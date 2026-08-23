@@ -97,7 +97,7 @@
 
       <div style="margin-top: 12px; padding: 12px; border-radius: 16px; background: var(--glass2); border: 1px solid var(--border2); display: {{ expandedDisplay }};">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 9px;">
-          <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);">Judge0</span>
+          <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);">go-judge</span>
           <span style="display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; color: var(--ok-text);"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--ok);"></span>Hoạt động</span>
         </div>
         <div style="height: 6px; border-radius: 999px; background: var(--track); overflow: hidden; margin-bottom: 8px;">
@@ -303,7 +303,7 @@ class Component extends DCLogic {
       fg: this.state.theme === t.key ? 'var(--seg-fg)' : 'var(--muted)',
     }));
     const footerLinks = [
-      { label: 'Tài liệu API', href: '#' }, { label: 'Trạng thái Judge0', href: '#' },
+      { label: 'Tài liệu API', href: '#' }, { label: 'Trạng thái go-judge', href: '#' },
       { label: 'Nhật ký thay đổi', href: '#' }, { label: 'Hỗ trợ', href: '#' },
     ];
     return {
@@ -335,13 +335,13 @@ class Component extends DCLogic {
 
     const stats = [
       ['Sự kiện 24 giờ', '12.408', '+3%', 'var(--text)', 'Trung bình 8,6 dòng mỗi giây'],
-      ['Lỗi', '37', '−12', neg, '31 lỗi từ Judge0 worker'],
+      ['Lỗi', '37', '−12', neg, '31 lỗi từ go-judge worker'],
       ['Cảnh báo', '184', '+21', warn, 'Phần lớn do vượt thời gian chạy'],
       ['Hành động quản trị', '46', '+9', ok, '6 tài khoản quản trị hoạt động'],
     ].map(([label, value, delta, fg, meta]) => ({ label, value, delta, fg, meta }));
 
     const raw = [
-      ['15:41:02', 'ERROR', 'Judge0 worker 3 mất kết nối, 4 job được xếp lại hàng đợi', 'judge0', 'system', 'evt_9f2a71'],
+      ['15:41:02', 'ERROR', 'go-judge worker 3 mất kết nối, 4 job được xếp lại hàng đợi', 'judge0', 'system', 'evt_9f2a71'],
       ['15:40:55', 'INFO', 'Chấm xong lượt nộp #48211, kết quả Accepted', 'judge0', 'nguyenvana', 'evt_9f2a6e'],
       ['15:39:18', 'AUDIT', 'Cập nhật giới hạn thời gian Python 3 từ 2s lên 3s', 'config', 'pdai', 'evt_9f2a53'],
       ['15:38:44', 'WARN', 'Lượt nộp #48207 vượt thời gian chạy trên testcase 14', 'judge0', 'tranbich', 'evt_9f2a41'],
@@ -372,7 +372,7 @@ class Component extends DCLogic {
     }));
 
     const services = [
-      ['Judge0', 'Hoạt động', '3 / 4 worker', warn],
+      ['go-judge', 'Hoạt động', '3 / 4 worker', warn],
       ['AI Gateway', 'Chậm hơn bình thường', 'p95 4,1s', warn],
       ['Cơ sở dữ liệu', 'Bình thường', '18 ms', ok],
       ['Xác thực', 'Bình thường', '99,99%', ok],

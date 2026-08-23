@@ -220,7 +220,7 @@ class Component extends DCLogic {
     const T = {
       titleUp: en ? "Create account" : "Tạo tài khoản",
       titleIn: en ? "Welcome back" : "Chào mừng trở lại",
-      subUp: en ? "Free forever. Judge0 runs your code in 12 languages." : "Miễn phí. Judge0 chạy code của bạn với 12 ngôn ngữ.",
+      subUp: en ? "Free forever. go-judge runs your code in Java, C++, and Python." : "Miễn phí. go-judge chạy code của bạn với Java, C++, và Python.",
       subIn: en ? "Sign in to continue your practice streak." : "Đăng nhập để tiếp tục chuỗi luyện tập của bạn.",
       user: en ? "Username" : "Tên đăng nhập",
       pw: en ? "Password" : "Mật khẩu",
@@ -254,7 +254,7 @@ class Component extends DCLogic {
       loadSteps: [
         { label: en ? "Verifying credentials" : "Xác thực thông tin", meta: "auth" },
         { label: en ? "Loading your progress" : "Tải tiến độ luyện tập", meta: "1 240" },
-        { label: en ? "Connecting to Judge0" : "Kết nối Judge0", meta: "12 lang" },
+        { label: en ? "Connecting to go-judge" : "Kết nối go-judge", meta: "3 lang" },
         { label: en ? "Building dashboard" : "Dựng bảng tổng quan", meta: "ui" }
       ].map((s, i) => Object.assign({}, s, {
         mark: st.step > i ? "\u2713" : st.step === i ? "\u2192" : "\u00B7",

@@ -11,7 +11,9 @@ date: 2026-08-21T05:05:00Z
 - Bổ sung 3 màn của luồng nộp bài: Kết quả nộp bài (F4), Phân tích bài giải (F5.1), Bài đã nộp (F5-lịch sử).
 - Nối kín luồng: Workspace → Kết quả nộp bài → Phân tích bài giải / Phỏng vấn giả lập; Bài đã nộp là lối vào lại.
 - Nav chính thêm mục "Bài đã nộp" trên toàn bộ 8 màn.
-- Vẫn lệch phạm vi ở Phỏng vấn giả lập (F5.2) và Câu hỏi phỏng vấn (F6) — chờ chủ dự án quyết.
+- Phỏng vấn giả lập (F5.2): đã chốt 2026-08-24 — bản hội thoại nhiều lượt là chính thức, xem
+  `06-plan/PROTOTYPE_DEBT.md` mục 1.3 (bản v1 chấm điểm 1-5 đã archive sang `09-layoutBase/_archive/`).
+  Câu hỏi phỏng vấn (F6): vẫn lệch phạm vi — chờ chủ dự án quyết.
 
 ## Screen map
 | Screen | Slug spec | Repo files |

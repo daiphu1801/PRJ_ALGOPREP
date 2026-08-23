@@ -52,14 +52,36 @@ gì là thiếu]`.
     vai trò hệ thống (`STUDENT`, `INSTRUCTOR`, `ADMIN`) và không xoá được vai trò đang có người dùng.
   - **F1-12 — Danh sách chức năng quản trị/nội dung nằm trong phạm vi ma trận** (đề xuất khởi điểm,
     `[SoT: Suy luận]` — chốt số lượng chính xác khi viết BD):
-    `PROBLEM_AUTHORING` (F2-01→04) · `TESTCASE_MANAGEMENT` (F2-05→09) · `CLASS_MANAGEMENT` (F2-12) ·
-    `USER_MANAGEMENT` (F1-13) · `JUDGE_QUEUE_MONITOR` (F4-10) · `AI_CONFIG` (F5-23) ·
+    `PROBLEM_AUTHORING` (F2-01→04) · `TESTCASE_MANAGEMENT` (F2-05→09, F2-14) · `CLASS_MANAGEMENT` (F2-12) ·
+    `USER_MANAGEMENT` (F1-13) · `REJUDGE_MANAGEMENT` (F4-09a→e) · `JUDGE_QUEUE_MONITOR` (F4-10) ·
+    `AI_CONFIG` (F5-23) ·
     `AI_TOKEN_BUDGET` (F5-21) · `SYSTEM_AUDIT_LOG` (F1-14) · `INTERVIEW_BANK_MANAGEMENT` (F6-11) ·
     `PERMISSION_MATRIX` (chính F1-10 — tự tham chiếu, mặc định chỉ `ADMIN` có toàn quyền).
   - **F1-13 — Quản lý tài khoản người dùng.** `ADMIN` đổi vai trò, khoá/mở khoá tài khoản, reset mật khẩu
     của người dùng khác — gác bởi `USER_MANAGEMENT` trong ma trận F1-10. Actor A3.
   - **F1-14 — Mọi thay đổi ma trận phân quyền và mọi thao tác quản trị đều ghi vào Nhật ký hệ thống**, kèm
-    ai đổi, đổi gì, đổi lúc nào — không có ngoại lệ cho chính thao tác đổi quyền.
+    ai đổi, đổi gì, đổi lúc nào — không có ngoại lệ cho chính thao tác đổi quyền. **Chốt phạm vi 2026-08-24
+    (`06-plan/PROTOTYPE_DEBT.md` mục 2.5):** F1-14 chỉ ghi **hành động quản trị của người** (đổi ma trận
+    quyền, đổi vai trò, khoá/mở khoá, reset mật khẩu...) — **không gộp** sự kiện hạ tầng/dịch vụ (lỗi judge
+    engine, worker mất kết nối, timeout sweep...). Hai luồng dữ liệu tách theo đúng Bounded Context sinh ra
+    chúng: hành động quản trị thuộc `identity` (F1-14), sự kiện hạ tầng thuộc `judge-orchestration` và đã có
+    chỗ riêng ở giám sát hàng đợi (F4-10), không cần một mã `Fx-nn` mới.
+- **Đăng nhập qua nhà cung cấp bên thứ ba (OAuth)** — bổ sung theo `06-plan/PROTOTYPE_DEBT.md` mục 2.2,
+  đối chiếu `09-layoutBase/Đăng nhập & Đăng ký.dc.html`:
+  - **F1-15 — Đăng nhập/đăng ký bằng OAuth (GitHub, Google)**, song song với F1-01/F1-02 (email + mật khẩu),
+    vai trò mặc định khi tạo tài khoản mới qua OAuth vẫn là `STUDENT` (F1-05). **Xung đột email — chốt
+    2026-08-24:** nếu email do provider OAuth trả về khớp với email của một tài khoản email/mật khẩu đã
+    tồn tại, hệ thống **tự động liên kết** đăng nhập OAuth vào tài khoản đó (coi email đã được provider xác
+    thực là đủ tin cậy) — không tạo tài khoản thứ hai, không hỏi lại người dùng. Người dùng sau đó đăng
+    nhập được bằng cả hai cách vào cùng một tài khoản.
+- **Tự xoá tài khoản (danger zone)** — bổ sung theo `06-plan/PROTOTYPE_DEBT.md` mục 2.3, đối chiếu
+  `09-layoutBase/Cài đặt.dc.html`:
+  - **F1-16 — Tự xoá tài khoản.** Chốt 2026-08-24: **khoá mềm rồi ẩn danh hoá sau khoảng ân hạn**, không
+    xoá thật ngay. Bấm xoá → tài khoản chuyển trạng thái `DEACTIVATED` ngay lập tức, không đăng nhập lại
+    được. Sau một khoảng ân hạn (đề xuất 30 ngày, `[SoT: Suy luận]` — chốt số ngày chính xác khi viết BD),
+    một job định kỳ ẩn danh hoá thông tin định danh (email, tên hiển thị) của tài khoản — bài nộp, bài giải
+    đã lưu, phiên phỏng vấn **không bị xoá**, chỉ gỡ liên kết tới danh tính cá nhân, để không phá vỡ thống
+    kê tiến độ lớp của giảng viên khi một học viên xoá tài khoản giữa kỳ.
 
 ### F2 — Ngân hàng bài toán và testcase (`problem-bank`)
 
@@ -82,6 +104,27 @@ gì là thiếu]`.
 - **Khám phá và quản lý lớp:**
   - Tìm kiếm và lọc bài toán theo chủ đề, độ khó, trạng thái đã giải (F2-11, actor A1).
   - Giao bài tập theo lớp (F2-12, actor A2).
+  - **Bài đã lưu (bookmark) kèm ghi chú riêng tư** (F2-13) — bổ sung theo `06-plan/PROTOTYPE_DEBT.md` mục
+    2.1, đối chiếu `09-layoutBase/Bài đã lưu.dc.html`. Người học đánh dấu bài toán để xem lại, kèm ghi chú
+    tự do theo từng bookmark. **Chốt 2026-08-24:** ghi chú lưu ở server theo (`user_id`, `problem_id`) —
+    **riêng tư tuyệt đối**, chỉ chủ tài khoản đọc được, không có ngoại lệ cho `INSTRUCTOR`/`ADMIN` dù có
+    toàn quyền qua ma trận phân quyền F1-10 (ghi chú bookmark không thuộc phạm vi ma trận, không phải một
+    `FUNCTION` quản trị). Vì lưu server-side nên tự đồng bộ trên mọi thiết bị đăng nhập, không cần cơ chế
+    đồng bộ riêng.
+  - **F2-14 — AI hỗ trợ sinh testcase tự động, output lấy từ chạy thật Đáp án mẫu (không để AI tự bịa
+    output)** — bổ sung theo `06-plan/PROTOTYPE_DEBT.md` mục 2.6, đối chiếu nút "Sinh tự động" ở
+    `09-layoutBase/Admin - Soạn đề bài.dc.html`. **Chốt 2026-08-24 — giữ tính năng, cơ chế an toàn bắt
+    buộc:** AI chỉ sinh **input** (dựa trên đề bài Markdown và Ràng buộc dữ liệu Admin đã khai báo);
+    **output không do AI tạo ra** — hệ thống lấy input đó chạy qua **Đáp án mẫu** của chính bài toán trên
+    go-judge (cùng `JudgeExecutionPort` dùng để chấm bài, F4-03) để lấy output thật, rồi mới ghép cặp
+    input/output vào danh sách testcase nháp. Cơ chế này loại bỏ rủi ro "AI bịa sai expected-output khiến
+    bài nộp đúng bị chấm Wrong Answer" đã nêu ở `PROTOTYPE_DEBT.md` mục 2.6 — output luôn là kết quả chạy
+    chương trình thật, không phải văn bản do AI viết ra.
+    - Testcase do F2-14 sinh ra ở trạng thái **nháp, chưa dùng để chấm bài** cho tới khi Admin xác nhận —
+      không tự động gộp vào bộ Hidden testcase khi xuất bản.
+    - Điều kiện tiên quyết: bài toán phải có Đáp án mẫu đã chạy Pass với testcase hiện có (nút "Chạy với
+      đáp án mẫu" trong cùng màn); chưa có đáp án mẫu hợp lệ thì không có gì để chạy input qua, tính năng vô
+      hiệu.
 
 ### F3 — Bộ sinh mã bọc hàm (`harness`) — trọng tâm kỹ thuật
 
@@ -127,8 +170,38 @@ Gọi qua cổng ra trung lập theo engine (`JudgeExecutionPort`), adapter mặ
 - **Thời gian thực:**
   - Đẩy trạng thái từng testcase qua WebSocket (STOMP) theo kênh riêng của từng bài nộp, ngay sau mỗi lần
     gọi cổng ra trả kết quả (F4-08).
-- **Vận hành:**
-  - Chấm lại (re-judge) theo một phiên bản bộ testcase (F4-09, actor A2/A3).
+- **Vận hành — Chấm lại (re-judge), actor A2/A3** — chi tiết hoá theo `06-plan/PROTOTYPE_DEBT.md` mục 2.7,
+  đối chiếu `09-layoutBase/Admin - Chấm lại.dc.html` (F4-09 trước đây chỉ một dòng, thực tế là một quy trình
+  vận hành nhiều bước):
+  - **F4-09a — Chọn phạm vi chấm lại**, một trong ba kiểu, mỗi kiểu có tham số riêng: **theo bài toán**
+    (chọn bài + phiên bản bộ testcase + lọc theo ngôn ngữ, áp cho toàn bộ lượt nộp của bài); **theo danh
+    sách lượt nộp cụ thể** (dán mã lượt nộp, hệ thống tự suy ra ngôn ngữ và dùng bộ testcase hiện hành);
+    **theo khoảng thời gian** (từ ngày – đến ngày, lọc theo loại kết quả cũ ví dụ chỉ `Runtime Error`/`TLE`,
+    có giới hạn số lượt tối đa mỗi phiên để tránh một phiên quá tải hệ thống).
+  - **F4-09b — Ước lượng ảnh hưởng trước khi chạy thật (dry-run)**: trước khi bắt đầu, hệ thống hiển thị số
+    lượt nộp sẽ bị chấm lại, thời gian ước tính, và số lần gọi `JudgeExecutionPort` dự kiến cho phạm vi đã
+    chọn; có tuỳ chọn **chạy thử trên một mẫu nhỏ** (ví dụ 20 lượt) để xem trước kết quả thật trước khi cam
+    kết chạy toàn bộ phạm vi.
+  - **F4-09c — Tuỳ chọn khi chạy**: (1) giữ nguyên kết quả cũ nếu điểm chấm lại thấp hơn — không hạ điểm đã
+    công bố cho người học; (2) gửi thông báo cho người học khi kết quả bài nộp của họ thay đổi; (3) chạy ở
+    hàng đợi nền, không chèn trước lượt nộp trực tiếp của người học đang học bình thường (ưu tiên trải
+    nghiệm thời gian thực của F4-08 hơn tốc độ hoàn thành chấm lại).
+  - **F4-09d — Điều khiển phiên đang chạy và bất biến dữ liệu**: một phiên chấm lại tạm dừng/tiếp tục hoặc
+    huỷ được giữa chừng; **chỉ chấm lại lượt nộp đã ở trạng thái kết quả cuối** — lượt đang chấm dở bị bỏ
+    qua, không chen vào (nhất quán với bất biến "không ghi đè trạng thái cuối" ở `glossary.md` mục 3); kết
+    quả bị thay thế bởi phiên chấm lại vẫn được lưu lại và khôi phục được trong một khoảng thời gian (đề
+    xuất 30 ngày, `[SoT: Suy luận]` — chốt số ngày chính xác khi viết BD, tương tự cách F1-16 xử lý khoảng
+    ân hạn xoá tài khoản).
+  - **F4-09e — Audit trail của mỗi phiên chấm lại**: mỗi phiên (bắt đầu, tạm dừng, huỷ, hoàn tất) ghi vào
+    Nhật ký hệ thống (F1-14) kèm người thực hiện, lý do, phạm vi, số lượt nộp, số lượt có kết quả thay đổi,
+    trạng thái cuối — xuất được ra CSV. Đây là một nguồn ghi log cụ thể cho `SYSTEM_AUDIT_LOG` (F1-12), gộp
+    cùng nhóm với việc audit hành động admin đang bàn ở mục 2.5 của `PROTOTYPE_DEBT.md`.
+  - **Không có bước duyệt trước khi chạy — chốt 2026-08-24** (`user_stories.md` mục 5, câu hỏi Q2 đã trả
+    lời): audit trail (F4-09e) là cơ chế kiểm soát duy nhất sau khi chạy, không cần một vai trò khác duyệt
+    trước. An toàn nằm ở nơi khác: phạm vi giảng viên (A2) đã bị giới hạn trong lớp mình phụ trách qua ma
+    trận quyền F1-10 nên rủi ro tác động diện rộng không xảy ra ở vai trò này; thao tác quy mô lớn (toàn hệ
+    thống) chỉ actor A3 làm được và đã có dry-run (F4-09b) cùng tạm dừng/huỷ giữa chừng (F4-09d) làm lớp an
+    toàn trước và trong khi chạy, thay cho một bước duyệt tĩnh trước khi bắt đầu.
   - Giám sát hàng đợi và tình trạng cụm judge engine (F4-10); cấu hình ngôn ngữ và giới hạn tài nguyên
     (F4-11) — cả hai thuộc actor A3.
 
@@ -150,10 +223,12 @@ Kích hoạt **sau khi** bài nộp đạt `Accepted`. Hai chức năng độc l
 
 **F5.2 — Phỏng vấn giả lập 1:1 (nhiều lượt, hội thoại):**
 
-- Mở phiên phỏng vấn cho một bài nộp đã `Accepted` (F5-09).
+- Mở phiên phỏng vấn cho một bài nộp đã `Accepted` (F5-09). Đây là lối vào mặc định, nhưng **không phải lối
+  vào duy nhất** — F5-24 mở thêm hai lối vào tự luyện, không đòi hỏi bài nộp `Accepted` nào.
 - Ba giai đoạn: **Giải trình thuật toán** — người học trình bày ý tưởng và lý do chọn cấu trúc dữ liệu
   (F5-10); **Phản biện** — AI chất vấn điểm chưa tối ưu và trường hợp biên (F5-11); **Mở rộng quy mô** —
-  tình huống dữ liệu tăng đột biến hoặc ràng buộc hệ thống đổi (F5-12).
+  tình huống dữ liệu tăng đột biến hoặc ràng buộc hệ thống đổi (F5-12). Ba giai đoạn này áp dụng cho phiên mở
+  từ cả ba lối vào ở F5-09/F5-24, không riêng gì lối vào từ bài nộp.
 - Duy trì ngữ cảnh phiên qua `ChatMemory` trên Redis xuyên ba giai đoạn (F5-13); stream phản hồi qua SSE
   (F5-14).
 - Kết phiên xuất bảng đánh giá rubric bốn tiêu chí (độ rõ ràng, độ chính xác kỹ thuật, khả năng phản biện,
@@ -172,6 +247,15 @@ Kích hoạt **sau khi** bài nộp đạt `Accepted`. Hai chức năng độc l
 - **Suy giảm có kiểm soát** (F5-22): AI hỏng hoặc hết quota thì F1-F4 vẫn hoạt động bình thường — ràng buộc
   kiến trúc, không phải lời hứa. Không được gọi AI đồng bộ trong luồng ghi nhận kết quả chấm.
 - Cấu hình prompt và rubric AI (F5-23, actor A3).
+- **Ba lối vào phiên phỏng vấn** (F5-24, `[SoT: Suy luận — đối chiếu 09-layoutBase/Phỏng vấn giả lập.dc.html
+  với F5-09, chốt cùng phiên với quyết định mục 1.3 của `06-plan/PROTOTYPE_DEBT.md`, 2026-08-24]`): ngoài
+  lối vào từ bài nộp `Accepted` (F5-09), người học còn tự mở phiên từ (a) **kho câu hỏi** có sẵn của F6, hoặc
+  (b) **tự chọn chủ đề** (tick nhiều chủ đề thuật toán, chọn mức độ và ngôn ngữ) khi chưa có bài nộp phù hợp
+  để luyện. Cả ba lối vào cùng chạy chung một luồng ba giai đoạn (F5-10 tới F5-16) và chung mọi ràng buộc AI
+  (F5-17 tới F5-22) — khác biệt duy nhất là nguồn đề bài/chủ đề nạp vào phiên, không phải luồng hội thoại.
+  Việc phỏng vấn không còn bị khoá cứng sau `Accepted` cần phản ánh lại ở câu mô tả tổng quan "sau khi
+  Accepted" trong `01-rd/overview/overview.md` khi module này được viết BD/DD — F5.2 giờ là **có thể mở sau
+  Accepted, hoặc mở độc lập để tự luyện**, không phải điều kiện bắt buộc.
 
 ### F6 — Ngân hàng câu hỏi phỏng vấn (`interview-bank`)
 

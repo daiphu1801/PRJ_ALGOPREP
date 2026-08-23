@@ -309,4 +309,6 @@ Ghi ra để không ai đọc xong lại tưởng đã có quyết định:
 | Danh sách màn hình và luồng điều hướng | `01-rd/screens/` rồi `02-bd/screens/` |
 | Cấu trúc chi tiết của lược đồ kiểu F3 | `02-bd/architecture/harness.md` |
 | Nhà cung cấp và tên model LLM cụ thể | Quyết định riêng khi có ràng buộc chi phí thật |
-| Hệ thống thiết kế giao diện (design token) | Chưa chọn — không có `09-layoutBase/` |
+| Hệ thống thiết kế giao diện (design token, màu sắc, typography, thư viện component) | Chưa chọn — chốt ở `02-bd/screens/` |
+| Chế độ theme (Dark/Light) | **Đã chốt 2026-08-24 — hỗ trợ cả hai, Light là mặc định** (`DEC-2026-0824-dark-light-theme`) |
+| Song ngữ Việt/Anh trên giao diện | **Đã chốt 2026-08-24 — có song ngữ vi/en** (`DEC-2026-0824-i18n-vi-en`), chi tiết khung dịch chốt ở `02-bd/screens/` |

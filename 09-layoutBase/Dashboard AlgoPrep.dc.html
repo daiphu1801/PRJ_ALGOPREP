@@ -344,9 +344,9 @@
       <div>
         <div style="display: flex; align-items: center; gap: 9px; margin-bottom: 9px;">
           <span style="font-size: 16px; font-weight: 700; letter-spacing: -0.01em;">AlgoPrep</span>
-          <span style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; font-weight: 600; letter-spacing: 0.14em; color: var(--gold); border: 1px solid var(--gold); border-radius: 4px; padding: 2px 5px 1px;">JUDGE0</span>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; font-weight: 600; letter-spacing: 0.14em; color: var(--gold); border: 1px solid var(--gold); border-radius: 4px; padding: 2px 5px 1px;">GO-JUDGE</span>
         </div>
-        <p style="margin: 0; font-size: 12.5px; line-height: 1.6; color: var(--ink3); max-width: 300px;"><span data-lang="vi">Nền tảng luyện thuật toán và ôn tập phỏng vấn, chấm bài bằng Judge0 self-hosted. Mã nguồn mở, triển khai bằng Docker Compose.</span><span data-lang="en">Practice algorithms and prepare for technical interviews, graded by self-hosted Judge0. Open source, deployed with Docker Compose.</span></p>
+        <p style="margin: 0; font-size: 12.5px; line-height: 1.6; color: var(--ink3); max-width: 300px;"><span data-lang="vi">Nền tảng luyện thuật toán và ôn tập phỏng vấn, chấm bài bằng go-judge self-hosted. Mã nguồn mở, triển khai bằng Docker Compose.</span><span data-lang="en">Practice algorithms and prepare for technical interviews, graded by self-hosted go-judge. Open source, deployed with Docker Compose.</span></p>
       </div>
       <sc-for list="{{ footerCols }}" as="col" hint-placeholder-count="3">
         <div>
@@ -362,7 +362,7 @@
     <div style="max-width: 1400px; margin: 0 auto; padding: 0 28px 26px; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
       <span style="font-size: 12px; color: var(--ink3);"><span data-lang="vi">© 2026 AlgoPrep — đồ án tốt nghiệp</span><span data-lang="en">© 2026 AlgoPrep — capstone project</span></span>
       <div style="display: flex; align-items: center; gap: 16px;">
-        <span style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink2);"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--ok);"></span><span data-lang="vi">Judge0 cluster hoạt động · hàng đợi 3 bài</span><span data-lang="en">Judge0 cluster healthy · 3 in queue</span></span>
+        <span style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink2);"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--ok);"></span><span data-lang="vi">go-judge cluster hoạt động · hàng đợi 3 bài</span><span data-lang="en">go-judge cluster healthy · 3 in queue</span></span>
         <span style="font-size: 12px; color: var(--ink3); font-family: 'JetBrains Mono', monospace;">v0.4.2</span>
       </div>
     </div>
@@ -532,7 +532,7 @@ class Component extends DCLogic {
       footerCols: [
         { title: T("Luyện tập", "Practice"), links: [{ label: T("Bài toán", "Problems") }, { label: "Workspace" }, { label: "Mock Interview" }, { label: T("Ngân hàng câu hỏi", "Question bank") }] },
         { title: T("Tài nguyên", "Resources"), links: [{ label: T("Hướng dẫn nộp bài", "Submission guide") }, { label: T("Đặc tả kiểu dữ liệu", "Type spec") }, { label: T("Giới hạn tài nguyên", "Resource limits") }, { label: T("Câu hỏi thường gặp", "FAQ") }] },
-        { title: T("Hệ thống", "System"), links: [{ label: T("Trạng thái Judge0", "Judge0 status") }, { label: T("Ngôn ngữ hỗ trợ", "Languages") }, { label: T("Tài liệu API", "API docs") }, { label: "GitHub" }] }
+        { title: T("Hệ thống", "System"), links: [{ label: T("Trạng thái go-judge", "go-judge status") }, { label: T("Ngôn ngữ hỗ trợ", "Languages") }, { label: T("Tài liệu API", "API docs") }, { label: "GitHub" }] }
       ],
 
       ranges: ["7 ngày", "30 ngày", "90 ngày"].map((r) => Object.assign({ label: st.uiLang === "en" ? r.replace("ngày", "days") : r, onClick: () => this.setState({ range: r }) }, this.tab(range === r))),

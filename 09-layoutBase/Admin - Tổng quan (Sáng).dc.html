@@ -96,7 +96,7 @@
 
       <div style="margin-top: 12px; padding: 12px; border-radius: 16px; background: var(--glass2); border: 1px solid var(--border2); display: {{ expandedDisplay }};">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 9px;">
-          <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);">Judge0</span>
+          <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);">go-judge</span>
           <span style="display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; color: var(--ok-text);"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--ok);"></span>Hoạt động</span>
         </div>
         <div style="height: 6px; border-radius: 999px; background: var(--track); overflow: hidden; margin-bottom: 8px;">
@@ -161,7 +161,7 @@
           <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 20px;">
             <div>
               <div style="font-size: 14.5px; font-weight: 700;">Lượt nộp bài theo ngày</div>
-              <div style="font-size: 12.5px; color: var(--muted);">Chia theo kết quả chấm của Judge0</div>
+              <div style="font-size: 12.5px; color: var(--muted);">Chia theo kết quả chấm của go-judge</div>
             </div>
             <div style="display: flex; gap: 14px;">
               <sc-for list="{{ legend }}" as="l" hint-placeholder-count="3">
@@ -353,7 +353,7 @@ class Component extends DCLogic {
       { label: 'Người dùng hoạt động', value: '1.284', delta: '+8,4%', sub: '312 người học trong 24 giờ', dot: '#3F7BE8', glow: 'rgba(88,150,255,0.26)', deltaFg: pos },
       { label: 'Lượt nộp bài', value: '9.416', delta: '+12,1%', sub: 'Trung bình 1.345 lượt/ngày', dot: '#8B5CF6', glow: 'rgba(160,120,250,0.22)', deltaFg: pos },
       { label: 'Tỉ lệ Accepted', value: '48%', delta: '−2,3%', sub: '4.520 lượt được chấp nhận', dot: '#17B57E', glow: 'rgba(60,200,160,0.22)', deltaFg: neg },
-      { label: 'Thời gian chấm TB', value: '1,8s', delta: '−0,4s', sub: 'Judge0 · 3 worker đang chạy', dot: '#F5B93F', glow: 'rgba(245,185,63,0.22)', deltaFg: pos },
+      { label: 'Thời gian chấm TB', value: '1,8s', delta: '−0,4s', sub: 'go-judge · 3 worker đang chạy', dot: '#F5B93F', glow: 'rgba(245,185,63,0.22)', deltaFg: pos },
     ];
 
     const legend = [
@@ -418,7 +418,7 @@ class Component extends DCLogic {
     }));
 
     const footerLinks = [
-      { label: 'Tài liệu API', href: '#' }, { label: 'Trạng thái Judge0', href: '#' },
+      { label: 'Tài liệu API', href: '#' }, { label: 'Trạng thái go-judge', href: '#' },
       { label: 'Nhật ký thay đổi', href: '#' }, { label: 'Hỗ trợ', href: '#' },
     ];
 

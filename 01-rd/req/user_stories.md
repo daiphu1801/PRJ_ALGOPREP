@@ -38,6 +38,10 @@ Là **sinh viên**, tôi muốn tạo tài khoản và đăng nhập, để bắ
   Token bằng Refresh Token mà tôi không phải đăng nhập lại (F1-03).
 - **Cho** tôi đang đăng nhập, **Khi** tôi đăng xuất, **Thì** Refresh Token của phiên đó bị vô hiệu hoá
   (F1-04).
+- **Cho** tôi chưa có tài khoản, **Khi** tôi đăng nhập bằng GitHub hoặc Google, **Thì** tài khoản được tạo tự
+  động với vai trò `STUDENT` nếu email đó chưa từng đăng ký; **Cho** email do OAuth trả về khớp với một tài
+  khoản email/mật khẩu đã có, **Khi** tôi đăng nhập bằng OAuth lần đầu, **Thì** hệ thống tự liên kết vào
+  chính tài khoản đó — tôi đăng nhập được bằng cả hai cách vào cùng một tài khoản (F1-15).
 
 ### US-A1-02: Tìm và chọn bài toán
 
@@ -85,6 +89,10 @@ Là **sinh viên**, tôi muốn xem lại quá trình luyện tập của mình 
   được đúng rubric của phiên đó (F1-08).
 - **Cho** thông tin cá nhân của tôi sai hoặc cần cập nhật, **Khi** tôi sửa ở trang hồ sơ, **Thì** thông tin
   mới được lưu (F1-09) `[SoT: Suy luận — README.md không nêu, nhưng đăng ký mà không sửa được gì là thiếu]`.
+- **Cho** tôi muốn ngừng sử dụng hệ thống hẳn, **Khi** tôi bấm xoá tài khoản ở khu "danger zone" của trang
+  Cài đặt và xác nhận, **Thì** tài khoản chuyển trạng thái `DEACTIVATED` ngay, tôi không đăng nhập lại được
+  nữa; sau một khoảng ân hạn, thông tin định danh của tôi (email, tên hiển thị) bị ẩn danh hoá, còn bài nộp,
+  bài đã lưu, và phiên phỏng vấn của tôi vẫn được giữ lại nhưng không còn gắn với danh tính cá nhân (F1-16).
 
 ### US-A1-06: Nhận phân tích bài giải sau khi Accepted
 
@@ -117,6 +125,9 @@ buổi phỏng vấn thật.
   thức** (F5-15, F5-18).
 - **Cho** AI hết quota hoặc lỗi giữa phiên, **Khi** sự cố xảy ra, **Thì** phiên kết thúc có kiểm soát, tôi
   nhận thông báo rõ ràng, và **bài nộp cùng kết quả chấm của tôi không bị ảnh hưởng** (F5-22).
+- **Cho** tôi chưa có bài nộp `Accepted` nào phù hợp muốn luyện, **Khi** tôi chọn mở phiên từ kho câu hỏi có
+  sẵn hoặc tự chọn một hoặc nhiều chủ đề cùng mức độ và ngôn ngữ, **Thì** phiên vẫn chạy đủ ba giai đoạn như
+  lối vào từ bài nộp, chỉ khác nguồn đề bài nạp vào (F5-24).
 
 ### US-A1-08: Ôn tập ngân hàng câu hỏi phỏng vấn
 
@@ -132,6 +143,19 @@ không phải viết mã của buổi phỏng vấn thật.
   chuẩn của câu hỏi và trả về điểm đã đạt, điểm còn thiếu, hướng bổ sung (F6-07, F6-08).
 - **Cho** tôi đã luyện một số câu, **Khi** tôi mở trang theo dõi, **Thì** tôi thấy lịch sử luyện tập, danh
   sách câu cần ôn lại, và tỉ lệ hoàn thành theo chủ đề (F6-09, F6-10).
+
+### US-A1-09: Lưu bài toán kèm ghi chú riêng tư
+
+Là **sinh viên**, tôi muốn đánh dấu bài toán để xem lại sau kèm ghi chú riêng, để không quên những bài mình
+định làm lại hoặc những điều mình nhận ra khi giải.
+
+- **Cho** tôi đang xem một bài toán, **Khi** tôi bấm lưu (bookmark), **Thì** bài đó xuất hiện trong danh sách
+  "Bài đã lưu" của tôi, kèm ô ghi chú tự do tôi có thể sửa bất cứ lúc nào (F2-13).
+- **Cho** tôi đã ghi chú vào một bookmark, **Khi** người khác (kể cả giảng viên hoặc quản trị viên) xem cùng
+  bài toán đó, **Thì** họ không thấy được ghi chú của tôi — ghi chú riêng tư tuyệt đối theo tài khoản
+  (F2-13).
+- **Cho** tôi đăng nhập từ một thiết bị khác, **Khi** tôi mở "Bài đã lưu", **Thì** tôi thấy đúng danh sách và
+  ghi chú như trên thiết bị cũ, vì dữ liệu lưu ở server (F2-13).
 
 ---
 
@@ -171,9 +195,11 @@ của lớp và sửa sai nếu testcase từng có lỗi.
 
 - **Cho** bài toán đã công bố, **Khi** tôi giao bài cho một lớp, **Thì** chỉ sinh viên của lớp đó thấy bài
   được giao (F2-12).
-- **Cho** một phiên bản bộ testcase mới đã có, **Khi** tôi yêu cầu chấm lại cho bài tập của lớp mình, **Thì**
-  các bài nộp liên quan được chấm lại theo phiên bản mới (F4-09) — tôi không yêu cầu chấm lại được bài nộp
-  ngoài lớp mình phụ trách (theo ma trận quyền F1-10).
+- **Cho** một phiên bản bộ testcase mới đã có, **Khi** tôi chọn phạm vi chấm lại theo bài toán của lớp mình,
+  **Thì** tôi thấy ước lượng số lượt nộp bị ảnh hưởng và thời gian dự kiến trước khi bấm chạy thật (F4-09a,
+  F4-09b) — tôi không chọn được phạm vi ngoài lớp mình phụ trách (theo ma trận quyền F1-10).
+- **Cho** phiên chấm lại đã chạy xong, **Khi** kết quả một bài nộp thay đổi, **Thì** hệ thống không hạ điểm
+  đã công bố nếu điểm mới thấp hơn, trừ khi tôi tắt tuỳ chọn đó (F4-09c).
 
 ### US-A2-04: Tạo bộ câu hỏi phỏng vấn riêng cho lớp
 
@@ -182,6 +208,21 @@ muốn.
 
 - **Cho** tôi đã chọn một tập câu hỏi từ ngân hàng, **Khi** tôi tạo bộ câu hỏi riêng và gán cho lớp, **Thì**
   sinh viên trong lớp đó thấy bộ câu hỏi này (F6-11).
+
+### US-A2-05: Nhờ AI sinh testcase tự động, output lấy từ chạy thật đáp án mẫu
+
+Là **giảng viên**, tôi muốn nhờ AI sinh thêm testcase khi soạn đề, để rút ngắn thời gian tự viết tay nhiều
+input mà vẫn tin tưởng được output là chính xác.
+
+- **Cho** bài toán đã có Đáp án mẫu chạy Pass với testcase hiện có, **Khi** tôi bấm "Sinh tự động" ở màn
+  Soạn đề bài, **Thì** AI sinh ra các input dựa trên đề bài và Ràng buộc dữ liệu tôi đã khai báo, hệ thống
+  chạy từng input đó qua Đáp án mẫu trên go-judge để lấy output thật, rồi thêm cặp input/output vào danh
+  sách testcase ở trạng thái nháp (F2-14).
+- **Cho** bài toán chưa có Đáp án mẫu chạy Pass, **Khi** tôi bấm "Sinh tự động", **Thì** hệ thống từ chối và
+  báo tôi cần có đáp án mẫu hợp lệ trước (F2-14) — không có gì để chạy input qua nên không sinh testcase.
+- **Cho** testcase do AI sinh đã nằm trong danh sách nháp, **Khi** tôi chưa xác nhận, **Thì** testcase đó
+  chưa được gộp vào bộ Hidden dùng để chấm bài (F2-14) — tôi luôn là người quyết định cuối cùng có dùng hay
+  không.
 
 ---
 
@@ -218,7 +259,7 @@ Là **quản trị viên**, tôi muốn giám sát hàng đợi bài nộp và t
 - **Cho** tôi mở bảng giám sát, **Khi** tôi xem, **Thì** tôi thấy độ dài hàng đợi, số bài nộp đang chạy, và
   tình trạng cụm judge engine (mặc định go-judge) (F4-10).
 - **Cho** một bài nộp bị treo quá ngưỡng thời gian, **Khi** timeout sweep phát hiện, **Thì** tôi thấy nó
-  trên bảng giám sát và kích hoạt chấm lại nếu cần (F4-07, F4-09).
+  trên bảng giám sát và kích hoạt chấm lại nếu cần (F4-07, F4-09a).
 
 ### US-A3-04: Cấu hình ngôn ngữ, giới hạn tài nguyên, và AI
 
@@ -232,9 +273,19 @@ vận hành hệ thống đúng với năng lực hạ tầng thật.
 - **Cho** tôi muốn kiểm soát chi phí AI, **Khi** tôi xem trang theo dõi token, **Thì** tôi thấy lượng token
   đã tiêu thụ và điều chỉnh được giới hạn tần suất gọi (F5-19, F5-21).
 
----
+### US-A3-05: Vận hành phiên chấm lại quy mô lớn
 
-## 4. A4 — Hệ thống tự động
+Là **quản trị viên**, tôi muốn vận hành một phiên chấm lại quy mô toàn hệ thống (ví dụ nâng cấp trình biên
+dịch), để áp dụng thay đổi cho hàng nghìn bài nộp cũ một cách an toàn và có thể kiểm soát giữa chừng.
+
+- **Cho** tôi chọn phạm vi "theo khoảng thời gian" hoặc toàn hệ thống, **Khi** tôi xem ước lượng, **Thì**
+  tôi thấy số lượt nộp bị ảnh hưởng và có thể "chạy thử" trên một mẫu nhỏ trước khi cam kết chạy toàn bộ
+  (F4-09a, F4-09b).
+- **Cho** một phiên chấm lại đang chạy, **Khi** tôi phát hiện vấn đề, **Thì** tôi tạm dừng hoặc huỷ được
+  ngay, và lượt nộp đang chấm dở không bị chen vào giữa chừng (F4-09d).
+- **Cho** một phiên chấm lại đã hoàn tất, tạm dừng, hoặc bị huỷ, **Khi** tôi mở lịch sử chấm lại, **Thì** tôi
+  thấy ai chạy, phạm vi nào, lý do gì, và bao nhiêu lượt nộp đổi kết quả — đồng thời bản ghi này cũng nằm
+  trong Nhật ký hệ thống chung (F4-09e, F1-14).
 
 Các mục dưới đây là hành vi **hệ thống phải tự thực hiện** mà không do ai bấm — job định kỳ và consumer lấy
 việc từ hàng đợi. Giữ dạng "Cho/Khi/Thì" để nhất quán với phần trên, nhưng chủ thể là hệ thống, không phải
@@ -306,7 +357,7 @@ Giữ nguyên tinh thần "ghi ra thay vì lặng lẽ giả định" của `rd-
 | # | Câu hỏi | Vì sao chưa trả lời được | Người trả lời |
 | :--- | :--- | :--- | :--- |
 | Q1 | Sinh viên có sửa được câu trả lời đã nộp ở Chế độ luyện (F6-07) sau khi đã nhận phản hồi AI không, hay mỗi lần chỉ nộp một lần? | `README.md` không nêu chi tiết luồng này | Chủ nhiệm đề tài |
-| Q2 | Giảng viên yêu cầu chấm lại (F4-09) có giới hạn số lần hoặc cần quản trị viên duyệt không? | Chưa có trong khảo sát, chỉ ghi "kích hoạt chấm lại" | Chủ nhiệm đề tài |
+| ~~Q2~~ | ~~Giảng viên yêu cầu chấm lại (F4-09a) có giới hạn số lần hoặc cần quản trị viên duyệt không?~~ **Đã trả lời 2026-08-24: không cần duyệt, chỉ cần audit.** Phạm vi giảng viên vốn đã bị chặn trong lớp mình phụ trách (ma trận quyền F1-10, xem `US-A2-03`); thao tác quy mô lớn (toàn hệ thống) tách riêng cho quản trị viên (`US-A3-05`) và đã có dry-run + tạm dừng/huỷ giữa chừng (F4-09b, F4-09d) làm lớp an toàn trước/trong khi chạy. Audit trail (F4-09e) chỉ cần để truy vết sau khi chạy, không cần thêm bước duyệt trước. | (đã trả lời) | Chủ nhiệm đề tài |
 | Q3 | US-A1-06 giả định "yêu cầu phân tích" là hành động chủ động của sinh viên (bấm nút) — có cần tự động gợi ý ngay khi `Accepted` hay chỉ hiện lựa chọn? | Suy luận từ `README.md` mục 2, chưa có màn hình cụ thể để xác nhận | Người viết BD màn `submission_result` |
 | Q4 | Ngưỡng thời gian cụ thể để timeout sweep (F4-07) coi một bài nộp là "treo" chưa được chốt số liệu | `environment.md`/`README.md` không có con số, chỉ có nguyên lý | Chủ nhiệm đề tài, chốt khi viết DD cho F4 |
 

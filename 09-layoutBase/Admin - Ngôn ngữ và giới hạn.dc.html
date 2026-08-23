@@ -96,7 +96,7 @@
 
       <div style="margin-top: 12px; padding: 12px; border-radius: 16px; background: var(--glass2); border: 1px solid var(--border2); display: {{ expandedDisplay }};">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 9px;">
-          <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);">Judge0</span>
+          <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);">go-judge</span>
           <span style="display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; color: var(--ok-text);"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--ok);"></span>Hoạt động</span>
         </div>
         <div style="height: 6px; border-radius: 999px; background: var(--track); overflow: hidden; margin-bottom: 8px;">
@@ -138,7 +138,6 @@
               <div style="font-size: 14.5px; font-weight: 700;">Ngôn ngữ được hỗ trợ</div>
               <div style="font-size: 12.5px; color: var(--muted);">Bật tắt và chỉnh hệ số cho từng ngôn ngữ</div>
             </div>
-            <button style="height: 32px; padding: 0 13px; border: 1px solid var(--border2); border-radius: 10px; background: var(--glass2); font-family: inherit; font-size: 12.5px; font-weight: 600; color: var(--text); cursor: pointer; white-space: nowrap;">Thêm ngôn ngữ</button>
           </div>
           <table style="width: 100%; min-width: 720px; font-size: 13.5px;">
             <thead>
@@ -240,7 +239,7 @@
 class Component extends DCLogic {
   state = {
     collapsed: false, theme: 'light',
-    enabled: { py: true, cpp: true, java: true, js: true, go: false, cs: true },
+    enabled: { py: true, cpp: true, java: true },
     sb: { net: false, fork: true, stderr: true },
   };
 
@@ -307,7 +306,7 @@ class Component extends DCLogic {
       fg: this.state.theme === t.key ? 'var(--seg-fg)' : 'var(--muted)',
     }));
     const footerLinks = [
-      { label: 'Tài liệu API', href: '#' }, { label: 'Trạng thái Judge0', href: '#' },
+      { label: 'Tài liệu API', href: '#' }, { label: 'Trạng thái go-judge', href: '#' },
       { label: 'Nhật ký thay đổi', href: '#' }, { label: 'Hỗ trợ', href: '#' },
     ];
     return {
@@ -340,17 +339,11 @@ class Component extends DCLogic {
       py: ['rgba(63,123,232,0.14)', dark ? '#7FD0FF' : '#2C5FC4'],
       cpp: ['rgba(139,92,246,0.14)', dark ? '#C4B5FD' : '#6D3FD1'],
       java: ['rgba(245,118,46,0.14)', dark ? '#FFB27A' : '#B4551A'],
-      js: ['rgba(245,185,63,0.16)', dark ? '#FFCE78' : '#A9750F'],
-      go: ['rgba(100,200,192,0.16)', dark ? '#7EE8BE' : '#0F8A61'],
-      cs: ['rgba(63,123,232,0.14)', dark ? '#8FD3FF' : '#2C5FC4'],
     };
     const langs = [
-      ['py', 'Python 3', 'PY', 'CPython 3.11.6', 'x3,0', '3.000 ms', '256 MB', 'Judge0 #71'],
-      ['cpp', 'C++ 17', 'C+', 'GCC 13.2', 'x1,0', '1.000 ms', '256 MB', 'Judge0 #54'],
-      ['java', 'Java 21', 'JV', 'OpenJDK 21.0.2', 'x2,0', '2.000 ms', '512 MB', 'Judge0 #62'],
-      ['js', 'JavaScript', 'JS', 'Node 20.11', 'x2,5', '2.500 ms', '256 MB', 'Judge0 #63'],
-      ['go', 'Go', 'GO', 'Go 1.22', 'x1,5', '1.500 ms', '256 MB', 'Judge0 #60'],
-      ['cs', 'C#', 'C#', '.NET 8.0', 'x2,0', '2.000 ms', '512 MB', 'Judge0 #51'],
+      ['py', 'Python 3', 'PY', 'CPython 3.11.6', 'x3,0', '3.000 ms', '256 MB', 'go-judge #71'],
+      ['cpp', 'C++ 17', 'C+', 'GCC 13.2', 'x1,0', '1.000 ms', '256 MB', 'go-judge #54'],
+      ['java', 'Java 21', 'JV', 'OpenJDK 21.0.2', 'x2,0', '2.000 ms', '512 MB', 'go-judge #62'],
     ].map(([key, name, short, compiler, factor, time, mem, judgeId]) => {
       const on = this.state.enabled[key];
       return Object.assign({
