@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; }
+  :root {
+    --bg: #ECEFF4; --panel: #FFFFFF; --panel2: #F7F9FC; --line: #E0E5EC; --line2: #ECEFF4;
+    --ink: #0F1319; --ink2: #545C69; --ink3: #8A93A1; --chip: #EDF1F6; --gut: #BFC7D2;
+    --accent: #1C9BF2; --glass: rgba(255,255,255,0.72); --grid: rgba(15,25,45,0.035); --ring: rgba(28,155,242,0.16); --accent2: #0B85DA; --ok: #1F9D63; --warn: #C4820E; --bad: #D8353A; --gold: #B8863A;
+    --shadow: 0 1px 2px rgba(15,25,45,0.04), 0 10px 28px rgba(15,25,45,0.07); --easy: #0F9D6E; --med: #C07C10; --hard: #D93A46; --onAccent: #FFFFFF; --rowHover: #F4F7FB;
+  }
+  [data-theme="dark"] {
+    --bg: #0B0D11; --panel: #14171D; --panel2: #191D24; --line: #262D38; --line2: #1E232B;
+    --ink: #E6EAF1; --ink2: #99A3B2; --ink3: #6B7483; --chip: #1E232C; --gut: #454E5C;
+    --accent: #4CC2FF; --glass: rgba(20,23,29,0.72); --grid: rgba(160,200,255,0.045); --ring: rgba(76,194,255,0.22); --accent2: #74D0FF; --ok: #3FBF82; --warn: #D9A03F; --bad: #E8615E; --gold: #D0A052;
+    --shadow: 0 1px 0 rgba(255,255,255,0.035) inset, 0 12px 34px rgba(0,0,0,0.55); --easy: #2CCB94; --med: #E9A93B; --hard: #FF6B6B; --onAccent: #06131E; --rowHover: #1A1F27;
+  }
+  [data-ui-lang="vi"] [data-lang="en"] { display: none; }
+  [data-ui-lang="en"] [data-lang="vi"] { display: none; }
+  body { margin: 0; background: var(--bg); font-family: 'Be Vietnam Pro', system-ui, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px); background-size: 48px 48px; background-position: -1px -1px; font-variant-numeric: tabular-nums; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { color: var(--ink); }
+  input { font-family: inherit; }
+  input:focus { outline: none; border-color: var(--accent); }
+  nav { scrollbar-width: none; }
+  nav::-webkit-scrollbar { display: none; }
+  a, button { transition: background-color .15s ease, color .15s ease, border-color .15s ease, box-shadow .15s ease; }
+  button:focus-visible, input:focus-visible, a:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ring); }
+  ::selection { background: var(--ring); }
+</style>
+<script src="./nav-loader.js"></script>
+</helmet>
+
+<div data-theme="{{ theme }}" data-ui-lang="{{ uiLang }}" style="min-height: 100vh; background: var(--bg); color: var(--ink);">
+
+  <header style="position: sticky; top: 0; z-index: 30; padding: 14px 20px 12px; background: linear-gradient(var(--bg) 82%, transparent);">
+    <div style="max-width: 1400px; margin: 0 auto; background: var(--glass); backdrop-filter: saturate(150%) blur(14px); -webkit-backdrop-filter: saturate(150%) blur(14px); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); height: 58px; padding: 0 20px; display: flex; align-items: center; gap: 30px;">
+      <div style="display: flex; align-items: center; gap: 9px; flex-shrink: 0;">
+        <span style="font-size: 19px; font-weight: 700; letter-spacing: -0.01em;">AlgoPrep</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; letter-spacing: 0.14em; color: var(--gold); border: 1px solid var(--gold); border-radius: 4px; padding: 2px 5px 1px;">JUDGE0</span>
+      </div>
+      <nav style="display: flex; align-items: center; gap: 20px; flex: 1 1 auto; min-width: 0; overflow-x: auto;">
+        <a href="./Dashboard AlgoPrep.dc.html" style="white-space: nowrap; font-size: 14.5px; font-weight: 500; color: var(--ink2);" style-hover="color: var(--ink);"><span data-lang="vi">Tổng quan</span><span data-lang="en">Overview</span></a>
+        <a href="./Ngân hàng bài toán.dc.html" style="white-space: nowrap; font-size: 14.5px; font-weight: 500; color: var(--ink2);" style-hover="color: var(--ink);"><span data-lang="vi">Bài toán</span><span data-lang="en">Problems</span></a>
+        <a href="./Workspace giải bài.dc.html" style="white-space: nowrap; font-size: 14.5px; font-weight: 500; color: var(--ink2);" style-hover="color: var(--ink);"><span data-lang="vi">Workspace</span><span data-lang="en">Workspace</span></a>
+        <a href="./Bài đã nộp.dc.html" style="white-space: nowrap; font-size: 14.5px; font-weight: 500; color: var(--ink2);" style-hover="color: var(--ink);"><span data-lang="vi">Bài đã nộp</span><span data-lang="en">Submissions</span></a>
+        <a href="./Phỏng vấn giả lập.dc.html" style="white-space: nowrap; font-size: 14.5px; font-weight: 500; color: var(--ink2);" style-hover="color: var(--ink);"><span data-lang="vi">Phỏng vấn giả lập</span><span data-lang="en">Mock interview</span></a>
+        <a href="./Câu hỏi phỏng vấn.dc.html" style="white-space: nowrap; font-size: 14.5px; font-weight: 600; color: var(--ink); border-bottom: 2px solid var(--accent); padding-bottom: 2px;"><span data-lang="vi">Câu hỏi phỏng vấn</span><span data-lang="en">Interview questions</span></a>
+      </nav>
+      <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
+        <div style="display: flex; gap: 3px; padding: 3px; background: var(--chip); border-radius: 8px; flex-shrink: 0;">
+          <sc-for list="{{ themeTabs }}" as="t" hint-placeholder-count="2"><button onClick="{{ t.onClick }}" style="height: 24px; padding: 0 10px; border: none; border-radius: 6px; font-family: inherit; font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; background: {{ t.bg }}; color: {{ t.fg }};">{{ t.label }}</button></sc-for>
+        </div>
+        <div style="display: flex; gap: 3px; padding: 3px; background: var(--chip); border-radius: 8px; flex-shrink: 0;">
+          <sc-for list="{{ langTabs }}" as="t" hint-placeholder-count="2"><button onClick="{{ t.onClick }}" style="height: 24px; padding: 0 9px; border: none; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; cursor: pointer; background: {{ t.bg }}; color: {{ t.fg }};">{{ t.label }}</button></sc-for>
+        </div>
+        <div style="position: relative;">
+          <button onClick="{{ toggleMenu }}" style="width: 32px; height: 32px; border-radius: 50%; background: var(--chip); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-family: inherit; font-size: 11.5px; font-weight: 600; color: var(--ink2); cursor: pointer;" style-hover="border-color: var(--ink3); color: var(--ink);">PD</button>
+          <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <div onClick="{{ closeMenu }}" style="position: fixed; inset: 0; z-index: 40;"></div>
+              <div style="position: absolute; top: 40px; right: 0; z-index: 50; width: 258px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); padding: 10px;">
+                <div style="display: flex; align-items: center; gap: 10px; padding: 6px 8px 12px;">
+                  <div style="width: 34px; height: 34px; border-radius: 50%; background: var(--chip); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: var(--ink2);">PD</div>
+                  <div>
+                    <div style="font-size: 13.5px; font-weight: 600;">Phú Đại</div>
+                    <div style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--ink3);">phudai@fabbi.io</div>
+                  </div>
+                </div>
+                <div style="height: 1px; background: var(--line2); margin: 0 -10px 8px;"></div>
+                <a href="./Trang cá nhân.dc.html" style="display: flex; align-items: center; width: 100%; height: 34px; padding: 0 10px; border-radius: 8px; font-size: 13.5px; font-weight: 500; color: var(--ink); text-decoration: none;" style-hover="background: var(--chip); color: var(--ink);"><span data-lang="vi">Trang cá nhân</span><span data-lang="en">Profile</span></a>
+                <a href="./Tiến độ của tôi.dc.html" style="display: flex; align-items: center; width: 100%; height: 34px; padding: 0 10px; border-radius: 8px; font-size: 13.5px; font-weight: 500; color: var(--ink); text-decoration: none;" style-hover="background: var(--chip); color: var(--ink);"><span data-lang="vi">Tiến độ của tôi</span><span data-lang="en">My progress</span></a>
+                <a href="./Bài đã lưu.dc.html" style="display: flex; align-items: center; width: 100%; height: 34px; padding: 0 10px; border-radius: 8px; font-size: 13.5px; font-weight: 500; color: var(--ink); text-decoration: none;" style-hover="background: var(--chip); color: var(--ink);"><span data-lang="vi">Bài đã lưu</span><span data-lang="en">Saved problems</span></a>
+                <a href="./Cài đặt.dc.html" style="display: flex; align-items: center; width: 100%; height: 34px; padding: 0 10px; border-radius: 8px; font-size: 13.5px; font-weight: 500; color: var(--ink); text-decoration: none;" style-hover="background: var(--chip); color: var(--ink);"><span data-lang="vi">Cài đặt</span><span data-lang="en">Settings</span></a>
+                <div style="height: 1px; background: var(--line2); margin: 8px -10px;"></div>
+                <a href="./Đăng nhập & Đăng ký.dc.html" style="display: flex; align-items: center; width: 100%; height: 34px; padding: 0 10px; border-radius: 8px; background: transparent; font-size: 13.5px; font-weight: 500; color: var(--bad); text-decoration: none; cursor: pointer;" style-hover="background: var(--chip);"><span data-lang="vi">Đăng xuất</span><span data-lang="en">Sign out</span></a>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main style="max-width: 1400px; margin: 0 auto; padding: 26px 28px 64px;">
+
+    <sc-if value="{{ isBrowse }}" hint-placeholder-val="{{ true }}">
+    <div>
+      <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 14px;">
+        <sc-for list="{{ stats }}" as="s" hint-placeholder-count="4">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="width: 6px; height: 6px; border-radius: 2px; flex-shrink: 0; background: {{ s.dot }};"></span>
+            <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; white-space: nowrap; color: var(--ink3);">{{ s.label }}</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 600;">{{ s.value }}</span>
+            <span style="font-size: 12px; color: var(--ink3); white-space: nowrap;">{{ s.unit }}</span>
+          </div>
+        </sc-for>
+        <div style="display: flex; gap: 8px; margin-left: auto;">
+          <button onClick="{{ startDrill }}" style="height: 34px; padding: 0 13px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); font-family: inherit; font-size: 13.5px; font-weight: 600; white-space: nowrap; color: var(--ink); cursor: pointer;" style-hover="background: var(--chip);"><span data-lang="vi">Luyện nhanh 10 câu</span><span data-lang="en">Quick drill · 10</span></button>
+          <a href="./Phỏng vấn giả lập.dc.html" style="display: flex; align-items: center; height: 34px; padding: 0 15px; border-radius: 8px; background: var(--accent); font-size: 13.5px; font-weight: 600; white-space: nowrap; color: var(--onAccent);" style-hover="background: var(--accent2); color: var(--onAccent);"><span data-lang="vi">Vào phiên giả lập</span><span data-lang="en">Start mock session</span></a>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start;">
+
+        <section style="background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden;">
+          <div style="padding: 16px 18px 14px; border-bottom: 1px solid var(--line2); display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+              <div style="flex: 1 1 180px; min-width: 0; display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 11px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel);">
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--ink3);">/</span>
+                <input value="{{ query }}" onChange="{{ onQuery }}" placeholder="{{ searchPlaceholder }}" style="flex: 1; min-width: 0; border: none; font-size: 14px; color: var(--ink); background: transparent; padding: 0;" />
+              </div>
+              <div style="display: flex; gap: 4px; padding: 3px; background: var(--chip); border-radius: 8px;">
+                <sc-for list="{{ statusTabs }}" as="t" hint-placeholder-count="4"><button onClick="{{ t.onClick }}" style="height: 26px; padding: 0 10px; border: none; border-radius: 6px; font-family: inherit; font-size: 12.5px; font-weight: 600; white-space: nowrap; cursor: pointer; background: {{ t.bg }}; color: {{ t.fg }};">{{ t.label }}</button></sc-for>
+              </div>
+            </div>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+              <sc-for list="{{ kindChips }}" as="c" hint-placeholder-count="5"><button onClick="{{ c.onClick }}" style="height: 26px; padding: 0 10px; border-radius: 20px; font-family: inherit; font-size: 12.5px; font-weight: 500; white-space: nowrap; cursor: pointer; background: {{ c.bg }}; color: {{ c.fg }}; border: 1px solid {{ c.border }};">{{ c.label }}</button></sc-for>
+            </div>
+          </div>
+          <div style="max-height: 620px; overflow-y: auto;">
+            <sc-for list="{{ questions }}" as="q" hint-placeholder-count="9">
+              <div onClick="{{ q.onSelect }}" onMouseEnter="{{ q.onEnter }}" onMouseLeave="{{ q.onLeave }}" style="padding: 13px 18px; border-bottom: 1px solid var(--line2); cursor: pointer; background: {{ q.bg }}; border-left: 2px solid {{ q.mark }};">
+                <div style="display: flex; align-items: center; gap: 9px; margin-bottom: 5px;">
+                  <span style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink3);">{{ q.kind }}</span>
+                  <span style="font-size: 11px; font-weight: 600; color: {{ q.diffColor }};">{{ q.diff }}</span>
+                  <span style="margin-left: auto; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 4px; white-space: nowrap; color: {{ q.statusFg }}; background: {{ q.statusBg }};">{{ q.statusLabel }}</span>
+                </div>
+                <div style="font-size: 14px; font-weight: 500; line-height: 1.45; text-wrap: pretty;">{{ q.title }}</div>
+              </div>
+            </sc-for>
+            <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+              <div style="padding: 40px 18px; text-align: center; font-size: 13.5px; color: var(--ink3);"><span data-lang="vi">Không có câu hỏi khớp bộ lọc.</span><span data-lang="en">No question matches these filters.</span></div>
+            </sc-if>
+          </div>
+        </section>
+
+        <section style="background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; position: sticky; top: 92px;">
+          <div style="padding: 16px 20px; border-bottom: 1px solid var(--line2); display: flex; align-items: center; gap: 10px;">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink3);">{{ selKind }}</span>
+            <span style="font-size: 11.5px; font-weight: 600; color: {{ selDiffColor }};">{{ selDiff }}</span>
+            <span style="margin-left: auto; font-size: 12px; color: var(--ink3);">{{ selMeta }}</span>
+          </div>
+          <div style="padding: 20px 22px 22px;">
+            <h2 style="margin: 0 0 18px; font-size: 18px; font-weight: 600; line-height: 1.45; letter-spacing: -0.01em; text-wrap: pretty;">{{ selTitle }}</h2>
+
+            <div style="font-size: 11.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink3); margin-bottom: 10px;"><span data-lang="vi">Ý cần nói</span><span data-lang="en">Answer outline</span></div>
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+              <sc-for list="{{ selPoints }}" as="p" hint-placeholder-count="4">
+                <div style="display: flex; gap: 10px;">
+                  <span style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; font-weight: 600; color: var(--accent); flex-shrink: 0; padding-top: 2px;">{{ p.n }}</span>
+                  <span style="font-size: 13.5px; color: var(--ink2); line-height: 1.6;">{{ p.text }}</span>
+                </div>
+              </sc-for>
+            </div>
+
+            <sc-if value="{{ showTrap }}" hint-placeholder-val="{{ true }}">
+            <div style="padding: 14px 16px; background: var(--panel2); border: 1px solid var(--line2); border-radius: 10px; margin-bottom: 20px;">
+              <div style="font-size: 11.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink3); margin-bottom: 7px;"><span data-lang="vi">Bẫy thường gặp</span><span data-lang="en">Common trap</span></div>
+              <div style="font-size: 13.5px; color: var(--ink2); line-height: 1.6;">{{ selTrap }}</div>
+            </div>
+            </sc-if>
+
+            <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px;">
+              <sc-for list="{{ selTags }}" as="t" hint-placeholder-count="3">
+                <span style="font-size: 12px; color: var(--ink2); background: var(--chip); border-radius: 20px; padding: 4px 10px;">{{ t.text }}</span>
+              </sc-for>
+            </div>
+
+            <div style="padding-top: 18px; border-top: 1px solid var(--line2);">
+              <div style="font-size: 11.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink3); margin-bottom: 9px;"><span data-lang="vi">Mức độ nắm</span><span data-lang="en">Recall level</span></div>
+              <div style="display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap;">
+                <sc-for list="{{ recallTabs }}" as="t" hint-placeholder-count="3"><button onClick="{{ t.onClick }}" style="height: 32px; padding: 0 14px; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 600; white-space: nowrap; cursor: pointer; background: {{ t.bg }}; color: {{ t.fg }}; border: 1px solid {{ t.border }};">{{ t.label }}</button></sc-for>
+              </div>
+              <button onClick="{{ addToSession }}" style="width: 100%; height: 38px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); font-family: inherit; font-size: 13.5px; font-weight: 600; color: var(--ink); cursor: pointer;" style-hover="border-color: var(--accent); color: var(--accent);">{{ addLabel }}</button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isDrill }}" hint-placeholder-val="{{ false }}">
+    <div style="max-width: 780px; margin: 0 auto;">
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px;">
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; font-weight: 600; letter-spacing: 0.08em; color: var(--ink3);">{{ drillCounter }}</span>
+        <button onClick="{{ exitDrill }}" style="height: 30px; padding: 0 12px; border: 1px solid var(--line); border-radius: 7px; background: var(--panel); font-family: inherit; font-size: 12.5px; font-weight: 600; color: var(--ink2); cursor: pointer;" style-hover="color: var(--ink); background: var(--chip);"><span data-lang="vi">Thoát</span><span data-lang="en">Exit</span></button>
+      </div>
+      <div style="height: 4px; border-radius: 2px; background: var(--chip); overflow: hidden; margin-bottom: 16px;">
+        <div style="height: 4px; border-radius: 2px; background: var(--accent); width: {{ drillPct }};"></div>
+      </div>
+      <section style="background: var(--panel); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); overflow: hidden;">
+        <div style="padding: 16px 24px; border-bottom: 1px solid var(--line2); display: flex; align-items: center; gap: 10px;">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink3);">{{ drillKind }}</span>
+          <span style="font-size: 11.5px; font-weight: 600; color: {{ drillDiffColor }};">{{ drillDiff }}</span>
+        </div>
+        <div style="padding: 34px 28px 30px; min-height: 260px; display: flex; flex-direction: column; justify-content: center;">
+          <h2 style="margin: 0; font-size: 22px; font-weight: 600; line-height: 1.45; letter-spacing: -0.01em; text-align: center; text-wrap: pretty;">{{ drillTitle }}</h2>
+          <sc-if value="{{ revealed }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top: 26px; padding-top: 22px; border-top: 1px solid var(--line2); display: flex; flex-direction: column; gap: 10px;">
+              <sc-for list="{{ drillPoints }}" as="p" hint-placeholder-count="4">
+                <div style="display: flex; gap: 10px;">
+                  <span style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; font-weight: 600; color: var(--accent); flex-shrink: 0; padding-top: 2px;">{{ p.n }}</span>
+                  <span style="font-size: 14px; color: var(--ink2); line-height: 1.6;">{{ p.text }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+        <div style="padding: 16px 24px; border-top: 1px solid var(--line2); background: var(--panel2); display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+          <button onClick="{{ toggleReveal }}" style="height: 36px; padding: 0 16px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); font-family: inherit; font-size: 13.5px; font-weight: 600; color: var(--ink); cursor: pointer;" style-hover="background: var(--chip);">{{ revealLabel }}</button>
+          <div style="display: flex; gap: 8px;">
+            <button onClick="{{ drillAgain }}" style="height: 36px; padding: 0 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); font-family: inherit; font-size: 13.5px; font-weight: 600; color: var(--warn); cursor: pointer;" style-hover="border-color: var(--warn);"><span data-lang="vi">Cần ôn lại</span><span data-lang="en">Needs review</span></button>
+            <button onClick="{{ drillGot }}" style="height: 36px; padding: 0 16px; border: none; border-radius: 8px; background: var(--accent); font-family: inherit; font-size: 13.5px; font-weight: 600; color: var(--onAccent); cursor: pointer;" style-hover="background: var(--accent2);"><span data-lang="vi">Đã thuộc</span><span data-lang="en">Got it</span></button>
+          </div>
+        </div>
+      </section>
+    </div>
+    </sc-if>
+
+  </main>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;drillSize&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:10,&quot;min&quot;:5,&quot;max&quot;:20,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Luyện nhanh&quot;},&quot;showTrap&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Chi tiết câu hỏi&quot;}}">
+const Q = [
+  { id: "IQ-014", kind: "Lý thuyết CS", en: "CS theory", diff: "Trung bình", status: "review",
+    title: "Hash table xử lý collision bằng cách nào? So sánh chaining và open addressing.",
+    points: ["Nêu định nghĩa collision và tại sao không tránh được với hàm băm hữu hạn.",
+             "Chaining: mỗi bucket là danh sách liên kết, chi phí trung bình O(1+α).",
+             "Open addressing: linear/quadratic probing, cache-friendly nhưng xấu khi load factor cao.",
+             "Chốt bằng ngưỡng load factor và thời điểm resize."],
+    trap: "Nói chaining luôn tốt hơn. Thực tế open addressing thắng khi load factor thấp nhờ locality bộ nhớ.",
+    tags: ["Hash map", "Cấu trúc dữ liệu", "Hỏi ở vòng 1"] },
+  { id: "IQ-021", kind: "Lý thuyết CS", en: "CS theory", diff: "Dễ", status: "known",
+    title: "Khác biệt giữa process và thread? Khi nào chọn multiprocessing thay vì multithreading?",
+    points: ["Process có không gian địa chỉ riêng, thread chia sẻ heap trong cùng process.",
+             "Chi phí context switch và giao tiếp IPC so với shared memory.",
+             "Với Python, nhắc GIL: CPU-bound dùng process, I/O-bound dùng thread."],
+    trap: "Trả lời chung chung mà không gắn với ngôn ngữ đang dùng ở vị trí ứng tuyển.",
+    tags: ["OS", "Concurrency"] },
+  { id: "IQ-033", kind: "System design", en: "System design", diff: "Khó", status: "review",
+    title: "Thiết kế hệ thống rút gọn URL cho 100 triệu link mỗi ngày.",
+    points: ["Chốt yêu cầu: tỉ lệ đọc/ghi, độ dài mã, thời gian sống, thống kê click.",
+             "Sinh mã: base62 từ counter phân tán hoặc hash + kiểm tra trùng.",
+             "Lưu trữ: key-value store, cache lớp trước cho các link nóng.",
+             "Nêu ước lượng dung lượng và chiến lược sharding."],
+    trap: "Nhảy vào vẽ kiến trúc trước khi chốt QPS và tỉ lệ đọc/ghi.",
+    tags: ["Scalability", "Cache", "Vòng senior"] },
+  { id: "IQ-040", kind: "System design", en: "System design", diff: "Trung bình", status: "new",
+    title: "Cache invalidation: các chiến lược phổ biến và đánh đổi của từng cách.",
+    points: ["TTL đơn giản nhưng có cửa sổ dữ liệu cũ.",
+             "Write-through, write-behind, cache-aside và ai chịu trách nhiệm ghi.",
+             "Nêu vấn đề thundering herd và cách chống bằng lock hoặc jitter TTL."],
+    trap: "Không nói rõ ai là nguồn sự thật khi cache và DB lệch nhau.",
+    tags: ["Cache", "Redis"] },
+  { id: "IQ-052", kind: "Database", en: "Database", diff: "Trung bình", status: "new",
+    title: "Index B-tree hoạt động thế nào và khi nào một index bị bỏ qua?",
+    points: ["Cấu trúc cây nhiều nhánh, độ sâu thấp nên ít lần đọc đĩa.",
+             "Composite index và quy tắc tiền tố ngoài cùng bên trái.",
+             "Bị bỏ qua khi hàm bọc lên cột, kiểu dữ liệu lệch, hoặc độ chọn lọc quá thấp."],
+    trap: "Nói thêm index thì luôn nhanh hơn, bỏ qua chi phí ghi và dung lượng.",
+    tags: ["SQL", "Tối ưu truy vấn"] },
+  { id: "IQ-058", kind: "Database", en: "Database", diff: "Khó", status: "review",
+    title: "Giải thích các mức isolation của transaction và hiện tượng đi kèm.",
+    points: ["Read uncommitted đến serializable, kèm dirty read, phantom read.",
+             "Cơ chế MVCC trong PostgreSQL so với khoá trong MySQL.",
+             "Ví dụ thực tế cần serializable, ví dụ chấp nhận repeatable read."],
+    trap: "Đọc thuộc tên bốn mức mà không lấy được ví dụ nghiệp vụ tương ứng.",
+    tags: ["Transaction", "PostgreSQL"] },
+  { id: "IQ-071", kind: "Ngôn ngữ", en: "Language", diff: "Dễ", status: "known",
+    title: "Truyền tham chiếu trong Python: vì sao sửa list trong hàm lại đổi cả biến ngoài?",
+    points: ["Python truyền tham chiếu tới object, không copy giá trị.",
+             "Phân biệt mutable và immutable, hệ quả với default argument.",
+             "Cách phòng: copy nông, copy sâu, hoặc trả về object mới."],
+    trap: "Gọi sai là truyền theo tham chiếu kiểu C++ mà không nói tới tính mutable.",
+    tags: ["Python", "Hỏi ở vòng 1"] },
+  { id: "IQ-084", kind: "Hành vi", en: "Behavioural", diff: "Trung bình", status: "new",
+    title: "Kể về một lần bạn đưa quyết định kỹ thuật sai. Bạn phát hiện và xử lý thế nào?",
+    points: ["Dùng khung STAR: bối cảnh, nhiệm vụ, hành động, kết quả.",
+             "Nêu tín hiệu giúp phát hiện sai, ưu tiên số liệu cụ thể.",
+             "Kết bằng thay đổi quy trình sau đó, không chỉ dừng ở lời xin lỗi."],
+    trap: "Chọn ví dụ quá nhỏ để tránh rủi ro, làm câu trả lời thiếu sức nặng.",
+    tags: ["STAR", "Vòng culture fit"] },
+  { id: "IQ-092", kind: "Hành vi", en: "Behavioural", diff: "Dễ", status: "review",
+    title: "Bạn xử lý thế nào khi review code của đồng nghiệp và không đồng ý về hướng làm?",
+    points: ["Tách chuyện đúng sai kỹ thuật khỏi ý kiến cá nhân.",
+             "Dựa vào tiêu chí đo được: hiệu năng, khả năng test, chi phí bảo trì.",
+             "Nêu cách leo thang khi vẫn bế tắc và mốc thời gian quyết định."],
+    trap: "Trả lời theo hướng luôn nhường để giữ hoà khí, không thể hiện quan điểm kỹ thuật.",
+    tags: ["Teamwork", "Code review"] }
+];
+
+const KINDS = ["Lý thuyết CS", "System design", "Database", "Ngôn ngữ", "Hành vi"];
+const STATUS = [
+  { k: "all", vi: "Tất cả", en: "All" },
+  { k: "new", vi: "Chưa xem", en: "New" },
+  { k: "review", vi: "Đang ôn", en: "Reviewing" },
+  { k: "known", vi: "Đã thuộc", en: "Known" }
+];
+
+class Component extends DCLogic {
+  state = { query: "", kind: "Tất cả", status: "all", selId: "IQ-014", hoverId: null,
+            marks: {}, view: "browse", drillIndex: 0, revealed: false,
+            theme: "light", uiLang: "vi", menuOpen: false };
+
+  componentDidMount() {
+    const t = localStorage.getItem("algoprep-theme");
+    if (t === "dark" || t === "light") this.setState({ theme: t });
+    const l = localStorage.getItem("algoprep-lang");
+    if (l === "vi" || l === "en") this.setState({ uiLang: l });
+  }
+  setTheme(t) { this.setState({ theme: t }); localStorage.setItem("algoprep-theme", t); }
+  setLang(l) { this.setState({ uiLang: l }); localStorage.setItem("algoprep-lang", l); }
+  seg2(active) { return active ? { bg: "var(--panel)", fg: "var(--ink)" } : { bg: "transparent", fg: "var(--ink2)" }; }
+  en() { return this.state.uiLang === "en"; }
+
+  diffColor(d) { return d === "Dễ" ? "var(--easy)" : d === "Khó" ? "var(--hard)" : "var(--med)"; }
+  statusOf(q) { return this.state.marks[q.id] || q.status; }
+  statusStyle(s) {
+    if (s === "known") return { fg: "var(--ok)", bg: "var(--chip)", mark: "var(--ok)" };
+    if (s === "review") return { fg: "var(--warn)", bg: "var(--chip)", mark: "var(--warn)" };
+    return { fg: "var(--ink3)", bg: "transparent", mark: "transparent" };
+  }
+  statusLabel(s) {
+    const en = this.en();
+    if (s === "known") return en ? "Known" : "Đã thuộc";
+    if (s === "review") return en ? "Reviewing" : "Đang ôn";
+    return en ? "New" : "Chưa xem";
+  }
+  mark(id, s) { this.setState((st) => ({ marks: Object.assign({}, st.marks, { [id]: s }) })); }
+
+  filtered() {
+    const st = this.state, qq = st.query.trim().toLowerCase();
+    return Q.filter((q) => {
+      if (st.kind !== "Tất cả" && q.kind !== st.kind) return false;
+      if (st.status !== "all" && this.statusOf(q) !== st.status) return false;
+      if (qq && q.title.toLowerCase().indexOf(qq) === -1 && q.tags.join(" ").toLowerCase().indexOf(qq) === -1) return false;
+      return true;
+    });
+  }
+
+  renderVals() {
+    const st = this.state, en = this.en();
+    const list = this.filtered();
+    const sel = Q.filter((q) => q.id === st.selId)[0] || list[0] || Q[0];
+    const drill = Q[st.drillIndex % Q.length];
+    const size = this.props.drillSize || 10;
+    const knownCount = Q.filter((q) => this.statusOf(q) === "known").length;
+    const reviewCount = Q.filter((q) => this.statusOf(q) === "review").length;
+
+    return {
+      theme: st.theme, uiLang: st.uiLang, menuOpen: st.menuOpen,
+      toggleMenu: () => this.setState({ menuOpen: !st.menuOpen }),
+      closeMenu: () => this.setState({ menuOpen: false }),
+      themeTabs: [{ k: "light", label: en ? "Light" : "Sáng" }, { k: "dark", label: en ? "Dark" : "Tối" }].map((t) =>
+        Object.assign({ label: t.label, onClick: () => this.setTheme(t.k) }, this.seg2(st.theme === t.k))),
+      langTabs: [{ k: "vi", label: "VI" }, { k: "en", label: "EN" }].map((t) =>
+        Object.assign({ label: t.label, onClick: () => this.setLang(t.k) }, this.seg2(st.uiLang === t.k))),
+
+      isBrowse: st.view === "browse", isDrill: st.view === "drill",
+
+      stats: [
+        { label: en ? "Questions" : "Tổng câu hỏi", value: "148", unit: en ? "questions" : "câu", dot: "var(--accent)", pct: "100%" },
+        { label: en ? "Known" : "Đã thuộc", value: String(62 + knownCount), unit: "/ 148", dot: "var(--ok)", pct: "42%" },
+        { label: en ? "Reviewing" : "Đang ôn", value: String(31 + reviewCount), unit: "/ 148", dot: "var(--warn)", pct: "21%" },
+        { label: en ? "Drilled this week" : "Ôn trong tuần", value: "24", unit: en ? "cards" : "thẻ", dot: "var(--gold)", pct: "58%" }
+      ],
+
+      query: st.query,
+      onQuery: (e) => this.setState({ query: e.target.value }),
+      searchPlaceholder: en ? "Search question or tag" : "Tìm câu hỏi hoặc tag",
+      statusTabs: STATUS.map((s) =>
+        Object.assign({ label: en ? s.en : s.vi, onClick: () => this.setState({ status: s.k }) }, this.seg2(st.status === s.k))),
+      kindChips: ["Tất cả"].concat(KINDS).map((k) => {
+        const on = st.kind === k;
+        return { label: k === "Tất cả" && en ? "All" : k, onClick: () => this.setState({ kind: k }),
+          bg: on ? "var(--ring)" : "var(--panel)", fg: on ? "var(--ink)" : "var(--ink2)",
+          border: on ? "var(--accent)" : "var(--line)" };
+      }),
+
+      isEmpty: list.length === 0,
+      questions: list.map((q) => {
+        const s = this.statusOf(q), ss = this.statusStyle(s);
+        const active = q.id === st.selId;
+        return {
+          title: q.title, kind: en ? q.en : q.kind, diff: q.diff, diffColor: this.diffColor(q.diff),
+          statusLabel: this.statusLabel(s), statusFg: ss.fg, statusBg: ss.bg, mark: active ? "var(--accent)" : ss.mark,
+          bg: active ? "var(--chip)" : st.hoverId === q.id ? "var(--rowHover)" : "transparent",
+          onSelect: () => this.setState({ selId: q.id }),
+          onEnter: () => this.setState({ hoverId: q.id }),
+          onLeave: () => this.setState({ hoverId: null })
+        };
+      }),
+
+      selKind: sel.id + " · " + (en ? sel.en : sel.kind),
+      selDiff: sel.diff, selDiffColor: this.diffColor(sel.diff),
+      selMeta: en ? "Asked in 6 of 12 interviews" : "Xuất hiện ở 6 / 12 buổi phỏng vấn",
+      selTitle: sel.title,
+      selPoints: sel.points.map((p, i) => ({ n: String(i + 1).padStart(2, "0"), text: p })),
+      selTrap: sel.trap,
+      selTags: sel.tags.map((t) => ({ text: t })),
+      recallTabs: STATUS.filter((s) => s.k !== "all").map((s) => {
+        const on = this.statusOf(sel) === s.k;
+        return { label: en ? s.en : s.vi, onClick: () => this.mark(sel.id, s.k),
+          bg: on ? "var(--ring)" : "var(--panel)", fg: on ? "var(--ink)" : "var(--ink2)",
+          border: on ? "var(--accent)" : "var(--line)" };
+      }),
+      addLabel: en ? "Add to next mock session" : "Thêm vào phiên giả lập tới",
+      addToSession: () => this.mark(sel.id, "review"),
+
+      startDrill: () => this.setState({ view: "drill", drillIndex: 0, revealed: false }),
+      exitDrill: () => this.setState({ view: "browse" }),
+      drillCounter: (en ? "CARD " : "THẺ ") + ((st.drillIndex % Q.length) + 1) + " / " + size,
+      drillPct: Math.round((((st.drillIndex % Q.length) + 1) / size) * 100) + "%",
+      showTrap: this.props.showTrap !== false,
+      drillKind: en ? drill.en : drill.kind,
+      drillDiff: drill.diff, drillDiffColor: this.diffColor(drill.diff),
+      drillTitle: drill.title,
+      drillPoints: drill.points.map((p, i) => ({ n: String(i + 1).padStart(2, "0"), text: p })),
+      revealed: st.revealed,
+      revealLabel: st.revealed ? (en ? "Hide answer" : "Ẩn đáp án") : (en ? "Show answer" : "Xem ý cần nói"),
+      toggleReveal: () => this.setState({ revealed: !st.revealed }),
+      drillGot: () => { this.mark(drill.id, "known"); this.setState({ drillIndex: st.drillIndex + 1, revealed: false }); },
+      drillAgain: () => { this.mark(drill.id, "review"); this.setState({ drillIndex: st.drillIndex + 1, revealed: false }); }
+    };
+  }
+}
+
+</script>
+</body>
+</html>

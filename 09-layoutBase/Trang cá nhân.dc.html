@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; }
+  :root {
+    --bg: #ECEFF4; --panel: #FFFFFF; --panel2: #F7F9FC; --line: #E0E5EC; --line2: #ECEFF4;
+    --ink: #0F1319; --ink2: #545C69; --ink3: #8A93A1; --chip: #EDF1F6; --gut: #BFC7D2;
+    --accent: #1C9BF2; --glass: rgba(255,255,255,0.72); --grid: rgba(15,25,45,0.035); --ring: rgba(28,155,242,0.16); --accent2: #0B85DA; --ok: #1F9D63; --warn: #C4820E; --bad: #D8353A; --gold: #B8863A;
+    --shadow: 0 1px 2px rgba(15,25,45,0.04), 0 10px 28px rgba(15,25,45,0.07); --easy: #0F9D6E; --med: #C07C10; --hard: #D93A46; --onAccent: #FFFFFF; --rowHover: #F4F7FB;
+  }
+  [data-theme="dark"] {
+    --bg: #0B0D11; --panel: #14171D; --panel2: #191D24; --line: #262D38; --line2: #1E232B;
+    --ink: #E6EAF1; --ink2: #99A3B2; --ink3: #6B7483; --chip: #1E232C; --gut: #454E5C;
+    --accent: #4CC2FF; --glass: rgba(20,23,29,0.72); --grid: rgba(160,200,255,0.045); --ring: rgba(76,194,255,0.22); --accent2: #74D0FF; --ok: #3FBF82; --warn: #D9A03F; --bad: #E8615E; --gold: #D0A052;
+    --shadow: 0 1px 0 rgba(255,255,255,0.035) inset, 0 12px 34px rgba(0,0,0,0.55); --easy: #2CCB94; --med: #E9A93B; --hard: #FF6B6B; --onAccent: #06131E; --rowHover: #1A1F27;
+  }
+  [data-ui-lang="vi"] [data-lang="en"] { display: none; }
+  [data-ui-lang="en"] [data-lang="vi"] { display: none; }
+  body { margin: 0; background: var(--bg); font-family: 'Be Vietnam Pro', system-ui, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px); background-size: 48px 48px; background-position: -1px -1px; font-variant-numeric: tabular-nums; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { color: var(--ink); }
+  input, select { font-family: inherit; }
+  input:focus, select:focus { outline: none; border-color: var(--accent); }
+  nav { scrollbar-width: none; }
+  nav::-webkit-scrollbar { display: none; }
+  a, button { transition: background-color .15s ease, color .15s ease, border-color .15s ease, box-shadow .15s ease; }
+  button:focus-visible, input:focus-visible, a:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ring); }
+  ::selection { background: var(--ring); }
+</style>
+<script src="./nav-loader.js"></script>
+</helmet>
+
+<div data-theme="{{ theme }}" data-ui-lang="{{ uiLang }}" style="min-height: 100vh; background: var(--bg); color: var(--ink);">
+
+  <header style="position: sticky; top: 0; z-index: 30; padding: 14px 20px 12px; background: linear-gradient(var(--bg) 82%, transparent);">
+    <div style="max-width: 1400px; margin: 0 auto; background: var(--glass); backdrop-filter: saturate(150%) blur(14px); -webkit-backdrop-filter: saturate(150%) blur(14px); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); height: 58px; padding: 0 20px; display: flex; align-items: center; gap: 30px;">
+      <div style="display: flex; align-items: center; gap: 9px; flex-shrink: 0;">
+        <span style="font-size: 19px; font-weight: 700; letter-spacing: -0.01em;">AlgoPrep</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; letter-spacing: 0.14em; color: var(--gold); border: 1px solid var(--gold); border-radius: 4px; padding: 2px 5px 1px;">JUDGE0</span>
+      </div>
+      <nav style="display: flex; align-items: center; gap: 20px; flex: 1 1 auto; min-width: 0; overflow-x: auto;">
+        <a href="./Dashboard AlgoPrep.dc.html" style="white-space: nowrap; font-size: 14.5px; font-weight: 500; color: var(--ink2);" style-hover="color: var(--ink);"><span data-lang="vi">Tổng quan</span><span data-lang="en">Overview</span></a>
+        <a href="./Ngân hàng bài toán.dc.html" style="white-space: nowrap; font-size: 14.5px; font-weight: 500; color: var(--ink2);" style-hover="color: var(--ink);"><span data-lang="vi">Bài toán</span><span data-lang="en">Problems</span></a>
+        <a href="./Workspace giải bài.dc.html" style="white-space: nowrap; font-size: 14.5px; font-weight: 500; color: var(--ink2);" style-hover="color: var(--ink);"><span data-lang="vi">Workspace</span><span data-lang="en">Workspace</span></a>
+        <a href="./Bài đã nộp.dc.html" style="white-space: nowrap; font-size: 14.5px; font-weight: 500; color: var(--ink2);" style-hover="color: var(--ink);"><span data-lang="vi">Bài đã nộp</span><span data-lang="en">Submissions</span></a>
+        <a href="./Phỏng vấn giả lập.dc.html" style="white-space: nowrap; font-size: 14.5px; font-weight: 500; color: var(--ink2);" style-hover="color: var(--ink);"><span data-lang="vi">Phỏng vấn giả lập</span><span data-lang="en">Mock interview</span></a>
+        <a href="./Câu hỏi phỏng vấn.dc.html" style="white-space: nowrap; font-size: 14.5px; font-weight: 500; color: var(--ink2);" style-hover="color: var(--ink);"><span data-lang="vi">Câu hỏi phỏng vấn</span><span data-lang="en">Interview questions</span></a>
+      </nav>
+      <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
+        <div style="display: flex; gap: 3px; padding: 3px; background: var(--chip); border-radius: 8px; flex-shrink: 0;">
+          <sc-for list="{{ themeTabs }}" as="t" hint-placeholder-count="2"><button onClick="{{ t.onClick }}" style="height: 24px; padding: 0 10px; border: none; border-radius: 6px; font-family: inherit; font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; background: {{ t.bg }}; color: {{ t.fg }};">{{ t.label }}</button></sc-for>
+        </div>
+        <div style="display: flex; gap: 3px; padding: 3px; background: var(--chip); border-radius: 8px; flex-shrink: 0;">
+          <sc-for list="{{ langTabs }}" as="t" hint-placeholder-count="2"><button onClick="{{ t.onClick }}" style="height: 24px; padding: 0 9px; border: none; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; cursor: pointer; background: {{ t.bg }}; color: {{ t.fg }};">{{ t.label }}</button></sc-for>
+        </div>
+        <div style="position: relative;">
+          <button onClick="{{ toggleMenu }}" style="width: 32px; height: 32px; border-radius: 50%; background: var(--chip); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-family: inherit; font-size: 11.5px; font-weight: 600; color: var(--ink2); cursor: pointer;" style-hover="border-color: var(--ink3); color: var(--ink);">PD</button>
+          <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <div onClick="{{ closeMenu }}" style="position: fixed; inset: 0; z-index: 40;"></div>
+              <div style="position: absolute; top: 40px; right: 0; z-index: 50; width: 258px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); padding: 10px;">
+                <div style="display: flex; align-items: center; gap: 10px; padding: 6px 8px 12px;">
+                  <div style="width: 34px; height: 34px; border-radius: 50%; background: var(--chip); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: var(--ink2);">PD</div>
+                  <div>
+                    <div style="font-size: 13.5px; font-weight: 600;">Phú Đại</div>
+                    <div style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--ink3);">phudai@fabbi.io</div>
+                  </div>
+                </div>
+                <div style="height: 1px; background: var(--line2); margin: 0 -10px 8px;"></div>
+                <a href="./Trang cá nhân.dc.html" style="display: flex; align-items: center; width: 100%; height: 34px; padding: 0 10px; border-radius: 8px; font-size: 13.5px; font-weight: 500; color: var(--ink); text-decoration: none; background: var(--chip);" style-hover="background: var(--chip); color: var(--ink);"><span data-lang="vi">Trang cá nhân</span><span data-lang="en">Profile</span></a>
+                <a href="./Tiến độ của tôi.dc.html" style="display: flex; align-items: center; width: 100%; height: 34px; padding: 0 10px; border-radius: 8px; font-size: 13.5px; font-weight: 500; color: var(--ink); text-decoration: none;" style-hover="background: var(--chip); color: var(--ink);"><span data-lang="vi">Tiến độ của tôi</span><span data-lang="en">My progress</span></a>
+                <a href="./Bài đã lưu.dc.html" style="display: flex; align-items: center; width: 100%; height: 34px; padding: 0 10px; border-radius: 8px; font-size: 13.5px; font-weight: 500; color: var(--ink); text-decoration: none;" style-hover="background: var(--chip); color: var(--ink);"><span data-lang="vi">Bài đã lưu</span><span data-lang="en">Saved problems</span></a>
+                <a href="./Cài đặt.dc.html" style="display: flex; align-items: center; width: 100%; height: 34px; padding: 0 10px; border-radius: 8px; font-size: 13.5px; font-weight: 500; color: var(--ink); text-decoration: none;" style-hover="background: var(--chip); color: var(--ink);"><span data-lang="vi">Cài đặt</span><span data-lang="en">Settings</span></a>
+                <div style="height: 1px; background: var(--line2); margin: 8px -10px;"></div>
+                <a href="./Đăng nhập & Đăng ký.dc.html" style="display: flex; align-items: center; width: 100%; height: 34px; padding: 0 10px; border-radius: 8px; background: transparent; font-size: 13.5px; font-weight: 500; color: var(--bad); text-decoration: none; cursor: pointer;" style-hover="background: var(--chip);"><span data-lang="vi">Đăng xuất</span><span data-lang="en">Sign out</span></a>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main style="max-width: 1400px; margin: 0 auto; padding: 26px 28px 64px;">
+
+    <div style="display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 14px; align-items: start;">
+
+      <div style="min-width: 0; display: flex; flex-direction: column; gap: 14px;">
+
+        <section style="background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 22px; display: flex; align-items: center; gap: 18px; flex-wrap: wrap;">
+          <div style="width: 68px; height: 68px; border-radius: 50%; background: var(--chip); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 600; color: var(--ink2); flex-shrink: 0;">PD</div>
+          <div style="min-width: 0;">
+            <div style="font-size: 22px; font-weight: 700; letter-spacing: -0.01em;">Phú Đại</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--ink3); margin-top: 3px;">phudai@fabbi.io</div>
+          </div>
+          <div style="margin-left: auto; display: flex; gap: 8px;">
+            <button style="height: 34px; padding: 0 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); font-family: inherit; font-size: 13.5px; font-weight: 600; color: var(--ink); cursor: pointer;" style-hover="background: var(--chip);"><span data-lang="vi">Đổi ảnh</span><span data-lang="en">Change photo</span></button>
+          </div>
+        </section>
+
+        <section style="background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden;">
+          <div style="padding: 13px 20px; border-bottom: 1px solid var(--line2); font-size: 11.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink3);"><span data-lang="vi">Thông tin cá nhân</span><span data-lang="en">Personal details</span></div>
+          <div style="padding: 18px 20px 20px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 16px;">
+            <sc-for list="{{ fields }}" as="f" hint-placeholder-count="6">
+              <div>
+                <div style="font-size: 11.5px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink3); margin-bottom: 6px;">{{ f.label }}</div>
+                <input value="{{ f.value }}" onChange="{{ f.onChange }}" style="width: 100%; height: 38px; padding: 0 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); font-size: 14px; color: var(--ink);" />
+              </div>
+            </sc-for>
+          </div>
+          <div style="padding: 14px 20px; border-top: 1px solid var(--line2); background: var(--panel2); display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 12.5px; color: var(--ink3);">{{ saveHint }}</span>
+            <div style="margin-left: auto; display: flex; gap: 8px;">
+              <button onClick="{{ reset }}" style="height: 36px; padding: 0 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); font-family: inherit; font-size: 13.5px; font-weight: 600; color: var(--ink2); cursor: pointer;" style-hover="background: var(--chip); color: var(--ink);"><span data-lang="vi">Hoàn tác</span><span data-lang="en">Revert</span></button>
+              <button onClick="{{ save }}" style="height: 36px; padding: 0 18px; border: none; border-radius: 8px; background: var(--accent); font-family: inherit; font-size: 13.5px; font-weight: 600; color: var(--onAccent); cursor: pointer;" style-hover="background: var(--accent2);">{{ saveLabel }}</button>
+            </div>
+          </div>
+        </section>
+
+        <section style="background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden;">
+          <div style="padding: 13px 20px; border-bottom: 1px solid var(--line2); font-size: 11.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink3);"><span data-lang="vi">Bảo mật</span><span data-lang="en">Security</span></div>
+          <div style="padding: 6px 20px 14px;">
+            <sc-for list="{{ security }}" as="s" hint-placeholder-count="2">
+              <div style="padding: 14px 0; border-bottom: 1px solid var(--line2); display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+                <div style="min-width: 0;">
+                  <div style="font-size: 14px; font-weight: 600;">{{ s.title }}</div>
+                  <div style="font-size: 12.5px; color: var(--ink3); margin-top: 2px;">{{ s.meta }}</div>
+                </div>
+                <button style="margin-left: auto; height: 32px; padding: 0 13px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); font-family: inherit; font-size: 13px; font-weight: 600; color: var(--ink); cursor: pointer;" style-hover="background: var(--chip);">{{ s.cta }}</button>
+              </div>
+            </sc-for>
+          </div>
+        </section>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <section style="background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden;">
+          <div style="padding: 13px 18px; border-bottom: 1px solid var(--line2); font-size: 11.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink3);"><span data-lang="vi">Tài khoản</span><span data-lang="en">Account</span></div>
+          <div style="padding: 6px 18px 14px;">
+            <sc-for list="{{ account }}" as="a" hint-placeholder-count="4">
+              <div style="padding: 11px 0; border-bottom: 1px solid var(--line2); display: flex; align-items: center; gap: 12px;">
+                <span style="font-size: 13px; color: var(--ink3);">{{ a.label }}</span>
+                <span style="margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; font-weight: 600; color: {{ a.color }};">{{ a.value }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </section>
+
+        <section style="background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden;">
+          <div style="padding: 13px 18px; border-bottom: 1px solid var(--line2); font-size: 11.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink3);"><span data-lang="vi">Luyện tập</span><span data-lang="en">Practice</span></div>
+          <div style="padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 14px;">
+            <sc-for list="{{ practice }}" as="p" hint-placeholder-count="3">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="width: 6px; height: 6px; border-radius: 2px; flex-shrink: 0; background: {{ p.dot }};"></span>
+                <span style="font-size: 13px; color: var(--ink3);">{{ p.label }}</span>
+                <span style="margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 600;">{{ p.value }}</span>
+              </div>
+            </sc-for>
+            <a href="./Tiến độ của tôi.dc.html" style="display: flex; align-items: center; justify-content: center; height: 36px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); font-size: 13.5px; font-weight: 600; color: var(--ink);" style-hover="background: var(--chip); color: var(--ink);"><span data-lang="vi">Xem tiến độ chi tiết</span><span data-lang="en">See full progress</span></a>
+          </div>
+        </section>
+
+        <a href="./Cài đặt.dc.html" style="display: flex; align-items: center; justify-content: center; height: 38px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); font-size: 14px; font-weight: 600; color: var(--ink);" style-hover="background: var(--chip); color: var(--ink);"><span data-lang="vi">Cài đặt tài khoản</span><span data-lang="en">Account settings</span></a>
+      </div>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900}}">
+const DEFAULTS = {
+  name: "Phú Đại", email: "phudai@fabbi.io", org: "Đại học Cần Thơ",
+  role: "Sinh viên năm 4", lang: "Python 3", target: "Middle Backend"
+};
+
+class Component extends DCLogic {
+  state = { form: Object.assign({}, DEFAULTS), saved: false, theme: "light", uiLang: "vi", menuOpen: false };
+
+  componentDidMount() {
+    const t = localStorage.getItem("algoprep-theme");
+    if (t === "dark" || t === "light") this.setState({ theme: t });
+    const l = localStorage.getItem("algoprep-lang");
+    if (l === "vi" || l === "en") this.setState({ uiLang: l });
+  }
+  setTheme(t) { this.setState({ theme: t }); localStorage.setItem("algoprep-theme", t); }
+  setLang(l) { this.setState({ uiLang: l }); localStorage.setItem("algoprep-lang", l); }
+  seg2(a) { return a ? { bg: "var(--panel)", fg: "var(--ink)" } : { bg: "transparent", fg: "var(--ink2)" }; }
+  en() { return this.state.uiLang === "en"; }
+  set(k, v) { this.setState((s) => ({ form: Object.assign({}, s.form, { [k]: v }), saved: false })); }
+
+  renderVals() {
+    const st = this.state, en = this.en(), f = st.form;
+    const dirty = Object.keys(DEFAULTS).some((k) => f[k] !== DEFAULTS[k]);
+
+    return {
+      theme: st.theme, uiLang: st.uiLang, menuOpen: st.menuOpen,
+      toggleMenu: () => this.setState({ menuOpen: !st.menuOpen }),
+      closeMenu: () => this.setState({ menuOpen: false }),
+      themeTabs: [{ k: "light", label: en ? "Light" : "Sáng" }, { k: "dark", label: en ? "Dark" : "Tối" }].map((t) =>
+        Object.assign({ label: t.label, onClick: () => this.setTheme(t.k) }, this.seg2(st.theme === t.k))),
+      langTabs: [{ k: "vi", label: "VI" }, { k: "en", label: "EN" }].map((t) =>
+        Object.assign({ label: t.label, onClick: () => this.setLang(t.k) }, this.seg2(st.uiLang === t.k))),
+
+      fields: [
+        { k: "name", label: en ? "Full name" : "Họ và tên" },
+        { k: "email", label: "Email" },
+        { k: "org", label: en ? "School / company" : "Trường / công ty" },
+        { k: "role", label: en ? "Current role" : "Vai trò hiện tại" },
+        { k: "lang", label: en ? "Default language" : "Ngôn ngữ mặc định" },
+        { k: "target", label: en ? "Target position" : "Vị trí mục tiêu" }
+      ].map((x) => ({ label: x.label, value: f[x.k], onChange: (e) => this.set(x.k, e.target.value) })),
+
+      saveLabel: st.saved ? (en ? "Saved" : "Đã lưu") : (en ? "Save changes" : "Lưu thay đổi"),
+      saveHint: st.saved
+        ? (en ? "Profile updated." : "Đã cập nhật thông tin.")
+        : dirty
+          ? (en ? "Unsaved changes." : "Có thay đổi chưa lưu.")
+          : (en ? "Email is used for sign-in and reminders." : "Email dùng để đăng nhập và nhận nhắc luyện tập."),
+      save: () => this.setState({ saved: true }),
+      reset: () => this.setState({ form: Object.assign({}, DEFAULTS), saved: false }),
+
+      security: [
+        { title: en ? "Password" : "Mật khẩu", meta: en ? "Last changed 12/06/2026" : "Đổi lần cuối 12/06/2026", cta: en ? "Change" : "Đổi" },
+        { title: en ? "Two-factor authentication" : "Xác thực hai lớp", meta: en ? "Not enabled" : "Chưa bật", cta: en ? "Enable" : "Bật" }
+      ],
+
+      account: [
+        { label: en ? "User id" : "Mã người dùng", value: "USR-10482", color: "var(--ink2)" },
+        { label: en ? "Joined" : "Ngày tham gia", value: "14/02/2026", color: "var(--ink2)" },
+        { label: en ? "Plan" : "Gói", value: "Pro", color: "var(--gold)" },
+        { label: en ? "Role" : "Quyền", value: en ? "Learner" : "Người học", color: "var(--ink2)" }
+      ],
+
+      practice: [
+        { label: en ? "Problems solved" : "Bài đã giải", value: "182", dot: "var(--ok)" },
+        { label: en ? "Submissions" : "Lượt nộp", value: "418", dot: "var(--accent)" },
+        { label: en ? "Mock interviews" : "Phiên phỏng vấn", value: "23", dot: "var(--gold)" }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Be Vietnam Pro', system-ui, sans-serif; background: #EAF0FA; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
+  [data-theme] {
+    --bg: #EAF0FA; --text: #0E1626; --muted: rgba(20,45,90,0.58); --muted2: rgba(20,45,90,0.44);
+    --glass: rgba(255,255,255,0.62); --glass2: rgba(255,255,255,0.72); --glass3: rgba(255,255,255,0.9);
+    --border: rgba(255,255,255,0.85); --border2: rgba(30,80,160,0.12); --inset: rgba(255,255,255,0.9);
+    --shadow: 0 18px 40px rgba(28,60,120,0.13); --shadow-lg: 0 20px 44px rgba(28,60,120,0.16);
+    --grid: rgba(30,70,140,0.045); --veil: radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,0.5) 0%, rgba(234,240,250,0.25) 100%);
+    --blob1: rgba(88,150,255,0.42); --blob2: rgba(168,132,255,0.34); --blob3: rgba(90,205,215,0.34);
+    --track: rgba(30,80,160,0.1); --row-hover: rgba(255,255,255,0.72); --nav-hover: rgba(255,255,255,0.85);
+    --active-bg: rgba(255,255,255,0.9); --active-border: rgba(63,123,232,0.22); --active-fg: #0E1626;
+    --cta-bg: linear-gradient(160deg, #3F7BE8, #2C5FC4); --cta-fg: #FFFFFF; --cta-shadow: 0 6px 16px rgba(45,95,196,0.3);
+    --seg-bg: #FFFFFF; --seg-fg: #0E1626; --logo-bg: linear-gradient(140deg, #3F7BE8, #7BA7FF); --logo-fg: #FFFFFF;
+    --link: #2563C7; --ok: #17B57E; --ok-text: #12996B;
+    color: var(--text);
+  }
+  [data-theme="dark"] {
+    --bg: #04060D; --text: #E4EDFC; --muted: rgba(200,220,250,0.6); --muted2: rgba(200,220,250,0.45);
+    --glass: rgba(150,190,255,0.075); --glass2: rgba(150,190,255,0.1); --glass3: rgba(150,190,255,0.14);
+    --border: rgba(150,190,255,0.16); --border2: rgba(150,190,255,0.14); --inset: rgba(190,220,255,0.24);
+    --shadow: 0 20px 48px rgba(0,0,0,0.5); --shadow-lg: 0 24px 60px rgba(0,0,0,0.6);
+    --grid: rgba(150,190,255,0.035); --veil: radial-gradient(120% 90% at 50% 0%, rgba(4,6,13,0) 30%, rgba(4,6,13,0.72) 100%);
+    --blob1: rgba(48,110,240,0.42); --blob2: rgba(96,72,210,0.3); --blob3: rgba(18,110,175,0.28);
+    --track: rgba(150,190,255,0.15); --row-hover: rgba(150,190,255,0.07); --nav-hover: rgba(150,190,255,0.14);
+    --active-bg: rgba(150,190,255,0.16); --active-border: rgba(150,190,255,0.24); --active-fg: #FFFFFF;
+    --cta-bg: linear-gradient(160deg, rgba(226,240,255,0.94), rgba(186,214,255,0.72)); --cta-fg: #071026; --cta-shadow: 0 6px 18px rgba(0,0,0,0.4);
+    --seg-bg: rgba(226,240,255,0.92); --seg-fg: #071026; --logo-bg: linear-gradient(140deg, rgba(210,232,255,0.55), rgba(150,190,255,0.14)); --logo-fg: #FFFFFF;
+    --link: #8FD3FF; --ok: #5AE0A8; --ok-text: #5AE0A8;
+  }
+  a { color: var(--link); text-decoration: none; }
+  a:hover { color: var(--text); }
+  ::selection { background: rgba(80,150,255,0.24); }
+  button, a, aside { transition: background-color .18s ease, color .18s ease, border-color .18s ease, box-shadow .18s ease, width .22s ease; }
+  button:focus-visible, a:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(90,160,255,0.4); }
+  @keyframes drift { 0% { transform: translate3d(0,0,0) scale(1); } 50% { transform: translate3d(3%, -4%, 0) scale(1.08); } 100% { transform: translate3d(0,0,0) scale(1); } }
+  nav::-webkit-scrollbar { width: 0; }
+</style>
+<script src="./nav-loader.js"></script>
+</helmet>
+
+<div data-theme="{{ theme }}" data-ui-lang="vi" style="position: relative; min-height: 100vh; overflow: hidden; background: var(--bg);">
+
+  <div style="position: fixed; inset: 0; z-index: 0; pointer-events: none;">
+    <div style="position: absolute; width: 780px; height: 780px; left: -180px; top: -260px; border-radius: 50%; background: radial-gradient(circle at 40% 40%, var(--blob1), transparent 62%); filter: blur(34px); animation: drift 26s ease-in-out infinite;"></div>
+    <div style="position: absolute; width: 720px; height: 720px; right: -140px; top: -200px; border-radius: 50%; background: radial-gradient(circle at 50% 50%, var(--blob2), transparent 62%); filter: blur(38px); animation: drift 34s ease-in-out infinite reverse;"></div>
+    <div style="position: absolute; width: 900px; height: 700px; left: 24%; bottom: -320px; border-radius: 50%; background: radial-gradient(circle at 50% 50%, var(--blob3), transparent 64%); filter: blur(42px); animation: drift 40s ease-in-out infinite;"></div>
+    <div style="position: absolute; inset: 0; background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px); background-size: 56px 56px;"></div>
+    <div style="position: absolute; inset: 0; background: var(--veil);"></div>
+  </div>
+
+  <div style="position: relative; z-index: 1; display: grid; grid-template-columns: {{ sidebarW }} minmax(0, 1fr); gap: 18px; padding: 18px; max-width: 1560px; margin: 0 auto; align-items: start;">
+
+    <aside style="position: sticky; top: 18px; z-index: 20; max-height: calc(100vh - 36px); display: flex; flex-direction: column; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 22px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow-lg); padding: 14px 12px; overflow: hidden;">
+      <div style="display: flex; align-items: center; gap: 10px; padding: 2px 2px 14px; justify-content: {{ railJustify }};">
+        <span style="width: 34px; height: 34px; flex-shrink: 0; border-radius: 11px; background: var(--logo-bg); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: var(--logo-fg);">A</span>
+        <div style="flex: 1 1 auto; min-width: 0; display: {{ expandedDisplay }};">
+          <div style="font-size: 15px; font-weight: 700; letter-spacing: -0.01em; white-space: nowrap;">AlgoPrep</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.16em; color: var(--muted2);">ADMIN</div>
+        </div>
+      </div>
+
+      <button onClick="{{ toggle }}" title="Thu gọn / mở rộng" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 32px; margin-bottom: 10px; border-radius: 10px; border: 1px solid var(--border2); background: var(--glass2); color: var(--muted); font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer;" style-hover="background: var(--nav-hover); color: var(--text);">
+        <span style="font-size: 13px;">{{ toggleIcon }}</span>
+        <span style="display: {{ expandedDisplay }};">Thu gọn</span>
+      </button>
+
+      <nav style="display: flex; flex-direction: column; gap: 3px; flex: 1 1 auto; overflow-y: auto; overflow-x: hidden; scrollbar-width: none;">
+        <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="10">
+          <a href="{{ n.href }}" title="{{ n.label }}" style="position: relative; display: flex; align-items: center; gap: 10px; height: 40px; padding: {{ n.pad }}; border-radius: 12px; font-size: 13.5px; font-weight: {{ n.weight }}; color: {{ n.fg }}; background: {{ n.bg }}; border: 1px solid {{ n.border }}; justify-content: {{ n.justify }};" style-hover="background: var(--nav-hover); color: var(--text);">
+            <span style="width: 26px; height: 26px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border-radius: 8px; background: {{ n.iconBg }}; color: {{ n.iconFg }}; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; font-weight: 600;">{{ n.icon }}</span>
+            <span style="flex: 1 1 auto; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: {{ expandedDisplay }};">{{ n.label }}</span>
+            <sc-if value="{{ n.showBadge }}" hint-placeholder-val="{{ false }}">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; font-weight: 600; padding: 2px 6px; border-radius: 6px; background: var(--track); color: {{ n.fg }};">{{ n.badge }}</span>
+            </sc-if>
+            <sc-if value="{{ n.dotBadge }}" hint-placeholder-val="{{ false }}">
+              <span style="position: absolute; top: 6px; right: 8px; width: 6px; height: 6px; border-radius: 50%; background: #F5762E;"></span>
+            </sc-if>
+          </a>
+        </sc-for>
+      </nav>
+
+      <div style="margin-top: 12px; padding: 12px; border-radius: 16px; background: var(--glass2); border: 1px solid var(--border2); display: {{ expandedDisplay }};">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 9px;">
+          <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);">Ngân sách tháng</span>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; font-weight: 600; color: var(--muted);">{{ budgetPct }}</span>
+        </div>
+        <div style="height: 6px; border-radius: 999px; background: var(--track); overflow: hidden; margin-bottom: 8px;">
+          <div style="width: {{ budgetPct }}; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #3F7BE8, #8B5CF6);"></div>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 11.5px; color: var(--muted);"><span>Còn lại</span><span style="font-family: 'JetBrains Mono', monospace;">{{ budgetLeft }}</span></div>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 10px; margin-top: 10px; padding: 6px 2px; justify-content: {{ railJustify }};">
+        <div style="width: 32px; height: 32px; flex-shrink: 0; border-radius: 50%; background: var(--glass3); border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 11.5px; font-weight: 600;">PD</div>
+        <div style="min-width: 0; flex: 1 1 auto; display: {{ expandedDisplay }};">
+          <div style="font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Phú Đại</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--muted2);">Quản trị viên</div>
+        </div>
+        <a href="./Dashboard AlgoPrep.dc.html" style="font-size: 11.5px; font-weight: 600; color: var(--muted); display: {{ expandedDisplay }};">Thoát</a>
+      </div>
+    </aside>
+
+    <main style="display: flex; flex-direction: column; gap: 16px; padding-bottom: 22px; min-width: 0;">
+
+      <div style="position: sticky; top: 18px; z-index: 15; display: flex; align-items: center; gap: 12px; height: 62px; padding: 0 16px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
+        <div style="flex: 1 1 auto; min-width: 0;">
+          <div style="font-size: 16px; font-weight: 700; letter-spacing: -0.01em;">Tiêu thụ token AI</div>
+          <div style="font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Theo dõi mức dùng theo ngày, theo tính năng và theo người học</div>
+        </div>
+        <div style="display: flex; gap: 3px; padding: 3px; border-radius: 12px; background: var(--track); border: 1px solid var(--border2); flex-shrink: 0;">
+          <sc-for list="{{ ranges }}" as="r" hint-placeholder-count="3">
+            <button onClick="{{ r.onClick }}" style="height: 28px; padding: 0 11px; border: none; border-radius: 9px; font-family: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer; background: {{ r.bg }}; color: {{ r.fg }};">{{ r.label }}</button>
+          </sc-for>
+        </div>
+        <div style="display: flex; gap: 3px; padding: 3px; border-radius: 12px; background: var(--track); border: 1px solid var(--border2); flex-shrink: 0;">
+          <sc-for list="{{ themes }}" as="t" hint-placeholder-count="2">
+            <button onClick="{{ t.onClick }}" title="{{ t.title }}" style="width: 30px; height: 28px; display: flex; align-items: center; justify-content: center; border: none; border-radius: 9px; font-family: inherit; font-size: 13px; cursor: pointer; background: {{ t.bg }}; color: {{ t.fg }};">{{ t.icon }}</button>
+          </sc-for>
+        </div>
+        <button style="height: 34px; padding: 0 15px; border: none; border-radius: 11px; background: var(--cta-bg); font-family: inherit; font-size: 13px; font-weight: 600; color: var(--cta-fg); cursor: pointer; white-space: nowrap; box-shadow: var(--cta-shadow); flex-shrink: 0;">Xuất báo cáo</button>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px;">
+        <sc-for list="{{ stats }}" as="s" hint-placeholder-count="4">
+          <div style="padding: 16px 18px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
+            <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted2); margin-bottom: 10px;">{{ s.label }}</div>
+            <div style="display: flex; align-items: baseline; gap: 8px;">
+              <span style="font-size: 27px; font-weight: 700; letter-spacing: -0.02em;">{{ s.value }}</span>
+              <span style="font-size: 12.5px; font-weight: 600; color: {{ s.deltaFg }};">{{ s.delta }}</span>
+            </div>
+            <div style="font-size: 12.5px; color: var(--muted); margin-top: 6px;">{{ s.meta }}</div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(300px, 1fr); gap: 16px;">
+
+        <div style="padding: 18px 20px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 22px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow); min-width: 0;">
+          <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 4px;">
+            <div>
+              <div style="font-size: 14.5px; font-weight: 700;">Token theo ngày</div>
+              <div style="font-size: 12.5px; color: var(--muted);">{{ chartCaption }}</div>
+            </div>
+            <div style="display: flex; gap: 14px; flex-wrap: wrap;">
+              <sc-for list="{{ legend }}" as="l" hint-placeholder-count="3">
+                <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted);"><span style="width: 9px; height: 9px; border-radius: 3px; background: {{ l.color }};"></span>{{ l.label }}</span>
+              </sc-for>
+            </div>
+          </div>
+          <div style="display: flex; align-items: flex-end; gap: 7px; height: 240px; margin: 20px 0 0; padding-top: 10px; border-bottom: 1px solid var(--border2);">
+            <sc-for list="{{ days }}" as="d" hint-placeholder-count="14">
+              <div title="{{ d.title }}" style="flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; height: 100%;">
+                <div style="height: {{ d.h1 }}; border-radius: 5px 5px 0 0; background: linear-gradient(180deg, #8B5CF6, rgba(139,92,246,0.6));"></div>
+                <div style="height: {{ d.h2 }}; background: linear-gradient(180deg, #3F7BE8, rgba(63,123,232,0.6));"></div>
+                <div style="height: {{ d.h3 }}; background: linear-gradient(180deg, #64C8C0, rgba(100,200,192,0.6));"></div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display: flex; gap: 7px; margin-top: 8px;">
+            <sc-for list="{{ days }}" as="d" hint-placeholder-count="14">
+              <div style="flex: 1 1 0; min-width: 0; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--muted2);">{{ d.label }}</div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 16px; min-width: 0;">
+          <div style="padding: 18px 20px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 22px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
+            <div style="font-size: 14.5px; font-weight: 700; margin-bottom: 3px;">Hạn mức tháng 8</div>
+            <div style="font-size: 12.5px; color: var(--muted); margin-bottom: 14px;">Đã dùng {{ budgetUsed }} trong {{ budgetCap }}</div>
+            <div style="height: 10px; border-radius: 999px; background: var(--track); overflow: hidden; margin-bottom: 8px;">
+              <div style="width: {{ budgetPct }}; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #3F7BE8, #8B5CF6);"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 12.5px; color: var(--muted); margin-bottom: 16px;"><span>Còn {{ budgetLeft }}</span><span>Dự kiến hết {{ runOut }}</span></div>
+            <div style="display: flex; flex-direction: column; gap: 9px;">
+              <sc-for list="{{ features }}" as="f" hint-placeholder-count="4">
+                <div>
+                  <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 5px;">
+                    <span style="font-size: 13px; font-weight: 600;">{{ f.name }}</span>
+                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--muted);">{{ f.value }}</span>
+                  </div>
+                  <div style="height: 6px; border-radius: 999px; background: var(--track); overflow: hidden;">
+                    <div style="width: {{ f.pct }}; height: 100%; border-radius: 999px; background: {{ f.bar }};"></div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="flex: 1 1 auto; padding: 18px 20px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 22px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
+            <div style="font-size: 14.5px; font-weight: 700; margin-bottom: 12px;">Cảnh báo</div>
+            <div style="display: flex; flex-direction: column; gap: 9px;">
+              <sc-for list="{{ alerts }}" as="a" hint-placeholder-count="3">
+                <div style="padding: 11px 13px; border-radius: 14px; background: {{ a.bg }}; border: 1px solid var(--border2);">
+                  <div style="font-size: 13px; font-weight: 600; color: {{ a.fg }};">{{ a.title }}</div>
+                  <div style="font-size: 12.5px; color: var(--muted); text-wrap: pretty; margin-top: 3px;">{{ a.meta }}</div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="margin-top: 14px; font-size: 12.5px; color: var(--muted2);">Sửa giới hạn tại <a href="./Admin - Cấu hình AI.dc.html">Cấu hình AI</a></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 16px;">
+
+        <div style="padding: 18px 20px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 22px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow); min-width: 0;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px;">
+            <div>
+              <div style="font-size: 14.5px; font-weight: 700;">Người học dùng nhiều nhất</div>
+              <div style="font-size: 12.5px; color: var(--muted);">Trong 30 ngày gần nhất</div>
+            </div>
+            <a href="#" style="font-size: 12.5px; font-weight: 600;">Xem tất cả</a>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 2px;">
+            <div style="display: grid; grid-template-columns: 22px minmax(0,1fr) 84px 74px 70px; gap: 10px; padding: 0 10px 8px; font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted2); border-bottom: 1px solid var(--border2);">
+              <span>#</span><span>Người học</span><span style="text-align: right;">Token</span><span style="text-align: right;">Lượt</span><span style="text-align: right;">Chi phí</span>
+            </div>
+            <sc-for list="{{ topUsers }}" as="u" hint-placeholder-count="6">
+              <div style="display: grid; grid-template-columns: 22px minmax(0,1fr) 84px 74px 70px; gap: 10px; align-items: center; padding: 10px; border-radius: 12px; font-size: 13px;" style-hover="background: var(--row-hover);">
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--muted2);">{{ u.rank }}</span>
+                <span style="min-width: 0; display: flex; align-items: center; gap: 9px;">
+                  <span style="width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%; background: var(--glass3); border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 10.5px; font-weight: 600;">{{ u.initials }}</span>
+                  <span style="min-width: 0;">
+                    <span style="display: block; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ u.name }}</span>
+                    <span style="display: block; font-size: 11.5px; color: var(--muted2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ u.meta }}</span>
+                  </span>
+                </span>
+                <span style="text-align: right; font-family: 'JetBrains Mono', monospace; font-weight: 600;">{{ u.tokens }}</span>
+                <span style="text-align: right; font-family: 'JetBrains Mono', monospace; color: var(--muted);">{{ u.calls }}</span>
+                <span style="text-align: right; font-family: 'JetBrains Mono', monospace; color: var(--muted);">{{ u.cost }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="padding: 18px 20px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 22px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow); min-width: 0;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px;">
+            <div>
+              <div style="font-size: 14.5px; font-weight: 700;">Bài toán tốn token nhất</div>
+              <div style="font-size: 12.5px; color: var(--muted);">Gợi ý và phân tích cộng lại</div>
+            </div>
+            <a href="./Ngân hàng bài toán.dc.html" style="font-size: 12.5px; font-weight: 600;">Ngân hàng bài</a>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 2px;">
+            <div style="display: grid; grid-template-columns: 22px minmax(0,1fr) 84px 92px; gap: 10px; padding: 0 10px 8px; font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted2); border-bottom: 1px solid var(--border2);">
+              <span>#</span><span>Bài toán</span><span style="text-align: right;">Token</span><span style="text-align: right;">TB / lượt</span>
+            </div>
+            <sc-for list="{{ topProblems }}" as="p" hint-placeholder-count="6">
+              <div style="display: grid; grid-template-columns: 22px minmax(0,1fr) 84px 92px; gap: 10px; align-items: center; padding: 10px; border-radius: 12px; font-size: 13px;" style-hover="background: var(--row-hover);">
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--muted2);">{{ p.rank }}</span>
+                <span style="min-width: 0;">
+                  <span style="display: block; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ p.name }}</span>
+                  <span style="display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--muted2);">
+                    <span style="color: {{ p.diffFg }}; font-weight: 600;">{{ p.diff }}</span><span>{{ p.meta }}</span>
+                  </span>
+                </span>
+                <span style="text-align: right; font-family: 'JetBrains Mono', monospace; font-weight: 600;">{{ p.tokens }}</span>
+                <span style="text-align: right; font-family: 'JetBrains Mono', monospace; color: var(--muted);">{{ p.avg }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+      <footer style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap; padding: 16px 20px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
+        <div style="min-width: 0;">
+          <div style="font-size: 13px; font-weight: 600;">AlgoPrep Admin · v2.4.1</div>
+          <div style="font-size: 12px; color: var(--muted2);">© 2026 AlgoPrep. Bảng điều khiển nội bộ.</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; margin-left: auto; font-size: 12.5px; color: var(--muted);">
+          <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--ok);"></span>Số liệu cập nhật 5 phút một lần
+        </div>
+        <div style="display: flex; gap: 18px; font-size: 12.5px;">
+          <sc-for list="{{ footerLinks }}" as="f" hint-placeholder-count="4">
+            <a href="{{ f.href }}" style="color: var(--muted); font-weight: 500;">{{ f.label }}</a>
+          </sc-for>
+        </div>
+      </footer>
+
+    </main>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#3F7BE8&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#3F7BE8&quot;,&quot;#8B5CF6&quot;,&quot;#17B57E&quot;,&quot;#F5B93F&quot;]},&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:1080}}">
+class Component extends DCLogic {
+  state = { collapsed: false, theme: 'light', range: '14 ngày' };
+
+  componentDidMount() {
+    try {
+      const t = localStorage.getItem('algoprep-admin-theme');
+      const c = localStorage.getItem('algoprep-admin-collapsed');
+      const next = {};
+      if (t === 'light' || t === 'dark') next.theme = t;
+      if (c === '1' || c === '0') next.collapsed = c === '1';
+      if (Object.keys(next).length) this.setState(next);
+    } catch (e) {}
+  }
+
+  setTheme(theme) {
+    this.setState({ theme });
+    try { localStorage.setItem('algoprep-admin-theme', theme); } catch (e) {}
+  }
+
+  shellVals() {
+    const activeKey = 'tokens';
+    const collapsed = this.state.collapsed;
+    const dark = this.state.theme === 'dark';
+    const accent = this.props.accent ?? (dark ? '#7FD0FF' : '#3F7BE8');
+    const nav = [
+      ['overview', 'Tổng quan', './Admin - Tổng quan (Sáng).dc.html', 'TQ', null, false],
+      ['problems', 'Quản lý bài tập', './Admin - Quản lý bài tập.dc.html', 'BT', '27', false],
+      ['iquestions', 'Câu hỏi phỏng vấn', './Admin - Câu hỏi phỏng vấn.dc.html', 'PV', '148', false],
+      ['queue', 'Hàng đợi chấm', './Admin - Hàng đợi chấm.dc.html', 'HĐ', '14', true],
+      ['rejudge', 'Chấm lại', './Admin - Chấm lại.dc.html', 'CL', '2', false],
+      ['lang', 'Ngôn ngữ và giới hạn', './Admin - Ngôn ngữ và giới hạn.dc.html', 'NN', null, false],
+      ['ai', 'Cấu hình AI', './Admin - Cấu hình AI.dc.html', 'AI', null, false],
+      ['tokens', 'Token AI', './Admin - Token AI.dc.html', 'TK', null, false],
+      ['users', 'Người dùng', './Admin - Người dùng.dc.html', 'ND', '1.2k', false],
+      ['logs', 'Nhật ký hệ thống', './Admin - Nhật ký hệ thống.dc.html', 'NK', null, false],
+    ];
+    const navItems = nav.map(([key, label, href, icon, badge, hot]) => {
+      const active = key === activeKey;
+      return {
+        label, href, icon, badge,
+        showBadge: !!badge && !collapsed,
+        dotBadge: !!badge && collapsed && hot,
+        weight: active ? 600 : 500,
+        fg: active ? 'var(--active-fg)' : 'var(--muted)',
+        bg: active ? 'var(--active-bg)' : 'transparent',
+        border: active ? 'var(--active-border)' : 'transparent',
+        iconBg: active ? accent : 'var(--track)',
+        iconFg: active ? (dark ? '#071026' : '#FFFFFF') : 'var(--muted)',
+        pad: collapsed ? '0' : '0 11px 0 7px',
+        justify: collapsed ? 'center' : 'flex-start',
+      };
+    });
+    const themes = [
+      { key: 'light', icon: '☀', title: 'Nền sáng' },
+      { key: 'dark', icon: '☾', title: 'Nền tối' },
+    ].map(t => ({
+      icon: t.icon, title: t.title,
+      onClick: () => this.setTheme(t.key),
+      bg: this.state.theme === t.key ? 'var(--seg-bg)' : 'transparent',
+      fg: this.state.theme === t.key ? 'var(--seg-fg)' : 'var(--muted)',
+    }));
+    const footerLinks = [
+      { label: 'Tài liệu API', href: '#' }, { label: 'Trạng thái Judge0', href: '#' },
+      { label: 'Nhật ký thay đổi', href: '#' }, { label: 'Hỗ trợ', href: '#' },
+    ];
+    return {
+      navItems, themes, footerLinks, dark,
+      theme: this.state.theme,
+      sidebarW: collapsed ? '72px' : '246px',
+      expandedDisplay: collapsed ? 'none' : 'block',
+      railJustify: collapsed ? 'center' : 'flex-start',
+      toggleIcon: collapsed ? '»' : '«',
+      toggle: () => this.setState(s => {
+        try { localStorage.setItem('algoprep-admin-collapsed', s.collapsed ? '0' : '1'); } catch (e) {}
+        return { collapsed: !s.collapsed };
+      }),
+    };
+  }
+
+  pageVals(dark) {
+    const ok = dark ? '#7EE8BE' : '#0F8A61';
+    const warn = dark ? '#FFCE78' : '#A9750F';
+    const neg = dark ? '#FF8A8A' : '#C84046';
+
+    const ranges = ['7 ngày', '14 ngày', '30 ngày'].map(label => ({
+      label,
+      onClick: () => this.setState({ range: label }),
+      bg: this.state.range === label ? 'var(--seg-bg)' : 'transparent',
+      fg: this.state.range === label ? 'var(--seg-fg)' : 'var(--muted)',
+    }));
+    const nDays = this.state.range === '7 ngày' ? 7 : this.state.range === '30 ngày' ? 30 : 14;
+
+    const stats = [
+      ['Token tháng này', '38,4 tr', '+12%', warn, 'Tính đến 22/08, 15:40'],
+      ['Trung bình mỗi ngày', '1,74 tr', '−4%', ok, 'Thấp hơn tuần trước'],
+      ['Chi phí tạm tính', '182 USD', '+9%', warn, 'Hạn mức 240 USD mỗi tháng'],
+      ['Lượt gọi AI', '9.418', '+6%', warn, '2.140 người học hoạt động'],
+    ].map(([label, value, delta, deltaFg, meta]) => ({ label, value, delta, deltaFg, meta }));
+
+    // seeded pseudo-random but stable per index
+    const days = [];
+    for (let i = 0; i < nDays; i++) {
+      const d = new Date(2026, 7, 22 - (nDays - 1 - i));
+      const w = d.getDay();
+      const base = (w === 0 || w === 6) ? 0.58 : 1;
+      const jitter = 0.72 + ((Math.sin(i * 2.3) + 1) / 2) * 0.5;
+      const hint = 42 * base * jitter, analyze = 30 * base * jitter * 0.94, interview = 16 * base * jitter * 1.08;
+      const fmt = v => (Math.round(v * 22) / 1000).toFixed(2).replace('.', ',') + ' tr';
+      days.push({
+        label: d.getDate() + '/' + (d.getMonth() + 1),
+        h1: hint.toFixed(1) + '%',
+        h2: analyze.toFixed(1) + '%',
+        h3: interview.toFixed(1) + '%',
+        title: d.getDate() + '/' + (d.getMonth() + 1) + ' · ' + fmt(hint + analyze + interview),
+      });
+    }
+
+    const legend = [
+      { label: 'Gợi ý', color: '#8B5CF6' },
+      { label: 'Phân tích', color: '#3F7BE8' },
+      { label: 'Phỏng vấn', color: '#64C8C0' },
+    ];
+
+    const features = [
+      ['Gợi ý theo bậc', '17,2 tr', '45%', 'linear-gradient(90deg,#8B5CF6,#3F7BE8)'],
+      ['Phân tích bài giải', '12,1 tr', '32%', 'linear-gradient(90deg,#3F7BE8,#64C8C0)'],
+      ['Phỏng vấn giả lập', '6,8 tr', '18%', 'linear-gradient(90deg,#64C8C0,#3F7BE8)'],
+      ['Sinh testcase', '2,3 tr', '6%', 'linear-gradient(90deg,#F5B93F,#F5762E)'],
+    ].map(([name, value, pct, bar]) => ({ name, value, pct, bar }));
+
+    const alerts = [
+      ['Sắp cạn hạn mức', 'Với nhịp hiện tại, ngân sách tháng hết vào 28/08.', warn],
+      ['Một tài khoản dùng bất thường', 'nguyenvana gọi 214 lượt trong 24 giờ, gấp 7 lần trung bình.', neg],
+      ['Prompt sinh testcase tốn hơn dự kiến', 'Trung bình 2.480 token mỗi lượt, cao hơn giới hạn 2.000.', warn],
+    ].map(([title, meta, fg]) => ({
+      title, meta, fg,
+      bg: fg === neg
+        ? (dark ? 'rgba(255,138,138,0.1)' : 'rgba(200,64,70,0.07)')
+        : (dark ? 'rgba(255,206,120,0.1)' : 'rgba(245,185,63,0.11)'),
+    }));
+
+    const topUsers = [
+      ['Nguyễn Văn An', 'nguyenvana · K21', '1,84 tr', '214', '8,7 USD'],
+      ['Trần Thị Bích', 'tranbich · K22', '1,21 tr', '156', '5,8 USD'],
+      ['Lê Hoàng Nam', 'lhnam · K21', '0,97 tr', '131', '4,6 USD'],
+      ['Phạm Minh Đức', 'pmduc · K23', '0,86 tr', '118', '4,1 USD'],
+      ['Vũ Thu Hà', 'vuthuha · K22', '0,74 tr', '102', '3,5 USD'],
+      ['Đỗ Quốc Bảo', 'dqbao · K23', '0,68 tr', '94', '3,2 USD'],
+    ].map(([name, meta, tokens, calls, cost], i) => ({
+      name, meta, tokens, calls, cost,
+      rank: String(i + 1),
+      initials: name.split(' ').slice(-2).map(w => w[0]).join(''),
+    }));
+
+    const dcol = { 'Dễ': ok, 'Trung bình': warn, 'Khó': neg };
+    const topProblems = [
+      ['Đường đi ngắn nhất trên lưới', 'Khó', '412 lượt gợi ý', '2,10 tr', '5.100'],
+      ['Cây khung nhỏ nhất', 'Khó', '298 lượt gợi ý', '1,52 tr', '5.100'],
+      ['Chuỗi con chung dài nhất', 'Trung bình', '506 lượt gợi ý', '1,44 tr', '2.850'],
+      ['Dãy con tăng dài nhất', 'Trung bình', '618 lượt gợi ý', '1,31 tr', '2.120'],
+      ['Hai con trỏ trên mảng sắp xếp', 'Dễ', '742 lượt gợi ý', '0,89 tr', '1.200'],
+      ['Đếm số đảo ngược', 'Khó', '184 lượt gợi ý', '0,81 tr', '4.400'],
+    ].map(([name, diff, meta, tokens, avg], i) => ({
+      name, diff, meta, tokens, avg, rank: String(i + 1), diffFg: dcol[diff],
+    }));
+
+    return {
+      ranges, stats, days, legend, features, alerts, topUsers, topProblems,
+      chartCaption: 'Tách theo tính năng, ' + nDays + ' ngày gần nhất',
+      budgetUsed: '38,4 tr', budgetCap: '52,0 tr', budgetPct: '74%', budgetLeft: '13,6 tr',
+      runOut: '28/08',
+    };
+  }
+
+  renderVals() {
+    const shell = this.shellVals();
+    return Object.assign({}, shell, this.pageVals(shell.dark));
+  }
+}
+
+</script>
+</body>
+</html>

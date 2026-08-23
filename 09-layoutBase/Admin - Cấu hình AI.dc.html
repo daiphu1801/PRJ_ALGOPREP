@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Be Vietnam Pro', system-ui, sans-serif; background: #EAF0FA; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
+  [data-theme] {
+    --bg: #EAF0FA; --text: #0E1626; --muted: rgba(20,45,90,0.58); --muted2: rgba(20,45,90,0.44);
+    --glass: rgba(255,255,255,0.62); --glass2: rgba(255,255,255,0.72); --glass3: rgba(255,255,255,0.9);
+    --border: rgba(255,255,255,0.85); --border2: rgba(30,80,160,0.12); --inset: rgba(255,255,255,0.9);
+    --shadow: 0 18px 40px rgba(28,60,120,0.13); --shadow-lg: 0 20px 44px rgba(28,60,120,0.16);
+    --grid: rgba(30,70,140,0.045); --veil: radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,0.5) 0%, rgba(234,240,250,0.25) 100%);
+    --blob1: rgba(88,150,255,0.42); --blob2: rgba(168,132,255,0.34); --blob3: rgba(90,205,215,0.34);
+    --track: rgba(30,80,160,0.1); --row-hover: rgba(255,255,255,0.72); --nav-hover: rgba(255,255,255,0.85);
+    --active-bg: rgba(255,255,255,0.9); --active-border: rgba(63,123,232,0.22); --active-fg: #0E1626;
+    --cta-bg: linear-gradient(160deg, #3F7BE8, #2C5FC4); --cta-fg: #FFFFFF; --cta-shadow: 0 6px 16px rgba(45,95,196,0.3);
+    --seg-bg: #FFFFFF; --seg-fg: #0E1626; --logo-bg: linear-gradient(140deg, #3F7BE8, #7BA7FF); --logo-fg: #FFFFFF;
+    --link: #2563C7; --ok: #17B57E; --ok-text: #12996B;
+    color: var(--text);
+  }
+  [data-theme="dark"] {
+    --bg: #04060D; --text: #E4EDFC; --muted: rgba(200,220,250,0.6); --muted2: rgba(200,220,250,0.45);
+    --glass: rgba(150,190,255,0.075); --glass2: rgba(150,190,255,0.1); --glass3: rgba(150,190,255,0.14);
+    --border: rgba(150,190,255,0.16); --border2: rgba(150,190,255,0.14); --inset: rgba(190,220,255,0.24);
+    --shadow: 0 20px 48px rgba(0,0,0,0.5); --shadow-lg: 0 24px 60px rgba(0,0,0,0.6);
+    --grid: rgba(150,190,255,0.035); --veil: radial-gradient(120% 90% at 50% 0%, rgba(4,6,13,0) 30%, rgba(4,6,13,0.72) 100%);
+    --blob1: rgba(48,110,240,0.42); --blob2: rgba(96,72,210,0.3); --blob3: rgba(18,110,175,0.28);
+    --track: rgba(150,190,255,0.15); --row-hover: rgba(150,190,255,0.07); --nav-hover: rgba(150,190,255,0.14);
+    --active-bg: rgba(150,190,255,0.16); --active-border: rgba(150,190,255,0.24); --active-fg: #FFFFFF;
+    --cta-bg: linear-gradient(160deg, rgba(226,240,255,0.94), rgba(186,214,255,0.72)); --cta-fg: #071026; --cta-shadow: 0 6px 18px rgba(0,0,0,0.4);
+    --seg-bg: rgba(226,240,255,0.92); --seg-fg: #071026; --logo-bg: linear-gradient(140deg, rgba(210,232,255,0.55), rgba(150,190,255,0.14)); --logo-fg: #FFFFFF;
+    --link: #8FD3FF; --ok: #5AE0A8; --ok-text: #5AE0A8;
+  }
+  a { color: var(--link); text-decoration: none; }
+  a:hover { color: var(--text); }
+  ::selection { background: rgba(80,150,255,0.24); }
+  button, a, aside { transition: background-color .18s ease, color .18s ease, border-color .18s ease, box-shadow .18s ease, width .22s ease; }
+  button:focus-visible, a:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(90,160,255,0.4); }
+  @keyframes drift { 0% { transform: translate3d(0,0,0) scale(1); } 50% { transform: translate3d(3%, -4%, 0) scale(1.08); } 100% { transform: translate3d(0,0,0) scale(1); } }
+  nav::-webkit-scrollbar { width: 0; }
+</style>
+<script src="./nav-loader.js"></script>
+</helmet>
+
+<div data-theme="{{ theme }}" style="position: relative; min-height: 100vh; overflow: hidden; background: var(--bg);">
+
+  <div style="position: fixed; inset: 0; z-index: 0; pointer-events: none;">
+    <div style="position: absolute; width: 780px; height: 780px; left: -180px; top: -260px; border-radius: 50%; background: radial-gradient(circle at 40% 40%, var(--blob1), transparent 62%); filter: blur(34px); animation: drift 26s ease-in-out infinite;"></div>
+    <div style="position: absolute; width: 720px; height: 720px; right: -140px; top: -200px; border-radius: 50%; background: radial-gradient(circle at 50% 50%, var(--blob2), transparent 62%); filter: blur(38px); animation: drift 34s ease-in-out infinite reverse;"></div>
+    <div style="position: absolute; width: 900px; height: 700px; left: 24%; bottom: -320px; border-radius: 50%; background: radial-gradient(circle at 50% 50%, var(--blob3), transparent 64%); filter: blur(42px); animation: drift 40s ease-in-out infinite;"></div>
+    <div style="position: absolute; inset: 0; background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px); background-size: 56px 56px;"></div>
+    <div style="position: absolute; inset: 0; background: var(--veil);"></div>
+  </div>
+
+  <div style="position: relative; z-index: 1; display: grid; grid-template-columns: {{ sidebarW }} minmax(0, 1fr); gap: 18px; padding: 18px; max-width: 1560px; margin: 0 auto; align-items: start;">
+
+    <aside style="position: sticky; top: 18px; z-index: 20; max-height: calc(100vh - 36px); display: flex; flex-direction: column; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 22px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow-lg); padding: 14px 12px; overflow: hidden;">
+      <div style="display: flex; align-items: center; gap: 10px; padding: 2px 2px 14px; justify-content: {{ railJustify }};">
+        <span style="width: 34px; height: 34px; flex-shrink: 0; border-radius: 11px; background: var(--logo-bg); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: var(--logo-fg);">A</span>
+        <div style="flex: 1 1 auto; min-width: 0; display: {{ expandedDisplay }};">
+          <div style="font-size: 15px; font-weight: 700; letter-spacing: -0.01em; white-space: nowrap;">AlgoPrep</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.16em; color: var(--muted2);">ADMIN</div>
+        </div>
+      </div>
+
+      <button onClick="{{ toggle }}" title="Thu gọn / mở rộng" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 32px; margin-bottom: 10px; border-radius: 10px; border: 1px solid var(--border2); background: var(--glass2); color: var(--muted); font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer;" style-hover="background: var(--nav-hover); color: var(--text);">
+        <span style="font-size: 13px;">{{ toggleIcon }}</span>
+        <span style="display: {{ expandedDisplay }};">Thu gọn</span>
+      </button>
+
+      <nav style="display: flex; flex-direction: column; gap: 3px; flex: 1 1 auto; overflow-y: auto; overflow-x: hidden; scrollbar-width: none;">
+        <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="10">
+          <a href="{{ n.href }}" title="{{ n.label }}" style="position: relative; display: flex; align-items: center; gap: 10px; height: 40px; padding: {{ n.pad }}; border-radius: 12px; font-size: 13.5px; font-weight: {{ n.weight }}; color: {{ n.fg }}; background: {{ n.bg }}; border: 1px solid {{ n.border }}; justify-content: {{ n.justify }};" style-hover="background: var(--nav-hover); color: var(--text);">
+            <span style="width: 26px; height: 26px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border-radius: 8px; background: {{ n.iconBg }}; color: {{ n.iconFg }}; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; font-weight: 600;">{{ n.icon }}</span>
+            <span style="flex: 1 1 auto; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: {{ expandedDisplay }};">{{ n.label }}</span>
+            <sc-if value="{{ n.showBadge }}" hint-placeholder-val="{{ false }}">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; font-weight: 600; padding: 2px 6px; border-radius: 6px; background: var(--track); color: {{ n.fg }};">{{ n.badge }}</span>
+            </sc-if>
+            <sc-if value="{{ n.dotBadge }}" hint-placeholder-val="{{ false }}">
+              <span style="position: absolute; top: 6px; right: 8px; width: 6px; height: 6px; border-radius: 50%; background: #F5762E;"></span>
+            </sc-if>
+          </a>
+        </sc-for>
+      </nav>
+
+      <div style="margin-top: 12px; padding: 12px; border-radius: 16px; background: var(--glass2); border: 1px solid var(--border2); display: {{ expandedDisplay }};">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 9px;">
+          <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);">Judge0</span>
+          <span style="display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; color: var(--ok-text);"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--ok);"></span>Hoạt động</span>
+        </div>
+        <div style="height: 6px; border-radius: 999px; background: var(--track); overflow: hidden; margin-bottom: 8px;">
+          <div style="width: 62%; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #17B57E, #3F7BE8);"></div>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 11.5px; color: var(--muted);"><span>Hàng đợi 14 job</span><span style="font-family: 'JetBrains Mono', monospace;">62%</span></div>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 10px; margin-top: 10px; padding: 6px 2px; justify-content: {{ railJustify }};">
+        <div style="width: 32px; height: 32px; flex-shrink: 0; border-radius: 50%; background: var(--glass3); border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 11.5px; font-weight: 600;">PD</div>
+        <div style="min-width: 0; flex: 1 1 auto; display: {{ expandedDisplay }};">
+          <div style="font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Phú Đại</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--muted2);">Quản trị viên</div>
+        </div>
+        <a href="./Dashboard AlgoPrep.dc.html" style="font-size: 11.5px; font-weight: 600; color: var(--muted); display: {{ expandedDisplay }};">Thoát</a>
+      </div>
+    </aside>
+
+    <main style="display: flex; flex-direction: column; gap: 16px; padding-bottom: 22px; min-width: 0;">
+
+      <div style="position: sticky; top: 18px; z-index: 15; display: flex; align-items: center; gap: 12px; height: 62px; padding: 0 16px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
+        <div style="flex: 1 1 auto; min-width: 0;">
+          <div style="font-size: 16px; font-weight: 700; letter-spacing: -0.01em;">Cấu hình trợ lý AI</div>
+          <div style="font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Prompt, rubric chấm và giới hạn tần suất</div>
+        </div>
+        <div style="display: flex; gap: 3px; padding: 3px; border-radius: 12px; background: var(--track); border: 1px solid var(--border2); flex-shrink: 0;">
+          <sc-for list="{{ themes }}" as="t" hint-placeholder-count="2">
+            <button onClick="{{ t.onClick }}" title="{{ t.title }}" style="width: 30px; height: 28px; display: flex; align-items: center; justify-content: center; border: none; border-radius: 9px; font-family: inherit; font-size: 13px; cursor: pointer; background: {{ t.bg }}; color: {{ t.fg }};">{{ t.icon }}</button>
+          </sc-for>
+        </div>
+        <button style="height: 34px; padding: 0 15px; border: none; border-radius: 11px; background: var(--cta-bg); font-family: inherit; font-size: 13px; font-weight: 600; color: var(--cta-fg); cursor: pointer; white-space: nowrap; box-shadow: var(--cta-shadow); flex-shrink: 0;">Lưu và phát hành</button>
+      </div>
+
+      <div style="display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(300px, 1fr); gap: 16px;">
+
+        <div style="display: flex; flex-direction: column; gap: 16px; min-width: 0;">
+          <div style="padding: 18px 20px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 22px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 14px;">
+              <div>
+                <div style="font-size: 14.5px; font-weight: 700;">Prompt theo tính năng</div>
+                <div style="font-size: 12.5px; color: var(--muted);">Mỗi tính năng dùng một bản prompt riêng, có phiên bản</div>
+              </div>
+              <button style="height: 32px; padding: 0 13px; border: 1px solid var(--border2); border-radius: 10px; background: var(--glass2); font-family: inherit; font-size: 12.5px; font-weight: 600; color: var(--text); cursor: pointer; white-space: nowrap;">Nhật ký phiên bản</button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <sc-for list="{{ prompts }}" as="p" hint-placeholder-count="4">
+                <div style="padding: 14px 15px; border-radius: 16px; background: var(--glass2); border: 1px solid {{ p.cardBorder }};">
+                  <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 6px;">
+                    <span style="font-size: 13.5px; font-weight: 600;">{{ p.name }}</span>
+                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 2px 7px; border-radius: 6px; background: var(--track); color: var(--muted);">{{ p.version }}</span>
+                    <span style="display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 9px; border-radius: 999px; font-size: 11.5px; font-weight: 600; background: {{ p.stBg }}; color: {{ p.stFg }};"><span style="width: 6px; height: 6px; border-radius: 50%; background: {{ p.stFg }};"></span>{{ p.status }}</span>
+                    <a href="#" style="margin-left: auto; font-size: 12.5px; font-weight: 600;">Chỉnh sửa</a>
+                  </div>
+                  <div style="font-size: 12.5px; color: var(--muted); line-height: 1.5; text-wrap: pretty; margin-bottom: 10px;">{{ p.desc }}</div>
+                  <div style="display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; color: var(--muted2);">
+                    <span>Model <span style="font-family: 'JetBrains Mono', monospace; color: var(--muted);">{{ p.model }}</span></span>
+                    <span>Nhiệt độ <span style="font-family: 'JetBrains Mono', monospace; color: var(--muted);">{{ p.temp }}</span></span>
+                    <span>Giới hạn <span style="font-family: 'JetBrains Mono', monospace; color: var(--muted);">{{ p.maxTokens }}</span></span>
+                    <span>Cập nhật {{ p.updated }}</span>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="padding: 18px 20px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 22px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 4px;">
+              <div style="font-size: 14.5px; font-weight: 700;">Rubric chấm bài giải</div>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: {{ weightFg }};">Tổng {{ weightTotal }}</span>
+            </div>
+            <div style="font-size: 12.5px; color: var(--muted); margin-bottom: 16px;">Trọng số dùng cho điểm tổng trong báo cáo phân tích</div>
+            <div style="display: flex; flex-direction: column; gap: 14px;">
+              <sc-for list="{{ rubric }}" as="r" hint-placeholder-count="5">
+                <div>
+                  <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 7px;">
+                    <div style="min-width: 0;">
+                      <span style="font-size: 13.5px; font-weight: 600;">{{ r.name }}</span>
+                      <span style="font-size: 12px; color: var(--muted2); margin-left: 8px;">{{ r.meta }}</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+                      <button onClick="{{ r.dec }}" style="width: 26px; height: 26px; border: 1px solid var(--border2); border-radius: 8px; background: var(--glass2); color: var(--text); font-family: inherit; font-size: 14px; line-height: 1; cursor: pointer;">−</button>
+                      <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; min-width: 42px; text-align: right;">{{ r.pct }}</span>
+                      <button onClick="{{ r.inc }}" style="width: 26px; height: 26px; border: 1px solid var(--border2); border-radius: 8px; background: var(--glass2); color: var(--text); font-family: inherit; font-size: 14px; line-height: 1; cursor: pointer;">+</button>
+                    </div>
+                  </div>
+                  <div style="height: 8px; border-radius: 999px; background: var(--track); overflow: hidden;">
+                    <div style="width: {{ r.pct }}; height: 100%; border-radius: 999px; background: {{ r.bar }};"></div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 16px; min-width: 0;">
+          <div style="padding: 18px 20px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 22px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
+            <div style="font-size: 14.5px; font-weight: 700; margin-bottom: 3px;">Giới hạn tần suất</div>
+            <div style="font-size: 12.5px; color: var(--muted); margin-bottom: 14px;">Chống lạm dụng và giữ chi phí trong ngân sách</div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <sc-for list="{{ limits }}" as="l" hint-placeholder-count="4">
+                <div style="display: flex; align-items: center; gap: 12px; padding: 11px 13px; border-radius: 14px; background: var(--glass2); border: 1px solid var(--border2);">
+                  <div style="min-width: 0; flex: 1 1 auto;">
+                    <div style="font-size: 13.5px; font-weight: 600;">{{ l.label }}</div>
+                    <div style="font-size: 12px; color: var(--muted2);">{{ l.meta }}</div>
+                  </div>
+                  <span style="font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 600; white-space: nowrap;">{{ l.value }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="padding: 18px 20px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 22px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
+            <div style="font-size: 14.5px; font-weight: 700; margin-bottom: 12px;">Nguyên tắc trả lời</div>
+            <div style="display: flex; flex-direction: column; gap: 9px;">
+              <sc-for list="{{ guards }}" as="g" hint-placeholder-count="4">
+                <div style="display: flex; align-items: center; gap: 12px; padding: 11px 13px; border-radius: 14px; background: var(--glass2); border: 1px solid var(--border2);">
+                  <div style="min-width: 0; flex: 1 1 auto;">
+                    <div style="font-size: 13.5px; font-weight: 600;">{{ g.title }}</div>
+                    <div style="font-size: 12px; color: var(--muted2); text-wrap: pretty;">{{ g.meta }}</div>
+                  </div>
+                  <button onClick="{{ g.onClick }}" style="width: 46px; height: 26px; flex-shrink: 0; padding: 3px; border: 1px solid var(--border2); border-radius: 999px; background: {{ g.trackBg }}; cursor: pointer; display: flex; justify-content: {{ g.knobPos }};">
+                    <span style="width: 18px; height: 18px; border-radius: 50%; background: {{ g.knobBg }};"></span>
+                  </button>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="flex: 1 1 auto; padding: 18px 20px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 22px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
+            <div style="font-size: 14.5px; font-weight: 700; margin-bottom: 10px;">Trước khi phát hành</div>
+            <div style="font-size: 13px; color: var(--muted); line-height: 1.6; text-wrap: pretty; margin-bottom: 12px;">Chạy bộ kiểm thử 30 bài giải mẫu để so sánh điểm rubric giữa bản nháp và bản đang chạy.</div>
+            <button style="width: 100%; height: 36px; border: 1px solid var(--border2); border-radius: 12px; background: var(--glass2); font-family: inherit; font-size: 13px; font-weight: 600; color: var(--text); cursor: pointer;">Chạy đối chiếu</button>
+            <div style="margin-top: 12px; font-size: 12.5px; color: var(--muted2);">Lần chạy gần nhất: 19/08, lệch trung bình 0,4 điểm. <a href="./Admin - Token AI.dc.html">Xem tiêu thụ token</a></div>
+          </div>
+        </div>
+      </div>
+
+      <footer style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap; padding: 16px 20px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
+        <div style="min-width: 0;">
+          <div style="font-size: 13px; font-weight: 600;">AlgoPrep Admin · v2.4.1</div>
+          <div style="font-size: 12px; color: var(--muted2);">© 2026 AlgoPrep. Bảng điều khiển nội bộ.</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; margin-left: auto; font-size: 12.5px; color: var(--muted);">
+          <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--ok);"></span>Mọi dịch vụ hoạt động bình thường
+        </div>
+        <div style="display: flex; gap: 18px; font-size: 12.5px;">
+          <sc-for list="{{ footerLinks }}" as="f" hint-placeholder-count="4">
+            <a href="{{ f.href }}" style="color: var(--muted); font-weight: 500;">{{ f.label }}</a>
+          </sc-for>
+        </div>
+      </footer>
+
+    </main>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#3F7BE8&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#3F7BE8&quot;,&quot;#8B5CF6&quot;,&quot;#17B57E&quot;,&quot;#F5B93F&quot;]},&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:1020}}">
+class Component extends DCLogic {
+  state = {
+    collapsed: false, theme: 'light',
+    weights: [30, 25, 20, 15, 10],
+    guards: { noFullCode: true, cite: true, vietnamese: true, escalate: false },
+  };
+
+  componentDidMount() {
+    try {
+      const t = localStorage.getItem('algoprep-admin-theme');
+      const c = localStorage.getItem('algoprep-admin-collapsed');
+      const next = {};
+      if (t === 'light' || t === 'dark') next.theme = t;
+      if (c === '1' || c === '0') next.collapsed = c === '1';
+      if (Object.keys(next).length) this.setState(next);
+    } catch (e) {}
+  }
+
+  setTheme(theme) {
+    this.setState({ theme });
+    try { localStorage.setItem('algoprep-admin-theme', theme); } catch (e) {}
+  }
+
+  bump(i, d) {
+    this.setState(s => {
+      const w = s.weights.slice();
+      w[i] = Math.max(0, Math.min(100, w[i] + d));
+      return { weights: w };
+    });
+  }
+
+  flipGuard(key) { this.setState(s => ({ guards: Object.assign({}, s.guards, { [key]: !s.guards[key] }) })); }
+
+  shellVals() {
+    const activeKey = 'ai';
+    const collapsed = this.state.collapsed;
+    const dark = this.state.theme === 'dark';
+    const accent = this.props.accent ?? (dark ? '#7FD0FF' : '#3F7BE8');
+    const nav = [
+      ['overview', 'Tổng quan', './Admin - Tổng quan (Sáng).dc.html', 'TQ', null, false],
+      ['problems', 'Quản lý bài tập', './Admin - Quản lý bài tập.dc.html', 'BT', '27', false],
+      ['iquestions', 'Câu hỏi phỏng vấn', './Admin - Câu hỏi phỏng vấn.dc.html', 'PV', '148', false],
+      ['queue', 'Hàng đợi chấm', './Admin - Hàng đợi chấm.dc.html', 'HĐ', '14', true],
+      ['rejudge', 'Chấm lại', './Admin - Chấm lại.dc.html', 'CL', '2', false],
+      ['lang', 'Ngôn ngữ và giới hạn', './Admin - Ngôn ngữ và giới hạn.dc.html', 'NN', null, false],
+      ['ai', 'Cấu hình AI', './Admin - Cấu hình AI.dc.html', 'AI', null, false],
+      ['tokens', 'Token AI', './Admin - Token AI.dc.html', 'TK', null, false],
+      ['users', 'Người dùng', './Admin - Người dùng.dc.html', 'ND', '1.2k', false],
+      ['logs', 'Nhật ký hệ thống', './Admin - Nhật ký hệ thống.dc.html', 'NK', null, false],
+    ];
+    const navItems = nav.map(([key, label, href, icon, badge, hot]) => {
+      const active = key === activeKey;
+      return {
+        label, href, icon, badge,
+        showBadge: !!badge && !collapsed,
+        dotBadge: !!badge && collapsed && hot,
+        weight: active ? 600 : 500,
+        fg: active ? 'var(--active-fg)' : 'var(--muted)',
+        bg: active ? 'var(--active-bg)' : 'transparent',
+        border: active ? 'var(--active-border)' : 'transparent',
+        iconBg: active ? accent : 'var(--track)',
+        iconFg: active ? (dark ? '#071026' : '#FFFFFF') : 'var(--muted)',
+        pad: collapsed ? '0' : '0 11px 0 7px',
+        justify: collapsed ? 'center' : 'flex-start',
+      };
+    });
+    const themes = [
+      { key: 'light', icon: '☀', title: 'Nền sáng' },
+      { key: 'dark', icon: '☾', title: 'Nền tối' },
+    ].map(t => ({
+      icon: t.icon, title: t.title,
+      onClick: () => this.setTheme(t.key),
+      bg: this.state.theme === t.key ? 'var(--seg-bg)' : 'transparent',
+      fg: this.state.theme === t.key ? 'var(--seg-fg)' : 'var(--muted)',
+    }));
+    const footerLinks = [
+      { label: 'Tài liệu API', href: '#' }, { label: 'Trạng thái Judge0', href: '#' },
+      { label: 'Nhật ký thay đổi', href: '#' }, { label: 'Hỗ trợ', href: '#' },
+    ];
+    return {
+      navItems, themes, footerLinks, dark,
+      theme: this.state.theme,
+      sidebarW: collapsed ? '72px' : '246px',
+      expandedDisplay: collapsed ? 'none' : 'block',
+      railJustify: collapsed ? 'center' : 'flex-start',
+      toggleIcon: collapsed ? '»' : '«',
+      toggle: () => this.setState(s => {
+        try { localStorage.setItem('algoprep-admin-collapsed', s.collapsed ? '0' : '1'); } catch (e) {}
+        return { collapsed: !s.collapsed };
+      }),
+    };
+  }
+
+  pageVals(dark) {
+    const ok = dark ? '#7EE8BE' : '#0F8A61';
+    const warn = dark ? '#FFCE78' : '#A9750F';
+    const blue = dark ? '#7FD0FF' : '#2C5FC4';
+    const neg = dark ? '#FF8A8A' : '#C84046';
+
+    const pst = {
+      'Đang chạy': [dark ? 'rgba(126,232,190,0.14)' : 'rgba(23,181,126,0.12)', ok],
+      'Bản nháp': [dark ? 'rgba(255,206,120,0.14)' : 'rgba(245,185,63,0.16)', warn],
+      'Thử nghiệm A/B': [dark ? 'rgba(127,208,255,0.14)' : 'rgba(63,123,232,0.12)', blue],
+    };
+    const prompts = [
+      ['Gợi ý theo bậc', 'v4.2', 'Đang chạy', 'Ba bậc gợi ý tăng dần, không đưa lời giải hoàn chỉnh ở bậc 1 và 2.', 'claude-sonnet', '0,3', '900 token', '14/08'],
+      ['Phân tích bài giải', 'v3.8', 'Đang chạy', 'Chấm theo rubric, chỉ ra độ phức tạp và điểm cần sửa, kèm trích đoạn mã.', 'claude-sonnet', '0,2', '1.600 token', '11/08'],
+      ['Phỏng vấn giả lập', 'v2.5', 'Thử nghiệm A/B', 'Đóng vai người phỏng vấn, hỏi tiếp theo câu trả lời, chấm cuối phiên.', 'claude-sonnet', '0,6', '1.200 token', '19/08'],
+      ['Sinh testcase', 'v1.9', 'Bản nháp', 'Sinh testcase biên từ đề bài, cần giảng viên duyệt trước khi dùng.', 'claude-haiku', '0,4', '2.000 token', '20/08'],
+    ].map(([name, version, status, desc, model, temp, maxTokens, updated]) => ({
+      name, version, status, desc, model, temp, maxTokens, updated,
+      stBg: pst[status][0], stFg: pst[status][1],
+      cardBorder: status === 'Đang chạy' ? 'var(--border2)' : pst[status][0],
+    }));
+
+    const names = [
+      ['Tính đúng đắn', 'kết quả testcase'],
+      ['Độ phức tạp', 'thời gian và bộ nhớ'],
+      ['Chất lượng mã', 'đặt tên, cấu trúc'],
+      ['Xử lý biên', 'trường hợp đặc biệt'],
+      ['Diễn giải', 'giải thích hướng làm'],
+    ];
+    const bars = [
+      'linear-gradient(90deg,#3F7BE8,#64C8C0)', 'linear-gradient(90deg,#8B5CF6,#3F7BE8)',
+      'linear-gradient(90deg,#64C8C0,#3F7BE8)', 'linear-gradient(90deg,#F5B93F,#64C8C0)',
+      'linear-gradient(90deg,#F5762E,#F5B93F)',
+    ];
+    const rubric = names.map(([name, meta], i) => ({
+      name, meta, bar: bars[i],
+      pct: this.state.weights[i] + '%',
+      inc: () => this.bump(i, 5),
+      dec: () => this.bump(i, -5),
+    }));
+    const total = this.state.weights.reduce((a, b) => a + b, 0);
+
+    const limits = [
+      { label: 'Gợi ý mỗi bài', value: '3 lượt', meta: 'Đếm lại khi người học nộp bài mới' },
+      { label: 'Phân tích mỗi ngày', value: '10 lượt', meta: 'Theo từng tài khoản người học' },
+      { label: 'Phỏng vấn mỗi tuần', value: '5 phiên', meta: 'Mỗi phiên tối đa 30 phút' },
+      { label: 'Chờ giữa hai yêu cầu', value: '20 giây', meta: 'Áp dụng cho mọi tính năng AI' },
+    ];
+
+    const g = this.state.guards;
+    const knob = on => ({
+      trackBg: on ? (dark ? 'rgba(126,232,190,0.3)' : 'rgba(23,181,126,0.28)') : 'var(--track)',
+      knobBg: on ? (dark ? '#7EE8BE' : '#17B57E') : 'var(--muted2)',
+      knobPos: on ? 'flex-end' : 'flex-start',
+    });
+    const guards = [
+      Object.assign({ title: 'Không đưa lời giải đầy đủ', meta: 'Chỉ gợi ý hướng đi và đoạn mã ngắn', onClick: () => this.flipGuard('noFullCode') }, knob(g.noFullCode)),
+      Object.assign({ title: 'Trích dẫn dòng mã người học', meta: 'Nhận xét phải chỉ rõ dòng liên quan', onClick: () => this.flipGuard('cite') }, knob(g.cite)),
+      Object.assign({ title: 'Trả lời bằng tiếng Việt', meta: 'Giữ nguyên thuật ngữ tiếng Anh', onClick: () => this.flipGuard('vietnamese') }, knob(g.vietnamese)),
+      Object.assign({ title: 'Chuyển giảng viên khi bí', meta: 'Sau 3 lần gợi ý không hiệu quả', onClick: () => this.flipGuard('escalate') }, knob(g.escalate)),
+    ];
+
+    return {
+      prompts, rubric, limits, guards,
+      weightTotal: total + '%',
+      weightFg: total === 100 ? 'var(--muted)' : neg,
+    };
+  }
+
+  renderVals() {
+    const shell = this.shellVals();
+    return Object.assign({}, shell, this.pageVals(shell.dark));
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Be Vietnam Pro', system-ui, sans-serif; background: #EAF0FA; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
+  [data-theme] {
+    --bg: #EAF0FA; --text: #0E1626; --muted: rgba(20,45,90,0.58); --muted2: rgba(20,45,90,0.44);
+    --glass: rgba(255,255,255,0.62); --glass2: rgba(255,255,255,0.72); --glass3: rgba(255,255,255,0.9);
+    --border: rgba(255,255,255,0.85); --border2: rgba(30,80,160,0.12); --inset: rgba(255,255,255,0.9);
+    --shadow: 0 18px 40px rgba(28,60,120,0.13); --shadow-lg: 0 20px 44px rgba(28,60,120,0.16);
+    --grid: rgba(30,70,140,0.045); --veil: radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,0.5) 0%, rgba(234,240,250,0.25) 100%);
+    --blob1: rgba(88,150,255,0.42); --blob2: rgba(168,132,255,0.34); --blob3: rgba(90,205,215,0.34);
+    --track: rgba(30,80,160,0.1); --row-hover: rgba(255,255,255,0.72); --nav-hover: rgba(255,255,255,0.85);
+    --active-bg: rgba(255,255,255,0.9); --active-border: rgba(63,123,232,0.22); --active-fg: #0E1626;
+    --cta-bg: linear-gradient(160deg, #3F7BE8, #2C5FC4); --cta-fg: #FFFFFF; --cta-shadow: 0 6px 16px rgba(45,95,196,0.3);
+    --seg-bg: #FFFFFF; --seg-fg: #0E1626; --logo-bg: linear-gradient(140deg, #3F7BE8, #7BA7FF); --logo-fg: #FFFFFF;
+    --link: #2563C7; --ok: #17B57E; --ok-text: #12996B; --scrim: rgba(14,22,38,0.42);
+    color: var(--text);
+  }
+  [data-theme="dark"] {
+    --bg: #04060D; --text: #E4EDFC; --muted: rgba(200,220,250,0.6); --muted2: rgba(200,220,250,0.45);
+    --glass: rgba(150,190,255,0.075); --glass2: rgba(150,190,255,0.1); --glass3: rgba(150,190,255,0.14);
+    --border: rgba(150,190,255,0.16); --border2: rgba(150,190,255,0.14); --inset: rgba(190,220,255,0.24);
+    --shadow: 0 20px 48px rgba(0,0,0,0.5); --shadow-lg: 0 24px 60px rgba(0,0,0,0.6);
+    --grid: rgba(150,190,255,0.035); --veil: radial-gradient(120% 90% at 50% 0%, rgba(4,6,13,0) 30%, rgba(4,6,13,0.72) 100%);
+    --blob1: rgba(48,110,240,0.42); --blob2: rgba(96,72,210,0.3); --blob3: rgba(18,110,175,0.28);
+    --track: rgba(150,190,255,0.15); --row-hover: rgba(150,190,255,0.07); --nav-hover: rgba(150,190,255,0.14);
+    --active-bg: rgba(150,190,255,0.16); --active-border: rgba(150,190,255,0.24); --active-fg: #FFFFFF;
+    --cta-bg: linear-gradient(160deg, rgba(226,240,255,0.94), rgba(186,214,255,0.72)); --cta-fg: #071026; --cta-shadow: 0 6px 18px rgba(0,0,0,0.4);
+    --seg-bg: rgba(226,240,255,0.92); --seg-fg: #071026; --logo-bg: linear-gradient(140deg, rgba(210,232,255,0.55), rgba(150,190,255,0.14)); --logo-fg: #FFFFFF;
+    --link: #8FD3FF; --ok: #5AE0A8; --ok-text: #5AE0A8; --scrim: rgba(2,4,10,0.66);
+  }
+  a { color: var(--link); text-decoration: none; }
+  a:hover { color: var(--text); }
+  ::selection { background: rgba(80,150,255,0.24); }
+  button, a, aside { transition: background-color .18s ease, color .18s ease, border-color .18s ease, box-shadow .18s ease, width .22s ease; }
+  button:focus-visible, a:focus-visible, input:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(90,160,255,0.4); }
+  input::placeholder { color: var(--muted2); }
+  @keyframes drift { 0% { transform: translate3d(0,0,0) scale(1); } 50% { transform: translate3d(3%, -4%, 0) scale(1.08); } 100% { transform: translate3d(0,0,0) scale(1); } }
+  nav::-webkit-scrollbar { width: 0; }
+</style>
+<script src="./nav-loader.js"></script>
+</helmet>
+
+<div data-theme="{{ theme }}" data-ui-lang="vi" style="position: relative; min-height: 100vh; overflow: hidden; background: var(--bg);">
+
+  <div style="position: fixed; inset: 0; z-index: 0; pointer-events: none;">
+    <div style="position: absolute; width: 780px; height: 780px; left: -180px; top: -260px; border-radius: 50%; background: radial-gradient(circle at 40% 40%, var(--blob1), transparent 62%); filter: blur(34px); animation: drift 26s ease-in-out infinite;"></div>
+    <div style="position: absolute; width: 720px; height: 720px; right: -140px; top: -200px; border-radius: 50%; background: radial-gradient(circle at 50% 50%, var(--blob2), transparent 62%); filter: blur(38px); animation: drift 34s ease-in-out infinite reverse;"></div>
+    <div style="position: absolute; width: 900px; height: 700px; left: 24%; bottom: -320px; border-radius: 50%; background: radial-gradient(circle at 50% 50%, var(--blob3), transparent 64%); filter: blur(42px); animation: drift 40s ease-in-out infinite;"></div>
+    <div style="position: absolute; inset: 0; background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px); background-size: 56px 56px;"></div>
+    <div style="position: absolute; inset: 0; background: var(--veil);"></div>
+  </div>
+
+  <div style="position: relative; z-index: 1; display: grid; grid-template-columns: {{ sidebarW }} minmax(0, 1fr); gap: 18px; padding: 18px; max-width: 1560px; margin: 0 auto; align-items: start;">
+
+    <aside style="position: sticky; top: 18px; z-index: 20; max-height: calc(100vh - 36px); display: flex; flex-direction: column; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 22px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow-lg); padding: 14px 12px; overflow: hidden;">
+      <div style="display: flex; align-items: center; gap: 10px; padding: 2px 2px 14px; justify-content: {{ railJustify }};">
+        <span style="width: 34px; height: 34px; flex-shrink: 0; border-radius: 11px; background: var(--logo-bg); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: var(--logo-fg);">A</span>
+        <div style="flex: 1 1 auto; min-width: 0; display: {{ expandedDisplay }};">
+          <div style="font-size: 15px; font-weight: 700; letter-spacing: -0.01em; white-space: nowrap;">AlgoPrep</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.16em; color: var(--muted2);">ADMIN</div>
+        </div>
+      </div>
+
+      <button onClick="{{ toggle }}" title="Thu gọn / mở rộng" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 32px; margin-bottom: 10px; border-radius: 10px; border: 1px solid var(--border2); background: var(--glass2); color: var(--muted); font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer;" style-hover="background: var(--nav-hover); color: var(--text);">
+        <span style="font-size: 13px;">{{ toggleIcon }}</span>
+        <span style="display: {{ expandedDisplay }};">Thu gọn</span>
+      </button>
+
+      <nav style="display: flex; flex-direction: column; gap: 3px; flex: 1 1 auto; overflow-y: auto; overflow-x: hidden; scrollbar-width: none;">
+        <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="10">
+          <a href="{{ n.href }}" title="{{ n.label }}" style="position: relative; display: flex; align-items: center; gap: 10px; height: 40px; padding: {{ n.pad }}; border-radius: 12px; font-size: 13.5px; font-weight: {{ n.weight }}; color: {{ n.fg }}; background: {{ n.bg }}; border: 1px solid {{ n.border }}; justify-content: {{ n.justify }};" style-hover="background: var(--nav-hover); color: var(--text);">
+            <span style="width: 26px; height: 26px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border-radius: 8px; background: {{ n.iconBg }}; color: {{ n.iconFg }}; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; font-weight: 600;">{{ n.icon }}</span>
+            <span style="flex: 1 1 auto; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: {{ expandedDisplay }};">{{ n.label }}</span>
+            <sc-if value="{{ n.showBadge }}" hint-placeholder-val="{{ false }}">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; font-weight: 600; padding: 2px 6px; border-radius: 6px; background: var(--track); color: {{ n.fg }};">{{ n.badge }}</span>
+            </sc-if>
+            <sc-if value="{{ n.dotBadge }}" hint-placeholder-val="{{ false }}">
+              <span style="position: absolute; top: 6px; right: 8px; width: 6px; height: 6px; border-radius: 50%; background: #F5762E;"></span>
+            </sc-if>
+          </a>
+        </sc-for>
+      </nav>
+
+      <div style="display: flex; align-items: center; gap: 10px; margin-top: 12px; padding: 6px 2px; justify-content: {{ railJustify }};">
+        <div style="width: 32px; height: 32px; flex-shrink: 0; border-radius: 50%; background: var(--glass3); border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 11.5px; font-weight: 600;">PD</div>
+        <div style="min-width: 0; flex: 1 1 auto; display: {{ expandedDisplay }};">
+          <div style="font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Phú Đại</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--muted2);">Quản trị viên</div>
+        </div>
+        <a href="./Dashboard AlgoPrep.dc.html" style="font-size: 11.5px; font-weight: 600; color: var(--muted); display: {{ expandedDisplay }};">Thoát</a>
+      </div>
+    </aside>
+
+    <main style="display: flex; flex-direction: column; gap: 16px; padding-bottom: 22px; min-width: 0;">
+
+      <div style="position: sticky; top: 18px; z-index: 15; display: flex; align-items: center; gap: 12px; height: 62px; padding: 0 16px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
+        <div style="flex: 1 1 auto; min-width: 0;">
+          <div style="font-size: 16px; font-weight: 700; letter-spacing: -0.01em;">Ngân hàng câu hỏi phỏng vấn</div>
+          <div style="font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">148 câu · chủ đề, cấp độ, câu hỏi đào sâu và tiêu chí đánh giá</div>
+        </div>
+        <div style="display: flex; gap: 3px; padding: 3px; border-radius: 12px; background: var(--track); border: 1px solid var(--border2); flex-shrink: 0;">
+          <sc-for list="{{ themes }}" as="t" hint-placeholder-count="2">
+            <button onClick="{{ t.onClick }}" title="{{ t.title }}" style="width: 30px; height: 28px; display: flex; align-items: center; justify-content: center; border: none; border-radius: 9px; font-family: inherit; font-size: 13px; cursor: pointer; background: {{ t.bg }}; color: {{ t.fg }};">{{ t.icon }}</button>
+          </sc-for>
+        </div>
+        <button style="height: 34px; padding: 0 13px; border: 1px solid var(--border2); border-radius: 11px; background: var(--glass2); font-family: inherit; font-size: 13px; font-weight: 600; color: var(--text); cursor: pointer; white-space: nowrap; flex-shrink: 0;">Nhập CSV</button>
+        <button style="height: 34px; padding: 0 15px; border: none; border-radius: 11px; background: var(--cta-bg); font-family: inherit; font-size: 13px; font-weight: 600; color: var(--cta-fg); cursor: pointer; white-space: nowrap; box-shadow: var(--cta-shadow); flex-shrink: 0;">Câu hỏi mới</button>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px;">
+        <sc-for list="{{ stats }}" as="s" hint-placeholder-count="4">
+          <div style="padding: 16px 18px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
+            <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted2); margin-bottom: 10px;">{{ s.label }}</div>
+            <div style="display: flex; align-items: baseline; gap: 8px;">
+              <span style="font-size: 27px; font-weight: 700; letter-spacing: -0.02em;">{{ s.value }}</span>
+              <span style="font-size: 12.5px; font-weight: 600; color: {{ s.deltaFg }};">{{ s.delta }}</span>
+            </div>
+            <div style="font-size: 12.5px; color: var(--muted); margin-top: 6px;">{{ s.meta }}</div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 12px 16px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 18px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
+        <label style="display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 12px; border-radius: 11px; background: var(--glass2); border: 1px solid var(--border2); flex: 1 1 220px; min-width: 0;">
+          <span style="font-size: 13px; color: var(--muted2);">⌕</span>
+          <input value="{{ query }}" onChange="{{ onQuery }}" placeholder="Tìm theo nội dung câu hỏi hoặc thẻ" style="flex: 1 1 auto; min-width: 0; border: none; background: transparent; font-family: inherit; font-size: 13px; color: var(--text);" />
+        </label>
+        <div style="display: flex; gap: 3px; padding: 3px; border-radius: 12px; background: var(--track); border: 1px solid var(--border2);">
+          <sc-for list="{{ topicTabs }}" as="t" hint-placeholder-count="5">
+            <button onClick="{{ t.onClick }}" style="height: 28px; padding: 0 12px; border: none; border-radius: 9px; font-family: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer; background: {{ t.bg }}; color: {{ t.fg }};">{{ t.label }}</button>
+          </sc-for>
+        </div>
+        <div style="display: flex; gap: 3px; padding: 3px; border-radius: 12px; background: var(--track); border: 1px solid var(--border2);">
+          <sc-for list="{{ levelTabs }}" as="l" hint-placeholder-count="4">
+            <button onClick="{{ l.onClick }}" style="height: 28px; padding: 0 12px; border: none; border-radius: 9px; font-family: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer; background: {{ l.bg }}; color: {{ l.fg }};">{{ l.label }}</button>
+          </sc-for>
+        </div>
+        <span style="margin-left: auto; font-size: 12.5px; color: var(--muted); white-space: nowrap;">{{ resultCount }}</span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px; align-items: start;">
+        <sc-for list="{{ cards }}" as="c" hint-placeholder-count="6">
+          <div style="display: flex; flex-direction: column; gap: 13px; padding: 18px 19px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--muted2);">{{ c.code }}</span>
+              <span style="display: inline-flex; align-items: center; height: 21px; padding: 0 9px; border-radius: 999px; font-size: 11.5px; font-weight: 600; background: {{ c.lvBg }}; color: {{ c.lvFg }};">{{ c.level }}</span>
+              <span style="font-size: 11.5px; color: var(--muted); margin-left: auto; white-space: nowrap;">{{ c.topic }}</span>
+            </div>
+
+            <div style="font-size: 14.5px; font-weight: 600; line-height: 1.45; text-wrap: pretty;">{{ c.question }}</div>
+
+            <div style="padding: 12px 13px; border-radius: 14px; background: var(--glass2); border: 1px solid var(--border2);">
+              <div style="font-size: 10.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted2); margin-bottom: 9px;">Đào sâu</div>
+              <div style="display: flex; flex-direction: column; gap: 7px;">
+                <sc-for list="{{ c.followUps }}" as="f" hint-placeholder-count="2">
+                  <div style="display: flex; gap: 8px; font-size: 12.5px; line-height: 1.5; color: var(--muted); text-wrap: pretty;">
+                    <span style="color: var(--muted2); flex-shrink: 0;">{{ f.bullet }}</span>
+                    <span>{{ f.text }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div>
+              <div style="font-size: 10.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted2); margin-bottom: 9px;">Tiêu chí đánh giá</div>
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <sc-for list="{{ c.rubric }}" as="r" hint-placeholder-count="3">
+                  <div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 5px;">
+                      <span style="font-size: 12.5px; font-weight: 500;">{{ r.label }}</span>
+                      <span style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--muted2);">{{ r.weight }}</span>
+                    </div>
+                    <div style="height: 5px; border-radius: 999px; background: var(--track); overflow: hidden;">
+                      <div style="width: {{ r.pct }}; height: 100%; border-radius: 999px; background: {{ r.bar }};"></div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 10px; padding-top: 12px; border-top: 1px solid var(--border2);">
+              <span style="font-size: 12px; color: var(--muted2); white-space: nowrap;">{{ c.usage }}</span>
+              <div style="display: flex; gap: 6px; margin-left: auto;">
+                <button style="height: 28px; padding: 0 11px; border: 1px solid var(--border2); border-radius: 9px; background: var(--glass2); font-family: inherit; font-size: 12px; font-weight: 600; color: var(--text); cursor: pointer;">Sửa</button>
+                <button style="height: 28px; padding: 0 11px; border: 1px solid var(--border2); border-radius: 9px; background: var(--glass2); font-family: inherit; font-size: 12px; font-weight: 600; color: var(--muted); cursor: pointer;">Nhân bản</button>
+                <button onClick="{{ c.askDelete }}" title="Xoá câu hỏi" style="width: 28px; height: 28px; border: 1px solid var(--border2); border-radius: 9px; background: transparent; font-family: inherit; font-size: 12px; color: var(--muted2); cursor: pointer; padding: 0;" style-hover="color: {{ dangerFg }};">✕</button>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 14px 18px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 18px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
+        <span style="font-size: 12.5px; color: var(--muted);">{{ pageLabel }}</span>
+        <div style="display: flex; align-items: center; gap: 6px; margin-left: auto;">
+          <button onClick="{{ prevPage }}" style="height: 30px; padding: 0 12px; border: 1px solid var(--border2); border-radius: 10px; background: var(--glass2); font-family: inherit; font-size: 12.5px; font-weight: 600; color: {{ prevFg }}; cursor: pointer;">Trước</button>
+          <sc-for list="{{ pages }}" as="pg" hint-placeholder-count="4">
+            <button onClick="{{ pg.onClick }}" style="min-width: 30px; height: 30px; padding: 0 8px; border: 1px solid {{ pg.border }}; border-radius: 10px; background: {{ pg.bg }}; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; font-weight: 600; color: {{ pg.fg }}; cursor: pointer;">{{ pg.label }}</button>
+          </sc-for>
+          <button onClick="{{ nextPage }}" style="height: 30px; padding: 0 12px; border: 1px solid var(--border2); border-radius: 10px; background: var(--glass2); font-family: inherit; font-size: 12.5px; font-weight: 600; color: {{ nextFg }}; cursor: pointer;">Sau</button>
+        </div>
+      </div>
+
+      <footer style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap; padding: 16px 20px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
+        <div style="min-width: 0;">
+          <div style="font-size: 13px; font-weight: 600;">AlgoPrep Admin · v2.4.1</div>
+          <div style="font-size: 12px; color: var(--muted2);">© 2026 AlgoPrep. Bảng điều khiển nội bộ.</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; margin-left: auto; font-size: 12.5px; color: var(--muted);">
+          <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--ok);"></span>Mọi dịch vụ hoạt động bình thường
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <sc-if value="{{ confirmOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; padding: 24px; background: var(--scrim); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);">
+      <div style="width: 100%; max-width: 420px; padding: 22px 24px; border-radius: 22px; background: var(--glass3); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); box-shadow: 0 1px 0 var(--inset) inset, var(--shadow-lg);">
+        <div style="font-size: 16.5px; font-weight: 700; margin-bottom: 8px;">Xoá câu hỏi?</div>
+        <div style="font-size: 13.5px; color: var(--muted); text-wrap: pretty; margin-bottom: 8px;">{{ confirmBody }}</div>
+        <div style="font-size: 12.5px; color: var(--muted2); text-wrap: pretty; margin-bottom: 20px;">Các phiên phỏng vấn đã dùng câu hỏi này vẫn giữ bản ghi cũ. Hành động không thể hoàn tác.</div>
+        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+          <button onClick="{{ closeConfirm }}" style="height: 36px; padding: 0 16px; border: 1px solid var(--border2); border-radius: 11px; background: var(--glass2); font-family: inherit; font-size: 13px; font-weight: 600; color: var(--text); cursor: pointer;">Huỷ</button>
+          <button onClick="{{ doDelete }}" style="height: 36px; padding: 0 16px; border: none; border-radius: 11px; background: {{ dangerBg }}; font-family: inherit; font-size: 13px; font-weight: 600; color: #FFFFFF; cursor: pointer;">Xoá câu hỏi</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:1080},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#3F7BE8&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#3F7BE8&quot;,&quot;#8B5CF6&quot;,&quot;#17B57E&quot;,&quot;#F5B93F&quot;]}}">
+class Component extends DCLogic {
+  state = { collapsed: false, theme: 'light', topic: 'Tất cả', level: 'Tất cả', query: '', page: 1, confirm: null, deleted: {} };
+
+  componentDidMount() {
+    try {
+      const t = localStorage.getItem('algoprep-admin-theme');
+      const c = localStorage.getItem('algoprep-admin-collapsed');
+      const next = {};
+      if (t === 'light' || t === 'dark') next.theme = t;
+      if (c === '1' || c === '0') next.collapsed = c === '1';
+      if (Object.keys(next).length) this.setState(next);
+    } catch (e) {}
+  }
+
+  setTheme(theme) {
+    this.setState({ theme });
+    try { localStorage.setItem('algoprep-admin-theme', theme); } catch (e) {}
+  }
+
+  shellVals() {
+    const activeKey = 'iquestions';
+    const collapsed = this.state.collapsed;
+    const dark = this.state.theme === 'dark';
+    const accent = this.props.accent ?? (dark ? '#7FD0FF' : '#3F7BE8');
+    const nav = [
+      ['overview', 'Tổng quan', './Admin - Tổng quan (Sáng).dc.html', 'TQ', null, false],
+      ['problems', 'Quản lý bài tập', './Admin - Quản lý bài tập.dc.html', 'BT', '27', false],
+      ['iquestions', 'Câu hỏi phỏng vấn', './Admin - Câu hỏi phỏng vấn.dc.html', 'PV', '148', false],
+      ['queue', 'Hàng đợi chấm', './Admin - Hàng đợi chấm.dc.html', 'HĐ', '14', true],
+      ['rejudge', 'Chấm lại', './Admin - Chấm lại.dc.html', 'CL', '2', false],
+      ['lang', 'Ngôn ngữ và giới hạn', './Admin - Ngôn ngữ và giới hạn.dc.html', 'NN', null, false],
+      ['ai', 'Cấu hình AI', './Admin - Cấu hình AI.dc.html', 'AI', null, false],
+      ['tokens', 'Token AI', './Admin - Token AI.dc.html', 'TK', null, false],
+      ['users', 'Người dùng', './Admin - Người dùng.dc.html', 'ND', '1.2k', false],
+      ['logs', 'Nhật ký hệ thống', './Admin - Nhật ký hệ thống.dc.html', 'NK', null, false],
+    ];
+    const navItems = nav.map(([key, label, href, icon, badge, hot]) => {
+      const active = key === activeKey;
+      return {
+        label, href, icon, badge,
+        showBadge: !!badge && !collapsed,
+        dotBadge: !!badge && collapsed && hot,
+        weight: active ? 600 : 500,
+        fg: active ? 'var(--active-fg)' : 'var(--muted)',
+        bg: active ? 'var(--active-bg)' : 'transparent',
+        border: active ? 'var(--active-border)' : 'transparent',
+        iconBg: active ? accent : 'var(--track)',
+        iconFg: active ? (dark ? '#071026' : '#FFFFFF') : 'var(--muted)',
+        pad: collapsed ? '0' : '0 11px 0 7px',
+        justify: collapsed ? 'center' : 'flex-start',
+      };
+    });
+    const themes = [
+      { key: 'light', icon: '☀', title: 'Nền sáng' },
+      { key: 'dark', icon: '☾', title: 'Nền tối' },
+    ].map(t => ({
+      icon: t.icon, title: t.title,
+      onClick: () => this.setTheme(t.key),
+      bg: this.state.theme === t.key ? 'var(--seg-bg)' : 'transparent',
+      fg: this.state.theme === t.key ? 'var(--seg-fg)' : 'var(--muted)',
+    }));
+    return {
+      navItems, themes, dark,
+      theme: this.state.theme,
+      sidebarW: collapsed ? '72px' : '246px',
+      expandedDisplay: collapsed ? 'none' : 'block',
+      railJustify: collapsed ? 'center' : 'flex-start',
+      toggleIcon: collapsed ? '»' : '«',
+      toggle: () => this.setState(s => {
+        try { localStorage.setItem('algoprep-admin-collapsed', s.collapsed ? '0' : '1'); } catch (e) {}
+        return { collapsed: !s.collapsed };
+      }),
+    };
+  }
+
+  data() {
+    return [
+      ['IQ-014', 'Lý thuyết CS', 'Trung bình', 'Hash table xử lý collision bằng cách nào? So sánh chaining và open addressing.',
+        ['Ngưỡng load factor nào thì cần resize?', 'Vì sao open addressing thắng khi load factor thấp?'],
+        [['Định nghĩa collision', 25], ['So sánh hai cơ chế', 40], ['Chốt bằng load factor', 35]], 'Dùng 184 lần · điểm TB 3.8/5'],
+      ['IQ-021', 'Lý thuyết CS', 'Dễ', 'Khác biệt giữa process và thread? Khi nào chọn multiprocessing thay vì multithreading?',
+        ['Chi phí context switch khác nhau ra sao?', 'GIL trong Python ảnh hưởng thế nào tới lựa chọn?'],
+        [['Phân biệt bộ nhớ', 40], ['Chi phí IPC và switch', 30], ['Gắn với ngôn ngữ cụ thể', 30]], 'Dùng 296 lần · điểm TB 4.2/5'],
+      ['IQ-033', 'System design', 'Khó', 'Thiết kế hệ thống rút gọn URL cho 100 triệu link mỗi ngày.',
+        ['Bạn chốt QPS và tỉ lệ đọc/ghi trước hay sau khi vẽ kiến trúc?', 'Sinh mã base62 từ counter phân tán hay hash rồi kiểm trùng?', 'Chiến lược sharding khi một shard nóng lên?'],
+        [['Chốt yêu cầu và QPS', 25], ['Thiết kế sinh mã', 30], ['Lưu trữ và cache', 30], ['Ước lượng dung lượng', 15]], 'Dùng 62 lần · điểm TB 3.1/5'],
+      ['IQ-040', 'System design', 'Trung bình', 'Cache invalidation: các chiến lược phổ biến và đánh đổi của từng cách.',
+        ['Khi cache và DB lệch nhau, đâu là nguồn sự thật?', 'Chống thundering herd bằng lock hay jitter TTL?'],
+        [['Nêu đủ chiến lược', 35], ['Phân tích đánh đổi', 35], ['Xử lý trường hợp xấu', 30]], 'Dùng 117 lần · điểm TB 3.4/5'],
+      ['IQ-052', 'Database', 'Trung bình', 'Index B-tree hoạt động thế nào và khi nào một index bị bỏ qua?',
+        ['Quy tắc tiền tố ngoài cùng bên trái áp dụng ra sao với composite index?', 'Chi phí ghi và dung lượng của index là bao nhiêu?'],
+        [['Hiểu cấu trúc B-tree', 35], ['Composite index', 30], ['Trường hợp bị bỏ qua', 35]], 'Dùng 141 lần · điểm TB 3.6/5'],
+      ['IQ-058', 'Database', 'Khó', 'Giải thích các mức isolation của transaction và hiện tượng đi kèm.',
+        ['MVCC của PostgreSQL khác cơ chế khoá của MySQL thế nào?', 'Nghiệp vụ nào buộc phải serializable?'],
+        [['Nêu đủ bốn mức', 30], ['Gắn với hiện tượng', 35], ['Ví dụ nghiệp vụ', 35]], 'Dùng 88 lần · điểm TB 2.9/5'],
+      ['IQ-071', 'Ngôn ngữ', 'Dễ', 'Truyền tham chiếu trong Python: vì sao sửa list trong hàm lại đổi cả biến ngoài?',
+        ['Default argument dạng list gây lỗi gì?', 'Copy nông và copy sâu khác nhau ở đâu?'],
+        [['Hiểu cơ chế truyền', 40], ['Mutable và immutable', 35], ['Cách phòng tránh', 25]], 'Dùng 203 lần · điểm TB 4.0/5'],
+      ['IQ-084', 'Hành vi', 'Trung bình', 'Kể về một lần bạn đưa quyết định kỹ thuật sai. Bạn phát hiện và xử lý thế nào?',
+        ['Tín hiệu nào giúp bạn phát hiện ra sai?', 'Quy trình của nhóm thay đổi gì sau đó?'],
+        [['Cấu trúc STAR', 35], ['Số liệu cụ thể', 35], ['Thay đổi quy trình', 30]], 'Dùng 74 lần · điểm TB 3.0/5'],
+      ['IQ-092', 'Hành vi', 'Dễ', 'Bạn xử lý thế nào khi review code của đồng nghiệp và không đồng ý về hướng làm?',
+        ['Bạn dựa vào tiêu chí đo được nào?', 'Khi nào thì leo thang và mốc thời gian ra sao?'],
+        [['Tách kỹ thuật khỏi cá nhân', 35], ['Tiêu chí đo được', 35], ['Cách leo thang', 30]], 'Dùng 41 lần · điểm TB 2.7/5'],
+    ];
+  }
+
+  pageVals(dark) {
+    const ok = dark ? '#7EE8BE' : '#0F8A61';
+    const warn = dark ? '#FFCE78' : '#A9750F';
+    const neg = dark ? '#FF8A8A' : '#C84046';
+    const blue = dark ? '#7FD0FF' : '#2C5FC4';
+    const purple = dark ? '#C4A9FF' : '#6D3FD8';
+    const s = this.state;
+
+    const seg = (list, key) => list.map(label => ({
+      label,
+      onClick: () => this.setState({ [key]: label, page: 1 }),
+      bg: s[key] === label ? 'var(--seg-bg)' : 'transparent',
+      fg: s[key] === label ? 'var(--seg-fg)' : 'var(--muted)',
+    }));
+
+    const stats = [
+      ['Tổng câu hỏi', '148', '+9', ok, '9 câu thêm trong tháng'],
+      ['Có tiêu chí đầy đủ', '131', '89%', ok, '17 câu thiếu rubric'],
+      ['Điểm trung bình', '3.5', '−0.2', warn, 'Trên thang 5, tính 30 ngày'],
+      ['Chưa dùng lần nào', '11', '', 'var(--muted2)', 'Cân nhắc rà soát lại nội dung'],
+    ].map(([label, value, delta, deltaFg, meta]) => ({ label, value, delta, deltaFg, meta }));
+
+    const lvStyle = {
+      'Dễ': [dark ? 'rgba(126,232,190,0.14)' : 'rgba(23,181,126,0.12)', ok],
+      'Trung bình': [dark ? 'rgba(127,208,255,0.14)' : 'rgba(63,123,232,0.1)', blue],
+      'Khó': [dark ? 'rgba(196,169,255,0.14)' : 'rgba(139,92,246,0.12)', purple],
+    };
+    const bars = ['linear-gradient(90deg,#3F7BE8,#64C8C0)', 'linear-gradient(90deg,#8B5CF6,#3F7BE8)', 'linear-gradient(90deg,#17B57E,#64C8C0)', 'linear-gradient(90deg,#F5B93F,#F5762E)'];
+
+    const q = s.query.trim().toLowerCase();
+    const list = this.data().filter(r =>
+      !s.deleted[r[0]] &&
+      (s.topic === 'Tất cả' || r[1] === s.topic) &&
+      (s.level === 'Tất cả' || r[2] === s.level) &&
+      (!q || r[3].toLowerCase().includes(q) || r[0].toLowerCase().includes(q))
+    );
+
+    const perPage = 6;
+    const totalPages = Math.max(1, Math.ceil(list.length / perPage));
+    const page = Math.min(s.page, totalPages);
+    const slice = list.slice((page - 1) * perPage, page * perPage);
+
+    const cards = slice.map(([code, topic, level, question, fus, rub, usage]) => ({
+      code, topic, level, question, usage,
+      lvBg: lvStyle[level][0], lvFg: lvStyle[level][1],
+      followUps: fus.map(text => ({ text, bullet: '→' })),
+      rubric: rub.map(([label, w], i) => ({ label, weight: w + '%', pct: w + '%', bar: bars[i % bars.length] })),
+      askDelete: () => this.setState({ confirm: { code, label: code + ' · ' + question.slice(0, 60) + '…' } }),
+    }));
+
+    const pages = Array.from({ length: totalPages }, (_, i) => i + 1).map(n => ({
+      label: String(n),
+      onClick: () => this.setState({ page: n }),
+      bg: n === page ? 'var(--active-bg)' : 'var(--glass2)',
+      border: n === page ? 'var(--active-border)' : 'var(--border2)',
+      fg: n === page ? 'var(--text)' : 'var(--muted)',
+    }));
+
+    const conf = s.confirm;
+    return {
+      stats, cards, pages,
+      topicTabs: seg(['Tất cả', 'Lý thuyết CS', 'System design', 'Database', 'Ngôn ngữ', 'Hành vi'], 'topic'),
+      levelTabs: seg(['Tất cả', 'Dễ', 'Trung bình', 'Khó'], 'level'),
+      query: s.query,
+      onQuery: e => this.setState({ query: e.target.value, page: 1 }),
+      resultCount: list.length + ' / 148 câu',
+      pageLabel: 'Trang ' + page + ' / ' + totalPages + ' · hiển thị ' + cards.length + ' câu',
+      prevFg: page > 1 ? 'var(--text)' : 'var(--muted2)',
+      nextFg: page < totalPages ? 'var(--text)' : 'var(--muted2)',
+      prevPage: () => this.setState(st => ({ page: Math.max(1, st.page - 1) })),
+      nextPage: () => this.setState({ page: Math.min(totalPages, page + 1) }),
+      dangerFg: neg,
+      dangerBg: dark ? '#C8484E' : '#C84046',
+      confirmOpen: !!conf,
+      confirmBody: conf ? conf.label : '',
+      closeConfirm: () => this.setState({ confirm: null }),
+      doDelete: () => this.setState(st => {
+        const del = Object.assign({}, st.deleted);
+        if (st.confirm) del[st.confirm.code] = true;
+        return { deleted: del, confirm: null };
+      }),
+    };
+  }
+
+  renderVals() {
+    const shell = this.shellVals();
+    return Object.assign({}, shell, this.pageVals(shell.dark));
+  }
+}
+</script>
+</body>
+</html>
