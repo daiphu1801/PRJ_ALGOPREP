@@ -1,0 +1,20 @@
+{
+  "name": "algoprep-admin-workspace",
+  "private": true,
+  "scripts": {
+    "dev": "cd 05-coding/frontend && next dev",
+    "build": "cd 05-coding/frontend && next build",
+    "lint": "cd 05-coding/frontend && eslint .",
+    "typecheck": "tsc --noEmit -p 05-coding/frontend/tsconfig.json"
+  },
+  "dependencies": {
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "lucide-react": "latest",
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "typescript": "latest"
+  }
+}
