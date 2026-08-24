@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; }
+  :root {
+    --bg: #ECEFF4; --panel: #FFFFFF; --panel2: #F7F9FC; --line: #E0E5EC; --line2: #ECEFF4;
+    --ink: #0F1319; --ink2: #545C69; --ink3: #8A93A1; --chip: #EDF1F6;
+    --accent: #1C9BF2; --glass: rgba(255,255,255,0.72); --grid: rgba(15,25,45,0.035); --ring: rgba(28,155,242,0.16); --accent2: #0B85DA; --ok: #1F9D63; --warn: #C4820E; --bad: #D8353A; --gold: #B8863A;
+    --kw: #0E70B8; --str: #1F7A4F; --num: #A8620E; --cmt: #9AA0A6; --gut: #BFC7D2; --shadow: 0 1px 2px rgba(15,25,45,0.04), 0 10px 28px rgba(15,25,45,0.07); --easy: #0F9D6E; --med: #C07C10; --hard: #D93A46; --onAccent: #FFFFFF; --rowHover: #F4F7FB;
+  }
+  [data-ui-lang="vi"] [data-lang="en"] { display: none; }
+  [data-ui-lang="en"] [data-lang="vi"] { display: none; }
+  [data-theme="dark"] {
+    --bg: #0B0D11; --panel: #14171D; --panel2: #191D24; --line: #262D38; --line2: #1E232B;
+    --ink: #E6EAF1; --ink2: #99A3B2; --ink3: #6B7483; --chip: #1E232C;
+    --accent: #4CC2FF; --glass: rgba(20,23,29,0.72); --grid: rgba(160,200,255,0.045); --ring: rgba(76,194,255,0.22); --accent2: #74D0FF; --ok: #3FBF82; --warn: #D9A03F; --bad: #E8615E; --gold: #D0A052;
+    --kw: #6FC2F5; --str: #8CD9A8; --num: #E0A96D; --cmt: #6B737C; --gut: #454E5C; --shadow: 0 1px 0 rgba(255,255,255,0.035) inset, 0 12px 34px rgba(0,0,0,0.55); --easy: #2CCB94; --med: #E9A93B; --hard: #FF6B6B; --onAccent: #06131E; --rowHover: #1A1F27;
+  }
+  body { margin: 0; background: var(--bg); font-family: 'Be Vietnam Pro', system-ui, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; overflow: hidden; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { color: var(--ink); }
+  textarea, input { font-family: inherit; }
+  textarea::selection { background: var(--ring); }
+  nav { scrollbar-width: none; }
+  nav::-webkit-scrollbar { display: none; }
+
+  body { background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px); background-size: 48px 48px; background-position: -1px -1px; font-variant-numeric: tabular-nums; }
+  a, button { transition: background-color .15s ease, color .15s ease, border-color .15s ease, box-shadow .15s ease; }
+  button:focus-visible, input:focus-visible, a:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ring); }
+  ::selection { background: var(--ring); }
+  th { font-variant-numeric: tabular-nums; }
+</style>
+<script src="./nav-loader.js"></script>
+</helmet>
+
+<div data-theme="{{ theme }}" data-ui-lang="{{ uiLang }}" style="height: 100vh; display: flex; flex-direction: column; background: var(--bg); color: var(--ink);">
+
+  <header style="flex-shrink: 0; padding: 12px 12px 4px;">
+    <div style="background: var(--glass); backdrop-filter: saturate(150%) blur(14px); -webkit-backdrop-filter: saturate(150%) blur(14px); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); overflow: hidden;">
+      <div style="padding: 0 20px; height: 58px; display: flex; align-items: center; gap: 30px;">
+      <div style="display: flex; align-items: center; gap: 9px; flex-shrink: 0;">
+        <span style="font-size: 19px; font-weight: 700; letter-spacing: -0.01em;">AlgoPrep</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; letter-spacing: 0.14em; color: var(--gold); border: 1px solid var(--gold); border-radius: 4px; padding: 2px 5px 1px;">JUDGE0</span>
+      </div>
+      <nav style="display: flex; align-items: center; gap: 20px; flex: 1 1 auto; min-width: 0; overflow-x: auto;">
+        <a href="./Dashboard AlgoPrep.dc.html" style="white-space: nowrap; font-size: 14.5px; font-weight: 500; color: var(--ink2);" style-hover="color: var(--ink);"><span data-lang="vi">Tổng quan</span><span data-lang="en">Overview</span></a>
+        <a href="./Ngân hàng bài toán.dc.html" style="white-space: nowrap; font-size: 14.5px; font-weight: 500; color: var(--ink2);" style-hover="color: var(--ink);"><span data-lang="vi">Bài toán</span><span data-lang="en">Problems</span></a>
+        <a href="./Workspace giải bài.dc.html" style="white-space: nowrap; font-size: 14.5px; font-weight: 600; color: var(--ink); border-bottom: 2px solid var(--accent); padding-bottom: 2px;"><span data-lang="vi">Workspace</span><span data-lang="en">Workspace</span></a>
+        <a href="./Bài đã nộp.dc.html" style="white-space: nowrap; font-size: 14.5px; font-weight: 500; color: var(--ink2);" style-hover="color: var(--ink);"><span data-lang="vi">Bài đã nộp</span><span data-lang="en">Submissions</span></a>
+        <a href="./Phỏng vấn giả lập.dc.html" style="white-space: nowrap; font-size: 14.5px; font-weight: 500; color: var(--ink2);" style-hover="color: var(--ink);"><span data-lang="vi">Phỏng vấn giả lập</span><span data-lang="en">Mock interview</span></a>
+        <a href="./Câu hỏi phỏng vấn.dc.html" style="white-space: nowrap; font-size: 14.5px; font-weight: 500; color: var(--ink2);" style-hover="color: var(--ink);"><span data-lang="vi">Câu hỏi phỏng vấn</span><span data-lang="en">Interview questions</span></a>
+      </nav>
+      <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
+        <div style="display: flex; gap: 3px; padding: 3px; background: var(--chip); border-radius: 8px; flex-shrink: 0;">
+          <sc-for list="{{ themeTabs }}" as="t" hint-placeholder-count="2"><button onClick="{{ t.onClick }}" style="height: 24px; padding: 0 10px; border: none; border-radius: 6px; font-family: inherit; font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; background: {{ t.bg }}; color: {{ t.fg }};">{{ t.label }}</button></sc-for>
+        </div>
+        <div style="display: flex; gap: 3px; padding: 3px; background: var(--chip); border-radius: 8px; flex-shrink: 0;">
+          <sc-for list="{{ langTabs }}" as="t" hint-placeholder-count="2"><button onClick="{{ t.onClick }}" style="height: 24px; padding: 0 9px; border: none; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; cursor: pointer; background: {{ t.bg }}; color: {{ t.fg }};">{{ t.label }}</button></sc-for>
+        </div>
+        <div style="position: relative;">
+          <button onClick="{{ toggleMenu }}" style="width: 32px; height: 32px; border-radius: 50%; background: var(--chip); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-family: inherit; font-size: 11.5px; font-weight: 600; color: var(--ink2); cursor: pointer;" style-hover="border-color: var(--ink3); color: var(--ink);">PD</button>
+          <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <div onClick="{{ closeMenu }}" style="position: fixed; inset: 0; z-index: 40;"></div>
+              <div style="position: absolute; top: 40px; right: 0; z-index: 50; width: 258px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); padding: 10px;">
+                <div style="display: flex; align-items: center; gap: 10px; padding: 6px 8px 12px;">
+                  <div style="width: 34px; height: 34px; border-radius: 50%; background: var(--chip); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: var(--ink2);">PD</div>
+                  <div>
+                    <div style="font-size: 13.5px; font-weight: 600;">Phú Đại</div>
+                    <div style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--ink3);">phudai@fabbi.io</div>
+                  </div>
+                </div>
+                <div style="height: 1px; background: var(--line2); margin: 0 -10px 8px;"></div>
+                <a href="./Trang cá nhân.dc.html" style="display: flex; align-items: center; width: 100%; height: 34px; padding: 0 10px; border-radius: 8px; font-size: 13.5px; font-weight: 500; color: var(--ink); text-decoration: none;" style-hover="background: var(--chip); color: var(--ink);"><span data-lang="vi">Trang cá nhân</span><span data-lang="en">Profile</span></a>
+                <a href="./Tiến độ của tôi.dc.html" style="display: flex; align-items: center; width: 100%; height: 34px; padding: 0 10px; border-radius: 8px; font-size: 13.5px; font-weight: 500; color: var(--ink); text-decoration: none;" style-hover="background: var(--chip); color: var(--ink);"><span data-lang="vi">Tiến độ của tôi</span><span data-lang="en">My progress</span></a>
+                <a href="./Bài đã lưu.dc.html" style="display: flex; align-items: center; width: 100%; height: 34px; padding: 0 10px; border-radius: 8px; font-size: 13.5px; font-weight: 500; color: var(--ink); text-decoration: none;" style-hover="background: var(--chip); color: var(--ink);"><span data-lang="vi">Bài đã lưu</span><span data-lang="en">Saved problems</span></a>
+                <a href="./Cài đặt.dc.html" style="display: flex; align-items: center; width: 100%; height: 34px; padding: 0 10px; border-radius: 8px; font-size: 13.5px; font-weight: 500; color: var(--ink); text-decoration: none;" style-hover="background: var(--chip); color: var(--ink);"><span data-lang="vi">Cài đặt</span><span data-lang="en">Settings</span></a>
+                <div style="height: 1px; background: var(--line2); margin: 8px -10px;"></div>
+                <a href="./Đăng nhập & Đăng ký.dc.html" style="display: flex; align-items: center; width: 100%; height: 34px; padding: 0 10px; border-radius: 8px; background: transparent; font-size: 13.5px; font-weight: 500; color: var(--bad); text-decoration: none; cursor: pointer;" style-hover="background: var(--chip);"><span data-lang="vi">Đăng xuất</span><span data-lang="en">Sign out</span></a>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+      </div>
+      <sc-if value="{{ hasProblem }}" hint-placeholder-val="{{ true }}">
+      <div style="padding: 0 20px; height: 44px; display: flex; align-items: center; gap: 14px; border-top: 1px solid var(--line2);">
+        <a href="./Ngân hàng bài toán.dc.html" style="white-space: nowrap; font-size: 13.5px; font-weight: 600; color: var(--ink2);" style-hover="color: var(--ink);"><span data-lang="vi">Danh sách bài</span><span data-lang="en">Problem list</span></a>
+        <span style="color: var(--ink3); font-size: 13px;">/</span>
+        <span style="white-space: nowrap; font-size: 13.5px; font-weight: 600;">{{ problem.num }}. {{ problem.title }}</span>
+        <span style="font-size: 12.5px; font-weight: 600; color: {{ problem.diffColor }};">{{ problem.difficulty }}</span>
+        <div style="flex: 1;"></div>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--ink3);">{{ timer }}</span>
+        <button onClick="{{ onRun }}" style="height: 32px; padding: 0 15px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel2); font-family: inherit; font-size: 13.5px; font-weight: 600; color: var(--ink); cursor: pointer; white-space: nowrap;" style-hover="border-color: var(--ink3);">Run Code</button>
+        <button onClick="{{ onSubmit }}" style="height: 32px; padding: 0 17px; border: none; border-radius: 8px; background: var(--ok); font-family: inherit; font-size: 13.5px; font-weight: 600; color: var(--onAccent); cursor: pointer;" style-hover="opacity: 0.9;">Submit</button>
+      </div>
+      </sc-if>
+    </div>
+  </header>
+
+  <sc-if value="{{ noProblem }}" hint-placeholder-val="{{ false }}">
+    <div style="flex: 1; min-height: 0; overflow-y: auto; padding: 26px 12px 40px; display: flex; justify-content: center;">
+      <div style="width: 100%; max-width: 820px;">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); margin-bottom: 11px;"><span data-lang="vi">WORKSPACE TRỐNG</span><span data-lang="en">EMPTY WORKSPACE</span></div>
+        <h1 style="margin: 0 0 7px; font-size: 24px; font-weight: 700; letter-spacing: -0.028em;"><span data-lang="vi">Chọn một bài toán để mở workspace</span><span data-lang="en">Pick a problem to open the workspace</span></h1>
+        <p style="margin: 0 0 26px; font-size: 14px; line-height: 1.6; color: var(--ink2); max-width: 560px; text-wrap: pretty;"><span data-lang="vi">Workspace cần một đề bài để dựng editor, testcase và bộ chấm go-judge. Tiếp tục bài đang làm, hoặc chọn từ danh sách gợi ý bên dưới.</span><span data-lang="en">The workspace needs a problem before it can build the editor, testcases and the go-judge runner. Resume your draft or pick one below.</span></p>
+
+        <sc-if value="{{ pendingTitle }}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; align-items: flex-start; gap: 10px; border: 1px solid var(--line); border-left: 3px solid var(--warn); border-radius: 12px; background: var(--panel); padding: 13px 16px; margin-bottom: 18px;">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; color: var(--warn); padding-top: 2px;">WIP</span>
+            <p style="margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--ink2);">{{ pendingNote }}</p>
+          </div>
+        </sc-if>
+
+        <div style="background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; display: flex; align-items: center; gap: 18px; margin-bottom: 22px;">
+          <div style="flex: 1 1 auto; min-width: 0;">
+            <div style="font-size: 11.5px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink3); margin-bottom: 6px;"><span data-lang="vi">Bài đang làm dở</span><span data-lang="en">Draft in progress</span></div>
+            <div style="font-size: 16.5px; font-weight: 700; letter-spacing: -0.015em; margin-bottom: 4px;">1. Two Sum</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ink3);">Python 3 · 18 <span data-lang="vi">dòng · lưu 09:42</span><span data-lang="en">lines · saved 09:42</span></div>
+          </div>
+          <button onClick="{{ resumeDraft }}" style="flex-shrink: 0; height: 40px; padding: 0 18px; border: none; border-radius: 9px; background: var(--accent); box-shadow: 0 10px 22px -12px rgba(20,140,230,0.8); font-family: inherit; font-size: 14px; font-weight: 600; white-space: nowrap; color: var(--onAccent); cursor: pointer; white-space: nowrap;" style-hover="background: var(--accent2);"><span data-lang="vi">Tiếp tục</span><span data-lang="en">Resume</span></button>
+        </div>
+
+        <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 10px;">
+          <h2 style="margin: 0; font-size: 14.5px; font-weight: 600;"><span data-lang="vi">Gợi ý theo điểm yếu của bạn</span><span data-lang="en">Suggested for your weak topics</span></h2>
+          <a href="./Ngân hàng bài toán.dc.html" style="font-size: 13.5px; font-weight: 500;"><span data-lang="vi">Xem toàn bộ 640 bài</span><span data-lang="en">Browse all 640</span></a>
+        </div>
+
+        <div style="background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden;">
+          <sc-for list="{{ pickList }}" as="p" hint-placeholder-count="4">
+            <div onClick="{{ p.onOpen }}" style="display: flex; align-items: center; gap: 14px; padding: 13px 18px; border-bottom: 1px solid var(--line2); color: var(--ink); cursor: pointer;" style-hover="background: var(--chip);">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--ink3); width: 30px; flex-shrink: 0;">{{ p.num }}</span>
+              <span style="flex: 1 1 auto; min-width: 0; font-size: 14.5px; font-weight: 600;">{{ p.title }}</span>
+              <span style="flex-shrink: 0; font-size: 12.5px; color: var(--ink2);">{{ p.topic }}</span>
+              <span style="flex-shrink: 0; width: 62px; text-align: right; font-size: 12.5px; font-weight: 600; color: {{ p.diffColor }};">{{ p.difficulty }}</span>
+              <span style="flex-shrink: 0; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--accent);">→</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ hasProblem }}" hint-placeholder-val="{{ true }}">
+  <div ref="{{ splitRef }}" style="flex: 1; min-height: 0; display: flex; padding: 8px;">
+
+    <section style="width: {{ leftWidth }}; min-width: 280px; min-height: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; display: flex; flex-direction: column; overflow: hidden;">
+      <div style="height: 40px; flex-shrink: 0; display: flex; align-items: stretch; gap: 2px; padding: 0 10px; border-bottom: 1px solid var(--line2);">
+        <sc-for list="{{ paneTabs }}" as="t" hint-placeholder-count="4">
+          <button onClick="{{ t.onClick }}" style="padding: 0 11px; border: none; background: transparent; font-family: inherit; font-size: 13.5px; cursor: pointer; font-weight: {{ t.weight }}; color: {{ t.fg }}; border-bottom: 2px solid {{ t.line }};">{{ t.label }}</button>
+        </sc-for>
+      </div>
+
+      <div style="flex: 1; min-height: 0; overflow-y: auto; padding: 20px 22px 24px;">
+        <sc-if value="{{ tabIsProblem }}" hint-placeholder-val="{{ true }}">
+          <div>
+            <h1 style="margin: 0 0 12px; font-size: 20px; font-weight: 700; letter-spacing: -0.02em;">{{ problem.num }}. {{ problem.title }}</h1>
+            <div style="display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-bottom: 20px;">
+              <span style="height: 24px; display: inline-flex; align-items: center; padding: 0 10px; border-radius: 20px; font-size: 12.5px; font-weight: 600; color: {{ problem.diffColor }}; background: {{ problem.diffBg }};">{{ problem.difficulty }}</span>
+              <span style="height: 24px; display: inline-flex; align-items: center; padding: 0 10px; border-radius: 20px; font-size: 12.5px; color: var(--ink2); background: var(--chip);">{{ problem.topic }}</span>
+              <span style="height: 24px; display: inline-flex; align-items: center; padding: 0 10px; border-radius: 20px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; font-weight: 600; color: var(--accent); background: var(--chip);">{{ problem.mode }}</span>
+              <span style="height: 24px; display: inline-flex; align-items: center; padding: 0 10px; border-radius: 20px; font-size: 12.5px; color: var(--ink2); background: var(--chip);">Gợi ý</span>
+            </div>
+
+            <p style="margin: 0 0 14px; font-size: 14.5px; line-height: 1.7; color: var(--ink); text-wrap: pretty;">Cho mảng số nguyên <code style="font-family: 'JetBrains Mono', monospace; font-size: 13px; padding: 1.5px 5px; border-radius: 4px; background: var(--chip);">nums</code> và số nguyên <code style="font-family: 'JetBrains Mono', monospace; font-size: 13px; padding: 1.5px 5px; border-radius: 4px; background: var(--chip);">target</code>, trả về chỉ số của hai phần tử có tổng bằng <code style="font-family: 'JetBrains Mono', monospace; font-size: 13px; padding: 1.5px 5px; border-radius: 4px; background: var(--chip);">target</code>.</p>
+            <p style="margin: 0 0 14px; font-size: 14.5px; line-height: 1.7; color: var(--ink); text-wrap: pretty;">Mỗi bộ dữ liệu vào chỉ có đúng một đáp án, và không được dùng cùng một phần tử hai lần. Thứ tự hai chỉ số trong kết quả không quan trọng.</p>
+            <p style="margin: 0 0 24px; font-size: 13.5px; line-height: 1.7; color: var(--ink2); text-wrap: pretty;">Bài này đang ở mô hình <strong style="color: var(--ink); font-weight: 600;">bọc hàm</strong>: bạn chỉ viết thân hàm, phần đọc dữ liệu và in kết quả do harness của hệ thống sinh ra cho từng ngôn ngữ.</p>
+
+            <sc-for list="{{ examples }}" as="e" hint-placeholder-count="3">
+              <div style="margin-bottom: 16px;">
+                <div style="font-size: 13.5px; font-weight: 700; margin-bottom: 7px;"><span data-lang="vi">Ví dụ</span><span data-lang="en">Example</span> {{ e.n }}</div>
+                <div style="border-left: 3px solid var(--line); padding: 2px 0 2px 13px; display: flex; flex-direction: column; gap: 4px;">
+                  <div style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--ink);"><strong style="font-weight: 600;">Input:</strong> {{ e.input }}</div>
+                  <div style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--ink);"><strong style="font-weight: 600;">Output:</strong> {{ e.output }}</div>
+                  <div style="font-size: 12.5px; color: var(--ink2);">{{ e.note }}</div>
+                </div>
+              </div>
+            </sc-for>
+
+            <div style="font-size: 13.5px; font-weight: 700; margin: 22px 0 9px;"><span data-lang="vi">Ràng buộc</span><span data-lang="en">Constraints</span></div>
+            <ul style="margin: 0 0 22px; padding-left: 18px; display: flex; flex-direction: column; gap: 6px;">
+              <sc-for list="{{ constraints }}" as="c" hint-placeholder-count="4">
+                <li style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--ink2);">{{ c.text }}</li>
+              </sc-for>
+            </ul>
+
+            <div style="border: 1px solid var(--line2); border-radius: 9px; padding: 13px 15px; background: var(--panel2);">
+              <div style="font-size: 12.5px; font-weight: 700; margin-bottom: 5px;"><span data-lang="vi">Câu hỏi mở rộng</span><span data-lang="en">Follow-up</span></div>
+              <p style="margin: 0; font-size: 13px; line-height: 1.65; color: var(--ink2);">Bạn có nghĩ ra cách làm nhanh hơn O(n²) không? Sau khi Accepted, mở Solution Review để đối chiếu độ phức tạp thực tế của bài giải với mức tối ưu đã biết.</p>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ tabIsHint }}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <sc-for list="{{ hints }}" as="h" hint-placeholder-count="3">
+              <div style="border: 1px solid var(--line2); border-radius: 9px; padding: 13px 15px;">
+                <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink3); margin-bottom: 6px;">Gợi ý {{ h.n }}</div>
+                <p style="margin: 0; font-size: 13.5px; line-height: 1.65; color: var(--ink);">{{ h.text }}</p>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ tabIsSubs }}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <sc-for list="{{ submissions }}" as="s" hint-placeholder-count="4">
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; border: 1px solid var(--line2); border-radius: 9px; padding: 11px 13px;">
+                <span style="font-size: 13px; font-weight: 600; color: {{ s.color }};">{{ s.verdict }}</span>
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ink2);">{{ s.lang }}</span>
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ink2);">{{ s.time }}</span>
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ink3);">{{ s.when }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ tabIsReview }}" hint-placeholder-val="{{ false }}">
+          <div>
+            <div style="display: flex; gap: 10px; margin-bottom: 18px;">
+              <sc-for list="{{ reviewMetrics }}" as="m" hint-placeholder-count="2">
+                <div style="flex: 1; border: 1px solid var(--line2); border-radius: 9px; padding: 12px 14px;">
+                  <div style="font-size: 11.5px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink3); margin-bottom: 6px;">{{ m.label }}</div>
+                  <div style="font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 600;">{{ m.value }}</div>
+                </div>
+              </sc-for>
+            </div>
+            <sc-for list="{{ reviewBlocks }}" as="b" hint-placeholder-count="3">
+              <div style="margin-bottom: 16px;">
+                <div style="font-size: 12.5px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; color: var(--ink3); margin-bottom: 6px;">{{ b.title }}</div>
+                <p style="margin: 0; font-size: 13.5px; line-height: 1.65; color: var(--ink);">{{ b.body }}</p>
+              </div>
+            </sc-for>
+            <button style="height: 34px; padding: 0 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel2); font-family: inherit; font-size: 13.5px; font-weight: 600; color: var(--ink); cursor: pointer;" style-hover="border-color: var(--ink3);"><span data-lang="vi">Bắt đầu Mock Interview với bài này</span><span data-lang="en">Start a Mock Interview on this problem</span></button>
+          </div>
+        </sc-if>
+      </div>
+
+      <div style="height: 40px; flex-shrink: 0; border-top: 1px solid var(--line2); display: flex; align-items: center; gap: 16px; padding: 0 18px; overflow: hidden;">
+        <span style="white-space: nowrap; font-size: 12.5px; color: var(--ink2);">AC rate <strong style="font-family: 'JetBrains Mono', monospace; color: var(--ink); font-weight: 600;">71%</strong></span>
+        <div style="flex: 1;"></div>
+        <button style="height: 26px; padding: 0 10px; border: none; border-radius: 7px; background: transparent; font-family: inherit; font-size: 12.5px; font-weight: 600; color: var(--ink2); cursor: pointer; white-space: nowrap;" style-hover="background: var(--chip); color: var(--ink);"><span data-lang="vi">Lưu bài</span><span data-lang="en">Save</span></button>
+        <span style="display: flex; align-items: center; gap: 6px; white-space: nowrap; font-size: 12.5px; color: var(--ink2);"><span style="width: 6px; height: 6px; border-radius: 50%; background: var(--ok);"></span><span data-lang="vi">go-judge sẵn sàng</span><span data-lang="en">go-judge ready</span></span>
+      </div>
+    </section>
+
+    <div onMouseDown="{{ startDrag }}" title="Kéo để co giãn" style="flex: 0 0 8px; cursor: col-resize; display: flex; align-items: center; justify-content: center;">
+      <div style="width: 2px; height: 34px; border-radius: 2px; background: var(--line);" style-hover="background: var(--accent);"></div>
+    </div>
+
+    <div style="flex: 1; min-width: 320px; min-height: 0; display: grid; grid-template-rows: minmax(300px, 1fr) minmax(180px, 246px); gap: 8px;">
+
+      <section style="min-height: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; display: flex; flex-direction: column; overflow: hidden;">
+        <div style="flex-shrink: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 7px 12px; border-bottom: 1px solid var(--line2);">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; font-weight: 600; color: var(--ink2);">Code</span>
+          <div style="display: flex; gap: 3px; padding: 3px; background: var(--chip); border-radius: 8px;">
+            <sc-for list="{{ langs }}" as="l" hint-placeholder-count="3">
+              <button onClick="{{ l.onClick }}" style="height: 24px; padding: 0 10px; border: none; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; font-weight: 600; cursor: pointer; background: {{ l.bg }}; color: {{ l.fg }};">{{ l.label }}</button>
+            </sc-for>
+          </div>
+          <div style="display: flex; gap: 3px; padding: 3px; background: var(--chip); border-radius: 8px;">
+            <sc-for list="{{ modes }}" as="m" hint-placeholder-count="3">
+              <button onClick="{{ m.onClick }}" title="{{ m.tip }}" style="height: 24px; padding: 0 10px; border: none; border-radius: 6px; font-family: inherit; font-size: 11.5px; font-weight: 600; cursor: pointer; background: {{ m.bg }}; color: {{ m.fg }};">{{ m.label }}</button>
+            </sc-for>
+          </div>
+          <div style="flex: 1;"></div>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--ink3);">{{ editorMeta }}</span>
+        </div>
+
+        <sc-if value="{{ isEditorMode }}" hint-placeholder-val="{{ true }}">
+          <div style="flex: 1; min-height: 0; display: flex; overflow: auto;">
+            <div style="flex-shrink: 0; padding: 12px 10px 12px 14px; text-align: right; user-select: none;">
+              <sc-for list="{{ lineNumbers }}" as="n" hint-placeholder-count="12">
+                <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 21px; color: var(--gut);">{{ n.n }}</div>
+              </sc-for>
+            </div>
+            <div style="position: relative; flex: 0 0 auto; align-self: flex-start; width: max-content; min-width: 100%; height: auto; min-height: 100%;">
+              <div style="padding: 12px 16px; pointer-events: none;">
+                <sc-for list="{{ codeLines }}" as="ln" hint-placeholder-count="12"><div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 21px; height: 21px; white-space: pre;"><sc-for list="{{ ln.tokens }}" as="tk" hint-placeholder-count="3"><span style="color: {{ tk.c }};">{{ tk.t }}</span></sc-for></div></sc-for>
+              </div>
+              <textarea value="{{ code }}" onChange="{{ onCode }}" spellcheck="false" wrap="off" style="position: absolute; inset: 0; width: 100%; height: 100%; border: none; resize: none; padding: 12px 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 21px; white-space: pre; color: transparent; caret-color: var(--ink); background: transparent; outline: none; overflow: hidden;"></textarea>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isUploadMode }}" hint-placeholder-val="{{ false }}">
+          <div style="flex: 1; min-height: 0; overflow-y: auto; padding: 18px;">
+            <div style="border: 1.5px dashed var(--line); border-radius: 12px; padding: 40px 20px; text-align: center; background: var(--panel2);">
+              <div style="font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 600; margin-bottom: 7px;">{{ uploadExt }}</div>
+              <div style="font-size: 13.5px; line-height: 1.6; color: var(--ink2); margin-bottom: 16px;"><span data-lang="vi">Kéo file mã nguồn vào đây, hoặc chọn từ máy. Chỉ nhận đúng phần mở rộng của</span><span data-lang="en">Drop a source file here, or pick one from your machine. Only the matching extension for</span> {{ lang }}<span data-lang="vi">, tối đa 64 KB.</span><span data-lang="en"> is accepted, up to 64 KB.</span></div>
+              <button style="height: 34px; padding: 0 16px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); font-family: inherit; font-size: 13.5px; font-weight: 600; color: var(--ink); cursor: pointer;" style-hover="border-color: var(--ink3);"><span data-lang="vi">Chọn file</span><span data-lang="en">Choose file</span></button>
+            </div>
+            <div style="margin-top: 14px; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--line2); border-radius: 9px; padding: 11px 13px;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; font-weight: 600; color: var(--accent);">{{ uploadExt }}</span>
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ink3);">2.1 KB · <span data-lang="vi">vừa tải lên</span><span data-lang="en">just uploaded</span></span>
+              </div>
+              <button style="height: 26px; padding: 0 10px; border: 1px solid var(--line); border-radius: 7px; background: transparent; font-family: inherit; font-size: 12.5px; font-weight: 600; color: var(--ink2); cursor: pointer;" style-hover="color: var(--ink);">Xem nội dung</button>
+            </div>
+          </div>
+        </sc-if>
+
+        <div style="height: 32px; flex-shrink: 0; border-top: 1px solid var(--line2); display: flex; align-items: center; padding: 0 14px; gap: 14px;">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--ink3);">{{ savedLabel }}</span>
+          <div style="flex: 1;"></div>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--ink3);">{{ limits }}</span>
+        </div>
+      </section>
+
+      <section style="min-height: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; display: flex; flex-direction: column; overflow: hidden;">
+        <div style="height: 38px; flex-shrink: 0; display: flex; align-items: stretch; gap: 2px; padding: 0 10px; border-bottom: 1px solid var(--line2);">
+          <sc-for list="{{ consoleTabs }}" as="t" hint-placeholder-count="2">
+            <button onClick="{{ t.onClick }}" style="padding: 0 11px; border: none; background: transparent; font-family: inherit; font-size: 13px; cursor: pointer; font-weight: {{ t.weight }}; color: {{ t.fg }}; border-bottom: 2px solid {{ t.line }};">{{ t.label }}</button>
+          </sc-for>
+          <div style="flex: 1;"></div>
+          <div style="display: flex; align-items: center;">
+            <span style="font-size: 12.5px; font-weight: 600; color: {{ verdictColor }};">{{ verdict }}</span>
+          </div>
+        </div>
+
+        <div style="flex: 1; min-height: 0; overflow-y: auto; padding: 14px 16px;">
+          <sc-if value="{{ showTestcase }}" hint-placeholder-val="{{ true }}">
+            <div>
+              <div style="display: flex; gap: 5px; margin-bottom: 12px;">
+                <sc-for list="{{ caseTabs }}" as="c" hint-placeholder-count="3">
+                  <button onClick="{{ c.onClick }}" style="height: 26px; padding: 0 11px; border-radius: 7px; border: 1px solid {{ c.border }}; font-family: inherit; font-size: 12.5px; font-weight: 600; white-space: nowrap; cursor: pointer; background: {{ c.bg }}; color: {{ c.fg }};">{{ c.label }}</button>
+                </sc-for>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div>
+                  <div style="font-size: 11.5px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink3); margin-bottom: 5px;">nums</div>
+                  <div style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; padding: 9px 11px; border: 1px solid var(--line2); border-radius: 8px; background: var(--panel2);">{{ activeCase.nums }}</div>
+                </div>
+                <div>
+                  <div style="font-size: 11.5px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink3); margin-bottom: 5px;">target</div>
+                  <div style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; padding: 9px 11px; border: 1px solid var(--line2); border-radius: 8px; background: var(--panel2);">{{ activeCase.target }}</div>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ showResult }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <sc-if value="{{ hasRun }}" hint-placeholder-val="{{ false }}">
+                <div>
+                  <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 14px;">
+                    <sc-for list="{{ caseDots }}" as="c" hint-placeholder-count="12">
+                      <span title="{{ c.tip }}" style="width: 13px; height: 13px; border-radius: 3px; background: {{ c.color }};"></span>
+                    </sc-for>
+                  </div>
+                  <div style="display: flex; gap: 24px; margin-bottom: 14px;">
+                    <sc-for list="{{ runMetrics }}" as="m" hint-placeholder-count="3">
+                      <div>
+                        <div style="font-size: 11.5px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink3); margin-bottom: 3px;">{{ m.label }}</div>
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 600;">{{ m.value }}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <pre style="margin: 0; padding: 11px 13px; border: 1px solid var(--line2); border-radius: 8px; background: var(--panel2); font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.65; color: var(--ink); overflow-x: auto;">{{ runOutput }}</pre>
+                  <sc-if value="{{ isAccepted }}" hint-placeholder-val="{{ false }}">
+                    <div style="margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px;">
+                      <a href="./Kết quả nộp bài.dc.html" style="display: inline-flex; align-items: center; height: 32px; padding: 0 14px; border: none; border-radius: 8px; background: var(--accent); font-size: 13px; font-weight: 600; color: var(--onAccent);" style-hover="background: var(--accent2); color: var(--onAccent);"><span data-lang="vi">Xem kết quả chấm</span><span data-lang="en">Full result</span></a>
+                      <a href="./Phân tích bài giải.dc.html" style="display: inline-flex; align-items: center; height: 32px; padding: 0 14px; border: 1px solid var(--line); border-radius: 8px; background: transparent; font-size: 13px; font-weight: 600; color: var(--ink);" style-hover="border-color: var(--ink3); color: var(--ink);"><span data-lang="vi">Phân tích bài giải</span><span data-lang="en">Analyse solution</span></a>
+                      <a href="./Phỏng vấn giả lập.dc.html" style="display: inline-flex; align-items: center; height: 32px; padding: 0 14px; border: 1px solid var(--line); border-radius: 8px; background: transparent; font-size: 13px; font-weight: 600; color: var(--ink);" style-hover="border-color: var(--ink3); color: var(--ink);"><span data-lang="vi">Phỏng vấn giả lập</span><span data-lang="en">Mock interview</span></a>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-if>
+              <sc-if value="{{ noRun }}" hint-placeholder-val="{{ true }}">
+                <p style="margin: 0; font-size: 13px; line-height: 1.65; color: var(--ink2);">Chưa có kết quả. Nhấn <strong style="color: var(--ink); font-weight: 600;">Run Code</strong> để chạy 3 testcase mẫu, hoặc <strong style="color: var(--ink); font-weight: 600;">Submit</strong> để chấm 40 testcase ẩn — trạng thái từng testcase cập nhật theo thời gian thực.</p>
+              </sc-if>
+            </div>
+          </sc-if>
+        </div>
+      </section>
+    </div>
+  </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900},&quot;defaultTheme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;light&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  state = { theme: "light", pane: "Đề bài", lang: "Python 3", mode: "Bọc hàm", code: null, ran: null, console: "Testcase", activeCase: 1, split: 47, uiLang: "vi", menuOpen: false };
+
+  setLang(l) { this.setState({ uiLang: l }); localStorage.setItem("algoprep-lang", l); }
+
+  splitRef = React.createRef();
+
+  componentDidMount() {
+    const saved = localStorage.getItem("algoprep-theme");
+    if (saved === "dark" || saved === "light") this.setState({ theme: saved });
+    const w = localStorage.getItem("algoprep-split");
+    if (w) this.setState({ split: Math.min(Math.max(parseFloat(w), 22), 74) });
+    const lg = localStorage.getItem("algoprep-lang");
+    if (lg === "vi" || lg === "en") this.setState({ uiLang: lg });
+    try {
+      const p = JSON.parse(localStorage.getItem("algoprep-problem") || "null");
+      if (p && p.title === "Two Sum") this.setState({ sel: p });
+      else if (p && p.title) this.setState({ pending: p.title });
+    } catch (e) {}
+  }
+
+  pick(p) {
+    localStorage.setItem("algoprep-problem", JSON.stringify(p));
+    this.setState({ sel: p, pending: null, pane: "Đề bài", ran: null, console: "Testcase" });
+  }
+
+  /* Chỉ Two Sum có đề bài đầy đủ trong prototype; bài khác hiện ghi chú WIP. */
+  choose(p) {
+    if (p.title === "Two Sum") this.pick(p);
+    else {
+      localStorage.setItem("algoprep-problem", JSON.stringify(p));
+      this.setState({ sel: null, pending: p.title });
+    }
+  }
+
+  startDrag = (e) => {
+    e.preventDefault();
+    const host = this.splitRef.current;
+    if (!host) return;
+    const box = host.getBoundingClientRect();
+    const move = (ev) => {
+      const pct = ((ev.clientX - box.left) / box.width) * 100;
+      this.setState({ split: Math.min(Math.max(pct, 22), 74) });
+    };
+    const up = () => {
+      window.removeEventListener("mousemove", move);
+      window.removeEventListener("mouseup", up);
+      document.body.style.userSelect = "";
+      document.body.style.cursor = "";
+      localStorage.setItem("algoprep-split", String(this.state.split));
+    };
+    document.body.style.userSelect = "none";
+    document.body.style.cursor = "col-resize";
+    window.addEventListener("mousemove", move);
+    window.addEventListener("mouseup", up);
+  };
+
+  setTheme(t) {
+    this.setState({ theme: t });
+    localStorage.setItem("algoprep-theme", t);
+  }
+
+  starter(lang, mode) {
+    if (mode === "Có hàm main") {
+      if (lang === "Python 3") return "import sys\n\ndef solve(nums, target):\n    seen = {}\n    for i, v in enumerate(nums):\n        if target - v in seen:\n            return seen[target - v]\n        seen[v] = i\n    return -1\n\ndef main():\n    data = sys.stdin.read().split()\n    n, target = int(data[0]), int(data[1])\n    nums = list(map(int, data[2:2 + n]))\n    print(solve(nums, target))\n\nif __name__ == \"__main__\":\n    main()\n";
+      if (lang === "Java 21") return "import java.io.*;\nimport java.util.*;\n\npublic class Main {\n    static int solve(int[] nums, int target) {\n        Map<Integer, Integer> seen = new HashMap<>();\n        for (int i = 0; i < nums.length; i++) {\n            if (seen.containsKey(target - nums[i])) return seen.get(target - nums[i]);\n            seen.put(nums[i], i);\n        }\n        return -1;\n    }\n\n    public static void main(String[] args) throws IOException {\n        var in = new BufferedReader(new InputStreamReader(System.in));\n        var st = new StringTokenizer(in.readLine());\n        int n = Integer.parseInt(st.nextToken());\n        int target = Integer.parseInt(st.nextToken());\n        int[] nums = new int[n];\n        st = new StringTokenizer(in.readLine());\n        for (int i = 0; i < n; i++) nums[i] = Integer.parseInt(st.nextToken());\n        System.out.println(solve(nums, target));\n    }\n}\n";
+      return "#include <bits/stdc++.h>\nusing namespace std;\n\nint solve(vector<int>& nums, int target) {\n    unordered_map<int,int> seen;\n    for (int i = 0; i < (int)nums.size(); ++i) {\n        auto it = seen.find(target - nums[i]);\n        if (it != seen.end()) return it->second;\n        seen[nums[i]] = i;\n    }\n    return -1;\n}\n\nint main() {\n    ios::sync_with_stdio(false);\n    int n, target;\n    cin >> n >> target;\n    vector<int> nums(n);\n    for (int i = 0; i < n; ++i) cin >> nums[i];\n    cout << solve(nums, target) << \"\\n\";\n    return 0;\n}\n";
+    }
+    if (lang === "Python 3") return "class Solution:\n    def solve(self, nums: List[int], target: int) -> int:\n        # Viết lời giải của bạn\n        seen = {}\n        for i, v in enumerate(nums):\n            if target - v in seen:\n                return seen[target - v]\n            seen[v] = i\n        return -1\n";
+    if (lang === "Java 21") return "class Solution {\n    public int solve(int[] nums, int target) {\n        // Viết lời giải của bạn\n        Map<Integer, Integer> seen = new HashMap<>();\n        for (int i = 0; i < nums.length; i++) {\n            if (seen.containsKey(target - nums[i])) {\n                return seen.get(target - nums[i]);\n            }\n            seen.put(nums[i], i);\n        }\n        return -1;\n    }\n}\n";
+    return "class Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Viết lời giải của bạn\n        unordered_map<int,int> seen;\n        for (int i = 0; i < nums.size(); ++i) {\n            auto it = seen.find(target - nums[i]);\n            if (it != seen.end()) return it->second;\n            seen[nums[i]] = i;\n        }\n        return -1;\n    }\n};\n";
+  }
+
+  ext(lang) { return lang === "Python 3" ? "Solution.py" : lang === "Java 21" ? "Main.java" : "solution.cpp"; }
+
+  keywords(lang) {
+    if (lang === "Python 3") return ["class", "def", "return", "for", "in", "if", "else", "elif", "import", "from", "while", "None", "True", "False", "self", "not", "and", "or", "print"];
+    if (lang === "Java 21") return ["class", "public", "static", "void", "int", "return", "for", "if", "else", "new", "import", "var", "throws", "String"];
+    return ["class", "public", "int", "return", "for", "if", "else", "auto", "using", "namespace", "vector", "unordered_map", "include", "cin", "cout", "ios", "sync_with_stdio"];
+  }
+
+  tokenize(line, lang) {
+    const kw = this.keywords(lang);
+    const re = /(#[^\n]*|\/\/[^\n]*)|("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')|(\b\d+\b)|([A-Za-z_][A-Za-z0-9_]*)|([^\sA-Za-z0-9_]+)|(\s+)/g;
+    const out = [];
+    let m;
+    while ((m = re.exec(line)) !== null) {
+      const t = m[0];
+      let c = "var(--ink)";
+      if (m[1]) c = "var(--cmt)";
+      else if (m[2]) c = "var(--str)";
+      else if (m[3]) c = "var(--num)";
+      else if (m[4]) c = kw.indexOf(t) >= 0 ? "var(--kw)" : "var(--ink)";
+      else if (m[5]) c = "var(--ink2)";
+      out.push({ t, c });
+    }
+    return out.length ? out : [{ t: " ", c: "var(--ink)" }];
+  }
+
+  seg(active) {
+    return active
+      ? { bg: "var(--panel)", fg: "var(--ink)" }
+      : { bg: "transparent", fg: "var(--ink2)" };
+  }
+
+  renderVals() {
+    const st = this.state;
+    const T = (vi, en) => (st.uiLang === "en" ? en : vi);
+    const code = st.code == null ? this.starter(st.lang, st.mode) : st.code;
+    const lines = code.split("\n");
+    const cases = [
+      { nums: "[2,7,11,15]", target: "9" },
+      { nums: "[3,2,4]", target: "6" },
+      { nums: "[3,3]", target: "6" }
+    ];
+
+    return {
+      theme: st.theme,
+      splitRef: this.splitRef,
+      startDrag: this.startDrag,
+      leftWidth: "calc(" + st.split + "% - 4px)",
+      uiLang: st.uiLang,
+      menuOpen: st.menuOpen,
+      toggleMenu: () => this.setState({ menuOpen: !st.menuOpen }),
+      closeMenu: () => this.setState({ menuOpen: false }),
+      langTabs: [{ k: "vi", label: "VI" }, { k: "en", label: "EN" }].map((t) =>
+        Object.assign({ label: t.label, onClick: () => this.setLang(t.k) }, this.seg(st.uiLang === t.k))),
+      themeTabs: [{ k: "light", label: st.uiLang === "en" ? "Light" : "Sáng" }, { k: "dark", label: st.uiLang === "en" ? "Dark" : "Tối" }].map((t) =>
+        Object.assign({ label: t.label, onClick: () => this.setTheme(t.k) }, this.seg(st.theme === t.k))),
+      timer: "00:12:41",
+      savedNote: T("Đã lưu nháp", "Draft saved"),
+      limits: "Time 2s · Memory 256MB",
+      savedLabel: T("Đã lưu nháp · " + lines.length + " dòng", "Draft saved · " + lines.length + " lines"),
+
+      hasProblem: !!st.sel,
+      noProblem: !st.sel,
+      resumeDraft: () => this.pick({ num: "1", title: "Two Sum", difficulty: "Easy", topic: "Array & Hashing" }),
+      pendingTitle: !!st.pending,
+      pendingNote: st.pending
+        ? T("Đề bài đầy đủ của “" + st.pending + "” chưa có trong bản prototype này. Bài Two Sum bên dưới đã có đủ đề, testcase và bộ chấm để bạn thử flow.",
+            "The full statement for “" + st.pending + "” isn't in this prototype yet. Two Sum below has the complete statement, testcases and runner.")
+        : "",
+      pickList: [
+        { num: "1", title: "Two Sum", topic: "Array & Hashing", difficulty: "Easy", diffColor: "var(--easy)" },
+        { num: "207", title: "Course Schedule", topic: "Graph", difficulty: "Medium", diffColor: "var(--med)" },
+        { num: "322", title: "Coin Change", topic: T("Quy hoạch động", "Dynamic programming"), difficulty: "Medium", diffColor: "var(--med)" },
+        { num: "76", title: "Minimum Window Substring", topic: T("Cửa sổ trượt", "Sliding window"), difficulty: "Hard", diffColor: "var(--hard)" }
+      ].map((p) => Object.assign({}, p, { onOpen: () => this.choose(p) })),
+
+      problem: Object.assign({
+        num: "1", title: "Two Sum", difficulty: "Easy", topic: "Array & Hashing", mode: "function wrapper",
+        diffColor: "var(--ok)", diffBg: "var(--chip)"
+      }, st.sel || {}),
+      paneTabs: ["Đề bài", "Gợi ý", "Bài nộp", "Solution Review"].map((t) => ({
+        label: st.uiLang === "en" ? ({ "Đề bài": "Description", "Gợi ý": "Hints", "Bài nộp": "Submissions", "Solution Review": "Solution Review" })[t] : t, onClick: () => this.setState({ pane: t }),
+        weight: st.pane === t ? "600" : "500",
+        fg: st.pane === t ? "var(--ink)" : "var(--ink3)",
+        line: st.pane === t ? "var(--accent)" : "transparent"
+      })),
+      tabIsProblem: st.pane === "Đề bài",
+      tabIsHint: st.pane === "Gợi ý",
+      tabIsSubs: st.pane === "Bài nộp",
+      tabIsReview: st.pane === "Solution Review",
+
+      examples: [
+        { n: "1", input: "nums = [2,7,11,15], target = 9", output: "[0,1]", note: "nums[0] + nums[1] = 9." },
+        { n: "2", input: "nums = [3,2,4], target = 6", output: "[1,2]", note: "Không dùng lại phần tử ở chỉ số 0." },
+        { n: "3", input: "nums = [3,3], target = 6", output: "[0,1]", note: "Cho phép hai phần tử trùng giá trị." }
+      ],
+      constraints: [
+        { text: "2 <= nums.length <= 10^4" },
+        { text: "-10^9 <= nums[i] <= 10^9" },
+        { text: "-10^9 <= target <= 10^9" },
+        { text: "Chỉ tồn tại duy nhất một đáp án" }
+      ],
+      hints: [
+        { n: "1", text: "Cách duyệt hai vòng lặp cho đáp án đúng nhưng mất O(n²). Hãy nghĩ xem bạn đang lặp lại phép tìm kiếm nào." },
+        { n: "2", text: "Với mỗi phần tử, phần còn thiếu là target - nums[i]. Bạn cần một cấu trúc tra cứu phần còn thiếu trong O(1)." },
+        { n: "3", text: "Dùng bảng băm lưu giá trị đã đi qua kèm chỉ số, kiểm tra trước khi thêm để tránh dùng lại cùng một phần tử." }
+      ],
+      submissions: [
+        { verdict: "Accepted", lang: "Python 3", time: "72 ms · 18.4 MB", when: "18/08 21:04", color: "var(--ok)" },
+        { verdict: "Wrong Answer 12/40", lang: "Python 3", time: "—", when: "18/08 20:51", color: "var(--bad)" },
+        { verdict: "Time Limit Exceeded", lang: "Java 21", time: "2000 ms", when: "17/08 09:12", color: "var(--warn)" }
+      ],
+      reviewMetrics: [
+        { label: T("Thời gian", "Time"), value: "O(n)" },
+        { label: T("Bộ nhớ", "Memory"), value: "O(n)" }
+      ],
+      reviewBlocks: [
+        { title: "Đối chiếu tối ưu", body: "Bài giải đã đạt mức tối ưu đã biết của bài toán. Có thể giảm hằng số bằng cách khởi tạo trước dung lượng bảng băm thay vì để nó tự mở rộng." },
+        { title: "Lỗ hổng & trường hợp biên", body: "Bộ test chưa phủ trường hợp mảng chỉ có hai phần tử trùng nhau ở hai đầu, và trường hợp target là số âm lớn. Giả định ngầm trong mã: luôn tồn tại đáp án." },
+        { title: "Chất lượng mã nguồn", body: "Tên biến ngắn nhưng rõ nghĩa trong ngữ cảnh. Nên đặt tên seen thành indexByValue để người đọc hiểu ngay nội dung bảng băm." }
+      ],
+
+      langs: ["Python 3", "Java 21", "C++ 17"].map((l) => Object.assign(
+        { label: l, onClick: () => this.setState({ lang: l, code: this.starter(l, st.mode) }) }, this.seg(st.lang === l))),
+      modes: [
+        { label: T("Có hàm main", "With main()"), key: "Có hàm main", tip: T("Tự đọc stdin, in stdout — hệ thống chạy nguyên file của bạn", "You read stdin and print stdout — your whole file is run") },
+        { label: T("Bọc hàm", "Function wrapper"), key: "Bọc hàm", tip: T("Chỉ viết thân hàm, harness do hệ thống sinh", "Write the function body only; the harness is generated") },
+        { label: T("Tải file", "Upload file"), key: "Tải file", tip: T("Nộp file mã nguồn đúng phần mở rộng của ngôn ngữ", "Submit a source file with the language extension") }
+      ].map((m) => Object.assign(
+        { label: m.label, tip: m.tip, onClick: () => this.setState({ mode: m.key, code: this.starter(st.lang, m.key) }) },
+        this.seg(st.mode === m.key))),
+      isEditorMode: st.mode !== "Tải file",
+      isUploadMode: st.mode === "Tải file",
+      uploadExt: this.ext(st.lang),
+      lang: st.lang,
+      editorMeta: st.mode === "Tải file" ? this.ext(st.lang) + " · tối đa 64 KB" : "UTF-8 · Ln " + lines.length + ", Col 1",
+
+      code,
+      onCode: (e) => this.setState({ code: e.target.value }),
+      codeHeight: Math.max(lines.length * 21 + 24, 320) + "px",
+      lineNumbers: lines.map((_, i) => ({ n: i + 1 })),
+      codeLines: lines.map((l) => ({ tokens: this.tokenize(l, st.lang) })),
+
+      consoleTabs: ["Testcase", "Kết quả"].map((t) => ({
+        label: st.uiLang === "en" && t === "Kết quả" ? "Result" : t, onClick: () => this.setState({ console: t }),
+        weight: st.console === t ? "600" : "500",
+        fg: st.console === t ? "var(--ink)" : "var(--ink3)",
+        line: st.console === t ? "var(--accent)" : "transparent"
+      })),
+      showTestcase: st.console === "Testcase",
+      showResult: st.console === "Kết quả",
+      caseTabs: [1, 2, 3].map((n) => Object.assign(
+        { label: "Case " + n, onClick: () => this.setState({ activeCase: n }) },
+        st.activeCase === n
+          ? { bg: "var(--chip)", fg: "var(--ink)", border: "var(--line)" }
+          : { bg: "transparent", fg: "var(--ink2)", border: "transparent" })),
+      activeCase: cases[st.activeCase - 1],
+
+      hasRun: st.ran !== null,
+      noRun: st.ran === null,
+      isAccepted: st.ran === "submit",
+      verdict: st.ran === "submit" ? "Accepted · 40/40" : st.ran === "run" ? "3/3 passed" : "",
+      verdictColor: "var(--ok)",
+      onRun: () => this.setState({ ran: "run", console: "Kết quả" }),
+      onSubmit: () => this.setState({ ran: "submit", console: "Kết quả" }),
+      openReview: () => this.setState({ pane: "Solution Review" }),
+      caseDots: Array.from({ length: st.ran === "submit" ? 40 : 3 }, (_, i) => ({ color: "var(--ok)", tip: "Case " + (i + 1) + ": passed" })),
+      runMetrics: st.ran === "submit"
+        ? [{ label: "Runtime", value: "72 ms" }, { label: "Memory", value: "18.4 MB" }, { label: "Beats", value: "84%" }]
+        : [{ label: "Runtime", value: "31 ms" }, { label: "Memory", value: "17.1 MB" }, { label: T("Ngôn ngữ", "Language"), value: st.lang }],
+      runOutput: st.ran === "submit"
+        ? "Accepted · 40/40 testcase\nCompile: OK (" + st.lang + ")\nĐã lưu vào tiến độ cá nhân · mở Solution Review để xem phân tích."
+        : "Case 1 → [0,1]   expected [0,1]   OK\nCase 2 → [1,2]   expected [1,2]   OK\nCase 3 → [0,1]   expected [0,1]   OK"
+    };
+  }
+}
+</script>
+</body>
+</html>

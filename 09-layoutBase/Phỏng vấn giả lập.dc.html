@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; }
+  :root {
+    --bg: #ECEFF4; --panel: #FFFFFF; --panel2: #F7F9FC; --line: #E0E5EC; --line2: #ECEFF4;
+    --ink: #0F1319; --ink2: #545C69; --ink3: #8A93A1; --chip: #EDF1F6; --gut: #BFC7D2;
+    --accent: #1C9BF2; --glass: rgba(255,255,255,0.72); --grid: rgba(15,25,45,0.035); --ring: rgba(28,155,242,0.16); --accent2: #0B85DA; --ok: #1F9D63; --warn: #C4820E; --bad: #D8353A; --gold: #B8863A;
+    --shadow: 0 1px 2px rgba(15,25,45,0.04), 0 10px 28px rgba(15,25,45,0.07); --easy: #0F9D6E; --med: #C07C10; --hard: #D93A46; --onAccent: #FFFFFF; --rowHover: #F4F7FB;
+    --code: #F7F9FC; --kw: #1F6FB8; --str: #1F7A4D; --cmt: #8A93A1;
+  }
+  [data-theme="dark"] {
+    --bg: #0B0D11; --panel: #14171D; --panel2: #191D24; --line: #262D38; --line2: #1E232B;
+    --ink: #E6EAF1; --ink2: #99A3B2; --ink3: #6B7483; --chip: #1E232C; --gut: #454E5C;
+    --accent: #4CC2FF; --glass: rgba(20,23,29,0.72); --grid: rgba(160,200,255,0.045); --ring: rgba(76,194,255,0.22); --accent2: #74D0FF; --ok: #3FBF82; --warn: #D9A03F; --bad: #E8615E; --gold: #D0A052;
+    --shadow: 0 1px 0 rgba(255,255,255,0.035) inset, 0 12px 34px rgba(0,0,0,0.55); --easy: #2CCB94; --med: #E9A93B; --hard: #FF6B6B; --onAccent: #06131E; --rowHover: #1A1F27;
+    --code: #0E1116; --kw: #6FC2F5; --str: #8CD9A8; --cmt: #6B737C;
+  }
+  [data-ui-lang="vi"] [data-lang="en"] { display: none; }
+  [data-ui-lang="en"] [data-lang="vi"] { display: none; }
+  body { margin: 0; background: var(--bg); font-family: 'Be Vietnam Pro', system-ui, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px); background-size: 48px 48px; background-position: -1px -1px; font-variant-numeric: tabular-nums; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { color: var(--ink); }
+  table { border-collapse: collapse; }
+  th { white-space: nowrap; }
+  textarea { font-family: inherit; }
+  textarea:focus { outline: none; border-color: var(--accent); }
+  nav { scrollbar-width: none; }
+  nav::-webkit-scrollbar { display: none; }
+  a, button { transition: background-color .15s ease, color .15s ease, border-color .15s ease, box-shadow .15s ease; }
+  button:focus-visible, textarea:focus-visible, a:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ring); }
+  ::selection { background: var(--ring); }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+</style>
+<script src="./nav-loader.js"></script>
+</helmet>
+
+<div data-theme="{{ theme }}" data-ui-lang="{{ uiLang }}" style="min-height: 100vh; background: var(--bg); color: var(--ink);">
+
+  <header style="position: sticky; top: 0; z-index: 30; padding: 14px 20px 12px; background: linear-gradient(var(--bg) 82%, transparent);">
+    <div style="max-width: 1400px; margin: 0 auto; background: var(--glass); backdrop-filter: saturate(150%) blur(14px); -webkit-backdrop-filter: saturate(150%) blur(14px); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); height: 58px; padding: 0 20px; display: flex; align-items: center; gap: 30px;">
+      <div style="display: flex; align-items: center; gap: 9px; flex-shrink: 0;">
+        <span style="font-size: 19px; font-weight: 700; letter-spacing: -0.01em;">AlgoPrep</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; letter-spacing: 0.14em; color: var(--gold); border: 1px solid var(--gold); border-radius: 4px; padding: 2px 5px 1px;">JUDGE0</span>
+      </div>
+      <nav style="display: flex; align-items: center; gap: 20px; flex: 1 1 auto; min-width: 0; overflow-x: auto;">
+        <a href="./Dashboard AlgoPrep.dc.html" style="white-space: nowrap; font-size: 14.5px; font-weight: 500; color: var(--ink2);" style-hover="color: var(--ink);"><span data-lang="vi">Tổng quan</span><span data-lang="en">Overview</span></a>
+        <a href="./Ngân hàng bài toán.dc.html" style="white-space: nowrap; font-size: 14.5px; font-weight: 500; color: var(--ink2);" style-hover="color: var(--ink);"><span data-lang="vi">Bài toán</span><span data-lang="en">Problems</span></a>
+        <a href="./Workspace giải bài.dc.html" style="white-space: nowrap; font-size: 14.5px; font-weight: 500; color: var(--ink2);" style-hover="color: var(--ink);"><span data-lang="vi">Workspace</span><span data-lang="en">Workspace</span></a>
+        <a href="./Bài đã nộp.dc.html" style="white-space: nowrap; font-size: 14.5px; font-weight: 500; color: var(--ink2);" style-hover="color: var(--ink);"><span data-lang="vi">Bài đã nộp</span><span data-lang="en">Submissions</span></a>
+        <a href="./Phỏng vấn giả lập.dc.html" style="white-space: nowrap; font-size: 14.5px; font-weight: 600; color: var(--ink); border-bottom: 2px solid var(--accent); padding-bottom: 2px;"><span data-lang="vi">Phỏng vấn giả lập</span><span data-lang="en">Mock interview</span></a>
+        <a href="./Câu hỏi phỏng vấn.dc.html" style="white-space: nowrap; font-size: 14.5px; font-weight: 500; color: var(--ink2);" style-hover="color: var(--ink);"><span data-lang="vi">Câu hỏi phỏng vấn</span><span data-lang="en">Interview questions</span></a>
+      </nav>
+      <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
+        <div style="display: flex; gap: 3px; padding: 3px; background: var(--chip); border-radius: 8px; flex-shrink: 0;">
+          <sc-for list="{{ themeTabs }}" as="t" hint-placeholder-count="2"><button onClick="{{ t.onClick }}" style="height: 24px; padding: 0 10px; border: none; border-radius: 6px; font-family: inherit; font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; background: {{ t.bg }}; color: {{ t.fg }};">{{ t.label }}</button></sc-for>
+        </div>
+        <div style="display: flex; gap: 3px; padding: 3px; background: var(--chip); border-radius: 8px; flex-shrink: 0;">
+          <sc-for list="{{ langTabs }}" as="t" hint-placeholder-count="2"><button onClick="{{ t.onClick }}" style="height: 24px; padding: 0 9px; border: none; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; cursor: pointer; background: {{ t.bg }}; color: {{ t.fg }};">{{ t.label }}</button></sc-for>
+        </div>
+        <div style="position: relative;">
+          <button onClick="{{ toggleMenu }}" style="width: 32px; height: 32px; border-radius: 50%; background: var(--chip); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-family: inherit; font-size: 11.5px; font-weight: 600; color: var(--ink2); cursor: pointer;" style-hover="border-color: var(--ink3); color: var(--ink);">PD</button>
+          <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <div onClick="{{ closeMenu }}" style="position: fixed; inset: 0; z-index: 40;"></div>
+              <div style="position: absolute; top: 40px; right: 0; z-index: 50; width: 258px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); padding: 10px;">
+                <div style="display: flex; align-items: center; gap: 10px; padding: 6px 8px 12px;">
+                  <div style="width: 34px; height: 34px; border-radius: 50%; background: var(--chip); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: var(--ink2);">PD</div>
+                  <div>
+                    <div style="font-size: 13.5px; font-weight: 600;">Phú Đại</div>
+                    <div style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--ink3);">phudai@fabbi.io</div>
+                  </div>
+                </div>
+                <div style="height: 1px; background: var(--line2); margin: 0 -10px 8px;"></div>
+                <a href="./Trang cá nhân.dc.html" style="display: flex; align-items: center; width: 100%; height: 34px; padding: 0 10px; border-radius: 8px; font-size: 13.5px; font-weight: 500; color: var(--ink); text-decoration: none;" style-hover="background: var(--chip); color: var(--ink);"><span data-lang="vi">Trang cá nhân</span><span data-lang="en">Profile</span></a>
+                <a href="./Tiến độ của tôi.dc.html" style="display: flex; align-items: center; width: 100%; height: 34px; padding: 0 10px; border-radius: 8px; font-size: 13.5px; font-weight: 500; color: var(--ink); text-decoration: none;" style-hover="background: var(--chip); color: var(--ink);"><span data-lang="vi">Tiến độ của tôi</span><span data-lang="en">My progress</span></a>
+                <a href="./Bài đã lưu.dc.html" style="display: flex; align-items: center; width: 100%; height: 34px; padding: 0 10px; border-radius: 8px; font-size: 13.5px; font-weight: 500; color: var(--ink); text-decoration: none;" style-hover="background: var(--chip); color: var(--ink);"><span data-lang="vi">Bài đã lưu</span><span data-lang="en">Saved problems</span></a>
+                <a href="./Cài đặt.dc.html" style="display: flex; align-items: center; width: 100%; height: 34px; padding: 0 10px; border-radius: 8px; font-size: 13.5px; font-weight: 500; color: var(--ink); text-decoration: none;" style-hover="background: var(--chip); color: var(--ink);"><span data-lang="vi">Cài đặt</span><span data-lang="en">Settings</span></a>
+                <div style="height: 1px; background: var(--line2); margin: 8px -10px;"></div>
+                <a href="./Đăng nhập & Đăng ký.dc.html" style="display: flex; align-items: center; width: 100%; height: 34px; padding: 0 10px; border-radius: 8px; background: transparent; font-size: 13.5px; font-weight: 500; color: var(--bad); text-decoration: none; cursor: pointer;" style-hover="background: var(--chip);"><span data-lang="vi">Đăng xuất</span><span data-lang="en">Sign out</span></a>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main style="max-width: 1400px; margin: 0 auto; padding: 26px 28px 64px;">
+
+    <sc-if value="{{ isEntry }}" hint-placeholder-val="{{ true }}">
+    <div>
+      <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 14px;">
+        <sc-for list="{{ stats }}" as="s" hint-placeholder-count="3">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="width: 6px; height: 6px; border-radius: 2px; flex-shrink: 0; background: {{ s.dot }};"></span>
+            <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; white-space: nowrap; color: var(--ink3);">{{ s.label }}</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 600;">{{ s.value }}</span>
+            <span style="font-size: 12px; color: var(--ink3); white-space: nowrap;">{{ s.unit }}</span>
+          </div>
+        </sc-for>
+        <a href="./Phỏng vấn giả lập v1.dc.html" style="margin-left: auto; display: flex; align-items: center; height: 34px; padding: 0 13px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); font-size: 13.5px; font-weight: 600; white-space: nowrap; color: var(--ink2);" style-hover="background: var(--chip); color: var(--ink);"><span data-lang="vi">Bản v1</span><span data-lang="en">Version 1</span></a>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 320px; gap: 14px; align-items: start; margin-bottom: 14px;">
+        <section style="background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden;">
+          <div style="padding: 14px 20px; border-bottom: 1px solid var(--line2); display: flex; align-items: center; gap: 14px;">
+            <span style="font-size: 11.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink3);"><span data-lang="vi">Bắt đầu từ</span><span data-lang="en">Start from</span></span>
+            <div style="display: flex; gap: 4px; padding: 3px; background: var(--chip); border-radius: 8px;">
+              <sc-for list="{{ sourceTabs }}" as="t" hint-placeholder-count="2"><button onClick="{{ t.onClick }}" style="height: 27px; padding: 0 12px; border: none; border-radius: 6px; font-family: inherit; font-size: 12.5px; font-weight: 600; white-space: nowrap; cursor: pointer; background: {{ t.bg }}; color: {{ t.fg }};">{{ t.label }}</button></sc-for>
+            </div>
+          </div>
+
+          <sc-if value="{{ fromSubmission }}" hint-placeholder-val="{{ true }}">
+          <div>
+            <div style="padding: 13px 20px; background: var(--panel2); border-bottom: 1px solid var(--line2); font-size: 13px; color: var(--ink2); text-wrap: pretty;"><span data-lang="vi">Chỉ bài nộp đã Accepted mới mở được phiên, vì AI cần đúng đoạn code bạn đã chạy qua toàn bộ testcase để chất vấn.</span><span data-lang="en">Only accepted submissions open a session: the AI needs the exact code that passed every test case.</span></div>
+            <sc-for list="{{ submissions }}" as="s" hint-placeholder-count="4">
+              <div onMouseEnter="{{ s.onEnter }}" onMouseLeave="{{ s.onLeave }}" style="padding: 14px 20px; border-bottom: 1px solid var(--line2); display: flex; align-items: center; gap: 16px; background: {{ s.bg }};">
+                <div style="flex: 1; min-width: 0;">
+                  <div style="display: flex; align-items: center; gap: 9px; margin-bottom: 4px;">
+                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink3);">{{ s.id }}</span>
+                    <span style="font-size: 11px; font-weight: 600; color: {{ s.diffColor }};">{{ s.diff }}</span>
+                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; color: var(--ok);">ACCEPTED</span>
+                  </div>
+                  <div style="font-size: 14.5px; font-weight: 600; margin-bottom: 3px;">{{ s.title }}</div>
+                  <div style="font-size: 12.5px; color: var(--ink3);">{{ s.meta }}</div>
+                </div>
+                <button onClick="{{ s.onStart }}" style="height: 34px; padding: 0 15px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); font-family: inherit; font-size: 13px; font-weight: 600; white-space: nowrap; color: var(--ink); cursor: pointer; flex-shrink: 0;" style-hover="border-color: var(--accent); color: var(--accent);"><span data-lang="vi">Phỏng vấn bài này</span><span data-lang="en">Interview on this</span></button>
+              </div>
+            </sc-for>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ fromBank }}" hint-placeholder-val="{{ false }}">
+          <div>
+            <div style="padding: 13px 20px; background: var(--panel2); border-bottom: 1px solid var(--line2); font-size: 13px; color: var(--ink2); text-wrap: pretty;"><span data-lang="vi">Không cần bài nộp. Dùng cho lý thuyết, system design và câu hỏi hành vi — AI chất vấn dựa trên câu trả lời bạn nói ra.</span><span data-lang="en">No submission needed. For theory, system design and behavioural questions the AI probes whatever you answer.</span></div>
+            <sc-for list="{{ bankItems }}" as="b" hint-placeholder-count="4">
+              <div onMouseEnter="{{ b.onEnter }}" onMouseLeave="{{ b.onLeave }}" style="padding: 14px 20px; border-bottom: 1px solid var(--line2); display: flex; align-items: center; gap: 16px; background: {{ b.bg }};">
+                <div style="flex: 1; min-width: 0;">
+                  <div style="display: flex; align-items: center; gap: 9px; margin-bottom: 4px;">
+                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink3);">{{ b.id }}</span>
+                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink3);">{{ b.kind }}</span>
+                    <span style="font-size: 11px; font-weight: 600; color: {{ b.diffColor }};">{{ b.diff }}</span>
+                  </div>
+                  <div style="font-size: 14px; font-weight: 500; line-height: 1.45; text-wrap: pretty;">{{ b.title }}</div>
+                </div>
+                <button onClick="{{ b.onStart }}" style="height: 34px; padding: 0 15px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); font-family: inherit; font-size: 13px; font-weight: 600; white-space: nowrap; color: var(--ink); cursor: pointer; flex-shrink: 0;" style-hover="border-color: var(--accent); color: var(--accent);"><span data-lang="vi">Phỏng vấn câu này</span><span data-lang="en">Interview on this</span></button>
+              </div>
+            </sc-for>
+            <div style="padding: 14px 20px;">
+              <a href="./Câu hỏi phỏng vấn.dc.html" style="font-size: 13.5px; font-weight: 600;"><span data-lang="vi">Xem toàn bộ 148 câu hỏi</span><span data-lang="en">Browse all 148 questions</span></a>
+            </div>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ fromSelf }}" hint-placeholder-val="{{ false }}">
+          <div>
+            <div style="padding: 13px 20px; background: var(--panel2); border-bottom: 1px solid var(--line2); font-size: 13px; color: var(--ink2); text-wrap: pretty;"><span data-lang="vi">AI tự sinh câu hỏi theo cấu hình dưới đây. Dùng khi bạn muốn luyện đúng một chủ đề mà chưa có bài nộp phù hợp.</span><span data-lang="en">The AI generates questions from the setup below. For drilling one topic when no submission fits.</span></div>
+            <div style="padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 18px;">
+              <div>
+                <div style="font-size: 13px; font-weight: 600; color: var(--ink2); margin-bottom: 8px;"><span data-lang="vi">Chủ đề</span><span data-lang="en">Topics</span></div>
+                <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                  <sc-for list="{{ selfTopicChips }}" as="c" hint-placeholder-count="8"><button onClick="{{ c.onClick }}" style="height: 28px; padding: 0 11px; border-radius: 20px; font-family: inherit; font-size: 12.5px; font-weight: 500; white-space: nowrap; cursor: pointer; background: {{ c.bg }}; color: {{ c.fg }}; border: 1px solid {{ c.border }};">{{ c.label }}</button></sc-for>
+                </div>
+              </div>
+              <div style="display: flex; gap: 30px; flex-wrap: wrap;">
+                <div>
+                  <div style="font-size: 13px; font-weight: 600; color: var(--ink2); margin-bottom: 8px;"><span data-lang="vi">Trình độ</span><span data-lang="en">Level</span></div>
+                  <div style="display: inline-flex; gap: 4px; padding: 3px; background: var(--chip); border-radius: 8px;">
+                    <sc-for list="{{ selfLevelTabs }}" as="t" hint-placeholder-count="4"><button onClick="{{ t.onClick }}" style="height: 30px; padding: 0 13px; border: none; border-radius: 6px; font-family: inherit; font-size: 13px; font-weight: 600; white-space: nowrap; cursor: pointer; background: {{ t.bg }}; color: {{ t.fg }};">{{ t.label }}</button></sc-for>
+                  </div>
+                </div>
+                <div>
+                  <div style="font-size: 13px; font-weight: 600; color: var(--ink2); margin-bottom: 8px;"><span data-lang="vi">Ngôn ngữ dùng để nói về code</span><span data-lang="en">Language for code talk</span></div>
+                  <div style="display: inline-flex; gap: 4px; padding: 3px; background: var(--chip); border-radius: 8px;">
+                    <sc-for list="{{ selfLangTabs }}" as="t" hint-placeholder-count="3"><button onClick="{{ t.onClick }}" style="height: 30px; padding: 0 13px; border: none; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; font-weight: 600; white-space: nowrap; cursor: pointer; background: {{ t.bg }}; color: {{ t.fg }};">{{ t.label }}</button></sc-for>
+                  </div>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 16px; border-top: 1px solid var(--line2);">
+                <div style="font-size: 13px; color: var(--ink2);">{{ selfSummary }}</div>
+                <button onClick="{{ startSelf }}" style="height: 38px; padding: 0 20px; border: none; border-radius: 8px; background: var(--accent); font-family: inherit; font-size: 14px; font-weight: 600; white-space: nowrap; color: var(--onAccent); cursor: pointer;" style-hover="background: var(--accent2);"><span data-lang="vi">Bắt đầu phiên</span><span data-lang="en">Start session</span></button>
+              </div>
+            </div>
+          </div>
+          </sc-if>
+        </section>
+
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          <section style="background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden;">
+            <div style="padding: 13px 18px; border-bottom: 1px solid var(--line2); font-size: 11.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink3);"><span data-lang="vi">Một phiên diễn ra thế nào</span><span data-lang="en">How a session runs</span></div>
+            <div style="padding: 6px 18px 16px;">
+              <sc-for list="{{ phaseInfo }}" as="p" hint-placeholder-count="3">
+                <div style="padding: 13px 0; border-bottom: 1px solid var(--line2); display: flex; gap: 11px;">
+                  <span style="width: 20px; height: 20px; border-radius: 6px; flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; color: var(--onAccent); background: {{ p.color }};">{{ p.n }}</span>
+                  <div>
+                    <div style="font-size: 13.5px; font-weight: 600; margin-bottom: 3px;">{{ p.name }}</div>
+                    <div style="font-size: 12.5px; color: var(--ink2); line-height: 1.55;">{{ p.desc }}</div>
+                  </div>
+                </div>
+              </sc-for>
+              <div style="padding-top: 12px; font-size: 12.5px; color: var(--ink3); line-height: 1.55;">{{ turnBudgetNote }}</div>
+            </div>
+          </section>
+          <section style="background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden;">
+            <div style="padding: 13px 18px; border-bottom: 1px solid var(--line2); font-size: 11.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink3);"><span data-lang="vi">Bốn tiêu chí nhận xét</span><span data-lang="en">Four feedback criteria</span></div>
+            <div style="padding: 12px 18px 16px; display: flex; flex-direction: column; gap: 9px;">
+              <sc-for list="{{ rubricNames }}" as="r" hint-placeholder-count="4">
+                <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px;">
+                  <span style="font-size: 13px; color: var(--ink2);">{{ r.name }}</span>
+                  <span style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--ink3);">{{ r.weight }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <section style="background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden;">
+        <div style="padding: 14px 20px; border-bottom: 1px solid var(--line2); display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-size: 11.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink3);"><span data-lang="vi">Phiên gần đây</span><span data-lang="en">Recent sessions</span></span>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--ink3);">{{ sessionCount }}</span>
+        </div>
+        <table style="width: 100%;">
+          <thead>
+            <tr>
+              <th style="padding: 9px 20px; text-align: left; font-size: 11.5px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink3); background: var(--panel2); border-bottom: 1px solid var(--line2);"><span data-lang="vi">Ngày</span><span data-lang="en">Date</span></th>
+              <th style="padding: 9px 12px; text-align: left; font-size: 11.5px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink3); background: var(--panel2); border-bottom: 1px solid var(--line2);"><span data-lang="vi">Nguồn phiên</span><span data-lang="en">Session source</span></th>
+              <th style="padding: 9px 12px; text-align: left; font-size: 11.5px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink3); background: var(--panel2); border-bottom: 1px solid var(--line2);"><span data-lang="vi">Mạch chủ đề</span><span data-lang="en">Topic thread</span></th>
+              <th style="padding: 9px 12px; text-align: right; font-size: 11.5px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink3); background: var(--panel2); border-bottom: 1px solid var(--line2);"><span data-lang="vi">Lượt</span><span data-lang="en">Turns</span></th>
+              <th style="padding: 9px 12px; text-align: right; font-size: 11.5px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink3); background: var(--panel2); border-bottom: 1px solid var(--line2);"><span data-lang="vi">Nhận xét</span><span data-lang="en">Feedback</span></th>
+              <th style="width: 110px; background: var(--panel2); border-bottom: 1px solid var(--line2);"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <sc-for list="{{ sessions }}" as="s" hint-placeholder-count="4">
+              <tr onMouseEnter="{{ s.onEnter }}" onMouseLeave="{{ s.onLeave }}" style="border-bottom: 1px solid var(--line2); background: {{ s.rowBg }};">
+                <td style="padding: 11px 20px; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--ink2);">{{ s.date }}</td>
+                <td style="padding: 11px 12px; font-size: 14px; font-weight: 500;">{{ s.src }}</td>
+                <td style="padding: 11px 12px; font-size: 13px; color: var(--ink2);">{{ s.thread }}</td>
+                <td style="padding: 11px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--ink2);">{{ s.turns }}</td>
+                <td style="padding: 11px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; color: {{ s.scoreColor }};">{{ s.score }}</td>
+                <td style="padding: 11px 20px 11px 12px; text-align: right;">
+                  <button onClick="{{ s.onOpen }}" style="height: 28px; padding: 0 12px; border: 1px solid var(--line); border-radius: 7px; background: var(--panel); font-family: inherit; font-size: 12.5px; font-weight: 600; white-space: nowrap; color: var(--ink2); cursor: pointer;" style-hover="border-color: var(--accent); color: var(--accent);"><span data-lang="vi">Xem lại</span><span data-lang="en">Review</span></button>
+                </td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </section>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isRunning }}" hint-placeholder-val="{{ false }}">
+    <div style="display: grid; grid-template-columns: 1fr 340px; gap: 14px; align-items: stretch; height: calc(100vh - 190px); min-height: 520px;">
+
+      <section style="min-height: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;">
+        <div style="padding: 13px 20px; border-bottom: 1px solid var(--line2); display: flex; align-items: center; gap: 12px;">
+          <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--ok); flex-shrink: 0;"></span>
+          <span style="font-size: 13.5px; font-weight: 600;">{{ sessionLabel }}</span>
+          <span style="margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; font-weight: 600; color: var(--ink2); background: var(--chip); border-radius: 5px; padding: 4px 9px;">{{ turnsLeftLabel }}</span>
+        </div>
+
+        <div style="padding: 11px 20px; background: var(--panel2); border-bottom: 1px solid var(--line2); display: flex; gap: 9px; align-items: flex-start;">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; color: var(--warn); flex-shrink: 0; padding-top: 1px;">i</span>
+          <span style="font-size: 12.5px; color: var(--ink2); line-height: 1.5; text-wrap: pretty;"><span data-lang="vi">Nhận xét cuối phiên là phản hồi để học, không phải điểm chính thức của bài tập.</span><span data-lang="en">End-of-session feedback is a learning signal, not an official grade.</span></span>
+        </div>
+
+        <div ref="{{ scrollRef }}" style="flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px;">
+          <sc-for list="{{ messages }}" as="m" hint-placeholder-count="4">
+            <div style="display: flex; flex-direction: column; align-items: {{ m.align }}; gap: 6px;">
+              <div style="display: flex; align-items: center; gap: 8px; padding: 0 4px;">
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink3);">{{ m.who }}</span>
+                <span style="font-size: 10.5px; font-weight: 600; padding: 2px 7px; border-radius: 4px; color: {{ m.phaseFg }}; background: {{ m.phaseBg }};">{{ m.phaseLabel }}</span>
+              </div>
+              <div style="max-width: 78%; padding: 13px 16px; border-radius: 12px; font-size: 14.5px; line-height: 1.6; text-wrap: pretty; background: {{ m.bg }}; color: {{ m.fg }}; border: 1px solid {{ m.border }};">{{ m.text }}</div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ thinking }}" hint-placeholder-val="{{ false }}">
+            <div style="display: flex; align-items: center; gap: 9px; padding: 0 4px;">
+              <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: blink 1.1s ease-in-out infinite;"></span>
+              <span style="font-size: 13px; color: var(--ink3);"><span data-lang="vi">Người phỏng vấn đang gõ…</span><span data-lang="en">Interviewer is typing…</span></span>
+            </div>
+          </sc-if>
+          <sc-if value="{{ aiError }}" hint-placeholder-val="{{ false }}">
+            <div style="padding: 15px 17px; border: 1px solid var(--bad); border-radius: 12px; background: var(--panel2);">
+              <div style="font-size: 13.5px; font-weight: 600; color: var(--bad); margin-bottom: 5px;"><span data-lang="vi">Không nhận được phản hồi từ AI</span><span data-lang="en">No response from the AI</span></div>
+              <div style="font-size: 13px; color: var(--ink2); line-height: 1.55; margin-bottom: 12px; text-wrap: pretty;"><span data-lang="vi">Phiên được kết thúc có kiểm soát. Toàn bộ hội thoại tới lượt vừa rồi đã lưu, bạn có thể mở lại nhận xét dựa trên phần đã trao đổi.</span><span data-lang="en">The session was closed cleanly. Everything up to the last turn is saved and can still be reviewed.</span></div>
+              <div style="display: flex; gap: 8px;">
+                <button onClick="{{ finish }}" style="height: 34px; padding: 0 14px; border: none; border-radius: 8px; background: var(--accent); font-family: inherit; font-size: 13px; font-weight: 600; color: var(--onAccent); cursor: pointer;" style-hover="background: var(--accent2);"><span data-lang="vi">Xem nhận xét phần đã trao đổi</span><span data-lang="en">See feedback so far</span></button>
+                <button onClick="{{ retry }}" style="height: 34px; padding: 0 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); font-family: inherit; font-size: 13px; font-weight: 600; color: var(--ink2); cursor: pointer;" style-hover="background: var(--chip); color: var(--ink);"><span data-lang="vi">Thử lại lượt này</span><span data-lang="en">Retry this turn</span></button>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+
+        <div style="flex-shrink: 0; padding: 16px 20px; border-top: 1px solid var(--line2); background: var(--panel2);">
+          <textarea value="{{ draft }}" onChange="{{ onDraft }}" placeholder="{{ draftPlaceholder }}" style="width: 100%; min-height: 92px; padding: 13px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); font-size: 14px; line-height: 1.6; color: var(--ink); resize: vertical;"></textarea>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 11px;">
+            <button onClick="{{ abort }}" style="height: 36px; padding: 0 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); font-family: inherit; font-size: 13.5px; font-weight: 600; color: var(--ink2); cursor: pointer;" style-hover="color: var(--bad); border-color: var(--bad);"><span data-lang="vi">Huỷ phiên</span><span data-lang="en">Abort</span></button>
+            <div style="display: flex; gap: 8px;">
+              <button onClick="{{ finish }}" style="height: 36px; padding: 0 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); font-family: inherit; font-size: 13.5px; font-weight: 600; color: var(--ink); cursor: pointer;" style-hover="background: var(--chip);"><span data-lang="vi">Kết phiên và nhận xét</span><span data-lang="en">End and get feedback</span></button>
+              <button onClick="{{ send }}" style="height: 36px; padding: 0 20px; border: none; border-radius: 8px; background: var(--accent); font-family: inherit; font-size: 13.5px; font-weight: 600; color: var(--onAccent); cursor: pointer;" style-hover="background: var(--accent2);"><span data-lang="vi">Trả lời</span><span data-lang="en">Answer</span></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div style="min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 14px;">
+        <section style="background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden;">
+          <div style="padding: 13px 18px; border-bottom: 1px solid var(--line2); font-size: 11.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink3);"><span data-lang="vi">Giai đoạn</span><span data-lang="en">Stage</span></div>
+          <div style="padding: 8px;">
+            <sc-for list="{{ phaseTrack }}" as="p" hint-placeholder-count="3">
+              <div style="display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 8px; background: {{ p.bg }};">
+                <span style="width: 20px; height: 20px; border-radius: 6px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; font-weight: 700; color: {{ p.dotFg }}; background: {{ p.dotBg }}; border: 1px solid {{ p.dotBorder }};">{{ p.mark }}</span>
+                <span style="font-size: 13.5px; font-weight: 500; color: {{ p.fg }};">{{ p.name }}</span>
+                <span style="margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink3);">{{ p.turns }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </section>
+
+        <section style="background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden;">
+          <div style="padding: 13px 18px; border-bottom: 1px solid var(--line2); font-size: 11.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink3);"><span data-lang="vi">Mạch chủ đề</span><span data-lang="en">Topic thread</span></div>
+          <div style="padding: 14px 18px 16px; display: flex; flex-direction: column; gap: 0;">
+            <sc-for list="{{ topicThread }}" as="t" hint-placeholder-count="3">
+              <div style="display: flex; gap: 11px;">
+                <div style="display: flex; flex-direction: column; align-items: center; flex-shrink: 0;">
+                  <span style="width: 9px; height: 9px; border-radius: 50%; margin-top: 5px; background: {{ t.dot }}; border: 1px solid {{ t.dotBorder }};"></span>
+                  <span style="width: 1px; flex: 1; background: var(--line); min-height: {{ t.lineH }};"></span>
+                </div>
+                <div style="padding-bottom: 14px;">
+                  <div style="font-size: 13.5px; font-weight: 600; color: {{ t.fg }};">{{ t.name }}</div>
+                  <div style="font-size: 12px; color: var(--ink3); margin-top: 2px;">{{ t.from }}</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </section>
+
+        <section style="background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden;">
+          <div style="padding: 13px 18px; border-bottom: 1px solid var(--line2); display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 11.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink3);">{{ contextTitle }}</span>
+            <sc-if value="{{ showContextToggle }}" hint-placeholder-val="{{ true }}">
+              <button onClick="{{ toggleContext }}" style="margin-left: auto; height: 24px; padding: 0 9px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); font-family: inherit; font-size: 11.5px; font-weight: 600; color: var(--ink2); cursor: pointer;" style-hover="background: var(--chip); color: var(--ink);">{{ contextToggleLabel }}</button>
+            </sc-if>
+          </div>
+          <div style="padding: 14px 18px 16px;">
+            <div style="font-size: 13.5px; font-weight: 600; margin-bottom: 4px;">{{ ctxTitle }}</div>
+            <div style="font-size: 12.5px; color: var(--ink3); margin-bottom: 12px;">{{ ctxMeta }}</div>
+            <sc-if value="{{ hasCtxNote }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size: 12.5px; color: var(--ink2); line-height: 1.55; text-wrap: pretty;">{{ ctxNote }}</div>
+            </sc-if>
+            <sc-if value="{{ contextOpen }}" hint-placeholder-val="{{ true }}">
+              <div style="border: 1px solid var(--line); border-radius: 9px; background: var(--code); padding: 12px 13px; max-height: 260px; overflow: auto;">
+                <sc-for list="{{ ctxCode }}" as="l" hint-placeholder-count="8">
+                  <div style="display: flex; gap: 12px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; line-height: 1.75;">
+                    <span style="color: var(--gut); flex-shrink: 0; text-align: right; width: 15px;">{{ l.n }}</span>
+                    <span style="color: {{ l.color }}; white-space: pre;">{{ l.text }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+          </div>
+        </section>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isResult }}" hint-placeholder-val="{{ false }}">
+    <div style="display: grid; grid-template-columns: 1fr 330px; gap: 14px; align-items: start;">
+      <section style="background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden;">
+        <div style="padding: 18px 22px; border-bottom: 1px solid var(--line2); display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+          <div>
+            <div style="font-size: 11.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink3); margin-bottom: 6px;"><span data-lang="vi">Nhận xét cuối phiên</span><span data-lang="en">Session feedback</span></div>
+            <div style="font-size: 17px; font-weight: 600;">{{ resultTitle }}</div>
+            <div style="font-size: 12.5px; color: var(--ink3); margin-top: 4px;">{{ resultMeta }}</div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 34px; font-weight: 700; letter-spacing: -0.03em; color: {{ overallColor }};">{{ overall }}</div>
+            <div style="font-size: 12px; color: var(--ink3);"><span data-lang="vi">trung bình 4 tiêu chí</span><span data-lang="en">mean of four criteria</span></div>
+          </div>
+        </div>
+        <div style="padding: 12px 22px; background: var(--panel2); border-bottom: 1px solid var(--line2); display: flex; gap: 9px; align-items: flex-start;">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; color: var(--warn); flex-shrink: 0; padding-top: 1px;">i</span>
+          <span style="font-size: 12.5px; color: var(--ink2); line-height: 1.5; text-wrap: pretty;"><span data-lang="vi">Đây là phản hồi để học, không phải điểm chính thức và không ảnh hưởng tới kết quả bài tập.</span><span data-lang="en">This is learning feedback, not an official grade, and does not affect assignment results.</span></span>
+        </div>
+        <div style="padding: 18px 22px 22px; display: flex; flex-direction: column; gap: 16px;">
+          <sc-for list="{{ rubricScores }}" as="r" hint-placeholder-count="4">
+            <div>
+              <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 7px;">
+                <span style="font-size: 13.5px; font-weight: 600;">{{ r.name }}</span>
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; color: {{ r.color }};">{{ r.score }}</span>
+              </div>
+              <div style="height: 6px; border-radius: 3px; background: var(--chip); overflow: hidden;">
+                <div style="height: 6px; border-radius: 3px; background: {{ r.color }}; width: {{ r.pct }};"></div>
+              </div>
+              <div style="margin-top: 7px; font-size: 12.5px; color: var(--ink2); line-height: 1.55; text-wrap: pretty;">{{ r.note }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <section style="background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden;">
+          <div style="padding: 13px 18px; border-bottom: 1px solid var(--line2); font-size: 11.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink3);"><span data-lang="vi">Chủ đề đã đi qua</span><span data-lang="en">Ground covered</span></div>
+          <div style="padding: 14px 18px 16px; display: flex; gap: 6px; flex-wrap: wrap;">
+            <sc-for list="{{ coveredTags }}" as="t" hint-placeholder-count="4">
+              <span style="font-size: 12.5px; color: var(--ink2); background: var(--chip); border-radius: 20px; padding: 5px 11px;">{{ t.text }}</span>
+            </sc-for>
+          </div>
+        </section>
+        <section style="background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden;">
+          <div style="padding: 13px 18px; border-bottom: 1px solid var(--line2); font-size: 11.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink3);"><span data-lang="vi">Việc nên làm tiếp</span><span data-lang="en">Next steps</span></div>
+          <div style="padding: 14px 18px 16px; display: flex; flex-direction: column; gap: 12px;">
+            <sc-for list="{{ nextSteps }}" as="n" hint-placeholder-count="3">
+              <div style="display: flex; gap: 10px;">
+                <span style="width: 5px; height: 5px; border-radius: 50%; background: var(--accent); margin-top: 7px; flex-shrink: 0;"></span>
+                <span style="font-size: 13px; color: var(--ink2); line-height: 1.55; text-wrap: pretty;">{{ n.text }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </section>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <button onClick="{{ restart }}" style="height: 38px; border: none; border-radius: 8px; background: var(--accent); font-family: inherit; font-size: 14px; font-weight: 600; color: var(--onAccent); cursor: pointer;" style-hover="background: var(--accent2);"><span data-lang="vi">Phiên mới</span><span data-lang="en">New session</span></button>
+          <a href="./Câu hỏi phỏng vấn.dc.html" style="display: flex; align-items: center; justify-content: center; height: 38px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); font-size: 14px; font-weight: 600; color: var(--ink);" style-hover="background: var(--chip); color: var(--ink);"><span data-lang="vi">Ôn chủ đề còn yếu</span><span data-lang="en">Drill weak topics</span></a>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+  </main>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;maxTurns&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:12,&quot;min&quot;:6,&quot;max&quot;:20,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Phiên&quot;},&quot;simulateAiError&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Trạng thái&quot;}}">
+const PHASES = [
+  { n: "1", vi: "Giải trình", en: "Explain", color: "var(--accent)",
+    dvi: "Bám sát code bạn vừa nộp: vì sao chọn cấu trúc đó, mỗi bước làm gì." },
+  { n: "2", vi: "Phản biện", en: "Challenge", color: "var(--warn)",
+    dvi: "Trường hợp biên, giả định ngầm, chỗ chưa tối ưu trong chính lời giải." },
+  { n: "3", vi: "Mở rộng", en: "Expand", color: "var(--gold)",
+    dvi: "Rời khỏi bài, đi sang kiến thức liên quan mà lời giải vừa rồi dẫn tới." }
+];
+
+const SUBS = [
+  { id: "SUB-2841", title: "Two Sum", diff: "Dễ", meta: "Python 3 · 42 ms · nộp 20/08, 21:14" },
+  { id: "SUB-2836", title: "Chuỗi con dài nhất không lặp", diff: "Trung bình", meta: "Python 3 · 88 ms · nộp 19/08, 09:02" },
+  { id: "SUB-2820", title: "LRU Cache", diff: "Trung bình", meta: "Java 21 · 134 ms · nộp 17/08, 22:47" },
+  { id: "SUB-2795", title: "Số đảo ngược trong mảng", diff: "Khó", meta: "C++ 17 · 61 ms · nộp 14/08, 15:30" }
+];
+
+const BANK = [
+  { id: "IQ-014", kind: "Lý thuyết CS", diff: "Trung bình", title: "Hash table xử lý collision bằng cách nào? So sánh chaining và open addressing." },
+  { id: "IQ-033", kind: "System design", diff: "Khó", title: "Thiết kế hệ thống rút gọn URL cho 100 triệu link mỗi ngày." },
+  { id: "IQ-052", kind: "Database", diff: "Trung bình", title: "Index B-tree hoạt động thế nào và khi nào một index bị bỏ qua?" },
+  { id: "IQ-084", kind: "Hành vi", diff: "Trung bình", title: "Kể về một lần bạn đưa quyết định kỹ thuật sai. Bạn phát hiện và xử lý thế nào?" }
+];
+
+const CODE = [
+  { text: "def two_sum(nums, target):", c: "kw" },
+  { text: "    seen = {}", c: "ink" },
+  { text: "    for i, x in enumerate(nums):", c: "kw" },
+  { text: "        need = target - x", c: "ink" },
+  { text: "        if need in seen:", c: "kw" },
+  { text: "            return [seen[need], i]", c: "kw" },
+  { text: "        seen[x] = i", c: "ink" },
+  { text: "    return []", c: "kw" }
+];
+
+const SCRIPT = [
+  { phase: 0, ai: "Bạn vừa nộp lời giải Two Sum dùng dictionary. Trước khi tôi hỏi sâu, mô tả lại cho tôi vòng lặp của bạn làm gì ở mỗi bước, và vì sao chỉ cần một lần đi qua mảng.",
+    user: "Em duyệt mảng một lần, mỗi phần tử em tính phần còn thiếu để đủ target rồi tra trong dict. Nếu đã thấy trước đó thì trả về hai chỉ số, nếu chưa thì lưu phần tử hiện tại lại. Nên chỉ cần một lượt." },
+  { phase: 0, ai: "Được. Vậy thứ tự hai dòng cuối trong vòng lặp có quan trọng không? Nếu bạn lưu seen[x] = i trước khi kiểm tra need thì kết quả đổi thế nào?",
+    user: "Nếu lưu trước thì với trường hợp target bằng đúng hai lần giá trị hiện tại, em sẽ tự khớp với chính mình và trả về hai chỉ số giống nhau. Nên phải kiểm tra trước rồi mới lưu." },
+  { phase: 1, ai: "Đúng chỗ tôi muốn hỏi. Giờ sang trường hợp biên: mảng có nhiều giá trị trùng nhau, ví dụ [3, 3, 4] với target 6. Dict của bạn chỉ giữ được một chỉ số cho mỗi khoá. Vì sao lời giải vẫn đúng?",
+    user: "Vì em kiểm tra need trước khi ghi đè. Khi tới số 3 thứ hai, số 3 đầu tiên đã nằm trong dict rồi nên em khớp được ngay, chưa cần tới lần ghi đè." },
+  { phase: 1, ai: "Vậy nếu đề đổi thành trả về tất cả các cặp thoả điều kiện chứ không chỉ một cặp, cấu trúc dict giá trị đơn của bạn còn dùng được không?",
+    user: "Không đủ. Em sẽ phải cho mỗi khoá giữ một danh sách các chỉ số, rồi ghép chéo giữa hai danh sách. Độ phức tạp sẽ phụ thuộc số cặp trả về chứ không còn O(n) nữa." },
+  { phase: 2, ai: "Tốt. Bạn nói dict tra cứu O(1). Bên dưới Python cài dict bằng hash table. Khi hai khoá băm ra cùng vị trí, CPython xử lý thế nào, và điều đó ảnh hưởng gì tới con số O(1) bạn vừa nói?",
+    user: "CPython dùng open addressing với probing, không dùng chaining. Nên O(1) là trung bình, còn xấu nhất khi nhiều collision thì có thể tệ hơn. Bảng cũng được resize khi đầy quá một ngưỡng." },
+  { phase: 2, ai: "Chính xác. Đẩy thêm một bước: mảng đầu vào giờ là 500 triệu số, không vừa RAM. Cách hash map của bạn không còn dùng được nữa. Bạn sẽ đổi hướng thế nào?",
+    user: "Em nghĩ tới hai hướng: sort ngoài rồi dùng two pointers, hoặc chia mảng thành các phân vùng theo hash rồi xử lý từng phân vùng vừa bộ nhớ. Hướng hai giữ được thời gian tuyến tính nhưng phải đọc ghi đĩa nhiều lần." }
+];
+
+const BANK_SCRIPT = [
+  { phase: 0, ai: "Câu này tôi muốn nghe cách bạn dựng khung trước. Collision trong hash table là gì, và vì sao không thể tránh được hoàn toàn?",
+    user: "Là khi hai khoá khác nhau băm ra cùng một vị trí trong bảng. Không tránh được vì miền khoá lớn hơn số ô của bảng, nên theo nguyên lý ngăn kéo luôn có khoá đụng nhau." },
+  { phase: 0, ai: "Được. Giờ so hai hướng xử lý: chaining và open addressing. Mỗi hướng lưu dữ liệu ở đâu khi đụng nhau?",
+    user: "Chaining thì mỗi ô giữ một danh sách liên kết, khoá đụng nhau nối vào cùng danh sách. Open addressing thì không có danh sách, khoá bị đụng sẽ đi tìm ô trống khác theo một quy luật probing." },
+  { phase: 1, ai: "Nhiều người dừng ở đó và kết luận chaining tốt hơn vì không bao giờ đầy bảng. Bạn có đồng ý không?",
+    user: "Em không đồng ý hẳn. Chaining phải đi theo con trỏ nên hay miss cache, còn open addressing dò các ô liền kề nên thân thiện với cache hơn. Khi load factor còn thấp thì open addressing thường nhanh hơn." },
+  { phase: 1, ai: "Vậy ngưỡng nào khiến bạn đổi ý? Cho tôi một con số load factor và lý do đứng sau con số đó.",
+    user: "Khoảng 0.7. Quá ngưỡng đó thì số lần probing tăng nhanh vì bảng còn ít ô trống, nên phải resize. Chaining chịu load factor cao hơn được nhưng đổi lại chi phí bộ nhớ cho con trỏ." },
+  { phase: 2, ai: "Tốt. Mở rộng ra: nếu khoá do người ngoài kiểm soát và họ cố tình chọn khoá cùng hash, chuyện gì xảy ra với dịch vụ của bạn?",
+    user: "Sẽ thành hash flooding, mọi khoá dồn vào một chỗ và tra cứu tụt về tuyến tính, dùng làm DoS được. Cách chống là randomize seed của hàm băm mỗi lần chạy tiến trình." },
+  { phase: 2, ai: "Đúng hướng. Câu cuối: cùng vấn đề đó nhưng ở bảng chỉ đọc, biết trước toàn bộ khoá từ đầu. Có cách nào bỏ hẳn collision?",
+    user: "Có thể dùng perfect hashing, xây hàm băm riêng cho đúng tập khoá đó nên không đụng nhau. Chi phí nằm ở lúc dựng bảng, còn tra cứu thì chắc chắn một lần." }
+];
+
+const BANK_THREAD = [
+  { name: "Bản chất collision", from: "từ câu hỏi bạn chọn" },
+  { name: "Chaining và open addressing", from: "so sánh hai hướng" },
+  { name: "Load factor và resize", from: "phản biện ngưỡng" },
+  { name: "Hash flooding và perfect hashing", from: "mở rộng sang bảo mật" }
+];
+
+const RUBRIC = [
+  { vi: "Độ rõ ràng khi trình bày", en: "Clarity of explanation", weight: "25%", score: 4.0,
+    nvi: "Mô tả vòng lặp gọn và đúng thứ tự. Nên nói ra bất biến của dict ngay từ đầu thay vì để tôi hỏi mới nêu." },
+  { vi: "Độ chính xác kỹ thuật", en: "Technical accuracy", weight: "30%", score: 4.4,
+    nvi: "Không có phát biểu sai. Phần open addressing của CPython nêu đúng, kể cả ngưỡng resize." },
+  { vi: "Khả năng phản biện", en: "Ability to defend", weight: "25%", score: 3.6,
+    nvi: "Giữ được lập luận khi bị hỏi ngược về thứ tự hai dòng cuối. Ở câu mảng 500 triệu phần tử còn trả lời hơi lửng, chưa chốt chọn hướng nào." },
+  { vi: "Nhận thức về độ phức tạp", en: "Complexity awareness", weight: "20%", score: 3.4,
+    nvi: "Nói đúng O(n) thời gian nhưng chưa chủ động nhắc bộ nhớ O(n) của dict, và chưa phân biệt trung bình với xấu nhất trước khi bị hỏi." }
+];
+
+const THREAD = [
+  { name: "Hash map một lượt", from: "từ lời giải bạn nộp" },
+  { name: "Trùng khoá và thứ tự cập nhật", from: "phản biện trường hợp biên" },
+  { name: "Collision resolution trong CPython", from: "mở rộng từ dict" },
+  { name: "Dữ liệu không vừa bộ nhớ", from: "mở rộng quy mô" }
+];
+
+class Component extends DCLogic {
+  state = { view: "entry", source: "sub", ctx: SUBS[0], step: 0, draft: "", thinking: false,
+            selfTopics: ["Hash map"], selfLevel: "Middle", selfLang: "Python 3",
+            errored: false, contextOpen: true, hover: null, hoverRow: null,
+            theme: "light", uiLang: "vi", menuOpen: false };
+
+  componentDidMount() {
+    const t = localStorage.getItem("algoprep-theme");
+    if (t === "dark" || t === "light") this.setState({ theme: t });
+    const l = localStorage.getItem("algoprep-lang");
+    if (l === "vi" || l === "en") this.setState({ uiLang: l });
+  }
+  componentWillUnmount() { clearTimeout(this.tid); }
+
+  chatRef = React.createRef();
+  componentDidUpdate() {
+    const el = this.chatRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }
+
+  setTheme(t) { this.setState({ theme: t }); localStorage.setItem("algoprep-theme", t); }
+  setLang(l) { this.setState({ uiLang: l }); localStorage.setItem("algoprep-lang", l); }
+  seg2(a) { return a ? { bg: "var(--panel)", fg: "var(--ink)" } : { bg: "transparent", fg: "var(--ink2)" }; }
+  en() { return this.state.uiLang === "en"; }
+  diffColor(d) { return d === "Dễ" ? "var(--easy)" : d === "Khó" ? "var(--hard)" : "var(--med)"; }
+  scoreColor(n) { return n >= 3.8 ? "var(--ok)" : n >= 3 ? "var(--warn)" : "var(--bad)"; }
+  maxTurns() { return this.props.maxTurns || 12; }
+
+  script() { return this.state.source === "sub" ? SCRIPT : BANK_SCRIPT; }
+
+  send() {
+    const st = this.state;
+    if (st.step >= this.script().length - 1) { this.setState({ view: "result" }); return; }
+    if (this.props.simulateAiError) { this.setState({ draft: "", errored: true }); return; }
+    this.setState({ draft: "", thinking: true });
+    this.tid = setTimeout(() => this.setState((s) => ({ thinking: false, step: s.step + 1 })), 900);
+  }
+
+  renderVals() {
+    const st = this.state, en = this.en();
+    const fromSub0 = st.source === "sub";
+    const script = fromSub0 ? SCRIPT : BANK_SCRIPT;
+    const thread = fromSub0 ? THREAD : BANK_THREAD;
+    const shown = script.slice(0, st.step + 1);
+    const msgs = [];
+    shown.forEach((s, i) => {
+      msgs.push({ role: "ai", phase: s.phase, text: s.ai });
+      if (i < st.step) msgs.push({ role: "me", phase: s.phase, text: s.user });
+    });
+    const curPhase = script[st.step].phase;
+    const used = msgs.length;
+    const overallNum = RUBRIC.reduce((a, r) => a + r.score, 0) / RUBRIC.length;
+    const fromSub = st.source === "sub";
+
+    return {
+      scrollRef: this.chatRef,
+      theme: st.theme, uiLang: st.uiLang, menuOpen: st.menuOpen,
+      toggleMenu: () => this.setState({ menuOpen: !st.menuOpen }),
+      closeMenu: () => this.setState({ menuOpen: false }),
+      themeTabs: [{ k: "light", label: en ? "Light" : "Sáng" }, { k: "dark", label: en ? "Dark" : "Tối" }].map((t) =>
+        Object.assign({ label: t.label, onClick: () => this.setTheme(t.k) }, this.seg2(st.theme === t.k))),
+      langTabs: [{ k: "vi", label: "VI" }, { k: "en", label: "EN" }].map((t) =>
+        Object.assign({ label: t.label, onClick: () => this.setLang(t.k) }, this.seg2(st.uiLang === t.k))),
+
+      isEntry: st.view === "entry", isRunning: st.view === "running", isResult: st.view === "result",
+
+      stats: [
+        { label: en ? "Sessions done" : "Phiên đã làm", value: "11", unit: en ? "sessions" : "phiên", dot: "var(--accent)", note: en ? "3 in the last 30 days" : "3 phiên trong 30 ngày gần nhất" },
+        { label: en ? "Mean feedback" : "Nhận xét trung bình", value: "3.7", unit: "/ 5", dot: "var(--ok)", note: en ? "Up 0.3 from last month" : "Tăng 0.3 so với tháng trước" },
+        { label: en ? "Weakest criterion" : "Tiêu chí yếu nhất", value: "3.2", unit: en ? "complexity" : "độ phức tạp", dot: "var(--warn)", note: en ? "Two sessions in a row" : "Thấp nhất hai phiên liền" }
+      ],
+
+      sourceTabs: [{ k: "sub", vi: "Bài nộp đã Accepted", en: "Accepted submission" }, { k: "bank", vi: "Kho câu hỏi", en: "Question bank" }, { k: "self", vi: "Tự chọn chủ đề", en: "Custom topic" }].map((t) =>
+        Object.assign({ label: en ? t.en : t.vi, onClick: () => this.setState({ source: t.k }) }, this.seg2(st.source === t.k))),
+      fromSubmission: fromSub, fromBank: st.source === "bank", fromSelf: st.source === "self",
+
+      selfTopicChips: ["Array", "Hash map", "Two pointers", "Graph", "DP", "Sorting", "System design", "Chuỗi"].map((t) => {
+        const on = st.selfTopics.indexOf(t) !== -1;
+        return { label: t, onClick: () => this.setState((s) => ({ selfTopics: s.selfTopics.indexOf(t) === -1 ? s.selfTopics.concat([t]) : s.selfTopics.filter((x) => x !== t) })),
+          bg: on ? "var(--ring)" : "var(--panel)", fg: on ? "var(--ink)" : "var(--ink2)", border: on ? "var(--accent)" : "var(--line)" };
+      }),
+      selfLevelTabs: ["Intern", "Junior", "Middle", "Senior"].map((l) =>
+        Object.assign({ label: l, onClick: () => this.setState({ selfLevel: l }) }, this.seg2(st.selfLevel === l))),
+      selfLangTabs: ["Python 3", "Java 21", "C++ 17"].map((c) =>
+        Object.assign({ label: c, onClick: () => this.setState({ selfLang: c }) }, this.seg2(st.selfLang === c))),
+      selfSummary: (st.selfTopics.length ? st.selfTopics.join(", ") : (en ? "any topic" : "mọi chủ đề")) + " · " + st.selfLevel + " · " + st.selfLang,
+      startSelf: () => this.setState({
+        view: "running", step: 0, draft: "", errored: false, thinking: false,
+        ctx: { id: en ? "CUSTOM" : "TỰ CHỌN",
+               title: st.selfTopics.length ? st.selfTopics.join(", ") : (en ? "Any topic" : "Mọi chủ đề"),
+               kind: st.selfLevel, diff: st.selfLang }
+      }),
+
+      submissions: SUBS.map((s) => ({
+        id: s.id, title: s.title, diff: s.diff, meta: s.meta, diffColor: this.diffColor(s.diff),
+        bg: st.hover === s.id ? "var(--rowHover)" : "transparent",
+        onEnter: () => this.setState({ hover: s.id }),
+        onLeave: () => this.setState({ hover: null }),
+        onStart: () => this.setState({ view: "running", ctx: s, step: 0, draft: "", errored: false, thinking: false })
+      })),
+      bankItems: BANK.map((b) => ({
+        id: b.id, kind: b.kind, diff: b.diff, title: b.title, diffColor: this.diffColor(b.diff),
+        bg: st.hover === b.id ? "var(--rowHover)" : "transparent",
+        onEnter: () => this.setState({ hover: b.id }),
+        onLeave: () => this.setState({ hover: null }),
+        onStart: () => this.setState({ view: "running", ctx: b, step: 0, draft: "", errored: false, thinking: false })
+      })),
+
+      phaseInfo: PHASES.map((p) => ({ n: p.n, name: en ? p.en : p.vi, desc: p.dvi, color: p.color })),
+      turnBudgetNote: en
+        ? "A session runs to " + this.maxTurns() + " turns, roughly four per stage, then closes with feedback."
+        : "Mỗi phiên tối đa " + this.maxTurns() + " lượt, khoảng bốn lượt một giai đoạn, rồi kết bằng nhận xét.",
+      rubricNames: RUBRIC.map((r) => ({ name: en ? r.en : r.vi, weight: r.weight })),
+
+      sessionCount: "4" + (en ? " sessions" : " phiên"),
+      sessions: [
+        { date: "2026-08-19", src: "SUB-2836 · Chuỗi con dài nhất", thread: "Sliding window → Unicode", turns: "12", score: "3.8" },
+        { date: "2026-08-17", src: "SUB-2820 · LRU Cache", thread: "Linked list → Cache eviction", turns: "10", score: "3.5" },
+        { date: "2026-08-12", src: "IQ-033 · Rút gọn URL", thread: "Base62 → Sharding", turns: "12", score: "3.1" },
+        { date: "2026-08-08", src: "SUB-2795 · Số đảo ngược", thread: "Merge sort → Cây Fenwick", turns: "9", score: "4.0" }
+      ].map((s, i) => Object.assign({}, s, {
+        scoreColor: this.scoreColor(parseFloat(s.score)),
+        rowBg: st.hoverRow === i ? "var(--rowHover)" : "transparent",
+        onEnter: () => this.setState({ hoverRow: i }),
+        onLeave: () => this.setState({ hoverRow: null }),
+        onOpen: () => this.setState({ view: "result" })
+      })),
+
+      sessionLabel: st.ctx.id + " · " + st.ctx.title,
+      turnsLeftLabel: (en ? "TURN " : "LƯỢT ") + used + " / " + this.maxTurns(),
+      messages: msgs.map((m) => {
+        const p = PHASES[m.phase];
+        const mine = m.role === "me";
+        return {
+          text: m.text, who: mine ? (en ? "You" : "Bạn") : (en ? "Interviewer" : "Người phỏng vấn"),
+          phaseLabel: p.n + " · " + (en ? p.en : p.vi),
+          phaseFg: p.color, phaseBg: "var(--chip)",
+          align: mine ? "flex-end" : "flex-start",
+          bg: mine ? "var(--chip)" : "var(--panel2)",
+          fg: "var(--ink)",
+          border: mine ? "var(--line)" : "var(--line2)"
+        };
+      }),
+      thinking: st.thinking,
+      aiError: st.errored,
+      retry: () => this.setState({ errored: false }),
+      draft: st.draft,
+      onDraft: (e) => this.setState({ draft: e.target.value }),
+      draftPlaceholder: en ? "Answer in your own words. State the approach before the detail." : "Trả lời bằng lời của bạn. Nêu hướng tiếp cận trước khi vào chi tiết.",
+      send: () => this.send(),
+      finish: () => this.setState({ view: "result", errored: false }),
+      abort: () => this.setState({ view: "entry", errored: false }),
+
+      phaseTrack: PHASES.map((p, i) => {
+        const state = i < curPhase ? "done" : i === curPhase ? "cur" : "todo";
+        const map = {
+          done: { mark: "✓", dotFg: "var(--onAccent)", dotBg: "var(--ok)", dotBorder: "var(--ok)", fg: "var(--ink2)", bg: "transparent" },
+          cur: { mark: p.n, dotFg: "var(--onAccent)", dotBg: p.color, dotBorder: p.color, fg: "var(--ink)", bg: "var(--chip)" },
+          todo: { mark: p.n, dotFg: "var(--ink3)", dotBg: "transparent", dotBorder: "var(--line)", fg: "var(--ink3)", bg: "transparent" }
+        };
+        const cnt = script.filter((s) => s.phase === i).length * 2;
+        return Object.assign({ name: en ? p.en : p.vi, turns: i <= curPhase ? cnt + (en ? " turns" : " lượt") : "—" }, map[state]);
+      }),
+      topicThread: thread.slice(0, curPhase + 2).map((t, i, arr) => ({
+        name: t.name, from: t.from,
+        dot: i === arr.length - 1 ? "var(--accent)" : "var(--panel)",
+        dotBorder: i === arr.length - 1 ? "var(--accent)" : "var(--gut)",
+        fg: i === arr.length - 1 ? "var(--ink)" : "var(--ink2)",
+        lineH: i === arr.length - 1 ? "0px" : "14px"
+      })),
+
+      contextTitle: fromSub ? (en ? "Submission context" : "Ngữ cảnh bài nộp") : st.source === "self" ? (en ? "Session setup" : "Cấu hình phiên") : (en ? "Question context" : "Ngữ cảnh câu hỏi"),
+      contextToggleLabel: st.contextOpen ? (en ? "Hide" : "Ẩn") : (en ? "Show" : "Hiện"),
+      toggleContext: () => this.setState({ contextOpen: !st.contextOpen }),
+      showContextToggle: fromSub,
+      contextOpen: st.contextOpen && fromSub,
+      ctxNote: fromSub ? "" : st.source === "self"
+        ? (en ? "No submission — questions are generated from this setup, and the AI talks code in " + st.selfLang + "." : "Không có bài nộp — câu hỏi do AI sinh theo cấu hình này, phần code nói theo " + st.selfLang + ".")
+        : (en ? "No code context — the AI probes the answer you give." : "Không có code — AI chất vấn dựa trên câu trả lời bạn nói ra."),
+      hasCtxNote: !fromSub,
+      ctxTitle: st.ctx.title,
+      ctxMeta: fromSub ? st.ctx.meta : st.ctx.kind + " · " + st.ctx.diff,
+      ctxCode: CODE.map((l, i) => ({ n: String(i + 1), text: l.text, color: l.c === "kw" ? "var(--kw)" : "var(--ink)" })),
+
+      resultTitle: st.ctx.id + " · " + st.ctx.title,
+      resultMeta: (en ? "12 turns · 3 stages · " : "12 lượt · 3 giai đoạn · ") + (fromSub ? (en ? "from accepted submission" : "từ bài nộp Accepted") : st.source === "self" ? (en ? "from custom setup" : "từ cấu hình tự chọn") : (en ? "from question bank" : "từ kho câu hỏi")),
+      overall: overallNum.toFixed(1),
+      overallColor: this.scoreColor(overallNum),
+      rubricScores: RUBRIC.map((r) => ({
+        name: en ? r.en : r.vi, score: r.score.toFixed(1),
+        pct: Math.round((r.score / 5) * 100) + "%",
+        color: this.scoreColor(r.score), note: r.nvi
+      })),
+      coveredTags: ["Hash map", "Trùng khoá", "Open addressing", "Resize ngưỡng", "External sort", "Two pointers"].map((t) => ({ text: t })),
+      nextSteps: [
+        { text: en ? "Say time and memory complexity without being asked." : "Nêu độ phức tạp thời gian và bộ nhớ mà không cần được hỏi." },
+        { text: en ? "Read how CPython dict resizes, then redo this session." : "Đọc cách CPython resize dict rồi làm lại phiên này." },
+        { text: en ? "Drill IQ-014 on collision resolution in the question bank." : "Ôn câu IQ-014 về collision resolution trong kho câu hỏi." }
+      ],
+      restart: () => this.setState({ view: "entry", step: 0, errored: false })
+    };
+  }
+}
+
+</script>
+</body>
+</html>

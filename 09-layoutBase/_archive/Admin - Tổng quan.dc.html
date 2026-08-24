@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Be Vietnam Pro', system-ui, sans-serif; background: #04060D; color: #E4EDFC; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
+  a { color: #8FD3FF; text-decoration: none; }
+  a:hover { color: #FFFFFF; }
+  table { border-collapse: collapse; }
+  ::selection { background: rgba(120,190,255,0.3); }
+  button, a, aside { transition: background-color .18s ease, color .18s ease, border-color .18s ease, box-shadow .18s ease, width .22s ease; }
+  button:focus-visible, a:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(140,200,255,0.35); }
+  @keyframes drift { 0% { transform: translate3d(0,0,0) scale(1); } 50% { transform: translate3d(3%, -4%, 0) scale(1.08); } 100% { transform: translate3d(0,0,0) scale(1); } }
+</style>
+</helmet>
+
+<div style="position: relative; min-height: 100vh; overflow: hidden; background: #04060D;">
+
+  <div style="position: fixed; inset: 0; z-index: 0; pointer-events: none;">
+    <div style="position: absolute; width: 780px; height: 780px; left: -180px; top: -260px; border-radius: 50%; background: radial-gradient(circle at 40% 40%, rgba(48,110,240,0.42), rgba(48,110,240,0) 62%); filter: blur(34px); animation: drift 26s ease-in-out infinite;"></div>
+    <div style="position: absolute; width: 720px; height: 720px; right: -140px; top: -200px; border-radius: 50%; background: radial-gradient(circle at 50% 50%, rgba(96,72,210,0.3), rgba(96,72,210,0) 62%); filter: blur(38px); animation: drift 34s ease-in-out infinite reverse;"></div>
+    <div style="position: absolute; width: 900px; height: 700px; left: 24%; bottom: -320px; border-radius: 50%; background: radial-gradient(circle at 50% 50%, rgba(18,110,175,0.28), rgba(18,110,175,0) 64%); filter: blur(42px); animation: drift 40s ease-in-out infinite;"></div>
+    <div style="position: absolute; inset: 0; background-image: linear-gradient(rgba(150,190,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(150,190,255,0.035) 1px, transparent 1px); background-size: 56px 56px;"></div>
+    <div style="position: absolute; inset: 0; background: radial-gradient(120% 90% at 50% 0%, rgba(4,6,13,0) 30%, rgba(4,6,13,0.72) 100%);"></div>
+  </div>
+
+  <div style="position: relative; z-index: 1; display: grid; grid-template-columns: {{ sidebarW }} minmax(0, 1fr); gap: 18px; padding: 18px; max-width: 1560px; margin: 0 auto;">
+
+    <aside style="position: sticky; top: 18px; align-self: start; height: calc(100vh - 36px); display: flex; flex-direction: column; background: rgba(150,190,255,0.075); backdrop-filter: blur(28px) saturate(160%); -webkit-backdrop-filter: blur(28px) saturate(160%); border: 1px solid rgba(150,190,255,0.16); border-radius: 22px; box-shadow: 0 1px 0 rgba(190,220,255,0.24) inset, 0 24px 60px rgba(0,0,0,0.6); padding: 18px 13px; overflow: hidden;">
+      <div style="display: flex; align-items: center; gap: 10px; padding: 4px 6px 18px;">
+        <span style="width: 30px; height: 30px; flex-shrink: 0; border-radius: 10px; background: linear-gradient(140deg, rgba(210,232,255,0.55), rgba(150,190,255,0.14)); border: 1px solid rgba(180,215,255,0.32); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #071026;">A</span>
+        <div style="flex: 1 1 auto; min-width: 0; display: {{ expandedDisplay }};">
+          <div style="font-size: 15px; font-weight: 700; letter-spacing: -0.01em; white-space: nowrap;">AlgoPrep</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.16em; color: rgba(200,220,250,0.5);">ADMIN</div>
+        </div>
+        <button onClick="{{ toggle }}" title="Thu gọn / mở rộng" style="width: 28px; height: 28px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border-radius: 9px; border: 1px solid rgba(150,190,255,0.18); background: rgba(150,190,255,0.09); color: rgba(214,230,255,0.8); font-family: inherit; font-size: 13px; cursor: pointer;" style-hover="background: rgba(150,190,255,0.18); color: #FFFFFF;">{{ toggleIcon }}</button>
+      </div>
+
+      <nav style="display: flex; flex-direction: column; gap: 3px; flex: 1 1 auto; overflow-y: auto; overflow-x: hidden;">
+        <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="9">
+          <a href="{{ n.href }}" title="{{ n.label }}" style="display: flex; align-items: center; gap: 11px; height: 38px; padding: 0 11px; border-radius: 12px; font-size: 13.5px; font-weight: {{ n.weight }}; color: {{ n.fg }}; background: {{ n.bg }}; border: 1px solid {{ n.border }};" style-hover="background: rgba(150,190,255,0.14); color: #FFFFFF;">
+            <span style="width: 6px; height: 6px; border-radius: 2px; background: {{ n.dot }}; flex-shrink: 0;"></span>
+            <span style="flex: 1 1 auto; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: {{ expandedDisplay }};">{{ n.label }}</span>
+            <sc-if value="{{ n.showBadge }}" hint-placeholder-val="{{ false }}">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; font-weight: 600; padding: 2px 6px; border-radius: 6px; background: rgba(150,190,255,0.16); color: #E4EDFC;">{{ n.badge }}</span>
+            </sc-if>
+          </a>
+        </sc-for>
+      </nav>
+
+      <div style="margin-top: 14px; padding: 13px; border-radius: 16px; background: rgba(150,190,255,0.07); border: 1px solid rgba(150,190,255,0.14); display: {{ expandedDisplay }};">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 9px;">
+          <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(200,220,250,0.55);">Judge0</span>
+          <span style="display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; color: #5AE0A8;"><span style="width: 6px; height: 6px; border-radius: 50%; background: #5AE0A8; box-shadow: 0 0 0 4px rgba(90,224,168,0.18);"></span>Hoạt động</span>
+        </div>
+        <div style="height: 6px; border-radius: 999px; background: rgba(150,190,255,0.15); overflow: hidden; margin-bottom: 8px;">
+          <div style="width: 62%; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #5AE0A8, #7FD0FF);"></div>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 11.5px; color: rgba(200,220,250,0.62);"><span>Hàng đợi 14 job</span><span style="font-family: 'JetBrains Mono', monospace;">62%</span></div>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 10px; margin-top: 12px; padding: 8px 6px; border-radius: 14px;">
+        <div style="width: 32px; height: 32px; flex-shrink: 0; border-radius: 50%; background: rgba(150,190,255,0.16); border: 1px solid rgba(150,190,255,0.22); display: flex; align-items: center; justify-content: center; font-size: 11.5px; font-weight: 600;">PD</div>
+        <div style="min-width: 0; flex: 1 1 auto; display: {{ expandedDisplay }};">
+          <div style="font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Phú Đại</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: rgba(200,220,250,0.5);">Quản trị viên</div>
+        </div>
+        <a href="./Dashboard AlgoPrep.dc.html" style="font-size: 11.5px; font-weight: 600; color: rgba(200,220,250,0.6); display: {{ expandedDisplay }};" style-hover="color: #FFFFFF;">Thoát</a>
+      </div>
+    </aside>
+
+    <main style="display: flex; flex-direction: column; gap: 16px; padding-bottom: 22px;">
+
+      <div style="display: flex; align-items: center; gap: 14px; height: 62px; padding: 0 18px; background: rgba(150,190,255,0.075); backdrop-filter: blur(28px) saturate(160%); -webkit-backdrop-filter: blur(28px) saturate(160%); border: 1px solid rgba(150,190,255,0.16); border-radius: 20px; box-shadow: 0 1px 0 rgba(190,220,255,0.22) inset, 0 18px 44px rgba(0,0,0,0.5);">
+        <div style="flex: 1 1 auto; min-width: 0;">
+          <div style="font-size: 16px; font-weight: 700; letter-spacing: -0.01em;">Tổng quan hệ thống</div>
+          <div style="font-size: 12.5px; color: rgba(200,220,250,0.58);">Cập nhật 2 phút trước · Dữ liệu 7 ngày gần nhất</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 9px; height: 34px; padding: 0 12px; border-radius: 11px; background: rgba(150,190,255,0.09); border: 1px solid rgba(150,190,255,0.16); min-width: 230px;">
+          <span style="font-size: 13px; color: rgba(200,220,250,0.45);">Tìm người dùng, bài toán…</span>
+        </div>
+        <div style="display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: rgba(150,190,255,0.09); border: 1px solid rgba(150,190,255,0.14);">
+          <sc-for list="{{ ranges }}" as="r" hint-placeholder-count="3">
+            <button onClick="{{ r.onClick }}" style="height: 26px; padding: 0 11px; border: none; border-radius: 9px; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer; background: {{ r.bg }}; color: {{ r.fg }};">{{ r.label }}</button>
+          </sc-for>
+        </div>
+        <button style="height: 34px; padding: 0 15px; border: 1px solid rgba(180,215,255,0.32); border-radius: 11px; background: linear-gradient(160deg, rgba(226,240,255,0.94), rgba(186,214,255,0.7)); font-family: inherit; font-size: 13px; font-weight: 600; color: #071026; cursor: pointer; white-space: nowrap;" style-hover="background: #FFFFFF;">Xuất báo cáo</button>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px;">
+        <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+          <div style="position: relative; overflow: hidden; padding: 17px 18px 16px; background: rgba(150,190,255,0.08); backdrop-filter: blur(26px) saturate(160%); -webkit-backdrop-filter: blur(26px) saturate(160%); border: 1px solid rgba(150,190,255,0.16); border-radius: 20px; box-shadow: 0 1px 0 rgba(190,220,255,0.22) inset, 0 18px 44px rgba(0,0,0,0.48);">
+            <div style="position: absolute; top: -40px; right: -40px; width: 130px; height: 130px; border-radius: 50%; background: {{ k.glow }}; filter: blur(28px);"></div>
+            <div style="position: relative; display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+              <span style="width: 7px; height: 7px; border-radius: 2px; background: {{ k.dot }};"></span>
+              <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(200,220,250,0.6);">{{ k.label }}</span>
+            </div>
+            <div style="position: relative; display: flex; align-items: baseline; gap: 8px;">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 29px; font-weight: 600; letter-spacing: -0.03em;">{{ k.value }}</span>
+              <span style="font-size: 12.5px; font-weight: 600; color: {{ k.deltaFg }};">{{ k.delta }}</span>
+            </div>
+            <div style="position: relative; margin-top: 6px; font-size: 12.5px; color: rgba(200,220,250,0.55);">{{ k.sub }}</div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr); gap: 16px;">
+
+        <div style="padding: 18px 20px 16px; background: rgba(150,190,255,0.075); backdrop-filter: blur(28px) saturate(160%); -webkit-backdrop-filter: blur(28px) saturate(160%); border: 1px solid rgba(150,190,255,0.16); border-radius: 22px; box-shadow: 0 1px 0 rgba(190,220,255,0.22) inset, 0 20px 48px rgba(0,0,0,0.5);">
+          <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 20px;">
+            <div>
+              <div style="font-size: 14.5px; font-weight: 700;">Lượt nộp bài theo ngày</div>
+              <div style="font-size: 12.5px; color: rgba(200,220,250,0.55);">Chia theo kết quả chấm của Judge0</div>
+            </div>
+            <div style="display: flex; gap: 14px;">
+              <sc-for list="{{ legend }}" as="l" hint-placeholder-count="3">
+                <span style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: rgba(200,220,250,0.68);"><span style="width: 8px; height: 8px; border-radius: 3px; background: {{ l.color }};"></span>{{ l.label }}</span>
+              </sc-for>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 14px; align-items: end; height: 210px;">
+            <sc-for list="{{ chart }}" as="c" hint-placeholder-count="7">
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; height: 100%; justify-content: flex-end;">
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: rgba(200,220,250,0.6);">{{ c.total }}</span>
+                <div style="width: 100%; max-width: 46px; display: flex; flex-direction: column; justify-content: flex-end; gap: 3px; height: {{ c.h }};">
+                  <div style="flex: {{ c.wa }} 1 0; border-radius: 6px 6px 3px 3px; background: linear-gradient(180deg, rgba(255,138,138,0.95), rgba(255,138,138,0.5)); min-height: 4px;"></div>
+                  <div style="flex: {{ c.tle }} 1 0; border-radius: 3px; background: linear-gradient(180deg, rgba(255,206,120,0.95), rgba(255,206,120,0.5)); min-height: 4px;"></div>
+                  <div style="flex: {{ c.ac }} 1 0; border-radius: 3px 3px 8px 8px; background: linear-gradient(180deg, rgba(126,232,190,0.95), rgba(120,200,255,0.6)); min-height: 4px;"></div>
+                </div>
+                <span style="font-size: 12px; color: rgba(200,220,250,0.55);">{{ c.day }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <div style="padding: 18px 20px; background: rgba(150,190,255,0.075); backdrop-filter: blur(28px) saturate(160%); -webkit-backdrop-filter: blur(28px) saturate(160%); border: 1px solid rgba(150,190,255,0.16); border-radius: 22px; box-shadow: 0 1px 0 rgba(190,220,255,0.22) inset, 0 20px 48px rgba(0,0,0,0.5);">
+            <div style="font-size: 14.5px; font-weight: 700; margin-bottom: 3px;">Chờ duyệt</div>
+            <div style="font-size: 12.5px; color: rgba(200,220,250,0.55); margin-bottom: 14px;">Nội dung do giảng viên và AI đề xuất</div>
+            <div style="display: flex; flex-direction: column; gap: 9px;">
+              <sc-for list="{{ queue }}" as="q" hint-placeholder-count="3">
+                <div style="display: flex; align-items: center; gap: 12px; padding: 11px 13px; border-radius: 14px; background: rgba(150,190,255,0.07); border: 1px solid rgba(150,190,255,0.14);">
+                  <div style="min-width: 0; flex: 1 1 auto;">
+                    <div style="font-size: 13.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ q.title }}</div>
+                    <div style="font-size: 12px; color: rgba(200,220,250,0.52);">{{ q.meta }}</div>
+                  </div>
+                  <span style="font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 600; color: {{ q.color }};">{{ q.count }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <a href="./Ngân hàng bài toán.dc.html" style="display: flex; align-items: center; justify-content: center; height: 36px; margin-top: 12px; border-radius: 12px; background: rgba(150,190,255,0.12); border: 1px solid rgba(150,190,255,0.18); font-size: 13px; font-weight: 600; color: #E4EDFC;" style-hover="background: rgba(150,190,255,0.2); color: #FFFFFF;">Mở hàng đợi duyệt</a>
+          </div>
+
+          <div style="flex: 1 1 auto; padding: 18px 20px; background: rgba(150,190,255,0.075); backdrop-filter: blur(28px) saturate(160%); -webkit-backdrop-filter: blur(28px) saturate(160%); border: 1px solid rgba(150,190,255,0.16); border-radius: 22px; box-shadow: 0 1px 0 rgba(190,220,255,0.22) inset, 0 20px 48px rgba(0,0,0,0.5);">
+            <div style="font-size: 14.5px; font-weight: 700; margin-bottom: 14px;">Chủ đề khó nhất</div>
+            <div style="display: flex; flex-direction: column; gap: 13px;">
+              <sc-for list="{{ topics }}" as="t" hint-placeholder-count="4">
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;"><span style="font-weight: 500;">{{ t.name }}</span><span style="font-family: 'JetBrains Mono', monospace; color: rgba(200,220,250,0.6);">{{ t.rate }}</span></div>
+                  <div style="height: 7px; border-radius: 999px; background: rgba(150,190,255,0.13); overflow: hidden;">
+                    <div style="width: {{ t.w }}; height: 100%; border-radius: 999px; background: {{ t.bar }};"></div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="padding: 18px 20px 8px; background: rgba(150,190,255,0.075); backdrop-filter: blur(28px) saturate(160%); -webkit-backdrop-filter: blur(28px) saturate(160%); border: 1px solid rgba(150,190,255,0.16); border-radius: 22px; box-shadow: 0 1px 0 rgba(190,220,255,0.22) inset, 0 20px 48px rgba(0,0,0,0.5);">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 12px;">
+          <div>
+            <div style="font-size: 14.5px; font-weight: 700;">Lượt nộp gần đây</div>
+            <div style="font-size: 12.5px; color: rgba(200,220,250,0.55);">Theo dõi trực tiếp trạng thái chấm</div>
+          </div>
+          <a href="./Bài đã nộp.dc.html" style="font-size: 13px; font-weight: 600;">Xem tất cả</a>
+        </div>
+        <table style="width: 100%; font-size: 13.5px;">
+          <thead>
+            <tr>
+              <sc-for list="{{ cols }}" as="c" hint-placeholder-count="6">
+                <th style="text-align: {{ c.align }}; padding: 9px 12px; font-size: 11px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(200,220,250,0.5); border-bottom: 1px solid rgba(150,190,255,0.16);">{{ c.label }}</th>
+              </sc-for>
+            </tr>
+          </thead>
+          <tbody>
+            <sc-for list="{{ rows }}" as="r" hint-placeholder-count="6">
+              <tr style="border-bottom: 1px solid rgba(150,190,255,0.09);" style-hover="background: rgba(150,190,255,0.07);">
+                <td style="padding: 12px; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: rgba(200,220,250,0.65);">{{ r.id }}</td>
+                <td style="padding: 12px;">
+                  <div style="display: flex; align-items: center; gap: 9px;">
+                    <span style="width: 26px; height: 26px; border-radius: 50%; background: rgba(150,190,255,0.14); border: 1px solid rgba(150,190,255,0.18); display: flex; align-items: center; justify-content: center; font-size: 10.5px; font-weight: 600;">{{ r.initials }}</span>
+                    <span style="font-weight: 500;">{{ r.user }}</span>
+                  </div>
+                </td>
+                <td style="padding: 12px; color: rgba(228,237,252,0.85);">{{ r.problem }}</td>
+                <td style="padding: 12px; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: rgba(200,220,250,0.65);">{{ r.lang }}</td>
+                <td style="padding: 12px;">
+                  <span style="display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: 999px; font-size: 12px; font-weight: 600; background: {{ r.stBg }}; border: 1px solid {{ r.stBorder }}; color: {{ r.stFg }};"><span style="width: 6px; height: 6px; border-radius: 50%; background: {{ r.stFg }};"></span>{{ r.status }}</span>
+                </td>
+                <td style="padding: 12px; text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: rgba(200,220,250,0.6);">{{ r.time }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+
+      <footer style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap; padding: 16px 20px; background: rgba(150,190,255,0.06); backdrop-filter: blur(28px) saturate(160%); -webkit-backdrop-filter: blur(28px) saturate(160%); border: 1px solid rgba(150,190,255,0.14); border-radius: 20px; box-shadow: 0 1px 0 rgba(190,220,255,0.18) inset, 0 18px 44px rgba(0,0,0,0.45);">
+        <div style="min-width: 0;">
+          <div style="font-size: 13px; font-weight: 600;">AlgoPrep Admin · v2.4.1</div>
+          <div style="font-size: 12px; color: rgba(200,220,250,0.5);">© 2026 AlgoPrep. Bảng điều khiển nội bộ.</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; margin-left: auto; font-size: 12.5px; color: rgba(200,220,250,0.6);">
+          <span style="width: 6px; height: 6px; border-radius: 50%; background: #5AE0A8; box-shadow: 0 0 0 4px rgba(90,224,168,0.16);"></span>Mọi dịch vụ hoạt động bình thường
+        </div>
+        <div style="display: flex; gap: 18px; font-size: 12.5px;">
+          <sc-for list="{{ footerLinks }}" as="f" hint-placeholder-count="4">
+            <a href="{{ f.href }}" style="color: rgba(200,220,250,0.68); font-weight: 500;" style-hover="color: #FFFFFF;">{{ f.label }}</a>
+          </sc-for>
+        </div>
+      </footer>
+
+    </main>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#7FD0FF&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#7FD0FF&quot;,&quot;#A78BFA&quot;,&quot;#7EE8BE&quot;,&quot;#FFCE78&quot;]}}">
+class Component extends DCLogic {
+  state = { range: '7 ngày', collapsed: false };
+
+  renderVals() {
+    const accent = this.props.accent ?? '#7FD0FF';
+    const collapsed = this.state.collapsed;
+    const nav = [
+      ['Tổng quan', './Admin - Tổng quan.dc.html', accent, null],
+      ['Người dùng', '#', 'rgba(180,210,255,0.35)', '1.2k'],
+      ['Bài toán', './Ngân hàng bài toán.dc.html', 'rgba(180,210,255,0.35)', null],
+      ['Testcase', '#', 'rgba(180,210,255,0.35)', null],
+      ['Lượt nộp', './Bài đã nộp.dc.html', 'rgba(180,210,255,0.35)', '14'],
+      ['Câu hỏi phỏng vấn', './Câu hỏi phỏng vấn.dc.html', 'rgba(180,210,255,0.35)', null],
+      ['Báo cáo AI', '#', 'rgba(180,210,255,0.35)', '6'],
+      ['Nhật ký hệ thống', '#', 'rgba(180,210,255,0.35)', null],
+      ['Cấu hình', './Cài đặt.dc.html', 'rgba(180,210,255,0.35)', null],
+    ];
+    const navItems = nav.map(([label, href, dot, badge], i) => ({
+      label, href, dot, badge,
+      showBadge: !!badge && !collapsed,
+      weight: i === 0 ? 600 : 500,
+      fg: i === 0 ? '#FFFFFF' : 'rgba(214,230,255,0.72)',
+      bg: i === 0 ? 'rgba(150,190,255,0.16)' : 'transparent',
+      border: i === 0 ? 'rgba(150,190,255,0.22)' : 'transparent',
+    }));
+
+    const ranges = ['24 giờ', '7 ngày', '30 ngày'].map(label => ({
+      label,
+      onClick: () => this.setState({ range: label }),
+      bg: this.state.range === label ? 'rgba(226,240,255,0.92)' : 'transparent',
+      fg: this.state.range === label ? '#071026' : 'rgba(214,230,255,0.7)',
+    }));
+
+    const kpis = [
+      { label: 'Người dùng hoạt động', value: '1.284', delta: '+8,4%', sub: '312 người học trong 24 giờ', dot: '#7FD0FF', glow: 'rgba(90,160,255,0.34)', deltaFg: '#7EE8BE' },
+      { label: 'Lượt nộp bài', value: '9.416', delta: '+12,1%', sub: 'Trung bình 1.345 lượt/ngày', dot: '#A78BFA', glow: 'rgba(140,120,240,0.3)', deltaFg: '#7EE8BE' },
+      { label: 'Tỉ lệ Accepted', value: '48%', delta: '−2,3%', sub: '4.520 lượt được chấp nhận', dot: '#7EE8BE', glow: 'rgba(110,210,190,0.28)', deltaFg: '#FF8A8A' },
+      { label: 'Thời gian chấm TB', value: '1,8s', delta: '−0,4s', sub: 'Judge0 · 3 worker đang chạy', dot: '#FFCE78', glow: 'rgba(230,190,120,0.26)', deltaFg: '#7EE8BE' },
+    ];
+
+    const legend = [
+      { label: 'Accepted', color: '#7EE8BE' },
+      { label: 'TLE', color: '#FFCE78' },
+      { label: 'Sai / lỗi', color: '#FF8A8A' },
+    ];
+
+    const raw = [
+      ['T2', 61, 14, 25, 1180], ['T3', 55, 17, 28, 1310], ['T4', 49, 19, 32, 1425],
+      ['T5', 58, 13, 29, 1288], ['T6', 44, 21, 35, 1602], ['T7', 52, 16, 32, 1174], ['CN', 47, 18, 35, 890],
+    ];
+    const maxTotal = Math.max(...raw.map(r => r[4]));
+    const chart = raw.map(([day, ac, tle, wa, total]) => ({
+      day, ac, tle, wa,
+      total: total.toLocaleString('vi-VN'),
+      h: (38 + (total / maxTotal) * 62) + '%',
+    }));
+
+    const queue = [
+      { title: 'Bài toán mới', meta: 'Giảng viên gửi lên', count: 7, color: '#7FD0FF' },
+      { title: 'Testcase chờ kiểm', meta: 'Sinh tự động từ AI', count: 23, color: '#FFCE78' },
+      { title: 'Báo cáo nội dung', meta: 'Người dùng phản ánh', count: 6, color: '#FF8A8A' },
+    ];
+
+    const topics = [
+      ['Quy hoạch động', '31%', 31], ['Đồ thị', '38%', 38], ['Cây nhị phân', '46%', 46], ['Hai con trỏ', '58%', 58],
+    ].map(([name, rate, v]) => ({
+      name, rate, w: v + '%',
+      bar: v < 35 ? 'linear-gradient(90deg,#FF8A8A,#FFB08A)' : v < 50 ? 'linear-gradient(90deg,#FFCE78,#7EE8BE)' : 'linear-gradient(90deg,#7EE8BE,#7FD0FF)',
+    }));
+
+    const cols = [
+      { label: 'Mã', align: 'left' }, { label: 'Người dùng', align: 'left' }, { label: 'Bài toán', align: 'left' },
+      { label: 'Ngôn ngữ', align: 'left' }, { label: 'Kết quả', align: 'left' }, { label: 'Thời điểm', align: 'right' },
+    ];
+
+    const st = {
+      'Accepted': ['rgba(126,232,190,0.14)', 'rgba(126,232,190,0.32)', '#7EE8BE'],
+      'Wrong answer': ['rgba(255,138,138,0.14)', 'rgba(255,138,138,0.32)', '#FF8A8A'],
+      'Time limit': ['rgba(255,206,120,0.14)', 'rgba(255,206,120,0.32)', '#FFCE78'],
+      'Đang chấm': ['rgba(127,208,255,0.14)', 'rgba(127,208,255,0.32)', '#7FD0FF'],
+      'Runtime error': ['rgba(255,138,138,0.14)', 'rgba(255,138,138,0.32)', '#FF8A8A'],
+    };
+    const rows = [
+      ['#SB-90412', 'Nguyễn Minh Anh', 'Two Sum', 'Python 3', 'Accepted', '2 phút trước'],
+      ['#SB-90411', 'Trần Quốc Bảo', 'Longest Substring', 'C++ 17', 'Đang chấm', '3 phút trước'],
+      ['#SB-90409', 'Lê Thu Hà', 'Course Schedule', 'Java 21', 'Time limit', '6 phút trước'],
+      ['#SB-90407', 'Phạm Gia Huy', 'Coin Change', 'Python 3', 'Wrong answer', '9 phút trước'],
+      ['#SB-90404', 'Đỗ Khánh Linh', 'Merge Intervals', 'C++ 17', 'Accepted', '12 phút trước'],
+      ['#SB-90401', 'Vũ Tuấn Kiệt', 'Binary Tree Paths', 'Java 21', 'Runtime error', '15 phút trước'],
+    ].map(([id, user, problem, lang, status, time]) => ({
+      id, user, problem, lang, status, time,
+      initials: user.split(' ').slice(-2).map(w => w[0]).join(''),
+      stBg: st[status][0], stBorder: st[status][1], stFg: st[status][2],
+    }));
+
+    const footerLinks = [
+      { label: 'Tài liệu API', href: '#' }, { label: 'Trạng thái Judge0', href: '#' },
+      { label: 'Nhật ký thay đổi', href: '#' }, { label: 'Hỗ trợ', href: '#' },
+    ];
+
+    return {
+      navItems, ranges, kpis, legend, chart, queue, topics, cols, rows, footerLinks,
+      sidebarW: collapsed ? '76px' : '246px',
+      expandedDisplay: collapsed ? 'none' : 'block',
+      toggleIcon: collapsed ? '»' : '«',
+      toggle: () => this.setState(s => ({ collapsed: !s.collapsed })),
+    };
+  }
+}
+</script>
+</body>
+</html>
