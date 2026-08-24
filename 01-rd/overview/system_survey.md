@@ -241,6 +241,7 @@ Việc chia nhỏ và đánh mã là [SoT: Suy luận]; **nội dung** từng ch
 | F1-14 | Ghi Nhật ký hệ thống cho mọi thay đổi ma trận phân quyền và mọi thao tác quản trị | A4 | Không có ngoại lệ, kể cả đổi quyền. Chốt 2026-08-24 (mục 2.5): chỉ hành động quản trị của người, không gộp sự kiện hạ tầng — sự kiện hạ tầng xem ở `admin_queue_monitor` (F4-10) |
 | F1-15 | Đăng nhập/đăng ký qua OAuth (GitHub, Google) | A1 A2 A3 | Bổ sung `06-plan/PROTOTYPE_DEBT.md` mục 2.2. Trùng email với tài khoản email/mật khẩu → tự động liên kết, không tạo tài khoản thứ hai |
 | F1-16 | Tự xoá tài khoản (danger zone) | A1 A2 A3 | Bổ sung mục 2.3. Khoá mềm (`DEACTIVATED`) ngay, ẩn danh hoá thông tin định danh sau khoảng ân hạn; bài nộp/bài giải/phiên phỏng vấn không bị xoá |
+| F1-17 | Tự đặt lại mật khẩu bằng mã 6 chữ số gửi qua email (Gmail) | A1 A2 A3 | Bổ sung `01-rd/screens/shared/auth.md` mục 5 câu hỏi mở Q4, chốt 2026-08-24. Mã dùng một lần, có hạn hiệu lực; không tiết lộ email có tồn tại hay không (OWASP) |
 
 ### 5.2. F2 — Ngân hàng bài toán và testcase
 
@@ -248,7 +249,7 @@ Việc chia nhỏ và đánh mã là [SoT: Suy luận]; **nội dung** từng ch
 | :--- | :--- | :--- | :--- |
 | F2-01 | Soạn đề bài bằng Markdown kèm công thức LaTeX | A2 | |
 | F2-02 | Phân loại bài toán theo độ khó và chủ đề | A2 | |
-| F2-03 | Khai báo đặc tả bài toán: chữ ký hàm theo từng ngôn ngữ, kiểu tham số và kiểu trả về | A2 | Đầu vào bắt buộc của F3 |
+| F2-03 | Khai báo đặc tả bài toán cho CẢ HAI mô hình: chữ ký hàm theo từng ngôn ngữ (Bọc hàm) và định dạng input/output theo dòng chuẩn (Standard I/O) | A2 | Sửa 2026-08-24 (`DEC-2026-0824-dual-submission-model-per-problem`) — trước chỉ có chữ ký hàm, giờ bắt buộc cả hai vì học viên tự chọn mô hình lúc làm bài (F3-13) |
 | F2-04 | Khai báo chiến lược so khớp kết quả cho bài toán | A2 | exact, chuẩn hoá khoảng trắng, epsilon, tập không thứ tự |
 | F2-05 | Tạo testcase mẫu (Sample) — công khai, dùng cho chạy thử | A2 | |
 | F2-06 | Tạo testcase ẩn (Hidden) — dùng cho nộp bài | A2 | |
@@ -280,7 +281,7 @@ mặc định) — vốn chỉ nhận stdin/stdout, y như Judge0.
 | F3-10 | So khớp tập hợp không xét thứ tự | A4 | |
 | F3-11 | Ánh xạ lỗi biên dịch về đúng dòng trong mã người dùng | A4 | Trừ độ lệch dòng của vùng chèn |
 | F3-12 | Che giấu lỗi thuộc phần mã harness | A4 | Người học không được thấy mã hệ thống |
-| F3-13 | Đường lùi sang mô hình nhập/xuất chuẩn khi lược đồ chưa phủ kiểu dữ liệu của bài | A2 | Phương án xử lý rủi ro, `README.md` mục 7 |
+| F3-13 | Cả hai mô hình nộp bài luôn song song cho mọi bài; học viên tự chọn lúc làm bài, không phải instructor chọn theo bài | A1 | Sửa 2026-08-24 (`DEC-2026-0824-dual-submission-model-per-problem`) — trước là "đường lùi" do A2 quyết theo bài, nay là lựa chọn của A1 mỗi lượt làm. Chỉ khi kiểu dữ liệu vượt lược đồ F3 mới ẩn hẳn Bọc hàm, còn Standard I/O luôn khả dụng |
 
 ### 5.4. F4 — Điều phối và giao tiếp judge engine
 
@@ -317,11 +318,12 @@ Kích hoạt **sau khi** bài nộp đạt Accepted. Hai chức năng độc l�
 | F5-02 | Phân tích độ phức tạp thời gian và bộ nhớ thực tế của mã đã nộp, kèm lập luận | A4 | |
 | F5-03 | Đối chiếu với độ phức tạp tối ưu đã biết của bài toán; nếu chưa tối ưu thì gợi ý hướng tiếp cận tốt hơn | A4 | |
 | F5-04 | Chỉ ra trường hợp biên bộ test chưa phủ, giả định ngầm trong mã, nguy cơ tràn số, rủi ro khi dữ liệu lớn hơn ràng buộc | A4 | |
-| F5-05 | Nhận xét chất lượng mã: đặt tên, phân rã, trùng lặp, độ dễ đọc | A4 | |
-| F5-06 | Đưa ra câu hỏi mở rộng để người học tự củng cố | A4 | |
+| F5-05 | Nhận xét chất lượng mã: đặt tên, phân rã, trùng lặp, độ dễ đọc | A4 | Chốt 2026-08-25: kèm điểm số dễ đọc thang 1-5, AI tự chấm trong cùng lượt phân tích, là một trường của F5-07 |
+| F5-06 | Đưa ra câu hỏi mở rộng để người học tự củng cố | A4 | Chốt 2026-08-25: dạng chủ đề/từ khoá gợi ý, không liên kết cố định tới câu hỏi cụ thể trong `interview-bank` — tránh đọc chéo module (`DEC-2026-0820-architecture-baseline`); UI dựng liên kết tìm kiếm sang `interview_bank_list` theo chủ đề. Cách trình bày cụ thể **[Đợi nextjs]** |
 | F5-07 | Trả kết quả dưới dạng dữ liệu có cấu trúc (JSON theo lược đồ) | A4 | Để giao diện render báo cáo tĩnh |
 | F5-08 | Lưu báo cáo kèm bài nộp, tra cứu lại được từ trang tiến độ | A4 | |
 | F5-26 | Áp dụng bản mã AI đề xuất vào Workspace, ghi đè mã đang có | A1 | Bổ sung mục 2.13. Bắt buộc xác nhận trước khi ghi đè; giữ lại bản mã cũ (khôi phục được), không mất luôn |
+| F5-27 | Điểm quy đổi trên thang 10 từ báo cáo F5.1, cho giảng viên xem nhanh + chấm tay đè lên trong lớp mình phụ trách | A2 A4 | Bổ sung mục 6.2.a (`06-plan/PROTOTYPE_DEBT.md`). Chốt 2026-08-24: chỉ là lớp tham khảo nội bộ của giảng viên, tách bạch khỏi Pass/Fail chính thức (F4-04) và không mâu thuẫn F5-18 vì không hiện cho người học như điểm chính thức |
 
 #### F5.2 — Phỏng vấn giả lập 1:1 (nhiều lượt)
 
@@ -371,14 +373,17 @@ Kích hoạt **sau khi** bài nộp đạt Accepted. Hai chức năng độc l�
 
 ### 5.7. Tổng hợp số lượng
 
+Cập nhật 2026-08-24 sau khi đồng bộ với prototype `09-layoutBase/` (F1-10..17, F2-13/14, F4-09a..e, F5-24..27, F6-12):
+
 | Phân hệ | Số chức năng | Trọng số công việc dự kiến |
 | :--- | :---: | :--- |
-| F1 — Danh tính và phân quyền | 9 | Trung bình. Nhiều thư viện sẵn, nhưng luồng hai token phải làm đúng |
-| F2 — Ngân hàng bài toán và testcase | 12 | Trung bình. Nặng phần giao diện soạn nội dung của A2 |
-| F3 — Bộ sinh mã bọc hàm | 13 | **Cao nhất.** Trọng tâm kỹ thuật, nhân ba theo số ngôn ngữ |
-| F4 — Điều phối judge engine | 11 | **Cao.** Không còn vì bất đồng bộ nhiều trạng thái (adapter mặc định gọi đồng bộ) — độ khó chuyển sang: điều phối concurrency khi nhiều Virtual Thread cùng gọi engine, và điều phối phản hồi realtime từng testcase qua WebSocket (`DEC-2026-0823-go-judge-default-engine`) |
-| F5 — Phân hệ AI | 23 | Cao. Hai luồng khác hẳn nhau về hình thái |
-| F6 — Ngân hàng câu hỏi | 11 | Thấp. Độc lập, cắt được nếu thiếu thời gian |
+| F1 — Danh tính và phân quyền | 17 | Trung bình. 17 mã (F1-01 tới F1-17): bao gồm ma trận quyền Role × Function × Action, OAuth, danger zone xoá tài khoản, tự đặt lại mật khẩu qua email |
+| F2 — Ngân hàng bài toán và testcase | 14 | Trung bình. 14 mã (F2-01 tới F2-14): giao diện soạn đề A2, bookmark note riêng tư, AI sinh input testcase |
+| F3 — Bộ sinh mã bọc hàm | 13 | **Cao nhất, tăng thêm sau 2026-08-24.** 13 mã (F3-01 tới F3-13): trọng tâm kỹ thuật, nhân ba theo số ngôn ngữ — và từ `DEC-2026-0824-dual-submission-model-per-problem`, codegen tăng gần gấp đôi vì mỗi ngôn ngữ giờ cần sinh cả mã Bọc hàm lẫn khung Standard I/O cho hầu hết bài toán, không còn là trường hợp hiếm |
+| F4 — Điều phối judge engine | 15 | **Cao.** 15 mã (F4-01 tới F4-08, F4-09a tới F4-09e, F4-10, F4-11): điều phối concurrency Virtual Threads, realtime WebSocket từng testcase, quy trình chấm lại 5 bước có dry-run/pause/audit |
+| F5 — Phân hệ AI | 27 | Cao. 27 mã (F5-01 tới F5-27): hai luồng phân tích bài giải & phỏng vấn giả lập, ngân sách token tự khoá, điểm AI tham khảo & chấm tay F5-27 |
+| F6 — Ngân hàng câu hỏi | 12 | Thấp. 12 mã (F6-01 tới F6-12): chế độ học & luyện,spaced-repetition tự chấm |
+| **Tổng** | **97** | *(Hoặc 93 nếu tính nhóm F4-09 là 1 chức năng)* |
 
 ---
 
@@ -390,8 +395,8 @@ Bốn luồng dưới đây là đầu vào để BD vẽ sơ đồ tuần tự 
 ### 6.1. Luồng chính — giải một bài toán từ đầu tới khi có phản hồi AI
 
 1. **A1** mở danh sách bài toán, lọc theo chủ đề và độ khó, chọn một bài (F2-11).
-2. **A1** đọc đề bài, chọn ngôn ngữ trong ba ngôn ngữ hỗ trợ. Hệ thống hiện mã khung tương ứng chữ ký hàm
-   của bài (F2-03).
+2. **A1** đọc đề bài, chọn ngôn ngữ trong ba ngôn ngữ hỗ trợ và chọn mô hình nộp bài (Bọc hàm hoặc Standard
+   I/O, F3-13). Hệ thống hiện mã khung tương ứng chữ ký hàm hoặc định dạng input/output của bài (F2-03).
 3. **A1** viết mã, bấm chạy thử. **A4** sinh mã harness (F3-02 tới F3-06), gọi judge engine qua
    `JudgeExecutionPort` với **testcase mẫu**, trả kết quả kèm dữ liệu vào ra thấy được (F4-02).
 4. **A1** sửa mã, bấm nộp bài. **A4** ghi trạng thái PENDING, đẩy vào hàng đợi, trả về ngay (F4-01).
@@ -456,7 +461,9 @@ hưởng** (F5-22).
 
 ## 7. Danh sách màn hình dự kiến
 
-[SoT: Suy luận — đây là **danh sách hạt giống** cho trục screen; chốt chính thức ở `01-rd/screens/`]
+[SoT: Suy luận — đây là **danh sách hạt giống** cho trục screen; chốt chính thức ở `01-rd/screens/<khu
+vực>/<slug>.md`, chia thư mục con theo khu vực actor: `shared/` (dùng chung mọi vai trò, ví dụ `auth`),
+`users/` (A1), `teacher/` (A2), `admin/` (A3)]
 
 Slug viết `snake_case`; slice frontend tương ứng viết `kebab-case` (`01-rd/system/codebase_structure.md`
 mục 3). Cột "Chức năng" trỏ về mã ở mục 5 — đó là cách BD theo screen truy về được BD theo module.
@@ -474,18 +481,21 @@ mục 3). Cột "Chức năng" trỏ về mã ở mục 5 — đó là cách BD 
 | `interview_bank_list` | Danh sách câu hỏi phỏng vấn | F6-01 tới F6-03 | `interview-bank` |
 | `interview_question_detail` | Chi tiết câu hỏi: chế độ học và chế độ luyện | F6-04 tới F6-08 | `interview-bank`, `ai-review` |
 | `my_progress` | Tiến độ cá nhân | F1-06 tới F1-08, F6-09, F6-10 | `identity`, `interview-bank` |
-| `my_submissions` | Lịch sử bài nộp của tôi | F1-07 | `judge-orchestration` |
-| `profile` | Trang cá nhân — thông tin hiển thị | F1-09 | `identity` |
-| `settings` | Cài đặt — chủ đề màu, ngôn ngữ giao diện, thông báo, xoá tài khoản | F1-16 | `identity` |
+| `my_submissions` | Lịch sử bài nộp của tôi | F1-07, F1-18 | `judge-orchestration` |
+| `profile` | Trang cá nhân — thông tin hiển thị, đổi mật khẩu | F1-09, F1-19 | `identity` |
+| `settings` | Cài đặt — chủ đề màu, ngôn ngữ giao diện, Workspace, phỏng vấn tự luyện, thông báo, xuất dữ liệu, xoá tài khoản | F1-16, F1-20, F1-21, F1-22, F5-28 | `identity`, `ai-review` |
 | `saved_problems` | Bài đã lưu — bookmark kèm ghi chú riêng tư | F2-13 | `problem-bank` |
 
 **Sửa 2026-08-24 theo `06-plan/PROTOTYPE_DEBT.md` mục 3.1/3.2:** `profile_settings` (1 slug suy luận ban
 đầu) tách thành 2 màn thật `profile` và `settings` theo đúng prototype (`Trang cá nhân.dc.html`,
 `Cài đặt.dc.html`); thêm `saved_problems` (`Bài đã lưu.dc.html`) — có thật trong prototype nhưng chưa từng
-liệt kê. `settings` chỉ gán được F1-16 (xoá tài khoản) — phần chủ đề màu và ngôn ngữ giao diện đã chốt có
-(mục 8.2: `DEC-2026-0824-dark-light-theme`, `DEC-2026-0824-i18n-vi-en`) nhưng chưa có mã `Fx-nn` riêng cho
-hành động đổi theme/ngôn ngữ trên màn này; thông báo hiển thị vẫn "chưa quyết, không phải đã loại" theo mục
-8.2.
+liệt kê.
+
+**Cập nhật 2026-08-25 theo `06-plan/reports/260825-1500-report-ai1-phase2-conflicts.md`:** khoảng trống mã
+`Fx-nn` của `settings` (trước đó "chỉ gán được F1-16") đã lấp bằng F1-20/F1-21/F1-22/F5-28; `my_submissions`
+(trước đó chỉ F1-07, một chỉ số, không phủ chính nội dung màn) lấp bằng F1-18; `profile` bổ sung F1-19 (tự
+đổi mật khẩu). Chủ đề màu/ngôn ngữ giao diện trên `settings` tiếp tục không cần mã riêng — đã có quyết định
+(`DEC-2026-0824-dark-light-theme`, `DEC-2026-0824-i18n-vi-en`).
 
 **Màn nặng nhất là `problem_detail`** — nó chạm bốn Bounded Context và chứa Monaco Editor, bảng testcase
 realtime, và cửa vào hai luồng AI. Đây là màn nên làm prototype trước tiên.
@@ -495,19 +505,25 @@ mở lại được từ trang tiến độ.
 
 ### 7.2. Khu vực giảng viên
 
-**Chốt 2026-08-24 theo `06-plan/PROTOTYPE_DEBT.md` mục 3.3 — Phương án B:** bốn slug dưới đây có
-layout/route **riêng biệt khỏi khu Admin**, phản ánh đúng trải nghiệm riêng cho A2 — không dùng chung shell
-với A3 như khu Admin ở mục 7.3. Đây là quyết định về **bố cục màn**, tách bạch khỏi quyết định ở mục 1.2 (đã
-chốt trước đó) vốn chỉ nói về **cơ chế phân quyền** (ma trận Role × Function × Action) — hai quyết định độc
-lập, không mâu thuẫn nhau. **Prototype cho 4 màn này chưa dựng** — chủ dự án sẽ triển khai sau; bốn dòng
-dưới đây vẫn là danh sách hạt giống `[SoT: Suy luận]`, chưa có file `09-layoutBase/*.dc.html` tương ứng.
+**Chốt 2026-08-24 theo `06-plan/PROTOTYPE_DEBT.md` mục 3.3 — Phương án B:** các slug dưới đây có layout/route
+**riêng biệt khỏi khu Admin**, phản ánh đúng trải nghiệm riêng cho A2 — không dùng chung shell với A3 như khu
+Admin ở mục 7.3. Đây là quyết định về **bố cục màn**, tách bạch khỏi quyết định ở mục 1.2 (đã chốt trước đó)
+vốn chỉ nói về **cơ chế phân quyền** (ma trận Role × Function × Action) — hai quyết định độc lập, không mâu
+thuẫn nhau.
 
-| Slug | Tên màn | Chức năng chính | Bounded Context liên quan |
-| :--- | :--- | :--- | :--- |
-| `problem_authoring` | Soạn bài toán và đặc tả hàm | F2-01 tới F2-04, F2-14 | `problem-bank`, `harness` |
-| `testcase_management` | Quản lý testcase và phiên bản bộ testcase | F2-05 tới F2-09 | `problem-bank` |
-| `class_management` | Quản lý lớp và giao bài tập | F2-12, F6-11 | `identity`, `problem-bank`, `interview-bank` |
-| `class_progress` | Tiến độ lớp | (dẫn xuất từ F1-06, F1-07) | `identity`, `judge-orchestration` |
+**Cập nhật 2026-08-24 (tiếp) theo `06-plan/PROTOTYPE_DEBT.md` mục 6.2.b:** 5 màn Giáo viên đã dựng prototype
+thật (`09-layoutBase/Giáo viên - *.dc.html`), phủ 2/4 slug hạt giống ban đầu (`class_management`,
+`class_progress`) và phát sinh thêm 2 slug ngoài dự kiến (`instructor_overview`, `instructor_grading`).
+`problem_authoring` và `testcase_management` **vẫn chưa có prototype**, còn là hạt giống `[SoT: Suy luận]`.
+
+| Slug | Tên màn | Chức năng chính | Bounded Context liên quan | Prototype |
+| :--- | :--- | :--- | :--- | :--- |
+| `problem_authoring` | Soạn bài toán và đặc tả hàm | F2-01 tới F2-04, F2-14 | `problem-bank`, `harness` | Chưa có |
+| `testcase_management` | Quản lý testcase và phiên bản bộ testcase | F2-05 tới F2-09 | `problem-bank` | Chưa có |
+| `class_management` | Quản lý lớp và giao bài tập | F2-12, F6-11 | `identity`, `problem-bank`, `interview-bank` | `Giáo viên - Lớp của tôi.dc.html`, `Giáo viên - Bài tập của tôi.dc.html` (gán bài từ ngân hàng cho lớp) |
+| `class_progress` | Tiến độ lớp | (dẫn xuất từ F1-06, F1-07) | `identity`, `judge-orchestration` | `Giáo viên - Tiến độ học viên.dc.html` |
+| `instructor_overview` | Tổng quan khu Giảng viên | (tổng hợp F2-12, F5-27, F6-11) | `identity` | `Giáo viên - Tổng quan.dc.html`. Slug mới phát sinh khi dựng prototype, không nằm trong 4 slug hạt giống ban đầu — hợp lý vì mỗi khu vực có shell riêng thường cần một dashboard riêng |
+| `instructor_grading` | Điểm AI tham khảo và chấm tay theo lớp | F5-27 | `ai-review`, `problem-bank` | `Giáo viên - Chấm bài.dc.html`. Slug mới, gắn mã F5-27 (chốt 2026-08-24, mục 6.2.a) |
 
 ### 7.3. Khu vực quản trị
 
@@ -522,11 +538,12 @@ dưới đây vẫn là danh sách hạt giống `[SoT: Suy luận]`, chưa có 
 | `admin_user_management` | Quản lý tài khoản: đổi vai trò, khoá/mở khoá, reset mật khẩu | F1-13 | `identity` |
 | `admin_system_log` | Nhật ký hệ thống: audit hành động quản trị | F1-14 | `identity` |
 
-Tổng: **25 màn dự kiến** — 13 người học, 4 giảng viên, 8 quản trị. Cập nhật 2026-08-24 theo
-`06-plan/PROTOTYPE_DEBT.md` mục 3.1/3.2 (tách `profile_settings` thành `profile`/`settings`, thêm
-`saved_problems`) và mục 2.5 (thêm `admin_system_log`) — trước đó là 22 (thêm
-`admin_permission_matrix`/`admin_user_management` theo mục 1.2, 2026-08-23). Bốn màn giảng viên ở mục 7.2
-vẫn ở dạng hạt giống, chưa có prototype dựng thật.
+Tổng: **27 màn dự kiến** — 13 người học, 6 giảng viên, 8 quản trị. Cập nhật 2026-08-24 (tiếp) theo
+`06-plan/PROTOTYPE_DEBT.md` mục 6.2.b: thêm `instructor_overview` và `instructor_grading` (2 slug phát sinh
+khi dựng prototype khu Giảng viên), khu giảng viên từ 4 lên 6 slug. Trước đó là 25 màn (mục 3.1/3.2: tách
+`profile_settings` thành `profile`/`settings`, thêm `saved_problems`; mục 2.5: thêm `admin_system_log`) —
+trước nữa là 22 (thêm `admin_permission_matrix`/`admin_user_management` theo mục 1.2, 2026-08-23).
+`problem_authoring` và `testcase_management` ở mục 7.2 vẫn ở dạng hạt giống, chưa có prototype dựng thật.
 
 ---
 
@@ -580,7 +597,7 @@ Theo `README.md` mục 7, xếp lại theo mức nghiêm trọng.
 | # | Rủi ro | Mức | Phương án xử lý | Ai theo dõi |
 | :--- | :--- | :--- | :--- | :--- |
 | R1 | ~~Judge0 yêu cầu cgroup v1, Linux hiện đại mặc định v2~~ — **đã đóng cho luồng mặc định** | Trước đây: Chặn cả đề tài | Giải quyết bằng `DEC-2026-0823-go-judge-default-engine`: đổi engine mặc định sang go-judge, hỗ trợ cả cgroup v1/v2. Rủi ro chỉ còn nếu Judge0Adapter được cắm lại | Đóng — theo dõi lại chỉ nếu đổi engine |
-| R2 | Bộ sinh mã không bao phủ hết kiểu dữ liệu | Cao | Xác định trước tập kiểu ưu tiên; bài có cấu trúc phức tạp chưa hỗ trợ thì chuyển sang nhập/xuất chuẩn (F3-13) | Khi thiết kế lược đồ kiểu |
+| R2 | Bộ sinh mã không bao phủ hết kiểu dữ liệu | Cao | Xác định trước tập kiểu ưu tiên; bài có cấu trúc phức tạp chưa hỗ trợ **Bọc hàm** thì chỉ còn hiện Standard I/O (F3-13 — sửa 2026-08-24, `DEC-2026-0824-dual-submission-model-per-problem`: giờ là ẩn bớt một trong hai mô hình luôn song song, không phải chuyển hẳn sang mô hình khác) | Khi thiết kế lược đồ kiểu |
 | R3 | Khối lượng công việc vượt tiến độ | Cao | Cố định hoàn thiện F1-F4; thứ tự cắt giảm: phỏng vấn giả lập → công cụ lớp học → dashboard phân tích nâng cao | Suốt dự án |
 | R4 | Chi phí API AI vượt dự kiến | Trung bình | Giới hạn tần suất theo người dùng, cache theo hash mã nguồn, kiểm soát quota token theo phiên (F5-19 tới F5-21) | Khi làm F5 |
 | R5 | Không đủ người dùng thật để kiểm thử | Trung bình | Phối hợp với giảng viên môn Cấu trúc dữ liệu và Giải thuật, đưa vào bài tập thực hành trên lớp | Trước khi báo cáo |

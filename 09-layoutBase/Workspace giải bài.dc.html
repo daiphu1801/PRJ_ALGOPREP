@@ -51,7 +51,7 @@
       <div style="padding: 0 20px; height: 58px; display: flex; align-items: center; gap: 30px;">
       <div style="display: flex; align-items: center; gap: 9px; flex-shrink: 0;">
         <span style="font-size: 19px; font-weight: 700; letter-spacing: -0.01em;">AlgoPrep</span>
-        <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; letter-spacing: 0.14em; color: var(--gold); border: 1px solid var(--gold); border-radius: 4px; padding: 2px 5px 1px;">JUDGE0</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; letter-spacing: 0.14em; color: var(--gold); border: 1px solid var(--gold); border-radius: 4px; padding: 2px 5px 1px;">GO-JUDGE</span>
       </div>
       <nav style="display: flex; align-items: center; gap: 20px; flex: 1 1 auto; min-width: 0; overflow-x: auto;">
         <a href="./Dashboard AlgoPrep.dc.html" style="white-space: nowrap; font-size: 14.5px; font-weight: 500; color: var(--ink2);" style-hover="color: var(--ink);"><span data-lang="vi">Tổng quan</span><span data-lang="en">Overview</span></a>
@@ -270,7 +270,13 @@
             </sc-for>
           </div>
           <div style="display: flex; gap: 3px; padding: 3px; background: var(--chip); border-radius: 8px;">
-            <sc-for list="{{ modes }}" as="m" hint-placeholder-count="3">
+            <sc-for list="{{ modes }}" as="m" hint-placeholder-count="2">
+              <button onClick="{{ m.onClick }}" title="{{ m.tip }}" style="height: 24px; padding: 0 10px; border: none; border-radius: 6px; font-family: inherit; font-size: 11.5px; font-weight: 600; cursor: pointer; background: {{ m.bg }}; color: {{ m.fg }};">{{ m.label }}</button>
+            </sc-for>
+          </div>
+          <div style="width: 1px; height: 20px; background: var(--line2); flex-shrink: 0;"></div>
+          <div style="display: flex; gap: 3px; padding: 3px; background: var(--chip); border-radius: 8px;">
+            <sc-for list="{{ inputMethods }}" as="m" hint-placeholder-count="2">
               <button onClick="{{ m.onClick }}" title="{{ m.tip }}" style="height: 24px; padding: 0 10px; border: none; border-radius: 6px; font-family: inherit; font-size: 11.5px; font-weight: 600; cursor: pointer; background: {{ m.bg }}; color: {{ m.fg }};">{{ m.label }}</button>
             </sc-for>
           </div>
@@ -391,7 +397,7 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900},&quot;defaultTheme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;light&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;tsType&quot;:&quot;string&quot;}}">
 class Component extends DCLogic {
-  state = { theme: "light", pane: "Đề bài", lang: "Python 3", mode: "Bọc hàm", code: null, ran: null, console: "Testcase", activeCase: 1, split: 47, uiLang: "vi", menuOpen: false };
+  state = { theme: "light", pane: "Đề bài", lang: "Python 3", mode: "Bọc hàm", inputMethod: "Gõ trực tiếp", code: null, ran: null, console: "Testcase", activeCase: 1, split: 47, uiLang: "vi", menuOpen: false };
 
   setLang(l) { this.setState({ uiLang: l }); localStorage.setItem("algoprep-lang", l); }
 
@@ -589,16 +595,21 @@ class Component extends DCLogic {
         { label: l, onClick: () => this.setState({ lang: l, code: this.starter(l, st.mode) }) }, this.seg(st.lang === l))),
       modes: [
         { label: T("Có hàm main", "With main()"), key: "Có hàm main", tip: T("Tự đọc stdin, in stdout — hệ thống chạy nguyên file của bạn", "You read stdin and print stdout — your whole file is run") },
-        { label: T("Bọc hàm", "Function wrapper"), key: "Bọc hàm", tip: T("Chỉ viết thân hàm, harness do hệ thống sinh", "Write the function body only; the harness is generated") },
-        { label: T("Tải file", "Upload file"), key: "Tải file", tip: T("Nộp file mã nguồn đúng phần mở rộng của ngôn ngữ", "Submit a source file with the language extension") }
+        { label: T("Bọc hàm", "Function wrapper"), key: "Bọc hàm", tip: T("Chỉ viết thân hàm, harness do hệ thống sinh", "Write the function body only; the harness is generated") }
       ].map((m) => Object.assign(
         { label: m.label, tip: m.tip, onClick: () => this.setState({ mode: m.key, code: this.starter(st.lang, m.key) }) },
         this.seg(st.mode === m.key))),
-      isEditorMode: st.mode !== "Tải file",
-      isUploadMode: st.mode === "Tải file",
+      inputMethods: [
+        { label: T("Gõ trực tiếp", "Type code"), key: "Gõ trực tiếp", tip: T("Viết mã ngay trong trình soạn thảo", "Write code directly in the editor") },
+        { label: T("Tải file", "Upload file"), key: "Tải file", tip: T("Nộp file mã nguồn đúng phần mở rộng của ngôn ngữ, áp dụng cho mô hình đang chọn", "Submit a source file with the language extension, for whichever model is selected") }
+      ].map((m) => Object.assign(
+        { label: m.label, tip: m.tip, onClick: () => this.setState({ inputMethod: m.key, code: m.key === "Gõ trực tiếp" ? this.starter(st.lang, st.mode) : st.code }) },
+        this.seg(st.inputMethod === m.key))),
+      isEditorMode: st.inputMethod !== "Tải file",
+      isUploadMode: st.inputMethod === "Tải file",
       uploadExt: this.ext(st.lang),
       lang: st.lang,
-      editorMeta: st.mode === "Tải file" ? this.ext(st.lang) + " · tối đa 64 KB" : "UTF-8 · Ln " + lines.length + ", Col 1",
+      editorMeta: st.inputMethod === "Tải file" ? this.ext(st.lang) + " · tối đa 64 KB" : "UTF-8 · Ln " + lines.length + ", Col 1",
 
       code,
       onCode: (e) => this.setState({ code: e.target.value }),

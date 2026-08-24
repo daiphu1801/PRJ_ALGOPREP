@@ -42,6 +42,16 @@ Là **sinh viên**, tôi muốn tạo tài khoản và đăng nhập, để bắ
   động với vai trò `STUDENT` nếu email đó chưa từng đăng ký; **Cho** email do OAuth trả về khớp với một tài
   khoản email/mật khẩu đã có, **Khi** tôi đăng nhập bằng OAuth lần đầu, **Thì** hệ thống tự liên kết vào
   chính tài khoản đó — tôi đăng nhập được bằng cả hai cách vào cùng một tài khoản (F1-15).
+- **Cho** tôi quên mật khẩu, **Khi** tôi bấm "Quên mật khẩu?" và nhập email, **Thì** hệ thống gửi một mã 6
+  chữ số ngẫu nhiên tới email đó qua Gmail, và luôn báo một câu chung ("nếu email tồn tại, mã đã được gửi")
+  bất kể email có tài khoản hay không (F1-17).
+- **Cho** mã 6 số đã được gửi, **Khi** tôi nhập đúng mã trong thời hạn hiệu lực, **Thì** tôi được đặt mật
+  khẩu mới, và mã đó không dùng lại được nữa (F1-17).
+- **Cho** mã 6 số đã hết hạn hoặc tôi nhập sai quá số lần cho phép, **Khi** tôi nhập mã, **Thì** hệ thống từ
+  chối và yêu cầu tôi bấm gửi lại mã mới (F1-17).
+- **Cho** tài khoản của tôi chỉ từng đăng nhập bằng GitHub/Google, chưa bao giờ đặt mật khẩu, **Khi** tôi
+  bấm "Quên mật khẩu?" và nhập email đó, **Thì** hệ thống không gửi mã 6 số mà gửi một email báo tài khoản
+  đang đăng nhập bằng OAuth và hướng dẫn tôi quay lại đăng nhập bằng đúng provider cũ (F1-17).
 
 ### US-A1-02: Tìm và chọn bài toán
 
@@ -61,8 +71,11 @@ không mà chưa tốn một lần nộp thật.
   **Thì** trình soạn thảo hiện mã khung khớp chữ ký hàm của bài bằng ngôn ngữ đó (F2-03).
 - **Cho** tôi đã viết mã, **Khi** tôi bấm Chạy thử, **Thì** hệ thống chạy mã với testcase Sample và trả kết
   quả kèm dữ liệu vào/ra thấy được, **không** ghi nhận vào tiến độ của tôi (F4-02).
-- **Cho** bài toán dùng mô hình bọc hàm nhưng kiểu dữ liệu của bài chưa được lược đồ F3 hỗ trợ, **Khi** tôi
-  mở bài đó, **Thì** hệ thống dùng mô hình Standard I/O cho bài này — tôi tự đọc `stdin`/ghi `stdout` (F3-13).
+- **Cho** một bài toán bất kỳ, **Khi** tôi mở bài đó, **Thì** tôi thấy cả hai lựa chọn mô hình nộp bài —
+  Bọc hàm và Standard I/O — và tự chọn mô hình nào cũng được, chuyển đổi qua lại không mất phần đã viết ở
+  mô hình kia (F3-13, sửa 2026-08-24 theo `DEC-2026-0824-dual-submission-model-per-problem`).
+- **Cho** bài toán có kiểu dữ liệu vượt quá lược đồ kiểu của F3, **Khi** tôi mở bài đó, **Thì** tuỳ chọn Bọc
+  hàm bị ẩn, tôi chỉ thấy và dùng được Standard I/O — tự đọc `stdin`/ghi `stdout` (F3-13).
 - **Cho** tôi đã có sẵn file mã nguồn trên máy, **Khi** tôi tải file đó lên thay vì gõ trực tiếp, **Thì** nội
   dung file nạp vào trình soạn thảo và tôi nộp/chạy thử được như bình thường (F4-01).
 
@@ -97,6 +110,19 @@ Là **sinh viên**, tôi muốn xem lại quá trình luyện tập của mình 
   Cài đặt và xác nhận, **Thì** tài khoản chuyển trạng thái `DEACTIVATED` ngay, tôi không đăng nhập lại được
   nữa; sau một khoảng ân hạn, thông tin định danh của tôi (email, tên hiển thị) bị ẩn danh hoá, còn bài nộp,
   bài đã lưu, và phiên phỏng vấn của tôi vẫn được giữ lại nhưng không còn gắn với danh tính cá nhân (F1-16).
+- **Cho** tôi đã đăng nhập, **Khi** tôi nhập đúng mật khẩu hiện tại kèm mật khẩu mới ở mục Bảo mật của trang
+  cá nhân, **Thì** mật khẩu được đổi ngay, không cần xác nhận qua email (F1-19) — khác luồng quên mật khẩu
+  (F1-17) chỉ dùng khi chưa đăng nhập.
+- **Cho** tôi muốn xem lại toàn bộ lượt nộp của mình, **Khi** tôi mở trang "Bài đã nộp" và lọc theo kết quả
+  hoặc ngôn ngữ, hoặc tìm theo tên/mã bài, **Thì** danh sách chỉ hiện đúng các lượt nộp khớp điều kiện,
+  kèm liên kết mở kết quả chi tiết và (nếu `Accepted`) mở phân tích bài giải (F1-18).
+- **Cho** tôi mở trang Cài đặt, **Khi** tôi đổi ngôn ngữ mặc định/cỡ chữ editor/tự lưu bản nháp/phím tắt Vim
+  của Workspace, **Thì** lựa chọn được lưu theo tài khoản và áp dụng lần sau tôi mở một bài toán để giải
+  (F1-20).
+- **Cho** tôi mở trang Cài đặt, **Khi** tôi bật thông báo nhắc luyện tập hoặc báo cáo hằng tuần, **Thì** tôi
+  nhận đúng email đó theo lịch đã định (F1-21).
+- **Cho** tôi mở trang Cài đặt, **Khi** tôi bấm xuất lượt nộp hoặc xuất hội thoại phỏng vấn, **Thì** tôi nhận
+  được file chỉ chứa dữ liệu của chính tôi, đúng định dạng đã chọn (CSV/JSON) (F1-22).
 
 ### US-A1-06: Nhận phân tích bài giải sau khi Accepted
 
@@ -135,6 +161,9 @@ buổi phỏng vấn thật.
 - **Cho** tôi chưa có bài nộp `Accepted` nào phù hợp muốn luyện, **Khi** tôi chọn mở phiên từ kho câu hỏi có
   sẵn hoặc tự chọn một hoặc nhiều chủ đề cùng mức độ và ngôn ngữ, **Thì** phiên vẫn chạy đủ ba giai đoạn như
   lối vào từ bài nộp, chỉ khác nguồn đề bài nạp vào (F5-24).
+- **Cho** tôi mở phiên tự luyện (không phải từ bài nộp `Accepted`), **Khi** tôi đã đặt trước ở trang Cài đặt
+  mức người phỏng vấn, số lượt tối đa, và có cho phép gợi ý hay không, **Thì** phiên áp đúng các tham số đó;
+  phiên mở từ một bài nộp `Accepted` không dùng các tham số tự chỉnh này (F5-28).
 
 ### US-A1-08: Ôn tập ngân hàng câu hỏi phỏng vấn
 
@@ -233,6 +262,20 @@ input mà vẫn tin tưởng được output là chính xác.
 - **Cho** testcase do AI sinh đã nằm trong danh sách nháp, **Khi** tôi chưa xác nhận, **Thì** testcase đó
   chưa được gộp vào bộ Hidden dùng để chấm bài (F2-14) — tôi luôn là người quyết định cuối cùng có dùng hay
   không.
+
+### US-A2-06: Xem điểm AI tham khảo và chấm tay cho bài nộp của lớp mình
+
+Là **giảng viên**, tôi muốn xem một điểm tham khảo nhanh cho từng bài nộp của lớp mình và tự chấm tay khi
+cần, để lướt qua chất lượng bài làm mà không phải đọc lại toàn bộ báo cáo phân tích của từng bài.
+
+- **Cho** một bài nộp `Accepted` đã có báo cáo phân tích bài giải (F5.1), **Khi** tôi mở màn Chấm bài của lớp
+  mình phụ trách, **Thì** tôi thấy một điểm quy đổi trên thang 10 từ báo cáo đó, gắn nhãn rõ là điểm tham
+  khảo (F5-27) — không phải kết quả Pass/Fail chính thức của bài nộp (F4-04 không đổi).
+- **Cho** điểm tham khảo đang hiển thị, **Khi** tôi bấm "Chấm ngay" và nhập điểm 0-10 kèm nhận xét, **Thì**
+  điểm chấm tay của tôi được lưu lại cạnh điểm AI, không ghi đè hay ảnh hưởng trạng thái submission của
+  người học (F5-27).
+- **Cho** tôi không có quyền trên lớp đó, **Khi** tôi mở màn Chấm bài, **Thì** tôi chỉ thấy bài nộp của lớp
+  mình phụ trách — gác bởi Function `CLASS_MANAGEMENT` trong ma trận quyền (F1-10, F1-12).
 
 ---
 

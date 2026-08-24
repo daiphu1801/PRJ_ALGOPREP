@@ -5,8 +5,9 @@ tiêu chí đặt một component vào tầng nào, cách xử lý hai kênh rea
 
 Nguyên lý FSD và lý do chọn ở `01-rd/overview/overview.md` mục 1.H. Backend đối ứng ở `backend_architecture.md`.
 
-> **Trạng thái 2026-08-20:** `05-coding/frontend/` còn rỗng. Đây là **thiết kế phải theo**, chưa phải mô tả
-> mã đang có. Không có hệ thống thiết kế (design system) nào được chọn — dự án **không** có `09-layoutBase/`.
+> **Trạng thái 2026-08-20 (cập nhật 2026-08-24):** `05-coding/frontend/` còn rỗng. Đây là **thiết kế phải theo**,
+> chưa phải mô tả mã đang có. Dự án có `09-layoutBase/` (31 màn prototype tĩnh `.dc.html`) làm căn cứ đối chiếu UX
+> và bố cục màn cho BD/DD.
 
 ---
 
@@ -30,9 +31,10 @@ Nguồn: `README.md` mục 5 và `DEC-2026-0820-stack-versions`.
 bài dùng cả hai), thư viện làm sạch HTML phía client, và thư viện biểu đồ cho trang tiến độ. Ghi ở đây để
 không ai tưởng chúng đã được chốt. [SoT: Suy luận]
 
-**Đa ngôn ngữ (i18n): NGOÀI phạm vi hiện tại.** `README.md` mục 6 không nêu i18n như một yêu cầu, nên giao
-diện chỉ có một ngôn ngữ. Nếu về sau cần thì đó là một quyết định riêng, và nó ảnh hưởng tới cấu trúc route
-(`[locale]/`) — nên nếu có khả năng cần thì phải quyết **trước** khi dựng route, không sau.
+**Đa ngôn ngữ (i18n): ĐÃ CHỐT có song ngữ Việt/Anh (vi/en)** theo `DEC-2026-0824-i18n-vi-en` (đồng bộ
+`overview.md` mục 3). Giao diện hỗ trợ chuyển đổi ngôn ngữ (`data-ui-lang`, `data-lang="vi|en"`), nội dung đề bài
+do giảng viên soạn giữ nguyên ngôn ngữ gốc. Chi tiết cấu trúc định tuyến và khung dịch i18n chốt tại
+`02-bd/screens/`.
 
 ---
 
@@ -202,12 +204,13 @@ agent thi hành, máy không bắt được** — đừng trông chờ `pnpm lin
 ---
 
 ## 6. Điều tài liệu này KHÔNG chốt
-
+ 
 | Chưa chốt | Sẽ chốt ở |
 | :--- | :--- |
-| Danh sách màn hình chính thức và slug của chúng | `01-rd/screens/` |
-| Bố cục và luồng tương tác từng màn | `02-bd/screens/<screen>.md` sau prototype |
+| Danh sách màn hình chính thức và slug của chúng | `01-rd/screens/` (đã có hạt giống ở `system_survey.md` mục 7 và 31 prototype ở `09-layoutBase/`) |
+| Bố cục và luồng tương tác từng màn | `02-bd/screens/<screen>.md` theo prototype `09-layoutBase/` |
 | Hợp đồng API mà từng màn gọi | `03-dd/api/` — `screens/` chỉ liên kết tới, không định nghĩa lại |
-| Hệ thống thiết kế, design token, chế độ sáng/tối | Chưa chọn |
+| Hệ thống thiết kế, design token | Chưa chọn — chốt ở `02-bd/screens/` |
+| Chế độ theme (Dark/Light) | **Đã chốt 2026-08-24 — hỗ trợ cả hai, Light là mặc định** (`DEC-2026-0824-dark-light-theme`) |
 | Thư viện Markdown + LaTeX, sanitizer, biểu đồ | Khi dựng màn chi tiết bài toán và trang tiến độ |
-| Có làm i18n hay không | Quyết định riêng — phải quyết trước khi dựng route |
+| Đa ngôn ngữ giao diện (i18n) | **Đã chốt 2026-08-24 — có song ngữ vi/en** (`DEC-2026-0824-i18n-vi-en`), chi tiết chốt ở `02-bd/screens/` |

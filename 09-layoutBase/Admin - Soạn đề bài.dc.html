@@ -13,34 +13,34 @@
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 <style>
   * { box-sizing: border-box; }
-  body { margin: 0; font-family: 'Be Vietnam Pro', system-ui, sans-serif; background: #EAF0FA; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
+  body { margin: 0; font-family: 'Be Vietnam Pro', system-ui, sans-serif; background: #EFFAF8; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
   [data-theme] {
-    --bg: #EAF0FA; --text: #0E1626; --muted: rgba(20,45,90,0.58); --muted2: rgba(20,45,90,0.44);
+    --bg: #EFFAF8; --text: #0C201D; --muted: rgba(12,45,40,0.58); --muted2: rgba(12,45,40,0.44);
     --glass: rgba(255,255,255,0.62); --glass2: rgba(255,255,255,0.72); --glass3: rgba(255,255,255,0.9);
-    --border: rgba(255,255,255,0.85); --border2: rgba(30,80,160,0.12); --inset: rgba(255,255,255,0.9);
+    --border: rgba(255,255,255,0.85); --border2: rgba(12,90,80,0.14); --inset: rgba(255,255,255,0.9);
     --shadow: 0 18px 40px rgba(28,60,120,0.13); --shadow-lg: 0 20px 44px rgba(28,60,120,0.16);
     --grid: rgba(30,70,140,0.045); --veil: radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,0.5) 0%, rgba(234,240,250,0.25) 100%);
-    --blob1: rgba(88,150,255,0.42); --blob2: rgba(168,132,255,0.34); --blob3: rgba(90,205,215,0.34);
-    --track: rgba(30,80,160,0.1); --row-hover: rgba(255,255,255,0.72); --nav-hover: rgba(255,255,255,0.85);
-    --active-bg: rgba(255,255,255,0.9); --active-border: rgba(63,123,232,0.22); --active-fg: #0E1626;
-    --cta-bg: linear-gradient(160deg, #3F7BE8, #2C5FC4); --cta-fg: #FFFFFF; --cta-shadow: 0 6px 16px rgba(45,95,196,0.3);
-    --seg-bg: #FFFFFF; --seg-fg: #0E1626; --logo-bg: linear-gradient(140deg, #3F7BE8, #7BA7FF); --logo-fg: #FFFFFF;
-    --link: #2563C7; --ok: #17B57E; --ok-text: #12996B; --scrim: rgba(14,22,38,0.42);
+    --blob1: rgba(45,74,110,0.34); --blob2: rgba(94,124,110,0.26); --blob3: rgba(196,164,102,0.2);
+    --track: rgba(12,90,80,0.1); --row-hover: rgba(255,255,255,0.72); --nav-hover: rgba(255,255,255,0.85);
+    --active-bg: rgba(255,255,255,0.9); --active-border: rgba(14,165,164,0.28); --active-fg: #063B37;
+    --cta-bg: linear-gradient(160deg, #0EA5A4, #0C7A79); --cta-fg: #FFFFFF; --cta-shadow: 0 6px 16px rgba(14,138,114,0.3);
+    --seg-bg: #FFFFFF; --seg-fg: #063B37; --logo-bg: linear-gradient(140deg, #0EA5A4, #22D3EE); --logo-fg: #FFFFFF;
+    --link: #0E7C90; --ok: #17B57E; --ok-text: #12996B; --scrim: rgba(14,22,38,0.42);
     --code-bg: rgba(255,255,255,0.86);
     color: var(--text);
   }
   [data-theme="dark"] {
-    --bg: #04060D; --text: #E4EDFC; --muted: rgba(200,220,250,0.6); --muted2: rgba(200,220,250,0.45);
-    --glass: rgba(150,190,255,0.075); --glass2: rgba(150,190,255,0.1); --glass3: rgba(150,190,255,0.14);
-    --border: rgba(150,190,255,0.16); --border2: rgba(150,190,255,0.14); --inset: rgba(190,220,255,0.24);
+    --bg: #040B0A; --text: #E9FBF7; --muted: rgba(210,235,230,0.6); --muted2: rgba(210,235,230,0.45);
+    --glass: rgba(120,230,220,0.06); --glass2: rgba(120,230,220,0.09); --glass3: rgba(120,230,220,0.13);
+    --border: rgba(120,230,220,0.14); --border2: rgba(120,230,220,0.12); --inset: rgba(170,240,230,0.2);
     --shadow: 0 20px 48px rgba(0,0,0,0.5); --shadow-lg: 0 24px 60px rgba(0,0,0,0.6);
     --grid: rgba(150,190,255,0.035); --veil: radial-gradient(120% 90% at 50% 0%, rgba(4,6,13,0) 30%, rgba(4,6,13,0.72) 100%);
-    --blob1: rgba(48,110,240,0.42); --blob2: rgba(96,72,210,0.3); --blob3: rgba(18,110,175,0.28);
-    --track: rgba(150,190,255,0.15); --row-hover: rgba(150,190,255,0.07); --nav-hover: rgba(150,190,255,0.14);
-    --active-bg: rgba(150,190,255,0.16); --active-border: rgba(150,190,255,0.24); --active-fg: #FFFFFF;
-    --cta-bg: linear-gradient(160deg, rgba(226,240,255,0.94), rgba(186,214,255,0.72)); --cta-fg: #071026; --cta-shadow: 0 6px 18px rgba(0,0,0,0.4);
-    --seg-bg: rgba(226,240,255,0.92); --seg-fg: #071026; --logo-bg: linear-gradient(140deg, rgba(210,232,255,0.55), rgba(150,190,255,0.14)); --logo-fg: #FFFFFF;
-    --link: #8FD3FF; --ok: #5AE0A8; --ok-text: #5AE0A8; --scrim: rgba(2,4,10,0.66);
+    --blob1: rgba(34,211,238,0.4); --blob2: rgba(20,184,166,0.32); --blob3: rgba(34,211,238,0.18);
+    --track: rgba(120,230,220,0.14); --row-hover: rgba(120,230,220,0.07); --nav-hover: rgba(120,230,220,0.13);
+    --active-bg: linear-gradient(135deg, rgba(34,211,238,0.3), rgba(20,184,166,0.2)); --active-border: rgba(103,232,249,0.4); --active-fg: #FFFFFF;
+    --cta-bg: linear-gradient(160deg, rgba(190,255,247,0.94), rgba(150,230,220,0.72)); --cta-fg: #052422; --cta-shadow: 0 6px 18px rgba(0,0,0,0.4);
+    --seg-bg: rgba(190,255,247,0.9); --seg-fg: #052422; --logo-bg: linear-gradient(135deg, #22D3EE, #0E4243); --logo-fg: #05201F;
+    --link: #67E8F9; --ok: #5AE0A8; --ok-text: #5AE0A8; --scrim: rgba(2,4,10,0.66);
     --code-bg: rgba(8,14,28,0.6);
   }
   a { color: var(--link); text-decoration: none; }
@@ -60,16 +60,16 @@
 <div data-theme="{{ theme }}" data-ui-lang="vi" style="position: relative; min-height: 100vh; overflow: hidden; background: var(--bg);">
 
   <div style="position: fixed; inset: 0; z-index: 0; pointer-events: none;">
-    <div style="position: absolute; width: 780px; height: 780px; left: -180px; top: -260px; border-radius: 50%; background: radial-gradient(circle at 40% 40%, var(--blob1), transparent 62%); filter: blur(34px); animation: drift 26s ease-in-out infinite;"></div>
-    <div style="position: absolute; width: 720px; height: 720px; right: -140px; top: -200px; border-radius: 50%; background: radial-gradient(circle at 50% 50%, var(--blob2), transparent 62%); filter: blur(38px); animation: drift 34s ease-in-out infinite reverse;"></div>
-    <div style="position: absolute; width: 900px; height: 700px; left: 24%; bottom: -320px; border-radius: 50%; background: radial-gradient(circle at 50% 50%, var(--blob3), transparent 64%); filter: blur(42px); animation: drift 40s ease-in-out infinite;"></div>
+    <div style="position: absolute; width: 780px; height: 780px; left: -180px; top: -260px; border-radius: 50%; background: radial-gradient(circle at 40% 40%, var(--blob1), transparent 62%); filter: blur(56px); animation: drift 26s ease-in-out infinite;"></div>
+    <div style="position: absolute; width: 720px; height: 720px; right: -140px; top: -200px; border-radius: 50%; background: radial-gradient(circle at 50% 50%, var(--blob2), transparent 62%); filter: blur(62px); animation: drift 34s ease-in-out infinite reverse;"></div>
+    <div style="position: absolute; width: 900px; height: 700px; left: 24%; bottom: -320px; border-radius: 50%; background: radial-gradient(circle at 50% 50%, var(--blob3), transparent 64%); filter: blur(68px); animation: drift 40s ease-in-out infinite;"></div>
     <div style="position: absolute; inset: 0; background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px); background-size: 56px 56px;"></div>
     <div style="position: absolute; inset: 0; background: var(--veil);"></div>
   </div>
 
-  <div style="position: relative; z-index: 1; display: grid; grid-template-columns: {{ sidebarW }} minmax(0, 1fr); gap: 18px; padding: 18px; max-width: 1560px; margin: 0 auto; align-items: start;">
+  <div style="position: relative; z-index: 1; display: flex; min-height: 100vh;">
 
-    <aside style="position: sticky; top: 18px; z-index: 20; max-height: calc(100vh - 36px); display: flex; flex-direction: column; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 22px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow-lg); padding: 14px 12px; overflow: hidden;">
+    <aside style="position: sticky; top: 0; align-self: flex-start; height: 100vh; z-index: 20; flex-shrink: 0; width: {{ sidebarW }}; display: flex; flex-direction: column; background: var(--glass2); border-right: 1px solid var(--border2); padding: 14px 12px; overflow: hidden; transition: width .22s ease;">
       <div style="display: flex; align-items: center; gap: 10px; padding: 2px 2px 14px; justify-content: {{ railJustify }};">
         <span style="width: 34px; height: 34px; flex-shrink: 0; border-radius: 11px; background: var(--logo-bg); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: var(--logo-fg);">A</span>
         <div style="flex: 1 1 auto; min-width: 0; display: {{ expandedDisplay }};">
@@ -84,19 +84,47 @@
       </button>
 
       <nav style="display: flex; flex-direction: column; gap: 3px; flex: 1 1 auto; overflow-y: auto; overflow-x: hidden; scrollbar-width: none;">
-        <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="10">
-          <a href="{{ n.href }}" title="{{ n.label }}" style="position: relative; display: flex; align-items: center; gap: 10px; height: 40px; padding: {{ n.pad }}; border-radius: 12px; font-size: 13.5px; font-weight: {{ n.weight }}; color: {{ n.fg }}; background: {{ n.bg }}; border: 1px solid {{ n.border }}; justify-content: {{ n.justify }};" style-hover="background: var(--nav-hover); color: var(--text);">
-            <span style="width: 26px; height: 26px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border-radius: 8px; background: {{ n.iconBg }}; color: {{ n.iconFg }}; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; font-weight: 600;">{{ n.icon }}</span>
-            <span style="flex: 1 1 auto; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: {{ expandedDisplay }};">{{ n.label }}</span>
-            <sc-if value="{{ n.showBadge }}" hint-placeholder-val="{{ false }}">
-              <span style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; font-weight: 600; padding: 2px 6px; border-radius: 6px; background: var(--track); color: {{ n.fg }};">{{ n.badge }}</span>
+        <sc-for list="{{ navGroups }}" as="g" hint-placeholder-count="5">
+          <div>
+            <a href="{{ g.href }}" onClick="{{ g.onClick }}" title="{{ g.label }}" style="position: relative; display: flex; align-items: center; gap: 10px; height: 40px; padding: {{ g.pad }}; border-radius: 12px; font-size: 13.5px; font-weight: {{ g.weight }}; color: {{ g.fg }}; background: {{ g.bg }}; border: 1px solid {{ g.border }}; justify-content: {{ g.justify }};" style-hover="background: var(--nav-hover); color: var(--text);">
+              <span style="width: 26px; height: 26px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border-radius: 8px; background: {{ g.iconBg }}; color: {{ g.iconFg }}; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; font-weight: 600;">{{ g.icon }}</span>
+              <span style="flex: 1 1 auto; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: {{ expandedDisplay }};">{{ g.label }}</span>
+              <sc-if value="{{ g.hasChildren }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size: 11px; color: var(--muted2); display: {{ expandedDisplay }}; transform: {{ g.chevRotate }}; transition: transform .15s ease;">›</span>
+              </sc-if>
+              <sc-if value="{{ g.showBadge }}" hint-placeholder-val="{{ false }}">
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; font-weight: 600; padding: 2px 6px; border-radius: 6px; background: var(--track); color: {{ g.fg }};">{{ g.badge }}</span>
+              </sc-if>
+            </a>
+            <sc-if value="{{ g.childrenOpen }}" hint-placeholder-val="{{ false }}">
+              <div style="display: flex; flex-direction: column; gap: 2px; margin: 3px 0 4px 33px; border-left: 1px solid var(--border2); padding-left: 10px;">
+                <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="2">
+                  <a href="{{ it.href }}" style="height: 32px; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 10px; border-radius: 8px; font-size: 12.5px; font-weight: {{ it.weight }}; color: {{ it.fg }}; background: {{ it.bg }}; border: 1px solid {{ it.border }};" style-hover="background: var(--nav-hover); color: var(--text);">
+                    <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ it.label }}</span>
+                    <sc-if value="{{ it.showBadge }}" hint-placeholder-val="{{ false }}">
+                      <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; color: var(--muted2);">{{ it.badge }}</span>
+                    </sc-if>
+                  </a>
+                </sc-for>
+              </div>
             </sc-if>
-            <sc-if value="{{ n.dotBadge }}" hint-placeholder-val="{{ false }}">
-              <span style="position: absolute; top: 6px; right: 8px; width: 6px; height: 6px; border-radius: 50%; background: #F5762E;"></span>
-            </sc-if>
+          </div>
+        </sc-for>
+
+        <div style="margin: 12px 0 6px; padding: 0 10px; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: var(--muted2); display: {{ expandedDisplay }};">KHÁC</div>
+        <sc-for list="{{ otherLinks }}" as="ol" hint-placeholder-count="3">
+          <a href="{{ ol.href }}" style="display: flex; align-items: center; gap: 10px; height: 36px; padding: 0 10px; border-radius: 10px; font-size: 13px; color: var(--muted); justify-content: {{ railJustify }};" style-hover="background: var(--nav-hover); color: var(--text);">
+            <span style="width: 18px; text-align: center; flex-shrink: 0; font-size: 13px;">{{ ol.icon }}</span>
+            <span style="display: {{ expandedDisplay }};">{{ ol.label }}</span>
           </a>
         </sc-for>
       </nav>
+
+      <div style="display: flex; gap: 3px; padding: 3px; margin-top: 10px; border-radius: 12px; background: var(--track); border: 1px solid var(--border2); justify-content: center;">
+        <sc-for list="{{ themes }}" as="t" hint-placeholder-count="2">
+          <button onClick="{{ t.onClick }}" title="{{ t.title }}" style="flex: 1 1 auto; height: 28px; display: flex; align-items: center; justify-content: center; gap: 6px; border: none; border-radius: 9px; font-family: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer; background: {{ t.bg }}; color: {{ t.fg }};"><span>{{ t.icon }}</span><span style="display: {{ expandedDisplay }};">{{ t.title }}</span></button>
+        </sc-for>
+      </div>
 
       <div style="display: flex; align-items: center; gap: 10px; margin-top: 12px; padding: 6px 2px; justify-content: {{ railJustify }};">
         <div style="width: 32px; height: 32px; flex-shrink: 0; border-radius: 50%; background: var(--glass3); border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 11.5px; font-weight: 600;">PD</div>
@@ -110,7 +138,7 @@
 
     <main style="display: flex; flex-direction: column; gap: 16px; padding-bottom: 22px; min-width: 0;">
 
-      <div style="position: sticky; top: 18px; z-index: 15; display: flex; align-items: center; gap: 12px; min-height: 62px; padding: 10px 16px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow); flex-wrap: wrap;">
+      <div style="position: sticky; top: 18px; z-index: 15; display: flex; align-items: center; gap: 12px; min-height: 62px; padding: 10px 16px; background: var(--glass); backdrop-filter: blur(42px) saturate(190%); -webkit-backdrop-filter: blur(42px) saturate(190%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow); flex-wrap: wrap;">
         <a href="./Admin - Quản lý bài tập.dc.html" title="Về danh sách" style="width: 32px; height: 32px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border-radius: 10px; border: 1px solid var(--border2); background: var(--glass2); font-size: 14px; color: var(--muted);" style-hover="color: var(--text);">‹</a>
         <div style="flex: 1 1 240px; min-width: 0;">
           <div style="display: flex; align-items: center; gap: 9px;">
@@ -131,7 +159,7 @@
       <div style="display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 16px; align-items: start;">
 
         <div style="display: flex; flex-direction: column; gap: 14px; min-width: 0;">
-          <div style="display: flex; gap: 3px; padding: 4px; border-radius: 14px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); box-shadow: 0 1px 0 var(--inset) inset, var(--shadow); flex-wrap: wrap;">
+          <div style="display: flex; gap: 3px; padding: 4px; border-radius: 14px; background: var(--glass); backdrop-filter: blur(42px) saturate(190%); -webkit-backdrop-filter: blur(42px) saturate(190%); border: 1px solid var(--border); box-shadow: 0 1px 0 var(--inset) inset, var(--shadow); flex-wrap: wrap;">
             <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4">
               <button onClick="{{ t.onClick }}" style="display: flex; align-items: center; gap: 7px; height: 34px; padding: 0 14px; border: none; border-radius: 11px; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; background: {{ t.bg }}; color: {{ t.fg }};">{{ t.label }}<span style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; font-weight: 600; padding: 1px 6px; border-radius: 6px; background: {{ t.pillBg }}; color: {{ t.pillFg }};">{{ t.count }}</span></button>
             </sc-for>
@@ -139,7 +167,7 @@
 
           <sc-if value="{{ isContent }}" hint-placeholder-val="{{ true }}">
             <div style="display: flex; flex-direction: column; gap: 14px;">
-              <div style="padding: 18px 20px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
+              <div style="padding: 18px 20px; background: var(--glass); backdrop-filter: blur(42px) saturate(190%); -webkit-backdrop-filter: blur(42px) saturate(190%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
                 <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted2); margin-bottom: 10px;">Tiêu đề</div>
                 <input value="{{ title }}" onChange="{{ onTitle }}" style="width: 100%; height: 40px; padding: 0 13px; border-radius: 11px; border: 1px solid var(--border2); background: var(--glass2); font-family: inherit; font-size: 15px; font-weight: 600; color: var(--text);" />
                 <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 18px 0 10px;">
@@ -149,7 +177,7 @@
                 <textarea value="{{ body }}" onChange="{{ onBody }}" style="width: 100%; min-height: 260px; padding: 14px; border-radius: 13px; border: 1px solid var(--border2); background: var(--code-bg); font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.75; color: var(--text); resize: vertical;"></textarea>
               </div>
 
-              <div style="padding: 18px 20px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
+              <div style="padding: 18px 20px; background: var(--glass); backdrop-filter: blur(42px) saturate(190%); -webkit-backdrop-filter: blur(42px) saturate(190%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
                 <div style="font-size: 14.5px; font-weight: 700; margin-bottom: 3px;">Ràng buộc và giới hạn</div>
                 <div style="font-size: 12.5px; color: var(--muted); margin-bottom: 16px;">Áp dụng cho toàn bộ ngôn ngữ, có thể ghi đè riêng ở màn Ngôn ngữ và giới hạn</div>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px;">
@@ -167,7 +195,7 @@
                 <textarea value="{{ constraints }}" onChange="{{ onConstraints }}" style="width: 100%; min-height: 96px; padding: 13px; border-radius: 13px; border: 1px solid var(--border2); background: var(--code-bg); font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.7; color: var(--text); resize: vertical;"></textarea>
               </div>
 
-              <div style="padding: 18px 20px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
+              <div style="padding: 18px 20px; background: var(--glass); backdrop-filter: blur(42px) saturate(190%); -webkit-backdrop-filter: blur(42px) saturate(190%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
                 <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px;">
                   <div>
                     <div style="font-size: 14.5px; font-weight: 700;">Đáp án mẫu</div>
@@ -185,7 +213,7 @@
           </sc-if>
 
           <sc-if value="{{ isExamples }}" hint-placeholder-val="{{ false }}">
-            <div style="padding: 18px 20px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
+            <div style="padding: 18px 20px; background: var(--glass); backdrop-filter: blur(42px) saturate(190%); -webkit-backdrop-filter: blur(42px) saturate(190%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
               <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px;">
                 <div>
                   <div style="font-size: 14.5px; font-weight: 700;">Ví dụ mẫu</div>
@@ -222,7 +250,7 @@
 
           <sc-if value="{{ isTestcase }}" hint-placeholder-val="{{ false }}">
             <div style="display: flex; flex-direction: column; gap: 14px;">
-              <div style="padding: 16px 18px 10px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
+              <div style="padding: 16px 18px 10px; background: var(--glass); backdrop-filter: blur(42px) saturate(190%); -webkit-backdrop-filter: blur(42px) saturate(190%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
                 <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px;">
                   <div style="flex: 1 1 auto; min-width: 0;">
                     <div style="font-size: 14.5px; font-weight: 700;">Testcase</div>
@@ -241,17 +269,18 @@
                   </div>
                 </sc-if>
 
-                <div style="display: grid; grid-template-columns: 30px 62px minmax(120px,1fr) minmax(120px,1fr) 96px 96px 34px; gap: 10px; padding: 0 8px 8px; font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted2); border-bottom: 1px solid var(--border2); min-width: 660px;">
-                  <span></span><span>#</span><span>Đầu vào</span><span>Kết quả mong đợi</span><span>Hiển thị</span><span style="text-align: right;">Chạy thử</span><span></span>
+                <div style="display: grid; grid-template-columns: 30px 62px minmax(120px,1fr) minmax(120px,1fr) 96px 82px 96px 34px; gap: 10px; padding: 0 8px 8px; font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted2); border-bottom: 1px solid var(--border2); min-width: 660px;">
+                  <span></span><span>#</span><span>Đầu vào</span><span>Kết quả mong đợi</span><span>Hiển thị</span><span style="text-align: right;">Điểm</span><span style="text-align: right;">Chạy thử</span><span></span>
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 2px; padding-bottom: 6px; min-width: 660px;">
                   <sc-for list="{{ testcases }}" as="tc" hint-placeholder-count="6">
-                    <div draggable="{{ true }}" onDragStart="{{ tc.onDragStart }}" onDragOver="{{ tc.onDragOver }}" onDragEnd="{{ tc.onDragEnd }}" onDrop="{{ tc.onDragEnd }}" style="display: grid; grid-template-columns: 30px 62px minmax(120px,1fr) minmax(120px,1fr) 96px 96px 34px; gap: 10px; align-items: center; padding: 9px 8px; border-radius: 12px; font-size: 13px; background: {{ tc.rowBg }}; border: 1px solid {{ tc.rowBorder }}; opacity: {{ tc.opacity }};" style-hover="background: var(--row-hover);">
+                    <div draggable="{{ true }}" onDragStart="{{ tc.onDragStart }}" onDragOver="{{ tc.onDragOver }}" onDragEnd="{{ tc.onDragEnd }}" onDrop="{{ tc.onDragEnd }}" style="display: grid; grid-template-columns: 30px 62px minmax(120px,1fr) minmax(120px,1fr) 96px 82px 96px 34px; gap: 10px; align-items: center; padding: 9px 8px; border-radius: 12px; font-size: 13px; background: {{ tc.rowBg }}; border: 1px solid {{ tc.rowBorder }}; opacity: {{ tc.opacity }};" style-hover="background: var(--row-hover);">
                       <span title="Kéo để sắp lại" style="display: flex; align-items: center; justify-content: center; height: 24px; border-radius: 7px; color: var(--muted2); cursor: grab; font-size: 13px; letter-spacing: 1px;">⠿</span>
                       <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted);">{{ tc.no }}</span>
                       <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ tc.input }}</span>
                       <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ tc.expected }}</span>
                       <button onClick="{{ tc.toggleVis }}" style="height: 24px; padding: 0 9px; border: 1px solid var(--border2); border-radius: 999px; background: {{ tc.visBg }}; font-family: inherit; font-size: 11.5px; font-weight: 600; color: {{ tc.visFg }}; cursor: pointer;">{{ tc.vis }}</button>
+                      <span style="text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--muted);">{{ tc.weight }}</span>
                       <span style="display: flex; align-items: center; justify-content: flex-end; gap: 6px; font-size: 12.5px; font-weight: 600; color: {{ tc.resFg }};">{{ tc.res }}</span>
                       <button onClick="{{ tc.remove }}" title="Xoá testcase" style="width: 24px; height: 24px; border-radius: 7px; border: 1px solid var(--border2); background: transparent; font-family: inherit; font-size: 11px; color: var(--muted2); cursor: pointer; padding: 0;" style-hover="color: {{ dangerFg }};">✕</button>
                     </div>
@@ -261,12 +290,23 @@
                   <button onClick="{{ addTestcase }}" style="height: 32px; padding: 0 13px; border: 1px dashed var(--border2); border-radius: 11px; background: transparent; font-family: inherit; font-size: 12.5px; font-weight: 600; color: var(--muted); cursor: pointer;" style-hover="color: var(--text); background: var(--glass2);">+ Thêm testcase</button>
                 </div>
               </div>
+
+              <div style="padding: 18px 20px; background: var(--glass); backdrop-filter: blur(42px) saturate(190%); -webkit-backdrop-filter: blur(42px) saturate(190%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
+                <div style="font-size: 14.5px; font-weight: 700; margin-bottom: 3px;">Chấm điểm từng phần</div>
+                <div style="font-size: 12.5px; color: var(--muted); margin-bottom: 14px;">Tổng trọng số phải bằng 100 để bài được xuất bản</div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <div style="flex: 1 1 auto; height: 8px; border-radius: 999px; background: var(--track); overflow: hidden;">
+                    <div style="width: {{ weightPct }}; height: 100%; border-radius: 999px; background: {{ weightBar }};"></div>
+                  </div>
+                  <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; color: {{ weightFg }}; white-space: nowrap;">{{ weightLabel }}</span>
+                </div>
+              </div>
             </div>
           </sc-if>
 
           <sc-if value="{{ isHints }}" hint-placeholder-val="{{ false }}">
             <div style="display: flex; flex-direction: column; gap: 14px;">
-              <div style="padding: 18px 20px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
+              <div style="padding: 18px 20px; background: var(--glass); backdrop-filter: blur(42px) saturate(190%); -webkit-backdrop-filter: blur(42px) saturate(190%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
                 <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 4px;">
                   <div style="font-size: 14.5px; font-weight: 700;">Gợi ý theo cấp độ</div>
                   <button style="height: 32px; padding: 0 13px; border: 1px solid var(--border2); border-radius: 11px; background: var(--glass2); font-family: inherit; font-size: 12.5px; font-weight: 600; color: var(--text); cursor: pointer; white-space: nowrap;">Nhờ AI soạn nháp</button>
@@ -285,7 +325,7 @@
                 </div>
               </div>
 
-              <div style="padding: 18px 20px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
+              <div style="padding: 18px 20px; background: var(--glass); backdrop-filter: blur(42px) saturate(190%); -webkit-backdrop-filter: blur(42px) saturate(190%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
                 <div style="font-size: 14.5px; font-weight: 700; margin-bottom: 3px;">Chỉ dẫn cho trợ lý AI</div>
                 <div style="font-size: 12.5px; color: var(--muted); margin-bottom: 14px;">Ngữ cảnh riêng của bài này, nối vào prompt hệ thống ở màn Cấu hình AI</div>
                 <textarea value="{{ aiBrief }}" style="width: 100%; min-height: 120px; padding: 13px; border-radius: 13px; border: 1px solid var(--border2); background: var(--code-bg); font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.7; color: var(--text); resize: vertical;"></textarea>
@@ -302,7 +342,7 @@
         </div>
 
         <div style="display: flex; flex-direction: column; gap: 14px; position: sticky; top: 92px;">
-          <div style="padding: 16px 18px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
+          <div style="padding: 16px 18px; background: var(--glass); backdrop-filter: blur(42px) saturate(190%); -webkit-backdrop-filter: blur(42px) saturate(190%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
             <div style="font-size: 13.5px; font-weight: 700; margin-bottom: 14px;">Thuộc tính</div>
             <div style="display: flex; flex-direction: column; gap: 14px;">
               <label style="display: block;">
@@ -337,7 +377,7 @@
             </div>
           </div>
 
-          <div style="padding: 16px 18px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
+          <div style="padding: 16px 18px; background: var(--glass); backdrop-filter: blur(42px) saturate(190%); -webkit-backdrop-filter: blur(42px) saturate(190%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
             <div style="font-size: 13.5px; font-weight: 700; margin-bottom: 12px;">Sẵn sàng xuất bản</div>
             <div style="display: flex; flex-direction: column; gap: 9px;">
               <sc-for list="{{ checklist }}" as="c" hint-placeholder-count="4">
@@ -349,7 +389,7 @@
             </div>
           </div>
 
-          <div style="padding: 16px 18px; background: var(--glass); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
+          <div style="padding: 16px 18px; background: var(--glass); backdrop-filter: blur(42px) saturate(190%); -webkit-backdrop-filter: blur(42px) saturate(190%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
             <div style="font-size: 13.5px; font-weight: 700; margin-bottom: 12px;">Số liệu bài</div>
             <div style="display: flex; flex-direction: column; gap: 10px;">
               <sc-for list="{{ metrics }}" as="m" hint-placeholder-count="4">
@@ -367,23 +407,23 @@
   </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:1080},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#3F7BE8&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#3F7BE8&quot;,&quot;#8B5CF6&quot;,&quot;#17B57E&quot;,&quot;#F5B93F&quot;]}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:1080},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#0EA5A4&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#0EA5A4&quot;,&quot;#22D3EE&quot;,&quot;#17B57E&quot;,&quot;#F5B93F&quot;]}}">
 class Component extends DCLogic {
   state = {
-    collapsed: false, theme: 'light', tab: 'content', diff: 'Hard', status: 'Đã xuất bản', solLang: 'Python',
+    openGroup: 'content', collapsed: false, theme: 'light', tab: 'content', diff: 'Hard', status: 'Đã xuất bản', solLang: 'Python',
     title: 'Minimum Window Substring',
     body: '## Đề bài\n\nCho hai chuỗi `s` và `t`, hãy trả về cửa sổ nhỏ nhất trong `s`\nchứa toàn bộ ký tự của `t`, tính cả số lần lặp.\n\nNếu không tồn tại cửa sổ như vậy, trả về chuỗi rỗng.\n\n## Yêu cầu\n\nKết quả được bảo đảm là duy nhất.\nLời giải mong đợi có độ phức tạp O(|s| + |t|).',
     constraints: '1 <= s.length, t.length <= 10^5\ns và t chỉ gồm chữ cái tiếng Anh in hoa và in thường',
     solution: 'from collections import Counter\n\ndef min_window(s: str, t: str) -> str:\n    if not t or not s:\n        return ""\n    need = Counter(t)\n    missing = len(t)\n    best = (0, 0)\n    left = 0\n    for right, ch in enumerate(s, 1):\n        if need[ch] > 0:\n            missing -= 1\n        need[ch] -= 1\n        if missing:\n            continue\n        while need[s[left]] < 0:\n            need[s[left]] += 1\n            left += 1\n        if not best[1] or right - left < best[1] - best[0]:\n            best = (left, right)\n    return s[best[0]:best[1]]',
     tcs: [
-      ['s = "ADOBECODEBANC", t = "ABC"', '"BANC"', 'Công khai'],
-      ['s = "a", t = "a"', '"a"', 'Công khai'],
-      ['s = "a", t = "aa"', '""', 'Công khai'],
-      ['s = "ab", t = "b"', '"b"', 'Ẩn'],
-      ['s = "aa", t = "aa"', '"aa"', 'Ẩn'],
-      ['s = "cabwefgewcwaefgcf", t = "cae"', '"cwae"', 'Ẩn'],
-      ['s 100k ký tự, t 26 ký tự phân biệt', '"…" (dài 5.184)', 'Ẩn'],
-      ['s 100k ký tự lặp chu kỳ, t 12 ký tự', '"…" (dài 34)', 'Ẩn'],
+      ['s = "ADOBECODEBANC", t = "ABC"', '"BANC"', 'Công khai', 10],
+      ['s = "a", t = "a"', '"a"', 'Công khai', 10],
+      ['s = "a", t = "aa"', '""', 'Công khai', 10],
+      ['s = "ab", t = "b"', '"b"', 'Ẩn', 10],
+      ['s = "aa", t = "aa"', '"aa"', 'Ẩn', 10],
+      ['s = "cabwefgewcwaefgcf", t = "cae"', '"cwae"', 'Ẩn', 15],
+      ['s 100k ký tự, t 26 ký tự phân biệt', '"…" (dài 5.184)', 'Ẩn', 20],
+      ['s 100k ký tự lặp chu kỳ, t 12 ký tự', '"…" (dài 34)', 'Ẩn', 15],
     ],
     examples: [
       ['s = "ADOBECODEBANC", t = "ABC"', '"BANC"', 'Cửa sổ nhỏ nhất "BANC" chứa đủ A, B và C của t.'],
@@ -410,39 +450,70 @@ class Component extends DCLogic {
     try { localStorage.setItem('algoprep-admin-theme', theme); } catch (e) {}
   }
 
+  toggleGroup(key) { this.setState(s => ({ openGroup: s.openGroup === key ? null : key })); }
+
   shellVals() {
     const activeKey = 'problems';
     const collapsed = this.state.collapsed;
     const dark = this.state.theme === 'dark';
-    const accent = this.props.accent ?? (dark ? '#7FD0FF' : '#3F7BE8');
-    const nav = [
-      ['overview', 'Tổng quan', './Admin - Tổng quan (Sáng).dc.html', 'TQ', null, false],
-      ['problems', 'Quản lý bài tập', './Admin - Quản lý bài tập.dc.html', 'BT', '27', false],
-      ['iquestions', 'Câu hỏi phỏng vấn', './Admin - Câu hỏi phỏng vấn.dc.html', 'PV', '148', false],
-      ['queue', 'Hàng đợi chấm', './Admin - Hàng đợi chấm.dc.html', 'HĐ', '14', true],
-      ['rejudge', 'Chấm lại', './Admin - Chấm lại.dc.html', 'CL', '2', false],
-      ['lang', 'Ngôn ngữ và giới hạn', './Admin - Ngôn ngữ và giới hạn.dc.html', 'NN', null, false],
-      ['ai', 'Cấu hình AI', './Admin - Cấu hình AI.dc.html', 'AI', null, false],
-      ['tokens', 'Token AI', './Admin - Token AI.dc.html', 'TK', null, false],
-      ['users', 'Người dùng', './Admin - Người dùng.dc.html', 'ND', '1.2k', false],
-      ['logs', 'Nhật ký hệ thống', './Admin - Nhật ký hệ thống.dc.html', 'NK', null, false],
+    const accent = this.props.accent ?? (dark ? '#22D3EE' : '#0EA5A4');
+    const groups = [
+      { key: 'overview', label: 'Tổng quan', href: './Admin - Tổng quan.dc.html', icon: 'TQ', items: [] },
+      { key: 'content', label: 'Nội dung', icon: 'ND', items: [
+        { key: 'problems', label: 'Quản lý bài tập', href: './Admin - Quản lý bài tập.dc.html', badge: '27' },
+        { key: 'iquestions', label: 'Câu hỏi phỏng vấn', href: './Admin - Câu hỏi phỏng vấn.dc.html', badge: '148' },
+      ] },
+      { key: 'ops', label: 'Vận hành', icon: 'VH', items: [
+        { key: 'queue', label: 'Hàng đợi chấm', href: './Admin - Hàng đợi chấm.dc.html', badge: '14' },
+        { key: 'rejudge', label: 'Chấm lại', href: './Admin - Chấm lại.dc.html', badge: '2' },
+        { key: 'lang', label: 'Ngôn ngữ và giới hạn', href: './Admin - Ngôn ngữ và giới hạn.dc.html' },
+      ] },
+      { key: 'ai', label: 'AI', icon: 'AI', items: [
+        { key: 'ai', label: 'Cấu hình AI', href: './Admin - Cấu hình AI.dc.html' },
+        { key: 'tokens', label: 'Token AI', href: './Admin - Token AI.dc.html' },
+      ] },
+      { key: 'system', label: 'Hệ thống', icon: 'HT', items: [
+        { key: 'users', label: 'Người dùng', href: './Admin - Người dùng.dc.html', badge: '1.2k' },
+        { key: 'logs', label: 'Nhật ký hệ thống', href: './Admin - Nhật ký hệ thống.dc.html' },
+        { key: 'perms', label: 'Ma trận phân quyền', href: './Admin - Ma trận phân quyền.dc.html' },
+      ] },
     ];
-    const navItems = nav.map(([key, label, href, icon, badge, hot]) => {
-      const active = key === activeKey;
+    const navGroups = groups.map(g => {
+      const hasChildren = g.items.length > 0;
+      const active = hasChildren ? g.items.some(it => it.key === activeKey) : g.key === activeKey;
+      const open = hasChildren && this.state.openGroup === g.key;
       return {
-        label, href, icon, badge,
-        showBadge: !!badge && !collapsed,
-        dotBadge: !!badge && collapsed && hot,
-        weight: active ? 600 : 500,
-        fg: active ? 'var(--active-fg)' : 'var(--muted)',
-        bg: active ? 'var(--active-bg)' : 'transparent',
-        border: active ? 'var(--active-border)' : 'transparent',
-        iconBg: active ? accent : 'var(--track)',
-        iconFg: active ? (dark ? '#071026' : '#FFFFFF') : 'var(--muted)',
+        label: g.label, href: hasChildren ? '#' : g.href, icon: g.icon,
+        hasChildren,
+        showBadge: false, badge: null,
+        onClick: hasChildren ? (e => { e.preventDefault(); this.toggleGroup(g.key); }) : null,
+        weight: (!hasChildren && active) ? 600 : (active ? 600 : 500),
+        fg: (!hasChildren && active) ? 'var(--active-fg)' : (active ? 'var(--text)' : 'var(--muted)'),
+        bg: (!hasChildren && active) ? 'var(--active-bg)' : 'transparent',
+        border: (!hasChildren && active) ? 'var(--active-border)' : 'transparent',
+        iconBg: (!hasChildren && active) ? accent : 'var(--track)',
+        iconFg: (!hasChildren && active) ? (dark ? '#071026' : '#FFFFFF') : 'var(--muted)',
         pad: collapsed ? '0' : '0 11px 0 7px',
         justify: collapsed ? 'center' : 'flex-start',
+        chevRotate: open ? 'rotate(90deg)' : 'rotate(0deg)',
+        childrenOpen: open && !collapsed,
+        items: g.items.map(it => {
+          const itActive = it.key === activeKey;
+          return {
+            label: it.label, href: it.href, badge: it.badge, showBadge: !!it.badge,
+            weight: itActive ? 600 : 500,
+            fg: itActive ? 'var(--active-fg)' : 'var(--muted)',
+            bg: itActive ? 'var(--active-bg)' : 'transparent',
+            border: itActive ? 'var(--active-border)' : 'transparent',
+          };
+        }),
       };
     });
+    const otherLinks = [
+      { label: 'Cài đặt', href: './Admin - Ngôn ngữ và giới hạn.dc.html', icon: '⚙' },
+      { label: 'Đăng nhập & Đăng ký', href: './Đăng nhập & Đăng ký.dc.html', icon: '↪' },
+      { label: 'Trang cá nhân', href: './Trang cá nhân.dc.html', icon: '◔' },
+    ];
     const themes = [
       { key: 'light', icon: '☀', title: 'Nền sáng' },
       { key: 'dark', icon: '☾', title: 'Nền tối' },
@@ -453,7 +524,7 @@ class Component extends DCLogic {
       fg: this.state.theme === t.key ? 'var(--seg-fg)' : 'var(--muted)',
     }));
     return {
-      navItems, themes, dark,
+      navGroups, otherLinks, themes, dark,
       theme: this.state.theme,
       sidebarW: collapsed ? '72px' : '246px',
       expandedDisplay: collapsed ? 'none' : 'block',
@@ -513,7 +584,7 @@ class Component extends DCLogic {
 
     const res = s.runResult;
     const testcases = s.tcs.map((tc, i) => {
-      const [input, expected, vis] = tc;
+      const [input, expected, vis, weight] = tc;
       const pub = vis === 'Công khai';
       let r = '—', rFg = 'var(--muted2)';
       if (s.running) { r = 'đang chạy'; rFg = 'var(--muted)'; }
@@ -522,7 +593,7 @@ class Component extends DCLogic {
         else { r = '✓ Đúng'; rFg = ok; }
       }
       return {
-        no: '#' + (i + 1), input, expected,
+        no: '#' + (i + 1), input, expected, weight: weight + '%',
         vis: pub ? 'Công khai' : 'Ẩn',
         visBg: pub ? (dark ? 'rgba(127,208,255,0.14)' : 'rgba(63,123,232,0.1)') : 'transparent',
         visFg: pub ? blue : 'var(--muted2)',
@@ -552,6 +623,7 @@ class Component extends DCLogic {
       };
     });
 
+    const totalWeight = s.tcs.reduce((a, r) => a + r[3], 0);
     const pubCount = s.tcs.filter(r => r[2] === 'Công khai').length;
 
     const examples = s.examples.map(([input, output, note], i) => ({
@@ -583,7 +655,7 @@ class Component extends DCLogic {
         border: on ? 'var(--active-border)' : 'var(--border2)',
         fg: on ? 'var(--text)' : 'var(--muted)',
         check: on ? '✓' : '',
-        boxBg: on ? (dark ? '#7FD0FF' : '#3F7BE8') : 'transparent',
+        boxBg: on ? (dark ? '#7FD0FF' : '#0EA5A4') : 'transparent',
         boxFg: on ? (dark ? '#071026' : '#FFFFFF') : 'transparent',
         boxBorder: on ? 'transparent' : 'var(--border2)',
       };
@@ -591,6 +663,7 @@ class Component extends DCLogic {
 
     const checkDefs = [
       [s.tcs.length >= 8, 'Có ít nhất 8 testcase'],
+      [totalWeight === 100, 'Tổng trọng số bằng 100 (hiện ' + totalWeight + ')'],
       [pubCount >= 2, 'Có ít nhất 2 testcase công khai'],
       [true, 'Đáp án mẫu chạy đúng mọi testcase'],
       [s.examples.length >= 2, 'Có ít nhất 2 ví dụ mẫu'],
@@ -631,8 +704,8 @@ class Component extends DCLogic {
         { label: 'Lượt xin gợi ý', value: '742' },
       ],
       addExample: () => this.setState(st => ({ examples: st.examples.concat([['', '', '']]) })),
-      addTestcase: () => this.setState(st => ({ tcs: st.tcs.concat([['', '', 'Ẩn']]), runResult: null })),
-      tcSummary: s.tcs.length + ' testcase · ' + pubCount + ' công khai',
+      addTestcase: () => this.setState(st => ({ tcs: st.tcs.concat([['', '', 'Ẩn', 0]]), runResult: null })),
+      tcSummary: s.tcs.length + ' testcase · ' + pubCount + ' công khai · tổng trọng số ' + totalWeight,
       runAll: () => this.runTests(),
       runLabel: s.running ? 'Đang chạy…' : 'Chạy với đáp án mẫu',
       hasRunResult: !!res,
@@ -642,6 +715,10 @@ class Component extends DCLogic {
       runBannerBg: res && res.failIdx >= 0 ? (dark ? 'rgba(255,138,138,0.1)' : 'rgba(200,64,70,0.07)') : (dark ? 'rgba(126,232,190,0.1)' : 'rgba(23,181,126,0.08)'),
       runBannerBorder: res && res.failIdx >= 0 ? (dark ? 'rgba(255,138,138,0.28)' : 'rgba(200,64,70,0.2)') : (dark ? 'rgba(126,232,190,0.28)' : 'rgba(23,181,126,0.22)'),
       clearRun: () => this.setState({ runResult: null }),
+      weightPct: Math.min(100, totalWeight) + '%',
+      weightLabel: totalWeight + ' / 100',
+      weightFg: totalWeight === 100 ? ok : warn,
+      weightBar: totalWeight === 100 ? 'linear-gradient(90deg,#17B57E,#64C8C0)' : 'linear-gradient(90deg,#F5B93F,#F5762E)',
       aiBrief: 'Bài này rèn kỹ thuật cửa sổ trượt có điều kiện. Nếu người học đề xuất duyệt mọi cửa sổ con, hãy hỏi họ làm sao biết một cửa sổ đã đủ ký tự mà không kiểm tra lại từ đầu. Không nhắc trực tiếp tới Counter hay biến đếm thiếu trước lượt hỏi thứ ba.',
       dangerFg: neg,
       saveHint: s.status === 'Đã xuất bản' ? 'Đang hiển thị cho người học · lưu nháp tự động 2 phút trước' : 'Bản nháp · chưa hiển thị cho người học',

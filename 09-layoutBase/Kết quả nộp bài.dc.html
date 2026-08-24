@@ -49,7 +49,7 @@
     <div style="max-width: 1400px; margin: 0 auto; background: var(--glass); backdrop-filter: saturate(150%) blur(14px); -webkit-backdrop-filter: saturate(150%) blur(14px); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); height: 58px; padding: 0 20px; display: flex; align-items: center; gap: 30px;">
       <div style="display: flex; align-items: center; gap: 9px; flex-shrink: 0;">
         <span style="font-size: 19px; font-weight: 700; letter-spacing: -0.01em;">AlgoPrep</span>
-        <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; letter-spacing: 0.14em; color: var(--gold); border: 1px solid var(--gold); border-radius: 4px; padding: 2px 5px 1px;">JUDGE0</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; letter-spacing: 0.14em; color: var(--gold); border: 1px solid var(--gold); border-radius: 4px; padding: 2px 5px 1px;">GO-JUDGE</span>
       </div>
       <nav style="display: flex; align-items: center; gap: 20px; flex: 1 1 auto; min-width: 0; overflow-x: auto;">
         <a href="./Dashboard AlgoPrep.dc.html" style="white-space: nowrap; font-size: 14.5px; font-weight: 500; color: var(--ink2);" style-hover="color: var(--ink);"><span data-lang="vi">Tổng quan</span><span data-lang="en">Overview</span></a>
@@ -131,7 +131,7 @@
           </div>
         </section>
 
-        <sc-if value="{{ hasFailure }}" hint-placeholder-val="{{ false }}">
+        <sc-if value="{{ hasFailureVisible }}" hint-placeholder-val="{{ false }}">
         <section style="background: var(--panel); border: 1px solid var(--bad); border-radius: 12px; overflow: hidden;">
           <div style="padding: 13px 20px; border-bottom: 1px solid var(--line2); font-size: 11.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--bad);"><span data-lang="vi">Testcase đầu tiên bị sai</span><span data-lang="en">First failing test case</span></div>
           <div style="padding: 16px 20px 18px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px;">
@@ -141,6 +141,16 @@
                 <div style="border: 1px solid var(--line); border-radius: 9px; background: var(--code); padding: 11px 12px; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.6; color: {{ b.color }}; white-space: pre-wrap; word-break: break-all;">{{ b.value }}</div>
               </div>
             </sc-for>
+          </div>
+        </section>
+        </sc-if>
+
+        <sc-if value="{{ hasFailureHidden }}" hint-placeholder-val="{{ false }}">
+        <section style="background: var(--panel); border: 1px solid var(--bad); border-radius: 12px; overflow: hidden;">
+          <div style="padding: 13px 20px; border-bottom: 1px solid var(--line2); font-size: 11.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--bad);"><span data-lang="vi">Testcase đầu tiên bị sai</span><span data-lang="en">First failing test case</span></div>
+          <div style="padding: 16px 20px 18px;">
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; color: var(--bad); margin-bottom: 6px;">{{ failHiddenStatus }}</div>
+            <div style="font-size: 12.5px; line-height: 1.6; color: var(--ink3);"><span data-lang="vi">Testcase ẩn — chỉ hiển thị trạng thái và chỉ số, không hiển thị Input/Expected/Output để tránh lộ dữ liệu testcase ẩn.</span><span data-lang="en">Hidden test case — only status and index are shown; Input/Expected/Output are withheld to avoid leaking hidden test data.</span></div>
           </div>
         </section>
         </sc-if>
@@ -168,8 +178,8 @@
                 <sc-for list="{{ cases }}" as="c" hint-placeholder-count="8">
                   <tr style="border-bottom: 1px solid var(--line2);">
                     <td style="padding: 10px 20px; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--ink3);">{{ c.n }}</td>
-                    <td style="padding: 10px 12px; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--ink2); white-space: nowrap;">{{ c.input }}</td>
-                    <td style="padding: 10px 12px; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--ink2); white-space: nowrap;">{{ c.expected }}</td>
+                    <td style="padding: 10px 12px; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; white-space: nowrap; color: {{ c.inputColor }};">{{ c.input }}</td>
+                    <td style="padding: 10px 12px; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; white-space: nowrap; color: {{ c.expectedColor }};">{{ c.expected }}</td>
                     <td style="padding: 10px 12px; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; white-space: nowrap; color: {{ c.outColor }};">{{ c.output }}</td>
                     <td style="padding: 10px 12px; text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--ink3);">{{ c.time }}</td>
                     <td style="padding: 10px 20px 10px 12px; text-align: right;">
@@ -277,6 +287,7 @@ class Component extends DCLogic {
     const verdict = this.props.verdict || "Accepted";
     const failed = verdict !== "Accepted";
     const failAt = 5;
+    const failIsHidden = failed && !CASES[failAt - 1].sample;
     const cases = CASES.map((c, i) => {
       const bad = failed && i + 1 === failAt;
       const skipped = failed && i + 1 > failAt;
@@ -319,20 +330,33 @@ class Component extends DCLogic {
         { label: en ? "Mode" : "Cách nộp", value: en ? "wrapper" : "bọc hàm", unit: "", color: "var(--ink2)" }
       ],
 
-      hasFailure: failed,
+      hasFailureVisible: failed && !failIsHidden,
+      hasFailureHidden: failIsHidden,
       failBlocks: [
         { label: "Input", value: "[0,4,3,0]\ntarget = 0", color: "var(--ink2)" },
         { label: "Expected", value: "[0,3]", color: "var(--ok)" },
         { label: en ? "Your output" : "Kết quả của bạn", value: verdict === "Time Limit Exceeded" ? "(hết thời gian 2000 ms)" : "[0,2]", color: "var(--bad)" }
       ],
+      failHiddenStatus: en
+        ? "Test case #" + failAt + " · " + (verdict === "Time Limit Exceeded" ? "TLE" : "WA")
+        : "Testcase #" + failAt + " · " + (verdict === "Time Limit Exceeded" ? "TLE" : "WA"),
 
       caseTabs: [{ k: "all", vi: "Tất cả", en: "All" }, { k: "sample", vi: "Ví dụ", en: "Samples" }, { k: "bad", vi: "Bị sai", en: "Failing" }].map((t) =>
         Object.assign({ label: en ? t.en : t.vi, onClick: () => this.setState({ caseFilter: t.k }) }, this.seg2(st.caseFilter === t.k))),
-      cases: shown.map((c) => ({
-        n: c.n, input: c.input, expected: c.expected, output: c.out, time: c.time, status: c.status,
-        outColor: c.status === "AC" ? "var(--ink2)" : c.status === "—" ? "var(--ink3)" : "var(--bad)",
-        statusColor: c.status === "AC" ? "var(--ok)" : c.status === "—" ? "var(--ink3)" : "var(--bad)"
-      })),
+      cases: shown.map((c) => {
+        const hidden = en ? "Hidden" : "Ẩn";
+        return {
+          n: c.n,
+          input: c.sample ? c.input : hidden,
+          expected: c.sample ? c.expected : hidden,
+          output: c.sample ? c.out : hidden,
+          time: c.time, status: c.status,
+          inputColor: c.sample ? "var(--ink2)" : "var(--ink3)",
+          expectedColor: c.sample ? "var(--ink2)" : "var(--ink3)",
+          outColor: !c.sample ? "var(--ink3)" : c.status === "AC" ? "var(--ink2)" : c.status === "—" ? "var(--ink3)" : "var(--bad)",
+          statusColor: c.status === "AC" ? "var(--ok)" : c.status === "—" ? "var(--ink3)" : "var(--bad)"
+        };
+      }),
       caseSummary: en
         ? "3 sample tests visible · " + (CASES.length - 3) + " hidden tests run on the grader"
         : "3 testcase ví dụ hiển thị · " + (CASES.length - 3) + " testcase ẩn chạy trên máy chấm",

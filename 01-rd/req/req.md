@@ -39,7 +39,16 @@ NestGame v2 → thay bằng: AlgoPrep gồm **sáu phân hệ chức năng chín
     (F1-07), lịch sử phỏng vấn mở lại được rubric của phiên cũ (F1-08).
 - **Quản lý hồ sơ:**
   - Sửa thông tin cá nhân (F1-09) — `[SoT: Suy luận — README.md không nêu, nhưng đăng ký mà không sửa được
-gì là thiếu]`.
+gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang cá nhân.dc.html`, tự quyết theo yêu cầu
+    trực tiếp của chủ dự án vì prototype hiện tại chỉ là bản dựng tham khảo — hành vi chi tiết sẽ dựng lại
+    khi có frontend Next.js thật): 6 trường sửa được — Họ và tên, Email, Trường/công ty, Vai trò hiện tại,
+    Ngôn ngữ mặc định, Vị trí mục tiêu. **Đổi Email** bắt buộc xác thực lại bằng mã 6 số gửi tới email mới
+    (tái dùng cơ chế của F1-17), email cũ còn hiệu lực cho tới khi xác thực xong. Trường "Gói" (`Pro`) trong
+    prototype là dữ liệu mẫu không có ý nghĩa — AlgoPrep không có mô hình phân hạng tài khoản, bỏ khỏi giao
+    diện thật **[Đợi nextjs]**. Mục "Xác thực hai lớp (2FA)" trong prototype nằm ngoài phạm vi đồ án — bỏ
+    khỏi giao diện thật **[Đợi nextjs]**.
+  - **F1-19 — Tự đổi mật khẩu khi đã đăng nhập.** Khác F1-17 (quên mật khẩu, chưa đăng nhập): người dùng nhập
+    mật khẩu hiện tại + mật khẩu mới ngay tại trang cá nhân/bảo mật, không qua email. **Chốt 2026-08-25.**
 - **Ma trận phân quyền Role × Function × Action** — chốt 2026-08-23 theo `06-plan/PROTOTYPE_DEBT.md` mục
   1.2. Giải quyết việc A2 (Giảng viên) và A3 (Quản trị viên) dùng **chung một khu Admin** trên giao diện,
   nhưng được tách quyền thật ở tầng ứng dụng thay vì chỉ ẩn/hiện menu:
@@ -52,13 +61,18 @@ gì là thiếu]`.
     vai trò hệ thống (`STUDENT`, `INSTRUCTOR`, `ADMIN`) và không xoá được vai trò đang có người dùng.
   - **F1-12 — Danh sách chức năng quản trị/nội dung nằm trong phạm vi ma trận** (đề xuất khởi điểm,
     `[SoT: Suy luận]` — chốt số lượng chính xác khi viết BD):
-    `PROBLEM_AUTHORING` (F2-01→04) · `TESTCASE_MANAGEMENT` (F2-05→09, F2-14) · `CLASS_MANAGEMENT` (F2-12) ·
+    `PROBLEM_AUTHORING` (F2-01→04) · `TESTCASE_MANAGEMENT` (F2-05→09, F2-14) · `CLASS_MANAGEMENT` (F2-12, F5-27) ·
     `USER_MANAGEMENT` (F1-13) · `REJUDGE_MANAGEMENT` (F4-09a→e) · `JUDGE_QUEUE_MONITOR` (F4-10) ·
     `AI_CONFIG` (F5-23) ·
     `AI_TOKEN_BUDGET` (F5-21, F5-25) · `SYSTEM_AUDIT_LOG` (F1-14) · `INTERVIEW_BANK_MANAGEMENT` (F6-11, F6-12) ·
     `PERMISSION_MATRIX` (chính F1-10 — tự tham chiếu, mặc định chỉ `ADMIN` có toàn quyền).
   - **F1-13 — Quản lý tài khoản người dùng.** `ADMIN` đổi vai trò, khoá/mở khoá tài khoản, reset mật khẩu
-    của người dùng khác — gác bởi `USER_MANAGEMENT` trong ma trận F1-10. Actor A3.
+    của người dùng khác — gác bởi `USER_MANAGEMENT` trong ma trận F1-10. Actor A3. **Chốt 2026-08-25** (qua
+    hỏi trực tiếp chủ dự án khi viết `01-rd/screens/admin/admin_user_management.md` — prototype có mục "Đề
+    nghị cấp quyền giảng viên" gây hiểu nhầm): **không có luồng tự yêu cầu nâng vai trò (self-service)** —
+    đổi vai trò luôn là hành động đơn phương của `ADMIN`, không có bước "người dùng xin, ADMIN duyệt". Nếu
+    một `STUDENT` muốn trở thành `INSTRUCTOR`, việc trao đổi diễn ra ngoài hệ thống (email, gặp trực tiếp),
+    rồi `ADMIN` tự vào đổi vai trò qua chính F1-13, không qua một hàng đợi phê duyệt riêng.
   - **F1-14 — Mọi thay đổi ma trận phân quyền và mọi thao tác quản trị đều ghi vào Nhật ký hệ thống**, kèm
     ai đổi, đổi gì, đổi lúc nào — không có ngoại lệ cho chính thao tác đổi quyền. **Chốt phạm vi 2026-08-24
     (`06-plan/PROTOTYPE_DEBT.md` mục 2.5):** F1-14 chỉ ghi **hành động quản trị của người** (đổi ma trận
@@ -82,13 +96,58 @@ gì là thiếu]`.
     một job định kỳ ẩn danh hoá thông tin định danh (email, tên hiển thị) của tài khoản — bài nộp, bài giải
     đã lưu, phiên phỏng vấn **không bị xoá**, chỉ gỡ liên kết tới danh tính cá nhân, để không phá vỡ thống
     kê tiến độ lớp của giảng viên khi một học viên xoá tài khoản giữa kỳ.
+- **Tự đặt lại mật khẩu (quên mật khẩu)** — bổ sung theo `01-rd/screens/shared/auth.md` mục 5 câu hỏi mở Q4, phát
+  hiện khi đối chiếu `09-layoutBase/Đăng nhập & Đăng ký.dc.html` (liên kết "Quên mật khẩu?" có thật ở màn
+  đăng nhập nhưng trước đó chưa có mã `Fx-nn` nào phủ luồng này — khác `F1-13` là ADMIN reset hộ người
+  khác):
+  - **F1-17 — Tự đặt lại mật khẩu bằng mã xác nhận 6 chữ số gửi qua email.** Chốt 2026-08-24 qua hỏi trực
+    tiếp chủ dự án: người dùng chưa đăng nhập nhập email tại màn `auth`; hệ thống gửi một mã gồm **6 chữ số
+    ngẫu nhiên** tới email đó qua Gmail; người dùng nhập đúng mã trong thời hạn hiệu lực (đề xuất 10 phút,
+    `[SoT: Suy luận]` — chốt số phút chính xác khi viết BD) thì được đặt mật khẩu mới. Mã chỉ dùng được một
+    lần — dùng xong hoặc hết hạn thì vô hiệu ngay, phải yêu cầu gửi mã mới. Giới hạn số lần nhập sai liên
+    tiếp (`[SoT: Suy luận]` — đề xuất 5 lần, chốt ở BD) và giới hạn tần suất gửi lại mã (chống spam email,
+    `[SoT: Suy luận]` — đề xuất tối thiểu 60 giây giữa hai lần gửi) để tránh lạm dụng.
+  - **Không tiết lộ email có tồn tại hay không:** thông báo sau khi bấm gửi mã luôn là một câu chung
+    ("Nếu email tồn tại trong hệ thống, mã xác nhận đã được gửi") bất kể email đó có tài khoản hay không —
+    tránh lộ thông tin cho kẻ dò email đã đăng ký (OWASP — user enumeration), khớp yêu cầu OWASP top 10 đã
+    nêu ở `CLAUDE.md` mục Rules.
+  - **Tài khoản chỉ đăng ký qua OAuth (chưa từng đặt mật khẩu, F1-15) — chốt 2026-08-24 qua hỏi trực tiếp
+    chủ dự án:** vì tài khoản này chưa từng có mật khẩu, "quên mật khẩu" không áp dụng được — hệ thống
+    **từ chối tạo mật khẩu mới qua luồng này**, chỉ gửi một email (không phải mã 6 số) báo tài khoản đang
+    đăng nhập bằng GitHub/Google và hướng dẫn quay lại đăng nhập bằng đúng provider đó. Bước nhập email vẫn
+    giữ nguyên thông báo chung ("nếu email tồn tại, mã đã được gửi") — không lộ việc tài khoản có tồn tại
+    hay không, chỉ khác nội dung email thực sự nhận được tuỳ loại tài khoản.
+- **Lịch sử nộp bài, tuỳ chọn cá nhân hoá, thông báo, và xuất dữ liệu** — bổ sung 2026-08-25 theo
+  `06-plan/reports/260825-1500-report-ai1-phase2-conflicts.md`, đối chiếu
+  `09-layoutBase/Bài đã nộp.dc.html` và `09-layoutBase/Cài đặt.dc.html`. Tự chốt theo yêu cầu trực tiếp của
+  chủ dự án — prototype là bản dựng tham khảo, chi tiết hành vi UI sẽ dựng lại khi có frontend Next.js thật
+  (đánh dấu **[Đợi nextjs]** ở phần thuần UI):
+  - **F1-18 — Xem lịch sử nộp bài của chính mình**, lọc theo verdict (AC/WA/TLE/CE/RE...) và ngôn ngữ, tìm
+    theo tên/mã bài; phân trang cuối bảng giống `problem_list` (F2-11) **[Đợi nextjs]** cho chi tiết UI.
+  - **F1-20 — Tuỳ chọn cá nhân hoá Workspace lưu theo tài khoản**: ngôn ngữ mặc định, cỡ chữ editor, tự lưu
+    bản nháp, phím tắt Vim — áp dụng khi mở màn giải bài (F3/F4), không ảnh hưởng chấm bài.
+  - **F1-21 — Thông báo email định kỳ**: nhắc luyện tập khi chuỗi ngày sắp mất, báo cáo tiến độ hằng tuần
+    theo chủ đề — job định kỳ thuộc `identity`, tắt/mở được theo từng loại. Không thuộc luồng OTP của F1-17.
+  - **F1-22 — Xuất dữ liệu cá nhân**: lượt nộp (CSV), hội thoại phỏng vấn (JSON) — chỉ xuất dữ liệu của
+    chính người dùng đang đăng nhập.
+  - **Câu chữ "Vùng nguy hiểm" ở màn Cài đặt phải khớp hành vi F1-16 đã chốt** (khoá mềm rồi ẩn danh hoá, dữ
+    liệu không mất) — prototype hiện ghi "xoá vĩnh viễn" là sai, sửa lại khi dựng UI thật **[Đợi nextjs]**.
 
 ### F2 — Ngân hàng bài toán và testcase (`problem-bank`)
 
 - **Soạn đề bài (A2):**
   - Soạn đề bài bằng Markdown kèm công thức LaTeX (F2-01); phân loại theo độ khó và chủ đề (F2-02).
-  - Khai báo đặc tả bài toán: chữ ký hàm theo từng ngôn ngữ trong ba ngôn ngữ (Java, C++, Python), kiểu
-    tham số và kiểu trả về (F2-03) — đây là **đầu vào bắt buộc** cho bộ sinh mã bọc hàm (F3).
+  - **Khai báo đặc tả bài toán cho CẢ HAI mô hình nộp bài song song (F2-03).** Sửa lại 2026-08-24 qua hỏi
+    trực tiếp chủ dự án khi viết `01-rd/screens/users/problem_detail.md` — bản trước chỉ nói tới đặc tả cho mô
+    hình Bọc hàm, thu hẹp hơn phạm vi đã chốt ở `README.md` mục 5 dòng 179 ("Hỗ trợ cả 2 mô hình: Bọc hàm và
+    Nhập/Xuất chuẩn") và mục 1.1 dòng 15 (so với HackerRank — "Cả hai"): mỗi bài toán khai báo
+    - **chữ ký hàm** theo từng ngôn ngữ trong ba ngôn ngữ (Java, C++, Python), kiểu tham số và kiểu trả về —
+      đầu vào bắt buộc cho mô hình **Bọc hàm** (bộ sinh mã F3), **và**
+    - **định dạng input/output theo dòng chuẩn** (thứ tự đọc từ `stdin`, định dạng in ra `stdout`) — đầu
+      vào bắt buộc cho mô hình **Standard I/O**, học viên tự đọc/ghi theo đúng định dạng này.
+    Học viên **tự chọn mô hình nào cũng được cho cùng một bài** ở màn `problem_detail` (F3-13 sửa lại — xem
+    dưới) — đây không phải một trong hai lựa chọn xung khắc của giảng viên, mà là input kép bắt buộc cho mọi
+    bài toán, trừ trường hợp F3-13 áp dụng.
   - Khai báo chiến lược so khớp kết quả cho bài toán: `EXACT` · `TRIMMED` · `EPSILON` · `UNORDERED_SET`
     (F2-04, `glossary.md` mục 2).
 - **Testcase:**
@@ -104,16 +163,22 @@ gì là thiếu]`.
 - **Khám phá và quản lý lớp:**
   - Tìm kiếm và lọc bài toán theo chủ đề, độ khó, trạng thái đã giải (F2-11, actor A1).
   - Giao bài tập theo lớp (F2-12, actor A2). **Bổ sung 2026-08-24** (`06-plan/PROTOTYPE_DEBT.md` mục 2.11,
-    đối chiếu `09-layoutBase/Ngân hàng bài toán.dc.html`): bài toán đã gán theo lớp hiển thị **lồng thành
-    một nhóm riêng ngay trong danh sách bài toán** (`problem_list`) của học viên thuộc lớp đó, không phải
-    một màn tách biệt — không cần mã mới, chỉ là cách trình bày của cùng F2-12.
+    đối chiếu `09-layoutBase/Ngân hàng bài toán.dc.html`): bài toán đã gán theo lớp **hiển thị thành một khối
+    riêng ngay trong cùng trang danh sách bài toán** (`problem_list`) của học viên thuộc lớp đó, không phải
+    một màn tách biệt — không cần mã mới, chỉ là cách trình bày của cùng F2-12. **Sửa câu chữ 2026-08-25**
+    (chốt qua `01-rd/screens/users/problem_list.md` Câu hỏi mở Q1, đã đóng): câu trước dùng chữ "lồng thành
+    một nhóm riêng" dễ hiểu nhầm là chèn xen kẽ vào từng dòng bảng; prototype thật là một khối tổng hợp cạnh
+    bảng chính (sidebar), không lồng vào từng dòng — giữ đúng theo prototype, chỉ sửa lại câu chữ mô tả.
   - **Bài đã lưu (bookmark) kèm ghi chú riêng tư** (F2-13) — bổ sung theo `06-plan/PROTOTYPE_DEBT.md` mục
     2.1, đối chiếu `09-layoutBase/Bài đã lưu.dc.html`. Người học đánh dấu bài toán để xem lại, kèm ghi chú
     tự do theo từng bookmark. **Chốt 2026-08-24:** ghi chú lưu ở server theo (`user_id`, `problem_id`) —
     **riêng tư tuyệt đối**, chỉ chủ tài khoản đọc được, không có ngoại lệ cho `INSTRUCTOR`/`ADMIN` dù có
     toàn quyền qua ma trận phân quyền F1-10 (ghi chú bookmark không thuộc phạm vi ma trận, không phải một
     `FUNCTION` quản trị). Vì lưu server-side nên tự đồng bộ trên mọi thiết bị đăng nhập, không cần cơ chế
-    đồng bộ riêng.
+    đồng bộ riêng. **Mở rộng 2026-08-25** (tự chốt theo yêu cầu chủ dự án, đối chiếu
+    `01-rd/screens/users/saved_problems.md` mục 5 Q1): mức riêng tư tuyệt đối áp cho **cả chính việc đã
+    bookmark bài nào** (không chỉ nội dung ghi chú) — `INSTRUCTOR`/`ADMIN` không biết một học viên đã lưu
+    bài toán nào.
   - **F2-14 — AI hỗ trợ sinh testcase tự động, output lấy từ chạy thật Đáp án mẫu (không để AI tự bịa
     output)** — bổ sung theo `06-plan/PROTOTYPE_DEBT.md` mục 2.6, đối chiếu nút "Sinh tự động" ở
     `09-layoutBase/Admin - Soạn đề bài.dc.html`. **Chốt 2026-08-24 — giữ tính năng, cơ chế an toàn bắt
@@ -146,8 +211,26 @@ Phân hệ cho phép mô hình bọc hàm hoạt động trên judge engine (go-
   (F3-09), tập hợp không xét thứ tự (F3-10).
 - **Ánh xạ lỗi biên dịch:** trả lỗi về đúng dòng trong mã người dùng (F3-11); **che giấu hoàn toàn** lỗi
   thuộc phần mã harness — người học không được thấy mã hệ thống (F3-12).
-- **Đường lùi có chủ ý:** bài toán có kiểu dữ liệu mà lược đồ chưa phủ thì chuyển sang mô hình Standard I/O
-  (F3-13, actor A2) — phương án xử lý rủi ro `README.md` mục 7, không phải chống chế lúc bí.
+- **Cả hai mô hình nộp bài luôn song song, học viên tự chọn (F3-13) — sửa lại 2026-08-24 qua hỏi trực tiếp
+  chủ dự án.** Bản trước coi Standard I/O là "đường lùi" chỉ dùng khi lược đồ kiểu chưa phủ được kiểu dữ
+  liệu của bài — thu hẹp hơn phạm vi đã chốt ở `README.md` mục 5 dòng 179 ("Hỗ trợ cả 2 mô hình") và khác
+  với hành vi thật của prototype (`09-layoutBase/Workspace giải bài.dc.html` dòng 596-601: học viên chọn tự
+  do giữa "Bọc hàm" và "Có hàm main" ngay trong Workspace cho cùng một bài, không khoá theo bài toán).
+  - **Mặc định:** mọi bài toán hiển thị cả hai mô hình ở màn `problem_detail`; học viên bấm chuyển đổi lúc
+    làm bài, không phải lựa chọn một lần cố định — mã khung (starter code) đổi theo đúng mô hình đang chọn
+    và ngôn ngữ đang chọn.
+  - **Trường hợp duy nhất chỉ còn một mô hình:** nếu kiểu dữ liệu của bài toán vượt quá lược đồ kiểu độc lập
+    ngôn ngữ của F3 (F3-01) — ví dụ cấu trúc dữ liệu tuỳ biến quá phức tạp để sinh mã bọc hàm tự động — thì
+    **ẩn hẳn tuỳ chọn Bọc hàm cho bài đó**, chỉ còn Standard I/O (luôn khả dụng cho mọi bài vì học viên tự
+    đọc/ghi theo định dạng khai báo ở F2-03, không phụ thuộc lược đồ kiểu). Đây là phương án xử lý rủi ro R2
+    (`README.md` mục 7), không phải hành vi mặc định.
+  - **Tác động tới khối lượng công việc:** vì mọi bài toán (trừ trường hợp trên) cần bộ sinh mã hoạt động
+    cho cả hai mô hình, khối lượng codegen của F3 tăng gần gấp đôi so với cách hiểu "đường lùi hiếm khi
+    dùng" trước đây — cần ghi nhận lại ở `system_survey.md` mục 5.7 và trọng số công việc, và ở BD kiến trúc
+    module `harness` (`02-bd/packages/harness/architecture.md`) vì tài liệu đó hiện vẫn viết theo khung
+    "đường lùi", cần chủ dự án xác nhận lại chiến lược Strategy/Plugin đã chọn có còn phù hợp không (nhiều
+    khả năng vẫn phù hợp — mỗi plugin ngôn ngữ giờ có hai phương thức sinh mã thay vì một, không đổi kiến
+    trúc tổng thể).
 
 ### F4 — Điều phối và giao tiếp judge engine (`judge-orchestration`)
 
@@ -211,6 +294,12 @@ Gọi qua cổng ra trung lập theo engine (`JudgeExecutionPort`), adapter mặ
     toàn trước và trong khi chạy, thay cho một bước duyệt tĩnh trước khi bắt đầu.
   - Giám sát hàng đợi và tình trạng cụm judge engine (F4-10); cấu hình ngôn ngữ và giới hạn tài nguyên
     (F4-11) — cả hai thuộc actor A3.
+  - **F4-12 — Chỉ số "Beats" trên trang kết quả nộp bài.** Bổ sung 2026-08-25 (chốt qua
+    `01-rd/screens/users/submission_result.md` Câu hỏi mở Q4, chốt theo RD): với một bài nộp `Accepted`,
+    tính tỉ lệ phần trăm bài nộp khác **nhanh hơn hoặc bằng** (theo runtime) chậm hơn bài nộp hiện tại, trong
+    tập tất cả bài nộp `Accepted` của **cùng bài toán và cùng ngôn ngữ lập trình** (không so giữa các ngôn
+    ngữ khác nhau vì tốc độ thực thi không tương đương). Chỉ hiển thị khi verdict là `Accepted`; rỗng (`—`)
+    cho mọi verdict khác. Công thức và ngưỡng làm tròn cụ thể chốt khi viết BD/DD của `judge-orchestration`.
 
 ### F5 — Phân hệ AI (`ai-review`)
 
@@ -223,8 +312,15 @@ Kích hoạt **sau khi** bài nộp đạt `Accepted`. Hai chức năng độc l
 - Phân tích độ phức tạp thời gian và bộ nhớ thực tế kèm lập luận (F5-02); đối chiếu với độ phức tạp tối ưu
   đã biết của bài toán, gợi ý hướng tiếp cận tốt hơn nếu chưa tối ưu (F5-03).
 - Chỉ ra trường hợp biên bộ test chưa phủ, giả định ngầm trong mã, nguy cơ tràn số, rủi ro khi dữ liệu lớn
-  hơn ràng buộc (F5-04); nhận xét chất lượng mã — đặt tên, phân rã, trùng lặp, độ dễ đọc (F5-05); đưa ra
-  câu hỏi mở rộng (F5-06).
+  hơn ràng buộc (F5-04); nhận xét chất lượng mã — đặt tên, phân rã, trùng lặp, độ dễ đọc, **kèm một điểm số
+  dễ đọc quy ước thang 1-5 do chính AI tự chấm trong cùng lượt phân tích** (không gọi thêm lần nào, chỉ là
+  một trường bổ sung trong JSON trả về) (F5-05); đưa ra câu hỏi mở rộng dưới dạng **chủ đề/từ khoá gợi ý**,
+  không phải liên kết cố định tới một câu hỏi cụ thể nào trong kho `interview-bank` — tránh `ai-review` phải
+  đọc dữ liệu của `interview-bank` (`DEC-2026-0820-architecture-baseline`, modules không import lẫn nhau);
+  giao diện tự dựng liên kết tìm kiếm sang `interview_bank_list` lọc theo đúng chủ đề/từ khoá đó (F5-06).
+  Chốt 2026-08-25 qua `06-plan/reports/260825-2100-ai2-solution-review-conflicts.md`, tự quyết theo yêu cầu
+  trực tiếp của chủ dự án khi review Phase 3 — cách trình bày cụ thể trên giao diện (số liên kết hiện ra,
+  bố cục) **[Đợi nextjs]**, để dựng lại khi có frontend thật thay vì đối chiếu tiếp prototype tĩnh.
 - Trả kết quả dưới dạng **JSON có lược đồ** để giao diện render báo cáo tĩnh (F5-07); lưu kèm bài nộp, tra
   cứu lại được từ trang tiến độ (F5-08).
 
@@ -284,6 +380,11 @@ Kích hoạt **sau khi** bài nộp đạt `Accepted`. Hai chức năng độc l
   Việc phỏng vấn không còn bị khoá cứng sau `Accepted` cần phản ánh lại ở câu mô tả tổng quan "sau khi
   Accepted" trong `01-rd/overview/overview.md` khi module này được viết BD/DD — F5.2 giờ là **có thể mở sau
   Accepted, hoặc mở độc lập để tự luyện**, không phải điều kiện bắt buộc.
+- **F5-28 — Tự chỉnh tham số phiên tự luyện** (chốt 2026-08-25, tự quyết theo yêu cầu trực tiếp của chủ dự
+  án, đối chiếu `09-layoutBase/Cài đặt.dc.html` mục "Phỏng vấn giả lập"): người học đặt trước Mức người
+  phỏng vấn (Junior/Middle/Senior), Số lượt tối đa mỗi phiên, và Cho phép gợi ý khi bí — **chỉ áp dụng cho
+  hai lối vào tự luyện của F5-24** (kho câu hỏi/tự chọn chủ đề), không áp dụng cho lối vào từ bài nộp
+  `Accepted` (F5-09) để giữ tính khách quan của phiên gắn với một bài giải thật.
 - **Áp dụng bản mã AI đề xuất vào Workspace** (F5-26) — bổ sung theo `06-plan/PROTOTYPE_DEBT.md` mục 2.13,
   đối chiếu `09-layoutBase/Phân tích bài giải.dc.html`. Sau khi nhận báo cáo phân tích bài giải (F5.1),
   người học bấm áp dụng một đoạn mã AI đề xuất trực tiếp vào Workspace, ghi đè mã đang có. **Chốt
@@ -292,6 +393,18 @@ Kích hoạt **sau khi** bài nộp đạt `Accepted`. Hai chức năng độc l
   không ghi đè mất luôn, đúng nguyên tắc "mã người học là của người học" (`01-rd/overview/overview.md` mục
   2). Không gộp vào F5-07/F5-08 vì đây là một hành động **ghi** vào Workspace của người dùng, khác bản chất
   với việc chỉ đọc/hiển thị báo cáo.
+- **Điểm AI tham khảo và chấm tay của giảng viên** (F5-27) — bổ sung theo `06-plan/PROTOTYPE_DEBT.md` mục
+  6.2.a, đối chiếu `09-layoutBase/Giáo viên - Chấm bài.dc.html`. Từ báo cáo phân tích bài giải (F5.1), hệ
+  thống quy đổi thêm một **điểm tham khảo trên thang 10** (không phải trường mới của F5-07, chỉ là một cách
+  hiển thị tổng hợp của cùng báo cáo) để giảng viên lướt nhanh chất lượng bài làm của học viên trong lớp mình
+  phụ trách; giảng viên chấm tay đè lên điểm này kèm nhận xét. **Chốt 2026-08-24 — qua hỏi trực tiếp chủ dự
+  án:** điểm AI 0-10 và điểm chấm tay của giảng viên **chỉ là lớp tham khảo nội bộ dành cho giảng viên**,
+  tách bạch hoàn toàn khỏi kết quả Pass/Fail chính thức của bài nộp (F4-04 — fail-fast, không đổi) — không
+  ghi đè, không ảnh hưởng trạng thái submission, không phải "chấm điểm từng phần theo trọng số" đã bị loại ở
+  mục 2.6. Không mâu thuẫn F5-18 (rubric/báo cáo AI vẫn chỉ là phản hồi hỗ trợ học tập) vì điểm 0-10 này chưa
+  bao giờ được trình bày cho người học như điểm chính thức, chỉ hiện trong màn quản lý riêng của giảng viên.
+  Phạm vi hiển thị: theo lớp giảng viên phụ trách (cùng cơ chế với F2-12). Actor A2, gác bởi Function
+  `CLASS_MANAGEMENT` trong ma trận phân quyền (F1-12).
 
 ### F6 — Ngân hàng câu hỏi phỏng vấn (`interview-bank`)
 

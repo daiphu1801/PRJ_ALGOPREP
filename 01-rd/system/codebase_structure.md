@@ -26,6 +26,7 @@ prj_algoprep/
 ├── 05-coding/              # TOÀN BỘ mã nguồn và hạ tầng local
 ├── 06-plan/                # Kế hoạch sống + reports/ của subagent
 ├── 07-review/              # Bản ghi review RD/BD/DD và review code
+├── 09-layoutBase/          # Prototype giao diện tĩnh (.dc.html) làm đầu vào cho BD/DD
 ├── README.md               # Báo cáo khảo sát hệ thống — nguồn của phạm vi
 └── CLAUDE.md               # Hướng dẫn agent
 ```
@@ -34,7 +35,7 @@ prj_algoprep/
 commit mà không đổi lại gì; và tài liệu với mã nguồn ở đây thay đổi cùng nhau theo từng slice.
 
 **Không có `01-legacy/`** — dự án greenfield, không có hệ cũ để đối chiếu.
-**Không có `09-layoutBase/`** — chưa chọn hệ thống thiết kế nào.
+**`09-layoutBase/`** — chứa 31 màn prototype tĩnh (`.dc.html`) làm căn cứ đối chiếu và đầu vào để dựng màn BD/DD.
 **Không có `plans/`** — mọi kế hoạch vào `06-plan/{YYMMDD-HHMM}-{slug}.md` (`CLAUDE.md` mục Rules).
 
 ---
@@ -91,7 +92,7 @@ trong `pom.xml` là nợ, không phải tiến độ.
 | Khái niệm | Tài liệu | Backend | Frontend | Database |
 | :--- | :--- | :--- | :--- | :--- |
 | Bounded Context | `code` trong `domain-registry.json` (`problem-bank`) | Module Maven `algoprep-problem-bank`, package `com.algoprep.problembank` | (không tương ứng) | Schema `problem` |
-| Màn hình | slug ở `01-rd/screens/<slug>.md` (`problem_detail`) | (không tương ứng) | Slice `views/problem-detail/` | (không tương ứng) |
+| Màn hình | slug ở `01-rd/screens/<khu vực>/<slug>.md` (`users/problem_detail.md`) | (không tương ứng) | Slice `views/problem-detail/` | (không tương ứng) |
 | Thực thể nghiệp vụ | Dòng trong `glossary.md` | Class trong `domain/model/` | Slice `entities/<name>/` | Bảng |
 
 Ba lưu ý về dấu nối, vì chúng khác nhau và đây là chỗ hay sai:
@@ -113,7 +114,7 @@ Hai trục tài liệu (`CLAUDE.md` mục Process), và chúng không được t
 | Trục | Đơn vị | Tài liệu | Mã nguồn |
 | :--- | :--- | :--- | :--- |
 | Bounded Context | sáu context | `02-bd/{architecture,database,security,storage}/<context>.md` · `03-dd/{api,logic,validation,jobs}/<context>.md` | `backend/algoprep-<context>/` |
-| Màn hình | từng màn | `01-rd/screens/<slug>.md` · `02-bd/screens/<slug>.md` · `03-dd/screens/<slug>.md` | `frontend/src/views/<slug>/` |
+| Màn hình | từng màn | `01-rd/screens/<khu vực>/<slug>.md` · `02-bd/screens/<khu vực>/<slug>.md` · `03-dd/screens/<khu vực>/<slug>.md` — khu vực là `shared`/`users`/`teacher`/`admin` theo actor chính của màn (2026-08-24, tiếp) | `frontend/src/views/<slug>/` |
 
 **Vì sao hai trục.** Một màn thường chạm nhiều context: màn chi tiết bài toán cần `problem-bank` +
 `harness` + `judge-orchestration` + `ai-review`. Không xếp được nó vào một context nào, nên nó có trục riêng.

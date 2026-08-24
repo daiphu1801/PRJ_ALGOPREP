@@ -53,7 +53,7 @@
         <div style="display: flex; align-items: center; gap: 11px; margin-bottom: 26px;">
           <span style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--line); border-top-color: var(--accent); animation: ap-spin 0.75s linear infinite;"></span>
           <span style="font-size: 17px; font-weight: 700; letter-spacing: -0.01em;">AlgoPrep</span>
-          <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; letter-spacing: 0.14em; color: var(--gold); border: 1px solid var(--gold); border-radius: 4px; padding: 2px 5px 1px;">JUDGE0</span>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; letter-spacing: 0.14em; color: var(--gold); border: 1px solid var(--gold); border-radius: 4px; padding: 2px 5px 1px;">GO-JUDGE</span>
         </div>
 
         <h2 style="margin: 0 0 6px; font-size: 21px; font-weight: 700; letter-spacing: -0.025em;"><span data-lang="vi">Đang chuẩn bị không gian làm việc</span><span data-lang="en">Preparing your workspace</span></h2>
@@ -91,7 +91,7 @@
     <div style="padding: 46px 50px 42px; display: flex; flex-direction: column;">
       <div style="display: flex; align-items: center; gap: 9px; margin-bottom: 40px;">
         <span style="font-size: 18px; font-weight: 700; letter-spacing: -0.01em;">AlgoPrep</span>
-        <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; letter-spacing: 0.14em; color: var(--gold); border: 1px solid var(--gold); border-radius: 4px; padding: 2px 5px 1px;">JUDGE0</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; letter-spacing: 0.14em; color: var(--gold); border: 1px solid var(--gold); border-radius: 4px; padding: 2px 5px 1px;">GO-JUDGE</span>
       </div>
 
       <div style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px;">{{ eyebrow }}</div>
@@ -242,7 +242,7 @@ class Component extends DCLogic {
       theme: st.theme, uiLang: st.uiLang,
       showSocial: this.props.showSocial ?? true,
       eyebrow: signup ? (en ? "NEW ACCOUNT" : "TÀI KHOẢN MỚI") : (en ? "SIGN IN" : "ĐĂNG NHẬP"),
-      badges: [en ? "1 240 PROBLEMS" : "1 240 BÀI", en ? "18 TOPICS" : "18 CHỦ ĐỀ", en ? "12 LANGUAGES" : "12 NGÔN NGỮ"],
+      badges: [en ? "1 240 PROBLEMS" : "1 240 BÀI", en ? "18 TOPICS" : "18 CHỦ ĐỀ", en ? "3 LANGUAGES" : "3 NGÔN NGỮ"],
       isSignup: signup, isLogin: !signup,
       formTitle: signup ? T.titleUp : T.titleIn,
       formSub: signup ? T.subUp : T.subIn,

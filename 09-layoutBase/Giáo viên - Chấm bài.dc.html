@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Be Vietnam Pro', system-ui, sans-serif; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
+  [data-theme] {
+    --bg: #F5F8FC; --text: #16202B; --muted: rgba(20,35,50,0.58); --muted2: rgba(20,35,50,0.44);
+    --glass: rgba(255,255,255,0.5); --glass2: rgba(255,255,255,0.65); --glass3: rgba(255,255,255,0.88);
+    --border: rgba(255,255,255,0.78); --border2: rgba(60,110,160,0.14); --inset: rgba(255,255,255,0.85);
+    --shadow: 0 18px 40px rgba(40,70,110,0.12); --shadow-lg: 0 20px 44px rgba(40,70,110,0.15);
+    --track: rgba(60,110,160,0.1); --nav-hover: rgba(255,255,255,0.75); --row-hover: rgba(255,255,255,0.6);
+    --active-bg: rgba(255,255,255,0.9); --active-border: rgba(127,179,219,0.4); --active-fg: #14425E;
+    --cta-bg: linear-gradient(160deg, #7FB3DB, #5B93C4); --cta-fg: #FFFFFF; --cta-shadow: 0 6px 16px rgba(91,147,196,0.3);
+    --seg-bg: #FFFFFF; --seg-fg: #14425E; --logo-bg: linear-gradient(135deg, #7FB3DB, #A8CDE8); --logo-fg: #0A2436;
+    --link: #4A7BA6; --ok: #6FAE8C; --warn: #C99A4A; --neg: #C97A6E;
+    --blob1: rgba(127,179,219,0.34); --blob2: rgba(168,205,232,0.28); --blob3: rgba(196,214,190,0.2);
+    --accent: #7FB3DB; --accent2: #A8CDE8; --scrim: rgba(14,22,38,0.32);
+    color: var(--text);
+  }
+  [data-theme="dark"] {
+    --bg: #0A0F16; --text: #E8EEF5; --muted: rgba(210,225,240,0.6); --muted2: rgba(210,225,240,0.45);
+    --glass: rgba(120,170,220,0.07); --glass2: rgba(120,170,220,0.1); --glass3: rgba(120,170,220,0.14);
+    --border: rgba(120,170,220,0.14); --border2: rgba(120,170,220,0.12); --inset: rgba(150,195,235,0.2);
+    --shadow: 0 20px 48px rgba(0,0,0,0.45); --shadow-lg: 0 24px 60px rgba(0,0,0,0.55);
+    --track: rgba(120,170,220,0.13); --nav-hover: rgba(120,170,220,0.12); --row-hover: rgba(120,170,220,0.08);
+    --active-bg: linear-gradient(135deg, rgba(127,179,219,0.3), rgba(168,205,232,0.18)); --active-border: rgba(168,205,232,0.4); --active-fg: #FFFFFF;
+    --cta-bg: linear-gradient(160deg, rgba(220,238,250,0.94), rgba(180,215,235,0.72)); --cta-fg: #0A1A26; --cta-shadow: 0 6px 18px rgba(0,0,0,0.4);
+    --seg-bg: rgba(220,238,250,0.9); --seg-fg: #0A1A26; --logo-bg: linear-gradient(135deg, #7FB3DB, #1C3348); --logo-fg: #FFFFFF;
+    --link: #9DCBEF; --ok: #8FDCB4; --warn: #E8C97E; --neg: #E89E92;
+    --blob1: rgba(127,179,219,0.38); --blob2: rgba(90,140,190,0.3); --blob3: rgba(150,180,150,0.16);
+    --accent: #9DCBEF; --accent2: #7FB3DB; --scrim: rgba(2,4,10,0.6);
+  }
+  a { color: var(--link); text-decoration: none; }
+  a:hover { color: var(--text); }
+  ::selection { background: rgba(127,179,219,0.28); }
+  button, a { transition: background-color .18s ease, color .18s ease, border-color .18s ease, box-shadow .18s ease; }
+  button:focus-visible, a:focus-visible, input:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(127,179,219,0.35); }
+  input::placeholder { color: var(--muted2); }
+  nav::-webkit-scrollbar { width: 0; }
+</style>
+<script src="./nav-loader.js"></script>
+</helmet>
+
+<div data-theme="{{ theme }}" style="min-height: 100vh; background: var(--bg); color: var(--text); position: relative; overflow: hidden;">
+  <div style="position: fixed; top: -220px; left: -140px; width: 620px; height: 620px; border-radius: 50%; background: radial-gradient(circle, var(--blob1), transparent 68%); filter: blur(90px); pointer-events: none;"></div>
+  <div style="position: fixed; bottom: -260px; right: -160px; width: 720px; height: 720px; border-radius: 50%; background: radial-gradient(circle, var(--blob2), transparent 68%); filter: blur(100px); pointer-events: none;"></div>
+  <div style="position: fixed; top: 35%; left: 55%; width: 520px; height: 520px; border-radius: 50%; background: radial-gradient(circle, var(--blob3), transparent 70%); filter: blur(120px); pointer-events: none;"></div>
+
+  <div style="position: relative; display: flex; min-height: 100vh;">
+
+    <aside style="position: sticky; top: 0; align-self: flex-start; height: 100vh; z-index: 20; flex-shrink: 0; width: {{ sidebarW }}; display: flex; flex-direction: column; background: var(--glass2); border-right: 1px solid var(--border2); padding: 16px 12px; overflow: hidden;">
+      <div style="display: flex; align-items: center; gap: 9px; padding: 4px 6px 16px; justify-content: {{ railJustify }};">
+        <span style="width: 30px; height: 30px; flex-shrink: 0; border-radius: 9px; background: var(--logo-bg); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: var(--logo-fg);">A</span>
+        <div style="display: {{ expandedDisplay }};">
+          <div style="font-size: 15px; font-weight: 800; letter-spacing: -0.01em;">AlgoPrep</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.16em; color: var(--muted2);">GIÁO VIÊN</div>
+        </div>
+      </div>
+
+      <button onClick="{{ toggle }}" title="Thu gọn / mở rộng" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 32px; margin-bottom: 10px; border-radius: 10px; border: 1px solid var(--border2); background: var(--glass); color: var(--muted); font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer;" style-hover="background: var(--nav-hover); color: var(--text);">
+        <span style="font-size: 13px;">{{ toggleIcon }}</span>
+        <span style="display: {{ expandedDisplay }};">Thu gọn</span>
+      </button>
+
+      <nav style="display: flex; flex-direction: column; gap: 2px; flex: 1 1 auto; overflow-y: auto; overflow-x: hidden; scrollbar-width: none;">
+        <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="5">
+          <a href="{{ n.href }}" title="{{ n.label }}" style="display: flex; align-items: center; gap: 10px; height: 40px; padding: {{ n.pad }}; border-radius: 12px; font-size: 13.5px; font-weight: {{ n.weight }}; color: {{ n.fg }}; background: {{ n.bg }}; border: 1px solid {{ n.border }}; justify-content: {{ n.justify }};" style-hover="background: var(--nav-hover); color: var(--text);">
+            <span style="width: 26px; height: 26px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border-radius: 8px; background: {{ n.iconBg }}; color: {{ n.iconFg }}; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600;">{{ n.icon }}</span>
+            <span style="flex: 1 1 auto; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: {{ expandedDisplay }};">{{ n.label }}</span>
+            <sc-if value="{{ n.showBadge }}" hint-placeholder-val="{{ false }}">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; font-weight: 600; padding: 2px 6px; border-radius: 6px; background: var(--track); color: {{ n.fg }};">{{ n.badge }}</span>
+            </sc-if>
+          </a>
+        </sc-for>
+
+        <div style="margin: 12px 0 6px; padding: 0 10px; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: var(--muted2); display: {{ expandedDisplay }};">KHÁC</div>
+        <sc-for list="{{ otherLinks }}" as="ol" hint-placeholder-count="2">
+          <a href="{{ ol.href }}" style="display: flex; align-items: center; gap: 10px; height: 36px; padding: 0 10px; border-radius: 10px; font-size: 13px; color: var(--muted); justify-content: {{ railJustify }};" style-hover="background: var(--nav-hover); color: var(--text);">
+            <span style="width: 18px; text-align: center; flex-shrink: 0; font-size: 13px;">{{ ol.icon }}</span>
+            <span style="display: {{ expandedDisplay }};">{{ ol.label }}</span>
+          </a>
+        </sc-for>
+      </nav>
+
+      <div style="display: flex; gap: 3px; padding: 3px; margin-top: 10px; border-radius: 12px; background: var(--track); border: 1px solid var(--border2); justify-content: center;">
+        <sc-for list="{{ themes }}" as="t" hint-placeholder-count="2">
+          <button onClick="{{ t.onClick }}" title="{{ t.title }}" style="flex: 1 1 auto; height: 28px; display: flex; align-items: center; justify-content: center; gap: 6px; border: none; border-radius: 9px; font-family: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer; background: {{ t.bg }}; color: {{ t.fg }};"><span>{{ t.icon }}</span><span style="display: {{ expandedDisplay }};">{{ t.title }}</span></button>
+        </sc-for>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 10px; margin-top: 10px; padding: 6px 2px; justify-content: {{ railJustify }};">
+        <div style="width: 32px; height: 32px; flex-shrink: 0; border-radius: 50%; background: var(--glass3); border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 11.5px; font-weight: 600;">TH</div>
+        <div style="min-width: 0; flex: 1 1 auto; display: {{ expandedDisplay }};">
+          <div style="font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Trần Hạ</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--muted2);">Giáo viên</div>
+        </div>
+        <a href="./Dashboard AlgoPrep.dc.html" style="font-size: 11.5px; font-weight: 600; color: var(--muted); display: {{ expandedDisplay }};">Thoát</a>
+      </div>
+    </aside>
+
+    <main style="flex: 1 1 auto; min-width: 0; padding: 18px; display: flex; justify-content: center;">
+    <div style="width: 100%; max-width: 1320px; display: flex; flex-direction: column; gap: 16px; padding-bottom: 22px;">
+
+      <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+        <div style="flex: 1 1 auto; min-width: 200px;">
+          <div style="font-size: 18px; font-weight: 700; letter-spacing: -0.01em;">Chấm bài</div>
+          <div style="font-size: 12.5px; color: var(--muted);">Bài nộp AI chấm điểm thấp hoặc học viên yêu cầu review</div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px;">
+        <sc-for list="{{ stats }}" as="s" hint-placeholder-count="4">
+          <div style="padding: 16px 18px; background: var(--glass); backdrop-filter: blur(42px) saturate(180%); -webkit-backdrop-filter: blur(42px) saturate(180%); border: 1px solid var(--border); border-radius: 18px; box-shadow: inset 0 1px 0 var(--inset), var(--shadow);">
+            <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted2); margin-bottom: 10px;">{{ s.label }}</div>
+            <div style="display: flex; align-items: baseline; gap: 8px;">
+              <span style="font-size: 25px; font-weight: 700; letter-spacing: -0.02em;">{{ s.value }}</span>
+              <span style="font-size: 12.5px; font-weight: 600; color: {{ s.deltaFg }};">{{ s.delta }}</span>
+            </div>
+            <div style="font-size: 12.5px; color: var(--muted); margin-top: 6px;">{{ s.meta }}</div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="padding: 16px 18px 8px; background: var(--glass); backdrop-filter: blur(42px) saturate(180%); -webkit-backdrop-filter: blur(42px) saturate(180%); border: 1px solid var(--border); border-radius: 20px; box-shadow: inset 0 1px 0 var(--inset), var(--shadow); min-width: 0;">
+
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px;">
+          <div style="display: flex; gap: 3px; padding: 3px; border-radius: 12px; background: var(--track); border: 1px solid var(--border2);">
+            <sc-for list="{{ statusTabs }}" as="s" hint-placeholder-count="3">
+              <button onClick="{{ s.onClick }}" style="height: 28px; padding: 0 12px; border: none; border-radius: 9px; font-family: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer; background: {{ s.bg }}; color: {{ s.fg }};">{{ s.label }}</button>
+            </sc-for>
+          </div>
+          <span style="margin-left: auto; font-size: 12.5px; color: var(--muted); white-space: nowrap;">{{ resultCount }}</span>
+        </div>
+
+        <div style="overflow-x: auto;">
+        <div style="display: grid; grid-template-columns: minmax(150px,1.1fr) minmax(150px,1.2fr) 110px 110px 96px 110px; min-width: 820px; gap: 10px; padding: 0 10px 8px; font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted2); border-bottom: 1px solid var(--border2);">
+          <span>Học viên</span><span>Bài tập</span><span>Lớp</span><span>Nộp lúc</span><span style="text-align: right;">Điểm AI</span><span></span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 2px; padding-top: 4px;">
+          <sc-for list="{{ rows }}" as="g" hint-placeholder-count="8">
+            <div style="display: grid; grid-template-columns: minmax(150px,1.1fr) minmax(150px,1.2fr) 110px 110px 96px 110px; min-width: 820px; gap: 10px; align-items: center; padding: 10px; border-radius: 12px;" style-hover="background: var(--row-hover);">
+              <span style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ g.student }}</span>
+              <span style="font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ g.problem }}</span>
+              <span style="font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ g.className }}</span>
+              <span style="font-size: 12px; color: var(--muted2);">{{ g.submitted }}</span>
+              <span style="text-align: right; font-family: 'JetBrains Mono', monospace; font-weight: 600; color: {{ g.fg }};">{{ g.score }}</span>
+              <span style="display: flex; justify-content: flex-end;">
+                <button onClick="{{ g.grade }}" style="height: 28px; padding: 0 12px; border: none; border-radius: 9px; background: var(--cta-bg); font-family: inherit; font-size: 12px; font-weight: 600; color: var(--cta-fg); cursor: pointer; white-space: nowrap;">Chấm ngay</button>
+              </span>
+            </div>
+          </sc-for>
+        </div>
+        </div>
+      </div>
+
+    </div>
+    </main>
+  </div>
+
+  <sc-if value="{{ modalOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; padding: 24px; background: var(--scrim); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);">
+      <div style="width: 100%; max-width: 480px; padding: 22px 24px; border-radius: 22px; background: var(--glass3); backdrop-filter: blur(42px) saturate(180%); -webkit-backdrop-filter: blur(42px) saturate(180%); border: 1px solid var(--border); box-shadow: inset 0 1px 0 var(--inset), var(--shadow-lg);">
+        <div style="font-size: 16.5px; font-weight: 700; margin-bottom: 4px;">{{ modalTitle }}</div>
+        <div style="font-size: 13px; color: var(--muted); margin-bottom: 18px;">{{ modalMeta }}</div>
+        <label style="display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 6px;">Điểm (0–10)</label>
+        <input value="{{ modalScore }}" onChange="{{ onModalScore }}" style="width: 100%; height: 40px; padding: 0 14px; border-radius: 11px; background: var(--glass2); border: 1px solid var(--border2); font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--text); margin-bottom: 14px;" />
+        <label style="display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 6px;">Nhận xét</label>
+        <textarea placeholder="Ghi chú cho học viên…" style="width: 100%; height: 70px; padding: 10px 14px; border-radius: 11px; background: var(--glass2); border: 1px solid var(--border2); font-family: inherit; font-size: 13px; color: var(--text); resize: none; margin-bottom: 18px;"></textarea>
+        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+          <button onClick="{{ closeModal }}" style="height: 36px; padding: 0 16px; border: 1px solid var(--border2); border-radius: 11px; background: var(--glass2); font-family: inherit; font-size: 13px; font-weight: 600; color: var(--text); cursor: pointer;">Huỷ</button>
+          <button onClick="{{ submitModal }}" style="height: 36px; padding: 0 16px; border: none; border-radius: 11px; background: var(--cta-bg); font-family: inherit; font-size: 13px; font-weight: 600; color: var(--cta-fg); cursor: pointer;">Lưu điểm</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { theme: 'light', collapsed: false, statusFilter: 'Chờ chấm', modal: null, modalScore: '', graded: {} };
+
+  componentDidMount() {
+    try {
+      const t = localStorage.getItem('algoprep-teacher-theme');
+      if (t === 'light' || t === 'dark') this.setState({ theme: t });
+    } catch (e) {}
+  }
+  setTheme(theme) {
+    this.setState({ theme });
+    try { localStorage.setItem('algoprep-teacher-theme', theme); } catch (e) {}
+  }
+  toggle() { this.setState(s => ({ collapsed: !s.collapsed })); }
+
+  data() {
+    return [
+      ['g1', 'Lê Minh Thư', 'Merge Intervals', 'Thuật toán K21', '2 giờ trước', '4/10', 'Chờ chấm'],
+      ['g2', 'Phạm Anh Khoa', 'Course Schedule', 'CTDL K22', '3 giờ trước', 'Yêu cầu review', 'Chờ chấm'],
+      ['g3', 'Vũ Ngọc Hà', 'Word Break', 'Thuật toán K21', '5 giờ trước', '5/10', 'Chờ chấm'],
+      ['g4', 'Đỗ Gia Bảo', 'Number of Islands', 'CTDL K22', '1 ngày trước', '3/10', 'Chờ chấm'],
+      ['g5', 'Hoàng Thu Trang', 'Trapping Rain Water', 'Luyện PV nâng cao', '1 ngày trước', '5/10', 'Chờ chấm'],
+      ['g6', 'Nguyễn Đức Long', 'Coin Change', 'CTDL K22', '2 ngày trước', 'Yêu cầu review', 'Chờ chấm'],
+      ['g7', 'Trần Bảo Ngọc', 'Two Sum', 'Thuật toán K21', 'Hôm qua', '9/10', 'Đã chấm'],
+      ['g8', 'Nguyễn Hoài An', 'Binary Search', 'CTDL K22', '2 ngày trước', '10/10', 'Đã chấm'],
+      ['g9', 'Lê Minh Thư', 'Valid Parentheses', 'Thuật toán K21', '3 ngày trước', '8/10', 'Đã chấm'],
+    ];
+  }
+
+  renderVals() {
+    const dark = this.state.theme === 'dark';
+    const collapsed = this.state.collapsed;
+    const ok = dark ? '#8FDCB4' : '#6FAE8C';
+    const warn = dark ? '#E8C97E' : '#C99A4A';
+    const neg = dark ? '#E89E92' : '#C97A6E';
+
+    const navDefs = [
+      ['overview', 'Tổng quan', './Giáo viên - Tổng quan.dc.html', 'TQ', null],
+      ['classes', 'Lớp của tôi', './Giáo viên - Lớp của tôi.dc.html', 'LH', '3'],
+      ['myproblems', 'Bài tập của tôi', './Giáo viên - Bài tập của tôi.dc.html', 'BT', '18'],
+      ['grading', 'Chấm bài', './Giáo viên - Chấm bài.dc.html', 'CB', '9'],
+      ['progress', 'Tiến độ học viên', './Giáo viên - Tiến độ học viên.dc.html', 'TĐ', null],
+    ];
+    const navItems = navDefs.map(([key, label, href, icon, badge]) => {
+      const active = key === 'grading';
+      return {
+        label, href, icon, badge, showBadge: !!badge && !collapsed,
+        weight: active ? 600 : 500,
+        fg: active ? 'var(--active-fg)' : 'var(--muted)',
+        bg: active ? 'var(--active-bg)' : 'transparent',
+        border: active ? 'var(--active-border)' : 'transparent',
+        iconBg: active ? 'var(--accent)' : 'var(--track)',
+        iconFg: active ? (dark ? '#0A1A26' : '#FFFFFF') : 'var(--muted)',
+        pad: collapsed ? '0' : '0 11px 0 7px',
+        justify: collapsed ? 'center' : 'flex-start',
+      };
+    });
+    const otherLinks = [
+      { label: 'Cài đặt', href: './Cài đặt.dc.html', icon: '⚙' },
+      { label: 'Trang cá nhân', href: './Trang cá nhân.dc.html', icon: '◔' },
+    ];
+    const themes = [
+      { key: 'light', icon: '☀', title: 'Sáng' },
+      { key: 'dark', icon: '☾', title: 'Tối' },
+    ].map(t => ({
+      icon: t.icon, title: t.title, onClick: () => this.setTheme(t.key),
+      bg: this.state.theme === t.key ? 'var(--seg-bg)' : 'transparent',
+      fg: this.state.theme === t.key ? 'var(--seg-fg)' : 'var(--muted)',
+    }));
+
+    const stats = [
+      { label: 'Chờ chấm', value: '9', delta: '', meta: '3 chờ quá 24 giờ', deltaFg: warn },
+      { label: 'Yêu cầu review', value: '2', delta: '', meta: 'Học viên chủ động gửi', deltaFg: warn },
+      { label: 'Đã chấm tuần này', value: '31', delta: '+12', meta: 'So với tuần trước', deltaFg: ok },
+      { label: 'Điểm TB sau chấm', value: '7.1', delta: '+0.4', meta: 'So với điểm AI', deltaFg: ok },
+    ];
+
+    const statusTabs = ['Chờ chấm', 'Đã chấm', 'Tất cả'].map(label => ({
+      label,
+      onClick: () => this.setState({ statusFilter: label }),
+      bg: this.state.statusFilter === label ? 'var(--seg-bg)' : 'transparent',
+      fg: this.state.statusFilter === label ? 'var(--seg-fg)' : 'var(--muted)',
+    }));
+
+    const sf = this.state.statusFilter;
+    const graded = this.state.graded;
+    const list = this.data().filter(r => {
+      const status = graded[r[0]] ? 'Đã chấm' : r[6];
+      return sf === 'Tất cả' || status === sf;
+    });
+
+    const rows = list.map(([id, student, problem, className, submitted, score, status0]) => {
+      const status = graded[id] ? 'Đã chấm' : status0;
+      const fg = status === 'Đã chấm' ? ok : (score === 'Yêu cầu review' ? warn : neg);
+      return {
+        student, problem, className, submitted, score: graded[id] ? graded[id] + '/10' : score, fg,
+        grade: () => this.setState({ modal: { id, student, problem }, modalScore: '' }),
+      };
+    });
+
+    const modal = this.state.modal;
+    return {
+      theme: this.state.theme, sidebarW: collapsed ? '72px' : '244px',
+      expandedDisplay: collapsed ? 'none' : 'block', railJustify: collapsed ? 'center' : 'flex-start',
+      toggleIcon: collapsed ? '»' : '«', toggle: () => this.toggle(),
+      navItems, otherLinks, themes, stats, statusTabs, rows,
+      resultCount: rows.length + ' bài',
+      modalOpen: !!modal,
+      modalTitle: modal ? modal.student + ' · ' + modal.problem : '',
+      modalMeta: 'Nhập điểm và nhận xét cho bài nộp này',
+      modalScore: this.state.modalScore,
+      onModalScore: e => this.setState({ modalScore: e.target.value }),
+      closeModal: () => this.setState({ modal: null }),
+      submitModal: () => this.setState(s => {
+        const g = Object.assign({}, s.graded);
+        if (s.modal) g[s.modal.id] = s.modalScore || '—';
+        return { graded: g, modal: null };
+      }),
+    };
+  }
+}
+
+</script>
+</body>
+</html>
