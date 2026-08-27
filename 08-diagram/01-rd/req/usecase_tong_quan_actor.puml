@@ -1,0 +1,96 @@
+@startuml usecase_tong_quan_actor
+' Use case tong quan AlgoPrep - actor la hinh nguoi (stick figure).
+' Cat use case theo man hinh that co trong prototype 05-coding/frontend/src/app.
+skinparam shadowing false
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName "Segoe UI"
+skinparam nodesep 45
+skinparam ranksep 70
+left to right direction
+
+skinparam actor {
+  BackgroundColor #DCEBFC
+  BorderColor #4A76A8
+  FontColor #1A1A1A
+}
+skinparam usecase {
+  BackgroundColor #FFF3B0
+  BorderColor #8C7B00
+  FontColor #1A1A1A
+}
+skinparam rectangle {
+  BackgroundColor #F7F7F7
+  BorderColor #999999
+  FontColor #1A1A1A
+}
+skinparam package {
+  BackgroundColor #FFFFFF
+  BorderColor #AAAAAA
+  FontColor #1A1A1A
+}
+skinparam ArrowColor #333333
+
+actor "Sinh viên" as a1
+
+rectangle "Hệ thống AlgoPrep" {
+  usecase "Đăng nhập / Đăng ký" as u14
+  package "Chức năng Sinh viên" {
+    usecase "Tìm và lưu bài toán" as u1
+    usecase "Giải và nộp bài" as u2
+    usecase "Phân tích bài giải bằng AI" as u3
+    usecase "Phỏng vấn giả lập với AI" as u4
+    usecase "Ôn tập câu hỏi phỏng vấn" as u5
+    usecase "Xem tiến độ và hồ sơ" as u6
+  }
+  package "Chức năng Giảng viên" {
+    usecase "Quản lý lớp học" as u7
+    usecase "Theo dõi tiến độ lớp" as u8
+    usecase "Chấm và nhận xét bài nộp" as u9
+  }
+  package "Dùng chung (Giảng viên & Quản trị viên)" {
+    usecase "Quản lý bài toán, câu hỏi" as u10
+    usecase "Quản lý ngân hàng câu hỏi phỏng vấn" as u17
+  }
+  package "Chức năng Quản trị viên" {
+    usecase "Quản lý người dùng, phân quyền" as u11
+    usecase "Giám sát chấm bài, re-judge" as u12
+    usecase "Cấu hình ngôn ngữ và AI" as u13
+    usecase "Theo dõi mức tiêu thụ AI" as u15
+    usecase "Xem nhật ký hệ thống" as u16
+  }
+}
+
+actor "Giảng viên" as a2
+actor "Quản trị viên" as a3
+rectangle "go-judge" as s1 #E8E8E8
+rectangle "Nhà cung cấp LLM" as s2 #E8E8E8
+
+a1 -- u14
+a2 -- u14
+a3 -- u14
+
+a1 -- u1
+a1 -- u2
+a1 -- u3
+a1 -- u4
+a1 -- u5
+a1 -- u6
+
+u7 -- a2
+u8 -- a2
+u9 -- a2
+u10 -- a2
+u17 -- a2
+
+u10 -- a3
+u17 -- a3
+u11 -- a3
+u12 -- a3
+u13 -- a3
+u15 -- a3
+u16 -- a3
+
+u2 --> s1
+u3 --> s2
+u4 --> s2
+@enduml

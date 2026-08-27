@@ -1,0 +1,199 @@
+<mxfile host="app.diagrams.net" modified="2026-08-26T00:00:00.000Z" agent="claude-code" version="24.7.5" type="device">
+  <diagram id="usecase-tong-quan-actor" name="Use Case tong quan - AlgoPrep">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="826" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="Sơ đồ Use Case tổng quan - Hệ thống AlgoPrep" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="300" y="10" width="650" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- System boundary: 1 khung, 2 cot use case ben trong (Sinh vien trai, Giang vien/Dung chung/Quan tri vien phai) -->
+        <mxCell id="sys" value="Hệ thống AlgoPrep" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#AAAAAA;verticalAlign=top;align=left;spacingLeft=8;spacingTop=6;fontColor=#1A1A1A;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="300" y="60" width="650" height="850" as="geometry" />
+        </mxCell>
+
+        <!-- Dang nhap / Dang ky - dung chung ca 3 actor, dat tren dinh, giua 2 cot -->
+        <mxCell id="u14" value="Đăng nhập / Đăng ký" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFF3B0;strokeColor=#8C7B00;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="520" y="95" width="220" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Cot trai: Chuc nang Sinh vien - actor Sinh vien dung ben trai, canh giua cluster cua minh -->
+        <mxCell id="pkgA" value="Chức năng Sinh viên" style="rounded=0;dashed=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#999999;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="340" y="140" width="260" height="380" as="geometry" />
+        </mxCell>
+        <mxCell id="u1" value="Tìm và lưu bài toán" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFF3B0;strokeColor=#8C7B00;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="350" y="180" width="240" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="u2" value="Giải và nộp bài" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFF3B0;strokeColor=#8C7B00;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="350" y="235" width="240" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="u3" value="Phân tích bài giải bằng AI" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFF3B0;strokeColor=#8C7B00;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="350" y="290" width="240" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="u4" value="Phỏng vấn giả lập với AI" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFF3B0;strokeColor=#8C7B00;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="350" y="345" width="240" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="u5" value="Ôn tập câu hỏi phỏng vấn" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFF3B0;strokeColor=#8C7B00;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="350" y="400" width="240" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="u6" value="Xem tiến độ và hồ sơ" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFF3B0;strokeColor=#8C7B00;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="350" y="455" width="240" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- go-judge, LLM: external system - noi tu u2/u3/u4, dat ngay ben duoi cot Sinh vien, khong cat qua cot nao -->
+        <mxCell id="s1" value="go-judge" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8E8E8;strokeColor=#666666;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="350" y="545" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="s2" value="Nhà cung cấp LLM" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8E8E8;strokeColor=#666666;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="350" y="600" width="200" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Cot phai, tren: rieng Giang vien - actor Giang vien dung ben phai, canh giua (pkgB + pkgShared) -->
+        <mxCell id="pkgB" value="Chức năng Giảng viên" style="rounded=0;dashed=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#999999;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="660" y="140" width="260" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="u7" value="Quản lý lớp học" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFF3B0;strokeColor=#8C7B00;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="670" y="180" width="240" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="u8" value="Theo dõi tiến độ lớp" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFF3B0;strokeColor=#8C7B00;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="670" y="235" width="240" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="u9" value="Chấm và nhận xét bài nộp" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFF3B0;strokeColor=#8C7B00;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="670" y="290" width="240" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- Cot phai, giua: dung chung Giang vien va Quan tri vien -->
+        <mxCell id="pkgShared" value="Dùng chung (Giảng viên &amp; Quản trị viên)" style="rounded=0;dashed=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#999999;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="660" y="370" width="260" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="u10" value="Quản lý bài toán, câu hỏi" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFF3B0;strokeColor=#8C7B00;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="670" y="410" width="240" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="u17" value="Quản lý ngân hàng câu hỏi phỏng vấn" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFF3B0;strokeColor=#8C7B00;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="670" y="470" width="240" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- Cot phai, duoi: rieng Quan tri vien - actor Quan tri vien dung ben phai, canh giua (pkgShared + pkgC) -->
+        <mxCell id="pkgC" value="Chức năng Quản trị viên" style="rounded=0;dashed=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#999999;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="660" y="560" width="260" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="u11" value="Quản lý người dùng, phân quyền" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFF3B0;strokeColor=#8C7B00;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="670" y="600" width="240" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="u12" value="Giám sát chấm bài, re-judge" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFF3B0;strokeColor=#8C7B00;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="670" y="655" width="240" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="u13" value="Cấu hình ngôn ngữ và AI" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFF3B0;strokeColor=#8C7B00;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="670" y="710" width="240" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="u15" value="Theo dõi mức tiêu thụ AI" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFF3B0;strokeColor=#8C7B00;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="670" y="765" width="240" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="u16" value="Xem nhật ký hệ thống" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFF3B0;strokeColor=#8C7B00;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="670" y="820" width="240" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- Actor Sinh vien - ben trai, canh giua pkgA -->
+        <mxCell id="a1" value="Sinh viên" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="110" y="300" width="30" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Actor Giang vien - ben phai, canh giua (pkgB + pkgShared), khong cung hang voi Quan tri vien -->
+        <mxCell id="a2" value="Giảng viên" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="940" y="310" width="30" height="60" as="geometry" />
+        </mxCell>
+        <!-- Actor Quan tri vien - ben phai, canh giua (pkgShared + pkgC), dat lech phai them de duong len u14 khong cat qua a2 -->
+        <mxCell id="a3" value="Quản trị viên" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="595" width="30" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Dang nhap dung chung ca 3 actor: di duong vong (orthogonal) qua le trai/phai, khong cat qua khung use case -->
+        <mxCell id="e0a" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;startArrow=none;strokeColor=#333333;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="a1" target="u14">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e0b" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;startArrow=none;strokeColor=#333333;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.3;entryDx=0;entryDy=0;" edge="1" parent="1" source="a2" target="u14">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e0c" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;startArrow=none;strokeColor=#333333;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.7;entryDx=0;entryDy=0;" edge="1" parent="1" source="a3" target="u14">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- a1 to u1..u6: thang hang ngang, khong cheo -->
+        <mxCell id="e1" style="edgeStyle=none;html=1;endArrow=none;startArrow=none;strokeColor=#333333;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="a1" target="u1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=none;html=1;endArrow=none;startArrow=none;strokeColor=#333333;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="a1" target="u2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" style="edgeStyle=none;html=1;endArrow=none;startArrow=none;strokeColor=#333333;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="a1" target="u3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" style="edgeStyle=none;html=1;endArrow=none;startArrow=none;strokeColor=#333333;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="a1" target="u4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" style="edgeStyle=none;html=1;endArrow=none;startArrow=none;strokeColor=#333333;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="a1" target="u5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" style="edgeStyle=none;html=1;endArrow=none;startArrow=none;strokeColor=#333333;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="a1" target="u6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- u7,u8,u9 to a2: thang hang ngang -->
+        <mxCell id="e7" style="edgeStyle=none;html=1;endArrow=none;startArrow=none;strokeColor=#333333;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="u7" target="a2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" style="edgeStyle=none;html=1;endArrow=none;startArrow=none;strokeColor=#333333;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="u8" target="a2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" style="edgeStyle=none;html=1;endArrow=none;startArrow=none;strokeColor=#333333;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="u9" target="a2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- u10,u17 dung chung: len a2 (tren) va xuong a3 (duoi), canh ngan vi 2 actor nam sat 2 phia cua pkgShared -->
+        <mxCell id="e10a" style="edgeStyle=none;html=1;endArrow=none;startArrow=none;strokeColor=#333333;exitX=1;exitY=0.3;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="u10" target="a2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10b" style="edgeStyle=none;html=1;endArrow=none;startArrow=none;strokeColor=#333333;exitX=1;exitY=0.7;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;" edge="1" parent="1" source="u10" target="a3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e17a" style="edgeStyle=none;html=1;endArrow=none;startArrow=none;strokeColor=#333333;exitX=1;exitY=0.3;exitDx=0;exitDy=0;entryX=0;entryY=0.7;entryDx=0;entryDy=0;" edge="1" parent="1" source="u17" target="a2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e17b" style="edgeStyle=none;html=1;endArrow=none;startArrow=none;strokeColor=#333333;exitX=1;exitY=0.7;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="u17" target="a3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- u11,u12,u13,u15,u16 to a3: thang hang ngang -->
+        <mxCell id="e11" style="edgeStyle=none;html=1;endArrow=none;startArrow=none;strokeColor=#333333;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="u11" target="a3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" style="edgeStyle=none;html=1;endArrow=none;startArrow=none;strokeColor=#333333;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="u12" target="a3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e13" style="edgeStyle=none;html=1;endArrow=none;startArrow=none;strokeColor=#333333;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="u13" target="a3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e15" style="edgeStyle=none;html=1;endArrow=none;startArrow=none;strokeColor=#333333;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="u15" target="a3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e16" style="edgeStyle=none;html=1;endArrow=none;startArrow=none;strokeColor=#333333;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="u16" target="a3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- u2 -> s1 (go-judge), u3/u4 -> s2 (LLM): huong xuong duoi, cung cot Sinh vien, khong cat qua cot nao khac -->
+        <mxCell id="e14" value="&lt;&lt;use&gt;&gt;" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="u2" target="s1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e15b" value="&lt;&lt;use&gt;&gt;" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="u3" target="s2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e16b" value="&lt;&lt;use&gt;&gt;" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="u4" target="s2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

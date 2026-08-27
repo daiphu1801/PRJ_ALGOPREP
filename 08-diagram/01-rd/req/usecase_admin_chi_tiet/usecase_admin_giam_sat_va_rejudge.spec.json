@@ -1,0 +1,32 @@
+{
+  "_": "Chi tiet nhom 'Giam sat cham bai, re-judge' (u12 o ban tong quan): F4-10 (giam sat hang doi) + F4-09a-e (re-judge). Chi ve actor Quan tri vien; Giang vien cung co re-judge nhung pham vi gioi han theo lop (khong ve trong file nay).",
+  "kind": "usecase",
+  "title": "Sơ đồ Use Case chi tiết - Giám sát chấm bài và Re-judge (Quản trị viên)",
+  "mode": "color",
+  "usecase": {
+    "system": "Chức năng Giám sát chấm bài & Re-judge",
+    "groups": [
+      {
+        "name": "Giám sát hàng đợi (F4-10)",
+        "actors": ["Quản trị viên"],
+        "usecases": [
+          "Xem trạng thái hàng đợi chấm bài",
+          "Xem tình trạng cụm judge engine"
+        ]
+      },
+      {
+        "name": "Chấm lại - Re-judge (F4-09a→e)",
+        "actors": ["Quản trị viên"],
+        "usecases": [
+          "Chọn phạm vi chấm lại",
+          "Ước lượng ảnh hưởng trước khi chạy",
+          "Chạy phiên chấm lại",
+          "Tạm dừng hoặc huỷ phiên chấm lại"
+        ]
+      }
+    ],
+    "externals": [
+      { "name": "go-judge", "from": ["Chạy phiên chấm lại", "Xem tình trạng cụm judge engine"] }
+    ]
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "_": "Chi tiet nhom 'Quan ly nguoi dung, phan quyen' (u11 o ban tong quan): F1-13 (quan ly tai khoan) + F1-10/F1-11 (ma tran phan quyen). Khong co luong tu yeu cau nang vai tro (self-service) -- doi vai tro luon la hanh dong don phuong cua Admin.",
+  "kind": "usecase",
+  "title": "Sơ đồ Use Case chi tiết - Quản lý người dùng và phân quyền (Quản trị viên)",
+  "mode": "color",
+  "usecase": {
+    "system": "Chức năng Quản lý người dùng & phân quyền",
+    "groups": [
+      {
+        "name": "Quản lý tài khoản (F1-13)",
+        "actors": ["Quản trị viên"],
+        "usecases": [
+          "Xem danh sách người dùng",
+          "Đổi vai trò người dùng",
+          "Khoá và mở khoá tài khoản",
+          "Reset mật khẩu người dùng"
+        ]
+      },
+      {
+        "name": "Ma trận phân quyền (F1-10, F1-11)",
+        "actors": ["Quản trị viên"],
+        "usecases": [
+          "Xem ma trận phân quyền",
+          "Bật tắt quyền theo vai trò và chức năng",
+          "Thêm vai trò mới",
+          "Sửa vai trò",
+          "Xoá vai trò"
+        ]
+      }
+    ]
+  }
+}

@@ -1,7 +1,7 @@
 # RD — Màn `admin_rejudge` (Chấm lại lượt nộp)
 
-> Slug: `admin_rejudge` — khớp `01-rd/overview/system_survey.md` mục 7.3 [SoT: 01-rd/overview/system_survey.md:530].
-> Bounded Context: `judge-orchestration` (F4) [SoT: 01-rd/overview/system_survey.md:530]. Actor: A3.
+> Slug: `admin_rejudge` — khớp `01-rd/overview/system_survey.md` mục 7.3 [SoT: 01-rd/overview/system_survey.md:551].
+> Bounded Context: `judge-orchestration` (F4) [SoT: 01-rd/overview/system_survey.md:551]. Actor: A3.
 >
 > Đối chiếu prototype: `09-layoutBase/Admin - Chấm lại.dc.html`. File này mô tả **hành vi và UX ở mức yêu
 > cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/req.md` (mục F4-09a→e), chỉ trỏ tới và bổ sung

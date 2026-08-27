@@ -1,0 +1,32 @@
+{
+  "common": {
+    "appName": "AlgoPrep",
+    "loading": "Đang tải...",
+    "error": "Đã có lỗi xảy ra",
+    "empty": "Chưa có dữ liệu",
+    "pendingDesign": "Màn hình đang chờ Basic Design / Detail Design."
+  },
+  "nav": {
+    "problems": "Bài toán",
+    "submissions": "Bài nộp",
+    "interviewBank": "Ngân hàng câu hỏi",
+    "progress": "Tiến độ",
+    "profile": "Hồ sơ",
+    "settings": "Cài đặt",
+    "login": "Đăng nhập",
+    "area": {
+      "student": "Khu vực người học",
+      "instructor": "Khu vực giảng viên",
+      "admin": "Khu vực quản trị"
+    }
+  },
+  "auth": {
+    "loginTitle": "Đăng nhập",
+    "signupTitle": "Đăng ký",
+    "switchToLogin": "Đã có tài khoản? Đăng nhập",
+    "switchToSignup": "Chưa có tài khoản? Đăng ký"
+  },
+  "problemList": {
+    "title": "Danh sách bài toán"
+  }
+}

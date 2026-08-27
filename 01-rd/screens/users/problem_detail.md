@@ -5,7 +5,7 @@
 > `judge-orchestration` (+ `ai-review` ở điểm ra sau `Accepted`)
 > [SoT: .nexa/control/dependency-map.md mục 5 — dòng `problem_detail`]. Actor: A1.
 >
-> **Màn nặng nhất trong 27 màn** — chạm bốn Bounded Context [SoT: 01-rd/overview/system_survey.md:495].
+> **Màn nặng nhất trong 30 màn** — chạm bốn Bounded Context [SoT: 01-rd/overview/system_survey.md:495].
 > Đối chiếu prototype: `09-layoutBase/Workspace giải bài.dc.html`.
 >
 > File này mô tả **hành vi và UX ở mức yêu cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/req.md`

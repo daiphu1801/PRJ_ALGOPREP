@@ -61,7 +61,7 @@ gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang c�
     vai trò hệ thống (`STUDENT`, `INSTRUCTOR`, `ADMIN`) và không xoá được vai trò đang có người dùng.
   - **F1-12 — Danh sách chức năng quản trị/nội dung nằm trong phạm vi ma trận** (đề xuất khởi điểm,
     `[SoT: Suy luận]` — chốt số lượng chính xác khi viết BD):
-    `PROBLEM_AUTHORING` (F2-01→04) · `TESTCASE_MANAGEMENT` (F2-05→09, F2-14) · `CLASS_MANAGEMENT` (F2-12, F5-27) ·
+    `PROBLEM_AUTHORING` (F2-01→04) · `TESTCASE_MANAGEMENT` (F2-05→09, F2-14) · `CLASS_MANAGEMENT` (F1-23, F2-12, F5-27) ·
     `USER_MANAGEMENT` (F1-13) · `REJUDGE_MANAGEMENT` (F4-09a→e) · `JUDGE_QUEUE_MONITOR` (F4-10) ·
     `AI_CONFIG` (F5-23) ·
     `AI_TOKEN_BUDGET` (F5-21, F5-25) · `SYSTEM_AUDIT_LOG` (F1-14) · `INTERVIEW_BANK_MANAGEMENT` (F6-11, F6-12) ·
@@ -80,6 +80,19 @@ gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang c�
     engine, worker mất kết nối, timeout sweep...). Hai luồng dữ liệu tách theo đúng Bounded Context sinh ra
     chúng: hành động quản trị thuộc `identity` (F1-14), sự kiện hạ tầng thuộc `judge-orchestration` và đã có
     chỗ riêng ở giám sát hàng đợi (F4-10), không cần một mã `Fx-nn` mới.
+- **Tạo lớp học và tham gia lớp bằng mã mời** — bổ sung 2026-08-28, lấp khoảng trống nêu ở
+  `01-rd/screens/teacher/class_management.md` Câu hỏi mở Q2 (chưa có mã `Fx-nn` nào cho CRUD lớp học). Chốt
+  qua hỏi trực tiếp chủ dự án:
+  - **F1-23 — Giáo viên (A2) tạo lớp học mới** với thông tin cơ bản (tên lớp, có thể kèm mô tả/lịch học —
+    danh sách trường cụ thể để BD/DD quyết định). Khi tạo xong, hệ thống sinh một **mã mời (invite code)**
+    duy nhất gắn với lớp đó. **Chốt 2026-08-28 — qua hỏi trực tiếp chủ dự án:** học viên (A1) **tự tham
+    gia lớp bằng cách nhập mã mời** (self-service join) — không phải giáo viên hay quản trị viên thêm thủ
+    công từng học viên. Gác bởi Function `CLASS_MANAGEMENT` trong ma trận phân quyền (F1-12) cho thao tác
+    tạo lớp (A2); việc học viên nhập mã mời để tham gia không đi qua ma trận phân quyền, tương tự cách
+    F1-05 gán vai trò mặc định khi đăng ký — có sẵn tài khoản hợp lệ và biết mã mời là đủ điều kiện.
+    **Còn mở (chưa chốt, xem `class_management.md` Q2b sau khi tách):** sửa/xoá lớp học sau khi tạo, cách
+    xoay vòng hoặc thu hồi mã mời cũ, giáo viên thêm/gỡ học viên thủ công không qua mã mời — chủ dự án chỉ
+    xác nhận **cơ chế tạo lớp + tham gia bằng mã mời**, chưa xác nhận các thao tác quản trị lớp còn lại.
 - **Đăng nhập qua nhà cung cấp bên thứ ba (OAuth)** — bổ sung theo `06-plan/PROTOTYPE_DEBT.md` mục 2.2,
   đối chiếu `09-layoutBase/Đăng nhập & Đăng ký.dc.html`:
   - **F1-15 — Đăng nhập/đăng ký bằng OAuth (GitHub, Google)**, song song với F1-01/F1-02 (email + mật khẩu),

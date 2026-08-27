@@ -4,9 +4,10 @@ Cấu trúc thư mục của repo AlgoPrep: trục tài liệu, trục mã ngu�
 một module backend nằm ở `backend_architecture.md` mục 3; phân tầng frontend ở `frontend_architecture.md`
 mục 2. Tài liệu này chỉ nói về **cây thư mục**.
 
-> **Trạng thái 2026-08-20:** `05-coding/` còn rỗng (chỉ có `.gitkeep`). Cây thư mục dưới đây là **đích phải
-> dựng**, không phải mô tả hiện trạng. Khi mã đã tồn tại thì **SoT của cấu trúc là CODE** — hai bên lệch thì
-> code thắng, nhưng phải sửa tài liệu ngay để không trôi tiếp.
+> **Trạng thái 2026-08-20 (cập nhật 2026-08-25):** `05-coding/frontend/` đã có khung base (xem
+> `05-coding/frontend/README.md`); `05-coding/backend/` còn rỗng. Cây thư mục dưới đây vẫn là **đích phải
+> dựng** cho phần chưa có. Khi mã đã tồn tại thì **SoT của cấu trúc là CODE** — hai bên lệch thì code thắng,
+> nhưng phải sửa tài liệu ngay để không trôi tiếp.
 
 ---
 
@@ -129,7 +130,7 @@ liệt kê và liên kết tới. Không có logic backend trong `screens/`.
 | Việc | Trạng thái |
 | :--- | :--- |
 | Tạo `05-coding/backend/pom.xml` và module `algoprep-common` + `algoprep-bootstrap` | Chưa có |
-| Tạo `05-coding/frontend/` (Next.js 16, TypeScript strict, cấu hình ESLint boundaries) | Chưa có |
+| Tạo `05-coding/frontend/` (Next.js 16, TypeScript strict, cấu hình ESLint boundaries) | **Đã có khung base** (2026-08-25) — nội dung nghiệp vụ từng màn chờ `02-bd/screens/` |
 | Tạo `05-coding/docker-compose.yml`, `database/init/`, `.env.example`, cấu hình `judge-engine/` | Chưa có |
 | ~~Kiểm chứng ràng buộc cgroup v1 của Judge0~~ | **Đã giải quyết** bằng `DEC-2026-0823-go-judge-default-engine` — engine mặc định đổi sang go-judge, hỗ trợ cả cgroup v1/v2, không còn là rủi ro số một |
 | Chạy `npx gitnexus analyze` lần đầu | Chỉ làm sau khi backend đã có module thật (`CLAUDE.md` mục GitNexus) |

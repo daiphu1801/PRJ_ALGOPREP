@@ -1,7 +1,7 @@
 # RD — Màn `admin_permission_matrix` (Ma trận phân quyền)
 
-> Slug: `admin_permission_matrix` — khớp `01-rd/overview/system_survey.md` mục 7.3 [SoT: 01-rd/overview/system_survey.md:534].
-> Bounded Context: `identity` (F1) [SoT: 01-rd/overview/system_survey.md:534]. Actor: A3.
+> Slug: `admin_permission_matrix` — khớp `01-rd/overview/system_survey.md` mục 7.3 [SoT: 01-rd/overview/system_survey.md:555].
+> Bounded Context: `identity` (F1) [SoT: 01-rd/overview/system_survey.md:555]. Actor: A3.
 >
 > Đối chiếu prototype: `09-layoutBase/Admin - Ma trận phân quyền.dc.html`. File này mô tả **hành vi và UX ở
 > mức yêu cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/req.md` (F1-10→F1-12), chỉ trỏ tới và bổ

@@ -385,6 +385,11 @@ Cập nhật 2026-08-24 sau khi đồng bộ với prototype `09-layoutBase/` (F
 | F6 — Ngân hàng câu hỏi | 12 | Thấp. 12 mã (F6-01 tới F6-12): chế độ học & luyện,spaced-repetition tự chấm |
 | **Tổng** | **97** | *(Hoặc 93 nếu tính nhóm F4-09 là 1 chức năng)* |
 
+**Lưu ý 2026-08-28:** bảng trên chưa cập nhật từ 2026-08-24 — dòng F1 vẫn ghi "17 mã (F1-01 tới F1-17)"
+nhưng `req.md` thực tế đã có tới **F1-23** (F1-18 tới F1-22 bổ sung 2026-08-25; F1-23 — tạo lớp + tham gia
+bằng mã mời — bổ sung 2026-08-28, lấp Câu hỏi mở Q2 của `class_management.md`). Dòng F5 cũng thiếu F5-28
+(`settings.md` dòng 505 đã dùng). Không tính lại toàn bảng ở đây — cần một đợt rà soát riêng khi viết BD.
+
 ---
 
 ## 6. Quy trình nghiệp vụ chính
@@ -468,6 +473,25 @@ vực>/<slug>.md`, chia thư mục con theo khu vực actor: `shared/` (dùng ch
 Slug viết `snake_case`; slice frontend tương ứng viết `kebab-case` (`01-rd/system/codebase_structure.md`
 mục 3). Cột "Chức năng" trỏ về mã ở mục 5 — đó là cách BD theo screen truy về được BD theo module.
 
+### 7.0. Khu vực dùng chung (nhiều actor)
+
+**Bổ sung 2026-08-25 (owner instruction).** Ba màn nội dung mà `req.md` gán cho A2 (giảng viên) nhưng
+prototype chỉ dựng trong shell Admin (đợt đối chiếu mục 7.3 dưới) được chốt **dùng chung một view, mount ở
+cả hai khu vực** — phạm vi dữ liệu do ma trận phân quyền quyết định, không phải instructor và admin có hai
+bản riêng. Quyết định: `DEC-2026-0825-shared-content-authoring-screens`. Không đổi Phương án B (mục 7.2) —
+khu Giảng viên vẫn giữ layout riêng khỏi khu Admin cho các màn không dùng chung.
+
+| Slug | Tên màn | Chức năng chính | Bounded Context liên quan | Mount ở |
+| :--- | :--- | :--- | :--- | :--- |
+| `problem_authoring` | Soạn bài toán và đặc tả hàm (đề bài, chữ ký hàm, chiến lược so khớp, testcase — gồm cả `testcase_management` đã gộp vào, xem dưới) | F2-01 tới F2-09, F2-14 | `problem-bank`, `harness` | `/instructor/problems/[id]`, `/admin/problems/[id]` |
+| `problem_management` | Quản lý bài tập — bảng quản trị nội dung, cửa vào `problem_authoring` (đổi tên từ `admin_problem_management`) | F2-01 tới F2-04, F2-14 | `problem-bank`, `harness` | `/instructor/problems`, `/admin/problems` |
+| `interview_question_management` | Quản lý ngân hàng câu hỏi phỏng vấn (đổi tên từ `admin_interview_question_management`) | F6-11, F6-12 | `interview-bank` | `/instructor/interview-questions`, `/admin/interview-questions` |
+
+**`testcase_management` không còn là slug riêng** — đã gộp hoàn toàn vào `problem_authoring` (chốt
+2026-08-25); phiên bản bộ testcase (F2-09) là panel trong tab Testcase, không tách màn hay hộp thoại riêng.
+Chi tiết: `01-rd/screens/shared/problem_authoring.md`, `01-rd/screens/shared/problem_management.md`,
+`01-rd/screens/shared/interview_question_management.md`.
+
 ### 7.1. Khu vực người học
 
 | Slug | Tên màn | Chức năng chính | Bounded Context liên quan |
@@ -514,36 +538,73 @@ thuẫn nhau.
 **Cập nhật 2026-08-24 (tiếp) theo `06-plan/PROTOTYPE_DEBT.md` mục 6.2.b:** 5 màn Giáo viên đã dựng prototype
 thật (`09-layoutBase/Giáo viên - *.dc.html`), phủ 2/4 slug hạt giống ban đầu (`class_management`,
 `class_progress`) và phát sinh thêm 2 slug ngoài dự kiến (`instructor_overview`, `instructor_grading`).
-`problem_authoring` và `testcase_management` **vẫn chưa có prototype**, còn là hạt giống `[SoT: Suy luận]`.
+
+**Sửa 2026-08-25 — `problem_authoring` và `testcase_management` đã chuyển khỏi bảng này.** Ghi chú cũ
+"vẫn chưa có prototype, còn là hạt giống" là **sai** — prototype có thật
+(`09-layoutBase/Admin - Soạn đề bài.dc.html`), chỉ dựng trong shell Admin, không phải khu Giảng viên. Sau khi
+chốt dùng chung hai khu vực (owner instruction, cùng ngày), hai slug này đã chuyển sang **mục 7.0 (khu dùng
+chung)**: `testcase_management` gộp vào `problem_authoring`, không còn tồn tại riêng. Lý do sai sót ban đầu:
+đợt 6.2.b chỉ soát các file `Giáo viên - *.dc.html`, không soát khu Admin — nơi hai màn nội dung này thật sự
+được dựng.
+
+**Cập nhật 2026-08-28 (`DEC-2026-0828-split-class-management-assignments`):** slug `class_management` tách
+thành hai — `class_management` (chỉ "Lớp của tôi": tổng quan lớp, danh sách học viên, F6-11) và
+`class_assignments` (mới, "Bài tập của tôi": giao/gán bài từ ngân hàng cho lớp, F2-12, yêu cầu chấm lại) —
+vì hai prototype có route/nav riêng biệt, mỗi màn cần một component Next.js riêng ở BD/DD. Xem
+`01-rd/screens/teacher/class_management.md` và `01-rd/screens/teacher/class_assignments.md`. Khu giảng viên
+4 → 5 slug, tổng 29 → 30 màn.
 
 | Slug | Tên màn | Chức năng chính | Bounded Context liên quan | Prototype |
 | :--- | :--- | :--- | :--- | :--- |
-| `problem_authoring` | Soạn bài toán và đặc tả hàm | F2-01 tới F2-04, F2-14 | `problem-bank`, `harness` | Chưa có |
-| `testcase_management` | Quản lý testcase và phiên bản bộ testcase | F2-05 tới F2-09 | `problem-bank` | Chưa có |
-| `class_management` | Quản lý lớp và giao bài tập | F2-12, F6-11 | `identity`, `problem-bank`, `interview-bank` | `Giáo viên - Lớp của tôi.dc.html`, `Giáo viên - Bài tập của tôi.dc.html` (gán bài từ ngân hàng cho lớp) |
+| `class_management` | Quản lý lớp — Lớp của tôi (tổng quan, danh sách học viên) | F1-10, F1-12, F6-11 | `identity`, `interview-bank` | `Giáo viên - Lớp của tôi.dc.html` |
+| `class_assignments` | Giao bài tập theo lớp — Bài tập của tôi | F2-12, F4-09a tới F4-09c | `problem-bank`, `judge-orchestration` | `Giáo viên - Bài tập của tôi.dc.html` (gán bài từ ngân hàng cho lớp) |
 | `class_progress` | Tiến độ lớp | (dẫn xuất từ F1-06, F1-07) | `identity`, `judge-orchestration` | `Giáo viên - Tiến độ học viên.dc.html` |
 | `instructor_overview` | Tổng quan khu Giảng viên | (tổng hợp F2-12, F5-27, F6-11) | `identity` | `Giáo viên - Tổng quan.dc.html`. Slug mới phát sinh khi dựng prototype, không nằm trong 4 slug hạt giống ban đầu — hợp lý vì mỗi khu vực có shell riêng thường cần một dashboard riêng |
 | `instructor_grading` | Điểm AI tham khảo và chấm tay theo lớp | F5-27 | `ai-review`, `problem-bank` | `Giáo viên - Chấm bài.dc.html`. Slug mới, gắn mã F5-27 (chốt 2026-08-24, mục 6.2.a) |
 
 ### 7.3. Khu vực quản trị
 
-| Slug | Tên màn | Chức năng chính | Bounded Context liên quan |
-| :--- | :--- | :--- | :--- |
-| `admin_queue_monitor` | Giám sát hàng đợi và cụm judge engine | F4-10 | `judge-orchestration` |
-| `admin_rejudge` | Kích hoạt và theo dõi chấm lại | F4-09a tới F4-09e | `judge-orchestration` |
-| `admin_language_config` | Cấu hình ngôn ngữ và giới hạn tài nguyên | F4-11, F2-10 | `judge-orchestration`, `problem-bank` |
-| `admin_ai_config` | Cấu hình prompt, rubric và giới hạn tần suất AI | F5-19, F5-23 | `ai-review` |
-| `admin_ai_usage` | Theo dõi lượng token tiêu thụ, ngân sách và dự báo cạn quota | F5-21, F5-25 | `ai-review` |
-| `admin_permission_matrix` | Ma trận phân quyền Role × Function × Action | F1-10, F1-11, F1-12 | `identity` |
-| `admin_user_management` | Quản lý tài khoản: đổi vai trò, khoá/mở khoá, reset mật khẩu | F1-13 | `identity` |
-| `admin_system_log` | Nhật ký hệ thống: audit hành động quản trị | F1-14 | `identity` |
+**Cập nhật 2026-08-25 — đối chiếu prototype khu Admin (đợt bổ sung, cùng loại việc `06-plan/PROTOTYPE_DEBT.md`
+mục 6.2.b đã làm cho khu Giảng viên):** nav khu Admin trong prototype có **5 nhóm / 11 đích** cộng 1 màn con,
+trong khi bảng này trước đó chỉ có 8 slug. `admin_overview` là slug bổ sung thật có prototype dựng
+(`Admin - Tổng quan.dc.html`), chỉ chưa từng được liệt kê. Hai đích nội dung còn lại của nav ("Quản lý bài
+tập", "Câu hỏi phỏng vấn") đã chốt **dùng chung với khu Giảng viên** — xem mục 7.0, không lặp lại ở đây. Nav
+thật: Tổng quan · Nội dung (Quản lý bài tập, Câu hỏi phỏng vấn — mục 7.0) · Vận hành (Hàng đợi chấm, Chấm
+lại, Ngôn ngữ và giới hạn) · AI (Cấu hình AI, Token AI) · Hệ thống (Người dùng, Nhật ký hệ thống, Ma trận
+phân quyền) [SoT: 09-layoutBase/Admin - Tổng quan.dc.html:360-380].
 
-Tổng: **27 màn dự kiến** — 13 người học, 6 giảng viên, 8 quản trị. Cập nhật 2026-08-24 (tiếp) theo
+| Slug | Tên màn | Chức năng chính | Bounded Context liên quan | Prototype |
+| :--- | :--- | :--- | :--- | :--- |
+| `admin_overview` | Tổng quan khu Quản trị — chỉ số hệ thống, lượt nộp theo ngôn ngữ/ngày/tháng, kết quả chấm, độ khó, bài phổ biến, người dùng mới/cũ | (tổng hợp, chưa gắn mã riêng) | `identity`, `judge-orchestration`, `problem-bank` | `Admin - Tổng quan.dc.html`. Slug bổ sung 2026-08-25. **Là đích điều hướng của `ADMIN` sau đăng nhập** theo `01-rd/screens/shared/auth.md:90` |
+| `admin_queue_monitor` | Giám sát hàng đợi và cụm judge engine | F4-10 | `judge-orchestration` | `Admin - Hàng đợi chấm.dc.html` |
+| `admin_rejudge` | Kích hoạt và theo dõi chấm lại | F4-09a tới F4-09e | `judge-orchestration` | `Admin - Chấm lại.dc.html` |
+| `admin_language_config` | Cấu hình ngôn ngữ và giới hạn tài nguyên | F4-11, F2-10 | `judge-orchestration`, `problem-bank` | `Admin - Ngôn ngữ và giới hạn.dc.html` |
+| `admin_ai_config` | Cấu hình prompt, rubric và giới hạn tần suất AI | F5-19, F5-23 | `ai-review` | `Admin - Cấu hình AI.dc.html` |
+| `admin_ai_usage` | Theo dõi lượng token tiêu thụ, ngân sách và dự báo cạn quota | F5-21, F5-25 | `ai-review` | `Admin - Token AI.dc.html` |
+| `admin_permission_matrix` | Ma trận phân quyền Role × Function × Action | F1-10, F1-11, F1-12 | `identity` | `Admin - Ma trận phân quyền.dc.html` |
+| `admin_user_management` | Quản lý tài khoản: đổi vai trò, khoá/mở khoá, reset mật khẩu | F1-13 | `identity` | `Admin - Người dùng.dc.html` |
+| `admin_system_log` | Nhật ký hệ thống: audit hành động quản trị | F1-14 | `identity` | `Admin - Nhật ký hệ thống.dc.html` |
+
+Tổng: **30 màn dự kiến** — 13 người học, 5 giảng viên, 9 quản trị, 3 dùng chung (mục 7.0). Cập nhật
+2026-08-28: khu giảng viên 4 → 5 (tách `class_management` thành `class_management` + `class_assignments`,
+`DEC-2026-0828-split-class-management-assignments`), tổng 29 → 30. Trước đó, cập nhật 2026-08-25, hai bước
+trong cùng một đợt đối chiếu khu Admin:
+
+1. Phát hiện `admin_overview`, `problem_management` (ban đầu ghi `admin_problem_management`),
+   `interview_question_management` (ban đầu ghi `admin_interview_question_management`) — 3 slug có prototype
+   dựng thật nhưng chưa từng được liệt kê — và ghi nhận `problem_authoring` (đã có slug) từng bị đánh dấu sai
+   "Chưa có prototype" ở mục 7.2. Tại bước này: quản trị 8 → 11 slug, tổng 27 → 30 màn.
+2. **Owner instruction cùng ngày:** chốt ba màn nội dung (`problem_authoring`, `problem_management`,
+   `interview_question_management`) dùng chung giữa A2 và A3 — chuyển sang mục 7.0 mới, đổi tên hai slug bỏ
+   tiền tố `admin_`, và gộp `testcase_management` (không còn tồn tại riêng) vào `problem_authoring`. Kết quả:
+   quản trị 11 → 9, giảng viên 6 → 4 (bớt `problem_authoring`/`testcase_management`), dùng chung 0 → 3, tổng
+   30 → 29. Quyết định: `DEC-2026-0825-shared-content-authoring-screens`.
+
+Trước đợt này là 27 màn. Cập nhật 2026-08-24 (tiếp) theo
 `06-plan/PROTOTYPE_DEBT.md` mục 6.2.b: thêm `instructor_overview` và `instructor_grading` (2 slug phát sinh
 khi dựng prototype khu Giảng viên), khu giảng viên từ 4 lên 6 slug. Trước đó là 25 màn (mục 3.1/3.2: tách
 `profile_settings` thành `profile`/`settings`, thêm `saved_problems`; mục 2.5: thêm `admin_system_log`) —
 trước nữa là 22 (thêm `admin_permission_matrix`/`admin_user_management` theo mục 1.2, 2026-08-23).
-`problem_authoring` và `testcase_management` ở mục 7.2 vẫn ở dạng hạt giống, chưa có prototype dựng thật.
 
 ---
 
@@ -634,5 +695,5 @@ F4 không có gì để điều phối, và F5 không có bài nộp Accepted n�
 | Nền tảng lý thuyết và lý do chọn từng nguyên lý | `01-rd/overview/overview.md` |
 | Từ vựng chuẩn của dự án | `01-rd/overview/glossary.md` |
 | Kiến trúc backend và frontend | `01-rd/system/backend_architecture.md` · `01-rd/system/frontend_architecture.md` |
-| Yêu cầu chức năng dạng đặc tả và yêu cầu phi chức năng | `01-rd/req/req.md` (**còn là nội dung dự án cũ**, xem `01-rd/README.md` mục 3) |
+| Yêu cầu chức năng dạng đặc tả và yêu cầu phi chức năng | `01-rd/req/req.md` (viết lại cho AlgoPrep 2026-08-23, xem `01-rd/README.md` mục 3) |
 | Thiết kế theo module và theo màn | `02-bd/` |

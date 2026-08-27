@@ -1,0 +1,10 @@
+packages:
+  - "frontend"
+allowBuilds:
+  '@parcel/watcher': true
+  '@swc/core': true
+  esbuild: true
+  unrs-resolver: true
+minimumReleaseAgeExclude:
+  - '@tanstack/query-core@5.102.3'
+  - '@tanstack/react-query@5.102.3'

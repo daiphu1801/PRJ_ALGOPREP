@@ -277,6 +277,22 @@ cần, để lướt qua chất lượng bài làm mà không phải đọc lạ
 - **Cho** tôi không có quyền trên lớp đó, **Khi** tôi mở màn Chấm bài, **Thì** tôi chỉ thấy bài nộp của lớp
   mình phụ trách — gác bởi Function `CLASS_MANAGEMENT` trong ma trận quyền (F1-10, F1-12).
 
+### US-A2-07: Tạo lớp học và mời học viên tham gia bằng mã mời
+
+Là **giảng viên**, tôi muốn tạo lớp học mới và có một mã mời để chia sẻ, để học viên tự tham gia lớp mà tôi
+không phải thêm thủ công từng người.
+
+- **Cho** tôi mở màn "Lớp của tôi", **Khi** tôi tạo lớp học mới với thông tin cơ bản, **Thì** hệ thống tạo
+  lớp và sinh cho tôi một mã mời duy nhất gắn với lớp đó (F1-23).
+- **Cho** lớp đã có mã mời, **Khi** tôi chia sẻ mã đó cho học viên, **Thì** học viên nhập đúng mã vào hệ
+  thống thì tự động trở thành thành viên của lớp, không cần tôi hay quản trị viên xác nhận thêm (F1-23).
+- **Cho** tôi là học viên nhập một mã mời không tồn tại hoặc đã hết hiệu lực, **Khi** tôi bấm tham gia lớp,
+  **Thì** hệ thống báo lỗi rõ ràng và không thêm tôi vào lớp nào `[SoT: Suy luận — hành vi lỗi hợp lý, chưa
+  hỏi chủ dự án]`.
+
+**Còn mở:** sửa/xoá lớp sau khi tạo, thu hồi hoặc tạo lại mã mời, giáo viên gỡ học viên khỏi lớp — xem
+`01-rd/screens/teacher/class_management.md` Câu hỏi mở Q2b.
+
 ---
 
 ## 3. A3 — Quản trị viên

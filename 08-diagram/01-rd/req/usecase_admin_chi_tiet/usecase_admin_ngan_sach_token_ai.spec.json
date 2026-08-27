@@ -1,0 +1,22 @@
+{
+  "_": "Chi tiet nhom 'Theo doi muc tieu thu AI' (u15 o ban tong quan): F5-21 (theo doi token) + F5-25 (ngan sach va du bao).",
+  "kind": "usecase",
+  "title": "Sơ đồ Use Case chi tiết - Ngân sách và mức tiêu thụ token AI (Quản trị viên)",
+  "mode": "color",
+  "usecase": {
+    "system": "Chức năng Ngân sách token AI",
+    "groups": [
+      {
+        "name": "Ngân sách token AI (F5-21, F5-25)",
+        "actors": ["Quản trị viên"],
+        "usecases": [
+          "Xem thống kê tiêu thụ token",
+          "Đặt ngân sách token theo kỳ",
+          "Xem dự báo cạn ngân sách",
+          "Xem bảng xếp hạng tiêu thụ token",
+          "Mở lại hoặc tăng ngân sách khi bị khoá"
+        ]
+      }
+    ]
+  }
+}

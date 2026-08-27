@@ -1,0 +1,32 @@
+{
+  "common": {
+    "appName": "AlgoPrep",
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "empty": "No data yet",
+    "pendingDesign": "This screen is waiting on Basic Design / Detail Design."
+  },
+  "nav": {
+    "problems": "Problems",
+    "submissions": "Submissions",
+    "interviewBank": "Interview Bank",
+    "progress": "Progress",
+    "profile": "Profile",
+    "settings": "Settings",
+    "login": "Log in",
+    "area": {
+      "student": "Learner area",
+      "instructor": "Instructor area",
+      "admin": "Admin area"
+    }
+  },
+  "auth": {
+    "loginTitle": "Log in",
+    "signupTitle": "Sign up",
+    "switchToLogin": "Already have an account? Log in",
+    "switchToSignup": "No account yet? Sign up"
+  },
+  "problemList": {
+    "title": "Problems"
+  }
+}

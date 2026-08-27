@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+/*
+ * Semantic color tokens — Dark/Light đã chốt, Light là mặc định (DEC-2026-0824-dark-light-theme).
+ * next-themes gắn class .dark lên <html> (attribute="class"); :root là Light.
+ * Hệ thống thiết kế đầy đủ (màu, typography, thư viện component) CHƯA chốt — token dưới đây là
+ * base tối thiểu để dựng khung, không phải bảng màu cuối cùng (frontend_architecture.md mục 6).
+ */
+:root {
+  --color-background: #ffffff;
+  --color-surface: #f8fafc;
+  --color-surface-hover: #eef1f5;
+  --color-text: #0f172a;
+  --color-text-muted: #64748b;
+  --color-border: #e2e8f0;
+  --color-primary: #2563eb;
+  --color-on-primary: #ffffff;
+  --color-danger: #dc2626;
+}
+
+.dark {
+  --color-background: #0b1120;
+  --color-surface: #111827;
+  --color-surface-hover: #1f2937;
+  --color-text: #e5e7eb;
+  --color-text-muted: #94a3b8;
+  --color-border: #1f2937;
+  --color-primary: #3b82f6;
+  --color-on-primary: #0b1120;
+  --color-danger: #f87171;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-text);
+}
+
+/* Bắt buộc trên mọi phần tử dùng backdrop-filter (frontend_architecture.md §2.A-D). */
+.glass-surface {
+  background: color-mix(in srgb, var(--color-surface) 70%, transparent);
+  backdrop-filter: blur(12px);
+}

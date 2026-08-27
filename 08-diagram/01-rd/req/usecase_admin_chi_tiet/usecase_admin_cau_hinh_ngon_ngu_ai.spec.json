@@ -1,0 +1,29 @@
+{
+  "_": "Chi tiet nhom 'Cau hinh ngon ngu va AI' (u13 o ban tong quan): F4-11 (ngon ngu & tai nguyen) + F5-23 (cau hinh prompt/rubric AI).",
+  "kind": "usecase",
+  "title": "Sơ đồ Use Case chi tiết - Cấu hình ngôn ngữ và AI (Quản trị viên)",
+  "mode": "color",
+  "usecase": {
+    "system": "Chức năng Cấu hình ngôn ngữ & AI",
+    "groups": [
+      {
+        "name": "Cấu hình ngôn ngữ và tài nguyên (F4-11)",
+        "actors": ["Quản trị viên"],
+        "usecases": [
+          "Cấu hình ngôn ngữ hỗ trợ",
+          "Cấu hình giới hạn thời gian và bộ nhớ"
+        ]
+      },
+      {
+        "name": "Cấu hình AI (F5-23)",
+        "actors": ["Quản trị viên"],
+        "usecases": [
+          "Soạn prompt AI theo phiên bản",
+          "Xem lại và khôi phục phiên bản prompt",
+          "Cấu hình trọng số tiêu chí rubric",
+          "Cấu hình giới hạn tần suất gọi AI"
+        ]
+      }
+    ]
+  }
+}

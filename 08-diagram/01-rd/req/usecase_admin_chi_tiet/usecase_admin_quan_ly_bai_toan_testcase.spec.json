@@ -1,0 +1,36 @@
+{
+  "_": "Chi tiet nhom 'Quan ly bai toan, cau hoi' (u10 o ban tong quan) cho actor Quan tri vien. Man hinh dung chung voi Giang vien (DEC-2026-0825-shared-content-authoring-screens) nhung o day chi ve actor Quan tri vien theo yeu cau.",
+  "kind": "usecase",
+  "title": "Sơ đồ Use Case chi tiết - Quản lý bài toán và testcase (Quản trị viên)",
+  "mode": "color",
+  "usecase": {
+    "system": "Chức năng Quản lý bài toán & testcase",
+    "groups": [
+      {
+        "name": "Soạn đề bài (F2-01→04)",
+        "actors": ["Quản trị viên"],
+        "usecases": [
+          "Soạn đề bài Markdown và LaTeX",
+          "Sửa và xoá đề bài",
+          "Phân loại độ khó và chủ đề",
+          "Khai báo đặc tả song song 2 mô hình nộp bài"
+        ]
+      },
+      {
+        "name": "Quản lý testcase (F2-05→09, F2-14)",
+        "actors": ["Quản trị viên"],
+        "usecases": [
+          "Khai báo chiến lược so khớp kết quả",
+          "Tải lên bộ testcase theo lô",
+          "Phân loại testcase Sample và Hidden",
+          "Quản lý phiên bản bộ testcase",
+          "Sinh testcase tự động bằng AI"
+        ]
+      }
+    ],
+    "externals": [
+      { "name": "go-judge", "from": ["Sinh testcase tự động bằng AI"] },
+      { "name": "Nhà cung cấp LLM", "from": ["Sinh testcase tự động bằng AI"] }
+    ]
+  }
+}

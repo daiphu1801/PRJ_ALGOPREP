@@ -5,9 +5,17 @@ tiêu chí đặt một component vào tầng nào, cách xử lý hai kênh rea
 
 Nguyên lý FSD và lý do chọn ở `01-rd/overview/overview.md` mục 1.H. Backend đối ứng ở `backend_architecture.md`.
 
-> **Trạng thái 2026-08-20 (cập nhật 2026-08-24):** `05-coding/frontend/` còn rỗng. Đây là **thiết kế phải theo**,
-> chưa phải mô tả mã đang có. Dự án có `09-layoutBase/` (31 màn prototype tĩnh `.dc.html`) làm căn cứ đối chiếu UX
-> và bố cục màn cho BD/DD.
+> **Trạng thái 2026-08-20 (cập nhật 2026-08-25):** `05-coding/frontend/` đã có **khung base** — cây thư mục FSD
+> đầy đủ 6 tầng, 29 slice `views/<slug>/` rỗng khớp `01-rd/screens/`, route theo actor, provider theme/i18n/query.
+> **Nợ kỹ thuật 2026-08-28:** `01-rd/screens/` nay có 30 màn — `class_management` tách thành
+> `class_management` + `class_assignments` mới (`DEC-2026-0828-split-class-management-assignments`) — nhưng
+> code chưa có slice `views/class-assignments/`. Cần dựng thêm slice này (và route
+> `/instructor/assignments`-kiểu) khi làm khung base tiếp; số "29 slice" ở trên vẫn đúng với code hiện tại,
+> chưa đúng với RD.
+> Chưa có nội dung nghiệp vụ (chờ `02-bd/screens/` + `03-dd/api/`). Bốn quyết định kiến trúc của khung base
+> (prefix URL `/admin` + `/instructor`, i18n không có segment locale, theme, pnpm workspace) chốt tại
+> **`DEC-2026-0825-frontend-base-architecture`**; ánh xạ slug↔URL và nợ kỹ thuật ở `05-coding/frontend/README.md`.
+> Dự án có `09-layoutBase/` (31 màn prototype tĩnh `.dc.html`) làm căn cứ đối chiếu UX và bố cục màn cho BD/DD.
 
 ---
 
@@ -213,4 +221,4 @@ agent thi hành, máy không bắt được** — đừng trông chờ `pnpm lin
 | Hệ thống thiết kế, design token | Chưa chọn — chốt ở `02-bd/screens/` |
 | Chế độ theme (Dark/Light) | **Đã chốt 2026-08-24 — hỗ trợ cả hai, Light là mặc định** (`DEC-2026-0824-dark-light-theme`) |
 | Thư viện Markdown + LaTeX, sanitizer, biểu đồ | Khi dựng màn chi tiết bài toán và trang tiến độ |
-| Đa ngôn ngữ giao diện (i18n) | **Đã chốt 2026-08-24 — có song ngữ vi/en** (`DEC-2026-0824-i18n-vi-en`), chi tiết chốt ở `02-bd/screens/` |
+| Đa ngôn ngữ giao diện (i18n) | **Đã chốt 2026-08-24 — có song ngữ vi/en** (`DEC-2026-0824-i18n-vi-en`); cơ chế triển khai chốt 2026-08-25 — `next-intl` không dùng segment locale trong URL, đổi qua cookie `NEXT_LOCALE` (`DEC-2026-0825-frontend-base-architecture`) |

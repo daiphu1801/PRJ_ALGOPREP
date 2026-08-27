@@ -19,6 +19,8 @@ CLAUDE.md
 *.env
 *.pem
 *.key
+!.env.example
+!*.env.example
 
 # ==========================================
 # Operating System & IDE
@@ -40,16 +42,21 @@ desktop.ini
 *.ipr
 
 # ==========================================
-# Logs & Databases
+# Logs & Databases & Local Storage
 # ==========================================
 *.log
 logs/
 *.sqlite
 *.sqlite3
 *.db
+*_data/
+database/data/
+minio_data/
+.minio.sys/
+redis_data/
 
 # ==========================================
-# Node.js / Frontend
+# Node.js / Frontend & Testing
 # ==========================================
 node_modules/
 npm-debug.log*
@@ -59,10 +66,17 @@ pnpm-debug.log*
 .pnpm-store/
 dist/
 build/
+out/
 .next/
 .out/
 .nuxt/
 .cache/
+.turbo/
+*.tsbuildinfo
+coverage/
+playwright-report/
+test-results/
+blob-report/
 
 # ==========================================
 # Java / Spring Boot / Maven / Gradle
