@@ -286,7 +286,7 @@ class Component extends DCLogic {
   state = {
     openGroup: 'ai', collapsed: false, theme: 'light',
     weights: [30, 25, 20, 15, 10],
-    guards: { noFullCode: true, cite: true, vietnamese: true, escalate: false },
+    guards: { noFullCode: true, cite: true, vietnamese: true },
   };
 
   componentDidMount() {
@@ -418,7 +418,6 @@ class Component extends DCLogic {
       'Thử nghiệm A/B': [dark ? 'rgba(127,208,255,0.14)' : 'rgba(63,123,232,0.12)', blue],
     };
     const prompts = [
-      ['Gợi ý theo bậc', 'v4.2', 'Đang chạy', 'Ba bậc gợi ý tăng dần, không đưa lời giải hoàn chỉnh ở bậc 1 và 2.', 'claude-sonnet', '0,3', '900 token', '14/08'],
       ['Phân tích bài giải', 'v3.8', 'Đang chạy', 'Chấm theo rubric, chỉ ra độ phức tạp và điểm cần sửa, kèm trích đoạn mã.', 'claude-sonnet', '0,2', '1.600 token', '11/08'],
       ['Phỏng vấn giả lập', 'v2.5', 'Thử nghiệm A/B', 'Đóng vai người phỏng vấn, hỏi tiếp theo câu trả lời, chấm cuối phiên.', 'claude-sonnet', '0,6', '1.200 token', '19/08'],
       ['Sinh testcase', 'v1.9', 'Bản nháp', 'Sinh testcase biên từ đề bài, cần giảng viên duyệt trước khi dùng.', 'claude-haiku', '0,4', '2.000 token', '20/08'],
@@ -449,7 +448,6 @@ class Component extends DCLogic {
     const total = this.state.weights.reduce((a, b) => a + b, 0);
 
     const limits = [
-      { label: 'Gợi ý mỗi bài', value: '3 lượt', meta: 'Đếm lại khi người học nộp bài mới' },
       { label: 'Phân tích mỗi ngày', value: '10 lượt', meta: 'Theo từng tài khoản người học' },
       { label: 'Phỏng vấn mỗi tuần', value: '5 phiên', meta: 'Mỗi phiên tối đa 30 phút' },
       { label: 'Chờ giữa hai yêu cầu', value: '20 giây', meta: 'Áp dụng cho mọi tính năng AI' },
@@ -465,7 +463,6 @@ class Component extends DCLogic {
       Object.assign({ title: 'Không đưa lời giải đầy đủ', meta: 'Chỉ gợi ý hướng đi và đoạn mã ngắn', onClick: () => this.flipGuard('noFullCode') }, knob(g.noFullCode)),
       Object.assign({ title: 'Trích dẫn dòng mã người học', meta: 'Nhận xét phải chỉ rõ dòng liên quan', onClick: () => this.flipGuard('cite') }, knob(g.cite)),
       Object.assign({ title: 'Trả lời bằng tiếng Việt', meta: 'Giữ nguyên thuật ngữ tiếng Anh', onClick: () => this.flipGuard('vietnamese') }, knob(g.vietnamese)),
-      Object.assign({ title: 'Chuyển giảng viên khi bí', meta: 'Sau 3 lần gợi ý không hiệu quả', onClick: () => this.flipGuard('escalate') }, knob(g.escalate)),
     ];
 
     return {

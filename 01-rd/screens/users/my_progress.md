@@ -5,22 +5,22 @@
 > [SoT: 01-rd/overview/system_survey.md:483 — cột Bounded Context ghi `identity`, `interview-bank`]. Actor: A1.
 >
 > Đối chiếu prototype: `09-layoutBase/Tiến độ của tôi.dc.html`. File này mô tả **hành vi và UX ở mức yêu
-> cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/req.md` (mục F1) và
-> `01-rd/req/user_stories.md` (`US-A1-05`), chỉ trỏ tới và bổ sung phần đặc thù của màn.
+> cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/identity.md` (mục F1) và
+> `01-rd/req/user_stories/a1_student.md` (`US-A1-05`), chỉ trỏ tới và bổ sung phần đặc thù của màn.
 
 ## 1. Mục đích màn hình
 
 Tổng hợp quá trình luyện tập của người học: bài đã giải theo chủ đề, tỉ lệ Accepted, và lịch sử phỏng vấn
-giả lập mở lại được rubric của phiên cũ [SoT: 01-rd/req/req.md:37-39 — F1-06, F1-07, F1-08].
+giả lập mở lại được rubric của phiên cũ [SoT: 01-rd/req/identity.md — F1-06, F1-07, F1-08].
 
 ## 2. Nguồn yêu cầu (không lặp lại — chỉ trỏ)
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Bài đã giải theo chủ đề | F1-06 | `01-rd/req/req.md:38` |
-| Tỉ lệ chấp thuận (Accepted / tổng số đã nộp) | F1-07 | `01-rd/req/req.md:38-39` |
-| Lịch sử phỏng vấn mở lại được rubric của phiên cũ | F1-08 | `01-rd/req/req.md:39` |
-| Given-When-Then đầy đủ | — | `01-rd/req/user_stories.md:98-108` (`US-A1-05`, 2 GWT đầu) |
+| Bài đã giải theo chủ đề | F1-06 | `01-rd/req/identity.md` — F1-06 |
+| Tỉ lệ chấp thuận (Accepted / tổng số đã nộp) | F1-07 | `01-rd/req/identity.md` — F1-07 |
+| Lịch sử phỏng vấn mở lại được rubric của phiên cũ | F1-08 | `01-rd/req/identity.md` — F1-08 |
+| Given-When-Then đầy đủ | — | `01-rd/req/user_stories/a1_student.md` (`US-A1-05`, 2 GWT đầu) |
 
 ## 3. Trạng thái và cấu trúc màn (screen states)
 
@@ -40,7 +40,7 @@ giả lập mở lại được rubric của phiên cũ [SoT: 01-rd/req/req.md:3
    "theo chủ đề": theo độ khó).
 5. **Khối "Nên ưu tiên" (Focus next)** — 3 gợi ý bài/chủ đề nên làm tiếp kèm lý do (`"Tỉ lệ AC 31% — thấp
    nhất"`, `"Còn 26 bài, tỉ lệ AC 44%"`, `"13 ngày chưa nộp bài nào"`, dòng 184-196) — không có mã `Fx-nn`,
-   là một tính năng gợi ý/xếp hạng chưa từng được đặc tả ở `req.md` — xem Câu hỏi mở Q2.
+   là một tính năng gợi ý/xếp hạng chưa từng được đặc tả ở `identity.md` — xem Câu hỏi mở Q2.
 6. **Khối "Phỏng vấn giả lập"** — số phiên, điểm trung bình, mục yếu nhất (`"Đánh đổi"` — trade-offs, dòng
    199-210) kèm liên kết bắt đầu phiên mới — khớp F1-08 (tóm tắt lịch sử), nhưng "mục yếu nhất" (rubric tổng
    hợp qua nhiều phiên) là suy luận tổng hợp chưa có mã `Fx-nn` — cùng nhóm với Q2.
@@ -76,8 +76,8 @@ giả lập mở lại được rubric của phiên cũ [SoT: 01-rd/req/req.md:3
 
 ## 7. Tham chiếu
 
-- `01-rd/req/req.md:37-39` — F1-06, F1-07, F1-08.
-- `01-rd/req/user_stories.md:98-108` — `US-A1-05` (2 GWT đầu).
+- `01-rd/req/identity.md` — F1-06, F1-07, F1-08.
+- `01-rd/req/user_stories/a1_student.md` — `US-A1-05` (2 GWT đầu).
 - `01-rd/overview/system_survey.md:483` — dòng `my_progress` trong bảng màn mục 7.
 - `09-layoutBase/Tiến độ của tôi.dc.html` — prototype.
 - `06-plan/nexa-plan/260824-2043-bd-screens-common-first.md` — kế hoạch Phase 0-1; Phase 2 tiếp tục ở đây.

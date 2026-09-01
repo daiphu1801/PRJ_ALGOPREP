@@ -5,7 +5,7 @@
 >
 > Theo lộ trình Phase 4 của `06-plan/nexa-plan/260824-2043-bd-screens-common-first.md` dòng 44. Đối chiếu
 > prototype: `09-layoutBase/Câu hỏi phỏng vấn.dc.html`. File này mô tả **hành vi và UX ở mức yêu cầu** —
-> không lặp lại đặc tả chức năng đã có ở `01-rd/req/req.md` (mục F6) và `01-rd/req/user_stories.md`
+> không lặp lại đặc tả chức năng đã có ở `01-rd/req/interview-bank.md` (mục F6) và `01-rd/req/user_stories/a1_student.md`
 > (`US-A1-08`), chỉ trỏ tới và bổ sung phần đặc thù của màn.
 >
 > **Ghi chú liên phase:** báo cáo `06-plan/reports/260825-2100-ai2-solution-review-conflicts.md` (Phase 3)
@@ -16,18 +16,18 @@
 
 Trang duyệt **toàn bộ kho câu hỏi phỏng vấn lý thuyết** (độc lập với bài nộp code): tìm kiếm, lọc theo chủ
 đề và trạng thái ôn tập, xem nhanh gợi ý trả lời của một câu hỏi, tự chấm mức độ nhớ, và một chế độ "luyện
-nhanh" dạng flashcard [SoT: 01-rd/req/user_stories.md:168-184 — `US-A1-08`;
+nhanh" dạng flashcard [SoT: 01-rd/req/user_stories/a1_student.md — `US-A1-08`;
 01-rd/overview/system_survey.md:481].
 
 ## 2. Nguồn yêu cầu (không lặp lại — chỉ trỏ)
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Danh sách câu hỏi phân loại theo chủ đề, mức độ khó; tìm kiếm và lọc; đánh dấu để xem lại | F6-01, F6-02, F6-03 | `01-rd/req/req.md:405-406` |
-| Chế độ học: gợi ý hướng tiếp cận, khung trả lời chuẩn (STAR cho câu hành vi), từ khoá cốt lõi | F6-04, F6-05, F6-06 | `01-rd/req/req.md:407-408` |
-| Lịch sử luyện tập, câu cần ôn lại, tỉ lệ hoàn thành theo chủ đề | F6-09, F6-10 | `01-rd/req/req.md:412-413` |
-| Tự chấm mức độ thuộc bài, hệ thống tự xếp lịch ôn lại (spaced repetition) | F6-12 | `01-rd/req/req.md:415-421` |
-| Given-When-Then đầy đủ cho luồng ôn tập ngân hàng câu hỏi | — | `01-rd/req/user_stories.md:168-184` (`US-A1-08`) |
+| Danh sách câu hỏi phân loại theo chủ đề, mức độ khó; tìm kiếm và lọc; đánh dấu để xem lại | F6-01, F6-02, F6-03 | `01-rd/req/interview-bank.md` — F6-01, F6-02, F6-03 |
+| Chế độ học: gợi ý hướng tiếp cận, khung trả lời chuẩn (STAR cho câu hành vi), từ khoá cốt lõi | F6-04, F6-05, F6-06 | `01-rd/req/interview-bank.md` — F6-04, F6-05, F6-06 |
+| Lịch sử luyện tập, câu cần ôn lại, tỉ lệ hoàn thành theo chủ đề | F6-09, F6-10 | `01-rd/req/interview-bank.md` — F6-09, F6-10 |
+| Tự chấm mức độ thuộc bài, hệ thống tự xếp lịch ôn lại (spaced repetition) | F6-12 | `01-rd/req/interview-bank.md` — F6-12 |
+| Given-When-Then đầy đủ cho luồng ôn tập ngân hàng câu hỏi | — | `01-rd/req/user_stories/a1_student.md` (`US-A1-08`) |
 
 ## 3. Trạng thái và cấu trúc màn (screen states)
 
@@ -77,14 +77,14 @@ Hai chế độ hiển thị không đổi hành vi nghiệp vụ, chỉ đổi 
   vấn.dc.html:357, 422]. Xem Câu hỏi mở Q2.
 - **Cho** tôi đã tự chấm một câu là "Đã thuộc", **Khi** tôi mở lại chế độ luyện nhanh sau đó, **Thì** hệ
   thống ưu tiên hiện lại các câu "Cần ôn lại"/"Chưa xem" trước, đúng tinh thần spaced-repetition của F6-12 —
-  công thức xếp lịch cụ thể thuộc DD [SoT: 01-rd/req/req.md:415-421].
+  công thức xếp lịch cụ thể thuộc DD [SoT: 01-rd/req/interview-bank.md — F6-12].
 
 ## 5. Câu hỏi mở
 
 | # | Câu hỏi | Vì sao chưa trả lời được | Đề xuất | Chủ sở hữu |
 | :-: | :--- | :--- | :--- | :--- |
 | Q1 | ~~Khối "xem nhanh" ở cột phải của `browse` đã hiện gần như đầy đủ nội dung Chế độ học (gợi ý hướng tiếp cận, tag) — vậy `interview_question_detail` là một trang riêng hay `interview_bank_list` đã đủ, không cần trang chi tiết riêng?~~ **ĐÃ CHỐT (2026-08-25, tự quyết theo yêu cầu chủ dự án — prototype là bản dựng tham khảo)**: `interview_bank_list` chỉ giữ bản **xem nhanh rút gọn** (đúng như prototype hiện có) — đủ để lướt nhanh và tự chấm mà không rời trang danh sách. `interview_question_detail` là **trang riêng, đầy đủ hơn**: Chế độ học đầy đủ (bao gồm khung trả lời chuẩn dạng STAR cho câu hành vi — F6-05 — hiện **hoàn toàn chưa có** ở bản xem nhanh) và Chế độ luyện (F6-07/F6-08, soạn câu trả lời + AI chấm — **hoàn toàn chưa được dựng ở bất kỳ đâu trong prototype**). Xem file RD riêng `01-rd/screens/users/interview_question_detail.md`. | — | Đã chốt cấu trúc 2 màn; nội dung `interview_question_detail` **[Đợi nextjs]** vì Chế độ luyện chưa có bản dựng nào để đối chiếu. | Đã đóng |
-| Q2 | Chế độ "Luyện nhanh" có lấy đúng theo bộ lọc đang áp ở `browse` (chủ đề, trạng thái) hay luôn duyệt toàn bộ 148 câu theo thứ tự cố định? Mã nguồn mẫu cho thấy trạng thái thứ hai, có thể chỉ là giản lược của bản dựng tham khảo. | Không có tài liệu `req.md`/`user_stories.md` nào mô tả chi tiết luồng chọn bộ câu hỏi cho "luyện nhanh". | **ĐÃ CHỐT (2026-08-25, tự quyết)**: hợp lý hơn cho người dùng là luyện nhanh lấy theo đúng bộ lọc đang áp ở `browse` (nếu không lọc gì thì mới lấy toàn bộ) — tránh người dùng bấm "luyện nhanh" sau khi đã lọc theo một chủ đề cụ thể mà lại nhận câu hỏi ở chủ đề khác. Cài đặt cụ thể **[Đợi nextjs]**. | Đợi nextjs |
+| Q2 | Chế độ "Luyện nhanh" có lấy đúng theo bộ lọc đang áp ở `browse` (chủ đề, trạng thái) hay luôn duyệt toàn bộ 148 câu theo thứ tự cố định? Mã nguồn mẫu cho thấy trạng thái thứ hai, có thể chỉ là giản lược của bản dựng tham khảo. | Không có tài liệu `interview-bank.md`/`user_stories/a1_student.md` nào mô tả chi tiết luồng chọn bộ câu hỏi cho "luyện nhanh". | **ĐÃ CHỐT (2026-08-25, tự quyết)**: hợp lý hơn cho người dùng là luyện nhanh lấy theo đúng bộ lọc đang áp ở `browse` (nếu không lọc gì thì mới lấy toàn bộ) — tránh người dùng bấm "luyện nhanh" sau khi đã lọc theo một chủ đề cụ thể mà lại nhận câu hỏi ở chủ đề khác. Cài đặt cụ thể **[Đợi nextjs]**. | Đợi nextjs |
 | Q3 | Tham số lọc theo chủ đề/từ khoá khi điều hướng từ `solution_review` (F5-06, Phase 3) cần đi qua query string dạng gì (một chủ đề hay nhiều, khớp chính xác tên chủ đề hay tìm kiếm mờ)? | Đây là điểm nối giữa hai module (`ai-review` → `interview-bank`) qua tầng giao diện (không qua đọc dữ liệu chéo module ở backend, chỉ là điều hướng URL) — chưa có DD nào của cả hai module để chốt định dạng chính xác. | **[Đợi nextjs]** — chốt khi viết DD cho `interview-bank` (API danh sách câu hỏi cần hỗ trợ lọc theo chủ đề qua tham số truy vấn). Không cần chủ dự án quyết ngay vì không đổi kiến trúc, chỉ là hình dạng một query param. | Đợi nextjs |
 
 ## 6. Ngoài phạm vi file này
@@ -101,8 +101,8 @@ Hai chế độ hiển thị không đổi hành vi nghiệp vụ, chỉ đổi 
 
 ## 7. Tham chiếu
 
-- `01-rd/req/req.md:405-421` — F6-01 tới F6-12.
-- `01-rd/req/user_stories.md:168-184` — `US-A1-08`.
+- `01-rd/req/interview-bank.md` — F6-01 tới F6-12.
+- `01-rd/req/user_stories/a1_student.md` — `US-A1-08`.
 - `01-rd/overview/system_survey.md:481` — dòng `interview_bank_list` trong bảng màn mục 7.1.
 - `06-plan/reports/260825-2100-ai2-solution-review-conflicts.md` — điểm nối từ `solution_review` (Phase 3).
 - `09-layoutBase/Câu hỏi phỏng vấn.dc.html` — prototype.

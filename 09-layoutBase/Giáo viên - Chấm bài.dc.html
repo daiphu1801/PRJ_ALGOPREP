@@ -140,16 +140,21 @@
               <button onClick="{{ s.onClick }}" style="height: 28px; padding: 0 12px; border: none; border-radius: 9px; font-family: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer; background: {{ s.bg }}; color: {{ s.fg }};">{{ s.label }}</button>
             </sc-for>
           </div>
+          <div style="display: flex; gap: 3px; padding: 3px; border-radius: 12px; background: var(--track); border: 1px solid var(--border2);">
+            <sc-for list="{{ classTabs }}" as="ct" hint-placeholder-count="4">
+              <button onClick="{{ ct.onClick }}" style="height: 28px; padding: 0 12px; border: none; border-radius: 9px; font-family: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer; background: {{ ct.bg }}; color: {{ ct.fg }};">{{ ct.label }}</button>
+            </sc-for>
+          </div>
           <span style="margin-left: auto; font-size: 12.5px; color: var(--muted); white-space: nowrap;">{{ resultCount }}</span>
         </div>
 
         <div style="overflow-x: auto;">
-        <div style="display: grid; grid-template-columns: minmax(150px,1.1fr) minmax(150px,1.2fr) 110px 110px 96px 110px; min-width: 820px; gap: 10px; padding: 0 10px 8px; font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted2); border-bottom: 1px solid var(--border2);">
-          <span>Học viên</span><span>Bài tập</span><span>Lớp</span><span>Nộp lúc</span><span style="text-align: right;">Điểm AI</span><span></span>
+        <div style="display: grid; grid-template-columns: minmax(150px,1.1fr) minmax(150px,1.2fr) 110px 110px 176px 110px; min-width: 900px; gap: 10px; padding: 0 10px 8px; font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted2); border-bottom: 1px solid var(--border2);">
+          <span>Học viên</span><span>Bài tập</span><span>Lớp</span><span>Nộp lúc</span><span style="text-align: right;">Điểm</span><span></span>
         </div>
         <div style="display: flex; flex-direction: column; gap: 2px; padding-top: 4px;">
           <sc-for list="{{ rows }}" as="g" hint-placeholder-count="8">
-            <div style="display: grid; grid-template-columns: minmax(150px,1.1fr) minmax(150px,1.2fr) 110px 110px 96px 110px; min-width: 820px; gap: 10px; align-items: center; padding: 10px; border-radius: 12px;" style-hover="background: var(--row-hover);">
+            <div style="display: grid; grid-template-columns: minmax(150px,1.1fr) minmax(150px,1.2fr) 110px 110px 176px 110px; min-width: 900px; gap: 10px; align-items: center; padding: 10px; border-radius: 12px;" style-hover="background: var(--row-hover);">
               <span style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ g.student }}</span>
               <span style="font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ g.problem }}</span>
               <span style="font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ g.className }}</span>
@@ -189,7 +194,7 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
-  state = { theme: 'light', collapsed: false, statusFilter: 'Chờ chấm', modal: null, modalScore: '', graded: {} };
+  state = { theme: 'light', collapsed: false, statusFilter: 'Chờ chấm', classFilter: 'Tất cả', modal: null, modalScore: '', graded: {} };
 
   componentDidMount() {
     try {
@@ -272,19 +277,31 @@ class Component extends DCLogic {
       fg: this.state.statusFilter === label ? 'var(--seg-fg)' : 'var(--muted)',
     }));
 
+    const classTabs = ['Tất cả', 'Thuật toán K21', 'CTDL K22', 'Luyện PV nâng cao'].map(label => ({
+      label,
+      onClick: () => this.setState({ classFilter: label }),
+      bg: this.state.classFilter === label ? 'var(--seg-bg)' : 'transparent',
+      fg: this.state.classFilter === label ? 'var(--seg-fg)' : 'var(--muted)',
+    }));
+
     const sf = this.state.statusFilter;
+    const cf = this.state.classFilter;
     const graded = this.state.graded;
     const list = this.data().filter(r => {
       const status = graded[r[0]] ? 'Đã chấm' : r[6];
-      return sf === 'Tất cả' || status === sf;
+      const statusOk = sf === 'Tất cả' || status === sf;
+      const classOk = cf === 'Tất cả' || r[3] === cf;
+      return statusOk && classOk;
     });
 
     const rows = list.map(([id, student, problem, className, submitted, score, status0]) => {
       const status = graded[id] ? 'Đã chấm' : status0;
+      const aiLabel = score === 'Yêu cầu review' ? 'AI: Yêu cầu review' : 'AI: ' + score;
+      const scoreDisplay = graded[id] ? aiLabel + ' · GV: ' + graded[id] + '/10' : aiLabel;
       const fg = status === 'Đã chấm' ? ok : (score === 'Yêu cầu review' ? warn : neg);
       return {
-        student, problem, className, submitted, score: graded[id] ? graded[id] + '/10' : score, fg,
-        grade: () => this.setState({ modal: { id, student, problem }, modalScore: '' }),
+        student, problem, className, submitted, score: scoreDisplay, fg,
+        grade: () => this.setState({ modal: { id, student, problem, aiScore: score }, modalScore: '' }),
       };
     });
 
@@ -293,11 +310,11 @@ class Component extends DCLogic {
       theme: this.state.theme, sidebarW: collapsed ? '72px' : '244px',
       expandedDisplay: collapsed ? 'none' : 'block', railJustify: collapsed ? 'center' : 'flex-start',
       toggleIcon: collapsed ? '»' : '«', toggle: () => this.toggle(),
-      navItems, otherLinks, themes, stats, statusTabs, rows,
+      navItems, otherLinks, themes, stats, statusTabs, classTabs, rows,
       resultCount: rows.length + ' bài',
       modalOpen: !!modal,
       modalTitle: modal ? modal.student + ' · ' + modal.problem : '',
-      modalMeta: 'Nhập điểm và nhận xét cho bài nộp này',
+      modalMeta: modal ? 'AI: ' + modal.aiScore + ' · GV: ' + (this.state.modalScore ? this.state.modalScore + '/10' : '(chưa nhập)') : '',
       modalScore: this.state.modalScore,
       onModalScore: e => this.setState({ modalScore: e.target.value }),
       closeModal: () => this.setState({ modal: null }),

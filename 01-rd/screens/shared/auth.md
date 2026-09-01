@@ -10,7 +10,7 @@
 > `06-plan/PROTOTYPE_DEBT.md` mục 6.1): `09-layoutBase/Đăng nhập & Đăng ký.dc.html`.
 >
 > File này mô tả **hành vi và UX ở mức yêu cầu** của một màn cụ thể — không lặp lại đặc tả chức năng đã có
-> ở `01-rd/req/req.md` (mục F1) hay `01-rd/req/user_stories.md` (`US-A1-01`), chỉ trỏ tới và bổ sung phần
+> ở `01-rd/req/identity.md` (mục F1) hay `01-rd/req/user_stories/a1_student.md` (`US-A1-01`), chỉ trỏ tới và bổ sung phần
 > đặc thù của **một màn**: trạng thái màn, luồng chuyển màn, và các câu hỏi mở phát sinh khi đối chiếu với
 > prototype thật mà bản mô tả chức năng chung chưa có.
 
@@ -18,18 +18,18 @@
 
 Là điểm vào duy nhất của hệ thống cho cả ba vai trò (`STUDENT`, `INSTRUCTOR`, `ADMIN`) — đăng ký tài khoản
 mới hoặc đăng nhập vào tài khoản đã có, bằng email/mật khẩu hoặc qua OAuth (GitHub, Google)
-[SoT: 01-rd/req/req.md:17-21, 69-76 — F1-01, F1-02, F1-15].
+[SoT: 01-rd/req/identity.md — F1-01, F1-02, F1-15].
 
 ## 2. Nguồn yêu cầu (không lặp lại — chỉ trỏ)
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Đăng ký email + mật khẩu, vai trò mặc định `STUDENT` | F1-01, F1-05 | `01-rd/req/req.md:18` |
-| Đăng nhập cấp Access Token + Refresh Token (cookie HTTP-Only) | F1-02 | `01-rd/req/req.md:19` |
-| Client tự làm mới Access Token khi gặp `401` | F1-03 | `01-rd/req/req.md:20` |
-| Đăng nhập/đăng ký qua OAuth (GitHub, Google), tự động liên kết theo email trùng | F1-15 | `01-rd/req/req.md:69-76` |
-| Tự đặt lại mật khẩu bằng mã 6 chữ số gửi qua email (Gmail), một lần dùng, có hạn hiệu lực | F1-17 | `01-rd/req/req.md:85-96` |
-| Given-When-Then đầy đủ cho các hành vi trên | — | `01-rd/req/user_stories.md:29-48` (`US-A1-01`) |
+| Đăng ký email + mật khẩu, vai trò mặc định `STUDENT` | F1-01, F1-05 | `01-rd/req/identity.md` — F1-01, F1-05 |
+| Đăng nhập cấp Access Token + Refresh Token (cookie HTTP-Only) | F1-02 | `01-rd/req/identity.md` — F1-02 |
+| Client tự làm mới Access Token khi gặp `401` | F1-03 | `01-rd/req/identity.md` — F1-03 |
+| Đăng nhập/đăng ký qua OAuth (GitHub, Google), tự động liên kết theo email trùng | F1-15 | `01-rd/req/identity.md` — F1-15 |
+| Tự đặt lại mật khẩu bằng mã 6 chữ số gửi qua email (Gmail), một lần dùng, có hạn hiệu lực | F1-17 | `01-rd/req/identity.md` — F1-17 |
+| Given-When-Then đầy đủ cho các hành vi trên | — | `01-rd/req/user_stories/a1_student.md` (`US-A1-01`) |
 
 ## 3. Trạng thái màn (screen states)
 
@@ -66,7 +66,7 @@ là mặc định — khớp `state.theme: "light"` dòng 186).
 ## 4. Given-When-Then bổ sung ở mức màn (không trùng `US-A1-01`)
 
 `US-A1-01` đã có đủ Given-When-Then cho đăng ký, đăng nhập, làm mới token, đăng xuất, và OAuth
-[SoT: 01-rd/req/user_stories.md:29-44]. Các mục dưới đây là hành vi **riêng của màn hình** mà mô tả chức
+[SoT: 01-rd/req/user_stories/a1_student.md — US-A1-01]. Các mục dưới đây là hành vi **riêng của màn hình** mà mô tả chức
 năng ở mức module chưa nêu, phát hiện khi đối chiếu prototype:
 
 - **Cho** tôi đang ở chế độ `signup`, **Khi** tôi bấm liên kết chuyển chế độ, **Thì** màn chuyển sang
@@ -74,7 +74,7 @@ năng ở mức module chưa nêu, phát hiện khi đối chiếu prototype:
   [SoT: 09-layoutBase/Đăng nhập & Đăng ký.dc.html:159, 272].
 - **Cho** tài khoản của tôi đang ở trạng thái `DEACTIVATED` (đã tự xoá, còn trong khoảng ân hạn — F1-16),
   **Khi** tôi thử đăng nhập bằng email/mật khẩu hoặc OAuth, **Thì** hệ thống từ chối đăng nhập và báo rõ lý
-  do (không phải sai mật khẩu) [SoT: 01-rd/req/req.md:79-84 — F1-16; suy ra từ việc F1-16 nói "không đăng
+  do (không phải sai mật khẩu) [SoT: 01-rd/req/identity.md — F1-16; suy ra từ việc F1-16 nói "không đăng
   nhập lại được" nhưng không mô tả màn `auth` phản ứng thế nào — `[SoT: Suy luận]`, xem Câu hỏi mở Q2].
 - **Cho** đăng nhập/đăng ký thành công, **Khi** overlay tải xong 4 bước, **Thì** hệ thống điều hướng tới
   màn tiến độ cá nhân (`my_progress`) cho `STUDENT`, không phải một màn trung chuyển khác — hành vi hiện tại
@@ -88,8 +88,8 @@ năng ở mức module chưa nêu, phát hiện khi đối chiếu prototype:
 | Q1 | ~~Màn `auth` xử lý lỗi đăng nhập/đăng ký thế nào...~~ **ĐÃ CHỐT (phiên 2026-08-25, chốt theo RD — prototype chỉ tham khảo, sẽ dựng lại khi làm FE Next.js thật):** thêm trạng thái lỗi inline dưới từng field bị sai (không dùng modal/toast che form), dùng token `--bad` nhất quán với theme. Áp dụng cho cả bốn tình huống: sai mật khẩu, email đã tồn tại, mật khẩu yếu, OAuth thất bại (thông báo riêng cho từng loại, không gộp chung một câu). **Chưa dựng vào `09-layoutBase/Đăng nhập & Đăng ký.dc.html`** — `fakeAuth()` vẫn luôn giả lập thành công, việc dựng UI lỗi thật để lúc build FE. | — | Đã chốt quyết định, chưa dựng prototype. | Đã đóng |
 | Q2 | ~~Thông báo khi tài khoản `DEACTIVATED`...~~ **ĐÃ CHỐT (phiên 2026-08-25, chốt theo RD):** cho phép khôi phục ngay tại màn `auth` nếu còn trong khoảng ân hạn — một hành động "Huỷ yêu cầu xoá tài khoản" xuất hiện khi hệ thống phát hiện đăng nhập đúng mật khẩu/OAuth vào tài khoản đang `DEACTIVATED`, tận dụng đúng lúc người dùng đã quay lại thay vì bắt liên hệ hỗ trợ. **Chưa dựng vào prototype** — để lúc build FE. | — | Đã chốt quyết định, chưa dựng prototype. | Đã đóng |
 | Q3 | ~~Sau khi `INSTRUCTOR`/`ADMIN` đăng nhập, có vào thẳng khu vực riêng...~~ **ĐÃ CHỐT (phiên 2026-08-25, chốt theo RD):** điều hướng theo vai trò — `STUDENT` → `my_progress`, `INSTRUCTOR` → `instructor_overview`, `ADMIN` → `admin_overview`; nếu người dùng đến `auth` từ một liên kết cụ thể cần đăng nhập trước (ví dụ bài toán được chia sẻ), ưu tiên quay lại đúng URL gốc đó thay vì đích mặc định theo vai trò. **Chưa dựng vào prototype** (hiện luôn điều hướng 1 đích `my_progress`) — để lúc build FE. **CẢNH BÁO 2026-08-25 (đã xử lý): `admin_overview` nay đã tồn tại** — `01-rd/screens/admin/admin_overview.md` được bổ sung 2026-08-25, đích `ADMIN` không còn treo. Cần đối chiếu lại code (`05-coding/frontend/src/entities/user/model/area.ts` → `HOME_PATH_BY_ROLE`) trỏ đúng `/admin/overview` khi build FE thật thay vì `/admin/queue` tạm thời. | — | Đã chốt quyết định, đã dựng đủ prototype. | Đã đóng |
-| Q4 | ~~"Quên mật khẩu?" xuất hiện ở chế độ `login` trong prototype nhưng không có mã `Fx-nn` nào mô tả luồng đặt lại mật khẩu qua email.~~ **Đã trả lời 2026-08-24 — qua hỏi trực tiếp chủ dự án:** có tính năng quên mật khẩu, gửi mã 6 chữ số ngẫu nhiên qua Gmail. Đã ghi `F1-17` vào `01-rd/req/req.md`, đồng bộ `system_survey.md` mục 5.1/5.7, thêm 3 Given-When-Then vào `US-A1-01` (`user_stories.md`), và thêm 3 trạng thái màn mới ở mục 3 (`forgot_email`, `forgot_otp`, `forgot_reset`) — chưa có trong prototype, cần dựng thêm khi làm UI thật/BD. | — | — | (đã đóng) |
-| Q4b | ~~Tài khoản chỉ từng đăng ký qua OAuth (chưa bao giờ đặt mật khẩu, F1-15) bấm "Quên mật khẩu" thì xử lý thế nào?~~ **Đã trả lời 2026-08-24 — qua hỏi trực tiếp chủ dự án:** đúng như chủ dự án chỉ ra — tài khoản chưa từng có mật khẩu thì không có gì để "quên", nên **từ chối tạo mật khẩu mới qua luồng này**; hệ thống gửi email báo tài khoản đang đăng nhập bằng GitHub/Google, hướng dẫn quay lại đúng provider đó. Đã ghi vào `req.md` (mục F1-17), thêm Given-When-Then vào `US-A1-01`. | — | — | (đã đóng) |
+| Q4 | ~~"Quên mật khẩu?" xuất hiện ở chế độ `login` trong prototype nhưng không có mã `Fx-nn` nào mô tả luồng đặt lại mật khẩu qua email.~~ **Đã trả lời 2026-08-24 — qua hỏi trực tiếp chủ dự án:** có tính năng quên mật khẩu, gửi mã 6 chữ số ngẫu nhiên qua Gmail. Đã ghi `F1-17` vào `01-rd/req/identity.md`, đồng bộ `system_survey.md` mục 5.1/5.7, thêm 3 Given-When-Then vào `US-A1-01` (`user_stories/a1_student.md`), và thêm 3 trạng thái màn mới ở mục 3 (`forgot_email`, `forgot_otp`, `forgot_reset`) — chưa có trong prototype, cần dựng thêm khi làm UI thật/BD. | — | — | (đã đóng) |
+| Q4b | ~~Tài khoản chỉ từng đăng ký qua OAuth (chưa bao giờ đặt mật khẩu, F1-15) bấm "Quên mật khẩu" thì xử lý thế nào?~~ **Đã trả lời 2026-08-24 — qua hỏi trực tiếp chủ dự án:** đúng như chủ dự án chỉ ra — tài khoản chưa từng có mật khẩu thì không có gì để "quên", nên **từ chối tạo mật khẩu mới qua luồng này**; hệ thống gửi email báo tài khoản đang đăng nhập bằng GitHub/Google, hướng dẫn quay lại đúng provider đó. Đã ghi vào `identity.md` (mục F1-17), thêm Given-When-Then vào `US-A1-01`. | — | — | (đã đóng) |
 
 ## 6. Ngoài phạm vi file này
 
@@ -101,8 +101,8 @@ năng ở mức module chưa nêu, phát hiện khi đối chiếu prototype:
 
 ## 7. Tham chiếu
 
-- `01-rd/req/req.md:17-96` — F1-01 tới F1-17.
-- `01-rd/req/user_stories.md:29-48` — `US-A1-01`.
+- `01-rd/req/identity.md` — F1-01 tới F1-17.
+- `01-rd/req/user_stories/a1_student.md` — `US-A1-01`.
 - `01-rd/overview/system_survey.md:469` — dòng `auth` trong bảng màn mục 7.1.
 - `09-layoutBase/Đăng nhập & Đăng ký.dc.html` — prototype đã sửa sạch (`06-plan/PROTOTYPE_DEBT.md` mục 6.1).
 - `.nexa/control/decision-registry.md` — `DEC-2026-0824-dark-light-theme`, `DEC-2026-0824-i18n-vi-en`.

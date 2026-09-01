@@ -1,0 +1,46 @@
+# AlgoPrep backend - cau hinh nen (moi profile deu thua huong).
+# Ha tang local: 05-coding/docker-compose.yml. Bien moi truong: 05-coding/.env.example
+spring:
+  application:
+    name: algoprep
+
+  threads:
+    virtual:
+      # DEC-2026-0901-backend-base-architecture diem 5.
+      #
+      # MOT DONG NAY LA LY DO DUY NHAT CHON JAVA 21 THAY VI 17
+      # (DEC-2026-0820-stack-versions muc rationale; 01-rd/overview/overview.md muc 1.D).
+      # 01-rd/req/nfr.md muc A: cho I/O la diem nghen cua ca he thong - goi go-judge dong bo,
+      # giu WebSocket cho tung bai nop dang cham, giu SSE suot mot phien phong van AI.
+      #
+      # Xoa dong nay thi app VAN CHAY va `mvnw verify` VAN XANH, chi co toan bo quyet dinh stack
+      # bi vo hieu trong im lang cho toi luc do k6. Vi vay no co test khang dinh:
+      # VirtualThreadsEnabledTest.
+      enabled: true
+
+server:
+  port: 8080
+  # Tra loi 404 co cau truc thay vi trang loi HTML mac dinh cua Tomcat.
+  error:
+    whitelabel:
+      enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        # Chi mo dung hai endpoint. Mo `*` la de lo `/actuator/env` va `/actuator/heapdump`.
+        include: health,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized
+      probes:
+        enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+logging:
+  level:
+    root: INFO
+    com.algoprep: DEBUG

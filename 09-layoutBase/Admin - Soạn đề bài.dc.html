@@ -269,18 +269,17 @@
                   </div>
                 </sc-if>
 
-                <div style="display: grid; grid-template-columns: 30px 62px minmax(120px,1fr) minmax(120px,1fr) 96px 82px 96px 34px; gap: 10px; padding: 0 8px 8px; font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted2); border-bottom: 1px solid var(--border2); min-width: 660px;">
-                  <span></span><span>#</span><span>Đầu vào</span><span>Kết quả mong đợi</span><span>Hiển thị</span><span style="text-align: right;">Điểm</span><span style="text-align: right;">Chạy thử</span><span></span>
+                <div style="display: grid; grid-template-columns: 30px 62px minmax(120px,1fr) minmax(120px,1fr) 96px 96px 34px; gap: 10px; padding: 0 8px 8px; font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted2); border-bottom: 1px solid var(--border2); min-width: 660px;">
+                  <span></span><span>#</span><span>Đầu vào</span><span>Kết quả mong đợi</span><span>Hiển thị</span><span style="text-align: right;">Chạy thử</span><span></span>
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 2px; padding-bottom: 6px; min-width: 660px;">
                   <sc-for list="{{ testcases }}" as="tc" hint-placeholder-count="6">
-                    <div draggable="{{ true }}" onDragStart="{{ tc.onDragStart }}" onDragOver="{{ tc.onDragOver }}" onDragEnd="{{ tc.onDragEnd }}" onDrop="{{ tc.onDragEnd }}" style="display: grid; grid-template-columns: 30px 62px minmax(120px,1fr) minmax(120px,1fr) 96px 82px 96px 34px; gap: 10px; align-items: center; padding: 9px 8px; border-radius: 12px; font-size: 13px; background: {{ tc.rowBg }}; border: 1px solid {{ tc.rowBorder }}; opacity: {{ tc.opacity }};" style-hover="background: var(--row-hover);">
+                    <div draggable="{{ true }}" onDragStart="{{ tc.onDragStart }}" onDragOver="{{ tc.onDragOver }}" onDragEnd="{{ tc.onDragEnd }}" onDrop="{{ tc.onDragEnd }}" style="display: grid; grid-template-columns: 30px 62px minmax(120px,1fr) minmax(120px,1fr) 96px 96px 34px; gap: 10px; align-items: center; padding: 9px 8px; border-radius: 12px; font-size: 13px; background: {{ tc.rowBg }}; border: 1px solid {{ tc.rowBorder }}; opacity: {{ tc.opacity }};" style-hover="background: var(--row-hover);">
                       <span title="Kéo để sắp lại" style="display: flex; align-items: center; justify-content: center; height: 24px; border-radius: 7px; color: var(--muted2); cursor: grab; font-size: 13px; letter-spacing: 1px;">⠿</span>
                       <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted);">{{ tc.no }}</span>
                       <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ tc.input }}</span>
                       <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ tc.expected }}</span>
                       <button onClick="{{ tc.toggleVis }}" style="height: 24px; padding: 0 9px; border: 1px solid var(--border2); border-radius: 999px; background: {{ tc.visBg }}; font-family: inherit; font-size: 11.5px; font-weight: 600; color: {{ tc.visFg }}; cursor: pointer;">{{ tc.vis }}</button>
-                      <span style="text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--muted);">{{ tc.weight }}</span>
                       <span style="display: flex; align-items: center; justify-content: flex-end; gap: 6px; font-size: 12.5px; font-weight: 600; color: {{ tc.resFg }};">{{ tc.res }}</span>
                       <button onClick="{{ tc.remove }}" title="Xoá testcase" style="width: 24px; height: 24px; border-radius: 7px; border: 1px solid var(--border2); background: transparent; font-family: inherit; font-size: 11px; color: var(--muted2); cursor: pointer; padding: 0;" style-hover="color: {{ dangerFg }};">✕</button>
                     </div>
@@ -290,41 +289,11 @@
                   <button onClick="{{ addTestcase }}" style="height: 32px; padding: 0 13px; border: 1px dashed var(--border2); border-radius: 11px; background: transparent; font-family: inherit; font-size: 12.5px; font-weight: 600; color: var(--muted); cursor: pointer;" style-hover="color: var(--text); background: var(--glass2);">+ Thêm testcase</button>
                 </div>
               </div>
-
-              <div style="padding: 18px 20px; background: var(--glass); backdrop-filter: blur(42px) saturate(190%); -webkit-backdrop-filter: blur(42px) saturate(190%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
-                <div style="font-size: 14.5px; font-weight: 700; margin-bottom: 3px;">Chấm điểm từng phần</div>
-                <div style="font-size: 12.5px; color: var(--muted); margin-bottom: 14px;">Tổng trọng số phải bằng 100 để bài được xuất bản</div>
-                <div style="display: flex; align-items: center; gap: 12px;">
-                  <div style="flex: 1 1 auto; height: 8px; border-radius: 999px; background: var(--track); overflow: hidden;">
-                    <div style="width: {{ weightPct }}; height: 100%; border-radius: 999px; background: {{ weightBar }};"></div>
-                  </div>
-                  <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; color: {{ weightFg }}; white-space: nowrap;">{{ weightLabel }}</span>
-                </div>
-              </div>
             </div>
           </sc-if>
 
           <sc-if value="{{ isHints }}" hint-placeholder-val="{{ false }}">
             <div style="display: flex; flex-direction: column; gap: 14px;">
-              <div style="padding: 18px 20px; background: var(--glass); backdrop-filter: blur(42px) saturate(190%); -webkit-backdrop-filter: blur(42px) saturate(190%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
-                <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 4px;">
-                  <div style="font-size: 14.5px; font-weight: 700;">Gợi ý theo cấp độ</div>
-                  <button style="height: 32px; padding: 0 13px; border: 1px solid var(--border2); border-radius: 11px; background: var(--glass2); font-family: inherit; font-size: 12.5px; font-weight: 600; color: var(--text); cursor: pointer; white-space: nowrap;">Nhờ AI soạn nháp</button>
-                </div>
-                <div style="font-size: 12.5px; color: var(--muted); margin-bottom: 16px;">Mở dần khi người học bế tắc, mỗi lần mở trừ điểm gợi ý</div>
-                <div style="display: flex; flex-direction: column; gap: 11px;">
-                  <sc-for list="{{ hints }}" as="h" hint-placeholder-count="3">
-                    <div style="padding: 13px 15px; border-radius: 15px; background: var(--glass2); border: 1px solid var(--border2);">
-                      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 9px;">
-                        <span style="display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 999px; font-size: 11.5px; font-weight: 600; background: {{ h.tagBg }}; color: {{ h.tagFg }};">{{ h.level }}</span>
-                        <span style="font-size: 12.5px; color: var(--muted2); margin-left: auto;">{{ h.cost }}</span>
-                      </div>
-                      <textarea value="{{ h.text }}" style="width: 100%; min-height: 64px; padding: 11px; border-radius: 11px; border: 1px solid var(--border2); background: var(--glass3); font-family: inherit; font-size: 13px; line-height: 1.65; color: var(--text); resize: vertical;"></textarea>
-                    </div>
-                  </sc-for>
-                </div>
-              </div>
-
               <div style="padding: 18px 20px; background: var(--glass); backdrop-filter: blur(42px) saturate(190%); -webkit-backdrop-filter: blur(42px) saturate(190%); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 1px 0 var(--inset) inset, var(--shadow);">
                 <div style="font-size: 14.5px; font-weight: 700; margin-bottom: 3px;">Chỉ dẫn cho trợ lý AI</div>
                 <div style="font-size: 12.5px; color: var(--muted); margin-bottom: 14px;">Ngữ cảnh riêng của bài này, nối vào prompt hệ thống ở màn Cấu hình AI</div>
@@ -416,14 +385,14 @@ class Component extends DCLogic {
     constraints: '1 <= s.length, t.length <= 10^5\ns và t chỉ gồm chữ cái tiếng Anh in hoa và in thường',
     solution: 'from collections import Counter\n\ndef min_window(s: str, t: str) -> str:\n    if not t or not s:\n        return ""\n    need = Counter(t)\n    missing = len(t)\n    best = (0, 0)\n    left = 0\n    for right, ch in enumerate(s, 1):\n        if need[ch] > 0:\n            missing -= 1\n        need[ch] -= 1\n        if missing:\n            continue\n        while need[s[left]] < 0:\n            need[s[left]] += 1\n            left += 1\n        if not best[1] or right - left < best[1] - best[0]:\n            best = (left, right)\n    return s[best[0]:best[1]]',
     tcs: [
-      ['s = "ADOBECODEBANC", t = "ABC"', '"BANC"', 'Công khai', 10],
-      ['s = "a", t = "a"', '"a"', 'Công khai', 10],
-      ['s = "a", t = "aa"', '""', 'Công khai', 10],
-      ['s = "ab", t = "b"', '"b"', 'Ẩn', 10],
-      ['s = "aa", t = "aa"', '"aa"', 'Ẩn', 10],
-      ['s = "cabwefgewcwaefgcf", t = "cae"', '"cwae"', 'Ẩn', 15],
-      ['s 100k ký tự, t 26 ký tự phân biệt', '"…" (dài 5.184)', 'Ẩn', 20],
-      ['s 100k ký tự lặp chu kỳ, t 12 ký tự', '"…" (dài 34)', 'Ẩn', 15],
+      ['s = "ADOBECODEBANC", t = "ABC"', '"BANC"', 'Công khai'],
+      ['s = "a", t = "a"', '"a"', 'Công khai'],
+      ['s = "a", t = "aa"', '""', 'Công khai'],
+      ['s = "ab", t = "b"', '"b"', 'Ẩn'],
+      ['s = "aa", t = "aa"', '"aa"', 'Ẩn'],
+      ['s = "cabwefgewcwaefgcf", t = "cae"', '"cwae"', 'Ẩn'],
+      ['s 100k ký tự, t 26 ký tự phân biệt', '"…" (dài 5.184)', 'Ẩn'],
+      ['s 100k ký tự lặp chu kỳ, t 12 ký tự', '"…" (dài 34)', 'Ẩn'],
     ],
     examples: [
       ['s = "ADOBECODEBANC", t = "ABC"', '"BANC"', 'Cửa sổ nhỏ nhất "BANC" chứa đủ A, B và C của t.'],
@@ -584,7 +553,7 @@ class Component extends DCLogic {
 
     const res = s.runResult;
     const testcases = s.tcs.map((tc, i) => {
-      const [input, expected, vis, weight] = tc;
+      const [input, expected, vis] = tc;
       const pub = vis === 'Công khai';
       let r = '—', rFg = 'var(--muted2)';
       if (s.running) { r = 'đang chạy'; rFg = 'var(--muted)'; }
@@ -593,7 +562,7 @@ class Component extends DCLogic {
         else { r = '✓ Đúng'; rFg = ok; }
       }
       return {
-        no: '#' + (i + 1), input, expected, weight: weight + '%',
+        no: '#' + (i + 1), input, expected,
         vis: pub ? 'Công khai' : 'Ẩn',
         visBg: pub ? (dark ? 'rgba(127,208,255,0.14)' : 'rgba(63,123,232,0.1)') : 'transparent',
         visFg: pub ? blue : 'var(--muted2)',
@@ -623,7 +592,6 @@ class Component extends DCLogic {
       };
     });
 
-    const totalWeight = s.tcs.reduce((a, r) => a + r[3], 0);
     const pubCount = s.tcs.filter(r => r[2] === 'Công khai').length;
 
     const examples = s.examples.map(([input, output, note], i) => ({
@@ -631,15 +599,6 @@ class Component extends DCLogic {
       remove: () => this.setState(st => ({ examples: st.examples.filter((_, j) => j !== i) })),
     }));
 
-    const hints = [
-      ['Gợi ý 1', 'Không trừ điểm', 'Hãy nghĩ về cửa sổ trượt: mở rộng cạnh phải cho tới khi cửa sổ đủ điều kiện, rồi co cạnh trái lại.', blue],
-      ['Gợi ý 2', '−5 điểm', 'Bạn cần biết khi nào cửa sổ đã đủ. Thử đếm số ký tự còn thiếu thay vì so sánh hai bảng tần số mỗi bước.', warn],
-      ['Gợi ý 3', '−12 điểm', 'Dùng Counter cho t và một biến missing. Mỗi ký tự vào và ra cửa sổ đúng một lần, cho độ phức tạp O(|s| + |t|).', neg],
-    ].map(([level, cost, text, fg]) => ({
-      level, cost, text,
-      tagBg: dark ? 'rgba(150,190,255,0.12)' : 'rgba(63,123,232,0.1)',
-      tagFg: fg,
-    }));
 
     const flagDefs = [
       ['noCode', 'Không đưa mã hoàn chỉnh'],
@@ -663,7 +622,6 @@ class Component extends DCLogic {
 
     const checkDefs = [
       [s.tcs.length >= 8, 'Có ít nhất 8 testcase'],
-      [totalWeight === 100, 'Tổng trọng số bằng 100 (hiện ' + totalWeight + ')'],
       [pubCount >= 2, 'Có ít nhất 2 testcase công khai'],
       [true, 'Đáp án mẫu chạy đúng mọi testcase'],
       [s.examples.length >= 2, 'Có ít nhất 2 ví dụ mẫu'],
@@ -677,7 +635,7 @@ class Component extends DCLogic {
     }));
 
     return {
-      tabs, testcases, examples, hints, aiFlags, checklist,
+      tabs, testcases, examples, aiFlags, checklist,
       isContent: s.tab === 'content',
       isExamples: s.tab === 'examples',
       isTestcase: s.tab === 'testcase',
@@ -705,7 +663,7 @@ class Component extends DCLogic {
       ],
       addExample: () => this.setState(st => ({ examples: st.examples.concat([['', '', '']]) })),
       addTestcase: () => this.setState(st => ({ tcs: st.tcs.concat([['', '', 'Ẩn', 0]]), runResult: null })),
-      tcSummary: s.tcs.length + ' testcase · ' + pubCount + ' công khai · tổng trọng số ' + totalWeight,
+      tcSummary: s.tcs.length + ' testcase · ' + pubCount + ' công khai',
       runAll: () => this.runTests(),
       runLabel: s.running ? 'Đang chạy…' : 'Chạy với đáp án mẫu',
       hasRunResult: !!res,
@@ -715,10 +673,6 @@ class Component extends DCLogic {
       runBannerBg: res && res.failIdx >= 0 ? (dark ? 'rgba(255,138,138,0.1)' : 'rgba(200,64,70,0.07)') : (dark ? 'rgba(126,232,190,0.1)' : 'rgba(23,181,126,0.08)'),
       runBannerBorder: res && res.failIdx >= 0 ? (dark ? 'rgba(255,138,138,0.28)' : 'rgba(200,64,70,0.2)') : (dark ? 'rgba(126,232,190,0.28)' : 'rgba(23,181,126,0.22)'),
       clearRun: () => this.setState({ runResult: null }),
-      weightPct: Math.min(100, totalWeight) + '%',
-      weightLabel: totalWeight + ' / 100',
-      weightFg: totalWeight === 100 ? ok : warn,
-      weightBar: totalWeight === 100 ? 'linear-gradient(90deg,#17B57E,#64C8C0)' : 'linear-gradient(90deg,#F5B93F,#F5762E)',
       aiBrief: 'Bài này rèn kỹ thuật cửa sổ trượt có điều kiện. Nếu người học đề xuất duyệt mọi cửa sổ con, hãy hỏi họ làm sao biết một cửa sổ đã đủ ký tự mà không kiểm tra lại từ đầu. Không nhắc trực tiếp tới Counter hay biến đếm thiếu trước lượt hỏi thứ ba.',
       dangerFg: neg,
       saveHint: s.status === 'Đã xuất bản' ? 'Đang hiển thị cho người học · lưu nháp tự động 2 phút trước' : 'Bản nháp · chưa hiển thị cho người học',

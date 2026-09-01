@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  algoprep-bootstrap — diem khoi chay va noi lap day dien.
+
+  KHONG phai mot Bounded Context, KHONG so huu schema (DEC-2026-0820-architecture-baseline).
+  Ba viec cua module nay:
+    1. @SpringBootApplication va cau hinh toan cuc (bao mat, xu ly loi, bean dung chung).
+    2. Lap adapter cho cac cong ra dung chung ma algoprep-common khai.
+    3. Chay bo test kiem ranh gioi module (ArchUnit) — day la CHO DUY NHAT thay duoc ca 8 module
+       cung luc, nen cung la cho duy nhat kiem duoc ranh gioi giua chung.
+
+  Phu thuoc TAT CA module (01-rd/system/backend_architecture.md muc 2.A luat 2), va khong ai
+  duoc phu thuoc nguoc lai — ArchUnit chan that.
+
+  Dat logic nghiep vu vao day la cach mot modular monolith am tham tro thanh monolith phang.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.algoprep</groupId>
+    <artifactId>algoprep-backend</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>algoprep-bootstrap</artifactId>
+  <name>algoprep-bootstrap</name>
+  <description>Diem khoi chay Spring Boot + test kiem ranh gioi module</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.algoprep</groupId>
+      <artifactId>algoprep-common</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.algoprep</groupId>
+      <artifactId>algoprep-identity</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.algoprep</groupId>
+      <artifactId>algoprep-problem-bank</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.algoprep</groupId>
+      <artifactId>algoprep-harness</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.algoprep</groupId>
+      <artifactId>algoprep-judge</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.algoprep</groupId>
+      <artifactId>algoprep-ai-review</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.algoprep</groupId>
+      <artifactId>algoprep-interview-bank</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+    <!-- Prometheus scrape endpoint. README.md muc 5 chot Prometheus + Grafana lam bo giam sat. -->
+
+    <!-- Ha tang. Task #10 cua ke hoach: chi CAU HINH va health indicator, CHUA Entity JPA nao -
+         bang/cot/khoa/index thuoc 02-bd/database/<module>.md, tai lieu chua ton tai. -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-redis</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-amqp</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-registry-prometheus</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
+    <!-- Cong cu kiem ranh gioi module. DEC-2026-0901-backend-base-architecture diem 1:
+         ArchUnit, KHONG dung Spring Modulith. Test scope, khong co dau vet runtime. -->
+    <dependency>
+      <groupId>com.tngtech.archunit</groupId>
+      <artifactId>archunit-junit5</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+</project>

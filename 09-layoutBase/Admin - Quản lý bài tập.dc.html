@@ -156,7 +156,6 @@
             <button onClick="{{ t.onClick }}" title="{{ t.title }}" style="width: 30px; height: 28px; display: flex; align-items: center; justify-content: center; border: none; border-radius: 9px; font-family: inherit; font-size: 13px; cursor: pointer; background: {{ t.bg }}; color: {{ t.fg }};">{{ t.icon }}</button>
           </sc-for>
         </div>
-        <button style="height: 34px; padding: 0 13px; border: 1px solid var(--border2); border-radius: 11px; background: var(--glass2); font-family: inherit; font-size: 13px; font-weight: 600; color: var(--text); cursor: pointer; white-space: nowrap; flex-shrink: 0;">Nhập CSV</button>
         <a href="./Admin - Soạn đề bài.dc.html" style="display: flex; align-items: center; height: 34px; padding: 0 15px; border-radius: 11px; background: var(--cta-bg); font-size: 13px; font-weight: 600; color: var(--cta-fg); white-space: nowrap; box-shadow: var(--cta-shadow); flex-shrink: 0;" style-hover="color: var(--cta-fg);">Bài tập mới</a>
       </div>
 
@@ -305,12 +304,12 @@
   <sc-if value="{{ confirmOpen }}" hint-placeholder-val="{{ false }}">
     <div style="position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; padding: 24px; background: var(--scrim); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);">
       <div style="width: 100%; max-width: 420px; padding: 22px 24px; border-radius: 22px; background: var(--glass3); backdrop-filter: blur(42px) saturate(190%); -webkit-backdrop-filter: blur(42px) saturate(190%); border: 1px solid var(--border); box-shadow: 0 1px 0 var(--inset) inset, var(--shadow-lg);">
-        <div style="font-size: 16.5px; font-weight: 700; margin-bottom: 8px;">Xoá bài tập?</div>
+        <div style="font-size: 16.5px; font-weight: 700; margin-bottom: 8px;">Ẩn bài tập?</div>
         <div style="font-size: 13.5px; color: var(--muted); text-wrap: pretty; margin-bottom: 8px;">{{ confirmBody }}</div>
-        <div style="font-size: 12.5px; color: var(--muted2); text-wrap: pretty; margin-bottom: 20px;">Toàn bộ testcase và lượt nộp liên quan sẽ bị ẩn khỏi trang người học. Hành động không thể hoàn tác.</div>
+        <div style="font-size: 12.5px; color: var(--muted2); text-wrap: pretty; margin-bottom: 20px;">Bài sẽ bị ẩn khỏi trang người học (đánh dấu `deleted`), không xoá dữ liệu testcase/lượt nộp liên quan — có thể khôi phục lại sau.</div>
         <div style="display: flex; gap: 10px; justify-content: flex-end;">
           <button onClick="{{ closeConfirm }}" style="height: 36px; padding: 0 16px; border: 1px solid var(--border2); border-radius: 11px; background: var(--glass2); font-family: inherit; font-size: 13px; font-weight: 600; color: var(--text); cursor: pointer;">Huỷ</button>
-          <button onClick="{{ doDelete }}" style="height: 36px; padding: 0 16px; border: none; border-radius: 11px; background: {{ dangerBg }}; font-family: inherit; font-size: 13px; font-weight: 600; color: #FFFFFF; cursor: pointer;">Xoá bài</button>
+          <button onClick="{{ doDelete }}" style="height: 36px; padding: 0 16px; border: none; border-radius: 11px; background: {{ dangerBg }}; font-family: inherit; font-size: 13px; font-weight: 600; color: #FFFFFF; cursor: pointer;">Ẩn bài</button>
         </div>
       </div>
     </div>

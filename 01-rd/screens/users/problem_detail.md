@@ -5,36 +5,37 @@
 > `judge-orchestration` (+ `ai-review` ở điểm ra sau `Accepted`)
 > [SoT: .nexa/control/dependency-map.md mục 5 — dòng `problem_detail`]. Actor: A1.
 >
-> **Màn nặng nhất trong 30 màn** — chạm bốn Bounded Context [SoT: 01-rd/overview/system_survey.md:495].
+> **Màn nặng nhất trong 31 màn** — chạm bốn Bounded Context [SoT: 01-rd/overview/system_survey.md:495].
 > Đối chiếu prototype: `09-layoutBase/Workspace giải bài.dc.html`.
 >
-> File này mô tả **hành vi và UX ở mức yêu cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/req.md`
-> (mục F2, F3, F4) và `01-rd/req/user_stories.md` (`US-A1-03`), chỉ trỏ tới và bổ sung phần đặc thù của màn.
+> File này mô tả **hành vi và UX ở mức yêu cầu** — không lặp lại đặc tả chức năng đã có ở
+> `01-rd/req/problem-bank.md` (mục F2), `01-rd/req/harness.md` (mục F3), `01-rd/req/judge-orchestration.md`
+> (mục F4) và `01-rd/req/user_stories/a1_student.md` (`US-A1-03`), chỉ trỏ tới và bổ sung phần đặc thù của màn.
 >
 > **Quan trọng — đã sửa một quyết định phạm vi trong lúc viết file này:** bản trước của F3-13 coi mô hình
 > Standard I/O là "đường lùi" do giảng viên chọn cố định theo từng bài. Đối chiếu prototype thật (mục 4 bên
 > dưới) cho thấy học viên **tự do chọn mô hình mỗi lượt làm bài**, khớp đúng `README.md` mục 5 dòng 179
 > ("Hỗ trợ cả 2 mô hình") hơn cách hiểu cũ. Đã chốt qua hỏi trực tiếp chủ dự án, ghi
-> `DEC-2026-0824-dual-submission-model-per-problem`, sửa `req.md` (F2-03, F3-13), `system_survey.md`,
-> `user_stories.md` (`US-A1-03`), và `02-bd/packages/harness/architecture.md`.
+> `DEC-2026-0824-dual-submission-model-per-problem`, sửa `problem-bank.md` (F2-03), `harness.md` (F3-13),
+> `system_survey.md`, `user_stories/a1_student.md` (`US-A1-03`), và `02-bd/packages/harness/architecture.md`.
 
 ## 1. Mục đích màn hình
 
 Nơi học viên đọc đề, viết mã (hoặc tải file mã nguồn lên), chạy thử với testcase mẫu, và nộp bài để chấm
 với testcase ẩn — cho cả hai mô hình nộp bài song song
-[SoT: 01-rd/req/req.md:159-199 — F3-01 tới F3-13; 01-rd/req/req.md:207-212 — F4-01, F4-02].
+[SoT: 01-rd/req/harness.md — F3-01 tới F3-13; 01-rd/req/judge-orchestration.md — F4-01, F4-02].
 
 ## 2. Nguồn yêu cầu (không lặp lại — chỉ trỏ)
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Đặc tả bài toán cho cả hai mô hình (chữ ký hàm + định dạng stdio) | F2-03 | `01-rd/req/req.md:109-117` |
-| Chọn mô hình nộp bài tự do mỗi lượt làm; ẩn Bọc hàm nếu kiểu dữ liệu vượt lược đồ | F3-13 | `01-rd/req/req.md:179-198` |
-| Sinh mã harness theo ngôn ngữ và mô hình (đọc input, gọi hàm, in kết quả) | F3-02→F3-04 | `01-rd/req/req.md:161-162` |
-| Ánh xạ lỗi biên dịch về đúng dòng người dùng; che giấu lỗi harness | F3-11, F3-12 | `01-rd/req/req.md:168-169` |
-| Nộp bài trả `submissionId` ngay, không chờ; hoặc tải file mã nguồn lên | F4-01 | `01-rd/req/req.md:207-211` |
-| Chạy thử với testcase Sample, không ghi nhận tiến độ | F4-02 | `01-rd/req/req.md:212` |
-| Given-When-Then đầy đủ | — | `01-rd/req/user_stories.md:65-77` (`US-A1-03`) |
+| Đặc tả bài toán cho cả hai mô hình (chữ ký hàm + định dạng stdio) | F2-03 | `01-rd/req/problem-bank.md` — F2-03 |
+| Chọn mô hình nộp bài tự do mỗi lượt làm; ẩn Bọc hàm nếu kiểu dữ liệu vượt lược đồ | F3-13 | `01-rd/req/harness.md` — F3-13 |
+| Sinh mã harness theo ngôn ngữ và mô hình (đọc input, gọi hàm, in kết quả) | F3-02→F3-04 | `01-rd/req/harness.md` — F3-02→F3-04 |
+| Ánh xạ lỗi biên dịch về đúng dòng người dùng; che giấu lỗi harness | F3-11, F3-12 | `01-rd/req/harness.md` — F3-11, F3-12 |
+| Nộp bài trả `submissionId` ngay, không chờ; hoặc tải file mã nguồn lên | F4-01 | `01-rd/req/judge-orchestration.md` — F4-01 |
+| Chạy thử với testcase Sample, không ghi nhận tiến độ | F4-02 | `01-rd/req/judge-orchestration.md` — F4-02 |
+| Given-When-Then đầy đủ | — | `01-rd/req/user_stories/a1_student.md` (`US-A1-03`) |
 
 ## 3. Trạng thái và cấu trúc màn (screen states)
 
@@ -110,8 +111,8 @@ với testcase ẩn — cho cả hai mô hình nộp bài song song
 
 ## 7. Tham chiếu
 
-- `01-rd/req/req.md:107-117, 153-199, 200-212` — F2-03, F3-01 tới F3-13, F4-01, F4-02.
-- `01-rd/req/user_stories.md:65-77` — `US-A1-03`.
+- `01-rd/req/problem-bank.md` — F2-03. `01-rd/req/harness.md` — F3-01 tới F3-13. `01-rd/req/judge-orchestration.md` — F4-01, F4-02.
+- `01-rd/req/user_stories/a1_student.md` — `US-A1-03`.
 - `01-rd/overview/system_survey.md:475, 495, 498` — dòng `problem_detail`, ghi chú "màn nặng nhất", ghi chú
   không gộp với `submission_result`.
 - `09-layoutBase/Workspace giải bài.dc.html` — prototype.

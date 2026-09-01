@@ -38,7 +38,7 @@ khu vực, cùng render một view (`ProblemManagementView`, `ProblemAuthoringVi
 `InterviewQuestionManagementView`) — theo `DEC-2026-0825-shared-content-authoring-screens`. Đây
 KHÔNG phải trùng lặp code: `ROLE_BY_AREA` chỉ gác được "khu vực nào cần role gì", còn "A2 chỉ thấy
 bài của mình" là phạm vi dữ liệu, việc của tầng API/backend theo ma trận phân quyền
-(`PROBLEM_AUTHORING`/`INTERVIEW_BANK_MANAGEMENT`, `req.md:64-67`), chưa hiện thực ở base.
+(`PROBLEM_AUTHORING`/`INTERVIEW_BANK_MANAGEMENT`, `01-rd/req/identity.md` — F1-12), chưa hiện thực ở base.
 
 ### Ánh xạ slug tài liệu ↔ URL
 

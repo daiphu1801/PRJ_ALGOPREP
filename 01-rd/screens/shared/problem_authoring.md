@@ -5,7 +5,7 @@
 > instruction, kết thúc Câu hỏi mở Q1 cũ): mount ở cả `/instructor/problems/[id]` và `/admin/problems/[id]`
 > (tiền tố theo `DEC-2026-0825-frontend-base-architecture`), cùng một view/BD/DD, A2 soạn/sửa bài của
 > mình, A3 quản toàn bộ kho — cơ chế gác cửa có sẵn qua `PROBLEM_AUTHORING`/`TESTCASE_MANAGEMENT`
-> (`req.md:64`, F1-10 tới F1-12). Ghi quyết định: `DEC-2026-0825-shared-content-authoring-screens`. File
+> (`01-rd/req/identity.md` — F1-10 tới F1-12). Ghi quyết định: `DEC-2026-0825-shared-content-authoring-screens`. File
 > này đã chuyển từ `01-rd/screens/teacher/` sang `01-rd/screens/shared/` cùng ngày.
 >
 > **Đối chiếu prototype: `09-layoutBase/Admin - Soạn đề bài.dc.html` (736 dòng).**
@@ -24,31 +24,31 @@
 > [SoT: 09-layoutBase/Admin - Soạn đề bài.dc.html:456, 463] và có nút quay lại
 > `./Admin - Quản lý bài tập.dc.html` [SoT: 09-layoutBase/Admin - Soạn đề bài.dc.html:142].
 >
-> File này mô tả **hành vi và UX ở mức yêu cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/req.md`
+> File này mô tả **hành vi và UX ở mức yêu cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/problem-bank.md`
 > mục F2, chỉ trỏ tới và bổ sung phần đặc thù của màn.
 
 ## 1. Mục đích màn hình
 
 Nơi người soạn nội dung tạo và sửa một bài toán trọn vẹn trong một màn: đề bài Markdown, phân loại độ khó và
 chủ đề, ràng buộc/giới hạn tài nguyên, ví dụ mẫu, đáp án mẫu, bộ testcase và các gợi ý kèm theo — rồi xuất
-bản cho người học [SoT: 01-rd/req/req.md:138-139]. Đây là màn "thượng nguồn" của toàn hệ thống: mọi thứ F3
-(sinh mã khung) và F4 (chấm bài) làm được đều phụ thuộc dữ liệu khai ở đây [SoT: 01-rd/req/req.md:144-147].
+bản cho người học [SoT: 01-rd/req/problem-bank.md — F2-01]. Đây là màn "thượng nguồn" của toàn hệ thống: mọi thứ F3
+(sinh mã khung) và F4 (chấm bài) làm được đều phụ thuộc dữ liệu khai ở đây [SoT: 01-rd/req/problem-bank.md — F2-03].
 
 ## 2. Nguồn yêu cầu (không lặp lại — chỉ trỏ)
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Soạn đề bài Markdown kèm LaTeX | F2-01 | `01-rd/req/req.md:139` |
-| Phân loại theo độ khó và chủ đề | F2-02 | `01-rd/req/req.md:139` |
-| Khai đặc tả bài toán cho cả hai mô hình nộp bài (chữ ký hàm theo ngôn ngữ + định dạng I/O chuẩn) | F2-03 | `01-rd/req/req.md:140-150` |
-| Chiến lược so khớp kết quả `EXACT`/`TRIMMED`/`EPSILON`/`UNORDERED_SET` | F2-04 | `01-rd/req/req.md:151-152` |
-| Testcase Sample (công khai, dùng cho Chạy thử) và Hidden (ẩn, dùng cho Nộp bài) | F2-05, F2-06 | `01-rd/req/req.md:154` |
-| Tải lên bộ testcase theo lô, bộ lớn lưu MinIO | F2-07 | `01-rd/req/req.md:155` |
-| Phiên bản hoá bộ testcase cho Re-judge | F2-09 | `01-rd/req/req.md:159` |
-| Giới hạn thời gian/bộ nhớ theo bài kèm hệ số nhân theo ngôn ngữ | F2-10 | `01-rd/req/req.md:160-162` |
-| AI sinh testcase: AI chỉ sinh input, output lấy từ chạy thật Đáp án mẫu qua go-judge; testcase ở trạng thái nháp chờ xác nhận | F2-14 | `01-rd/req/req.md:182-195` |
-| Given-When-Then liên quan | — | `01-rd/req/user_stories.md:203-214` (`US-A2-01`), `216-228` (`US-A2-02`), `251-264` (`US-A2-05`) |
-| Gác quyền: `PROBLEM_AUTHORING` và `TESTCASE_MANAGEMENT` là hai `FUNCTION` trong ma trận phân quyền | F1-10 tới F1-12 | `01-rd/req/req.md:55-68` |
+| Soạn đề bài Markdown kèm LaTeX | F2-01 | `01-rd/req/problem-bank.md` — F2-01 |
+| Phân loại theo độ khó và chủ đề | F2-02 | `01-rd/req/problem-bank.md` — F2-02 |
+| Khai đặc tả bài toán cho cả hai mô hình nộp bài (chữ ký hàm theo ngôn ngữ + định dạng I/O chuẩn) | F2-03 | `01-rd/req/problem-bank.md` — F2-03 |
+| Chiến lược so khớp kết quả `EXACT`/`TRIMMED`/`EPSILON`/`UNORDERED_SET` | F2-04 | `01-rd/req/problem-bank.md` — F2-04 |
+| Testcase Sample (công khai, dùng cho Chạy thử) và Hidden (ẩn, dùng cho Nộp bài) | F2-05, F2-06 | `01-rd/req/problem-bank.md` — F2-05, F2-06 |
+| Tải lên bộ testcase theo lô, bộ lớn lưu MinIO | F2-07 | `01-rd/req/problem-bank.md` — F2-07 |
+| Phiên bản hoá bộ testcase cho Re-judge | F2-09 | `01-rd/req/problem-bank.md` — F2-09 |
+| Giới hạn thời gian/bộ nhớ theo bài kèm hệ số nhân theo ngôn ngữ | F2-10 | `01-rd/req/problem-bank.md` — F2-10 |
+| AI sinh testcase: AI chỉ sinh input, output lấy từ chạy thật Đáp án mẫu qua go-judge; testcase ở trạng thái nháp chờ xác nhận | F2-14 | `01-rd/req/problem-bank.md` — F2-14 |
+| Given-When-Then liên quan | — | `01-rd/req/user_stories/a2_instructor.md` (`US-A2-01`, `US-A2-02`, `US-A2-05`) |
+| Gác quyền: `PROBLEM_AUTHORING` và `TESTCASE_MANAGEMENT` là hai `FUNCTION` trong ma trận phân quyền | F1-10 tới F1-12 | `01-rd/req/identity.md` — F1-10 tới F1-12 |
 
 ## 3. Trạng thái và cấu trúc màn (screen states)
 
@@ -79,7 +79,7 @@ Tab và số đếm: "Nội dung đề" · "Ví dụ mẫu" (theo số ví dụ)
 - **"Nội dung đề · Markdown"** kèm bộ đếm ký tự (dòng 174-177) — F2-01. **Cảnh báo:** prototype chỉ có ô
   textarea thuần, **không có vùng xem trước Markdown và không có bất cứ dấu vết nào của LaTeX**
   (grep `LaTeX` trên toàn file: không có kết quả), trong khi F2-01 yêu cầu "Markdown kèm công thức LaTeX"
-  [SoT: 01-rd/req/req.md:139]. Cần bổ sung khi dựng UI thật — xem Q7.
+  [SoT: 01-rd/req/problem-bank.md — F2-01]. Cần bổ sung khi dựng UI thật — xem Q7.
 - **"Ràng buộc và giới hạn"** (dòng 181-193, giá trị mẫu dòng 693-698) — 4 trường: Giới hạn thời gian
   (2.0 giây), Giới hạn bộ nhớ (256 MB), **Kích thước đầu ra (64 KB)**, **Số lần nộp / giờ (30 lượt)**. Hai
   trường đầu khớp F2-10; hai trường sau chưa có mã — xem Q7. Chú thích trên màn: "Áp dụng cho toàn bộ ngôn
@@ -88,11 +88,11 @@ Tab và số đếm: "Nội dung đề" · "Ví dụ mẫu" (theo số ví dụ)
   [SoT: 01-rd/overview/system_survey.md:552].
 - **"Ràng buộc dữ liệu"** — textarea tự do (`1 <= s.length, t.length <= 10^5 ...`, dòng 194-195, 416). Vừa là
   phần đề bài (F2-01), vừa là **đầu vào bắt buộc cho F2-14**: AI sinh input "dựa trên đề bài Markdown và Ràng
-  buộc dữ liệu Admin đã khai báo" [SoT: 01-rd/req/req.md:185-186].
+  buộc dữ liệu Admin đã khai báo" [SoT: 01-rd/req/problem-bank.md — F2-14].
 - **"Đáp án mẫu"** kèm chọn ngôn ngữ Python/C++/Java (dòng 199-210, 690), phụ đề trên màn: "Dùng để sinh kết
   quả mong đợi cho testcase" (dòng 202) — khớp chính xác cơ chế an toàn của F2-14
-  [SoT: 01-rd/req/req.md:186-190]. `req.md` mới chỉ nhắc Đáp án mẫu **bên trong** F2-14 như một điều kiện
-  tiên quyết [SoT: 01-rd/req/req.md:193-195], chưa có mã riêng cho chính việc khai Đáp án mẫu — xem Q7.
+  [SoT: 01-rd/req/problem-bank.md — F2-14]. `problem-bank.md` mới chỉ nhắc Đáp án mẫu **bên trong** F2-14 như một điều kiện
+  tiên quyết [SoT: 01-rd/req/problem-bank.md — F2-14], chưa có mã riêng cho chính việc khai Đáp án mẫu — xem Q7.
 
 **Tab 2 — Ví dụ mẫu** (dòng 215-249, 629-632): danh sách ví dụ, mỗi ví dụ gồm Đầu vào / Kết quả / Giải thích,
 kèm "Thêm ví dụ" và xoá từng ví dụ. Phụ đề: "Hiển thị công khai trong đề bài, kèm lời giải thích" (dòng 220).
@@ -108,21 +108,21 @@ liệu chạy máy) — prototype tách hai tab riêng và giữ đúng phân bi
   `06-plan/PROTOTYPE_DEBT.md` đã ghi nhận [SoT: 06-plan/PROTOTYPE_DEBT.md:266-267].
 - **"Chạy với đáp án mẫu"** (dòng 261, 709-710) + dải kết quả chạy ("Đúng 8/8 testcase" hoặc "Thất bại ở
   testcase #k", kèm thời gian tối đa, dòng 264-269, 711-716) — hiện thực điều kiện tiên quyết của F2-14
-  ("Đáp án mẫu đã chạy Pass với testcase hiện có") [SoT: 01-rd/req/req.md:193-195].
+  ("Đáp án mẫu đã chạy Pass với testcase hiện có") [SoT: 01-rd/req/problem-bank.md — F2-14].
 - **Bảng testcase** (dòng 272-291): cột `#`, Đầu vào, Kết quả mong đợi, **Hiển thị**, **Điểm**, Chạy thử,
   xoá. Cột "Hiển thị" là nút bật/tắt hai giá trị **"Công khai" / "Ẩn"** (dòng 282, 604-608) — ánh xạ đúng
-  F2-05 / F2-06, chỉ khác chữ: `req.md` dùng thuật ngữ **Sample / Hidden**
-  [SoT: 01-rd/req/req.md:154]. Đề nghị khi dựng UI thật giữ nhãn tiếng Việt "Công khai/Ẩn" trên giao diện
+  F2-05 / F2-06, chỉ khác chữ: `problem-bank.md` dùng thuật ngữ **Sample / Hidden**
+  [SoT: 01-rd/req/problem-bank.md — F2-05, F2-06]. Đề nghị khi dựng UI thật giữ nhãn tiếng Việt "Công khai/Ẩn" trên giao diện
   nhưng dùng `SAMPLE`/`HIDDEN` làm giá trị dữ liệu, để không sinh ra thuật ngữ thứ hai trong lược đồ DB.
   **Cột "Điểm" là một xung đột — xem Q3.**
 - **Kéo-thả sắp lại thứ tự testcase** (dòng 278, 610-622) và **"+ Thêm testcase"** (dòng 290, 707). Thứ tự
   testcase là dữ liệu có nghĩa với F4 vì fail-fast dừng ở testcase sai đầu tiên
-  [SoT: 01-rd/req/req.md:249-250] — việc cho sắp lại thứ tự là hợp lý, không có mã riêng nhưng nằm gọn trong
+  [SoT: 01-rd/req/judge-orchestration.md — F4-04] — việc cho sắp lại thứ tự là hợp lý, không có mã riêng nhưng nằm gọn trong
   F2-05/F2-06 [SoT: Suy luận].
 - **Khối "Chấm điểm từng phần"** (dòng 294-303, 626, 718-721) — thanh trọng số, yêu cầu "Tổng trọng số phải
   bằng 100 để bài được xuất bản". **Xung đột — xem Q3.**
 - Ghi chú: F2-08 (chống rò rỉ testcase ẩn) **không hạn chế màn này** — F2-08 ràng buộc phản hồi của luồng
-  nộp bài phía người học [SoT: 01-rd/req/req.md:156-158], còn người soạn đề đương nhiên thấy input/output của
+  nộp bài phía người học [SoT: 01-rd/req/problem-bank.md — F2-08], còn người soạn đề đương nhiên thấy input/output của
   testcase ẩn.
 
 **Tab 4 — Gợi ý AI** (dòng 307-341), gồm hai khối tách biệt:
@@ -135,7 +135,7 @@ liệu chạy máy) — prototype tách hai tab riêng và giữ đúng phân bi
 - **"Chỉ dẫn cho trợ lý AI"** (dòng 328-339, 644-662, 722) — textarea ngữ cảnh riêng của bài, phụ đề "nối vào
   prompt hệ thống ở màn Cấu hình AI" (dòng 330), kèm 3 cờ: "Không đưa mã hoàn chỉnh", "Chỉ hỏi ngược, không
   giải hộ", "Cho phép AI mở gợi ý ẩn" (dòng 645-647). **Không có mã nào phủ** — F5-23 chỉ nói cấu hình prompt
-  và rubric ở cấp hệ thống, actor A3 [SoT: 01-rd/req/req.md:360-365]. Xem Q6.
+  và rubric ở cấp hệ thống, actor A3 [SoT: 01-rd/req/ai-review.md — F5-23]. Xem Q6.
 
 ### 3.3. Cột thuộc tính bên phải
 
@@ -154,8 +154,8 @@ liệu chạy máy) — prototype tách hai tab riêng và giữ đúng phân bi
 
 - **Cho** một bài toán chưa có Đáp án mẫu chạy Pass, **Khi** người soạn mở tab Testcase, **Thì** nút "Sinh tự
   động" ở trạng thái vô hiệu kèm lý do ngay tại chỗ, thay vì bấm được rồi mới báo lỗi — F2-14 đã chốt là
-  "chưa có đáp án mẫu hợp lệ thì tính năng vô hiệu" [SoT: 01-rd/req/req.md:193-195], và
-  `US-A2-05` mô tả hành vi từ chối sau khi bấm [SoT: 01-rd/req/user_stories.md:260-261]; đề xuất chặn sớm ở
+  "chưa có đáp án mẫu hợp lệ thì tính năng vô hiệu" [SoT: 01-rd/req/problem-bank.md — F2-14], và
+  `US-A2-05` mô tả hành vi từ chối sau khi bấm [SoT: 01-rd/req/user_stories/a2_instructor.md — US-A2-05]; đề xuất chặn sớm ở
   mức giao diện thay vì chỉ báo lỗi sau. Prototype hiện chưa gắn hành vi nào cho nút này
   [SoT: 06-plan/PROTOTYPE_DEBT.md:266-267].
 - **Cho** người soạn bấm "Chạy với đáp án mẫu" trên bộ testcase hiện có, **Khi** một testcase không đạt,
@@ -164,13 +164,14 @@ liệu chạy máy) — prototype tách hai tab riêng và giữ đúng phân bi
   [SoT: 09-layoutBase/Admin - Soạn đề bài.dc.html:544-550, 592, 668].
 - **Cho** người soạn đổi trạng thái bài từ "Đã xuất bản" về "Nháp" hoặc "Ẩn", **Khi** lưu, **Thì** bài không
   còn hiển thị cho người học nhưng các lượt nộp đã có không bị xoá — nguyên tắc "không phá dữ liệu đã có" mà
-  hệ thống đã áp cho khoá tài khoản (F1-16) và chấm lại (F4-09c) [SoT: Suy luận: prototype chỉ hiện câu "Bản
-  nháp · chưa hiển thị cho người học" (dòng 724) mà không nói gì về lượt nộp cũ; suy ra từ hai tiền lệ đã
-  chốt: F1-16 khoá mềm không xoá bài nộp [SoT: 06-plan/PROTOTYPE_DEBT.md:62-65] và F4-09c không hạ điểm đã
-  công bố [SoT: 01-rd/req/user_stories.md:240-241]. Cần chủ dự án xác nhận, gộp vào Q7].
+  hệ thống đã áp cho khoá tài khoản (F1-16) [SoT: Suy luận: prototype chỉ hiện câu "Bản nháp · chưa hiển thị
+  cho người học" (dòng 724) mà không nói gì về lượt nộp cũ; suy ra từ tiền lệ đã chốt F1-16 khoá mềm không
+  xoá bài nộp [SoT: 06-plan/PROTOTYPE_DEBT.md:62-65]. Cần chủ dự án xác nhận, gộp vào Q7]. (Tiền lệ "chấm
+  lại không hạ điểm" F4-09c dẫn trước đây đã loại khỏi phạm vi 2026-08-28,
+  `DEC-2026-0828-remove-rejudge-scope`.)
 - **Cho** người soạn sửa bộ testcase của một bài **đã có người nộp**, **Khi** lưu, **Thì** hệ thống tăng
   phiên bản bộ testcase và cho biết phiên bản mới là bao nhiêu — yêu cầu F2-09 đã có
-  [SoT: 01-rd/req/user_stories.md:227-228] nhưng **prototype không có bất cứ chỗ nào hiển thị phiên bản** (grep
+  [SoT: 01-rd/req/user_stories/a2_instructor.md — US-A2-02] nhưng **prototype không có bất cứ chỗ nào hiển thị phiên bản** (grep
   "phiên bản" trên file prototype: không có kết quả). Xem Q4.
 
 ## 5. Câu hỏi mở
@@ -179,11 +180,14 @@ liệu chạy máy) — prototype tách hai tab riêng và giữ đúng phân bi
 | :-: | :-: | :--- | :--- | :--- | :--- |
 | Q1 | — | ~~Màn này thuộc khu Giảng viên hay khu Admin — hay cả hai?~~ **ĐÃ CHỐT 2026-08-25 (owner instruction):** dùng chung một màn, mount ở cả `/instructor/problems/[id]` và `/admin/problems/[id]` (tiền tố theo `DEC-2026-0825-frontend-base-architecture`), phạm vi dữ liệu do ma trận phân quyền F1-10 tới F1-12 quyết định — A2 soạn/sửa bài của mình, A3 quản toàn bộ. | — | Ghi quyết định `DEC-2026-0825-shared-content-authoring-screens`, chốt cùng lúc với `interview_question_management` (cùng dạng lệch). Không đè Phương án B (mục 7.2) — khu Giảng viên vẫn giữ layout riêng, đây chỉ là một view mount ở hai route. | Đã đóng |
 | Q2 | — | ~~`testcase_management` có nên bị gộp vào `problem_authoring`?~~ **ĐÃ CHỐT 2026-08-25 (owner instruction):** gộp hoàn toàn — `testcase_management` không còn là slug riêng. | — | Phiên bản bộ testcase (F2-09) là **panel/drawer bên trong tab Testcase** của màn này, không tách hộp thoại hay màn riêng. Tổng số màn dự kiến giảm theo (xem `system_survey.md`). | Đã đóng |
-| Q3 | Cao | **Cột "Điểm" và khối "Chấm điểm từng phần" vẫn còn nguyên trong prototype, trái với nợ đã ghi là "đã xử lý".** `06-plan/PROTOTYPE_DEBT.md` mục 2.6 phần 1 tuyên bố **BỎ** chấm điểm từng phần vì mâu thuẫn fail-fast F4-04, và ghi rõ "**Đã sửa prototype** — bỏ cột Điểm trong bảng testcase, bỏ khối Chấm điểm từng phần, bỏ trường trọng số khỏi dữ liệu mẫu `tcs` và state liên quan (`totalWeight`, `weightPct`, `weightLabel`, `weightFg`, `weightBar`, điều kiện Tổng trọng số bằng 100 trong checklist)" [SoT: 06-plan/PROTOTYPE_DEBT.md:69, 249-256]. **Đã đọc và kiểm cả hai nơi — việc sửa CHƯA được áp dụng:** cột "Điểm" còn ở [SoT: 09-layoutBase/Admin - Soạn đề bài.dc.html:273], giá trị trọng số từng dòng còn ở [SoT: 09-layoutBase/Admin - Soạn đề bài.dc.html:283, 419-426, 596], khối "Chấm điểm từng phần" còn nguyên ở [SoT: 09-layoutBase/Admin - Soạn đề bài.dc.html:294-303], `totalWeight`/`weightPct`/`weightLabel`/`weightFg`/`weightBar` còn ở [SoT: 09-layoutBase/Admin - Soạn đề bài.dc.html:626, 718-721], và điều kiện "Tổng trọng số bằng 100" còn trong checklist xuất bản [SoT: 09-layoutBase/Admin - Soạn đề bài.dc.html:666]. Đây là **nợ đã đánh dấu xong nhưng chưa làm**, không phải một tính năng được giữ có chủ đích: nếu giữ có chủ đích thì mục 2.6 sẽ không ghi "đã sửa". | Bản thân quyết định đã rõ (bỏ, vì fail-fast F4-04 dừng ở testcase sai đầu tiên nên không thể cộng điểm theo trọng số [SoT: 01-rd/req/req.md:249-250]) — cái chưa rõ chỉ là **ai áp dụng và khi nào**: sửa prototype ngay bây giờ, hay để tới lúc dựng UI Next.js thật rồi bỏ luôn. RD này không tự sửa prototype. | Không mở lại quyết định — giữ Pass/Fail toàn phần. Xoá cột "Điểm", khối "Chấm điểm từng phần" và điều kiện "Tổng trọng số bằng 100" **khi dựng UI thật**, và **sửa lại câu chữ ở `PROTOTYPE_DEBT.md` mục 2.6** từ "Đã sửa prototype" thành "chờ áp dụng khi dựng UI" để nợ không bị coi là đã trả. RD này **đã đặc tả theo bản đã bỏ trọng số**: mục 3.2 chỉ mô tả cột "Điểm" như xung đột, không coi là yêu cầu. | Chủ dự án (xác nhận), điều phối RD (sửa câu chữ nợ) |
-| Q4 | Cao | **Prototype thiếu hoàn toàn UI cho F2-03, F2-04 và F2-09 — ba yêu cầu đã chốt.** Survey gán slug này cho "F2-01 tới F2-04, F2-14" [SoT: 01-rd/overview/system_survey.md:527], nhưng grep trên toàn bộ prototype cho các từ "hàm", "chữ ký", "so khớp", "EXACT", "TRIMMED", "EPSILON", "UNORDERED", "stdin", "phiên bản" **không trả về kết quả nào**. Nghĩa là: không có chỗ khai **chữ ký hàm theo từng ngôn ngữ + kiểu tham số/kiểu trả về** (F2-03 — đầu vào **bắt buộc** để F3 sinh mã khung [SoT: 01-rd/req/req.md:144-145]), không có chỗ khai **định dạng I/O chuẩn** cho mô hình Standard I/O (F2-03 [SoT: 01-rd/req/req.md:146-147]), không có chỗ chọn **chiến lược so khớp** (F2-04 [SoT: 01-rd/req/req.md:151-152]), không có chỗ nào thấy **phiên bản bộ testcase** (F2-09 [SoT: 01-rd/req/req.md:159]). | Đây là khoảng trống prototype, không phải khoảng trống yêu cầu — ba mã đều đã chốt trong `req.md` và F2-03 còn có một quyết định kiến trúc chống lưng (`DEC-2026-0824-dual-submission-model-per-problem`). Việc cần chủ dự án quyết là **hình dạng UI**: thêm tab thứ năm, hay nhét vào tab "Nội dung đề". | Thêm **một tab "Đặc tả" riêng** (tab thứ năm) chứa: chữ ký hàm cho từng ngôn ngữ trong ba ngôn ngữ Java/C++/Python, lược đồ kiểu tham số và kiểu trả về, định dạng đọc `stdin`/in `stdout` cho mô hình Standard I/O, và một trường chọn chiến lược so khớp `EXACT`/`TRIMMED`/`EPSILON`/`UNORDERED_SET`. Lý do tách tab: đây là dữ liệu **F3 đọc để sinh mã**, sai một chữ là mã khung sai cho cả ba ngôn ngữ — trộn vào tab đề bài dễ bị bỏ sót. Phiên bản bộ testcase (F2-09) hiển thị ở đầu tab Testcase kèm liên kết mở lịch sử phiên bản (gắn với Q2). **Không xuất bản được bài nếu tab này còn trống** — thêm vào checklist "Sẵn sàng xuất bản". | Chủ dự án |
-| Q5 | Trung bình | **"Gợi ý theo cấp độ" kèm trừ điểm là một tính năng hoàn chỉnh trên prototype nhưng không có mã `Fx-nn` nào phủ** [SoT: 09-layoutBase/Admin - Soạn đề bài.dc.html:309-326, 635-637]. Nặng hơn: nhãn "−5 điểm" / "−12 điểm" giả định hệ thống có **điểm số cho một bài toán**, trong khi F4 chỉ có Pass/Fail toàn phần và fail-fast [SoT: 01-rd/req/req.md:249-250], và chính vì thế mà chấm điểm từng phần đã bị bỏ (Q3). Phía người học cũng đã có tab "Gợi ý" trong Workspace mà chưa gắn mã [SoT: 01-rd/screens/users/problem_detail.md:51], và ô "Lượt xin gợi ý" trong Số liệu bài [SoT: 09-layoutBase/Admin - Soạn đề bài.dc.html:704] — cùng một tính năng, ba chỗ, không mã nào. | Không được tự phát minh mã mới, và cũng không thể coi đây là chi tiết vận hành của một mã có sẵn: gợi ý theo cấp độ là dữ liệu mới (nội dung gợi ý, thứ tự mở, chi phí), luồng mới (người học mở dần), và có hệ quả tính điểm. | Hai bước, tách rời: (a) **Giữ tính năng gợi ý theo cấp độ** — nó có mặt ở cả hai đầu (soạn và học) nên rất khó là dữ liệu mẫu ngẫu nhiên — và mở **một mã F2 mới** cho nó khi chủ dự án đồng ý (RD này không tự đặt số hiệu). (b) **Bỏ phần "trừ điểm"**: đổi nhãn chi phí thành nhãn trung tính (ví dụ "Gợi ý nhẹ / vừa / mạnh" hoặc "mức 1/2/3"), vì mô hình chấm hiện tại không có điểm số để trừ — cùng lý do đã bỏ chấm điểm từng phần ở Q3. Nếu chủ dự án muốn giữ trừ điểm thật thì đó là một hệ điểm mới cho toàn hệ thống, phải mở `DEC-` riêng. | Chủ dự án |
-| Q6 | Trung bình | **"Chỉ dẫn cho trợ lý AI" theo từng bài + 3 cờ hành vi AI — không có mã phủ, và có mặt rủi ro bảo mật.** Prototype ghi rõ nội dung này "nối vào prompt hệ thống ở màn Cấu hình AI" [SoT: 09-layoutBase/Admin - Soạn đề bài.dc.html:330], nhưng F5-23 chỉ định nghĩa cấu hình prompt/rubric **ở cấp hệ thống, actor A3** [SoT: 01-rd/req/req.md:360-365] — không có mã nào cho ngữ cảnh AI **theo từng bài toán** do người soạn nhập. Riêng cờ "Cho phép AI mở gợi ý ẩn" [SoT: 09-layoutBase/Admin - Soạn đề bài.dc.html:647] còn phụ thuộc tính năng ở Q5. | Hai câu hỏi lồng nhau: (1) phạm vi — có cho phép ngữ cảnh AI theo bài không; (2) an toàn — F5-17 yêu cầu "mã nguồn và câu trả lời người dùng là tham số dữ liệu, tách hoàn toàn khỏi chỉ thị hệ thống" [SoT: 01-rd/req/req.md:343-344], nhưng **không nói gì về văn bản do giảng viên nhập rồi ghép vào system prompt** — đây là một lỗ trống trong ràng buộc F5-17, không tự lấp được. | Giữ tính năng (ngữ cảnh theo bài làm chất lượng phỏng vấn/phân tích tốt hơn rõ rệt) nhưng **coi nó là chỉ thị bậc hai, không phải chỉ thị hệ thống**: nối vào prompt trong một khối có nhãn riêng, không được ghi đè các ràng buộc cứng của F5-17/F5-18, và chỉ vai trò có `PROBLEM_AUTHORING:UPDATE` trong ma trận F1-10 mới sửa được. Cần chủ dự án chốt phạm vi rồi mới mở mã (F2 hay F5 — RD này không tự chọn). Nút **"Nhờ AI soạn nháp"** [SoT: 09-layoutBase/Admin - Soạn đề bài.dc.html:312] cùng nhóm câu hỏi: F2-14 chỉ phủ sinh **testcase**, không phủ AI soạn **gợi ý/đề bài** — đề xuất quyết chung một lượt với Q5 để không mở ba mã rời rạc cho cùng một ý "AI hỗ trợ người soạn đề". | Chủ dự án |
-| Q7 | Thấp | **Nhóm các phần trên màn chưa gắn được mã nào, mức ảnh hưởng nhỏ, gom lại quyết một lượt:** (a) **Vòng đời bài toán** Nháp/Đã xuất bản/Ẩn + nút "Lưu và xuất bản" + lưu nháp tự động [SoT: 09-layoutBase/Admin - Soạn đề bài.dc.html:692, 724, 156]; (b) **checklist "Sẵn sàng xuất bản"** với các ngưỡng cụ thể ≥ 8 testcase, ≥ 2 công khai, ≥ 2 ví dụ [SoT: 09-layoutBase/Admin - Soạn đề bài.dc.html:664-670]; (c) **"Xem như người học"** [SoT: 09-layoutBase/Admin - Soạn đề bài.dc.html:155]; (d) **"Thẻ" tự do** — F2-02 chỉ nói độ khó và chủ đề, F2-11 chỉ lọc theo chủ đề/độ khó/trạng thái đã giải [SoT: 01-rd/req/req.md:139, 164], không mã nào nói tới thẻ; (e) **hai trường giới hạn "Kích thước đầu ra" và "Số lần nộp / giờ"** [SoT: 09-layoutBase/Admin - Soạn đề bài.dc.html:696-697] — F2-10 chỉ nói thời gian và bộ nhớ; (f) **"Số liệu bài"** (Lượt nộp, Tỉ lệ AC, Thời gian giải TB) [SoT: 09-layoutBase/Admin - Soạn đề bài.dc.html:700-705]; (g) **"Sửa lần cuối ... bởi Phú Đại"** [SoT: 09-layoutBase/Admin - Soạn đề bài.dc.html:402] — audit sửa nội dung, trong khi F1-14 đã bị thu hẹp chỉ còn hành động quản trị [SoT: 06-plan/PROTOTYPE_DEBT.md:74-77]. | Mỗi mục đều nhỏ và nhìn qua thì "hiển nhiên phải có", nhưng theo luật của dự án thì không có mã nghĩa là không có yêu cầu, và các con số ngưỡng (8/2/2) là quyết định nghiệp vụ chứ không phải chi tiết UI. | (a) và (b): coi là hệ quả vận hành trực tiếp của F2-01 (soạn đề thì phải có nháp và điều kiện xuất bản), **không mở mã mới**, nhưng **các ngưỡng 8/2/2 phải do chủ dự án chốt** rồi ghi thẳng vào `req.md` mục F2 như tham số của F2-01. (c) và (f): không mở mã — (c) là chế độ xem trước của cùng dữ liệu F2-01, (f) dùng lại nguồn số liệu của `admin_overview` [SoT: 01-rd/overview/system_survey.md:547]. (d): xác nhận có giữ "thẻ" hay không; nếu giữ thì F2-02 và F2-11 phải được mở rộng câu chữ, vì lọc theo thẻ là kỳ vọng đương nhiên của người học. (e): xác nhận hai trường này thuộc F2-10 (mở rộng câu chữ) hay bỏ khỏi màn để tránh trùng `admin_language_config` (F4-11). (g): xác nhận có cần audit "ai sửa bài toán lúc nào" không; nếu cần thì đây là audit **nội dung**, khác F1-14 (audit **hành động quản trị**) và cần chỗ riêng. | Chủ dự án |
+| Q3 | — | ~~**Cột "Điểm" và khối "Chấm điểm từng phần" vẫn còn nguyên trong prototype...**~~ **ĐÃ CHỐT 2026-08-31 (owner instruction — xác nhận lại quyết định đã có từ 2026-08-24):** **xoá**, giữ Pass/Fail toàn phần + fail-fast F4-04. | — | Xoá cột "Điểm", khối "Chấm điểm từng phần" và điều kiện "Tổng trọng số bằng 100" khi dựng UI thật. `06-plan/PROTOTYPE_DEBT.md` mục 2.6/7.3.d cập nhật cùng đợt. | Đã đóng |
+| Q4 | — | ~~**Prototype thiếu hoàn toàn UI cho F2-03, F2-04 và F2-09...**~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** thêm **một tab "Đặc tả" riêng** (tab thứ năm). | — | Tab "Đặc tả" chứa: chữ ký hàm cho từng ngôn ngữ Java/C++/Python, lược đồ kiểu tham số/kiểu trả về, định dạng đọc `stdin`/in `stdout` cho Standard I/O, trường chọn chiến lược so khớp `EXACT`/`TRIMMED`/`EPSILON`/`UNORDERED_SET`. Phiên bản bộ testcase (F2-09) hiển thị ở đầu tab Testcase. **Không xuất bản được nếu tab này còn trống** — thêm vào checklist "Sẵn sàng xuất bản". Xem `DEC-2026-0831-problem-authoring-spec-tab`. | Đã đóng |
+| Q5 | — | ~~**"Gợi ý theo cấp độ" kèm trừ điểm là một tính năng hoàn chỉnh trên prototype...**~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** **cắt khỏi phạm vi**, cùng tính năng với "Gợi ý theo bậc" đã cắt ở `admin_ai_config`. | — | Xoá khối/tab "Gợi ý theo cấp độ" khi dựng UI thật; đối ứng phía người học ở `problem_detail` cũng xoá cùng lúc. Xem `DEC-2026-0831-problem-authoring-round2`. | Đã đóng |
+| Q6 | — | ~~**"Chỉ dẫn cho trợ lý AI" theo từng bài + 3 cờ hành vi AI — không có mã phủ, và có mặt rủi ro bảo mật.**~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất) — phần an toàn:** **giữ tính năng**, coi là **chỉ thị bậc hai**, không phải chỉ thị hệ thống — amendment vào F5-17 (`01-rd/req/ai-review.md`). | — | Nối vào prompt trong một khối có nhãn riêng (ví dụ `<per_problem_context>`), không được ghi đè ràng buộc cứng của F5-17/F5-18, chỉ vai trò có `PROBLEM_AUTHORING:UPDATE` (F1-10) mới sửa được. Xem `DEC-2026-0831-ai-instruction-injection-guard`. **Còn mở, tách riêng khỏi Q6, chưa xử lý trong đợt này:** nút "Nhờ AI soạn nháp" (F2-14 chỉ phủ sinh testcase, không phủ AI soạn gợi ý/đề bài) — lưu ý Q5 (đã cắt "Gợi ý theo cấp độ") không tự động trả lời câu này, vì "Nhờ AI soạn nháp" là một nút riêng, không phải một phần của khối gợi ý đã cắt. | Đã đóng (phần an toàn) |
+| Q7 | — | ~~**Nhóm các phần trên màn chưa gắn được mã nào...**~~ **ĐÃ CHỐT 2026-08-31 — cả 7 mục (a-g), theo đúng đề xuất:** (a) vòng đời + (b) checklist ngưỡng 8/2/2 = hệ quả trực tiếp của F2-01/F2-15, không mã mới; (c) và (f) không mã mới; (d) giữ "Thẻ", mở rộng F2-02/F2-11; (e) giữ 2 trường giới hạn, mở rộng F2-10; (g) giữ trường `updated_by`/`updated_at`, không phải audit trail như F1-14, không mã mới. | — | (a)(b): ngưỡng đã ghi vào `01-rd/req/problem-bank.md` (amendment F2-15, cùng `DEC-2026-0831-problem-management-lifecycle-details`). (d)(e): đã ghi vào `problem-bank.md` (amendment F2-02/F2-11/F2-10, `DEC-2026-0831-problem-authoring-round2`). (c)(f)(g): không đổi `problem-bank.md`, chỉ là chi tiết UI/dữ liệu hiển thị, ghi nhận ở đây là đủ. | Đã đóng |
+
+**Cập nhật 2026-08-31: toàn bộ Q1-Q7 đã đóng.** Còn một mục nhỏ tách riêng khỏi Q6 mà chưa xử lý: nút "Nhờ
+AI soạn nháp" (xem ghi chú ở Q6).
 
 ## 6. Ngoài phạm vi file này
 
@@ -192,7 +196,7 @@ liệu chạy máy) — prototype tách hai tab riêng và giữ đúng phân bi
 - Hợp đồng API (CRUD bài toán, CRUD testcase, tải lên hàng loạt, chạy đáp án mẫu, sinh testcase bằng AI) —
   thuộc DD (`03-dd/api/problem-bank.md`, `03-dd/api/harness.md`, `03-dd/api/ai-review.md`, chưa viết).
 - Lược đồ kiểu dữ liệu độc lập ngôn ngữ và thuật toán sinh mã khung từ chữ ký hàm — thuộc `harness` (F3-01
-  tới F3-06, `01-rd/req/req.md:203-209`), không thuộc trục màn.
+  tới F3-06, `01-rd/req/harness.md`), không thuộc trục màn.
 - Lưu trữ bộ testcase lớn trên MinIO (F2-07) — thuộc BD storage (`02-bd/storage/problem-bank.md`, chưa
   viết).
 - Ma trận phân quyền và các ô `PROBLEM_AUTHORING`/`TESTCASE_MANAGEMENT` — thuộc màn
@@ -204,11 +208,11 @@ liệu chạy máy) — prototype tách hai tab riêng và giữ đúng phân bi
 
 ## 7. Tham chiếu
 
-- `01-rd/req/req.md:55-68` — F1-10 tới F1-12 (ma trận phân quyền, `PROBLEM_AUTHORING`, `TESTCASE_MANAGEMENT`).
-- `01-rd/req/req.md:136-195` — toàn bộ mục F2: F2-01 tới F2-14.
-- `01-rd/req/req.md:249-250` — F4-04 fail-fast (căn cứ bỏ chấm điểm từng phần, Q3).
-- `01-rd/req/req.md:343-344, 360-365` — F5-17 (chống prompt injection), F5-23 (cấu hình prompt cấp hệ thống).
-- `01-rd/req/user_stories.md:203-264` — `US-A2-01`, `US-A2-02`, `US-A2-05`.
+- `01-rd/req/identity.md` — F1-10 tới F1-12 (ma trận phân quyền, `PROBLEM_AUTHORING`, `TESTCASE_MANAGEMENT`).
+- `01-rd/req/problem-bank.md` — toàn bộ mục F2: F2-01 tới F2-14.
+- `01-rd/req/judge-orchestration.md` — F4-04 fail-fast (căn cứ bỏ chấm điểm từng phần, Q3).
+- `01-rd/req/ai-review.md` — F5-17 (chống prompt injection), F5-23 (cấu hình prompt cấp hệ thống).
+- `01-rd/req/user_stories/a2_instructor.md` — `US-A2-01`, `US-A2-02`, `US-A2-05`.
 - `01-rd/overview/system_survey.md` mục 7.2 (khu Giảng viên) và mục 7.0 (khu dùng chung).
 - `01-rd/screens/shared/problem_management.md` — màn cha, cửa vào màn này.
 - `01-rd/screens/users/problem_detail.md:51` — tab "Gợi ý" phía người học (đối ứng của Q5).

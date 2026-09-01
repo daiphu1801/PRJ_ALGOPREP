@@ -4,34 +4,36 @@
 > Bounded Context: `identity` (F1) [SoT: 01-rd/overview/system_survey.md:557]. Actor: A3.
 >
 > Đối chiếu prototype: `09-layoutBase/Admin - Nhật ký hệ thống.dc.html`. File này mô tả **hành vi và UX ở
-> mức yêu cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/req.md` (F1-14), chỉ trỏ tới và bổ sung
+> mức yêu cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/identity.md` (F1-14), chỉ trỏ tới và bổ sung
 > phần đặc thù của màn. Khớp RD tốt — đúng phân định "chỉ ghi hành động quản trị của người, không gộp sự
-> kiện hạ tầng" đã chốt trước ở `req.md:62-68`.
+> kiện hạ tầng" đã chốt trước ở `identity.md` — F1-14.
 
 ## 1. Mục đích màn hình
 
 Xem lại mọi hành động quản trị (đổi ma trận quyền, đổi vai trò, khoá/mở khoá, reset mật khẩu, chấm lại...)
-kèm ai đổi, đổi gì, đổi lúc nào — không có ngoại lệ [SoT: 01-rd/req/req.md:62-68 — F1-14].
+kèm ai đổi, đổi gì, đổi lúc nào — không có ngoại lệ [SoT: 01-rd/req/identity.md — F1-14].
 
 ## 2. Nguồn yêu cầu (không lặp lại — chỉ trỏ)
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Ghi mọi thay đổi ma trận phân quyền và thao tác quản trị vào Nhật ký hệ thống | F1-14 | `01-rd/req/req.md:62-68` |
-| Given-When-Then liên quan | — | `01-rd/req/user_stories.md:295-296, 304-305, 344-346` (rải trong `US-A3-01/02/05`) |
+| Ghi mọi thay đổi ma trận phân quyền và thao tác quản trị vào Nhật ký hệ thống | F1-14 | `01-rd/req/identity.md` — F1-14 |
+| Given-When-Then liên quan | — | `01-rd/req/user_stories/a3_admin.md` (rải trong `US-A3-01/02/05`) |
 
 ## 3. Trạng thái và cấu trúc màn (screen states)
 
 Đối chiếu `09-layoutBase/Admin - Nhật ký hệ thống.dc.html`:
 
 1. **Ghi chú tiêu đề** — "Hành động quản trị của con người · sự kiện hạ tầng xem ở Hàng đợi chấm" (dòng
-   152) — khớp **chính xác từng chữ** với quyết định phạm vi đã chốt ở `req.md:64-68`. Đây là bằng chứng
+   152) — khớp **chính xác từng chữ** với quyết định phạm vi đã chốt ở `identity.md` — F1-12, F1-14. Đây là bằng chứng
    mạnh nhất trong toàn Phase 6 rằng quyết định phân tách hai luồng dữ liệu (hành động quản trị vs. sự kiện
    hạ tầng) đã được phản ánh đúng vào UI thật.
 2. **Theo dõi trực tiếp** — toggle bật/tắt live update (dòng 154-156) — không có mã riêng, chi tiết UX hợp
    lý cho một trang log.
 3. **4 chỉ số tổng** — Hành động quản trị 24 giờ, Đổi ma trận phân quyền, Khoá/mở khoá tài khoản, Phiên
-   chấm lại đã chạy (dòng 395-400) — tổng hợp từ F1-14 + F1-10 + F1-13 + F4-09e, không cần mã riêng.
+   chấm lại đã chạy (dòng 395-400) — tổng hợp từ F1-14 + F1-10 + F1-13, không cần mã riêng. **Cập nhật
+   2026-08-28:** chỉ số "Phiên chấm lại đã chạy" hết ý nghĩa (F4-09e đã loại khỏi phạm vi,
+   `DEC-2026-0828-remove-rejudge-scope`) — bỏ chỉ số này khi build FE thật, còn 3 chỉ số.
 4. **Danh sách sự kiện** — tìm kiếm, lọc theo phân loại (Xác thực/Ma trận quyền/Cấu hình/Nội dung), mỗi
    dòng: giờ, phân loại, nội dung, dịch vụ, người thực hiện, mã sự kiện (dòng 402-412) — khớp F1-14 ("ai
    đổi, đổi gì, đổi lúc nào"). Phân loại "Nội dung" (ví dụ "Thêm testcase biên", "Xuất bản bài toán") mở
@@ -74,8 +76,8 @@ lại để tránh trùng câu hỏi trên nhiều file):
 
 ## 7. Tham chiếu
 
-- `01-rd/req/req.md:62-68` — F1-14.
-- `01-rd/req/user_stories.md:295-296, 304-305, 344-346` — GWT rải trong `US-A3-01/02/05`.
+- `01-rd/req/identity.md` — F1-14.
+- `01-rd/req/user_stories/a3_admin.md` — GWT rải trong `US-A3-01/02/05`.
 - `01-rd/overview/system_survey.md` mục 7.3 — dòng `admin_system_log`.
 - `09-layoutBase/Admin - Nhật ký hệ thống.dc.html` — prototype.
 - `01-rd/screens/admin/admin_user_management.md` mục 5 Q1 — phát hiện gian lận mã nguồn, nguồn chính.

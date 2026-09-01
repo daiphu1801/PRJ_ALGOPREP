@@ -104,10 +104,6 @@
     <div style="width: 100%; max-width: 1320px; display: flex; flex-direction: column; gap: 16px; padding-bottom: 22px;">
 
       <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-        <label style="display: flex; align-items: center; gap: 9px; height: 42px; padding: 0 16px; border-radius: 12px; background: var(--glass2); border: 1px solid var(--border2); flex: 1 1 260px; max-width: 380px;">
-          <i data-lucide="search" style="width: 15px; height: 15px; color: var(--muted2);"></i>
-          <input placeholder="Tìm người dùng, bài toán…" style="flex: 1 1 auto; min-width: 0; border: none; background: transparent; font-family: inherit; font-size: 13.5px; color: var(--text);" />
-        </label>
         <div style="flex: 1 1 auto;"></div>
         <div style="display: flex; align-items: center; gap: 8px;">
           <sc-for list="{{ topIcons }}" as="ti" hint-placeholder-count="3">
@@ -255,7 +251,7 @@
         <div style="padding: 18px 20px; background: var(--glass); backdrop-filter: blur(36px) saturate(180%); -webkit-backdrop-filter: blur(36px) saturate(180%); border: 1px solid var(--border); border-radius: 18px; box-shadow: var(--shadow);">
           <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
             <div style="font-size: 14px; font-weight: 700;">Bài phổ biến nhất</div>
-            <i data-lucide="more-vertical" style="width: 15px; height: 15px; color: var(--muted2);"></i>
+            <a href="./Admin - Quản lý bài tập.dc.html" style="font-size: 12px; font-weight: 600; color: var(--muted); white-space: nowrap;">Xem tất cả</a>
           </div>
           <div style="display: flex; flex-direction: column; gap: 13px;">
             <sc-for list="{{ topProblems }}" as="ts" hint-placeholder-count="4">
@@ -356,6 +352,7 @@ class Component extends DCLogic {
     const dark = this.state.theme === 'dark';
     const collapsed = this.state.collapsed;
     const cyan = dark ? '#22D3EE' : '#0891A8', teal = dark ? '#14B8A6' : '#0F8A72', slate = dark ? '#7E8D8E' : 'rgba(12,40,36,0.5)';
+    const warnC = dark ? '#FFCE78' : '#A9750F', negC = dark ? '#FF8A8A' : '#C84046';
     const activeKey = 'overview';
 
     const groups = [
@@ -435,8 +432,10 @@ class Component extends DCLogic {
     const bars = barSeed.map((v, i) => ({ h: v + '%', color: i % 3 === 0 ? cyan : i % 3 === 1 ? teal : slate }));
 
     const gaugeVals = [{ label: 'Accepted', value: '48%', frac: 0.48, color: cyan, icon: 'check-circle-2' },
-      { label: 'Sai / lỗi', value: '29%', frac: 0.29, color: slate, icon: 'x-circle' },
-      { label: 'Time limit', value: '23%', frac: 0.23, color: teal, icon: 'clock' }];
+      { label: 'Sai kết quả', value: '24%', frac: 0.24, color: slate, icon: 'x-circle' },
+      { label: 'Quá thời gian', value: '14%', frac: 0.14, color: teal, icon: 'clock' },
+      { label: 'Lỗi thực thi', value: '8%', frac: 0.08, color: negC, icon: 'alert-triangle' },
+      { label: 'Lỗi biên dịch', value: '6%', frac: 0.06, color: warnC, icon: 'code' }];
     const nTicks = 40, cx = 130, cy = 145, rInner = 92, rOuter = 118;
     const gaugeTicks = [];
     for (let i = 0; i < nTicks; i++) {
@@ -472,12 +471,12 @@ class Component extends DCLogic {
     const dayVals = [7,8,6,7,10,6,4];
     const emptyDot = dark ? 'rgba(255,255,255,0.06)' : 'rgba(12,90,80,0.08)';
     const dotColumns = dayVals.map(v => ({ dots: Array.from({ length: 10 }, (_, i) => ({ color: i < v ? (v >= 9 ? cyan : teal) : emptyDot })) }));
-    const weekTotal = '9.416', dayAvg = '1.345';
+    const weekTotal = '942', dayAvg = '135';
 
     const monthLabels = ['T1','T2','T3','T4','T5','T6'];
     const monthVals = [720, 810, 690, 940, 880, 1020];
     const monthLine = this.smoothPath(monthVals, 260, 90, 10).path;
-    const monthTotal = '9.416';
+    const monthTotal = '3.618';
 
     const topProblems = [
       { name: 'Two Sum', count: 295 }, { name: 'Course Schedule', count: 285 },

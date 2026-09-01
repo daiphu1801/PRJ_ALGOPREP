@@ -470,7 +470,7 @@ class Component extends DCLogic {
     const controls = [
       Object.assign({ title: 'Tạm dừng tiêu thụ hàng đợi', meta: 'Giữ job lại, không giao cho worker', onClick: () => this.flip('pause') }, knob(t.pause)),
       Object.assign({ title: 'Tự động mở rộng worker', meta: 'Thêm worker khi hàng đợi vượt 20 job', onClick: () => this.flip('autoscale') }, knob(t.autoscale)),
-      Object.assign({ title: 'Ưu tiên bài thi', meta: 'Job từ kỳ thi được chấm trước', onClick: () => this.flip('priority') }, knob(t.priority)),
+      Object.assign({ title: 'Ưu tiên cao', meta: 'Job được gắn cờ ưu tiên cao được chấm trước', onClick: () => this.flip('priority') }, knob(t.priority)),
     ];
 
     const latency = [
@@ -498,13 +498,13 @@ class Component extends DCLogic {
       'Lỗi sandbox': [dark ? 'rgba(255,138,138,0.14)' : 'rgba(216,73,79,0.1)', dark ? 'rgba(255,138,138,0.32)' : 'rgba(216,73,79,0.26)', neg],
     };
     const prio = {
-      'Kỳ thi': [dark ? 'rgba(255,206,120,0.16)' : 'rgba(245,185,63,0.16)', warn],
+      'Ưu tiên cao': [dark ? 'rgba(255,206,120,0.16)' : 'rgba(245,185,63,0.16)', warn],
       'Thường': ['var(--track)', 'var(--muted)'],
       'Chấm lại': [dark ? 'rgba(160,140,250,0.18)' : 'rgba(139,92,246,0.12)', dark ? '#C4B5FD' : '#6D3FD1'],
     };
     const rows = [
-      ['#J-77410', '#SB-90412', 'Python 3', 'Kỳ thi', 'Đang chấm', '0,4s'],
-      ['#J-77409', '#SB-90411', 'C++ 17', 'Kỳ thi', 'Đang chấm', '0,9s'],
+      ['#J-77410', '#SB-90412', 'Python 3', 'Ưu tiên cao', 'Đang chấm', '0,4s'],
+      ['#J-77409', '#SB-90411', 'C++ 17', 'Ưu tiên cao', 'Đang chấm', '0,9s'],
       ['#J-77406', '#SB-90408', 'Java 21', 'Thường', 'Đang chờ', '12s'],
       ['#J-77404', '#SB-90406', 'Python 3', 'Chấm lại', 'Đang chờ', '31s'],
       ['#J-77401', '#SB-90403', 'C++ 17', 'Chấm lại', 'Đang chờ', '46s'],

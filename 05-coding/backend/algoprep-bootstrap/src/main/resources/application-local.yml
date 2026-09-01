@@ -1,0 +1,62 @@
+# AlgoPrep backend - profile `local`: noi vao ha tang o 05-coding/docker-compose.yml.
+#
+# Chay:  cd 05-coding && docker compose up -d
+#        cd backend && ./mvnw -pl algoprep-bootstrap spring-boot:run -Dspring-boot.run.profiles=local
+#
+# Mat khau doc tu bien moi truong, KHONG hard-code: 05-coding/.env la file duy nhat giu gia tri
+# that va no nam trong .gitignore. Mac dinh o day khop voi .env.example de chay thu duoc ngay,
+# nhung mot mat khau that thi phai den tu moi truong.
+spring:
+  datasource:
+    # MOT PostgreSQL instance, SAU schema (DEC-2026-0820-architecture-baseline).
+    # Khong dat `currentSchema` o day: moi module chi duoc cham schema cua chinh no, va dieu do do
+    # khai bao @Table(schema=...) cua tung module bao dam, chu khong do mot gia tri toan cuc.
+    url: jdbc:postgresql://${ALGOPREP_DB_HOST:localhost}:${ALGOPREP_DB_PORT:5432}/${ALGOPREP_DB_NAME:algoprep}
+    username: ${ALGOPREP_DB_USER:algoprep}
+    password: ${ALGOPREP_DB_PASSWORD:algoprep-local-dev-pw}
+    hikari:
+      # 10 la mac dinh cua Hikari. CHUA TINH TOAN theo tai that - nguong dong thoi chua duoc chot
+      # (01-rd/req/nfr.md muc A ghi ro dieu nay can chu nhiem de tai xac nhan), nen de nguyen mac
+      # dinh va do bang k6 khi co luong nop bai that, thay vi doan mot con so bay gio.
+      maximum-pool-size: 10
+      pool-name: algoprep-hikari
+
+  jpa:
+    # KHONG dung ddl-auto o bat ky moi truong nao, ke ca local: schema do migration quan.
+    # Cong cu migration (Flyway/Liquibase) CHUA CHOT - xem 05-coding/backend/README.md.
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+
+  data:
+    redis:
+      host: ${ALGOPREP_REDIS_HOST:localhost}
+      port: ${ALGOPREP_REDIS_PORT:6379}
+      password: ${ALGOPREP_REDIS_PASSWORD:algoprep-local-dev-pw}
+
+  rabbitmq:
+    host: ${ALGOPREP_RABBITMQ_HOST:localhost}
+    port: ${ALGOPREP_RABBITMQ_PORT:5672}
+    username: ${ALGOPREP_RABBITMQ_USER:algoprep}
+    password: ${ALGOPREP_RABBITMQ_PASSWORD:algoprep-local-dev-pw}
+
+# Engine cham bai. KHONG co adapter nao doc gia tri nay o khung base - GoJudgeAdapter thuoc slice
+# judge-orchestration. Dat san dia chi de slice do khong phai di tim.
+algoprep:
+  judge-engine:
+    base-url: ${ALGOPREP_GO_JUDGE_URL:http://localhost:5050}
+
+management:
+  endpoint:
+    health:
+      # Local thi hien chi tiet cho de chan doan; moi truong that dung mac dinh when-authorized
+      # trong application.yml.
+      show-details: always
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG

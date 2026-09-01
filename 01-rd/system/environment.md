@@ -69,8 +69,12 @@ nó thì Modular Monolith trôi thành monolith phẳng sau vài sprint, và to�
 `backend_architecture.md` mục 2.A, cộng luật `presentation`/`infrastructure` của module này không xuất hiện
 trong import của module khác.
 
-Công cụ hiện thực (ArchUnit, hoặc Spring Modulith `verify()`, hoặc cả hai) **chưa chốt** — quyết định khi
-dựng `algoprep-bootstrap`. Yêu cầu thì đã chốt: phải fail build, không phải cảnh báo. [SoT: Suy luận]
+Công cụ hiện thực **đã chốt: ArchUnit, không dùng Spring Modulith** — `DEC-2026-0901-backend-base-architecture`
+điểm 1, quyết định đúng lúc dựng `algoprep-bootstrap` như tài liệu này hẹn. Lý do: bốn luật tầng ở
+`backend_architecture.md` mục 3.A là luật mức package **bên trong** một module, còn Spring Modulith chỉ hiểu
+ranh giới **giữa** các module theo quy ước package riêng của nó. Bộ test nằm ở
+`algoprep-bootstrap/src/test/java/com/algoprep/bootstrap/architecture/` (7 luật), và cả 7 đã được kiểm bằng
+vi phạm cố tình — build đỏ đúng luật tương ứng.
 
 **Riêng cho `algoprep-harness` (F3).** Bộ sinh mã phải có **test so khớp mã sinh ra (golden file)** cho cả ba
 ngôn ngữ: một đặc tả kiểu vào, so mã sinh ra với mã đã chốt. Đây là bộ test rẻ nhất và bắt lỗi tốt nhất của
@@ -131,7 +135,8 @@ lỗi engine) mà khó tái tạo bằng engine thật. [SoT: Suy luận]
 
 | Chưa chốt | Sẽ chốt ở |
 | :--- | :--- |
-| Công cụ kiểm ranh giới module (ArchUnit / Spring Modulith / cả hai) | Khi dựng `algoprep-bootstrap` |
-| Phiên bản minor cụ thể của từng image trong `docker-compose.yml` | Khi tạo file đó |
-| Cấu hình pipeline GitHub Actions | Khi có mã thật để chạy CI |
+| ~~Công cụ kiểm ranh giới module~~ | **Đã chốt**: ArchUnit, `DEC-2026-0901-backend-base-architecture` điểm 1 |
+| ~~Phiên bản image trong `docker-compose.yml`~~ | **Đã chốt** khi tạo file (2026-09-01), pin cứng: `postgres:16.15-alpine` · `redis:7.4-alpine` · `rabbitmq:4.2.9-management-alpine` · `criyle/go-judge:v1.12.3` · `minio/minio:RELEASE.2025-09-07T16-13-09Z` · `prom/prometheus:v3.14.0` · `grafana/grafana:13.0.7` |
+| Công cụ migration schema (Flyway / Liquibase) | Cùng `02-bd/database/<module>.md` đầu tiên |
+| Cấu hình pipeline GitHub Actions | Đã có mã thật để chạy CI — làm ở slice sau |
 | Nhà cung cấp LLM và cách quản khoá API giữa các môi trường | Quyết định riêng |

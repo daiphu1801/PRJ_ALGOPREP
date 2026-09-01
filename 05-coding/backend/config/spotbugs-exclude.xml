@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  AlgoPrep backend — danh sách loại trừ của SpotBugs.
+
+  Luật của file này: mỗi loại trừ phải có lý do viết ra. Một loại trừ không giải thích thì không
+  phân biệt được với một lỗi thật đã bị bịt miệng, và đây là chỗ đầu tiên người review mở ra khi
+  SpotBugs "không tìm thấy gì".
+
+  Điều CỐ TÌNH KHÔNG loại trừ, vì FindSecBugs bắt được chúng chính là mục đích
+  (01-rd/req/nfr.md mục D): SQL injection, credential hard-code, path traversal, mã hoá yếu,
+  sink XSS, và command injection.
+-->
+<FindBugsFilter>
+
+  <!-- File sinh tự động không mang lỗi do người viết, và số dòng của chúng đổi mỗi lần sinh lại,
+       nên một phát hiện ở đây không hành động được. -->
+  <Match>
+    <Class name="~.*\$\$SpringCGLIB\$\$.*"/>
+  </Match>
+  <Match>
+    <Class name="~.*_\$\$_jvst.*"/>
+  </Match>
+
+  <!-- package-info chỉ mang annotation. -->
+  <Match>
+    <Class name="~.*\.package-info"/>
+  </Match>
+
+  <!--
+    EI_EXPOSE_REP / EI_EXPOSE_REP2 trên record.
+    SpotBugs cảnh báo accessor của record trả về một field khả biến là "để lộ biểu diễn nội bộ".
+    Với value object dựng từ kiểu java.time và collection thì cảnh báo này nổ liên tục và lời
+    khuyên của nó không áp dụng được: record CHÍNH LÀ biểu diễn, và copy phòng vệ ở mọi accessor
+    sẽ triệt tiêu đúng lý do dùng record cho lược đồ kiểu F3.
+    Vấn đề khả biến thật trong Aggregate do review bắt, không do detector này.
+  -->
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
+    <Class name="~com\.algoprep\..*"/>
+  </Match>
+
+  <!--
+    CT_CONSTRUCTOR_THROW trên AlgoPrepException — loại trừ ĐÚNG MỘT CLASS, có chủ đích.
+
+    SpotBugs báo: constructor ném ngoại lệ thì để lại một đối tượng khởi tạo dở, mở đường cho
+    "finalizer attack" — kẻ tấn công kế thừa class, ghi đè finalize(), và chạm được vào đối tượng dở
+    đó. Cảnh báo này đúng về nguyên tắc chung.
+
+    Vì sao không áp dụng ở đây:
+      1. Kiểm tham số ngay trong constructor là cách làm ĐÚNG (fail fast). Bỏ nó đi để SpotBugs im
+         nghĩa là một mã lỗi rỗng sẽ lọt xuống tới phản hồi HTTP, và frontend dịch theo mã lỗi
+         (backend_architecture.md mục 7) — mã rỗng làm người dùng thấy một thông báo trống.
+      2. Kịch bản tấn công đòi ba điều kiện: class kế thừa được, kẻ tấn công chèn được lớp con vào
+         classpath, và finalize() còn hiệu lực. Đây là ngoại lệ nội bộ, chỉ do mã của chính dự án
+         khởi tạo, không nhận lớp con từ ngoài. Thêm nữa, finalization đã bị đánh dấu deprecated for
+         removal từ Java 18.
+      3. Phương án thay thế duy nhất giữ được kiểm tra là chuyển sang static factory, tức là đổi
+         chữ ký của toàn bộ cây ngoại lệ để làm vừa lòng một detector, không phải để sửa một lỗi.
+
+    Phạm vi hẹp có chủ đích: chỉ class này, không phải cả gói exception, và KHÔNG phải toàn dự án —
+    một constructor khác ném ngoại lệ ở chỗ khác vẫn phải bị bắt.
+  -->
+  <Match>
+    <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+    <Class name="com.algoprep.common.exception.AlgoPrepException"/>
+  </Match>
+
+</FindBugsFilter>

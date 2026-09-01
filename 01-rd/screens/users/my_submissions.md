@@ -4,7 +4,7 @@
 > Bounded Context chính: `judge-orchestration` (F4) [SoT: 01-rd/overview/system_survey.md:484]. Actor: A1.
 >
 > Đối chiếu prototype: `09-layoutBase/Bài đã nộp.dc.html`. File này mô tả **hành vi và UX ở mức yêu cầu** —
-> không lặp lại đặc tả chức năng đã có ở `01-rd/req/req.md`, chỉ trỏ tới và bổ sung phần đặc thù của màn.
+> không lặp lại đặc tả chức năng đã có ở `01-rd/req/identity.md` và `01-rd/req/judge-orchestration.md`, chỉ trỏ tới và bổ sung phần đặc thù của màn.
 > **Phát hiện của Phase 2, đã tự chốt 2026-08-25 — xem mục 5**: màn này (danh sách đầy đủ lịch sử nộp bài,
 > lọc/tìm kiếm) ban đầu không có mã `Fx-nn` nào phủ đúng nội dung chính — đã bổ sung **F1-18**.
 
@@ -17,10 +17,10 @@ bài, mở kết quả chi tiết hoặc phân tích bài giải (nếu `Accepte
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Tỉ lệ chấp thuận (Accepted / tổng số đã nộp) — chỉ số tổng, không phải danh sách | F1-07 | `01-rd/req/req.md:38-39` |
-| Chấm bài theo testcase, verdict AC/WA/TLE/CE... | F4-01 → F4-08 | `01-rd/req/req.md:207-227` |
-| Xem lịch sử nộp bài, lọc verdict/ngôn ngữ, tìm kiếm | F1-18 | `01-rd/req/req.md` (khối bổ sung 2026-08-25, sau F1-17) |
-| Given-When-Then liên quan | — | `01-rd/req/user_stories.md:82-96` (`US-A1-04`), thêm GWT F1-18 ở `US-A1-05` |
+| Tỉ lệ chấp thuận (Accepted / tổng số đã nộp) — chỉ số tổng, không phải danh sách | F1-07 | `01-rd/req/identity.md` — F1-07 |
+| Chấm bài theo testcase, verdict AC/WA/TLE/CE... | F4-01 → F4-08 | `01-rd/req/judge-orchestration.md` — F4-01 → F4-08 |
+| Xem lịch sử nộp bài, lọc verdict/ngôn ngữ, tìm kiếm | F1-18 | `01-rd/req/identity.md` — F1-18 (khối bổ sung 2026-08-25, sau F1-17) |
+| Given-When-Then liên quan | — | `01-rd/req/user_stories/a1_student.md` (`US-A1-04`), thêm GWT F1-18 ở `US-A1-05` |
 
 ## 3. Trạng thái và cấu trúc màn (screen states)
 
@@ -61,7 +61,7 @@ bài, mở kết quả chi tiết hoặc phân tích bài giải (nếu `Accepte
 
 | # | Câu hỏi | Quyết định | Ghi chú |
 | :-: | :--- | :--- | :--- |
-| Q1 | Không có mã `Fx-nn` nào đặc tả "xem lại lịch sử nộp bài, lọc theo verdict/ngôn ngữ, tìm kiếm" — nội dung chính của màn này. | **Bổ sung F1-18 — Xem lịch sử nộp bài của chính mình**, lọc theo verdict/ngôn ngữ, tìm theo tên/mã bài. Đã ghi vào `01-rd/req/req.md` (mục F1, sau khối F1-17) và thêm GWT vào `01-rd/req/user_stories.md` (`US-A1-05`); đã đồng bộ `system_survey.md:484`. | Đã chốt, không còn mở. |
+| Q1 | Không có mã `Fx-nn` nào đặc tả "xem lại lịch sử nộp bài, lọc theo verdict/ngôn ngữ, tìm kiếm" — nội dung chính của màn này. | **Bổ sung F1-18 — Xem lịch sử nộp bài của chính mình**, lọc theo verdict/ngôn ngữ, tìm theo tên/mã bài. Đã ghi vào `01-rd/req/identity.md` (mục F1, sau khối F1-17) và thêm GWT vào `01-rd/req/user_stories/a1_student.md` (`US-A1-05`); đã đồng bộ `system_survey.md:484`. | Đã chốt, không còn mở. |
 | Q2 | Prototype không có phân trang cho bảng lịch sử — hành vi thật khi có hàng trăm lượt nộp là gì? | **Chốt: áp cùng kiểu phân trang cuối bảng như `problem_list`** (`01-rd/screens/users/problem_list.md` mục 3.5) để nhất quán UX giữa hai bảng danh sách. | Số dòng mỗi trang, style phân trang cụ thể **[Đợi nextjs]**. |
 
 ## 6. Ngoài phạm vi file này
@@ -70,13 +70,13 @@ bài, mở kết quả chi tiết hoặc phân tích bài giải (nếu `Accepte
   chưa viết).
 - Hợp đồng API (lọc, tìm kiếm, phân trang danh sách nộp bài) — thuộc DD (`03-dd/api/judge-orchestration.md`,
   chưa viết).
-- Việc bổ sung mã `Fx-nn` mới (Q1) — chỉ đề xuất ở đây, chưa tự sửa `req.md`/`user_stories.md` vì chưa có xác
+- Việc bổ sung mã `Fx-nn` mới (Q1) — chỉ đề xuất ở đây, chưa tự sửa `identity.md`/`user_stories/a1_student.md` vì chưa có xác
   nhận trực tiếp của chủ dự án (khác với các trường hợp Phase 0-1 đã hỏi và chốt ngay).
 
 ## 7. Tham chiếu
 
-- `01-rd/req/req.md:38-39, 207-227` — F1-07, F4-01→F4-08.
-- `01-rd/req/user_stories.md:82-96` — `US-A1-04`.
+- `01-rd/req/identity.md` — F1-07, F1-18. `01-rd/req/judge-orchestration.md` — F4-01→F4-08.
+- `01-rd/req/user_stories/a1_student.md` — `US-A1-04`, `US-A1-05`.
 - `01-rd/overview/system_survey.md:484` — dòng `my_submissions` trong bảng màn mục 7.
 - `09-layoutBase/Bài đã nộp.dc.html` — prototype.
 - `01-rd/screens/users/problem_list.md` — mẫu phân trang tham khảo cho Câu hỏi mở Q2.

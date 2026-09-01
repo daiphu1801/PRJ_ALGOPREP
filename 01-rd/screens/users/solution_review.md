@@ -9,31 +9,31 @@
 > không có state hội thoại — rẻ hơn F5.2, theo Stage 3" của `dependency-map.md` mục 4.
 >
 > Đối chiếu prototype: `09-layoutBase/Phân tích bài giải.dc.html`. File này mô tả **hành vi và UX ở mức yêu
-> cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/req.md` (mục F5.1) và
-> `01-rd/req/user_stories.md` (`US-A1-06`), chỉ trỏ tới và bổ sung phần đặc thù của màn.
+> cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/ai-review.md` (mục F5.1) và
+> `01-rd/req/user_stories/a1_student.md` (`US-A1-06`), chỉ trỏ tới và bổ sung phần đặc thù của màn.
 
 ## 1. Mục đích màn hình
 
 Trang hiện **báo cáo phân tích một lượt** (không hội thoại) do AI sinh ra sau khi một bài nộp đạt
 `Accepted`: độ phức tạp thời gian/bộ nhớ thực tế đối chiếu tối ưu đã biết, điểm mạnh, điểm cần sửa, một bản
 mã đề xuất cải tiến (diff), và lối vào tiếp sang Phỏng vấn giả lập cho cùng bài nộp
-[SoT: 01-rd/req/user_stories.md:114-129 — `US-A1-06`; 01-rd/overview/system_survey.md:479].
+[SoT: 01-rd/req/user_stories/a1_student.md — `US-A1-06`; 01-rd/overview/system_survey.md:479].
 
 ## 2. Nguồn yêu cầu (không lặp lại — chỉ trỏ)
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Yêu cầu phân tích bài giải vừa nộp | F5-01 | `01-rd/req/req.md:270` |
-| Phân tích độ phức tạp thời gian/bộ nhớ thực tế kèm lập luận, đối chiếu tối ưu đã biết | F5-02, F5-03 | `01-rd/req/req.md:271-272` |
-| Trường hợp biên chưa phủ, giả định ngầm, rủi ro tràn số; nhận xét chất lượng mã; câu hỏi mở rộng | F5-04, F5-05, F5-06 | `01-rd/req/req.md:273-275` |
-| Trả JSON có lược đồ để render báo cáo tĩnh; lưu kèm bài nộp, tra cứu lại từ trang tiến độ | F5-07, F5-08 | `01-rd/req/req.md:276-277` |
-| Chống prompt injection: mã nguồn là tham số dữ liệu, tách khỏi chỉ thị hệ thống | F5-17 | `01-rd/req/req.md:295-296` |
-| Định hướng giáo dục: báo cáo là phản hồi học tập, không phải điểm chính thức — phải hiện rõ trên giao diện | F5-18 | `01-rd/req/req.md:297-298` |
-| Cache theo hash mã nguồn — nộp lại đúng mã đó không gọi lại API | F5-20 | `01-rd/req/req.md:299-300` |
-| Vượt ngân sách token → tự động tạm khoá gọi AI cho `STUDENT`/`INSTRUCTOR` | F5-25 | `01-rd/req/req.md:302-309` |
-| Suy giảm có kiểm soát: AI hỏng/hết quota không ảnh hưởng F1-F4 | F5-22 | `01-rd/req/req.md:310-311` |
-| Áp dụng bản mã AI đề xuất vào Workspace, xác nhận trước khi ghi đè, giữ lại bản cũ | F5-26 | `01-rd/req/req.md:335-342` |
-| Given-When-Then đầy đủ cho luồng nhận và dùng báo cáo phân tích | — | `01-rd/req/user_stories.md:114-129` (`US-A1-06`) |
+| Yêu cầu phân tích bài giải vừa nộp | F5-01 | `01-rd/req/ai-review.md` — F5-01 |
+| Phân tích độ phức tạp thời gian/bộ nhớ thực tế kèm lập luận, đối chiếu tối ưu đã biết | F5-02, F5-03 | `01-rd/req/ai-review.md` — F5-02, F5-03 |
+| Trường hợp biên chưa phủ, giả định ngầm, rủi ro tràn số; nhận xét chất lượng mã; câu hỏi mở rộng | F5-04, F5-05, F5-06 | `01-rd/req/ai-review.md` — F5-04, F5-05, F5-06 |
+| Trả JSON có lược đồ để render báo cáo tĩnh; lưu kèm bài nộp, tra cứu lại từ trang tiến độ | F5-07, F5-08 | `01-rd/req/ai-review.md` — F5-07, F5-08 |
+| Chống prompt injection: mã nguồn là tham số dữ liệu, tách khỏi chỉ thị hệ thống | F5-17 | `01-rd/req/ai-review.md` — F5-17 |
+| Định hướng giáo dục: báo cáo là phản hồi học tập, không phải điểm chính thức — phải hiện rõ trên giao diện | F5-18 | `01-rd/req/ai-review.md` — F5-18 |
+| Cache theo hash mã nguồn — nộp lại đúng mã đó không gọi lại API | F5-20 | `01-rd/req/ai-review.md` — F5-20 |
+| Vượt ngân sách token → tự động tạm khoá gọi AI cho `STUDENT`/`INSTRUCTOR` | F5-25 | `01-rd/req/ai-review.md` — F5-25 |
+| Suy giảm có kiểm soát: AI hỏng/hết quota không ảnh hưởng F1-F4 | F5-22 | `01-rd/req/ai-review.md` — F5-22 |
+| Áp dụng bản mã AI đề xuất vào Workspace, xác nhận trước khi ghi đè, giữ lại bản cũ | F5-26 | `01-rd/req/ai-review.md` — F5-26 |
+| Given-When-Then đầy đủ cho luồng nhận và dùng báo cáo phân tích | — | `01-rd/req/user_stories/a1_student.md` (`US-A1-06`) |
 
 ## 3. Trạng thái và cấu trúc màn (screen states)
 
@@ -46,7 +46,7 @@ mã đề xuất cải tiến (diff), và lối vào tiếp sang Phỏng vấn g
    thuật), **"Dễ đọc" dạng điểm số `4 / 5`**, và thời điểm sinh báo cáo [SoT:
    09-layoutBase/Phân tích bài giải.dc.html:107-117, 288-293]. **Đã chốt 2026-08-25** (Câu hỏi mở Q1, cũ):
    giữ điểm số này, do AI tự chấm thang 1-5 trong cùng lượt phân tích, là một trường bổ sung của F5-07/F5-05
-   [SoT: 01-rd/req/req.md:276-282].
+   [SoT: 01-rd/req/ai-review.md — F5-05].
 3. **Nút "Phỏng vấn về bài này"** ở góc phải thanh chỉ số — dẫn thẳng sang `mock_interview` cho cùng bài nộp
    [SoT: 09-layoutBase/Phân tích bài giải.dc.html:116], khớp luồng "hai lựa chọn AI" của
    `01-rd/overview/system_survey.md` mục 3.2.
@@ -78,7 +78,7 @@ mã đề xuất cải tiến (diff), và lối vào tiếp sang Phỏng vấn g
     phải yêu cầu liên kết cứng tới bản ghi thật. F5-06 sinh **chủ đề/từ khoá gợi ý**, không phải id câu hỏi;
     giao diện tự dựng liên kết tìm kiếm sang `interview_bank_list` lọc theo chủ đề đó — `ai-review` không
     đọc dữ liệu của `interview-bank`, giữ đúng nguyên tắc "modules never import each other"
-    (`DEC-2026-0820-architecture-baseline`) [SoT: 01-rd/req/req.md:276-282]. Số lượng liên kết hiện ra, bố
+    (`DEC-2026-0820-architecture-baseline`) [SoT: 01-rd/req/ai-review.md — F5-06]. Số lượng liên kết hiện ra, bố
     cục cụ thể của khối này **[Đợi nextjs]** — dựng lại khi có frontend thật, không tiếp tục đối chiếu
     prototype tĩnh cho chi tiết này.
 11. **Không có trạng thái đang chờ AI xử lý (loading) và không có trạng thái lỗi** (AI hết quota theo F5-22,
@@ -93,26 +93,26 @@ Hai chế độ hiển thị không đổi hành vi nghiệp vụ, chỉ đổi 
 
 - **Cho** tôi mở `solution_review` cho một bài nộp đã có báo cáo (từ cache theo F5-20 hoặc đã sinh trước
   đó), **Khi** trang tải xong, **Thì** tôi thấy ngay đầy đủ báo cáo mà không cần chờ một cuộc gọi AI mới nào
-  [SoT: 01-rd/req/req.md:299-300 — F5-20].
+  [SoT: 01-rd/req/ai-review.md — F5-20].
 - **Cho** báo cáo chưa từng được sinh cho bài nộp này, **Khi** tôi vào màn từ `submission_result`, **Thì**
   tôi cần thấy một trạng thái đang xử lý trong lúc hệ thống gọi AI — trạng thái này **chưa có trong
   prototype**, xem Câu hỏi mở Q3 [SoT: Suy luận — hệ quả tất yếu của việc gọi AI là một thao tác bất đồng bộ
-  có độ trễ, `req.md` không mô tả UX chờ].
+  có độ trễ, `ai-review.md` không mô tả UX chờ].
 - **Cho** ngân sách token AI đã cạn cho vai trò của tôi (F5-25), **Khi** tôi bấm yêu cầu phân tích một bài
   nộp mới, **Thì** tôi cần thấy thông báo rõ ràng là tính năng AI đang tạm khoá, không phải một lỗi hệ thống
-  chung chung — trạng thái này **chưa có trong prototype**, xem Câu hỏi mở Q3 [SoT: 01-rd/req/req.md:306-309
+  chung chung — trạng thái này **chưa có trong prototype**, xem Câu hỏi mở Q3 [SoT: 01-rd/req/ai-review.md
   — F5-25].
 - **Cho** báo cáo có đề xuất mã cải tiến, **Khi** tôi bấm "Áp bản đề xuất trong Workspace", **Thì** hệ thống
   hỏi xác nhận trước khi ghi đè và giữ lại bản mã cũ của tôi để khôi phục nếu đổi ý — hành vi xác nhận/lưu
   bản cũ diễn ra ở `problem_detail` (Workspace), không phải trên chính màn `solution_review` [SoT:
-  01-rd/req/req.md:337-340 — F5-26; 01-rd/screens/users/problem_detail.md].
+  01-rd/req/ai-review.md — F5-26; 01-rd/screens/users/problem_detail.md].
 
 ## 5. Câu hỏi mở
 
 | # | Câu hỏi | Vì sao chưa trả lời được | Đề xuất | Chủ sở hữu |
 | :-: | :--- | :--- | :--- | :--- |
-| Q1 | ~~"Dễ đọc: 4 / 5" ở thanh chỉ số đầu trang là điểm số định lượng, nhưng F5-05 chỉ mô tả "nhận xét chất lượng mã" ở dạng định tính...~~ **ĐÃ CHỐT (2026-08-25, tự quyết theo yêu cầu chủ dự án — prototype là bản dựng tham khảo)**: giữ điểm số, thang 1-5, do AI tự chấm trong cùng lượt phân tích (không gọi thêm), là một trường bổ sung của F5-05/F5-07 [SoT: 01-rd/req/req.md:276-282; 01-rd/overview/system_survey.md:321]. | — | Đã chốt, không cần hành động thêm. | Đã đóng |
-| Q2 | ~~Khối "Kiến thức nên ôn" liên kết trực tiếp tới 3 câu hỏi cụ thể có `id` thật (`IQ-014`, `IQ-071`, `IQ-033`)...~~ **ĐÃ CHỐT (2026-08-25, tự quyết theo yêu cầu chủ dự án — prototype là bản dựng tham khảo, sẽ dựng lại khi có frontend Next.js thật)**: các `id` cố định trong prototype chỉ là dữ liệu mẫu; F5-06 sinh **chủ đề/từ khoá gợi ý**, không phải liên kết cứng tới bản ghi thật của `interview-bank` — `ai-review` không đọc dữ liệu `interview-bank`, giữ đúng "modules never import each other" (`DEC-2026-0820-architecture-baseline`); giao diện tự dựng liên kết tìm kiếm sang `interview_bank_list` theo chủ đề [SoT: 01-rd/req/req.md:276-282; 01-rd/overview/system_survey.md:322]. Số lượng liên kết hiện ra và bố cục cụ thể **[Đợi nextjs]**. | — | Đã chốt hướng kiến trúc; chi tiết trình bày chờ dựng UI thật. | Đã đóng |
+| Q1 | ~~"Dễ đọc: 4 / 5" ở thanh chỉ số đầu trang là điểm số định lượng, nhưng F5-05 chỉ mô tả "nhận xét chất lượng mã" ở dạng định tính...~~ **ĐÃ CHỐT (2026-08-25, tự quyết theo yêu cầu chủ dự án — prototype là bản dựng tham khảo)**: giữ điểm số, thang 1-5, do AI tự chấm trong cùng lượt phân tích (không gọi thêm), là một trường bổ sung của F5-05/F5-07 [SoT: 01-rd/req/ai-review.md — F5-05; 01-rd/overview/system_survey.md:321]. | — | Đã chốt, không cần hành động thêm. | Đã đóng |
+| Q2 | ~~Khối "Kiến thức nên ôn" liên kết trực tiếp tới 3 câu hỏi cụ thể có `id` thật (`IQ-014`, `IQ-071`, `IQ-033`)...~~ **ĐÃ CHỐT (2026-08-25, tự quyết theo yêu cầu chủ dự án — prototype là bản dựng tham khảo, sẽ dựng lại khi có frontend Next.js thật)**: các `id` cố định trong prototype chỉ là dữ liệu mẫu; F5-06 sinh **chủ đề/từ khoá gợi ý**, không phải liên kết cứng tới bản ghi thật của `interview-bank` — `ai-review` không đọc dữ liệu `interview-bank`, giữ đúng "modules never import each other" (`DEC-2026-0820-architecture-baseline`); giao diện tự dựng liên kết tìm kiếm sang `interview_bank_list` theo chủ đề [SoT: 01-rd/req/ai-review.md — F5-06; 01-rd/overview/system_survey.md:322]. Số lượng liên kết hiện ra và bố cục cụ thể **[Đợi nextjs]**. | — | Đã chốt hướng kiến trúc; chi tiết trình bày chờ dựng UI thật. | Đã đóng |
 | Q3 | Trạng thái đang chờ AI xử lý (loading) và trạng thái lỗi (hết quota F5-22, bị khoá ngân sách F5-25, lỗi gọi model) hoàn toàn chưa được dựng trong prototype — toàn bộ file là một báo cáo tĩnh đã có sẵn dữ liệu. | Prototype không có biến trạng thái nào mô phỏng việc đang gọi AI hay việc gọi thất bại; đây là khoảng trống UX cần bổ sung khi dựng UI thật, không phải xung đột với RD. | **[Đợi nextjs]** — thêm hai trạng thái màn khi dựng frontend thật: "đang phân tích" (skeleton/spinner, có thể kèm ước lượng thời gian) và "không thể phân tích" (phân biệt lỗi tạm thời — cho thử lại — với bị khoá do ngân sách F5-25 — không cho thử lại, chỉ hiện lý do). Không cần chốt nghiệp vụ gì thêm, chỉ là việc dựng UI còn thiếu. | Đợi nextjs |
 
 ## 6. Ngoài phạm vi file này
@@ -130,8 +130,8 @@ Hai chế độ hiển thị không đổi hành vi nghiệp vụ, chỉ đổi 
 
 ## 7. Tham chiếu
 
-- `01-rd/req/req.md:270-311, 335-342` — F5-01 tới F5-08, F5-17, F5-18, F5-20, F5-22, F5-25, F5-26.
-- `01-rd/req/user_stories.md:114-129` — `US-A1-06`.
+- `01-rd/req/ai-review.md` — F5-01 tới F5-08, F5-17, F5-18, F5-20, F5-22, F5-25, F5-26.
+- `01-rd/req/user_stories/a1_student.md` — `US-A1-06`.
 - `01-rd/overview/system_survey.md:479` — dòng `solution_review` trong bảng màn mục 7.1.
 - `.nexa/control/dependency-map.md:127` — Bounded Context chạm bởi `solution_review`.
 - `.nexa/control/decision-registry.md` — `DEC-2026-0820-architecture-baseline` (nguyên tắc modules không

@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+    "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+    "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+<!--
+  AlgoPrep backend — miễn trừ Checkstyle.
+
+  Luật của file này giống luật của spotbugs-exclude.xml: mỗi miễn trừ phải có lý do viết ra, và lý
+  do phải là "luật không áp dụng được ở đây", không phải "sửa cho pass thì mệt".
+-->
+<suppressions>
+
+  <!--
+    HideUtilityClassConstructor trên class khởi chạy Spring Boot.
+
+    Luật này bắt class chỉ có phương thức static phải có constructor private. Class
+    @SpringBootApplication chỉ có `main`, nên bị khớp — nhưng nó KHÔNG phải class tiện ích: Spring
+    dùng nó làm class cấu hình và phải khởi tạo được nó. Thêm constructor private vào là context
+    không nạp nổi.
+  -->
+  <suppress checks="HideUtilityClassConstructor" files=".*Application\.java$"/>
+
+</suppressions>

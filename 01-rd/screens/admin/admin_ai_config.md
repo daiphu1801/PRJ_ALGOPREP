@@ -4,28 +4,27 @@
 > Bounded Context: `ai-review` (F5) [SoT: 01-rd/overview/system_survey.md:553]. Actor: A3.
 >
 > Đối chiếu prototype: `09-layoutBase/Admin - Cấu hình AI.dc.html`. File này mô tả **hành vi và UX ở mức yêu
-> cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/req.md` (F5-19, F5-23), chỉ trỏ tới và bổ sung
+> cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/ai-review.md` (F5-19, F5-23), chỉ trỏ tới và bổ sung
 > phần đặc thù của màn.
-> **Phát hiện quan trọng nhất của Phase 6 — xem Câu hỏi mở Q1**: prototype liệt kê một prompt "Gợi ý theo
-> bậc" (v4.2, "Đang chạy") ngang hàng với Phân tích bài giải (F5.1) và Phỏng vấn giả lập (F5.2) — nhưng
-> **không có tính năng "gợi ý theo bậc" nào được đặc tả ở bất kỳ đâu trong `req.md`/`README.md`**. Đây là
-> một tính năng AI hoàn chỉnh (có ngân sách token riêng, thống kê riêng ở `admin_ai_usage`) mà toàn bộ RD
-> hiện tại không hề biết tới.
+> **Phát hiện quan trọng nhất của Phase 6 — Câu hỏi mở Q1, ĐÃ CHỐT 2026-08-31**: prototype liệt kê một prompt
+> "Gợi ý theo bậc" (v4.2, "Đang chạy") ngang hàng với Phân tích bài giải (F5.1) và Phỏng vấn giả lập (F5.2)
+> — không có tính năng "gợi ý theo bậc" nào được đặc tả ở bất kỳ đâu trong `ai-review.md`/`README.md`. **Chốt: cắt
+> khỏi phạm vi** (`DEC-2026-0831-remove-tiered-hints-ai-config`) — xem mục 5 Q1/Q2.
 
 ## 1. Mục đích màn hình
 
 Cấu hình prompt theo phiên bản, trọng số rubric chấm bài giải, giới hạn tần suất gọi AI, và nguyên tắc trả
-lời chung của AI [SoT: 01-rd/req/req.md:303, 315-319, 322-335 — F5-19, F5-23].
+lời chung của AI [SoT: 01-rd/req/ai-review.md — F5-19, F5-23].
 
 ## 2. Nguồn yêu cầu (không lặp lại — chỉ trỏ)
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Giới hạn tần suất gọi AI theo người dùng | F5-19 | `01-rd/req/req.md:303` |
-| Cấu hình prompt và rubric AI, có phiên bản, xem lại/khôi phục | F5-23 | `01-rd/req/req.md:315-319` |
-| Chống prompt injection (nguyên tắc "Không đưa lời giải đầy đủ" là ứng dụng của quy tắc này) | F5-17 | `01-rd/req/req.md:305-306` |
-| Chạy đối chiếu prompt trước khi phát hành — giữ ở tầng giao diện, chưa cam kết backend | — | `01-rd/req/req.md:322-334` (chốt phạm vi rõ) |
-| Given-When-Then liên quan | — | `01-rd/req/user_stories.md:317-326` (`US-A3-04`, GWT 2) |
+| Giới hạn tần suất gọi AI theo người dùng | F5-19 | `01-rd/req/ai-review.md` — F5-19 |
+| Cấu hình prompt và rubric AI, có phiên bản, xem lại/khôi phục | F5-23 | `01-rd/req/ai-review.md` — F5-23 |
+| Chống prompt injection (nguyên tắc "Không đưa lời giải đầy đủ" là ứng dụng của quy tắc này) | F5-17 | `01-rd/req/ai-review.md` — F5-17 |
+| Chạy đối chiếu prompt trước khi phát hành — giữ ở tầng giao diện, chưa cam kết backend | — | `01-rd/req/ai-review.md` — F5-23 (chốt phạm vi rõ) |
+| Given-When-Then liên quan | — | `01-rd/req/user_stories/a3_admin.md` (`US-A3-04`, GWT 2) |
 
 ## 3. Trạng thái và cấu trúc màn (screen states)
 
@@ -48,7 +47,7 @@ lời chung của AI [SoT: 01-rd/req/req.md:303, 315-319, 322-335 — F5-19, F5-
    bằng tiếng Việt", "Chuyển giảng viên khi bí" (dòng 465-469). Ba toggle đầu khớp tinh thần chống lộ lời
    giải + định hướng giáo dục (F5-17, F5-18). **Toggle "Chuyển giảng viên khi bí" ngụ ý một luồng escalation
    từ AI sang giảng viên chưa từng được đặc tả** — xem Câu hỏi mở Q2.
-5. **Trước khi phát hành (Chạy đối chiếu)** — khớp đúng phần đã chốt phạm vi ở `req.md:322-334` (giữ ở tầng
+5. **Trước khi phát hành (Chạy đối chiếu)** — khớp đúng phần đã chốt phạm vi ở `ai-review.md` — F5-23 (giữ ở tầng
    giao diện, backend không nằm trong cam kết đợt này) — không phải khoảng trống, đã có quyết định rõ.
 
 ## 4. Given-When-Then bổ sung ở mức màn
@@ -64,21 +63,20 @@ lời chung của AI [SoT: 01-rd/req/req.md:303, 315-319, 322-335 — F5-19, F5-
 
 | # | Câu hỏi | Vì sao chưa trả lời được | Đề xuất | Chủ sở hữu |
 | :-: | :--- | :--- | :--- | :--- |
-| Q1 | **"Gợi ý theo bậc" là một tính năng AI đầy đủ trong prototype (prompt riêng có phiên bản, giới hạn tần suất riêng, ngân sách token riêng ở `admin_ai_usage`) nhưng hoàn toàn không có trong `req.md`/`README.md`.** Đây có phải tính năng thật (gợi ý dần từng bậc khi người học đang giải một bài, trước khi nộp/Accepted — khác hẳn Solution Review F5.1 chỉ chạy sau Accepted) cần một mã `Fx-nn` mới (có thể F5-29 hoặc một nhóm F5.0 mới) và RD riêng, hay là tính năng đã bị cắt khỏi phạm vi đồ án nhưng chưa dọn khỏi prototype? | Đây là phát hiện có ảnh hưởng lớn nhất trong Phase 6 — nếu là tính năng thật, nó thêm hẳn một luồng AI thứ ba (ngoài F5.1, F5.2) chạy *trong khi giải bài*, khác vị trí kích hoạt với F5.1/F5.2 (đều chạy sau khi có bài nộp) — ảnh hưởng tới `problem_detail`/Workspace, không chỉ `ai-review`. Không tự quyết được vì mở/đóng một tính năng AI thứ ba là quyết định phạm vi lớn, giống việc AI-2 để mở Q2 của `solution_review` (`06-plan/reports/260825-2100-ai2-solution-review-conflicts.md`). | Nếu là tính năng thật: mở một RD riêng cho luồng "Gợi ý theo bậc" (có thể là một phần của `problem_detail`/Workspace hoặc một màn mới), gán mã mới, và xác nhận vị trí kích hoạt (trong Workspace, trước khi nộp). Nếu đã cắt khỏi phạm vi: xoá 3 thẻ liên quan (thẻ prompt ở đây, dòng "Gợi ý mỗi bài" ở giới hạn tần suất, cột "Gợi ý"/features "Gợi ý theo bậc" ở `admin_ai_usage`) khi dựng UI thật. | Chủ dự án |
-| Q2 | Toggle "Chuyển giảng viên khi bí" (sau 3 lần gợi ý không hiệu quả) ngụ ý một luồng escalation từ AI sang giảng viên con người — chưa từng được đặc tả ở F5 hay ở bất kỳ US-A2 nào (giảng viên không có story nào về "nhận yêu cầu hỗ trợ từ AI"). | Phụ thuộc trực tiếp vào câu trả lời Q1 (toggle này thuộc khối "Gợi ý theo bậc") — nếu Q1 xác nhận tính năng gợi ý không tồn tại, Q2 tự động không áp dụng. | Gộp xử lý cùng Q1 — chỉ cần trả lời riêng nếu Q1 xác nhận "Gợi ý theo bậc" là tính năng thật và cần escalation tới giảng viên. | Chủ dự án |
+| Q1 | ~~**"Gợi ý theo bậc" là một tính năng AI đầy đủ trong prototype...**~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** **cắt khỏi phạm vi** — không phải tính năng thật, không cấp mã mới (không có `F5-29`). | — | Khi dựng UI thật: xoá 3 chỗ liên quan — thẻ prompt "Gợi ý theo bậc" ở đây, dòng "Gợi ý mỗi bài" ở giới hạn tần suất, mục "Gợi ý theo bậc" ở `admin_ai_usage`. Xem `DEC-2026-0831-remove-tiered-hints-ai-config`. | Đã đóng |
+| Q2 | ~~Toggle "Chuyển giảng viên khi bí"...~~ **ĐÃ CHỐT 2026-08-31 — moot theo Q1:** không có luồng escalation vì tính năng "Gợi ý theo bậc" đã cắt khỏi phạm vi. | — | Xoá toggle này cùng lúc xoá thẻ "Gợi ý theo bậc" khi dựng UI thật. | Đã đóng |
 
 ## 6. Ngoài phạm vi file này
 
 - Bảng màu, spacing, component cụ thể — thuộc BD (`02-bd/screens/admin/admin_ai_config.md`, chưa viết).
 - Hợp đồng API (CRUD prompt theo phiên bản, cấu hình rubric, giới hạn tần suất) — thuộc DD
-  (`03-dd/api/ai-review.md`, chưa viết) — **không nên viết DD cho phần "Gợi ý theo bậc" trước khi Q1 được
-  chủ dự án chốt**.
-- Backend cho "Chạy đối chiếu" (regression test 30 bài mẫu) — đã chốt ngoài cam kết đợt này ở `req.md:328-335`.
+  (`03-dd/api/ai-review.md`, chưa viết). Không viết DD cho "Gợi ý theo bậc" — đã cắt khỏi phạm vi 2026-08-31.
+- Backend cho "Chạy đối chiếu" (regression test 30 bài mẫu) — đã chốt ngoài cam kết đợt này ở `ai-review.md` — F5-23.
 
 ## 7. Tham chiếu
 
-- `01-rd/req/req.md:303, 305-306, 315-319, 322-335` — F5-17, F5-19, F5-23.
-- `01-rd/req/user_stories.md:317-326` — `US-A3-04` (GWT 2).
+- `01-rd/req/ai-review.md` — F5-17, F5-19, F5-23.
+- `01-rd/req/user_stories/a3_admin.md` — `US-A3-04` (GWT 2).
 - `01-rd/overview/system_survey.md` mục 7.3 — dòng `admin_ai_config`.
 - `09-layoutBase/Admin - Cấu hình AI.dc.html` — prototype.
 - `06-plan/reports/260825-2100-ai2-solution-review-conflicts.md` — tiền lệ để một câu hỏi ảnh hưởng kiến

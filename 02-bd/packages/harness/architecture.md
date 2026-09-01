@@ -6,8 +6,8 @@
 
 ## 1. Bối cảnh
 
-`01-rd/req/req.md` mục F3 khoá cứng đúng ba ngôn ngữ nộp bài: Java, C++, Python
-(`01-rd/req/req.md:92-104`). Không mở rộng thêm ngôn ngữ ở tầng yêu cầu — xem quyết định giữ nguyên phạm vi
+`01-rd/req/harness.md` mục F3 khoá cứng đúng ba ngôn ngữ nộp bài: Java, C++, Python
+(`01-rd/req/harness.md` — F3-01 tới F3-04). Không mở rộng thêm ngôn ngữ ở tầng yêu cầu — xem quyết định giữ nguyên phạm vi
 tại `06-plan/PROTOTYPE_DEBT.md` mục 1.1 (chốt 2026-08-24, chọn Phương án A: bỏ tính năng "Thêm ngôn ngữ"
 khỏi giao diện Admin).
 
@@ -60,12 +60,12 @@ F2-03, ghi `stdout`, không cần tiêm mã người dùng qua khuôn vì ngư�
 
 - Tên và chữ ký cụ thể của interface plugin, cơ chế đăng ký registry, vị trí đặt code (Maven module nào)
   — viết ở `03-dd/logic/harness.md` khi vào giai đoạn DD của module `harness`.
-- Test golden-file so khớp mã sinh ra cho cả ba ngôn ngữ đã có yêu cầu ở `req.md:260` — DD cần chỉ rõ cách
+- Test golden-file so khớp mã sinh ra cho cả ba ngôn ngữ đã có yêu cầu ở `01-rd/req/nfr.md` (mục E) — DD cần chỉ rõ cách
   tổ chức test theo từng plugin.
 
 ## 5. Tham chiếu
 
-- `01-rd/req/req.md:162-199` — đặc tả F3-01 tới F3-13 (dòng cập nhật 2026-08-24, xem mục 2b).
+- `01-rd/req/harness.md` — đặc tả F3-01 tới F3-13 (cập nhật 2026-08-24, xem mục 2b).
 - `06-plan/PROTOTYPE_DEBT.md` mục 1.1 — quyết định giữ khoá 3 ngôn ngữ, Phương án A.
 - `.nexa/control/decision-registry.md` — `DEC-2026-0823-go-judge-default-engine`,
   `DEC-2026-0824-dual-submission-model-per-problem`.

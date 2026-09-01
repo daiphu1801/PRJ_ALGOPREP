@@ -7,11 +7,12 @@ Nguyên lý FSD và lý do chọn ở `01-rd/overview/overview.md` mục 1.H. Ba
 
 > **Trạng thái 2026-08-20 (cập nhật 2026-08-25):** `05-coding/frontend/` đã có **khung base** — cây thư mục FSD
 > đầy đủ 6 tầng, 29 slice `views/<slug>/` rỗng khớp `01-rd/screens/`, route theo actor, provider theme/i18n/query.
-> **Nợ kỹ thuật 2026-08-28:** `01-rd/screens/` nay có 30 màn — `class_management` tách thành
-> `class_management` + `class_assignments` mới (`DEC-2026-0828-split-class-management-assignments`) — nhưng
-> code chưa có slice `views/class-assignments/`. Cần dựng thêm slice này (và route
-> `/instructor/assignments`-kiểu) khi làm khung base tiếp; số "29 slice" ở trên vẫn đúng với code hiện tại,
-> chưa đúng với RD.
+> **Nợ kỹ thuật 2026-08-28:** `01-rd/screens/` nay có 31 màn — `class_management` tách thành
+> `class_management` + `class_assignments` mới (`DEC-2026-0828-split-class-management-assignments`), và
+> thêm slug `class_student_detail` (F1-27) — nhưng code chưa có slice `views/class-assignments/` hay
+> `views/class-student-detail/`. Cần dựng thêm hai slice này (và route kiểu `/instructor/assignments`,
+> `/instructor/classes/[classId]/students/[studentId]`) khi làm khung base tiếp; số "29 slice" ở trên vẫn
+> đúng với code hiện tại, chưa đúng với RD.
 > Chưa có nội dung nghiệp vụ (chờ `02-bd/screens/` + `03-dd/api/`). Bốn quyết định kiến trúc của khung base
 > (prefix URL `/admin` + `/instructor`, i18n không có segment locale, theme, pnpm workspace) chốt tại
 > **`DEC-2026-0825-frontend-base-architecture`**; ánh xạ slug↔URL và nợ kỹ thuật ở `05-coding/frontend/README.md`.

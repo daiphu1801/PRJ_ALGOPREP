@@ -1,0 +1,256 @@
+# AlgoPrep — ha tang local.
+#
+# File nay NAM TRONG 05-coding/, khong o root repo (01-rd/system/codebase_structure.md muc 2;
+# 01-rd/system/environment.md muc 2): moi thu can de CHAY he thong nam canh ma nguon cua he thong.
+#
+# Khoi chay:  docker compose up -d
+# Kiem tra:   docker compose ps          (moi service phai `healthy`)
+# Dung:       docker compose down        (giu du lieu)
+#             docker compose down -v     (xoa sach volume)
+#
+# Bien moi truong: sao chep .env.example thanh .env truoc khi chay lan dau.
+#
+# Phien ban image pin cung, khong dung `latest`: `latest` lam hai lan `up` tren hai may cho ra hai
+# phien ban khac nhau, va do la lop loi kho tim nhat trong mot du an mot nguoi.
+
+name: algoprep
+
+services:
+  # ---------------------------------------------------------------------------
+  # PostgreSQL — database chinh, SAU schema trong MOT instance.
+  # Sau schema, khong phai sau database: modular monolith dung mot PostgreSQL instance
+  # (DEC-2026-0820-architecture-baseline), ranh gioi la schema.
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: postgres:16.15-alpine
+    container_name: algoprep-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-algoprep}
+      POSTGRES_USER: ${POSTGRES_USER:-algoprep}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD phai duoc dat trong .env}
+      # Bat buoc scram-sha-256 thay vi md5 (mac dinh cua image la scram tu 14, ghi ro cho khoi troi).
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+      TZ: UTC
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      # Script trong database/init/ chi chay LAN DAU, khi volume con rong. Doi script roi `up` lai
+      # se KHONG chay lai — phai `down -v`. Day la hanh vi cua image, khong phai loi cau hinh.
+      - ./database/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-algoprep} -d ${POSTGRES_DB:-algoprep}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  # ---------------------------------------------------------------------------
+  # Redis — cache, ChatMemory cua phien phong van AI, rate limit Token Bucket, khoa phan tan.
+  # Pin dong 7 theo 01-rd/system/environment.md muc 2 (dong 8.x da co tren Docker Hub — doi len
+  # can mot quyet dinh, khong lam am tham o day).
+  # ---------------------------------------------------------------------------
+  redis:
+    image: redis:7.4-alpine
+    container_name: algoprep-redis
+    restart: unless-stopped
+    command:
+      - redis-server
+      - --requirepass
+      - ${REDIS_PASSWORD:?REDIS_PASSWORD phai duoc dat trong .env}
+      - --appendonly
+      - "yes"
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a $$REDIS_PASSWORD ping | grep -q PONG"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+
+  # ---------------------------------------------------------------------------
+  # RabbitMQ — hang doi bai nop. Bat management plugin de quan sat hang doi luc phat trien
+  # (01-rd/system/environment.md muc 2).
+  # ---------------------------------------------------------------------------
+  rabbitmq:
+    image: rabbitmq:4.2.9-management-alpine
+    container_name: algoprep-rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-algoprep}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:?RABBITMQ_PASSWORD phai duoc dat trong .env}
+    ports:
+      - "${RABBITMQ_PORT:-5672}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT:-15672}:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_running"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  # ---------------------------------------------------------------------------
+  # MinIO — gia lap S3 cho bo testcase lon. Metadata van o PostgreSQL (README.md muc 5).
+  # ---------------------------------------------------------------------------
+  minio:
+    image: minio/minio:RELEASE.2025-09-07T16-13-09Z
+    container_name: algoprep-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-algoprep}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?MINIO_ROOT_PASSWORD phai duoc dat trong .env}
+    ports:
+      - "${MINIO_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # Service khoi tao bucket san (01-rd/system/environment.md muc 2 yeu cau ro). Chay mot lan roi
+  # thoat — `docker compose ps` se thay no `exited (0)`, day la dung, khong phai loi.
+  minio-init:
+    image: minio/minio:RELEASE.2025-09-07T16-13-09Z
+    container_name: algoprep-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 $${MINIO_ROOT_USER} $${MINIO_ROOT_PASSWORD} &&
+      mc mb --ignore-existing local/$${MINIO_BUCKET_TESTCASE} &&
+      mc anonymous set none local/$${MINIO_BUCKET_TESTCASE} &&
+      echo 'bucket san sang: '$${MINIO_BUCKET_TESTCASE}
+      "
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-algoprep}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      # `mc anonymous set none` o tren la co chu dich: testcase an KHONG duoc truy cap cong khai
+      # (F2-08 — chong ro ri testcase an, 01-rd/req/nfr.md muc D).
+      MINIO_BUCKET_TESTCASE: ${MINIO_BUCKET_TESTCASE:-algoprep-testcases}
+    restart: "no"
+
+  # ---------------------------------------------------------------------------
+  # go-judge — engine thuc thi ma trong sandbox. DEC-2026-0823-go-judge-default-engine.
+  #
+  # DICH VU NGOAI, khong phai module trong monolith (01-rd/system/backend_architecture.md muc 6.A).
+  # STATELESS: khong can Postgres/Redis rieng nhu Judge0 tung can
+  # (01-rd/system/environment.md muc 2).
+  #
+  # `privileged: true` la BAT BUOC, khong phai tuy chon: go-sandbox can tao namespace va dat cgroup
+  # limit cho tien trinh con. Day cung la ly do engine chay tach ra thanh dich vu ngoai thay vi nam
+  # trong tien trinh backend — quyen nay khong the cap cho ung dung web.
+  # ---------------------------------------------------------------------------
+  go-judge:
+    image: criyle/go-judge:v1.12.3
+    container_name: algoprep-go-judge
+    restart: unless-stopped
+    privileged: true
+    shm_size: 256m
+    # `cgroup: host` + mount /sys/fs/cgroup — BAT BUOC tren Docker Desktop / WSL2.
+    #
+    # Khong co hai dong nay thi go-judge chet trong vong lap restart voi
+    # "cgroup path is empty". Chuoi nguyen nhan doc duoc tu log cua chinh no:
+    #   1. Nhan ra dang chay cgroup v2 (dung).
+    #   2. Thu noi systemd dbus de tao cgroup -> that bai, vi VM cua Docker Desktop khong co
+    #      /var/run/dbus/system_bus_socket.
+    #   3. Fallback sang "dung cgroup prefix hien tai" -> nhung trong cgroup namespace RIENG,
+    #      container doc duong dan cgroup cua chinh no ra chuoi rong.
+    #   4. createAndNestCgroup voi prefix rong -> fatal.
+    # `cgroup: host` bo buoc 3 di: container nam trong cgroup namespace cua host nen co duong dan
+    # that de long cgroup con vao.
+    #
+    # Luu y: day KHONG phai rui ro cgroup v1 cu cua Judge0 quay lai. Judge0 doi BAN cgroup v1;
+    # go-judge chay tot tren v2 va chi can duong dan cgroup that. Doi mot dong cau hinh compose,
+    # khong phai ep tham so kernel hay dung VM rieng (DEC-2026-0823-go-judge-default-engine).
+    cgroup: host
+    command:
+      - -http-addr=0.0.0.0:5050
+      - -grpc-addr=0.0.0.0:5051
+      - -monitor-addr=0.0.0.0:5052
+      - -parallelism=${GO_JUDGE_PARALLELISM:-4}
+      - -output-limit=67108864
+      - -silent=false
+      # Mo /metrics o cong monitor cho Prometheus scrape (05-coding/monitoring/prometheus.yml).
+      - -enable-metrics
+    ports:
+      - "${GO_JUDGE_PORT:-5050}:5050"
+      - "${GO_JUDGE_MONITOR_PORT:-5052}:5052"
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+      # Cau hinh ngon ngu va moi truong sandbox: 05-coding/judge-engine/
+      - ./judge-engine:/opt/algoprep/judge-engine:ro
+    healthcheck:
+      # /version la endpoint khong can xac thuc cua go-judge.
+      #
+      # Dung bash + /dev/tcp chu khong dung `wget` hay `curl`: image criyle/go-judge KHONG co ca
+      # hai (da kiem: `command -v wget curl` khong tra ve gi), nen healthcheck dua tren chung se bao
+      # unhealthy VINH VIEN trong khi service van chay dung — mot bao dong gia, va bao dong gia con
+      # te hon khong bao. bash co san trong image, va /dev/tcp kiem duoc HTTP that chu khong chi
+      # kiem cong co mo.
+      test:
+        - CMD
+        - bash
+        - -c
+        - >-
+          exec 3<>/dev/tcp/127.0.0.1/5050
+          && printf 'GET /version HTTP/1.0\r\n\r\n' >&3
+          && head -1 <&3 | grep -q '200 OK'
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  # ---------------------------------------------------------------------------
+  # Prometheus + Grafana — giam sat (README.md muc 5).
+  # 01-rd/system/environment.md muc 2: "co the bat muon, nhung phai co truoc khi bao cao hieu nang".
+  # Dat trong profile `observability` de `up` mac dinh nhe: `docker compose --profile observability up -d`
+  # ---------------------------------------------------------------------------
+  prometheus:
+    image: prom/prometheus:v3.14.0
+    container_name: algoprep-prometheus
+    restart: unless-stopped
+    profiles: ["observability"]
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.retention.time=15d
+    ports:
+      - "${PROMETHEUS_PORT:-9090}:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+
+  grafana:
+    image: grafana/grafana:13.0.7
+    container_name: algoprep-grafana
+    restart: unless-stopped
+    profiles: ["observability"]
+    depends_on:
+      - prometheus
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:?GRAFANA_PASSWORD phai duoc dat trong .env}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    ports:
+      - "${GRAFANA_PORT:-3001}:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+
+volumes:
+  postgres-data:
+  redis-data:
+  rabbitmq-data:
+  minio-data:
+  prometheus-data:
+  grafana-data:

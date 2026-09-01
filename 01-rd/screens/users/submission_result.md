@@ -10,27 +10,28 @@
 > 01-rd/overview/system_survey.md:498-499].
 >
 > Đối chiếu prototype: `09-layoutBase/Kết quả nộp bài.dc.html`. File này mô tả **hành vi và UX ở mức yêu
-> cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/req.md` (mục F4) và
-> `01-rd/req/user_stories.md` (`US-A1-04`), chỉ trỏ tới và bổ sung phần đặc thù của màn.
+> cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/judge-orchestration.md` (mục F4) và
+> `01-rd/req/user_stories/a1_student.md` (`US-A1-04`), chỉ trỏ tới và bổ sung phần đặc thù của màn.
 
 ## 1. Mục đích màn hình
 
 Trang xem lại kết quả của **một bài nộp cụ thể** sau khi đã có `submissionId`: verdict tổng (Accepted/Wrong
 Answer/Time Limit Exceeded...), thống kê chạy (thời gian, bộ nhớ), chi tiết theo từng testcase, mã nguồn đã
 nộp, và lối vào hai luồng AI sau khi `Accepted` (Phân tích bài giải, Phỏng vấn giả lập)
-[SoT: 01-rd/req/user_stories.md:82-96 — US-A1-04; 01-rd/overview/system_survey.md:476].
+[SoT: 01-rd/req/user_stories/a1_student.md — US-A1-04; 01-rd/overview/system_survey.md:476].
 
 ## 2. Nguồn yêu cầu (không lặp lại — chỉ trỏ)
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Nộp bài trả `submissionId` ngay, không chờ kết quả chấm | F4-01 | `01-rd/req/req.md:207-211` |
-| Gọi `JudgeExecutionPort` từng testcase, dừng sớm khi có lỗi (fail-fast) | F4-03, F4-04 | `01-rd/req/req.md:214-215` |
-| Đẩy trạng thái từng testcase qua WebSocket (STOMP) theo kênh riêng của bài nộp | F4-08 | `01-rd/req/req.md:227` |
-| Chống rò rỉ testcase ẩn: chỉ trả trạng thái và chỉ số, không trả input/diff chi tiết | F2-08 | `01-rd/req/req.md:127-129` |
-| Ánh xạ lỗi biên dịch về đúng dòng mã người dùng; che giấu hoàn toàn mã harness | F3-11, F3-12 | `01-rd/req/req.md:177-178` |
-| Sau `Accepted`, mở hai lựa chọn: Phân tích bài giải hoặc Phỏng vấn giả lập | F5-01, F5-09 | `01-rd/req/user_stories.md:95-96` |
-| Given-When-Then đầy đủ cho luồng nộp bài và xem kết quả thời gian thực | — | `01-rd/req/user_stories.md:82-96` (`US-A1-04`) |
+| Nộp bài trả `submissionId` ngay, không chờ kết quả chấm | F4-01 | `01-rd/req/judge-orchestration.md` — F4-01 |
+| Gọi `JudgeExecutionPort` từng testcase, chạy hết toàn bộ N testcase (fail-fast đã bỏ) | F4-03 | `01-rd/req/judge-orchestration.md` — F4-03, amendment 2026-08-31, `DEC-2026-0831-partial-score-testcase-ratio` |
+| Điểm tỷ lệ testcase (thang 1đ/bài, không thay verdict) | F4-13 | `01-rd/req/judge-orchestration.md` — F4-13, amendment 2026-08-31, `DEC-2026-0831-partial-score-testcase-ratio` |
+| Đẩy trạng thái từng testcase qua WebSocket (STOMP) theo kênh riêng của bài nộp | F4-08 | `01-rd/req/judge-orchestration.md` — F4-08 |
+| Chống rò rỉ testcase ẩn: chỉ trả trạng thái và chỉ số, không trả input/diff chi tiết | F2-08 | `01-rd/req/problem-bank.md` — F2-08 |
+| Ánh xạ lỗi biên dịch về đúng dòng mã người dùng; che giấu hoàn toàn mã harness | F3-11, F3-12 | `01-rd/req/harness.md` — F3-11, F3-12 |
+| Sau `Accepted`, mở hai lựa chọn: Phân tích bài giải hoặc Phỏng vấn giả lập | F5-01, F5-09 | `01-rd/req/ai-review.md` — F5-01, F5-09 |
+| Given-When-Then đầy đủ cho luồng nộp bài và xem kết quả thời gian thực | — | `01-rd/req/user_stories/a1_student.md` (`US-A1-04`) |
 
 ## 3. Trạng thái và cấu trúc màn (screen states)
 
@@ -40,13 +41,17 @@ nộp, và lối vào hai luồng AI sau khi `Accepted` (Phân tích bài giải
    kèm thời điểm nộp), tên bài và độ khó [SoT: 09-layoutBase/Kết quả nộp bài.dc.html:111-122]. Editor mẫu chỉ
    khai báo **ba** giá trị verdict: `Accepted`, `Wrong Answer`, `Time Limit Exceeded`
    [SoT: 09-layoutBase/Kết quả nộp bài.dc.html:238] — không có `Compile Error` hay `Runtime Error` dù cả hai
-   đều là verdict hợp lệ theo F3-11/F3-12 (ánh xạ lỗi biên dịch) và theo F4-09a (đã nhắc "Runtime Error/TLE"
-   như loại kết quả cũ có thể lọc khi chấm lại) — đã chốt ở Câu hỏi mở Q3 (đã đóng), chưa dựng vào prototype.
+   đều là verdict hợp lệ theo F3-11/F3-12 (ánh xạ lỗi biên dịch) — đã chốt ở Câu hỏi mở Q3 (đã đóng), chưa
+   dựng vào prototype. (Tiền lệ F4-09a "Runtime Error/TLE" như loại kết quả cũ có thể lọc khi chấm lại đã
+   loại khỏi phạm vi 2026-08-28, `DEC-2026-0828-remove-rejudge-scope` — không còn liên quan.)
 2. **Thanh thống kê chạy** (`runStats`) — 5 chỉ số: Testcase (đạt/tổng), Runtime, Memory, "Beats" (tỉ lệ % nhanh
    hơn các bài nộp khác), và Cách nộp (`wrapper`/`stdio`, khớp F3-13) [SoT:
    09-layoutBase/Kết quả nộp bài.dc.html:123-131, 314-320]. Bốn chỉ số rỗng (`—`) khi bài nộp không
    `Accepted` [SoT: 09-layoutBase/Kết quả nộp bài.dc.html:316-319]. Chỉ số "Beats" chưa có mã `Fx-nn` nào mô
-   tả cách tính — đã chốt ở Câu hỏi mở Q4 (đã đóng): mã **F4-12** mới, xem `01-rd/req/req.md`.
+   tả cách tính — đã chốt ở Câu hỏi mở Q4 (đã đóng): mã **F4-12** mới, xem `01-rd/req/judge-orchestration.md`. **Amendment
+   2026-08-31** (`DEC-2026-0831-partial-score-testcase-ratio`): thêm chỉ số thứ sáu **"Điểm"** (F4-13, ví dụ
+   "0.6/1") ngay cạnh banner verdict, hiển thị cho **mọi** verdict (không rỗng khi không `Accepted`, khác
+   bốn chỉ số kia) — vì bây giờ mọi testcase đều được chạy hết, luôn có đủ dữ liệu tính tỷ lệ.
 3. **Khối "Testcase đầu tiên bị sai"** — chỉ hiện khi có lỗi, tách hai biến thể theo loại testcase gây sai
    (`hasFailureVisible`/`hasFailureHidden`): nếu testcase gây sai là **mẫu** (`sample: true`), hiện đủ ba ô
    Input/Expected/"Kết quả của bạn" như cũ; nếu là **ẩn** (`sample: false`), chỉ hiện một dòng trạng thái +
@@ -56,7 +61,8 @@ nộp, và lối vào hai luồng AI sau khi `Accepted` (Phân tích bài giải
    sai (`failAt = 5`) là testcase ẩn thứ 5, nay chỉ hiện trạng thái, không còn lộ Input/Expected/Output
    [SoT: 09-layoutBase/Kết quả nộp bài.dc.html:329, 334].
 4. **Bảng "Chi tiết testcase"** — tab lọc Tất cả/Ví dụ/Bị sai (`caseTabs`), cột #, Input, Expected, Output,
-   Time, Kết quả (AC/WA/TLE/`—` khi bị bỏ qua do fail-fast) [SoT:
+   Time, Kết quả (AC/WA/TLE). **Amendment 2026-08-31**: không còn giá trị `—` do bỏ qua vì fail-fast — mọi
+   testcase đều thực sự được chạy nên luôn có kết quả thật [SoT:
    09-layoutBase/Kết quả nộp bài.dc.html:148-184]. **Đã sửa cùng lỗi F2-08 như mục 3**: với testcase
    `sample: false`, ba cột Input/Expected/Output nay hiện placeholder "Ẩn"/"Hidden" thay vì giá trị thật, ở
    mọi tab lọc kể cả "Bị sai" [SoT: 09-layoutBase/Kết quả nộp bài.dc.html:346-359]. Dòng tóm tắt cuối bảng
@@ -96,14 +102,14 @@ Hai chế độ hiển thị không đổi hành vi nghiệp vụ, chỉ đổi 
 - **Cho** testcase gây sai là một testcase ẩn (`Hidden`, F2-06), **Khi** tôi xem khối "Testcase đầu tiên bị
   sai" hoặc bảng "Chi tiết testcase", **Thì** tôi chỉ thấy trạng thái (`WA`/`TLE`) và chỉ số thứ tự của
   testcase đó, không thấy Input, không thấy Expected, không thấy Output của tôi — **đã khớp prototype sau khi
-  sửa Câu hỏi mở Q1** [SoT: 01-rd/req/req.md:127-129; 09-layoutBase/Kết quả nộp bài.dc.html:148-153, 346-359].
+  sửa Câu hỏi mở Q1** [SoT: 01-rd/req/problem-bank.md — F2-08; 09-layoutBase/Kết quả nộp bài.dc.html:148-153, 346-359].
 - **Cho** testcase gây sai là một testcase mẫu (`Sample`, F2-05), **Khi** tôi xem hai khối trên, **Thì** tôi
   được thấy đầy đủ Input/Expected/Output vì testcase mẫu vốn công khai, không thuộc phạm vi bảo vệ của F2-08
-  [SoT: 01-rd/req/req.md:125 — phân biệt Sample/Hidden].
+  [SoT: 01-rd/req/problem-bank.md — F2-05, F2-06, phân biệt Sample/Hidden].
 - **Cho** bài nộp có verdict `Compile Error`, **Khi** tôi xem trang kết quả, **Thì** tôi thấy lỗi biên dịch
   được ánh xạ về đúng dòng trong mã tôi đã viết, không lộ bất kỳ dòng mã harness nào (F3-11, F3-12) — trạng
   thái này **chưa có trong prototype** — đã chốt ở Câu hỏi mở Q3 (đã đóng): khối "Lỗi biên dịch" thay thế
-  khối "Testcase đầu tiên bị sai" khi verdict là `Compile Error` [SoT: 01-rd/req/req.md:177-178].
+  khối "Testcase đầu tiên bị sai" khi verdict là `Compile Error` [SoT: 01-rd/req/harness.md — F3-11, F3-12].
 
 ## 5. Câu hỏi mở
 
@@ -112,7 +118,8 @@ Hai chế độ hiển thị không đổi hành vi nghiệp vụ, chỉ đổi 
 | Q1 | ~~Prototype hiện hiển thị Input/Expected/Output đầy đủ cho testcase ẩn khi nó gây sai...~~ **ĐÃ CHỐT (phiên 2026-08-25)**: không có ngoại lệ nghiệp vụ nào — đây là lỗi dựng prototype, đã sửa trực tiếp `09-layoutBase/Kết quả nộp bài.dc.html` theo đúng đề xuất: testcase `sample: false` hiển thị placeholder "Ẩn"/"Hidden" ở cột Input/Expected/Output (giữ cột #, Time, Kết quả); khối "Testcase đầu tiên bị sai" khi rơi vào testcase ẩn chỉ còn một dòng trạng thái + chỉ số [SoT: 09-layoutBase/Kết quả nộp bài.dc.html:148-153, 346-359]. | — | Đã sửa, không cần hành động thêm. | Đã đóng |
 | Q2 | ~~Màn `submission_result` có cần tự nhận cập nhật qua WebSocket khi người dùng mở đúng URL này lúc bài nộp còn đang ở trạng thái `PENDING`/đang chấm...~~ **ĐÃ CHỐT (phiên 2026-08-25, chốt theo RD):** có — `submission_result` tự subscribe kênh WebSocket của đúng `submissionId` khi tải trang nếu trạng thái bài nộp chưa phải trạng thái cuối, tái dùng đúng cơ chế F4-08, tránh phải bắt người dùng ở lại `problem_detail` mới thấy tiến độ. **Không có state nào cần dựng thêm ở prototype tĩnh này** — hành vi thuộc tầng kết nối thật, chỉ có ý nghĩa khi build FE Next.js thật. | — | Đã chốt quyết định. | Đã đóng |
 | Q3 | ~~Verdict `Compile Error` và `Runtime Error` chưa có trạng thái nào được dựng trong prototype...~~ **ĐÃ CHỐT (phiên 2026-08-25, chốt theo RD):** thêm hai trạng thái verdict mới vào UI thật — `Compile Error` (thay khối "Testcase đầu tiên bị sai" bằng khối "Lỗi biên dịch" hiện thông điệp lỗi + số dòng, ẩn hẳn bảng testcase vì chưa có testcase nào chạy) và `Runtime Error` (giữ bảng testcase, thêm badge mô tả loại lỗi runtime ở testcase gây lỗi, vẫn tuân F2-08 nếu đó là testcase ẩn). **Chưa dựng vào `09-layoutBase/Kết quả nộp bài.dc.html`** (enum verdict vẫn chỉ 3 giá trị) — để lúc build FE Next.js thật. | — | Đã chốt quyết định, chưa dựng prototype. | Đã đóng |
-| Q4 | ~~Chỉ số "Beats"...chưa có mã `Fx-nn` nào mô tả cách tính...~~ **ĐÃ CHỐT (phiên 2026-08-25, chốt theo RD):** đã thêm **F4-12** vào `01-rd/req/req.md` — tính theo runtime, so sánh trong tập bài nộp `Accepted` của cùng bài toán và cùng ngôn ngữ (không so chéo ngôn ngữ), chỉ hiển thị khi verdict là `Accepted` [SoT: 01-rd/req/req.md — F4-12]. | — | Đã thêm mã F4-12 vào `req.md`. | Đã đóng |
+| Q4 | ~~Chỉ số "Beats"...chưa có mã `Fx-nn` nào mô tả cách tính...~~ **ĐÃ CHỐT (phiên 2026-08-25, chốt theo RD):** đã thêm **F4-12** vào `01-rd/req/judge-orchestration.md` — tính theo runtime, so sánh trong tập bài nộp `Accepted` của cùng bài toán và cùng ngôn ngữ (không so chéo ngôn ngữ), chỉ hiển thị khi verdict là `Accepted` [SoT: 01-rd/req/judge-orchestration.md — F4-12]. | — | Đã thêm mã F4-12 vào `judge-orchestration.md`. | Đã đóng |
+| Q5 | Chủ dự án muốn thêm điểm tỷ lệ testcase (mỗi bài toán tối đa 1đ, chia theo tỷ lệ testcase Pass), hiển thị cho người học — đảo lại phần "Pass/Fail toàn phần + fail-fast, không điểm từng phần" đã chốt 2026-08-24 (`06-plan/PROTOTYPE_DEBT.md` mục 2.6 phần 1). **ĐÃ CHỐT (phiên 2026-08-31, qua hỏi trực tiếp chủ dự án):** bỏ fail-fast (F4-04 hết hiệu lực), thêm mã **F4-13** — điểm tỷ lệ hiển thị thêm cạnh banner verdict, không thay thế verdict `Accepted`/`Wrong Answer` nhị phân (vẫn giữ nguyên mọi phụ thuộc: kích hoạt F5, F1-07, ngưỡng AC&lt;30% của `problem_management`). Không đảo lại quyết định bỏ cột "Điểm"/trọng số ở UI `problem_authoring` — điểm tỷ lệ ở đây tính tự động đều nhau, không cần giảng viên khai báo trọng số. Xem `DEC-2026-0831-partial-score-testcase-ratio`. | — | Đã thêm mã F4-13, sửa F4-03/04, xem mục 3.2 và 3.4. | Đã đóng |
 
 ## 6. Ngoài phạm vi file này
 
@@ -120,15 +127,15 @@ Hai chế độ hiển thị không đổi hành vi nghiệp vụ, chỉ đổi 
   chưa viết).
 - Hợp đồng API (lấy chi tiết một bài nộp, kênh WebSocket theo `submissionId`) — thuộc DD
   (`03-dd/api/judge-orchestration.md`, chưa viết).
-- Thuật toán so khớp kết quả (exact/whitespace/epsilon/set — F3-07 tới F3-10), cơ chế fail-fast, timeout
-  sweep — thuộc logic của `judge-orchestration`/`harness`, không thuộc file theo trục màn này.
+- Thuật toán so khớp kết quả (exact/whitespace/epsilon/set — F3-07 tới F3-10), cơ chế chạy hết testcase,
+  timeout sweep — thuộc logic của `judge-orchestration`/`harness`, không thuộc file theo trục màn này.
 - Nội dung và bố cục của `solution_review` và `mock_interview` (hai màn đích của cột hành động tiếp theo) —
   thuộc các file RD riêng của chúng.
 
 ## 7. Tham chiếu
 
-- `01-rd/req/req.md:127-129, 177-178, 207-227` — F2-08, F3-11, F3-12, F4-01, F4-03, F4-04, F4-08.
-- `01-rd/req/user_stories.md:82-96` — `US-A1-04`.
+- `01-rd/req/problem-bank.md` — F2-08. `01-rd/req/harness.md` — F3-11, F3-12. `01-rd/req/judge-orchestration.md` — F4-01, F4-03, F4-04, F4-08, F4-12, F4-13.
+- `01-rd/req/user_stories/a1_student.md` — `US-A1-04`.
 - `01-rd/overview/system_survey.md:476, 498-499` — dòng `submission_result` trong bảng màn mục 7.1.
 - `.nexa/control/dependency-map.md:125` — Bounded Context chạm bởi `submission_result`.
 - `09-layoutBase/Kết quả nộp bài.dc.html` — prototype.

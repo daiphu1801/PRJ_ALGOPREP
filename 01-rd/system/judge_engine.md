@@ -92,8 +92,9 @@ F4 gọi `JudgeExecutionPort` **một lần cho mỗi testcase**, không dồn n
 
 1. F3 sinh mã harness (mã người dùng được tiêm vào template, đóng gói theo đúng định dạng adapter yêu cầu —
    không hardcode Base64 như Judge0 từng cần).
-2. F4 lấy từng testcase, gọi `JudgeExecutionPort` (adapter `GoJudgeAdapter`) — có fail-fast: nếu điều kiện
-   dừng đạt (ví dụ đã sai một testcase và cấu hình không cần chạy tiếp), không gọi các testcase còn lại.
+2. F4 lấy từng testcase, gọi `JudgeExecutionPort` (adapter `GoJudgeAdapter`) cho **mọi** testcase, không
+   dừng sớm. Fail-fast (`F4-04`) đã bị khai tử bởi `DEC-2026-0831-partial-score-testcase-ratio`: điểm
+   tỷ lệ `F4-13` cần biết số testcase đạt trên tổng số, nên bài nộp phải chạy hết.
 3. go-judge chạy trong sandbox `go-sandbox`, trả kết quả (`status`, `stdout`, `stderr`, thời gian, bộ nhớ)
    **ngay trong response** — không có bước webhook/token như Judge0.
 4. F4 đẩy kết quả testcase đó lên WebSocket ngay, rồi gọi tiếp testcase kế.

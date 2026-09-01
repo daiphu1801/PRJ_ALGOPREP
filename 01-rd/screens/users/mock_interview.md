@@ -3,32 +3,32 @@
 > Slug: `mock_interview` — khớp `01-rd/overview/system_survey.md` mục 7.1 dòng `mock_interview`
 > [SoT: 01-rd/overview/system_survey.md:480]. Bounded Context: `ai-review` (F5.2), có đọc thêm từ
 > `interview-bank` (F6) khi mở phiên từ lối vào "kho câu hỏi" [SoT: .nexa/control/dependency-map.md:127 —
-> dòng `solution_review` · `mock_interview`; 01-rd/req/req.md:366-374 — F5-24]. Actor: A1 (chính).
+> dòng `solution_review` · `mock_interview`; 01-rd/req/ai-review.md — F5-24]. Actor: A1 (chính).
 >
 > Theo lộ trình Phase 4 của `06-plan/nexa-plan/260824-2043-bd-screens-common-first.md` dòng 44-45. Đối
 > chiếu prototype: `09-layoutBase/Phỏng vấn giả lập.dc.html`. File này mô tả **hành vi và UX ở mức yêu cầu**
-> — không lặp lại đặc tả chức năng đã có ở `01-rd/req/req.md` (mục F5.2) và
-> `01-rd/req/user_stories.md` (`US-A1-07`), chỉ trỏ tới và bổ sung phần đặc thù của màn.
+> — không lặp lại đặc tả chức năng đã có ở `01-rd/req/ai-review.md` (mục F5.2) và
+> `01-rd/req/user_stories/a1_student.md` (`US-A1-07`), chỉ trỏ tới và bổ sung phần đặc thù của màn.
 
 ## 1. Mục đích màn hình
 
 Trang cho người học mở và tham gia một **phiên phỏng vấn giả lập 1:1 nhiều lượt** với AI, qua ba giai đoạn
 (Giải trình → Phản biện → Mở rộng), từ một trong ba lối vào (bài nộp `Accepted`, kho câu hỏi F6, hoặc tự
-chọn chủ đề), và xem lại rubric bốn tiêu chí khi kết phiên [SoT: 01-rd/req/user_stories.md:144-166 —
+chọn chủ đề), và xem lại rubric bốn tiêu chí khi kết phiên [SoT: 01-rd/req/user_stories/a1_student.md —
 `US-A1-07`; 01-rd/overview/system_survey.md:480].
 
 ## 2. Nguồn yêu cầu (không lặp lại — chỉ trỏ)
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Mở phiên cho bài nộp `Accepted`; ba giai đoạn Giải trình/Phản biện/Mở rộng | F5-09 tới F5-12 | `01-rd/req/req.md:321-326` |
-| Duy trì ngữ cảnh qua `ChatMemory`/Redis; stream phản hồi qua SSE | F5-13, F5-14 | `01-rd/req/req.md:327-328` |
-| Kết phiên xuất rubric 4 tiêu chí kèm nhận xét; lưu phiên, mở lại từ trang tiến độ | F5-15, F5-16 | `01-rd/req/req.md:329-331` |
-| Chống prompt injection; định hướng giáo dục (không phải điểm chính thức) | F5-17, F5-18 | `01-rd/req/req.md:335-338` |
-| Rate limit, suy giảm có kiểm soát khi AI hỏng/hết quota | F5-19, F5-22, F5-25 | `01-rd/req/req.md:339-349` |
-| Ba lối vào phiên: bài nộp `Accepted`, kho câu hỏi F6, tự chọn chủ đề | F5-24 | `01-rd/req/req.md:366-374` |
-| Tự chỉnh tham số phiên tự luyện (mức độ, số lượt, gợi ý) — chỉ áp dụng 2 lối vào tự luyện | F5-28 | `01-rd/req/req.md:378-382` |
-| Given-When-Then đầy đủ cho luồng phỏng vấn giả lập | — | `01-rd/req/user_stories.md:144-166` (`US-A1-07`) |
+| Mở phiên cho bài nộp `Accepted`; ba giai đoạn Giải trình/Phản biện/Mở rộng | F5-09 tới F5-12 | `01-rd/req/ai-review.md` — F5-09 tới F5-12 |
+| Duy trì ngữ cảnh qua `ChatMemory`/Redis; stream phản hồi qua SSE | F5-13, F5-14 | `01-rd/req/ai-review.md` — F5-13, F5-14 |
+| Kết phiên xuất rubric 4 tiêu chí kèm nhận xét; lưu phiên, mở lại từ trang tiến độ | F5-15, F5-16 | `01-rd/req/ai-review.md` — F5-15, F5-16 |
+| Chống prompt injection; định hướng giáo dục (không phải điểm chính thức) | F5-17, F5-18 | `01-rd/req/ai-review.md` — F5-17, F5-18 |
+| Rate limit, suy giảm có kiểm soát khi AI hỏng/hết quota | F5-19, F5-22, F5-25 | `01-rd/req/ai-review.md` — F5-19, F5-22, F5-25 |
+| Ba lối vào phiên: bài nộp `Accepted`, kho câu hỏi F6, tự chọn chủ đề | F5-24 | `01-rd/req/ai-review.md` — F5-24 |
+| Tự chỉnh tham số phiên tự luyện (mức độ, số lượt, gợi ý) — chỉ áp dụng 2 lối vào tự luyện | F5-28 | `01-rd/req/ai-review.md` — F5-28 |
+| Given-When-Then đầy đủ cho luồng phỏng vấn giả lập | — | `01-rd/req/user_stories/a1_student.md` (`US-A1-07`) |
 
 ## 3. Trạng thái và cấu trúc màn (screen states)
 
@@ -54,7 +54,7 @@ chọn chủ đề), và xem lại rubric bốn tiêu chí khi kết phiên [SoT
      (Intern/Junior/Middle/Senior)** [SoT: 09-layoutBase/Phỏng vấn giả lập.dc.html:616-617], trong khi màn
      `settings` (F5-28, đã chốt 2026-08-25) chỉ định nghĩa 3 mức (Junior/Middle/Senior)
      [SoT: 01-rd/screens/users/settings.md:43]. **Đã tự chốt (2026-08-25)**: đây là dữ liệu mẫu còn sót lại
-     từ trước khi màn `settings` khoá danh sách 3 mức — không sửa `req.md`/`settings.md` (đã chốt bởi phiên
+     từ trước khi màn `settings` khoá danh sách 3 mức — không sửa `ai-review.md`/`settings.md` (đã chốt bởi phiên
      khác), giữ nguyên 3 mức làm chuẩn; tab "Intern" trong prototype của màn này là dữ liệu thừa, bỏ khi
      dựng UI thật **[Đợi nextjs]**.
 3. **Khối "Một phiên diễn ra thế nào"** — liệt kê 3 giai đoạn kèm mô tả ngắn và ghi chú số lượt tối đa
@@ -114,14 +114,14 @@ Hai chế độ hiển thị không đổi hành vi nghiệp vụ, chỉ đổi 
 - **Cho** tôi mở phiên tự luyện (kho câu hỏi hoặc tự chọn chủ đề) sau khi đã đặt tham số ở `settings`
   (F5-28), **Khi** phiên bắt đầu, **Thì** số lượt tối đa và việc có gợi ý khi bí áp đúng theo tham số đã đặt
   — chi tiết truyền tham số từ `settings` sang `mock_interview` **[Đợi nextjs]** [SoT:
-  01-rd/req/req.md:378-382 — F5-28].
+  01-rd/req/ai-review.md — F5-28].
 
 ## 5. Câu hỏi mở
 
 | # | Câu hỏi | Vì sao chưa trả lời được | Đề xuất | Chủ sở hữu |
 | :-: | :--- | :--- | :--- | :--- |
 | Q1 | ~~Trọng số 25/30/25/20% hiện ở khối "Bốn tiêu chí nhận xét" nhưng điểm tổng (`overall`) ở trạng thái `result` lại tính bằng trung bình cộng không trọng số — mâu thuẫn nội bộ ngay trong prototype.~~ **ĐÃ CHỐT (2026-08-25, tự quyết theo yêu cầu chủ dự án — prototype là bản dựng tham khảo)**: điểm tổng phải tính theo **trung bình có trọng số** đúng bằng các phần trăm đã hiện (25/30/25/20%), không phải trung bình cộng đơn giản — khớp đúng tinh thần F5-23 (cấu hình trọng số rubric). Công thức tính cụ thể và việc trọng số này có cấu hình được qua F5-23 hay cố định **[Đợi nextjs]**, chốt khi viết DD cho `ai-review`. | — | Đã chốt hướng tính, chi tiết cấu hình chờ DD. | Đã đóng |
-| Q2 | Tab Trình độ ở lối vào "Tự chọn chủ đề" có 4 mức (Intern/Junior/Middle/Senior), trong khi `settings` (F5-28) đã chốt 3 mức (Junior/Middle/Senior). | Hai file prototype khác nhau (`Phỏng vấn giả lập.dc.html` và `Cài đặt.dc.html`) không khớp nhau về danh sách này. | **ĐÃ CHỐT (2026-08-25, tự quyết)**: giữ 3 mức theo `settings` (đã chốt trước, thuộc phạm vi phiên khác) — coi "Intern" trong màn này là dữ liệu mẫu thừa, bỏ khi dựng UI thật. Không sửa `req.md`/`settings.md`. | Đã đóng |
+| Q2 | Tab Trình độ ở lối vào "Tự chọn chủ đề" có 4 mức (Intern/Junior/Middle/Senior), trong khi `settings` (F5-28) đã chốt 3 mức (Junior/Middle/Senior). | Hai file prototype khác nhau (`Phỏng vấn giả lập.dc.html` và `Cài đặt.dc.html`) không khớp nhau về danh sách này. | **ĐÃ CHỐT (2026-08-25, tự quyết)**: giữ 3 mức theo `settings` (đã chốt trước, thuộc phạm vi phiên khác) — coi "Intern" trong màn này là dữ liệu mẫu thừa, bỏ khi dựng UI thật. Không sửa `ai-review.md`/`settings.md`. | Đã đóng |
 | Q3 | Nút "Thêm vào phiên giả lập tới" ở `interview_bank_list` (xem file RD riêng) chỉ đổi trạng thái tự chấm cục bộ, không có cơ chế "hàng đợi câu hỏi cho phiên tới" nào thực sự nối sang màn `mock_interview` — người dùng bấm nút này không thấy hệ quả rõ ràng. | Hai file prototype không chia sẻ state nào; đây là giới hạn của bản dựng tham khảo tĩnh, không phải một khoảng trống nghiệp vụ đã biết trước. | **[Đợi nextjs]** — khi dựng backend thật, cân nhắc có nên có một "hàng đợi câu hỏi tự luyện" theo người dùng hay bỏ hẳn cơ chế này, chỉ giữ lối vào tự chọn trực tiếp từ danh sách (đã có nút "Phỏng vấn câu này" ngay tại `interview_bank_list`/`mock_interview`). Không phải quyết định kiến trúc lớn, không cần chủ dự án chốt ngay. | Đợi nextjs |
 
 ## 6. Ngoài phạm vi file này
@@ -138,8 +138,8 @@ Hai chế độ hiển thị không đổi hành vi nghiệp vụ, chỉ đổi 
 
 ## 7. Tham chiếu
 
-- `01-rd/req/req.md:321-382` — F5-09 tới F5-28.
-- `01-rd/req/user_stories.md:144-166` — `US-A1-07`.
+- `01-rd/req/ai-review.md` — F5-09 tới F5-28.
+- `01-rd/req/user_stories/a1_student.md` — `US-A1-07`.
 - `01-rd/overview/system_survey.md:480` — dòng `mock_interview` trong bảng màn mục 7.1.
 - `.nexa/control/dependency-map.md:127` — Bounded Context chạm bởi `mock_interview`.
 - `01-rd/screens/users/settings.md:43` — danh sách 3 mức trình độ đã chốt (F5-28).

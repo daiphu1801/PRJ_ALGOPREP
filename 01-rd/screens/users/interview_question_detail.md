@@ -2,7 +2,7 @@
 
 > Slug: `interview_question_detail` — khớp `01-rd/overview/system_survey.md` mục 7.1 dòng
 > `interview_question_detail` [SoT: 01-rd/overview/system_survey.md:482]. Bounded Context: `interview-bank`
-> (F6), phần Chế độ luyện (F6-07/F6-08) đi qua `ai-review` [SoT: 01-rd/req/req.md:409-411]. Actor: A1
+> (F6), phần Chế độ luyện (F6-07/F6-08) đi qua `ai-review` [SoT: 01-rd/req/interview-bank.md — F6-07, F6-08]. Actor: A1
 > (chính).
 >
 > Theo lộ trình Phase 4 của `06-plan/nexa-plan/260824-2043-bd-screens-common-first.md` dòng 44.
@@ -11,27 +11,27 @@
 > phỏng vấn.dc.html` chỉ dựng một khối "xem nhanh" rút gọn ngay trong `interview_bank_list` (xem
 > `01-rd/screens/users/interview_bank_list.md` mục 3.1.4 và Câu hỏi mở Q1 — đã chốt 2026-08-25: hai màn
 > tách riêng, `interview_question_detail` là trang đầy đủ hơn). Nội dung dưới đây suy ra trực tiếp từ
-> `req.md`/`user_stories.md` (F6-04 tới F6-08) và từ đúng phần dữ liệu đã có trong khối "xem nhanh", **không
+> `interview-bank.md`/`user_stories/a1_student.md` (F6-04 tới F6-08) và từ đúng phần dữ liệu đã có trong khối "xem nhanh", **không
 > có UI thật nào để đối chiếu Chế độ luyện** — đánh dấu rõ từng phần **[Đợi nextjs]**.
 
 ## 1. Mục đích màn hình
 
 Trang chi tiết của **một câu hỏi phỏng vấn cụ thể**, đầy đủ hai chế độ: **Chế độ học** (`STUDY`, xem gợi ý
 và khung trả lời chuẩn) và **Chế độ luyện** (`PRACTICE`, tự soạn câu trả lời và nhận phản hồi từ AI) [SoT:
-01-rd/req/user_stories.md:175-179 — `US-A1-08`; 01-rd/req/req.md:407-411 — F6-04 tới F6-08].
+01-rd/req/user_stories/a1_student.md — `US-A1-08`; 01-rd/req/interview-bank.md — F6-04 tới F6-08].
 
 ## 2. Nguồn yêu cầu (không lặp lại — chỉ trỏ)
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Chế độ học: gợi ý hướng tiếp cận | F6-04 | `01-rd/req/req.md:407` |
-| Chế độ học: khung trả lời chuẩn, áp dụng STAR cho câu hành vi | F6-05 | `01-rd/req/req.md:407-408` |
-| Chế độ học: danh sách từ khoá kỹ thuật cốt lõi | F6-06 | `01-rd/req/req.md:408` |
-| Chế độ luyện: người dùng tự soạn câu trả lời | F6-07 | `01-rd/req/req.md:409` |
-| Chế độ luyện: AI đối chiếu tiêu chí chuẩn, trả điểm đã đạt/điểm còn thiếu/hướng bổ sung | F6-08 | `01-rd/req/req.md:409-411` |
-| Đánh dấu để xem lại; tự chấm mức độ thuộc bài | F6-03, F6-12 | `01-rd/req/req.md:406, 415-421` |
-| Chống prompt injection, rate limit — Chế độ luyện đi qua phân hệ AI, chịu chung ràng buộc F5 | F5-17 tới F5-22 | `01-rd/req/req.md:335-351, 409-411` |
-| Given-When-Then Chế độ học/luyện | — | `01-rd/req/user_stories.md:175-179` (`US-A1-08`) |
+| Chế độ học: gợi ý hướng tiếp cận | F6-04 | `01-rd/req/interview-bank.md` — F6-04 |
+| Chế độ học: khung trả lời chuẩn, áp dụng STAR cho câu hành vi | F6-05 | `01-rd/req/interview-bank.md` — F6-05 |
+| Chế độ học: danh sách từ khoá kỹ thuật cốt lõi | F6-06 | `01-rd/req/interview-bank.md` — F6-06 |
+| Chế độ luyện: người dùng tự soạn câu trả lời | F6-07 | `01-rd/req/interview-bank.md` — F6-07 |
+| Chế độ luyện: AI đối chiếu tiêu chí chuẩn, trả điểm đã đạt/điểm còn thiếu/hướng bổ sung | F6-08 | `01-rd/req/interview-bank.md` — F6-08 |
+| Đánh dấu để xem lại; tự chấm mức độ thuộc bài | F6-03, F6-12 | `01-rd/req/interview-bank.md` — F6-03, F6-12 |
+| Chống prompt injection, rate limit — Chế độ luyện đi qua phân hệ AI, chịu chung ràng buộc F5 | F5-17 tới F5-22 | `01-rd/req/ai-review.md` — F5-17 tới F5-22; `01-rd/req/interview-bank.md` — F6-08 |
+| Given-When-Then Chế độ học/luyện | — | `01-rd/req/user_stories/a1_student.md` (`US-A1-08`) |
 
 ## 3. Trạng thái và cấu trúc màn (screen states) — suy luận, chưa có prototype đối chiếu
 
@@ -71,9 +71,9 @@ và khung trả lời chuẩn) và **Chế độ luyện** (`PRACTICE`, tự so�
 9. **Trạng thái loading/lỗi khi gọi AI** — **[Đợi nextjs]**, cùng loại khoảng trống đã ghi nhận ở
    `solution_review` (Phase 3, Câu hỏi mở Q3) và đã có mẫu tốt hơn ở `mock_interview` (khối `aiError`) — nên
    tái dùng mẫu của `mock_interview` làm chuẩn khi dựng UI thật.
-10. **Câu hỏi mở về việc có sửa lại câu trả lời sau khi đã nhận phản hồi hay không** — đã được `user_stories.md`
-    ghi nhận là câu hỏi mở ở mức yêu cầu (Q1), không phải phát hiện mới của phiên này [SoT:
-    01-rd/req/user_stories.md:417].
+10. **Câu hỏi mở về việc có sửa lại câu trả lời sau khi đã nhận phản hồi hay không** — đã được
+    `01-rd/req/user_stories/open_questions.md` ghi nhận là câu hỏi mở ở mức yêu cầu (Q1), không phải phát
+    hiện mới của phiên này [SoT: 01-rd/req/user_stories/open_questions.md — Q1].
 
 ## 4. Given-When-Then bổ sung ở mức màn (không trùng `US-A1-08`)
 
@@ -82,17 +82,17 @@ và khung trả lời chuẩn) và **Chế độ luyện** (`PRACTICE`, tự so�
   đáp án trước khi tự làm) — **[Đợi nextjs]**, chưa có prototype xác nhận hành vi ẩn/hiện chéo hai chế độ.
 - **Cho** tôi vừa gửi câu trả lời ở Chế độ luyện, **Khi** AI chấm xong, **Thì** tôi thấy điểm đã đạt/điểm
   còn thiếu/hướng bổ sung (F6-08), và giao diện ghi rõ đây là phản hồi học tập — áp dụng chung nguyên tắc
-  F5-18 dù F6-08 không thuộc F5 [SoT: 01-rd/req/req.md:409-411].
-- **Cho** ngân sách token AI đã cạn cho vai trò của tôi (F5-25, áp dụng cả F6-08 theo `req.md:347`), **Khi**
+  F5-18 dù F6-08 không thuộc F5 [SoT: 01-rd/req/interview-bank.md — F6-08].
+- **Cho** ngân sách token AI đã cạn cho vai trò của tôi (F5-25, áp dụng cả F6-08 theo `interview-bank.md`), **Khi**
   tôi gửi câu trả lời ở Chế độ luyện, **Thì** tôi thấy thông báo tính năng AI đang tạm khoá — cùng loại
-  trạng thái đã ghi ở `01-rd/screens/users/solution_review.md` mục 4 [SoT: 01-rd/req/req.md:346-349].
+  trạng thái đã ghi ở `01-rd/screens/users/solution_review.md` mục 4 [SoT: 01-rd/req/ai-review.md — F5-25].
 
 ## 5. Câu hỏi mở
 
 | # | Câu hỏi | Vì sao chưa trả lời được | Đề xuất | Chủ sở hữu |
 | :-: | :--- | :--- | :--- | :--- |
-| Q1 | Toàn bộ Chế độ luyện (F6-07/F6-08) và khung trả lời chuẩn STAR (F6-05) chưa có bản dựng nào để đối chiếu — mức độ chi tiết UI phải suy luận hoàn toàn từ `req.md`. | Không có prototype; đây là phần duy nhất của Phase 3-4 phải suy luận UI từ đầu thay vì đối chiếu bản dựng có sẵn. | **[Đợi nextjs]** — dựng prototype hoặc UI thật cho Chế độ luyện trước khi viết BD cho phần này; RD ở đây chỉ đủ để mô tả hành vi nghiệp vụ, không mô tả bố cục cụ thể. | Đợi nextjs |
-| Q2 | Sinh viên có sửa được câu trả lời đã nộp ở Chế độ luyện sau khi đã nhận phản hồi AI không? | Đã là câu hỏi mở có sẵn ở mức yêu cầu, chưa từng được trả lời. | Giữ nguyên câu hỏi đã ghi ở `user_stories.md`, không tự suy diễn thêm ở mức màn. | Chủ dự án (đã ghi từ trước, không phải phát hiện mới của Phase 4) |
+| Q1 | Toàn bộ Chế độ luyện (F6-07/F6-08) và khung trả lời chuẩn STAR (F6-05) chưa có bản dựng nào để đối chiếu — mức độ chi tiết UI phải suy luận hoàn toàn từ `interview-bank.md`. | Không có prototype; đây là phần duy nhất của Phase 3-4 phải suy luận UI từ đầu thay vì đối chiếu bản dựng có sẵn. | **[Đợi nextjs]** — dựng prototype hoặc UI thật cho Chế độ luyện trước khi viết BD cho phần này; RD ở đây chỉ đủ để mô tả hành vi nghiệp vụ, không mô tả bố cục cụ thể. | Đợi nextjs |
+| Q2 | ~~Sinh viên có sửa được câu trả lời đã nộp ở Chế độ luyện sau khi đã nhận phản hồi AI không?~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** không sửa được — mỗi lần nộp là một lượt độc lập. | — | Đã ghi vào `01-rd/req/interview-bank.md` (amendment F6-07) và đóng cùng lúc ở `01-rd/req/user_stories/open_questions.md` Q1. Xem `DEC-2026-0831-outside-screens-closures`. | Đã đóng |
 
 ## 6. Ngoài phạm vi file này
 
@@ -105,8 +105,8 @@ và khung trả lời chuẩn) và **Chế độ luyện** (`PRACTICE`, tự so�
 
 ## 7. Tham chiếu
 
-- `01-rd/req/req.md:335-351, 405-421` — F5-17 tới F5-22, F6-01 tới F6-12.
-- `01-rd/req/user_stories.md:168-184, 417` — `US-A1-08`, câu hỏi mở Q1 gốc.
+- `01-rd/req/ai-review.md` — F5-17 tới F5-22. `01-rd/req/interview-bank.md` — F6-01 tới F6-12.
+- `01-rd/req/user_stories/a1_student.md` — `US-A1-08`. `01-rd/req/user_stories/open_questions.md` — Q1 gốc.
 - `01-rd/overview/system_survey.md:482` — dòng `interview_question_detail` trong bảng màn mục 7.1.
 - `01-rd/screens/users/interview_bank_list.md` — màn nguồn, mục 3.1.4 và Câu hỏi mở Q1 (quyết định tách hai
   màn).

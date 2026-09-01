@@ -47,7 +47,7 @@ Sáu module nghiệp vụ theo `.nexa/domain-registry.json`, cộng một module
 | `algoprep-identity` | `identity` | `identity` | F1 | Xác thực JWT, phân quyền `STUDENT`/`INSTRUCTOR`/`ADMIN`, tiến độ cá nhân |
 | `algoprep-problem-bank` | `problem-bank` | `problem` | F2 | Đề bài Markdown và LaTeX, đặc tả hàm theo ngôn ngữ, testcase Sample và Hidden, phiên bản bộ testcase, giới hạn tài nguyên |
 | `algoprep-harness` | `harness` | `harness` | F3 | Lược đồ kiểu độc lập ngôn ngữ, sinh mã Java/C++/Python, tiêm mã người dùng, chiến lược so khớp, ánh xạ lỗi biên dịch |
-| `algoprep-judge` | `judge-orchestration` | `judge` | F4 | Hàng đợi RabbitMQ, gọi `JudgeExecutionPort` từng testcase kèm fail-fast (adapter mặc định go-judge, đồng bộ), timeout sweep, đẩy trạng thái qua WebSocket. Xác thực webhook và idempotency theo token chỉ cần nếu một adapter bất đồng bộ được bật |
+| `algoprep-judge` | `judge-orchestration` | `judge` | F4 | Hàng đợi RabbitMQ, gọi `JudgeExecutionPort` cho **mọi** testcase, không dừng sớm (adapter mặc định go-judge, đồng bộ) — fail-fast `F4-04` đã bị khai tử bởi `DEC-2026-0831-partial-score-testcase-ratio` vì điểm tỷ lệ `F4-13` cần chạy hết testcase. Timeout sweep, đẩy trạng thái qua WebSocket. Xác thực webhook và idempotency theo token chỉ cần nếu một adapter bất đồng bộ được bật |
 | `algoprep-ai-review` | `ai-review` | `ai` | F5 | Solution Review một lượt (JSON có cấu trúc) và Mock Interview nhiều lượt (SSE, `ChatMemory` trên Redis, rubric) |
 | `algoprep-interview-bank` | `interview-bank` | `interview_bank` | F6 | Ngân hàng câu hỏi lý thuyết, chế độ học, chế độ luyện có AI đối chiếu, theo dõi tiến độ |
 | `algoprep-bootstrap` | (không) | (không) | — | `@SpringBootApplication`, gom cấu hình toàn cục, chạy test kiểm ranh giới module |
@@ -114,7 +114,9 @@ algoprep-judge/src/main/java/com/algoprep/judge/
 ├── application/                # --- CA SỬ DỤNG ---
 │   ├── ports/in/               # Cổng VÀO: mỗi ca sử dụng một interface, một phương thức
 │   │                           #   SubmitSolutionUseCase, RecordJudgeCallbackUseCase,
-│   │                           #   RequestRejudgeUseCase, GetSubmissionDetailQuery
+│   │                           #   GetSubmissionDetailQuery
+│   │                           #   (RequestRejudgeUseCase đã bị bỏ khỏi phạm vi bởi
+│   │                           #    DEC-2026-0828-remove-rejudge-scope)
 │   ├── ports/out/              # Cổng RA của đường ĐỌC — trả read model, không trả Aggregate
 │   │                           #   SubmissionReadPort, QueueMetricsReadPort
 │   ├── command/                # Handler làm ĐỔI trạng thái, mở transaction
@@ -201,8 +203,9 @@ application/command              DispatchSubmissionCommandHandler
                   ├─→ domain/model  Submission cập nhật kết quả testcase này, tính lại trạng thái tổng,
                   │                 KHÔNG bao giờ ghi đè một trạng thái đã là trạng thái cuối
                   ├─→ infrastructure/realtime → đẩy trạng thái testcase qua WebSocket topic của bài nộp
-                  └─→ nếu điều kiện dừng đạt (testcase sai/lỗi) → dừng lặp, không gọi testcase còn lại
-      ↓ (khi hết testcase hoặc đã dừng sớm)
+                  └─→ chạy TIẾP testcase còn lại kể cả khi testcase này sai — không dừng sớm,
+                    vì điểm tỷ lệ F4-13 cần biết số testcase đạt trên tổng số
+      ↓ (khi hết testcase)
       SubmissionEventPublisher → phát SubmissionAcceptedEvent khi đạt Accepted
 ```
 

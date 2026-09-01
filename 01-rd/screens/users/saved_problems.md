@@ -4,21 +4,21 @@
 > Bounded Context: `problem-bank` (F2) [SoT: 01-rd/overview/system_survey.md:487]. Actor: A1.
 >
 > Đối chiếu prototype: `09-layoutBase/Bài đã lưu.dc.html`. File này mô tả **hành vi và UX ở mức yêu cầu** —
-> không lặp lại đặc tả chức năng đã có ở `01-rd/req/req.md` (mục F2) và `01-rd/req/user_stories.md`
+> không lặp lại đặc tả chức năng đã có ở `01-rd/req/problem-bank.md` (mục F2) và `01-rd/req/user_stories/a1_student.md`
 > (`US-A1-09`), chỉ trỏ tới và bổ sung phần đặc thù của màn. Đây là màn **khớp tốt nhất** với RD trong số 5
 > màn Phase 2 — không có xung đột nghiêm trọng, chỉ một khoảng trống nhỏ (Câu hỏi mở Q1).
 
 ## 1. Mục đích màn hình
 
 Xem lại danh sách bài toán đã đánh dấu (bookmark) kèm ghi chú riêng tư theo từng bài, lọc theo độ khó và
-trạng thái làm bài, bỏ lưu hoặc vào giải trực tiếp từ danh sách [SoT: 01-rd/req/req.md:140-146 — F2-13].
+trạng thái làm bài, bỏ lưu hoặc vào giải trực tiếp từ danh sách [SoT: 01-rd/req/problem-bank.md — F2-13].
 
 ## 2. Nguồn yêu cầu (không lặp lại — chỉ trỏ)
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Lưu bài toán (bookmark) kèm ghi chú riêng tư tuyệt đối theo `(user_id, problem_id)` | F2-13 | `01-rd/req/req.md:140-146`, `262` |
-| Given-When-Then đầy đủ | — | `01-rd/req/user_stories.md:170-181` (`US-A1-09`) |
+| Lưu bài toán (bookmark) kèm ghi chú riêng tư tuyệt đối theo `(user_id, problem_id)` | F2-13 | `01-rd/req/problem-bank.md` — F2-13 |
+| Given-When-Then đầy đủ | — | `01-rd/req/user_stories/a1_student.md` (`US-A1-09`) |
 
 ## 3. Trạng thái và cấu trúc màn (screen states)
 
@@ -51,7 +51,7 @@ trạng thái làm bài, bỏ lưu hoặc vào giải trực tiếp từ danh s�
 
 | # | Câu hỏi | Quyết định | Ghi chú |
 | :-: | :--- | :--- | :--- |
-| Q1 | Câu chữ chân bảng ngụ ý toàn bộ danh sách bookmark là riêng tư, `req.md` chỉ chốt rõ ở mức ghi chú. | **Chốt: áp cùng mức riêng tư tuyệt đối cho cả việc bookmark**, không chỉ ghi chú — nhất quán với câu chữ UI và cách xử lý dữ liệu cá nhân ở các màn khác. Mở rộng phạm vi F2-13 (không cần mã mới). | `[SoT: Suy luận]`, đã chốt, không còn mở. |
+| Q1 | Câu chữ chân bảng ngụ ý toàn bộ danh sách bookmark là riêng tư, `problem-bank.md` chỉ chốt rõ ở mức ghi chú. | **Chốt: áp cùng mức riêng tư tuyệt đối cho cả việc bookmark**, không chỉ ghi chú — nhất quán với câu chữ UI và cách xử lý dữ liệu cá nhân ở các màn khác. Mở rộng phạm vi F2-13 (không cần mã mới). | `[SoT: Suy luận]`, đã chốt, không còn mở. |
 
 ## 6. Ngoài phạm vi file này
 
@@ -62,7 +62,7 @@ trạng thái làm bài, bỏ lưu hoặc vào giải trực tiếp từ danh s�
 
 ## 7. Tham chiếu
 
-- `01-rd/req/req.md:140-146, 262` — F2-13.
-- `01-rd/req/user_stories.md:170-181` — `US-A1-09`.
+- `01-rd/req/problem-bank.md` — F2-13.
+- `01-rd/req/user_stories/a1_student.md` — `US-A1-09`.
 - `01-rd/overview/system_survey.md:487` — dòng `saved_problems` trong bảng màn mục 7.
 - `09-layoutBase/Bài đã lưu.dc.html` — prototype.

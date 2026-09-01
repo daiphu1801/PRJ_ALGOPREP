@@ -1,0 +1,34 @@
+# AlgoPrep — cau hinh Prometheus cho moi truong local.
+#
+# Bat bang profile: docker compose --profile observability up -d
+# 01-rd/system/environment.md muc 2: giam sat "co the bat muon, nhung phai co truoc khi bao cao
+# hieu nang".
+#
+# So lieu toi thieu phai theo doi (01-rd/system/backend_architecture.md muc 7): do dai hang doi,
+# do tre cham bai, ti le callback loi, token AI da dung. Ba trong bon so lieu do la metric NGHIEP VU
+# do backend tu phat qua Micrometer — chung chua ton tai vi F4/F5 chua duoc dung.
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    environment: local
+
+scrape_configs:
+  # Backend AlgoPrep. `host.docker.internal` vi backend chay NGOAI compose luc phat trien
+  # (`./mvnw spring-boot:run` tren may that), khong phai mot service trong file compose.
+  - job_name: algoprep-backend
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ["host.docker.internal:8080"]
+        labels:
+          application: algoprep
+
+  # go-judge tu phat metric o cong monitor rieng (-monitor-addr), khong phai cong HTTP chinh.
+  - job_name: go-judge
+    static_configs:
+      - targets: ["go-judge:5052"]
+
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]

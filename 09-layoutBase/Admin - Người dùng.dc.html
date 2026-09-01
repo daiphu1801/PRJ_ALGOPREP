@@ -424,6 +424,7 @@ class Component extends DCLogic {
       ['Đang hoạt động 24 giờ', '312', '+8%', ok, '24% tổng số người học'],
       ['Chờ xác thực email', '18', '−3', warn, 'Quá 7 ngày sẽ tự huỷ'],
       ['Bị khóa', '7', '+2', neg, '3 do vi phạm gian lận'],
+      ['Yêu cầu đặt lại mật khẩu', '6', '+1', warn, 'Gửi trong 24 giờ qua'],
     ].map(([label, value, delta, deltaFg, meta]) => ({ label, value, delta, deltaFg, meta }));
 
     const roleStyle = {
@@ -480,9 +481,7 @@ class Component extends DCLogic {
     ].map(([name, value, pct, bar]) => ({ name, value, pct, bar }));
 
     const queue = [
-      ['Yêu cầu đặt lại mật khẩu', 'Gửi trong 24 giờ qua', '6', warn],
       ['Chờ xác thực email', 'Quá hạn 7 ngày sẽ tự huỷ', '18', warn],
-      ['Báo cáo nghi gian lận', 'Trùng mã nguồn giữa hai tài khoản', '3', neg],
       ['Đề nghị cấp quyền giảng viên', 'Cần quản trị viên phê duyệt', '2', blue],
     ].map(([title, meta, count, fg]) => ({ title, meta, count, fg }));
 

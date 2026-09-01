@@ -422,7 +422,7 @@ class Component extends DCLogic {
 
     const sb = this.state.sb;
     const sandbox = [
-      Object.assign({ title: 'Cho phép truy cập mạng', meta: 'Tắt trong mọi kỳ thi', onClick: () => this.flip('sb', 'net') }, knob(sb.net)),
+      Object.assign({ title: 'Cho phép truy cập mạng', meta: 'Luôn tắt trong sandbox chấm bài', onClick: () => this.flip('sb', 'net') }, knob(sb.net)),
       Object.assign({ title: 'Giới hạn tiến trình con', meta: 'Tối đa 60 tiến trình', onClick: () => this.flip('sb', 'fork') }, knob(sb.fork)),
       Object.assign({ title: 'Trả stderr cho người học', meta: 'Cắt còn 2 KB đầu', onClick: () => this.flip('sb', 'stderr') }, knob(sb.stderr)),
     ];

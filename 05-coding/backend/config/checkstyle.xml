@@ -1,0 +1,118 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+    "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+    "https://checkstyle.org/dtds/configuration_1_3.dtd">
+<!--
+  AlgoPrep backend — luật Checkstyle.
+
+  Ba ngưỡng dưới đây KHÔNG phải sở thích về style; chúng do
+  01-rd/system/environment.md mục 3.A chốt cứng:
+    - phương thức tối đa 50 dòng
+    - tham số tối đa 5
+    - cấm wildcard import
+  Phần còn lại cố tình tối giản: định dạng là việc của Spotless (google-java-format), tìm lỗi là
+  việc của SpotBugs. Nhân bản chúng ở đây sẽ tạo ra hai công cụ cãi nhau trên cùng một dòng.
+
+  severity=warning ở đây cộng với <violationSeverity>warning</violationSeverity> trong POM nghĩa là
+  MỌI luật trong file này đều FAIL BUILD. Không có luật nào ở mức khuyến nghị.
+-->
+<module name="Checker">
+  <property name="severity" value="warning"/>
+  <property name="charset" value="UTF-8"/>
+  <property name="fileExtensions" value="java"/>
+
+  <!-- File phải kết thúc bằng newline; tránh diff hiện một thay đổi ảo ở dòng cuối. -->
+  <module name="NewlineAtEndOfFile"/>
+
+  <!-- Miễn trừ có lý do, xem config/checkstyle-suppressions.xml. Đường dẫn do POM truyền vào qua
+       <suppressionsLocation>; optional=true để Checkstyle chạy độc lập (IDE) không đỏ vì thiếu
+       biến. -->
+  <module name="SuppressionFilter">
+    <property name="file" value="${checkstyle.suppressions.file}" default=""/>
+    <property name="optional" value="true"/>
+  </module>
+
+  <module name="TreeWalker">
+
+    <!-- === Ba luật do environment.md mục 3.A bắt buộc === -->
+
+    <!-- Phương thức tối đa 50 dòng. Comment và dòng trống không tính: luật này nói về lượng thứ
+         người đọc phải giữ trong đầu, và một phương thức 50 dòng có 20 dòng giải thích không phải
+         vấn đề mà nó phòng. -->
+    <module name="MethodLength">
+      <property name="max" value="50"/>
+      <property name="countEmpty" value="false"/>
+      <property name="tokens" value="METHOD_DEF, CTOR_DEF, COMPACT_CTOR_DEF"/>
+    </module>
+
+    <!-- Tối đa 5 tham số. Record được miễn: danh sách component của record là một định nghĩa dữ
+         liệu, không phải gánh nặng ở chỗ gọi, và lược đồ kiểu của harness (F3) có nhu cầu thật về
+         record nhiều thành phần. -->
+    <module name="ParameterNumber">
+      <property name="max" value="5"/>
+      <property name="tokens" value="METHOD_DEF, CTOR_DEF"/>
+      <property name="ignoreOverriddenMethods" value="true"/>
+    </module>
+
+    <!-- Cấm wildcard import. Nhờ vậy chỉ cần đọc phần import là thấy được một module có chạm sang
+         Bounded Context khác hay không — đúng thứ bộ test ArchUnit trong algoprep-bootstrap khẳng
+         định. Một wildcard import che mất điều đó. -->
+    <module name="AvoidStarImport">
+      <property name="allowClassImports" value="false"/>
+      <property name="allowStaticMemberImports" value="false"/>
+    </module>
+
+    <!-- === Luật hỗ trợ: rẻ, và mỗi luật chặn một lớp lỗi thật === -->
+
+    <!-- Import không dùng thường là dấu vết của một phụ thuộc chéo module vừa bị xoá. -->
+    <module name="UnusedImports">
+      <property name="processJavadoc" value="true"/>
+    </module>
+
+    <!-- Import từ sun.* và tương tự là không khả chuyển. -->
+    <module name="IllegalImport"/>
+
+    <!-- Import thừa (cùng package, java.lang, trùng lặp). -->
+    <module name="RedundantImport"/>
+
+    <!-- Thân if/for/while/do phải có ngoặc. Chặn lớp lỗi kiểu goto-fail. -->
+    <module name="NeedBraces"/>
+
+    <!-- Catch rỗng nuốt lỗi trong im lặng. Bắt buộc phải có tên biến nói rõ là có chủ đích. -->
+    <module name="EmptyCatchBlock">
+      <property name="exceptionVariableName" value="expected|ignored"/>
+    </module>
+
+    <!-- Dùng == thay cho .equals() trên String. -->
+    <module name="StringLiteralEquality"/>
+
+    <!-- Rơi xuyên case của switch mà không ghi chú là có chủ đích. -->
+    <module name="FallThrough"/>
+
+    <!-- Một class top-level một file. -->
+    <module name="OneTopLevelClass"/>
+
+    <!-- Tên package phải khớp thư mục, chữ thường, không gạch dưới. Đây là thứ giữ cho
+         com.algoprep.problembank (không dấu gạch, vì Java không cho) khớp với tên module
+         algoprep-problem-bank (01-rd/system/codebase_structure.md mục 3). -->
+    <module name="PackageDeclaration"/>
+    <module name="PackageName">
+      <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>
+    </module>
+
+    <!-- Quy ước đặt tên theo Google Java Style. -->
+    <module name="TypeName"/>
+    <module name="MethodName"/>
+    <module name="ConstantName"/>
+    <module name="LocalVariableName"/>
+    <module name="MemberName"/>
+    <module name="ParameterName"/>
+
+    <!-- Thứ tự modifier (public static final, không phải static public final). -->
+    <module name="ModifierOrder"/>
+
+    <!-- Class tiện ích và class hằng số không được khởi tạo được. -->
+    <module name="HideUtilityClassConstructor"/>
+
+  </module>
+</module>

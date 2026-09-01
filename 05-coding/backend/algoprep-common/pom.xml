@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  algoprep-common — nhan dung chung (shared kernel).
+
+  KHONG phai mot Bounded Context, KHONG so huu schema nao
+  (DEC-2026-0820-architecture-baseline). Chi chua thu ma moi module can va khong thuoc rieng
+  module nao: kieu mien co so, ngoai le nen, cong ra dung chung.
+
+  Hai luat, ArchUnit trong algoprep-bootstrap chan that:
+    - Module nay KHONG phu thuoc ai (01-rd/system/backend_architecture.md muc 2.A luat 3).
+    - KHONG chua nghiep vu cua context nao (muc 2). Dat logic nghiep vu vao day la cach mot
+      modular monolith am tham tro thanh monolith phang.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.algoprep</groupId>
+    <artifactId>algoprep-backend</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>algoprep-common</artifactId>
+  <name>algoprep-common</name>
+  <description>Nhan dung chung — kieu mien co so, ngoai le nen, cong ra dung chung</description>
+
+  <!-- Khong khai dependency nao. Java thuan. Day la chu dich, khong phai thieu sot. -->
+</project>

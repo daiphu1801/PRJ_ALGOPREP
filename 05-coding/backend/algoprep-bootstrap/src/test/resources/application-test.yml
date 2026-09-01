@@ -1,0 +1,40 @@
+# AlgoPrep backend - profile `test`: chay `./mvnw verify` DOC LAP HOAN TOAN voi ha tang.
+#
+# Vi sao khong dung database that o day:
+#   `./mvnw verify` la cong bat buoc truoc khi bao xong viec (G-CHECK,
+#   01-rd/system/environment.md muc 4). No phai cho ra CUNG MOT KET QUA du may co bat Docker hay
+#   khong. Neu khong thi cong bien thanh mot thu ai cung tim cach bo qua.
+#
+# Bai hoc da gap thay vi doan (2026-09-01): thieu khoi `management.health.*` duoi day,
+# `./mvnw verify` XANH tren may khong co Docker va DO tren may CO Docker - vi indicator redis noi
+# tới localhost:6379 khong mat khau, con Redis trong compose thi CO mat khau, nen ket qua la DOWN
+# va /actuator/health tra 503. Do la loai flaky te nhat: thanh cong hay that bai phu thuoc vao mot
+# thu nam ngoai cay ma nguon.
+#
+# DAY LA NO KY THUAT CO THOI HAN. Test tich hop that dung TESTCONTAINERS voi PostgreSQL/Redis/
+# RabbitMQ THAT (01-rd/system/environment.md muc 5 - KHONG mock database bang H2, vi hanh vi khac
+# Postgres du de test xanh ma production do). Chung thuoc slice cua tung module va KHONG dung
+# profile nay. Xoa dan cac muc duoi day khi module dau tien co Entity JPA that.
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
+      - org.springframework.boot.jpa.autoconfigure.HibernateJpaAutoConfiguration
+      - org.springframework.boot.data.redis.autoconfigure.RedisAutoConfiguration
+      - org.springframework.boot.amqp.autoconfigure.RabbitAutoConfiguration
+
+# Loai tru autoconfigure o tren KHONG du: health contributor cua Redis den tu mot
+# autoconfiguration KHAC (RedisHealthContributorAutoConfiguration), nen no van song va van thu ket
+# noi. Tat thang bang co `management.health.*` la cach tuong minh, va khong phu thuoc vao viec doan
+# dung ten class da bi doi goi o Spring Boot 4.
+management:
+  health:
+    redis:
+      enabled: false
+    db:
+      enabled: false
+    rabbit:
+      enabled: false
+  endpoint:
+    health:
+      show-details: always

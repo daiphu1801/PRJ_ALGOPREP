@@ -197,7 +197,10 @@
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
         <div style="padding: 18px 20px; background: var(--glass); backdrop-filter: blur(40px) saturate(180%); -webkit-backdrop-filter: blur(40px) saturate(180%); border: 1px solid var(--border); border-radius: 20px; box-shadow: inset 0 1px 0 var(--inset), var(--shadow);">
-          <div style="font-size: 14.5px; font-weight: 700; margin-bottom: 3px;">Tiến độ học viên</div>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 3px;">
+            <div style="font-size: 14.5px; font-weight: 700;">Tiến độ học viên</div>
+            <a href="./Giáo viên - Tiến độ học viên.dc.html" style="font-size: 12px; font-weight: 600; color: var(--muted); white-space: nowrap;">Xem tất cả</a>
+          </div>
           <div style="font-size: 12.5px; color: var(--muted); margin-bottom: 14px;">Điểm trung bình 4 tuần gần nhất</div>
           <svg viewBox="0 0 260 90" style="width: 100%; height: 76px;">
             <path d="{{ progressLine }}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"></path>

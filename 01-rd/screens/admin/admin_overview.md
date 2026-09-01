@@ -21,7 +21,7 @@
 > [SoT: 01-rd/overview/system_survey.md:547], khu quản trị từ 8 lên 11 slug, tổng số màn dự kiến 27 → 30
 > [SoT: 01-rd/overview/system_survey.md:559-565].
 >
-> File này mô tả hành vi và UX ở mức yêu cầu — không lặp lại đặc tả chức năng đã có ở `01-rd/req/req.md`,
+> File này mô tả hành vi và UX ở mức yêu cầu — không lặp lại đặc tả chức năng đã có ở `01-rd/req/identity.md`,
 > chỉ trỏ tới và bổ sung phần đặc thù của màn.
 
 ## 1. Mục đích màn hình
@@ -43,30 +43,33 @@ có màn thật; việc sửa `HOME_PATH_BY_ROLE` là việc của code, không 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
 | Điều hướng theo vai trò sau đăng nhập — `ADMIN` → `admin_overview` | (quyết định RD, chưa có mã `Fx-nn`) | `01-rd/screens/shared/auth.md:90` (Q3 đã chốt) |
-| Ma trận phân quyền gác từng chức năng quản trị mà nav trỏ tới | F1-10 tới F1-12 | `01-rd/req/req.md:55-68` |
-| Quản lý tài khoản người dùng (đích nav "Người dùng") | F1-13 | `01-rd/req/req.md:69-75` |
-| Nhật ký hệ thống — audit hành động quản trị (đích nav "Nhật ký hệ thống") | F1-14 | `01-rd/req/req.md:76-84` |
-| Phân loại bài toán theo độ khó (trục biểu đồ "Độ khó bài toán": Dễ/Trung bình/Khó) | F2-02 | `01-rd/req/req.md:139` |
-| Giám sát hàng đợi và cụm judge engine (đích nav "Hàng đợi chấm") | F4-10 | `01-rd/req/req.md:295` |
-| Cấu hình ngôn ngữ và giới hạn tài nguyên (đích nav "Ngôn ngữ và giới hạn") | F4-11 | `01-rd/req/req.md:296` |
-| Chấm lại quy mô lớn (đích nav "Chấm lại") | F4-09a tới F4-09e | `01-rd/req/req.md:266-294` |
-| Cấu hình prompt/rubric AI (đích nav "Cấu hình AI") | F5-23 | `01-rd/req/req.md:360-365` |
-| Ngân sách và token AI (đích nav "Token AI") | F5-21, F5-25 | `01-rd/req/req.md:347-351` |
-| Quản lý ngân hàng câu hỏi phỏng vấn (đích nav "Câu hỏi phỏng vấn") | F6-11, F6-12 | `01-rd/req/req.md:67` (danh sách Function `INTERVIEW_BANK_MANAGEMENT`), `01-rd/req/req.md:423` (F6-12) |
+| Ma trận phân quyền gác từng chức năng quản trị mà nav trỏ tới | F1-10 tới F1-12 | `01-rd/req/identity.md` — F1-10 tới F1-12 |
+| Quản lý tài khoản người dùng (đích nav "Người dùng") | F1-13 | `01-rd/req/identity.md` — F1-13 |
+| Nhật ký hệ thống — audit hành động quản trị (đích nav "Nhật ký hệ thống") | F1-14 | `01-rd/req/identity.md` — F1-14 |
+| Phân loại bài toán theo độ khó (trục biểu đồ "Độ khó bài toán": Dễ/Trung bình/Khó) | F2-02 | `01-rd/req/problem-bank.md` — F2-02 |
+| Giám sát hàng đợi và cụm judge engine (đích nav "Hàng đợi chấm") | F4-10 | `01-rd/req/judge-orchestration.md` — F4-10 |
+| Cấu hình ngôn ngữ và giới hạn tài nguyên (đích nav "Ngôn ngữ và giới hạn") | F4-11 | `01-rd/req/judge-orchestration.md` — F4-11 |
+| ~~Chấm lại quy mô lớn (đích nav "Chấm lại")~~ | — | **Đã loại khỏi phạm vi 2026-08-28** — `DEC-2026-0828-remove-rejudge-scope`. Đích nav "Chấm lại" cần gỡ khỏi màn khi build FE thật. |
+| Cấu hình prompt/rubric AI (đích nav "Cấu hình AI") | F5-23 | `01-rd/req/ai-review.md` — F5-23 |
+| Ngân sách và token AI (đích nav "Token AI") | F5-21, F5-25 | `01-rd/req/ai-review.md` — F5-21, F5-25 |
+| Quản lý ngân hàng câu hỏi phỏng vấn (đích nav "Câu hỏi phỏng vấn") | F6-12 | `01-rd/req/identity.md` — F1-12 (danh sách Function `INTERVIEW_BANK_MANAGEMENT`), `01-rd/req/interview-bank.md` — F6-12. F6-11 đã loại khỏi phạm vi 2026-08-28, `DEC-2026-0828-remove-per-class-interview-set` |
 | Ba ngôn ngữ nộp bài — trục dữ liệu của biểu đồ "Lượt nộp theo ngôn ngữ" | (giới hạn phạm vi, không phải mã `Fx-nn`) | `01-rd/overview/system_survey.md:570` |
-| Given-When-Then của các màn con | US-A3-01 tới US-A3-05 | `01-rd/req/user_stories.md:284-345` |
+| Given-When-Then của các màn con | US-A3-01 tới US-A3-05 | `01-rd/req/user_stories/a3_admin.md` |
 
 **Ghi chú traceability — đây là phát hiện chính của file này:** không có mã `Fx-nn` nào và không có
 `US-A3-nn` nào mô tả **bản thân màn tổng quan** hay bất kỳ khối thống kê trên đó. `US-A3-01` tới `US-A3-05`
 đều mô tả màn con (ma trận quyền, quản lý người dùng, giám sát hàng đợi, cấu hình, chấm lại)
-[SoT: 01-rd/req/user_stories.md:284-345]. Cụ thể, **8 trong 9 khối nội dung của màn không gán được mã nào**
+[SoT: 01-rd/req/user_stories/a3_admin.md]. Cụ thể, **8 trong 9 khối nội dung của màn không gán được mã nào**
 — chi tiết ở mục 3, quy về Câu hỏi mở Q2 tới Q6. Đây là cùng dạng khoảng trống đã ghi nhận cho
-`instructor_overview` [SoT: 01-rd/screens/teacher/instructor_overview.md:39-42].
+`instructor_overview` [SoT: 01-rd/screens/teacher/instructor_overview.md:39-42]. **Cập nhật 2026-08-31: toàn
+bộ Q1-Q8 đã đóng.** Q2 cấp mã `F1-29` cho cả 8 khối; Q5 xác nhận legend "Độ khó bài toán" là nhãn vẽ sai; Q3
+bỏ ô tìm kiếm; Q4 hiện đủ 5 verdict; Q6 thêm một liên kết cho "Bài phổ biến nhất"; Q7 mở rộng phạm vi debt
+i18n; Q8 thêm 3 trạng thái theo từng khối.
 
 ## 3. Trạng thái và cấu trúc màn (đối chiếu prototype)
 
 Đối chiếu `09-layoutBase/Admin - Tổng quan.dc.html` — hành vi UX thật đã dựng, không suy diễn trừ khi ghi rõ
-`[SoT: Suy luận]`. Cột "Mã" ghi mã `Fx-nn` gán được; `—` nghĩa là **không gán được mã nào trong `req.md`**.
+`[SoT: Suy luận]`. Cột "Mã" ghi mã `Fx-nn` gán được; `—` nghĩa là **không gán được mã nào trong các file `01-rd/req/*.md`**.
 
 1. **Shell khu Admin, nav 5 nhóm / 11 đích** (HTML dòng 68-94, dữ liệu dòng 361-381): Tổng quan (không có
    item con, `items: []`) · Nội dung (Quản lý bài tập, Câu hỏi phỏng vấn) · Vận hành (Hàng đợi chấm, Chấm
@@ -80,7 +83,7 @@ có màn thật; việc sửa `HOME_PATH_BY_ROLE` là việc của code, không 
 2. **Thanh công cụ đầu trang** (HTML dòng 106-126): ô tìm kiếm "Tìm người dùng, bài toán…" (dòng 109), 3 nút
    biểu tượng không nhãn `layout-grid`/`moon`/`shield-check` (dòng 113-117, dữ liệu dòng 422 — không có
    handler, không có `href`), khối danh tính "Phú Đại / Quản trị viên" (dòng 121-122). **Mã: —** cho ô tìm
-   kiếm: F2-11 là tìm kiếm **bài toán cho A1** [SoT: 01-rd/req/req.md:164], không phải tìm kiếm liên thực
+   kiếm: F2-11 là tìm kiếm **bài toán cho A1** [SoT: 01-rd/req/problem-bank.md — F2-11], không phải tìm kiếm liên thực
    thể (người dùng + bài toán) cho A3 — xem Câu hỏi mở Q3.
 3. **Dải chỉ số tổng — 2 thẻ** (HTML dòng 128-144, dữ liệu dòng 426-429): "Tổng lượt nộp bài" = `9.416`
    (delta `+12,1%`) và "Người dùng hoạt động" = `1.284` (delta `+8,4%`), mỗi thẻ kèm sparkline
@@ -95,13 +98,13 @@ có màn thật; việc sửa `HOME_PATH_BY_ROLE` là việc của code, không 
 5. **"Kết quả chấm"** (HTML dòng 162-181, dữ liệu dòng 437-453): đồng hồ nửa vòng 40 vạch + legend 3 mức —
    `Accepted` 48% · `Sai / lỗi` 29% · `Time limit` 23%, tổng đúng 100%
    [SoT: 09-layoutBase/Admin - Tổng quan.dc.html:437-439]. **Mã: —.** Tập verdict thật của hệ thống là
-   AC/WA/TLE/CE/RE... [SoT: 01-rd/req/req.md:125 — F1-18 liệt kê bộ lọc verdict], nên nhóm "Sai / lỗi" đang
+   AC/WA/TLE/CE/RE... [SoT: 01-rd/req/identity.md — F1-18 liệt kê bộ lọc verdict], nên nhóm "Sai / lỗi" đang
    gộp WA + CE + RE thành một, quy tắc gộp chưa được định nghĩa ở đâu — xem Câu hỏi mở Q4.
 6. **"Độ khó bài toán"** (HTML dòng 184-209, dữ liệu dòng 455-468): cột đôi theo 3 mức Dễ / Trung bình / Khó,
    legend **"AI sinh"** và **"Giảng viên soạn"** [SoT: 09-layoutBase/Admin - Tổng quan.dc.html:455-459]. Trục
-   độ khó khớp F2-02 [SoT: 01-rd/req/req.md:139]. **Mã: — cho trục phân loại nguồn gốc bài toán, và đây là
-   phát hiện nghiêm trọng nhất của màn:** `req.md` chỉ có **F2-14 — AI hỗ trợ sinh testcase**
-   [SoT: 01-rd/req/req.md:182-191], **không có mã nào cho AI sinh chính bài toán/đề bài**, cũng không có mã
+   độ khó khớp F2-02 [SoT: 01-rd/req/problem-bank.md — F2-02]. **Mã: — cho trục phân loại nguồn gốc bài toán, và đây là
+   phát hiện nghiêm trọng nhất của màn:** `problem-bank.md` chỉ có **F2-14 — AI hỗ trợ sinh testcase**
+   [SoT: 01-rd/req/problem-bank.md — F2-14], **không có mã nào cho AI sinh chính bài toán/đề bài**, cũng không có mã
    nào nói bài toán lưu thuộc tính "ai là tác giả" để chia hai nhóm này. Xem Câu hỏi mở Q5.
 7. **"Lượt nộp theo ngày"** (HTML dòng 211-234, dữ liệu dòng 471-475): lưới dot 7 cột T2→CN, mỗi cột 10 dot
    sáng/mờ theo giá trị; chân widget hiện `9.416 · Tổng lượt nộp` và `1.345 · TB/ngày`
@@ -120,7 +123,7 @@ có màn thật; việc sửa `HOME_PATH_BY_ROLE` là việc của code, không 
     hạn.dc.html`, "Đăng nhập & Đăng ký" → màn `auth`, "Trang cá nhân" → màn `profile`
     [SoT: 09-layoutBase/Admin - Tổng quan.dc.html:406-410]. **Cảnh báo:** "Cài đặt" trỏ tới màn
     `admin_language_config` (cấu hình hệ thống), không phải màn `settings` (tuỳ chọn cá nhân, F1-20
-    [SoT: 01-rd/req/req.md:127-128]) — hai thứ khác nhau, nhãn gây hiểu nhầm. Đề xuất sửa khi dựng UI thật;
+    [SoT: 01-rd/req/identity.md — F1-18, F1-20]) — hai thứ khác nhau, nhãn gây hiểu nhầm. Đề xuất sửa khi dựng UI thật;
     không cần mã mới.
 12. **Theme** (HTML dòng 96-100, dữ liệu dòng 412-420): chỉ công tắc Sáng/Tối, lưu `localStorage` khoá
     `algoprep-admin-theme` [SoT: 09-layoutBase/Admin - Tổng quan.dc.html:328], mặc định `light` đúng
@@ -128,7 +131,9 @@ có màn thật; việc sửa `HOME_PATH_BY_ROLE` là việc của code, không 
     `data-ui-lang`/`data-lang`** trong toàn bộ file (xác minh: `data-ui-lang` không xuất hiện lần nào) —
     `DEC-2026-0824-i18n-vi-en` chỉ nêu tên 4 màn Admin còn thiếu scaffold (`Chấm lại`, `Cấu hình AI`, `Hàng
     đợi chấm`, `Ngôn ngữ và giới hạn`), **không có `Tổng quan`**
-    [SoT: .nexa/control/decision-registry.md:303-316] — xem Câu hỏi mở Q7.
+    [SoT: .nexa/control/decision-registry.md:303-316] — xem Câu hỏi mở Q7. **Cập nhật 2026-08-28:** `Chấm
+    lại` (`admin_rejudge`) đã loại khỏi phạm vi (`DEC-2026-0828-remove-rejudge-scope`), amendment ghi ở
+    cùng decision entry — còn 3 màn thật sự cần scaffold.
 13. **Không có trạng thái rỗng / lỗi / đang tải**: toàn bộ dữ liệu là hằng số tĩnh trả về ngay trong
     `renderVals()` [SoT: 09-layoutBase/Admin - Tổng quan.dc.html:355-504], không có nhánh nào cho "chưa có
     dữ liệu", "một nguồn số liệu không phản hồi", hay "đang tải" — xem Câu hỏi mở Q8.
@@ -158,7 +163,7 @@ hành vi đã dựng trong prototype — đánh dấu nguồn từng dòng.
 - **Cho** tôi là `ADMIN` nhưng ma trận phân quyền F1-10 không cấp cho vai trò của tôi một Function nào đó,
   **Khi** tôi mở `admin_overview`, **Thì** đích nav tương ứng và khối số liệu lấy từ Function đó không được
   hiển thị (hoặc hiển thị trạng thái không có quyền) thay vì lỗi kỹ thuật [SoT: Suy luận — suy từ nguyên tắc
-  F1-10/F1-12 rằng mọi chức năng quản trị đều bị gác bởi ma trận quyền, `01-rd/req/req.md:55-68`; prototype
+  F1-10/F1-12 rằng mọi chức năng quản trị đều bị gác bởi ma trận quyền, `01-rd/req/identity.md` — F1-10, F1-12; prototype
   render nav tĩnh, không có nhánh theo quyền].
 - **Cho** một nguồn số liệu (`problem-bank` / `judge-orchestration` / `ai-review`) không phản hồi, **Khi**
   tôi mở màn, **Thì** các khối còn lại vẫn hiển thị và chỉ khối bị ảnh hưởng báo lỗi — không sập cả màn
@@ -170,13 +175,13 @@ hành vi đã dựng trong prototype — đánh dấu nguồn từng dòng.
 | # | Câu hỏi | Ưu tiên | Vì sao chưa trả lời được | Đề xuất | Chủ sở hữu |
 | :-: | :--- | :--- | :--- | :--- | :--- |
 | Q1 | ~~`admin_overview` chưa có dòng nào trong bảng slug, và hai đích nav "Quản lý bài tập" / "Câu hỏi phỏng vấn" cũng chưa có slug.~~ **ĐÃ CHỐT 2026-08-25:** `admin_overview` thêm vào mục 7.3 (đúng như đề xuất). Hai đích nội dung kia mở đợt đối chiếu riêng như đề xuất, kết quả: `admin_problem_management`/`admin_interview_question_management` được viết RD rồi đổi tên bỏ tiền tố, chuyển sang mục 7.0 (khu dùng chung A2+A3) — `DEC-2026-0825-shared-content-authoring-screens`. | — | Đã chốt. Chi tiết: `01-rd/screens/shared/problem_management.md`, `01-rd/screens/shared/interview_question_management.md`, `01-rd/screens/shared/problem_authoring.md`. | Đã đóng |
-| Q2 | **8/9 khối thống kê trên màn không gán được mã `Fx-nn` nào** (chỉ số tổng, lượt nộp theo ngôn ngữ / theo ngày / theo tháng, kết quả chấm, độ khó, bài phổ biến, người dùng mới-cũ). Có cấp một mã mới cho "Báo cáo thống kê vận hành cho A3" (ví dụ một mã trong F1 hoặc một mã tổng hợp mới) không, hay coi toàn bộ màn là màn dẫn xuất không cần mã? Kèm theo: định nghĩa "Người dùng hoạt động" (cửa sổ thời gian, có loại trừ `DEACTIVATED` của F1-16 không), khung thời gian tính delta, đơn vị trục 20 cột của biểu đồ ngôn ngữ, và cơ chế phân biệt "người dùng mới" vs "quay lại". | Cao | `req.md` không có mục nào về thống kê/báo cáo cho A3 (kiểm tra bằng tìm "thống kê", "báo cáo", "biểu đồ" — chỉ ra F1-21 báo cáo tiến độ qua email và các báo cáo AI của F5, khác hoàn toàn). Không được tự phát minh mã mới theo quy tắc dự án. | Cấp **một** mã mới duy nhất cho cả màn (dashboard vận hành A3) rồi liệt kê các chỉ số thành phần bên dưới nó, thay vì cấp 8 mã rời — giữ `req.md` gọn và khớp cách F1-12 gộp Function. "Người dùng hoạt động": đề xuất đăng nhập trong 30 ngày gần nhất, loại trừ `DEACTIVATED`. Cả hai đều cần chủ dự án chốt. | Chủ dự án |
-| Q3 | Ô tìm kiếm "Tìm người dùng, bài toán…" là tìm kiếm liên thực thể cho A3 (người dùng + bài toán trong cùng một hộp), khác F2-11 (A1 tìm bài toán). Có phải một chức năng thật cần mã riêng, hay chỉ là chỗ dành sẵn trong prototype chưa gắn hành vi? | Trung bình | Prototype không gắn handler nào cho input này [SoT: 09-layoutBase/Admin - Tổng quan.dc.html:109]; cùng dạng với ô tìm kiếm chưa có hành vi ở `instructor_overview` [SoT: 01-rd/screens/teacher/instructor_overview.md:56-59]. | Nếu giữ: mô tả rõ phạm vi tìm (người dùng theo email/tên, bài toán theo tên/mã) và gác bởi ma trận quyền F1-10. Nếu chưa cần cho đồ án: bỏ khỏi UI thật để không hứa tính năng không làm. | Chủ dự án |
-| Q4 | Widget "Kết quả chấm" gộp verdict thành 3 nhóm (`Accepted` / `Sai / lỗi` / `Time limit`) trong khi hệ thống có AC/WA/TLE/CE/RE. Quy tắc gộp là gì — `Sai / lỗi` = WA + CE + RE? Vì sao TLE được tách riêng còn CE/RE bị gộp? | Trung bình | Không có mã nào định nghĩa cách nhóm verdict cho mục đích thống kê; F1-18 chỉ liệt kê verdict làm bộ lọc [SoT: 01-rd/req/req.md:125]. | Đề xuất hiển thị đủ 5 verdict thật thay vì gộp 3 nhóm (dashboard quản trị không có lý do làm mờ CE/RE — CE cao là dấu hiệu lỗi harness F3, RE cao là dấu hiệu lỗi sandbox, gộp lại thì mất tín hiệu). Cần chủ dự án xác nhận vì đây là thay đổi nội dung màn so với prototype. | Chủ dự án |
-| Q5 | **Legend "AI sinh" / "Giảng viên soạn" ở biểu đồ "Độ khó bài toán" ngụ ý hệ thống có bài toán do AI sinh ra và lưu tác giả/nguồn gốc của bài toán. `req.md` chỉ có F2-14 (AI sinh **testcase**, output chạy từ đáp án mẫu), không có mã nào cho AI sinh **đề bài**.** Đây là tính năng thật cần một mã `Fx-nn` mới trong F2, hay chỉ là nhãn dữ liệu mẫu vẽ sai (thực tế phải là "AI sinh testcase" / "testcase soạn tay", hoặc một trục phân loại khác)? | Cao | Cùng dạng phát hiện với 6.2.a/6.2.b: prototype hiện một tính năng chưa có trong RD, không tự quyết được vì "AI sinh đề bài" mở ra cả một luồng mới (kiểm duyệt đề AI sinh, tránh trùng bài, bản quyền phát biểu bài toán) [SoT: 06-plan/PROTOTYPE_DEBT.md:534-545 — tiền lệ xử lý]. | Nếu là dữ liệu mẫu vẽ sai: đổi legend thành trục phân loại có thật (ví dụ tỉ lệ Accepted theo độ khó), không cần mã mới. Nếu là tính năng thật: cần một mã F2 mới cùng cơ chế an toàn tương tự F2-14 (bài AI sinh ở trạng thái nháp, Admin xác nhận mới xuất bản, `01-rd/req/req.md:191`) — và ít nhất một thuộc tính "nguồn gốc bài toán" trong `problem-bank`. | Chủ dự án |
-| Q6 | Các widget "Bài phổ biến nhất", "Kết quả chấm", "Lượt nộp theo tháng", "Người dùng mới / cũ" đều **không có liên kết đi tiếp** sang màn con tương ứng, khác hẳn mẫu dashboard của khu Giảng viên vốn có "Xem tất cả"/"Quản lý lớp". Đây là cố ý (chỉ tóm tắt) hay thiếu điều hướng? | Thấp | Prototype chỉ có biểu tượng `more-vertical` trang trí ở góc mỗi widget, không có handler [SoT: 09-layoutBase/Admin - Tổng quan.dc.html:165, 214, 241, 258]. Cùng dạng câu hỏi Q5 của `instructor_overview` [SoT: 01-rd/screens/teacher/instructor_overview.md:119]. | Đề xuất tối thiểu cho "Bài phổ biến nhất" có liên kết sang màn quản lý bài tập (khi Q1 chốt xong slug), các widget biểu đồ còn lại giữ nguyên là tóm tắt. | Chủ dự án |
-| Q7 | `Admin - Tổng quan.dc.html` **không có** scaffold `data-ui-lang`/`data-lang`, nhưng `DEC-2026-0824-i18n-vi-en` chỉ nêu tên 4 màn Admin thiếu scaffold và không có màn này. Phạm vi debt của quyết định đó có bao trùm cả `admin_overview` không? | Thấp | Không sửa được `.nexa/control/decision-registry.md` từ file RD theo trục màn này; và quyết định được viết 2026-08-24, có thể trước khi bản `Tổng quan` hiện tại được dựng lại [SoT: .nexa/control/decision-registry.md:303-316; 06-plan/PROTOTYPE_DEBT.md:502-513]. Câu hỏi này trùng Q6 của `instructor_overview` [SoT: 01-rd/screens/teacher/instructor_overview.md:120] — dấu hiệu danh sách 4 màn trong quyết định đã lạc hậu. | Đề xuất mở rộng phạm vi debt của `DEC-2026-0824-i18n-vi-en` thành "mọi màn khu Admin và khu Giảng viên" thay vì liệt kê tên từng file — danh sách tên file sẽ lạc hậu mỗi lần dựng thêm prototype. Cần một entry cập nhật trong decision registry. | Chủ dự án |
-| Q8 | Màn chưa có trạng thái rỗng (hệ thống mới triển khai, chưa có lượt nộp nào), trạng thái đang tải, trạng thái lỗi từng khối. Có bổ sung trước khi viết BD không, và khi một nguồn số liệu chết thì hỏng cả màn hay chỉ hỏng khối đó? | Trung bình | Prototype dùng dữ liệu tĩnh, không có nhánh nào cho các trạng thái này [SoT: 09-layoutBase/Admin - Tổng quan.dc.html:355-504]. | Đề xuất 3 trạng thái: `empty` (chưa có dữ liệu — hiện câu hướng dẫn thay vì biểu đồ trống), `loading` theo **từng khối** (không chặn cả màn), `error` theo **từng khối** — khối lấy số liệu từ `ai-review` chết không được làm sập màn, khớp nguyên tắc AI degrade gracefully ở `CLAUDE.md`. | Chủ dự án |
+| Q2 | ~~**8/9 khối thống kê trên màn không gán được mã `Fx-nn` nào**...~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** cấp **một** mã mới duy nhất — `F1-29` — cho cả 8 khối, không cấp mã rời. "Người dùng hoạt động" = đăng nhập trong 30 ngày gần nhất, loại trừ `DEACTIVATED` (F1-16). Khung thời gian delta và đơn vị trục biểu đồ ngôn ngữ để BD/DD quyết định. | — | Xem `01-rd/req/identity.md` (F1-29, sau F1-28) và `DEC-2026-0831-admin-overview-dashboard-stats`. Quy tắc gộp verdict ở "Kết quả chấm" **không nằm trong đợt chốt này** — vẫn là Q4, mức Trung bình. | Đã đóng |
+| Q3 | ~~Ô tìm kiếm "Tìm người dùng, bài toán…"...~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** bỏ khỏi UI thật. | — | Không hứa tính năng chưa làm — xoá ô tìm kiếm này khi dựng UI Next.js thật. Xem `DEC-2026-0831-admin-overview-ui-decisions`. | Đã đóng |
+| Q4 | ~~Widget "Kết quả chấm" gộp verdict thành 3 nhóm...~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** hiện đủ **5 verdict thật** (AC/WA/TLE/CE/RE) thay vì gộp 3 nhóm. | — | Giữ tín hiệu CE (lỗi harness F3) và RE (lỗi sandbox) tách biệt. Đã ghi vào `01-rd/req/identity.md` (amendment F1-29). Xem `DEC-2026-0831-admin-overview-ui-decisions`. | Đã đóng |
+| Q5 | ~~**Legend "AI sinh" / "Giảng viên soạn"...**~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** đây là **nhãn dữ liệu mẫu vẽ sai** ở prototype, không phải tính năng thật — hệ thống không có AI sinh đề bài, chỉ có F2-14 (AI sinh testcase). | — | Khi dựng UI thật: đổi trục thành phân loại có thật (ví dụ tỉ lệ Accepted theo độ khó) `[SoT: Suy luận — BD chọn trục cụ thể]`. Không cấp mã F2 mới, không thêm thuộc tính "nguồn gốc bài toán". Xem `DEC-2026-0831-admin-overview-dashboard-stats`. | Đã đóng |
+| Q6 | ~~Các widget... không có liên kết đi tiếp...~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** chỉ "Bài phổ biến nhất" có liên kết "Xem tất cả", các widget biểu đồ còn lại giữ nguyên là tóm tắt. | — | Liên kết dẫn sang `problem_management`. Xem `DEC-2026-0831-admin-overview-ui-decisions`. | Đã đóng |
+| Q7 | ~~`Admin - Tổng quan.dc.html` không có scaffold `data-ui-lang`/`data-lang`...~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** mở rộng phạm vi debt của `DEC-2026-0824-i18n-vi-en` thành "mọi màn khu Admin và khu Giảng viên" thay vì liệt kê tên từng file. | — | Xem `DEC-2026-0831-i18n-scope-expansion` (amendment, `DEC-2026-0824-i18n-vi-en` vẫn ACTIVE). Cùng câu hỏi với Q6 của `instructor_overview.md` — coi như đóng chung. | Đã đóng |
+| Q8 | ~~Màn chưa có trạng thái rỗng/đang tải/lỗi...~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** 3 trạng thái `empty`/`loading`/`error`, theo **từng khối riêng**. | — | Khối lấy số liệu từ `ai-review` chết không làm sập cả màn, khớp nguyên tắc AI degrade gracefully. Đã ghi vào `01-rd/req/identity.md` (amendment F1-29). Xem `DEC-2026-0831-admin-overview-ui-decisions`. | Đã đóng |
 
 ## 6. Ngoài phạm vi file này
 
@@ -186,7 +191,7 @@ hành vi đã dựng trong prototype — đánh dấu nguồn từng dòng.
   toán, chuỗi thời gian ngày/tháng), cơ chế cache và tần suất làm mới — thuộc DD (`03-dd/api/identity.md` và
   các module liên quan, chưa viết).
 - Công thức truy vấn/aggregate cụ thể của từng chỉ số — thuộc DD (`03-dd/logic/`), sau khi Q2 được chốt.
-- Logic nghiệp vụ của 10 màn con mà nav trỏ tới (F1-10→14, F4-09→11, F5-21/23/25, F6-11/12) — thuộc RD/BD/DD
+- Logic nghiệp vụ của 9 màn con mà nav trỏ tới (F1-10→14, F4-10/11, F5-21/23/25, F6-12) — thuộc RD/BD/DD
   của từng màn đó, không lặp lại ở đây.
 - Quyết định có cấp mã `Fx-nn` mới cho thống kê (Q2) và cho AI sinh đề bài (Q5) — file này **không tự phát
   minh mã**, chờ chủ dự án.
@@ -196,17 +201,15 @@ hành vi đã dựng trong prototype — đánh dấu nguồn từng dòng.
 - `01-rd/screens/shared/auth.md:90` — Q3 đã chốt (`ADMIN` → `admin_overview`) và cảnh báo Q3b (tham chiếu
   treo mà file này đóng lại).
 - `01-rd/overview/system_survey.md:547` — mục 7.3, dòng `admin_overview` (bổ sung 2026-08-25).
-- `01-rd/overview/system_survey.md:559-565` — tổng 30 màn dự kiến sau đợt đối chiếu khu Admin và tách
-  `class_management`/`class_assignments` (2026-08-28).
+- `01-rd/overview/system_survey.md:559-565` — tổng 31 màn dự kiến sau đợt đối chiếu khu Admin, tách
+  `class_management`/`class_assignments`, thêm `class_student_detail`, và loại bỏ `admin_rejudge`
+  (2026-08-28).
 - `01-rd/overview/system_survey.md:570` — giới hạn đúng ba ngôn ngữ nộp bài.
-- `01-rd/req/req.md:55-84` — F1-10 tới F1-14.
-- `01-rd/req/req.md:125-128` — F1-18 (bộ lọc verdict), F1-20 (tuỳ chọn cá nhân, phân biệt với "Cài đặt" ở
-  nhóm KHÁC).
-- `01-rd/req/req.md:139, 164` — F2-02 (phân loại độ khó), F2-11 (tìm kiếm bài toán cho A1).
-- `01-rd/req/req.md:182-191` — F2-14 (AI sinh testcase, cơ chế nháp chờ Admin xác nhận) — mốc so sánh cho Q5.
-- `01-rd/req/req.md:266-296` — F4-09a→e, F4-10, F4-11.
-- `01-rd/req/req.md:347-365, 423` — F5-21/F5-25, F5-23, F6-12.
-- `01-rd/req/user_stories.md:284-345` — `US-A3-01` tới `US-A3-05` (đều thuộc màn con).
+- `01-rd/req/identity.md` — F1-10 tới F1-14, F1-18, F1-20.
+- `01-rd/req/problem-bank.md` — F2-02 (phân loại độ khó), F2-11 (tìm kiếm bài toán cho A1), F2-14 (AI sinh testcase, cơ chế nháp chờ Admin xác nhận) — mốc so sánh cho Q5.
+- `01-rd/req/judge-orchestration.md` — F4-10, F4-11 (F4-09a→e đã loại khỏi phạm vi, `DEC-2026-0828-remove-rejudge-scope`).
+- `01-rd/req/ai-review.md` — F5-21, F5-23, F5-25. `01-rd/req/interview-bank.md` — F6-12.
+- `01-rd/req/user_stories/a3_admin.md` — `US-A3-01` tới `US-A3-05` (đều thuộc màn con).
 - `01-rd/screens/admin/admin_queue_monitor.md` — khuôn mẫu cấu trúc file này.
 - `01-rd/screens/teacher/instructor_overview.md` — màn dashboard cùng loại, tiền lệ xử lý khoảng trống
   traceability.

@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  AlgoPrep backend — POM cha.
+
+  Modular Monolith: một tiến trình, một PostgreSQL instance, tám module Maven
+  (sáu Bounded Context + algoprep-common + algoprep-bootstrap).
+  Thiết kế:    01-rd/system/backend_architecture.md
+  Quyết định:  DEC-2026-0820-stack-versions · DEC-2026-0820-architecture-baseline
+               DEC-2026-0901-backend-base-architecture
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <!-- Patch cao nhất của dòng 4.0.x đã pin bởi DEC-2026-0820-stack-versions.
+         4.1.x và 4.2.0-M1 có trên Maven Central nhưng CỐ TÌNH không lấy. -->
+    <version>4.0.8</version>
+    <relativePath/>
+  </parent>
+
+  <groupId>com.algoprep</groupId>
+  <artifactId>algoprep-backend</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>algoprep-backend</name>
+  <description>AlgoPrep backend — POM cha của modular monolith</description>
+
+  <!--
+    Khai đủ tám module ngay (DEC-2026-0901-backend-base-architecture điểm 2).
+    Năm module chưa tới lượt chỉ có pom.xml và package-info.java từng tầng, không có class
+    nghiệp vụ. Thứ tự dưới đây là thứ tự DỰNG theo 01-rd/system/backend_architecture.md mục 2;
+    thứ tự build thật do Maven tự suy ra từ phụ thuộc.
+  -->
+  <modules>
+    <module>algoprep-common</module>
+    <module>algoprep-identity</module>
+    <module>algoprep-problem-bank</module>
+    <module>algoprep-harness</module>
+    <module>algoprep-judge</module>
+    <module>algoprep-ai-review</module>
+    <module>algoprep-interview-bank</module>
+    <module>algoprep-bootstrap</module>
+  </modules>
+
+  <properties>
+    <!-- Java 21 LTS chứ không phải 17: Virtual Threads GA ở 21 và đó là lý do DUY NHẤT của
+         lựa chọn này (DEC-2026-0820-stack-versions mục rationale). -->
+    <java.version>21</java.version>
+    <maven.compiler.release>21</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+    <!-- Phiên bản công cụ đã xác minh trên repo1.maven.org ngày 2026-09-01. -->
+    <archunit.version>1.5.0</archunit.version>
+    <spotless.version>3.10.1</spotless.version>
+    <google-java-format.version>1.36.1</google-java-format.version>
+    <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
+    <checkstyle.version>14.1.0</checkstyle.version>
+    <spotbugs-maven-plugin.version>4.10.4.0</spotbugs-maven-plugin.version>
+    <findsecbugs.version>1.14.0</findsecbugs.version>
+    <jacoco.version>0.8.15</jacoco.version>
+    <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
+
+    <!-- File cấu hình dùng chung ở 05-coding/backend/config/, mọi module trỏ về đây. -->
+    <config.dir>${maven.multiModuleProjectDirectory}/config</config.dir>
+
+    <!--
+      JaCoCo theo lộ trình (DEC-2026-0901-backend-base-architecture điểm 3).
+      Ngưỡng 80% mà 01-rd/system/environment.md mục 3.A yêu cầu được cấu hình NGAY.
+      Việc CHẶN được bật THEO TỪNG MODULE bằng cách ghi đè property này thành true trong pom của
+      module đó, đúng lúc module có class nghiệp vụ đầu tiên trong domain/ hoặc application/.
+      Đây là lộ trình bật chặn, KHÔNG phải hạ ngưỡng — ngưỡng vẫn là 80%.
+    -->
+    <jacoco.haltOnFailure>false</jacoco.haltOnFailure>
+    <jacoco.line.minimum>0.80</jacoco.line.minimum>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.tngtech.archunit</groupId>
+        <artifactId>archunit-junit5</artifactId>
+        <version>${archunit.version}</version>
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <!-- Mọi module có JUnit 5 + AssertJ + Mockito qua starter test của Spring Boot. -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>com.diffplug.spotless</groupId>
+          <artifactId>spotless-maven-plugin</artifactId>
+          <version>${spotless.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-checkstyle-plugin</artifactId>
+          <version>${maven-checkstyle-plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>com.github.spotbugs</groupId>
+          <artifactId>spotbugs-maven-plugin</artifactId>
+          <version>${spotbugs-maven-plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>${jacoco.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <version>${maven-enforcer-plugin.version}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
+    <plugins>
+      <!-- Cổng 0: sai JDK hoặc sai Maven thì đỏ NGAY, thay vì đỏ bằng một lỗi biên dịch khó hiểu
+           40 giây sau. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>enforce-toolchain</id>
+            <goals><goal>enforce</goal></goals>
+            <configuration>
+              <rules>
+                <requireMavenVersion><version>[3.9.9,)</version></requireMavenVersion>
+                <requireJavaVersion><version>[21,26)</version></requireJavaVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Cổng 1: định dạng. Google Java Style. Sai định dạng là FAIL BUILD
+           (01-rd/system/environment.md mục 3.A). -->
+      <plugin>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+        <configuration>
+          <!-- LF, không theo nền tảng. Máy phát triển Windows có core.autocrlf=true nên mặc định
+               của Spotless (theo .gitattributes rồi theo nền tảng) sẽ ra CRLF ở đây và LF trong CI
+               Linux — cùng một file, hai nội dung. Chốt LF cộng với 05-coding/backend/.gitattributes
+               để hai bên cùng nói một thứ. -->
+          <lineEndings>UNIX</lineEndings>
+          <java>
+            <googleJavaFormat>
+              <version>${google-java-format.version}</version>
+            </googleJavaFormat>
+            <removeUnusedImports/>
+            <trimTrailingWhitespace/>
+            <endWithNewline/>
+          </java>
+        </configuration>
+        <executions>
+          <execution>
+            <id>spotless-check</id>
+            <phase>verify</phase>
+            <goals><goal>check</goal></goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Cổng 2: cấu trúc. Phương thức ≤ 50 dòng, tham số ≤ 5, cấm wildcard import
+           (01-rd/system/environment.md mục 3.A). -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <dependencies>
+          <dependency>
+            <groupId>com.puppycrawl.tools</groupId>
+            <artifactId>checkstyle</artifactId>
+            <version>${checkstyle.version}</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <configLocation>${config.dir}/checkstyle.xml</configLocation>
+          <suppressionsLocation>${config.dir}/checkstyle-suppressions.xml</suppressionsLocation>
+          <includeTestSourceDirectory>true</includeTestSourceDirectory>
+          <consoleOutput>true</consoleOutput>
+          <failOnViolation>true</failOnViolation>
+          <violationSeverity>warning</violationSeverity>
+        </configuration>
+        <executions>
+          <execution>
+            <id>checkstyle-check</id>
+            <phase>verify</phase>
+            <goals><goal>check</goal></goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Cổng 3: phân tích tĩnh. SpotBugs + FindSecBugs — null pointer, resource leak, mật khẩu
+           hard-code, SQL injection (01-rd/system/environment.md mục 3.A). -->
+      <plugin>
+        <groupId>com.github.spotbugs</groupId>
+        <artifactId>spotbugs-maven-plugin</artifactId>
+        <configuration>
+          <effort>Max</effort>
+          <threshold>Medium</threshold>
+          <excludeFilterFile>${config.dir}/spotbugs-exclude.xml</excludeFilterFile>
+          <includeTests>false</includeTests>
+          <plugins>
+            <plugin>
+              <groupId>com.h3xstream.findsecbugs</groupId>
+              <artifactId>findsecbugs-plugin</artifactId>
+              <version>${findsecbugs.version}</version>
+            </plugin>
+          </plugins>
+        </configuration>
+        <executions>
+          <execution>
+            <id>spotbugs-check</id>
+            <phase>verify</phase>
+            <goals><goal>check</goal></goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Cổng 4: độ bao phủ. Chính bộ `excludes` ở mức plugin là cách hiện thực "80% cho tầng
+           application và domain": infrastructure và presentation bị loại khỏi bundle, nên con số
+           báo ra CHÍNH LÀ con số của domain + application. -->
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/infrastructure/**</exclude>
+            <exclude>**/presentation/**</exclude>
+            <exclude>**/config/**</exclude>
+            <exclude>**/*Application.class</exclude>
+            <exclude>**/package-info.class</exclude>
+          </excludes>
+        </configuration>
+        <executions>
+          <execution>
+            <id>jacoco-prepare-agent</id>
+            <goals><goal>prepare-agent</goal></goals>
+          </execution>
+          <execution>
+            <id>jacoco-report</id>
+            <phase>verify</phase>
+            <goals><goal>report</goal></goals>
+          </execution>
+          <execution>
+            <id>jacoco-check</id>
+            <phase>verify</phase>
+            <goals><goal>check</goal></goals>
+            <configuration>
+              <haltOnFailure>${jacoco.haltOnFailure}</haltOnFailure>
+              <rules>
+                <rule>
+                  <element>BUNDLE</element>
+                  <limits>
+                    <limit>
+                      <counter>LINE</counter>
+                      <value>COVEREDRATIO</value>
+                      <minimum>${jacoco.line.minimum}</minimum>
+                    </limit>
+                  </limits>
+                </rule>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
