@@ -14,7 +14,7 @@
 > hỏi mở Q1 nêu ra ở bản trước của file này. Chủ dự án đã chốt tách theo đề xuất: **file này giờ chỉ mô
 > tả "Lớp của tôi"**; phần "Bài tập của tôi" chuyển sang slug mới
 > `01-rd/screens/teacher/class_assignments.md`. Lý do và phạm vi ảnh hưởng đầy đủ ở
-> `.nexa/control/decision-registry.md` → `DEC-2026-0828-split-class-management-assignments`.
+> Quyết định: `DEC-2026-0828-split-class-management-assignments`.
 >
 > File này mô tả **hành vi và UX ở mức yêu cầu** của màn "Lớp của tôi" — không lặp lại đặc tả chức năng
 > chung đã có ở `01-rd/req/identity.md` (F1), chỉ trỏ tới và bổ sung phần đặc thù của màn: trạng thái màn, cấu
@@ -125,5 +125,5 @@ Mục dưới đây là hành vi **riêng của màn hình**, phát hiện khi �
 - `DEC-2026-0828-remove-rejudge-scope` — F4-09a→e, `admin_rejudge` loại khỏi phạm vi.
 - `01-rd/screens/teacher/class_assignments.md` — slug chị em, tách ra 2026-08-28, mô tả "Bài tập của tôi".
 - `09-layoutBase/Giáo viên - Lớp của tôi.dc.html` — prototype.
-- `.nexa/control/decision-registry.md` → `DEC-2026-0828-split-class-management-assignments`.
-- `.nexa/domain-registry.json` — định nghĩa Bounded Context và actor.
+- Quyết định: `DEC-2026-0828-split-class-management-assignments`.
+- `README.md` mục 3 và mục 4 — định nghĩa Bounded Context và actor.

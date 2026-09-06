@@ -6,7 +6,7 @@ class, mã lỗi. Bảng này là chỗ tra khi phân vân, và là chỗ sửa 
 **Luật dùng:** tiếng Việt trong tài liệu và giao diện, tiếng Anh trong mã. Cột "Trong code" là tên **duy
 nhất** được dùng khi đặt tên bảng, cột, class, endpoint và mã lỗi.
 
-Nguyên lý: `overview.md` mục 1.A. Nguồn phạm vi: `README.md` mục 3 và mục 4, `.nexa/domain-registry.json`.
+Nguyên lý: `overview.md` mục 1.A. Nguồn phạm vi: `README.md` mục 3 và mục 4.
 
 > Một số hàng dưới đây là **đề xuất từ vựng**, chưa được chốt ở tài liệu nào — chúng được đánh dấu
 > `[đề xuất]`. Khi BD của module tương ứng được viết, hoặc chốt lại, hoặc đổi ở cả hai nơi.
@@ -26,7 +26,7 @@ Nguyên lý: `overview.md` mục 1.A. Nguồn phạm vi: `README.md` mục 3 và
 | **Testcase** | `testcase` | Một cặp dữ liệu vào và kết quả mong đợi | "test", "case" một mình |
 | **Testcase mẫu** | `SAMPLE` | Testcase công khai, dùng cho chế độ Chạy thử | "public test", "visible test" |
 | **Testcase ẩn** | `HIDDEN` | Testcase không công khai, dùng cho chế độ Nộp bài. Chỉ trả **trạng thái và chỉ số**, không trả input và không trả diff | "private test", "secret test" |
-| **Phiên bản bộ testcase** | `testcase_set_version` | Phiên bản của cả bộ testcase, để Re-judge biết chấm lại theo phiên bản nào | "test version" một mình |
+| **Phiên bản bộ testcase** | `testcase_set_version` | Phiên bản của cả bộ testcase, để **truy vết** một lượt nộp cũ đã được chấm theo phiên bản nào (F2-09). Sửa 2026-09-03: trước ghi "để Re-judge biết chấm lại theo phiên bản nào" — cơ chế chấm lại đã loại khỏi phạm vi, `DEC-2026-0828-remove-rejudge-scope` | "test version" một mình |
 | **Giới hạn tài nguyên** | `resource_limit` | Giới hạn thời gian và bộ nhớ theo bài, kèm hệ số nhân theo ngôn ngữ | "limit" một mình, "quota" (quota là của AI) |
 | **Bài tập được giao** | `assignment` | Bài toán được giảng viên gán cho một lớp | "homework", "task" |
 
@@ -66,7 +66,7 @@ Nguyên lý: `overview.md` mục 1.A. Nguồn phạm vi: `README.md` mục 3 và
 | **Bí mật callback (đặc thù adapter bất đồng bộ)** | `callback_secret` | Token bí mật riêng theo từng bài nộp, dùng xác thực webhook — chỉ cần khi có adapter bất đồng bộ | "api key", "webhook token" |
 | **Chống trùng** | `idempotency` | Consumer/adapter xử lý cùng một message hoặc cùng một callback nhiều lần vẫn cho ra cùng một kết quả, không ghi đè trạng thái cuối | "dedup" |
 | **Timeout sweep** | `stuck_submission_sweep` | Job quét bài nộp treo quá ngưỡng thời gian — bản nhẹ của "job đối soát" cũ; với adapter đồng bộ, nguyên nhân treo chủ yếu là worker crash (RabbitMQ tự redeliver), không cần chủ động hỏi lại một hệ ngoài như khi dùng Judge0 | "reconciliation job" (tên cũ, dùng khi có adapter bất đồng bộ), "cron", "sync job" |
-| **Chấm lại** | `rejudge` | Chấm lại bài nộp cũ theo một phiên bản bộ testcase | "regrade", "retry" |
+| ~~**Chấm lại**~~ | ~~`rejudge`~~ | **NGOÀI PHẠM VI (2026-08-28)** — `DEC-2026-0828-remove-rejudge-scope`. Không có cơ chế chấm lại bài nộp cũ; testcase sai thì học viên báo giảng viên, giảng viên tự sửa và tăng phiên bản bộ testcase (F2-09), lượt nộp cũ giữ nguyên kết quả cũ. Giữ dòng này để người đọc gặp chữ "chấm lại" trong tài liệu cũ biết nó đã bị bỏ | "regrade", "retry" |
 | **Hệ máy chấm** | `judge engine` (mặc định: go-judge) | Dịch vụ ngoài, không phải module trong hệ thống. Judge0 vẫn là một adapter thay thế hợp lệ, không phải engine mặc định | "Judge0" (tên riêng của một adapter cụ thể, không phải tên chung), "sandbox" (sandbox là `go-sandbox`/`isolate`, tầng bên dưới engine) |
 
 ---
@@ -110,8 +110,8 @@ Nguyên lý: `overview.md` mục 1.A. Nguồn phạm vi: `README.md` mục 3 và
 | **Người dùng** | `user` | Một tài khoản trong hệ thống | "account", "member" |
 | **Vai trò** | `role` | `STUDENT` · `INSTRUCTOR` · `ADMIN` | "permission" (permission là quyền cụ thể, role là nhóm quyền) |
 | **Người học** | `STUDENT` | Actor A1 — giải bài, nộp bài, dùng AI, xem tiến độ | "learner", "player" |
-| **Giảng viên** | `INSTRUCTOR` | Actor A2 — soạn đề, tải testcase, giao bài, tạo bộ câu hỏi | "teacher", "author" |
-| **Quản trị viên** | `ADMIN` | Actor A3 — giám sát judge engine và hàng đợi, chấm lại, cấu hình prompt và rubric | "root", "superuser" |
+| **Giảng viên** | `INSTRUCTOR` | Actor A2 — soạn đề, tải testcase, giao bài theo lớp, quản trị nội dung kho câu hỏi phỏng vấn **dùng chung** (F6-13). Sửa 2026-09-03: trước ghi "tạo bộ câu hỏi", dễ hiểu thành bộ câu hỏi riêng theo lớp (F6-11) — F6-11 đã loại khỏi phạm vi, `DEC-2026-0828-remove-per-class-interview-set` | "teacher", "author" |
+| **Quản trị viên** | `ADMIN` | Actor A3 — giám sát judge engine và hàng đợi (F4-10), cấu hình ngôn ngữ và giới hạn tài nguyên (F4-11), cấu hình prompt và rubric (F5-23), ngân sách token (F5-25), ma trận phân quyền (F1-10), quản lý tài khoản (F1-13). Sửa 2026-09-03: bỏ "chấm lại" khỏi mô tả vai trò, `DEC-2026-0828-remove-rejudge-scope` | "root", "superuser" |
 | **Access Token** | `access_token` | JWT thời hạn ngắn, đi trong header `Authorization`, giữ trong bộ nhớ ở client | "token" một mình |
 | **Refresh Token** | `refresh_token` | Thời hạn dài, nằm trong cookie HTTP-Only | "session" |
 | **Tiến độ** | `user_progress` | Bài đã giải theo chủ đề, tỉ lệ chấp thuận, lịch sử phỏng vấn | "stats", "dashboard" |

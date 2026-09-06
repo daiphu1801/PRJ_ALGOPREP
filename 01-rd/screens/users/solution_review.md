@@ -2,7 +2,7 @@
 
 > Slug: `solution_review` — khớp `01-rd/overview/system_survey.md` mục 7.1 dòng `solution_review`
 > [SoT: 01-rd/overview/system_survey.md:479]. Bounded Context: `ai-review` (F5.1)
-> [SoT: .nexa/control/dependency-map.md:127 — dòng `solution_review` · `mock_interview`]. Actor: A1 (chính
+> [SoT: 01-rd/overview/system_survey.md mục 7.1 — cột "Bounded Context liên quan", dòng `solution_review` và `mock_interview`]. Actor: A1 (chính
 > — chủ sở hữu bài nộp).
 >
 > Theo lộ trình Phase 3 của `06-plan/nexa-plan/260824-2043-bd-screens-common-first.md` dòng 44: "Một lượt,
@@ -133,8 +133,8 @@ Hai chế độ hiển thị không đổi hành vi nghiệp vụ, chỉ đổi 
 - `01-rd/req/ai-review.md` — F5-01 tới F5-08, F5-17, F5-18, F5-20, F5-22, F5-25, F5-26.
 - `01-rd/req/user_stories/a1_student.md` — `US-A1-06`.
 - `01-rd/overview/system_survey.md:479` — dòng `solution_review` trong bảng màn mục 7.1.
-- `.nexa/control/dependency-map.md:127` — Bounded Context chạm bởi `solution_review`.
-- `.nexa/control/decision-registry.md` — `DEC-2026-0820-architecture-baseline` (nguyên tắc modules không
+- `01-rd/overview/system_survey.md` mục 7.1 — Bounded Context chạm bởi `solution_review`.
+- Quyết định: `DEC-2026-0820-architecture-baseline` (nguyên tắc modules không
   import lẫn nhau, liên quan Câu hỏi mở Q2).
 - `09-layoutBase/Phân tích bài giải.dc.html` — prototype.
 - `06-plan/nexa-plan/260824-2043-bd-screens-common-first.md` — kế hoạch Phase 3 sinh ra file này.

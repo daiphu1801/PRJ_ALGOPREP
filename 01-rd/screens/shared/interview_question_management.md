@@ -159,12 +159,12 @@ dung do A2 soạn nhưng prototype dựng trong shell Admin), xem `DEC-2026-0825
   `DEC-2026-0828-remove-per-class-interview-set`), F1-14 (phạm vi Nhật ký hệ thống).
 - `01-rd/req/interview-bank.md` — mục F6 đầy đủ, F6-01 tới F6-13.
 - `01-rd/req/user_stories/a2_instructor.md` — `US-A2-10` (chốt 2026-08-30).
-- `.nexa/control/decision-registry.md` → `DEC-2026-0828-remove-per-class-interview-set`,
+- Quyết định: `DEC-2026-0828-remove-per-class-interview-set`,
   `DEC-2026-0830-interview-bank-crud`.
 - `01-rd/overview/system_survey.md` mục 7.2 (khu Giảng viên) và mục 7.0 (khu dùng chung).
 - `01-rd/screens/users/interview_bank_list.md` · `01-rd/screens/users/interview_question_detail.md` — hai màn
   phía người học đọc dữ liệu do màn này tạo.
 - `01-rd/screens/admin/admin_ai_config.md` — hai rubric của F5, để đối chiếu với rubric theo câu hỏi ở Q3.
 - `06-plan/PROTOTYPE_DEBT.md` mục 6.2.b và mục 7 — tiền lệ và bản ghi đợt đối chiếu khu Admin.
-- `.nexa/control/decision-registry.md` — `DEC-2026-0825-shared-content-authoring-screens`.
+- Quyết định: `DEC-2026-0825-shared-content-authoring-screens`.
 - `09-layoutBase/Admin - Câu hỏi phỏng vấn.dc.html` — prototype (504 dòng).

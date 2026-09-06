@@ -9,8 +9,8 @@ Nguyên lý và lý do chọn nằm ở `01-rd/overview/overview.md` mục 1.A �
 | Nguồn | Vai trò |
 | :--- | :--- |
 | `README.md` mục 4, mục 5 | Phân hệ F1-F6 và công nghệ — nguồn của phạm vi |
-| `.nexa/domain-registry.json` | Sáu Bounded Context, tên module, tên schema |
-| `.nexa/control/decision-registry.md` | `DEC-2026-0820-stack-versions`, `DEC-2026-0820-architecture-baseline` |
+| `README.md` mục 4 | Sáu Bounded Context, tên module, tên schema |
+| Decision registry (theo mã) | `DEC-2026-0820-stack-versions`, `DEC-2026-0820-architecture-baseline` |
 | `01-rd/system/codebase_structure.md` | Cây thư mục thật của monorepo |
 
 > **Trạng thái 2026-08-20:** `05-coding/` còn rỗng. Tài liệu này là **thiết kế phải theo**, chưa phải mô tả
@@ -39,7 +39,7 @@ vào `infrastructure` của `identity`) làm **fail build**. Chi tiết công c�
 
 ## 2. Bảy module Maven
 
-Sáu module nghiệp vụ theo `.nexa/domain-registry.json`, cộng một module dùng chung và một module khởi chạy.
+Sáu module nghiệp vụ theo `README.md` mục 4, cộng một module dùng chung và một module khởi chạy.
 
 | Module Maven | Bounded Context | Schema PostgreSQL | Phân hệ | Vai trò |
 | :--- | :--- | :--- | :--- | :--- |
@@ -273,7 +273,7 @@ chấm bài. Đây chính là suy giảm có kiểm soát ở mức mã nguồn.
 ### 6.A. Judge engine (go-judge mặc định)
 
 * **Định vị:** dịch vụ ngoài, chạy bằng Docker, **không phải module trong monolith**
-  (`.nexa/domain-registry.json`, phần `crosscutting`).
+  (`README.md` mục 4 và mục 5 — phần hạ tầng dùng chung).
 * **Cửa duy nhất:** `algoprep-judge/infrastructure/judgeengine/GoJudgeAdapter`, hiện thực cổng ra
   `JudgeExecutionPort` (`domain/ports/out`). Không module nào khác được gọi judge engine trực tiếp.
 * **Cổng phải trung lập theo engine** (`DEC-2026-0823-go-judge-default-engine`) — chữ ký cổng chỉ có dạng

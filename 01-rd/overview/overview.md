@@ -18,7 +18,7 @@ nhắc lại chức năng — nó trả lời câu hỏi *dựa trên lý thuy�
 | Yêu cầu chức năng và phi chức năng | `01-rd/req/req.md` |
 
 **Quy ước dẫn nguồn trong tài liệu này:** mỗi khẳng định về phạm vi hoặc công nghệ đều trỏ về nguồn thật
-(`README.md` mục n, `.nexa/domain-registry.json`, hoặc một `DEC-` trong `.nexa/control/decision-registry.md`).
+(`README.md` mục n, hoặc một mã `DEC-` trong decision registry).
 Phần nào là suy luận thiết kế chưa được chốt ở đâu thì ghi rõ `[SoT: Suy luận]` — không trình bày như đã chốt.
 
 ---
@@ -34,7 +34,7 @@ DDD giải quyết độ phức tạp nghiệp vụ bằng cách chia hệ thố
 
 * **Bounded Context (bối cảnh giới hạn).** Sáu phân hệ F1-F6 của `README.md` mục 4 tương ứng sáu Bounded
   Context, mỗi context là **một Maven child module** và **một PostgreSQL schema** — chốt trong
-  `.nexa/domain-registry.json`: `identity` · `problem-bank` · `harness` · `judge-orchestration` ·
+  `README.md` mục 4: `identity` · `problem-bank` · `harness` · `judge-orchestration` ·
   `ai-review` · `interview-bank`.
   Đây là **Modular Monolith**, không phải microservices: một tiến trình, một database, ranh giới module
   được bảo vệ bằng kiểm tra tự động thay vì bằng ranh giới mạng (xem `environment.md` mục 2.A).
@@ -186,8 +186,8 @@ Judge0 (webhook bất đồng bộ). Nếu một adapter bất đồng bộ (ví
   - **seccomp** — chặn danh sách system call. Mã bị chấm không mở socket, không tạo tiến trình con, không
     ghi ra ngoài thư mục làm việc.
 * **Judge engine nằm ở tầng nào.** Judge engine (go-judge) là **dịch vụ ngoài**, chạy bằng Docker, nói
-  chuyện qua REST đồng bộ — **không phải một module trong monolith** (`.nexa/domain-registry.json`, phần
-  `crosscutting`). AlgoPrep xây ba tầng *phía trên* nó: mô hình bọc hàm (F3), điều phối và phản hồi thời
+  chuyện qua REST đồng bộ — **không phải một module trong monolith** (`README.md` mục 4 — nó thuộc nhóm hạ tầng
+  dùng chung, không phải một trong sáu phân hệ). AlgoPrep xây ba tầng *phía trên* nó: mô hình bọc hàm (F3), điều phối và phản hồi thời
   gian thực (F4), tầng đánh giá bằng AI (F5).
 * **Rủi ro đã đóng cho luồng mặc định.** Judge0 yêu cầu cgroup v1 trong khi Linux hiện đại mặc định v2 — đây
   từng là rủi ro số một của đề tài (R1). Đã đóng bằng `DEC-2026-0823-go-judge-default-engine`: đổi engine

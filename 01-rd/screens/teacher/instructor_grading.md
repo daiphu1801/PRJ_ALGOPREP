@@ -28,7 +28,7 @@ chính thức của bài nộp [SoT: 01-rd/req/ai-review.md — F5-27].
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
 | Quy đổi báo cáo phân tích bài giải (F5.1) thành một điểm tham khảo thang 10 cho giảng viên | F5-27 | `01-rd/req/ai-review.md` — F5-27 |
-| Điểm AI 0-10 và điểm chấm tay là lớp tham khảo nội bộ, tách bạch hoàn toàn khỏi Pass/Fail chính thức (F4-04), không ghi đè/không đổi trạng thái submission | F5-27 | `01-rd/req/ai-review.md` — F5-27 |
+| Điểm AI 0-10 và điểm chấm tay là lớp tham khảo nội bộ, tách bạch hoàn toàn khỏi Pass/Fail chính thức của bài nộp (và khỏi điểm tỷ lệ testcase F4-13 hiện cho học viên), không ghi đè/không đổi trạng thái submission | F5-27 | `01-rd/req/ai-review.md` — F5-27 |
 | Không phải "chấm điểm từng phần theo trọng số" (đã loại) | F5-27 | `01-rd/req/ai-review.md` — F5-27 |
 | Phạm vi hiển thị theo lớp giảng viên phụ trách, cùng cơ chế F2-12 | F5-27, F2-12 | `01-rd/req/ai-review.md` — F5-27, `01-rd/req/problem-bank.md` — F2-12 |
 | Gác bởi Function `CLASS_MANAGEMENT` trong ma trận phân quyền | F1-12, F1-10 | `01-rd/req/identity.md` — F1-10, F1-12 |
@@ -130,7 +130,7 @@ chính thức của bài nộp [SoT: 01-rd/req/ai-review.md — F5-27].
 
 - `01-rd/req/ai-review.md` — F5-27, F5-01 tới F5-08 (nguồn báo cáo F5.1 dùng để quy đổi điểm).
 - `01-rd/req/identity.md` — F1-10 tới F1-12, `CLASS_MANAGEMENT`.
-- `01-rd/req/judge-orchestration.md` — F4-04 (fail-fast, Pass/Fail chính thức không đổi).
+- `01-rd/req/judge-orchestration.md` — F4-13 (điểm tỷ lệ testcase hiện cho học viên; `F4-04` fail-fast đã hết hiệu lực 2026-08-31, `DEC-2026-0831-partial-score-testcase-ratio`).
 - `01-rd/req/problem-bank.md` — F2-12 (cơ chế phạm vi theo lớp, dùng chung).
 - `01-rd/req/user_stories/a2_instructor.md` — `US-A2-06`.
 - `01-rd/overview/system_survey.md:506-526` — mục 7.2 Khu vực giảng viên, dòng `instructor_grading`.
@@ -139,4 +139,4 @@ chính thức của bài nộp [SoT: 01-rd/req/ai-review.md — F5-27].
   (F2-08), dùng để đối chiếu kết luận "không có xung đột nghiêm trọng" ở mục 3.8 của file này.
 - `01-rd/screens/users/solution_review.md` — đã kiểm tra, không có mô tả cơ chế "yêu cầu review" (từng liên
   quan Câu hỏi mở Q1, nay đã đóng — tính năng loại bỏ khỏi phạm vi).
-- `.nexa/control/decision-registry.md` — `DEC-2026-0830-remove-student-review-request`.
+- Quyết định: `DEC-2026-0830-remove-student-review-request`.

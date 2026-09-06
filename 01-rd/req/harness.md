@@ -4,8 +4,9 @@
 > chuyển nguyên văn từ `req.md` (không đổi ý nghĩa, không thêm/bớt), chỉ hạ heading `###` xuống `#`.
 
 Phân hệ cho phép mô hình bọc hàm hoạt động trên judge engine (go-judge mặc định) — vốn chỉ nhận stdin/stdout
-(`overview.md` mục 1.G). Chi tiết codegen theo ngôn ngữ, ánh xạ lỗi biên dịch và đường lùi: xem
-`.claude/skills/dd-generation/references/harness-codegen.md` khi viết DD.
+(`overview.md` mục 1.G). Chi tiết codegen theo từng ngôn ngữ, cách ánh xạ lỗi biên dịch, và đường lùi
+Standard I/O **thuộc tầng DD**, sẽ chốt ở `03-dd/logic/harness.md` (chưa tồn tại) sau khi
+`02-bd/architecture/harness.md` chốt lược đồ kiểu. RD chỉ khoá phạm vi — mã `F3-01` tới `F3-13` dưới đây.
 
 - **Lược đồ kiểu dữ liệu độc lập ngôn ngữ** (F3-01): nguyên thuỷ, chuỗi, mảng nhiều chiều, danh sách lồng
   nhau, danh sách liên kết, cây nhị phân.
@@ -33,7 +34,7 @@ Phân hệ cho phép mô hình bọc hàm hoạt động trên judge engine (go-
     (`README.md` mục 7), không phải hành vi mặc định.
   - **Tác động tới khối lượng công việc:** vì mọi bài toán (trừ trường hợp trên) cần bộ sinh mã hoạt động
     cho cả hai mô hình, khối lượng codegen của F3 tăng gần gấp đôi so với cách hiểu "đường lùi hiếm khi
-    dùng" trước đây. **Đã xác nhận 2026-08-24** ở `02-bd/packages/harness/architecture.md` mục 2b (viết cùng
+    dùng" trước đây. **Đã xác nhận 2026-08-24** ở `02-bd/architecture/harness.md` mục 2b (viết cùng
     lúc với quyết định `DEC-2026-0824-dual-submission-model-per-problem`): chiến lược Strategy/Plugin **giữ
     nguyên**, không đổi kiến trúc — mỗi plugin ngôn ngữ có hai phương thức sinh mã (Bọc hàm, Standard I/O)
     thay vì một, cùng một interface, không cần registry riêng. Câu hỏi "cần chủ dự án xác nhận lại" trước đó

@@ -10,8 +10,10 @@
 
 ## 1. Mục đích màn hình
 
-Xem lại mọi hành động quản trị (đổi ma trận quyền, đổi vai trò, khoá/mở khoá, reset mật khẩu, chấm lại...)
-kèm ai đổi, đổi gì, đổi lúc nào — không có ngoại lệ [SoT: 01-rd/req/identity.md — F1-14].
+Xem lại mọi hành động quản trị (đổi ma trận quyền, đổi vai trò, khoá/mở khoá, reset mật khẩu, thao tác nội
+dung kho bài và kho câu hỏi...) kèm ai đổi, đổi gì, đổi lúc nào — không có ngoại lệ
+[SoT: 01-rd/req/identity.md — F1-14]. **Sửa 2026-09-03:** bỏ "chấm lại" khỏi danh sách ví dụ — hành động
+đó không còn tồn tại (`DEC-2026-0828-remove-rejudge-scope`), như mục 3 chỉ số 4 của file này đã ghi nhận.
 
 ## 2. Nguồn yêu cầu (không lặp lại — chỉ trỏ)
 

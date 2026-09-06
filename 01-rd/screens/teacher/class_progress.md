@@ -131,7 +131,7 @@ xác nhận mã và gộp chính thức vào `identity.md`/`user_stories/a2_inst
 - `01-rd/req/identity.md` — F1-06, F1-07 (định nghĩa gốc, viết cho A1), F1-28 (chốt 2026-08-30, mã trực tiếp cho màn này), F1-12 (Function `CLASS_MANAGEMENT`).
 - `01-rd/req/ai-review.md` — F5-27 (cơ chế phạm vi lớp giảng viên phụ trách).
 - `01-rd/req/user_stories/a2_instructor.md` — `US-A2-03` tới `US-A2-06`, `US-A2-09` (chốt 2026-08-30).
-- `.nexa/control/decision-registry.md` — `DEC-2026-0830-class-progress-dashboard`.
+- Quyết định: `DEC-2026-0830-class-progress-dashboard`.
 - `09-layoutBase/Giáo viên - Tiến độ học viên.dc.html` — prototype đối chiếu.
 - `06-plan/PROTOTYPE_DEBT.md:534-545` — mục 6.2.b, ghi nhận `class_progress` đã có prototype thật, đối
   chiếu tên file/slug.

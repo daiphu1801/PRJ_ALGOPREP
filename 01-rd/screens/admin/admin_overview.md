@@ -127,11 +127,11 @@ i18n; Q8 thêm 3 trạng thái theo từng khối.
     không cần mã mới.
 12. **Theme** (HTML dòng 96-100, dữ liệu dòng 412-420): chỉ công tắc Sáng/Tối, lưu `localStorage` khoá
     `algoprep-admin-theme` [SoT: 09-layoutBase/Admin - Tổng quan.dc.html:328], mặc định `light` đúng
-    `DEC-2026-0824-dark-light-theme` [SoT: .nexa/control/decision-registry.md:281-285]. **Không có scaffold
+    `DEC-2026-0824-dark-light-theme`. **Không có scaffold
     `data-ui-lang`/`data-lang`** trong toàn bộ file (xác minh: `data-ui-lang` không xuất hiện lần nào) —
     `DEC-2026-0824-i18n-vi-en` chỉ nêu tên 4 màn Admin còn thiếu scaffold (`Chấm lại`, `Cấu hình AI`, `Hàng
     đợi chấm`, `Ngôn ngữ và giới hạn`), **không có `Tổng quan`**
-    [SoT: .nexa/control/decision-registry.md:303-316] — xem Câu hỏi mở Q7. **Cập nhật 2026-08-28:** `Chấm
+    [SoT: `DEC-2026-0824-i18n-vi-en`] — xem Câu hỏi mở Q7. **Cập nhật 2026-08-28:** `Chấm
     lại` (`admin_rejudge`) đã loại khỏi phạm vi (`DEC-2026-0828-remove-rejudge-scope`), amendment ghi ở
     cùng decision entry — còn 3 màn thật sự cần scaffold.
 13. **Không có trạng thái rỗng / lỗi / đang tải**: toàn bộ dữ liệu là hằng số tĩnh trả về ngay trong
@@ -170,10 +170,15 @@ hành vi đã dựng trong prototype — đánh dấu nguồn từng dòng.
   [SoT: Suy luận — suy từ nguyên tắc "AI subsystem degrades gracefully" ở `CLAUDE.md` mục Rules áp cho khối
   số liệu đọc từ `ai-review`; prototype không có trạng thái lỗi, xem Q8].
 
-## 5. Câu hỏi mở (chưa trả lời — không tự chọn thay)
+## 5. Câu hỏi mở (toàn bộ 8 câu đã đóng 2026-08-31)
 
-| # | Câu hỏi | Ưu tiên | Vì sao chưa trả lời được | Đề xuất | Chủ sở hữu |
-| :-: | :--- | :--- | :--- | :--- | :--- |
+**Sửa định dạng 2026-09-03:** bảng này từng có header 6 cột trong khi cả 8 hàng chỉ có 5 ô, nên từ cột thứ
+tư nội dung bị lệch sang trái một cột — kết luận rơi vào cột "Vì sao chưa trả lời được", trạng thái rơi vào
+cột "Đề xuất". Bỏ cột "Vì sao chưa trả lời được" (không còn nghĩa khi mọi câu đã đóng) và đổi tên cột cuối
+thành "Trạng thái" cho khớp dữ liệu thật. Nội dung từng ô không đổi.
+
+| # | Câu hỏi | Ưu tiên | Đề xuất và kết luận | Trạng thái |
+| :-: | :--- | :--- | :--- | :--- |
 | Q1 | ~~`admin_overview` chưa có dòng nào trong bảng slug, và hai đích nav "Quản lý bài tập" / "Câu hỏi phỏng vấn" cũng chưa có slug.~~ **ĐÃ CHỐT 2026-08-25:** `admin_overview` thêm vào mục 7.3 (đúng như đề xuất). Hai đích nội dung kia mở đợt đối chiếu riêng như đề xuất, kết quả: `admin_problem_management`/`admin_interview_question_management` được viết RD rồi đổi tên bỏ tiền tố, chuyển sang mục 7.0 (khu dùng chung A2+A3) — `DEC-2026-0825-shared-content-authoring-screens`. | — | Đã chốt. Chi tiết: `01-rd/screens/shared/problem_management.md`, `01-rd/screens/shared/interview_question_management.md`, `01-rd/screens/shared/problem_authoring.md`. | Đã đóng |
 | Q2 | ~~**8/9 khối thống kê trên màn không gán được mã `Fx-nn` nào**...~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** cấp **một** mã mới duy nhất — `F1-29` — cho cả 8 khối, không cấp mã rời. "Người dùng hoạt động" = đăng nhập trong 30 ngày gần nhất, loại trừ `DEACTIVATED` (F1-16). Khung thời gian delta và đơn vị trục biểu đồ ngôn ngữ để BD/DD quyết định. | — | Xem `01-rd/req/identity.md` (F1-29, sau F1-28) và `DEC-2026-0831-admin-overview-dashboard-stats`. Quy tắc gộp verdict ở "Kết quả chấm" **không nằm trong đợt chốt này** — vẫn là Q4, mức Trung bình. | Đã đóng |
 | Q3 | ~~Ô tìm kiếm "Tìm người dùng, bài toán…"...~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** bỏ khỏi UI thật. | — | Không hứa tính năng chưa làm — xoá ô tìm kiếm này khi dựng UI Next.js thật. Xem `DEC-2026-0831-admin-overview-ui-decisions`. | Đã đóng |
@@ -193,8 +198,10 @@ hành vi đã dựng trong prototype — đánh dấu nguồn từng dòng.
 - Công thức truy vấn/aggregate cụ thể của từng chỉ số — thuộc DD (`03-dd/logic/`), sau khi Q2 được chốt.
 - Logic nghiệp vụ của 9 màn con mà nav trỏ tới (F1-10→14, F4-10/11, F5-21/23/25, F6-12) — thuộc RD/BD/DD
   của từng màn đó, không lặp lại ở đây.
-- Quyết định có cấp mã `Fx-nn` mới cho thống kê (Q2) và cho AI sinh đề bài (Q5) — file này **không tự phát
-  minh mã**, chờ chủ dự án.
+- ~~Quyết định có cấp mã `Fx-nn` mới cho thống kê (Q2) và cho AI sinh đề bài (Q5) — chờ chủ dự án.~~
+  **Đã chốt 2026-08-31** (ghi nhận 2026-09-05): Q2 cấp `F1-29` — một mã tổng hợp cho cả 8 khối thống kê
+  (`DEC-2026-0831-admin-overview-dashboard-stats`); Q5 xác nhận legend "AI sinh / Giảng viên soạn" là
+  **nhãn dữ liệu mẫu vẽ sai** ở prototype, hệ thống không có AI sinh đề bài nên **không cấp mã F2 mới**.
 
 ## 7. Tham chiếu
 
@@ -215,6 +222,6 @@ hành vi đã dựng trong prototype — đánh dấu nguồn từng dòng.
   traceability.
 - `06-plan/PROTOTYPE_DEBT.md:502-513` — mục 6.1.c, lịch sử file prototype `Admin - Tổng quan.dc.html`.
 - `06-plan/PROTOTYPE_DEBT.md:534-545` — mục 6.2.b, tiền lệ phát hiện slug phát sinh khi dựng prototype.
-- `.nexa/control/decision-registry.md:281-300` — `DEC-2026-0824-dark-light-theme`.
-- `.nexa/control/decision-registry.md:303-325` — `DEC-2026-0824-i18n-vi-en`.
+- `DEC-2026-0824-dark-light-theme` — quyết định theme Sáng/Tối.
+- `DEC-2026-0824-i18n-vi-en` — quyết định song ngữ VI/EN.
 - `09-layoutBase/Admin - Tổng quan.dc.html` — prototype đối chiếu chính của file này.

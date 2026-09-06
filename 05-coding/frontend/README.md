@@ -6,8 +6,8 @@ Next.js 16.x (App Router) + TypeScript strict + Tailwind CSS v4, kiến trúc Fe
 
 ## Trạng thái: khung base (2026-08-25)
 
-Scaffold — cây thư mục FSD 6 tầng, 29 slice `views/<slug>/` khớp `01-rd/screens/` (25 gốc + 3
-màn dùng chung + admin_overview phát sinh từ đợt đối chiếu prototype khu Admin, 2026-08-25), route theo actor,
+Scaffold — cây thư mục FSD 6 tầng, **31** slice `views/<slug>/` khớp đúng 1-1 với 31 màn sống của
+`01-rd/screens/` (32 file trừ `admin_rejudge`), route theo actor,
 provider (theme/i18n/query), bộ công cụ chất lượng. **Chưa có nội dung nghiệp vụ thật**:
 `02-bd/screens/` và `03-dd/api/` còn trống nên mọi `views/*` là khung rỗng chờ BD/DD.
 
@@ -58,6 +58,20 @@ màn. Bảng này giữ chuỗi tra ngược `01-rd → 02-bd → 03-dd → code
 | `problem_management` | `problem-management` | `/admin/problems`, `/instructor/problems` |
 | `problem_authoring` | `problem-authoring` | `/admin/problems/[problemId]`, `/instructor/problems/[problemId]` |
 | `interview_question_management` | `interview-question-management` | `/admin/interview-questions`, `/instructor/interview-questions` |
+| `class_assignments` | `class-assignments` | `/instructor/assignments` |
+| `class_student_detail` | `class-student-detail` | `/instructor/classes/[classId]/students/[studentId]` |
+| `interview_question_authoring` | `interview-question-authoring` | `/admin/interview-questions/[questionId]`, `/instructor/interview-questions/[questionId]` |
+
+### Ba slice thêm 2026-09-01, và hai URL do khung base tự chọn
+
+Đợt base 2026-08-25 thiếu `class_assignments` (RD của nó vào cùng commit với base mà không có slice), còn
+`class_student_detail` và `interview_question_authoring` có RD sau đó. Cả ba đã thêm ngày 2026-09-01.
+
+| Màn | URL đến từ đâu |
+| :--- | :--- |
+| `interview_question_authoring` | **RD chốt** — `01-rd/screens/shared/interview_question_authoring.md:14`, Câu hỏi mở Q6 đóng 2026-09-01 |
+| `class_assignments` | **Khung base tự chọn** `/instructor/assignments`. RD chỉ chốt nó là một mục nav độc lập trong sidebar giáo viên (`DEC-2026-0828-split-class-management-assignments`), không chốt URL. Chọn theo khuôn mẫu `/instructor/<danh-từ>` của các màn còn lại — **xác nhận lại khi viết DD** |
+| `class_student_detail` | **Khung base tự chọn** `/instructor/classes/[classId]/students/[studentId]`. RD chốt đây là màn/route riêng chứ không phải expand row (`class_student_detail.md:22-26`), không chốt URL. Chọn theo khuôn mẫu route lồng đã có của `class_progress` (`/instructor/classes/[classId]/progress`) — **xác nhận lại khi viết DD** |
 
 Các màn còn lại: URL trùng tên slice. `problem_management`, `problem_authoring`,
 `interview_question_management` đều thuộc `01-rd/screens/shared/` (mục 7.0 của

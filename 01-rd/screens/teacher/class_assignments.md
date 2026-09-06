@@ -10,7 +10,7 @@
 > `01-rd/overview/system_survey.md` mục 7.2 gộp hai prototype có route/nav riêng biệt vào một slug hạt
 > giống. Chủ dự án chốt tách theo đề xuất ở Câu hỏi mở Q1 (bản cũ của `class_management.md`): mỗi màn có
 > route và component riêng ở FE Next.js nên mỗi màn một slug BD/DD. Lý do và phạm vi ảnh hưởng đầy đủ ở
-> `.nexa/control/decision-registry.md` → `DEC-2026-0828-split-class-management-assignments`.
+> Quyết định: `DEC-2026-0828-split-class-management-assignments`.
 >
 > Quan hệ thật giữa hai màn, đọc trực tiếp từ code: đây là **hai mục điều hướng (nav item) độc lập trong
 > cùng sidebar giáo viên**, không phải hai tab của một trang — mỗi file prototype có route riêng
@@ -127,6 +127,6 @@ hành vi **riêng của màn hình**, phát hiện khi đối chiếu prototype:
   mục 3.2 của file này.
 - `01-rd/screens/teacher/class_management.md` — slug chị em, tách ra 2026-08-28, mô tả "Lớp của tôi".
 - `09-layoutBase/Giáo viên - Bài tập của tôi.dc.html` — prototype.
-- `.nexa/control/decision-registry.md` → `DEC-2026-0828-split-class-management-assignments`,
+- Quyết định: `DEC-2026-0828-split-class-management-assignments`,
   `DEC-2026-0828-remove-rejudge-scope` (F4-09a→c loại khỏi phạm vi).
-- `.nexa/domain-registry.json` — định nghĩa Bounded Context và actor.
+- `README.md` mục 3 và mục 4 — định nghĩa Bounded Context và actor.

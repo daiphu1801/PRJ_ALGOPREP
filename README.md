@@ -88,7 +88,7 @@ Hệ thống tích hợp go-judge self-hosted làm tầng thực thi (mặc đ�
   - _Sample:_ Công khai, dành cho chế độ "Run Code".
   - _Hidden:_ Ẩn, dành cho chế độ "Submit".
 - **Chống rò rỉ testcase ẩn:** Chỉ hiển thị trạng thái và chỉ số testcase sai, không hiển thị input hay diff chi tiết.
-- **Phiên bản hóa bộ testcase:** Hỗ trợ cơ chế Re-judge biết chấm lại theo phiên bản nào.
+- **Phiên bản hóa bộ testcase:** Để **truy vết** một lượt nộp cũ đã được chấm theo phiên bản nào. _(Sửa 2026-09-05: câu gốc ghi "hỗ trợ cơ chế Re-judge biết chấm lại theo phiên bản nào" — cơ chế chấm lại đã loại khỏi phạm vi, `DEC-2026-0828-remove-rejudge-scope`; phiên bản nay chỉ dùng truy vết.)_
 - **Giới hạn tài nguyên:** Giới hạn thời gian (Time Limit) và bộ nhớ (Memory Limit) theo bài, có hệ số nhân theo từng ngôn ngữ.
 
 ### F3 — Bộ sinh mã bọc hàm (Test Harness Generator)
@@ -106,14 +106,14 @@ _Phân hệ cho phép mô hình bọc hàm hoạt động trên judge engine (go
 _Gọi qua một cổng ra trung lập theo engine (`JudgeExecutionPort`), adapter mặc định là go-judge; xem `DEC-2026-0823-go-judge-default-engine`._
 
 - **Tiếp nhận bài nộp:** Ghi trạng thái `PENDING`, đẩy vào hàng đợi RabbitMQ, phản hồi ngay lập tức cho người dùng.
-- **Gửi từng testcase, fail-fast:** Gọi cổng ra một lần cho mỗi testcase (không dồn batch); khi một testcase gặp lỗi/sai theo điều kiện dừng thì bỏ các testcase còn lại của bài nộp, tiết kiệm tài nguyên máy chủ và rút ngắn thời gian phản hồi.
+- **Gửi từng testcase, chạy hết N testcase:** Gọi cổng ra một lần cho mỗi testcase (không dồn batch) và **chạy hết toàn bộ testcase của bài nộp**, để luôn biết tỷ lệ pass. _(Sửa 2026-09-05: câu gốc mô tả cơ chế **fail-fast** — bỏ các testcase còn lại khi một testcase sai. Cơ chế đó đã hết hiệu lực theo `DEC-2026-0831-partial-score-testcase-ratio`: điểm tỷ lệ testcase cần chạy đủ N testcase mới tính được, đổi lại tải máy chủ và thời gian chờ cao hơn.)_
 - **Xác thực webhook và chống callback trùng — chỉ khi dùng adapter bất đồng bộ:** Với adapter mặc định (go-judge, gọi đồng bộ), kết quả trả về ngay trong lời gọi, không có khái niệm callback. Nếu một adapter bất đồng bộ (ví dụ Judge0) được cắm vào sau này, xác thực webhook bằng token bí mật và chống trùng theo token là chi tiết **nội bộ của adapter đó**, domain không cần biết.
 - **Timeout sweep (bản nhẹ của job đối soát):** Quét các bài nộp bị treo quá ngưỡng thời gian — với mô hình gọi đồng bộ qua RabbitMQ, nguyên nhân chủ yếu là worker crash giữa lúc đang gọi engine, xử lý bằng ack/nack và redelivery có sẵn của RabbitMQ, không cần chủ động hỏi lại trạng thái một hệ ngoài như khi dùng Judge0.
 - **Cập nhật thời gian thực:** Đẩy trạng thái từng testcase qua WebSocket theo kênh riêng (topic) của từng bài nộp, ngay sau mỗi lần gọi cổng ra trả về kết quả.
 
 ### F5 — Phân hệ AI
 
-_Kích hoạt sau khi bài nộp đạt `Accepted`. Phân hệ gồm hai chức năng độc lập, người dùng chủ động lựa chọn:_
+_Phân hệ gồm hai chức năng độc lập, người dùng chủ động lựa chọn. **F5.1** kích hoạt sau khi bài nộp đạt `Accepted`. **F5.2** mở được theo ba lối vào: từ một bài nộp `Accepted`, từ kho câu hỏi F6, hoặc tự chọn chủ đề để tự luyện. (Sửa 2026-09-05: câu gốc ghi cả phân hệ "kích hoạt sau khi Accepted" — với F5.2 thì `Accepted` không còn là điều kiện bắt buộc kể từ khi ba lối vào được chốt.)_
 
 #### F5.1 — Phân tích bài giải (Solution Review)
 
@@ -148,11 +148,11 @@ Phiên hội thoại nhiều lượt, AI đóng vai kỹ sư phỏng vấn kỹ 
 
 _Màn hình độc lập, không gắn liền với bài nộp code — phục vụ ôn luyện lý thuyết và kỹ năng trả lời phỏng vấn._
 
-- **Danh sách câu hỏi:** Phân loại theo chủ đề (Cấu trúc dữ liệu, Thuật toán, Thiết kế hệ thống, Câu hỏi hành vi) và mức độ khó; hỗ trợ tìm kiếm, lọc và đánh dấu yêu thích (bookmark).
+- **Danh sách câu hỏi:** Phân loại theo **5 chủ đề** (Lý thuyết CS, System design, Database, Ngôn ngữ, Hành vi) và mức độ khó; hỗ trợ tìm kiếm, lọc và đánh dấu yêu thích (bookmark). _(Sửa 2026-09-05: danh mục gốc có 4 chủ đề; `DEC-2026-0830-interview-bank-crud` chốt lấy danh mục 5 chủ đề của prototype làm chuẩn.)_
 - **Chế độ học:** Xem gợi ý hướng tiếp cận, khung trả lời chuẩn (áp dụng mô hình STAR cho câu hỏi hành vi) và danh sách các từ khóa kỹ thuật cốt lõi cần nêu.
 - **Chế độ luyện:** Người dùng tự soạn câu trả lời, AI đối chiếu với tiêu chí chuẩn của câu hỏi và trả về phản hồi ngắn — điểm đã đạt, điểm còn thiếu, hướng dẫn bổ sung.
 - **Theo dõi tiến độ:** Lịch sử luyện tập, danh sách câu hỏi cần ôn tập lại, tỷ lệ hoàn thành theo từng chủ đề.
-- **Mở rộng:** Giảng viên (A2) có thể tạo bộ câu hỏi riêng và gán cho các lớp học phụ trách.
+- ~~**Mở rộng:** Giảng viên (A2) có thể tạo bộ câu hỏi riêng và gán cho các lớp học phụ trách.~~ **NGOÀI PHẠM VI** — `DEC-2026-0828-remove-per-class-interview-set` (ghi nhận vào đây 2026-09-05). Ngân hàng câu hỏi là **một kho duy nhất dùng chung ở cấp hệ thống**; giảng viên và quản trị viên cùng quản trị nội dung kho đó, không có khái niệm bộ câu hỏi riêng theo lớp.
 
 ---
 
@@ -186,7 +186,8 @@ _Màn hình độc lập, không gắn liền với bài nộp code — phục v
 - Xây dựng Cloud IDE hoàn chỉnh.
 - Bài toán tương tác (Interactive Problems).
 - Phỏng vấn bằng giọng nói (Voice Interview).
-- Hệ thống giải đấu (Contest) và Bảng xếp hạng trực tiếp (Leaderboard) thời gian thực _(Lưu ý: cơ chế Re-judge vẫn nằm trong phạm vi)_.
+- Hệ thống giải đấu (Contest) và Bảng xếp hạng trực tiếp (Leaderboard) thời gian thực.
+- **Cơ chế chấm lại (Re-judge)** — _bổ sung 2026-09-05_. Câu gốc ở dòng trên ghi ngược lại ("Lưu ý: cơ chế Re-judge vẫn nằm trong phạm vi"); `DEC-2026-0828-remove-rejudge-scope` đã loại hẳn khỏi phạm vi. Khi một testcase sai, học viên báo giảng viên và giảng viên tự sửa rồi tăng phiên bản bộ testcase — không có luồng chấm lại hàng loạt, lượt nộp cũ giữ nguyên kết quả cũ.
 - Trình chấm tùy biến (Custom Checker) do người ra đề tự tải lên.
 
 ---
