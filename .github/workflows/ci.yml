@@ -1,0 +1,154 @@
+# AlgoPrep — CI.
+#
+# Chay dung hai cong chat luong ma CLAUDE.md muc Rules (G-CHECK) va
+# 01-rd/system/environment.md muc 4 bat buoc:
+#   - 05-coding/frontend/  ->  pnpm check      (typecheck + lint + vitest)
+#   - 05-coding/backend/   ->  ./mvnw verify   (Spotless, Checkstyle, SpotBugs, JaCoCo, ArchUnit)
+#
+# Hai job doc lap va CHAY THEO PATH FILTER: sua tai lieu thi khong job nao chay, sua frontend thi
+# khong build backend. Ly do khong phai tiet kiem phut CI ma la tin hieu: mot job do phai co nghia
+# la "thu vua sua bi hong", khong phai "co gi do o dau do".
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  # Cho phep chay tay khi can (vi du sau khi doi cau hinh CI ma khong doi ma nguon).
+  workflow_dispatch:
+
+# Push lien tiep vao cung mot branch thi huy lan chay cu. Tren main thi KHONG huy — lich su ket qua
+# cua main la thu dung de tra nguoc khi tim commit lam do build.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+permissions:
+  contents: read
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Xac dinh phan nao thay doi. Tach thanh job rieng thay vi dung `paths:` o muc
+  # `on:` — vi `paths:` lam CA workflow bi SKIP, va mot required check bi skip thi
+  # branch protection coi nhu "chua chay" chu khong phai "da qua", nen PR bi treo.
+  # Cach nay luon co job chay, chi noi dung ben trong la co dieu kien.
+  # ---------------------------------------------------------------------------
+  changes:
+    name: Phat hien thay doi
+    runs-on: ubuntu-latest
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+      backend: ${{ steps.filter.outputs.backend }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Loc theo duong dan
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            frontend:
+              - '05-coding/frontend/**'
+              - '05-coding/package.json'
+              - '05-coding/pnpm-lock.yaml'
+              - '05-coding/pnpm-workspace.yaml'
+              - '.github/workflows/ci.yml'
+            backend:
+              - '05-coding/backend/**'
+              - '.github/workflows/ci.yml'
+
+  # ---------------------------------------------------------------------------
+  # Frontend — pnpm check
+  # ---------------------------------------------------------------------------
+  frontend:
+    name: Frontend (pnpm check)
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: 05-coding
+    steps:
+      - uses: actions/checkout@v4
+
+      # pnpm phai cai TRUOC setup-node, vi `cache: pnpm` cua setup-node can pnpm da ton tai de
+      # tim duoc store path.
+      - name: Cai pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          # Khong pin so o day: doc tu `packageManager` trong 05-coding/package.json, nen chi co
+          # MOT cho khai phien ban pnpm. Hai cho la hai cho de lech nhau.
+          #
+          # `package_json_file` la BAT BUOC o repo nay: mac dinh action doc package.json o GOC repo,
+          # va repo nay KHONG co package.json o goc (workspace pnpm nam o 05-coding/). Thieu dong
+          # nay thi action do voi "No pnpm version is specified".
+          # Luu y: `defaults.run.working-directory` khong ap cho action, chi ap cho buoc `run`.
+          package_json_file: 05-coding/package.json
+          run_install: false
+
+      - name: Cai Node
+        uses: actions/setup-node@v4
+        with:
+          # >= 20.9 LTS theo 01-rd/system/environment.md muc 1. Dung 22 LTS cho CI.
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: 05-coding/pnpm-lock.yaml
+
+      - name: Cai dependency
+        # --frozen-lockfile: lockfile lech package.json thi DO, khong tu sua. Day la cach duy nhat
+        # CI phat hien duoc mot dependency duoc them ma quen commit lockfile.
+        run: pnpm install --frozen-lockfile
+
+      - name: pnpm check (typecheck + lint + vitest)
+        run: pnpm check
+
+  # ---------------------------------------------------------------------------
+  # Backend — ./mvnw verify
+  #
+  # KHONG can service container: profile `test` loai tru autoconfigure cua
+  # PostgreSQL/Redis/RabbitMQ (05-coding/backend/algoprep-bootstrap/src/test/resources/
+  # application-test.yml), co chu dich de cong cho ra cung mot ket qua o may lap trinh vien va o CI.
+  # Khi module dau tien co Entity JPA that, test tich hop se dung Testcontainers — Docker co san
+  # tren ubuntu-latest nen job nay khong phai doi cau hinh luc do.
+  # ---------------------------------------------------------------------------
+  backend:
+    name: Backend (mvnw verify)
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: 05-coding/backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cai JDK 21
+        uses: actions/setup-java@v4
+        with:
+          # 21 chu khong phai 17 hay 25: DEC-2026-0820-stack-versions pin Java 21 LTS, va POM cha
+          # co maven-enforcer chan JDK ngoai [21,26) nen sai phien ban la do ngay o buoc validate.
+          java-version: '21'
+          distribution: temurin
+          cache: maven
+
+      - name: mvnw verify
+        # -B khong mau, khong interactive. Khong dung -q: output cua cong chat luong CHINH LA thu
+        # can doc khi job do, va "bao PASS khong kem output thi khong tinh" (CLAUDE.md muc Rules).
+        run: ./mvnw -B verify
+
+      - name: Tai bao cao khi that bai
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-reports
+          # surefire cho test that bai, checkstyle/spotbugs cho vi pham cong tinh, jacoco cho do
+          # bao phu. Khong co chung thi doc log tho de doan, va doan thi mat mot vong CI nua.
+          path: |
+            05-coding/backend/**/target/surefire-reports/**
+            05-coding/backend/**/target/checkstyle-result.xml
+            05-coding/backend/**/target/spotbugsXml.xml
+            05-coding/backend/**/target/site/jacoco/**
+          retention-days: 7
+          if-no-files-found: ignore

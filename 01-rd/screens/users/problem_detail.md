@@ -3,7 +3,7 @@
 > Slug: `problem_detail` — khớp `01-rd/overview/system_survey.md` mục 7.1 dòng `problem_detail`
 > [SoT: 01-rd/overview/system_survey.md:475]. Bounded Context: `problem-bank` + `harness` +
 > `judge-orchestration` (+ `ai-review` ở điểm ra sau `Accepted`)
-> [SoT: .nexa/control/dependency-map.md mục 5 — dòng `problem_detail`]. Actor: A1.
+> [SoT: 01-rd/overview/system_survey.md mục 7.1 — cột "Bounded Context liên quan", dòng `problem_detail`]. Actor: A1.
 >
 > **Màn nặng nhất trong 31 màn** — chạm bốn Bounded Context [SoT: 01-rd/overview/system_survey.md:495].
 > Đối chiếu prototype: `09-layoutBase/Workspace giải bài.dc.html`.
@@ -17,7 +17,7 @@
 > dưới) cho thấy học viên **tự do chọn mô hình mỗi lượt làm bài**, khớp đúng `README.md` mục 5 dòng 179
 > ("Hỗ trợ cả 2 mô hình") hơn cách hiểu cũ. Đã chốt qua hỏi trực tiếp chủ dự án, ghi
 > `DEC-2026-0824-dual-submission-model-per-problem`, sửa `problem-bank.md` (F2-03), `harness.md` (F3-13),
-> `system_survey.md`, `user_stories/a1_student.md` (`US-A1-03`), và `02-bd/packages/harness/architecture.md`.
+> `system_survey.md`, `user_stories/a1_student.md` (`US-A1-03`), và `02-bd/architecture/harness.md`.
 
 ## 1. Mục đích màn hình
 
@@ -104,7 +104,7 @@ với testcase ẩn — cho cả hai mô hình nộp bài song song
 - Hợp đồng API (nộp bài, chạy thử, WebSocket per-testcase) — thuộc DD (`03-dd/api/judge-orchestration.md`,
   `03-dd/api/harness.md`, chưa viết).
 - Thuật toán sinh mã harness theo từng ngôn ngữ và từng mô hình — thuộc logic của `harness`
-  (`02-bd/packages/harness/architecture.md` mục 2b), không thuộc file theo trục màn này.
+  (`02-bd/architecture/harness.md` mục 2b), không thuộc file theo trục màn này.
 - Luồng cập nhật kết quả testcase theo thời gian thực sau khi Submit — thuộc màn `submission_result`
   (`01-rd/screens/users/submission_result.md`), không lặp lại ở đây theo đúng ghi chú "đừng gộp hai màn"
   [SoT: 01-rd/overview/system_survey.md:498].
@@ -116,7 +116,7 @@ với testcase ẩn — cho cả hai mô hình nộp bài song song
 - `01-rd/overview/system_survey.md:475, 495, 498` — dòng `problem_detail`, ghi chú "màn nặng nhất", ghi chú
   không gộp với `submission_result`.
 - `09-layoutBase/Workspace giải bài.dc.html` — prototype.
-- `.nexa/control/decision-registry.md` — `DEC-2026-0824-dual-submission-model-per-problem` (phát sinh từ
+- Quyết định: `DEC-2026-0824-dual-submission-model-per-problem` (phát sinh từ
   chính việc viết file này).
-- `02-bd/packages/harness/architecture.md` mục 2b — hệ quả kiến trúc của quyết định trên.
+- `02-bd/architecture/harness.md` mục 2b — hệ quả kiến trúc của quyết định trên.
 - `06-plan/nexa-plan/260824-2043-bd-screens-common-first.md` — kế hoạch Phase 1 sinh ra file này.

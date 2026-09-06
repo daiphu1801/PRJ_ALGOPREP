@@ -52,7 +52,7 @@ Gọi qua cổng ra trung lập theo engine (`JudgeExecutionPort`), adapter mặ
   testcase; **các lượt nộp cũ đã chấm theo testcase lỗi giữ nguyên kết quả cũ, không có cơ chế tự động chấm
   lại hàng loạt.** Lý do: giảm chức năng không cần thiết cho phạm vi đồ án — cơ chế báo lỗi thủ công (qua
   `submission_result`/kênh liên hệ giảng viên) đã đủ xử lý trường hợp thực tế. Mã `F4-09a` tới `F4-09e` và
-  màn `admin_rejudge` **không còn hiệu lực** — xem `.nexa/control/decision-registry.md` →
+  màn `admin_rejudge` **không còn hiệu lực** — xem quyết định
   `DEC-2026-0828-remove-rejudge-scope` để biết đầy đủ các file bị ảnh hưởng.
 - Giám sát hàng đợi và tình trạng cụm judge engine (F4-10); cấu hình ngôn ngữ và giới hạn tài nguyên
   (F4-11) — cả hai thuộc actor A3. **Amendment 2026-08-31** (lấp Câu hỏi mở Q1/Q2 của

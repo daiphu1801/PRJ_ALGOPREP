@@ -16,7 +16,7 @@
 > sẽ lệch mỗi khi file được sửa, mã `Fx-nn` thì không.
 
 NestGame v2 → thay bằng: AlgoPrep gồm **sáu phân hệ chức năng chính** theo Bounded Context
-(`.nexa/domain-registry.json`), mỗi phân hệ có yêu cầu kỹ thuật và trải nghiệm người dùng riêng.
+(`README.md` mục 4), mỗi phân hệ có yêu cầu kỹ thuật và trải nghiệm người dùng riêng.
 
 | Mã phân hệ | Bounded Context | File | Phạm vi (một dòng) |
 | :--- | :--- | :--- | :--- |

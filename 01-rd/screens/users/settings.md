@@ -22,8 +22,8 @@ giả lập, thông báo email, xuất dữ liệu, và khu vực tự xoá tài
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
 | Tự xoá tài khoản (danger zone) | F1-16 | `01-rd/req/identity.md` — F1-16 |
-| Theme Sáng/Tối, mặc định Sáng | `DEC-2026-0824-dark-light-theme` | `.nexa/control/decision-registry.md` |
-| Ngôn ngữ giao diện VI/EN | `DEC-2026-0824-i18n-vi-en` | `.nexa/control/decision-registry.md` |
+| Theme Sáng/Tối, mặc định Sáng | `DEC-2026-0824-dark-light-theme` | Decision registry |
+| Ngôn ngữ giao diện VI/EN | `DEC-2026-0824-i18n-vi-en` | Decision registry |
 | Tuỳ chọn cá nhân hoá Workspace (ngôn ngữ mặc định, cỡ chữ, autosave, Vim) | F1-20 | `01-rd/req/identity.md` — F1-20 (khối bổ sung 2026-08-25) |
 | Thông báo email định kỳ (nhắc luyện tập, báo cáo tuần) | F1-21 | `01-rd/req/identity.md` — F1-21 (khối bổ sung 2026-08-25) |
 | Xuất dữ liệu cá nhân (CSV/JSON) | F1-22 | `01-rd/req/identity.md` — F1-22 (khối bổ sung 2026-08-25) |
@@ -90,6 +90,6 @@ giả lập, thông báo email, xuất dữ liệu, và khu vực tự xoá tài
 - `01-rd/req/identity.md` — F1-16 (đã chốt), F1-20, F1-21, F1-22. `01-rd/req/ai-review.md` — F5-28.
 - `01-rd/req/user_stories/a1_student.md` — `US-A1-05` (GWT cuối), `US-A1-07`.
 - `01-rd/overview/system_survey.md:486, 490-492` — dòng `settings` và ghi chú "chỉ gán được F1-16".
-- `.nexa/control/decision-registry.md` — `DEC-2026-0824-dark-light-theme`, `DEC-2026-0824-i18n-vi-en`.
+- Quyết định: `DEC-2026-0824-dark-light-theme`, `DEC-2026-0824-i18n-vi-en`.
 - `09-layoutBase/Cài đặt.dc.html` — prototype.
 - `06-plan/reports/260825-1500-report-ai1-phase2-conflicts.md` — báo cáo xung đột + quyết định đã chốt, đánh dấu AI-1.

@@ -7,7 +7,7 @@ Engine mặc định của AlgoPrep, chốt bởi `DEC-2026-0823-go-judge-defaul
 
 go-judge là **dịch vụ ngoài, không phải module trong monolith**
 (`01-rd/system/backend_architecture.md` mục 6.A). Cửa duy nhất vào nó là
-`algoprep-judge/infrastructure/judgeengine/GoJudgeAdapter`, hiện thực cổng ra `JudeExecutionPort`.
+`algoprep-judge/infrastructure/judgeengine/GoJudgeAdapter`, hiện thực cổng ra `JudgeExecutionPort`.
 Không module nào khác được gọi engine trực tiếp.
 
 Cổng phải **trung lập theo engine**: chữ ký chỉ có dạng "chạy một testcase, trả một kết quả", không
@@ -24,7 +24,7 @@ domain/application.
 | Endpoint `/version` dùng làm healthcheck | Ánh xạ kết quả engine sang value object của AlgoPrep (ACL) |
 
 Thư mục này được mount vào container tại `/opt/algoprep/judge-engine` (chỉ đọc). Nó **rỗng có chủ
-đích**: cấu hình biên dịch từng ngôn ngữ phụ thuộc `02-bd/packages/harness/` và
+đích**: cấu hình biên dịch từng ngôn ngữ phụ thuộc `02-bd/architecture/harness.md` và
 `03-dd/api/judge-orchestration.md`, cả hai chưa tồn tại. Đặt sẵn một cấu hình đoán trước ở đây sẽ
 thành nợ mà không ai biết là nợ.
 

@@ -69,8 +69,9 @@ Quản lý tài khoản người dùng — đổi vai trò, khoá/mở khoá, re
   viết). **Cập nhật 2026-08-31: Q1, Q2, Q3 đều đã đóng, không còn gì chặn BD.**
 - Hợp đồng API (tìm kiếm/lọc người dùng, hành động gộp, reset mật khẩu) — thuộc DD (`03-dd/api/identity.md`,
   chưa viết).
-- Cơ chế so khớp mã nguồn chống gian lận (Q1) — không tự đặc tả trong file này, chờ chủ dự án quyết định
-  phạm vi.
+- ~~Cơ chế so khớp mã nguồn chống gian lận (Q1) — chờ chủ dự án quyết định phạm vi.~~ **Đã chốt
+  2026-08-31** (ghi nhận 2026-09-05): **ngoài phạm vi đồ án**, không phát triển
+  (`DEC-2026-0831-remove-plagiarism-report`).
 
 ## 7. Tham chiếu
 

@@ -2,7 +2,7 @@
 
 > Slug: `mock_interview` — khớp `01-rd/overview/system_survey.md` mục 7.1 dòng `mock_interview`
 > [SoT: 01-rd/overview/system_survey.md:480]. Bounded Context: `ai-review` (F5.2), có đọc thêm từ
-> `interview-bank` (F6) khi mở phiên từ lối vào "kho câu hỏi" [SoT: .nexa/control/dependency-map.md:127 —
+> `interview-bank` (F6) khi mở phiên từ lối vào "kho câu hỏi" [SoT: 01-rd/overview/system_survey.md mục 7.1 — cột "Bounded Context liên quan",
 > dòng `solution_review` · `mock_interview`; 01-rd/req/ai-review.md — F5-24]. Actor: A1 (chính).
 >
 > Theo lộ trình Phase 4 của `06-plan/nexa-plan/260824-2043-bd-screens-common-first.md` dòng 44-45. Đối
@@ -141,7 +141,7 @@ Hai chế độ hiển thị không đổi hành vi nghiệp vụ, chỉ đổi 
 - `01-rd/req/ai-review.md` — F5-09 tới F5-28.
 - `01-rd/req/user_stories/a1_student.md` — `US-A1-07`.
 - `01-rd/overview/system_survey.md:480` — dòng `mock_interview` trong bảng màn mục 7.1.
-- `.nexa/control/dependency-map.md:127` — Bounded Context chạm bởi `mock_interview`.
+- `01-rd/overview/system_survey.md` mục 7.1 — Bounded Context chạm bởi `mock_interview`.
 - `01-rd/screens/users/settings.md:43` — danh sách 3 mức trình độ đã chốt (F5-28).
 - `09-layoutBase/Phỏng vấn giả lập.dc.html` — prototype.
 - `06-plan/nexa-plan/260824-2043-bd-screens-common-first.md` — kế hoạch Phase 4 sinh ra file này.

@@ -187,7 +187,7 @@ Q3 → Q5. **Trạng thái vòng đời bài toán đã có mã** — `F2-15` (c
 - `01-rd/overview/system_survey.md:471-487` — mục 7.1, khu người học (`problem_list`).
 - `01-rd/overview/system_survey.md` mục 7.0 (khu dùng chung) — `problem_management`, `problem_authoring`.
 - `06-plan/PROTOTYPE_DEBT.md` mục 6.2.b và mục 7 — tiền lệ và bản ghi đợt đối chiếu khu Admin.
-- `.nexa/control/decision-registry.md` — `DEC-2026-0825-shared-content-authoring-screens`,
+- Quyết định: `DEC-2026-0825-shared-content-authoring-screens`,
   `DEC-2026-0830-problem-lifecycle-two-states`.
 - `09-layoutBase/Admin - Quản lý bài tập.dc.html` — prototype.
 - `01-rd/screens/admin/admin_queue_monitor.md` — màn cùng khuôn cấu trúc (không cùng khu vực actor).

@@ -26,8 +26,8 @@ Màn hình độc lập, không gắn với bài nộp code (`README.md` mục 4
   KHỎI PHẠM VI (2026-08-28, qua hỏi trực tiếp chủ dự án).** Học viên dùng chung một ngân hàng câu hỏi phỏng
   vấn duy nhất ở cấp hệ thống (`interview_bank_list`, `interview_question_management`) — không có khái niệm
   "bộ câu hỏi riêng theo lớp". Lý do: giảm chức năng không cần thiết cho phạm vi đồ án. Mã `F6-11` và Function
-  `INTERVIEW_BANK_MANAGEMENT` phần liên quan tới lớp không còn hiệu lực — xem
-  `.nexa/control/decision-registry.md` → `DEC-2026-0828-remove-per-class-interview-set`.
+  `INTERVIEW_BANK_MANAGEMENT` phần liên quan tới lớp không còn hiệu lực — xem quyết định
+  `DEC-2026-0828-remove-per-class-interview-set`.
 - **Tự chấm mức độ thuộc bài (spaced repetition)** (F6-12) — bổ sung theo `06-plan/PROTOTYPE_DEBT.md` mục
   2.10, đối chiếu `09-layoutBase/Câu hỏi phỏng vấn.dc.html`. **Chốt 2026-08-24 — qua hỏi trực tiếp chủ dự
   án:** sau khi xem gợi ý hướng tiếp cận/khung trả lời chuẩn ở Chế độ học (F6-04, F6-05), người học tự chấm

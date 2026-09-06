@@ -11,7 +11,7 @@ date: 2026-08-24T20:14:00Z
   riêng, không dùng chung Admin.
 - Màn mới "Giáo viên - Chấm bài": điểm AI quy đổi thang 10 từ báo cáo F5.1 + chấm tay của giảng viên — ghi
   mã mới **F5-27** (chốt 2026-08-24, chỉ là lớp tham khảo nội bộ, không phải điểm chính thức, tách bạch khỏi
-  Pass/Fail F4-04).
+  Pass/Fail của bài nộp). _(Sửa 2026-09-05: câu gốc trỏ `F4-04` — mã đó đã hết hiệu lực theo `DEC-2026-0831-partial-score-testcase-ratio`. `F5-27` vẫn nguyên giá trị, chỉ đổi mốc đối chiếu.)_
 - Rà lại toàn bộ đợt cập nhật Admin trước đó (Chấm lại, Câu hỏi phỏng vấn, Cấu hình AI, Hàng đợi chấm, Ngôn
   ngữ và giới hạn, Người dùng, Nhật ký hệ thống, Quản lý bài tập, Soạn đề bài, Token AI) và phát hiện một
   đợt revert ngoài ý muốn (nhãn Judge0 quay lại, khoá 3 ngôn ngữ bị mở lại thành 6, `Phỏng vấn giả lập v1`
@@ -41,9 +41,9 @@ date: 2026-08-24T20:14:00Z
 | Admin - Tổng quan | `admin_overview` | system_survey.md 7.3 |
 | Admin - Quản lý bài tập | `problem_authoring` | system_survey.md 5.2 (F2-01→04), 7.2/7.3 |
 | Admin - Soạn đề bài | `problem_authoring` + `testcase_management` | system_survey.md 5.2 (F2-01→10, F2-14), 7.2/7.3 |
-| Admin - Câu hỏi phỏng vấn | `interview_bank_management` | system_survey.md 5.6 (F6-11, F6-12), 7.3 |
+| Admin - Câu hỏi phỏng vấn | `interview_question_management` | system_survey.md 5.6 (F6-12, F6-13), 7.0 — _sửa 2026-09-05: slug cũ `interview_bank_management` không tồn tại; `F6-11` đã loại khỏi phạm vi, thay bằng `F6-13`; màn chuyển sang khu dùng chung (mục 7.0)_ |
 | Admin - Hàng đợi chấm | `admin_queue_monitor` | system_survey.md 5.4 (F4-10), 7.3 |
-| Admin - Chấm lại | `admin_rejudge` | system_survey.md 5.4 (F4-09a→e), 7.3 |
+| ~~Admin - Chấm lại~~ | ~~`admin_rejudge`~~ | **NGOÀI PHẠM VI 2026-08-28** — `DEC-2026-0828-remove-rejudge-scope`. Prototype giữ lại để lưu vết, không dựng trong UI thật |
 | Admin - Ngôn ngữ và giới hạn | `admin_language_config` | system_survey.md 5.4 (F4-11), 5.2 (F2-10), 7.3 |
 | Admin - Cấu hình AI | `admin_ai_config` | system_survey.md 5.5 (F5-19, F5-23), 7.3 |
 | Admin - Token AI | `admin_ai_usage` | system_survey.md 5.5 (F5-21, F5-25), 7.3 |
@@ -51,7 +51,7 @@ date: 2026-08-24T20:14:00Z
 | Admin - Người dùng | `admin_user_management` | system_survey.md 5.1 (F1-13), 7.3 |
 | Admin - Nhật ký hệ thống | `admin_system_log` | system_survey.md 5.1 (F1-14), 7.3 |
 | Giáo viên - Tổng quan | `instructor_overview` | system_survey.md 7.2 |
-| Giáo viên - Lớp của tôi | `class_management` | system_survey.md 5.2 (F2-12, F6-11), 7.2 |
+| Giáo viên - Lớp của tôi | `class_management` | system_survey.md 5.2 (F2-12), 5.1 (F1-23→F1-26), 7.2 — _sửa 2026-09-05: bỏ `F6-11` (đã loại khỏi phạm vi), bổ sung nhóm mã CRUD lớp học_ |
 | Giáo viên - Bài tập của tôi | `class_management` | system_survey.md 5.2 (F2-12), 7.2 (view gán bài từ ngân hàng) |
 | Giáo viên - Tiến độ học viên | `class_progress` | system_survey.md 7.2 |
 | Giáo viên - Chấm bài | `instructor_grading` | system_survey.md 5.5 (F5-27), 7.2 |

@@ -93,5 +93,5 @@ Chưa có prototype để đối chiếu — cấu trúc dưới đây là đề
 - `01-rd/req/user_stories/a2_instructor.md` — `US-A2-08`.
 - `01-rd/overview/system_survey.md:576` — dòng `class_student_detail` trong bảng màn mục 7.2.
 - `01-rd/screens/teacher/class_management.md` — màn nguồn, Câu hỏi mở Q4 (đã đóng, sinh ra slug này).
-- `.nexa/control/decision-registry.md` — quyết định gốc 2026-08-28 lấp Q4 của `class_management.md` (ghi
+- Quyết định: quyết định gốc 2026-08-28 lấp Q4 của `class_management.md` (ghi
   trong `01-rd/req/identity.md` F1-27, không có `DEC-` riêng cho chính slug này).

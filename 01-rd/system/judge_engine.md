@@ -9,7 +9,7 @@ tên `judge0.md`, viết cho Judge0; đổi tên và viết lại theo `DEC-2026
 Nguồn: `README.md` (mục 1.2, 4 F3/F4, 5, 7 — đã cập nhật theo `DEC-2026-0823-go-judge-default-engine`);
 `01-rd/overview/overview.md`; `01-rd/overview/system_survey.md`; `01-rd/system/backend_architecture.md`;
 `01-rd/system/environment.md`; `01-rd/system/codebase_structure.md`;
-`.nexa/control/decision-registry.md` (entry `DEC-2026-0823-go-judge-default-engine`).
+quyết định `DEC-2026-0823-go-judge-default-engine`.
 
 ---
 

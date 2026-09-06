@@ -115,10 +115,13 @@ liệu chạy máy) — prototype tách hai tab riêng và giữ đúng phân bi
   [SoT: 01-rd/req/problem-bank.md — F2-05, F2-06]. Đề nghị khi dựng UI thật giữ nhãn tiếng Việt "Công khai/Ẩn" trên giao diện
   nhưng dùng `SAMPLE`/`HIDDEN` làm giá trị dữ liệu, để không sinh ra thuật ngữ thứ hai trong lược đồ DB.
   **Cột "Điểm" là một xung đột — xem Q3.**
-- **Kéo-thả sắp lại thứ tự testcase** (dòng 278, 610-622) và **"+ Thêm testcase"** (dòng 290, 707). Thứ tự
+- **Kéo-thả sắp lại thứ tự testcase** (dòng 278, 610-622) và **"+ Thêm testcase"** (dòng 290, 707). Việc
+  cho sắp lại thứ tự là hợp lý ở mức trình bày (người ra đề nhóm testcase theo nhóm ca kiểm thử), không có
+  mã riêng nhưng nằm gọn trong F2-05/F2-06 [SoT: Suy luận]. **Sửa 2026-09-05:** lý do gốc ghi "thứ tự
   testcase là dữ liệu có nghĩa với F4 vì fail-fast dừng ở testcase sai đầu tiên
-  [SoT: 01-rd/req/judge-orchestration.md — F4-04] — việc cho sắp lại thứ tự là hợp lý, không có mã riêng nhưng nằm gọn trong
-  F2-05/F2-06 [SoT: Suy luận].
+  [SoT: 01-rd/req/judge-orchestration.md — F4-04]" — lý do đó **không còn đúng**: `F4-04` hết hiệu lực
+  (`DEC-2026-0831-partial-score-testcase-ratio`), mọi bài nộp chạy hết N testcase nên thứ tự không ảnh
+  hưởng kết quả chấm. Kết luận giữ nguyên, chỉ căn cứ đổi.
 - **Khối "Chấm điểm từng phần"** (dòng 294-303, 626, 718-721) — thanh trọng số, yêu cầu "Tổng trọng số phải
   bằng 100 để bài được xuất bản". **Xung đột — xem Q3.**
 - Ghi chú: F2-08 (chống rò rỉ testcase ẩn) **không hạn chế màn này** — F2-08 ràng buộc phản hồi của luồng
@@ -210,7 +213,11 @@ AI soạn nháp" (xem ghi chú ở Q6).
 
 - `01-rd/req/identity.md` — F1-10 tới F1-12 (ma trận phân quyền, `PROBLEM_AUTHORING`, `TESTCASE_MANAGEMENT`).
 - `01-rd/req/problem-bank.md` — toàn bộ mục F2: F2-01 tới F2-14.
-- `01-rd/req/judge-orchestration.md` — F4-04 fail-fast (căn cứ bỏ chấm điểm từng phần, Q3).
+- `01-rd/req/judge-orchestration.md` — F4-13 điểm tỷ lệ testcase. _(Sửa 2026-09-05: dòng này trước ghi
+  "F4-04 fail-fast (căn cứ bỏ chấm điểm từng phần, Q3)". `F4-04` đã hết hiệu lực
+  (`DEC-2026-0831-partial-score-testcase-ratio`), nên nó không còn là căn cứ cho bất cứ điều gì. Kết luận
+  của Q3 **vẫn đúng** nhưng vì lý do khác: cái bị bỏ là **chấm điểm từng phần theo trọng số do người ra đề
+  tự đặt**, còn `F4-13` là tỷ lệ testcase đạt **không trọng số** — hai thứ khác nhau, không mâu thuẫn.)_
 - `01-rd/req/ai-review.md` — F5-17 (chống prompt injection), F5-23 (cấu hình prompt cấp hệ thống).
 - `01-rd/req/user_stories/a2_instructor.md` — `US-A2-01`, `US-A2-02`, `US-A2-05`.
 - `01-rd/overview/system_survey.md` mục 7.2 (khu Giảng viên) và mục 7.0 (khu dùng chung).
@@ -220,6 +227,6 @@ AI soạn nháp" (xem ghi chú ở Q6).
 - `06-plan/PROTOTYPE_DEBT.md` mục 2.6 (chấm điểm từng phần và AI sinh testcase) và mục 7 (đợt đối chiếu).
 - `09-layoutBase/Admin - Soạn đề bài.dc.html` — prototype (736 dòng).
 - `09-layoutBase/Admin - Quản lý bài tập.dc.html` — màn cha, cửa vào màn này.
-- `.nexa/control/decision-registry.md` — `DEC-2026-0824-dual-submission-model-per-problem` (nền của F2-03),
+- Quyết định: `DEC-2026-0824-dual-submission-model-per-problem` (nền của F2-03),
   `DEC-2026-0825-frontend-base-architecture` (tiền tố `/instructor` và `/admin`),
   `DEC-2026-0825-shared-content-authoring-screens` (dùng chung màn, chốt Q1/Q2).

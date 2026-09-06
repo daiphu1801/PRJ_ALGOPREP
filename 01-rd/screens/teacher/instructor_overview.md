@@ -138,10 +138,10 @@ trên hành vi đã dựng trong prototype, không phải trích dẫn từ user
 - `01-rd/req/identity.md` — F1-10 tới F1-12 (ma trận phân quyền, Function `CLASS_MANAGEMENT`).
 - `01-rd/req/problem-bank.md` — F2-12 (giao bài theo lớp).
 - `01-rd/req/ai-review.md` — F5-27 (điểm AI tham khảo + chấm tay theo lớp).
-- `.nexa/control/decision-registry.md` → `DEC-2026-0828-remove-per-class-interview-set` (F6-11 loại khỏi phạm vi).
+- Quyết định: `DEC-2026-0828-remove-per-class-interview-set` (F6-11 loại khỏi phạm vi).
 - `01-rd/req/user_stories/a2_instructor.md` — `US-A2-01` tới `US-A2-06`.
 - `01-rd/screens/shared/auth.md:90` — Q3 đã chốt, điều hướng theo vai trò sau đăng nhập.
 - `01-rd/screens/users/problem_list.md` — tham khảo văn phong và cách trích dẫn.
 - `09-layoutBase/Giáo viên - Tổng quan.dc.html` — prototype đối chiếu chính của file này.
-- `.nexa/control/decision-registry.md:303-325` — `DEC-2026-0824-i18n-vi-en`.
-- `.nexa/control/decision-registry.md:377` — `DEC-2026-0824-dark-light-theme`.
+- `DEC-2026-0824-i18n-vi-en` — quyết định song ngữ VI/EN.
+- `DEC-2026-0824-dark-light-theme` — quyết định theme Sáng/Tối.

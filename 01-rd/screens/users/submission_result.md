@@ -2,7 +2,7 @@
 
 > Slug: `submission_result` — khớp `01-rd/overview/system_survey.md` mục 7.1 dòng `submission_result`
 > [SoT: 01-rd/overview/system_survey.md:476]. Bounded Context: `judge-orchestration` (F4), có đọc thêm từ
-> `problem-bank` (siêu dữ liệu bài toán, độ khó) [SoT: .nexa/control/dependency-map.md:125 — dòng
+> `problem-bank` (siêu dữ liệu bài toán, độ khó) [SoT: 01-rd/overview/system_survey.md mục 7.1 — cột "Bounded Context liên quan", dòng
 > `submission_result`]. Actor: A1 (chính — chủ sở hữu bài nộp).
 >
 > `system_survey.md` chốt rõ **`problem_detail` và `submission_result` là hai màn riêng, không gộp**: kết
@@ -134,9 +134,9 @@ Hai chế độ hiển thị không đổi hành vi nghiệp vụ, chỉ đổi 
 
 ## 7. Tham chiếu
 
-- `01-rd/req/problem-bank.md` — F2-08. `01-rd/req/harness.md` — F3-11, F3-12. `01-rd/req/judge-orchestration.md` — F4-01, F4-03, F4-04, F4-08, F4-12, F4-13.
+- `01-rd/req/problem-bank.md` — F2-08. `01-rd/req/harness.md` — F3-11, F3-12. `01-rd/req/judge-orchestration.md` — F4-01, F4-03, F4-08, F4-12, F4-13. _(Sửa 2026-09-05: bỏ `F4-04` khỏi danh sách — hết hiệu lực theo `DEC-2026-0831-partial-score-testcase-ratio`.)_
 - `01-rd/req/user_stories/a1_student.md` — `US-A1-04`.
 - `01-rd/overview/system_survey.md:476, 498-499` — dòng `submission_result` trong bảng màn mục 7.1.
-- `.nexa/control/dependency-map.md:125` — Bounded Context chạm bởi `submission_result`.
+- `01-rd/overview/system_survey.md` mục 7.1 — Bounded Context chạm bởi `submission_result`.
 - `09-layoutBase/Kết quả nộp bài.dc.html` — prototype.
 - `06-plan/nexa-plan/260824-2043-bd-screens-common-first.md` — kế hoạch Phase 1 sinh ra file này.

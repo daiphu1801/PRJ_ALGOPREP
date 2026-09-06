@@ -116,4 +116,4 @@ bản) `[SoT: Suy luận, song song tiền lệ problem_authoring — không t�
   ra slug này).
 - `01-rd/screens/shared/problem_authoring.md` — tiền lệ cấu trúc màn soạn riêng (dẫn chiếu song song, không
   phải nguồn chức năng).
-- `.nexa/control/decision-registry.md` → `DEC-2026-0830-interview-bank-crud`.
+- Quyết định: `DEC-2026-0830-interview-bank-crud`.

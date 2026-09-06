@@ -3,7 +3,7 @@
 > Slug: `problem_list` — khớp `01-rd/overview/system_survey.md` mục 7.1 dòng `problem_list`
 > [SoT: 01-rd/overview/system_survey.md:474]. Bounded Context: `problem-bank` (F2), có đọc thêm từ
 > `identity` (trạng thái đã giải theo người dùng) và `harness` (nhãn mô hình nộp bài của từng bài)
-> [SoT: .nexa/control/dependency-map.md mục 5 — dòng `problem_list`]. Actor: A1 (chính), A2 (khi xem để giao
+> [SoT: 01-rd/overview/system_survey.md mục 7.1 — cột "Bounded Context liên quan", dòng `problem_list`]. Actor: A1 (chính), A2 (khi xem để giao
 > bài — màn thật cho A2 giao bài là `class_management`, không phải file này).
 >
 > Đối chiếu prototype: `09-layoutBase/Ngân hàng bài toán.dc.html`. File này mô tả **hành vi và UX ở mức yêu
@@ -88,7 +88,7 @@ giải, kèm khu vực riêng hiển thị bài đã được giảng viên giao
 ## 7. Tham chiếu
 
 - `01-rd/req/problem-bank.md` — F2-11, F2-12. `01-rd/req/harness.md` — F3-13.
-- `.nexa/control/decision-registry.md` — `DEC-2026-0824-dual-submission-model-per-problem` (ảnh hưởng gián
+- Quyết định: `DEC-2026-0824-dual-submission-model-per-problem` (ảnh hưởng gián
   tiếp tới cách hiển thị nhãn mô hình ở màn này, xem Câu hỏi mở Q3).
 - `01-rd/req/user_stories/a1_student.md` — `US-A1-02`.
 - `01-rd/overview/system_survey.md:474` — dòng `problem_list` trong bảng màn mục 7.1.

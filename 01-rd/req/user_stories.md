@@ -13,8 +13,9 @@ các file dưới đây diễn đạt cùng phạm vi đó thành **việc mỗi
 >
 > **Quan hệ với `04-tdd/`.** File này ở tầng RD, viết theo ngôn ngữ nghiệp vụ — một tiêu chí chấp nhận là
 > một câu Cho/Khi/Thì. `04-tdd/<module>.md` là bộ tiêu chí nghiệm thu chi tiết hơn (`AC-nn` dạng Precondition
-> / Action / Expected result), viết **cùng lúc với DD của module đó** (`.claude/rules/tdd-mode.md`). Chưa
-> file `04-tdd/` nào tồn tại — viết dần theo từng slice, không viết trước hàng loạt.
+> / Action / Expected result), viết **cùng lúc với DD của module đó** theo quy trình
+> RD → BD → Prototype → DD → CODE → TEST. Chưa file `04-tdd/` nào tồn tại — viết dần theo từng slice, không
+> viết trước hàng loạt.
 >
 > Ký hiệu: **Cho** (bối cảnh) · **Khi** (hành động) · **Thì** (kết quả) — Given/When/Then.
 

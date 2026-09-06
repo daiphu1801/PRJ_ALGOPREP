@@ -89,7 +89,10 @@ cần, để lướt qua chất lượng bài làm mà không phải đọc lạ
 
 - **Cho** một bài nộp `Accepted` đã có báo cáo phân tích bài giải (F5.1), **Khi** tôi mở màn Chấm bài của lớp
   mình phụ trách, **Thì** tôi thấy một điểm quy đổi trên thang 10 từ báo cáo đó, gắn nhãn rõ là điểm tham
-  khảo (F5-27) — không phải kết quả Pass/Fail chính thức của bài nộp (F4-04 không đổi).
+  khảo (F5-27) — không phải kết quả Pass/Fail chính thức của bài nộp, và cũng không phải điểm tỷ lệ testcase
+  hiện cho học viên (F4-13). _(Sửa 2026-09-05: câu trước ghi "(F4-04 không đổi)"; `F4-04` đã hết hiệu lực
+  theo `DEC-2026-0831-partial-score-testcase-ratio`. Ý của tiêu chí không đổi — điểm AI vẫn tách bạch khỏi
+  kết quả chấm chính thức.)_
 - **Cho** điểm tham khảo đang hiển thị, **Khi** tôi bấm "Chấm ngay" và nhập điểm 0-10 kèm nhận xét, **Thì**
   điểm chấm tay của tôi được lưu lại cạnh điểm AI, không ghi đè hay ảnh hưởng trạng thái submission của
   người học (F5-27).

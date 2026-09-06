@@ -66,7 +66,7 @@ cách an toàn [SoT: 01-rd/req/judge-orchestration.md — F4-09a→e, mã đã l
 
 | # | Câu hỏi | Vì sao chưa trả lời được | Đề xuất | Chủ sở hữu |
 | :-: | :--- | :--- | :--- | :--- |
-| Q1 | Toggle "Thông báo cho người học" (gửi thông báo khi kết quả thay đổi do chấm lại) không có mã `Fx-nn`. `judge-orchestration.md` F4-09 không nhắc việc thông báo người học khi điểm/verdict của họ đổi do chấm lại. | Đây là một hành vi thông báo mới, khác nhóm email OTP (F1-17) hay email nhắc luyện tập đã đề xuất ở `settings` (F1-21) — chưa rõ có nằm trong phạm vi đồ án. | Coi là mở rộng nhỏ của F4-09c (tuỳ chọn khi chạy), không cần mã mới — thông báo trong-app (không nhất thiết qua email) khi lượt nộp cũ của người dùng bị đổi kết quả. Chốt hình thức thông báo cụ thể khi viết BD. | Chủ dự án |
+| ~~Q1~~ | ~~Toggle "Thông báo cho người học" (gửi thông báo khi kết quả thay đổi do chấm lại) không có mã `Fx-nn`.~~ **MOOT (2026-08-28, ghi nhận 2026-09-03):** toàn bộ tính năng chấm lại đã loại khỏi phạm vi (`DEC-2026-0828-remove-rejudge-scope`), nên không có sự kiện "kết quả đổi do chấm lại" để thông báo. Câu hỏi và đề xuất cũ giữ lại chỉ để lưu vết, cùng cách `01-rd/req/user_stories/open_questions.md` xử lý Q2. | (hết hiệu lực) | ~~Coi là mở rộng nhỏ của F4-09c, không cần mã mới~~ — F4-09c không còn tồn tại. | Đã đóng (moot) |
 
 ## 6. Ngoài phạm vi file này
 

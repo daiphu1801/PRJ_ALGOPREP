@@ -67,8 +67,13 @@ nhất có thể, không phải chờ toàn bộ chấm xong.
   `submissionId` và không bắt tôi chờ màn hình (F4-01).
 - **Cho** bài nộp đang được chấm, **Khi** một testcase ẩn có kết quả, **Thì** trạng thái testcase đó cập
   nhật trên giao diện của tôi qua WebSocket, không cần tôi tải lại trang (F4-08).
-- **Cho** một testcase ẩn sai hoặc lỗi theo điều kiện dừng, **Khi** hệ thống phát hiện, **Thì** các testcase
-  ẩn còn lại của bài nộp đó không được chạy tiếp (F4-04) — tôi thấy trạng thái dừng ở đúng testcase đó.
+- **Cho** một testcase ẩn sai hoặc lỗi, **Khi** hệ thống ghi nhận, **Thì** các testcase ẩn còn lại **vẫn
+  được chạy tiếp** — tôi thấy đủ trạng thái của toàn bộ testcase và một điểm tỷ lệ testcase đạt (F4-13).
+  **Sửa 2026-09-05:** tiêu chí này trước ghi ngược lại — "các testcase còn lại không được chạy tiếp
+  (F4-04)". `F4-04` (fail-fast) đã hết hiệu lực theo `DEC-2026-0831-partial-score-testcase-ratio`, và bản
+  cũ **mâu thuẫn trực tiếp** với tiêu chí tương ứng ở `01-rd/req/user_stories/a4_system.md` (`US-A4-02`) vốn
+  đã sửa đúng từ 2026-08-31. Nếu không sửa, test sinh ra từ tiêu chí này sẽ khẳng định đúng cái ngược lại
+  với hành vi thật.
 - **Cho** một testcase ẩn sai, **Khi** tôi xem kết quả, **Thì** tôi chỉ thấy **trạng thái và chỉ số** của
   testcase đó, không thấy dữ liệu vào và không thấy diff chi tiết (F2-08).
 - **Cho** toàn bộ testcase ẩn đều đúng, **Khi** bài nộp đạt `Accepted`, **Thì** giao diện mở ra hai lựa chọn:

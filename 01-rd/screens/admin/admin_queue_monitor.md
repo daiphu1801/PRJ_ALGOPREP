@@ -69,7 +69,9 @@ viên biết hệ thống có đang khoẻ không và xử lý kịp khi có bà
 - Bảng màu, spacing, component cụ thể — thuộc BD (`02-bd/screens/admin/admin_queue_monitor.md`, chưa viết).
 - Hợp đồng API (số liệu cụm, điều khiển pause/autoscale, WebSocket cập nhật hàng đợi) — thuộc DD
   (`03-dd/api/judge-orchestration.md`, chưa viết).
-- Khái niệm "kỳ thi" (Q2) — không tự đặc tả trong file này, chờ chủ dự án quyết định phạm vi.
+- ~~Khái niệm "kỳ thi" (Q2) — chờ chủ dự án quyết định phạm vi.~~ **Đã chốt 2026-08-31** (ghi nhận
+  2026-09-05): đây chỉ là **nhãn ưu tiên hàng đợi**, không phải một module thi riêng — đổi tên lại cho
+  chuẩn xác khi dựng UI thật (`DEC-2026-0831-judge-orchestration-ops-details`).
 
 ## 7. Tham chiếu
 
@@ -77,4 +79,4 @@ viên biết hệ thống có đang khoẻ không và xử lý kịp khi có bà
 - `01-rd/req/user_stories/a3_admin.md` — `US-A3-03`.
 - `01-rd/overview/system_survey.md` mục 7.3 — dòng `admin_queue_monitor`.
 - `09-layoutBase/Admin - Hàng đợi chấm.dc.html` — prototype.
-- `06-plan/reports/260825-XXXX-report-ai1-phase6-conflicts.md` — báo cáo xung đột Phase 6.
+- `06-plan/reports/260825-1700-report-ai1-phase6-conflicts.md` — báo cáo xung đột Phase 6.
