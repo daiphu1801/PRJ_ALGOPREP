@@ -67,7 +67,7 @@ Hệ thống tích hợp go-judge self-hosted làm tầng thực thi (mặc đ�
 | :----- | :------------------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **A1** | Sinh viên / Người dùng cuối     | Tìm và giải bài toán, chạy thử và nộp bài, xem kết quả từng testcase, chọn Study Pack hoặc Mock Interview sau khi đạt Accepted, theo dõi tiến độ cá nhân. |
 | **A2** | Giảng viên (hoặc Quản trị viên) | Soạn đề bài và đặc tả hàm, tải lên bộ testcase, quản lý câu hỏi và giao bài tập theo lớp.                                                                 |
-| **A3** | Quản trị viên                   | Giám sát cụm judge engine (go-judge) và hàng đợi, kích hoạt Re-judge, quản lý ngôn ngữ và giới hạn tài nguyên, cấu hình prompt và rubric AI.              |
+| **A3** | Quản trị viên                   | Giám sát cụm judge engine (go-judge) và hàng đợi, quản lý ngôn ngữ và giới hạn tài nguyên, cấu hình prompt và rubric AI, ma trận phân quyền, quản lý tài khoản. _(Sửa 2026-09-09: bỏ "kích hoạt Re-judge" — `DEC-2026-0828-remove-rejudge-scope`; đợt 2026-09-05 sửa 5 phát biểu khác trong file này nhưng sót bảng actor.)_ |
 | **A4** | Hệ thống tự động                | Điều phối bài nộp sang judge engine, phát hiện bài nộp bị treo (timeout sweep), sinh Study Pack và điều phối phiên phỏng vấn.                             |
 
 ---

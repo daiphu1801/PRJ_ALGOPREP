@@ -1,7 +1,7 @@
 # RD — Màn `saved_problems` (Bài đã lưu)
 
-> Slug: `saved_problems` — khớp `01-rd/overview/system_survey.md:487` [SoT: 01-rd/overview/system_survey.md:487].
-> Bounded Context: `problem-bank` (F2) [SoT: 01-rd/overview/system_survey.md:487]. Actor: A1.
+> Slug: `saved_problems` — khớp `01-rd/overview/system_survey.md` mục 7.1 dòng `saved_problems` [SoT: 01-rd/overview/system_survey.md — mục 7.1 dòng `saved_problems`].
+> Bounded Context: `problem-bank` (F2) [SoT: 01-rd/overview/system_survey.md — mục 7.1 dòng `saved_problems`]. Actor: A1.
 >
 > Đối chiếu prototype: `09-layoutBase/Bài đã lưu.dc.html`. File này mô tả **hành vi và UX ở mức yêu cầu** —
 > không lặp lại đặc tả chức năng đã có ở `01-rd/req/problem-bank.md` (mục F2) và `01-rd/req/user_stories/a1_student.md`
@@ -64,5 +64,5 @@ trạng thái làm bài, bỏ lưu hoặc vào giải trực tiếp từ danh s�
 
 - `01-rd/req/problem-bank.md` — F2-13.
 - `01-rd/req/user_stories/a1_student.md` — `US-A1-09`.
-- `01-rd/overview/system_survey.md:487` — dòng `saved_problems` trong bảng màn mục 7.
+- `01-rd/overview/system_survey.md` — mục 7.1 dòng `saved_problems`.
 - `09-layoutBase/Bài đã lưu.dc.html` — prototype.

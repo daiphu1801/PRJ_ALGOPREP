@@ -1,7 +1,7 @@
 # RD — Màn `interview_question_authoring` (Soạn câu hỏi phỏng vấn)
 
 > Slug: `interview_question_authoring` — khớp `01-rd/overview/system_survey.md` mục 7.0 dòng
-> `interview_question_authoring` [SoT: 01-rd/overview/system_survey.md:491]. Mã: F6-13
+> `interview_question_authoring` [SoT: 01-rd/overview/system_survey.md — mục 7.0 dòng `interview_question_authoring`]. Mã: F6-13
 > [SoT: 01-rd/req/interview-bank.md — F6-13]. Bounded Context: `interview-bank`.
 > **Actor: A2 và A3 — màn dùng chung, phạm vi dữ liệu theo quyền**, gác bởi Function
 > `INTERVIEW_BANK_MANAGEMENT` (`01-rd/req/identity.md` — F1-12), cùng cơ chế dùng chung đã áp dụng cho
@@ -13,7 +13,7 @@
 > Câu hỏi mở Q4 của `01-rd/screens/shared/interview_question_management.md`, cùng `DEC-2026-0830-interview-bank-crud`
 > [SoT: 01-rd/screens/shared/interview_question_management.md:132]. Route: `/instructor/interview-questions/[id]`,
 > `/admin/interview-questions/[id]` — **chốt giữ nguyên đề xuất 2026-09-01** (Câu hỏi mở Q6)
-> [SoT: 01-rd/overview/system_survey.md:491]. Cấu trúc màn dưới đây **suy diễn song song
+> [SoT: 01-rd/overview/system_survey.md — mục 7.0 dòng `interview_question_authoring`]. Cấu trúc màn dưới đây **suy diễn song song
 > theo tiền lệ `problem_authoring`** (một màn soạn riêng cho một bản ghi phức tạp, không phải modal/drawer)
 > — quyết định gốc đã dẫn rõ chính tiền lệ này khi cắt bỏ phương án modal
 > [SoT: 01-rd/req/interview-bank.md — F6-13, dòng "song song tiền lệ problem_authoring"], không phải suy
@@ -111,7 +111,7 @@ bản) `[SoT: Suy luận, song song tiền lệ problem_authoring — không t�
 - `01-rd/req/interview-bank.md` — F6-01, F6-08, F6-12, F6-13.
 - `01-rd/req/identity.md` — F1-12, F1-14.
 - `01-rd/req/user_stories/a2_instructor.md` — `US-A2-10`.
-- `01-rd/overview/system_survey.md:491, 498-500` — dòng `interview_question_authoring` trong bảng màn mục 7.0.
+- `01-rd/overview/system_survey.md` — mục 7.0 dòng `interview_question_authoring`, cùng khối ghi chú "Cập nhật 2026-08-30" ngay dưới bảng.
 - `01-rd/screens/shared/interview_question_management.md` — màn cha/nguồn, Câu hỏi mở Q2-Q7 (đã đóng, sinh
   ra slug này).
 - `01-rd/screens/shared/problem_authoring.md` — tiền lệ cấu trúc màn soạn riêng (dẫn chiếu song song, không

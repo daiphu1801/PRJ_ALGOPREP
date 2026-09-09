@@ -3,13 +3,14 @@
 > Tách ra từ `01-rd/req/req.md` ngày 2026-08-31 để dễ đọc (theo Bounded Context). Nội dung dưới đây được
 > chuyển nguyên văn từ `req.md` (không đổi ý nghĩa, không thêm/bớt), chỉ hạ heading `###` xuống `#`.
 
-Kích hoạt **sau khi** bài nộp đạt `Accepted`. Hai chức năng độc lập, người dùng chủ động chọn
-(`README.md` mục 4-F5).
+Hai chức năng độc lập, người dùng chủ động chọn (`README.md` mục 4-F5). F5.1 (Solution Review) luôn kích
+hoạt **sau khi** bài nộp đạt `Accepted`. F5.2 (Mock Interview) có lối vào mặc định sau khi bài nộp đạt
+`Accepted`, cộng hai lối vào tự luyện không đòi hỏi `Accepted` — xem F5-24.
 
 **F5.1 — Phân tích bài giải (một lượt, không hội thoại):**
 
 - Yêu cầu phân tích bài giải vừa nộp (F5-01). **Amendment 2026-08-31** (lấp Câu hỏi mở Q3 của
-  `01-rd/req/user_stories.md`, `DEC-2026-0831-outside-screens-closures`): đây là **hành động chủ động của
+  `01-rd/req/user_stories/open_questions.md`, `DEC-2026-0831-outside-screens-closures`): đây là **hành động chủ động của
   người học** — hệ thống chỉ hiện lựa chọn/nút bấm sau khi bài nộp đạt `Accepted`, không tự động chạy phân
   tích ngay. Tiết kiệm chi phí gọi AI (khớp tinh thần rate-limit F5-19 và cache F5-20), khớp đúng cách
   prototype `submission_result` đã dựng (nút bấm, không tự chạy).
@@ -77,7 +78,11 @@ Kích hoạt **sau khi** bài nộp đạt `Accepted`. Hai chức năng độc l
   - Mỗi tính năng AI (Phân tích bài giải, Phỏng vấn giả lập...) dùng **một bản prompt riêng, có phiên bản**
     (ví dụ `v3.8`), lưu lại lịch sử các phiên bản đã có (nháp/đang chạy) và xem lại/khôi phục bản cũ được.
   - Cấu hình trọng số từng tiêu chí của **rubric chấm bài giải** (dùng cho điểm tổng trong báo cáo phân
-    tích), và **giới hạn tần suất** gọi AI theo cấu hình admin đặt (ngưỡng thực thi bởi F5-19).
+    tích), và **giới hạn tần suất** gọi AI theo cấu hình admin đặt (ngưỡng thực thi bởi F5-19). F5-23 chỉ
+    phủ rubric của F5.1 (Solution Review). Hệ thống có **ba rubric độc lập**, đừng gộp: F5-23 (rubric chấm
+    bài giải, admin cấu hình trọng số) · **F5-15** (rubric bốn tiêu chí kết phiên Mock Interview) · **F6-13**
+    (tiêu chí đối chiếu Chế độ luyện F6-08). Trọng số 25/30/25/20% của rubric F5-15 có cấu hình được hay cố
+    định thì chốt khi viết DD cho `ai-review` — xem `01-rd/screens/users/mock_interview.md` Câu hỏi mở Q1.
   - **Chạy đối chiếu (regression test) trước khi publish prompt mới: giữ ở tầng giao diện, chưa cam kết
     logic backend trong phạm vi đồ án.** Nút "Chạy đối chiếu" (chạy 30 bài giải mẫu, so sánh điểm rubric
     giữa bản nháp và bản đang chạy) thể hiện đúng tầm nhìn kiểm thử chất lượng prompt trước khi thay đổi

@@ -1,7 +1,7 @@
 # RD — Màn `admin_queue_monitor` (Hàng đợi chấm & cụm go-judge)
 
-> Slug: `admin_queue_monitor` — khớp `01-rd/overview/system_survey.md` mục 7.3 [SoT: 01-rd/overview/system_survey.md:550].
-> Bounded Context: `judge-orchestration` (F4) [SoT: 01-rd/overview/system_survey.md:550]. Actor: A3.
+> Slug: `admin_queue_monitor` — khớp `01-rd/overview/system_survey.md` mục 7.3 [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_queue_monitor`].
+> Bounded Context: `judge-orchestration` (F4) [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_queue_monitor`]. Actor: A3.
 >
 > Đối chiếu prototype: `09-layoutBase/Admin - Hàng đợi chấm.dc.html`. File này mô tả **hành vi và UX ở mức
 > yêu cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/judge-orchestration.md` (mục F4), chỉ trỏ tới và bổ sung

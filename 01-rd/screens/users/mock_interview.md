@@ -1,7 +1,7 @@
 # RD — Màn `mock_interview` (Phỏng vấn giả lập)
 
 > Slug: `mock_interview` — khớp `01-rd/overview/system_survey.md` mục 7.1 dòng `mock_interview`
-> [SoT: 01-rd/overview/system_survey.md:480]. Bounded Context: `ai-review` (F5.2), có đọc thêm từ
+> [SoT: 01-rd/overview/system_survey.md — mục 7.1 dòng `mock_interview`]. Bounded Context: `ai-review` (F5.2), có đọc thêm từ
 > `interview-bank` (F6) khi mở phiên từ lối vào "kho câu hỏi" [SoT: 01-rd/overview/system_survey.md mục 7.1 — cột "Bounded Context liên quan",
 > dòng `solution_review` · `mock_interview`; 01-rd/req/ai-review.md — F5-24]. Actor: A1 (chính).
 >
@@ -15,7 +15,7 @@
 Trang cho người học mở và tham gia một **phiên phỏng vấn giả lập 1:1 nhiều lượt** với AI, qua ba giai đoạn
 (Giải trình → Phản biện → Mở rộng), từ một trong ba lối vào (bài nộp `Accepted`, kho câu hỏi F6, hoặc tự
 chọn chủ đề), và xem lại rubric bốn tiêu chí khi kết phiên [SoT: 01-rd/req/user_stories/a1_student.md —
-`US-A1-07`; 01-rd/overview/system_survey.md:480].
+`US-A1-07`; 01-rd/overview/system_survey.md — mục 7.1 dòng `mock_interview`].
 
 ## 2. Nguồn yêu cầu (không lặp lại — chỉ trỏ)
 
@@ -120,7 +120,7 @@ Hai chế độ hiển thị không đổi hành vi nghiệp vụ, chỉ đổi 
 
 | # | Câu hỏi | Vì sao chưa trả lời được | Đề xuất | Chủ sở hữu |
 | :-: | :--- | :--- | :--- | :--- |
-| Q1 | ~~Trọng số 25/30/25/20% hiện ở khối "Bốn tiêu chí nhận xét" nhưng điểm tổng (`overall`) ở trạng thái `result` lại tính bằng trung bình cộng không trọng số — mâu thuẫn nội bộ ngay trong prototype.~~ **ĐÃ CHỐT (2026-08-25, tự quyết theo yêu cầu chủ dự án — prototype là bản dựng tham khảo)**: điểm tổng phải tính theo **trung bình có trọng số** đúng bằng các phần trăm đã hiện (25/30/25/20%), không phải trung bình cộng đơn giản — khớp đúng tinh thần F5-23 (cấu hình trọng số rubric). Công thức tính cụ thể và việc trọng số này có cấu hình được qua F5-23 hay cố định **[Đợi nextjs]**, chốt khi viết DD cho `ai-review`. | — | Đã chốt hướng tính, chi tiết cấu hình chờ DD. | Đã đóng |
+| Q1 | ~~Trọng số 25/30/25/20% hiện ở khối "Bốn tiêu chí nhận xét" nhưng điểm tổng (`overall`) ở trạng thái `result` lại tính bằng trung bình cộng không trọng số — mâu thuẫn nội bộ ngay trong prototype.~~ **ĐÃ CHỐT (2026-08-25, tự quyết theo yêu cầu chủ dự án — prototype là bản dựng tham khảo)**: điểm tổng phải tính theo **trung bình có trọng số** đúng bằng các phần trăm đã hiện (25/30/25/20%), không phải trung bình cộng đơn giản. Công thức tính cụ thể và việc trọng số này có cấu hình được hay cố định **[Đợi nextjs]**, chốt khi viết DD cho `ai-review`. **Sửa 2026-09-09:** hai chỗ trong ô này trước dẫn `F5-23` ("khớp đúng tinh thần F5-23", "có cấu hình được qua F5-23 hay cố định") — sai neo. Rubric bốn tiêu chí của phiên phỏng vấn thuộc **`F5-15`**; `F5-23` chỉ phủ rubric của F5.1 Solution Review ("rubric chấm bài giải", `01-rd/req/ai-review.md` — F5-23). Kết luận "tính trung bình có trọng số 25/30/25/20%" **không đổi**, chỉ đổi mã neo và bỏ giả định rằng admin cấu hình được trọng số này qua màn `admin_ai_config`. | — | Đã chốt hướng tính, chi tiết cấu hình chờ DD. | Đã đóng |
 | Q2 | Tab Trình độ ở lối vào "Tự chọn chủ đề" có 4 mức (Intern/Junior/Middle/Senior), trong khi `settings` (F5-28) đã chốt 3 mức (Junior/Middle/Senior). | Hai file prototype khác nhau (`Phỏng vấn giả lập.dc.html` và `Cài đặt.dc.html`) không khớp nhau về danh sách này. | **ĐÃ CHỐT (2026-08-25, tự quyết)**: giữ 3 mức theo `settings` (đã chốt trước, thuộc phạm vi phiên khác) — coi "Intern" trong màn này là dữ liệu mẫu thừa, bỏ khi dựng UI thật. Không sửa `ai-review.md`/`settings.md`. | Đã đóng |
 | Q3 | Nút "Thêm vào phiên giả lập tới" ở `interview_bank_list` (xem file RD riêng) chỉ đổi trạng thái tự chấm cục bộ, không có cơ chế "hàng đợi câu hỏi cho phiên tới" nào thực sự nối sang màn `mock_interview` — người dùng bấm nút này không thấy hệ quả rõ ràng. | Hai file prototype không chia sẻ state nào; đây là giới hạn của bản dựng tham khảo tĩnh, không phải một khoảng trống nghiệp vụ đã biết trước. | **[Đợi nextjs]** — khi dựng backend thật, cân nhắc có nên có một "hàng đợi câu hỏi tự luyện" theo người dùng hay bỏ hẳn cơ chế này, chỉ giữ lối vào tự chọn trực tiếp từ danh sách (đã có nút "Phỏng vấn câu này" ngay tại `interview_bank_list`/`mock_interview`). Không phải quyết định kiến trúc lớn, không cần chủ dự án chốt ngay. | Đợi nextjs |
 
@@ -140,7 +140,7 @@ Hai chế độ hiển thị không đổi hành vi nghiệp vụ, chỉ đổi 
 
 - `01-rd/req/ai-review.md` — F5-09 tới F5-28.
 - `01-rd/req/user_stories/a1_student.md` — `US-A1-07`.
-- `01-rd/overview/system_survey.md:480` — dòng `mock_interview` trong bảng màn mục 7.1.
+- `01-rd/overview/system_survey.md` — mục 7.1 dòng `mock_interview`.
 - `01-rd/overview/system_survey.md` mục 7.1 — Bounded Context chạm bởi `mock_interview`.
 - `01-rd/screens/users/settings.md:43` — danh sách 3 mức trình độ đã chốt (F5-28).
 - `09-layoutBase/Phỏng vấn giả lập.dc.html` — prototype.

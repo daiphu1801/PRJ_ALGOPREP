@@ -1,8 +1,8 @@
 # RD — Màn `class_progress` (Tiến độ lớp)
 
 > Slug: `class_progress` — khớp `01-rd/overview/system_survey.md` mục 7.2, dòng bảng slug
-> [SoT: 01-rd/overview/system_survey.md:524]. Bounded Context: `identity` + `judge-orchestration`
-> [SoT: 01-rd/overview/system_survey.md:524]. Actor: A2 (Giảng viên).
+> [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_progress`]. Bounded Context: `identity` + `judge-orchestration`
+> [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_progress`]. Actor: A2 (Giảng viên).
 >
 > Prototype đối chiếu: `09-layoutBase/Giáo viên - Tiến độ học viên.dc.html` (đã dựng thật, chưa sửa nợ quy
 > chuẩn — xem mục 3 và Câu hỏi mở).
@@ -34,7 +34,7 @@ mở Q1 (đã đóng).
 | Bài đã giải theo chủ đề (định nghĩa gốc, viết cho A1 xem tiến độ cá nhân) | F1-06 | `01-rd/req/identity.md` — F1-06 |
 | Tỉ lệ chấp thuận — Accepted / tổng bài nộp (định nghĩa gốc, viết cho A1 xem tiến độ cá nhân) | F1-07 | `01-rd/req/identity.md` — F1-07 |
 | Tổng hợp tiến độ nhiều học viên trong lớp phụ trách (điểm TB, hoàn thành, chuỗi ngày, xu hướng, khối "Cần chú ý") | F1-28 | `01-rd/req/identity.md` — F1-28 (bổ sung 2026-08-30) |
-| ~~Bảng slug mục 7.2 ghi `class_progress` là "dẫn xuất từ F1-06, F1-07"~~ — đã thay bằng mã trực tiếp F1-28; `system_survey.md` cần cập nhật dòng này khi đợt rà soát tiếp theo chạm tới mục 7.2 | (lịch sử) | `01-rd/overview/system_survey.md:524` |
+| ~~Bảng slug mục 7.2 ghi `class_progress` là "dẫn xuất từ F1-06, F1-07"~~ — đã thay bằng mã trực tiếp F1-28; `system_survey.md` cần cập nhật dòng này khi đợt rà soát tiếp theo chạm tới mục 7.2 | (lịch sử) | `01-rd/overview/system_survey.md` — mục 7.2 dòng `class_progress` |
 | Cơ chế xác định "lớp giảng viên phụ trách" — giao bài theo lớp, chỉ sinh viên lớp đó thấy bài | F2-12 | `01-rd/req/user_stories/a2_instructor.md` (`US-A2-03`) |
 | Cùng cơ chế lớp giảng viên phụ trách áp dụng cho phạm vi hiển thị màn chấm bài (`instructor_grading`) — dẫn chiếu để dùng chung cơ chế, không phát minh riêng cho `class_progress` | F5-27 | `01-rd/req/ai-review.md` — F5-27 |
 | Gác quyền mở màn bằng Function `CLASS_MANAGEMENT` trong ma trận phân quyền | F1-10, F1-12 | `01-rd/req/identity.md` — F1-10, F1-12 |
@@ -77,7 +77,7 @@ diễn:
    Q4.
 9. **Điều hướng** — mục "Tiến độ học viên" trong sidebar khu Giảng viên, cạnh "Tổng quan" / "Lớp của tôi" /
    "Bài tập của tôi" / "Chấm bài" [SoT: 09-layoutBase/Giáo viên - Tiến độ học viên.dc.html:244-250] — khớp
-   layout riêng biệt khu Giảng viên đã chốt ở `01-rd/overview/system_survey.md:508-512` (Phương án B, tách
+   layout riêng biệt khu Giảng viên đã chốt ở `01-rd/overview/system_survey.md` — mục 7.2, khối "Chốt 2026-08-24 ... Phương án B" (Phương án B, tách
    shell khỏi Admin).
 10. Không thấy trạng thái rỗng (lớp chưa có học viên), trạng thái lỗi tải dữ liệu, hay phân trang cho danh
     sách học viên khi lớp đông — `data()` chỉ có 8 bản ghi mẫu trong khi đếm kết quả hiển thị "82 học viên"
@@ -126,8 +126,8 @@ xác nhận mã và gộp chính thức vào `identity.md`/`user_stories/a2_inst
 
 ## 7. Tham chiếu
 
-- `01-rd/overview/system_survey.md:524` — dòng `class_progress` trong bảng slug mục 7.2.
-- `01-rd/overview/system_survey.md:508-512` — quyết định layout riêng biệt khu Giảng viên (Phương án B).
+- `01-rd/overview/system_survey.md` — mục 7.2 dòng `class_progress`.
+- `01-rd/overview/system_survey.md` — mục 7.2, khối "Chốt 2026-08-24 ... Phương án B".
 - `01-rd/req/identity.md` — F1-06, F1-07 (định nghĩa gốc, viết cho A1), F1-28 (chốt 2026-08-30, mã trực tiếp cho màn này), F1-12 (Function `CLASS_MANAGEMENT`).
 - `01-rd/req/ai-review.md` — F5-27 (cơ chế phạm vi lớp giảng viên phụ trách).
 - `01-rd/req/user_stories/a2_instructor.md` — `US-A2-03` tới `US-A2-06`, `US-A2-09` (chốt 2026-08-30).

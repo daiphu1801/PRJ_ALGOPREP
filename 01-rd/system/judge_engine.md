@@ -107,7 +107,7 @@ F4 gọi `JudgeExecutionPort` **một lần cho mỗi testcase**, không dồn n
 | Actor | Tương tác với judge engine |
 | :--- | :--- |
 | A1 — Học viên | Không gọi trực tiếp; thấy kết quả qua UI thời gian thực |
-| A3 — Quản trị viên | Giám sát cụm go-judge và hàng đợi, kích hoạt Re-judge |
+| A3 — Quản trị viên | Giám sát cụm go-judge và hàng đợi (F4-10), cấu hình ngôn ngữ và giới hạn tài nguyên (F4-11) _(sửa 2026-09-09: bỏ "kích hoạt Re-judge" — `DEC-2026-0828-remove-rejudge-scope`; đợt 2026-09-05 đã sửa mô tả vai trò A3 ở `01-rd/overview/system_survey.md` mục 4.1 nhưng sót bảng này)_ |
 | A4 — Hệ thống tự động | Điều phối bài nộp sang judge engine qua `JudgeExecutionPort`, phát hiện bài nộp bị treo (timeout sweep) |
 
 ---

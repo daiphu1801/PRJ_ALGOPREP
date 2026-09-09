@@ -85,7 +85,7 @@ Tab và số đếm: "Nội dung đề" · "Ví dụ mẫu" (theo số ví dụ)
   trường đầu khớp F2-10; hai trường sau chưa có mã — xem Q7. Chú thích trên màn: "Áp dụng cho toàn bộ ngôn
   ngữ, có thể ghi đè riêng ở màn Ngôn ngữ và giới hạn" (dòng 182) — khớp đúng phân vai: **hệ số nhân theo
   ngôn ngữ của F2-10 không nằm ở màn này**, nằm ở `admin_language_config` (F4-11)
-  [SoT: 01-rd/overview/system_survey.md:552].
+  [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_language_config`].
 - **"Ràng buộc dữ liệu"** — textarea tự do (`1 <= s.length, t.length <= 10^5 ...`, dòng 194-195, 416). Vừa là
   phần đề bài (F2-01), vừa là **đầu vào bắt buộc cho F2-14**: AI sinh input "dựa trên đề bài Markdown và Ràng
   buộc dữ liệu Admin đã khai báo" [SoT: 01-rd/req/problem-bank.md — F2-14].
@@ -143,8 +143,10 @@ liệu chạy máy) — prototype tách hai tab riêng và giữ đúng phân bi
 ### 3.3. Cột thuộc tính bên phải
 
 1. **"Thuộc tính"** (dòng 345-378): Chủ đề (dòng 349-351) và Độ khó Easy/Medium/Hard (dòng 353-358, 691) —
-   F2-02. **Trạng thái** Nháp / Đã xuất bản / Ẩn (dòng 360-367, 692) và **Thẻ** tự do (dòng 368-376, 699) —
-   chưa có mã, xem Q7.
+   F2-02. **Trạng thái** — prototype dòng 360-367/692 còn hiện 3 lựa chọn (Nháp/Đã xuất bản/Ẩn), nhưng
+   `problem-bank.md` — F2-15 (`DEC-2026-0830-problem-lifecycle-two-states`) đã chốt chỉ còn **hai** trạng thái
+   `Chưa xuất bản` / `Đã xuất bản`, bỏ hẳn "Ẩn" — dựng UI thật theo F2-15, không theo prototype ở điểm này.
+   **Thẻ** tự do (dòng 368-376, 699) — chưa có mã, xem Q7.
 2. **"Sẵn sàng xuất bản"** (dòng 380-390, 664-677) — checklist 5 điều kiện tính tự động: ≥ 8 testcase, tổng
    trọng số bằng 100, ≥ 2 testcase công khai, đáp án mẫu chạy đúng mọi testcase, ≥ 2 ví dụ mẫu. Đây là **cửa
    chất lượng trước khi xuất bản**; không có mã nào định nghĩa các ngưỡng này (8, 2, 2) — xem Q7. Điều kiện
@@ -165,12 +167,12 @@ liệu chạy máy) — prototype tách hai tab riêng và giữ đúng phân bi
   **Thì** màn chỉ ra đúng testcase đầu tiên sai kèm nguyên nhân (ví dụ "Vượt giờ") và bài **không** đạt điều
   kiện "Đáp án mẫu chạy đúng mọi testcase" trong checklist Sẵn sàng xuất bản
   [SoT: 09-layoutBase/Admin - Soạn đề bài.dc.html:544-550, 592, 668].
-- **Cho** người soạn đổi trạng thái bài từ "Đã xuất bản" về "Nháp" hoặc "Ẩn", **Khi** lưu, **Thì** bài không
-  còn hiển thị cho người học nhưng các lượt nộp đã có không bị xoá — nguyên tắc "không phá dữ liệu đã có" mà
-  hệ thống đã áp cho khoá tài khoản (F1-16) [SoT: Suy luận: prototype chỉ hiện câu "Bản nháp · chưa hiển thị
-  cho người học" (dòng 724) mà không nói gì về lượt nộp cũ; suy ra từ tiền lệ đã chốt F1-16 khoá mềm không
-  xoá bài nộp [SoT: 06-plan/PROTOTYPE_DEBT.md:62-65]. Cần chủ dự án xác nhận, gộp vào Q7]. (Tiền lệ "chấm
-  lại không hạ điểm" F4-09c dẫn trước đây đã loại khỏi phạm vi 2026-08-28,
+- **Cho** người soạn đổi trạng thái bài từ "Đã xuất bản" về "Chưa xuất bản" (F2-15 — chỉ hai trạng thái, không
+  còn "Ẩn"), **Khi** lưu, **Thì** bài không còn hiển thị cho người học nhưng các lượt nộp đã có không bị xoá —
+  nguyên tắc "không phá dữ liệu đã có" mà hệ thống đã áp cho khoá tài khoản (F1-16) [SoT: Suy luận: prototype
+  chỉ hiện câu "Bản nháp · chưa hiển thị cho người học" (dòng 724) mà không nói gì về lượt nộp cũ; suy ra từ
+  tiền lệ đã chốt F1-16 khoá mềm không xoá bài nộp [SoT: 06-plan/PROTOTYPE_DEBT.md:62-65]. Cần chủ dự án xác
+  nhận, gộp vào Q7]. (Tiền lệ "chấm lại không hạ điểm" F4-09c dẫn trước đây đã loại khỏi phạm vi 2026-08-28,
   `DEC-2026-0828-remove-rejudge-scope`.)
 - **Cho** người soạn sửa bộ testcase của một bài **đã có người nộp**, **Khi** lưu, **Thì** hệ thống tăng
   phiên bản bộ testcase và cho biết phiên bản mới là bao nhiêu — yêu cầu F2-09 đã có
@@ -183,7 +185,7 @@ liệu chạy máy) — prototype tách hai tab riêng và giữ đúng phân bi
 | :-: | :-: | :--- | :--- | :--- | :--- |
 | Q1 | — | ~~Màn này thuộc khu Giảng viên hay khu Admin — hay cả hai?~~ **ĐÃ CHỐT 2026-08-25 (owner instruction):** dùng chung một màn, mount ở cả `/instructor/problems/[id]` và `/admin/problems/[id]` (tiền tố theo `DEC-2026-0825-frontend-base-architecture`), phạm vi dữ liệu do ma trận phân quyền F1-10 tới F1-12 quyết định — A2 soạn/sửa bài của mình, A3 quản toàn bộ. | — | Ghi quyết định `DEC-2026-0825-shared-content-authoring-screens`, chốt cùng lúc với `interview_question_management` (cùng dạng lệch). Không đè Phương án B (mục 7.2) — khu Giảng viên vẫn giữ layout riêng, đây chỉ là một view mount ở hai route. | Đã đóng |
 | Q2 | — | ~~`testcase_management` có nên bị gộp vào `problem_authoring`?~~ **ĐÃ CHỐT 2026-08-25 (owner instruction):** gộp hoàn toàn — `testcase_management` không còn là slug riêng. | — | Phiên bản bộ testcase (F2-09) là **panel/drawer bên trong tab Testcase** của màn này, không tách hộp thoại hay màn riêng. Tổng số màn dự kiến giảm theo (xem `system_survey.md`). | Đã đóng |
-| Q3 | — | ~~**Cột "Điểm" và khối "Chấm điểm từng phần" vẫn còn nguyên trong prototype...**~~ **ĐÃ CHỐT 2026-08-31 (owner instruction — xác nhận lại quyết định đã có từ 2026-08-24):** **xoá**, giữ Pass/Fail toàn phần + fail-fast F4-04. | — | Xoá cột "Điểm", khối "Chấm điểm từng phần" và điều kiện "Tổng trọng số bằng 100" khi dựng UI thật. `06-plan/PROTOTYPE_DEBT.md` mục 2.6/7.3.d cập nhật cùng đợt. | Đã đóng |
+| Q3 | — | ~~**Cột "Điểm" và khối "Chấm điểm từng phần" vẫn còn nguyên trong prototype...**~~ **ĐÃ CHỐT 2026-08-31 (owner instruction — xác nhận lại quyết định đã có từ 2026-08-24):** **xoá** khối "Chấm điểm từng phần theo trọng số do người ra đề tự đặt"; giữ verdict Pass/Fail nhị phân. (Sửa 2026-09-05: căn cứ ban đầu ghi "fail-fast F4-04" — mã này đã hết hiệu lực do `DEC-2026-0831-partial-score-testcase-ratio`, hệ thống nay luôn chạy hết mọi testcase và trả về F4-13, tỷ lệ testcase đạt **không trọng số**, hiển thị song song với verdict nhị phân. Kết luận xoá "chấm điểm từng phần theo trọng số" vẫn đúng, chỉ khác căn cứ — xem mục 7.) | — | Xoá cột "Điểm", khối "Chấm điểm từng phần" và điều kiện "Tổng trọng số bằng 100" khi dựng UI thật. `06-plan/PROTOTYPE_DEBT.md` mục 2.6/7.3.d cập nhật cùng đợt. | Đã đóng |
 | Q4 | — | ~~**Prototype thiếu hoàn toàn UI cho F2-03, F2-04 và F2-09...**~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** thêm **một tab "Đặc tả" riêng** (tab thứ năm). | — | Tab "Đặc tả" chứa: chữ ký hàm cho từng ngôn ngữ Java/C++/Python, lược đồ kiểu tham số/kiểu trả về, định dạng đọc `stdin`/in `stdout` cho Standard I/O, trường chọn chiến lược so khớp `EXACT`/`TRIMMED`/`EPSILON`/`UNORDERED_SET`. Phiên bản bộ testcase (F2-09) hiển thị ở đầu tab Testcase. **Không xuất bản được nếu tab này còn trống** — thêm vào checklist "Sẵn sàng xuất bản". Xem `DEC-2026-0831-problem-authoring-spec-tab`. | Đã đóng |
 | Q5 | — | ~~**"Gợi ý theo cấp độ" kèm trừ điểm là một tính năng hoàn chỉnh trên prototype...**~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** **cắt khỏi phạm vi**, cùng tính năng với "Gợi ý theo bậc" đã cắt ở `admin_ai_config`. | — | Xoá khối/tab "Gợi ý theo cấp độ" khi dựng UI thật; đối ứng phía người học ở `problem_detail` cũng xoá cùng lúc. Xem `DEC-2026-0831-problem-authoring-round2`. | Đã đóng |
 | Q6 | — | ~~**"Chỉ dẫn cho trợ lý AI" theo từng bài + 3 cờ hành vi AI — không có mã phủ, và có mặt rủi ro bảo mật.**~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất) — phần an toàn:** **giữ tính năng**, coi là **chỉ thị bậc hai**, không phải chỉ thị hệ thống — amendment vào F5-17 (`01-rd/req/ai-review.md`). | — | Nối vào prompt trong một khối có nhãn riêng (ví dụ `<per_problem_context>`), không được ghi đè ràng buộc cứng của F5-17/F5-18, chỉ vai trò có `PROBLEM_AUTHORING:UPDATE` (F1-10) mới sửa được. Xem `DEC-2026-0831-ai-instruction-injection-guard`. **Còn mở, tách riêng khỏi Q6, chưa xử lý trong đợt này:** nút "Nhờ AI soạn nháp" (F2-14 chỉ phủ sinh testcase, không phủ AI soạn gợi ý/đề bài) — lưu ý Q5 (đã cắt "Gợi ý theo cấp độ") không tự động trả lời câu này, vì "Nhờ AI soạn nháp" là một nút riêng, không phải một phần của khối gợi ý đã cắt. | Đã đóng (phần an toàn) |

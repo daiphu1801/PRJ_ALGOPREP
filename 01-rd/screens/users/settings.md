@@ -1,7 +1,7 @@
 # RD — Màn `settings` (Cài đặt)
 
-> Slug: `settings` — khớp `01-rd/overview/system_survey.md:486` [SoT: 01-rd/overview/system_survey.md:486].
-> Bounded Context: `identity` (F1) [SoT: 01-rd/overview/system_survey.md:486]. Actor: A1.
+> Slug: `settings` — khớp `01-rd/overview/system_survey.md` mục 7.1 dòng `settings` [SoT: 01-rd/overview/system_survey.md — mục 7.1 dòng `settings`].
+> Bounded Context: `identity` (F1) [SoT: 01-rd/overview/system_survey.md — mục 7.1 dòng `settings`]. Actor: A1.
 >
 > Đối chiếu prototype: `09-layoutBase/Cài đặt.dc.html`. File này mô tả **hành vi và UX ở mức yêu cầu** —
 > không lặp lại đặc tả chức năng đã có ở `01-rd/req/identity.md` (mục F1), chỉ trỏ tới và bổ sung phần đặc thù
@@ -72,7 +72,7 @@ giả lập, thông báo email, xuất dữ liệu, và khu vực tự xoá tài
 
 | # | Câu hỏi | Quyết định | Ghi chú |
 | :-: | :--- | :--- | :--- |
-| Q1 | 4/5 nhóm cài đặt (Workspace, Phỏng vấn giả lập, Thông báo, Xuất dữ liệu) không có mã `Fx-nn`. | **Chốt theo nhóm, tất cả giữ trong phạm vi đồ án:** (a) Workspace → **F1-20**; (b) Phỏng vấn giả lập tự chỉnh tham số → **F5-28**, chỉ áp dụng cho lối vào tự luyện (F5-24), không áp dụng cho phiên từ bài nộp `Accepted` (F5-09); (c) Thông báo email định kỳ → **F1-21**, job thuộc `identity`; (d) Xuất dữ liệu → **F1-22**. Cả bốn đã ghi vào `01-rd/req/identity.md` (F5-28 vào `ai-review.md`), GWT tương ứng vào `user_stories/a1_student.md`, đồng bộ `system_survey.md:484-486`. | Đã chốt, không còn mở. |
+| Q1 | 4/5 nhóm cài đặt (Workspace, Phỏng vấn giả lập, Thông báo, Xuất dữ liệu) không có mã `Fx-nn`. | **Chốt theo nhóm, tất cả giữ trong phạm vi đồ án:** (a) Workspace → **F1-20**; (b) Phỏng vấn giả lập tự chỉnh tham số → **F5-28**, chỉ áp dụng cho lối vào tự luyện (F5-24), không áp dụng cho phiên từ bài nộp `Accepted` (F5-09); (c) Thông báo email định kỳ → **F1-21**, job thuộc `identity`; (d) Xuất dữ liệu → **F1-22**. Cả bốn đã ghi vào `01-rd/req/identity.md` (F5-28 vào `ai-review.md`), GWT tương ứng vào `user_stories/a1_student.md`, đồng bộ `01-rd/overview/system_survey.md` — mục 7.1 các dòng `my_submissions`, `profile`, `settings`. | Đã chốt, không còn mở. |
 | Q2 | Câu chữ "Vùng nguy hiểm" nói xoá vĩnh viễn, sai so với F1-16 đã chốt (dữ liệu không mất, chỉ ẩn danh hoá). | **Chốt: câu chữ đúng phải theo hành vi F1-16** — ví dụ "Tài khoản chuyển sang trạng thái ngừng hoạt động ngay; thông tin định danh của bạn sẽ được ẩn danh hoá sau [N] ngày, còn lượt nộp/bài đã lưu/phiên phỏng vấn của bạn vẫn được giữ lại". Đã ghi vào `identity.md`. | Sửa câu chữ thật trên UI **[Đợi nextjs]** — không sửa `09-layoutBase/Cài đặt.dc.html` (prototype tĩnh, không phải đích cuối). |
 
 ## 6. Ngoài phạm vi file này
@@ -89,7 +89,7 @@ giả lập, thông báo email, xuất dữ liệu, và khu vực tự xoá tài
 
 - `01-rd/req/identity.md` — F1-16 (đã chốt), F1-20, F1-21, F1-22. `01-rd/req/ai-review.md` — F5-28.
 - `01-rd/req/user_stories/a1_student.md` — `US-A1-05` (GWT cuối), `US-A1-07`.
-- `01-rd/overview/system_survey.md:486, 490-492` — dòng `settings` và ghi chú "chỉ gán được F1-16".
+- `01-rd/overview/system_survey.md` — mục 7.1 dòng `settings`, cùng ghi chú tách `profile`/`settings` ngay dưới bảng.
 - Quyết định: `DEC-2026-0824-dark-light-theme`, `DEC-2026-0824-i18n-vi-en`.
 - `09-layoutBase/Cài đặt.dc.html` — prototype.
 - `06-plan/reports/260825-1500-report-ai1-phase2-conflicts.md` — báo cáo xung đột + quyết định đã chốt, đánh dấu AI-1.

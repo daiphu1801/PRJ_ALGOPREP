@@ -171,7 +171,7 @@ gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang c�
     (Lớp phụ trách, Tổng học viên, Cần chấm tay, Điểm TB lớp), widget "Cần chấm tay", "Hoạt động gần đây",
     "Lớp của tôi", "Tiến độ học viên", "Bài tập của tôi" — một mã tổng hợp duy nhất, không phải một `FUNCTION`
     riêng trong ma trận F1-10 (mọi vai trò `INSTRUCTOR` đều thấy trang này, là đích mặc định sau đăng nhập,
-    `auth.md` Q3 đã chốt). Trả lời `US-A2-11` mới trong `01-rd/req/user_stories.md`.
+    `auth.md` Q3 đã chốt). Trả lời `US-A2-11` mới trong `01-rd/req/user_stories/a2_instructor.md`.
     - **Điểm TB lớp** = điểm AI tham khảo (F5-27), gộp trung bình trên mọi bài `Accepted` có báo cáo F5.1 của
       (các) lớp phụ trách — sẵn có cho mọi bài `Accepted`, không phụ thuộc giảng viên đã chấm tay hay chưa.
     - **Badge số trên nav** ("3" lớp, "18" bài tập, "9" cần chấm) làm mới khi tải lại trang/chuyển màn, không

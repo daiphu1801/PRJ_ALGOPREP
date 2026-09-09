@@ -4,8 +4,9 @@
 > 2026-08-25, xem dưới). Bounded Context: `interview-bank` (F6). **Actor: A2 và A3 — màn dùng chung, phạm vi
 > dữ liệu theo quyền.** Đã chốt ngày 2026-08-25 (owner instruction, kết thúc Câu hỏi mở Q1 cũ): mount ở cả
 > `/instructor/interview-questions` và `/admin/interview-questions`, cùng một view/BD/DD, phạm vi do quyền
-> `INTERVIEW_BANK_MANAGEMENT` quyết định (`01-rd/req/identity.md` — F1-10 tới F1-12) — A2 chỉ thấy/sửa bộ câu hỏi của lớp
-> mình phụ trách, A3 thấy toàn bộ kho. Ghi quyết định:
+> `INTERVIEW_BANK_MANAGEMENT` quyết định (`01-rd/req/identity.md` — F1-10 tới F1-12) — cả A2 và A3 đều thấy và
+> sửa toàn bộ kho câu hỏi hệ thống (không chia theo lớp phụ trách — xem mục 2, cập nhật 2026-08-28,
+> `DEC-2026-0828-remove-per-class-interview-set`). Ghi quyết định:
 > `DEC-2026-0825-shared-content-authoring-screens`.
 >
 > Đối chiếu prototype: `09-layoutBase/Admin - Câu hỏi phỏng vấn.dc.html` (504 dòng, dựng trong shell Admin —
@@ -30,7 +31,7 @@ Phân biệt rạch ròi với hai màn phía người học, **không trùng l�
 | Màn | Actor | Việc làm ở đó |
 | :--- | :--- | :--- |
 | `interview_bank_list` | A1 | Duyệt/lọc kho câu hỏi để ôn, xem nhanh, tự chấm mức nhớ, luyện nhanh dạng flashcard [SoT: 01-rd/screens/users/interview_bank_list.md:17-20] |
-| `interview_question_detail` | A1 | Chế độ học đầy đủ (F6-04 tới F6-06) và Chế độ luyện có AI đối chiếu (F6-07, F6-08) [SoT: 01-rd/overview/system_survey.md:482] |
+| `interview_question_detail` | A1 | Chế độ học đầy đủ (F6-04 tới F6-06) và Chế độ luyện có AI đối chiếu (F6-07, F6-08) [SoT: 01-rd/overview/system_survey.md — mục 7.1 dòng `interview_question_detail`] |
 | `interview_question_management` (file này) | A2 và A3 (dùng chung — đã chốt) | **Tạo và bảo trì chính nội dung** câu hỏi mà hai màn trên đọc. Không có chế độ học, không có chế độ luyện, không có tự chấm |
 
 ## 2. Nguồn yêu cầu (không lặp lại — chỉ trỏ)
@@ -107,8 +108,8 @@ hỏi phỏng vấn.dc.html:56, 358-366].
 ## 4. Given-When-Then bổ sung ở mức màn
 
 - **Cho** tôi có quyền `INTERVIEW_BANK_MANAGEMENT` (F1-10, F1-12), **Khi** tôi mở màn quản lý ngân hàng câu
-  hỏi, **Thì** tôi chỉ thấy và chỉ sửa được phần kho câu hỏi thuộc phạm vi vai trò của tôi (A2 theo lớp phụ
-  trách, A3 toàn kho) [SoT: 01-rd/req/identity.md — F1-12; 01-rd/req/interview-bank.md — F6-13].
+  hỏi, **Thì** tôi thấy và sửa được toàn bộ kho câu hỏi hệ thống — không chia theo lớp (A2 và A3 cùng phạm
+  vi dữ liệu, cập nhật 2026-08-28) [SoT: 01-rd/req/identity.md — F1-12; 01-rd/req/interview-bank.md — F6-13].
 - **Cho** một câu hỏi chưa có đủ tiêu chí đánh giá, **Khi** tôi mở màn, **Thì** câu hỏi đó được đếm vào chỉ số
   "17 câu thiếu rubric" và phân biệt được với câu hỏi đã đủ tiêu chí [SoT: 09-layoutBase/Admin - Câu hỏi phỏng
   vấn.dc.html:430]. Chốt 2026-08-30 (F6-13): câu hỏi thiếu tiêu chí vẫn hiện ở Chế độ học, nhưng ẩn khỏi Chế

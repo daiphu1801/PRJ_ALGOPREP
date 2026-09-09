@@ -1,8 +1,8 @@
 # RD — Màn `my_progress` (Tiến độ của tôi)
 
-> Slug: `my_progress` — khớp `01-rd/overview/system_survey.md:483` [SoT: 01-rd/overview/system_survey.md:483].
+> Slug: `my_progress` — khớp `01-rd/overview/system_survey.md` mục 7.1 dòng `my_progress` [SoT: 01-rd/overview/system_survey.md — mục 7.1 dòng `my_progress`].
 > Bounded Context: `identity` (F1), có đọc thêm từ `interview-bank` (F6) cho khối phỏng vấn giả lập/lý thuyết
-> [SoT: 01-rd/overview/system_survey.md:483 — cột Bounded Context ghi `identity`, `interview-bank`]. Actor: A1.
+> [SoT: 01-rd/overview/system_survey.md — mục 7.1 dòng `my_progress` — cột Bounded Context ghi `identity`, `interview-bank`]. Actor: A1.
 >
 > Đối chiếu prototype: `09-layoutBase/Tiến độ của tôi.dc.html`. File này mô tả **hành vi và UX ở mức yêu
 > cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/identity.md` (mục F1) và
@@ -78,6 +78,6 @@ giả lập mở lại được rubric của phiên cũ [SoT: 01-rd/req/identity
 
 - `01-rd/req/identity.md` — F1-06, F1-07, F1-08.
 - `01-rd/req/user_stories/a1_student.md` — `US-A1-05` (2 GWT đầu).
-- `01-rd/overview/system_survey.md:483` — dòng `my_progress` trong bảng màn mục 7.
+- `01-rd/overview/system_survey.md` — mục 7.1 dòng `my_progress`.
 - `09-layoutBase/Tiến độ của tôi.dc.html` — prototype.
 - `06-plan/nexa-plan/260824-2043-bd-screens-common-first.md` — kế hoạch Phase 0-1; Phase 2 tiếp tục ở đây.

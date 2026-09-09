@@ -1,7 +1,7 @@
 # RD — Màn `profile` (Trang cá nhân)
 
-> Slug: `profile` — khớp `01-rd/overview/system_survey.md:485` [SoT: 01-rd/overview/system_survey.md:485].
-> Bounded Context: `identity` (F1) [SoT: 01-rd/overview/system_survey.md:485]. Actor: A1 (mọi actor có tài
+> Slug: `profile` — khớp `01-rd/overview/system_survey.md` mục 7.1 dòng `profile` [SoT: 01-rd/overview/system_survey.md — mục 7.1 dòng `profile`].
+> Bounded Context: `identity` (F1) [SoT: 01-rd/overview/system_survey.md — mục 7.1 dòng `profile`]. Actor: A1 (mọi actor có tài
 > khoản thật ra đều có trang này, nhưng trục màn `users/` áp dụng vì prototype và luồng chính là của A1 —
 > A2/A3 dùng chung cấu trúc màn, khác biệt nếu có sẽ xử lý khi viết BD).
 >
@@ -79,6 +79,6 @@ lối vào nhanh tới Cài đặt [SoT: 01-rd/req/identity.md — F1-09].
 
 - `01-rd/req/identity.md` — F1-09, F1-19.
 - `01-rd/req/user_stories/a1_student.md` — `US-A1-05` (GWT thứ 3).
-- `01-rd/overview/system_survey.md:485` — dòng `profile` trong bảng màn mục 7.
+- `01-rd/overview/system_survey.md` — mục 7.1 dòng `profile`.
 - `09-layoutBase/Trang cá nhân.dc.html` — prototype.
 - `01-rd/screens/shared/auth.md` — luồng F1-17 (quên mật khẩu) tham chiếu ở Câu hỏi mở Q3.

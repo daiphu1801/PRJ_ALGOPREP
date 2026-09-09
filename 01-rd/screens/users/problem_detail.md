@@ -1,11 +1,11 @@
 # RD — Màn `problem_detail` (Workspace giải bài)
 
 > Slug: `problem_detail` — khớp `01-rd/overview/system_survey.md` mục 7.1 dòng `problem_detail`
-> [SoT: 01-rd/overview/system_survey.md:475]. Bounded Context: `problem-bank` + `harness` +
+> [SoT: 01-rd/overview/system_survey.md — mục 7.1 dòng `problem_detail`]. Bounded Context: `problem-bank` + `harness` +
 > `judge-orchestration` (+ `ai-review` ở điểm ra sau `Accepted`)
 > [SoT: 01-rd/overview/system_survey.md mục 7.1 — cột "Bounded Context liên quan", dòng `problem_detail`]. Actor: A1.
 >
-> **Màn nặng nhất trong 31 màn** — chạm bốn Bounded Context [SoT: 01-rd/overview/system_survey.md:495].
+> **Màn nặng nhất trong 31 màn** — chạm bốn Bounded Context [SoT: 01-rd/overview/system_survey.md — mục 7.1, ghi chú "Màn nặng nhất là `problem_detail`"].
 > Đối chiếu prototype: `09-layoutBase/Workspace giải bài.dc.html`.
 >
 > File này mô tả **hành vi và UX ở mức yêu cầu** — không lặp lại đặc tả chức năng đã có ở
@@ -107,13 +107,13 @@ với testcase ẩn — cho cả hai mô hình nộp bài song song
   (`02-bd/architecture/harness.md` mục 2b), không thuộc file theo trục màn này.
 - Luồng cập nhật kết quả testcase theo thời gian thực sau khi Submit — thuộc màn `submission_result`
   (`01-rd/screens/users/submission_result.md`), không lặp lại ở đây theo đúng ghi chú "đừng gộp hai màn"
-  [SoT: 01-rd/overview/system_survey.md:498].
+  [SoT: 01-rd/overview/system_survey.md — mục 7.1, ghi chú "`problem_detail` và `submission_result` là hai màn riêng, đừng gộp"].
 
 ## 7. Tham chiếu
 
 - `01-rd/req/problem-bank.md` — F2-03. `01-rd/req/harness.md` — F3-01 tới F3-13. `01-rd/req/judge-orchestration.md` — F4-01, F4-02.
 - `01-rd/req/user_stories/a1_student.md` — `US-A1-03`.
-- `01-rd/overview/system_survey.md:475, 495, 498` — dòng `problem_detail`, ghi chú "màn nặng nhất", ghi chú
+- `01-rd/overview/system_survey.md` — mục 7.1 dòng `problem_detail`, cùng hai ghi chú ngay dưới bảng: "Màn nặng nhất là `problem_detail`" và "hai màn riêng, đừng gộp" với
   không gộp với `submission_result`.
 - `09-layoutBase/Workspace giải bài.dc.html` — prototype.
 - Quyết định: `DEC-2026-0824-dual-submission-model-per-problem` (phát sinh từ

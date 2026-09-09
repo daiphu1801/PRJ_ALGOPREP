@@ -1,7 +1,7 @@
 # RD — Màn `problem_list` (Ngân hàng bài toán)
 
 > Slug: `problem_list` — khớp `01-rd/overview/system_survey.md` mục 7.1 dòng `problem_list`
-> [SoT: 01-rd/overview/system_survey.md:474]. Bounded Context: `problem-bank` (F2), có đọc thêm từ
+> [SoT: 01-rd/overview/system_survey.md — mục 7.1 dòng `problem_list`]. Bounded Context: `problem-bank` (F2), có đọc thêm từ
 > `identity` (trạng thái đã giải theo người dùng) và `harness` (nhãn mô hình nộp bài của từng bài)
 > [SoT: 01-rd/overview/system_survey.md mục 7.1 — cột "Bounded Context liên quan", dòng `problem_list`]. Actor: A1 (chính), A2 (khi xem để giao
 > bài — màn thật cho A2 giao bài là `class_management`, không phải file này).
@@ -42,10 +42,9 @@ giải, kèm khu vực riêng hiển thị bài đã được giảng viên giao
 3. **Sidebar chủ đề** — danh sách chủ đề kèm tiến độ `đã giải/tổng số` riêng theo từng chủ đề (dòng 572-579)
    — không có mã `Fx-nn` riêng, là cách trình bày tổng hợp của F2-11 + F1-06 (tiến độ theo chủ đề).
 4. **Khu "Bài tập lớp"** — một khối riêng trong cùng trang (không phải lồng vào từng dòng bảng), liệt kê tên
-   lớp và các bài đã gán (dòng 222-236) — khớp tinh thần F2-12 ("không phải một màn tách biệt"), nhưng
-   **hiển thị dạng khối tổng hợp cạnh bảng chính, không phải lồng trực tiếp vào từng dòng bài toán** như câu
-   chữ ở `problem-bank.md` — F2-12 ("lồng thành một nhóm riêng ngay trong danh sách bài toán") có thể khiến người đọc
-   hiểu nhầm là chèn xen kẽ vào bảng — xem Câu hỏi mở Q1.
+   lớp và các bài đã gán (dòng 222-236) — khớp đúng câu chữ hiện hành của F2-12 ("hiển thị thành một khối
+   riêng ngay trong cùng trang danh sách bài toán", sửa 2026-08-25 theo Câu hỏi mở Q1 dưới đây): một khối
+   tổng hợp cạnh bảng chính, không lồng trực tiếp vào từng dòng bài toán.
 5. **Phân trang** — cuối bảng, không phải infinite-scroll (dòng 194-199).
 6. **`isSolve`** (trạng thái nội bộ trong file, dòng 242+) — có UI Run Code/Submit y hệt Workspace, nhưng
    hàm `open(p)` thực tế **luôn điều hướng sang file riêng** `Workspace giải bài.dc.html`
@@ -91,6 +90,6 @@ giải, kèm khu vực riêng hiển thị bài đã được giảng viên giao
 - Quyết định: `DEC-2026-0824-dual-submission-model-per-problem` (ảnh hưởng gián
   tiếp tới cách hiển thị nhãn mô hình ở màn này, xem Câu hỏi mở Q3).
 - `01-rd/req/user_stories/a1_student.md` — `US-A1-02`.
-- `01-rd/overview/system_survey.md:474` — dòng `problem_list` trong bảng màn mục 7.1.
+- `01-rd/overview/system_survey.md` — mục 7.1 dòng `problem_list`.
 - `09-layoutBase/Ngân hàng bài toán.dc.html` — prototype.
 - `06-plan/nexa-plan/260824-2043-bd-screens-common-first.md` — kế hoạch Phase 1 sinh ra file này.

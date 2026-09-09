@@ -1,10 +1,9 @@
 # RD — Màn `auth` (Đăng nhập & Đăng ký)
 
-> Slug: `auth` — khớp `01-rd/overview/system_survey.md` mục 7.1 dòng `auth`
-> [SoT: 01-rd/overview/system_survey.md:469]. Bounded Context: `identity` (F1)
+> Slug: `auth` — khớp `01-rd/overview/system_survey.md` mục 7.0 dòng `auth`
+> [SoT: 01-rd/overview/system_survey.md — mục 7.0 dòng `auth`]. Bounded Context: `identity` (F1)
 > [SoT: README.md mục 4 — sáu phân hệ F1-F6]. Actor: A1, A2, A3 (mọi vai trò đều đi qua màn này trước khi vào hệ
-> thống) [SoT: 01-rd/overview/system_survey.md:465-482 — auth nằm ở mục 7.1 "Khu vực người học" nhưng không
-> có gate theo vai trò; A2/A3 dùng chung màn này để đăng nhập, chỉ khác điểm đến sau khi xác thực].
+> thống) [SoT: 01-rd/overview/system_survey.md — mục 7.0 dòng `auth`; màn không có gate theo vai trò; A2/A3 dùng chung màn này để đăng nhập, chỉ khác điểm đến sau khi xác thực].
 >
 > Đối chiếu prototype đã sửa sạch quy chuẩn (nhãn go-judge, khoá 3 ngôn ngữ, theme Light mặc định —
 > `06-plan/PROTOTYPE_DEBT.md` mục 6.1): `09-layoutBase/Đăng nhập & Đăng ký.dc.html`.
@@ -103,7 +102,7 @@ năng ở mức module chưa nêu, phát hiện khi đối chiếu prototype:
 
 - `01-rd/req/identity.md` — F1-01 tới F1-17.
 - `01-rd/req/user_stories/a1_student.md` — `US-A1-01`.
-- `01-rd/overview/system_survey.md:469` — dòng `auth` trong bảng màn mục 7.1.
+- `01-rd/overview/system_survey.md` — mục 7.0 dòng `auth`.
 - `09-layoutBase/Đăng nhập & Đăng ký.dc.html` — prototype đã sửa sạch (`06-plan/PROTOTYPE_DEBT.md` mục 6.1).
 - Quyết định: `DEC-2026-0824-dark-light-theme`, `DEC-2026-0824-i18n-vi-en`.
 - `06-plan/nexa-plan/260824-2043-bd-screens-common-first.md` — kế hoạch Phase 0 sinh ra file này.
