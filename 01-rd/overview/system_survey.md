@@ -222,8 +222,12 @@ mô tả `F6-11` (bộ câu hỏi riêng theo lớp) vốn đã bị loại
 
 Cùng lý do, hàng "Soạn đề bài, đặc tả hàm, tải testcase" bật cột A3 thành **Có**: `problem_authoring` và
 `problem_management` là màn dùng chung, mount ở cả `/instructor/*` lẫn `/admin/*`, phạm vi dữ liệu do
-`PROBLEM_AUTHORING`/`TESTCASE_MANAGEMENT` quyết định — A2 thấy bài của mình/lớp mình, A3 thấy toàn kho
-(`DEC-2026-0825-shared-content-authoring-screens`, xem `01-rd/screens/shared/problem_management.md` mục 1).
+`PROBLEM_AUTHORING`/`TESTCASE_MANAGEMENT` quyết định — A2 thấy và sửa **bài do chính mình soạn** (theo quyền
+tác giả), A3 thấy toàn kho (`DEC-2026-0825-shared-content-authoring-screens`, xem
+`01-rd/screens/shared/problem_management.md` mục 1). **Sửa 2026-09-09:** câu trước ghi "bài của mình/lớp
+mình" — sai, phạm vi của A2 trên kho bài **không** chia theo lớp phụ trách: bài toán không phải thực thể sở
+hữu theo lớp, việc gán bài vào lớp là chuyện riêng của `class_assignments` (F2-12). Bản trong
+`01-rd/screens/shared/problem_management.md` đã sửa cùng đợt.
 Cột "Actor" của các hàng `F2-01` tới `F2-04` ở mục 5.2 ghi `A2` theo nghĩa **ai thường khởi phát**, không
 phải ai được phép — hai cột trả lời hai câu hỏi khác nhau.
 
@@ -380,7 +384,7 @@ Kích hoạt **sau khi** bài nộp đạt Accepted. Hai chức năng độc l�
 | F5-21 | Theo dõi và ghi nhận lượng token tiêu thụ theo từng phiên | |
 | F5-25 | Ngân sách token AI theo khoảng thời gian, dự báo cạn quota, bảng xếp hạng người dùng/bài toán tốn token nhiều nhất | Bổ sung mục 2.9. Chốt 2026-08-24: vượt ngân sách → tự động tạm khoá gọi AI cho STUDENT/INSTRUCTOR; ADMIN không bị khoá |
 | F5-22 | Suy giảm có kiểm soát: AI hỏng hoặc hết quota thì F1-F4 vẫn hoạt động bình thường | Ràng buộc kiến trúc, không phải lời hứa |
-| F5-23 | Cấu hình prompt (có phiên bản, xem lại/khôi phục), trọng số rubric, giới hạn tần suất | Actor A3. Chốt 2026-08-24 (mục 2.8): "Chạy đối chiếu" (regression test 30 bài mẫu) giữ trên UI, backend thật hoãn sang giai đoạn mở rộng |
+| F5-23 | Cấu hình prompt (có phiên bản, xem lại/khôi phục), trọng số rubric **của Solution Review**, giới hạn tần suất | Actor A3. Chốt 2026-08-24 (mục 2.8): "Chạy đối chiếu" (regression test 30 bài mẫu) giữ trên UI, backend thật hoãn sang giai đoạn mở rộng. **Làm rõ 2026-09-09:** phần "trọng số rubric" của F5-23 chỉ phủ rubric của **F5.1 Solution Review** — đúng theo câu chữ gốc "rubric chấm bài giải" ở `01-rd/req/ai-review.md` (F5-23). Rubric bốn tiêu chí của **F5.2 Mock Interview** là rubric khác, thuộc `F5-15`; rubric của Chế độ luyện F6 là rubric thứ ba, thuộc `F6-13`. Ba rubric độc lập nhau |
 
 ### 5.6. F6 — Ngân hàng câu hỏi phỏng vấn
 
@@ -720,7 +724,7 @@ mục dưới đây không còn là "chưa quyết":
 sửa lại 2026-08-31 (report `rd_review_report_260826.html` mục 6.5 nêu dòng này là câu hỏi mở, nhưng thực ra
 đã có câu trả lời từ trước khi report được viết):** thông báo qua email **CÓ trong phạm vi** — `F1-21` (nhắc
 luyện tập khi chuỗi ngày sắp mất, báo cáo tiến độ hằng tuần), gác được bật/tắt theo từng loại, job định kỳ
-thuộc `identity`. Xem `01-rd/req/req.md` (khối F1-21) và `01-rd/screens/users/settings.md` Q1 (đã đóng).
+thuộc `identity`. Xem `01-rd/req/identity.md` (F1-21) và `01-rd/screens/users/settings.md` Q1 (đã đóng).
 
 **Đã chốt 2026-08-24** (`06-plan/PROTOTYPE_DEBT.md` mục 2.8, qua hỏi trực tiếp chủ dự án) — một mục hoãn lại
 chứ không loại hẳn: **backend thật cho "Chạy đối chiếu" (regression test) prompt AI trước khi publish**

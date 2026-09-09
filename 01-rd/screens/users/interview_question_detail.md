@@ -1,7 +1,7 @@
 # RD — Màn `interview_question_detail` (Chi tiết câu hỏi phỏng vấn)
 
 > Slug: `interview_question_detail` — khớp `01-rd/overview/system_survey.md` mục 7.1 dòng
-> `interview_question_detail` [SoT: 01-rd/overview/system_survey.md:482]. Bounded Context: `interview-bank`
+> `interview_question_detail` [SoT: 01-rd/overview/system_survey.md — mục 7.1 dòng `interview_question_detail`]. Bounded Context: `interview-bank`
 > (F6), phần Chế độ luyện (F6-07/F6-08) đi qua `ai-review` [SoT: 01-rd/req/interview-bank.md — F6-07, F6-08]. Actor: A1
 > (chính).
 >
@@ -107,7 +107,7 @@ và khung trả lời chuẩn) và **Chế độ luyện** (`PRACTICE`, tự so�
 
 - `01-rd/req/ai-review.md` — F5-17 tới F5-22. `01-rd/req/interview-bank.md` — F6-01 tới F6-12.
 - `01-rd/req/user_stories/a1_student.md` — `US-A1-08`. `01-rd/req/user_stories/open_questions.md` — Q1 gốc.
-- `01-rd/overview/system_survey.md:482` — dòng `interview_question_detail` trong bảng màn mục 7.1.
+- `01-rd/overview/system_survey.md` — mục 7.1 dòng `interview_question_detail`.
 - `01-rd/screens/users/interview_bank_list.md` — màn nguồn, mục 3.1.4 và Câu hỏi mở Q1 (quyết định tách hai
   màn).
 - `01-rd/screens/users/solution_review.md`, `01-rd/screens/users/mock_interview.md` — tham chiếu mẫu trình

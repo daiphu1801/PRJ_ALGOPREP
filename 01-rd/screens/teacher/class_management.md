@@ -1,10 +1,10 @@
 # RD — Màn `class_management` (Quản lý lớp — Lớp của tôi)
 
 > Slug: `class_management` — khớp `01-rd/overview/system_survey.md` mục 7.2 dòng `class_management`
-> [SoT: 01-rd/overview/system_survey.md:547]. Mô tả: "Quản lý lớp — tổng quan và danh sách học viên",
-> mã liên quan F1-10, F1-12, F1-23 tới F1-27 [SoT: 01-rd/overview/system_survey.md:547; F1-23 tới F1-27 bổ
+> [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_management`]. Mô tả: "Quản lý lớp — tổng quan và danh sách học viên",
+> mã liên quan F1-10, F1-12, F1-23 tới F1-27 [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_management`; F1-23 tới F1-27 bổ
 > sung 2026-08-28]. Bounded Context: `identity` (danh sách học viên theo lớp, phân quyền A2)
-> [SoT: 01-rd/overview/system_survey.md:547]. Actor: A2 (Giáo viên). (F6-11 và Bounded Context
+> [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_management`]. Actor: A2 (Giáo viên). (F6-11 và Bounded Context
 > `interview-bank` từng gắn với slug này đã loại khỏi phạm vi 2026-08-28 —
 > `DEC-2026-0828-remove-per-class-interview-set`.)
 >
@@ -23,7 +23,7 @@
 ## 1. Mục đích màn hình
 
 Cho giáo viên (A2) xem tổng quan các lớp mình phụ trách, danh sách học viên và tiến độ của từng lớp
-[SoT: 01-rd/overview/system_survey.md:547; 01-rd/req/problem-bank.md — F2-12]. Mọi phạm vi hiển thị và thao tác đều
+[SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_management`; 01-rd/req/problem-bank.md — F2-12]. Mọi phạm vi hiển thị và thao tác đều
 giới hạn trong lớp giáo viên đó phụ trách, gác bởi Function `CLASS_MANAGEMENT` trong ma trận phân quyền
 [SoT: 01-rd/req/identity.md — F1-12; 01-rd/req/ai-review.md — F5-27].
 
@@ -88,13 +88,13 @@ Mục dưới đây là hành vi **riêng của màn hình**, phát hiện khi �
 | # | Câu hỏi | Vì sao chưa trả lời được | Đề xuất | Chủ sở hữu |
 | :-: | :--- | :--- | :--- | :--- |
 | Q1 | ~~`system_survey.md` gộp một slug `class_management` cho hai file prototype có route/nav riêng biệt...~~ **ĐÃ CHỐT (2026-08-28):** tách thành hai slug — `class_management` (file này, "Lớp của tôi") và `class_assignments` (`01-rd/screens/teacher/class_assignments.md`, "Bài tập của tôi") — theo đúng đề xuất ban đầu, vì hai route Next.js khác nhau. Ghi thành `DEC-2026-0828-split-class-management-assignments`. | — | Đã chốt, đã tách file. | (đã đóng) |
-| Q2 | ~~Nút "+ Tạo lớp mới" ở "Lớp của tôi" không có hành vi nào được lập trình trong prototype... Luồng tạo lớp chưa có mã `Fx-nn` nào.~~ **ĐÃ CHỐT MỘT PHẦN (2026-08-28, qua hỏi trực tiếp chủ dự án):** giáo viên (A2) tạo lớp mới với thông tin cơ bản; hệ thống sinh một **mã mời (invite code)** riêng cho lớp; học viên (A1) **tự tham gia lớp bằng cách nhập mã mời** — không phải A2/A3 thêm thủ công. Ghi thành `F1-23` (`01-rd/req/req.md`), Given-When-Then ở `US-A2-07` (`01-rd/req/user_stories.md`). **Chưa dựng vào prototype** — để lúc build FE. Phần **CRUD lớp còn lại chưa chốt** — xem Q2b. | — | Đã chốt cơ chế tạo lớp + tham gia bằng mã mời. Phần còn lại xem Q2b. | Q2 đóng một phần, phát sinh Q2b |
+| Q2 | ~~Nút "+ Tạo lớp mới" ở "Lớp của tôi" không có hành vi nào được lập trình trong prototype... Luồng tạo lớp chưa có mã `Fx-nn` nào.~~ **ĐÃ CHỐT MỘT PHẦN (2026-08-28, qua hỏi trực tiếp chủ dự án):** giáo viên (A2) tạo lớp mới với thông tin cơ bản; hệ thống sinh một **mã mời (invite code)** riêng cho lớp; học viên (A1) **tự tham gia lớp bằng cách nhập mã mời** — không phải A2/A3 thêm thủ công. Ghi thành `F1-23` (`01-rd/req/identity.md`), Given-When-Then ở `US-A2-07` (`01-rd/req/user_stories/a2_instructor.md`) _(sửa 2026-09-09: hai neo trước trỏ vào `req/req.md` và `req/user_stories.md`, nay là file chỉ mục rỗng nội dung sau `DEC-2026-0831-rd-req-split-by-module`)_. **Chưa dựng vào prototype** — để lúc build FE. Phần **CRUD lớp còn lại chưa chốt** — xem Q2b. | — | Đã chốt cơ chế tạo lớp + tham gia bằng mã mời. Phần còn lại xem Q2b. | Q2 đóng một phần, phát sinh Q2b |
 | Q2b | ~~Sau khi chốt Q2 (tạo lớp + mã mời), vẫn còn: giáo viên có sửa/xoá lớp sau khi tạo không? Mã mời có thu hồi/tạo lại được không? Giáo viên có gỡ một học viên cụ thể khỏi lớp không, và gỡ rồi thì lịch sử bài nộp của học viên đó có giữ nguyên không?~~ **ĐÃ CHỐT (2026-08-28, qua hỏi trực tiếp chủ dự án):** (a) xoá lớp là **xoá thật** (hard delete), khác cách F1-16 xử lý xoá tài khoản (khoá mềm) — chủ đích, không phải thiếu nhất quán; (b) mã mời **có thời hạn dùng**; (c) giáo viên **gỡ được học viên** khỏi lớp, và gỡ thì **xoá luôn lịch sử làm bài** của học viên đó trong lớp — không giữ lại ("đã gỡ rồi thì giữ cũng không làm gì", theo lời chủ dự án). Ghi thành `F1-24`, `F1-25`, `F1-26`; GWT bổ sung vào `US-A2-07`. **Chưa dựng vào prototype** — để lúc build FE. Phát sinh Q2c (nhỏ, không chặn BD). | — | Đã chốt cả ba điểm. | (đã đóng), phát sinh Q2c |
 | Q2c | ~~F1-25 chỉ chốt việc mã mời có thời hạn dùng, chưa chốt: sau khi mã hết hạn, giáo viên có tạo lại/gia hạn mã mời cho cùng lớp đó không?~~ **ĐÃ CHỐT (2026-08-28, qua hỏi trực tiếp chủ dự án):** giáo viên có quyền **tạo nhiều mã mời mới** cho cùng lớp, mỗi mã mới có **thời hạn dùng riêng**, độc lập với các mã cũ. Ghi bổ sung vào `F1-25`, GWT thêm vào `US-A2-07`. | — | Đã chốt. | (đã đóng) |
 | Q3 | ~~Thẻ lớp trong "Lớp của tôi" không có hành vi bấm để xem chi tiết lớp. Bảng học viên bên dưới đã lọc được theo lớp nhưng chưa rõ đây có phải là toàn bộ "chi tiết lớp" cần có hay còn thiếu.~~ **ĐÃ CHỐT (2026-08-28, qua hỏi trực tiếp chủ dự án):** không cần trang con `/class/:id` riêng — tổng quan + bảng học viên lọc theo tab **đã đủ**. Đây chỉ là hành vi bấm-để-lọc chưa được nối trong prototype (`onClick` thiếu), **không phải khoảng trống nghiệp vụ**, không cần mã `Fx-nn` mới. | — | Đã chốt: giữ nguyên cấu trúc màn, chỉ cần nối hành vi bấm thẻ lớp → lọc bảng học viên khi build FE thật. | (đã đóng) |
 | Q4 | ~~Bảng "Danh sách học viên" không có nút thêm/xoá học viên khỏi lớp, không có hồ sơ chi tiết từng học viên (link sang màn nào?). Ngưỡng phân loại trạng thái "Đang tốt/Cần hỗ trợ/Vắng bài" không có công thức trong `req.md`.~~ **ĐÃ CHỐT (2026-08-28, qua hỏi trực tiếp chủ dự án):** (a) hồ sơ chi tiết học viên **cần một màn/route riêng** (không phải mở rộng ngay tại bảng) — ghi `F1-27`, GWT ở `US-A2-08`, thêm slug mới `class_student_detail` (chưa có prototype); (b) công thức phân loại trạng thái **để BD/DD tự đề xuất**, chủ dự án không chốt ngưỡng cụ thể ngay bây giờ `[SoT: Suy luận]`. (Gỡ học viên đã có mã `F1-26` qua Q2b.) | — | Đã chốt cả hai phần. | (đã đóng) |
 | Q5 | ~~Màn "Lớp của tôi" không có bất kỳ UI nào cho F6-11 (tạo bộ câu hỏi phỏng vấn riêng và gán cho lớp)... Hoặc (a) dựng tab riêng trong `class_management`, hoặc (b) tách slug riêng?~~ **ĐÃ CHỐT (2026-08-28, qua hỏi trực tiếp chủ dự án):** bỏ hẳn khái niệm "bộ câu hỏi phỏng vấn riêng theo lớp" — học viên dùng chung một ngân hàng câu hỏi phỏng vấn duy nhất ở cấp hệ thống (`interview_bank_list`). Không cần tab, không cần slug riêng. `F6-11`, `US-A2-04` đã loại khỏi phạm vi — xem `DEC-2026-0828-remove-per-class-interview-set`. | — | Đã chốt: không cần UI cho tính năng này ở màn `class_management`. | (đã đóng) |
-| Q6 | ~~Không có UI nào cho yêu cầu chấm lại theo lớp (F4-09a/b/c) trong cả hai prototype của slug này.~~ **ĐÃ CHỐT (2026-08-28, qua hỏi trực tiếp chủ dự án):** bỏ hẳn tính năng chấm lại — go-judge đã fail-fast trong một lần chấm, và nếu testcase từng sai thì học viên báo cho giảng viên, giảng viên tự sửa testcase (không cần chấm lại hàng loạt lượt nộp cũ). `F4-09a` tới `F4-09e`, màn `admin_rejudge`, và mọi UI liên quan đã loại khỏi phạm vi — xem `DEC-2026-0828-remove-rejudge-scope`. | — | Đã chốt: không cần UI, không cần mã yêu cầu nào cho chấm lại. | (đã đóng) |
+| Q6 | ~~Không có UI nào cho yêu cầu chấm lại theo lớp (F4-09a/b/c) trong cả hai prototype của slug này.~~ **ĐÃ CHỐT (2026-08-28, qua hỏi trực tiếp chủ dự án):** bỏ hẳn tính năng chấm lại — nếu testcase từng sai thì học viên báo cho giảng viên, giảng viên tự sửa testcase (không cần chấm lại hàng loạt lượt nộp cũ). _(Sửa 2026-09-09: căn cứ gốc ghi thêm "go-judge đã fail-fast trong một lần chấm" — `F4-04` hết hiệu lực từ 2026-08-31, `DEC-2026-0831-partial-score-testcase-ratio`, nên mệnh đề đó không còn đúng ở thể hiện tại. Kết luận bỏ chấm lại **không đổi**: nó dựa vào việc sửa testcase thủ công là đủ, không dựa vào fail-fast.)_ `F4-09a` tới `F4-09e`, màn `admin_rejudge`, và mọi UI liên quan đã loại khỏi phạm vi — xem `DEC-2026-0828-remove-rejudge-scope`. | — | Đã chốt: không cần UI, không cần mã yêu cầu nào cho chấm lại. | (đã đóng) |
 
 ## 6. Ngoài phạm vi file này
 
@@ -117,7 +117,7 @@ Mục dưới đây là hành vi **riêng của màn hình**, phát hiện khi �
 
 ## 7. Tham chiếu
 
-- `01-rd/overview/system_survey.md:547` — dòng `class_management` trong bảng màn mục 7.2.
+- `01-rd/overview/system_survey.md` — mục 7.2 dòng `class_management`.
 - `01-rd/req/identity.md` — F1-10 tới F1-12; F1-23 tới F1-27 (CRUD lớp học + mã mời + hồ sơ học viên, bổ
   sung 2026-08-28).
 - `01-rd/req/user_stories/a2_instructor.md` — `US-A2-07` (tạo lớp + mã mời); `US-A2-08` (hồ sơ chi tiết học viên).

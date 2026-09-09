@@ -1,0 +1,53 @@
+{
+  "kind": "usecase",
+  "title": "Sơ đồ Use Case tổng quan - Hệ thống AlgoPrep",
+  "mode": "color",
+  "usecase": {
+    "system": "Hệ thống AlgoPrep",
+    "groups": [
+      {
+        "name": "Chức năng Sinh viên",
+        "actors": ["Sinh viên"],
+        "usecases": [
+          "Tìm và lưu bài toán",
+          "Giải và nộp bài",
+          "Phân tích bài giải bằng AI",
+          "Phỏng vấn giả lập với AI",
+          "Ôn tập câu hỏi phỏng vấn",
+          "Xem tiến độ, hồ sơ và cài đặt cá nhân"
+        ]
+      },
+      {
+        "name": "Chức năng Giảng viên",
+        "actors": ["Giảng viên"],
+        "usecases": [
+          "Quản lý lớp học và tiến độ học viên",
+          "Chấm và nhận xét bài nộp"
+        ]
+      },
+      {
+        "name": "Dùng chung (Giảng viên & Quản trị viên)",
+        "actors": ["Giảng viên", "Quản trị viên"],
+        "usecases": ["Quản lý bài toán, câu hỏi", "Quản lý ngân hàng câu hỏi phỏng vấn"]
+      },
+      {
+        "name": "Chức năng Quản trị viên",
+        "actors": ["Quản trị viên"],
+        "usecases": [
+          "Quản lý người dùng, phân quyền",
+          "Giám sát vận hành judge engine",
+          "Cấu hình ngôn ngữ và AI",
+          "Theo dõi mức tiêu thụ AI",
+          "Xem nhật ký hệ thống"
+        ]
+      }
+    ],
+    "common": [
+      { "name": "Đăng nhập / Đăng ký", "actors": ["Sinh viên", "Giảng viên", "Quản trị viên"] }
+    ],
+    "externals": [
+      { "name": "go-judge", "from": ["Giải và nộp bài"] },
+      { "name": "Nhà cung cấp LLM", "from": ["Phân tích bài giải bằng AI", "Phỏng vấn giả lập với AI"] }
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "_": "Luong 'giao bai toan cho lop phu trach' cua actor A2, hien thuc hoa usecase_gv_quan_ly_lop_hoc (F2-12). Nguon: prototype 09-layoutBase/Giao vien - Bai tap cua toi.dc.html (hai hanh dong that trong markup: 'Gan tu ngan hang bai toan' va 'Gan cho lop') + 01-rd/screens/teacher/class_assignments.md muc 2 (F2-12: giao bai da CONG BO cho mot lop, chi sinh vien lop do thay bai duoc giao) + F2-12 (system_survey.md:289 -- bai da gan hien LONG THANH NHOM RIENG ngay trong problem_list, khong phai man tach biet).",
+  "_co_a1": "Hai buoc cuoi ve goc nhin cua Sinh vien, va do la co y: dieu quan trong nhat cua F2-12 khong phai viec ghi ban gan, ma la HE QUA -- chi hoc vien cua lop do thay bai, va thay duoi dang mot nhom rieng trong danh sach bai toan. So do dung o buoc 'da gan' thi khong cho thay dieu do.",
+  "_chi_bai_da_xuat_ban": "Chi bai o trang thai 'Da xuat ban' moi gan duoc -- F2-12 ghi 'bai toan da cong bo', khop voi vong doi hai trang thai F2-15 (DEC-2026-0830-problem-lifecycle-two-states).",
+  "_granularity": "03-dd/api/ hien rong nen ba tang gom thanh 'May chu AlgoPrep' -- xem ghi chu day du o sequence_admin_doi_ma_tran_phan_quyen.spec.json.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự - Giao bài toán cho lớp (Giảng viên)",
+  "mode": "color",
+  "sequence": {
+    "participants": [
+      { "name": "Giảng viên", "role": "actor" },
+      { "name": "Màn Bài tập của tôi", "role": "boundary" },
+      { "name": "Máy chủ AlgoPrep", "role": "service" },
+      { "name": "PostgreSQL", "role": "datastore" },
+      { "name": "Sinh viên", "role": "actor" }
+    ],
+    "messages": [
+      { "from": "Giảng viên", "to": "Màn Bài tập của tôi", "text": "Chọn \"Gán từ ngân hàng bài toán\"" },
+      { "from": "Màn Bài tập của tôi", "to": "Máy chủ AlgoPrep", "text": "Yêu cầu danh sách bài đã xuất bản" },
+      { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Đọc bài toán trạng thái Đã xuất bản" },
+      { "from": "Máy chủ AlgoPrep", "to": "Màn Bài tập của tôi", "text": "Danh sách bài toán", "kind": "return" },
+      { "from": "Giảng viên", "to": "Màn Bài tập của tôi", "text": "Chọn bài và bấm \"Gán cho lớp\"" },
+      { "from": "Màn Bài tập của tôi", "to": "Máy chủ AlgoPrep", "text": "Gửi bài toán và lớp được gán" },
+      { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Ghi bản gán bài theo lớp" },
+      { "from": "Máy chủ AlgoPrep", "to": "Màn Bài tập của tôi", "text": "Xác nhận đã gán", "kind": "return" },
+      { "from": "Màn Bài tập của tôi", "to": "Giảng viên", "text": "Hiện bài trong danh sách bài tập của lớp", "kind": "return" },
+      { "from": "Sinh viên", "to": "Máy chủ AlgoPrep", "text": "Mở danh sách bài toán" },
+      { "from": "Máy chủ AlgoPrep", "to": "Sinh viên", "text": "Hiện nhóm \"Bài được giao\" của lớp mình", "kind": "return" }
+    ]
+  }
+}

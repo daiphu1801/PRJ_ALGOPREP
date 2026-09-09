@@ -1,0 +1,29 @@
+{
+  "_": "Chi tiet oval 'Quan ly lop hoc va tien do hoc vien' o ban tong quan (phan quan ly), actor A2 Giang vien. Nguon: 01-rd/screens/teacher/class_management.md muc 2 (F1-23 tới F1-27) va 01-rd/screens/teacher/class_assignments.md muc 2 (F2-12). Luu y F1-23: hoc vien TU tham gia bang ma moi (self-service join), giang vien khong them thu cong; sua thong tin lop dung chung luong voi F1-23, khong cap ma rieng. F1-26 go hoc vien = xoa luon lich su lam bai cua hoc vien do TRONG PHAM VI LOP (theo class_management.md muc 2, manh hon cach dien dat o system_survey.md). F1-24 xoa lop la hard delete. Bo bot: F1-10/F1-12 (ma tran phan quyen) la co che gac quyen, khong ve thanh use case cua A2; F1-27 (ho so chi tiet hoc vien) ve o usecase_gv_theo_doi_tien_do_lop. KHONG ve F4-09 (cham lai) va F6-11 (bo cau hoi rieng theo lop) du hai man con nhac -- ca hai da het hieu luc (DEC-2026-0828-remove-rejudge-scope, DEC-2026-0828-remove-per-class-interview-set).",
+  "kind": "usecase",
+  "title": "Sơ đồ Use Case chi tiết - Quản lý lớp học (Giảng viên)",
+  "mode": "color",
+  "usecase": {
+    "system": "Chức năng Quản lý lớp học",
+    "groups": [
+      {
+        "name": "Lớp học và mã mời (F1-23 tới F1-25)",
+        "actors": ["Giảng viên"],
+        "usecases": [
+          "Tạo lớp học và sinh mã mời",
+          "Sửa thông tin lớp học",
+          "Tạo thêm mã mời mới cho lớp",
+          "Xoá lớp học"
+        ]
+      },
+      {
+        "name": "Học viên và bài tập của lớp (F1-26, F2-12)",
+        "actors": ["Giảng viên"],
+        "usecases": [
+          "Gỡ học viên khỏi lớp",
+          "Giao bài toán đã xuất bản cho lớp"
+        ]
+      }
+    ]
+  }
+}

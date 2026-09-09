@@ -16,7 +16,7 @@ Màn hình độc lập, không gắn với bài nộp code (`README.md` mục 4
 - **Chế độ luyện (`PRACTICE`):** người dùng tự soạn câu trả lời (F6-07); AI đối chiếu với tiêu chí chuẩn,
   trả phản hồi ngắn — điểm đã đạt, điểm còn thiếu, hướng bổ sung (F6-08) — **đi qua phân hệ AI**, không tự
   gọi LLM, nên chịu chung ràng buộc F5-17 tới F5-22. **Amendment 2026-08-31** (lấp Câu hỏi mở Q1 của
-  `01-rd/req/user_stories.md`, cùng Câu hỏi mở Q2 của
+  `01-rd/req/user_stories/open_questions.md`, cùng Câu hỏi mở Q2 của
   `01-rd/screens/users/interview_question_detail.md`, `DEC-2026-0831-outside-screens-closures`): câu trả
   lời đã nộp ở Chế độ luyện **không sửa lại được** — mỗi lần nộp là một lượt (attempt) độc lập, muốn thử lại
   thì nộp một lượt mới; giữ đầy đủ lịch sử từng lượt cho F6-09/F6-10 theo dõi tiến bộ qua thời gian.

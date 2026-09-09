@@ -27,11 +27,11 @@
   - **Chống rò rỉ testcase ẩn** (F2-08): phản hồi chỉ trả **trạng thái và chỉ số** của testcase sai, không
     trả input và không trả diff chi tiết — ràng buộc bảo mật nghiệp vụ, áp dụng cho mọi API và log của
     luồng nộp bài (`README.md` mục 4-F2).
-  - Phiên bản hoá bộ testcase để **truy vết** một lượt nộp cũ đã chấm theo phiên bản nào (F2-09).
-    **Sửa 2026-09-03:** câu trước ghi "để Re-judge biết chấm lại theo phiên bản nào" — cơ chế chấm lại đã
-    loại khỏi phạm vi (`DEC-2026-0828-remove-rejudge-scope`), nên phiên bản bộ testcase giờ chỉ còn tác
-    dụng truy vết, không phải đầu vào cho một luồng chấm lại. Bản trong `01-rd/req/user_stories/a2_instructor.md`
-    (`US-A2-02`) đã sửa từ 2026-08-28, bản ở đây sót lại.
+  - Phiên bản hoá bộ testcase để **truy vết** một lượt nộp cũ đã chấm theo phiên bản nào (F2-09). (Sửa
+    2026-09-03: câu trước ghi "để Re-judge biết chấm lại theo phiên bản nào" — cơ chế chấm lại đã loại khỏi
+    phạm vi từ 2026-08-28, `DEC-2026-0828-remove-rejudge-scope` — nên phiên bản bộ testcase giờ chỉ còn tác
+    dụng truy vết, không phải đầu vào cho một luồng chấm lại. Khớp với bản đã sửa cùng lúc trong
+    `01-rd/req/user_stories/a2_instructor.md`, `US-A2-02`.)
 - **Giới hạn tài nguyên:**
   - Giới hạn thời gian và bộ nhớ theo bài, kèm **hệ số nhân theo ngôn ngữ** — Java chậm hơn C++ nên cùng
     một bài phải khác hệ số (F2-10). **Amendment 2026-08-31** (Câu hỏi mở Q7(e) của

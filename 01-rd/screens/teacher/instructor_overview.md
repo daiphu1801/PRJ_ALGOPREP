@@ -1,16 +1,16 @@
 # RD — Màn `instructor_overview` (Tổng quan khu Giảng viên)
 
 > Slug: `instructor_overview` — khớp `01-rd/overview/system_survey.md` mục 7.2 dòng `instructor_overview`
-> [SoT: 01-rd/overview/system_survey.md:525]. Bounded Context: `identity` (chính) — màn tổng hợp số liệu đọc
+> [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `instructor_overview`]. Bounded Context: `identity` (chính) — màn tổng hợp số liệu đọc
 > thêm từ `problem-bank`, `judge-orchestration` và `ai-review` để dựng các thẻ thống kê, nhưng bản thân màn
-> không sở hữu logic nghiệp vụ của các module đó [SoT: 01-rd/overview/system_survey.md:525]. Actor: A2
+> không sở hữu logic nghiệp vụ của các module đó [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `instructor_overview`]. Actor: A2
 > (Giảng viên) — màn có shell/route riêng biệt khỏi khu Admin theo quyết định bố cục ở
-> `01-rd/overview/system_survey.md:508-512`.
+> `01-rd/overview/system_survey.md` — mục 7.2, khối "Chốt 2026-08-24 ... Phương án B".
 >
 > Đối chiếu prototype: `09-layoutBase/Giáo viên - Tổng quan.dc.html`. Đây là slug **mới phát sinh khi dựng
 > prototype thật**, không nằm trong 4 slug hạt giống ban đầu của khu Giảng viên (`problem_authoring`,
 > `testcase_management`, `class_management`, `class_progress`) — lý do đã ghi rõ tại nguồn: "mỗi khu vực có
-> shell riêng thường cần một dashboard riêng" [SoT: 01-rd/overview/system_survey.md:525].
+> shell riêng thường cần một dashboard riêng" [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `instructor_overview`].
 >
 > File này mô tả hành vi và UX ở mức yêu cầu — không lặp lại đặc tả chức năng đã có ở
 > `01-rd/req/identity.md`/`01-rd/req/user_stories/a2_instructor.md`, chỉ trỏ tới và bổ sung phần đặc thù của một màn.
@@ -36,7 +36,7 @@ tiết (soạn bài, giao bài, chấm bài...) thuộc các màn con mà mỗi 
 
 **Cập nhật 2026-08-28:** F6-11 (bộ câu hỏi phỏng vấn riêng theo lớp) đã loại khỏi phạm vi —
 `DEC-2026-0828-remove-per-class-interview-set`. Bỏ khỏi tổng hợp F2-12/F5-27/F6-11 ở dashboard nếu có.
-| Bảng slug khu Giảng viên, đối chiếu prototype `Giáo viên - Tổng quan.dc.html` | — | `01-rd/overview/system_survey.md:519-526` |
+| Bảng slug khu Giảng viên, đối chiếu prototype `Giáo viên - Tổng quan.dc.html` | — | `01-rd/overview/system_survey.md` — mục 7.2, bảng slug khu giảng viên |
 
 **Ghi chú traceability:** không có `US-A2-nn` nào mô tả riêng hành vi của chính màn tổng quan (các thẻ thống
 kê, widget "Hoạt động gần đây", biểu đồ tiến độ) — `US-A2-01` tới `US-A2-06` đều mô tả các màn con
@@ -50,7 +50,7 @@ diễn trừ khi ghi rõ `[SoT: Suy luận]`:
 
 1. **Shell riêng khu Giảng viên** — sidebar cố định bên trái với logo AlgoPrep + nhãn "GIÁO VIÊN"
    (dòng 64-68), có nút thu gọn/mở rộng (dòng 71-74, `state.collapsed`), khác hẳn shell khu Admin — khớp
-   quyết định bố cục ở `system_survey.md:508-512`.
+   quyết định bố cục ở `01-rd/overview/system_survey.md` — mục 7.2, khối "Chốt 2026-08-24 ... Phương án B".
 2. **Điều hướng chính (nav) gồm 5 mục**, mục `overview` đang active mặc định trên chính màn này
    (dòng 271-291, `navDefs`): Tổng quan (không badge), Lớp của tôi (badge "3"), Bài tập của tôi
    (badge "18"), Chấm bài (badge "9"), Tiến độ học viên (không badge). Badge là số đếm tĩnh trong dữ liệu
@@ -83,7 +83,7 @@ diễn trừ khi ghi rõ `[SoT: Suy luận]`:
 9. **Widget "Bài tập của tôi"** (dòng 212-228, dữ liệu mẫu dòng 336-341): danh sách bài toán do giảng viên
    phụ trách kèm số lượt học viên đã dùng; liên kết "Xem tất cả" trỏ sang `Giáo viên - Bài tập của tôi.dc.html`
    (dòng 215) — theo bảng slug, tệp này cùng thuộc `class_management`
-   [SoT: 01-rd/overview/system_survey.md:523].
+   [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `instructor_overview`].
 10. **Theme** — chỉ có công tắc Sáng/Tối (dòng 96-100, 296-303), lưu `localStorage` khoá riêng
     `algoprep-teacher-theme` (dòng 242-248) khác khoá của khu học viên. **Không thấy scaffold ngôn ngữ
     (`data-ui-lang`/`data-lang`)** như các màn học viên và màn `auth` đã có — xem Câu hỏi mở Q6.
@@ -106,7 +106,7 @@ trên hành vi đã dựng trong prototype, không phải trích dẫn từ user
   lọc lớp giữa hai màn].
 - **Cho** tôi đang ở `instructor_overview`, **Khi** tôi bấm "Quản lý lớp" ở widget "Lớp của tôi" hoặc "Xem
   tất cả" ở widget "Bài tập của tôi", **Thì** tôi được điều hướng sang màn `class_management`
-  [SoT: 09-layoutBase/Giáo viên - Tổng quan.dc.html:180, 215; 01-rd/overview/system_survey.md:523].
+  [SoT: 09-layoutBase/Giáo viên - Tổng quan.dc.html:180, 215; 01-rd/overview/system_survey.md — mục 7.2 dòng `instructor_overview`].
 - **Cho** tôi phụ trách nhiều hơn một lớp, **Khi** các thẻ thống kê và widget hiển thị số liệu, **Thì** số
   liệu là tổng hợp trên **tất cả** các lớp tôi phụ trách, không phải của một lớp cụ thể — khớp cơ chế phạm vi
   "theo lớp giảng viên phụ trách" đã chốt ở F5-27/F2-12 nhưng áp dụng ở mức tổng hợp nhiều lớp
@@ -134,7 +134,7 @@ trên hành vi đã dựng trong prototype, không phải trích dẫn từ user
 
 ## 7. Tham chiếu
 
-- `01-rd/overview/system_survey.md:508-526` — mục 7.2 Khu vực giảng viên, bảng slug và dòng `instructor_overview`.
+- `01-rd/overview/system_survey.md` — mục 7.2 dòng `instructor_overview`.
 - `01-rd/req/identity.md` — F1-10 tới F1-12 (ma trận phân quyền, Function `CLASS_MANAGEMENT`).
 - `01-rd/req/problem-bank.md` — F2-12 (giao bài theo lớp).
 - `01-rd/req/ai-review.md` — F5-27 (điểm AI tham khảo + chấm tay theo lớp).

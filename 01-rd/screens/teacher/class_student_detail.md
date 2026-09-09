@@ -1,8 +1,8 @@
 # RD — Màn `class_student_detail` (Hồ sơ chi tiết học viên)
 
 > Slug: `class_student_detail` — khớp `01-rd/overview/system_survey.md` mục 7.2 dòng `class_student_detail`
-> [SoT: 01-rd/overview/system_survey.md:576]. Mã liên quan: F1-27 [SoT: 01-rd/req/identity.md — F1-27].
-> Bounded Context: `identity` [SoT: 01-rd/overview/system_survey.md:576]. Actor: A2 (Giáo viên).
+> [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_student_detail`]. Mã liên quan: F1-27 [SoT: 01-rd/req/identity.md — F1-27].
+> Bounded Context: `identity` [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_student_detail`]. Actor: A2 (Giáo viên).
 >
 > **Slug mới, chưa có prototype.** Thêm 2026-08-28, qua hỏi trực tiếp chủ dự án khi trả lời Câu hỏi mở Q4 của
 > `01-rd/screens/teacher/class_management.md` [SoT: 01-rd/screens/teacher/class_management.md:95;
@@ -91,7 +91,7 @@ Chưa có prototype để đối chiếu — cấu trúc dưới đây là đề
 - `01-rd/req/identity.md` — F1-06, F1-07, F1-10, F1-12, F1-26, F1-27.
 - `01-rd/req/judge-orchestration.md` — F4-13.
 - `01-rd/req/user_stories/a2_instructor.md` — `US-A2-08`.
-- `01-rd/overview/system_survey.md:576` — dòng `class_student_detail` trong bảng màn mục 7.2.
+- `01-rd/overview/system_survey.md` — mục 7.2 dòng `class_student_detail`.
 - `01-rd/screens/teacher/class_management.md` — màn nguồn, Câu hỏi mở Q4 (đã đóng, sinh ra slug này).
 - Quyết định: quyết định gốc 2026-08-28 lấp Q4 của `class_management.md` (ghi
   trong `01-rd/req/identity.md` F1-27, không có `DEC-` riêng cho chính slug này).

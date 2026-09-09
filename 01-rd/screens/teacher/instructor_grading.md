@@ -1,15 +1,15 @@
 # RD — Màn `instructor_grading` (Điểm AI tham khảo và chấm tay theo lớp)
 
 > Slug: `instructor_grading` — khớp `01-rd/overview/system_survey.md` mục 7.2, dòng `instructor_grading`
-> [SoT: 01-rd/overview/system_survey.md:526]. Bounded Context: `ai-review` + `problem-bank`
-> [SoT: 01-rd/overview/system_survey.md:526]. Actor: A2 (Giảng viên)
+> [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `instructor_grading`]. Bounded Context: `ai-review` + `problem-bank`
+> [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `instructor_grading`]. Actor: A2 (Giảng viên)
 > [SoT: 01-rd/req/ai-review.md — F5-27, "Actor A2, gác bởi Function `CLASS_MANAGEMENT`..."].
 >
 > Slug phát sinh khi dựng prototype thật, không nằm trong 4 slug hạt giống ban đầu của khu Giảng viên
-> [SoT: 01-rd/overview/system_survey.md:514-516].
+> [SoT: 01-rd/overview/system_survey.md — mục 7.2, ghi chú slug mới phát sinh khi dựng prototype].
 >
 > Đối chiếu prototype: `09-layoutBase/Giáo viên - Chấm bài.dc.html` (đã dựng thật, không phải hạt giống suy
-> luận) [SoT: 01-rd/overview/system_survey.md:526].
+> luận) [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `instructor_grading`].
 >
 > File này mô tả **hành vi và UX ở mức yêu cầu** của một màn cụ thể — không lặp lại đặc tả chức năng đã có
 > ở `01-rd/req/ai-review.md` (mục F5-27) hay `01-rd/req/user_stories/a2_instructor.md` (`US-A2-06`), chỉ trỏ tới và bổ sung phần
@@ -35,7 +35,7 @@ chính thức của bài nộp [SoT: 01-rd/req/ai-review.md — F5-27].
 | Nguồn của điểm quy đổi là báo cáo JSON có lược đồ của F5.1 | F5-07 | `01-rd/req/ai-review.md` — F5-07 |
 | Riêng biệt với điểm dễ đọc 1-5 do AI tự chấm trong cùng báo cáo F5.1 (không phải cùng một trường) | F5-05 | `01-rd/req/ai-review.md` — F5-05 |
 | Given-When-Then đầy đủ cho hành vi trên | — | `01-rd/req/user_stories/a2_instructor.md` (`US-A2-06`) |
-| Khu vực Giảng viên có layout/route riêng biệt khỏi khu Admin | — | `01-rd/overview/system_survey.md:508-512` |
+| Khu vực Giảng viên có layout/route riêng biệt khỏi khu Admin | — | `01-rd/overview/system_survey.md` — mục 7.2, khối "Chốt 2026-08-24 ... Phương án B" |
 
 ## 3. Trạng thái và cấu trúc màn (đối chiếu prototype)
 
@@ -133,7 +133,7 @@ chính thức của bài nộp [SoT: 01-rd/req/ai-review.md — F5-27].
 - `01-rd/req/judge-orchestration.md` — F4-13 (điểm tỷ lệ testcase hiện cho học viên; `F4-04` fail-fast đã hết hiệu lực 2026-08-31, `DEC-2026-0831-partial-score-testcase-ratio`).
 - `01-rd/req/problem-bank.md` — F2-12 (cơ chế phạm vi theo lớp, dùng chung).
 - `01-rd/req/user_stories/a2_instructor.md` — `US-A2-06`.
-- `01-rd/overview/system_survey.md:506-526` — mục 7.2 Khu vực giảng viên, dòng `instructor_grading`.
+- `01-rd/overview/system_survey.md` — mục 7.2 dòng `instructor_grading`.
 - `09-layoutBase/Giáo viên - Chấm bài.dc.html` — prototype đã dựng thật.
 - `01-rd/screens/users/submission_result.md:52-62` — mẫu cách ghi nhận và sửa một vi phạm tách bạch dữ liệu
   (F2-08), dùng để đối chiếu kết luận "không có xung đột nghiêm trọng" ở mục 3.8 của file này.

@@ -1,5 +1,5 @@
 {
-  "_": "Chi tiet nhom 'Xem nhat ky he thong' (u16 o ban tong quan): F1-14 (nhat ky hanh dong quan tri) + F4-09e (audit trail phien re-judge).",
+  "_": "Chi tiet nhom 'Xem nhat ky he thong' (u16 o ban tong quan): F1-14 (nhat ky hanh dong quan tri). Sua 2026-09-07: bo use case xuat nhat ky phien cham lai -- F4-09e (audit trail re-judge) da HET HIEU LUC tu DEC-2026-0828-remove-rejudge-scope, khong con phien cham lai nao de xuat nhat ky.",
   "kind": "usecase",
   "title": "Sơ đồ Use Case chi tiết - Nhật ký hệ thống (Quản trị viên)",
   "mode": "color",
@@ -7,13 +7,12 @@
     "system": "Chức năng Nhật ký hệ thống",
     "groups": [
       {
-        "name": "Nhật ký hệ thống (F1-14, F4-09e)",
+        "name": "Nhật ký hệ thống (F1-14)",
         "actors": ["Quản trị viên"],
         "usecases": [
           "Xem nhật ký hành động quản trị",
           "Lọc nhật ký theo người, hành động, thời gian",
-          "Tìm kiếm nhật ký theo từ khoá",
-          "Xuất nhật ký phiên chấm lại ra CSV"
+          "Tìm kiếm nhật ký theo từ khoá"
         ]
       }
     ]

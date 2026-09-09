@@ -1,0 +1,33 @@
+{
+  "_": "Chi tiet oval 'Giai va nop bai' o ban tong quan, actor A1 Sinh vien. Nguon: 01-rd/screens/users/problem_detail.md muc 2 (F2-03, F3-13, F3-02->04, F3-11, F3-12, F4-01, F4-02) va 01-rd/screens/users/submission_result.md muc 2 + muc 7 (F4-01, F4-03, F4-08, F4-12, F4-13, F2-08). Bo bot: sinh ma harness F3-02->04 la viec cua A4 (he thong), khong phai use case cua Sinh vien nen khong ve; chong ro ri testcase an (F2-08) la rang buoc bao mat, the hien trong nhan 'chi so va trang thai' chu khong tach oval rieng. KHONG ve F4-04 (fail-fast) va F4-09 (cham lai) du submission_result.md con nhac -- ca hai da het hieu luc (DEC-2026-0831-partial-score-testcase-ratio, DEC-2026-0828-remove-rejudge-scope).",
+  "kind": "usecase",
+  "title": "Sơ đồ Use Case chi tiết - Giải và nộp bài (Sinh viên)",
+  "mode": "color",
+  "usecase": {
+    "system": "Chức năng Giải và nộp bài",
+    "groups": [
+      {
+        "name": "Soạn mã và chạy thử (F2-03, F3-13, F4-02)",
+        "actors": ["Sinh viên"],
+        "usecases": [
+          "Chọn ngôn ngữ và mô hình nộp bài",
+          "Viết mã trong Workspace",
+          "Chạy thử với testcase mẫu"
+        ]
+      },
+      {
+        "name": "Nộp bài và xem kết quả (F4-01, F4-08, F4-12, F4-13, F3-11)",
+        "actors": ["Sinh viên"],
+        "usecases": [
+          "Nộp bài bằng cách gõ trực tiếp hoặc tải file",
+          "Xem lỗi biên dịch theo dòng mã của mình",
+          "Theo dõi trạng thái từng testcase thời gian thực",
+          "Xem verdict, điểm tỷ lệ testcase và chỉ số Beats"
+        ]
+      }
+    ],
+    "externals": [
+      { "name": "go-judge", "from": ["Chạy thử với testcase mẫu", "Theo dõi trạng thái từng testcase thời gian thực"] }
+    ]
+  }
+}

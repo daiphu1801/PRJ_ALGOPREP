@@ -1,0 +1,30 @@
+{
+  "_": "Chi tiet nhom 'Giam sat van hanh judge engine' (oval o ban tong quan, doi ten 2026-09-07). Truoc day file nay ten '..._va_rejudge' va co ca nhom Re-judge (F4-09a->e) -- toan bo re-judge da HET HIEU LUC tu DEC-2026-0828-remove-rejudge-scope (hoc vien tu bao loi testcase cho giang vien tu sua, khong cham lai hang loat). File nay chi con F4-10 (giam sat hang doi/cum) + F4-07 (timeout sweep), dung theo luong 6.4 cua system_survey.md.",
+  "kind": "usecase",
+  "title": "Sơ đồ Use Case chi tiết - Giám sát vận hành judge engine (Quản trị viên)",
+  "mode": "color",
+  "usecase": {
+    "system": "Chức năng Giám sát vận hành judge engine",
+    "groups": [
+      {
+        "name": "Giám sát hàng đợi và cụm (F4-10)",
+        "actors": ["Quản trị viên"],
+        "usecases": [
+          "Xem trạng thái hàng đợi chấm bài",
+          "Xem tình trạng cụm judge engine"
+        ]
+      },
+      {
+        "name": "Xử lý bài nộp treo (F4-07)",
+        "actors": ["Quản trị viên"],
+        "usecases": [
+          "Quét và phát hiện bài nộp treo quá ngưỡng",
+          "Xử lý thủ công bài nộp treo"
+        ]
+      }
+    ],
+    "externals": [
+      { "name": "go-judge", "from": ["Xem tình trạng cụm judge engine"] }
+    ]
+  }
+}

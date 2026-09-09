@@ -1,0 +1,29 @@
+{
+  "_": "Chi tiet oval 'Quan ly lop hoc va tien do hoc vien' o ban tong quan (phan theo doi), actor A2 Giang vien. Nguon: 01-rd/screens/teacher/class_progress.md muc 2 (F1-28) + muc 3 (khoi 'Can chu y'), 01-rd/screens/teacher/class_student_detail.md muc 2 (F1-27, F1-26, F4-13/F1-06 diem tot nhat tinh tren best-attempt), 01-rd/screens/teacher/instructor_overview.md muc 2 (F1-30, dich mac dinh sau dang nhap cua vai tro INSTRUCTOR). Gom bot: 4 the chi so + 5 widget cua F1-30 gom thanh MOT oval; diem TB / ti le hoan thanh / chuoi ngay / xu huong cua F1-28 gom vao oval 'tong hop tien do' thay vi tach tung con so -- day la muc tong quan, chi tiet tung widget thuoc BD/DD. Luu y class_progress.md muc 2 da sua: F1-28 la ma TRUC TIEP, khong con la 'dan xuat tu F1-06/F1-07' nhu bang slug o system_survey.md:524 con ghi. Bo bot: F1-10/F1-12 la co che gac quyen, khong ve thanh use case.",
+  "kind": "usecase",
+  "title": "Sơ đồ Use Case chi tiết - Theo dõi tiến độ lớp và học viên (Giảng viên)",
+  "mode": "color",
+  "usecase": {
+    "system": "Chức năng Theo dõi tiến độ lớp và học viên",
+    "groups": [
+      {
+        "name": "Tổng quan và tiến độ lớp (F1-28, F1-30)",
+        "actors": ["Giảng viên"],
+        "usecases": [
+          "Xem tổng quan khối lượng công việc của mình",
+          "Xem tổng hợp tiến độ nhiều học viên trong lớp",
+          "Xem danh sách học viên cần chú ý"
+        ]
+      },
+      {
+        "name": "Hồ sơ chi tiết học viên (F1-27)",
+        "actors": ["Giảng viên"],
+        "usecases": [
+          "Mở hồ sơ chi tiết một học viên trong lớp phụ trách",
+          "Xem tiến độ và điểm tốt nhất mỗi bài của học viên",
+          "Xem lịch sử nộp bài của học viên"
+        ]
+      }
+    ]
+  }
+}

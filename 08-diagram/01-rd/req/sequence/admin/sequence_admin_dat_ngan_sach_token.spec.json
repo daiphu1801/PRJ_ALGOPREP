@@ -1,0 +1,37 @@
+{
+  "_": "Luong 'dat ngan sach token AI va tu dong khoa khi vuot' cua actor A3, hien thuc hoa usecase_admin_ngan_sach_token_ai (F5-21, F5-25). Nguon: 01-rd/screens/admin/admin_ai_usage.md:22 ('Ngan sach token, du bao can quota, tu dong khoa khi vuot | F5-25') + F5-25 (system_survey.md:381 -- vuot ngan sach thi tu dong tam khoa goi AI cho STUDENT/INSTRUCTOR, ADMIN KHONG bi khoa) + prototype 09-layoutBase/Admin - Token AI.dc.html (nut 'Xuat bao cao', tach tieu thu theo tinh nang).",
+  "_alt": "Mot khoi alt duy nhat, va no la NGHIEP VU chu khong phai xu ly loi: tu khoa khi vuot ngan sach la hanh vi chot cua F5-25. THOI DIEM danh gia -- ngay sau khi luu ngan sach moi, doi chieu voi muc tieu thu da ghi nhan -- la [SoT: Suy luan]: F5-25 chot HANH VI khoa nhung khong noi ro khoa duoc kiem tai luc dat ngan sach hay tai luc goi AI. Ve o day vi day la luc Admin thay ket qua ngay tren man.",
+  "_khong_ve": "KHONG ve tinh nang 'Goi y' du prototype con no trong bang tach tieu thu theo tinh nang: goi y theo bac da bi cat khoi pham vi theo DEC-2026-0831-remove-tiered-hints-ai-config. Canh bao 'mot tai khoan dung bat thuong' (DEC-2026-0831-ai-usage-anomaly-alert) la canh bao MEM, khong tu khoa tai khoan, nen khong tron vao nhanh alt nay.",
+  "_granularity": "03-dd/api/ hien rong nen cac tang trong may chu gom thanh 'May chu AlgoPrep' -- xem ghi chu day du o sequence_admin_doi_ma_tran_phan_quyen.spec.json.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự - Đặt ngân sách token AI và tự động khoá khi vượt (Quản trị viên)",
+  "mode": "color",
+  "sequence": {
+    "participants": [
+      { "name": "Quản trị viên", "role": "actor" },
+      { "name": "Màn Token AI", "role": "boundary" },
+      { "name": "Máy chủ AlgoPrep", "role": "service" },
+      { "name": "PostgreSQL", "role": "datastore" }
+    ],
+    "messages": [
+      { "from": "Quản trị viên", "to": "Màn Token AI", "text": "Đặt mức ngân sách token cho kỳ" },
+      { "from": "Màn Token AI", "to": "Máy chủ AlgoPrep", "text": "Gửi mức ngân sách mới" },
+      { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Ghi mức ngân sách của kỳ" },
+      { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Ghi Nhật ký hệ thống" },
+      { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Đọc mức tiêu thụ token đã ghi nhận" },
+      {
+        "alt": {
+          "label": "Mức tiêu thụ đã vượt ngân sách mới?",
+          "then": [
+            { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Bật cờ tạm khoá gọi AI cho STUDENT và INSTRUCTOR" },
+            { "from": "Máy chủ AlgoPrep", "to": "Màn Token AI", "text": "Xác nhận, kèm cảnh báo AI đang tạm khoá; ADMIN không bị khoá", "kind": "return" }
+          ],
+          "else": [
+            { "from": "Máy chủ AlgoPrep", "to": "Màn Token AI", "text": "Xác nhận, kèm dự báo ngày cạn quota", "kind": "return" }
+          ]
+        }
+      },
+      { "from": "Màn Token AI", "to": "Quản trị viên", "text": "Hiện ngân sách, dự báo và trạng thái khoá", "kind": "return" }
+    ]
+  }
+}

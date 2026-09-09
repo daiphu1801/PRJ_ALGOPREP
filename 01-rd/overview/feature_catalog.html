@@ -1,0 +1,708 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Danh mục chức năng AlgoPrep</title>
+<style>
+  :root {
+    --bg: #F4F5F7;
+    --surface: #FFFFFF;
+    --surface-2: #ECEEF1;
+    --text: #171B21;
+    --text-muted: #5B6472;
+    --border: #DDE1E6;
+    --accent: #3B5BDB;
+    --accent-soft: #E7ECFC;
+    --mono: #171B21;
+
+    --f1: #2B6CB0; --f1-bg: #E7F0FA;
+    --f2: #2F855A; --f2-bg: #E7F5EE;
+    --f3: #6B46C1; --f3-bg: #F0E9FB;
+    --f4: #C05621; --f4-bg: #FBEBDF;
+    --f5: #B83280; --f5-bg: #FAE6F1;
+    --f6: #0E7C86; --f6-bg: #E1F3F4;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #12151B;
+      --surface: #1B1F27;
+      --surface-2: #232833;
+      --text: #E7EAEE;
+      --text-muted: #9AA3B2;
+      --border: #2B303B;
+      --accent: #7C9CFF;
+      --accent-soft: #232E4D;
+      --mono: #C7CDD8;
+
+      --f1: #6FA6E0; --f1-bg: #1C2C3E;
+      --f2: #6BC79A; --f2-bg: #17301F;
+      --f3: #B79AEA; --f3-bg: #2B2140;
+      --f4: #E39A5C; --f4-bg: #3A2311;
+      --f5: #E389BE; --f5-bg: #3A1B2C;
+      --f6: #5FCBD1; --f6-bg: #103237;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  body {
+    font-family: ui-serif, "Iowan Old Style", "Palatino Linotype", Georgia, "Times New Roman", serif;
+    font-size: 16px;
+    line-height: 1.55;
+  }
+
+  .mono {
+    font-family: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    min-height: 100vh;
+  }
+
+  /* ---------- Sidebar ---------- */
+
+  .sidebar {
+    position: sticky;
+    top: 0;
+    align-self: start;
+    height: 100vh;
+    overflow-y: auto;
+    border-right: 1px solid var(--border);
+    background: var(--surface);
+    padding: 1.75rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .brand-eyebrow {
+    font-family: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .brand-title {
+    font-family: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 0.2rem 0 0;
+    text-wrap: balance;
+  }
+
+  .brand-sub {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: 0.4rem 0 0;
+  }
+
+  #filter {
+    width: 100%;
+    padding: 0.55rem 0.7rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface-2);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.9rem;
+  }
+
+  #filter:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+
+  #count-line {
+    font-family: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .nav-list a {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.4rem 0.55rem;
+    border-radius: 6px;
+    text-decoration: none;
+    color: var(--text);
+    font-size: 0.88rem;
+  }
+
+  .nav-list a:hover,
+  .nav-list a:focus-visible {
+    background: var(--surface-2);
+    outline: none;
+  }
+
+  .nav-list .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex: none;
+    display: inline-block;
+    margin-right: 0.5rem;
+  }
+
+  .nav-list .n {
+    font-family: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+  }
+
+  .sidebar-foot {
+    margin-top: auto;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+    padding-top: 0.9rem;
+  }
+
+  /* ---------- Main content ---------- */
+
+  main {
+    padding: 2.5rem clamp(1.25rem, 4vw, 3.5rem) 5rem;
+    max-width: 1180px;
+  }
+
+  .page-head h1 {
+    font-family: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+    font-size: clamp(1.6rem, 2.6vw, 2.1rem);
+    margin: 0 0 0.5rem;
+    text-wrap: balance;
+  }
+
+  .page-head p {
+    max-width: 68ch;
+    color: var(--text-muted);
+  }
+
+  .scope-note {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin: 1.5rem 0 3rem;
+    font-size: 0.92rem;
+  }
+
+  .scope-note code {
+    font-family: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+    font-size: 0.85em;
+    background: var(--surface-2);
+    padding: 0.05em 0.35em;
+    border-radius: 4px;
+  }
+
+  section.module {
+    margin-bottom: 3rem;
+    scroll-margin-top: 1.5rem;
+  }
+
+  .module-head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.35rem;
+  }
+
+  .module-tag {
+    font-family: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 0.1rem 0.5rem;
+    border-radius: 5px;
+  }
+
+  .module-head h2 {
+    font-family: ui-serif, "Iowan Old Style", Georgia, serif;
+    font-size: 1.35rem;
+    margin: 0;
+    font-weight: 600;
+  }
+
+  .module-meta {
+    font-family: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin: 0 0 1rem;
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.94rem;
+  }
+
+  thead th {
+    text-align: left;
+    font-family: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--surface);
+  }
+
+  tbody td {
+    padding: 0.65rem 1rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  tbody tr.is-hidden {
+    display: none;
+  }
+
+  td.code {
+    font-family: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    white-space: nowrap;
+    width: 1%;
+  }
+
+  td.name {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-weight: 600;
+    width: 20%;
+  }
+
+  td.desc {
+    color: var(--text);
+    width: 34%;
+  }
+
+  td.ref {
+    font-family: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    width: 30%;
+  }
+
+  td.ref .diagram-part {
+    display: block;
+    margin-top: 0.3rem;
+    color: var(--text-muted);
+    opacity: 0.85;
+  }
+
+  td.ref .diagram-part::before {
+    content: "sơ đồ: ";
+    font-style: italic;
+  }
+
+  td.ref .none {
+    font-style: italic;
+    opacity: 0.7;
+  }
+
+  mark {
+    background: var(--accent-soft);
+    color: inherit;
+    border-radius: 3px;
+    padding: 0 0.1em;
+  }
+
+  .empty-state {
+    display: none;
+    padding: 2rem;
+    text-align: center;
+    color: var(--text-muted);
+    font-family: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+    font-size: 0.85rem;
+  }
+
+  .foot-note {
+    margin-top: 3.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.88rem;
+    color: var(--text-muted);
+  }
+
+  .foot-note ul {
+    padding-left: 1.2rem;
+  }
+
+  @media (max-width: 800px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar {
+      position: static;
+      height: auto;
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+    }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <aside class="sidebar">
+    <div>
+      <div class="brand-eyebrow">AlgoPrep &middot; RD</div>
+      <h1 class="brand-title">Danh mục chức năng</h1>
+      <p class="brand-sub">111 mã Fx-nn sống, 6 Bounded Context, kèm file RD/sơ đồ liên quan.</p>
+    </div>
+
+    <input type="search" id="filter" placeholder="Lọc theo mã, từ khoá, hoặc tên file&hellip;" autocomplete="off">
+    <div id="count-line">111 / 111 hiển thị</div>
+
+    <ul class="nav-list">
+      <li><a href="#f1"><span><span class="dot" style="background:var(--f1)"></span>F1 &middot; identity</span><span class="n">30</span></a></li>
+      <li><a href="#f2"><span><span class="dot" style="background:var(--f2)"></span>F2 &middot; problem-bank</span><span class="n">17</span></a></li>
+      <li><a href="#f3"><span><span class="dot" style="background:var(--f3)"></span>F3 &middot; harness</span><span class="n">13</span></a></li>
+      <li><a href="#f4"><span><span class="dot" style="background:var(--f4)"></span>F4 &middot; judge-orchestration</span><span class="n">11</span></a></li>
+      <li><a href="#f5"><span><span class="dot" style="background:var(--f5)"></span>F5 &middot; ai-review</span><span class="n">28</span></a></li>
+      <li><a href="#f6"><span><span class="dot" style="background:var(--f6)"></span>F6 &middot; interview-bank</span><span class="n">12</span></a></li>
+    </ul>
+
+    <div class="sidebar-foot">
+      Nguồn: <span class="mono">01-rd/req/*.md</span><br>
+      File liên quan: <span class="mono">01-rd/screens/</span>, <span class="mono">08-diagram/01-rd/req/</span><br>
+      Bản Markdown song song: <span class="mono">feature_catalog.md</span>
+    </div>
+  </aside>
+
+  <main>
+    <div class="page-head">
+      <h1>Danh mục chức năng hệ thống AlgoPrep</h1>
+      <p>Tổng hợp toàn bộ mã chức năng đang sống trong RD, kèm giải thích ngắn gọn một dòng mỗi mã và
+      danh sách file RD/sơ đồ thật sự trích dẫn mã đó (xác minh bằng Grep, không suy đoán). Đây là bảng
+      tra cứu nhanh &mdash; đặc tả đầy đủ vẫn nằm ở từng file
+      <span class="mono">01-rd/req/&lt;module&gt;.md</span>.</p>
+    </div>
+
+    <div class="scope-note">
+      Chỉ liệt kê chức năng nghiệp vụ (<code>Fx-nn</code>). Yêu cầu phi chức năng nằm ở
+      <code>01-rd/req/nfr.md</code>. Các mã đã cấp rồi loại khỏi phạm vi
+      (<code>F4-04</code>, <code>F4-09a</code>&ndash;<code>F4-09e</code>, <code>F6-11</code>) không xuất
+      hiện ở đây &mdash; xem <code>system_survey.md</code> mục 5.7 nếu cần lịch sử. Cột cuối rút gọn đường
+      dẫn: bỏ tiền tố <code>01-rd/screens/</code> cho screen, bỏ tiền tố <code>08-diagram/01-rd/req/</code>
+      và đuôi <code>.spec.json</code> cho sơ đồ.
+    </div>
+
+    <!-- F1 -->
+    <section class="module" id="f1">
+      <div class="module-head">
+        <span class="module-tag" style="color:var(--f1); background:var(--f1-bg)">F1</span>
+        <h2>Danh tính và phân quyền &middot; <span class="mono">identity</span></h2>
+      </div>
+      <p class="module-meta">01-rd/req/identity.md &middot; 30 mã (F1-01&ndash;F1-30)</p>
+      <div class="table-wrap">
+        <table data-module="F1">
+          <thead><tr><th>Mã</th><th>Chức năng</th><th>Giải thích ngắn gọn</th><th>File liên quan</th></tr></thead>
+          <tbody>
+            <tr><td class="code">F1-01</td><td class="name">Đăng ký tài khoản</td><td class="desc">Email + mật khẩu, vai trò mặc định <span class="mono">STUDENT</span></td><td class="ref">shared/auth.md; users/profile.md; admin/admin_user_management.md<span class="diagram-part">sequence/user/sequence_user_dang_ky_dang_nhap; usecase/shared/usecase_shared_dang_nhap_dang_ky</span></td></tr>
+            <tr><td class="code">F1-02</td><td class="name">Đăng nhập</td><td class="desc">Cấp Access Token ngắn hạn + Refresh Token trong cookie HTTP-Only</td><td class="ref">shared/auth.md<span class="diagram-part">sequence/user/sequence_user_dang_ky_dang_nhap; usecase/shared/usecase_shared_dang_nhap_dang_ky</span></td></tr>
+            <tr><td class="code">F1-03</td><td class="name">Tự làm mới Access Token</td><td class="desc">Client tự đổi token mới khi gặp lỗi 401</td><td class="ref">shared/auth.md<span class="diagram-part">sequence/user/sequence_user_dang_ky_dang_nhap</span></td></tr>
+            <tr><td class="code">F1-04</td><td class="name">Đăng xuất</td><td class="desc">Vô hiệu hoá Refresh Token của phiên hiện tại</td><td class="ref"><span class="none">(chưa có screen)</span><span class="diagram-part">usecase/shared/usecase_shared_dang_nhap_dang_ky</span></td></tr>
+            <tr><td class="code">F1-05</td><td class="name">Phân quyền theo vai trò</td><td class="desc">Ba vai trò tách biệt STUDENT/INSTRUCTOR/ADMIN, không lồng nhau</td><td class="ref">shared/auth.md<span class="diagram-part">sequence/user/sequence_user_dang_ky_dang_nhap</span></td></tr>
+            <tr><td class="code">F1-06</td><td class="name">Tiến độ cá nhân &mdash; bài đã giải</td><td class="desc">Theo chủ đề, kèm điểm tỷ lệ testcase tốt nhất từng bài (F4-13)</td><td class="ref">users/problem_list.md; users/profile.md; users/my_progress.md; teacher/class_progress.md; teacher/class_student_detail.md<span class="diagram-part">sequence/gv/sequence_gv_xem_tien_do_lop; usecase/user/usecase_user_tien_do_va_lich_su</span></td></tr>
+            <tr><td class="code">F1-07</td><td class="name">Tỉ lệ chấp thuận</td><td class="desc">Số bài nộp đạt Accepted trên tổng số lượt nộp</td><td class="ref">users/submission_result.md; users/my_submissions.md; users/my_progress.md; users/profile.md; teacher/class_progress.md; teacher/class_student_detail.md<span class="diagram-part">sequence/gv/sequence_gv_xem_tien_do_lop; usecase/user/usecase_user_tien_do_va_lich_su</span></td></tr>
+            <tr><td class="code">F1-08</td><td class="name">Lịch sử phỏng vấn</td><td class="desc">Xem lại rubric của phiên Mock Interview cũ</td><td class="ref">users/profile.md; users/my_progress.md; teacher/class_progress.md<span class="diagram-part">usecase/user/usecase_user_tien_do_va_lich_su</span></td></tr>
+            <tr><td class="code">F1-09</td><td class="name">Sửa thông tin cá nhân</td><td class="desc">6 trường sửa được; đổi email phải xác thực lại qua mã 6 số</td><td class="ref">users/profile.md<span class="diagram-part">usecase/user/usecase_user_ho_so_va_cai_dat</span></td></tr>
+            <tr><td class="code">F1-10</td><td class="name">Ma trận phân quyền Role x Function x Action</td><td class="desc">ADMIN bật/tắt quyền từng cặp, có hiệu lực ngay</td><td class="ref">shared/problem_management.md; teacher/instructor_overview.md; shared/problem_authoring.md; admin/admin_permission_matrix.md; teacher/instructor_grading.md; teacher/class_management.md; teacher/class_progress.md; teacher/class_assignments.md; teacher/class_student_detail.md; admin/admin_system_log.md; admin/admin_overview.md<span class="diagram-part">usecase/admin/usecase_admin_quan_ly_nguoi_dung_phan_quyen</span></td></tr>
+            <tr><td class="code">F1-11</td><td class="name">Function/Action là dữ liệu seed cố định</td><td class="desc">Chỉ đọc trên giao diện; Role tạo/sửa/xoá được</td><td class="ref">shared/problem_management.md; admin/admin_permission_matrix.md<span class="diagram-part">usecase/admin/usecase_admin_quan_ly_nguoi_dung_phan_quyen</span></td></tr>
+            <tr><td class="code">F1-12</td><td class="name">Danh sách Function quản trị/nội dung</td><td class="desc">Liệt kê các nhóm chức năng bị ma trận F1-10 gác</td><td class="ref">shared/problem_management.md; teacher/instructor_overview.md; shared/interview_question_management.md; shared/problem_authoring.md; admin/admin_permission_matrix.md; teacher/instructor_grading.md; teacher/class_management.md; teacher/class_progress.md; teacher/class_assignments.md; teacher/class_student_detail.md; shared/interview_question_authoring.md; admin/admin_system_log.md; admin/admin_overview.md<span class="diagram-part"><span class="none">(chưa có sơ đồ riêng)</span></span></td></tr>
+            <tr><td class="code">F1-13</td><td class="name">Quản lý tài khoản người dùng</td><td class="desc">ADMIN đổi vai trò, khoá/mở khoá, reset mật khẩu hộ người khác</td><td class="ref">admin/admin_user_management.md; admin/admin_system_log.md; admin/admin_overview.md<span class="diagram-part">usecase/admin/usecase_admin_quan_ly_nguoi_dung_phan_quyen; sequence/admin/sequence_admin_doi_vai_tro_nguoi_dung</span></td></tr>
+            <tr><td class="code">F1-14</td><td class="name">Nhật ký hệ thống</td><td class="desc">Ghi mọi thao tác quản trị của người (không gộp sự kiện hạ tầng)</td><td class="ref">shared/interview_question_management.md; admin/admin_user_management.md; admin/admin_queue_monitor.md; admin/admin_system_log.md; admin/admin_overview.md; shared/interview_question_authoring.md; teacher/instructor_overview.md<span class="diagram-part">sequence/admin/sequence_admin_cau_hinh_prompt_ai; usecase/admin/usecase_admin_nhat_ky_he_thong; sequence/admin/sequence_admin_doi_vai_tro_nguoi_dung; sequence/admin/sequence_admin_giam_sat_hang_doi</span></td></tr>
+            <tr><td class="code">F1-15</td><td class="name">Đăng nhập/đăng ký OAuth</td><td class="desc">GitHub, Google &mdash; tự liên kết vào tài khoản có cùng email</td><td class="ref">shared/auth.md<span class="diagram-part">sequence/user/sequence_user_dang_ky_dang_nhap; usecase/shared/usecase_shared_dang_nhap_dang_ky</span></td></tr>
+            <tr><td class="code">F1-16</td><td class="name">Tự xoá tài khoản</td><td class="desc">Khoá mềm ngay, ẩn danh hoá sau khoảng ân hạn, dữ liệu không mất</td><td class="ref">users/settings.md; shared/problem_management.md; users/profile.md; shared/problem_authoring.md; shared/auth.md; admin/admin_user_management.md; admin/admin_overview.md<span class="diagram-part">sequence/gv/sequence_gv_go_hoc_vien_khoi_lop; usecase/user/usecase_user_ho_so_va_cai_dat</span></td></tr>
+            <tr><td class="code">F1-17</td><td class="name">Tự đặt lại mật khẩu</td><td class="desc">Mã xác nhận 6 số gửi qua email, không lộ email có tồn tại hay không</td><td class="ref">users/settings.md; users/profile.md; shared/auth.md; admin/admin_user_management.md<span class="diagram-part">sequence/user/sequence_user_dang_ky_dang_nhap; usecase/shared/usecase_shared_dang_nhap_dang_ky</span></td></tr>
+            <tr><td class="code">F1-18</td><td class="name">Xem lịch sử nộp bài của chính mình</td><td class="desc">Lọc theo verdict, ngôn ngữ, tìm theo tên/mã bài</td><td class="ref">users/my_submissions.md; admin/admin_overview.md<span class="diagram-part">usecase/user/usecase_user_tien_do_va_lich_su</span></td></tr>
+            <tr><td class="code">F1-19</td><td class="name">Tự đổi mật khẩu khi đã đăng nhập</td><td class="desc">Nhập mật khẩu hiện tại + mật khẩu mới, không qua email</td><td class="ref">users/profile.md<span class="diagram-part">usecase/user/usecase_user_ho_so_va_cai_dat</span></td></tr>
+            <tr><td class="code">F1-20</td><td class="name">Tuỳ chọn cá nhân hoá Workspace</td><td class="desc">Ngôn ngữ mặc định, cỡ chữ, tự lưu nháp, phím tắt Vim</td><td class="ref">users/settings.md; admin/admin_overview.md<span class="diagram-part">usecase/user/usecase_user_ho_so_va_cai_dat</span></td></tr>
+            <tr><td class="code">F1-21</td><td class="name">Thông báo email định kỳ</td><td class="desc">Nhắc chuỗi ngày sắp mất, báo cáo tiến độ hằng tuần</td><td class="ref">users/settings.md; teacher/class_progress.md<span class="diagram-part">usecase/user/usecase_user_ho_so_va_cai_dat</span></td></tr>
+            <tr><td class="code">F1-22</td><td class="name">Xuất dữ liệu cá nhân</td><td class="desc">Lượt nộp (CSV), hội thoại phỏng vấn (JSON) của chính mình</td><td class="ref">users/settings.md<span class="diagram-part">usecase/user/usecase_user_ho_so_va_cai_dat</span></td></tr>
+            <tr><td class="code">F1-23</td><td class="name">Tạo lớp học + mã mời</td><td class="desc">Giáo viên tạo lớp, hệ thống sinh mã mời; học viên tự tham gia bằng mã</td><td class="ref">teacher/class_management.md; teacher/class_student_detail.md<span class="diagram-part">sequence/gv/sequence_gv_tao_lop_va_ma_moi; usecase/gv/usecase_gv_quan_ly_lop_hoc</span></td></tr>
+            <tr><td class="code">F1-24</td><td class="name">Xoá lớp học</td><td class="desc">Giáo viên xoá thật (hard delete), khác cách khoá mềm tài khoản</td><td class="ref">teacher/class_management.md<span class="diagram-part"><span class="none">(chưa có sơ đồ riêng)</span></span></td></tr>
+            <tr><td class="code">F1-25</td><td class="name">Mã mời có thời hạn</td><td class="desc">Tạo được nhiều mã mời mới cho cùng một lớp, mỗi mã có hạn riêng</td><td class="ref">teacher/class_management.md<span class="diagram-part">sequence/gv/sequence_gv_tao_lop_va_ma_moi; usecase/gv/usecase_gv_quan_ly_lop_hoc</span></td></tr>
+            <tr><td class="code">F1-26</td><td class="name">Gỡ học viên khỏi lớp</td><td class="desc">Xoá cascade lịch sử làm bài của học viên đó trong phạm vi lớp</td><td class="ref">teacher/class_management.md; teacher/class_assignments.md; teacher/class_student_detail.md<span class="diagram-part">sequence/gv/sequence_gv_go_hoc_vien_khoi_lop; sequence/gv/sequence_gv_tao_lop_va_ma_moi; usecase/gv/usecase_gv_quan_ly_lop_hoc</span></td></tr>
+            <tr><td class="code">F1-27</td><td class="name">Xem hồ sơ chi tiết học viên</td><td class="desc">Màn riêng class_student_detail, phạm vi trong lớp phụ trách</td><td class="ref">teacher/class_management.md; teacher/class_student_detail.md<span class="diagram-part">sequence/gv/sequence_gv_xem_tien_do_lop; usecase/gv/usecase_gv_theo_doi_tien_do_lop</span></td></tr>
+            <tr><td class="code">F1-28</td><td class="name">Dashboard tiến độ lớp</td><td class="desc">class_progress &mdash; điểm TB, hoàn thành %, streak, nhãn cần chú ý</td><td class="ref">teacher/class_progress.md<span class="diagram-part">sequence/gv/sequence_gv_xem_tien_do_lop; usecase/gv/usecase_gv_theo_doi_tien_do_lop</span></td></tr>
+            <tr><td class="code">F1-29</td><td class="name">Dashboard tổng quan vận hành</td><td class="desc">admin_overview &mdash; 8 khối thống kê hệ thống, một mã tổng hợp</td><td class="ref">admin/admin_overview.md; teacher/class_student_detail.md<span class="diagram-part"><span class="none">(chưa có sơ đồ riêng)</span></span></td></tr>
+            <tr><td class="code">F1-30</td><td class="name">Dashboard khối lượng công việc giảng viên</td><td class="desc">instructor_overview &mdash; lớp phụ trách, cần chấm tay, hoạt động gần đây</td><td class="ref">teacher/instructor_overview.md; teacher/class_student_detail.md<span class="diagram-part">usecase/gv/usecase_gv_theo_doi_tien_do_lop; sequence/gv/sequence_gv_xem_tien_do_lop</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- F2 -->
+    <section class="module" id="f2">
+      <div class="module-head">
+        <span class="module-tag" style="color:var(--f2); background:var(--f2-bg)">F2</span>
+        <h2>Ngân hàng bài toán và testcase &middot; <span class="mono">problem-bank</span></h2>
+      </div>
+      <p class="module-meta">01-rd/req/problem-bank.md &middot; 17 mã (F2-01&ndash;F2-17)</p>
+      <div class="table-wrap">
+        <table data-module="F2">
+          <thead><tr><th>Mã</th><th>Chức năng</th><th>Giải thích ngắn gọn</th><th>File liên quan</th></tr></thead>
+          <tbody>
+            <tr><td class="code">F2-01</td><td class="name">Soạn đề bài</td><td class="desc">Markdown kèm công thức LaTeX</td><td class="ref">teacher/instructor_overview.md; shared/problem_management.md; shared/problem_authoring.md<span class="diagram-part">usecase/shared/usecase_shared_soan_de_bai</span></td></tr>
+            <tr><td class="code">F2-02</td><td class="name">Phân loại bài toán</td><td class="desc">Độ khó, chủ đề, và thẻ (tag) tự do nhiều thẻ mỗi bài</td><td class="ref">admin/admin_overview.md; shared/problem_management.md; shared/problem_authoring.md<span class="diagram-part">usecase/shared/usecase_shared_soan_de_bai</span></td></tr>
+            <tr><td class="code">F2-03</td><td class="name">Đặc tả cho cả 2 mô hình nộp bài</td><td class="desc">Chữ ký hàm 3 ngôn ngữ (Bọc hàm) + định dạng đọc/ghi (Standard I/O)</td><td class="ref">users/problem_detail.md; shared/problem_management.md; shared/problem_authoring.md<span class="diagram-part">usecase/user/usecase_user_giai_va_nop_bai; usecase/shared/usecase_shared_soan_de_bai</span></td></tr>
+            <tr><td class="code">F2-04</td><td class="name">Chiến lược so khớp kết quả</td><td class="desc">EXACT / TRIMMED / EPSILON / UNORDERED_SET</td><td class="ref">shared/problem_management.md; shared/problem_authoring.md<span class="diagram-part">usecase/shared/usecase_shared_soan_de_bai</span></td></tr>
+            <tr><td class="code">F2-05</td><td class="name">Testcase Sample</td><td class="desc">Công khai, dùng cho Chạy thử</td><td class="ref">users/submission_result.md; shared/problem_management.md; shared/problem_authoring.md<span class="diagram-part">usecase/shared/usecase_shared_quan_ly_testcase</span></td></tr>
+            <tr><td class="code">F2-06</td><td class="name">Testcase Hidden</td><td class="desc">Ẩn, dùng để chấm khi Nộp bài</td><td class="ref">users/submission_result.md; shared/problem_management.md; shared/problem_authoring.md<span class="diagram-part">usecase/shared/usecase_shared_quan_ly_testcase</span></td></tr>
+            <tr><td class="code">F2-07</td><td class="name">Tải testcase theo lô</td><td class="desc">Bộ lớn lưu trên MinIO</td><td class="ref">shared/problem_authoring.md<span class="diagram-part">usecase/shared/usecase_shared_quan_ly_testcase</span></td></tr>
+            <tr><td class="code">F2-08</td><td class="name">Chống rò rỉ testcase ẩn</td><td class="desc">Phản hồi chỉ trả trạng thái và chỉ số, không trả input/diff</td><td class="ref">users/submission_result.md; users/solution_review.md; teacher/instructor_grading.md; shared/problem_authoring.md<span class="diagram-part">usecase/shared/usecase_shared_quan_ly_testcase</span></td></tr>
+            <tr><td class="code">F2-09</td><td class="name">Phiên bản hoá bộ testcase</td><td class="desc">Truy vết một lượt nộp cũ đã chấm theo phiên bản nào</td><td class="ref">shared/problem_management.md; shared/problem_authoring.md<span class="diagram-part">usecase/shared/usecase_shared_quan_ly_testcase</span></td></tr>
+            <tr><td class="code">F2-10</td><td class="name">Giới hạn tài nguyên</td><td class="desc">Thời gian/bộ nhớ theo bài, hệ số ngôn ngữ, đầu ra tối đa, số lần nộp/giờ</td><td class="ref">admin/admin_language_config.md; shared/problem_authoring.md<span class="diagram-part">usecase/shared/usecase_shared_quan_ly_testcase</span></td></tr>
+            <tr><td class="code">F2-11</td><td class="name">Tìm kiếm và lọc bài toán</td><td class="desc">Theo chủ đề, độ khó, trạng thái đã giải, thẻ</td><td class="ref">admin/admin_overview.md; users/problem_list.md; shared/problem_management.md; teacher/class_progress.md<span class="diagram-part">usecase/user/usecase_user_tim_va_luu_bai_toan</span></td></tr>
+            <tr><td class="code">F2-12</td><td class="name">Giao bài theo lớp</td><td class="desc">Gán/gỡ bài cho lớp; gỡ không xoá lượt nộp cũ của học viên</td><td class="ref">teacher/instructor_overview.md; users/problem_list.md; teacher/instructor_grading.md; teacher/class_management.md; teacher/class_student_detail.md; teacher/class_assignments.md; teacher/class_progress.md; shared/problem_management.md<span class="diagram-part">usecase/user/usecase_user_tim_va_luu_bai_toan; sequence/gv/sequence_gv_giao_bai_cho_lop; usecase/gv/usecase_gv_quan_ly_lop_hoc</span></td></tr>
+            <tr><td class="code">F2-13</td><td class="name">Bookmark riêng tư</td><td class="desc">Đánh dấu bài + ghi chú riêng, tuyệt đối riêng tư kể cả với giảng viên/admin</td><td class="ref">users/saved_problems.md<span class="diagram-part">usecase/user/usecase_user_tim_va_luu_bai_toan</span></td></tr>
+            <tr><td class="code">F2-14</td><td class="name">AI sinh testcase tự động</td><td class="desc">AI chỉ sinh input; output chạy thật từ Đáp án mẫu, không để AI bịa</td><td class="ref">admin/admin_ai_config.md; admin/admin_ai_usage.md; admin/admin_overview.md; shared/problem_management.md; shared/problem_authoring.md<span class="diagram-part">usecase/shared/usecase_shared_quan_ly_testcase</span></td></tr>
+            <tr><td class="code">F2-15</td><td class="name">Vòng đời bài toán</td><td class="desc">2 trạng thái Chưa xuất bản/Đã xuất bản; xoá là ẩn mềm + cờ deleted</td><td class="ref">shared/problem_management.md; shared/problem_authoring.md<span class="diagram-part">usecase/shared/usecase_shared_quan_ly_danh_sach_bai_toan</span></td></tr>
+            <tr><td class="code">F2-16</td><td class="name">Nhân bản bài toán</td><td class="desc">Sao chép toàn bộ nội dung thành bài mới ở trạng thái Chưa xuất bản</td><td class="ref">shared/problem_management.md; shared/interview_question_authoring.md<span class="diagram-part">usecase/shared/usecase_shared_quan_ly_danh_sach_bai_toan</span></td></tr>
+            <tr><td class="code">F2-17</td><td class="name">Xuất CSV danh sách bài toán</td><td class="desc">Chỉ dữ liệu bảng, không xuất nội dung đề/testcase</td><td class="ref">shared/problem_management.md<span class="diagram-part">usecase/shared/usecase_shared_quan_ly_danh_sach_bai_toan</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- F3 -->
+    <section class="module" id="f3">
+      <div class="module-head">
+        <span class="module-tag" style="color:var(--f3); background:var(--f3-bg)">F3</span>
+        <h2>Bộ sinh mã bọc hàm &middot; <span class="mono">harness</span></h2>
+      </div>
+      <p class="module-meta">01-rd/req/harness.md &middot; 13 mã (F3-01&ndash;F3-13) &mdash; trọng tâm kỹ thuật của đồ án</p>
+      <div class="table-wrap">
+        <table data-module="F3">
+          <thead><tr><th>Mã</th><th>Chức năng</th><th>Giải thích ngắn gọn</th><th>File liên quan</th></tr></thead>
+          <tbody>
+            <tr><td class="code">F3-01</td><td class="name">Lược đồ kiểu độc lập ngôn ngữ</td><td class="desc">Nguyên thuỷ, chuỗi, mảng nhiều chiều, danh sách, cây nhị phân</td><td class="ref">shared/problem_authoring.md; users/problem_detail.md; users/problem_list.md<span class="diagram-part"><span class="none">(chưa có)</span></span></td></tr>
+            <tr><td class="code">F3-02</td><td class="name">Sinh mã đọc dữ liệu vào</td><td class="desc">Từ đặc tả, cho cả 3 ngôn ngữ</td><td class="ref">users/problem_detail.md<span class="diagram-part"><span class="none">(chưa có)</span></span></td></tr>
+            <tr><td class="code">F3-03</td><td class="name">Sinh mã gọi hàm người dùng</td><td class="desc">Ghép lời gọi đúng chữ ký hàm đã khai báo</td><td class="ref"><span class="none">(chưa có screen/sơ đồ)</span></td></tr>
+            <tr><td class="code">F3-04</td><td class="name">Sinh mã in kết quả</td><td class="desc">Định dạng output theo đúng kiểu trả về</td><td class="ref">users/problem_detail.md<span class="diagram-part"><span class="none">(chưa có)</span></span></td></tr>
+            <tr><td class="code">F3-05</td><td class="name">Tiêm mã người dùng</td><td class="desc">Ghép mã người học vào vùng chèn của mã khung</td><td class="ref"><span class="none">(chưa có screen/sơ đồ)</span></td></tr>
+            <tr><td class="code">F3-06</td><td class="name">Đóng gói gửi qua JudgeExecutionPort</td><td class="desc">Theo đúng định dạng adapter yêu cầu (go-judge mặc định)</td><td class="ref">shared/problem_authoring.md<span class="diagram-part"><span class="none">(chưa có)</span></span></td></tr>
+            <tr><td class="code">F3-07</td><td class="name">So khớp exact</td><td class="desc">So sánh chuỗi/giá trị chính xác tuyệt đối</td><td class="ref">users/submission_result.md<span class="diagram-part"><span class="none">(chưa có)</span></span></td></tr>
+            <tr><td class="code">F3-08</td><td class="name">So khớp chuẩn hoá khoảng trắng</td><td class="desc">Bỏ qua khác biệt whitespace</td><td class="ref"><span class="none">(chưa có screen/sơ đồ)</span></td></tr>
+            <tr><td class="code">F3-09</td><td class="name">So khớp epsilon</td><td class="desc">Số thực, sai số cho phép</td><td class="ref"><span class="none">(chưa có screen/sơ đồ)</span></td></tr>
+            <tr><td class="code">F3-10</td><td class="name">So khớp tập hợp không thứ tự</td><td class="desc">Kết quả đúng nhưng không cần đúng thứ tự phần tử</td><td class="ref">users/submission_result.md<span class="diagram-part"><span class="none">(chưa có)</span></span></td></tr>
+            <tr><td class="code">F3-11</td><td class="name">Ánh xạ lỗi biên dịch</td><td class="desc">Trả lỗi về đúng dòng trong mã người dùng</td><td class="ref">users/problem_detail.md; users/submission_result.md<span class="diagram-part">usecase/user/usecase_user_giai_va_nop_bai</span></td></tr>
+            <tr><td class="code">F3-12</td><td class="name">Che giấu lỗi mã harness</td><td class="desc">Người học không bao giờ thấy lỗi thuộc phần mã hệ thống</td><td class="ref">users/problem_detail.md; users/submission_result.md<span class="diagram-part"><span class="none">(chưa có)</span></span></td></tr>
+            <tr><td class="code">F3-13</td><td class="name">Hai mô hình song song, tự chọn</td><td class="desc">Chuyển đổi Bọc hàm/Standard I/O ngay lúc làm bài; trừ bài vượt lược đồ kiểu chỉ còn Standard I/O</td><td class="ref">users/problem_detail.md; users/problem_list.md; users/submission_result.md<span class="diagram-part">usecase/user/usecase_user_tim_va_luu_bai_toan; usecase/user/usecase_user_giai_va_nop_bai</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- F4 -->
+    <section class="module" id="f4">
+      <div class="module-head">
+        <span class="module-tag" style="color:var(--f4); background:var(--f4-bg)">F4</span>
+        <h2>Điều phối judge engine &middot; <span class="mono">judge-orchestration</span></h2>
+      </div>
+      <p class="module-meta">01-rd/req/judge-orchestration.md &middot; 11 mã sống (F4-04 và F4-09a&ndash;F4-09e đã loại khỏi phạm vi)</p>
+      <div class="table-wrap">
+        <table data-module="F4">
+          <thead><tr><th>Mã</th><th>Chức năng</th><th>Giải thích ngắn gọn</th><th>File liên quan</th></tr></thead>
+          <tbody>
+            <tr><td class="code">F4-01</td><td class="name">Tiếp nhận bài nộp</td><td class="desc">Ghi PENDING, đẩy hàng đợi RabbitMQ, phản hồi ngay; hỗ trợ tải file mã nguồn lên</td><td class="ref">users/my_submissions.md; users/submission_result.md; users/problem_detail.md<span class="diagram-part">sequence/user/sequence_user_nop_bai_va_xem_ket_qua_realtime; usecase/user/usecase_user_giai_va_nop_bai</span></td></tr>
+            <tr><td class="code">F4-02</td><td class="name">Chạy thử</td><td class="desc">Với testcase Sample, không ghi nhận vào tiến độ</td><td class="ref">users/problem_detail.md<span class="diagram-part">usecase/user/usecase_user_giai_va_nop_bai</span></td></tr>
+            <tr><td class="code">F4-03</td><td class="name">Gọi judge từng testcase</td><td class="desc">Một lần gọi mỗi testcase, chạy hết toàn bộ N testcase (không dừng sớm)</td><td class="ref">users/submission_result.md<span class="diagram-part"><span class="none">(chưa có)</span></span></td></tr>
+            <tr><td class="code">F4-05</td><td class="name">Xác thực webhook</td><td class="desc">Token bí mật riêng theo bài nộp &mdash; chỉ cần khi có adapter bất đồng bộ</td><td class="ref"><span class="none">(chưa có screen/sơ đồ)</span></td></tr>
+            <tr><td class="code">F4-06</td><td class="name">Chống trùng callback</td><td class="desc">Theo token của engine &mdash; chỉ cần khi có adapter bất đồng bộ</td><td class="ref"><span class="none">(chưa có screen/sơ đồ)</span></td></tr>
+            <tr><td class="code">F4-07</td><td class="name">Timeout sweep</td><td class="desc">Quét bài nộp treo quá 5 phút không có cập nhật trạng thái</td><td class="ref">admin/admin_queue_monitor.md<span class="diagram-part">usecase/admin/usecase_admin_giam_sat_judge_engine; sequence/admin/sequence_admin_giam_sat_hang_doi</span></td></tr>
+            <tr><td class="code">F4-08</td><td class="name">Đẩy trạng thái realtime</td><td class="desc">Qua WebSocket (STOMP), theo kênh riêng từng bài nộp</td><td class="ref">users/my_submissions.md; users/submission_result.md<span class="diagram-part">sequence/user/sequence_user_nop_bai_va_xem_ket_qua_realtime; usecase/user/usecase_user_giai_va_nop_bai</span></td></tr>
+            <tr><td class="code">F4-10</td><td class="name">Giám sát và điều khiển cụm judge</td><td class="desc">Xem hàng đợi, tạm dừng/tiếp tục tiêu thụ, bật/tắt autoscale</td><td class="ref">admin/admin_overview.md; admin/admin_queue_monitor.md<span class="diagram-part">usecase/admin/usecase_admin_giam_sat_judge_engine; sequence/admin/sequence_admin_giam_sat_hang_doi</span></td></tr>
+            <tr><td class="code">F4-11</td><td class="name">Cấu hình ngôn ngữ và giới hạn</td><td class="desc">Hệ số theo ngôn ngữ + 3 tham số sandbox go-judge (mạng, tiến trình con, stderr)</td><td class="ref">admin/admin_language_config.md; admin/admin_overview.md; shared/problem_authoring.md<span class="diagram-part">usecase/admin/usecase_admin_cau_hinh_ngon_ngu_ai; sequence/admin/sequence_admin_cau_hinh_prompt_ai</span></td></tr>
+            <tr><td class="code">F4-12</td><td class="name">Chỉ số &ldquo;Beats&rdquo;</td><td class="desc">% bài nộp khác chậm hơn, cùng bài toán và cùng ngôn ngữ, chỉ khi Accepted</td><td class="ref">users/submission_result.md<span class="diagram-part">usecase/user/usecase_user_giai_va_nop_bai</span></td></tr>
+            <tr><td class="code">F4-13</td><td class="name">Điểm tỷ lệ testcase</td><td class="desc">Pass/N quy về thang 1 điểm, hiển thị thêm cạnh verdict nhị phân không đổi</td><td class="ref">users/submission_result.md; teacher/class_student_detail.md; teacher/instructor_grading.md; shared/problem_authoring.md<span class="diagram-part">sequence/user/sequence_user_nop_bai_va_xem_ket_qua_realtime; usecase/user/usecase_user_giai_va_nop_bai; sequence/gv/sequence_gv_cham_tay_de_len_diem_ai</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- F5 -->
+    <section class="module" id="f5">
+      <div class="module-head">
+        <span class="module-tag" style="color:var(--f5); background:var(--f5-bg)">F5</span>
+        <h2>Phân hệ AI &middot; <span class="mono">ai-review</span></h2>
+      </div>
+      <p class="module-meta">01-rd/req/ai-review.md &middot; 28 mã (F5-01&ndash;F5-28; F5-29 đề xuất nhưng không bao giờ cấp)</p>
+      <div class="table-wrap">
+        <table data-module="F5">
+          <thead><tr><th>Mã</th><th>Chức năng</th><th>Giải thích ngắn gọn</th><th>File liên quan</th></tr></thead>
+          <tbody>
+            <tr><td class="code">F5-01</td><td class="name">Yêu cầu phân tích bài giải</td><td class="desc">Hành động chủ động của học viên, chỉ hiện sau khi Accepted</td><td class="ref">users/submission_result.md; users/problem_detail.md; users/my_submissions.md; users/solution_review.md; users/problem_list.md<span class="diagram-part">usecase/user/usecase_user_phan_tich_bai_giai_ai; sequence/user/sequence_user_phan_tich_bai_giai_ai</span></td></tr>
+            <tr><td class="code">F5-02</td><td class="name">Phân tích độ phức tạp</td><td class="desc">Thời gian và bộ nhớ thực tế, kèm lập luận</td><td class="ref">users/solution_review.md<span class="diagram-part"><span class="none">(chưa có)</span></span></td></tr>
+            <tr><td class="code">F5-03</td><td class="name">Gợi ý hướng tiếp cận tốt hơn</td><td class="desc">Đối chiếu với độ phức tạp tối ưu đã biết của bài toán</td><td class="ref">users/solution_review.md<span class="diagram-part"><span class="none">(chưa có)</span></span></td></tr>
+            <tr><td class="code">F5-04</td><td class="name">Chỉ ra rủi ro trong mã</td><td class="desc">Edge case chưa phủ, giả định ngầm, tràn số, dữ liệu lớn</td><td class="ref">users/solution_review.md<span class="diagram-part"><span class="none">(chưa có)</span></span></td></tr>
+            <tr><td class="code">F5-05</td><td class="name">Nhận xét chất lượng mã</td><td class="desc">Đặt tên, phân rã, trùng lặp, kèm điểm dễ đọc thang 1-5</td><td class="ref">teacher/instructor_grading.md; users/solution_review.md<span class="diagram-part">sequence/gv/sequence_gv_cham_tay_de_len_diem_ai</span></td></tr>
+            <tr><td class="code">F5-06</td><td class="name">Gợi ý chủ đề liên kết</td><td class="desc">Từ khoá/chủ đề gợi ý, dẫn sang interview_bank_list (F6)</td><td class="ref">users/solution_review.md; users/interview_bank_list.md<span class="diagram-part"><span class="none">(chưa có)</span></span></td></tr>
+            <tr><td class="code">F5-07</td><td class="name">Trả JSON có lược đồ</td><td class="desc">Để giao diện render báo cáo tĩnh</td><td class="ref">teacher/instructor_grading.md; users/solution_review.md<span class="diagram-part">usecase/user/usecase_user_phan_tich_bai_giai_ai; usecase/gv/usecase_gv_cham_va_nhan_xet_bai_nop; sequence/gv/sequence_gv_cham_tay_de_len_diem_ai</span></td></tr>
+            <tr><td class="code">F5-08</td><td class="name">Lưu báo cáo</td><td class="desc">Kèm bài nộp, tra cứu lại từ trang tiến độ</td><td class="ref">users/solution_review.md<span class="diagram-part">usecase/user/usecase_user_phan_tich_bai_giai_ai; sequence/user/sequence_user_phan_tich_bai_giai_ai</span></td></tr>
+            <tr><td class="code">F5-09</td><td class="name">Mở phiên phỏng vấn từ bài nộp</td><td class="desc">Lối vào mặc định của Mock Interview, cần Accepted</td><td class="ref">users/submission_result.md; users/problem_detail.md; users/mock_interview.md; users/settings.md<span class="diagram-part">usecase/user/usecase_user_phong_van_gia_lap_ai; sequence/user/sequence_user_phong_van_gia_lap_ai</span></td></tr>
+            <tr><td class="code">F5-10</td><td class="name">Giai đoạn Giải trình thuật toán</td><td class="desc">Người học trình bày ý tưởng, lý do chọn cấu trúc dữ liệu</td><td class="ref">users/mock_interview.md<span class="diagram-part">usecase/user/usecase_user_phong_van_gia_lap_ai</span></td></tr>
+            <tr><td class="code">F5-11</td><td class="name">Giai đoạn Phản biện</td><td class="desc">AI chất vấn điểm chưa tối ưu và trường hợp biên</td><td class="ref">shared/interview_question_management.md; shared/interview_question_authoring.md; users/mock_interview.md<span class="diagram-part"><span class="none">(chưa có)</span></span></td></tr>
+            <tr><td class="code">F5-12</td><td class="name">Giai đoạn Mở rộng quy mô</td><td class="desc">Tình huống dữ liệu tăng đột biến, ràng buộc hệ thống đổi</td><td class="ref">users/mock_interview.md<span class="diagram-part"><span class="none">(chưa có)</span></span></td></tr>
+            <tr><td class="code">F5-13</td><td class="name">Duy trì ngữ cảnh phiên</td><td class="desc">ChatMemory trên Redis xuyên cả 3 giai đoạn</td><td class="ref">users/mock_interview.md<span class="diagram-part">sequence/user/sequence_user_phong_van_gia_lap_ai</span></td></tr>
+            <tr><td class="code">F5-14</td><td class="name">Stream phản hồi</td><td class="desc">Qua SSE</td><td class="ref">users/mock_interview.md<span class="diagram-part"><span class="none">(chưa có)</span></span></td></tr>
+            <tr><td class="code">F5-15</td><td class="name">Rubric 4 tiêu chí</td><td class="desc">Độ rõ ràng, độ chính xác kỹ thuật, khả năng phản biện, nhận thức độ phức tạp</td><td class="ref">shared/interview_question_management.md; shared/interview_question_authoring.md; users/mock_interview.md<span class="diagram-part"><span class="none">(chưa có)</span></span></td></tr>
+            <tr><td class="code">F5-16</td><td class="name">Lưu phiên và rubric</td><td class="desc">Mở lại được từ trang tiến độ</td><td class="ref">users/mock_interview.md<span class="diagram-part">usecase/user/usecase_user_phong_van_gia_lap_ai; sequence/user/sequence_user_phong_van_gia_lap_ai</span></td></tr>
+            <tr><td class="code">F5-17</td><td class="name">Chống prompt injection</td><td class="desc">Mã nguồn/câu trả lời và chỉ dẫn AI của giảng viên đều là tham số dữ liệu, không phải chỉ thị hệ thống</td><td class="ref">shared/problem_authoring.md; users/solution_review.md; admin/admin_ai_config.md; users/interview_question_detail.md<span class="diagram-part">sequence/user/sequence_user_phan_tich_bai_giai_ai; sequence/user/sequence_user_on_tap_luyen_tap_ai</span></td></tr>
+            <tr><td class="code">F5-18</td><td class="name">Định hướng giáo dục</td><td class="desc">Rubric/báo cáo là phản hồi hỗ trợ học tập, không phải điểm chính thức</td><td class="ref">users/solution_review.md; users/mock_interview.md; admin/admin_ai_config.md; users/interview_question_detail.md<span class="diagram-part"><span class="none">(chưa có)</span></span></td></tr>
+            <tr><td class="code">F5-19</td><td class="name">Giới hạn tần suất gọi AI</td><td class="desc">Theo người dùng, kèm cảnh báo mềm khi một tài khoản dùng bất thường</td><td class="ref">users/solution_review.md; admin/admin_ai_usage.md; admin/admin_ai_config.md; users/mock_interview.md<span class="diagram-part"><span class="none">(chưa có)</span></span></td></tr>
+            <tr><td class="code">F5-20</td><td class="name">Cache kết quả phân tích</td><td class="desc">Theo hash mã nguồn &mdash; nộp lại đúng mã thì không gọi lại AI</td><td class="ref">users/solution_review.md<span class="diagram-part">sequence/user/sequence_user_phan_tich_bai_giai_ai</span></td></tr>
+            <tr><td class="code">F5-21</td><td class="name">Theo dõi token tiêu thụ</td><td class="desc">Theo từng phiên</td><td class="ref">admin/admin_overview.md; admin/admin_ai_usage.md<span class="diagram-part">usecase/admin/usecase_admin_ngan_sach_token_ai; sequence/admin/sequence_admin_dat_ngan_sach_token</span></td></tr>
+            <tr><td class="code">F5-22</td><td class="name">Suy giảm có kiểm soát</td><td class="desc">AI hỏng/hết quota thì F1-F4 vẫn hoạt động bình thường</td><td class="ref">users/solution_review.md; users/mock_interview.md; users/interview_question_detail.md<span class="diagram-part">sequence/user/sequence_user_phong_van_gia_lap_ai; sequence/user/sequence_user_phan_tich_bai_giai_ai</span></td></tr>
+            <tr><td class="code">F5-23</td><td class="name">Cấu hình prompt và rubric</td><td class="desc">Actor A3; rubric có phiên bản, chỉ phủ rubric của Solution Review</td><td class="ref">shared/problem_authoring.md; shared/interview_question_management.md; shared/interview_question_authoring.md; admin/admin_system_log.md; admin/admin_overview.md; admin/admin_ai_config.md; users/solution_review.md<span class="diagram-part">usecase/admin/usecase_admin_cau_hinh_ngon_ngu_ai; sequence/admin/sequence_admin_cau_hinh_prompt_ai</span></td></tr>
+            <tr><td class="code">F5-24</td><td class="name">Ba lối vào phiên phỏng vấn</td><td class="desc">Từ bài nộp, từ kho câu hỏi F6, hoặc tự chọn chủ đề &mdash; 2 lối sau không cần Accepted</td><td class="ref">users/mock_interview.md; users/settings.md<span class="diagram-part">usecase/user/usecase_user_phong_van_gia_lap_ai</span></td></tr>
+            <tr><td class="code">F5-25</td><td class="name">Ngân sách token AI</td><td class="desc">Dự báo cạn quota, tự động khoá gọi AI khi vượt (trừ ADMIN)</td><td class="ref">users/solution_review.md; admin/admin_overview.md; admin/admin_ai_usage.md; users/interview_question_detail.md; users/mock_interview.md<span class="diagram-part">usecase/admin/usecase_admin_ngan_sach_token_ai; sequence/admin/sequence_admin_dat_ngan_sach_token; sequence/user/sequence_user_phan_tich_bai_giai_ai</span></td></tr>
+            <tr><td class="code">F5-26</td><td class="name">Áp mã AI vào Workspace</td><td class="desc">Có xác nhận trước khi ghi đè, giữ lại bản mã cũ (snapshot)</td><td class="ref">users/solution_review.md<span class="diagram-part">usecase/user/usecase_user_phan_tich_bai_giai_ai</span></td></tr>
+            <tr><td class="code">F5-27</td><td class="name">Điểm AI tham khảo + chấm tay</td><td class="desc">Thang 10, giảng viên chấm đè kèm nhận xét, tách bạch khỏi verdict chính thức</td><td class="ref">teacher/instructor_overview.md; teacher/instructor_grading.md; teacher/class_student_detail.md; teacher/class_progress.md; teacher/class_assignments.md; teacher/class_management.md<span class="diagram-part">usecase/gv/usecase_gv_cham_va_nhan_xet_bai_nop; sequence/gv/sequence_gv_cham_tay_de_len_diem_ai</span></td></tr>
+            <tr><td class="code">F5-28</td><td class="name">Tự chỉnh tham số phiên tự luyện</td><td class="desc">Mức người phỏng vấn, số lượt tối đa, cho phép gợi ý khi bí</td><td class="ref">users/mock_interview.md; users/settings.md<span class="diagram-part">usecase/user/usecase_user_phong_van_gia_lap_ai</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- F6 -->
+    <section class="module" id="f6">
+      <div class="module-head">
+        <span class="module-tag" style="color:var(--f6); background:var(--f6-bg)">F6</span>
+        <h2>Ngân hàng câu hỏi phỏng vấn &middot; <span class="mono">interview-bank</span></h2>
+      </div>
+      <p class="module-meta">01-rd/req/interview-bank.md &middot; 12 mã sống (F6-11 đã loại khỏi phạm vi)</p>
+      <div class="table-wrap">
+        <table data-module="F6">
+          <thead><tr><th>Mã</th><th>Chức năng</th><th>Giải thích ngắn gọn</th><th>File liên quan</th></tr></thead>
+          <tbody>
+            <tr><td class="code">F6-01</td><td class="name">Danh sách câu hỏi</td><td class="desc">Phân loại theo 5 chủ đề (CS, System design, Database, Ngôn ngữ, Hành vi) và mức độ</td><td class="ref">users/interview_bank_list.md; shared/interview_question_management.md; shared/interview_question_authoring.md; users/interview_question_detail.md<span class="diagram-part">usecase/user/usecase_user_on_tap_cau_hoi_phong_van</span></td></tr>
+            <tr><td class="code">F6-02</td><td class="name">Tìm kiếm và lọc</td><td class="desc">Theo chủ đề, mức độ, thẻ</td><td class="ref">users/interview_bank_list.md; shared/interview_question_management.md<span class="diagram-part"><span class="none">(chưa có)</span></span></td></tr>
+            <tr><td class="code">F6-03</td><td class="name">Đánh dấu xem lại</td><td class="desc">Đánh dấu câu hỏi để xem lại sau</td><td class="ref">users/interview_bank_list.md; shared/interview_question_management.md; users/interview_question_detail.md<span class="diagram-part"><span class="none">(chưa có)</span></span></td></tr>
+            <tr><td class="code">F6-04</td><td class="name">Chế độ học &mdash; gợi ý hướng tiếp cận</td><td class="desc">Xem gợi ý cách trả lời</td><td class="ref">users/interview_bank_list.md; shared/interview_question_management.md; shared/interview_question_authoring.md; users/interview_question_detail.md<span class="diagram-part">sequence/user/sequence_user_on_tap_luyen_tap_ai</span></td></tr>
+            <tr><td class="code">F6-05</td><td class="name">Chế độ học &mdash; khung trả lời chuẩn</td><td class="desc">Áp dụng mô hình STAR cho câu hỏi hành vi</td><td class="ref">users/interview_bank_list.md; shared/interview_question_management.md; users/interview_question_detail.md<span class="diagram-part"><span class="none">(chưa có)</span></span></td></tr>
+            <tr><td class="code">F6-06</td><td class="name">Chế độ học &mdash; từ khoá cốt lõi</td><td class="desc">Danh sách từ khoá kỹ thuật cần nêu</td><td class="ref">users/interview_bank_list.md; shared/interview_question_management.md; users/interview_question_detail.md<span class="diagram-part">usecase/user/usecase_user_on_tap_cau_hoi_phong_van</span></td></tr>
+            <tr><td class="code">F6-07</td><td class="name">Chế độ luyện &mdash; tự soạn câu trả lời</td><td class="desc">Mỗi lần nộp là một lượt độc lập, không sửa lại được</td><td class="ref">shared/interview_question_management.md; users/interview_question_detail.md<span class="diagram-part">usecase/user/usecase_user_on_tap_cau_hoi_phong_van; sequence/user/sequence_user_on_tap_luyen_tap_ai</span></td></tr>
+            <tr><td class="code">F6-08</td><td class="name">AI đối chiếu câu trả lời</td><td class="desc">So với tiêu chí chuẩn, trả điểm đã đạt/còn thiếu/hướng bổ sung</td><td class="ref">shared/interview_question_management.md; shared/interview_question_authoring.md; users/interview_question_detail.md<span class="diagram-part">sequence/user/sequence_user_on_tap_luyen_tap_ai</span></td></tr>
+            <tr><td class="code">F6-09</td><td class="name">Lịch sử luyện tập</td><td class="desc">Danh sách câu hỏi cần ôn lại</td><td class="ref">users/interview_bank_list.md<span class="diagram-part"><span class="none">(chưa có)</span></span></td></tr>
+            <tr><td class="code">F6-10</td><td class="name">Tỉ lệ hoàn thành theo chủ đề</td><td class="desc">Theo dõi tiến độ ôn tập</td><td class="ref">users/interview_bank_list.md<span class="diagram-part">usecase/user/usecase_user_on_tap_cau_hoi_phong_van</span></td></tr>
+            <tr><td class="code">F6-12</td><td class="name">Tự chấm mức độ thuộc bài</td><td class="desc">Spaced repetition &mdash; tự xếp lịch câu hỏi cần ôn lại sớm hơn</td><td class="ref">users/interview_bank_list.md; shared/interview_question_management.md; shared/interview_question_authoring.md; users/interview_question_detail.md; admin/admin_overview.md<span class="diagram-part">usecase/user/usecase_user_on_tap_cau_hoi_phong_van; sequence/user/sequence_user_on_tap_luyen_tap_ai</span></td></tr>
+            <tr><td class="code">F6-13</td><td class="name">Quản trị nội dung ngân hàng câu hỏi</td><td class="desc">CRUD dùng chung hệ thống (A2 và A3), không còn phân theo lớp</td><td class="ref">shared/interview_question_management.md; shared/interview_question_authoring.md<span class="diagram-part">usecase/shared/usecase_shared_quan_ly_ngan_hang_cau_hoi</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <p class="empty-state" id="empty-state">Không tìm thấy mã hoặc từ khoá phù hợp.</p>
+
+    <div class="foot-note">
+      <strong>Ghi chú phạm vi</strong>
+      <ul>
+        <li>File này chỉ liệt kê chức năng nghiệp vụ (<span class="mono">Fx-nn</span>). Yêu cầu phi chức năng
+          nằm ở <span class="mono">01-rd/req/nfr.md</span>, không lặp lại ở đây.</li>
+        <li>Các tính năng đã cắt khỏi phạm vi trong quá trình RD (chấm lại/rejudge, bộ câu hỏi phỏng vấn theo
+          lớp, gợi ý theo bậc, báo cáo nghi gian lận, học viên yêu cầu review) không xuất hiện ở bảng trên
+          &mdash; xem <span class="mono">.nexa/control/decision-registry.md</span> nếu cần lý do loại bỏ.</li>
+        <li>Nguồn duy nhất cho từng mã vẫn là file <span class="mono">01-rd/req/&lt;module&gt;.md</span>
+          tương ứng &mdash; bảng này có thể lệch nếu RD được sửa sau ngày 2026-09-08 mà file này chưa cập
+          nhật theo.</li>
+        <li>Cột &ldquo;File liên quan&rdquo; liệt kê screen RD và sơ đồ hiện có trên đĩa tại thời điểm
+          2026-09-09, xác minh bằng Grep theo đúng chuỗi mã &mdash; không phải danh sách &ldquo;nơi lẽ ra
+          nên trích dẫn&rdquo;. Thiếu tham chiếu không có nghĩa là mã sai hay thiếu; nhiều mã (đặc biệt F3,
+          F4 phần hạ tầng) là chi tiết kỹ thuật nội bộ, không cần một màn hình riêng để minh hoạ.</li>
+      </ul>
+    </div>
+  </main>
+</div>
+
+<script>
+(function () {
+  var input = document.getElementById('filter');
+  var rows = Array.prototype.slice.call(document.querySelectorAll('tbody tr'));
+  var sections = Array.prototype.slice.call(document.querySelectorAll('section.module'));
+  var countLine = document.getElementById('count-line');
+  var emptyState = document.getElementById('empty-state');
+  var total = rows.length;
+
+  function clearMarks(cell) {
+    if (cell.querySelector('mark')) {
+      cell.textContent = cell.textContent;
+    }
+  }
+
+  function highlight(cell, needle) {
+    var text = cell.textContent;
+    var idx = text.toLowerCase().indexOf(needle);
+    if (idx === -1) { return; }
+    cell.innerHTML = text.slice(0, idx) +
+      '<mark>' + text.slice(idx, idx + needle.length) + '</mark>' +
+      text.slice(idx + needle.length);
+  }
+
+  function applyFilter() {
+    var needle = input.value.trim().toLowerCase();
+    var shown = 0;
+
+    rows.forEach(function (row) {
+      var cells = row.querySelectorAll('td');
+      cells.forEach(clearMarks);
+      var haystack = row.textContent.toLowerCase();
+      var match = needle === '' || haystack.indexOf(needle) !== -1;
+      row.classList.toggle('is-hidden', !match);
+      if (match) {
+        shown++;
+        if (needle !== '') {
+          cells.forEach(function (cell) { highlight(cell, needle); });
+        }
+      }
+    });
+
+    sections.forEach(function (section) {
+      var visibleRows = section.querySelectorAll('tbody tr:not(.is-hidden)');
+      section.style.display = visibleRows.length === 0 ? 'none' : '';
+    });
+
+    countLine.textContent = shown + ' / ' + total + ' hiển thị';
+    emptyState.style.display = shown === 0 ? 'block' : 'none';
+  }
+
+  input.addEventListener('input', applyFilter);
+})();
+</script>
+</body>
+</html>

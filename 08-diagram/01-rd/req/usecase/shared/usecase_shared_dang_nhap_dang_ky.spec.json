@@ -1,0 +1,34 @@
+{
+  "_": "Chi tiet oval DUNG CHUNG 'Dang nhap / Dang ky' o ban tong quan -- man 01-rd/screens/shared/auth.md, moi vai tro deu di qua truoc khi vao he thong (system_survey.md muc 7.0). Nguon: auth.md muc 2 (F1-01, F1-02, F1-15, F1-17). Chi F1-01 la rieng A1 (dang ky moi -> vai tro mac dinh STUDENT, system_survey.md:243) nen dat thanh mot goi rieng; F1-02/F1-04/F1-15/F1-17 la A1 A2 A3 nen nam trong goi dung chung. Bo bot: F1-03 (client tu lam moi Access Token khi gap 401) va F1-05 (kiem quyen theo vai tro o tang ung dung) la actor A4 -- xu ly noi bo, khong phai use case cua nguoi dung. Chi tiet ky thuat cua F1-02 (Access Token ngan han + Refresh Token trong cookie HTTP-Only) va cua F1-15 (trung email thi tu dong lien ket, khong tao tai khoan thu hai) khong tach oval rieng -- thuoc BD/DD. Ratio canh/node cua file nay vuot nguong 1.5: xem doan ban giao, day la he qua co hoc cua viec 3 actor dung chung mot man (moi use case dung chung ton 3 duong lien ket), khong phai so do bi roi.",
+  "kind": "usecase",
+  "title": "Sơ đồ Use Case chi tiết - Đăng nhập và đăng ký (dùng chung)",
+  "mode": "color",
+  "usecase": {
+    "system": "Chức năng Đăng nhập và đăng ký",
+    "groups": [
+      {
+        "name": "Đăng ký tài khoản (F1-01)",
+        "actors": ["Sinh viên"],
+        "usecases": [
+          "Đăng ký tài khoản bằng email và mật khẩu"
+        ]
+      },
+      {
+        "name": "Đăng nhập và đăng xuất (F1-02, F1-04, F1-15)",
+        "actors": ["Sinh viên", "Giảng viên", "Quản trị viên"],
+        "usecases": [
+          "Đăng nhập bằng email và mật khẩu",
+          "Đăng nhập qua GitHub hoặc Google",
+          "Đăng xuất"
+        ]
+      },
+      {
+        "name": "Quên mật khẩu (F1-17)",
+        "actors": ["Sinh viên", "Giảng viên", "Quản trị viên"],
+        "usecases": [
+          "Tự đặt lại mật khẩu bằng mã 6 chữ số gửi qua email"
+        ]
+      }
+    ]
+  }
+}

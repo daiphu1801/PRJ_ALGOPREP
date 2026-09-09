@@ -1,0 +1,58 @@
+<mxfile host="app.diagrams.net" agent="drawio-uml-architect" type="device">
+  <diagram id="so-do-tuan-tu-giam-sat-hang-doi-va-cum-judge-engine-quan-tri" name="so-do-tuan-tu-giam-sat-hang-doi-va-cum-judge-engine-quan-tri">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="826" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="Sơ đồ tuần tự - Giám sát hàng đợi và cụm judge engine (Quản trị viên)" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="60" y="10" width="1000" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="v1" value="Quản trị viên" style="shape=umlLifeline;participant=umlActor;perimeter=lifelinePerimeter;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;verticalAlign=top;spacingTop=40;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="120" y="60" width="30" height="514" as="geometry" />
+        </mxCell>
+        <mxCell id="v2" value="Màn Hàng đợi chấm" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#FFFFFF;strokeColor=#666666;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="230" y="60" width="150" height="514" as="geometry" />
+        </mxCell>
+        <mxCell id="v3" value="Máy chủ AlgoPrep" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#FFF2CC;strokeColor=#B8952A;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="400" y="60" width="150" height="514" as="geometry" />
+        </mxCell>
+        <mxCell id="v4" value="RabbitMQ" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#BDD7EE;strokeColor=#5A7FA6;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="570" y="60" width="150" height="514" as="geometry" />
+        </mxCell>
+        <mxCell id="v5" value="go-judge" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#BDD7EE;strokeColor=#5A7FA6;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="740" y="60" width="150" height="514" as="geometry" />
+        </mxCell>
+        <mxCell id="v6" value="PostgreSQL" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#D9D9D9;strokeColor=#7A7A7A;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="910" y="60" width="150" height="514" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" value="1. Mở màn giám sát" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=11;verticalAlign=bottom;exitX=0.5;exitY=0.1751;exitDx=0;exitDy=0;entryX=0.5;entryY=0.1751;entryDx=0;entryDy=0;" edge="1" parent="1" source="v1" target="v2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" value="2. Yêu cầu số liệu vận hành" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=11;verticalAlign=bottom;exitX=0.5;exitY=0.2646;exitDx=0;exitDy=0;entryX=0.5;entryY=0.2646;entryDx=0;entryDy=0;" edge="1" parent="1" source="v2" target="v3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" value="3. Đọc số job đang chờ" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=11;verticalAlign=bottom;exitX=0.5;exitY=0.3541;exitDx=0;exitDy=0;entryX=0.5;entryY=0.3541;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" value="4. Độ dài hàng đợi" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=11;verticalAlign=bottom;exitX=0.5;exitY=0.4436;exitDx=0;exitDy=0;entryX=0.5;entryY=0.4436;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" value="5. Kiểm tra tình trạng cụm" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=11;verticalAlign=bottom;exitX=0.5;exitY=0.5331;exitDx=0;exitDy=0;entryX=0.5;entryY=0.5331;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" value="6. Trạng thái worker và thông lượng" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=11;verticalAlign=bottom;exitX=0.5;exitY=0.6226;exitDx=0;exitDy=0;entryX=0.5;entryY=0.6226;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e13" value="7. Đọc lượt nộp treo quá ngưỡng và job lỗi 24 giờ" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=11;verticalAlign=bottom;exitX=0.5;exitY=0.7121;exitDx=0;exitDy=0;entryX=0.5;entryY=0.7121;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e14" value="8. Số liệu hàng đợi, thông lượng, trạng thái go-judge" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=11;verticalAlign=bottom;exitX=0.5;exitY=0.8016;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8016;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e15" value="9. Hiện bảng giám sát" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=11;verticalAlign=bottom;exitX=0.5;exitY=0.8911;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8911;entryDx=0;entryDy=0;" edge="1" parent="1" source="v2" target="v1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

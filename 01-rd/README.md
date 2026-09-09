@@ -13,7 +13,7 @@ Chỉ mục của tầng RD. Đây là tầng đầu của quy trình **RD → B
 | :--- | :--- | :--- |
 | `overview.md` | Nền tảng lý thuyết cốt lõi: DDD, Clean Architecture, command/query, Java 21 + Spring Boot 4 + Virtual Threads, bất đồng bộ và realtime, sandbox, sinh mã bọc hàm, FSD, OWASP, tích hợp LLM. Kèm chính sách AI và mục "điều KHÔNG chốt" | Viết cho AlgoPrep 2026-08-20 |
 | `glossary.md` | Ngôn ngữ thống nhất: tiếng Việt trong tài liệu, tiếng Anh trong mã, theo từng Bounded Context | Viết cho AlgoPrep 2026-08-20 |
-| `system_survey.md` | Khảo sát **chi tiết**: hệ thống tham khảo, khoảng trống và định vị, bốn actor kèm ma trận quyền, **bảng chức năng có mã `Fx-nn`**, bốn quy trình nghiệp vụ chính, danh sách màn dự kiến (**đã lỗi thời — nguồn thật là `01-rd/screens/`, 32 màn**), phạm vi, rủi ro, tiêu chí thành công | Viết cho AlgoPrep 2026-08-20 |
+| `system_survey.md` | Khảo sát **chi tiết**: hệ thống tham khảo, khoảng trống và định vị, bốn actor kèm ma trận quyền, **bảng chức năng có mã `Fx-nn`**, bốn quy trình nghiệp vụ chính, danh sách màn dự kiến (**nguồn thật là `01-rd/screens/` — 32 file, 31 màn sống**; bảng ở mục 7 của survey vẫn được cập nhật theo và tổng chốt ở cuối mục 7 là đúng, xem lưu ý ở mục 1 dưới đây), phạm vi, rủi ro, tiêu chí thành công | Viết cho AlgoPrep 2026-08-20 |
 
 ### `system/` — kiến trúc và môi trường
 
@@ -34,6 +34,11 @@ Hai file gốc `req.md` và `user_stories.md` giờ là **chỉ mục mỏng**, 
 Quan trọng khi trích dẫn: dùng **neo mã** (`F4-13`, `US-A1-03`) chứ không dùng số dòng. Mã là định danh
 vĩnh viễn của yêu cầu; số dòng chết theo mỗi lần sửa file, và đó là lý do đợt tách phải viết lại 345
 citation.
+
+**Mở rộng 2026-09-09 — luật này áp cho cả `overview/system_survey.md`:** cấm neo theo số dòng vào file đó,
+dùng `mục <số> dòng <slug|mã>`. Lý do: nó là file bị sửa nhiều nhất của tầng RD, và 111 citation neo theo
+dòng từ `screens/` đã trôi hết (xem mục 7.1). Neo theo dòng chỉ còn dùng cho file **đã đóng băng** —
+`09-layoutBase/*.dc.html`.
 
 | File | Nội dung | Trạng thái |
 | :--- | :--- | :--- |
@@ -289,6 +294,89 @@ cả 6 hạng mục đã `[x]`, và một mục "Còn mở" thực ra đã xong.
 | Cột bảng câu hỏi mở | **0 lệch** |
 | Pictograph | **0** |
 | Mã `DEC-` trích mà không tồn tại trong registry | **0** |
+
+## 7. Rà soát 2026-09-09 — đợt vá vênh thứ tư
+
+Ba đợt trước (2026-09-01, 09-03, 09-05) kiểm mã `Fx-nn`, câu hỏi mở, pictograph và **sự tồn tại** của
+citation. Đợt này thêm hai trục mà cả ba đợt trước đều không kiểm: **citation `file:line` có trỏ đúng chỗ
+hay không** (không chỉ đúng file và trong phạm vi dòng), và **một phát biểu đã sửa ở nơi phát sinh có lan
+tới bảng tổng hợp hay chưa**. Bản ghi đầy đủ: `07-review/rd_drift_repair_260909.md`.
+
+### 7.1. `system_survey.md:<dòng>` — 111 citation đều đã trôi
+
+Trục nặng nhất của đợt. `01-rd/` có **111 citation neo theo số dòng vào `system_survey.md`** — file bị sửa
+nhiều nhất của tầng RD. Script kiểm được 14 cái (những cái có mã `Fx-nn` trong cùng câu để đối chiếu):
+**sai 14/14**. Kiểm tay thêm 4 cái: sai cả 4, lệch 30-100 dòng. Ví dụ `screens/users/solution_review.md`
+trích `system_survey.md:321` cho `F5-05`, trong khi dòng 321 là bảng F4 và `F5-05` nằm ở dòng 350.
+
+Mục 4 của tài liệu này khai "157/157 citation `file:line` trỏ đúng file và trong phạm vi số dòng" — đúng
+theo nghĩa hẹp đó, nhưng script khi ấy chỉ kiểm **file có tồn tại** và **số dòng không vượt độ dài file**,
+không kiểm **trỏ đúng nội dung**. Một anchor trôi vẫn "hợp lệ" với phép kiểm đó.
+
+Đã chuyển **toàn bộ 111 citation sang neo ngữ nghĩa**: `01-rd/overview/system_survey.md` — mục 7.1 dòng
+`problem_list`, mục 5.5 dòng `F5-05`, mục 8 bảng giới hạn phạm vi... Neo mục + tên dòng không chết khi file
+được chèn thêm nội dung.
+
+**Luật bổ sung, hiệu lực từ 2026-09-09:** cấm neo theo số dòng vào `01-rd/overview/system_survey.md`. Dùng
+`mục <số> dòng <slug|mã>`. Đây là mở rộng đúng phạm vi của `DEC-2026-0831-rd-req-split-by-module` — đợt đó
+đã chuyển 345 citation trong `req/` sang neo mã nhưng chưa áp cho `screens/`, nên `screens/` tiếp tục sinh
+anchor theo dòng thêm hơn một tuần. Với các file **ổn định** (`09-layoutBase/*.dc.html` — prototype tĩnh,
+đã đóng băng) thì neo theo dòng vẫn dùng được và vẫn đang đúng.
+
+### 7.2. Sáu chỗ sửa ở nơi phát sinh mà không lan tới bảng tổng hợp
+
+| Chỗ còn vênh | Nói gì | Đúng phải là |
+| :--- | :--- | :--- |
+| `overview/overview.md` mục 1 (nguyên lý bất đồng bộ) | Mục "**Fail-fast theo testcase**" mô tả việc bỏ các testcase còn lại như nguyên lý kiến trúc đang sống | `F4-04` hết hiệu lực, chạy hết N testcase (`DEC-2026-0831-partial-score-testcase-ratio`) |
+| `overview/glossary.md` — thuật ngữ `batch` | "xử lý theo thứ tự **với fail-fast**" | Bỏ mệnh đề fail-fast; thứ tự không còn quyết định testcase nào bị bỏ |
+| `system/judge_engine.md` mục 2.5 — bảng actor | A3 "**kích hoạt Re-judge**" | Rejudge ngoài phạm vi (`DEC-2026-0828-remove-rejudge-scope`) |
+| `README.md` gốc mục 3 — bảng actor | A3 "**kích hoạt Re-judge**" | Cùng lý do. Đợt 2026-09-05 sửa 5 phát biểu khác trong file này nhưng sót bảng actor |
+| `overview/system_survey.md` mục 4.3 | A2 thấy bài "**của mình/lớp mình**" | A2 theo **quyền tác giả**, không theo lớp phụ trách — bài toán không phải thực thể sở hữu theo lớp |
+| `screens/admin/admin_overview.md` mục 3 | Còn khung "4 màn Admin cần scaffold i18n → còn 3 màn" | Q7 của chính file đó đã bỏ danh sách tên màn, mở rộng thành mọi màn Admin + Giảng viên (`DEC-2026-0831-i18n-scope-expansion`) |
+
+Nặng nhất là dòng đầu: `overview.md` là file nền lý thuyết, nguồn chương 2 của báo cáo, và nó nói **ngược**
+với `req/judge-orchestration.md` (F4-03) cùng `system/backend_architecture.md`. Mục 6.2 của tài liệu này
+khai đã quét hết fail-fast ở 7 chỗ — bốn chỗ trong bảng trên không nằm trong 7 chỗ đó.
+
+Ba chỗ nhỏ hơn cùng dạng đã sửa kèm: `req/ai-review.md` + `screens/users/mock_interview.md` (Q1) làm rõ
+**hệ thống có ba rubric độc lập** — `F5-23` (Solution Review, admin cấu hình trọng số) · `F5-15` (bốn tiêu
+chí kết phiên Mock Interview) · `F6-13` (tiêu chí đối chiếu Chế độ luyện); trước đó `mock_interview.md` neo
+rubric của F5.2 vào `F5-23`, sai mã. Và `screens/teacher/class_management.md` Q6 bỏ mệnh đề "go-judge đã
+fail-fast" khỏi căn cứ bỏ chấm lại (kết luận không đổi, chỉ đổi căn cứ).
+
+### 7.3. Sáu citation còn trỏ vào hai file chỉ mục
+
+Mục 1 của tài liệu này đã ghi "hai file gốc `req.md` / `user_stories.md` giờ là chỉ mục mỏng — đừng trích
+dẫn `Fx-nn` từ chúng nữa", nhưng 6 chỗ vẫn trích: `screens/teacher/class_management.md` (Q2: `F1-23`,
+`US-A2-07`), `overview/system_survey.md` (khối `F1-21`), `req/ai-review.md`, `req/identity.md`,
+`req/interview-bank.md`, `req/judge-orchestration.md` (Câu hỏi mở của `user_stories.md`, nay ở
+`req/user_stories/open_questions.md`). Đã trỏ lại đúng file nội dung. Các con trỏ điều hướng thuần
+(bảng "đọc gì ở đâu") vẫn được trỏ vào file chỉ mục — đó là đúng vai của nó.
+
+### 7.4. Một hạng mục đã kiểm và **không** phải vênh
+
+Chuỗi cộng dồn tổng số màn ở mục 7 của survey (`29 → 30`, `30 → 31`, `31 → 30`, `30 → 31`) đọc liền nhau
+thì tưởng lệch, nhưng mỗi mốc đều có ngày và khối tổng ở cuối mục 7 đã dựng lại đúng trình tự thời gian —
+tổng chốt **31 màn sống / 32 file** là đúng. Chỉ là thứ tự vật lý trong file khác thứ tự thời gian. Không
+sửa, để không tạo commit churn.
+
+### 7.5. Kết quả script sau đợt vá
+
+| Trục | Kết quả |
+| :--- | :--- |
+| Citation neo theo dòng vào `system_survey.md` | **0** (trước đợt: 111, sai 100% ở mẫu kiểm được) |
+| Mã `Fx-nn` dùng vs định nghĩa | 111 định nghĩa, **0 treo**, **0 mã định nghĩa mà không ai dùng** |
+| Mã `Fx-nn` hết hiệu lực mô tả như đang sống | **0** |
+| `US-Axx-nn` treo | **0** |
+| Mã `DEC-` trích mà không có trong registry | **0** (43 id) |
+| Citation `file:line` trỏ file không tồn tại / vượt số dòng | **0** |
+| Câu hỏi mở còn treo | **0** |
+| Section màn khai trong file RD vs mục thật trong survey | **0 lệch** (32/32 slug) |
+| Pictograph | **0** |
+
+Trục cần thêm cho đợt sau: **kiểm chéo giữa `feature_catalog.md` và `feature_catalog.html`** (hiện khớp
+111-111) và **kiểm citation `09-layoutBase/*.dc.html:<dòng>`** — đợt này chỉ kiểm phạm vi dòng, chưa kiểm
+nội dung dòng đó có đúng thứ đang được trích hay không.
 
 ---
 

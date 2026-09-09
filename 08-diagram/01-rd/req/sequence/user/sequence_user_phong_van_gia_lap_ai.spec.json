@@ -1,0 +1,32 @@
+{
+  "_": "Luong 'phong van gia lap 1:1 ba giai doan tu bai nop Accepted' cua actor A1, hien thuc hoa usecase_user_phong_van_gia_lap_ai (F5-09 toi F5-16). Nguon: US-A1-07 (01-rd/req/user_stories/a1_student.md) + 01-rd/screens/users/mock_interview.md muc 2-3 (ba giai doan Giai trinh/Phan bien/Mo rong).",
+  "_ceiling": "Gop buoc cap nhat ChatMemory rieng vao message 'chuyen giai doan' va bo bot mot lan lap SSE de vua dung 14 message -- KHONG ve rieng giai doan 3 (tinh huong du lieu tang dot bien) thanh mot vong hoi-dap rieng ma gop chung vao message chat van giai doan 2, de giu tran o muc thap nhat co the ma van du 3 giai doan + rubric F5-18.",
+  "_khong_ve": "KHONG ve nhanh loi AI (F5-22, khoi aiError cua prototype) va KHONG ve nut Huy phien (abort) -- day la nhanh phu/xu ly loi, khong phai nghiep vu chinh cua so do tong quan.",
+  "_granularity": "03-dd/api/ hien rong nen cac tang trong may chu gom thanh 'May chu AlgoPrep'; Nha cung cap LLM tach rieng vi la ranh gioi tien trinh that. Redis (ChatMemory, F5-13) KHONG ve rieng lam participant nua sau khi gom bot de vua trang A4 -- gop vao message 'khoi tao ChatMemory' cua May chu AlgoPrep, van neu dung yeu cau F5-13 bang loi.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự - Phỏng vấn giả lập AI ba giai đoạn (Sinh viên)",
+  "mode": "color",
+  "sequence": {
+    "participants": [
+      { "name": "Sinh viên", "role": "actor" },
+      { "name": "Màn Phỏng vấn giả lập", "role": "boundary" },
+      { "name": "Máy chủ AlgoPrep", "role": "service" },
+      { "name": "Nhà cung cấp LLM", "role": "external" }
+    ],
+    "messages": [
+      { "from": "Sinh viên", "to": "Màn Phỏng vấn giả lập", "text": "Chọn bài nộp Accepted, bấm Bắt đầu phiên" },
+      { "from": "Màn Phỏng vấn giả lập", "to": "Máy chủ AlgoPrep", "text": "Mở phiên phỏng vấn (submissionId), khởi tạo ChatMemory" },
+      { "from": "Máy chủ AlgoPrep", "to": "Nhà cung cấp LLM", "text": "Câu hỏi giai đoạn Giải trình thuật toán" },
+      { "from": "Nhà cung cấp LLM", "to": "Máy chủ AlgoPrep", "text": "Phản hồi sinh dần", "kind": "async" },
+      { "from": "Máy chủ AlgoPrep", "to": "Màn Phỏng vấn giả lập", "text": "Stream câu hỏi qua SSE", "kind": "async" },
+      { "from": "Sinh viên", "to": "Màn Phỏng vấn giả lập", "text": "Trình bày ý tưởng, trả lời" },
+      { "from": "Màn Phỏng vấn giả lập", "to": "Máy chủ AlgoPrep", "text": "Gửi trả lời, chuyển giai đoạn Phản biện" },
+      { "from": "Máy chủ AlgoPrep", "to": "Nhà cung cấp LLM", "text": "Chất vấn điểm chưa tối ưu, trường hợp biên, dữ liệu tăng đột biến" },
+      { "from": "Nhà cung cấp LLM", "to": "Máy chủ AlgoPrep", "text": "Phản hồi sinh dần", "kind": "async" },
+      { "from": "Sinh viên", "to": "Màn Phỏng vấn giả lập", "text": "Bấm Kết phiên và nhận xét" },
+      { "from": "Máy chủ AlgoPrep", "to": "Nhà cung cấp LLM", "text": "Yêu cầu tổng hợp rubric 4 tiêu chí" },
+      { "from": "Nhà cung cấp LLM", "to": "Máy chủ AlgoPrep", "text": "Rubric kèm nhận xét từng tiêu chí", "kind": "return" },
+      { "from": "Máy chủ AlgoPrep", "to": "Màn Phỏng vấn giả lập", "text": "Lưu phiên, trả rubric kèm cảnh báo phản hồi học tập, không phải điểm chính thức", "kind": "return" }
+    ]
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "_": "Luong 'giam sat hang doi va tinh trang cum judge engine' cua actor A3, hien thuc hoa usecase_admin_giam_sat_judge_engine (F4-10 + F4-07). Nguon buoc tuong tac: prototype 09-layoutBase/Admin - Hang doi cham.dc.html -- cac chi so that trong markup la 'Job dang cho', 'Job loi 24 gio', 'Thong luong', 'Trang thai go-judge', 'Luot nop', 'Cho'. RabbitMQ va go-judge lay tu stack chot o CLAUDE.md (RabbitMQ hang doi, go-judge la engine mac dinh theo DEC-2026-0823-go-judge-default-engine).",
+  "_khong_ghi_log": "So do nay KHONG co buoc ghi Nhat ky he thong, va do la co y: F1-14 chi ghi hanh dong quan tri CUA NGUOI, khong gom su kien ha tang -- su kien ha tang xem o chinh man nay (F4-10). Chot 2026-08-24, system_survey.md:256.",
+  "_khong_ve": "KHONG ve nut 'Cham lai' du prototype con no trong nav: re-judge da bi loai khoi pham vi theo DEC-2026-0828-remove-rejudge-scope.",
+  "_granularity": "03-dd/api/ hien rong nen cac tang trong may chu gom thanh 'May chu AlgoPrep'; RabbitMQ, go-judge, PostgreSQL tach rieng vi la ranh gioi tien trinh that. Viec may chu doc do dai hang doi truc tiep tu RabbitMQ (thay vi tu mot bang thong ke trong PostgreSQL) la [SoT: Suy luan] -- prototype chi cho thay con so tren giao dien, khong cho thay nguon.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự - Giám sát hàng đợi và cụm judge engine (Quản trị viên)",
+  "mode": "color",
+  "sequence": {
+    "participants": [
+      { "name": "Quản trị viên", "role": "actor" },
+      { "name": "Màn Hàng đợi chấm", "role": "boundary" },
+      { "name": "Máy chủ AlgoPrep", "role": "service" },
+      { "name": "RabbitMQ", "role": "external" },
+      { "name": "go-judge", "role": "external" },
+      { "name": "PostgreSQL", "role": "datastore" }
+    ],
+    "messages": [
+      { "from": "Quản trị viên", "to": "Màn Hàng đợi chấm", "text": "Mở màn giám sát" },
+      { "from": "Màn Hàng đợi chấm", "to": "Máy chủ AlgoPrep", "text": "Yêu cầu số liệu vận hành" },
+      { "from": "Máy chủ AlgoPrep", "to": "RabbitMQ", "text": "Đọc số job đang chờ" },
+      { "from": "RabbitMQ", "to": "Máy chủ AlgoPrep", "text": "Độ dài hàng đợi", "kind": "return" },
+      { "from": "Máy chủ AlgoPrep", "to": "go-judge", "text": "Kiểm tra tình trạng cụm" },
+      { "from": "go-judge", "to": "Máy chủ AlgoPrep", "text": "Trạng thái worker và thông lượng", "kind": "return" },
+      { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Đọc lượt nộp treo quá ngưỡng và job lỗi 24 giờ" },
+      { "from": "Máy chủ AlgoPrep", "to": "Màn Hàng đợi chấm", "text": "Số liệu hàng đợi, thông lượng, trạng thái go-judge", "kind": "return" },
+      { "from": "Màn Hàng đợi chấm", "to": "Quản trị viên", "text": "Hiện bảng giám sát", "kind": "return" }
+    ]
+  }
+}

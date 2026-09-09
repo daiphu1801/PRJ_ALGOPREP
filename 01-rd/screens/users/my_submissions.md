@@ -1,7 +1,7 @@
 # RD — Màn `my_submissions` (Bài đã nộp)
 
-> Slug: `my_submissions` — khớp `01-rd/overview/system_survey.md:484` [SoT: 01-rd/overview/system_survey.md:484].
-> Bounded Context chính: `judge-orchestration` (F4) [SoT: 01-rd/overview/system_survey.md:484]. Actor: A1.
+> Slug: `my_submissions` — khớp `01-rd/overview/system_survey.md` mục 7.1 dòng `my_submissions` [SoT: 01-rd/overview/system_survey.md — mục 7.1 dòng `my_submissions`].
+> Bounded Context chính: `judge-orchestration` (F4) [SoT: 01-rd/overview/system_survey.md — mục 7.1 dòng `my_submissions`]. Actor: A1.
 >
 > Đối chiếu prototype: `09-layoutBase/Bài đã nộp.dc.html`. File này mô tả **hành vi và UX ở mức yêu cầu** —
 > không lặp lại đặc tả chức năng đã có ở `01-rd/req/identity.md` và `01-rd/req/judge-orchestration.md`, chỉ trỏ tới và bổ sung phần đặc thù của màn.
@@ -61,7 +61,7 @@ bài, mở kết quả chi tiết hoặc phân tích bài giải (nếu `Accepte
 
 | # | Câu hỏi | Quyết định | Ghi chú |
 | :-: | :--- | :--- | :--- |
-| Q1 | Không có mã `Fx-nn` nào đặc tả "xem lại lịch sử nộp bài, lọc theo verdict/ngôn ngữ, tìm kiếm" — nội dung chính của màn này. | **Bổ sung F1-18 — Xem lịch sử nộp bài của chính mình**, lọc theo verdict/ngôn ngữ, tìm theo tên/mã bài. Đã ghi vào `01-rd/req/identity.md` (mục F1, sau khối F1-17) và thêm GWT vào `01-rd/req/user_stories/a1_student.md` (`US-A1-05`); đã đồng bộ `system_survey.md:484`. | Đã chốt, không còn mở. |
+| Q1 | Không có mã `Fx-nn` nào đặc tả "xem lại lịch sử nộp bài, lọc theo verdict/ngôn ngữ, tìm kiếm" — nội dung chính của màn này. | **Bổ sung F1-18 — Xem lịch sử nộp bài của chính mình**, lọc theo verdict/ngôn ngữ, tìm theo tên/mã bài. Đã ghi vào `01-rd/req/identity.md` (mục F1, sau khối F1-17) và thêm GWT vào `01-rd/req/user_stories/a1_student.md` (`US-A1-05`); đã đồng bộ `01-rd/overview/system_survey.md` — mục 7.1 dòng `my_submissions`. | Đã chốt, không còn mở. |
 | Q2 | Prototype không có phân trang cho bảng lịch sử — hành vi thật khi có hàng trăm lượt nộp là gì? | **Chốt: áp cùng kiểu phân trang cuối bảng như `problem_list`** (`01-rd/screens/users/problem_list.md` mục 3.5) để nhất quán UX giữa hai bảng danh sách. | Số dòng mỗi trang, style phân trang cụ thể **[Đợi nextjs]**. |
 
 ## 6. Ngoài phạm vi file này
@@ -77,7 +77,7 @@ bài, mở kết quả chi tiết hoặc phân tích bài giải (nếu `Accepte
 
 - `01-rd/req/identity.md` — F1-07, F1-18. `01-rd/req/judge-orchestration.md` — F4-01→F4-08.
 - `01-rd/req/user_stories/a1_student.md` — `US-A1-04`, `US-A1-05`.
-- `01-rd/overview/system_survey.md:484` — dòng `my_submissions` trong bảng màn mục 7.
+- `01-rd/overview/system_survey.md` — mục 7.1 dòng `my_submissions`.
 - `09-layoutBase/Bài đã nộp.dc.html` — prototype.
 - `01-rd/screens/users/problem_list.md` — mẫu phân trang tham khảo cho Câu hỏi mở Q2.
 - `06-plan/reports/260825-1500-report-ai1-phase2-conflicts.md` — báo cáo xung đột + quyết định đã chốt.

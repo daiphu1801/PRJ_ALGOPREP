@@ -1,0 +1,29 @@
+{
+  "_": "Nua dau cua oval 'Xem tien do, ho so va cai dat ca nhan' o ban tong quan, actor A1 Sinh vien. Nguon: 01-rd/screens/users/my_progress.md muc 2 (F1-06, F1-07, F1-08) va 01-rd/screens/users/my_submissions.md muc 2 (F1-07, F1-18). Tach lam 2 file (file nay + usecase_user_ho_so_va_cai_dat) vi gop ca 4 man my_progress/my_submissions/profile/settings vao mot so do se len 11 oval, vuot tran 10. 'Diem tot nhat moi bai' la amendment 2026-08-31 cua F1-06 (max diem ty le F4-13 qua cac lan nop, DEC-2026-0831-partial-score-testcase-ratio).",
+  "kind": "usecase",
+  "title": "Sơ đồ Use Case chi tiết - Tiến độ và lịch sử cá nhân (Sinh viên)",
+  "mode": "color",
+  "usecase": {
+    "system": "Chức năng Tiến độ và lịch sử cá nhân",
+    "groups": [
+      {
+        "name": "Tiến độ cá nhân (F1-06, F1-07, F1-08)",
+        "actors": ["Sinh viên"],
+        "usecases": [
+          "Xem bài đã giải theo chủ đề và điểm tốt nhất mỗi bài",
+          "Xem tỉ lệ chấp thuận",
+          "Xem lịch sử phỏng vấn và mở lại rubric cũ"
+        ]
+      },
+      {
+        "name": "Lịch sử nộp bài (F1-18)",
+        "actors": ["Sinh viên"],
+        "usecases": [
+          "Xem danh sách bài nộp của mình",
+          "Lọc lịch sử theo verdict và ngôn ngữ",
+          "Tìm bài nộp theo tên hoặc mã bài"
+        ]
+      }
+    ]
+  }
+}

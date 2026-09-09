@@ -1,0 +1,34 @@
+{
+  "_": "Chi tiet oval 'Phong van gia lap voi AI' o ban tong quan, actor A1 Sinh vien. Nguon: 01-rd/screens/users/mock_interview.md muc 2 (F5-09 tới F5-16, F5-24, F5-28) va muc 3.1-3.3 (ba loi vao o tab 'Bat dau tu', nut Huy phien o trang thai running, rubric 4 tieu chi o trang thai result). Luu y F5-28: tham so phien tu luyen CHI ap cho hai loi vao tu luyen (kho cau hoi / tu chon chu de), khong ap cho loi vao tu bai nop Accepted -- nut dieu khien nam o man settings nhung ve o day vi thuoc nghiep vu phong van. 'Huy phien' khong co ma Fx-nn rieng, la suy luan tu prototype [SoT: Suy luan]. Bo bot: F5-13 (ChatMemory Redis), F5-14 (SSE), F5-17, F5-18, F5-19, F5-22, F5-25 la rang buoc/ky thuat he thong, khong ve thanh oval.",
+  "kind": "usecase",
+  "title": "Sơ đồ Use Case chi tiết - Phỏng vấn giả lập với AI (Sinh viên)",
+  "mode": "color",
+  "usecase": {
+    "system": "Chức năng Phỏng vấn giả lập với AI",
+    "groups": [
+      {
+        "name": "Mở phiên phỏng vấn (F5-09, F5-24, F5-28)",
+        "actors": ["Sinh viên"],
+        "usecases": [
+          "Mở phiên từ bài nộp đã Accepted",
+          "Mở phiên từ kho câu hỏi phỏng vấn",
+          "Mở phiên theo chủ đề tự chọn",
+          "Chỉnh tham số phiên tự luyện"
+        ]
+      },
+      {
+        "name": "Tiến hành và kết phiên (F5-10 tới F5-16)",
+        "actors": ["Sinh viên"],
+        "usecases": [
+          "Trả lời qua ba giai đoạn Giải trình, Phản biện, Mở rộng",
+          "Huỷ phiên đang diễn ra",
+          "Nhận rubric bốn tiêu chí khi kết phiên",
+          "Mở lại rubric của phiên cũ"
+        ]
+      }
+    ],
+    "externals": [
+      { "name": "Nhà cung cấp LLM", "from": ["Trả lời qua ba giai đoạn Giải trình, Phản biện, Mở rộng"] }
+    ]
+  }
+}

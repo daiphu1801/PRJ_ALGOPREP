@@ -25,7 +25,7 @@
 ## 1. Mục đích màn hình
 
 Cho giáo viên (A2) quản lý danh sách bài toán đã gán cho lớp mình phụ trách, gán thêm bài từ ngân hàng bài
-toán chung [SoT: 01-rd/overview/system_survey.md:547 (trước tách); 01-rd/req/problem-bank.md — F2-12]. Mọi phạm vi hiển
+toán chung [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_assignments` (trước tách); 01-rd/req/problem-bank.md — F2-12]. Mọi phạm vi hiển
 thị và thao tác đều giới hạn trong lớp giáo viên đó phụ trách, gác bởi Function `CLASS_MANAGEMENT` trong ma
 trận phân quyền [SoT: 01-rd/req/identity.md — F1-12; 01-rd/req/ai-review.md — F5-27]. (Yêu cầu chấm lại theo phạm vi lớp đã loại khỏi phạm
 vi 2026-08-28 — `DEC-2026-0828-remove-rejudge-scope`.)
@@ -119,7 +119,7 @@ hành vi **riêng của màn hình**, phát hiện khi đối chiếu prototype:
 
 ## 7. Tham chiếu
 
-- `01-rd/overview/system_survey.md:547` — dòng `class_management` (trước tách) trong bảng màn mục 7.2; cần
+- `01-rd/overview/system_survey.md` — mục 7.2 dòng `class_assignments`.
   cập nhật thành hai dòng theo `DEC-2026-0828-split-class-management-assignments`.
 - `01-rd/req/identity.md` — F1-10 tới F1-12. `01-rd/req/problem-bank.md` — F2-12. `01-rd/req/ai-review.md` — F5-27.
 - `01-rd/req/user_stories/a2_instructor.md` — `US-A2-03`.

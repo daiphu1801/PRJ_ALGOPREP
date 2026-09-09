@@ -18,8 +18,8 @@
 > 6.2.b đã làm cho khu Giảng viên — phát hiện `instructor_overview` và `instructor_grading` là slug **phát
 > sinh khi dựng prototype**, không nằm trong danh sách hạt giống, rồi đồng bộ lại bảng slug và tổng số màn
 > [SoT: 06-plan/PROTOTYPE_DEBT.md:534-545]. Đã đồng bộ trong cùng đợt: dòng `admin_overview` thêm vào bảng
-> [SoT: 01-rd/overview/system_survey.md:547], khu quản trị từ 8 lên 11 slug, tổng số màn dự kiến 27 → 30
-> [SoT: 01-rd/overview/system_survey.md:559-565].
+> [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng khối "Cập nhật 2026-08-25" (quản trị 8 → 11 slug)], khu quản trị từ 8 lên 11 slug, tổng số màn dự kiến 27 → 30
+> [SoT: 01-rd/overview/system_survey.md — mục 7, khối tổng cuối mục ("Tổng: 31 màn sống")].
 >
 > File này mô tả hành vi và UX ở mức yêu cầu — không lặp lại đặc tả chức năng đã có ở `01-rd/req/identity.md`,
 > chỉ trỏ tới và bổ sung phần đặc thù của màn.
@@ -53,7 +53,7 @@ có màn thật; việc sửa `HOME_PATH_BY_ROLE` là việc của code, không 
 | Cấu hình prompt/rubric AI (đích nav "Cấu hình AI") | F5-23 | `01-rd/req/ai-review.md` — F5-23 |
 | Ngân sách và token AI (đích nav "Token AI") | F5-21, F5-25 | `01-rd/req/ai-review.md` — F5-21, F5-25 |
 | Quản lý ngân hàng câu hỏi phỏng vấn (đích nav "Câu hỏi phỏng vấn") | F6-12 | `01-rd/req/identity.md` — F1-12 (danh sách Function `INTERVIEW_BANK_MANAGEMENT`), `01-rd/req/interview-bank.md` — F6-12. F6-11 đã loại khỏi phạm vi 2026-08-28, `DEC-2026-0828-remove-per-class-interview-set` |
-| Ba ngôn ngữ nộp bài — trục dữ liệu của biểu đồ "Lượt nộp theo ngôn ngữ" | (giới hạn phạm vi, không phải mã `Fx-nn`) | `01-rd/overview/system_survey.md:570` |
+| Ba ngôn ngữ nộp bài — trục dữ liệu của biểu đồ "Lượt nộp theo ngôn ngữ" | (giới hạn phạm vi, không phải mã `Fx-nn`) | `01-rd/overview/system_survey.md` — mục 8, bảng giới hạn phạm vi, dòng "Ngôn ngữ nộp bài" |
 | Given-When-Then của các màn con | US-A3-01 tới US-A3-05 | `01-rd/req/user_stories/a3_admin.md` |
 
 **Ghi chú traceability — đây là phát hiện chính của file này:** không có mã `Fx-nn` nào và không có
@@ -92,7 +92,7 @@ i18n; Q8 thêm 3 trạng thái theo từng khối.
    delta — xem Câu hỏi mở Q2.
 4. **"Lượt nộp theo ngôn ngữ"** (HTML dòng 146-160, dữ liệu dòng 431-435): legend Python · C++ · Java, 20 cột
    bar [SoT: 09-layoutBase/Admin - Tổng quan.dc.html:431-435]. Ba ngôn ngữ khớp giới hạn phạm vi
-   [SoT: 01-rd/overview/system_survey.md:570], nhưng **trục hoành 20 cột không có nhãn** — không rõ 20 cột là
+   [SoT: 01-rd/overview/system_survey.md — mục 8, bảng giới hạn phạm vi, dòng "Ngôn ngữ nộp bài"], nhưng **trục hoành 20 cột không có nhãn** — không rõ 20 cột là
    20 ngày, 20 tuần, hay 20 nhóm nào [SoT: 09-layoutBase/Admin - Tổng quan.dc.html:155-159 — HTML không render
    nhãn trục]. **Mã: —** cho bản thân số liệu thống kê; xem Q2.
 5. **"Kết quả chấm"** (HTML dòng 162-181, dữ liệu dòng 437-453): đồng hồ nửa vòng 40 vạch + legend 3 mức —
@@ -129,11 +129,14 @@ i18n; Q8 thêm 3 trạng thái theo từng khối.
     `algoprep-admin-theme` [SoT: 09-layoutBase/Admin - Tổng quan.dc.html:328], mặc định `light` đúng
     `DEC-2026-0824-dark-light-theme`. **Không có scaffold
     `data-ui-lang`/`data-lang`** trong toàn bộ file (xác minh: `data-ui-lang` không xuất hiện lần nào) —
-    `DEC-2026-0824-i18n-vi-en` chỉ nêu tên 4 màn Admin còn thiếu scaffold (`Chấm lại`, `Cấu hình AI`, `Hàng
-    đợi chấm`, `Ngôn ngữ và giới hạn`), **không có `Tổng quan`**
-    [SoT: `DEC-2026-0824-i18n-vi-en`] — xem Câu hỏi mở Q7. **Cập nhật 2026-08-28:** `Chấm
-    lại` (`admin_rejudge`) đã loại khỏi phạm vi (`DEC-2026-0828-remove-rejudge-scope`), amendment ghi ở
-    cùng decision entry — còn 3 màn thật sự cần scaffold.
+    `DEC-2026-0824-i18n-vi-en` bản gốc chỉ nêu tên 4 màn Admin còn thiếu scaffold (`Chấm lại`, `Cấu hình
+    AI`, `Hàng đợi chấm`, `Ngôn ngữ và giới hạn`), **không có `Tổng quan`** — đó chính là câu hỏi Q7 của
+    file này. **Cập nhật 2026-08-28:** `Chấm lại` (`admin_rejudge`) đã loại khỏi phạm vi
+    (`DEC-2026-0828-remove-rejudge-scope`). **Cập nhật 2026-09-09 — đây mới là trạng thái hiện hành:** Q7 đã
+    đóng 2026-08-31 bằng cách **bỏ hẳn danh sách tên màn**, mở rộng phạm vi debt thành **mọi màn khu Admin và
+    khu Giảng viên** (`DEC-2026-0831-i18n-scope-expansion`). Nên `Tổng quan` **có** nằm trong phạm vi, và
+    con số "còn 3 màn cần scaffold" mà đoạn này từng ghi không còn là cách đếm đúng — không đếm theo tên màn
+    nữa. Xem `01-rd/overview/system_survey.md` mục 8 (khối "Đã chốt 2026-08-24", gạch đầu dòng i18n).
 13. **Không có trạng thái rỗng / lỗi / đang tải**: toàn bộ dữ liệu là hằng số tĩnh trả về ngay trong
     `renderVals()` [SoT: 09-layoutBase/Admin - Tổng quan.dc.html:355-504], không có nhánh nào cho "chưa có
     dữ liệu", "một nguồn số liệu không phản hồi", hay "đang tải" — xem Câu hỏi mở Q8.
@@ -207,11 +210,11 @@ thành "Trạng thái" cho khớp dữ liệu thật. Nội dung từng ô khôn
 
 - `01-rd/screens/shared/auth.md:90` — Q3 đã chốt (`ADMIN` → `admin_overview`) và cảnh báo Q3b (tham chiếu
   treo mà file này đóng lại).
-- `01-rd/overview/system_survey.md:547` — mục 7.3, dòng `admin_overview` (bổ sung 2026-08-25).
-- `01-rd/overview/system_survey.md:559-565` — tổng 31 màn dự kiến sau đợt đối chiếu khu Admin, tách
+- `01-rd/overview/system_survey.md` — mục 7.3 dòng khối "Cập nhật 2026-08-25" (quản trị 8 → 11 slug).
+- `01-rd/overview/system_survey.md` — mục 7, khối tổng cuối mục ("Tổng: 31 màn sống").
   `class_management`/`class_assignments`, thêm `class_student_detail`, và loại bỏ `admin_rejudge`
   (2026-08-28).
-- `01-rd/overview/system_survey.md:570` — giới hạn đúng ba ngôn ngữ nộp bài.
+- `01-rd/overview/system_survey.md` — mục 8, bảng giới hạn phạm vi, dòng "Ngôn ngữ nộp bài".
 - `01-rd/req/identity.md` — F1-10 tới F1-14, F1-18, F1-20.
 - `01-rd/req/problem-bank.md` — F2-02 (phân loại độ khó), F2-11 (tìm kiếm bài toán cho A1), F2-14 (AI sinh testcase, cơ chế nháp chờ Admin xác nhận) — mốc so sánh cho Q5.
 - `01-rd/req/judge-orchestration.md` — F4-10, F4-11 (F4-09a→e đã loại khỏi phạm vi, `DEC-2026-0828-remove-rejudge-scope`).

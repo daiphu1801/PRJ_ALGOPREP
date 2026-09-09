@@ -1,7 +1,7 @@
 # RD — Màn `admin_language_config` (Ngôn ngữ và giới hạn chấm)
 
-> Slug: `admin_language_config` — khớp `01-rd/overview/system_survey.md` mục 7.3 [SoT: 01-rd/overview/system_survey.md:552].
-> Bounded Context: `judge-orchestration` + `problem-bank` [SoT: 01-rd/overview/system_survey.md:552]. Actor: A3.
+> Slug: `admin_language_config` — khớp `01-rd/overview/system_survey.md` mục 7.3 [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_language_config`].
+> Bounded Context: `judge-orchestration` + `problem-bank` [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_language_config`]. Actor: A3.
 >
 > Đối chiếu prototype: `09-layoutBase/Admin - Ngôn ngữ và giới hạn.dc.html`. File này mô tả **hành vi và UX
 > ở mức yêu cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/problem-bank.md` (F2-10) và

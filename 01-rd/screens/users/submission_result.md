@@ -1,13 +1,13 @@
 # RD — Màn `submission_result` (Kết quả nộp bài)
 
 > Slug: `submission_result` — khớp `01-rd/overview/system_survey.md` mục 7.1 dòng `submission_result`
-> [SoT: 01-rd/overview/system_survey.md:476]. Bounded Context: `judge-orchestration` (F4), có đọc thêm từ
+> [SoT: 01-rd/overview/system_survey.md — mục 7.1 dòng `submission_result`]. Bounded Context: `judge-orchestration` (F4), có đọc thêm từ
 > `problem-bank` (siêu dữ liệu bài toán, độ khó) [SoT: 01-rd/overview/system_survey.md mục 7.1 — cột "Bounded Context liên quan", dòng
 > `submission_result`]. Actor: A1 (chính — chủ sở hữu bài nộp).
 >
 > `system_survey.md` chốt rõ **`problem_detail` và `submission_result` là hai màn riêng, không gộp**: kết
 > quả một bài nộp cần URL riêng để mở lại được từ trang tiến độ/lịch sử [SoT:
-> 01-rd/overview/system_survey.md:498-499].
+> 01-rd/overview/system_survey.md — mục 7.1, ghi chú "`problem_detail` và `submission_result` là hai màn riêng, đừng gộp"].
 >
 > Đối chiếu prototype: `09-layoutBase/Kết quả nộp bài.dc.html`. File này mô tả **hành vi và UX ở mức yêu
 > cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/judge-orchestration.md` (mục F4) và
@@ -18,7 +18,7 @@
 Trang xem lại kết quả của **một bài nộp cụ thể** sau khi đã có `submissionId`: verdict tổng (Accepted/Wrong
 Answer/Time Limit Exceeded...), thống kê chạy (thời gian, bộ nhớ), chi tiết theo từng testcase, mã nguồn đã
 nộp, và lối vào hai luồng AI sau khi `Accepted` (Phân tích bài giải, Phỏng vấn giả lập)
-[SoT: 01-rd/req/user_stories/a1_student.md — US-A1-04; 01-rd/overview/system_survey.md:476].
+[SoT: 01-rd/req/user_stories/a1_student.md — US-A1-04; 01-rd/overview/system_survey.md — mục 7.1 dòng `submission_result`].
 
 ## 2. Nguồn yêu cầu (không lặp lại — chỉ trỏ)
 
@@ -80,7 +80,7 @@ nộp, và lối vào hai luồng AI sau khi `Accepted` (Phân tích bài giải
 7. **Khối "Lần nộp trước của bài này"** — tối đa 3 lượt nộp gần nhất **của cùng bài toán này**, kèm liên kết
    "Xem toàn bộ lịch sử nộp" dẫn sang `my_submissions` [SoT: 09-layoutBase/Kết quả nộp bài.dc.html:215-229].
    Đây là một lát cắt thu hẹp của lịch sử nộp bài đã có mã F1-07, không cần mã riêng
-   [SoT: 01-rd/overview/system_survey.md:482 — dòng `my_submissions`, F1-07].
+   [SoT: 01-rd/overview/system_survey.md — mục 7.1 dòng `my_submissions` — dòng `my_submissions`, F1-07].
 8. **Nút "Sửa lại và nộp tiếp"** — quay về Workspace (`problem_detail`) để sửa mã và nộp lại
    [SoT: 09-layoutBase/Kết quả nộp bài.dc.html:231].
 9. **Không có trạng thái "đang chấm" (`PENDING`/`RUNNING`)** — toàn bộ state trong prototype là tĩnh, tính từ
@@ -98,7 +98,7 @@ Hai chế độ hiển thị không đổi hành vi nghiệp vụ, chỉ đổi 
   trang tải xong, **Thì** tôi thấy ngay đầy đủ banner verdict, thống kê chạy, bảng testcase và code đã nộp mà
   không cần chờ một sự kiện WebSocket nào — khác với lúc bài nộp còn đang chấm dở (US-A1-04 mô tả trường hợp
   đó) [SoT: Suy luận — hệ quả tất yếu của việc `submission_result` là trang xem lại có URL riêng
-  (01-rd/overview/system_survey.md:498-499), chưa có Given-When-Then riêng nào xác nhận].
+  (01-rd/overview/system_survey.md — mục 7.1, ghi chú "`problem_detail` và `submission_result` là hai màn riêng, đừng gộp"), chưa có Given-When-Then riêng nào xác nhận].
 - **Cho** testcase gây sai là một testcase ẩn (`Hidden`, F2-06), **Khi** tôi xem khối "Testcase đầu tiên bị
   sai" hoặc bảng "Chi tiết testcase", **Thì** tôi chỉ thấy trạng thái (`WA`/`TLE`) và chỉ số thứ tự của
   testcase đó, không thấy Input, không thấy Expected, không thấy Output của tôi — **đã khớp prototype sau khi
@@ -136,7 +136,7 @@ Hai chế độ hiển thị không đổi hành vi nghiệp vụ, chỉ đổi 
 
 - `01-rd/req/problem-bank.md` — F2-08. `01-rd/req/harness.md` — F3-11, F3-12. `01-rd/req/judge-orchestration.md` — F4-01, F4-03, F4-08, F4-12, F4-13. _(Sửa 2026-09-05: bỏ `F4-04` khỏi danh sách — hết hiệu lực theo `DEC-2026-0831-partial-score-testcase-ratio`.)_
 - `01-rd/req/user_stories/a1_student.md` — `US-A1-04`.
-- `01-rd/overview/system_survey.md:476, 498-499` — dòng `submission_result` trong bảng màn mục 7.1.
+- `01-rd/overview/system_survey.md` — mục 7.1 dòng `submission_result`, cùng ghi chú "`problem_detail` và `submission_result` là hai màn riêng, đừng gộp".
 - `01-rd/overview/system_survey.md` mục 7.1 — Bounded Context chạm bởi `submission_result`.
 - `09-layoutBase/Kết quả nộp bài.dc.html` — prototype.
 - `06-plan/nexa-plan/260824-2043-bd-screens-common-first.md` — kế hoạch Phase 1 sinh ra file này.

@@ -1,0 +1,41 @@
+{
+  "_": "Luong 'dang ky, dang nhap, tu lam moi Access Token' cua actor A1, hien thuc hoa usecase_user_ho_so_va_cai_dat phan xac thuc (F1-01, F1-02, F1-03, F1-05). Nguon: US-A1-01 (01-rd/req/user_stories/a1_student.md) + 01-rd/screens/shared/auth.md muc 2-3 (form dang ky/dang nhap, overlay 4 buoc sau khi thanh cong).",
+  "_alt": "Khoi alt 'Mat khau dung?' la nhanh CHINH cua man dang nhap (thanh cong/tu choi), khong phai xu ly loi phu -- dung tinh than 'nhanh la nghiep vu' cua spec-schema.md muc 3.",
+  "_khong_ve": "KHONG ve rieng luong OAuth (F1-15) va quen mat khau (F1-17) trong cung so do nay de giu duoi 1 alt/14 message -- hai luong do la nhanh phu, xem chi tiet Given-When-Then rieng trong US-A1-01, khong phai pham vi so do tong quan nay.",
+  "_granularity": "03-dd/api/ hien rong nen cac tang trong may chu gom thanh 'May chu AlgoPrep' -- xem ghi chu day du o sequence_admin_doi_ma_tran_phan_quyen.spec.json.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự - Đăng ký, đăng nhập và tự làm mới token (Sinh viên)",
+  "mode": "color",
+  "sequence": {
+    "participants": [
+      { "name": "Sinh viên", "role": "actor" },
+      { "name": "Màn Đăng nhập", "role": "boundary" },
+      { "name": "Máy chủ AlgoPrep", "role": "service" },
+      { "name": "PostgreSQL", "role": "datastore" }
+    ],
+    "messages": [
+      { "from": "Sinh viên", "to": "Màn Đăng nhập", "text": "Điền form đăng ký (email, mật khẩu)" },
+      { "from": "Màn Đăng nhập", "to": "Máy chủ AlgoPrep", "text": "POST /auth/register" },
+      { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Tạo tài khoản, vai trò mặc định STUDENT" },
+      { "from": "Máy chủ AlgoPrep", "to": "Màn Đăng nhập", "text": "Access Token + Set-Cookie Refresh Token", "kind": "return" },
+      { "from": "Màn Đăng nhập", "to": "Sinh viên", "text": "Chuyển sang trang Tiến độ cá nhân", "kind": "return" },
+      { "from": "Sinh viên", "to": "Màn Đăng nhập", "text": "Lần sau: nhập email/mật khẩu, bấm Đăng nhập" },
+      { "from": "Màn Đăng nhập", "to": "Máy chủ AlgoPrep", "text": "POST /auth/login" },
+      {
+        "alt": {
+          "label": "Mật khẩu đúng?",
+          "then": [
+            { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Ghi nhận lần đăng nhập" },
+            { "from": "Máy chủ AlgoPrep", "to": "Màn Đăng nhập", "text": "Access Token + Set-Cookie Refresh Token", "kind": "return" }
+          ],
+          "else": [
+            { "from": "Máy chủ AlgoPrep", "to": "Màn Đăng nhập", "text": "401 Unauthorized", "kind": "return" }
+          ]
+        }
+      },
+      { "from": "Màn Đăng nhập", "to": "Máy chủ AlgoPrep", "text": "Gọi API nghiệp vụ, nhận 401 (Access Token hết hạn)" },
+      { "from": "Màn Đăng nhập", "to": "Máy chủ AlgoPrep", "text": "Tự làm mới bằng Refresh Token (cookie HTTP-Only)" },
+      { "from": "Máy chủ AlgoPrep", "to": "Màn Đăng nhập", "text": "Access Token mới, không phải đăng nhập lại", "kind": "return" }
+    ]
+  }
+}

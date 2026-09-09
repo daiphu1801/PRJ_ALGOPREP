@@ -1,0 +1,22 @@
+{
+  "_": "Chi tiet oval DUNG CHUNG 'Quan ly ngan hang cau hoi phong van' o ban tong quan -- man 01-rd/screens/shared/interview_question_management.md + man soan rieng interview_question_authoring.md. Chuyen tu usecase_admin_quan_ly_ngan_hang_cau_hoi 2026-09-07 va them actor Giang vien: F6-13 ghi ro actor A2 (pham vi lop phu trach) va A3 (toan bo kho), man mount o ca hai khu (DEC-2026-0825-shared-content-authoring-screens, DEC-2026-0830-interview-bank-crud). Nguon F6-13: CRUD noi dung dung chung voi 3 nhom truong -- noi dung+phan loai (F6-01), danh sach cau hoi 'dao sau', va rubric co trong so (chinh la tieu chi chuan ma F6-08 doi chieu, la rubric thu BA trong he thong, doc lap F5-15/F5-23); xoa mem (an khoi man hoc vien, khong cascade vao phien phong van cu); moi thao tac ghi Nhat ky he thong F1-14; taxonomy 5 chu de moi thay danh sach 4 chu de cu. KHONG ve F6-11 (bo cau hoi rieng theo lop) -- da het hieu luc theo DEC-2026-0828-remove-per-class-interview-set. Nhap CSV cau hoi ngoai pham vi ban dau, khong cap ma.",
+  "kind": "usecase",
+  "title": "Sơ đồ Use Case chi tiết - Quản lý ngân hàng câu hỏi phỏng vấn (dùng chung)",
+  "mode": "color",
+  "usecase": {
+    "system": "Chức năng Quản lý ngân hàng câu hỏi phỏng vấn",
+    "groups": [
+      {
+        "name": "Quản trị nội dung dùng chung (F6-13)",
+        "actors": ["Giảng viên", "Quản trị viên"],
+        "usecases": [
+          "Tạo câu hỏi phỏng vấn mới",
+          "Sửa nội dung, câu hỏi đào sâu và rubric có trọng số",
+          "Nhân bản câu hỏi phỏng vấn",
+          "Xoá mềm câu hỏi phỏng vấn",
+          "Phân loại theo 5 chủ đề và mức độ khó"
+        ]
+      }
+    ]
+  }
+}

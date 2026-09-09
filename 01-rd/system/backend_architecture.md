@@ -37,9 +37,10 @@ vào `infrastructure` của `identity`) làm **fail build**. Chi tiết công c�
 
 ---
 
-## 2. Bảy module Maven
+## 2. Tám module Maven
 
-Sáu module nghiệp vụ theo `README.md` mục 4, cộng một module dùng chung và một module khởi chạy.
+Sáu module nghiệp vụ theo `README.md` mục 4, cộng một module dùng chung và một module khởi chạy
+(`DEC-2026-0901-backend-base-architecture` — cả 8 module khai báo trước cùng lúc).
 
 | Module Maven | Bounded Context | Schema PostgreSQL | Phân hệ | Vai trò |
 | :--- | :--- | :--- | :--- | :--- |

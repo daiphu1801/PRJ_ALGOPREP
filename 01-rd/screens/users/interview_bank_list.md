@@ -1,7 +1,7 @@
 # RD — Màn `interview_bank_list` (Danh sách câu hỏi phỏng vấn)
 
 > Slug: `interview_bank_list` — khớp `01-rd/overview/system_survey.md` mục 7.1 dòng `interview_bank_list`
-> [SoT: 01-rd/overview/system_survey.md:481]. Bounded Context: `interview-bank` (F6). Actor: A1 (chính).
+> [SoT: 01-rd/overview/system_survey.md — mục 7.1 dòng `interview_bank_list`]. Bounded Context: `interview-bank` (F6). Actor: A1 (chính).
 >
 > Theo lộ trình Phase 4 của `06-plan/nexa-plan/260824-2043-bd-screens-common-first.md` dòng 44. Đối chiếu
 > prototype: `09-layoutBase/Câu hỏi phỏng vấn.dc.html`. File này mô tả **hành vi và UX ở mức yêu cầu** —
@@ -17,7 +17,7 @@
 Trang duyệt **toàn bộ kho câu hỏi phỏng vấn lý thuyết** (độc lập với bài nộp code): tìm kiếm, lọc theo chủ
 đề và trạng thái ôn tập, xem nhanh gợi ý trả lời của một câu hỏi, tự chấm mức độ nhớ, và một chế độ "luyện
 nhanh" dạng flashcard [SoT: 01-rd/req/user_stories/a1_student.md — `US-A1-08`;
-01-rd/overview/system_survey.md:481].
+01-rd/overview/system_survey.md — mục 7.1 dòng `interview_bank_list`].
 
 ## 2. Nguồn yêu cầu (không lặp lại — chỉ trỏ)
 
@@ -103,7 +103,7 @@ Hai chế độ hiển thị không đổi hành vi nghiệp vụ, chỉ đổi 
 
 - `01-rd/req/interview-bank.md` — F6-01 tới F6-12.
 - `01-rd/req/user_stories/a1_student.md` — `US-A1-08`.
-- `01-rd/overview/system_survey.md:481` — dòng `interview_bank_list` trong bảng màn mục 7.1.
+- `01-rd/overview/system_survey.md` — mục 7.1 dòng `interview_bank_list`.
 - `06-plan/reports/260825-2100-ai2-solution-review-conflicts.md` — điểm nối từ `solution_review` (Phase 3).
 - `09-layoutBase/Câu hỏi phỏng vấn.dc.html` — prototype.
 - `06-plan/nexa-plan/260824-2043-bd-screens-common-first.md` — kế hoạch Phase 4 sinh ra file này.

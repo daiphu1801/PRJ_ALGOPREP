@@ -1,7 +1,7 @@
 # RD — Màn `admin_ai_usage` (Tiêu thụ token AI)
 
-> Slug: `admin_ai_usage` — khớp `01-rd/overview/system_survey.md` mục 7.3 [SoT: 01-rd/overview/system_survey.md:554].
-> Bounded Context: `ai-review` (F5) [SoT: 01-rd/overview/system_survey.md:554]. Actor: A3.
+> Slug: `admin_ai_usage` — khớp `01-rd/overview/system_survey.md` mục 7.3 [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_ai_usage`].
+> Bounded Context: `ai-review` (F5) [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_ai_usage`]. Actor: A3.
 >
 > Đối chiếu prototype: `09-layoutBase/Admin - Token AI.dc.html`. File này mô tả **hành vi và UX ở mức yêu
 > cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/ai-review.md` (F5-21, F5-25), chỉ trỏ tới và bổ sung

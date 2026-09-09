@@ -1,0 +1,30 @@
+{
+  "_": "Luong 'xem diem AI tham khao roi cham tay de len' cua actor A2, hien thuc hoa usecase_gv_cham_va_nhan_xet_bai_nop (F5-27, F5-07). Nguon: prototype 09-layoutBase/Giao vien - Cham bai.dc.html + 01-rd/screens/teacher/instructor_grading.md muc 3 -- tab loc 'Cho cham'/'Da cham'/'Tat ca' (diem 3), bang co cot 'Diem AI' (diem 4), cot hanh dong 'Cham ngay' mo modal (diem 5), modal co o 'Diem (0-10)' + o 'Nhan xet' textarea + nut 'Huy'/'Luu diem' (diem 6).",
+  "_khong_goi_llm": "KHONG co participant 'Nha cung cap LLM', va do la diem chinh xac quan trong: man nay DOC LAI bao cao JSON F5-07 da sinh san tu luong AI cua hoc vien (F5.1), khong tu goi model. Nguon: instructor_grading.md muc 2 -- 'Nguon cua diem quy doi la bao cao JSON co luoc do cua F5.1'.",
+  "_khong_ghi_de": "Buoc 8 ghi ro 'khong doi trang thai bai nop': F5-27 chot diem AI 0-10 va diem cham tay la LOP THAM KHAO NOI BO cua giang vien, tach bach hoan toan khoi Pass/Fail chinh thuc cua bai nop va khoi diem ty le testcase F4-13 hien cho hoc vien. instructor_grading.md muc 3 diem 8 xac nhan prototype cung khong co phan tu nao goi y diem anh huong trang thai.",
+  "_khong_ve": "KHONG ve the thong ke 'Yeu cau review' du prototype con no: instructor_grading.md muc 3 diem 2 da gach bo hang muc nay. Diem de doc 1-5 do AI tu cham (F5-05) la truong KHAC, khong phai diem quy doi thang 10 nay.",
+  "_granularity": "03-dd/api/ hien rong nen ba tang gom thanh 'May chu AlgoPrep' -- xem ghi chu day du o sequence_admin_doi_ma_tran_phan_quyen.spec.json.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự - Chấm tay đè lên điểm AI tham khảo (Giảng viên)",
+  "mode": "color",
+  "sequence": {
+    "participants": [
+      { "name": "Giảng viên", "role": "actor" },
+      { "name": "Màn Chấm bài", "role": "boundary" },
+      { "name": "Máy chủ AlgoPrep", "role": "service" },
+      { "name": "PostgreSQL", "role": "datastore" }
+    ],
+    "messages": [
+      { "from": "Giảng viên", "to": "Màn Chấm bài", "text": "Mở tab \"Chờ chấm\"" },
+      { "from": "Màn Chấm bài", "to": "Máy chủ AlgoPrep", "text": "Yêu cầu bài nộp chờ chấm trong lớp phụ trách" },
+      { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Đọc bài nộp kèm báo cáo phân tích AI đã lưu" },
+      { "from": "Máy chủ AlgoPrep", "to": "Màn Chấm bài", "text": "Danh sách kèm điểm AI quy đổi thang 10", "kind": "return" },
+      { "from": "Giảng viên", "to": "Màn Chấm bài", "text": "Bấm \"Chấm ngay\" trên một dòng" },
+      { "from": "Giảng viên", "to": "Màn Chấm bài", "text": "Nhập điểm 0-10 và nhận xét, bấm \"Lưu điểm\"" },
+      { "from": "Màn Chấm bài", "to": "Máy chủ AlgoPrep", "text": "Gửi điểm chấm tay và nhận xét" },
+      { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Ghi điểm chấm tay, không đổi trạng thái bài nộp" },
+      { "from": "Máy chủ AlgoPrep", "to": "Màn Chấm bài", "text": "Xác nhận đã lưu điểm", "kind": "return" },
+      { "from": "Màn Chấm bài", "to": "Giảng viên", "text": "Chuyển bài nộp sang tab \"Đã chấm\"", "kind": "return" }
+    ]
+  }
+}

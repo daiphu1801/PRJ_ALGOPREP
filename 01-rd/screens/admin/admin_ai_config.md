@@ -1,7 +1,7 @@
 # RD — Màn `admin_ai_config` (Cấu hình trợ lý AI)
 
-> Slug: `admin_ai_config` — khớp `01-rd/overview/system_survey.md` mục 7.3 [SoT: 01-rd/overview/system_survey.md:553].
-> Bounded Context: `ai-review` (F5) [SoT: 01-rd/overview/system_survey.md:553]. Actor: A3.
+> Slug: `admin_ai_config` — khớp `01-rd/overview/system_survey.md` mục 7.3 [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_ai_config`].
+> Bounded Context: `ai-review` (F5) [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_ai_config`]. Actor: A3.
 >
 > Đối chiếu prototype: `09-layoutBase/Admin - Cấu hình AI.dc.html`. File này mô tả **hành vi và UX ở mức yêu
 > cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/ai-review.md` (F5-19, F5-23), chỉ trỏ tới và bổ sung

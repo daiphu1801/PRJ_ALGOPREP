@@ -39,7 +39,7 @@ Gọi qua cổng ra trung lập theo engine (`JudgeExecutionPort`), adapter mặ
     đã là trạng thái cuối** (`glossary.md` mục 3) giữ nguyên bất kể adapter.
   - Timeout sweep: quét bài nộp treo quá ngưỡng thời gian (F4-07) — bản nhẹ, dựa vào ack/nack và redelivery
     của RabbitMQ, không cần chủ động hỏi lại một hệ ngoài như khi dùng Judge0. **Amendment 2026-08-31** (lấp
-    Câu hỏi mở Q4 của `01-rd/req/user_stories.md`, `DEC-2026-0831-outside-screens-closures`): ngưỡng "treo"
+    Câu hỏi mở Q4 của `01-rd/req/user_stories/open_questions.md`, `DEC-2026-0831-outside-screens-closures`): ngưỡng "treo"
     = **5 phút** không nhận được cập nhật trạng thái nào cho một job `[SoT: Suy luận]`, BD/DD chỉnh được.
 - **Thời gian thực:**
   - Đẩy trạng thái từng testcase qua WebSocket (STOMP) theo kênh riêng của từng bài nộp, ngay sau mỗi lần

@@ -52,7 +52,9 @@ DDD giải quyết độ phức tạp nghiệp vụ bằng cách chia hệ thố
   `SourceHash` (khoá cache kết quả phân tích AI).
 * **Domain Event (sự kiện miền).** Việc đã xảy ra trong miền, phát để module khác phản ứng mà không phụ
   thuộc trực tiếp. Ví dụ: `SubmissionAcceptedEvent` — `judge-orchestration` phát khi bài nộp đạt
-  `Accepted`; `identity` nghe để cập nhật tiến độ cá nhân, `ai-review` nghe để mở khoá hai luồng F5.
+  `Accepted`; `identity` nghe để cập nhật tiến độ cá nhân, `ai-review` nghe để mở lối vào F5.1 (Solution
+  Review, luôn gắn với một bài nộp) và lối vào mặc định của F5.2 (Mock Interview) — F5.2 còn hai lối vào
+  tự luyện khác không cần sự kiện này (F5-24, `01-rd/req/ai-review.md`).
   Trong Modular Monolith, sự kiện đi qua bộ phát nội bộ của Spring (`ApplicationEventPublisher`) —
   tách rời logic mà không trả chi phí mạng. [SoT: Suy luận — tên sự kiện là đề xuất, chốt ở BD]
 * **Anti-Corruption Layer (ACL).** Hai hệ ngoài có mô hình riêng và không được để nó rò vào miền của
@@ -154,9 +156,15 @@ Judge0 (webhook bất đồng bộ). Nếu một adapter bất đồng bộ (ví
   theo số lần gọi**, và **không bao giờ ghi đè một trạng thái đã là trạng thái cuối** — bất biến này không
   đổi bất kể adapter. Với adapter bất đồng bộ (nếu dùng lại Judge0), thêm một lớp idempotency theo token của
   engine, nhưng đó là chi tiết nội bộ của `Judge0Adapter`, không lộ ra port.
-* **Fail-fast theo testcase.** F4 gọi `JudgeExecutionPort` từng testcase một; testcase trước sai hoặc lỗi
-  theo điều kiện dừng thì bỏ các testcase còn lại của bài nộp. Người học biết mình sai ở testcase nào sớm
-  hơn, và cụm judge engine không đốt tài nguyên chạy nốt một bài nộp đã chắc chắn sai.
+* **Chạy hết mọi testcase, không dừng sớm.** F4 gọi `JudgeExecutionPort` từng testcase một, và gọi cho
+  **mọi** testcase của bài nộp kể cả khi một testcase đã sai. Lý do: điểm tỷ lệ testcase đạt (`F4-13`) chỉ
+  tính được khi biết đủ N kết quả, nên không được phép bỏ testcase nào. Đánh đổi đã chấp nhận: tải cụm judge
+  engine và thời gian chờ của người học đều cao hơn phương án dừng sớm.
+  **Sửa 2026-09-09:** mục này trước mang tiêu đề "Fail-fast theo testcase" và mô tả việc bỏ các testcase
+  còn lại như một nguyên lý kiến trúc đang sống. `F4-04` (fail-fast) đã hết hiệu lực theo
+  `DEC-2026-0831-partial-score-testcase-ratio`; đợt quét 2026-09-05 sửa 7 chỗ khác nhưng bỏ sót chỗ này,
+  nên file nền lý thuyết vẫn nói ngược với `01-rd/req/judge-orchestration.md` (F4-03) và
+  `01-rd/system/backend_architecture.md` (module `algoprep-judge`).
 * **Timeout sweep thay cho đối soát nặng.** Với adapter đồng bộ, một bài nộp treo ở trạng thái trung gian
   hầu như luôn là do worker crash giữa lúc đang gọi engine — RabbitMQ tự redeliver message chưa ack, xử lý
   được phần lớn trường hợp. Job quét định kỳ vẫn giữ lại ở dạng nhẹ hơn: chỉ phát hiện bài nộp treo quá
@@ -229,8 +237,10 @@ cầu nối đó.
   Mỗi slice chỉ lộ ra qua Public API (`index.ts`) của nó.
 * **Vì sao cần với AlgoPrep.** Màn chi tiết bài toán là màn nặng nhất của hệ thống: đề bài Markdown và
   LaTeX, Monaco Editor, chọn ngôn ngữ, chạy thử, nộp bài, bảng kết quả từng testcase cập nhật qua
-  WebSocket, và sau khi `Accepted` thì mở thêm hai luồng AI. Chia theo loại kỹ thuật (`components/`,
-  `hooks/`, `utils/`) thì một màn như vậy rải khắp cây thư mục và không ai còn biết sửa một chỗ thì vỡ chỗ nào.
+  WebSocket, và sau khi `Accepted` thì mở thêm lối vào Solution Review và lối vào mặc định của Mock
+  Interview (F5.2 còn hai lối vào tự luyện khác không cần `Accepted` — F5-24). Chia theo loại kỹ thuật
+  (`components/`, `hooks/`, `utils/`) thì một màn như vậy rải khắp cây thư mục và không ai còn biết sửa một
+  chỗ thì vỡ chỗ nào.
 * Chi tiết tầng, tiêu chí đặt tầng và cách thi hành: `frontend_architecture.md`.
 
 ### I. An toàn thông tin theo OWASP Top 10

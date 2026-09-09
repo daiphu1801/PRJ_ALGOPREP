@@ -1,0 +1,21 @@
+{
+  "_": "Chi tiet oval DUNG CHUNG 'Quan ly bai toan, cau hoi' o ban tong quan -- phan SOAN DE, man 01-rd/screens/shared/problem_authoring.md. Chuyen tu usecase_admin_quan_ly_bai_toan_testcase 2026-09-07 va them actor Giang vien: man nay mount o CA HAI khu /instructor/* va /admin/*, pham vi du lieu do ma tran phan quyen quyet dinh (DEC-2026-0825-shared-content-authoring-screens) -- ve duoi mot actor la sai mo hinh. Tach lam 2 file (file nay + usecase_shared_quan_ly_testcase) vi giu nguyen 9 use case cua ban admin cu roi nhan 2 actor se thanh 18 canh, vuot tran 16. Nguon: system_survey.md muc 5.2 (F2-01 tới F2-04). F2-03 bat buoc khai bao CA HAI mo hinh nop bai (DEC-2026-0824-dual-submission-model-per-problem), khong con chi co chu ky ham.",
+  "kind": "usecase",
+  "title": "Sơ đồ Use Case chi tiết - Soạn đề bài (dùng chung)",
+  "mode": "color",
+  "usecase": {
+    "system": "Chức năng Soạn đề bài",
+    "groups": [
+      {
+        "name": "Soạn và đặc tả đề bài (F2-01 tới F2-04)",
+        "actors": ["Giảng viên", "Quản trị viên"],
+        "usecases": [
+          "Soạn và sửa đề bài Markdown kèm LaTeX",
+          "Phân loại độ khó và chủ đề",
+          "Khai báo đặc tả song song hai mô hình nộp bài",
+          "Khai báo chiến lược so khớp kết quả"
+        ]
+      }
+    ]
+  }
+}

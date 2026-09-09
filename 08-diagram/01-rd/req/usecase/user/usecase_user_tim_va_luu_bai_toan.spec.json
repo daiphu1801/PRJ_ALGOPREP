@@ -1,0 +1,30 @@
+{
+  "_": "Chi tiet oval 'Tim va luu bai toan' o ban tong quan (08-diagram/01-rd/req/usecase_tong_quan_actor.drawio), actor A1 Sinh vien. Nguon: 01-rd/screens/users/problem_list.md muc 2 (F2-11, F2-12) va 01-rd/screens/users/saved_problems.md muc 2 (F2-13). Bo bot: viec chon mo hinh nop bai (F3-13) tuy duoc problem_list.md nhac den nhung thuoc man problem_detail -- ve o usecase_user_giai_va_nop_bai.",
+  "kind": "usecase",
+  "title": "Sơ đồ Use Case chi tiết - Tìm và lưu bài toán (Sinh viên)",
+  "mode": "color",
+  "usecase": {
+    "system": "Chức năng Tìm và lưu bài toán",
+    "groups": [
+      {
+        "name": "Tìm kiếm danh sách bài toán (F2-11, F2-12)",
+        "actors": ["Sinh viên"],
+        "usecases": [
+          "Tìm kiếm bài toán theo tên",
+          "Lọc theo chủ đề và độ khó",
+          "Lọc theo trạng thái đã giải",
+          "Xem nhóm bài tập được giao theo lớp"
+        ]
+      },
+      {
+        "name": "Bài đã lưu (F2-13)",
+        "actors": ["Sinh viên"],
+        "usecases": [
+          "Lưu bài toán vào danh sách riêng",
+          "Soạn ghi chú riêng tư cho bài đã lưu",
+          "Bỏ lưu bài toán"
+        ]
+      }
+    ]
+  }
+}

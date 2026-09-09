@@ -1,0 +1,21 @@
+{
+  "_": "Chi tiet oval DUNG CHUNG 'Quan ly bai toan, cau hoi' o ban tong quan -- man 01-rd/screens/shared/problem_management.md (bang quan tri danh sach, cua vao problem_authoring). Chuyen tu usecase_admin_quan_ly_danh_sach_bai_toan 2026-09-07 va them actor Giang vien (DEC-2026-0825-shared-content-authoring-screens; ca F2-15/F2-16/F2-17 deu ghi actor A2 A3 o system_survey.md muc 5.2). Nguon: F2-15 vong doi dung HAI trang thai Chua xuat ban / Da xuat ban, khong co 'Da an' (DEC-2026-0830-problem-lifecycle-two-states); xoa = Chua xuat ban + co deleted rieng, du lieu lien quan khong mat; F2-16 nhan ban ke ca theo lo; F2-17 chi xuat phan du lieu bang, KHONG xuat de bai/dac ta/testcase, va nhap CSV bai toan da bi cat khoi pham vi (DEC-2026-0831-problem-management-lifecycle-details).",
+  "kind": "usecase",
+  "title": "Sơ đồ Use Case chi tiết - Quản lý danh sách bài toán (dùng chung)",
+  "mode": "color",
+  "usecase": {
+    "system": "Chức năng Quản lý danh sách bài toán",
+    "groups": [
+      {
+        "name": "Vòng đời và danh mục bài toán (F2-15, F2-16, F2-17)",
+        "actors": ["Giảng viên", "Quản trị viên"],
+        "usecases": [
+          "Xuất bản hoặc gỡ xuất bản bài toán",
+          "Xoá mềm bài toán",
+          "Nhân bản bài toán, kể cả theo lô",
+          "Xuất CSV danh sách bài toán"
+        ]
+      }
+    ]
+  }
+}
