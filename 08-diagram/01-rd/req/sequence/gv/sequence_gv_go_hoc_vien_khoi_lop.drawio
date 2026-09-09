@@ -1,0 +1,49 @@
+<mxfile host="app.diagrams.net" agent="drawio-uml-architect" type="device">
+  <diagram id="so-do-tuan-tu-go-hoc-vien-khoi-lop-giang-vien" name="so-do-tuan-tu-go-hoc-vien-khoi-lop-giang-vien">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="826" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="Sơ đồ tuần tự - Gỡ học viên khỏi lớp (Giảng viên)" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="60" y="10" width="660" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="v1" value="Giảng viên" style="shape=umlLifeline;participant=umlActor;perimeter=lifelinePerimeter;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;verticalAlign=top;spacingTop=40;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="120" y="60" width="30" height="468" as="geometry" />
+        </mxCell>
+        <mxCell id="v2" value="Màn Lớp của tôi" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#FFFFFF;strokeColor=#666666;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="230" y="60" width="150" height="468" as="geometry" />
+        </mxCell>
+        <mxCell id="v3" value="Máy chủ AlgoPrep" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#FFF2CC;strokeColor=#B8952A;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="400" y="60" width="150" height="468" as="geometry" />
+        </mxCell>
+        <mxCell id="v4" value="PostgreSQL" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#D9D9D9;strokeColor=#7A7A7A;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="570" y="60" width="150" height="468" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" value="1. Chọn học viên, bấm gỡ khỏi lớp" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=11;verticalAlign=bottom;exitX=0.5;exitY=0.1923;exitDx=0;exitDy=0;entryX=0.5;entryY=0.1923;entryDx=0;entryDy=0;" edge="1" parent="1" source="v1" target="v2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" value="2. Hỏi xác nhận: lịch sử làm bài trong lớp sẽ bị xoá" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=11;verticalAlign=bottom;exitX=0.5;exitY=0.2906;exitDx=0;exitDy=0;entryX=0.5;entryY=0.2906;entryDx=0;entryDy=0;" edge="1" parent="1" source="v2" target="v1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" value="3. Xác nhận gỡ" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=11;verticalAlign=bottom;exitX=0.5;exitY=0.3889;exitDx=0;exitDy=0;entryX=0.5;entryY=0.3889;entryDx=0;entryDy=0;" edge="1" parent="1" source="v1" target="v2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" value="4. Gửi yêu cầu gỡ học viên khỏi lớp" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=11;verticalAlign=bottom;exitX=0.5;exitY=0.4872;exitDx=0;exitDy=0;entryX=0.5;entryY=0.4872;entryDx=0;entryDy=0;" edge="1" parent="1" source="v2" target="v3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" value="5. Xoá thành viên khỏi lớp" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=11;verticalAlign=bottom;exitX=0.5;exitY=0.5855;exitDx=0;exitDy=0;entryX=0.5;entryY=0.5855;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" value="6. Xoá lịch sử làm bài của học viên trong lớp" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=11;verticalAlign=bottom;exitX=0.5;exitY=0.6838;exitDx=0;exitDy=0;entryX=0.5;entryY=0.6838;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" value="7. Xác nhận đã gỡ" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=11;verticalAlign=bottom;exitX=0.5;exitY=0.7821;exitDx=0;exitDy=0;entryX=0.5;entryY=0.7821;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" value="8. Cập nhật danh sách học viên của lớp" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=11;verticalAlign=bottom;exitX=0.5;exitY=0.8803;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8803;entryDx=0;entryDy=0;" edge="1" parent="1" source="v2" target="v1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

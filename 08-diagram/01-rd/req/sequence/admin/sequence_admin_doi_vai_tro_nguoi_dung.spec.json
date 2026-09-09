@@ -1,0 +1,24 @@
+{
+  "_": "Luong 'doi vai tro mot tai khoan' cua actor A3, hien thuc hoa usecase_admin_quan_ly_nguoi_dung_phan_quyen (nhom 'Quan ly tai khoan', F1-13). Nguon buoc tuong tac: prototype 09-layoutBase/Admin - Nguoi dung.dc.html (ba nut tren moi dong: 'Doi vai tro', 'Khoa tai khoan', 'Dat lai mat khau'; co phan trang Truoc/Sau) + F1-13 (system_survey.md:255, gac boi USER_MANAGEMENT trong ma tran F1-10) + F1-14 (moi thao tac quan tri deu ghi Nhat ky he thong).",
+  "_gom": "Chi ve MOT trong ba hanh dong cua F1-13. 'Khoa/mo khoa tai khoan' va 'Dat lai mat khau' di dung hinh dang nay (man -> may chu -> ghi PostgreSQL -> ghi Nhat ky -> tra ve), khac nhau o noi dung ghi, nen khong ve thanh 3 so do gan nhu trung nhau.",
+  "_granularity": "03-dd/api/ hien rong nen ba tang controller/service/repository gom thanh 'May chu AlgoPrep' -- xem ghi chu day du o sequence_admin_doi_ma_tran_phan_quyen.spec.json.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự - Đổi vai trò người dùng (Quản trị viên)",
+  "mode": "color",
+  "sequence": {
+    "participants": [
+      { "name": "Quản trị viên", "role": "actor" },
+      { "name": "Màn Người dùng", "role": "boundary" },
+      { "name": "Máy chủ AlgoPrep", "role": "service" },
+      { "name": "PostgreSQL", "role": "datastore" }
+    ],
+    "messages": [
+      { "from": "Quản trị viên", "to": "Màn Người dùng", "text": "Chọn tài khoản, bấm \"Đổi vai trò\"" },
+      { "from": "Màn Người dùng", "to": "Máy chủ AlgoPrep", "text": "Gửi vai trò mới của tài khoản" },
+      { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Cập nhật vai trò của tài khoản" },
+      { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Ghi Nhật ký hệ thống" },
+      { "from": "Máy chủ AlgoPrep", "to": "Màn Người dùng", "text": "Xác nhận đã đổi vai trò", "kind": "return" },
+      { "from": "Màn Người dùng", "to": "Quản trị viên", "text": "Hiện vai trò mới trong bảng người dùng", "kind": "return" }
+    ]
+  }
+}

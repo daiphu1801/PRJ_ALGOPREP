@@ -1,0 +1,34 @@
+{
+  "_": "Chi tiet oval 'On tap cau hoi phong van' o ban tong quan, actor A1 Sinh vien. Nguon: 01-rd/screens/users/interview_bank_list.md muc 2 (F6-01, F6-02, F6-03, F6-04, F6-05, F6-06, F6-09, F6-10, F6-12) va 01-rd/screens/users/interview_question_detail.md muc 3.2-3.3 (Che do hoc / Che do luyen, F6-04 tới F6-08). Canh <<use>> sang LLM la duong GIAN TIEP: F6-08 di qua phan he AI (F5), interview-bank khong tu goi LLM [SoT: 01-rd/req/interview-bank.md -- F6-08]. KHONG ve F6-11 (bo cau hoi rieng theo lop) -- da het hieu luc theo DEC-2026-0828-remove-per-class-interview-set. Nhieu khoi cua man interview_question_detail con o trang thai [Doi nextjs], noi dung o day lay theo dac ta RD chu khong theo prototype.",
+  "kind": "usecase",
+  "title": "Sơ đồ Use Case chi tiết - Ôn tập câu hỏi phỏng vấn (Sinh viên)",
+  "mode": "color",
+  "usecase": {
+    "system": "Chức năng Ôn tập ngân hàng câu hỏi phỏng vấn",
+    "groups": [
+      {
+        "name": "Chế độ học (F6-01 tới F6-06)",
+        "actors": ["Sinh viên"],
+        "usecases": [
+          "Tìm kiếm và lọc câu hỏi theo chủ đề, độ khó",
+          "Đánh dấu câu hỏi để xem lại",
+          "Xem gợi ý hướng tiếp cận và bẫy thường gặp",
+          "Xem khung trả lời chuẩn và từ khoá cốt lõi"
+        ]
+      },
+      {
+        "name": "Chế độ luyện và ôn lại (F6-07 tới F6-10, F6-12)",
+        "actors": ["Sinh viên"],
+        "usecases": [
+          "Tự soạn câu trả lời",
+          "Nhận phản hồi AI đối chiếu tiêu chí chuẩn",
+          "Tự chấm mức độ thuộc bài để xếp lịch ôn lại",
+          "Xem lịch sử luyện tập và tỉ lệ hoàn thành theo chủ đề"
+        ]
+      }
+    ],
+    "externals": [
+      { "name": "Nhà cung cấp LLM", "from": ["Nhận phản hồi AI đối chiếu tiêu chí chuẩn"] }
+    ]
+  }
+}

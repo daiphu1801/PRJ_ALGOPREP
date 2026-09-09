@@ -1,0 +1,24 @@
+{
+  "_": "Luong 'doi quyen trong ma tran phan quyen' cua actor A3, hien thuc hoa usecase_admin_quan_ly_nguoi_dung_phan_quyen (nhom 'Ma tran phan quyen'). Nguon buoc tuong tac: prototype 09-layoutBase/Admin - Ma tran phan quyen.dc.html (nut 'Luu thay doi' -> nhan 'Da luu', panel 'Nhat ky thay doi', lien ket sang Nhat ky he thong.dc.html) + 01-rd/screens/admin/admin_permission_matrix.md muc 2 (F1-10 doi CO HIEU LUC NGAY, F1-11 Function/Action la seed chi doc nen chi co Role sua duoc, F1-12 danh sach 11 Function trong pham vi) + F1-14 (ghi Nhat ky he thong cho MOI thay doi ma tran, khong co ngoai le, system_survey.md:256).",
+  "_granularity": "QUAN TRONG: 03-dd/api/ hien RONG (chi co .gitkeep) va 02-bd/ moi co architecture/harness.md, nen KHONG co ten Controller/Service/Repository nao de trich dan. Theo dung cach gom cua skill (grouping #2), ba tang do gom thanh MOT participant 'May chu AlgoPrep'; he thong ngoai va datastore van tach rieng vi do la ranh gioi so do can cho thay. Khi DD ra doi thi tach lai participant tu ten that, khong doan truoc.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự - Đổi quyền trong ma trận phân quyền (Quản trị viên)",
+  "mode": "color",
+  "sequence": {
+    "participants": [
+      { "name": "Quản trị viên", "role": "actor" },
+      { "name": "Màn Ma trận phân quyền", "role": "boundary" },
+      { "name": "Máy chủ AlgoPrep", "role": "service" },
+      { "name": "PostgreSQL", "role": "datastore" }
+    ],
+    "messages": [
+      { "from": "Quản trị viên", "to": "Màn Ma trận phân quyền", "text": "Bật tắt ô quyền Role x Function x Action" },
+      { "from": "Quản trị viên", "to": "Màn Ma trận phân quyền", "text": "Bấm \"Lưu thay đổi\"" },
+      { "from": "Màn Ma trận phân quyền", "to": "Máy chủ AlgoPrep", "text": "Gửi các ô quyền đã đổi" },
+      { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Ghi ma trận quyền mới" },
+      { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Ghi Nhật ký hệ thống" },
+      { "from": "Máy chủ AlgoPrep", "to": "Màn Ma trận phân quyền", "text": "Xác nhận đã lưu, quyền có hiệu lực ngay", "kind": "return" },
+      { "from": "Màn Ma trận phân quyền", "to": "Quản trị viên", "text": "Hiện nhãn \"Đã lưu\" và dòng nhật ký thay đổi", "kind": "return" }
+    ]
+  }
+}

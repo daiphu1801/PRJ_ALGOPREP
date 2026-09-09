@@ -1,0 +1,30 @@
+{
+  "_": "Luong 'cau hinh prompt AI co phien ban va khoi phuc' cua actor A3, hien thuc hoa usecase_admin_cau_hinh_ngon_ngu_ai (nhom 'Cau hinh AI', F5-23). Nguon: F5-23 (system_survey.md:383 -- cau hinh prompt CO PHIEN BAN, xem lai/khoi phuc, trong so rubric, gioi han tan suat) + prototype 09-layoutBase/Admin - Cau hinh AI.dc.html + F1-14 (moi thao tac quan tri ghi Nhat ky he thong).",
+  "_hai_tuong_tac": "So do nay co y ve HAI tuong tac lien tiep cua cung mot tinh nang (luu thanh phien ban moi, roi khoi phuc mot phien ban cu) thay vi mot luong duy nhat -- vi 'co phien ban' chi co nghia khi thay ca duong khoi phuc. Neu chi ve duong luu thi doc gia khong thay tai sao phai danh phien ban.",
+  "_khong_ve": "KHONG ve nut 'Chay doi chieu' (regression test 30 bai mau): F5-23 chot giu nut do TREN UI nhung backend that hoan sang giai doan mo rong, nen ve mot luong tuan tu cho no la ve thu chua ton tai. Cau hinh ngon ngu va gioi han tai nguyen (F4-11) nam cung goi use case nhung la man khac (Admin - Ngon ngu va gioi han.dc.html), khong tron vao so do nay.",
+  "_granularity": "03-dd/api/ hien rong nen cac tang trong may chu gom thanh 'May chu AlgoPrep' -- xem ghi chu day du o sequence_admin_doi_ma_tran_phan_quyen.spec.json.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự - Cấu hình prompt AI theo phiên bản (Quản trị viên)",
+  "mode": "color",
+  "sequence": {
+    "participants": [
+      { "name": "Quản trị viên", "role": "actor" },
+      { "name": "Màn Cấu hình AI", "role": "boundary" },
+      { "name": "Máy chủ AlgoPrep", "role": "service" },
+      { "name": "PostgreSQL", "role": "datastore" }
+    ],
+    "messages": [
+      { "from": "Quản trị viên", "to": "Màn Cấu hình AI", "text": "Sửa prompt và trọng số rubric" },
+      { "from": "Màn Cấu hình AI", "to": "Máy chủ AlgoPrep", "text": "Gửi bản prompt mới" },
+      { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Lưu thành một phiên bản prompt mới" },
+      { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Ghi Nhật ký hệ thống" },
+      { "from": "Máy chủ AlgoPrep", "to": "Màn Cấu hình AI", "text": "Xác nhận, trả số phiên bản đang áp dụng", "kind": "return" },
+      { "from": "Màn Cấu hình AI", "to": "Quản trị viên", "text": "Hiện phiên bản đang áp dụng" },
+      { "from": "Quản trị viên", "to": "Màn Cấu hình AI", "text": "Xem lại và chọn khôi phục một phiên bản cũ" },
+      { "from": "Màn Cấu hình AI", "to": "Máy chủ AlgoPrep", "text": "Yêu cầu khôi phục phiên bản đã chọn" },
+      { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Đặt phiên bản cũ thành đang áp dụng" },
+      { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Ghi Nhật ký hệ thống" },
+      { "from": "Máy chủ AlgoPrep", "to": "Màn Cấu hình AI", "text": "Xác nhận đã khôi phục", "kind": "return" }
+    ]
+  }
+}

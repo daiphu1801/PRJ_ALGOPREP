@@ -1,0 +1,31 @@
+{
+  "_": "Luong 'xem tong hop tien do lop roi mo ho so chi tiet mot hoc vien' cua actor A2, hien thuc hoa usecase_gv_theo_doi_tien_do_lop (F1-28 + F1-27). Nguon: prototype 09-layoutBase/Giao vien - Tien do hoc vien.dc.html + 01-rd/screens/teacher/class_progress.md muc 2 (F1-28: diem TB lop, ti le hoan thanh, chuoi ngay, xu huong, khoi 'Can chu y') va muc 3 (khoi 'Can chu y' liet ke hoc vien co nhan canh bao) + 01-rd/screens/teacher/class_student_detail.md muc 2 (F1-27 ho so chi tiet: thong tin co ban, tien do, lich su nop bai; F4-13/F1-06 diem ty le testcase tinh tren best-attempt).",
+  "_hai_tuong_tac": "Ve HAI tuong tac lien tiep: xem dashboard tong hop (F1-28), roi bam vao mot hoc vien de mo ho so chi tiet (F1-27) -- vi F1-27 la mot man/route RIENG (slug class_student_detail) va duong vao no chinh la tu bang danh sach nay (class_student_detail.md muc 2, US-A2-08). Ve tach hai so do thi mat duong noi giua chung.",
+  "_ma_truc_tiep": "F1-28 la ma TRUC TIEP cho ca dashboard, khong con la 'dan xuat tu F1-06/F1-07' nhu bang slug o system_survey.md:524 con ghi -- class_progress.md muc 2 da sua dong nay.",
+  "_khong_ve": "KHONG ve dashboard tong quan khoi luong cong viec (F1-30, man instructor_overview): hinh dang tuan tu cua no gan nhu trung voi buoc 1-6 o day (mo man -> may chu tong hop -> tra ve), ve them chi lap lai. F1-27 gioi han PHAM VI theo lop phu trach (tu choi neu khong phu trach lop do, US-A2-08) -- do la kiem quyen, khong ve thanh nhanh alt.",
+  "_granularity": "03-dd/api/ hien rong nen ba tang gom thanh 'May chu AlgoPrep'; cac nguong phan loai 'Can chu y' la [SoT: Suy luan] o chinh RD (class_progress.md ghi cac con so nguong se tinh chinh o BD/DD), nen so do chi ve viec DOC du lieu de xac dinh, khong ve cong thuc.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự - Xem tiến độ lớp và hồ sơ học viên (Giảng viên)",
+  "mode": "color",
+  "sequence": {
+    "participants": [
+      { "name": "Giảng viên", "role": "actor" },
+      { "name": "Màn Tiến độ học viên", "role": "boundary" },
+      { "name": "Máy chủ AlgoPrep", "role": "service" },
+      { "name": "PostgreSQL", "role": "datastore" }
+    ],
+    "messages": [
+      { "from": "Giảng viên", "to": "Màn Tiến độ học viên", "text": "Chọn lớp phụ trách" },
+      { "from": "Màn Tiến độ học viên", "to": "Máy chủ AlgoPrep", "text": "Yêu cầu tổng hợp tiến độ của lớp" },
+      { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Đọc bài đã giải và tỉ lệ chấp thuận theo học viên" },
+      { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Đọc chuỗi ngày hoạt động để xác định học viên cần chú ý" },
+      { "from": "Máy chủ AlgoPrep", "to": "Màn Tiến độ học viên", "text": "Điểm trung bình lớp, bảng học viên, khối Cần chú ý", "kind": "return" },
+      { "from": "Màn Tiến độ học viên", "to": "Giảng viên", "text": "Hiện dashboard tiến độ lớp", "kind": "return" },
+      { "from": "Giảng viên", "to": "Màn Tiến độ học viên", "text": "Bấm vào một học viên trong bảng" },
+      { "from": "Màn Tiến độ học viên", "to": "Máy chủ AlgoPrep", "text": "Yêu cầu hồ sơ chi tiết học viên" },
+      { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Đọc tiến độ, điểm tốt nhất mỗi bài và lịch sử nộp bài" },
+      { "from": "Máy chủ AlgoPrep", "to": "Màn Tiến độ học viên", "text": "Hồ sơ chi tiết học viên", "kind": "return" },
+      { "from": "Màn Tiến độ học viên", "to": "Giảng viên", "text": "Mở màn hồ sơ chi tiết học viên", "kind": "return" }
+    ]
+  }
+}

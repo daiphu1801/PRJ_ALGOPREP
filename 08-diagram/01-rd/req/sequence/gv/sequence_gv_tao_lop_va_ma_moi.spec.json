@@ -1,0 +1,42 @@
+{
+  "_": "Luong 'tao lop hoc va hoc vien tu tham gia bang ma moi' cua actor A2, hien thuc hoa usecase_gv_quan_ly_lop_hoc (F1-23, F1-25). Nguon: 01-rd/screens/teacher/class_management.md muc 2 (F1-23 tao lop + sinh ma moi + hoc vien TU tham gia; F1-25 ma moi co thoi han dung, tao duoc nhieu ma moi moi cho cung lop) va muc 5 Q2/Q2b/Q2c (chot 2026-08-28 qua hoi truc tiep chu du an), GWT o US-A2-07.",
+  "_hai_actor": "Co HAI actor trong cung mot so do, va do la trong tam: F1-23 chot hoc vien A1 TU NHAP MA MOI de vao lop (self-service join), KHONG phai giang vien hay admin them thu cong. Ve thieu A1 thi so do mat dung cai dac diem thiet ke ma no ton tai de cho thay. Buoc 'gui ma moi' giua hai actor la duong NGOAI he thong -- RD khong chot kenh gui (email/chat/doc mieng), nen chi ve la mot buoc trao doi giua hai nguoi, khong gan he thong nao vao.",
+  "_khong_co_prototype": "Toan bo F1-23 tới F1-26 duoc chot 2026-08-28, SAU khi prototype da dung -- 09-layoutBase/Giao vien - Lop cua toi.dc.html chi co nut '+ Tao lop moi' KHONG gan hanh vi nao (class_management.md muc 3 diem 1 va muc 5 Q2). Nghia la cac buoc trong so do nay lay tu quyet dinh RD, khong doi chieu duoc voi prototype. Man hinh that se dung khi build FE.",
+  "_alt": "Mot khoi alt duy nhat va no la nghiep vu: F1-25 chot 'ma het han thi nhap vao bi tu choi'. Khong phai xu ly loi ky thuat.",
+  "_granularity": "03-dd/api/ hien rong (chi co .gitkeep) nen khong co ten Controller/Service/Repository nao de trich dan; ba tang gom thanh 'May chu AlgoPrep' theo cach gom #2 cua skill. Xem ghi chu day du o sequence_admin_doi_ma_tran_phan_quyen.spec.json.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự - Tạo lớp học và tham gia bằng mã mời (Giảng viên)",
+  "mode": "color",
+  "sequence": {
+    "participants": [
+      { "name": "Giảng viên", "role": "actor" },
+      { "name": "Màn Lớp của tôi", "role": "boundary" },
+      { "name": "Máy chủ AlgoPrep", "role": "service" },
+      { "name": "PostgreSQL", "role": "datastore" },
+      { "name": "Sinh viên", "role": "actor" }
+    ],
+    "messages": [
+      { "from": "Giảng viên", "to": "Màn Lớp của tôi", "text": "Bấm \"Tạo lớp mới\", nhập thông tin cơ bản" },
+      { "from": "Màn Lớp của tôi", "to": "Máy chủ AlgoPrep", "text": "Gửi yêu cầu tạo lớp" },
+      { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Ghi lớp học mới" },
+      { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Sinh và ghi mã mời kèm thời hạn dùng" },
+      { "from": "Máy chủ AlgoPrep", "to": "Màn Lớp của tôi", "text": "Trả mã mời của lớp", "kind": "return" },
+      { "from": "Màn Lớp của tôi", "to": "Giảng viên", "text": "Hiện mã mời và thời hạn dùng", "kind": "return" },
+      { "from": "Giảng viên", "to": "Sinh viên", "text": "Gửi mã mời cho học viên", "kind": "async" },
+      { "from": "Sinh viên", "to": "Máy chủ AlgoPrep", "text": "Nhập mã mời để tự tham gia lớp" },
+      { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Kiểm tra mã mời" },
+      {
+        "alt": {
+          "label": "Mã mời còn trong thời hạn dùng?",
+          "then": [
+            { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Thêm học viên vào lớp" },
+            { "from": "Máy chủ AlgoPrep", "to": "Sinh viên", "text": "Vào lớp thành công", "kind": "return" }
+          ],
+          "else": [
+            { "from": "Máy chủ AlgoPrep", "to": "Sinh viên", "text": "Từ chối, mã mời đã hết hạn", "kind": "return" }
+          ]
+        }
+      }
+    ]
+  }
+}

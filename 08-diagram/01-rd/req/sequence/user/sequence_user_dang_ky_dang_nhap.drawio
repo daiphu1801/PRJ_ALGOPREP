@@ -1,0 +1,70 @@
+<mxfile host="app.diagrams.net" agent="drawio-uml-architect" type="device">
+  <diagram id="so-do-tuan-tu-dang-ky-dang-nhap-va-tu-lam-moi-token-sinh-vie" name="so-do-tuan-tu-dang-ky-dang-nhap-va-tu-lam-moi-token-sinh-vie">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="826" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="Sơ đồ tuần tự - Đăng ký, đăng nhập và tự làm mới token (Sinh viên)" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="60" y="10" width="660" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="v1" value="alt [Mật khẩu đúng?]" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#999999;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;fontColor=#1A1A1A;fontSize=11;fontStyle=1;dashed=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="464" width="700" height="178" as="geometry" />
+        </mxCell>
+        <mxCell id="v2" value="else" style="text;html=1;dashed=1;strokeColor=#999999;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontColor=#1A1A1A;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="40" y="592" width="700" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="v3" value="Sinh viên" style="shape=umlLifeline;participant=umlActor;perimeter=lifelinePerimeter;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;verticalAlign=top;spacingTop=40;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="120" y="60" width="30" height="746" as="geometry" />
+        </mxCell>
+        <mxCell id="v4" value="Màn Đăng nhập" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#FFFFFF;strokeColor=#666666;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="230" y="60" width="150" height="746" as="geometry" />
+        </mxCell>
+        <mxCell id="v5" value="Máy chủ AlgoPrep" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#FFF2CC;strokeColor=#B8952A;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="400" y="60" width="150" height="746" as="geometry" />
+        </mxCell>
+        <mxCell id="v6" value="PostgreSQL" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#D9D9D9;strokeColor=#7A7A7A;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="570" y="60" width="150" height="746" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" value="1. Điền form đăng ký (email, mật khẩu)" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=11;verticalAlign=bottom;exitX=0.5;exitY=0.1206;exitDx=0;exitDy=0;entryX=0.5;entryY=0.1206;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" value="2. POST /auth/register" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=11;verticalAlign=bottom;exitX=0.5;exitY=0.1823;exitDx=0;exitDy=0;entryX=0.5;entryY=0.1823;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" value="3. Tạo tài khoản, vai trò mặc định STUDENT" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=11;verticalAlign=bottom;exitX=0.5;exitY=0.2440;exitDx=0;exitDy=0;entryX=0.5;entryY=0.2440;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" value="4. Access Token + Set-Cookie Refresh Token" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=11;verticalAlign=bottom;exitX=0.5;exitY=0.3056;exitDx=0;exitDy=0;entryX=0.5;entryY=0.3056;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" value="5. Chuyển sang trang Tiến độ cá nhân" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=11;verticalAlign=bottom;exitX=0.5;exitY=0.3673;exitDx=0;exitDy=0;entryX=0.5;entryY=0.3673;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" value="6. Lần sau: nhập email/mật khẩu, bấm Đăng nhập" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=11;verticalAlign=bottom;exitX=0.5;exitY=0.4290;exitDx=0;exitDy=0;entryX=0.5;entryY=0.4290;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e13" value="7. POST /auth/login" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=11;verticalAlign=bottom;exitX=0.5;exitY=0.4906;exitDx=0;exitDy=0;entryX=0.5;entryY=0.4906;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e14" value="8. Ghi nhận lần đăng nhập" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=11;verticalAlign=bottom;exitX=0.5;exitY=0.5871;exitDx=0;exitDy=0;entryX=0.5;entryY=0.5871;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e15" value="9. Access Token + Set-Cookie Refresh Token" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=11;verticalAlign=bottom;exitX=0.5;exitY=0.6488;exitDx=0;exitDy=0;entryX=0.5;entryY=0.6488;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e16" value="10. 401 Unauthorized" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=11;verticalAlign=bottom;exitX=0.5;exitY=0.7399;exitDx=0;exitDy=0;entryX=0.5;entryY=0.7399;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e17" value="11. Gọi API nghiệp vụ, nhận 401 (Access Token hết hạn)" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=11;verticalAlign=bottom;exitX=0.5;exitY=0.8016;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8016;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e18" value="12. Tự làm mới bằng Refresh Token (cookie HTTP-Only)" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=11;verticalAlign=bottom;exitX=0.5;exitY=0.8633;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8633;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e19" value="13. Access Token mới, không phải đăng nhập lại" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=11;verticalAlign=bottom;exitX=0.5;exitY=0.9249;exitDx=0;exitDy=0;entryX=0.5;entryY=0.9249;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

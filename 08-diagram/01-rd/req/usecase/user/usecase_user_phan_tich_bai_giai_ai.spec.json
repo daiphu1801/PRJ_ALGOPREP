@@ -1,0 +1,32 @@
+{
+  "_": "Chi tiet oval 'Phan tich bai giai bang AI' o ban tong quan, actor A1 Sinh vien. Nguon: 01-rd/screens/users/solution_review.md muc 2 (F5-01 tới F5-08, F5-20, F5-26) va muc 3 (diem 'De doc' 1-5 la mot truong cua F5-07/F5-05, khoi 'Kien thuc nen on' la F5-06 sinh chu de/tu khoa chu khong lien ket cung id cau hoi). Bo bot: rang buoc he thong khong phai use case cua Sinh vien -- F5-17 (chong prompt injection), F5-18 (dinh huong giao duc), F5-19 (rate limit), F5-20 (cache theo hash), F5-22 (suy giam co kiem soat), F5-25 (khoa khi can ngan sach) khong ve thanh oval.",
+  "kind": "usecase",
+  "title": "Sơ đồ Use Case chi tiết - Phân tích bài giải bằng AI (Sinh viên)",
+  "mode": "color",
+  "usecase": {
+    "system": "Chức năng Phân tích bài giải bằng AI",
+    "groups": [
+      {
+        "name": "Nhận báo cáo phân tích (F5-01 tới F5-07)",
+        "actors": ["Sinh viên"],
+        "usecases": [
+          "Yêu cầu phân tích bài nộp đã Accepted",
+          "Xem đối chiếu độ phức tạp với mức tối ưu đã biết",
+          "Xem điểm mạnh, điểm cần sửa và điểm dễ đọc",
+          "Xem chủ đề kiến thức nên ôn tập"
+        ]
+      },
+      {
+        "name": "Dùng lại kết quả phân tích (F5-08, F5-26)",
+        "actors": ["Sinh viên"],
+        "usecases": [
+          "Áp bản mã AI đề xuất vào Workspace",
+          "Mở lại báo cáo cũ từ trang tiến độ"
+        ]
+      }
+    ],
+    "externals": [
+      { "name": "Nhà cung cấp LLM", "from": ["Yêu cầu phân tích bài nộp đã Accepted"] }
+    ]
+  }
+}

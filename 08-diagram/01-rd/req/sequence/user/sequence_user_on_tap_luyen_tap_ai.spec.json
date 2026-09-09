@@ -1,0 +1,33 @@
+{
+  "_": "Luong 'Che do hoc xem goi y, roi Che do luyen tu soan cau tra loi va nhan phan hoi AI, tu cham muc do nho' cua actor A1, hien thuc hoa usecase_user_on_tap_cau_hoi_phong_van (F6-04 toi F6-08, F6-12). Nguon: US-A1-08 (01-rd/req/user_stories/a1_student.md) + 01-rd/screens/users/interview_question_detail.md muc 2-3.",
+  "_chua_co_prototype": "Phan Che do luyen (F6-07/F6-08) chua co prototype doi chieu -- interview_question_detail.md muc 3.3 danh dau [Doi nextjs]. Cac message tuong ung o day suy ra truc tiep tu F6-07/F6-08 cua interview-bank.md, khong phai tu UI da dung -- ghi ro trong ban giao, khong trinh bay nhu su that da xac nhan bang UI.",
+  "_prompt_injection": "Message goi LLM ghi ro '(tham so du lieu)' de the hien F5-17 cung ap dung cho F6-08 (Che do luyen di qua phan he AI, chiu chung rang buoc F5).",
+  "_granularity": "03-dd/api/ hien rong nen cac tang trong may chu gom thanh 'May chu AlgoPrep'; Nha cung cap LLM tach rieng vi la ranh gioi tien trinh that.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự - Ôn tập câu hỏi phỏng vấn: Chế độ học và Chế độ luyện có AI (Sinh viên)",
+  "mode": "color",
+  "sequence": {
+    "participants": [
+      { "name": "Sinh viên", "role": "actor" },
+      { "name": "Màn Chi tiết câu hỏi", "role": "boundary" },
+      { "name": "Máy chủ AlgoPrep", "role": "service" },
+      { "name": "PostgreSQL", "role": "datastore" },
+      { "name": "Nhà cung cấp LLM", "role": "external" }
+    ],
+    "messages": [
+      { "from": "Sinh viên", "to": "Màn Chi tiết câu hỏi", "text": "Mở câu hỏi ở Chế độ học" },
+      { "from": "Màn Chi tiết câu hỏi", "to": "Máy chủ AlgoPrep", "text": "Lấy gợi ý, khung trả lời chuẩn, từ khoá cốt lõi" },
+      { "from": "Máy chủ AlgoPrep", "to": "Màn Chi tiết câu hỏi", "text": "Gợi ý + khung trả lời chuẩn + từ khoá", "kind": "return" },
+      { "from": "Sinh viên", "to": "Màn Chi tiết câu hỏi", "text": "Chuyển Chế độ luyện, tự soạn trả lời, bấm Gửi" },
+      { "from": "Màn Chi tiết câu hỏi", "to": "Máy chủ AlgoPrep", "text": "Gửi câu trả lời tự soạn" },
+      { "from": "Máy chủ AlgoPrep", "to": "Nhà cung cấp LLM", "text": "Đối chiếu với tiêu chí chuẩn (tham số dữ liệu)" },
+      { "from": "Nhà cung cấp LLM", "to": "Máy chủ AlgoPrep", "text": "Điểm đã đạt, điểm còn thiếu, hướng bổ sung", "kind": "return" },
+      { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Lưu lượt luyện tập vào lịch sử" },
+      { "from": "Máy chủ AlgoPrep", "to": "Màn Chi tiết câu hỏi", "text": "Kết quả chấm", "kind": "return" },
+      { "from": "Màn Chi tiết câu hỏi", "to": "Sinh viên", "text": "Hiện điểm đã đạt/còn thiếu/hướng bổ sung", "kind": "return" },
+      { "from": "Sinh viên", "to": "Màn Chi tiết câu hỏi", "text": "Tự chấm mức độ nhớ (Biết rõ / Mơ hồ / Quên)" },
+      { "from": "Màn Chi tiết câu hỏi", "to": "Máy chủ AlgoPrep", "text": "Gửi mức tự chấm" },
+      { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Cập nhật thứ tự ưu tiên ôn lại" }
+    ]
+  }
+}

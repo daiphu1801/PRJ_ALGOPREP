@@ -1,0 +1,27 @@
+{
+  "_": "Chi tiet oval 'Cham va nhan xet bai nop' o ban tong quan, actor A2 Giang vien. Nguon: 01-rd/screens/teacher/instructor_grading.md muc 2 (F5-27, F5-07, F2-12 pham vi lop) va muc 3 dong 70 (o 'Nhan xet' textarea + nut Luu diem). KHONG co canh <<use>> sang Nha cung cap LLM: man nay DOC LAI bao cao JSON F5-07 da sinh san tu luong F5.1 cua hoc vien, khong tu goi LLM [SoT: 01-rd/screens/teacher/instructor_grading.md muc 2 -- 'Nguon cua diem quy doi la bao cao JSON co luoc do cua F5.1']. Diem AI 0-10 va diem cham tay la lop tham khao noi bo cua giang vien, tach bach hoan toan khoi Pass/Fail chinh thuc va khoi diem ty le testcase F4-13 hien cho hoc vien -- khong ghi de trang thai submission. KHONG ve F4-04 (fail-fast) du man con nhac, da het hieu luc theo DEC-2026-0831-partial-score-testcase-ratio.",
+  "kind": "usecase",
+  "title": "Sơ đồ Use Case chi tiết - Chấm và nhận xét bài nộp (Giảng viên)",
+  "mode": "color",
+  "usecase": {
+    "system": "Chức năng Chấm và nhận xét bài nộp",
+    "groups": [
+      {
+        "name": "Điểm AI tham khảo (F5-27, F5-07)",
+        "actors": ["Giảng viên"],
+        "usecases": [
+          "Xem điểm AI quy đổi thang 10 theo lớp phụ trách",
+          "Mở lại báo cáo phân tích AI của bài nộp"
+        ]
+      },
+      {
+        "name": "Chấm tay và nhận xét (F5-27)",
+        "actors": ["Giảng viên"],
+        "usecases": [
+          "Chấm tay đè lên điểm AI tham khảo",
+          "Ghi nhận xét cho bài nộp của học viên"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "_": "Chi tiet oval DUNG CHUNG 'Quan ly bai toan, cau hoi' o ban tong quan -- phan TESTCASE, man 01-rd/screens/shared/problem_authoring.md (testcase_management da gop hoan toan vao day, chot 2026-08-25). Chuyen tu usecase_admin_quan_ly_bai_toan_testcase 2026-09-07 va them actor Giang vien (DEC-2026-0825-shared-content-authoring-screens). Nguon: system_survey.md muc 5.2 (F2-05, F2-06, F2-07, F2-09, F2-10, F2-14). BO SUNG 2026-09-07: F2-10 (dat gioi han thoi gian/bo nho THEO BAI kem he so nhan theo ngon ngu, actor A2 A3, system_survey.md:287) truoc day khong duoc ve o bat ky so do nao -- KHAC F4-11 trong usecase_admin_cau_hinh_ngon_ngu_ai.spec.json, do la cau hinh gioi han o muc HE THONG do rieng A3 quan ly. F2-14: AI chi sinh INPUT, output lay tu chay that Dap an mau qua go-judge, testcase sinh ra o trang thai nhap can Admin xac nhan -- day la ly do co ca hai canh <<use>> sang go-judge va LLM. Bo bot: F2-08 (chong ro ri testcase an) la rang buoc bao mat cua he thong, khong phai use case cua nguoi soan de.",
+  "kind": "usecase",
+  "title": "Sơ đồ Use Case chi tiết - Quản lý testcase (dùng chung)",
+  "mode": "color",
+  "usecase": {
+    "system": "Chức năng Quản lý testcase",
+    "groups": [
+      {
+        "name": "Testcase và giới hạn tài nguyên (F2-05 tới F2-10, F2-14)",
+        "actors": ["Giảng viên", "Quản trị viên"],
+        "usecases": [
+          "Tạo testcase Sample và testcase Hidden",
+          "Tải lên bộ testcase theo lô",
+          "Quản lý phiên bản bộ testcase",
+          "Đặt giới hạn thời gian và bộ nhớ theo bài",
+          "Sinh testcase tự động bằng AI"
+        ]
+      }
+    ],
+    "externals": [
+      { "name": "go-judge", "from": ["Sinh testcase tự động bằng AI"] },
+      { "name": "Nhà cung cấp LLM", "from": ["Sinh testcase tự động bằng AI"] }
+    ]
+  }
+}

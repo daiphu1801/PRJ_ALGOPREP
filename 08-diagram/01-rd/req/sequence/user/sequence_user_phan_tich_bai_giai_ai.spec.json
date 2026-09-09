@@ -1,0 +1,41 @@
+{
+  "_": "Luong 'yeu cau phan tich bai giai sau Accepted, co cache theo hash ma nguon' cua actor A1, hien thuc hoa usecase_user_phan_tich_bai_giai_ai (F5-01 toi F5-08, F5-20). Nguon: US-A1-06 (01-rd/req/user_stories/a1_student.md) + 01-rd/screens/users/solution_review.md muc 2-3.",
+  "_alt": "Khoi alt 'Da co bao cao cache theo hash ma nguon?' la nhanh CHINH cua F5-20 (cache-hit khong goi lai AI la mot yeu cau nghiep vu ro rang, khong phai xu ly loi).",
+  "_prompt_injection": "Message goi LLM ghi ro '(tham so du lieu)' de the hien dung F5-17: ma nguon la du lieu dau vao, tach biet khoi chi thi he thong -- khong phai chi tiet trang tri.",
+  "_khong_ve": "KHONG ve trang thai loading/loi khi goi AI (het quota F5-22, khoa ngan sach F5-25): solution_review.md Cau hoi mo Q3 xac nhan hai trang thai nay CHUA co trong prototype, con [Doi nextjs] -- ve them la ve thu chua chot UI.",
+  "_granularity": "03-dd/api/ hien rong nen cac tang trong may chu gom thanh 'May chu AlgoPrep'; Nha cung cap LLM tach rieng vi la ranh gioi tien trinh that.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự - Phân tích bài giải bằng AI sau khi Accepted (Sinh viên)",
+  "mode": "color",
+  "sequence": {
+    "participants": [
+      { "name": "Sinh viên", "role": "actor" },
+      { "name": "Màn Phân tích bài giải", "role": "boundary" },
+      { "name": "Máy chủ AlgoPrep", "role": "service" },
+      { "name": "PostgreSQL", "role": "datastore" },
+      { "name": "Nhà cung cấp LLM", "role": "external" }
+    ],
+    "messages": [
+      { "from": "Sinh viên", "to": "Màn Phân tích bài giải", "text": "Mở màn từ bài nộp đã Accepted" },
+      { "from": "Màn Phân tích bài giải", "to": "Máy chủ AlgoPrep", "text": "Yêu cầu phân tích (submissionId)" },
+      { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Tính hash mã nguồn, tra cache báo cáo" },
+      {
+        "alt": {
+          "label": "Đã có báo cáo cache theo hash mã nguồn?",
+          "then": [
+            { "from": "Máy chủ AlgoPrep", "to": "Màn Phân tích bài giải", "text": "Trả báo cáo từ cache, không gọi lại AI", "kind": "return" }
+          ],
+          "else": [
+            { "from": "Máy chủ AlgoPrep", "to": "Nhà cung cấp LLM", "text": "Gửi mã nguồn (tham số dữ liệu) + prompt phân tích" },
+            { "from": "Nhà cung cấp LLM", "to": "Máy chủ AlgoPrep", "text": "Báo cáo JSON có lược đồ", "kind": "return" },
+            { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Lưu báo cáo kèm hash mã nguồn" }
+          ]
+        }
+      },
+      { "from": "Máy chủ AlgoPrep", "to": "Màn Phân tích bài giải", "text": "Báo cáo phân tích", "kind": "return" },
+      { "from": "Màn Phân tích bài giải", "to": "Sinh viên", "text": "Hiện độ phức tạp, điểm mạnh/cần sửa, đề xuất cải tiến", "kind": "return" },
+      { "from": "Sinh viên", "to": "Màn Phân tích bài giải", "text": "Bấm Áp bản đề xuất vào Workspace" },
+      { "from": "Màn Phân tích bài giải", "to": "Sinh viên", "text": "Hỏi xác nhận trước khi ghi đè, giữ lại bản mã cũ", "kind": "return" }
+    ]
+  }
+}

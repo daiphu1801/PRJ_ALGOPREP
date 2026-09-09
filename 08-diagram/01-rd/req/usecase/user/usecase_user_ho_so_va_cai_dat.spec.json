@@ -1,0 +1,29 @@
+{
+  "_": "Nua sau cua oval 'Xem tien do, ho so va cai dat ca nhan' o ban tong quan, actor A1 Sinh vien. Nguon: 01-rd/screens/users/profile.md muc 2 (F1-09, F1-19) va 01-rd/screens/users/settings.md muc 2 (F1-16, F1-20, F1-21, F1-22). Bo bot: chu de mau Sang/Toi va ngon ngu giao dien VI/EN nam tren man settings nhung KHONG co ma Fx-nn (chi co DEC-2026-0824-dark-light-theme va DEC-2026-0824-i18n-vi-en) nen khong ve thanh use case. F5-28 (tham so phien tu luyen) tuy dat tren man settings nhung ve o usecase_user_phong_van_gia_lap_ai vi thuoc nghiep vu phong van. F1-17 (quen mat khau, chua dang nhap) thuoc man auth dung chung, khong ve o day -- khac F1-19 la tu doi mat khau khi DA dang nhap.",
+  "kind": "usecase",
+  "title": "Sơ đồ Use Case chi tiết - Hồ sơ và cài đặt cá nhân (Sinh viên)",
+  "mode": "color",
+  "usecase": {
+    "system": "Chức năng Hồ sơ và cài đặt cá nhân",
+    "groups": [
+      {
+        "name": "Hồ sơ cá nhân (F1-09, F1-19)",
+        "actors": ["Sinh viên"],
+        "usecases": [
+          "Sửa thông tin cá nhân",
+          "Tự đổi mật khẩu khi đã đăng nhập"
+        ]
+      },
+      {
+        "name": "Cài đặt và dữ liệu cá nhân (F1-20 tới F1-22, F1-16)",
+        "actors": ["Sinh viên"],
+        "usecases": [
+          "Tuỳ chỉnh Workspace: ngôn ngữ, cỡ chữ, tự lưu nháp, phím Vim",
+          "Bật tắt thông báo email định kỳ",
+          "Xuất dữ liệu cá nhân ra CSV và JSON",
+          "Tự xoá tài khoản"
+        ]
+      }
+    ]
+  }
+}

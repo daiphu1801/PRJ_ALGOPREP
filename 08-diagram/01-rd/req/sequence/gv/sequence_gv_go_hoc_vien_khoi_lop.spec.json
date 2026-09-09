@@ -1,0 +1,28 @@
+{
+  "_": "Luong 'go mot hoc vien khoi lop' cua actor A2, hien thuc hoa usecase_gv_quan_ly_lop_hoc (F1-26). Nguon: 01-rd/screens/teacher/class_management.md muc 2 va muc 5 Q2b (chot 2026-08-28 qua hoi truc tiep chu du an): go hoc vien thi XOA LUON LICH SU LAM BAI cua hoc vien do trong lop, khong giu lai -- nguyen van ly do cua chu du an: 'da go roi thi giu cung khong lam gi'. class_student_detail.md muc 2 ghi them: nut go dat o CA bang danh sach class_management VA o man ho so chi tiet (chot 2026-09-01).",
+  "_pham_vi_xoa": "Buoc 6 la diem dang chu y nhat cua so do: pham vi xoa la 'trong lop', khong phai xoa tai khoan hay xoa toan bo lich su nop bai cua hoc vien tren he thong. Khac han F1-16 (tu xoa tai khoan) la khoa mem.",
+  "_khong_co_prototype": "F1-26 chot 2026-08-28, SAU khi prototype da dung, nen luong nay chua co UI (class_management.md muc 3). Buoc 2-3 (hoi xac nhan truoc khi go) la [SoT: Suy luan] -- RD chot HE QUA xoa lich su nhung khong chot co hop thoai xac nhan hay khong; ve vao vi day la hanh dong pha huy du lieu khong hoan tac duoc, va de trong thi doc gia hieu la go mot phat la mat.",
+  "_khong_alt": "Khong dung khoi alt: hop thoai xac nhan la luong giao dien, khong phai nhanh nghiep vu -- theo dung cach gom #3 cua skill (giu alt cho nhanh NAO LA nghiep vu).",
+  "_granularity": "03-dd/api/ hien rong nen ba tang gom thanh 'May chu AlgoPrep' -- xem ghi chu day du o sequence_admin_doi_ma_tran_phan_quyen.spec.json.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự - Gỡ học viên khỏi lớp (Giảng viên)",
+  "mode": "color",
+  "sequence": {
+    "participants": [
+      { "name": "Giảng viên", "role": "actor" },
+      { "name": "Màn Lớp của tôi", "role": "boundary" },
+      { "name": "Máy chủ AlgoPrep", "role": "service" },
+      { "name": "PostgreSQL", "role": "datastore" }
+    ],
+    "messages": [
+      { "from": "Giảng viên", "to": "Màn Lớp của tôi", "text": "Chọn học viên, bấm gỡ khỏi lớp" },
+      { "from": "Màn Lớp của tôi", "to": "Giảng viên", "text": "Hỏi xác nhận: lịch sử làm bài trong lớp sẽ bị xoá", "kind": "return" },
+      { "from": "Giảng viên", "to": "Màn Lớp của tôi", "text": "Xác nhận gỡ" },
+      { "from": "Màn Lớp của tôi", "to": "Máy chủ AlgoPrep", "text": "Gửi yêu cầu gỡ học viên khỏi lớp" },
+      { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Xoá thành viên khỏi lớp" },
+      { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Xoá lịch sử làm bài của học viên trong lớp" },
+      { "from": "Máy chủ AlgoPrep", "to": "Màn Lớp của tôi", "text": "Xác nhận đã gỡ", "kind": "return" },
+      { "from": "Màn Lớp của tôi", "to": "Giảng viên", "text": "Cập nhật danh sách học viên của lớp", "kind": "return" }
+    ]
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "_": "Luong 'nop bai va xem ket qua tung testcase theo thoi gian thuc' cua actor A1, hien thuc hoa usecase_user_giai_va_nop_bai (F4-01, F4-08, F4-13). Nguon: US-A1-04 (01-rd/req/user_stories/a1_student.md) + 01-rd/screens/users/submission_result.md muc 2 (bang doi chieu hanh vi F4-01/F4-03/F4-08/F4-12/F4-13).",
+  "_khong_fail_fast": "Buoc 'go-judge tra ket qua tung testcase' KHONG dung lai khi gap sai: F4-04 (fail-fast) da het hieu luc theo DEC-2026-0831-partial-score-testcase-ratio -- toan bo N testcase deu duoc chay, diem ty le F4-13 tinh tren du lieu that.",
+  "_granularity": "03-dd/api/ hien rong nen cac tang trong may chu gom thanh 'May chu AlgoPrep'; RabbitMQ, go-judge, PostgreSQL tach rieng vi la ranh gioi tien trinh that -- cung cach chon nhu sequence_admin_giam_sat_hang_doi.spec.json.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự - Nộp bài và xem kết quả từng testcase theo thời gian thực (Sinh viên)",
+  "mode": "color",
+  "sequence": {
+    "participants": [
+      { "name": "Sinh viên", "role": "actor" },
+      { "name": "Màn Nộp bài", "role": "boundary" },
+      { "name": "Máy chủ AlgoPrep", "role": "service" },
+      { "name": "RabbitMQ", "role": "external" },
+      { "name": "go-judge", "role": "external" },
+      { "name": "PostgreSQL", "role": "datastore" }
+    ],
+    "messages": [
+      { "from": "Sinh viên", "to": "Màn Nộp bài", "text": "Bấm Nộp bài" },
+      { "from": "Màn Nộp bài", "to": "Máy chủ AlgoPrep", "text": "POST /submissions" },
+      { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Lưu bản nộp, trạng thái PENDING" },
+      { "from": "Máy chủ AlgoPrep", "to": "Màn Nộp bài", "text": "submissionId ngay, không chờ chấm xong", "kind": "return" },
+      { "from": "Màn Nộp bài", "to": "Sinh viên", "text": "Hiện submissionId, mở kênh WebSocket theo dõi", "kind": "return" },
+      { "from": "Máy chủ AlgoPrep", "to": "RabbitMQ", "text": "Đẩy job chấm từng testcase", "kind": "async" },
+      { "from": "RabbitMQ", "to": "go-judge", "text": "Phân phối job cho worker", "kind": "async" },
+      { "from": "go-judge", "to": "Máy chủ AlgoPrep", "text": "Kết quả từng testcase (chạy hết, không dừng sớm)", "kind": "async" },
+      { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Ghi kết quả từng testcase" },
+      { "from": "Máy chủ AlgoPrep", "to": "Màn Nộp bài", "text": "Đẩy trạng thái testcase qua WebSocket", "kind": "async" },
+      { "from": "Màn Nộp bài", "to": "Sinh viên", "text": "Cập nhật realtime từng testcase, không cần tải lại trang", "kind": "async" },
+      { "from": "Máy chủ AlgoPrep", "to": "PostgreSQL", "text": "Ghi verdict tổng và điểm tỷ lệ testcase" },
+      { "from": "Máy chủ AlgoPrep", "to": "Màn Nộp bài", "text": "Verdict cuối + điểm tỷ lệ testcase", "kind": "return" }
+    ]
+  }
+}
