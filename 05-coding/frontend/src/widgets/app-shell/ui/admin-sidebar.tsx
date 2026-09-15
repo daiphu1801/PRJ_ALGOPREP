@@ -2,43 +2,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ThemeLangSwitcher } from "@/shared/ui";
+import { NavGroupHeader, NavLink, ThemeLangSwitcher } from "@/shared/ui";
 import { useT } from "@/shared/i18n";
 import { cn } from "@/shared/lib";
 import { ADMIN_NAV_GROUPS, ADMIN_NAV_MISC, ADMIN_NAV_OVERVIEW } from "../model/admin-nav";
-
-// Declared at module scope, not inside AdminSidebar — react-hooks/static-components flags a
-// component factory recreated on every render (it would reset internal state each render).
-function NavLink({
-  href,
-  label,
-  isActive,
-  collapsed,
-}: {
-  href: string;
-  label: string;
-  isActive: boolean;
-  collapsed: boolean;
-}) {
-  return (
-    <Link
-      href={href}
-      title={collapsed ? label : undefined}
-      aria-current={isActive ? "page" : undefined}
-      className={cn(
-        "block rounded-md border border-transparent px-3 py-1.5 text-sm transition-colors",
-        collapsed && "truncate text-center",
-        isActive
-          ? "bg-[var(--color-primary)] text-[var(--color-on-primary)] [border-color:var(--admin-active-border)]"
-          : "text-[var(--color-text)] hover:bg-[var(--admin-nav-hover)]",
-      )}
-    >
-      {label}
-    </Link>
-  );
-}
 
 /**
  * Layout matches 09-layoutBase/Admin - Tổng quan.dc.html:57-101 1:1 (02-bd/screens/admin/admin_overview.md
@@ -98,7 +66,7 @@ export function AdminSidebar() {
     <nav
       aria-label={t("sidebarLabel")}
       className={cn(
-        "glass-surface flex shrink-0 flex-col gap-3 overflow-y-auto border-r border-[var(--color-border)] p-3 transition-[width]",
+        "glass-surface flex shrink-0 flex-col gap-3 overflow-x-hidden overflow-y-auto border-r border-[var(--color-border)] p-3 transition-[width]",
         effectiveCollapsed ? "w-[72px]" : "w-56",
       )}
     >
@@ -124,45 +92,42 @@ export function AdminSidebar() {
         {!effectiveCollapsed && <span>{t("collapseSidebar")}</span>}
       </button>
 
-      <div className="flex flex-1 flex-col gap-1 overflow-y-auto">
+      <div className="flex flex-1 flex-col gap-1 overflow-x-hidden overflow-y-auto">
         <NavLink
           href={ADMIN_NAV_OVERVIEW.href}
           label={t(ADMIN_NAV_OVERVIEW.labelKey)}
+          icon={ADMIN_NAV_OVERVIEW.icon}
           isActive={pathname === ADMIN_NAV_OVERVIEW.href}
           collapsed={effectiveCollapsed}
         />
 
-        {ADMIN_NAV_GROUPS.map((group) => (
-          <div key={group.key}>
-            <button
-              type="button"
-              onClick={() => toggleGroup(group.key)}
-              aria-expanded={!!openGroups[group.key]}
-              title={effectiveCollapsed ? t(group.labelKey) : undefined}
-              className={cn(
-                "flex w-full items-center rounded-md px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)] hover:bg-[var(--color-surface-hover)]",
-                effectiveCollapsed ? "justify-center" : "justify-between",
+        {ADMIN_NAV_GROUPS.map((group) => {
+          const isOpen = !!openGroups[group.key] && !effectiveCollapsed;
+          return (
+            <div key={group.key}>
+              <NavGroupHeader
+                label={t(group.labelKey)}
+                icon={group.icon}
+                isOpen={isOpen}
+                collapsed={effectiveCollapsed}
+                onClick={() => toggleGroup(group.key)}
+              />
+              {isOpen && (
+                <div className="mt-1 ml-4 flex flex-col gap-0.5 border-l border-[var(--color-border)] pl-2">
+                  {group.items.map((item) => (
+                    <NavLink
+                      key={item.key}
+                      href={item.href}
+                      label={t(item.labelKey)}
+                      isActive={pathname === item.href}
+                      collapsed={effectiveCollapsed}
+                    />
+                  ))}
+                </div>
               )}
-            >
-              {!effectiveCollapsed && t(group.labelKey)}
-              {!effectiveCollapsed && <span aria-hidden="true">{openGroups[group.key] ? "−" : "+"}</span>}
-              {effectiveCollapsed && <span aria-hidden="true">{t(group.labelKey).charAt(0)}</span>}
-            </button>
-            {openGroups[group.key] && (
-              <div className={cn("mt-1 flex flex-col gap-0.5", !effectiveCollapsed && "ml-4 border-l border-[var(--color-border)] pl-2")}>
-                {group.items.map((item) => (
-                  <NavLink
-                    key={item.key}
-                    href={item.href}
-                    label={t(item.labelKey)}
-                    isActive={pathname === item.href}
-                    collapsed={effectiveCollapsed}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
+            </div>
+          );
+        })}
 
         <div className={cn("mt-3 border-t border-[var(--color-border)] pt-2", effectiveCollapsed && "text-center")}>
           {!effectiveCollapsed && (
@@ -176,6 +141,7 @@ export function AdminSidebar() {
                 key={item.key}
                 href={item.href}
                 label={t(item.labelKey)}
+                icon={item.icon}
                 isActive={pathname === item.href}
                 collapsed={effectiveCollapsed}
               />
@@ -184,7 +150,7 @@ export function AdminSidebar() {
         </div>
       </div>
 
-      <ThemeLangSwitcher variant="inline" className={cn(effectiveCollapsed && "flex-col")} />
+      <ThemeLangSwitcher variant="inline" collapsed={effectiveCollapsed} />
     </nav>
   );
 }

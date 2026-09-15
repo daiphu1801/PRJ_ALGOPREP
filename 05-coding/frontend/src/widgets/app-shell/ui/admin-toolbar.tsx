@@ -1,4 +1,5 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
+import { LayoutGrid, Moon, ShieldCheck } from "lucide-react";
 import { getT } from "@/shared/i18n/server";
 
 /**
@@ -15,8 +16,13 @@ import { getT } from "@/shared/i18n/server";
  * disabled + aria-hidden so they don't become dead keyboard stops (a11y). The liên-thực-thể search
  * box from an older prototype draft is dropped per DEC-2026-0831-admin-overview-ui-decisions —
  * never rebuilt here.
+ *
+ * Icons are the real `layout-grid`/`moon`/`shield-check` glyphs BD section 2 point 2 names, not a
+ * plain "•" placeholder — that stand-in (and the 2026-09-14 "missing glassmorphism" flag above)
+ * predated `lucide-react` being added to the project (2026-09-15, for the sidebar/theme-switcher
+ * icon pass); this closes the same gap here instead of leaving one lone spot still un-iconified.
  */
-const DECORATIVE_ICONS = ["grid", "moon", "shield"] as const;
+const DECORATIVE_ICONS = [LayoutGrid, Moon, ShieldCheck];
 
 export async function AdminToolbar() {
   const t = await getT("adminNav");
@@ -24,13 +30,13 @@ export async function AdminToolbar() {
   return (
     <div className="mb-3 flex items-center gap-2">
       <div className="flex-1" />
-      {DECORATIVE_ICONS.map((icon) => (
+      {DECORATIVE_ICONS.map((Icon) => (
         <span
-          key={icon}
+          key={Icon.displayName}
           aria-hidden="true"
           className="glass-surface flex h-8 w-8 items-center justify-center rounded-full text-[var(--color-text-muted)] opacity-70"
         >
-          •
+          <Icon className="h-4 w-4" />
         </span>
       ))}
       {/* Real identity waits on app/providers/auth-provider.tsx session bootstrap (still TODO) —

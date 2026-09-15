@@ -7,8 +7,7 @@
     "pendingDesign": "Màn hình đang chờ Basic Design / Detail Design.",
     "themeLight": "Sáng",
     "themeDark": "Tối",
-    "themeSwitchToLight": "Chuyển sang giao diện sáng",
-    "themeSwitchToDark": "Chuyển sang giao diện tối",
+    "themeSwitcher": "Chọn giao diện sáng/tối",
     "languageSwitcher": "Chọn ngôn ngữ giao diện"
   },
   "nav": {
@@ -135,5 +134,12 @@
       "viewAll": "Xem tất cả",
       "userRetention": "Người dùng mới / quay lại"
     }
+  },
+  "adminAuth": {
+    "eyebrow": "QUẢN TRỊ VIÊN",
+    "title": "Đăng nhập quản trị",
+    "subtitle": "Dành riêng cho quản trị viên AlgoPrep — đăng nhập bằng tài khoản được cấp.",
+    "submit": "Đăng nhập",
+    "notAdminHint": "Không phải quản trị viên? Dùng trang đăng nhập thông thường."
   }
 }

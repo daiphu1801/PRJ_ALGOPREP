@@ -3,6 +3,8 @@ export { Skeleton } from "./skeleton";
 export { EmptyState } from "./empty-state";
 export { ErrorState } from "./error-state";
 export { InlineFieldError } from "./inline-field-error";
+export { NavLink } from "./nav-link";
+export { NavGroupHeader } from "./nav-group-header";
 export { ThemeLangSwitcher } from "./theme-lang-switcher";
 export { LiquidGlassBackdrop } from "./liquid-glass-backdrop";
 export { StatCardWithSparkline } from "./charts/stat-card-with-sparkline";

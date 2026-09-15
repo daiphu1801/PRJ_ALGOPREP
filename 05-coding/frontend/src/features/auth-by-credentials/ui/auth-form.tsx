@@ -10,6 +10,13 @@ import { OtpInputGroup } from "./otp-input-group";
 
 type AuthFormProps = {
   flow: ReturnType<typeof useAuthFlow>;
+  /**
+   * Admin login (`views/admin-auth`, `DEC-2026-0915-admin-separate-login-route`) hides the OAuth
+   * row — admin accounts are provisioned, not self-service via Google/GitHub — without needing a
+   * second copy of this form. Defaults to true so the shared `auth` screen (student/instructor/
+   * public) keeps rendering it exactly as before.
+   */
+  showOAuth?: boolean;
 };
 
 /**
@@ -20,7 +27,7 @@ type AuthFormProps = {
  * action's state across files for no reuse benefit (frontend_architecture.md 2.A: "gắn với một
  * hành động của người dùng" stays in features/<action>/ui as a unit).
  */
-export function AuthForm({ flow }: AuthFormProps) {
+export function AuthForm({ flow, showOAuth = true }: AuthFormProps) {
   const t = useT("auth");
   const [showPassword, setShowPassword] = useState(false);
 
@@ -195,7 +202,7 @@ export function AuthForm({ flow }: AuthFormProps) {
         {isSignup ? t("signupSubmit") : t("loginSubmit")}
       </Button>
 
-      <OAuthButtonGroup onSelect={(provider) => void submitOAuth(provider)} disabled={isSubmitting} />
+      {showOAuth && <OAuthButtonGroup onSelect={(provider) => void submitOAuth(provider)} disabled={isSubmitting} />}
     </form>
   );
 }

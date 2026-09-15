@@ -15,8 +15,19 @@ type HorizontalBarChartProps = {
   pointLabels: string[];
 };
 
+// BD component inventory explicitly flags this as a required addition, not optional: "trục hoành
+// cần nhãn thời gian (thiếu ở prototype, phải bổ sung khi build FE)"
+// (02-bd/screens/admin/admin_overview.md section 3). `pointLabels` was already threaded through as
+// data (used for `title`/`aria-label`) but never rendered as visible text — this is what closes
+// that gap. With up to 20 points (dc.html's "20 mốc"), printing all 20 under a narrow mid-column
+// widget would overlap into an unreadable smear, so only every Nth label is drawn (plus the last
+// point, so the axis never appears to stop short of the data) — the skipped labels stay reachable
+// via each bar-group's `title` tooltip, same as before.
+const MAX_VISIBLE_AXIS_LABELS = 6;
+
 export function HorizontalBarChart({ series, pointLabels }: HorizontalBarChartProps) {
   const max = Math.max(...series.flatMap((s) => s.points), 1);
+  const labelStep = Math.max(1, Math.ceil(pointLabels.length / MAX_VISIBLE_AXIS_LABELS));
 
   return (
     <div>
@@ -44,6 +55,24 @@ export function HorizontalBarChart({ series, pointLabels }: HorizontalBarChartPr
             ))}
           </div>
         ))}
+      </div>
+      {/* Each point still gets a flex-1 anchor slot so a visible label lines up under its own bar
+          group, but slots are ~16px wide at 20 points — too narrow for even "N13" without
+          `overflow-visible` (a `truncate` here just turns every real label into "N..."). Neighbours
+          are empty spacers, so the overflow has room to spill without colliding with anything. */}
+      <div className="mt-1 flex gap-1" aria-hidden="true">
+        {pointLabels.map((label, pointIndex) => {
+          const isLastPoint = pointIndex === pointLabels.length - 1;
+          const showLabel = pointIndex % labelStep === 0 || isLastPoint;
+          return (
+            <span
+              key={label}
+              className={`relative flex-1 overflow-visible whitespace-nowrap text-[10px] text-[var(--color-text-muted)] ${isLastPoint ? "text-right" : "text-center"}`}
+            >
+              {showLabel ? label : ""}
+            </span>
+          );
+        })}
       </div>
     </div>
   );

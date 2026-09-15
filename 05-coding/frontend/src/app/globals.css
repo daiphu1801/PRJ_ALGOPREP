@@ -63,6 +63,24 @@ body {
 }
 
 /*
+ * Theme switch (Light/Dark) crossfade — without this the color tokens above snap instantly when
+ * next-themes toggles the `.dark` class, which reads as a jarring flash rather than a switch.
+ * Scoped to `*` but LOW specificity (a bare type selector), so Tailwind's own `transition-colors`
+ * utility (class selector, higher specificity) still wins wherever a component already declares
+ * its own hover/focus transition — this is only the fallback for everything else.
+ * `prefers-reduced-motion` gate: this is decorative motion, not functional, so honor it.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  *,
+  *::before,
+  *::after {
+    transition-property: background-color, border-color, color, fill, stroke, box-shadow, outline-color;
+    transition-timing-function: ease;
+    transition-duration: 150ms;
+  }
+}
+
+/*
  * Admin shell theme scope — the Admin area does NOT share the app's generic token values.
  * 09-layoutBase/Admin - Tổng quan.dc.html:18-38 defines its OWN bg/text/muted/glass/border/active/logo
  * tokens per theme, distinct from the rest of the app's palette. Overriding
@@ -137,4 +155,32 @@ body {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.05),
     0 16px 36px rgba(0, 0, 0, 0.45);
+}
+
+/* Elevated variant for the ONE dominant centered surface on a screen (Admin login card) rather
+   than a grid of small dashboard widgets — `.glass-card` alone reads as flat here because a large
+   panel has more area sitting flush against a similarly-pale background, so the same shadow that
+   is enough for a small widget disappears into it. Adds: a brighter top specular highlight (the
+   "glass edge catching light" cue), a thin bright inset ring standing in for a glass rim, a tight
+   contact shadow for lift, and a big soft ambient shadow so the panel visibly floats over the
+   liquid-blob backdrop instead of blending into it. Flagged by the owner 2026-09-15 — the admin
+   login card looked "phẳng" (flat) against the mockup's intended liquid-glass depth. */
+.admin-shell .glass-card--elevated {
+  backdrop-filter: blur(40px) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 75%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, white 55%, transparent),
+    0 1px 2px rgba(6, 40, 36, 0.15),
+    0 8px 12px -4px rgba(6, 40, 36, 0.18),
+    0 24px 32px -8px rgba(6, 50, 46, 0.28),
+    0 48px 80px -20px rgba(6, 50, 46, 0.42);
+}
+
+.dark .admin-shell .glass-card--elevated {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 2px 4px rgba(0, 0, 0, 0.35),
+    0 10px 20px -6px rgba(0, 0, 0, 0.5),
+    0 32px 64px -16px rgba(0, 0, 0, 0.6);
 }

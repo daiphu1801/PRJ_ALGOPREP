@@ -111,6 +111,11 @@ Không liệt kê request/response, mã lỗi HTTP cụ thể tại đây — th
 | `forgot_email` → `forgot_otp` → `forgot_reset` | `login` | Hoàn tất đặt lại mật khẩu |
 | Bất kỳ màn nào, Access Token hết hạn và refresh cũng thất bại (refresh-token reuse bị revoke cả family) | `auth` (`login`) | [SoT: 02-bd/security/identity.md mục 1 — "buộc đăng nhập lại"] |
 
+**Divergence 2026-09-15 (`DEC-2026-0915-admin-separate-login-route`):** vai trò `ADMIN` không còn đăng
+nhập qua màn `auth` dùng chung ở trên nữa — có route/màn `/admin/login` riêng (`views/admin-auth`), cùng
+API/contract đăng nhập, chỉ khác route và giao diện (liquid-glass theo `admin_overview`, không có
+signup/OAuth). Bảng điều hướng trên vẫn đúng nguyên trạng cho A1 (`STUDENT`) và A2 (`INSTRUCTOR`).
+
 ## 6. Access rights (ai vào được màn này — không phải "vào được làm gì")
 
 - Màn `auth` **không yêu cầu đăng nhập** — là điểm vào công khai cho mọi actor A1/A2/A3

@@ -7,8 +7,7 @@
     "pendingDesign": "This screen is waiting on Basic Design / Detail Design.",
     "themeLight": "Light",
     "themeDark": "Dark",
-    "themeSwitchToLight": "Switch to light theme",
-    "themeSwitchToDark": "Switch to dark theme",
+    "themeSwitcher": "Choose interface theme",
     "languageSwitcher": "Choose interface language"
   },
   "nav": {
@@ -135,5 +134,12 @@
       "viewAll": "View all",
       "userRetention": "New / returning users"
     }
+  },
+  "adminAuth": {
+    "eyebrow": "ADMINISTRATOR",
+    "title": "Admin sign in",
+    "subtitle": "For AlgoPrep administrators only — sign in with your provisioned account.",
+    "submit": "Sign in",
+    "notAdminHint": "Not an administrator? Use the regular sign-in page instead."
   }
 }
