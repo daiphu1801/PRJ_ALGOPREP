@@ -19,9 +19,11 @@ type ButtonProps = ComponentPropsWithoutRef<"button"> & {
   variant?: keyof typeof VARIANT;
   size?: keyof typeof SIZE;
   /**
-   * Truyền style của Button xuống đúng một element con thay vì render thẻ <button>.
-   * Dùng khi cần một liên kết trông như nút: <Button asChild><Link href="...">…</Link></Button>.
-   * Không có nó thì mọi chỗ cần link-dạng-nút sẽ copy lại chuỗi class — đúng loại nợ sinh sôi.
+   * Forwards the Button's styling onto exactly one child element instead of rendering a
+   * <button> tag. Use it when you need a link that looks like a button:
+   * <Button asChild><Link href="...">…</Link></Button>.
+   * Without it, every place that needs a link-styled-as-button would copy the class string —
+   * exactly the kind of debt that compounds.
    */
   asChild?: boolean;
 };

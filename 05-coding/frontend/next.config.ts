@@ -7,6 +7,9 @@ const withNextIntl = createNextIntlPlugin("./src/shared/i18n/request.ts");
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  // Off by request — the dev-only floating "N" badge (route/build indicator) was mistaken for an
+  // app button during UI review. Dev-mode only; never renders in production either way.
+  devIndicators: false,
 };
 
 export default withNextIntl(nextConfig);

@@ -1,15 +1,17 @@
 import { redirect } from "next/navigation";
 
 /**
- * Route gốc không có màn Landing riêng — `01-rd/screens/` không có màn nào như vậy trong 25 màn.
+ * The root route has no dedicated Landing screen — `01-rd/screens/` has no such screen among
+ * its 25.
  *
- * Hành vi đầy đủ theo `01-rd/screens/shared/auth.md:90` (Q3): chưa đăng nhập thì về `/login`;
- * đã đăng nhập thì về đích theo vai trò (`entities/user` → `HOME_PATH_BY_ROLE`), và nếu người
- * dùng tới từ một liên kết cần đăng nhập trước thì ưu tiên quay lại đúng URL đó.
+ * Full behavior per `01-rd/screens/shared/auth.md:90` (Q3): not logged in goes to `/login`;
+ * logged in goes to the role-based destination (`entities/user` → `HOME_PATH_BY_ROLE`), and if
+ * the user arrived from a link that required login first, prefer returning to that exact URL.
  *
- * Ở khung base chỉ hiện thực nhánh CHƯA ĐĂNG NHẬP, vì chưa có session thật
- * (`app/providers/auth-provider.tsx` còn TODO, cần `03-dd/api/identity.md`). Nhánh theo vai trò
- * và returnUrl thuộc `middleware.ts` — dựng cùng lúc với xác thực thật, không đoán trước.
+ * At this base-scaffold stage only the NOT-LOGGED-IN branch is implemented, since there is no
+ * real session yet (`app/providers/auth-provider.tsx` is still a TODO, needs
+ * `03-dd/api/identity.md`). The role-based branch and returnUrl belong to `middleware.ts` — to
+ * be built alongside real auth, not guessed at ahead of time.
  */
 export default function RootPage() {
   redirect("/login");

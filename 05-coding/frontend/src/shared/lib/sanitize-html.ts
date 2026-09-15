@@ -1,16 +1,17 @@
 /**
- * Điểm sanitize HTML DUY NHẤT của frontend (đề bài Markdown, phản hồi AI) — mọi nơi khác
- * import từ đây, không import dompurify trực tiếp (chặn bằng ESLint no-restricted-imports).
+ * The frontend's SINGLE HTML sanitization point (problem statement Markdown, AI responses) —
+ * everywhere else imports from here, never dompurify directly (blocked via ESLint
+ * no-restricted-imports).
  *
- * CHƯA TRIỂN KHAI, VÀ CHỦ ĐÍCH LÀ NÉM LỖI. Thư viện sanitizer chưa được chọn
- * (01-rd/system/frontend_architecture.md mục 1 — "ba thư viện phải quyết định bằng nhu cầu
- * thật"). Một sanitizer giả (ví dụ regex strip thẻ script) nguy hiểm hơn là không có: nó tạo
- * cảm giác an toàn sai và XSS vẫn đi qua bằng hàng chục vector khác (onerror, javascript:,
- * SVG, thẻ chưa đóng). Ném lỗi ngay để bất kỳ ai vô tình dùng nó đều thấy tại thời điểm dev,
- * thay vì phát hiện khi đã lên production.
+ * NOT IMPLEMENTED YET, AND DELIBERATELY THROWS. A sanitizer library has not been chosen
+ * (01-rd/system/frontend_architecture.md section 1 — "the three libraries must be decided by
+ * actual need"). A fake sanitizer (e.g. a regex that strips script tags) is more dangerous than
+ * none at all: it creates a false sense of safety while XSS still gets through via dozens of
+ * other vectors (onerror, javascript:, SVG, unclosed tags). Throwing immediately means anyone
+ * who accidentally uses it finds out at dev time, not after it has shipped to production.
  *
- * Khi triển khai thật: sanitize phía server là lớp một (Jsoup, overview.md mục 1.I), hàm này
- * là lớp phòng thủ thứ hai phía client.
+ * When actually implemented: server-side sanitization is layer one (Jsoup, overview.md section
+ * 1.I), this function is the second line of defense on the client.
  */
 export function sanitizeHtml(_rawHtml: string): string {
   throw new Error(

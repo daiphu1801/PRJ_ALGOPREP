@@ -1,9 +1,10 @@
 import { getT } from "@/shared/i18n/server";
 
-// Khung rỗng cho màn dùng chung 'problem_authoring' (A2 + A3, mount ở /instructor/problems/[problemId] và
-// /admin/problems/[problemId] — DEC-2026-0825-shared-content-authoring-screens). Chờ
-// 02-bd/screens/shared/problem_authoring.md chốt bố cục — màn nặng nhất trong RD (4 tab + tab Đặc tả kỹ
-// thuật đang chờ chốt ở Câu hỏi mở Q4, panel phiên bản testcase F2-09 ở Q2 đã chốt).
+// Empty shell for the shared 'problem_authoring' screen (A2 + A3, mounted at /instructor/problems/[problemId]
+// and /admin/problems/[problemId] — DEC-2026-0825-shared-content-authoring-screens). Pending
+// 02-bd/screens/shared/problem_authoring.md to lock the layout — the heaviest screen in the RD (4 tabs,
+// with the Technical Spec tab still pending resolution at open question Q4; the testcase-versioning
+// panel F2-09 was already resolved at Q2).
 export async function ProblemAuthoringView() {
   const t = await getT("common");
 

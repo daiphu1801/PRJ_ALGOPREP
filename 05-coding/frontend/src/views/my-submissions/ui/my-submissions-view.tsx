@@ -1,7 +1,8 @@
 import { getT } from "@/shared/i18n/server";
 
-// Khung rỗng cho màn hình 'my-submissions' — chờ 02-bd/screens/ + 03-dd/screens/ chốt bố cục và
-// component thật. Nguồn slug: 01-rd/screens/. KHÔNG thêm logic nghiệp vụ ở đây trước khi có DD.
+// Empty shell for the 'my-submissions' screen — waiting on 02-bd/screens/ + 03-dd/screens/ to lock
+// the layout and real components. Slug source: 01-rd/screens/. Do NOT add business logic here
+// before the DD lands.
 export async function MySubmissionsView() {
   const t = await getT("common");
 

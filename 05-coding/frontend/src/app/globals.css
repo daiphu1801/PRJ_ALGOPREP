@@ -1,10 +1,11 @@
 @import "tailwindcss";
 
 /*
- * Semantic color tokens — Dark/Light đã chốt, Light là mặc định (DEC-2026-0824-dark-light-theme).
- * next-themes gắn class .dark lên <html> (attribute="class"); :root là Light.
- * Hệ thống thiết kế đầy đủ (màu, typography, thư viện component) CHƯA chốt — token dưới đây là
- * base tối thiểu để dựng khung, không phải bảng màu cuối cùng (frontend_architecture.md mục 6).
+ * Semantic color tokens — Dark/Light is locked in, Light is the default (DEC-2026-0824-dark-light-theme).
+ * next-themes attaches the .dark class to <html> (attribute="class"); :root is Light.
+ * The full design system (colors, typography, component library) is NOT locked in yet — the
+ * tokens below are a minimal base to scaffold the shell, not the final palette
+ * (frontend_architecture.md section 6).
  */
 :root {
   --color-background: #ffffff;
@@ -16,6 +17,22 @@
   --color-primary: #2563eb;
   --color-on-primary: #ffffff;
   --color-danger: #dc2626;
+  /* Liquid-glass backdrop blobs, Admin shell only — colors carried over verbatim from
+     09-layoutBase/Admin - Tổng quan.dc.html:24 (--blob1/2/3, light theme). This is the shell's
+     defining visual identity, not a placeholder brand color, so it is not deferred like the rest
+     of the palette. */
+  --color-blob-1: rgba(34, 211, 238, 0.5);
+  --color-blob-2: rgba(20, 184, 166, 0.42);
+  --color-blob-3: rgba(90, 150, 255, 0.3);
+  /* Admin shell accent palette — ported verbatim from dc.html:26 (--cyan/--teal/--slate, light) plus
+     the warning/negative colors used by the "Kết quả chấm" gauge legend (dc.html:355). Charts read
+     these via colorVar instead of the generic --color-primary/--color-danger, which are shared
+     across the whole app and were never meant to carry this screen's specific cyan/teal identity. */
+  --color-admin-cyan: #0891a8;
+  --color-admin-teal: #0f8a72;
+  --color-admin-slate: rgba(12, 40, 36, 0.5);
+  --color-admin-warn: #a9750f;
+  --color-admin-negative: #c84046;
 }
 
 .dark {
@@ -28,6 +45,16 @@
   --color-primary: #3b82f6;
   --color-on-primary: #0b1120;
   --color-danger: #f87171;
+  /* dc.html:35-37 (--blob1/2/3, dark theme). */
+  --color-blob-1: rgba(34, 211, 238, 0.4);
+  --color-blob-2: rgba(20, 184, 166, 0.32);
+  --color-blob-3: rgba(34, 211, 238, 0.18);
+  /* dc.html:354-355 (dark theme cyan/teal/slate/warnC/negC). */
+  --color-admin-cyan: #22d3ee;
+  --color-admin-teal: #14b8a6;
+  --color-admin-slate: #7e8d8e;
+  --color-admin-warn: #ffce78;
+  --color-admin-negative: #ff8a8a;
 }
 
 body {
@@ -35,8 +62,79 @@ body {
   color: var(--color-text);
 }
 
-/* Bắt buộc trên mọi phần tử dùng backdrop-filter (frontend_architecture.md §2.A-D). */
+/*
+ * Admin shell theme scope — the Admin area does NOT share the app's generic token values.
+ * 09-layoutBase/Admin - Tổng quan.dc.html:18-38 defines its OWN bg/text/muted/glass/border/active/logo
+ * tokens per theme, distinct from the rest of the app's palette. Overriding
+ * the semantic tokens inside `.admin-shell` (applied once, on the AppShell admin wrapper) means
+ * every existing component that already reads --color-* (buttons, .glass-surface, chart muted
+ * text, nav links) automatically renders in the exact mockup palette with zero per-component
+ * changes — only the scope boundary changes, not the components.
+ */
+.admin-shell {
+  --color-background: #f2f8f7;
+  --color-surface: #ffffff;
+  --color-surface-hover: rgba(12, 90, 80, 0.1);
+  --color-text: #0c201d;
+  --color-text-muted: rgba(12, 40, 36, 0.6);
+  --color-border: rgba(12, 90, 80, 0.14);
+  --color-primary: rgba(255, 255, 255, 0.85);
+  --color-on-primary: #063b37;
+  --admin-glass: rgba(255, 255, 255, 0.42);
+  --admin-glass-strong: rgba(255, 255, 255, 0.58);
+  --admin-active-border: rgba(14, 165, 164, 0.3);
+  --admin-logo-bg: linear-gradient(135deg, #0ea5a4, #22d3ee);
+  --admin-logo-fg: #ffffff;
+  --admin-nav-hover: rgba(255, 255, 255, 0.7);
+}
+
+.dark .admin-shell {
+  --color-background: #050807;
+  --color-surface: #06100e;
+  --color-surface-hover: rgba(255, 255, 255, 0.06);
+  --color-text: #f3f5f4;
+  --color-text-muted: #7e8d8e;
+  --color-border: rgba(255, 255, 255, 0.06);
+  --color-primary: #22d3ee;
+  --color-on-primary: #05201f;
+  --admin-glass: rgba(6, 10, 9, 0.55);
+  --admin-glass-strong: rgba(5, 9, 8, 0.6);
+  --admin-active-border: rgba(103, 232, 249, 0.4);
+  --admin-logo-bg: linear-gradient(135deg, #22d3ee, #0e4243);
+  --admin-logo-fg: #05201f;
+  --admin-nav-hover: rgba(255, 255, 255, 0.06);
+}
+
+/* Exact glass alpha from dc.html instead of the generic color-mix formula — the mockup's glass
+   values are fixed constants (--glass/--glass2), not derived from a solid "surface" color. */
+.admin-shell .glass-surface {
+  background: var(--admin-glass-strong);
+}
+
+.admin-shell .glass-card {
+  background: var(--admin-glass);
+}
+
+/* Required on every element that uses backdrop-filter (frontend_architecture.md section 2.A-D). */
 .glass-surface {
   background: color-mix(in srgb, var(--color-surface) 70%, transparent);
   backdrop-filter: blur(12px);
+}
+
+/* Elevated glass card variant for Admin dashboard widgets — dc.html:127 uses a stronger blur
+   (36px vs. the shell's 12px) + a big 18px radius + an inset highlight/drop-shadow combo so the
+   card reads as floating glass over the liquid-blob background, not a flat bordered panel. */
+.glass-card {
+  background: color-mix(in srgb, var(--color-surface) 55%, transparent);
+  backdrop-filter: blur(28px) saturate(160%);
+  border-radius: 18px;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 40%, transparent),
+    0 16px 36px rgba(10, 60, 55, 0.1);
+}
+
+.dark .glass-card {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 16px 36px rgba(0, 0, 0, 0.45);
 }

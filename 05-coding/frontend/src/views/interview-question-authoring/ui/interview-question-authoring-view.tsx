@@ -1,9 +1,9 @@
 import { getT } from "@/shared/i18n/server";
 
-// Khung rỗng cho màn dùng chung 'interview_question_authoring' (A2 + A3, mount ở
-// /instructor/interview-questions/[questionId] và /admin/interview-questions/[questionId] —
-// route chốt tại 01-rd/screens/shared/interview_question_authoring.md:14). Cùng khuôn với
-// problem_authoring theo DEC-2026-0825-shared-content-authoring-screens.
+// Empty shell for the shared 'interview_question_authoring' screen (A2 + A3, mounted at
+// /instructor/interview-questions/[questionId] and /admin/interview-questions/[questionId] —
+// route locked in 01-rd/screens/shared/interview_question_authoring.md:14). Follows the same
+// pattern as problem_authoring per DEC-2026-0825-shared-content-authoring-screens.
 export async function InterviewQuestionAuthoringView() {
   const t = await getT("common");
 

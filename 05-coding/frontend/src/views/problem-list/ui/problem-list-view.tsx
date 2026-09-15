@@ -1,7 +1,8 @@
 import { getT } from "@/shared/i18n/server";
 
-// View mẫu dùng i18n phía SERVER (Server Component) — đối chiếu với views/auth dùng phía client.
-// Hai đường này chứng minh cả facade shared/i18n và shared/i18n/server đều chạy thật.
+// Sample view using i18n on the SERVER side (Server Component) — contrasted with views/auth, which
+// uses the client side. Together these two paths prove both the shared/i18n facade and
+// shared/i18n/server actually work.
 export async function ProblemListView() {
   const t = await getT();
 

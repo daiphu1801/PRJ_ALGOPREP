@@ -1,8 +1,8 @@
 import { getT } from "@/shared/i18n/server";
 
-// Khung rỗng cho màn hình dùng chung 'interview_question_management' (A2 + A3, mount ở
-// /instructor/interview-questions và /admin/interview-questions —
-// DEC-2026-0825-shared-content-authoring-screens). Chờ 02-bd/screens/shared/ chốt bố cục.
+// Empty shell for the shared 'interview_question_management' screen (A2 + A3, mounted at
+// /instructor/interview-questions and /admin/interview-questions —
+// DEC-2026-0825-shared-content-authoring-screens). Pending 02-bd/screens/shared/ to lock the layout.
 export async function InterviewQuestionManagementView() {
   const t = await getT("common");
 

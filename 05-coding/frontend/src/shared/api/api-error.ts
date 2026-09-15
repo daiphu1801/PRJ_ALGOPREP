@@ -1,5 +1,5 @@
-// Backend trả mã lỗi ổn định, không trả message đã dịch — frontend tự ánh xạ mã lỗi
-// (xem shared/i18n + useErrorMessage, sẽ dựng khi có 03-dd/api thật).
+// The backend returns a stable error code, not a translated message — the frontend maps the
+// code itself (see shared/i18n + useErrorMessage, to be built once a real 03-dd/api exists).
 export class ApiError extends Error {
   readonly code: string;
   readonly status: number;

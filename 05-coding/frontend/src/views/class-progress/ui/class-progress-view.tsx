@@ -1,7 +1,8 @@
 import { getT } from "@/shared/i18n/server";
 
-// Khung rỗng cho màn hình 'class-progress' — chờ 02-bd/screens/ + 03-dd/screens/ chốt bố cục và
-// component thật. Nguồn slug: 01-rd/screens/. KHÔNG thêm logic nghiệp vụ ở đây trước khi có DD.
+// Empty shell for the 'class-progress' screen — waiting on 02-bd/screens/ + 03-dd/screens/ to
+// lock down the layout and real components. Slug source: 01-rd/screens/. Do NOT add business logic
+// here before the DD exists.
 export async function ClassProgressView() {
   const t = await getT("common");
 
