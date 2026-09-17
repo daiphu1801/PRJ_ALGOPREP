@@ -125,7 +125,13 @@ export function ThemeLangSwitcher({ variant = "inline", collapsed = false, class
     );
   const circleButton = (active: boolean) =>
     cn(
-      "glass-surface flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[var(--color-border)] text-[10.5px] font-bold uppercase transition-colors",
+      "glass-surface flex shrink-0 items-center justify-center rounded-full border border-[var(--color-border)] font-bold uppercase transition-colors",
+      // Collapsed rail is a SEPARATE width budget from the expanded sidebar and was never
+      // re-measured after the 2026-09-16 padding pass: 72px rail with p-3 leaves 48px of content,
+      // while two 24px circles plus gap-1 need 52px. Measured 2026-09-17 (Playwright bounding box):
+      // the group started 9.5px from the rail edge instead of 12px, eating 2.5px of the gutter on
+      // each side. 20px circles with a 2px gap need 42px and leave real slack.
+      stacked ? "h-5 w-5 text-[10px]" : "h-6 w-6 text-[10.5px]",
       active
         ? cn("bg-[var(--color-primary)] text-[var(--color-on-primary)]", activeElevation)
         : "text-[var(--color-text-muted)] hover:bg-[var(--color-surface-hover)] hover:text-[var(--color-text)]",
@@ -160,7 +166,11 @@ export function ThemeLangSwitcher({ variant = "inline", collapsed = false, class
           </button>
         ))}
       </div>
-      <div role="group" aria-label={t("languageSwitcher")} className="flex items-center gap-1">
+      <div
+        role="group"
+        aria-label={t("languageSwitcher")}
+        className={cn("flex items-center", stacked ? "gap-0.5" : "gap-1")}
+      >
         {locales.map((candidate) => (
           <button
             key={candidate}

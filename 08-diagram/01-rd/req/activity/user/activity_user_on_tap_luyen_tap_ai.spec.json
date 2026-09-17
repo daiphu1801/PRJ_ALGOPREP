@@ -1,0 +1,35 @@
+{
+  "_": "Chuyen tu sequence_user_on_tap_luyen_tap_ai.spec.json (13 message) thanh activity. Khong co decision he thong that su: buoc 'tu cham muc do nho' la du lieu nguoi dung nhap (Biet ro/Mo ho/Quen) chu khong phai re nhanh xu ly khac nhau cua he thong, nen giu tuan tu dung theo dan y ke hoach 'khong bia nhanh gia'.",
+  "_chua_co_prototype": "Phan Che do luyen (F6-07/F6-08) chua co prototype doi chieu, ke thua canh bao tu sequence goc: cac hanh dong tuong ung o day suy ra tu dac ta F6-07/F6-08, khong phai tu UI da dung.",
+  "kind": "activity",
+  "title": "Sơ đồ hoạt động - Ôn tập câu hỏi phỏng vấn: Chế độ học và Chế độ luyện có AI (Sinh viên)",
+  "activity": {
+    "nodes": [
+      { "id": "start", "type": "start" },
+      { "id": "n1", "type": "action", "text": "Mở câu hỏi ở Chế độ học" },
+      { "id": "n2", "type": "action", "text": "Lấy gợi ý, khung trả lời chuẩn, từ khoá cốt lõi" },
+      { "id": "n3", "type": "action", "text": "Chuyển Chế độ luyện, tự soạn câu trả lời, bấm Gửi" },
+      { "id": "n4", "type": "action", "text": "Gửi câu trả lời tự soạn cho hệ thống" },
+      { "id": "n5", "type": "action", "text": "Đối chiếu câu trả lời với tiêu chí chuẩn qua LLM (tham số dữ liệu)" },
+      { "id": "n6", "type": "action", "text": "Nhận điểm đã đạt, điểm còn thiếu, hướng bổ sung" },
+      { "id": "n7", "type": "action", "text": "Lưu lượt luyện tập vào lịch sử" },
+      { "id": "n8", "type": "action", "text": "Hiện điểm đã đạt/còn thiếu/hướng bổ sung" },
+      { "id": "n9", "type": "action", "text": "Tự chấm mức độ nhớ (Biết rõ / Mơ hồ / Quên)" },
+      { "id": "n10", "type": "action", "text": "Cập nhật thứ tự ưu tiên ôn lại" },
+      { "id": "end", "type": "end" }
+    ],
+    "edges": [
+      { "from": "start", "to": "n1" },
+      { "from": "n1", "to": "n2" },
+      { "from": "n2", "to": "n3" },
+      { "from": "n3", "to": "n4" },
+      { "from": "n4", "to": "n5" },
+      { "from": "n5", "to": "n6" },
+      { "from": "n6", "to": "n7" },
+      { "from": "n7", "to": "n8" },
+      { "from": "n8", "to": "n9" },
+      { "from": "n9", "to": "n10" },
+      { "from": "n10", "to": "end" }
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "_": "Chuyen tu sequence_user_phong_van_gia_lap_ai.spec.json (13 message, 3 giai doan Giai trinh/Phan bien/Mo rong) thanh activity. Khong co decision he thong that su o muc tong quan: nhu ghi chu cua sequence goc (_khong_ve), KHONG ve nhanh loi AI (F5-22) va nut Huy phien -- giu tuan tu dung 3 giai doan + rubric F5-18.",
+  "kind": "activity",
+  "title": "Sơ đồ hoạt động - Phỏng vấn giả lập AI ba giai đoạn (Sinh viên)",
+  "activity": {
+    "nodes": [
+      { "id": "start", "type": "start" },
+      { "id": "n1", "type": "action", "text": "Chọn bài nộp Accepted, bấm Bắt đầu phiên" },
+      { "id": "n2", "type": "action", "text": "Mở phiên phỏng vấn (submissionId), khởi tạo ChatMemory" },
+      { "id": "n3", "type": "action", "text": "Giai đoạn Giải trình thuật toán: AI đặt câu hỏi, stream qua SSE" },
+      { "id": "n4", "type": "action", "text": "Trình bày ý tưởng, trả lời" },
+      { "id": "n5", "type": "action", "text": "Gửi trả lời, chuyển giai đoạn Phản biện" },
+      { "id": "n6", "type": "action", "text": "Giai đoạn Phản biện: AI chất vấn điểm chưa tối ưu, trường hợp biên, dữ liệu tăng đột biến" },
+      { "id": "n7", "type": "action", "text": "Bấm Kết phiên và nhận xét" },
+      { "id": "n8", "type": "action", "text": "Yêu cầu tổng hợp rubric 4 tiêu chí" },
+      { "id": "n9", "type": "action", "text": "Nhận rubric kèm nhận xét từng tiêu chí" },
+      { "id": "n10", "type": "action", "text": "Lưu phiên, trả rubric kèm cảnh báo phản hồi học tập (không phải điểm chính thức)" },
+      { "id": "end", "type": "end" }
+    ],
+    "edges": [
+      { "from": "start", "to": "n1" },
+      { "from": "n1", "to": "n2" },
+      { "from": "n2", "to": "n3" },
+      { "from": "n3", "to": "n4" },
+      { "from": "n4", "to": "n5" },
+      { "from": "n5", "to": "n6" },
+      { "from": "n6", "to": "n7" },
+      { "from": "n7", "to": "n8" },
+      { "from": "n8", "to": "n9" },
+      { "from": "n9", "to": "n10" },
+      { "from": "n10", "to": "end" }
+    ]
+  }
+}

@@ -33,6 +33,36 @@
   --color-admin-slate: rgba(12, 40, 36, 0.5);
   --color-admin-warn: #a9750f;
   --color-admin-negative: #c84046;
+  /* Tokens the shared data/form primitives need (DataTable row hover, Toggle track, Badge success,
+     Modal scrim, table column headers). Defined app-wide so those primitives render sanely outside
+     the Admin area too; `.admin-shell` below overrides them with the mockup's exact values, the
+     same pattern already used for --admin-nav-hover. --color-text-subtle is one step lighter than
+     --color-text-muted: table column headers and secondary metadata sit below body-muted text. */
+  --color-text-subtle: #94a3b8;
+  --color-row-hover: #f1f5f9;
+  --color-track: #e2e8f0;
+  --color-success: #16a34a;
+  --color-success-text: #15803d;
+  --color-scrim: rgba(15, 23, 42, 0.45);
+  /* Primary call-to-action. Separate from --color-primary because inside `.admin-shell` that token
+     is the near-white sidebar "active item" fill, which would render a white CTA on a white card. */
+  /* Declared as a gradient even outside the Admin scope: the CTA is painted with background-image,
+     which ignores a bare color value. Two identical stops render as a flat fill. */
+  --color-cta-bg: linear-gradient(160deg, var(--color-primary), var(--color-primary));
+  --color-cta-fg: var(--color-on-primary);
+  --color-cta-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  /* Categorical accents for Badge. `.admin-shell` overrides them with the mockup's exact values. */
+  --color-accent-blue: #2563eb;
+  --color-accent-blue-bg: rgba(37, 99, 235, 0.12);
+  --color-accent-purple: #7c3aed;
+  --color-accent-purple-bg: rgba(124, 58, 237, 0.12);
+  /* Selected table row. Declared as an image because the Admin dark value is a gradient
+     (see `.dark .admin-shell` below); background-color cannot carry one. */
+  --color-row-selected: linear-gradient(
+    135deg,
+    var(--color-surface-hover),
+    var(--color-surface-hover)
+  );
 }
 
 .dark {
@@ -55,6 +85,21 @@
   --color-admin-slate: #7e8d8e;
   --color-admin-warn: #ffce78;
   --color-admin-negative: #ff8a8a;
+  --color-text-subtle: #64748b;
+  --color-row-hover: #1f2937;
+  --color-track: #334155;
+  --color-success: #4ade80;
+  --color-success-text: #4ade80;
+  --color-scrim: rgba(0, 0, 0, 0.6);
+  --color-accent-blue: #60a5fa;
+  --color-accent-blue-bg: rgba(96, 165, 250, 0.14);
+  --color-accent-purple: #a78bfa;
+  --color-accent-purple-bg: rgba(167, 139, 250, 0.14);
+  --color-row-selected: linear-gradient(
+    135deg,
+    var(--color-surface-hover),
+    var(--color-surface-hover)
+  );
 }
 
 body {
@@ -104,6 +149,43 @@ body {
   --admin-logo-bg: linear-gradient(135deg, #0ea5a4, #22d3ee);
   --admin-logo-fg: #ffffff;
   --admin-nav-hover: rgba(255, 255, 255, 0.7);
+  /* Verbatim from 09-layoutBase/Admin - Người dùng.dc.html light theme: --muted2 (line 18),
+     --row-hover and --track (line 24), --ok and --ok-text (line 28). --color-scrim has no
+     counterpart in the mockup (no modal was ever drawn) — [SoT: Suy luận], tinted toward the
+     Admin palette's deep green instead of the app's slate. */
+  --color-text-subtle: rgba(12, 45, 40, 0.44);
+  --color-row-hover: rgba(255, 255, 255, 0.72);
+  --color-track: rgba(12, 90, 80, 0.1);
+  --color-success: #17b57e;
+  --color-success-text: #12996b;
+  --color-scrim: rgba(6, 32, 29, 0.45);
+  /* Language chips, verbatim from 09-layoutBase/Admin - Ngôn ngữ và giới hạn.dc.html:396-400 (`chip`).
+     The mockup keeps one background per language across both themes and swaps only the foreground. */
+  --color-lang-py-bg: rgba(63, 123, 232, 0.14);
+  --color-lang-py-fg: #2c5fc4;
+  --color-lang-cpp-bg: rgba(139, 92, 246, 0.14);
+  --color-lang-cpp-fg: #6d3fd1;
+  --color-lang-java-bg: rgba(245, 118, 46, 0.14);
+  --color-lang-java-fg: #b4551a;
+  /* Audit-category accents, verbatim from 09-layoutBase/Admin - Nhật ký hệ thống.dc.html:386-391
+     (`cat`). Only blue and purple are new: that screen's "Cấu hình" and "Nội dung" categories map
+     onto --color-admin-warn and --color-success, which already exist. The green differs by a hair
+     (#0f8a61 there vs #17b57e here) — reused rather than forked for a shade nobody can name apart. */
+  --color-accent-blue: #2c5fc4;
+  --color-accent-blue-bg: rgba(63, 123, 232, 0.12);
+  --color-accent-purple: #6d3fd1;
+  --color-accent-purple-bg: rgba(139, 92, 246, 0.12);
+  /* dc.html:25 --active-bg (light) — a flat fill, expressed as a two-stop gradient so the token
+     has one type across both themes. */
+  --color-row-selected: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.9),
+    rgba(255, 255, 255, 0.9)
+  );
+  /* dc.html:26 — the Admin CTA is a teal gradient, not a flat fill. */
+  --color-cta-bg: linear-gradient(160deg, #0ea5a4, #0c7a79);
+  --color-cta-fg: #ffffff;
+  --color-cta-shadow: 0 6px 16px rgba(14, 138, 114, 0.3);
 }
 
 .dark .admin-shell {
@@ -121,6 +203,29 @@ body {
   --admin-logo-bg: linear-gradient(135deg, #22d3ee, #0e4243);
   --admin-logo-fg: #05201f;
   --admin-nav-hover: rgba(255, 255, 255, 0.06);
+  /* dc.html dark theme: --muted2 (line 32), --row-hover and --track (line 38), --ok/--ok-text
+     (line 42) — dark collapses ok and ok-text to the same value. */
+  --color-text-subtle: rgba(210, 235, 230, 0.45);
+  --color-row-hover: rgba(120, 230, 220, 0.07);
+  --color-track: rgba(120, 230, 220, 0.14);
+  --color-success: #5ae0a8;
+  --color-success-text: #5ae0a8;
+  --color-scrim: rgba(0, 0, 0, 0.65);
+  /* dc.html:396-400, dark branch of each `chip` pair. */
+  --color-lang-py-fg: #7fd0ff;
+  --color-lang-cpp-fg: #c4b5fd;
+  --color-lang-java-fg: #ffb27a;
+  /* dc.html:383-391, dark branch. */
+  --color-accent-blue: #7fd0ff;
+  --color-accent-blue-bg: rgba(127, 208, 255, 0.14);
+  --color-accent-purple: #c4b5fd;
+  --color-accent-purple-bg: rgba(160, 140, 250, 0.18);
+  /* dc.html:39 --active-bg (dark) — verbatim, this one really is a gradient. */
+  --color-row-selected: linear-gradient(135deg, rgba(34, 211, 238, 0.3), rgba(20, 184, 166, 0.2));
+  /* dc.html:41 — dark inverts the CTA to a pale mint fill with dark text. */
+  --color-cta-bg: linear-gradient(160deg, rgba(190, 255, 247, 0.94), rgba(150, 230, 220, 0.72));
+  --color-cta-fg: #052422;
+  --color-cta-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
 }
 
 /* Exact glass alpha from dc.html instead of the generic color-mix formula — the mockup's glass

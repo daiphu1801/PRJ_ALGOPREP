@@ -1,0 +1,36 @@
+{
+  "_": "Chuyen tu sequence_admin_dat_ngan_sach_token.spec.json (F5-21, F5-25). Khoi alt trong sequence ('Muc tieu thu da vuot ngan sach moi?') la nghiep vu chot (F5-25: tu dong khoa khi vuot), nen giu nguyen thanh mot node decision co guard o ca hai nhanh.",
+  "kind": "activity",
+  "title": "Sơ đồ hoạt động - Đặt ngân sách token AI và tự động khoá khi vượt (Quản trị viên)",
+  "mode": "mono",
+  "activity": {
+    "nodes": [
+      { "id": "start", "type": "start" },
+      { "id": "n1", "type": "action", "text": "Đặt mức ngân sách token cho kỳ" },
+      { "id": "n2", "type": "action", "text": "Ghi mức ngân sách của kỳ" },
+      { "id": "n3", "type": "action", "text": "Ghi Nhật ký hệ thống" },
+      { "id": "n4", "type": "action", "text": "Đọc mức tiêu thụ token đã ghi nhận" },
+      { "id": "d1", "type": "decision", "text": "Mức tiêu thụ đã vượt ngân sách mới?" },
+      { "id": "n5", "type": "action", "text": "Bật cờ tạm khoá gọi AI cho STUDENT và INSTRUCTOR" },
+      { "id": "n6", "type": "action", "text": "Xác nhận, cảnh báo đang tạm khoá; ADMIN không bị khoá" },
+      { "id": "n7", "type": "action", "text": "Xác nhận, kèm dự báo ngày cạn quota" },
+      { "id": "merge", "type": "merge" },
+      { "id": "n8", "type": "action", "text": "Hiện ngân sách, dự báo và trạng thái khoá" },
+      { "id": "end", "type": "end" }
+    ],
+    "edges": [
+      { "from": "start", "to": "n1" },
+      { "from": "n1", "to": "n2" },
+      { "from": "n2", "to": "n3" },
+      { "from": "n3", "to": "n4" },
+      { "from": "n4", "to": "d1" },
+      { "from": "d1", "to": "n5", "guard": "vượt" },
+      { "from": "d1", "to": "n7", "guard": "chưa vượt" },
+      { "from": "n5", "to": "n6" },
+      { "from": "n6", "to": "merge" },
+      { "from": "n7", "to": "merge" },
+      { "from": "merge", "to": "n8" },
+      { "from": "n8", "to": "end" }
+    ]
+  }
+}

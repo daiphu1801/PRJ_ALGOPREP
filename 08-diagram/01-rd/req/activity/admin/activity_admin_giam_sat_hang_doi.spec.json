@@ -1,0 +1,31 @@
+{
+  "_": "Chuyen tu sequence_admin_giam_sat_hang_doi.spec.json (F4-10, F4-07). Toan bo luong la doc so lieu tuan tu tu ba nguon (RabbitMQ, go-judge, PostgreSQL) roi hien thi; khong co dieu kien re nhanh nao duoc dac ta trong sequence goc, nen khong them decision gia.",
+  "kind": "activity",
+  "title": "Sơ đồ hoạt động - Giám sát hàng đợi và cụm judge engine (Quản trị viên)",
+  "mode": "mono",
+  "activity": {
+    "nodes": [
+      { "id": "start", "type": "start" },
+      { "id": "n1", "type": "action", "text": "Mở màn giám sát" },
+      { "id": "n2", "type": "action", "text": "Yêu cầu số liệu vận hành" },
+      { "id": "n3", "type": "action", "text": "Đọc số job đang chờ trong RabbitMQ" },
+      { "id": "n4", "type": "action", "text": "Nhận độ dài hàng đợi" },
+      { "id": "n5", "type": "action", "text": "Kiểm tra tình trạng cụm go-judge" },
+      { "id": "n6", "type": "action", "text": "Nhận trạng thái worker và thông lượng" },
+      { "id": "n7", "type": "action", "text": "Đọc lượt nộp treo quá ngưỡng và job lỗi 24 giờ" },
+      { "id": "n8", "type": "action", "text": "Hiện bảng giám sát" },
+      { "id": "end", "type": "end" }
+    ],
+    "edges": [
+      { "from": "start", "to": "n1" },
+      { "from": "n1", "to": "n2" },
+      { "from": "n2", "to": "n3" },
+      { "from": "n3", "to": "n4" },
+      { "from": "n4", "to": "n5" },
+      { "from": "n5", "to": "n6" },
+      { "from": "n6", "to": "n7" },
+      { "from": "n7", "to": "n8" },
+      { "from": "n8", "to": "end" }
+    ]
+  }
+}

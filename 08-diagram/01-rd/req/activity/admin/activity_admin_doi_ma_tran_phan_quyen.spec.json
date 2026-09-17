@@ -1,0 +1,29 @@
+{
+  "_": "Chuyen tu sequence_admin_doi_ma_tran_phan_quyen.spec.json. Khong co diem re nhanh nao trong luong (F1-10: doi co hieu luc ngay, khong co dieu kien thanh cong/that bai duoc dac ta), nen la mot chuoi hanh dong tuan tu, khong them decision gia.",
+  "kind": "activity",
+  "title": "Sơ đồ hoạt động - Đổi quyền trong ma trận phân quyền (Quản trị viên)",
+  "mode": "mono",
+  "activity": {
+    "nodes": [
+      { "id": "start", "type": "start" },
+      { "id": "n1", "type": "action", "text": "Bật tắt ô quyền Role x Function x Action" },
+      { "id": "n2", "type": "action", "text": "Bấm \"Lưu thay đổi\"" },
+      { "id": "n3", "type": "action", "text": "Gửi các ô quyền đã đổi" },
+      { "id": "n4", "type": "action", "text": "Ghi ma trận quyền mới" },
+      { "id": "n5", "type": "action", "text": "Ghi Nhật ký hệ thống" },
+      { "id": "n6", "type": "action", "text": "Xác nhận đã lưu, quyền có hiệu lực ngay" },
+      { "id": "n7", "type": "action", "text": "Hiện nhãn \"Đã lưu\" và dòng nhật ký thay đổi" },
+      { "id": "end", "type": "end" }
+    ],
+    "edges": [
+      { "from": "start", "to": "n1" },
+      { "from": "n1", "to": "n2" },
+      { "from": "n2", "to": "n3" },
+      { "from": "n3", "to": "n4" },
+      { "from": "n4", "to": "n5" },
+      { "from": "n5", "to": "n6" },
+      { "from": "n6", "to": "n7" },
+      { "from": "n7", "to": "end" }
+    ]
+  }
+}

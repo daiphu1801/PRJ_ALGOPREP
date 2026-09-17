@@ -1,0 +1,37 @@
+{
+  "_": "Chuyen tu sequence_user_dang_ky_dang_nhap.spec.json (13 message) thanh activity: cac buoc dang ky/dang nhap/tu lam moi token gop tuan tu, giu lai dung mot decision that su cua luong -- 'Mat khau dung?' (nhanh chinh cua man dang nhap, khong phai xu ly loi, theo _alt cua sequence goc).",
+  "_khong_ve": "Nhu sequence goc: KHONG ve rieng OAuth (F1-15) va quen mat khau (F1-17).",
+  "_nhanh_401": "Nhanh 'sai' cua decision ket thuc bang thong bao 401 va dung lai o end, dung nhu sequence goc (khoi else chi co 1 message tra ve, khong co buoc tiep theo).",
+  "kind": "activity",
+  "title": "Sơ đồ hoạt động - Đăng ký, đăng nhập và tự làm mới token (Sinh viên)",
+  "activity": {
+    "nodes": [
+      { "id": "start", "type": "start" },
+      { "id": "n1", "type": "action", "text": "Điền form đăng ký (email, mật khẩu)" },
+      { "id": "n2", "type": "action", "text": "Hệ thống tạo tài khoản (vai trò STUDENT), cấp Access Token + Refresh Token" },
+      { "id": "n3", "type": "action", "text": "Chuyển sang trang Tiến độ cá nhân" },
+      { "id": "n4", "type": "action", "text": "Lần sau: nhập email/mật khẩu, bấm Đăng nhập" },
+      { "id": "d1", "type": "decision", "text": "Mật khẩu đúng?" },
+      { "id": "n5", "type": "action", "text": "Ghi nhận lần đăng nhập, cấp Access Token + Refresh Token mới" },
+      { "id": "n7", "type": "action", "text": "Hiện 401 Unauthorized" },
+      { "id": "n6", "type": "action", "text": "Gọi API nghiệp vụ, nhận 401 vì Access Token hết hạn" },
+      { "id": "n8", "type": "action", "text": "Tự động làm mới bằng Refresh Token (cookie HTTP-Only)" },
+      { "id": "n9", "type": "action", "text": "Nhận Access Token mới, tiếp tục thao tác không cần đăng nhập lại" },
+      { "id": "end", "type": "end" }
+    ],
+    "edges": [
+      { "from": "start", "to": "n1" },
+      { "from": "n1", "to": "n2" },
+      { "from": "n2", "to": "n3" },
+      { "from": "n3", "to": "n4" },
+      { "from": "n4", "to": "d1" },
+      { "from": "d1", "to": "n5", "guard": "đúng" },
+      { "from": "d1", "to": "n7", "guard": "sai" },
+      { "from": "n5", "to": "n6" },
+      { "from": "n7", "to": "end" },
+      { "from": "n6", "to": "n8" },
+      { "from": "n8", "to": "n9" },
+      { "from": "n9", "to": "end" }
+    ]
+  }
+}

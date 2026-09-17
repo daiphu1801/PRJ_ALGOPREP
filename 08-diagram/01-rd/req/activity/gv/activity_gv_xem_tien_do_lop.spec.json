@@ -1,0 +1,26 @@
+{
+  "_": "Activity cho luong 'xem tong hop tien do lop roi mo ho so chi tiet mot hoc vien' cua actor A2, dan tu sequence_gv_xem_tien_do_lop.spec.json (F1-28 + F1-27). Sequence goc khong co alt -- ghi chu '_khong_ve' trong sequence noi ro pham vi theo lop phu trach la kiem quyen, khong phai nhanh nghiep vu, nen o day khong dat decision, giu chuoi tuan tu hai buoc tuong tac lien tiep (dashboard roi ho so chi tiet).",
+  "kind": "activity",
+  "title": "Sơ đồ hoạt động - Xem tiến độ lớp và hồ sơ học viên (Giảng viên)",
+  "activity": {
+    "nodes": [
+      { "id": "start", "type": "start" },
+      { "id": "n1", "type": "action", "text": "Chọn lớp phụ trách" },
+      { "id": "n2", "type": "action", "text": "Hệ thống đọc bài đã giải, tỉ lệ chấp thuận và chuỗi ngày hoạt động theo học viên" },
+      { "id": "n3", "type": "action", "text": "Hiện điểm trung bình lớp, bảng học viên, khối \"Cần chú ý\"" },
+      { "id": "n4", "type": "action", "text": "Bấm vào một học viên trong bảng" },
+      { "id": "n5", "type": "action", "text": "Hệ thống đọc tiến độ, điểm tốt nhất mỗi bài và lịch sử nộp bài của học viên đó" },
+      { "id": "n6", "type": "action", "text": "Mở màn hồ sơ chi tiết học viên" },
+      { "id": "end", "type": "end" }
+    ],
+    "edges": [
+      { "from": "start", "to": "n1" },
+      { "from": "n1", "to": "n2" },
+      { "from": "n2", "to": "n3" },
+      { "from": "n3", "to": "n4" },
+      { "from": "n4", "to": "n5" },
+      { "from": "n5", "to": "n6" },
+      { "from": "n6", "to": "end" }
+    ]
+  }
+}

@@ -46,10 +46,23 @@ export function AdminSidebar() {
   // Independent per-group open state — deliberately NOT a single-open accordion. dc.html:302, 332
   // only allows one group open at a time (a single `openGroup` var), but the owner asked on
   // 2026-09-14 to let multiple parent groups stay expanded together, so this is one intentional
-  // divergence from 1:1 prototype fidelity. Defaults to all closed, same as the mockup.
+  // divergence from 1:1 prototype fidelity. Holds ONLY groups the user toggled by hand; a group
+  // with no entry falls back to the route-derived default below.
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
 
-  const toggleGroup = (key: string) => setOpenGroups((prev) => ({ ...prev, [key]: !prev[key] }));
+  // The group owning the current route defaults to open, so the sidebar shows where you are. The
+  // mockup does the same (dc.html seeds `openGroup` with the group of the screen being viewed);
+  // without it, landing on /admin/system-log left every group shut and nothing marked active.
+  // Derived rather than synced through an effect: `openGroups` only holds groups the user has
+  // explicitly toggled, and `undefined` means "fall back to the route".
+  const ownsActiveRoute = (key: string) =>
+    ADMIN_NAV_GROUPS.find((group) => group.key === key)?.items.some(
+      (item) => item.href === pathname,
+    ) ?? false;
+  const isGroupOpen = (key: string) => openGroups[key] ?? ownsActiveRoute(key);
+
+  const toggleGroup = (key: string) =>
+    setOpenGroups((prev) => ({ ...prev, [key]: !(prev[key] ?? ownsActiveRoute(key)) }));
   const toggleCollapsed = () => {
     setCollapsed((prev) => {
       const next = !prev;
@@ -102,7 +115,7 @@ export function AdminSidebar() {
         />
 
         {ADMIN_NAV_GROUPS.map((group) => {
-          const isOpen = !!openGroups[group.key] && !effectiveCollapsed;
+          const isOpen = isGroupOpen(group.key) && !effectiveCollapsed;
           return (
             <div key={group.key}>
               <NavGroupHeader

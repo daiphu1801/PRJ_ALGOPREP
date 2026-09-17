@@ -31,6 +31,11 @@ test("admin overview renders the Admin shell with sidebar nav (PROTOTYPE, views/
   // Primary action: sidebar nav reaches an existing real route, not a 404.
   const nav = page.getByRole("navigation", { name: "Điều hướng khu quản trị" });
   await expect(nav).toBeVisible();
+
+  // Nav groups start closed (admin-sidebar.tsx `openGroups` defaults to {}), so the group has to be
+  // expanded first — its items are not in the DOM until then. This test was written in the same
+  // commit as the sidebar (13aaff2) and had been failing on that step ever since.
+  await nav.getByRole("button", { name: "Nội dung" }).click();
   await nav.getByRole("link", { name: "Quản lý bài tập" }).click();
   await expect(page).toHaveURL(/\/admin\/problems$/);
 });

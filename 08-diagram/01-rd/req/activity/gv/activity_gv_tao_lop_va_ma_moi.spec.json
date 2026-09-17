@@ -1,0 +1,36 @@
+{
+  "_": "Activity cho luong 'tao lop hoc va hoc vien tu tham gia bang ma moi' cua actor A2, dan tu sequence_gv_tao_lop_va_ma_moi.spec.json (F1-23, F1-25). Sequence goc co dung MOT khoi alt nghiep vu ('Ma moi con trong thoi han dung?'), duoc chuyen thanh mot decision node duy nhat voi guard tren ca hai canh ra, dung F1-25.",
+  "_hai_actor": "Giu ca hai actor (Giang vien tao lop, Sinh vien tu nhap ma de vao lop) vi day la diem thiet ke chinh cua F1-23 -- self-service join, khong phai giang vien them thu cong.",
+  "kind": "activity",
+  "title": "Sơ đồ hoạt động - Tạo lớp học và tham gia bằng mã mời (Giảng viên)",
+  "activity": {
+    "nodes": [
+      { "id": "start", "type": "start" },
+      { "id": "n1", "type": "action", "text": "Bấm \"Tạo lớp mới\", nhập thông tin cơ bản" },
+      { "id": "n2", "type": "action", "text": "Hệ thống ghi lớp học, sinh và ghi mã mời kèm thời hạn dùng" },
+      { "id": "n3", "type": "action", "text": "Hiện mã mời và thời hạn dùng cho giảng viên" },
+      { "id": "n4", "type": "action", "text": "Giảng viên gửi mã mời cho học viên" },
+      { "id": "n5", "type": "action", "text": "Sinh viên nhập mã mời để tự tham gia lớp" },
+      { "id": "n6", "type": "action", "text": "Hệ thống kiểm tra mã mời" },
+      { "id": "d1", "type": "decision", "text": "Mã mời còn trong thời hạn dùng?" },
+      { "id": "n7", "type": "action", "text": "Thêm học viên vào lớp" },
+      { "id": "n8", "type": "action", "text": "Báo vào lớp thành công" },
+      { "id": "n9", "type": "action", "text": "Từ chối, báo mã mời đã hết hạn" },
+      { "id": "end", "type": "end" }
+    ],
+    "edges": [
+      { "from": "start", "to": "n1" },
+      { "from": "n1", "to": "n2" },
+      { "from": "n2", "to": "n3" },
+      { "from": "n3", "to": "n4" },
+      { "from": "n4", "to": "n5" },
+      { "from": "n5", "to": "n6" },
+      { "from": "n6", "to": "d1" },
+      { "from": "d1", "to": "n7", "guard": "còn hạn" },
+      { "from": "d1", "to": "n9", "guard": "hết hạn" },
+      { "from": "n7", "to": "n8" },
+      { "from": "n8", "to": "end" },
+      { "from": "n9", "to": "end" }
+    ]
+  }
+}

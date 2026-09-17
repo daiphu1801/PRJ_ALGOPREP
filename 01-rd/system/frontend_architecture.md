@@ -54,6 +54,20 @@ do giảng viên soạn giữ nguyên ngôn ngữ gốc. Chi tiết cấu trúc 
 > nhất, không để chữ tự quyết định độ rộng** — "Sáng"/"Tối" và "Light"/"Dark" chênh tới ~9px mỗi nút, để
 > control tự co giãn theo chữ sẽ xô lệch cả hàng chứa nó mỗi lần đổi ngôn ngữ.
 
+> **Quy ước namespace chốt 2026-09-17** (trước đợt dựng ngang 11 màn Admin — thời điểm đó
+> `messages/{vi,en}.json` mới có 7 namespace / 123 key cho đúng 2 màn, và sẽ nhân lên nhiều lần):
+>
+> - **Một namespace cho mỗi slug màn**, tên viết `camelCase` từ slug: `admin_user_management` →
+>   `adminUserManagement`. Màn nào chỉ đọc namespace của chính nó, không đọc chéo sang màn khác — đọc
+>   chéo là dấu hiệu chuỗi đó thuộc về `common`.
+> - **`common`** giữ nhãn lặp lại ở nhiều màn (`Huỷ`, `Lưu`, `Trước`, `Sau`, `Đang tải`), **`nav`** giữ
+>   nhãn điều hướng. Một chuỗi chỉ được lên `common` khi đã có từ 2 màn dùng thật — không dự phòng trước.
+> - **Primitive trong `shared/ui` không đọc i18n.** `Pagination`, `ConfirmDialog`, `TextField`... nhận
+>   nhãn qua prop; tầng `shared` không được biết namespace nào tồn tại, đúng tiêu chí mục 2.A. Màn gọi
+>   mới là nơi dịch.
+> - `messages/vi.json` và `messages/en.json` phải **cùng tập key**; `shared/i18n/messages.test.ts` đã
+>   kiểm điều này, nên key lệch sẽ làm đỏ `pnpm check` chứ không âm thầm rơi về khoá thô.
+
 ---
 
 ## 2. Phân tầng FSD

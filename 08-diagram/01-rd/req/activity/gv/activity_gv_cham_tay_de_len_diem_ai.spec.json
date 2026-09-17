@@ -1,0 +1,25 @@
+{
+  "_": "Activity cho luong 'cham tay de len diem AI tham khao' cua actor A2, dan tu sequence_gv_cham_tay_de_len_diem_ai.spec.json (F5-27, F5-07). Sequence goc KHONG co alt/re nhanh nghiep vu nao -- toan bo la chuoi tuan tu, nen activity nay khong co decision node, dung theo dung huong dan cua plan: khong bia nhanh gia khi sequence khong co nhanh that.",
+  "_khong_doi_trang_thai": "Buoc cuoi 'Ghi diem cham tay, khong doi trang thai bai nop' giu nguyen y sequence goc: day la lop tham khao noi bo, tach bach khoi Pass/Fail chinh thuc.",
+  "kind": "activity",
+  "title": "Sơ đồ hoạt động - Chấm tay đè lên điểm AI tham khảo (Giảng viên)",
+  "activity": {
+    "nodes": [
+      { "id": "start", "type": "start" },
+      { "id": "n1", "type": "action", "text": "Mở tab \"Chờ chấm\", xem danh sách kèm điểm AI quy đổi thang 10" },
+      { "id": "n2", "type": "action", "text": "Bấm \"Chấm ngay\" trên một dòng bài nộp" },
+      { "id": "n3", "type": "action", "text": "Nhập điểm 0-10 và nhận xét, bấm \"Lưu điểm\"" },
+      { "id": "n4", "type": "action", "text": "Hệ thống ghi điểm chấm tay, không đổi trạng thái bài nộp" },
+      { "id": "n5", "type": "action", "text": "Chuyển bài nộp sang tab \"Đã chấm\"" },
+      { "id": "end", "type": "end" }
+    ],
+    "edges": [
+      { "from": "start", "to": "n1" },
+      { "from": "n1", "to": "n2" },
+      { "from": "n2", "to": "n3" },
+      { "from": "n3", "to": "n4" },
+      { "from": "n4", "to": "n5" },
+      { "from": "n5", "to": "end" }
+    ]
+  }
+}

@@ -141,5 +141,739 @@
     "subtitle": "For AlgoPrep administrators only — sign in with your provisioned account.",
     "submit": "Sign in",
     "notAdminHint": "Not an administrator? Use the regular sign-in page instead."
+  },
+  "adminLanguageConfig": {
+    "title": "Languages and judge limits",
+    "subtitle": "Per-language time multipliers applied to every problem",
+    "save": "Save changes",
+    "languagesTitle": "Supported languages",
+    "languagesSubtitle": "Enable or disable a language and adjust its multiplier",
+    "columnLanguage": "Language",
+    "columnCompiler": "Compiler",
+    "columnTimeMultiplier": "Time factor",
+    "columnTimeLimit": "Time limit",
+    "columnMemory": "Memory",
+    "columnEnabled": "On",
+    "timeMultiplierFor": "Time multiplier for {language}",
+    "enableLanguage": "Enable {language}",
+    "milliseconds": "{value} ms",
+    "megabytes": "{value} MB",
+    "unitMs": "ms",
+    "unitMb": "MB",
+    "unitKb": "KB",
+    "unitSec": "s",
+    "defaultsTitle": "Default limits",
+    "defaultsSubtitle": "Used when a problem declares none of its own",
+    "defaults": {
+      "timeLimitMs": {
+        "label": "Time limit",
+        "meta": "Multiplied by the language factor"
+      },
+      "memoryLimitMb": {
+        "label": "Memory limit",
+        "meta": "Applies to every language"
+      },
+      "outputLimitKb": {
+        "label": "Output size",
+        "meta": "Exceeding it reports Output limit"
+      },
+      "compileTimeoutSec": {
+        "label": "Compile time",
+        "meta": "Not counted toward the run limit"
+      }
+    },
+    "sandboxTitle": "Sandbox",
+    "sandbox": {
+      "networkAccess": {
+        "label": "Allow network access",
+        "meta": "Always off in the judging sandbox"
+      },
+      "limitChildProcesses": {
+        "label": "Limit child processes",
+        "meta": "At most 60 processes"
+      },
+      "returnStderr": {
+        "label": "Return stderr to students",
+        "meta": "Truncated to the first 2 KB"
+      }
+    },
+    "noticeTitle": "Before you change a limit",
+    "noticeBody": "Changes to a multiplier or a resource limit apply only to submissions made after you save. Earlier submissions keep the verdict they already have."
+  },
+  "adminSystemLog": {
+    "title": "System log",
+    "subtitle": "Administrative actions taken by people · infrastructure events live in Judge queue",
+    "liveOn": "Live",
+    "liveOff": "Paused",
+    "export": "Download log",
+    "stat": {
+      "adminActions24h": {
+        "label": "Admin actions, 24h",
+        "meta": "6 admin accounts active"
+      },
+      "permissionChanges": {
+        "label": "Permission matrix edits",
+        "meta": "ADMIN only"
+      },
+      "accountLocks": {
+        "label": "Accounts locked / unlocked",
+        "meta": "Duplicate source or a report"
+      }
+    },
+    "searchLabel": "Search the log",
+    "searchPlaceholder": "Search by service, account or event id",
+    "categoryFilterLabel": "Filter by category",
+    "categoryAll": "All",
+    "category": {
+      "auth": "Auth",
+      "permission": "Permissions",
+      "config": "Config",
+      "content": "Content"
+    },
+    "resultCount": "{shown} / {total} rows",
+    "pageLabel": "Showing the {shown} most recent of {total} events",
+    "loadMore": "Load {count} more",
+    "emptyFiltered": "No event matches the current filter",
+    "clearFilters": "Clear filters",
+    "activeAdminsTitle": "Active admins",
+    "activeAdminsSubtitle": "By most recent action",
+    "breakdownTitle": "Actions by category · 7 days",
+    "infraNote": "Infrastructure events (worker, AI, backup) live on the Judge queue screen",
+    "eventListLabel": "Event list"
+  },
+  "adminUserManagement": {
+    "title": "User management",
+    "subtitle": "Accounts, roles and access status",
+    "addAccount": "Add account",
+    "stat": {
+      "total": {
+        "label": "Total accounts",
+        "meta": "32 new accounts this week"
+      },
+      "active24h": {
+        "label": "Active in 24h",
+        "meta": "24% of all learners"
+      },
+      "pendingEmail": {
+        "label": "Awaiting email check",
+        "meta": "Dropped after 7 days"
+      },
+      "locked": {
+        "label": "Locked",
+        "meta": "3 for cheating"
+      },
+      "passwordResets": {
+        "label": "Password reset requests",
+        "meta": "Sent in the last 24h"
+      }
+    },
+    "searchLabel": "Search users",
+    "searchPlaceholder": "Search by name, email or username",
+    "roleFilterLabel": "Filter by role",
+    "statusFilterLabel": "Filter by status",
+    "filterAll": "All",
+    "role": {
+      "student": "Learner",
+      "instructor": "Instructor",
+      "admin": "Admin",
+      "deactivated": "Deactivated"
+    },
+    "status": {
+      "active": "Active",
+      "pending": "Unverified",
+      "locked": "Locked"
+    },
+    "resultCount": "{shown} / {total} accounts",
+    "tableCaption": "Account list",
+    "columnUser": "User",
+    "columnRole": "Role",
+    "columnSolved": "Solved",
+    "columnSubmissions": "Submissions",
+    "columnLastActive": "Last active",
+    "columnStatus": "Status",
+    "selectAll": "Select every visible account",
+    "selectRow": "Select {name}",
+    "selectionLabel": "{count} accounts selected",
+    "bulkResetPassword": "Reset password",
+    "bulkChangeRole": "Change role",
+    "bulkLock": "Lock accounts",
+    "emptyFiltered": "No account matches the current filter",
+    "pageLabel": "Page {page} of {totalPages} · showing {shown} rows",
+    "previous": "Previous",
+    "next": "Next",
+    "roleDistributionTitle": "Role distribution",
+    "roleDistributionSubtitle": "1,284 active accounts in total",
+    "pendingTitle": "Needs attention",
+    "pending": {
+      "pendingEmail": {
+        "label": "Awaiting email check",
+        "meta": "Dropped after 7 days"
+      },
+      "instructorRequest": {
+        "label": "Instructor access requests",
+        "meta": "Needs admin approval"
+      }
+    },
+    "confirmLockTitle": "Lock {count} accounts?",
+    "confirmLockBody": "{count} accounts will not be able to sign in until unlocked. Their submissions and progress are kept.",
+    "confirmLockAction": "Lock accounts",
+    "cancel": "Cancel"
+  },
+  "adminAiUsage": {
+    "title": "AI token usage",
+    "subtitle": "Track consumption by day, by feature and by learner",
+    "export": "Export report",
+    "rangeLabel": "Time range",
+    "range": {
+      "7d": "7 days",
+      "14d": "14 days",
+      "30d": "30 days"
+    },
+    "stat": {
+      "monthTokens": {
+        "label": "Tokens this month",
+        "meta": "As of 22/08, 15:40"
+      },
+      "dailyAverage": {
+        "label": "Daily average",
+        "meta": "Lower than last week"
+      },
+      "estimatedCost": {
+        "label": "Estimated cost",
+        "meta": "240 USD monthly cap"
+      },
+      "calls": {
+        "label": "AI calls",
+        "meta": "2,140 active learners"
+      }
+    },
+    "dailyChartTitle": "Tokens per day",
+    "dailyChartSubtitle": "Split by feature, last {days} days",
+    "feature": {
+      "review": "Solution review",
+      "interview": "Mock interview",
+      "testcase": "Testcase generation"
+    },
+    "budgetTitle": "Monthly budget",
+    "budgetSubtitle": "{used} of {cap} used",
+    "budgetLeft": "{left} left",
+    "budgetRunOut": "Runs out around {date}",
+    "alertsTitle": "Alerts",
+    "alert": {
+      "budgetRunningOut": {
+        "title": "Budget running low",
+        "meta": "At the current rate the monthly budget runs out on 28/08."
+      },
+      "anomalousAccount": {
+        "title": "One account is using AI abnormally",
+        "meta": "nguyenvana made 214 calls in 24 hours, 7x the average. An admin should review it; the system does not lock the account."
+      },
+      "testcasePromptCost": {
+        "title": "Testcase prompt costs more than expected",
+        "meta": "2,480 tokens per call on average, above the 2,000 target."
+      }
+    },
+    "alertsFootnote": "Adjust limits on the AI configuration screen",
+    "topUsersTitle": "Heaviest learners",
+    "topUsersSubtitle": "Over the last 30 days",
+    "topProblemsTitle": "Most token-hungry problems",
+    "topProblemsSubtitle": "Solution review and mock interview combined",
+    "columnLearner": "Learner",
+    "columnTokens": "Tokens",
+    "columnCalls": "Calls",
+    "columnCost": "Cost",
+    "columnProblem": "Problem",
+    "columnAveragePerCall": "Avg / call",
+    "callCount": "{count} AI calls",
+    "difficulty": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard"
+    },
+    "emptyUsers": "No learner used AI in this range",
+    "emptyProblems": "No problem consumed tokens in this range"
+  },
+  "adminQueueMonitor": {
+    "title": "Judge queue",
+    "subtitle": "go-judge worker cluster, waiting jobs and infrastructure events",
+    "refresh": "Refresh",
+    "kpi": {
+      "waiting": {
+        "label": "Jobs waiting",
+        "meta": "Longest wait 46 seconds"
+      },
+      "running": {
+        "label": "Judging now",
+        "meta": "4 workers busy"
+      },
+      "throughput": {
+        "label": "Throughput",
+        "meta": "Average over the last hour"
+      },
+      "failed24h": {
+        "label": "Failed jobs, 24h",
+        "meta": "2 sandbox errors · 1 out of memory"
+      }
+    },
+    "workersTitle": "go-judge worker cluster",
+    "workersSubtitle": "{count} workers · autoscales up to {max}",
+    "workerStatus": {
+      "running": "Running",
+      "idle": "Idle",
+      "overloaded": "Overloaded"
+    },
+    "workerLoadLabel": "Load of {id}",
+    "workerLoad": "Load {load}%",
+    "workerJobs": "{count} jobs",
+    "controlsTitle": "Cluster controls",
+    "control": {
+      "paused": {
+        "label": "Pause queue consumption",
+        "meta": "Hold jobs back instead of handing them to workers"
+      },
+      "autoscale": {
+        "label": "Autoscale workers",
+        "meta": "Add a worker when the queue passes 20 jobs"
+      },
+      "highPriorityFirst": {
+        "label": "High priority first",
+        "meta": "Jobs flagged high priority are judged first"
+      }
+    },
+    "latencyTitle": "Latency per queue",
+    "latencyQueue": {
+      "normal": "Normal queue",
+      "high": "High-priority queue"
+    },
+    "jobsTitle": "Jobs in the queue",
+    "jobsSubtitle": "Click a column header to change the sort",
+    "jobFilterLabel": "Filter jobs",
+    "filterAll": "All",
+    "filterFailed": "Failed",
+    "columnJob": "Job",
+    "columnSubmission": "Submission",
+    "columnLanguage": "Language",
+    "columnPriority": "Priority",
+    "columnStatus": "Status",
+    "columnWait": "Wait",
+    "priority": {
+      "high": "High",
+      "normal": "Normal"
+    },
+    "jobStatus": {
+      "running": "Judging",
+      "waiting": "Waiting",
+      "sandboxError": "Sandbox error"
+    },
+    "emptyJobs": "No job matches the current filter",
+    "infraTitle": "Recent infrastructure events",
+    "infraSubtitle": "Worker, AI gateway, backup · not administrative actions, those live on the System log screen",
+    "infraLevel": {
+      "error": "ERROR",
+      "warn": "WARN",
+      "info": "INFO"
+    }
+  },
+  "adminPermissionMatrix": {
+    "title": "Permission matrix",
+    "subtitle": "Role × Function × Action · changes take effect immediately",
+    "save": "Save changes",
+    "saved": "Saved",
+    "scopeNoticeTitle": "What this matrix governs",
+    "scopeNoticeBody": "Functions and Actions are fixed seed data and read-only — only Roles can be created, edited or deleted. A STUDENT's basic learning rights (view/submit, review, interview, practise) do not go through this matrix.",
+    "roleSwitcherLabel": "Select a role",
+    "addRole": "+ New role",
+    "newRoleLabel": "New role name",
+    "newRolePlaceholder": "New role name",
+    "createRole": "Create",
+    "cancel": "Cancel",
+    "deleteRole": "Delete this role",
+    "systemRoleNote": "System role · cannot be deleted",
+    "studentNoticeTitle": "The STUDENT role",
+    "studentNoticeBody": "STUDENT already has every basic learning right by virtue of the role, outside this matrix — the cells below are for reference and cannot be edited.",
+    "tableCaption": "Permission matrix for {role}",
+    "columnFunction": "Function",
+    "action": {
+      "create": "Create",
+      "read": "Read",
+      "update": "Update",
+      "delete": "Delete"
+    },
+    "cellLabel": "{action} on {function} for role {role}",
+    "emptyFunctions": "No function in the matrix yet",
+    "confirmDeleteTitle": "Delete role {role}?",
+    "confirmDeleteBody": "The role will be removed from the matrix. What happens to accounts currently assigned to it is not settled — see the open question in the report.",
+    "function": {
+      "PROBLEM_AUTHORING": "Problem authoring & function specs",
+      "TESTCASE_MANAGEMENT": "Testcases & versioning",
+      "CLASS_MANAGEMENT": "Classes & assignments",
+      "USER_MANAGEMENT": "User accounts",
+      "JUDGE_QUEUE_MONITOR": "Judge queue & cluster",
+      "AI_CONFIG": "AI prompts & rubrics",
+      "AI_TOKEN_BUDGET": "AI token budget",
+      "SYSTEM_AUDIT_LOG": "System log",
+      "INTERVIEW_BANK_MANAGEMENT": "Interview question bank",
+      "PERMISSION_MATRIX": "Permission matrix"
+    }
+  },
+  "adminAiConfig": {
+    "title": "AI assistant configuration",
+    "subtitle": "Prompts, grading rubric and rate limits",
+    "publish": "Save and publish",
+    "versionLog": "Version log",
+    "close": "Close",
+    "editPrompt": "Edit",
+    "promptsTitle": "Prompt per feature",
+    "promptsSubtitle": "Each feature uses its own versioned prompt",
+    "feature": {
+      "review": "Solution review",
+      "interview": "Mock interview",
+      "testcase": "Testcase generation"
+    },
+    "promptDescription": {
+      "review": "Grades against the rubric, calls out complexity and what to fix, quoting the code.",
+      "interview": "Plays the interviewer, follows up on each answer, grades at the end of the session.",
+      "testcase": "Generates edge-case testcases from the statement; an instructor approves before use."
+    },
+    "promptStatus": {
+      "live": "Live",
+      "draft": "Draft",
+      "abTest": "A/B test"
+    },
+    "metaModel": "Model",
+    "metaTemperature": "Temperature",
+    "metaMaxTokens": "Limit",
+    "metaUpdated": "Updated {date}",
+    "rubricTitle": "Solution grading rubric",
+    "rubricSubtitle": "Weights behind the overall score in the review report",
+    "weightTotal": "Total {total}%",
+    "weightLabel": "Weight for {criterion}",
+    "weightDecrement": "Decrease {criterion}",
+    "weightIncrement": "Increase {criterion}",
+    "weightWarningTitle": "Weights do not add up to 100%",
+    "weightWarningBody": "Currently {total}%. Whether publishing should be blocked at anything other than 100% is not settled — see the open question in the report.",
+    "rubric": {
+      "correctness": {
+        "label": "Correctness",
+        "meta": "testcase results"
+      },
+      "complexity": {
+        "label": "Complexity",
+        "meta": "time and memory"
+      },
+      "codeQuality": {
+        "label": "Code quality",
+        "meta": "naming, structure"
+      },
+      "edgeCases": {
+        "label": "Edge cases",
+        "meta": "special inputs"
+      },
+      "explanation": {
+        "label": "Explanation",
+        "meta": "reasoning about the approach"
+      }
+    },
+    "limitsTitle": "Rate limits",
+    "limitsSubtitle": "Curb abuse and keep cost inside the budget",
+    "limit": {
+      "reviewPerDay": {
+        "label": "Reviews per day",
+        "meta": "Per learner account"
+      },
+      "interviewPerWeek": {
+        "label": "Interviews per week",
+        "meta": "Up to 30 minutes each"
+      },
+      "cooldown": {
+        "label": "Cooldown between requests",
+        "meta": "Applies to every AI feature"
+      }
+    },
+    "guardsTitle": "Answer guards",
+    "guard": {
+      "noFullSolution": {
+        "label": "Never give a full solution",
+        "meta": "Point at an approach and short snippets only"
+      },
+      "citeLines": {
+        "label": "Quote the learner's lines",
+        "meta": "Every remark must name the line it is about"
+      },
+      "answerInVietnamese": {
+        "label": "Answer in Vietnamese",
+        "meta": "Keep English technical terms as they are"
+      }
+    },
+    "preReleaseTitle": "Before publishing",
+    "preReleaseBody": "Run the 30 sample solutions to compare rubric scores between the draft and the live prompt. The backend for this is deferred to a later phase, so the button is inactive.",
+    "runComparison": "Run comparison",
+    "lastComparison": "Last run: {date}, average delta {delta}."
+  },
+  "problemManagement": {
+    "title": "Problem management",
+    "subtitle": "{total} problems · {published} visible in the problem bank",
+    "newProblem": "New problem",
+    "stat": {
+      "total": {
+        "label": "Total problems",
+        "meta": "3 added this month"
+      },
+      "published": {
+        "label": "Published",
+        "meta": "Exactly what learners see"
+      },
+      "draft": {
+        "label": "Drafts",
+        "meta": "1 has no testcases yet"
+      },
+      "acceptedRate": {
+        "label": "Average AC rate",
+        "meta": "Over the last 90 days"
+      }
+    },
+    "searchLabel": "Search problems",
+    "searchPlaceholder": "Search by code or title",
+    "difficultyFilterLabel": "Filter by difficulty",
+    "statusFilterLabel": "Filter by status",
+    "filterAll": "All",
+    "difficulty": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard"
+    },
+    "status": {
+      "published": "Published",
+      "draft": "Draft"
+    },
+    "resultCount": "{shown} / {total} problems",
+    "tableCaption": "Problem list",
+    "columnCode": "Code",
+    "columnTitle": "Title",
+    "columnTopic": "Topic",
+    "columnDifficulty": "Difficulty",
+    "columnStatus": "Status",
+    "columnSubmissions": "Submissions",
+    "columnAccepted": "AC",
+    "columnTestcasesAndEdit": "TC · Edited",
+    "testcasesAndEdit": "{count} TC · {edited}",
+    "selectAll": "Select every visible problem",
+    "selectRow": "Select {title}",
+    "selectionLabel": "{count} problems selected",
+    "bulk": {
+      "publish": "Publish",
+      "changeDifficulty": "Change difficulty",
+      "assignTopic": "Assign topic",
+      "duplicate": "Duplicate",
+      "exportCsv": "Export CSV",
+      "delete": "Delete"
+    },
+    "edit": "Edit",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "editProblem": "Edit {title}",
+    "deleteProblem": "Delete {title}",
+    "emptyFiltered": "No problem matches the current filter",
+    "pageLabel": "Page {page} of {totalPages} · showing {shown} rows",
+    "previous": "Previous",
+    "next": "Next",
+    "goToPage": "Page {page}",
+    "confirmDeleteTitle": "Delete {title}?",
+    "confirmDeleteBody": "The problem is removed from the list. What happens to its existing submissions is not settled — see the open question in the report."
+  },
+  "interviewQuestionManagement": {
+    "title": "Interview question bank",
+    "subtitle": "{total} questions · instructors and admins can edit all of them",
+    "importCsv": "Import CSV",
+    "newQuestion": "New question",
+    "stat": {
+      "total": {
+        "label": "Total questions",
+        "meta": "9 added this month"
+      },
+      "withRubric": {
+        "label": "With a full rubric",
+        "meta": "17 are missing one"
+      },
+      "averageScore": {
+        "label": "Average score",
+        "meta": "Out of 5, over 30 days"
+      },
+      "neverUsed": {
+        "label": "Never used",
+        "meta": "Worth reviewing the wording"
+      }
+    },
+    "searchLabel": "Search questions",
+    "searchPlaceholder": "Search by question text or code",
+    "topicFilterLabel": "Filter by topic",
+    "levelFilterLabel": "Filter by level",
+    "filterAll": "All",
+    "topic": {
+      "csTheory": "CS theory",
+      "systemDesign": "System design",
+      "database": "Database",
+      "language": "Languages",
+      "behavioural": "Behavioural"
+    },
+    "level": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard"
+    },
+    "resultCount": "{shown} / {total} questions",
+    "followUps": "Follow-ups",
+    "rubric": "Scoring criteria",
+    "usage": "Used {count} times · avg {score}/5",
+    "edit": "Edit",
+    "duplicate": "Duplicate",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "deleteQuestion": "Delete question {code}",
+    "emptyFiltered": "No question matches the current filter",
+    "pageLabel": "Page {page} of {totalPages} · showing {shown} cards",
+    "previous": "Previous",
+    "next": "Next",
+    "goToPage": "Page {page}",
+    "confirmDeleteTitle": "Delete question {code}?",
+    "confirmDeleteBody": "The question leaves the bank. Interview sessions that already used it keep their history."
+  },
+  "interviewQuestionAuthoring": {
+    "titleNew": "Author an interview question",
+    "subtitle": "Saving makes the question live — there is no separate publish step",
+    "back": "Back",
+    "previewAsLearner": "Preview as learner",
+    "save": "Save",
+    "saving": "Saving…",
+    "savedAt": "Saved at {time}",
+    "unsaved": "Not saved",
+    "group1Title": "Content and classification",
+    "group1Subtitle": "The question body is written in Markdown",
+    "questionLabel": "Question",
+    "questionPlaceholder": "e.g. How does a hash table handle collisions?",
+    "topicLabel": "Topic",
+    "levelLabel": "Level",
+    "topic": {
+      "csTheory": "CS theory",
+      "systemDesign": "System design",
+      "database": "Database",
+      "language": "Languages",
+      "behavioural": "Behavioural"
+    },
+    "level": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard"
+    },
+    "group2Title": "Follow-up probes",
+    "group2Subtitle": "No limit on how many, and no per-probe difficulty",
+    "followUpLabel": "Follow-up {index}",
+    "followUpPlaceholder": "e.g. At what load factor should it resize?",
+    "addFollowUp": "+ Add a follow-up",
+    "removeFollowUp": "Remove follow-up {index}",
+    "group3Title": "Scoring criteria",
+    "group3Subtitle": "Leaving it empty is fine; once there are criteria they must total 100%",
+    "rubricTotal": "Total {total}%",
+    "rubricBlockTitle": "Cannot save — weights must total 100%",
+    "rubricBlockBody": "Currently {total}%. Either adjust to 100% or remove every criterion to save the question without a rubric.",
+    "rubricEmptyTitle": "No scoring criteria yet",
+    "rubricEmptyBody": "The question still saves and works in study mode, but stays out of practice mode until it has a rubric.",
+    "criterionLabel": "Criterion {index} name",
+    "criterionPlaceholder": "e.g. Compares the two mechanisms",
+    "criterionWeightLabel": "Weight of criterion {index}",
+    "criterionWeightDecrement": "Decrease criterion {index}",
+    "criterionWeightIncrement": "Increase criterion {index}",
+    "addCriterion": "+ Add a criterion",
+    "removeCriterion": "Remove criterion {index}",
+    "remove": "Remove",
+    "group4Title": "Administrative actions",
+    "group4Subtitle": "Copy into a new record, or retire this question",
+    "duplicate": "Duplicate",
+    "softDelete": "Retire",
+    "cancel": "Cancel",
+    "confirmSoftDeleteTitle": "Retire this question?",
+    "confirmSoftDeleteBody": "The question is marked retired and stops appearing in study and practice mode. Interview sessions that already used it keep their history."
+  },
+  "problemAuthoring": {
+    "subtitle": "Topic {topic} · publish once the checklist passes",
+    "back": "Back",
+    "previewAsLearner": "Preview as learner",
+    "publish": "Save and publish",
+    "tabsLabel": "Section being edited",
+    "tab": {
+      "content": "Statement",
+      "examples": "Examples ({count})",
+      "testcases": "Testcases ({count})",
+      "ai": "AI guidance"
+    },
+    "statementTitle": "Statement",
+    "statementSubtitle": "Written in Markdown with LaTeX support",
+    "titleLabel": "Title",
+    "bodyLabel": "Statement body",
+    "limitsTitle": "Constraints and limits",
+    "limitsSubtitle": "Applies to every language; override per language on the Languages screen",
+    "limit": {
+      "timeLimitMs": "Time limit (ms)",
+      "memoryLimitMb": "Memory (MB)",
+      "outputLimitKb": "Output (KB)",
+      "stackLimitMb": "Stack (MB)"
+    },
+    "constraintsLabel": "Input constraints",
+    "solutionTitle": "Reference solution",
+    "solutionSubtitle": "Generates testcase output and is checked before publishing",
+    "solutionLabel": "Reference solution in {language}",
+    "examplesTitle": "Worked examples",
+    "examplesSubtitle": "Shown to learners inside the statement",
+    "exampleIndex": "Example {index}",
+    "exampleInput": "Input",
+    "exampleOutput": "Output",
+    "exampleExplanation": "Explanation",
+    "testcasesTitle": "Testcases",
+    "testcasesSubtitle": "{total} testcases · {publicCount} public",
+    "columnInput": "Input",
+    "columnExpected": "Expected",
+    "columnVisibility": "Visibility",
+    "visibility": {
+      "public": "Public",
+      "hidden": "Hidden"
+    },
+    "emptyTestcases": "No testcase yet",
+    "aiTitle": "Guidance for the AI assistant",
+    "aiSubtitle": "Problem-specific context appended to the system prompt from the AI configuration screen",
+    "aiBriefLabel": "Problem-specific context",
+    "aiGuard": {
+      "noFullCode": {
+        "label": "Never give complete code",
+        "meta": "The AI points at an approach and short snippets only"
+      },
+      "socraticOnly": {
+        "label": "Ask back, never solve it",
+        "meta": "Lead with questions instead of handing over a solution"
+      }
+    },
+    "propertiesTitle": "Properties",
+    "topicLabel": "Topic",
+    "difficultyLabel": "Difficulty",
+    "statusLabel": "Status",
+    "difficulty": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard"
+    },
+    "status": {
+      "draft": "Draft",
+      "published": "Published"
+    },
+    "checklistTitle": "Publish checklist",
+    "checklistBlockTitle": "Cannot publish yet",
+    "checklistBlockBody": "{count} requirements still unmet.",
+    "checkDone": "Done",
+    "checkPending": "Todo",
+    "check": {
+      "minTestcases": "At least 8 testcases",
+      "minPublic": "At least 2 public testcases",
+      "solutionPasses": "Reference solution passes every testcase",
+      "minExamples": "At least 2 worked examples"
+    }
   }
 }
