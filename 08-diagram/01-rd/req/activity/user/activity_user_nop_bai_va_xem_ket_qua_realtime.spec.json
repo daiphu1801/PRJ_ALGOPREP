@@ -1,0 +1,36 @@
+{
+  "_": "Chuyen tu sequence_user_nop_bai_va_xem_ket_qua_realtime.spec.json (13 message) thanh activity. Khong co decision that su: F4-04 (fail-fast) da het hieu luc theo DEC-2026-0831-partial-score-testcase-ratio nen 'cham tung testcase' la MOT buoc tuan tu chay het N testcase, khong re nhanh dung/sai o muc tong quan -- giu dung tinh than 'khong bia nhanh gia' cua ke hoach.",
+  "kind": "activity",
+  "title": "Sơ đồ hoạt động - Nộp bài và xem kết quả từng testcase theo thời gian thực (Sinh viên)",
+  "activity": {
+    "nodes": [
+      { "id": "start", "type": "start" },
+      { "id": "n1", "type": "action", "text": "Bấm Nộp bài" },
+      { "id": "n2", "type": "action", "text": "Gửi bản nộp (POST /submissions)" },
+      { "id": "n3", "type": "action", "text": "Lưu bản nộp, trạng thái PENDING" },
+      { "id": "n4", "type": "action", "text": "Trả submissionId ngay, không chờ chấm xong" },
+      { "id": "n5", "type": "action", "text": "Mở kênh WebSocket theo dõi kết quả" },
+      { "id": "n6", "type": "action", "text": "Đẩy job chấm từng testcase vào hàng đợi (RabbitMQ)" },
+      { "id": "n7", "type": "action", "text": "go-judge chấm lần lượt từng testcase (chạy hết, không dừng sớm)" },
+      { "id": "n8", "type": "action", "text": "Ghi kết quả từng testcase vào CSDL" },
+      { "id": "n9", "type": "action", "text": "Đẩy trạng thái testcase qua WebSocket, cập nhật realtime không cần tải lại trang" },
+      { "id": "n10", "type": "action", "text": "Ghi verdict tổng và điểm tỷ lệ testcase" },
+      { "id": "n11", "type": "action", "text": "Trả verdict cuối kèm điểm tỷ lệ testcase" },
+      { "id": "end", "type": "end" }
+    ],
+    "edges": [
+      { "from": "start", "to": "n1" },
+      { "from": "n1", "to": "n2" },
+      { "from": "n2", "to": "n3" },
+      { "from": "n3", "to": "n4" },
+      { "from": "n4", "to": "n5" },
+      { "from": "n5", "to": "n6" },
+      { "from": "n6", "to": "n7" },
+      { "from": "n7", "to": "n8" },
+      { "from": "n8", "to": "n9" },
+      { "from": "n9", "to": "n10" },
+      { "from": "n10", "to": "n11" },
+      { "from": "n11", "to": "end" }
+    ]
+  }
+}

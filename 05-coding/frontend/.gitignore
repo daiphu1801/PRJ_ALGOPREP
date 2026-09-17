@@ -8,3 +8,7 @@ coverage
 .env.local
 test-results
 playwright-report
+blob-report
+e2e/__screenshots__/
+e2e/screenshots/
+e2e/*-snapshots/

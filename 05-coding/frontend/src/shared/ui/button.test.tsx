@@ -3,20 +3,20 @@ import { render, screen } from "@testing-library/react";
 import { Button } from "./button";
 
 describe("Button", () => {
-  it("render children và nhận className tuỳ biến", () => {
+  it("renders children and accepts a custom className", () => {
     render(<Button className="extra">Nộp bài</Button>);
     const el = screen.getByRole("button", { name: "Nộp bài" });
     expect(el).toBeInTheDocument();
     expect(el.className).toContain("extra");
   });
 
-  it("asChild truyền style xuống thẻ con thay vì render <button>", () => {
+  it("asChild forwards styling to the child element instead of rendering a <button>", () => {
     render(
       <Button asChild>
         <a href="/login">Đăng nhập</a>
       </Button>,
     );
-    // Phải là link, KHÔNG phải button — nếu hỏng thì mọi chỗ dùng link-dạng-nút sẽ mất a11y.
+    // Must be a link, NOT a button — if this breaks, every link-styled-as-button loses a11y.
     const link = screen.getByRole("link", { name: "Đăng nhập" });
     expect(link).toBeInTheDocument();
     expect(screen.queryByRole("button")).not.toBeInTheDocument();

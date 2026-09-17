@@ -1,8 +1,8 @@
 import { getT } from "@/shared/i18n/server";
 
-// Khung rỗng cho màn 'class_assignments' ("Bài tập của tôi", A2). Là một mục nav ĐỘC LẬP
-// trong sidebar giáo viên, không phải tab của class_management — tách theo
-// DEC-2026-0828-split-class-management-assignments. Chờ 02-bd/screens/teacher/class_assignments.md.
+// Empty shell for the 'class_assignments' screen ("My Assignments", A2). This is a STANDALONE
+// nav item in the instructor sidebar, not a tab under class_management — split out per
+// DEC-2026-0828-split-class-management-assignments. Pending 02-bd/screens/teacher/class_assignments.md.
 export async function ClassAssignmentsView() {
   const t = await getT("common");
 

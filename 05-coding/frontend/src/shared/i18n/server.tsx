@@ -5,8 +5,8 @@ import { getLocale, getMessages, getTranslations } from "next-intl/server";
 export { getTranslations as getT, getLocale };
 
 /**
- * Facade duy nhất được phép import next-intl trực tiếp (chặn ở nơi khác bằng ESLint
- * no-restricted-imports) — đổi thư viện i18n sau này chỉ sửa file này.
+ * The only facade allowed to import next-intl directly (blocked everywhere else via ESLint
+ * no-restricted-imports) — swapping the i18n library later only means editing this file.
  */
 export async function IntlProvider({ children }: { children: ReactNode }) {
   const locale = await getLocale();

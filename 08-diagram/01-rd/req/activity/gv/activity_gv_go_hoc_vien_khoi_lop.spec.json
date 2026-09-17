@@ -1,0 +1,27 @@
+{
+  "_": "Activity cho luong 'go mot hoc vien khoi lop' cua actor A2, dan tu sequence_gv_go_hoc_vien_khoi_lop.spec.json (F1-26). Sequence goc chi ve mot nhanh xac nhan (khong ve nhanh Huy), va tu ghi chu '_khong_alt' trong sequence noi ro: hop thoai xac nhan la luong giao dien, khong phai nhanh nghiep vu, nen o day cung khong dat decision -- giu dung mach tuan tu da duoc chot, khong bia them nhanh Huy.",
+  "_pham_vi_xoa": "Buoc 5 'xoa lich su lam bai trong lop' giu dung pham vi cua RD: chi xoa du lieu TRONG lop do, khong dung den tai khoan hay lich su toan he thong cua hoc vien.",
+  "kind": "activity",
+  "title": "Sơ đồ hoạt động - Gỡ học viên khỏi lớp (Giảng viên)",
+  "activity": {
+    "nodes": [
+      { "id": "start", "type": "start" },
+      { "id": "n1", "type": "action", "text": "Chọn học viên, bấm gỡ khỏi lớp" },
+      { "id": "n2", "type": "action", "text": "Hệ thống hỏi xác nhận: lịch sử làm bài trong lớp sẽ bị xoá" },
+      { "id": "n3", "type": "action", "text": "Xác nhận gỡ" },
+      { "id": "n4", "type": "action", "text": "Hệ thống xoá thành viên khỏi lớp" },
+      { "id": "n5", "type": "action", "text": "Hệ thống xoá lịch sử làm bài của học viên trong lớp" },
+      { "id": "n6", "type": "action", "text": "Cập nhật danh sách học viên của lớp" },
+      { "id": "end", "type": "end" }
+    ],
+    "edges": [
+      { "from": "start", "to": "n1" },
+      { "from": "n1", "to": "n2" },
+      { "from": "n2", "to": "n3" },
+      { "from": "n3", "to": "n4" },
+      { "from": "n4", "to": "n5" },
+      { "from": "n5", "to": "n6" },
+      { "from": "n6", "to": "end" }
+    ]
+  }
+}

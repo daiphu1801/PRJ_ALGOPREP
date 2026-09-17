@@ -1,0 +1,34 @@
+{
+  "_": "Chuyen tu sequence_admin_cau_hinh_prompt_ai.spec.json (F5-23). Hai buoc nghiep vu lien tiep -- luu phien ban prompt moi, roi khoi phuc mot phien ban cu -- ghep thanh MOT chuoi hanh dong tuan tu vi day la mo ta trinh tu thao tac cua Admin, khong phai mot quyet dinh re nhanh: khong co diem nao trong luong that su re thanh hai huong loai tru nhau.",
+  "_khong_decision": "Khong co node decision: ca hai 'nhanh' (luu ban moi / khoi phuc ban cu) deu la hanh dong Admin chu dong chon lam, khong phai he thong danh gia dieu kien roi re nhanh.",
+  "kind": "activity",
+  "title": "Sơ đồ hoạt động - Cấu hình prompt AI theo phiên bản (Quản trị viên)",
+  "mode": "mono",
+  "activity": {
+    "nodes": [
+      { "id": "start", "type": "start" },
+      { "id": "n1", "type": "action", "text": "Sửa prompt và trọng số rubric, gửi bản mới" },
+      { "id": "n2", "type": "action", "text": "Lưu thành một phiên bản prompt mới" },
+      { "id": "n3", "type": "action", "text": "Ghi Nhật ký hệ thống" },
+      { "id": "n4", "type": "action", "text": "Hiện phiên bản đang áp dụng" },
+      { "id": "n5", "type": "action", "text": "Xem lại, chọn khôi phục một phiên bản cũ" },
+      { "id": "n6", "type": "action", "text": "Yêu cầu khôi phục phiên bản đã chọn" },
+      { "id": "n7", "type": "action", "text": "Đặt phiên bản cũ thành đang áp dụng" },
+      { "id": "n8", "type": "action", "text": "Ghi Nhật ký hệ thống" },
+      { "id": "n9", "type": "action", "text": "Hiện đã khôi phục xong" },
+      { "id": "end", "type": "end" }
+    ],
+    "edges": [
+      { "from": "start", "to": "n1" },
+      { "from": "n1", "to": "n2" },
+      { "from": "n2", "to": "n3" },
+      { "from": "n3", "to": "n4" },
+      { "from": "n4", "to": "n5" },
+      { "from": "n5", "to": "n6" },
+      { "from": "n6", "to": "n7" },
+      { "from": "n7", "to": "n8" },
+      { "from": "n8", "to": "n9" },
+      { "from": "n9", "to": "end" }
+    ]
+  }
+}

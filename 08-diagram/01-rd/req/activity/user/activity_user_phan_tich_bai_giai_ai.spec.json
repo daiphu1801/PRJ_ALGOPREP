@@ -1,0 +1,37 @@
+{
+  "_": "Chuyen tu sequence_user_phan_tich_bai_giai_ai.spec.json (13 message, 1 khoi alt) thanh activity. Giu dung mot decision that su cua luong -- 'Da co bao cao cache theo hash ma nguon?' (nhanh chinh cua F5-20, khong phai xu ly loi, theo _alt cua sequence goc). Hai nhanh deu tiep tuc chay (khong ket thuc rieng) nen can node merge truoc khi hien bao cao.",
+  "_khong_ve": "Nhu sequence goc: KHONG ve trang thai loading/loi khi goi AI (het quota F5-22, khoa ngan sach F5-25) -- solution_review.md Cau hoi mo Q3 xac nhan hai trang thai nay chua co trong prototype.",
+  "_prompt_injection": "Node 'Gui ma nguon cho LLM' ghi ro '(tham so du lieu)' de giu dung F5-17: ma nguon la du lieu dau vao, tach biet khoi chi thi he thong.",
+  "kind": "activity",
+  "title": "Sơ đồ hoạt động - Phân tích bài giải bằng AI sau khi Accepted (Sinh viên)",
+  "activity": {
+    "nodes": [
+      { "id": "start", "type": "start" },
+      { "id": "n1", "type": "action", "text": "Mở màn Phân tích bài giải từ bài nộp đã Accepted" },
+      { "id": "n2", "type": "action", "text": "Yêu cầu phân tích (submissionId)" },
+      { "id": "n3", "type": "action", "text": "Tính hash mã nguồn, tra cache báo cáo" },
+      { "id": "d1", "type": "decision", "text": "Đã có báo cáo cache theo hash mã nguồn?" },
+      { "id": "n4", "type": "action", "text": "Gửi mã nguồn (tham số dữ liệu) + prompt phân tích cho LLM" },
+      { "id": "n5", "type": "action", "text": "Nhận báo cáo JSON có lược đồ, lưu kèm hash mã nguồn" },
+      { "id": "m1", "type": "merge" },
+      { "id": "n6", "type": "action", "text": "Hiện độ phức tạp, điểm mạnh/cần sửa, đề xuất cải tiến" },
+      { "id": "n7", "type": "action", "text": "Bấm Áp bản đề xuất vào Workspace" },
+      { "id": "n8", "type": "action", "text": "Hỏi xác nhận trước khi ghi đè, giữ lại bản mã cũ" },
+      { "id": "end", "type": "end" }
+    ],
+    "edges": [
+      { "from": "start", "to": "n1" },
+      { "from": "n1", "to": "n2" },
+      { "from": "n2", "to": "n3" },
+      { "from": "n3", "to": "d1" },
+      { "from": "d1", "to": "n4", "guard": "chưa có" },
+      { "from": "d1", "to": "m1", "guard": "có" },
+      { "from": "n4", "to": "n5" },
+      { "from": "n5", "to": "m1" },
+      { "from": "m1", "to": "n6" },
+      { "from": "n6", "to": "n7" },
+      { "from": "n7", "to": "n8" },
+      { "from": "n8", "to": "end" }
+    ]
+  }
+}

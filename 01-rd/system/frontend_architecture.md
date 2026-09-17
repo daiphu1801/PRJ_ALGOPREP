@@ -45,6 +45,29 @@ không ai tưởng chúng đã được chốt. [SoT: Suy luận]
 do giảng viên soạn giữ nguyên ngôn ngữ gốc. Chi tiết cấu trúc định tuyến và khung dịch i18n chốt tại
 `02-bd/screens/`.
 
+> **Mẫu triển khai chốt 2026-09-16** (vá lỗi giật trang khi đổi ngôn ngữ, owner báo qua ảnh chụp thật):
+> đổi ngôn ngữ **không** gọi `window.location.reload()` — chỉ ghi cookie `NEXT_LOCALE` rồi gọi
+> `router.refresh()` (bọc trong `startTransition`) để Server Component đọc lại cookie tại chỗ, không tải lại
+> toàn trang (`05-coding/frontend/src/shared/i18n/index.ts` hàm `setLocale`,
+> `shared/ui/theme-lang-switcher.tsx`). Kèm một quy tắc UI đa ngôn ngữ chung: **nhãn nào đổi theo ngôn ngữ mà
+> nằm trong control có hình dạng cố định (tab, pill, nút toolbar) phải có `min-width` đo theo bản dịch dài
+> nhất, không để chữ tự quyết định độ rộng** — "Sáng"/"Tối" và "Light"/"Dark" chênh tới ~9px mỗi nút, để
+> control tự co giãn theo chữ sẽ xô lệch cả hàng chứa nó mỗi lần đổi ngôn ngữ.
+
+> **Quy ước namespace chốt 2026-09-17** (trước đợt dựng ngang 11 màn Admin — thời điểm đó
+> `messages/{vi,en}.json` mới có 7 namespace / 123 key cho đúng 2 màn, và sẽ nhân lên nhiều lần):
+>
+> - **Một namespace cho mỗi slug màn**, tên viết `camelCase` từ slug: `admin_user_management` →
+>   `adminUserManagement`. Màn nào chỉ đọc namespace của chính nó, không đọc chéo sang màn khác — đọc
+>   chéo là dấu hiệu chuỗi đó thuộc về `common`.
+> - **`common`** giữ nhãn lặp lại ở nhiều màn (`Huỷ`, `Lưu`, `Trước`, `Sau`, `Đang tải`), **`nav`** giữ
+>   nhãn điều hướng. Một chuỗi chỉ được lên `common` khi đã có từ 2 màn dùng thật — không dự phòng trước.
+> - **Primitive trong `shared/ui` không đọc i18n.** `Pagination`, `ConfirmDialog`, `TextField`... nhận
+>   nhãn qua prop; tầng `shared` không được biết namespace nào tồn tại, đúng tiêu chí mục 2.A. Màn gọi
+>   mới là nơi dịch.
+> - `messages/vi.json` và `messages/en.json` phải **cùng tập key**; `shared/i18n/messages.test.ts` đã
+>   kiểm điều này, nên key lệch sẽ làm đỏ `pnpm check` chứ không âm thầm rơi về khoá thô.
+
 ---
 
 ## 2. Phân tầng FSD
@@ -220,6 +243,6 @@ agent thi hành, máy không bắt được** — đừng trông chờ `pnpm lin
 | Bố cục và luồng tương tác từng màn | `02-bd/screens/<screen>.md` theo prototype `09-layoutBase/` |
 | Hợp đồng API mà từng màn gọi | `03-dd/api/` — `screens/` chỉ liên kết tới, không định nghĩa lại |
 | Hệ thống thiết kế, design token | Chưa chọn — chốt ở `02-bd/screens/` |
-| Chế độ theme (Dark/Light) | **Đã chốt 2026-08-24 — hỗ trợ cả hai, Light là mặc định** (`DEC-2026-0824-dark-light-theme`) |
+| Chế độ theme (Dark/Light) | **Đã chốt 2026-08-24 — hỗ trợ cả hai, Light là mặc định** (`DEC-2026-0824-dark-light-theme`). Chuyển màu mượt (crossfade) bằng một transition CSS đặc hiệu thấp khai ở `app/globals.css` (150ms, tôn trọng `prefers-reduced-motion`) — màn mới không cần tự thêm transition riêng cho `background-color`/`border-color`/`color` |
 | Thư viện Markdown + LaTeX, sanitizer, biểu đồ | Khi dựng màn chi tiết bài toán và trang tiến độ |
 | Đa ngôn ngữ giao diện (i18n) | **Đã chốt 2026-08-24 — có song ngữ vi/en** (`DEC-2026-0824-i18n-vi-en`); cơ chế triển khai chốt 2026-08-25 — `next-intl` không dùng segment locale trong URL, đổi qua cookie `NEXT_LOCALE` (`DEC-2026-0825-frontend-base-architecture`) |

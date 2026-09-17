@@ -5,7 +5,7 @@ import { tokenStore } from "./token-store";
 
 const httpClient = axios.create({
   baseURL: env.apiBaseUrl,
-  withCredentials: true, // gửi cookie Refresh Token HttpOnly
+  withCredentials: true, // send the HttpOnly Refresh Token cookie
 });
 
 httpClient.interceptors.request.use((config) => {
@@ -16,7 +16,7 @@ httpClient.interceptors.request.use((config) => {
   return config;
 });
 
-// Chống lặp làm mới token vô hạn: một lần refresh thất bại thì đăng xuất, không thử lại.
+// Prevent infinite token-refresh loops: one failed refresh logs the user out, no retry.
 let refreshInFlight: Promise<string | null> | null = null;
 
 async function refreshAccessToken(): Promise<string | null> {
@@ -50,7 +50,7 @@ httpClient.interceptors.response.use(
   },
 );
 
-/** Envelope response chung của backend — đường đọc dùng data trực tiếp qua mapper của entity. */
+/** Common backend response envelope — the read path uses `data` directly via the entity's mapper. */
 export async function apiGet<T>(url: string, params?: Record<string, unknown>): Promise<T> {
   const res = await httpClient.get<T>(url, { params });
   return res.data;

@@ -1,25 +1,50 @@
 import { expect, test } from "@playwright/test";
 
 /**
- * Smoke test tối thiểu của khung base. KHÔNG phải luồng E2E xương sống — luồng đó
- * (đăng nhập → mở bài toán → chạy thử → nộp → kết quả realtime → Accepted → luồng AI) đặc tả ở
- * 01-rd/system/environment.md mục 3.B, chỉ dựng được khi có backend thật.
+ * Minimal smoke test for the base shell. NOT the backbone E2E flow — that flow
+ * (login -> open problem -> run -> submit -> realtime result -> Accepted -> AI flow) is specified in
+ * 01-rd/system/environment.md section 3.B, and can only be stood up once a real backend exists.
  */
-test("route gốc điều hướng về màn đăng nhập", async ({ page }) => {
+test("root route redirects to the login screen", async ({ page }) => {
   await page.goto("/");
   await expect(page).toHaveURL(/\/login$/);
 });
 
-test("khu vực người học render được AppShell", async ({ page }) => {
+test("student area renders the AppShell", async ({ page }) => {
   await page.goto("/problems");
   await expect(page.getByRole("banner")).toContainText("AlgoPrep");
 });
 
-test("locale mặc định là tiếng Việt và cookie đổi được sang tiếng Anh", async ({ page, context }) => {
+test("auth screen renders and the signup/login mode switch is reachable (PROTOTYPE, views/auth)", async ({ page }) => {
+  await page.goto("/login");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Đăng nhập");
+
+  // Primary action: switch mode via the aside panel button (02-bd/screens/shared/auth.md section 2).
+  await page.getByRole("button", { name: "Chưa có tài khoản? Đăng ký" }).first().click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Đăng ký");
+});
+
+test("admin overview renders the Admin shell with sidebar nav (PROTOTYPE, views/admin-overview)", async ({ page }) => {
+  await page.goto("/admin/overview");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Tổng quan");
+
+  // Primary action: sidebar nav reaches an existing real route, not a 404.
+  const nav = page.getByRole("navigation", { name: "Điều hướng khu quản trị" });
+  await expect(nav).toBeVisible();
+
+  // Nav groups start closed (admin-sidebar.tsx `openGroups` defaults to {}), so the group has to be
+  // expanded first — its items are not in the DOM until then. This test was written in the same
+  // commit as the sidebar (13aaff2) and had been failing on that step ever since.
+  await nav.getByRole("button", { name: "Nội dung" }).click();
+  await nav.getByRole("link", { name: "Quản lý bài tập" }).click();
+  await expect(page).toHaveURL(/\/admin\/problems$/);
+});
+
+test("default locale is Vietnamese and the cookie can switch it to English", async ({ page, context }) => {
   await page.goto("/problems");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Danh sách bài toán");
 
-  // Đổi ngôn ngữ bằng cookie, KHÔNG đổi URL — kiểm chứng cơ chế i18n non-prefix đã chốt.
+  // Switch locale via cookie, NOT the URL — verifies the non-prefix i18n mechanism that was locked in.
   await context.addCookies([
     { name: "NEXT_LOCALE", value: "en", url: "http://localhost:3000" },
   ]);

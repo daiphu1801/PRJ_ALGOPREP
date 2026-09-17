@@ -1,6 +1,6 @@
-// Access Token giữ trong bộ nhớ ứng dụng, KHÔNG BAO GIỜ localStorage — XSS đọc được
-// localStorage. Refresh Token nằm trong cookie HttpOnly do backend set, JS không đọc được.
-// Nguồn: 01-rd/system/frontend_architecture.md mục 4.
+// The Access Token is kept in application memory, NEVER localStorage — XSS can read
+// localStorage. The Refresh Token lives in an HttpOnly cookie set by the backend, which JS
+// cannot read. Source: 01-rd/system/frontend_architecture.md section 4.
 let accessToken: string | null = null;
 
 export const tokenStore = {

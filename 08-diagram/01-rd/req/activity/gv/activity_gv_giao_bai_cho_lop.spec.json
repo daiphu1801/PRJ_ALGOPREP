@@ -1,0 +1,29 @@
+{
+  "_": "Activity cho luong 'giao bai toan cho lop phu trach' cua actor A2, dan tu sequence_gv_giao_bai_cho_lop.spec.json (F2-12). Sequence goc khong co alt -- toan bo tuan tu, nen khong dat decision. Hai buoc cuoi thuoc goc nhin Sinh vien (A1) duoc giu lai vi la HE QUA quan trong cua F2-12 (chi hoc vien lop do thay bai, hien thanh nhom rieng) dung nhu ghi chu trong sequence goc.",
+  "_chi_bai_da_xuat_ban": "Buoc 2 'xem danh sach bai da xuat ban' phan anh dung F2-12: chi bai o trang thai Da xuat ban moi liet ke duoc de gan -- day la dieu kien loc du lieu, khong phai mot diem re nhanh hai nhanh trong luong xu ly nen khong ve thanh decision.",
+  "kind": "activity",
+  "title": "Sơ đồ hoạt động - Giao bài toán cho lớp (Giảng viên)",
+  "activity": {
+    "nodes": [
+      { "id": "start", "type": "start" },
+      { "id": "n1", "type": "action", "text": "Chọn \"Gán từ ngân hàng bài toán\"" },
+      { "id": "n2", "type": "action", "text": "Xem danh sách bài toán đã xuất bản" },
+      { "id": "n3", "type": "action", "text": "Chọn bài và bấm \"Gán cho lớp\"" },
+      { "id": "n4", "type": "action", "text": "Hệ thống ghi bản gán bài theo lớp" },
+      { "id": "n5", "type": "action", "text": "Hiện bài trong danh sách bài tập của lớp" },
+      { "id": "n6", "type": "action", "text": "Sinh viên mở danh sách bài toán" },
+      { "id": "n7", "type": "action", "text": "Hiện nhóm \"Bài được giao\" của lớp mình cho sinh viên" },
+      { "id": "end", "type": "end" }
+    ],
+    "edges": [
+      { "from": "start", "to": "n1" },
+      { "from": "n1", "to": "n2" },
+      { "from": "n2", "to": "n3" },
+      { "from": "n3", "to": "n4" },
+      { "from": "n4", "to": "n5" },
+      { "from": "n5", "to": "n6" },
+      { "from": "n6", "to": "n7" },
+      { "from": "n7", "to": "end" }
+    ]
+  }
+}
