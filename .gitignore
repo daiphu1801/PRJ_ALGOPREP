@@ -7,6 +7,15 @@ CLAUDE.md
 06-plan/
 07-review/
 10-session/
+11-layoutDocx/
+
+# Office documents & generated reports
+*.docx
+*.doc
+
+# Rendered diagram images (source files are .drawio and .spec.json)
+08-diagram/**/*.png
+08-diagram/*.png
 
 # ==========================================
 # Environment & Secrets
