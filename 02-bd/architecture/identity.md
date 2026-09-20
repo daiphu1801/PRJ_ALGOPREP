@@ -81,7 +81,7 @@ giao diện; **Role tạo/sửa/xoá được**"* — khác với cách đọc t
 
 **Đã xác nhận 2026-09-13 — role tuỳ biến là yêu cầu thật, không phải suy diễn.** Câu hỏi ban đầu (có thực
 sự cần role tuỳ biến ngoài ba role hệ thống, hay câu "Role tạo/sửa/xoá được" chỉ nói ADMIN sửa tên hiển
-thị) đã đóng bằng bằng chứng ở tầng RD màn hình: `01-rd/screens/admin/admin_permission_matrix.md` dòng
+thị) đã đóng bằng bằng chứng ở tầng RD màn hình: `01-rd/screens/admin/ADM0202_permission_matrix.md` dòng
 32-34 tả rõ "Tab chọn Role — STUDENT/INSTRUCTOR/ADMIN, nút '+ Vai trò mới', nút 'Xoá vai trò này' (ẩn với
 vai trò hệ thống)"; dòng 48 có Given-When-Then "Cho quản trị viên bấm '+ Vai trò mới' và đặt tên, Khi xác
 nhận tạo, Thì vai trò mới xuất hiện...". Thiết kế bảng `roles` mở rộng được ở mục 5 file `database` giữ

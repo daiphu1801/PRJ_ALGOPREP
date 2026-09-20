@@ -6,7 +6,7 @@ import java.time.Instant;
  * Dấu hiệu cho một sự kiện miền.
  *
  * <p>Sự kiện miền là <strong>một trong đúng ba cách</strong> hai module được phép nói chuyện với
- * nhau ({@code 01-rd/system/backend_architecture.md} mục 5); hai cách còn lại là cổng ra do module
+ * nhau ({@code 01-rd/system/SYS0101_backend_architecture.md} mục 5); hai cách còn lại là cổng ra do module
  * gọi tự khai, và đường đọc riêng. Không có cách thứ tư, và import chéo module thì ArchUnit chặn.
  *
  * <p>Sự kiện miền là <strong>bất đồng bộ có chủ ý</strong>: nếu ghép việc cập nhật tiến độ cá nhân

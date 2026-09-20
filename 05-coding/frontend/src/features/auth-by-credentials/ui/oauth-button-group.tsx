@@ -11,7 +11,7 @@ type OAuthButtonGroupProps = {
 
 /**
  * Both buttons call the same success path in the static prototype
- * (02-bd/screens/shared/auth.md BD Q2) — a real per-provider OAuth redirect is DD's job. Only
+ * (02-bd/screens/shared/SHR0101_auth.md, Câu hỏi mở Q2) — a real per-provider OAuth redirect is DD's job. Only
  * shown in `signup`/`login`, per the component inventory.
  */
 export function OAuthButtonGroup({ onSelect, disabled }: OAuthButtonGroupProps) {

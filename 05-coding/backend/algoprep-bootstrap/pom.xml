@@ -9,7 +9,7 @@
     3. Chay bo test kiem ranh gioi module (ArchUnit) — day la CHO DUY NHAT thay duoc ca 8 module
        cung luc, nen cung la cho duy nhat kiem duoc ranh gioi giua chung.
 
-  Phu thuoc TAT CA module (01-rd/system/backend_architecture.md muc 2.A luat 2), va khong ai
+  Phu thuoc TAT CA module (01-rd/system/SYS0101_backend_architecture.md muc 2.A luat 2), va khong ai
   duoc phu thuoc nguoc lai — ArchUnit chan that.
 
   Dat logic nghiep vu vao day la cach mot modular monolith am tham tro thanh monolith phang.

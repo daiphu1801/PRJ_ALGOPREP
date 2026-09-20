@@ -6,7 +6,7 @@
  *
  * <p>Đây là <strong>cách duy nhất</strong> ranh giới module được bảo vệ tự động. Không có nó thì
  * Modular Monolith trôi thành monolith phẳng sau vài sprint, và toàn bộ lý do chia module ở {@code
- * 01-rd/system/backend_architecture.md} mục 1 thành trang trí ({@code 01-rd/system/environment.md}
+ * 01-rd/system/SYS0101_backend_architecture.md} mục 1 thành trang trí ({@code 01-rd/system/SYS0301_environment.md}
  * mục 3.A).
  */
 package com.algoprep.bootstrap.architecture;

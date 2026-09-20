@@ -111,7 +111,7 @@ Khung **không có** trạng thái `loading`/`error` — nó không gọi API n�
 ## 8. Tham chiếu
 
 - `09-layoutBase/Admin - Tổng quan.dc.html` — bằng chứng layout gốc của sidebar và toolbar.
-- `02-bd/screens/admin/admin_overview.md` mục 2 điểm 1 — nơi khung được mô tả lần đầu.
+- `02-bd/screens/admin/ADM0101_overview.md` mục 2 điểm 1 — nơi khung được mô tả lần đầu.
 - `07-review/bd_screens_admin_open_questions_260913.md` mục 4 — nơi yêu cầu tách file này.
 - `05-coding/frontend/src/widgets/app-shell/` — hiện thực.
 - Quyết định: `DEC-2026-0825-frontend-base-architecture`, `DEC-2026-0915-admin-separate-login-route`.

@@ -5,7 +5,7 @@ package com.algoprep.common.exception;
  *
  * <p>Khác với việc kiểm quyền ở tầng giao diện: quyền sở hữu dữ liệu phải kiểm ở tầng {@code
  * application} của từng module, vì "kiểm quyền chỉ ở giao diện là không kiểm" ({@code
- * 01-rd/system/backend_architecture.md} mục 7).
+ * 01-rd/system/SYS0101_backend_architecture.md} mục 7).
  */
 public class PermissionDeniedException extends AlgoPrepException {
 

@@ -7,7 +7,7 @@ Màn hình độc lập, không gắn với bài nộp code (`README.md` mục 4
 
 - **Danh sách và khám phá:** câu hỏi phân loại theo chủ đề và mức độ khó (F6-01); tìm kiếm và lọc (F6-02);
   đánh dấu để xem lại (F6-03). **Danh mục chủ đề sửa lại 2026-08-30 (owner instruction, trả lời Câu hỏi mở
-  Q6 của `01-rd/screens/shared/interview_question_management.md`):** 5 chủ đề — Lý thuyết CS, System
+  Q6 của `01-rd/screens/shared/SHR0301_interview_question_management.md`):** 5 chủ đề — Lý thuyết CS, System
   design, Database, Ngôn ngữ, Hành vi — thay cho danh mục 4 chủ đề cũ (Cấu trúc dữ liệu, Thuật toán, Thiết
   kế hệ thống, Câu hỏi hành vi), lấy theo prototype vì bao phủ rộng hơn (có thêm Database và Ngôn ngữ). Áp
   dụng cho cả bộ lọc ở `interview_bank_list`, `interview_question_detail` lẫn màn quản trị.
@@ -17,7 +17,7 @@ Màn hình độc lập, không gắn với bài nộp code (`README.md` mục 4
   trả phản hồi ngắn — điểm đã đạt, điểm còn thiếu, hướng bổ sung (F6-08) — **đi qua phân hệ AI**, không tự
   gọi LLM, nên chịu chung ràng buộc F5-17 tới F5-22. **Amendment 2026-08-31** (lấp Câu hỏi mở Q1 của
   `01-rd/req/user_stories/open_questions.md`, cùng Câu hỏi mở Q2 của
-  `01-rd/screens/users/interview_question_detail.md`, `DEC-2026-0831-outside-screens-closures`): câu trả
+  `01-rd/screens/users/USR0402_interview_question_detail.md`, `DEC-2026-0831-outside-screens-closures`): câu trả
   lời đã nộp ở Chế độ luyện **không sửa lại được** — mỗi lần nộp là một lượt (attempt) độc lập, muốn thử lại
   thì nộp một lượt mới; giữ đầy đủ lịch sử từng lượt cho F6-09/F6-10 theo dõi tiến bộ qua thời gian.
 - **Theo dõi tiến độ:** lịch sử luyện tập và danh sách câu hỏi cần ôn lại (F6-09); tỉ lệ hoàn thành theo
@@ -37,7 +37,7 @@ Màn hình độc lập, không gắn với bài nộp code (`README.md` mục 4
   luận]`, chốt công thức chính xác khi viết DD cho F6.
 - **F6-13 — Quản trị nội dung ngân hàng câu hỏi phỏng vấn dùng chung: tạo, sửa, nhân bản, xoá** — trả lời
   Câu hỏi mở Q2 (và gói theo Q3, Q4, Q5, Q7) của
-  `01-rd/screens/shared/interview_question_management.md`. **Chốt 2026-08-30 (owner instruction):**
+  `01-rd/screens/shared/SHR0301_interview_question_management.md`. **Chốt 2026-08-30 (owner instruction):**
   - Actor A2 và A3, gác bởi Function `INTERVIEW_BANK_MANAGEMENT` (F1-12) cùng F6-12 — phạm vi theo quyền,
     không phải mã riêng theo lớp (F6-11 đã loại bỏ).
   - Mỗi câu hỏi có 4 nhóm trường: nội dung + phân loại (F6-01), danh sách **câu hỏi đào sâu** (truy vấn tiếp
@@ -47,7 +47,7 @@ Màn hình độc lập, không gắn với bài nộp code (`README.md` mục 4
     Chế độ luyện cần một mốc để tính điểm theo từng tiêu chí.
   - **Việc soạn/sửa câu hỏi diễn ra ở một màn riêng** (không phải modal/drawer) — 4 nhóm trường lồng nhau
     quá nặng cho modal. Slug `interview_question_authoring`, RD ở
-    `01-rd/screens/shared/interview_question_authoring.md` (viết 2026-09-01), chưa có prototype minh hoạ
+    `01-rd/screens/shared/SHR0302_interview_question_authoring.md` (viết 2026-09-01), chưa có prototype minh hoạ
     **[Đợi nextjs]**.
   - **Nhập CSV theo lô: ngoài phạm vi bản đầu** — không cấp mã, giữ nút ở mức tham khảo, không cam kết hiện
     thực trong đồ án này.

@@ -32,8 +32,8 @@ const THEME_OPTIONS = [
 /**
  * Theme (Light/Dark, DEC-2026-0824-dark-light-theme) + language (vi/en, DEC-2026-0824-i18n-vi-en)
  * switcher. Domain-agnostic — takes no business type — so it lives in shared/ui per
- * 01-rd/system/frontend_architecture.md section 2.A-B, and is reused by both the `auth` screen
- * (fixed corner widget, 02-bd/screens/shared/auth.md section 1) and the Admin shell sidebar
+ * 01-rd/system/SYS0102_frontend_architecture.md section 2.A-B, and is reused by both the `auth` screen
+ * (fixed corner widget, 02-bd/screens/shared/SHR0101_auth.md Sheet 4.4) and the Admin shell sidebar
  * (02-bd/screens/admin/admin_overview.md section 2 point 6).
  *
  * Two DIFFERENT shapes on purpose, not one shared track twice: Theme stays a segmented pill —

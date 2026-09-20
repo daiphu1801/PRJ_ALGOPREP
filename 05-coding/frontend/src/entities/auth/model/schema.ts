@@ -1,7 +1,7 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 //
 // Zod schemas for the `auth` screen, one per mode of the state machine
-// (02-bd/screens/shared/auth.md section 3). Keeping the schema here (not inline in the feature)
+// (02-bd/screens/shared/SHR0101_auth.md Sheet 3). Keeping the schema here (not inline in the feature)
 // is what makes the future swap to a real 03-dd/api/identity.md contract mechanical: the DD's
 // client validation table becomes a diff on this file, not a rewrite.
 import { z } from "zod";
@@ -22,7 +22,7 @@ export const signupSchema = z
     email: emailField,
     termsAccepted: z.boolean(),
   })
-  // BD Q1 (open question, 02-bd/screens/shared/auth.md:140): the prototype only has a toggle, no
+  // BD Q1 (closed, 02-bd/screens/shared/SHR0101_auth.md, Câu hỏi mở): the prototype only has a toggle, no
   // validation. We resolve it for the prototype by blocking submit — matches the BD's own
   // recommendation ("Chặn submit, hiện cảnh báo dưới checkbox"), flagged as [SoT: Suy luận] until
   // DD confirms.

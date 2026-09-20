@@ -1,7 +1,7 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 //
 // `fakeAuth()` always succeeds in the static prototype
-// [SoT: 02-bd/screens/shared/auth.md:33 — "BD chốt state machine hiển thị"]. Here we go one step
+// [SoT: 02-bd/screens/shared/SHR0101_auth.md Sheet 3 — screen-to-screen transitions]. Here we go one step
 // further than the static prototype (which has zero validation) so the loading overlay and
 // inline-field-error UI have something real to react to; still entirely client-side, no network.
 import type {
@@ -40,7 +40,7 @@ export async function fakeLogin(input: LoginInput): Promise<AuthOutcome> {
   const id = input.identifier.trim().toLowerCase();
 
   if (id === "deactivated") {
-    // deactivated-recovery variant of `login` (02-bd/screens/shared/auth.md section 3) — the
+    // deactivated-recovery variant of `login` (02-bd/screens/shared/SHR0101_auth.md Sheet 3) — the
     // credentials are otherwise correct, so this is `ok: true` with a flag, not a field error.
     return { ok: true, role: "STUDENT", deactivated: true };
   }
@@ -56,7 +56,7 @@ export async function fakeLogin(input: LoginInput): Promise<AuthOutcome> {
 }
 
 export async function fakeOAuthLogin(_provider: "google" | "github"): Promise<AuthOutcome> {
-  // Prototype note (BD Q2, 02-bd/screens/shared/auth.md:141): both OAuth buttons call the same
+  // Prototype note (BD Q2, 02-bd/screens/shared/SHR0101_auth.md, Câu hỏi mở): both OAuth buttons call the same
   // fake success path in the static prototype — a real redirect-based flow is DD's job.
   await delay(900);
   return { ok: true, role: "STUDENT" };

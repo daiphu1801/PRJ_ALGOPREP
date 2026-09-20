@@ -3,7 +3,7 @@
   algoprep-problem-bank — Bounded Context `problem-bank` (F2), schema PostgreSQL `problem`.
 
   Chi phu thuoc algoprep-common. KHONG phu thuoc module nghiep vu nao khac
-  (01-rd/system/backend_architecture.md muc 2.A luat 1) — ArchUnit trong algoprep-bootstrap chan that.
+  (01-rd/system/SYS0101_backend_architecture.md muc 2.A luat 1) — ArchUnit trong algoprep-bootstrap chan that.
 
   Trang thai: khung base, chua co class nghiep vu. Noi dung cho BD/DD cua module nay
   (02-bd/ + 03-dd/). Xem 05-coding/backend/README.md.

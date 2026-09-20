@@ -16,7 +16,7 @@ type OtpInputGroupProps = {
 };
 
 /**
- * 6-digit OTP entry for `forgot_otp` (02-bd/screens/shared/auth.md section 2, `OtpInputGroup`
+ * 6-digit OTP entry for `forgot_otp` (02-bd/screens/shared/SHR0101_auth.md Sheet 5, khu vực G, `OtpInputGroup`
  * — "chưa dựng trong prototype"). One text input rather than 6 separate boxes: same behavior,
  * far less state, acceptable simplification for the PROTOTYPE lane.
  */

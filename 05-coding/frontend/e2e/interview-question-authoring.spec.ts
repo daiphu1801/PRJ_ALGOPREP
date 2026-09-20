@@ -2,8 +2,8 @@ import { expect, test } from "@playwright/test";
 
 /**
  * PROTOTYPE screen check for interview_question_authoring — the one Admin screen with NO mockup
- * (02-bd/screens/shared/interview_question_authoring.md:7-13). These assertions cover the rules the
- * BD states rather than any visual, since there is nothing to compare a visual against.
+ * (02-bd/screens/shared/SHR0302_interview_question_authoring.md:12-14). These assertions cover the rules
+ * the BD states rather than any visual, since there is nothing to compare a visual against.
  */
 test("saving is a single action with no draft/publish split", async ({ page }) => {
   await page.goto("/admin/interview-questions/new");

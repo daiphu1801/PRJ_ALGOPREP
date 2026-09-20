@@ -15,7 +15,7 @@ type NavLinkProps = {
 /**
  * Promoted from `widgets/app-shell/ui/admin-sidebar.tsx` (2026-09-16) — it took no AlgoPrep
  * business type (`Problem`/`Submission`/admin nav config, etc.), only presentation props
- * (href/label/icon/isActive/collapsed), so per `01-rd/system/frontend_architecture.md` section 2.A
+ * (href/label/icon/isActive/collapsed), so per `01-rd/system/SYS0102_frontend_architecture.md` section 2.A
  * ("component có biết về nghiệp vụ không") it belongs in `shared/ui` regardless of how many places
  * use it today. Falls back to the app's generic `--color-*` tokens when the admin-only
  * `--admin-nav-hover`/`--admin-active-border` custom properties aren't defined by an ancestor

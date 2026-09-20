@@ -5,7 +5,7 @@
 > cross-cutting, không gắn riêng một Bounded Context nào nên không tách theo `Fx-nn`.
 
 > Bản trước ghi số liệu SLA cụ thể của NestGame v2 (P95 ≤ 200ms, 500 CCU...) — số liệu đó **không** có
-> nguồn ở AlgoPrep nên không mang sang. Mục này chỉ ghi số liệu có nguồn thật (`environment.md`,
+> nguồn ở AlgoPrep nên không mang sang. Mục này chỉ ghi số liệu có nguồn thật (`SYS0301_environment.md`,
 > `README.md`) và đánh dấu `[SoT: Suy luận]` cho ngưỡng đề xuất chưa được chủ nhiệm đề tài chốt.
 
 ## A. Hiệu năng (Performance)
@@ -15,7 +15,7 @@
   vấn PostgreSQL — xử lý bằng Virtual Threads (`overview.md` mục 1.D). Việc tính toán nặng của chính bài
   giải người dùng chạy trong judge engine, ngoài JVM.
 - **Kiểm chứng bằng tải, không bằng suy diễn:** luồng nộp bài đồng thời phải đo bằng **k6**
-  (`environment.md` mục 5) — đây là chỗ Virtual Threads phải chứng minh được điều `overview.md` mục 1.D
+  (`SYS0301_environment.md` mục 5) — đây là chỗ Virtual Threads phải chứng minh được điều `overview.md` mục 1.D
   khẳng định, không phải một lời hứa kiến trúc.
 - **Ngưỡng cụ thể (P95 độ trễ API, số phiên phỏng vấn đồng thời, số bài nộp đồng thời) chưa được chốt** —
   `[SoT: Suy luận]`: cần chủ nhiệm đề tài xác nhận trước khi viết vào `02-bd/architecture/`.
@@ -24,9 +24,9 @@
 
 - **Modular Monolith, không phải microservices** (`overview.md` mục 1.A, `DEC-2026-0820-architecture-baseline`):
   một tiến trình, một PostgreSQL instance, sáu schema. Ranh giới module bảo vệ bằng kiểm tra tự động
-  (test kiểm ranh giới module, `environment.md` mục 3.A), không phải ranh giới mạng.
+  (test kiểm ranh giới module, `SYS0301_environment.md` mục 3.A), không phải ranh giới mạng.
 - Judge engine (go-judge mặc định) và các dịch vụ hạ tầng (RabbitMQ, Redis, MinIO) chạy tách biệt qua
-  Docker (`environment.md` mục 2) — mở rộng theo chiều ngang của tầng thực thi độc lập với việc mở rộng
+  Docker (`SYS0301_environment.md` mục 2) — mở rộng theo chiều ngang của tầng thực thi độc lập với việc mở rộng
   backend.
 
 ## C. Độ tin cậy (Reliability)
@@ -62,7 +62,7 @@ cầu kiểm chứng được:
 
 ## E. Khả năng bảo trì (Maintainability)
 
-Nguồn: `environment.md` mục 3-4 — đây là các cổng chất lượng **thật**, phải chạy được, không phải mục tiêu
+Nguồn: `SYS0301_environment.md` mục 3-4 — đây là các cổng chất lượng **thật**, phải chạy được, không phải mục tiêu
 định tính:
 
 - Backend: Spotless, Checkstyle, SpotBugs + FindSecBugs, JaCoCo **≥ 80%** cho tầng `application` và
@@ -70,8 +70,8 @@ Nguồn: `environment.md` mục 3-4 — đây là các cổng chất lượng **
 - Frontend: TypeScript `strict`, ESLint + `eslint-plugin-boundaries` (chặn import sai chiều FSD),
   Prettier, Husky + lint-staged.
 - Riêng `algoprep-harness` (F3): bắt buộc có test so khớp mã sinh ra (golden file) cho cả ba ngôn ngữ —
-  đây là bộ test rẻ nhất và bắt lỗi tốt nhất của đề tài (`environment.md` mục 3.A).
-- Cổng chất lượng bắt buộc trước khi báo xong việc (G-CHECK, `environment.md` mục 4): `pnpm check` cho
+  đây là bộ test rẻ nhất và bắt lỗi tốt nhất của đề tài (`SYS0301_environment.md` mục 3.A).
+- Cổng chất lượng bắt buộc trước khi báo xong việc (G-CHECK, `SYS0301_environment.md` mục 4): `pnpm check` cho
   frontend, `./mvnw verify` cho backend, thêm `pnpm e2e` khi có thay đổi luồng người dùng.
 
 ## F. Tiêu chí thành công và kiểm chứng

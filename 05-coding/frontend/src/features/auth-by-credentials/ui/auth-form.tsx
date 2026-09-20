@@ -20,11 +20,11 @@ type AuthFormProps = {
 };
 
 /**
- * Dynamic field list per mode (`DynamicFieldList`, 02-bd/screens/shared/auth.md section 2) plus
+ * Dynamic field list per mode (`DynamicFieldList`, 02-bd/screens/shared/SHR0101_auth.md Sheet 5, khu vực A) plus
  * every mode-specific control (password reveal, terms checkbox, remember-me, forgot-password link,
  * OAuth group, deactivated-account banner). Kept as one component instead of five tiny ones —
  * the fields ARE the one user action (`auth-by-credentials`), splitting further would scatter one
- * action's state across files for no reuse benefit (frontend_architecture.md 2.A: "gắn với một
+ * action's state across files for no reuse benefit (SYS0102_frontend_architecture.md 2.A: "gắn với một
  * hành động của người dùng" stays in features/<action>/ui as a unit).
  */
 export function AuthForm({ flow, showOAuth = true }: AuthFormProps) {

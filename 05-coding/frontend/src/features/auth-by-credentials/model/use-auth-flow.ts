@@ -23,7 +23,7 @@ import {
   type AuthMode,
 } from "@/entities/auth";
 
-/** Number of sequential steps shown by AuthLoadingOverlay (02-bd/screens/shared/auth.md section 1). */
+/** Number of sequential steps shown by AuthLoadingOverlay (02-bd/screens/shared/SHR0101_auth.md Sheet 5, khu vực D). */
 export const LOADING_STEP_COUNT = 4;
 const LOADING_STEP_DELAY_MS = 500;
 const OTP_RESEND_COOLDOWN_MS = 60_000;
@@ -82,7 +82,7 @@ export function useAuthFlow(initialMode: AuthMode) {
         await new Promise((resolve) => setTimeout(resolve, LOADING_STEP_DELAY_MS));
       }
       // A saved `redirect`/`returnTo` wins over the role-default destination
-      // (02-bd/screens/shared/auth.md section 5).
+      // (02-bd/screens/shared/SHR0101_auth.md Sheet 3).
       const redirectTo = searchParams.get("redirect") ?? searchParams.get("returnTo");
       router.push(redirectTo && redirectTo.startsWith("/") ? redirectTo : HOME_PATH_BY_ROLE[role]);
     },
@@ -133,7 +133,7 @@ export function useAuthFlow(initialMode: AuthMode) {
       }
       if (outcome.deactivated) {
         // Stays on `login` — deactivated-recovery is a variant, not a new mode
-        // (02-bd/screens/shared/auth.md section 3).
+        // (02-bd/screens/shared/SHR0101_auth.md Sheet 3).
         setDeactivatedBanner(true);
         return;
       }

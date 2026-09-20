@@ -5,11 +5,11 @@
 
 - **Soạn đề bài (A2):**
   - Soạn đề bài bằng Markdown kèm công thức LaTeX (F2-01); phân loại theo độ khó và chủ đề (F2-02).
-    **Amendment 2026-08-31** (Câu hỏi mở Q7(d) của `01-rd/screens/shared/problem_authoring.md`,
+    **Amendment 2026-08-31** (Câu hỏi mở Q7(d) của `01-rd/screens/shared/SHR0202_problem_authoring.md`,
     `DEC-2026-0831-problem-authoring-round2`): F2-02 còn bao gồm **thẻ (tag) tự do**, nhiều thẻ mỗi bài,
     không giới hạn danh mục cố định như chủ đề — dùng để lọc chi tiết hơn ở F2-11.
   - **Khai báo đặc tả bài toán cho CẢ HAI mô hình nộp bài song song (F2-03).** Sửa lại 2026-08-24 qua hỏi
-    trực tiếp chủ dự án khi viết `01-rd/screens/users/problem_detail.md` — bản trước chỉ nói tới đặc tả cho mô
+    trực tiếp chủ dự án khi viết `01-rd/screens/users/USR0102_problem_detail.md` — bản trước chỉ nói tới đặc tả cho mô
     hình Bọc hàm, thu hẹp hơn phạm vi đã chốt ở `README.md` mục 5 dòng 179 ("Hỗ trợ cả 2 mô hình: Bọc hàm và
     Nhập/Xuất chuẩn") và mục 1.1 dòng 15 (so với HackerRank — "Cả hai"): mỗi bài toán khai báo
     - **chữ ký hàm** theo từng ngôn ngữ trong ba ngôn ngữ (Java, C++, Python), kiểu tham số và kiểu trả về —
@@ -35,7 +35,7 @@
 - **Giới hạn tài nguyên:**
   - Giới hạn thời gian và bộ nhớ theo bài, kèm **hệ số nhân theo ngôn ngữ** — Java chậm hơn C++ nên cùng
     một bài phải khác hệ số (F2-10). **Amendment 2026-08-31** (Câu hỏi mở Q7(e) của
-    `01-rd/screens/shared/problem_authoring.md`, `DEC-2026-0831-problem-authoring-round2`): F2-10 còn bao
+    `01-rd/screens/shared/SHR0202_problem_authoring.md`, `DEC-2026-0831-problem-authoring-round2`): F2-10 còn bao
     gồm **kích thước đầu ra tối đa** và **số lần nộp tối đa mỗi giờ**, khai theo từng bài toán (khác hệ số
     theo ngôn ngữ ở `admin_language_config`/F4-11, vốn là giới hạn mặc định toàn hệ thống).
 - **Khám phá và quản lý lớp:**
@@ -45,10 +45,10 @@
     đối chiếu `09-layoutBase/Ngân hàng bài toán.dc.html`): bài toán đã gán theo lớp **hiển thị thành một khối
     riêng ngay trong cùng trang danh sách bài toán** (`problem_list`) của học viên thuộc lớp đó, không phải
     một màn tách biệt — không cần mã mới, chỉ là cách trình bày của cùng F2-12. **Sửa câu chữ 2026-08-25**
-    (chốt qua `01-rd/screens/users/problem_list.md` Câu hỏi mở Q1, đã đóng): câu trước dùng chữ "lồng thành
+    (chốt qua `01-rd/screens/users/USR0101_problem_list.md` Câu hỏi mở Q1, đã đóng): câu trước dùng chữ "lồng thành
     một nhóm riêng" dễ hiểu nhầm là chèn xen kẽ vào từng dòng bảng; prototype thật là một khối tổng hợp cạnh
     bảng chính (sidebar), không lồng vào từng dòng — giữ đúng theo prototype, chỉ sửa lại câu chữ mô tả.
-    **Amendment 2026-08-31** (lấp Câu hỏi mở Q9 của `01-rd/screens/teacher/class_assignments.md`, chốt theo
+    **Amendment 2026-08-31** (lấp Câu hỏi mở Q9 của `01-rd/screens/teacher/INS0202_class_assignments.md`, chốt theo
     phương án khuyến nghị): F2-12 còn bao gồm **gỡ bài đã giao khỏi lớp**, actor A2, cùng quyền
     `CLASS_MANAGEMENT:UPDATE`. Gỡ chỉ ẩn bài khỏi danh sách được giao cho lớp đó **từ thời điểm gỡ trở đi** —
     **không xoá** lượt nộp/điểm/tiến độ cũ của học viên gắn với bài đó trong lớp, khác hẳn cách F1-26 xoá
@@ -61,7 +61,7 @@
     toàn quyền qua ma trận phân quyền F1-10 (ghi chú bookmark không thuộc phạm vi ma trận, không phải một
     `FUNCTION` quản trị). Vì lưu server-side nên tự đồng bộ trên mọi thiết bị đăng nhập, không cần cơ chế
     đồng bộ riêng. **Mở rộng 2026-08-25** (tự chốt theo yêu cầu chủ dự án, đối chiếu
-    `01-rd/screens/users/saved_problems.md` mục 5 Q1): mức riêng tư tuyệt đối áp cho **cả chính việc đã
+    `01-rd/screens/users/USR0103_saved_problems.md` mục 5 Q1): mức riêng tư tuyệt đối áp cho **cả chính việc đã
     bookmark bài nào** (không chỉ nội dung ghi chú) — `INSTRUCTOR`/`ADMIN` không biết một học viên đã lưu
     bài toán nào.
   - **F2-14 — AI hỗ trợ sinh testcase tự động, output lấy từ chạy thật Đáp án mẫu (không để AI tự bịa
@@ -79,7 +79,7 @@
       đáp án mẫu" trong cùng màn); chưa có đáp án mẫu hợp lệ thì không có gì để chạy input qua, tính năng vô
       hiệu.
   - **F2-15 — Vòng đời bài toán: hai trạng thái `Chưa xuất bản` / `Đã xuất bản`** — trả lời Câu hỏi mở Q2 của
-    `01-rd/screens/shared/problem_management.md`. **Chốt 2026-08-30 (owner instruction):** rút gọn còn đúng
+    `01-rd/screens/shared/SHR0201_problem_management.md`. **Chốt 2026-08-30 (owner instruction):** rút gọn còn đúng
     hai trạng thái, bỏ trạng thái thứ ba `Đã ẩn` mà prototype từng dùng — một bài từng xuất bản rồi bị rút
     xuống quay lại đúng trạng thái `Chưa xuất bản`, không giữ trạng thái riêng để phân biệt "chưa từng xuất
     bản" với "đã xuất bản rồi rút xuống". Xem `DEC-2026-0830-problem-lifecycle-two-states`.
@@ -99,7 +99,7 @@
       đang soạn" với "đã xoá". Dữ liệu liên quan (lượt nộp, bookmark, phiên phỏng vấn) không bị xoá — cùng
       nguyên tắc F1-16. Áp dụng cho cả xoá một dòng và xoá theo lô.
     - **Điều kiện xuất bản chi tiết — amendment 2026-08-31** (Câu hỏi mở Q7(b) của
-      `01-rd/screens/shared/problem_authoring.md`, cùng DEC trên): ngoài testcase Hidden (F2-06) và đặc tả
+      `01-rd/screens/shared/SHR0202_problem_authoring.md`, cùng DEC trên): ngoài testcase Hidden (F2-06) và đặc tả
       đủ (F2-03), checklist "Sẵn sàng xuất bản" của `problem_authoring` chặn cứng nếu chưa đạt đủ **cả 5**:
       tối thiểu 8 testcase, tối thiểu 2 testcase công khai (Sample), tối thiểu 2 ví dụ mẫu, đáp án mẫu chạy
       Pass trên mọi testcase hiện có, và (đã bỏ ở Q3 riêng của `problem_authoring.md`) tổng trọng số 100 —
@@ -109,7 +109,7 @@
       hình được: tỉ lệ AC dưới **30%**, và `Chưa xuất bản` quá **7 ngày** kể từ lần sửa gần nhất — cả hai
       `[SoT: Suy luận]`, khớp đúng số liệu prototype đang dùng.
   - **F2-16 — Nhân bản bài toán.** Bổ sung 2026-08-31, lấp Câu hỏi mở Q4 của
-    `01-rd/screens/shared/problem_management.md` (`DEC-2026-0831-problem-management-lifecycle-details`).
+    `01-rd/screens/shared/SHR0201_problem_management.md` (`DEC-2026-0831-problem-management-lifecycle-details`).
     Sao chép toàn bộ nội dung một bài toán (đề, đặc tả F2-03/F2-04, testcase, ví dụ mẫu, đáp án mẫu) thành
     một bài mới ở trạng thái `Chưa xuất bản`, actor A2/A3 có quyền `PROBLEM_AUTHORING:CREATE`. Hành động
     theo lô (nhiều bài cùng lúc) được.

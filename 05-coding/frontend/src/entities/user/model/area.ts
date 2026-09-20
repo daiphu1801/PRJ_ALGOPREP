@@ -14,7 +14,7 @@ export type AppArea = "public" | "student" | "instructor" | "admin";
  *
  * SEMANTIC NOTE: this is the role REQUIRED by the area, NOT the role of the currently logged-in
  * user. Real authorization is enforced by the backend; blocking on the client is only UX
- * (01-rd/system/frontend_architecture.md section 4).
+ * (01-rd/system/SYS0102_frontend_architecture.md section 4).
  */
 export const ROLE_BY_AREA = {
   student: "STUDENT",

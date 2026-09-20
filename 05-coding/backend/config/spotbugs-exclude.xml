@@ -49,7 +49,7 @@
     Vì sao không áp dụng ở đây:
       1. Kiểm tham số ngay trong constructor là cách làm ĐÚNG (fail fast). Bỏ nó đi để SpotBugs im
          nghĩa là một mã lỗi rỗng sẽ lọt xuống tới phản hồi HTTP, và frontend dịch theo mã lỗi
-         (backend_architecture.md mục 7) — mã rỗng làm người dùng thấy một thông báo trống.
+         (SYS0101_backend_architecture.md mục 7) — mã rỗng làm người dùng thấy một thông báo trống.
       2. Kịch bản tấn công đòi ba điều kiện: class kế thừa được, kẻ tấn công chèn được lớp con vào
          classpath, và finalize() còn hiệu lực. Đây là ngoại lệ nội bộ, chỉ do mã của chính dự án
          khởi tạo, không nhận lớp con từ ngoài. Thêm nữa, finalization đã bị đánh dấu deprecated for

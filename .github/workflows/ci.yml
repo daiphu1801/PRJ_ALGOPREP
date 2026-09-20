@@ -1,7 +1,7 @@
 # AlgoPrep — CI.
 #
 # Chay dung hai cong chat luong ma CLAUDE.md muc Rules (G-CHECK) va
-# 01-rd/system/environment.md muc 4 bat buoc:
+# 01-rd/system/SYS0301_environment.md muc 4 bat buoc:
 #   - 05-coding/frontend/  ->  pnpm check      (typecheck + lint + vitest)
 #   - 05-coding/backend/   ->  ./mvnw verify   (Spotless, Checkstyle, SpotBugs, JaCoCo, ArchUnit)
 #
@@ -91,7 +91,7 @@ jobs:
       - name: Cai Node
         uses: actions/setup-node@v4
         with:
-          # >= 20.9 LTS theo 01-rd/system/environment.md muc 1. Dung 22 LTS cho CI.
+          # >= 20.9 LTS theo 01-rd/system/SYS0301_environment.md muc 1. Dung 22 LTS cho CI.
           node-version: 22
           cache: pnpm
           cache-dependency-path: 05-coding/pnpm-lock.yaml

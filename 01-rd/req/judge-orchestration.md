@@ -56,7 +56,7 @@ Gọi qua cổng ra trung lập theo engine (`JudgeExecutionPort`), adapter mặ
   `DEC-2026-0828-remove-rejudge-scope` để biết đầy đủ các file bị ảnh hưởng.
 - Giám sát hàng đợi và tình trạng cụm judge engine (F4-10); cấu hình ngôn ngữ và giới hạn tài nguyên
   (F4-11) — cả hai thuộc actor A3. **Amendment 2026-08-31** (lấp Câu hỏi mở Q1/Q2 của
-  `01-rd/screens/admin/admin_queue_monitor.md` và Q1 của `01-rd/screens/admin/admin_language_config.md`,
+  `01-rd/screens/admin/ADM0401_queue_monitor.md` và Q1 của `01-rd/screens/admin/ADM0501_language_config.md`,
   `DEC-2026-0831-judge-orchestration-ops-details`):
   - **F4-10 bao gồm điều khiển vận hành cơ bản trên cụm**, không chỉ xem: tạm dừng/tiếp tục tiêu thụ hàng
     đợi, bật/tắt tự động mở rộng worker — hai điều khiển này là phần tự nhiên của một bảng giám sát vận
@@ -69,7 +69,7 @@ Gọi qua cổng ra trung lập theo engine (`JudgeExecutionPort`), adapter mặ
     không phải một luồng nghiệp vụ "quản lý kỳ thi" riêng — đổi thành nhãn trung tính (ví dụ "Ưu tiên cao")
     khi dựng UI thật, không mở RD mới cho "chế độ thi".
   - **F4-12 — Chỉ số "Beats" trên trang kết quả nộp bài.** Bổ sung 2026-08-25 (chốt qua
-    `01-rd/screens/users/submission_result.md` Câu hỏi mở Q4, chốt theo RD): với một bài nộp `Accepted`,
+    `01-rd/screens/users/USR0201_submission_result.md` Câu hỏi mở Q4, chốt theo RD): với một bài nộp `Accepted`,
     tính tỉ lệ phần trăm bài nộp khác **nhanh hơn hoặc bằng** (theo runtime) chậm hơn bài nộp hiện tại, trong
     tập tất cả bài nộp `Accepted` của **cùng bài toán và cùng ngôn ngữ lập trình** (không so giữa các ngôn
     ngữ khác nhau vì tốc độ thực thi không tương đương). Chỉ hiển thị khi verdict là `Accepted`; rỗng (`—`)

@@ -3,7 +3,7 @@
 // Pill shape and metrics match 09-layoutBase/Admin - *.dc.html (border-radius: 999px appears in all
 // 12 Admin mockups). Presentational only: it takes a `variant` and children, never a domain type —
 // DifficultyBadge/StatusBadge/VerdictLabel take Problem/Submission and therefore belong in
-// entities/*/ui per 01-rd/system/frontend_architecture.md section 2.A.
+// entities/*/ui per 01-rd/system/SYS0102_frontend_architecture.md section 2.A.
 import type { ComponentPropsWithoutRef } from "react";
 import { cn } from "@/shared/lib";
 

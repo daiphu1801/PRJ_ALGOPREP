@@ -135,7 +135,7 @@ tập của em đó thay vì chỉ nhìn một dòng tóm tắt trong bảng.
 
 **Còn mở:** công thức phân loại trạng thái "Đang tốt/Cần hỗ trợ/Vắng bài" — để BD/DD quyết định khi thiết
 kế, xem `01-rd/req/identity.md` F1-27. Slug/route đã chốt: `class_student_detail`, RD ở
-`01-rd/screens/teacher/class_student_detail.md`.
+`01-rd/screens/teacher/INS0204_class_student_detail.md`.
 
 ### US-A2-09: Xem tổng hợp tiến độ nhiều học viên trong lớp
 

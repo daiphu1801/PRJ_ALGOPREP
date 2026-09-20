@@ -149,7 +149,7 @@ chấm mới nhất). Index `(user_id) WHERE next_review_at <= now()` — truy v
 ### 1.8. `question_sets` — đã đóng 2026-09-13: bỏ hẳn, không tạo bảng
 
 Bản BD 2026-09-12 từng cân nhắc giữ `question_sets`/`question_set_items` ở mức tối giản (xem kiến trúc
-mục 2.2). Đã bác bỏ: `01-rd/screens/shared/interview_question_management.md` dòng 97-103 xác nhận màn
+mục 2.2). Đã bác bỏ: `01-rd/screens/shared/SHR0301_interview_question_management.md` dòng 97-103 xác nhận màn
 quản trị nội dung — nơi duy nhất một khái niệm nhóm câu hỏi có thể xuất hiện — **không có bất kỳ điều
 khiển nào liên quan tới "bộ câu hỏi"**. Không tạo `question_sets`, `question_set_items`, hay
 `question_set_class_assignment` — cả ba đều ngoài phạm vi.

@@ -217,7 +217,7 @@ module nào cũng cần cả 4 file, không viết file rỗng".
 
 **Đã xác nhận 2026-09-13 — không cần hỏi lại chủ dự án.** RD chốt công thức này từ trước (không phải BD
 tự suy diễn): `01-rd/req/judge-orchestration.md` F4-12, bổ sung 2026-08-25 qua việc đóng Câu hỏi mở Q4 của
-`01-rd/screens/users/submission_result.md` — trích nguyên văn: "tính tỉ lệ phần trăm bài nộp khác **nhanh
+`01-rd/screens/users/USR0201_submission_result.md` — trích nguyên văn: "tính tỉ lệ phần trăm bài nộp khác **nhanh
 hơn hoặc bằng** (theo runtime) chậm hơn bài nộp hiện tại, trong tập tất cả bài nộp `Accepted` của cùng bài
 toán và cùng ngôn ngữ lập trình". BD chỉ cần chuyển câu chữ đó thành công thức:
 

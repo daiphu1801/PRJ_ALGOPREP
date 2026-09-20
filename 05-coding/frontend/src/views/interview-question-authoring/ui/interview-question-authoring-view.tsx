@@ -2,7 +2,7 @@
 //
 // THE ONE ADMIN SCREEN WITH NO PROTOTYPE. 09-layoutBase has no mockup for it and the BD says so
 // outright, describing the layout by structure only
-// [SoT: 02-bd/screens/shared/interview_question_authoring.md:7-13]. So this build follows the BD
+// [SoT: 02-bd/screens/shared/SHR0302_interview_question_authoring.md:12-14]. So this build follows the BD
 // rather than a picture, reuses the tokens and primitives the other Admin screens already
 // established, and needs the owner to approve how it looks — there is nothing to compare against.
 //

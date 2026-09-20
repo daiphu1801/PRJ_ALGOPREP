@@ -4,7 +4,7 @@
 // on admin_overview manages its 3 states independently, so one failing source never blocks the
 // rest of the screen (02-bd/screens/admin/admin_overview.md section 4,
 // DEC-2026-0831-admin-overview-ui-decisions). Purely presentational — no admin/dashboard domain
-// type — so it lives in shared/ui per frontend_architecture.md section 2.A-B.
+// type — so it lives in shared/ui per SYS0102_frontend_architecture.md section 2.A-B.
 import type { ReactNode } from "react";
 import { Button, EmptyState, ErrorState, Skeleton } from "@/shared/ui";
 

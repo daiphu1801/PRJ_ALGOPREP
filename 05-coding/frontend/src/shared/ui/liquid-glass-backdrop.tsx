@@ -5,7 +5,7 @@
 // Ported 1:1 from 09-layoutBase/Admin - Tổng quan.dc.html:51-53 (position/size/blur radius), using
 // the --color-blob-1/2/3 tokens (globals.css) for the actual colors. Purely decorative — no domain
 // type, no admin-specific logic — so it lives in shared/ui per
-// 01-rd/system/frontend_architecture.md section 2.A-B, even though only the Admin shell uses it
+// 01-rd/system/SYS0102_frontend_architecture.md section 2.A-B, even though only the Admin shell uses it
 // today.
 export function LiquidGlassBackdrop() {
   // No negative z-index: `fixed` already takes this out of normal flow, and being the FIRST

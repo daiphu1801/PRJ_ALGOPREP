@@ -5,7 +5,7 @@ import { useT } from "@/shared/i18n";
 import { LOADING_STEP_COUNT } from "../model/use-auth-flow";
 
 /**
- * 4 sequential steps with a mark (·/→/tick) — 02-bd/screens/shared/auth.md section 1 and section 2
+ * 4 sequential steps with a mark (·/→/tick) — 02-bd/screens/shared/SHR0101_auth.md Sheet 4.4 and Sheet 5, khu vực D
  * (`AuthLoadingOverlay`). Not a generic spinner: the RD/BD explicitly designed this as a fixed
  * 4-step sequence, not a plain network-wait indicator.
  */

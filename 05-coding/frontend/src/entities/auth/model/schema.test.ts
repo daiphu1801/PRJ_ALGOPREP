@@ -8,7 +8,7 @@ import {
 } from "./schema";
 
 describe("signupSchema", () => {
-  it("rejects submit when terms are not accepted (BD Q1, 02-bd/screens/shared/auth.md:140)", () => {
+  it("rejects submit when terms are not accepted (BD Q1, closed — 02-bd/screens/shared/SHR0101_auth.md, Câu hỏi mở)", () => {
     const result = signupSchema.safeParse({
       username: "learner01",
       password: "password123",

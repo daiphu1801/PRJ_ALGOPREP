@@ -1,8 +1,8 @@
 # AlgoPrep — Frontend
 
 Next.js 16.x (App Router) + TypeScript strict + Tailwind CSS v4, kiến trúc Feature-Sliced Design
-(FSD). Spec đầy đủ: `01-rd/system/frontend_architecture.md`. Cây thư mục monorepo:
-`01-rd/system/codebase_structure.md`.
+(FSD). Spec đầy đủ: `01-rd/system/SYS0102_frontend_architecture.md`. Cây thư mục monorepo:
+`01-rd/system/SYS0201_codebase_structure.md`.
 
 ## Trạng thái: khung base (2026-08-25)
 
@@ -44,7 +44,7 @@ bài của mình" là phạm vi dữ liệu, việc của tầng API/backend the
 
 Slug trong `01-rd/screens/` là `snake_case`, slice FSD là `kebab-case`, URL ngắn hơn cả hai ở vài
 màn. Bảng này giữ chuỗi tra ngược `01-rd → 02-bd → 03-dd → code` (luật chống trôi,
-`codebase_structure.md` mục 3):
+`SYS0201_codebase_structure.md` mục 3):
 
 | Slug tài liệu | Slice `views/` | URL |
 | :--- | :--- | :--- |
@@ -69,7 +69,7 @@ màn. Bảng này giữ chuỗi tra ngược `01-rd → 02-bd → 03-dd → code
 
 | Màn | URL đến từ đâu |
 | :--- | :--- |
-| `interview_question_authoring` | **RD chốt** — `01-rd/screens/shared/interview_question_authoring.md:14`, Câu hỏi mở Q6 đóng 2026-09-01 |
+| `interview_question_authoring` | **RD chốt** — `01-rd/screens/shared/SHR0302_interview_question_authoring.md:14`, Câu hỏi mở Q6 đóng 2026-09-01 |
 | `class_assignments` | **Khung base tự chọn** `/instructor/assignments`. RD chỉ chốt nó là một mục nav độc lập trong sidebar giáo viên (`DEC-2026-0828-split-class-management-assignments`), không chốt URL. Chọn theo khuôn mẫu `/instructor/<danh-từ>` của các màn còn lại — **xác nhận lại khi viết DD** |
 | `class_student_detail` | **Khung base tự chọn** `/instructor/classes/[classId]/students/[studentId]`. RD chốt đây là màn/route riêng chứ không phải expand row (`class_student_detail.md:22-26`), không chốt URL. Chọn theo khuôn mẫu route lồng đã có của `class_progress` (`/instructor/classes/[classId]/progress`) — **xác nhận lại khi viết DD** |
 
@@ -81,7 +81,7 @@ Các màn còn lại: URL trùng tên slice. `problem_management`, `problem_auth
 ## Màn `auth`
 
 Một view duy nhất (`views/auth`), chuyển chế độ tại chỗ không rời URL theo
-`01-rd/screens/shared/auth.md` mục 3 điểm 3. `/login` và `/register` là hai route chỉ để
+`01-rd/screens/shared/SHR0101_auth.md` mục 3 điểm 3. `/login` và `/register` là hai route chỉ để
 deep-link, cùng render `AuthView` với `initialMode` khác nhau. `AuthMode` khai đủ 5 chế độ
 (`login` · `signup` · `forgot_email` · `forgot_otp` · `forgot_reset` — F1-17); ba chế độ
 `forgot_*` chưa dựng UI.
@@ -126,9 +126,9 @@ route mà `.next` còn cũ thì `tsc` báo lỗi module không tồn tại cho r
 - **`sanitizeHtml` CỐ TÌNH NÉM LỖI.** Thư viện sanitizer chưa chọn. Hàm giả (regex strip
   `<script>`) nguy hiểm hơn không có vì XSS vẫn đi qua `onerror`, `javascript:`, SVG — nên nó
   throw để ai dùng là thấy ngay lúc dev. Thay bằng bản thật trước khi render nội dung người dùng.
-- **Thư viện Markdown + LaTeX, biểu đồ** — chưa chọn (`frontend_architecture.md` mục 1).
+- **Thư viện Markdown + LaTeX, biểu đồ** — chưa chọn (`SYS0102_frontend_architecture.md` mục 1).
 - **E2E xương sống** — `e2e/smoke.spec.ts` chỉ là smoke (redirect, AppShell, đổi locale). Luồng
-  thật ở `environment.md` mục 3.B cần backend.
+  thật ở `SYS0301_environment.md` mục 3.B cần backend.
 
 ## Nợ kỹ thuật đã biết
 

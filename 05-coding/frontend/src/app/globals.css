@@ -5,7 +5,7 @@
  * next-themes attaches the .dark class to <html> (attribute="class"); :root is Light.
  * The full design system (colors, typography, component library) is NOT locked in yet — the
  * tokens below are a minimal base to scaffold the shell, not the final palette
- * (frontend_architecture.md section 6).
+ * (SYS0102_frontend_architecture.md section 6).
  */
 :root {
   --color-background: #ffffff;
@@ -238,7 +238,7 @@ body {
   background: var(--admin-glass);
 }
 
-/* Required on every element that uses backdrop-filter (frontend_architecture.md section 2.A-D). */
+/* Required on every element that uses backdrop-filter (SYS0102_frontend_architecture.md section 2.A-D). */
 .glass-surface {
   background: color-mix(in srgb, var(--color-surface) 70%, transparent);
   backdrop-filter: blur(12px);

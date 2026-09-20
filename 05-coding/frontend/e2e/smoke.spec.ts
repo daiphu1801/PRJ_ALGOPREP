@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 /**
  * Minimal smoke test for the base shell. NOT the backbone E2E flow — that flow
  * (login -> open problem -> run -> submit -> realtime result -> Accepted -> AI flow) is specified in
- * 01-rd/system/environment.md section 3.B, and can only be stood up once a real backend exists.
+ * 01-rd/system/SYS0301_environment.md section 3.B, and can only be stood up once a real backend exists.
  */
 test("root route redirects to the login screen", async ({ page }) => {
   await page.goto("/");
@@ -19,7 +19,7 @@ test("auth screen renders and the signup/login mode switch is reachable (PROTOTY
   await page.goto("/login");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Đăng nhập");
 
-  // Primary action: switch mode via the aside panel button (02-bd/screens/shared/auth.md section 2).
+  // Primary action: switch mode via the aside panel button (02-bd/screens/shared/SHR0101_auth.md Sheet 5, khu vực B).
   await page.getByRole("button", { name: "Chưa có tài khoản? Đăng ký" }).first().click();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Đăng ký");
 });

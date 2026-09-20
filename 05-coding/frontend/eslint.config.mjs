@@ -4,7 +4,7 @@ import boundaries from "eslint-plugin-boundaries";
 
 // Chiều import FSD: app -> views -> widgets -> features -> entities -> shared.
 // Tầng dưới không bao giờ biết tầng trên; cùng tầng không import lẫn nhau.
-// Nguồn: 01-rd/system/frontend_architecture.md mục 2.
+// Nguồn: 01-rd/system/SYS0102_frontend_architecture.md mục 2.
 const FSD_LAYERS = ["app", "views", "widgets", "features", "entities", "shared"];
 
 const elementTypes = FSD_LAYERS.map((type) => ({
@@ -48,7 +48,7 @@ const eslintConfig = [
               message: "Dùng sanitizeHtml() từ @/shared/lib, không import dompurify trực tiếp.",
             },
           ],
-          // Public API Rule (quy tắc vàng số 1 của FSD, frontend_architecture.md:93-95):
+          // Public API Rule (quy tắc vàng số 1 của FSD, SYS0102_frontend_architecture.md:93-95):
           // chỉ được import một slice qua index.ts ở gốc slice, không trỏ sâu vào file bên trong.
           // shared/ được miễn vì nó chia theo segment kỹ thuật, không có slice (shared/i18n/server
           // là entry point hợp lệ, không phải deep import).

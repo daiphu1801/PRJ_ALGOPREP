@@ -66,7 +66,7 @@ nhất, không mỗi màn tự định nghĩa danh sách riêng.
 `domain-registry.json` liệt kê `question_set` trong scope của module (dòng 95) — ghi trước khi
 `DEC-2026-0828-remove-per-class-interview-set` chốt, và BD ban đầu (2026-09-12) từng cân nhắc giữ lại ở
 mức tối giản ("bộ câu hỏi do người soạn tự nhóm, không gán lớp"). **Đã bác bỏ phương án đó** bằng bằng
-chứng RD trục màn hình: `01-rd/screens/shared/interview_question_management.md` dòng 97-103 xác nhận rõ
+chứng RD trục màn hình: `01-rd/screens/shared/SHR0301_interview_question_management.md` dòng 97-103 xác nhận rõ
 màn quản trị nội dung — màn duy nhất có thể cần khái niệm nhóm câu hỏi — **không có bất kỳ điều khiển nào
 liên quan tới lớp học hoặc "bộ câu hỏi" trong toàn bộ prototype**, và ghi thẳng: "không cần khái niệm 'bộ
 câu hỏi theo lớp' nữa" sau khi F6-11 bị loại — không chỉ phần "theo lớp", mà toàn bộ khái niệm nhóm câu
@@ -112,7 +112,7 @@ ClassScopeQueryPort.getManagedClassIds(userId) -> List<ClassId>
 ```
 
 **Cách dùng đã chốt** (đóng cả hai câu hỏi mở cũ — phạm vi sửa của A2 và vai trò thật của port này):
-`01-rd/screens/shared/interview_question_management.md` dòng 110-112 (Given-When-Then) xác nhận rõ "Cho
+`01-rd/screens/shared/SHR0301_interview_question_management.md` dòng 110-112 (Given-When-Then) xác nhận rõ "Cho
 tôi có quyền `INTERVIEW_BANK_MANAGEMENT`, Khi tôi mở màn quản lý ngân hàng câu hỏi, Thì tôi thấy và sửa
 được **toàn bộ** kho câu hỏi hệ thống — không chia theo lớp (A2 và A3 cùng phạm vi dữ liệu)". Vậy:
 
@@ -259,7 +259,7 @@ tắc `bd-generation` "không phải module nào cũng cần cả 4 file, không
 - `.nexa/domain-registry.json` — domain `interview-bank`, scope: `interview_question`, `question_topic`,
   `answer_rubric`, `user_answer`, `bookmark`, `practice_history`, `question_set` (scope liệt kê
   `question_set` đã lỗi thời — BD đóng 2026-09-13, không dùng thực thể này, xem mục 2.2).
-- `01-rd/screens/shared/interview_question_management.md` — dòng 97-103 (bỏ `question_set`), dòng 110-112
+- `01-rd/screens/shared/SHR0301_interview_question_management.md` — dòng 97-103 (bỏ `question_set`), dòng 110-112
   (A2 sửa toàn bộ ngân hàng).
 - `.nexa/control/dependency-map.md` dòng 52 (hạ tầng), dòng 37/103 (độc lập luồng nộp bài, hạng mục dễ bị
   cắt thứ hai nếu thiếu thời gian).

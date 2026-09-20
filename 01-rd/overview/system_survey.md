@@ -17,7 +17,7 @@ Khi hai bên lệch: `README.md` thắng về phạm vi (cái gì làm, cái gì
 — đó là đề xuất của phân tích, chưa phải điều đã chốt.
 
 **Tài liệu này không nói về công nghệ và kiến trúc.** Xem `01-rd/overview/overview.md` (nền tảng lý thuyết),
-`01-rd/system/backend_architecture.md`, `01-rd/system/frontend_architecture.md`.
+`01-rd/system/SYS0101_backend_architecture.md`, `01-rd/system/SYS0102_frontend_architecture.md`.
 
 ---
 
@@ -213,7 +213,7 @@ menu. Ma trận này **không** ảnh hưởng quyền học tập cơ bản c�
 
 **Sửa 2026-09-05.** Bảng trên bỏ hàng "Kích hoạt chấm lại" — tính năng đã loại khỏi phạm vi
 (`DEC-2026-0828-remove-rejudge-scope`), và bảng ma trận thật ở
-`01-rd/screens/admin/admin_permission_matrix.md` mục 3 cũng đã bỏ Function `REJUDGE_MANAGEMENT` từ
+`01-rd/screens/admin/ADM0202_permission_matrix.md` mục 3 cũng đã bỏ Function `REJUDGE_MANAGEMENT` từ
 2026-08-28 — hai bảng đang nói khác nhau. Hàng "Tạo bộ câu hỏi phỏng vấn" sửa thành "Quản trị nội dung
 ngân hàng câu hỏi phỏng vấn (F6-13)" và bật cột A3 thành **Có**: kho câu hỏi là một kho dùng chung, cả A2
 lẫn A3 cùng quản trị qua Function `INTERVIEW_BANK_MANAGEMENT` (`DEC-2026-0830-interview-bank-crud`); bản cũ
@@ -224,10 +224,10 @@ Cùng lý do, hàng "Soạn đề bài, đặc tả hàm, tải testcase" bật 
 `problem_management` là màn dùng chung, mount ở cả `/instructor/*` lẫn `/admin/*`, phạm vi dữ liệu do
 `PROBLEM_AUTHORING`/`TESTCASE_MANAGEMENT` quyết định — A2 thấy và sửa **bài do chính mình soạn** (theo quyền
 tác giả), A3 thấy toàn kho (`DEC-2026-0825-shared-content-authoring-screens`, xem
-`01-rd/screens/shared/problem_management.md` mục 1). **Sửa 2026-09-09:** câu trước ghi "bài của mình/lớp
+`01-rd/screens/shared/SHR0201_problem_management.md` mục 1). **Sửa 2026-09-09:** câu trước ghi "bài của mình/lớp
 mình" — sai, phạm vi của A2 trên kho bài **không** chia theo lớp phụ trách: bài toán không phải thực thể sở
 hữu theo lớp, việc gán bài vào lớp là chuyện riêng của `class_assignments` (F2-12). Bản trong
-`01-rd/screens/shared/problem_management.md` đã sửa cùng đợt.
+`01-rd/screens/shared/SHR0201_problem_management.md` đã sửa cùng đợt.
 Cột "Actor" của các hàng `F2-01` tới `F2-04` ở mục 5.2 ghi `A2` theo nghĩa **ai thường khởi phát**, không
 phải ai được phép — hai cột trả lời hai câu hỏi khác nhau.
 
@@ -260,7 +260,7 @@ Việc chia nhỏ và đánh mã là [SoT: Suy luận]; **nội dung** từng ch
 | F1-14 | Ghi Nhật ký hệ thống cho mọi thay đổi ma trận phân quyền và mọi thao tác quản trị | A4 | Không có ngoại lệ, kể cả đổi quyền. Chốt 2026-08-24 (mục 2.5): chỉ hành động quản trị của người, không gộp sự kiện hạ tầng — sự kiện hạ tầng xem ở `admin_queue_monitor` (F4-10) |
 | F1-15 | Đăng nhập/đăng ký qua OAuth (GitHub, Google) | A1 A2 A3 | Bổ sung `06-plan/PROTOTYPE_DEBT.md` mục 2.2. Trùng email với tài khoản email/mật khẩu → tự động liên kết, không tạo tài khoản thứ hai |
 | F1-16 | Tự xoá tài khoản (danger zone) | A1 A2 A3 | Bổ sung mục 2.3. Khoá mềm (`DEACTIVATED`) ngay, ẩn danh hoá thông tin định danh sau khoảng ân hạn; bài nộp/bài giải/phiên phỏng vấn không bị xoá |
-| F1-17 | Tự đặt lại mật khẩu bằng mã 6 chữ số gửi qua email (Gmail) | A1 A2 A3 | Bổ sung `01-rd/screens/shared/auth.md` mục 5 câu hỏi mở Q4, chốt 2026-08-24. Mã dùng một lần, có hạn hiệu lực; không tiết lộ email có tồn tại hay không (OWASP) |
+| F1-17 | Tự đặt lại mật khẩu bằng mã 6 chữ số gửi qua email (Gmail) | A1 A2 A3 | Bổ sung `01-rd/screens/shared/SHR0101_auth.md` mục 5 câu hỏi mở Q4, chốt 2026-08-24. Mã dùng một lần, có hạn hiệu lực; không tiết lộ email có tồn tại hay không (OWASP) |
 | F1-18 | Xem lịch sử nộp bài của chính mình: lọc theo verdict (`AC`/`WA`/`TLE`/`CE`/`RE`) và ngôn ngữ, tìm theo tên/mã bài, phân trang cuối bảng | A1 | Bổ sung 2026-08-25 (`my_submissions` Q1). Phân trang cùng kiểu `problem_list` (F2-11); chi tiết UI **[Đợi nextjs]** |
 | F1-19 | Tự đổi mật khẩu khi đã đăng nhập: nhập mật khẩu hiện tại kèm mật khẩu mới, không qua email | A1 A2 A3 | Bổ sung 2026-08-25 (`profile` Q1). Khác F1-17 — F1-17 là quên mật khẩu khi chưa đăng nhập |
 | F1-20 | Tuỳ chọn cá nhân hoá Workspace lưu theo tài khoản: ngôn ngữ mặc định, cỡ chữ editor, tự lưu bản nháp, phím tắt Vim | A1 | Bổ sung 2026-08-25 (`settings` Q1). Áp dụng khi mở màn giải bài (F3/F4), không ảnh hưởng chấm bài |
@@ -521,7 +521,7 @@ hưởng** (F5-22).
 vực>/<slug>.md`, chia thư mục con theo khu vực actor: `shared/` (dùng chung mọi vai trò, ví dụ `auth`),
 `users/` (A1), `teacher/` (A2), `admin/` (A3)]
 
-Slug viết `snake_case`; slice frontend tương ứng viết `kebab-case` (`01-rd/system/codebase_structure.md`
+Slug viết `snake_case`; slice frontend tương ứng viết `kebab-case` (`01-rd/system/SYS0201_codebase_structure.md`
 mục 3). Cột "Chức năng" trỏ về mã ở mục 5 — đó là cách BD theo screen truy về được BD theo module.
 
 ### 7.0. Khu vực dùng chung (nhiều actor)
@@ -538,12 +538,12 @@ khu Giảng viên vẫn giữ layout riêng khỏi khu Admin cho các màn khôn
 | `problem_authoring` | Soạn bài toán và đặc tả hàm (đề bài, chữ ký hàm, chiến lược so khớp, testcase — gồm cả `testcase_management` đã gộp vào, xem dưới) | F2-01 tới F2-09, F2-14 | `problem-bank`, `harness` | `/instructor/problems/[id]`, `/admin/problems/[id]` |
 | `problem_management` | Quản lý bài tập — bảng quản trị nội dung, cửa vào `problem_authoring` (đổi tên từ `admin_problem_management`) | F2-01 tới F2-04, F2-14 | `problem-bank`, `harness` | `/instructor/problems`, `/admin/problems` |
 | `interview_question_management` | Quản lý ngân hàng câu hỏi phỏng vấn (đổi tên từ `admin_interview_question_management`) | F6-12, F6-13 | `interview-bank` | `/instructor/interview-questions`, `/admin/interview-questions` |
-| `interview_question_authoring` | Soạn/sửa một câu hỏi phỏng vấn (nội dung, câu hỏi đào sâu, tiêu chí đánh giá có trọng số) — trả lời Q4 của `interview_question_management.md`, gắn mã `F6-13` | F6-13 | `interview-bank` | `/instructor/interview-questions/[id]`, `/admin/interview-questions/[id]` (chốt 2026-09-01). **RD: `01-rd/screens/shared/interview_question_authoring.md` (viết 2026-09-01). Chưa có prototype `[Đợi nextjs]`** |
+| `interview_question_authoring` | Soạn/sửa một câu hỏi phỏng vấn (nội dung, câu hỏi đào sâu, tiêu chí đánh giá có trọng số) — trả lời Q4 của `interview_question_management.md`, gắn mã `F6-13` | F6-13 | `interview-bank` | `/instructor/interview-questions/[id]`, `/admin/interview-questions/[id]` (chốt 2026-09-01). **RD: `01-rd/screens/shared/SHR0302_interview_question_authoring.md` (viết 2026-09-01). Chưa có prototype `[Đợi nextjs]`** |
 
 **`testcase_management` không còn là slug riêng** — đã gộp hoàn toàn vào `problem_authoring` (chốt
 2026-08-25); phiên bản bộ testcase (F2-09) là panel trong tab Testcase, không tách màn hay hộp thoại riêng.
-Chi tiết: `01-rd/screens/shared/problem_authoring.md`, `01-rd/screens/shared/problem_management.md`,
-`01-rd/screens/shared/interview_question_management.md`.
+Chi tiết: `01-rd/screens/shared/SHR0202_problem_authoring.md`, `01-rd/screens/shared/SHR0201_problem_management.md`,
+`01-rd/screens/shared/SHR0301_interview_question_management.md`.
 
 **Cập nhật 2026-09-03 — chuyển `auth` từ mục 7.1 sang mục này.** Cây thư mục `01-rd/screens/` là nguồn
 thật của trục màn, và ở đó `auth` nằm trong `shared/` vì cả
@@ -612,8 +612,8 @@ chung)**: `testcase_management` gộp vào `problem_authoring`, không còn tồ
 **Cập nhật 2026-08-28 (`DEC-2026-0828-split-class-management-assignments`):** slug `class_management` tách
 thành hai — `class_management` (chỉ "Lớp của tôi": tổng quan lớp, danh sách học viên) và `class_assignments`
 (mới, "Bài tập của tôi": giao/gán bài từ ngân hàng cho lớp, F2-12) — vì hai prototype có route/nav riêng
-biệt, mỗi màn cần một component Next.js riêng ở BD/DD. Xem `01-rd/screens/teacher/class_management.md` và
-`01-rd/screens/teacher/class_assignments.md`. Khu giảng viên 4 → 5 slug, tổng 29 → 30 màn.
+biệt, mỗi màn cần một component Next.js riêng ở BD/DD. Xem `01-rd/screens/teacher/INS0201_class_management.md` và
+`01-rd/screens/teacher/INS0202_class_assignments.md`. Khu giảng viên 4 → 5 slug, tổng 29 → 30 màn.
 
 **Cập nhật 2026-08-28 (tiếp), qua hỏi trực tiếp chủ dự án khi trả lời Q4 của `class_management.md`:** thêm
 slug mới `class_student_detail` (hồ sơ chi tiết một học viên trong lớp phụ trách, F1-27) — chưa có
@@ -628,7 +628,7 @@ riêng theo lớp, `DEC-2026-0828-remove-per-class-interview-set`) và F4-09a→
 | :--- | :--- | :--- | :--- | :--- |
 | `class_management` | Quản lý lớp — Lớp của tôi (tổng quan, danh sách học viên) | F1-10, F1-12 | `identity` | `Giáo viên - Lớp của tôi.dc.html` |
 | `class_assignments` | Giao bài tập theo lớp — Bài tập của tôi | F2-12 | `problem-bank` | `Giáo viên - Bài tập của tôi.dc.html` (gán bài từ ngân hàng cho lớp) |
-| `class_student_detail` | Hồ sơ chi tiết một học viên trong lớp phụ trách | F1-27 | `identity` | Chưa có prototype `[Đợi nextjs]` — slug bổ sung 2026-08-28, lấp Câu hỏi mở Q4 của `class_management.md`. **RD: `01-rd/screens/teacher/class_student_detail.md` (viết 2026-09-01)** |
+| `class_student_detail` | Hồ sơ chi tiết một học viên trong lớp phụ trách | F1-27 | `identity` | Chưa có prototype `[Đợi nextjs]` — slug bổ sung 2026-08-28, lấp Câu hỏi mở Q4 của `class_management.md`. **RD: `01-rd/screens/teacher/INS0204_class_student_detail.md` (viết 2026-09-01)** |
 | `class_progress` | Tiến độ lớp | (dẫn xuất từ F1-06, F1-07) | `identity`, `judge-orchestration` | `Giáo viên - Tiến độ học viên.dc.html` |
 | `instructor_overview` | Tổng quan khu Giảng viên | (tổng hợp F2-12, F5-27) | `identity` | `Giáo viên - Tổng quan.dc.html`. Slug mới phát sinh khi dựng prototype, không nằm trong 4 slug hạt giống ban đầu — hợp lý vì mỗi khu vực có shell riêng thường cần một dashboard riêng |
 | `instructor_grading` | Điểm AI tham khảo và chấm tay theo lớp | F5-27 | `ai-review`, `problem-bank` | `Giáo viên - Chấm bài.dc.html`. Slug mới, gắn mã F5-27 (chốt 2026-08-24, mục 6.2.a) |
@@ -646,7 +646,7 @@ phân quyền) [SoT: 09-layoutBase/Admin - Tổng quan.dc.html:360-380].
 
 | Slug | Tên màn | Chức năng chính | Bounded Context liên quan | Prototype |
 | :--- | :--- | :--- | :--- | :--- |
-| `admin_overview` | Tổng quan khu Quản trị — chỉ số hệ thống, lượt nộp theo ngôn ngữ/ngày/tháng, kết quả chấm, độ khó, bài phổ biến, người dùng mới/cũ | (tổng hợp, chưa gắn mã riêng) | `identity`, `judge-orchestration`, `problem-bank` | `Admin - Tổng quan.dc.html`. Slug bổ sung 2026-08-25. **Là đích điều hướng của `ADMIN` sau đăng nhập** theo `01-rd/screens/shared/auth.md:90` |
+| `admin_overview` | Tổng quan khu Quản trị — chỉ số hệ thống, lượt nộp theo ngôn ngữ/ngày/tháng, kết quả chấm, độ khó, bài phổ biến, người dùng mới/cũ | (tổng hợp, chưa gắn mã riêng) | `identity`, `judge-orchestration`, `problem-bank` | `Admin - Tổng quan.dc.html`. Slug bổ sung 2026-08-25. **Là đích điều hướng của `ADMIN` sau đăng nhập** theo `01-rd/screens/shared/SHR0101_auth.md:90` |
 | `admin_queue_monitor` | Giám sát hàng đợi và cụm judge engine | F4-10 | `judge-orchestration` | `Admin - Hàng đợi chấm.dc.html` |
 | ~~`admin_rejudge`~~ | ~~Kích hoạt và theo dõi chấm lại~~ | — | — | **ĐÃ LOẠI BỎ KHỎI PHẠM VI (2026-08-28)** — xem `DEC-2026-0828-remove-rejudge-scope`. Route `/admin/rejudge` và view code (nếu có) cần gỡ khi dọn khung base FE. |
 | `admin_language_config` | Cấu hình ngôn ngữ và giới hạn tài nguyên | F4-11, F2-10 | `judge-orchestration`, `problem-bank` | `Admin - Ngôn ngữ và giới hạn.dc.html` |
@@ -724,7 +724,7 @@ mục dưới đây không còn là "chưa quyết":
 sửa lại 2026-08-31 (report `rd_review_report_260826.html` mục 6.5 nêu dòng này là câu hỏi mở, nhưng thực ra
 đã có câu trả lời từ trước khi report được viết):** thông báo qua email **CÓ trong phạm vi** — `F1-21` (nhắc
 luyện tập khi chuỗi ngày sắp mất, báo cáo tiến độ hằng tuần), gác được bật/tắt theo từng loại, job định kỳ
-thuộc `identity`. Xem `01-rd/req/identity.md` (F1-21) và `01-rd/screens/users/settings.md` Q1 (đã đóng).
+thuộc `identity`. Xem `01-rd/req/identity.md` (F1-21) và `01-rd/screens/users/USR0503_settings.md` Q1 (đã đóng).
 
 **Đã chốt 2026-08-24** (`06-plan/PROTOTYPE_DEBT.md` mục 2.8, qua hỏi trực tiếp chủ dự án) — một mục hoãn lại
 chứ không loại hẳn: **backend thật cho "Chạy đối chiếu" (regression test) prompt AI trước khi publish**
@@ -778,6 +778,6 @@ F4 không có gì để điều phối, và F5 không có bài nộp Accepted n�
 | :--- | :--- |
 | Nền tảng lý thuyết và lý do chọn từng nguyên lý | `01-rd/overview/overview.md` |
 | Từ vựng chuẩn của dự án | `01-rd/overview/glossary.md` |
-| Kiến trúc backend và frontend | `01-rd/system/backend_architecture.md` · `01-rd/system/frontend_architecture.md` |
+| Kiến trúc backend và frontend | `01-rd/system/SYS0101_backend_architecture.md` · `01-rd/system/SYS0102_frontend_architecture.md` |
 | Yêu cầu chức năng dạng đặc tả và yêu cầu phi chức năng | `01-rd/req/req.md` (viết lại cho AlgoPrep 2026-08-23, xem `01-rd/README.md` mục 3) |
 | Thiết kế theo module và theo màn | `02-bd/` |

@@ -47,7 +47,7 @@ hoạt **sau khi** bài nộp đạt `Accepted`. F5.2 (Mock Interview) có lối
 
 - **Chống prompt injection** (F5-17): mã nguồn và câu trả lời người dùng là **tham số dữ liệu**, tách hoàn
   toàn khỏi chỉ thị hệ thống — OWASP LLM01 (`overview.md` mục 1.J, `CLAUDE.md` mục Rules). **Amendment
-  2026-08-31** (lấp Câu hỏi mở Q6 của `01-rd/screens/shared/problem_authoring.md`, mức Cao): quy tắc này
+  2026-08-31** (lấp Câu hỏi mở Q6 của `01-rd/screens/shared/SHR0202_problem_authoring.md`, mức Cao): quy tắc này
   cũng áp dụng cho **văn bản do người soạn đề (A2/A3) nhập ở khối "Chỉ dẫn cho trợ lý AI" theo từng bài
   toán** rồi nối vào prompt hệ thống của `ai-review`. Văn bản này **không được coi là chỉ thị hệ thống** dù
   do một actor có quyền nhập — nối vào prompt trong một khối có nhãn riêng (ví dụ `<per_problem_context>`),
@@ -66,7 +66,7 @@ hoạt **sau khi** bài nộp đạt `Accepted`. F5.2 (Mock Interview) có lối
   khoá gọi AI** (F5.1, F5.2, F6-08) cho vai trò `STUDENT` và `INSTRUCTOR` ngay khi vượt ngân sách đã đặt;
   `ADMIN` không bị khoá và là người duy nhất mở lại/tăng ngân sách. F1-F4 (giải bài, chạy thử, nộp bài,
   chấm) không bị ảnh hưởng — khoá chỉ chặn lời gọi AI, đúng nguyên tắc suy giảm có kiểm soát (F5-22).
-  **Amendment 2026-08-31** (lấp Câu hỏi mở Q1 của `01-rd/screens/admin/admin_ai_usage.md`,
+  **Amendment 2026-08-31** (lấp Câu hỏi mở Q1 của `01-rd/screens/admin/ADM0302_ai_usage.md`,
   `DEC-2026-0831-ai-usage-anomaly-alert`): F5-19/F5-25 còn bao gồm một **cảnh báo mềm cấp tài khoản** — khi
   một tài khoản gọi AI với tần suất lệch bất thường so với trung bình (ví dụ gấp nhiều lần), hệ thống hiện
   cảnh báo cho `ADMIN` xem xét ở `admin_ai_usage`, **không tự khoá tài khoản đó** (khác hẳn khoá do vượt
@@ -82,7 +82,7 @@ hoạt **sau khi** bài nộp đạt `Accepted`. F5.2 (Mock Interview) có lối
     phủ rubric của F5.1 (Solution Review). Hệ thống có **ba rubric độc lập**, đừng gộp: F5-23 (rubric chấm
     bài giải, admin cấu hình trọng số) · **F5-15** (rubric bốn tiêu chí kết phiên Mock Interview) · **F6-13**
     (tiêu chí đối chiếu Chế độ luyện F6-08). Trọng số 25/30/25/20% của rubric F5-15 có cấu hình được hay cố
-    định thì chốt khi viết DD cho `ai-review` — xem `01-rd/screens/users/mock_interview.md` Câu hỏi mở Q1.
+    định thì chốt khi viết DD cho `ai-review` — xem `01-rd/screens/users/USR0302_mock_interview.md` Câu hỏi mở Q1.
   - **Chạy đối chiếu (regression test) trước khi publish prompt mới: giữ ở tầng giao diện, chưa cam kết
     logic backend trong phạm vi đồ án.** Nút "Chạy đối chiếu" (chạy 30 bài giải mẫu, so sánh điểm rubric
     giữa bản nháp và bản đang chạy) thể hiện đúng tầm nhìn kiểm thử chất lượng prompt trước khi thay đổi
@@ -128,7 +128,7 @@ hoạt **sau khi** bài nộp đạt `Accepted`. F5.2 (Mock Interview) có lối
   học (tỷ lệ testcase pass, thang 1), không quy đổi qua nhau.
   Phạm vi hiển thị: theo lớp giảng viên phụ trách (cùng cơ chế với F2-12). Actor A2, gác bởi Function
   `CLASS_MANAGEMENT` trong ma trận phân quyền (F1-12). **Amendment 2026-08-31** (lấp Câu hỏi mở Q2, Q3, Q4
-  của `01-rd/screens/teacher/instructor_grading.md`, chốt theo phương án khuyến nghị):
+  của `01-rd/screens/teacher/INS0301_grading.md`, chốt theo phương án khuyến nghị):
   - **Q2 — màn `instructor_grading` là hàng đợi đã lọc sẵn**, không hiển thị toàn bộ bài nộp của lớp: chỉ
     liệt kê bài `Accepted` có điểm AI tham khảo **dưới 6/10** `[SoT: Suy luận — BD/DD chỉnh được]`.
   - **Q3 — hiển thị song song điểm AI gốc và điểm chấm tay** sau khi giảng viên đã chấm (ví dụ "AI: 4/10 ·

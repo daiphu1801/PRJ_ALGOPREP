@@ -1,14 +1,14 @@
 -- AlgoPrep — khoi tao sau schema.
 --
 -- Script nay duoc mount vao /docker-entrypoint-initdb.d/ cua image postgres
--- (01-rd/system/environment.md muc 2) va CHI CHAY LAN DAU, khi volume con rong. Doi file nay roi
+-- (01-rd/system/SYS0301_environment.md muc 2) va CHI CHAY LAN DAU, khi volume con rong. Doi file nay roi
 -- `docker compose up` lai se KHONG chay lai — phai `docker compose down -v`.
 --
 -- Sau schema, khong phai sau database: Modular Monolith dung MOT PostgreSQL instance
 -- (DEC-2026-0820-architecture-baseline), ranh gioi giua cac Bounded Context la schema.
 --
 -- Ten schema NGAN HON ten Bounded Context o ba cho — day la cho hay sai
--- (01-rd/system/codebase_structure.md muc 3):
+-- (01-rd/system/SYS0201_codebase_structure.md muc 3):
 --   problem-bank        -> problem
 --   judge-orchestration -> judge
 --   ai-review           -> ai

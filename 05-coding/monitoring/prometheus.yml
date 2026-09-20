@@ -1,10 +1,10 @@
 # AlgoPrep — cau hinh Prometheus cho moi truong local.
 #
 # Bat bang profile: docker compose --profile observability up -d
-# 01-rd/system/environment.md muc 2: giam sat "co the bat muon, nhung phai co truoc khi bao cao
+# 01-rd/system/SYS0301_environment.md muc 2: giam sat "co the bat muon, nhung phai co truoc khi bao cao
 # hieu nang".
 #
-# So lieu toi thieu phai theo doi (01-rd/system/backend_architecture.md muc 7): do dai hang doi,
+# So lieu toi thieu phai theo doi (01-rd/system/SYS0101_backend_architecture.md muc 7): do dai hang doi,
 # do tre cham bai, ti le callback loi, token AI da dung. Ba trong bon so lieu do la metric NGHIEP VU
 # do backend tu phat qua Micrometer — chung chua ton tai vi F4/F5 chua duoc dung.
 

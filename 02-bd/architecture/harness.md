@@ -308,7 +308,7 @@ dòng** (bước 2-4), đây là phần bất biến không đổi theo compiler
 - `06-plan/PROTOTYPE_DEBT.md` mục 1.1 — quyết định giữ khoá 3 ngôn ngữ, Phương án A.
 - `.nexa/control/decision-registry.md` — `DEC-2026-0823-go-judge-default-engine`,
   `DEC-2026-0824-dual-submission-model-per-problem`.
-- `01-rd/screens/users/problem_detail.md` — RD theo trục màn phát hiện ra sai lệch dẫn tới quyết định ở mục 2b.
+- `01-rd/screens/users/USR0102_problem_detail.md` — RD theo trục màn phát hiện ra sai lệch dẫn tới quyết định ở mục 2b.
 - `02-bd/architecture/problem-bank.md` mục 4, 5 — phía cung cấp đặc tả hàm và cờ `function_wrapper_supported`
   mà mục 4.1, 4.5 file này trả lời dứt khoát.
 - `.nexa/control/dependency-map.md` mục 2 (harness = pure computation, chỉ Postgres cho template/lược đồ

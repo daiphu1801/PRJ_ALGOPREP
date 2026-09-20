@@ -5,7 +5,7 @@
 // 09-layoutBase/Admin - Câu hỏi phỏng vấn.dc.html:182-233.
 //
 // Lives in entities/, not shared/: it takes an `InterviewQuestion`, so by the layering test in
-// 01-rd/system/frontend_architecture.md section 2.A it only has meaning inside this domain. The
+// 01-rd/system/SYS0102_frontend_architecture.md section 2.A it only has meaning inside this domain. The
 // student-facing interview bank screen will reuse it with `actions` left out.
 "use client";
 

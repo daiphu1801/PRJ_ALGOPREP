@@ -1,8 +1,8 @@
 # AlgoPrep — Backend
 
 Java 21 LTS + Spring Boot 4.0.8 + Maven multi-module. Modular Monolith: **một tiến trình, một
-PostgreSQL instance, tám module Maven**. Spec đầy đủ: `01-rd/system/backend_architecture.md`. Cây
-thư mục monorepo: `01-rd/system/codebase_structure.md`.
+PostgreSQL instance, tám module Maven**. Spec đầy đủ: `01-rd/system/SYS0101_backend_architecture.md`. Cây
+thư mục monorepo: `01-rd/system/SYS0201_codebase_structure.md`.
 
 ## Trạng thái: khung base (2026-09-01)
 
@@ -28,7 +28,7 @@ file này. Kế hoạch thực hiện: `06-plan/nexa-plan/260831-2323-backend-ba
 Package Java **không có dấu gạch** (`problembank`) dù tên module có (`algoprep-problem-bank`) — Java
 không cho dấu gạch trong tên package. Tên schema **ngắn hơn** tên context ở ba chỗ
 (`problem-bank` → `problem`, `judge-orchestration` → `judge`, `ai-review` → `ai`). Bảng ánh xạ đầy
-đủ: `.nexa/domain-registry.json`; luật chống trôi: `01-rd/system/codebase_structure.md` mục 3.
+đủ: `.nexa/domain-registry.json`; luật chống trôi: `01-rd/system/SYS0201_codebase_structure.md` mục 3.
 
 ## Lệnh
 
@@ -48,7 +48,7 @@ curl http://localhost:8080/actuator/health
 **`./mvnw verify` KHÔNG cần Docker** — có chủ đích. Profile `test` loại trừ autoconfigure của
 PostgreSQL/Redis/RabbitMQ, nên cổng chất lượng cho ra cùng một kết quả dù máy có bật hạ tầng hay
 không. Test tích hợp có hạ tầng thật dùng Testcontainers và thuộc slice của từng module
-(`01-rd/system/environment.md` mục 5 — **không** mock database bằng H2).
+(`01-rd/system/SYS0301_environment.md` mục 5 — **không** mock database bằng H2).
 
 **Spring Boot không đọc `05-coding/.env`.** Phải `set -a && . ./.env && set +a` trước khi
 `spring-boot:run`, nếu không app dùng giá trị mặc định trong `application-local.yml`.
@@ -80,7 +80,7 @@ Threads) bị vô hiệu trong im lặng cho tới lúc đo k6.
 
 ## JaCoCo: ngưỡng 80% đã cấu hình, chặn thì bật theo module
 
-Ngưỡng `01-rd/system/environment.md` mục 3.A yêu cầu (**≥ 80%** cho `application` và `domain`) đã
+Ngưỡng `01-rd/system/SYS0301_environment.md` mục 3.A yêu cầu (**≥ 80%** cho `application` và `domain`) đã
 nằm trong POM cha. `haltOnFailure` đang `false` và được bật **theo từng module** bằng cách ghi đè
 `<jacoco.haltOnFailure>true</jacoco.haltOnFailure>` trong pom của module đó, đúng lúc module có class
 nghiệp vụ đầu tiên (`DEC-2026-0901-backend-base-architecture` điểm 3).
@@ -108,7 +108,7 @@ loãng.
   migration (Flyway / Liquibase) **chưa chốt**.
 - **`GoJudgeAdapter`** — thuộc slice `judge-orchestration`. Hạ tầng go-judge đã chạy và đã kiểm chạy
   được mã thật; xem `05-coding/judge-engine/README.md`.
-- **Pipeline GitHub Actions** — `01-rd/system/environment.md` mục 6 hẹn "khi có mã thật để chạy CI".
+- **Pipeline GitHub Actions** — `01-rd/system/SYS0301_environment.md` mục 6 hẹn "khi có mã thật để chạy CI".
   Giờ đã có mã thật.
 
 ## Nợ kỹ thuật đã biết

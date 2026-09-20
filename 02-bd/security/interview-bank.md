@@ -37,7 +37,7 @@ qua claim JWT, **`interview-bank` tự kiểm sở hữu ở tầng use case c�
   thao tác này (khác `ai-review`'s `CLASS_MANAGEMENT` scope theo lớp phụ trách) — vì ngân hàng câu hỏi
   là dùng chung toàn hệ thống, một A2 có quyền `INTERVIEW_BANK_MANAGEMENT:CREATE`/`UPDATE` sửa được nội
   dung áp dụng cho toàn bộ học viên, không chỉ lớp mình phụ trách. **Đã đóng 2026-09-13** — căn cứ
-  `01-rd/screens/shared/interview_question_management.md` dòng 110-112 (Given-When-Then): "tôi thấy và
+  `01-rd/screens/shared/SHR0301_interview_question_management.md` dòng 110-112 (Given-When-Then): "tôi thấy và
   sửa được toàn bộ kho câu hỏi hệ thống — không chia theo lớp (A2 và A3 cùng phạm vi dữ liệu)". A2
   **không** bị giới hạn bởi `created_by` — cột đó chỉ phục vụ hiển thị/audit ("ai tạo"), không phải điều
   kiện lọc quyền sửa. Không thêm điều kiện `created_by = currentUser` ở tầng use case.

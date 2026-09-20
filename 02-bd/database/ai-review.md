@@ -259,7 +259,7 @@ budget_configs` (seed 1 dòng mặc định) → `solution_reviews` → `rubric_
 - Lược đồ JSON đầy đủ `solution_reviews.result_json` (F5-07) — tên trường, kiểu từng phần.
 - Thang điểm chính xác của `rubric_scores.score` cho từng `owner_type` (0-10 hay 0-100).
 - ~~`rubric_scores` của Mock Interview cấu hình được trọng số hay cố định~~ — **đã đóng 2026-09-13: cố
-  định 25/30/25/20%, không cấu hình qua `admin_ai_config`.** Căn cứ: `01-rd/screens/admin/admin_ai_config.md`
+  định 25/30/25/20%, không cấu hình qua `admin_ai_config`.** Căn cứ: `01-rd/screens/admin/ADM0301_ai_config.md`
   dòng 39-42 xác nhận màn này chỉ cấu hình rubric 5 tiêu chí của Solution Review (F5-23), tự nhận "khác 4
   tiêu chí rubric phỏng vấn — hai rubric riêng cho hai tính năng khác nhau (F5.1 vs F5.2), không xung đột".
   `rubric_scores.owner_type = MOCK_INTERVIEW` do đó không cần cột trọng số cấu hình được — trọng số

@@ -5,9 +5,9 @@ import { useT } from "@/shared/i18n";
 import type { AuthMode } from "@/entities/auth";
 
 /**
- * Right column (`AsideModePanel`, 02-bd/screens/shared/auth.md section 2): badges, mode-dependent
+ * Right column (`AsideModePanel`, 02-bd/screens/shared/SHR0101_auth.md Sheet 5, khu vực B): badges, mode-dependent
  * copy, a static code illustration, nav dots. Page composition specific to this one screen (not
- * reused elsewhere) — kept as a views-local component per frontend_architecture.md section 2.A
+ * reused elsewhere) — kept as a views-local component per SYS0102_frontend_architecture.md section 2.A
  * ("dùng ở nhiều nơi KHÔNG phải tiêu chí" cuts both ways: a one-off composition stays in views/,
  * it doesn't need to earn a promotion to shared/features just because it's a separate file).
  */

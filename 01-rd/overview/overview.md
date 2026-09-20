@@ -11,10 +11,10 @@ nhắc lại chức năng — nó trả lời câu hỏi *dựa trên lý thuy�
 | :--- | :--- |
 | Khảo sát, phân hệ F1-F6, phạm vi, rủi ro | `README.md` |
 | Ngôn ngữ thống nhất (thuật ngữ nghiệp vụ) | `01-rd/overview/glossary.md` |
-| Kiến trúc backend: module, tầng, cổng, luồng | `01-rd/system/backend_architecture.md` |
-| Cấu trúc thư mục monorepo | `01-rd/system/codebase_structure.md` |
-| Kiến trúc frontend FSD | `01-rd/system/frontend_architecture.md` |
-| Môi trường, phiên bản, cổng chất lượng | `01-rd/system/environment.md` |
+| Kiến trúc backend: module, tầng, cổng, luồng | `01-rd/system/SYS0101_backend_architecture.md` |
+| Cấu trúc thư mục monorepo | `01-rd/system/SYS0201_codebase_structure.md` |
+| Kiến trúc frontend FSD | `01-rd/system/SYS0102_frontend_architecture.md` |
+| Môi trường, phiên bản, cổng chất lượng | `01-rd/system/SYS0301_environment.md` |
 | Yêu cầu chức năng và phi chức năng | `01-rd/req/req.md` |
 
 **Quy ước dẫn nguồn trong tài liệu này:** mỗi khẳng định về phạm vi hoặc công nghệ đều trỏ về nguồn thật
@@ -37,7 +37,7 @@ DDD giải quyết độ phức tạp nghiệp vụ bằng cách chia hệ thố
   `README.md` mục 4: `identity` · `problem-bank` · `harness` · `judge-orchestration` ·
   `ai-review` · `interview-bank`.
   Đây là **Modular Monolith**, không phải microservices: một tiến trình, một database, ranh giới module
-  được bảo vệ bằng kiểm tra tự động thay vì bằng ranh giới mạng (xem `environment.md` mục 2.A).
+  được bảo vệ bằng kiểm tra tự động thay vì bằng ranh giới mạng (xem `SYS0301_environment.md` mục 2.A).
 * **Ubiquitous Language (ngôn ngữ thống nhất).** Một khái niệm một tên, giống nhau ở tài liệu, giao diện,
   tên bảng, tên class và mã lỗi. Bảng tra là `glossary.md`. Ví dụ: **bài nộp** luôn là `submission`, không
   lúc `submit` lúc `attempt`; **đặc tả bài toán** luôn là `problem_spec`.
@@ -72,7 +72,7 @@ nằm chung một PostgreSQL instance; ranh giới là ranh giới **mã nguồn
 ### B. Clean Architecture — quy tắc phụ thuộc
 
 Mục tiêu: lõi nghiệp vụ độc lập với framework, database, giao diện và hệ ngoài. Bố cục thư mục cụ thể ở
-`backend_architecture.md` mục 3; đây là nguyên lý.
+`SYS0101_backend_architecture.md` mục 3; đây là nguyên lý.
 
 * **Dependency Rule.** Phụ thuộc chỉ hướng vào trong. Lõi miền không biết Spring, không biết JPA, không biết
   go-judge hay Judge0, không biết HTTP. Cụ thể: **không `@Entity`, không `@Component`, không
@@ -164,7 +164,7 @@ Judge0 (webhook bất đồng bộ). Nếu một adapter bất đồng bộ (ví
   còn lại như một nguyên lý kiến trúc đang sống. `F4-04` (fail-fast) đã hết hiệu lực theo
   `DEC-2026-0831-partial-score-testcase-ratio`; đợt quét 2026-09-05 sửa 7 chỗ khác nhưng bỏ sót chỗ này,
   nên file nền lý thuyết vẫn nói ngược với `01-rd/req/judge-orchestration.md` (F4-03) và
-  `01-rd/system/backend_architecture.md` (module `algoprep-judge`).
+  `01-rd/system/SYS0101_backend_architecture.md` (module `algoprep-judge`).
 * **Timeout sweep thay cho đối soát nặng.** Với adapter đồng bộ, một bài nộp treo ở trạng thái trung gian
   hầu như luôn là do worker crash giữa lúc đang gọi engine — RabbitMQ tự redeliver message chưa ack, xử lý
   được phần lớn trường hợp. Job quét định kỳ vẫn giữ lại ở dạng nhẹ hơn: chỉ phát hiện bài nộp treo quá
@@ -186,7 +186,7 @@ Judge0 (webhook bất đồng bộ). Nếu một adapter bất đồng bộ (ví
 * **Định vị.** Đề tài **không xây lại bộ máy chấm bài**. Cô lập tiến trình khi chạy mã không tin cậy là bài
   toán cấp kernel; engine chấm mặc định (go-judge, sandbox `go-sandbox`) đã giải quyết, làm lại chỉ thêm rủi
   ro bảo mật (`README.md` mục 1.2.1 và 1.3).
-* **Cơ chế kernel mà sandbox dựa vào** (`README.md` mục 5; `01-rd/system/judge_engine.md` mục 3):
+* **Cơ chế kernel mà sandbox dựa vào** (`README.md` mục 5; `01-rd/system/SYS0401_judge_engine.md` mục 3):
   - **namespaces** — tiến trình bị chấm thấy một không gian riêng: hệ thống tệp, PID, mạng. Nó không thấy
     tiến trình khác, không ra được internet.
   - **cgroups** — giới hạn cứng CPU và bộ nhớ. Vượt là bị kết thúc; đây là nền của trạng thái vượt bộ nhớ.
@@ -241,7 +241,7 @@ cầu nối đó.
   Interview (F5.2 còn hai lối vào tự luyện khác không cần `Accepted` — F5-24). Chia theo loại kỹ thuật
   (`components/`, `hooks/`, `utils/`) thì một màn như vậy rải khắp cây thư mục và không ai còn biết sửa một
   chỗ thì vỡ chỗ nào.
-* Chi tiết tầng, tiêu chí đặt tầng và cách thi hành: `frontend_architecture.md`.
+* Chi tiết tầng, tiêu chí đặt tầng và cách thi hành: `SYS0102_frontend_architecture.md`.
 
 ### I. An toàn thông tin theo OWASP Top 10
 

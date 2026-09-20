@@ -12,7 +12,7 @@ type NavGroupHeaderProps = {
 
 /**
  * Promoted alongside `NavLink` (2026-09-16, same reasoning: no AlgoPrep business type, only
- * presentation + an `onClick` callback — `01-rd/system/frontend_architecture.md` section 2.A). The
+ * presentation + an `onClick` callback — `01-rd/system/SYS0102_frontend_architecture.md` section 2.A). The
  * expand/collapse chevron and its rotation are generic "toggle group" behavior, not admin-nav
  * specific — this component doesn't know `ADMIN_NAV_GROUPS` exists, the caller owns that state.
  */

@@ -61,7 +61,7 @@ gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang c�
     `PERMISSION_MATRIX` (chính F1-10 — tự tham chiếu, mặc định chỉ `ADMIN` có toàn quyền).
   - **F1-13 — Quản lý tài khoản người dùng.** `ADMIN` đổi vai trò, khoá/mở khoá tài khoản, reset mật khẩu
     của người dùng khác — gác bởi `USER_MANAGEMENT` trong ma trận F1-10. Actor A3. **Chốt 2026-08-25** (qua
-    hỏi trực tiếp chủ dự án khi viết `01-rd/screens/admin/admin_user_management.md` — prototype có mục "Đề
+    hỏi trực tiếp chủ dự án khi viết `01-rd/screens/admin/ADM0201_user_management.md` — prototype có mục "Đề
     nghị cấp quyền giảng viên" gây hiểu nhầm): **không có luồng tự yêu cầu nâng vai trò (self-service)** —
     đổi vai trò luôn là hành động đơn phương của `ADMIN`, không có bước "người dùng xin, ADMIN duyệt". Nếu
     một `STUDENT` muốn trở thành `INSTRUCTOR`, việc trao đổi diễn ra ngoài hệ thống (email, gặp trực tiếp),
@@ -74,7 +74,7 @@ gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang c�
     chúng: hành động quản trị thuộc `identity` (F1-14), sự kiện hạ tầng thuộc `judge-orchestration` và đã có
     chỗ riêng ở giám sát hàng đợi (F4-10), không cần một mã `Fx-nn` mới.
 - **Tạo lớp học và tham gia lớp bằng mã mời** — bổ sung 2026-08-28, lấp khoảng trống nêu ở
-  `01-rd/screens/teacher/class_management.md` Câu hỏi mở Q2 (chưa có mã `Fx-nn` nào cho CRUD lớp học). Chốt
+  `01-rd/screens/teacher/INS0201_class_management.md` Câu hỏi mở Q2 (chưa có mã `Fx-nn` nào cho CRUD lớp học). Chốt
   qua hỏi trực tiếp chủ dự án:
   - **F1-23 — Giáo viên (A2) tạo lớp học mới** với thông tin cơ bản (tên lớp, có thể kèm mô tả/lịch học —
     danh sách trường cụ thể để BD/DD quyết định). Khi tạo xong, hệ thống sinh một **mã mời (invite code)**
@@ -105,12 +105,12 @@ gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang c�
     độ, lịch sử nộp bài — phạm vi giới hạn trong lớp giáo viên đó quản lý). **Chốt 2026-08-28 — qua hỏi
     trực tiếp chủ dự án, lấp Q4 của `class_management.md`:** đây **cần một màn/route riêng**, không phải
     hiển thị mở rộng ngay tại bảng danh sách học viên — slug `class_student_detail` ở khu giảng viên, RD ở
-    `01-rd/screens/teacher/class_student_detail.md` (viết 2026-09-01); chưa có prototype minh hoạ
+    `01-rd/screens/teacher/INS0204_class_student_detail.md` (viết 2026-09-01); chưa có prototype minh hoạ
     `[Đợi nextjs]`. Công thức phân loại trạng thái học viên ("Đang tốt"/"Cần hỗ trợ"/"Vắng bài") **chưa
     chốt ngưỡng cụ thể** — chủ dự án chọn để BD/DD tự đề xuất `[SoT: Suy luận — ngưỡng cụ thể quyết định
     khi thiết kế, không phải yêu cầu chức năng cứng]`.
   - **F1-28 — Giảng viên xem tổng hợp tiến độ nhiều học viên trong (các) lớp mình phụ trách** (dashboard
-    `class_progress`) — trả lời Câu hỏi mở Q1-Q6 của `01-rd/screens/teacher/class_progress.md`. **Chốt
+    `class_progress`) — trả lời Câu hỏi mở Q1-Q6 của `01-rd/screens/teacher/INS0203_class_progress.md`. **Chốt
     2026-08-30 (owner instruction — "tạo dashboard ở mức tốt là được", tức chốt ở mức hợp lý, không cần đàm
     phán từng ngưỡng số; các con số cụ thể đánh dấu `[SoT: Suy luận]` để BD/DD tinh chỉnh):**
     - **Điểm trung bình (thang 10, theo học viên)** = tỉ lệ Accepted/tổng lượt nộp của học viên đó trong lớp
@@ -137,7 +137,7 @@ gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang c�
     - Gác bởi Function `CLASS_MANAGEMENT` (F1-12); phạm vi hiển thị theo lớp giảng viên phụ trách, cùng cơ
       chế đã dùng ở F2-12/F5-27.
 - **Quản trị viên (A3) xem tổng quan vận hành hệ thống** — bổ sung 2026-08-31, lấp Câu hỏi mở Q2 và Q5 của
-  `01-rd/screens/admin/admin_overview.md` (`07-review/rd_review_report_260826.html` mục 6.2, mức Cao). Chốt
+  `01-rd/screens/admin/ADM0101_overview.md` (`07-review/rd_review_report_260826.html` mục 6.2, mức Cao). Chốt
   qua hỏi trực tiếp chủ dự án, cả hai theo phương án khuyến nghị:
   - **F1-29 — Dashboard tổng quan vận hành** (`admin_overview`) bao trùm 8/9 khối thống kê trước đó không có
     mã: 2 thẻ chỉ số tổng (Tổng lượt nộp, Người dùng hoạt động), Lượt nộp theo ngôn ngữ/theo ngày/theo tháng,
@@ -163,7 +163,7 @@ gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang c�
     Khi dựng UI thật: đổi trục thành một phân loại có thật (ví dụ tỉ lệ Accepted theo độ khó)
     `[SoT: Suy luận — BD chọn trục cụ thể]`, không thêm mã F2 mới, không thêm thuộc tính tác giả bài toán.
 - **Giảng viên (A2) xem tổng quan khối lượng công việc** — bổ sung 2026-08-31, lấp Câu hỏi mở Q1-Q5, Q7 của
-  `01-rd/screens/teacher/instructor_overview.md` (Q6 đã đóng riêng qua `DEC-2026-0831-i18n-scope-expansion`).
+  `01-rd/screens/teacher/INS0101_instructor_overview.md` (Q6 đã đóng riêng qua `DEC-2026-0831-i18n-scope-expansion`).
   Chốt theo phương án khuyến nghị đã đề xuất sẵn trong RD (mẫu hình giống cách `class_progress`/F1-28 và
   `admin_overview`/F1-29 đã chốt trong phiên này — chủ dự án uỷ quyền áp phương án hợp lý nhất thay vì
   duyệt từng dòng, đánh dấu rõ `[SoT: Suy luận]` ở mọi con số chưa có căn cứ cứng):
@@ -200,7 +200,7 @@ gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang c�
     một job định kỳ ẩn danh hoá thông tin định danh (email, tên hiển thị) của tài khoản — bài nộp, bài giải
     đã lưu, phiên phỏng vấn **không bị xoá**, chỉ gỡ liên kết tới danh tính cá nhân, để không phá vỡ thống
     kê tiến độ lớp của giảng viên khi một học viên xoá tài khoản giữa kỳ.
-- **Tự đặt lại mật khẩu (quên mật khẩu)** — bổ sung theo `01-rd/screens/shared/auth.md` mục 5 câu hỏi mở Q4, phát
+- **Tự đặt lại mật khẩu (quên mật khẩu)** — bổ sung theo `01-rd/screens/shared/SHR0101_auth.md` mục 5 câu hỏi mở Q4, phát
   hiện khi đối chiếu `09-layoutBase/Đăng nhập & Đăng ký.dc.html` (liên kết "Quên mật khẩu?" có thật ở màn
   đăng nhập nhưng trước đó chưa có mã `Fx-nn` nào phủ luồng này — khác `F1-13` là ADMIN reset hộ người
   khác):

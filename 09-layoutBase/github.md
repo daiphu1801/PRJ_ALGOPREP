@@ -27,7 +27,7 @@ date: 2026-08-24T20:14:00Z
 | :--- | :--- | :--- |
 | Dashboard AlgoPrep | `my_progress` | system_survey.md 5.1 (F1-06→08), 5.6 (F6-09, F6-10) |
 | Ngân hàng bài toán | `problem_list` | system_survey.md 5.2 (F2-11) |
-| Workspace giải bài | `problem_detail` | system_survey.md 5.2, 5.3, 5.4; frontend_architecture.md 2.B |
+| Workspace giải bài | `problem_detail` | system_survey.md 5.2, 5.3, 5.4; SYS0102_frontend_architecture.md 2.B |
 | Kết quả nộp bài | `submission_result` | system_survey.md 5.4 (F4-01→08) |
 | Phân tích bài giải | `solution_review` | system_survey.md 5.5 F5.1 (F5-01→08) |
 | Bài đã nộp | `my_submissions` | system_survey.md 5.4, 5.5 (lịch sử nộp) |
@@ -62,7 +62,7 @@ date: 2026-08-24T20:14:00Z
 
 ### 2026-08-21T02:26:10Z
 - Repo có thêm tầng `01-rd/` (overview, req, system) — vẫn chưa có source UI, `05-coding/frontend/` rỗng.
-- Đối chiếu 5 trang prototype với `system_survey.md` mục 5, 6, 7 và `frontend_architecture.md`.
+- Đối chiếu 5 trang prototype với `system_survey.md` mục 5, 6, 7 và `SYS0102_frontend_architecture.md`.
 - Workspace đúng ràng buộc 3 ngôn ngữ (Python 3 / Java 21 / C++ 17) theo mục 8.1.
 
 ### 2026-08-20T03:44:23Z

@@ -19,11 +19,11 @@ Chỉ mục của tầng RD. Đây là tầng đầu của quy trình **RD → B
 
 | File | Nội dung | Trạng thái |
 | :--- | :--- | :--- |
-| `backend_architecture.md` | Modular Monolith, tám module Maven, bốn tầng Clean Architecture, cổng vào và cổng ra, hai luồng dữ liệu điển hình, cách các module nói chuyện, cách ly judge engine (go-judge mặc định) và LLM | Viết cho AlgoPrep 2026-08-20 (trước đó là file rỗng); cập nhật engine 2026-08-23 |
-| `frontend_architecture.md` | Next.js 16 App Router, sáu tầng FSD, tiêu chí đặt tầng, hai kênh realtime, bảo mật client | Viết cho AlgoPrep 2026-08-20 |
-| `codebase_structure.md` | Cây thư mục monorepo, bên trong `05-coding/`, quy ước đặt tên xuyên tài liệu và mã | Viết cho AlgoPrep 2026-08-20; cập nhật engine 2026-08-23 |
-| `environment.md` | Phiên bản đã chốt, hạ tầng Docker, công cụ QA, cổng chất lượng G-CHECK, chiến lược kiểm thử | Viết cho AlgoPrep 2026-08-20; cập nhật engine 2026-08-23 |
-| `judge_engine.md` | Judge engine (go-judge mặc định): giới thiệu, vai trò, cổng trung lập để đổi engine, ràng buộc cgroup, cài đặt/chạy trên Windows, sự cố thường gặp | Viết cho AlgoPrep 2026-08-23 (trước đó là `judge0.md`, đổi tên theo `DEC-2026-0823-go-judge-default-engine`) |
+| `SYS0101_backend_architecture.md` | Modular Monolith, tám module Maven, bốn tầng Clean Architecture, cổng vào và cổng ra, hai luồng dữ liệu điển hình, cách các module nói chuyện, cách ly judge engine (go-judge mặc định) và LLM | Viết cho AlgoPrep 2026-08-20 (trước đó là file rỗng); cập nhật engine 2026-08-23 |
+| `SYS0102_frontend_architecture.md` | Next.js 16 App Router, sáu tầng FSD, tiêu chí đặt tầng, hai kênh realtime, bảo mật client | Viết cho AlgoPrep 2026-08-20 |
+| `SYS0201_codebase_structure.md` | Cây thư mục monorepo, bên trong `05-coding/`, quy ước đặt tên xuyên tài liệu và mã | Viết cho AlgoPrep 2026-08-20; cập nhật engine 2026-08-23 |
+| `SYS0301_environment.md` | Phiên bản đã chốt, hạ tầng Docker, công cụ QA, cổng chất lượng G-CHECK, chiến lược kiểm thử | Viết cho AlgoPrep 2026-08-20; cập nhật engine 2026-08-23 |
+| `SYS0401_judge_engine.md` | Judge engine (go-judge mặc định): giới thiệu, vai trò, cổng trung lập để đổi engine, ràng buộc cgroup, cài đặt/chạy trên Windows, sự cố thường gặp | Viết cho AlgoPrep 2026-08-23 (trước đó là `judge0.md`, đổi tên theo `DEC-2026-0823-go-judge-default-engine`) |
 
 ### `req/` — yêu cầu
 
@@ -60,7 +60,7 @@ dòng từ `screens/` đã trôi hết (xem mục 7.1). Neo theo dòng chỉ cò
 ### `screens/` — trục màn hình
 
 **32 file, đã xong.** Mỗi màn một file `<slug>.md`, slug viết `snake_case`; slice frontend tương ứng viết
-`kebab-case` (`codebase_structure.md` mục 3). Khu vực đặt theo **actor chính** của màn.
+`kebab-case` (`SYS0201_codebase_structure.md` mục 3). Khu vực đặt theo **actor chính** của màn.
 
 | Khu vực | Actor | Số màn | Slug |
 | :--- | :--- | :-: | :--- |
@@ -71,7 +71,7 @@ dòng từ `screens/` đã trôi hết (xem mục 7.1). Neo theo dòng chỉ cò
 
 Hai lưu ý:
 
-* `admin/admin_rejudge.md` **không phải màn sống** — rejudge đã bị loại khỏi phạm vi
+* `admin/ADM0402_rejudge.md` **không phải màn sống** — rejudge đã bị loại khỏi phạm vi
   (`DEC-2026-0828-remove-rejudge-scope`), file giữ lại chỉ để lưu vết và **không dùng làm căn cứ viết
   BD/DD**. Route `/admin/rejudge` mà khung base FE từng dựng đã bị xoá ngày 2026-09-01.
 * Frontend đã **soi 1-1 với trục màn**: 32 file RD, **31 màn sống, 31 slice** trong
@@ -88,10 +88,10 @@ Hai lưu ý:
 | Bạn là | Đọc theo thứ tự |
 | :--- | :--- |
 | Người mới vào dự án | `README.md` (gốc repo) → `overview/overview.md` → `overview/glossary.md` |
-| Người sắp viết mã backend | `overview/overview.md` mục 1.A đến 1.E → `system/backend_architecture.md` → `system/environment.md` |
-| Người sắp viết mã frontend | `overview/overview.md` mục 1.H → `system/frontend_architecture.md` → `system/environment.md` mục 3.B và mục 4 |
-| Người viết BD theo module | `overview/glossary.md` → **`req/<context>.md` của đúng module đó** → `req/nfr.md` → `system/backend_architecture.md` mục 8 (danh sách việc BD phải chốt). `system_survey.md` mục 5 vẫn là bảng `Fx-nn` tổng hợp, dùng để tra chéo |
-| Người viết BD theo màn | **`screens/<khu vực>/<slug>.md`** → `req/<context>.md` của các context màn đó chạm → `system/frontend_architecture.md`. Một màn thường chạm nhiều context (`CLAUDE.md` mục Process) |
+| Người sắp viết mã backend | `overview/overview.md` mục 1.A đến 1.E → `system/SYS0101_backend_architecture.md` → `system/SYS0301_environment.md` |
+| Người sắp viết mã frontend | `overview/overview.md` mục 1.H → `system/SYS0102_frontend_architecture.md` → `system/SYS0301_environment.md` mục 3.B và mục 4 |
+| Người viết BD theo module | `overview/glossary.md` → **`req/<context>.md` của đúng module đó** → `req/nfr.md` → `system/SYS0101_backend_architecture.md` mục 8 (danh sách việc BD phải chốt). `system_survey.md` mục 5 vẫn là bảng `Fx-nn` tổng hợp, dùng để tra chéo |
+| Người viết BD theo màn | **`screens/<khu vực>/<slug>.md`** → `req/<context>.md` của các context màn đó chạm → `system/SYS0102_frontend_architecture.md`. Một màn thường chạm nhiều context (`CLAUDE.md` mục Process) |
 
 ---
 
@@ -112,9 +112,9 @@ Mọi tài liệu từ `02-bd/` trở đi giờ có thể dẫn nguồn từ c�
 ## 4. Rà soát 2026-08-23 — không còn nội dung dự án cũ nào khác
 
 Kiểm tra toàn bộ chín file còn lại của `01-rd/` (ngoài hai file vừa viết lại ở mục 3): `overview.md`,
-`glossary.md`, `system_survey.md`, `backend_architecture.md`, `frontend_architecture.md`,
-`codebase_structure.md`, `environment.md`, `judge_engine.md` (đổi tên từ `judge0.md` cùng ngày), và chính
-file `README.md` này. Cả chín đều đã được viết cho AlgoPrep từ đợt 2026-08-20 (riêng `judge_engine.md` từ
+`glossary.md`, `system_survey.md`, `SYS0101_backend_architecture.md`, `SYS0102_frontend_architecture.md`,
+`SYS0201_codebase_structure.md`, `SYS0301_environment.md`, `SYS0401_judge_engine.md` (đổi tên từ `judge0.md` cùng ngày), và chính
+file `README.md` này. Cả chín đều đã được viết cho AlgoPrep từ đợt 2026-08-20 (riêng `SYS0401_judge_engine.md` từ
 2026-08-23), không còn thuật ngữ, module hay ví dụ nào của NestGame v2 (game, ROM, hệ máy, save state,
 IAM/Catalog...). `01-rd/screens/` vẫn chưa tồn tại — đây là trạng thái greenfield đúng như
 `01-rd/README.md` mục 1 ghi nhận, không phải nợ tài liệu.
@@ -170,7 +170,7 @@ hai: `req/harness.md` giờ trỏ vào `03-dd/logic/harness.md` (đúng tầng s
 | **Gọi tên một quyết định theo mã**, ví dụ "chốt theo `DEC-2026-0828-remove-rejudge-scope`" — không kèm đường dẫn, không kèm số dòng | Trích `.claude/**` hoặc `.nexa/**` **dưới dạng đường dẫn**, nhất là kèm số dòng như `[SoT: .nexa/control/decision-registry.md:281-285]` |
 
 Ngoại lệ giữ nguyên: được hiện các đường dẫn đó khi đang **mô tả cây thư mục** của repo, như
-`system/codebase_structure.md` mục 1.
+`system/SYS0201_codebase_structure.md` mục 1.
 
 Lý do tách hai mức thay vì cấm hẳn: decision registry là tầng **P1** của thang SoT, nằm ngay trên chính
 `01-rd`, nên cấm RD nhắc tới nó là cắt tài liệu khỏi tầng có quyền ghi đè nó. Cái thực sự làm khó người đọc
@@ -202,7 +202,7 @@ Bảy việc đã sửa, ngoài bốn trục trên:
    nên thiếu 20 mã là thiếu 20 yêu cầu.
 2. **Gỡ "chấm lại" khỏi từ vựng sống** — `glossary.md` (thuật ngữ `rejudge`, mô tả vai trò `ADMIN`, lý do
    tồn tại của `testcase_set_version`), `req/problem-bank.md` (mục đích `F2-09`),
-   `screens/admin/admin_system_log.md` mục 1. Toàn bộ do `DEC-2026-0828-remove-rejudge-scope`; bản trong
+   `screens/admin/ADM0403_system_log.md` mục 1. Toàn bộ do `DEC-2026-0828-remove-rejudge-scope`; bản trong
    `user_stories/a2_instructor.md` đã sửa từ 2026-08-28, mấy bản kia sót lại.
 3. **`glossary.md`** — mô tả vai trò `INSTRUCTOR` ghi "tạo bộ câu hỏi", dễ đọc thành bộ câu hỏi riêng theo
    lớp (`F6-11`, đã loại khỏi phạm vi); sửa thành quản trị kho câu hỏi **dùng chung** (`F6-13`).
@@ -232,8 +232,8 @@ chấm tay, cửa sổ thống kê 7 ngày) giữ nhãn `[SoT: Suy luận]` — 
 định.
 
 **Sửa thêm cùng ngày:** ba mục "Ngoài phạm vi file này" còn ghi "chờ chủ dự án" cho những câu hỏi thực ra
-đã đóng từ 2026-08-31 — `screens/admin/admin_overview.md` (Q2, Q5), `screens/admin/admin_queue_monitor.md`
-(Q2), `screens/admin/admin_user_management.md` (Q1). Cùng loại vênh với đợt 2026-09-03: quyết định đã chốt
+đã đóng từ 2026-08-31 — `screens/admin/ADM0101_overview.md` (Q2, Q5), `screens/admin/ADM0401_queue_monitor.md`
+(Q2), `screens/admin/ADM0201_user_management.md` (Q1). Cùng loại vênh với đợt 2026-09-03: quyết định đã chốt
 nhưng một chỗ trong tài liệu chưa theo kịp.
 
 ## 6. Rà soát 2026-09-05 — mở rộng ra ngoài `01-rd/`
@@ -265,14 +265,14 @@ hành vi sống — đã sửa hết trong đợt này:
 * `req/user_stories/a1_student.md` — **nghiêm trọng nhất**: một tiêu chí Given-When-Then khẳng định "các
   testcase còn lại không được chạy tiếp", **mâu thuẫn trực tiếp** với tiêu chí tương ứng ở
   `a4_system.md`. Test sinh ra từ tiêu chí này sẽ kiểm đúng cái ngược lại với hành vi thật.
-* `req/user_stories/a2_instructor.md` · `screens/teacher/instructor_grading.md` (2 chỗ) ·
-  `screens/shared/problem_authoring.md` (2 chỗ) · `screens/users/submission_result.md` ·
+* `req/user_stories/a2_instructor.md` · `screens/teacher/INS0301_grading.md` (2 chỗ) ·
+  `screens/shared/SHR0202_problem_authoring.md` (2 chỗ) · `screens/users/USR0201_submission_result.md` ·
   `overview/system_survey.md` mục 5.5 và mục 6.1 (2 bước của luồng chính) · `09-layoutBase/github.md`.
 
 ### 6.3. Bảng ma trận quyền của survey lệch với ma trận thật
 
 `system_survey.md` mục 4.3 còn hàng **"Kích hoạt chấm lại"**, trong khi
-`screens/admin/admin_permission_matrix.md` mục 3 đã bỏ Function `REJUDGE_MANAGEMENT` từ 2026-08-28 — hai
+`screens/admin/ADM0202_permission_matrix.md` mục 3 đã bỏ Function `REJUDGE_MANAGEMENT` từ 2026-08-28 — hai
 bảng nói khác nhau. Đã bỏ hàng đó, và sửa thêm hai hàng sai actor: "Tạo bộ câu hỏi phỏng vấn" (mô tả
 `F6-11` đã bỏ, nay là `F6-13` dùng chung A2+A3) và "Soạn đề bài" (A3 phải là **Có** — màn dùng chung theo
 `DEC-2026-0825-shared-content-authoring-screens`). Mô tả vai trò A3 ở mục 4.1 cũng còn "kích hoạt chấm
@@ -306,7 +306,7 @@ tới bảng tổng hợp hay chưa**. Bản ghi đầy đủ: `07-review/rd_dri
 
 Trục nặng nhất của đợt. `01-rd/` có **111 citation neo theo số dòng vào `system_survey.md`** — file bị sửa
 nhiều nhất của tầng RD. Script kiểm được 14 cái (những cái có mã `Fx-nn` trong cùng câu để đối chiếu):
-**sai 14/14**. Kiểm tay thêm 4 cái: sai cả 4, lệch 30-100 dòng. Ví dụ `screens/users/solution_review.md`
+**sai 14/14**. Kiểm tay thêm 4 cái: sai cả 4, lệch 30-100 dòng. Ví dụ `screens/users/USR0301_solution_review.md`
 trích `system_survey.md:321` cho `F5-05`, trong khi dòng 321 là bảng F4 và `F5-05` nằm ở dòng 350.
 
 Mục 4 của tài liệu này khai "157/157 citation `file:line` trỏ đúng file và trong phạm vi số dòng" — đúng
@@ -329,25 +329,25 @@ anchor theo dòng thêm hơn một tuần. Với các file **ổn định** (`09
 | :--- | :--- | :--- |
 | `overview/overview.md` mục 1 (nguyên lý bất đồng bộ) | Mục "**Fail-fast theo testcase**" mô tả việc bỏ các testcase còn lại như nguyên lý kiến trúc đang sống | `F4-04` hết hiệu lực, chạy hết N testcase (`DEC-2026-0831-partial-score-testcase-ratio`) |
 | `overview/glossary.md` — thuật ngữ `batch` | "xử lý theo thứ tự **với fail-fast**" | Bỏ mệnh đề fail-fast; thứ tự không còn quyết định testcase nào bị bỏ |
-| `system/judge_engine.md` mục 2.5 — bảng actor | A3 "**kích hoạt Re-judge**" | Rejudge ngoài phạm vi (`DEC-2026-0828-remove-rejudge-scope`) |
+| `system/SYS0401_judge_engine.md` mục 2.5 — bảng actor | A3 "**kích hoạt Re-judge**" | Rejudge ngoài phạm vi (`DEC-2026-0828-remove-rejudge-scope`) |
 | `README.md` gốc mục 3 — bảng actor | A3 "**kích hoạt Re-judge**" | Cùng lý do. Đợt 2026-09-05 sửa 5 phát biểu khác trong file này nhưng sót bảng actor |
 | `overview/system_survey.md` mục 4.3 | A2 thấy bài "**của mình/lớp mình**" | A2 theo **quyền tác giả**, không theo lớp phụ trách — bài toán không phải thực thể sở hữu theo lớp |
-| `screens/admin/admin_overview.md` mục 3 | Còn khung "4 màn Admin cần scaffold i18n → còn 3 màn" | Q7 của chính file đó đã bỏ danh sách tên màn, mở rộng thành mọi màn Admin + Giảng viên (`DEC-2026-0831-i18n-scope-expansion`) |
+| `screens/admin/ADM0101_overview.md` mục 3 | Còn khung "4 màn Admin cần scaffold i18n → còn 3 màn" | Q7 của chính file đó đã bỏ danh sách tên màn, mở rộng thành mọi màn Admin + Giảng viên (`DEC-2026-0831-i18n-scope-expansion`) |
 
 Nặng nhất là dòng đầu: `overview.md` là file nền lý thuyết, nguồn chương 2 của báo cáo, và nó nói **ngược**
-với `req/judge-orchestration.md` (F4-03) cùng `system/backend_architecture.md`. Mục 6.2 của tài liệu này
+với `req/judge-orchestration.md` (F4-03) cùng `system/SYS0101_backend_architecture.md`. Mục 6.2 của tài liệu này
 khai đã quét hết fail-fast ở 7 chỗ — bốn chỗ trong bảng trên không nằm trong 7 chỗ đó.
 
-Ba chỗ nhỏ hơn cùng dạng đã sửa kèm: `req/ai-review.md` + `screens/users/mock_interview.md` (Q1) làm rõ
+Ba chỗ nhỏ hơn cùng dạng đã sửa kèm: `req/ai-review.md` + `screens/users/USR0302_mock_interview.md` (Q1) làm rõ
 **hệ thống có ba rubric độc lập** — `F5-23` (Solution Review, admin cấu hình trọng số) · `F5-15` (bốn tiêu
 chí kết phiên Mock Interview) · `F6-13` (tiêu chí đối chiếu Chế độ luyện); trước đó `mock_interview.md` neo
-rubric của F5.2 vào `F5-23`, sai mã. Và `screens/teacher/class_management.md` Q6 bỏ mệnh đề "go-judge đã
+rubric của F5.2 vào `F5-23`, sai mã. Và `screens/teacher/INS0201_class_management.md` Q6 bỏ mệnh đề "go-judge đã
 fail-fast" khỏi căn cứ bỏ chấm lại (kết luận không đổi, chỉ đổi căn cứ).
 
 ### 7.3. Sáu citation còn trỏ vào hai file chỉ mục
 
 Mục 1 của tài liệu này đã ghi "hai file gốc `req.md` / `user_stories.md` giờ là chỉ mục mỏng — đừng trích
-dẫn `Fx-nn` từ chúng nữa", nhưng 6 chỗ vẫn trích: `screens/teacher/class_management.md` (Q2: `F1-23`,
+dẫn `Fx-nn` từ chúng nữa", nhưng 6 chỗ vẫn trích: `screens/teacher/INS0201_class_management.md` (Q2: `F1-23`,
 `US-A2-07`), `overview/system_survey.md` (khối `F1-21`), `req/ai-review.md`, `req/identity.md`,
 `req/interview-bank.md`, `req/judge-orchestration.md` (Câu hỏi mở của `user_stories.md`, nay ở
 `req/user_stories/open_questions.md`). Đã trỏ lại đúng file nội dung. Các con trỏ điều hướng thuần

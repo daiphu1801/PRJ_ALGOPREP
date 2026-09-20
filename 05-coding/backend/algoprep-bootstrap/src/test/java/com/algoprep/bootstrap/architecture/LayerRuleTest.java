@@ -11,7 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /**
- * Bốn luật TẦNG của {@code 01-rd/system/backend_architecture.md} mục 3.A, áp cho mọi module.
+ * Bốn luật TẦNG của {@code 01-rd/system/SYS0101_backend_architecture.md} mục 3.A, áp cho mọi module.
  *
  * <p>Đây là phần Spring Modulith không diễn đạt được — nó chỉ hiểu ranh giới GIỮA các module theo
  * quy ước package riêng của nó, còn bốn luật dưới đây là luật BÊN TRONG một module. Đó là lý do
@@ -47,7 +47,7 @@ class LayerRuleTest {
             "org.hibernate..")
         .because(
             "lõi nghiệp vụ phải test được không cần khởi động Spring và không cần database; đây là"
-                + " điều kiện để bộ sinh mã F3 test được bằng golden file (environment.md mục 3.A)")
+                + " điều kiện để bộ sinh mã F3 test được bằng golden file (SYS0301_environment.md mục 3.A)")
         .check(classes);
   }
 
@@ -92,7 +92,7 @@ class LayerRuleTest {
         .beTopLevelClasses()
         .because(
             "KHÔNG có package domain/repository — repository là một cổng ra, sống trong"
-                + " domain/ports/out (backend_architecture.md mục 3.A)")
+                + " domain/ports/out (SYS0101_backend_architecture.md mục 3.A)")
         .check(classes);
 
     // Thay cho application/usecase là cặp command/ và query/.
@@ -103,7 +103,7 @@ class LayerRuleTest {
         .beTopLevelClasses()
         .because(
             "KHÔNG có package application/usecase — thay bằng cặp command/ và query/, vì hai đường"
-                + " có nhu cầu dữ liệu khác nhau (backend_architecture.md mục 3.A)")
+                + " có nhu cầu dữ liệu khác nhau (SYS0101_backend_architecture.md mục 3.A)")
         .check(classes);
 
     // Cổng là hợp đồng, nên phải là interface.

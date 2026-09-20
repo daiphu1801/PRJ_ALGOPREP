@@ -6,7 +6,7 @@
   AlgoPrep backend — luật Checkstyle.
 
   Ba ngưỡng dưới đây KHÔNG phải sở thích về style; chúng do
-  01-rd/system/environment.md mục 3.A chốt cứng:
+  01-rd/system/SYS0301_environment.md mục 3.A chốt cứng:
     - phương thức tối đa 50 dòng
     - tham số tối đa 5
     - cấm wildcard import
@@ -34,7 +34,7 @@
 
   <module name="TreeWalker">
 
-    <!-- === Ba luật do environment.md mục 3.A bắt buộc === -->
+    <!-- === Ba luật do SYS0301_environment.md mục 3.A bắt buộc === -->
 
     <!-- Phương thức tối đa 50 dòng. Comment và dòng trống không tính: luật này nói về lượng thứ
          người đọc phải giữ trong đầu, và một phương thức 50 dòng có 20 dòng giải thích không phải
@@ -94,7 +94,7 @@
 
     <!-- Tên package phải khớp thư mục, chữ thường, không gạch dưới. Đây là thứ giữ cho
          com.algoprep.problembank (không dấu gạch, vì Java không cho) khớp với tên module
-         algoprep-problem-bank (01-rd/system/codebase_structure.md mục 3). -->
+         algoprep-problem-bank (01-rd/system/SYS0201_codebase_structure.md mục 3). -->
     <module name="PackageDeclaration"/>
     <module name="PackageName">
       <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>

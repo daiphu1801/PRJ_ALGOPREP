@@ -1,7 +1,7 @@
 # AlgoPrep — ha tang local.
 #
-# File nay NAM TRONG 05-coding/, khong o root repo (01-rd/system/codebase_structure.md muc 2;
-# 01-rd/system/environment.md muc 2): moi thu can de CHAY he thong nam canh ma nguon cua he thong.
+# File nay NAM TRONG 05-coding/, khong o root repo (01-rd/system/SYS0201_codebase_structure.md muc 2;
+# 01-rd/system/SYS0301_environment.md muc 2): moi thu can de CHAY he thong nam canh ma nguon cua he thong.
 #
 # Khoi chay:  docker compose up -d
 # Kiem tra:   docker compose ps          (moi service phai `healthy`)
@@ -48,7 +48,7 @@ services:
 
   # ---------------------------------------------------------------------------
   # Redis — cache, ChatMemory cua phien phong van AI, rate limit Token Bucket, khoa phan tan.
-  # Pin dong 7 theo 01-rd/system/environment.md muc 2 (dong 8.x da co tren Docker Hub — doi len
+  # Pin dong 7 theo 01-rd/system/SYS0301_environment.md muc 2 (dong 8.x da co tren Docker Hub — doi len
   # can mot quyet dinh, khong lam am tham o day).
   # ---------------------------------------------------------------------------
   redis:
@@ -75,7 +75,7 @@ services:
 
   # ---------------------------------------------------------------------------
   # RabbitMQ — hang doi bai nop. Bat management plugin de quan sat hang doi luc phat trien
-  # (01-rd/system/environment.md muc 2).
+  # (01-rd/system/SYS0301_environment.md muc 2).
   # ---------------------------------------------------------------------------
   rabbitmq:
     image: rabbitmq:4.2.9-management-alpine
@@ -118,7 +118,7 @@ services:
       timeout: 5s
       retries: 10
 
-  # Service khoi tao bucket san (01-rd/system/environment.md muc 2 yeu cau ro). Chay mot lan roi
+  # Service khoi tao bucket san (01-rd/system/SYS0301_environment.md muc 2 yeu cau ro). Chay mot lan roi
   # thoat — `docker compose ps` se thay no `exited (0)`, day la dung, khong phai loi.
   minio-init:
     image: minio/minio:RELEASE.2025-09-07T16-13-09Z
@@ -144,9 +144,9 @@ services:
   # ---------------------------------------------------------------------------
   # go-judge — engine thuc thi ma trong sandbox. DEC-2026-0823-go-judge-default-engine.
   #
-  # DICH VU NGOAI, khong phai module trong monolith (01-rd/system/backend_architecture.md muc 6.A).
+  # DICH VU NGOAI, khong phai module trong monolith (01-rd/system/SYS0101_backend_architecture.md muc 6.A).
   # STATELESS: khong can Postgres/Redis rieng nhu Judge0 tung can
-  # (01-rd/system/environment.md muc 2).
+  # (01-rd/system/SYS0301_environment.md muc 2).
   #
   # `privileged: true` la BAT BUOC, khong phai tuy chon: go-sandbox can tao namespace va dat cgroup
   # limit cho tien trinh con. Day cung la ly do engine chay tach ra thanh dich vu ngoai thay vi nam
@@ -214,7 +214,7 @@ services:
 
   # ---------------------------------------------------------------------------
   # Prometheus + Grafana — giam sat (README.md muc 5).
-  # 01-rd/system/environment.md muc 2: "co the bat muon, nhung phai co truoc khi bao cao hieu nang".
+  # 01-rd/system/SYS0301_environment.md muc 2: "co the bat muon, nhung phai co truoc khi bao cao hieu nang".
   # Dat trong profile `observability` de `up` mac dinh nhe: `docker compose --profile observability up -d`
   # ---------------------------------------------------------------------------
   prometheus:

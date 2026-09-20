@@ -18,7 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
  *
  * <p>Không cần Docker — có chủ đích. Ở base, {@code algoprep-bootstrap} chưa nối PostgreSQL/Redis/
  * RabbitMQ, nên {@code mvnw verify} chạy được trên một máy chưa bật hạ tầng. Test tích hợp có hạ
- * tầng thật dùng Testcontainers và thuộc slice của từng module ({@code 01-rd/system/environment.md}
+ * tầng thật dùng Testcontainers và thuộc slice của từng module ({@code 01-rd/system/SYS0301_environment.md}
  * mục 5 — KHÔNG mock database bằng H2).
  */
 @SpringBootTest

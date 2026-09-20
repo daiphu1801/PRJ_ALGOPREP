@@ -9,4 +9,4 @@ one slice and balloons into the very monolith FSD exists to avoid.
 
 No feature exists yet at this base stage — build one once `03-dd/api/<module>.md` exists for
 that action.
-Source: `01-rd/system/frontend_architecture.md` section 2.
+Source: `01-rd/system/SYS0102_frontend_architecture.md` section 2.

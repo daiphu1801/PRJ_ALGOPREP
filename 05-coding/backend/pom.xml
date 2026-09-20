@@ -4,7 +4,7 @@
 
   Modular Monolith: một tiến trình, một PostgreSQL instance, tám module Maven
   (sáu Bounded Context + algoprep-common + algoprep-bootstrap).
-  Thiết kế:    01-rd/system/backend_architecture.md
+  Thiết kế:    01-rd/system/SYS0101_backend_architecture.md
   Quyết định:  DEC-2026-0820-stack-versions · DEC-2026-0820-architecture-baseline
                DEC-2026-0901-backend-base-architecture
 -->
@@ -32,7 +32,7 @@
   <!--
     Khai đủ tám module ngay (DEC-2026-0901-backend-base-architecture điểm 2).
     Năm module chưa tới lượt chỉ có pom.xml và package-info.java từng tầng, không có class
-    nghiệp vụ. Thứ tự dưới đây là thứ tự DỰNG theo 01-rd/system/backend_architecture.md mục 2;
+    nghiệp vụ. Thứ tự dưới đây là thứ tự DỰNG theo 01-rd/system/SYS0101_backend_architecture.md mục 2;
     thứ tự build thật do Maven tự suy ra từ phụ thuộc.
   -->
   <modules>
@@ -70,7 +70,7 @@
 
     <!--
       JaCoCo theo lộ trình (DEC-2026-0901-backend-base-architecture điểm 3).
-      Ngưỡng 80% mà 01-rd/system/environment.md mục 3.A yêu cầu được cấu hình NGAY.
+      Ngưỡng 80% mà 01-rd/system/SYS0301_environment.md mục 3.A yêu cầu được cấu hình NGAY.
       Việc CHẶN được bật THEO TỪNG MODULE bằng cách ghi đè property này thành true trong pom của
       module đó, đúng lúc module có class nghiệp vụ đầu tiên trong domain/ hoặc application/.
       Đây là lộ trình bật chặn, KHÔNG phải hạ ngưỡng — ngưỡng vẫn là 80%.
@@ -151,7 +151,7 @@
       </plugin>
 
       <!-- Cổng 1: định dạng. Google Java Style. Sai định dạng là FAIL BUILD
-           (01-rd/system/environment.md mục 3.A). -->
+           (01-rd/system/SYS0301_environment.md mục 3.A). -->
       <plugin>
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
@@ -180,7 +180,7 @@
       </plugin>
 
       <!-- Cổng 2: cấu trúc. Phương thức ≤ 50 dòng, tham số ≤ 5, cấm wildcard import
-           (01-rd/system/environment.md mục 3.A). -->
+           (01-rd/system/SYS0301_environment.md mục 3.A). -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
@@ -209,7 +209,7 @@
       </plugin>
 
       <!-- Cổng 3: phân tích tĩnh. SpotBugs + FindSecBugs — null pointer, resource leak, mật khẩu
-           hard-code, SQL injection (01-rd/system/environment.md mục 3.A). -->
+           hard-code, SQL injection (01-rd/system/SYS0301_environment.md mục 3.A). -->
       <plugin>
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs-maven-plugin</artifactId>

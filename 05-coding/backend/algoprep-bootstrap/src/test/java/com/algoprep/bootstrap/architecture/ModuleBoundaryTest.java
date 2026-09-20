@@ -11,10 +11,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /**
- * Ba luật ranh giới MODULE của {@code 01-rd/system/backend_architecture.md} mục 2.A, cộng luật
+ * Ba luật ranh giới MODULE của {@code 01-rd/system/SYS0101_backend_architecture.md} mục 2.A, cộng luật
  * package ở mục 2 phần cuối.
  *
- * <p>Vi phạm phải làm FAIL BUILD, không phải cảnh báo ({@code 01-rd/system/environment.md} mục
+ * <p>Vi phạm phải làm FAIL BUILD, không phải cảnh báo ({@code 01-rd/system/SYS0301_environment.md} mục
  * 3.A).
  */
 class ModuleBoundaryTest {
@@ -54,7 +54,7 @@ class ModuleBoundaryTest {
           .because(
               "module nghiệp vụ chỉ được phụ thuộc algoprep-common; hai module cần nói chuyện thì đi"
                   + " bằng sự kiện miền hoặc bằng cổng ra do module gọi tự khai"
-                  + " (backend_architecture.md mục 5), không bằng import thẳng")
+                  + " (SYS0101_backend_architecture.md mục 5), không bằng import thẳng")
           .check(classes);
     }
   }
@@ -119,7 +119,7 @@ class ModuleBoundaryTest {
           .resideInAnyPackage(forbidden)
           .because(
               "ràng buộc chặt hơn pom.xml và không diễn đạt được bằng pom.xml"
-                  + " (backend_architecture.md mục 2.A phần cuối). Áp cho CẢ bootstrap: bootstrap"
+                  + " (SYS0101_backend_architecture.md mục 2.A phần cuối). Áp cho CẢ bootstrap: bootstrap"
                   + " lắp bean bằng component scan, không cần import adapter của module khác — nới"
                   + " luật này về sau dễ hơn siết nó lại")
           .check(classes);

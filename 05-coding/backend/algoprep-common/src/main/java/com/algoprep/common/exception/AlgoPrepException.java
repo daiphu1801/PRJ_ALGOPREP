@@ -4,7 +4,7 @@ package com.algoprep.common.exception;
  * Gốc của mọi ngoại lệ nghiệp vụ trong AlgoPrep.
  *
  * <p>Mang một <strong>mã lỗi ổn định</strong> tách khỏi thông điệp. Frontend dịch theo mã, không
- * bao giờ hiển thị message thô ({@code 01-rd/system/backend_architecture.md} mục 7) — nên message ở
+ * bao giờ hiển thị message thô ({@code 01-rd/system/SYS0101_backend_architecture.md} mục 7) — nên message ở
  * đây viết cho log và cho lập trình viên, không viết cho người dùng cuối.
  *
  * <p><strong>Danh mục mã lỗi chưa được chốt.</strong> Nó thuộc {@code 03-dd/api/api.md}, tài liệu

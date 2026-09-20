@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { fakeLogin, fakeSignup, fakeVerifyOtp } from "./fake-auth";
 
 describe("fakeLogin", () => {
-  it("returns the deactivated-recovery variant for the reserved 'deactivated' identifier (02-bd/screens/shared/auth.md section 3)", async () => {
+  it("returns the deactivated-recovery variant for the reserved 'deactivated' identifier (02-bd/screens/shared/SHR0101_auth.md Sheet 3)", async () => {
     const outcome = await fakeLogin({ identifier: "deactivated", password: "anything", rememberMe: false });
     expect(outcome).toEqual({ ok: true, role: "STUDENT", deactivated: true });
   });

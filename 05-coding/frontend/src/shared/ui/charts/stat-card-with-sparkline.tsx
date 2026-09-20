@@ -1,7 +1,7 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 //
 // Presentational only (numbers + a label in, nothing about the AlgoPrep domain) — shared/ui per
-// frontend_architecture.md section 2.A-B. No charting library added (none was in package.json);
+// SYS0102_frontend_architecture.md section 2.A-B. No charting library added (none was in package.json);
 // the sparkline is a tiny inline SVG polyline, good enough to show real shape/proportions
 // (vibecode-pipeline PROTOTYPE lane, "not pixel-perfect").
 type StatCardWithSparklineProps = {

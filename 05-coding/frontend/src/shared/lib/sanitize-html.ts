@@ -4,7 +4,7 @@
  * no-restricted-imports).
  *
  * NOT IMPLEMENTED YET, AND DELIBERATELY THROWS. A sanitizer library has not been chosen
- * (01-rd/system/frontend_architecture.md section 1 — "the three libraries must be decided by
+ * (01-rd/system/SYS0102_frontend_architecture.md section 1 — "the three libraries must be decided by
  * actual need"). A fake sanitizer (e.g. a regex that strips script tags) is more dangerous than
  * none at all: it creates a false sense of safety while XSS still gets through via dozens of
  * other vectors (onerror, javascript:, SVG, unclosed tags). Throwing immediately means anyone

@@ -31,7 +31,7 @@
 
 - **Không xây lại sandbox:** Cô lập tiến trình khi chạy mã không tin cậy là bài toán cấp kernel; `go-sandbox` (lõi của go-judge) đã giải quyết, và là engine chấm đang chạy thật trong Hydro — một online judge đang hoạt động. Làm lại chỉ thêm rủi ro bảo mật mà không tạo đóng góp mới (tiết kiệm thời gian).
 - **Đúng tầng cần tích hợp:** go-judge chỉ là API thực thi, không áp đặt mô hình bài toán hay quy trình nghiệp vụ — nên ba tầng đóng góp của đề tài xây trực tiếp lên trên được, khác với DOMjudge hay HUSTOJ vốn trọn gói.
-- **Không kén cgroup version:** go-judge chạy được cả cgroup v1 và v2 (Judge0 chỉ chạy được v1) — đóng rủi ro triển khai trên Windows/WSL2 mà không cần ép tham số kernel. Chi tiết: `01-rd/system/judge_engine.md`.
+- **Không kén cgroup version:** go-judge chạy được cả cgroup v1 và v2 (Judge0 chỉ chạy được v1) — đóng rủi ro triển khai trên Windows/WSL2 mà không cần ép tham số kernel. Chi tiết: `01-rd/system/SYS0401_judge_engine.md`.
 - **Stateless, hạ tầng nhẹ:** Không cần Postgres/Redis riêng cho engine như Judge0 — submission vẫn lưu ở database của AlgoPrep.
 - **Hỗ trợ đóng gói đa lệnh trong một request:** `cmd: Cmd[]` → `[]Result`, có `pipeMapping`/`copyOutCached` để compile rồi run trong một lần gọi, đúng với kiến trúc hàng đợi và phản hồi thời gian thực ở F4.
 - **Đóng gói sẵn, self-host được:** Ba ngôn ngữ trong phạm vi (Java, C++, Python) tự cấu hình compiler/runtime trong image chạy go-judge; mã nguồn mở, chạy nội bộ bằng Docker Compose.

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  *
  * <p>Trả {@link ProblemDetail} (RFC 9457) kèm thuộc tính {@code errorCode}. Frontend dịch theo
  * {@code errorCode}, KHÔNG hiển thị {@code detail} thô — {@code detail} viết cho log và cho lập
- * trình viên ({@code 01-rd/system/backend_architecture.md} mục 7).
+ * trình viên ({@code 01-rd/system/SYS0101_backend_architecture.md} mục 7).
  *
  * <p><strong>Khung base, chưa đầy đủ.</strong> Danh mục mã lỗi và bảng ánh xạ mã lỗi sang HTTP
  * status thuộc {@code 03-dd/api/api.md}, tài liệu chưa tồn tại. Ba nhánh dưới đây bám theo ba loại

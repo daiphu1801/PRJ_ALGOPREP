@@ -280,7 +280,7 @@ ngay ở tầng use case (trả lỗi nghiệp vụ `AI_BUDGET_EXCEEDED`, không
 (đề xuất mỗi giờ, `[SoT: Suy luận]`) tính tần suất gọi AI 24 giờ gần nhất của từng tài khoản, so với trung
 bình toàn hệ thống cùng khung giờ; nếu tỉ lệ lệch vượt ngưỡng (đề xuất **gấp 5 lần trung bình**,
 `[SoT: Suy luận]` — RD chỉ nêu ví dụ minh hoạ "214 lượt/24h, gấp 7 lần trung bình" ở
-`01-rd/screens/admin/admin_ai_usage.md`, không chốt ngưỡng kích hoạt) → ghi một dòng
+`01-rd/screens/admin/ADM0302_ai_usage.md`, không chốt ngưỡng kích hoạt) → ghi một dòng
 `ai_usage_anomaly_alerts` (`status = OPEN`), hiển thị cho `ADMIN` ở `admin_ai_usage` để xem xét thủ công.
 Tài khoản đó **tiếp tục gọi AI bình thường** trừ khi đồng thời chạm ngân sách (mục 6.3) hoặc `ADMIN` chủ
 động khoá tay qua `USER_MANAGEMENT`. Hai cơ chế 6.3/6.4 không được gộp chung một bảng hay một trạng thái —

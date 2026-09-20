@@ -1,12 +1,12 @@
 # go-judge — engine thực thi mã trong sandbox
 
 Engine mặc định của AlgoPrep, chốt bởi `DEC-2026-0823-go-judge-default-engine`. Chi tiết kỹ thuật:
-`01-rd/system/judge_engine.md`.
+`01-rd/system/SYS0401_judge_engine.md`.
 
 ## Vị trí trong kiến trúc
 
 go-judge là **dịch vụ ngoài, không phải module trong monolith**
-(`01-rd/system/backend_architecture.md` mục 6.A). Cửa duy nhất vào nó là
+(`01-rd/system/SYS0101_backend_architecture.md` mục 6.A). Cửa duy nhất vào nó là
 `algoprep-judge/infrastructure/judgeengine/GoJudgeAdapter`, hiện thực cổng ra `JudgeExecutionPort`.
 Không module nào khác được gọi engine trực tiếp.
 

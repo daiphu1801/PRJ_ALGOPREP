@@ -7,7 +7,7 @@
   module nao: kieu mien co so, ngoai le nen, cong ra dung chung.
 
   Hai luat, ArchUnit trong algoprep-bootstrap chan that:
-    - Module nay KHONG phu thuoc ai (01-rd/system/backend_architecture.md muc 2.A luat 3).
+    - Module nay KHONG phu thuoc ai (01-rd/system/SYS0101_backend_architecture.md muc 2.A luat 3).
     - KHONG chua nghiep vu cua context nao (muc 2). Dat logic nghiep vu vao day la cach mot
       modular monolith am tham tro thanh monolith phang.
 -->

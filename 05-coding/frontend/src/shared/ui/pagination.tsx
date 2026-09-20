@@ -5,7 +5,7 @@
 // shared/problem_management.md, interview_question_management.md, problem_authoring.md).
 //
 // All user-visible strings arrive as props: shared/ui must not reach into i18n, or the primitive
-// stops being presentational (01-rd/system/frontend_architecture.md section 2.A).
+// stops being presentational (01-rd/system/SYS0102_frontend_architecture.md section 2.A).
 "use client";
 
 import { cn } from "@/shared/lib";
