@@ -1,25 +1,11 @@
 # RD (Yêu cầu hệ thống mới) — Giao bài cho lớp / `INS0202`
 
-> Mã màn hình: `INS0202`, theo `02-bd/_rules/bd-template-9sheet.md` mục 8.
+> Mã màn hình: `INS0202` [Nguồn: 02-bd/_rules/bd-template-9sheet.md — mục 8].
 > Slug chính tắc: `class_assignments` — slug mới, tách khỏi `class_management` ngày 2026-08-28
-> (`DEC-2026-0828-split-class-management-assignments`). Mô tả: "Giao bài tập theo lớp", mã liên quan F2-12.
-> Bounded Context: `problem-bank` (gán bài toán cho lớp). Actor: A2 (Giáo viên). (F4-09a tới F4-09c và
-> Bounded Context `judge-orchestration` từng gắn với slug này đã loại khỏi phạm vi 2026-08-28 —
-> `DEC-2026-0828-remove-rejudge-scope`.)
-> **Nguồn gốc:** trước 2026-08-28, nội dung file này nằm chung với `class_management` trong một file RD vì
-> `01-rd/overview/system_survey.md` mục 7.2 gộp hai prototype có route/nav riêng biệt vào một slug hạt
-> giống. Chủ dự án chốt tách theo đề xuất ở Câu hỏi mở Q1 (bản cũ của `class_management.md`): mỗi màn có
-> route và component riêng ở FE Next.js nên mỗi màn một slug BD/DD. Lý do và phạm vi ảnh hưởng đầy đủ ở
-> Quyết định: `DEC-2026-0828-split-class-management-assignments`.
-> Quan hệ thật giữa hai màn, đọc trực tiếp từ code: đây là **hai mục điều hướng (nav item) độc lập trong
-> cùng sidebar giáo viên**, không phải hai tab của một trang — mỗi file prototype có route riêng
-> (`./Giáo viên - Lớp của tôi.dc.html`, `./Giáo viên - Bài tập của tôi.dc.html`) và mục nav riêng biệt
-> ("Lớp của tôi" mã `LH`, "Bài tập của tôi" mã `BT`) [SoT: 09-layoutBase/Giáo viên - Lớp của tôi.dc.html:221-222].
-> File này mô tả **hành vi và UX ở mức yêu cầu** của màn "Bài tập của tôi" — không lặp lại đặc tả chức năng
-> chung đã có ở `01-rd/req/problem-bank.md` (F2) và `01-rd/req/user_stories/a2_instructor.md` (`US-A2-03`), chỉ trỏ tới và bổ
-> sung phần đặc thù của màn: trạng thái màn, cấu trúc UI, và các câu hỏi mở phát sinh khi đối chiếu với
-> prototype thật.
-> Nguồn sự thật (SoT): các nguồn được dẫn chiếu trong bảng yêu cầu và chương 9.
+> [SoT: DEC-2026-0828-split-class-management-assignments].
+> Phạm vi/Bounded Context: `problem-bank` (gán bài toán cho lớp). Actor: A2 (Giáo viên).
+> Nguồn sự thật (SoT): `01-rd/req/problem-bank.md` (F2-12), `01-rd/req/identity.md` (F1-12),
+> `09-layoutBase/Giáo viên - Bài tập của tôi.dc.html` (prototype), `01-rd/req/user_stories/a2_instructor.md` (`US-A2-03`).
 > Tài liệu này có thể đọc độc lập.
 
 ---
@@ -30,7 +16,24 @@ Cho giáo viên (A2) quản lý danh sách bài toán đã gán cho lớp mình 
 toán chung [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_assignments` (trước tách); 01-rd/req/problem-bank.md — F2-12]. Mọi phạm vi hiển
 thị và thao tác đều giới hạn trong lớp giáo viên đó phụ trách, gác bởi Function `CLASS_MANAGEMENT` trong ma
 trận phân quyền [SoT: 01-rd/req/identity.md — F1-12; 01-rd/req/ai-review.md — F5-27]. (Yêu cầu chấm lại theo phạm vi lớp đã loại khỏi phạm
-vi 2026-08-28 — `DEC-2026-0828-remove-rejudge-scope`.)
+vi 2026-08-28 — `DEC-2026-0828-remove-rejudge-scope`; F4-09a tới F4-09c và Bounded Context
+`judge-orchestration` từng gắn với slug này cũng đã loại khỏi phạm vi cùng đợt.)
+
+**Nguồn gốc:** trước 2026-08-28, nội dung file này nằm chung với `class_management` trong một file RD vì
+`01-rd/overview/system_survey.md` mục 7.2 gộp hai prototype có route/nav riêng biệt vào một slug hạt giống.
+Chủ dự án chốt tách theo đề xuất ở Câu hỏi mở Q1 (bản cũ của `class_management.md`): mỗi màn có route và
+component riêng ở FE Next.js nên mỗi màn một slug BD/DD. Lý do và phạm vi ảnh hưởng đầy đủ ở Quyết định:
+`DEC-2026-0828-split-class-management-assignments`.
+
+Quan hệ thật giữa hai màn, đọc trực tiếp từ code: đây là **hai mục điều hướng (nav item) độc lập trong cùng
+sidebar giáo viên**, không phải hai tab của một trang — mỗi file prototype có route riêng (`./Giáo viên -
+Lớp của tôi.dc.html`, `./Giáo viên - Bài tập của tôi.dc.html`) và mục nav riêng biệt ("Lớp của tôi" mã
+`LH`, "Bài tập của tôi" mã `BT`) [SoT: 09-layoutBase/Giáo viên - Lớp của tôi.dc.html:221-222].
+
+File này mô tả **hành vi và UX ở mức yêu cầu** của màn "Bài tập của tôi" — không lặp lại đặc tả chức năng
+chung đã có ở `01-rd/req/problem-bank.md` (F2) và `01-rd/req/user_stories/a2_instructor.md` (`US-A2-03`), chỉ trỏ tới và bổ
+sung phần đặc thù của màn: trạng thái màn, cấu trúc UI, và các câu hỏi mở phát sinh khi đối chiếu với
+prototype thật.
 
 ---
 

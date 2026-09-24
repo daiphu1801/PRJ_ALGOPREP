@@ -35,6 +35,10 @@
 - Cache quyền theo role (`identity:permcache:<roleId>`) tại tầng ứng dụng (Caffeine cục bộ hoặc đọc
   Redis); khi `permissions` đổi, publish một sự kiện nội bộ invalidate cache **ở mọi instance** (Redis
   pub/sub hoặc tương đương) để đáp ứng yêu cầu "có hiệu lực ngay, không khởi động lại dịch vụ".
+- **Ngoại lệ xem Audit Log cho Quản trị viên (`DEC-2026-0922-users-and-admin-conflict-resolutions`)**:
+  Mọi tài khoản có `base_category = ADMIN` đều có quyền xem (READ) nhật ký hệ thống `system_audit_logs`.
+  Chức năng `SYSTEM_AUDIT_LOG` trong ma trận phân quyền chỉ gác việc chỉnh sửa cấu hình log / xuất log,
+  không gác quyền đọc để tránh nguy cơ cấu hình nhầm dẫn đến Admin bị tước quyền giám sát chính mình.
 
 ## 3. OWASP / chống lạm dụng
 

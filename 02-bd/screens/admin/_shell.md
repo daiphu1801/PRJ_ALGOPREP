@@ -15,7 +15,7 @@
 
 ## 1. Phạm vi
 
-Khung này gồm đúng ba phần, áp cho **mọi** route `/admin/*` trừ `/admin/login`:
+Khung này gồm bốn phần, áp cho **mọi** route `/admin/*` trừ `/admin/login`; chân trang chốt 2026-09-21, mô tả riêng ở mục 9 để không phải đánh số lại các mục sau (xem Câu hỏi mở Q4, mục 7):
 
 | Phần | File hiện thực | Vai trò |
 | :--- | :--- | :--- |
@@ -105,8 +105,8 @@ Khung **không có** trạng thái `loading`/`error` — nó không gọi API n�
 | :-: | :--- | :--- |
 | Q1 | Khối danh tính lấy dữ liệu từ đâu khi có phiên thật? | Chờ `app/providers/auth-provider.tsx` và `03-dd/api/identity.md` |
 | Q2 | Ba icon trang trí ở toolbar cuối cùng thành gì, hay bỏ hẳn? | BD `admin_overview` chốt là trang trí; nếu bỏ hẳn thì toolbar chỉ còn khối danh tính |
-| Q3 | Khu Giảng viên (`/instructor/*`) dùng lại khung này hay có khung riêng? | `DEC-2026-0828` chọn Phương án B (tách riêng khu Giảng viên) nhưng chưa nói khung điều hướng có dùng chung không |
-| Q4 | Khung có cần chân trang (footer) không? | Mọi `.dc.html` đều có footer (phiên bản, trạng thái dịch vụ, 4 liên kết phụ); bản Next.js hiện **không dựng** để giữ nhất quán với `admin_overview` đã build trước đó |
+| Q3 | Khu Giảng viên (`/instructor/*`) dùng lại khung này hay có khung riêng? | **ĐÃ TRẢ LỜI 2026-09-21 — khung riêng**, nav phẳng 5 mục thay vì 4 nhóm gập, khối danh tính ở đáy sidebar thay vì toolbar, và không có toolbar dùng chung. Chi tiết: `02-bd/screens/teacher/_shell.md` mục 2 |
+| Q4 | Khung có cần chân trang (footer) không? | **ĐÃ CHỐT 2026-09-21 — có, dựng thật**, áp cho mọi route kể cả `admin_overview`. Cấu trúc, divergence với prototype và hiện thực: mục 9 |
 
 ## 8. Tham chiếu
 
@@ -115,3 +115,49 @@ Khung **không có** trạng thái `loading`/`error` — nó không gọi API n�
 - `07-review/bd_screens_admin_open_questions_260913.md` mục 4 — nơi yêu cầu tách file này.
 - `05-coding/frontend/src/widgets/app-shell/` — hiện thực.
 - Quyết định: `DEC-2026-0825-frontend-base-architecture`, `DEC-2026-0915-admin-separate-login-route`.
+
+## 9. Chân trang (chốt 2026-09-21)
+
+Trả lời Câu hỏi mở Q4 (mục 7): chủ dự án chốt **dựng chân trang thật**, áp cho **mọi** route `/admin/*`
+kể cả `admin_overview` — không phải phần tuỳ chọn theo từng màn. Phụ lục này đứng ở cuối file thay vì
+chen vào mục 1-8 để giữ nguyên mọi số dòng đã bị 5 file BD khác trích dẫn (`_shell.md:19-21`, `:29-43`,
+`:64`, `:67-68`, `:78-80`, `:109`...) — chen giữa sẽ làm lệch toàn bộ, biến trích dẫn đúng thành trích dẫn
+sai một cách âm thầm.
+
+### 9.1 Cấu trúc
+
+Ba khu trong một hàng flex, nằm **bên trong** `<main>`, là phần tử cuối cùng sau nội dung màn — không phải
+sibling của `<aside>`/`<main>` như sidebar/toolbar/nền
+[Nguồn: 09-layoutBase/Admin - Người dùng.dc.html:146,277-290,292 — `<footer>` nằm giữa `<main>` và `</main>`].
+
+| Khu | Nội dung | Nguồn |
+| :--- | :--- | :--- |
+| Trái | "AlgoPrep Admin · v2.4.1" (đậm) + "© 2026 AlgoPrep. Bảng điều khiển nội bộ." (phụ) | `Admin - Người dùng.dc.html:279-280` |
+| Giữa/phải | Chấm tròn trạng thái + "Mọi dịch vụ hoạt động bình thường" | `Admin - Người dùng.dc.html:282-284` |
+| Phải | 4 liên kết: "Tài liệu API", "Trạng thái go-judge", "Nhật ký thay đổi", "Hỗ trợ" | `Admin - Người dùng.dc.html:286-288,390-393` |
+
+### 9.2 Divergence có chủ đích thứ ba, khác prototype
+
+Nối tiếp 2 divergence đã ghi ở mục 2.2. Prototype riêng của `admin_overview`
+(`09-layoutBase/Admin - Tổng quan.dc.html:296-297`) **không có** chân trang — tệp kết thúc ngay sau
+`</main>`, đã ghi nhận ở `02-bd/screens/admin/ADM0101_overview.md` mục 4. Quyết định này cố ý phủ lên
+bằng chứng đó: nhất quán toàn khu Admin (một khung, một chân trang) được ưu tiên hơn bám đúng 1:1 một
+prototype không đầy đủ của riêng một màn.
+
+### 9.3 Bốn liên kết là trang trí
+
+`href="#"` trong mọi prototype — chưa có đích thật. Giữ đúng tinh thần đã áp cho 3 icon toolbar (mục 3):
+không phải điểm dừng bàn phím chết. Cho tới khi có đích thật (`03-dd/api/*` hoặc route nội bộ), 4 liên kết
+render dạng chữ tĩnh, không phải `<a>` sống, không `tabindex`.
+
+### 9.4 Hiện thực
+
+`widgets/app-shell/ui/admin-footer.tsx`, render trong `app-shell.tsx` ngay sau `{children}`, cùng bên
+trong khối `max-width: 1320px` — đúng vị trí "cuối `<main>`" ở mục 9.1, không phải một `<footer>` cố định
+đáy viewport.
+
+### 9.5 Cần đồng bộ ngược
+
+Hai file sau ghi "chân trang: không dựng" từ trước quyết định này, cần sửa theo quyết định 9 này:
+`02-bd/screens/admin/ADM0101_overview.md` mục 4, `02-bd/screens/admin/ADM0202_permission_matrix.md`
+đoạn ngay trước mục 4.5.

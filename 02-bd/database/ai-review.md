@@ -73,7 +73,7 @@ tra cứu lại từ trang tiến độ — F5-08 — kể cả khi cache đã b
 | `submission_id` | tham chiếu `judge.submissions.id` nullable, không FK vật lý | Chỉ có giá trị khi `entry_type = SUBMISSION` |
 | `question_ref` | VARCHAR nullable | F5-24a — định danh câu hỏi F6 do frontend truyền vào, `ai-review` không đọc bảng `interview_bank` (kiến trúc mục 4.2) |
 | `topics` | JSONB nullable | F5-24b — mảng chủ đề thuật toán học viên tick chọn |
-| `interviewer_level` | ENUM(`JUNIOR`,`MIDDLE`,`SENIOR`) nullable | F5-28 — chỉ áp dụng `entry_type IN (QUESTION_BANK, TOPIC_SELECTION)` |
+| `interviewer_level` | ENUM(`INTERN`,`JUNIOR`,`MIDDLE`,`SENIOR`) nullable | F5-28 — chỉ áp dụng `entry_type IN (QUESTION_BANK, TOPIC_SELECTION)`. 4 mức, thống nhất toàn hệ thống theo `DEC-2026-0922-users-and-admin-conflict-resolutions` mục (2) |
 | `max_turns` | SMALLINT nullable | F5-28 — giới hạn số lượt tối đa; `NULL` khi `entry_type = SUBMISSION` (không giới hạn cứng theo lối vào này) |
 | `hint_allowed` | BOOLEAN nullable | F5-28 |
 | `stage` | ENUM(`EXPLAIN`,`CHALLENGE`,`SCALE_UP`,`COMPLETED`,`ABANDONED`) | State machine — kiến trúc mục 4.2 |
@@ -222,15 +222,34 @@ Unique `(interview_session_id, turn_index)`.
 
 ## 4. Điều kiện đầy đủ của hàng đợi `instructor_grading` (F5-27, `DEC-2026-0831-instructor-grading-round2` Q2)
 
+**Sửa 2026-09-21** (`DEC-2026-0921-teacher-screens-conflict-resolutions`): `manual_graded_at IS NULL`
+trước đây nằm trong điều kiện cơ sở, khiến hai trong ba tab trạng thái của màn
+(`02-bd/screens/teacher/INS0301_grading.md`) **luôn rỗng** — bản ghi đã chấm rơi khỏi truy vấn nên không
+có gì để hiển thị ở tab "Đã chấm" và "Tất cả", trái với yêu cầu hiển thị điểm AI và điểm chấm tay cạnh
+nhau của `DEC-2026-0831-instructor-grading-round2` Q3. Nay nó là điều kiện **của tab**, không phải của
+hàng đợi.
+
+Điều kiện cơ sở, dùng cho cả ba tab:
+
 ```sql
 SELECT sr.* FROM ai.solution_reviews sr
 JOIN judge.submissions s ON s.id = sr.submission_id   -- không FK vật lý, join theo giá trị
 WHERE s.status = 'ACCEPTED'
   AND sr.ai_score_10 < 6.0
-  AND sr.manual_graded_at IS NULL
   AND s.problem_id IN (<các problem_id thuộc lớp giảng viên phụ trách>)  -- qua identity.class_enrollments
 ORDER BY sr.created_at ASC
 ```
+
+Điều kiện cộng thêm theo tab:
+
+| Tab | Điều kiện cộng thêm | Ghi chú |
+| :--- | :--- | :--- |
+| Chờ chấm (mặc định) | `AND sr.manual_graded_at IS NULL` | Đúng điều kiện của index partial ở mục 2, nên tab mặc định vẫn dùng được index |
+| Đã chấm | `AND sr.manual_graded_at IS NOT NULL` | Không dùng được index partial; sắp xếp theo `manual_graded_at DESC` hợp lý hơn `created_at ASC` vì người dùng muốn xem cái vừa chấm |
+| Tất cả | không có | |
+
+Bộ lọc học viên (`DEC-2026-0921-teacher-screens-conflict-resolutions`, đường vào từ
+`class_student_detail`) là một điều kiện cộng thêm độc lập với tab: `AND s.user_id = <student_id>`.
 
 `[SoT: Suy luận]` — cú pháp minh hoạ ý tưởng truy vấn, không phải câu SQL production (join xuyên schema
 trong cùng một câu lệnh chỉ hợp lệ vì cả hai vẫn nằm trong **một** instance PostgreSQL — không phải
@@ -255,6 +274,10 @@ budget_configs` (seed 1 dòng mặc định) → `solution_reviews` → `rubric_
 | Rate limit F5.1 / F5.2 | 10 lượt/giờ / 3 phiên/giờ | RD không nêu số, BD đề xuất khởi điểm |
 
 ## 7. Việc còn mở — chuyển sang DD
+
+**Sửa 2026-09-24**: `interview_sessions.interviewer_level` (mục 1.4) trước đây liệt kê 3 giá trị
+(`JUNIOR`,`MIDDLE`,`SENIOR`), lệch thời so với `DEC-2026-0922-users-and-admin-conflict-resolutions` mục
+(2) đã chốt 4 mức thống nhất toàn hệ thống. Đã sửa thành `ENUM(INTERN,JUNIOR,MIDDLE,SENIOR)`.
 
 - Lược đồ JSON đầy đủ `solution_reviews.result_json` (F5-07) — tên trường, kiểu từng phần.
 - Thang điểm chính xác của `rubric_scores.score` cho từng `owner_type` (0-10 hay 0-100).

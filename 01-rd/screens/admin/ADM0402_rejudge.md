@@ -3,7 +3,7 @@
 > Mã màn hình: `ADM0402` [SoT: 02-bd/_rules/bd-template-9sheet.md — mục 8]. Mã được giữ để truy vết; màn ngoài phạm vi BD/DD.
 > Slug chính tắc: `admin_rejudge` [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_rejudge`].
 > Trạng thái phạm vi: ĐÃ LOẠI BỎ KHỎI PHẠM VI (`DEC-2026-0828-remove-rejudge-scope`). Giữ lại để lưu vết.
-> Bounded Context: `judge-orchestration` (F4) [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_rejudge`]. Actor: A3 (Quản trị viên).
+> Phạm vi/Bounded Context: `judge-orchestration` (F4) [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_rejudge`]. Actor: A3 (Quản trị viên).
 > Nguồn sự thật (SoT): `01-rd/req/judge-orchestration.md` (F4-09a→e, đã loại bỏ), `09-layoutBase/Admin - Chấm lại.dc.html` (prototype), `01-rd/req/user_stories/a3_admin.md` (`US-A3-05`).
 > Tài liệu này có thể đọc độc lập.
 
@@ -138,4 +138,4 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` mục 7.3 — dòng `admin_rejudge`. |
 | Prototype | `09-layoutBase/Admin - Chấm lại.dc.html` — prototype. |
 | Quyết định | `DEC-2026-0828-remove-rejudge-scope` (loại bỏ rejudge khỏi phạm vi đồ án). |
-| Màn liên quan | `01-rd/screens/admin/ADM0401_queue_monitor.md` mục 5 Q2 — khái niệm "kỳ thi" liên quan. |
+| Màn liên quan | `01-rd/screens/admin/ADM0401_queue_monitor.md` mục 4 Q2 — khái niệm "kỳ thi" liên quan. |

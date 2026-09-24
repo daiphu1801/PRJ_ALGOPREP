@@ -1,19 +1,13 @@
 # RD (Yêu cầu hệ thống mới) — Tổng quan giảng viên / `INS0101`
 
-> Mã màn hình: `INS0101`, theo `02-bd/_rules/bd-template-9sheet.md` mục 8.
-> Slug chính tắc: `instructor_overview` — khớp `01-rd/overview/system_survey.md` mục 7.2 dòng `instructor_overview`
-> [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `instructor_overview`]. Bounded Context: `identity` (chính) — màn tổng hợp số liệu đọc
-> thêm từ `problem-bank`, `judge-orchestration` và `ai-review` để dựng các thẻ thống kê, nhưng bản thân màn
-> không sở hữu logic nghiệp vụ của các module đó [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `instructor_overview`]. Actor: A2
-> (Giảng viên) — màn có shell/route riêng biệt khỏi khu Admin theo quyết định bố cục ở
-> `01-rd/overview/system_survey.md` — mục 7.2, khối "Chốt 2026-08-24 ... Phương án B".
-> Đối chiếu prototype: `09-layoutBase/Giáo viên - Tổng quan.dc.html`. Đây là slug **mới phát sinh khi dựng
-> prototype thật**, không nằm trong 4 slug hạt giống ban đầu của khu Giảng viên (`problem_authoring`,
-> `testcase_management`, `class_management`, `class_progress`) — lý do đã ghi rõ tại nguồn: "mỗi khu vực có
-> shell riêng thường cần một dashboard riêng" [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `instructor_overview`].
-> File này mô tả hành vi và UX ở mức yêu cầu — không lặp lại đặc tả chức năng đã có ở
-> `01-rd/req/identity.md`/`01-rd/req/user_stories/a2_instructor.md`, chỉ trỏ tới và bổ sung phần đặc thù của một màn.
-> Nguồn sự thật (SoT): các nguồn được dẫn chiếu trong bảng yêu cầu và chương 9.
+> Mã màn hình: `INS0101` [Nguồn: 02-bd/_rules/bd-template-9sheet.md — mục 8].
+> Slug chính tắc: `instructor_overview` [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `instructor_overview`].
+> Phạm vi/Bounded Context: `identity` (chính) — màn tổng hợp số liệu đọc thêm từ `problem-bank`,
+> `judge-orchestration` và `ai-review` để dựng các thẻ thống kê, nhưng bản thân màn không sở hữu logic
+> nghiệp vụ của các module đó [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `instructor_overview`].
+> Actor: A2 (Giảng viên).
+> Nguồn sự thật (SoT): `01-rd/req/identity.md`, `01-rd/req/user_stories/a2_instructor.md`,
+> `09-layoutBase/Giáo viên - Tổng quan.dc.html` (prototype), `01-rd/overview/system_survey.md` — mục 7.2.
 > Tài liệu này có thể đọc độc lập.
 
 ---
@@ -26,6 +20,16 @@ hợp về khối lượng công việc và tình hình lớp mình phụ trách
 số học viên, số bài cần chấm tay, điểm trung bình lớp, danh sách bài nộp cần chấm gấp, hoạt động gần đây,
 tóm tắt các lớp và bài tập do mình phụ trách. Đây thuần là màn tổng hợp/điều hướng — hành vi nghiệp vụ chi
 tiết (soạn bài, giao bài, chấm bài...) thuộc các màn con mà mỗi thẻ/widget trỏ tới.
+
+Màn có shell/route riêng biệt khỏi khu Admin theo quyết định bố cục ở `01-rd/overview/system_survey.md` —
+mục 7.2, khối "Chốt 2026-08-24 ... Phương án B". Đối chiếu prototype `09-layoutBase/Giáo viên - Tổng
+quan.dc.html`. Đây là slug **mới phát sinh khi dựng prototype thật**, không nằm trong 4 slug hạt giống ban
+đầu của khu Giảng viên (`problem_authoring`, `testcase_management`, `class_management`, `class_progress`)
+— lý do đã ghi rõ tại nguồn: "mỗi khu vực có shell riêng thường cần một dashboard riêng"
+[SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `instructor_overview`].
+
+File này mô tả hành vi và UX ở mức yêu cầu — không lặp lại đặc tả chức năng đã có ở
+`01-rd/req/identity.md`/`01-rd/req/user_stories/a2_instructor.md`, chỉ trỏ tới và bổ sung phần đặc thù của một màn.
 
 ---
 

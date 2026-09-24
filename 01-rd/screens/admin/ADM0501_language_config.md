@@ -2,7 +2,7 @@
 
 > Mã màn hình: `ADM0501` [SoT: 02-bd/_rules/bd-template-9sheet.md — mục 8].
 > Slug chính tắc: `admin_language_config` [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_language_config`].
-> Bounded Context: `judge-orchestration` + `problem-bank` [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_language_config`]. Actor: A3 (Quản trị viên).
+> Phạm vi/Bounded Context: `judge-orchestration` + `problem-bank` [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_language_config`]. Actor: A3 (Quản trị viên).
 > Nguồn sự thật (SoT): `01-rd/req/problem-bank.md` (F2-10), `01-rd/req/judge-orchestration.md` (F4-11), `09-layoutBase/Admin - Ngôn ngữ và giới hạn.dc.html` (prototype), `01-rd/req/user_stories/a3_admin.md` (`US-A3-04`).
 > Tài liệu này có thể đọc độc lập.
 
@@ -123,4 +123,4 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 | Tiêu chuẩn kỹ thuật | `CLAUDE.md` mục "Locked stack" — khoá đúng 3 ngôn ngữ. |
 | Prototype | `09-layoutBase/Admin - Ngôn ngữ và giới hạn.dc.html` — prototype. |
 | Quyết định | `DEC-2026-0828-remove-rejudge-scope`; `DEC-2026-0831-judge-orchestration-ops-details`. |
-| Màn liên quan | `01-rd/screens/admin/ADM0401_queue_monitor.md` mục 5 Q2 — khái niệm "kỳ thi" liên quan. |
+| Màn liên quan | `01-rd/screens/admin/ADM0401_queue_monitor.md` mục 4 Q2 — khái niệm "kỳ thi" liên quan. |

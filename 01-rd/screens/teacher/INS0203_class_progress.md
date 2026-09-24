@@ -1,23 +1,26 @@
 # RD (Yêu cầu hệ thống mới) — Tiến độ lớp / `INS0203`
 
-> Mã màn hình: `INS0203`, theo `02-bd/_rules/bd-template-9sheet.md` mục 8.
-> Slug chính tắc: `class_progress` — khớp `01-rd/overview/system_survey.md` mục 7.2, dòng bảng slug
-> [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_progress`]. Bounded Context: `identity` + `judge-orchestration`
+> Mã màn hình: `INS0203` [Nguồn: 02-bd/_rules/bd-template-9sheet.md — mục 8].
+> Slug chính tắc: `class_progress` [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_progress`].
+> Phạm vi/Bounded Context: `identity` + `judge-orchestration`
 > [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_progress`]. Actor: A2 (Giảng viên).
-> Prototype đối chiếu: `09-layoutBase/Giáo viên - Tiến độ học viên.dc.html` (đã dựng thật, chưa sửa nợ quy
-> chuẩn — xem mục 3 và Câu hỏi mở).
-> File này mô tả **hành vi và UX ở mức yêu cầu** của một màn cụ thể — không lặp lại đặc tả chức năng đã có
-> ở `01-rd/req/identity.md` hay `01-rd/req/user_stories/a2_instructor.md`, chỉ trỏ tới và bổ sung phần đặc thù của **một màn**.
-> **Cập nhật 2026-08-30 (owner instruction — "tạo dashboard ở mức tốt là được"):** ràng buộc "không sửa
-> `identity.md`/`user_stories/a2_instructor.md`" của phiên làm việc trước đã hết hiệu lực — chủ dự án giao quyền chốt Câu hỏi
-> mở Q1-Q6 ở mức hợp lý, không cần đàm phán từng ngưỡng số. Đã cấp mã `F1-28`
-> (`01-rd/req/identity.md`) và `US-A2-09` (`01-rd/req/user_stories/a2_instructor.md`), xem mục 5.
-> Nguồn sự thật (SoT): các nguồn được dẫn chiếu trong bảng yêu cầu và chương 9.
+> Nguồn sự thật (SoT): `01-rd/req/identity.md` (F1-28), `01-rd/req/user_stories/a2_instructor.md` (`US-A2-09`),
+> `09-layoutBase/Giáo viên - Tiến độ học viên.dc.html` (prototype).
 > Tài liệu này có thể đọc độc lập.
 
 ---
 
 ## 1. Mục đích và bối cảnh
+
+Prototype đối chiếu: `09-layoutBase/Giáo viên - Tiến độ học viên.dc.html` (đã dựng thật, chưa sửa nợ quy
+chuẩn — xem mục 3 và Câu hỏi mở). File này mô tả **hành vi và UX ở mức yêu cầu** của một màn cụ thể — không
+lặp lại đặc tả chức năng đã có ở `01-rd/req/identity.md` hay `01-rd/req/user_stories/a2_instructor.md`, chỉ
+trỏ tới và bổ sung phần đặc thù của **một màn**.
+
+**Cập nhật 2026-08-30 (owner instruction — "tạo dashboard ở mức tốt là được"):** ràng buộc "không sửa
+`identity.md`/`user_stories/a2_instructor.md`" của phiên làm việc trước đã hết hiệu lực — chủ dự án giao
+quyền chốt Câu hỏi mở Q1-Q6 ở mức hợp lý, không cần đàm phán từng ngưỡng số. Đã cấp mã `F1-28`
+(`01-rd/req/identity.md`) và `US-A2-09` (`01-rd/req/user_stories/a2_instructor.md`), xem mục 5.
 
 Cho giảng viên (A2) xem tiến độ học tập **tổng hợp của nhiều học viên** trong (các) lớp mình phụ trách —
 điểm trung bình theo lớp, danh sách học viên kèm điểm/tỉ lệ hoàn thành/chuỗi ngày hoạt động, và một khối

@@ -20,7 +20,7 @@ thù của màn.
 
 **Phát hiện của Phase 6 — Câu hỏi mở Q1, ĐÃ CHỐT 2026-08-31**: khối "Cần xử lý" có mục "Báo cáo nghi gian
 lận" (phát hiện trùng mã nguồn giữa hai tài khoản) hoàn toàn chưa có mã `Fx-nn`. **Chốt: ngoài phạm vi**
-(`DEC-2026-0831-remove-plagiarism-report`) — xem mục 5 Q1.
+(`DEC-2026-0831-remove-plagiarism-report`) — xem mục 4 Q1.
 
 **Q2 đã chốt 2026-08-25 qua yêu cầu trực tiếp của chủ dự án:** không có luồng tự yêu cầu nâng vai trò —
 **chỉ ADMIN được đổi vai trò**, đúng nguyên văn F1-13. Mục "Đề nghị cấp quyền giảng viên" trong prototype

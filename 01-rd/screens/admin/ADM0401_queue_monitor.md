@@ -2,7 +2,7 @@
 
 > Mã màn hình: `ADM0401` [SoT: 02-bd/_rules/bd-template-9sheet.md — mục 8].
 > Slug chính tắc: `admin_queue_monitor` [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_queue_monitor`].
-> Bounded Context: `judge-orchestration` (F4) [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_queue_monitor`]. Actor: A3 (Quản trị viên).
+> Phạm vi/Bounded Context: `judge-orchestration` (F4) [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_queue_monitor`]. Actor: A3 (Quản trị viên).
 > Nguồn sự thật (SoT): `01-rd/req/judge-orchestration.md` (F4-07, F4-10), `09-layoutBase/Admin - Hàng đợi chấm.dc.html` (prototype), `01-rd/req/user_stories/a3_admin.md` (`US-A3-03`).
 > Tài liệu này có thể đọc độc lập.
 
@@ -18,7 +18,7 @@ viên biết hệ thống có đang khoẻ không và xử lý kịp khi có bà
 yêu cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/judge-orchestration.md` (mục F4), chỉ trỏ tới và bổ sung
 phần đặc thù của màn. Phát hiện Phase 6: khái niệm **"kỳ thi" (ưu tiên hàng đợi cho job thi)** xuất hiện ở
 đây và ở `admin_language_config` — **đã chốt 2026-08-31: chỉ là nhãn phân loại ưu tiên, không phải tính
-năng thật** (xem mục 5 Q2, `DEC-2026-0831-judge-orchestration-ops-details`). (Trước đó cũng nhắc
+năng thật** (xem mục 4 Q2, `DEC-2026-0831-judge-orchestration-ops-details`). (Trước đó cũng nhắc
 `admin_rejudge`, nhưng màn đó **đã loại khỏi phạm vi 2026-08-28** — `DEC-2026-0828-remove-rejudge-scope`.)
 
 ---

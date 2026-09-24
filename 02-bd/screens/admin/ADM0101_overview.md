@@ -271,9 +271,11 @@ cuối cùng.
 | Hàng 3, giữa — "Bài phổ biến nhất" | `:251-268` | Liên kết "Xem tất cả", 4 dòng bài kèm thanh tỉ lệ và số lượt |
 | Hàng 3, phải — "Người dùng mới / cũ" | `:270-292` | Chú giải 2 chuỗi, 6 nhóm cột đôi theo tháng |
 
-Prototype này **không có chân trang**; tệp kết thúc ngay sau `</main>`
-[Nguồn: 09-layoutBase/Admin - Tổng quan.dc.html:296-297]. Ghi nhận đúng như vậy thay vì mượn chân trang của
-màn khác — vấn đề chân trang chung còn mở ở `02-bd/screens/admin/_shell.md` mục 7 Q4.
+Prototype riêng của màn này **không có chân trang**; tệp kết thúc ngay sau `</main>`
+[Nguồn: 09-layoutBase/Admin - Tổng quan.dc.html:296-297]. **Cập nhật 2026-09-21**: khung chung Admin đã
+chốt dựng chân trang thật cho mọi route, kể cả màn này — đây là divergence có chủ đích với prototype
+riêng của `admin_overview` (không phải mượn chân trang của màn khác, mà khung chung áp đều)
+[Nguồn: 02-bd/screens/admin/_shell.md mục 9.2]. Câu hỏi mở Q4 cũ ở `_shell.md` mục 7 đã đóng.
 
 Màn **cố ý không có tiêu đề hiển thị**: prototype đi thẳng từ thanh công cụ vào lưới, khác 10 màn Admin còn
 lại [Nguồn: 02-bd/screens/admin/_shell.md:78-80]. Giữ nguyên khi dựng Next.js; không quy định màu sắc, khoảng

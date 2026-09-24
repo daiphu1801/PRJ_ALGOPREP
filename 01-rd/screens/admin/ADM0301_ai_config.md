@@ -21,7 +21,7 @@ phần đặc thù của màn.
 **Phát hiện quan trọng nhất của Phase 6 — Câu hỏi mở Q1, ĐÃ CHỐT 2026-08-31**: prototype liệt kê một prompt
 "Gợi ý theo bậc" (v4.2, "Đang chạy") ngang hàng với Phân tích bài giải (F5.1) và Phỏng vấn giả lập (F5.2)
 — không có tính năng "gợi ý theo bậc" nào được đặc tả ở bất kỳ đâu trong `ai-review.md`/`README.md`. **Chốt: cắt
-khỏi phạm vi** (`DEC-2026-0831-remove-tiered-hints-ai-config`) — xem mục 5 Q1/Q2.
+khỏi phạm vi** (`DEC-2026-0831-remove-tiered-hints-ai-config`) — xem mục 4 Q1/Q2.
 
 ---
 

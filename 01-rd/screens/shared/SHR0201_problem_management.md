@@ -2,7 +2,7 @@
 
 > Mã màn hình: `SHR0201` [SoT: 02-bd/_rules/bd-template-9sheet.md — mục 8].
 > Slug chính tắc: `problem_management` [SoT: 01-rd/overview/system_survey.md — mục 7.0 dòng `problem_management`].
-> Bounded Context: `problem-bank` (F2). Actor: A2, A3 (màn dùng chung, phạm vi dữ liệu theo quyền).
+> Phạm vi/Bounded Context: `problem-bank` (F2). Actor: A2, A3 (màn dùng chung, phạm vi dữ liệu theo quyền).
 > Nguồn sự thật (SoT): `01-rd/req/problem-bank.md` (F2), `09-layoutBase/Admin - Quản lý bài tập.dc.html` (prototype), `01-rd/req/user_stories/a2_instructor.md` (`US-A2-01`, `US-A2-02`), `01-rd/req/identity.md` (F1-10 → F1-12).
 > Tài liệu này có thể đọc độc lập.
 

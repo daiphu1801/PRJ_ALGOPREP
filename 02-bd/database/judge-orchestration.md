@@ -97,10 +97,14 @@ không tạo/xoá dòng (khớp phạm vi đã khoá ở `02-bd/architecture/har
 | `language` | ENUM(`JAVA`,`CPP`,`PYTHON`) PK | |
 | `time_limit_multiplier` | DECIMAL(3,2) | F2-10 — nhân với `problems.time_limit_ms` của từng bài. Đề xuất mặc định `[SoT: Suy luận]`: Java `2.00`, C++ `1.00`, Python `3.00` — Java/Python chậm hơn C++ đáng kể trên cùng thuật toán, số cụ thể chủ dự án xác nhận hoặc chỉnh |
 | `memory_limit_multiplier` | DECIMAL(3,2) default `1.00` | Tương tự cho bộ nhớ — RD không nhấn mạnh chênh lệch bộ nhớ giữa ba ngôn ngữ bằng thời gian, mặc định `1.00` cho cả ba, chủ dự án chỉnh nếu cần |
-| `network_access_enabled` | BOOLEAN default `false` | Tham số sandbox 1/3 (F4-11, `DEC-2026-0831-judge-orchestration-ops-details`) — mặc định chặn |
-| `max_child_processes` | INT default `1` | Tham số sandbox 2/3 — `[SoT: Suy luận]` số cụ thể, đa số bài không cần spawn tiến trình con, chủ dự án xác nhận |
-| `return_stderr_to_student` | BOOLEAN default `false` | Tham số sandbox 3/3 |
+| `network_access_enabled` | BOOLEAN default `false` | Tham số sandbox 1/3 (F4-11, `DEC-2026-0831-judge-orchestration-ops-details`) — mặc định chặn. Áp dụng cấp toàn cục hệ thống (`DEC-2026-0922-users-and-admin-conflict-resolutions`) |
+| `max_child_processes` | INT default `1` | Tham số sandbox 2/3 — số cụ thể, đa số bài không cần spawn tiến trình con. Áp dụng cấp toàn cục hệ thống (`DEC-2026-0922-users-and-admin-conflict-resolutions`) |
+| `return_stderr_to_student` | BOOLEAN default `false` | Tham số sandbox 3/3 — Áp dụng cấp toàn cục hệ thống (`DEC-2026-0922-users-and-admin-conflict-resolutions`) |
 | `updated_at` / `updated_by` | TIMESTAMPTZ / tham chiếu user id | `updated_by` không FK vật lý, giống quy ước `problems.updated_by` |
+
+> [!NOTE]
+> **Quy định cấu hình Sandbox toàn cục (`DEC-2026-0922-users-and-admin-conflict-resolutions`)**:
+> Ba tham số sandbox (`network_access_enabled`, `max_child_processes`, `return_stderr_to_student`) được quản lý chung ở cấp toàn hệ thống (hạ tầng docker/cgroup của go-judge runner), đồng bộ giữa các ngôn ngữ thay vì tách riêng per-language, vừa khớp prototype ADM0501 vừa tuân thủ tiêu chí ponytail tinh gọn.
 
 ### 1.6. `outbox_events` (kiến trúc mục 6, `DEC-2026-0912-judge-outbox-pattern`)
 

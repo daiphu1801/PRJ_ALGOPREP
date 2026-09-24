@@ -1,24 +1,24 @@
 # RD (Yêu cầu hệ thống mới) — Chi tiết học viên / `INS0204`
 
-> Mã màn hình: `INS0204`, theo `02-bd/_rules/bd-template-9sheet.md` mục 8.
-> Slug chính tắc: `class_student_detail` — khớp `01-rd/overview/system_survey.md` mục 7.2 dòng `class_student_detail`
-> [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_student_detail`]. Mã liên quan: F1-27 [SoT: 01-rd/req/identity.md — F1-27].
-> Bounded Context: `identity` [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_student_detail`]. Actor: A2 (Giáo viên).
-> **Slug mới, chưa có prototype.** Thêm 2026-08-28, qua hỏi trực tiếp chủ dự án khi trả lời Câu hỏi mở Q4 của
-> `01-rd/screens/teacher/INS0201_class_management.md` [SoT: 01-rd/screens/teacher/INS0201_class_management.md:95;
-> 01-rd/req/identity.md — F1-27]. Không có `09-layoutBase/*.dc.html` minh hoạ cho màn này — mọi chi tiết cấu
-> trúc UI dưới đây (ngoài các điểm đã chốt qua Q4) đánh dấu `[SoT: Suy luận]` hoặc `[Đợi nextjs]`, để BD/DD tự
-> thiết kế khi dựng UI thật, đúng tinh thần "viết vừa đủ, đúng lúc" của project (`CLAUDE.md` — RD → BD →
-> Prototype → DD).
-> File này mô tả **hành vi và UX ở mức yêu cầu** — không lặp lại đặc tả chức năng chung đã có ở
-> `01-rd/req/identity.md` (F1) và `01-rd/req/user_stories/a2_instructor.md` (`US-A2-08`), chỉ trỏ tới và bổ
-> sung phần đặc thù của màn.
-> Nguồn sự thật (SoT): các nguồn được dẫn chiếu trong bảng yêu cầu và chương 9.
+> Mã màn hình: `INS0204` [Nguồn: 02-bd/_rules/bd-template-9sheet.md — mục 8].
+> Slug chính tắc: `class_student_detail` [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_student_detail`].
+> Phạm vi/Bounded Context: `identity` [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_student_detail`]. Actor: A2 (Giáo viên).
+> Nguồn sự thật (SoT): `01-rd/req/identity.md` (F1-27), `01-rd/req/user_stories/a2_instructor.md` (`US-A2-08`),
+> `01-rd/screens/teacher/INS0201_class_management.md:95` (Câu hỏi mở Q4 nguồn gốc slug này).
 > Tài liệu này có thể đọc độc lập.
 
 ---
 
 ## 1. Mục đích và bối cảnh
+
+**Slug mới, chưa có prototype.** Thêm 2026-08-28, qua hỏi trực tiếp chủ dự án khi trả lời Câu hỏi mở Q4 của
+`01-rd/screens/teacher/INS0201_class_management.md` [SoT: 01-rd/screens/teacher/INS0201_class_management.md:95;
+01-rd/req/identity.md — F1-27]. Không có `09-layoutBase/*.dc.html` minh hoạ cho màn này — mọi chi tiết cấu
+trúc UI dưới đây (ngoài các điểm đã chốt qua Q4) đánh dấu `[SoT: Suy luận]` hoặc `[Đợi nextjs]`, để BD/DD tự
+thiết kế khi dựng UI thật, đúng tinh thần "viết vừa đủ, đúng lúc" của project (`CLAUDE.md` — RD → BD →
+Prototype → DD). File này mô tả **hành vi và UX ở mức yêu cầu** — không lặp lại đặc tả chức năng chung đã
+có ở `01-rd/req/identity.md` (F1) và `01-rd/req/user_stories/a2_instructor.md` (`US-A2-08`), chỉ trỏ tới và
+bổ sung phần đặc thù của màn.
 
 Cho giáo viên (A2) xem hồ sơ chi tiết của **một học viên cụ thể** trong lớp mình phụ trách — thông tin cơ
 bản, tiến độ, lịch sử nộp bài — thay vì chỉ nhìn một dòng tóm tắt ở bảng danh sách học viên của

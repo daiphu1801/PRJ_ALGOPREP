@@ -2,7 +2,7 @@
 
 > Mã màn hình: `SHR0101` [SoT: 02-bd/_rules/bd-template-9sheet.md — mục 8].
 > Slug chính tắc: `auth` [SoT: 01-rd/overview/system_survey.md — mục 7.0 dòng `auth`].
-> Bounded Context: `identity` (F1) [SoT: README.md mục 4 — sáu phân hệ F1-F6]. Actor: A1, A2, A3 (mọi vai trò đều đi qua màn này trước khi vào hệ thống).
+> Phạm vi/Bounded Context: `identity` (F1) [SoT: README.md mục 4 — sáu phân hệ F1-F6]. Actor: A1, A2, A3 (mọi vai trò đều đi qua màn này trước khi vào hệ thống).
 > Nguồn sự thật (SoT): `01-rd/req/identity.md` (F1-01, F1-02, F1-15, F1-17), `09-layoutBase/Đăng nhập & Đăng ký.dc.html` (prototype), `01-rd/req/user_stories/a1_student.md` (`US-A1-01`).
 > Tài liệu này có thể đọc độc lập.
 

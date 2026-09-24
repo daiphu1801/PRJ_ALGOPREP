@@ -2,7 +2,7 @@
 
 > Mã màn hình: `SHR0301` [SoT: 02-bd/_rules/bd-template-9sheet.md — mục 8].
 > Slug chính tắc: `interview_question_management` [SoT: 01-rd/overview/system_survey.md — mục 7.0 dòng `interview_question_management`].
-> Bounded Context: `interview-bank` (F6). Actor: A2, A3 (màn dùng chung, phạm vi dữ liệu theo quyền).
+> Phạm vi/Bounded Context: `interview-bank` (F6). Actor: A2, A3 (màn dùng chung, phạm vi dữ liệu theo quyền).
 > Nguồn sự thật (SoT): `01-rd/req/interview-bank.md` (F6), `09-layoutBase/Admin - Câu hỏi phỏng vấn.dc.html` (prototype), `01-rd/req/identity.md` (F1-10 tới F1-14).
 > Tài liệu này có thể đọc độc lập.
 

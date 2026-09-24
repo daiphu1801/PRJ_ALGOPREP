@@ -203,8 +203,11 @@ Bảng ma trận đặt trong vùng cuộn ngang, chiều rộng tối thiểu 6
 hẹp thì cuộn ngang thay vì ép chữ xuống dòng. Giữ nguyên cấu trúc này khi dựng Next.js; không quy định màu
 sắc, khoảng cách hay typography ở BD.
 
-Chân trang: bản Next.js hiện **không dựng** chân trang, theo ghi nhận ở `02-bd/screens/admin/_shell.md`
-Câu hỏi mở Q4 [Nguồn: 02-bd/screens/admin/_shell.md:109].
+Chân trang: dùng chân trang thật của khung chung Admin, chốt 2026-09-21
+[Nguồn: 02-bd/screens/admin/_shell.md mục 9]. Ghi chú "Mọi thay đổi ghi vào Nhật ký hệ thống" ở dòng
+`:227-240` của riêng prototype màn này **không** có trong chân trang dùng chung (mục 9.1 chỉ có
+phiên bản/trạng thái/4 liên kết) — nếu cần giữ ghi chú đó thì đây là nội dung đặc thù của màn, để ngỏ
+cho DD quyết định thêm dòng phụ hay bỏ, không phải phần của khung chung.
 
 ### 4.5 Cấu trúc slice FSD [Nội bộ]
 

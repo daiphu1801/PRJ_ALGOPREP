@@ -19,6 +19,7 @@ Cốt lõi F1-01 → F1-09, F1-15, F1-16.
 | `school_or_company` | VARCHAR nullable | F1-09 |
 | `default_language` | VARCHAR | F1-09, F1-20 — ngôn ngữ nộp bài mặc định (Java/C++/Python) |
 | `status` | ENUM(`ACTIVE`,`DEACTIVATED`) | F1-16, F1-13 (ADMIN khoá/mở khoá) |
+| `last_active_at` | TIMESTAMPTZ nullable | Ghi nhận mốc hoạt động gần nhất (đăng nhập/nộp bài), cập nhật throttle theo phút, phục vụ ADM0201 (`DEC-2026-0922-users-and-admin-conflict-resolutions`) |
 | `deactivated_at` | TIMESTAMPTZ nullable | Mốc bắt đầu ân hạn 30 ngày (F1-16) |
 | `anonymized_at` | TIMESTAMPTZ nullable | Job định kỳ set khi ẩn danh hoá xong |
 | `created_at` / `updated_at` | TIMESTAMPTZ | |
@@ -110,18 +111,19 @@ role tuỳ biến...) — không ghi sự kiện hạ tầng (đó là `judge-or
 
 - `user_problem_best_score(user_id, problem_id, best_ratio, best_verdict, updated_at)` — phục vụ F1-06
   best-attempt (`DEC-2026-0831-partial-score-testcase-ratio`).
-- `user_submission_stats(user_id, total_submissions, accepted_count, updated_at)` — phục vụ F1-07 tỉ lệ
-  Accepted.
-- `identity_recent_activity(id, actor_user_id, activity_type, ref_type, ref_id, occurred_at)` — phục vụ
-  F1-30 "Hoạt động gần đây", giữ 90 ngày (job dọn định kỳ), hiển thị 10 mục gần nhất.
-- `notification_preferences(user_id PK, streak_reminder_enabled, weekly_report_enabled)` — F1-21.
+- `user_submission_stats(user_id, total_submissions, accepted_count, first_try_accepted_count, updated_at)` — phục vụ F1-07 tỉ lệ
+  Accepted và chỉ số "Đúng ngay lần đầu" trên USR0202/USR0501 (`DEC-2026-0922-users-and-admin-conflict-resolutions`).
+- `identity_recent_activity(id, actor_user_id, scope_class_id, activity_type, ref_type, ref_id, occurred_at)` — phục vụ
+  F1-30 "Hoạt động gần đây", `scope_class_id` nullable phục vụ giảng viên lọc hoạt động học viên theo lớp trên INS0101 (`DEC-2026-0922-users-and-admin-conflict-resolutions`), giữ 90 ngày (job dọn định kỳ), hiển thị 10 mục gần nhất.
+- `user_preferences(user_id PK, streak_reminder_enabled, weekly_report_enabled, preferred_interview_level)` — F1-21, mở rộng lưu thêm cấp độ phỏng vấn ưa thích (`INTERN`/`JUNIOR`/`MIDDLE`/`SENIOR`, `DEC-2026-0922-users-and-admin-conflict-resolutions`). Các tuỳ chọn editor (cỡ chữ, vim mode) được lưu tại `localStorage` trình duyệt theo nguyên tắc ponytail tinh gọn, không đẻ thêm bảng nháp hay bảng cấu hình editor.
 
 ## 2. Chỉ mục (index) đáng chú ý
 
 - `users(email)` unique — tra cứu đăng nhập.
 - `refresh_tokens(user_id, revoked_at)` — liệt kê phiên còn hiệu lực.
 - `class_enrollments(student_id)` — "lớp của tôi" phía học viên.
-- `identity_recent_activity(actor_user_id, occurred_at DESC)` — truy vấn 10 mục gần nhất.
+- `identity_recent_activity(actor_user_id, occurred_at DESC)` — truy vấn 10 mục gần nhất của cá nhân.
+- `identity_recent_activity(scope_class_id, occurred_at DESC) WHERE scope_class_id IS NOT NULL` — feed hoạt động lớp học (INS0101).
 - `permissions(role_id)` — nạp toàn bộ quyền của một role khi cache miss.
 
 ## 3. Redis — key pattern

@@ -1,24 +1,11 @@
 # RD (Yêu cầu hệ thống mới) — Quản lý lớp / `INS0201`
 
-> Mã màn hình: `INS0201`, theo `02-bd/_rules/bd-template-9sheet.md` mục 8.
-> Slug chính tắc: `class_management` — khớp `01-rd/overview/system_survey.md` mục 7.2 dòng `class_management`
-> [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_management`]. Mô tả: "Quản lý lớp — tổng quan và danh sách học viên",
-> mã liên quan F1-10, F1-12, F1-23 tới F1-27 [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_management`; F1-23 tới F1-27 bổ
-> sung 2026-08-28]. Bounded Context: `identity` (danh sách học viên theo lớp, phân quyền A2)
-> [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_management`]. Actor: A2 (Giáo viên). (F6-11 và Bounded Context
-> `interview-bank` từng gắn với slug này đã loại khỏi phạm vi 2026-08-28 —
-> `DEC-2026-0828-remove-per-class-interview-set`.)
-> **Tách slug 2026-08-28 (`DEC-2026-0828-split-class-management-assignments`):** file này trước đó gộp
-> chung hai prototype có route/nav riêng biệt — `09-layoutBase/Giáo viên - Lớp của tôi.dc.html` và
-> `09-layoutBase/Giáo viên - Bài tập của tôi.dc.html` — dưới một slug `class_management`, theo đúng câu
-> hỏi mở Q1 nêu ra ở bản trước của file này. Chủ dự án đã chốt tách theo đề xuất: **file này giờ chỉ mô
-> tả "Lớp của tôi"**; phần "Bài tập của tôi" chuyển sang slug mới
-> `01-rd/screens/teacher/INS0202_class_assignments.md`. Lý do và phạm vi ảnh hưởng đầy đủ ở
-> Quyết định: `DEC-2026-0828-split-class-management-assignments`.
-> File này mô tả **hành vi và UX ở mức yêu cầu** của màn "Lớp của tôi" — không lặp lại đặc tả chức năng
-> chung đã có ở `01-rd/req/identity.md` (F1), chỉ trỏ tới và bổ sung phần đặc thù của màn: trạng thái màn, cấu
-> trúc UI, và các câu hỏi mở phát sinh khi đối chiếu với prototype thật.
-> Nguồn sự thật (SoT): các nguồn được dẫn chiếu trong bảng yêu cầu và chương 9.
+> Mã màn hình: `INS0201` [Nguồn: 02-bd/_rules/bd-template-9sheet.md — mục 8].
+> Slug chính tắc: `class_management` [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_management`].
+> Phạm vi/Bounded Context: `identity` (danh sách học viên theo lớp, phân quyền A2)
+> [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_management`]. Actor: A2 (Giáo viên).
+> Nguồn sự thật (SoT): `01-rd/req/identity.md` (F1-10, F1-12, F1-23 tới F1-27),
+> `09-layoutBase/Giáo viên - Lớp của tôi.dc.html` (prototype), `DEC-2026-0828-split-class-management-assignments`.
 > Tài liệu này có thể đọc độc lập.
 
 ---
@@ -28,7 +15,21 @@
 Cho giáo viên (A2) xem tổng quan các lớp mình phụ trách, danh sách học viên và tiến độ của từng lớp
 [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_management`; 01-rd/req/problem-bank.md — F2-12]. Mọi phạm vi hiển thị và thao tác đều
 giới hạn trong lớp giáo viên đó phụ trách, gác bởi Function `CLASS_MANAGEMENT` trong ma trận phân quyền
-[SoT: 01-rd/req/identity.md — F1-12; 01-rd/req/ai-review.md — F5-27].
+[SoT: 01-rd/req/identity.md — F1-12; 01-rd/req/ai-review.md — F5-27]. Mô tả gốc: "Quản lý lớp — tổng quan và
+danh sách học viên" [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_management`]. (F6-11 và
+Bounded Context `interview-bank` từng gắn với slug này đã loại khỏi phạm vi 2026-08-28 —
+`DEC-2026-0828-remove-per-class-interview-set`.)
+
+**Tách slug 2026-08-28 (`DEC-2026-0828-split-class-management-assignments`):** file này trước đó gộp chung
+hai prototype có route/nav riêng biệt — `09-layoutBase/Giáo viên - Lớp của tôi.dc.html` và `09-layoutBase/
+Giáo viên - Bài tập của tôi.dc.html` — dưới một slug `class_management`, theo đúng câu hỏi mở Q1 nêu ra ở
+bản trước của file này. Chủ dự án đã chốt tách theo đề xuất: **file này giờ chỉ mô tả "Lớp của tôi"**; phần
+"Bài tập của tôi" chuyển sang slug mới `01-rd/screens/teacher/INS0202_class_assignments.md`. Lý do và phạm
+vi ảnh hưởng đầy đủ ở Quyết định: `DEC-2026-0828-split-class-management-assignments`.
+
+File này mô tả **hành vi và UX ở mức yêu cầu** của màn "Lớp của tôi" — không lặp lại đặc tả chức năng chung
+đã có ở `01-rd/req/identity.md` (F1), chỉ trỏ tới và bổ sung phần đặc thù của màn: trạng thái màn, cấu trúc
+UI, và các câu hỏi mở phát sinh khi đối chiếu với prototype thật.
 
 ---
 

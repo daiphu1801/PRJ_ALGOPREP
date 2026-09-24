@@ -2,7 +2,7 @@
 
 > Mã màn hình: `SHR0202` [SoT: 02-bd/_rules/bd-template-9sheet.md — mục 8].
 > Slug chính tắc: `problem_authoring` [SoT: 01-rd/overview/system_survey.md — mục 7.0 dòng `problem_authoring`].
-> Bounded Context: `problem-bank` + `harness` (F2, F3). Actor: A2, A3 (màn dùng chung, phạm vi dữ liệu theo quyền).
+> Phạm vi/Bounded Context: `problem-bank` + `harness` (F2, F3). Actor: A2, A3 (màn dùng chung, phạm vi dữ liệu theo quyền).
 > Nguồn sự thật (SoT): `01-rd/req/problem-bank.md` (F2-01 tới F2-14), `09-layoutBase/Admin - Soạn đề bài.dc.html` (prototype), `01-rd/req/user_stories/a2_instructor.md` (`US-A2-01`, `US-A2-02`, `US-A2-05`), `01-rd/req/identity.md` (F1-10 tới F1-12).
 > Tài liệu này có thể đọc độc lập.
 

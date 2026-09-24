@@ -138,4 +138,4 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 | User story | `01-rd/req/user_stories/a3_admin.md` — `US-A3-04` (GWT 3-4). |
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` mục 7.3 — dòng `admin_ai_usage`. |
 | Prototype | `09-layoutBase/Admin - Token AI.dc.html` — prototype. |
-| Màn liên quan | `01-rd/screens/admin/ADM0301_ai_config.md` mục 5 Q1 — câu hỏi trung tâm, hai file cùng chờ một quyết định. |
+| Màn liên quan | `01-rd/screens/admin/ADM0301_ai_config.md` mục 4 Q1 — câu hỏi trung tâm, hai file cùng chờ một quyết định. |

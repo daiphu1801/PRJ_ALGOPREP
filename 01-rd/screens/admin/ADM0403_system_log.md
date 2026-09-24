@@ -2,7 +2,7 @@
 
 > Mã màn hình: `ADM0403` [SoT: 02-bd/_rules/bd-template-9sheet.md — mục 8].
 > Slug chính tắc: `admin_system_log` [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_system_log`].
-> Bounded Context: `identity` (F1) [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_system_log`]. Actor: A3 (Quản trị viên).
+> Phạm vi/Bounded Context: `identity` (F1) [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_system_log`]. Actor: A3 (Quản trị viên).
 > Nguồn sự thật (SoT): `01-rd/req/identity.md` (F1-14), `09-layoutBase/Admin - Nhật ký hệ thống.dc.html` (prototype), `01-rd/req/user_stories/a3_admin.md`.
 > Tài liệu này có thể đọc độc lập.
 
@@ -134,4 +134,4 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 | User story | `01-rd/req/user_stories/a3_admin.md` — GWT rải trong `US-A3-01/02/05`. |
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` mục 7.3 — dòng `admin_system_log`. |
 | Prototype | `09-layoutBase/Admin - Nhật ký hệ thống.dc.html` — prototype. |
-| Màn liên quan | `01-rd/screens/admin/ADM0201_user_management.md` mục 5 Q1 — phát hiện gian lận mã nguồn, nguồn chính. |
+| Màn liên quan | `01-rd/screens/admin/ADM0201_user_management.md` mục 4 Q1 — phát hiện gian lận mã nguồn, nguồn chính. |
