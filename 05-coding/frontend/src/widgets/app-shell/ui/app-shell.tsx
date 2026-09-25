@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import type { AppArea } from "@/entities/user";
 import { getT } from "@/shared/i18n/server";
 import { LiquidGlassBackdrop } from "@/shared/ui";
+import { AdminFooter } from "./admin-footer";
 import { AdminSidebar } from "./admin-sidebar";
 import { AdminToolbar } from "./admin-toolbar";
 
@@ -46,6 +47,10 @@ export async function AppShell({ area, children }: AppShellProps) {
           <div className="mx-auto w-full max-w-[1320px]">
             <AdminToolbar />
             {children}
+            {/* Shared by ALL 11 Admin screens, decided 2026-09-21 (02-bd/screens/admin/_shell.md
+                section 9) — deliberately overrides admin_overview's own footerless prototype so the
+                whole Admin area has one consistent chrome instead of one screen missing it. */}
+            <AdminFooter />
           </div>
         </main>
       </div>

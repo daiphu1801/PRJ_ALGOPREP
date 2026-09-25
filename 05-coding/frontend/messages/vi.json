@@ -83,11 +83,190 @@
       "passwordMismatch": "Mật khẩu xác nhận không khớp",
       "usernameTaken": "Tên đăng nhập đã tồn tại",
       "credentialsInvalid": "Sai tên đăng nhập hoặc mật khẩu",
-      "otpInvalid": "Mã xác thực không đúng"
+      "otpInvalid": "Mã xác thực không đúng",
+      "notInstructorAccount": "Tài khoản này không có quyền giảng viên"
     }
   },
+  "instructorAuth": {
+    "title": "Đăng nhập giảng viên",
+    "subtitle": "Dành riêng cho giảng viên AlgoPrep — đăng nhập bằng tài khoản đã được cấp quyền.",
+    "notInstructorHint": "Không phải giảng viên? Dùng trang đăng nhập thông thường."
+  },
   "problemList": {
-    "title": "Danh sách bài toán"
+    "title": "Danh sách bài toán",
+    "summary": {
+      "solvedTotal": "Đã giải",
+      "linkSaved": "Bài đã lưu",
+      "btnRandom": "Bài ngẫu nhiên"
+    },
+    "topicNav": {
+      "label": "Lọc theo chủ đề"
+    },
+    "filter": {
+      "all": "Tất cả",
+      "searchLabel": "Tìm bài toán",
+      "searchPlaceholder": "Tìm theo tên bài hoặc mã bài",
+      "statusLabel": "Lọc theo trạng thái",
+      "difficultyLabel": "Lọc theo độ khó"
+    },
+    "state": {
+      "solved": "Đã giải",
+      "attempted": "Đang làm",
+      "todo": "Chưa làm"
+    },
+    "difficulty": {
+      "easy": "Dễ",
+      "medium": "Trung bình",
+      "hard": "Khó"
+    },
+    "submissionModel": {
+      "both": "Cả hai",
+      "stdioOnly": "Chỉ Standard I/O"
+    },
+    "table": {
+      "caption": "Bảng danh sách bài toán",
+      "colState": "Trạng thái",
+      "colTitle": "Bài toán",
+      "colTopics": "Chủ đề",
+      "colDifficulty": "Độ khó",
+      "colAcRate": "AC rate",
+      "btnSolve": "Vào giải",
+      "hasReview": "Đã có Solution Review",
+      "empty": "Không có bài nào khớp bộ lọc"
+    },
+    "pager": {
+      "summary": "Hiển thị {from}–{to} trong {total} bài",
+      "previous": "Trang trước",
+      "next": "Trang sau",
+      "goToPage": "Tới trang {page}"
+    },
+    "inProgress": {
+      "title": "Bài đang làm dở",
+      "empty": "Chưa có bài đang làm dở"
+    },
+    "assignment": {
+      "title": "Bài tập lớp",
+      "empty": "Chưa có bài nào được giao"
+    },
+    "language": {
+      "java": "Java",
+      "cpp": "C++",
+      "python": "Python"
+    }
+  },
+  "savedProblems": {
+    "title": "Bài đã lưu",
+    "subtitle": "{total} bài đã lưu, {solved} bài đã giải",
+    "summary": {
+      "total": "Tổng số đã lưu",
+      "solved": "Đã giải trong số đó"
+    },
+    "filter": {
+      "all": "Tất cả",
+      "searchLabel": "Tìm bài toán",
+      "searchPlaceholder": "Tìm theo tên bài hoặc mã bài",
+      "statusLabel": "Lọc theo trạng thái",
+      "difficultyLabel": "Lọc theo độ khó"
+    },
+    "state": {
+      "solved": "Đã giải",
+      "attempted": "Đang làm",
+      "todo": "Chưa làm"
+    },
+    "difficulty": {
+      "easy": "Dễ",
+      "medium": "Trung bình",
+      "hard": "Khó"
+    },
+    "table": {
+      "caption": "Bảng bài đã lưu",
+      "colProblem": "Bài toán",
+      "colTopics": "Chủ đề",
+      "colState": "Trạng thái",
+      "colNote": "Ghi chú riêng tư",
+      "noNote": "Chưa có ghi chú",
+      "colSavedAt": "Ngày lưu",
+      "btnSolve": "Vào giải",
+      "btnUnsave": "Bỏ lưu",
+      "emptyFiltered": "Không có bài nào khớp bộ lọc"
+    },
+    "emptyAll": "Bạn chưa lưu bài toán nào.",
+    "footerPrivacyNote": "Bài đã lưu và ghi chú chỉ hiển thị với bạn."
+  },
+  "problemDetail": {
+    "empty": {
+      "title": "Chưa chọn bài toán",
+      "linkList": "Quay về danh sách bài toán"
+    },
+    "taskbar": {
+      "linkList": "Danh sách bài",
+      "btnRun": "Run Code",
+      "btnSubmit": "Submit"
+    },
+    "difficulty": {
+      "easy": "Dễ",
+      "medium": "Trung bình",
+      "hard": "Khó"
+    },
+    "submissionModel": {
+      "both": "Cả hai mô hình khả dụng",
+      "stdioOnly": "Chỉ Standard I/O"
+    },
+    "panel": {
+      "tabsLabel": "Chọn tab thông tin bài toán",
+      "tabStatement": "Đề bài",
+      "tabSubmissions": "Bài nộp",
+      "tabReview": "Solution Review",
+      "examplesTitle": "Ví dụ",
+      "constraintsTitle": "Ràng buộc",
+      "noSubmissions": "Bạn chưa nộp bài này lần nào.",
+      "timeComplexity": "Độ phức tạp thời gian",
+      "spaceComplexity": "Độ phức tạp bộ nhớ",
+      "linkMockInterview": "Mở phỏng vấn giả lập",
+      "noReview": "Chưa có Solution Review cho bài này.",
+      "btnSave": "Lưu bài",
+      "btnUnsave": "Bỏ lưu"
+    },
+    "toolbar": {
+      "languageLabel": "Chọn ngôn ngữ",
+      "modeLabel": "Chọn mô hình nộp bài",
+      "inputMethodLabel": "Chọn phương thức nhập mã",
+      "codeAreaLabel": "Vùng soạn mã",
+      "uploadHint": "Kéo thả hoặc chọn file mã nguồn (.java, .cpp, .py, tối đa 64 KB)"
+    },
+    "mode": {
+      "stdio": "Có hàm main",
+      "function": "Bọc hàm"
+    },
+    "inputMethod": {
+      "type": "Gõ trực tiếp",
+      "upload": "Tải file"
+    },
+    "language": {
+      "java": "Java",
+      "cpp": "C++",
+      "python": "Python"
+    },
+    "console": {
+      "tabsLabel": "Chọn tab bảng kết quả",
+      "tabTestcase": "Testcase",
+      "tabResult": "Kết quả",
+      "passed": "Đạt",
+      "failed": "Không đạt",
+      "runHint": "Bấm \"Run Code\" để chạy thử với testcase mẫu.",
+      "judging": "Đang chấm...",
+      "submitHint": "Bấm \"Submit\" để nộp bài.",
+      "linkResult": "Xem kết quả đầy đủ",
+      "linkReview": "Phân tích bài giải",
+      "linkInterview": "Phỏng vấn giả lập"
+    },
+    "verdict": {
+      "accepted": "Accepted",
+      "wrongAnswer": "Sai kết quả",
+      "runtimeError": "Lỗi runtime",
+      "timeLimitExceeded": "Quá thời gian",
+      "running": "Đang chấm"
+    }
   },
   "adminNav": {
     "sidebarLabel": "Điều hướng khu quản trị",
@@ -112,7 +291,14 @@
     "auth": "Đăng nhập & Đăng ký",
     "profile": "Trang cá nhân",
     "identityNamePlaceholder": "Người dùng",
-    "adminIdentityPlaceholder": "Quản trị viên"
+    "adminIdentityPlaceholder": "Quản trị viên",
+    "footerBrand": "AlgoPrep Admin · v2.4.1",
+    "footerCopyright": "© 2026 AlgoPrep. Bảng điều khiển nội bộ.",
+    "footerStatusOk": "Mọi dịch vụ hoạt động bình thường",
+    "footerLinkApiDocs": "Tài liệu API",
+    "footerLinkJudgeStatus": "Trạng thái go-judge",
+    "footerLinkChangelog": "Nhật ký thay đổi",
+    "footerLinkSupport": "Hỗ trợ"
   },
   "adminOverview": {
     "title": "Tổng quan",
@@ -874,6 +1060,837 @@
       "minPublic": "Có ít nhất 2 testcase công khai",
       "solutionPasses": "Đáp án mẫu chạy đúng mọi testcase",
       "minExamples": "Có ít nhất 2 ví dụ mẫu"
+    }
+  },
+  "submissionResult": {
+    "breadcrumbLabel": "Đường dẫn phân cấp",
+    "breadcrumbProblems": "Ngân hàng bài toán",
+    "breadcrumbCurrent": "Lượt nộp #{id}",
+    "notFound": "Không tìm thấy bài nộp.",
+    "verdict": {
+      "PENDING": "Đang chờ",
+      "COMPILING": "Đang biên dịch",
+      "JUDGING": "Đang chấm...",
+      "ACCEPTED": "Đã chấp nhận",
+      "WRONG_ANSWER": "Sai kết quả",
+      "TIME_LIMIT_EXCEEDED": "Quá thời gian",
+      "MEMORY_LIMIT_EXCEEDED": "Quá bộ nhớ",
+      "RUNTIME_ERROR": "Lỗi thực thi",
+      "COMPILE_ERROR": "Lỗi biên dịch"
+    },
+    "difficulty": {
+      "EASY": "Dễ",
+      "MEDIUM": "Trung bình",
+      "HARD": "Khó"
+    },
+    "verdictSubtitle": "{passed}/{total} testcase đạt - nộp lúc {submittedAt}",
+    "stats": {
+      "testcase": "Testcase",
+      "runtime": "Runtime",
+      "memory": "Memory",
+      "beats": "Beats",
+      "beatsValue": "Nhanh hơn {percent}%",
+      "mode": "Cách nộp"
+    },
+    "mode": {
+      "FUNCTION_WRAPPER": "Hàm (Wrapper)",
+      "STANDARD_IO": "Standard I/O"
+    },
+    "language": {
+      "PYTHON": "Python 3",
+      "CPP": "C++ 17",
+      "JAVA": "Java 21"
+    },
+    "testcaseTableCaption": "Kết quả từng testcase",
+    "testcaseEmpty": "Chưa có testcase nào chạy.",
+    "col": {
+      "order": "STT",
+      "visibility": "Loại",
+      "verdict": "Trạng thái",
+      "runtime": "Runtime",
+      "memory": "Memory",
+      "action": "Chi tiết",
+      "expand": "Chi tiết"
+    },
+    "visibility": {
+      "SAMPLE": "Mẫu",
+      "HIDDEN": "Ẩn"
+    },
+    "sample": {
+      "input": "Dữ liệu đầu vào",
+      "expected": "Kết quả kỳ vọng",
+      "actual": "Kết quả thực tế",
+      "hiddenNotice": "Không hiển thị input/output của testcase ẩn để tránh lộ đáp án."
+    },
+    "code": {
+      "copy": "Sao chép mã",
+      "copied": "Đã chép!"
+    },
+    "actions": {
+      "solutionReview": "Phân tích bài giải (AI)",
+      "mockInterview": "Phỏng vấn giả lập (AI)",
+      "retry": "Quay lại Workspace",
+      "needAccepted": "Tính năng chỉ mở khi bài nộp đạt Accepted."
+    }
+  },
+  "mySubmissions": {
+    "title": "Bài đã nộp",
+    "subtitle": "Toàn bộ lịch sử nộp bài của bạn",
+    "stats": {
+      "total": "Tổng lượt nộp",
+      "accepted": "Được chấp nhận",
+      "acceptedValue": "{count} ({rate}%)",
+      "firstTry": "Đúng ngay lần đầu",
+      "firstTryValue": "{firstTry} / {accepted} ({rate}%)",
+      "topLanguage": "Dùng nhiều nhất",
+      "topLanguageValue": "{language} ({rate}%)"
+    },
+    "filter": {
+      "searchLabel": "Tìm bài toán",
+      "searchPlaceholder": "Nhập mã bài hoặc tên bài",
+      "verdictLabel": "Lọc theo kết quả",
+      "languageLabel": "Lọc theo ngôn ngữ",
+      "all": "Tất cả"
+    },
+    "verdict": {
+      "ACCEPTED": "Đã chấp nhận",
+      "WRONG_ANSWER": "Sai kết quả",
+      "TIME_LIMIT_EXCEEDED": "Quá thời gian",
+      "MEMORY_LIMIT_EXCEEDED": "Quá bộ nhớ",
+      "RUNTIME_ERROR": "Lỗi thực thi",
+      "COMPILE_ERROR": "Lỗi biên dịch"
+    },
+    "language": {
+      "PYTHON": "Python 3",
+      "CPP": "C++ 17",
+      "JAVA": "Java 21"
+    },
+    "table": {
+      "caption": "Lịch sử nộp bài",
+      "col": {
+        "submittedAt": "Thời điểm",
+        "problem": "Bài toán",
+        "language": "Ngôn ngữ",
+        "verdict": "Kết quả",
+        "testcases": "Testcase",
+        "runtime": "Thời gian chạy"
+      },
+      "btnResult": "Kết quả",
+      "btnReview": "Phân tích",
+      "needAccepted": "Tính năng chỉ mở khi bài nộp đạt Accepted.",
+      "empty": "Không có bài nộp nào khớp bộ lọc."
+    },
+    "footer": {
+      "summary": "Hiển thị {from} - {to} trong số {total} bài nộp",
+      "previous": "‹",
+      "next": "›",
+      "pageLabel": "Trang {page}"
+    }
+  },
+  "interviewBankList": {
+    "stats": {
+      "total": "Tổng câu hỏi",
+      "known": "Đã thuộc",
+      "reviewing": "Đang ôn",
+      "drilledThisWeek": "Đã tự chấm"
+    },
+    "startDrill": "Luyện nhanh {count} câu",
+    "startMockInterview": "Vào phiên giả lập",
+    "startMockInterviewUnavailable": "Chưa có lối vào độc lập cho phiên giả lập ở bản dựng này",
+    "searchLabel": "Tìm câu hỏi",
+    "searchPlaceholder": "Tìm câu hỏi hoặc tag",
+    "statusFilterLabel": "Lọc theo trạng thái ôn tập",
+    "statusTabs": {
+      "all": "Tất cả",
+      "new": "Chưa xem",
+      "reviewing": "Đang ôn",
+      "known": "Đã thuộc"
+    },
+    "topicFilterLabel": "Lọc theo chủ đề",
+    "filterAll": "Tất cả",
+    "topic": {
+      "csTheory": "Lý thuyết CS",
+      "systemDesign": "System design",
+      "database": "Database",
+      "language": "Ngôn ngữ",
+      "behavioural": "Hành vi"
+    },
+    "level": {
+      "easy": "Dễ",
+      "medium": "Trung bình",
+      "hard": "Khó"
+    },
+    "recall": {
+      "unrated": "Chưa xem",
+      "known": "Biết rõ",
+      "vague": "Mơ hồ",
+      "forgotten": "Quên"
+    },
+    "bookmarkLabel": "Đánh dấu xem lại",
+    "emptyFiltered": "Không có câu hỏi khớp bộ lọc.",
+    "quickView": {
+      "selectPrompt": "Chọn một câu hỏi để xem nhanh.",
+      "outlineLabel": "Ý cần nói",
+      "recallLabel": "Mức độ nắm",
+      "viewDetail": "Xem chi tiết"
+    },
+    "drill": {
+      "counter": "Thẻ {current} / {total}",
+      "exit": "Thoát",
+      "reveal": "Xem ý cần nói",
+      "hide": "Ẩn đáp án"
+    }
+  },
+  "interviewQuestionDetail": {
+    "notFound": "Không tìm thấy câu hỏi này, hoặc câu hỏi đã ngừng dùng.",
+    "header": {
+      "linkBack": "Quay lại danh sách",
+      "bookmark": "Đánh dấu xem lại",
+      "bookmarked": "Đã đánh dấu"
+    },
+    "topic": {
+      "csTheory": "Lý thuyết CS",
+      "systemDesign": "System design",
+      "database": "Database",
+      "language": "Ngôn ngữ",
+      "behavioural": "Hành vi"
+    },
+    "level": {
+      "easy": "Dễ",
+      "medium": "Trung bình",
+      "hard": "Khó"
+    },
+    "mode": {
+      "groupLabel": "Chuyển chế độ",
+      "study": "Chế độ học",
+      "practice": "Chế độ luyện",
+      "practiceLockedReason": "Câu hỏi này chưa có tiêu chí đánh giá nên chưa luyện được."
+    },
+    "study": {
+      "outlineLabel": "Ý cần nói",
+      "answerFrameworkLabel": "Khung trả lời chuẩn",
+      "keywordsLabel": "Từ khoá cốt lõi",
+      "followUpsLabel": "Câu hỏi đào sâu",
+      "recallLabel": "Mức độ nắm",
+      "recall": {
+        "known": "Biết rõ",
+        "vague": "Mơ hồ",
+        "forgotten": "Quên"
+      }
+    },
+    "practice": {
+      "answerLabel": "Câu trả lời của bạn",
+      "answerPlaceholder": "Soạn câu trả lời của bạn ở đây…",
+      "charCounter": "{count} / {max} ký tự",
+      "btnSubmit": "Nộp câu trả lời",
+      "btnRetry": "Thử lại một lượt mới",
+      "pendingState": "Đang đối chiếu câu trả lời của bạn...",
+      "strengthsLabel": "Điểm đã đạt",
+      "gapsLabel": "Điểm còn thiếu",
+      "nextStepsLabel": "Hướng bổ sung",
+      "eduDisclaimer": "Đây là phản hồi hỗ trợ học tập, không phải điểm số chính thức.",
+      "aiUnavailable": "Câu trả lời đã được ghi nhận nhưng chưa có phản hồi AI.",
+      "linkBackToStudy": "Xem gợi ý ở Chế độ học",
+      "feedbackSample": {
+        "strength": "Đã đề cập tốt: {criterion}",
+        "gap": "Cần bổ sung thêm cho tiêu chí: {criterion}",
+        "nextSteps": "Xem lại Chế độ học để đối chiếu ý cần nói và khung trả lời chuẩn trước khi thử lại."
+      }
+    },
+    "attempts": {
+      "title": "Lịch sử các lượt",
+      "emptyState": "Bạn chưa luyện câu hỏi này lần nào.",
+      "attemptNo": "Lượt {n}",
+      "status": {
+        "pending": "Đang chấm",
+        "completed": "Đã có phản hồi",
+        "failed": "Chưa chấm được"
+      }
+    },
+    "leaveConfirm": {
+      "message": "Câu trả lời bạn đang soạn chưa được nộp và sẽ mất. Vẫn rời màn?",
+      "btnStay": "Ở lại",
+      "btnLeave": "Rời màn"
+    }
+  },
+  "solutionReview": {
+    "breadcrumbLabel": "Đường dẫn phân cấp",
+    "breadcrumbSubmissionResult": "Kết quả nộp bài",
+    "breadcrumbCurrent": "Phân tích bài giải",
+    "statProblem": "Bài toán",
+    "statApproach": "Hướng giải",
+    "statReadability": "Dễ đọc",
+    "interviewCta": "Phỏng vấn về bài này",
+    "approachOptimal": "tối ưu",
+    "approachSuboptimal": "chưa tối ưu",
+    "eduNoticeTitle": "Phản hồi để học, không phải điểm chính thức",
+    "eduNoticeBody": "Báo cáo do AI sinh một lượt từ code đã nộp. Là phản hồi để học, không phải điểm chính thức.",
+    "summaryTitle": "Nhận xét tổng quan",
+    "complexityTitle": "Độ phức tạp",
+    "complexityYours": "Bài của bạn",
+    "complexityBest": "Tốt nhất đã biết",
+    "complexityNote": "Ghi chú",
+    "complexityTime": "Thời gian",
+    "complexitySpace": "Bộ nhớ",
+    "rubricTitle": "Rubric chấm bài giải",
+    "rubric": {
+      "correctness": "Tính đúng đắn",
+      "performance": "Hiệu năng",
+      "cleanCode": "Chất lượng mã",
+      "scalability": "Khả năng mở rộng",
+      "dataStructure": "Cấu trúc dữ liệu"
+    },
+    "strengthsTitle": "Làm tốt",
+    "improvementsTitle": "Nên sửa",
+    "edgeCasesTitle": "Ca biên tiềm ẩn",
+    "diffTitle": "Bản đề xuất",
+    "sourceCodeTitle": "Code đã nộp",
+    "applyCta": "Áp dụng vào Workspace",
+    "difficulty": {
+      "easy": "Dễ",
+      "medium": "Trung bình",
+      "hard": "Khó"
+    },
+    "errorTransientTitle": "Hệ thống AI đang bận",
+    "errorTransientBody": "Hệ thống AI đang bận, thử lại sau ít phút.",
+    "retry": "Thử lại",
+    "errorBudgetLockedTitle": "Đã đạt giới hạn phân tích AI",
+    "errorBudgetLockedBody": "Bạn đã đạt giới hạn phân tích AI trong ngày. Bạn vẫn có thể tiếp tục làm bài bình thường.",
+    "backToWorkspace": "Quay lại Ngân hàng bài toán",
+    "applyConfirmTitle": "Xác nhận ghi đè mã nguồn",
+    "applyConfirmBody": "Mã đề xuất sẽ ghi đè mã hiện tại trong Workspace. Bạn có chắc chắn muốn tiếp tục?",
+    "applyConfirmConfirm": "Ghi đè & Mở Workspace",
+    "applyConfirmCancel": "Huỷ"
+  },
+  "mockInterview": {
+    "statSessions": "Số phiên đã làm",
+    "statSessionsMeta": "Tổng số phiên đã hoàn tất",
+    "statAverage": "Đánh giá trung bình",
+    "statWeakest": "Tiêu chí cần cải thiện",
+    "startFrom": "Bắt đầu từ",
+    "tab": {
+      "submission": "Bài nộp Accepted",
+      "bank": "Kho câu hỏi",
+      "custom": "Tự chọn chủ đề"
+    },
+    "customTopicHint": "Chọn chủ đề, mức độ và ngôn ngữ cho phiên phỏng vấn tự luyện.",
+    "configTitle": "Cấu hình phiên",
+    "levelLabel": "Cấp độ",
+    "level": {
+      "intern": "Intern",
+      "junior": "Junior",
+      "middle": "Middle",
+      "senior": "Senior"
+    },
+    "turnsLabel": "Số lượt hỏi",
+    "turnsOption": "{count} lượt",
+    "hintLabel": "Cho phép gợi ý",
+    "startCta": "Bắt đầu phiên",
+    "stage": {
+      "explain": "Giải trình",
+      "challenge": "Phản biện",
+      "scaleUp": "Mở rộng"
+    },
+    "turnCount": "Lượt {current} / {total}",
+    "aiTyping": "AI đang gõ...",
+    "messageInputLabel": "Câu trả lời",
+    "messageInputPlaceholder": "Nhập câu trả lời của bạn...",
+    "send": "Gửi",
+    "hintCta": "Xin gợi ý",
+    "stopEarlyCta": "Kết thúc sớm",
+    "earlyExitTitle": "Kết thúc phiên phỏng vấn?",
+    "earlyExitBody": "Phiên sẽ kết thúc trước khi đủ số lượt và được chấm điểm trên phần đã hoàn thành.",
+    "earlyExitConfirm": "Kết thúc",
+    "earlyExitCancel": "Tiếp tục phỏng vấn",
+    "resultOverall": "Điểm tổng kết phiên",
+    "rubric": {
+      "clarity": "Độ rõ ràng",
+      "technicalAccuracy": "Độ chính xác kỹ thuật",
+      "pushbackHandling": "Khả năng phản biện",
+      "complexityAwareness": "Nhận thức độ phức tạp"
+    },
+    "retryCta": "Luyện tập lại",
+    "backCta": "Về danh sách"
+  },
+  "classManagement": {
+    "header": {
+      "title": "Lớp của tôi",
+      "summary": "{classCount} lớp · {studentCount} học viên",
+      "btnCreateClass": "+ Tạo lớp mới"
+    },
+    "stats": {
+      "classCount": "Tổng số lớp",
+      "classCountMeta": "{count} học viên",
+      "avgCompletion": "Hoàn thành trung bình",
+      "pendingGrading": "Cần chấm tay",
+      "absentStudents": "Học viên vắng bài"
+    },
+    "classList": {
+      "col": {
+        "studentCount": "{count} HV",
+        "completionBar": "Tỉ lệ hoàn thành",
+        "avgScore": "Điểm TB",
+        "pendingGrading": "Cần chấm",
+        "absentCount": "Vắng bài",
+        "menuEdit": "Sửa thông tin lớp",
+        "menuInvite": "Mã mời",
+        "menuDelete": "Xoá lớp"
+      }
+    },
+    "btnFilterClass": "Xem học viên",
+    "status": {
+      "insufficient_data": "Chưa đủ dữ liệu",
+      "absent": "Vắng bài",
+      "needs_support": "Cần hỗ trợ",
+      "watch": "Theo dõi",
+      "on_track": "Đang tốt"
+    },
+    "studentList": {
+      "title": "Danh sách học viên",
+      "col": {
+        "studentName": "Học viên",
+        "className": "Lớp",
+        "avgScore": "Điểm TB",
+        "completion": "Hoàn thành",
+        "status": "Trạng thái",
+        "lastActive": "Hoạt động"
+      }
+    },
+    "btnRemoveStudent": "Gỡ khỏi lớp",
+    "filterAll": "Tất cả",
+    "cancel": "Huỷ",
+    "emptyStudents": "Chưa có học viên nào khớp bộ lọc",
+    "popup": {
+      "createClassTitle": "Tạo lớp mới",
+      "editClassTitle": "Sửa thông tin lớp",
+      "classNameLabel": "Tên lớp",
+      "scheduleLabel": "Lịch học",
+      "saveClass": "Lưu",
+      "inviteCodeTitle": "Mã mời",
+      "createInviteCode": "Tạo mã mới",
+      "deleteClassTitle": "Xoá lớp {name}?",
+      "deleteClassBody": "Đây là xoá thật, không khôi phục được.",
+      "deleteClassConfirm": "Xoá lớp",
+      "removeStudentTitle": "Gỡ {name} khỏi lớp?",
+      "removeStudentBody": "Thao tác này sẽ xoá luôn lịch sử làm bài của học viên trong phạm vi lớp này.",
+      "removeStudentConfirm": "Gỡ học viên"
+    }
+  },
+  "classAssignments": {
+    "header": {
+      "title": "Bài tập của tôi",
+      "summary": "{count} bài đã gán cho lớp · từ ngân hàng bài toán chung",
+      "btnAssignFromBank": "+ Gán từ ngân hàng bài toán"
+    },
+    "stats": {
+      "assignedCount": "Bài đã gán",
+      "assignedCountMeta": "Trên {count} lớp",
+      "weeklySubmissions": "Lượt nộp tuần này",
+      "weeklySubmissionsMeta": "So với tuần trước",
+      "avgAcRate": "AC trung bình",
+      "pendingGrading": "Cần chấm tay"
+    },
+    "assignmentList": {
+      "search": "Tìm theo tên bài",
+      "classTabs": "Lọc theo lớp",
+      "resultCount": "{shown} / {total} bài",
+      "col": {
+        "title": "Bài tập",
+        "topic": "Chủ đề",
+        "difficulty": "Độ khó",
+        "assignedClasses": "Gán cho lớp",
+        "submissionCount": "Lượt nộp",
+        "acRate": "AC",
+        "btnDetail": "Chi tiết",
+        "btnRemove": "Gỡ khỏi lớp"
+      }
+    },
+    "difficulty": {
+      "EASY": "Dễ",
+      "MEDIUM": "Trung bình",
+      "HARD": "Khó"
+    },
+    "filterAll": "Tất cả",
+    "cancel": "Huỷ",
+    "emptyAssignments": "Chưa có bài nào được gán",
+    "popup": {
+      "removeAssignmentTitle": "Gỡ {title} khỏi lớp?",
+      "removeAssignmentBody": "Bài sẽ không còn hiện trong danh sách được giao từ lúc gỡ, nhưng lịch sử nộp bài, điểm và tiến độ của học viên vẫn giữ nguyên.",
+      "removeAssignmentConfirm": "Gỡ khỏi lớp",
+      "removeClassChoice": "Lớp cần gỡ"
+    }
+  },
+  "classProgress": {
+    "header": {
+      "title": "Tiến độ học viên",
+      "subtitle": "Theo dõi điểm số, hoàn thành và mức độ hoạt động"
+    },
+    "scoreTrend": {
+      "title": "Điểm trung bình theo lớp",
+      "rangeLabel": "6 tuần gần nhất"
+    },
+    "attention": {
+      "title": "Cần chú ý"
+    },
+    "status": {
+      "insufficient_data": "Chưa đủ dữ liệu",
+      "absent": "Vắng bài",
+      "needs_support": "Cần hỗ trợ",
+      "watch": "Theo dõi",
+      "on_track": "Đúng tiến độ"
+    },
+    "studentList": {
+      "title": "Danh sách học viên",
+      "searchBox": "Tìm học viên",
+      "classTabs": "Lọc theo lớp",
+      "resultCount": "{shown} / {total} học viên",
+      "col": {
+        "studentName": "Học viên",
+        "className": "Lớp",
+        "avgScore": "Điểm TB",
+        "completion": "Hoàn thành",
+        "streak": "Chuỗi ngày",
+        "trend": "Xu hướng",
+        "lastActive": "Hoạt động"
+      }
+    },
+    "filterAll": "Tất cả",
+    "previous": "Trước",
+    "next": "Sau",
+    "pageSummary": "Trang {page} / {total}",
+    "empty": "Chưa có dữ liệu"
+  },
+  "classStudentDetail": {
+    "loading": "Đang tải…",
+    "notFound": "Không tìm thấy học viên trong lớp này",
+    "backLink": "Quay lại",
+    "btnRemoveFromClass": "Gỡ khỏi lớp",
+    "linkViewGrading": "Xem chấm bài của học viên này",
+    "stats": {
+      "avgScore": "Điểm TB",
+      "completion": "Hoàn thành",
+      "streak": "Chuỗi ngày",
+      "lastActive": "Hoạt động"
+    },
+    "topicProgress": {
+      "title": "Theo chủ đề",
+      "item": "{topic}: {count} bài"
+    },
+    "assignmentProgress": {
+      "title": "Bài đã giao",
+      "col": {
+        "title": "Bài tập",
+        "topic": "Chủ đề",
+        "acRate": "AC"
+      }
+    },
+    "submissionHistory": {
+      "title": "Lịch sử nộp bài",
+      "col": {
+        "problem": "Bài tập",
+        "language": "Ngôn ngữ",
+        "status": "Trạng thái",
+        "ratio": "Tỉ lệ testcase",
+        "submittedAt": "Nộp lúc"
+      },
+      "btnViewResult": "Xem kết quả"
+    },
+    "empty": "Chưa có dữ liệu",
+    "cancel": "Huỷ",
+    "popup": {
+      "removeTitle": "Gỡ {name} khỏi lớp?",
+      "removeBody": "Gỡ là xoá thật kèm cascade dữ liệu lịch sử làm bài trong phạm vi lớp.",
+      "removeConfirm": "Gỡ học viên"
+    }
+  },
+  "instructorGrading": {
+    "header": {
+      "title": "Chấm bài",
+      "subtitle": "Bài nộp Accepted có điểm AI dưới 6/10 trong các lớp bạn phụ trách"
+    },
+    "stats": {
+      "pendingCount": "Chờ chấm",
+      "gradedCount": "Đã chấm tuần này",
+      "avgManualScore": "Điểm TB sau chấm"
+    },
+    "filter": {
+      "statusTabs": "Lọc theo trạng thái chấm",
+      "classTabs": "Lọc theo lớp",
+      "studentChip": "Học viên: {name}",
+      "clearStudentChip": "Bỏ lọc học viên",
+      "resultCount": "{count} bài"
+    },
+    "statusFilter": {
+      "pending": "Chờ chấm",
+      "graded": "Đã chấm"
+    },
+    "filterAll": "Tất cả",
+    "queue": {
+      "col": {
+        "student": "Học viên",
+        "problem": "Bài tập",
+        "className": "Lớp",
+        "submittedAt": "Nộp lúc",
+        "score": "Điểm",
+        "btnGrade": "Chấm ngay"
+      }
+    },
+    "empty": "Không có bài nào khớp bộ lọc",
+    "popup": {
+      "title": "{student} · {problem}",
+      "meta": "AI: {ai}/10 · GV: {manual}",
+      "scoreInput": "Điểm (0-10)",
+      "commentInput": "Nhận xét",
+      "btnCancel": "Huỷ",
+      "btnSave": "Lưu điểm"
+    }
+  },
+  "instructorOverview": {
+    "toolbar": {
+      "searchBox": "Tìm lớp, học viên, bài tập…",
+      "btnCreateClass": "+ Tạo lớp mới"
+    },
+    "stat": {
+      "classCount": "Lớp phụ trách",
+      "classCountMeta": "{count} học viên",
+      "studentCount": "Tổng học viên",
+      "pendingGrading": "Cần chấm tay",
+      "avgScore": "Điểm TB lớp"
+    },
+    "grading": {
+      "title": "Cần chấm tay",
+      "subtitle": "Bài nộp AI chấm điểm thấp",
+      "linkViewAll": "Xem tất cả",
+      "col": {
+        "meta": "AI chấm {score}/10 · nộp {time} trước"
+      }
+    },
+    "activity": {
+      "title": "Hoạt động gần đây",
+      "subtitle": "10 mục gần nhất"
+    },
+    "classes": {
+      "title": "Lớp của tôi",
+      "linkManage": "Quản lý lớp",
+      "col": {
+        "studentCount": "{count} HV"
+      }
+    },
+    "trend": {
+      "title": "Tiến độ học viên",
+      "subtitle": "Điểm trung bình 4 tuần gần nhất",
+      "linkViewAll": "Xem tất cả"
+    },
+    "assignments": {
+      "title": "Bài tập của tôi",
+      "linkViewAll": "Xem tất cả"
+    },
+    "difficulty": {
+      "EASY": "Dễ",
+      "MEDIUM": "Trung bình",
+      "HARD": "Khó"
+    },
+    "empty": "Chưa có dữ liệu"
+  },
+  "profile": {
+    "loadError": "Không tải được hồ sơ.",
+    "retry": "Thử lại",
+    "settingsShortcut": "Cài đặt tài khoản",
+    "form": {
+      "title": "Thông tin cá nhân",
+      "displayName": "Họ và tên",
+      "email": "Email",
+      "schoolOrCompany": "Trường / công ty",
+      "currentPosition": "Vai trò hiện tại",
+      "defaultLanguage": "Ngôn ngữ mặc định",
+      "targetPosition": "Vị trí mục tiêu",
+      "revert": "Hoàn tác",
+      "save": "Lưu thay đổi",
+      "saved": "Đã lưu",
+      "statusIdle": "Email dùng để đăng nhập và nhận nhắc luyện tập.",
+      "statusDirty": "Có thay đổi chưa lưu.",
+      "statusSaved": "Đã cập nhật thông tin."
+    },
+    "security": {
+      "title": "Bảo mật",
+      "passwordLabel": "Mật khẩu",
+      "changePassword": "Đổi",
+      "setPassword": "Đặt mật khẩu",
+      "passwordChangedAt": "Đổi lần cuối {date}",
+      "passwordNoDate": "Chưa rõ ngày đổi gần nhất",
+      "noPassword": "Chưa đặt mật khẩu — đang đăng nhập bằng {provider}",
+      "providerLabel": "Đăng nhập bằng",
+      "providerDescription": "Phương thức đăng nhập đã liên kết với tài khoản",
+      "providerCredentials": "Email và mật khẩu"
+    },
+    "account": {
+      "title": "Tài khoản",
+      "joinedAt": "Ngày tham gia",
+      "role": "Quyền"
+    },
+    "practice": {
+      "title": "Luyện tập",
+      "solved": "Bài đã giải",
+      "submissions": "Lượt nộp",
+      "interviews": "Phiên phỏng vấn",
+      "viewFullProgress": "Xem tiến độ chi tiết"
+    },
+    "emailOtp": {
+      "title": "Xác thực email mới",
+      "hint": "Đã gửi mã gồm 6 chữ số tới {email}. Nhập mã để hoàn tất việc đổi email.",
+      "codeLabel": "Mã xác nhận",
+      "cancel": "Huỷ",
+      "confirm": "Xác nhận"
+    },
+    "passwordDialog": {
+      "titleChange": "Đổi mật khẩu",
+      "titleSet": "Đặt mật khẩu",
+      "cancel": "Huỷ",
+      "confirm": "Xác nhận",
+      "currentPassword": "Mật khẩu hiện tại",
+      "newPassword": "Mật khẩu mới",
+      "confirmPassword": "Nhập lại mật khẩu mới",
+      "ruleHint": "Tối thiểu 8 ký tự, có cả chữ và số."
+    },
+    "errors": {
+      "displayNameRequired": "Vui lòng nhập họ và tên",
+      "displayNameTooLong": "Tối đa 100 ký tự",
+      "schoolOrCompanyTooLong": "Tối đa 150 ký tự",
+      "currentPositionTooLong": "Tối đa 100 ký tự",
+      "targetPositionTooLong": "Tối đa 100 ký tự",
+      "passwordTooShort": "Mật khẩu tối thiểu 8 ký tự",
+      "passwordTooLong": "Mật khẩu tối đa 128 ký tự",
+      "passwordNeedsLetter": "Mật khẩu cần ít nhất một chữ cái",
+      "passwordNeedsDigit": "Mật khẩu cần ít nhất một chữ số",
+      "passwordMismatch": "Hai mật khẩu không khớp",
+      "currentPasswordRequired": "Vui lòng nhập mật khẩu hiện tại",
+      "currentPasswordInvalid": "Mật khẩu hiện tại không đúng",
+      "otpLength": "Mã xác nhận phải đủ 6 chữ số",
+      "otpDigitsOnly": "Mã xác nhận chỉ gồm chữ số",
+      "otpInvalid": "Mã xác nhận không đúng hoặc đã hết hạn"
+    }
+  },
+  "settings": {
+    "loadError": "Không tải được cài đặt.",
+    "retry": "Thử lại",
+    "backToProfile": "Về trang cá nhân",
+    "appearance": {
+      "title": "Giao diện",
+      "description": "Áp cho toàn bộ màn hình và được ghi nhớ trên thiết bị này."
+    },
+    "workspace": {
+      "title": "Workspace",
+      "defaultLanguage": "Ngôn ngữ mặc định",
+      "defaultLanguageDescription": "Được chọn sẵn khi mở một bài toán.",
+      "editorFontSize": "Cỡ chữ editor",
+      "editorFontSizeDescription": "Chỉ áp cho vùng soạn code.",
+      "autosaveDraft": "Tự lưu bản nháp",
+      "autosaveDraftDescription": "Giữ lại code chưa nộp của từng bài, tải lại trang không mất.",
+      "vimMode": "Phím tắt Vim",
+      "vimModeDescription": "Áp dụng trong vùng soạn code."
+    },
+    "interview": {
+      "title": "Phỏng vấn giả lập",
+      "degradedNotice": "Chưa lấy được tuỳ chọn phỏng vấn giả lập. Các nhóm còn lại vẫn xem và lưu được bình thường.",
+      "interviewerLevel": "Mức người phỏng vấn",
+      "interviewerLevelDescription": "Quyết định độ sâu của các câu hỏi truy vấn.",
+      "maxTurns": "Số lượt tối đa mỗi phiên",
+      "maxTurnsDescription": "Đến giới hạn này phiên sẽ kết và trả nhận xét.",
+      "hintAllowed": "Cho phép gợi ý",
+      "hintAllowedDescription": "Người phỏng vấn có thể gợi ý khi bạn bị bí.",
+      "scopeNote": "Ba tuỳ chọn này chỉ áp cho phiên bạn tự mở từ ngân hàng câu hỏi hoặc từ chủ đề tự chọn. Phiên mở từ một bài nộp Accepted luôn dùng tham số chuẩn.",
+      "saveFailedWarning": "Không lưu được tuỳ chọn phỏng vấn giả lập (ai-review). Workspace và Thông báo vẫn đã lưu."
+    },
+    "notification": {
+      "title": "Thông báo",
+      "streakReminder": "Nhắc luyện tập",
+      "streakReminderDescription": "Một email mỗi ngày khi chuỗi ngày luyện tập sắp mất.",
+      "weeklyReport": "Báo cáo hằng tuần",
+      "weeklyReportDescription": "Tiến độ theo chủ đề, gửi vào thứ Hai."
+    },
+    "saveBar": {
+      "title": "Trạng thái",
+      "statusIdle": "Chủ đề màu và ngôn ngữ áp ngay; các mục còn lại lưu bằng nút bên dưới.",
+      "statusDirty": "Bạn có thay đổi chưa lưu.",
+      "statusSaved": "Đã áp cài đặt cho tài khoản này.",
+      "save": "Lưu cài đặt",
+      "saved": "Đã lưu"
+    },
+    "dataExport": {
+      "title": "Dữ liệu của bạn",
+      "exportSubmissions": "Xuất lượt nộp",
+      "exportInterviews": "Xuất hội thoại phỏng vấn"
+    },
+    "dangerZone": {
+      "title": "Vùng nguy hiểm",
+      "consequenceText": "Tài khoản chuyển sang trạng thái ngừng hoạt động ngay và bạn không đăng nhập lại được. Sau 30 ngày, thông tin định danh của bạn được ẩn danh hoá; lượt nộp, bài đã lưu và phiên phỏng vấn vẫn được giữ lại.",
+      "delete": "Xoá tài khoản"
+    },
+    "deleteConfirm": {
+      "title": "Xác nhận xoá tài khoản",
+      "confirm": "Xoá tài khoản của tôi",
+      "cancel": "Huỷ",
+      "confirmPhraseLabel": "Gõ lại email của bạn ({email}) để xác nhận",
+      "phraseHint": "Email chưa khớp."
+    },
+    "errors": {
+      "confirmPhraseMismatch": "Email không khớp"
+    }
+  },
+  "myProgress": {
+    "title": "Tiến độ của tôi",
+    "emptyGeneric": "Chưa có dữ liệu",
+    "errorGeneric": "Không tải được dữ liệu",
+    "stats": {
+      "solved": "Đã giải",
+      "submissions": "Lượt nộp",
+      "streak": "Chuỗi ngày",
+      "days": "ngày",
+      "avgAttempts": "Số lần nộp / bài",
+      "interviews": "Phỏng vấn",
+      "rangeTabs": "Chọn khoảng thời gian",
+      "range7d": "7 ngày",
+      "range30d": "30 ngày",
+      "rangeAll": "Tất cả"
+    },
+    "topics": {
+      "title": "Theo chủ đề",
+      "orderNote": "Sắp theo phần còn lại nhiều nhất",
+      "colTopic": "Chủ đề",
+      "colSolved": "Đã giải",
+      "colAcRate": "Tỉ lệ AC",
+      "colLast": "Lần cuối"
+    },
+    "chart": {
+      "title": "Lượt nộp 14 ngày gần nhất",
+      "tooltipCount": "Lượt nộp"
+    },
+    "difficulty": {
+      "title": "Theo độ khó",
+      "EASY": "Dễ",
+      "MEDIUM": "Trung bình",
+      "HARD": "Khó"
+    },
+    "focus": {
+      "title": "Nên ưu tiên",
+      "allSolved": "Bạn đã giải hết bài của mọi chủ đề",
+      "reasonLowestAc": "Tỉ lệ AC {rate}% — thấp nhất",
+      "reasonMostUnsolved": "Còn {remaining} bài, tỉ lệ AC {rate}%",
+      "reasonStale": "{days} ngày chưa nộp bài nào"
+    },
+    "interview": {
+      "title": "Phỏng vấn giả lập",
+      "newSession": "Bắt đầu một phiên mới",
+      "degradedNotice": "Chưa lấy được dữ liệu phỏng vấn giả lập. Các phần còn lại của trang vẫn hiển thị bình thường.",
+      "sessionCount": "Số phiên",
+      "avgScore": "Điểm trung bình",
+      "weakest": "Mục yếu nhất",
+      "criteria": {
+        "CLARITY": "Độ rõ ràng",
+        "TECHNICAL_ACCURACY": "Độ chính xác kỹ thuật",
+        "PUSHBACK_HANDLING": "Khả năng phản biện",
+        "COMPLEXITY_AWARENESS": "Nhận thức độ phức tạp"
+      }
     }
   }
 }

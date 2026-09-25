@@ -17,6 +17,7 @@ export type {
 export {
   signup,
   login,
+  instructorLogin,
   oauthLogin,
   cancelDeactivation,
   forgotEmail,

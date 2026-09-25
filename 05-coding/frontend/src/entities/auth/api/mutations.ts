@@ -21,6 +21,7 @@ import type {
 import {
   fakeCancelDeactivation,
   fakeForgotEmail,
+  fakeInstructorLogin,
   fakeLogin,
   fakeOAuthLogin,
   fakeResendOtp,
@@ -38,6 +39,11 @@ export const signup = (input: SignupInput): Promise<AuthOutcome> =>
 
 export const login = (input: LoginInput): Promise<AuthOutcome> =>
   withMockData(() => fakeLogin(input), notImplemented);
+
+// `POST /auth/instructor/login` (03-dd/api/identity.md endpoint #49,
+// `DEC-2026-0925-instructor-separate-login-route`) — dedicated endpoint for `views/instructor-auth`.
+export const instructorLogin = (input: LoginInput): Promise<AuthOutcome> =>
+  withMockData(() => fakeInstructorLogin(input), notImplemented);
 
 export const oauthLogin = (provider: "google" | "github"): Promise<AuthOutcome> =>
   withMockData(() => fakeOAuthLogin(provider), notImplemented);

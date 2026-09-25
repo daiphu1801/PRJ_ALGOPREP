@@ -21,6 +21,8 @@ import {
   verifyOtp,
   type AuthFieldErrors,
   type AuthMode,
+  type AuthOutcome,
+  type LoginInput,
 } from "@/entities/auth";
 
 /** Number of sequential steps shown by AuthLoadingOverlay (02-bd/screens/shared/SHR0101_auth.md Sheet 5, khu vực D). */
@@ -39,7 +41,13 @@ function zodErrorsToFieldErrors(error: ZodError): AuthFieldErrors {
   return result;
 }
 
-export function useAuthFlow(initialMode: AuthMode) {
+/**
+ * `loginFn` lets a caller swap in a different login mutation without duplicating this whole hook —
+ * `views/instructor-auth` passes `instructorLogin` (`DEC-2026-0925-instructor-separate-login-route`),
+ * everyone else keeps the default `login`. Same trick as `AuthForm`'s `showOAuth` prop: one shared
+ * state machine, per-caller behavior through a parameter.
+ */
+export function useAuthFlow(initialMode: AuthMode, loginFn: (input: LoginInput) => Promise<AuthOutcome> = login) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -126,7 +134,7 @@ export function useAuthFlow(initialMode: AuthMode) {
     }
     setIsSubmitting(true);
     try {
-      const outcome = await login(parsed.data);
+      const outcome = await loginFn(parsed.data);
       if (!outcome.ok) {
         setFieldErrors(outcome.fieldErrors);
         return;
@@ -142,7 +150,7 @@ export function useAuthFlow(initialMode: AuthMode) {
       setIsSubmitting(false);
       setLoadingStep(null);
     }
-  }, [fields, runLoadingOverlayThenNavigate]);
+  }, [fields, loginFn, runLoadingOverlayThenNavigate]);
 
   const submitOAuth = useCallback(
     async (provider: "google" | "github") => {

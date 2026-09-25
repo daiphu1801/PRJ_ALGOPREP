@@ -11,10 +11,11 @@ import { OtpInputGroup } from "./otp-input-group";
 type AuthFormProps = {
   flow: ReturnType<typeof useAuthFlow>;
   /**
-   * Admin login (`views/admin-auth`, `DEC-2026-0915-admin-separate-login-route`) hides the OAuth
-   * row — admin accounts are provisioned, not self-service via Google/GitHub — without needing a
-   * second copy of this form. Defaults to true so the shared `auth` screen (student/instructor/
-   * public) keeps rendering it exactly as before.
+   * Admin login (`views/admin-auth`, `DEC-2026-0915-admin-separate-login-route`) and Instructor
+   * login (`views/instructor-auth`, `DEC-2026-0925-instructor-separate-login-route`) both hide the
+   * OAuth row — those accounts are provisioned/promoted, not self-service via Google/GitHub —
+   * without needing a second copy of this form. Defaults to true so the shared `auth` screen
+   * (student/public) keeps rendering it exactly as before.
    */
   showOAuth?: boolean;
 };
