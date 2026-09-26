@@ -55,6 +55,14 @@ export async function fakeLogin(input: LoginInput): Promise<AuthOutcome> {
   return { ok: true, role: "STUDENT" };
 }
 
+// `DEC-2026-0925-instructor-separate-login-route` — same credential check as `fakeLogin`, plus a
+// role gate applied only after credentials verify (mirrors the real endpoint's `403 IDT-111`).
+export async function fakeInstructorLogin(input: LoginInput): Promise<AuthOutcome> {
+  const outcome = await fakeLogin(input);
+  if (!outcome.ok || outcome.role === "INSTRUCTOR") return outcome;
+  return { ok: false, fieldErrors: { identifier: "errors.notInstructorAccount" } };
+}
+
 export async function fakeOAuthLogin(_provider: "google" | "github"): Promise<AuthOutcome> {
   // Prototype note (BD Q2, 02-bd/screens/shared/SHR0101_auth.md, Câu hỏi mở): both OAuth buttons call the same
   // fake success path in the static prototype — a real redirect-based flow is DD's job.

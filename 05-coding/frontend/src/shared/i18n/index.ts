@@ -1,6 +1,6 @@
 "use client";
 
-export { useTranslations as useT, useLocale } from "next-intl";
+export { useTranslations as useT, useLocale, NextIntlClientProvider } from "next-intl";
 export { locales, defaultLocale, localeCookieName, type Locale } from "./config";
 
 import { localeCookieName, type Locale } from "./config";

@@ -83,11 +83,190 @@
       "passwordMismatch": "Passwords do not match",
       "usernameTaken": "This username already exists",
       "credentialsInvalid": "Wrong username or password",
-      "otpInvalid": "Incorrect verification code"
+      "otpInvalid": "Incorrect verification code",
+      "notInstructorAccount": "This account does not have instructor access"
     }
   },
+  "instructorAuth": {
+    "title": "Instructor sign in",
+    "subtitle": "For AlgoPrep instructors only — sign in with your granted account.",
+    "notInstructorHint": "Not an instructor? Use the regular sign-in page instead."
+  },
   "problemList": {
-    "title": "Problems"
+    "title": "Problems",
+    "summary": {
+      "solvedTotal": "Solved",
+      "linkSaved": "Saved problems",
+      "btnRandom": "Random problem"
+    },
+    "topicNav": {
+      "label": "Filter by topic"
+    },
+    "filter": {
+      "all": "All",
+      "searchLabel": "Search problems",
+      "searchPlaceholder": "Search by title or code",
+      "statusLabel": "Filter by status",
+      "difficultyLabel": "Filter by difficulty"
+    },
+    "state": {
+      "solved": "Solved",
+      "attempted": "Attempted",
+      "todo": "Todo"
+    },
+    "difficulty": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard"
+    },
+    "submissionModel": {
+      "both": "Both",
+      "stdioOnly": "Standard I/O only"
+    },
+    "table": {
+      "caption": "Problem list table",
+      "colState": "Status",
+      "colTitle": "Problem",
+      "colTopics": "Topics",
+      "colDifficulty": "Difficulty",
+      "colAcRate": "AC rate",
+      "btnSolve": "Solve",
+      "hasReview": "Has Solution Review",
+      "empty": "No problem matches this filter"
+    },
+    "pager": {
+      "summary": "Showing {from}-{to} of {total} problems",
+      "previous": "Previous page",
+      "next": "Next page",
+      "goToPage": "Go to page {page}"
+    },
+    "inProgress": {
+      "title": "In progress",
+      "empty": "No problem in progress"
+    },
+    "assignment": {
+      "title": "Class assignments",
+      "empty": "No problem assigned yet"
+    },
+    "language": {
+      "java": "Java",
+      "cpp": "C++",
+      "python": "Python"
+    }
+  },
+  "savedProblems": {
+    "title": "Saved problems",
+    "subtitle": "{total} saved, {solved} solved",
+    "summary": {
+      "total": "Total saved",
+      "solved": "Solved among these"
+    },
+    "filter": {
+      "all": "All",
+      "searchLabel": "Search problems",
+      "searchPlaceholder": "Search by title or code",
+      "statusLabel": "Filter by status",
+      "difficultyLabel": "Filter by difficulty"
+    },
+    "state": {
+      "solved": "Solved",
+      "attempted": "Attempted",
+      "todo": "Todo"
+    },
+    "difficulty": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard"
+    },
+    "table": {
+      "caption": "Saved problems table",
+      "colProblem": "Problem",
+      "colTopics": "Topics",
+      "colState": "Status",
+      "colNote": "Private note",
+      "noNote": "No note yet",
+      "colSavedAt": "Saved on",
+      "btnSolve": "Solve",
+      "btnUnsave": "Unsave",
+      "emptyFiltered": "No problem matches this filter"
+    },
+    "emptyAll": "You haven't saved any problem yet.",
+    "footerPrivacyNote": "Saved problems and notes are visible to you only."
+  },
+  "problemDetail": {
+    "empty": {
+      "title": "No problem selected",
+      "linkList": "Back to problem list"
+    },
+    "taskbar": {
+      "linkList": "Problem list",
+      "btnRun": "Run Code",
+      "btnSubmit": "Submit"
+    },
+    "difficulty": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard"
+    },
+    "submissionModel": {
+      "both": "Both models available",
+      "stdioOnly": "Standard I/O only"
+    },
+    "panel": {
+      "tabsLabel": "Select a problem info tab",
+      "tabStatement": "Statement",
+      "tabSubmissions": "Submissions",
+      "tabReview": "Solution Review",
+      "examplesTitle": "Examples",
+      "constraintsTitle": "Constraints",
+      "noSubmissions": "You haven't submitted this problem yet.",
+      "timeComplexity": "Time complexity",
+      "spaceComplexity": "Space complexity",
+      "linkMockInterview": "Open mock interview",
+      "noReview": "No Solution Review for this problem yet.",
+      "btnSave": "Save",
+      "btnUnsave": "Unsave"
+    },
+    "toolbar": {
+      "languageLabel": "Select language",
+      "modeLabel": "Select submission model",
+      "inputMethodLabel": "Select input method",
+      "codeAreaLabel": "Code editor area",
+      "uploadHint": "Drag and drop or pick a source file (.java, .cpp, .py, max 64 KB)"
+    },
+    "mode": {
+      "stdio": "Has main",
+      "function": "Function wrapper"
+    },
+    "inputMethod": {
+      "type": "Type directly",
+      "upload": "Upload file"
+    },
+    "language": {
+      "java": "Java",
+      "cpp": "C++",
+      "python": "Python"
+    },
+    "console": {
+      "tabsLabel": "Select a result panel tab",
+      "tabTestcase": "Testcase",
+      "tabResult": "Result",
+      "passed": "Passed",
+      "failed": "Failed",
+      "runHint": "Click \"Run Code\" to run against sample testcases.",
+      "judging": "Judging...",
+      "submitHint": "Click \"Submit\" to submit your solution.",
+      "linkResult": "View full result",
+      "linkReview": "Solution review",
+      "linkInterview": "Mock interview"
+    },
+    "verdict": {
+      "accepted": "Accepted",
+      "wrongAnswer": "Wrong Answer",
+      "runtimeError": "Runtime Error",
+      "timeLimitExceeded": "Time Limit Exceeded",
+      "running": "Judging"
+    }
   },
   "adminNav": {
     "sidebarLabel": "Admin area navigation",
@@ -112,7 +291,14 @@
     "auth": "Log in & Sign up",
     "profile": "Profile",
     "identityNamePlaceholder": "User",
-    "adminIdentityPlaceholder": "Administrator"
+    "adminIdentityPlaceholder": "Administrator",
+    "footerBrand": "AlgoPrep Admin · v2.4.1",
+    "footerCopyright": "© 2026 AlgoPrep. Internal control panel.",
+    "footerStatusOk": "All services operating normally",
+    "footerLinkApiDocs": "API docs",
+    "footerLinkJudgeStatus": "go-judge status",
+    "footerLinkChangelog": "Changelog",
+    "footerLinkSupport": "Support"
   },
   "adminOverview": {
     "title": "Overview",
@@ -874,6 +1060,837 @@
       "minPublic": "At least 2 public testcases",
       "solutionPasses": "Reference solution passes every testcase",
       "minExamples": "At least 2 worked examples"
+    }
+  },
+  "submissionResult": {
+    "breadcrumbLabel": "Breadcrumb",
+    "breadcrumbProblems": "Problem bank",
+    "breadcrumbCurrent": "Submission #{id}",
+    "notFound": "Submission not found.",
+    "verdict": {
+      "PENDING": "Queued",
+      "COMPILING": "Compiling",
+      "JUDGING": "Judging...",
+      "ACCEPTED": "Accepted",
+      "WRONG_ANSWER": "Wrong answer",
+      "TIME_LIMIT_EXCEEDED": "Time limit exceeded",
+      "MEMORY_LIMIT_EXCEEDED": "Memory limit exceeded",
+      "RUNTIME_ERROR": "Runtime error",
+      "COMPILE_ERROR": "Compile error"
+    },
+    "difficulty": {
+      "EASY": "Easy",
+      "MEDIUM": "Medium",
+      "HARD": "Hard"
+    },
+    "verdictSubtitle": "{passed}/{total} testcases passed - submitted {submittedAt}",
+    "stats": {
+      "testcase": "Testcases",
+      "runtime": "Runtime",
+      "memory": "Memory",
+      "beats": "Beats",
+      "beatsValue": "Faster than {percent}%",
+      "mode": "Submission mode"
+    },
+    "mode": {
+      "FUNCTION_WRAPPER": "Function wrapper",
+      "STANDARD_IO": "Standard I/O"
+    },
+    "language": {
+      "PYTHON": "Python 3",
+      "CPP": "C++ 17",
+      "JAVA": "Java 21"
+    },
+    "testcaseTableCaption": "Per-testcase results",
+    "testcaseEmpty": "No testcase has run yet.",
+    "col": {
+      "order": "#",
+      "visibility": "Type",
+      "verdict": "Verdict",
+      "runtime": "Runtime",
+      "memory": "Memory",
+      "action": "Detail",
+      "expand": "Detail"
+    },
+    "visibility": {
+      "SAMPLE": "Sample",
+      "HIDDEN": "Hidden"
+    },
+    "sample": {
+      "input": "Input",
+      "expected": "Expected output",
+      "actual": "Actual output",
+      "hiddenNotice": "Hidden testcase input/output is never shown, to prevent leaking the answer."
+    },
+    "code": {
+      "copy": "Copy code",
+      "copied": "Copied!"
+    },
+    "actions": {
+      "solutionReview": "Solution review (AI)",
+      "mockInterview": "Mock interview (AI)",
+      "retry": "Back to Workspace",
+      "needAccepted": "Available once this submission is Accepted."
+    }
+  },
+  "mySubmissions": {
+    "title": "My submissions",
+    "subtitle": "Your full submission history",
+    "stats": {
+      "total": "Total submissions",
+      "accepted": "Accepted",
+      "acceptedValue": "{count} ({rate}%)",
+      "firstTry": "First-try accepted",
+      "firstTryValue": "{firstTry} / {accepted} ({rate}%)",
+      "topLanguage": "Most used",
+      "topLanguageValue": "{language} ({rate}%)"
+    },
+    "filter": {
+      "searchLabel": "Search problems",
+      "searchPlaceholder": "Search by problem code or title",
+      "verdictLabel": "Filter by verdict",
+      "languageLabel": "Filter by language",
+      "all": "All"
+    },
+    "verdict": {
+      "ACCEPTED": "Accepted",
+      "WRONG_ANSWER": "Wrong answer",
+      "TIME_LIMIT_EXCEEDED": "Time limit exceeded",
+      "MEMORY_LIMIT_EXCEEDED": "Memory limit exceeded",
+      "RUNTIME_ERROR": "Runtime error",
+      "COMPILE_ERROR": "Compile error"
+    },
+    "language": {
+      "PYTHON": "Python 3",
+      "CPP": "C++ 17",
+      "JAVA": "Java 21"
+    },
+    "table": {
+      "caption": "Submission history",
+      "col": {
+        "submittedAt": "Submitted at",
+        "problem": "Problem",
+        "language": "Language",
+        "verdict": "Verdict",
+        "testcases": "Testcases",
+        "runtime": "Runtime"
+      },
+      "btnResult": "Result",
+      "btnReview": "Review",
+      "needAccepted": "Available once this submission is Accepted.",
+      "empty": "No submission matches this filter."
+    },
+    "footer": {
+      "summary": "Showing {from}-{to} of {total} submissions",
+      "previous": "Previous",
+      "next": "Next",
+      "pageLabel": "Page {page}"
+    }
+  },
+  "solutionReview": {
+    "breadcrumbLabel": "Breadcrumb",
+    "breadcrumbSubmissionResult": "Submission result",
+    "breadcrumbCurrent": "Solution review",
+    "statProblem": "Problem",
+    "statApproach": "Approach",
+    "statReadability": "Readability",
+    "interviewCta": "Interview on this",
+    "approachOptimal": "optimal",
+    "approachSuboptimal": "not optimal",
+    "eduNoticeTitle": "Learning feedback, not an official grade",
+    "eduNoticeBody": "A single AI pass over the submitted code. Learning feedback, not an official grade.",
+    "summaryTitle": "Overall",
+    "complexityTitle": "Complexity",
+    "complexityYours": "Yours",
+    "complexityBest": "Best known",
+    "complexityNote": "Note",
+    "complexityTime": "Time",
+    "complexitySpace": "Memory",
+    "rubricTitle": "Solution review rubric",
+    "rubric": {
+      "correctness": "Correctness",
+      "performance": "Performance",
+      "cleanCode": "Code quality",
+      "scalability": "Scalability",
+      "dataStructure": "Data structure"
+    },
+    "strengthsTitle": "Done well",
+    "improvementsTitle": "To improve",
+    "edgeCasesTitle": "Edge cases to watch",
+    "diffTitle": "Suggested version",
+    "sourceCodeTitle": "Submitted code",
+    "applyCta": "Apply in Workspace",
+    "difficulty": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard"
+    },
+    "errorTransientTitle": "The AI system is busy",
+    "errorTransientBody": "The AI system is busy — try again in a few minutes.",
+    "retry": "Retry",
+    "errorBudgetLockedTitle": "Daily AI review limit reached",
+    "errorBudgetLockedBody": "You've reached today's AI review limit. You can keep solving problems normally.",
+    "backToWorkspace": "Back to the problem bank",
+    "applyConfirmTitle": "Confirm overwriting your source code",
+    "applyConfirmBody": "The suggested code will overwrite your current code in the Workspace. Continue?",
+    "applyConfirmConfirm": "Overwrite & open Workspace",
+    "applyConfirmCancel": "Cancel"
+  },
+  "mockInterview": {
+    "statSessions": "Sessions completed",
+    "statSessionsMeta": "Total completed sessions",
+    "statAverage": "Average score",
+    "statWeakest": "Criterion to improve",
+    "startFrom": "Start from",
+    "tab": {
+      "submission": "Accepted submission",
+      "bank": "Question bank",
+      "custom": "Custom topic"
+    },
+    "customTopicHint": "Pick a topic, level and language for a self-practice session.",
+    "configTitle": "Session settings",
+    "levelLabel": "Level",
+    "level": {
+      "intern": "Intern",
+      "junior": "Junior",
+      "middle": "Middle",
+      "senior": "Senior"
+    },
+    "turnsLabel": "Number of turns",
+    "turnsOption": "{count} turns",
+    "hintLabel": "Allow hints",
+    "startCta": "Start session",
+    "stage": {
+      "explain": "Explain",
+      "challenge": "Challenge",
+      "scaleUp": "Scale up"
+    },
+    "turnCount": "Turn {current} / {total}",
+    "aiTyping": "AI is typing...",
+    "messageInputLabel": "Your answer",
+    "messageInputPlaceholder": "Type your answer...",
+    "send": "Send",
+    "hintCta": "Ask for a hint",
+    "stopEarlyCta": "End early",
+    "earlyExitTitle": "End the interview session?",
+    "earlyExitBody": "The session will end before all turns are used and will be graded on what was covered.",
+    "earlyExitConfirm": "End session",
+    "earlyExitCancel": "Keep going",
+    "resultOverall": "Overall session score",
+    "rubric": {
+      "clarity": "Clarity",
+      "technicalAccuracy": "Technical accuracy",
+      "pushbackHandling": "Pushback handling",
+      "complexityAwareness": "Complexity awareness"
+    },
+    "retryCta": "Practice again",
+    "backCta": "Back to list"
+  },
+  "interviewBankList": {
+    "stats": {
+      "total": "Total questions",
+      "known": "Known",
+      "reviewing": "Reviewing",
+      "drilledThisWeek": "Self-rated"
+    },
+    "startDrill": "Quick drill · {count}",
+    "startMockInterview": "Start mock session",
+    "startMockInterviewUnavailable": "No standalone entry point for a mock session in this build yet",
+    "searchLabel": "Search questions",
+    "searchPlaceholder": "Search question or tag",
+    "statusFilterLabel": "Filter by recall status",
+    "statusTabs": {
+      "all": "All",
+      "new": "New",
+      "reviewing": "Reviewing",
+      "known": "Known"
+    },
+    "topicFilterLabel": "Filter by topic",
+    "filterAll": "All",
+    "topic": {
+      "csTheory": "CS theory",
+      "systemDesign": "System design",
+      "database": "Database",
+      "language": "Language",
+      "behavioural": "Behavioural"
+    },
+    "level": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard"
+    },
+    "recall": {
+      "unrated": "New",
+      "known": "Known",
+      "vague": "Vague",
+      "forgotten": "Forgotten"
+    },
+    "bookmarkLabel": "Bookmark for later",
+    "emptyFiltered": "No question matches these filters.",
+    "quickView": {
+      "selectPrompt": "Select a question to preview it.",
+      "outlineLabel": "Answer outline",
+      "recallLabel": "Recall level",
+      "viewDetail": "View details"
+    },
+    "drill": {
+      "counter": "Card {current} / {total}",
+      "exit": "Exit",
+      "reveal": "Show answer outline",
+      "hide": "Hide answer"
+    }
+  },
+  "interviewQuestionDetail": {
+    "notFound": "This question was not found, or is no longer active.",
+    "header": {
+      "linkBack": "Back to list",
+      "bookmark": "Bookmark for later",
+      "bookmarked": "Bookmarked"
+    },
+    "topic": {
+      "csTheory": "CS theory",
+      "systemDesign": "System design",
+      "database": "Database",
+      "language": "Language",
+      "behavioural": "Behavioural"
+    },
+    "level": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard"
+    },
+    "mode": {
+      "groupLabel": "Mode",
+      "study": "Study mode",
+      "practice": "Practice mode",
+      "practiceLockedReason": "This question has no grading rubric yet, so Practice mode is locked."
+    },
+    "study": {
+      "outlineLabel": "Answer outline",
+      "answerFrameworkLabel": "Model answer framework",
+      "keywordsLabel": "Core keywords",
+      "followUpsLabel": "Follow-up questions",
+      "recallLabel": "Recall level",
+      "recall": {
+        "known": "Known",
+        "vague": "Vague",
+        "forgotten": "Forgotten"
+      }
+    },
+    "practice": {
+      "answerLabel": "Your answer",
+      "answerPlaceholder": "Write your answer here…",
+      "charCounter": "{count} / {max} characters",
+      "btnSubmit": "Submit answer",
+      "btnRetry": "Try a new attempt",
+      "pendingState": "Reviewing your answer...",
+      "strengthsLabel": "Strengths",
+      "gapsLabel": "Gaps",
+      "nextStepsLabel": "Next steps",
+      "eduDisclaimer": "This is learning feedback, not an official score.",
+      "aiUnavailable": "Your answer was recorded, but AI feedback is not available.",
+      "linkBackToStudy": "See the outline in Study mode",
+      "feedbackSample": {
+        "strength": "Covered well: {criterion}",
+        "gap": "Needs more detail on: {criterion}",
+        "nextSteps": "Review Study mode's outline and framework before trying again."
+      }
+    },
+    "attempts": {
+      "title": "Attempt history",
+      "emptyState": "You haven't practised this question yet.",
+      "attemptNo": "Attempt {n}",
+      "status": {
+        "pending": "Grading",
+        "completed": "Has feedback",
+        "failed": "Not graded"
+      }
+    },
+    "leaveConfirm": {
+      "message": "Your unsubmitted answer will be lost. Leave anyway?",
+      "btnStay": "Stay",
+      "btnLeave": "Leave"
+    }
+  },
+  "classManagement": {
+    "header": {
+      "title": "My Classes",
+      "summary": "{classCount} classes · {studentCount} students",
+      "btnCreateClass": "+ Create class"
+    },
+    "stats": {
+      "classCount": "Total classes",
+      "classCountMeta": "{count} students",
+      "avgCompletion": "Average completion",
+      "pendingGrading": "Pending manual grading",
+      "absentStudents": "Absent students"
+    },
+    "classList": {
+      "col": {
+        "studentCount": "{count} students",
+        "completionBar": "Completion rate",
+        "avgScore": "Avg score",
+        "pendingGrading": "Pending",
+        "absentCount": "Absent",
+        "menuEdit": "Edit class",
+        "menuInvite": "Invite codes",
+        "menuDelete": "Delete class"
+      }
+    },
+    "btnFilterClass": "View students",
+    "status": {
+      "insufficient_data": "Insufficient data",
+      "absent": "Absent",
+      "needs_support": "Needs support",
+      "watch": "Watch",
+      "on_track": "On track"
+    },
+    "studentList": {
+      "title": "Student list",
+      "col": {
+        "studentName": "Student",
+        "className": "Class",
+        "avgScore": "Avg score",
+        "completion": "Completion",
+        "status": "Status",
+        "lastActive": "Last active"
+      }
+    },
+    "btnRemoveStudent": "Remove from class",
+    "filterAll": "All",
+    "cancel": "Cancel",
+    "emptyStudents": "No students match this filter",
+    "popup": {
+      "createClassTitle": "Create class",
+      "editClassTitle": "Edit class",
+      "classNameLabel": "Class name",
+      "scheduleLabel": "Schedule",
+      "saveClass": "Save",
+      "inviteCodeTitle": "Invite codes",
+      "createInviteCode": "Create new code",
+      "deleteClassTitle": "Delete {name}?",
+      "deleteClassBody": "This permanently deletes the class and cannot be undone.",
+      "deleteClassConfirm": "Delete class",
+      "removeStudentTitle": "Remove {name} from class?",
+      "removeStudentBody": "This also deletes the student's submission history within this class.",
+      "removeStudentConfirm": "Remove student"
+    }
+  },
+  "classAssignments": {
+    "header": {
+      "title": "My Assignments",
+      "summary": "{count} problems assigned to your classes · from the shared problem bank",
+      "btnAssignFromBank": "+ Assign from problem bank"
+    },
+    "stats": {
+      "assignedCount": "Assigned problems",
+      "assignedCountMeta": "Across {count} classes",
+      "weeklySubmissions": "Submissions this week",
+      "weeklySubmissionsMeta": "Compared to last week",
+      "avgAcRate": "Average AC rate",
+      "pendingGrading": "Pending manual grading"
+    },
+    "assignmentList": {
+      "search": "Search by problem name",
+      "classTabs": "Filter by class",
+      "resultCount": "{shown} / {total} problems",
+      "col": {
+        "title": "Problem",
+        "topic": "Topic",
+        "difficulty": "Difficulty",
+        "assignedClasses": "Assigned to",
+        "submissionCount": "Submissions",
+        "acRate": "AC",
+        "btnDetail": "Details",
+        "btnRemove": "Remove from class"
+      }
+    },
+    "difficulty": {
+      "EASY": "Easy",
+      "MEDIUM": "Medium",
+      "HARD": "Hard"
+    },
+    "filterAll": "All",
+    "cancel": "Cancel",
+    "emptyAssignments": "No problems assigned yet",
+    "popup": {
+      "removeAssignmentTitle": "Remove {title} from class?",
+      "removeAssignmentBody": "The problem will no longer appear as assigned from now on, but students' submission history, scores and progress stay intact.",
+      "removeAssignmentConfirm": "Remove from class",
+      "removeClassChoice": "Class to remove from"
+    }
+  },
+  "classProgress": {
+    "header": {
+      "title": "Student progress",
+      "subtitle": "Track scores, completion and activity"
+    },
+    "scoreTrend": {
+      "title": "Average score by class",
+      "rangeLabel": "Last 6 weeks"
+    },
+    "attention": {
+      "title": "Needs attention"
+    },
+    "status": {
+      "insufficient_data": "Not enough data",
+      "absent": "Absent",
+      "needs_support": "Needs support",
+      "watch": "Watch",
+      "on_track": "On track"
+    },
+    "studentList": {
+      "title": "Student list",
+      "searchBox": "Search students",
+      "classTabs": "Filter by class",
+      "resultCount": "{shown} / {total} students",
+      "col": {
+        "studentName": "Student",
+        "className": "Class",
+        "avgScore": "Avg score",
+        "completion": "Completion",
+        "streak": "Streak",
+        "trend": "Trend",
+        "lastActive": "Last active"
+      }
+    },
+    "filterAll": "All",
+    "previous": "Previous",
+    "next": "Next",
+    "pageSummary": "Page {page} / {total}",
+    "empty": "No data yet"
+  },
+  "classStudentDetail": {
+    "loading": "Loading…",
+    "notFound": "Student not found in this class",
+    "backLink": "Back",
+    "btnRemoveFromClass": "Remove from class",
+    "linkViewGrading": "View this student's manual grading",
+    "stats": {
+      "avgScore": "Avg score",
+      "completion": "Completion",
+      "streak": "Streak",
+      "lastActive": "Last active"
+    },
+    "topicProgress": {
+      "title": "By topic",
+      "item": "{topic}: {count} problems"
+    },
+    "assignmentProgress": {
+      "title": "Assigned problems",
+      "col": {
+        "title": "Problem",
+        "topic": "Topic",
+        "acRate": "AC"
+      }
+    },
+    "submissionHistory": {
+      "title": "Submission history",
+      "col": {
+        "problem": "Problem",
+        "language": "Language",
+        "status": "Status",
+        "ratio": "Testcase ratio",
+        "submittedAt": "Submitted at"
+      },
+      "btnViewResult": "View result"
+    },
+    "empty": "No data yet",
+    "cancel": "Cancel",
+    "popup": {
+      "removeTitle": "Remove {name} from class?",
+      "removeBody": "This is a real deletion with cascade, wiping submission history within this class.",
+      "removeConfirm": "Remove student"
+    }
+  },
+  "instructorGrading": {
+    "header": {
+      "title": "Grading",
+      "subtitle": "Accepted submissions AI scored below 6/10 in your classes"
+    },
+    "stats": {
+      "pendingCount": "Pending",
+      "gradedCount": "Graded this week",
+      "avgManualScore": "Average score after grading"
+    },
+    "filter": {
+      "statusTabs": "Filter by grading status",
+      "classTabs": "Filter by class",
+      "studentChip": "Student: {name}",
+      "clearStudentChip": "Clear student filter",
+      "resultCount": "{count} submissions"
+    },
+    "statusFilter": {
+      "pending": "Pending",
+      "graded": "Graded"
+    },
+    "filterAll": "All",
+    "queue": {
+      "col": {
+        "student": "Student",
+        "problem": "Problem",
+        "className": "Class",
+        "submittedAt": "Submitted at",
+        "score": "Score",
+        "btnGrade": "Grade now"
+      }
+    },
+    "empty": "No submissions match this filter",
+    "popup": {
+      "title": "{student} · {problem}",
+      "meta": "AI: {ai}/10 · Instructor: {manual}",
+      "scoreInput": "Score (0-10)",
+      "commentInput": "Comment",
+      "btnCancel": "Cancel",
+      "btnSave": "Save score"
+    }
+  },
+  "instructorOverview": {
+    "toolbar": {
+      "searchBox": "Search classes, students, problems…",
+      "btnCreateClass": "+ Create class"
+    },
+    "stat": {
+      "classCount": "Classes",
+      "classCountMeta": "{count} students",
+      "studentCount": "Total students",
+      "pendingGrading": "Pending manual grading",
+      "avgScore": "Average class score"
+    },
+    "grading": {
+      "title": "Needs manual grading",
+      "subtitle": "AI-scored submissions below threshold",
+      "linkViewAll": "View all",
+      "col": {
+        "meta": "AI scored {score}/10 · submitted {time} ago"
+      }
+    },
+    "activity": {
+      "title": "Recent activity",
+      "subtitle": "Last 10 events"
+    },
+    "classes": {
+      "title": "My classes",
+      "linkManage": "Manage classes",
+      "col": {
+        "studentCount": "{count} students"
+      }
+    },
+    "trend": {
+      "title": "Student progress",
+      "subtitle": "Average score, last 4 weeks",
+      "linkViewAll": "View all"
+    },
+    "assignments": {
+      "title": "My assignments",
+      "linkViewAll": "View all"
+    },
+    "difficulty": {
+      "EASY": "Easy",
+      "MEDIUM": "Medium",
+      "HARD": "Hard"
+    },
+    "empty": "No data yet"
+  },
+  "profile": {
+    "loadError": "Could not load the profile.",
+    "retry": "Retry",
+    "settingsShortcut": "Account settings",
+    "form": {
+      "title": "Personal details",
+      "displayName": "Full name",
+      "email": "Email",
+      "schoolOrCompany": "School / company",
+      "currentPosition": "Current role",
+      "defaultLanguage": "Default language",
+      "targetPosition": "Target position",
+      "revert": "Revert",
+      "save": "Save changes",
+      "saved": "Saved",
+      "statusIdle": "Email is used for sign-in and reminders.",
+      "statusDirty": "Unsaved changes.",
+      "statusSaved": "Profile updated."
+    },
+    "security": {
+      "title": "Security",
+      "passwordLabel": "Password",
+      "changePassword": "Change",
+      "setPassword": "Set password",
+      "passwordChangedAt": "Last changed {date}",
+      "passwordNoDate": "Last-changed date unknown",
+      "noPassword": "No password set — signing in via {provider}",
+      "providerLabel": "Signed in with",
+      "providerDescription": "Sign-in methods linked to this account",
+      "providerCredentials": "Email and password"
+    },
+    "account": {
+      "title": "Account",
+      "joinedAt": "Joined",
+      "role": "Role"
+    },
+    "practice": {
+      "title": "Practice",
+      "solved": "Problems solved",
+      "submissions": "Submissions",
+      "interviews": "Mock interviews",
+      "viewFullProgress": "See full progress"
+    },
+    "emailOtp": {
+      "title": "Verify new email",
+      "hint": "A 6-digit code was sent to {email}. Enter it to finish changing your email.",
+      "codeLabel": "Confirmation code",
+      "cancel": "Cancel",
+      "confirm": "Confirm"
+    },
+    "passwordDialog": {
+      "titleChange": "Change password",
+      "titleSet": "Set password",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "currentPassword": "Current password",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm new password",
+      "ruleHint": "At least 8 characters, with both letters and digits."
+    },
+    "errors": {
+      "displayNameRequired": "Please enter your full name",
+      "displayNameTooLong": "Up to 100 characters",
+      "schoolOrCompanyTooLong": "Up to 150 characters",
+      "currentPositionTooLong": "Up to 100 characters",
+      "targetPositionTooLong": "Up to 100 characters",
+      "passwordTooShort": "Password must be at least 8 characters",
+      "passwordTooLong": "Password must be at most 128 characters",
+      "passwordNeedsLetter": "Password needs at least one letter",
+      "passwordNeedsDigit": "Password needs at least one digit",
+      "passwordMismatch": "Passwords do not match",
+      "currentPasswordRequired": "Please enter your current password",
+      "currentPasswordInvalid": "Current password is incorrect",
+      "otpLength": "The code must be 6 digits",
+      "otpDigitsOnly": "The code must contain digits only",
+      "otpInvalid": "The code is invalid or has expired"
+    }
+  },
+  "settings": {
+    "loadError": "Could not load settings.",
+    "retry": "Retry",
+    "backToProfile": "Back to profile",
+    "appearance": {
+      "title": "Appearance",
+      "description": "Applies across every screen and is remembered on this device."
+    },
+    "workspace": {
+      "title": "Workspace",
+      "defaultLanguage": "Default language",
+      "defaultLanguageDescription": "Pre-selected when a problem opens.",
+      "editorFontSize": "Editor font size",
+      "editorFontSizeDescription": "Applies to the code editor only.",
+      "autosaveDraft": "Autosave draft",
+      "autosaveDraftDescription": "Keeps unsent code per problem so a reload does not lose it.",
+      "vimMode": "Vim keybindings",
+      "vimModeDescription": "For the code editor."
+    },
+    "interview": {
+      "title": "Mock interview",
+      "degradedNotice": "Could not load mock-interview preferences. The other groups still work and save normally.",
+      "interviewerLevel": "Interviewer level",
+      "interviewerLevelDescription": "Sets how deep the follow-up questions go.",
+      "maxTurns": "Max turns per session",
+      "maxTurnsDescription": "The session closes and gives feedback at this limit.",
+      "hintAllowed": "Allow hints",
+      "hintAllowedDescription": "The interviewer may nudge you when an answer stalls.",
+      "scopeNote": "These three options only apply to sessions you start yourself from the question bank or a chosen topic. A session opened from an Accepted submission always uses the standard parameters.",
+      "saveFailedWarning": "Could not save mock-interview preferences (ai-review). Workspace and Notifications were still saved."
+    },
+    "notification": {
+      "title": "Notifications",
+      "streakReminder": "Practice reminder",
+      "streakReminderDescription": "One email a day when the streak is at risk.",
+      "weeklyReport": "Weekly report",
+      "weeklyReportDescription": "Progress by topic, sent every Monday."
+    },
+    "saveBar": {
+      "title": "Status",
+      "statusIdle": "Theme and language apply immediately; the rest is saved with the button below.",
+      "statusDirty": "You have unsaved changes.",
+      "statusSaved": "Settings applied to this account.",
+      "save": "Save settings",
+      "saved": "Saved"
+    },
+    "dataExport": {
+      "title": "Your data",
+      "exportSubmissions": "Export submissions",
+      "exportInterviews": "Export interview transcripts"
+    },
+    "dangerZone": {
+      "title": "Danger zone",
+      "consequenceText": "Your account is deactivated immediately and you will not be able to sign in again. After 30 days your identity details are anonymized; your submissions, saved problems and interview sessions are kept.",
+      "delete": "Delete account"
+    },
+    "deleteConfirm": {
+      "title": "Confirm account deletion",
+      "confirm": "Delete my account",
+      "cancel": "Cancel",
+      "confirmPhraseLabel": "Type your email ({email}) to confirm",
+      "phraseHint": "Email does not match yet."
+    },
+    "errors": {
+      "confirmPhraseMismatch": "Email does not match"
+    }
+  },
+  "myProgress": {
+    "title": "My progress",
+    "emptyGeneric": "No data yet",
+    "errorGeneric": "Could not load data",
+    "stats": {
+      "solved": "Solved",
+      "submissions": "Submissions",
+      "streak": "Streak",
+      "days": "days",
+      "avgAttempts": "Avg attempts",
+      "interviews": "Interviews",
+      "rangeTabs": "Select a time range",
+      "range7d": "7 days",
+      "range30d": "30 days",
+      "rangeAll": "All time"
+    },
+    "topics": {
+      "title": "By topic",
+      "orderNote": "Ordered by how much is left",
+      "colTopic": "Topic",
+      "colSolved": "Solved",
+      "colAcRate": "AC rate",
+      "colLast": "Last"
+    },
+    "chart": {
+      "title": "Submissions, last 14 days",
+      "tooltipCount": "Submissions"
+    },
+    "difficulty": {
+      "title": "By difficulty",
+      "EASY": "Easy",
+      "MEDIUM": "Medium",
+      "HARD": "Hard"
+    },
+    "focus": {
+      "title": "Focus next",
+      "allSolved": "You have solved every topic's problems",
+      "reasonLowestAc": "{rate}% AC — the weakest topic",
+      "reasonMostUnsolved": "{remaining} problems left, {rate}% AC",
+      "reasonStale": "No submission in {days} days"
+    },
+    "interview": {
+      "title": "Mock interviews",
+      "newSession": "Start a new session",
+      "degradedNotice": "Could not load mock-interview data. The rest of the page still works normally.",
+      "sessionCount": "Sessions",
+      "avgScore": "Average score",
+      "weakest": "Weakest rubric",
+      "criteria": {
+        "CLARITY": "Clarity",
+        "TECHNICAL_ACCURACY": "Technical accuracy",
+        "PUSHBACK_HANDLING": "Pushback handling",
+        "COMPLEXITY_AWARENESS": "Complexity awareness"
+      }
     }
   }
 }
