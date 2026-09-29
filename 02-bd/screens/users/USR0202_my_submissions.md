@@ -189,7 +189,7 @@ Bố cục dạng danh sách trung tâm một cột với các khối chức nă
 ### 4.5. Cấu trúc slice FSD [Nội bộ]
 
 - Route: `/my-submissions`
-- View slice: `src/views/my-submissions/`
+- View slice: `src/views/users/my-submissions/`
   - `ui/my-submissions-page.tsx`
   - `ui/submission-stats-cards.tsx`
   - `ui/submission-filter-toolbar.tsx`

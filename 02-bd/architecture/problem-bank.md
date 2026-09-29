@@ -69,6 +69,14 @@ Theo `DEC-2026-0820-architecture-baseline`: không import schema khác. `problem
   niệm testcase/submission)? BD tạm chọn phương án thứ hai (port hẹp, tên đề xuất
   `SampleSolutionRunnerPort`) vì F2-14 không cần toàn bộ ngữ nghĩa `submission` của F4 — chốt cụ thể ở DD.
 
+  **Xem lại 2026-09-28 — hợp đồng port phải nới:** F2-14 đổi sang mô hình AI viết script sinh dữ liệu
+  (`01-rd/req/problem-bank.md` — F2-14), nên ngoài lượt "một chương trình + một input -> một output"
+  (chạy Đáp án mẫu) còn một lượt hình dạng KHÁC: **chạy script sinh dữ liệu, không có input, output rất
+  lớn**. Hai ràng buộc mới đi kèm, không dùng chung với lượt chấm bài: **giới hạn kích thước output**
+  (bài nộp học viên bị chặn tự nhiên vì chỉ in đáp án, script sinh dữ liệu thì mục đích là in thật
+  nhiều) và **hạt giống ngẫu nhiên cố định** (không cố định thì F2-09 phiên bản hoá mất ý nghĩa).
+  Nới hợp đồng port hay thêm một hàm riêng — chốt ở DD.
+
 ### 3.3. Consume domain event (xây read model nội bộ)
 
 | Sự kiện lắng nghe | Từ module | Dùng để cập nhật | Phục vụ |

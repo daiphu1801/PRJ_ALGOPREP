@@ -215,7 +215,7 @@ Bố cục dạng tài liệu báo cáo dọc chuyên nghiệp:
 ### 4.5. Cấu trúc slice FSD [Nội bộ]
 
 - Route: `/submissions/[id]/review`
-- View slice: `src/views/solution-review/`
+- View slice: `src/views/users/solution-review/`
   - `ui/solution-review-page.tsx`
   - `ui/review-header-stats.tsx`
   - `ui/educational-disclaimer-banner.tsx`

@@ -320,7 +320,7 @@ i18n, không phải yêu cầu hiển thị song ngữ cùng lúc — cùng kế
 
 | Khối | Slice dự kiến | Căn cứ |
 | :--- | :--- | :--- |
-| Trang | `views/profile` | Quy ước FSD của dự án |
+| Trang | `views/users/profile` | Quy ước FSD của dự án |
 | Khung khu Người học | Dùng lại `widgets/app-shell` | `02-bd/screens/users/_shell.md` |
 | Khối danh tính | `widgets/profile-identity-card` | Prototype `:101-110` |
 | Biểu mẫu 6 trường | `features/edit-my-profile` | Prototype `:112-129` |

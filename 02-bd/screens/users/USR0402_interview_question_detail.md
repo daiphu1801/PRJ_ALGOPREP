@@ -305,7 +305,7 @@ Không quy định màu sắc, khoảng cách hay typography ở BD
 
 | Khối | Slice dự kiến | Căn cứ |
 | :--- | :--- | :--- |
-| Trang | `views/interview-question-detail` | Quy ước FSD của dự án |
+| Trang | `views/users/interview-question-detail` | Quy ước FSD của dự án |
 | Khung khu Người học | Dùng lại `widgets/student-shell` | `02-bd/screens/users/_shell.md` |
 | Dữ liệu miền câu hỏi | **Dùng lại** `entities/interview-question` | Dùng chung với `USR0401`, **không nhân bản** [Nguồn: 02-bd/screens/users/USR0401_interview_bank_list.md:283-284] |
 | Nhãn chủ đề | **Dùng lại** `entities/question-topic` | Như trên |

@@ -11,8 +11,8 @@
   [Nguồn: 01-rd/screens/shared/SHR0302_interview_question_authoring.md:6-10].
 - Màn này **chưa có prototype** ở `09-layoutBase/` (`[Đợi nextjs]`), route chưa dựng mockup trung gian
   [Nguồn: 01-rd/screens/shared/SHR0302_interview_question_authoring.md:12]. Đã có một bản dựng UI thật ở
-  `05-coding/frontend/src/views/interview-question-authoring/`, tự nhận là "PROTOTYPE — no DD yet"
-  [Nguồn: 05-coding/frontend/src/views/interview-question-authoring/ui/interview-question-authoring-view.tsx:1].
+  `05-coding/frontend/src/views/shared/interview-question-authoring/`, tự nhận là "PROTOTYPE — no DD yet"
+  [Nguồn: 05-coding/frontend/src/views/shared/interview-question-authoring/ui/interview-question-authoring-view.tsx:1].
   BD này dùng bản dựng đó làm bằng chứng cấu trúc bổ sung khi RD không đủ chi tiết, ghi rõ từng chỗ dùng.
 - Màn này không có màn con, chỉ có 2 popup: Xem như học viên, Xác nhận xoá mềm.
 
@@ -110,7 +110,7 @@
 
 [Khi huỷ] Không có.
 
-[Nguồn: 01-rd/screens/shared/SHR0302_interview_question_authoring.md:52; 05-coding/frontend/src/views/interview-question-authoring/ui/interview-question-authoring-view.tsx:100-102]
+[Nguồn: 01-rd/screens/shared/SHR0302_interview_question_authoring.md:52; 05-coding/frontend/src/views/shared/interview-question-authoring/ui/interview-question-authoring-view.tsx:100-102]
 
 #### Biên soạn câu hỏi phỏng vấn (đang sửa) → Biên soạn câu hỏi phỏng vấn (tạo mới, dữ liệu nhân bản)
 
@@ -143,7 +143,7 @@ sao chép toàn bộ.
 
 [Khi huỷ] Không có.
 
-[Nguồn: 01-rd/screens/shared/SHR0302_interview_question_authoring.md:66-67, 82-84; 05-coding/frontend/src/views/interview-question-authoring/ui/interview-question-authoring-view.tsx:277-287]
+[Nguồn: 01-rd/screens/shared/SHR0302_interview_question_authoring.md:66-67, 82-84; 05-coding/frontend/src/views/shared/interview-question-authoring/ui/interview-question-authoring-view.tsx:277-287]
 
 #### Popup Xác nhận xoá mềm → Danh sách câu hỏi phỏng vấn
 
@@ -176,7 +176,7 @@ sao chép toàn bộ.
 
 [Khi huỷ] Không có.
 
-[Nguồn: 01-rd/screens/shared/SHR0302_interview_question_authoring.md:53, mục 5 Q2; 05-coding/frontend/src/views/interview-question-authoring/ui/interview-question-authoring-view.tsx:109-111 (nút đã dựng, chưa gắn hành vi mở popup)]
+[Nguồn: 01-rd/screens/shared/SHR0302_interview_question_authoring.md:53, mục 5 Q2; 05-coding/frontend/src/views/shared/interview-question-authoring/ui/interview-question-authoring-view.tsx:109-111 (nút đã dựng, chưa gắn hành vi mở popup)]
 
 ### 3.2 Sơ đồ
 
@@ -243,9 +243,9 @@ F6-13].
 - Không có vòng đời nháp/xuất bản như `problem_authoring` — chốt 2026-09-01
   [Nguồn: 01-rd/screens/shared/SHR0302_interview_question_authoring.md:94].
 - 4 nhóm trường trình bày tuần tự theo chiều dọc, không dùng tab — khớp bản dựng UI hiện tại (4 `Card` xếp
-  dọc, không có điều khiển tab) [Nguồn: 05-coding/frontend/src/views/interview-question-authoring/ui/interview-question-authoring-view.tsx:119-274].
+  dọc, không có điều khiển tab) [Nguồn: 05-coding/frontend/src/views/shared/interview-question-authoring/ui/interview-question-authoring-view.tsx:119-274].
 - Khối "Hành động quản trị" (Nhóm 4, Nhân bản/Xoá mềm) đặt thành một khối riêng ở cuối trang, không phải
-  menu ngữ cảnh ở thanh đầu trang [Nguồn: 05-coding/frontend/src/views/interview-question-authoring/ui/interview-question-authoring-view.tsx:260-274].
+  menu ngữ cảnh ở thanh đầu trang [Nguồn: 05-coding/frontend/src/views/shared/interview-question-authoring/ui/interview-question-authoring-view.tsx:260-274].
 - Không thiết kế bảng "bộ câu hỏi" (`question_sets`) — đã loại khỏi phạm vi 2026-09-13
   [Nguồn: 02-bd/database/interview-bank.md:149-155].
 - Ba trường `suggested_approach`/`sample_answer_framework`/`core_keywords` (F6-04/05/06) tồn tại trong
@@ -311,7 +311,7 @@ hoàn thiện Next.js theo DD; không quy định màu sắc, khoảng cách hay
 
 | Khối | Slice dự kiến | Căn cứ |
 | :--- | :--- | :--- |
-| Trang | `views/interview-question-authoring` | Đã dựng: `05-coding/frontend/src/views/interview-question-authoring/` |
+| Trang | `views/shared/interview-question-authoring` | Đã dựng: `05-coding/frontend/src/views/shared/interview-question-authoring/` |
 | Dữ liệu miền | `entities/interview-question` | Đã dựng: cung cấp `QUESTION_TOPICS`, `QUESTION_LEVELS`, `RubricCriterion` |
 | Khối tiêu chí đánh giá | Dùng lại `shared/ui/NumberStepper` cho ô trọng số | Đã dựng: `05-coding/frontend/src/shared/ui/number-stepper.tsx`, cùng component họ `admin_ai_config` dùng cho rubric Solution Review |
 | Popup | `features/interview-question-preview`, `features/interview-question-soft-delete` | Xác nhận xoá mềm đã dựng bằng `shared/ui/ConfirmDialog`; popup xem trước chưa gắn hành vi |
@@ -396,7 +396,7 @@ hoàn thiện Next.js theo DD; không quy định màu sắc, khoảng cách hay
 | | 3 | Huỷ | `interviewQuestionAuthoring.popup.softDeleteCancel` | - | - | Button | - | - | - | I | - | - | Đóng popup, giữ nguyên câu hỏi<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-15 |
 
 [Nguồn: 01-rd/screens/shared/SHR0302_interview_question_authoring.md:52-67; 02-bd/database/interview-bank.md:8-66;
-05-coding/frontend/src/views/interview-question-authoring/ui/interview-question-authoring-view.tsx:95-287]
+05-coding/frontend/src/views/shared/interview-question-authoring/ui/interview-question-authoring-view.tsx:95-287]
 
 ---
 
@@ -555,7 +555,7 @@ không gọi máy chủ (đề xuất, chưa chốt — xem Q3).
 
 [Nguồn: 01-rd/screens/shared/SHR0302_interview_question_authoring.md:52-84, 93-94;
 02-bd/database/interview-bank.md:22-66;
-05-coding/frontend/src/views/interview-question-authoring/ui/interview-question-authoring-view.tsx:58-91]
+05-coding/frontend/src/views/shared/interview-question-authoring/ui/interview-question-authoring-view.tsx:58-91]
 
 ---
 
@@ -585,11 +585,11 @@ Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 
 | # | Câu hỏi | Vì sao chưa trả lời được | Chủ sở hữu |
 | :-: | :--- | :--- | :--- |
-| Q1 | Ngưỡng độ dài tối đa cho mỗi dòng "câu hỏi đào sâu" (Nhóm 2) — RD chỉ chốt "không giới hạn số lượng", không chốt giới hạn ký tự mỗi dòng. | RD không nêu con số, bản dựng UI hiện tại cũng không đặt `maxLength` [Nguồn: 05-coding/frontend/src/views/interview-question-authoring/ui/interview-question-authoring-view.tsx:152-159]. | DD `interview-bank` |
-| Q2 | Popup "Xem như học viên" hiển thị dữ liệu form hiện tại (chưa lưu) hay bắt buộc lưu trước? Có gọi `GetInterviewQuestionDetail` hay hoàn toàn dựng phía client từ state đang có? | RD chỉ nói có nút preview, không nói rõ nguồn dữ liệu; bản dựng UI hiện tại có nút nhưng chưa gắn hành vi [Nguồn: 01-rd/screens/shared/SHR0302_interview_question_authoring.md:53; 05-coding/frontend/src/views/interview-question-authoring/ui/interview-question-authoring-view.tsx:109-111]. | DD `interview-bank` + DD màn hình |
+| Q1 | Ngưỡng độ dài tối đa cho mỗi dòng "câu hỏi đào sâu" (Nhóm 2) — RD chỉ chốt "không giới hạn số lượng", không chốt giới hạn ký tự mỗi dòng. | RD không nêu con số, bản dựng UI hiện tại cũng không đặt `maxLength` [Nguồn: 05-coding/frontend/src/views/shared/interview-question-authoring/ui/interview-question-authoring-view.tsx:152-159]. | DD `interview-bank` |
+| Q2 | Popup "Xem như học viên" hiển thị dữ liệu form hiện tại (chưa lưu) hay bắt buộc lưu trước? Có gọi `GetInterviewQuestionDetail` hay hoàn toàn dựng phía client từ state đang có? | RD chỉ nói có nút preview, không nói rõ nguồn dữ liệu; bản dựng UI hiện tại có nút nhưng chưa gắn hành vi [Nguồn: 01-rd/screens/shared/SHR0302_interview_question_authoring.md:53; 05-coding/frontend/src/views/shared/interview-question-authoring/ui/interview-question-authoring-view.tsx:109-111]. | DD `interview-bank` + DD màn hình |
 | Q3 | Ba trường `suggested_approach` (F6-04), `sample_answer_framework` (F6-05), `core_keywords` (F6-06) tồn tại trong `interview_questions` nhưng không có nhóm trường nào ở màn này (RD chỉ chốt 4 nhóm) hay ở bản dựng UI hiện tại biên soạn chúng. Ai/màn nào tạo dữ liệu cho ba trường này — seed thủ công, một nhóm thứ 5 còn thiếu trong RD, hay một cơ chế khác (ví dụ AI sinh tự động)? | Đây là khoảng trống thật giữa schema DB (F6-04/05/06 đã có cột) và phạm vi màn soạn nội dung duy nhất của Bounded Context này (F6-13) — không suy đoán "chắc có nhóm ẩn nào đó" [Nguồn: 01-rd/screens/shared/SHR0302_interview_question_authoring.md:48-67; 02-bd/database/interview-bank.md:31-33]. | Chủ dự án (có thể cần một DEC nếu quyết định thêm Nhóm 5) |
 | Q4 | Có ngưỡng số dòng tối đa cho bộ tiêu chí đánh giá (Nhóm 3) không, hay hoàn toàn không giới hạn như Nhóm 2? | RD không nêu trần cho Nhóm 3, chỉ nêu rõ cho Nhóm 2 | DD `interview-bank` |
-| Q5 | `title` của câu hỏi lấy từ đâu — người dùng nhập riêng, hay hệ thống tự sinh từ vài từ đầu của `content_markdown`? Bản dựng UI hiện tại không có ô nhập tiêu đề riêng, chỉ có ô nội dung câu hỏi. | RD nói "mã/tiêu đề câu hỏi đang sửa" ở thanh đầu trang nhưng không mô tả cách nhập; DB có cột `title` độc lập với `content_markdown` [Nguồn: 01-rd/screens/shared/SHR0302_interview_question_authoring.md:52; 02-bd/database/interview-bank.md:29-30; 05-coding/frontend/src/views/interview-question-authoring/ui/interview-question-authoring-view.tsx:120-146]. | DD `interview-bank` + DD màn hình |
+| Q5 | `title` của câu hỏi lấy từ đâu — người dùng nhập riêng, hay hệ thống tự sinh từ vài từ đầu của `content_markdown`? Bản dựng UI hiện tại không có ô nhập tiêu đề riêng, chỉ có ô nội dung câu hỏi. | RD nói "mã/tiêu đề câu hỏi đang sửa" ở thanh đầu trang nhưng không mô tả cách nhập; DB có cột `title` độc lập với `content_markdown` [Nguồn: 01-rd/screens/shared/SHR0302_interview_question_authoring.md:52; 02-bd/database/interview-bank.md:29-30; 05-coding/frontend/src/views/shared/interview-question-authoring/ui/interview-question-authoring-view.tsx:120-146]. | DD `interview-bank` + DD màn hình |
 | Q6 | Danh sách `criterion_code` gợi ý mặc định cho A2/A3 khi soạn tiêu chí mới — có seed sẵn vài tiêu chí phổ biến (ví dụ "Tính đúng đắn", "Độ đầy đủ", "Rõ ràng") hay để trống hoàn toàn tự đặt như bản dựng UI hiện tại? | `02-bd/database/interview-bank.md` mục 7 đã nêu câu hỏi này ở tầng schema, chưa có câu trả lời | DD `interview-bank` |
 | Q7 | Trường `description` của `answer_rubrics` (mô tả tiêu chí) không có ô nhập ở màn này theo cả RD lẫn bản dựng UI hiện tại — có bổ sung ô nhập không, hay để trống vĩnh viễn (NULL) và trường này chỉ phục vụ mục đích khác? | RD (mục 63-65) chỉ nói "mỗi tiêu chí có trọng số phần trăm", không nhắc tới mô tả; DB có cột `description` [Nguồn: 02-bd/database/interview-bank.md:60]. | DD `interview-bank` |
 

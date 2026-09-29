@@ -213,9 +213,9 @@ BD. Ngưỡng breakpoint cụ thể chưa có nguồn, xem Câu hỏi mở Q8.
 
 | Khối | Slice dự kiến | Căn cứ |
 | :--- | :--- | :--- |
-| Trang | `views/admin-language-config` | Quy ước FSD của dự án |
+| Trang | `views/admin/language-config` | Quy ước FSD của dự án |
 | Khung Admin | Dùng lại `widgets/app-shell` | `02-bd/screens/admin/_shell.md:19-21` |
-| Bảng ngôn ngữ | `widgets/language-config-table` + `entities/language-config` | Prototype `:163-203` |
+| Bảng ngôn ngữ | `views/admin/language-config` (UI ở `ui/`, dữ liệu ở `api/` + `model/` của view; chỉ tách widget khi màn thứ hai cần) | Prototype `:163-203` |
 | Giới hạn mặc định | `widgets/grading-defaults-card` | Prototype `:206-220` |
 | Sandbox | `features/sandbox-config` | Prototype `:222-237` |
 | Lưu thay đổi | `features/language-config-save` | Prototype `:158` |

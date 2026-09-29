@@ -31,7 +31,7 @@ Quét toàn bộ `02-bd/screens/**` (Sheet 7.3 "Danh sách endpoint") tìm mọi
 | 6 | GET | `/api/v1/identity/auth/oauth/{provider}/callback` | Nhận callback OAuth, đối chiếu `state`, tự liên kết hoặc tạo tài khoản (F1-15) | `SHR0101_auth` | Công khai; BR-03 |
 | 7 | POST | `/api/v1/identity/auth/password/forgot` | Gửi OTP quên mật khẩu (F1-17) | `SHR0101_auth` | Công khai; luôn trả 200 (chống dò email, `02-bd/security/identity.md:45-46`) |
 | 8 | POST | `/api/v1/identity/auth/password/reset` | Xác nhận OTP + đặt mật khẩu mới (F1-17) | `SHR0101_auth` | Công khai; BR-04 |
-| 49 | POST | `/api/v1/identity/auth/instructor/login` | Đăng nhập riêng cho giảng viên — cùng contract endpoint #2, tự chặn tài khoản không phải `INSTRUCTOR` | `views/instructor-auth` (route `/instructor/login`, không có màn RD/BD — `DEC-2026-0925-instructor-separate-login-route`) | Công khai; rate-limit BR-01; đánh số #49 (nối cuối danh sách) để không đổi số các endpoint 9-48 đã được trích dẫn nơi khác |
+| 49 | POST | `/api/v1/identity/auth/instructor/login` | Đăng nhập riêng cho giảng viên — cùng contract endpoint #2, tự chặn tài khoản không phải `INSTRUCTOR` | `views/teacher/auth` (route `/instructor/login`, không có màn RD/BD — `DEC-2026-0925-instructor-separate-login-route`) | Công khai; rate-limit BR-01; đánh số #49 (nối cuối danh sách) để không đổi số các endpoint 9-48 đã được trích dẫn nơi khác |
 
 ### 0.2. Hồ sơ cá nhân — `USR0502_profile.md`
 
@@ -66,7 +66,7 @@ Quét toàn bộ `02-bd/screens/**` (Sheet 7.3 "Danh sách endpoint") tìm mọi
 | 25 | POST | `/api/v1/identity/classes/join` | Học viên tham gia lớp bằng mã mời (F1-23) | `USR0101_problem_list` (khối "Bài tập lớp"), luồng nhập mã | BR-09: hết hạn/không tồn tại → `422 IDT-410` |
 | 26 | GET | `/api/v1/identity/classes/{classId}/students` | Danh sách học viên trong lớp, kèm trạng thái phân loại (F1-27) | `INS0201_class_management`, `INS0203_class_progress` | Ngưỡng phân loại theo BR-10 |
 | 27 | DELETE | `/api/v1/identity/classes/{classId}/students/{studentId}` | Gỡ học viên khỏi lớp (F1-26) | `INS0201_class_management` | Phát `StudentRemovedFromClass`, xem BR-11 |
-| 28 | GET | `/api/v1/identity/classes/{classId}/students/{studentId}/detail` | Chi tiết một học viên trong lớp (F1-28) | `INS0204_class_student_detail` | Điểm TB tính theo phạm vi lớp [SoT: `07-review/...:184`, `DEC-2026-0921-teacher-screens-conflict-resolutions`] — đọc từ `judge-orchestration.GetStudentSubmissionMetrics` |
+| 28 | GET | `/api/v1/identity/classes/{classId}/students/{studentId}/detail` | Chi tiết một học viên trong lớp (F1-28) | `INS0204_class_student_detail` | Điểm TB tính theo phạm vi lớp [SoT: `07-review/...:184`, `DEC-2026-0921-teacher-screens-conflict-resolutions`] — đọc từ `judge-orchestration.GetClassStudentSubmissionMetrics` |
 | 29 | GET | `/api/v1/identity/classes/{classId}/progress` | Dashboard tiến độ lớp: hoàn thành TB, phân loại 5 nhãn (F1-28) | `INS0203_class_progress` | Đọc `class_completion_stats` (BR-12); nhãn theo `DEC-2026-0921-teacher-screens-conflict-resolutions` |
 
 ### 0.5. Ma trận phân quyền và vai trò — `ADM0202_permission_matrix.md`

@@ -279,7 +279,7 @@ khoảng cách hay typography ở BD.
 
 | Khối | Slice dự kiến | Căn cứ |
 | :--- | :--- | :--- |
-| Trang | `views/admin-user-management` | Quy ước FSD của dự án |
+| Trang | `views/admin/user-management` | Quy ước FSD của dự án |
 | Khung Admin | Dùng lại `widgets/admin-shell` | `02-bd/screens/admin/_shell.md` |
 | Dải chỉ số | `widgets/user-stat-strip` | Prototype `:161-172` |
 | Bảng người dùng | `widgets/user-table` + `entities/user` | Prototype `:174-237` |

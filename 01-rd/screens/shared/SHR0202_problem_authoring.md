@@ -80,12 +80,16 @@ Tab và số đếm: "Nội dung đề" · "Ví dụ mẫu" (theo số ví dụ)
   ngôn ngữ của F2-10 không nằm ở màn này**, nằm ở `admin_language_config` (F4-11)
   [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_language_config`].
 - **"Ràng buộc dữ liệu"** — textarea tự do (`1 <= s.length, t.length <= 10^5 ...`, dòng 194-195, 416). Vừa là
-  phần đề bài (F2-01), vừa là **đầu vào bắt buộc cho F2-14**: AI sinh input "dựa trên đề bài Markdown và Ràng
-  buộc dữ liệu Admin đã khai báo" [SoT: 01-rd/req/problem-bank.md — F2-14].
+  phần đề bài (F2-01), vừa là **đầu vào bắt buộc cho F2-14**: AI viết script sinh input dựa trên đề bài
+  Markdown, Ràng buộc dữ liệu đã khai, **và 2 testcase Sample làm ví dụ khuôn** — sửa 2026-09-28
+  [SoT: 01-rd/req/problem-bank.md — F2-14 bước 1].
 - **"Đáp án mẫu"** kèm chọn ngôn ngữ Python/C++/Java (dòng 199-210, 690), phụ đề trên màn: "Dùng để sinh kết
   quả mong đợi cho testcase" (dòng 202) — khớp chính xác cơ chế an toàn của F2-14
-  [SoT: 01-rd/req/problem-bank.md — F2-14]. `problem-bank.md` mới chỉ nhắc Đáp án mẫu **bên trong** F2-14 như một điều kiện
-  tiên quyết [SoT: 01-rd/req/problem-bank.md — F2-14], chưa có mã riêng cho chính việc khai Đáp án mẫu — xem Q7.
+  [SoT: 01-rd/req/problem-bank.md — F2-14]. **Sửa 2026-09-28:** thiếu sót ghi ở đây đã được xử lý — việc khai và
+  chạy kiểm Đáp án mẫu nay có mã riêng **F2-18**, vì nó gác hai cửa (mở tính năng F2-14 và cho phép xuất bản
+  F2-15) [SoT: 01-rd/req/problem-bank.md — F2-18]. **Đáp án mẫu KHÔNG bao giờ đưa vào prompt của AI**: nó là
+  trọng tài sinh output của hệ thống, đưa vào prompt vừa phơi đáp án vừa khiến AI sinh input bám theo cách cài
+  đặt thay vì theo đặc tả [SoT: 01-rd/req/problem-bank.md — F2-14 bước 2].
 
 **Tab 2 — Ví dụ mẫu** (dòng 215-249, 629-632): danh sách ví dụ, mỗi ví dụ gồm Đầu vào / Kết quả / Giải thích,
 kèm "Thêm ví dụ" và xoá từng ví dụ. Phụ đề: "Hiển thị công khai trong đề bài, kèm lời giải thích" (dòng 220).
@@ -97,8 +101,17 @@ liệu chạy máy) — prototype tách hai tab riêng và giữ đúng phân bi
 
 - Tóm tắt "N testcase · M công khai · tổng trọng số X" (dòng 257, 708).
 - **"Tải lên hàng loạt"** (dòng 259) — F2-07.
-- **"Sinh tự động"** (dòng 260) — F2-14. Prototype chưa gắn `onClick` (còn là placeholder tĩnh), đúng như
-  `06-plan/PROTOTYPE_DEBT.md` đã ghi nhận [SoT: 06-plan/PROTOTYPE_DEBT.md:266-267].
+- **"Sinh tự động"** (dòng 260) — F2-14. Prototype tĩnh chưa gắn `onClick`, đúng như
+  `06-plan/PROTOTYPE_DEBT.md` đã ghi nhận [SoT: 06-plan/PROTOTYPE_DEBT.md:266-267]. **Điều kiện mở nút
+  (sửa 2026-09-28):** phải có **tối thiểu 2 testcase Sample do người soạn đề tự viết** và **Đáp án mẫu
+  (F2-18) đã chạy Pass cả 2 Sample đó**; chưa đủ thì nút vô hiệu kèm lý do. Bấm nút không sinh thẳng dữ
+  liệu mà **sinh một script**, chạy script trong sandbox rồi mới nạp input qua Đáp án mẫu lấy output
+  [SoT: 01-rd/req/problem-bank.md — F2-14].
+- **Bảng testcase nháp + ma trận độ phủ** (chưa có trong prototype tĩnh, thêm 2026-09-28) — mỗi testcase do
+  F2-14 sinh mang một **nhãn phân loại ca** (biên dưới, biên trên, suy biến, trùng lặp, đã sắp xếp, giá trị
+  cực trị); ma trận gom theo nhãn để người soạn đề nhìn ra đang thiếu loại ca nào. Testcase nháp **không
+  tính vào các mốc của checklist xuất bản** cho tới khi được duyệt và phân loại Sample/Hidden
+  [SoT: 01-rd/req/problem-bank.md — F2-14].
 - **"Chạy với đáp án mẫu"** (dòng 261, 709-710) + dải kết quả chạy ("Đúng 8/8 testcase" hoặc "Thất bại ở
   testcase #k", kèm thời gian tối đa, dòng 264-269, 711-716) — hiện thực điều kiện tiên quyết của F2-14
   ("Đáp án mẫu đã chạy Pass với testcase hiện có") [SoT: 01-rd/req/problem-bank.md — F2-14].
@@ -205,7 +218,8 @@ AI soạn nháp" (xem ghi chú ở Q6).
 | REQ-06 | Tải lên bộ testcase theo lô, bộ lớn lưu MinIO (F2-07) | Chức năng | `01-rd/req/problem-bank.md` — F2-07 |
 | REQ-07 | Phiên bản hoá bộ testcase cho Re-judge (F2-09) | Chức năng | `01-rd/req/problem-bank.md` — F2-09 |
 | REQ-08 | Giới hạn thời gian/bộ nhớ theo bài kèm hệ số nhân theo ngôn ngữ (F2-10) | Chức năng | `01-rd/req/problem-bank.md` — F2-10 |
-| REQ-09 | AI sinh testcase: AI chỉ sinh input, output lấy từ chạy thật Đáp án mẫu qua go-judge; testcase ở trạng thái nháp chờ xác nhận (F2-14) | Chức năng | `01-rd/req/problem-bank.md` — F2-14 |
+| REQ-09 | AI sinh testcase: AI viết **script** sinh input (nhận đề bài + ràng buộc + 2 Sample, KHÔNG nhận Đáp án mẫu), chạy script trong sandbox có giới hạn kích thước output, kiểm input thoả ràng buộc, rồi nạp qua Đáp án mẫu lấy output; testcase ở trạng thái nháp chờ duyệt và không tính vào checklist xuất bản (F2-14) | Chức năng | `01-rd/req/problem-bank.md` — F2-14 |
+| REQ-09b | Khai Đáp án mẫu và chạy kiểm trên toàn bộ testcase hiện có; gác điều kiện mở F2-14 và điều kiện xuất bản F2-15 (F2-18) | Chức năng | `01-rd/req/problem-bank.md` — F2-18 |
 | REQ-10 | Given-When-Then liên quan (—) | Chức năng | `01-rd/req/user_stories/a2_instructor.md` (`US-A2-01`, `US-A2-02`, `US-A2-05`) |
 | REQ-11 | Gác quyền: `PROBLEM_AUTHORING` và `TESTCASE_MANAGEMENT` là hai `FUNCTION` trong ma trận phân quyền (F1-10 tới F1-12) | Chức năng | `01-rd/req/identity.md` — F1-10 tới F1-12 |
 
@@ -246,7 +260,7 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 
 | Loại | Tham chiếu |
 |---|---|
-| Yêu cầu module | `01-rd/req/identity.md` — F1-10 tới F1-12; `01-rd/req/problem-bank.md` — F2-01 tới F2-14; `01-rd/req/judge-orchestration.md` — F4-13; `01-rd/req/ai-review.md` — F5-17, F5-23. |
+| Yêu cầu module | `01-rd/req/identity.md` — F1-10 tới F1-12; `01-rd/req/problem-bank.md` — F2-01 tới F2-18; `01-rd/req/judge-orchestration.md` — F4-13; `01-rd/req/ai-review.md` — F5-17, F5-23. |
 | User story | `01-rd/req/user_stories/a2_instructor.md` — `US-A2-01`, `US-A2-02`, `US-A2-05`. |
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` mục 7.2 (khu Giảng viên) và mục 7.0 (khu dùng chung). |
 | Prototype | `09-layoutBase/Admin - Soạn đề bài.dc.html` — prototype (736 dòng). |

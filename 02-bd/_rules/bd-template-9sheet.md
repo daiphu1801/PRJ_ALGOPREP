@@ -131,7 +131,7 @@ thứ phải giống nhau xuyên `01-rd` → `02-bd` → `03-dd` theo luật ch�
 | Quản trị | `ADM` | A3 |
 | Dùng chung nhiều vai trò | `SHR` | A1 / A2 / A3 |
 
-### Bảng mã (32 màn)
+### Bảng mã (33 màn)
 
 | Mã | Tên file | Slug chính tắc | Tên màn | Nhóm |
 | :--- | :--- | :--- | :--- | :--- |
@@ -144,9 +144,10 @@ thứ phải giống nhau xuyên `01-rd` → `02-bd` → `03-dd` theo luật ch�
 | `USR0302` | `USR0302_mock_interview.md` | `mock_interview` | Phỏng vấn giả lập | AI |
 | `USR0401` | `USR0401_interview_bank_list.md` | `interview_bank_list` | Ngân hàng câu hỏi | Câu hỏi phỏng vấn |
 | `USR0402` | `USR0402_interview_question_detail.md` | `interview_question_detail` | Chi tiết câu hỏi | Câu hỏi phỏng vấn |
-| `USR0501` | `USR0501_my_progress.md` | `my_progress` | Tiến độ của tôi | Cá nhân |
+| `USR0501` | `USR0501_my_progress.md` | `my_progress` | Tiến độ của tôi — **đã gộp vào `USR0601`** 2026-09-27, RD giữ làm hồ sơ gốc, không viết BD/DD (`DEC-2026-0927-student-area-merge-and-shared-shell`) | Cá nhân |
 | `USR0502` | `USR0502_profile.md` | `profile` | Hồ sơ | Cá nhân |
 | `USR0503` | `USR0503_settings.md` | `settings` | Thiết lập | Cá nhân |
+| `USR0601` | `USR0601_dashboard.md` | `dashboard` | Tổng quan người học | Tổng quan |
 | `INS0101` | `INS0101_overview.md` | `instructor_overview` | Tổng quan giảng viên | Tổng quan |
 | `INS0201` | `INS0201_class_management.md` | `class_management` | Quản lý lớp | Lớp học |
 | `INS0202` | `INS0202_class_assignments.md` | `class_assignments` | Giao bài cho lớp | Lớp học |
@@ -170,6 +171,10 @@ thứ phải giống nhau xuyên `01-rd` → `02-bd` → `03-dd` theo luật ch�
 
 Quy tắc bổ sung:
 - **Mã đã cấp thì không đổi, không tái sử dụng.** Màn bị cắt khỏi phạm vi thì mã đó bỏ trống vĩnh viễn.
+  Ngoại lệ đã dùng một lần, ghi lại để không ai tưởng là tiền lệ: màn `dashboard` ban đầu được đặt nhầm là
+  `USR0100` khi viết RD ngày 2026-09-27 — sai dạng mã (`<nhóm 2 số><thứ tự 2 số>` không có thứ tự `00`, và
+  nhóm `01` của khu Người học đã là "Bài tập"). Sửa thành `USR0601` ngay trong ngày, trước khi có BD/DD nào
+  trỏ tới. `USR0100` chưa bao giờ hợp lệ nên không phải "mã đã cấp"; nó bỏ trống vĩnh viễn như mọi mã khác.
 - Màn mới lấy số thứ tự kế tiếp trong nhóm của nó. Nhóm mới lấy số nhóm kế tiếp trong khu vực.
 - `02-bd/screens/admin/_shell.md` **không phải màn hình** mà là khung chung dùng lại, nên không cấp mã và
   giữ nguyên tên.

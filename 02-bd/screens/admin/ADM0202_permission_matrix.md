@@ -213,7 +213,7 @@ cho DD quyết định thêm dòng phụ hay bỏ, không phải phần của kh
 
 | Khối | Slice dự kiến | Căn cứ |
 | :--- | :--- | :--- |
-| Trang | `views/admin-permission-matrix` | Quy ước FSD của dự án |
+| Trang | `views/admin/permission-matrix` | Quy ước FSD của dự án |
 | Khung Admin | Dùng lại `widgets/app-shell` | [Nguồn: 02-bd/screens/admin/_shell.md:20-24] |
 | Khối vai trò | `features/role-tabs` + `entities/role` | Prototype `:167-190` |
 | Tạo và xoá vai trò | `features/role-create`, `features/role-delete` | Prototype `:174-189` |

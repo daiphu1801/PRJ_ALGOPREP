@@ -262,7 +262,7 @@ mở Q3.
 
 | Khối | Slice dự kiến | Căn cứ |
 | :--- | :--- | :--- |
-| Trang | `views/saved-problems` | Quy ước FSD của dự án |
+| Trang | `views/users/saved-problems` | Quy ước FSD của dự án |
 | Khung Người học | Dùng lại `widgets/app-shell` (biến thể `student-header`) | `02-bd/screens/users/_shell.md` mục 1 |
 | Dải chỉ số | `widgets/saved-problems-summary` | Prototype `:99-109` |
 | Ô tìm kiếm, tab độ khó, tab trạng thái | Dùng lại `features/problem-filter` của `USR0101` | Prototype `:112-123`; cùng bộ tham số URL nên cùng một feature, chỉ khác tập tham số bật lên |

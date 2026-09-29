@@ -274,6 +274,7 @@ Việc chia nhỏ và đánh mã là [SoT: Suy luận]; **nội dung** từng ch
 | F1-28 | Giảng viên xem tổng hợp tiến độ nhiều học viên trong (các) lớp phụ trách — dashboard `class_progress` | A2 | Bổ sung 2026-08-30, **một mã tổng hợp** cho cả dashboard (`DEC-2026-0830-class-progress-dashboard`), trả lời Q1-Q6 của `class_progress.md`. Các con số ngưỡng `[SoT: Suy luận]`, BD/DD tinh chỉnh |
 | F1-29 | Dashboard tổng quan vận hành — `admin_overview` | A3 | Bổ sung 2026-08-31, **một mã tổng hợp** bao trùm 8/9 khối thống kê (`DEC-2026-0831-admin-overview-dashboard-stats`). Không phải một `FUNCTION` riêng trong ma trận F1-10 — mọi vai trò `ADMIN` đều thấy vì đây là đích mặc định sau đăng nhập |
 | F1-30 | Dashboard tổng quan khối lượng công việc — `instructor_overview` | A2 | Bổ sung 2026-08-31, **một mã tổng hợp** cho 4 thẻ chỉ số cộng 5 widget (`DEC-2026-0831-instructor-overview-dashboard`); trả lời `US-A2-11`. Không phải một `FUNCTION` riêng trong ma trận F1-10. **Chủ dự án phê duyệt chính thức 2026-09-05** |
+| F1-31 | Dashboard tổng quan luyện tập của người học — `dashboard` | A1 | Bổ sung 2026-09-27, **một mã tổng hợp** cho 4 thẻ chỉ số cộng 6 khối (`DEC-2026-0927-student-dashboard-home`). Không phải một `FUNCTION` riêng trong ma trận F1-10 — mọi vai trò `STUDENT` đều thấy vì đây là đích mặc định sau đăng nhập. `my_progress` (F1-06 tới F1-08) đã gộp vào màn này cùng ngày (`DEC-2026-0927-student-area-merge-and-shared-shell`), nên F1-31 nay bao cả phần đó |
 
 ### 5.2. F2 — Ngân hàng bài toán và testcase
 
@@ -414,7 +415,7 @@ chiếu với mã thực dùng trong toàn `01-rd/`: **0 mã sống nào còn n�
 
 | Phân hệ | Số chức năng | Trọng số công việc dự kiến |
 | :--- | :---: | :--- |
-| F1 — Danh tính và phân quyền | 30 | Trung bình, **tăng mạnh sau 2026-08-25**. 30 mã (F1-01 tới F1-30): ma trận quyền Role × Function × Action, OAuth, danger zone, tự đặt lại mật khẩu; cộng thêm tuỳ chọn cá nhân (F1-18 tới F1-22), CRUD lớp học và mã mời (F1-23 tới F1-27), và **ba dashboard tổng hợp** (F1-28 `class_progress`, F1-29 `admin_overview`, F1-30 `instructor_overview`) — mỗi dashboard là một mã duy nhất thay vì cấp mã rời cho từng widget |
+| F1 — Danh tính và phân quyền | 31 | Trung bình, **tăng mạnh sau 2026-08-25**. 31 mã (F1-01 tới F1-31): ma trận quyền Role × Function × Action, OAuth, danger zone, tự đặt lại mật khẩu; cộng thêm tuỳ chọn cá nhân (F1-18 tới F1-22), CRUD lớp học và mã mời (F1-23 tới F1-27), và **bốn dashboard tổng hợp** (F1-28 `class_progress`, F1-29 `admin_overview`, F1-30 `instructor_overview`, F1-31 `dashboard` của người học) — mỗi dashboard là một mã duy nhất thay vì cấp mã rời cho từng widget |
 | F2 — Ngân hàng bài toán và testcase | 17 | Trung bình. 17 mã (F2-01 tới F2-17): giao diện soạn đề A2, bookmark note riêng tư, AI sinh input testcase, cộng vòng đời hai trạng thái (F2-15), nhân bản (F2-16), xuất CSV (F2-17) |
 | F3 — Bộ sinh mã bọc hàm | 13 | **Cao nhất, tăng thêm sau 2026-08-24.** 13 mã (F3-01 tới F3-13): trọng tâm kỹ thuật, nhân ba theo số ngôn ngữ — và từ `DEC-2026-0824-dual-submission-model-per-problem`, codegen tăng gần gấp đôi vì mỗi ngôn ngữ giờ cần sinh cả mã Bọc hàm lẫn khung Standard I/O cho hầu hết bài toán, không còn là trường hợp hiếm |
 | F4 — Điều phối judge engine | 11 | **Cao.** 11 mã hiệu lực (F4-01 tới F4-03, F4-05 tới F4-08, F4-10 tới F4-13): điều phối concurrency Virtual Threads, realtime WebSocket từng testcase. **Cập nhật 2026-08-28:** F4-09a tới F4-09e (chấm lại) đã loại khỏi phạm vi, `DEC-2026-0828-remove-rejudge-scope`. **Cập nhật 2026-08-31:** F4-04 (fail-fast) hết hiệu lực, thêm F4-12 (Beats) và F4-13 (điểm tỷ lệ testcase), `DEC-2026-0831-partial-score-testcase-ratio` |
@@ -559,6 +560,7 @@ Chưa có prototype. Khu dùng chung 3 → 4 slug, tổng 30 → 31 màn.
 
 | Slug | Tên màn | Chức năng chính | Bounded Context liên quan |
 | :--- | :--- | :--- | :--- |
+| `dashboard` | Tổng quan — trang đích sau đăng nhập của người học; **đã gộp cả `my_progress`** | F1-31, F1-06 tới F1-08, F6-09, F6-10 | `identity`, `problem-bank`, `judge-orchestration`, `ai-review`, `interview-bank` |
 | `problem_list` | Danh sách bài toán | F2-11 | `problem-bank`, `identity` |
 | `problem_detail` | Chi tiết bài toán: đề bài, soạn mã, chạy thử, nộp bài | F2-01, F3-*, F4-01, F4-02, F4-08 | `problem-bank`, `harness`, `judge-orchestration` |
 | `submission_result` | Kết quả một bài nộp | F4-08, F2-08 | `judge-orchestration` |
@@ -566,7 +568,6 @@ Chưa có prototype. Khu dùng chung 3 → 4 slug, tổng 30 → 31 màn.
 | `mock_interview` | Phiên phỏng vấn giả lập | F5-09 tới F5-16 | `ai-review` |
 | `interview_bank_list` | Danh sách câu hỏi phỏng vấn | F6-01 tới F6-03 | `interview-bank` |
 | `interview_question_detail` | Chi tiết câu hỏi: chế độ học và chế độ luyện | F6-04 tới F6-08 | `interview-bank`, `ai-review` |
-| `my_progress` | Tiến độ cá nhân | F1-06 tới F1-08, F6-09, F6-10 | `identity`, `interview-bank` |
 | `my_submissions` | Lịch sử bài nộp của tôi | F1-07, F1-18 | `judge-orchestration` |
 | `profile` | Trang cá nhân — thông tin hiển thị, đổi mật khẩu | F1-09, F1-19 | `identity` |
 | `settings` | Cài đặt — chủ đề màu, ngôn ngữ giao diện, Workspace, phỏng vấn tự luyện, thông báo, xuất dữ liệu, xoá tài khoản | F1-16, F1-20, F1-21, F1-22, F5-28 | `identity`, `ai-review` |
@@ -582,6 +583,18 @@ liệt kê.
 (trước đó chỉ F1-07, một chỉ số, không phủ chính nội dung màn) lấp bằng F1-18; `profile` bổ sung F1-19 (tự
 đổi mật khẩu). Chủ đề màu/ngôn ngữ giao diện trên `settings` tiếp tục không cần mã riêng — đã có quyết định
 (`DEC-2026-0824-dark-light-theme`, `DEC-2026-0824-i18n-vi-en`).
+
+**Cập nhật 2026-09-27 (`DEC-2026-0927-student-dashboard-home`):** thêm slug `dashboard` — khu người học
+12 → **13 slug**, tổng 31 → 32 màn. Đây là màn tổng quan riêng của `STUDENT`, đồng thời là đích mới sau
+đăng nhập (sửa một phần Q3 của `01-rd/screens/shared/SHR0101_auth.md`, trước đó là `my_progress`). Trước
+thay đổi này `STUDENT` là vai trò duy nhất không có màn tổng quan, trong khi `ADMIN` đã có `admin_overview`
+và `INSTRUCTOR` đã có `instructor_overview`. Ranh giới giữa `dashboard` và `my_progress` ghi ở
+`01-rd/screens/users/USR0601_dashboard.md` mục 4 Q4.
+
+**Sửa cùng ngày (`DEC-2026-0927-student-area-merge-and-shared-shell`):** `my_progress` **gộp hẳn vào**
+`dashboard`, route `/progress` bỏ. Khu người học quay lại **12 slug**, tổng 31 màn — tức là thêm một màn
+rồi bỏ một màn, không phải thêm ròng. `01-rd/screens/users/USR0501_my_progress.md` giữ lại làm hồ sơ gốc
+của REQ-01 tới REQ-06 đã chuyển sang màn mới, không phải màn còn sống.
 
 **Màn nặng nhất là `problem_detail`** — nó chạm bốn Bounded Context và chứa Monaco Editor, bảng testcase
 realtime, và cửa vào hai luồng AI. Đây là màn nên làm prototype trước tiên.

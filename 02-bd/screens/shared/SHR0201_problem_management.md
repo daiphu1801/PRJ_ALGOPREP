@@ -293,7 +293,7 @@ khi dựng UI thật, con số phải suy ra từ chính tập dữ liệu đang
 
 | Khối | Slice dự kiến | Căn cứ |
 | :--- | :--- | :--- |
-| Trang | `views/problem-management` | Quy ước FSD của dự án |
+| Trang | `views/shared/problem-management` | Quy ước FSD của dự án |
 | Khung Admin/Giảng viên | Dùng lại khung chung của từng khu vực | Ngoài phạm vi file này |
 | Dải chỉ số | `widgets/problem-stat-strip` | Prototype `:162-173` |
 | Bảng bài toán | `widgets/problem-table` + `entities/problem` | Prototype `:177-245` |

@@ -270,7 +270,7 @@ khoảng cách hay typography ở BD.
 
 | Khối | Slice dự kiến | Căn cứ |
 | :--- | :--- | :--- |
-| Trang | `views/interview-bank-list` | Quy ước FSD của dự án |
+| Trang | `views/users/interview-bank-list` | Quy ước FSD của dự án |
 | Khung khu Người học | Dùng lại `widgets/student-shell` | `02-bd/screens/users/_shell.md` |
 | Thanh chỉ số | `widgets/recall-summary-bar` + `entities/recall-rating` | Prototype `:99-107` |
 | Bộ lọc | `features/interview-question-filter` + `entities/question-topic` | Prototype `:117-130` |

@@ -304,7 +304,7 @@ cách hay typography ở BD.
 
 | Khối | Slice dự kiến | Căn cứ |
 | :--- | :--- | :--- |
-| Trang | `views/instructor-overview` | Quy ước FSD của dự án; slice hiện là stub `pendingDesign` [Nguồn: 02-bd/screens/teacher/_shell.md:13-15] |
+| Trang | `views/teacher/overview` | Quy ước FSD của dự án; slice hiện là stub `pendingDesign` [Nguồn: 02-bd/screens/teacher/_shell.md:13-15] |
 | Khung Giảng viên | Dùng lại `widgets/app-shell` + `instructor-sidebar` | `02-bd/screens/teacher/_shell.md` mục 1 |
 | Hàng công cụ đầu màn | `widgets/instructor-overview-toolbar` | Prototype `:115-125`; **không** đẩy lên `_shell` vì các màn khác của khu này có hàng đầu khác hẳn [Nguồn: 02-bd/screens/teacher/_shell.md:30] |
 | 4 thẻ thống kê | `widgets/instructor-stat-cards` | Prototype `:127-138` |

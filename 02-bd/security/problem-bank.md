@@ -62,6 +62,16 @@ suốt dự án, không phải đặc thù riêng module.
   prompt-injection nếu đề bài chứa văn bản độc hại từ một nguồn không tin cậy — dù ở đây người soạn đề là
   A2/A3 đã qua xác thực, vẫn áp nguyên tắc chung "dữ liệu vào prompt là tham số, tách khỏi chỉ thị hệ
   thống" theo `CLAUDE.md` mục Rules).
+- **AI không bao giờ nhận Đáp án mẫu** (sửa 2026-09-28): AI chỉ nhận đề bài, ràng buộc dữ liệu và 2
+  testcase Sample. Đưa lời giải vào prompt vừa phơi đáp án một đường không cần thiết, vừa khiến AI sinh
+  input bám theo cách cài đặt cụ thể thay vì theo đặc tả [SoT: 01-rd/req/problem-bank.md — F2-14 bước 2].
+- **Script do AI viết chạy trong sandbox với BA hạn mức** (thêm 2026-09-28): chặn mạng, giới hạn thời
+  gian, và **giới hạn kích thước output**. Hạn mức thứ ba là ràng buộc mới, không có ở luồng chấm bài:
+  bài nộp học viên bị chặn tự nhiên vì nó chỉ in ra đáp án, còn script sinh dữ liệu có mục đích là in ra
+  thật nhiều — một vòng lặp sai là vài GB đổ vào đĩa.
+- **Kiểm input thoả ràng buộc đã khai trước khi nạp vào Đáp án mẫu** (thêm 2026-09-28). Cơ chế "output
+  từ chạy thật" KHÔNG bắt được loại lỗi này: input sai ràng buộc vẫn chạy trót lọt và vẫn sinh ra output
+  thật, nhưng testcase đó sai đặc tả nên bài nộp làm đúng theo ràng buộc công bố sẽ trượt oan.
 - **AI không bao giờ tự viết expected-output** — output luôn là kết quả chạy Đáp án mẫu thật qua
   `JudgeExecutionPort`/`SampleSolutionRunnerPort` (kiến trúc mục 3.2). Đây là kiểm soát bắt buộc, không
   phải tuỳ chọn cấu hình — loại bỏ hoàn toàn khả năng "AI bịa expected-output sai khiến bài đúng bị chấm

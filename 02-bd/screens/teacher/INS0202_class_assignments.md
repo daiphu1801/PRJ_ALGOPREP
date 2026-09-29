@@ -265,7 +265,7 @@ Hai điều khiển dưới đây **không có trong prototype** và do BD này 
 
 | Khối | Slice dự kiến | Căn cứ |
 | :--- | :--- | :--- |
-| Trang | `views/class-assignments` | Quy ước FSD của dự án; slice đã được tạo sẵn dạng stub [Nguồn: 02-bd/screens/teacher/_shell.md:13-14] |
+| Trang | `views/teacher/class-assignments` | Quy ước FSD của dự án; slice đã được tạo sẵn dạng stub [Nguồn: 02-bd/screens/teacher/_shell.md:13-14] |
 | Khung Giảng viên | Dùng lại `widgets/app-shell` (biến thể `instructor-sidebar`) | `02-bd/screens/teacher/_shell.md` mục 1 |
 | Dải thẻ số liệu | `widgets/assignment-summary-stats` | Prototype `:123-134` |
 | Bảng bài đã gán | `widgets/class-assignment-table` + `entities/class-assignment` | Prototype `:136-171` |

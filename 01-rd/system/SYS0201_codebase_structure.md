@@ -124,7 +124,7 @@ prj_algoprep/
 | Khái niệm | Tài liệu | Backend | Frontend | Database |
 | :--- | :--- | :--- | :--- | :--- |
 | Bounded Context | `code` trong `domain-registry.json` (`problem-bank`) | Module Maven `algoprep-problem-bank`, package `com.algoprep.problembank` | (không tương ứng) | Schema `problem` |
-| Màn hình | slug ở `01-rd/screens/<khu vực>/<slug>.md` (`users/problem_detail.md`) | (không tương ứng) | Slice `views/problem-detail/` | (không tương ứng) |
+| Màn hình | slug ở `01-rd/screens/<khu vực>/<slug>.md` (`users/problem_detail.md`) | (không tương ứng) | Slice `views/users/problem-detail/` | (không tương ứng) |
 | Thực thể nghiệp vụ | Dòng trong `glossary.md` | Class trong `domain/model/` | Slice `entities/<name>/` | Bảng |
 
 Ba lưu ý về dấu nối, vì chúng khác nhau và đây là chỗ hay sai:

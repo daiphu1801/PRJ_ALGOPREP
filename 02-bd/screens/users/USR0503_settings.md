@@ -301,7 +301,7 @@ liệu và chế độ lưu** của từng mục; câu chữ hiển thị cuối
 
 | Khối | Slice dự kiến | Căn cứ |
 | :--- | :--- | :--- |
-| Trang | `views/settings` | Quy ước FSD của dự án |
+| Trang | `views/users/settings` | Quy ước FSD của dự án |
 | Khung khu Người học | Dùng lại `widgets/app-shell` | `02-bd/screens/users/_shell.md` |
 | Nhóm Giao diện | Dùng lại `features/theme-switch` + `features/locale-switch` của khung | Prototype `:60,63` và `:215-225` là **cùng một cặp điều khiển**, không dựng hai lần |
 | Ba nhóm chờ nút Lưu | `widgets/settings-form` + `features/save-my-settings` | Prototype `:97-122`, `:136-141` |

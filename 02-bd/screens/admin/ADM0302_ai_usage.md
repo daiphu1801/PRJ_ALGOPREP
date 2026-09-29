@@ -236,7 +236,7 @@ khoảng cách hay typography ở BD.
 
 | Khối | Slice dự kiến | Căn cứ |
 | :--- | :--- | :--- |
-| Trang | `views/admin-ai-usage` | Quy ước FSD của dự án |
+| Trang | `views/admin/ai-usage` | Quy ước FSD của dự án |
 | Khung Admin | Dùng lại `widgets/admin-shell` | `02-bd/screens/admin/_shell.md` |
 | Bộ chọn khoảng thời gian | `features/ai-usage-range-filter` | Prototype `:152-156` |
 | Bốn thẻ chỉ số | `widgets/ai-usage-stats` | Prototype `:165-176` |
