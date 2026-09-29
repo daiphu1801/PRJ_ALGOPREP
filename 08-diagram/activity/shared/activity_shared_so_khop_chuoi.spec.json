@@ -1,0 +1,122 @@
+{
+  "_": "Tach doi tu mot so do bon nhanh ve ngay 2026-09-28: bon nhanh song song lam so do rong 1370px logic, dat trong bao cao thi chu chi con 4.4pt. Lan ranh tach lay tu chinh 02-bd/architecture/harness.md muc 6: EXACT/TRIMMED so SANH CHUOI, con EPSILON/UNORDERED_SET 'khong so sanh chuoi ma parse lai' (:243, :250). Nguon: 01-rd/req/harness.md:18-19, 02-bd/architecture/harness.md:231-256.",
+  "_vi_sao_activity": "Thuat toan re nhanh theo mot truong khai bao (matching_strategy), khong phai hoi thoai giua cac tang -- ve sequence se ra mot cot self-call. Cung ly do da chon activity cho activity_shared_sinh_ma_boc_ham.",
+  "_actor": "Khong thuoc actor nguoi nao: viec cua he thong tu dong (A4), chay o moi lan cham testcase.",
+  "_chuan_hoa_truoc": "Buoc chuan hoa dat TRUOC node quyet dinh vi ca bon chien luoc deu so tren chuoi DA chuan hoa theo dinh dang in an cua tung kind, khong so byte-by-byte tren chuoi tho [SoT: 02-bd/architecture/harness.md:233-235].",
+  "kind": "activity",
+  "title": "Sơ đồ hoạt động - So khớp kết quả trên chuỗi: EXACT và TRIMMED (hệ thống)",
+  "covers": [
+    "F3-07",
+    "F3-08"
+  ],
+  "activity": {
+    "nodes": [
+      {
+        "id": "start",
+        "type": "start"
+      },
+      {
+        "id": "n1",
+        "type": "action",
+        "text": "Nhận output thực tế, output mong đợi và matching_strategy đã khai của bài"
+      },
+      {
+        "id": "n2",
+        "type": "action",
+        "text": "Chuẩn hoá cả hai output theo định dạng in ấn của kiểu dữ liệu"
+      },
+      {
+        "id": "d1",
+        "type": "decision",
+        "text": "Chiến lược so khớp trên chuỗi nào?"
+      },
+      {
+        "id": "n3",
+        "type": "action",
+        "text": "So sánh hai chuỗi đã chuẩn hoá, phải bằng nhau tuyệt đối"
+      },
+      {
+        "id": "n4",
+        "type": "action",
+        "text": "Cắt khoảng trắng đầu cuối dòng, gộp khoảng trắng liên tiếp, rồi so như EXACT"
+      },
+      {
+        "id": "m1",
+        "type": "merge"
+      },
+      {
+        "id": "d2",
+        "type": "decision",
+        "text": "Hai chuỗi khớp?"
+      },
+      {
+        "id": "n5",
+        "type": "action",
+        "text": "Đánh dấu testcase Đạt"
+      },
+      {
+        "id": "n6",
+        "type": "action",
+        "text": "Đánh dấu testcase Chưa đạt, giữ output thực tế để hiển thị"
+      },
+      {
+        "id": "end",
+        "type": "end"
+      }
+    ],
+    "edges": [
+      {
+        "from": "start",
+        "to": "n1"
+      },
+      {
+        "from": "n1",
+        "to": "n2"
+      },
+      {
+        "from": "n2",
+        "to": "d1"
+      },
+      {
+        "from": "d1",
+        "to": "n3",
+        "guard": "EXACT"
+      },
+      {
+        "from": "d1",
+        "to": "n4",
+        "guard": "TRIMMED"
+      },
+      {
+        "from": "n3",
+        "to": "m1"
+      },
+      {
+        "from": "n4",
+        "to": "m1"
+      },
+      {
+        "from": "m1",
+        "to": "d2"
+      },
+      {
+        "from": "d2",
+        "to": "n5",
+        "guard": "khớp"
+      },
+      {
+        "from": "d2",
+        "to": "n6",
+        "guard": "không khớp"
+      },
+      {
+        "from": "n5",
+        "to": "end"
+      },
+      {
+        "from": "n6",
+        "to": "end"
+      }
+    ]
+  }
+}

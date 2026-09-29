@@ -1,0 +1,136 @@
+{
+  "_": "Luong nop bai va xem ket qua tung testcase theo thoi gian thuc cua actor A1. Nguon: US-A1-04 (01-rd/req/user_stories/a1_student.md), 01-rd/req/judge-orchestration.md (F4-01, F4-03, F4-08, F4-13), 02-bd/architecture/judge-orchestration.md muc 4 (state machine) va muc 6 (Outbox), 02-bd/architecture/harness.md muc 5 (plugin sinh ma, anh xa loi bien dich).",
+  "_khong_fail_fast": "F4-04 (dung som khi gap testcase sai) da het hieu luc theo DEC-2026-0831-partial-score-testcase-ratio -- vong lap chay het N testcase de co du lieu tinh ty le F4-13.",
+  "_tran": "8 participant -> be ngang 1310px, vuot canh dai A4. Chap nhan co y: day la luong xuyen 4 tang cong 2 ranh gioi tien trinh that (RabbitMQ, go-judge), gom bot bat ky cot nao cung xoa mat mot ranh gioi kien truc. In A3 hoac xuat SVG.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Nộp bài và chấm từng testcase (3/3)",
+  "covers": [
+    "F3-03",
+    "F3-04",
+    "F3-05",
+    "F4-03",
+    "F4-08",
+    "F4-13",
+    "F5-01"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Sinh viên",
+        "role": "actor"
+      },
+      {
+        "name": "SubmissionController",
+        "role": "controller",
+        "stereo": "REST + STOMP"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema judge"
+      },
+      {
+        "name": "JudgeWorker",
+        "role": "service",
+        "stereo": "consumer + harness"
+      },
+      {
+        "name": "go-judge",
+        "role": "external",
+        "stereo": "sandbox"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 3 - Chấm lần lượt N testcase, KHÔNG dừng sớm (F4-03, F4-13)"
+      },
+      {
+        "from": "JudgeWorker",
+        "to": "JudgeWorker",
+        "text": "Lặp cho từng testcase i = 1..N"
+      },
+      {
+        "from": "JudgeWorker",
+        "to": "PostgreSQL",
+        "text": "Phát hành judge_run_token cho cặp (submission, testcase i)"
+      },
+      {
+        "from": "JudgeWorker",
+        "to": "go-judge",
+        "text": "run(payload testcase i, giới hạn đã nhân hệ số ngôn ngữ)"
+      },
+      {
+        "from": "go-judge",
+        "to": "JudgeWorker",
+        "text": "exitCode, stdout, runtimeMs, memoryKb",
+        "kind": "return"
+      },
+      {
+        "from": "JudgeWorker",
+        "to": "JudgeWorker",
+        "text": "So khớp output theo matching_strategy, ra verdict testcase i"
+      },
+      {
+        "from": "JudgeWorker",
+        "to": "PostgreSQL",
+        "text": "Ghi kết quả testcase i và set consumed_at trong cùng giao dịch"
+      },
+      {
+        "from": "JudgeWorker",
+        "to": "SubmissionController",
+        "text": "Đẩy kết quả testcase i",
+        "kind": "async"
+      },
+      {
+        "from": "SubmissionController",
+        "to": "Sinh viên",
+        "text": "STOMP - cập nhật đúng một dòng trong bảng testcase",
+        "kind": "async"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "Sinh viên",
+        "text": "Thấy từng testcase sáng dần, không tải lại trang"
+      },
+      {
+        "phase": "Giai đoạn 4 - Tổng hợp verdict, phát sự kiện qua Outbox (F4-13, F5-01)"
+      },
+      {
+        "from": "JudgeWorker",
+        "to": "JudgeWorker",
+        "text": "Verdict tổng = verdict testcase hỏng đầu tiên; tính tỉ lệ passed/total"
+      },
+      {
+        "from": "JudgeWorker",
+        "to": "PostgreSQL",
+        "text": "UPDATE submissions + INSERT outbox_events trong CÙNG giao dịch"
+      },
+      {
+        "from": "JudgeWorker",
+        "to": "SubmissionController",
+        "text": "Đẩy verdict cuối kèm điểm tỉ lệ testcase",
+        "kind": "async"
+      },
+      {
+        "from": "SubmissionController",
+        "to": "Sinh viên",
+        "text": "STOMP - hiện verdict, mở nút Phân tích bài giải nếu Accepted",
+        "kind": "async"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "Sinh viên",
+        "text": "Kết quả cuối cùng của lượt nộp"
+      },
+      {
+        "from": "JudgeWorker",
+        "to": "JudgeWorker",
+        "text": "Outbox relay publish SubmissionAccepted / SubmissionGraded (RabbitMQ)"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_user_nop_bai_va_xem_ket_qua_realtime.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 1/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md.",
+  "_gop": "Gop RabbitMQ thanh self-message tren JudgeWorker 2026-09-27: vai tro hang doi da ve day du o phan 1, o day chi la buoc nhan ban nop tu hang doi. Giu go-judge rieng theo DEC-2026-0823. Chu dau tu chot."
+}

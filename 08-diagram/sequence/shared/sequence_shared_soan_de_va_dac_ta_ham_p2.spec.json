@@ -1,0 +1,131 @@
+{
+  "_": "Luong soan de bai, khai dac ta ham cho CA HAI mo hinh nop bai, va checklist chan xuat ban. Nguon: US-A2-01 va US-A2-01b (01-rd/req/user_stories/a2_instructor.md:8-35), 01-rd/req/problem-bank.md (F2-01 den F2-04, F2-15), 01-rd/req/harness.md (F3-01 luoc do kieu, F3-13 hai mo hinh song song), 02-bd/architecture/harness.md muc 4 (luoc do kieu).",
+  "_shared": "Man soan de duoc gan cho CA giang vien va quan tri vien, chia pham vi bang quyen PROBLEM_AUTHORING (DEC-2026-0825-shared-content-authoring-screens) -- vi vay dat o sequence/shared/ chu khong phai gv/.",
+  "_chan_xuat_ban": "F2-15: thieu testcase Hidden hoac thieu dac ta thi CHAN, khong cho xuat ban mot bai khong cham duoc.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Soạn đề bài và khai đặc tả hàm (Giảng viên và Quản trị viên) (2/3)",
+  "covers": [
+    "F2-03",
+    "F3-01",
+    "F3-13"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Người soạn đề",
+        "role": "actor"
+      },
+      {
+        "name": "ProblemController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "ProblemService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema problem"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 2 - Khai đặc tả cho CẢ HAI mô hình nộp bài (F2-03, F3-13)"
+      },
+      {
+        "from": "Người soạn đề",
+        "to": "Người soạn đề",
+        "text": "Khai chữ ký hàm riêng cho Java, C++, Python"
+      },
+      {
+        "from": "Người soạn đề",
+        "to": "Người soạn đề",
+        "text": "Khai định dạng stdin và stdout cho mô hình Standard I/O"
+      },
+      {
+        "from": "Người soạn đề",
+        "to": "ProblemController",
+        "text": "PUT /problems/{id}/specs { functionSignatures, ioFormat, matchingStrategy }"
+      },
+      {
+        "from": "ProblemController",
+        "to": "ProblemService",
+        "text": "updateSpecs(command, authorId)"
+      },
+      {
+        "from": "ProblemService",
+        "to": "ProblemService",
+        "text": "validate(kiểu tham số và kiểu trả về) (TypeSchemaValidator)"
+      },
+      {
+        "from": "ProblemService",
+        "to": "ProblemService",
+        "text": "Đối chiếu với lược đồ kiểu độc lập ngôn ngữ: nguyên thuỷ, mảng, danh sách lồng, danh sách liên kết, cây nhị phân"
+      },
+      {
+        "from": "ProblemService",
+        "to": "ProblemService",
+        "text": "Chặn tổ hợp vô nghĩa: UNORDERED_SET trên cây nhị phân hoặc danh sách liên kết"
+      },
+      {
+        "from": "ProblemService",
+        "to": "ProblemService",
+        "text": "Kết quả kiểm lược đồ kiểu (TypeSchemaValidator)"
+      },
+      {
+        "alt": {
+          "label": "Kiểu dữ liệu vượt quá lược đồ kiểu của F3?",
+          "then": [
+            {
+              "from": "ProblemService",
+              "to": "PostgreSQL",
+              "text": "Đánh dấu bài chỉ dùng được mô hình Standard I/O"
+            },
+            {
+              "from": "ProblemService",
+              "to": "ProblemController",
+              "text": "Cảnh báo: ẩn hẳn tuỳ chọn Bọc hàm cho bài này",
+              "kind": "return"
+            },
+            {
+              "from": "ProblemController",
+              "to": "Người soạn đề",
+              "text": "200 OK kèm cảnh báo, không phải lỗi",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "ProblemService",
+              "to": "PostgreSQL",
+              "text": "save(problem_specs cho cả ba ngôn ngữ và cả hai mô hình)"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "PostgreSQL",
+              "text": "UPSERT problem_specs (ProblemRepository)"
+            },
+            {
+              "from": "ProblemService",
+              "to": "ProblemController",
+              "text": "ProblemSpecDto",
+              "kind": "return"
+            },
+            {
+              "from": "ProblemController",
+              "to": "Người soạn đề",
+              "text": "200 OK",
+              "kind": "return"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_shared_soan_de_va_dac_ta_ham.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 2/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

@@ -1,0 +1,155 @@
+{
+  "_": "Luong F5.1 Solution Review (mot lan, ket qua JSON co cau truc) cua actor A1. Nguon: 01-rd/req/ai-review.md (F5-01 den F5-08), 02-bd/architecture/ai-review.md muc 3.2/3.3 (SubmissionSnapshotPort, ProblemContextPort), muc 5 (ba lop instruction chong prompt injection), muc 6.2 (cache theo source hash), muc 6.3 (ngan sach token).",
+  "_suy_giam": "Nhanh LLM loi khong lam hong F1-F4: bao loi tai cho, khong khoa man Nop bai (CLAUDE.md -- AI degrades gracefully).",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Phân tích bài giải bằng AI (Sinh viên) (1/3)",
+  "covers": [
+    "F5-01",
+    "F5-19",
+    "F5-20",
+    "F5-21"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Sinh viên",
+        "role": "actor"
+      },
+      {
+        "name": "ReviewController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "SolutionReviewService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "Redis",
+        "role": "datastore",
+        "stereo": "rate-limit, cache"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema ai"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 1 - Chỉ mở sau khi bài đã Accepted (F5-01)"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "Sinh viên",
+        "text": "Bấm \"Phân tích bài giải\""
+      },
+      {
+        "from": "Sinh viên",
+        "to": "ReviewController",
+        "text": "POST /ai/solution-reviews { submissionId }"
+      },
+      {
+        "from": "ReviewController",
+        "to": "SolutionReviewService",
+        "text": "requestSolutionReview(command, userId)"
+      },
+      {
+        "from": "SolutionReviewService",
+        "to": "PostgreSQL",
+        "text": "Đọc snapshot bài nộp qua SubmissionSnapshotPort"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "SolutionReviewService",
+        "text": "sourceCode, language, runtimeMs, memoryKb",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Bài nộp đã ở trạng thái ACCEPTED?",
+          "then": [
+            {
+              "from": "SolutionReviewService",
+              "to": "ReviewController",
+              "text": "Lỗi nghiệp vụ SUBMISSION_NOT_ACCEPTED",
+              "kind": "return"
+            },
+            {
+              "from": "ReviewController",
+              "to": "Sinh viên",
+              "text": "422 - chặn trước khi tốn một lượt gọi LLM",
+              "kind": "return"
+            }
+          ]
+        }
+      },
+      {
+        "phase": "Giai đoạn 2 - Chặn chi phí: rate-limit, cache theo mã nguồn, ngân sách token (F5-19, F5-20, F5-21)"
+      },
+      {
+        "from": "SolutionReviewService",
+        "to": "Redis",
+        "text": "INCR ai:ratelimit:<userId>:SOLUTION_REVIEW"
+      },
+      {
+        "from": "Redis",
+        "to": "SolutionReviewService",
+        "text": "Số lượt gọi trong cửa sổ trượt",
+        "kind": "return"
+      },
+      {
+        "from": "SolutionReviewService",
+        "to": "SolutionReviewService",
+        "text": "Chuẩn hoá mã nguồn rồi băm SHA-256 ra source_hash"
+      },
+      {
+        "from": "SolutionReviewService",
+        "to": "PostgreSQL",
+        "text": "SELECT ai_cache_entries WHERE (problemId, language, source_hash)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "SolutionReviewService",
+        "text": "Báo cáo cũ hoặc rỗng",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Đã có bản phân tích cho đúng mã nguồn này?",
+          "then": [
+            {
+              "from": "SolutionReviewService",
+              "to": "ReviewController",
+              "text": "Trả bản lưu sẵn - không gọi LLM, không tính vào giới hạn",
+              "kind": "return"
+            },
+            {
+              "from": "ReviewController",
+              "to": "Sinh viên",
+              "text": "200 OK (cache hit)",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "SolutionReviewService",
+              "to": "PostgreSQL",
+              "text": "Đọc ai_token_budget_configs, kiểm tra locked_at"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "SolutionReviewService",
+              "text": "Hạn mức và mức tiêu thụ chu kỳ hiện tại",
+              "kind": "return"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_user_phan_tich_bai_giai_ai.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 1/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

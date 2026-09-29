@@ -1,0 +1,112 @@
+{
+  "_": "Luong quan tri tai khoan nguoi dung (doi vai tro, khoa/mo khoa) cua actor A3. Nguon: US-A3-02 (01-rd/req/user_stories/a3_admin.md), 01-rd/req/identity.md (F1-13, F1-14), 02-bd/security/identity.md:64-66 (filter kiem status MOI request, khong chi kiem exp).",
+  "_diem_mau_chot": "Khoa tai khoan phai thu hoi refresh token, va Access Token cu (con han toi 15 phut) bi chan o filter vi filter kiem status moi request -- neu khong, nguoi bi khoa van dung he thong duoc them 15 phut.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Đổi vai trò và khoá tài khoản người dùng (Quản trị viên) (3/3)",
+  "covers": [
+    "F1-14"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Quản trị viên",
+        "role": "actor"
+      },
+      {
+        "name": "UserAdminController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "UserAdminService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema identity"
+      },
+      {
+        "name": "Redis",
+        "role": "datastore",
+        "stereo": "cache quyền"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 3 - Khoá tài khoản: thu hồi phiên và chặn ngay ở filter (F1-14)"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Bấm \"Khoá tài khoản\""
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "UserAdminController",
+        "text": "POST /identity/admin/users/{userId}/lock"
+      },
+      {
+        "from": "UserAdminController",
+        "to": "UserAdminService",
+        "text": "lockUser(userId, adminId)"
+      },
+      {
+        "from": "UserAdminService",
+        "to": "PostgreSQL",
+        "text": "UPDATE users SET status = LOCKED"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "UPDATE users (UserRepository)"
+      },
+      {
+        "from": "UserAdminService",
+        "to": "PostgreSQL",
+        "text": "Thu hồi toàn bộ refresh_tokens của tài khoản"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "UPDATE refresh_tokens SET revoked_at = now() (UserRepository)"
+      },
+      {
+        "from": "UserAdminService",
+        "to": "PostgreSQL",
+        "text": "Ghi system_audit_logs: ai khoá, khoá ai, lúc nào"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "INSERT INTO system_audit_logs (UserRepository)"
+      },
+      {
+        "from": "UserAdminService",
+        "to": "Redis",
+        "text": "Xoá cache quyền để filter đọc lại status ngay"
+      },
+      {
+        "from": "UserAdminService",
+        "to": "UserAdminController",
+        "text": "Trạng thái mới của tài khoản",
+        "kind": "return"
+      },
+      {
+        "from": "UserAdminController",
+        "to": "Quản trị viên",
+        "text": "200 OK",
+        "kind": "return"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Tài khoản chuyển trạng thái Đã khoá, mọi phiên đang mở bị chặn"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_admin_doi_vai_tro_nguoi_dung.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 3/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

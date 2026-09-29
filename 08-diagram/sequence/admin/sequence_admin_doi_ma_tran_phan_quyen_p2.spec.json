@@ -1,0 +1,162 @@
+{
+  "_": "Luong doi mot o trong ma tran phan quyen Role x Function x Action cua actor A3. Nguon: US-A3-01 (01-rd/req/user_stories/a3_admin.md), 01-rd/req/identity.md (F1-10, F1-11, F1-14), 03-dd/api/identity.md muc 0.5 (endpoint #31, BR-13), 02-bd/architecture/identity.md muc 6 (quyen KHONG nhung vao claim JWT tinh, phai tra tai thoi diem request).",
+  "_diem_mau_chot": "Doi o co hieu luc NGAY, khong can khoi dong lai dich vu -- vi vay phai vo hieu cache quyen chu khong doi token het han.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Đổi ma trận phân quyền (Quản trị viên) (2/2)",
+  "covers": [
+    "F1-14"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Quản trị viên",
+        "role": "actor"
+      },
+      {
+        "name": "RbacController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "RbacService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema identity"
+      },
+      {
+        "name": "Redis",
+        "role": "datastore",
+        "stereo": "cache quyền"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 2 - Mỗi lần tích một ô là một lời gọi riêng (BR-13)"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Tích ô UPDATE của cặp (vai trò, chức năng)"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "RbacController",
+        "text": "PATCH /identity/rbac/matrix/{roleId}/{functionId}/{actionId}"
+      },
+      {
+        "from": "RbacController",
+        "to": "RbacController",
+        "text": "Kiểm quyền RBAC_MANAGEMENT:UPDATE của chính người gọi"
+      },
+      {
+        "from": "RbacController",
+        "to": "RbacService",
+        "text": "updateRolePermission(command, adminId)"
+      },
+      {
+        "from": "RbacService",
+        "to": "PostgreSQL",
+        "text": "findRole(roleId)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "SELECT roles WHERE id = ? (RoleRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "Role kèm cờ is_system (RoleRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "RbacService",
+        "text": "Role",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Thao tác chạm vào vai trò hệ thống theo cách bị cấm?",
+          "then": [
+            {
+              "from": "RbacService",
+              "to": "RbacController",
+              "text": "Từ chối - không xoá được vai trò hệ thống",
+              "kind": "return"
+            },
+            {
+              "from": "RbacController",
+              "to": "Quản trị viên",
+              "text": "422 kèm lý do",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "RbacService",
+              "to": "PostgreSQL",
+              "text": "upsert(role_permissions)"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "PostgreSQL",
+              "text": "INSERT hoặc DELETE role_permissions (RoleRepository)"
+            }
+          ]
+        }
+      },
+      {
+        "phase": "Giai đoạn 3 - Ghi nhật ký bắt buộc và vô hiệu cache để có hiệu lực ngay (F1-14)"
+      },
+      {
+        "from": "RbacService",
+        "to": "PostgreSQL",
+        "text": "Ghi system_audit_logs: ai đổi, đổi ô nào, lúc nào - không có ngoại lệ"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "INSERT INTO system_audit_logs cùng giao dịch với thay đổi quyền (RoleRepository)"
+      },
+      {
+        "from": "RbacService",
+        "to": "Redis",
+        "text": "Xoá cache quyền của vai trò vừa đổi"
+      },
+      {
+        "from": "RbacService",
+        "to": "RbacService",
+        "text": "Quyền tra tại thời điểm request, không nhúng vào Access Token"
+      },
+      {
+        "from": "RbacService",
+        "to": "RbacController",
+        "text": "Trạng thái mới của ô",
+        "kind": "return"
+      },
+      {
+        "from": "RbacController",
+        "to": "Quản trị viên",
+        "text": "200 OK",
+        "kind": "return"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Cập nhật đúng một ô, không tải lại cả lưới"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Quyền có hiệu lực ngay, không cần khởi động lại dịch vụ"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_admin_doi_ma_tran_phan_quyen.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 2/2). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

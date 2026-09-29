@@ -1,0 +1,115 @@
+<mxfile host="app.diagrams.net" agent="drawio-uml-architect" type="device">
+  <diagram id="so-do-tuan-tu-chi-tiet-cham-tay-de-len-diem-ai-tham-khao-gia" name="so-do-tuan-tu-chi-tiet-cham-tay-de-len-diem-ai-tham-khao-gia">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="826" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="Sơ đồ tuần tự chi tiết - Chấm tay đè lên điểm AI tham khảo (Giảng viên) (1/3)" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="60" y="10" width="580" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="v1" value="alt [Lớp yêu cầu nằm ngoài phạm vi phụ trách?]" style="algoprep=alt;rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#999999;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;fontColor=#1A1A1A;fontSize=13;fontStyle=1;dashed=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="384" width="600" height="274" as="geometry" />
+        </mxCell>
+        <mxCell id="v2" value="else" style="text;html=1;dashed=1;strokeColor=#999999;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontColor=#1A1A1A;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="484" width="600" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="v3" value="Giai đoạn 1 - Hàng đợi chấm tay, chỉ trong phạm vi lớp mình phụ trách" style="algoprep=phase;rounded=0;whiteSpace=wrap;html=1;fillColor=#EFEFEF;strokeColor=#999999;dashed=1;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#1A1A1A;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="142" width="600" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="v4" value="Giảng viên" style="shape=umlLifeline;participant=umlActor;perimeter=lifelinePerimeter;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;verticalAlign=top;spacingTop=40;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="110" y="60" width="30" height="720" as="geometry" />
+        </mxCell>
+        <mxCell id="v5" value='GradingController&lt;br&gt;&lt;font style="font-size:9px"&gt;(presentation)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#C6EFCE;strokeColor=#5E8E5E;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="210" y="60" width="130" height="720" as="geometry" />
+        </mxCell>
+        <mxCell id="v6" value='GradingService&lt;br&gt;&lt;font style="font-size:9px"&gt;(application)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#FFF2CC;strokeColor=#B8952A;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="360" y="60" width="130" height="720" as="geometry" />
+        </mxCell>
+        <mxCell id="v7" value='PostgreSQL&lt;br&gt;&lt;font style="font-size:9px"&gt;(schema ai)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#D9D9D9;strokeColor=#7A7A7A;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="510" y="60" width="130" height="720" as="geometry" />
+        </mxCell>
+        <mxCell id="v8" style="html=1;points=[[0,0,0,0,0],[0,1,0,0,0],[1,0,0,0,0],[1,1,0,0,0]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="v6">
+          <mxGeometry x="60" y="208" width="10" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="v9" style="html=1;points=[[0,0,0,0,0],[0,1,0,0,0],[1,0,0,0,0],[1,1,0,0,0]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="v5">
+          <mxGeometry x="60" y="176" width="10" height="214" as="geometry" />
+        </mxCell>
+        <mxCell id="v10" style="html=1;points=[[0,0,0,0,0],[0,1,0,0,0],[1,0,0,0,0],[1,1,0,0,0]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="v7">
+          <mxGeometry x="60" y="444" width="10" height="124" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" value="1. Mở màn Chấm bài của lớp" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.1806;exitDx=0;exitDy=0;entryX=0.5;entryY=0.2083;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="180" y="190" />
+            <mxPoint x="180" y="210" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e12" value="2. GET /ai/grading-queue?classId=..." style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.2444;exitDx=0;exitDy=0;entryX=0.5;entryY=0.2444;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e13" value="2.1. listPendingGrading(classId, instructorId)" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.2889;exitDx=0;exitDy=0;entryX=0.5;entryY=0.2889;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e14" value="2.1.1. getClassesOf(instructorId) - đọc phạm vi lớp qua cổng ra (ClassScopeQueryPort)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.3333;exitDx=0;exitDy=0;entryX=0.5;entryY=0.3611;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v6">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="480" y="300" />
+            <mxPoint x="480" y="320" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e15" value="2.1.2. Danh sách lớp được phép xem (ClassScopeQueryPort)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.3972;exitDx=0;exitDy=0;entryX=0.5;entryY=0.4250;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v6">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="480" y="346" />
+            <mxPoint x="480" y="366" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e16" value="Chặn ở tầng ứng dụng" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.4972;exitDx=0;exitDy=0;entryX=0.5;entryY=0.4972;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e17" value="403 - chỉ thấy bài nộp của lớp mình" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.5417;exitDx=0;exitDy=0;entryX=0.5;entryY=0.5417;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e18" value="3. findAcceptedSubmissionsWithReview(classId)" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.6167;exitDx=0;exitDy=0;entryX=0.5;entryY=0.6167;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e19" value="3.1. SELECT solution_reviews JOIN submissions (verdict = ACCEPTED) (GradingRepository)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.6611;exitDx=0;exitDy=0;entryX=0.5;entryY=0.6889;entryDx=0;entryDy=0;" edge="1" parent="1" source="v7" target="v7">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="630" y="536" />
+            <mxPoint x="630" y="556" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e20" value="3.2. Bài nộp kèm điểm AI quy đổi 0-10 (GradingRepository)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.7250;exitDx=0;exitDy=0;entryX=0.5;entryY=0.7528;entryDx=0;entryDy=0;" edge="1" parent="1" source="v7" target="v7">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="630" y="582" />
+            <mxPoint x="630" y="602" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e21" value="List&amp;lt;GradingItem&amp;gt;" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.7889;exitDx=0;exitDy=0;entryX=0.5;entryY=0.7889;entryDx=0;entryDy=0;" edge="1" parent="1" source="v7" target="v6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e22" value="Hàng đợi chấm tay" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8333;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8333;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e23" value="200 OK" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8778;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8778;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e24" value="4. Danh sách bài nộp kèm điểm AI kèm nhãn Tham khảo" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.9222;exitDx=0;exitDy=0;entryX=0.5;entryY=0.9500;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="180" y="724" />
+            <mxPoint x="180" y="744" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

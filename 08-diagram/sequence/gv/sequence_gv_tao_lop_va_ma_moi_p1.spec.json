@@ -1,0 +1,108 @@
+{
+  "_": "Luong tao lop hoc va phat ma moi cua actor A2, ke ca buoc hoc vien dung ma de tham gia. Nguon: US-A2-07 (01-rd/req/user_stories/a2_instructor.md:102-123), 01-rd/req/identity.md (F1-23, F1-25, F1-26), 03-dd/api/identity.md muc 0.4 (endpoint #20, #23, #25), 02-bd/architecture/identity.md muc 5 (ma moi TTL 7 ngay), 02-bd/database/identity.md:93-94 (nhieu ma hieu luc song song).",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Tạo lớp học và phát mã mời (Giảng viên) (1/3)",
+  "covers": [
+    "F1-10",
+    "F1-23"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Giảng viên",
+        "role": "actor"
+      },
+      {
+        "name": "ClassController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "ClassService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema identity"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 1 - Tạo lớp học mới (F1-23)"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Nhập tên lớp, mô tả, ghi chú lịch học"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Bấm \"Tạo lớp\""
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Kiểm tra tên lớp không rỗng phía client"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "ClassController",
+        "text": "POST /identity/classes { name, description, scheduleNote }"
+      },
+      {
+        "from": "ClassController",
+        "to": "ClassController",
+        "text": "Kiểm quyền CLASS_MANAGEMENT:CREATE theo ma trận F1-10"
+      },
+      {
+        "from": "ClassController",
+        "to": "ClassService",
+        "text": "createClass(command, instructorId)"
+      },
+      {
+        "from": "ClassService",
+        "to": "PostgreSQL",
+        "text": "save(class, instructor_id = người gọi)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "INSERT INTO classes (ClassRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "classId (ClassRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "ClassService",
+        "text": "Class đã lưu",
+        "kind": "return"
+      },
+      {
+        "from": "ClassService",
+        "to": "ClassController",
+        "text": "ClassDto",
+        "kind": "return"
+      },
+      {
+        "from": "ClassController",
+        "to": "Giảng viên",
+        "text": "201 Created",
+        "kind": "return"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Lớp mới xuất hiện trong danh sách"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_gv_tao_lop_va_ma_moi.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 1/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

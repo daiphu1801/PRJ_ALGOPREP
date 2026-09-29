@@ -1,0 +1,134 @@
+{
+  "_": "Luong cau hinh prompt va trong so rubric cua AI, co phien ban va khoi phuc duoc, cua actor A3. Nguon: US-A3-04 (01-rd/req/user_stories/a3_admin.md), 01-rd/req/ai-review.md (F5-23), 02-bd/architecture/ai-review.md muc 2 (prompt_templates / rubric_configs, KHONG thiet ke backend cho nut Chay doi chieu), muc 5 (Lop 1 chua cau chi dan rang buoc, A2/A3 khong sua duoc).",
+  "_pham_vi": "RD dong 86-93 giu nut \"Chay doi chieu\" o tang giao dien; so do nay khong ve mot endpoint backend cho no.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Cấu hình prompt và rubric của AI (Quản trị viên) (2/3)",
+  "covers": [
+    "F5-23"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Quản trị viên",
+        "role": "actor"
+      },
+      {
+        "name": "AiConfigController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "AiConfigService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema ai"
+      },
+      {
+        "name": "Redis",
+        "role": "datastore",
+        "stereo": "cache prompt"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 2 - Lưu thành PHIÊN BẢN MỚI, không sửa đè bản cũ (F5-23)"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Sửa chỉ thị hệ thống và trọng số rubric rồi bấm Lưu"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "AiConfigController",
+        "text": "POST /ai/config/prompt-templates { systemInstruction, rubricWeights }"
+      },
+      {
+        "from": "AiConfigController",
+        "to": "AiConfigService",
+        "text": "publishNewVersion(command, adminId)"
+      },
+      {
+        "from": "AiConfigService",
+        "to": "AiConfigService",
+        "text": "Kiểm tra tổng trọng số rubric và các trường bắt buộc"
+      },
+      {
+        "from": "AiConfigService",
+        "to": "AiConfigService",
+        "text": "Giữ nguyên câu chỉ dẫn ràng buộc của Lớp 1 - phần cố định, không cho sửa"
+      },
+      {
+        "alt": {
+          "label": "Trọng số rubric không hợp lệ?",
+          "then": [
+            {
+              "from": "AiConfigService",
+              "to": "AiConfigController",
+              "text": "Lỗi validate, không tạo phiên bản",
+              "kind": "return"
+            },
+            {
+              "from": "AiConfigController",
+              "to": "Quản trị viên",
+              "text": "400 kèm trường sai",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "AiConfigService",
+              "to": "PostgreSQL",
+              "text": "INSERT bản mới với version = max + 1, đặt is_active"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "PostgreSQL",
+              "text": "INSERT prompt_templates + UPDATE bản cũ thành không hiệu lực (PromptRepository)"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "PostgreSQL",
+              "text": "templateId của bản mới (PromptRepository)"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "AiConfigService",
+              "text": "PromptTemplate mới",
+              "kind": "return"
+            }
+          ]
+        }
+      },
+      {
+        "from": "AiConfigService",
+        "to": "PostgreSQL",
+        "text": "Ghi system_audit_logs: ai đổi cấu hình AI, phiên bản nào"
+      },
+      {
+        "from": "AiConfigService",
+        "to": "Redis",
+        "text": "Xoá cache prompt để lượt gọi AI kế tiếp dùng bản mới"
+      },
+      {
+        "from": "AiConfigService",
+        "to": "AiConfigController",
+        "text": "Phiên bản vừa tạo",
+        "kind": "return"
+      },
+      {
+        "from": "AiConfigController",
+        "to": "Quản trị viên",
+        "text": "201 Created",
+        "kind": "return"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_admin_cau_hinh_prompt_ai.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 2/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

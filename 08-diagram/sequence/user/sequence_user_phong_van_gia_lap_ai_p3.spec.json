@@ -1,0 +1,117 @@
+{
+  "_": "Luong F5.2 Mock Interview (da luot, ba giai doan, ket thuc bang rubric) cua actor A1. Nguon: 01-rd/req/ai-review.md (F5-09 den F5-16), 02-bd/architecture/ai-review.md muc 1 (aggregate InterviewSession, SSE controller, Redis ChatMemory), muc 5 (ba lop instruction), muc 6.1 (rate-limit theo phien).",
+  "_phase": "Ba giai doan trong so do la ba giai doan NGHIEP VU cua phien phong van (lam ro de bai -> trinh bay huong giai -> dao sau va cham rubric), khong phai ba buoc ky thuat.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Phỏng vấn giả lập với AI (3/3)",
+  "covers": [
+    "F5-13",
+    "F5-16",
+    "F5-18"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Sinh viên",
+        "role": "actor"
+      },
+      {
+        "name": "InterviewController",
+        "role": "controller",
+        "stereo": "SSE"
+      },
+      {
+        "name": "InterviewService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema ai"
+      },
+      {
+        "name": "Nhà cung cấp LLM",
+        "role": "external",
+        "stereo": "Spring AI"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 3 - Đào sâu độ phức tạp rồi kết phiên bằng rubric (F5-13, F5-16, F5-18)"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "Sinh viên",
+        "text": "Bấm \"Kết thúc phỏng vấn\""
+      },
+      {
+        "from": "Sinh viên",
+        "to": "InterviewController",
+        "text": "POST /ai/interviews/{id}/finish"
+      },
+      {
+        "from": "InterviewController",
+        "to": "InterviewService",
+        "text": "finishSession(sessionId)"
+      },
+      {
+        "from": "InterviewService",
+        "to": "InterviewService",
+        "text": "scoreRubric(toàn bộ hội thoại, trọng số rubric đang hiệu lực) (SpringAiLlmAdapter)"
+      },
+      {
+        "from": "InterviewService",
+        "to": "Nhà cung cấp LLM",
+        "text": "Yêu cầu trả JSON rubric có cấu trúc"
+      },
+      {
+        "from": "Nhà cung cấp LLM",
+        "to": "InterviewService",
+        "text": "Điểm từng tiêu chí + nhận xét + số token",
+        "kind": "return"
+      },
+      {
+        "from": "InterviewService",
+        "to": "InterviewService",
+        "text": "RubricScore (SpringAiLlmAdapter)"
+      },
+      {
+        "from": "InterviewService",
+        "to": "PostgreSQL",
+        "text": "UPDATE interview_sessions (rubric, stage = FINISHED) + INSERT token_usage"
+      },
+      {
+        "from": "InterviewService",
+        "to": "InterviewService",
+        "text": "Xoá ChatMemory của phiên đã kết thúc (Redis)"
+      },
+      {
+        "from": "InterviewService",
+        "to": "PostgreSQL",
+        "text": "Phát MockInterviewFinished cho identity ghi lịch sử phỏng vấn",
+        "kind": "async"
+      },
+      {
+        "from": "InterviewService",
+        "to": "InterviewController",
+        "text": "InterviewRubricDto",
+        "kind": "return"
+      },
+      {
+        "from": "InterviewController",
+        "to": "Sinh viên",
+        "text": "200 OK",
+        "kind": "return"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "Sinh viên",
+        "text": "Bảng rubric kèm nhãn chỉ mang tính định hướng học tập, không phải điểm chính thức"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_user_phong_van_gia_lap_ai.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 1/2). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md.",
+  "_gop": "Gop Redis (ChatMemory) thanh self-message tren InterviewService 2026-09-27 de so do con 5 lifeline, chu in dat tren 6pt. Chu dau tu chot. Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

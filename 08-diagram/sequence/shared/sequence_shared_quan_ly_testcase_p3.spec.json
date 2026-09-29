@@ -1,0 +1,142 @@
+{
+  "_": "Luong quan ly testcase: tai len theo lo (bo lon di MinIO), phien ban hoa khi sua sau luc da co nguoi nop, va AI sinh testcase voi output lay tu chay that Dap an mau. Nguon: US-A2-02 va US-A2-05 (01-rd/req/user_stories/a2_instructor.md:37-50, 70-83), 01-rd/req/problem-bank.md (F2-05 den F2-10, F2-14), 02-bd/database/problem-bank.md muc 1.6 (su kien TestcaseSetVersionBumped).",
+  "_minio": "Day la luong DUY NHAT trong toan he thong cham toi MinIO (.nexa/control/dependency-map.md) -- truoc dot nay khong co ban ve nao cho no.",
+  "_su_kien": "TestcaseSetVersionBumped ve duoi dang INSERT outbox_events, khong ve lifeline RabbitMQ rieng: them mot cot nua thanh 9 duong doi, be ngang vuot xa kho in ma khong noi them duoc gi -- co che Outbox da duoc ve day du o sequence_user_nop_bai_va_xem_ket_qua_realtime.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Quản lý testcase, phiên bản hoá và AI sinh testcase (Giảng viên và Quản trị viên) (3/3)",
+  "covers": [
+    "F2-14"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Người soạn đề",
+        "role": "actor"
+      },
+      {
+        "name": "TestcaseController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "TestcaseService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "go-judge",
+        "role": "external",
+        "stereo": "chạy đáp án mẫu"
+      },
+      {
+        "name": "Nhà cung cấp LLM",
+        "role": "external",
+        "stereo": "Spring AI"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema problem"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 3 - AI sinh testcase nháp, output lấy từ chạy THẬT đáp án mẫu (F2-14)"
+      },
+      {
+        "from": "Người soạn đề",
+        "to": "Người soạn đề",
+        "text": "Bấm \"Sinh tự động\""
+      },
+      {
+        "from": "Người soạn đề",
+        "to": "TestcaseController",
+        "text": "POST /problems/{id}/testcases/generate"
+      },
+      {
+        "from": "TestcaseController",
+        "to": "TestcaseService",
+        "text": "generateTestcases(problemId, authorId)"
+      },
+      {
+        "from": "TestcaseService",
+        "to": "PostgreSQL",
+        "text": "Đọc Đáp án mẫu và trạng thái chạy Pass của nó"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "TestcaseService",
+        "text": "Đáp án mẫu hoặc rỗng",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Chưa có đáp án mẫu chạy Pass?",
+          "then": [
+            {
+              "from": "TestcaseService",
+              "to": "TestcaseController",
+              "text": "Từ chối - không có gì để lấy output thật",
+              "kind": "return"
+            },
+            {
+              "from": "TestcaseController",
+              "to": "Người soạn đề",
+              "text": "422 kèm hướng dẫn thêm đáp án mẫu trước",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "TestcaseService",
+              "to": "Nhà cung cấp LLM",
+              "text": "Sinh dữ liệu ĐẦU VÀO theo đặc tả, không sinh output"
+            },
+            {
+              "from": "Nhà cung cấp LLM",
+              "to": "TestcaseService",
+              "text": "Danh sách input đề xuất",
+              "kind": "return"
+            },
+            {
+              "from": "TestcaseService",
+              "to": "go-judge",
+              "text": "Chạy đáp án mẫu với từng input vừa sinh"
+            },
+            {
+              "from": "go-judge",
+              "to": "TestcaseService",
+              "text": "Output thật của đáp án mẫu",
+              "kind": "return"
+            },
+            {
+              "from": "TestcaseService",
+              "to": "PostgreSQL",
+              "text": "INSERT testcases ở trạng thái NHÁP, chưa dùng để chấm"
+            }
+          ]
+        }
+      },
+      {
+        "from": "TestcaseService",
+        "to": "TestcaseController",
+        "text": "Danh sách testcase nháp chờ xác nhận",
+        "kind": "return"
+      },
+      {
+        "from": "TestcaseController",
+        "to": "Người soạn đề",
+        "text": "200 OK",
+        "kind": "return"
+      },
+      {
+        "from": "Người soạn đề",
+        "to": "Người soạn đề",
+        "text": "Testcase nháp chỉ vào bộ chấm sau khi người soạn xác nhận"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_shared_quan_ly_testcase.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 3/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

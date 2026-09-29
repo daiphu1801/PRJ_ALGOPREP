@@ -1,0 +1,107 @@
+{
+  "_": "Luong soan de bai, khai dac ta ham cho CA HAI mo hinh nop bai, va checklist chan xuat ban. Nguon: US-A2-01 va US-A2-01b (01-rd/req/user_stories/a2_instructor.md:8-35), 01-rd/req/problem-bank.md (F2-01 den F2-04, F2-15), 01-rd/req/harness.md (F3-01 luoc do kieu, F3-13 hai mo hinh song song), 02-bd/architecture/harness.md muc 4 (luoc do kieu).",
+  "_shared": "Man soan de duoc gan cho CA giang vien va quan tri vien, chia pham vi bang quyen PROBLEM_AUTHORING (DEC-2026-0825-shared-content-authoring-screens) -- vi vay dat o sequence/shared/ chu khong phai gv/.",
+  "_chan_xuat_ban": "F2-15: thieu testcase Hidden hoac thieu dac ta thi CHAN, khong cho xuat ban mot bai khong cham duoc.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Soạn đề bài và khai đặc tả hàm (Giảng viên và Quản trị viên) (1/3)",
+  "covers": [
+    "F1-10",
+    "F2-01",
+    "F2-02",
+    "F3-01"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Người soạn đề",
+        "role": "actor"
+      },
+      {
+        "name": "ProblemController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "ProblemService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema problem"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 1 - Soạn nội dung đề bài và phân loại (F2-01, F2-02)"
+      },
+      {
+        "from": "Người soạn đề",
+        "to": "Người soạn đề",
+        "text": "Viết đề bài bằng Markdown kèm công thức LaTeX"
+      },
+      {
+        "from": "Người soạn đề",
+        "to": "Người soạn đề",
+        "text": "Xem trước bản dựng, không gọi máy chủ khi gõ"
+      },
+      {
+        "from": "Người soạn đề",
+        "to": "Người soạn đề",
+        "text": "Chọn độ khó, chủ đề và gắn thẻ tự do"
+      },
+      {
+        "from": "Người soạn đề",
+        "to": "ProblemController",
+        "text": "POST /problems { statementMd, difficulty, topics, tags }"
+      },
+      {
+        "from": "ProblemController",
+        "to": "ProblemController",
+        "text": "Kiểm quyền PROBLEM_AUTHORING:CREATE theo ma trận F1-10"
+      },
+      {
+        "from": "ProblemController",
+        "to": "ProblemService",
+        "text": "createDraft(command, authorId)"
+      },
+      {
+        "from": "ProblemService",
+        "to": "PostgreSQL",
+        "text": "save(problem, status = CHƯA XUẤT BẢN)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "INSERT INTO problems (ProblemRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "problemId (ProblemRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "ProblemService",
+        "text": "Problem nháp",
+        "kind": "return"
+      },
+      {
+        "from": "ProblemService",
+        "to": "ProblemController",
+        "text": "ProblemDto",
+        "kind": "return"
+      },
+      {
+        "from": "ProblemController",
+        "to": "Người soạn đề",
+        "text": "201 Created",
+        "kind": "return"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_shared_soan_de_va_dac_ta_ham.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 1/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

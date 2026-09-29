@@ -1,0 +1,94 @@
+{
+  "_": "Luong quan tri tai khoan nguoi dung (doi vai tro, khoa/mo khoa) cua actor A3. Nguon: US-A3-02 (01-rd/req/user_stories/a3_admin.md), 01-rd/req/identity.md (F1-13, F1-14), 02-bd/security/identity.md:64-66 (filter kiem status MOI request, khong chi kiem exp).",
+  "_diem_mau_chot": "Khoa tai khoan phai thu hoi refresh token, va Access Token cu (con han toi 15 phut) bi chan o filter vi filter kiem status moi request -- neu khong, nguoi bi khoa van dung he thong duoc them 15 phut.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Đổi vai trò và khoá tài khoản người dùng (Quản trị viên) (1/3)",
+  "covers": [
+    "F1-10",
+    "F1-13"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Quản trị viên",
+        "role": "actor"
+      },
+      {
+        "name": "UserAdminController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "UserAdminService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema identity"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 1 - Tìm tài khoản cần xử lý (F1-13)"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Tìm theo email hoặc họ tên"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "UserAdminController",
+        "text": "GET /identity/admin/users?keyword=..."
+      },
+      {
+        "from": "UserAdminController",
+        "to": "UserAdminController",
+        "text": "Kiểm quyền USER_MANAGEMENT:READ theo ma trận F1-10"
+      },
+      {
+        "from": "UserAdminController",
+        "to": "UserAdminService",
+        "text": "searchUsers(query)"
+      },
+      {
+        "from": "UserAdminService",
+        "to": "PostgreSQL",
+        "text": "search(keyword, phân trang)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "SELECT users JOIN roles (UserRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "Danh sách tài khoản kèm vai trò và trạng thái (UserRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "UserAdminService",
+        "text": "Page<User>",
+        "kind": "return"
+      },
+      {
+        "from": "UserAdminService",
+        "to": "UserAdminController",
+        "text": "Trang kết quả",
+        "kind": "return"
+      },
+      {
+        "from": "UserAdminController",
+        "to": "Quản trị viên",
+        "text": "200 OK",
+        "kind": "return"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_admin_doi_vai_tro_nguoi_dung.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 1/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

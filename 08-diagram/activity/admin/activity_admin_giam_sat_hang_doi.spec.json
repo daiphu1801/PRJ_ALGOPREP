@@ -1,0 +1,136 @@
+{
+  "_": "Chuyen tu sequence_admin_giam_sat_hang_doi.spec.json (F4-10, F4-07). Toan bo luong la doc so lieu tuan tu tu ba nguon (RabbitMQ, go-judge, PostgreSQL) roi hien thi; khong co dieu kien re nhanh nao duoc dac ta trong sequence goc, nen khong them decision gia.",
+  "kind": "activity",
+  "title": "Sơ đồ hoạt động - Giám sát hàng đợi và cụm judge engine (Quản trị viên)",
+  "covers": ["F4-07", "F4-10"],
+  "mode": "mono",
+  "activity": {
+    "nodes": [
+      {
+        "id": "start",
+        "type": "start"
+      },
+      {
+        "id": "n1",
+        "type": "action",
+        "text": "Mở màn giám sát"
+      },
+      {
+        "id": "n2",
+        "type": "action",
+        "text": "Đọc độ dài hàng đợi và số consumer từ RabbitMQ"
+      },
+      {
+        "id": "n3",
+        "type": "action",
+        "text": "Đếm bài nộp đang PENDING, COMPILING, JUDGING"
+      },
+      {
+        "id": "d1",
+        "type": "decision",
+        "text": "Có bài nộp quá ngưỡng 5 phút không cập nhật?"
+      },
+      {
+        "id": "n4",
+        "type": "action",
+        "text": "Job sweep đặt SYSTEM_ERROR, failure_reason WORKER_TIMEOUT"
+      },
+      {
+        "id": "n5",
+        "type": "action",
+        "text": "Mệnh đề WHERE chặn ghi đè kết quả của worker về muộn"
+      },
+      {
+        "id": "m1",
+        "type": "merge"
+      },
+      {
+        "id": "n6",
+        "type": "action",
+        "text": "Hiện bảng giám sát kèm cảnh báo bài treo"
+      },
+      {
+        "id": "d2",
+        "type": "decision",
+        "text": "Tạm dừng tiêu thụ hàng đợi?"
+      },
+      {
+        "id": "n7",
+        "type": "action",
+        "text": "Dừng consumer, không huỷ message đang chờ"
+      },
+      {
+        "id": "n8",
+        "type": "action",
+        "text": "Ghi Nhật ký hệ thống: ai tạm dừng, lúc nào"
+      },
+      {
+        "id": "end",
+        "type": "end"
+      }
+    ],
+    "edges": [
+      {
+        "from": "start",
+        "to": "n1"
+      },
+      {
+        "from": "n1",
+        "to": "n2"
+      },
+      {
+        "from": "n2",
+        "to": "n3"
+      },
+      {
+        "from": "n3",
+        "to": "d1"
+      },
+      {
+        "from": "d1",
+        "to": "m1",
+        "guard": "không có"
+      },
+      {
+        "from": "d1",
+        "to": "n4",
+        "guard": "có"
+      },
+      {
+        "from": "n4",
+        "to": "n5"
+      },
+      {
+        "from": "n5",
+        "to": "m1"
+      },
+      {
+        "from": "m1",
+        "to": "n6"
+      },
+      {
+        "from": "n6",
+        "to": "d2"
+      },
+      {
+        "from": "d2",
+        "to": "n7",
+        "guard": "có"
+      },
+      {
+        "from": "d2",
+        "to": "end",
+        "guard": "không"
+      },
+      {
+        "from": "n7",
+        "to": "n8"
+      },
+      {
+        "from": "n8",
+        "to": "end"
+      }
+    ]
+  },
+  "_nhanh_re": "Nhanh re: job sweep 60 giay quet bai treo qua 5 phut [SoT: 02-bd/architecture/judge-orchestration.md muc 5.3]."
+}

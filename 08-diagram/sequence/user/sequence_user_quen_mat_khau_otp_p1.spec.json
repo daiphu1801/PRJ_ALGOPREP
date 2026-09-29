@@ -1,0 +1,128 @@
+{
+  "_": "Luong quen mat khau bang OTP 6 so cua actor A1. Nguon: 01-rd/req/identity.md (F1-17, dong 209-217), 03-dd/api/identity.md muc 0.1 (endpoint #7, #8), 03-dd/logic/identity.md BR-04, 02-bd/architecture/identity.md muc 5 (OTP 10 phut, 5 lan sai, cooldown 60 giay), 02-bd/security/identity.md:45-46 va :50-52.",
+  "_bao_mat": "Hai diem bao mat la ly do luong nay dang mot so do rieng: (1) endpoint forgot LUON tra 200 du email co ton tai hay khong -- chong do email theo OWASP user enumeration; (2) buoc reset khong re nhanh som khi email khong ton tai, di het toi buoc tra loi chung o cuoi de khong lo thong tin qua thoi gian phan hoi.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Quên mật khẩu bằng OTP (Sinh viên) (1/3)",
+  "covers": [
+    "F1-17"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Sinh viên",
+        "role": "actor"
+      },
+      {
+        "name": "AuthController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "PasswordResetService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "Redis",
+        "role": "datastore",
+        "stereo": "OTP, cooldown"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema identity"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 1 - Gửi OTP, luôn trả 200 để không lộ email có tồn tại hay không"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "Sinh viên",
+        "text": "Nhập email rồi bấm \"Gửi mã\""
+      },
+      {
+        "from": "Sinh viên",
+        "to": "AuthController",
+        "text": "POST /auth/password/forgot { email }"
+      },
+      {
+        "from": "AuthController",
+        "to": "PasswordResetService",
+        "text": "requestOtp(email)"
+      },
+      {
+        "from": "PasswordResetService",
+        "to": "Redis",
+        "text": "Kiểm cooldown gửi lại 60 giây"
+      },
+      {
+        "from": "Redis",
+        "to": "PasswordResetService",
+        "text": "Còn cooldown hay không",
+        "kind": "return"
+      },
+      {
+        "from": "PasswordResetService",
+        "to": "PostgreSQL",
+        "text": "SELECT users WHERE email = ?"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PasswordResetService",
+        "text": "Tài khoản hoặc rỗng",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Email có tồn tại trong hệ thống?",
+          "then": [
+            {
+              "from": "PasswordResetService",
+              "to": "PasswordResetService",
+              "text": "Sinh OTP 6 số ngẫu nhiên"
+            },
+            {
+              "from": "PasswordResetService",
+              "to": "Redis",
+              "text": "SET identity:pwreset:<userId> TTL 10 phút, bộ đếm sai = 0"
+            },
+            {
+              "from": "PasswordResetService",
+              "to": "PasswordResetService",
+              "text": "Gửi OTP tới hộp thư (EmailSender)"
+            }
+          ],
+          "else": [
+            {
+              "from": "PasswordResetService",
+              "to": "PasswordResetService",
+              "text": "Không sinh OTP, không gửi thư, không báo lỗi ra ngoài"
+            }
+          ]
+        }
+      },
+      {
+        "from": "PasswordResetService",
+        "to": "AuthController",
+        "text": "Kết quả giống hệt nhau ở cả hai nhánh",
+        "kind": "return"
+      },
+      {
+        "from": "AuthController",
+        "to": "Sinh viên",
+        "text": "200 \"Nếu email tồn tại, mã đã được gửi\"",
+        "kind": "return"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "Sinh viên",
+        "text": "Chuyển sang bước nhập mã, bật đếm ngược gửi lại"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_user_quen_mat_khau_otp.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 1/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

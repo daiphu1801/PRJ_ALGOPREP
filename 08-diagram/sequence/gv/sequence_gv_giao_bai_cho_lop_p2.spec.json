@@ -1,0 +1,166 @@
+{
+  "_": "Luong giao bai toan da xuat ban cho mot lop cua actor A2. Nguon: US-A2-03 (01-rd/req/user_stories/a2_instructor.md:52-56), US-A2-01b (xuat ban bai toan), 01-rd/req/problem-bank.md, 02-bd/architecture/identity.md muc 3.1 (lien module qua domain event, khong import truc tiep).",
+  "_ranh_gioi": "Man Giao bai thuoc truc man hinh; hai module problem-bank va identity KHONG import nhau nen viec kiem tra lop va viec kiem tra bai toan di qua hai lenh goi doc lap tu tang application, dung DEC-2026-0820-architecture-baseline.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Giao bài toán cho lớp (Giảng viên) (2/2)",
+  "covers": [
+    "F1-10",
+    "F2-12"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Giảng viên",
+        "role": "actor"
+      },
+      {
+        "name": "AssignmentController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "AssignmentService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema identity"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 2 - Kiểm tra quyền sở hữu lớp và trạng thái bài toán"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "AssignmentController",
+        "text": "POST /identity/classes/{classId}/assignments { problemId, dueAt }"
+      },
+      {
+        "from": "AssignmentController",
+        "to": "AssignmentController",
+        "text": "Kiểm quyền CLASS_MANAGEMENT:UPDATE theo ma trận F1-10"
+      },
+      {
+        "from": "AssignmentController",
+        "to": "AssignmentService",
+        "text": "assignProblem(command, instructorId)"
+      },
+      {
+        "from": "AssignmentService",
+        "to": "PostgreSQL",
+        "text": "Kiểm tra instructor_id của lớp khớp người gọi"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "SELECT classes WHERE id = ? AND instructor_id = ? (AssignmentRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "Lớp thuộc sở hữu hoặc rỗng (AssignmentRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "AssignmentService",
+        "text": "Optional<Class>",
+        "kind": "return"
+      },
+      {
+        "from": "AssignmentService",
+        "to": "AssignmentService",
+        "text": "getContext(problemId) - đọc qua cổng ra, không import problem-bank (ProblemContextPort)"
+      },
+      {
+        "from": "AssignmentService",
+        "to": "AssignmentService",
+        "text": "title, difficulty, trạng thái xuất bản (ProblemContextPort)"
+      },
+      {
+        "alt": {
+          "label": "Bài toán chưa xuất bản hoặc lớp không thuộc quyền phụ trách?",
+          "then": [
+            {
+              "from": "AssignmentService",
+              "to": "AssignmentController",
+              "text": "Lỗi nghiệp vụ, không ghi dữ liệu",
+              "kind": "return"
+            },
+            {
+              "from": "AssignmentController",
+              "to": "Giảng viên",
+              "text": "422 kèm lý do cụ thể",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "AssignmentService",
+              "to": "PostgreSQL",
+              "text": "save(class_assignments)"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "PostgreSQL",
+              "text": "INSERT INTO class_assignments (AssignmentRepository)"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "PostgreSQL",
+              "text": "assignmentId (AssignmentRepository)"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "AssignmentService",
+              "text": "Assignment đã lưu",
+              "kind": "return"
+            }
+          ]
+        }
+      },
+      {
+        "phase": "Giai đoạn 3 - Ghi nhật ký và mở bài cho đúng học viên của lớp"
+      },
+      {
+        "from": "AssignmentService",
+        "to": "PostgreSQL",
+        "text": "Ghi system_audit_logs: ai giao, giao bài nào, cho lớp nào"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "INSERT INTO system_audit_logs (AssignmentRepository)"
+      },
+      {
+        "from": "AssignmentService",
+        "to": "AssignmentController",
+        "text": "AssignmentDto",
+        "kind": "return"
+      },
+      {
+        "from": "AssignmentController",
+        "to": "Giảng viên",
+        "text": "201 Created",
+        "kind": "return"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Bài xuất hiện trong danh sách bài đã giao kèm hạn nộp"
+      },
+      {
+        "from": "AssignmentService",
+        "to": "PostgreSQL",
+        "text": "Chỉ học viên thuộc class_members mới thấy bài ở khối Bài tập lớp",
+        "kind": "async"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_gv_giao_bai_cho_lop.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 2/2). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md.",
+  "_sua_covers": "Them F2-12 ngay 2026-09-28: xem ghi chu cung ten o phan 1."
+}

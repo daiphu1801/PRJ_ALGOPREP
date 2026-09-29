@@ -1,0 +1,131 @@
+{
+  "_": "Luong F5.2 Mock Interview (da luot, ba giai doan, ket thuc bang rubric) cua actor A1. Nguon: 01-rd/req/ai-review.md (F5-09 den F5-16), 02-bd/architecture/ai-review.md muc 1 (aggregate InterviewSession, SSE controller, Redis ChatMemory), muc 5 (ba lop instruction), muc 6.1 (rate-limit theo phien).",
+  "_phase": "Ba giai doan trong so do la ba giai doan NGHIEP VU cua phien phong van (lam ro de bai -> trinh bay huong giai -> dao sau va cham rubric), khong phai ba buoc ky thuat.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Phỏng vấn giả lập với AI (1/3)",
+  "covers": [
+    "F5-09",
+    "F5-10"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Sinh viên",
+        "role": "actor"
+      },
+      {
+        "name": "InterviewController",
+        "role": "controller",
+        "stereo": "SSE"
+      },
+      {
+        "name": "InterviewService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema ai"
+      },
+      {
+        "name": "Nhà cung cấp LLM",
+        "role": "external",
+        "stereo": "Spring AI"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 1 - Mở phiên và làm rõ đề bài (F5-09, F5-10)"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "Sinh viên",
+        "text": "Bấm \"Phỏng vấn giả lập\" từ bài đã Accepted"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "InterviewController",
+        "text": "POST /ai/interviews { submissionId, level }"
+      },
+      {
+        "from": "InterviewController",
+        "to": "InterviewService",
+        "text": "startSession(command, userId)"
+      },
+      {
+        "from": "InterviewService",
+        "to": "InterviewService",
+        "text": "Đếm số phiên mới trong giờ của người dùng (Redis)"
+      },
+      {
+        "from": "InterviewService",
+        "to": "InterviewService",
+        "text": "Số phiên đã mở (Redis)"
+      },
+      {
+        "alt": {
+          "label": "Vượt giới hạn phiên mỗi giờ hoặc ngân sách token đã cạn?",
+          "then": [
+            {
+              "from": "InterviewService",
+              "to": "InterviewController",
+              "text": "AI_BUDGET_EXCEEDED - không gọi tới LlmProviderPort",
+              "kind": "return"
+            },
+            {
+              "from": "InterviewController",
+              "to": "Sinh viên",
+              "text": "429 kèm thông báo rõ lý do",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "InterviewService",
+              "to": "PostgreSQL",
+              "text": "INSERT interview_sessions, stage = CLARIFY"
+            },
+            {
+              "from": "InterviewService",
+              "to": "InterviewService",
+              "text": "Khởi tạo ChatMemory cho phiên (Redis)"
+            }
+          ]
+        }
+      },
+      {
+        "from": "InterviewService",
+        "to": "InterviewService",
+        "text": "openingQuestion(systemInstruction, problemContext) (SpringAiLlmAdapter)"
+      },
+      {
+        "from": "InterviewService",
+        "to": "Nhà cung cấp LLM",
+        "text": "System message = chỉ thị cố định + rubric của giai đoạn CLARIFY"
+      },
+      {
+        "from": "Nhà cung cấp LLM",
+        "to": "InterviewService",
+        "text": "Dòng token câu hỏi mở đầu",
+        "kind": "return"
+      },
+      {
+        "from": "InterviewService",
+        "to": "InterviewController",
+        "text": "Chuyển tiếp từng mẩu token",
+        "kind": "async"
+      },
+      {
+        "from": "InterviewController",
+        "to": "Sinh viên",
+        "text": "SSE - chữ hiện dần, không chờ trả lời trọn gói",
+        "kind": "async"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_user_phong_van_gia_lap_ai.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 1/2). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md.",
+  "_gop": "Gop Redis (ChatMemory) thanh self-message tren InterviewService 2026-09-27 de so do con 5 lifeline, chu in dat tren 6pt. Chu dau tu chot. Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

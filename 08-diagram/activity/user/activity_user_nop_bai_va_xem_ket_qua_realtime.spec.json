@@ -1,0 +1,144 @@
+{
+  "_": "Chuyen tu sequence_user_nop_bai_va_xem_ket_qua_realtime.spec.json (13 message) thanh activity. Khong co decision that su: F4-04 (fail-fast) da het hieu luc theo DEC-2026-0831-partial-score-testcase-ratio nen 'cham tung testcase' la MOT buoc tuan tu chay het N testcase, khong re nhanh dung/sai o muc tong quan -- giu dung tinh than 'khong bia nhanh gia' cua ke hoach.",
+  "kind": "activity",
+  "title": "Sơ đồ hoạt động - Nộp bài và xem kết quả từng testcase theo thời gian thực (Sinh viên)",
+  "covers": ["F3-11", "F4-13"],
+  "activity": {
+    "nodes": [
+      {
+        "id": "start",
+        "type": "start"
+      },
+      {
+        "id": "n1",
+        "type": "action",
+        "text": "Bấm Nộp bài"
+      },
+      {
+        "id": "n2",
+        "type": "action",
+        "text": "Lưu bản nộp trạng thái PENDING, trả submissionId ngay"
+      },
+      {
+        "id": "n3",
+        "type": "action",
+        "text": "Mở kênh WebSocket và đẩy job chấm vào RabbitMQ"
+      },
+      {
+        "id": "n4",
+        "type": "action",
+        "text": "Worker sinh mã bọc hàm, ghép mã người học rồi biên dịch"
+      },
+      {
+        "id": "d1",
+        "type": "decision",
+        "text": "Biên dịch có lỗi?"
+      },
+      {
+        "id": "n5",
+        "type": "action",
+        "text": "Ánh xạ lỗi về đúng dòng mã người học, đặt COMPILE_ERROR"
+      },
+      {
+        "id": "n6",
+        "type": "action",
+        "text": "Chấm lần lượt hết N testcase, đẩy từng kết quả qua WebSocket"
+      },
+      {
+        "id": "d2",
+        "type": "decision",
+        "text": "Toàn bộ N testcase đều đạt?"
+      },
+      {
+        "id": "n7",
+        "type": "action",
+        "text": "Verdict ACCEPTED, mở nút Phân tích bài giải"
+      },
+      {
+        "id": "n8",
+        "type": "action",
+        "text": "Verdict lấy theo testcase hỏng đầu tiên, vẫn tính điểm tỉ lệ"
+      },
+      {
+        "id": "m1",
+        "type": "merge"
+      },
+      {
+        "id": "n9",
+        "type": "action",
+        "text": "Ghi verdict và phát sự kiện qua Outbox"
+      },
+      {
+        "id": "end",
+        "type": "end"
+      }
+    ],
+    "edges": [
+      {
+        "from": "start",
+        "to": "n1"
+      },
+      {
+        "from": "n1",
+        "to": "n2"
+      },
+      {
+        "from": "n2",
+        "to": "n3"
+      },
+      {
+        "from": "n3",
+        "to": "n4"
+      },
+      {
+        "from": "n4",
+        "to": "d1"
+      },
+      {
+        "from": "d1",
+        "to": "n6",
+        "guard": "không lỗi"
+      },
+      {
+        "from": "d1",
+        "to": "n5",
+        "guard": "có lỗi"
+      },
+      {
+        "from": "n5",
+        "to": "end"
+      },
+      {
+        "from": "n6",
+        "to": "d2"
+      },
+      {
+        "from": "d2",
+        "to": "n7",
+        "guard": "đạt hết"
+      },
+      {
+        "from": "d2",
+        "to": "n8",
+        "guard": "có testcase hỏng"
+      },
+      {
+        "from": "n7",
+        "to": "m1"
+      },
+      {
+        "from": "n8",
+        "to": "m1"
+      },
+      {
+        "from": "m1",
+        "to": "n9"
+      },
+      {
+        "from": "n9",
+        "to": "end"
+      }
+    ]
+  },
+  "_nhanh_re": "Hai nhanh that: bien dich loi (F3-11) va tong hop verdict (F4-13). Vong lap cham testcase KHONG dung som -- F4-04 da bai bo theo DEC-2026-0831-partial-score-testcase-ratio."
+}

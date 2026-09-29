@@ -1,0 +1,51 @@
+{
+  "_": "Chi tiet oval 'Giam sat van hanh va tong quan he thong' o ban tong quan. Truoc day file nay ten '..._va_rejudge' va co ca nhom Re-judge (F4-09a->e) -- toan bo re-judge da HET HIEU LUC tu DEC-2026-0828-remove-rejudge-scope. Con lai F4-10 (giam sat hang doi/cum) + F4-07 (timeout sweep), dung theo luong 6.4 cua system_survey.md.",
+  "kind": "usecase",
+  "title": "Sơ đồ Use Case chi tiết - Giám sát vận hành và tổng quan hệ thống (Quản trị viên)",
+  "covers": ["F1-29", "F4-07", "F4-10"],
+  "mode": "color",
+  "usecase": {
+    "system": "Chức năng Giám sát vận hành và tổng quan hệ thống",
+    "groups": [
+      {
+        "name": "Tổng quan vận hành (F1-29)",
+        "actors": [
+          "Quản trị viên"
+        ],
+        "usecases": [
+          "Xem thống kê lượt nộp và kết quả chấm",
+          "Xem thống kê người dùng và bài toán phổ biến"
+        ]
+      },
+      {
+        "name": "Giám sát hàng đợi và cụm (F4-10)",
+        "actors": [
+          "Quản trị viên"
+        ],
+        "usecases": [
+          "Xem trạng thái hàng đợi chấm bài",
+          "Xem tình trạng cụm judge engine"
+        ]
+      },
+      {
+        "name": "Xử lý bài nộp treo (F4-07)",
+        "actors": [
+          "Quản trị viên"
+        ],
+        "usecases": [
+          "Quét và phát hiện bài nộp treo quá ngưỡng",
+          "Xử lý thủ công bài nộp treo"
+        ]
+      }
+    ],
+    "externals": [
+      {
+        "name": "go-judge",
+        "from": [
+          "Xem tình trạng cụm judge engine"
+        ]
+      }
+    ]
+  },
+  "_them_f1_29": "Them nhom 'Tong quan van hanh (F1-29)' ngay 2026-09-27 sau ra soat doi chieu 01-rd/overview/feature_catalog.md: F1-29 (dashboard admin_overview, dich mac dinh sau khi ADMIN dang nhap, 01-rd/req/identity.md:142-147) truoc do KHONG co oval o ban tong quan va khong co so do chi tiet nao nhac toi -- trong khi F1-30 (dashboard giang vien, cung ban chat) da duoc phu trong usecase_gv_theo_doi_tien_do_lop. Dat o day thay vi them oval thu 14 o ban tong quan vi ban do da 21 node, vuot tran 16. Danh doi da biet: F1-29 la THONG KE NGHIEP VU con hai nhom kia la SUC KHOE HA TANG, nen nhan oval tong quan phai noi rong thanh 'Giam sat van hanh va tong quan he thong'. Ten FILE giu nguyen de khong pha tham chieu o feature_catalog."
+}

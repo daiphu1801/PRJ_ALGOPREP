@@ -1,0 +1,103 @@
+{
+  "_": "Luong giam sat hang doi va cum judge engine cua actor A3, ke ca job quet bai nop treo. Nguon: US-A3-03 (01-rd/req/user_stories/a3_admin.md), 01-rd/req/judge-orchestration.md (F4-07, F4-10), 02-bd/architecture/judge-orchestration.md muc 5.3 (sweep 5 phut, chu ky quet 60 giay, menh de WHERE chong ghi de).",
+  "_diem_mau_chot": "Menh de WHERE status NOT IN (7 trang thai cuoi) cua job sweep KHONG phai toi uu truy van -- no la co che chong ghi de khi mot worker cham hoan tat dung luc job chay.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Giám sát hàng đợi và quét bài nộp treo (Quản trị viên) (3/3)",
+  "covers": [
+    "F4-10"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Quản trị viên",
+        "role": "actor"
+      },
+      {
+        "name": "JudgeOpsController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "JudgeOpsService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "RabbitMQ",
+        "role": "external",
+        "stereo": "hàng đợi chấm"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema judge"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 3 - Điều khiển cụm: tạm dừng và mở lại tiêu thụ hàng đợi (F4-10)"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Bấm \"Tạm dừng tiêu thụ hàng đợi\""
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Hiện hộp xác nhận nêu rõ bài nộp mới sẽ xếp hàng chờ"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Xác nhận"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "JudgeOpsController",
+        "text": "POST /judge/ops/queue/pause"
+      },
+      {
+        "from": "JudgeOpsController",
+        "to": "JudgeOpsService",
+        "text": "pauseConsumption(adminId)"
+      },
+      {
+        "from": "JudgeOpsService",
+        "to": "RabbitMQ",
+        "text": "Dừng consumer, không huỷ message đang chờ"
+      },
+      {
+        "from": "JudgeOpsService",
+        "to": "PostgreSQL",
+        "text": "Ghi system_audit_logs: ai tạm dừng, lúc nào"
+      },
+      {
+        "from": "JudgeOpsService",
+        "to": "JudgeOpsController",
+        "text": "Trạng thái cụm đã tạm dừng",
+        "kind": "return"
+      },
+      {
+        "from": "JudgeOpsController",
+        "to": "Quản trị viên",
+        "text": "200 OK",
+        "kind": "return"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Bảng giám sát chuyển sang trạng thái Đang tạm dừng"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "JudgeOpsController",
+        "text": "Tự làm mới số liệu theo chu kỳ",
+        "kind": "async"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_admin_giam_sat_hang_doi.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 3/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

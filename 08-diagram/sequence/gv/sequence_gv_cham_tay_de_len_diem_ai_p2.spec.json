@@ -1,0 +1,93 @@
+{
+  "_": "Luong xem diem AI tham khao roi cham tay de len cua actor A2. Nguon: US-A2-06 (01-rd/req/user_stories/a2_instructor.md:85-99), 01-rd/req/ai-review.md (F5-27), DEC-2026-0831-instructor-grading-round2, 02-bd/architecture/ai-review.md muc 2 (diem quy doi 0-10 luu canh solution_reviews, KHONG ghi de).",
+  "_diem_mau_chot": "Diem AI la THAM KHAO. Diem giang vien la diem chinh thuc va duoc luu nhu mot ban ghi RIENG -- hai con so cung ton tai, khong con so nao ghi de con so nao.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Chấm tay đè lên điểm AI tham khảo (Giảng viên) (2/3)",
+  "covers": [
+    "F5-27"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Giảng viên",
+        "role": "actor"
+      },
+      {
+        "name": "GradingController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "GradingService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema ai"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 2 - Đọc báo cáo phân tích của AI trước khi quyết định (F5-27)"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Mở một bài nộp trong hàng đợi"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "GradingController",
+        "text": "GET /ai/solution-reviews/{submissionId}"
+      },
+      {
+        "from": "GradingController",
+        "to": "GradingService",
+        "text": "getReviewForInstructor(submissionId, instructorId)"
+      },
+      {
+        "from": "GradingService",
+        "to": "PostgreSQL",
+        "text": "findReviewWithSourceCode(submissionId)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "SELECT solution_reviews, mã nguồn bài nộp (GradingRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "Báo cáo phân tích + điểm AI + mã nguồn (GradingRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "GradingService",
+        "text": "SolutionReview",
+        "kind": "return"
+      },
+      {
+        "from": "GradingService",
+        "to": "GradingController",
+        "text": "SolutionReviewDto",
+        "kind": "return"
+      },
+      {
+        "from": "GradingController",
+        "to": "Giảng viên",
+        "text": "200 OK",
+        "kind": "return"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Điểm AI, nhận xét từng tiêu chí và mã nguồn cạnh nhau"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_gv_cham_tay_de_len_diem_ai.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 2/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

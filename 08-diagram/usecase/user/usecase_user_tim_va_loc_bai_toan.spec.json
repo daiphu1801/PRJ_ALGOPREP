@@ -1,0 +1,25 @@
+{
+  "_": "Chi tiet oval 'Tim va loc bai toan' o ban tong quan, actor A1 Sinh vien. Nguon: 01-rd/screens/users/USR0101_problem_list.md muc 2 (F2-11, F2-12). Bo bot: viec chon mo hinh nop bai tuy duoc problem_list.md nhac den nhung thuoc man problem_detail -- ve o usecase_user_giai_va_nop_bai.",
+  "_tach_2026_09_27": "Truoc day file nay ten 'usecase_user_tim_va_luu_bai_toan' va gom ca phan Bai da luu. Tach doi theo yeu cau chu du an: RD coi day la HAI thu khac nhau -- tim-loc nam o man USR0101_problem_list, con Bai da luu nam o man rieng USR0103_saved_problems voi ghi chu rieng tu tuyet doi (ke ca ADMIN khong doc duoc). Phan Bai da luu chuyen sang usecase_user_luu_bai_toan. KHONG viet ma so cua so do kia vao ghi chu nay: feature_catalog khop chuoi literal tren ca file, viet vao la bi gan nham.",
+  "kind": "usecase",
+  "title": "Sơ đồ Use Case chi tiết - Tìm và lọc bài toán (Sinh viên)",
+  "covers": ["F2-11", "F2-12"],
+  "mode": "color",
+  "usecase": {
+    "system": "Chức năng Tìm và lọc bài toán",
+    "groups": [
+      {
+        "name": "Tìm kiếm danh sách bài toán (F2-11, F2-12)",
+        "actors": [
+          "Sinh viên"
+        ],
+        "usecases": [
+          "Tìm kiếm bài toán theo tên",
+          "Lọc theo chủ đề, độ khó và thẻ",
+          "Lọc theo trạng thái đã giải",
+          "Xem nhóm bài tập được giao theo lớp"
+        ]
+      }
+    ]
+  }
+}

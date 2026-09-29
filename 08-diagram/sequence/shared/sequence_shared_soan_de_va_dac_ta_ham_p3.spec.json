@@ -1,0 +1,126 @@
+{
+  "_": "Luong soan de bai, khai dac ta ham cho CA HAI mo hinh nop bai, va checklist chan xuat ban. Nguon: US-A2-01 va US-A2-01b (01-rd/req/user_stories/a2_instructor.md:8-35), 01-rd/req/problem-bank.md (F2-01 den F2-04, F2-15), 01-rd/req/harness.md (F3-01 luoc do kieu, F3-13 hai mo hinh song song), 02-bd/architecture/harness.md muc 4 (luoc do kieu).",
+  "_shared": "Man soan de duoc gan cho CA giang vien va quan tri vien, chia pham vi bang quyen PROBLEM_AUTHORING (DEC-2026-0825-shared-content-authoring-screens) -- vi vay dat o sequence/shared/ chu khong phai gv/.",
+  "_chan_xuat_ban": "F2-15: thieu testcase Hidden hoac thieu dac ta thi CHAN, khong cho xuat ban mot bai khong cham duoc.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Soạn đề bài và khai đặc tả hàm (Giảng viên và Quản trị viên) (3/3)",
+  "covers": [
+    "F2-15",
+    "F3-01"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Người soạn đề",
+        "role": "actor"
+      },
+      {
+        "name": "ProblemController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "ProblemService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema problem"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 3 - Checklist Sẵn sàng xuất bản, chặn bài không chấm được (F2-15)"
+      },
+      {
+        "from": "Người soạn đề",
+        "to": "Người soạn đề",
+        "text": "Bấm \"Xuất bản\""
+      },
+      {
+        "from": "Người soạn đề",
+        "to": "ProblemController",
+        "text": "POST /problems/{id}/publish"
+      },
+      {
+        "from": "ProblemController",
+        "to": "ProblemService",
+        "text": "publish(problemId, authorId)"
+      },
+      {
+        "from": "ProblemService",
+        "to": "PostgreSQL",
+        "text": "Đếm testcase Hidden và kiểm đặc tả đủ theo mô hình đã khai"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "SELECT COUNT testcases WHERE kind = HIDDEN; SELECT problem_specs (ProblemRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "Số testcase Hidden và bộ đặc tả hiện có (ProblemRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "ProblemService",
+        "text": "Dữ liệu cho checklist",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Thiếu testcase Hidden hoặc thiếu đặc tả?",
+          "then": [
+            {
+              "from": "ProblemService",
+              "to": "ProblemController",
+              "text": "Chặn xuất bản kèm danh sách mục chưa đạt",
+              "kind": "return"
+            },
+            {
+              "from": "ProblemController",
+              "to": "Người soạn đề",
+              "text": "422 - nêu rõ thiếu gì, không xuất bản bài không chấm được",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "ProblemService",
+              "to": "PostgreSQL",
+              "text": "UPDATE problems SET status = ĐÃ XUẤT BẢN"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "PostgreSQL",
+              "text": "UPDATE problems + INSERT system_audit_logs (ProblemRepository)"
+            },
+            {
+              "from": "ProblemService",
+              "to": "ProblemController",
+              "text": "Trạng thái mới của bài toán",
+              "kind": "return"
+            },
+            {
+              "from": "ProblemController",
+              "to": "Người soạn đề",
+              "text": "200 OK",
+              "kind": "return"
+            }
+          ]
+        }
+      },
+      {
+        "from": "Người soạn đề",
+        "to": "Người soạn đề",
+        "text": "Bài xuất hiện ở danh sách bài toán của học viên"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_shared_soan_de_va_dac_ta_ham.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 3/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

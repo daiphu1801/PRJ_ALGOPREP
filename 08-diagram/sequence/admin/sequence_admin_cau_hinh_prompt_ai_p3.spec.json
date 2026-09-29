@@ -1,0 +1,92 @@
+{
+  "_": "Luong cau hinh prompt va trong so rubric cua AI, co phien ban va khoi phuc duoc, cua actor A3. Nguon: US-A3-04 (01-rd/req/user_stories/a3_admin.md), 01-rd/req/ai-review.md (F5-23), 02-bd/architecture/ai-review.md muc 2 (prompt_templates / rubric_configs, KHONG thiet ke backend cho nut Chay doi chieu), muc 5 (Lop 1 chua cau chi dan rang buoc, A2/A3 khong sua duoc).",
+  "_pham_vi": "RD dong 86-93 giu nut \"Chay doi chieu\" o tang giao dien; so do nay khong ve mot endpoint backend cho no.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Cấu hình prompt và rubric của AI (Quản trị viên) (3/3)",
+  "covers": [
+    "F5-23"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Quản trị viên",
+        "role": "actor"
+      },
+      {
+        "name": "AiConfigController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "AiConfigService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema ai"
+      },
+      {
+        "name": "Redis",
+        "role": "datastore",
+        "stereo": "cache prompt"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 3 - Khôi phục một phiên bản cũ khi bản mới có vấn đề"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Chọn một phiên bản cũ rồi bấm \"Khôi phục\""
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "AiConfigController",
+        "text": "POST /ai/config/prompt-templates/{version}/restore"
+      },
+      {
+        "from": "AiConfigController",
+        "to": "AiConfigService",
+        "text": "restoreVersion(version, adminId)"
+      },
+      {
+        "from": "AiConfigService",
+        "to": "PostgreSQL",
+        "text": "Tạo phiên bản mới sao chép nội dung bản cũ"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "INSERT prompt_templates (nguồn = version cũ) (PromptRepository)"
+      },
+      {
+        "from": "AiConfigService",
+        "to": "Redis",
+        "text": "Xoá cache prompt"
+      },
+      {
+        "from": "AiConfigService",
+        "to": "AiConfigController",
+        "text": "Phiên bản đang hiệu lực sau khôi phục",
+        "kind": "return"
+      },
+      {
+        "from": "AiConfigController",
+        "to": "Quản trị viên",
+        "text": "200 OK",
+        "kind": "return"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Lịch sử giữ nguyên mọi phiên bản, không mất dấu vết"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_admin_cau_hinh_prompt_ai.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 3/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

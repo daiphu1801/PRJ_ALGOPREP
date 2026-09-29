@@ -1,0 +1,27 @@
+{
+  "_": "Chi tiet oval 'Luu bai toan (Bai da luu)' o ban tong quan, actor A1 Sinh vien. Nguon: 01-rd/screens/users/USR0103_saved_problems.md muc 1 (xem lai danh sach da danh dau, ghi chu rieng tu theo tung bai, loc theo do kho va trang thai lam bai, bo luu, vao giai truc tiep tu danh sach) va 01-rd/req/problem-bank.md F2-13.",
+  "_rieng_tu": "F2-13 chot 2026-08-24: ghi chu luu server theo (user_id, problem_id), RIENG TU TUYET DOI -- chi chu tai khoan doc duoc, khong co ngoai le cho INSTRUCTOR/ADMIN du co toan quyen qua ma tran F1-10, vi ghi chu bookmark khong phai mot FUNCTION quan tri. Cau hoi mo Q1 cua USR0103 da chot mo rong muc rieng tu nay cho CA danh sach bookmark chu khong chi rieng ghi chu. Vi vay so do nay khong co actor A2/A3.",
+  "_tach_2026_09_27": "Tach ra tu 'usecase_user_tim_va_luu_bai_toan' theo yeu cau chu du an. Truoc day phan tim-loc danh sach va phan Bai da luu nam chung mot oval o ban tong quan du RD tach thanh hai man hinh rieng. KHONG viet ma so cua so do kia vao ghi chu nay: feature_catalog khop chuoi literal tren ca file, viet vao la bi gan nham.",
+  "kind": "usecase",
+  "title": "Sơ đồ Use Case chi tiết - Lưu bài toán và ghi chú riêng tư (Sinh viên)",
+  "covers": ["F2-13"],
+  "mode": "color",
+  "usecase": {
+    "system": "Chức năng Lưu bài toán (Bài đã lưu)",
+    "groups": [
+      {
+        "name": "Bài đã lưu và ghi chú riêng tư (F2-13)",
+        "actors": [
+          "Sinh viên"
+        ],
+        "usecases": [
+          "Lưu bài toán vào danh sách riêng",
+          "Soạn ghi chú riêng tư cho bài đã lưu",
+          "Lọc bài đã lưu theo độ khó và trạng thái làm bài",
+          "Vào giải trực tiếp từ danh sách đã lưu",
+          "Bỏ lưu bài toán"
+        ]
+      }
+    ]
+  }
+}

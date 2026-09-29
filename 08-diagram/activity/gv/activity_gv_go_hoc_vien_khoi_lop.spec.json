@@ -1,0 +1,128 @@
+{
+  "_": "Activity cho luong 'go mot hoc vien khoi lop' cua actor A2, dan tu sequence_gv_go_hoc_vien_khoi_lop.spec.json (F1-26). Sequence goc chi ve mot nhanh xac nhan (khong ve nhanh Huy), va tu ghi chu '_khong_alt' trong sequence noi ro: hop thoai xac nhan la luong giao dien, khong phai nhanh nghiep vu, nen o day cung khong dat decision -- giu dung mach tuan tu da duoc chot, khong bia them nhanh Huy.",
+  "_pham_vi_xoa": "Buoc 5 'xoa lich su lam bai trong lop' giu dung pham vi cua RD: chi xoa du lieu TRONG lop do, khong dung den tai khoan hay lich su toan he thong cua hoc vien.",
+  "kind": "activity",
+  "title": "Sơ đồ hoạt động - Gỡ học viên khỏi lớp (Giảng viên)",
+  "covers": ["F1-26"],
+  "activity": {
+    "nodes": [
+      {
+        "id": "start",
+        "type": "start"
+      },
+      {
+        "id": "n1",
+        "type": "action",
+        "text": "Chọn học viên, bấm Gỡ khỏi lớp"
+      },
+      {
+        "id": "n2",
+        "type": "action",
+        "text": "Hộp xác nhận nêu rõ lịch sử làm bài trong lớp sẽ bị xoá vĩnh viễn"
+      },
+      {
+        "id": "d1",
+        "type": "decision",
+        "text": "Giảng viên xác nhận?"
+      },
+      {
+        "id": "n3",
+        "type": "action",
+        "text": "Huỷ thao tác, không đổi gì"
+      },
+      {
+        "id": "d2",
+        "type": "decision",
+        "text": "Lớp thuộc quyền phụ trách?"
+      },
+      {
+        "id": "n4",
+        "type": "action",
+        "text": "Từ chối ở tầng ứng dụng, không chỉ ẩn nút trên giao diện"
+      },
+      {
+        "id": "n5",
+        "type": "action",
+        "text": "Xoá bản ghi thành viên khỏi lớp"
+      },
+      {
+        "id": "n6",
+        "type": "action",
+        "text": "Xoá cascade lượt nộp, điểm, tiến độ gắn với lớp này"
+      },
+      {
+        "id": "n7",
+        "type": "action",
+        "text": "Ghi Nhật ký hệ thống và phát StudentRemovedFromClass"
+      },
+      {
+        "id": "n8",
+        "type": "action",
+        "text": "Cập nhật lại sĩ số và bảng học viên"
+      },
+      {
+        "id": "end",
+        "type": "end"
+      }
+    ],
+    "edges": [
+      {
+        "from": "start",
+        "to": "n1"
+      },
+      {
+        "from": "n1",
+        "to": "n2"
+      },
+      {
+        "from": "n2",
+        "to": "d1"
+      },
+      {
+        "from": "d1",
+        "to": "d2",
+        "guard": "xác nhận"
+      },
+      {
+        "from": "d1",
+        "to": "n3",
+        "guard": "huỷ"
+      },
+      {
+        "from": "n3",
+        "to": "end"
+      },
+      {
+        "from": "d2",
+        "to": "n5",
+        "guard": "có"
+      },
+      {
+        "from": "d2",
+        "to": "n4",
+        "guard": "không"
+      },
+      {
+        "from": "n4",
+        "to": "end"
+      },
+      {
+        "from": "n5",
+        "to": "n6"
+      },
+      {
+        "from": "n6",
+        "to": "n7"
+      },
+      {
+        "from": "n7",
+        "to": "n8"
+      },
+      {
+        "from": "n8",
+        "to": "end"
+      }
+    ]
+  },
+  "_nhanh_re": "Giu nguyen hanh vi XOA THAT CO CASCADE cua ban truoc -- dung F1-26 [SoT: 01-rd/req/identity.md:98-103]. Them hai nhanh: xac nhan co chu dich, va kiem quyen so huu lop."
+}

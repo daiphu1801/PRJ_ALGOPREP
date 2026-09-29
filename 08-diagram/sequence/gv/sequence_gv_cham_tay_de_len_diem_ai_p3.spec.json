@@ -1,0 +1,108 @@
+{
+  "_": "Luong xem diem AI tham khao roi cham tay de len cua actor A2. Nguon: US-A2-06 (01-rd/req/user_stories/a2_instructor.md:85-99), 01-rd/req/ai-review.md (F5-27), DEC-2026-0831-instructor-grading-round2, 02-bd/architecture/ai-review.md muc 2 (diem quy doi 0-10 luu canh solution_reviews, KHONG ghi de).",
+  "_diem_mau_chot": "Diem AI la THAM KHAO. Diem giang vien la diem chinh thuc va duoc luu nhu mot ban ghi RIENG -- hai con so cung ton tai, khong con so nao ghi de con so nao.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Chấm tay đè lên điểm AI tham khảo (Giảng viên) (3/3)",
+  "covers": [
+    "F5-27"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Giảng viên",
+        "role": "actor"
+      },
+      {
+        "name": "GradingController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "GradingService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema ai"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 3 - Chấm tay: ghi bản ghi mới, KHÔNG ghi đè điểm AI"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Bấm \"Chấm ngay\", nhập điểm 0-10 kèm nhận xét"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Kiểm tra điểm nằm trong khoảng 0 đến 10 phía client"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "GradingController",
+        "text": "POST /ai/grading/{submissionId} { score, comment }"
+      },
+      {
+        "from": "GradingController",
+        "to": "GradingController",
+        "text": "Kiểm tra lại khoảng điểm ở phía máy chủ"
+      },
+      {
+        "from": "GradingController",
+        "to": "GradingService",
+        "text": "gradeManually(command, instructorId)"
+      },
+      {
+        "from": "GradingService",
+        "to": "PostgreSQL",
+        "text": "save(instructor_grades) - bản ghi riêng cạnh solution_reviews"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "INSERT INTO instructor_grades (điểm AI giữ nguyên) (GradingRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "gradeId (GradingRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "GradingService",
+        "text": "InstructorGrade đã lưu",
+        "kind": "return"
+      },
+      {
+        "from": "GradingService",
+        "to": "PostgreSQL",
+        "text": "Ghi system_audit_logs: ai chấm, bài nào, điểm bao nhiêu"
+      },
+      {
+        "from": "GradingService",
+        "to": "GradingController",
+        "text": "InstructorGradeDto",
+        "kind": "return"
+      },
+      {
+        "from": "GradingController",
+        "to": "Giảng viên",
+        "text": "201 Created",
+        "kind": "return"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Điểm chính thức hiện cạnh điểm AI tham khảo, bài rời hàng đợi"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_gv_cham_tay_de_len_diem_ai.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 3/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

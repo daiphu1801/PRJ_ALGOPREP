@@ -1,0 +1,151 @@
+{
+  "_": "Luong F6 Chế độ học + Chế độ luyện cua actor A1 tren ngan hang cau hoi phong van. Nguon: 01-rd/req/interview-bank.md (F6-04 den F6-08, F6-09, F6-12), 02-bd/architecture/interview-bank.md muc 1 (AnswerFeedbackPort, SpringAiFeedbackAdapter, job spaced repetition), muc 2 (Chế độ luyện la NOI DUY NHAT module nay goi AI).",
+  "_bat_bien": "F6-07 amendment (DEC-2026-0831-outside-screens-closures): moi lan nop la mot attempt doc lap, khong UPDATE cau tra loi cu.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Ôn tập và luyện tập câu hỏi phỏng vấn (Sinh viên) (2/3)",
+  "covers": [
+    "F6-07",
+    "F6-08"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Sinh viên",
+        "role": "actor"
+      },
+      {
+        "name": "PracticeController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "PracticeService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema interview_bank"
+      },
+      {
+        "name": "Nhà cung cấp LLM",
+        "role": "external",
+        "stereo": "Spring AI"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 2 - Chế độ luyện: tự soạn câu trả lời rồi nhờ AI đối chiếu (F6-07, F6-08)"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "Sinh viên",
+        "text": "Chuyển sang Chế độ luyện, gõ câu trả lời rồi nộp"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "PracticeController",
+        "text": "POST /interview-bank/questions/{id}/answers { answerText }"
+      },
+      {
+        "from": "PracticeController",
+        "to": "PracticeController",
+        "text": "Kiểm tra độ dài câu trả lời, chặn nội dung rỗng"
+      },
+      {
+        "from": "PracticeController",
+        "to": "PracticeService",
+        "text": "submitPracticeAnswer(command, userId)"
+      },
+      {
+        "from": "PracticeService",
+        "to": "PostgreSQL",
+        "text": "Đọc bộ tiêu chí đánh giá chuẩn của câu hỏi"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PracticeService",
+        "text": "Danh sách tiêu chí",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Câu hỏi đã có bộ tiêu chí đánh giá?",
+          "then": [
+            {
+              "from": "PracticeService",
+              "to": "PracticeController",
+              "text": "RUBRIC_MISSING - không gọi AI khi không có gì để đối chiếu",
+              "kind": "return"
+            },
+            {
+              "from": "PracticeController",
+              "to": "Sinh viên",
+              "text": "422 kèm gợi ý báo cho giảng viên bổ sung",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "PracticeService",
+              "to": "PracticeService",
+              "text": "compare(tiêu chí chuẩn, câu trả lời người học) (SpringAiFeedbackAdapter)"
+            },
+            {
+              "from": "PracticeService",
+              "to": "PracticeService",
+              "text": "Tiêu chí vào system message, câu trả lời vào user message"
+            },
+            {
+              "from": "PracticeService",
+              "to": "Nhà cung cấp LLM",
+              "text": "Yêu cầu đối chiếu và chỉ ra ý còn thiếu"
+            },
+            {
+              "from": "Nhà cung cấp LLM",
+              "to": "PracticeService",
+              "text": "Nhận xét theo từng tiêu chí",
+              "kind": "return"
+            },
+            {
+              "from": "PracticeService",
+              "to": "PracticeService",
+              "text": "AnswerFeedback (SpringAiFeedbackAdapter)"
+            }
+          ]
+        }
+      },
+      {
+        "from": "PracticeService",
+        "to": "PostgreSQL",
+        "text": "INSERT user_answers - thêm attempt mới, không sửa attempt cũ"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "INSERT user_answers (question_id, user_id, attempt_no) (QuestionRepository)"
+      },
+      {
+        "from": "PracticeService",
+        "to": "PracticeController",
+        "text": "AnswerFeedbackDto",
+        "kind": "return"
+      },
+      {
+        "from": "PracticeController",
+        "to": "Sinh viên",
+        "text": "200 OK",
+        "kind": "return"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "Sinh viên",
+        "text": "Đối chiếu từng tiêu chí, chỉ rõ ý còn thiếu"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_user_on_tap_luyen_tap_ai.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 2/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

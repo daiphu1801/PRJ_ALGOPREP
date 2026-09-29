@@ -1,0 +1,134 @@
+{
+  "_": "Luong tao lop hoc va phat ma moi cua actor A2, ke ca buoc hoc vien dung ma de tham gia. Nguon: US-A2-07 (01-rd/req/user_stories/a2_instructor.md:102-123), 01-rd/req/identity.md (F1-23, F1-25, F1-26), 03-dd/api/identity.md muc 0.4 (endpoint #20, #23, #25), 02-bd/architecture/identity.md muc 5 (ma moi TTL 7 ngay), 02-bd/database/identity.md:93-94 (nhieu ma hieu luc song song).",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Tạo lớp học và phát mã mời (Giảng viên) (3/3)",
+  "covers": [
+    "F1-23"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Giảng viên",
+        "role": "actor"
+      },
+      {
+        "name": "ClassController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "ClassService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema identity"
+      },
+      {
+        "name": "Học viên",
+        "role": "actor"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 3 - Học viên dùng mã để tham gia lớp (F1-23, BR-09)"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Học viên",
+        "text": "Chia sẻ mã mời ngoài hệ thống",
+        "kind": "async"
+      },
+      {
+        "from": "Học viên",
+        "to": "Giảng viên",
+        "text": "Nhập mã mời rồi bấm \"Tham gia lớp\""
+      },
+      {
+        "from": "Giảng viên",
+        "to": "ClassController",
+        "text": "POST /identity/classes/join { code }"
+      },
+      {
+        "from": "ClassController",
+        "to": "ClassService",
+        "text": "joinClass(code, studentId)"
+      },
+      {
+        "from": "ClassService",
+        "to": "PostgreSQL",
+        "text": "findActiveInviteCode(code)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "SELECT class_invite_codes WHERE code = ? AND expires_at > now() (ClassRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "Mã còn hiệu lực hoặc rỗng (ClassRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "ClassService",
+        "text": "Optional<InviteCode>",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Mã không tồn tại hoặc đã hết hạn?",
+          "then": [
+            {
+              "from": "ClassService",
+              "to": "ClassController",
+              "text": "IDT-410",
+              "kind": "return"
+            },
+            {
+              "from": "ClassController",
+              "to": "Giảng viên",
+              "text": "422 \"Mã không hợp lệ hoặc đã hết hạn\"",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "ClassService",
+              "to": "PostgreSQL",
+              "text": "save(class_members) nếu chưa là thành viên"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "PostgreSQL",
+              "text": "INSERT INTO class_members (ClassRepository)"
+            },
+            {
+              "from": "ClassService",
+              "to": "ClassController",
+              "text": "ClassDto của lớp vừa tham gia",
+              "kind": "return"
+            },
+            {
+              "from": "ClassController",
+              "to": "Giảng viên",
+              "text": "200 OK",
+              "kind": "return"
+            }
+          ]
+        }
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Học viên",
+        "text": "Khối \"Bài tập lớp\" xuất hiện ở màn Danh sách bài toán",
+        "kind": "return"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_gv_tao_lop_va_ma_moi.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 3/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

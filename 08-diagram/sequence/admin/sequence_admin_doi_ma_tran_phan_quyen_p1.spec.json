@@ -1,0 +1,93 @@
+{
+  "_": "Luong doi mot o trong ma tran phan quyen Role x Function x Action cua actor A3. Nguon: US-A3-01 (01-rd/req/user_stories/a3_admin.md), 01-rd/req/identity.md (F1-10, F1-11, F1-14), 03-dd/api/identity.md muc 0.5 (endpoint #31, BR-13), 02-bd/architecture/identity.md muc 6 (quyen KHONG nhung vao claim JWT tinh, phai tra tai thoi diem request).",
+  "_diem_mau_chot": "Doi o co hieu luc NGAY, khong can khoi dong lai dich vu -- vi vay phai vo hieu cache quyen chu khong doi token het han.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Đổi ma trận phân quyền (Quản trị viên) (1/2)",
+  "covers": [
+    "F1-10"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Quản trị viên",
+        "role": "actor"
+      },
+      {
+        "name": "RbacController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "RbacService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema identity"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 1 - Nạp ma trận, Function và Action chỉ đọc (F1-10)"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Mở màn Ma trận phân quyền"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "RbacController",
+        "text": "GET /identity/rbac/matrix"
+      },
+      {
+        "from": "RbacController",
+        "to": "RbacService",
+        "text": "getPermissionMatrix()"
+      },
+      {
+        "from": "RbacService",
+        "to": "PostgreSQL",
+        "text": "findAllRolesWithPermissions()"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "SELECT roles, functions, actions, role_permissions (RoleRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "Toàn bộ ma trận (RoleRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "RbacService",
+        "text": "PermissionMatrix",
+        "kind": "return"
+      },
+      {
+        "from": "RbacService",
+        "to": "RbacController",
+        "text": "MatrixDto - functions và actions đánh dấu chỉ đọc",
+        "kind": "return"
+      },
+      {
+        "from": "RbacController",
+        "to": "Quản trị viên",
+        "text": "200 OK",
+        "kind": "return"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Lưới Role x Function x Action kèm tab chọn vai trò"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_admin_doi_ma_tran_phan_quyen.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 1/2). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

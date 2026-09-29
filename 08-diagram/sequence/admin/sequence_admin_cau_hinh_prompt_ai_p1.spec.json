@@ -1,0 +1,98 @@
+{
+  "_": "Luong cau hinh prompt va trong so rubric cua AI, co phien ban va khoi phuc duoc, cua actor A3. Nguon: US-A3-04 (01-rd/req/user_stories/a3_admin.md), 01-rd/req/ai-review.md (F5-23), 02-bd/architecture/ai-review.md muc 2 (prompt_templates / rubric_configs, KHONG thiet ke backend cho nut Chay doi chieu), muc 5 (Lop 1 chua cau chi dan rang buoc, A2/A3 khong sua duoc).",
+  "_pham_vi": "RD dong 86-93 giu nut \"Chay doi chieu\" o tang giao dien; so do nay khong ve mot endpoint backend cho no.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Cấu hình prompt và rubric của AI (Quản trị viên) (1/3)",
+  "covers": [
+    "F5-23"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Quản trị viên",
+        "role": "actor"
+      },
+      {
+        "name": "AiConfigController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "AiConfigService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema ai"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 1 - Nạp bản đang hiệu lực và lịch sử phiên bản (F5-23)"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Mở màn Cấu hình AI"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "AiConfigController",
+        "text": "GET /ai/config/prompt-templates"
+      },
+      {
+        "from": "AiConfigController",
+        "to": "AiConfigController",
+        "text": "Kiểm quyền AI_CONFIG:READ - khác quyền soạn đề của giảng viên"
+      },
+      {
+        "from": "AiConfigController",
+        "to": "AiConfigService",
+        "text": "getActiveTemplateWithHistory()"
+      },
+      {
+        "from": "AiConfigService",
+        "to": "PostgreSQL",
+        "text": "findActiveAndVersions()"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "SELECT prompt_templates, rubric_configs ORDER BY version DESC (PromptRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "Bản đang dùng + danh sách phiên bản cũ (PromptRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "AiConfigService",
+        "text": "PromptTemplate, List<Version>",
+        "kind": "return"
+      },
+      {
+        "from": "AiConfigService",
+        "to": "AiConfigController",
+        "text": "AiConfigDto",
+        "kind": "return"
+      },
+      {
+        "from": "AiConfigController",
+        "to": "Quản trị viên",
+        "text": "200 OK",
+        "kind": "return"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Nội dung prompt, trọng số rubric, lịch sử phiên bản"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_admin_cau_hinh_prompt_ai.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 1/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

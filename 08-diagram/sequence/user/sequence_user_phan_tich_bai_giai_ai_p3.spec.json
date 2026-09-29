@@ -1,0 +1,74 @@
+{
+  "_": "Luong F5.1 Solution Review (mot lan, ket qua JSON co cau truc) cua actor A1. Nguon: 01-rd/req/ai-review.md (F5-01 den F5-08), 02-bd/architecture/ai-review.md muc 3.2/3.3 (SubmissionSnapshotPort, ProblemContextPort), muc 5 (ba lop instruction chong prompt injection), muc 6.2 (cache theo source hash), muc 6.3 (ngan sach token).",
+  "_suy_giam": "Nhanh LLM loi khong lam hong F1-F4: bao loi tai cho, khong khoa man Nop bai (CLAUDE.md -- AI degrades gracefully).",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Phân tích bài giải bằng AI (Sinh viên) (3/3)",
+  "covers": [
+    "F5-08",
+    "F5-21"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Sinh viên",
+        "role": "actor"
+      },
+      {
+        "name": "ReviewController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "SolutionReviewService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema ai"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 4 - Lưu kết quả, ghi mức tiêu thụ, phát sự kiện (F5-08, F5-21)"
+      },
+      {
+        "from": "SolutionReviewService",
+        "to": "SolutionReviewService",
+        "text": "Kiểm tra JSON đúng lược đồ, cắt trường lạ"
+      },
+      {
+        "from": "SolutionReviewService",
+        "to": "PostgreSQL",
+        "text": "INSERT solution_reviews + ai_cache_entries + token_usage"
+      },
+      {
+        "from": "SolutionReviewService",
+        "to": "PostgreSQL",
+        "text": "Phát SolutionReviewCompleted cho identity dựng hoạt động gần đây",
+        "kind": "async"
+      },
+      {
+        "from": "SolutionReviewService",
+        "to": "ReviewController",
+        "text": "SolutionReviewDto",
+        "kind": "return"
+      },
+      {
+        "from": "ReviewController",
+        "to": "Sinh viên",
+        "text": "200 OK",
+        "kind": "return"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "Sinh viên",
+        "text": "Độ phức tạp, điểm mạnh yếu, gợi ý cải thiện - kèm nhãn chỉ mang tính hỗ trợ học tập"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_user_phan_tich_bai_giai_ai.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 3/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

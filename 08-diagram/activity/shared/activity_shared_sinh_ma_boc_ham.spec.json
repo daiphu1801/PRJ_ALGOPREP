@@ -1,0 +1,162 @@
+{
+  "_": "Lõi kỹ thuật F3: sinh mã theo mô hình nộp bài, ánh xạ lỗi biên dịch về đúng dòng người học, so khớp kết quả. Nguồn: 01-rd/req/harness.md (F3-01 đến F3-13), 02-bd/architecture/harness.md mục 5 (trách nhiệm plugin), mục 6 (bốn chiến lược so khớp), mục 7 (nguyên lý dịch số dòng, các bước 2-4).",
+  "_vi_sao_activity": "F3 là thuật toán có rẽ nhánh (theo mô hình nộp bài, theo vị trí dòng lỗi), không phải hội thoại giữa các tầng -- vẽ sequence sẽ ra một cột self-call dài không nói thêm được gì.",
+  "_actor": "Không thuộc actor người nào: đây là US-A4-01 (01-rd/req/user_stories/a4_system.md:13), việc của hệ thống tự động. Đặt ở shared/ vì nó phục vụ mọi lượt nộp bài của mọi actor.",
+  "kind": "activity",
+  "title": "Sơ đồ hoạt động - Sinh mã bọc hàm, ánh xạ lỗi biên dịch và so khớp kết quả (F3)",
+  "covers": [
+    "F3-01",
+    "F3-02",
+    "F3-03",
+    "F3-04",
+    "F3-05",
+    "F3-06",
+    "F3-11",
+    "F3-12",
+    "F3-13"
+  ],
+  "activity": {
+    "nodes": [
+      {
+        "id": "start",
+        "type": "start"
+      },
+      {
+        "id": "a1",
+        "type": "action",
+        "text": "Nhận đặc tả hàm, mã người học và mô hình nộp bài đang chọn"
+      },
+      {
+        "id": "d1",
+        "type": "decision",
+        "text": "Mô hình nộp bài nào?"
+      },
+      {
+        "id": "a2",
+        "type": "action",
+        "text": "Sinh khung đọc dữ liệu vào, gọi hàm người học, in kết quả theo lược đồ kiểu"
+      },
+      {
+        "id": "a3",
+        "type": "action",
+        "text": "Ghép mã người học vào khung biên dịch tối thiểu, không sinh logic đọc ghi"
+      },
+      {
+        "id": "m1",
+        "type": "merge"
+      },
+      {
+        "id": "a4",
+        "type": "action",
+        "text": "Ghi userCodeStartLine, đóng gói theo định dạng adapter rồi biên dịch"
+      },
+      {
+        "id": "d2",
+        "type": "decision",
+        "text": "Biên dịch có lỗi?"
+      },
+      {
+        "id": "a5",
+        "type": "action",
+        "text": "Trừ userCodeStartLine trừ 1 để quy đổi ra số dòng trong mã người học"
+      },
+      {
+        "id": "d3",
+        "type": "decision",
+        "text": "Dòng lỗi nằm trong vùng mã người học?"
+      },
+      {
+        "id": "a6",
+        "type": "action",
+        "text": "Trả nguyên văn thông điệp compiler, thay số dòng bằng số đã quy đổi"
+      },
+      {
+        "id": "a7",
+        "type": "action",
+        "text": "Che giấu hoàn toàn, ghi log ERROR nội bộ, chỉ báo lỗi hệ thống chung"
+      },
+      {
+        "id": "a8",
+        "type": "action",
+        "text": "Chạy từng testcase rồi so khớp theo matching_strategy đã khai"
+      },
+      {
+        "id": "end",
+        "type": "end"
+      }
+    ],
+    "edges": [
+      {
+        "from": "start",
+        "to": "a1"
+      },
+      {
+        "from": "a1",
+        "to": "d1"
+      },
+      {
+        "from": "d1",
+        "to": "a2",
+        "guard": "Bọc hàm"
+      },
+      {
+        "from": "d1",
+        "to": "a3",
+        "guard": "Standard I/O"
+      },
+      {
+        "from": "a2",
+        "to": "m1"
+      },
+      {
+        "from": "a3",
+        "to": "m1"
+      },
+      {
+        "from": "m1",
+        "to": "a4"
+      },
+      {
+        "from": "a4",
+        "to": "d2"
+      },
+      {
+        "from": "d2",
+        "to": "a8",
+        "guard": "không lỗi"
+      },
+      {
+        "from": "d2",
+        "to": "a5",
+        "guard": "có lỗi"
+      },
+      {
+        "from": "a5",
+        "to": "d3"
+      },
+      {
+        "from": "d3",
+        "to": "a6",
+        "guard": "trong vùng người học"
+      },
+      {
+        "from": "d3",
+        "to": "a7",
+        "guard": "thuộc mã khung"
+      },
+      {
+        "from": "a8",
+        "to": "end"
+      },
+      {
+        "from": "a6",
+        "to": "end"
+      },
+      {
+        "from": "a7",
+        "to": "end"
+      }
+    ]
+  },
+  "_sua_covers": "Sua covers 2026-09-28 sau ra soat am tinh gia: ban cu chi khai F3-01 va F3-13 vi ghi chu viet dai 'F3-01 den F3-13', ma luat cu chi tinh hai dau dai. Doi chieu tung node voi bang ma: 'Sinh khung doc du lieu vao, goi ham nguoi hoc, in ket qua theo luoc do kieu' = F3-01 F3-02 F3-03 F3-04; 'Ghep ma nguoi hoc vao khung' = F3-05; 'dong goi theo dinh dang adapter' = F3-06; 'Tru userCodeStartLine... thay so dong' = F3-11; 'Che giau hoan toan, ghi log ERROR noi bo' = F3-12; nhanh 'Mo hinh nop bai nao?' = F3-13."
+}

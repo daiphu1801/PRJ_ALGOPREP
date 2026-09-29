@@ -1,0 +1,98 @@
+{
+  "_": "Luong dang nhap bang OAuth (GitHub, Google) va tu lien ket theo email cua actor A1. Nguon: 01-rd/req/identity.md (F1-15), 03-dd/api/identity.md muc 0.1 (endpoint #5, #6), 03-dd/logic/identity.md BR-03, 02-bd/architecture/identity.md muc 2 (OAuth tu lien ket theo email).",
+  "_bao_mat": "Hai chot chan chiem tai khoan: (1) doi chieu `state` luu Redis TTL 10 phut -- chong CSRF o buoc callback; (2) provider tra `email_verified = false` thi TU CHOI, khong tao oauth_identities va khong tao users -- neu bo buoc nay, ai dang ky mot tai khoan provider bang email nguoi khac deu chiem duoc tai khoan AlgoPrep tuong ung.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Đăng nhập và tự liên kết tài khoản OAuth (Sinh viên) (1/3)",
+  "covers": [
+    "F1-15"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Sinh viên",
+        "role": "actor"
+      },
+      {
+        "name": "AuthController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "OAuthService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "Redis",
+        "role": "datastore",
+        "stereo": "state TTL 10 phút"
+      },
+      {
+        "name": "Nhà cung cấp OAuth",
+        "role": "external",
+        "stereo": "GitHub, Google"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 1 - Khởi tạo luồng, sinh state chống giả mạo (BR-03)"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "Sinh viên",
+        "text": "Bấm \"Đăng nhập với GitHub\""
+      },
+      {
+        "from": "Sinh viên",
+        "to": "AuthController",
+        "text": "GET /auth/oauth/{provider}/redirect"
+      },
+      {
+        "from": "AuthController",
+        "to": "OAuthService",
+        "text": "buildAuthorizeUrl(provider)"
+      },
+      {
+        "from": "OAuthService",
+        "to": "OAuthService",
+        "text": "Sinh chuỗi state ngẫu nhiên"
+      },
+      {
+        "from": "OAuthService",
+        "to": "Redis",
+        "text": "SET identity:oauthstate:<state> TTL 10 phút"
+      },
+      {
+        "from": "OAuthService",
+        "to": "AuthController",
+        "text": "URL uỷ quyền kèm state",
+        "kind": "return"
+      },
+      {
+        "from": "AuthController",
+        "to": "Sinh viên",
+        "text": "200 OK kèm URL",
+        "kind": "return"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "Sinh viên",
+        "text": "Chuyển hướng sang trang đăng nhập của provider"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "Nhà cung cấp OAuth",
+        "text": "Đăng nhập và chấp thuận quyền truy cập"
+      },
+      {
+        "from": "Nhà cung cấp OAuth",
+        "to": "Sinh viên",
+        "text": "Chuyển hướng về kèm code và state",
+        "kind": "return"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_user_lien_ket_oauth.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 1/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}
