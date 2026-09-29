@@ -1,4 +1,4 @@
-import { MySubmissionsView } from "@/views/my-submissions";
+import { MySubmissionsView } from "@/views/users/my-submissions";
 
 export default function Page() {
   return <MySubmissionsView />;

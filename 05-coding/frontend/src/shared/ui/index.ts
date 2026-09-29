@@ -7,6 +7,7 @@ export { Badge, type BadgeVariant } from "./badge";
 export { Card } from "./card";
 export { SettingRow } from "./setting-row";
 export { PageHeader } from "./page-header";
+export { PageContainer } from "./page-container";
 export { StatCard } from "./stat-card";
 export { SegmentedTabs } from "./segmented-tabs";
 export { NoticeTile, type NoticeTone } from "./notice-tile";
@@ -37,3 +38,5 @@ export {
   type StackedSeries,
 } from "./charts/stacked-bar-chart";
 export { DashboardBlockState } from "./charts/dashboard-block-state";
+export { RadarChart } from "./charts/radar-chart";
+export { ActivityHeatmap } from "./charts/activity-heatmap";

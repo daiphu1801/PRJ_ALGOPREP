@@ -32,3 +32,16 @@ export {
   fetchSavedProblems,
   simulateSubmission,
 } from "./api/__mock__/problem-mocks";
+export {
+  AI_GUARD_KEYS,
+  TESTCASE_CATEGORIES,
+  type AiGuardKey,
+  type ProblemDraft,
+  type ProblemLimits,
+  type Testcase,
+  type TestcaseCategory,
+  type TestcaseOrigin,
+  type TestcaseVisibility,
+  type WorkedExample,
+} from "./model/draft-types";
+export { fetchProblemDraft } from "./api/__mock__/problem-draft-mocks";

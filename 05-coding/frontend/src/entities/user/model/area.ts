@@ -22,9 +22,16 @@ export const ROLE_BY_AREA = {
   admin: "ADMIN",
 } as const satisfies Record<Exclude<AppArea, "public">, Role>;
 
-/** Post-login navigation target, by role — locked in at 01-rd/screens/shared/auth.md:90 (Q3). */
+/**
+ * Post-login navigation target, by role — locked in at 01-rd/screens/shared/SHR0101_auth.md (Q3).
+ *
+ * STUDENT moved from `/progress` to `/dashboard` on 2026-09-27
+ * (`DEC-2026-0927-student-dashboard-home`), which amended that same Q3: the Student area gained an
+ * overview screen of its own (`01-rd/screens/users/USR0601_dashboard.md`), so `my_progress` is no
+ * longer the landing page. The other two destinations are unchanged.
+ */
 export const HOME_PATH_BY_ROLE = {
-  STUDENT: "/progress",
+  STUDENT: "/dashboard",
   INSTRUCTOR: "/instructor/overview",
   // Unblocked 2026-08-25: `admin_overview` has a real prototype (09-layoutBase/Admin - Tổng
   // quan.dc.html) and was added to system_survey.md section 7.3 after the Admin area reconciliation pass.

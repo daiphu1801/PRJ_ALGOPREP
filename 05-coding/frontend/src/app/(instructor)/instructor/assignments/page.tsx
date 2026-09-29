@@ -1,4 +1,4 @@
-import { ClassAssignmentsView } from "@/views/class-assignments";
+import { ClassAssignmentsView } from "@/views/teacher/class-assignments";
 
 export default function Page() {
   return <ClassAssignmentsView />;

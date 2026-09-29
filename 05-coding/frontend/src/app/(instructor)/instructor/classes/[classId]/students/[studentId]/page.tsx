@@ -1,4 +1,4 @@
-import { ClassStudentDetailView } from "@/views/class-student-detail";
+import { ClassStudentDetailView } from "@/views/teacher/class-student-detail";
 
 type PageProps = { params: Promise<{ classId: string; studentId: string }> };
 

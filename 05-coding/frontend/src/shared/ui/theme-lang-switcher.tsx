@@ -125,7 +125,13 @@ export function ThemeLangSwitcher({ variant = "inline", collapsed = false, class
     );
   const circleButton = (active: boolean) =>
     cn(
-      "glass-surface flex shrink-0 items-center justify-center rounded-full border border-[var(--color-border)] font-bold uppercase transition-colors",
+      // `glass-surface` ONLY on the inactive circle. It sets `background` from a plain class rule,
+      // which beats the `bg-[var(--color-primary)]` utility below, so an active circle was painted
+      // translucent-white and its `--color-on-primary` white label vanished into it — visible the
+      // moment this switcher moved out of `.admin-shell` (where `--color-primary` is itself
+      // near-white, hiding the bug) and onto the Student header's blue primary.
+      "flex shrink-0 items-center justify-center rounded-full border border-[var(--color-border)] font-bold uppercase transition-colors",
+      !active && "glass-surface",
       // Collapsed rail is a SEPARATE width budget from the expanded sidebar and was never
       // re-measured after the 2026-09-16 padding pass: 72px rail with p-3 leaves 48px of content,
       // while two 24px circles plus gap-1 need 52px. Measured 2026-09-17 (Playwright bounding box):

@@ -15,7 +15,7 @@ test("student area renders the AppShell", async ({ page }) => {
   await expect(page.getByRole("banner")).toContainText("AlgoPrep");
 });
 
-test("auth screen renders and the signup/login mode switch is reachable (PROTOTYPE, views/auth)", async ({ page }) => {
+test("auth screen renders and the signup/login mode switch is reachable (PROTOTYPE, views/shared/auth)", async ({ page }) => {
   await page.goto("/login");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Đăng nhập");
 
@@ -24,7 +24,7 @@ test("auth screen renders and the signup/login mode switch is reachable (PROTOTY
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Đăng ký");
 });
 
-test("admin overview renders the Admin shell with sidebar nav (PROTOTYPE, views/admin-overview)", async ({ page }) => {
+test("admin overview renders the Admin shell with sidebar nav (PROTOTYPE, views/admin/overview)", async ({ page }) => {
   await page.goto("/admin/overview");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Tổng quan");
 

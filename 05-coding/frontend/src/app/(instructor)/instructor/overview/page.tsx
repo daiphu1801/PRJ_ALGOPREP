@@ -1,4 +1,4 @@
-import { InstructorOverviewView } from "@/views/instructor-overview";
+import { InstructorOverviewView } from "@/views/teacher/overview";
 
 export default function Page() {
   return <InstructorOverviewView />;

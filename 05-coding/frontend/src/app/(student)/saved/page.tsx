@@ -1,4 +1,4 @@
-import { SavedProblemsView } from "@/views/saved-problems";
+import { SavedProblemsView } from "@/views/users/saved-problems";
 
 export default function Page() {
   return <SavedProblemsView />;
