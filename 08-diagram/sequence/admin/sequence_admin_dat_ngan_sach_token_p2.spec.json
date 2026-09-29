@@ -1,0 +1,130 @@
+{
+  "_": "Luong dat ngan sach token, tu dong khoa khi can quota, va canh bao bat thuong cap tai khoan cua actor A3. Nguon: US-A3-04 (01-rd/req/user_stories/a3_admin.md), 01-rd/req/ai-review.md (F5-19, F5-21, F5-25), 02-bd/architecture/ai-review.md muc 6.3 (ngan sach + locked_at, ADMIN khong bi khoa) va muc 6.4 (DEC-2026-0831-ai-usage-anomaly-alert -- canh bao mem, KHONG tu khoa tai khoan).",
+  "_hai_co_che": "Muc 6.3 va 6.4 la HAI co che tach biet: mot cai tu khoa theo ngan sach toan he thong, mot cai chi canh bao de ADMIN xem xet thu cong. Ve chung mot so do de thay ro chung khong dinh vao nhau.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Đặt ngân sách token và cảnh báo bất thường (Quản trị viên) (2/2)",
+  "covers": [
+    "F5-19",
+    "F5-21",
+    "F5-25"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Quản trị viên",
+        "role": "actor"
+      },
+      {
+        "name": "TokenBudgetController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "TokenBudgetService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "AnomalyAlertJob",
+        "role": "service",
+        "stereo": "@Scheduled mỗi giờ"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema ai"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 3 - Cảnh báo bất thường: cảnh báo mềm, KHÔNG tự khoá tài khoản"
+      },
+      {
+        "from": "AnomalyAlertJob",
+        "to": "PostgreSQL",
+        "text": "Tính tần suất gọi AI 24 giờ gần nhất của từng tài khoản"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "AnomalyAlertJob",
+        "text": "Tần suất từng tài khoản và trung bình toàn hệ thống",
+        "kind": "return"
+      },
+      {
+        "from": "AnomalyAlertJob",
+        "to": "AnomalyAlertJob",
+        "text": "So với trung bình cùng khung giờ, lấy ngưỡng gấp 5 lần"
+      },
+      {
+        "alt": {
+          "label": "Có tài khoản vượt ngưỡng?",
+          "then": [
+            {
+              "from": "AnomalyAlertJob",
+              "to": "PostgreSQL",
+              "text": "INSERT ai_usage_anomaly_alerts (status = OPEN)"
+            },
+            {
+              "from": "AnomalyAlertJob",
+              "to": "AnomalyAlertJob",
+              "text": "Tài khoản đó VẪN gọi AI bình thường - đây không phải lệnh khoá"
+            }
+          ],
+          "else": [
+            {
+              "from": "AnomalyAlertJob",
+              "to": "AnomalyAlertJob",
+              "text": "Không ghi cảnh báo, chờ lượt chạy sau"
+            }
+          ]
+        }
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Mở mục Cảnh báo bất thường"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "TokenBudgetController",
+        "text": "GET /ai/admin/anomaly-alerts?status=OPEN"
+      },
+      {
+        "from": "TokenBudgetController",
+        "to": "TokenBudgetService",
+        "text": "listOpenAlerts()"
+      },
+      {
+        "from": "TokenBudgetService",
+        "to": "PostgreSQL",
+        "text": "SELECT ai_usage_anomaly_alerts WHERE status = OPEN"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "TokenBudgetService",
+        "text": "Danh sách cảnh báo đang mở",
+        "kind": "return"
+      },
+      {
+        "from": "TokenBudgetService",
+        "to": "TokenBudgetController",
+        "text": "List<AnomalyAlertDto>",
+        "kind": "return"
+      },
+      {
+        "from": "TokenBudgetController",
+        "to": "Quản trị viên",
+        "text": "200 OK",
+        "kind": "return"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Danh sách tài khoản nghi bất thường để xem xét thủ công"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_admin_dat_ngan_sach_token.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 2/2). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

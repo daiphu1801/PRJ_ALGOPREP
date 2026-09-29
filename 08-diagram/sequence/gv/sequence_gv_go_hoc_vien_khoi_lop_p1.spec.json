@@ -1,0 +1,148 @@
+{
+  "_": "Luong go hoc vien khoi lop cua actor A2. Nguon: US-A2-07 (01-rd/req/user_stories/a2_instructor.md:121-123), 01-rd/req/identity.md (F1-26, F1-14), 03-dd/api/identity.md muc 0.4 (endpoint #27, phat StudentRemovedFromClass, BR-11).",
+  "_xoa_that_co_cascade": "F1-26 chot 2026-08-28 qua hoi truc tiep chu du an: go hoc vien khoi lop thi XOA LUON lich su lam bai cua hoc vien do TRONG PHAM VI LOP NAY (luot nop, diem, tien do gan voi lop) -- xoa that, co cascade [SoT: 01-rd/req/identity.md:98-103, 01-rd/req/user_stories/a2_instructor.md:121-123]. RD ghi ro dieu nay de BD/DD khong lo ap khuon mau \"giu lai du lieu\" cua F1-16 (xoa tai khoan chi khoa mem) sang day. Ban ve dau tien cua so do nay da mac dung loi do va da duoc sua 2026-09-26.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Gỡ học viên khỏi lớp (Giảng viên) (1/2)",
+  "covers": [
+    "F1-10",
+    "F1-13",
+    "F1-26"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Giảng viên",
+        "role": "actor"
+      },
+      {
+        "name": "ClassController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "ClassService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema identity"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 1 - Xác nhận có chủ đích trước khi gỡ (F1-26)"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Mở danh sách học viên, bấm \"Gỡ khỏi lớp\""
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Hộp xác nhận nêu rõ: lịch sử làm bài trong lớp sẽ bị xoá vĩnh viễn"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Xác nhận gỡ"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "ClassController",
+        "text": "DELETE /identity/classes/{classId}/students/{studentId}"
+      },
+      {
+        "from": "ClassController",
+        "to": "ClassController",
+        "text": "Kiểm quyền CLASS_MANAGEMENT:DELETE theo ma trận F1-10"
+      },
+      {
+        "from": "ClassController",
+        "to": "ClassService",
+        "text": "removeStudent(classId, studentId, instructorId)"
+      },
+      {
+        "phase": "Giai đoạn 2 - Kiểm quyền sở hữu lớp rồi mới ghi (F1-13)"
+      },
+      {
+        "from": "ClassService",
+        "to": "PostgreSQL",
+        "text": "findClassOwnedBy(classId, instructorId)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "SELECT classes WHERE id = ? AND instructor_id = ? (ClassRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "Lớp thuộc sở hữu hoặc rỗng (ClassRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "ClassService",
+        "text": "Optional<Class>",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Lớp không thuộc quyền phụ trách của người gọi?",
+          "then": [
+            {
+              "from": "ClassService",
+              "to": "ClassController",
+              "text": "Từ chối ở tầng ứng dụng, không chỉ ẩn nút trên giao diện",
+              "kind": "return"
+            },
+            {
+              "from": "ClassController",
+              "to": "Giảng viên",
+              "text": "403 Forbidden",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "ClassService",
+              "to": "PostgreSQL",
+              "text": "findMembership(classId, studentId)"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "PostgreSQL",
+              "text": "SELECT class_members WHERE class_id = ? AND user_id = ? (ClassRepository)"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "PostgreSQL",
+              "text": "Bản ghi thành viên hoặc rỗng (ClassRepository)"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "ClassService",
+              "text": "Optional<ClassMember>",
+              "kind": "return"
+            },
+            {
+              "from": "ClassService",
+              "to": "PostgreSQL",
+              "text": "delete(class_members)"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "PostgreSQL",
+              "text": "DELETE FROM class_members (ClassRepository)"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_gv_go_hoc_vien_khoi_lop.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 1/2). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

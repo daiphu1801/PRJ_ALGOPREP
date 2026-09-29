@@ -38,7 +38,9 @@ duy nhất** phụ thuộc một dịch vụ ngoài monolith [SoT: `dependency-m
 
 ## 3. Giao tiếp liên module
 
-Theo `dependency-map.md` mục 1: không import trực tiếp. `judge-orchestration` dùng ba kênh:
+Theo `dependency-map.md` mục 1: không import trực tiếp. `judge-orchestration` dùng bốn kênh: hai cổng
+ra do chính nó khai (mục 3.1, 3.2), một cặp cổng đọc cho module khác gọi vào (mục 3.3), và domain event
+hai chiều (mục 3.4, 3.5).
 
 ### 3.1. Outbound port do chính module khai báo — gọi ra judge engine
 
@@ -70,12 +72,72 @@ câu hỏi mở đã ghi ở `02-bd/architecture/problem-bank.md` mục 3.2 về
 `JudgeExecutionPort` hay không; câu trả lời ở đây là **không dùng chung**, vì hai chiều gọi khác hẳn nhau
 (một là "chấm bài của học viên", một là "đọc đặc tả bài toán").
 
-### 3.3. Domain event — phát ra (F4 → F5, F4 → F1)
+### 3.3. Cổng đọc số liệu nộp bài cho module khác — **hai luồng tách riêng**
+
+`judge.submissions` là nơi duy nhất trả lời được bốn câu hỏi mà không read model nào của `identity` trả
+lời được: chuỗi ngày luyện tập, mốc nộp gần nhất, chuỗi lượt nộp theo thời gian, và tỉ lệ Accepted **giới
+hạn trong một tập bài**. `identity.user_submission_stats` chỉ có số luỹ kế toàn hệ thống
+[Nguồn: 02-bd/database/identity.md:113-114], và `identity` **không được truy vấn chéo schema**. Vì vậy
+module này phải mở cổng đọc.
+
+Năm màn đã viết BD dựa trên giả định cổng đó tồn tại — `INS0201`, `INS0203`, `INS0204`, `USR0501`,
+`USR0601` — trong khi mục này **chưa từng được viết**, kể cả ở mục 9 "Việc còn mở". Đây là lần đầu nó
+được đặc tả.
+
+**Chốt: hai cổng, không phải một cổng tham số hoá** (`DEC-2026-0927-submission-metrics-two-ports`).
+
+| | Luồng Giảng viên | Luồng Người học |
+| :--- | :--- | :--- |
+| Tên nghiệp vụ | `GetClassStudentSubmissionMetrics` | `GetMySubmissionMetrics` |
+| Actor | A2 (`INSTRUCTOR`) | A1 (`STUDENT`) |
+| Đọc dữ liệu của | **người khác** — một tập học viên | **chính mình**, không ai khác |
+| Lấy danh tính từ | tham số `studentIds` tường minh, gác bởi phạm vi lớp | **token của phiên đăng nhập**, không có tham số danh tính |
+| Đơn vị gom thời gian | tuần | ngày |
+| Phạm vi lọc bài | tập bài đã giao cho lớp | tập chủ đề, hoặc toàn bộ |
+| Màn gọi | `INS0201`, `INS0203`, `INS0204` | `USR0501`, `USR0601` |
+
+Ký hiệu khái niệm (chữ ký thật chốt ở DD):
+
+```
+GetClassStudentSubmissionMetrics(classId, studentIds[], problemIds[], weekCount)
+  -> [ { studentId, streakDays, lastSubmittedAt, acceptedRatio, weeklyTrend[] } ]
+
+GetMySubmissionMetrics(range | dayCount, topicIds[]?)        // userId LẤY TỪ TOKEN
+  -> { streakDays, lastSubmittedAt, acRateByTopic[], dailyCounts[] }
+```
+
+**Vì sao tách chứ không tham số hoá.** Ba lý do, lý do đầu là lý do quyết định:
+
+1. **Quy tắc chống IDOR trở thành thuộc tính của chữ ký, không còn là quy ước phải nhớ.** Cả
+   `USR0501` lẫn `USR0601` đều có một dòng kiểm bắt buộc ở Sheet 9: mọi endpoint của màn lấy `user_id` từ
+   token, **không** nhận từ tham số phía client. Một cổng gộp có tham số `studentIds[]` tuỳ chọn thì hai
+   màn Người học vẫn gọi được kèm `studentIds` của người khác — không có gì trong chữ ký ngăn việc đó, chỉ
+   có một câu văn trong BD. Tách ra thì cổng phía Người học **không có chỗ để truyền danh tính**, muốn lách
+   cũng không lách được.
+2. Hai đơn vị gom thời gian khác nhau (tuần cho xu hướng lớp, ngày cho biểu đồ cá nhân) và hai chiều dữ
+   liệu khác nhau (một tập học viên so với một người). Gộp lại thì một nửa tham số luôn thừa ở mỗi lần gọi.
+3. Hai đường đi qua hai tầng phân quyền khác nhau: luồng Giảng viên gác bởi `CLASS_MANAGEMENT` và phạm vi
+   lớp, luồng Người học gác bởi chính phiên đăng nhập.
+
+Đối xứng ở phía gọi: `identity` khai **hai** outbound port hẹp — `ClassStudentMetricsPort` và
+`MySubmissionMetricsPort` — thay cho một `StudentSubmissionMetricsPort` duy nhất mà các BD màn trước đây
+giả định. Cùng nguyên tắc "hai chiều gọi khác hẳn nhau thì không dùng chung cổng" đã áp ở mục 3.2.
+
+**Lưới hoạt động 12 tháng** (`USR0601` Khu vực E) dùng chính `GetMySubmissionMetrics` với `dayCount = 364`,
+**không** phải một endpoint riêng của `identity` như bản BD màn đó đề xuất lúc đầu: để hai module cùng trả
+lời câu "mỗi ngày có bao nhiêu lượt nộp" là đúng cái trôi lệch mà mục này sinh ra để chặn. Việc quy đổi số
+đếm sang 5 mức đậm nhạt là của bên gọi, không phải của cổng. Rủi ro hiệu năng của cửa sổ 364 ngày trên màn
+đích sau đăng nhập vẫn là **việc còn mở**, xem mục 9.
+
+`[Suy luận]` — tên cổng và tên tham số do BD này đề xuất, DD chốt lại. Cái được chốt ở đây là **ranh giới
+hai luồng**, không phải chính tả của chữ ký.
+
+### 3.4. Domain event — phát ra (F4 → F5, F4 → F1)
 
 Xem mục 5 (Transactional Outbox, `DEC-2026-0912-judge-outbox-pattern`) — đây là điểm chốt dứt khoát của
 BD này cho câu hỏi mở ở `dependency-map.md` mục 1.
 
-### 3.4. Domain event — lắng nghe (F2 → F4)
+### 3.5. Domain event — lắng nghe (F2 → F4)
 
 `judge-orchestration` lắng nghe `TestcaseSetVersionBumped` phát từ `problem-bank`
 (`02-bd/database/problem-bank.md` mục 1.6) — không để cập nhật testcase (không còn re-judge), chỉ để ghi
@@ -241,6 +303,12 @@ nêu, chốt ở DD nếu cần đổi. Rỗng (`—`) cho mọi verdict khác `
   vào DD, vì `harness` là bên tạo payload.
 - Chu kỳ quét sweep 60 giây (mục 5.3) và giới hạn cắt `stderr_snippet` 4KB (mục 7) — số đề xuất, chủ dự án
   xác nhận hoặc đổi số cụ thể.
+- Chữ ký thật của `GetClassStudentSubmissionMetrics` và `GetMySubmissionMetrics` (mục 3.3): tên tham số,
+  kiểu trả về, phân trang nếu tập học viên lớn.
+- **Hiệu năng cửa sổ 364 ngày** của `GetMySubmissionMetrics`: đây là truy vấn chạy ở màn đích sau đăng
+  nhập của **mọi** người học. Ba hướng — index `(user_id, submitted_at)` rồi đếm trực tiếp, thêm read model
+  đếm sẵn theo ngày, hoặc cache Redis theo `user_id`. Chưa chốt; đề xuất đo trước rồi chọn, không tối ưu
+  trước khi có số.
 
 ## 10. Tham chiếu
 

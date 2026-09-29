@@ -1,0 +1,117 @@
+{
+  "_": "Luong quan tri tai khoan nguoi dung (doi vai tro, khoa/mo khoa) cua actor A3. Nguon: US-A3-02 (01-rd/req/user_stories/a3_admin.md), 01-rd/req/identity.md (F1-13, F1-14), 02-bd/security/identity.md:64-66 (filter kiem status MOI request, khong chi kiem exp).",
+  "_diem_mau_chot": "Khoa tai khoan phai thu hoi refresh token, va Access Token cu (con han toi 15 phut) bi chan o filter vi filter kiem status moi request -- neu khong, nguoi bi khoa van dung he thong duoc them 15 phut.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Đổi vai trò và khoá tài khoản người dùng (Quản trị viên) (2/3)",
+  "covers": [
+    "F1-13"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Quản trị viên",
+        "role": "actor"
+      },
+      {
+        "name": "UserAdminController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "UserAdminService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema identity"
+      },
+      {
+        "name": "Redis",
+        "role": "datastore",
+        "stereo": "cache quyền"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 2 - Đổi vai trò, chặn tự hạ quyền chính mình (F1-13)"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Chọn vai trò mới rồi xác nhận"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "UserAdminController",
+        "text": "PATCH /identity/admin/users/{userId}/role { roleId }"
+      },
+      {
+        "from": "UserAdminController",
+        "to": "UserAdminService",
+        "text": "changeRole(command, adminId)"
+      },
+      {
+        "from": "UserAdminService",
+        "to": "PostgreSQL",
+        "text": "findById(userId) và findRole(roleId)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "SELECT users, roles (UserRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "Tài khoản đích và vai trò đích (UserRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "UserAdminService",
+        "text": "User, Role",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Người gọi đang tự hạ quyền chính mình?",
+          "then": [
+            {
+              "from": "UserAdminService",
+              "to": "UserAdminController",
+              "text": "Từ chối - tránh khoá mất lối vào khu quản trị",
+              "kind": "return"
+            },
+            {
+              "from": "UserAdminController",
+              "to": "Quản trị viên",
+              "text": "422 kèm lý do",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "UserAdminService",
+              "to": "PostgreSQL",
+              "text": "UPDATE users SET role_id = ?"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "PostgreSQL",
+              "text": "UPDATE users (UserRepository)"
+            },
+            {
+              "from": "UserAdminService",
+              "to": "Redis",
+              "text": "Xoá cache quyền của tài khoản vừa đổi"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_admin_doi_vai_tro_nguoi_dung.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 2/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

@@ -1,0 +1,88 @@
+{
+  "_": "Luong F6 Chế độ học + Chế độ luyện cua actor A1 tren ngan hang cau hoi phong van. Nguon: 01-rd/req/interview-bank.md (F6-04 den F6-08, F6-09, F6-12), 02-bd/architecture/interview-bank.md muc 1 (AnswerFeedbackPort, SpringAiFeedbackAdapter, job spaced repetition), muc 2 (Chế độ luyện la NOI DUY NHAT module nay goi AI).",
+  "_bat_bien": "F6-07 amendment (DEC-2026-0831-outside-screens-closures): moi lan nop la mot attempt doc lap, khong UPDATE cau tra loi cu.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Ôn tập và luyện tập câu hỏi phỏng vấn (Sinh viên) (3/3)",
+  "covers": [
+    "F6-09",
+    "F6-12"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Sinh viên",
+        "role": "actor"
+      },
+      {
+        "name": "PracticeController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "PracticeService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema interview_bank"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 3 - Tự chấm mức thuộc bài và xếp lịch ôn lại (F6-12, F6-09)"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "Sinh viên",
+        "text": "Chọn mức Biết rõ / Mơ hồ / Quên"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "PracticeController",
+        "text": "POST /interview-bank/questions/{id}/recall { level }"
+      },
+      {
+        "from": "PracticeController",
+        "to": "PracticeService",
+        "text": "rateRecall(command, userId)"
+      },
+      {
+        "from": "PracticeService",
+        "to": "PracticeService",
+        "text": "Tính ngày ôn lại kế tiếp theo giãn cách lặp lại"
+      },
+      {
+        "from": "PracticeService",
+        "to": "PostgreSQL",
+        "text": "UPDATE user_question_progress (recall_level, next_review_at)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "UPDATE user_question_progress (QuestionRepository)"
+      },
+      {
+        "from": "PracticeService",
+        "to": "PracticeController",
+        "text": "Ngày ôn lại kế tiếp",
+        "kind": "return"
+      },
+      {
+        "from": "PracticeController",
+        "to": "Sinh viên",
+        "text": "200 OK",
+        "kind": "return"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "Sinh viên",
+        "text": "Câu hỏi vào danh sách Cần ôn lại kèm mốc thời gian"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_user_on_tap_luyen_tap_ai.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 3/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

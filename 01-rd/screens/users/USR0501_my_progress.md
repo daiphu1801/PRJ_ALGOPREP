@@ -1,4 +1,10 @@
-# RD (Yêu cầu hệ thống mới) — Tiến độ của tôi / `USR0501`
+# RD (Yêu cầu hệ thống mới) — Tiến độ của tôi / `USR0501` — **ĐÃ GỘP VÀO `USR0601`**
+
+> **TRẠNG THÁI 2026-09-27: màn này không còn tồn tại độc lập.** Toàn bộ nội dung đã gộp vào
+> `01-rd/screens/users/USR0601_dashboard.md` theo `DEC-2026-0927-student-area-merge-and-shared-shell`;
+> route `/progress` đã bỏ. Giữ file này làm hồ sơ gốc của các yêu cầu đã gộp — **REQ-01 tới REQ-06 và
+> hai câu hỏi đã chốt Q1 (định nghĩa streak) / Q2 (quy tắc "Nên ưu tiên") vẫn còn hiệu lực**, chỉ đổi
+> nơi thực hiện. Không viết thêm yêu cầu mới vào đây; viết vào `USR0601_dashboard.md`.
 
 > Mã màn hình: `USR0501` [Nguồn: `02-bd/_rules/bd-template-9sheet.md` — mục 8].
 > Slug chính tắc: `my_progress` [SoT: `01-rd/overview/system_survey.md` — mục 7.1 dòng `my_progress`].

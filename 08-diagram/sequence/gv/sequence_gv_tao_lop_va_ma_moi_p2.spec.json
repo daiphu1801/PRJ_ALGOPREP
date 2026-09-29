@@ -1,0 +1,107 @@
+{
+  "_": "Luong tao lop hoc va phat ma moi cua actor A2, ke ca buoc hoc vien dung ma de tham gia. Nguon: US-A2-07 (01-rd/req/user_stories/a2_instructor.md:102-123), 01-rd/req/identity.md (F1-23, F1-25, F1-26), 03-dd/api/identity.md muc 0.4 (endpoint #20, #23, #25), 02-bd/architecture/identity.md muc 5 (ma moi TTL 7 ngay), 02-bd/database/identity.md:93-94 (nhieu ma hieu luc song song).",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Tạo lớp học và phát mã mời (Giảng viên) (2/3)",
+  "covers": [
+    "F1-25"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Giảng viên",
+        "role": "actor"
+      },
+      {
+        "name": "ClassController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "ClassService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema identity"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 2 - Sinh mã mời, hạn dùng 7 ngày (F1-25)"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Bấm \"Tạo mã mời\" cho lớp vừa tạo"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "ClassController",
+        "text": "POST /identity/classes/{classId}/invite-codes"
+      },
+      {
+        "from": "ClassController",
+        "to": "ClassService",
+        "text": "createInviteCode(classId, instructorId)"
+      },
+      {
+        "from": "ClassService",
+        "to": "PostgreSQL",
+        "text": "Kiểm tra instructor_id của lớp khớp người gọi"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "SELECT classes WHERE id = ? AND instructor_id = ? (ClassRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "Lớp thuộc sở hữu hoặc rỗng (ClassRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "ClassService",
+        "text": "Optional<Class>",
+        "kind": "return"
+      },
+      {
+        "from": "ClassService",
+        "to": "ClassService",
+        "text": "Sinh chuỗi mã ngẫu nhiên, đặt expires_at = now() + 7 ngày"
+      },
+      {
+        "from": "ClassService",
+        "to": "PostgreSQL",
+        "text": "save(inviteCode) - mã cũ vẫn còn hiệu lực song song"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "INSERT INTO class_invite_codes (ClassRepository)"
+      },
+      {
+        "from": "ClassService",
+        "to": "ClassController",
+        "text": "InviteCodeDto { code, expiresAt }",
+        "kind": "return"
+      },
+      {
+        "from": "ClassController",
+        "to": "Giảng viên",
+        "text": "201 Created",
+        "kind": "return"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Hiện mã kèm hạn dùng và nút sao chép"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_gv_tao_lop_va_ma_moi.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 2/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

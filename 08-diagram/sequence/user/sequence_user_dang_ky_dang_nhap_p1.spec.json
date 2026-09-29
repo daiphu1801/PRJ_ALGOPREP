@@ -1,0 +1,151 @@
+{
+  "_": "Luong dang ky + dang nhap cua actor A1. Nguon: 01-rd/req/identity.md (F1-01, F1-02), 03-dd/api/identity.md muc 0.1 (endpoint #1, #2), 03-dd/logic/identity.md (BR-01 rate-limit, BR-02 rotation).",
+  "_tang": "Tach dung 4 tang cua DEC-2026-0820-architecture-baseline: presentation (AuthController) / application (AuthService) / infrastructure (UserRepository, Redis) / du lieu (PostgreSQL schema identity).",
+  "_phase": "Ba giai doan: dang ky -> dang nhap -> cap token va dieu huong theo vai tro.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Đăng ký và đăng nhập (Sinh viên) (1/3)",
+  "covers": [
+    "F1-01"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Sinh viên",
+        "role": "actor"
+      },
+      {
+        "name": "AuthController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "AuthService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema identity"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 1 - Đăng ký tài khoản (F1-01)"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "Sinh viên",
+        "text": "Nhập email, họ tên, mật khẩu"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "Sinh viên",
+        "text": "Bấm \"Đăng ký\""
+      },
+      {
+        "from": "Sinh viên",
+        "to": "Sinh viên",
+        "text": "Kiểm tra định dạng email và độ mạnh mật khẩu phía client"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "AuthController",
+        "text": "POST /auth/register { email, fullName, password }"
+      },
+      {
+        "from": "AuthController",
+        "to": "AuthController",
+        "text": "Kiểm tra body theo registerSchema"
+      },
+      {
+        "from": "AuthController",
+        "to": "AuthService",
+        "text": "register(command)"
+      },
+      {
+        "from": "AuthService",
+        "to": "PostgreSQL",
+        "text": "findByEmail(email)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "SELECT * FROM users WHERE email = ? (UserRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "0 hoặc 1 bản ghi (UserRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "AuthService",
+        "text": "Optional<User>",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Email đã được đăng ký?",
+          "then": [
+            {
+              "from": "AuthService",
+              "to": "AuthController",
+              "text": "Lỗi nghiệp vụ IDT-101",
+              "kind": "return"
+            },
+            {
+              "from": "AuthController",
+              "to": "Sinh viên",
+              "text": "409 \"Email đã được đăng ký\"",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "AuthService",
+              "to": "AuthService",
+              "text": "Băm mật khẩu bằng BCrypt"
+            },
+            {
+              "from": "AuthService",
+              "to": "PostgreSQL",
+              "text": "save(user, role = STUDENT, status = ACTIVE)"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "PostgreSQL",
+              "text": "INSERT INTO users (UserRepository)"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "PostgreSQL",
+              "text": "userId (UserRepository)"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "AuthService",
+              "text": "User đã lưu",
+              "kind": "return"
+            },
+            {
+              "from": "AuthService",
+              "to": "AuthController",
+              "text": "UserDto",
+              "kind": "return"
+            },
+            {
+              "from": "AuthController",
+              "to": "Sinh viên",
+              "text": "201 Created - chuyển sang tab Đăng nhập",
+              "kind": "return"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_user_dang_ky_dang_nhap.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 1/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

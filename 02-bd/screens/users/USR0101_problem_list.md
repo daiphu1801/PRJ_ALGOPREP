@@ -270,7 +270,7 @@ Nhánh `isSolve` của prototype (`:242-426`) là mã thừa của một hướn
 
 | Khối | Slice dự kiến | Căn cứ |
 | :--- | :--- | :--- |
-| Trang | `views/problem-list` | Quy ước FSD của dự án |
+| Trang | `views/users/problem-list` | Quy ước FSD của dự án |
 | Khung Người học | Dùng lại `widgets/app-shell` (biến thể `student-header`) | `02-bd/screens/users/_shell.md` mục 1 |
 | Dải chỉ số | `widgets/problem-catalog-summary` | Prototype `:103-116` |
 | Thanh chủ đề + chip chủ đề | `features/problem-topic-filter` | Prototype `:118-125,148-152` |

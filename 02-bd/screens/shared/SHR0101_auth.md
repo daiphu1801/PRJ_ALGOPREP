@@ -15,7 +15,7 @@
 > module: `02-bd/architecture/identity.md`, `02-bd/database/identity.md`, `02-bd/security/identity.md`.
 >
 > **Divergence 2026-09-15 (`DEC-2026-0915-admin-separate-login-route`):** vai trò A3 (`ADMIN`) **không**
-> đăng nhập qua màn này — có route/màn `/admin/login` riêng (`views/admin-auth`), cùng hợp đồng API đăng
+> đăng nhập qua màn này — có route/màn `/admin/login` riêng (`views/admin/auth`), cùng hợp đồng API đăng
 > nhập nhưng khác route và giao diện, không có signup/OAuth. Màn `SHR0101` chỉ còn phục vụ A1 (`STUDENT`)
 > và A2 (`INSTRUCTOR`) [Nguồn: 02-bd/screens/shared/SHR0101_auth.md cũ (đã xoá) mục 5, dòng ghi decision này].
 > **Không thiết kế** màn `/admin/login` ở đây.
@@ -263,7 +263,7 @@ Hai cột chỉ đổi **nội dung field/văn bản** theo `mode`, không đổ
 
 | Khối | Slice thực tế trong code | Căn cứ |
 | :--- | :--- | :--- |
-| Trang | `views/auth` | `05-coding/frontend/src/views/auth/ui/auth-aside-panel.tsx` |
+| Trang | `views/shared/auth` | `05-coding/frontend/src/views/shared/auth/ui/auth-aside-panel.tsx` |
 | Form + luồng submit | `features/auth-by-credentials` (`ui/auth-form.tsx`, `ui/oauth-button-group.tsx`, `ui/otp-input-group.tsx`, `ui/auth-loading-overlay.tsx`, `model/use-auth-flow.ts`) | `05-coding/frontend/src/features/auth-by-credentials/**` |
 | Kiểu dữ liệu, schema, mock API | `entities/auth` (`model/types.ts`, `model/schema.ts`, `api/__mock__/fake-auth.ts`) | `05-coding/frontend/src/entities/auth/**` |
 | Công tắc theme/ngôn ngữ | Dùng lại `shared/ui/theme-lang-switcher` | `05-coding/frontend/src/shared/ui/theme-lang-switcher.tsx` |

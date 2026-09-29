@@ -1,0 +1,115 @@
+{
+  "_": "Luong quan ly testcase: tai len theo lo (bo lon di MinIO), phien ban hoa khi sua sau luc da co nguoi nop, va AI sinh testcase voi output lay tu chay that Dap an mau. Nguon: US-A2-02 va US-A2-05 (01-rd/req/user_stories/a2_instructor.md:37-50, 70-83), 01-rd/req/problem-bank.md (F2-05 den F2-10, F2-14), 02-bd/database/problem-bank.md muc 1.6 (su kien TestcaseSetVersionBumped).",
+  "_minio": "Day la luong DUY NHAT trong toan he thong cham toi MinIO (.nexa/control/dependency-map.md) -- truoc dot nay khong co ban ve nao cho no.",
+  "_su_kien": "TestcaseSetVersionBumped ve duoi dang INSERT outbox_events, khong ve lifeline RabbitMQ rieng: them mot cot nua thanh 9 duong doi, be ngang vuot xa kho in ma khong noi them duoc gi -- co che Outbox da duoc ve day du o sequence_user_nop_bai_va_xem_ket_qua_realtime.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Quản lý testcase, phiên bản hoá và AI sinh testcase (Giảng viên và Quản trị viên) (2/3)",
+  "covers": [
+    "F2-09"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Người soạn đề",
+        "role": "actor"
+      },
+      {
+        "name": "TestcaseController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "TestcaseService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema problem"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 2 - Sửa bộ testcase sau khi đã có lượt nộp: tăng phiên bản (F2-09)"
+      },
+      {
+        "from": "Người soạn đề",
+        "to": "Người soạn đề",
+        "text": "Sửa một testcase rồi bấm Lưu"
+      },
+      {
+        "from": "Người soạn đề",
+        "to": "TestcaseController",
+        "text": "PATCH /problems/{id}/testcases/{tcId}"
+      },
+      {
+        "from": "TestcaseController",
+        "to": "TestcaseService",
+        "text": "updateTestcase(command, authorId)"
+      },
+      {
+        "from": "TestcaseService",
+        "to": "PostgreSQL",
+        "text": "Kiểm tra bài toán đã có lượt nộp nào chưa"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "TestcaseService",
+        "text": "Số lượt nộp đã chấm",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Bài toán đã có người nộp?",
+          "then": [
+            {
+              "from": "TestcaseService",
+              "to": "PostgreSQL",
+              "text": "UPDATE testcase + tăng testcase_set_version + INSERT outbox_events"
+            },
+            {
+              "from": "TestcaseService",
+              "to": "TestcaseService",
+              "text": "Phát TestcaseSetVersionBumped để judge ghi đúng số hiệu lúc bắt đầu chấm"
+            },
+            {
+              "from": "TestcaseService",
+              "to": "TestcaseController",
+              "text": "Phiên bản mới của bộ testcase",
+              "kind": "return"
+            },
+            {
+              "from": "TestcaseController",
+              "to": "Người soạn đề",
+              "text": "200 OK kèm cảnh báo lượt nộp cũ vẫn truy vết theo phiên bản cũ",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "TestcaseService",
+              "to": "PostgreSQL",
+              "text": "UPDATE testcase, giữ nguyên phiên bản"
+            },
+            {
+              "from": "TestcaseService",
+              "to": "TestcaseController",
+              "text": "Kết quả cập nhật",
+              "kind": "return"
+            },
+            {
+              "from": "TestcaseController",
+              "to": "Người soạn đề",
+              "text": "200 OK",
+              "kind": "return"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_shared_quan_ly_testcase.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 2/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

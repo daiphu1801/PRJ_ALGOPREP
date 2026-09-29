@@ -1,0 +1,117 @@
+{
+  "_": "Activity cho luong 'xem tong hop tien do lop roi mo ho so chi tiet mot hoc vien' cua actor A2, dan tu sequence_gv_xem_tien_do_lop.spec.json (F1-28 + F1-27). Sequence goc khong co alt -- ghi chu '_khong_ve' trong sequence noi ro pham vi theo lop phu trach la kiem quyen, khong phai nhanh nghiep vu, nen o day khong dat decision, giu chuoi tuan tu hai buoc tuong tac lien tiep (dashboard roi ho so chi tiet).",
+  "kind": "activity",
+  "title": "Sơ đồ hoạt động - Xem tiến độ lớp và hồ sơ học viên (Giảng viên)",
+  "covers": ["F1-27", "F1-28"],
+  "activity": {
+    "nodes": [
+      {
+        "id": "start",
+        "type": "start"
+      },
+      {
+        "id": "n1",
+        "type": "action",
+        "text": "Chọn lớp phụ trách"
+      },
+      {
+        "id": "n2",
+        "type": "action",
+        "text": "Đọc read model đã dựng sẵn từ sự kiện SubmissionGraded"
+      },
+      {
+        "id": "d1",
+        "type": "decision",
+        "text": "Mọi nguồn số liệu đều phản hồi?"
+      },
+      {
+        "id": "n3",
+        "type": "action",
+        "text": "Trả phần dữ liệu đã có, đánh dấu ô thiếu, không chặn cả màn"
+      },
+      {
+        "id": "m1",
+        "type": "merge"
+      },
+      {
+        "id": "n4",
+        "type": "action",
+        "text": "Hiện điểm trung bình lớp, bảng học viên, khối Cần hỗ trợ"
+      },
+      {
+        "id": "d2",
+        "type": "decision",
+        "text": "Mở hồ sơ chi tiết một học viên?"
+      },
+      {
+        "id": "n5",
+        "type": "action",
+        "text": "Đọc chỉ số bài nộp trong phạm vi lớp đang xét"
+      },
+      {
+        "id": "n6",
+        "type": "action",
+        "text": "Mở màn hồ sơ chi tiết học viên"
+      },
+      {
+        "id": "end",
+        "type": "end"
+      }
+    ],
+    "edges": [
+      {
+        "from": "start",
+        "to": "n1"
+      },
+      {
+        "from": "n1",
+        "to": "n2"
+      },
+      {
+        "from": "n2",
+        "to": "d1"
+      },
+      {
+        "from": "d1",
+        "to": "m1",
+        "guard": "đủ"
+      },
+      {
+        "from": "d1",
+        "to": "n3",
+        "guard": "thiếu nguồn"
+      },
+      {
+        "from": "n3",
+        "to": "m1"
+      },
+      {
+        "from": "m1",
+        "to": "n4"
+      },
+      {
+        "from": "n4",
+        "to": "d2"
+      },
+      {
+        "from": "d2",
+        "to": "n5",
+        "guard": "có"
+      },
+      {
+        "from": "d2",
+        "to": "end",
+        "guard": "không"
+      },
+      {
+        "from": "n5",
+        "to": "n6"
+      },
+      {
+        "from": "n6",
+        "to": "end"
+      }
+    ]
+  },
+  "_nhanh_re": "Nhanh re: mot nguon so lieu khong phan hoi thi man van len, phan do bao loi tai cho [SoT: 01-rd/req/user_stories/a2_instructor.md:185 -- US-A2-11]."
+}

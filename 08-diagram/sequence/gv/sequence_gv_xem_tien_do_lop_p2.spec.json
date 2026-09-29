@@ -1,0 +1,147 @@
+{
+  "_": "Luong xem dashboard tien do lop cua actor A2. Nguon: US-A2-09 (01-rd/req/user_stories/a2_instructor.md:140-155), 01-rd/req/identity.md (F1-27, F1-28), 03-dd/api/identity.md muc 0.4 (endpoint #26, #29), 02-bd/architecture/identity.md muc 3.1 (read model dung tu domain event SubmissionGraded, KHONG doc thang schema judge).",
+  "_suy_giam": "US-A2-11 (a2_instructor.md:185): mot nguon so lieu khong phan hoi thi man van len, phan do bao loi tai cho -- ve thanh nhanh alt vi day la nghiep vu that, khong phai xu ly loi trang tri.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Xem tiến độ lớp học (Giảng viên) (2/2)",
+  "covers": [
+    "F1-27",
+    "F1-28"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Giảng viên",
+        "role": "actor"
+      },
+      {
+        "name": "ClassProgressController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "ClassProgressService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "read model identity"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 3 - Phân loại học viên và suy giảm êm khi thiếu nguồn số liệu"
+      },
+      {
+        "from": "ClassProgressService",
+        "to": "ClassProgressService",
+        "text": "Không nộp bài trong 7 ngày gần nhất thì xếp nhãn Vắng bài"
+      },
+      {
+        "from": "ClassProgressService",
+        "to": "ClassProgressService",
+        "text": "Tỉ lệ hoàn thành dưới ngưỡng thì xếp nhãn Cần hỗ trợ"
+      },
+      {
+        "alt": {
+          "label": "Một nguồn số liệu không phản hồi?",
+          "then": [
+            {
+              "from": "ClassProgressService",
+              "to": "ClassProgressController",
+              "text": "Trả phần dữ liệu đã có, đánh dấu ô thiếu",
+              "kind": "return"
+            },
+            {
+              "from": "ClassProgressController",
+              "to": "Giảng viên",
+              "text": "200 OK kèm cờ nguồn lỗi - KHÔNG chặn cả màn",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "ClassProgressService",
+              "to": "ClassProgressController",
+              "text": "ClassProgressDto đầy đủ",
+              "kind": "return"
+            },
+            {
+              "from": "ClassProgressController",
+              "to": "Giảng viên",
+              "text": "200 OK",
+              "kind": "return"
+            }
+          ]
+        }
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Vẽ bảng học viên và biểu đồ theo đúng lớp đang chọn"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Điểm trung bình lớp, tỉ lệ hoàn thành, danh sách cần hỗ trợ"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Bấm vào một học viên để mở hồ sơ chi tiết"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "ClassProgressController",
+        "text": "GET /identity/classes/{classId}/students/{studentId}/detail"
+      },
+      {
+        "from": "ClassProgressController",
+        "to": "ClassProgressService",
+        "text": "getStudentDetail(classId, studentId, instructorId)"
+      },
+      {
+        "from": "ClassProgressService",
+        "to": "PostgreSQL",
+        "text": "Đọc chỉ số bài nộp trong phạm vi lớp đang xét"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "SELECT theo class_id, không lấy toàn bộ lịch sử ngoài lớp (ProgressRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "Chỉ số của riêng học viên trong lớp (ProgressRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "ClassProgressService",
+        "text": "StudentMetrics",
+        "kind": "return"
+      },
+      {
+        "from": "ClassProgressService",
+        "to": "ClassProgressController",
+        "text": "StudentDetailDto",
+        "kind": "return"
+      },
+      {
+        "from": "ClassProgressController",
+        "to": "Giảng viên",
+        "text": "200 OK",
+        "kind": "return"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Hồ sơ chi tiết học viên trong phạm vi lớp mình phụ trách"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_gv_xem_tien_do_lop.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 2/2). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

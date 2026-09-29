@@ -1,0 +1,91 @@
+{
+  "_": "Luong go hoc vien khoi lop cua actor A2. Nguon: US-A2-07 (01-rd/req/user_stories/a2_instructor.md:121-123), 01-rd/req/identity.md (F1-26, F1-14), 03-dd/api/identity.md muc 0.4 (endpoint #27, phat StudentRemovedFromClass, BR-11).",
+  "_xoa_that_co_cascade": "F1-26 chot 2026-08-28 qua hoi truc tiep chu du an: go hoc vien khoi lop thi XOA LUON lich su lam bai cua hoc vien do TRONG PHAM VI LOP NAY (luot nop, diem, tien do gan voi lop) -- xoa that, co cascade [SoT: 01-rd/req/identity.md:98-103, 01-rd/req/user_stories/a2_instructor.md:121-123]. RD ghi ro dieu nay de BD/DD khong lo ap khuon mau \"giu lai du lieu\" cua F1-16 (xoa tai khoan chi khoa mem) sang day. Ban ve dau tien cua so do nay da mac dung loi do va da duoc sua 2026-09-26.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Gỡ học viên khỏi lớp (Giảng viên) (2/2)",
+  "covers": [
+    "F1-10",
+    "F1-13",
+    "F1-26"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Giảng viên",
+        "role": "actor"
+      },
+      {
+        "name": "ClassController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "ClassService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema identity"
+      },
+      {
+        "name": "RabbitMQ",
+        "role": "external",
+        "stereo": "sự kiện domain"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 3 - Ghi nhật ký, phát sự kiện, giữ nguyên lịch sử bài nộp"
+      },
+      {
+        "from": "ClassService",
+        "to": "PostgreSQL",
+        "text": "Ghi system_audit_logs: ai gỡ, gỡ ai, khỏi lớp nào, lúc nào"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "INSERT INTO system_audit_logs + INSERT outbox_events cùng giao dịch (ClassRepository)"
+      },
+      {
+        "from": "ClassService",
+        "to": "ClassController",
+        "text": "Kết quả gỡ thành công",
+        "kind": "return"
+      },
+      {
+        "from": "ClassController",
+        "to": "Giảng viên",
+        "text": "204 No Content",
+        "kind": "return"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Bỏ học viên khỏi bảng, cập nhật lại sĩ số"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Học viên rời lớp; lịch sử làm bài gắn với lớp bị xoá thật, không khôi phục được"
+      },
+      {
+        "from": "ClassService",
+        "to": "RabbitMQ",
+        "text": "Outbox relay publish StudentRemovedFromClass",
+        "kind": "async"
+      },
+      {
+        "from": "ClassService",
+        "to": "RabbitMQ",
+        "text": "judge-orchestration nhận sự kiện, xoá cascade lượt nộp và điểm trong phạm vi lớp",
+        "kind": "async"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_gv_go_hoc_vien_khoi_lop.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 2/2). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

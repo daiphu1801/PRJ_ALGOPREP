@@ -218,7 +218,7 @@ Bố cục dạng luồng dọc đơn cột (Single-column layout), chia thành 
 ### 4.5. Cấu trúc slice FSD [Nội bộ]
 
 - Route: `/submissions/[id]`
-- View slice: `src/views/submission-result/`
+- View slice: `src/views/users/submission-result/`
   - `ui/submission-result-page.tsx`
   - `ui/verdict-banner.tsx`
   - `ui/run-stats-grid.tsx`

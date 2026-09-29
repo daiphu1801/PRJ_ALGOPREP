@@ -1,0 +1,133 @@
+{
+  "_": "Luong dang nhap bang OAuth (GitHub, Google) va tu lien ket theo email cua actor A1. Nguon: 01-rd/req/identity.md (F1-15), 03-dd/api/identity.md muc 0.1 (endpoint #5, #6), 03-dd/logic/identity.md BR-03, 02-bd/architecture/identity.md muc 2 (OAuth tu lien ket theo email).",
+  "_bao_mat": "Hai chot chan chiem tai khoan: (1) doi chieu `state` luu Redis TTL 10 phut -- chong CSRF o buoc callback; (2) provider tra `email_verified = false` thi TU CHOI, khong tao oauth_identities va khong tao users -- neu bo buoc nay, ai dang ky mot tai khoan provider bang email nguoi khac deu chiem duoc tai khoan AlgoPrep tuong ung.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Đăng nhập và tự liên kết tài khoản OAuth (Sinh viên) (2/3)",
+  "covers": [
+    "F1-15"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Sinh viên",
+        "role": "actor"
+      },
+      {
+        "name": "AuthController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "OAuthService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "Redis",
+        "role": "datastore",
+        "stereo": "state TTL 10 phút"
+      },
+      {
+        "name": "Nhà cung cấp OAuth",
+        "role": "external",
+        "stereo": "GitHub, Google"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 2 - Callback: đối chiếu state rồi mới đổi code lấy hồ sơ"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "AuthController",
+        "text": "GET /auth/oauth/{provider}/callback?code=...&state=..."
+      },
+      {
+        "from": "AuthController",
+        "to": "OAuthService",
+        "text": "handleCallback(provider, code, state)"
+      },
+      {
+        "from": "OAuthService",
+        "to": "Redis",
+        "text": "GET identity:oauthstate:<state>"
+      },
+      {
+        "from": "Redis",
+        "to": "OAuthService",
+        "text": "State còn hiệu lực hoặc rỗng",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "State không khớp hoặc đã hết hạn?",
+          "then": [
+            {
+              "from": "OAuthService",
+              "to": "AuthController",
+              "text": "IDT-109 - dừng trước khi gọi provider",
+              "kind": "return"
+            },
+            {
+              "from": "AuthController",
+              "to": "Sinh viên",
+              "text": "401 \"Phiên liên kết không hợp lệ\"",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "OAuthService",
+              "to": "Redis",
+              "text": "DEL state - dùng đúng một lần"
+            },
+            {
+              "from": "OAuthService",
+              "to": "Nhà cung cấp OAuth",
+              "text": "Đổi code lấy access token của provider"
+            },
+            {
+              "from": "Nhà cung cấp OAuth",
+              "to": "OAuthService",
+              "text": "Token của provider",
+              "kind": "return"
+            },
+            {
+              "from": "OAuthService",
+              "to": "Nhà cung cấp OAuth",
+              "text": "Lấy hồ sơ người dùng"
+            },
+            {
+              "from": "Nhà cung cấp OAuth",
+              "to": "OAuthService",
+              "text": "providerUserId, providerEmail, email_verified",
+              "kind": "return"
+            }
+          ]
+        }
+      },
+      {
+        "alt": {
+          "label": "Provider báo email_verified = false?",
+          "then": [
+            {
+              "from": "OAuthService",
+              "to": "AuthController",
+              "text": "IDT-110 - KHÔNG tạo oauth_identities, KHÔNG tạo users",
+              "kind": "return"
+            },
+            {
+              "from": "AuthController",
+              "to": "Sinh viên",
+              "text": "422 \"Email của tài khoản provider chưa được xác minh\"",
+              "kind": "return"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_user_lien_ket_oauth.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 2/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

@@ -231,7 +231,7 @@ xuyên module qua cổng) chưa có thiết kế, xem Câu hỏi mở Q1.
 | `UserRetention` | Người dùng mới / quay lại |
 
 Tám tên DTO này **không phải đề xuất mới** — chúng đã tồn tại dưới dạng schema Zod trong bản dựng giao diện
-[Nguồn: 05-coding/frontend/src/entities/admin-dashboard/model/types.ts:14,20,25,36,43,49,54,65]. `03-dd/api/identity.md`
+[Nguồn: 05-coding/frontend/src/views/admin/overview/model/types.ts:14,20,25,36,43,49,54,65]. `03-dd/api/identity.md`
 chốt tên phía máy chủ và giữ đúng hình dạng này để tầng chống hư hỏng dữ liệu không phải biến đổi thêm.
 
 ### 4.3 Bảng dữ liệu liên quan (4)
@@ -285,9 +285,9 @@ cách hay typography ở BD.
 
 | Khối | Slice | Căn cứ |
 | :--- | :--- | :--- |
-| Trang | `views/admin-overview` | Đã tồn tại: `05-coding/frontend/src/views/admin-overview/ui/admin-overview-view.tsx` |
+| Trang | `views/admin/overview` | Đã tồn tại: `05-coding/frontend/src/views/admin/overview/ui/admin-overview-view.tsx` |
 | Khung Admin | Dùng lại `widgets/app-shell` | `02-bd/screens/admin/_shell.md:20-24` |
-| Hai thẻ chỉ số | `views/admin-overview/ui/blocks/stat-cards-row.tsx` | Đã tồn tại |
+| Hai thẻ chỉ số | `views/admin/overview/ui/blocks/stat-cards-row.tsx` | Đã tồn tại |
 | Lượt nộp theo ngôn ngữ | `.../blocks/submissions-by-language-block.tsx` | Đã tồn tại |
 | Kết quả chấm | `.../blocks/verdict-distribution-block.tsx` | Đã tồn tại |
 | Độ khó bài toán | `.../blocks/difficulty-breakdown-block.tsx` | Đã tồn tại |
@@ -295,12 +295,12 @@ cách hay typography ở BD.
 | Lượt nộp theo tháng | `.../blocks/submissions-by-month-block.tsx` | Đã tồn tại |
 | Bài phổ biến nhất | `.../blocks/top-problems-block.tsx` | Đã tồn tại |
 | Người dùng mới / quay lại | `.../blocks/user-retention-block.tsx` | Đã tồn tại |
-| DTO và truy vấn | `entities/admin-dashboard` | Đã tồn tại, gồm `model/types.ts` và `api/queries.ts` |
+| DTO và truy vấn | `views/admin/overview` | Đã tồn tại, gồm `model/types.ts` và `api/queries.ts` |
 
 Khác các màn chưa dựng, ánh xạ slice của màn này **không phải suy luận** — bản dựng giao diện đã có đủ 8 khối
-và lớp `entities/admin-dashboard`. Dữ liệu hiện là dữ liệu giả ở `api/__mock__/dashboard-mocks.ts`, nợ được
+và lớp `views/admin/overview`. Dữ liệu hiện là dữ liệu giả ở `api/__mock__/dashboard-mocks.ts`, nợ được
 ghi nhận ngay trong mã nguồn (`// PROTOTYPE — no DD yet`)
-[Nguồn: 05-coding/frontend/src/entities/admin-dashboard/model/types.ts:1-2].
+[Nguồn: 05-coding/frontend/src/views/admin/overview/model/types.ts:1-2].
 
 > [Nội bộ] Ảnh minh hoạ đặt ở `08-diagram/02-bd/screens/admin/`, chụp bằng Playwright trên ứng dụng Next.js
 > thật khi đã có mã chạy được. Chưa có thì tham chiếu prototype, không vẽ tay.
@@ -563,7 +563,7 @@ ghi nhận ngay trong mã nguồn (`// PROTOTYPE — no DD yet`)
 | 14 | `UserRetention` | `groups` | List | `identity.users`, `identity.refresh_tokens` | `created_at`, `issued_at` | "Nhóm cột theo tháng", "Cột người dùng mới", "Cột quay lại" | Có | [Nguồn] 6 nhóm tháng, mỗi nhóm hai giá trị; cùng dải 6 tháng với `SubmissionsByMonth`. |
 
 Tên và hình dạng 8 DTO lấy từ bản dựng giao diện đã có
-[Nguồn: 05-coding/frontend/src/entities/admin-dashboard/model/types.ts:8-65].
+[Nguồn: 05-coding/frontend/src/views/admin/overview/model/types.ts:8-65].
 
 ### 7.2 Truy cập bảng dữ liệu (4)
 

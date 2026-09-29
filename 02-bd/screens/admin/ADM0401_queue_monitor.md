@@ -222,7 +222,7 @@ trúc này khi dựng Next.js; không quy định màu sắc, khoảng cách hay
 
 | Khối | Slice dự kiến | Căn cứ |
 | :--- | :--- | :--- |
-| Trang | `views/admin-queue-monitor` | Quy ước FSD của dự án |
+| Trang | `views/admin/queue-monitor` | Quy ước FSD của dự án |
 | Khung Admin | Dùng lại `widgets/app-shell` | `02-bd/screens/admin/_shell.md` mục 1 |
 | Dải chỉ số tổng | `widgets/queue-kpi-strip` | Prototype `:162-174` |
 | Cụm worker | `widgets/worker-cluster-grid` + `entities/worker-node` | Prototype `:177-195` |

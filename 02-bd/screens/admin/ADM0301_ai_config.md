@@ -259,7 +259,7 @@ khoảng cách hay typography ở BD.
 
 | Khối | Slice dự kiến | Căn cứ |
 | :--- | :--- | :--- |
-| Trang | `views/admin-ai-config` | Quy ước FSD của dự án |
+| Trang | `views/admin/ai-config` | Quy ước FSD của dự án |
 | Khung Admin | Dùng lại `widgets/admin-shell` | `02-bd/screens/admin/_shell.md` |
 | Khối prompt | `widgets/prompt-feature-list` + `entities/prompt-template` | Prototype `:163-190` |
 | Khối rubric | `widgets/rubric-weight-editor` + `entities/rubric-config` | Prototype `:192-218` |

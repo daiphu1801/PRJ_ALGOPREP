@@ -1,0 +1,100 @@
+{
+  "_": "Luong quen mat khau bang OTP 6 so cua actor A1. Nguon: 01-rd/req/identity.md (F1-17, dong 209-217), 03-dd/api/identity.md muc 0.1 (endpoint #7, #8), 03-dd/logic/identity.md BR-04, 02-bd/architecture/identity.md muc 5 (OTP 10 phut, 5 lan sai, cooldown 60 giay), 02-bd/security/identity.md:45-46 va :50-52.",
+  "_bao_mat": "Hai diem bao mat la ly do luong nay dang mot so do rieng: (1) endpoint forgot LUON tra 200 du email co ton tai hay khong -- chong do email theo OWASP user enumeration; (2) buoc reset khong re nhanh som khi email khong ton tai, di het toi buoc tra loi chung o cuoi de khong lo thong tin qua thoi gian phan hoi.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Quên mật khẩu bằng OTP (Sinh viên) (2/3)",
+  "covers": [
+    "F1-17"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Sinh viên",
+        "role": "actor"
+      },
+      {
+        "name": "AuthController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "PasswordResetService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "Redis",
+        "role": "datastore",
+        "stereo": "OTP, cooldown"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 2 - Xác nhận OTP, đếm số lần sai (F1-17, BR-04)"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "Sinh viên",
+        "text": "Nhập mã 6 số và mật khẩu mới"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "AuthController",
+        "text": "POST /auth/password/reset { email, otp, newPassword }"
+      },
+      {
+        "from": "AuthController",
+        "to": "AuthController",
+        "text": "Kiểm độ mạnh mật khẩu mới"
+      },
+      {
+        "from": "AuthController",
+        "to": "PasswordResetService",
+        "text": "resetPassword(command)"
+      },
+      {
+        "from": "PasswordResetService",
+        "to": "Redis",
+        "text": "GET identity:pwreset:<userId>"
+      },
+      {
+        "from": "Redis",
+        "to": "PasswordResetService",
+        "text": "OTP đang hiệu lực và bộ đếm sai",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Mã sai, hết hạn, hoặc email không tồn tại?",
+          "then": [
+            {
+              "from": "PasswordResetService",
+              "to": "Redis",
+              "text": "INCR bộ đếm sai; đủ 5 lần thì xoá key, buộc gửi lại"
+            },
+            {
+              "from": "PasswordResetService",
+              "to": "PasswordResetService",
+              "text": "Không rẽ nhánh sớm - đi hết tới bước trả lỗi chung, tránh lộ qua thời gian phản hồi"
+            },
+            {
+              "from": "PasswordResetService",
+              "to": "AuthController",
+              "text": "IDT-107",
+              "kind": "return"
+            },
+            {
+              "from": "AuthController",
+              "to": "Sinh viên",
+              "text": "422 \"Mã không đúng hoặc đã hết hạn\"",
+              "kind": "return"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_user_quen_mat_khau_otp.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 2/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

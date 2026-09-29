@@ -1,0 +1,94 @@
+{
+  "_": "Luong F6 Chế độ học + Chế độ luyện cua actor A1 tren ngan hang cau hoi phong van. Nguon: 01-rd/req/interview-bank.md (F6-04 den F6-08, F6-09, F6-12), 02-bd/architecture/interview-bank.md muc 1 (AnswerFeedbackPort, SpringAiFeedbackAdapter, job spaced repetition), muc 2 (Chế độ luyện la NOI DUY NHAT module nay goi AI).",
+  "_bat_bien": "F6-07 amendment (DEC-2026-0831-outside-screens-closures): moi lan nop la mot attempt doc lap, khong UPDATE cau tra loi cu.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Ôn tập và luyện tập câu hỏi phỏng vấn (Sinh viên) (1/3)",
+  "covers": [
+    "F6-04",
+    "F6-05"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Sinh viên",
+        "role": "actor"
+      },
+      {
+        "name": "PracticeController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "PracticeService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema interview_bank"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 1 - Chế độ học: dữ liệu soạn sẵn, KHÔNG qua AI (F6-04, F6-05)"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "Sinh viên",
+        "text": "Lọc theo chủ đề rồi mở một câu hỏi"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "PracticeController",
+        "text": "GET /interview-bank/questions/{id}?mode=STUDY"
+      },
+      {
+        "from": "PracticeController",
+        "to": "PracticeService",
+        "text": "getQuestionForStudy(query, userId)"
+      },
+      {
+        "from": "PracticeService",
+        "to": "PostgreSQL",
+        "text": "findById(questionId)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "SELECT interview_questions JOIN answer_rubric_criteria (QuestionRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "Câu hỏi, hướng tiếp cận, khung STAR, từ khoá cốt lõi (QuestionRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PracticeService",
+        "text": "InterviewQuestion",
+        "kind": "return"
+      },
+      {
+        "from": "PracticeService",
+        "to": "PracticeController",
+        "text": "QuestionStudyDto - không gọi LLM ở chế độ này",
+        "kind": "return"
+      },
+      {
+        "from": "PracticeController",
+        "to": "Sinh viên",
+        "text": "200 OK",
+        "kind": "return"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "Sinh viên",
+        "text": "Hiển thị nội dung ôn tập soạn sẵn"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_user_on_tap_luyen_tap_ai.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 1/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

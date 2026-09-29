@@ -64,20 +64,71 @@
     `01-rd/screens/users/USR0103_saved_problems.md` mục 5 Q1): mức riêng tư tuyệt đối áp cho **cả chính việc đã
     bookmark bài nào** (không chỉ nội dung ghi chú) — `INSTRUCTOR`/`ADMIN` không biết một học viên đã lưu
     bài toán nào.
-  - **F2-14 — AI hỗ trợ sinh testcase tự động, output lấy từ chạy thật Đáp án mẫu (không để AI tự bịa
+  - **F2-14 — AI viết SCRIPT sinh testcase, output lấy từ chạy thật Đáp án mẫu (không để AI tự bịa
     output)** — bổ sung theo `06-plan/PROTOTYPE_DEBT.md` mục 2.6, đối chiếu nút "Sinh tự động" ở
     `09-layoutBase/Admin - Soạn đề bài.dc.html`. **Chốt 2026-08-24 — giữ tính năng, cơ chế an toàn bắt
-    buộc:** AI chỉ sinh **input** (dựa trên đề bài Markdown và Ràng buộc dữ liệu Admin đã khai báo);
-    **output không do AI tạo ra** — hệ thống lấy input đó chạy qua **Đáp án mẫu** của chính bài toán trên
-    go-judge (cùng `JudgeExecutionPort` dùng để chấm bài, F4-03) để lấy output thật, rồi mới ghép cặp
-    input/output vào danh sách testcase nháp. Cơ chế này loại bỏ rủi ro "AI bịa sai expected-output khiến
-    bài nộp đúng bị chấm Wrong Answer" đã nêu ở `PROTOTYPE_DEBT.md` mục 2.6 — output luôn là kết quả chạy
-    chương trình thật, không phải văn bản do AI viết ra.
-    - Testcase do F2-14 sinh ra ở trạng thái **nháp, chưa dùng để chấm bài** cho tới khi Admin xác nhận —
-      không tự động gộp vào bộ Hidden testcase khi xuất bản.
-    - Điều kiện tiên quyết: bài toán phải có Đáp án mẫu đã chạy Pass với testcase hiện có (nút "Chạy với
-      đáp án mẫu" trong cùng màn); chưa có đáp án mẫu hợp lệ thì không có gì để chạy input qua, tính năng vô
-      hiệu.
+    buộc. Sửa 2026-09-28 (owner instruction) — AI viết script sinh dữ liệu thay vì sinh thẳng dữ liệu**,
+    theo mô hình bộ đề của các hệ ra đề thi đấu (generator + model solution + validator; Codeforces
+    Polygon là ví dụ công khai). Lý do đổi: bắt AI gõ thẳng ra một ca `N = 100.000` phần tử là không khả
+    thi, nên bản cũ **không sinh được testcase đo hiệu năng** — trong khi đó mới là loại testcase bắt được
+    bài nộp sai độ phức tạp. Luồng đầy đủ:
+    1. **AI chỉ nhận đề bài Markdown, Ràng buộc dữ liệu đã khai, và 2 testcase Sample** (đưa vào prompt
+       dưới dạng **tham số dữ liệu**, tách khỏi chỉ thị hệ thống theo `CLAUDE.md` mục Rules). 2 Sample
+       đóng vai ví dụ khuôn input/output — với mô hình Standard I/O thì khuôn input chỉ nằm trong văn xuôi
+       đề bài, không có ví dụ thì AI phải đoán.
+    2. **AI KHÔNG bao giờ nhận Đáp án mẫu.** Đáp án mẫu là trọng tài của hệ thống, không phải đầu vào của
+       AI: đưa lời giải vào prompt vừa phơi đáp án một đường không cần thiết, vừa khiến AI sinh input bám
+       theo **cách cài đặt cụ thể** thay vì theo đặc tả.
+    3. AI trả về một **script sinh input**, kèm **nhãn phân loại ca** cho từng nhóm testcase nó sinh
+       (biên dưới, biên trên, suy biến, trùng lặp, đã sắp xếp, giá trị cực trị). Nhãn này dựng nên ma trận
+       độ phủ ở bước duyệt — người soạn đề nhìn ma trận là thấy đang thiếu loại ca nào.
+    4. Hệ thống **chạy script trong sandbox**: chặn mạng, giới hạn thời gian, và **giới hạn kích thước
+       output**. Giới hạn kích thước là ràng buộc MỚI, không dùng chung với bài nộp học viên: bài nộp bị
+       chặn tự nhiên vì nó chỉ in ra đáp án, còn script sinh dữ liệu **có mục đích là in ra thật nhiều**,
+       một vòng lặp sai là vài GB. Script vượt bất kỳ hạn mức nào thì loại cả script, báo lý do.
+    5. **Hạt giống ngẫu nhiên của script phải cố định.** Không cố định thì mỗi lần chạy ra dữ liệu khác
+       nhau, F2-09 (phiên bản hoá bộ testcase) mất ý nghĩa, và bấm "sinh lại" sẽ âm thầm đổi thứ đang dùng
+       chấm điểm học viên.
+    6. **Kiểm từng input có thoả Ràng buộc dữ liệu đã khai** trước khi nạp vào Đáp án mẫu. Bước này bắt
+       loại lỗi mà cơ chế "output từ chạy thật" KHÔNG bắt được: input sai ràng buộc vẫn chạy qua Đáp án mẫu
+       trót lọt và vẫn sinh ra một output *thật*, nhưng testcase đó sai đặc tả — bài nộp làm đúng theo ràng
+       buộc đã công bố sẽ trượt oan.
+    7. **Output không do AI tạo ra** — hệ thống nạp input hợp lệ vào **Đáp án mẫu** của chính bài toán để
+       lấy output thật, rồi mới ghép cặp input/output. Input nào làm Đáp án mẫu chạy lỗi hoặc quá giờ thì
+       **loại input đó**; riêng khi đó là ca cỡ lớn nhất thì **cảnh báo giới hạn thời gian của bài (F2-10)
+       có thể đặt sai hoặc Đáp án mẫu quá chậm**, không lặng lẽ bỏ qua.
+    8. **Lưu dữ liệu đã sinh làm chuẩn, lưu script kèm hạt giống làm xuất xứ.** Không lưu mỗi script rồi
+       chạy lại khi cần: thứ dùng chấm điểm học viên phải bất biến, mà chạy lại script phụ thuộc phiên bản
+       ngôn ngữ và thư viện. Bộ dữ liệu lớn đi MinIO theo F2-07.
+
+    Cơ chế này loại bỏ rủi ro "AI bịa sai expected-output khiến bài nộp đúng bị chấm Wrong Answer" đã nêu
+    ở `PROTOTYPE_DEBT.md` mục 2.6 — output luôn là kết quả chạy chương trình thật, không phải văn bản do
+    AI viết ra.
+    - Testcase do F2-14 sinh ra ở trạng thái **nháp, chưa dùng để chấm bài** cho tới khi người soạn đề xác
+      nhận và phân loại Sample/Hidden — không tự động gộp vào bộ Hidden testcase khi xuất bản.
+    - **Chỉ testcase đã duyệt mới được tính vào các mốc của checklist xuất bản** (tối thiểu 8 testcase,
+      tối thiểu 2 Sample — xem F2-15). Một testcase chưa ai nhìn qua thì không được phép tham gia quyết
+      định điểm của học viên; đó chính là điều khiến bước duyệt thủ công là kiểm soát chất lượng thật chứ
+      không phải thủ tục hình thức.
+    - Điều kiện tiên quyết: bài toán phải có **tối thiểu 2 testcase Sample do người soạn đề tự viết** và
+      **Đáp án mẫu (F2-18) đã chạy Pass cả 2 Sample đó**; chưa đủ thì nút "Sinh tự động" vô hiệu. AI sinh
+      **thêm**, không khởi tạo bộ testcase từ con số không.
+    - **Ngoài phạm vi, khai rõ:** (a) *checker* — chấm bài có nhiều đáp án đúng cùng hợp lệ (in ra đường đi
+      bất kỳ, thứ tự bất kỳ thoả điều kiện); hệ thống chỉ có bốn chiến lược so khớp F2-07 tới F2-10 nên mọi
+      bài trong ngân hàng phải có đáp án duy nhất theo một trong bốn chiến lược đó. (b) *đối chiếu bằng lời
+      giải thứ hai (brute force)* để bắt bug của chính Đáp án mẫu — đây là hạn chế đã biết: nếu Đáp án mẫu
+      sai, mọi testcase sinh ra đều đóng dấu cái sai đó thành chuẩn, và neo duy nhất thoát khỏi vòng tròn
+      là 2 testcase Sample do người soạn đề tự viết tay.
+  - **F2-18 — Khai và chạy kiểm Đáp án mẫu (golden solution)** — tách thành mã riêng ngày 2026-09-28. Trước
+    đó Đáp án mẫu chỉ tồn tại như một điều kiện tiên quyết nằm lồng bên trong F2-14 và một dòng trong
+    checklist xuất bản, **không có mã `Fx-nn` nào** (`01-rd/screens/shared/SHR0202_problem_authoring.md` đã
+    ghi nhận thiếu sót này). Nay nó gác hai cửa — mở tính năng F2-14 và cho phép xuất bản F2-15 — nên phải
+    có mã riêng để DD móc vào và để bảng truy vết không hụt.
+    - Người soạn đề khai một chương trình giải đúng bài toán, bằng một trong ba ngôn ngữ nộp bài.
+    - Nút "Chạy với đáp án mẫu" chạy nó qua sandbox trên **toàn bộ testcase hiện có**, hiển thị Pass/Fail
+      từng testcase. Đáp án mẫu chạy Fail bất kỳ testcase nào là tín hiệu **hoặc đáp án sai, hoặc testcase
+      sai** — phải xử lý trước khi làm tiếp, không cho bỏ qua.
+    - Đáp án mẫu là **nguồn sinh output duy nhất** của F2-14, và không bao giờ đưa vào prompt của AI.
   - **F2-15 — Vòng đời bài toán: hai trạng thái `Chưa xuất bản` / `Đã xuất bản`** — trả lời Câu hỏi mở Q2 của
     `01-rd/screens/shared/SHR0201_problem_management.md`. **Chốt 2026-08-30 (owner instruction):** rút gọn còn đúng
     hai trạng thái, bỏ trạng thái thứ ba `Đã ẩn` mà prototype từng dùng — một bài từng xuất bản rồi bị rút
@@ -101,8 +152,8 @@
     - **Điều kiện xuất bản chi tiết — amendment 2026-08-31** (Câu hỏi mở Q7(b) của
       `01-rd/screens/shared/SHR0202_problem_authoring.md`, cùng DEC trên): ngoài testcase Hidden (F2-06) và đặc tả
       đủ (F2-03), checklist "Sẵn sàng xuất bản" của `problem_authoring` chặn cứng nếu chưa đạt đủ **cả 5**:
-      tối thiểu 8 testcase, tối thiểu 2 testcase công khai (Sample), tối thiểu 2 ví dụ mẫu, đáp án mẫu chạy
-      Pass trên mọi testcase hiện có, và (đã bỏ ở Q3 riêng của `problem_authoring.md`) tổng trọng số 100 —
+      tối thiểu 8 testcase **đã duyệt**, tối thiểu 2 testcase công khai (Sample) **đã duyệt**, tối thiểu
+      2 ví dụ mẫu, Đáp án mẫu (F2-18) chạy Pass trên mọi testcase hiện có, và (đã bỏ ở Q3 riêng của `problem_authoring.md`) tổng trọng số 100 —
       **không còn áp dụng**. Cả 4 ngưỡng còn lại đánh dấu `[SoT: Suy luận]`, BD/DD chỉnh được.
     - **Ngưỡng thống kê kho bài — amendment 2026-08-31** (Câu hỏi mở Q5 của `problem_management.md`, cùng
       DEC trên): khối "Bài cần chú ý" là **dẫn xuất trình bày**, không cần mã riêng, dùng hai ngưỡng cấu

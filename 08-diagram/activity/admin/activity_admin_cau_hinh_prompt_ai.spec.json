@@ -1,0 +1,120 @@
+{
+  "_": "Chuyen tu sequence_admin_cau_hinh_prompt_ai.spec.json (F5-23). Hai buoc nghiep vu lien tiep -- luu phien ban prompt moi, roi khoi phuc mot phien ban cu -- ghep thanh MOT chuoi hanh dong tuan tu vi day la mo ta trinh tu thao tac cua Admin, khong phai mot quyet dinh re nhanh: khong co diem nao trong luong that su re thanh hai huong loai tru nhau.",
+  "_khong_decision": "Khong co node decision: ca hai 'nhanh' (luu ban moi / khoi phuc ban cu) deu la hanh dong Admin chu dong chon lam, khong phai he thong danh gia dieu kien roi re nhanh.",
+  "kind": "activity",
+  "title": "Sơ đồ hoạt động - Cấu hình prompt AI theo phiên bản (Quản trị viên)",
+  "covers": ["F5-23"],
+  "mode": "mono",
+  "activity": {
+    "nodes": [
+      {
+        "id": "start",
+        "type": "start"
+      },
+      {
+        "id": "n1",
+        "type": "action",
+        "text": "Sửa prompt và trọng số rubric, gửi bản mới"
+      },
+      {
+        "id": "d1",
+        "type": "decision",
+        "text": "Trọng số rubric hợp lệ?"
+      },
+      {
+        "id": "n2",
+        "type": "action",
+        "text": "Báo lỗi trường sai, không tạo phiên bản nào"
+      },
+      {
+        "id": "n3",
+        "type": "action",
+        "text": "Lưu thành phiên bản mới, giữ nguyên câu chỉ dẫn ràng buộc của Lớp 1"
+      },
+      {
+        "id": "n4",
+        "type": "action",
+        "text": "Ghi Nhật ký hệ thống và xoá cache prompt"
+      },
+      {
+        "id": "n5",
+        "type": "action",
+        "text": "Hiện phiên bản đang áp dụng"
+      },
+      {
+        "id": "d2",
+        "type": "decision",
+        "text": "Bản mới có vấn đề, cần quay lại bản cũ?"
+      },
+      {
+        "id": "n6",
+        "type": "action",
+        "text": "Chọn một phiên bản cũ trong lịch sử"
+      },
+      {
+        "id": "n7",
+        "type": "action",
+        "text": "Tạo phiên bản mới sao chép nội dung bản cũ, lịch sử giữ nguyên"
+      },
+      {
+        "id": "end",
+        "type": "end"
+      }
+    ],
+    "edges": [
+      {
+        "from": "start",
+        "to": "n1"
+      },
+      {
+        "from": "n1",
+        "to": "d1"
+      },
+      {
+        "from": "d1",
+        "to": "n3",
+        "guard": "hợp lệ"
+      },
+      {
+        "from": "d1",
+        "to": "n2",
+        "guard": "không hợp lệ"
+      },
+      {
+        "from": "n2",
+        "to": "end"
+      },
+      {
+        "from": "n3",
+        "to": "n4"
+      },
+      {
+        "from": "n4",
+        "to": "n5"
+      },
+      {
+        "from": "n5",
+        "to": "d2"
+      },
+      {
+        "from": "d2",
+        "to": "n6",
+        "guard": "có"
+      },
+      {
+        "from": "d2",
+        "to": "end",
+        "guard": "không"
+      },
+      {
+        "from": "n6",
+        "to": "n7"
+      },
+      {
+        "from": "n7",
+        "to": "end"
+      }
+    ]
+  },
+  "_nhanh_re": "Nhanh re: trong so rubric khong hop le thi khong tao phien ban nao [SoT: 02-bd/architecture/ai-review.md muc 2 -- F5-23 luu co phien ban]."
+}

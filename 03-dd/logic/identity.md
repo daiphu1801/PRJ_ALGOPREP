@@ -132,7 +132,9 @@ tiên khớp điều kiện thắng):
 4. `WATCH` ("Theo dõi") — tỉ lệ hoàn thành bài giao < 50%.
 5. `ON_TRACK` ("Đang tốt") — còn lại.
 - **Nguồn dữ liệu**: bài đã giao đọc từ `problem-bank.ListClassAssignments`; tiến độ đọc từ
-  `judge-orchestration.GetStudentSubmissionMetrics` theo phạm vi lớp (không dùng `user_submission_stats`
+  `judge-orchestration.GetClassStudentSubmissionMetrics` theo phạm vi lớp
+  (đổi tên 2026-09-27 bởi `DEC-2026-0927-submission-metrics-two-ports`; cổng này nay tách hẳn khỏi cổng
+  phía Người học) (không dùng `user_submission_stats`
   toàn cục — read model đó không lọc theo bài đã giao của một lớp cụ thể)
   [SoT: `07-review/bd_open_questions_with_solutions_260924.md:184`].
 

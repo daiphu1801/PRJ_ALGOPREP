@@ -1,0 +1,130 @@
+{
+  "_": "Luong nop bai va xem ket qua tung testcase theo thoi gian thuc cua actor A1. Nguon: US-A1-04 (01-rd/req/user_stories/a1_student.md), 01-rd/req/judge-orchestration.md (F4-01, F4-03, F4-08, F4-13), 02-bd/architecture/judge-orchestration.md muc 4 (state machine) va muc 6 (Outbox), 02-bd/architecture/harness.md muc 5 (plugin sinh ma, anh xa loi bien dich).",
+  "_khong_fail_fast": "F4-04 (dung som khi gap testcase sai) da het hieu luc theo DEC-2026-0831-partial-score-testcase-ratio -- vong lap chay het N testcase de co du lieu tinh ty le F4-13.",
+  "_tran": "8 participant -> be ngang 1310px, vuot canh dai A4. Chap nhan co y: day la luong xuyen 4 tang cong 2 ranh gioi tien trinh that (RabbitMQ, go-judge), gom bot bat ky cot nao cung xoa mat mot ranh gioi kien truc. In A3 hoac xuat SVG.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Nộp bài và chấm từng testcase (2/3)",
+  "covers": [
+    "F3-02",
+    "F3-03",
+    "F3-04",
+    "F3-05",
+    "F3-06",
+    "F3-11",
+    "F4-08"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Sinh viên",
+        "role": "actor"
+      },
+      {
+        "name": "SubmissionController",
+        "role": "controller",
+        "stereo": "REST + STOMP"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema judge"
+      },
+      {
+        "name": "JudgeWorker",
+        "role": "service",
+        "stereo": "consumer + harness"
+      },
+      {
+        "name": "go-judge",
+        "role": "external",
+        "stereo": "sandbox"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 2 - Sinh mã bọc hàm và biên dịch (F3-02 đến F3-06, F3-11)"
+      },
+      {
+        "from": "JudgeWorker",
+        "to": "JudgeWorker",
+        "text": "Phân phối job cho worker rảnh (RabbitMQ)"
+      },
+      {
+        "from": "JudgeWorker",
+        "to": "PostgreSQL",
+        "text": "UPDATE status = COMPILING"
+      },
+      {
+        "from": "JudgeWorker",
+        "to": "PostgreSQL",
+        "text": "Đọc đặc tả hàm, bộ testcase, giới hạn thời gian và bộ nhớ"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "JudgeWorker",
+        "text": "function_spec, N testcase, limits",
+        "kind": "return"
+      },
+      {
+        "from": "JudgeWorker",
+        "to": "JudgeWorker",
+        "text": "Sinh khung bọc hàm theo ngôn ngữ, chèn mã người học"
+      },
+      {
+        "from": "JudgeWorker",
+        "to": "JudgeWorker",
+        "text": "Ghi bảng offset dòng của mã khung"
+      },
+      {
+        "from": "JudgeWorker",
+        "to": "go-judge",
+        "text": "Biên dịch mã đã ghép"
+      },
+      {
+        "from": "go-judge",
+        "to": "JudgeWorker",
+        "text": "exitCode, stderr thô",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Biên dịch lỗi?",
+          "then": [
+            {
+              "from": "JudgeWorker",
+              "to": "JudgeWorker",
+              "text": "Ánh xạ lỗi về đúng dòng mã người học, lọc dòng thuộc mã khung"
+            },
+            {
+              "from": "JudgeWorker",
+              "to": "PostgreSQL",
+              "text": "UPDATE status = COMPILE_ERROR (trạng thái cuối)"
+            },
+            {
+              "from": "JudgeWorker",
+              "to": "SubmissionController",
+              "text": "Đẩy COMPILE_ERROR kèm danh sách lỗi",
+              "kind": "async"
+            },
+            {
+              "from": "SubmissionController",
+              "to": "Sinh viên",
+              "text": "STOMP - hiện lỗi ngay tại dòng người học viết",
+              "kind": "async"
+            }
+          ],
+          "else": [
+            {
+              "from": "JudgeWorker",
+              "to": "PostgreSQL",
+              "text": "UPDATE status = JUDGING"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_user_nop_bai_va_xem_ket_qua_realtime.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 1/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

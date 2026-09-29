@@ -16,7 +16,7 @@ Tài liệu này đặc tả kiến trúc Next.js theo Feature-Sliced Design (FS
 Nguyên lý FSD và lý do chọn ở `01-rd/overview/overview.md` mục 1.H. Backend đối ứng ở `SYS0101_backend_architecture.md`.
 
 > **Trạng thái 2026-08-20 (cập nhật 2026-08-25):** `05-coding/frontend/` đã có **khung base** — cây thư mục FSD đầy đủ 6 tầng, 29 slice `views/<slug>/` rỗng khớp `01-rd/screens/`, route theo actor, provider theme/i18n/query.
-> **Nợ kỹ thuật 2026-08-28:** `01-rd/screens/` nay có 31 màn — `class_management` tách thành `class_management` + `class_assignments` mới (`DEC-2026-0828-split-class-management-assignments`), và thêm slug `class_student_detail` (F1-27) — nhưng code chưa có slice `views/class-assignments/` hay `views/class-student-detail/`. Cần dựng thêm hai slice này (và route kiểu `/instructor/assignments`, `/instructor/classes/[classId]/students/[studentId]`) khi làm khung base tiếp; số "29 slice" ở trên vẫn đúng với code hiện tại, chưa đúng với RD.
+> **Nợ kỹ thuật 2026-08-28:** `01-rd/screens/` nay có 31 màn — `class_management` tách thành `class_management` + `class_assignments` mới (`DEC-2026-0828-split-class-management-assignments`), và thêm slug `class_student_detail` (F1-27) — nhưng code chưa có slice `views/teacher/class-assignments/` hay `views/teacher/class-student-detail/`. Cần dựng thêm hai slice này (và route kiểu `/instructor/assignments`, `/instructor/classes/[classId]/students/[studentId]`) khi làm khung base tiếp; số "29 slice" ở trên vẫn đúng với code hiện tại, chưa đúng với RD.
 > Chưa có nội dung nghiệp vụ (chờ `02-bd/screens/` + `03-dd/api/`). Bốn quyết định kiến trúc của khung base (prefix URL `/admin` + `/instructor`, i18n không có segment locale, theme, pnpm workspace) chốt tại **`DEC-2026-0825-frontend-base-architecture`**; ánh xạ slug↔URL và nợ kỹ thuật ở `05-coding/frontend/README.md`.
 > Dự án có `09-layoutBase/` (31 màn prototype tĩnh `.dc.html`) làm căn cứ đối chiếu UX và bố cục màn cho BD/DD.
 
@@ -106,15 +106,12 @@ frontend/src/
 │   └── globals.css
 │
 ├── views/                        # TẦNG 2: Bố cục hoàn chỉnh của MỘT màn hình
-│   ├── problem-list/             #   một slice cho mỗi màn trong 01-rd/screens/
-│   ├── problem-detail/           #   tên slice = slug của màn, dấu `_` đổi thành `-`
-│   ├── submission-result/
-│   ├── solution-review/
-│   ├── mock-interview/
-│   ├── interview-bank/
-│   ├── my-progress/
-│   ├── auth/
-│   └── admin/                    #   khu vực quản trị, mỗi màn một slice con
+│   ├── admin/                    #   nhóm theo actor, trùng tên thư mục trong 01-rd/screens/
+│   │   ├── overview/             #   mỗi màn một slice; tên slice = slug màn, `_` đổi thành `-`
+│   │   └── ai-config/            #   bỏ tiền tố actor khỏi tên slice (không viết `admin-ai-config`)
+│   ├── teacher/                  #   class-management/, grading/, ...
+│   ├── users/                    #   problem-list/, problem-detail/, submission-result/, ...
+│   └── shared/                   #   màn dùng chung nhiều vai trò: auth/, problem-authoring/, ...
 │
 ├── widgets/                      # TẦNG 3: Tổ hợp UI lớn ghép từ nhiều feature
 │   ├── app-shell/                #   header, điều hướng chính
@@ -132,7 +129,7 @@ frontend/src/
 │   └── author-problem/           #   soạn đề và tải testcase (vai trò INSTRUCTOR)
 │
 ├── entities/                     # TẦNG 5: Thực thể nghiệp vụ — kiểu dữ liệu và UI thuần
-│   ├── problem/                  #   ProblemCard, DifficultyBadge, TopicTag, kiểu Problem
+│   ├── problem/                  #   ProblemCard, DifficultyBadge, TopicTag, kiểu Problem, bản nháp đề (ProblemDraft)
 │   ├── submission/               #   StatusBadge, VerdictLabel, kiểu Submission
 │   ├── testcase/                 #   TestcaseRow — Hidden chỉ hiện trạng thái và chỉ số
 │   ├── interview-question/
@@ -151,7 +148,11 @@ frontend/src/
 > 1. Chỉ import một slice qua Public API của nó — file `index.ts` ở gốc slice (ví dụ `import { ProblemCard } from '@/entities/problem'`), không trỏ sâu vào file bên trong.
 > 2. Import chỉ đi **một hướng, xuống dưới**: `app → views → widgets → features → entities → shared`. Tầng dưới không bao giờ biết tầng trên. Cùng tầng thì không import lẫn nhau.
 
-**Tên slice `views` khớp slug màn hình.** Mỗi màn trong `01-rd/screens/` có đúng một slice `views` cùng tên, `_` đổi thành `-`. Nhờ vậy `grep` một tên là ra cả chuỗi `01-rd → 02-bd → 03-dd → code` — đúng luật chống trôi của `CLAUDE.md` mục Process.
+**Tên slice `views` khớp slug màn hình.** Mỗi màn trong `01-rd/screens/<nhóm>/` có đúng một slice `views/<nhóm>/<slug>`, `_` đổi thành `-`, nhóm lấy đúng tên thư mục RD (`admin` · `teacher` · `users` · `shared`). Nhờ vậy `grep` một tên là ra cả chuỗi `01-rd → 02-bd → 03-dd → code` — đúng luật chống trôi của `CLAUDE.md` mục Process.
+
+**Thư mục nhóm chỉ chứa slice, không chứa code.** Không có `views/admin/index.ts`, không có `views/admin/lib/`. Code dùng chung giữa hai màn cùng nhóm phải xuống `widgets` / `features` / `entities`, như mọi code dùng chung khác. ESLint coi `views/<nhóm>/<slug>` là một slice (`eslint.config.mjs`, pattern `src/views/*/*`), nên màn này import màn kia vẫn bị chặn dù cùng nhóm.
+
+**Dữ liệu riêng của một màn nằm trong chính view đó.** Kiểu DTO và truy vấn chỉ một màn dùng (số liệu tổng quan Admin, nhật ký hệ thống, cấu hình ngôn ngữ...) đặt ở `views/<nhóm>/<slug>/model/` và `views/<nhóm>/<slug>/api/`, không mở slice `entities` riêng. Một slice `entities` chỉ được mở khi nó là **danh từ nghiệp vụ** thuộc một Bounded Context F1–F6 **và** có từ hai slice trở lên dùng, hoặc đã có widget/feature trong kế hoạch cần nó. Khi màn thứ hai cần dữ liệu đó, chuyển xuống `entities` trong cùng thay đổi. Quy tắc này nói về **dữ liệu**; tiêu chí đặt **component** vẫn là mục 5.2.A. `DEC-2026-0929-fsd-views-grouped-entities-domain-only`.
 
 **Hai màn dễ bị gộp, đừng gộp:** `problem-detail` là nơi đọc đề và viết mã; `submission-result` là kết quả của một bài nộp cụ thể (có URL riêng để chia sẻ và để mở lại từ trang tiến độ). Gộp làm một thì không mở lại được một bài nộp cũ.
 **Và hai luồng AI là hai slice riêng:** `solution-review` (một lượt, tĩnh) khác `mock-interview` (nhiều lượt, stream, có trạng thái phiên). Chúng chỉ giống nhau ở chỗ cùng mở ra sau `Accepted`.

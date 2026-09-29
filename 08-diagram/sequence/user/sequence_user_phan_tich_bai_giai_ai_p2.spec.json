@@ -1,0 +1,83 @@
+{
+  "_": "Luong F5.1 Solution Review (mot lan, ket qua JSON co cau truc) cua actor A1. Nguon: 01-rd/req/ai-review.md (F5-01 den F5-08), 02-bd/architecture/ai-review.md muc 3.2/3.3 (SubmissionSnapshotPort, ProblemContextPort), muc 5 (ba lop instruction chong prompt injection), muc 6.2 (cache theo source hash), muc 6.3 (ngan sach token).",
+  "_suy_giam": "Nhanh LLM loi khong lam hong F1-F4: bao loi tai cho, khong khoa man Nop bai (CLAUDE.md -- AI degrades gracefully).",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Phân tích bài giải bằng AI (Sinh viên) (2/3)",
+  "covers": [
+    "F5-17"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "SolutionReviewService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema ai"
+      },
+      {
+        "name": "Nhà cung cấp LLM",
+        "role": "external",
+        "stereo": "Spring AI"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 3 - Dựng prompt ba lớp, mã nguồn LUÔN là dữ liệu (F5-17)"
+      },
+      {
+        "from": "SolutionReviewService",
+        "to": "PostgreSQL",
+        "text": "Đọc prompt_templates bản đang hiệu lực và ngữ cảnh bài toán"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "SolutionReviewService",
+        "text": "system_instruction, rubric, perProblemAiContext",
+        "kind": "return"
+      },
+      {
+        "from": "SolutionReviewService",
+        "to": "SolutionReviewService",
+        "text": "analyze(systemInstruction, problemContext, sourceCode) (SpringAiLlmAdapter)"
+      },
+      {
+        "from": "SolutionReviewService",
+        "to": "SolutionReviewService",
+        "text": "Lớp 1 - chỉ thị hệ thống cố định vào system message"
+      },
+      {
+        "from": "SolutionReviewService",
+        "to": "SolutionReviewService",
+        "text": "Lớp 2 - ngữ cảnh giảng viên bọc trong <per_problem_context>, không phải chỉ thị"
+      },
+      {
+        "from": "SolutionReviewService",
+        "to": "SolutionReviewService",
+        "text": "Lớp 3 - mã nguồn người học vào user message, luôn là dữ liệu"
+      },
+      {
+        "from": "SolutionReviewService",
+        "to": "Nhà cung cấp LLM",
+        "text": "ChatClient.prompt().system(...).user(...)"
+      },
+      {
+        "from": "Nhà cung cấp LLM",
+        "to": "SolutionReviewService",
+        "text": "JSON có cấu trúc + số token đã dùng",
+        "kind": "return"
+      },
+      {
+        "from": "SolutionReviewService",
+        "to": "SolutionReviewService",
+        "text": "SolutionReviewResult (SpringAiLlmAdapter)"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_user_phan_tich_bai_giai_ai.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 2/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

@@ -1,0 +1,71 @@
+{
+  "_": "Luong giam sat hang doi va cum judge engine cua actor A3, ke ca job quet bai nop treo. Nguon: US-A3-03 (01-rd/req/user_stories/a3_admin.md), 01-rd/req/judge-orchestration.md (F4-07, F4-10), 02-bd/architecture/judge-orchestration.md muc 5.3 (sweep 5 phut, chu ky quet 60 giay, menh de WHERE chong ghi de).",
+  "_diem_mau_chot": "Menh de WHERE status NOT IN (7 trang thai cuoi) cua job sweep KHONG phai toi uu truy van -- no la co che chong ghi de khi mot worker cham hoan tat dung luc job chay.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Giám sát hàng đợi và quét bài nộp treo (Quản trị viên) (2/3)",
+  "covers": [
+    "F4-07"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "TimeoutSweepJob",
+        "role": "service",
+        "stereo": "@Scheduled 60 giây"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema judge"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 2 - Job quét bài nộp treo chạy nền, độc lập với màn (F4-07)"
+      },
+      {
+        "from": "TimeoutSweepJob",
+        "to": "PostgreSQL",
+        "text": "SELECT submissions WHERE status chưa kết thúc AND updated_at < now() - 5 phút"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "TimeoutSweepJob",
+        "text": "Danh sách bài nộp nghi treo",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Có bài nộp quá ngưỡng 5 phút?",
+          "then": [
+            {
+              "from": "TimeoutSweepJob",
+              "to": "PostgreSQL",
+              "text": "UPDATE status = SYSTEM_ERROR, failure_reason = WORKER_TIMEOUT"
+            },
+            {
+              "from": "TimeoutSweepJob",
+              "to": "TimeoutSweepJob",
+              "text": "Mệnh đề WHERE status NOT IN (7 trạng thái cuối) chặn ghi đè kết quả worker về muộn"
+            },
+            {
+              "from": "TimeoutSweepJob",
+              "to": "PostgreSQL",
+              "text": "INSERT outbox_events cùng giao dịch"
+            }
+          ],
+          "else": [
+            {
+              "from": "TimeoutSweepJob",
+              "to": "TimeoutSweepJob",
+              "text": "Không làm gì, chờ lượt quét 60 giây sau"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_admin_giam_sat_hang_doi.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 2/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

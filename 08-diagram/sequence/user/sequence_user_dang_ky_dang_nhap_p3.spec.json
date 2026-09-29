@@ -1,0 +1,93 @@
+{
+  "_": "Luong dang ky + dang nhap cua actor A1. Nguon: 01-rd/req/identity.md (F1-01, F1-02), 03-dd/api/identity.md muc 0.1 (endpoint #1, #2), 03-dd/logic/identity.md (BR-01 rate-limit, BR-02 rotation).",
+  "_tang": "Tach dung 4 tang cua DEC-2026-0820-architecture-baseline: presentation (AuthController) / application (AuthService) / infrastructure (UserRepository, Redis) / du lieu (PostgreSQL schema identity).",
+  "_phase": "Ba giai doan: dang ky -> dang nhap -> cap token va dieu huong theo vai tro.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Đăng ký và đăng nhập (Sinh viên) (3/3)",
+  "covers": [
+    "F1-03"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Sinh viên",
+        "role": "actor"
+      },
+      {
+        "name": "AuthController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "AuthService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "Redis",
+        "role": "datastore",
+        "stereo": "rate-limit, token"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema identity"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 3 - Cấp token, xoay vòng và điều hướng theo vai trò (F1-03, BR-02)"
+      },
+      {
+        "from": "AuthService",
+        "to": "AuthService",
+        "text": "Sinh Access Token JWT, hạn 15 phút"
+      },
+      {
+        "from": "AuthService",
+        "to": "AuthService",
+        "text": "Sinh Refresh Token, băm SHA-256, hạn 30 ngày"
+      },
+      {
+        "from": "AuthService",
+        "to": "PostgreSQL",
+        "text": "saveRefreshToken(token_hash, family_id)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "INSERT INTO refresh_tokens (UserRepository)"
+      },
+      {
+        "from": "AuthService",
+        "to": "Redis",
+        "text": "DEL bộ đếm đăng nhập sai của cặp (email, IP)"
+      },
+      {
+        "from": "AuthService",
+        "to": "AuthController",
+        "text": "AuthSessionDto { accessToken, user, role }",
+        "kind": "return"
+      },
+      {
+        "from": "AuthController",
+        "to": "Sinh viên",
+        "text": "200 OK + Set-Cookie refresh_token (HttpOnly)",
+        "kind": "return"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "Sinh viên",
+        "text": "Lưu Access Token trong bộ nhớ, không lưu localStorage"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "Sinh viên",
+        "text": "Điều hướng tới khu vực Người học theo vai trò STUDENT"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_user_dang_ky_dang_nhap.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 3/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

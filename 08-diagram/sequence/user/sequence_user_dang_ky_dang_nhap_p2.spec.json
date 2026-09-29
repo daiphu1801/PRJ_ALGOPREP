@@ -1,0 +1,119 @@
+{
+  "_": "Luong dang ky + dang nhap cua actor A1. Nguon: 01-rd/req/identity.md (F1-01, F1-02), 03-dd/api/identity.md muc 0.1 (endpoint #1, #2), 03-dd/logic/identity.md (BR-01 rate-limit, BR-02 rotation).",
+  "_tang": "Tach dung 4 tang cua DEC-2026-0820-architecture-baseline: presentation (AuthController) / application (AuthService) / infrastructure (UserRepository, Redis) / du lieu (PostgreSQL schema identity).",
+  "_phase": "Ba giai doan: dang ky -> dang nhap -> cap token va dieu huong theo vai tro.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Đăng ký và đăng nhập (Sinh viên) (2/3)",
+  "covers": [
+    "F1-02"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Sinh viên",
+        "role": "actor"
+      },
+      {
+        "name": "AuthController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "AuthService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "Redis",
+        "role": "datastore",
+        "stereo": "rate-limit, token"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema identity"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 2 - Đăng nhập và chống dò mật khẩu (F1-02, BR-01)"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "Sinh viên",
+        "text": "Nhập email, mật khẩu rồi bấm \"Đăng nhập\""
+      },
+      {
+        "from": "Sinh viên",
+        "to": "AuthController",
+        "text": "POST /auth/login { email, password }"
+      },
+      {
+        "from": "AuthController",
+        "to": "AuthService",
+        "text": "login(command, clientIp)"
+      },
+      {
+        "from": "AuthService",
+        "to": "Redis",
+        "text": "GET identity:ratelimit:login:<email>:<ip>"
+      },
+      {
+        "from": "Redis",
+        "to": "AuthService",
+        "text": "Số lần sai trong cửa sổ 15 phút",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Đã sai từ 5 lần trở lên trong 15 phút?",
+          "then": [
+            {
+              "from": "AuthService",
+              "to": "AuthController",
+              "text": "IDT-103 - không chạm tới cơ sở dữ liệu",
+              "kind": "return"
+            },
+            {
+              "from": "AuthController",
+              "to": "Sinh viên",
+              "text": "429 \"Thử lại sau ít phút\"",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "AuthService",
+              "to": "PostgreSQL",
+              "text": "findByEmail(email)"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "PostgreSQL",
+              "text": "SELECT users JOIN roles (UserRepository)"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "PostgreSQL",
+              "text": "User kèm vai trò (UserRepository)"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "AuthService",
+              "text": "User",
+              "kind": "return"
+            },
+            {
+              "from": "AuthService",
+              "to": "AuthService",
+              "text": "Đối chiếu BCrypt mật khẩu nhập với password_hash"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_user_dang_ky_dang_nhap.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 2/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

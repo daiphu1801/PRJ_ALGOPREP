@@ -143,7 +143,7 @@ Màn hình thay đổi bố cục linh hoạt theo 3 trạng thái:
 ### 4.5. Cấu trúc slice FSD [Nội bộ]
 
 - Route: `/mock-interview`
-- View slice: `src/views/mock-interview/`
+- View slice: `src/views/users/mock-interview/`
   - `ui/mock-interview-page.tsx`
   - `ui/entry/entry-stats-banner.tsx`
   - `ui/entry/entry-source-tabs.tsx`

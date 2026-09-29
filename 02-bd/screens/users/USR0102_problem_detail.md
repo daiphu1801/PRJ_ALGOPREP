@@ -354,7 +354,7 @@ quy định màu sắc, khoảng cách hay typography ở BD.
 
 | Khối | Slice dự kiến | Căn cứ |
 | :--- | :--- | :--- |
-| Trang | `views/problem-detail` | Quy ước FSD của dự án |
+| Trang | `views/users/problem-detail` | Quy ước FSD của dự án |
 | Khung Người học (thu gọn) | Dùng lại `widgets/app-shell` (biến thể `student-header`, tham số thu gọn) | `02-bd/screens/users/_shell.md` mục 2.5 |
 | Thanh tác vụ bài toán | `widgets/problem-taskbar` | Prototype `:98-107` |
 | Trạng thái chưa chọn bài | `widgets/workspace-empty-state` | Prototype `:112-152` |

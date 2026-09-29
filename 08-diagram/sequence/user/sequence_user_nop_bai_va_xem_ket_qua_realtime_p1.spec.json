@@ -1,0 +1,115 @@
+{
+  "_": "Luong nop bai va xem ket qua tung testcase theo thoi gian thuc cua actor A1. Nguon: US-A1-04 (01-rd/req/user_stories/a1_student.md), 01-rd/req/judge-orchestration.md (F4-01, F4-03, F4-08, F4-13), 02-bd/architecture/judge-orchestration.md muc 4 (state machine) va muc 6 (Outbox), 02-bd/architecture/harness.md muc 5 (plugin sinh ma, anh xa loi bien dich).",
+  "_khong_fail_fast": "F4-04 (dung som khi gap testcase sai) da het hieu luc theo DEC-2026-0831-partial-score-testcase-ratio -- vong lap chay het N testcase de co du lieu tinh ty le F4-13.",
+  "_tran": "8 participant -> be ngang 1310px, vuot canh dai A4. Chap nhan co y: day la luong xuyen 4 tang cong 2 ranh gioi tien trinh that (RabbitMQ, go-judge), gom bot bat ky cot nao cung xoa mat mot ranh gioi kien truc. In A3 hoac xuat SVG.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Nộp bài và chấm từng testcase (1/3)",
+  "covers": [
+    "F3-03",
+    "F3-04",
+    "F3-05",
+    "F4-01",
+    "F4-08"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Sinh viên",
+        "role": "actor"
+      },
+      {
+        "name": "SubmissionController",
+        "role": "controller",
+        "stereo": "REST + STOMP"
+      },
+      {
+        "name": "SubmissionService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "RabbitMQ",
+        "role": "external",
+        "stereo": "hàng đợi chấm"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema judge"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 1 - Tiếp nhận bản nộp, trả lời ngay không chờ chấm (F4-01)"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "Sinh viên",
+        "text": "Viết mã trong Monaco, chọn ngôn ngữ"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "Sinh viên",
+        "text": "Bấm \"Nộp bài\""
+      },
+      {
+        "from": "Sinh viên",
+        "to": "Sinh viên",
+        "text": "Khoá nút Nộp, hiện trạng thái Đang gửi"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "SubmissionController",
+        "text": "POST /submissions { problemId, language, sourceCode }"
+      },
+      {
+        "from": "SubmissionController",
+        "to": "SubmissionController",
+        "text": "Kiểm tra ngôn ngữ thuộc Java / C++ / Python"
+      },
+      {
+        "from": "SubmissionController",
+        "to": "SubmissionService",
+        "text": "submit(command, userId)"
+      },
+      {
+        "from": "SubmissionService",
+        "to": "PostgreSQL",
+        "text": "INSERT submissions, status = PENDING"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "SubmissionService",
+        "text": "submissionId",
+        "kind": "return"
+      },
+      {
+        "from": "SubmissionService",
+        "to": "RabbitMQ",
+        "text": "Đẩy job chấm vào hàng đợi",
+        "kind": "async"
+      },
+      {
+        "from": "SubmissionService",
+        "to": "SubmissionController",
+        "text": "submissionId",
+        "kind": "return"
+      },
+      {
+        "from": "SubmissionController",
+        "to": "Sinh viên",
+        "text": "202 Accepted - không chờ chấm xong",
+        "kind": "return"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "Sinh viên",
+        "text": "Mở kênh WebSocket /topic/submissions/{id}"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_user_nop_bai_va_xem_ket_qua_realtime.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 1/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md.",
+  "_khong_ve_f4_05_06": "KHONG ve xac thuc webhook (F4-05) va chong trung callback (F4-06). Ly do: CLAUDE.md muc Bounded Contexts chot day la 'adapter-internal concerns, only relevant if an async adapter (e.g. Judge0) is plugged in'. Voi go-judge la engine mac dinh (DEC-2026-0823-go-judge-default-engine), JudgeWorker goi cong ra dong bo cho tung testcase, khong co callback nao quay ve nen hai co che nay khong nam trong luong chinh. Ghi lai o day de lan ra soat sau khong tinh nham la bo sot -- ra soat 2026-09-28 phat hien hai ma nay khong spec nao nhac toi, ke ca de loai tru. [SoT: 01-rd/req/judge-orchestration.md:37]"
+}

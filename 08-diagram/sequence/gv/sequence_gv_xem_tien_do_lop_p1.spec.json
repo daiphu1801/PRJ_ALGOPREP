@@ -1,0 +1,132 @@
+{
+  "_": "Luong xem dashboard tien do lop cua actor A2. Nguon: US-A2-09 (01-rd/req/user_stories/a2_instructor.md:140-155), 01-rd/req/identity.md (F1-27, F1-28), 03-dd/api/identity.md muc 0.4 (endpoint #26, #29), 02-bd/architecture/identity.md muc 3.1 (read model dung tu domain event SubmissionGraded, KHONG doc thang schema judge).",
+  "_suy_giam": "US-A2-11 (a2_instructor.md:185): mot nguon so lieu khong phan hoi thi man van len, phan do bao loi tai cho -- ve thanh nhanh alt vi day la nghiep vu that, khong phai xu ly loi trang tri.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Xem tiến độ lớp học (Giảng viên) (1/2)",
+  "covers": [
+    "F1-27",
+    "F1-28"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Giảng viên",
+        "role": "actor"
+      },
+      {
+        "name": "ClassProgressController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "ClassProgressService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "read model identity"
+      },
+      {
+        "name": "RabbitMQ",
+        "role": "external",
+        "stereo": "sự kiện domain"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 1 - Read model được dựng sẵn từ sự kiện, không đọc chéo schema"
+      },
+      {
+        "from": "RabbitMQ",
+        "to": "ClassProgressService",
+        "text": "SubmissionGraded { userId, problemId, verdict, passedCount, totalCount }",
+        "kind": "async"
+      },
+      {
+        "from": "ClassProgressService",
+        "to": "ClassProgressService",
+        "text": "Kiểm tra event_id đã xử lý chưa, chống xử lý trùng khi redeliver"
+      },
+      {
+        "from": "ClassProgressService",
+        "to": "PostgreSQL",
+        "text": "upsert(user_problem_best_score, user_submission_stats)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "UPDATE read model của identity (ProgressRepository)"
+      },
+      {
+        "phase": "Giai đoạn 2 - Mở màn, đọc danh sách học viên và số liệu tổng hợp (F1-27, F1-28)"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Chọn một lớp trong bộ lọc"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "ClassProgressController",
+        "text": "GET /identity/classes/{classId}/progress"
+      },
+      {
+        "from": "ClassProgressController",
+        "to": "ClassProgressController",
+        "text": "Kiểm quyền và kiểm lớp thuộc quyền phụ trách"
+      },
+      {
+        "from": "ClassProgressController",
+        "to": "ClassProgressService",
+        "text": "getClassProgress(classId, instructorId)"
+      },
+      {
+        "from": "ClassProgressService",
+        "to": "PostgreSQL",
+        "text": "findClassCompletionStats(classId)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "SELECT class_completion_stats JOIN class_members (ProgressRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "Tỉ lệ hoàn thành, điểm trung bình quy đổi theo phạm vi lớp (ProgressRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "ClassProgressService",
+        "text": "ClassCompletionStats",
+        "kind": "return"
+      },
+      {
+        "from": "ClassProgressService",
+        "to": "PostgreSQL",
+        "text": "findStudentsWithActivity(classId)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "SELECT lần nộp gần nhất của từng học viên trong lớp (ProgressRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "Mốc hoạt động của từng học viên (ProgressRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "ClassProgressService",
+        "text": "List<StudentActivity>",
+        "kind": "return"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_gv_xem_tien_do_lop.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 1/2). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

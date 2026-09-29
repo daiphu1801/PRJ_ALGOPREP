@@ -275,7 +275,7 @@ màu sắc, khoảng cách hay typography ở BD.
 
 | Khối | Slice dự kiến | Căn cứ |
 | :--- | :--- | :--- |
-| Trang | `views/interview-question-management` | Quy ước FSD của dự án |
+| Trang | `views/shared/interview-question-management` | Quy ước FSD của dự án |
 | Khung Admin/Giảng viên | Dùng lại `widgets/admin-shell` cho `/admin/...`; khung Giảng viên tương đương **[Đợi nextjs]** | `02-bd/screens/admin/_shell.md` |
 | Dải chỉ số | `widgets/interview-question-stat-strip` | Prototype `:152-163` |
 | Bộ lọc | `features/interview-question-filter` | Prototype `:165-181` |

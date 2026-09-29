@@ -258,7 +258,7 @@ Sidebar/topbar Admin/Instructor dùng chung khung điều hướng toàn hệ th
 
 | Khối | Slice dự kiến | Căn cứ |
 | :--- | :--- | :--- |
-| Trang | `views/problem-authoring` | Quy ước FSD của dự án |
+| Trang | `views/shared/problem-authoring` | Quy ước FSD của dự án |
 | Khung Admin/Instructor | Dùng lại `widgets/admin-shell` / `widgets/instructor-shell` theo tiền tố route | `DEC-2026-0825-frontend-base-architecture` |
 | Đầu trang | `widgets/authoring-header` + `entities/problem` | Prototype `:141-157` |
 | Tab 1 | `widgets/problem-content-form` + `entities/problem` | Prototype `:168-213` |

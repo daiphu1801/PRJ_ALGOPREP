@@ -1,0 +1,124 @@
+{
+  "_": "Luong xem diem AI tham khao roi cham tay de len cua actor A2. Nguon: US-A2-06 (01-rd/req/user_stories/a2_instructor.md:85-99), 01-rd/req/ai-review.md (F5-27), DEC-2026-0831-instructor-grading-round2, 02-bd/architecture/ai-review.md muc 2 (diem quy doi 0-10 luu canh solution_reviews, KHONG ghi de).",
+  "_diem_mau_chot": "Diem AI la THAM KHAO. Diem giang vien la diem chinh thuc va duoc luu nhu mot ban ghi RIENG -- hai con so cung ton tai, khong con so nao ghi de con so nao.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Chấm tay đè lên điểm AI tham khảo (Giảng viên) (1/3)",
+  "covers": [
+    "F5-27"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Giảng viên",
+        "role": "actor"
+      },
+      {
+        "name": "GradingController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "GradingService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema ai"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 1 - Hàng đợi chấm tay, chỉ trong phạm vi lớp mình phụ trách"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Mở màn Chấm bài của lớp"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "GradingController",
+        "text": "GET /ai/grading-queue?classId=..."
+      },
+      {
+        "from": "GradingController",
+        "to": "GradingService",
+        "text": "listPendingGrading(classId, instructorId)"
+      },
+      {
+        "from": "GradingService",
+        "to": "GradingService",
+        "text": "getClassesOf(instructorId) - đọc phạm vi lớp qua cổng ra (ClassScopeQueryPort)"
+      },
+      {
+        "from": "GradingService",
+        "to": "GradingService",
+        "text": "Danh sách lớp được phép xem (ClassScopeQueryPort)"
+      },
+      {
+        "alt": {
+          "label": "Lớp yêu cầu nằm ngoài phạm vi phụ trách?",
+          "then": [
+            {
+              "from": "GradingService",
+              "to": "GradingController",
+              "text": "Chặn ở tầng ứng dụng",
+              "kind": "return"
+            },
+            {
+              "from": "GradingController",
+              "to": "Giảng viên",
+              "text": "403 - chỉ thấy bài nộp của lớp mình",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "GradingService",
+              "to": "PostgreSQL",
+              "text": "findAcceptedSubmissionsWithReview(classId)"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "PostgreSQL",
+              "text": "SELECT solution_reviews JOIN submissions (verdict = ACCEPTED) (GradingRepository)"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "PostgreSQL",
+              "text": "Bài nộp kèm điểm AI quy đổi 0-10 (GradingRepository)"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "GradingService",
+              "text": "List<GradingItem>",
+              "kind": "return"
+            }
+          ]
+        }
+      },
+      {
+        "from": "GradingService",
+        "to": "GradingController",
+        "text": "Hàng đợi chấm tay",
+        "kind": "return"
+      },
+      {
+        "from": "GradingController",
+        "to": "Giảng viên",
+        "text": "200 OK",
+        "kind": "return"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Danh sách bài nộp kèm điểm AI kèm nhãn Tham khảo"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_gv_cham_tay_de_len_diem_ai.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 1/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

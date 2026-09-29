@@ -1,0 +1,122 @@
+{
+  "_": "Chuyen tu sequence_user_on_tap_luyen_tap_ai.spec.json (13 message) thanh activity. Khong co decision he thong that su: buoc 'tu cham muc do nho' la du lieu nguoi dung nhap (Biet ro/Mo ho/Quen) chu khong phai re nhanh xu ly khac nhau cua he thong, nen giu tuan tu dung theo dan y ke hoach 'khong bia nhanh gia'.",
+  "_chua_co_prototype": "Phan Che do luyen (F6-07/F6-08) chua co prototype doi chieu, ke thua canh bao tu sequence goc: cac hanh dong tuong ung o day suy ra tu dac ta F6-07/F6-08, khong phai tu UI da dung.",
+  "kind": "activity",
+  "title": "Sơ đồ hoạt động - Ôn tập câu hỏi phỏng vấn: Chế độ học và Chế độ luyện có AI (Sinh viên)",
+  "covers": ["F6-07", "F6-08"],
+  "activity": {
+    "nodes": [
+      {
+        "id": "start",
+        "type": "start"
+      },
+      {
+        "id": "n1",
+        "type": "action",
+        "text": "Mở câu hỏi ở Chế độ học"
+      },
+      {
+        "id": "n2",
+        "type": "action",
+        "text": "Xem hướng tiếp cận, khung STAR, từ khoá cốt lõi - dữ liệu soạn sẵn, không qua AI"
+      },
+      {
+        "id": "n3",
+        "type": "action",
+        "text": "Chuyển Chế độ luyện, tự soạn câu trả lời rồi nộp"
+      },
+      {
+        "id": "d1",
+        "type": "decision",
+        "text": "Câu hỏi đã có bộ tiêu chí đánh giá?"
+      },
+      {
+        "id": "n4",
+        "type": "action",
+        "text": "Báo thiếu tiêu chí, không gọi AI khi không có gì để đối chiếu"
+      },
+      {
+        "id": "n5",
+        "type": "action",
+        "text": "Đối chiếu qua LLM: tiêu chí là chỉ thị, câu trả lời là dữ liệu"
+      },
+      {
+        "id": "n6",
+        "type": "action",
+        "text": "Ghi thêm một attempt mới, không sửa attempt cũ"
+      },
+      {
+        "id": "n7",
+        "type": "action",
+        "text": "Hiện ý đã đạt và ý còn thiếu theo từng tiêu chí"
+      },
+      {
+        "id": "n8",
+        "type": "action",
+        "text": "Tự chấm mức Biết rõ / Mơ hồ / Quên"
+      },
+      {
+        "id": "n9",
+        "type": "action",
+        "text": "Tính ngày ôn lại kế tiếp theo giãn cách lặp lại"
+      },
+      {
+        "id": "end",
+        "type": "end"
+      }
+    ],
+    "edges": [
+      {
+        "from": "start",
+        "to": "n1"
+      },
+      {
+        "from": "n1",
+        "to": "n2"
+      },
+      {
+        "from": "n2",
+        "to": "n3"
+      },
+      {
+        "from": "n3",
+        "to": "d1"
+      },
+      {
+        "from": "d1",
+        "to": "n5",
+        "guard": "có"
+      },
+      {
+        "from": "d1",
+        "to": "n4",
+        "guard": "chưa có"
+      },
+      {
+        "from": "n4",
+        "to": "end"
+      },
+      {
+        "from": "n5",
+        "to": "n6"
+      },
+      {
+        "from": "n6",
+        "to": "n7"
+      },
+      {
+        "from": "n7",
+        "to": "n8"
+      },
+      {
+        "from": "n8",
+        "to": "n9"
+      },
+      {
+        "from": "n9",
+        "to": "end"
+      }
+    ]
+  },
+  "_nhanh_re": "Nhanh re: cau hoi thieu bo tieu chi danh gia thi KHONG goi AI [SoT: 01-rd/req/user_stories/a2_instructor.md:168, F6-08]."
+}

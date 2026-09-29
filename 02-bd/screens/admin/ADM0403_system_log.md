@@ -207,11 +207,11 @@ typography ở BD.
 
 | Khối | Slice dự kiến | Căn cứ |
 | :--- | :--- | :--- |
-| Trang | `views/admin-system-log` | Quy ước FSD của dự án |
+| Trang | `views/admin/system-log` | Quy ước FSD của dự án |
 | Khung Admin | Dùng lại `widgets/app-shell` | `02-bd/screens/admin/_shell.md:24-28` |
 | Thẻ chỉ số | Dùng lại primitive thẻ chỉ số đã có ở `admin_overview` | Prototype `:165-176` |
 | Bộ lọc | `features/audit-log-filter` | Prototype `:181-192` |
-| Danh sách | `widgets/audit-log-list` + `entities/audit-log` | Prototype `:194-212` |
+| Danh sách | `views/admin/system-log` (UI ở `ui/`, dữ liệu ở `api/` + `model/` của view; chỉ tách widget khi màn thứ hai cần) | Prototype `:194-212` |
 | Khối phụ | `widgets/active-admins-panel`, `widgets/audit-category-breakdown` | Prototype `:216-247` |
 | Kênh thời gian thực | `features/audit-log-live` | Prototype `:154-156` |
 

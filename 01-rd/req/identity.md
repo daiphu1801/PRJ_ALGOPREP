@@ -184,6 +184,24 @@ gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang c�
       còn lại ("Lớp của tôi" → `class_management`, "Bài tập của tôi" → `class_assignments`).
     - Màn cần 3 trạng thái — `empty`, `loading`, `error` — theo **từng khối riêng**, cùng nguyên tắc đã áp
       cho `admin_overview` (F1-29).
+  - **F1-31 — Dashboard tổng quan luyện tập của người học** (`dashboard`) bao trùm 4 thẻ thống kê (Đã giải,
+    Acceptance rate, Streak, Mock Interview), lời chào kèm chủ đề yếu nhất tuần, nút "Tiếp tục bài đang làm",
+    biểu đồ "Bài nộp theo ngày", "Năng lực theo chủ đề", "Hoạt động 12 tháng", "Bài toán gợi ý",
+    "Tiến độ theo chủ đề", và hai khối gần đây "Mock Interview" / "Solution Review" — một mã tổng hợp duy
+    nhất, cùng cách đã làm cho `class_progress` (F1-28), `admin_overview` (F1-29) và `instructor_overview`
+    (F1-30). Không phải một `FUNCTION` riêng trong ma trận F1-10: mọi vai trò `STUDENT` đều thấy trang này,
+    là đích mặc định sau đăng nhập kể từ `DEC-2026-0927-student-dashboard-home`.
+    - **`my_progress` đã gộp vào đây** (`DEC-2026-0927-student-area-merge-and-shared-shell`, cùng ngày).
+      Ban đầu hai màn cùng tồn tại, chia theo câu hỏi chúng trả lời — `dashboard` "làm gì tiếp theo",
+      `my_progress` "tôi đang ở đâu" — nhưng khoảng 60% khối trùng nhau nên chủ dự án chốt gộp làm một.
+      F1-31 do đó bao luôn phần hiển thị của F1-06/F1-07/F1-08 trước thuộc `my_progress`: bảng "Theo chủ đề"
+      đầy đủ (có tỉ lệ AC và lần nộp cuối), khối "Theo độ khó", khối "Nên ưu tiên". Route `/progress` đã bỏ.
+    - **"Năng lực theo chủ đề"** là thang 0-100 suy ra từ tỉ lệ AC (F1-07) và độ khó bài đã giải (F1-06) —
+      không phải dữ liệu mới, không gọi AI. Công thức chính xác để BD/DD chốt.
+    - **"Bài toán gợi ý"** xếp hạng bằng quy tắc đơn giản trên dữ liệu đã có, cùng nguyên tắc đã chốt cho khối
+      "Nên ưu tiên" của `my_progress` (`USR0501` Q2): ưu tiên chủ đề yếu nhất, không gọi AI.
+    - Màn cần 3 trạng thái — `empty`, `loading`, `error` — theo **từng khối riêng**, cùng nguyên tắc đã áp cho
+      `admin_overview` (F1-29) và `instructor_overview` (F1-30).
 - **Đăng nhập qua nhà cung cấp bên thứ ba (OAuth)** — bổ sung theo `06-plan/PROTOTYPE_DEBT.md` mục 2.2,
   đối chiếu `09-layoutBase/Đăng nhập & Đăng ký.dc.html`:
   - **F1-15 — Đăng nhập/đăng ký bằng OAuth (GitHub, Google)**, song song với F1-01/F1-02 (email + mật khẩu),

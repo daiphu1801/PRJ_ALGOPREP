@@ -257,7 +257,7 @@ tay. Giữ nguyên nhãn "Điểm" khi dựng Next.js. Không quy định màu s
 
 | Khối | Slice dự kiến | Căn cứ |
 | :--- | :--- | :--- |
-| Trang | `views/instructor-grading` | Quy ước FSD của dự án |
+| Trang | `views/teacher/grading` | Quy ước FSD của dự án |
 | Khung Giảng viên | Dùng lại `widgets/instructor-shell` | `02-bd/screens/teacher/_shell.md` mục 1 |
 | Dải thẻ thống kê | `widgets/grading-stats` | Prototype `:122-133` |
 | Hàng đợi | `widgets/grading-queue` + `entities/solution-review` | Prototype `:135-170` |

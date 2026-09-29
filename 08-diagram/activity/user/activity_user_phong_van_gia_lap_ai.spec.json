@@ -1,0 +1,136 @@
+{
+  "_": "Chuyen tu sequence_user_phong_van_gia_lap_ai.spec.json (13 message, 3 giai doan Giai trinh/Phan bien/Mo rong) thanh activity. Khong co decision he thong that su o muc tong quan: nhu ghi chu cua sequence goc (_khong_ve), KHONG ve nhanh loi AI (F5-22) va nut Huy phien -- giu tuan tu dung 3 giai doan + rubric F5-18.",
+  "kind": "activity",
+  "title": "Sơ đồ hoạt động - Phỏng vấn giả lập AI ba giai đoạn (Sinh viên)",
+  "covers": ["F5-18"],
+  "activity": {
+    "nodes": [
+      {
+        "id": "start",
+        "type": "start"
+      },
+      {
+        "id": "n1",
+        "type": "action",
+        "text": "Chọn bài nộp Accepted, bấm Bắt đầu phiên"
+      },
+      {
+        "id": "d1",
+        "type": "decision",
+        "text": "Vượt giới hạn phiên mỗi giờ hoặc ngân sách token đã cạn?"
+      },
+      {
+        "id": "n2",
+        "type": "action",
+        "text": "Chặn ngay ở tầng use case, không gọi tới LLM"
+      },
+      {
+        "id": "n3",
+        "type": "action",
+        "text": "Mở phiên, khởi tạo ChatMemory, vào giai đoạn Làm rõ đề bài"
+      },
+      {
+        "id": "n4",
+        "type": "action",
+        "text": "AI hỏi và stream qua SSE, học viên trả lời một lượt"
+      },
+      {
+        "id": "n5",
+        "type": "action",
+        "text": "Câu trả lời luôn vào user message - là dữ liệu, không bao giờ là chỉ thị"
+      },
+      {
+        "id": "d2",
+        "type": "decision",
+        "text": "Đã đủ ý để sang giai đoạn sau?"
+      },
+      {
+        "id": "n6",
+        "type": "action",
+        "text": "Sang giai đoạn Trình bày hướng giải rồi Đào sâu độ phức tạp"
+      },
+      {
+        "id": "n7",
+        "type": "action",
+        "text": "Bấm Kết thúc phỏng vấn"
+      },
+      {
+        "id": "n8",
+        "type": "action",
+        "text": "Tổng hợp rubric, lưu phiên, xoá ChatMemory"
+      },
+      {
+        "id": "n9",
+        "type": "action",
+        "text": "Hiện rubric kèm nhãn chỉ mang tính định hướng học tập"
+      },
+      {
+        "id": "end",
+        "type": "end"
+      }
+    ],
+    "edges": [
+      {
+        "from": "start",
+        "to": "n1"
+      },
+      {
+        "from": "n1",
+        "to": "d1"
+      },
+      {
+        "from": "d1",
+        "to": "n3",
+        "guard": "còn quota"
+      },
+      {
+        "from": "d1",
+        "to": "n2",
+        "guard": "vượt"
+      },
+      {
+        "from": "n2",
+        "to": "end"
+      },
+      {
+        "from": "n3",
+        "to": "n4"
+      },
+      {
+        "from": "n4",
+        "to": "n5"
+      },
+      {
+        "from": "n5",
+        "to": "d2"
+      },
+      {
+        "from": "d2",
+        "to": "n6",
+        "guard": "đủ ý"
+      },
+      {
+        "from": "d2",
+        "to": "n4",
+        "guard": "chưa đủ, hỏi tiếp"
+      },
+      {
+        "from": "n6",
+        "to": "n7"
+      },
+      {
+        "from": "n7",
+        "to": "n8"
+      },
+      {
+        "from": "n8",
+        "to": "n9"
+      },
+      {
+        "from": "n9",
+        "to": "end"
+      }
+    ]
+  },
+  "_nhanh_re": "Nhanh re: chan truoc khi goi LLM khi vuot gioi han phien hoac can ngan sach token [SoT: 02-bd/architecture/ai-review.md muc 6.1, 6.3]. Vong lap: hoi tiep khi chua du y -- day la ban chat da luot cua F5.2."
+}

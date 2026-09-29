@@ -1,0 +1,105 @@
+{
+  "_": "Luong giam sat hang doi va cum judge engine cua actor A3, ke ca job quet bai nop treo. Nguon: US-A3-03 (01-rd/req/user_stories/a3_admin.md), 01-rd/req/judge-orchestration.md (F4-07, F4-10), 02-bd/architecture/judge-orchestration.md muc 5.3 (sweep 5 phut, chu ky quet 60 giay, menh de WHERE chong ghi de).",
+  "_diem_mau_chot": "Menh de WHERE status NOT IN (7 trang thai cuoi) cua job sweep KHONG phai toi uu truy van -- no la co che chong ghi de khi mot worker cham hoan tat dung luc job chay.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Giám sát hàng đợi và quét bài nộp treo (Quản trị viên) (1/3)",
+  "covers": [
+    "F1-10",
+    "F4-10"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Quản trị viên",
+        "role": "actor"
+      },
+      {
+        "name": "JudgeOpsController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "JudgeOpsService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "RabbitMQ",
+        "role": "external",
+        "stereo": "hàng đợi chấm"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema judge"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 1 - Bảng giám sát: độ dài hàng đợi và tình trạng cụm (F4-10)"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Mở bảng giám sát chấm bài"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "JudgeOpsController",
+        "text": "GET /judge/ops/overview"
+      },
+      {
+        "from": "JudgeOpsController",
+        "to": "JudgeOpsController",
+        "text": "Kiểm quyền JUDGE_OPS:READ theo ma trận F1-10"
+      },
+      {
+        "from": "JudgeOpsController",
+        "to": "JudgeOpsService",
+        "text": "getOverview()"
+      },
+      {
+        "from": "JudgeOpsService",
+        "to": "RabbitMQ",
+        "text": "Đọc độ dài hàng đợi và số consumer đang gắn"
+      },
+      {
+        "from": "RabbitMQ",
+        "to": "JudgeOpsService",
+        "text": "queueDepth, consumerCount",
+        "kind": "return"
+      },
+      {
+        "from": "JudgeOpsService",
+        "to": "PostgreSQL",
+        "text": "COUNT submissions theo từng trạng thái chưa kết thúc"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "JudgeOpsService",
+        "text": "Số bài PENDING / COMPILING / JUDGING",
+        "kind": "return"
+      },
+      {
+        "from": "JudgeOpsService",
+        "to": "JudgeOpsController",
+        "text": "JudgeOverviewDto",
+        "kind": "return"
+      },
+      {
+        "from": "JudgeOpsController",
+        "to": "Quản trị viên",
+        "text": "200 OK",
+        "kind": "return"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Độ dài hàng đợi, số bài đang chạy, tình trạng cụm go-judge"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_admin_giam_sat_hang_doi.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 1/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

@@ -1,0 +1,95 @@
+{
+  "_": "Luong giao bai toan da xuat ban cho mot lop cua actor A2. Nguon: US-A2-03 (01-rd/req/user_stories/a2_instructor.md:52-56), US-A2-01b (xuat ban bai toan), 01-rd/req/problem-bank.md, 02-bd/architecture/identity.md muc 3.1 (lien module qua domain event, khong import truc tiep).",
+  "_ranh_gioi": "Man Giao bai thuoc truc man hinh; hai module problem-bank va identity KHONG import nhau nen viec kiem tra lop va viec kiem tra bai toan di qua hai lenh goi doc lap tu tang application, dung DEC-2026-0820-architecture-baseline.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Giao bài toán cho lớp (Giảng viên) (1/2)",
+  "covers": [
+    "F1-10",
+    "F2-12"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Giảng viên",
+        "role": "actor"
+      },
+      {
+        "name": "AssignmentController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "AssignmentService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema identity"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 1 - Chọn lớp và chọn bài toán đã xuất bản"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Mở màn Giao bài của một lớp"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "AssignmentController",
+        "text": "GET /identity/classes/my"
+      },
+      {
+        "from": "AssignmentController",
+        "to": "AssignmentService",
+        "text": "listMyClasses(instructorId)"
+      },
+      {
+        "from": "AssignmentService",
+        "to": "PostgreSQL",
+        "text": "findByInstructorId(instructorId)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "SELECT classes WHERE instructor_id = ? (AssignmentRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "PostgreSQL",
+        "text": "Danh sách lớp phụ trách (AssignmentRepository)"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "AssignmentService",
+        "text": "List<Class>",
+        "kind": "return"
+      },
+      {
+        "from": "AssignmentService",
+        "to": "AssignmentController",
+        "text": "Danh sách lớp",
+        "kind": "return"
+      },
+      {
+        "from": "AssignmentController",
+        "to": "Giảng viên",
+        "text": "200 OK",
+        "kind": "return"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Chọn lớp, chọn bài toán, đặt hạn nộp"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_gv_giao_bai_cho_lop.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 1/2). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md.",
+  "_sua_covers": "Them F2-12 ngay 2026-09-28: ca luong nay LA nghiep vu giao bai cho lop (F2-12), truoc chi khai F1-10 vi mot message co nhac chuoi 'ma tran F1-10' con 'F2-12' khong xuat hien o dau."
+}

@@ -1,0 +1,102 @@
+{
+  "_": "Luong dang nhap bang OAuth (GitHub, Google) va tu lien ket theo email cua actor A1. Nguon: 01-rd/req/identity.md (F1-15), 03-dd/api/identity.md muc 0.1 (endpoint #5, #6), 03-dd/logic/identity.md BR-03, 02-bd/architecture/identity.md muc 2 (OAuth tu lien ket theo email).",
+  "_bao_mat": "Hai chot chan chiem tai khoan: (1) doi chieu `state` luu Redis TTL 10 phut -- chong CSRF o buoc callback; (2) provider tra `email_verified = false` thi TU CHOI, khong tao oauth_identities va khong tao users -- neu bo buoc nay, ai dang ky mot tai khoan provider bang email nguoi khac deu chiem duoc tai khoan AlgoPrep tuong ung.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Đăng nhập và tự liên kết tài khoản OAuth (Sinh viên) (3/3)",
+  "covers": [
+    "F1-15"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Sinh viên",
+        "role": "actor"
+      },
+      {
+        "name": "AuthController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "OAuthService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema identity"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 3 - Tự liên kết theo email, hoặc tạo tài khoản mới"
+      },
+      {
+        "from": "OAuthService",
+        "to": "PostgreSQL",
+        "text": "SELECT users WHERE email = providerEmail"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "OAuthService",
+        "text": "Tài khoản sẵn có hoặc rỗng",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Đã có tài khoản dùng đúng email này?",
+          "then": [
+            {
+              "from": "OAuthService",
+              "to": "PostgreSQL",
+              "text": "INSERT oauth_identities, liên kết vào tài khoản sẵn có"
+            }
+          ],
+          "else": [
+            {
+              "from": "OAuthService",
+              "to": "PostgreSQL",
+              "text": "INSERT users (password_hash = NULL, vai trò STUDENT)"
+            },
+            {
+              "from": "OAuthService",
+              "to": "PostgreSQL",
+              "text": "INSERT oauth_identities trỏ về tài khoản vừa tạo"
+            }
+          ]
+        }
+      },
+      {
+        "from": "OAuthService",
+        "to": "OAuthService",
+        "text": "Phát hành Access Token và Refresh Token y như đăng nhập thường"
+      },
+      {
+        "from": "OAuthService",
+        "to": "PostgreSQL",
+        "text": "INSERT refresh_tokens (token_hash, family_id)"
+      },
+      {
+        "from": "OAuthService",
+        "to": "AuthController",
+        "text": "AuthSessionDto",
+        "kind": "return"
+      },
+      {
+        "from": "AuthController",
+        "to": "Sinh viên",
+        "text": "200 OK + Set-Cookie refresh_token (HttpOnly)",
+        "kind": "return"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "Sinh viên",
+        "text": "Vào thẳng khu Người học; tài khoản chưa có mật khẩu vẫn đặt được sau ở màn Hồ sơ"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_user_lien_ket_oauth.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 3/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}
