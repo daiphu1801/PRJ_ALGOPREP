@@ -1,4 +1,4 @@
-import { ProblemListView } from "@/views/problem-list";
+import { ProblemListView } from "@/views/users/problem-list";
 
 export default function Page() {
   return <ProblemListView />;

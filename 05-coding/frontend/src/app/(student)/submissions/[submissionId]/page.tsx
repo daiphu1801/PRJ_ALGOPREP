@@ -1,4 +1,4 @@
-import { SubmissionResultView } from "@/views/submission-result";
+import { SubmissionResultView } from "@/views/users/submission-result";
 
 export default function Page() {
   return <SubmissionResultView />;

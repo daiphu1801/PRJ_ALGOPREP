@@ -11,6 +11,7 @@
     "languageSwitcher": "Choose interface language"
   },
   "nav": {
+    "dashboard": "Overview",
     "problems": "Problems",
     "submissions": "Submissions",
     "interviewBank": "Interview Bank",
@@ -18,6 +19,13 @@
     "profile": "Profile",
     "settings": "Settings",
     "login": "Log in",
+    "saved": "Saved problems",
+    "logout": "Sign out",
+    "accountMenu": "Open account menu",
+    "closeMenu": "Close account menu",
+    "workspace": "Workspace",
+    "mockInterview": "Mock interview",
+    "toggleNav": "Open navigation menu",
     "area": {
       "student": "Learner area",
       "instructor": "Instructor area",
@@ -299,6 +307,20 @@
     "footerLinkJudgeStatus": "go-judge status",
     "footerLinkChangelog": "Changelog",
     "footerLinkSupport": "Support"
+  },
+  "instructorNav": {
+    "sidebarLabel": "Instructor area navigation",
+    "areaEyebrow": "INSTRUCTOR",
+    "toggleSidebar": "Collapse / expand",
+    "collapseSidebar": "Collapse",
+    "groupMisc": "Other",
+    "overview": "Overview",
+    "classes": "My classes",
+    "assignments": "My assignments",
+    "grading": "Grading",
+    "settings": "Settings",
+    "profile": "Profile",
+    "students": "Student list"
   },
   "adminOverview": {
     "title": "Overview",
@@ -1060,6 +1082,27 @@
       "minPublic": "At least 2 public testcases",
       "solutionPasses": "Reference solution passes every testcase",
       "minExamples": "At least 2 worked examples"
+    },
+    "generateTitle": "Generate testcases with AI",
+    "generateSubtitle": "AI writes a generator script; the system runs it, then takes outputs from the reference solution. AI never sees the reference solution.",
+    "generateAction": "Generate",
+    "generateLockedTitle": "Not available yet",
+    "generateLockedBody": "Needs at least 2 hand-written Sample testcases and a reference solution that passes them all. Currently {samples} hand-written Sample.",
+    "coverageTitle": "Coverage matrix",
+    "coverageSubtitle": "Approved over total testcases per case class. A zero is a class still missing.",
+    "draftsTitle": "Draft testcases awaiting review",
+    "draftsSubtitle": "{count} unreviewed. Drafts do not count toward the publish checklist and are not used for grading.",
+    "draftsEmpty": "No draft testcases left.",
+    "approveAction": "Approve",
+    "rejectAction": "Discard",
+    "category": {
+      "typical": "Typical",
+      "boundaryLow": "Lower bound",
+      "boundaryHigh": "Upper bound",
+      "degenerate": "Degenerate",
+      "duplicate": "Duplicates",
+      "sorted": "Sorted",
+      "extreme": "Extreme values"
     }
   },
   "submissionResult": {
@@ -1437,29 +1480,8 @@
         "menuDelete": "Delete class"
       }
     },
-    "btnFilterClass": "View students",
-    "status": {
-      "insufficient_data": "Insufficient data",
-      "absent": "Absent",
-      "needs_support": "Needs support",
-      "watch": "Watch",
-      "on_track": "On track"
-    },
-    "studentList": {
-      "title": "Student list",
-      "col": {
-        "studentName": "Student",
-        "className": "Class",
-        "avgScore": "Avg score",
-        "completion": "Completion",
-        "status": "Status",
-        "lastActive": "Last active"
-      }
-    },
-    "btnRemoveStudent": "Remove from class",
     "filterAll": "All",
     "cancel": "Cancel",
-    "emptyStudents": "No students match this filter",
     "popup": {
       "createClassTitle": "Create class",
       "editClassTitle": "Edit class",
@@ -1474,7 +1496,8 @@
       "removeStudentTitle": "Remove {name} from class?",
       "removeStudentBody": "This also deletes the student's submission history within this class.",
       "removeStudentConfirm": "Remove student"
-    }
+    },
+    "btnViewStudents": "View students"
   },
   "classAssignments": {
     "header": {
@@ -1522,8 +1545,8 @@
   },
   "classProgress": {
     "header": {
-      "title": "Student progress",
-      "subtitle": "Track scores, completion and activity"
+      "title": "Student list",
+      "subtitle": "Scores, completion, streaks and standing of the students in your classes"
     },
     "scoreTrend": {
       "title": "Average score by class",
@@ -1551,14 +1574,22 @@
         "completion": "Completion",
         "streak": "Streak",
         "trend": "Trend",
-        "lastActive": "Last active"
+        "lastActive": "Last active",
+        "status": "Status"
       }
     },
     "filterAll": "All",
     "previous": "Previous",
     "next": "Next",
     "pageSummary": "Page {page} / {total}",
-    "empty": "No data yet"
+    "empty": "No data yet",
+    "btnRemoveStudent": "Remove from class",
+    "cancel": "Cancel",
+    "popup": {
+      "removeStudentTitle": "Remove {name} from the class?",
+      "removeStudentBody": "The student loses access to the class assignments. Past submissions are kept.",
+      "removeStudentConfirm": "Remove"
+    }
   },
   "classStudentDetail": {
     "loading": "Loading…",
@@ -1655,14 +1686,15 @@
       "classCountMeta": "{count} students",
       "studentCount": "Total students",
       "pendingGrading": "Pending manual grading",
-      "avgScore": "Average class score"
+      "avgScore": "Average class score",
+      "avgScoreMeta": "vs. last week"
     },
     "grading": {
       "title": "Needs manual grading",
       "subtitle": "AI-scored submissions below threshold",
       "linkViewAll": "View all",
       "col": {
-        "meta": "AI scored {score}/10 · submitted {time} ago"
+        "meta": "AI scored {score}/10 · submitted {time}"
       }
     },
     "activity": {
@@ -1891,6 +1923,109 @@
         "PUSHBACK_HANDLING": "Pushback handling",
         "COMPLEXITY_AWARENESS": "Complexity awareness"
       }
+    }
+  },
+  "dashboard": {
+    "title": "Overview",
+    "seeAll": "See all",
+    "retry": "Retry",
+    "filterAll": "All",
+    "emptyGeneric": "No data yet",
+    "errorGeneric": "Could not load this block",
+    "errorAi": "The AI subsystem is not responding — the other blocks still work",
+    "difficulty": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard"
+    },
+    "solveState": {
+      "solved": "Solved",
+      "attempted": "Attempted",
+      "todo": "Todo"
+    },
+    "greeting": {
+      "title": "Welcome back",
+      "weakestTopic": "Weakest topic this week: {topic} — skill {rate}/100, the lowest of {count} topics.",
+      "noData": "No practice data yet — solve your first problem to see your strengths and gaps.",
+      "btnResume": "Resume last problem",
+      "btnStart": "Start solving"
+    },
+    "stats": {
+      "solved": "Solved",
+      "solvedMeta": "of {total} published problems",
+      "acRate": "Acceptance rate",
+      "acRateMeta": "{submissions} submissions · {accepted} accepted",
+      "acRateEmpty": "No submissions yet",
+      "streak": "Streak",
+      "streakUnit": "days",
+      "streakMeta": "{avg} submissions per solved problem on average",
+      "interview": "Mock Interview",
+      "interviewUnit": "sessions",
+      "interviewMeta": "Average rubric {score} / 5",
+      "interviewNoScore": "No session has a rubric yet",
+      "interviewEmpty": "No interview sessions yet",
+      "regionLabel": "{metric} stat"
+    },
+    "daily": {
+      "title": "Submissions per day",
+      "totalLabel": "submissions · {average} per day on average",
+      "empty": "No submissions in this range"
+    },
+    "radar": {
+      "title": "Skill by topic",
+      "subtitle": "Scored 0-100 from acceptance rate and how much of the topic is solved",
+      "empty": "At least 3 topics with data are needed to draw this chart"
+    },
+    "activity": {
+      "title": "Activity, last 12 months",
+      "summary": "{days} active days in the last 12 months",
+      "less": "Less",
+      "more": "More",
+      "tooltip": "{day}: {count} submissions",
+      "tooltipNone": "{day}: no submissions",
+      "empty": "No activity in the last 12 months"
+    },
+    "suggested": {
+      "title": "Suggested problems",
+      "count": "{count} problems",
+      "difficultyLabel": "Filter by difficulty",
+      "topicLabel": "Filter by topic",
+      "colProblem": "Problem",
+      "colTopic": "Topic",
+      "colDifficulty": "Difficulty",
+      "colAcRate": "AC rate",
+      "tagFunction": "function",
+      "empty": "No problem matches these filters"
+    },
+    "topics": {
+      "title": "Topic progress",
+      "barLabel": "{topic} topic progress",
+      "empty": "No topic tracked yet"
+    },
+    "interviews": {
+      "title": "Mock Interview",
+      "session": "Session on {date}",
+      "empty": "No interview sessions yet"
+    },
+    "reviews": {
+      "title": "Solution Review",
+      "empty": "No analysis report yet",
+      "verdict": {
+        "optimal": "Optimal",
+        "improvable": "Improvable",
+        "suboptimal": "Suboptimal"
+      }
+    },
+    "rangeLabel": "Choose a time range",
+    "range7d": "7 days",
+    "range30d": "30 days",
+    "rangeAll": "All"
+  },
+  "studentShell": {
+    "footer": {
+      "copyright": "© 2026 AlgoPrep — capstone project",
+      "clusterStatus": "go-judge cluster healthy",
+      "version": "v0.4.2"
     }
   }
 }

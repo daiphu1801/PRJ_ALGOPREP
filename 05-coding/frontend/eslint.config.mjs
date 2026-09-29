@@ -7,11 +7,17 @@ import boundaries from "eslint-plugin-boundaries";
 // Nguồn: 01-rd/system/SYS0102_frontend_architecture.md mục 2.
 const FSD_LAYERS = ["app", "views", "widgets", "features", "entities", "shared"];
 
+// views/ has one extra level: an actor group mirroring 01-rd/screens/ (admin, teacher, users, shared).
+// A group folder holds slices only, never code of its own. DEC-2026-0929-fsd-views-grouped-entities-domain-only.
+// Patterns are anchored at src/ so that `shared/*` cannot also match the `views/shared/*` group.
+const PATTERNS = { app: "src/app/**", views: "src/views/*/*" };
+const CAPTURES = { app: undefined, views: ["group", "slice"] };
+
 const elementTypes = FSD_LAYERS.map((type) => ({
   type,
-  pattern: type === "app" ? "app/**" : `${type}/*`,
+  pattern: PATTERNS[type] ?? `src/${type}/*`,
   mode: "folder",
-  capture: type === "app" ? undefined : ["slice"],
+  capture: type in CAPTURES ? CAPTURES[type] : ["slice"],
 }));
 
 const eslintConfig = [
@@ -58,11 +64,11 @@ const eslintConfig = [
                 "@/entities/*/*",
                 "@/features/*/*",
                 "@/widgets/*/*",
-                "@/views/*/*",
+                "@/views/*/*/*",
                 "../entities/*/*",
                 "../features/*/*",
                 "../widgets/*/*",
-                "../views/*/*",
+                "../views/*/*/*",
               ],
               message:
                 "Deep import bị chặn (Public API Rule) — import qua index.ts của slice, ví dụ '@/entities/user' thay vì '@/entities/user/model/types'.",

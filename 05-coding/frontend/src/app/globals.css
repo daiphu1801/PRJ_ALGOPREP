@@ -289,3 +289,153 @@ body {
     0 10px 20px -6px rgba(0, 0, 0, 0.5),
     0 32px 64px -16px rgba(0, 0, 0, 0.6);
 }
+
+/*
+ * Instructor shell theme scope — same pattern and same reason as `.admin-shell` above: the
+ * Instructor mockups define their OWN palette (a cool blue one), not the app's generic slate/blue
+ * placeholder. Values are verbatim from 09-layoutBase/Giáo viên - Tổng quan.dc.html:18-46, which
+ * all 5 Instructor screens repeat byte-for-byte. Overriding the semantic tokens on one wrapper
+ * means every primitive that already reads --color-* (Card, StatCard, PageHeader, DataTable,
+ * Badge, Button, charts) lands in the mockup palette with zero per-component edits.
+ *
+ * Reported by the owner 2026-09-27: the Instructor screens "vẫn chưa được theo layoutbase ở css" —
+ * they were rendering in the generic :root palette with no shell at all.
+ */
+.instructor-shell {
+  /* dc.html:20-21 --bg/--text/--muted/--muted2 */
+  --color-background: #f5f8fc;
+  --color-surface: #ffffff;
+  --color-text: #16202b;
+  --color-text-muted: rgba(20, 35, 50, 0.58);
+  --color-text-subtle: rgba(20, 35, 50, 0.44);
+  /* dc.html:22-23 --glass/--glass2/--glass3, --border2, --track, --nav-hover */
+  --instructor-glass: rgba(255, 255, 255, 0.5);
+  --instructor-glass-strong: rgba(255, 255, 255, 0.65);
+  --color-border: rgba(60, 110, 160, 0.14);
+  --color-track: rgba(60, 110, 160, 0.1);
+  --color-surface-hover: rgba(255, 255, 255, 0.75);
+  --color-row-hover: rgba(255, 255, 255, 0.75);
+  /* dc.html:25 --active-bg/--active-border/--active-fg. NavLink reads the `--admin-*` names — they
+     are that primitive's contract, not an Admin-only value (see its doc comment), so they are set
+     here rather than forking the component. */
+  --instructor-active-bg: rgba(255, 255, 255, 0.9);
+  --instructor-active-fg: #14425e;
+  --admin-active-border: rgba(127, 179, 219, 0.4);
+  --admin-nav-hover: rgba(255, 255, 255, 0.75);
+  /* dc.html:26 --cta-bg/--cta-fg/--cta-shadow */
+  --color-cta-bg: linear-gradient(160deg, #7fb3db, #5b93c4);
+  --color-cta-fg: #ffffff;
+  --color-cta-shadow: 0 6px 16px rgba(91, 147, 196, 0.3);
+  /* dc.html:27 --logo-bg/--logo-fg */
+  --instructor-logo-bg: linear-gradient(135deg, #7fb3db, #a8cde8);
+  --instructor-logo-fg: #0a2436;
+  /* dc.html:188 — completion bars are filled with the accent2→accent gradient, not ProgressBar's
+     default Admin teal. Passed explicitly at the two call sites so the default stays untouched. */
+  --instructor-progress-fill: linear-gradient(90deg, #a8cde8, #7fb3db);
+  /* dc.html:26 --seg-bg/--seg-fg — the selected chip of a segmented control is a WHITE pill with
+     dark blue text, not a filled primary-blue pill. Applied by the [aria-pressed] rule below. */
+  --instructor-seg-bg: #ffffff;
+  --instructor-seg-fg: #14425e;
+  /* dc.html:28 --link/--ok/--warn/--neg. --color-primary is the LINK color here, unlike
+     `.admin-shell` where it carries the near-white nav-active fill: the Instructor views use
+     text-[var(--color-primary)] for their "Xem tất cả" links, which a white value would erase.
+     The nav-active fill is applied by the `[aria-current]` rule below instead. */
+  --color-primary: #4a7ba6;
+  --color-on-primary: #ffffff;
+  --color-success: #6fae8c;
+  --color-success-text: #6fae8c;
+  --color-danger: #c97a6e;
+  --color-scrim: rgba(10, 25, 40, 0.45);
+  /* dc.html:29 --blob1/2/3 — the three blurred backdrop circles (:56-58). */
+  --color-blob-1: rgba(127, 179, 219, 0.34);
+  --color-blob-2: rgba(168, 205, 232, 0.28);
+  --color-blob-3: rgba(196, 214, 190, 0.2);
+  /* The chart/badge accents the shared primitives ask for by name. Mapped onto this mockup's own
+     --accent/--accent2/--ok/--warn/--neg (dc.html:28, :30) rather than left on the Admin cyan. */
+  --color-admin-cyan: #4a7ba6;
+  --color-admin-teal: #6fae8c;
+  --color-admin-slate: rgba(20, 35, 50, 0.44);
+  --color-admin-warn: #c99a4a;
+  --color-admin-negative: #c97a6e;
+  --color-accent-blue: #4a7ba6;
+  --color-accent-blue-bg: rgba(127, 179, 219, 0.18);
+  --color-accent-purple: #5b93c4;
+  --color-accent-purple-bg: rgba(91, 147, 196, 0.16);
+  --color-row-selected: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9));
+}
+
+.dark .instructor-shell {
+  /* dc.html:32-46, the dark branch of every pair above. */
+  --color-background: #0a0f16;
+  --color-surface: #0f1720;
+  --color-text: #e8eef5;
+  --color-text-muted: rgba(210, 225, 240, 0.6);
+  --color-text-subtle: rgba(210, 225, 240, 0.45);
+  --instructor-glass: rgba(120, 170, 220, 0.07);
+  --instructor-glass-strong: rgba(120, 170, 220, 0.1);
+  --color-border: rgba(120, 170, 220, 0.12);
+  --color-track: rgba(120, 170, 220, 0.13);
+  --color-surface-hover: rgba(120, 170, 220, 0.12);
+  --color-row-hover: rgba(120, 170, 220, 0.12);
+  --instructor-active-bg: linear-gradient(135deg, rgba(127, 179, 219, 0.3), rgba(168, 205, 232, 0.18));
+  --instructor-active-fg: #ffffff;
+  --admin-active-border: rgba(168, 205, 232, 0.4);
+  --admin-nav-hover: rgba(120, 170, 220, 0.12);
+  --color-cta-bg: linear-gradient(160deg, rgba(220, 238, 250, 0.94), rgba(180, 215, 235, 0.72));
+  --color-cta-fg: #0a1a26;
+  --color-cta-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+  --instructor-logo-bg: linear-gradient(135deg, #7fb3db, #1c3348);
+  --instructor-logo-fg: #ffffff;
+  --instructor-progress-fill: linear-gradient(90deg, #7fb3db, #9dcbef);
+  /* dc.html:40 */
+  --instructor-seg-bg: rgba(220, 238, 250, 0.9);
+  --instructor-seg-fg: #0a1a26;
+  --color-primary: #9dcbef;
+  --color-on-primary: #0a1a26;
+  --color-success: #8fdcb4;
+  --color-success-text: #8fdcb4;
+  --color-danger: #e89e92;
+  --color-scrim: rgba(0, 0, 0, 0.6);
+  --color-blob-1: rgba(127, 179, 219, 0.38);
+  --color-blob-2: rgba(90, 140, 190, 0.3);
+  --color-blob-3: rgba(150, 180, 150, 0.16);
+  --color-admin-cyan: #9dcbef;
+  --color-admin-teal: #8fdcb4;
+  --color-admin-slate: rgba(210, 225, 240, 0.45);
+  --color-admin-warn: #e8c97e;
+  --color-admin-negative: #e89e92;
+  --color-accent-blue: #9dcbef;
+  --color-accent-blue-bg: rgba(127, 179, 219, 0.2);
+  --color-accent-purple: #7fb3db;
+  --color-accent-purple-bg: rgba(127, 179, 219, 0.16);
+  --color-row-selected: linear-gradient(135deg, rgba(127, 179, 219, 0.3), rgba(168, 205, 232, 0.18));
+}
+
+/* Exact glass alpha from dc.html (:22, :34) instead of the generic color-mix formula — same reason
+   as the `.admin-shell` pair above: these are fixed constants, not derived from a solid surface. */
+.instructor-shell .glass-surface {
+  background: var(--instructor-glass-strong);
+}
+
+.instructor-shell .glass-card {
+  background: var(--instructor-glass);
+}
+
+/* The nav-active fill. NavLink paints it with `bg-[var(--color-primary)]`, which inside this scope
+   is the link blue, not the mockup's near-white --active-bg (dc.html:25) — so it is overridden
+   here rather than by bending --color-primary and breaking every "Xem tất cả" link. Scoped to
+   `nav` so Pagination's own aria-current="page" button is left alone. */
+.instructor-shell nav [aria-current="page"] {
+  background: var(--instructor-active-bg);
+  color: var(--instructor-active-fg);
+}
+
+/* Selected chip of every segmented control (SegmentedTabs, and both groups of ThemeLangSwitcher —
+   all of them mark the selection with aria-pressed). They paint it with
+   `bg-[var(--color-primary)]`, which in the Admin scope IS the near-white selected fill but here is
+   the link blue, so the mockup's white pill (dc.html:26) is restored by attribute instead. Same
+   reason and same shape as the nav rule above. */
+.instructor-shell [aria-pressed="true"] {
+  background: var(--instructor-seg-bg);
+  color: var(--instructor-seg-fg);
+}

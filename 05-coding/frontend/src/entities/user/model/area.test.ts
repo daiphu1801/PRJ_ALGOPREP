@@ -9,7 +9,9 @@ describe("ROLE_BY_AREA", () => {
 
 describe("HOME_PATH_BY_ROLE", () => {
   it("gives each role exactly one destination, and INSTRUCTOR/ADMIN land in their own area", () => {
-    expect(HOME_PATH_BY_ROLE.STUDENT).toBe("/progress");
+    // Moved from "/progress" by DEC-2026-0927-student-dashboard-home, which added
+    // 01-rd/screens/users/USR0601_dashboard.md and amended SHR0101_auth.md Q3.
+    expect(HOME_PATH_BY_ROLE.STUDENT).toBe("/dashboard");
     expect(HOME_PATH_BY_ROLE.INSTRUCTOR.startsWith("/instructor/")).toBe(true);
     // Pins the rule: ADMIN's destination must stay under /admin — if it ever points elsewhere,
     // the prefix-based middleware guard stops protecting that route.

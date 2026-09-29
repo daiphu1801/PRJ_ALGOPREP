@@ -80,7 +80,7 @@ Các màn còn lại: URL trùng tên slice. `problem_management`, `problem_auth
 
 ## Màn `auth`
 
-Một view duy nhất (`views/auth`), chuyển chế độ tại chỗ không rời URL theo
+Một view duy nhất (`views/shared/auth`), chuyển chế độ tại chỗ không rời URL theo
 `01-rd/screens/shared/SHR0101_auth.md` mục 3 điểm 3. `/login` và `/register` là hai route chỉ để
 deep-link, cùng render `AuthView` với `initialMode` khác nhau. `AuthMode` khai đủ 5 chế độ
 (`login` · `signup` · `forgot_email` · `forgot_otp` · `forgot_reset` — F1-17); ba chế độ

@@ -11,6 +11,7 @@
     "languageSwitcher": "Chọn ngôn ngữ giao diện"
   },
   "nav": {
+    "dashboard": "Tổng quan",
     "problems": "Bài toán",
     "submissions": "Bài nộp",
     "interviewBank": "Ngân hàng câu hỏi",
@@ -18,6 +19,13 @@
     "profile": "Hồ sơ",
     "settings": "Cài đặt",
     "login": "Đăng nhập",
+    "saved": "Bài đã lưu",
+    "logout": "Đăng xuất",
+    "accountMenu": "Mở menu tài khoản",
+    "closeMenu": "Đóng menu tài khoản",
+    "workspace": "Workspace",
+    "mockInterview": "Phỏng vấn giả lập",
+    "toggleNav": "Mở menu điều hướng",
     "area": {
       "student": "Khu vực người học",
       "instructor": "Khu vực giảng viên",
@@ -299,6 +307,20 @@
     "footerLinkJudgeStatus": "Trạng thái go-judge",
     "footerLinkChangelog": "Nhật ký thay đổi",
     "footerLinkSupport": "Hỗ trợ"
+  },
+  "instructorNav": {
+    "sidebarLabel": "Điều hướng khu giảng viên",
+    "areaEyebrow": "GIÁO VIÊN",
+    "toggleSidebar": "Thu gọn / mở rộng",
+    "collapseSidebar": "Thu gọn",
+    "groupMisc": "Khác",
+    "overview": "Tổng quan",
+    "classes": "Lớp của tôi",
+    "assignments": "Bài tập của tôi",
+    "grading": "Chấm bài",
+    "settings": "Cài đặt",
+    "profile": "Trang cá nhân",
+    "students": "Danh sách học viên"
   },
   "adminOverview": {
     "title": "Tổng quan",
@@ -1060,6 +1082,27 @@
       "minPublic": "Có ít nhất 2 testcase công khai",
       "solutionPasses": "Đáp án mẫu chạy đúng mọi testcase",
       "minExamples": "Có ít nhất 2 ví dụ mẫu"
+    },
+    "generateTitle": "Sinh testcase bằng AI",
+    "generateSubtitle": "AI viết script sinh dữ liệu, hệ thống chạy script rồi lấy kết quả từ đáp án mẫu. AI không nhìn thấy đáp án mẫu.",
+    "generateAction": "Sinh tự động",
+    "generateLockedTitle": "Chưa mở được tính năng",
+    "generateLockedBody": "Cần tối thiểu 2 testcase Sample tự viết và đáp án mẫu chạy Pass hết. Hiện có {samples} Sample tự viết.",
+    "coverageTitle": "Ma trận độ phủ",
+    "coverageSubtitle": "Số testcase đã duyệt trên tổng số, theo từng loại ca. Ô bằng 0 là loại ca còn thiếu.",
+    "draftsTitle": "Testcase nháp chờ duyệt",
+    "draftsSubtitle": "{count} testcase chưa duyệt. Chưa duyệt thì không tính vào điều kiện xuất bản và không dùng chấm bài.",
+    "draftsEmpty": "Không còn testcase nháp nào.",
+    "approveAction": "Duyệt",
+    "rejectAction": "Loại",
+    "category": {
+      "typical": "Ca thường",
+      "boundaryLow": "Biên dưới",
+      "boundaryHigh": "Biên trên",
+      "degenerate": "Suy biến",
+      "duplicate": "Trùng lặp",
+      "sorted": "Đã sắp xếp",
+      "extreme": "Giá trị cực trị"
     }
   },
   "submissionResult": {
@@ -1437,29 +1480,8 @@
         "menuDelete": "Xoá lớp"
       }
     },
-    "btnFilterClass": "Xem học viên",
-    "status": {
-      "insufficient_data": "Chưa đủ dữ liệu",
-      "absent": "Vắng bài",
-      "needs_support": "Cần hỗ trợ",
-      "watch": "Theo dõi",
-      "on_track": "Đang tốt"
-    },
-    "studentList": {
-      "title": "Danh sách học viên",
-      "col": {
-        "studentName": "Học viên",
-        "className": "Lớp",
-        "avgScore": "Điểm TB",
-        "completion": "Hoàn thành",
-        "status": "Trạng thái",
-        "lastActive": "Hoạt động"
-      }
-    },
-    "btnRemoveStudent": "Gỡ khỏi lớp",
     "filterAll": "Tất cả",
     "cancel": "Huỷ",
-    "emptyStudents": "Chưa có học viên nào khớp bộ lọc",
     "popup": {
       "createClassTitle": "Tạo lớp mới",
       "editClassTitle": "Sửa thông tin lớp",
@@ -1474,7 +1496,8 @@
       "removeStudentTitle": "Gỡ {name} khỏi lớp?",
       "removeStudentBody": "Thao tác này sẽ xoá luôn lịch sử làm bài của học viên trong phạm vi lớp này.",
       "removeStudentConfirm": "Gỡ học viên"
-    }
+    },
+    "btnViewStudents": "Xem học viên"
   },
   "classAssignments": {
     "header": {
@@ -1522,8 +1545,8 @@
   },
   "classProgress": {
     "header": {
-      "title": "Tiến độ học viên",
-      "subtitle": "Theo dõi điểm số, hoàn thành và mức độ hoạt động"
+      "title": "Danh sách học viên",
+      "subtitle": "Điểm số, mức hoàn thành, chuỗi ngày và trạng thái của học viên trong các lớp bạn phụ trách"
     },
     "scoreTrend": {
       "title": "Điểm trung bình theo lớp",
@@ -1551,14 +1574,22 @@
         "completion": "Hoàn thành",
         "streak": "Chuỗi ngày",
         "trend": "Xu hướng",
-        "lastActive": "Hoạt động"
+        "lastActive": "Hoạt động",
+        "status": "Trạng thái"
       }
     },
     "filterAll": "Tất cả",
     "previous": "Trước",
     "next": "Sau",
     "pageSummary": "Trang {page} / {total}",
-    "empty": "Chưa có dữ liệu"
+    "empty": "Chưa có dữ liệu",
+    "btnRemoveStudent": "Gỡ khỏi lớp",
+    "cancel": "Huỷ",
+    "popup": {
+      "removeStudentTitle": "Gỡ {name} khỏi lớp?",
+      "removeStudentBody": "Học viên sẽ không còn thấy bài tập của lớp. Bài đã nộp vẫn được giữ lại.",
+      "removeStudentConfirm": "Gỡ khỏi lớp"
+    }
   },
   "classStudentDetail": {
     "loading": "Đang tải…",
@@ -1655,14 +1686,15 @@
       "classCountMeta": "{count} học viên",
       "studentCount": "Tổng học viên",
       "pendingGrading": "Cần chấm tay",
-      "avgScore": "Điểm TB lớp"
+      "avgScore": "Điểm TB lớp",
+      "avgScoreMeta": "So với tuần trước"
     },
     "grading": {
       "title": "Cần chấm tay",
       "subtitle": "Bài nộp AI chấm điểm thấp",
       "linkViewAll": "Xem tất cả",
       "col": {
-        "meta": "AI chấm {score}/10 · nộp {time} trước"
+        "meta": "AI chấm {score}/10 · nộp {time}"
       }
     },
     "activity": {
@@ -1891,6 +1923,109 @@
         "PUSHBACK_HANDLING": "Khả năng phản biện",
         "COMPLEXITY_AWARENESS": "Nhận thức độ phức tạp"
       }
+    }
+  },
+  "dashboard": {
+    "title": "Tổng quan",
+    "seeAll": "Tất cả",
+    "retry": "Thử lại",
+    "filterAll": "Tất cả",
+    "emptyGeneric": "Chưa có dữ liệu",
+    "errorGeneric": "Không tải được khối này",
+    "errorAi": "Phân hệ AI đang không phản hồi — các khối còn lại vẫn hoạt động",
+    "difficulty": {
+      "easy": "Dễ",
+      "medium": "Trung bình",
+      "hard": "Khó"
+    },
+    "solveState": {
+      "solved": "Đã giải",
+      "attempted": "Đang làm",
+      "todo": "Chưa làm"
+    },
+    "greeting": {
+      "title": "Chào bạn, tiếp tục nhé",
+      "weakestTopic": "Điểm yếu tuần này: {topic} — năng lực {rate}/100, thấp nhất trong {count} chủ đề.",
+      "noData": "Chưa có dữ liệu luyện tập — giải bài đầu tiên để thấy điểm mạnh yếu của bạn.",
+      "btnResume": "Tiếp tục bài đang làm",
+      "btnStart": "Bắt đầu giải bài"
+    },
+    "stats": {
+      "solved": "Đã giải",
+      "solvedMeta": "trên tổng {total} bài đã phát hành",
+      "acRate": "Acceptance rate",
+      "acRateMeta": "{submissions} bài nộp · {accepted} Accepted",
+      "acRateEmpty": "Chưa có bài nộp nào",
+      "streak": "Chuỗi ngày",
+      "streakUnit": "ngày",
+      "streakMeta": "Trung bình {avg} lần nộp mỗi bài đã giải",
+      "interview": "Mock Interview",
+      "interviewUnit": "phiên",
+      "interviewMeta": "Rubric trung bình {score} / 5",
+      "interviewNoScore": "Chưa có phiên nào được chấm rubric",
+      "interviewEmpty": "Chưa có phiên phỏng vấn nào",
+      "regionLabel": "Chỉ số {metric}"
+    },
+    "daily": {
+      "title": "Bài nộp theo ngày",
+      "totalLabel": "lượt nộp · trung bình {average} bài/ngày",
+      "empty": "Chưa có bài nộp nào trong khoảng này"
+    },
+    "radar": {
+      "title": "Năng lực theo chủ đề",
+      "subtitle": "Thang điểm 0-100, tính từ tỉ lệ AC và phần bài đã giải của chủ đề",
+      "empty": "Cần ít nhất 3 chủ đề có dữ liệu để vẽ biểu đồ"
+    },
+    "activity": {
+      "title": "Hoạt động 12 tháng",
+      "summary": "{days} ngày có bài nộp trong 12 tháng qua",
+      "less": "Ít",
+      "more": "Nhiều",
+      "tooltip": "{day}: {count} bài nộp",
+      "tooltipNone": "{day}: không có bài nộp",
+      "empty": "Chưa có hoạt động nào trong 12 tháng qua"
+    },
+    "suggested": {
+      "title": "Bài toán gợi ý",
+      "count": "{count} bài",
+      "difficultyLabel": "Lọc theo độ khó",
+      "topicLabel": "Lọc theo chủ đề",
+      "colProblem": "Bài toán",
+      "colTopic": "Chủ đề",
+      "colDifficulty": "Độ khó",
+      "colAcRate": "AC rate",
+      "tagFunction": "function",
+      "empty": "Không có bài nào khớp bộ lọc"
+    },
+    "topics": {
+      "title": "Tiến độ theo chủ đề",
+      "barLabel": "Tiến độ chủ đề {topic}",
+      "empty": "Chưa có chủ đề nào được theo dõi"
+    },
+    "interviews": {
+      "title": "Mock Interview",
+      "session": "Phiên ngày {date}",
+      "empty": "Chưa có phiên phỏng vấn nào"
+    },
+    "reviews": {
+      "title": "Solution Review",
+      "empty": "Chưa có báo cáo phân tích nào",
+      "verdict": {
+        "optimal": "Đã tối ưu",
+        "improvable": "Còn cải thiện được",
+        "suboptimal": "Chưa tối ưu"
+      }
+    },
+    "rangeLabel": "Chọn khoảng thời gian",
+    "range7d": "7 ngày",
+    "range30d": "30 ngày",
+    "rangeAll": "Tất cả"
+  },
+  "studentShell": {
+    "footer": {
+      "copyright": "© 2026 AlgoPrep — đồ án tốt nghiệp",
+      "clusterStatus": "go-judge cluster hoạt động",
+      "version": "v0.4.2"
     }
   }
 }

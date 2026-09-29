@@ -1,4 +1,4 @@
-import { AuthView } from "@/views/auth";
+import { AuthView } from "@/views/shared/auth";
 
 export default function RegisterPage() {
   return <AuthView initialMode="signup" />;

@@ -1,4 +1,4 @@
-import { AdminAiUsageView } from "@/views/admin-ai-usage";
+import { AdminAiUsageView } from "@/views/admin/ai-usage";
 
 export default function Page() {
   return <AdminAiUsageView />;
