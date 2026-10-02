@@ -15,7 +15,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { Pencil, Search, Tags, Trash2 } from "lucide-react";
 import {
   fetchAdminProblemPage,
   type AdminProblem,
@@ -23,17 +23,27 @@ import {
   type ProblemSortKey,
   type ProblemStatus,
 } from "../api";
+import {
+  addProblemTopic,
+  problemTopicLabel,
+  removeProblemTopic,
+  renameProblemTopic,
+  useProblemTopics,
+} from "@/entities/problem";
 import { useT } from "@/shared/i18n";
+import { usePersistedPageSize } from "@/shared/lib";
 import {
   Badge,
   Button,
   Card,
   ConfirmDialog,
   DataTable,
+  IconAction,
+  ManagedListDialog,
   PageHeader,
   Pagination,
+  ProgressBar,
   SegmentedTabs,
-  StatCard,
   TextField,
   type BadgeVariant,
   type DataTableColumn,
@@ -50,14 +60,23 @@ const STATUS_COLOR_VAR: Record<ProblemStatus, string> = {
   draft: "--color-admin-warn",
 };
 
-const PAGE_SIZE = 8;
+// 8 is the default, 20 and 50 the other choices (SHR0201 Q4).
+const PAGE_SIZES = [8, 20, 50] as const;
 
 type DifficultyFilter = Difficulty | "all";
 type StatusFilter = ProblemStatus | "all";
 
-export function ProblemManagementView() {
+type Props = {
+  /** Topic management is ADMIN-only; the screen is shared with INSTRUCTOR, who may only pick topics. */
+  canManageTopics?: boolean;
+};
+
+export function ProblemManagementView({ canManageTopics = false }: Props) {
   const t = useT("problemManagement");
   const [page] = useState(fetchAdminProblemPage);
+  const topicList = useProblemTopics();
+  const [pageSize, setPageSize] = usePersistedPageSize("algoprep-problems-page-size", PAGE_SIZES, 8);
+  const [managingTopics, setManagingTopics] = useState(false);
   const [query, setQuery] = useState("");
   const [difficulty, setDifficulty] = useState<DifficultyFilter>("all");
   const [status, setStatus] = useState<StatusFilter>("all");
@@ -108,7 +127,17 @@ export function ProblemManagementView() {
     });
   }, [page.problems, deletedCodes, query, difficulty, status, sort]);
 
-  const visible = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+  // Rows still on screen (not locally deleted) per topic, so the manager can refuse deleting a topic
+  // that is in use.
+  const topicUsage = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const problem of page.problems) {
+      if (!deletedCodes.has(problem.code)) counts[problem.topic] = (counts[problem.topic] ?? 0) + 1;
+    }
+    return counts;
+  }, [page.problems, deletedCodes]);
+
+  const visible = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   function toggleRow(code: string) {
     setSelected((previous) => {
@@ -148,7 +177,7 @@ export function ProblemManagementView() {
       sortable: true,
       render: (problem) => (
         <span className="block truncate text-[12.5px] text-[var(--color-text-muted)]">
-          {problem.topic}
+          {problemTopicLabel(topicList, problem.topic)}
         </span>
       ),
     },
@@ -219,32 +248,23 @@ export function ProblemManagementView() {
     {
       key: "actions",
       header: "",
-      width: "64px",
+      width: "88px",
       align: "right",
       render: (problem) => (
         <span className="flex justify-end gap-1">
-          <Button
-            asChild
-            variant="ghost"
-            size="sm"
-            className="border border-[var(--color-border)] px-2"
-          >
-            <Link
-              href={`/admin/problems/${problem.code.replace("#", "")}`}
-              aria-label={t("editProblem", { title: problem.title })}
-            >
-              {t("edit")}
-            </Link>
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            aria-label={t("deleteProblem", { title: problem.title })}
+          <IconAction
+            icon={Pencil}
+            label={t("edit")}
+            ariaLabel={t("editProblem", { title: problem.title })}
+            href={`/admin/problems/${problem.code.replace("#", "")}`}
+          />
+          <IconAction
+            icon={Trash2}
+            label={t("delete")}
+            ariaLabel={t("deleteProblem", { title: problem.title })}
+            tone="danger"
             onClick={() => setPendingDelete(problem)}
-            className="border border-[var(--color-border)] px-2 text-[var(--color-admin-negative)]"
-          >
-            {t("delete")}
-          </Button>
+          />
         </span>
       ),
     },
@@ -259,23 +279,24 @@ export function ProblemManagementView() {
           published: page.publishedCount,
         })}
         actions={
-          <Button asChild variant="cta" size="sm">
-            <Link href="/admin/problems/new">{t("newProblem")}</Link>
-          </Button>
+          <>
+            {canManageTopics ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="gap-1.5 border border-[var(--color-border)]"
+                onClick={() => setManagingTopics(true)}
+              >
+                <Tags aria-hidden="true" className="h-4 w-4" />
+                {t("manageTopics")}
+              </Button>
+            ) : null}
+            <Button asChild variant="cta" size="sm">
+              <Link href="/admin/problems/new">{t("newProblem")}</Link>
+            </Button>
+          </>
         }
       />
-
-      <div className="mb-4 grid gap-3.5 [grid-template-columns:repeat(auto-fit,minmax(200px,1fr))]">
-        {page.stats.map((stat) => (
-          <StatCard
-            key={stat.key}
-            label={t(`stat.${stat.key}.label`)}
-            value={stat.value}
-            delta={<span style={{ color: `var(${stat.deltaColorVar})` }}>{stat.delta}</span>}
-            meta={t(`stat.${stat.key}.meta`)}
-          />
-        ))}
-      </div>
 
       <Card className="min-w-0 px-[18px] py-4">
         <div className="mb-3.5 flex flex-wrap items-center gap-2.5">
@@ -381,12 +402,18 @@ export function ProblemManagementView() {
 
         <Pagination
           page={currentPage}
-          pageSize={PAGE_SIZE}
+          pageSize={pageSize}
+          pageSizeOptions={PAGE_SIZES}
+          pageSizeLabel={t("pageSizeLabel")}
+          onPageSizeChange={(size) => {
+            setPageSize(size);
+            setCurrentPage(1);
+          }}
           total={filtered.length}
           onPageChange={setCurrentPage}
           summary={t("pageLabel", {
             page: currentPage,
-            totalPages: Math.max(1, Math.ceil(filtered.length / PAGE_SIZE)),
+            totalPages: Math.max(1, Math.ceil(filtered.length / pageSize)),
             shown: visible.length,
           })}
           previousLabel={t("previous")}
@@ -395,6 +422,98 @@ export function ProblemManagementView() {
           pageLabel={(value) => t("goToPage", { page: value })}
         />
       </Card>
+
+      <div className="mt-4 grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(320px,1fr))]">
+        <Card
+          title={t("topicDist.title")}
+          description={t("topicDist.subtitle", {
+            total: page.problems.length,
+            topics: page.topicDistribution.length,
+          })}
+        >
+          <ul className="flex flex-col gap-3.5">
+            {page.topicDistribution.map((item) => (
+              <li key={item.topicName}>
+                <div className="mb-1.5 flex items-center justify-between gap-2.5">
+                  <span className="text-[13px] font-semibold">
+                    {problemTopicLabel(topicList, item.topicName)}
+                  </span>
+                  <span className="font-mono text-[12.5px] text-[var(--color-text-muted)]">
+                    {item.count} · {item.percent}%
+                  </span>
+                </div>
+                <ProgressBar value={item.percent} label={problemTopicLabel(topicList, item.topicName)} height={7} />
+              </li>
+            ))}
+          </ul>
+        </Card>
+
+        <Card
+          title={t("attention.title")}
+          action={
+            <span className="text-[12.5px] text-[var(--color-text-subtle)]">
+              {t("attention.tag")}
+            </span>
+          }
+        >
+          <ul className="flex flex-col gap-2.5">
+            {page.attention
+              .filter((item) => item.count > 0)
+              .map((item) => (
+              <li
+                key={item.ruleCode}
+                className="glass-surface flex items-center gap-3 rounded-2xl border border-[var(--color-border)] px-3.5 py-2.5"
+              >
+                <div className="min-w-0 flex-1">
+                  <div className="text-[13.5px] font-semibold">
+                    {t(`attention.rule.${item.ruleCode}.title`)}
+                  </div>
+                  <div className="text-xs text-[var(--color-text-subtle)]">
+                    {t(`attention.rule.${item.ruleCode}.meta`)}
+                  </div>
+                </div>
+                <span
+                  className="font-mono text-[13px] font-semibold"
+                  style={{
+                    color:
+                      item.count === 0
+                        ? "var(--color-text-muted)"
+                        : item.ruleCode === "noTestcase"
+                          ? "var(--color-admin-negative)"
+                          : "var(--color-admin-warn)",
+                  }}
+                >
+                  {item.count}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      </div>
+
+      <ManagedListDialog
+        open={managingTopics}
+        onClose={() => setManagingTopics(false)}
+        items={topicList}
+        usage={topicUsage}
+        onAdd={addProblemTopic}
+        onRename={renameProblemTopic}
+        onRemove={removeProblemTopic}
+        labels={{
+          title: t("topicManager.title"),
+          hint: t("topicManager.hint"),
+          nameLabel: t("topicManager.nameLabel"),
+          newLabel: t("topicManager.newLabel"),
+          newPlaceholder: t("topicManager.newPlaceholder"),
+          add: t("topicManager.add"),
+          save: t("topicManager.save"),
+          delete: t("delete"),
+          close: t("topicManager.close"),
+          usage: (count) => t("topicManager.usage", { count }),
+          deleteBlocked: (count) => t("topicManager.deleteBlocked", { count }),
+          error: { empty: t("topicManager.error.empty"), duplicate: t("topicManager.error.duplicate") },
+        }}
+      />
 
       <ConfirmDialog
         open={pendingDelete !== null}

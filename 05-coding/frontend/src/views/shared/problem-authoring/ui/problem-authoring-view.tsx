@@ -21,6 +21,8 @@ import {
   AI_GUARD_KEYS,
   TESTCASE_CATEGORIES,
   fetchProblemDraft,
+  problemTopicLabel,
+  useProblemTopics,
   type AiGuardKey,
   type ProblemDraft,
   type ProblemLimits,
@@ -36,6 +38,7 @@ import {
   NoticeTile,
   PageHeader,
   SegmentedTabs,
+  SelectField,
   SettingRow,
   TextArea,
   TextField,
@@ -55,6 +58,7 @@ const LIMIT_KEYS: (keyof ProblemLimits)[] = [
 export function ProblemAuthoringView() {
   const t = useT("problemAuthoring");
   const [draft, setDraft] = useState<ProblemDraft>(fetchProblemDraft);
+  const topicList = useProblemTopics();
   const [tab, setTab] = useState<TabKey>("content");
 
   function patch(changes: Partial<ProblemDraft>) {
@@ -152,7 +156,7 @@ export function ProblemAuthoringView() {
     <div>
       <PageHeader
         title={draft.title}
-        description={t("subtitle", { topic: draft.topic })}
+        description={t("subtitle", { topic: problemTopicLabel(topicList, draft.topic) })}
         actions={
           <>
             <Button asChild variant="ghost" size="sm" className="border border-[var(--color-border)]">
@@ -389,10 +393,11 @@ export function ProblemAuthoringView() {
         <div className="flex flex-col gap-3.5 xl:sticky xl:top-[92px]">
           <Card title={t("propertiesTitle")}>
             <div className="flex flex-col gap-3.5">
-              <TextField
+              <SelectField
                 label={t("topicLabel")}
                 value={draft.topic}
                 onChange={(event) => patch({ topic: event.target.value })}
+                options={topicList.map((topic) => ({ value: topic.key, label: topic.label }))}
               />
               <div>
                 <p className="mb-1.5 text-[11px] font-semibold tracking-[0.07em] text-[var(--color-text-subtle)] uppercase">

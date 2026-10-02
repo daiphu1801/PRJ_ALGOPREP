@@ -2,3 +2,4 @@
 export { useAuthFlow, LOADING_STEP_COUNT } from "./model/use-auth-flow";
 export { AuthForm } from "./ui/auth-form";
 export { AuthLoadingOverlay } from "./ui/auth-loading-overlay";
+export { DevQuickLogin } from "./ui/dev-quick-login";

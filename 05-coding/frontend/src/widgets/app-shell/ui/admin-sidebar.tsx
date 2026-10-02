@@ -9,7 +9,7 @@ import { cn } from "@/shared/lib";
 import { ADMIN_NAV_GROUPS, ADMIN_NAV_MISC, ADMIN_NAV_OVERVIEW } from "../model/admin-nav";
 
 /**
- * Layout matches 09-layoutBase/Admin - Tổng quan.dc.html:57-101 1:1 (02-bd/screens/admin/admin_overview.md
+ * Layout matches 09-layoutBase/Admin - Tổng quan.dc.html:57-101 1:1 (02-bd/screens/admin/ADM0101_overview.md
  * section 2 point 1): logo + collapse toggle live INSIDE the sidebar (not the toolbar), and the
  * theme switcher sits at the sidebar's footer — the static prototype has no toolbar branding at
  * all. Clicking a group header only expands/collapses it — it does NOT navigate and does NOT leave
@@ -79,7 +79,9 @@ export function AdminSidebar() {
     <nav
       aria-label={t("sidebarLabel")}
       className={cn(
-        "glass-surface flex shrink-0 flex-col gap-3 overflow-x-hidden overflow-y-auto border-r border-[var(--color-border)] p-3 transition-[width]",
+        // Pinned to the viewport (same fix as InstructorSidebar): without sticky + h-screen the nav is a
+        // tall flex child and scrolls away with a long table. `self-start` lets sticky work in the row.
+        "glass-surface sticky top-0 flex h-screen shrink-0 flex-col gap-3 self-start overflow-x-hidden overflow-y-auto border-r border-[var(--color-border)] p-3 transition-[width]",
         effectiveCollapsed ? "w-[72px]" : "w-56",
       )}
     >

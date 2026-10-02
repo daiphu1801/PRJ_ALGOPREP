@@ -3,13 +3,14 @@
 
 import { useT } from "@/shared/i18n";
 import { DashboardBlockState, StatCardWithSparkline } from "@/shared/ui";
-import { useActiveUsersSummary, useSubmissionsSummary } from "../../api";
+import { useActiveUsersSummary, usePasswordResetsSummary, useSubmissionsSummary } from "../../api";
 
-// Row 1, left column: two vertical stat cards (02-bd/screens/admin/admin_overview.md section 2 point 3).
+// Row 1, left column: three vertical stat cards (the third was added 2026-10-01, see usePasswordResetsSummary) (02-bd/screens/admin/ADM0101_overview.md section 2 point 3).
 export function StatCardsRow() {
   const t = useT("adminOverview");
   const submissions = useSubmissionsSummary();
   const activeUsers = useActiveUsersSummary();
+  const passwordResets = usePasswordResetsSummary();
 
   return (
     <div className="flex flex-col gap-3">
@@ -56,6 +57,29 @@ export function StatCardsRow() {
             deltaDirection={activeUsers.data.deltaDirection}
             sparklineSeries={activeUsers.data.sparklineSeries}
             accentColorVar="--color-admin-teal"
+          />
+        )}
+      </DashboardBlockState>
+      <DashboardBlockState
+        title={t("blocks.passwordResetsSummary")}
+        isLoading={passwordResets.isLoading}
+        isError={passwordResets.isError}
+        isEmpty={false}
+        onRetry={() => passwordResets.refetch()}
+        emptyMessage={t("emptyGeneric")}
+        errorMessage={t("errorGeneric")}
+        retryLabel={t("retry")}
+        minHeightClassName="min-h-[80px]"
+        hideTitle
+      >
+        {passwordResets.data && (
+          <StatCardWithSparkline
+            label={t("blocks.passwordResetsSummary")}
+            value={passwordResets.data.value.toLocaleString("vi-VN")}
+            deltaPercent={passwordResets.data.deltaPercent}
+            deltaDirection={passwordResets.data.deltaDirection}
+            sparklineSeries={passwordResets.data.sparklineSeries}
+            accentColorVar="--color-admin-warn"
           />
         )}
       </DashboardBlockState>

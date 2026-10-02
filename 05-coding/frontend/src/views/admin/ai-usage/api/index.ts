@@ -2,7 +2,6 @@ export {
   AI_FEATURES,
   type AiFeature,
   type AiUsagePage,
-  type AiUsageStat,
   type DailyUsage,
   type FeatureShare,
   type TopProblem,

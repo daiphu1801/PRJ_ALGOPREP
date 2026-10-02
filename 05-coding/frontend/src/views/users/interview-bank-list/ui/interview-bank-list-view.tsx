@@ -14,7 +14,8 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Search } from "lucide-react";
 import {
-  QUESTION_TOPICS,
+  topicLabel,
+  useInterviewTopics,
   fetchInterviewQuestionPage,
   useRecallAndBookmarkState,
   InterviewQuestionListRow,
@@ -51,6 +52,7 @@ function drillPriority(recall: RecallLevel | null): number {
 export function InterviewBankListView() {
   const t = useT("interviewBankList");
   const [page] = useState(fetchInterviewQuestionPage);
+  const topicList = useInterviewTopics();
   const { recall, bookmarks, rate, toggleBookmark } = useRecallAndBookmarkState(page.questions);
 
   const [query, setQuery] = useState("");
@@ -141,7 +143,7 @@ export function InterviewBankListView() {
         <Card>
           <div className="mb-4 flex items-center gap-2">
             <span className="text-[10.5px] font-semibold tracking-[0.06em] text-[var(--color-text-subtle)] uppercase">
-              {t(`topic.${card.topic}`)}
+              {topicLabel(topicList, card.topic)}
             </span>
             <span className="text-[11.5px] font-semibold text-[var(--color-text-muted)]">
               {t(`level.${card.level}`)}
@@ -244,7 +246,7 @@ export function InterviewBankListView() {
                 onValueChange={setTopic}
                 options={[
                   { value: "all" as const, label: t("filterAll") },
-                  ...QUESTION_TOPICS.map((key) => ({ value: key, label: t(`topic.${key}`) })),
+                  ...topicList.map((item) => ({ value: item.key, label: item.label })),
                 ]}
               />
             </div>
@@ -257,7 +259,7 @@ export function InterviewBankListView() {
                 <InterviewQuestionListRow
                   key={question.code}
                   question={question}
-                  topicLabel={t(`topic.${question.topic}`)}
+                  topicLabel={topicLabel(topicList, question.topic)}
                   levelLabel={t(`level.${question.level}`)}
                   recallLabel={recallBadgeLabel(recall[question.code] ?? null)}
                   recall={recall[question.code] ?? null}
@@ -276,7 +278,7 @@ export function InterviewBankListView() {
           {selected ? (
             <>
               <div className="mb-3 flex items-center gap-2">
-                <Badge variant="neutral">{t(`topic.${selected.topic}`)}</Badge>
+                <Badge variant="neutral">{topicLabel(topicList, selected.topic)}</Badge>
                 <span className="text-[11.5px] font-semibold text-[var(--color-text-muted)]">
                   {t(`level.${selected.level}`)}
                 </span>

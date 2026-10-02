@@ -27,17 +27,18 @@ import {
   type WorkerStatus,
 } from "../api";
 import { useT } from "@/shared/i18n";
+import { queueSettings } from "../model/settings";
 import {
   Badge,
   Button,
   Card,
   DataTable,
   PageHeader,
+  ParamsDialog,
   ProgressBar,
   RankedProgressList,
   SegmentedTabs,
   SettingRow,
-  StatCard,
   Toggle,
   type BadgeVariant,
   type DataTableColumn,
@@ -79,6 +80,8 @@ export function AdminQueueMonitorView() {
   const t = useT("adminQueueMonitor");
   const [page] = useState(fetchQueuePage);
   const [controls, setControls] = useState<ClusterControls>(page.controls);
+  const settings = queueSettings.use();
+  const [editingParams, setEditingParams] = useState(false);
   const [filter, setFilter] = useState<JobFilter>("all");
   const [sort, setSort] = useState<{ key: SortKey; direction: "asc" | "desc" }>({
     key: "wait",
@@ -152,7 +155,6 @@ export function AdminQueueMonitorView() {
   const controlRows: { key: keyof ClusterControls }[] = [
     { key: "paused" },
     { key: "autoscale" },
-    { key: "highPriorityFirst" },
   ];
 
   return (
@@ -161,23 +163,21 @@ export function AdminQueueMonitorView() {
         title={t("title")}
         description={t("subtitle")}
         actions={
-          <Button variant="cta" size="sm">
-            {t("refresh")}
-          </Button>
+          <>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="border border-[var(--color-border)]"
+              onClick={() => setEditingParams(true)}
+            >
+              {t("params.open")}
+            </Button>
+            <Button variant="cta" size="sm">
+              {t("refresh")}
+            </Button>
+          </>
         }
       />
-
-      <div className="mb-4 grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(210px,1fr))]">
-        {page.kpis.map((kpi) => (
-          <StatCard
-            key={kpi.key}
-            label={t(`kpi.${kpi.key}.label`)}
-            value={kpi.value}
-            meta={t(`kpi.${kpi.key}.meta`)}
-            valueColorVar={kpi.colorVar}
-          />
-        ))}
-      </div>
 
       <div className="mb-4 grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(280px,1fr)]">
         <Card
@@ -224,7 +224,7 @@ export function AdminQueueMonitorView() {
                 <SettingRow
                   key={key}
                   label={t(`control.${key}.label`)}
-                  description={t(`control.${key}.meta`)}
+                  description={t(`control.${key}.meta`, { threshold: settings.autoscaleThreshold })}
                 >
                   <Toggle
                     checked={controls[key]}
@@ -252,6 +252,33 @@ export function AdminQueueMonitorView() {
           </Card>
         </div>
       </div>
+
+      <ParamsDialog
+        open={editingParams}
+        onClose={() => setEditingParams(false)}
+        title={t("params.title")}
+        values={{
+          autoscaleThreshold: String(settings.autoscaleThreshold),
+          jobsPerPage: String(settings.jobsPerPage),
+          errorRetentionHours: String(settings.errorRetentionHours),
+          latencyCapSeconds: String(settings.latencyCapSeconds),
+        }}
+        fields={[
+          { type: "number", key: "autoscaleThreshold", label: t("params.autoscaleThreshold"), hint: t("params.autoscaleThresholdHint"), unit: t("params.unitJobs"), min: 1 },
+          { type: "number", key: "jobsPerPage", label: t("params.jobsPerPage"), unit: t("params.unitRows"), min: 1 },
+          { type: "number", key: "errorRetentionHours", label: t("params.errorRetention"), unit: t("params.unitHours"), min: 1 },
+          { type: "number", key: "latencyCapSeconds", label: t("params.latencyCap"), unit: t("params.unitSeconds"), min: 1 },
+        ]}
+        onSave={(values) =>
+          queueSettings.set({
+            autoscaleThreshold: Number(values.autoscaleThreshold),
+            jobsPerPage: Number(values.jobsPerPage),
+            errorRetentionHours: Number(values.errorRetentionHours),
+            latencyCapSeconds: Number(values.latencyCapSeconds),
+          })
+        }
+        labels={{ save: t("params.save"), cancel: t("params.cancel"), errorMin: (min) => t("params.errorMin", { min }) }}
+      />
 
       <Card
         title={t("jobsTitle")}

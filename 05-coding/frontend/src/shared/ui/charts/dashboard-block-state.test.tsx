@@ -4,7 +4,7 @@ import { render, screen } from "@testing-library/react";
 import { DashboardBlockState } from "./dashboard-block-state";
 
 // Each of the 9 admin_overview blocks manages its own loading/empty/error state independently
-// (02-bd/screens/admin/admin_overview.md section 4) — this pins the 4-way branch that makes that
+// (02-bd/screens/admin/ADM0101_overview.md section 4) — this pins the 4-way branch that makes that
 // true, so a future edit can't quietly collapse it back to a single screen-level state.
 describe("DashboardBlockState", () => {
   const baseProps = {

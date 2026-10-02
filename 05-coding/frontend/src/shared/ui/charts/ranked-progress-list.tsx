@@ -2,7 +2,7 @@
 //
 // List with a proportional bar per item. Two shapes now use it:
 // - admin_overview "Bài phổ biến nhất": numbered, one accent, a "Xem tất cả" link
-//   (02-bd/screens/admin/admin_overview.md section 2 point 5 — the ONLY block with such a link).
+//   (02-bd/screens/admin/ADM0101_overview.md section 2 point 5 — the ONLY block with such a link).
 // - admin_system_log "Phân loại hành động · 7 ngày": unnumbered, one colour per category, a plain
 //   footnote instead of a link (09-layoutBase/Admin - Nhật ký hệ thống.dc.html:233-246).
 //

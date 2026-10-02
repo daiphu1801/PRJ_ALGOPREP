@@ -29,6 +29,11 @@ type PaginationProps = {
   showPageNumbers?: boolean;
   /** Accessible label for one page button, e.g. `Trang ${n}`. Required with showPageNumbers. */
   pageLabel?: (page: number) => string;
+  /** Rows-per-page choices; with `onPageSizeChange` renders a picker before the arrows. */
+  pageSizeOptions?: readonly number[];
+  onPageSizeChange?: (size: number) => void;
+  /** Accessible name of the picker, e.g. "Số dòng mỗi trang". */
+  pageSizeLabel?: string;
   className?: string;
 };
 
@@ -42,6 +47,9 @@ export function Pagination({
   nextLabel,
   showPageNumbers = false,
   pageLabel,
+  pageSizeOptions,
+  onPageSizeChange,
+  pageSizeLabel,
   className,
 }: PaginationProps) {
   const lastPage = Math.max(1, Math.ceil(total / pageSize));
@@ -59,6 +67,20 @@ export function Pagination({
     >
       <span className="text-[var(--color-text-muted)]">{summary}</span>
       <span className="flex items-center gap-1.5">
+        {pageSizeOptions && onPageSizeChange ? (
+          <select
+            aria-label={pageSizeLabel}
+            value={pageSize}
+            onChange={(event) => onPageSizeChange(Number(event.target.value))}
+            className="mr-1.5 h-8 rounded-md border border-[var(--color-border)] bg-transparent px-2 font-mono text-[12.5px]"
+          >
+            {pageSizeOptions.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        ) : null}
         <Button
           variant="ghost"
           size="sm"

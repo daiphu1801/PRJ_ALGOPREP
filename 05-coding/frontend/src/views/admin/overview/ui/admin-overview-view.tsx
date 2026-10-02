@@ -1,6 +1,6 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 //
-// Full layout per 02-bd/screens/admin/admin_overview.md section 2: 3 grid rows, 9 independently
+// Full layout per 02-bd/screens/admin/ADM0101_overview.md section 2: 3 grid rows, 9 independently
 // stateful data blocks. The sidebar/toolbar shell itself lives in widgets/app-shell (extended for
 // area="admin", see the impact note in 06-plan/reports/ for this run) because BD section 2 point 1
 // says the shell is shared across all 11 Admin nav destinations, not specific to this screen.
@@ -26,7 +26,7 @@ export async function AdminOverviewView() {
     <div className="flex flex-col gap-3">
       <h1 className="sr-only">{t("title")}</h1>
 
-      {/* Row 1: 1fr 1.25fr 1fr (02-bd/screens/admin/admin_overview.md section 2 point 3) */}
+      {/* Row 1: 1fr 1.25fr 1fr (02-bd/screens/admin/ADM0101_overview.md section 2 point 3) */}
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-[1fr_1.25fr_1fr]">
         <StatCardsRow />
         <SubmissionsByLanguageBlock />

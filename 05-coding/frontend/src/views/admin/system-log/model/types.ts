@@ -25,15 +25,6 @@ export type AuditEvent = {
   actor: string;
 };
 
-export type AuditStat = {
-  key: string;
-  value: number;
-  /** Change against the previous window, already signed. */
-  delta: string;
-  /** CSS custom-property name colouring the figure. */
-  colorVar?: string;
-};
-
 export type ActiveAdmin = {
   name: string;
   /** Role plus action count, e.g. "Quản trị viên · 28 hành động". */
@@ -46,7 +37,6 @@ export type ActiveAdmin = {
 export type CategoryCount = { category: AuditCategory; count: number };
 
 export type AuditLogPage = {
-  stats: AuditStat[];
   events: AuditEvent[];
   activeAdmins: ActiveAdmin[];
   breakdown: CategoryCount[];

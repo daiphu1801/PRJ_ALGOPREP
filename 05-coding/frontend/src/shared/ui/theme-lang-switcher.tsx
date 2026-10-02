@@ -34,7 +34,7 @@ const THEME_OPTIONS = [
  * switcher. Domain-agnostic — takes no business type — so it lives in shared/ui per
  * 01-rd/system/SYS0102_frontend_architecture.md section 2.A-B, and is reused by both the `auth` screen
  * (fixed corner widget, 02-bd/screens/shared/SHR0101_auth.md Sheet 4.4) and the Admin shell sidebar
- * (02-bd/screens/admin/admin_overview.md section 2 point 6).
+ * (02-bd/screens/admin/ADM0101_overview.md section 2 point 6).
  *
  * Two DIFFERENT shapes on purpose, not one shared track twice: Theme stays a segmented pill —
  * 1:1 with the prototype's toggle group, BOTH options always visible inside one track
@@ -87,10 +87,10 @@ export function ThemeLangSwitcher({ variant = "inline", collapsed = false, class
   // it narrower". `variant="floating"` (the auth screen's corner widget) always had room to spare.
   const stacked = collapsed;
 
-  // "nổi lên" (owner 2026-09-16): in Light theme `--color-primary` inside `.admin-shell` is a
-  // near-white `rgba(255,255,255,0.85)` sitting on an almost-as-light glass track — a flat color
-  // swap alone barely reads as "selected" there (still true in Dark, just less needed since
-  // `--color-primary` is a saturated cyan). A small multi-layer shadow gives the active segment its
+  // "nổi lên" (owner 2026-09-16): in Light theme the selected segment inside `.admin-shell` is a
+  // near-white `--admin-active-bg` (globals.css) sitting on an almost-as-light glass track — a flat
+  // color swap alone barely reads as "selected" there (still true in Dark, just less needed since
+  // that token is a cyan/teal gradient). A small multi-layer shadow gives the active segment its
   // own contact shadow, like a raised tab/chip floating a hair above the track, instead of relying
   // on background contrast alone.
   const activeElevation =

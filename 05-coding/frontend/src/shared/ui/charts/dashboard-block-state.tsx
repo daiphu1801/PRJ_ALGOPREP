@@ -2,7 +2,7 @@
 //
 // Wraps ONE dashboard block with its own loading/empty/error state — per BD, each of the 9 blocks
 // on admin_overview manages its 3 states independently, so one failing source never blocks the
-// rest of the screen (02-bd/screens/admin/admin_overview.md section 4,
+// rest of the screen (02-bd/screens/admin/ADM0101_overview.md section 4,
 // DEC-2026-0831-admin-overview-ui-decisions). Purely presentational — no admin/dashboard domain
 // type — so it lives in shared/ui per SYS0102_frontend_architecture.md section 2.A-B.
 import type { ReactNode } from "react";

@@ -3,10 +3,9 @@
 
 import { Suspense } from "react";
 import { useT } from "@/shared/i18n";
-import { ThemeLangSwitcher } from "@/shared/ui";
+import { AuthAsidePanel, ThemeLangSwitcher } from "@/shared/ui";
 import type { AuthMode } from "@/entities/auth";
-import { AuthForm, AuthLoadingOverlay, useAuthFlow } from "@/features/auth-by-credentials";
-import { AuthAsidePanel } from "./auth-aside-panel";
+import { AuthForm, AuthLoadingOverlay, DevQuickLogin, useAuthFlow } from "@/features/auth-by-credentials";
 
 export type { AuthMode };
 
@@ -39,6 +38,9 @@ function AuthViewContent({ initialMode = "signup" }: AuthViewProps) {
           <div className="mt-6">
             <AuthForm flow={flow} />
           </div>
+          {/* All three roles here: this screen calls the shared `login()`, which routes by the role
+              the mock returns, so it is the one entry point that can reach every area. */}
+          <DevQuickLogin flow={flow} roles={["STUDENT", "INSTRUCTOR", "ADMIN"]} />
           {isLoginLike && (
             <button
               type="button"
@@ -50,7 +52,32 @@ function AuthViewContent({ initialMode = "signup" }: AuthViewProps) {
           )}
         </div>
 
-        <AuthAsidePanel mode={mode} onSwitchMode={() => setMode(mode === "login" ? "signup" : "login")} />
+        <AuthAsidePanel
+          className="rounded-r-2xl"
+          badges={[t("badgeProblems"), t("badgeTopics"), t("badgeLanguages")]}
+          title={mode === "login" ? t("asideLoginTitle") : t("asideSignupTitle")}
+          description={mode === "login" ? t("asideLoginDescription") : t("asideSignupDescription")}
+          action={
+            isLoginLike && (
+              <button
+                type="button"
+                onClick={() => setMode(mode === "login" ? "signup" : "login")}
+                className="on-accent-outline rounded-md border px-3 py-1.5 text-xs font-medium"
+              >
+                {mode === "login" ? t("switchToSignup") : t("switchToLogin")}
+              </button>
+            )
+          }
+        >
+          {/* The mockup's illustration (09-layoutBase/Đăng nhập & Đăng ký.dc.html:165-171): a snippet
+              of a solved problem, so the panel shows what the product is rather than describing it. */}
+          <pre
+            aria-hidden="true"
+            className="on-accent-tint overflow-hidden rounded-lg p-3 text-[11px] leading-relaxed opacity-90"
+          >
+            {"function twoSum(nums, target) {\n  const seen = new Map();\n  for (let i = 0; i < nums.length; i++) {\n    ...\n  }\n}"}
+          </pre>
+        </AuthAsidePanel>
 
         {loadingStep !== null && <AuthLoadingOverlay currentStep={loadingStep} />}
       </section>

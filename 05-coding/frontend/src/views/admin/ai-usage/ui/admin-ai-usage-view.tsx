@@ -27,6 +27,7 @@ import {
   type TopUser,
   type UsageRange,
 } from "../api";
+import { aiBudgetSettings, useModelPrices } from "@/entities/ai-budget";
 import { useT } from "@/shared/i18n";
 import {
   Badge,
@@ -39,7 +40,6 @@ import {
   RankedProgressList,
   SegmentedTabs,
   StackedBarChart,
-  StatCard,
   type BadgeVariant,
   type DataTableColumn,
 } from "@/shared/ui";
@@ -62,6 +62,8 @@ export function AdminAiUsageView() {
   const t = useT("adminAiUsage");
   const [page] = useState(fetchAiUsagePage);
   const [range, setRange] = useState<UsageRange>("14d");
+  const budgetSettings = aiBudgetSettings.use();
+  const modelPrices = useModelPrices();
 
   const days = page.daily[range];
 
@@ -108,7 +110,7 @@ export function AdminAiUsageView() {
       width: "76px",
       align: "right",
       render: (user) => (
-        <span className="font-mono text-[var(--color-text-muted)]">{user.cost}</span>
+        <span className="font-mono text-[var(--color-text-muted)]">{modelPrices.length === 0 ? "-" : user.cost}</span>
       ),
     },
   ];
@@ -181,18 +183,6 @@ export function AdminAiUsageView() {
         }
       />
 
-      <div className="mb-4 grid gap-3.5 [grid-template-columns:repeat(auto-fit,minmax(210px,1fr))]">
-        {page.stats.map((stat) => (
-          <StatCard
-            key={stat.key}
-            label={t(`stat.${stat.key}.label`)}
-            value={stat.value}
-            delta={<span style={{ color: `var(${stat.deltaColorVar})` }}>{stat.delta}</span>}
-            meta={t(`stat.${stat.key}.meta`)}
-          />
-        ))}
-      </div>
-
       <div className="mb-4 grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(300px,1fr)]">
         <Card
           title={t("dailyChartTitle")}
@@ -224,7 +214,11 @@ export function AdminAiUsageView() {
             <ProgressBar
               value={page.budget.percent}
               label={t("budgetTitle")}
-              fill="linear-gradient(90deg, var(--color-admin-teal), var(--color-admin-warn))"
+              fill={
+                page.budget.percent >= budgetSettings.warnPercent
+                  ? "var(--color-admin-warn)"
+                  : "var(--color-admin-teal)"
+              }
             />
             <p className="mt-2 mb-4 flex justify-between text-[12.5px] text-[var(--color-text-muted)]">
               <span>{t("budgetLeft", { left: page.budget.leftLabel })}</span>

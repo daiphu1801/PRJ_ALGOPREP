@@ -25,14 +25,6 @@ export type AdminUser = {
   status: AdminUserStatus;
 };
 
-export type AdminUserStat = {
-  key: string;
-  value: string;
-  delta: string;
-  deltaColorVar: string;
-  meta: string;
-};
-
 export type RoleDistributionItem = {
   role: AdminUserRole | "deactivated";
   /** Pre-formatted "1.196 · 93%" — share and count together, as the mockup shows them. */
@@ -48,7 +40,8 @@ export type PendingTask = {
 };
 
 export type AdminUserPage = {
-  stats: AdminUserStat[];
+  /** Email of the acting admin; the lock rules compare against it. */
+  currentUserEmail: string;
   users: AdminUser[];
   roleDistribution: RoleDistributionItem[];
   pendingTasks: PendingTask[];

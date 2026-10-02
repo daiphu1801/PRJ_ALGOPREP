@@ -93,12 +93,25 @@
       "credentialsInvalid": "Sai tên đăng nhập hoặc mật khẩu",
       "otpInvalid": "Mã xác thực không đúng",
       "notInstructorAccount": "Tài khoản này không có quyền giảng viên"
-    }
+    },
+    "quickLoginTitle": "Đăng nhập nhanh (dữ liệu giả)",
+    "quickLoginStudent": "Học viên",
+    "quickLoginInstructor": "Giảng viên",
+    "quickLoginAdmin": "Quản trị viên",
+    "quickLoginHint": "Chỉ hiện khi đang chạy dữ liệu giả. Bấm một nút là vào thẳng, không cần gõ."
   },
   "instructorAuth": {
     "title": "Đăng nhập giảng viên",
     "subtitle": "Dành riêng cho giảng viên AlgoPrep — đăng nhập bằng tài khoản đã được cấp quyền.",
-    "notInstructorHint": "Không phải giảng viên? Dùng trang đăng nhập thông thường."
+    "notInstructorHint": "Không phải giảng viên? Dùng trang đăng nhập thông thường.",
+    "badgeClasses": "Lớp học",
+    "badgeGrading": "Chấm bài",
+    "badgeProgress": "Tiến độ",
+    "asideTitle": "Khu làm việc của giảng viên",
+    "asideDescription": "Giao bài cho lớp, chấm phần cần chấm tay và theo dõi tiến độ từng học viên trong một chỗ.",
+    "asideHighlight1": "Giao và quản lý bài tập theo lớp",
+    "asideHighlight2": "Chấm tay phần bài nộp cần đánh giá",
+    "asideHighlight3": "Theo dõi tiến độ và kết quả học viên"
   },
   "problemList": {
     "title": "Danh sách bài toán",
@@ -330,6 +343,7 @@
     "blocks": {
       "submissionsSummary": "Tổng lượt nộp bài",
       "activeUsersSummary": "Người dùng hoạt động",
+      "passwordResetsSummary": "Yêu cầu đặt lại mật khẩu",
       "submissionsByLanguage": "Lượt nộp theo ngôn ngữ",
       "verdictDistribution": "Kết quả chấm",
       "difficultyBreakdown": "Độ khó bài toán",
@@ -348,7 +362,15 @@
     "title": "Đăng nhập quản trị",
     "subtitle": "Dành riêng cho quản trị viên AlgoPrep — đăng nhập bằng tài khoản được cấp.",
     "submit": "Đăng nhập",
-    "notAdminHint": "Không phải quản trị viên? Dùng trang đăng nhập thông thường."
+    "notAdminHint": "Không phải quản trị viên? Dùng trang đăng nhập thông thường.",
+    "badgeContent": "Nội dung",
+    "badgeOperations": "Vận hành",
+    "badgeAi": "AI",
+    "asideTitle": "Bảng điều khiển nội bộ",
+    "asideDescription": "Quản trị ngân hàng bài toán, hàng đợi chấm go-judge và cấu hình AI của toàn hệ thống.",
+    "asideHighlight1": "Quản lý bài tập và câu hỏi phỏng vấn",
+    "asideHighlight2": "Theo dõi hàng đợi chấm và nhật ký hệ thống",
+    "asideHighlight3": "Cấu hình AI, ngôn ngữ và phân quyền"
   },
   "adminLanguageConfig": {
     "title": "Ngôn ngữ và giới hạn chấm",
@@ -409,25 +431,45 @@
     "noticeBody": "Thay đổi hệ số hoặc giới hạn tài nguyên chỉ áp dụng cho các lượt nộp mới kể từ thời điểm lưu. Các lượt nộp trước đó giữ nguyên kết quả đã chấm."
   },
   "adminSystemLog": {
+    "retention": {
+      "open": "Lưu trữ",
+      "title": "Thời hạn lưu nhật ký",
+      "days": "Thời hạn lưu",
+      "daysUnit": "ngày",
+      "policy": "Với log quá hạn",
+      "policyDelete": "Xoá hẳn",
+      "policyArchive": "Nén và lưu trữ",
+      "hint": "Không có thao tác xoá tay từng dòng log; chỉ job hệ thống dọn khi quá hạn.",
+      "save": "Lưu",
+      "cancel": "Huỷ",
+      "errorMin": "Nhập số nguyên từ {min} trở lên"
+    },
+    "exportDialog": {
+      "title": "Tải nhật ký",
+      "columns": "Cột cần xuất",
+      "from": "Từ ngày",
+      "to": "Đến ngày",
+      "note": "Xuất CSV, không giới hạn số dòng. Mỗi lần xuất được ghi thành một dòng log.",
+      "submit": "Xuất CSV",
+      "cancel": "Huỷ",
+      "close": "Đóng",
+      "errorRange": "Ngày kết thúc phải sau ngày bắt đầu",
+      "doneTitle": "Đã tạo tệp CSV",
+      "doneBody": "{count} cột. Hành động xuất đã được ghi thành một dòng log.",
+      "col": {
+        "time": "Thời gian",
+        "actor": "Người thực hiện",
+        "service": "Dịch vụ",
+        "category": "Phân loại",
+        "content": "Nội dung",
+        "id": "Mã sự kiện"
+      }
+    },
     "title": "Nhật ký hệ thống",
     "subtitle": "Hành động quản trị của con người · sự kiện hạ tầng xem ở Hàng đợi chấm",
     "liveOn": "Theo dõi trực tiếp",
     "liveOff": "Đã tạm dừng",
     "export": "Tải nhật ký",
-    "stat": {
-      "adminActions24h": {
-        "label": "Hành động quản trị 24 giờ",
-        "meta": "6 tài khoản quản trị hoạt động"
-      },
-      "permissionChanges": {
-        "label": "Đổi ma trận phân quyền",
-        "meta": "Chỉ ADMIN thực hiện được"
-      },
-      "accountLocks": {
-        "label": "Khoá / mở khoá tài khoản",
-        "meta": "Do trùng mã nguồn hoặc báo cáo"
-      }
-    },
     "searchLabel": "Tìm trong nhật ký",
     "searchPlaceholder": "Tìm theo dịch vụ, tài khoản hoặc mã sự kiện",
     "categoryFilterLabel": "Lọc theo phân loại",
@@ -453,28 +495,6 @@
     "title": "Quản lý người dùng",
     "subtitle": "Tài khoản, vai trò và trạng thái truy cập",
     "addAccount": "Thêm tài khoản",
-    "stat": {
-      "total": {
-        "label": "Tổng tài khoản",
-        "meta": "32 tài khoản mới trong tuần"
-      },
-      "active24h": {
-        "label": "Đang hoạt động 24 giờ",
-        "meta": "24% tổng số người học"
-      },
-      "pendingEmail": {
-        "label": "Chờ xác thực email",
-        "meta": "Quá 7 ngày sẽ tự huỷ"
-      },
-      "locked": {
-        "label": "Bị khóa",
-        "meta": "3 do vi phạm gian lận"
-      },
-      "passwordResets": {
-        "label": "Yêu cầu đặt lại mật khẩu",
-        "meta": "Gửi trong 24 giờ qua"
-      }
-    },
     "searchLabel": "Tìm người dùng",
     "searchPlaceholder": "Tìm theo tên, email hoặc tài khoản",
     "roleFilterLabel": "Lọc theo vai trò",
@@ -522,6 +542,24 @@
         "meta": "Cần quản trị viên phê duyệt"
       }
     },
+    "lockBlockedTitle": "Không khóa được",
+    "lockBlockedBody": "Thao tác này sẽ khóa quản trị viên cuối cùng đang hoạt động. Hệ thống luôn phải còn ít nhất một quản trị viên để cấu hình. Hãy thêm hoặc mở khóa một quản trị viên khác trước.",
+    "lockBlockedClose": "Đã hiểu",
+    "confirmLockSelfWarning": "Bạn đang khóa chính tài khoản của mình: bạn sẽ bị đăng xuất và không đăng nhập lại được cho tới khi quản trị viên khác mở khóa.",
+    "addDialog": {
+      "title": "Thêm tài khoản",
+      "nameLabel": "Họ và tên",
+      "emailLabel": "Email",
+      "roleLabel": "Vai trò",
+      "note": "Mật khẩu tạm được gửi qua email; người dùng phải đổi ở lần đăng nhập đầu tiên.",
+      "submit": "Tạo tài khoản",
+      "done": "Xong",
+      "errorName": "Nhập họ và tên",
+      "errorEmail": "Email không hợp lệ",
+      "errorDuplicate": "Email này đã có tài khoản",
+      "createdTitle": "Đã tạo tài khoản",
+      "createdBody": "Mật khẩu tạm đã được gửi tới {email}. Tài khoản ở trạng thái chờ xác thực cho tới lần đăng nhập đầu tiên."
+    },
     "confirmLockTitle": "Khóa {count} tài khoản?",
     "confirmLockBody": "{count} tài khoản sẽ không đăng nhập được cho tới khi được mở khóa. Bài nộp và tiến độ của họ giữ nguyên.",
     "confirmLockAction": "Khóa tài khoản",
@@ -536,24 +574,6 @@
       "7d": "7 ngày",
       "14d": "14 ngày",
       "30d": "30 ngày"
-    },
-    "stat": {
-      "monthTokens": {
-        "label": "Token tháng này",
-        "meta": "Tính đến 22/08, 15:40"
-      },
-      "dailyAverage": {
-        "label": "Trung bình mỗi ngày",
-        "meta": "Thấp hơn tuần trước"
-      },
-      "estimatedCost": {
-        "label": "Chi phí tạm tính",
-        "meta": "Hạn mức 240 USD mỗi tháng"
-      },
-      "calls": {
-        "label": "Lượt gọi AI",
-        "meta": "2.140 người học hoạt động"
-      }
     },
     "dailyChartTitle": "Token theo ngày",
     "dailyChartSubtitle": "Tách theo tính năng, {days} ngày gần nhất",
@@ -602,27 +622,25 @@
     "emptyProblems": "Chưa có bài toán nào tiêu thụ token trong khoảng này"
   },
   "adminQueueMonitor": {
+    "params": {
+      "open": "Tham số",
+      "title": "Tham số hàng đợi",
+      "save": "Lưu",
+      "cancel": "Huỷ",
+      "errorMin": "Nhập số nguyên từ {min} trở lên",
+      "autoscaleThreshold": "Ngưỡng tự mở rộng worker",
+      "autoscaleThresholdHint": "Số job đang chờ để cụm thêm worker.",
+      "jobsPerPage": "Số dòng mỗi trang của bảng job",
+      "errorRetention": "Thời gian giữ job lỗi hệ thống",
+      "latencyCap": "Ngưỡng trần thanh độ trễ",
+      "unitJobs": "job",
+      "unitRows": "dòng",
+      "unitHours": "giờ",
+      "unitSeconds": "giây"
+    },
     "title": "Hàng đợi chấm",
     "subtitle": "Cụm worker go-judge, job đang chờ và sự kiện hạ tầng",
     "refresh": "Làm mới",
-    "kpi": {
-      "waiting": {
-        "label": "Job đang chờ",
-        "meta": "Chờ lâu nhất 46 giây"
-      },
-      "running": {
-        "label": "Đang chấm",
-        "meta": "4 worker đang bận"
-      },
-      "throughput": {
-        "label": "Thông lượng",
-        "meta": "Trung bình 1 giờ qua"
-      },
-      "failed24h": {
-        "label": "Job lỗi 24 giờ",
-        "meta": "2 lỗi sandbox · 1 hết bộ nhớ"
-      }
-    },
     "workersTitle": "Cụm worker go-judge",
     "workersSubtitle": "{count} worker · tự động mở rộng tối đa {max}",
     "workerStatus": {
@@ -641,11 +659,7 @@
       },
       "autoscale": {
         "label": "Tự động mở rộng worker",
-        "meta": "Thêm worker khi hàng đợi vượt 20 job"
-      },
-      "highPriorityFirst": {
-        "label": "Ưu tiên cao",
-        "meta": "Job được gắn cờ ưu tiên cao được chấm trước"
+        "meta": "Thêm worker khi hàng đợi vượt {threshold} job"
       }
     },
     "latencyTitle": "Độ trễ theo hàng đợi",
@@ -725,6 +739,31 @@
     }
   },
   "adminAiConfig": {
+    "budget": {
+      "title": "Ngân sách và đơn giá",
+      "subtitle": "Quản trị viên tự đặt, không giới hạn",
+      "warnLabel": "Ngưỡng cảnh báo ngân sách",
+      "warnMeta": "Thanh ngân sách đổi màu khi mức dùng đạt ngưỡng này",
+      "warnDecrement": "Giảm ngưỡng cảnh báo",
+      "warnIncrement": "Tăng ngưỡng cảnh báo",
+      "pricesLabel": "Đơn giá token theo mô hình",
+      "pricesMeta": "Mô hình chưa có đơn giá thì cột Chi phí hiện dấu -",
+      "manage": "Quản lý",
+      "dialog": {
+        "title": "Đơn giá token theo mô hình",
+        "hint": "Nhập đơn giá (USD cho mỗi 1 triệu token) của từng mô hình. Không giới hạn số mô hình.",
+        "nameLabel": "Tên mô hình",
+        "newLabel": "Mô hình mới",
+        "newPlaceholder": "Ví dụ: claude-sonnet",
+        "add": "Thêm",
+        "save": "Lưu tên",
+        "delete": "Xoá",
+        "close": "Đóng",
+        "priceLabel": "Đơn giá của {name} (USD mỗi 1 triệu token)",
+        "errorEmpty": "Tên mô hình không được để trống",
+        "errorDuplicate": "Đã có mô hình trùng tên"
+      }
+    },
     "title": "Cấu hình trợ lý AI",
     "subtitle": "Prompt, rubric chấm và giới hạn tần suất",
     "publish": "Lưu và phát hành",
@@ -822,28 +861,54 @@
     "title": "Quản lý bài tập",
     "subtitle": "{total} bài · {published} bài đang hiển thị ở Ngân hàng bài toán",
     "newProblem": "Bài tập mới",
-    "stat": {
-      "total": {
-        "label": "Tổng bài tập",
-        "meta": "3 bài thêm trong tháng"
-      },
-      "published": {
-        "label": "Đã xuất bản",
-        "meta": "Đúng bằng số bài trang người học thấy"
-      },
-      "draft": {
-        "label": "Bản nháp",
-        "meta": "1 bài chưa có testcase"
-      },
-      "acceptedRate": {
-        "label": "Tỉ lệ AC trung bình",
-        "meta": "Tính trên 90 ngày gần nhất"
-      }
-    },
     "searchLabel": "Tìm bài tập",
     "searchPlaceholder": "Tìm theo mã bài hoặc tiêu đề",
     "difficultyFilterLabel": "Lọc theo độ khó",
     "statusFilterLabel": "Lọc theo trạng thái",
+    "topicDist": {
+      "title": "Phân bố theo chủ đề",
+      "subtitle": "Tổng {total} bài trên {topics} chủ đề"
+    },
+    "attention": {
+      "title": "Bài cần chú ý",
+      "tag": "Tự phát hiện",
+      "rule": {
+        "noTestcase": {
+          "title": "Chưa có testcase",
+          "meta": "Bài chưa có testcase nào"
+        },
+        "lowAcceptRate": {
+          "title": "Tỉ lệ AC thấp",
+          "meta": "Tỉ lệ AC dưới 30%"
+        },
+        "hiddenFromLearners": {
+          "title": "Đang ẩn khỏi người học",
+          "meta": "Từng xuất bản, hiện đã gỡ"
+        },
+        "staleDraft": {
+          "title": "Bản nháp quá hạn",
+          "meta": "Chưa xuất bản quá 7 ngày"
+        }
+      }
+    },
+    "manageTopics": "Quản lý chủ đề",
+    "topicManager": {
+      "title": "Quản lý chủ đề bài tập",
+      "hint": "Chủ đề do quản trị viên tự định nghĩa, không giới hạn số lượng. Chỉ xoá được chủ đề chưa có bài tập nào.",
+      "nameLabel": "Tên chủ đề",
+      "newLabel": "Chủ đề mới",
+      "newPlaceholder": "Ví dụ: Quy hoạch động",
+      "add": "Thêm",
+      "save": "Lưu tên",
+      "close": "Đóng",
+      "usage": "{count} bài",
+      "deleteBlocked": "Còn {count} bài, chưa xoá được",
+      "error": {
+        "empty": "Tên chủ đề không được để trống",
+        "duplicate": "Đã có chủ đề trùng tên"
+      }
+    },
+    "pageSizeLabel": "Số dòng mỗi trang",
     "filterAll": "Tất cả",
     "difficulty": {
       "easy": "Easy",
@@ -892,43 +957,45 @@
   "interviewQuestionManagement": {
     "title": "Ngân hàng câu hỏi phỏng vấn",
     "subtitle": "{total} câu hỏi · giảng viên và quản trị viên đều sửa được toàn bộ",
-    "importCsv": "Nhập CSV",
-    "newQuestion": "Câu hỏi mới",
-    "stat": {
-      "total": {
-        "label": "Tổng câu hỏi",
-        "meta": "9 câu thêm trong tháng"
-      },
-      "withRubric": {
-        "label": "Có tiêu chí đầy đủ",
-        "meta": "17 câu thiếu rubric"
-      },
-      "averageScore": {
-        "label": "Điểm trung bình",
-        "meta": "Trên thang 5, tính 30 ngày"
-      },
-      "neverUsed": {
-        "label": "Chưa dùng lần nào",
-        "meta": "Cân nhắc rà soát lại nội dung"
+    "manageTopics": "Quản lý chủ đề",
+    "topicManager": {
+      "title": "Quản lý chủ đề câu hỏi",
+      "hint": "Chủ đề do quản trị viên tự định nghĩa, không giới hạn số lượng. Chỉ xoá được chủ đề chưa có câu hỏi nào.",
+      "starLabel": "Dùng khung STAR cho {name}",
+      "nameLabel": "Tên chủ đề",
+      "newLabel": "Chủ đề mới",
+      "newPlaceholder": "Ví dụ: Mạng máy tính",
+      "add": "Thêm",
+      "save": "Lưu tên",
+      "close": "Đóng",
+      "usage": "{count} câu",
+      "deleteBlocked": "Còn {count} câu hỏi, chưa xoá được",
+      "error": {
+        "empty": "Tên chủ đề không được để trống",
+        "duplicate": "Đã có chủ đề trùng tên"
       }
     },
+    "importCsv": "Nhập CSV",
+    "newQuestion": "Câu hỏi mới",
     "searchLabel": "Tìm câu hỏi",
     "searchPlaceholder": "Tìm theo nội dung câu hỏi hoặc mã",
     "topicFilterLabel": "Lọc theo chủ đề",
     "levelFilterLabel": "Lọc theo mức độ",
     "filterAll": "Tất cả",
-    "topic": {
-      "csTheory": "Lý thuyết CS",
-      "systemDesign": "System design",
-      "database": "Database",
-      "language": "Ngôn ngữ",
-      "behavioural": "Hành vi"
-    },
     "level": {
       "easy": "Dễ",
       "medium": "Trung bình",
       "hard": "Khó"
     },
+    "columnCode": "Mã",
+    "columnQuestion": "Câu hỏi",
+    "columnTopic": "Chủ đề",
+    "columnLevel": "Mức độ",
+    "columnFollowUps": "Đào sâu",
+    "columnRubric": "Tiêu chí",
+    "columnUsage": "Lượt dùng",
+    "columnScore": "Điểm TB",
+    "tableCaption": "Danh sách câu hỏi phỏng vấn",
     "resultCount": "{shown} / {total} câu hỏi",
     "followUps": "Đào sâu",
     "rubric": "Tiêu chí đánh giá",
@@ -937,9 +1004,11 @@
     "duplicate": "Nhân bản",
     "delete": "Xoá",
     "cancel": "Huỷ",
+    "editQuestion": "Sửa câu hỏi {code}",
+    "duplicateQuestion": "Nhân bản câu hỏi {code}",
     "deleteQuestion": "Xoá câu hỏi {code}",
     "emptyFiltered": "Không có câu hỏi nào khớp bộ lọc hiện tại",
-    "pageLabel": "Trang {page} trong {totalPages} · hiển thị {shown} thẻ",
+    "pageLabel": "Trang {page} trong {totalPages} · hiển thị {shown} dòng",
     "previous": "Trước",
     "next": "Sau",
     "goToPage": "Trang {page}",
@@ -949,25 +1018,23 @@
   "interviewQuestionAuthoring": {
     "titleNew": "Soạn câu hỏi phỏng vấn",
     "subtitle": "Lưu là câu hỏi hiển thị ngay — không có bước xuất bản riêng",
+    "titleEdit": "Sửa câu hỏi {code}",
+    "notFoundTitle": "Không tìm thấy câu hỏi",
+    "notFoundBody": "Không có câu hỏi nào mang mã {code}. Có thể nó đã bị gỡ khỏi ngân hàng.",
+    "classifyTitle": "Phân loại",
+    "classifySubtitle": "Chủ đề và độ khó dùng để lọc ở ngân hàng câu hỏi",
     "back": "Quay lại",
     "previewAsLearner": "Xem như học viên",
     "save": "Lưu",
     "saving": "Đang lưu…",
     "savedAt": "Đã lưu lúc {time}",
     "unsaved": "Chưa lưu",
-    "group1Title": "Nội dung và phân loại",
+    "group1Title": "Nội dung câu hỏi",
     "group1Subtitle": "Nội dung câu hỏi viết bằng Markdown",
     "questionLabel": "Nội dung câu hỏi",
     "questionPlaceholder": "Ví dụ: Hash table xử lý collision bằng cách nào?",
     "topicLabel": "Chủ đề",
     "levelLabel": "Độ khó",
-    "topic": {
-      "csTheory": "Lý thuyết CS",
-      "systemDesign": "System design",
-      "database": "Database",
-      "language": "Ngôn ngữ",
-      "behavioural": "Hành vi"
-    },
     "level": {
       "easy": "Dễ",
       "medium": "Trung bình",
@@ -1251,13 +1318,6 @@
     },
     "topicFilterLabel": "Lọc theo chủ đề",
     "filterAll": "Tất cả",
-    "topic": {
-      "csTheory": "Lý thuyết CS",
-      "systemDesign": "System design",
-      "database": "Database",
-      "language": "Ngôn ngữ",
-      "behavioural": "Hành vi"
-    },
     "level": {
       "easy": "Dễ",
       "medium": "Trung bình",
@@ -1291,13 +1351,6 @@
       "bookmark": "Đánh dấu xem lại",
       "bookmarked": "Đã đánh dấu"
     },
-    "topic": {
-      "csTheory": "Lý thuyết CS",
-      "systemDesign": "System design",
-      "database": "Database",
-      "language": "Ngôn ngữ",
-      "behavioural": "Hành vi"
-    },
     "level": {
       "easy": "Dễ",
       "medium": "Trung bình",
@@ -1311,6 +1364,7 @@
     },
     "study": {
       "outlineLabel": "Ý cần nói",
+      "starTag": "STAR",
       "answerFrameworkLabel": "Khung trả lời chuẩn",
       "keywordsLabel": "Từ khoá cốt lõi",
       "followUpsLabel": "Câu hỏi đào sâu",

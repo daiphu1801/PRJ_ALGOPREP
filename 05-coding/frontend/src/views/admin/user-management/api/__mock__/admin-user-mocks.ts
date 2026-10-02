@@ -3,49 +3,9 @@
 import type {
   AdminUser,
   AdminUserPage,
-  AdminUserStat,
   PendingTask,
   RoleDistributionItem,
 } from "../../model/types";
-
-// dc.html:422-428.
-const STATS: AdminUserStat[] = [
-  {
-    key: "total",
-    value: "1.284",
-    delta: "+42",
-    deltaColorVar: "--color-success",
-    meta: "32 tài khoản mới trong tuần",
-  },
-  {
-    key: "active24h",
-    value: "312",
-    delta: "+8%",
-    deltaColorVar: "--color-success",
-    meta: "24% tổng số người học",
-  },
-  {
-    key: "pendingEmail",
-    value: "18",
-    delta: "−3",
-    deltaColorVar: "--color-admin-warn",
-    meta: "Quá 7 ngày sẽ tự huỷ",
-  },
-  {
-    key: "locked",
-    value: "7",
-    delta: "+2",
-    deltaColorVar: "--color-admin-negative",
-    meta: "3 do vi phạm gian lận",
-  },
-  {
-    key: "passwordResets",
-    value: "6",
-    delta: "+1",
-    deltaColorVar: "--color-admin-warn",
-    meta: "Gửi trong 24 giờ qua",
-  },
-];
 
 // dc.html:437-447. Counts are plain numbers here; the mockup pre-formatted them as strings.
 const USERS: AdminUser[] = [
@@ -76,7 +36,8 @@ const PENDING_TASKS: PendingTask[] = [
 
 export function fetchAdminUserPage(): AdminUserPage {
   return {
-    stats: STATS.map((stat) => ({ ...stat })),
+    // The one admin in the sample rows is the acting account.
+    currentUserEmail: "pdai@algoprep.vn",
     users: USERS.map((user) => ({ ...user })),
     roleDistribution: ROLE_DISTRIBUTION.map((item) => ({ ...item })),
     pendingTasks: PENDING_TASKS.map((task) => ({ ...task })),

@@ -31,6 +31,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   findInterviewQuestionByCode,
+  topicLabel,
+  useInterviewTopics,
   useRecallAndBookmarkState,
   RecallLevelPicker,
   type AnswerAttempt,
@@ -48,6 +50,7 @@ type Mode = "study" | "practice";
 export function InterviewQuestionDetailView({ questionId }: { questionId: string }) {
   const t = useT("interviewQuestionDetail");
   const router = useRouter();
+  const topicList = useInterviewTopics();
   const [question] = useState(() => findInterviewQuestionByCode(questionId));
 
   // Hook cần một mảng — câu hỏi đơn lẻ vẫn seed đúng một khoá. Câu hỏi không tồn tại thì mảng rỗng,
@@ -168,7 +171,7 @@ export function InterviewQuestionDetailView({ questionId }: { questionId: string
 
       <Card className="mb-4">
         <div className="mb-2 flex items-center gap-2">
-          <Badge variant="neutral">{t(`topic.${question.topic}`)}</Badge>
+          <Badge variant="neutral">{topicLabel(topicList, question.topic)}</Badge>
           <span className="text-[11.5px] font-semibold text-[var(--color-text-muted)]">
             {t(`level.${question.level}`)}
           </span>
@@ -226,8 +229,11 @@ export function InterviewQuestionDetailView({ questionId }: { questionId: string
           </div>
 
           <div>
-            <p className="mb-2 text-[10.5px] font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
+            <p className="mb-2 flex items-center gap-2 text-[10.5px] font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
               {t("study.answerFrameworkLabel")}
+              {topicList.find((item) => item.key === question.topic)?.usesStarFramework ? (
+                <Badge variant="neutral">{t("study.starTag")}</Badge>
+              ) : null}
             </p>
             <p className="text-[13.5px] whitespace-pre-line text-[var(--color-text)]">
               {question.sampleAnswerFramework}

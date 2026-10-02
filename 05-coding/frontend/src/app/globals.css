@@ -14,9 +14,19 @@
   --color-text: #0f172a;
   --color-text-muted: #64748b;
   --color-border: #e2e8f0;
-  --color-primary: #2563eb;
+  /* Accent pair, verbatim from the student-area mockups' --accent/--onAccent
+     (09-layoutBase/Đăng nhập & Đăng ký.dc.html:19 — the same value in all six student screens
+     sampled, so it is the area's palette, not one screen's choice). Was a placeholder Tailwind
+     indigo-blue #2563eb/#3b82f6; in Dark that mid-blue carried dark text, which is the pairing the
+     owner flagged on 2026-09-29 as not sitting right against the dark background. The mockup pairs
+     dark text with a much LIGHTER sky blue, which is what makes it work. */
+  --color-primary: #1c9bf2;
   --color-on-primary: #ffffff;
-  --color-danger: #dc2626;
+  /* dc.html:19 --bad */
+  --color-danger: #d8353a;
+  /* Faint blueprint grid behind the auth screens — verbatim from
+     09-layoutBase/Đăng nhập & Đăng ký.dc.html:19 (--grid, light). Applied by `.grid-backdrop` below. */
+  --color-grid: rgba(15, 25, 45, 0.035);
   /* Liquid-glass backdrop blobs, Admin shell only — colors carried over verbatim from
      09-layoutBase/Admin - Tổng quan.dc.html:24 (--blob1/2/3, light theme). This is the shell's
      defining visual identity, not a placeholder brand color, so it is not deferred like the rest
@@ -72,9 +82,13 @@
   --color-text: #e5e7eb;
   --color-text-muted: #94a3b8;
   --color-border: #1f2937;
-  --color-primary: #3b82f6;
-  --color-on-primary: #0b1120;
-  --color-danger: #f87171;
+  /* dc.html:25 --accent/--onAccent, dark branch. */
+  --color-primary: #4cc2ff;
+  --color-on-primary: #06131e;
+  /* dc.html:25 --bad */
+  --color-danger: #e8615e;
+  /* Đăng nhập & Đăng ký.dc.html:25 (--grid, dark). */
+  --color-grid: rgba(160, 200, 255, 0.045);
   /* dc.html:35-37 (--blob1/2/3, dark theme). */
   --color-blob-1: rgba(34, 211, 238, 0.4);
   --color-blob-2: rgba(20, 184, 166, 0.32);
@@ -105,6 +119,63 @@
 body {
   background: var(--color-background);
   color: var(--color-text);
+}
+
+/*
+ * Surfaces that sit ON an accent-filled panel (AuthAsidePanel: its badges, the highlight list, the
+ * code sample, the mode-switch button). Tinted with --color-on-primary instead of a hardcoded
+ * white or black, because the accent flips between a mid sky blue carrying WHITE text in Light and
+ * a pale sky blue carrying NEAR-BLACK text in Dark (dc.html:19 / :25) — a fixed `white/15` that
+ * reads fine on the first one washes out completely on the second.
+ */
+.on-accent-tint {
+  background: color-mix(in srgb, var(--color-on-primary) 14%, transparent);
+}
+
+.on-accent-outline {
+  border-color: color-mix(in srgb, var(--color-on-primary) 45%, transparent);
+}
+
+.on-accent-outline:hover {
+  background: color-mix(in srgb, var(--color-on-primary) 12%, transparent);
+}
+
+/*
+ * The auth screens' page background. The mockup does not leave the area around the login card
+ * blank — it rules a 48px blueprint grid across the body
+ * (09-layoutBase/Đăng nhập & Đăng ký.dc.html:39), which is what stops a single centred card
+ * from reading as a box adrift on white. Low enough alpha to sit behind text without competing.
+ */
+.grid-backdrop {
+  background-image:
+    linear-gradient(var(--color-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-grid) 1px, transparent 1px);
+  background-size: 48px 48px;
+  background-position: -1px -1px;
+}
+
+/*
+ * Clickable affordance. Tailwind v4's preflight resets `button` to `cursor: default`, so nothing
+ * in the app showed a pointer on hover or any feedback on press — the shared <Button> and the raw
+ * <button> elements alike. One base rule beats a `cursor-pointer` class on every call site, and it
+ * also covers the elements that only carry role="button".
+ * Colour on hover stays with each component (Button's `hover:opacity-*`, `hover:bg-*`); this adds
+ * only the press state none of them declare.
+ */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+summary {
+  cursor: pointer;
+}
+
+button:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+button:not(:disabled):active,
+[role="button"]:not([aria-disabled="true"]):active {
+  filter: brightness(0.92);
 }
 
 /*
@@ -141,8 +212,16 @@ body {
   --color-text: #0c201d;
   --color-text-muted: rgba(12, 40, 36, 0.6);
   --color-border: rgba(12, 90, 80, 0.14);
-  --color-primary: rgba(255, 255, 255, 0.85);
-  --color-on-primary: #063b37;
+  /* dc.html:26 --cyan / --teal: inside this scope --color-primary is the LINK-and-accent colour,
+     the same reading `.instructor-shell` gives it below. It used to hold the near-white nav-active
+     fill (dc.html:22 --active-bg), which painted white-on-white everywhere the token is used as a
+     foreground or a button fill: the "Quên mật khẩu?" link, the password SHOW toggle and the
+     `primary` Button on the /admin/login glass card all disappeared (owner screenshot 2026-09-29).
+     The nav-active fill moved to --admin-active-bg/-fg, applied by the two attribute rules below. */
+  --color-primary: #0891a8;
+  --color-on-primary: #ffffff;
+  --admin-active-bg: rgba(255, 255, 255, 0.85);
+  --admin-active-fg: #063b37;
   --admin-glass: rgba(255, 255, 255, 0.42);
   --admin-glass-strong: rgba(255, 255, 255, 0.58);
   --admin-active-border: rgba(14, 165, 164, 0.3);
@@ -197,6 +276,10 @@ body {
   --color-border: rgba(255, 255, 255, 0.06);
   --color-primary: #22d3ee;
   --color-on-primary: #05201f;
+  /* dc.html:39 --active-bg/--active-fg — dark really is a gradient, not the flat cyan the
+     nav row was painting before the split above. */
+  --admin-active-bg: linear-gradient(135deg, rgba(34, 211, 238, 0.35), rgba(20, 184, 166, 0.22));
+  --admin-active-fg: #eafeff;
   --admin-glass: rgba(6, 10, 9, 0.55);
   --admin-glass-strong: rgba(5, 9, 8, 0.6);
   --admin-active-border: rgba(103, 232, 249, 0.4);
@@ -226,6 +309,17 @@ body {
   --color-cta-bg: linear-gradient(160deg, rgba(190, 255, 247, 0.94), rgba(150, 230, 220, 0.72));
   --color-cta-fg: #052422;
   --color-cta-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+}
+
+/* The nav-active fill and the selected chip of every segmented control — same split, and for the
+   same reason, as the `.instructor-shell` pair further down: NavLink and SegmentedTabs/
+   ThemeLangSwitcher paint the selection with `bg-[var(--color-primary)]`, which in this scope is
+   now the link cyan, so the mockup's near-white fill (dc.html:22 --active-bg) is restored by
+   attribute instead. `nav`-scoped so Pagination's own aria-current="page" button is left alone. */
+.admin-shell nav [aria-current="page"],
+.admin-shell [aria-pressed="true"] {
+  background: var(--admin-active-bg);
+  color: var(--admin-active-fg);
 }
 
 /* Exact glass alpha from dc.html instead of the generic color-mix formula — the mockup's glass

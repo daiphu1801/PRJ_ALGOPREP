@@ -1,7 +1,7 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 //
 // 6-month line chart with a total headline number (submissions-by-month block,
-// 02-bd/screens/admin/admin_overview.md section 3). Generic point list, no domain type — shared/ui.
+// 02-bd/screens/admin/ADM0101_overview.md section 3). Generic point list, no domain type — shared/ui.
 type LinePoint = { label: string; value: number };
 
 export function LineChartWithTotal({

@@ -4,8 +4,8 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { useT } from "@/shared/i18n";
-import { LiquidGlassBackdrop, ThemeLangSwitcher } from "@/shared/ui";
-import { AuthForm, AuthLoadingOverlay, useAuthFlow } from "@/features/auth-by-credentials";
+import { AuthAsideHighlights, AuthAsidePanel, LiquidGlassBackdrop, ThemeLangSwitcher } from "@/shared/ui";
+import { AuthForm, AuthLoadingOverlay, DevQuickLogin, useAuthFlow } from "@/features/auth-by-credentials";
 
 /**
  * Dedicated Admin login screen (`DEC-2026-0915-admin-separate-login-route`) — a separate route
@@ -50,10 +50,14 @@ function AdminAuthViewContent() {
         style={{ background: "radial-gradient(circle, var(--color-admin-cyan), transparent 70%)", opacity: 0.25 }}
       />
 
+      {/* Two columns from `lg` up: the form alone on a max-w-md card left this screen reading as a
+          small box adrift on a large backdrop (owner, 2026-09-29). The right column is the same
+          `AuthAsidePanel` the student screen uses, so the fix costs content, not a second layout. */}
       <section
-        className="glass-card glass-card--elevated relative z-10 w-full max-w-md p-8"
+        className="glass-card glass-card--elevated relative z-10 grid w-full max-w-3xl grid-cols-1 overflow-hidden lg:grid-cols-[1.06fr_1fr]"
         style={{ border: "1px solid color-mix(in srgb, white 35%, var(--color-border))" }}
       >
+        <div className="p-8">
         <div className="mb-6 flex items-center gap-2.5">
           <span
             aria-hidden="true"
@@ -78,6 +82,8 @@ function AdminAuthViewContent() {
         <div className="mt-6">
           <AuthForm flow={flow} showOAuth={false} />
         </div>
+        {/* Only the admin account — the other two would land outside this area anyway. */}
+        <DevQuickLogin flow={flow} roles={["ADMIN"]} />
 
         {mode === "login" && (
           <p className="mt-6 text-center text-xs text-[var(--color-text-muted)]">
@@ -87,6 +93,18 @@ function AdminAuthViewContent() {
             </Link>
           </p>
         )}
+
+        </div>
+
+        <AuthAsidePanel
+          badges={[tAdmin("badgeContent"), tAdmin("badgeOperations"), tAdmin("badgeAi")]}
+          title={tAdmin("asideTitle")}
+          description={tAdmin("asideDescription")}
+        >
+          <AuthAsideHighlights
+            items={[tAdmin("asideHighlight1"), tAdmin("asideHighlight2"), tAdmin("asideHighlight3")]}
+          />
+        </AuthAsidePanel>
 
         {loadingStep !== null && <AuthLoadingOverlay currentStep={loadingStep} />}
       </section>

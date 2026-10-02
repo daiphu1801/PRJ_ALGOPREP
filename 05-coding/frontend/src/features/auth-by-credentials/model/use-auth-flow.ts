@@ -29,6 +29,8 @@ import {
 export const LOADING_STEP_COUNT = 4;
 const LOADING_STEP_DELAY_MS = 500;
 const OTP_RESEND_COOLDOWN_MS = 60_000;
+/** Any non-empty string the mock does not treat as a wrong password. Long enough for `loginSchema`. */
+const QUICK_LOGIN_PASSWORD = "demo1234";
 
 type FieldValues = Record<string, string | boolean>;
 
@@ -122,6 +124,32 @@ export function useAuthFlow(initialMode: AuthMode, loginFn: (input: LoginInput) 
     }
   }, [fields, runLoadingOverlayThenNavigate]);
 
+  /** Everything after the input is valid. Split out so `quickLogin` can reach it without going
+      through the form fields — the two differ only in where the credentials come from. */
+  const runLogin = useCallback(
+    async (input: LoginInput) => {
+      setIsSubmitting(true);
+      try {
+        const outcome = await loginFn(input);
+        if (!outcome.ok) {
+          setFieldErrors(outcome.fieldErrors);
+          return;
+        }
+        if (outcome.deactivated) {
+          // Stays on `login` — deactivated-recovery is a variant, not a new mode
+          // (02-bd/screens/shared/SHR0101_auth.md Sheet 3).
+          setDeactivatedBanner(true);
+          return;
+        }
+        await runLoadingOverlayThenNavigate(outcome.role);
+      } finally {
+        setIsSubmitting(false);
+        setLoadingStep(null);
+      }
+    },
+    [loginFn, runLoadingOverlayThenNavigate],
+  );
+
   const submitLogin = useCallback(async () => {
     const parsed = loginSchema.safeParse({
       identifier: fields.identifier ?? "",
@@ -132,25 +160,29 @@ export function useAuthFlow(initialMode: AuthMode, loginFn: (input: LoginInput) 
       setFieldErrors(zodErrorsToFieldErrors(parsed.error));
       return;
     }
-    setIsSubmitting(true);
-    try {
-      const outcome = await loginFn(parsed.data);
-      if (!outcome.ok) {
-        setFieldErrors(outcome.fieldErrors);
-        return;
-      }
-      if (outcome.deactivated) {
-        // Stays on `login` — deactivated-recovery is a variant, not a new mode
-        // (02-bd/screens/shared/SHR0101_auth.md Sheet 3).
-        setDeactivatedBanner(true);
-        return;
-      }
-      await runLoadingOverlayThenNavigate(outcome.role);
-    } finally {
-      setIsSubmitting(false);
-      setLoadingStep(null);
-    }
-  }, [fields, loginFn, runLoadingOverlayThenNavigate]);
+    await runLogin(parsed.data);
+  }, [fields, runLogin]);
+
+  /**
+   * One-click login with a canned identifier, for the mock-data quick-login panel. It does NOT set
+   * the fields and then submit: `submit` reads `fields` through a closure, so a value written in
+   * the same tick would not be visible to it. The credentials go straight to `runLogin`, and the
+   * inputs are filled only so the screen shows what was used.
+   *
+   * The identifiers are the reserved ones the mock recognises
+   * (`entities/auth/api/__mock__/fake-auth.ts`: `admin` → ADMIN, `instructor` → INSTRUCTOR, anything
+   * else → STUDENT); the password is any string except the literal `wrong`.
+   */
+  const quickLogin = useCallback(
+    (identifier: string) => {
+      setModeState("login");
+      setFieldErrors({});
+      setDeactivatedBanner(false);
+      setFields({ identifier, password: QUICK_LOGIN_PASSWORD });
+      return runLogin({ identifier, password: QUICK_LOGIN_PASSWORD, rememberMe: false });
+    },
+    [runLogin],
+  );
 
   const submitOAuth = useCallback(
     async (provider: "google" | "github") => {
@@ -283,6 +315,7 @@ export function useAuthFlow(initialMode: AuthMode, loginFn: (input: LoginInput) 
     otpAttemptsLeft,
     otpCooldownUntil,
     submit,
+    quickLogin,
     submitOAuth,
     submitCancelDeactivation,
     submitResendOtp,

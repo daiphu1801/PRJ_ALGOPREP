@@ -25,17 +25,27 @@ import {
   type PromptStatus,
   type RubricKey,
 } from "../api";
+import {
+  addModelPrice,
+  aiBudgetSettings,
+  removeModelPrice,
+  renameModelPrice,
+  setModelPriceValue,
+  useModelPrices,
+} from "@/entities/ai-budget";
 import { useT } from "@/shared/i18n";
 import {
   Badge,
   Button,
   Card,
+  ManagedListDialog,
   Modal,
   NoticeTile,
   NumberStepper,
   PageHeader,
   ProgressBar,
   SettingRow,
+  TextField,
   Toggle,
   type BadgeVariant,
 } from "@/shared/ui";
@@ -59,6 +69,9 @@ export function AdminAiConfigView() {
   const t = useT("adminAiConfig");
   const [page, setPage] = useState<AiConfigPage>(fetchAiConfigPage);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [pricesOpen, setPricesOpen] = useState(false);
+  const budgetSettings = aiBudgetSettings.use();
+  const modelPrices = useModelPrices();
 
   const total = totalWeight(page.rubricWeights);
   const weightsBalanced = total === 100;
@@ -218,6 +231,34 @@ export function AdminAiConfigView() {
             </div>
           </Card>
 
+          <Card title={t("budget.title")} description={t("budget.subtitle")}>
+            <div className="flex flex-col gap-2.5">
+              <SettingRow label={t("budget.warnLabel")} description={t("budget.warnMeta")}>
+                <NumberStepper
+                  value={budgetSettings.warnPercent}
+                  onValueChange={(warnPercent) => aiBudgetSettings.set({ warnPercent })}
+                  label={t("budget.warnLabel")}
+                  min={1}
+                  max={100}
+                  step={5}
+                  format={(value) => `${value}%`}
+                  decrementLabel={t("budget.warnDecrement")}
+                  incrementLabel={t("budget.warnIncrement")}
+                />
+              </SettingRow>
+              <SettingRow label={t("budget.pricesLabel")} description={t("budget.pricesMeta")}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="border border-[var(--color-border)]"
+                  onClick={() => setPricesOpen(true)}
+                >
+                  {t("budget.manage")}
+                </Button>
+              </SettingRow>
+            </div>
+          </Card>
+
           <Card title={t("guardsTitle")}>
             <div className="flex flex-col gap-2.5">
               {GUARD_KEYS.map((key) => (
@@ -287,6 +328,42 @@ export function AdminAiConfigView() {
           ))}
         </ul>
       </Modal>
+
+      <ManagedListDialog
+        open={pricesOpen}
+        onClose={() => setPricesOpen(false)}
+        items={modelPrices}
+        usage={{}}
+        onAdd={addModelPrice}
+        onRename={renameModelPrice}
+        onRemove={removeModelPrice}
+        renderExtra={(item) => (
+          <TextField
+            label={t("budget.dialog.priceLabel", { name: item.label })}
+            hideLabel
+            type="number"
+            min={0}
+            step="0.1"
+            value={String(item.usdPerMillionTokens)}
+            onChange={(event) => setModelPriceValue(item.key, Math.max(0, Number(event.target.value) || 0))}
+            wrapperClassName="w-24"
+          />
+        )}
+        labels={{
+          title: t("budget.dialog.title"),
+          hint: t("budget.dialog.hint"),
+          nameLabel: t("budget.dialog.nameLabel"),
+          newLabel: t("budget.dialog.newLabel"),
+          newPlaceholder: t("budget.dialog.newPlaceholder"),
+          add: t("budget.dialog.add"),
+          save: t("budget.dialog.save"),
+          delete: t("budget.dialog.delete"),
+          close: t("budget.dialog.close"),
+          usage: () => "",
+          deleteBlocked: () => "",
+          error: { empty: t("budget.dialog.errorEmpty"), duplicate: t("budget.dialog.errorDuplicate") },
+        }}
+      />
     </div>
   );
 }

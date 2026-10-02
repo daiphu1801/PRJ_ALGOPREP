@@ -41,6 +41,18 @@ export function fakeActiveUsersSummary(): Promise<StatSummary> {
   });
 }
 
+// Moved here from the user-management stat strip when that strip was removed (owner instruction
+// 2026-10-01: KPIs live on the overview page only). Value and meaning from the old ADM0201 card:
+// reset-password requests sent in the last 24 hours.
+export function fakePasswordResetsSummary(): Promise<StatSummary> {
+  return delay({
+    value: 6,
+    deltaPercent: 20,
+    deltaDirection: "up",
+    sparklineSeries: [3, 4, 2, 5, 4, 5, 6],
+  });
+}
+
 export function fakeSubmissionsByLanguage(): Promise<SubmissionsByLanguage> {
   // dc.html:428-432 (langLegend order Python/C++/Java, barSeed shared across all 3 series in the
   // static mock — kept as one representative wave per language here since the prototype's own bar
@@ -75,7 +87,7 @@ export function fakeVerdictDistribution(): Promise<VerdictDistribution> {
 export function fakeDifficultyBreakdown(): Promise<DifficultyBreakdown> {
   // dc.html:454-467 (difficultyLegend/diffData) use "AI sinh"/"Giảng viên soạn" as the 2-series
   // labels — kept here ONLY as colors/proportions reference. The labels themselves are
-  // deliberately NOT copied 1:1: 02-bd/screens/admin/admin_overview.md section 2 point 4 already
+  // deliberately NOT copied 1:1: 02-bd/screens/admin/ADM0101_overview.md section 2 point 4 already
   // decided (DEC-2026-0831-admin-overview-dashboard-stats) that "nguồn gốc bài toán" (AI-authored vs.
   // instructor-authored) is not a real attribute in problem-bank, and replaced the axis with
   // Tổng lượt nộp / Accepted — a real, derivable pair. Visual shape (2 bars x 3 difficulty groups,

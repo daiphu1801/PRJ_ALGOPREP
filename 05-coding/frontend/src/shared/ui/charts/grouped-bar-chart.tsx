@@ -1,7 +1,7 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 //
 // Reused twice per BD: difficulty breakdown (3 groups x 2 bars) and new/returning users
-// (6 groups x 2 bars) — 02-bd/screens/admin/admin_overview.md section 3. Generic group/bar list,
+// (6 groups x 2 bars) — 02-bd/screens/admin/ADM0101_overview.md section 3. Generic group/bar list,
 // no domain type — shared/ui.
 type Bar = { label: string; value: number; colorVar: string };
 type Group = { label: string; bars: Bar[] };

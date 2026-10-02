@@ -7,21 +7,12 @@
 //     normal priority, which is what they would be once rejudge no longer exists.
 import type {
   ClusterControls,
-  ClusterKpi,
   InfraEvent,
   QueueJob,
   QueueLatency,
   QueuePage,
   Worker,
 } from "../../model/types";
-
-// dc.html:440-445.
-const KPIS: ClusterKpi[] = [
-  { key: "waiting", value: "14", colorVar: "--color-admin-teal" },
-  { key: "running", value: "6", colorVar: "--color-admin-warn" },
-  { key: "throughput", value: "38/phút", colorVar: "--color-success" },
-  { key: "failed24h", value: "3", colorVar: "--color-admin-negative" },
-];
 
 // dc.html:452-457.
 const WORKERS: Worker[] = [
@@ -35,7 +26,6 @@ const WORKERS: Worker[] = [
 const CONTROLS: ClusterControls = {
   paused: false,
   autoscale: true,
-  highPriorityFirst: true,
 };
 
 // dc.html:477 minus the rejudge queue.
@@ -66,7 +56,6 @@ const INFRA_EVENTS: InfraEvent[] = [
 
 export function fetchQueuePage(): QueuePage {
   return {
-    kpis: KPIS.map((kpi) => ({ ...kpi })),
     workers: WORKERS.map((worker) => ({ ...worker })),
     controls: { ...CONTROLS },
     latency: LATENCY.map((item) => ({ ...item })),

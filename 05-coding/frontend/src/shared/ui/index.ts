@@ -1,4 +1,7 @@
 export { Button } from "./button";
+export { IconAction } from "./icon-action";
+export { ManagedListDialog, type ManagedListLabels } from "./managed-list-dialog";
+export { ParamsDialog, type ParamField, type ParamValues } from "./params-dialog";
 export { Skeleton } from "./skeleton";
 export { EmptyState } from "./empty-state";
 export { ErrorState } from "./error-state";
@@ -25,6 +28,7 @@ export { NavLink } from "./nav-link";
 export { NavGroupHeader } from "./nav-group-header";
 export { ThemeLangSwitcher } from "./theme-lang-switcher";
 export { LiquidGlassBackdrop } from "./liquid-glass-backdrop";
+export { AuthAsidePanel, AuthAsideHighlights } from "./auth-aside-panel";
 export { StatCardWithSparkline } from "./charts/stat-card-with-sparkline";
 export { HorizontalBarChart } from "./charts/horizontal-bar-chart";
 export { HalfDonutGauge } from "./charts/half-donut-gauge";

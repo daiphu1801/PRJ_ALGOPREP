@@ -5,7 +5,12 @@
 //
 // The stat figures are adjusted to stay self-consistent with two states: the mockup shows 27 total
 // / 24 published / 2 draft, which leaves one row unaccounted for — that row was the hidden one.
-import type { AdminProblem, AdminProblemPage, ProblemStat } from "../../model/types";
+import type {
+  AdminProblem,
+  AdminProblemPage,
+  AttentionItem,
+  TopicDistributionItem,
+} from "../../model/types";
 
 const PROBLEMS: AdminProblem[] = [
   { code: "#121", title: "Best Time to Buy and Sell Stock", topic: "Array", difficulty: "easy", status: "published", submissionCount: 4120, acceptedRate: 68, testcaseCount: 20, editedLabel: "3 ngày trước" },
@@ -31,17 +36,41 @@ const PROBLEMS: AdminProblem[] = [
   { code: "#987", title: "Vertical Order Traversal", topic: "Tree", difficulty: "hard", status: "published", submissionCount: 210, acceptedRate: 22, testcaseCount: 20, editedLabel: "2 tuần trước" },
 ];
 
-// dc.html:477-482, "Đã xuất bản" recounted for the two-state lifecycle.
-const STATS: ProblemStat[] = [
-  { key: "total", value: "27", delta: "+3", deltaColorVar: "--color-success" },
-  { key: "published", value: "25", delta: "93%", deltaColorVar: "--color-success" },
-  { key: "draft", value: "2", delta: "+2", deltaColorVar: "--color-admin-warn" },
-  { key: "acceptedRate", value: "52%", delta: "−2%", deltaColorVar: "--color-admin-warn" },
-];
+// Both side blocks are derived from the rows above, never typed in: the prototype's "486 bài trên
+// 12 chủ đề" contradicts its own 27-row screen (02-bd/screens/shared/SHR0201_problem_management.md
+// section 4.4), so the numbers must come from the dataset actually shown.
+function topicDistribution(): TopicDistributionItem[] {
+  const counts = new Map<string, number>();
+  for (const problem of PROBLEMS) counts.set(problem.topic, (counts.get(problem.topic) ?? 0) + 1);
+  return [...counts.entries()]
+    .sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0]))
+    .map(([topicName, count]) => ({
+      topicName,
+      count,
+      percent: Math.round((count / PROBLEMS.length) * 100),
+    }));
+}
+
+// The four auto-detected rules (BD Sheet 5 area F). The mock rows carry no publish history, so
+// "hiddenFromLearners" and "staleDraft" cannot be derived and stay at 0 until the API exists.
+function attention(): AttentionItem[] {
+  return [
+    { ruleCode: "noTestcase", count: PROBLEMS.filter((problem) => problem.testcaseCount === 0).length },
+    {
+      ruleCode: "lowAcceptRate",
+      count: PROBLEMS.filter(
+        (problem) => problem.status === "published" && problem.acceptedRate < 30,
+      ).length,
+    },
+    { ruleCode: "hiddenFromLearners", count: 0 },
+    { ruleCode: "staleDraft", count: 0 },
+  ];
+}
 
 export function fetchAdminProblemPage(): AdminProblemPage {
   return {
-    stats: STATS.map((stat) => ({ ...stat })),
+    topicDistribution: topicDistribution(),
+    attention: attention(),
     problems: PROBLEMS.map((problem) => ({ ...problem })),
     totalProblems: 27,
     publishedCount: 25,

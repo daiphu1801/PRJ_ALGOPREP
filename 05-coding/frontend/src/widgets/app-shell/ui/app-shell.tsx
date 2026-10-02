@@ -19,7 +19,7 @@ type AppShellProps = {
  * Shared application shell. Each authenticated area gets its own chrome, because each one has
  * its own prototype: `instructor` a sidebar + blob backdrop (added 2026-09-27), `student` a
  * top-nav header (added 2026-09-27, see the `student` branch below). `admin` gets the real shell per
- * 02-bd/screens/admin/admin_overview.md section 2 point 1: a sidebar (11 nav destinations, shared
+ * 02-bd/screens/admin/ADM0101_overview.md section 2 point 1: a sidebar (11 nav destinations, shared
  * across ALL Admin screens, not specific to admin_overview) + toolbar — this is why the sidebar
  * was added HERE instead of a one-off widget under views/admin-overview (it must show up on the
  * other 10 stub Admin pages too). Ran `impact` on AppShell before this edit

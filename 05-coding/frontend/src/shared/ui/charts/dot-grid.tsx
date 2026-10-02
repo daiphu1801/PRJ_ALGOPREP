@@ -1,6 +1,6 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 //
-// 7x10 dot grid (submissions-by-day block, 02-bd/screens/admin/admin_overview.md section 3).
+// 7x10 dot grid (submissions-by-day block, 02-bd/screens/admin/ADM0101_overview.md section 3).
 // Generic column/intensity list, no domain type — shared/ui.
 type DotColumn = { label: string; intensity: number };
 

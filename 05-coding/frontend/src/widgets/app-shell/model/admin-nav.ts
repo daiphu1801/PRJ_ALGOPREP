@@ -1,6 +1,6 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 //
-// The 11 Admin nav destinations from 02-bd/screens/admin/admin_overview.md section 6, grouped as
+// The 11 Admin nav destinations from 02-bd/screens/admin/ADM0101_overview.md section 6, grouped as
 // the prototype groups them (Nội dung/Vận hành/AI/Hệ thống — dòng 386-389 of
 // 09-layoutBase/Admin - Tổng quan.dc.html). Links point at routes that already exist as stub
 // pages (app/(admin)/admin/**), never at a 404 — per this task's instruction. "Chấm lại"
@@ -84,7 +84,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
  * The "KHÁC" footer group (BD section 2 point 6, section 6 — dòng 403-407). `settings` here
  * intentionally reuses the `languageConfig` route, matching a known quirk BD flags for DD to fix
  * (the prototype's "Cài đặt" link points at the wrong destination) — kept as-is rather than
- * silently invented, [SoT: 02-bd/screens/admin/admin_overview.md section 2 point 6].
+ * silently invented, [SoT: 02-bd/screens/admin/ADM0101_overview.md section 2 point 6].
  */
 export const ADMIN_NAV_MISC: AdminNavMiscItem[] = [
   { key: "settings", href: "/admin/language-config", labelKey: "settings", icon: Settings },

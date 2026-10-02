@@ -29,18 +29,20 @@ import {
   type AdminUserStatus,
 } from "../api";
 import { useT } from "@/shared/i18n";
+import { checkLock } from "../model/guards";
+import { AddAccountDialog } from "./add-account-dialog";
 import {
   Badge,
   Button,
   Card,
   ConfirmDialog,
+  Modal,
   DataTable,
   PageHeader,
   Pagination,
   RankedProgressList,
   SegmentedTabs,
   SettingRow,
-  StatCard,
   TextField,
   type BadgeVariant,
   type DataTableColumn,
@@ -74,6 +76,8 @@ const PAGE_SIZE = 20;
 export function AdminUserManagementView() {
   const t = useT("adminUserManagement");
   const [page] = useState(fetchAdminUserPage);
+  const [accounts, setAccounts] = useState(page.users);
+  const [adding, setAdding] = useState(false);
   const [query, setQuery] = useState("");
   const [role, setRole] = useState<RoleFilter>("all");
   const [status, setStatus] = useState<StatusFilter>("all");
@@ -83,7 +87,7 @@ export function AdminUserManagementView() {
   // Role, status and free text combine with AND — same as the mockup's own filter (dc.html:449-453).
   const users = useMemo(() => {
     const needle = query.trim().toLowerCase();
-    return page.users.filter(
+    return accounts.filter(
       (user) =>
         (role === "all" || user.role === role) &&
         (status === "all" || user.status === status) &&
@@ -91,7 +95,9 @@ export function AdminUserManagementView() {
           user.name.toLowerCase().includes(needle) ||
           user.email.toLowerCase().includes(needle)),
     );
-  }, [page.users, query, role, status]);
+  }, [accounts, query, role, status]);
+
+  const lockCheck = checkLock(accounts, selected, page.currentUserEmail);
 
   function toggleRow(key: string) {
     setSelected((prev) => {
@@ -188,23 +194,11 @@ export function AdminUserManagementView() {
         title={t("title")}
         description={t("subtitle")}
         actions={
-          <Button variant="cta" size="sm">
+          <Button variant="cta" size="sm" onClick={() => setAdding(true)}>
             {t("addAccount")}
           </Button>
         }
       />
-
-      <div className="mb-4 grid gap-3.5 [grid-template-columns:repeat(auto-fit,minmax(200px,1fr))]">
-        {page.stats.map((stat) => (
-          <StatCard
-            key={stat.key}
-            label={t(`stat.${stat.key}.label`)}
-            value={stat.value}
-            delta={<span style={{ color: `var(${stat.deltaColorVar})` }}>{stat.delta}</span>}
-            meta={t(`stat.${stat.key}.meta`)}
-          />
-        ))}
-      </div>
 
       <Card className="mb-4 min-w-0 px-[18px] py-4">
         <div className="mb-3.5 flex flex-wrap items-center gap-2.5">
@@ -239,7 +233,7 @@ export function AdminUserManagementView() {
             ]}
           />
           <span className="ml-auto text-[12.5px] whitespace-nowrap text-[var(--color-text-muted)]">
-            {t("resultCount", { shown: users.length, total: page.users.length })}
+            {t("resultCount", { shown: users.length, total: accounts.length })}
           </span>
         </div>
 
@@ -326,11 +320,42 @@ export function AdminUserManagementView() {
         </Card>
       </div>
 
+      <AddAccountDialog
+        open={adding}
+        onClose={() => setAdding(false)}
+        existingEmails={new Set(accounts.map((account) => account.email))}
+        onCreate={(user) => setAccounts((previous) => [user, ...previous])}
+      />
+
+      {/* "At least one active ADMIN always remains" is a hard block; locking yourself only warns. */}
+      <Modal
+        open={confirmingLock && lockCheck.blockedLastAdmin}
+        onClose={() => setConfirmingLock(false)}
+        title={t("lockBlockedTitle")}
+        footer={
+          <Button
+            variant="ghost"
+            size="sm"
+            className="border border-[var(--color-border)]"
+            onClick={() => setConfirmingLock(false)}
+          >
+            {t("lockBlockedClose")}
+          </Button>
+        }
+      >
+        <p className="text-[13px]">{t("lockBlockedBody")}</p>
+      </Modal>
+
       <ConfirmDialog
-        open={confirmingLock}
+        open={confirmingLock && !lockCheck.blockedLastAdmin}
         onClose={() => setConfirmingLock(false)}
         onConfirm={() => {
-          // No endpoint yet — clearing the selection is the visible outcome of a successful lock.
+          // No endpoint yet — the rows flip to locked locally and the selection clears.
+          setAccounts((previous) =>
+            previous.map((account) =>
+              selected.has(account.email) ? { ...account, status: "locked" } : account,
+            ),
+          );
           setSelected(new Set());
           setConfirmingLock(false);
         }}
@@ -340,6 +365,11 @@ export function AdminUserManagementView() {
         destructive
       >
         {t("confirmLockBody", { count: selected.size })}
+        {lockCheck.includesSelf ? (
+          <span className="mt-2 block font-semibold text-[var(--color-admin-warn)]">
+            {t("confirmLockSelfWarning")}
+          </span>
+        ) : null}
       </ConfirmDialog>
     </div>
   );

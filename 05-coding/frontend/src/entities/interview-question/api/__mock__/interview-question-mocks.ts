@@ -1,7 +1,7 @@
 // PROTOTYPE mock — no backend endpoint exists yet.
 // Questions from 09-layoutBase/Admin - Câu hỏi phỏng vấn.dc.html:381-409; the "Dùng N lần · điểm TB
 // X/5" string there is split into two fields so the screen can format it per locale.
-import type { InterviewQuestion, InterviewQuestionPage, QuestionStat } from "../../model/types";
+import type { InterviewQuestion, InterviewQuestionPage } from "../../model/types";
 
 // Student-facing fields below are [SoT: Suy luận] where noted — USR0402 has no prototype to
 // reference (01-rd/screens/users/USR0402_interview_question_detail.md mục 1), so content is
@@ -307,17 +307,8 @@ const QUESTIONS: InterviewQuestion[] = [
   },
 ];
 
-// dc.html:428-433.
-const STATS: QuestionStat[] = [
-  { key: "total", value: "148", delta: "+9", deltaColorVar: "--color-success" },
-  { key: "withRubric", value: "131", delta: "89%", deltaColorVar: "--color-success" },
-  { key: "averageScore", value: "3.5", delta: "−0.2", deltaColorVar: "--color-admin-warn" },
-  { key: "neverUsed", value: "11", delta: "", deltaColorVar: "--color-text-subtle" },
-];
-
 export function fetchInterviewQuestionPage(): InterviewQuestionPage {
   return {
-    stats: STATS.map((stat) => ({ ...stat })),
     questions: QUESTIONS.map((question) => ({ ...question })),
     totalQuestions: 148,
   };

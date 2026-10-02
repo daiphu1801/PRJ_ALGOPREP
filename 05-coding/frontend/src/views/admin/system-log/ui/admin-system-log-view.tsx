@@ -24,16 +24,18 @@ import {
   type AuditEvent,
 } from "../api";
 import { useT } from "@/shared/i18n";
+import { logSettings, type ExpiryPolicy } from "../model/settings";
+import { ExportLogDialog } from "./export-log-dialog";
 import {
   Badge,
   Button,
   Card,
   EmptyState,
   PageHeader,
+  ParamsDialog,
   RankedProgressList,
   SegmentedTabs,
   SettingRow,
-  StatCard,
   TextField,
   type BadgeVariant,
 } from "@/shared/ui";
@@ -63,6 +65,9 @@ export function AdminSystemLogView() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<CategoryFilter>("all");
   const [live, setLive] = useState(true);
+  const settings = logSettings.use();
+  const [editingRetention, setEditingRetention] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   // Category and free text combine with AND, matching the prototype's own filter (dc.html:414-418).
   // Search covers service, actor and event id — not the message — because the BD rules out a
@@ -105,25 +110,20 @@ export function AdminSystemLogView() {
               />
               {live ? t("liveOn") : t("liveOff")}
             </Button>
-            <Button variant="cta" size="sm">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="border border-[var(--color-border)]"
+              onClick={() => setEditingRetention(true)}
+            >
+              {t("retention.open")}
+            </Button>
+            <Button variant="cta" size="sm" onClick={() => setExporting(true)}>
               {t("export")}
             </Button>
           </>
         }
       />
-
-      <div className="mb-4 grid gap-3.5 [grid-template-columns:repeat(auto-fit,minmax(190px,1fr))]">
-        {page.stats.map((stat) => (
-          <StatCard
-            key={stat.key}
-            label={t(`stat.${stat.key}.label`)}
-            value={stat.value}
-            delta={stat.delta}
-            meta={t(`stat.${stat.key}.meta`)}
-            valueColorVar={stat.colorVar}
-          />
-        ))}
-      </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(290px,0.42fr)]">
         <Card className="min-w-0 px-[18px] py-4">
@@ -223,6 +223,35 @@ export function AdminSystemLogView() {
           </Card>
         </div>
       </div>
+
+      <ParamsDialog
+        open={editingRetention}
+        onClose={() => setEditingRetention(false)}
+        title={t("retention.title")}
+        values={{ retentionDays: String(settings.retentionDays), expiry: settings.expiry }}
+        fields={[
+          { type: "number", key: "retentionDays", label: t("retention.days"), unit: t("retention.daysUnit"), min: 1 },
+          {
+            type: "select",
+            key: "expiry",
+            label: t("retention.policy"),
+            hint: t("retention.hint"),
+            options: [
+              { value: "delete", label: t("retention.policyDelete") },
+              { value: "archive", label: t("retention.policyArchive") },
+            ],
+          },
+        ]}
+        onSave={(values) =>
+          logSettings.set({
+            retentionDays: Number(values.retentionDays),
+            expiry: values.expiry as ExpiryPolicy,
+          })
+        }
+        labels={{ save: t("retention.save"), cancel: t("retention.cancel"), errorMin: (min) => t("retention.errorMin", { min }) }}
+      />
+
+      <ExportLogDialog open={exporting} onClose={() => setExporting(false)} />
     </div>
   );
 }

@@ -37,17 +37,10 @@ export type Worker = {
   meta: string;
 };
 
-export type ClusterKpi = {
-  key: string;
-  value: string;
-  colorVar: string;
-};
-
 /** Cluster controls that actually act on the queue (F4-10 includes operating what it monitors). */
 export type ClusterControls = {
   paused: boolean;
   autoscale: boolean;
-  highPriorityFirst: boolean;
 };
 
 export type QueueLatency = {
@@ -68,7 +61,6 @@ export type InfraEvent = {
 };
 
 export type QueuePage = {
-  kpis: ClusterKpi[];
   workers: Worker[];
   controls: ClusterControls;
   latency: QueueLatency[];

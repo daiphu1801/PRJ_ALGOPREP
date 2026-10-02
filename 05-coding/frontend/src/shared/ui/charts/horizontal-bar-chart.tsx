@@ -1,7 +1,7 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 //
 // Multi-series bar chart (submissions-by-language block: 3 fixed series, one per submission
-// language — 02-bd/screens/admin/admin_overview.md section 3). Takes only generic series/points,
+// language — 02-bd/screens/admin/ADM0101_overview.md section 3). Takes only generic series/points,
 // no domain type — shared/ui.
 type Series = {
   label: string;
@@ -17,7 +17,7 @@ type HorizontalBarChartProps = {
 
 // BD component inventory explicitly flags this as a required addition, not optional: "trục hoành
 // cần nhãn thời gian (thiếu ở prototype, phải bổ sung khi build FE)"
-// (02-bd/screens/admin/admin_overview.md section 3). `pointLabels` was already threaded through as
+// (02-bd/screens/admin/ADM0101_overview.md section 3). `pointLabels` was already threaded through as
 // data (used for `title`/`aria-label`) but never rendered as visible text — this is what closes
 // that gap. With up to 20 points (dc.html's "20 mốc"), printing all 20 under a narrow mid-column
 // widget would overlap into an unreadable smear, so only every Nth label is drawn (plus the last

@@ -5,14 +5,7 @@
 //   - the "Phiên chấm lại đã chạy" stat card is gone (3 cards, not 4),
 //   - the 15:18:02 "#RJ-0139" event is gone (9 events, not 10),
 //   - the "Chấm lại" category is gone (4 categories, not 5).
-import type { ActiveAdmin, AuditEvent, AuditLogPage, AuditStat, CategoryCount } from "../../model/types";
-
-// dc.html:395-400, fourth row dropped.
-const STATS: AuditStat[] = [
-  { key: "adminActions24h", value: 46, delta: "+9" },
-  { key: "permissionChanges", value: 5, delta: "+2", colorVar: "--color-success" },
-  { key: "accountLocks", value: 3, delta: "0", colorVar: "--color-admin-warn" },
-];
+import type { ActiveAdmin, AuditEvent, AuditLogPage, CategoryCount } from "../../model/types";
 
 // dc.html:402-413, the rejudge row dropped.
 const EVENTS: AuditEvent[] = [
@@ -126,7 +119,6 @@ const TOTAL_EVENTS = 12408;
 
 export function fetchAuditLogPage(): AuditLogPage {
   return {
-    stats: STATS.map((stat) => ({ ...stat })),
     events: EVENTS.map((event) => ({ ...event })),
     activeAdmins: ACTIVE_ADMINS.map((admin) => ({ ...admin })),
     breakdown: BREAKDOWN.map((item) => ({ ...item })),

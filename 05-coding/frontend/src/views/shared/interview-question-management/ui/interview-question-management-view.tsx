@@ -1,12 +1,13 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md section 9.
 //
 // Layout follows 09-layoutBase/Admin - Câu hỏi phỏng vấn.dc.html: header with a CSV import and a
-// "Câu hỏi mới" CTA (:147-149), stat cards (:151-163), a filter bar (:165-183), then a card grid
-// (:185-233) and numbered paging (:235-247).
+// "Câu hỏi mới" CTA (:147-149), a filter bar (:165-183), then the list and numbered paging
+// (:235-247).
 //
-// Card grid, not a table: each question carries follow-ups and a weighted rubric, which a row
-// cannot hold without truncating the thing the screen exists to show. The card lives in
-// entities/interview-question so the student-facing bank screen can reuse it.
+// List, not cards: same DataTable layout as problem-management so the two admin bank screens read
+// alike (owner instruction 2026-10-01). Follow-ups and rubric show as counts; their full text lives
+// on the edit screen. InterviewQuestionCard stays in entities/interview-question for the
+// student-facing bank screen.
 //
 // FIVE topics, per DEC-2026-0830-interview-bank-crud — the taxonomy that replaced a stale set of
 // four. A2 and A3 both edit the entire bank, with no "only what I authored" restriction.
@@ -14,37 +15,54 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { Copy, Pencil, Search, Tags, Trash2 } from "lucide-react";
 import {
   QUESTION_LEVELS,
-  QUESTION_TOPICS,
   fetchInterviewQuestionPage,
-  InterviewQuestionCard,
+  topicLabel,
+  useInterviewTopics,
   type InterviewQuestion,
   type QuestionLevel,
   type QuestionTopic,
 } from "@/entities/interview-question";
 import { useT } from "@/shared/i18n";
 import {
+  Badge,
   Button,
   Card,
   ConfirmDialog,
-  EmptyState,
+  DataTable,
+  IconAction,
   PageHeader,
   Pagination,
   SegmentedTabs,
-  StatCard,
   TextField,
+  type BadgeVariant,
+  type DataTableColumn,
 } from "@/shared/ui";
+import { TopicManagerDialog } from "./topic-manager-dialog";
 
-const PAGE_SIZE = 6;
+const LEVEL_VARIANT: Record<QuestionLevel, BadgeVariant> = {
+  easy: "success",
+  medium: "warn",
+  hard: "negative",
+};
+
+const PAGE_SIZE = 8;
 
 type TopicFilter = QuestionTopic | "all";
 type LevelFilter = QuestionLevel | "all";
 
-export function InterviewQuestionManagementView() {
+type Props = {
+  /** Topic management is ADMIN-only; the screen is shared with INSTRUCTOR, who may only pick topics. */
+  canManageTopics?: boolean;
+};
+
+export function InterviewQuestionManagementView({ canManageTopics = false }: Props) {
   const t = useT("interviewQuestionManagement");
   const [page] = useState(fetchInterviewQuestionPage);
+  const topicList = useInterviewTopics();
+  const [managingTopics, setManagingTopics] = useState(false);
   const [query, setQuery] = useState("");
   const [topic, setTopic] = useState<TopicFilter>("all");
   const [level, setLevel] = useState<LevelFilter>("all");
@@ -65,6 +83,16 @@ export function InterviewQuestionManagementView() {
     );
   }, [page.questions, deletedCodes, query, topic, level]);
 
+  // Questions still on screen (not locally deleted) per topic, so the manager can refuse deleting a
+  // topic that is in use.
+  const topicUsage = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const question of page.questions) {
+      if (!deletedCodes.has(question.code)) counts[question.topic] = (counts[question.topic] ?? 0) + 1;
+    }
+    return counts;
+  }, [page.questions, deletedCodes]);
+
   const visible = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   function resetToFirstPage<T>(setter: (value: T) => void) {
@@ -74,6 +102,109 @@ export function InterviewQuestionManagementView() {
     };
   }
 
+  const columns: DataTableColumn<InterviewQuestion>[] = [
+    {
+      key: "code",
+      header: t("columnCode"),
+      width: "92px",
+      render: (question) => (
+        <span className="font-mono text-xs text-[var(--color-text-muted)]">{question.code}</span>
+      ),
+    },
+    {
+      key: "question",
+      header: t("columnQuestion"),
+      render: (question) => (
+        <Link
+          href={`/admin/interview-questions/${question.code}`}
+          className="block truncate font-semibold hover:underline"
+        >
+          {question.question}
+        </Link>
+      ),
+    },
+    {
+      key: "topic",
+      header: t("columnTopic"),
+      width: "140px",
+      render: (question) => (
+        <span className="block truncate text-[12.5px] text-[var(--color-text-muted)]">
+          {topicLabel(topicList, question.topic)}
+        </span>
+      ),
+    },
+    {
+      key: "level",
+      header: t("columnLevel"),
+      width: "116px",
+      render: (question) => (
+        <Badge variant={LEVEL_VARIANT[question.level]}>{t(`level.${question.level}`)}</Badge>
+      ),
+    },
+    {
+      key: "followUps",
+      header: t("columnFollowUps"),
+      width: "84px",
+      align: "right",
+      render: (question) => <span className="font-mono">{question.followUps.length}</span>,
+    },
+    {
+      key: "rubric",
+      header: t("columnRubric"),
+      width: "84px",
+      align: "right",
+      render: (question) => <span className="font-mono">{question.rubric.length}</span>,
+    },
+    {
+      key: "usage",
+      header: t("columnUsage"),
+      width: "96px",
+      align: "right",
+      render: (question) => (
+        <span className="font-mono text-[var(--color-text-muted)]">
+          {question.usageCount.toLocaleString("vi-VN")}
+        </span>
+      ),
+    },
+    {
+      key: "score",
+      header: t("columnScore"),
+      width: "76px",
+      align: "right",
+      render: (question) => (
+        <span className="font-mono font-semibold">{question.averageScore.toFixed(1)}</span>
+      ),
+    },
+    {
+      key: "actions",
+      header: "",
+      width: "128px",
+      align: "right",
+      render: (question) => (
+        <span className="flex justify-end gap-1">
+          <IconAction
+            icon={Pencil}
+            label={t("edit")}
+            ariaLabel={t("editQuestion", { code: question.code })}
+            href={`/admin/interview-questions/${question.code}`}
+          />
+          <IconAction
+            icon={Copy}
+            label={t("duplicate")}
+            ariaLabel={t("duplicateQuestion", { code: question.code })}
+          />
+          <IconAction
+            icon={Trash2}
+            label={t("delete")}
+            ariaLabel={t("deleteQuestion", { code: question.code })}
+            tone="danger"
+            onClick={() => setPendingDelete(question)}
+          />
+        </span>
+      ),
+    },
+  ];
+
   return (
     <div>
       <PageHeader
@@ -81,6 +212,17 @@ export function InterviewQuestionManagementView() {
         description={t("subtitle", { total: page.totalQuestions })}
         actions={
           <>
+            {canManageTopics ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="gap-1.5 border border-[var(--color-border)]"
+                onClick={() => setManagingTopics(true)}
+              >
+                <Tags aria-hidden="true" className="h-4 w-4" />
+                {t("manageTopics")}
+              </Button>
+            ) : null}
             <Button variant="ghost" size="sm" className="border border-[var(--color-border)]">
               {t("importCsv")}
             </Button>
@@ -91,24 +233,8 @@ export function InterviewQuestionManagementView() {
         }
       />
 
-      <div className="mb-4 grid gap-3.5 [grid-template-columns:repeat(auto-fit,minmax(200px,1fr))]">
-        {page.stats.map((stat) => (
-          <StatCard
-            key={stat.key}
-            label={t(`stat.${stat.key}.label`)}
-            value={stat.value}
-            delta={
-              stat.delta ? (
-                <span style={{ color: `var(${stat.deltaColorVar})` }}>{stat.delta}</span>
-              ) : undefined
-            }
-            meta={t(`stat.${stat.key}.meta`)}
-          />
-        ))}
-      </div>
-
-      <Card className="mb-4 px-4 py-3">
-        <div className="flex flex-wrap items-center gap-2.5">
+      <Card className="min-w-0 px-[18px] py-4">
+        <div className="mb-3.5 flex flex-wrap items-center gap-2.5">
           <TextField
             label={t("searchLabel")}
             hideLabel
@@ -127,7 +253,7 @@ export function InterviewQuestionManagementView() {
             onValueChange={resetToFirstPage(setTopic)}
             options={[
               { value: "all" as const, label: t("filterAll") },
-              ...QUESTION_TOPICS.map((key) => ({ value: key, label: t(`topic.${key}`) })),
+              ...topicList.map((topic) => ({ value: topic.key, label: topic.label })),
             ]}
           />
           <SegmentedTabs
@@ -143,56 +269,16 @@ export function InterviewQuestionManagementView() {
             {t("resultCount", { shown: filtered.length, total: page.questions.length })}
           </span>
         </div>
-      </Card>
 
-      {visible.length === 0 ? (
-        <Card>
-          <EmptyState>{t("emptyFiltered")}</EmptyState>
-        </Card>
-      ) : (
-        <div className="grid items-start gap-3.5 [grid-template-columns:repeat(auto-fill,minmax(340px,1fr))]">
-          {visible.map((question) => (
-            <InterviewQuestionCard
-              key={question.code}
-              question={question}
-              topicLabel={t(`topic.${question.topic}`)}
-              levelLabel={t(`level.${question.level}`)}
-              followUpsLabel={t("followUps")}
-              rubricLabel={t("rubric")}
-              usageLabel={t("usage", {
-                count: question.usageCount,
-                score: question.averageScore.toFixed(1),
-              })}
-              actions={
-                <>
-                  <Button
-                    asChild
-                    variant="ghost"
-                    size="sm"
-                    className="border border-[var(--color-border)]"
-                  >
-                    <Link href={`/admin/interview-questions/${question.code}`}>{t("edit")}</Link>
-                  </Button>
-                  <Button variant="ghost" size="sm" className="border border-[var(--color-border)]">
-                    {t("duplicate")}
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    aria-label={t("deleteQuestion", { code: question.code })}
-                    onClick={() => setPendingDelete(question)}
-                    className="border border-[var(--color-border)] px-2 text-[var(--color-admin-negative)]"
-                  >
-                    {t("delete")}
-                  </Button>
-                </>
-              }
-            />
-          ))}
-        </div>
-      )}
+        <DataTable
+          caption={t("tableCaption")}
+          columns={columns}
+          rows={visible}
+          rowKey={(question) => question.code}
+          emptyMessage={t("emptyFiltered")}
+          minWidth={1000}
+        />
 
-      <Card className="mt-4 px-4 py-2">
         <Pagination
           page={currentPage}
           pageSize={PAGE_SIZE}
@@ -207,9 +293,14 @@ export function InterviewQuestionManagementView() {
           nextLabel={t("next")}
           showPageNumbers
           pageLabel={(value) => t("goToPage", { page: value })}
-          className="pt-0"
         />
       </Card>
+
+      <TopicManagerDialog
+        open={managingTopics}
+        onClose={() => setManagingTopics(false)}
+        usage={topicUsage}
+      />
 
       <ConfirmDialog
         open={pendingDelete !== null}

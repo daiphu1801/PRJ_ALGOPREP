@@ -1,18 +1,11 @@
 /**
  * Interview question bank (F6-13, DEC-2026-0830-interview-bank-crud).
  *
- * FIVE topics, replacing an earlier stale set of four — that decision settles the taxonomy.
  * A2 and A3 can edit the whole bank, not only questions they authored themselves.
+ * Topics are admin-managed data (DEC-2026-1001-admin-configurable-settings), so a question carries
+ * only the topic's stable key; labels come from `useInterviewTopics()` in ./topic-store.
  */
-export type QuestionTopic = "csTheory" | "systemDesign" | "database" | "language" | "behavioural";
-
-export const QUESTION_TOPICS: QuestionTopic[] = [
-  "csTheory",
-  "systemDesign",
-  "database",
-  "language",
-  "behavioural",
-];
+export type QuestionTopic = string;
 
 export type QuestionLevel = "easy" | "medium" | "hard";
 
@@ -80,15 +73,7 @@ export type AnswerAttempt = {
   nextSteps?: string;
 };
 
-export type QuestionStat = {
-  key: string;
-  value: string;
-  delta: string;
-  deltaColorVar: string;
-};
-
 export type InterviewQuestionPage = {
-  stats: QuestionStat[];
   questions: InterviewQuestion[];
   totalQuestions: number;
 };

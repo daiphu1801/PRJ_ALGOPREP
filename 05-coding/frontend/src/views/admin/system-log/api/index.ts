@@ -5,7 +5,6 @@ export {
   type AuditCategory,
   type AuditEvent,
   type AuditLogPage,
-  type AuditStat,
   type CategoryCount,
 } from "../model/types";
 export { fetchAuditLogPage } from "./__mock__/audit-log-mocks";

@@ -1,7 +1,7 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 //
 // Half-circle gauge, N colored slices summing to 100% — used for the 5-verdict distribution block
-// (AC/WA/TLE/RE/CE, 02-bd/screens/admin/admin_overview.md section 2 point 3). Generic slice list in,
+// (AC/WA/TLE/RE/CE, 02-bd/screens/admin/ADM0101_overview.md section 2 point 3). Generic slice list in,
 // no domain type — shared/ui.
 type GaugeSlice = {
   label: string;

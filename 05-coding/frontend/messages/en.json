@@ -93,12 +93,25 @@
       "credentialsInvalid": "Wrong username or password",
       "otpInvalid": "Incorrect verification code",
       "notInstructorAccount": "This account does not have instructor access"
-    }
+    },
+    "quickLoginTitle": "Quick login (mock data)",
+    "quickLoginStudent": "Student",
+    "quickLoginInstructor": "Instructor",
+    "quickLoginAdmin": "Administrator",
+    "quickLoginHint": "Only shown while mock data is on. One click logs you straight in, no typing."
   },
   "instructorAuth": {
     "title": "Instructor sign in",
     "subtitle": "For AlgoPrep instructors only — sign in with your granted account.",
-    "notInstructorHint": "Not an instructor? Use the regular sign-in page instead."
+    "notInstructorHint": "Not an instructor? Use the regular sign-in page instead.",
+    "badgeClasses": "Classes",
+    "badgeGrading": "Grading",
+    "badgeProgress": "Progress",
+    "asideTitle": "The instructor workspace",
+    "asideDescription": "Assign problems to a class, grade what needs a human eye, and follow each student's progress in one place.",
+    "asideHighlight1": "Assign and manage problems per class",
+    "asideHighlight2": "Manually grade the submissions that need review",
+    "asideHighlight3": "Track student progress and results"
   },
   "problemList": {
     "title": "Problems",
@@ -330,6 +343,7 @@
     "blocks": {
       "submissionsSummary": "Total submissions",
       "activeUsersSummary": "Active users",
+      "passwordResetsSummary": "Password reset requests",
       "submissionsByLanguage": "Submissions by language",
       "verdictDistribution": "Verdict distribution",
       "difficultyBreakdown": "Difficulty breakdown",
@@ -348,7 +362,15 @@
     "title": "Admin sign in",
     "subtitle": "For AlgoPrep administrators only — sign in with your provisioned account.",
     "submit": "Sign in",
-    "notAdminHint": "Not an administrator? Use the regular sign-in page instead."
+    "notAdminHint": "Not an administrator? Use the regular sign-in page instead.",
+    "badgeContent": "Content",
+    "badgeOperations": "Operations",
+    "badgeAi": "AI",
+    "asideTitle": "Internal control panel",
+    "asideDescription": "Run the problem bank, the go-judge queue and the system-wide AI configuration.",
+    "asideHighlight1": "Manage problems and interview questions",
+    "asideHighlight2": "Watch the judge queue and the system log",
+    "asideHighlight3": "Configure AI, languages and permissions"
   },
   "adminLanguageConfig": {
     "title": "Languages and judge limits",
@@ -409,25 +431,45 @@
     "noticeBody": "Changes to a multiplier or a resource limit apply only to submissions made after you save. Earlier submissions keep the verdict they already have."
   },
   "adminSystemLog": {
+    "retention": {
+      "open": "Retention",
+      "title": "Log retention",
+      "days": "Keep logs for",
+      "daysUnit": "days",
+      "policy": "Expired logs",
+      "policyDelete": "Delete",
+      "policyArchive": "Compress and archive",
+      "hint": "No per-row delete exists; only the system job cleans up expired rows.",
+      "save": "Save",
+      "cancel": "Cancel",
+      "errorMin": "Enter a whole number of {min} or more"
+    },
+    "exportDialog": {
+      "title": "Download log",
+      "columns": "Columns to export",
+      "from": "From",
+      "to": "To",
+      "note": "CSV export, no row limit. Each export is itself logged as one row.",
+      "submit": "Export CSV",
+      "cancel": "Cancel",
+      "close": "Close",
+      "errorRange": "End date must be after the start date",
+      "doneTitle": "CSV file created",
+      "doneBody": "{count} columns. The export was logged as one row.",
+      "col": {
+        "time": "Time",
+        "actor": "Actor",
+        "service": "Service",
+        "category": "Category",
+        "content": "Content",
+        "id": "Event ID"
+      }
+    },
     "title": "System log",
     "subtitle": "Administrative actions taken by people · infrastructure events live in Judge queue",
     "liveOn": "Live",
     "liveOff": "Paused",
     "export": "Download log",
-    "stat": {
-      "adminActions24h": {
-        "label": "Admin actions, 24h",
-        "meta": "6 admin accounts active"
-      },
-      "permissionChanges": {
-        "label": "Permission matrix edits",
-        "meta": "ADMIN only"
-      },
-      "accountLocks": {
-        "label": "Accounts locked / unlocked",
-        "meta": "Duplicate source or a report"
-      }
-    },
     "searchLabel": "Search the log",
     "searchPlaceholder": "Search by service, account or event id",
     "categoryFilterLabel": "Filter by category",
@@ -453,28 +495,6 @@
     "title": "User management",
     "subtitle": "Accounts, roles and access status",
     "addAccount": "Add account",
-    "stat": {
-      "total": {
-        "label": "Total accounts",
-        "meta": "32 new accounts this week"
-      },
-      "active24h": {
-        "label": "Active in 24h",
-        "meta": "24% of all learners"
-      },
-      "pendingEmail": {
-        "label": "Awaiting email check",
-        "meta": "Dropped after 7 days"
-      },
-      "locked": {
-        "label": "Locked",
-        "meta": "3 for cheating"
-      },
-      "passwordResets": {
-        "label": "Password reset requests",
-        "meta": "Sent in the last 24h"
-      }
-    },
     "searchLabel": "Search users",
     "searchPlaceholder": "Search by name, email or username",
     "roleFilterLabel": "Filter by role",
@@ -522,6 +542,24 @@
         "meta": "Needs admin approval"
       }
     },
+    "lockBlockedTitle": "Cannot lock",
+    "lockBlockedBody": "This would lock the last active administrator. The system must always keep at least one administrator able to configure it. Add or unlock another administrator first.",
+    "lockBlockedClose": "Got it",
+    "confirmLockSelfWarning": "You are locking your own account: you will be signed out and cannot sign back in until another administrator unlocks it.",
+    "addDialog": {
+      "title": "Add account",
+      "nameLabel": "Full name",
+      "emailLabel": "Email",
+      "roleLabel": "Role",
+      "note": "A temporary password is emailed; the user must change it on first sign-in.",
+      "submit": "Create account",
+      "done": "Done",
+      "errorName": "Enter a full name",
+      "errorEmail": "Invalid email",
+      "errorDuplicate": "This email already has an account",
+      "createdTitle": "Account created",
+      "createdBody": "A temporary password was sent to {email}. The account stays pending until the first sign-in."
+    },
     "confirmLockTitle": "Lock {count} accounts?",
     "confirmLockBody": "{count} accounts will not be able to sign in until unlocked. Their submissions and progress are kept.",
     "confirmLockAction": "Lock accounts",
@@ -536,24 +574,6 @@
       "7d": "7 days",
       "14d": "14 days",
       "30d": "30 days"
-    },
-    "stat": {
-      "monthTokens": {
-        "label": "Tokens this month",
-        "meta": "As of 22/08, 15:40"
-      },
-      "dailyAverage": {
-        "label": "Daily average",
-        "meta": "Lower than last week"
-      },
-      "estimatedCost": {
-        "label": "Estimated cost",
-        "meta": "240 USD monthly cap"
-      },
-      "calls": {
-        "label": "AI calls",
-        "meta": "2,140 active learners"
-      }
     },
     "dailyChartTitle": "Tokens per day",
     "dailyChartSubtitle": "Split by feature, last {days} days",
@@ -602,27 +622,25 @@
     "emptyProblems": "No problem consumed tokens in this range"
   },
   "adminQueueMonitor": {
+    "params": {
+      "open": "Parameters",
+      "title": "Queue parameters",
+      "save": "Save",
+      "cancel": "Cancel",
+      "errorMin": "Enter a whole number of {min} or more",
+      "autoscaleThreshold": "Worker autoscale threshold",
+      "autoscaleThresholdHint": "Waiting jobs before the cluster adds a worker.",
+      "jobsPerPage": "Rows per page in the job table",
+      "errorRetention": "Keep system-error jobs for",
+      "latencyCap": "Latency bar cap",
+      "unitJobs": "jobs",
+      "unitRows": "rows",
+      "unitHours": "hours",
+      "unitSeconds": "seconds"
+    },
     "title": "Judge queue",
     "subtitle": "go-judge worker cluster, waiting jobs and infrastructure events",
     "refresh": "Refresh",
-    "kpi": {
-      "waiting": {
-        "label": "Jobs waiting",
-        "meta": "Longest wait 46 seconds"
-      },
-      "running": {
-        "label": "Judging now",
-        "meta": "4 workers busy"
-      },
-      "throughput": {
-        "label": "Throughput",
-        "meta": "Average over the last hour"
-      },
-      "failed24h": {
-        "label": "Failed jobs, 24h",
-        "meta": "2 sandbox errors · 1 out of memory"
-      }
-    },
     "workersTitle": "go-judge worker cluster",
     "workersSubtitle": "{count} workers · autoscales up to {max}",
     "workerStatus": {
@@ -641,11 +659,7 @@
       },
       "autoscale": {
         "label": "Autoscale workers",
-        "meta": "Add a worker when the queue passes 20 jobs"
-      },
-      "highPriorityFirst": {
-        "label": "High priority first",
-        "meta": "Jobs flagged high priority are judged first"
+        "meta": "Add a worker when the queue passes {threshold} jobs"
       }
     },
     "latencyTitle": "Latency per queue",
@@ -725,6 +739,31 @@
     }
   },
   "adminAiConfig": {
+    "budget": {
+      "title": "Budget and pricing",
+      "subtitle": "Set by the administrator, no limit",
+      "warnLabel": "Budget warning threshold",
+      "warnMeta": "The budget bar changes colour once usage reaches this level",
+      "warnDecrement": "Lower the warning threshold",
+      "warnIncrement": "Raise the warning threshold",
+      "pricesLabel": "Token price per model",
+      "pricesMeta": "A model without a price shows - in the Cost column",
+      "manage": "Manage",
+      "dialog": {
+        "title": "Token price per model",
+        "hint": "Enter the price (USD per 1 million tokens) of each model. No limit on how many models.",
+        "nameLabel": "Model name",
+        "newLabel": "New model",
+        "newPlaceholder": "Example: claude-sonnet",
+        "add": "Add",
+        "save": "Save name",
+        "delete": "Delete",
+        "close": "Close",
+        "priceLabel": "Price of {name} (USD per 1 million tokens)",
+        "errorEmpty": "Model name cannot be empty",
+        "errorDuplicate": "A model with this name already exists"
+      }
+    },
     "title": "AI assistant configuration",
     "subtitle": "Prompts, grading rubric and rate limits",
     "publish": "Save and publish",
@@ -822,28 +861,54 @@
     "title": "Problem management",
     "subtitle": "{total} problems · {published} visible in the problem bank",
     "newProblem": "New problem",
-    "stat": {
-      "total": {
-        "label": "Total problems",
-        "meta": "3 added this month"
-      },
-      "published": {
-        "label": "Published",
-        "meta": "Exactly what learners see"
-      },
-      "draft": {
-        "label": "Drafts",
-        "meta": "1 has no testcases yet"
-      },
-      "acceptedRate": {
-        "label": "Average AC rate",
-        "meta": "Over the last 90 days"
-      }
-    },
     "searchLabel": "Search problems",
     "searchPlaceholder": "Search by code or title",
     "difficultyFilterLabel": "Filter by difficulty",
     "statusFilterLabel": "Filter by status",
+    "topicDist": {
+      "title": "Distribution by topic",
+      "subtitle": "{total} problems across {topics} topics"
+    },
+    "attention": {
+      "title": "Needs attention",
+      "tag": "Auto-detected",
+      "rule": {
+        "noTestcase": {
+          "title": "No testcases",
+          "meta": "Problem has no testcase at all"
+        },
+        "lowAcceptRate": {
+          "title": "Low AC rate",
+          "meta": "AC rate below 30%"
+        },
+        "hiddenFromLearners": {
+          "title": "Hidden from learners",
+          "meta": "Was published, now withdrawn"
+        },
+        "staleDraft": {
+          "title": "Stale draft",
+          "meta": "Unpublished for over 7 days"
+        }
+      }
+    },
+    "manageTopics": "Manage topics",
+    "topicManager": {
+      "title": "Manage problem topics",
+      "hint": "Topics are defined by the administrator, with no limit on how many. Only a topic with no problems can be deleted.",
+      "nameLabel": "Topic name",
+      "newLabel": "New topic",
+      "newPlaceholder": "Example: Dynamic programming",
+      "add": "Add",
+      "save": "Save name",
+      "close": "Close",
+      "usage": "{count} problems",
+      "deleteBlocked": "{count} problems remain, cannot delete",
+      "error": {
+        "empty": "Topic name cannot be empty",
+        "duplicate": "A topic with this name already exists"
+      }
+    },
+    "pageSizeLabel": "Rows per page",
     "filterAll": "All",
     "difficulty": {
       "easy": "Easy",
@@ -892,43 +957,45 @@
   "interviewQuestionManagement": {
     "title": "Interview question bank",
     "subtitle": "{total} questions · instructors and admins can edit all of them",
-    "importCsv": "Import CSV",
-    "newQuestion": "New question",
-    "stat": {
-      "total": {
-        "label": "Total questions",
-        "meta": "9 added this month"
-      },
-      "withRubric": {
-        "label": "With a full rubric",
-        "meta": "17 are missing one"
-      },
-      "averageScore": {
-        "label": "Average score",
-        "meta": "Out of 5, over 30 days"
-      },
-      "neverUsed": {
-        "label": "Never used",
-        "meta": "Worth reviewing the wording"
+    "manageTopics": "Manage topics",
+    "topicManager": {
+      "title": "Manage question topics",
+      "hint": "Topics are defined by the administrator, with no limit on how many. Only a topic with no questions can be deleted.",
+      "starLabel": "Use the STAR framework for {name}",
+      "nameLabel": "Topic name",
+      "newLabel": "New topic",
+      "newPlaceholder": "Example: Computer networks",
+      "add": "Add",
+      "save": "Save name",
+      "close": "Close",
+      "usage": "{count} questions",
+      "deleteBlocked": "{count} questions remain, cannot delete",
+      "error": {
+        "empty": "Topic name cannot be empty",
+        "duplicate": "A topic with this name already exists"
       }
     },
+    "importCsv": "Import CSV",
+    "newQuestion": "New question",
     "searchLabel": "Search questions",
     "searchPlaceholder": "Search by question text or code",
     "topicFilterLabel": "Filter by topic",
     "levelFilterLabel": "Filter by level",
     "filterAll": "All",
-    "topic": {
-      "csTheory": "CS theory",
-      "systemDesign": "System design",
-      "database": "Database",
-      "language": "Languages",
-      "behavioural": "Behavioural"
-    },
     "level": {
       "easy": "Easy",
       "medium": "Medium",
       "hard": "Hard"
     },
+    "columnCode": "Code",
+    "columnQuestion": "Question",
+    "columnTopic": "Topic",
+    "columnLevel": "Level",
+    "columnFollowUps": "Follow-ups",
+    "columnRubric": "Criteria",
+    "columnUsage": "Uses",
+    "columnScore": "Avg score",
+    "tableCaption": "Interview question list",
     "resultCount": "{shown} / {total} questions",
     "followUps": "Follow-ups",
     "rubric": "Scoring criteria",
@@ -937,9 +1004,11 @@
     "duplicate": "Duplicate",
     "delete": "Delete",
     "cancel": "Cancel",
+    "editQuestion": "Edit question {code}",
+    "duplicateQuestion": "Duplicate question {code}",
     "deleteQuestion": "Delete question {code}",
     "emptyFiltered": "No question matches the current filter",
-    "pageLabel": "Page {page} of {totalPages} · showing {shown} cards",
+    "pageLabel": "Page {page} of {totalPages} · showing {shown} rows",
     "previous": "Previous",
     "next": "Next",
     "goToPage": "Page {page}",
@@ -949,25 +1018,23 @@
   "interviewQuestionAuthoring": {
     "titleNew": "Author an interview question",
     "subtitle": "Saving makes the question live — there is no separate publish step",
+    "titleEdit": "Edit question {code}",
+    "notFoundTitle": "Question not found",
+    "notFoundBody": "No question has the code {code}. It may have been removed from the bank.",
+    "classifyTitle": "Classification",
+    "classifySubtitle": "Topic and level drive the filters in the question bank",
     "back": "Back",
     "previewAsLearner": "Preview as learner",
     "save": "Save",
     "saving": "Saving…",
     "savedAt": "Saved at {time}",
     "unsaved": "Not saved",
-    "group1Title": "Content and classification",
+    "group1Title": "Question content",
     "group1Subtitle": "The question body is written in Markdown",
     "questionLabel": "Question",
     "questionPlaceholder": "e.g. How does a hash table handle collisions?",
     "topicLabel": "Topic",
     "levelLabel": "Level",
-    "topic": {
-      "csTheory": "CS theory",
-      "systemDesign": "System design",
-      "database": "Database",
-      "language": "Languages",
-      "behavioural": "Behavioural"
-    },
     "level": {
       "easy": "Easy",
       "medium": "Medium",
@@ -1350,13 +1417,6 @@
     },
     "topicFilterLabel": "Filter by topic",
     "filterAll": "All",
-    "topic": {
-      "csTheory": "CS theory",
-      "systemDesign": "System design",
-      "database": "Database",
-      "language": "Language",
-      "behavioural": "Behavioural"
-    },
     "level": {
       "easy": "Easy",
       "medium": "Medium",
@@ -1390,13 +1450,6 @@
       "bookmark": "Bookmark for later",
       "bookmarked": "Bookmarked"
     },
-    "topic": {
-      "csTheory": "CS theory",
-      "systemDesign": "System design",
-      "database": "Database",
-      "language": "Language",
-      "behavioural": "Behavioural"
-    },
     "level": {
       "easy": "Easy",
       "medium": "Medium",
@@ -1410,6 +1463,7 @@
     },
     "study": {
       "outlineLabel": "Answer outline",
+      "starTag": "STAR",
       "answerFrameworkLabel": "Model answer framework",
       "keywordsLabel": "Core keywords",
       "followUpsLabel": "Follow-up questions",

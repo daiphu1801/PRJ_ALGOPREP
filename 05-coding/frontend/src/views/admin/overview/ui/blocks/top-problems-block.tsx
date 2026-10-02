@@ -6,7 +6,7 @@ import { DashboardBlockState, RankedProgressList } from "@/shared/ui";
 import { useTopProblems } from "../../api";
 
 // Only block on this screen with a link onward — to problem_management
-// (02-bd/screens/admin/admin_overview.md section 2 point 5, DEC-2026-0831-admin-overview-ui-decisions).
+// (02-bd/screens/admin/ADM0101_overview.md section 2 point 5, DEC-2026-0831-admin-overview-ui-decisions).
 export function TopProblemsBlock() {
   const t = useT("adminOverview");
   const query = useTopProblems();

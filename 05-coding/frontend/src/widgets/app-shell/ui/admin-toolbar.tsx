@@ -12,7 +12,7 @@ import { getT } from "@/shared/i18n/server";
  * flat bordered dot — the owner flagged this as missing glassmorphism on 2026-09-14. The 3
  * unlabeled icon buttons (dc.html:109-113) have no handler and no Fx-nn code in the static
  * prototype — BD explicitly keeps them as decoration, not a feature
- * (02-bd/screens/admin/admin_overview.md section 3, "Không đưa vào component inventory"). Marked
+ * (02-bd/screens/admin/ADM0101_overview.md section 3, "Không đưa vào component inventory"). Marked
  * disabled + aria-hidden so they don't become dead keyboard stops (a11y). The liên-thực-thể search
  * box from an older prototype draft is dropped per DEC-2026-0831-admin-overview-ui-decisions —
  * never rebuilt here.

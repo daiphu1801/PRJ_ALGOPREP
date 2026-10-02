@@ -47,6 +47,21 @@ describe("useAuthFlow", () => {
     expect(push).not.toHaveBeenCalled();
   });
 
+  it("logs in from quickLogin without any field being filled first", async () => {
+    push.mockClear();
+    // The point of the test: `submit` reads `fields` through a closure, so filling the form and
+    // submitting in the same tick would not work. quickLogin must reach the login call directly.
+    const { result } = renderHook(() => useAuthFlow("signup"));
+
+    await act(async () => {
+      await result.current.quickLogin("admin");
+    });
+
+    await waitFor(() => expect(push).toHaveBeenCalledWith("/admin/overview"), { timeout: 5000 });
+    expect(result.current.mode).toBe("login");
+    expect(result.current.fields.identifier).toBe("admin");
+  });
+
   it("clears a field's error the moment that field is edited again", () => {
     const { result } = renderHook(() => useAuthFlow("login"));
 

@@ -4,7 +4,6 @@
 // column stops counting "lượt gợi ý".
 import type {
   AiUsagePage,
-  AiUsageStat,
   DailyUsage,
   FeatureShare,
   TopProblem,
@@ -12,14 +11,6 @@ import type {
   UsageAlert,
   UsageRange,
 } from "../../model/types";
-
-// dc.html:450-455.
-const STATS: AiUsageStat[] = [
-  { key: "monthTokens", value: "38,4 tr", delta: "+12%", deltaColorVar: "--color-admin-warn", meta: "Tính đến 22/08, 15:40" },
-  { key: "dailyAverage", value: "1,74 tr", delta: "−4%", deltaColorVar: "--color-success", meta: "Thấp hơn tuần trước" },
-  { key: "estimatedCost", value: "182 USD", delta: "+9%", deltaColorVar: "--color-admin-warn", meta: "Hạn mức 240 USD mỗi tháng" },
-  { key: "calls", value: "9.418", delta: "+6%", deltaColorVar: "--color-admin-warn", meta: "2.140 người học hoạt động" },
-];
 
 /**
  * The mockup generates its bars from `Math.sin(i)` at render time (dc.html:458-472). Reproduced
@@ -89,7 +80,6 @@ export function fetchAiUsagePage(): AiUsagePage {
   };
 
   return {
-    stats: STATS.map((stat) => ({ ...stat })),
     daily,
     featureShares: FEATURE_SHARES.map((share) => ({ ...share })),
     alerts: ALERTS.map((alert) => ({ ...alert })),

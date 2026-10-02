@@ -45,3 +45,11 @@ export {
   type WorkedExample,
 } from "./model/draft-types";
 export { fetchProblemDraft } from "./api/__mock__/problem-draft-mocks";
+export {
+  addProblemTopic,
+  problemTopicLabel,
+  removeProblemTopic,
+  renameProblemTopic,
+  useProblemTopics,
+  type ProblemTopic,
+} from "./model/topic-store";

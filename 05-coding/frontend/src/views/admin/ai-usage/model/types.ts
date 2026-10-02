@@ -17,14 +17,6 @@ export const AI_FEATURES: AiFeature[] = ["review", "interview", "testcase"];
 
 export type UsageRange = "7d" | "14d" | "30d";
 
-export type AiUsageStat = {
-  key: string;
-  value: string;
-  delta: string;
-  deltaColorVar: string;
-  meta: string;
-};
-
 /** One day on the stacked chart: tokens per feature, in millions. */
 export type DailyUsage = {
   label: string;
@@ -64,7 +56,6 @@ export type TopProblem = {
 };
 
 export type AiUsagePage = {
-  stats: AiUsageStat[];
   daily: Record<UsageRange, DailyUsage[]>;
   featureShares: FeatureShare[];
   alerts: UsageAlert[];

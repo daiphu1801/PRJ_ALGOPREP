@@ -1,6 +1,5 @@
 export {
   type ClusterControls,
-  type ClusterKpi,
   type InfraEvent,
   type InfraLevel,
   type JobPriority,

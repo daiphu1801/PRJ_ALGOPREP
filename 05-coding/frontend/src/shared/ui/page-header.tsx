@@ -15,6 +15,8 @@ import type { ReactNode } from "react";
 import { cn } from "@/shared/lib";
 
 type PageHeaderProps = {
+  /** Slot before the title, e.g. a back-to-list icon on detail screens. */
+  leading?: ReactNode;
   title: ReactNode;
   description?: ReactNode;
   /** Screen-level actions, e.g. a primary save button. */
@@ -22,7 +24,7 @@ type PageHeaderProps = {
   className?: string;
 };
 
-export function PageHeader({ title, description, actions, className }: PageHeaderProps) {
+export function PageHeader({ leading, title, description, actions, className }: PageHeaderProps) {
   return (
     <header
       className={cn(
@@ -30,6 +32,7 @@ export function PageHeader({ title, description, actions, className }: PageHeade
         className,
       )}
     >
+      {leading ? <div className="shrink-0">{leading}</div> : null}
       <div className="min-w-0 flex-1">
         <h1 className="truncate text-base font-bold tracking-tight">{title}</h1>
         {description ? (

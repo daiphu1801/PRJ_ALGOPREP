@@ -2,6 +2,7 @@
 export {
   useSubmissionsSummary,
   useActiveUsersSummary,
+  usePasswordResetsSummary,
   useSubmissionsByLanguage,
   useVerdictDistribution,
   useDifficultyBreakdown,

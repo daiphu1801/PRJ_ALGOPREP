@@ -1,7 +1,7 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 //
 // One TanStack Query hook per block, matching BD's recommendation to keep 9 endpoints separate so
-// one failing source doesn't fail the whole payload (02-bd/screens/admin/admin_overview.md
+// one failing source doesn't fail the whole payload (02-bd/screens/admin/ADM0101_overview.md
 // section 5 — "khuyến nghị giữ riêng theo khối", [SoT: Suy luận]). Each hook's queryFn goes
 // through withMockData so graduation only means deleting the __mock__ import here.
 import { useQuery } from "@tanstack/react-query";
@@ -9,6 +9,7 @@ import { ApiError, withMockData } from "@/shared/api";
 import {
   fakeActiveUsersSummary,
   fakeDifficultyBreakdown,
+  fakePasswordResetsSummary,
   fakeSubmissionsByDay,
   fakeSubmissionsByLanguage,
   fakeSubmissionsByMonth,
@@ -35,6 +36,13 @@ export const useActiveUsersSummary = () =>
   useQuery({
     queryKey: ["admin-dashboard", "active-users-summary"],
     queryFn: () => withMockData(fakeActiveUsersSummary, notImplemented),
+    ...QUERY_OPTIONS,
+  });
+
+export const usePasswordResetsSummary = () =>
+  useQuery({
+    queryKey: ["admin-dashboard", "password-resets-summary"],
+    queryFn: () => withMockData(fakePasswordResetsSummary, notImplemented),
     ...QUERY_OPTIONS,
   });
 

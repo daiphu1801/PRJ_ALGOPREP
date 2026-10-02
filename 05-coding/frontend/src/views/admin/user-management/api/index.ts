@@ -3,7 +3,6 @@ export {
   type AdminUser,
   type AdminUserPage,
   type AdminUserRole,
-  type AdminUserStat,
   type AdminUserStatus,
   type PendingTask,
   type RoleDistributionItem,

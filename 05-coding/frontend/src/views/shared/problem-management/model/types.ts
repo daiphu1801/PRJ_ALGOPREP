@@ -25,16 +25,26 @@ export type AdminProblem = {
   editedLabel: string;
 };
 
-export type ProblemStat = {
-  key: string;
-  value: string;
-  delta: string;
-  deltaColorVar: string;
+/** One row of the "Phân bố theo chủ đề" block (BD TopicDistributionItemDto). */
+export type TopicDistributionItem = {
+  topicName: string;
+  count: number;
+  /** Share of all problems, 0-100. */
+  percent: number;
+};
+
+export type AttentionRuleCode = "noTestcase" | "lowAcceptRate" | "hiddenFromLearners" | "staleDraft";
+
+/** One row of the "Bài cần chú ý" block (BD AttentionItemDto); `ruleCode` keys the i18n label. */
+export type AttentionItem = {
+  ruleCode: AttentionRuleCode;
+  count: number;
 };
 
 export type AdminProblemPage = {
-  stats: ProblemStat[];
   problems: AdminProblem[];
+  topicDistribution: TopicDistributionItem[];
+  attention: AttentionItem[];
   totalProblems: number;
   publishedCount: number;
 };
