@@ -66,8 +66,12 @@ gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang c�
     đổi vai trò luôn là hành động đơn phương của `ADMIN`, không có bước "người dùng xin, ADMIN duyệt". Nếu
     một `STUDENT` muốn trở thành `INSTRUCTOR`, việc trao đổi diễn ra ngoài hệ thống (email, gặp trực tiếp),
     rồi `ADMIN` tự vào đổi vai trò qua chính F1-13, không qua một hàng đợi phê duyệt riêng.
+    **Bổ sung "Thêm tài khoản" (đã chỉnh 2026-10-01, `DEC-2026-1001-admin-configurable-settings`):** `ADMIN` tạo tay
+    tài khoản `INSTRUCTOR` hoặc `STUDENT` từ màn quản lý người dùng; hệ thống sinh mật khẩu tạm và gửi qua email cho
+    chủ tài khoản; thao tác được ghi Nhật ký hệ thống (F1-14). Không thêm mã `Fx-nn` mới; không tạo được tài khoản
+    `ADMIN` bằng đường này `[SoT: Suy luận]` — quyết định chỉ nêu INSTRUCTOR/STUDENT.
   - **F1-14 — Mọi thay đổi ma trận phân quyền và mọi thao tác quản trị đều ghi vào Nhật ký hệ thống**, kèm
-    ai đổi, đổi gì, đổi lúc nào — không có ngoại lệ cho chính thao tác đổi quyền. **Chốt phạm vi 2026-08-24
+    ai đổi, đổi gì, đổi lúc nào — không có ngoại lệ cho chính thao tác đổi quyền. **Mở rộng (đã chỉnh 2026-10-01, `DEC-2026-1001-admin-configurable-settings`):** F1-14 còn ghi một số sự kiện xác thực do người dùng tự kích hoạt, trước hết `PASSWORD_RESET_REQUESTED` (ghi khi phát hành mã OTP đặt lại mật khẩu; **không bao giờ lưu mã OTP**; không ghi khi email không khớp tài khoản nào) — để thẻ tổng quan quản trị đếm được số mã đã phát hành. Phần "chỉ ghi hành động quản trị" ngay dưới đây áp dụng cho nhóm sự kiện hạ tầng, không áp dụng cho các sự kiện xác thực này. **Chốt phạm vi 2026-08-24
     (`06-plan/PROTOTYPE_DEBT.md` mục 2.5):** F1-14 chỉ ghi **hành động quản trị của người** (đổi ma trận
     quyền, đổi vai trò, khoá/mở khoá, reset mật khẩu...) — **không gộp** sự kiện hạ tầng/dịch vụ (lỗi judge
     engine, worker mất kết nối, timeout sweep...). Hai luồng dữ liệu tách theo đúng Bounded Context sinh ra

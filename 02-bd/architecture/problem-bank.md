@@ -24,7 +24,7 @@ phải tồn tại** — khác `identity`.
 
 | Nhóm | Mã | Ghi chú |
 | :--- | :--- | :--- |
-| Soạn đề bài | F2-01, F2-02 | Markdown + LaTeX; độ khó, chủ đề, thẻ (tag) tự do nhiều-nhiều |
+| Soạn đề bài | F2-01, F2-02 | Markdown + LaTeX; độ khó, chủ đề, thẻ (tag) tự do nhiều-nhiều. Danh mục chủ đề là dữ liệu **do ADMIN quản lý** (đã chốt 2026-10-01, `DEC-2026-1001-admin-configurable-settings`): ADMIN tạo/đổi tên/sắp xếp/xoá, A2 chỉ chọn; endpoint `ListProblemTopics`, `CreateProblemTopic`, `UpdateProblemTopic`, `ReorderProblemTopics`, `DeleteProblemTopic` (xoá bị từ chối khi còn bài tham chiếu, trả số đếm); xem `database/problem-bank.md` mục 1.2 và `security/problem-bank.md` mục 1 |
 | Đặc tả song song hai mô hình nộp bài | F2-03 | Chữ ký hàm theo Java/C++/Python (đầu vào cho F3 — bọc hàm) **và** định dạng stdin/stdout theo dòng chuẩn (đầu vào cho mô hình Standard I/O). Cả hai luôn cùng tồn tại cho một bài, trừ ngoại lệ F3-13 (kiểu dữ liệu vượt lược đồ, ẩn tuỳ chọn Bọc hàm — cờ đặt ở `problem-bank`, đọc bởi `harness`) [SoT: `01-rd/req/problem-bank.md:11-21`; `02-bd/architecture/harness.md` mục 2b] |
 | Chiến lược so khớp | F2-04 | `EXACT`/`TRIMMED`/`EPSILON`/`UNORDERED_SET`, khai theo bài toán, `harness` đọc để sinh mã so khớp |
 | Testcase Sample/Hidden | F2-05, F2-06, F2-08 | Sample công khai (Chạy thử), Hidden ẩn (Nộp bài); chống rò rỉ — API/log không bao giờ trả input hay diff của Hidden testcase |

@@ -122,6 +122,21 @@ không tạo/xoá dòng (khớp phạm vi đã khoá ở `02-bd/architecture/har
 Index `outbox_events(published_at) WHERE published_at IS NULL` — relay quét theo `created_at ASC` trong
 tập con này.
 
+### 1.7. `cluster_settings` (F4-10, `DEC-2026-1001-admin-configurable-settings`)
+
+Một dòng duy nhất (ràng buộc `CHECK (id = 1)`), chỉ ADMIN (A3) sửa qua khối "Điều khiển cụm" của
+`ADM0401`. Lưu ở PostgreSQL để còn nguyên sau khi khởi động lại; module này cố ý không dùng Redis
+(mục 3) nên không đặt ở đó `[SoT: Suy luận]`.
+
+| Cột | Kiểu | Ghi chú |
+| :--- | :--- | :--- |
+| `id` | SMALLINT PK | Luôn `1` |
+| `queue_paused` | BOOLEAN default `false` | Bật thì worker ngừng nhận job mới, job đang chấm vẫn chạy hết |
+| `autoscale_enabled` | BOOLEAN default `true` | Bật thì cụm tự thêm worker khi hàng đợi vượt ngưỡng |
+| `autoscale_job_threshold` | INT default `20`, CHECK `> 0` | Ngưỡng số job đang chờ để thêm worker; mặc định 20 là suy luận của BD `[SoT: Suy luận]`, ADMIN tự đổi |
+| `updated_by` | UUID | Tham chiếu `identity.users.id`, không có FK vật lý chéo schema |
+| `updated_at` | TIMESTAMPTZ | |
+
 ## 2. Chỉ mục (index) đáng chú ý
 
 - `submissions(status, updated_at)` — job sweep quét theo điều kiện mục 1.1.
@@ -141,7 +156,7 @@ trung gian; hàng đợi công việc đã có RabbitMQ đảm nhiệm.
 ## 4. Migration — thứ tự tạo bảng
 
 `language_configs` (seed 3 dòng) → `submissions` → `submission_testcase_results` → `judge_run_tokens` →
-`callback_logs` → `outbox_events`.
+`callback_logs` → `outbox_events` → `cluster_settings` (seed 1 dòng).
 
 ## 5. Giá trị mặc định BD chốt (RD để ngỏ, `[SoT: Suy luận]`)
 

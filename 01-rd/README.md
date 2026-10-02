@@ -252,7 +252,7 @@ báo cáo. Sáu phát biểu bị quyết định sau đó đảo ngược mà c
 | F2 — phiên bản bộ testcase | "hỗ trợ cơ chế Re-judge biết chấm lại theo phiên bản nào" | Chấm lại ngoài phạm vi; phiên bản chỉ để truy vết |
 | F4 | "Gửi từng testcase, **fail-fast** — bỏ các testcase còn lại" | Chạy hết N testcase; `F4-04` hết hiệu lực |
 | F5 mở đầu | "Kích hoạt sau khi bài nộp đạt `Accepted`" cho cả phân hệ | Chỉ đúng với F5.1; F5.2 có ba lối vào |
-| F6 — danh mục chủ đề | 4 chủ đề | 5 chủ đề, lấy theo prototype |
+| F6 — danh mục chủ đề | 4 chủ đề | 5 chủ đề khởi tạo lấy theo prototype; từ 2026-10-01 là dữ liệu do ADMIN quản lý, không cố định số lượng (`DEC-2026-1001-admin-configurable-settings`) |
 | F6 — "Mở rộng" | "Giảng viên tạo bộ câu hỏi riêng và gán cho lớp" | `F6-11` ngoài phạm vi; kho dùng chung |
 | Mục 6 — phạm vi | "_Lưu ý: cơ chế Re-judge **vẫn nằm trong phạm vi**_" | Ngoài phạm vi từ 2026-08-28 |
 

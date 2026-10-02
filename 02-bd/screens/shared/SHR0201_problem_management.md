@@ -20,15 +20,16 @@
 > **Phạm vi đã chốt trước khi viết BD** — theo RD mục 5 (Q1 → Q5, đã đóng), không mở lại:
 > - Dùng chung một view cho A2 và A3; A2 chỉ thấy/sửa bài do chính mình soạn (quyền tác giả, không theo
 >   lớp phụ trách), A3 thấy toàn bộ kho [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:165 (Q1)].
->   **Xem Câu hỏi mở Q1 của file này** — schema `problem-bank` hiện chưa có cột lưu tác giả gốc.
+>   **Xem Câu hỏi mở Q1 của file này** — đã chốt 2026-10-01 thêm cột `problems.author_id` bất biến; schema `problem-bank` chưa cập nhật (`02-bd/database/problem-bank.md`, ngoài phạm vi đợt này). A3 không bị lọc phạm vi.
 > - Vòng đời bài toán đúng hai trạng thái `Chưa xuất bản`/`Đã xuất bản` (F2-15), không có `Đã ẩn`
 >   [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:166 (Q2); 02-bd/database/problem-bank.md:18].
 > - Xoá là ẩn mềm: `problems.status` không đổi, chỉ bật `problems.deleted`
 >   [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:167 (Q3); 02-bd/database/problem-bank.md:19].
 > - Giữ "Nhân bản" (F2-16) và "Xuất CSV" (F2-17); **cắt bỏ "Nhập CSV"** khỏi phạm vi
 >   [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:168 (Q4)].
-> - 4 chỉ số tổng và khối "Bài cần chú ý" là chỉ số dẫn xuất, ngưỡng đã chốt: AC < 30%, chưa xuất bản > 7
->   ngày [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:169 (Q5); 02-bd/database/problem-bank.md:167].
+> - Khối "Bài cần chú ý" là chỉ số dẫn xuất, ngưỡng đã chốt: AC < 30%, chưa xuất bản > 7 ngày
+>   (dải 4 thẻ chỉ số tổng **đã bỏ khỏi UI từ 2026-10-01**: chỉ trang tổng quan mới hiển thị KPI, trang danh sách
+>   chỉ có tiêu đề, bộ lọc, danh sách — xem `02-bd/screens/admin/_shell.md`) [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:169 (Q5); 02-bd/database/problem-bank.md:167].
 > - Không có "chấm lại hàng loạt" (rejudge) trên màn này — ngoài phạm vi toàn hệ thống
 >   (`DEC-2026-0828-remove-rejudge-scope`).
 
@@ -47,11 +48,11 @@
 | Tên vật lý (slug) | `problem_management` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A2 (`INSTRUCTOR`) / A3 (`ADMIN`) — dùng chung |
-| Phiên bản | V1.0 |
+| Phiên bản | V1.5 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/20 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/09/20 |
+| Ngày cập nhật | 2026/10/01 |
 
 ---
 
@@ -60,6 +61,11 @@
 | Ver | Sheet bị sửa | Nội dung sửa | Ngày | Người sửa |
 | :--- | :--- | :--- | :--- | :--- |
 | V1.0 | Toàn bộ | Thay thế BD văn xuôi cũ (8 mục: layout, component inventory, screen states, API tiêu thụ, điều hướng, quyền, câu hỏi mở) bằng mẫu 9 sheet. Phát hiện lỗ hổng nguồn dữ liệu mới: schema `problem-bank` không có cột lưu tác giả gốc của bài toán, trong khi RD yêu cầu lọc theo quyền tác giả cho A2 — mở Q1. Ngưỡng "tỉ lệ AC trung bình 90 ngày" cũng không có nguồn cửa sổ thời gian trong read model `problem_stats` — mở Q2 | 2026/09/20 | Nhóm phát triển AlgoPrep |
+| V1.1 | Sheet 3, 4, 5, 6, 7, 8; Câu hỏi mở | Bỏ dải 4 thẻ chỉ số tổng (Khu vực B còn ghi chú rỗng, giữ chữ cái C đến F), bỏ `ProblemManagementStatsDto` và endpoint `GetProblemManagementStats` (hai số tổng ở dòng phụ lấy từ `ListProblemsAdmin`), đánh số lại DTO và endpoint; nút Sửa/Xoá cuối dòng đổi thành icon kèm tooltip (`IconAction`); Q2 hết áp dụng. Theo quy ước "chỉ một trang tổng quan hiển thị KPI" | 2026/10/01 | Nhóm phát triển AlgoPrep |
+| V1.2 | Sheet 4; Câu hỏi mở | Đồng bộ bản dựng ngày 2026-10-01: hai khối phụ Khu vực E (Phân bố theo chủ đề) và Khu vực F (Bài cần chú ý) **đã có trong mã** (`views/shared/problem-management/ui/problem-management-view.tsx`), dữ liệu giả suy ra từ chính các dòng của bảng (số bài và tỉ lệ theo chủ đề, bốn bộ đếm quy tắc); quy tắc "Đang ẩn khỏi người học" và "Bản nháp quá hạn" đang bằng 0 trong dữ liệu giả vì dòng không mang lịch sử xuất bản. Giữ nguyên quy tắc BD và DTO. Ghi một điểm lệch giữa mã và Sheet 6 Khu vực F (xem 4.5). Owner giữ hai khối phụ (`DEC-2026-1001-single-overview-page-kpi`: panel phụ không coi là KPI). Thêm đề xuất cho Q1, Q4 theo nguyên tắc admin (chờ owner xác nhận) | 2026/10/01 | AI |
+| V1.3 | Sheet 4, 5, 6, 9, Câu hỏi mở | Đã chốt 2026-10-01 (owner uỷ quyền cân nhắc), xem `DEC-2026-1001-admin-configurable-settings`: (1) Q1: thêm `problems.author_id` bất biến; bộ lọc tác giả chỉ áp cho A2, A3 thấy, sửa, xuất bản mọi bài; schema `problem-bank` chưa được cập nhật ở đợt này; (2) Q4: số dòng mỗi trang do người dùng chọn (ví dụ 8, 20, 50), nhớ theo tài khoản, mặc định 8, không trần cho ADMIN — thêm item NO 16 bộ chọn ở Khu vực danh sách; sửa các câu "chưa có cột nguồn" và "kích thước trang chốt ở DD" | 2026/10/01 | AI |
+| V1.4 | Sheet 3, 4, 5, 6, 7, 8, 9, Câu hỏi mở | Đã chốt 2026-10-01 (owner uỷ quyền), xem `DEC-2026-1001-admin-configurable-settings`: (1) **chủ đề bài toán (`topics`, F2-02) là dữ liệu do ADMIN quản lý**, cùng cách xử lý với chủ đề câu hỏi phỏng vấn ở `SHR0301`: thêm nút "Quản lý chủ đề" ở thanh tiêu đề (chỉ ADMIN thấy, Khu vực A NO 4) mở popup thêm, đổi tên, sắp xếp lại, xoá; xoá bị từ chối khi còn bài tham chiếu, popup hiện số bài; A2 chỉ chọn qua "Gán chủ đề"; không giới hạn số chủ đề; (2) thêm popup quản lý chủ đề (Popup NO 2-8, Sheet 5 và Sheet 6), 2 DTO và 4 endpoint ghi (`CreateProblemTopic`, `UpdateProblemTopic`, `ReorderProblemTopics`, `DeleteProblemTopic`), EVT-20 tới EVT-25, Sheet 9 NO 11-14; `ListTopics` đổi tên `ListProblemTopics`; (3) cột "Chủ đề", khối "Phân bố theo chủ đề" và danh sách "Gán chủ đề" đọc từ dữ liệu, số chủ đề không cố định; (4) `problems.author_id` đã có trong `02-bd/database/problem-bank.md` mục 1.1 (Q1 đóng hẳn) | 2026/10/01 | AI |
+| V1.5 | Sheet 4, 5 | Đồng bộ với prototype dựng 2026-10-01 (vòng 5): bộ chọn số dòng 8/20/50 và popup quản lý chủ đề đã dựng, bỏ các câu "chưa dựng", "không có trong prototype"; ghi rõ prototype nhớ lựa chọn theo trình duyệt (localStorage) thay vì theo tài khoản, bộ chọn đứng trước các mũi tên trong thanh phân trang, popup chưa có nút lên/xuống | 2026/10/01 | AI |
 
 ---
 
@@ -82,7 +88,7 @@
 
 [Giá trị trả về] Không có.
 
-[Khi thành công] Tải dải chỉ số tổng, trang đầu của bảng bài toán (phạm vi theo actor), khối "Phân bố theo
+[Khi thành công] Tải trang đầu của bảng bài toán (phạm vi theo actor), khối "Phân bố theo
 chủ đề" và khối "Bài cần chú ý".
 
 [Khi huỷ] Không có.
@@ -104,7 +110,7 @@ chủ đề" và khối "Bài cần chú ý".
 
 #### Quản lý bài tập → `problem_authoring` (chế độ sửa)
 
-[Điều kiện mở] Bấm tiêu đề bài toán trong bảng, hoặc bấm nút "Sửa" cuối dòng đó — cùng một đích, không
+[Điều kiện mở] Bấm tiêu đề bài toán trong bảng, hoặc bấm icon "Sửa" cuối dòng đó — cùng một đích, không
 phải hai luồng khác nhau [Nguồn: 09-layoutBase/Admin - Quản lý bài tập.dc.html:219,227-228;
 01-rd/screens/shared/SHR0201_problem_management.md:104-107,113-114].
 
@@ -120,7 +126,7 @@ phải hai luồng khác nhau [Nguồn: 09-layoutBase/Admin - Quản lý bài t�
 
 #### Quản lý bài tập → Popup Xác nhận xoá (một dòng)
 
-[Điều kiện mở] Bấm nút "Xoá" ở nhóm nút cuối một dòng trong bảng
+[Điều kiện mở] Bấm icon "Xoá" ở nhóm nút cuối một dòng trong bảng
 [Nguồn: 09-layoutBase/Admin - Quản lý bài tập.dc.html:227-229].
 
 [Chế độ mở] Chế độ xác nhận hành động phá huỷ (ẩn mềm).
@@ -151,6 +157,20 @@ nộp liên quan sẽ bị ẩn khỏi trang người học. Hành động khôn
 
 [Khi huỷ] Đóng popup, giữ nguyên danh sách đang chọn.
 
+#### Quản lý bài tập → Popup Quản lý chủ đề (chỉ ADMIN)
+
+[Điều kiện mở] ADMIN bấm nút "Quản lý chủ đề" ở thanh tiêu đề. A2 không thấy nút này.
+
+[Chế độ mở] Chế độ quản trị danh mục chủ đề bài toán.
+
+[Thông tin truyền] Không có (danh sách lấy qua `ListProblemTopics`, kèm số bài đang tham chiếu mỗi chủ đề).
+
+[Giá trị trả về] Không có. Đóng popup thì danh sách chủ đề, cột "Chủ đề" và khối "Phân bố theo chủ đề" được tải lại.
+
+[Khi thành công] Mỗi thao tác thêm, đổi tên, sắp xếp, xoá có hiệu lực ngay trên máy chủ; popup cập nhật dòng tương ứng. Xoá bị từ chối khi còn bài tham chiếu và hiện số bài (đã chốt 2026-10-01, `DEC-2026-1001-admin-configurable-settings`).
+
+[Khi huỷ] Đóng popup, không đổi thêm gì.
+
 ### 3.2 Sơ đồ
 
 ```mermaid
@@ -160,8 +180,10 @@ flowchart LR
     main -->|"Tiêu đề bài / nút Sửa"| edit["problem_authoring<br/>chế độ sửa"]
     main -->|"Xoá (một dòng)"| delOne["Popup Xác nhận xoá<br/>một dòng"]
     main -->|"Xoá (theo lô)"| delBulk["Popup Xác nhận xoá<br/>theo lô"]
+    main -->|"Quản lý chủ đề (ADMIN)"| topics["Popup Quản lý chủ đề"]
     delOne --> main
     delBulk --> main
+    topics --> main
 
     classDef source fill:#F3E5F5,stroke:#9C5CC4,color:#000
     classDef screen fill:#E3F2FD,stroke:#3B82F6,color:#000
@@ -170,7 +192,7 @@ flowchart LR
     class nav source
     class main screen
     class create,edit screen
-    class delOne,delBulk popup
+    class delOne,delBulk,topics popup
 ```
 
 [Nguồn: 09-layoutBase/Admin - Quản lý bài tập.dc.html:159-160,196-206,219,227-229,305-317,591-592;
@@ -189,9 +211,9 @@ xử lý theo lô, và mở luồng tạo/sửa đề bài
 
 [Luồng nghiệp vụ chính]
 
-1. **Hiển thị ban đầu**: vào màn, hệ thống tải song song bốn nhóm dữ liệu — dải chỉ số tổng, trang đầu
-   bảng bài toán (phạm vi theo actor), khối "Phân bố theo chủ đề" và khối "Bài cần chú ý". Trong lúc chờ,
-   mỗi khối hiển thị khung chờ đúng số dòng dự kiến.
+1. **Hiển thị ban đầu**: vào màn, hệ thống tải song song ba nhóm dữ liệu — trang đầu bảng bài toán
+   (phạm vi theo actor, kèm hai số tổng cho dòng phụ tiêu đề), khối "Phân bố theo chủ đề" và khối "Bài cần
+   chú ý". Trong lúc chờ, mỗi khối hiển thị khung chờ đúng số dòng dự kiến.
 2. **Thu hẹp danh sách**: gõ từ khoá theo mã hoặc tiêu đề, chọn tab độ khó và tab trạng thái. Mỗi lần đổi
    điều kiện thì về trang 1 [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:95-96].
 3. **Chọn bài toán**: tích chọn từng dòng. Có ít nhất một dòng được chọn thì thanh hành động theo lô hiện
@@ -203,7 +225,7 @@ xử lý theo lô, và mở luồng tạo/sửa đề bài
 5. **Chặn xuất bản thiếu điều kiện**: bài chưa đạt checklist xuất bản (không đủ testcase Hidden/Sample,
    thiếu đặc tả) bị chặn cứng kèm lý do khi cố chuyển sang `Đã xuất bản`
    [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:139-143; 02-bd/database/problem-bank.md:166].
-6. **Làm mới**: sau khi một hành động ghi thành công, tải lại bảng, dải chỉ số tổng và hai khối phụ; bỏ
+6. **Làm mới**: sau khi một hành động ghi thành công, tải lại bảng và hai khối phụ; bỏ
    danh sách đang chọn.
 
 [Người dùng] A2 (`INSTRUCTOR`) hoặc A3 (`ADMIN`) đã đăng nhập, có Function `PROBLEM_AUTHORING`
@@ -219,7 +241,7 @@ xử lý theo lô, và mở luồng tạo/sửa đề bài
 - Không có "chấm lại hàng loạt" — ngoài phạm vi toàn hệ thống (`DEC-2026-0828-remove-rejudge-scope`).
 - Không hiển thị bookmark của học viên dưới bất kỳ hình thức nào, kể cả số tổng hợp ẩn danh
   [Nguồn: 02-bd/security/problem-bank.md:48-56].
-- Phạm vi dữ liệu theo tác giả cho A2 **chưa có cột nguồn trong DB** — xem Câu hỏi mở Q1.
+- Phạm vi dữ liệu theo tác giả cho A2 dựa trên cột `problems.author_id` bất biến (đã chốt 2026-10-01, xem Câu hỏi mở Q1); cột này đã có trong `02-bd/database/problem-bank.md` mục 1.1 (bổ sung 2026-10-01). A3 thấy, sửa, xuất bản mọi bài, không bị lọc.
 
 [Quyền sử dụng]
 - Xem: được, khi có `PROBLEM_AUTHORING:READ`.
@@ -227,10 +249,11 @@ xử lý theo lô, và mở luồng tạo/sửa đề bài
 - Sửa (xuất bản/ẩn, đổi độ khó, gán chủ đề): được, khi có `PROBLEM_AUTHORING:UPDATE`.
 - Xoá (ẩn mềm): được, khi có `PROBLEM_AUTHORING:DELETE`.
 - Xuất CSV: được, khi có `PROBLEM_AUTHORING:READ` [Nguồn: 02-bd/security/problem-bank.md:5-18].
+- Quản lý chủ đề (thêm, đổi tên, sắp xếp, xoá): chỉ vai trò `ADMIN` có `PROBLEM_AUTHORING` (`CREATE`/`UPDATE`/`DELETE` tương ứng thao tác); dùng lại Function sẵn có, không Function mới. A2 chỉ chọn chủ đề có sẵn qua "Gán chủ đề" hoặc ở `SHR0202` (đã chốt 2026-10-01, `DEC-2026-1001-admin-configurable-settings`).
 
 [Số bản ghi tối đa] Bảng bài toán phân trang phía máy chủ; prototype hiển thị 8 dòng một trang
-[Nguồn: 09-layoutBase/Admin - Quản lý bài tập.dc.html:236-245] — kích thước trang thật chốt ở DD. Dải chỉ
-số: đúng 4 thẻ. Khối "Bài cần chú ý": tối đa 4 dòng (một dòng mỗi quy tắc phát hiện).
+[Nguồn: 09-layoutBase/Admin - Quản lý bài tập.dc.html:236-245]. Đã chốt 2026-10-01 (Q4): người dùng tự chọn số dòng mỗi trang (ví dụ 8, 20, 50), nhớ theo tài khoản, mặc định 8, không trần riêng cho ADMIN. Khối "Bài
+cần chú ý": tối đa 4 dòng (một dòng mỗi quy tắc phát hiện).
 
 [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:27-159; 02-bd/database/problem-bank.md:8-29,166-170;
 02-bd/security/problem-bank.md:1-56]
@@ -238,10 +261,11 @@ số: đúng 4 thẻ. Khối "Bài cần chú ý": tối đa 4 dòng (một dòn
 ### 4.2 DTO liên quan
 
 - `ProblemManagementListItemDto`
-- `ProblemManagementStatsDto`
 - `TopicDistributionItemDto`
 - `AttentionItemDto`
 - `TopicOptionDto`
+- `ProblemTopicManageResultDto`
+- `ProblemTopicDeleteRefusedDto`
 - `BulkProblemActionResultDto`
 
 `[Suy luận]` — tên DTO do BD này đề xuất, `03-dd/api/problem-bank.md` chốt lại.
@@ -257,7 +281,7 @@ số: đúng 4 thẻ. Khối "Bài cần chú ý": tối đa 4 dòng (một dòn
 | 5 | `problem_stats` (read model) | [Nguồn: 02-bd/database/problem-bank.md:138] |
 
 Bảng `tags`/`problem_tags` không dùng ở màn này — cột "Chủ đề" và khối "Phân bố theo chủ đề" đọc `topics`
-(danh mục cố định, F2-02), không phải `tags` (nhãn tự do, dùng để lọc chi tiết hơn ở `problem_list`)
+(danh mục do ADMIN quản lý, F2-02, đã chốt 2026-10-01), không phải `tags` (nhãn tự do, dùng để lọc chi tiết hơn ở `problem_list`)
 [Nguồn: 02-bd/database/problem-bank.md:35-45]. Bảng `bookmarks` không xuất hiện — màn này không có quyền
 đọc bookmark của học viên [Nguồn: 02-bd/security/problem-bank.md:48-56].
 
@@ -271,14 +295,15 @@ design system cuối cùng. Khu Giảng viên mount cùng view, chưa có protot
 | :--- | :--- | :--- |
 | Thanh điều hướng bên trái (khung chung) | `:343,348-352` | Nhóm "Nội dung" đang mở, mục con "Quản lý bài tập" đang chọn, badge `27` — dùng lại khung chung của khu Admin/Giảng viên |
 | Thanh tiêu đề dính trên | `:150-160` | Tiêu đề, dòng phụ đếm tổng và số bài công khai, nút "Bài tập mới" |
-| Dải chỉ số tổng | `:162-173`, dữ liệu `:477-482` | Lưới 4 thẻ số liệu: Tổng bài tập, Đã xuất bản, Chưa xuất bản, Tỉ lệ AC trung bình |
+| Dải chỉ số tổng | `:162-173`, dữ liệu `:477-482` | **Không dựng trên UI Next.js (2026-10-01)** — trang danh sách không hiển thị KPI; hai số tổng và đã xuất bản nằm ở dòng phụ thanh tiêu đề |
 | Thanh lọc và tìm kiếm | `:177-193` | Ô tìm mã/tiêu đề, tab độ khó 4 mục, tab trạng thái 3 mục, bộ đếm kết quả |
 | Thanh hành động theo lô | `:196-206,591` | Chỉ hiện khi `selectedCount > 0`; nhãn số đã chọn và 5 nút hành động + nút Xoá |
 | Bảng bài toán | `:208-232`, sort `:518-528`, màu AC `:539` | Lưới 10 cột, 7 cột sắp xếp được |
-| Phân trang | `:236-245,513-516,595` | Nhãn trang và hai nút "Trước" / "Sau", 8 dòng/trang |
+| Phân trang | `:236-245,513-516,595` | Nhãn trang, hai nút "Trước" / "Sau", 8 dòng/trang mặc định; bộ chọn số dòng mỗi trang (8, 20, 50) đã chốt 2026-10-01 và prototype đã dựng: ô chọn đứng trong thanh phân trang, trước các mũi tên (`shared/ui/pagination.tsx:70`) |
 | Khối "Phân bố theo chủ đề" | `:249-265`, dữ liệu `:566-572` | Thanh ngang tỉ lệ theo từng chủ đề |
 | Khối "Bài cần chú ý" | `:267-283`, dữ liệu `:574-579` | 4 quy tắc tự phát hiện |
 | Hộp thoại xác nhận xoá | `:304-317` | Dùng chung cho xoá một dòng và xoá theo lô |
+| Hộp thoại quản lý chủ đề | Không có trong `09-layoutBase`; prototype mã đã dựng (`views/shared/problem-management/ui/problem-management-view.tsx:494-516`, dialog dùng chung `managed-list-dialog.tsx`) | Popup (chỉ ADMIN, nút ở thanh tiêu đề chỉ hiện khi `canManageTopics`): danh sách dòng chủ đề (tên, số bài, đổi tên, xoá bị khoá khi còn bài tham chiếu), ô nhập tên chủ đề mới và nút Thêm. **Chưa có nút lên/xuống** (ghi nợ prototype 16.3) |
 | Chân trang (khung chung) | Ngoài phạm vi trích dẫn của RD | Dùng lại khung chung Admin/Giảng viên |
 
 Hai khối phụ (Phân bố theo chủ đề, Bài cần chú ý) nằm cạnh nhau, xếp chồng trên màn hẹp — giữ nguyên cấu
@@ -295,7 +320,6 @@ khi dựng UI thật, con số phải suy ra từ chính tập dữ liệu đang
 | :--- | :--- | :--- |
 | Trang | `views/shared/problem-management` | Quy ước FSD của dự án |
 | Khung Admin/Giảng viên | Dùng lại khung chung của từng khu vực | Ngoài phạm vi file này |
-| Dải chỉ số | `widgets/problem-stat-strip` | Prototype `:162-173` |
 | Bảng bài toán | `widgets/problem-table` + `entities/problem` | Prototype `:177-245` |
 | Bộ lọc | `features/problem-filter` | Prototype `:177-193` |
 | Hành động theo lô | `features/problem-bulk-action` | Prototype `:196-206` |
@@ -303,6 +327,8 @@ khi dựng UI thật, con số phải suy ra từ chính tập dữ liệu đang
 | Popup xác nhận xoá | `features/problem-delete-confirm` | Prototype `:304-317` |
 
 `[Suy luận]` — ánh xạ slice do BD đề xuất, DD màn hình chốt lại.
+
+**Hiện trạng bản dựng (2026-10-01):** hai khối phụ đã được dựng trong `problem-management-view.tsx` với dữ liệu giả ở `api/__mock__/admin-problem-mocks.ts`. Dòng phụ khối "Phân bố theo chủ đề" lấy số bài và số chủ đề từ chính tập dòng đang hiển thị, đúng yêu cầu ở cảnh báo dữ liệu mẫu của mục 4.4 (không dùng số "486 bài trên 12 chủ đề" của prototype). Hai điểm cần biết khi nối API thật: (1) quy tắc "Đang ẩn khỏi người học" và "Bản nháp quá hạn" trả 0 trong dữ liệu giả vì dòng giả không có lịch sử xuất bản — chỉ `GetAttentionList` thật mới đếm được; (2) bản dựng hiện **hiển thị cả quy tắc có số 0** (chữ màu nhạt) trong khi Sheet 6 Khu vực F NO 2 quy định ẩn dòng của quy tắc không có bài khớp — BD giữ quy tắc ẩn, điểm lệch ghi ở `06-plan/PROTOTYPE_DEBT.md` mục 16.
 
 > [Nội bộ] Ảnh minh hoạ đặt ở `08-diagram/02-bd/screens/shared/`, chụp bằng Playwright trên ứng dụng
 > Next.js thật khi đã có mã chạy được. Chưa có thì tham chiếu prototype, không vẽ tay.
@@ -319,20 +345,16 @@ khi dựng UI thật, con số phải suy ra từ chính tập dữ liệu đang
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Thanh tiêu đề | | | | | | | | | | | | | |
 | | 1 | Tiêu đề màn | `problemManagement.header.title` | - | - | Label | String | - | - | O | Quản lý bài tập | - | Tên màn hiển thị cố định<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] - |
-| | 2 | Mô tả phụ | `problemManagement.header.subtitle` | `problems` | `status`, `deleted` | Label | String | - | - | O | - | `{tổng} bài · {đã xuất bản} bài đang hiển thị ở Ngân hàng bài toán` | Đếm tổng số bài trong phạm vi actor và số bài `PUBLISHED` — phải bằng đúng số bài `problem_list` của người học thấy<br>[Công thức] `{tổng}` = COUNT(`problems` WHERE `deleted = false`, phạm vi theo actor); `{đã xuất bản}` = COUNT(cùng tập, `status = 'PUBLISHED'`) [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:132-135]<br>[EVT liên quan] EVT-1 |
+| | 2 | Mô tả phụ | `problemManagement.header.subtitle` | `problems` | `status`, `deleted` | Label | String | - | - | O | - | `{tổng} bài · {đã xuất bản} bài đang hiển thị ở Ngân hàng bài toán` | Đếm tổng số bài trong phạm vi actor và số bài `PUBLISHED` — phải bằng đúng số bài `problem_list` của người học thấy; hai số lấy từ phản hồi `ListProblemsAdmin` (tổng và số đã xuất bản), không có lời gọi thống kê riêng<br>[Công thức] `{tổng}` = COUNT(`problems` WHERE `deleted = false`, phạm vi theo actor); `{đã xuất bản}` = COUNT(cùng tập, `status = 'PUBLISHED'`) [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:132-135]<br>[EVT liên quan] EVT-1 |
 | | 3 | Bài tập mới | `problemManagement.header.btnCreate` | - | - | Button | - | - | - | I | - | - | Mở `problem_authoring` chế độ tạo mới<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-9 |
+| | 4 | Quản lý chủ đề | `problemManagement.header.btnManageTopics` | `topics` | - | Button | - | - | - | I | - | - | Mở popup quản lý chủ đề; chỉ ADMIN thấy (đã chốt 2026-10-01, `DEC-2026-1001-admin-configurable-settings`)<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-20 |
 
-### Khu vực B — Dải chỉ số tổng
+### Khu vực B — Dải chỉ số tổng (đã bỏ)
 
-| Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
-| :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
-| Dải chỉ số tổng | | | | | | | | | | | | | |
-| | 1 | Tổng bài tập | `problemManagement.stat.total` | `problems` | `deleted` | Label | Number | 8 | - | O | 0 | Số nguyên | Tổng số bài trong phạm vi actor<br>[Công thức] COUNT(`problems` WHERE `deleted = false`, phạm vi theo actor)<br>[EVT liên quan] EVT-1 |
-| | 2 | Đã xuất bản | `problemManagement.stat.published` | `problems` | `status` | Label | Number | 8 | - | O | 0 | Số nguyên | Số bài đang hiển thị ở `problem_list`<br>[Công thức] COUNT(`status = 'PUBLISHED' AND deleted = false`, phạm vi theo actor) [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:49]<br>[EVT liên quan] EVT-1 |
-| | 3 | Chưa xuất bản | `problemManagement.stat.unpublished` | `problems` | `status` | Label | Number | 8 | - | O | 0 | Số nguyên | Số bài chưa công khai<br>[Công thức] COUNT(`status = 'UNPUBLISHED' AND deleted = false`, phạm vi theo actor)<br>[EVT liên quan] EVT-1 |
-| | 4 | Tỉ lệ AC trung bình | `problemManagement.stat.avgAcRate` | `problem_stats` | `ac_rate` | Label | Number | 5 | - | O | 0 | Phần trăm một chữ số thập phân | Tỉ lệ Accepted trung bình<br>[Nguồn giá trị] **Chưa có nguồn đúng cửa sổ 90 ngày** — `problem_stats.ac_rate` là read model toàn thời gian, không có trường theo cửa sổ thời gian trượt, xem Q2<br>[EVT liên quan] EVT-1 |
-| | 5 | Chú thích của thẻ "Đã xuất bản" | `problemManagement.stat.col.publishedMeta` | - | - | ListColumn | String | - | - | O | - | Đúng bằng số bài trang người học thấy | Nhãn tĩnh i18n<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] - |
-| | 6 | Chú thích của thẻ "Chưa xuất bản" | `problemManagement.stat.col.unpublishedMeta` | `testcases`, `problems` | - | ListColumn | String | - | - | O | - | `{số} bài chưa có testcase` | Số bài chưa xuất bản và chưa có testcase nào<br>[Công thức] COUNT(`problems` WHERE `status = 'UNPUBLISHED' AND deleted = false` AND không tồn tại dòng `testcases` khớp `problem_id`, phạm vi theo actor)<br>[EVT liên quan] EVT-1 |
+Khu vực này **không còn item nào** kể từ 2026-10-01: dải 4 thẻ (Tổng bài tập, Đã xuất bản, Chưa xuất bản, Tỉ lệ
+AC trung bình) và hai chú thích đi kèm đã bị xoá khỏi UI theo quy ước "chỉ một trang tổng quan hiển thị KPI"
+(`02-bd/screens/admin/_shell.md`). Giữ nguyên chữ cái khu vực C đến F để các tham chiếu hiện có không phải đánh
+số lại. Hai số tổng còn lại dùng ở dòng phụ tiêu đề (Khu vực A, NO 2).
 
 ### Khu vực C — Bộ lọc và hành động theo lô
 
@@ -360,17 +382,18 @@ khi dựng UI thật, con số phải suy ra từ chính tập dữ liệu đang
 | | 2 | Ô chọn dòng | `problemManagement.list.col.checkbox` | - | - | Button | Boolean | - | - | I | Không chọn | - | Tích chọn bài toán trên dòng đó để đưa vào hành động theo lô. Trạng thái tồn tại trên màn, giữ nguyên qua đổi trang/đổi lọc [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:144-153]<br>[Nguồn giá trị] Trạng thái chọn của màn hình<br>[EVT liên quan] EVT-5 |
 | | 3 | Mã | `problemManagement.list.col.code` | `problems` | `code` | ListColumn | String | - | - | O | - | - | Mã ngắn của bài toán, sắp xếp được<br>[Nguồn giá trị] Cột `code`<br>[EVT liên quan] EVT-6 |
 | | 4 | Tiêu đề | `problemManagement.list.col.title` | `problems` | `title` | Link | String | - | - | O | - | - | Tiêu đề bài toán, bấm vào mở `problem_authoring` chế độ sửa, sắp xếp được<br>[Nguồn giá trị] Cột `title`<br>[EVT liên quan] EVT-6, EVT-10 |
-| | 5 | Chủ đề | `problemManagement.list.col.topics` | `topics` | `name` | ListColumn | String | - | - | O | - | Danh sách phân cách bởi dấu phẩy | Các chủ đề đã gán cho bài, qua bảng nối<br>[Nguồn giá trị] `topics.name` qua `problem_topics.problem_id` [Nguồn: 02-bd/database/problem-bank.md:37-39]<br>[EVT liên quan] - |
+| | 5 | Chủ đề | `problemManagement.list.col.topics` | `topics` | `name` | ListColumn | String | - | - | O | - | Danh sách phân cách bởi dấu phẩy | Các chủ đề đã gán cho bài, qua bảng nối; danh mục đọc từ dữ liệu `topics`, không phải danh sách cố định<br>[Nguồn giá trị] `topics.name` qua `problem_topics.problem_id` [Nguồn: 02-bd/database/problem-bank.md:37-39]<br>[EVT liên quan] - |
 | | 6 | Độ khó | `problemManagement.list.col.difficulty` | `problems` | `difficulty` | Badge | Enum | - | - | O | - | Nhãn tiếng Việt | Ba mức Easy/Medium/Hard, sắp xếp được<br>[Nguồn giá trị] Cột `difficulty` [Nguồn: 02-bd/database/problem-bank.md:17]<br>[EVT liên quan] EVT-6 |
 | | 7 | Trạng thái | `problemManagement.list.col.status` | `problems` | `status` | Badge | Enum | - | - | O | - | Nhãn tiếng Việt kèm chấm màu | Hai giá trị `PUBLISHED`/`UNPUBLISHED`, sắp xếp được<br>[Nguồn giá trị] `PUBLISHED` thành "Đã xuất bản", `UNPUBLISHED` thành "Chưa xuất bản" [Nguồn: 02-bd/database/problem-bank.md:18]<br>[EVT liên quan] EVT-6 |
 | | 8 | Lượt nộp | `problemManagement.list.col.submissionCount` | `problem_stats` | `submission_count` | ListColumn | Number | 8 | - | O | 0 | Số nguyên phân cách nghìn | Tổng số lượt nộp của bài, sắp xếp được<br>[Nguồn giá trị] Read model tổng hợp từ domain event [Nguồn: 02-bd/database/problem-bank.md:138]<br>[EVT liên quan] EVT-6 |
 | | 9 | AC | `problemManagement.list.col.acRate` | `problem_stats` | `ac_rate` | ListColumn | Number | 5 | - | O | 0 | Phần trăm, đổi màu theo ngưỡng 60% và 35% | Tỉ lệ Accepted, sắp xếp được<br>[Nguồn giá trị] Cột `ac_rate` [Nguồn: 02-bd/database/problem-bank.md:138]<br>[Công thức] Màu xanh khi ≥ 60%, màu vàng khi 35–59%, màu đỏ khi < 35% [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:107-108]<br>[EVT liên quan] EVT-6 |
 | | 10 | TC · Sửa cuối | `problemManagement.list.col.testcaseAndUpdated` | `testcases`, `problems` | -, `updated_at` | ListColumn | String | - | - | O | - | `{số testcase} TC · {mô tả tương đối}` | Số testcase hiện có và thời điểm sửa cuối, gộp một cột<br>[Công thức] Số testcase = COUNT(`testcases` WHERE `problem_id` khớp dòng); mô tả tương đối tính từ `problems.updated_at` [Nguồn: 09-layoutBase/Admin - Quản lý bài tập.dc.html:210-211 (RD mục 3.6)]<br>[EVT liên quan] - |
-| | 11 | Sửa | `problemManagement.list.col.btnEdit` | - | - | Button | - | - | - | I | - | - | Mở `problem_authoring` chế độ sửa cho dòng đó — cùng đích với bấm tiêu đề<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-10 |
-| | 12 | Xoá | `problemManagement.list.col.btnDelete` | - | - | Button | - | - | - | I | - | - | Mở popup xác nhận xoá cho một dòng (ẩn mềm)<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-16 |
+| | 11 | Sửa | `problemManagement.list.col.btnEdit` | - | - | Button | - | - | - | I | - | - | Mở `problem_authoring` chế độ sửa cho dòng đó — cùng đích với bấm tiêu đề. Hiển thị là nút vuông chỉ có icon bút chì (`IconAction`), tên "Sửa" nằm ở tooltip bên dưới (hiện khi rê chuột hoặc focus bàn phím) và ở `aria-label` — xem `02-bd/screens/admin/_shell.md`, mục "Quy ước icon thao tác + tooltip"<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-10 |
+| | 12 | Xoá | `problemManagement.list.col.btnDelete` | - | - | Button | - | - | - | I | - | - | Mở popup xác nhận xoá cho một dòng (ẩn mềm). Hiển thị là nút vuông chỉ có icon thùng rác, tông cảnh báo (`tone="danger"`), tên "Xoá" ở tooltip và `aria-label`<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-16 |
 | | 13 | Nhãn trang | `problemManagement.paging.label` | - | - | Label | String | - | - | O | - | `Trang {số} trong {số} · hiển thị {số} dòng` | Vị trí trang hiện tại và số dòng đang hiển thị<br>[Công thức] Lấy từ phần phân trang trong phản hồi của `ListProblemsAdmin`<br>[EVT liên quan] EVT-7, EVT-8 |
 | | 14 | Trang trước | `problemManagement.paging.btnPrev` | - | - | Button | - | - | - | I | - | - | Lùi về trang liền trước<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-7 |
 | | 15 | Trang sau | `problemManagement.paging.btnNext` | - | - | Button | - | - | - | I | - | - | Tiến tới trang liền sau<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-8 |
+| | 16 | Chọn số dòng mỗi trang | `problemManagement.paging.pageSize` | - | - | List | Number | 3 | - | I/O | 8 | 8 / 20 / 50 | Người dùng tự chọn số dòng mỗi trang, nhớ theo tài khoản; không trần riêng cho ADMIN. **Đã chốt 2026-10-01** (Q4, `DEC-2026-1001-admin-configurable-settings`); prototype đã dựng ngày 2026-10-01 với đúng ba lựa chọn 8/20/50, mặc định 8, ô chọn đứng trước các mũi tên Trước/Sau; prototype **nhớ theo trình duyệt (localStorage, khoá `algoprep-problems-page-size`)** vì chưa có kho theo tài khoản `[SoT: Suy luận]` do prototype tự chọn (`shared/lib/use-persisted-page-size.ts`), đổi lựa chọn thì về trang 1. Danh sách lựa chọn 8/20/50 nay trùng prototype, DD xác nhận lại<br>[Nguồn giá trị] Tham số `pageSize` của `ListProblemsAdmin`, lưu lựa chọn theo tài khoản (nơi lưu thuộc DD, `[SoT: Suy luận]`)<br>[EVT liên quan] EVT-7, EVT-8 |
 
 ### Khu vực E — Phân bố theo chủ đề
 
@@ -379,7 +402,7 @@ khi dựng UI thật, con số phải suy ra từ chính tập dữ liệu đang
 | Phân bố theo chủ đề | | | | | | | | | | | | | |
 | | 1 | Tiêu đề khối | `problemManagement.topicDist.title` | - | - | Label | String | - | - | O | Phân bố theo chủ đề | - | Nhãn tĩnh i18n<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] - |
 | | 2 | Chú thích tổng | `problemManagement.topicDist.subtitle` | `problems`, `topics` | - | Label | String | - | - | O | - | `Tổng {số} bài trên {số} chủ đề` | Tổng số bài có ít nhất một chủ đề và tổng số chủ đề khác nhau đang được dùng, tính trên phạm vi actor — **không dùng số mẫu tự mâu thuẫn của prototype** [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:114-118]<br>[Công thức] `{số bài}` = COUNT(`problems` phạm vi theo actor, `deleted = false`); `{số chủ đề}` = COUNT DISTINCT `topic_id` trong `problem_topics` của cùng tập<br>[EVT liên quan] EVT-1 |
-| | 3 | Danh sách chủ đề | `problemManagement.topicDist.list` | `topics` | - | List | List | - | - | O | rỗng | - | Mỗi dòng một chủ đề đang được dùng trong phạm vi actor<br>[Nguồn giá trị] Kết quả gọi `GetTopicDistribution`<br>[EVT liên quan] EVT-1 |
+| | 3 | Danh sách chủ đề | `problemManagement.topicDist.list` | `topics` | - | List | List | - | - | O | rỗng | - | Mỗi dòng một chủ đề đang được dùng trong phạm vi actor; số dòng đọc từ dữ liệu, không cố định<br>[Nguồn giá trị] Kết quả gọi `GetTopicDistribution`<br>[EVT liên quan] EVT-1 |
 | | 4 | Tên chủ đề | `problemManagement.topicDist.col.name` | `topics` | `name` | ListColumn | String | - | - | O | - | - | Tên chủ đề hiển thị<br>[Nguồn giá trị] Cột `name`<br>[EVT liên quan] - |
 | | 5 | Số lượng và tỉ lệ | `problemManagement.topicDist.col.value` | `problems`, `problem_topics` | - | ListColumn | String | - | - | O | - | `{số} · {số}%` | Số bài gán chủ đề đó và tỉ lệ trên tổng số bài có chủ đề<br>[Công thức] Số bài = COUNT(`problem_topics` WHERE `topic_id` khớp, join `problems` phạm vi actor); tỉ lệ = số bài chia tổng số bài có ít nhất một chủ đề. Một bài có thể thuộc nhiều chủ đề nên tổng tỉ lệ không nhất thiết bằng 100% `[Suy luận]` — RD không nói rõ cách chuẩn hoá khi một bài đa chủ đề<br>[EVT liên quan] - |
 | | 6 | Thanh tỉ lệ | `problemManagement.topicDist.col.bar` | - | - | ProgressBar | Number | - | - | O | - | - | Biểu diễn trực quan tỉ lệ<br>[Công thức] Chiều rộng bằng đúng tỉ lệ phần trăm của dòng<br>[EVT liên quan] - |
@@ -401,6 +424,13 @@ khi dựng UI thật, con số phải suy ra từ chính tập dữ liệu đang
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Popup | | | | | | | | | | | | | |
 | | 1 | Xác nhận xoá | `problemManagement.popup.deleteConfirm` | `problems`, `problem_stats` | `code`, `title`, `submission_count` | Popup | - | - | - | I | - | Xác nhận / Huỷ | Xác nhận trước khi ẩn mềm một bài hoặc nhiều bài đã chọn; liệt kê mã, tiêu đề và số lượt nộp bị ảnh hưởng [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:154-156]<br>[Nguồn giá trị] Bài toán đang thao tác hoặc danh sách đang chọn<br>[EVT liên quan] EVT-16, EVT-17, EVT-18, EVT-19 |
+| | 2 | Popup quản lý chủ đề | `problemManagement.popup.topics` | `topics` | - | Popup | - | - | - | I | - | Đóng | Khung popup, tiêu đề "Quản lý chủ đề"; chỉ ADMIN mở được. Prototype đã dựng (bản dựng chưa có nút lên/xuống NO 7; số bài tham chiếu tính từ các dòng đang hiển thị, nút xoá khoá khi số bài lớn hơn 0)<br>[Nguồn giá trị] Phản hồi `ListProblemTopics`<br>[EVT liên quan] EVT-20, EVT-25 |
+| | 3 | Danh sách chủ đề | `problemManagement.popup.topics.list` | `topics` | `name`, `sort_order` | List | List | - | - | O | rỗng | - | Mỗi dòng: tên chủ đề, số bài đang tham chiếu (mọi trạng thái, kể cả bài đã ẩn mềm), nút lên/xuống, nút đổi tên, nút xoá. Không giới hạn số dòng<br>[Công thức] `COUNT(problem_topics WHERE topic_id = t.id)`<br>[EVT liên quan] EVT-20 |
+| | 4 | Ô tên chủ đề mới | `problemManagement.popup.topics.newName` | `topics` | `name` | TextBox | String | 60 | - | I | rỗng | - | Tên hiển thị; không trùng tên chủ đề có sẵn (không phân biệt hoa thường). Giới hạn 60 là `[Suy luận]` (theo `SHR0301`), DD chốt<br>[Nguồn giá trị] Giá trị người dùng nhập<br>[EVT liên quan] EVT-21 |
+| | 5 | Nút Thêm chủ đề | `problemManagement.popup.topics.btnAdd` | `topics` | - | Button | - | - | - | I | - | - | Gọi `CreateProblemTopic`; chủ đề mới xếp cuối danh sách<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-21 |
+| | 6 | Nút Đổi tên | `problemManagement.popup.topics.btnRename` | `topics` | `name` | Button | - | - | - | I | - | - | Sửa tên tại dòng, lưu bằng `UpdateProblemTopic`. Mã `code` không đổi<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-22 |
+| | 7 | Nút Lên/Xuống | `problemManagement.popup.topics.btnReorder` | `topics` | `sort_order` | Button | - | - | - | I | - | - | Đổi chỗ dòng với dòng liền kề, gọi `ReorderProblemTopics` với toàn bộ thứ tự mới<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-23 |
+| | 8 | Nút Xoá chủ đề | `problemManagement.popup.topics.btnDelete` | `topics` | - | Button | - | - | - | I | - | - | Gọi `DeleteProblemTopic`. Bị từ chối nếu còn bài tham chiếu: popup hiện số bài và yêu cầu chuyển hoặc bỏ gán các bài đó trước<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-24 |
 
 [Nguồn: 09-layoutBase/Admin - Quản lý bài tập.dc.html:150-317,477-482,513-528,539,566-579,591-595;
 02-bd/database/problem-bank.md:8-29,37-39,83-99,138,166-170; 01-rd/screens/shared/SHR0201_problem_management.md:27-159]
@@ -420,18 +450,11 @@ khi dựng UI thật, con số phải suy ra từ chính tập dữ liệu đang
 | | 1 | Tiêu đề màn | Có | - |
 | | 2 | Mô tả phụ | Có | [Điều kiện hiển thị] Trong lúc tải hiển thị khung chờ dạng dòng chữ. |
 | | 3 | Bài tập mới | Điều kiện | [Điều kiện hiển thị] Luôn hiển thị.<br>[Điều kiện kích hoạt] Kích hoạt khi có quyền `PROBLEM_AUTHORING:CREATE`; không có quyền thì hiển thị nhưng không kích hoạt. |
+| | 4 | Quản lý chủ đề | Điều kiện | [Điều kiện hiển thị] Chỉ hiển thị với vai trò `ADMIN`. |
 
-### Khu vực B — Dải chỉ số tổng
+### Khu vực B — Dải chỉ số tổng (đã bỏ)
 
-| Khu vực | NO | Tên item | Hiển thị | Ghi chú |
-| :--- | --: | :--- | :-: | :--- |
-| Dải chỉ số tổng | | | | |
-| | 1 | Tổng bài tập | Có | [Điều kiện hiển thị] Trong lúc tải hiển thị khung chờ đúng 4 thẻ. |
-| | 2 | Đã xuất bản | Có | - |
-| | 3 | Chưa xuất bản | Có | - |
-| | 4 | Tỉ lệ AC trung bình | Điều kiện | [Điều kiện hiển thị] Chỉ hiển thị khi Q2 đã chốt nguồn cửa sổ 90 ngày; chưa chốt thì ẩn cả thẻ, không hiển thị số tính sai cửa sổ thời gian. |
-| | 5 | Chú thích của thẻ "Đã xuất bản" | Có | - |
-| | 6 | Chú thích của thẻ "Chưa xuất bản" | Có | [Tự động đặt] Cập nhật lại sau mỗi lần tải khối. |
+Không còn item nào — xem Sheet 5, Khu vực B.
 
 ### Khu vực C — Bộ lọc và hành động theo lô
 
@@ -470,6 +493,7 @@ khi dựng UI thật, con số phải suy ra từ chính tập dữ liệu đang
 | | 13 | Nhãn trang | Có | [Tự động đặt] Cập nhật lại sau mỗi lần tải danh sách. |
 | | 14 | Trang trước | Có | [Điều kiện kích hoạt] Không kích hoạt khi đang ở trang 1 hoặc đang tải. |
 | | 15 | Trang sau | Có | [Điều kiện kích hoạt] Không kích hoạt khi đang ở trang cuối hoặc đang tải. |
+| | 16 | Chọn số dòng mỗi trang | Có | [Tự động đặt] Đổi lựa chọn thì đưa về trang 1, gọi lại `ListProblemsAdmin` với `pageSize` mới. |
 
 ### Khu vực E — Phân bố theo chủ đề
 
@@ -500,6 +524,13 @@ khi dựng UI thật, con số phải suy ra từ chính tập dữ liệu đang
 | :--- | --: | :--- | :-: | :--- |
 | Popup | | | | |
 | | 1 | Xác nhận xoá | Điều kiện | [Điều kiện hiển thị] Chỉ hiển thị sau khi bấm "Xoá" ở một dòng hoặc trên thanh hành động theo lô.<br>[Điều kiện kích hoạt] Nút "Xác nhận" luôn kích hoạt ngay khi popup mở — không cần nhập liệu thêm. |
+| | 2 | Popup quản lý chủ đề | Điều kiện | [Điều kiện hiển thị] Chỉ hiển thị sau khi ADMIN bấm "Quản lý chủ đề". |
+| | 3 | Danh sách chủ đề | Có | [Điều kiện hiển thị] Trong lúc tải hiển thị khung chờ. Danh sách rỗng thì hiển thị thông báo rỗng kèm ô thêm chủ đề. |
+| | 4 | Ô tên chủ đề mới | Có | - |
+| | 5 | Nút Thêm chủ đề | Có | [Điều kiện kích hoạt] Chỉ kích hoạt khi ô tên có nội dung hợp lệ. |
+| | 6 | Nút Đổi tên | Có | - |
+| | 7 | Nút Lên/Xuống | Có | [Điều kiện kích hoạt] Nút "Lên" không kích hoạt ở dòng đầu, nút "Xuống" không kích hoạt ở dòng cuối. |
+| | 8 | Nút Xoá chủ đề | Có | [Điều kiện kích hoạt] Luôn kích hoạt; việc từ chối khi còn bài tham chiếu do máy chủ quyết, giao diện hiển thị số đếm đã có để báo trước. |
 
 [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:144-153; 02-bd/security/problem-bank.md:5-18]
 
@@ -520,23 +551,22 @@ khi dựng UI thật, con số phải suy ra từ chính tập dữ liệu đang
 | 7 | `ProblemManagementListItemDto` | `submissionCount` | Number | `problem_stats` | `submission_count` | Bảng "Lượt nộp" | Có | [Nguồn] Read model [Nguồn: 02-bd/database/problem-bank.md:138] |
 | 8 | `ProblemManagementListItemDto` | `acRate` | Number | `problem_stats` | `ac_rate` | Bảng "AC" | Có | [Chuyển đổi] Đổi màu theo ngưỡng 60%/35% ở tầng hiển thị, không phải trường riêng trong DTO. |
 | 9 | `ProblemManagementListItemDto` | `testcaseCount`, `updatedAt` | Number, Date | `testcases`, `problems` | -, `updated_at` | Bảng "TC · Sửa cuối" | Có | [Nguồn] `testcaseCount` đếm ở tầng application; `updatedAt` đọc trực tiếp cột `problems.updated_at`. |
-| 10 | `ProblemManagementStatsDto` | `total`, `published`, `unpublished` | Number | `problems` | `status`, `deleted` | Thẻ "Tổng bài tập", "Đã xuất bản", "Chưa xuất bản" | Có | [Nguồn] Phản hồi của `GetProblemManagementStats`, đã áp phạm vi theo actor. |
-| 11 | `ProblemManagementStatsDto` | `unpublishedWithoutTestcaseCount` | Number | `testcases`, `problems` | - | Chú thích "Chưa xuất bản" | Có | [Nguồn] Cùng lời gọi `GetProblemManagementStats`. |
-| 12 | `ProblemManagementStatsDto` | `avgAcRate` | Number | `problem_stats` | `ac_rate` | Thẻ "Tỉ lệ AC trung bình" | Điều kiện | [Nguồn] **Chưa chốt** — cần nguồn cửa sổ 90 ngày, xem Q2. |
-| 13 | `TopicDistributionItemDto` | `topicId`, `topicName`, `count`, `percent` | UUID, String, Number, Number | `topics`, `problem_topics` | `id`, `name` | Khối "Phân bố theo chủ đề" | Có | [Nguồn] Phản hồi của `GetTopicDistribution`. |
-| 14 | `AttentionItemDto` | `ruleCode`, `count` | String, Number | `problems`, `testcases`, `problem_stats` | - | Khối "Bài cần chú ý" | Có | [Nguồn] Phản hồi của `GetAttentionList`<br>[Chuyển đổi] `ruleCode` là khoá tra nhãn tĩnh i18n cho tên và chú thích quy tắc. |
-| 15 | `TopicOptionDto` | `id`, `name` | UUID, String | `topics` | `id`, `name` | Hành động "Gán chủ đề" | Có | [Nguồn] Phản hồi của `ListTopics`<br>[Đích] `id` là tham số của `AssignTopic`. |
-| 16 | `BulkProblemActionResultDto` | `succeededIds`, `failedItems` | List, List | - | - | Thông báo hoàn tất của EVT-11 → EVT-19 | Có | [Chuyển đổi] Một hành động theo lô phía màn là **N lệnh đơn** phía tầng ứng dụng (mỗi bài xử lý độc lập, ví dụ khi lô hỗn hợp xuất bản có bài đạt/chưa đạt checklist); `failedItems` mang `id` kèm mã lỗi của từng bài hỏng `[Suy luận]` — RD không nói rõ hành vi lô hỗn hợp, BD đề xuất xử lý độc lập từng bài để nhất quán với nguyên tắc "chặn cứng kèm lý do" đã chốt cho từng bài đơn lẻ. |
+| 10 | `TopicDistributionItemDto` | `topicId`, `topicName`, `count`, `percent` | UUID, String, Number, Number | `topics`, `problem_topics` | `id`, `name` | Khối "Phân bố theo chủ đề" | Có | [Nguồn] Phản hồi của `GetTopicDistribution`. |
+| 11 | `AttentionItemDto` | `ruleCode`, `count` | String, Number | `problems`, `testcases`, `problem_stats` | - | Khối "Bài cần chú ý" | Có | [Nguồn] Phản hồi của `GetAttentionList`<br>[Chuyển đổi] `ruleCode` là khoá tra nhãn tĩnh i18n cho tên và chú thích quy tắc. |
+| 12 | `TopicOptionDto` | `id`, `code`, `name`, `sortOrder`, `problemCount` | UUID, String, String, Number, Number | `topics` | `id`, `code`, `name`, `sort_order` | Hành động "Gán chủ đề"; popup "Quản lý chủ đề" | Có | [Nguồn] Phản hồi của `ListProblemTopics`, đọc từ dữ liệu, không còn danh sách cố định; `problemCount` chỉ cần cho popup (ADMIN)<br>[Đích] `id` là tham số của `AssignTopic`. |
+| 13 | `BulkProblemActionResultDto` | `succeededIds`, `failedItems` | List, List | - | - | Thông báo hoàn tất của EVT-11 → EVT-19 | Có | [Chuyển đổi] Một hành động theo lô phía màn là **N lệnh đơn** phía tầng ứng dụng (mỗi bài xử lý độc lập, ví dụ khi lô hỗn hợp xuất bản có bài đạt/chưa đạt checklist); `failedItems` mang `id` kèm mã lỗi của từng bài hỏng `[Suy luận]` — RD không nói rõ hành vi lô hỗn hợp, BD đề xuất xử lý độc lập từng bài để nhất quán với nguyên tắc "chặn cứng kèm lý do" đã chốt cho từng bài đơn lẻ. |
+| 14 | `ProblemTopicManageResultDto` | `topicId`, `code`, `name`, `sortOrder` | UUID, String, String, Number | `topics` | `id`, `code`, `name`, `sort_order` | Popup "Quản lý chủ đề" | Có | [Nguồn] Phản hồi của `CreateProblemTopic`, `UpdateProblemTopic`; `ReorderProblemTopics` trả lại toàn bộ danh sách thứ tự mới |
+| 15 | `ProblemTopicDeleteRefusedDto` | `topicId`, `referencingProblemCount` | UUID, Number | `problem_topics` | `topic_id` | Popup "Quản lý chủ đề" | Có | [Nguồn] Phản hồi lỗi của `DeleteProblemTopic` khi còn tham chiếu; `referencingProblemCount` hiển thị cho ADMIN |
 
 ### 7.2 Truy cập bảng dữ liệu (5)
 
 | NO | Tên logic | Bảng | Repository | CRUD | Mục đích | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :--- | :--- |
-| 1 | Bài toán | `problems` | `ProblemRepository` | R, U | Tìm kiếm, lọc, phân trang, phạm vi theo actor; đổi `status`, `difficulty`, `deleted`; tạo bản sao khi nhân bản | `ListProblemsAdmin`: R<br>`GetProblemManagementStats`: R<br>`PublishProblem`/`UnpublishProblem`: R, U<br>`ChangeDifficulty`: R, U<br>`DuplicateProblem`: R, C (bản sao)<br>`DeleteProblem`: R, U (bật `deleted`) |
-| 2 | Chủ đề | `topics`, `problem_topics` | `TopicRepository` | R, C | Đọc danh sách chủ đề để hiển thị và để chọn khi gán; ghi quan hệ khi gán chủ đề theo lô | `ListProblemsAdmin`: R<br>`ListTopics`: R<br>`GetTopicDistribution`: R<br>`AssignTopic`: C |
-| 3 | Testcase | `testcases` | `TestcaseRepository` | R | Đếm số testcase cho cột "TC · Sửa cuối", chú thích "Chưa xuất bản" và quy tắc "Chưa có testcase"; kiểm checklist khi xuất bản | `ListProblemsAdmin`: R<br>`GetProblemManagementStats`: R<br>`GetAttentionList`: R<br>`PublishProblem`: R |
-| 4 | Thống kê bài toán | `problem_stats` | `ProblemStatsRepository` | R | Đọc lượt nộp, tỉ lệ AC cho bảng, thẻ tổng và quy tắc "Tỉ lệ AC thấp" | `ListProblemsAdmin`: R<br>`GetProblemManagementStats`: R<br>`GetAttentionList`: R |
-| 5 | Nhật ký hệ thống | `system_audit_logs` (schema `identity`) | `SystemAuditLogRepository` | C | Ghi một dòng cho mỗi bài toán chịu tác động của một hành động ghi (xoá, xuất bản/ẩn, đổi độ khó, gán chủ đề, nhân bản) — cùng nguyên tắc đã áp dụng ở `ADM0201` `[Suy luận]`, chốt số liệu cụ thể ở DD | `PublishProblem`/`UnpublishProblem`: C<br>`ChangeDifficulty`: C<br>`AssignTopic`: C<br>`DuplicateProblem`: C<br>`DeleteProblem`: C |
+| 1 | Bài toán | `problems` | `ProblemRepository` | R, U | Tìm kiếm, lọc, phân trang, phạm vi theo actor; đổi `status`, `difficulty`, `deleted`; tạo bản sao khi nhân bản | `ListProblemsAdmin`: R<br>`PublishProblem`/`UnpublishProblem`: R, U<br>`ChangeDifficulty`: R, U<br>`DuplicateProblem`: R, C (bản sao)<br>`DeleteProblem`: R, U (bật `deleted`) |
+| 2 | Chủ đề | `topics`, `problem_topics` | `TopicRepository` | R, C, U, D | Đọc danh sách chủ đề để hiển thị và để chọn khi gán; ghi quan hệ khi gán chủ đề theo lô; ADMIN thêm, đổi tên, sắp xếp lại, xoá chủ đề | `ListProblemsAdmin`: R<br>`ListProblemTopics`: R<br>`GetTopicDistribution`: R<br>`AssignTopic`: C<br>`CreateProblemTopic`: C<br>`UpdateProblemTopic`: U<br>`ReorderProblemTopics`: U<br>`DeleteProblemTopic`: R (đếm tham chiếu), D |
+| 3 | Testcase | `testcases` | `TestcaseRepository` | R | Đếm số testcase cho cột "TC · Sửa cuối" và quy tắc "Chưa có testcase"; kiểm checklist khi xuất bản | `ListProblemsAdmin`: R<br>`GetAttentionList`: R<br>`PublishProblem`: R |
+| 4 | Thống kê bài toán | `problem_stats` | `ProblemStatsRepository` | R | Đọc lượt nộp, tỉ lệ AC cho bảng và quy tắc "Tỉ lệ AC thấp" | `ListProblemsAdmin`: R<br>`GetAttentionList`: R |
+| 5 | Nhật ký hệ thống | `system_audit_logs` (schema `identity`) | `SystemAuditLogRepository` | C | Ghi một dòng cho mỗi bài toán chịu tác động của một hành động ghi (xoá, xuất bản/ẩn, đổi độ khó, gán chủ đề, nhân bản) — cùng nguyên tắc đã áp dụng ở `ADM0201` `[Suy luận]`, chốt số liệu cụ thể ở DD | `PublishProblem`/`UnpublishProblem`: C<br>`ChangeDifficulty`: C<br>`AssignTopic`: C<br>`DuplicateProblem`: C<br>`DeleteProblem`: C<br>`CreateProblemTopic`, `UpdateProblemTopic`, `ReorderProblemTopics`, `DeleteProblemTopic`: C (một dòng mỗi thao tác chủ đề) |
 
 `[Suy luận]` — tên repository do BD này đề xuất, DD module `problem-bank` chốt lại. Bảng `bookmarks` không
 xuất hiện — màn này không có quyền đọc [Nguồn: 02-bd/security/problem-bank.md:48-56].
@@ -547,18 +577,21 @@ xuất hiện — màn này không có quyền đọc [Nguồn: 02-bd/security/p
 
 | NO | Endpoint (tên nghiệp vụ) | Mục đích | BC sở hữu |
 | --: | :--- | :--- | :--- |
-| 1 | `ListProblemsAdmin` | Tìm kiếm, lọc, sắp xếp và phân trang danh sách bài toán, phạm vi theo actor | `problem-bank` |
-| 2 | `GetProblemManagementStats` | Tải dải chỉ số tổng | `problem-bank` |
-| 3 | `GetTopicDistribution` | Tải số liệu phân bố theo chủ đề | `problem-bank` |
-| 4 | `GetAttentionList` | Tải khối "Bài cần chú ý" | `problem-bank` |
-| 5 | `ListTopics` | Tải danh sách chủ đề khả dụng cho hành động "Gán chủ đề" | `problem-bank` |
-| 6 | `PublishProblem` | Xuất bản một hoặc nhiều bài toán | `problem-bank` |
-| 7 | `UnpublishProblem` | Rút xuống một hoặc nhiều bài toán | `problem-bank` |
-| 8 | `ChangeDifficulty` | Đổi độ khó theo lô | `problem-bank` |
-| 9 | `AssignTopic` | Gán chủ đề theo lô | `problem-bank` |
-| 10 | `DuplicateProblem` | Nhân bản một hoặc nhiều bài toán | `problem-bank` |
-| 11 | `ExportProblemsCsv` | Xuất CSV metadata bài toán | `problem-bank` |
-| 12 | `DeleteProblem` | Xoá (ẩn mềm) một hoặc nhiều bài toán | `problem-bank` |
+| 1 | `ListProblemsAdmin` | Tìm kiếm, lọc, sắp xếp và phân trang danh sách bài toán, phạm vi theo actor; kèm hai số tổng (tổng, đã xuất bản) cho dòng phụ tiêu đề | `problem-bank` |
+| 2 | `GetTopicDistribution` | Tải số liệu phân bố theo chủ đề | `problem-bank` |
+| 3 | `GetAttentionList` | Tải khối "Bài cần chú ý" | `problem-bank` |
+| 4 | `ListProblemTopics` | Tải danh mục chủ đề (đọc từ dữ liệu) cho hành động "Gán chủ đề" và popup quản lý; mọi người dùng đã xác thực gọi được. Đổi tên từ `ListTopics` ngày 2026-10-01 | `problem-bank` |
+| 5 | `PublishProblem` | Xuất bản một hoặc nhiều bài toán | `problem-bank` |
+| 6 | `UnpublishProblem` | Rút xuống một hoặc nhiều bài toán | `problem-bank` |
+| 7 | `ChangeDifficulty` | Đổi độ khó theo lô | `problem-bank` |
+| 8 | `AssignTopic` | Gán chủ đề theo lô | `problem-bank` |
+| 9 | `DuplicateProblem` | Nhân bản một hoặc nhiều bài toán | `problem-bank` |
+| 10 | `ExportProblemsCsv` | Xuất CSV metadata bài toán | `problem-bank` |
+| 11 | `DeleteProblem` | Xoá (ẩn mềm) một hoặc nhiều bài toán | `problem-bank` |
+| 12 | `CreateProblemTopic` | Thêm chủ đề mới (chỉ ADMIN); sinh `code` slug duy nhất, xếp cuối `sort_order` | `problem-bank` |
+| 13 | `UpdateProblemTopic` | Đổi `name` (chỉ ADMIN); `code` giữ nguyên | `problem-bank` |
+| 14 | `ReorderProblemTopics` | Ghi lại `sort_order` theo danh sách thứ tự mới (chỉ ADMIN) | `problem-bank` |
+| 15 | `DeleteProblemTopic` | Xoá chủ đề (chỉ ADMIN); từ chối khi còn bài tham chiếu, trả `referencingProblemCount` | `problem-bank` |
 
 Việc gộp "Xuất bản"/"Rút xuống" thành một endpoint hay tách hai, và việc gộp nhiều bài vào một lời gọi hay
 gọi nhiều lần, là quyết định kỹ thuật của DD, không phải BD.
@@ -575,7 +608,7 @@ gọi nhiều lần, là quyết định kỹ thuật của DD, không phải BD
 
 | NO | Loại | Sự kiện | Chi tiết | Chuyển màn | Gọi API | Tên xử lý | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :-: | :--- | :--- |
-| 1 | Màn hình | Khởi tạo màn | Vào màn thì tải bốn nhóm dữ liệu. | Không | Có | `ListProblemsAdmin`, `GetProblemManagementStats`, `GetTopicDistribution`, `GetAttentionList`, `ListTopics` | [Các bước]<br>1. Kiểm tra quyền `PROBLEM_AUTHORING:READ`.<br>2. Xác định phạm vi dữ liệu theo actor (A2: quyền tác giả — xem Q1; A3: toàn bộ kho).<br>3. Hiển thị khung chờ cho dải chỉ số, bảng và hai khối phụ.<br>4. Tải song song năm nhóm dữ liệu; `ListTopics` tải sẵn để hành động "Gán chủ đề" không phải chờ.<br>[Khi thành công] Bảng hiển thị trang 1 với bộ lọc "Tất cả", thanh hành động theo lô không hiển thị vì chưa chọn dòng nào.<br>[Khi lỗi] Hiển thị thông báo lỗi kèm nút thử lại tại đúng khối tải thất bại; không hiển thị dữ liệu cũ của khối đó. |
+| 1 | Màn hình | Khởi tạo màn | Vào màn thì tải ba nhóm dữ liệu cùng danh sách chủ đề. | Không | Có | `ListProblemsAdmin`, `GetTopicDistribution`, `GetAttentionList`, `ListProblemTopics` | [Các bước]<br>1. Kiểm tra quyền `PROBLEM_AUTHORING:READ`.<br>2. Xác định phạm vi dữ liệu theo actor (A2: quyền tác giả — xem Q1; A3: toàn bộ kho).<br>3. Hiển thị khung chờ cho bảng và hai khối phụ.<br>4. Tải song song bốn lời gọi; `ListProblemTopics` tải sẵn để hành động "Gán chủ đề" không phải chờ.<br>[Khi thành công] Bảng hiển thị trang 1 với bộ lọc "Tất cả", thanh hành động theo lô không hiển thị vì chưa chọn dòng nào.<br>[Khi lỗi] Hiển thị thông báo lỗi kèm nút thử lại tại đúng khối tải thất bại; không hiển thị dữ liệu cũ của khối đó. |
 | 2 | Nhập liệu | Tìm kiếm theo từ khoá | Gõ vào ô tìm kiếm. | Không | Có | `ListProblemsAdmin` | [Các bước]<br>1. Chờ một khoảng ngắn sau khi ngừng gõ.<br>2. Đưa về trang 1.<br>3. Gọi lại danh sách với từ khoá mới.<br>[Khi thành công] Bảng và nhãn số kết quả cập nhật theo từ khoá.<br>[Khi lỗi] Giữ nguyên từ khoá đã gõ, hiển thị lỗi ở vùng bảng. |
 | 3 | Nút | Đổi tab độ khó | Bấm một tab trong nhóm độ khó. | Không | Có | `ListProblemsAdmin` | [Các bước]<br>1. Đặt tab đang chọn.<br>2. Đưa về trang 1.<br>3. Gọi lại danh sách.<br>[Khi thành công] Bảng chỉ còn bài toán thuộc `difficulty` tương ứng; tab "Tất cả" bỏ điều kiện này.<br>[Khi lỗi] Giữ nguyên tab vừa chọn, hiển thị lỗi ở vùng bảng. |
 | 4 | Nút | Đổi tab trạng thái | Bấm một tab trong nhóm trạng thái. | Không | Có | `ListProblemsAdmin` | [Các bước]<br>1. Đặt tab đang chọn.<br>2. Đưa về trang 1.<br>3. Gọi lại danh sách.<br>[Khi thành công] Bảng chỉ còn bài toán có `status` tương ứng.<br>[Khi lỗi] Giữ nguyên tab vừa chọn, hiển thị lỗi ở vùng bảng. |
@@ -584,16 +617,22 @@ gọi nhiều lần, là quyết định kỹ thuật của DD, không phải BD
 | 7 | Nút | Trang trước | Bấm "Trước" ở vùng phân trang. | Không | Có | `ListProblemsAdmin` | [Các bước]<br>1. Giảm số trang một đơn vị.<br>2. Tải trang mới, giữ nguyên tập chọn.<br>[Khi thành công] Bảng hiển thị trang liền trước, nhãn trang cập nhật.<br>[Khi lỗi] Giữ nguyên trang hiện tại, hiển thị lỗi ở vùng bảng. |
 | 8 | Nút | Trang sau | Bấm "Sau" ở vùng phân trang. | Không | Có | `ListProblemsAdmin` | [Các bước]<br>1. Tăng số trang một đơn vị.<br>2. Tải trang mới, giữ nguyên tập chọn.<br>[Khi thành công] Bảng hiển thị trang liền sau, nhãn trang cập nhật.<br>[Khi lỗi] Giữ nguyên trang hiện tại, hiển thị lỗi ở vùng bảng. |
 | 9 | Nút | Mở `problem_authoring` chế độ tạo mới | Bấm "Bài tập mới" ở thanh tiêu đề. | Có | Không | - | [Các bước]<br>1. Điều hướng sang `problem_authoring` không kèm `problem_id`.<br>[Khi thành công] Mở `problem_authoring` (`SHR0202`) rỗng. |
-| 10 | Liên kết | Mở `problem_authoring` chế độ sửa | Bấm tiêu đề bài toán trong bảng, hoặc bấm nút "Sửa" cuối dòng. | Có | Không | - | [Các bước]<br>1. Điều hướng sang `problem_authoring` kèm `problem_id` của dòng đó.<br>[Khi thành công] Mở `problem_authoring` (`SHR0202`) đã nạp sẵn nội dung bài toán đó. Màn `problem_management` không có thay đổi chưa lưu tại chỗ (mọi thao tác ghi ở đây hoàn tất ngay hoặc qua popup), nên không hỏi xác nhận rời màn. |
-| 11 | Nút | Xuất bản / ẩn theo lô | Bấm "Xuất bản/ẩn" trên thanh hành động theo lô. | Không | Có | `PublishProblem`, `UnpublishProblem` | [Các bước]<br>1. Kiểm tra quyền `PROBLEM_AUTHORING:UPDATE`.<br>2. Với mỗi bài trong tập chọn, xác định hành động (bài `UNPUBLISHED` → xuất bản, bài `PUBLISHED` → rút xuống) và kiểm checklist xuất bản nếu là chiều xuất bản (Sheet 9).<br>3. Áp dụng độc lập cho **từng** bài, ghi một dòng `system_audit_logs` riêng.<br>4. Tải lại bảng, dải chỉ số và khối "Bài cần chú ý".<br>[Khi thành công] Trạng thái các dòng liên quan cập nhật.<br>[Khi lỗi] Bài không đạt checklist xuất bản bị từ chối riêng kèm lý do cụ thể, các bài còn lại trong lô vẫn được xử lý (S8 — chặn cứng theo từng bài, không chặn cả lô) `[Suy luận]` — xem Sheet 7.1 dòng `BulkProblemActionResultDto`.<br>[Thông báo hoàn tất] "Đã cập nhật trạng thái xuất bản cho {số} bài." |
+| 10 | Liên kết | Mở `problem_authoring` chế độ sửa | Bấm tiêu đề bài toán trong bảng, hoặc bấm icon "Sửa" cuối dòng. | Có | Không | - | [Các bước]<br>1. Điều hướng sang `problem_authoring` kèm `problem_id` của dòng đó.<br>[Khi thành công] Mở `problem_authoring` (`SHR0202`) đã nạp sẵn nội dung bài toán đó. Màn `problem_management` không có thay đổi chưa lưu tại chỗ (mọi thao tác ghi ở đây hoàn tất ngay hoặc qua popup), nên không hỏi xác nhận rời màn. |
+| 11 | Nút | Xuất bản / ẩn theo lô | Bấm "Xuất bản/ẩn" trên thanh hành động theo lô. | Không | Có | `PublishProblem`, `UnpublishProblem` | [Các bước]<br>1. Kiểm tra quyền `PROBLEM_AUTHORING:UPDATE`.<br>2. Với mỗi bài trong tập chọn, xác định hành động (bài `UNPUBLISHED` → xuất bản, bài `PUBLISHED` → rút xuống) và kiểm checklist xuất bản nếu là chiều xuất bản (Sheet 9).<br>3. Áp dụng độc lập cho **từng** bài, ghi một dòng `system_audit_logs` riêng.<br>4. Tải lại bảng và khối "Bài cần chú ý".<br>[Khi thành công] Trạng thái các dòng liên quan cập nhật.<br>[Khi lỗi] Bài không đạt checklist xuất bản bị từ chối riêng kèm lý do cụ thể, các bài còn lại trong lô vẫn được xử lý (S8 — chặn cứng theo từng bài, không chặn cả lô) `[Suy luận]` — xem Sheet 7.1 dòng `BulkProblemActionResultDto`.<br>[Thông báo hoàn tất] "Đã cập nhật trạng thái xuất bản cho {số} bài." |
 | 12 | Nút | Đổi độ khó theo lô | Bấm "Đổi độ khó" trên thanh hành động theo lô, chọn mức độ khó đích. | Không | Có | `ChangeDifficulty` | [Các bước]<br>1. Kiểm tra quyền `PROBLEM_AUTHORING:UPDATE`.<br>2. Áp dụng cho **từng** bài đã chọn, ghi một dòng `system_audit_logs` riêng.<br>3. Tải lại bảng.<br>[Khi thành công] Cột "Độ khó" của các dòng liên quan cập nhật.<br>[Khi lỗi] Thành công một phần thì báo rõ số bài thành công, số bài thất bại kèm lý do.<br>[Thông báo hoàn tất] "Đã đổi độ khó cho {số} bài." |
 | 13 | Nút | Gán chủ đề theo lô | Bấm "Gán chủ đề" trên thanh hành động theo lô, chọn một chủ đề đích. | Không | Có | `AssignTopic` | [Các bước]<br>1. Kiểm tra quyền `PROBLEM_AUTHORING:UPDATE`.<br>2. Ghi quan hệ `problem_topics` cho **từng** bài đã chọn, bỏ qua nếu quan hệ đã tồn tại.<br>3. Tải lại bảng và khối "Phân bố theo chủ đề".<br>[Khi thành công] Cột "Chủ đề" của các dòng liên quan cập nhật.<br>[Khi lỗi] Thành công một phần thì báo rõ số bài thành công, số bài thất bại kèm lý do.<br>[Thông báo hoàn tất] "Đã gán chủ đề cho {số} bài." |
-| 14 | Nút | Nhân bản theo lô | Bấm "Nhân bản" trên thanh hành động theo lô. | Không | Có | `DuplicateProblem` | [Các bước]<br>1. Kiểm tra quyền `PROBLEM_AUTHORING:CREATE`.<br>2. Tạo một bản sao độc lập ở trạng thái `Chưa xuất bản` cho **từng** bài đã chọn (F2-16), đặt `duplicated_from_problem_id`.<br>3. Tải lại bảng và dải chỉ số.<br>[Khi thành công] Các bản sao mới xuất hiện ở trang phù hợp với bộ lọc/sắp xếp hiện tại.<br>[Khi lỗi] Thành công một phần thì báo rõ số bài thành công, số bài thất bại kèm lý do.<br>[Thông báo hoàn tất] "Đã tạo {số} bản sao." |
+| 14 | Nút | Nhân bản theo lô | Bấm "Nhân bản" trên thanh hành động theo lô. | Không | Có | `DuplicateProblem` | [Các bước]<br>1. Kiểm tra quyền `PROBLEM_AUTHORING:CREATE`.<br>2. Tạo một bản sao độc lập ở trạng thái `Chưa xuất bản` cho **từng** bài đã chọn (F2-16), đặt `duplicated_from_problem_id`.<br>3. Tải lại bảng.<br>[Khi thành công] Các bản sao mới xuất hiện ở trang phù hợp với bộ lọc/sắp xếp hiện tại.<br>[Khi lỗi] Thành công một phần thì báo rõ số bài thành công, số bài thất bại kèm lý do.<br>[Thông báo hoàn tất] "Đã tạo {số} bản sao." |
 | 15 | Nút | Xuất CSV theo lô | Bấm "Xuất CSV" trên thanh hành động theo lô. | Không | Có | `ExportProblemsCsv` | [Các bước]<br>1. Kiểm tra quyền `PROBLEM_AUTHORING:READ`.<br>2. Xuất CSV chỉ chứa metadata bảng của các bài đã chọn (F2-17), không đề bài/đặc tả/testcase.<br>[Khi thành công] Tải xuống tệp CSV.<br>[Khi lỗi] Hiển thị lỗi, không tải tệp. |
-| 16 | Nút | Mở popup xác nhận xoá (một dòng) | Bấm "Xoá" cuối một dòng. | Không | Không | - | [Các bước]<br>1. Lấy `problem_id`, mã, tiêu đề và số lượt nộp của dòng đó.<br>2. Mở popup xác nhận.<br>[Khi thành công] Popup hiển thị đúng một bài kèm số lượt nộp bị ảnh hưởng. |
+| 16 | Nút | Mở popup xác nhận xoá (một dòng) | Bấm icon "Xoá" cuối một dòng. | Không | Không | - | [Các bước]<br>1. Lấy `problem_id`, mã, tiêu đề và số lượt nộp của dòng đó.<br>2. Mở popup xác nhận.<br>[Khi thành công] Popup hiển thị đúng một bài kèm số lượt nộp bị ảnh hưởng. |
 | 17 | Nút | Mở popup xác nhận xoá (theo lô) | Bấm "Xoá" trên thanh hành động theo lô. | Không | Không | - | [Các bước]<br>1. Tổng hợp danh sách bài đang chọn và tổng lượt nộp bị ảnh hưởng.<br>2. Mở popup xác nhận.<br>[Khi thành công] Popup liệt kê đúng tập đã tick, không áp lên toàn bộ kết quả lọc [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:144-147]. |
-| 18 | Popup | Xác nhận xoá | Bấm "Xác nhận" trong popup xác nhận xoá. | Không | Có | `DeleteProblem` | [Các bước]<br>1. Kiểm tra quyền `PROBLEM_AUTHORING:DELETE`.<br>2. Với A2, kiểm phạm vi tác giả trước khi cho phép (xem Q1).<br>3. Bật `problems.deleted = true` cho **từng** bài trong tập, không đổi `status` [Nguồn: 02-bd/database/problem-bank.md:19].<br>4. Ghi một dòng `system_audit_logs` riêng cho mỗi bài.<br>5. Đóng popup, bỏ lựa chọn, tải lại bảng, dải chỉ số và hai khối phụ.<br>[Khi thành công] Bài bị xoá biến mất khỏi bảng ở mọi bộ lọc trạng thái, kể cả tab "Tất cả".<br>[Khi lỗi] Thành công một phần thì vẫn đóng popup và báo rõ số bài thành công, số bài thất bại kèm lý do.<br>[Thông báo hoàn tất] "Đã xoá {số} bài." |
+| 18 | Popup | Xác nhận xoá | Bấm "Xác nhận" trong popup xác nhận xoá. | Không | Có | `DeleteProblem` | [Các bước]<br>1. Kiểm tra quyền `PROBLEM_AUTHORING:DELETE`.<br>2. Với A2, kiểm phạm vi tác giả trước khi cho phép (xem Q1).<br>3. Bật `problems.deleted = true` cho **từng** bài trong tập, không đổi `status` [Nguồn: 02-bd/database/problem-bank.md:19].<br>4. Ghi một dòng `system_audit_logs` riêng cho mỗi bài.<br>5. Đóng popup, bỏ lựa chọn, tải lại bảng và hai khối phụ.<br>[Khi thành công] Bài bị xoá biến mất khỏi bảng ở mọi bộ lọc trạng thái, kể cả tab "Tất cả".<br>[Khi lỗi] Thành công một phần thì vẫn đóng popup và báo rõ số bài thành công, số bài thất bại kèm lý do.<br>[Thông báo hoàn tất] "Đã xoá {số} bài." |
 | 19 | Nút | Huỷ trong popup xác nhận xoá | Bấm "Huỷ" hoặc đóng popup. | Không | Không | - | [Các bước]<br>1. Đóng popup.<br>[Khi thành công] Không bài nào bị đổi, danh sách đang chọn giữ nguyên (trường hợp xoá theo lô). |
+| 20 | Nút | Mở popup quản lý chủ đề | Bấm "Quản lý chủ đề" ở thanh tiêu đề. | Không | Có | `ListProblemTopics` | [Các bước]<br>1. Kiểm tra vai trò `ADMIN`.<br>2. Mở popup, tải danh sách chủ đề kèm `problemCount`.<br>[Khi thành công] Popup hiển thị các dòng chủ đề theo `sort_order`.<br>[Khi lỗi] Hiển thị lỗi trong popup kèm nút thử lại. |
+| 21 | Nút | Thêm chủ đề | Nhập tên và bấm "Thêm". | Không | Có | `CreateProblemTopic` | [Các bước]<br>1. Kiểm tra tên hợp lệ và không trùng.<br>2. Gọi máy chủ tạo chủ đề, sinh `code`, xếp cuối danh sách.<br>3. Ghi một dòng `system_audit_logs`.<br>[Khi thành công] Dòng mới xuất hiện cuối danh sách, ô nhập được xoá.<br>[Khi lỗi] Giữ nguyên nội dung ô nhập, hiển thị lỗi tại ô. |
+| 22 | Nút | Đổi tên chủ đề | Sửa tên tại dòng và xác nhận. | Không | Có | `UpdateProblemTopic` | [Các bước]<br>1. Kiểm tra tên hợp lệ và không trùng.<br>2. Gọi máy chủ cập nhật `name`.<br>3. Ghi một dòng `system_audit_logs`.<br>[Khi thành công] Dòng hiển thị tên mới.<br>[Khi lỗi] Giữ tên cũ, hiển thị lỗi tại dòng. |
+| 23 | Nút | Đổi thứ tự chủ đề | Bấm "Lên" hoặc "Xuống" ở một dòng. | Không | Có | `ReorderProblemTopics` | [Các bước]<br>1. Đổi chỗ hai dòng trên giao diện.<br>2. Gửi toàn bộ thứ tự mới lên máy chủ.<br>3. Ghi một dòng `system_audit_logs`.<br>[Khi thành công] Thứ tự mới giữ nguyên.<br>[Khi lỗi] Trả lại thứ tự cũ, hiển thị lỗi. |
+| 24 | Nút | Xoá chủ đề | Bấm "Xoá" ở một dòng chủ đề. | Không | Có | `DeleteProblemTopic` | [Các bước]<br>1. Gọi máy chủ xoá chủ đề.<br>2. Máy chủ đếm bài tham chiếu; còn bất kỳ bài nào thì từ chối.<br>3. Nếu được phép xoá thì ghi một dòng `system_audit_logs`.<br>[Khi thành công] Dòng biến mất khỏi popup.<br>[Khi lỗi] Khi bị từ chối, hiển thị "Còn {số} bài toán thuộc chủ đề này. Hãy chuyển hoặc bỏ gán các bài đó trước." và giữ nguyên dòng. |
+| 25 | Popup | Đóng popup quản lý chủ đề | Bấm "Đóng" hoặc ra ngoài popup. | Không | Có | `ListProblemTopics`, `ListProblemsAdmin`, `GetTopicDistribution` | [Các bước]<br>1. Đóng popup.<br>2. Tải lại danh sách chủ đề, bảng bài toán và khối "Phân bố theo chủ đề" để cột "Chủ đề" khớp dữ liệu mới.<br>[Khi thành công] Cột "Chủ đề" và khối phân bố phản ánh thay đổi. |
 
 [Nguồn: 09-layoutBase/Admin - Quản lý bài tập.dc.html:151-317,518-528; 01-rd/screens/shared/SHR0201_problem_management.md:132-159;
 02-bd/database/problem-bank.md:18-19,166]
@@ -610,14 +649,18 @@ gọi nhiều lần, là quyết định kỹ thuật của DD, không phải BD
 | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: |
 | 1 | Kiểm quyền | Quyền xem màn | [Nội dung kiểm] Người dùng không có `PROBLEM_AUTHORING:READ` thì không được vào màn.<br>[Nơi thực thi] Chặn ở cả tầng định tuyến phía giao diện và tầng phân quyền phía máy chủ [Nguồn: 02-bd/security/problem-bank.md:20-22]. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn không có quyền truy cập chức năng này." | EVT-1 | 1 |
 | 2 | Kiểm quyền | Quyền thực hiện hành động ghi | [Nội dung kiểm] Xuất bản/ẩn, đổi độ khó, gán chủ đề yêu cầu `PROBLEM_AUTHORING:UPDATE`; nhân bản yêu cầu `PROBLEM_AUTHORING:CREATE`; xoá yêu cầu `PROBLEM_AUTHORING:DELETE`.<br>[Nơi thực thi] Máy chủ, kiểm lại từng lời gọi kể cả khi giao diện đã ẩn nút [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:157-159].<br>[Tiêu điểm] Thanh hành động theo lô. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn không có quyền thực hiện thao tác này." | EVT-11, EVT-12, EVT-13, EVT-14, EVT-18 | 1 |
-| 3 | Kiểm quyền | Phạm vi dữ liệu theo tác giả (A2) | [Nội dung kiểm] A2 chỉ được sửa/xoá bài do chính mình soạn; thao tác trên bài không thuộc phạm vi tác giả bị từ chối dù có `PROBLEM_AUTHORING:UPDATE`/`DELETE`.<br>[Nơi thực thi] Máy chủ.<br>[Tiêu điểm] Dòng vi phạm trong bảng. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn không có quyền chỉnh sửa bài toán này." Ràng buộc này **chưa thực thi được** vì thiếu cột nguồn tác giả trong `problems`, xem Q1. | EVT-11, EVT-12, EVT-13, EVT-18 | 2 |
+| 3 | Kiểm quyền | Phạm vi dữ liệu theo tác giả (A2) | [Nội dung kiểm] A2 chỉ được sửa/xoá bài do chính mình soạn; thao tác trên bài không thuộc phạm vi tác giả bị từ chối dù có `PROBLEM_AUTHORING:UPDATE`/`DELETE`.<br>[Nơi thực thi] Máy chủ.<br>[Tiêu điểm] Dòng vi phạm trong bảng. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn không có quyền chỉnh sửa bài toán này." Ràng buộc này dựa trên cột `problems.author_id` đã chốt 2026-10-01 (Q1); cột đã có trong schema `problem-bank` (`database/problem-bank.md` mục 1.1). A3 không bị ràng buộc này. | EVT-11, EVT-12, EVT-13, EVT-18 | 2 |
 | 4 | Kiểm nhập liệu | Độ dài từ khoá tìm kiếm | [Nội dung kiểm] Từ khoá dài quá 100 ký tự thì không gửi lên máy chủ.<br>[Nơi thực thi] Màn hình.<br>[Tiêu điểm] Ô tìm kiếm. | Lỗi | Chưa có mã thông báo | Nội dung "Từ khoá tìm kiếm tối đa 100 ký tự." Giới hạn 100 là `[Suy luận]` theo độ dài thực tế của mã và tiêu đề, DD chốt số chính xác. | EVT-2 | 1 |
 | 5 | Kiểm nhập liệu | Tập bài toán không rỗng | [Nội dung kiểm] Danh sách `problem_id` gửi lên rỗng thì từ chối lời gọi.<br>[Nơi thực thi] Máy chủ. | Lỗi | Chưa có mã thông báo | Nội dung "Chưa chọn bài toán nào." Thanh hành động theo lô chỉ hiện khi có lựa chọn, nên lỗi này chỉ xảy ra khi gọi thẳng máy chủ. | EVT-11, EVT-12, EVT-13, EVT-14, EVT-15, EVT-18 | 3 |
 | 6 | Kiểm nghiệp vụ | Phải chọn giá trị đích | [Nội dung kiểm] "Đổi độ khó" chưa chọn mức đích, hoặc "Gán chủ đề" chưa chọn chủ đề đích, thì không cho xác nhận.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Vùng chọn giá trị đích trong thao tác lô. | Lỗi | Chưa có mã thông báo | Nội dung "Hãy chọn giá trị muốn áp dụng." | EVT-12, EVT-13 | 1 |
 | 7 | Kiểm nghiệp vụ | Chặn xuất bản thiếu điều kiện | [Nội dung kiểm] Bài chưa đạt checklist xuất bản (thiếu testcase Hidden/Sample theo ngưỡng đã chốt, thiếu đặc tả) thì từ chối chuyển sang `Đã xuất bản`.<br>[Nơi thực thi] Máy chủ.<br>[Tiêu điểm] Dòng vi phạm trong tập chọn. | Lỗi | Chưa có mã thông báo | Nội dung "Bài chưa đủ điều kiện xuất bản: {lý do cụ thể}." Chặn cứng, không phải cảnh báo (chốt 2026-08-30) [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:139-143; 02-bd/database/problem-bank.md:166]. Các bài còn lại trong lô vẫn được xử lý. | EVT-11 | 2 |
 | 8 | Kiểm nghiệp vụ | Xoá không xoá dữ liệu liên quan | [Nội dung kiểm] Xoá một bài chỉ bật `problems.deleted = true`, không xoá `testcases`, `problem_topics`, lượt nộp hay bookmark liên quan.<br>[Nơi thực thi] Máy chủ. | Lỗi | Chưa có mã thông báo | Vi phạm nguyên tắc ẩn mềm [Nguồn: 02-bd/database/problem-bank.md:19] là lỗi triển khai, không phải điều kiện người dùng gặp trực tiếp — ghi lại để DD và review code không bỏ sót. | EVT-18 | 3 |
 | 9 | Kiểm nghiệp vụ | Ghi nhật ký không ngoại lệ | [Nội dung kiểm] Mỗi bài toán chịu tác động của một hành động ghi phải ghi đúng một dòng `system_audit_logs`.<br>[Nơi thực thi] Máy chủ, trong cùng giao dịch với thao tác ghi. | Lỗi | Chưa có mã thông báo | Ghi nhật ký thất bại thì thao tác trên bài đó coi như thất bại và không áp dụng — cùng nguyên tắc đã áp dụng ở `ADM0201` [Nguồn: 02-bd/security/identity.md:51-53]. | EVT-11, EVT-12, EVT-13, EVT-14, EVT-18 | 4 |
-| 10 | Kiểm nghiệp vụ | Lỗi hệ thống hoặc lỗi gọi máy chủ | [Nội dung kiểm] Gọi máy chủ thất bại hoặc trả lỗi nghiệp vụ thì dừng thao tác, không hiển thị dữ liệu cũ của khối lỗi.<br>[Nơi thực thi] Màn hình. | Lỗi | Mã lỗi trong phản hồi | Phản hồi có mã lỗi đã đăng ký thì hiển thị nội dung tương ứng; chưa đăng ký thì hiển thị "Không kết nối được máy chủ." kèm nút thử lại. | EVT-1, EVT-2, EVT-3, EVT-4, EVT-6, EVT-7, EVT-8, EVT-11, EVT-12, EVT-13, EVT-14, EVT-15, EVT-18 | 1 |
+| 10 | Kiểm nghiệp vụ | Lỗi hệ thống hoặc lỗi gọi máy chủ | [Nội dung kiểm] Gọi máy chủ thất bại hoặc trả lỗi nghiệp vụ thì dừng thao tác, không hiển thị dữ liệu cũ của khối lỗi.<br>[Nơi thực thi] Màn hình. | Lỗi | Mã lỗi trong phản hồi | Phản hồi có mã lỗi đã đăng ký thì hiển thị nội dung tương ứng; chưa đăng ký thì hiển thị "Không kết nối được máy chủ." kèm nút thử lại. | EVT-1, EVT-2, EVT-3, EVT-4, EVT-6, EVT-7, EVT-8, EVT-11, EVT-12, EVT-13, EVT-14, EVT-15, EVT-18, EVT-20, EVT-21, EVT-22, EVT-23, EVT-24, EVT-25 | 1 |
+| 11 | Kiểm quyền | Quyền quản lý chủ đề | [Nội dung kiểm] Thêm, đổi tên, sắp xếp, xoá chủ đề chỉ cho vai trò `ADMIN` có `PROBLEM_AUTHORING`; A2 bị từ chối kể cả khi gọi thẳng API.<br>[Nơi thực thi] Máy chủ. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn không có quyền thực hiện thao tác này." | EVT-20, EVT-21, EVT-22, EVT-23, EVT-24 | 1 |
+| 12 | Kiểm nhập liệu | Tên chủ đề | [Nội dung kiểm] Tên không rỗng sau khi cắt khoảng trắng, tối đa 60 ký tự, không trùng tên chủ đề khác (không phân biệt hoa thường).<br>[Nơi thực thi] Màn hình và máy chủ. | Lỗi | Chưa có mã thông báo | Nội dung "Tên chủ đề không hợp lệ hoặc đã tồn tại." Giới hạn 60 là `[Suy luận]`, DD chốt. | EVT-21, EVT-22 | 2 |
+| 13 | Kiểm nghiệp vụ | Xoá chủ đề còn được tham chiếu | [Nội dung kiểm] Từ chối xoá khi tồn tại `problem_topics.topic_id` trỏ tới chủ đề, tính cả bài chưa xuất bản và bài đã ẩn mềm; phản hồi kèm `referencingProblemCount`.<br>[Nơi thực thi] Máy chủ; khoá ngoại không `ON DELETE CASCADE` là lưới an toàn thứ hai. | Lỗi | Chưa có mã thông báo | Nội dung "Còn {số} bài toán thuộc chủ đề này. Hãy chuyển hoặc bỏ gán các bài đó trước." | EVT-24 | 2 |
+| 14 | Kiểm nghiệp vụ | Ghi nhật ký thay đổi chủ đề | [Nội dung kiểm] Mỗi lần thêm, đổi tên, sắp xếp, xoá chủ đề thành công ghi đúng một dòng `system_audit_logs`, cùng giao dịch.<br>[Nơi thực thi] Máy chủ. | Lỗi | Chưa có mã thông báo | Ghi nhật ký thất bại thì thao tác coi như thất bại, theo F1-14. | EVT-21, EVT-22, EVT-23, EVT-24 | 4 |
 
 Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 
@@ -630,7 +673,7 @@ Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 
 | # | Câu hỏi | Vì sao chưa trả lời được | Chủ sở hữu |
 | :-: | :--- | :--- | :--- |
-| Q1 | Cột nào lưu "tác giả gốc" của một bài toán để lọc phạm vi dữ liệu cho A2? RD đã chốt A2 chỉ thấy/sửa bài do chính mình soạn theo quyền tác giả [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:6,165]. Nhưng bảng `problems` (`02-bd/database/problem-bank.md` mục 1.1) chỉ có `updated_by` (người sửa **gần nhất**, không phải người tạo) — **không có cột `author_id`/`created_by`**. | Đây là phát hiện mới của bản BD này: nếu dùng `updated_by` để lọc theo tác giả thì sai ngay khi A3 sửa hộ một bài của A2, hoặc khi A2 khác sửa lại bài đồng nghiệp — `updated_by` sẽ trỏ sang người sửa cuối chứ không phải người tạo ban đầu. Đề xuất: thêm cột `problems.author_id` (đặt một lần khi tạo, bất biến, tham chiếu `user_id` bên schema `identity` theo đúng nguyên tắc không FK vật lý xuyên schema đã áp dụng cho `updated_by` [Nguồn: 02-bd/database/problem-bank.md:31-33]). BD này **không tự thêm cột** — cần xác nhận ở `02-bd/database/problem-bank.md` trước khi DD viết `ListProblemsAdmin`. | BD `database/problem-bank.md` + Chủ dự án |
-| Q2 | Chỉ số "Tỉ lệ AC trung bình (90 ngày gần nhất)" lấy nguồn ở đâu? Prototype và RD đều nêu cửa sổ 90 ngày [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:89-90; 09-layoutBase/Admin - Quản lý bài tập.dc.html:478-483]. | Read model `problem_stats` (`02-bd/database/problem-bank.md` mục 1.9) chỉ có `submission_count`, `accepted_count`, `ac_rate` toàn thời gian — không có trường theo cửa sổ thời gian trượt. Tính đúng "90 ngày gần nhất" cần hoặc (a) đọc trực tiếp bảng lượt nộp gốc bên `judge-orchestration` theo mốc thời gian mỗi lần tải màn (tốn hơn, xuyên module), hoặc (b) mở rộng read model thêm cột `ac_rate_90d` cập nhật theo lịch (rẻ hơn khi đọc, cần thêm job tính lại định kỳ). BD không tự chọn phương án. | BD `database/problem-bank.md` + Chủ dự án |
+| Q1 | ~~Cột nào lưu "tác giả gốc" của một bài toán để lọc phạm vi dữ liệu cho A2?~~ RD đã chốt A2 chỉ thấy/sửa bài do chính mình soạn theo quyền tác giả [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:6,165]. Bảng `problems` (`02-bd/database/problem-bank.md` mục 1.1) chỉ có `updated_by` (người sửa **gần nhất**, không phải người tạo) — **không có cột `author_id`/`created_by`**. **ĐÃ CHỐT 2026-10-01 (owner uỷ quyền cân nhắc), xem `DEC-2026-1001-admin-configurable-settings`:** thêm cột `problems.author_id` (đặt một lần khi tạo, bất biến, tham chiếu `user_id` bên schema `identity` theo nguyên tắc không FK vật lý xuyên schema đã áp dụng cho `updated_by` [Nguồn: 02-bd/database/problem-bank.md:31-33]); bộ lọc theo tác giả chỉ áp cho A2, còn A3 (`ADMIN`) thấy, sửa và xuất bản mọi bài, không bị lọc phạm vi, kể cả bài của A2. **Đã thêm cột** vào `02-bd/database/problem-bank.md` mục 1.1 (2026-10-01, vòng 4). | Đã đóng | Đã đóng |
+| Q2 | **Không còn áp dụng từ 2026-10-01** (thẻ "Tỉ lệ AC trung bình" đã bỏ khỏi UI cùng dải chỉ số; câu hỏi chỉ sống lại nếu trang tổng quan cần chỉ số này). Chỉ số "Tỉ lệ AC trung bình (90 ngày gần nhất)" lấy nguồn ở đâu? Prototype và RD đều nêu cửa sổ 90 ngày [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:89-90; 09-layoutBase/Admin - Quản lý bài tập.dc.html:478-483]. | Read model `problem_stats` (`02-bd/database/problem-bank.md` mục 1.9) chỉ có `submission_count`, `accepted_count`, `ac_rate` toàn thời gian — không có trường theo cửa sổ thời gian trượt. Tính đúng "90 ngày gần nhất" cần hoặc (a) đọc trực tiếp bảng lượt nộp gốc bên `judge-orchestration` theo mốc thời gian mỗi lần tải màn (tốn hơn, xuyên module), hoặc (b) mở rộng read model thêm cột `ac_rate_90d` cập nhật theo lịch (rẻ hơn khi đọc, cần thêm job tính lại định kỳ). BD không tự chọn phương án. | BD `database/problem-bank.md` + Chủ dự án |
 | Q3 | Hành vi khi thao tác "Xuất bản/ẩn" theo lô trúng một tập hỗn hợp (một số bài đủ điều kiện, một số chưa) — kế thừa từ BD cũ (`BD-Q1`), chưa được owner xác nhận chính thức. Sheet 8 EVT-11 và Sheet 7.1 `BulkProblemActionResultDto` đã tạm dùng phương án "xử lý độc lập từng bài, báo lỗi riêng phần không đạt" làm mặc định thiết kế. | RD chỉ mô tả GWT cho một bài đơn lẻ (RD mục 4), không nói rõ hành vi khi trộn nhiều bài trong một lô. Phương án hiện dùng nhất quán với nguyên tắc "chặn cứng kèm lý do" đã chốt cho từng bài, nhưng chưa có xác nhận chính thức bằng văn bản. | Chốt ở DD (`03-dd/api/problem-bank.md`) hoặc xin owner xác nhận trước khi viết API. |
-| Q4 | Số dòng/trang (8 theo prototype) có cấu hình được hay cố định? Kế thừa từ BD cũ (`BD-Q2`), chưa có câu trả lời chính thức. | RD không đề cập, chỉ mô tả đúng số của prototype [Nguồn: 09-layoutBase/Admin - Quản lý bài tập.dc.html:236-245]. | Chốt ở DD nếu phát sinh nhu cầu cấu hình. |
+| Q4 | ~~Số dòng/trang (8 theo prototype) có cấu hình được hay cố định?~~ Kế thừa từ BD cũ (`BD-Q2`). **ĐÃ CHỐT 2026-10-01 (owner uỷ quyền cân nhắc), xem `DEC-2026-1001-admin-configurable-settings`:** số dòng/trang là lựa chọn của người dùng trên màn (ví dụ 8, 20, 50), nhớ theo từng tài khoản, mặc định 8 theo prototype; không đặt trần cứng riêng cho ADMIN. Bộ chọn chưa dựng (nợ prototype). | RD không đề cập, chỉ mô tả đúng số của prototype [Nguồn: 09-layoutBase/Admin - Quản lý bài tập.dc.html:236-245]. | Đã đóng |

@@ -45,6 +45,26 @@ qua claim JWT, **`interview-bank` tự kiểm sở hữu ở tầng use case c�
   Không tự động thấy `user_answers`/`recall_ratings` của một học viên cụ thể trừ khi có Function riêng
   yêu cầu (cùng nguyên tắc đã áp dụng cho `ai-review`'s `interview_turns` — RD không đặc tả chức năng
   này, không thiết kế thêm ở đợt này).
+- **Quản lý chủ đề (`question_topics`) — chỉ ADMIN** (chốt 2026-10-01, owner uỷ quyền cân nhắc, xem
+  `DEC-2026-1001-admin-configurable-settings`). Dùng lại Function `INTERVIEW_BANK_MANAGEMENT`
+  (`01-rd/req/identity.md:60`) kết hợp kiểm vai trò `ADMIN` ở tầng use case; **không tạo Function mới**
+  (`[SoT: Suy luận]` — quyết định chỉ nói dùng lại quyền quản lý ngân hàng cho A3; chưa dẫn được ma trận quyền
+  thực tế nên giữ dấu suy luận. **Đã chốt 2026-10-01 (owner uỷ quyền), xem
+  `DEC-2026-1001-admin-configurable-settings`**: dùng lại quyền hiện có cộng kiểm vai trò, không Function mới;
+  `SHR0301` Q7 đã đóng). Bảng 2.1 tóm tắt.
+
+Bảng 2.1: Ma trận quyền thao tác trên danh mục chủ đề (đứng sau đoạn mô tả quyền ở trên).
+
+| Thao tác (endpoint) | Học viên (A1) | Giảng viên (A2) | Quản trị viên (A3) | Điều kiện |
+| :--- | :-: | :-: | :-: | :--- |
+| `ListQuestionTopics` | Có | Có | Có | Mọi người dùng đã xác thực |
+| `CreateQuestionTopic` | Không | Không | Có | `INTERVIEW_BANK_MANAGEMENT:CREATE` + vai trò `ADMIN` |
+| `UpdateQuestionTopic` | Không | Không | Có | `INTERVIEW_BANK_MANAGEMENT:UPDATE` + vai trò `ADMIN`; đổi tên và bật/tắt cờ `uses_star_framework` (đổi tên từ `RenameQuestionTopic`, 2026-10-01) |
+| `ReorderQuestionTopics` | Không | Không | Có | `INTERVIEW_BANK_MANAGEMENT:UPDATE` + vai trò `ADMIN` |
+| `DeleteQuestionTopic` | Không | Không | Có | `INTERVIEW_BANK_MANAGEMENT:DELETE` + vai trò `ADMIN`; từ chối khi còn câu hỏi tham chiếu |
+
+  Kiểm ở máy chủ kể cả khi giao diện đã ẩn nút; A2 gọi trực tiếp API nhận `403 FORBIDDEN` (cùng chính sách lỗi
+  ở mục 2). Mỗi thao tác thành công ghi một dòng `system_audit_logs` (F1-14) trong cùng giao dịch.
 
 ## 3. `question_sets` — đã đóng 2026-09-13: không áp dụng
 

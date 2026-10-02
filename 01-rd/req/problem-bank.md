@@ -7,7 +7,10 @@
   - Soạn đề bài bằng Markdown kèm công thức LaTeX (F2-01); phân loại theo độ khó và chủ đề (F2-02).
     **Amendment 2026-08-31** (Câu hỏi mở Q7(d) của `01-rd/screens/shared/SHR0202_problem_authoring.md`,
     `DEC-2026-0831-problem-authoring-round2`): F2-02 còn bao gồm **thẻ (tag) tự do**, nhiều thẻ mỗi bài,
-    không giới hạn danh mục cố định như chủ đề — dùng để lọc chi tiết hơn ở F2-11.
+    không có danh mục do `ADMIN` quản lý như chủ đề — dùng để lọc chi tiết hơn ở F2-11.
+    **Đã chỉnh 2026-10-01 (`DEC-2026-1001-admin-configurable-settings`):** danh mục **chủ đề** của F2-02 là dữ liệu do `ADMIN` (A3)
+    quản lý, cùng cách với chủ đề câu hỏi phỏng vấn (F6-01) — thêm, đổi tên, sắp xếp, xoá, không giới hạn số lượng; xoá bị từ chối khi còn
+    bài tham chiếu; `INSTRUCTOR` (A2) chỉ chọn chủ đề có sẵn khi soạn đề. Thẻ tự do không đổi.
   - **Khai báo đặc tả bài toán cho CẢ HAI mô hình nộp bài song song (F2-03).** Sửa lại 2026-08-24 qua hỏi
     trực tiếp chủ dự án khi viết `01-rd/screens/users/USR0102_problem_detail.md` — bản trước chỉ nói tới đặc tả cho mô
     hình Bọc hàm, thu hẹp hơn phạm vi đã chốt ở `README.md` mục 5 dòng 179 ("Hỗ trợ cả 2 mô hình: Bọc hàm và

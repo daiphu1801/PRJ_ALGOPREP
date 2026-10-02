@@ -42,7 +42,10 @@ duy nhất.
 Đối chiếu `09-layoutBase/Admin - Người dùng.dc.html`:
 
 1. **4 chỉ số tổng** — Tổng tài khoản, Đang hoạt động 24 giờ, Chờ xác thực email, Bị khoá (dòng 422-427) —
-   không có mã riêng, tổng hợp hiển thị của F1-13 và trạng thái tài khoản (F1-01/F1-16).
+   không có mã riêng, tổng hợp hiển thị của F1-13 và trạng thái tài khoản (F1-01/F1-16). **Cập nhật
+   2026-10-01 (owner instruction):** dải chỉ số này **không được dựng** trên UI Next.js — chỉ một trang tổng
+   quan mỗi khu hiển thị KPI, trang danh sách chỉ có tiêu đề, bộ lọc, danh sách và phân trang. Hai khối bên
+   dưới (Phân bố theo vai trò, Cần xử lý) vẫn giữ.
 2. **Bảng người dùng** — tìm kiếm, lọc theo vai trò/trạng thái, chọn nhiều dòng rồi hành động gộp (Đặt lại
    mật khẩu / Đổi vai trò / Khoá tài khoản, dòng 194-203) — khớp F1-13, mở rộng UX cho phép áp dụng hành
    động lên nhiều tài khoản cùng lúc (không có mã riêng, là cách trình bày của F1-13).

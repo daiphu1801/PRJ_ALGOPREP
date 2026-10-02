@@ -14,6 +14,14 @@
   đã liệt kê ở `02-bd/database/identity.md` mục 1.3.
 - **Giao/gỡ bài theo lớp** (F2-12): gác bởi Function `CLASS_MANAGEMENT:UPDATE`
   (`DEC-2026-0831-class-assignments-round2` xác nhận đúng mã quyền này cho hành động gỡ).
+- **Quản lý danh mục chủ đề bài toán** (`topics`, F2-02; chốt 2026-10-01, owner uỷ quyền, xem
+  `DEC-2026-1001-admin-configurable-settings`): **chỉ ADMIN** tạo, đổi tên, sắp xếp lại, xoá chủ đề; A2 chỉ
+  chọn. Dùng lại Function `PROBLEM_AUTHORING` (`CREATE`/`UPDATE`/`DELETE` tương ứng thao tác) cộng kiểm vai trò
+  `ADMIN` ở tầng use case — **không tạo Function mới**, cùng cách `interview-bank` làm
+  (`02-bd/security/interview-bank.md` mục 2). `ListProblemTopics` mở cho mọi người dùng đã xác thực. A2 gọi
+  thẳng API ghi nhận `403 FORBIDDEN`. Mỗi thao tác thành công ghi `system_audit_logs` (F1-14) cùng giao dịch
+  `[SoT: Suy luận]` — quyết định không nêu tên Function; chọn `PROBLEM_AUTHORING` vì chủ đề là siêu dữ liệu của
+  bài toán.
 - **Xuất CSV danh sách bài toán** (F2-17): cùng quyền `PROBLEM_AUTHORING:READ` — chỉ đọc metadata, không
   cần quyền ghi.
 

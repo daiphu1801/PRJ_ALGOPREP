@@ -33,11 +33,11 @@
 | Tên vật lý (slug) | `admin_ai_config` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A3 (`ADMIN`) |
-| Phiên bản | V0.2 |
+| Phiên bản | V0.3 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/13 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/09/20 |
+| Ngày cập nhật | 2026/10/01 |
 
 ---
 
@@ -47,6 +47,7 @@
 | :--- | :--- | :--- | :--- | :--- |
 | V0.1 | Toàn bộ | Tạo mới theo cấu trúc 7 mục văn xuôi (layout regions, component inventory, screen states, APIs consumed, navigation, access rights, câu hỏi mở) | 2026/09/13 | Nhóm phát triển AlgoPrep |
 | V0.2 | Toàn bộ | Chuyển sang mẫu 9 sheet. Chốt nguồn dữ liệu của mọi trường hiển thị (đóng Q7: không thêm cột DB nào), chốt nơi lưu giới hạn tần suất là Redis, bổ sung Sheet 8 danh sách sự kiện và Sheet 9 đặc tả kiểm tra, phát sinh thêm câu hỏi mở về bước nhảy trọng số và cảnh báo rời màn | 2026/09/20 | Nhóm phát triển AlgoPrep |
+| V0.3 | Sheet 1, 3, 4, 5, 6, 7, 8, 9, Câu hỏi mở | Bổ sung thẻ "Ngân sách và đơn giá" (Khu vực G, cột phải, giữa "Giới hạn tần suất" và "Nguyên tắc trả lời") và popup "Đơn giá token theo mô hình" mà prototype đã dựng ngày 2026-10-01: ngưỡng cảnh báo ngân sách và đơn giá token theo mô hình do ADMIN đặt (`DEC-2026-1001-admin-configurable-settings`, đóng `ADM0302` Q2 và Q7). Thêm DTO, endpoint đề xuất, EVT-16 tới EVT-20, Sheet 9 NO 8-11, Q9-Q11. Sửa dòng phạm vi "Không cấu hình ngân sách token" cho khớp (chỉ hạn mức token vẫn thuộc `ADM0302`). Bảng lưu trữ thuộc DD, không sửa `02-bd/database/ai-review.md` | 2026/10/01 | Nhóm phát triển AlgoPrep |
 
 ---
 
@@ -67,7 +68,7 @@
 
 [Giá trị trả về] Không có.
 
-[Khi thành công] Tải toàn bộ cấu hình hiện hành và hiển thị 5 khối nội dung ở trạng thái chỉ xem.
+[Khi thành công] Tải toàn bộ cấu hình hiện hành và hiển thị 6 khối nội dung ở trạng thái chỉ xem (khối thứ 6 "Ngân sách và đơn giá" thêm ngày 2026-10-01).
 
 [Khi huỷ] Không có.
 
@@ -128,6 +129,22 @@ bản đang chạy để sửa; đã có bản `DRAFT` thì mở chính bản đ
 
 [Khi huỷ] Đóng popup, giữ nguyên trạng thái biên soạn.
 
+#### Cấu hình trợ lý AI → Popup Đơn giá token theo mô hình
+
+[Điều kiện mở] Bấm nút "Quản lý" ở dòng "Đơn giá token theo mô hình" trong thẻ "Ngân sách và đơn giá".
+
+[Chế độ mở] Chế độ sửa danh mục: thêm, đổi tên, xoá mô hình và đặt đơn giá, không giới hạn số mô hình.
+
+[Thông tin truyền] Danh sách mô hình kèm đơn giá hiện hành.
+
+[Giá trị trả về] Không có; mọi thay đổi ghi ngay khi thao tác trong popup.
+
+[Khi thành công] Popup hiển thị danh sách mô hình, mỗi dòng có tên, đơn giá và nút xoá.
+
+[Khi huỷ] Đóng popup bằng nút "Đóng", thẻ "Ngân sách và đơn giá" giữ giá trị hiện hành.
+
+[Nguồn: 05-coding/frontend/src/views/admin/ai-config/ui/admin-ai-config-view.tsx:332-366; 05-coding/frontend/src/shared/ui/managed-list-dialog.tsx:83-159]
+
 #### Cấu hình trợ lý AI → Tiêu thụ token AI
 
 [Điều kiện mở] Bấm liên kết "Xem tiêu thụ token" ở khối "Trước khi phát hành".
@@ -151,9 +168,11 @@ flowchart LR
     main -->|"Chỉnh sửa"| edit["Popup Sửa prompt<br/>lưu bản nháp"]
     main -->|"Nhật ký phiên bản"| history["Popup Nhật ký phiên bản<br/>xem / khôi phục"]
     main -->|"Lưu và phát hành"| confirm["Popup Xác nhận phát hành<br/>Phát hành / Huỷ"]
+    main -->|"Quản lý đơn giá"| prices["Popup Đơn giá token<br/>thêm / đổi tên / xoá / giá"]
     edit --> main
     history --> main
     confirm --> main
+    prices --> main
     main -->|"Xem tiêu thụ token"| usage["Tiêu thụ token AI<br/>admin_ai_usage"]
 
     classDef source fill:#F3E5F5,stroke:#9C5CC4,color:#000
@@ -162,7 +181,7 @@ flowchart LR
 
     class nav,usage source
     class main screen
-    class edit,history,confirm popup
+    class edit,history,confirm,prices popup
 ```
 
 [Nguồn: 09-layoutBase/Admin - Cấu hình AI.dc.html:67-143,168,178,259; 01-rd/screens/admin/ADM0301_ai_config.md:58-60]
@@ -191,6 +210,10 @@ suất gọi AI và nguyên tắc trả lời chung của trợ lý AI, rồi ph
 5. **Đối chiếu trước phát hành**: bấm "Chạy đối chiếu" để so điểm rubric giữa bản nháp và bản đang chạy trên
    bộ 30 bài giải mẫu. **Chỉ có giao diện, không gọi backend ở đợt này.**
 6. **Phát hành**: bấm "Lưu và phát hành", xác nhận trong popup, hệ thống chuyển bản nháp thành bản đang chạy.
+7. **Đặt ngưỡng cảnh báo ngân sách và đơn giá token** (thêm 2026-10-01): trong thẻ "Ngân sách và đơn giá",
+   quản trị viên chỉnh ngưỡng bằng nút giảm và tăng, hoặc bấm "Quản lý" để thêm, đổi tên, xoá mô hình và đặt
+   đơn giá. Hai giá trị này **không đi qua "Lưu và phát hành"** trong prototype (ghi ngay khi thao tác), xem
+   Câu hỏi mở Q9. Màn `admin_ai_usage` đọc lại hai giá trị này.
 
 [Người dùng] Quản trị viên đã đăng nhập, có Function `AI_CONFIG`.
 
@@ -198,7 +221,9 @@ suất gọi AI và nguyên tắc trả lời chung của trợ lý AI, rồi ph
 
 [Phạm vi]
 - Không cấu hình rubric Mock Interview (4 tiêu chí cố định theo F5-15).
-- Không cấu hình ngân sách token — thuộc màn `admin_ai_usage`, gác bởi Function `AI_TOKEN_BUDGET`.
+- Không cấu hình **hạn mức token** (`limit_tokens`) — thuộc màn `admin_ai_usage`, gác bởi Function
+  `AI_TOKEN_BUDGET`. Từ 2026-10-01 màn này chỉ giữ hai tham số đi kèm do ADMIN đặt: ngưỡng cảnh báo ngân sách
+  và đơn giá token theo mô hình (Khu vực G); phân quyền của hai tham số này xem Câu hỏi mở Q10.
 - "Chạy đối chiếu" chỉ dựng tầng giao diện, không cam kết logic backend ở đợt này
   [Nguồn: 01-rd/req/ai-review.md — F5-23].
 - Không thiết kế tính năng "Gợi ý theo bậc" (đã cắt phạm vi 2026-08-31).
@@ -211,7 +236,8 @@ suất gọi AI và nguyên tắc trả lời chung của trợ lý AI, rồi ph
 - Xoá: không. Prompt cũ chuyển trạng thái `ARCHIVED`, không xoá vật lý.
 
 [Số bản ghi tối đa] Danh sách prompt: theo số `feature_code` có thật, hiện là 3 thẻ. Rubric: đúng 5 tiêu chí.
-Giới hạn tần suất: 3 dòng. Nguyên tắc trả lời: 3 toggle. Không phân trang.
+Giới hạn tần suất: 3 dòng. Nguyên tắc trả lời: 3 toggle. Ngưỡng cảnh báo ngân sách: đúng 1 giá trị. Đơn giá
+token: không giới hạn số mô hình (`DEC-2026-1001-admin-configurable-settings`). Không phân trang.
 
 [Nguồn: 01-rd/screens/admin/ADM0301_ai_config.md:20-50; 02-bd/database/ai-review.md:8-38; 02-bd/security/ai-review.md:79-82]
 
@@ -221,6 +247,8 @@ Giới hạn tần suất: 3 dòng. Nguyên tắc trả lời: 3 toggle. Không 
 - `RubricConfigDto`
 - `RateLimitConfigDto`
 - `ResponseGuardConfigDto`
+- `AiBudgetSettingsDto` (thêm 2026-10-01)
+- `ModelPriceDto` (thêm 2026-10-01)
 
 `[Suy luận]` — tên DTO do BD này đề xuất, `03-dd/api/ai-review.md` chốt lại.
 
@@ -235,6 +263,11 @@ Hai nhóm dữ liệu còn lại **không dùng bảng PostgreSQL**: giới hạ
 Redis (`CLAUDE.md` — Redis dùng cho cache, `ChatMemory` và rate limiting); nguyên tắc trả lời chưa chốt nơi
 lưu, xem Câu hỏi mở Q2.
 
+Hai nhóm dữ liệu thêm 2026-10-01 (ngưỡng cảnh báo ngân sách, đơn giá token theo mô hình) **chưa có bảng nào**
+trong `02-bd/database/ai-review.md` (file đó chỉ có `ai.prompt_templates`, `ai.rubric_configs`,
+`ai.ai_token_budget_configs`, `ai.token_usage`). Bảng lưu trữ là việc của DD `ai-review`, BD màn này không
+thiết kế cột; xem Câu hỏi mở Q11.
+
 ### 4.4 Vùng bố cục
 
 Đối chiếu `09-layoutBase/Admin - Cấu hình AI.dc.html` — bằng chứng bố cục chỉ-đọc, **không phải** design
@@ -247,6 +280,7 @@ system cuối cùng.
 | Cột trái — "Prompt theo tính năng" | `:163-190` | Danh sách thẻ prompt theo `feature_code`, nút "Nhật ký phiên bản" |
 | Cột trái — "Rubric chấm bài giải" | `:192-218` | 5 tiêu chí trọng số kèm nhãn tổng, chỉ áp dụng `SOLUTION_REVIEW` |
 | Cột phải — "Giới hạn tần suất" | `:222-236` | Danh sách giới hạn dạng nhãn kèm giá trị |
+| Cột phải — "Ngân sách và đơn giá" (thêm 2026-10-01, **không có trong `09-layoutBase`**) | Chỉ có ở prototype mã: `views/admin/ai-config/ui/admin-ai-config-view.tsx:234-260` | Ngưỡng cảnh báo ngân sách (nút giảm, tăng) và dòng "Đơn giá token theo mô hình" kèm nút "Quản lý". Nằm giữa "Giới hạn tần suất" và "Nguyên tắc trả lời" `[SoT: Suy luận]` do prototype tự chọn vị trí, mockup tĩnh không vẽ thẻ này |
 | Cột phải — "Nguyên tắc trả lời" | `:238-253` | 3 toggle bật hoặc tắt |
 | Cột phải — "Trước khi phát hành" | `:255-260` | Mô tả bộ đối chiếu 30 bài mẫu, nút "Chạy đối chiếu", dòng kết quả gần nhất kèm liên kết sang `admin_ai_usage` |
 | Chân trang (khung chung Admin) | `:264-277` | Trạng thái dịch vụ, liên kết phụ — dùng lại khung chung |
@@ -265,6 +299,7 @@ khoảng cách hay typography ở BD.
 | Khối rubric | `widgets/rubric-weight-editor` + `entities/rubric-config` | Prototype `:192-218` |
 | Khối giới hạn, nguyên tắc | `features/ai-rate-limit`, `features/ai-response-guard` | Prototype `:222-253` |
 | Popup | `features/prompt-edit`, `features/prompt-version-history`, `features/ai-config-publish` | Prototype `:168,178` |
+| Khối ngân sách, đơn giá (thêm 2026-10-01) | `entities/ai-budget` (kho ngưỡng và đơn giá, dùng chung với `views/admin/ai-usage`) + dialog dùng chung `shared/ui/managed-list-dialog` | Mã prototype: `05-coding/frontend/src/entities/ai-budget/model/ai-budget-store.ts:1-29` |
 
 `[Suy luận]` — ánh xạ slice do BD đề xuất, DD màn hình chốt lại.
 
@@ -347,6 +382,23 @@ khoảng cách hay typography ở BD.
 | | 3 | Kết quả lần chạy gần nhất | `adminAiConfig.regression.lastRunText` | - | - | Label | String | - | - | O | - | `Lần chạy gần nhất: {ngày}, lệch trung bình {số} điểm.` | Tóm tắt kết quả đối chiếu gần nhất<br>[Nguồn giá trị] Dữ liệu tĩnh ở đợt này, không có nguồn backend<br>[EVT liên quan] - |
 | | 4 | Xem tiêu thụ token | `adminAiConfig.regression.linkTokenUsage` | - | - | Link | - | - | - | I | - | - | Điều hướng sang màn `admin_ai_usage`<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-15 |
 
+### Khu vực G — Ngân sách và đơn giá (thêm 2026-10-01)
+
+> Thẻ nằm ở cột phải, giữa "Giới hạn tần suất" và "Nguyên tắc trả lời" nhưng được ghi thành khu vực G để không
+> đánh số lại các khu vực đã có tham chiếu bên ngoài. Prototype tự chọn vị trí và nội dung thẻ; `09-layoutBase`
+> không có thẻ này `[SoT: Suy luận]`.
+
+| Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
+| :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
+| Ngân sách và đơn giá | | | | | | | | | | | | | |
+| | 1 | Tiêu đề thẻ | `adminAiConfig.budget.title` | - | - | Label | String | - | - | O | Ngân sách và đơn giá | - | Tiêu đề thẻ, kèm mô tả phụ "Quản trị viên tự đặt, không giới hạn"<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] - |
+| | 2 | Nhãn ngưỡng cảnh báo ngân sách | `adminAiConfig.budget.warnLabel` | - | - | Label | String | - | - | O | Ngưỡng cảnh báo ngân sách | - | Kèm mô tả "Thanh ngân sách đổi màu khi mức dùng đạt ngưỡng này"<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] - |
+| | 3 | Giảm ngưỡng | `adminAiConfig.budget.btnWarnDecrease` | - | - | Button | - | - | - | I | - | `−` | Giảm ngưỡng cảnh báo một bước<br>[Công thức] Giá trị hiện tại trừ 5, không xuống dưới 1<br>[EVT liên quan] EVT-16 |
+| | 4 | Ngưỡng cảnh báo ngân sách | `adminAiConfig.budget.warnPercent` | **Chưa có bảng** (DD chốt, xem Q11) | `warn_percent` (đề xuất) | NumberBox | Number | 3 | Có | I/O | 70 | `{số}%` | Ngưỡng phần trăm mức dùng so với hạn mức token mà tại đó thanh ngân sách ở `admin_ai_usage` đổi sang màu cảnh báo. Số nguyên 1 đến 100, bước 5. Mặc định 70 theo ví dụ của RD [Nguồn: 01-rd/screens/admin/ADM0302_ai_usage.md:50-52] và chốt ở `ADM0302` Q7<br>[Nguồn giá trị] Giá trị ADMIN đặt<br>[EVT liên quan] EVT-16 |
+| | 5 | Tăng ngưỡng | `adminAiConfig.budget.btnWarnIncrease` | - | - | Button | - | - | - | I | - | `+` | Tăng ngưỡng cảnh báo một bước<br>[Công thức] Giá trị hiện tại cộng 5, không vượt quá 100<br>[EVT liên quan] EVT-16 |
+| | 6 | Nhãn đơn giá token | `adminAiConfig.budget.pricesLabel` | - | - | Label | String | - | - | O | Đơn giá token theo mô hình | - | Kèm mô tả "Mô hình chưa có đơn giá thì cột Chi phí hiện dấu -"<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] - |
+| | 7 | Quản lý | `adminAiConfig.budget.btnManagePrices` | - | - | Button | - | - | - | I | - | - | Mở popup quản lý đơn giá token theo mô hình<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-17 |
+
 ### Popup
 
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
@@ -355,8 +407,16 @@ khoảng cách hay typography ở BD.
 | | 1 | Sửa prompt | `adminAiConfig.popup.promptEdit` | `ai.prompt_templates` | `system_instruction` | Popup | - | - | - | I/O | - | - | Form sửa chỉ thị hệ thống của bản nháp. Model, nhiệt độ và giới hạn token **không sửa ở đây** (đọc từ `application.yml`). Prototype chưa có form chi tiết, trường cụ thể do DD màn hình chốt<br>[Nguồn giá trị] Bản `DRAFT` của prompt được chọn<br>[EVT liên quan] EVT-2, EVT-3, EVT-4 |
 | | 2 | Nhật ký phiên bản | `adminAiConfig.popup.versionHistory` | `ai.prompt_templates` | `version`, `status`, `published_at` | Popup | - | - | - | I/O | - | - | Danh sách phiên bản trước đây, có hành động khôi phục (F5-23)<br>[Nguồn giá trị] Các dòng cùng `feature_code`, sắp xếp theo `published_at` giảm dần<br>[EVT liên quan] EVT-5, EVT-6, EVT-7 |
 | | 3 | Xác nhận phát hành | `adminAiConfig.popup.publishConfirm` | - | - | Popup | - | - | - | I | - | Phát hành / Huỷ | Xác nhận trước khi chuyển bản nháp thành bản đang chạy<br>[Nguồn giá trị] Tóm tắt các thay đổi đang chờ<br>[EVT liên quan] EVT-12, EVT-13, EVT-14 |
+| | 4 | Đơn giá token theo mô hình | `adminAiConfig.popup.modelPrices` | **Chưa có bảng** (xem Q11) | - | Popup | - | - | - | I/O | - | - | Popup quản lý danh sách mô hình và đơn giá. Dòng hướng dẫn: "Nhập đơn giá (USD cho mỗi 1 triệu token) của từng mô hình. Không giới hạn số mô hình."<br>[Nguồn giá trị] Danh sách mô hình đang lưu<br>[EVT liên quan] EVT-17, EVT-18, EVT-19, EVT-20 |
+| | 5 | Danh sách mô hình | `adminAiConfig.popup.modelPrices.list` | **Chưa có bảng** | - | List | List | - | - | I/O | 1 dòng mẫu "Mô hình mặc định", 3 USD (dữ liệu mẫu của prototype) | - | Mỗi dòng gồm tên mô hình, ô đơn giá, nút lưu tên, nút xoá. Không giới hạn số dòng, không phân trang<br>[Nguồn giá trị] Kết quả gọi `ListModelPrices`<br>[EVT liên quan] EVT-17 |
+| | 6 | Tên mô hình | `adminAiConfig.popup.modelPrices.name` | **Chưa có bảng** | `model_name` (đề xuất, khớp `ai.token_usage.model_name`) | TextBox | String | - | Có | I/O | - | Văn bản tự do, tự cắt khoảng trắng hai đầu | Tên mô hình AI mà quản trị viên gõ; là chuỗi dữ liệu, không phải khoá i18n. Sửa xong bấm nút lưu tên hoặc nhấn Enter mới ghi<br>[Nguồn giá trị] Cột tên mô hình<br>[EVT liên quan] EVT-18 |
+| | 7 | Đơn giá | `adminAiConfig.popup.modelPrices.usdPerMillion` | **Chưa có bảng** | `usd_per_million_tokens` (đề xuất) | NumberBox | Number | - | Có | I/O | 0 (khi thêm mô hình mới) | `{số}` USD cho mỗi 1 triệu token, bước 0.1 | Đơn giá không âm. Ghi ngay khi đổi giá trị<br>[Nguồn giá trị] Cột đơn giá<br>[EVT liên quan] EVT-19 |
+| | 8 | Xoá mô hình | `adminAiConfig.popup.modelPrices.btnDelete` | **Chưa có bảng** | - | Button | - | - | - | I | - | - | Xoá mô hình khỏi danh sách đơn giá. Không có kiểm tra "đang được tham chiếu": xoá thì mô hình đó mất đơn giá, cột Chi phí của các dòng dùng mô hình đó hiện `-`<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-20 |
+| | 9 | Tên mô hình mới | `adminAiConfig.popup.modelPrices.newName` | - | - | TextBox | String | - | Có | I | rỗng | Văn bản tự do | Ô nhập tên mô hình cần thêm, gợi ý "Ví dụ: claude-sonnet"<br>[Nguồn giá trị] Giá trị người dùng gõ<br>[EVT liên quan] EVT-18 |
+| | 10 | Thêm | `adminAiConfig.popup.modelPrices.btnAdd` | - | - | Button | - | - | - | I | - | - | Thêm mô hình mới với đơn giá 0<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-18 |
+| | 11 | Đóng | `adminAiConfig.popup.modelPrices.btnClose` | - | - | Button | - | - | - | I | - | - | Đóng popup<br>[Nguồn giá trị] -<br>[EVT liên quan] - |
 
-[Nguồn: 09-layoutBase/Admin - Cấu hình AI.dc.html:147-158,163-190,192-218,222-236,238-253,255-260; 02-bd/database/ai-review.md:8-38; 01-rd/screens/admin/ADM0301_ai_config.md:36-50]
+[Nguồn: 09-layoutBase/Admin - Cấu hình AI.dc.html:147-158,163-190,192-218,222-236,238-253,255-260; 02-bd/database/ai-review.md:8-38; 01-rd/screens/admin/ADM0301_ai_config.md:36-50; Khu vực G và Popup NO 4-11: 05-coding/frontend/src/views/admin/ai-config/ui/admin-ai-config-view.tsx:234-260,332-366, 05-coding/frontend/src/entities/ai-budget/model/ai-budget-store.ts:12-29, 05-coding/frontend/messages/vi.json:742-766]
 
 ---
 
@@ -435,6 +495,19 @@ khoảng cách hay typography ở BD.
 | | 3 | Kết quả lần chạy gần nhất | Điều kiện | [Điều kiện hiển thị] Chỉ hiển thị khi có dữ liệu lần chạy gần nhất; không có thì ẩn cả dòng, giữ nguyên liên kết "Xem tiêu thụ token". |
 | | 4 | Xem tiêu thụ token | Có | - |
 
+### Khu vực G — Ngân sách và đơn giá (thêm 2026-10-01)
+
+| Khu vực | NO | Tên item | Hiển thị | Ghi chú |
+| :--- | --: | :--- | :-: | :--- |
+| Ngân sách và đơn giá | | | | |
+| | 1 | Tiêu đề thẻ | Có | - |
+| | 2 | Nhãn ngưỡng cảnh báo ngân sách | Có | - |
+| | 3 | Giảm ngưỡng | Có | [Điều kiện kích hoạt] Không kích hoạt khi ngưỡng bằng 1. |
+| | 4 | Ngưỡng cảnh báo ngân sách | Có | [Tự động đặt] Giá trị cập nhật ngay khi bấm nút giảm hoặc tăng, hiển thị kèm ký hiệu `%`. |
+| | 5 | Tăng ngưỡng | Có | [Điều kiện kích hoạt] Không kích hoạt khi ngưỡng bằng 100. |
+| | 6 | Nhãn đơn giá token | Có | - |
+| | 7 | Quản lý | Có | [Điều kiện kích hoạt] Luôn kích hoạt về mặt giao diện; kích hoạt sau khi tải xong danh sách mô hình khi có API thật. |
+
 ### Popup
 
 | Khu vực | NO | Tên item | Hiển thị | Ghi chú |
@@ -443,8 +516,16 @@ khoảng cách hay typography ở BD.
 | | 1 | Sửa prompt | Điều kiện | [Điều kiện hiển thị] Chỉ hiển thị sau khi bấm "Chỉnh sửa" trên một thẻ prompt. Các thẻ prompt khác không bị khoá khi popup đang mở. |
 | | 2 | Nhật ký phiên bản | Điều kiện | [Điều kiện hiển thị] Chỉ hiển thị sau khi bấm "Nhật ký phiên bản". |
 | | 3 | Xác nhận phát hành | Điều kiện | [Điều kiện hiển thị] Chỉ hiển thị sau khi bấm "Lưu và phát hành" và nút đó đang ở trạng thái kích hoạt. |
+| | 4 | Đơn giá token theo mô hình | Điều kiện | [Điều kiện hiển thị] Chỉ hiển thị sau khi bấm "Quản lý" ở Khu vực G. Các khối khác của màn không bị khoá khi popup đang mở. |
+| | 5 | Danh sách mô hình | Có | [Điều kiện hiển thị] Không có dòng nào thì danh sách trống, vẫn hiển thị ô thêm mô hình mới. Khi không còn đơn giá nào, cột Chi phí của `admin_ai_usage` hiển thị `-`. |
+| | 6 | Tên mô hình | Có | [Điều kiện kích hoạt] Nút lưu tên chỉ hiện khi tên đã bị sửa so với giá trị đang lưu. |
+| | 7 | Đơn giá | Có | [Tự động đặt] Giá trị ghi ngay khi đổi; giá trị âm hoặc không phải số được đưa về 0 (xem Sheet 9 NO 9). |
+| | 8 | Xoá mô hình | Có | [Điều kiện kích hoạt] Luôn kích hoạt: prototype không đếm số bản ghi tham chiếu nên không khoá nút xoá. |
+| | 9 | Tên mô hình mới | Có | - |
+| | 10 | Thêm | Có | [Điều kiện kích hoạt] Luôn kích hoạt; ô rỗng hoặc trùng tên thì báo lỗi, không thêm. |
+| | 11 | Đóng | Có | - |
 
-[Nguồn: 09-layoutBase/Admin - Cấu hình AI.dc.html:172,195-196,199,226,241; 02-bd/database/ai-review.md:37; 01-rd/screens/admin/ADM0301_ai_config.md:58-60]
+[Nguồn: 09-layoutBase/Admin - Cấu hình AI.dc.html:172,195-196,199,226,241; 02-bd/database/ai-review.md:37; 01-rd/screens/admin/ADM0301_ai_config.md:58-60; Khu vực G và Popup NO 4-11: 05-coding/frontend/src/views/admin/ai-config/ui/admin-ai-config-view.tsx:234-260,332-366; 05-coding/frontend/src/shared/ui/managed-list-dialog.tsx:100-158]
 
 ---
 
@@ -468,6 +549,9 @@ khoảng cách hay typography ở BD.
 | 12 | `RateLimitConfigDto` | `value` | Number | - | - | Giới hạn "Giá trị giới hạn" | Có | [Nguồn] Giá trị người dùng nhập<br>[Đích] Tham số của `UpdateRateLimitConfig`, ghi xuống cấu hình rate-limit trên Redis. |
 | 13 | `ResponseGuardConfigDto` | `guardCode` | String | - | - | Nguyên tắc "Tên nguyên tắc", "Mô tả nguyên tắc" | Có | [Chuyển đổi] Là khoá tra nhãn tĩnh i18n. Nơi lưu chưa chốt, xem Q2. |
 | 14 | `ResponseGuardConfigDto` | `enabled` | Boolean | - | - | Nguyên tắc "Công tắc" | Có | [Nguồn] Trạng thái công tắc người dùng đặt<br>[Đích] Tham số của `UpdateResponseGuardConfig`. |
+| 15 | `AiBudgetSettingsDto` | `warnPercent` | Number | **Chưa có bảng** (DD chốt, Q11) | `warn_percent` (đề xuất) | Ngân sách "Ngưỡng cảnh báo ngân sách" | Có | [Nguồn] Phản hồi của `GetAiBudgetSettings`; giá trị người dùng chỉnh bằng nút giảm hoặc tăng<br>[Đích] Tham số của `UpdateAiBudgetSettings`<br>[Chuyển đổi] Gửi lên dạng số nguyên 1 đến 100, không kèm ký hiệu phần trăm. **Đọc lại ở `admin_ai_usage`** để quyết định màu thanh tiến độ ngân sách [Nguồn: 02-bd/screens/admin/ADM0302_ai_usage.md:388] (`ADM0302` Q7). |
+| 16 | `ModelPriceDto` | `id`, `modelName` | UUID, String | **Chưa có bảng** | `id`, `model_name` (đề xuất) | Popup đơn giá "Tên mô hình" | Có (`modelName`) | [Nguồn] Phản hồi của `ListModelPrices`; giá trị người dùng nhập<br>[Đích] Tham số của `CreateModelPrice`, `UpdateModelPrice`, `DeleteModelPrice`<br>[Chuyển đổi] `modelName` là khoá nối với `ai.token_usage.model_name` khi tính cột Chi phí ở `admin_ai_usage`; so khớp không phân biệt hoa thường và đã cắt khoảng trắng hai đầu (hành vi của prototype). Đổi tên khiến các bản ghi `token_usage` cũ không còn khớp, xem Q9. |
+| 17 | `ModelPriceDto` | `usdPerMillionTokens` | Number | **Chưa có bảng** | `usd_per_million_tokens` (đề xuất) | Popup đơn giá "Đơn giá" | Có | [Nguồn] Phản hồi của `ListModelPrices`; giá trị người dùng nhập<br>[Đích] Tham số của `CreateModelPrice` (mặc định 0) và `UpdateModelPrice`<br>[Chuyển đổi] Không âm. **Đọc lại ở `admin_ai_usage`** (cột Chi phí): gộp token của người học theo `model_name` rồi nhân đơn giá [Nguồn: 02-bd/screens/admin/ADM0302_ai_usage.md:330]. Không có đơn giá nào thì cột Chi phí hiển thị `-`. |
 
 ### 7.2 Truy cập bảng dữ liệu (2)
 
@@ -478,6 +562,11 @@ khoảng cách hay typography ở BD.
 
 Không có thao tác xoá (`D`) trên màn này: prompt cũ chuyển sang trạng thái `ARCHIVED`, không xoá vật lý.
 Giới hạn tần suất đọc và ghi trên Redis, không qua repository JPA.
+
+Ngưỡng cảnh báo ngân sách và đơn giá token (thêm 2026-10-01) **chưa có dòng trong bảng truy cập** vì chưa có
+bảng: `02-bd/database/ai-review.md` không thiết kế nơi lưu hai nhóm này, và file đó không được sửa trong lần
+đồng bộ này. Bảng cấu hình mới của `ai-review` (ngưỡng một dòng, đơn giá nhiều dòng theo mô hình) là việc của DD,
+xem Câu hỏi mở Q11. Hai nhóm này vì vậy chưa có repository.
 
 `[Suy luận]` — tên repository do BD này đề xuất, DD module `ai-review` chốt lại.
 
@@ -497,6 +586,15 @@ Giới hạn tần suất đọc và ghi trên Redis, không qua repository JPA.
 | 8 | `UpdateRateLimitConfig` | Cập nhật giới hạn tần suất | `ai-review` |
 | 9 | `GetResponseGuardConfig` | Tải trạng thái các nguyên tắc trả lời | `ai-review` |
 | 10 | `UpdateResponseGuardConfig` | Cập nhật các nguyên tắc trả lời | `ai-review` |
+| 11 | `GetAiBudgetSettings` | Tải ngưỡng cảnh báo ngân sách; cũng là nguồn mà `admin_ai_usage` đọc (có thể gộp vào `GetAiTokenBudgetStatus` của `ADM0302`) | `ai-review` |
+| 12 | `UpdateAiBudgetSettings` | Cập nhật ngưỡng cảnh báo ngân sách, backend kiểm số nguyên 1 đến 100 | `ai-review` |
+| 13 | `ListModelPrices` | Tải danh sách mô hình kèm đơn giá | `ai-review` |
+| 14 | `CreateModelPrice` | Thêm mô hình với đơn giá khởi tạo 0, backend kiểm tên không rỗng và không trùng | `ai-review` |
+| 15 | `UpdateModelPrice` | Đổi tên mô hình và/hoặc đơn giá, backend kiểm tên không trùng và đơn giá không âm | `ai-review` |
+| 16 | `DeleteModelPrice` | Xoá mô hình khỏi danh sách đơn giá | `ai-review` |
+
+`[Suy luận]` — endpoint 11 đến 16 do BD này đề xuất (thêm 2026-10-01) để khớp `ADM0302` Q2 và Q7; tên và quyền
+thật do `03-dd/api/ai-review.md` chốt.
 
 Không có endpoint cho nút "Chạy đối chiếu" ở đợt này. Endpoint số 1 có thể phải gọi thêm module
 `problem-bank` cho thẻ "Sinh testcase" — xem Câu hỏi mở Q1.
@@ -513,7 +611,7 @@ Không có endpoint cho nút "Chạy đối chiếu" ở đợt này. Endpoint s
 
 | NO | Loại | Sự kiện | Chi tiết | Chuyển màn | Gọi API | Tên xử lý | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :-: | :--- | :--- |
-| 1 | Màn hình | Khởi tạo màn | Vào màn thì tải toàn bộ cấu hình hiện hành. | Không | Có | `ListPromptTemplates`, `GetRubricConfig`, `GetRateLimitConfig`, `GetResponseGuardConfig` | [Các bước]<br>1. Kiểm tra quyền `AI_CONFIG`.<br>2. Hiển thị khung chờ cho cả 4 khối dữ liệu.<br>3. Tải song song 4 nhóm dữ liệu.<br>[Khi thành công] Hiển thị đầy đủ 5 khối nội dung ở trạng thái chỉ xem, nút "Lưu và phát hành" không kích hoạt vì chưa có thay đổi.<br>[Khi lỗi] Hiển thị thông báo lỗi tại đúng khối tải thất bại; các khối tải được vẫn hiển thị bình thường, không rời màn. |
+| 1 | Màn hình | Khởi tạo màn | Vào màn thì tải toàn bộ cấu hình hiện hành. | Không | Có | `ListPromptTemplates`, `GetRubricConfig`, `GetRateLimitConfig`, `GetResponseGuardConfig` | [Các bước]<br>1. Kiểm tra quyền `AI_CONFIG`.<br>2. Hiển thị khung chờ cho cả 4 khối dữ liệu.<br>3. Tải song song 4 nhóm dữ liệu.<br>[Khi thành công] Hiển thị đầy đủ 6 khối nội dung ở trạng thái chỉ xem, nút "Lưu và phát hành" không kích hoạt vì chưa có thay đổi.<br>[Khi lỗi] Hiển thị thông báo lỗi tại đúng khối tải thất bại; các khối tải được vẫn hiển thị bình thường, không rời màn. |
 | 2 | Liên kết | Mở popup sửa prompt | Bấm "Chỉnh sửa" trên một thẻ prompt. | Không | Không | - | [Các bước]<br>1. Prompt đang ở trạng thái "Đang chạy" thì tạo một bản nháp trong bộ nhớ từ bản đang chạy; đã có bản nháp thì dùng chính bản đó.<br>2. Mở popup với nội dung bản nháp.<br>[Khi thành công] Popup hiển thị, thẻ tương ứng gắn nhãn "Đang sửa bản nháp", các thẻ khác không bị khoá. |
 | 3 | Nút | Lưu bản nháp | Bấm "Lưu" trong popup sửa prompt. | Không | Có | `UpdatePromptTemplateDraft` | [Các bước]<br>1. Kiểm tra chỉ thị hệ thống không rỗng.<br>2. Gửi nội dung bản nháp lên máy chủ.<br>3. Đóng popup và cập nhật thẻ prompt tương ứng.<br>[Khi thành công] Thẻ hiển thị trạng thái "Bản nháp" và ngày cập nhật mới; bản đang chạy không đổi.<br>[Khi lỗi] Giữ popup mở, giữ nguyên nội dung người dùng đã nhập, hiển thị lỗi trong popup.<br>[Thông báo hoàn tất] "Đã lưu bản nháp." |
 | 4 | Nút | Huỷ sửa prompt | Bấm "Huỷ" hoặc đóng popup sửa prompt. | Không | Không | - | [Các bước]<br>1. Đóng popup.<br>[Khi xác nhận] Nội dung đã bị sửa mà chưa lưu thì hỏi xác nhận trước khi bỏ thay đổi.<br>[Khi thành công] Popup đóng, thẻ prompt giữ nguyên nội dung trước khi mở. |
@@ -528,6 +626,11 @@ Không có endpoint cho nút "Chạy đối chiếu" ở đợt này. Endpoint s
 | 13 | Popup | Xác nhận phát hành — "Phát hành" | Bấm "Phát hành" trong popup xác nhận. | Không | Có | `PublishPromptTemplate`, `UpdateRubricConfig`, `UpdateRateLimitConfig`, `UpdateResponseGuardConfig` | [Các bước]<br>1. Kiểm tra tổng trọng số rubric bằng 100%.<br>2. Gửi toàn bộ thay đổi lên máy chủ.<br>3. Đóng popup và tải lại cấu hình.<br>[Khi thành công] Các thẻ prompt hiển thị phiên bản, trạng thái và ngày cập nhật mới; trạng thái biên soạn được xoá; nút "Lưu và phát hành" trở về không kích hoạt.<br>[Khi lỗi] Giữ nguyên toàn bộ thay đổi đang biên soạn, hiển thị lỗi tại khối gây lỗi, **không** hoàn tác ngầm phần đã sửa ở khối khác. Phát hành có phải một giao dịch nguyên tử phía máy chủ hay không còn mở, xem Q3.<br>[Thông báo hoàn tất] "Đã phát hành cấu hình mới." |
 | 14 | Popup | Xác nhận phát hành — "Huỷ" | Bấm "Huỷ" trong popup xác nhận. | Không | Không | - | [Các bước]<br>1. Đóng popup.<br>[Khi thành công] Mọi thay đổi vẫn ở trạng thái chưa phát hành, nút "Lưu và phát hành" vẫn kích hoạt. |
 | 15 | Liên kết | Xem tiêu thụ token | Bấm "Xem tiêu thụ token". | Có | Không | - | [Các bước]<br>1. Điều hướng sang màn `admin_ai_usage`.<br>[Khi xác nhận] Còn thay đổi chưa phát hành thì hỏi xác nhận trước khi rời màn, xem Q8.<br>[Khi thành công] Mở màn `admin_ai_usage`. |
+| 16 | Nút | Đổi ngưỡng cảnh báo ngân sách | Bấm nút giảm hoặc tăng ở "Ngưỡng cảnh báo ngân sách". | Không | Có | `GetAiBudgetSettings` (khi vào màn), `UpdateAiBudgetSettings` | [Các bước]<br>1. Tăng hoặc giảm ngưỡng 5 điểm phần trăm, giữ trong khoảng 1 đến 100.<br>2. Ghi giá trị mới.<br>[Khi thành công] Ngưỡng hiển thị giá trị mới ngay. Thanh ngân sách ở `admin_ai_usage` dùng ngưỡng mới ở lần mở sau (hoặc ngay nếu chung kho trạng thái). Prototype ghi thẳng vào kho trong bộ nhớ, **không qua** "Lưu và phát hành", xem Q9.<br>[Khi lỗi] Giữ giá trị cũ, hiển thị lỗi tại dòng. Khi vào màn, khối này được tải cùng EVT-1 (thêm hai lệnh `GetAiBudgetSettings`, `ListModelPrices`). |
+| 17 | Nút | Mở popup đơn giá token | Bấm "Quản lý" ở dòng "Đơn giá token theo mô hình". | Không | Có | `ListModelPrices` | [Các bước]<br>1. Tải danh sách mô hình kèm đơn giá (prototype đọc kho trong bộ nhớ).<br>2. Mở popup.<br>[Khi thành công] Popup hiển thị danh sách và ô thêm mô hình mới.<br>[Khi lỗi] Không mở popup, hiển thị lỗi trên màn chính. |
+| 18 | Nút | Thêm mô hình, đổi tên mô hình | Bấm "Thêm" (hoặc Enter ở ô tên mới); sửa tên của một dòng rồi bấm nút lưu tên hoặc Enter. | Không | Có | `CreateModelPrice`, `UpdateModelPrice` | [Các bước]<br>1. Cắt khoảng trắng hai đầu của tên.<br>2. Tên rỗng thì báo lỗi, dừng.<br>3. Tên trùng với mô hình khác (không phân biệt hoa thường) thì báo lỗi, dừng.<br>4. Thêm mới với đơn giá 0, hoặc đổi tên giữ nguyên đơn giá.<br>[Khi thành công] Dòng mới xuất hiện cuối danh sách, ô tên mới được xoá; hoặc tên mới thay tên cũ.<br>[Khi lỗi] Lỗi hiển thị ngay dưới dòng vi phạm, popup mở nguyên. |
+| 19 | Nhập liệu | Đổi đơn giá mô hình | Sửa ô đơn giá của một dòng. | Không | Có | `UpdateModelPrice` | [Các bước]<br>1. Chuyển giá trị nhập thành số; giá trị không phải số hoặc âm thì đưa về 0.<br>2. Ghi đơn giá.<br>[Khi thành công] Đơn giá của dòng đổi ngay; cột Chi phí ở `admin_ai_usage` dùng đơn giá mới.<br>[Khi lỗi] Giữ giá trị cũ, hiển thị lỗi tại dòng. |
+| 20 | Nút | Xoá mô hình khỏi bảng đơn giá | Bấm nút xoá trên một dòng. | Không | Có | `DeleteModelPrice` | [Các bước]<br>1. Xoá dòng khỏi danh sách (prototype không xin xác nhận và không đếm bản ghi tham chiếu).<br>[Khi thành công] Dòng biến mất; mô hình đó không còn đơn giá. Danh sách rỗng thì cột Chi phí ở `admin_ai_usage` hiển thị `-` cho mọi dòng.<br>[Khi lỗi] Giữ nguyên danh sách, hiển thị lỗi. |
 
 [Nguồn: 09-layoutBase/Admin - Cấu hình AI.dc.html:157,168,178,195-196,247,257,259; 01-rd/screens/admin/ADM0301_ai_config.md:58-60; 02-bd/database/ai-review.md:16,37]
 
@@ -547,6 +650,10 @@ Không có endpoint cho nút "Chạy đối chiếu" ở đợt này. Endpoint s
 | 5 | Kiểm nhập liệu | Chỉ thị hệ thống bắt buộc | [Nội dung kiểm] Chỉ thị hệ thống rỗng thì không cho lưu bản nháp.<br>[Nơi thực thi] Popup sửa prompt.<br>[Tiêu điểm] Ô chỉ thị hệ thống. | Lỗi | Chưa có mã thông báo | Nội dung "Chỉ thị hệ thống không được để trống." | EVT-3 | 1 |
 | 6 | Kiểm nghiệp vụ | Xung đột phiên bản khi phát hành | [Nội dung kiểm] Bản đang chạy đã bị người khác thay đổi kể từ lúc tải màn thì dừng phát hành.<br>[Nơi thực thi] Máy chủ. | Lỗi | Mã lỗi trong phản hồi | Nội dung "Cấu hình đã được người khác cập nhật. Vui lòng tải lại màn hình." Ràng buộc "đúng một bản `ACTIVE` cho mỗi `feature_code`" do máy chủ bảo đảm [Nguồn: 02-bd/database/ai-review.md:15]. | EVT-13 | 2 |
 | 7 | Kiểm nghiệp vụ | Lỗi hệ thống hoặc lỗi gọi máy chủ | [Nội dung kiểm] Gọi máy chủ thất bại hoặc trả lỗi nghiệp vụ thì dừng thao tác, giữ nguyên dữ liệu đang hiển thị.<br>[Nơi thực thi] Màn hình. | Lỗi | Mã lỗi trong phản hồi | Phản hồi có mã lỗi đã đăng ký thì hiển thị nội dung tương ứng; chưa đăng ký thì hiển thị "Không kết nối được máy chủ." | EVT-1, EVT-3, EVT-5, EVT-6, EVT-13 | 1 |
+| 8 | Kiểm nhập liệu | Khoảng giá trị ngưỡng cảnh báo ngân sách | [Nội dung kiểm] Ngưỡng không phải số nguyên từ 1 đến 100 thì không cho đặt.<br>[Nơi thực thi] Màn hình (nút giảm và tăng chặn sẵn ở 1 và 100, bước 5) và máy chủ.<br>[Tiêu điểm] Dòng "Ngưỡng cảnh báo ngân sách". | Lỗi | Chưa có mã thông báo | Nội dung "Ngưỡng phải là số nguyên từ 1 đến 100." `[SoT: Suy luận]` — nội dung do BD đặt, prototype không có thông báo vì nút đã chặn sẵn. | EVT-16 | 1 |
+| 9 | Kiểm nhập liệu | Đơn giá không âm | [Nội dung kiểm] Đơn giá nhỏ hơn 0 hoặc không phải số thì không lưu.<br>[Nơi thực thi] Màn hình và máy chủ. Prototype không báo lỗi mà tự đưa giá trị về 0 (ô nhập `min=0`, mã dùng `Math.max(0, Number(...) \|\| 0)`); đó là cách xử lý do prototype tự chọn.<br>[Tiêu điểm] Ô đơn giá của dòng vi phạm. | Lỗi | Chưa có mã thông báo | Nội dung "Đơn giá phải là số không âm." `[SoT: Suy luận]` — BD đề xuất báo lỗi thay vì ép về 0, chờ owner, xem Q9. Đơn giá 0 vẫn hợp lệ. | EVT-19 | 1 |
+| 10 | Kiểm nhập liệu | Tên mô hình không rỗng | [Nội dung kiểm] Tên mô hình rỗng (sau khi cắt khoảng trắng hai đầu) thì không thêm, không đổi tên.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Ô tên của dòng vi phạm hoặc ô tên mô hình mới. | Lỗi | Chưa có mã thông báo | Nội dung "Tên mô hình không được để trống" (đúng chữ prototype). | EVT-18 | 1 |
+| 11 | Kiểm nhập liệu | Tên mô hình không trùng | [Nội dung kiểm] Tên trùng với mô hình khác (so sánh sau khi cắt khoảng trắng, không phân biệt hoa thường theo locale `vi`) thì không thêm, không đổi tên.<br>[Nơi thực thi] Màn hình và máy chủ (ràng buộc duy nhất ở cột tên khi có bảng).<br>[Tiêu điểm] Ô tên của dòng vi phạm hoặc ô tên mô hình mới. | Lỗi | Chưa có mã thông báo | Nội dung "Đã có mô hình trùng tên" (đúng chữ prototype). | EVT-18 | 2 |
 
 Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 
@@ -566,3 +673,6 @@ Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 | Q6 | Bước nhảy của nút `−`/`+` trên mỗi tiêu chí rubric là bao nhiêu — 1% hay 5%? | Prototype không ghi giá trị bước nhảy, chỉ có hai nút | DD màn hình |
 | Q7 | ~~Các trường "Mô tả", "Model", "Nhiệt độ", "Giới hạn token" trên thẻ prompt và "Mô tả tiêu chí" của rubric hiển thị trên màn nhưng không có cột tương ứng trong `prompt_templates` / `rubric_configs` — có bổ sung cột không?~~ **ĐÃ CHỐT 2026-09-20: không bổ sung cột nào.** Mô tả là nhãn tĩnh i18n (chữ cố định, quản trị viên không sửa); model, nhiệt độ, giới hạn token đọc từ `application.yml` và màn chỉ hiển thị — prototype không có control sửa, cũng chưa có yêu cầu nào nói quản trị viên phải đổi model theo từng prompt. Khi nào có yêu cầu sửa thật thì mới thêm cột, lúc đó mới đủ dữ kiện để thiết kế đúng. | — | Đã đóng |
 | Q8 | Rời màn khi còn thay đổi chưa phát hành (bấm "Xem tiêu thụ token", hoặc đổi mục ở thanh điều hướng) thì có hỏi xác nhận không? | RD không có yêu cầu nào về việc này; ảnh hưởng cả liên kết trong màn lẫn điều hướng bằng thanh bên | Chủ dự án |
+| Q9 | Ngưỡng cảnh báo và đơn giá token có ghi ngay khi thao tác (như prototype) hay đi qua "Lưu và phát hành" cùng prompt? Đề xuất `[SoT: Suy luận]`: ghi ngay, vì chúng không có vòng đời bản nháp, phát hành, lưu trữ như prompt. Kèm ba chi tiết do prototype tự chọn: (a) giá trị âm hoặc không phải số tự đưa về 0 thay vì báo lỗi; (b) xoá mô hình không bị chặn dù còn bản ghi `token_usage` mang tên đó; (c) đổi tên mô hình làm bản ghi cũ mất khớp đơn giá, vì khoá nối là tên (`token_usage.model_name`) chứ không phải mã bất biến. | Quyết định ADMIN tự đặt tham số có hiệu lực, nhưng chưa nói cách lưu; RD `ADM0301` không nhắc thẻ này vì thẻ phát sinh từ `DEC-2026-1001-admin-configurable-settings` | Chủ dự án + DD `ai-review` |
+| Q10 | Hai tham số mới do Function nào gác: `AI_CONFIG` (cùng màn) hay `AI_TOKEN_BUDGET:UPDATE` (cùng nơi dữ liệu được đọc ở `ADM0302`)? `ADM0302` đã tách hai Function theo F1-12. | Prototype không phân quyền; cả hai cách đều hợp lý. Đề xuất `[SoT: Suy luận]`: `AI_CONFIG` để quyền vào màn khớp quyền sửa trên màn, còn `ADM0302` chỉ cần `AI_TOKEN_BUDGET:READ` để đọc | `02-bd/security/ai-review.md` + DD `ai-review` |
+| Q11 | Bảng lưu ngưỡng cảnh báo (một dòng) và đơn giá theo mô hình (nhiều dòng, tên mô hình duy nhất) đặt ở đâu trong schema `ai`? | `02-bd/database/ai-review.md` không có bảng nào cho hai nhóm này (file đó không được sửa trong lần đồng bộ ngày 2026-10-01). Đã nêu ở `ADM0302` Q2: "bảng cấu hình mới trong `ai-review`" thuộc DD. Có thể gộp ngưỡng vào `ai.ai_token_budget_configs` (đã có `limit_tokens`, `period_start`) và thêm bảng đơn giá riêng | DD `ai-review` |

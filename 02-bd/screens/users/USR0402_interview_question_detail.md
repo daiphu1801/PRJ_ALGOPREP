@@ -63,8 +63,9 @@ prototype không vẽ. Danh sách đầy đủ các điểm phải suy diễn n�
 >   Chế độ học vẫn xem được bình thường [Nguồn: 02-bd/architecture/interview-bank.md:223-232].
 > - **Không có** khái niệm "bộ câu hỏi theo lớp" (F6-11 đã loại, `DEC-2026-0828-remove-per-class-interview-set`).
 >   Màn này không còn dấu vết nào của F6-11 — không có điều khiển nào nhắc tới lớp học.
-> - **5 chủ đề cố định** là dữ liệu seed dùng chung (`DEC-2026-0830-interview-bank-crud`)
->   [Nguồn: 01-rd/req/interview-bank.md:9-13].
+> - **Danh mục chủ đề là dữ liệu do ADMIN quản lý** (5 chủ đề khởi tạo, không còn cố định — thay tiểu quyết
+> định 4 của `DEC-2026-0830-interview-bank-crud` bằng `DEC-2026-1001-admin-configurable-settings`), dùng chung
+> [Nguồn: 01-rd/req/interview-bank.md:9-13 cho 5 chủ đề khởi tạo].
 >
 > **Bốn câu hỏi mở của `USR0401` chạm trực tiếp màn này** — ghi nhận là đã biết, **không quyết lại**, quyết
 > thế nào thì màn này theo y hệt: Q3 (mã câu hỏi người đọc được dạng `IQ-014`), Q4 (tag của prototype có
@@ -86,11 +87,11 @@ prototype không vẽ. Danh sách đầy đủ các điểm phải suy diễn n�
 | Tên vật lý (slug) | `interview_question_detail` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`) |
-| Phiên bản | V1.0 |
+| Phiên bản | V1.3 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/22 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/09/22 |
+| Ngày cập nhật | 2026/10/01 |
 
 ---
 
@@ -99,6 +100,9 @@ prototype không vẽ. Danh sách đầy đủ các điểm phải suy diễn n�
 | Ver | Sheet bị sửa | Nội dung sửa | Ngày | Người sửa |
 | :--- | :--- | :--- | :--- | :--- |
 | V1.0 | Toàn bộ | Tạo mới theo mẫu 9 sheet. Kế thừa nguyên hợp đồng tham số, DTO, endpoint và ba quyết định phạm vi từ `USR0401`; bổ sung hai endpoint mới cho Chế độ luyện (`SubmitPracticeAnswer`, `ListMyAnswerAttempts`) — chỗ duy nhất chạm `user_answers` và `answer_rubrics`. Vì màn không có prototype riêng, mọi kết luận về bố cục Chế độ luyện đều đánh `[Suy luận]` và liệt kê tập trung ở mục 4.4; phát hiện 3 trường không có nguồn dữ liệu ("Bẫy thường gặp", "tần suất xuất hiện", điểm số theo trọng số của phản hồi AI) và chuyển thành câu hỏi mở | 2026/09/22 | Nhóm phát triển AlgoPrep |
+| V1.1 | Phương châm tài liệu | Đã chốt 2026-10-01 (owner uỷ quyền cân nhắc), xem `DEC-2026-1001-admin-configurable-settings`: sửa câu "5 chủ đề cố định" thành danh mục chủ đề do ADMIN quản lý (5 chủ đề khởi tạo). Không đổi thiết kế màn; quy tắc khung STAR gắn với mã `BEHAVIORAL` xem `02-bd/database/interview-bank.md` mục 7 | 2026/10/01 | AI |
+| V1.2 | Sheet 4, 5, 6, 7, Phương châm | Đã chốt 2026-10-01 (owner uỷ quyền), xem `DEC-2026-1001-admin-configurable-settings`: khung STAR không còn gắn mã `BEHAVIORAL`, mà theo cờ `question_topics.uses_star_framework`. `InterviewQuestionDetailDto` thêm `topicUsesStarFramework`, `topicCode` đổi kiểu Enum thành String; quy tắc kết xuất khung trả lời chuẩn đọc cờ này | 2026/10/01 | AI |
+| V1.3 | Sheet 5, 6, 7 | Đồng bộ với prototype dựng 2026-10-01: thêm item "Nhãn STAR" (Khu vực C NO 7) — nhãn nhỏ cạnh nhãn "Khung trả lời chuẩn", hiện khi chủ đề của câu hỏi bật cờ STAR, nguồn `topicUsesStarFramework` đã có trong DTO. Sheet 6 NO 7 điều kiện hiển thị, Sheet 7 NO 2 và NO 7 ghi thêm item màn nuôi bởi cờ này | 2026/10/01 | AI |
 
 ---
 
@@ -356,11 +360,12 @@ Không quy định màu sắc, khoảng cách hay typography ở BD
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Chế độ học | | | | | | | | | | | | | |
 | | 1 | Ý cần nói | `interviewQuestionDetail.study.outline` | `interview_questions` | `suggested_approach` | List | String | - | - | O | - | Danh sách đánh số hai chữ số | Gợi ý hướng tiếp cận (F6-04), cùng nội dung và cùng cách trình bày với bản xem nhanh của `USR0401`<br>[Nguồn giá trị] Cột `suggested_approach`, kiểu TEXT dạng Markdown [Nguồn: 02-bd/database/interview-bank.md:31]; cách trình bày [Nguồn: 09-layoutBase/Câu hỏi phỏng vấn.dc.html:157-165]<br>[EVT liên quan] EVT-1 |
-| | 2 | Khung trả lời chuẩn | `interviewQuestionDetail.study.answerFramework` | `interview_questions` | `sample_answer_framework` | Label | String | - | - | O | - | Markdown kết xuất; câu hành vi hiện đúng 4 mục Situation / Task / Action / Result | Khung trả lời chuẩn (F6-05). **Trường này `USR0401` không hiển thị** — đây là khác biệt chính giữa bản xem nhanh và trang đầy đủ<br>[Nguồn giá trị] Cột `sample_answer_framework`; với `topic_id = BEHAVIORAL` áp dụng cấu trúc STAR, lưu dạng Markdown 4 mục chứ không phải 4 cột riêng [Nguồn: 02-bd/database/interview-bank.md:32]<br>[EVT liên quan] EVT-1 |
+| | 2 | Khung trả lời chuẩn | `interviewQuestionDetail.study.answerFramework` | `interview_questions` | `sample_answer_framework` | Label | String | - | - | O | - | Markdown kết xuất; câu hành vi hiện đúng 4 mục Situation / Task / Action / Result | Khung trả lời chuẩn (F6-05). **Trường này `USR0401` không hiển thị** — đây là khác biệt chính giữa bản xem nhanh và trang đầy đủ<br>[Nguồn giá trị] Cột `sample_answer_framework`; với chủ đề có `question_topics.uses_star_framework = true` áp dụng cấu trúc STAR, lưu dạng Markdown 4 mục chứ không phải 4 cột riêng [Nguồn: 02-bd/database/interview-bank.md:40]<br>[EVT liên quan] EVT-1 |
 | | 3 | Từ khoá cốt lõi | `interviewQuestionDetail.study.coreKeywords` | `interview_questions` | `core_keywords` | List | List | - | - | O | Rỗng | Chip | Từ khoá kỹ thuật cốt lõi cần nêu khi trả lời (F6-06), khối riêng tách khỏi nhãn phân loại<br>[Nguồn giá trị] Cột `core_keywords` [Nguồn: 02-bd/database/interview-bank.md:33]. Việc "tag" của prototype có phải chính `core_keywords` không là Câu hỏi mở Q4 của `USR0401` — màn này theo y hệt, không quyết lại<br>[EVT liên quan] EVT-1 |
 | | 4 | Câu hỏi đào sâu | `interviewQuestionDetail.study.followUpQuestions` | `interview_questions` | `follow_up_questions` | List | List | - | - | O | Rỗng | Danh sách gạch đầu dòng | Các truy vấn tiếp theo cùng câu hỏi gốc. **Chỉ hiển thị tham khảo ở Chế độ học**, không dùng ở Chế độ luyện<br>[Nguồn giá trị] Cột `follow_up_questions`, JSONB mảng chuỗi [Nguồn: 02-bd/database/interview-bank.md:34]<br>[EVT liên quan] EVT-1 |
 | | 5 | Mức độ nắm | `interviewQuestionDetail.study.recallLevels` | `recall_ratings` | `rating` | List | Enum | - | - | I/O | Mức hiện hành, không có thì không chọn mức nào | - | Ba nút tự chấm mức độ nhớ (F6-12): Biết rõ / Mơ hồ / Quên. **Hành vi giống hệt `USR0401`**, kể cả ba mức và việc ghi đè tại chỗ<br>[Nguồn giá trị] Enum `rating` của `recall_ratings` [Nguồn: 02-bd/database/interview-bank.md:136]. Nhãn ba mức là Câu hỏi mở Q6 của `USR0401` — theo y hệt, không quyết lại<br>[EVT liên quan] EVT-6 |
 | | 6 | Ngày ôn lại kế tiếp | `interviewQuestionDetail.study.nextReviewHint` | `recall_ratings` | `next_review_at`, `interval_days` | Label | String | - | - | O | Ẩn | `Sẽ nhắc ôn lại sau {n} ngày` | Phản hồi cho biết lần tự chấm vừa rồi có tác dụng gì<br>[Nguồn giá trị] Cột `next_review_at` và `interval_days`, máy chủ trả về trong `RecallRatingDto` [Nguồn: 02-bd/database/interview-bank.md:137-138]. **Có hiện hay không là Câu hỏi mở Q7 của `USR0401`** — chưa chốt; item này giữ ở trạng thái chờ quyết, hiện theo đúng kết luận của Q7<br>[EVT liên quan] EVT-6 |
+| | 7 | Nhãn STAR | `interviewQuestionDetail.study.starTag` | `question_topics` | `uses_star_framework` | Badge | Boolean | - | - | O | Ẩn | `STAR` | Nhãn nhỏ đứng cạnh nhãn khối "Khung trả lời chuẩn" (NO 2), báo rằng chủ đề của câu hỏi bật khung STAR nên khung được kết xuất theo 4 mục Situation / Task / Action / Result<br>[Nguồn giá trị] `InterviewQuestionDetailDto.topicUsesStarFramework` (Sheet 7 NO 2), tức cờ `question_topics.uses_star_framework` [Nguồn: 02-bd/database/interview-bank.md:40]. Nhãn tĩnh i18n "STAR", không phải dữ liệu người dùng nhập. Prototype dựng ngày 2026-10-01 (`views/users/interview-question-detail/ui/interview-question-detail-view.tsx:231-237`) tra cờ từ kho chủ đề phía giao diện thay vì từ DTO `[SoT: Suy luận]` do prototype tự chọn, vì chưa có API; khi có API thì đọc từ DTO<br>[EVT liên quan] EVT-1 |
 
 ### Khu vực D — Chế độ luyện
 
@@ -438,11 +443,12 @@ Không quy định màu sắc, khoảng cách hay typography ở BD
 | :--- | --: | :--- | :-: | :--- |
 | Chế độ học | | | | |
 | | 1 | Ý cần nói | Điều kiện | [Điều kiện hiển thị] Chỉ hiển thị ở Chế độ học; `suggested_approach` rỗng thì ẩn cả khối, không hiển thị tiêu đề khối trống. **Ẩn hoàn toàn ở Chế độ luyện** để người học không nhìn đáp án trước khi tự làm. |
-| | 2 | Khung trả lời chuẩn | Điều kiện | [Điều kiện hiển thị] Như NO 1, với `sample_answer_framework`. Câu hỏi thuộc chủ đề `BEHAVIORAL` thì kết xuất đúng 4 mục STAR; chủ đề khác kết xuất nguyên khối Markdown, **không** ép vào 4 mục. |
+| | 2 | Khung trả lời chuẩn | Điều kiện | [Điều kiện hiển thị] Như NO 1, với `sample_answer_framework`. Câu hỏi thuộc chủ đề có cờ `uses_star_framework` (`topicUsesStarFramework = true`) thì kết xuất đúng 4 mục STAR; chủ đề khác kết xuất nguyên khối Markdown, **không** ép vào 4 mục. |
 | | 3 | Từ khoá cốt lõi | Điều kiện | [Điều kiện hiển thị] Như NO 1, với `core_keywords`. |
 | | 4 | Câu hỏi đào sâu | Điều kiện | [Điều kiện hiển thị] Như NO 1, với `follow_up_questions`. Không hiển thị ở Chế độ luyện — dữ liệu này phục vụ giai đoạn Phản biện của `mock_interview`, không phải gợi ý cho lượt luyện hiện tại. |
 | | 5 | Mức độ nắm | Điều kiện | [Điều kiện hiển thị] Chỉ hiển thị ở Chế độ học.<br>[Điều kiện kích hoạt] Không kích hoạt trong lúc đang chờ phản hồi của lần tự chấm trước.<br>[Tự động đặt] Mức đang lưu được chọn sẵn; chấm lại thì mức mới thay mức cũ, không cộng dồn. |
 | | 6 | Ngày ôn lại kế tiếp | Điều kiện | [Điều kiện hiển thị] Chỉ hiển thị khi đã có dòng `recall_ratings` cho cặp người dùng và câu hỏi, **và** khi Câu hỏi mở Q7 của `USR0401` chốt là có hiện. Chưa chốt thì mặc định ẩn.<br>[Tự động đặt] Cập nhật ngay sau mỗi lần tự chấm thành công, lấy giá trị máy chủ trả về. |
+| | 7 | Nhãn STAR | Điều kiện | [Điều kiện hiển thị] Chỉ hiển thị ở Chế độ học, cùng khối "Khung trả lời chuẩn" (NO 2) và chỉ khi `topicUsesStarFramework = true`. Khối NO 2 bị ẩn (`sample_answer_framework` rỗng) thì nhãn ẩn theo. Chủ đề không bật cờ STAR thì không có nhãn, khung kết xuất nguyên khối Markdown. Không bấm được, không có hành vi. |
 
 ### Khu vực D — Chế độ luyện
 
@@ -496,12 +502,12 @@ Không quy định màu sắc, khoảng cách hay typography ở BD
 | NO | DTO | Trường DTO | Kiểu | Bảng DB | Cột DB | Item màn | Hiển thị | Ghi chú |
 | --: | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :--- |
 | 1 | `InterviewQuestionDetailDto` | `id` | UUID | `interview_questions` | `id` | - | Không | [Nguồn] Tham số `questionId` nhận từ `USR0401`<br>[Đích] Tham số của `RateQuestionRecall`, `ToggleQuestionBookmark`, `SubmitPracticeAnswer`, `ListMyAnswerAttempts`. |
-| 2 | `InterviewQuestionDetailDto` | `topicCode`, `topicDisplayName` | Enum, String | `question_topics` | `code`, `display_name` | Đầu trang "Chủ đề và độ khó" | Có | [Nguồn] Join qua `interview_questions.topic_id`<br>[Chuyển đổi] Hiển thị `display_name`; `topicCode = BEHAVIORAL` còn quyết định cách kết xuất khung trả lời chuẩn theo 4 mục STAR. |
+| 2 | `InterviewQuestionDetailDto` | `topicCode`, `topicDisplayName`, `topicUsesStarFramework` | String, String, Boolean | `question_topics` | `code`, `display_name`, `uses_star_framework` | Đầu trang "Chủ đề và độ khó"; Chế độ học "Nhãn STAR" | Có | [Nguồn] Join qua `interview_questions.topic_id`<br>[Chuyển đổi] Hiển thị `display_name`; `topicUsesStarFramework` (cờ `uses_star_framework`) còn quyết định cách kết xuất khung trả lời chuẩn theo 4 mục STAR và việc hiện nhãn "STAR" cạnh nhãn khối (Sheet 5 Khu vực C NO 7). |
 | 3 | `InterviewQuestionDetailDto` | `difficulty` | Enum | `interview_questions` | `difficulty` | Đầu trang "Chủ đề và độ khó" | Có | [Chuyển đổi] `EASY` / `MEDIUM` / `HARD` đổi sang "Dễ" / "Trung bình" / "Khó" — cùng ánh xạ với `USR0401`, không đặt bộ nhãn thứ hai. |
 | 4 | `InterviewQuestionDetailDto` | `title` | String | `interview_questions` | `title` | Đầu trang "Tiêu đề câu hỏi" | Có | - |
 | 5 | `InterviewQuestionDetailDto` | `contentMarkdown` | String | `interview_questions` | `content_markdown` | Đầu trang "Nội dung câu hỏi" | Có | [Chuyển đổi] Kết xuất Markdown. `USR0401` không hiển thị trường này. |
 | 6 | `InterviewQuestionDetailDto` | `suggestedApproach` | String | `interview_questions` | `suggested_approach` | Chế độ học "Ý cần nói" | Có | [Chuyển đổi] Markdown, tách mục danh sách thành các dòng đánh số hai chữ số — giống hệt `USR0401`. |
-| 7 | `InterviewQuestionDetailDto` | `sampleAnswerFramework` | String | `interview_questions` | `sample_answer_framework` | Chế độ học "Khung trả lời chuẩn" | Có | [Chuyển đổi] Markdown; 4 mục STAR khi `topicCode = BEHAVIORAL`. **Trường màn này hiển thị thêm so với `USR0401`** [Nguồn: 02-bd/screens/users/USR0401_interview_bank_list.md:442]. |
+| 7 | `InterviewQuestionDetailDto` | `sampleAnswerFramework` | String | `interview_questions` | `sample_answer_framework` | Chế độ học "Khung trả lời chuẩn" | Có | [Chuyển đổi] Markdown; 4 mục STAR khi `topicUsesStarFramework = true`. **Trường màn này hiển thị thêm so với `USR0401`** [Nguồn: 02-bd/screens/users/USR0401_interview_bank_list.md:442]. |
 | 8 | `InterviewQuestionDetailDto` | `coreKeywords` | List | `interview_questions` | `core_keywords` | Chế độ học "Từ khoá cốt lõi" | Có | [Chuyển đổi] Mỗi phần tử là một chip. |
 | 9 | `InterviewQuestionDetailDto` | `followUpQuestions` | List | `interview_questions` | `follow_up_questions` | Chế độ học "Câu hỏi đào sâu" | Có | [Chuyển đổi] Mỗi phần tử là một dòng. **Trường màn này hiển thị thêm so với `USR0401`** (cùng nguồn trên). |
 | 10 | `InterviewQuestionDetailDto` | `bookmarked` | Boolean | `bookmarks` | `user_id`, `question_id` | Đầu trang "Đánh dấu xem lại" | Có | [Nguồn] Tồn tại dòng `bookmarks` khớp cặp khoá thì `true`<br>[Đích] Tham số của `ToggleQuestionBookmark`. |

@@ -25,8 +25,9 @@
 > - **Không có** khái niệm "bộ câu hỏi theo lớp" (F6-11 đã loại khỏi phạm vi,
 >   `DEC-2026-0828-remove-per-class-interview-set`) và **không có** bảng `question_sets`
 >   [Nguồn: 02-bd/database/interview-bank.md:149-155].
-> - **5 chủ đề cố định** là dữ liệu seed dùng chung ba màn, màn này không tự định nghĩa danh sách riêng
->   (`DEC-2026-0830-interview-bank-crud`) [Nguồn: 01-rd/req/interview-bank.md:9-13;
+> - **Danh mục chủ đề là dữ liệu do ADMIN quản lý** (5 chủ đề khởi tạo, không còn cố định — thay tiểu quyết
+>   định 4 của `DEC-2026-0830-interview-bank-crud` bằng `DEC-2026-1001-admin-configurable-settings`), dùng chung ba màn, màn này không tự định
+>   nghĩa danh sách riêng [Nguồn: 01-rd/req/interview-bank.md:9-13;
 >   02-bd/architecture/interview-bank.md:56-62].
 > - **Màn này không gọi AI.** Chế độ luyện (F6-07/F6-08 — nơi duy nhất F6 chạm LLM) nằm ở `USR0402`
 >   [Nguồn: 02-bd/architecture/interview-bank.md:49]. Phân hệ AI chết hoặc hết quota thì màn này hoạt
@@ -50,11 +51,11 @@
 | Tên vật lý (slug) | `interview_bank_list` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`) |
-| Phiên bản | V1.0 |
+| Phiên bản | V1.2 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/21 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/09/21 |
+| Ngày cập nhật | 2026/10/01 |
 
 ---
 
@@ -63,6 +64,8 @@
 | Ver | Sheet bị sửa | Nội dung sửa | Ngày | Người sửa |
 | :--- | :--- | :--- | :--- | :--- |
 | V1.0 | Toàn bộ | Tạo mới theo mẫu 9 sheet. Ánh xạ toàn bộ trường hiển thị của prototype về cột thật trong `02-bd/database/interview-bank.md`; phát hiện 5 trường prototype không có nguồn dữ liệu (mã câu hỏi `IQ-0nn`, dòng "Xuất hiện ở 6/12 buổi phỏng vấn", "Bẫy thường gặp", "Thêm vào phiên giả lập tới", tag) và chuyển thành câu hỏi mở; bổ sung hai điều khiển RD yêu cầu mà prototype thiếu (đánh dấu xem lại F6-03, liên kết mở `USR0402`) | 2026/09/21 | Nhóm phát triển AlgoPrep |
+| V1.1 | Sheet 7 (mục 7.3) | Sửa tham chiếu sang `SHR0301`: endpoint `GetInterviewQuestionBankStats` không còn tồn tại ở màn quản trị (dải thẻ chỉ số đã bỏ 2026-10-01), nên bỏ câu "không dùng lại" và trỏ số dòng đúng của `ListInterviewQuestions`, `ListQuestionTopics`. Không đổi hành vi của màn này | 2026/10/01 | AI |
+| V1.2 | Sheet 4, 5, 7 | Đã chốt 2026-10-01 (owner uỷ quyền cân nhắc), xem `DEC-2026-1001-admin-configurable-settings`: **danh mục chủ đề do ADMIN quản lý**, không còn "5 chủ đề cố định". Chip chủ đề đọc từ `ListQuestionTopics`: chip "Tất cả" cộng một chip cho mỗi chủ đề hiện có, số chip không cố định; 5 chủ đề cũ chỉ là dữ liệu khởi tạo. `ListQuestionTopics` là endpoint đọc, mọi người dùng đã xác thực gọi được; thêm/sửa/xoá chủ đề ở `SHR0301` | 2026/10/01 | AI |
 
 ---
 
@@ -172,7 +175,7 @@ không rời danh sách, tự chấm mức độ nhớ để hệ thống xếp 
 
 [Luồng nghiệp vụ chính]
 
-1. **Hiển thị ban đầu**: vào màn, hệ thống tải song song ba nhóm dữ liệu — danh mục 5 chủ đề, trang đầu
+1. **Hiển thị ban đầu**: vào màn, hệ thống tải song song ba nhóm dữ liệu — danh mục chủ đề (đọc từ dữ liệu), trang đầu
    danh sách câu hỏi `ACTIVE`, và bốn chỉ số ôn tập của chính người học. Trong lúc chờ, mỗi khu vực hiển
    thị khung chờ đúng số dòng dự kiến. Có tham số `topic`/`q` trên URL thì áp bộ lọc trước khi gọi danh
    sách.
@@ -218,7 +221,7 @@ với một người dùng cụ thể, nên màn không có chế độ xem ẩn
 [Số bản ghi tối đa] Danh sách câu hỏi: phân trang cuộn, mỗi lần tải 20 dòng
 (`[Suy luận]` — prototype giới hạn vùng cuộn 620px với 9 dòng mẫu và không cài phân trang,
 09-layoutBase/Câu hỏi phỏng vấn.dc.html:131-132; 148 câu hỏi trong dữ liệu mẫu là quá nhiều để tải một
-lần). Chủ đề: đúng 5 chip cộng chip "Tất cả". Tab trạng thái: đúng 4. Bộ thẻ luyện nhanh: mặc định 10
+lần). Chủ đề: chip "Tất cả" cộng một chip mỗi chủ đề hiện có (prototype vẽ 5). Tab trạng thái: đúng 4. Bộ thẻ luyện nhanh: mặc định 10
 thẻ, khoảng 5 tới 20 [Nguồn: 09-layoutBase/Câu hỏi phỏng vấn.dc.html:235].
 
 ### 4.2 DTO liên quan
@@ -256,7 +259,7 @@ của màn quản trị `SHR0301` chứ không phải màn này.
 | Header ngang dính trên (khung chung khu Người học) | `:46-93` | Dùng lại `02-bd/screens/users/_shell.md` mục 2, không mô tả lại |
 | Vùng nội dung | `:95` | Một cột giữa trang, chiều rộng tối đa 1400px |
 | Thanh chỉ số và hành động | `:99-112` | Bốn chỉ số ôn tập bên trái, hai nút hành động dồn về phải |
-| Cột trái — bộ lọc | `:117-130` | Ô tìm kiếm, bốn tab trạng thái, sáu chip chủ đề |
+| Cột trái — bộ lọc | `:117-130` | Ô tìm kiếm, bốn tab trạng thái, chip chủ đề (prototype vẽ sáu chip, số chip thật theo dữ liệu) |
 | Cột trái — danh sách câu hỏi | `:131-145` | Vùng cuộn dọc, mỗi dòng gồm chủ đề, độ khó, nhãn trạng thái, tiêu đề; có trạng thái rỗng |
 | Cột phải — bản xem nhanh | `:148-188` | Dính trên khi cuộn; tiêu đề, ý cần nói, từ khoá, khối tự chấm |
 | Trạng thái `drill` | `:193-229` | Thay toàn bộ vùng nội dung: thanh tiến độ, thẻ câu hỏi, hai nút chấm |
@@ -311,7 +314,7 @@ khoảng cách hay typography ở BD.
 | Bộ lọc | | | | | | | | | | | | | |
 | | 1 | Ô tìm kiếm | `interviewBankList.filter.searchBox` | `interview_questions` | `title`, `content_markdown`, `core_keywords` | TextBox | String | 100 | - | I/O | Rỗng, hoặc tham số `q` trên URL | - | Tìm theo tiêu đề, nội dung và từ khoá cốt lõi (F6-02)<br>[Nguồn giá trị] Người học nhập; giá trị khởi tạo lấy từ tham số `q` khi đến từ `solution_review`<br>[EVT liên quan] EVT-2 |
 | | 2 | Tab trạng thái ôn tập | `interviewBankList.filter.statusTabs` | `recall_ratings` | `rating` | List | Enum | - | - | I/O | `Tất cả` | - | Bốn tab: Tất cả / Chưa xem / Đang ôn / Đã thuộc [Nguồn: 09-layoutBase/Câu hỏi phỏng vấn.dc.html:305-310]<br>[Công thức] `Chưa xem` là **không có** dòng `recall_ratings` cho cặp người dùng và câu hỏi; `Đang ôn` là `rating IN ('VAGUE','FORGOTTEN')`; `Đã thuộc` là `rating = 'KNOWN'`<br>[EVT liên quan] EVT-3 |
-| | 3 | Chip chủ đề | `interviewBankList.filter.topicChips` | `question_topics` | `code`, `display_name`, `sort_order` | List | List | - | - | I/O | `Tất cả` | - | Sáu chip: chip "Tất cả" cộng đúng 5 chủ đề seed, sắp theo `sort_order` (`DEC-2026-0830-interview-bank-crud`)<br>[Nguồn giá trị] Kết quả gọi `ListQuestionTopics`; nhãn lấy `display_name`, giá trị lọc lấy `code`. Giá trị khởi tạo lấy từ tham số `topic` khi đến từ `solution_review`<br>[EVT liên quan] EVT-1, EVT-4 |
+| | 3 | Chip chủ đề | `interviewBankList.filter.topicChips` | `question_topics` | `code`, `display_name`, `sort_order` | List | List | - | - | I/O | `Tất cả` | - | Chip "Tất cả" cộng một chip cho mỗi chủ đề trong `question_topics`, sắp theo `sort_order`; số chip không cố định vì ADMIN thêm/xoá chủ đề được (`DEC-2026-1001-admin-configurable-settings`)<br>[Nguồn giá trị] Kết quả gọi `ListQuestionTopics`; nhãn lấy `display_name`, giá trị lọc lấy `code`. Giá trị khởi tạo lấy từ tham số `topic` khi đến từ `solution_review`<br>[EVT liên quan] EVT-1, EVT-4 |
 
 ### Khu vực C — Danh sách câu hỏi
 
@@ -380,7 +383,7 @@ khoảng cách hay typography ở BD.
 | Bộ lọc | | | | |
 | | 1 | Ô tìm kiếm | Điều kiện | [Điều kiện hiển thị] Chỉ hiển thị ở trạng thái `browse`.<br>[Tự động đặt] Có tham số `q` trên URL thì đặt sẵn giá trị đó ngay khi khởi tạo màn, trước khi gọi danh sách. |
 | | 2 | Tab trạng thái ôn tập | Điều kiện | [Điều kiện hiển thị] Chỉ hiển thị ở trạng thái `browse`. Luôn đủ 4 tab, không ẩn tab nào kể cả khi không có câu hỏi ở trạng thái đó. |
-| | 3 | Chip chủ đề | Điều kiện | [Điều kiện hiển thị] Chỉ hiển thị ở trạng thái `browse`. Trong lúc tải danh mục chủ đề hiển thị khung chờ đúng 6 chip.<br>[Tự động đặt] Có tham số `topic` trên URL thì chọn sẵn chip tương ứng; mã chủ đề không khớp 5 giá trị seed thì bỏ qua tham số và giữ "Tất cả". |
+| | 3 | Chip chủ đề | Điều kiện | [Điều kiện hiển thị] Chỉ hiển thị ở trạng thái `browse`. Trong lúc tải danh mục chủ đề hiển thị khung chờ cho dải chip (số chip theo danh mục hiện có, mặc định giả định 6 khi chưa tải).<br>[Tự động đặt] Có tham số `topic` trên URL thì chọn sẵn chip tương ứng; mã chủ đề không khớp chủ đề nào trong danh mục đã tải thì bỏ qua tham số và giữ "Tất cả". |
 
 ### Khu vực C — Danh sách câu hỏi
 
@@ -440,7 +443,7 @@ khoảng cách hay typography ở BD.
 | 7 | `InterviewQuestionDetailDto` | `suggestedApproach` | String | `interview_questions` | `suggested_approach` | Xem nhanh "Ý cần nói", Luyện nhanh "Ý cần nói trên thẻ" | Có | [Chuyển đổi] Markdown, tách mục danh sách thành các dòng đánh số hai chữ số khi hiển thị. |
 | 8 | `InterviewQuestionDetailDto` | `coreKeywords` | List | `interview_questions` | `core_keywords` | Xem nhanh "Từ khoá cốt lõi" | Có | [Chuyển đổi] Mỗi phần tử là một chip. |
 | 9 | `InterviewQuestionDetailDto` | `sampleAnswerFramework`, `followUpQuestions` | String, List | `interview_questions` | `sample_answer_framework`, `follow_up_questions` | - | Không | [Đích] Chỉ màn `USR0402` dùng — DTO dùng chung nhưng màn này **không** hiển thị, đúng phạm vi "bản xem nhanh rút gọn" [Nguồn: 01-rd/screens/users/USR0401_interview_bank_list.md:111]. |
-| 10 | `QuestionTopicDto` | `code`, `displayName`, `sortOrder` | Enum, String, Number | `question_topics` | `code`, `display_name`, `sort_order` | Bộ lọc "Chip chủ đề" | Có | [Nguồn] Phản hồi của `ListQuestionTopics`, đúng 5 dòng seed<br>[Chuyển đổi] Giao diện tự thêm chip "Tất cả" ở đầu, không phải một dòng dữ liệu. |
+| 10 | `QuestionTopicDto` | `code`, `displayName`, `sortOrder` | String, String, Number | `question_topics` | `code`, `display_name`, `sort_order` | Bộ lọc "Chip chủ đề" | Có | [Nguồn] Phản hồi của `ListQuestionTopics`, đọc từ dữ liệu do ADMIN quản lý (không còn đúng 5 dòng seed); `code` là slug, không còn enum<br>[Chuyển đổi] Giao diện tự thêm chip "Tất cả" ở đầu, không phải một dòng dữ liệu. |
 | 11 | `RecallSummaryDto` | `totalActiveQuestions` | Number | `interview_questions` | `status` | Chỉ số "Tổng câu hỏi" | Có | [Nguồn] Phản hồi của `GetMyRecallSummary`. |
 | 12 | `RecallSummaryDto` | `knownCount`, `reviewingCount`, `ratedLast7Days` | Number | `recall_ratings` | `rating`, `rated_at` | Chỉ số "Đã thuộc", "Đang ôn", "Ôn trong tuần" | Có | [Nguồn] Tính theo `user_id` hiện hành, không phụ thuộc bộ lọc đang áp trên màn. |
 | 13 | `RecallRatingDto` | `questionId`, `rating` | UUID, Enum | `recall_ratings` | `question_id`, `rating` | Xem nhanh "Mức độ nắm", Luyện nhanh "Tự chấm trên thẻ" | Có | [Nguồn] Mức người học chọn<br>[Đích] Tham số của `RateQuestionRecall`. |
@@ -451,7 +454,7 @@ khoảng cách hay typography ở BD.
 | NO | Tên logic | Bảng | Repository | CRUD | Mục đích | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :--- | :--- |
 | 1 | Câu hỏi phỏng vấn | `interview_bank.interview_questions` | `InterviewQuestionRepository` | R | Đọc danh sách đã lọc, đọc nội dung một câu hỏi, đếm tổng câu hỏi `ACTIVE` | `ListInterviewQuestions`: R<br>`GetInterviewQuestion`: R<br>`GetMyRecallSummary`: R. Luôn kèm điều kiện `status = 'ACTIVE'` |
-| 2 | Danh mục chủ đề | `interview_bank.question_topics` | `QuestionTopicRepository` | R | Đọc 5 chủ đề seed cho chip lọc và cho nhãn chủ đề của từng dòng | `ListQuestionTopics`: R. Không có thao tác ghi — đổi danh mục chủ đề là một quyết định kiến trúc, không phải CRUD [Nguồn: 02-bd/database/interview-bank.md:19-20] |
+| 2 | Danh mục chủ đề | `interview_bank.question_topics` | `QuestionTopicRepository` | R | Đọc danh mục chủ đề cho chip lọc và cho nhãn chủ đề của từng dòng | `ListQuestionTopics`: R. Màn này không ghi; ADMIN thêm/đổi tên/sắp xếp/xoá chủ đề ở `SHR0301` [Nguồn: 02-bd/database/interview-bank.md:8-35] |
 | 3 | Trạng thái ôn tập | `interview_bank.recall_ratings` | `RecallRatingRepository` | C, R, U | Đọc trạng thái ôn tập của người học, ghi mức tự chấm mới | `ListInterviewQuestions`: R<br>`GetMyRecallSummary`: R<br>`RateQuestionRecall`: C, U — chưa có dòng thì tạo, đã có thì ghi đè tại chỗ [Nguồn: 02-bd/database/interview-bank.md:139-144] |
 | 4 | Đánh dấu xem lại | `interview_bank.bookmarks` | `BookmarkRepository` | C, R, D | Đọc trạng thái đánh dấu, thêm và gỡ đánh dấu | `ListInterviewQuestions`: R<br>`ToggleQuestionBookmark`: C khi bật, D khi tắt — bookmark là nhị phân, không có trường nào để sửa [Nguồn: 02-bd/database/interview-bank.md:77-78] |
 
@@ -467,21 +470,22 @@ bất biến, không có đường ghi nào từ màn này (`DEC-2026-0831-outsi
 | NO | Endpoint (tên nghiệp vụ) | Mục đích | BC sở hữu |
 | --: | :--- | :--- | :--- |
 | 1 | `ListInterviewQuestions` | Tìm kiếm, lọc và phân trang danh sách câu hỏi; cũng dùng để lấy bộ thẻ luyện nhanh bằng cách thêm thứ tự ưu tiên câu cần ôn lại và giới hạn số dòng | `interview-bank` |
-| 2 | `ListQuestionTopics` | Tải danh mục 5 chủ đề cố định cho chip lọc | `interview-bank` |
+| 2 | `ListQuestionTopics` | Tải danh mục chủ đề (đọc từ dữ liệu) cho chip lọc | `interview-bank` |
 | 3 | `GetInterviewQuestion` | Tải nội dung một câu hỏi cho bản xem nhanh và cho thẻ luyện nhanh; dùng chung với màn `USR0402` | `interview-bank` |
 | 4 | `GetMyRecallSummary` | Tải bốn chỉ số ôn tập của chính người học | `interview-bank` |
 | 5 | `RateQuestionRecall` | Ghi một lần tự chấm mức độ nhớ và tính lại lịch ôn lại (F6-12) | `interview-bank` |
 | 6 | `ToggleQuestionBookmark` | Bật hoặc tắt đánh dấu xem lại một câu hỏi (F6-03) | `interview-bank` |
 
 Endpoint NO 1 và NO 2 **dùng lại đúng tên nghiệp vụ** của màn quản trị `SHR0301`
-[Nguồn: 02-bd/screens/shared/SHR0301_interview_question_management.md:487,489] — cùng một việc, khác
+[Nguồn: 02-bd/screens/shared/SHR0301_interview_question_management.md:469-470] — cùng một việc, khác
 phạm vi dữ liệu theo quyền, không đặt tên thứ hai. Không có endpoint riêng cho luyện nhanh: RD đã chốt
 phiên luyện lấy theo đúng bộ lọc đang áp [Nguồn: 01-rd/screens/users/USR0401_interview_bank_list.md:112],
 nên NO 1 đã đủ.
 
-`GetInterviewQuestionBankStats` của `SHR0301` **không** dùng lại: bốn thẻ của màn quản trị là chỉ số chất
-lượng nội dung toàn ngân hàng, còn bốn chỉ số của màn này là tiến độ ôn tập của một người học — khác dữ
-liệu, khác phạm vi quyền.
+Màn quản trị `SHR0301` **không còn** endpoint thống kê nào để dùng lại: `GetInterviewQuestionBankStats` đã bỏ
+cùng dải bốn thẻ chỉ số ngày 2026-10-01 [Nguồn: 02-bd/screens/shared/SHR0301_interview_question_management.md:475].
+Bốn chỉ số của màn này là tiến độ ôn tập của một người học, lấy từ `GetMyRecallSummary` (NO 4) — khác dữ liệu,
+khác phạm vi quyền với các thẻ chất lượng nội dung toàn ngân hàng từng có ở màn quản trị.
 
 [Nguồn: 02-bd/database/interview-bank.md:8-20,22-46,68-78,129-147]
 

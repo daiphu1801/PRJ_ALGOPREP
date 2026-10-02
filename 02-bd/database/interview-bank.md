@@ -7,17 +7,25 @@
 
 ### 1.1. `question_topics` (F6-01)
 
-Danh mục chủ đề dùng chung — 5 giá trị đã chốt, seed cố định.
+Danh mục chủ đề dùng chung — **dữ liệu do ADMIN quản lý** (đã chốt 2026-10-01, owner uỷ quyền cân nhắc, xem
+`DEC-2026-1001-admin-configurable-settings`). 5 dòng ban đầu chỉ là dữ liệu seed khởi tạo, không còn là danh
+sách cố định.
 
 | Cột | Kiểu | Ghi chú |
 | :--- | :--- | :--- |
 | `id` | UUID PK | |
-| `code` | ENUM(`CS_THEORY`,`SYSTEM_DESIGN`,`DATABASE`,`LANGUAGE`,`BEHAVIORAL`) | Tương ứng Lý thuyết CS / System design / Database / Ngôn ngữ / Hành vi [SoT: `01-rd/req/interview-bank.md:9-13`] |
-| `display_name` | VARCHAR | Nhãn hiển thị tiếng Việt |
-| `sort_order` | SMALLINT | Thứ tự hiện ở bộ lọc |
+| `code` | VARCHAR UNIQUE NOT NULL | Slug ổn định, sinh một lần khi tạo, không đổi khi đổi tên (`display_name`) nên không vỡ tham chiếu. **Không còn là ENUM.** 5 dòng seed giữ nguyên mã `CS_THEORY`, `SYSTEM_DESIGN`, `DATABASE`, `LANGUAGE`, `BEHAVIORAL` (Lý thuyết CS / System design / Database / Ngôn ngữ / Hành vi) [SoT: `01-rd/req/interview-bank.md:9-13`]. Chủ đề tạo mới: slug sinh từ `display_name` (chữ hoa, gạch dưới, hậu tố số nếu trùng) `[SoT: Suy luận]` — DEC chỉ yêu cầu "unique stable slug string", cách sinh cụ thể chốt ở DD |
+| `display_name` | VARCHAR UNIQUE NOT NULL | Nhãn hiển thị tiếng Việt; ADMIN đổi tên được. Duy nhất không phân biệt hoa thường |
+| `sort_order` | SMALLINT | Thứ tự hiện ở bộ lọc; ADMIN sắp xếp lại được |
+| `uses_star_framework` | BOOLEAN NOT NULL default `false` | Bổ sung 2026-10-01: câu hỏi thuộc chủ đề bật cờ này kết xuất khung trả lời chuẩn theo 4 mục STAR (mục 1.2, `sample_answer_framework`). Dòng seed `BEHAVIORAL` có giá trị `true`, các dòng seed khác `false`. ADMIN bật/tắt trong popup quản lý chủ đề; thay cho việc gắn STAR vào mã `BEHAVIORAL` |
 
-Seed đúng 5 dòng, không có use case tạo/xoá topic ở đợt này — thay đổi danh mục chủ đề là một quyết định
-kiến trúc (đã từng cần một DEC — `DEC-2026-0830-interview-bank-crud` mục 4), không phải một CRUD thường.
+Quyền thao tác: **chỉ ADMIN (A3)** tạo, đổi tên, bật/tắt cờ STAR, sắp xếp lại, xoá chủ đề; A2 (INSTRUCTOR) chỉ chọn từ danh
+sách có sẵn khi soạn câu hỏi. Không giới hạn số lượng chủ đề. Xoá chủ đề bị **từ chối khi còn bất kỳ
+`interview_questions.topic_id` trỏ tới** (tính cả câu `RETIRED`, vì FK vẫn tồn tại): API trả số câu hỏi đang
+tham chiếu để UI yêu cầu ADMIN chuyển hoặc xoá các câu đó trước. Bảo vệ ở hai lớp: kiểm ở tầng use case
+(trả lỗi nghiệp vụ kèm số đếm) và FK `interview_questions.topic_id` không `ON DELETE CASCADE` làm lưới an
+toàn. Quyết định này **thay thế** tiểu quyết định 4 (Q6, "phân loại 5 chủ đề cố định") của
+`DEC-2026-0830-interview-bank-crud`; ghi lại như lịch sử, không còn hiệu lực.
 
 ### 1.2. `interview_questions` (F6-01, F6-04, F6-05, F6-06, F6-13)
 
@@ -29,7 +37,7 @@ kiến trúc (đã từng cần một DEC — `DEC-2026-0830-interview-bank-crud
 | `title` | VARCHAR | |
 | `content_markdown` | TEXT | Nội dung câu hỏi, Markdown |
 | `suggested_approach` | TEXT | F6-04 — hướng tiếp cận gợi ý, dữ liệu tĩnh |
-| `sample_answer_framework` | TEXT | F6-05 — khung trả lời chuẩn; với `topic_id = BEHAVIORAL` áp dụng cấu trúc STAR (Situation/Task/Action/Result), lưu dạng văn bản có cấu trúc (Markdown 4 mục), không phải 4 cột riêng — vì chỉ câu hành vi mới cần STAR, câu kỹ thuật dùng khung tự do khác |
+| `sample_answer_framework` | TEXT | F6-05 — khung trả lời chuẩn; với câu hỏi thuộc chủ đề có `question_topics.uses_star_framework = true` (mục 1.1; chủ đề `BEHAVIORAL` seed bật cờ này) áp dụng cấu trúc STAR (Situation/Task/Action/Result), lưu dạng văn bản có cấu trúc (Markdown 4 mục), không phải 4 cột riêng — vì chỉ câu hành vi mới cần STAR, câu kỹ thuật dùng khung tự do khác |
 | `core_keywords` | TEXT[] hoặc JSONB mảng chuỗi | F6-06 — từ khoá kỹ thuật cốt lõi cần nêu |
 | `follow_up_questions` | JSONB mảng chuỗi | "Câu hỏi đào sâu" — `DEC-2026-0830-interview-bank-crud` mục 1: truy vấn tiếp theo cùng câu hỏi gốc, **khác** F6-04/05/06 và khác giai đoạn Phản biện F5-11 của `ai-review` (không dùng ở Chế độ luyện của F6, chỉ hiển thị tham khảo ở Chế độ học) |
 | `status` | ENUM(`ACTIVE`,`RETIRED`) | F6-13 Q7 — xoá mềm: `RETIRED` ẩn khỏi mọi màn phía học viên, không cascade xoá dữ liệu đã dùng |
@@ -112,7 +120,7 @@ Dẫn xuất từ `user_answers`, nhưng giữ một bảng tổng hợp riêng 
 | `user_id` | tham chiếu `identity.users.id`, không FK vật lý | |
 | `topic_id` | FK → `question_topics.id` | |
 | `questions_attempted` | INT | Số câu hỏi riêng biệt (không phải số lượt) đã có ít nhất một `user_answers` thuộc topic này |
-| `questions_total` | INT | Tổng số câu hỏi `ACTIVE` thuộc topic này tại thời điểm tính — dùng tính tỉ lệ hoàn thành F6-10 |
+| `questions_total` | INT | Tổng số câu hỏi `ACTIVE` thuộc topic này tại thời điểm tính — dùng tính tỉ lệ hoàn thành F6-10. Topic do ADMIN tạo mới chưa có dòng `practice_history` nào cho tới khi học viên làm câu đầu tiên; truy vấn tiến độ phải LEFT JOIN từ `question_topics` để chủ đề mới vẫn hiện (tỉ lệ 0) |
 | `last_practiced_at` | TIMESTAMPTZ | |
 | `updated_at` | TIMESTAMPTZ | |
 
@@ -177,7 +185,7 @@ Chế độ luyện là một lượt hỏi-đáp, không phải hội thoại �
 
 ## 4. Migration — thứ tự tạo bảng
 
-`question_topics` (seed 5 dòng) → `interview_questions` → `answer_rubrics` → `bookmarks` →
+`question_topics` (seed 5 dòng khởi tạo, sau đó ADMIN thêm/đổi tên/xoá qua API) → `interview_questions` → `answer_rubrics` → `bookmarks` →
 `user_answers` → `practice_history` → `recall_ratings`. Không có `question_sets`/`question_set_items` —
 đã bỏ khỏi phạm vi (mục 1.8).
 
@@ -214,6 +222,11 @@ chưa từng đụng tới.
   xác nhận.
 - Có giữ lịch sử từng lần tự chấm recall (mục 1.7) hay chỉ trạng thái mới nhất — quyết định ảnh hưởng có
   cần bảng `recall_rating_history` riêng hay không.
+- Quản lý chủ đề (mục 1.1, chốt 2026-10-01): (a) cách sinh slug `code` cho chủ đề mới (còn mở, chốt ở DD);
+  (b) ~~quy tắc STAR gắn với mã `BEHAVIORAL`~~ — **đã chốt 2026-10-01 (owner uỷ quyền), xem
+  `DEC-2026-1001-admin-configurable-settings`**: STAR là cờ `question_topics.uses_star_framework`, `BEHAVIORAL`
+  xoá/đổi tên được như mọi chủ đề; (c) ~~`topics` của problem-bank (F2-02) chưa đổi~~ — **đã chốt cùng cách
+  xử lý**, xem `02-bd/database/problem-bank.md` mục 1.2.
 - Số cụ thể rate-limit Chế độ luyện (mục 5).
 - Danh sách `criterion_code` cụ thể mặc định gợi ý cho A2/A3 khi soạn rubric mới (mục 1.3) — có seed sẵn
   vài tiêu chí phổ biến hay để trống hoàn toàn tự đặt.

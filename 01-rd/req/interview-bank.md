@@ -11,8 +11,11 @@ Màn hình độc lập, không gắn với bài nộp code (`README.md` mục 4
   design, Database, Ngôn ngữ, Hành vi — thay cho danh mục 4 chủ đề cũ (Cấu trúc dữ liệu, Thuật toán, Thiết
   kế hệ thống, Câu hỏi hành vi), lấy theo prototype vì bao phủ rộng hơn (có thêm Database và Ngôn ngữ). Áp
   dụng cho cả bộ lọc ở `interview_bank_list`, `interview_question_detail` lẫn màn quản trị.
+  **Đã chỉnh 2026-10-01 (`DEC-2026-1001-admin-configurable-settings`):** 5 chủ đề trên chỉ là **dữ liệu khởi tạo**; danh mục chủ đề
+  do `ADMIN` (A3) quản lý — thêm, đổi tên, sắp xếp, xoá, không giới hạn số lượng và không còn con số cố định 5; xoá bị từ chối khi
+  còn câu hỏi tham chiếu; `INSTRUCTOR` (A2) chỉ chọn chủ đề có sẵn khi soạn câu hỏi.
 - **Chế độ học (`STUDY`):** xem gợi ý hướng tiếp cận (F6-04); xem khung trả lời chuẩn, áp dụng mô hình STAR
-  cho câu hỏi hành vi (F6-05); xem danh sách từ khoá kỹ thuật cốt lõi cần nêu (F6-06).
+  cho câu hỏi thuộc chủ đề được `ADMIN` bật cờ "dùng khung STAR" — mặc định chủ đề Hành vi (F6-05; đã chỉnh 2026-10-01, không còn gắn cứng với một chủ đề); xem danh sách từ khoá kỹ thuật cốt lõi cần nêu (F6-06).
 - **Chế độ luyện (`PRACTICE`):** người dùng tự soạn câu trả lời (F6-07); AI đối chiếu với tiêu chí chuẩn,
   trả phản hồi ngắn — điểm đã đạt, điểm còn thiếu, hướng bổ sung (F6-08) — **đi qua phân hệ AI**, không tự
   gọi LLM, nên chịu chung ràng buộc F5-17 tới F5-22. **Amendment 2026-08-31** (lấp Câu hỏi mở Q1 của
@@ -40,6 +43,9 @@ Màn hình độc lập, không gắn với bài nộp code (`README.md` mục 4
   `01-rd/screens/shared/SHR0301_interview_question_management.md`. **Chốt 2026-08-30 (owner instruction):**
   - Actor A2 và A3, gác bởi Function `INTERVIEW_BANK_MANAGEMENT` (F1-12) cùng F6-12 — phạm vi theo quyền,
     không phải mã riêng theo lớp (F6-11 đã loại bỏ).
+  - **Quản lý chủ đề (đã chỉnh 2026-10-01, `DEC-2026-1001-admin-configurable-settings`):** riêng việc thêm, đổi tên, sắp xếp, xoá chủ đề và
+    bật/tắt cờ "dùng khung STAR" của từng chủ đề chỉ dành cho A3 (`ADMIN`), dùng lại quyền `INTERVIEW_BANK_MANAGEMENT` cộng kiểm vai trò,
+    không Function mới; A2 chỉ chọn chủ đề. Mọi thao tác ghi Nhật ký hệ thống (F1-14).
   - Mỗi câu hỏi có 4 nhóm trường: nội dung + phân loại (F6-01), danh sách **câu hỏi đào sâu** (truy vấn tiếp
     theo cùng câu hỏi gốc — không phải F6-04/05/06, đó là dữ liệu riêng phục vụ AI chất vấn sâu hơn ở giai
     đoạn Phản biện, F5-11), và bộ **tiêu chí đánh giá có trọng số phần trăm** — chính là "tiêu chí chuẩn" mà

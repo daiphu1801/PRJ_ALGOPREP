@@ -256,8 +256,8 @@ Việc chia nhỏ và đánh mã là [SoT: Suy luận]; **nội dung** từng ch
 | F1-10 | Ma trận phân quyền Role × Function × Action, đổi tức thời | A3 | Chốt 2026-08-23, `06-plan/PROTOTYPE_DEBT.md` mục 1.2. Giải quyết A2/A3 dùng chung một khu Admin |
 | F1-11 | Function/Action là dữ liệu seed chỉ đọc; Role tạo/sửa/xoá được trên giao diện | A3 | Không xoá được vai trò hệ thống hoặc vai trò đang có người dùng |
 | F1-12 | Danh sách chức năng nằm trong phạm vi ma trận (`PROBLEM_AUTHORING`, `TESTCASE_MANAGEMENT`, `CLASS_MANAGEMENT`, `USER_MANAGEMENT`, `JUDGE_QUEUE_MONITOR`, `AI_CONFIG`, `AI_TOKEN_BUDGET`, `SYSTEM_AUDIT_LOG`, `INTERVIEW_BANK_MANAGEMENT`, `PERMISSION_MATRIX`) | A3 | [SoT: Suy luận — danh sách khởi điểm, chốt số lượng chính xác ở BD]. `AI_TOKEN_BUDGET` nay gồm cả F5-21 và F5-25; `INTERVIEW_BANK_MANAGEMENT` nay chỉ còn F6-12 (F6-12); `CLASS_MANAGEMENT` nay gồm cả F1-23 tới F1-27. **Cập nhật 2026-08-28:** `REJUDGE_MANAGEMENT` loại bỏ (`DEC-2026-0828-remove-rejudge-scope`); F6-11 loại bỏ khỏi `INTERVIEW_BANK_MANAGEMENT` (`DEC-2026-0828-remove-per-class-interview-set`) |
-| F1-13 | Quản lý tài khoản người dùng: đổi vai trò, khoá/mở khoá, reset mật khẩu | A3 | Gác bởi `USER_MANAGEMENT` trong ma trận F1-10 |
-| F1-14 | Ghi Nhật ký hệ thống cho mọi thay đổi ma trận phân quyền và mọi thao tác quản trị | A4 | Không có ngoại lệ, kể cả đổi quyền. Chốt 2026-08-24 (mục 2.5): chỉ hành động quản trị của người, không gộp sự kiện hạ tầng — sự kiện hạ tầng xem ở `admin_queue_monitor` (F4-10) |
+| F1-13 | Quản lý tài khoản người dùng: đổi vai trò, khoá/mở khoá, reset mật khẩu, thêm tài khoản | A3 | Gác bởi `USER_MANAGEMENT` trong ma trận F1-10. "Thêm tài khoản" (INSTRUCTOR/STUDENT, mật khẩu tạm qua email, ghi nhật ký) đã chỉnh 2026-10-01 |
+| F1-14 | Ghi Nhật ký hệ thống cho mọi thay đổi ma trận phân quyền và mọi thao tác quản trị | A4 | Không có ngoại lệ, kể cả đổi quyền. Chốt 2026-08-24 (mục 2.5): chỉ hành động quản trị của người, không gộp sự kiện hạ tầng — sự kiện hạ tầng xem ở `admin_queue_monitor` (F4-10). Đã chỉnh 2026-10-01: ghi thêm sự kiện xác thực do người dùng kích hoạt (`PASSWORD_RESET_REQUESTED`, không lưu OTP) |
 | F1-15 | Đăng nhập/đăng ký qua OAuth (GitHub, Google) | A1 A2 A3 | Bổ sung `06-plan/PROTOTYPE_DEBT.md` mục 2.2. Trùng email với tài khoản email/mật khẩu → tự động liên kết, không tạo tài khoản thứ hai |
 | F1-16 | Tự xoá tài khoản (danger zone) | A1 A2 A3 | Bổ sung mục 2.3. Khoá mềm (`DEACTIVATED`) ngay, ẩn danh hoá thông tin định danh sau khoảng ân hạn; bài nộp/bài giải/phiên phỏng vấn không bị xoá |
 | F1-17 | Tự đặt lại mật khẩu bằng mã 6 chữ số gửi qua email (Gmail) | A1 A2 A3 | Bổ sung `01-rd/screens/shared/SHR0101_auth.md` mục 5 câu hỏi mở Q4, chốt 2026-08-24. Mã dùng một lần, có hạn hiệu lực; không tiết lộ email có tồn tại hay không (OWASP) |
@@ -281,7 +281,7 @@ Việc chia nhỏ và đánh mã là [SoT: Suy luận]; **nội dung** từng ch
 | Mã | Chức năng | Actor | Ghi chú |
 | :--- | :--- | :--- | :--- |
 | F2-01 | Soạn đề bài bằng Markdown kèm công thức LaTeX | A2 | |
-| F2-02 | Phân loại bài toán theo độ khó và chủ đề | A2 | |
+| F2-02 | Phân loại bài toán theo độ khó và chủ đề | A2 | Danh mục chủ đề do ADMIN quản lý, A2 chỉ chọn (đã chỉnh 2026-10-01) |
 | F2-03 | Khai báo đặc tả bài toán cho CẢ HAI mô hình: chữ ký hàm theo từng ngôn ngữ (Bọc hàm) và định dạng input/output theo dòng chuẩn (Standard I/O) | A2 | Sửa 2026-08-24 (`DEC-2026-0824-dual-submission-model-per-problem`) — trước chỉ có chữ ký hàm, giờ bắt buộc cả hai vì học viên tự chọn mô hình lúc làm bài (F3-13) |
 | F2-04 | Khai báo chiến lược so khớp kết quả cho bài toán | A2 | exact, chuẩn hoá khoảng trắng, epsilon, tập không thứ tự |
 | F2-05 | Tạo testcase mẫu (Sample) — công khai, dùng cho chạy thử | A2 | |
@@ -393,11 +393,11 @@ Kích hoạt **sau khi** bài nộp đạt Accepted. Hai chức năng độc l�
 
 | Mã | Chức năng | Actor | Ghi chú |
 | :--- | :--- | :--- | :--- |
-| F6-01 | Danh sách câu hỏi phân loại theo chủ đề và mức độ khó | A1 | Cấu trúc dữ liệu, thuật toán, thiết kế hệ thống, câu hỏi hành vi |
+| F6-01 | Danh sách câu hỏi phân loại theo chủ đề và mức độ khó | A1 | Danh mục chủ đề do ADMIN quản lý, không cố định số lượng (đã chỉnh 2026-10-01); 5 chủ đề khởi tạo: Lý thuyết CS, System design, Database, Ngôn ngữ, Hành vi |
 | F6-02 | Tìm kiếm và lọc câu hỏi | A1 | |
 | F6-03 | Đánh dấu câu hỏi để xem lại | A1 | |
 | F6-04 | Chế độ học: xem gợi ý hướng tiếp cận | A1 | |
-| F6-05 | Chế độ học: xem khung trả lời chuẩn, áp dụng mô hình STAR cho câu hỏi hành vi | A1 | |
+| F6-05 | Chế độ học: xem khung trả lời chuẩn, áp dụng mô hình STAR cho câu hỏi thuộc chủ đề bật cờ "dùng khung STAR" | A1 | Mặc định chủ đề Hành vi; ADMIN bật/tắt cờ (đã chỉnh 2026-10-01) |
 | F6-06 | Chế độ học: xem danh sách từ khoá kỹ thuật cốt lõi cần nêu | A1 | |
 | F6-07 | Chế độ luyện: người dùng tự soạn câu trả lời | A1 | |
 | F6-08 | Chế độ luyện: AI đối chiếu câu trả lời với tiêu chí chuẩn, trả phản hồi ngắn — điểm đã đạt, điểm còn thiếu, hướng bổ sung | A4 | Đi qua phân hệ AI, không tự gọi LLM |
@@ -405,7 +405,7 @@ Kích hoạt **sau khi** bài nộp đạt Accepted. Hai chức năng độc l�
 | F6-10 | Tỉ lệ hoàn thành theo từng chủ đề | A1 | |
 | ~~F6-11~~ | ~~Giảng viên tạo bộ câu hỏi riêng và gán cho lớp phụ trách~~ | — | **ĐÃ LOẠI BỎ KHỎI PHẠM VI (2026-08-28)** — `DEC-2026-0828-remove-per-class-interview-set`. Học viên dùng chung ngân hàng câu hỏi phỏng vấn hệ thống. |
 | F6-12 | Tự chấm mức độ thuộc bài (Biết rõ / Mơ hồ / Quên), hệ thống tự xếp lịch ôn lại | A1 | Bổ sung mục 2.10. Thuật toán kiểu spaced-repetition đơn giản, chốt công thức chính xác ở DD |
-| F6-13 | Quản trị nội dung ngân hàng câu hỏi dùng chung: tạo, sửa, nhân bản, xoá | A2 A3 | Bổ sung 2026-08-30 (`interview_question_management` Q2-Q7, `DEC-2026-0830-interview-bank-crud`). Gác bởi `INTERVIEW_BANK_MANAGEMENT` trong ma trận F1-10 cùng F6-12; gồm cả trường "Đào sâu" và "Tiêu chí đánh giá có trọng số" (chính là tiêu chí chuẩn F6-08 đối chiếu — rubric thứ ba, độc lập F5-15/F5-23). Xoá mềm, mọi thao tác ghi Nhật ký hệ thống F1-14. Soạn/sửa ở màn riêng `interview_question_authoring`. **Nhập CSV câu hỏi ngoài phạm vi bản đầu, không cấp mã** |
+| F6-13 | Quản trị nội dung ngân hàng câu hỏi dùng chung: tạo, sửa, nhân bản, xoá | A2 A3 | Bổ sung 2026-08-30 (`interview_question_management` Q2-Q7, `DEC-2026-0830-interview-bank-crud`). Gác bởi `INTERVIEW_BANK_MANAGEMENT` trong ma trận F1-10 cùng F6-12; gồm cả trường "Đào sâu" và "Tiêu chí đánh giá có trọng số" (chính là tiêu chí chuẩn F6-08 đối chiếu — rubric thứ ba, độc lập F5-15/F5-23). Xoá mềm, mọi thao tác ghi Nhật ký hệ thống F1-14. Soạn/sửa ở màn riêng `interview_question_authoring`. **Nhập CSV câu hỏi ngoài phạm vi bản đầu, không cấp mã**. Đã chỉnh 2026-10-01: A3 quản lý danh mục chủ đề và cờ STAR, A2 chỉ chọn |
 
 ### 5.7. Tổng hợp số lượng
 

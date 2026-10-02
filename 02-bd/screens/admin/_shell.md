@@ -59,6 +59,13 @@ Rail 72px với `p-3` hai bên chỉ còn **48px** nội dung. Mọi thứ đặ
 
 Dưới 1024px (`lg`) sidebar **luôn** ở dạng rail bất kể tuỳ chọn đã lưu.
 
+### 2.4. Sidebar ghim cố định (chốt 2026-10-01)
+
+Sidebar dùng `sticky top-0 h-screen self-start` và tự cuộn dọc bên trong (`overflow-y-auto`), giống sidebar khu
+Giảng viên: khi một bảng dài kéo trang cuộn xuống, thanh điều hướng vẫn đứng yên theo khung nhìn thay vì trôi đi
+cùng nội dung [SoT: 05-coding/frontend/src/widgets/app-shell/ui/admin-sidebar.tsx:82-84]. Trước đó sidebar chỉ là
+một phần tử flex cao bằng nội dung nên bị cuộn mất.
+
 ## 3. Toolbar
 
 Không phải header toàn trang — là hàng đầu tiên **bên trong** vùng nội dung của `<main>`. Gồm: một
@@ -78,6 +85,52 @@ khung thay vì mỗi màn tự khai, nếu không màn hình rộng sẽ kéo gi
 Mỗi màn tự quyết có `PageHeader` hay không. `admin_overview` **cố ý không có tiêu đề hiển thị** (prototype
 đi thẳng từ toolbar vào lưới), 10 màn còn lại đều có. Vì vậy `PageHeader` là primitive của `shared/ui`,
 không nằm trong khung này.
+
+### 4.1. Quy ước KPI: chỉ một trang tổng quan (chốt 2026-10-01, owner instruction)
+
+**Chỉ một trang tổng quan hiển thị KPI; các trang danh sách chỉ có tiêu đề, bộ lọc, danh sách và phân trang.**
+Trang tổng quan của khu Admin là `admin_overview` (`ADM0101`); khu Giảng viên có trang tổng quan riêng. Hệ quả:
+dải thẻ chỉ số (`StatCard`) đã bị xoá khỏi quản lý bài tập, quản lý người dùng, nhật ký hệ thống và quản lý câu
+hỏi phỏng vấn; trường `stats` bị xoá khỏi model và mock, các khoá i18n `stat.*` bị xoá. Các panel phụ cạnh danh
+sách (phân bố theo vai trò, việc cần xử lý, quản trị viên hoạt động, biểu đồ phân loại, phân bố theo chủ đề và bài
+cần chú ý) **không** bị xoá. Từ 2026-10-01 quy ước áp tiếp cho `admin_queue_monitor` và `admin_ai_usage` (owner
+chốt trong ngày, hai dải thẻ đã xoá cùng `kpis` / `stats` trong model, mock và i18n; các số liệu hàng đợi và token
+chưa có chỗ mới trên tổng quan). Thẻ "Yêu cầu đặt lại mật khẩu" chuyển lên tổng quan Admin làm thẻ thứ ba. Quy ước
+chưa áp cho trang khu Người học và trang chi tiết lớp. Mỗi BD màn bị ảnh hưởng ghi lại ở Khu vực B
+"đã bỏ" của Sheet 5 và 6.
+
+### 4.2. Quy ước icon thao tác + tooltip (`IconAction`, chốt 2026-10-01)
+
+Thao tác ở cuối dòng của bảng (sửa, xoá, nhân bản...) hiển thị bằng nút vuông chỉ có icon thay cho nút chữ, dùng
+component `shared/ui/icon-action.tsx` [SoT: 05-coding/frontend/src/shared/ui/icon-action.tsx:1-80]:
+
+| Thuộc tính | Quy ước |
+| :--- | :--- |
+| Hình dạng | Nút vuông 32x32px (`h-8 w-8`), viền theo `--color-border`; render `<button>`, hoặc `<a>` khi có `href` (ví dụ nút Sửa dẫn sang màn soạn) |
+| Tên hành động | Một chuỗi `label` dùng cho cả `aria-label` và nội dung tooltip |
+| Tooltip | Hộp nhỏ nằm dưới nút, hiện khi rê chuột hoặc focus bàn phím; gắn vào `<body>` bằng portal và định vị `fixed`, vì vùng bọc bảng có `overflow-x: auto` sẽ cắt tooltip của dòng cuối nếu để trong luồng |
+| Tông | `default`; `danger` (màu tiêu cực của khu Admin) cho thao tác phá huỷ như Xoá |
+| Màn đang dùng | `problem_management` (Sửa, Xoá) |
+
+Giới hạn đã biết: tooltip chỉ hoạt động bằng chuột và focus, chưa có hành vi cho thiết bị cảm ứng; `aria-label`
+là tên hành động chung ("Sửa"), không còn kèm tên bài như "Sửa bài {title}" — xem `06-plan/PROTOTYPE_DEBT.md`.
+
+### 4.3. Khe `leading` của `PageHeader` (2026-10-01)
+
+`PageHeader` có thêm prop tuỳ chọn `leading`, đặt ở đầu hàng tiêu đề trước phần tên màn; dùng cho icon quay lại ở
+các màn chi tiết và màn soạn [SoT: 05-coding/frontend/src/shared/ui/page-header.tsx:19-35]. Không có `leading` thì
+bố cục không đổi.
+
+### 4.4. Nguyên tắc cấu hình của khu Admin (chốt 2026-10-01, owner uỷ quyền cân nhắc)
+
+Nguyên tắc owner nêu ngày 2026-10-01: "Đã là admin hệ thống thì chủ động cấu hình mọi thứ, không bị giới hạn gì."
+**Admin cấu hình được mọi tham số và danh mục; chỉ giữ các bất biến bảo toàn như ADMIN hoạt động cuối cùng và nhật ký
+bất biến.** Hệ quả cho mọi BD màn Admin: ngưỡng, giới hạn, đơn giá, thời hạn lưu và danh mục (ví dụ chủ đề câu hỏi
+phỏng vấn) là dữ liệu hoặc cấu hình do ADMIN đặt, không hard-code và không khoá cứng trong `application.yml`; một
+ràng buộc chỉ còn chặn cứng khi nó bảo vệ chính khả năng cấu hình của admin hoặc tính toàn vẹn dấu vết kiểm toán, các
+ràng buộc còn lại chuyển thành cảnh báo xác nhận. Căn cứ và danh sách quyết định cụ thể:
+`DEC-2026-1001-admin-configurable-settings` (`.nexa/control/decision-registry.md`). Các màn cấu hình tương ứng chưa
+dựng, ghi `06-plan/PROTOTYPE_DEBT.md` mục 16.2.
 
 ## 5. Bảng màu và token
 

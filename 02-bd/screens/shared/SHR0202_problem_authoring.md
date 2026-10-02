@@ -41,11 +41,11 @@
 | Tên vật lý (slug) | `problem_authoring` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A2 (`INSTRUCTOR`) và A3 (`ADMIN`) — dùng chung một view |
-| Phiên bản | V1.0 |
+| Phiên bản | V1.1 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/20 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/09/20 |
+| Ngày cập nhật | 2026/10/01 |
 
 ---
 
@@ -55,6 +55,7 @@
 | :--- | :--- | :--- | :--- | :--- |
 | V0.1 | Toàn bộ | Tạo mới theo cấu trúc 10 mục văn xuôi (layout regions, component inventory, screen states, API tiêu thụ, navigation, access rights, câu hỏi mở) tại `02-bd/screens/shared/SHR0202_problem_authoring.md` | 2026/09/13 | Nhóm phát triển AlgoPrep |
 | V1.0 | Toàn bộ | Chuyển sang mẫu 9 sheet, đổi tên file thành `SHR0202_problem_authoring.md`. Phát hiện 4 khoảng trống schema chưa từng ghi nhận (Ràng buộc dữ liệu, Đáp án mẫu, Giải thích ví dụ mẫu, Chỉ dẫn AI theo bài — không có cột/bảng DB tương ứng trong `02-bd/database/problem-bank.md`), ghi thành câu hỏi mở thay vì mặc định có cột | 2026/09/20 | Nhóm phát triển AlgoPrep |
+| V1.1 | Sheet 5, 7, 8 | Đã chốt 2026-10-01 (owner uỷ quyền), xem `DEC-2026-1001-admin-configurable-settings`: chủ đề bài toán (`topics`) là dữ liệu do ADMIN quản lý; bộ chọn "Chủ đề" ở cột Thuộc tính đọc từ `ListProblemTopics` (đổi tên từ `ListProblemTopics`), số lựa chọn không cố định; A2 chỉ chọn, không tạo chủ đề tại màn này; ADMIN quản lý chủ đề ở `SHR0201`. Thẻ (`tags`) không đổi | 2026/10/01 | AI |
 
 ---
 
@@ -383,7 +384,7 @@ Sidebar/topbar Admin/Instructor dùng chung khung điều hướng toàn hệ th
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Cột thuộc tính | | | | | | | | | | | | | |
-| | 1 | Chủ đề | `problemAuthoring.props.topic` | `problem_topics` | `topic_id` | List | List | - | Không | I/O | rỗng | Danh mục cố định `topics` | [Nguồn giá trị] `problem_topics WHERE problem_id = :id`, danh mục chọn từ bảng `topics`<br>[EVT liên quan] EVT-31 |
+| | 1 | Chủ đề | `problemAuthoring.props.topic` | `problem_topics` | `topic_id` | List | List | - | Không | I/O | rỗng | Danh mục `topics` do ADMIN quản lý (số lựa chọn không cố định; A2 không tạo chủ đề tại màn này, ADMIN quản lý ở `SHR0201`) | [Nguồn giá trị] `problem_topics WHERE problem_id = :id`, danh mục chọn từ bảng `topics`<br>[EVT liên quan] EVT-31 |
 | | 2 | Độ khó | `problemAuthoring.props.difficulty` | `problems` | `difficulty` | List | Enum | - | Có | I/O | `EASY` | `EASY`/`MEDIUM`/`HARD` | [Nguồn giá trị] Cột `difficulty`<br>[EVT liên quan] EVT-31 |
 | | 3 | Trạng thái | `problemAuthoring.props.status` | `problems` | `status` | List | Enum | - | Có | I/O | `UNPUBLISHED` | `Chưa xuất bản`/`Đã xuất bản` | Đúng 2 lựa chọn (F2-15). Prototype còn vẽ "Ẩn" — **không dựng khi build UI thật**<br>[Nguồn giá trị] Cột `status`<br>[EVT liên quan] EVT-32 |
 | | 4 | Thẻ | `problemAuthoring.props.tags` | `problem_tags` | `tag_id` | List | List | - | Không | I/O | rỗng | Tự do, tạo mới khi gõ chưa tồn tại | [Nguồn giá trị] `problem_tags WHERE problem_id = :id`, giá trị mới tạo vào `tags`<br>[EVT liên quan] EVT-31 |
@@ -567,7 +568,7 @@ Sidebar/topbar Admin/Instructor dùng chung khung điều hướng toàn hệ th
 | 2 | Đặc tả bài toán | `problem_specs` | `ProblemSpecRepository` | C, R, U | Đọc/ghi chiến lược so khớp, định dạng stdin/stdout | `SaveProblemSpec`: C, U |
 | 3 | Chữ ký hàm | `function_signatures` | `FunctionSignatureRepository` | C, R, U | Đọc/ghi chữ ký hàm theo 3 ngôn ngữ | `SaveProblemSpec`: C, U |
 | 4 | Testcase | `testcases` | `TestcaseRepository` | C, R, U, D | CRUD testcase, sắp thứ tự, đổi Hiển thị, đánh dấu ví dụ mẫu | `CreateTestcase`: C<br>`UpdateTestcase`: U<br>`DeleteTestcase`: D<br>`ReorderTestcases`: U |
-| 5 | Chủ đề | `topics`, `problem_topics` | `TopicRepository`, `ProblemTopicRepository` | R, U | Đọc danh mục chủ đề, ghi liên kết bài-chủ đề | `ListTopics`: R<br>`SaveProblemContent`: U (bảng liên kết) |
+| 5 | Chủ đề | `topics`, `problem_topics` | `TopicRepository`, `ProblemTopicRepository` | R, U | Đọc danh mục chủ đề, ghi liên kết bài-chủ đề | `ListProblemTopics`: R<br>`SaveProblemContent`: U (bảng liên kết) |
 | 6 | Thẻ | `tags`, `problem_tags` | `TagRepository`, `ProblemTagRepository` | C, R, U | Tạo thẻ mới khi gõ chưa tồn tại, ghi liên kết bài-thẻ | `SaveProblemContent`: C, U |
 | 7 | Số liệu bài | `problem_stats` | `ProblemStatsRepository` | R | Đọc read model tổng hợp | `GetProblemStats`: R |
 
@@ -596,7 +597,7 @@ Không có thao tác xoá (`D`) trên `problems` ở màn này — xoá bài to�
 | 11 | `GenerateTestcasesWithAi` | Sinh input testcase bằng AI (F2-14) — output vẫn chạy qua Đáp án mẫu, không lấy output từ AI | `problem-bank` |
 | 12 | `SaveProblemSpec` | Lưu chữ ký hàm, định dạng stdin/stdout, chiến lược so khớp; validate cấu trúc theo lược đồ kiểu của `harness` | `problem-bank` (lưu trữ) + `harness` (nguồn lược đồ kiểu qua shared kernel `algoprep-common`, không phải một API riêng) |
 | 13 | `GetProblemStats` | Đọc số liệu bài (lượt nộp, tỉ lệ AC) | `problem-bank` |
-| 14 | `ListTopics` | Đọc danh mục chủ đề để chọn ở "Thuộc tính" | `problem-bank` |
+| 14 | `ListProblemTopics` | Đọc danh mục chủ đề để chọn ở "Thuộc tính" | `problem-bank` |
 
 Không có endpoint cho "Chỉ dẫn cho trợ lý AI"/3 cờ hành vi và cho "Ràng buộc dữ liệu"/"Đáp án mẫu" ở đợt
 này — nơi lưu chưa chốt, xem Câu hỏi mở Q1, Q2, Q4. Không có API nào của `judge-orchestration` hay
@@ -618,7 +619,7 @@ port riêng của `problem-bank`, không qua hàng đợi của `judge-orchestra
 
 | NO | Loại | Sự kiện | Chi tiết | Chuyển màn | Gọi API | Tên xử lý | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :-: | :--- | :--- |
-| 1 | Màn hình | Khởi tạo màn — chế độ sửa | Vào màn với `id` hợp lệ. | Không | Có | `GetProblemForAuthoring`, `GetProblemStats`, `ListTopics` | [Các bước]<br>1. Kiểm tra quyền `PROBLEM_AUTHORING`/`TESTCASE_MANAGEMENT` và quyền sở hữu (A2 chỉ bài của mình).<br>2. Hiển thị khung chờ toàn bộ 3 vùng chính.<br>3. Tải song song dữ liệu.<br>[Khi thành công] Hiển thị đầy đủ 5 tab và cột thuộc tính, mặc định mở Tab "Nội dung đề".<br>[Khi lỗi] Thông báo lỗi toàn màn kèm nút thử lại/quay về `problem_management`, không hiển thị dữ liệu cũ giả định. |
+| 1 | Màn hình | Khởi tạo màn — chế độ sửa | Vào màn với `id` hợp lệ. | Không | Có | `GetProblemForAuthoring`, `GetProblemStats`, `ListProblemTopics` | [Các bước]<br>1. Kiểm tra quyền `PROBLEM_AUTHORING`/`TESTCASE_MANAGEMENT` và quyền sở hữu (A2 chỉ bài của mình).<br>2. Hiển thị khung chờ toàn bộ 3 vùng chính.<br>3. Tải song song dữ liệu.<br>[Khi thành công] Hiển thị đầy đủ 5 tab và cột thuộc tính, mặc định mở Tab "Nội dung đề".<br>[Khi lỗi] Thông báo lỗi toàn màn kèm nút thử lại/quay về `problem_management`, không hiển thị dữ liệu cũ giả định. |
 | 2 | Màn hình | Khởi tạo màn — soạn mới | Vào màn không có `id` hợp lệ, hoặc từ nút "Bài tập mới" ở `problem_management`. | Không | Không | - | [Các bước]<br>1. Khởi tạo form rỗng, `status = UNPUBLISHED`.<br>[Khi thành công] Toàn bộ trường rỗng, checklist hiện đủ 4 mục ở trạng thái chưa đạt. |
 | 3 | Liên kết | Quay lại danh sách bài tập | Bấm nút quay lại. | Có | Không | - | [Các bước]<br>1. Điều hướng về `problem_management`.<br>[Khi xác nhận] Còn thay đổi chưa lưu thì hỏi xác nhận — xem Câu hỏi mở Q12.<br>[Khi thành công] Mở `problem_management`, giữ nguyên bộ lọc/trang trước đó. |
 | 4 | Nút | Mở xem trước đề bài | Bấm "Xem như người học". | Không | Không | - | [Các bước]<br>1. Mở popup/tab xem trước.<br>[Khi thành công] Hiển thị đề bài dạng đọc đúng như A1 thấy. Đích cụ thể chưa chốt, xem Câu hỏi mở Q6. |

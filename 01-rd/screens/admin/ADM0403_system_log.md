@@ -40,7 +40,10 @@ kiện hạ tầng" đã chốt trước ở `identity.md` — F1-14.
 3. **4 chỉ số tổng** — Hành động quản trị 24 giờ, Đổi ma trận phân quyền, Khoá/mở khoá tài khoản, Phiên
    chấm lại đã chạy (dòng 395-400) — tổng hợp từ F1-14 + F1-10 + F1-13, không cần mã riêng. **Cập nhật
    2026-08-28:** chỉ số "Phiên chấm lại đã chạy" hết ý nghĩa (F4-09e đã loại khỏi phạm vi,
-   `DEC-2026-0828-remove-rejudge-scope`) — bỏ chỉ số này khi build FE thật, còn 3 chỉ số.
+   `DEC-2026-0828-remove-rejudge-scope`) — bỏ chỉ số này khi build FE thật, còn 3 chỉ số. **Cập nhật
+   2026-10-01 (owner instruction):** cả dải chỉ số này **không được dựng** trên UI Next.js — chỉ một trang
+   tổng quan mỗi khu hiển thị KPI, trang danh sách chỉ có tiêu đề, bộ lọc và danh sách. Hai khối bên phải
+   (Quản trị viên hoạt động, Phân loại 7 ngày) vẫn giữ.
 4. **Danh sách sự kiện** — tìm kiếm, lọc theo phân loại (Xác thực/Ma trận quyền/Cấu hình/Nội dung), mỗi
    dòng: giờ, phân loại, nội dung, dịch vụ, người thực hiện, mã sự kiện (dòng 402-412) — khớp F1-14 ("ai
    đổi, đổi gì, đổi lúc nào"). Phân loại "Nội dung" (ví dụ "Thêm testcase biên", "Xuất bản bài toán") mở

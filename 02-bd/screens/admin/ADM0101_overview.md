@@ -38,11 +38,11 @@
 | Tên vật lý (slug) | `admin_overview` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A3 (`ADMIN`) |
-| Phiên bản | V0.2 |
+| Phiên bản | V0.5 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/15 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/09/20 |
+| Ngày cập nhật | 2026/10/01 |
 
 ---
 
@@ -52,6 +52,9 @@
 | :--- | :--- | :--- | :--- | :--- |
 | V0.1 | Toàn bộ | Tạo mới theo cấu trúc 8 mục văn xuôi (bounded context theo khối, layout regions, component inventory, screen states, API dự kiến, navigation, access rights, câu hỏi mở) | 2026/09/15 | Nhóm phát triển AlgoPrep |
 | V0.2 | Toàn bộ | Chuyển sang mẫu 9 sheet. Chốt nguồn dữ liệu của mọi trường hiển thị, chốt khung thời gian tính delta và đơn vị trục biểu đồ theo ngôn ngữ (hai điểm RD uỷ quyền cho BD), bổ sung Sheet 5/6 danh sách và điều khiển item, Sheet 8 danh sách sự kiện, Sheet 9 đặc tả kiểm tra. Phát sinh hai câu hỏi mở mới về đường lấy số liệu xuyên module và về mốc đăng nhập gần nhất | 2026/09/20 | Nhóm phát triển AlgoPrep |
+| V0.3 | 3, 4, 5, 6, 7, 8; Câu hỏi mở | Thêm thẻ chỉ số thứ ba "Yêu cầu đặt lại mật khẩu" ở hàng 1 cột trái (chuyển từ dải thẻ của `ADM0201` theo `DEC-2026-1001-single-overview-page-kpi`): Khu vực A thêm item NO 9-12, thêm endpoint `GetPasswordResetsSummary` (NO 10), số khối số liệu 9 thành 10, sửa các câu "hai thẻ chỉ số" thành "ba thẻ". Giá trị 6, +20 phần trăm, sparkline 7 điểm hiện là dữ liệu giả. Thêm Q4 về nguồn số liệu 24 giờ của thẻ mới | 2026/10/01 | AI |
+| V0.4 | Sheet 5, 7, Câu hỏi mở | Đã chốt 2026-10-01 (owner uỷ quyền cân nhắc), xem `DEC-2026-1001-admin-configurable-settings`: Q4 đóng — thẻ "Yêu cầu đặt lại mật khẩu" lấy số liệu từ **nhật ký hệ thống, không dùng Redis**: giá trị = `COUNT` dòng `identity.system_audit_logs` có `action_type = PASSWORD_RESET_REQUESTED` trong 24 giờ gần nhất, delta so với 24 giờ liền trước, sparkline 7 điểm theo ngày. Sửa NO 10, 11, 12 (Sheet 5), bảng DTO NO 1, thêm `identity.system_audit_logs` vào bảng dữ liệu (4 thành 5 bảng), bỏ câu "không đọc bảng nào" | 2026/10/01 | AI |
+| V0.5 | Sheet 5, Câu hỏi mở | Đã chốt 2026-10-01 (owner uỷ quyền), xem `DEC-2026-1001-admin-configurable-settings`: thẻ "Yêu cầu đặt lại mật khẩu" đếm **số mã OTP đã phát hành** (dòng `PASSWORD_RESET_REQUESTED`), không đếm mọi lần bấm "Quên mật khẩu"; yêu cầu cho email không khớp tài khoản nào không ghi dòng nên không vào số. Nhãn và ghi chú NO 9-10 nêu rõ nghĩa của số. Q4 giữ đóng | 2026/10/01 | AI |
 
 ---
 
@@ -74,7 +77,7 @@ gian.
 
 [Giá trị trả về] Không có.
 
-[Khi thành công] Hiển thị khung Admin và 9 khối số liệu, mỗi khối tự tải dữ liệu riêng.
+[Khi thành công] Hiển thị khung Admin và 10 khối số liệu, mỗi khối tự tải dữ liệu riêng.
 
 [Khi huỷ] Không có.
 
@@ -89,7 +92,7 @@ không có item con nên bấm vào là điều hướng thật.
 
 [Giá trị trả về] Không có.
 
-[Khi thành công] Như trên: hiển thị khung Admin và 9 khối số liệu.
+[Khi thành công] Như trên: hiển thị khung Admin và 10 khối số liệu.
 
 [Khi huỷ] Không có.
 
@@ -160,7 +163,7 @@ quay lại — trước khi đi vào từng màn vận hành cụ thể
 1. **Điều hướng vào màn**: tài khoản `ADMIN` đăng nhập thành công thì hệ thống đưa thẳng tới màn này; hoặc
    người dùng bấm mục "Tổng quan" trên thanh điều hướng.
 2. **Hiển thị ban đầu**: khung Admin (thanh điều hướng, thanh công cụ) render ngay vì không phụ thuộc API
-   nào. Chín khối số liệu tải **song song và độc lập**, mỗi khối hiển thị khung chờ đúng kích thước của nó.
+   nào. Mười khối số liệu tải **song song và độc lập**, mỗi khối hiển thị khung chờ đúng kích thước của nó.
 3. **Đọc số liệu**: người dùng đọc, không nhập gì. Màn **không có trường nhập liệu, không có nút lưu, không
    có trạng thái biên soạn** — do đó không bao giờ tồn tại thay đổi chưa lưu và không cần cảnh báo khi rời
    màn.
@@ -190,11 +193,11 @@ quay lại — trước khi đi vào từng màn vận hành cụ thể
 - Sửa: không.
 - Xoá: không.
 
-[Số bản ghi tối đa] Thẻ chỉ số: 2. Biểu đồ theo ngôn ngữ: 20 mốc thời gian, 3 chuỗi. Kết quả chấm: đúng 5
+[Số bản ghi tối đa] Thẻ chỉ số: 3. Biểu đồ theo ngôn ngữ: 20 mốc thời gian, 3 chuỗi. Kết quả chấm: đúng 5
 verdict. Độ khó: 3 nhóm, mỗi nhóm 2 cột. Theo ngày: 7 cột. Theo tháng: 6 điểm. Bài phổ biến: 4 dòng. Người
 dùng mới và quay lại: 6 nhóm, mỗi nhóm 2 cột. Không phân trang ở bất kỳ khối nào.
 
-Chín khối số liệu của màn lấy dữ liệu từ ba Bounded Context khác nhau; bảng dưới ánh xạ từng khối sang BC
+Mười khối số liệu của màn lấy dữ liệu từ ba Bounded Context khác nhau; bảng dưới ánh xạ từng khối sang BC
 cung cấp số liệu, để xác định đúng nơi viết DD:
 
 | # | Khối nội dung | BC cung cấp số liệu | Mã RD |
@@ -208,6 +211,7 @@ cung cấp số liệu, để xác định đúng nơi viết DD:
 | 7 | "Lượt nộp theo tháng" | `judge-orchestration` | F1-29 |
 | 8 | "Bài phổ biến nhất" | `problem-bank` kết hợp `judge-orchestration` | F1-29 |
 | 9 | "Người dùng mới / quay lại" | `identity` | F1-29 |
+| 10 | Thẻ "Yêu cầu đặt lại mật khẩu" (chuyển từ `ADM0201` ngày 2026-10-01, `DEC-2026-1001-single-overview-page-kpi`) | `identity` | F1-13 `[Suy luận]`: chỉ số này vốn thuộc dải thẻ của màn quản lý người dùng; chưa có mã RD riêng cho việc hiển thị nó trên tổng quan |
 
 Màn thuộc `identity` vì đây là đích mặc định sau đăng nhập của `ADMIN`, nhưng `identity` **không đọc trực
 tiếp schema `judge` hay `problem`** — kiến trúc cấm phá vỡ ranh giới module dù chung một instance Postgres
@@ -221,7 +225,7 @@ xuyên module qua cổng) chưa có thiết kế, xem Câu hỏi mở Q1.
 
 | DTO | Khối dùng |
 | :--- | :--- |
-| `StatSummary` | Hai thẻ chỉ số |
+| `StatSummary` | Ba thẻ chỉ số |
 | `SubmissionsByLanguage` | Lượt nộp theo ngôn ngữ |
 | `VerdictDistribution` | Kết quả chấm |
 | `DifficultyBreakdown` | Độ khó bài toán |
@@ -234,7 +238,7 @@ Tám tên DTO này **không phải đề xuất mới** — chúng đã tồn t�
 [Nguồn: 05-coding/frontend/src/views/admin/overview/model/types.ts:14,20,25,36,43,49,54,65]. `03-dd/api/identity.md`
 chốt tên phía máy chủ và giữ đúng hình dạng này để tầng chống hư hỏng dữ liệu không phải biến đổi thêm.
 
-### 4.3 Bảng dữ liệu liên quan (4)
+### 4.3 Bảng dữ liệu liên quan (5)
 
 | NO | Bảng | Ghi chú |
 | --: | :--- | :--- |
@@ -242,8 +246,9 @@ chốt tên phía máy chủ và giữ đúng hình dạng này để tầng ch�
 | 2 | `identity.refresh_tokens` | [Nguồn: 02-bd/database/identity.md:74-78] — nguồn duy nhất hiện có cho mốc đăng nhập, xem Q2 |
 | 3 | `judge.submissions` | [Nguồn: 02-bd/database/judge-orchestration.md:14-34] |
 | 4 | `problem.problems` | [Nguồn: 02-bd/database/problem-bank.md:13-29] |
+| 5 | `identity.system_audit_logs` | [Nguồn: 02-bd/database/identity.md:104-121] — chỉ cho thẻ "Yêu cầu đặt lại mật khẩu": đếm `action_type = PASSWORD_RESET_REQUESTED` (chốt 2026-10-01, Q4) |
 
-Cả 4 bảng đều **chỉ đọc** với màn này, và hai bảng cuối thuộc module khác nên `identity` không truy cập trực
+Cả 5 bảng đều **chỉ đọc** với màn này; `judge.submissions` và `problem.problems` thuộc module khác nên `identity` không truy cập trực
 tiếp (xem 4.1 và Q1). Các read model sẵn có của `identity` (`user_submission_stats`,
 `user_problem_best_score`, `identity_recent_activity`) đều gom **theo từng người dùng**
 [Nguồn: 02-bd/database/identity.md:109-118], không dùng lại được cho số liệu toàn hệ thống theo ngôn ngữ,
@@ -260,7 +265,7 @@ cuối cùng.
 | Thanh công cụ đầu trang (khung chung Admin) | `:106-122` | Khoảng đệm co giãn, 3 nút biểu tượng trang trí, khối danh tính — dùng lại khung chung. **Ô tìm kiếm đã bỏ** theo quyết định |
 | Vùng nội dung | `:104` | Container căn giữa, `max-width: 1320px` — áp ở khung chung, màn không tự khai |
 | Hàng 1 — lưới 3 cột `1fr 1.25fr 1fr` | `:124-178` | Ba khối đầu tiên |
-| Hàng 1, cột trái — 2 thẻ chỉ số | `:125-140` | "Tổng lượt nộp bài" và "Người dùng hoạt động", mỗi thẻ có giá trị, delta và đường sparkline |
+| Hàng 1, cột trái — 3 thẻ chỉ số | `:125-140` | "Tổng lượt nộp bài" và "Người dùng hoạt động", mỗi thẻ có giá trị, delta và đường sparkline. Thẻ thứ ba "Yêu cầu đặt lại mật khẩu" thêm 2026-10-01 **không có trong prototype** (chỉ vẽ 2 thẻ), dựng theo cùng kiểu hai thẻ đầu |
 | Hàng 1, cột giữa — "Lượt nộp theo ngôn ngữ" | `:142-156` | Chú giải 3 ngôn ngữ, 20 cột bar |
 | Hàng 1, cột phải — "Kết quả chấm" | `:158-177` | Đồng hồ nửa vòng 40 vạch, chú giải 5 verdict kèm phần trăm |
 | Hàng 2 — lưới 2 cột `1.3fr 1fr` | `:180-231` | Hai khối tiếp theo |
@@ -287,7 +292,7 @@ cách hay typography ở BD.
 | :--- | :--- | :--- |
 | Trang | `views/admin/overview` | Đã tồn tại: `05-coding/frontend/src/views/admin/overview/ui/admin-overview-view.tsx` |
 | Khung Admin | Dùng lại `widgets/app-shell` | `02-bd/screens/admin/_shell.md:20-24` |
-| Hai thẻ chỉ số | `views/admin/overview/ui/blocks/stat-cards-row.tsx` | Đã tồn tại |
+| Ba thẻ chỉ số | `views/admin/overview/ui/blocks/stat-cards-row.tsx` | Đã tồn tại (thẻ thứ ba dùng `usePasswordResetsSummary` ở `api/queries.ts`) |
 | Lượt nộp theo ngôn ngữ | `.../blocks/submissions-by-language-block.tsx` | Đã tồn tại |
 | Kết quả chấm | `.../blocks/verdict-distribution-block.tsx` | Đã tồn tại |
 | Độ khó bài toán | `.../blocks/difficulty-breakdown-block.tsx` | Đã tồn tại |
@@ -313,11 +318,11 @@ ghi nhận ngay trong mã nguồn (`// PROTOTYPE — no DD yet`)
 >
 > Toàn bộ item của màn có `I/O = O` trừ hai nút. Màn không có ô nhập liệu nào.
 
-### Khu vực A — Hai thẻ chỉ số
+### Khu vực A — Ba thẻ chỉ số
 
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
-| Hai thẻ chỉ số | | | | | | | | | | | | | |
+| Ba thẻ chỉ số | | | | | | | | | | | | | |
 | | 1 | Nhãn thẻ tổng lượt nộp | `adminOverview.statSubmissions.label` | - | - | Label | String | - | - | O | Tổng lượt nộp bài | - | Tên chỉ số<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] - |
 | | 2 | Giá trị tổng lượt nộp | `adminOverview.statSubmissions.value` | `judge.submissions` | `id` | Label | Number | 9 | - | O | - | Số nguyên, ngăn cách nghìn bằng dấu chấm | Tổng lượt nộp **toàn hệ thống**, không giới hạn thời gian<br>[Công thức] Đếm mọi dòng `judge.submissions`, không lọc trạng thái<br>[EVT liên quan] EVT-1 |
 | | 3 | Delta tổng lượt nộp | `adminOverview.statSubmissions.delta` | `judge.submissions` | `submitted_at` | Label | Number | 6 | - | O | - | `+{số},{số}%` hoặc `−{số},{số}%` | Mức tăng giảm so với kỳ trước<br>[Công thức] **Chốt ở BD**: (số lượt nộp 30 ngày gần nhất − số lượt nộp 30 ngày liền trước) chia số lượt nộp 30 ngày liền trước, theo `submitted_at`. Mẫu bằng 0 thì hiển thị `-` thay vì vô cực<br>[EVT liên quan] EVT-1 |
@@ -326,6 +331,10 @@ ghi nhận ngay trong mã nguồn (`// PROTOTYPE — no DD yet`)
 | | 6 | Giá trị người dùng hoạt động | `adminOverview.statActiveUsers.value` | `identity.refresh_tokens` | `user_id`, `issued_at` | Label | Number | 9 | - | O | - | Số nguyên, ngăn cách nghìn bằng dấu chấm | Tài khoản có đăng nhập trong **30 ngày gần nhất**, loại trừ `users.status = DEACTIVATED` (F1-16)<br>[Công thức] Đếm `user_id` phân biệt trong `refresh_tokens` có `issued_at` trong 30 ngày gần nhất, trừ tài khoản `DEACTIVATED`. Bảng `users` **không có cột mốc đăng nhập gần nhất**, xem Q2<br>[EVT liên quan] EVT-1 |
 | | 7 | Delta người dùng hoạt động | `adminOverview.statActiveUsers.delta` | `identity.refresh_tokens` | `issued_at` | Label | Number | 6 | - | O | - | `+{số},{số}%` hoặc `−{số},{số}%` | Mức tăng giảm so với kỳ trước<br>[Công thức] Cùng quy tắc kỳ 30 ngày như NO 3, áp trên số người dùng hoạt động<br>[EVT liên quan] EVT-1 |
 | | 8 | Sparkline người dùng hoạt động | `adminOverview.statActiveUsers.spark` | `identity.refresh_tokens` | `issued_at` | Label | List | - | - | O | - | Đường 7 điểm | Xu hướng ngắn hạn kèm thẻ<br>[Công thức] Số người dùng hoạt động tính tới cuối từng ngày trong 7 ngày gần nhất<br>[EVT liên quan] EVT-1 |
+| | 9 | Nhãn thẻ yêu cầu đặt lại mật khẩu | `adminOverview.statPasswordResets.label` | - | - | Label | String | - | - | O | Yêu cầu đặt lại mật khẩu | - | Tên chỉ số. Thẻ chuyển từ `ADM0201` sang 2026-10-01 [Nguồn: .nexa/control/decision-registry.md:2376-2378]; khoá i18n trong mã là `adminOverview.blocks.passwordResetsSummary`<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] - |
+| | 10 | Giá trị yêu cầu đặt lại mật khẩu | `adminOverview.statPasswordResets.value` | - | - | Label | Number | 9 | - | O | - | Số nguyên, ngăn cách nghìn bằng dấu chấm | Số mã OTP đặt lại mật khẩu đã phát hành trong 24 giờ gần nhất — không phải số lần bấm "Quên mật khẩu", vì yêu cầu cho email không khớp tài khoản nào không ghi dòng (đã chốt 2026-10-01) (ý nghĩa của thẻ cũ ở `ADM0201`; dữ liệu giả hiện là 6)<br>[Nguồn giá trị] Bảng `identity.system_audit_logs`, cột `action_type`, `created_at`. [Công thức] `COUNT(*) WHERE action_type = 'PASSWORD_RESET_REQUESTED' AND created_at >= now() - interval '24 hours'`. **Không đếm khoá Redis** `identity:pwreset:<userId>` (TTL 10 phút [Nguồn: 02-bd/database/identity.md:134], không giữ lịch sử). Dòng nhật ký được ghi mỗi lần phát hành OTP, không lưu OTP — xem Q4 (đã đóng) và `02-bd/database/identity.md` mục 1.11<br>[EVT liên quan] EVT-1 |
+| | 11 | Delta yêu cầu đặt lại mật khẩu | `adminOverview.statPasswordResets.delta` | - | - | Label | Number | 6 | - | O | - | `+{số},{số}%` hoặc `−{số},{số}%` | Mức tăng giảm so với kỳ trước (dữ liệu giả hiện là +20%)<br>[Công thức] So **24 giờ gần nhất** với **24 giờ liền trước**: `(hiện tại − trước) / trước`; trước = 0 thì hiển thị `-`. Cả hai đếm từ `system_audit_logs` theo `action_type = PASSWORD_RESET_REQUESTED` (khác kỳ 30 ngày của NO 3, vì thẻ này đo sự kiện ngắn hạn) — xem Q4<br>[EVT liên quan] EVT-1 |
+| | 12 | Sparkline yêu cầu đặt lại mật khẩu | `adminOverview.statPasswordResets.spark` | - | - | Label | List | - | - | O | - | Đường 7 điểm | Xu hướng ngắn hạn kèm thẻ (dữ liệu giả hiện có 7 điểm)<br>[Công thức] Số dòng `PASSWORD_RESET_REQUESTED` của từng ngày trong 7 ngày gần nhất, nhóm theo ngày của `created_at` — cùng nguồn ở NO 10, xem Q4<br>[EVT liên quan] EVT-1 |
 
 ### Khu vực B — Lượt nộp theo ngôn ngữ
 
@@ -408,7 +417,7 @@ ghi nhận ngay trong mã nguồn (`// PROTOTYPE — no DD yet`)
 
 ### Khu vực I — Trạng thái khối dùng chung
 
-Áp cho **cả 9 khối** ở mục 4.1, mỗi khối một thể hiện riêng. Ba trạng thái này là yêu cầu chốt của
+Áp cho **cả 10 khối** ở mục 4.1, mỗi khối một thể hiện riêng. Ba trạng thái này là yêu cầu chốt của
 `DEC-2026-0831-admin-overview-ui-decisions` [Nguồn: 01-rd/req/identity.md:157-159].
 
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
@@ -433,11 +442,11 @@ ghi nhận ngay trong mã nguồn (`// PROTOTYPE — no DD yet`)
 > nhập. Mọi item số liệu cùng chịu chung một luật hiển thị: chỉ hiện khi khối chứa nó ở trạng thái có dữ
 > liệu, ghi một lần ở dòng danh sách hoặc dòng gốc của mỗi khu vực thay vì lặp trên từng cột.
 
-### Khu vực A — Hai thẻ chỉ số
+### Khu vực A — Ba thẻ chỉ số
 
 | Khu vực | NO | Tên item | Hiển thị | Ghi chú |
 | :--- | --: | :--- | :-: | :--- |
-| Hai thẻ chỉ số | | | | |
+| Ba thẻ chỉ số | | | | |
 | | 1 | Nhãn thẻ tổng lượt nộp | Có | - |
 | | 2 | Giá trị tổng lượt nộp | Điều kiện | [Điều kiện hiển thị] Chỉ hiện khi khối tải xong và không lỗi; trong lúc tải hiện khung chờ đúng kích thước thẻ. |
 | | 3 | Delta tổng lượt nộp | Điều kiện | [Điều kiện hiển thị] Chỉ hiện khi kỳ so sánh trước đó có ít nhất một lượt nộp; mẫu bằng 0 thì hiện `-`.<br>[Tự động đặt] Mũi tên và màu chữ đổi theo dấu của giá trị: tăng dùng hướng lên, giảm dùng hướng xuống. |
@@ -446,6 +455,10 @@ ghi nhận ngay trong mã nguồn (`// PROTOTYPE — no DD yet`)
 | | 6 | Giá trị người dùng hoạt động | Điều kiện | [Điều kiện hiển thị] Như NO 2, tính riêng cho thẻ này. |
 | | 7 | Delta người dùng hoạt động | Điều kiện | [Điều kiện hiển thị] Như NO 3, tính riêng cho thẻ này. |
 | | 8 | Sparkline người dùng hoạt động | Điều kiện | [Điều kiện hiển thị] Như NO 4, tính riêng cho thẻ này. |
+| | 9 | Nhãn thẻ yêu cầu đặt lại mật khẩu | Có | - |
+| | 10 | Giá trị yêu cầu đặt lại mật khẩu | Điều kiện | [Điều kiện hiển thị] Như NO 2, tính riêng cho thẻ này. |
+| | 11 | Delta yêu cầu đặt lại mật khẩu | Điều kiện | [Điều kiện hiển thị] Như NO 3, tính riêng cho thẻ này. |
+| | 12 | Sparkline yêu cầu đặt lại mật khẩu | Điều kiện | [Điều kiện hiển thị] Như NO 4, tính riêng cho thẻ này. |
 
 ### Khu vực B — Lượt nộp theo ngôn ngữ
 
@@ -547,7 +560,7 @@ ghi nhận ngay trong mã nguồn (`// PROTOTYPE — no DD yet`)
 
 | NO | DTO | Trường DTO | Kiểu | Bảng DB | Cột DB | Item màn | Hiển thị | Ghi chú |
 | --: | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :--- |
-| 1 | `StatSummary` | `value` | Number | `judge.submissions` / `identity.refresh_tokens` | `id` / `user_id` | Thẻ chỉ số "Giá trị tổng lượt nộp", "Giá trị người dùng hoạt động" | Có | [Nguồn] Phản hồi của `GetSubmissionsSummary` và `GetActiveUsersSummary`<br>[Chuyển đổi] Máy chủ trả số nguyên thuần; định dạng ngăn cách nghìn do giao diện làm. |
+| 1 | `StatSummary` | `value` | Number | `judge.submissions` / `identity.refresh_tokens` / `identity.system_audit_logs` | `id` / `user_id` / `action_type` | Thẻ chỉ số "Giá trị tổng lượt nộp", "Giá trị người dùng hoạt động", "Giá trị yêu cầu đặt lại mật khẩu" | Có | [Nguồn] Phản hồi của `GetSubmissionsSummary`, `GetActiveUsersSummary` và `GetPasswordResetsSummary` (thẻ thứ ba: nguồn `identity.system_audit_logs`, không dùng Redis — xem Q4)<br>[Chuyển đổi] Máy chủ trả số nguyên thuần; định dạng ngăn cách nghìn do giao diện làm. |
 | 2 | `StatSummary` | `deltaPercent` | Number | - | - | Thẻ chỉ số "Delta" | Có | [Nguồn] Máy chủ tính sẵn theo công thức kỳ 30 ngày ở Sheet 5<br>[Chuyển đổi] Giao diện **không** tự tính delta từ hai số — tránh hai nơi cùng định nghĩa một công thức. |
 | 3 | `StatSummary` | `deltaDirection` | Enum | - | - | Thẻ chỉ số "Delta" | Có | [Chuyển đổi] `up` / `down` quyết định biểu tượng mũi tên và màu chữ. |
 | 4 | `StatSummary` | `sparklineSeries` | List | `judge.submissions` / `identity.refresh_tokens` | `submitted_at` / `issued_at` | Thẻ chỉ số "Sparkline" | Có | [Nguồn] Mảng 7 số theo ngày, cũ nhất trước. |
@@ -565,7 +578,7 @@ ghi nhận ngay trong mã nguồn (`// PROTOTYPE — no DD yet`)
 Tên và hình dạng 8 DTO lấy từ bản dựng giao diện đã có
 [Nguồn: 05-coding/frontend/src/views/admin/overview/model/types.ts:8-65].
 
-### 7.2 Truy cập bảng dữ liệu (4)
+### 7.2 Truy cập bảng dữ liệu (5)
 
 | NO | Tên logic | Bảng | Repository | CRUD | Mục đích | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :--- | :--- |
@@ -573,6 +586,8 @@ Tên và hình dạng 8 DTO lấy từ bản dựng giao diện đã có
 | 2 | Phiên làm mới | `identity.refresh_tokens` | `RefreshTokenRepository` | R | Suy ra mốc đăng nhập gần nhất của từng tài khoản | `GetActiveUsersSummary`: R<br>`GetUserRetention`: R<br>Nguồn tạm, xem Q2 |
 | 3 | Bài nộp | `judge.submissions` | `SubmissionRepository` | R | Mọi số liệu về lượt nộp, ngôn ngữ, verdict, chuỗi thời gian, bài phổ biến | `GetSubmissionsSummary`, `GetSubmissionsByLanguage`, `GetVerdictDistribution`, `GetSubmissionsByDay`, `GetSubmissionsByMonth`, `GetTopProblems`, `GetDifficultyBreakdown`: R |
 | 4 | Bài toán | `problem.problems` | `ProblemRepository` | R | Phân nhóm theo độ khó, lấy tên bài cho danh sách phổ biến | `GetDifficultyBreakdown`, `GetTopProblems`: R |
+
+Thẻ "Yêu cầu đặt lại mật khẩu" (thêm 2026-10-01) đọc bảng `identity.system_audit_logs` (hàng 5 ở trên), **không** đọc Redis: Q4 đã đóng 2026-10-01.
 
 Toàn bộ là `R`. Màn không tạo, không sửa, không xoá bất kỳ bản ghi nào — không có thao tác `C`, `U`, `D`.
 
@@ -597,12 +612,13 @@ Hai bảng NO 3 và NO 4 thuộc module khác, `identity` **không** được m�
 | 7 | `GetSubmissionsByMonth` | Lượt nộp 6 tháng gần nhất kèm tổng | `identity` |
 | 8 | `GetTopProblems` | Bốn bài toán có nhiều lượt nộp nhất | `identity` |
 | 9 | `GetUserRetention` | Người dùng mới và quay lại theo 6 tháng | `identity` |
+| 10 | `GetPasswordResetsSummary` | Số yêu cầu đặt lại mật khẩu kèm delta và sparkline; chuyển từ `ADM0201` 2026-10-01 | `identity` |
 
-**Chốt ở BD: giữ 9 endpoint riêng, không gộp thành một payload tổng hợp.** Lý do là yêu cầu ba trạng thái
+**Chốt ở BD: giữ 10 endpoint riêng, không gộp thành một payload tổng hợp.** Lý do là yêu cầu ba trạng thái
 theo từng khối [Nguồn: 01-rd/req/identity.md:157-159] — một payload gộp sẽ khiến một nguồn số liệu hỏng làm
-hỏng phản hồi của cả 9 khối, đúng thứ mà quyết định đó muốn tránh.
+hỏng phản hồi của cả 10 khối, đúng thứ mà quyết định đó muốn tránh.
 
-Cả 9 endpoint thuộc `identity`; hai module `judge-orchestration` và `problem-bank` **không** mở đường riêng
+Cả 10 endpoint thuộc `identity`; hai module `judge-orchestration` và `problem-bank` **không** mở đường riêng
 cho màn này. Cách `identity` lấy được số liệu của hai module đó là Q1.
 
 [Nguồn: 02-bd/architecture/identity.md:44-56; 02-bd/database/identity.md:109-118]
@@ -617,7 +633,7 @@ cho màn này. Cách `identity` lấy được số liệu của hai module đó
 
 | NO | Loại | Sự kiện | Chi tiết | Chuyển màn | Gọi API | Tên xử lý | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :-: | :--- | :--- |
-| 1 | Màn hình | Khởi tạo màn | Vào màn thì tải song song 9 khối số liệu. | Không | Có | `GetSubmissionsSummary`, `GetActiveUsersSummary`, `GetSubmissionsByLanguage`, `GetVerdictDistribution`, `GetDifficultyBreakdown`, `GetSubmissionsByDay`, `GetSubmissionsByMonth`, `GetTopProblems`, `GetUserRetention` | [Các bước]<br>1. Kiểm tra tài khoản có `base_category = ADMIN` và `status = ACTIVE`.<br>2. Render ngay khung Admin — khung không gọi API nào nên không bao giờ phải chờ.<br>3. Hiện khung chờ cho cả 9 khối rồi gọi song song 9 endpoint.<br>[Khi thành công] Mỗi khối thay khung chờ bằng nội dung của chính nó, khối nào có dữ liệu trước thì hiện trước.<br>[Khi lỗi] Khối gọi thất bại hiện thông báo lỗi cục bộ kèm nút "Thử lại"; 8 khối còn lại **không bị ảnh hưởng**, không rời màn, không hiện lỗi cấp màn. |
+| 1 | Màn hình | Khởi tạo màn | Vào màn thì tải song song 10 khối số liệu. | Không | Có | `GetSubmissionsSummary`, `GetActiveUsersSummary`, `GetPasswordResetsSummary`, `GetSubmissionsByLanguage`, `GetVerdictDistribution`, `GetDifficultyBreakdown`, `GetSubmissionsByDay`, `GetSubmissionsByMonth`, `GetTopProblems`, `GetUserRetention` | [Các bước]<br>1. Kiểm tra tài khoản có `base_category = ADMIN` và `status = ACTIVE`.<br>2. Render ngay khung Admin — khung không gọi API nào nên không bao giờ phải chờ.<br>3. Hiện khung chờ cho cả 10 khối rồi gọi song song 10 endpoint.<br>[Khi thành công] Mỗi khối thay khung chờ bằng nội dung của chính nó, khối nào có dữ liệu trước thì hiện trước.<br>[Khi lỗi] Khối gọi thất bại hiện thông báo lỗi cục bộ kèm nút "Thử lại"; 9 khối còn lại **không bị ảnh hưởng**, không rời màn, không hiện lỗi cấp màn. |
 | 2 | Nút | Tải lại một khối | Bấm "Thử lại" trong khung của một khối đang lỗi. | Không | Có | Đúng một endpoint của khối đó | [Các bước]<br>1. Đưa riêng khối đó về trạng thái đang tải.<br>2. Gọi lại đúng endpoint của khối.<br>[Khi thành công] Khối hiện dữ liệu, thông báo lỗi biến mất.<br>[Khi lỗi] Giữ nguyên thông báo lỗi, nút "Thử lại" kích hoạt lại để bấm tiếp. Không giới hạn số lần bấm ở phía giao diện. |
 | 3 | Liên kết | Xem tất cả bài toán | Bấm "Xem tất cả" ở khối "Bài phổ biến nhất". | Có | Không | - | [Các bước]<br>1. Điều hướng sang màn `problem_management`.<br>[Khi thành công] Mở `problem_management` ở bộ lọc mặc định. **Không hỏi xác nhận trước khi rời màn**: màn chỉ đọc, không có trạng thái biên soạn nên không tồn tại thay đổi chưa lưu. Các lời gọi API đang dang dở bị huỷ. |
 | 4 | Liên kết | Điều hướng bằng thanh bên | Bấm một item con của 4 nhóm gập, hoặc một liên kết trong nhóm "KHÁC". | Có | Không | - | [Các bước]<br>1. Điều hướng sang màn tương ứng.<br>[Khi thành công] Mở màn đích. Cũng không hỏi xác nhận, cùng lý do như EVT-3. Bấm chính **tên nhóm** thì chỉ mở hoặc đóng nhóm, không rời màn và không gọi API — hành vi này thuộc khung chung `02-bd/screens/admin/_shell.md` mục 2.2. |
@@ -643,7 +659,7 @@ nút.
 | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: |
 | 1 | Kiểm quyền | Quyền truy cập màn | [Nội dung kiểm] Tài khoản không có `roles.base_category = ADMIN` thì không được vào màn.<br>[Nơi thực thi] Chặn ở cả tầng định tuyến phía giao diện và tầng phân quyền phía máy chủ, không chỉ ẩn giao diện [Nguồn: 02-bd/security/identity.md:25-26]. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn không có quyền truy cập chức năng này." Đây là **trường hợp duy nhất trong khu Admin không tra bảng `permissions`** — kiểm bằng `base_category`, vì F1-29 không phải một hàng trong ma trận F1-10 [Nguồn: 01-rd/req/identity.md:146-147]. | EVT-1 | 1 |
 | 2 | Kiểm quyền | Tài khoản bị vô hiệu hoá | [Nội dung kiểm] Tài khoản có `users.status = DEACTIVATED` thì không được vào màn dù vai trò là `ADMIN`.<br>[Nơi thực thi] Máy chủ. | Lỗi | Chưa có mã thông báo | Nội dung "Tài khoản đã bị vô hiệu hoá." Cùng luật F1-16 áp cho mọi màn, ghi ở đây vì màn là đích mặc định sau đăng nhập nên là nơi luật này chạm đầu tiên. | EVT-1 | 2 |
-| 3 | Kiểm nghiệp vụ | Lỗi gọi máy chủ của một khối | [Nội dung kiểm] Endpoint của một khối thất bại hoặc trả lỗi thì chỉ khối đó chuyển sang trạng thái lỗi.<br>[Nơi thực thi] Màn hình.<br>[Tiêu điểm] Đúng khung của khối bị lỗi. | Cảnh báo | Mã lỗi trong phản hồi | Phản hồi có mã lỗi đã đăng ký thì hiển thị nội dung tương ứng; chưa đăng ký thì hiển thị "Không tải được dữ liệu khối này." Mức là **Cảnh báo** chứ không phải Lỗi vì màn vẫn dùng được: 8 khối còn lại vẫn hiển thị [Nguồn: 01-rd/screens/admin/ADM0101_overview.md:171-174]. | EVT-1, EVT-2 | 1 |
+| 3 | Kiểm nghiệp vụ | Lỗi gọi máy chủ của một khối | [Nội dung kiểm] Endpoint của một khối thất bại hoặc trả lỗi thì chỉ khối đó chuyển sang trạng thái lỗi.<br>[Nơi thực thi] Màn hình.<br>[Tiêu điểm] Đúng khung của khối bị lỗi. | Cảnh báo | Mã lỗi trong phản hồi | Phản hồi có mã lỗi đã đăng ký thì hiển thị nội dung tương ứng; chưa đăng ký thì hiển thị "Không tải được dữ liệu khối này." Mức là **Cảnh báo** chứ không phải Lỗi vì màn vẫn dùng được: 9 khối còn lại vẫn hiển thị [Nguồn: 01-rd/screens/admin/ADM0101_overview.md:171-174]. | EVT-1, EVT-2 | 1 |
 | 4 | Kiểm nghiệp vụ | Không có dữ liệu | [Nội dung kiểm] Endpoint trả về hợp lệ nhưng không có bản ghi nào thì khối hiện dòng chú thích rỗng, không hiện biểu đồ trống.<br>[Nơi thực thi] Màn hình.<br>[Tiêu điểm] Đúng khung của khối rỗng. | Thông tin | Chưa có mã thông báo | Nội dung "Chưa có dữ liệu". Rỗng **không phải lỗi** — hệ thống mới cài thì mọi khối số liệu nộp bài đều rỗng một cách hợp lệ. | EVT-1, EVT-2 | 2 |
 | 5 | Kiểm nghiệp vụ | Không ghi nhật ký lượt xem | [Nội dung kiểm] Việc mở màn **không** được ghi vào `identity.system_audit_logs`.<br>[Nơi thực thi] Máy chủ. | Thông tin | Chưa có mã thông báo | Không có thông báo cho người dùng. Ghi ở đây như một luật kiểm được: F1-14 chỉ ghi hành động quản trị làm đổi trạng thái, không ghi lượt truy cập xem [Nguồn: 02-bd/database/identity.md:105-107]. Màn chỉ đọc nên không có hành động nào phải ghi nhật ký. | EVT-1 | 3 |
 
@@ -661,7 +677,8 @@ Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 | Q1 | `identity` lấy số liệu của `judge.submissions` và `problem.problems` bằng đường nào — thêm một read model tổng hợp toàn hệ thống do `identity` tự cập nhật từ domain event, hay truy vấn đồng bộ xuyên module qua cổng ra? Kiến trúc cấm đọc trực tiếp schema của module khác [Nguồn: 02-bd/architecture/identity.md:44-47], mà ba read model sẵn có đều gom theo từng người dùng nên không dùng lại được cho số liệu toàn hệ thống [Nguồn: 02-bd/database/identity.md:109-118]. | Chưa thiết kế ở BD module. Ảnh hưởng độ trễ số liệu (read model thì có trễ, truy vấn đồng bộ thì đúng thời điểm nhưng nặng) và ảnh hưởng cả 9 endpoint ở mục 7.3 | BD `identity` + DD `identity` |
 | Q2 | Mốc đăng nhập gần nhất của một tài khoản lấy ở đâu? Bảng `users` **không có** cột nào kiểu `last_login_at` [Nguồn: 02-bd/database/identity.md:13-24], trong khi F1-29 định nghĩa "người dùng hoạt động" là có đăng nhập trong 30 ngày gần nhất [Nguồn: 01-rd/req/identity.md:148-149]. BD này tạm dùng `MAX(refresh_tokens.issued_at)` vì đó là dữ liệu đã có sẵn, nhưng nó đo **lần cấp token**, không hẳn là lần đăng nhập, và bản ghi có thể bị dọn khi hết hạn. | Cần chủ dự án hoặc BD `identity` quyết: chấp nhận xấp xỉ bằng `refresh_tokens`, hay thêm một cột mốc đăng nhập kèm migration. Ảnh hưởng hai khối (thẻ "Người dùng hoạt động" và "Người dùng mới / quay lại") | BD `identity` |
 | Q3 | Số liệu của màn có cần làm mới tự động không, hay chỉ tải một lần khi vào màn? RD không nói gì về tần suất làm mới, prototype dùng dữ liệu hằng số tĩnh [Nguồn: 01-rd/screens/admin/ADM0101_overview.md:140-142]. | Ảnh hưởng thiết kế cache phía máy chủ và tải truy vấn; chưa có yêu cầu nào đòi số liệu thời gian thực | Chủ dự án |
+| Q4 | ~~Thẻ "Yêu cầu đặt lại mật khẩu" lấy số 24 giờ, delta và sparkline 7 ngày từ đâu? Khoá OTP quên mật khẩu trên Redis chỉ sống 10 phút [Nguồn: 02-bd/database/identity.md:134] nên đếm khoá chỉ cho biết số mã đang treo lúc này.~~ **ĐÃ CHỐT 2026-10-01 (owner uỷ quyền cân nhắc), xem `DEC-2026-1001-admin-configurable-settings`:** nguồn là nhật ký hệ thống, **không dùng Redis**. Thêm `action_type` `PASSWORD_RESET_REQUESTED` (nhóm Xác thực) vào `identity.system_audit_logs`, ghi khi phát hành mã OTP, không lưu OTP; thẻ = `COUNT` dòng này trong 24 giờ gần nhất, delta so với 24 giờ liền trước, sparkline 7 điểm theo ngày. Hệ quả: F1-14 phải ghi một sự kiện xác thực do người dùng tự kích hoạt, không chỉ hành động quản trị — RD F1-14 chưa nhắc, cần mở rộng RD (xem báo cáo vòng 3). Yêu cầu cho email không khớp tài khoản nào không ghi dòng. | Đã đóng | DD `identity` (chốt tên chỉ mục) |
 
 Ba câu hỏi mở của RD gốc đã đóng hết từ 2026-08-31
-[Nguồn: 01-rd/screens/admin/ADM0101_overview.md:176-192]; ba câu trên là câu **mới phát sinh** khi chốt nguồn
+[Nguồn: 01-rd/screens/admin/ADM0101_overview.md:176-192]; bốn câu trên là câu **mới phát sinh** khi chốt nguồn
 dữ liệu ở mức BD, không phải mở lại câu cũ.

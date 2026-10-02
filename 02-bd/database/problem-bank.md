@@ -24,6 +24,7 @@ Cốt lõi F2-01, F2-02, F2-15, F2-16.
 | `max_submissions_per_hour` | INT nullable | F2-10 amendment, per-problem; NULL = không giới hạn riêng, dùng mặc định hệ thống |
 | `duplicated_from_problem_id` | FK → `problems.id` nullable | F2-16 — vết tích nhân bản, không bắt buộc dùng ở UI |
 | `known_optimal_complexity` | VARCHAR nullable | Bổ sung 2026-09-12 theo yêu cầu BD `ai-review` (F5-03 — Solution Review đối chiếu độ phức tạp bài giải với optimum đã biết). Dạng chuỗi ký hiệu Big-O (`O(n)`, `O(n log n)`...), do giảng viên nhập khi soạn đề (`problem_authoring`); NULL = chưa khai báo, F5.1 bỏ qua bước so sánh optimum cho bài đó thay vì suy đoán `[SoT: Suy luận]` |
+| `author_id` | tham chiếu `identity.users.id`, không FK vật lý xuyên schema, NOT NULL | Bổ sung 2026-10-01 (`SHR0201` Q1, `DEC-2026-1001-admin-configurable-settings`): người tạo bài, **bất biến** — gán một lần khi tạo, không bao giờ đổi (khác `updated_by` đổi theo lần sửa gần nhất). Nhân bản (F2-16) gán `author_id` = người nhân bản. Dùng cho bộ lọc "Bài của tôi" của A2; ADMIN thấy và sửa mọi bài. Lưu ý: yêu cầu "FK users" của quyết định được thực hiện như tham chiếu id kiểm ở tầng ứng dụng, đúng nguyên tắc không FK xuyên schema bên dưới `[SoT: Suy luận]`. Index `problems(author_id)` |
 | `updated_by` | FK → user (tham chiếu id, không FK cứng liên schema) | F2-10 amendment Q7(g) — trường phẳng, không phải audit trail đầy đủ |
 | `created_at` / `updated_at` | TIMESTAMPTZ | `updated_at` dùng cho ngưỡng "chưa xuất bản quá 7 ngày" |
 | `published_at` | TIMESTAMPTZ nullable | Mốc xuất bản lần gần nhất |
@@ -34,15 +35,28 @@ kiểm ở tầng ứng dụng khi ghi.
 
 ### 1.2. `topics` / `problem_topics` (F2-02)
 
-`topics(id, name, created_at)` — seed cố định theo giáo trình (danh mục chủ đề, ví dụ "Mảng", "Cây",
-"Đồ thị"...); `problem_topics(problem_id FK, topic_id FK)`, many-to-many, unique
-`(problem_id, topic_id)`.
+Danh mục chủ đề bài toán là **dữ liệu do ADMIN quản lý**, cùng cách xử lý với `interview_bank.question_topics`
+(đã chốt 2026-10-01, owner uỷ quyền, xem `DEC-2026-1001-admin-configurable-settings`; thay cho câu "seed cố
+định theo giáo trình" trước đó). Các chủ đề ban đầu (ví dụ "Mảng", "Cây", "Đồ thị"...) chỉ là dữ liệu seed.
+
+`topics(id UUID PK, code VARCHAR UNIQUE NOT NULL, name VARCHAR UNIQUE NOT NULL, sort_order SMALLINT, created_at)`:
+`code` là slug ổn định sinh một lần khi tạo, không đổi khi đổi `name`; `name` duy nhất không phân biệt hoa thường;
+`sort_order` là thứ tự hiện ở bộ lọc. `problem_topics(problem_id FK, topic_id FK)`, many-to-many, unique
+`(problem_id, topic_id)`; FK `topic_id` **không** `ON DELETE CASCADE`.
+
+Quyền thao tác: **chỉ ADMIN (A3)** tạo, đổi tên, sắp xếp lại, xoá chủ đề; A2 (INSTRUCTOR) chỉ chọn từ danh sách
+có sẵn khi soạn đề. Không giới hạn số lượng chủ đề. Xoá bị **từ chối khi còn bất kỳ `problem_topics.topic_id` trỏ
+tới** (tính cả bài `UNPUBLISHED` và bài `deleted = true`, vì FK vẫn tồn tại): API trả số bài đang tham chiếu để
+UI yêu cầu ADMIN chuyển hoặc bỏ gán các bài đó trước. Bảo vệ hai lớp: kiểm ở use case (lỗi nghiệp vụ kèm số
+đếm) và FK không cascade làm lưới an toàn. Mọi thao tác ghi `system_audit_logs` (F1-14). Cách sinh slug `code`
+chốt ở DD `[SoT: Suy luận]` — quyết định chỉ nói "giống interview topics".
 
 ### 1.3. `tags` / `problem_tags` (F2-02 amendment, `DEC-2026-0831-problem-authoring-round2`)
 
 `tags(id, name unique)` — **tự do**, không danh mục cố định, tạo mới khi A2 gõ thẻ chưa tồn tại;
-`problem_tags(problem_id FK, tag_id FK)`, unique `(problem_id, tag_id)`. Khác `topics` ở chỗ không seed
-cố định — dùng để lọc chi tiết hơn (F2-11).
+`problem_tags(problem_id FK, tag_id FK)`, unique `(problem_id, tag_id)`. Khác `topics` ở chỗ không có danh mục
+do ADMIN quản lý: A2 gõ thêm thẻ mới ngay khi soạn đề, không qua ADMIN — dùng để lọc chi tiết hơn (F2-11).
+`tags` không đổi trong đợt 2026-10-01.
 
 ### 1.4. `problem_specs` (F2-03, F2-04, F2-09)
 
@@ -156,7 +170,7 @@ khác** — ràng buộc ở tầng ứng dụng/security, không phải chỉ �
 
 ## 4. Migration — thứ tự tạo bảng
 
-`topics` (seed) → `tags` → `problems` → `problem_topics` → `problem_tags` → `problem_specs` →
+`topics` (seed khởi tạo, sau đó ADMIN thêm/đổi tên/sắp xếp/xoá qua API) → `tags` → `problems` → `problem_topics` → `problem_tags` → `problem_specs` →
 `function_signatures` → `testcases` → `class_assignments` → `bookmarks` → `problem_stats` (read model).
 
 ## 5. Giá trị mặc định BD chốt (RD để ngỏ, `[SoT: Suy luận]`)

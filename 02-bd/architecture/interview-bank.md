@@ -44,22 +44,46 @@ lời, tiêu chí, rubric) — không có file lớn hay nhị phân trong phạ
 
 | Nhóm | Mã | Ghi chú |
 | :--- | :--- | :--- |
-| Danh sách và khám phá | F6-01, F6-02, F6-03 | Phân loại theo 5 chủ đề đã chốt (mục 2.1 dưới), tìm kiếm/lọc, bookmark |
+| Danh sách và khám phá | F6-01, F6-02, F6-03 | Phân loại theo danh mục chủ đề do ADMIN quản lý (mục 2.1 dưới), tìm kiếm/lọc, bookmark |
 | Chế độ học (`STUDY`) | F6-04, F6-05, F6-06 | Dữ liệu tĩnh soạn sẵn, **không qua AI** — hướng tiếp cận, khung STAR (câu hành vi), từ khoá cốt lõi |
 | Chế độ luyện (`PRACTICE`) | F6-07, F6-08 | Học viên tự soạn câu trả lời, AI đối chiếu tiêu chí chuẩn — **nơi duy nhất module này gọi AI** — mục 4.2 |
 | Không sửa lại câu trả lời đã nộp | F6-07 amendment | `DEC-2026-0831-outside-screens-closures` — mỗi lần nộp là một attempt độc lập, không `UPDATE`, giữ lịch sử đầy đủ |
 | Theo dõi tiến độ | F6-09, F6-10 | Lịch sử luyện tập, danh sách "cần ôn lại", tỉ lệ hoàn thành theo chủ đề |
 | Tự chấm mức độ thuộc bài (spaced repetition) | F6-12 | Ba mức Biết rõ/Mơ hồ/Quên, tự xếp lịch ôn lại — mục 6 |
+| Quản trị danh mục chủ đề | F6-01 (mở rộng) | `DEC-2026-1001-admin-configurable-settings` — **chỉ ADMIN (A3)** thêm, đổi tên, sắp xếp lại, xoá chủ đề; A2 chỉ chọn. Xem mục 2.1 |
 | Quản trị nội dung ngân hàng câu hỏi | F6-13 | `DEC-2026-0830-interview-bank-crud` — actor A2/A3, **cùng phạm vi dữ liệu, sửa được toàn bộ ngân hàng câu hỏi hệ thống** (đã đóng 2026-09-13, xem mục 2.2), tạo/sửa/nhân bản/xoá mềm, gác bởi Function `INTERVIEW_BANK_MANAGEMENT` (F1-12) |
 | **Đã cắt khỏi phạm vi — KHÔNG thiết kế lại** | F6-11 | "Bộ câu hỏi riêng theo lớp" — `DEC-2026-0828-remove-per-class-interview-set`. `question_set` **đã bỏ hoàn toàn khỏi scope** (đóng 2026-09-13, xem mục 2.2) — không chỉ phần "gán theo lớp" |
 
-### 2.1. Danh mục chủ đề (F6-01) — 5 giá trị đã chốt
+### 2.1. Danh mục chủ đề (F6-01) — dữ liệu do ADMIN quản lý (chốt 2026-10-01)
 
-`Lý thuyết CS`, `System design`, `Database`, `Ngôn ngữ`, `Hành vi` — thay danh mục 4 chủ đề cũ
-[SoT: `01-rd/req/interview-bank.md:9-13`, `DEC-2026-0830-interview-bank-crud` mục 4]. Đây là dữ liệu
-seed dùng chung cho cả ba màn `interview_bank_list`, `interview_question_detail`,
-`interview_question_authoring` — module này giữ **một** bảng `question_topics` làm nguồn sự thật duy
-nhất, không mỗi màn tự định nghĩa danh sách riêng.
+Năm chủ đề ban đầu `Lý thuyết CS`, `System design`, `Database`, `Ngôn ngữ`, `Hành vi` (thay danh mục 4 chủ đề cũ)
+[SoT: `01-rd/req/interview-bank.md:9-13`] **chỉ là dữ liệu khởi tạo (seed)**. Từ 2026-10-01 danh mục là dữ
+liệu do A3 (`ADMIN`) quản lý: thêm, đổi tên, sắp xếp lại, xoá; A2 (`INSTRUCTOR`) chỉ chọn từ danh mục có sẵn
+khi soạn câu hỏi. Không giới hạn số chủ đề. Xoá bị từ chối khi còn bất kỳ câu hỏi nào tham chiếu — API trả
+số câu hỏi đang tham chiếu để giao diện yêu cầu chuyển hoặc xoá chúng trước. Căn cứ: owner uỷ quyền cân nhắc,
+`DEC-2026-1001-admin-configurable-settings` — **thay thế** tiểu quyết định 4 (Q6, 5 chủ đề cố định) của
+`DEC-2026-0830-interview-bank-crud`.
+
+Module vẫn giữ **một** bảng `question_topics` làm nguồn sự thật duy nhất cho cả ba màn `interview_bank_list`,
+`interview_question_detail`, `interview_question_authoring` và màn quản trị `interview_question_management`;
+không màn nào tự định nghĩa danh sách riêng. Hai thay đổi kéo theo ở tầng thiết kế:
+
+- **Endpoint (tên nghiệp vụ, hợp đồng chi tiết ở `03-dd/api/interview-bank.md`)**: `ListQuestionTopics` (mọi
+  người dùng đã xác thực), `CreateQuestionTopic`, `UpdateQuestionTopic` (đổi tên và bật/tắt cờ `uses_star_framework`; đổi tên từ
+  `RenameQuestionTopic` ngày 2026-10-01), `ReorderQuestionTopics`,
+  `DeleteQuestionTopic` (bốn endpoint này chỉ ADMIN). Danh sách đầy đủ kèm màn gọi ở
+  `02-bd/screens/shared/SHR0301_interview_question_management.md` mục 7.3.
+- **Quyền**: dùng lại Function `INTERVIEW_BANK_MANAGEMENT` (F1-12) cho `CREATE`/`UPDATE`/`DELETE` tương ứng,
+  cộng kiểm vai trò `ADMIN` — không tạo Function mới. Chi tiết ở `02-bd/security/interview-bank.md` mục 2.
+- **Port/domain**: `QuestionTopic` là aggregate nhỏ riêng trong `domain` (quy tắc "không xoá khi còn tham
+  chiếu" nằm ở use case `DeleteQuestionTopicCommand` qua truy vấn đếm, không nằm ở controller)
+  `[SoT: Suy luận]` — nhất quán mô hình bốn tầng ở mục 1. Mọi thao tác ghi `system_audit_logs` (F1-14) qua
+  cùng outbound port ghi nhật ký mà `interview-bank` đã dùng cho nhân bản/xoá câu hỏi.
+
+Khung STAR (mục 4.1) **không còn gắn vào mã `BEHAVIORAL`**: chủ đề có cờ `uses_star_framework = true`
+(`database/interview-bank.md` mục 1.1) kết xuất khung trả lời chuẩn theo 4 mục STAR; `BEHAVIORAL` seed bật cờ
+này nhưng xoá/đổi tên được như mọi chủ đề. Đã chốt 2026-10-01 (owner uỷ quyền), xem
+`DEC-2026-1001-admin-configurable-settings`.
 
 ### 2.2. `question_set` — đã đóng 2026-09-13: bỏ hẳn khỏi phạm vi
 
@@ -137,7 +161,7 @@ kiện bắt buộc), thiết kế khi `identity`/`interview-bank` DD gặp nhau
 
 ```
 Học viên mở một câu hỏi (interview_question_detail)
-  -> đọc suggested_approach, sample_answer_framework (khung STAR nếu topic = HÀNH_VI), core_keywords[]
+  -> đọc suggested_approach, sample_answer_framework (khung STAR nếu topic có uses_star_framework), core_keywords[]
      -- toàn bộ là dữ liệu tĩnh đã soạn sẵn trong bảng interview_questions, KHÔNG gọi AnswerFeedbackPort
   -> (tuỳ chọn) tự chấm mức độ nhớ ngay sau khi xem — F6-12, mục 6
 ```
@@ -250,6 +274,7 @@ tắc `bd-generation` "không phải module nào cũng cần cả 4 file, không
 - **`feedback_prompt_templates` có cần bảng riêng có phiên bản** như `prompt_templates` của `ai-review`,
   hay một hằng số cấu hình đơn giản hơn (module F6 nhỏ hơn nhiều so với F5, có thể không cần versioning
   đầy đủ) — chốt ở DD.
+- **Quản lý chủ đề (chốt 2026-10-01, mục 2.1)**: (a) cách sinh slug `code` cho chủ đề mới (còn mở, chốt ở DD); (b) ~~khung STAR gắn vào mã `BEHAVIORAL`~~ — đã chốt 2026-10-01 (owner uỷ quyền), xem `DEC-2026-1001-admin-configurable-settings`: STAR là cờ `uses_star_framework` trên chủ đề; (c) ~~`topics` của `problem-bank` (F2-02) chưa đổi~~ — đã chốt cùng cách xử lý, xem `02-bd/database/problem-bank.md` mục 1.2.
 - **Thông báo nhắc ôn tập** (mục 6, cuối) — có tái dùng cơ chế email nhắc của F1-21 hay không, ngoài
   phạm vi chắc chắn của module này.
 

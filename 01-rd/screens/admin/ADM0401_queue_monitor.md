@@ -34,7 +34,9 @@ năng thật** (xem mục 4 Q2, `DEC-2026-0831-judge-orchestration-ops-details`)
 Đối chiếu `09-layoutBase/Admin - Hàng đợi chấm.dc.html`:
 
 1. **4 chỉ số tổng** — Job đang chờ, Đang chấm, Thông lượng (job/phút), Job lỗi 24 giờ (dòng 440-445) — khớp
-   F4-10.
+   F4-10. **Cập nhật 2026-10-01:** dải 4 chỉ số này **đã bỏ khỏi UI** theo
+   `DEC-2026-1001-single-overview-page-kpi` (chỉ trang tổng quan hiển thị KPI); các khối còn lại giữ nguyên.
+   Bốn chỉ số chưa có chỗ mới, F4-10 vẫn được phục vụ bởi cụm worker, độ trễ theo hàng đợi và bảng job.
 2. **Cụm worker go-judge** — 4 worker, mỗi worker: trạng thái (Đang chạy/Nhàn rỗi/Quá tải), % tải, số job,
    uptime, vCPU (dòng 452-462) — khớp F4-10 (tình trạng cụm).
 3. **Điều khiển cụm** — 3 toggle: "Tạm dừng tiêu thụ hàng đợi", "Tự động mở rộng worker", "Ưu tiên bài thi"

@@ -107,6 +107,18 @@ phần dữ liệu của nó — tránh `identity` viết trực tiếp vào sch
 Chỉ ghi hành động quản trị của người (đổi ma trận quyền, đổi vai trò, khoá/mở khoá, reset mật khẩu, tạo
 role tuỳ biến...) — không ghi sự kiện hạ tầng (đó là `judge-orchestration`, F4-10).
 
+**Bổ sung 2026-10-01 (`DEC-2026-1001-admin-configurable-settings`), loại `action_type` thứ nhất do người dùng tự kích hoạt:**
+`PASSWORD_RESET_REQUESTED` ("yêu cầu đặt lại mật khẩu", nhóm phân loại hiển thị **Xác thực**,
+`02-bd/screens/admin/ADM0403_system_log.md`). Ghi một dòng mỗi lần hệ thống **phát hành** một mã OTP quên mật
+khẩu (cùng thời điểm tạo khoá Redis `identity:pwreset:<userId>`, mục 3 dưới), với `actor_user_id` = `target_id`
+= `users.id` của tài khoản được đặt lại, `target_type = 'USER'`, `before_json`/`after_json` rỗng. **Không bao
+giờ lưu mã OTP**, không lưu email hay mật khẩu. Yêu cầu cho email không khớp tài khoản nào không ghi dòng
+(không có `users.id` để làm tác nhân, và để khỏi lộ ra email nào tồn tại); thẻ ở trang tổng quan Admin vì vậy
+đếm số **mã đã phát hành**, không đếm mọi lần bấm "Quên mật khẩu". Đây là mở rộng so với câu "chỉ ghi hành
+động quản trị" ở trên: F1-14 gốc nói về hành động quản trị, còn loại này là sự kiện xác thực — thuộc phạm vi
+quyết định đã nêu, nhưng RD F1-14 (`01-rd/req/identity.md:68-75`) chưa nhắc, cần mở rộng RD `[SoT: Suy luận]`.
+Chỉ mục gợi ý `(action_type, created_at DESC)` để đếm 24 giờ/7 ngày nhanh `[SoT: Suy luận]`.
+
 ### 1.12. Read model tổng hợp từ domain event (mục 3.1 kiến trúc)
 
 - `user_problem_best_score(user_id, problem_id, best_ratio, best_verdict, updated_at)` — phục vụ F1-06

@@ -96,6 +96,11 @@ i18n; Q8 thêm 3 trạng thái theo từng khối.
    [SoT: 09-layoutBase/Admin - Tổng quan.dc.html:426-429]. **Mã: —.** Không có mã nào định nghĩa "người dùng
    hoạt động" (hoạt động trong bao lâu? loại trừ `DEACTIVATED` của F1-16 không?) hay khung thời gian so sánh
    delta — xem Câu hỏi mở Q2.
+   **Cập nhật 2026-10-01 (`DEC-2026-1001-single-overview-page-kpi`):** dải này nay có **3 thẻ**. Thẻ thứ ba
+   "Yêu cầu đặt lại mật khẩu" chuyển từ dải thẻ của `ADM0201` (đã bỏ khỏi màn đó), nằm ở hàng 1 cột trái dưới
+   hai thẻ đầu, cùng kiểu giá trị + delta + sparkline 7 điểm; dữ liệu giả hiện là 6, +20%. Prototype
+   `Admin - Tổng quan.dc.html` chỉ vẽ 2 thẻ nên thẻ thứ ba không có bằng chứng bố cục ở đó. Số khối số liệu của
+   màn tăng từ 9 lên **10**. Số 24 giờ và lịch sử của thẻ mới lấy từ nhật ký hệ thống (`identity.system_audit_logs`, loại hành động yêu cầu đặt lại mật khẩu), không lấy từ Redis — đã chốt 2026-10-01, xem BD Q4 và `DEC-2026-1001-admin-configurable-settings`.
 4. **"Lượt nộp theo ngôn ngữ"** (HTML dòng 146-160, dữ liệu dòng 431-435): legend Python · C++ · Java, 20 cột
    bar [SoT: 09-layoutBase/Admin - Tổng quan.dc.html:431-435]. Ba ngôn ngữ khớp giới hạn phạm vi
    [SoT: 01-rd/overview/system_survey.md — mục 8, bảng giới hạn phạm vi, dòng "Ngôn ngữ nộp bài"], nhưng **trục hoành 20 cột không có nhãn** — không rõ 20 cột là

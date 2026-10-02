@@ -33,7 +33,10 @@ trong biểu đồ theo ngày và dòng "Gợi ý theo bậc" (45%) trong khối
 Đối chiếu `09-layoutBase/Admin - Token AI.dc.html`:
 
 1. **4 chỉ số tổng** — Token tháng này, Trung bình mỗi ngày, Chi phí tạm tính, Lượt gọi AI (dòng 451-456) —
-   khớp F5-21.
+   khớp F5-21. **Cập nhật 2026-10-01:** dải 4 chỉ số này **đã bỏ khỏi UI** theo
+   `DEC-2026-1001-single-overview-page-kpi` (chỉ trang tổng quan hiển thị KPI); bộ chọn 7/14/30 ngày chỉ còn
+   tác động lên biểu đồ theo ngày. Bốn chỉ số chưa có chỗ mới; F5-21 vẫn được phục vụ bởi biểu đồ theo ngày, hạn
+   mức tháng và hai bảng xếp hạng.
 2. **Biểu đồ token theo ngày, tách theo tính năng** — 3 dải màu: Gợi ý, Phân tích, Phỏng vấn (dòng 476-480)
    — **thiếu dải cho "Sinh testcase" (F2-14) dù dải đó có xuất hiện ở khối "Theo tính năng" phía dưới** —
    không phải xung đột nghiêm trọng, chỉ là biểu đồ chọn hiện 3/4 tính năng có khối lượng lớn nhất. **Cập

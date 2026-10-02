@@ -95,6 +95,11 @@ Q3 → Q5. **Trạng thái vòng đời bài toán đã có mã** — `F2-15` (c
    testcase"), Tỉ lệ AC trung bình (tính trên 90 ngày gần nhất)
    [SoT: 09-layoutBase/Admin - Quản lý bài tập.dc.html:478-483]. 3/4 chỉ số có mã (`F2-15`); tỉ lệ AC trung
    bình vẫn không có mã — xem Q5.
+   **Cập nhật 2026-10-01 (owner instruction):** dải 4 thẻ này **không được dựng** trên UI Next.js. Quy ước
+   mới: chỉ một trang tổng quan mỗi khu (tổng quan Admin, tổng quan Giảng viên) hiển thị KPI; trang danh sách
+   chỉ có tiêu đề, bộ lọc, danh sách và phân trang. Hai con số tổng và đã xuất bản vẫn hiện ở dòng phụ của
+   thanh tiêu đề (mục 2 dưới đây, điểm 2). Các chỉ số dẫn xuất của F2-15 (Q5) giữ nguyên là định nghĩa nghiệp
+   vụ, chỉ không còn thẻ riêng trên màn này.
 4. **Thanh lọc và tìm kiếm** — ô tìm "theo mã bài hoặc tiêu đề"
    [SoT: 09-layoutBase/Admin - Quản lý bài tập.dc.html:181], tab độ khó `Tất cả / Easy / Medium / Hard`, tab
    trạng thái `Tất cả / Đã xuất bản / Chưa xuất bản` (nhãn prototype ghi "Bản nháp"), và bộ đếm kết quả
@@ -109,7 +114,10 @@ Q3 → Q5. **Trạng thái vòng đời bài toán đã có mã** — `F2-15` (c
    ở dạng thao tác lô; ba hành động còn lại và "Xoá" **không có mã** — xem Q2, Q3, Q4.
 6. **Bảng bài toán** — 10 cột: ô chọn, Mã, Tiêu đề (liên kết sang `problem_authoring`), Chủ đề, Độ khó,
    Trạng thái, Lượt nộp, AC, "TC · Sửa" (số testcase và thời điểm sửa cuối gộp một cột), và nhóm nút
-   sửa/xoá [SoT: 09-layoutBase/Admin - Quản lý bài tập.dc.html:209-232]. 7 cột sắp xếp được, đảo chiều khi
+   sửa/xoá [SoT: 09-layoutBase/Admin - Quản lý bài tập.dc.html:209-232]. **Cập nhật 2026-10-01:** UI Next.js hiển
+   thị nhóm nút này dưới dạng hai nút chỉ có icon (bút chì = Sửa, thùng rác = Xoá, màu cảnh báo cho Xoá),
+   tên hành động hiện ở tooltip nhỏ bên dưới khi rê chuột hoặc focus bàn phím
+   [SoT: 05-coding/frontend/src/views/shared/problem-management/ui/problem-management-view.tsx:221-238]. 7 cột sắp xếp được, đảo chiều khi
    bấm lại cùng cột [SoT: 09-layoutBase/Admin - Quản lý bài tập.dc.html:518-528]. Cột AC đổi màu theo ngưỡng
    60% và 35% [SoT: 09-layoutBase/Admin - Quản lý bài tập.dc.html:539].
 7. **Phân trang** — 8 dòng mỗi trang, nút Trước/Sau và số trang, nhãn "Trang x / y · hiển thị n dòng"
