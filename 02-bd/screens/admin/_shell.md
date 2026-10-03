@@ -21,7 +21,7 @@ Khung này gồm bốn phần, áp cho **mọi** route `/admin/*` trừ `/admin/
 | :--- | :--- | :--- |
 | Sidebar | `widgets/app-shell/ui/admin-sidebar.tsx` | Điều hướng 11 đích + thu gọn + chuyển theme/ngôn ngữ |
 | Toolbar | `widgets/app-shell/ui/admin-toolbar.tsx` | Hàng đầu trong `<main>`: icon trang trí + khối danh tính |
-| Nền và scope màu | `widgets/app-shell/ui/app-shell.tsx` + `shared/ui/liquid-glass-backdrop.tsx` + `app/globals.css` | Nền liquid-glass, scope `.admin-shell` ghi đè token màu |
+| Nền và scope màu | `widgets/app-shell/ui/app-shell.tsx` + `shared/ui/layout/liquid-glass-backdrop.tsx` + `app/globals.css` | Nền liquid-glass, scope `.admin-shell` ghi đè token màu |
 
 `/admin/login` **không** dùng khung này — nó là màn đứng riêng theo
 `DEC-2026-0915-admin-separate-login-route`, chỉ mượn lại scope `.admin-shell` để ăn cùng bảng màu.
@@ -102,7 +102,7 @@ chưa áp cho trang khu Người học và trang chi tiết lớp. Mỗi BD màn
 ### 4.2. Quy ước icon thao tác + tooltip (`IconAction`, chốt 2026-10-01)
 
 Thao tác ở cuối dòng của bảng (sửa, xoá, nhân bản...) hiển thị bằng nút vuông chỉ có icon thay cho nút chữ, dùng
-component `shared/ui/icon-action.tsx` [SoT: 05-coding/frontend/src/shared/ui/icon-action.tsx:1-80]:
+component `shared/ui/primitives/icon-action.tsx` [SoT: 05-coding/frontend/src/shared/ui/primitives/icon-action.tsx:1-80]:
 
 | Thuộc tính | Quy ước |
 | :--- | :--- |
@@ -118,7 +118,7 @@ là tên hành động chung ("Sửa"), không còn kèm tên bài như "Sửa b
 ### 4.3. Khe `leading` của `PageHeader` (2026-10-01)
 
 `PageHeader` có thêm prop tuỳ chọn `leading`, đặt ở đầu hàng tiêu đề trước phần tên màn; dùng cho icon quay lại ở
-các màn chi tiết và màn soạn [SoT: 05-coding/frontend/src/shared/ui/page-header.tsx:19-35]. Không có `leading` thì
+các màn chi tiết và màn soạn [SoT: 05-coding/frontend/src/shared/ui/layout/page-header.tsx:19-35]. Không có `leading` thì
 bố cục không đổi.
 
 ### 4.4. Nguyên tắc cấu hình của khu Admin (chốt 2026-10-01, owner uỷ quyền cân nhắc)

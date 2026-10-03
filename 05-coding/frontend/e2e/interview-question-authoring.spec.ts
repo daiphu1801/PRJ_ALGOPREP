@@ -12,7 +12,9 @@ test("saving is a single action with no draft/publish split", async ({ page }) =
   await expect(page.getByRole("button", { name: "Lưu" })).toBeVisible();
   // RD Q5: a question is live once saved. Anything offering to publish separately is wrong.
   await expect(page.getByRole("button", { name: /xuất bản/i })).toHaveCount(0);
-  await expect(page.getByText("Chưa lưu")).toBeVisible();
+  // The Save button is disabled until the form changes: the old "Chưa lưu" label is gone (feedback is a toast).
+  await expect(page.getByRole("button", { name: "Lưu" })).toBeDisabled();
+  await expect(page.getByText("Chưa lưu")).toHaveCount(0);
 });
 
 test("an empty rubric saves, a rubric that misses 100% does not", async ({ page }) => {

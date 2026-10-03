@@ -10,6 +10,7 @@ import Link from "next/link";
 import { Search } from "lucide-react";
 import { fetchSavedProblems, type Difficulty, type SavedProblem, type SolveState } from "@/entities/problem";
 import { useT } from "@/shared/i18n";
+import { toast } from "@/shared/lib/toast-store";
 import {
   Badge,
   Button,
@@ -63,6 +64,12 @@ export function SavedProblemsView() {
   function unsave(id: string) {
     // Bỏ lưu xoá luôn ghi chú riêng tư gắn với bookmark đó — REQ-04.
     setAll((previous) => previous.filter((problem) => problem.id !== id));
+    toast.success(t("toast.unsaved"));
+  }
+
+  // The list filters live while typing (no toast per keystroke); Enter is the explicit search.
+  function announceSearch() {
+    toast.info(filtered.length > 0 ? t("toast.searchResult", { count: filtered.length }) : t("toast.searchEmpty"));
   }
 
   const columns: DataTableColumn<SavedProblem>[] = [
@@ -157,6 +164,9 @@ export function SavedProblemsView() {
             placeholder={t("filter.searchPlaceholder")}
             value={query}
             onChange={(event) => setQuery(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") announceSearch();
+            }}
             wrapperClassName="min-w-[220px] flex-1"
           />
           <SegmentedTabs

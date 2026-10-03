@@ -25,6 +25,7 @@ import {
   type RecallLevel,
 } from "@/entities/interview-question";
 import { useT } from "@/shared/i18n";
+import { toast } from "@/shared/lib/toast-store";
 import { Badge, Button, Card, EmptyState, SegmentedTabs, StatCard, TextField } from "@/shared/ui";
 
 // Mặc định 10 thẻ, khoảng 5-20 [SoT: 09-layoutBase/Câu hỏi phỏng vấn.dc.html:235].
@@ -108,10 +109,27 @@ export function InterviewBankListView() {
     rate(current.code, level);
     if (drillIndex + 1 >= drillQueue.length) {
       setView("browse");
+      toast.success(t("toast.drillDone", { count: drillQueue.length }));
       return;
     }
     setDrillIndex((i) => i + 1);
     setRevealed(false);
+  }
+
+  function rateSelected(code: string, level: RecallLevel) {
+    rate(code, level);
+    toast.success(t("toast.rated"));
+  }
+
+  function toggleBookmarkWithToast(code: string) {
+    const wasBookmarked = bookmarks[code] ?? false;
+    toggleBookmark(code);
+    toast.success(wasBookmarked ? t("toast.unbookmarked") : t("toast.bookmarked"));
+  }
+
+  // The list filters live while typing (no toast per keystroke); Enter is the explicit search.
+  function announceSearch() {
+    toast.info(filtered.length > 0 ? t("toast.searchResult", { count: filtered.length }) : t("toast.searchEmpty"));
   }
 
   const recallLabels: Record<RecallLevel, string> = {
@@ -225,6 +243,9 @@ export function InterviewBankListView() {
                 placeholder={t("searchPlaceholder")}
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") announceSearch();
+                }}
                 wrapperClassName="min-w-[180px] flex-1"
               />
               <SegmentedTabs
@@ -267,7 +288,7 @@ export function InterviewBankListView() {
                   bookmarked={bookmarks[question.code] ?? false}
                   bookmarkLabel={t("bookmarkLabel")}
                   onSelect={() => setSelectedCode(question.code)}
-                  onToggleBookmark={() => toggleBookmark(question.code)}
+                  onToggleBookmark={() => toggleBookmarkWithToast(question.code)}
                 />
               ))
             )}
@@ -315,7 +336,7 @@ export function InterviewBankListView() {
                 </p>
                 <RecallLevelPicker
                   value={recall[selected.code] ?? null}
-                  onRate={(level) => rate(selected.code, level)}
+                  onRate={(level) => rateSelected(selected.code, level)}
                   labels={recallLabels}
                   groupLabel={t("quickView.recallLabel")}
                   className="mb-3"

@@ -3,5 +3,5 @@ import { InterviewQuestionManagementView } from "@/views/shared/interview-questi
 // Shared A2+A3 screen — DEC-2026-0825-shared-content-authoring-screens. The same view is also
 // mounted at (instructor)/instructor/interview-questions.
 export default function Page() {
-  return <InterviewQuestionManagementView canManageTopics />;
+  return <InterviewQuestionManagementView basePath="/admin/interview-questions" canManageTopics />;
 }

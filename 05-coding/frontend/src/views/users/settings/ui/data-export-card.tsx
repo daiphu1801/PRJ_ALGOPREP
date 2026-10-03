@@ -3,11 +3,17 @@
 
 import { useT } from "@/shared/i18n";
 import { Card } from "@/shared/ui";
+import { toast } from "@/shared/lib/toast-store";
 import { useExportData } from "@/features/export-my-data";
 
 export function DataExportCard() {
   const t = useT("settings");
   const { pending, exportSubmissions, exportInterviews } = useExportData();
+
+  async function run(action: () => Promise<boolean>) {
+    if (await action()) toast.success(t("dataExport.exported"));
+    else toast.error(t("dataExport.exportFailed"));
+  }
 
   return (
     <Card title={t("dataExport.title")}>
@@ -15,13 +21,13 @@ export function DataExportCard() {
         <ExportButton
           label={t("dataExport.exportSubmissions")}
           format="CSV"
-          onClick={() => void exportSubmissions()}
+          onClick={() => void run(exportSubmissions)}
           disabled={pending === "submissions"}
         />
         <ExportButton
           label={t("dataExport.exportInterviews")}
           format="JSON"
-          onClick={() => void exportInterviews()}
+          onClick={() => void run(exportInterviews)}
           disabled={pending === "interviews"}
         />
       </div>

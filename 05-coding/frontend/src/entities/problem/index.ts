@@ -36,7 +36,11 @@ export {
   AI_GUARD_KEYS,
   TESTCASE_CATEGORIES,
   type AiGuardKey,
+  type DroppedReason,
+  type GenerateTestcasesInput,
+  type GenerateTestcasesResult,
   type ProblemDraft,
+  type ProblemDraftRecord,
   type ProblemLimits,
   type Testcase,
   type TestcaseCategory,
@@ -44,7 +48,12 @@ export {
   type TestcaseVisibility,
   type WorkedExample,
 } from "./model/draft-types";
-export { fetchProblemDraft } from "./api/__mock__/problem-draft-mocks";
+export {
+  useGenerateTestcases,
+  useProblemDraft,
+  usePublishProblem,
+  useSaveProblemDraft,
+} from "./api/queries";
 export {
   addProblemTopic,
   problemTopicLabel,

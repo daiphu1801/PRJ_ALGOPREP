@@ -3,7 +3,7 @@
 // `fakeAuth()` always succeeds in the static prototype
 // [SoT: 02-bd/screens/shared/SHR0101_auth.md Sheet 3 — screen-to-screen transitions]. Here we go one step
 // further than the static prototype (which has zero validation) so the loading overlay and
-// inline-field-error UI have something real to react to; still entirely client-side, no network.
+// field-level UI have something real to react to; still entirely client-side, no network.
 import type {
   ForgotEmailInput,
   ForgotOtpInput,

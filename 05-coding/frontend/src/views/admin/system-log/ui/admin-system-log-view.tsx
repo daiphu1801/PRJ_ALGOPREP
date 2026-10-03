@@ -248,7 +248,7 @@ export function AdminSystemLogView() {
             expiry: values.expiry as ExpiryPolicy,
           })
         }
-        labels={{ save: t("retention.save"), cancel: t("retention.cancel"), errorMin: (min) => t("retention.errorMin", { min }) }}
+        labels={{ save: t("retention.save"), cancel: t("retention.cancel"), saved: t("retention.saved"), errorMin: (min) => t("retention.errorMin", { min }) }}
       />
 
       <ExportLogDialog open={exporting} onClose={() => setExporting(false)} />

@@ -29,6 +29,7 @@ import {
   type Role,
 } from "../api";
 import { useT } from "@/shared/i18n";
+import { toast } from "@/shared/lib/toast-store";
 import {
   Button,
   Card,
@@ -48,7 +49,6 @@ export function AdminPermissionMatrixView() {
   const [addingRole, setAddingRole] = useState(false);
   const [newRoleName, setNewRoleName] = useState("");
   const [confirmingDelete, setConfirmingDelete] = useState(false);
-  const [justSaved, setJustSaved] = useState(false);
 
   const activeRole: Role =
     page.roles.find((role) => role.key === activeRoleKey) ?? page.roles[0]!;
@@ -70,7 +70,6 @@ export function AdminPermissionMatrixView() {
         },
       };
     });
-    setJustSaved(false);
   }
 
   function createRole() {
@@ -84,6 +83,7 @@ export function AdminPermissionMatrixView() {
     setActiveRoleKey(key);
     setAddingRole(false);
     setNewRoleName("");
+    toast.success(t("createRoleDone", { role: name }));
   }
 
   function deleteActiveRole() {
@@ -96,6 +96,7 @@ export function AdminPermissionMatrixView() {
       };
     });
     setActiveRoleKey("INSTRUCTOR");
+    toast.success(t("deleteRoleDone", { role: activeRole.label }));
     setConfirmingDelete(false);
   }
 
@@ -143,8 +144,8 @@ export function AdminPermissionMatrixView() {
         title={t("title")}
         description={t("subtitle")}
         actions={
-          <Button variant="cta" size="sm" onClick={() => setJustSaved(true)}>
-            {justSaved ? t("saved") : t("save")}
+          <Button variant="cta" size="sm" onClick={() => toast.success(t("saveDone"))}>
+            {t("save")}
           </Button>
         }
       />

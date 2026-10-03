@@ -29,6 +29,7 @@ import {
   type ClassSummary,
 } from "@/entities/class";
 import { useT } from "@/shared/i18n";
+import { toast, toastFirstError } from "@/shared/lib/toast-store";
 import {
   Badge,
   Button,
@@ -113,8 +114,12 @@ export function ClassManagementView() {
         dialog={formDialog}
         onClose={() => setFormDialog(null)}
         onSubmit={(form) => {
-          if (formDialog?.mode === "edit") updateClass.mutate({ id: formDialog.target.id, form });
-          else createClass.mutate(form);
+          const done = {
+            onSuccess: () => toast.success(t(formDialog?.mode === "edit" ? "toast.updated" : "toast.created", { name: form.name })),
+            onError: () => toast.error(t("toast.failed")),
+          };
+          if (formDialog?.mode === "edit") updateClass.mutate({ id: formDialog.target.id, form }, done);
+          else createClass.mutate(form, done);
           setFormDialog(null);
         }}
         t={t}
@@ -126,7 +131,13 @@ export function ClassManagementView() {
         open={deleteTarget !== null}
         onClose={() => setDeleteTarget(null)}
         onConfirm={() => {
-          if (deleteTarget) deleteClass.mutate(deleteTarget.id);
+          if (deleteTarget) {
+            const name = deleteTarget.name;
+            deleteClass.mutate(deleteTarget.id, {
+              onSuccess: () => toast.success(t("toast.deleted", { name })),
+              onError: () => toast.error(t("toast.failed")),
+            });
+          }
           setDeleteTarget(null);
         }}
         title={t("popup.deleteClassTitle", { name: deleteTarget?.name ?? "" })}
@@ -155,8 +166,19 @@ function ClassFormDialog({
   const editing = dialog?.mode === "edit" ? dialog.target : null;
   const [name, setName] = useState(editing?.name ?? "");
   const [scheduleNote, setScheduleNote] = useState(editing?.scheduleNote ?? "");
+  const [touched, setTouched] = useState(false);
 
   if (!dialog) return null;
+
+  const nameInvalid = touched && !name.trim();
+  function submit() {
+    setTouched(true);
+    if (!name.trim()) {
+      toastFirstError([t("validation.nameRequired")]);
+      return;
+    }
+    onSubmit({ name: name.trim(), scheduleNote: scheduleNote.trim() || undefined });
+  }
 
   return (
     <Modal
@@ -168,14 +190,14 @@ function ClassFormDialog({
           <Button variant="ghost" size="sm" onClick={onClose}>
             {t("cancel")}
           </Button>
-          <Button size="sm" disabled={!name.trim()} onClick={() => onSubmit({ name: name.trim(), scheduleNote: scheduleNote.trim() || undefined })}>
+          <Button size="sm" onClick={submit}>
             {t("popup.saveClass")}
           </Button>
         </>
       }
     >
       <div className="flex flex-col gap-3">
-        <TextField label={t("popup.classNameLabel")} value={name} onChange={(e) => setName(e.target.value)} required />
+        <TextField label={t("popup.classNameLabel")} value={name} onChange={(e) => setName(e.target.value)} required invalid={nameInvalid} />
         <TextField label={t("popup.scheduleLabel")} value={scheduleNote} onChange={(e) => setScheduleNote(e.target.value)} />
       </div>
     </Modal>
@@ -194,7 +216,15 @@ function InviteCodeDialog({ classId, onClose, t }: { classId: string | null; onC
       onClose={onClose}
       title={t("popup.inviteCodeTitle")}
       footer={
-        <Button size="sm" onClick={() => createInvite.mutate(classId)}>
+        <Button
+          size="sm"
+          onClick={() =>
+            createInvite.mutate(classId, {
+              onSuccess: () => toast.success(t("toast.inviteCreated")),
+              onError: () => toast.error(t("toast.failed")),
+            })
+          }
+        >
           {t("popup.createInviteCode")}
         </Button>
       }

@@ -21,7 +21,7 @@ Khung này gồm **ba phần**, áp cho mọi route `/instructor/*`; chân trang
 | Phần | File hiện thực dự kiến | Vai trò |
 | :--- | :--- | :--- |
 | Sidebar | `widgets/app-shell/ui/instructor-sidebar.tsx` | Điều hướng + thu gọn + chuyển theme + khối danh tính |
-| Nền và scope màu | `widgets/app-shell/ui/app-shell.tsx` + `shared/ui/liquid-glass-backdrop.tsx` + `app/globals.css` | Nền liquid-glass, scope `.instructor-shell` ghi đè token màu |
+| Nền và scope màu | `widgets/app-shell/ui/app-shell.tsx` + `shared/ui/layout/liquid-glass-backdrop.tsx` + `app/globals.css` | Nền liquid-glass, scope `.instructor-shell` ghi đè token màu |
 
 Hai thứ khu Admin có mà khu này **không** có, không phải thiếu sót mà là khác biệt thật của prototype:
 

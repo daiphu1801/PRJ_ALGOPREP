@@ -20,6 +20,7 @@ import Link from "next/link";
 import { useAssignmentSummary, useClassAssignments, useRemoveAssignment, type AssignedProblem } from "@/entities/class-assignment";
 import { useInstructorClasses } from "@/entities/class";
 import { useT } from "@/shared/i18n";
+import { toast } from "@/shared/lib/toast-store";
 import {
   Badge,
   Button,
@@ -162,7 +163,14 @@ export function ClassAssignmentsView() {
         onClose={() => setRemoveTarget(null)}
         onConfirm={() => {
           if (removeTarget && removeClassChoice) {
-            removeAssignment.mutate({ problemId: removeTarget.id, classId: removeClassChoice });
+            const title = removeTarget.title;
+            removeAssignment.mutate(
+              { problemId: removeTarget.id, classId: removeClassChoice },
+              {
+                onSuccess: () => toast.success(t("toast.removed", { title })),
+                onError: () => toast.error(t("toast.failed")),
+              },
+            );
           }
           setRemoveTarget(null);
         }}

@@ -29,6 +29,7 @@ import {
 } from "../api";
 import { aiBudgetSettings, useModelPrices } from "@/entities/ai-budget";
 import { useT } from "@/shared/i18n";
+import { toast } from "@/shared/lib/toast-store";
 import {
   Badge,
   Button,
@@ -176,7 +177,7 @@ export function AdminAiUsageView() {
                 { value: "30d", label: t("range.30d") },
               ]}
             />
-            <Button variant="cta" size="sm">
+            <Button variant="cta" size="sm" onClick={() => toast.success(t("exportDone"))}>
               {t("export")}
             </Button>
           </>

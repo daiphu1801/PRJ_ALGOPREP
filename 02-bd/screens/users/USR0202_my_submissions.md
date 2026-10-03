@@ -46,11 +46,11 @@
 | Tên vật lý (slug) | `my_submissions` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`) |
-| Phiên bản | V0.1 |
+| Phiên bản | V0.2 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/22 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/09/22 |
+| Ngày cập nhật | 2026/10/03 |
 
 ---
 
@@ -60,6 +60,7 @@
 | :--- | :--- | :--- | :--- | :--- |
 | V0.1 | Toàn bộ | Tạo mới theo mẫu 9 sheet. Chốt 4 thẻ thống kê tổng quan (khớp F1-07), bộ lọc kết hợp tìm kiếm và đa tiêu chí (F1-18), phân trang máy chủ và quy tắc mở khóa nút Phân tích AI F5-01 | 2026/09/22 | Nhóm phát triển AlgoPrep |
 | V0.2 | Sheet 3, 5, 7.3, Câu hỏi mở | Viết lại Sheet 3 theo khuôn "Danh sách chuyển màn" 6 thẻ + sơ đồ Mermaid; viết lại Sheet 5 theo khuôn 14 cột (thêm Bảng DB/Cột DB, mỗi item một dòng); bỏ cột "Phương thức & URL dự kiến" ở Sheet 7.3. Sửa nguồn 2 thẻ thống kê: "Được chấp nhận" và "Đúng ngay lần đầu" đổi công thức đúng theo cột thật của `identity.user_submission_stats` (không có `acceptedRate` lưu sẵn); phát hiện "Dùng nhiều nhất" (ngôn ngữ) chưa có cột read model nào — thêm Câu hỏi mở Q4 | 2026/09/24 | Nhóm phát triển AlgoPrep |
+| V0.2 | Sheet 8, 9 | Đổi báo lỗi tải sau thao tác lọc, tìm kiếm và `[Tiêu điểm]` ô tìm kiếm sang toast; giữ nguyên khối lỗi tải màn kèm nút thử lại ở EVT-1. Theo `DEC-2026-1003-toast-feedback-channel`. | 2026/10/03 | AI |
 
 ---
 
@@ -337,9 +338,9 @@ số — cùng quy ước đã chốt ở `02-bd/screens/users/USR0101_problem_l
 | NO | Loại | Sự kiện | Chi tiết | Chuyển màn | Gọi API | Tên xử lý | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :-: | :--- | :--- |
 | 1 | Khởi tạo | Tải màn hình | Đọc tham số URL, tải 4 thẻ thống kê và trang danh sách bài nộp đầu tiên. | Không | Có | `GetMySubmissionSummaryStats`, `ListMySubmissions` | [Các bước]<br>1. Kiểm tra đăng nhập.<br>2. Đọc các tham số `q`, `verdict`, `language`, `page` từ URL.<br>3. Tải song song thống kê và bảng dữ liệu.<br>[Khi thành công] Hiển thị các thẻ chỉ số và bảng lịch sử.<br>[Khi lỗi] Hiển thị thông báo lỗi và nút thử lại. |
-| 2 | Nhập liệu | Nhập tìm kiếm bài | Gõ từ khóa vào ô tìm kiếm bài toán. | Không | Có | `ListMySubmissions` | [Các bước]<br>1. Debounce 400ms.<br>2. Đặt `page = 1`, cập nhật param `q` vào URL.<br>3. Gọi `ListMySubmissions` tải lại bảng.<br>[Khi thành công] Bảng cập nhật danh sách bài khớp từ khóa.<br>[Khi lỗi] Báo lỗi tải dữ liệu. |
-| 3 | Lọc | Chọn tab Verdict | Bấm chọn một tab verdict (Accepted, WA, TLE...). | Không | Có | `ListMySubmissions` | [Các bước]<br>1. Đặt `page = 1`, cập nhật param `verdict` vào URL.<br>2. Gọi `ListMySubmissions`.<br>[Khi thành công] Bảng chỉ hiện bài nộp đúng verdict đang chọn.<br>[Khi lỗi] Báo lỗi tải dữ liệu. |
-| 4 | Lọc | Chọn tab Ngôn ngữ | Bấm chọn một tab ngôn ngữ (Python, Java, C++). | Không | Có | `ListMySubmissions` | [Các bước]<br>1. Đặt `page = 1`, cập nhật param `language` vào URL.<br>2. Gọi `ListMySubmissions`.<br>[Khi thành công] Bảng chỉ hiện bài nộp bằng ngôn ngữ đang chọn.<br>[Khi lỗi] Báo lỗi tải dữ liệu. |
+| 2 | Nhập liệu | Nhập tìm kiếm bài | Gõ từ khóa vào ô tìm kiếm bài toán. | Không | Có | `ListMySubmissions` | [Các bước]<br>1. Debounce 400ms.<br>2. Đặt `page = 1`, cập nhật param `q` vào URL.<br>3. Gọi `ListMySubmissions` tải lại bảng.<br>[Khi thành công] Bảng cập nhật danh sách bài khớp từ khóa. Nhấn Enter trong ô tìm kiếm thì toast thông tin báo số lượt nộp tìm thấy (hoặc không có lượt nào); gõ dở thì không toast [Nguồn: 05-coding/frontend/src/views/users/my-submissions/ui/my-submissions-view.tsx:75-78].<br>[Khi lỗi] Hiển thị toast lỗi tải dữ liệu. |
+| 3 | Lọc | Chọn tab Verdict | Bấm chọn một tab verdict (Accepted, WA, TLE...). | Không | Có | `ListMySubmissions` | [Các bước]<br>1. Đặt `page = 1`, cập nhật param `verdict` vào URL.<br>2. Gọi `ListMySubmissions`.<br>[Khi thành công] Bảng chỉ hiện bài nộp đúng verdict đang chọn.<br>[Khi lỗi] Hiển thị toast lỗi tải dữ liệu. |
+| 4 | Lọc | Chọn tab Ngôn ngữ | Bấm chọn một tab ngôn ngữ (Python, Java, C++). | Không | Có | `ListMySubmissions` | [Các bước]<br>1. Đặt `page = 1`, cập nhật param `language` vào URL.<br>2. Gọi `ListMySubmissions`.<br>[Khi thành công] Bảng chỉ hiện bài nộp bằng ngôn ngữ đang chọn.<br>[Khi lỗi] Hiển thị toast lỗi tải dữ liệu. |
 | 5 | Điều hướng | Bấm link bài toán | Bấm vào tên bài toán trong bảng. | Có | Không | - | [Các bước]<br>1. Điều hướng sang `problem_detail` (`USR0102`) của bài tương ứng. |
 | 6 | Điều hướng | Bấm nút Kết quả | Bấm nút "Kết quả" trên dòng bài nộp. | Có | Không | - | [Các bước]<br>1. Điều hướng sang `submission_result` (`USR0201`) kèm `submission_id`. |
 | 7 | Điều hướng | Bấm nút Phân tích | Bấm nút "Phân tích" trên dòng bài nộp Accepted. | Có | Không | - | [Các bước]<br>1. Kiểm tra verdict = `ACCEPTED`.<br>2. Điều hướng sang `solution_review` (`USR0301`) kèm `submission_id`. |
@@ -355,7 +356,7 @@ số — cùng quy ước đã chốt ở `02-bd/screens/users/USR0101_problem_l
 | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: |
 | 1 | Kiểm quyền | Phải đăng nhập | [Nội dung kiểm] Học viên chưa đăng nhập không được truy cập lịch sử bài nộp.<br>[Nơi thực thi] Giao diện và API gateway.<br>[Tiêu điểm] Toàn màn. | Lỗi | Chưa có mã thông báo | Nội dung "Vui lòng đăng nhập để xem lịch sử bài nộp." | EVT-1 | 1 |
 | 2 | Kiểm quyền | Giới hạn dữ liệu cá nhân | [Nội dung kiểm] API chỉ quét các bài nộp có `user_id` trùng với ID trong token phiên đăng nhập.<br>[Nơi thực thi] Máy chủ tầng truy vấn.<br>[Tiêu điểm] Toàn màn. | Lỗi | Mã lỗi trong phản hồi | Bảo đảm quyền riêng tư tuyệt đối cho học viên. | EVT-1, EVT-2, EVT-3, EVT-4 | 2 |
-| 3 | Kiểm nhập liệu | Độ dài từ khóa tìm kiếm | [Nội dung kiểm] Cắt gọn chuỗi tìm kiếm tối đa 100 ký tự.<br>[Nơi thực thi] Màn hình.<br>[Tiêu điểm] Ô tìm kiếm. | Cảnh báo | Chưa có mã thông báo | Nội dung "Từ khóa tìm kiếm tối đa 100 ký tự." | EVT-2 | 1 |
+| 3 | Kiểm nhập liệu | Độ dài từ khóa tìm kiếm | [Nội dung kiểm] Cắt gọn chuỗi tìm kiếm tối đa 100 ký tự.<br>[Nơi thực thi] Màn hình.<br>[Tiêu điểm] Viền ô tìm kiếm + toast. | Cảnh báo | Chưa có mã thông báo | Nội dung "Từ khóa tìm kiếm tối đa 100 ký tự." | EVT-2 | 1 |
 | 4 | Kiểm nghiệp vụ | Tham số lọc URL không hợp lệ | [Nội dung kiểm] Nếu người dùng chỉnh tay tham số `verdict` hoặc `language` trên URL thành giá trị lạ, tự động fallback về `ALL`.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Thanh lọc. | Cảnh báo | Không có thông báo | Tránh lỗi làm trắng màn hình khi mở link cũ. | EVT-1 | 3 |
 | 5 | Kiểm nghiệp vụ | Trạng thái nút Phân tích | [Nội dung kiểm] Kiểm tra các dòng có verdict khác `ACCEPTED` không được phép click nút Phân tích AI.<br>[Nơi thực thi] Màn hình.<br>[Tiêu điểm] Nút Phân tích. | Cảnh báo | Không có thông báo | Tuân thủ nghiêm ngặt quy tắc F5-01. | EVT-7 | 1 |
 

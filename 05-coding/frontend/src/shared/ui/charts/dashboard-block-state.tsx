@@ -6,6 +6,7 @@
 // DEC-2026-0831-admin-overview-ui-decisions). Purely presentational — no admin/dashboard domain
 // type — so it lives in shared/ui per SYS0102_frontend_architecture.md section 2.A-B.
 import type { ReactNode } from "react";
+import { toast } from "@/shared/lib/toast-store";
 import { Button, EmptyState, ErrorState, Skeleton } from "@/shared/ui";
 
 type DashboardBlockStateProps = {
@@ -13,7 +14,8 @@ type DashboardBlockStateProps = {
   isLoading: boolean;
   isError: boolean;
   isEmpty: boolean;
-  onRetry: () => void;
+  /** May return the refetch promise (react-query); a result with `isError` means it failed again. */
+  onRetry: () => unknown;
   emptyMessage: string;
   errorMessage: string;
   retryLabel: string;
@@ -23,6 +25,11 @@ type DashboardBlockStateProps = {
   hideTitle?: boolean;
   children: ReactNode;
 };
+
+/** react-query resolves a failed refetch instead of throwing, with `isError` set on the result. */
+function failedAgain(result: unknown): boolean {
+  return typeof result === "object" && result !== null && "isError" in result && result.isError === true;
+}
 
 export function DashboardBlockState({
   title,
@@ -37,6 +44,12 @@ export function DashboardBlockState({
   hideTitle = false,
   children,
 }: DashboardBlockStateProps) {
+  // The block already says it failed. A retry the user just pressed that fails again is a new event,
+  // so it gets a toast; the first load failure does not (a dashboard can have many blocks failing).
+  async function retry() {
+    if (failedAgain(await onRetry())) toast.error(errorMessage);
+  }
+
   return (
     <section
       aria-label={title}
@@ -49,7 +62,7 @@ export function DashboardBlockState({
         <ErrorState>
           <div className="flex flex-col items-center gap-2">
             <span>{errorMessage}</span>
-            <Button size="sm" variant="ghost" onClick={onRetry}>
+            <Button size="sm" variant="ghost" onClick={() => void retry()}>
               {retryLabel}
             </Button>
           </div>

@@ -24,7 +24,10 @@ phạm vi riêng theo lớp, vì F6-11 (bộ câu hỏi riêng theo lớp) đã 
 
 **Slug mới, chưa có prototype (`[Đợi nextjs]`).** Chốt 2026-08-30, qua hỏi trực tiếp chủ dự án khi trả lời
 Câu hỏi mở Q4 của `01-rd/screens/shared/SHR0301_interview_question_management.md`, cùng `DEC-2026-0830-interview-bank-crud`. Route: `/instructor/interview-questions/[id]`,
-`/admin/interview-questions/[id]` — **chốt giữ nguyên đề xuất 2026-09-01** (Câu hỏi mở Q6). Cấu trúc màn dưới đây **suy diễn song song
+`/admin/interview-questions/[id]` — **chốt giữ nguyên đề xuất 2026-09-01** (Câu hỏi mở Q6).
+**Cập nhật 2026-10-02 (`DEC-2026-1002-split-detail-and-edit-pages`):** khu Admin, `/admin/interview-questions/[id]` nay là
+trang chỉ đọc `interview_question_info` (`SHR0303`); màn soạn này chuyển sang `/admin/interview-questions/[id]/edit`, và
+`/admin/interview-questions/new` là chế độ tạo mới. **Cập nhật 2026-10-03:** khu Giảng viên làm theo, cùng cấu trúc (`/instructor/interview-questions/[id]` chỉ đọc, `/instructor/interview-questions/[id]/edit` và `/instructor/interview-questions/new` là màn soạn) — phần khoá route của Q6 không còn đúng ở cả hai khu [SoT: 05-coding/frontend/src/app/(instructor)/instructor/interview-questions/[questionId]/edit/page.tsx:1-10]. Cấu trúc màn dưới đây **suy diễn song song
 theo tiền lệ `problem_authoring`** (một màn soạn riêng cho một bản ghi phức tạp, không phải modal/drawer)
 — quyết định gốc đã dẫn rõ chính tiền lệ này khi cắt bỏ phương án modal, không phải suy diễn tự do.
 
@@ -77,9 +80,9 @@ bản) `[SoT: Suy luận, song song tiền lệ problem_authoring — không t�
    bố cục là lưới hai cột rộng toàn trang — cột rộng chứa Nhóm 1 (nội dung câu hỏi), Nhóm 2 (câu hỏi đào
    sâu) và Nhóm 3 (bộ tiêu chí đánh giá); cột hẹp cố định khi cuộn chứa phân loại (chủ đề, độ khó thuộc
    Nhóm 1) và, **chỉ ở chế độ sửa**, khối Hành động quản trị (Nhóm 4: Nhân bản, Ngừng dùng)
-   [SoT: 05-coding/frontend/src/views/shared/interview-question-authoring/ui/interview-question-authoring-view.tsx:9-12, 159-161, 286-321].
+   [SoT: 05-coding/frontend/src/views/shared/interview-question-authoring/ui/interview-question-authoring-view.tsx:9-12, 160-161, 287, 305-321].
    Màn tải câu hỏi theo mã trên route; mã không tồn tại thì hiện trạng thái "không tìm thấy" kèm nút quay lại
-   [SoT: 05-coding/frontend/src/views/shared/interview-question-authoring/ui/interview-question-authoring-view.tsx:123-135].
+   [SoT: 05-coding/frontend/src/views/shared/interview-question-authoring/ui/interview-question-authoring-view.tsx:124-136].
 
 ### 2.1 Cấu trúc hệ thống liên quan
 
@@ -114,7 +117,7 @@ bản) `[SoT: Suy luận, song song tiền lệ problem_authoring — không t�
 | Q3 | ~~Câu hỏi đào sâu (nhóm 2) là văn bản tự do hay có cấu trúc?~~ **ĐÃ CHỐT (2026-09-01):** danh sách văn bản tự do, không giới hạn số lượng, không có độ khó riêng — AI dùng nguyên văn khi truy vấn ở giai đoạn Phản biện (F5-11). | — | Đã chốt. | Đã đóng |
 | Q4 | ~~Nhân bản một câu hỏi có nhân bản luôn cả bộ tiêu chí và câu hỏi đào sâu không?~~ **ĐÃ CHỐT (2026-09-01):** nhân bản toàn bộ 4 nhóm, giữ nguyên tiền lệ `problem_management`/F2-16 (nhân bản = sao chép toàn bộ nội dung). | — | Đã chốt. | Đã đóng |
 | Q5 | ~~Nút "Lưu" có phân biệt "Lưu nháp" và "Lưu và công bố" như `problem_authoring`, hay câu hỏi hiện ngay khi lưu?~~ **ĐÃ CHỐT (2026-09-01):** không có vòng đời nháp/xuất bản riêng — câu hỏi hiện ngay cho học viên khi lưu (trừ khi tự động ẩn khỏi Chế độ luyện do thiếu tiêu chí, đã chốt ở mục 2). | — | Đã chốt. | Đã đóng |
-| Q6 | ~~Route chính xác — giữ đề xuất hay đổi khi build FE?~~ **ĐÃ CHỐT (2026-09-01):** giữ đề xuất `/instructor/interview-questions/[id]`, `/admin/interview-questions/[id]` — khớp đúng khuôn mẫu route của `problem_authoring`. | — | Đã chốt. | Đã đóng |
+| Q6 | ~~Route chính xác — giữ đề xuất hay đổi khi build FE?~~ **ĐÃ CHỐT (2026-09-01):** giữ đề xuất `/instructor/interview-questions/[id]`, `/admin/interview-questions/[id]` — khớp đúng khuôn mẫu route của `problem_authoring`. **Phần khoá route bị thay thế** bởi `DEC-2026-1002-split-detail-and-edit-pages`: khu Admin từ 2026-10-02, khu Giảng viên từ 2026-10-03 (`[id]` là trang chỉ đọc, form soạn ở `[id]/edit` và `/new`). | — | Đã chốt. | Đã đóng |
 
 ---
 

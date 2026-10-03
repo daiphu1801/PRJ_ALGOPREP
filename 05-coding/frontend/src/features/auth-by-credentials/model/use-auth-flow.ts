@@ -34,6 +34,13 @@ const QUICK_LOGIN_PASSWORD = "demo1234";
 
 type FieldValues = Record<string, string | boolean>;
 
+/**
+ * What the form should tell the user, as an i18n key relative to the "auth" namespace. The hook has
+ * no translator (it stays testable without a provider), so `AuthForm` translates `key` and raises
+ * the toast. A fresh object per event, so repeating the same failure still toasts again.
+ */
+export type AuthFeedback = { tone: "success" | "error"; key: string };
+
 function zodErrorsToFieldErrors(error: ZodError): AuthFieldErrors {
   const result: AuthFieldErrors = {};
   for (const issue of error.issues) {
@@ -56,6 +63,7 @@ export function useAuthFlow(initialMode: AuthMode, loginFn: (input: LoginInput) 
   const [mode, setModeState] = useState<AuthMode>(initialMode);
   const [fields, setFields] = useState<FieldValues>({});
   const [fieldErrors, setFieldErrors] = useState<AuthFieldErrors>({});
+  const [feedback, setFeedback] = useState<AuthFeedback | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loadingStep, setLoadingStep] = useState<number | null>(null);
   const [deactivatedBanner, setDeactivatedBanner] = useState(false);
@@ -65,6 +73,15 @@ export function useAuthFlow(initialMode: AuthMode, loginFn: (input: LoginInput) 
   // One id per forgot-password journey so the mock's per-attempt OTP counter (module-level Map,
   // see entities/auth/api/__mock__/fake-auth.ts) doesn't leak across separate attempts.
   const otpSessionKey = useRef(0);
+
+  /** Marks the failed fields and asks for one error toast carrying the first message. */
+  const raise = useCallback((errors: AuthFieldErrors) => {
+    setFieldErrors(errors);
+    const first = Object.values(errors).find(Boolean);
+    if (first) setFeedback({ tone: "error", key: first });
+  }, []);
+
+  const confirm = useCallback((key: string) => setFeedback({ tone: "success", key }), []);
 
   const setMode = useCallback((next: AuthMode) => {
     setModeState(next);
@@ -107,14 +124,14 @@ export function useAuthFlow(initialMode: AuthMode, loginFn: (input: LoginInput) 
       termsAccepted: Boolean(fields.termsAccepted),
     });
     if (!parsed.success) {
-      setFieldErrors(zodErrorsToFieldErrors(parsed.error));
+      raise(zodErrorsToFieldErrors(parsed.error));
       return;
     }
     setIsSubmitting(true);
     try {
       const outcome = await signup(parsed.data);
       if (!outcome.ok) {
-        setFieldErrors(outcome.fieldErrors);
+        raise(outcome.fieldErrors);
         return;
       }
       await runLoadingOverlayThenNavigate(outcome.role);
@@ -122,7 +139,7 @@ export function useAuthFlow(initialMode: AuthMode, loginFn: (input: LoginInput) 
       setIsSubmitting(false);
       setLoadingStep(null);
     }
-  }, [fields, runLoadingOverlayThenNavigate]);
+  }, [fields, raise, runLoadingOverlayThenNavigate]);
 
   /** Everything after the input is valid. Split out so `quickLogin` can reach it without going
       through the form fields — the two differ only in where the credentials come from. */
@@ -132,7 +149,7 @@ export function useAuthFlow(initialMode: AuthMode, loginFn: (input: LoginInput) 
       try {
         const outcome = await loginFn(input);
         if (!outcome.ok) {
-          setFieldErrors(outcome.fieldErrors);
+          raise(outcome.fieldErrors);
           return;
         }
         if (outcome.deactivated) {
@@ -147,7 +164,7 @@ export function useAuthFlow(initialMode: AuthMode, loginFn: (input: LoginInput) 
         setLoadingStep(null);
       }
     },
-    [loginFn, runLoadingOverlayThenNavigate],
+    [loginFn, raise, runLoadingOverlayThenNavigate],
   );
 
   const submitLogin = useCallback(async () => {
@@ -157,11 +174,11 @@ export function useAuthFlow(initialMode: AuthMode, loginFn: (input: LoginInput) 
       rememberMe: Boolean(fields.rememberMe),
     });
     if (!parsed.success) {
-      setFieldErrors(zodErrorsToFieldErrors(parsed.error));
+      raise(zodErrorsToFieldErrors(parsed.error));
       return;
     }
     await runLogin(parsed.data);
-  }, [fields, runLogin]);
+  }, [fields, raise, runLogin]);
 
   /**
    * One-click login with a canned identifier, for the mock-data quick-login panel. It does NOT set
@@ -205,15 +222,16 @@ export function useAuthFlow(initialMode: AuthMode, loginFn: (input: LoginInput) 
     try {
       await cancelDeactivation();
       setDeactivatedBanner(false);
+      confirm("notice.deactivationCancelled");
     } finally {
       setIsSubmitting(false);
     }
-  }, []);
+  }, [confirm]);
 
   const submitForgotEmail = useCallback(async () => {
     const parsed = forgotEmailSchema.safeParse({ email: fields.email ?? "" });
     if (!parsed.success) {
-      setFieldErrors(zodErrorsToFieldErrors(parsed.error));
+      raise(zodErrorsToFieldErrors(parsed.error));
       return;
     }
     setIsSubmitting(true);
@@ -224,22 +242,23 @@ export function useAuthFlow(initialMode: AuthMode, loginFn: (input: LoginInput) 
       setOtpAttemptsLeft(5);
       setOtpCooldownUntil(Date.now() + OTP_RESEND_COOLDOWN_MS);
       setMode("forgot_otp");
+      confirm("notice.codeSent");
     } finally {
       setIsSubmitting(false);
     }
-  }, [fields, setMode]);
+  }, [fields, raise, confirm, setMode]);
 
   const submitForgotOtp = useCallback(async () => {
     const parsed = forgotOtpSchema.safeParse({ otp: fields.otp ?? "" });
     if (!parsed.success) {
-      setFieldErrors(zodErrorsToFieldErrors(parsed.error));
+      raise(zodErrorsToFieldErrors(parsed.error));
       return;
     }
     setIsSubmitting(true);
     try {
       const outcome = await verifyOtp(parsed.data, String(otpSessionKey.current));
       if (!outcome.ok) {
-        setFieldErrors(outcome.fieldErrors);
+        raise(outcome.fieldErrors);
         setOtpAttemptsLeft(outcome.attemptsLeft);
         return;
       }
@@ -247,7 +266,7 @@ export function useAuthFlow(initialMode: AuthMode, loginFn: (input: LoginInput) 
     } finally {
       setIsSubmitting(false);
     }
-  }, [fields, setMode]);
+  }, [fields, raise, setMode]);
 
   const submitResendOtp = useCallback(async () => {
     if (Date.now() < otpCooldownUntil) return;
@@ -257,10 +276,11 @@ export function useAuthFlow(initialMode: AuthMode, loginFn: (input: LoginInput) 
       otpSessionKey.current += 1;
       setOtpAttemptsLeft(5);
       setOtpCooldownUntil(Date.now() + OTP_RESEND_COOLDOWN_MS);
+      confirm("notice.codeResent");
     } finally {
       setIsSubmitting(false);
     }
-  }, [otpCooldownUntil]);
+  }, [otpCooldownUntil, confirm]);
 
   const submitForgotReset = useCallback(async () => {
     const parsed = forgotResetSchema.safeParse({
@@ -268,22 +288,23 @@ export function useAuthFlow(initialMode: AuthMode, loginFn: (input: LoginInput) 
       confirmPassword: fields.confirmPassword ?? "",
     });
     if (!parsed.success) {
-      setFieldErrors(zodErrorsToFieldErrors(parsed.error));
+      raise(zodErrorsToFieldErrors(parsed.error));
       return;
     }
     setIsSubmitting(true);
     try {
       const outcome = await resetPassword(parsed.data);
       if (!outcome.ok) {
-        setFieldErrors(outcome.fieldErrors);
+        raise(outcome.fieldErrors);
         return;
       }
       // Does not auto-login (01-rd/screens/shared/auth.md:58-59).
       setMode("login");
+      confirm("notice.passwordReset");
     } finally {
       setIsSubmitting(false);
     }
-  }, [fields, setMode]);
+  }, [fields, raise, confirm, setMode]);
 
   const submit = useCallback(() => {
     switch (mode) {
@@ -308,6 +329,7 @@ export function useAuthFlow(initialMode: AuthMode, loginFn: (input: LoginInput) 
     fields,
     updateField,
     fieldErrors,
+    feedback,
     isSubmitting,
     loadingStep,
     deactivatedBanner,

@@ -20,6 +20,14 @@ bản cho người học [SoT: 01-rd/req/problem-bank.md — F2-01]. Đây là m
 mình, A3 quản toàn bộ kho — cơ chế gác cửa có sẵn qua `PROBLEM_AUTHORING`/`TESTCASE_MANAGEMENT`
 (`01-rd/req/identity.md` — F1-10 tới F1-12). Ghi quyết định: `DEC-2026-0825-shared-content-authoring-screens`.
 
+**Cập nhật 2026-10-02 (`DEC-2026-1002-split-detail-and-edit-pages`):** khu Admin, URL gốc `/admin/problems/[id]` nay là trang
+chỉ đọc `problem_info` (`SHR0203`); màn soạn này chuyển sang `/admin/problems/[id]/edit`, còn `/admin/problems/new` là
+chế độ tạo mới. **Cập nhật 2026-10-03:** khu Giảng viên đã tách giống hệt khu Admin — `/instructor/problems/[problemId]` là
+trang chỉ đọc, màn soạn nằm ở `/instructor/problems/[problemId]/edit` và `/instructor/problems/new`
+[SoT: 05-coding/frontend/src/app/(instructor)/instructor/problems/[problemId]/edit/page.tsx; 05-coding/frontend/src/app/(instructor)/instructor/problems/new/page.tsx].
+View nhận prop bắt buộc `basePath` (gốc của khu) cho liên kết quay lại, không còn gắn cứng `/admin`
+[SoT: 05-coding/frontend/src/views/shared/problem-authoring/ui/problem-authoring-view.tsx:59-63, 168].
+
 Đối chiếu prototype: `09-layoutBase/Admin - Soạn đề bài.dc.html` (736 dòng).
 
 **Lưu ý tích hợp:**
@@ -102,7 +110,7 @@ liệu chạy máy) — prototype tách hai tab riêng và giữ đúng phân bi
 - Tóm tắt "N testcase · M công khai · tổng trọng số X" (dòng 257, 708).
 - **"Tải lên hàng loạt"** (dòng 259) — F2-07.
 - **"Sinh tự động"** (dòng 260) — F2-14. Prototype tĩnh chưa gắn `onClick`, đúng như
-  `06-plan/PROTOTYPE_DEBT.md` đã ghi nhận [SoT: 06-plan/PROTOTYPE_DEBT.md:266-267]. **Điều kiện mở nút
+  `06-plan/PROTOTYPE_DEBT.md` đã ghi nhận [SoT: 06-plan/PROTOTYPE_DEBT.md:289-290]. **Điều kiện mở nút
   (sửa 2026-09-28):** phải có **tối thiểu 2 testcase Sample do người soạn đề tự viết** và **Đáp án mẫu
   (F2-18) đã chạy Pass cả 2 Sample đó**; chưa đủ thì nút vô hiệu kèm lý do. Bấm nút không sinh thẳng dữ
   liệu mà **sinh một script**, chạy script trong sandbox rồi mới nạp input qua Đáp án mẫu lấy output
@@ -140,7 +148,7 @@ liệu chạy máy) — prototype tách hai tab riêng và giữ đúng phân bi
   **mỗi lần mở trừ điểm gợi ý**" (dòng 314), nhãn chi phí từng mức: "Không trừ điểm" / "−5 điểm" / "−12 điểm"
   (dòng 635-637). Kèm nút **"Nhờ AI soạn nháp"** (dòng 312). **Không có mã `Fx-nn` nào phủ khối này** — xem
   Q5. Đối ứng phía người học là tab "Gợi ý" ở `problem_detail`, cũng chưa gắn mã
-  [SoT: 01-rd/screens/users/USR0102_problem_detail.md:51].
+  [SoT: 01-rd/screens/users/USR0102_problem_detail.md:58].
 - **"Chỉ dẫn cho trợ lý AI"** (dòng 328-339, 644-662, 722) — textarea ngữ cảnh riêng của bài, phụ đề "nối vào
   prompt hệ thống ở màn Cấu hình AI" (dòng 330), kèm 3 cờ: "Không đưa mã hoàn chỉnh", "Chỉ hỏi ngược, không
   giải hộ", "Cho phép AI mở gợi ý ẩn" (dòng 645-647). **Không có mã nào phủ** — F5-23 chỉ nói cấu hình prompt
@@ -265,5 +273,5 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` mục 7.2 (khu Giảng viên) và mục 7.0 (khu dùng chung). |
 | Prototype | `09-layoutBase/Admin - Soạn đề bài.dc.html` — prototype (736 dòng). |
 | Quyết định | `DEC-2026-0824-dual-submission-model-per-problem`; `DEC-2026-0825-frontend-base-architecture`; `DEC-2026-0825-shared-content-authoring-screens`; `DEC-2026-0831-problem-authoring-spec-tab`; `DEC-2026-0831-problem-authoring-round2`. |
-| Màn liên quan | `01-rd/screens/shared/SHR0201_problem_management.md` — màn cha; `01-rd/screens/users/USR0102_problem_detail.md:51`. |
+| Màn liên quan | `01-rd/screens/shared/SHR0201_problem_management.md` — màn cha; `01-rd/screens/users/USR0102_problem_detail.md:58`. |
 | Kế hoạch | `06-plan/PROTOTYPE_DEBT.md` mục 2.6 và mục 7. |

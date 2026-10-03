@@ -14,6 +14,7 @@ import Link from "next/link";
 import { useClassAssignments } from "@/entities/class-assignment";
 import { initialsOfClassStudent, useClassStudentDetail, useInstructorClasses, useRemoveStudent } from "@/entities/class";
 import { useT } from "@/shared/i18n";
+import { toast } from "@/shared/lib/toast-store";
 import { Badge, Button, Card, ConfirmDialog, DataTable, PageHeader, StatCard, type DataTableColumn } from "@/shared/ui";
 
 // Deterministic mock submission history — no dedicated entity yet (this screen has no
@@ -171,7 +172,10 @@ export function ClassStudentDetailView({ classId, studentId }: { classId: string
         open={confirmingRemove}
         onClose={() => setConfirmingRemove(false)}
         onConfirm={() => {
-          removeStudent.mutate(studentId);
+          removeStudent.mutate(studentId, {
+            onSuccess: () => toast.success(t("toast.removed", { name: student.name })),
+            onError: () => toast.error(t("toast.failed")),
+          });
           setConfirmingRemove(false);
         }}
         title={t("popup.removeTitle", { name: student.name })}

@@ -33,6 +33,7 @@ import {
   type RubricCriterion,
 } from "@/entities/interview-question";
 import { useT } from "@/shared/i18n";
+import { toast } from "@/shared/lib/toast-store";
 import {
   Button,
   Card,
@@ -90,7 +91,6 @@ export function InterviewQuestionAuthoringView({ questionId, listHref }: Props) 
   const [loaded] = useState(() => draftFor(questionId));
   const [draft, setDraft] = useState<Draft>(loaded ?? EMPTY_DRAFT);
   const [saving, setSaving] = useState(false);
-  const [savedAt, setSavedAt] = useState<string | null>(null);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   const rubricTotal = draft.rubric.reduce((sum, criterion) => sum + criterion.weight, 0);
@@ -100,7 +100,6 @@ export function InterviewQuestionAuthoringView({ questionId, listHref }: Props) 
 
   function patch(changes: Partial<Draft>) {
     setDraft((previous) => ({ ...previous, ...changes }));
-    setSavedAt(null);
   }
 
   function setFollowUp(index: number, value: string) {
@@ -113,12 +112,27 @@ export function InterviewQuestionAuthoringView({ questionId, listHref }: Props) 
     });
   }
 
+  // The Save button looks disabled while blocked but stays clickable, so a click names the reason.
   async function save() {
+    if (saving) return;
+    if (draft.question.trim().length === 0) {
+      toast.warning(t("saveBlocked.empty"));
+      return;
+    }
+    if (rubricBlocksSave) {
+      toast.warning(`${t("rubricBlockTitle")}: ${t("rubricBlockBody", { total: rubricTotal })}`);
+      return;
+    }
     setSaving(true);
     // No endpoint yet — the delay stands in for the round trip so the saving state is reviewable.
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    setSaving(false);
-    setSavedAt(new Date().toLocaleTimeString("vi-VN"));
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      toast.success(t("toast.saved"));
+    } catch {
+      toast.error(t("toast.saveFailed"));
+    } finally {
+      setSaving(false);
+    }
   }
 
   if (loaded === null) {
@@ -143,14 +157,8 @@ export function InterviewQuestionAuthoringView({ questionId, listHref }: Props) 
         description={t("subtitle")}
         actions={
           <>
-            <span
-              aria-live="polite"
-              className="hidden text-xs whitespace-nowrap text-[var(--color-text-subtle)] sm:inline"
-            >
-              {saving ? t("saving") : savedAt ? t("savedAt", { time: savedAt }) : t("unsaved")}
-            </span>
             <IconAction icon={Eye} label={t("previewAsLearner")} />
-            <Button variant="cta" size="sm" onClick={save} disabled={!canSave}>
+            <Button variant="cta" size="sm" onClick={save} disabled={saving} aria-disabled={!canSave || undefined}>
               {t("save")}
             </Button>
           </>
@@ -224,12 +232,6 @@ export function InterviewQuestionAuthoringView({ questionId, listHref }: Props) 
               ) : undefined
             }
           >
-            {rubricBlocksSave ? (
-              <NoticeTile tone="negative" title={t("rubricBlockTitle")} className="mb-3">
-                {t("rubricBlockBody", { total: rubricTotal })}
-              </NoticeTile>
-            ) : null}
-
             {draft.rubric.length === 0 ? (
               <NoticeTile tone="info" title={t("rubricEmptyTitle")} className="mb-3">
                 {t("rubricEmptyBody")}
@@ -305,7 +307,12 @@ export function InterviewQuestionAuthoringView({ questionId, listHref }: Props) 
           {isNew ? null : (
             <Card title={t("group4Title")} description={t("group4Subtitle")}>
               <div className="flex flex-wrap gap-2">
-                <Button variant="ghost" size="sm" className="border border-[var(--color-border)]">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => toast.success(t("toast.duplicated"))}
+                  className="border border-[var(--color-border)]"
+                >
                   {t("duplicate")}
                 </Button>
                 <Button
@@ -325,7 +332,10 @@ export function InterviewQuestionAuthoringView({ questionId, listHref }: Props) 
       <ConfirmDialog
         open={confirmingDelete}
         onClose={() => setConfirmingDelete(false)}
-        onConfirm={() => setConfirmingDelete(false)}
+        onConfirm={() => {
+          setConfirmingDelete(false);
+          toast.success(t("toast.softDeleted"));
+        }}
         title={t("confirmSoftDeleteTitle")}
         confirmLabel={t("softDelete")}
         cancelLabel={t("cancel")}

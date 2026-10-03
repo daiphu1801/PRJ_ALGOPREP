@@ -8,7 +8,17 @@
     "themeLight": "Light",
     "themeDark": "Dark",
     "themeSwitcher": "Choose interface theme",
-    "languageSwitcher": "Choose interface language"
+    "languageSwitcher": "Choose interface language",
+    "toast": {
+      "region": "Notifications",
+      "dismiss": "Dismiss notification",
+      "tone": {
+        "success": "Success",
+        "error": "Error",
+        "warning": "Warning",
+        "info": "Info"
+      }
+    }
   },
   "nav": {
     "dashboard": "Overview",
@@ -65,6 +75,12 @@
     "confirmPasswordLabel": "Confirm new password",
     "forgotResetSubmit": "Reset password",
     "deactivatedBannerMessage": "This account is in its grace period before deletion. You can cancel the deletion request to keep using it.",
+    "notice": {
+      "codeSent": "Verification code sent to your email",
+      "codeResent": "Verification code sent again",
+      "passwordReset": "Password reset, please sign in",
+      "deactivationCancelled": "Account deletion request cancelled"
+    },
     "deactivatedBannerCancel": "Cancel deletion request",
     "loadingTitle": "Processing...",
     "loadingStep1": "Verifying credentials",
@@ -173,6 +189,11 @@
       "java": "Java",
       "cpp": "C++",
       "python": "Python"
+    },
+    "toast": {
+      "randomEmpty": "No problem matches the filters to pick from.",
+      "searchResult": "Found {count} problems.",
+      "searchEmpty": "No problems found."
     }
   },
   "savedProblems": {
@@ -212,7 +233,12 @@
       "emptyFiltered": "No problem matches this filter"
     },
     "emptyAll": "You haven't saved any problem yet.",
-    "footerPrivacyNote": "Saved problems and notes are visible to you only."
+    "footerPrivacyNote": "Saved problems and notes are visible to you only.",
+    "toast": {
+      "unsaved": "Problem removed from saved.",
+      "searchResult": "Found {count} saved problems.",
+      "searchEmpty": "No saved problems found."
+    }
   },
   "problemDetail": {
     "empty": {
@@ -287,6 +313,13 @@
       "runtimeError": "Runtime Error",
       "timeLimitExceeded": "Time Limit Exceeded",
       "running": "Judging"
+    },
+    "toast": {
+      "runDone": "Ran {count} sample testcases.",
+      "submitAccepted": "Submission accepted.",
+      "submitRejected": "Submission not accepted: {passed}/{total} testcases passed.",
+      "saved": "Problem saved.",
+      "unsaved": "Problem removed from saved."
     }
   },
   "adminNav": {
@@ -428,7 +461,9 @@
       }
     },
     "noticeTitle": "Before you change a limit",
-    "noticeBody": "Changes to a multiplier or a resource limit apply only to submissions made after you save. Earlier submissions keep the verdict they already have."
+    "noticeBody": "Changes to a multiplier or a resource limit apply only to submissions made after you save. Earlier submissions keep the verdict they already have.",
+    "saveDone": "Language and limit configuration saved",
+    "errorInvalidValue": "Time multipliers must be above 0 and limits must be whole numbers of 1 or more"
   },
   "adminSystemLog": {
     "retention": {
@@ -442,7 +477,8 @@
       "hint": "No per-row delete exists; only the system job cleans up expired rows.",
       "save": "Save",
       "cancel": "Cancel",
-      "errorMin": "Enter a whole number of {min} or more"
+      "errorMin": "Enter a whole number of {min} or more",
+      "saved": "Log retention settings saved"
     },
     "exportDialog": {
       "title": "Download log",
@@ -455,7 +491,7 @@
       "close": "Close",
       "errorRange": "End date must be after the start date",
       "doneTitle": "CSV file created",
-      "doneBody": "{count} columns. The export was logged as one row.",
+      "doneBody": "Log exported with {count} columns",
       "col": {
         "time": "Time",
         "actor": "Actor",
@@ -463,7 +499,8 @@
         "category": "Category",
         "content": "Content",
         "id": "Event ID"
-      }
+      },
+      "errorNoColumns": "Pick at least one column to export"
     },
     "title": "System log",
     "subtitle": "Administrative actions taken by people · infrastructure events live in Judge queue",
@@ -558,12 +595,15 @@
       "errorEmail": "Invalid email",
       "errorDuplicate": "This email already has an account",
       "createdTitle": "Account created",
-      "createdBody": "A temporary password was sent to {email}. The account stays pending until the first sign-in."
+      "createdBody": "Account created. A temporary password was sent to {email}."
     },
     "confirmLockTitle": "Lock {count} accounts?",
     "confirmLockBody": "{count} accounts will not be able to sign in until unlocked. Their submissions and progress are kept.",
     "confirmLockAction": "Lock accounts",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "bulkResetDone": "Password reset email sent to {count} accounts",
+    "bulkRoleDone": "Role changed for {count} accounts",
+    "bulkLockDone": "{count} accounts locked"
   },
   "adminAiUsage": {
     "title": "AI token usage",
@@ -619,7 +659,8 @@
       "hard": "Hard"
     },
     "emptyUsers": "No learner used AI in this range",
-    "emptyProblems": "No problem consumed tokens in this range"
+    "emptyProblems": "No problem consumed tokens in this range",
+    "exportDone": "AI usage report exported"
   },
   "adminQueueMonitor": {
     "params": {
@@ -636,7 +677,8 @@
       "unitJobs": "jobs",
       "unitRows": "rows",
       "unitHours": "hours",
-      "unitSeconds": "seconds"
+      "unitSeconds": "seconds",
+      "saved": "Queue settings saved"
     },
     "title": "Judge queue",
     "subtitle": "go-judge worker cluster, waiting jobs and infrastructure events",
@@ -655,11 +697,15 @@
     "control": {
       "paused": {
         "label": "Pause queue consumption",
-        "meta": "Hold jobs back instead of handing them to workers"
+        "meta": "Hold jobs back instead of handing them to workers",
+        "doneOn": "New submissions paused",
+        "doneOff": "New submissions resumed"
       },
       "autoscale": {
         "label": "Autoscale workers",
-        "meta": "Add a worker when the queue passes {threshold} jobs"
+        "meta": "Add a worker when the queue passes {threshold} jobs",
+        "doneOn": "Worker autoscaling turned on",
+        "doneOff": "Worker autoscaling turned off"
       }
     },
     "latencyTitle": "Latency per queue",
@@ -694,7 +740,8 @@
       "error": "ERROR",
       "warn": "WARN",
       "info": "INFO"
-    }
+    },
+    "refreshDone": "Queue data refreshed"
   },
   "adminPermissionMatrix": {
     "title": "Permission matrix",
@@ -736,7 +783,10 @@
       "SYSTEM_AUDIT_LOG": "System log",
       "INTERVIEW_BANK_MANAGEMENT": "Interview question bank",
       "PERMISSION_MATRIX": "Permission matrix"
-    }
+    },
+    "saveDone": "Permission matrix saved",
+    "createRoleDone": "Role {role} created",
+    "deleteRoleDone": "Role {role} deleted"
   },
   "adminAiConfig": {
     "budget": {
@@ -761,7 +811,10 @@
         "close": "Close",
         "priceLabel": "Price of {name} (USD per 1 million tokens)",
         "errorEmpty": "Model name cannot be empty",
-        "errorDuplicate": "A model with this name already exists"
+        "errorDuplicate": "A model with this name already exists",
+        "doneAdd": "Model added",
+        "doneRename": "Model renamed",
+        "doneRemove": "Model removed"
       }
     },
     "title": "AI assistant configuration",
@@ -798,7 +851,7 @@
     "weightDecrement": "Decrease {criterion}",
     "weightIncrement": "Increase {criterion}",
     "weightWarningTitle": "Weights do not add up to 100%",
-    "weightWarningBody": "Currently {total}%. Whether publishing should be blocked at anything other than 100% is not settled — see the open question in the report.",
+    "weightWarningBody": "Currently {total}%. Adjust the weights to add up to 100% before publishing.",
     "rubric": {
       "correctness": {
         "label": "Correctness",
@@ -855,7 +908,8 @@
     "preReleaseTitle": "Before publishing",
     "preReleaseBody": "Run the 30 sample solutions to compare rubric scores between the draft and the live prompt. The backend for this is deferred to a later phase, so the button is inactive.",
     "runComparison": "Run comparison",
-    "lastComparison": "Last run: {date}, average delta {delta}."
+    "lastComparison": "Last run: {date}, average delta {delta}.",
+    "publishDone": "AI configuration saved and published"
   },
   "problemManagement": {
     "title": "Problem management",
@@ -903,6 +957,11 @@
       "close": "Close",
       "usage": "{count} problems",
       "deleteBlocked": "{count} problems remain, cannot delete",
+      "done": {
+        "add": "Topic added",
+        "rename": "Topic renamed",
+        "remove": "Topic deleted"
+      },
       "error": {
         "empty": "Topic name cannot be empty",
         "duplicate": "A topic with this name already exists"
@@ -952,7 +1011,19 @@
     "next": "Next",
     "goToPage": "Page {page}",
     "confirmDeleteTitle": "Delete {title}?",
-    "confirmDeleteBody": "The problem is removed from the list. What happens to its existing submissions is not settled — see the open question in the report."
+    "confirmDeleteBody": "The problem is removed from the list. What happens to its existing submissions is not settled — see the open question in the report.",
+    "toast": {
+      "deleted": "Problem {title} deleted",
+      "searchResult": "Found {count} problems",
+      "searchEmpty": "No problems found",
+      "bulkNeedsChoice": "Pick a value to apply first (the prototype has no picker yet)",
+      "bulk": {
+        "publish": "Published {count} problems",
+        "duplicate": "Duplicated {count} problems",
+        "exportCsv": "Exported {count} problems to CSV",
+        "delete": "Deleted {count} problems"
+      }
+    }
   },
   "interviewQuestionManagement": {
     "title": "Interview question bank",
@@ -970,10 +1041,17 @@
       "close": "Close",
       "usage": "{count} questions",
       "deleteBlocked": "{count} questions remain, cannot delete",
+      "done": {
+        "add": "Topic added",
+        "rename": "Topic renamed",
+        "remove": "Topic deleted"
+      },
       "error": {
         "empty": "Topic name cannot be empty",
         "duplicate": "A topic with this name already exists"
-      }
+      },
+      "starEnabled": "STAR framework enabled for {name}",
+      "starDisabled": "STAR framework disabled for {name}"
     },
     "importCsv": "Import CSV",
     "newQuestion": "New question",
@@ -1013,7 +1091,14 @@
     "next": "Next",
     "goToPage": "Page {page}",
     "confirmDeleteTitle": "Delete question {code}?",
-    "confirmDeleteBody": "The question leaves the bank. Interview sessions that already used it keep their history."
+    "confirmDeleteBody": "The question leaves the bank. Interview sessions that already used it keep their history.",
+    "toast": {
+      "deleted": "Question {code} deleted",
+      "duplicated": "Question {code} duplicated",
+      "imported": "Imported CSV from {name}",
+      "searchResult": "Found {count} questions",
+      "searchEmpty": "No questions found"
+    }
   },
   "interviewQuestionAuthoring": {
     "titleNew": "Author an interview question",
@@ -1067,13 +1152,41 @@
     "softDelete": "Retire",
     "cancel": "Cancel",
     "confirmSoftDeleteTitle": "Retire this question?",
-    "confirmSoftDeleteBody": "The question is marked retired and stops appearing in study and practice mode. Interview sessions that already used it keep their history."
+    "confirmSoftDeleteBody": "The question is marked retired and stops appearing in study and practice mode. Interview sessions that already used it keep their history.",
+    "toast": {
+      "saved": "Question saved",
+      "saveFailed": "Save failed, try again",
+      "duplicated": "Question duplicated",
+      "softDeleted": "Question retired"
+    },
+    "saveBlocked": {
+      "empty": "Enter the question text before saving."
+    }
   },
   "problemAuthoring": {
     "subtitle": "Topic {topic} · publish once the checklist passes",
     "back": "Back",
     "previewAsLearner": "Preview as learner",
+    "previewNeedsSave": "Save the problem before previewing",
+    "loadFailed": "Could not load the problem. Try again later.",
+    "generating": "Generating testcases...",
+    "generatingBody": "The AI is writing the script and the system is running the checks. This can take tens of seconds.",
+    "generateQuota": "{left} of {limit} generations left for this problem",
+    "unsaved": {
+      "title": "Unsaved changes",
+      "body": "This problem has unsaved changes. Save before leaving, leave without saving, or stay and keep editing. If the checklist is incomplete, Save and leave only saves the draft and does not publish.",
+      "saveAndLeave": "Save and leave",
+      "leave": "Leave without saving",
+      "stay": "Stay"
+    },
     "publish": "Save and publish",
+    "save": "Save",
+    "saveHint": {
+      "saving": "Saving...",
+      "saved": "Saved",
+      "dirty": "Unsaved changes",
+      "error": "Save failed, try again"
+    },
     "tabsLabel": "Section being edited",
     "tab": {
       "content": "Statement",
@@ -1113,6 +1226,33 @@
       "hidden": "Hidden"
     },
     "emptyTestcases": "No testcase yet",
+    "emptyExamples": "No worked example yet",
+    "columnStatus": "Status",
+    "columnActions": "Actions",
+    "statusDraft": "Draft",
+    "edit": "Edit",
+    "delete": "Delete",
+    "addTestcase": "Add testcase",
+    "addExample": "Add example",
+    "runSolution": "Run reference solution",
+    "runResultTitle": "Reference solution ran",
+    "runResultBody": "Passed {passed}/{total} approved testcases.",
+    "runStaleTitle": "No valid run result",
+    "runStaleBody": "The testcase set or the reference solution just changed. Run again to unlock the publish checklist.",
+    "confirmDeleteTestcaseTitle": "Delete this testcase?",
+    "confirmDeleteTestcaseBody": "The testcase leaves the grading set and the reference-solution run must be repeated.",
+    "confirmDeleteExampleTitle": "Delete this worked example?",
+    "confirmDeleteExampleBody": "The example no longer appears in the statement shown to learners.",
+    "examplesFloorWarning": "A published problem with only 2 examples cannot lose one. Add an example before deleting.",
+    "dialog": {
+      "addTestcase": "Add testcase",
+      "editTestcase": "Edit testcase",
+      "addExample": "Add worked example",
+      "editExample": "Edit worked example",
+      "save": "Save",
+      "cancel": "Cancel",
+      "required": "Input and output are required."
+    },
     "aiTitle": "Guidance for the AI assistant",
     "aiSubtitle": "Problem-specific context appended to the system prompt from the AI configuration screen",
     "aiBriefLabel": "Problem-specific context",
@@ -1170,7 +1310,76 @@
       "duplicate": "Duplicates",
       "sorted": "Sorted",
       "extreme": "Extreme values"
+    },
+    "toast": {
+      "saved": "Problem saved",
+      "saveFailed": "Save failed, try again",
+      "published": "Problem saved and published",
+      "publishFailed": "Publish failed, try again",
+      "testcaseAdded": "Testcase added",
+      "testcaseUpdated": "Testcase updated",
+      "testcaseDeleted": "Testcase deleted",
+      "exampleAdded": "Worked example added",
+      "generated": "Generated {count} draft testcases for your review",
+      "generateDuplicates": "{count} testcases already exist and were skipped",
+      "generateNothing": "No new testcase to add",
+      "droppedInvalidConstraint": "{count} inputs broke the declared constraints and were dropped",
+      "droppedReferenceFailed": "{count} inputs crashed the reference solution and were dropped",
+      "droppedTimeout": "{count} inputs timed out the reference solution and were dropped",
+      "generateLargestWarning": "The largest case timed out the reference solution: the problem time limit may be wrong, or the reference solution is too slow",
+      "generateLimitReached": "This problem used all {limit} automatic generations. Review the drafts or write more testcases yourself.",
+      "generateFailed": "Testcase generation failed, nothing was added. Try again later.",
+      "exampleUpdated": "Worked example updated",
+      "exampleDeleted": "Worked example deleted",
+      "draftApproved": "Draft testcase approved",
+      "draftRejected": "Draft testcase rejected"
+    },
+    "runBlocked": {
+      "noSolution": "Enter the reference solution before running it.",
+      "noTestcase": "At least one approved testcase is needed to run the reference solution."
     }
+  },
+  "problemPreview": {
+    "loadFailed": "Could not load the problem. Try again later.",
+    "savedAt": "Saved version from {time}. Unsaved changes are not shown here.",
+    "neverSaved": "Nothing saved from this browser yet, showing the sample problem.",
+    "statementTitle": "Statement",
+    "constraintsLabel": "Constraints",
+    "examplesTitle": "Examples",
+    "exampleInput": "Input",
+    "exampleOutput": "Output",
+    "exampleExplanation": "Explanation",
+    "limitsTitle": "Limits",
+    "timeLimit": "Time",
+    "memoryLimit": "Memory"
+  },
+  "problemInfo": {
+    "loadFailed": "Could not load the problem. Try again later.",
+    "back": "Back to list",
+    "edit": "Edit problem",
+    "subtitle": "Code #{code} · topic {topic}",
+    "statTestcases": "Approved testcases",
+    "statTestcasesMeta": "{count} testcases awaiting review",
+    "statPublic": "Public testcases",
+    "statSolution": "Reference solution",
+    "statTimeLimit": "Time limit",
+    "solutionSubtitle": "Reference solution in {language}, visible to admins and instructors only",
+    "solutionToggle": "Show reference solution code",
+    "guardOn": "On",
+    "guardOff": "Off",
+    "aiBriefEmpty": "No problem-specific context yet."
+  },
+  "interviewQuestionInfo": {
+    "back": "Back to list",
+    "edit": "Edit question",
+    "title": "Question {code}",
+    "followUpsEmpty": "No follow-up questions yet.",
+    "usageTitle": "Usage",
+    "usageCount": "Times used in sessions",
+    "averageScore": "Average score",
+    "practiceMode": "Practice mode",
+    "practiceOn": "Available",
+    "practiceOff": "Not available, no rubric"
   },
   "submissionResult": {
     "breadcrumbLabel": "Breadcrumb",
@@ -1234,7 +1443,8 @@
     },
     "code": {
       "copy": "Copy code",
-      "copied": "Copied!"
+      "copied": "Source code copied.",
+      "copyFailed": "Could not copy the source code."
     },
     "actions": {
       "solutionReview": "Solution review (AI)",
@@ -1295,6 +1505,10 @@
       "previous": "Previous",
       "next": "Next",
       "pageLabel": "Page {page}"
+    },
+    "toast": {
+      "searchResult": "Found {count} submissions.",
+      "searchEmpty": "No submissions found."
     }
   },
   "solutionReview": {
@@ -1344,7 +1558,12 @@
     "applyConfirmTitle": "Confirm overwriting your source code",
     "applyConfirmBody": "The suggested code will overwrite your current code in the Workspace. Continue?",
     "applyConfirmConfirm": "Overwrite & open Workspace",
-    "applyConfirmCancel": "Cancel"
+    "applyConfirmCancel": "Cancel",
+    "toast": {
+      "budgetLocked": "The AI budget is used up, so the solution review cannot be generated.",
+      "transientError": "Could not generate the solution review. Please try again.",
+      "applied": "Suggestion applied to your solution."
+    }
   },
   "mockInterview": {
     "statSessions": "Sessions completed",
@@ -1394,7 +1613,10 @@
       "complexityAwareness": "Complexity awareness"
     },
     "retryCta": "Practice again",
-    "backCta": "Back to list"
+    "backCta": "Back to list",
+    "toast": {
+      "finished": "Interview session finished. Your evaluation is ready."
+    }
   },
   "interviewBankList": {
     "stats": {
@@ -1441,6 +1663,14 @@
       "exit": "Exit",
       "reveal": "Show answer outline",
       "hide": "Hide answer"
+    },
+    "toast": {
+      "drillDone": "Finished reviewing {count} cards.",
+      "rated": "Recall level recorded.",
+      "bookmarked": "Question saved.",
+      "unbookmarked": "Question removed from saved.",
+      "searchResult": "Found {count} questions.",
+      "searchEmpty": "No questions found."
     }
   },
   "interviewQuestionDetail": {
@@ -1507,6 +1737,12 @@
       "message": "Your unsubmitted answer will be lost. Leave anyway?",
       "btnStay": "Stay",
       "btnLeave": "Leave"
+    },
+    "toast": {
+      "answerSubmitted": "Answer submitted. The AI feedback is ready.",
+      "rated": "Recall level recorded.",
+      "bookmarked": "Question saved.",
+      "unbookmarked": "Question removed from saved."
     }
   },
   "classManagement": {
@@ -1551,7 +1787,17 @@
       "removeStudentBody": "This also deletes the student's submission history within this class.",
       "removeStudentConfirm": "Remove student"
     },
-    "btnViewStudents": "View students"
+    "btnViewStudents": "View students",
+    "toast": {
+      "created": "Class \"{name}\" created",
+      "updated": "Changes to class \"{name}\" saved",
+      "deleted": "Class \"{name}\" deleted",
+      "inviteCreated": "New invite code created",
+      "failed": "The action failed, please try again"
+    },
+    "validation": {
+      "nameRequired": "Enter a class name"
+    }
   },
   "classAssignments": {
     "header": {
@@ -1595,6 +1841,10 @@
       "removeAssignmentBody": "The problem will no longer appear as assigned from now on, but students' submission history, scores and progress stay intact.",
       "removeAssignmentConfirm": "Remove from class",
       "removeClassChoice": "Class to remove from"
+    },
+    "toast": {
+      "removed": "Removed \"{title}\" from the class",
+      "failed": "Could not remove the assignment, please try again"
     }
   },
   "classProgress": {
@@ -1643,6 +1893,10 @@
       "removeStudentTitle": "Remove {name} from the class?",
       "removeStudentBody": "The student loses access to the class assignments. Past submissions are kept.",
       "removeStudentConfirm": "Remove"
+    },
+    "toast": {
+      "removed": "Removed {name} from the class",
+      "failed": "Could not remove the student, please try again"
     }
   },
   "classStudentDetail": {
@@ -1686,6 +1940,10 @@
       "removeTitle": "Remove {name} from class?",
       "removeBody": "This is a real deletion with cascade, wiping submission history within this class.",
       "removeConfirm": "Remove student"
+    },
+    "toast": {
+      "removed": "Removed {name} from the class",
+      "failed": "Could not remove the student, please try again"
     }
   },
   "instructorGrading": {
@@ -1728,6 +1986,13 @@
       "commentInput": "Comment",
       "btnCancel": "Cancel",
       "btnSave": "Save score"
+    },
+    "toast": {
+      "saved": "Grade saved for {student}",
+      "failed": "Could not save the grade, please try again"
+    },
+    "validation": {
+      "scoreRange": "The score must be between 0 and 10"
     }
   },
   "instructorOverview": {
@@ -1795,7 +2060,9 @@
       "saved": "Saved",
       "statusIdle": "Email is used for sign-in and reminders.",
       "statusDirty": "Unsaved changes.",
-      "statusSaved": "Profile updated."
+      "statusSaved": "Profile updated.",
+      "savedToast": "Profile saved",
+      "invalid": "The profile details are not valid"
     },
     "security": {
       "title": "Security",
@@ -1826,7 +2093,8 @@
       "hint": "A 6-digit code was sent to {email}. Enter it to finish changing your email.",
       "codeLabel": "Confirmation code",
       "cancel": "Cancel",
-      "confirm": "Confirm"
+      "confirm": "Confirm",
+      "done": "New email confirmed"
     },
     "passwordDialog": {
       "titleChange": "Change password",
@@ -1836,7 +2104,9 @@
       "currentPassword": "Current password",
       "newPassword": "New password",
       "confirmPassword": "Confirm new password",
-      "ruleHint": "At least 8 characters, with both letters and digits."
+      "ruleHint": "At least 8 characters, with both letters and digits.",
+      "done": "Password changed",
+      "invalid": "The password details are not valid"
     },
     "errors": {
       "displayNameRequired": "Please enter your full name",
@@ -1900,12 +2170,15 @@
       "statusDirty": "You have unsaved changes.",
       "statusSaved": "Settings applied to this account.",
       "save": "Save settings",
-      "saved": "Saved"
+      "saved": "Settings saved.",
+      "saveFailed": "Could not save settings. Please try again."
     },
     "dataExport": {
       "title": "Your data",
       "exportSubmissions": "Export submissions",
-      "exportInterviews": "Export interview transcripts"
+      "exportInterviews": "Export interview transcripts",
+      "exported": "Data exported.",
+      "exportFailed": "Could not export your data. Please try again."
     },
     "dangerZone": {
       "title": "Danger zone",
@@ -1917,7 +2190,8 @@
       "confirm": "Delete my account",
       "cancel": "Cancel",
       "confirmPhraseLabel": "Type your email ({email}) to confirm",
-      "phraseHint": "Email does not match yet."
+      "phraseHint": "Email does not match yet.",
+      "done": "Account deletion requested"
     },
     "errors": {
       "confirmPhraseMismatch": "Email does not match"

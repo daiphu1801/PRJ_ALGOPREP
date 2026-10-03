@@ -8,9 +8,9 @@
 // the UI stays while the backend is deferred to a later phase (risk R3, cost of batching 30 sample
 // solutions through the AI). Wiring it now would be the one thing that decision rules out.
 //
-// The rubric total is shown and flagged when it is not 100%. The mockup does the same; whether the
-// screen should refuse to publish at anything other than 100% is not settled anywhere, so it warns
-// rather than blocks — carried into the phase report.
+// The rubric total is shown and flagged when it is not 100%, and publishing is BLOCKED until it is
+// (owner decision 2026-10-03, BD ADM0301 Sheet 9 NO 2). The button looks disabled but stays
+// clickable: a click names the total in a toast instead of doing nothing.
 "use client";
 
 import { useState } from "react";
@@ -34,13 +34,13 @@ import {
   useModelPrices,
 } from "@/entities/ai-budget";
 import { useT } from "@/shared/i18n";
+import { toast } from "@/shared/lib/toast-store";
 import {
   Badge,
   Button,
   Card,
   ManagedListDialog,
   Modal,
-  NoticeTile,
   NumberStepper,
   PageHeader,
   ProgressBar,
@@ -83,6 +83,14 @@ export function AdminAiConfigView() {
     }));
   }
 
+  function publish() {
+    if (!weightsBalanced) {
+      toast.warning(`${t("weightWarningTitle")}: ${t("weightWarningBody", { total })}`);
+      return;
+    }
+    toast.success(t("publishDone"));
+  }
+
   function setGuard(key: GuardKey, value: boolean) {
     setPage((previous) => ({ ...previous, guards: { ...previous.guards, [key]: value } }));
   }
@@ -93,7 +101,7 @@ export function AdminAiConfigView() {
         title={t("title")}
         description={t("subtitle")}
         actions={
-          <Button variant="cta" size="sm">
+          <Button variant="cta" size="sm" aria-disabled={!weightsBalanced || undefined} onClick={publish}>
             {t("publish")}
           </Button>
         }
@@ -178,11 +186,6 @@ export function AdminAiConfigView() {
               </span>
             }
           >
-            {weightsBalanced ? null : (
-              <NoticeTile tone="warn" title={t("weightWarningTitle")} className="mb-3.5">
-                {t("weightWarningBody", { total })}
-              </NoticeTile>
-            )}
             <div className="flex flex-col gap-3.5">
               {RUBRIC_KEYS.map((key) => (
                 <div key={key}>
@@ -362,6 +365,11 @@ export function AdminAiConfigView() {
           usage: () => "",
           deleteBlocked: () => "",
           error: { empty: t("budget.dialog.errorEmpty"), duplicate: t("budget.dialog.errorDuplicate") },
+          done: {
+            add: t("budget.dialog.doneAdd"),
+            rename: t("budget.dialog.doneRename"),
+            remove: t("budget.dialog.doneRemove"),
+          },
         }}
       />
     </div>

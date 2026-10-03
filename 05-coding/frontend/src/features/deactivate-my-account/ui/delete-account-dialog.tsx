@@ -2,18 +2,25 @@
 "use client";
 
 import { useT } from "@/shared/i18n";
+import { toast } from "@/shared/lib/toast-store";
 import { ConfirmDialog } from "@/shared/ui";
 import { useDeactivateAccount } from "../model/use-deactivate-account";
 
 export function DeleteAccountDialog({ email, onClose }: { email: string; onClose: () => void }) {
   const t = useT("settings");
-  const { confirmPhrase, setConfirmPhrase, canConfirm, error, isSubmitting, confirm } = useDeactivateAccount(email);
+  const { confirmPhrase, setConfirmPhrase, canConfirm, isSubmitting, confirm } = useDeactivateAccount(email);
+
+  async function handleConfirm() {
+    const result = await confirm();
+    if (result.status === "done") toast.success(t("deleteConfirm.done"));
+    else if (result.status === "error") toast.error(t(result.errorKey));
+  }
 
   return (
     <ConfirmDialog
       open
       onClose={onClose}
-      onConfirm={() => void confirm()}
+      onConfirm={() => void handleConfirm()}
       title={t("deleteConfirm.title")}
       confirmLabel={t("deleteConfirm.confirm")}
       cancelLabel={t("deleteConfirm.cancel")}
@@ -32,10 +39,6 @@ export function DeleteAccountDialog({ email, onClose }: { email: string; onClose
         onChange={(e) => setConfirmPhrase(e.target.value)}
         className="h-9 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-sm text-[var(--color-text)]"
       />
-      {error ? <p className="mt-2 text-xs text-[var(--color-danger)]">{t(error)}</p> : null}
-      {!canConfirm && confirmPhrase.length > 0 ? (
-        <p className="mt-2 text-xs text-[var(--color-text-muted)]">{t("deleteConfirm.phraseHint")}</p>
-      ) : null}
     </ConfirmDialog>
   );
 }

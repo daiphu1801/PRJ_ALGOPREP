@@ -22,7 +22,7 @@ sửa toàn bộ kho câu hỏi hệ thống (không chia theo lớp phụ trác
 `DEC-2026-0825-shared-content-authoring-screens`.
 
 Đối chiếu prototype: `09-layoutBase/Admin - Câu hỏi phỏng vấn.dc.html` (504 dòng, dựng trong shell Admin —
-khu Giảng viên chưa có prototype tương ứng). Đây là nav cấp 1 trong nhóm "Nội dung" của khu Admin
+khu Giảng viên không có prototype HTML tương ứng; **cập nhật 2026-10-03:** bản dựng Next.js đã mount cùng view ở cả hai khu). Đây là nav cấp 1 trong nhóm "Nội dung" của khu Admin
 (`activeKey = 'iquestions'`) [SoT: 09-layoutBase/Admin - Câu hỏi phỏng vấn.dc.html:297, 303-306].
 
 **Lịch sử slug:** bổ sung 2026-08-25 với tên `admin_interview_question_management` (màn chưa từng có trong
@@ -33,7 +33,7 @@ Phân biệt rạch ròi với hai màn phía người học, **không trùng l�
 
 | Màn | Actor | Việc làm ở đó |
 | :--- | :--- | :--- |
-| `interview_bank_list` | A1 | Duyệt/lọc kho câu hỏi để ôn, xem nhanh, tự chấm mức nhớ, luyện nhanh dạng flashcard [SoT: 01-rd/screens/users/USR0401_interview_bank_list.md:17-20] |
+| `interview_bank_list` | A1 | Duyệt/lọc kho câu hỏi để ôn, xem nhanh, tự chấm mức nhớ, luyện nhanh dạng flashcard [SoT: 01-rd/screens/users/USR0401_interview_bank_list.md:14-17] |
 | `interview_question_detail` | A1 | Chế độ học đầy đủ (F6-04 tới F6-06) và Chế độ luyện có AI đối chiếu (F6-07, F6-08) [SoT: 01-rd/overview/system_survey.md — mục 7.1 dòng `interview_question_detail`] |
 | `interview_question_management` (file này) | A2 và A3 (dùng chung — đã chốt) | **Tạo và bảo trì chính nội dung** câu hỏi mà hai màn trên đọc. Không có chế độ học, không có chế độ luyện, không có tự chấm |
 
@@ -67,7 +67,9 @@ xoá** (`confirmOpen`) [SoT: 09-layoutBase/Admin - Câu hỏi phỏng vấn.dc.h
 bốn thẻ chỉ số; bản dựng Next.js đã đổi sang **danh sách dạng bảng** (cột Mã, Câu hỏi, Chủ đề, Mức độ,
 Đào sâu, Tiêu chí, Lượt dùng, Điểm TB, Thao tác; 8 dòng một trang) và **bỏ dải bốn thẻ chỉ số** — hệ thống
 chỉ có một trang tổng quan Admin/Giảng viên, các trang danh sách chỉ có bộ lọc và danh sách
-[SoT: 05-coding/frontend/src/views/shared/interview-question-management/ui/interview-question-management-view.tsx:1-10, 49, 237-244].
+[SoT: 05-coding/frontend/src/views/shared/interview-question-management/ui/interview-question-management-view.tsx:7-10, 51, 107-208, 210-238].
+**Cập nhật 2026-10-03:** view nhận prop bắt buộc `basePath` (khu Admin `/admin/interview-questions`, khu Giảng viên `/instructor/interview-questions`); liên kết ở từng dòng và nút "Câu hỏi mới" dựng từ `basePath`, không còn cố định `/admin`
+[SoT: 05-coding/frontend/src/views/shared/interview-question-management/ui/interview-question-management-view.tsx:56-63, 121, 191, 232].
 Các mô tả dưới đây về prototype được giữ làm bằng chứng nguồn dữ liệu; chỗ nào khác với bản dựng thì ghi rõ.
 
 1. **Thanh tiêu đề** — "Ngân hàng câu hỏi phỏng vấn" kèm dòng phụ "148 câu · chủ đề, cấp độ, câu hỏi đào sâu
@@ -113,7 +115,7 @@ Các mô tả dưới đây về prototype được giữ làm bằng chứng ng
      và ba hành động "Sửa" / "Nhân bản" / nút xoá (dòng 226-228). Bản dựng: hai cột "Lượt dùng" và "Điểm
      TB", cùng cột "Thao tác" gồm ba nút **chỉ có biểu tượng** (bút chì = Sửa, hai tờ chồng = Nhân bản,
      thùng rác = Xoá); tên hành động hiện ở tooltip nhỏ bên dưới nút khi rê chuột hoặc focus; Nhân bản
-     áp dụng theo từng dòng [SoT: 05-coding/frontend/src/views/shared/interview-question-management/ui/interview-question-management-view.tsx:159-181; 05-coding/frontend/src/shared/ui/icon-action.tsx:21-26].
+     áp dụng theo từng dòng [SoT: 05-coding/frontend/src/views/shared/interview-question-management/ui/interview-question-management-view.tsx:180-208; 05-coding/frontend/src/shared/ui/primitives/icon-action.tsx:25-30, 86-98].
 6. **Phân trang** (dòng 235-244) — cơ chế giao diện, không cần mã.
 7. **Hộp thoại xác nhận xoá** (dòng 259-271): tiêu đề "Xoá câu hỏi?", nội dung nêu mã và trích 60 ký tự đầu
    của câu hỏi (dòng 460), kèm ghi chú **"Các phiên phỏng vấn đã dùng câu hỏi này vẫn giữ bản ghi cũ. Hành
@@ -155,6 +157,8 @@ hỏi phỏng vấn.dc.html:56, 358-366].
   `01-rd/screens/users/USR0401_interview_bank_list.md`.
 - Màn soạn/sửa một câu hỏi (slug `interview_question_authoring`, chốt 2026-08-30 — F6-13) — RD riêng ở
   `01-rd/screens/shared/SHR0302_interview_question_authoring.md` (viết 2026-09-01), không đặc tả lại ở đây.
+  Từ 2026-10-02 (`DEC-2026-1002-split-detail-and-edit-pages`) bấm nội dung câu hỏi mở trang chỉ đọc `interview_question_info`
+  (`01-rd/screens/shared/SHR0303_interview_question_info.md`); biểu tượng Sửa mới mở màn soạn. **Cập nhật 2026-10-03:** khu Giảng viên làm theo cùng cấu trúc (`/instructor/interview-questions/[questionId]` chỉ đọc, `/edit` và `/new` là form soạn) [SoT: 05-coding/frontend/src/app/(instructor)/instructor/interview-questions/[questionId]/page.tsx:1-12].
 - Thuật toán và công thức chấm của Chế độ luyện — thuộc logic `interview-bank` và `ai-review`.
 
 ---

@@ -22,7 +22,12 @@ và `/admin/problems`, cùng một view/BD/DD, A2 chỉ thấy và sửa bài do
 `DEC-2026-0825-shared-content-authoring-screens`.
 
 Đối chiếu prototype: `09-layoutBase/Admin - Quản lý bài tập.dc.html` (618 dòng, dựng trong shell Admin —
-khu Giảng viên chưa có prototype tương ứng, xem `06-plan/PROTOTYPE_DEBT.md` mục 7.3.a). File này mô tả
+khu Giảng viên không có mockup riêng trong `09-layoutBase/`, xem `06-plan/PROTOTYPE_DEBT.md` mục 7.3.a).
+**Cập nhật 2026-10-03:** khu Giảng viên đã dựng bằng code Next.js, cùng một view, nhận prop bắt buộc `basePath`
+(gốc của khu, `/admin/problems` hoặc `/instructor/problems`) nên liên kết dòng, nút "Bài tập mới" không còn
+gắn cứng `/admin`
+[SoT: 05-coding/frontend/src/views/shared/problem-management/ui/problem-management-view.tsx:69-76, 167-169, 261, 297].
+Từ đây, khi code và mockup lệch nhau thì **code là hiện trạng**; mockup chỉ còn là lịch sử. File này mô tả
 **hành vi và UX ở mức yêu cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/problem-bank.md` (mục F2), chỉ
 trỏ tới và bổ sung phần đặc thù của màn.
 
@@ -112,12 +117,12 @@ Q3 → Q5. **Trạng thái vòng đời bài toán đã có mã** — `F2-15` (c
    "Đổi độ khó", "Gán chủ đề", "Nhân bản", "Xuất CSV" cộng nút "Xoá"
    [SoT: 09-layoutBase/Admin - Quản lý bài tập.dc.html:196-206, 591]. "Đổi độ khó" và "Gán chủ đề" là F2-02
    ở dạng thao tác lô; ba hành động còn lại và "Xoá" **không có mã** — xem Q2, Q3, Q4.
-6. **Bảng bài toán** — 10 cột: ô chọn, Mã, Tiêu đề (liên kết sang `problem_authoring`), Chủ đề, Độ khó,
+6. **Bảng bài toán** — 10 cột: ô chọn, Mã, Tiêu đề (liên kết sang `problem_info`; biểu tượng Sửa ở cột thao tác sang `problem_authoring`, cập nhật 2026-10-02), Chủ đề, Độ khó,
    Trạng thái, Lượt nộp, AC, "TC · Sửa" (số testcase và thời điểm sửa cuối gộp một cột), và nhóm nút
    sửa/xoá [SoT: 09-layoutBase/Admin - Quản lý bài tập.dc.html:209-232]. **Cập nhật 2026-10-01:** UI Next.js hiển
    thị nhóm nút này dưới dạng hai nút chỉ có icon (bút chì = Sửa, thùng rác = Xoá, màu cảnh báo cho Xoá),
    tên hành động hiện ở tooltip nhỏ bên dưới khi rê chuột hoặc focus bàn phím
-   [SoT: 05-coding/frontend/src/views/shared/problem-management/ui/problem-management-view.tsx:221-238]. 7 cột sắp xếp được, đảo chiều khi
+   [SoT: 05-coding/frontend/src/views/shared/problem-management/ui/problem-management-view.tsx:250-272]. 7 cột sắp xếp được, đảo chiều khi
    bấm lại cùng cột [SoT: 09-layoutBase/Admin - Quản lý bài tập.dc.html:518-528]. Cột AC đổi màu theo ngưỡng
    60% và 35% [SoT: 09-layoutBase/Admin - Quản lý bài tập.dc.html:539].
 7. **Phân trang** — 8 dòng mỗi trang, nút Trước/Sau và số trang, nhãn "Trang x / y · hiển thị n dòng"

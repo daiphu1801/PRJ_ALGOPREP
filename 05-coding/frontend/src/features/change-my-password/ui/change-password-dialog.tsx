@@ -2,6 +2,7 @@
 "use client";
 
 import { useT } from "@/shared/i18n";
+import { toast } from "@/shared/lib/toast-store";
 import { Button, Modal, TextField } from "@/shared/ui";
 import { useChangePassword } from "../model/use-change-password";
 
@@ -25,6 +26,12 @@ export function ChangePasswordDialog({
     submit,
   } = useChangePassword(hasPassword, onClose);
 
+  async function handleSubmit() {
+    const result = await submit();
+    if (result.ok) toast.success(t("passwordDialog.done"));
+    else toast.error(t(result.errorKey));
+  }
+
   return (
     <Modal
       open
@@ -35,7 +42,7 @@ export function ChangePasswordDialog({
           <Button variant="ghost" size="sm" onClick={onClose} disabled={isSubmitting}>
             {t("passwordDialog.cancel")}
           </Button>
-          <Button size="sm" onClick={() => void submit()} disabled={isSubmitting} aria-busy={isSubmitting || undefined}>
+          <Button size="sm" onClick={() => void handleSubmit()} disabled={isSubmitting} aria-busy={isSubmitting || undefined}>
             {t("passwordDialog.confirm")}
           </Button>
         </>
@@ -48,7 +55,7 @@ export function ChangePasswordDialog({
             type="password"
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
-            error={fieldErrors.currentPassword ? t(fieldErrors.currentPassword) : undefined}
+            invalid={Boolean(fieldErrors.currentPassword)}
             maxLength={128}
           />
         ) : null}
@@ -57,7 +64,7 @@ export function ChangePasswordDialog({
           type="password"
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
-          error={fieldErrors.newPassword ? t(fieldErrors.newPassword) : undefined}
+          invalid={Boolean(fieldErrors.newPassword)}
           maxLength={128}
         />
         <TextField
@@ -65,7 +72,7 @@ export function ChangePasswordDialog({
           type="password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
-          error={fieldErrors.confirmPassword ? t(fieldErrors.confirmPassword) : undefined}
+          invalid={Boolean(fieldErrors.confirmPassword)}
           maxLength={128}
         />
         <p className="text-xs text-[var(--color-text-subtle)]">{t("passwordDialog.ruleHint")}</p>

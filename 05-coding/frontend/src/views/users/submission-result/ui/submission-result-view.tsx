@@ -18,6 +18,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { fetchSubmissionDetail, type SubmissionTestcaseResult } from "@/entities/submission";
 import { useT } from "@/shared/i18n";
+import { toast } from "@/shared/lib/toast-store";
 import { Badge, Button, EmptyState, type BadgeVariant } from "@/shared/ui";
 
 const VERDICT_VARIANT: Record<string, BadgeVariant> = {
@@ -54,7 +55,6 @@ export function SubmissionResultView() {
   const submissionId = params?.submissionId ?? "";
   const submission = useMemo(() => fetchSubmissionDetail(submissionId), [submissionId]);
   const [expanded, setExpanded] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
 
   if (!submission) {
     return <EmptyState>{t("notFound")}</EmptyState>;
@@ -64,9 +64,15 @@ export function SubmissionResultView() {
   const canOpenAi = submission.status === "ACCEPTED";
 
   function copyCode() {
-    void navigator.clipboard?.writeText(submission!.sourceCode);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    const clipboard = navigator.clipboard;
+    if (!clipboard) {
+      toast.error(t("code.copyFailed"));
+      return;
+    }
+    clipboard.writeText(submission!.sourceCode).then(
+      () => toast.success(t("code.copied")),
+      () => toast.error(t("code.copyFailed")),
+    );
   }
 
   return (
@@ -163,7 +169,7 @@ export function SubmissionResultView() {
         <div className="mb-2.5 flex items-center justify-between gap-2">
           <Badge variant="neutral">{t(`language.${submission.language}`)}</Badge>
           <Button variant="ghost" size="sm" onClick={copyCode}>
-            {copied ? t("code.copied") : t("code.copy")}
+            {t("code.copy")}
           </Button>
         </div>
         <pre className="max-h-[420px] overflow-auto rounded-lg bg-[var(--color-surface-hover)] p-3 font-mono text-[12.5px] whitespace-pre-wrap">

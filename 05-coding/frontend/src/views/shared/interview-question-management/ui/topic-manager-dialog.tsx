@@ -13,6 +13,7 @@ import {
   useInterviewTopics,
 } from "@/entities/interview-question";
 import { useT } from "@/shared/i18n";
+import { toast } from "@/shared/lib/toast-store";
 import { ManagedListDialog, Toggle } from "@/shared/ui";
 
 type Props = {
@@ -38,7 +39,12 @@ export function TopicManagerDialog({ open, onClose, usage }: Props) {
       renderExtra={(topic) => (
         <Toggle
           checked={topic.usesStarFramework}
-          onCheckedChange={(checked) => setInterviewTopicStar(topic.key, checked)}
+          onCheckedChange={(checked) => {
+            setInterviewTopicStar(topic.key, checked);
+            toast.success(
+              t(checked ? "topicManager.starEnabled" : "topicManager.starDisabled", { name: topic.label }),
+            );
+          }}
           label={t("topicManager.starLabel", { name: topic.label })}
         />
       )}
@@ -57,6 +63,11 @@ export function TopicManagerDialog({ open, onClose, usage }: Props) {
         error: {
           empty: t("topicManager.error.empty"),
           duplicate: t("topicManager.error.duplicate"),
+        },
+        done: {
+          add: t("topicManager.done.add"),
+          rename: t("topicManager.done.rename"),
+          remove: t("topicManager.done.remove"),
         },
       }}
     />

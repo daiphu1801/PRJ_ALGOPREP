@@ -99,6 +99,23 @@ const eslintConfig = [
     },
   },
   {
+    // DEC-2026-1003-toast-feedback-channel: results and validation errors go through the shared
+    // toast, never a hand-written alert line on the page. The toaster itself and the data-load
+    // error placeholder are the only places allowed to say role="alert".
+    files: ["src/**/*.tsx"],
+    ignores: ["src/shared/ui/feedback/toaster.tsx", "src/shared/ui/feedback/error-state.tsx", "src/**/*.test.tsx"],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "JSXAttribute[name.name='role'][value.value='alert']",
+          message:
+            'Không tự viết role="alert" để báo kết quả hoặc lỗi nhập: dùng toast từ "@/shared/lib/toast-store" (DEC-2026-1003-toast-feedback-channel).',
+        },
+      ],
+    },
+  },
+  {
     ignores: [".next/**", "node_modules/**", "playwright-report/**", "test-results/**"],
   },
 ];

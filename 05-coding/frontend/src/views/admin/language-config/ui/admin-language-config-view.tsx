@@ -36,6 +36,7 @@ import {
   type SandboxConfig,
 } from "../api";
 import { useLocale, useT } from "@/shared/i18n";
+import { toast } from "@/shared/lib/toast-store";
 import {
   Button,
   Card,
@@ -63,9 +64,12 @@ export function AdminLanguageConfigView() {
   const [saved, setSaved] = useState<LanguageConfigPage>(fetchLanguageConfigPage);
   const [draft, setDraft] = useState<LanguageConfigPage>(saved);
   const [saving, setSaving] = useState(false);
+  const [attempted, setAttempted] = useState(false);
 
   const dirty = JSON.stringify(draft) !== JSON.stringify(saved);
   const number = (value: number) => value.toLocaleString(locale);
+  const badMultiplier = (value: number) => !(value > 0);
+  const badDefault = (value: number) => !Number.isInteger(value) || value < 1;
 
   function patchLanguage(key: LanguageConfig["key"], patch: Partial<LanguageConfig>) {
     setDraft((prev) => ({
@@ -85,11 +89,20 @@ export function AdminLanguageConfigView() {
   }
 
   async function save() {
+    setAttempted(true);
+    const invalid =
+      draft.languages.some((language) => badMultiplier(language.timeMultiplier)) ||
+      Object.values(draft.defaults).some(badDefault);
+    if (invalid) {
+      toast.error(t("errorInvalidValue"));
+      return;
+    }
     setSaving(true);
     // No endpoint yet — the delay stands in for the round trip so the `saving` state is reviewable.
     await new Promise((resolve) => setTimeout(resolve, 600));
     setSaved(draft);
     setSaving(false);
+    toast.success(t("saveDone"));
   }
 
   const columns: DataTableColumn<LanguageConfig>[] = [
@@ -139,6 +152,7 @@ export function AdminLanguageConfigView() {
           onChange={(event) =>
             patchLanguage(language.key, { timeMultiplier: Number(event.target.value) })
           }
+          invalid={attempted && badMultiplier(language.timeMultiplier)}
           className="h-8 font-mono"
         />
       ),
@@ -240,6 +254,7 @@ export function AdminLanguageConfigView() {
                       value={draft.defaults[key]}
                       disabled={saving}
                       onChange={(event) => patchDefaults({ [key]: Number(event.target.value) })}
+                      invalid={attempted && badDefault(draft.defaults[key])}
                       className="h-8 w-24 font-mono"
                       wrapperClassName="w-auto"
                     />

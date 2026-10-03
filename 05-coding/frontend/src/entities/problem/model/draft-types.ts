@@ -89,3 +89,37 @@ export type ProblemDraft = {
   aiBrief: string;
   aiGuards: Record<AiGuardKey, boolean>;
 };
+
+/** What the editor, the read-only page and the preview all load: the problem plus its last save time. */
+export type ProblemDraftRecord = {
+  draft: ProblemDraft;
+  /** ISO time of the last save, or null when the problem was never saved. */
+  savedAt: string | null;
+  /**
+   * F2-14 quota: how many times the author already generated testcases for this problem, and the
+   * cap. The counter lives on the server (the client cannot be trusted with it); the cap is an
+   * ADMIN-configurable setting (DEC-2026-1001-admin-configurable-settings), default 2.
+   */
+  aiGeneration: { used: number; limit: number };
+};
+
+/** Why a generated input was thrown away instead of becoming a draft testcase. */
+export type DroppedReason = "invalidConstraint" | "referenceFailed" | "timeout";
+
+/** `GenerateTestcasesWithAi` request (BD SHR0202 EVT-16). Never carries the reference solution. */
+export type GenerateTestcasesInput = {
+  problemId?: string;
+  /** Statement Markdown, sent to the AI as data. */
+  body: string;
+  constraints: string;
+  /** The author-written Sample rows that anchor the input format. */
+  samples: Pick<Testcase, "input" | "expected">[];
+};
+
+/** `GenerateTestcasesWithAi` response: new unapproved draft rows plus what was discarded. */
+export type GenerateTestcasesResult = {
+  testcases: Testcase[];
+  dropped: { reason: DroppedReason; count: number }[];
+  /** The largest case failed or timed out on the reference solution: F2-10 limit may be wrong. */
+  largestCaseWarning: boolean;
+};

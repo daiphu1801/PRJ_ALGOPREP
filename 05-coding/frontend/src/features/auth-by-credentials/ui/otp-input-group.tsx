@@ -3,12 +3,13 @@
 
 import { useEffect, useState } from "react";
 import { useT } from "@/shared/i18n";
-import { Button, InlineFieldError } from "@/shared/ui";
+import { Button } from "@/shared/ui";
 
 type OtpInputGroupProps = {
   value: string;
   onChange: (value: string) => void;
-  error?: string;
+  /** Marks the code as rejected; the message is a toast raised by the auth flow. */
+  invalid?: boolean;
   attemptsLeft: number;
   cooldownUntil: number;
   onResend: () => void;
@@ -23,7 +24,7 @@ type OtpInputGroupProps = {
 export function OtpInputGroup({
   value,
   onChange,
-  error,
+  invalid = false,
   attemptsLeft,
   cooldownUntil,
   onResend,
@@ -51,12 +52,9 @@ export function OtpInputGroup({
         value={value}
         disabled={disabled}
         onChange={(e) => onChange(e.target.value.replace(/\D/g, ""))}
-        className="w-full rounded-md border border-[var(--color-border)] bg-transparent px-3 py-2 text-center text-lg tracking-[0.5em] text-[var(--color-text)]"
-        aria-describedby="otp-error"
+        aria-invalid={invalid || undefined}
+        className={`w-full rounded-md border bg-transparent px-3 py-2 text-center text-lg tracking-[0.5em] text-[var(--color-text)] ${invalid ? "border-[var(--color-danger)]" : "border-[var(--color-border)]"}`}
       />
-      <div id="otp-error">
-        <InlineFieldError message={error} />
-      </div>
       <p className="mt-1 text-xs text-[var(--color-text-muted)]">{t("otpAttemptsLeft", { count: attemptsLeft })}</p>
       <Button type="button" variant="ghost" size="sm" disabled={secondsLeft > 0 || disabled} onClick={onResend} className="mt-2">
         {secondsLeft > 0 ? t("otpResendCooldown", { seconds: secondsLeft }) : t("otpResend")}

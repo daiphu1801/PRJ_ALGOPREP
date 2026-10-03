@@ -13,7 +13,7 @@
 // four. A2 and A3 both edit the entire bank, with no "only what I authored" restriction.
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { Copy, Pencil, Search, Tags, Trash2 } from "lucide-react";
 import {
@@ -26,6 +26,7 @@ import {
   type QuestionTopic,
 } from "@/entities/interview-question";
 import { useT } from "@/shared/i18n";
+import { toast } from "@/shared/lib/toast-store";
 import {
   Badge,
   Button,
@@ -54,11 +55,13 @@ type TopicFilter = QuestionTopic | "all";
 type LevelFilter = QuestionLevel | "all";
 
 type Props = {
+  /** Area root for row links and the create button, e.g. "/admin/interview-questions". */
+  basePath: string;
   /** Topic management is ADMIN-only; the screen is shared with INSTRUCTOR, who may only pick topics. */
   canManageTopics?: boolean;
 };
 
-export function InterviewQuestionManagementView({ canManageTopics = false }: Props) {
+export function InterviewQuestionManagementView({ basePath, canManageTopics = false }: Props) {
   const t = useT("interviewQuestionManagement");
   const [page] = useState(fetchInterviewQuestionPage);
   const topicList = useInterviewTopics();
@@ -67,6 +70,7 @@ export function InterviewQuestionManagementView({ canManageTopics = false }: Pro
   const [topic, setTopic] = useState<TopicFilter>("all");
   const [level, setLevel] = useState<LevelFilter>("all");
   const [currentPage, setCurrentPage] = useState(1);
+  const csvInput = useRef<HTMLInputElement>(null);
   const [pendingDelete, setPendingDelete] = useState<InterviewQuestion | null>(null);
   const [deletedCodes, setDeletedCodes] = useState<ReadonlySet<string>>(new Set());
 
@@ -95,6 +99,15 @@ export function InterviewQuestionManagementView({ canManageTopics = false }: Pro
 
   const visible = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
+  // Live filtering stays silent; only an explicit submit (Enter) reports the result count.
+  function announceSearch() {
+    toast.info(
+      filtered.length === 0
+        ? t("toast.searchEmpty")
+        : t("toast.searchResult", { count: filtered.length }),
+    );
+  }
+
   function resetToFirstPage<T>(setter: (value: T) => void) {
     return (value: T) => {
       setter(value);
@@ -116,7 +129,7 @@ export function InterviewQuestionManagementView({ canManageTopics = false }: Pro
       header: t("columnQuestion"),
       render: (question) => (
         <Link
-          href={`/admin/interview-questions/${question.code}`}
+          href={`${basePath}/${question.code}`}
           className="block truncate font-semibold hover:underline"
         >
           {question.question}
@@ -186,12 +199,13 @@ export function InterviewQuestionManagementView({ canManageTopics = false }: Pro
             icon={Pencil}
             label={t("edit")}
             ariaLabel={t("editQuestion", { code: question.code })}
-            href={`/admin/interview-questions/${question.code}`}
+            href={`${basePath}/${question.code}/edit`}
           />
           <IconAction
             icon={Copy}
             label={t("duplicate")}
             ariaLabel={t("duplicateQuestion", { code: question.code })}
+            onClick={() => toast.success(t("toast.duplicated", { code: question.code }))}
           />
           <IconAction
             icon={Trash2}
@@ -223,11 +237,28 @@ export function InterviewQuestionManagementView({ canManageTopics = false }: Pro
                 {t("manageTopics")}
               </Button>
             ) : null}
-            <Button variant="ghost" size="sm" className="border border-[var(--color-border)]">
+            <input
+              ref={csvInput}
+              type="file"
+              accept=".csv,text/csv"
+              hidden
+              data-testid="csv-input"
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                if (file) toast.success(t("toast.imported", { name: file.name }));
+                event.target.value = "";
+              }}
+            />
+            <Button
+              variant="ghost"
+              size="sm"
+              className="border border-[var(--color-border)]"
+              onClick={() => csvInput.current?.click()}
+            >
               {t("importCsv")}
             </Button>
             <Button asChild variant="cta" size="sm">
-              <Link href="/admin/interview-questions/new">{t("newQuestion")}</Link>
+              <Link href={`${basePath}/new`}>{t("newQuestion")}</Link>
             </Button>
           </>
         }
@@ -244,6 +275,9 @@ export function InterviewQuestionManagementView({ canManageTopics = false }: Pro
             onChange={(event) => {
               setQuery(event.target.value);
               setCurrentPage(1);
+            }}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") announceSearch();
             }}
             wrapperClassName="min-w-[220px] flex-1"
           />
@@ -308,6 +342,7 @@ export function InterviewQuestionManagementView({ canManageTopics = false }: Pro
         onConfirm={() => {
           if (pendingDelete) {
             setDeletedCodes((previous) => new Set(previous).add(pendingDelete.code));
+            toast.success(t("toast.deleted", { code: pendingDelete.code }));
           }
           setPendingDelete(null);
         }}

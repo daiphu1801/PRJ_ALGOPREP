@@ -63,11 +63,11 @@
 | Tên vật lý (slug) | `class_student_detail` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A2 (`INSTRUCTOR`) |
-| Phiên bản | V0.1 |
+| Phiên bản | V0.3 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/21 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/09/21 |
+| Ngày cập nhật | 2026/10/03 |
 
 ---
 
@@ -77,6 +77,7 @@
 | :--- | :--- | :--- | :--- | :--- |
 | V0.1 | Toàn bộ | Tạo mới theo mẫu 9 sheet. Màn không có prototype nên toàn bộ bố cục là suy diễn có đánh dấu, bám phạm vi dữ liệu F1-27 và quy ước 5 màn anh em cùng cụm. Chốt hợp đồng ba đường vào (cùng cặp `studentId` + `classId`). Đề xuất tính "Hoàn thành %" và "Số bài đã giải" tại chỗ từ `user_problem_best_score` thay vì gọi `GetClassAssignmentCompletion`, tránh chờ một endpoint chưa tồn tại. Phát sinh 10 câu hỏi mở | 2026/09/21 | Nhóm phát triển AlgoPrep |
 | V0.2 | 4.3, 5, 7.1, 7.2, Câu hỏi mở | Áp `DEC-2026-0921-teacher-screens-conflict-resolutions` và `DEC-2026-0921-class-completion-owned-by-identity`: Điểm TB đổi nguồn sang `judge.submissions` theo phạm vi lớp; bộ nhãn trạng thái thêm mã `INSUFFICIENT_DATA` tường minh thay vì trả rỗng; cách tính Hoàn thành của màn này nay áp cho cả cụm và `GetClassAssignmentCompletion` bị bỏ. Đóng Q1, Q3 | 2026-09-21 | AI |
+| V0.3 | 1, 8, 9 | Áp `DEC-2026-1003-toast-feedback-channel`: kết quả và lỗi của thao tác gỡ học viên ghi là toast; giữ nguyên vùng lỗi tải theo khối | 2026-10-03 | AI |
 
 ---
 
@@ -694,7 +695,7 @@ Ghi chú ranh giới:
 | 2 | Liên kết | Quay lại màn gọi tới | Bấm "Quay lại" ở khối hồ sơ. | Có | Không | - | [Các bước]<br>1. Điều hướng về đúng màn đã gọi tới (`class_progress` hoặc `class_management`).<br>[Khi thành công] Rời màn. Màn này chỉ đọc nên **không** hỏi xác nhận; không có thay đổi chưa lưu nào để mất. Bộ lọc của màn cha chỉ được khôi phục nếu màn cha ghi trạng thái lọc vào query string — xem Câu hỏi mở Q6. |
 | 3 | Liên kết | Mở màn Quản lý lớp | Bấm tên lớp ở khối hồ sơ. | Có | Không | - | [Các bước]<br>1. Điều hướng sang `class_management` kèm `classId`.<br>[Khi thành công] Mở màn quản lý lớp với lớp đó đang được chọn. Không hỏi xác nhận trước khi rời. |
 | 4 | Nút | Mở popup gỡ học viên | Bấm "Gỡ khỏi lớp". | Không | Không | - | [Các bước]<br>1. Mở popup xác nhận, truyền `studentId`, `classId`, tên học viên và tên lớp để dựng câu cảnh báo.<br>[Khi thành công] Popup hiển thị, màn nền không đổi dữ liệu. |
-| 5 | Nút | Xác nhận gỡ học viên | Bấm "Gỡ học viên" trong popup. | Có | Có | `RemoveStudentFromClass` | [Các bước]<br>1. Vô hiệu hai nút trong popup, gửi yêu cầu gỡ.<br>2. Đóng popup.<br>3. Rời màn về đúng màn gọi tới, kèm tín hiệu để màn đó tải lại danh sách học viên.<br>[Khi xác nhận] Popup này chính là bước xác nhận; thao tác là xoá thật kèm cascade nên **không có hoàn tác** [Nguồn: 01-rd/req/identity.md:98-103].<br>[Khi thành công] Học viên biến mất khỏi danh sách của màn gọi tới.<br>[Khi lỗi] Đóng popup, **ở lại màn chi tiết** và hiển thị lỗi; không rời màn khi chưa chắc dữ liệu đã đổi.<br>[Thông báo hoàn tất] "Đã gỡ học viên khỏi lớp." — dùng lại đúng nội dung của `class_management` [Nguồn: 02-bd/screens/teacher/INS0201_class_management.md:557]. |
+| 5 | Nút | Xác nhận gỡ học viên | Bấm "Gỡ học viên" trong popup. | Có | Có | `RemoveStudentFromClass` | [Các bước]<br>1. Vô hiệu hai nút trong popup, gửi yêu cầu gỡ.<br>2. Đóng popup.<br>3. Rời màn về đúng màn gọi tới, kèm tín hiệu để màn đó tải lại danh sách học viên.<br>[Khi xác nhận] Popup này chính là bước xác nhận; thao tác là xoá thật kèm cascade nên **không có hoàn tác** [Nguồn: 01-rd/req/identity.md:98-103].<br>[Khi thành công] Học viên biến mất khỏi danh sách của màn gọi tới.<br>[Khi lỗi] Đóng popup, **ở lại màn chi tiết** và hiện toast lỗi; không rời màn khi chưa chắc dữ liệu đã đổi.<br>[Thông báo hoàn tất] Toast "Đã gỡ học viên khỏi lớp." — dùng lại đúng nội dung của `class_management` [Nguồn: 02-bd/screens/teacher/INS0201_class_management.md:557]. |
 | 6 | Nút | Huỷ popup gỡ học viên | Bấm "Huỷ" trong popup. | Không | Không | - | [Các bước]<br>1. Đóng popup.<br>[Khi huỷ] Giữ nguyên màn chi tiết, không gọi máy chủ, không đổi dữ liệu đang hiển thị. |
 | 7 | Liên kết | Mở màn Chấm tay lọc theo học viên | Bấm "Xem chấm bài của học viên này". | Có | Không | - | [Các bước]<br>1. Điều hướng sang `instructor_grading` kèm `studentId` và `classId` làm bộ lọc sẵn.<br>[Khi thành công] Hàng đợi chấm tay chỉ còn bài của học viên này. Màn đích hiện **chưa có bộ lọc theo học viên** [Nguồn: 02-bd/screens/teacher/INS0301_grading.md:281-285] — xem Câu hỏi mở Q4. Không hỏi xác nhận trước khi rời. |
 | 8 | Nút | Chuyển trang lịch sử nộp bài | Bấm số trang hoặc nút trước/sau. | Không | Có | `ListStudentClassSubmissions` | [Các bước]<br>1. Tải trang được chọn, giữ nguyên `studentId` và `classId`.<br>2. Cuộn khối lịch sử về đầu bảng.<br>[Khi thành công] Bảng đổi nội dung tại chỗ; bốn khối còn lại không tải lại.<br>[Khi lỗi] Giữ nguyên trang đang hiển thị, hiển thị lỗi kèm nút "Thử lại". |
@@ -726,7 +727,7 @@ Ghi chú ranh giới:
 | 10 | Kiểm nghiệp vụ | Học viên bị gỡ khỏi lớp ở phiên khác | [Nội dung kiểm] Học viên đã bị gỡ khỏi lớp (F1-26, xoá thật) thì màn này báo không tìm thấy thay vì hiển thị hồ sơ rỗng.<br>[Nơi thực thi] Máy chủ. | Lỗi | Mã lỗi trong phản hồi | Nội dung "Học viên này không còn thuộc lớp." Cần vì gỡ học viên là xoá thật, không có bản ghi mềm để phát hiện [Nguồn: 02-bd/database/identity.md:95-101]. Cùng tình huống mà `class_progress` đã mô tả ở phía màn gọi tới [Nguồn: 02-bd/screens/teacher/INS0203_class_progress.md:490]. | EVT-1, EVT-8, EVT-9 | 2 |
 | 11 | Kiểm nghiệp vụ | Gỡ học viên là không hoàn tác | [Nội dung kiểm] Thao tác gỡ chỉ được thực hiện sau khi popup xác nhận đã hiển thị nội dung nêu rõ xoá thật kèm cascade; không có đường tắt bỏ qua popup.<br>[Nơi thực thi] Màn hình và máy chủ. | Cảnh báo | Chưa có mã thông báo | Nội dung "Gỡ học viên sẽ xoá toàn bộ lịch sử làm bài của học viên trong lớp này và không thể hoàn tác." [Nguồn: 01-rd/req/identity.md:98-103] | EVT-4, EVT-5 | 1 |
 | 12 | Kiểm nghiệp vụ | Một khối lỗi không kéo đổ cả màn | [Nội dung kiểm] Gọi `problem-bank` hoặc `judge-orchestration` thất bại thì chỉ khối hoặc thẻ phụ thuộc nguồn đó hiển thị `-` hoặc trạng thái lỗi riêng; khối hồ sơ và các khối lấy được vẫn hiển thị.<br>[Nơi thực thi] Màn hình. | Cảnh báo | Chưa có mã thông báo | Không hiện hộp lỗi toàn màn. Ngoại lệ duy nhất là khối hồ sơ lỗi — khi đó không có `studentId` hợp lệ để tải phần còn lại, nên dừng cả màn là đúng. | EVT-1, EVT-9 | 3 |
-| 13 | Kiểm nghiệp vụ | Lỗi hệ thống hoặc lỗi gọi máy chủ | [Nội dung kiểm] Gọi máy chủ thất bại hoặc trả lỗi nghiệp vụ thì dừng thao tác, giữ nguyên dữ liệu đang hiển thị và hiện nút "Thử lại" ở đúng khối.<br>[Nơi thực thi] Màn hình. | Lỗi | Mã lỗi trong phản hồi | Phản hồi có mã lỗi đã đăng ký thì hiển thị nội dung tương ứng; chưa đăng ký thì hiển thị "Không kết nối được máy chủ." | EVT-1, EVT-5, EVT-8, EVT-9 | 1 |
+| 13 | Kiểm nghiệp vụ | Lỗi hệ thống hoặc lỗi gọi máy chủ | [Nội dung kiểm] Gọi máy chủ thất bại hoặc trả lỗi nghiệp vụ thì dừng thao tác, giữ nguyên dữ liệu đang hiển thị và hiện nút "Thử lại" ở đúng khối.<br>[Nơi thực thi] Màn hình. | Lỗi | Mã lỗi trong phản hồi | Phản hồi có mã lỗi đã đăng ký thì hiển thị nội dung tương ứng; chưa đăng ký thì hiển thị "Không kết nối được máy chủ." Lỗi của thao tác ghi (gỡ học viên) hiện bằng toast; lỗi tải một khối vẫn nằm ở vùng thay chỗ của khối đó kèm nút "Thử lại" [Nguồn: DEC-2026-1003-toast-feedback-channel]. | EVT-1, EVT-5, EVT-8, EVT-9 | 1 |
 
 Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 

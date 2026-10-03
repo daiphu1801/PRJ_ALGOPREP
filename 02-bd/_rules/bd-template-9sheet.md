@@ -52,6 +52,14 @@ thứ tự dòng đã quy định. Tự chế thẻ mới là sai quy ước.
   màn, kể cả mở popup.
 - Thuật ngữ: có slug riêng trong `01-rd/screens/` là **màn hình**; không có slug riêng, mở chồng lên màn
   hiện tại là **popup**.
+- **Kênh thông báo** (`DEC-2026-1003-toast-feedback-channel`, 2026-10-03): kết quả thao tác (lưu, xoá, tìm
+  kiếm, xuất bản, lỗi hệ thống) và lỗi nhập liệu đều hiện bằng **toast** dùng chung, ở góc phải-trên, tự tắt
+  sau vài giây, có nút X. Ô nhập sai chỉ **đổi viền đỏ**, không có chữ lỗi cạnh ô; mỗi lần gửi chỉ có **một**
+  toast, nội dung là lỗi đầu tiên. Khi viết BD: `[Khi lỗi]` và `[Thông báo hoàn tất]` ở Sheet 8 ghi "toast",
+  `[Tiêu điểm]` ở Sheet 9 ghi "viền ô + toast". **Không viết** "báo lỗi tại ô", "ngay dưới trường", "banner"
+  cho kết quả thao tác. Ngoại lệ là nội dung giải thích trạng thái của trang (lý do một nút bị khoá, cảnh
+  báo cấu hình đang có hiệu lực), vùng thay chỗ nội dung khi tải lỗi hoặc rỗng, và nhãn tĩnh: các thứ này
+  là nội dung trang, không phải thông báo. Hai quy tắc đi kèm: (a) nút bị chặn bởi một trạng thái trang đang giải thích (lý do nút bị khoá) **trông như bị khoá nhưng vẫn bấm được**, bấm thì toast cảnh báo nêu lý do, nên Sheet 6 ghi `[Điều kiện kích hoạt]` là "bấm được, bị chặn kèm toast" thay vì "vô hiệu"; (b) người dùng bấm Thử lại, Làm mới mà vẫn lỗi thì có toast lỗi, còn lỗi tải lần đầu thì không. Tìm kiếm chỉ toast khi người dùng gửi (Enter), kèm số kết quả.
 
 ## 4. Quy ước ID
 
@@ -99,6 +107,7 @@ Hai luật này là lý do mẫu 9 sheet đáng dùng. Bỏ chúng thì khung ch
 | AUD-02 | ID item | ID item ở Sheet 5 không trùng; NO trong mỗi khu vực liên tục từ 1 | Có |
 | AUD-03 | ID sự kiện | `EVT-n` liên tục, không trùng; mọi `EVT` được tham chiếu đều tồn tại ở Sheet 8 | Có |
 | AUD-04 | Thông báo | Sheet 9 chỉ ghi mã thông báo có thật; chưa có mã thì ghi `Chưa có mã thông báo` kèm nội dung | Không |
+| AUD-04b | Kênh thông báo | Kết quả thao tác và lỗi nhập liệu ghi là toast; không còn cụm "báo lỗi tại ô", "ngay dưới trường", "banner" cho kết quả thao tác (ngoại lệ nêu ở mục 3) | Không |
 | AUD-05 | Item và điều khiển | Sheet 5 và Sheet 6 khớp NO, tên item, thứ tự; mọi dòng `Điều kiện` đều có điều kiện | Có |
 | AUD-06 | Số bảng dữ liệu | Số bảng ở mục 4.3 khớp số dòng ở mục 7.2 | Có |
 | AUD-07 | CRUD | Cột `CRUD` và cột ghi chú ở mục 7.2 mô tả cùng một tập thao tác | Không |
@@ -166,8 +175,10 @@ thứ phải giống nhau xuyên `01-rd` → `02-bd` → `03-dd` theo luật ch�
 | `SHR0101` | `SHR0101_auth.md` | `auth` | Đăng nhập và đăng ký | Xác thực |
 | `SHR0201` | `SHR0201_problem_management.md` | `problem_management` | Quản lý bài tập | Nội dung bài tập |
 | `SHR0202` | `SHR0202_problem_authoring.md` | `problem_authoring` | Biên soạn bài tập | Nội dung bài tập |
+| `SHR0203` | `SHR0203_problem_info.md` | `problem_info` | Chi tiết bài tập | Nội dung bài tập |
 | `SHR0301` | `SHR0301_interview_question_management.md` | `interview_question_management` | Quản lý câu hỏi phỏng vấn | Nội dung câu hỏi |
 | `SHR0302` | `SHR0302_interview_question_authoring.md` | `interview_question_authoring` | Biên soạn câu hỏi phỏng vấn | Nội dung câu hỏi |
+| `SHR0303` | `SHR0303_interview_question_info.md` | `interview_question_info` | Chi tiết câu hỏi phỏng vấn | Nội dung câu hỏi |
 
 Quy tắc bổ sung:
 - **Mã đã cấp thì không đổi, không tái sử dụng.** Màn bị cắt khỏi phạm vi thì mã đó bỏ trống vĩnh viễn.

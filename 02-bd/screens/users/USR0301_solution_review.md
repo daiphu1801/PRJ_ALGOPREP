@@ -51,11 +51,11 @@
 | Tên vật lý (slug) | `solution_review` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`) |
-| Phiên bản | V0.1 |
+| Phiên bản | V0.2 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/22 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/09/22 |
+| Ngày cập nhật | 2026/10/03 |
 
 ---
 
@@ -65,6 +65,7 @@
 | :--- | :--- | :--- | :--- | :--- |
 | V0.1 | Toàn bộ | Tạo mới theo mẫu 9 sheet. Chốt cấu trúc JSON báo cáo phân tích F5-07, so sánh độ phức tạp F5-02/F5-03, rubric 5 tiêu chí F5-23, banner giáo dục F5-18, cơ chế cache mã băm F5-20, và popup xác nhận áp dụng mã F5-26 | 2026/09/22 | Nhóm phát triển AlgoPrep |
 | V0.2 | Sheet 3, 5, 6, 7.3, 8, 9, Câu hỏi mở | Viết lại Sheet 3 theo khuôn "Danh sách chuyển màn" 6 thẻ + sơ đồ Mermaid; viết lại Sheet 5 theo khuôn 14 cột (thêm Bảng DB/Cột DB); sửa nguồn phần lớn nội dung báo cáo về đúng cột thật `ai.solution_reviews.result_json` (JSONB) thay vì các cột riêng không tồn tại (`approach_title`, `strengths`...); bỏ cột "Phương thức & URL dự kiến" ở Sheet 7.3. Bổ sung Khu vực I (Trạng thái đang xử lý/lỗi AI) tách rõ ba trạng thái theo Câu hỏi mở Q3 của RD: đang tải, lỗi tạm thời (cho thử lại), bị khoá ngân sách F5-25 (không cho thử lại) — cập nhật đồng bộ Sheet 6, Sheet 8 (EVT-1, EVT-7 mới) và Sheet 9 (tách dòng kiểm 4 thành 4 và 5) | 2026/09/24 | Nhóm phát triển AlgoPrep |
+| V0.2 | Sheet 8, 9 | Bổ sung toast cho lỗi tạm thời, hết ngân sách và xác nhận áp dụng mã; giữ nguyên banner giáo dục F5-18 và khối trạng thái Khu vực I thay chỗ báo cáo. Theo `DEC-2026-1003-toast-feedback-channel`. | 2026/10/03 | AI |
 
 ---
 
@@ -459,13 +460,13 @@ sách cố định trong RD [Nguồn: 02-bd/database/ai-review.md:36].
 
 | NO | Loại | Sự kiện | Chi tiết | Chuyển màn | Gọi API | Tên xử lý | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :-: | :--- | :--- |
-| 1 | Khởi tạo | Mở màn hình | Đọc `submission_id` từ URL, gọi API lấy hoặc sinh báo cáo phân tích. | Không | Có | `GetOrCreateSolutionReview` | [Các bước]<br>1. Kiểm tra đăng nhập và kiểm tra bài nộp đạt `ACCEPTED`.<br>2. Nếu báo cáo đã có (cache/DB theo F5-20), gọi xong trả ngay, bỏ qua bước 3.<br>3. Nếu chưa có, hiển thị khung chờ đang phân tích (Khu vực I NO 1) trong lúc gọi AI.<br>[Khi thành công] Ẩn khung chờ, hiển thị toàn bộ báo cáo phân tích tĩnh (Khu vực A-G).<br>[Khi lỗi] Phân biệt hai loại theo F5-22/F5-25: lỗi tạm thời (timeout, provider lỗi) hiển thị Khu vực I NO 2 kèm nút Thử lại (NO 3); vượt ngân sách token hiển thị Khu vực I NO 4, không có nút thử lại, chỉ có lối thoát về `submission_result` hoặc Workspace. |
+| 1 | Khởi tạo | Mở màn hình | Đọc `submission_id` từ URL, gọi API lấy hoặc sinh báo cáo phân tích. | Không | Có | `GetOrCreateSolutionReview` | [Các bước]<br>1. Kiểm tra đăng nhập và kiểm tra bài nộp đạt `ACCEPTED`.<br>2. Nếu báo cáo đã có (cache/DB theo F5-20), gọi xong trả ngay, bỏ qua bước 3.<br>3. Nếu chưa có, hiển thị khung chờ đang phân tích (Khu vực I NO 1) trong lúc gọi AI.<br>[Khi thành công] Ẩn khung chờ, hiển thị toàn bộ báo cáo phân tích tĩnh (Khu vực A-G).<br>[Khi lỗi] Phân biệt hai loại theo F5-22/F5-25: lỗi tạm thời (timeout, provider lỗi) hiển thị Khu vực I NO 2 kèm nút Thử lại (NO 3); vượt ngân sách token hiển thị Khu vực I NO 4, không có nút thử lại, chỉ có lối thoát về `submission_result` hoặc Workspace. Khối Khu vực I thay chỗ báo cáo nên giữ nguyên; ngoài ra, ngay lúc lỗi xảy ra có một toast lỗi tương ứng (tạm thời hoặc hết ngân sách), và mỗi lần thử lại thất bại lại có thêm một toast [Nguồn: 05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:68-77]. |
 | 2 | Điều hướng | Bấm link Breadcrumb | Người dùng bấm quay lại Kết quả nộp bài. | Có | Không | - | [Các bước]<br>1. Điều hướng về `submission_result` (`USR0201`) kèm `submission_id`. |
 | 3 | Điều hướng | Bấm Phỏng vấn bài này | Bấm nút "Phỏng vấn về bài này" tại góc phải đầu trang. | Có | Không | - | [Các bước]<br>1. Điều hướng sang `mock_interview` (`USR0302`) kèm query `submission_id={id}`. |
 | 4 | Giao diện | Bấm Áp dụng vào Workspace | Bấm nút "Áp dụng vào Workspace" tại khối Diff. | Không | Không | - | [Các bước]<br>1. Mở popup `applyConfirm`. |
 | 5 | Giao diện | Bấm Huỷ áp dụng | Bấm nút "Huỷ" tại popup xác nhận. | Không | Không | - | [Các bước]<br>1. Đóng popup `applyConfirm`, giữ nguyên màn hình. |
-| 6 | Điều hướng | Xác nhận áp dụng mã | Bấm "Ghi đè & Mở Workspace" tại popup. | Có | Không | - | [Các bước]<br>1. Lưu bản mã `suggestedCode` vào bộ nhớ tạm trình duyệt (Session Storage).<br>2. Điều hướng sang `problem_detail` (`USR0102`) của bài toán tương ứng kèm cờ khôi phục mã.<br>[Khi thành công] Workspace mở ra với mã nguồn cải tiến đã được nạp sẵn. |
-| 7 | Nút | Bấm Thử lại | Bấm nút "Thử lại" khi đang ở trạng thái lỗi tạm thời (Khu vực I NO 2/3). | Không | Có | `GetOrCreateSolutionReview` | [Các bước]<br>1. Ẩn thông báo lỗi tạm thời, hiện lại khung chờ đang phân tích.<br>2. Gọi lại `GetOrCreateSolutionReview`.<br>[Khi thành công] Hiển thị báo cáo như EVT-1.<br>[Khi lỗi] Lỗi tạm thời lặp lại thì hiện lại Khu vực I NO 2/3; nếu lần này là lỗi ngân sách thì chuyển sang NO 4, không còn nút Thử lại. |
+| 6 | Điều hướng | Xác nhận áp dụng mã | Bấm "Ghi đè & Mở Workspace" tại popup. | Có | Không | - | [Các bước]<br>1. Lưu bản mã `suggestedCode` vào bộ nhớ tạm trình duyệt (Session Storage).<br>2. Điều hướng sang `problem_detail` (`USR0102`) của bài toán tương ứng kèm cờ khôi phục mã.<br>[Khi thành công] Workspace mở ra với mã nguồn cải tiến đã được nạp sẵn. Xác nhận xong thì hiện toast thành công "Đã áp dụng gợi ý vào bài làm." (bản dựng hiện tại chỉ hiện toast này, chưa điều hướng) [Nguồn: 05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:121-125]. |
+| 7 | Nút | Bấm Thử lại | Bấm nút "Thử lại" khi đang ở trạng thái lỗi tạm thời (Khu vực I NO 2/3). | Không | Có | `GetOrCreateSolutionReview` | [Các bước]<br>1. Ẩn thông báo lỗi tạm thời, hiện lại khung chờ đang phân tích.<br>2. Gọi lại `GetOrCreateSolutionReview`.<br>[Khi thành công] Hiển thị báo cáo như EVT-1.<br>[Khi lỗi] Lỗi tạm thời lặp lại thì hiện lại Khu vực I NO 2/3 kèm một toast lỗi mới; nếu lần này là lỗi ngân sách thì chuyển sang NO 4, không còn nút Thử lại. |
 
 ---
 
@@ -476,8 +477,8 @@ sách cố định trong RD [Nguồn: 02-bd/database/ai-review.md:36].
 | 1 | Kiểm quyền | Phải đăng nhập | [Nội dung kiểm] Chưa đăng nhập thì chuyển hướng về `auth`.<br>[Nơi thực thi] Giao diện và API gateway.<br>[Tiêu điểm] Toàn màn. | Lỗi | Chưa có mã thông báo | Nội dung "Vui lòng đăng nhập để xem phân tích bài giải." | EVT-1 | 1 |
 | 2 | Kiểm quyền | Quyền sở hữu bài nộp | [Nội dung kiểm] Chỉ chủ sở hữu bài nộp mới được xem báo cáo phân tích; người khác mở bị chặn 403.<br>[Nơi thực thi] Máy chủ.<br>[Tiêu điểm] Toàn màn. | Lỗi | Mã lỗi trong phản hồi | Tránh rò rỉ phân tích cá nhân. | EVT-1 | 2 |
 | 3 | Kiểm nghiệp vụ | Bắt buộc verdict ACCEPTED | [Nội dung kiểm] Nếu bài nộp chưa đạt `ACCEPTED`, từ chối yêu cầu sinh phân tích (F5-01).<br>[Nơi thực thi] Máy chủ.<br>[Tiêu điểm] Toàn màn. | Lỗi | Chưa có mã thông báo | Nội dung "Tính năng phân tích bài giải chỉ áp dụng cho các lượt nộp đạt Accepted." | EVT-1 | 3 |
-| 4 | Kiểm nghiệp vụ | Suy giảm êm khi lỗi tạm thời | [Nội dung kiểm] AI provider lỗi hoặc timeout (không phải hết ngân sách): hiển thị Khu vực I NO 2 kèm nút Thử lại, cho phép học viên gọi lại (F5-22).<br>[Nơi thực thi] Màn hình.<br>[Tiêu điểm] Toàn màn. | Cảnh báo | Chưa có mã thông báo | Nội dung "Hệ thống AI đang bận, thử lại sau ít phút." | EVT-1, EVT-7 | 4 |
-| 5 | Kiểm nghiệp vụ | Suy giảm êm khi bị khoá ngân sách | [Nội dung kiểm] Vượt ngân sách token AI (F5-25): hiển thị Khu vực I NO 4, **không** hiện nút Thử lại — gọi lại ngay cũng sẽ thất bại cùng lý do. Học viên vẫn dùng được F1-F4 (xem lại kết quả, làm bài mới) bình thường.<br>[Nơi thực thi] Máy chủ (chặn trước khi gọi LLM) và màn hình.<br>[Tiêu điểm] Toàn màn. | Cảnh báo | Chưa có mã thông báo | Nội dung "Bạn đã đạt giới hạn phân tích AI trong ngày. Bạn vẫn có thể tiếp tục làm bài bình thường." | EVT-1 | 4 |
+| 4 | Kiểm nghiệp vụ | Suy giảm êm khi lỗi tạm thời | [Nội dung kiểm] AI provider lỗi hoặc timeout (không phải hết ngân sách): hiển thị Khu vực I NO 2 kèm nút Thử lại, cho phép học viên gọi lại (F5-22).<br>[Nơi thực thi] Màn hình.<br>[Tiêu điểm] Toàn màn. | Cảnh báo | Chưa có mã thông báo | Nội dung "Hệ thống AI đang bận, thử lại sau ít phút." Hiện ở khối trạng thái thay chỗ báo cáo (Khu vực I NO 2) và đồng thời bằng một toast lỗi ngay lúc xảy ra [Nguồn: 05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:72-76]. | EVT-1, EVT-7 | 4 |
+| 5 | Kiểm nghiệp vụ | Suy giảm êm khi bị khoá ngân sách | [Nội dung kiểm] Vượt ngân sách token AI (F5-25): hiển thị Khu vực I NO 4, **không** hiện nút Thử lại — gọi lại ngay cũng sẽ thất bại cùng lý do. Học viên vẫn dùng được F1-F4 (xem lại kết quả, làm bài mới) bình thường.<br>[Nơi thực thi] Máy chủ (chặn trước khi gọi LLM) và màn hình.<br>[Tiêu điểm] Toàn màn. | Cảnh báo | Chưa có mã thông báo | Nội dung "Bạn đã đạt giới hạn phân tích AI trong ngày. Bạn vẫn có thể tiếp tục làm bài bình thường." Hiện ở khối khoá ngân sách thay chỗ báo cáo (Khu vực I NO 4) và đồng thời bằng một toast lỗi ngay lúc xảy ra [Nguồn: 05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:72-76]. | EVT-1 | 4 |
 | 6 | Kiểm nghiệp vụ | Xác nhận trước khi ghi đè mã | [Nội dung kiểm] Tuyệt đối không tự động ghi đè mã nguồn của học viên trong Workspace mà không có xác nhận rõ ràng (F5-26).<br>[Nơi thực thi] Màn hình.<br>[Tiêu điểm] Popup xác nhận. | Cảnh báo | Không có thông báo | Bảo vệ mã gốc của người học tránh mất mát dữ liệu ngoài ý muốn. | EVT-4, EVT-6 | 1 |
 
 ---

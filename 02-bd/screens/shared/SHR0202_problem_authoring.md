@@ -10,7 +10,7 @@
   Actor dùng chung A2/A3 (một view, mount ở hai tiền tố route) nên nhóm `SHR`, không phải `INS`/`ADM`
   [Nguồn: 01-rd/screens/shared/SHR0202_problem_authoring.md:4-9, `DEC-2026-0825-shared-content-authoring-screens`].
 - Màn này là **màn con của `SHR0201` (`problem_management`)**, không phải màn gốc; có 1 popup: Xem trước
-  đề bài [Nguồn: 01-rd/screens/shared/SHR0202_problem_authoring.md:22-25].
+  đề bài [Nguồn: 01-rd/screens/shared/SHR0202_problem_authoring.md:36-37, 68].
 - Hai Bounded Context sở hữu: **`problem-bank`** (nội dung đề, testcase, F2) và **`harness`** (lược đồ
   kiểu dữ liệu đọc bởi tab "Đặc tả", chỉ góp lược đồ qua shared kernel `algoprep-common`, không có API
   riêng mà màn này gọi trực tiếp) [Nguồn: 02-bd/architecture/harness.md mục 4.1].
@@ -20,11 +20,11 @@
 > `02-bd/storage/problem-bank.md`, `02-bd/architecture/harness.md`.
 >
 > **Không thiết kế** khối "Gợi ý theo cấp độ" kèm trừ điểm (tab Gợi ý AI) — đã cắt khỏi phạm vi
-> `DEC-2026-0831-problem-authoring-round2` [Nguồn: 01-rd/screens/shared/SHR0202_problem_authoring.md:190].
+> `DEC-2026-0831-problem-authoring-round2` [Nguồn: 01-rd/screens/shared/SHR0202_problem_authoring.md:209 (Q5)].
 > **Không thiết kế** cột "Điểm" / khối "Chấm điểm từng phần theo trọng số" ở bảng testcase — đã xoá
-> `DEC-2026-0831-partial-score-testcase-ratio` [Nguồn: 01-rd/screens/shared/SHR0202_problem_authoring.md:188].
+> `DEC-2026-0831-partial-score-testcase-ratio` [Nguồn: 01-rd/screens/shared/SHR0202_problem_authoring.md:207 (Q3)].
 > **Không thiết kế** lựa chọn Trạng thái "Ẩn" — chỉ còn `UNPUBLISHED`/`PUBLISHED`
-> `DEC-2026-0830-problem-lifecycle-two-states` [Nguồn: 01-rd/screens/shared/SHR0202_problem_authoring.md:146-148].
+> `DEC-2026-0830-problem-lifecycle-two-states` [Nguồn: 01-rd/screens/shared/SHR0202_problem_authoring.md:159-163].
 
 ---
 
@@ -41,11 +41,11 @@
 | Tên vật lý (slug) | `problem_authoring` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A2 (`INSTRUCTOR`) và A3 (`ADMIN`) — dùng chung một view |
-| Phiên bản | V1.1 |
+| Phiên bản | V1.13 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/20 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/10/01 |
+| Ngày cập nhật | 2026/10/03 |
 
 ---
 
@@ -56,6 +56,18 @@
 | V0.1 | Toàn bộ | Tạo mới theo cấu trúc 10 mục văn xuôi (layout regions, component inventory, screen states, API tiêu thụ, navigation, access rights, câu hỏi mở) tại `02-bd/screens/shared/SHR0202_problem_authoring.md` | 2026/09/13 | Nhóm phát triển AlgoPrep |
 | V1.0 | Toàn bộ | Chuyển sang mẫu 9 sheet, đổi tên file thành `SHR0202_problem_authoring.md`. Phát hiện 4 khoảng trống schema chưa từng ghi nhận (Ràng buộc dữ liệu, Đáp án mẫu, Giải thích ví dụ mẫu, Chỉ dẫn AI theo bài — không có cột/bảng DB tương ứng trong `02-bd/database/problem-bank.md`), ghi thành câu hỏi mở thay vì mặc định có cột | 2026/09/20 | Nhóm phát triển AlgoPrep |
 | V1.1 | Sheet 5, 7, 8 | Đã chốt 2026-10-01 (owner uỷ quyền), xem `DEC-2026-1001-admin-configurable-settings`: chủ đề bài toán (`topics`) là dữ liệu do ADMIN quản lý; bộ chọn "Chủ đề" ở cột Thuộc tính đọc từ `ListProblemTopics` (đổi tên từ `ListProblemTopics`), số lựa chọn không cố định; A2 chỉ chọn, không tạo chủ đề tại màn này; ADMIN quản lý chủ đề ở `SHR0201`. Thẻ (`tags`) không đổi | 2026/10/01 | AI |
+| V1.2 | Sheet 3, 8 | Đồng bộ `DEC-2026-1002-split-detail-and-edit-pages` (2026-10-02): route chế độ sửa đổi thành `/admin/problems/[problemId]/edit`, chế độ soạn mới là `/admin/problems/new` (khu Admin); thêm chuyển màn `problem_info` (`SHR0203`) sang `problem_authoring` qua nút "Sửa bài". Danh sách `problem_management` chỉ còn dẫn vào đây qua icon "Sửa" và "Bài tập mới" (bấm tiêu đề mở `problem_info`). Khu Giảng viên `/instructor/problems/[id]` chưa tách, giữ nguyên | 2026/10/02 | AI |
+| V1.3 | Sheet 3, 8; trích dẫn | Khu Giảng viên đã tách giống khu Admin (2026-10-03): `/instructor/problems/[problemId]/edit` (sửa) và `/instructor/problems/new` (soạn mới); `/instructor/problems/[problemId]` là `problem_info`. View nhận prop bắt buộc `basePath` (gốc của khu) cho nút quay lại, không còn gắn cứng `/admin` [Nguồn: 05-coding/frontend/src/views/shared/problem-authoring/ui/problem-authoring-view.tsx:59-63, 168]. Làm mới số dòng trích dẫn vào RD `SHR0202` và `problem-management-view.tsx` (đã lệch sau các đợt sửa); mockup `09-layoutBase` chỉ là tham chiếu, mã là hiện trạng theo quy ước chủ dự án 2026-10-03 | 2026/10/03 | AI |
+| V1.4 | Sheet 8, Câu hỏi mở Q7/Q8/Q12 | Ghi hiện trạng bản dựng sau đợt bổ sung thao tác ghi cho tab Ví dụ mẫu và tab Testcase (2026-10-03): thêm/sửa/xoá bằng hộp thoại thay cho dòng trống nhập tại chỗ, nút "Chạy với đáp án mẫu" (kết quả giả lập) với cơ chế kết quả chạy hết hiệu lực khi bộ testcase hoặc đáp án mẫu đổi, nút "Lưu" tường minh và nút "Lưu và xuất bản" gọi qua hai điểm nối mock. Không đổi hành vi BD đã chốt; các điểm lệch ghi ở bảng cuối Sheet 8 và phần ghi chú Q7, Q8, Q12 | 2026/10/03 | AI |
+| V1.5 | Sheet 6, 8 | Chốt theo chủ dự án 2026-10-03: ngưỡng chặn xoá ví dụ là 2 (không phải 1, khớp checklist xuất bản tối thiểu 2 ví dụ); nút xoá vẫn hiện, khi bài `PUBLISHED` và chỉ còn 2 ví dụ thì bấm hiện toast cảnh báo thay cho việc vô hiệu hoá nút. Sửa Sheet 6 khu vực D mục 6, EVT-14 và hàng 14 của bảng hiện trạng | 2026/10/03 | AI |
+| V1.6 | Sheet 5, 6, 8 (gồm Bảng 8.1), 9 | Đồng bộ `DEC-2026-1003-toast-feedback-channel` (2026-10-03): kết quả thao tác (lưu, xuất bản, chạy đáp án mẫu, thêm/sửa/xoá ví dụ mẫu và testcase, duyệt/loại testcase nháp) và lỗi nhập là toast; ô sai đổi viền đỏ; bỏ nhãn trạng thái lưu, nút "Lưu" chỉ bật khi có thay đổi; toast cảnh báo `examplesFloorWarning` đã dựng; `[Tiêu điểm]` Sheet 9 ghi "viền ô + toast". Giữ nguyên thông báo trạng thái trang (kết quả chạy cũ hết hiệu lực, khoá sinh tự động, checklist chưa đạt) | 2026/10/03 | Nhóm phát triển AlgoPrep |
+| V1.7 | Sheet 5, 8 | Ghi hiện trạng giao diện sau đợt đổi nút có chữ sang icon (2026-10-03, chủ dự án yêu cầu, chưa duyệt hình): thêm hàng vào Bảng 8.1, sửa ghi chú Sheet 5 mục 1, 4 của thanh đầu trang và mục 14 của bảng testcase. Hành vi không đổi | 2026/10/03 | AI |
+| V1.8 | Sheet 3, 8, Câu hỏi mở | Chủ dự án trả lời câu hỏi mở 2026-10-03: Q6 chốt xem trước ở tab mới, dữ liệu đã lưu; Q7 chốt lưu tay kèm popup cảnh báo khi thoát; Q12 chốt như Q7; Q8 ghi nhận yêu cầu "rõ ràng hơn", chưa chốt. Thêm Q13, Q14 cho các chi tiết còn mở. Sửa EVT-3, EVT-4. Bản dựng chưa có popup thoát và chưa gắn nút xem trước | 2026/10/03 | AI |
+| V1.9 | Sheet 3, 5, 8, Câu hỏi mở | Chủ dự án đồng ý toàn bộ đề xuất cho Q8, Q13, Q14 (2026-10-03) và yêu cầu dựng: xem trước ở tab mới (bản đã lưu), popup ba nút khi thoát lúc còn thay đổi chưa lưu, toast liệt kê mọi điều kiện xuất bản còn thiếu, checklist bấm để nhảy tab. Đóng Q8, Q13, Q14; thêm Q15 (trang xem trước có nên là chế độ xem trước của problem_detail), Q16 (xung đột phiên bản khi lưu tay). Thêm hai hàng vào Bảng 8.1 | 2026/10/03 | AI |
+| V1.10 | Sheet 8 (EVT-16, Bảng 8.1) | Sửa EVT-16 theo bản AI viết script (`DEC-2026-0928-f2-14-generator-script`, trước đó BD còn ghi bản cũ AI sinh thẳng input): thêm script, sandbox, hạt giống cố định, kiểm ràng buộc, không gửi Đáp án mẫu. Ghi hàng mock sinh testcase vào Bảng 8.1. Lớp dữ liệu màn soạn bài chuyển sang khuôn `queries.ts` + `withMockData` như các màn khác | 2026/10/03 | AI |
+| V1.11 | Sheet 4, 5, 6, 8 (Bảng 8.1), 9 | Đồng bộ `DEC-2026-1003-toast-feedback-channel` và chỉ đạo của chủ dự án 2026-10-03 "bỏ khối inline, người dùng bấm vào nút đang khoá thì hiện toast": bỏ thông báo trên trang "kết quả chạy đã cũ", khối vàng "Chưa xuất bản được, còn N điều kiện" và (từ trước) khối "Chưa mở được tính năng". Giữ danh sách checklist (Đạt/Chưa); kết quả chạy cũ chỉ còn thể hiện bằng mục "Đáp án mẫu chạy đúng mọi testcase" về "Chưa". Ba nút Lưu và xuất bản, Chạy với đáp án mẫu, Sinh tự động trông như khoá (`aria-disabled`) nhưng vẫn bấm được, bấm thì toast nêu lý do. Không có item nào ở Sheet 5, 6 bị xoá nên NO và EVT giữ nguyên [Nguồn: 05-coding/frontend/src/views/shared/problem-authoring/ui/problem-authoring-view.tsx:214-222, 239-247, 259-263, 430-438, 589-597, 626-636] | 2026/10/03 | AI |
+| V1.12 | Sheet 8 (EVT-16, Bảng 8.1), Câu hỏi mở | Chủ dự án chốt 2026-10-03: mỗi bài tối đa 2 lần sinh (ADMIN cấu hình), chỉ lần thành công mới tính; tiến độ chỉ một trạng thái đang chạy chung. Mock sửa theo: lần 1 ra bộ A, lần 2 ra bộ B, lần 3 bị chặn; nút hiện "Còn N/M lần". Đóng Q17, thêm Q18 (nơi cấu hình và nơi lưu bộ đếm) | 2026/10/03 | AI |
+| V1.13 | Câu hỏi mở | Đóng Q18 theo chốt 2026-10-03: cấu hình số lần sinh ở `ADM0301` Khu vực H (Cấu hình AI), bộ đếm ở cột `problems.ai_testcase_generations_used`, người soạn chỉ thấy "Còn N/M lần". Không đổi hành vi màn | 2026/10/03 | AI |
 
 ---
 
@@ -68,11 +80,13 @@
 
 #### Quản lý bài tập → Biên soạn bài tập
 
-[Điều kiện mở] Bấm nút "Bài tập mới", hoặc click một dòng bài toán trong bảng danh sách ở màn
-`problem_management`.
+[Điều kiện mở] Bấm nút "Bài tập mới", hoặc bấm icon "Sửa" cuối một dòng bài toán trong bảng danh sách ở màn
+`problem_management`. Bấm **tiêu đề** bài không còn vào đây mà mở `problem_info` (`SHR0203`)
+[Nguồn: 05-coding/frontend/src/views/shared/problem-management/ui/problem-management-view.tsx:167-169, 261, 297].
 
-[Chế độ mở] Route có `id` (đường dẫn `/instructor/problems/[id]` hoặc `/admin/problems/[id]`) mở chế độ
-sửa; route không có `id` hợp lệ mở chế độ soạn mới.
+[Chế độ mở] Route `{basePath}/[problemId]/edit` mở chế độ sửa, `{basePath}/new` mở chế độ soạn mới. Khu Admin (`basePath` = `/admin/problems`):
+[Nguồn: 05-coding/frontend/src/app/(admin)/admin/problems/[problemId]/edit/page.tsx:1-5; 05-coding/frontend/src/app/(admin)/admin/problems/new/page.tsx:1-5]. Khu Giảng viên (`basePath` = `/instructor/problems`), **đã tách từ 2026-10-03** giống khu Admin: `/instructor/problems/[problemId]/edit` và `/instructor/problems/new`
+[Nguồn: 05-coding/frontend/src/app/(instructor)/instructor/problems/[problemId]/edit/page.tsx:1-5; 05-coding/frontend/src/app/(instructor)/instructor/problems/new/page.tsx:1-5].
 
 [Thông tin truyền] `problem_id` (khi sửa) hoặc không có tham số (khi soạn mới).
 
@@ -80,6 +94,21 @@ sửa; route không có `id` hợp lệ mở chế độ soạn mới.
 
 [Khi thành công] Tải toàn bộ chi tiết bài toán (chế độ sửa) hoặc khởi tạo form rỗng (chế độ mới), hiển thị
 5 tab nội dung và cột thuộc tính bên phải.
+
+[Khi huỷ] Không có.
+
+#### Chi tiết bài tập → Biên soạn bài tập (chế độ sửa)
+
+[Điều kiện mở] Bấm nút "Sửa bài" ở thanh đầu trang màn `problem_info` (`SHR0203`)
+[Nguồn: 05-coding/frontend/src/views/shared/problem-info/ui/problem-info-view.tsx:76-78; 01-rd/screens/shared/SHR0203_problem_info.md:71].
+
+[Chế độ mở] Chế độ sửa, route `{basePath}/[problemId]/edit` (khu Admin `/admin/problems/[problemId]/edit`, khu Giảng viên `/instructor/problems/[problemId]/edit`).
+
+[Thông tin truyền] `problem_id` của bài đang xem.
+
+[Giá trị trả về] Không có.
+
+[Khi thành công] Như chuyển màn từ `problem_management` ở chế độ sửa: tải toàn bộ chi tiết bài toán, hiển thị 5 tab và cột thuộc tính.
 
 [Khi huỷ] Không có.
 
@@ -93,7 +122,7 @@ sửa; route không có `id` hợp lệ mở chế độ soạn mới.
 
 [Giá trị trả về] Không có.
 
-[Khi thành công] Điều hướng về `problem_management`, giữ nguyên bộ lọc/trang trước đó của màn cha.
+[Khi thành công] Điều hướng về `problem_management` của đúng khu đang dùng (`href={basePath}`) [Nguồn: 05-coding/frontend/src/views/shared/problem-authoring/ui/problem-authoring-view.tsx:168]; giữ nguyên bộ lọc/trang trước đó của màn cha là yêu cầu BD, bản dựng chưa có `[SoT: Suy luận]`.
 
 [Khi huỷ] Còn thay đổi chưa lưu thì hỏi xác nhận trước khi rời màn — điểm mở, xem Câu hỏi mở Q12.
 
@@ -131,7 +160,8 @@ mới — đích cụ thể chưa chốt, xem Câu hỏi mở Q6.
 
 ```mermaid
 flowchart LR
-    parent["Quản lý bài tập<br/>problem_management"] -->|"Bài tập mới / click dòng"| main["Biên soạn bài tập<br/>problem_authoring"]
+    parent["Quản lý bài tập<br/>problem_management"] -->|"Bài tập mới / icon Sửa"| main["Biên soạn bài tập<br/>problem_authoring"]
+    info["Chi tiết bài tập<br/>problem_info"] -->|"Sửa bài"| main
     main -->|"nút quay lại"| parent
     main -->|"Xem như người học"| preview["Popup Xem trước đề bài<br/>chỉ xem"]
     preview -->|"Đóng"| main
@@ -140,12 +170,12 @@ flowchart LR
     classDef screen fill:#E3F2FD,stroke:#3B82F6,color:#000
     classDef popup fill:#FFF7CC,stroke:#D4A72C,color:#000
 
-    class parent source
+    class parent,info source
     class main screen
     class preview popup
 ```
 
-[Nguồn: 09-layoutBase/Admin - Soạn đề bài.dc.html:142,155-156; 01-rd/screens/shared/SHR0202_problem_authoring.md:22-25,61-69]
+[Nguồn: 09-layoutBase/Admin - Soạn đề bài.dc.html:142,155-156; 01-rd/screens/shared/SHR0202_problem_authoring.md:60-70]
 
 ---
 
@@ -155,7 +185,7 @@ flowchart LR
 
 [Mục đích màn] Cho A2/A3 tạo và sửa trọn vẹn một bài toán trong một màn: đề Markdown+LaTeX, phân loại,
 ràng buộc/giới hạn, ví dụ mẫu, đặc tả song song hai mô hình nộp bài, đáp án mẫu, testcase, gợi ý AI theo
-bài — rồi xuất bản [Nguồn: 01-rd/screens/shared/SHR0202_problem_authoring.md:30-35].
+bài — rồi xuất bản [Nguồn: 01-rd/screens/shared/SHR0202_problem_authoring.md:13-16].
 
 [Luồng nghiệp vụ chính]
 
@@ -204,7 +234,7 @@ presigned URL lên MinIO, không qua form multipart thẳng tới backend
 không giới hạn. Chữ ký hàm: đúng 3 dòng (một mỗi ngôn ngữ khoá cứng Java/C++/Python). Cờ hành vi AI: đúng
 3 dòng. Checklist xuất bản: đúng 4 điều kiện.
 
-[Nguồn: 01-rd/screens/shared/SHR0202_problem_authoring.md:32-35,53-156; 02-bd/database/problem-bank.md mục 1;
+[Nguồn: 01-rd/screens/shared/SHR0202_problem_authoring.md:13-16,40-170; 02-bd/database/problem-bank.md mục 1;
 01-rd/req/identity.md — F1-10 tới F1-12]
 
 ### 4.2 DTO liên quan
@@ -248,7 +278,7 @@ thuộc tính sticky bên phải, lưới 2 cột `minmax(0,1fr) 300px`
 | Thanh tab | `:163-165` | 5 tab kèm số đếm: Nội dung đề · Ví dụ mẫu (N) · Testcase (N) · Đặc tả · Gợi ý AI. Tab "Đặc tả" không có trong prototype gốc — bổ sung theo `DEC-2026-0831-problem-authoring-spec-tab` |
 | Tab 1 — Nội dung đề | `:168-213` | Tiêu đề, Nội dung đề Markdown, Ràng buộc và giới hạn (4 trường), Ràng buộc dữ liệu, Đáp án mẫu theo ngôn ngữ |
 | Tab 2 — Ví dụ mẫu | `:215-249` | Danh sách ví dụ (Đầu vào/Kết quả/Giải thích), thêm/xoá |
-| Tab 3 — Testcase | `:251-305` | Thanh hành động, băng kết quả chạy, bảng testcase kéo-thả, panel phiên bản bộ testcase (bổ sung theo `DEC-2026-0831-problem-authoring-spec-tab`) |
+| Tab 3 — Testcase | `:251-305` | Thanh hành động, bảng testcase kéo-thả, panel phiên bản bộ testcase (bổ sung theo `DEC-2026-0831-problem-authoring-spec-tab`) |
 | Tab 4 — Đặc tả (mới) | không có trong prototype | Chữ ký hàm Java/C++/Python, định dạng stdin/stdout, chiến lược so khớp — dựng theo `DEC-2026-0831-problem-authoring-spec-tab` |
 | Tab 5 — Gợi ý AI | `:307-341` | Chỉ dẫn cho trợ lý AI + 3 cờ hành vi (khối "Gợi ý theo cấp độ" đã cắt) |
 | Cột thuộc tính (sticky) | `:344-403` | Thuộc tính (Chủ đề, Độ khó, Trạng thái, Thẻ), Sẵn sàng xuất bản (checklist), Số liệu bài |
@@ -286,11 +316,11 @@ Sidebar/topbar Admin/Instructor dùng chung khung điều hướng toàn hệ th
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Thanh đầu trang | | | | | | | | | | | | | |
-| | 1 | Nút quay lại | `problemAuthoring.header.btnBack` | - | - | Button | - | - | - | I | - | `‹` | Về màn `problem_management`<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-3 |
+| | 1 | Nút quay lại | `problemAuthoring.header.btnBack` | - | - | Button | - | - | - | I | - | `‹` | Về màn `problem_management`. **Bản dựng 2026-10-03:** icon `ArrowLeft` ở bên trái header, chữ chỉ còn trong tooltip<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-3 |
 | | 2 | Mã và tiêu đề bài | `problemAuthoring.header.codeTitle` | `problems` | `code`, `title` | Label | String | - | - | O | - | `#{code} · {title}` | Chỉ hiển thị khi chế độ sửa (có `id`); soạn mới hiện "Bài toán mới"<br>[Nguồn giá trị] Cột `code`, `title`<br>[EVT liên quan] - |
-| | 3 | Trạng thái lưu | `problemAuthoring.header.saveHint` | `problems` | `status`, `updated_at` | Label | String | - | - | O | - | Xem Sheet 6 | Cơ chế auto-save chưa có mã RD<br>[Công thức] `status = PUBLISHED` → "Đang hiển thị cho người học · lưu nháp tự động {X} trước"; `status = UNPUBLISHED` → "Bản nháp · chưa hiển thị cho người học"<br>[EVT liên quan] EVT-7 đến EVT-11 |
-| | 4 | Xem như người học | `problemAuthoring.header.btnPreview` | - | - | Button | - | - | - | I | - | - | Mở popup xem trước đề bài<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-4 |
-| | 5 | Lưu và xuất bản | `problemAuthoring.header.btnPublish` | - | - | Button | - | - | - | I | - | - | Chuyển `problems.status` sang `PUBLISHED`<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-33 |
+| | 3 | Trạng thái lưu | `problemAuthoring.header.saveHint` | `problems` | `status`, `updated_at` | Label | String | - | - | O | - | Xem Sheet 6 | Cơ chế auto-save chưa có mã RD. **Bản dựng 2026-10-03:** không còn nhãn này trên trang, kết quả lưu đi qua toast (Bảng 8.1)<br>[Công thức] `status = PUBLISHED` → "Đang hiển thị cho người học · lưu nháp tự động {X} trước"; `status = UNPUBLISHED` → "Bản nháp · chưa hiển thị cho người học"<br>[EVT liên quan] EVT-7 đến EVT-11 |
+| | 4 | Xem như người học | `problemAuthoring.header.btnPreview` | - | - | Button | - | - | - | I | - | - | Mở popup xem trước đề bài. **Bản dựng 2026-10-03:** icon `Eye`, mở tab mới tới `{basePath}/{id}/preview` hiển thị bản đã lưu (Q6, Q13); vô hiệu khi bài chưa từng lưu<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-4 |
+| | 5 | Lưu và xuất bản | `problemAuthoring.header.btnPublish` | - | - | Button | - | - | - | I | - | - | Chuyển `problems.status` sang `PUBLISHED`. **Bản dựng 2026-10-03:** khi checklist còn mục chưa đạt nút trông mờ (`aria-disabled`) nhưng vẫn bấm được, bấm thì toast cảnh báo; không còn khối vàng trên trang<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-33 |
 
 ### Khu vực B — Thanh tab
 
@@ -339,9 +369,9 @@ Sidebar/topbar Admin/Instructor dùng chung khung điều hướng toàn hệ th
 | | 1 | Tóm tắt testcase | `problemAuthoring.testcase.summary` | `testcases` | `visibility` | Label | String | - | - | O | - | `{N} testcase · {M} công khai` | [Công thức] `N` = tổng dòng `testcases`; `M` = số dòng `visibility = SAMPLE`<br>[EVT liên quan] EVT-1 |
 | | 2 | Phiên bản bộ testcase | `problemAuthoring.testcase.versionBadge` | `problems` | `current_testcase_set_version` | Badge | Number | - | - | O | `1` | `v{n}` | Panel bổ sung theo `DEC-2026-0831-problem-authoring-spec-tab`, không có trong prototype gốc<br>[Nguồn giá trị] Cột `current_testcase_set_version`<br>[EVT liên quan] EVT-1 |
 | | 3 | Tải lên hàng loạt | `problemAuthoring.testcase.btnBulkUpload` | - | - | Button | - | - | - | I | - | - | Mở luồng presigned URL lên MinIO (F2-07)<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-15 |
-| | 4 | Sinh tự động | `problemAuthoring.testcase.btnAutoGenerate` | - | - | Button | - | - | - | I | - | - | AI chỉ sinh input; output chạy thật qua Đáp án mẫu (F2-14)<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-16 |
-| | 5 | Chạy với đáp án mẫu | `problemAuthoring.testcase.btnRunSample` | - | - | Button | - | - | - | I | - | - | Chạy toàn bộ testcase hiện có qua Đáp án mẫu (outbound port tới go-judge)<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-18 |
-| | 6 | Băng kết quả chạy | `problemAuthoring.testcase.runResultBanner` | - | - | Label | String | - | - | O | ẩn | "Đúng {n}/{n} testcase" hoặc "Thất bại ở testcase #{k}" | Dữ liệu chạy thử, không lưu DB (ephemeral, chỉ tồn tại trong phiên biên soạn)<br>[Nguồn giá trị] Kết quả gọi `RunSampleSolutionAgainstTestcases`<br>[EVT liên quan] EVT-18 |
+| | 4 | Sinh tự động | `problemAuthoring.testcase.btnAutoGenerate` | - | - | Button | - | - | - | I | - | - | AI chỉ sinh input; output chạy thật qua Đáp án mẫu (F2-14). **Bản dựng 2026-10-03:** chưa đủ điều kiện thì nút trông mờ nhưng vẫn bấm được, bấm thì toast nêu lý do; không có khối giải thích trên trang<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-16 |
+| | 5 | Chạy với đáp án mẫu | `problemAuthoring.testcase.btnRunSample` | - | - | Button | - | - | - | I | - | - | Chạy toàn bộ testcase hiện có qua Đáp án mẫu (outbound port tới go-judge). **Bản dựng 2026-10-03:** thiếu đáp án mẫu hoặc chưa có testcase đã duyệt thì nút trông mờ nhưng vẫn bấm được, bấm thì toast nêu lý do<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-18 |
+| | 6 | Kết quả chạy đáp án mẫu | `problemAuthoring.testcase.runResultBanner` | - | - | Label | String | - | - | O | ẩn | "Đúng {n}/{n} testcase" hoặc "Thất bại ở testcase #{k}" — hiện bằng toast (thành công hoặc cảnh báo), không còn băng trên trang; trạng thái "kết quả cũ hết hiệu lực" cũng không còn thông báo riêng, chỉ thể hiện bằng mục checklist "Đáp án mẫu chạy đúng mọi testcase" về "Chưa" | Dữ liệu chạy thử, không lưu DB (ephemeral, chỉ tồn tại trong phiên biên soạn)<br>[Nguồn giá trị] Kết quả gọi `RunSampleSolutionAgainstTestcases`<br>[EVT liên quan] EVT-18 |
 | | 7 | Danh sách testcase | `problemAuthoring.testcase.list` | `testcases` | - | List | List | - | - | I/O | rỗng | - | [Nguồn giá trị] `testcases WHERE problem_id = :id`, sắp theo thứ tự hiển thị<br>[EVT liên quan] EVT-1 |
 | | 8 | STT | `problemAuthoring.testcase.col.index` | - | - | ListColumn | Number | - | - | O | - | Số thứ tự hiển thị | [Công thức] Vị trí trong danh sách sau khi sắp xếp<br>[EVT liên quan] EVT-23 |
 | | 9 | Đầu vào | `problemAuthoring.testcase.col.input` | `testcases` | `input_inline` / `input_object_key` | TextBox | String | - | Có | I/O | - | - | [Công thức] `input_storage = INLINE` hiển thị `input_inline`; `= MINIO` hiển thị nội dung tải từ presigned URL (`02-bd/storage/problem-bank.md` mục 3)<br>[EVT liên quan] EVT-20 |
@@ -349,7 +379,7 @@ Sidebar/topbar Admin/Instructor dùng chung khung điều hướng toàn hệ th
 | | 11 | Hiển thị | `problemAuthoring.testcase.col.visibility` | `testcases` | `visibility` | Toggle | Enum | - | Có | I/O | `HIDDEN` | Nhãn "Công khai"/"Ẩn", giá trị `SAMPLE`/`HIDDEN` | Nhãn tiếng Việt, giá trị dữ liệu `SAMPLE`/`HIDDEN` — không sinh thuật ngữ thứ hai<br>[Nguồn giá trị] Cột `visibility`<br>[EVT liên quan] EVT-21 |
 | | 12 | Nhãn testcase AI nháp | `problemAuthoring.testcase.col.aiDraftBadge` | `testcases` | `is_ai_generated_draft` | Badge | Boolean | - | - | O | `false` | "Nháp AI" | Chỉ hiện khi `true`; chưa gộp vào Hidden khi xuất bản cho tới khi A2/A3 xác nhận<br>[Nguồn giá trị] Cột `is_ai_generated_draft`<br>[EVT liên quan] EVT-17 |
 | | 13 | Chạy thử | `problemAuthoring.testcase.col.btnRunSingle` | - | - | Button | - | - | - | I | - | - | Chạy Đáp án mẫu với đúng một testcase này<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-22 |
-| | 14 | Xoá | `problemAuthoring.testcase.col.btnDelete` | - | - | Button | - | - | - | I | - | - | Xoá một dòng testcase<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-23 |
+| | 14 | Xoá | `problemAuthoring.testcase.col.btnDelete` | - | - | Button | - | - | - | I | - | - | Xoá một dòng testcase. **Bản dựng 2026-10-03:** icon `Trash2` (đỏ) cạnh icon Sửa `Pencil`<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-23 |
 | | 15 | Kéo-thả sắp thứ tự | `problemAuthoring.testcase.dragHandle` | - | - | Button | - | - | - | I | - | - | Không còn ảnh hưởng kết quả chấm (F4 chạy hết mọi testcase), chỉ ảnh hưởng cách trình bày<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-24 |
 | | 16 | Thêm testcase | `problemAuthoring.testcase.btnAdd` | - | - | Button | - | - | - | I | - | - | Thêm dòng trống, mặc định `Ẩn`<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-19 |
 
@@ -388,7 +418,7 @@ Sidebar/topbar Admin/Instructor dùng chung khung điều hướng toàn hệ th
 | | 2 | Độ khó | `problemAuthoring.props.difficulty` | `problems` | `difficulty` | List | Enum | - | Có | I/O | `EASY` | `EASY`/`MEDIUM`/`HARD` | [Nguồn giá trị] Cột `difficulty`<br>[EVT liên quan] EVT-31 |
 | | 3 | Trạng thái | `problemAuthoring.props.status` | `problems` | `status` | List | Enum | - | Có | I/O | `UNPUBLISHED` | `Chưa xuất bản`/`Đã xuất bản` | Đúng 2 lựa chọn (F2-15). Prototype còn vẽ "Ẩn" — **không dựng khi build UI thật**<br>[Nguồn giá trị] Cột `status`<br>[EVT liên quan] EVT-32 |
 | | 4 | Thẻ | `problemAuthoring.props.tags` | `problem_tags` | `tag_id` | List | List | - | Không | I/O | rỗng | Tự do, tạo mới khi gõ chưa tồn tại | [Nguồn giá trị] `problem_tags WHERE problem_id = :id`, giá trị mới tạo vào `tags`<br>[EVT liên quan] EVT-31 |
-| | 5 | Checklist sẵn sàng xuất bản | `problemAuthoring.props.checklist.list` | - | - | List | List | - | - | O | 4 dòng chưa đạt | - | 4 điều kiện: ≥8 testcase, ≥2 Sample, đáp án mẫu chạy đúng mọi testcase, ≥2 ví dụ mẫu (đã bỏ "tổng trọng số 100")<br>[Công thức] Tính từ `testcases`, kết quả `RunSampleSolutionAgainstTestcases`, `WorkedExampleDto`<br>[EVT liên quan] EVT-33 |
+| | 5 | Checklist sẵn sàng xuất bản | `problemAuthoring.props.checklist.list` | - | - | List | List | - | - | O | 4 dòng chưa đạt | - | 4 điều kiện: ≥8 testcase, ≥2 Sample, đáp án mẫu chạy đúng mọi testcase, ≥2 ví dụ mẫu (đã bỏ "tổng trọng số 100"). **Bản dựng 2026-10-03:** chỉ còn danh sách Đạt/Chưa từng điều kiện; không còn khối vàng "Chưa xuất bản được, còn N điều kiện" (lý do nằm ở toast khi bấm "Lưu và xuất bản")<br>[Công thức] Tính từ `testcases`, kết quả `RunSampleSolutionAgainstTestcases`, `WorkedExampleDto`<br>[EVT liên quan] EVT-33 |
 | | 6 | Lượt nộp | `problemAuthoring.props.metrics.submissionCount` | `problem_stats` | `submission_count` | Label | Number | - | - | O | 0 | Số nguyên | [Nguồn giá trị] Cột `submission_count`<br>[EVT liên quan] EVT-1 |
 | | 7 | Tỉ lệ AC | `problemAuthoring.props.metrics.acRate` | `problem_stats` | `ac_rate` | Label | Number | - | - | O | 0 | `{số}%` | [Nguồn giá trị] Cột `ac_rate`<br>[EVT liên quan] EVT-1 |
 | | 8 | Thời gian giải trung bình | `problemAuthoring.props.metrics.avgSolveTime` | - | - | Label | Number | - | - | O | - | - | **Không có cột DB** trong `problem_stats` (chỉ có `submission_count`, `accepted_count`, `ac_rate`, `updated_at`) — xem Câu hỏi mở Q5<br>[Nguồn giá trị] Chưa xác định — xem Q5<br>[EVT liên quan] - |
@@ -403,7 +433,7 @@ Sidebar/topbar Admin/Instructor dùng chung khung điều hướng toàn hệ th
 | | 1 | Xem trước đề bài | `problemAuthoring.popup.preview` | - | - | Popup | - | - | - | O | - | - | Render đề bài đúng như A1 thấy, đích cụ thể (modal/tab mới) chưa chốt<br>[Nguồn giá trị] Nội dung đang biên soạn trong bộ nhớ<br>[EVT liên quan] EVT-4, EVT-5 |
 
 [Nguồn: 09-layoutBase/Admin - Soạn đề bài.dc.html:141-403; 02-bd/database/problem-bank.md mục 1;
-01-rd/screens/shared/SHR0202_problem_authoring.md:59-156]
+01-rd/screens/shared/SHR0202_problem_authoring.md:56-170]
 
 ---
 
@@ -419,9 +449,9 @@ Sidebar/topbar Admin/Instructor dùng chung khung điều hướng toàn hệ th
 | Thanh đầu trang | | | | |
 | | 1 | Nút quay lại | Có | [Điều kiện kích hoạt] Luôn kích hoạt. Còn thay đổi chưa lưu thì hỏi xác nhận trước khi rời — xem Câu hỏi mở Q12. |
 | | 2 | Mã và tiêu đề bài | Điều kiện | [Điều kiện hiển thị] Chỉ hiện khi đang ở chế độ sửa (có `id`); chế độ soạn mới hiện "Bài toán mới". |
-| | 3 | Trạng thái lưu | Có | [Tự động đặt] Cập nhật ngay sau mỗi lần auto-save thành công. |
+| | 3 | Trạng thái lưu | Có | [Tự động đặt] Cập nhật ngay sau mỗi lần auto-save thành công. Bản dựng 2026-10-03 không còn nhãn; kết quả lưu hiện bằng toast, nút "Lưu" bật khi có thay đổi chưa lưu. |
 | | 4 | Xem như người học | Có | [Điều kiện kích hoạt] Kích hoạt sau khi tải xong dữ liệu ban đầu. |
-| | 5 | Lưu và xuất bản | Có | [Điều kiện kích hoạt] Luôn hiển thị; hành vi khi checklist chưa đủ 4 điều kiện chưa chốt (chặn cứng hay lưu về nháp kèm banner) — xem Câu hỏi mở Q8. |
+| | 5 | Lưu và xuất bản | Có | [Điều kiện kích hoạt] Bấm được, bị chặn kèm toast: luôn hiển thị; khi checklist chưa đủ 4 điều kiện nút trông mờ nhưng vẫn bấm được, bấm thì không lưu mà hiện toast cảnh báo liệt kê mọi điều kiện còn thiếu (Câu hỏi mở Q8 đã chốt). |
 
 ### Khu vực B — Thanh tab
 
@@ -448,7 +478,7 @@ Sidebar/topbar Admin/Instructor dùng chung khung điều hướng toàn hệ th
 | | 7 | Số lần nộp / giờ | Có | - |
 | | 8 | Ràng buộc dữ liệu | Có | - |
 | | 9 | Ngôn ngữ đáp án mẫu | Có | - |
-| | 10 | Mã đáp án mẫu | Có | [Điều kiện kích hoạt] Đáp án mẫu chưa chạy Pass toàn bộ testcase thì nút "Sinh tự động" ở Tab 3 vô hiệu — xem Khu vực E mục 4. |
+| | 10 | Mã đáp án mẫu | Có | [Điều kiện kích hoạt] Đáp án mẫu chưa chạy Pass toàn bộ testcase thì nút "Sinh tự động" ở Tab 3 bị chặn kèm toast khi bấm — xem Khu vực E mục 4. |
 
 ### Khu vực D — Tab 2: Ví dụ mẫu
 
@@ -460,7 +490,7 @@ Sidebar/topbar Admin/Instructor dùng chung khung điều hướng toàn hệ th
 | | 3 | Kết quả | Có | - |
 | | 4 | Giải thích | Có | - |
 | | 5 | Thêm ví dụ | Có | - |
-| | 6 | Xoá ví dụ | Có | [Điều kiện kích hoạt] Không kích hoạt khi chỉ còn đúng 1 ví dụ và bài đã `PUBLISHED` — cần giữ tối thiểu 2 ví dụ theo checklist xuất bản, xem Sheet 9. |
+| | 6 | Xoá ví dụ | Có | [Điều kiện chặn] Nút luôn hiện. Khi bài đã `PUBLISHED` và chỉ còn đúng 2 ví dụ thì bấm không mở hộp xác nhận mà hiện toast cảnh báo "chỉ còn 2 ví dụ nên không thể xoá, hãy bổ sung ví dụ trước khi xoá" — xoá nữa sẽ xuống 1, dưới mức tối thiểu 2 ví dụ của checklist xuất bản, xem Sheet 9. Toast dùng thành phần toast dùng chung của dự án (`DEC-2026-1003-toast-feedback-channel`). |
 
 ### Khu vực E — Tab 3: Testcase
 
@@ -470,9 +500,9 @@ Sidebar/topbar Admin/Instructor dùng chung khung điều hướng toàn hệ th
 | | 1 | Tóm tắt testcase | Có | [Tự động đặt] Tính lại ngay sau mỗi lần thêm/xoá/đổi Hiển thị testcase. |
 | | 2 | Phiên bản bộ testcase | Có | [Tự động đặt] Tăng khi lưu thay đổi testcase Hidden của bài đã `PUBLISHED` và đã có submission. |
 | | 3 | Tải lên hàng loạt | Có | - |
-| | 4 | Sinh tự động | Có | [Điều kiện kích hoạt] **Vô hiệu kèm lý do ngay tại chỗ** khi chưa có Đáp án mẫu chạy Pass toàn bộ testcase hiện có — chặn sớm ở giao diện, không chờ bấm mới báo lỗi. |
-| | 5 | Chạy với đáp án mẫu | Có | [Điều kiện kích hoạt] Không kích hoạt khi ô Mã đáp án mẫu rỗng. |
-| | 6 | Băng kết quả chạy | Điều kiện | [Điều kiện hiển thị] Chỉ hiện sau khi có ít nhất một lần chạy trong phiên biên soạn hiện tại. |
+| | 4 | Sinh tự động | Có | [Điều kiện kích hoạt] Bấm được, bị chặn kèm toast: khi chưa có ít nhất 2 testcase Sample tự viết và Đáp án mẫu chạy Pass toàn bộ testcase hiện có thì nút trông mờ nhưng vẫn bấm được; bấm thì toast cảnh báo nêu lý do, không gọi AI. Không có khối giải thích trên trang. |
+| | 5 | Chạy với đáp án mẫu | Có | [Điều kiện kích hoạt] Bấm được, bị chặn kèm toast: khi ô Mã đáp án mẫu rỗng hoặc chưa có testcase đã duyệt thì nút trông mờ nhưng vẫn bấm được; bấm thì toast cảnh báo nêu lý do, không chạy. |
+| | 6 | Kết quả chạy đáp án mẫu | Điều kiện | [Điều kiện hiển thị] Toast chỉ hiện sau mỗi lần bấm chạy trong phiên biên soạn hiện tại. Không còn thông báo "kết quả cũ hết hiệu lực" trên trang (bỏ 2026-10-03); kết quả cũ chỉ thể hiện bằng mục checklist "Đáp án mẫu chạy đúng mọi testcase" về "Chưa" [Nguồn: 05-coding/frontend/src/views/shared/problem-authoring/ui/problem-authoring-view.tsx:604-606]. |
 | | 7 | Danh sách testcase | Có | [Điều kiện hiển thị] Chưa có testcase nào hiện "Chưa có testcase — Thêm hoặc Tải lên hàng loạt". |
 | | 8 | STT | Có | - |
 | | 9 | Đầu vào | Có | - |
@@ -619,43 +649,74 @@ port riêng của `problem-bank`, không qua hàng đợi của `judge-orchestra
 
 | NO | Loại | Sự kiện | Chi tiết | Chuyển màn | Gọi API | Tên xử lý | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :-: | :--- | :--- |
-| 1 | Màn hình | Khởi tạo màn — chế độ sửa | Vào màn với `id` hợp lệ. | Không | Có | `GetProblemForAuthoring`, `GetProblemStats`, `ListProblemTopics` | [Các bước]<br>1. Kiểm tra quyền `PROBLEM_AUTHORING`/`TESTCASE_MANAGEMENT` và quyền sở hữu (A2 chỉ bài của mình).<br>2. Hiển thị khung chờ toàn bộ 3 vùng chính.<br>3. Tải song song dữ liệu.<br>[Khi thành công] Hiển thị đầy đủ 5 tab và cột thuộc tính, mặc định mở Tab "Nội dung đề".<br>[Khi lỗi] Thông báo lỗi toàn màn kèm nút thử lại/quay về `problem_management`, không hiển thị dữ liệu cũ giả định. |
-| 2 | Màn hình | Khởi tạo màn — soạn mới | Vào màn không có `id` hợp lệ, hoặc từ nút "Bài tập mới" ở `problem_management`. | Không | Không | - | [Các bước]<br>1. Khởi tạo form rỗng, `status = UNPUBLISHED`.<br>[Khi thành công] Toàn bộ trường rỗng, checklist hiện đủ 4 mục ở trạng thái chưa đạt. |
-| 3 | Liên kết | Quay lại danh sách bài tập | Bấm nút quay lại. | Có | Không | - | [Các bước]<br>1. Điều hướng về `problem_management`.<br>[Khi xác nhận] Còn thay đổi chưa lưu thì hỏi xác nhận — xem Câu hỏi mở Q12.<br>[Khi thành công] Mở `problem_management`, giữ nguyên bộ lọc/trang trước đó. |
-| 4 | Nút | Mở xem trước đề bài | Bấm "Xem như người học". | Không | Không | - | [Các bước]<br>1. Mở popup/tab xem trước.<br>[Khi thành công] Hiển thị đề bài dạng đọc đúng như A1 thấy. Đích cụ thể chưa chốt, xem Câu hỏi mở Q6. |
+| 1 | Màn hình | Khởi tạo màn — chế độ sửa | Vào màn với `id` hợp lệ (route `/edit`), từ icon "Sửa" ở `problem_management` hoặc nút "Sửa bài" ở `problem_info`. | Không | Có | `GetProblemForAuthoring`, `GetProblemStats`, `ListProblemTopics` | [Các bước]<br>1. Kiểm tra quyền `PROBLEM_AUTHORING`/`TESTCASE_MANAGEMENT` và quyền sở hữu (A2 chỉ bài của mình).<br>2. Hiển thị khung chờ toàn bộ 3 vùng chính.<br>3. Tải song song dữ liệu.<br>[Khi thành công] Hiển thị đầy đủ 5 tab và cột thuộc tính, mặc định mở Tab "Nội dung đề".<br>[Khi lỗi] Thông báo lỗi toàn màn kèm nút thử lại/quay về `problem_management`, không hiển thị dữ liệu cũ giả định. |
+| 2 | Màn hình | Khởi tạo màn — soạn mới | Vào màn không có `id` hợp lệ, hoặc từ nút "Bài tập mới" ở `problem_management` (route `{basePath}/new`). | Không | Không | - | [Các bước]<br>1. Khởi tạo form rỗng, `status = UNPUBLISHED`.<br>[Khi thành công] Toàn bộ trường rỗng, checklist hiện đủ 4 mục ở trạng thái chưa đạt. |
+| 3 | Liên kết | Quay lại danh sách bài tập | Bấm nút quay lại. | Có | Không | - | [Các bước]<br>1. Điều hướng về `problem_management`.<br>[Khi xác nhận] Còn thay đổi chưa lưu thì hiện popup cảnh báo (Q7, Q12 đã chốt; chi tiết ở Q14).<br>[Khi thành công] Mở `problem_management`, giữ nguyên bộ lọc/trang trước đó. |
+| 4 | Nút | Mở xem trước đề bài | Bấm "Xem như người học". | Không | Không | - | [Các bước]<br>1. Mở **tab trình duyệt mới** (Q6 đã chốt 2026-10-03).<br>[Khi thành công] Hiển thị đề bài dạng đọc đúng như A1 thấy, từ **dữ liệu đã lưu lần cuối**, không gồm thay đổi chưa lưu. Chi tiết còn mở ở Q13. |
 | 5 | Nút | Đóng xem trước đề bài | Bấm "Đóng" trong popup xem trước. | Không | Không | - | [Các bước]<br>1. Đóng popup.<br>[Khi thành công] Màn chính giữ nguyên trạng thái biên soạn trước đó. |
 | 6 | Tab | Đổi tab nội dung | Bấm một trong 5 tab. | Không | Không | - | [Các bước]<br>1. Ẩn khối nội dung tab hiện tại, hiện khối nội dung tab được chọn.<br>[Khi thành công] Không mất dữ liệu đã nhập ở tab khác — mọi tab dùng chung một trạng thái biên soạn trong bộ nhớ. |
-| 7 | Nhập liệu | Sửa Tiêu đề | Gõ vào ô "Tiêu đề". | Không | Có | `SaveProblemContent` | [Các bước]<br>1. Debounce theo thời gian, gửi auto-save.<br>[Khi thành công] `saveHint` cập nhật.<br>[Khi lỗi] Hiển thị lỗi tại ô, giữ nguyên nội dung đã gõ. Cơ chế debounce cụ thể chưa chốt, xem Câu hỏi mở Q7. |
-| 8 | Nhập liệu | Sửa Nội dung đề (Markdown) | Gõ vào ô "Nội dung đề". | Không | Có | `SaveProblemContent` | [Các bước]<br>1. Cập nhật bộ đếm ký tự theo thời gian thực.<br>2. Debounce, gửi auto-save.<br>[Khi thành công] `saveHint` cập nhật.<br>[Khi lỗi] Hiển thị lỗi tại ô, giữ nguyên nội dung đã gõ. |
-| 9 | Nhập liệu | Sửa Ràng buộc và giới hạn | Sửa một trong 4 trường số (thời gian/bộ nhớ/kích thước đầu ra/số lần nộp). | Không | Có | `SaveProblemContent` | [Các bước]<br>1. Kiểm giá trị số dương.<br>2. Debounce, gửi auto-save.<br>[Khi lỗi] Giá trị không hợp lệ thì báo lỗi ngay tại ô, không gửi auto-save. |
+| 7 | Nhập liệu | Sửa Tiêu đề | Gõ vào ô "Tiêu đề". | Không | Có | `SaveProblemContent` | [Các bước]<br>1. Debounce theo thời gian, gửi auto-save.<br>[Khi thành công] Toast thành công.<br>[Khi lỗi] Ô đổi viền đỏ và hiện toast lỗi, giữ nguyên nội dung đã gõ. Cơ chế debounce cụ thể chưa chốt, xem Câu hỏi mở Q7. |
+| 8 | Nhập liệu | Sửa Nội dung đề (Markdown) | Gõ vào ô "Nội dung đề". | Không | Có | `SaveProblemContent` | [Các bước]<br>1. Cập nhật bộ đếm ký tự theo thời gian thực.<br>2. Debounce, gửi auto-save.<br>[Khi thành công] Toast thành công.<br>[Khi lỗi] Ô đổi viền đỏ và hiện toast lỗi, giữ nguyên nội dung đã gõ. |
+| 9 | Nhập liệu | Sửa Ràng buộc và giới hạn | Sửa một trong 4 trường số (thời gian/bộ nhớ/kích thước đầu ra/số lần nộp). | Không | Có | `SaveProblemContent` | [Các bước]<br>1. Kiểm giá trị số dương.<br>2. Debounce, gửi auto-save.<br>[Khi lỗi] Giá trị không hợp lệ thì ô đổi viền đỏ và hiện toast lỗi, không gửi auto-save. |
 | 10 | Nhập liệu | Sửa Ràng buộc dữ liệu | Gõ vào ô "Ràng buộc dữ liệu". | Không | Có | `SaveProblemContent` | [Các bước]<br>1. Debounce, gửi auto-save.<br>[Khi thành công] Dữ liệu sẵn sàng làm đầu vào cho "Sinh tự động" (F2-14). Nơi lưu chưa chốt, xem Câu hỏi mở Q1. |
 | 11 | Nhập liệu | Sửa Đáp án mẫu | Đổi ngôn ngữ hoặc sửa mã đáp án mẫu. | Không | Có | `SaveProblemContent` | [Các bước]<br>1. Debounce, gửi auto-save.<br>[Khi thành công] Ô "Sinh tự động" và "Chạy với đáp án mẫu" chuyển trạng thái kích hoạt nếu mã không rỗng. Nơi lưu chưa chốt, xem Câu hỏi mở Q2. |
-| 12 | Nút | Thêm ví dụ mẫu | Bấm "Thêm ví dụ". | Không | Không | - | [Các bước]<br>1. Thêm dòng trống vào danh sách ví dụ.<br>[Khi thành công] Dòng mới ở trạng thái chỉnh sửa ngay. |
-| 13 | Nhập liệu | Sửa một ví dụ mẫu | Sửa Đầu vào/Kết quả/Giải thích của một dòng. | Không | Có | `SaveProblemContent` | [Các bước]<br>1. Debounce, gửi auto-save.<br>[Khi lỗi] Giữ nguyên nội dung đã gõ, báo lỗi tại dòng. Trường "Giải thích" chưa có nơi lưu xác định, xem Câu hỏi mở Q3. |
-| 14 | Nút | Xoá một ví dụ mẫu | Bấm nút xoá trên một dòng ví dụ. | Không | Có | `SaveProblemContent` | [Các bước]<br>1. Xoá dòng khỏi danh sách.<br>[Khi xác nhận] Hỏi xác nhận trước khi xoá.<br>[Khi thành công] Cập nhật lại số đếm "Ví dụ mẫu (N)" ở thanh tab. |
-| 15 | Nút | Tải lên hàng loạt testcase | Bấm "Tải lên hàng loạt". | Không | Có | `RequestTestcaseBulkUploadUrl`, `ConfirmTestcaseBulkUpload` | [Các bước]<br>1. Chọn file theo lô ở máy người dùng.<br>2. Lấy presigned URL, tải thẳng lên MinIO.<br>3. Xác nhận hoàn tất với backend.<br>[Khi thành công] Các testcase mới xuất hiện trong bảng, cập nhật tóm tắt testcase.<br>[Khi lỗi] Hiển thị lỗi file cụ thể (định dạng sai, quá kích thước), không thêm testcase một phần. |
-| 16 | Nút | Sinh tự động testcase (AI) | Bấm "Sinh tự động". | Không | Có | `GenerateTestcasesWithAi` | [Các bước]<br>1. Kiểm Đáp án mẫu đã chạy Pass toàn bộ testcase hiện có (đã chặn sớm ở Sheet 6, đây là kiểm lại phía máy chủ).<br>2. AI sinh input dựa trên đề bài + Ràng buộc dữ liệu.<br>3. Chạy input qua Đáp án mẫu để lấy output thật.<br>[Khi thành công] Testcase mới thêm vào bảng ở trạng thái "Nháp AI" (`is_ai_generated_draft = true`).<br>[Khi lỗi] Hiển thị lỗi, không thêm testcase nào. |
+| 12 | Nút | Thêm ví dụ mẫu | Bấm "Thêm ví dụ". | Không | Không | - | [Các bước]<br>1. Thêm dòng trống vào danh sách ví dụ.<br>[Khi thành công] Dòng mới ở trạng thái chỉnh sửa ngay.<br>[Thông báo hoàn tất] Toast thành công khi thêm xong (bản dựng thêm qua hộp thoại, xem Bảng 8.1). |
+| 13 | Nhập liệu | Sửa một ví dụ mẫu | Sửa Đầu vào/Kết quả/Giải thích của một dòng. | Không | Có | `SaveProblemContent` | [Các bước]<br>1. Debounce, gửi auto-save.<br>[Khi lỗi] Giữ nguyên nội dung đã gõ, ô sai đổi viền đỏ và hiện toast lỗi. Trường "Giải thích" chưa có nơi lưu xác định, xem Câu hỏi mở Q3. |
+| 14 | Nút | Xoá một ví dụ mẫu | Bấm nút xoá trên một dòng ví dụ. | Không | Có | `SaveProblemContent` | [Các bước]<br>1. Bài đã `PUBLISHED` và chỉ còn 2 ví dụ: hiện toast cảnh báo, dừng, không xoá.<br>2. Xoá dòng khỏi danh sách.<br>[Khi xác nhận] Hỏi xác nhận trước khi xoá.<br>[Khi thành công] Cập nhật lại số đếm "Ví dụ mẫu (N)" ở thanh tab.<br>[Thông báo hoàn tất] Toast thành công khi xoá xong. |
+| 15 | Nút | Tải lên hàng loạt testcase | Bấm "Tải lên hàng loạt". | Không | Có | `RequestTestcaseBulkUploadUrl`, `ConfirmTestcaseBulkUpload` | [Các bước]<br>1. Chọn file theo lô ở máy người dùng.<br>2. Lấy presigned URL, tải thẳng lên MinIO.<br>3. Xác nhận hoàn tất với backend.<br>[Khi thành công] Các testcase mới xuất hiện trong bảng, cập nhật tóm tắt testcase.<br>[Khi lỗi] Toast lỗi nêu file cụ thể (định dạng sai, quá kích thước), không thêm testcase một phần. |
+| 16 | Nút | Sinh tự động testcase (AI) | Bấm "Sinh tự động". | Không | Có | `GenerateTestcasesWithAi` | [Các bước] (theo bản AI viết script, `DEC-2026-0928-f2-14-generator-script`)<br>1. Kiểm điều kiện: tối thiểu 2 testcase Sample do người soạn tự viết và Đáp án mẫu đã chạy Pass chúng (đã chặn sớm ở Sheet 6, máy chủ kiểm lại).<br>2. Gửi AI đề bài, Ràng buộc dữ liệu và 2 Sample dưới dạng tham số dữ liệu. **Không gửi Đáp án mẫu.**<br>3. AI trả về script sinh input kèm nhãn loại ca.<br>4. Chạy script trong sandbox: chặn mạng, giới hạn thời gian và kích thước output, hạt giống cố định.<br>5. Kiểm từng input theo Ràng buộc dữ liệu, input sai bị loại.<br>6. Chạy input hợp lệ qua Đáp án mẫu để lấy output thật. Input làm Đáp án mẫu lỗi hoặc quá giờ bị loại; nếu đó là ca lớn nhất thì cảnh báo giới hạn thời gian (F2-10) có thể đặt sai.<br>[Khi thành công] Testcase mới thêm vào bảng ở trạng thái "Nháp AI" (`is_ai_generated_draft = true`), bỏ qua input đã có; toast nêu số testcase thêm và các input bị loại.<br>[Khi lỗi] Toast lỗi, không thêm testcase nào (ví dụ script vượt giới hạn kích thước output).<br>[Giới hạn lần sinh] Mỗi bài chỉ được sinh tối đa N lần (mặc định 2, ADMIN cấu hình). Mỗi lần bấm là một script AI **mới**, nên ra bộ ca khác; chỉ lần chạy thành công (thêm ít nhất 1 testcase nháp) mới tính, lần lỗi không tính, duyệt hoặc loại nháp không hoàn lại lượt. Bộ đếm lưu ở máy chủ. Nút hiện "Còn N/M lần"; hết lượt thì bấm ra toast cảnh báo. [Nguồn: 01-rd/req/problem-bank.md:70-124; chủ dự án 2026-10-03] |
 | 17 | Nút | Xác nhận testcase AI sinh | Bấm xác nhận trên một testcase có nhãn "Nháp AI". | Không | Có | `UpdateTestcase` | [Các bước]<br>1. Đặt `is_ai_generated_draft = false`.<br>[Khi thành công] Nhãn "Nháp AI" biến mất, testcase được tính vào Hidden khi xuất bản. |
-| 18 | Nút | Chạy với đáp án mẫu | Bấm "Chạy với đáp án mẫu". | Không | Có | `RunSampleSolutionAgainstTestcases` | [Các bước]<br>1. Gửi mã Đáp án mẫu và toàn bộ testcase tới outbound port go-judge.<br>2. Hiển thị nút "Đang chạy…", disabled.<br>3. Nhận kết quả từng testcase.<br>[Khi thành công] `RunResultBanner` hiện "Đúng N/N testcase" hoặc "Thất bại ở testcase #k" kèm nguyên nhân đầu tiên; checklist "Đáp án mẫu chạy đúng mọi testcase" cập nhật.<br>[Khi lỗi] Hiển thị lỗi hệ thống, giữ nguyên bảng testcase. |
-| 19 | Nút | Thêm testcase thủ công | Bấm "+ Thêm testcase". | Không | Có | `CreateTestcase` | [Các bước]<br>1. Thêm dòng trống, mặc định `Ẩn`.<br>[Khi thành công] Dòng mới xuất hiện cuối bảng, cập nhật tóm tắt testcase. |
-| 20 | Nhập liệu | Sửa một testcase | Sửa Đầu vào/Kết quả mong đợi của một dòng. | Không | Có | `UpdateTestcase` | [Các bước]<br>1. Debounce, gửi auto-save.<br>[Khi lỗi] Giữ nguyên nội dung đã gõ, báo lỗi tại dòng. |
+| 18 | Nút | Chạy với đáp án mẫu | Bấm "Chạy với đáp án mẫu". | Không | Có | `RunSampleSolutionAgainstTestcases` | [Các bước]<br>1. Gửi mã Đáp án mẫu và toàn bộ testcase tới outbound port go-judge.<br>2. Hiển thị nút "Đang chạy…", disabled.<br>3. Nhận kết quả từng testcase.<br>[Khi thành công] Toast "Đúng N/N testcase" (thành công khi Pass hết) hoặc "Thất bại ở testcase #k" kèm nguyên nhân đầu tiên (cảnh báo) [Nguồn: 05-coding/frontend/src/views/shared/problem-authoring/ui/problem-authoring-view.tsx:199]; checklist "Đáp án mẫu chạy đúng mọi testcase" cập nhật.<br>[Khi lỗi] Toast lỗi hệ thống, giữ nguyên bảng testcase. |
+| 19 | Nút | Thêm testcase thủ công | Bấm "+ Thêm testcase". | Không | Có | `CreateTestcase` | [Các bước]<br>1. Thêm dòng trống, mặc định `Ẩn`.<br>[Khi thành công] Dòng mới xuất hiện cuối bảng, cập nhật tóm tắt testcase.<br>[Thông báo hoàn tất] Toast thành công. |
+| 20 | Nhập liệu | Sửa một testcase | Sửa Đầu vào/Kết quả mong đợi của một dòng. | Không | Có | `UpdateTestcase` | [Các bước]<br>1. Debounce, gửi auto-save.<br>[Khi lỗi] Giữ nguyên nội dung đã gõ, ô sai đổi viền đỏ và hiện toast lỗi. |
 | 21 | Toggle | Đổi Hiển thị testcase | Bấm toggle "Công khai"/"Ẩn" trên một dòng. | Không | Có | `UpdateTestcase` | [Các bước]<br>1. Đảo giá trị `visibility`.<br>[Khi thành công] Cập nhật tóm tắt "N testcase · M công khai" và checklist "≥2 testcase công khai". |
-| 22 | Nút | Chạy thử một testcase | Bấm "Chạy thử" trên một dòng. | Không | Có | `RunSampleSolutionAgainstTestcases` | [Các bước]<br>1. Chạy Đáp án mẫu chỉ với testcase này.<br>[Khi thành công] Đánh dấu kết quả tại dòng (đạt/không đạt, thời gian chạy).<br>[Khi lỗi] Hiển thị lỗi tại dòng, không ảnh hưởng các dòng khác. |
-| 23 | Nút | Xoá một testcase | Bấm nút xoá trên một dòng. | Không | Có | `DeleteTestcase` | [Các bước]<br>1. Xoá dòng.<br>[Khi xác nhận] Hỏi xác nhận trước khi xoá.<br>[Khi thành công] Cập nhật lại tóm tắt testcase và checklist. |
+| 22 | Nút | Chạy thử một testcase | Bấm "Chạy thử" trên một dòng. | Không | Có | `RunSampleSolutionAgainstTestcases` | [Các bước]<br>1. Chạy Đáp án mẫu chỉ với testcase này.<br>[Khi thành công] Đánh dấu kết quả tại dòng (đạt/không đạt, thời gian chạy).<br>[Khi lỗi] Toast lỗi, không ảnh hưởng các dòng khác. |
+| 23 | Nút | Xoá một testcase | Bấm nút xoá trên một dòng. | Không | Có | `DeleteTestcase` | [Các bước]<br>1. Xoá dòng.<br>[Khi xác nhận] Hỏi xác nhận trước khi xoá.<br>[Khi thành công] Cập nhật lại tóm tắt testcase và checklist.<br>[Thông báo hoàn tất] Toast thành công. |
 | 24 | Kéo-thả | Sắp lại thứ tự testcase | Kéo-thả một dòng trong bảng. | Không | Có | `ReorderTestcases` | [Các bước]<br>1. Ghi lại thứ tự trình bày mới.<br>[Khi thành công] Bảng hiển thị theo thứ tự mới; không ảnh hưởng kết quả chấm (F4 chạy hết mọi testcase). |
-| 25 | Nhập liệu | Sửa chữ ký hàm | Sửa Tên hàm/Kiểu trả về/Tham số của một ngôn ngữ. | Không | Có | `SaveProblemSpec` | [Các bước]<br>1. Validate cấu trúc JSONB theo lược đồ `TypeKind` (mục 4.2 `harness`).<br>2. Debounce, gửi auto-save.<br>[Khi thành công] Cấu trúc hợp lệ thì lưu bình thường; cấu trúc vượt lược đồ thì đặt `function_wrapper_supported = false` và hiện cảnh báo tại tab — **không chặn cứng việc lưu**.<br>[Khi lỗi] Lỗi cấu trúc dữ liệu (thiếu `of` bắt buộc, `kind` không hợp lệ) hiển thị tại đúng trường vi phạm. |
-| 26 | Nhập liệu | Sửa định dạng Standard I/O | Sửa "Định dạng đọc stdin"/"Định dạng in stdout". | Không | Có | `SaveProblemSpec` | [Các bước]<br>1. Debounce, gửi auto-save.<br>[Khi thành công] `saveHint` cập nhật. |
-| 27 | Nhập liệu | Chọn chiến lược so khớp | Chọn giá trị ở "Chiến lược so khớp", nhập "Giá trị epsilon" nếu chọn `EPSILON`. | Không | Có | `SaveProblemSpec` | [Các bước]<br>1. Kiểm tổ hợp không hợp lệ `UNORDERED_SET` + kiểu trả về `BINARY_TREE`/`LINKED_LIST` (chặn ở tầng giao diện, xem Sheet 9).<br>2. Debounce, gửi auto-save.<br>[Khi lỗi] Tổ hợp không hợp lệ thì báo lỗi ngay tại `MatchingStrategySelector`, không gửi auto-save. |
-| 28 | Nhập liệu | Sửa Chỉ dẫn cho trợ lý AI | Gõ vào ô "Chỉ dẫn cho trợ lý AI". | Không | Có | `SaveAiAuthoringContext` | [Các bước]<br>1. Nội dung gửi lên **như dữ liệu**, không ghép chuỗi phía client.<br>2. Debounce, gửi auto-save.<br>[Khi thành công] `saveHint` cập nhật. Nơi lưu chưa chốt, xem Câu hỏi mở Q4. |
-| 29 | Toggle | Bật/tắt cờ hành vi AI | Bấm một trong 3 cờ ở Tab "Gợi ý AI". | Không | Có | `SaveAiAuthoringContext` | [Các bước]<br>1. Đảo trạng thái cờ.<br>[Khi thành công] `saveHint` cập nhật. Nơi lưu chưa chốt, xem Câu hỏi mở Q4. |
+| 25 | Nhập liệu | Sửa chữ ký hàm | Sửa Tên hàm/Kiểu trả về/Tham số của một ngôn ngữ. | Không | Có | `SaveProblemSpec` | [Các bước]<br>1. Validate cấu trúc JSONB theo lược đồ `TypeKind` (mục 4.2 `harness`).<br>2. Debounce, gửi auto-save.<br>[Khi thành công] Cấu trúc hợp lệ thì lưu bình thường; cấu trúc vượt lược đồ thì đặt `function_wrapper_supported = false` và hiện cảnh báo tại tab (nội dung giải thích trạng thái của tab, giữ nguyên) — **không chặn cứng việc lưu**.<br>[Khi lỗi] Lỗi cấu trúc dữ liệu (thiếu `of` bắt buộc, `kind` không hợp lệ) trường vi phạm đổi viền đỏ và hiện toast lỗi. |
+| 26 | Nhập liệu | Sửa định dạng Standard I/O | Sửa "Định dạng đọc stdin"/"Định dạng in stdout". | Không | Có | `SaveProblemSpec` | [Các bước]<br>1. Debounce, gửi auto-save.<br>[Khi thành công] Toast thành công. |
+| 27 | Nhập liệu | Chọn chiến lược so khớp | Chọn giá trị ở "Chiến lược so khớp", nhập "Giá trị epsilon" nếu chọn `EPSILON`. | Không | Có | `SaveProblemSpec` | [Các bước]<br>1. Kiểm tổ hợp không hợp lệ `UNORDERED_SET` + kiểu trả về `BINARY_TREE`/`LINKED_LIST` (chặn ở tầng giao diện, xem Sheet 9).<br>2. Debounce, gửi auto-save.<br>[Khi lỗi] Tổ hợp không hợp lệ thì `MatchingStrategySelector` đổi viền đỏ và hiện toast lỗi, không gửi auto-save. |
+| 28 | Nhập liệu | Sửa Chỉ dẫn cho trợ lý AI | Gõ vào ô "Chỉ dẫn cho trợ lý AI". | Không | Có | `SaveAiAuthoringContext` | [Các bước]<br>1. Nội dung gửi lên **như dữ liệu**, không ghép chuỗi phía client.<br>2. Debounce, gửi auto-save.<br>[Khi thành công] Toast thành công. Nơi lưu chưa chốt, xem Câu hỏi mở Q4. |
+| 29 | Toggle | Bật/tắt cờ hành vi AI | Bấm một trong 3 cờ ở Tab "Gợi ý AI". | Không | Có | `SaveAiAuthoringContext` | [Các bước]<br>1. Đảo trạng thái cờ.<br>[Khi thành công] Toast thành công. Nơi lưu chưa chốt, xem Câu hỏi mở Q4. |
 | 30 | Nút | Bấm "Nhờ AI soạn nháp" | Bấm nút "Nhờ AI soạn nháp". | Không | Không | - | [Các bước]<br>1. Chưa có hành vi backend nào được chốt.<br>[Khi thành công] Không có — tính năng còn treo, giữ/cắt chưa quyết định, xem Câu hỏi mở Q9. |
-| 31 | Nhập liệu | Sửa Thuộc tính | Đổi Chủ đề/Thẻ ở cột phải. | Không | Có | `SaveProblemContent` | [Các bước]<br>1. Debounce, gửi auto-save.<br>[Khi thành công] `saveHint` cập nhật. |
-| 32 | Nhập liệu | Đổi Trạng thái (cột phải) | Chọn lại giá trị ở "Trạng thái". | Không | Có | `UpdateProblemPublishStatus` | [Các bước]<br>1. Chọn `Đã xuất bản` thì kiểm checklist đủ 4 điều kiện trước khi gửi.<br>2. Chọn `Chưa xuất bản` thì gửi ngay, không cần điều kiện.<br>[Khi thành công] Bài `Đã xuất bản` → `Chưa xuất bản`: ẩn khỏi người học, lượt nộp cũ không bị xoá. Bài `Chưa xuất bản` → `Đã xuất bản`: hành vi giống EVT-33.<br>[Khi lỗi] Checklist chưa đủ thì báo lỗi, không đổi trạng thái. |
-| 33 | Nút | Lưu và xuất bản | Bấm "Lưu và xuất bản" ở đầu trang. | Không | Có | `UpdateProblemPublishStatus` | [Các bước]<br>1. Kiểm đủ 4 điều kiện checklist.<br>2. Gửi yêu cầu chuyển `status = PUBLISHED`.<br>[Khi thành công] `saveHint` chuyển "Đang hiển thị cho người học...". Sửa testcase Hidden của bài đã có submission thì tăng `current_testcase_set_version` và báo số hiệu mới.<br>[Khi lỗi] Checklist chưa đủ — hành vi cụ thể (chặn cứng hay lưu nháp kèm banner) chưa chốt, xem Câu hỏi mở Q8.<br>[Thông báo hoàn tất] "Đã xuất bản bài toán." |
+| 31 | Nhập liệu | Sửa Thuộc tính | Đổi Chủ đề/Thẻ ở cột phải. | Không | Có | `SaveProblemContent` | [Các bước]<br>1. Debounce, gửi auto-save.<br>[Khi thành công] Toast thành công. |
+| 32 | Nhập liệu | Đổi Trạng thái (cột phải) | Chọn lại giá trị ở "Trạng thái". | Không | Có | `UpdateProblemPublishStatus` | [Các bước]<br>1. Chọn `Đã xuất bản` thì kiểm checklist đủ 4 điều kiện trước khi gửi.<br>2. Chọn `Chưa xuất bản` thì gửi ngay, không cần điều kiện.<br>[Khi thành công] Bài `Đã xuất bản` → `Chưa xuất bản`: ẩn khỏi người học, lượt nộp cũ không bị xoá. Bài `Chưa xuất bản` → `Đã xuất bản`: hành vi giống EVT-33.<br>[Khi lỗi] Checklist chưa đủ thì hiện toast lỗi liệt kê điều kiện thiếu, không đổi trạng thái. |
+| 33 | Nút | Lưu và xuất bản | Bấm "Lưu và xuất bản" ở đầu trang. | Không | Có | `UpdateProblemPublishStatus` | [Các bước]<br>1. Kiểm đủ 4 điều kiện checklist.<br>2. Gửi yêu cầu chuyển `status = PUBLISHED`.<br>[Khi thành công] hiện toast thành công, trạng thái bài chuyển "Đang hiển thị cho người học". Sửa testcase Hidden của bài đã có submission thì tăng `current_testcase_set_version` và báo số hiệu mới.<br>[Khi lỗi] Checklist chưa đủ — hành vi cụ thể (chặn cứng hay lưu nháp kèm toast) chưa chốt, xem Câu hỏi mở Q8.<br>[Thông báo hoàn tất] Toast thành công "Đã xuất bản bài toán." |
 | 34 | Màn hình | Rời màn khi có thay đổi chưa lưu | Rời khỏi màn qua nút quay lại, đổi mục điều hướng, hoặc đóng tab trình duyệt. | Không | Không | - | [Các bước]<br>1. Kiểm còn thay đổi chưa auto-save xong hay không.<br>[Khi xác nhận] Có cảnh báo trước khi rời màn hay không — chưa chốt, xem Câu hỏi mở Q12.<br>[Khi thành công] Rời màn bình thường nếu không còn thay đổi treo. |
 
-[Nguồn: 09-layoutBase/Admin - Soạn đề bài.dc.html:141-403; 01-rd/screens/shared/SHR0202_problem_authoring.md:59-180;
+[Nguồn: 09-layoutBase/Admin - Soạn đề bài.dc.html:141-403; 01-rd/screens/shared/SHR0202_problem_authoring.md:56-199;
 02-bd/database/problem-bank.md mục 1; 02-bd/architecture/harness.md mục 4, 6]
+
+### Hiện trạng bản dựng prototype (2026-10-03)
+
+Bản dựng đã nối thao tác ghi cho tab Ví dụ mẫu và tab Testcase, nhưng cách thể hiện lệch với các sự kiện ở bảng trên ở những điểm trong Bảng 8.1. Mọi dữ liệu vẫn là state cục bộ của view; việc gọi máy chủ đi qua `entities/problem/api/queries.ts` (`useProblemDraft`, `useSaveProblemDraft`, `usePublishProblem`, `useGenerateTestcases`, mỗi hook dùng `withMockData(mock, fetchReal)` như các màn khác), nên khi DD chốt hợp đồng chỉ phải điền phần gọi thật, không sửa màn.
+
+Bảng 8.1: Điểm lệch giữa Sheet 8 và bản dựng prototype
+
+| EVT | BD quy định | Bản dựng | Nguồn |
+| :-: | :--- | :--- | :--- |
+| 12, 13 | Thêm dòng trống, sửa tại dòng, tự lưu sau debounce | Hộp thoại Thêm/Sửa ví dụ; Đầu vào và Kết quả bắt buộc, Giải thích tuỳ chọn; không tự lưu, thay đổi được ghi khi bấm "Lưu". Thêm hoặc sửa xong hiện toast thành công; bỏ trống trường bắt buộc thì hiện toast lỗi, ô sai đổi viền đỏ | `problem-authoring-view.tsx:128-138`; `edit-dialogs.tsx:120-124` |
+| 14, 23 | Hỏi xác nhận trước khi xoá | Đúng như BD, bằng `ConfirmDialog`. Xoá xong hiện toast thành công (ví dụ mẫu và testcase đều có) | `problem-authoring-view.tsx:118-126, 147-157, 707-728` |
+| 14 | Nút xoá ví dụ luôn hiện; khi bài `PUBLISHED` và chỉ còn 2 ví dụ thì bấm hiện toast cảnh báo, không xoá (Sheet 6 khu vực D mục 6) | Đúng như BD: `requestDeleteExample` hiện toast cảnh báo `examplesFloorWarning` rồi dừng, không mở hộp xác nhận, khi bài `published` và `examples.length <= 2`. Nút xoá luôn hiện | `problem-authoring-view.tsx:140-148` |
+| 19, 20 | Thêm dòng trống mặc định `Ẩn`; sửa tại dòng, tự lưu | Hộp thoại Thêm/Sửa testcase; mặc định `Ẩn`; Đầu vào và Kết quả mong đợi bắt buộc; testcase tự viết vào bảng ở trạng thái đã duyệt, nguồn `manual`. Thêm hoặc sửa xong hiện toast thành công; bỏ trống trường bắt buộc thì hiện toast lỗi, ô sai đổi viền đỏ | `problem-authoring-view.tsx:96-116`; `edit-dialogs.tsx:58-65` |
+| 21 | Toggle Công khai/Ẩn ngay trên dòng | Đổi Hiển thị nằm trong hộp thoại Sửa, chưa có toggle trên dòng | `edit-dialogs.tsx:58` |
+| 17 | Đặt `is_ai_generated_draft = false` khi xác nhận | Nút "Duyệt"/"Loại" ở tab Gợi ý AI, mỗi nút hiện toast thành công; bảng testcase hiện badge "Nháp" ở cột Trạng thái | `problem-authoring-view.tsx:238-253, 271-274` |
+| 18 | Chạy toàn bộ testcase qua go-judge; kết quả "Đúng N/N" hoặc "Thất bại ở testcase #k" | Kết quả **giả lập**: mọi testcase đã duyệt đều Pass. Nút trông mờ nhưng vẫn bấm được khi mã đáp án mẫu rỗng hoặc chưa có testcase đã duyệt; bấm thì toast cảnh báo nêu lý do (`runBlocked.noSolution`, `runBlocked.noTestcase`). Kết quả chạy là **toast**: thành công khi Pass hết, cảnh báo khi có testcase không Pass | `problem-authoring-view.tsx:193-200, 493` |
+| 18 (bổ sung) | Băng kết quả "ẩn" cho tới lần chạy đầu tiên | Kết quả chạy không còn là băng trên trang mà là toast (dòng trên). **Trạng thái hết hiệu lực cũng không còn thông báo trên trang** (bỏ 2026-10-03, chủ dự án): thêm, sửa, xoá testcase, duyệt một testcase nháp, hoặc sửa đáp án mẫu thì kết quả cũ bị bỏ và checklist "Đáp án mẫu chạy đúng mọi testcase" về chưa đạt cho tới khi chạy lại; đó là dấu hiệu duy nhất. Loại một testcase nháp không làm hết hiệu lực vì nháp chưa thuộc bộ đã chạy | `problem-authoring-view.tsx:65, 96-125, 193-200, 504-510` |
+| 7 đến 11, 13, 20, 28, 29, 31 | Tự lưu sau debounce, `saveHint` báo trạng thái | **Lưu tường minh**: nút "Lưu" chỉ bật khi nội dung khác bản đã lưu (`dirty`) và không đang lưu. **Không còn nhãn trạng thái** ("Có thay đổi chưa lưu", "Đang lưu...", "Đã lưu", "Lưu thất bại" đã bỏ); lưu thành công hiện toast thành công, lưu thất bại hiện toast lỗi | `problem-authoring-view.tsx:80-83, 159-172, 329-331` |
+| 33 | Kiểm đủ checklist rồi chuyển `status = PUBLISHED` | Nút "Lưu và xuất bản" **trông mờ nhưng vẫn bấm được** khi checklist còn mục chưa đạt (chặn cứng, Q8 đã chốt): bấm thì toast cảnh báo `checklistBlockTitle` kèm các điều kiện còn thiếu, không lưu; không còn khối vàng trên trang. Đủ checklist thì bấm sẽ lưu rồi đặt trạng thái Đã xuất bản, kèm toast thành công hoặc toast lỗi. Máy chủ vẫn phải là nơi kiểm thẩm quyền (Sheet 9 mục 9), mock chỉ tin giao diện | `problem-authoring-view.tsx:174-190, 332-338`; `problem-draft-mocks.ts:17-29` |
+| 32 | Chọn "Đã xuất bản" ở cột Thuộc tính thì kiểm checklist | **Chưa dựng**: bộ chọn Trạng thái đổi được tự do, không kiểm checklist | `problem-authoring-view.tsx:637-652` |
+| 7 đến 11, 13, 20, 28, 29, 31 (bổ sung) | `[Khi lỗi]` ghi "báo lỗi tại ô", "báo lỗi tại dòng" | Mọi thao tác ghi cùng đi qua một toast lỗi khi lưu thất bại; không có chữ lỗi cạnh ô | `problem-authoring-view.tsx:159-172` |
+| 3, 4, 14, 23 và nút Duyệt/Loại (EVT 17) (bổ sung, chưa duyệt hình) | Các nút này là nút có chữ | Chuyển sang icon Lucide kèm tooltip và tên truy cập qua `IconAction` dùng chung (2026-10-03): quay lại `ArrowLeft` ở khe `leading` bên trái header, "Xem như người học" `Eye`, Sửa `Pencil` và Xoá `Trash2` (đỏ) ở từng dòng ví dụ và testcase, Duyệt `Check` và Loại `X` (đỏ) ở khối testcase nháp. Chữ giữ nguyên làm nhãn tooltip. Lưu, Xuất bản, Thêm, Chạy, Sinh vẫn là nút có chữ | `problem-authoring-view.tsx:318-319, 328, 334, 450-455, 583-588` |
+| 3, 4, 7 đến 11 (Q6, Q7, Q12, Q13, Q14) | Xem trước ở popup; tự lưu; thoát không hỏi | **Xem trước:** icon `Eye` mở tab mới tới `{basePath}/{id}/preview` (trang `ProblemPreviewView`), hiện bản đã lưu lần cuối kèm dòng "Bản đã lưu lúc HH:mm"; vô hiệu khi bài chưa lưu. **Thoát:** khi còn thay đổi chưa lưu, bấm icon quay lại, mục sidebar hoặc nút Back của trình duyệt thì hiện popup ba nút (Lưu và thoát, Thoát không lưu, Ở lại); đóng hoặc tải lại tab dùng hộp thoại mặc định của trình duyệt. **Lưu và thoát** chỉ lưu bản nháp. Xung đột phiên bản khi hai người cùng sửa (Q14c) **chưa dựng** | `problem-authoring-view.tsx:91, 167-187, 351-356, 722-735`; `shared/lib/use-unsaved-changes-guard.ts`; `shared/ui/feedback/unsaved-changes-dialog.tsx`; `views/shared/problem-preview/ui/problem-preview-view.tsx`; `problem-draft-mocks.ts` (bản lưu cục bộ cho trang xem trước) |
+| 33 (Q8) | Chặn khi checklist chưa đủ | Toast khi bấm Xuất bản liệt kê **mọi** điều kiện còn thiếu; mục chưa đạt trong checklist bấm được để nhảy tới tab Testcase hoặc Ví dụ mẫu | `problem-authoring-view.tsx:189-196, 245-251, 703-715` |
+| 16 (F2-14) | Bấm Sinh tự động: kiểm điều kiện rồi AI sinh testcase nháp | Bản dựng chạy **mock** qua `useGenerateTestcases`: bấm thì hiện một trạng thái đang chạy chung (khoảng 2,4 giây, không tách bước vì BE thật có thể không báo từng bước), rồi thêm 4 testcase nháp. **Hai lần sinh mỗi bài**: lần 1 ra bộ A, lần 2 ra bộ B khác (script AI mới); lần 3 bị chặn bằng toast. Nút hiện "Còn N/2 lần"; bộ đếm do mock lưu cùng bài (`ProblemDraftRecord.aiGeneration`). Toast nêu số thêm, số input bị loại và cảnh báo ca lớn nhất. Đổi kết quả bằng `?aiMock=error` (script vượt giới hạn output, không thêm gì, không tính lượt) hoặc `?aiMock=warn` (có input bị loại, ca lớn nhất quá giờ) | `problem-authoring-view.tsx:259-306, 640-662`; `entities/problem/api/queries.ts`; `entities/problem/api/__mock__/problem-draft-mocks.ts` |
+| 12 đến 14, 19 đến 23 (bổ sung) | Sheet 8 chưa ghi thông báo hoàn tất cho ví dụ mẫu và testcase | Thêm, sửa, xoá ví dụ mẫu: `toast.exampleAdded`, `exampleUpdated`, `exampleDeleted`; thêm, sửa, xoá testcase: `toast.testcaseAdded`, `testcaseUpdated`, `testcaseDeleted`; mỗi lần một toast thành công | `problem-authoring-view.tsx:115, 125, 137, 156` |
+
+Các điểm nối mock chỉ có chữ ký, chưa có hợp đồng, vì `03-dd/api/problem-bank.md` chưa tồn tại (xem `RD SHR0202` mục 3).
+Phần khác trong Sheet 8 (EVT-3, 4, 15, 16, 22, 24 đến 27, 30, 34) vẫn chưa dựng hoặc chưa đổi so với BD.
+
+[Nguồn: 05-coding/frontend/src/views/shared/problem-authoring/ui/problem-authoring-view.tsx; 05-coding/frontend/src/views/shared/problem-authoring/ui/edit-dialogs.tsx; 05-coding/frontend/src/entities/problem/api/__mock__/problem-draft-mocks.ts]
 
 ---
 
@@ -668,13 +729,13 @@ port riêng của `problem-bank`, không qua hàng đợi của `judge-orchestra
 | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: |
 | 1 | Kiểm quyền | Quyền truy cập màn | [Nội dung kiểm] Không có Function `PROBLEM_AUTHORING`/`TESTCASE_MANAGEMENT` thì không được vào màn.<br>[Nơi thực thi] Chặn ở cả tầng định tuyến phía giao diện và tầng phân quyền phía máy chủ.<br>[Tiêu điểm] Toàn màn. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn không có quyền truy cập chức năng này." | EVT-1 | 1 |
 | 2 | Kiểm quyền | Quyền sở hữu bài toán (A2) | [Nội dung kiểm] A2 mở bài toán không do chính mình tạo thì bị chặn, dù có Function `PROBLEM_AUTHORING`.<br>[Nơi thực thi] Tầng application phía máy chủ — không chỉ ẩn UI.<br>[Tiêu điểm] Toàn màn. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn không có quyền chỉnh sửa bài toán này." A3 không bị ràng buộc này. | EVT-1 | 2 |
-| 3 | Kiểm nhập liệu | Trường bắt buộc Tab 1 | [Nội dung kiểm] Tiêu đề, Nội dung đề, Giới hạn thời gian, Giới hạn bộ nhớ, Kích thước đầu ra rỗng thì không cho auto-save.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Ô vi phạm. | Lỗi | Chưa có mã thông báo | Nội dung "Trường này không được để trống." | EVT-7, EVT-8, EVT-9 | 1 |
-| 4 | Kiểm nhập liệu | Giá trị số dương | [Nội dung kiểm] Giới hạn thời gian, bộ nhớ, kích thước đầu ra, số lần nộp/giờ (nếu có) phải là số nguyên dương.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Ô vi phạm. | Lỗi | Chưa có mã thông báo | Nội dung "Giá trị phải là số nguyên lớn hơn 0." | EVT-9 | 1 |
-| 5 | Kiểm nghiệp vụ | Chữ ký hàm vượt lược đồ kiểu (F3-13) | [Nội dung kiểm] Cấu trúc JSONB của `return_type`/`parameters` có `kind` không hợp lệ hoặc thiếu `of` bắt buộc.<br>[Nơi thực thi] Máy chủ (`problem-bank`, đọc lược đồ từ shared kernel `algoprep-common`), có lớp kiểm lại độc lập ở `harness` (phòng thủ theo chiều sâu).<br>[Tiêu điểm] Trường Kiểu trả về/Tham số vi phạm ở Tab 4. | Cảnh báo | Chưa có mã thông báo | Nội dung "Kiểu dữ liệu này chỉ hỗ trợ Standard I/O, bài sẽ không hiện tuỳ chọn Bọc hàm cho người học." **Không chặn cứng lưu** — tự đặt `function_wrapper_supported = false` [Nguồn: 02-bd/architecture/harness.md mục 4.5]. | EVT-25 | 1 |
-| 6 | Kiểm nghiệp vụ | Tổ hợp so khớp không hợp lệ | [Nội dung kiểm] `matching_strategy = UNORDERED_SET` không hợp lệ khi kiểu trả về là `BINARY_TREE`/`LINKED_LIST`.<br>[Nơi thực thi] Màn hình (chặn chọn) và máy chủ (kiểm lại khi lưu).<br>[Tiêu điểm] `MatchingStrategySelector`. | Lỗi | Chưa có mã thông báo | Nội dung cụ thể chưa chốt câu chữ — xem Câu hỏi mở Q11 [Nguồn: 02-bd/architecture/harness.md mục 6]. | EVT-27 | 1 |
-| 7 | Kiểm nghiệp vụ | `epsilon_value` bắt buộc | [Nội dung kiểm] `matching_strategy = EPSILON` mà `epsilon_value` rỗng thì không cho lưu.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Ô "Giá trị epsilon". | Lỗi | Chưa có mã thông báo | Nội dung "Vui lòng nhập giá trị epsilon." | EVT-27 | 2 |
-| 8 | Kiểm nghiệp vụ | Điều kiện "Sinh tự động" | [Nội dung kiểm] Chưa có Đáp án mẫu chạy Pass toàn bộ testcase hiện có thì không cho sinh tự động.<br>[Nơi thực thi] Chặn sớm ở giao diện (nút vô hiệu kèm lý do), kiểm lại ở máy chủ.<br>[Tiêu điểm] Nút "Sinh tự động". | Lỗi | Chưa có mã thông báo | Nội dung "Cần chạy Đáp án mẫu Pass toàn bộ testcase trước khi sinh tự động." | EVT-16 | 1 |
-| 9 | Kiểm nghiệp vụ | Checklist sẵn sàng xuất bản | [Nội dung kiểm] Chuyển `status` sang `PUBLISHED` chỉ khi đủ 4 điều kiện: ≥8 testcase, ≥2 testcase công khai, đáp án mẫu chạy đúng mọi testcase, ≥2 ví dụ mẫu.<br>[Nơi thực thi] Máy chủ — nguồn thẩm quyền duy nhất, giao diện chỉ hiển thị lại kết quả tính từ backend.<br>[Tiêu điểm] Checklist ở cột phải. | Lỗi | Chưa có mã thông báo | Nội dung liệt kê từng điều kiện chưa đạt. Hành vi cụ thể của nút "Lưu và xuất bản" khi chưa đủ — xem Câu hỏi mở Q8 [Nguồn: 02-bd/database/problem-bank.md mục 5]. | EVT-32, EVT-33 | 1 |
+| 3 | Kiểm nhập liệu | Trường bắt buộc Tab 1 | [Nội dung kiểm] Tiêu đề, Nội dung đề, Giới hạn thời gian, Giới hạn bộ nhớ, Kích thước đầu ra rỗng thì không cho auto-save.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Viền ô + toast; ô vi phạm. | Lỗi | Chưa có mã thông báo | Nội dung "Trường này không được để trống." | EVT-7, EVT-8, EVT-9 | 1 |
+| 4 | Kiểm nhập liệu | Giá trị số dương | [Nội dung kiểm] Giới hạn thời gian, bộ nhớ, kích thước đầu ra, số lần nộp/giờ (nếu có) phải là số nguyên dương.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Viền ô + toast; ô vi phạm. | Lỗi | Chưa có mã thông báo | Nội dung "Giá trị phải là số nguyên lớn hơn 0." | EVT-9 | 1 |
+| 5 | Kiểm nghiệp vụ | Chữ ký hàm vượt lược đồ kiểu (F3-13) | [Nội dung kiểm] Cấu trúc JSONB của `return_type`/`parameters` có `kind` không hợp lệ hoặc thiếu `of` bắt buộc.<br>[Nơi thực thi] Máy chủ (`problem-bank`, đọc lược đồ từ shared kernel `algoprep-common`), có lớp kiểm lại độc lập ở `harness` (phòng thủ theo chiều sâu).<br>[Tiêu điểm] Viền ô + toast (cảnh báo); trường Kiểu trả về/Tham số vi phạm ở Tab 4. | Cảnh báo | Chưa có mã thông báo | Nội dung "Kiểu dữ liệu này chỉ hỗ trợ Standard I/O, bài sẽ không hiện tuỳ chọn Bọc hàm cho người học." **Không chặn cứng lưu** — tự đặt `function_wrapper_supported = false` [Nguồn: 02-bd/architecture/harness.md mục 4.5]. | EVT-25 | 1 |
+| 6 | Kiểm nghiệp vụ | Tổ hợp so khớp không hợp lệ | [Nội dung kiểm] `matching_strategy = UNORDERED_SET` không hợp lệ khi kiểu trả về là `BINARY_TREE`/`LINKED_LIST`.<br>[Nơi thực thi] Màn hình (chặn chọn) và máy chủ (kiểm lại khi lưu).<br>[Tiêu điểm] Viền ô + toast; `MatchingStrategySelector`. | Lỗi | Chưa có mã thông báo | Nội dung cụ thể chưa chốt câu chữ — xem Câu hỏi mở Q11 [Nguồn: 02-bd/architecture/harness.md mục 6]. | EVT-27 | 1 |
+| 7 | Kiểm nghiệp vụ | `epsilon_value` bắt buộc | [Nội dung kiểm] `matching_strategy = EPSILON` mà `epsilon_value` rỗng thì không cho lưu.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Viền ô + toast; ô "Giá trị epsilon". | Lỗi | Chưa có mã thông báo | Nội dung "Vui lòng nhập giá trị epsilon." | EVT-27 | 2 |
+| 8 | Kiểm nghiệp vụ | Điều kiện "Sinh tự động" | [Nội dung kiểm] Chưa có Đáp án mẫu chạy Pass toàn bộ testcase hiện có thì không cho sinh tự động.<br>[Nơi thực thi] Chặn sớm ở giao diện (nút trông như bị khoá nhưng vẫn bấm được, bấm thì toast nêu lý do; `problem-authoring-view.tsx` nút `generateAction`), kiểm lại ở máy chủ.<br>[Tiêu điểm] Toast cảnh báo khi bấm nút đang khoá; nút "Sinh tự động" (từ 2026-10-03 không còn khối giải thích trên trang theo chỉ đạo của chủ dự án: lý do khoá chỉ hiện bằng toast khi bấm). | Lỗi | Chưa có mã thông báo | Nội dung "Cần chạy Đáp án mẫu Pass toàn bộ testcase trước khi sinh tự động." | EVT-16 | 1 |
+| 9 | Kiểm nghiệp vụ | Checklist sẵn sàng xuất bản | [Nội dung kiểm] Chuyển `status` sang `PUBLISHED` chỉ khi đủ 4 điều kiện: ≥8 testcase, ≥2 testcase công khai, đáp án mẫu chạy đúng mọi testcase, ≥2 ví dụ mẫu.<br>[Nơi thực thi] Máy chủ — nguồn thẩm quyền duy nhất, giao diện chỉ hiển thị lại kết quả tính từ backend.<br>[Tiêu điểm] Toast khi bấm "Lưu và xuất bản" lúc nút đang trông mờ; danh sách checklist ở cột phải (không còn khối giải thích riêng trên trang, bỏ 2026-10-03). | Lỗi | Chưa có mã thông báo | Nội dung liệt kê từng điều kiện chưa đạt. Hành vi cụ thể của nút "Lưu và xuất bản" khi chưa đủ — xem Câu hỏi mở Q8 [Nguồn: 02-bd/database/problem-bank.md mục 5]. | EVT-32, EVT-33 | 1 |
 | 10 | Kiểm nghiệp vụ | Xung đột phiên bản khi lưu | [Nội dung kiểm] Nội dung bài toán đã bị người khác sửa kể từ lúc tải màn thì dừng lưu.<br>[Nơi thực thi] Máy chủ. | Lỗi | Mã lỗi trong phản hồi | Nội dung "Bài toán đã được người khác cập nhật. Vui lòng tải lại." | EVT-7 đến EVT-33 (mọi thao tác ghi) | 2 |
 | 11 | Kiểm nghiệp vụ | Lỗi hệ thống hoặc lỗi gọi máy chủ | [Nội dung kiểm] Gọi máy chủ thất bại hoặc trả lỗi nghiệp vụ thì dừng thao tác, giữ nguyên dữ liệu đang hiển thị.<br>[Nơi thực thi] Màn hình. | Lỗi | Mã lỗi trong phản hồi | Phản hồi có mã lỗi đã đăng ký thì hiển thị nội dung tương ứng; chưa đăng ký thì hiển thị "Không kết nối được máy chủ." | Toàn bộ EVT có "Gọi API = Có" | 1 |
 
@@ -694,12 +755,16 @@ Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 | Q3 | "Ví dụ mẫu" (Tab 2) — RD khẳng định đây là khái niệm tách biệt với testcase Sample ("không phải dữ liệu chạy máy"), nhưng thiết kế trước đó ánh xạ vào cờ `testcases.is_worked_example`, và cột "Giải thích" không có nơi lưu nào cả. Giữ nguyên cách ánh xạ vào `testcases` (cần thêm cột `explanation`), hay tách hẳn một bảng `worked_examples` riêng đúng tinh thần RD? | Mâu thuẫn giữa mô tả RD và thiết kế DB hiện tại, chưa có đối chiếu chính thức | DD `problem-bank` |
 | Q4 | "Chỉ dẫn cho trợ lý AI" + 3 cờ hành vi theo bài (Tab 5, `DEC-2026-0831-ai-instruction-injection-guard`) không có bảng DB nào lưu. Thêm bảng `problem_ai_authoring_context(problem_id, brief_text, no_full_code, question_only, allow_hidden_hint)` hay ghép vào `problems`? | Quyết định đã chốt phần an toàn (khối chỉ thị bậc hai), chưa chốt nơi lưu | DD `problem-bank` |
 | Q5 | "Thời gian giải trung bình" và "Lượt xin gợi ý" ở panel "Số liệu bài" không có cột tương ứng trong `problem_stats` (chỉ có `submission_count`, `accepted_count`, `ac_rate`, `updated_at`). Bổ sung cột vào read model, hay bỏ hai chỉ số này khỏi UI thật vì phụ thuộc tính năng "Gợi ý theo cấp độ" đã cắt? | Read model chưa mở rộng theo hai chỉ số này | DD `problem-bank` |
-| Q6 | Nút "Xem như người học" — đích đến cụ thể (modal/tab mới) và có render đúng `problem_detail` thật không? Nội dung xem trước lấy từ dữ liệu đã lưu hay cả thay đổi chưa lưu trong bộ nhớ? | Chưa có mã RD, chưa có prototype cho popup này | DD |
-| Q7 | Auto-save — debounce theo bao nhiêu giây/trường, có khoá trường khi đang lưu hay không; không có mã `Fx-nn` nào phủ | RD chỉ ngụ ý qua chuỗi `saveHint`, không định nghĩa cơ chế | DD |
-| Q8 | Hành vi nút "Lưu và xuất bản" khi checklist chưa đủ 4 điều kiện — chặn cứng hay lưu nội dung về nháp kèm banner liệt kê điều kiện thiếu? | Chưa có mã RD nào định nghĩa hành vi cụ thể | DD |
+| Q6 | ~~Nút "Xem như người học" — đích đến cụ thể (modal/tab mới)? Nội dung lấy từ dữ liệu đã lưu hay bản chưa lưu?~~ **ĐÃ CHỐT 2026-10-03 (chủ dự án):** mở **tab trình duyệt mới**, hiển thị **dữ liệu đã lưu lần cuối**. Còn mở các chi tiết đi kèm: bài chưa từng lưu, bài `UNPUBLISHED` (route người học thường không cho xem), cách báo khi còn thay đổi chưa lưu | Chưa có mã RD, chưa có prototype; đã dựng (Bảng 8.1). Chi tiết ở Q13 (đã chốt), Q15 (mở) | Đã đóng (chi tiết: Q13) |
+| Q7 | ~~Auto-save — debounce theo bao nhiêu giây/trường, có khoá trường khi đang lưu hay không~~ **ĐÃ CHỐT 2026-10-03 (chủ dự án):** **lưu tay** bằng nút "Lưu", không tự lưu. Còn thay đổi chưa lưu mà người dùng thoát khỏi màn thì hiện **popup cảnh báo** (cùng cơ chế với Q12). Mọi chỗ ở Sheet 8 ghi "debounce, gửi auto-save" đọc là "ghi khi bấm Lưu" | RD chỉ ngụ ý qua chuỗi `saveHint`. Bản dựng đã lưu tay (Bảng 8.1); popup khi thoát đã dựng (Bảng 8.1). Chi tiết ở Q14 (đã chốt) | Đã đóng (chi tiết: Q14) |
+| Q8 | ~~Hành vi nút "Lưu và xuất bản" khi checklist chưa đủ điều kiện — chặn cứng hay lưu nháp?~~ **ĐÃ CHỐT 2026-10-03 (chủ dự án đồng ý đề xuất):** chặn cứng nhưng nói rõ lý do: nút trông mờ nhưng vẫn bấm được; bấm thì toast liệt kê **tất cả** điều kiện còn thiếu (không chỉ điều kiện đầu tiên); trong checklist ở cột phải, mục chưa đạt bấm được để nhảy tới tab cần làm (Testcase hoặc Ví dụ mẫu). Nút "Lưu" riêng vẫn lưu được bản nháp khi checklist chưa đủ | Bản dựng đã làm đúng như vậy (Bảng 8.1) | Đã đóng |
 | Q9 | Nút "Nhờ AI soạn nháp" (Tab 1 cũ) — giữ tính năng (cần thêm mã RD mới) hay cắt khỏi phạm vi cùng đợt với "Gợi ý theo cấp độ"? | RD ghi nhận đây là mục còn treo, tách riêng khỏi quyết định đã chốt của Q6/Q5 gốc | Chủ dự án |
 | Q10 | `FunctionSignatureEditor` (Tab 4) — picker cấu trúc kiểu (chọn `kind`, lồng `of`) là đề xuất BD, chưa có UI cụ thể nào trong prototype vì tab "Đặc tả" hoàn toàn mới | Tab mới bổ sung sau prototype gốc theo `DEC-2026-0831-problem-authoring-spec-tab` | DD + prototype bổ sung |
 | Q11 | Câu chữ thông báo lỗi cụ thể cho tổ hợp không hợp lệ `UNORDERED_SET` + `BINARY_TREE`/`LINKED_LIST` chưa chốt | `02-bd/architecture/harness.md` mục 6 chỉ khoá nguyên tắc, chưa khoá câu chữ | DD |
-| Q12 | Rời màn khi còn thay đổi chưa lưu (bấm nút quay lại, đổi mục điều hướng, đóng tab) — có hỏi xác nhận không? | RD không có yêu cầu nào về việc này | Chủ dự án |
-
-**Status:** DONE_WITH_CONCERNS
+| Q12 | ~~Rời màn khi còn thay đổi chưa lưu — có hỏi xác nhận không?~~ **ĐÃ CHỐT 2026-10-03 (chủ dự án):** có, giống Q7: popup cảnh báo khi thoát lúc còn thay đổi chưa lưu | RD không có yêu cầu nào về việc này. Bản dựng đã có cờ "có thay đổi chưa lưu" (`problem-authoring-view.tsx:80-82`), popup khi thoát đã dựng (Bảng 8.1). Chi tiết ở Q14 | Đã đóng (chi tiết: Q14) |
+| Q13 | ~~Chi tiết của Q6~~ **ĐÃ CHỐT 2026-10-03 (chủ dự án đồng ý đề xuất):** (a) bài mới chưa lưu: icon xem trước bị vô hiệu, tooltip "Lưu bài trước khi xem"; (b) bài `UNPUBLISHED`: tab mới mở route xem trước riêng của tác giả `{basePath}/{id}/preview` (A2 chỉ bài của mình, A3 tất cả), không dùng route người học; (c) còn thay đổi chưa lưu: vẫn mở ngay, tab xem trước có dòng "Bản đã lưu lúc HH:mm. Thay đổi chưa lưu không hiện ở đây" | Bản dựng đã có (Bảng 8.1). Trang xem trước là trang chỉ đọc đơn giản trong khung khu vực, chưa phải màn `problem_detail` của người học ở chế độ xem trước, xem Q15 | Đã đóng (Q15 mở) |
+| Q14 | ~~Chi tiết của Q7 và Q12~~ **ĐÃ CHỐT 2026-10-03 (chủ dự án đồng ý đề xuất):** (a) popup chặn icon quay lại, mục điều hướng sidebar và nút Back của trình duyệt; đóng hoặc tải lại tab dùng hộp thoại mặc định của trình duyệt (không tuỳ biến được); (b) popup có ba nút "Lưu và thoát", "Thoát không lưu", "Ở lại"; khi checklist chưa đủ thì "Lưu và thoát" chỉ lưu bản nháp, không xuất bản; (c) hai người cùng sửa một bài: chặn người lưu sau và báo bài đã được người khác sửa, thay vì ghi đè (Sheet 9 mục 10) | (a), (b) đã dựng bằng `useUnsavedChangesGuard` và `UnsavedChangesDialog` dùng chung. (c) **chưa dựng**: mock không có phiên bản bài, thuộc DD `problem-bank`, xem Q16 | Đã đóng (Q16 mở) |
+| Q15 | Trang xem trước hiện là trang chỉ đọc riêng (đề, ràng buộc, giới hạn, ví dụ). Có nên dựng thành chế độ xem trước của màn `problem_detail` người học (USR0102) để tác giả thấy đúng giao diện giải bài, hay giữ trang đơn giản? Và nên có slug/RD/BD riêng không | Phát sinh khi dựng Q13, 2026-10-03 | Chủ dự án |
+| Q16 | Xung đột phiên bản khi hai người lưu tay cùng một bài (Q14c): dùng khoá lạc quan theo `updated_at` hay số phiên bản? Mã lỗi và câu chữ thông báo là gì? Người bị chặn xem được bản của người kia và gộp tay không | Cần hợp đồng `SaveProblemContent` chưa viết | DD `problem-bank` |
+| Q17 | ~~Sinh tự động: có cần chọn loại ca, số lượng, giới hạn số lần? Tiến độ bốn bước?~~ **ĐÃ CHỐT 2026-10-03 (chủ dự án):** giới hạn **2 lần sinh mỗi bài**, ADMIN cấu hình được; chỉ lần thành công mới tính. Tiến độ chỉ hiện một trạng thái đang chạy chung, không tách bốn bước. Còn mở: chọn loại ca hoặc số lượng mỗi lần sinh (hiện luôn sinh trọn bộ), xem Q18 | Phát sinh khi dựng mock 2026-10-03; RD F2-14 không nêu giới hạn lần | Đã đóng (Q18 mở) |
+| Q18 | ~~Con số giới hạn lần sinh và bộ đếm: cấu hình ở màn nào, bộ đếm lưu ở đâu, người soạn thấy gì~~ **ĐÃ CHỐT 2026-10-03 (chủ dự án đồng ý đề xuất):** (a) cấu hình ở **Cấu hình AI** (`ADM0301`, thẻ riêng "Sinh testcase tự động", Khu vực H), Function `AI_CONFIG`; giới hạn sandbox của script sinh dữ liệu thuộc nhóm Vận hành (`ADM0501`, `ADM0301` Q13); (b) bộ đếm là cột `problems.ai_testcase_generations_used` (`02-bd/database/problem-bank.md` mục 1.1); (c) người soạn chỉ thấy "Còn N/M lần", không thấy cấu hình chung | Nơi lưu con số trần chung còn mở ở `ADM0301` Q12 | Đã đóng |

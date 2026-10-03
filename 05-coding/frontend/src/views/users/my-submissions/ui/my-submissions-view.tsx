@@ -21,6 +21,7 @@ import {
   type VerdictFilter,
 } from "@/entities/submission";
 import { useT } from "@/shared/i18n";
+import { toast } from "@/shared/lib/toast-store";
 import {
   Badge,
   Button,
@@ -70,6 +71,11 @@ export function MySubmissionsView() {
   function updateFilter<T>(setter: (value: T) => void, value: T) {
     setter(value);
     setPage(1);
+  }
+
+  // The list filters live while typing (no toast per keystroke); Enter is the explicit search.
+  function announceSearch() {
+    toast.info(listPage.totalItems > 0 ? t("toast.searchResult", { count: listPage.totalItems }) : t("toast.searchEmpty"));
   }
 
   const columns: DataTableColumn<SubmissionListItem>[] = [
@@ -189,6 +195,9 @@ export function MySubmissionsView() {
             placeholder={t("filter.searchPlaceholder")}
             value={query}
             onChange={(event) => updateFilter(setQuery, event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") announceSearch();
+            }}
             wrapperClassName="min-w-[220px] flex-1"
           />
           <SegmentedTabs

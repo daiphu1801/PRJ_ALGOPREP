@@ -30,6 +30,7 @@ import {
   type StudentStatus,
 } from "@/entities/class";
 import { useT } from "@/shared/i18n";
+import { toast } from "@/shared/lib/toast-store";
 import {
   Badge,
   Button,
@@ -204,7 +205,13 @@ export function ClassProgressView() {
         open={removeTarget !== null}
         onClose={() => setRemoveTarget(null)}
         onConfirm={() => {
-          if (removeTarget) removeStudent.mutate(removeTarget.id);
+          if (removeTarget) {
+            const name = removeTarget.name;
+            removeStudent.mutate(removeTarget.id, {
+              onSuccess: () => toast.success(t("toast.removed", { name })),
+              onError: () => toast.error(t("toast.failed")),
+            });
+          }
           setRemoveTarget(null);
         }}
         title={t("popup.removeStudentTitle", { name: removeTarget?.name ?? "" })}

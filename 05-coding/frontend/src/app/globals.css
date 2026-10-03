@@ -197,6 +197,56 @@ button:not(:disabled):active,
 }
 
 /*
+ * Toast motion (shared/ui/feedback/toaster.tsx). In: slide from the right with a small overshoot.
+ * Out: slide right and fade while the row collapses (grid-template-rows 1fr to 0fr, set inline), so
+ * the cards below glide up. Progress: a bar along the bottom that scales to 0 over the card's
+ * lifetime (duration set inline). All of it is decoration, so it sits behind the reduced-motion gate
+ * and the card simply appears and disappears without it.
+ */
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(32px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes toast-progress {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .toast-enter {
+    animation: toast-in 340ms cubic-bezier(0.2, 0.9, 0.25, 1.15) both;
+  }
+
+  .toast-wrap {
+    transition-property: grid-template-rows, opacity, transform;
+    transition-duration: 220ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .toast-leaving {
+    opacity: 0;
+    transform: translateX(28px);
+  }
+
+  .toast-progress {
+    animation-name: toast-progress;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+  }
+}
+
+/*
  * Admin shell theme scope — the Admin area does NOT share the app's generic token values.
  * 09-layoutBase/Admin - Tổng quan.dc.html:18-38 defines its OWN bg/text/muted/glass/border/active/logo
  * tokens per theme, distinct from the rest of the app's palette. Overriding

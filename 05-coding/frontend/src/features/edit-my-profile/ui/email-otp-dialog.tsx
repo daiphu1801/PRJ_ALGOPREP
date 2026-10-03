@@ -8,6 +8,7 @@
 
 import { useState } from "react";
 import { useT } from "@/shared/i18n";
+import { toast } from "@/shared/lib/toast-store";
 import { Button, Modal } from "@/shared/ui";
 import { confirmEmailChange, emailOtpSchema } from "@/entities/user";
 
@@ -22,22 +23,26 @@ export function EmailOtpDialog({
 }) {
   const t = useT("profile");
   const [code, setCode] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  // Red border only; the message is a toast.
+  const [invalid, setInvalid] = useState(false);
   const [pending, setPending] = useState(false);
 
   const submit = async () => {
     const parsed = emailOtpSchema.safeParse({ code });
     if (!parsed.success) {
-      setError(t(parsed.error.issues[0]!.message));
+      setInvalid(true);
+      toast.error(t(parsed.error.issues[0]!.message));
       return;
     }
     setPending(true);
     try {
       const outcome = await confirmEmailChange(parsed.data.code, newEmail);
       if (!outcome.ok) {
-        setError(t(outcome.message));
+        setInvalid(true);
+        toast.error(t(outcome.message));
         return;
       }
+      toast.success(t("emailOtp.done"));
       onConfirmed();
     } finally {
       setPending(false);
@@ -68,11 +73,11 @@ export function EmailOtpDialog({
         value={code}
         onChange={(e) => {
           setCode(e.target.value.replace(/\D/g, ""));
-          setError(null);
+          setInvalid(false);
         }}
-        className="h-10 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-center text-lg tracking-[0.4em]"
+        aria-invalid={invalid || undefined}
+        className={`h-10 w-full rounded-lg border bg-[var(--color-surface)] px-3 text-center text-lg tracking-[0.4em] ${invalid ? "border-[var(--color-danger)]" : "border-[var(--color-border)]"}`}
       />
-      {error ? <p className="mt-2 text-xs text-[var(--color-danger)]">{error}</p> : null}
     </Modal>
   );
 }

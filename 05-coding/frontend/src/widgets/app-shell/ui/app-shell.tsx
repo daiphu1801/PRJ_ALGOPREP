@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import type { AppArea } from "@/entities/user";
 import { LiquidGlassBackdrop, PageContainer } from "@/shared/ui";
-import { SHELL_MAX_WIDTH_PX } from "@/shared/config";
+import { SHELL_MAX_WIDTH_PX } from "@/shared/api/config";
 import { AdminFooter } from "./admin-footer";
 import { AdminSidebar } from "./admin-sidebar";
 import { AdminToolbar } from "./admin-toolbar";

@@ -41,6 +41,9 @@ function zodErrorsToFieldErrors(error: ZodError): Record<string, string> {
   return result;
 }
 
+/** Outcome of `save`: the i18n key (profile namespace) of the first error, so the card can toast it. */
+export type SaveProfileResult = { ok: true } | { ok: false; errorKey: string };
+
 /**
  * Owns Khu vực B (personal-info form) of USR0502_profile. `email` is edited here but is NEVER part
  * of `UpdateMyProfileInput` (03-dd/api/identity.md endpoint 10 note) — changing it fires
@@ -76,7 +79,7 @@ export function useEditProfile(profile: UserProfile, onProfileSaved: (next: User
     setJustSaved(false);
   }, [saved]);
 
-  const save = useCallback(async () => {
+  const save = useCallback(async (): Promise<SaveProfileResult> => {
     const input: ProfileFormInput = {
       displayName: fields.displayName,
       schoolOrCompany: fields.schoolOrCompany,
@@ -86,8 +89,9 @@ export function useEditProfile(profile: UserProfile, onProfileSaved: (next: User
     };
     const parsed = profileFormSchema.safeParse(input);
     if (!parsed.success) {
-      setFieldErrors(zodErrorsToFieldErrors(parsed.error));
-      return;
+      const errors = zodErrorsToFieldErrors(parsed.error);
+      setFieldErrors(errors);
+      return { ok: false, errorKey: Object.values(errors)[0] ?? "form.invalid" };
     }
 
     setIsSaving(true);
@@ -101,6 +105,7 @@ export function useEditProfile(profile: UserProfile, onProfileSaved: (next: User
       setSaved((prev) => ({ ...toFormValues(nextProfile), email: prev.email }));
       setJustSaved(true);
       if (emailChanged) setEmailOtpTarget(fields.email);
+      return { ok: true };
     } finally {
       setIsSaving(false);
     }

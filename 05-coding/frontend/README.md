@@ -27,7 +27,7 @@ Route group tách layout theo actor; instructor và admin có **prefix URL thậ
 | Công khai | `app/(public)/` | `/login` · `/register` |
 | Người học | `app/(student)/` | `/problems` · `/submissions` · `/progress` · `/saved` · `/interview-bank` · `/profile` · `/settings` |
 | Giảng viên | `app/(instructor)/instructor/` | `/instructor/classes` · `/instructor/grading` · `/instructor/overview` · `/instructor/problems[/[id]]` · `/instructor/interview-questions` |
-| Quản trị | `app/(admin)/admin/` | `/admin/overview` · `/admin/users` · `/admin/queue` · `/admin/ai-config` · `/admin/problems[/[id]]` · `/admin/interview-questions` · ... |
+| Quản trị | `app/(admin)/admin/` | `/admin/overview` · `/admin/users` · `/admin/queue` · `/admin/ai-config` · `/admin/problems[/[id]][/edit]` · `/admin/interview-questions[/[id]][/edit]` · ... |
 
 Role bắt buộc theo khu vực: `entities/user/model/area.ts` → `ROLE_BY_AREA`. **`middleware.ts`
 phải đọc map đó**, không viết lại — hai chỗ lệch nhau là một khu vực hở quyền không thấy trong
@@ -56,11 +56,20 @@ màn. Bảng này giữ chuỗi tra ngược `01-rd → 02-bd → 03-dd → code
 | `admin_user_management` | `admin-user-management` | `/admin/users` |
 | `admin_queue_monitor` | `admin-queue-monitor` | `/admin/queue` |
 | `problem_management` | `problem-management` | `/admin/problems`, `/instructor/problems` |
-| `problem_authoring` | `problem-authoring` | `/admin/problems/[problemId]`, `/instructor/problems/[problemId]` |
+| `problem_authoring` | `problem-authoring` | `/admin/problems/[problemId]/edit`, `/admin/problems/new`; `/instructor/problems/[problemId]/edit`, `/instructor/problems/new` |
+| `problem_info` | `problem-info` | `/admin/problems/[problemId]`, `/instructor/problems/[problemId]` (trang chi tiết chỉ đọc, thêm 2026-10-02) |
 | `interview_question_management` | `interview-question-management` | `/admin/interview-questions`, `/instructor/interview-questions` |
 | `class_assignments` | `class-assignments` | `/instructor/assignments` |
 | `class_student_detail` | `class-student-detail` | `/instructor/classes/[classId]/students/[studentId]` |
-| `interview_question_authoring` | `interview-question-authoring` | `/admin/interview-questions/[questionId]`, `/instructor/interview-questions/[questionId]` |
+| `interview_question_authoring` | `interview-question-authoring` | `/admin/interview-questions/[questionId]/edit`, `/admin/interview-questions/new`; `/instructor/interview-questions/[questionId]/edit`, `/instructor/interview-questions/new` |
+| `interview_question_info` | `interview-question-info` | `/admin/interview-questions/[questionId]`, `/instructor/interview-questions/[questionId]` (trang chi tiết chỉ đọc, thêm 2026-10-02) |
+
+### Tách trang chi tiết và trang sửa (2026-10-02)
+
+`DEC-2026-1002-split-detail-and-edit-pages`: URL gốc của một bản ghi là trang **chỉ đọc** (`problem_info`,
+`interview_question_info`), form soạn nằm dưới `/edit`, `/new` là form tạo mới (đoạn tĩnh nên không bị
+`[id]` bắt). Làm cho khu **Admin** ngày 2026-10-02, khu **Giảng viên** ngày 2026-10-03. Các view danh sách,
+soạn và chi tiết nhận prop `basePath` (gốc của khu vực) nên không còn liên kết nào gắn cứng `/admin`.
 
 ### Ba slice thêm 2026-09-01, và hai URL do khung base tự chọn
 
@@ -103,6 +112,22 @@ pnpm --filter frontend build
 route mà `.next` còn cũ thì `tsc` báo lỗi module không tồn tại cho route cũ. Xoá `.next` rồi
 `pnpm build` lại là hết.
 
+## Thông báo (toast), kênh phản hồi duy nhất
+
+Quyết định: `DEC-2026-1003-toast-feedback-channel`. Kết quả thao tác và lỗi nhập liệu **không hiện thành chữ trên trang**, chỉ hiện bằng toast.
+
+| Việc | Cách làm |
+| :--- | :--- |
+| Báo kết quả | `import { toast } from "@/shared/lib/toast-store"` rồi `toast.success(t("..."))`, tương tự `error`, `warning`, `info`. Truyền **chuỗi đã dịch** |
+| Báo lỗi nhập liệu | Đặt `invalid` lên `TextField` / `TextArea` (viền đỏ và `aria-invalid`, không có chữ) và gọi `toastFirstError([...])` để chỉ bắn **một** toast |
+| Hiển thị | `shared/ui/toaster.tsx`, gắn một lần ở `app/providers`, nên phủ Admin, Giảng viên, Người học và màn đăng nhập. Góc phải-trên, tối đa 4 cái, tự tắt (success và info 4 giây, error và warning 7 giây), rê chuột hoặc focus thì dừng đếm, có nút `×`. Chuyển động (trượt vào có nảy nhẹ, trượt ra rồi thu gọn hàng, thanh tiến độ chạy ngược) nằm trong `globals.css` dưới `prefers-reduced-motion`, người tắt chuyển động thì thẻ chỉ hiện và mất |
+| Nút bị chặn | `aria-disabled` thay cho `disabled` (trông như bị khoá, `Button` có kiểu sẵn), và `onClick` bắn `toast.warning(lý do)`. Chỉ giữ `disabled` thật khi cần chặn bấm đúp lúc đang gửi |
+| Thử lại vẫn lỗi | `DashboardBlockState` tự toast lỗi khi `onRetry` trả về kết quả `isError`; lỗi tải lần đầu không toast |
+| Hook không có `t` | Trả về khoá i18n (xem `useAuthFlow`, `useChangePassword`), nơi có `t` dịch rồi bắn toast |
+| Kiểm thử | `renderHook(() => useToasts())` và `act(() => toast.clear())` (xem `shared/ui/params-dialog.test.tsx`) |
+
+Giữ nguyên, không phải thông báo: nội dung giải thích trạng thái trang (`NoticeTile` nêu lý do một nút bị khoá), vùng thay chỗ nội dung khi tải lỗi hoặc rỗng (`ErrorState`, `EmptyState`, khối dashboard), nhãn và gợi ý tĩnh.
+
 ## Điều ESLint chặn thật (không phải quy ước)
 
 | Luật | Cơ chế |
@@ -126,7 +151,7 @@ route mà `.next` còn cũ thì `tsc` báo lỗi module không tồn tại cho r
 - **`sanitizeHtml` CỐ TÌNH NÉM LỖI.** Thư viện sanitizer chưa chọn. Hàm giả (regex strip
   `<script>`) nguy hiểm hơn không có vì XSS vẫn đi qua `onerror`, `javascript:`, SVG — nên nó
   throw để ai dùng là thấy ngay lúc dev. Thay bằng bản thật trước khi render nội dung người dùng.
-- **Thư viện Markdown + LaTeX, biểu đồ** — chưa chọn (`SYS0102_frontend_architecture.md` mục 1).
+- **Biểu đồ** — chưa chọn (`SYS0102_frontend_architecture.md` mục 1). Markdown + LaTeX đã chọn 2026-10-03 (`DEC-2026-1003-markdown-latex-libraries`): dùng `MarkdownPreview` ở `shared/ui`, không parse HTML thô.
 - **E2E xương sống** — `e2e/smoke.spec.ts` chỉ là smoke (redirect, AppShell, đổi locale). Luồng
   thật ở `SYS0301_environment.md` mục 3.B cần backend.
 

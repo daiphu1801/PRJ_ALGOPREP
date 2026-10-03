@@ -1,9 +1,10 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useT } from "@/shared/i18n";
-import { Button, InlineFieldError } from "@/shared/ui";
+import { toast } from "@/shared/lib/toast-store";
+import { Button } from "@/shared/ui";
 import type { useAuthFlow } from "../model/use-auth-flow";
 import { OAuthButtonGroup } from "./oauth-button-group";
 import { OtpInputGroup } from "./otp-input-group";
@@ -37,6 +38,7 @@ export function AuthForm({ flow, showOAuth = true }: AuthFormProps) {
     fields,
     updateField,
     fieldErrors,
+    feedback,
     isSubmitting,
     deactivatedBanner,
     forgotTargetEmail,
@@ -49,15 +51,21 @@ export function AuthForm({ flow, showOAuth = true }: AuthFormProps) {
     setMode,
   } = flow;
 
+  // The flow reports in i18n keys; this is where they become words, as a toast (no inline text).
+  useEffect(() => {
+    if (feedback) toast[feedback.tone](t(feedback.key));
+  }, [feedback, t]);
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     void submit();
   };
 
-  // fieldErrors stores i18n KEYS relative to the "auth" namespace (see entities/auth/model/schema.ts),
-  // not display text — translate here so the mock/zod layer never has to know about locales.
-  const fieldErrorMessage = (name: string): string | undefined =>
-    fieldErrors[name] ? t(fieldErrors[name]) : undefined;
+  // fieldErrors stores i18n KEYS relative to the "auth" namespace (see entities/auth/model/schema.ts).
+  // A field only needs to know that it failed; the message went out as a toast.
+  const isInvalid = (name: string) => Boolean(fieldErrors[name]);
+  const controlClass = (name: string, extra = "") =>
+    `w-full rounded-md border bg-transparent px-3 py-2 text-sm text-[var(--color-text)] ${extra} ${isInvalid(name) ? "border-[var(--color-danger)]" : "border-[var(--color-border)]"}`;
 
   const textField = (name: string, label: string, type: "text" | "email" = "text") => (
     <div>
@@ -70,12 +78,9 @@ export function AuthForm({ flow, showOAuth = true }: AuthFormProps) {
         value={typeof fields[name] === "string" ? fields[name] : ""}
         disabled={isSubmitting}
         onChange={(e) => updateField(name, e.target.value)}
-        className="w-full rounded-md border border-[var(--color-border)] bg-transparent px-3 py-2 text-sm text-[var(--color-text)]"
-        aria-describedby={`${name}-error`}
+        className={controlClass(name)}
+        aria-invalid={isInvalid(name) || undefined}
       />
-      <div id={`${name}-error`}>
-        <InlineFieldError message={fieldErrorMessage(name)} />
-      </div>
     </div>
   );
 
@@ -91,8 +96,8 @@ export function AuthForm({ flow, showOAuth = true }: AuthFormProps) {
           value={typeof fields[name] === "string" ? fields[name] : ""}
           disabled={isSubmitting}
           onChange={(e) => updateField(name, e.target.value)}
-          className="w-full rounded-md border border-[var(--color-border)] bg-transparent px-3 py-2 pr-16 text-sm text-[var(--color-text)]"
-          aria-describedby={`${name}-error`}
+          className={controlClass(name, "pr-16")}
+          aria-invalid={isInvalid(name) || undefined}
         />
         <button
           type="button"
@@ -101,9 +106,6 @@ export function AuthForm({ flow, showOAuth = true }: AuthFormProps) {
         >
           {showPassword ? t("passwordHide") : t("passwordShow")}
         </button>
-      </div>
-      <div id={`${name}-error`}>
-        <InlineFieldError message={fieldErrorMessage(name)} />
       </div>
     </div>
   );
@@ -130,7 +132,7 @@ export function AuthForm({ flow, showOAuth = true }: AuthFormProps) {
         <OtpInputGroup
           value={typeof fields.otp === "string" ? fields.otp : ""}
           onChange={(value) => updateField("otp", value)}
-          error={fieldErrorMessage("otp")}
+          invalid={isInvalid("otp")}
           attemptsLeft={otpAttemptsLeft}
           cooldownUntil={otpCooldownUntil}
           onResend={() => void submitResendOtp()}
@@ -159,8 +161,10 @@ export function AuthForm({ flow, showOAuth = true }: AuthFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      {/* Page state with an action inside it (cancel the deletion), not a one-off result, so it
+          stays on the page rather than becoming a toast. */}
       {deactivatedBanner && (
-        <div role="alert" className="rounded-md border border-[var(--color-danger)] p-3 text-sm text-[var(--color-danger)]">
+        <div role="status" className="rounded-md border border-[var(--color-danger)] p-3 text-sm text-[var(--color-danger)]">
           <p>{t("deactivatedBannerMessage")}</p>
           <Button type="button" size="sm" variant="ghost" className="mt-2" onClick={() => void submitCancelDeactivation()}>
             {t("deactivatedBannerCancel")}
@@ -173,9 +177,12 @@ export function AuthForm({ flow, showOAuth = true }: AuthFormProps) {
       {isSignup && textField("email", t("emailLabel"), "email")}
 
       {isSignup ? (
-        <label className="flex items-start gap-2 text-sm text-[var(--color-text)]">
+        <label
+          className={`flex items-start gap-2 text-sm ${isInvalid("termsAccepted") ? "text-[var(--color-danger)]" : "text-[var(--color-text)]"}`}
+        >
           <input
             type="checkbox"
+            aria-invalid={isInvalid("termsAccepted") || undefined}
             checked={Boolean(fields.termsAccepted)}
             onChange={(e) => updateField("termsAccepted", e.target.checked)}
             className="mt-0.5"
@@ -197,7 +204,6 @@ export function AuthForm({ flow, showOAuth = true }: AuthFormProps) {
           </button>
         </div>
       )}
-      {isSignup && <InlineFieldError message={fieldErrorMessage("termsAccepted")} />}
 
       <Button type="submit" disabled={isSubmitting}>
         {isSignup ? t("signupSubmit") : t("loginSubmit")}

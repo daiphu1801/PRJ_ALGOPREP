@@ -2,7 +2,8 @@
 // submit path are reachable. Full behavioural coverage per 04-tdd/interview_question_detail.md's
 // AC-nn comes later, once that file exists.
 import { describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, renderHook, screen } from "@testing-library/react";
+import { toast, useToasts } from "@/shared/lib/toast-store";
 import { InterviewQuestionDetailView } from "./interview-question-detail-view";
 
 vi.mock("@/shared/i18n", () => ({
@@ -46,6 +47,15 @@ describe("InterviewQuestionDetailView", () => {
     // IQ-040 is seeded with hasRubric: false.
     render(<InterviewQuestionDetailView questionId="IQ-040" />);
 
-    expect(screen.getByText("mode.practice")).toBeDisabled();
+    const toasts = renderHook(() => useToasts());
+
+    const practice = screen.getByText("mode.practice");
+    expect(practice).toHaveAttribute("aria-disabled", "true");
+    // Stays clickable: the click says why instead of doing nothing.
+    fireEvent.click(practice);
+    expect(toasts.result.current.map((item) => [item.tone, item.message])).toEqual([
+      ["warning", "mode.practiceLockedReason"],
+    ]);
+    act(() => toast.clear());
   });
 });

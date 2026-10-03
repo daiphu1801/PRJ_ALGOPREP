@@ -51,11 +51,11 @@
 | Tên vật lý (slug) | `submission_result` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`) |
-| Phiên bản | V0.1 |
+| Phiên bản | V0.2 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/22 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/09/22 |
+| Ngày cập nhật | 2026/10/03 |
 
 ---
 
@@ -65,6 +65,7 @@
 | :--- | :--- | :--- | :--- | :--- |
 | V0.1 | Toàn bộ | Tạo mới theo mẫu 9 sheet. Chốt cơ chế realtime WebSocket per-testcase (`/topic/submissions/{id}`), công thức Beats F4-12, hiển thị điểm tỷ lệ F4-13, che giấu testcase ẩn F2-08, ánh xạ lỗi biên dịch F3-11/F3-12 và phân quyền truy cập kết quả bài nộp | 2026/09/22 | Nhóm phát triển AlgoPrep |
 | V0.2 | Sheet 3, 5, 7.3, 6, Câu hỏi mở | Viết lại Sheet 3 theo khuôn "Danh sách chuyển màn" 6 thẻ + sơ đồ Mermaid; viết lại Sheet 5 theo khuôn 14 cột (thêm Bảng DB/Cột DB, mỗi item một dòng); bỏ cột "Phương thức & URL dự kiến" ở Sheet 7.3 (đường dẫn API thuộc `03-dd/api/`, chưa viết). Sửa nguồn `beats_percent`: không phải cột DB, là giá trị tính tại thời điểm đọc theo công thức ở `02-bd/architecture/judge-orchestration.md:224-229`. Sửa cột testcase Mẫu/Ẩn về đúng tên thật `testcases.visibility` (không phải `is_sample`), input/expected về `input_inline`/`expected_output_inline`. Bổ sung điều kiện ẩn hẳn bảng testcase khi `status = COMPILE_ERROR` (Sheet 6 Khu vực D NO 1, theo Q3 đã chốt ở RD). Phát hiện thêm: chưa có cột lưu output thực tế của testcase mẫu — thêm Câu hỏi mở Q4 | 2026/09/24 | Nhóm phát triển AlgoPrep |
+| V0.2 | Sheet 6, 8 | Kết quả sao chép mã nguồn báo bằng toast thay vì đổi nhãn nút; giữ nguyên vùng không tìm thấy bài nộp và khối lỗi biên dịch. Theo `DEC-2026-1003-toast-feedback-channel`. | 2026/10/03 | AI |
 
 ---
 
@@ -360,7 +361,7 @@ Bố cục dạng luồng dọc đơn cột (Single-column layout), chia thành 
 | NO | Tên item | Hiển thị | Kích hoạt | Ghi chú |
 | --: | :--- | :--- | :--- | :--- |
 | 1 | Nhãn Ngôn ngữ đã nộp | Có | Không | [Điều kiện hiển thị] Luôn hiển thị.<br>[Điều kiện kích hoạt] Không áp dụng.<br>[Tự động đặt] - |
-| 2 | Nút Sao chép mã | Có | Có | [Điều kiện hiển thị] Luôn hiển thị.<br>[Điều kiện kích hoạt] Luôn kích hoạt.<br>[Tự động đặt] Đổi nhãn thành "Đã chép!" trong 2 giây sau khi bấm. |
+| 2 | Nút Sao chép mã | Có | Có | [Điều kiện hiển thị] Luôn hiển thị.<br>[Điều kiện kích hoạt] Luôn kích hoạt.<br>[Tự động đặt] Nhãn nút giữ nguyên "Sao chép mã"; kết quả sao chép báo bằng toast (xem EVT-5). |
 | 3 | Trình soạn thảo chỉ đọc | Có | Không | [Điều kiện hiển thị] Luôn hiển thị ở chế độ `readOnly: true`.<br>[Điều kiện kích hoạt] Cho phép cuộn, chọn text; không cho phép gõ phím sửa mã.<br>[Tự động đặt] Highlight dòng lỗi nếu có thông tin lỗi biên dịch. |
 | 4 | Khối thông báo lỗi biên dịch | Điều kiện | Không | [Điều kiện hiển thị] Chỉ hiển thị khi verdict là `COMPILE_ERROR`.<br>[Điều kiện kích hoạt] Cho phép cuộn đọc log lỗi.<br>[Tự động đặt] - |
 
@@ -419,7 +420,7 @@ Bố cục dạng luồng dọc đơn cột (Single-column layout), chia thành 
 | 2 | Điều hướng | Bấm link Ngân hàng bài | Người dùng bấm link quay về danh sách bài tập. | Có | Không | - | [Các bước]<br>1. Điều hướng sang `problem_list` (`USR0101`). |
 | 3 | Điều hướng | Bấm link Tiêu đề bài | Người dùng bấm vào tiêu đề bài toán. | Có | Không | - | [Các bước]<br>1. Điều hướng sang `problem_detail` (`USR0102`) của bài toán tương ứng. |
 | 4 | Giao diện | Mở rộng chi tiết testcase | Bấm mở rộng hàng kết quả testcase. | Không | Không | - | [Các bước]<br>1. Nếu là testcase mẫu: toggle mở rộng hiển thị Input, Expected, Actual.<br>2. Nếu là testcase ẩn: toggle mở rộng hiển thị thông báo bảo mật F2-08. |
-| 5 | Giao diện | Sao chép mã nguồn | Bấm nút Sao chép mã. | Không | Không | - | [Các bước]<br>1. Gọi Clipboard API sao chép toàn bộ `sourceCode`.<br>2. Đổi nhãn nút thành "Đã chép!" trong 2 giây. |
+| 5 | Giao diện | Sao chép mã nguồn | Bấm nút Sao chép mã. | Không | Không | - | [Các bước]<br>1. Gọi Clipboard API sao chép toàn bộ `sourceCode`.<br>[Khi thành công] Hiện toast thành công "Đã sao chép mã nguồn."<br>[Khi lỗi] Trình duyệt không hỗ trợ Clipboard API hoặc ghi vào clipboard bị từ chối thì hiện toast lỗi "Không sao chép được mã nguồn." [Nguồn: 05-coding/frontend/src/views/users/submission-result/ui/submission-result-view.tsx:66-76]. |
 | 6 | Điều hướng | Bấm Phân tích bài giải | Bấm nút Phân tích bài giải AI. | Có | Không | - | [Các bước]<br>1. Kiểm tra verdict = `ACCEPTED`.<br>2. Điều hướng sang `solution_review` (`USR0301`) kèm `submission_id`. |
 | 7 | Điều hướng | Bấm Phỏng vấn giả lập | Bấm nút Phỏng vấn giả lập AI. | Có | Không | - | [Các bước]<br>1. Kiểm tra verdict = `ACCEPTED`.<br>2. Điều hướng sang `mock_interview` (`USR0302`) kèm `submission_id`. |
 | 8 | Điều hướng | Bấm Làm lại bài | Bấm nút Làm lại bài. | Có | Không | - | [Các bước]<br>1. Điều hướng về `problem_detail` (`USR0102`) của bài toán tương ứng để mở lại Workspace. |

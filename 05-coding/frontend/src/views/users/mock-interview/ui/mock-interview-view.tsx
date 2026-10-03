@@ -22,6 +22,7 @@ import {
   type InterviewStage,
 } from "@/entities/mock-interview";
 import { useT } from "@/shared/i18n";
+import { toast } from "@/shared/lib/toast-store";
 import { Badge, Button, ConfirmDialog, SegmentedTabs, StatCard, TextArea, Toggle } from "@/shared/ui";
 import { useMockInterviewSession } from "../model/use-mock-interview-session";
 
@@ -40,6 +41,13 @@ export function MockInterviewView() {
   const [draft, setDraft] = useState("");
   const [earlyExitOpen, setEarlyExitOpen] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
+
+  // Finishing (all turns used or stopped early) is reported once, whichever path got there.
+  const reportedResult = useRef(false);
+  useEffect(() => {
+    if (session.screenState === "result" && !reportedResult.current) toast.success(t("toast.finished"));
+    reportedResult.current = session.screenState === "result";
+  }, [session.screenState, t]);
 
   useEffect(() => {
     // jsdom (used by the test suite) does not implement scrollIntoView.

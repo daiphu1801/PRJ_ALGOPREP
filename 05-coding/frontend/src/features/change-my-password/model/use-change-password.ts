@@ -4,6 +4,9 @@
 import { useCallback, useState } from "react";
 import { changeMyPassword, changePasswordSchema } from "@/entities/user";
 
+/** Outcome of `submit`: the i18n key (profile namespace) of the first error, so the dialog can toast it. */
+export type ChangePasswordResult = { ok: true } | { ok: false; errorKey: string };
+
 export function useChangePassword(hasPassword: boolean, onChanged: () => void) {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -18,23 +21,24 @@ export function useChangePassword(hasPassword: boolean, onChanged: () => void) {
     setFieldErrors({});
   }, []);
 
-  const submit = useCallback(async () => {
+  const submit = useCallback(async (): Promise<ChangePasswordResult> => {
     const parsed = changePasswordSchema(hasPassword).safeParse({ currentPassword, newPassword, confirmPassword });
     if (!parsed.success) {
       const errors: Record<string, string> = {};
       for (const issue of parsed.error.issues) errors[issue.path.join(".") || "form"] ??= issue.message;
       setFieldErrors(errors);
-      return;
+      return { ok: false, errorKey: Object.values(errors)[0] ?? "passwordDialog.invalid" };
     }
     setIsSubmitting(true);
     try {
       const outcome = await changeMyPassword(parsed.data);
       if (!outcome.ok) {
         setFieldErrors({ currentPassword: outcome.message });
-        return;
+        return { ok: false, errorKey: outcome.message };
       }
       reset();
       onChanged();
+      return { ok: true };
     } finally {
       setIsSubmitting(false);
     }

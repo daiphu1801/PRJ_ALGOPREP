@@ -1,6 +1,6 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 //
-// Khu vực A — reuses shared/ui/theme-lang-switcher.tsx wholesale (per task instruction) instead of
+// Khu vực A — reuses shared/ui/layout/theme-lang-switcher.tsx wholesale (per task instruction) instead of
 // re-implementing two more segmented tabs: same two controls, same immediate-apply behaviour
 // (REQ-09), no "Lưu cài đặt" involvement (BD Sheet 4.5 — "không có slice riêng").
 import { useT } from "@/shared/i18n";

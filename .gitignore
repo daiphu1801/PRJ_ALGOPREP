@@ -4,6 +4,9 @@
 CLAUDE.md
 .claude/
 .nexa/
+opencode.json
+opencode.jsonc
+.opencode/
 06-plan/
 07-review/
 10-session/

@@ -15,7 +15,7 @@
 // coloured list renders the same information without a new dependency.
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -27,6 +27,7 @@ import {
 } from "@/entities/solution-review";
 import { ApiError } from "@/shared/api";
 import { useT } from "@/shared/i18n";
+import { toast } from "@/shared/lib/toast-store";
 import { Badge, Button, Card, ConfirmDialog, NoticeTile, Skeleton } from "@/shared/ui";
 
 const DIFF_LINE_CLASS: Record<string, string> = {
@@ -63,6 +64,16 @@ function SolutionReviewContent() {
   const isBudgetLocked = query.error instanceof ApiError && query.error.code === AI_BUDGET_LOCKED_CODE;
   const isTransientError = query.isError && !isBudgetLocked;
   const data = query.data as SolutionReviewDetail | undefined;
+
+  // The error blocks below replace the report; the toast announces the failure at the moment it
+  // happens (errorUpdatedAt changes on every failed attempt, so a failed retry toasts again).
+  const errorUpdatedAt = query.errorUpdatedAt;
+  useEffect(() => {
+    if (!errorUpdatedAt) return;
+    if (isBudgetLocked) toast.error(t("toast.budgetLocked"));
+    else if (isTransientError) toast.error(t("toast.transientError"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- t is stable per locale; only a new failure should toast
+  }, [errorUpdatedAt]);
 
   return (
     <section className="p-6">
@@ -108,7 +119,10 @@ function SolutionReviewContent() {
       <ConfirmDialog
         open={applyConfirmOpen}
         onClose={() => setApplyConfirmOpen(false)}
-        onConfirm={() => setApplyConfirmOpen(false)}
+        onConfirm={() => {
+          setApplyConfirmOpen(false);
+          toast.success(t("toast.applied"));
+        }}
         title={t("applyConfirmTitle")}
         confirmLabel={t("applyConfirmConfirm")}
         cancelLabel={t("applyConfirmCancel")}

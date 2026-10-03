@@ -1,5 +1,5 @@
 import axios, { type AxiosError } from "axios";
-import { env } from "@/shared/config";
+import { env } from "@/shared/api/config";
 import { ApiError } from "./api-error";
 import { tokenStore } from "./token-store";
 

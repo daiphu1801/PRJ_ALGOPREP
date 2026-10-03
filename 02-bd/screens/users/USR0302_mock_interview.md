@@ -56,11 +56,11 @@
 | Tên vật lý (slug) | `mock_interview` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`) |
-| Phiên bản | V0.2 |
+| Phiên bản | V0.3 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/22 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/09/24 |
+| Ngày cập nhật | 2026/10/03 |
 
 ---
 
@@ -70,6 +70,7 @@
 | :--- | :--- | :--- | :--- | :--- |
 | V0.1 | Toàn bộ | Tạo mới theo mẫu 9 sheet. Chốt quản lý 3 trạng thái (entry/running/result), 3 lối vào F5-24, tiến trình 3 giai đoạn F5-10..F5-12, stream phản hồi SSE F5-14, rubric 4 tiêu chí F5-15 trọng số 25/30/25/20%, và popup xác nhận dừng sớm | 2026/09/22 | Nhóm phát triển AlgoPrep |
 | V0.2 | Sheet 1 (header), Sheet 5, Sheet 6, Sheet 7 | Sửa lỗi review: (1) gỡ trích dẫn bịa `DEC-2026-0913-interview-rubric-fixed-weights` (không tồn tại trong decision-registry), thay bằng `02-bd/database/ai-review.md:96-97`; (2) đổi tên 4 tiêu chí rubric đúng theo RD/database — Kỹ thuật→Độ rõ ràng (`CLARITY`), Giao tiếp→Độ chính xác kỹ thuật (`TECHNICAL_ACCURACY`), Giải quyết vấn đề→Khả năng phản biện (`PUSHBACK_HANDLING`), Chất lượng mã→Nhận thức độ phức tạp (`COMPLEXITY_AWARENESS`), áp dụng cho toàn bộ field/ID/nhãn liên quan; (3) xác nhận `interviewer_level` 4 mức theo `DEC-2026-0922-users-and-admin-conflict-resolutions`, đóng Câu hỏi mở Q1 cũ; (4) viết lại Sheet 5 và Sheet 7 đúng khuôn mẫu 9 sheet (thêm cột Bảng DB/Cột DB ở Sheet 5 và 7.1, Sheet 7.3 bỏ method/path HTTP); (5) phát hiện và ghi Câu hỏi mở Q4 mới — schema chưa có cột lưu `overallScore`/`feedbackSummary` tổng hợp | 2026/09/24 | Nhóm phát triển AlgoPrep |
+| V0.3 | Sheet 8, 9 | Bổ sung toast khi kết thúc phiên (EVT-14, EVT-18) và đổi báo hết hạn mức khi bắt đầu phiên sang toast; giữ nguyên nút Thử tải lại và popup xác nhận dừng sớm. Theo `DEC-2026-1003-toast-feedback-channel`. | 2026/10/03 | AI |
 
 ---
 
@@ -368,11 +369,11 @@ Màn hình thay đổi bố cục linh hoạt theo 3 trạng thái:
 | 11 | Giao diện | Bấm Xem đề & mã | Bấm nút mở drawer tham khảo. | Không | Không | - | [Các bước]<br>1. Mở drawer hiển thị đề bài và mã nguồn gốc. |
 | 12 | Giao diện | Bấm Đóng drawer | Bấm nút đóng drawer. | Không | Không | - | [Các bước]<br>1. Đóng drawer trở lại khung chat. |
 | 13 | Nhập liệu | Nhập tin nhắn | Gõ vào ô nhập câu trả lời. | Không | Không | - | [Các bước]<br>1. Cập nhật state input; nếu có ký tự thì mở khóa nút Gửi. |
-| 14 | Hành động | Bấm Gửi câu trả lời | Gửi câu trả lời của người học qua SSE. | Không | Có | `SendInterviewAnswerStream` | [Các bước]<br>1. Thêm bubble tin nhắn của người học vào timeline.<br>2. Xóa trắng ô nhập.<br>3. Khóa ô nhập và nút gửi.<br>4. Mở kết nối SSE nhận stream phản hồi từ AI.<br>5. Append từng token vào bubble tin nhắn của AI.<br>6. Khi stream kết thúc: mở khóa ô nhập, tăng số lượt hỏi.<br>7. Nếu đạt `maxTurns`: tự động kích hoạt `CompleteInterviewSession`. |
+| 14 | Hành động | Bấm Gửi câu trả lời | Gửi câu trả lời của người học qua SSE. | Không | Có | `SendInterviewAnswerStream` | [Các bước]<br>1. Thêm bubble tin nhắn của người học vào timeline.<br>2. Xóa trắng ô nhập.<br>3. Khóa ô nhập và nút gửi.<br>4. Mở kết nối SSE nhận stream phản hồi từ AI.<br>5. Append từng token vào bubble tin nhắn của AI.<br>6. Khi stream kết thúc: mở khóa ô nhập, tăng số lượt hỏi.<br>7. Nếu đạt `maxTurns`: tự động kích hoạt `CompleteInterviewSession`; khi sang màn kết quả thì hiện toast thành công "Phiên phỏng vấn đã kết thúc. Kết quả đánh giá đã sẵn sàng." [Nguồn: 05-coding/frontend/src/views/users/mock-interview/ui/mock-interview-view.tsx:46-50]. |
 | 15 | Hành động | Bấm Xin gợi ý | Yêu cầu AI gợi ý hướng tư duy. | Không | Có | `RequestInterviewHint` | [Các bước]<br>1. Gửi yêu cầu gợi ý lên máy chủ.<br>2. AI trả về tin nhắn gợi ý đóng khung đặc biệt trong timeline. |
 | 16 | Giao diện | Bấm Dừng phỏng vấn | Bấm nút kết thúc sớm. | Không | Không | - | [Các bước]<br>1. Mở popup xác nhận `earlyExitModal`. |
 | 17 | Giao diện | Huỷ dừng sớm | Bấm "Tiếp tục" trong popup. | Không | Không | - | [Các bước]<br>1. Đóng popup, tiếp tục phiên phỏng vấn. |
-| 18 | Hành động | Xác nhận dừng sớm | Bấm "Kết thúc & Chấm điểm" trong popup. | Không | Có | `CompleteInterviewSession` | [Các bước]<br>1. Đóng popup.<br>2. Gọi `CompleteInterviewSession` chấm điểm các lượt đã có.<br>3. Chuyển state màn hình sang `result`. |
+| 18 | Hành động | Xác nhận dừng sớm | Bấm "Kết thúc & Chấm điểm" trong popup. | Không | Có | `CompleteInterviewSession` | [Các bước]<br>1. Đóng popup.<br>2. Gọi `CompleteInterviewSession` chấm điểm các lượt đã có.<br>3. Chuyển state màn hình sang `result`, hiện cùng toast kết thúc phiên như EVT-14 (chỉ một toast cho mỗi lần kết thúc, dù kết thúc bằng đường nào) [Nguồn: 05-coding/frontend/src/views/users/mock-interview/ui/mock-interview-view.tsx:46-50]. |
 | 19 | Hành động | Bấm Luyện tập lại | Bấm nút Luyện tập lại ở màn kết quả. | Không | Không | - | [Các bước]<br>1. Reset toàn bộ state phiên chat.<br>2. Chuyển màn hình về trạng thái `entry`. |
 | 20 | Điều hướng | Bấm Về danh sách | Bấm nút Về trang bài toán. | Có | Không | - | [Các bước]<br>1. Điều hướng về `problem_list` (`USR0101`). |
 
@@ -383,7 +384,7 @@ Màn hình thay đổi bố cục linh hoạt theo 3 trạng thái:
 | NO | Loại | Tóm tắt kiểm | Chi tiết | Mức | Mã thông báo | Ghi chú | EVT gọi | Thứ tự |
 | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: |
 | 1 | Kiểm quyền | Phải đăng nhập | [Nội dung kiểm] Học viên chưa đăng nhập không được mở phiên phỏng vấn.<br>[Nơi thực thi] Giao diện và API gateway.<br>[Tiêu điểm] Toàn màn. | Lỗi | Chưa có mã thông báo | Nội dung "Vui lòng đăng nhập để bắt đầu phỏng vấn giả lập." | EVT-1, EVT-10 | 1 |
-| 2 | Kiểm nghiệp vụ | Hạn mức ngân sách token | [Nội dung kiểm] Kiểm tra hạn mức token AI của học viên trước khi bắt đầu phiên (F5-25). Nếu đã chạm trần, thông báo và từ chối tạo phiên.<br>[Nơi thực thi] Máy chủ.<br>[Tiêu điểm] Nút Bắt đầu. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn đã đạt giới hạn sử dụng AI hôm nay. Vui lòng quay lại vào ngày mai." | EVT-10 | 2 |
+| 2 | Kiểm nghiệp vụ | Hạn mức ngân sách token | [Nội dung kiểm] Kiểm tra hạn mức token AI của học viên trước khi bắt đầu phiên (F5-25). Nếu đã chạm trần, từ chối tạo phiên và báo bằng toast.<br>[Nơi thực thi] Máy chủ.<br>[Tiêu điểm] Toast; nút Bắt đầu. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn đã đạt giới hạn sử dụng AI hôm nay. Vui lòng quay lại vào ngày mai." | EVT-10 | 2 |
 | 3 | Kiểm nghiệp vụ | Bắt buộc chọn câu hỏi / chủ đề | [Nội dung kiểm] Không cho phép bấm bắt đầu khi chưa chọn bài nộp, chưa chọn câu hỏi hoặc chưa tick chủ đề.<br>[Nơi thực thi] Màn hình.<br>[Tiêu điểm] Nút Bắt đầu. | Cảnh báo | Chưa có mã thông báo | Nội dung "Vui lòng chọn một bài nộp, câu hỏi hoặc chủ đề để phỏng vấn." | EVT-10 | 1 |
 | 4 | Kiểm nghiệp vụ | Chống tấn công Prompt Injection | [Nội dung kiểm] Kiểm tra nội dung câu trả lời của học viên; ngăn chặn các chỉ thị ghi đè prompt hệ thống (F5-17).<br>[Nơi thực thi] Máy chủ tầng AI gateway.<br>[Tiêu điểm] Ô nhập tin nhắn. | Lỗi | Mã lỗi trong phản hồi | Bảo vệ an toàn mô hình ngôn ngữ lớn. | EVT-14 | 1 |
 | 5 | Kiểm nghiệp vụ | Xử lý đứt kết nối SSE giữa chừng | [Nội dung kiểm] Nếu kết nối SSE stream bị đứt trong khi AI đang trả lời, màn hình hiển thị nút "Thử tải lại câu trả lời" đọc từ Redis cache.<br>[Nơi thực thi] Màn hình.<br>[Tiêu điểm] Khung chat. | Cảnh báo | Không có thông báo | Giữ trải nghiệm liền mạch cho học viên khi mạng chập chờn. | EVT-14 | 2 |

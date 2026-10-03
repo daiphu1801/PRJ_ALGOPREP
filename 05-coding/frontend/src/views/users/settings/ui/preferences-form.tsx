@@ -5,6 +5,7 @@
 "use client";
 
 import { useT } from "@/shared/i18n";
+import { toast } from "@/shared/lib/toast-store";
 import { Button, Card, EmptyState, ErrorState, SegmentedTabs, SettingRow, Skeleton, Toggle } from "@/shared/ui";
 import { useInterviewPreferences, useMySettings } from "@/entities/user";
 import { useAccountPreferences } from "@/features/update-account-preferences";
@@ -58,10 +59,19 @@ function Body({
   interviewDegraded: boolean;
 }) {
   const t = useT("settings");
-  const { draft, dirty, isSaving, justSaved, interviewPreferencesWarning, setWorkspace, setNotifications, setInterview, set, save } =
+  const { draft, dirty, isSaving, setWorkspace, setNotifications, setInterview, set, save } =
     useAccountPreferences(settings, interview ?? { maxTurnsPerSession: "12", hintAllowed: true });
 
-  const statusText = justSaved ? t("saveBar.statusSaved") : dirty ? t("saveBar.statusDirty") : t("saveBar.statusIdle");
+  async function handleSave() {
+    try {
+      const { settingsOk, interviewOk } = await save();
+      if (settingsOk && interviewOk) toast.success(t("saveBar.saved"));
+      else if (settingsOk) toast.warning(t("interview.saveFailedWarning"));
+      else toast.error(t("saveBar.saveFailed"));
+    } catch {
+      toast.error(t("saveBar.saveFailed"));
+    }
+  }
 
   return (
     <div className="flex flex-col gap-3.5">
@@ -162,12 +172,9 @@ function Body({
       </Card>
 
       <Card title={t("saveBar.title")}>
-        <p className="mb-3 text-sm text-[var(--color-text-muted)]">{statusText}</p>
-        {interviewPreferencesWarning ? (
-          <p className="mb-3 text-xs text-[var(--color-danger)]">{t("interview.saveFailedWarning")}</p>
-        ) : null}
-        <Button className="w-full" onClick={() => void save()} disabled={!dirty || isSaving} aria-busy={isSaving || undefined}>
-          {justSaved ? t("saveBar.saved") : t("saveBar.save")}
+        <p className="mb-3 text-sm text-[var(--color-text-muted)]">{t("saveBar.statusIdle")}</p>
+        <Button className="w-full" onClick={() => void handleSave()} disabled={!dirty || isSaving} aria-busy={isSaving || undefined}>
+          {t("saveBar.save")}
         </Button>
       </Card>
     </div>

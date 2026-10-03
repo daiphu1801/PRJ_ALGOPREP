@@ -23,6 +23,7 @@ import {
   type SolveState,
 } from "@/entities/problem";
 import { useT } from "@/shared/i18n";
+import { toast } from "@/shared/lib/toast-store";
 import {
   Badge,
   Button,
@@ -96,10 +97,17 @@ export function ProblemListView() {
   const visible = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   function pickRandom() {
-    if (filtered.length === 0) return;
     const problem = filtered[Math.floor(Math.random() * filtered.length)];
-    if (!problem) return;
+    if (!problem) {
+      toast.warning(t("toast.randomEmpty"));
+      return;
+    }
     router.push(`/problems/${problem.id}`);
+  }
+
+  // The list filters live while typing (no toast per keystroke); Enter is the explicit search.
+  function announceSearch() {
+    toast.info(filtered.length > 0 ? t("toast.searchResult", { count: filtered.length }) : t("toast.searchEmpty"));
   }
 
   const columns: DataTableColumn<ProblemListItem>[] = [
@@ -258,6 +266,9 @@ export function ProblemListView() {
               onChange={(event) => {
                 setQuery(event.target.value);
                 resetToFirstPage();
+              }}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") announceSearch();
               }}
               wrapperClassName="min-w-[220px] flex-1"
             />

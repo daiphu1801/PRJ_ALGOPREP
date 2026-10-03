@@ -80,6 +80,9 @@ Bổ sung khía cạnh bảo mật của mục kiểm soát chi phí đã thiế
   `admin_ai_config` — một vai trò được cấp `AI_CONFIG:UPDATE` (sửa prompt) không tự động có
   `AI_TOKEN_BUDGET:UPDATE` (mở khoá ngân sách) trừ khi ma trận cấp riêng cả hai. Đây là chủ ý của F1-12
   tách hai Function, không phải sơ suất — kiểm cả hai độc lập ở tầng `@PreAuthorize`.
+- **Ngưỡng cảnh báo ngân sách và đơn giá token theo mô hình do `AI_CONFIG` gác** (owner chốt 2026-10-02,
+  `ADM0301` Q10), không phải `AI_TOKEN_BUDGET`. Màn `admin_ai_usage` chỉ đọc hai giá trị này để hiển thị;
+  hạn mức token (`limit_tokens`) và đánh dấu cảnh báo bất thường vẫn gác bởi `AI_TOKEN_BUDGET`.
 - **`ai_usage_anomaly_alerts` chỉ đọc/đánh dấu `REVIEWED` — không có endpoint nào tự động khoá tài khoản
   từ bảng này** (`DEC-2026-0831-ai-usage-anomaly-alert`) — nếu `ADMIN` quyết định khoá sau khi xem cảnh
   báo, đó là một hành động riêng qua `USER_MANAGEMENT` (khoá tài khoản, F1-13), không phải một hiệu ứng

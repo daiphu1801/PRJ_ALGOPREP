@@ -5,8 +5,8 @@
 // action bar, a sortable table and numbered paging (:175-250).
 //
 // Shared screen: A2 and A3 both use it, mounted at /instructor and /admin
-// (DEC-2026-0825-shared-content-authoring-screens). This build wires the /admin route only —
-// /instructor gets its own route when the instructor area is built.
+// (DEC-2026-0825-shared-content-authoring-screens). `basePath` is the area's problems root
+// ("/admin/problems" or "/instructor/problems"), so row links stay inside the area they were opened from.
 //
 // TWO lifecycle states, not three. DEC-2026-0830-problem-lifecycle-two-states drops "Đã ẩn"; the
 // mockup still has it on row #987 and inside a bulk action labelled "Xuất bản / ẩn". The filter
@@ -32,6 +32,7 @@ import {
 } from "@/entities/problem";
 import { useT } from "@/shared/i18n";
 import { usePersistedPageSize } from "@/shared/lib";
+import { toast } from "@/shared/lib/toast-store";
 import {
   Badge,
   Button,
@@ -63,15 +64,18 @@ const STATUS_COLOR_VAR: Record<ProblemStatus, string> = {
 // 8 is the default, 20 and 50 the other choices (SHR0201 Q4).
 const PAGE_SIZES = [8, 20, 50] as const;
 
+type BulkAction = "publish" | "changeDifficulty" | "assignTopic" | "duplicate" | "exportCsv";
 type DifficultyFilter = Difficulty | "all";
 type StatusFilter = ProblemStatus | "all";
 
 type Props = {
+  /** Area root for row links and the create button, e.g. "/admin/problems". */
+  basePath: string;
   /** Topic management is ADMIN-only; the screen is shared with INSTRUCTOR, who may only pick topics. */
   canManageTopics?: boolean;
 };
 
-export function ProblemManagementView({ canManageTopics = false }: Props) {
+export function ProblemManagementView({ basePath, canManageTopics = false }: Props) {
   const t = useT("problemManagement");
   const [page] = useState(fetchAdminProblemPage);
   const topicList = useProblemTopics();
@@ -137,6 +141,32 @@ export function ProblemManagementView({ canManageTopics = false }: Props) {
     return counts;
   }, [page.problems, deletedCodes]);
 
+  // Live filtering stays silent; only an explicit submit (Enter) reports the result count.
+  function announceSearch() {
+    toast.info(
+      filtered.length === 0
+        ? t("toast.searchEmpty")
+        : t("toast.searchResult", { count: filtered.length }),
+    );
+  }
+
+  function runBulk(action: BulkAction) {
+    const count = selected.size;
+    if (action === "changeDifficulty" || action === "assignTopic") {
+      // ponytail: prototype has no picker dialog for these two yet, so the click only explains that.
+      toast.info(t("toast.bulkNeedsChoice"));
+      return;
+    }
+    toast.success(t(`toast.bulk.${action}`, { count }));
+  }
+
+  function deleteSelected() {
+    const count = selected.size;
+    setDeletedCodes((previous) => new Set([...previous, ...selected]));
+    setSelected(new Set());
+    toast.success(t("toast.bulk.delete", { count }));
+  }
+
   const visible = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   function toggleRow(code: string) {
@@ -163,7 +193,7 @@ export function ProblemManagementView({ canManageTopics = false }: Props) {
       sortable: true,
       render: (problem) => (
         <Link
-          href={`/admin/problems/${problem.code.replace("#", "")}`}
+          href={`${basePath}/${problem.code.replace("#", "")}`}
           className="block truncate font-semibold hover:underline"
         >
           {problem.title}
@@ -256,7 +286,7 @@ export function ProblemManagementView({ canManageTopics = false }: Props) {
             icon={Pencil}
             label={t("edit")}
             ariaLabel={t("editProblem", { title: problem.title })}
-            href={`/admin/problems/${problem.code.replace("#", "")}`}
+            href={`${basePath}/${problem.code.replace("#", "")}/edit`}
           />
           <IconAction
             icon={Trash2}
@@ -292,7 +322,7 @@ export function ProblemManagementView({ canManageTopics = false }: Props) {
               </Button>
             ) : null}
             <Button asChild variant="cta" size="sm">
-              <Link href="/admin/problems/new">{t("newProblem")}</Link>
+              <Link href={`${basePath}/new`}>{t("newProblem")}</Link>
             </Button>
           </>
         }
@@ -309,6 +339,9 @@ export function ProblemManagementView({ canManageTopics = false }: Props) {
             onChange={(event) => {
               setQuery(event.target.value);
               setCurrentPage(1);
+            }}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") announceSearch();
             }}
             wrapperClassName="min-w-[220px] flex-1"
           />
@@ -351,13 +384,14 @@ export function ProblemManagementView({ canManageTopics = false }: Props) {
             </span>
             <span className="ml-auto flex flex-wrap gap-2">
               {/* "Xuất bản", not the mockup's "Xuất bản / ẩn": hiding is no longer a state. */}
-              {(["publish", "changeDifficulty", "assignTopic", "duplicate", "exportCsv"] as const).map(
+              {(["publish", "changeDifficulty", "assignTopic", "duplicate", "exportCsv"] as const satisfies readonly BulkAction[]).map(
                 (action) => (
                   <Button
                     key={action}
                     variant="ghost"
                     size="sm"
                     className="border border-[var(--color-border)]"
+                    onClick={() => runBulk(action)}
                   >
                     {t(`bulk.${action}`)}
                   </Button>
@@ -367,7 +401,7 @@ export function ProblemManagementView({ canManageTopics = false }: Props) {
                 variant="ghost"
                 size="sm"
                 className="text-[var(--color-admin-negative)]"
-                onClick={() => setSelected(new Set())}
+                onClick={deleteSelected}
               >
                 {t("bulk.delete")}
               </Button>
@@ -512,6 +546,11 @@ export function ProblemManagementView({ canManageTopics = false }: Props) {
           usage: (count) => t("topicManager.usage", { count }),
           deleteBlocked: (count) => t("topicManager.deleteBlocked", { count }),
           error: { empty: t("topicManager.error.empty"), duplicate: t("topicManager.error.duplicate") },
+          done: {
+            add: t("topicManager.done.add"),
+            rename: t("topicManager.done.rename"),
+            remove: t("topicManager.done.remove"),
+          },
         }}
       />
 
@@ -521,6 +560,7 @@ export function ProblemManagementView({ canManageTopics = false }: Props) {
         onConfirm={() => {
           if (pendingDelete) {
             setDeletedCodes((previous) => new Set(previous).add(pendingDelete.code));
+            toast.success(t("toast.deleted", { title: pendingDelete.title }));
           }
           setPendingDelete(null);
         }}

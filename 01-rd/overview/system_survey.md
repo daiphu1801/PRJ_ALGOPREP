@@ -536,10 +536,12 @@ khu Giảng viên vẫn giữ layout riêng khỏi khu Admin cho các màn khôn
 | Slug | Tên màn | Chức năng chính | Bounded Context liên quan | Mount ở |
 | :--- | :--- | :--- | :--- | :--- |
 | `auth` | Đăng nhập và đăng ký | F1-01, F1-02, F1-15, F1-17 | `identity` | `/login`, `/register` — mọi vai trò đi qua màn này trước khi vào hệ thống |
-| `problem_authoring` | Soạn bài toán và đặc tả hàm (đề bài, chữ ký hàm, chiến lược so khớp, testcase — gồm cả `testcase_management` đã gộp vào, xem dưới) | F2-01 tới F2-09, F2-14 | `problem-bank`, `harness` | `/instructor/problems/[id]`, `/admin/problems/[id]` |
+| `problem_authoring` | Soạn bài toán và đặc tả hàm (đề bài, chữ ký hàm, chiến lược so khớp, testcase — gồm cả `testcase_management` đã gộp vào, xem dưới) | F2-01 tới F2-09, F2-14 | `problem-bank`, `harness` | `/instructor/problems/[id]/edit`, `/admin/problems/[id]/edit`, `/instructor/problems/new`, `/admin/problems/new` (cập nhật 2026-10-02, khu Giảng viên 2026-10-03) |
+| `problem_info` | Chi tiết bài tập, chỉ đọc — URL gốc của bản ghi, có nút sang màn soạn (thêm 2026-10-02, `DEC-2026-1002-split-detail-and-edit-pages`) | F2-01, F2-02, F2-05, F2-06, F2-10, F2-14, F2-15, F2-18 | `problem-bank` | `/instructor/problems/[id]`, `/admin/problems/[id]`. **RD: `01-rd/screens/shared/SHR0203_problem_info.md`.** Chưa có prototype `[Đợi nextjs]` |
 | `problem_management` | Quản lý bài tập — bảng quản trị nội dung, cửa vào `problem_authoring` (đổi tên từ `admin_problem_management`) | F2-01 tới F2-04, F2-14 | `problem-bank`, `harness` | `/instructor/problems`, `/admin/problems` |
 | `interview_question_management` | Quản lý ngân hàng câu hỏi phỏng vấn (đổi tên từ `admin_interview_question_management`) | F6-12, F6-13 | `interview-bank` | `/instructor/interview-questions`, `/admin/interview-questions` |
-| `interview_question_authoring` | Soạn/sửa một câu hỏi phỏng vấn (nội dung, câu hỏi đào sâu, tiêu chí đánh giá có trọng số) — trả lời Q4 của `interview_question_management.md`, gắn mã `F6-13` | F6-13 | `interview-bank` | `/instructor/interview-questions/[id]`, `/admin/interview-questions/[id]` (chốt 2026-09-01). **RD: `01-rd/screens/shared/SHR0302_interview_question_authoring.md` (viết 2026-09-01). Chưa có prototype `[Đợi nextjs]`** |
+| `interview_question_authoring` | Soạn/sửa một câu hỏi phỏng vấn (nội dung, câu hỏi đào sâu, tiêu chí đánh giá có trọng số) — trả lời Q4 của `interview_question_management.md`, gắn mã `F6-13` | F6-13 | `interview-bank` | `/instructor/interview-questions/[id]/edit`, `/admin/interview-questions/[id]/edit`, `/instructor/interview-questions/new`, `/admin/interview-questions/new` (chốt 2026-09-01, đổi 2026-10-02 cho Admin và 2026-10-03 cho Giảng viên). **RD: `01-rd/screens/shared/SHR0302_interview_question_authoring.md` (viết 2026-09-01). Chưa có prototype `[Đợi nextjs]`** |
+| `interview_question_info` | Chi tiết câu hỏi phỏng vấn, chỉ đọc — URL gốc của bản ghi, có nút sang màn soạn (thêm 2026-10-02, `DEC-2026-1002-split-detail-and-edit-pages`) | F6-01, F6-08, F6-13 | `interview-bank` | `/instructor/interview-questions/[id]`, `/admin/interview-questions/[id]`. **RD: `01-rd/screens/shared/SHR0303_interview_question_info.md`.** Chưa có prototype `[Đợi nextjs]` |
 
 **`testcase_management` không còn là slug riêng** — đã gộp hoàn toàn vào `problem_authoring` (chốt
 2026-08-25); phiên bản bộ testcase (F2-09) là panel trong tab Testcase, không tách màn hay hộp thoại riêng.
@@ -555,6 +557,11 @@ người học **12 slug**; tổng không đổi.
 **Cập nhật 2026-08-30 (`DEC-2026-0830-interview-bank-crud`):** thêm slug mới `interview_question_authoring`
 — trả lời Q2-Q7 của `interview_question_management.md` một lượt (cấp `F6-13`, CRUD kho câu hỏi dùng chung).
 Chưa có prototype. Khu dùng chung 3 → 4 slug, tổng 30 → 31 màn.
+
+**Cập nhật 2026-10-02 (`DEC-2026-1002-split-detail-and-edit-pages`):** thêm hai slug chỉ đọc `problem_info` (`SHR0203`) và
+`interview_question_info` (`SHR0303`); URL gốc của bản ghi là trang chỉ đọc, màn soạn chuyển xuống `/edit`. Khu dùng chung
+5 → 7 slug, tổng 31 → 33 màn. Khu Admin dựng ngày 2026-10-02, khu Giảng viên ngày 2026-10-03 (cùng khuôn, cùng view). Hai hàng bảng ở mục
+7.0 cập nhật cho đúng.
 
 ### 7.1. Khu vực người học
 

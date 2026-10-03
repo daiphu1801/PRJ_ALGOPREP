@@ -26,6 +26,7 @@ import {
   type ManualGradingItem,
 } from "@/entities/manual-grading";
 import { useT } from "@/shared/i18n";
+import { toast, toastFirstError } from "@/shared/lib/toast-store";
 import { Badge, Button, Card, DataTable, Modal, PageHeader, SegmentedTabs, TextArea, TextField, type DataTableColumn } from "@/shared/ui";
 
 export function InstructorGradingView() {
@@ -132,11 +133,30 @@ export function InstructorGradingView() {
 function GradeDialog({ item, onClose, t }: { item: ManualGradingItem | null; onClose: () => void; t: ReturnType<typeof useT> }) {
   const [score, setScore] = useState("");
   const [comment, setComment] = useState("");
+  const [touched, setTouched] = useState(false);
   const saveGrade = useSaveManualGrade();
 
   if (!item) return null;
 
   const scoreValue = Number(score || item.manualScore || "");
+  const scoreInvalid = Number.isNaN(scoreValue) || scoreValue < 0 || scoreValue > 10;
+
+  function save() {
+    if (!item) return;
+    setTouched(true);
+    if (scoreInvalid) {
+      toastFirstError([t("validation.scoreRange")]);
+      return;
+    }
+    saveGrade.mutate(
+      { id: item.id, score: scoreValue, comment: comment || item.manualComment || "" },
+      {
+        onSuccess: () => toast.success(t("toast.saved", { student: item.studentName })),
+        onError: () => toast.error(t("toast.failed")),
+      },
+    );
+    onClose();
+  }
 
   return (
     <Modal
@@ -148,14 +168,7 @@ function GradeDialog({ item, onClose, t }: { item: ManualGradingItem | null; onC
           <Button variant="ghost" size="sm" onClick={onClose}>
             {t("popup.btnCancel")}
           </Button>
-          <Button
-            size="sm"
-            disabled={Number.isNaN(scoreValue) || scoreValue < 0 || scoreValue > 10}
-            onClick={() => {
-              saveGrade.mutate({ id: item.id, score: scoreValue, comment: comment || item.manualComment || "" });
-              onClose();
-            }}
-          >
+          <Button size="sm" onClick={save}>
             {t("popup.btnSave")}
           </Button>
         </>
@@ -172,6 +185,7 @@ function GradeDialog({ item, onClose, t }: { item: ManualGradingItem | null; onC
           max={10}
           step={0.5}
           defaultValue={item.manualScore ?? undefined}
+          invalid={touched && scoreInvalid}
           onChange={(event) => setScore(event.target.value)}
         />
         <TextArea label={t("popup.commentInput")} defaultValue={item.manualComment ?? ""} onChange={(event) => setComment(event.target.value)} />

@@ -29,6 +29,7 @@ import {
   type AdminUserStatus,
 } from "../api";
 import { useT } from "@/shared/i18n";
+import { toast } from "@/shared/lib/toast-store";
 import { checkLock } from "../model/guards";
 import { AddAccountDialog } from "./add-account-dialog";
 import {
@@ -36,7 +37,6 @@ import {
   Button,
   Card,
   ConfirmDialog,
-  Modal,
   DataTable,
   PageHeader,
   Pagination,
@@ -106,6 +106,12 @@ export function AdminUserManagementView() {
       else next.add(key);
       return next;
     });
+  }
+
+  function requestBulkLock() {
+    // "At least one active ADMIN always remains" is a hard block; locking yourself only warns.
+    if (lockCheck.blockedLastAdmin) toast.warning(t("lockBlockedBody"));
+    else setConfirmingLock(true);
   }
 
   function toggleAll(selectAll: boolean) {
@@ -243,16 +249,26 @@ export function AdminUserManagementView() {
               {t("selectionLabel", { count: selected.size })}
             </span>
             <span className="ml-auto flex flex-wrap gap-2">
-              <Button variant="ghost" size="sm" className="border border-[var(--color-border)]">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="border border-[var(--color-border)]"
+                onClick={() => toast.success(t("bulkResetDone", { count: selected.size }))}
+              >
                 {t("bulkResetPassword")}
               </Button>
-              <Button variant="ghost" size="sm" className="border border-[var(--color-border)]">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="border border-[var(--color-border)]"
+                onClick={() => toast.success(t("bulkRoleDone", { count: selected.size }))}
+              >
                 {t("bulkChangeRole")}
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setConfirmingLock(true)}
+                onClick={requestBulkLock}
                 className="text-[var(--color-admin-negative)]"
               >
                 {t("bulkLock")}
@@ -327,27 +343,8 @@ export function AdminUserManagementView() {
         onCreate={(user) => setAccounts((previous) => [user, ...previous])}
       />
 
-      {/* "At least one active ADMIN always remains" is a hard block; locking yourself only warns. */}
-      <Modal
-        open={confirmingLock && lockCheck.blockedLastAdmin}
-        onClose={() => setConfirmingLock(false)}
-        title={t("lockBlockedTitle")}
-        footer={
-          <Button
-            variant="ghost"
-            size="sm"
-            className="border border-[var(--color-border)]"
-            onClick={() => setConfirmingLock(false)}
-          >
-            {t("lockBlockedClose")}
-          </Button>
-        }
-      >
-        <p className="text-[13px]">{t("lockBlockedBody")}</p>
-      </Modal>
-
       <ConfirmDialog
-        open={confirmingLock && !lockCheck.blockedLastAdmin}
+        open={confirmingLock}
         onClose={() => setConfirmingLock(false)}
         onConfirm={() => {
           // No endpoint yet — the rows flip to locked locally and the selection clears.
@@ -356,6 +353,7 @@ export function AdminUserManagementView() {
               selected.has(account.email) ? { ...account, status: "locked" } : account,
             ),
           );
+          toast.success(t("bulkLockDone", { count: selected.size }));
           setSelected(new Set());
           setConfirmingLock(false);
         }}

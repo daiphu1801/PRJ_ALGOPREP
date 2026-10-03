@@ -28,6 +28,7 @@ Cốt lõi F2-01, F2-02, F2-15, F2-16.
 | `updated_by` | FK → user (tham chiếu id, không FK cứng liên schema) | F2-10 amendment Q7(g) — trường phẳng, không phải audit trail đầy đủ |
 | `created_at` / `updated_at` | TIMESTAMPTZ | `updated_at` dùng cho ngưỡng "chưa xuất bản quá 7 ngày" |
 | `published_at` | TIMESTAMPTZ nullable | Mốc xuất bản lần gần nhất |
+| `ai_testcase_generations_used` | INT NOT NULL default 0 | Bổ sung 2026-10-03 (`DEC-2026-1003-ai-testcase-generation-quota`, `SHR0202` Q17 và Q18): số lần "Sinh tự động" (F2-14) đã chạy **thành công** cho bài này. Chỉ lần thêm được ít nhất 1 testcase nháp mới cộng; lần lỗi không cộng, duyệt hoặc loại nháp không hoàn lại. Bộ đếm do máy chủ giữ, client không đếm. Mốc trần là tham số ADMIN toàn hệ thống (`ADM0301` Khu vực H, nơi lưu: `ADM0301` Q12), không lưu ở bảng này |
 
 `[SoT: Suy luận]` — `updated_by` tham chiếu `user_id` bên schema `identity` nhưng **không đặt FOREIGN KEY
 vật lý xuyên schema** (đúng nguyên tắc modular monolith — mỗi schema độc lập migration); ràng buộc toàn vẹn
@@ -182,6 +183,7 @@ khác** — ràng buộc ở tầng ứng dụng/security, không phải chỉ �
 | `max_submissions_per_hour` mặc định khi A2 không khai | 60 lần/giờ | RD chỉ xác nhận trường tồn tại (`DEC-2026-0831-problem-authoring-round2`), không nêu số — BD đề xuất |
 | Cache `problem:list` TTL | 60 giây | RD/dependency-map xác nhận có cache, không nêu TTL |
 | Danh mục `difficulty` | `EASY`/`MEDIUM`/`HARD` | RD chỉ nói "phân loại theo độ khó" (F2-02), không liệt kê tên |
+| Số lần sinh testcase AI tối đa mỗi bài | 2, ADMIN cấu hình | Chủ dự án 2026-10-03 (`DEC-2026-1003-ai-testcase-generation-quota`); RD F2-14 không nêu giới hạn lần |
 
 ## 6. Việc còn mở — chuyển sang DD
 

@@ -27,6 +27,7 @@ import {
   type WorkerStatus,
 } from "../api";
 import { useT } from "@/shared/i18n";
+import { toast } from "@/shared/lib/toast-store";
 import { queueSettings } from "../model/settings";
 import {
   Badge,
@@ -172,7 +173,7 @@ export function AdminQueueMonitorView() {
             >
               {t("params.open")}
             </Button>
-            <Button variant="cta" size="sm">
+            <Button variant="cta" size="sm" onClick={() => toast.success(t("refreshDone"))}>
               {t("refresh")}
             </Button>
           </>
@@ -229,7 +230,10 @@ export function AdminQueueMonitorView() {
                   <Toggle
                     checked={controls[key]}
                     onCheckedChange={(value) =>
-                      setControls((previous) => ({ ...previous, [key]: value }))
+                      {
+                        setControls((previous) => ({ ...previous, [key]: value }));
+                        toast.success(t(`control.${key}.${value ? "doneOn" : "doneOff"}`));
+                      }
                     }
                     label={t(`control.${key}.label`)}
                   />
@@ -277,7 +281,7 @@ export function AdminQueueMonitorView() {
             latencyCapSeconds: Number(values.latencyCapSeconds),
           })
         }
-        labels={{ save: t("params.save"), cancel: t("params.cancel"), errorMin: (min) => t("params.errorMin", { min }) }}
+        labels={{ save: t("params.save"), cancel: t("params.cancel"), saved: t("params.saved"), errorMin: (min) => t("params.errorMin", { min }) }}
       />
 
       <Card

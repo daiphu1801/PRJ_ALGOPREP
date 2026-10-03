@@ -47,11 +47,11 @@
 | Tên vật lý (slug) | `class_assignments` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A2 (`INSTRUCTOR`) |
-| Phiên bản | V0.1 |
+| Phiên bản | V0.2 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/21 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/09/21 |
+| Ngày cập nhật | 2026/10/03 |
 
 ---
 
@@ -60,6 +60,7 @@
 | Ver | Sheet bị sửa | Nội dung sửa | Ngày | Người sửa |
 | :--- | :--- | :--- | :--- | :--- |
 | V0.1 | Toàn bộ | Tạo mới theo mẫu 9 sheet. Chốt nguồn dữ liệu của mọi trường hiển thị, ánh xạ về `problem.class_assignments` / `problems` / `problem_stats`. Thiết kế bổ sung hành động gỡ bài khỏi lớp (ẩn mềm) theo `DEC-2026-0831-class-assignments-round2` mà prototype chưa dựng. Phát sinh 10 câu hỏi mở | 2026/09/21 | Nhóm phát triển AlgoPrep |
+| V0.2 | 1, 8, 9 | Áp `DEC-2026-1003-toast-feedback-channel`: kết quả gỡ bài và lỗi gọi máy chủ ghi là toast, bỏ cụm "lỗi trên màn chính" | 2026-10-03 | AI |
 
 ---
 
@@ -468,7 +469,7 @@ gọi lại đúng tên, không đặt tên mới. Endpoint 5 hỏng thì màn v
 | 5 | Liên kết | Mở chi tiết bài tập | Bấm "Chi tiết" trên một dòng. | Có | Không | - | [Các bước]<br>1. Điều hướng sang `problem_detail` kèm `id` bài toán.<br>[Khi thành công] Mở màn chi tiết ở chế độ xem. Đích là `problem_detail`, **không phải** màn câu hỏi phỏng vấn như liên kết cũ trong prototype [Nguồn: 01-rd/screens/teacher/INS0202_class_assignments.md:123]. |
 | 6 | Nút | Mở xác nhận gỡ bài | Bấm "Gỡ khỏi lớp" trên một dòng. | Không | Không | - | [Các bước]<br>1. Mở popup xác nhận kèm tên bài.<br>2. Tab đang lọc một lớp thì chọn sẵn lớp đó; tab là "Tất cả" và bài gán nhiều lớp thì hiển thị danh sách lớp để chọn.<br>[Khi thành công] Popup hiển thị cảnh báo bài sẽ ẩn khỏi danh sách được giao nhưng lịch sử nộp bài giữ nguyên. |
 | 7 | Danh sách | Chọn lớp cần gỡ | Chọn một lớp trong danh sách "Lớp cần gỡ" của popup. | Không | Không | - | [Các bước]<br>1. Ghi nhận lớp được chọn.<br>2. Kích hoạt nút "Gỡ khỏi lớp" trong popup.<br>[Khi thành công] Câu xác nhận cập nhật đúng tên lớp vừa chọn. Chưa chọn lớp nào thì nút xác nhận vẫn tắt. |
-| 8 | Nút | Xác nhận gỡ bài | Bấm "Gỡ khỏi lớp" trong popup xác nhận. | Không | Có | `RemoveClassAssignment` | [Các bước]<br>1. Gửi yêu cầu gỡ với cặp `problemId` và `classId`.<br>2. Đóng popup.<br>3. Gỡ tên lớp khỏi cột "Gán cho lớp"; không còn lớp nào thì gỡ luôn dòng khỏi bảng.<br>4. Tải lại dải thẻ số liệu và số kết quả.<br>[Khi xác nhận] Popup này chính là bước xác nhận; không gỡ khi chưa qua bước này.<br>[Khi thành công] Bài không còn hiện trong danh sách được giao của lớp đó; **lịch sử nộp bài, điểm và tiến độ của học viên giữ nguyên** [Nguồn: DEC-2026-0831-class-assignments-round2].<br>[Khi lỗi] Giữ nguyên dòng, đóng popup và hiển thị lỗi trên màn chính.<br>[Thông báo hoàn tất] "Đã gỡ bài khỏi lớp. Lịch sử làm bài của học viên vẫn được giữ." |
+| 8 | Nút | Xác nhận gỡ bài | Bấm "Gỡ khỏi lớp" trong popup xác nhận. | Không | Có | `RemoveClassAssignment` | [Các bước]<br>1. Gửi yêu cầu gỡ với cặp `problemId` và `classId`.<br>2. Đóng popup.<br>3. Gỡ tên lớp khỏi cột "Gán cho lớp"; không còn lớp nào thì gỡ luôn dòng khỏi bảng.<br>4. Tải lại dải thẻ số liệu và số kết quả.<br>[Khi xác nhận] Popup này chính là bước xác nhận; không gỡ khi chưa qua bước này.<br>[Khi thành công] Bài không còn hiện trong danh sách được giao của lớp đó; **lịch sử nộp bài, điểm và tiến độ của học viên giữ nguyên** [Nguồn: DEC-2026-0831-class-assignments-round2].<br>[Khi lỗi] Giữ nguyên dòng, đóng popup và hiện toast lỗi.<br>[Thông báo hoàn tất] Toast "Đã gỡ bài khỏi lớp. Lịch sử làm bài của học viên vẫn được giữ." |
 | 9 | Nút | Huỷ gỡ bài | Bấm "Huỷ", bấm ra ngoài hoặc nhấn phím thoát trong popup xác nhận. | Không | Không | - | [Các bước]<br>1. Đóng popup, xoá lựa chọn lớp tạm thời.<br>[Khi thành công] Bài vẫn được gán cho lớp, bảng không đổi. Popup không có dữ liệu nhập nên không cần hỏi xác nhận lần hai. |
 
 [Nguồn: 09-layoutBase/Giáo viên - Bài tập của tôi.dc.html:120,141,145,165,300; 01-rd/screens/teacher/INS0202_class_assignments.md:63-86,122-124; DEC-2026-0831-class-assignments-round2]
@@ -490,7 +491,7 @@ gọi lại đúng tên, không đặt tên mới. Endpoint 5 hỏng thì màn v
 | 6 | Kiểm nghiệp vụ | Bài đã bị gỡ ở phiên khác | [Nội dung kiểm] Dòng `class_assignments` đã có `removed_at` thì không gỡ lần nữa; coi là đã đạt kết quả mong muốn và yêu cầu tải lại bảng.<br>[Nơi thực thi] Máy chủ. | Cảnh báo | Mã lỗi trong phản hồi | Nội dung "Bài này đã được gỡ khỏi lớp trước đó. Đang tải lại danh sách." Thao tác phải **bất biến khi lặp** — dùng điều kiện `removed_at IS NULL` ngay trong lệnh cập nhật [Nguồn: 02-bd/database/problem-bank.md:125,127]. | EVT-8 | 2 |
 | 7 | Kiểm nghiệp vụ | Bài không còn xuất bản | [Nội dung kiểm] Bài đã rút xuất bản (`status = UNPUBLISHED`) hoặc đã ẩn mềm (`deleted = true`) vẫn hiện trong danh sách đã gán nhưng phải gắn nhãn cảnh báo, vì học viên không còn nhìn thấy bài đó.<br>[Nơi thực thi] Màn hình. | Cảnh báo | Chưa có mã thông báo | Nội dung "Bài này đã bị rút khỏi ngân hàng — học viên trong lớp không còn truy cập được." Hành vi đề xuất của BD `[Suy luận]`, xem Câu hỏi mở Q10 [Nguồn: 02-bd/database/problem-bank.md:18,19] | EVT-1 | 2 |
 | 8 | Kiểm nghiệp vụ | Phân hệ AI không khả dụng | [Nội dung kiểm] Gọi `ai-review` để lấy số "Cần chấm tay" thất bại thì vẫn hiển thị đầy đủ phần còn lại của màn.<br>[Nơi thực thi] Màn hình. | Cảnh báo | Chưa có mã thông báo | Hiển thị `-` tại thẻ, không hiện hộp lỗi. Bắt buộc theo nguyên tắc phân hệ AI suy giảm êm của dự án. | EVT-1 | 2 |
-| 9 | Kiểm nghiệp vụ | Lỗi hệ thống hoặc lỗi gọi máy chủ | [Nội dung kiểm] Gọi máy chủ thất bại hoặc trả lỗi nghiệp vụ thì dừng thao tác, giữ nguyên dữ liệu đang hiển thị.<br>[Nơi thực thi] Màn hình. | Lỗi | Mã lỗi trong phản hồi | Phản hồi có mã lỗi đã đăng ký thì hiển thị nội dung tương ứng; chưa đăng ký thì hiển thị "Không kết nối được máy chủ." | EVT-1, EVT-3, EVT-4, EVT-8 | 1 |
+| 9 | Kiểm nghiệp vụ | Lỗi hệ thống hoặc lỗi gọi máy chủ | [Nội dung kiểm] Gọi máy chủ thất bại hoặc trả lỗi nghiệp vụ thì dừng thao tác, giữ nguyên dữ liệu đang hiển thị.<br>[Nơi thực thi] Màn hình. | Lỗi | Mã lỗi trong phản hồi | Phản hồi có mã lỗi đã đăng ký thì hiển thị nội dung tương ứng; chưa đăng ký thì hiển thị "Không kết nối được máy chủ." Cả hai đều hiện bằng toast. | EVT-1, EVT-3, EVT-4, EVT-8 | 1 |
 
 Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 

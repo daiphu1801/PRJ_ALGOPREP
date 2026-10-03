@@ -39,6 +39,7 @@ import {
   type RecallLevel,
 } from "@/entities/interview-question";
 import { useT } from "@/shared/i18n";
+import { toast } from "@/shared/lib/toast-store";
 import { Badge, Button, Card, ConfirmDialog, EmptyState, NoticeTile, TextArea } from "@/shared/ui";
 
 // [SoT: Suy luận] — BD Sheet 9 NO 6 để ngỏ giới hạn độ dài cụ thể (Câu hỏi mở Q3); 4000 ký tự đủ
@@ -125,7 +126,18 @@ export function InterviewQuestionDetailView({ questionId }: { questionId: string
         ...prev,
       ]);
       setPendingFeedback(false);
+      toast.success(t("toast.answerSubmitted"));
     }, 900);
+  }
+
+  function rateWithToast(level: RecallLevel) {
+    rate(question!.code, level);
+    toast.success(t("toast.rated"));
+  }
+
+  function toggleBookmarkWithToast() {
+    toggleBookmark(question!.code);
+    toast.success((bookmarks[question!.code] ?? false) ? t("toast.unbookmarked") : t("toast.bookmarked"));
   }
 
   function retryPractice() {
@@ -163,7 +175,7 @@ export function InterviewQuestionDetailView({ questionId }: { questionId: string
           size="sm"
           className="border border-[var(--color-border)]"
           aria-pressed={bookmarks[question.code] ?? false}
-          onClick={() => toggleBookmark(question.code)}
+          onClick={toggleBookmarkWithToast}
         >
           {(bookmarks[question.code] ?? false) ? t("header.bookmarked") : t("header.bookmark")}
         </Button>
@@ -199,17 +211,20 @@ export function InterviewQuestionDetailView({ questionId }: { questionId: string
           variant={mode === "practice" ? "primary" : "ghost"}
           size="sm"
           className={mode !== "practice" ? "border border-[var(--color-border)]" : undefined}
-          disabled={!question.hasRubric}
+          aria-disabled={!question.hasRubric || undefined}
           title={!question.hasRubric ? t("mode.practiceLockedReason") : undefined}
-          onClick={() => setMode("practice")}
+          onClick={() => {
+            // Looks disabled but stays clickable so the click says why.
+            if (!question.hasRubric) {
+              toast.warning(t("mode.practiceLockedReason"));
+              return;
+            }
+            setMode("practice");
+          }}
         >
           {t("mode.practice")}
         </Button>
       </div>
-      {!question.hasRubric && mode === "study" ? (
-        <NoticeTile tone="info" title={t("mode.practiceLockedReason")} className="mb-4" />
-      ) : null}
-
       {mode === "study" ? (
         <Card className="mb-4 flex flex-col gap-5">
           <div>
@@ -279,7 +294,7 @@ export function InterviewQuestionDetailView({ questionId }: { questionId: string
             </p>
             <RecallLevelPicker
               value={recall[question.code] ?? null}
-              onRate={(level) => rate(question.code, level)}
+              onRate={rateWithToast}
               labels={recallLabels}
               groupLabel={t("study.recallLabel")}
             />

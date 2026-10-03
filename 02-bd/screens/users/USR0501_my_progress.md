@@ -45,11 +45,11 @@
 | Tên vật lý (slug) | `my_progress` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`) |
-| Phiên bản | V0.1 |
+| Phiên bản | V0.2 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/21 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/09/21 |
+| Ngày cập nhật | 2026/10/03 |
 
 ---
 
@@ -58,6 +58,7 @@
 | Ver | Sheet bị sửa | Nội dung sửa | Ngày | Người sửa |
 | :--- | :--- | :--- | :--- | :--- |
 | V0.1 | Toàn bộ | Tạo mới theo mẫu 9 sheet. Chốt nguồn dữ liệu của mọi trường hiển thị; dùng lại tên nghiệp vụ `GetMySubmissionMetrics` của cụm màn lớp thay vì đặt tên mới. Thiết kế bổ sung danh sách phiên phỏng vấn (prototype thiếu, nhưng F1-08 bắt buộc), trạng thái rỗng, trạng thái lỗi theo từng khối và đường suy giảm khi phân hệ AI hỏng. Phát sinh 9 câu hỏi mở | 2026/09/21 | Nhóm phát triển AlgoPrep |
+| V0.2 | Sheet 9 | Đổi báo giá trị khoảng thời gian không hợp lệ sang toast; làm rõ lỗi tải từng khối giữ nguyên là nội dung thay chỗ khối. Theo `DEC-2026-1003-toast-feedback-channel`. | 2026/10/03 | AI |
 
 ---
 
@@ -553,11 +554,11 @@ Ghi chú ranh giới:
 | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: |
 | 1 | Kiểm quyền | Phải đăng nhập | [Nội dung kiểm] Người dùng chưa đăng nhập thì không vào được màn, chuyển về màn `auth`.<br>[Nơi thực thi] Chặn ở cả tầng định tuyến phía giao diện và tầng phân quyền phía máy chủ, không chỉ ẩn giao diện. | Lỗi | Chưa có mã thông báo | Nội dung "Vui lòng đăng nhập để xem tiến độ của bạn." | EVT-1 | 1 |
 | 2 | Kiểm quyền | Chỉ xem dữ liệu của chính mình | [Nội dung kiểm] Mọi endpoint của màn lấy `user_id` từ token của phiên đăng nhập, **không** nhận `user_id` từ tham số phía client.<br>[Nơi thực thi] Máy chủ. | Lỗi | Mã lỗi trong phản hồi | Đây là ràng buộc bắt buộc, không phải lựa chọn: màn này không có bất kỳ đường nào xem tiến độ người khác. Nhận `user_id` từ client sẽ mở ngay một lỗ IDOR. | EVT-1, EVT-2 | 2 |
-| 3 | Kiểm nhập liệu | Giá trị khoảng thời gian hợp lệ | [Nội dung kiểm] Khoảng thời gian chỉ nhận đúng ba giá trị `7d`, `30d`, `all`; giá trị khác thì máy chủ trả lỗi và màn giữ nguyên lựa chọn cũ.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Cụm tab khoảng thời gian. | Lỗi | Mã lỗi trong phản hồi | Nội dung "Khoảng thời gian không hợp lệ." Ba giá trị lấy từ prototype [Nguồn: 09-layoutBase/Tiến độ của tôi.dc.html:266]. | EVT-2 | 1 |
+| 3 | Kiểm nhập liệu | Giá trị khoảng thời gian hợp lệ | [Nội dung kiểm] Khoảng thời gian chỉ nhận đúng ba giá trị `7d`, `30d`, `all`; giá trị khác thì máy chủ trả lỗi và màn giữ nguyên lựa chọn cũ.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Cụm tab khoảng thời gian + toast. | Lỗi | Mã lỗi trong phản hồi | Nội dung "Khoảng thời gian không hợp lệ." hiện bằng toast. Ba giá trị lấy từ prototype [Nguồn: 09-layoutBase/Tiến độ của tôi.dc.html:266]. | EVT-2 | 1 |
 | 4 | Kiểm nghiệp vụ | Chia cho 0 | [Nội dung kiểm] Mọi tỉ lệ trên màn phải kiểm mẫu số trước khi chia: tỉ lệ AC, số lần nộp trên bài, tỉ lệ đã giải theo chủ đề và theo độ khó.<br>[Nơi thực thi] Máy chủ khi tính, màn hình khi hiển thị.<br>[Tiêu điểm] Chỉ số vi phạm. | Cảnh báo | Chưa có mã thông báo | Mẫu số bằng 0 thì trả `null` và hiển thị `-`, **không** hiển thị `0%`. Hai chuyện khác nhau: "chưa có dữ liệu" không phải "kết quả bằng 0" — cùng quy ước đã dùng ở `class_student_detail` [Nguồn: 02-bd/screens/teacher/INS0204_class_student_detail.md:48]. | EVT-1, EVT-2 | 1 |
 | 5 | Kiểm nghiệp vụ | Suy giảm êm khi phân hệ AI hỏng | [Nội dung kiểm] `GetMyInterviewSummary` lỗi hoặc quá hạn chờ thì **không** được làm hỏng bốn khối còn lại, không được chặn khởi tạo màn.<br>[Nơi thực thi] Màn hình.<br>[Tiêu điểm] Khu vực F. | Cảnh báo | Chưa có mã thông báo | Nội dung "Chưa lấy được dữ liệu phỏng vấn giả lập. Các phần còn lại của trang vẫn hiển thị bình thường." Đây là ràng buộc bắt buộc của dự án, không phải lựa chọn thiết kế. | EVT-1 | 1 |
 | 6 | Kiểm nghiệp vụ | Không lộ dữ liệu chấm chi tiết | [Nội dung kiểm] Phản hồi của mọi endpoint trên màn chỉ chứa số đếm và tỉ lệ; **không** chứa nội dung testcase, diff đầu ra, hay mã nguồn bài nộp.<br>[Nơi thực thi] Máy chủ. | Lỗi | Mã lỗi trong phản hồi | Màn tổng hợp không phải nơi khoan sâu vào một lượt nộp; muốn xem chi tiết thì đi qua `submission_result` (`USR0201`). | EVT-1, EVT-2 | 2 |
-| 7 | Kiểm nghiệp vụ | Lỗi hệ thống hoặc lỗi gọi máy chủ | [Nội dung kiểm] Gọi máy chủ thất bại thì chỉ khối tương ứng chuyển sang trạng thái lỗi, giữ nguyên dữ liệu các khối khác đang hiển thị.<br>[Nơi thực thi] Màn hình. | Lỗi | Mã lỗi trong phản hồi | Phản hồi có mã lỗi đã đăng ký thì hiển thị nội dung tương ứng; chưa đăng ký thì hiển thị "Không kết nối được máy chủ." | EVT-1, EVT-2, EVT-7 | 1 |
+| 7 | Kiểm nghiệp vụ | Lỗi hệ thống hoặc lỗi gọi máy chủ | [Nội dung kiểm] Gọi máy chủ thất bại thì chỉ khối tương ứng chuyển sang trạng thái lỗi, giữ nguyên dữ liệu các khối khác đang hiển thị.<br>[Nơi thực thi] Màn hình. | Lỗi | Mã lỗi trong phản hồi | Phản hồi có mã lỗi đã đăng ký thì hiển thị nội dung tương ứng; chưa đăng ký thì hiển thị "Không kết nối được máy chủ." Lỗi tải của một khối hiện ngay trong khối đó (nội dung thay chỗ, kèm nút Thử lại), không dùng toast. | EVT-1, EVT-2, EVT-7 | 1 |
 
 Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 

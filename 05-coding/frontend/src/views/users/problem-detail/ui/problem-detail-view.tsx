@@ -30,6 +30,7 @@ import {
   type WrapperMode,
 } from "@/entities/problem";
 import { useT } from "@/shared/i18n";
+import { toast } from "@/shared/lib/toast-store";
 import { Badge, Button, Card, EmptyState, SegmentedTabs, type BadgeVariant } from "@/shared/ui";
 
 const DIFFICULTY_VARIANT: Record<Difficulty, BadgeVariant> = {
@@ -87,6 +88,11 @@ export function ProblemDetailView() {
     setCodeByKey((previous) => ({ ...previous, [key]: value }));
   }
 
+  function toggleSaved() {
+    toast.success(saved ? t("toast.unsaved") : t("toast.saved"));
+    setSaved(!saved);
+  }
+
   function runSample() {
     setRunning(true);
     setConsoleTab("testcase");
@@ -94,6 +100,7 @@ export function ProblemDetailView() {
       // ponytail: giả lập luôn Pass hết testcase mẫu — không chạy mã thật (chưa nối go-judge).
       setSampleRun(detail.sampleTestcases.map(() => ({ passed: true })));
       setRunning(false);
+      toast.success(t("toast.runDone", { count: detail.sampleTestcases.length }));
     }, 400);
   }
 
@@ -121,6 +128,8 @@ export function ProblemDetailView() {
             };
       setResult(run);
       setRunning(false);
+      if (run.overallVerdict === "accepted") toast.success(t("toast.submitAccepted"));
+      else toast.error(t("toast.submitRejected", { passed: run.passedCount, total: run.totalCount }));
     }, 700);
   }
 
@@ -241,7 +250,7 @@ export function ProblemDetailView() {
             <span className="text-[11.5px] text-[var(--color-text-muted)]">
               AC rate: {detail.acRate === null ? "-" : `${detail.acRate}%`}
             </span>
-            <Button variant="ghost" size="sm" className="border border-[var(--color-border)]" onClick={() => setSaved((v) => !v)}>
+            <Button variant="ghost" size="sm" className="border border-[var(--color-border)]" onClick={toggleSaved}>
               {saved ? t("panel.btnUnsave") : t("panel.btnSave")}
             </Button>
           </div>
