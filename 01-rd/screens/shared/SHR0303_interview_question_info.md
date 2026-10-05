@@ -28,7 +28,7 @@ phân loại và sử dụng bên hẹp) `[SoT: Suy luận]`; chủ dự án ch�
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Hiển thị mã câu hỏi, chủ đề (nhãn đọc từ danh mục do ADMIN quản lý), độ khó | F6-01 | `01-rd/req/interview-bank.md` — F6-01 |
+| Hiển thị mã câu hỏi, chủ đề (nhãn đọc từ danh mục do ADMIN quản lý), độ khó (cũng do ADMIN quản lý — danh mục dữ liệu, giống chủ đề; ba mức Dễ/Trung bình/Khó chỉ là dữ liệu khởi tạo; cập nhật 2026-10-03) | F6-01 | `01-rd/req/interview-bank.md` — F6-01 |
 | Hiển thị nội dung câu hỏi dưới dạng Markdown kèm công thức LaTeX đã dựng (cập nhật 2026-10-03) và danh sách câu hỏi đào sâu | F6-13 | `01-rd/req/interview-bank.md` — F6-13 |
 | Hiển thị bộ tiêu chí đánh giá và tổng trọng số; bộ trống thì báo rõ câu hỏi chưa có mặt ở Chế độ luyện | F6-13, F6-08 | `01-rd/req/interview-bank.md` — F6-13, F6-08 |
 | Hiển thị số lần dùng trong phiên, điểm trung bình trên thang 5, trạng thái Chế độ luyện (mở khi có ít nhất một tiêu chí) | F6-13 | `01-rd/req/interview-bank.md` |

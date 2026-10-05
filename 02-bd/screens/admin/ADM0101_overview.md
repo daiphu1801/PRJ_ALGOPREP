@@ -38,11 +38,11 @@
 | Tên vật lý (slug) | `admin_overview` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A3 (`ADMIN`) |
-| Phiên bản | V0.5 |
+| Phiên bản | V0.6 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/15 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/10/01 |
+| Ngày cập nhật | 2026/10/03 |
 
 ---
 
@@ -55,6 +55,7 @@
 | V0.3 | 3, 4, 5, 6, 7, 8; Câu hỏi mở | Thêm thẻ chỉ số thứ ba "Yêu cầu đặt lại mật khẩu" ở hàng 1 cột trái (chuyển từ dải thẻ của `ADM0201` theo `DEC-2026-1001-single-overview-page-kpi`): Khu vực A thêm item NO 9-12, thêm endpoint `GetPasswordResetsSummary` (NO 10), số khối số liệu 9 thành 10, sửa các câu "hai thẻ chỉ số" thành "ba thẻ". Giá trị 6, +20 phần trăm, sparkline 7 điểm hiện là dữ liệu giả. Thêm Q4 về nguồn số liệu 24 giờ của thẻ mới | 2026/10/01 | AI |
 | V0.4 | Sheet 5, 7, Câu hỏi mở | Đã chốt 2026-10-01 (owner uỷ quyền cân nhắc), xem `DEC-2026-1001-admin-configurable-settings`: Q4 đóng — thẻ "Yêu cầu đặt lại mật khẩu" lấy số liệu từ **nhật ký hệ thống, không dùng Redis**: giá trị = `COUNT` dòng `identity.system_audit_logs` có `action_type = PASSWORD_RESET_REQUESTED` trong 24 giờ gần nhất, delta so với 24 giờ liền trước, sparkline 7 điểm theo ngày. Sửa NO 10, 11, 12 (Sheet 5), bảng DTO NO 1, thêm `identity.system_audit_logs` vào bảng dữ liệu (4 thành 5 bảng), bỏ câu "không đọc bảng nào" | 2026/10/01 | AI |
 | V0.5 | Sheet 5, Câu hỏi mở | Đã chốt 2026-10-01 (owner uỷ quyền), xem `DEC-2026-1001-admin-configurable-settings`: thẻ "Yêu cầu đặt lại mật khẩu" đếm **số mã OTP đã phát hành** (dòng `PASSWORD_RESET_REQUESTED`), không đếm mọi lần bấm "Quên mật khẩu"; yêu cầu cho email không khớp tài khoản nào không ghi dòng nên không vào số. Nhãn và ghi chú NO 9-10 nêu rõ nghĩa của số. Q4 giữ đóng | 2026/10/01 | AI |
+| V0.6 | Sheet 4, 5, 6, 7 | Đồng bộ `DEC-2026-1001-admin-configurable-settings` mục (7): độ khó bài tập là danh mục do ADMIN quản lý (bảng riêng `problem_levels`), không còn enum cố định. Biểu đồ "Độ khó bài toán" (`difficulty-breakdown-block.tsx`) vẽ **một nhóm mỗi mức** trong danh mục theo thứ tự `sort_order`, mỗi nhóm 2 cột (Tổng lượt nộp / Lượt Accepted); số nhóm không còn cố định 3. Màu cột theo chuỗi, không theo mức, nên mức ADMIN thêm sau không cần màu. Đổi `DifficultyBreakdown.groups`: mỗi phần tử mang `levelCode`, `levelDisplayName`, `totalSubmissions`, `acceptedSubmissions`; mức chưa có bài hoặc chưa có lượt nộp vẫn hiện với hai cột bằng 0. Thêm `problem.problem_levels` vào bảng liên quan và Truy cập bảng (đọc qua cổng ra của `problem-bank`). Màn chỉ hiển thị; không lọc theo độ khó | 2026/10/03 | AI |
 
 ---
 
@@ -194,7 +195,7 @@ quay lại — trước khi đi vào từng màn vận hành cụ thể
 - Xoá: không.
 
 [Số bản ghi tối đa] Thẻ chỉ số: 3. Biểu đồ theo ngôn ngữ: 20 mốc thời gian, 3 chuỗi. Kết quả chấm: đúng 5
-verdict. Độ khó: 3 nhóm, mỗi nhóm 2 cột. Theo ngày: 7 cột. Theo tháng: 6 điểm. Bài phổ biến: 4 dòng. Người
+verdict. Độ khó: một nhóm mỗi mức trong `problem_levels` (ba mức khởi tạo ra 3 nhóm; số nhóm không cố định vì ADMIN thêm/xoá mức được), mỗi nhóm 2 cột. Theo ngày: 7 cột. Theo tháng: 6 điểm. Bài phổ biến: 4 dòng. Người
 dùng mới và quay lại: 6 nhóm, mỗi nhóm 2 cột. Không phân trang ở bất kỳ khối nào.
 
 Mười khối số liệu của màn lấy dữ liệu từ ba Bounded Context khác nhau; bảng dưới ánh xạ từng khối sang BC
@@ -238,7 +239,7 @@ Tám tên DTO này **không phải đề xuất mới** — chúng đã tồn t�
 [Nguồn: 05-coding/frontend/src/views/admin/overview/model/types.ts:14,20,25,36,43,49,54,65]. `03-dd/api/identity.md`
 chốt tên phía máy chủ và giữ đúng hình dạng này để tầng chống hư hỏng dữ liệu không phải biến đổi thêm.
 
-### 4.3 Bảng dữ liệu liên quan (5)
+### 4.3 Bảng dữ liệu liên quan (6)
 
 | NO | Bảng | Ghi chú |
 | --: | :--- | :--- |
@@ -247,8 +248,9 @@ chốt tên phía máy chủ và giữ đúng hình dạng này để tầng ch�
 | 3 | `judge.submissions` | [Nguồn: 02-bd/database/judge-orchestration.md:14-34] |
 | 4 | `problem.problems` | [Nguồn: 02-bd/database/problem-bank.md:13-29] |
 | 5 | `identity.system_audit_logs` | [Nguồn: 02-bd/database/identity.md:104-121] — chỉ cho thẻ "Yêu cầu đặt lại mật khẩu": đếm `action_type = PASSWORD_RESET_REQUESTED` (chốt 2026-10-01, Q4) |
+| 6 | `problem.problem_levels` | Danh mục độ khó do ADMIN quản lý — danh sách nhóm, thứ tự và nhãn của biểu đồ "Độ khó bài toán" [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`] |
 
-Cả 5 bảng đều **chỉ đọc** với màn này; `judge.submissions` và `problem.problems` thuộc module khác nên `identity` không truy cập trực
+Cả 6 bảng đều **chỉ đọc** với màn này; `judge.submissions`, `problem.problems` và `problem.problem_levels` thuộc module khác nên `identity` không truy cập trực
 tiếp (xem 4.1 và Q1). Các read model sẵn có của `identity` (`user_submission_stats`,
 `user_problem_best_score`, `identity_recent_activity`) đều gom **theo từng người dùng**
 [Nguồn: 02-bd/database/identity.md:109-118], không dùng lại được cho số liệu toàn hệ thống theo ngôn ngữ,
@@ -269,7 +271,7 @@ cuối cùng.
 | Hàng 1, cột giữa — "Lượt nộp theo ngôn ngữ" | `:142-156` | Chú giải 3 ngôn ngữ, 20 cột bar |
 | Hàng 1, cột phải — "Kết quả chấm" | `:158-177` | Đồng hồ nửa vòng 40 vạch, chú giải 5 verdict kèm phần trăm |
 | Hàng 2 — lưới 2 cột `1.3fr 1fr` | `:180-231` | Hai khối tiếp theo |
-| Hàng 2, trái — "Độ khó bài toán" | `:181-205` | Chú giải 2 chuỗi, trục dọc 5 mốc, 3 nhóm cột đôi Dễ / Trung bình / Khó |
+| Hàng 2, trái — "Độ khó bài toán" | `:181-205` | Chú giải 2 chuỗi, trục dọc 5 mốc, 3 nhóm cột đôi Dễ / Trung bình / Khó (prototype vẽ đúng 3 mức khởi tạo; bản thật vẽ một nhóm mỗi mức trong `problem_levels`) |
 | Hàng 2, phải — "Lượt nộp theo ngày" | `:207-230` | Lưới 7 cột x 10 chấm, nhãn T2 đến CN, chân khối hiện tổng tuần và trung bình mỗi ngày |
 | Hàng 3 — lưới 3 cột đều `1fr 1fr 1fr` | `:233-293` | Ba khối cuối |
 | Hàng 3, trái — "Lượt nộp theo tháng" | `:234-249` | Số tổng lớn, đường 6 tháng, nhãn T1 đến T6 |
@@ -365,8 +367,8 @@ ghi nhận ngay trong mã nguồn (`// PROTOTYPE — no DD yet`)
 | | 1 | Tiêu đề khối | `adminOverview.difficulty.title` | - | - | Label | String | - | - | O | Độ khó bài toán | - | Tên khối<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] - |
 | | 2 | Chú giải hai chuỗi | `adminOverview.difficulty.legend` | - | - | List | List | - | - | O | 2 dòng | - | **Đổi trục so với prototype**: "Tổng lượt nộp" và "Lượt Accepted", thay cho "AI sinh" / "Giảng viên soạn" là nhãn dữ liệu mẫu vẽ sai [Nguồn: 01-rd/req/identity.md:163-166]<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] - |
 | | 3 | Nhãn trục dọc | `adminOverview.difficulty.axis` | `judge.submissions` | `id` | Label | List | - | - | O | 5 mốc | Số nguyên | 5 mốc chia đều từ 0 tới giá trị lớn nhất<br>[Công thức] Làm tròn lên giá trị cột cao nhất rồi chia 4 khoảng đều<br>[EVT liên quan] EVT-1 |
-| | 4 | Nhóm cột theo độ khó | `adminOverview.difficulty.groups` | `problem.problems` | `difficulty` | List | List | - | - | O | 3 nhóm | - | Đúng 3 mức của enum `problems.difficulty`<br>[Nguồn giá trị] Nhóm bài toán theo `difficulty`, chỉ tính bài `status = PUBLISHED` và `deleted = false`<br>[EVT liên quan] EVT-1 |
-| | 5 | Nhãn mức độ khó | `adminOverview.difficulty.col.label` | `problem.problems` | `difficulty` | ListColumn | Enum | - | - | O | - | Nhãn tiếng Việt | Tên mức độ khó hiển thị cho người dùng<br>[Nguồn giá trị] Nhãn tĩnh i18n map từ `difficulty`: `EASY` thành "Dễ"; `MEDIUM` thành "Trung bình"; `HARD` thành "Khó"<br>[EVT liên quan] - |
+| | 4 | Nhóm cột theo độ khó | `adminOverview.difficulty.groups` | `problem.problem_levels`, `problem.problems` | `code`, `display_name`, `sort_order`, `level_id` | List | List | - | - | O | Một nhóm mỗi mức | - | Một nhóm cho **mỗi mức** trong `problem_levels` theo `sort_order` (ba mức khởi tạo ra 3 nhóm; số nhóm không cố định), mỗi nhóm hai cột; màu cột theo chuỗi (Tổng lượt nộp, Accepted), **không** theo mức<br>[Nguồn giá trị] Nhóm bài toán theo `level_id`, chỉ tính bài `status = PUBLISHED` và `deleted = false`; danh sách mức đọc từ dữ liệu do ADMIN quản lý, không còn enum cố định `DEC-2026-1001-admin-configurable-settings` mục (7) [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`]<br>[EVT liên quan] EVT-1 |
+| | 5 | Nhãn mức độ khó | `adminOverview.difficulty.col.label` | `problem.problem_levels` | `display_name` | ListColumn | String | - | - | O | - | Nhãn `display_name` | Tên mức độ khó hiển thị cho người dùng<br>[Nguồn giá trị] Cột `problem_levels.display_name`, **đọc từ dữ liệu**, không còn nhãn tĩnh i18n map từ enum `EASY`/`MEDIUM`/`HARD` `DEC-2026-1001-admin-configurable-settings` mục (7)<br>[EVT liên quan] - |
 | | 6 | Cột tổng lượt nộp | `adminOverview.difficulty.col.totalBar` | `judge.submissions` | `problem_id` | ListColumn | Number | 9 | - | O | - | Số nguyên | Cột thứ nhất của mỗi nhóm<br>[Công thức] Đếm `judge.submissions` của các bài thuộc mức độ khó đó<br>[EVT liên quan] EVT-1 |
 | | 7 | Cột lượt Accepted | `adminOverview.difficulty.col.acceptedBar` | `judge.submissions` | `problem_id`, `status` | ListColumn | Number | 9 | - | O | - | Số nguyên | Cột thứ hai của mỗi nhóm; so hai cột là ra tỉ lệ pass trực quan<br>[Công thức] Đếm `judge.submissions` có `status = ACCEPTED` của các bài thuộc mức độ khó đó<br>[EVT liên quan] EVT-1 |
 
@@ -489,7 +491,7 @@ ghi nhận ngay trong mã nguồn (`// PROTOTYPE — no DD yet`)
 | | 1 | Tiêu đề khối | Có | - |
 | | 2 | Chú giải hai chuỗi | Có | - |
 | | 3 | Nhãn trục dọc | Điều kiện | [Điều kiện hiển thị] Hiện cùng lúc với biểu đồ.<br>[Tự động đặt] Mốc cao nhất tính lại theo cột cao nhất mỗi lần dữ liệu đổi. |
-| | 4 | Nhóm cột theo độ khó | Điều kiện | [Điều kiện hiển thị] Trong lúc tải hiện khung chờ đúng 3 nhóm. Luôn hiện đủ 3 mức, mức chưa có bài toán nào vẫn hiện với cột bằng 0. |
+| | 4 | Nhóm cột theo độ khó | Điều kiện | [Điều kiện hiển thị] Trong lúc tải hiện khung chờ 3 nhóm (số nhóm thật chỉ biết sau khi tải). Luôn hiện đủ một nhóm cho mỗi mức trong `problem_levels`, mức chưa có bài toán nào vẫn hiện với cột bằng 0. |
 | | 5 | Nhãn mức độ khó | Có | - |
 | | 6 | Cột tổng lượt nộp | Có | - |
 | | 7 | Cột lượt Accepted | Có | - |
@@ -567,7 +569,7 @@ ghi nhận ngay trong mã nguồn (`// PROTOTYPE — no DD yet`)
 | 5 | `SubmissionsByLanguage` | `pointLabels` | List | `judge.submissions` | `submitted_at` | "Nhãn trục hoành" | Có | [Nguồn] 20 nhãn ngày dạng `DD/MM`. |
 | 6 | `SubmissionsByLanguage` | `series` | List | `judge.submissions` | `language`, `submitted_at` | "Biểu đồ cột theo mốc", "Chú giải ngôn ngữ" | Có | [Chuyển đổi] Mỗi phần tử là một ngôn ngữ kèm mảng 20 giá trị; nhãn hiển thị tra từ enum `language`. |
 | 7 | `VerdictDistribution` | `slices` | List | `judge.submissions` | `status` | "Danh sách chú giải verdict", "Đồng hồ nửa vòng" | Có | [Chuyển đổi] Mỗi lát gồm mã verdict và phần trăm đã làm tròn; nhãn tiếng Việt tra bằng nhãn tĩnh i18n, **không** lấy chuỗi hiển thị từ máy chủ. |
-| 8 | `DifficultyBreakdown` | `groups` | List | `problem.problems` | `difficulty` | "Nhóm cột theo độ khó" | Có | [Nguồn] Đúng 3 nhóm theo enum `difficulty`, thứ tự cố định `EASY`, `MEDIUM`, `HARD`. |
+| 8 | `DifficultyBreakdown` | `groups` | List | `problem.problem_levels`, `problem.problems`, `judge.submissions` | `code`, `display_name`, `sort_order`, `level_id`, `status` | "Nhóm cột theo độ khó" | Có | [Nguồn] Một phần tử cho **mỗi mức** trong `problem_levels`, thứ tự theo `sort_order` (thay cố định 3 nhóm `EASY`, `MEDIUM`, `HARD`, theo `DEC-2026-1001-admin-configurable-settings` mục (7))<br>[Chuyển đổi] Mỗi phần tử gồm `levelCode`, `levelDisplayName`, `totalSubmissions`, `acceptedSubmissions`; mức không có lượt nộp trả `0`/`0`. Nhãn là `display_name` đọc từ dữ liệu, không ánh xạ cứng. |
 | 9 | `DifficultyBreakdown` | `legend` | List | - | - | "Chú giải hai chuỗi" | Có | [Chuyển đổi] Hai chuỗi "Tổng lượt nộp" và "Lượt Accepted" — trục đã đổi so với prototype, xem Sheet 5 khu vực D. |
 | 10 | `SubmissionsByDay` | `columns` | List | `judge.submissions` | `submitted_at` | "Lưới chấm 7 cột" | Có | [Chuyển đổi] Máy chủ trả số lượt nộp thật của từng ngày; giao diện tự quy ra số chấm sáng. |
 | 11 | `SubmissionsByDay` | `weekTotal`, `dailyAverage` | Number | `judge.submissions` | `submitted_at` | "Tổng lượt nộp trong tuần", "Trung bình mỗi ngày" | Có | [Nguồn] Máy chủ tính sẵn, phạm vi đúng 7 ngày đang hiển thị. |
@@ -586,6 +588,7 @@ Tên và hình dạng 8 DTO lấy từ bản dựng giao diện đã có
 | 2 | Phiên làm mới | `identity.refresh_tokens` | `RefreshTokenRepository` | R | Suy ra mốc đăng nhập gần nhất của từng tài khoản | `GetActiveUsersSummary`: R<br>`GetUserRetention`: R<br>Nguồn tạm, xem Q2 |
 | 3 | Bài nộp | `judge.submissions` | `SubmissionRepository` | R | Mọi số liệu về lượt nộp, ngôn ngữ, verdict, chuỗi thời gian, bài phổ biến | `GetSubmissionsSummary`, `GetSubmissionsByLanguage`, `GetVerdictDistribution`, `GetSubmissionsByDay`, `GetSubmissionsByMonth`, `GetTopProblems`, `GetDifficultyBreakdown`: R |
 | 4 | Bài toán | `problem.problems` | `ProblemRepository` | R | Phân nhóm theo độ khó, lấy tên bài cho danh sách phổ biến | `GetDifficultyBreakdown`, `GetTopProblems`: R |
+| 5 | Danh mục độ khó | `problem.problem_levels` | `ProblemLevelRepository` | R | Danh sách mức theo `sort_order` và nhãn `display_name` để dựng đủ một nhóm cột cho mỗi mức, kể cả mức chưa có lượt nộp | `GetDifficultyBreakdown`: R, qua cổng ra của `problem-bank`. Màn này không ghi; ADMIN quản lý độ khó ở `SHR0201` [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`] |
 
 Thẻ "Yêu cầu đặt lại mật khẩu" (thêm 2026-10-01) đọc bảng `identity.system_audit_logs` (hàng 5 ở trên), **không** đọc Redis: Q4 đã đóng 2026-10-01.
 
@@ -607,7 +610,7 @@ Hai bảng NO 3 và NO 4 thuộc module khác, `identity` **không** được m�
 | 2 | `GetActiveUsersSummary` | Số người dùng hoạt động kèm delta và sparkline | `identity` |
 | 3 | `GetSubmissionsByLanguage` | Chuỗi 20 mốc lượt nộp tách theo ba ngôn ngữ | `identity` |
 | 4 | `GetVerdictDistribution` | Tỉ lệ 5 verdict trên tổng bài đã có kết quả cuối | `identity` |
-| 5 | `GetDifficultyBreakdown` | Tổng lượt nộp và lượt Accepted theo ba mức độ khó | `identity` |
+| 5 | `GetDifficultyBreakdown` | Tổng lượt nộp và lượt Accepted theo từng mức độ khó (một phần tử mỗi mức trong `problem_levels`, theo `sort_order`) | `identity` |
 | 6 | `GetSubmissionsByDay` | Lượt nộp 7 ngày gần nhất kèm tổng tuần và trung bình ngày | `identity` |
 | 7 | `GetSubmissionsByMonth` | Lượt nộp 6 tháng gần nhất kèm tổng | `identity` |
 | 8 | `GetTopProblems` | Bốn bài toán có nhiều lượt nộp nhất | `identity` |

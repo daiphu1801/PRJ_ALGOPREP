@@ -20,7 +20,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Search } from "lucide-react";
 import {
   fetchAdminUserPage,
   initialsOf,
@@ -34,6 +33,7 @@ import { checkLock } from "../model/guards";
 import { AddAccountDialog } from "./add-account-dialog";
 import {
   Badge,
+  BulkActionBar,
   Button,
   Card,
   ConfirmDialog,
@@ -41,9 +41,9 @@ import {
   PageHeader,
   Pagination,
   RankedProgressList,
-  SegmentedTabs,
+  FilterBar,
+  FilterMenu,
   SettingRow,
-  TextField,
   type BadgeVariant,
   type DataTableColumn,
 } from "@/shared/ui";
@@ -207,17 +207,16 @@ export function AdminUserManagementView() {
       />
 
       <Card className="mb-4 min-w-0 px-[18px] py-4">
-        <div className="mb-3.5 flex flex-wrap items-center gap-2.5">
-          <TextField
-            label={t("searchLabel")}
-            hideLabel
-            leadingIcon={<Search className="h-3.5 w-3.5" />}
-            placeholder={t("searchPlaceholder")}
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            wrapperClassName="min-w-[220px] flex-1"
-          />
-          <SegmentedTabs
+        <FilterBar
+          search={{
+            label: t("searchLabel"),
+            placeholder: t("searchPlaceholder"),
+            value: query,
+            onChange: (next) => setQuery(next),
+          }}
+          resultCount={t("resultCount", { shown: users.length, total: accounts.length })}
+        >
+          <FilterMenu
             label={t("roleFilterLabel")}
             value={role}
             onValueChange={setRole}
@@ -228,7 +227,7 @@ export function AdminUserManagementView() {
               { value: "admin", label: t("role.admin") },
             ]}
           />
-          <SegmentedTabs
+          <FilterMenu
             label={t("statusFilterLabel")}
             value={status}
             onValueChange={setStatus}
@@ -238,44 +237,34 @@ export function AdminUserManagementView() {
               { value: "locked", label: t("status.locked") },
             ]}
           />
-          <span className="ml-auto text-[12.5px] whitespace-nowrap text-[var(--color-text-muted)]">
-            {t("resultCount", { shown: users.length, total: accounts.length })}
-          </span>
-        </div>
+        </FilterBar>
 
-        {selected.size > 0 ? (
-          <div className="mb-3 flex flex-wrap items-center gap-2.5 rounded-2xl border border-[var(--admin-active-border)] bg-[image:var(--color-row-selected)] px-3.5 py-2.5">
-            <span className="text-[13px] font-semibold">
-              {t("selectionLabel", { count: selected.size })}
-            </span>
-            <span className="ml-auto flex flex-wrap gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="border border-[var(--color-border)]"
-                onClick={() => toast.success(t("bulkResetDone", { count: selected.size }))}
-              >
-                {t("bulkResetPassword")}
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="border border-[var(--color-border)]"
-                onClick={() => toast.success(t("bulkRoleDone", { count: selected.size }))}
-              >
-                {t("bulkChangeRole")}
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={requestBulkLock}
-                className="text-[var(--color-admin-negative)]"
-              >
-                {t("bulkLock")}
-              </Button>
-            </span>
-          </div>
-        ) : null}
+        <BulkActionBar count={selected.size} label={t("selectionLabel", { count: selected.size })}>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="border border-[var(--color-border)]"
+            onClick={() => toast.success(t("bulkResetDone", { count: selected.size }))}
+          >
+            {t("bulkResetPassword")}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="border border-[var(--color-border)]"
+            onClick={() => toast.success(t("bulkRoleDone", { count: selected.size }))}
+          >
+            {t("bulkChangeRole")}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={requestBulkLock}
+            className="text-[var(--color-admin-negative)]"
+          >
+            {t("bulkLock")}
+          </Button>
+        </BulkActionBar>
 
         <DataTable
           caption={t("tableCaption")}

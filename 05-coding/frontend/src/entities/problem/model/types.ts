@@ -5,7 +5,8 @@
 // `entities/problem` across the three; DO NOT reuse `entities/admin-problem`, which is the
 // instructor/admin-side shape from a different screen family).
 
-export type Difficulty = "easy" | "medium" | "hard";
+/** Stable key of an admin-managed problem difficulty level (see ./level-store). */
+export type Difficulty = string;
 
 /**
  * MOCK MERGE NOTE: in the real system, `solveState` is NOT returned by `problem-bank`.
@@ -44,9 +45,8 @@ export type RatioStat = { solved: number; total: number };
 
 export type ProblemCatalogSummary = {
   solvedTotal: RatioStat;
-  solvedEasy: RatioStat;
-  solvedMedium: RatioStat;
-  solvedHard: RatioStat;
+  /** Solved / total per level key (admin-managed list); a level missing here has no problems yet. */
+  solvedByLevel: Readonly<Record<string, RatioStat>>;
 };
 
 export type TopicProgress = { id: string; name: string } & RatioStat;

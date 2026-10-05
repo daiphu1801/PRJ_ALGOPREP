@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { Pagination } from "../data/pagination";
 import { SelectField } from "./select-field";
 import { TextField } from "./text-field";
@@ -64,5 +64,26 @@ describe("Pagination", () => {
       />,
     );
     expect(screen.getByRole("button", { name: "Sau" })).toBeDisabled();
+  });
+
+  it("offers a rows-per-page pop-up only when given the options and a handler", () => {
+    const onPageSizeChange = vi.fn();
+    render(
+      <Pagination
+        page={1}
+        pageSize={20}
+        total={143}
+        onPageChange={() => {}}
+        summary="1-20 trên 143"
+        previousLabel="Trước"
+        nextLabel="Sau"
+        pageSizeOptions={[8, 20, 50]}
+        onPageSizeChange={onPageSizeChange}
+        pageSizeLabel="Số dòng mỗi trang"
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /^Số dòng mỗi trang/ }));
+    fireEvent.click(screen.getByRole("option", { name: "50" }));
+    expect(onPageSizeChange).toHaveBeenCalledWith(50);
   });
 });

@@ -61,7 +61,7 @@
 | Tên vật lý (slug) | `problem_detail` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`) |
-| Phiên bản | V0.2 |
+| Phiên bản | V0.3 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/22 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
@@ -75,6 +75,7 @@
 | :--- | :--- | :--- | :--- | :--- |
 | V0.1 | Toàn bộ | Tạo mới theo mẫu 9 sheet. Gỡ tab "Gợi ý" khỏi thiết kế theo `DEC-2026-0831-remove-tiered-hints-ai-config`, còn 3 tab. Chốt hai trục lựa chọn độc lập (mô hình nộp bài và phương thức nhập mã) theo `DEC-2026-0824-dual-submission-model-per-problem`. Chốt nguyên tắc không lộ testcase ẩn thực thi ở tầng máy chủ. Chốt hợp đồng chuyển màn sang bốn màn hệ quả của một lượt nộp. Phát sinh 13 câu hỏi mở | 2026/09/22 | Nhóm phát triển AlgoPrep |
 | V0.2 | Sheet 8, 9 | Đổi phản hồi sau thao tác (đổi ngôn ngữ, tải file, Run Code, Submit, kết quả chấm, lưu bài) và `[Tiêu điểm]` kiểm nhập liệu sang toast + viền ô; giữ vùng lỗi tải panel, lỗi biên dịch trong bảng kết quả, hộp xác nhận rời màn. Theo `DEC-2026-1003-toast-feedback-channel`. | 2026/10/03 | AI |
+| V0.3 | Sheet 4, 5, 7 | Đồng bộ `DEC-2026-1001-admin-configurable-settings` mục (7): độ khó bài tập là danh mục do ADMIN quản lý (bảng riêng `problem_levels`). Nhãn độ khó (thanh tác vụ, danh sách chọn bài, tab Đề bài) đọc `display_name` qua `problems.level_id`; DTO `difficulty` thành `levelCode`/`levelDisplayName`; thêm `problem_levels` vào bảng liên quan và Truy cập bảng. Màn chỉ hiển thị nhãn, không lọc theo độ khó và không gọi `ListProblemLevels` (nhãn đã nằm trong phản hồi `GetProblemForWorkspace`) | 2026/10/03 | AI |
 
 ---
 
@@ -297,15 +298,15 @@ Câu hỏi mở Q7.
 `statement_md`, giới hạn thời gian/bộ nhớ, cờ `function_wrapper_supported`, chữ ký hàm; màn kia cần
 `acRate`, `solveState`, `topicNames`.
 
-### 4.3 Bảng dữ liệu liên quan (12)
+### 4.3 Bảng dữ liệu liên quan (13)
 
 | NO | Bảng | Ghi chú |
 | --: | :--- | :--- |
-| 1 | `problem.problems` | Đề bài, độ khó, giới hạn cơ sở, cờ mô hình [Nguồn: 02-bd/database/problem-bank.md:11-29] |
+| 1 | `problem.problems` | Đề bài, khoá `level_id` của độ khó, giới hạn cơ sở, cờ mô hình [Nguồn: 02-bd/database/problem-bank.md:11-29] |
 | 2 | `problem.topics` | Nhãn chủ đề trên tab Đề bài [Nguồn: 02-bd/database/problem-bank.md:37-39] |
 | 3 | `problem.problem_topics` | Nối bài với chủ đề [Nguồn: 02-bd/database/problem-bank.md:37-39] |
 | 4 | `problem.problem_specs` | Định dạng `stdin`/`stdout` cho mô hình Standard I/O [Nguồn: 02-bd/database/problem-bank.md:58-60] |
-| 5 | `problem.function_signatures` | Chữ ký hàm theo từng ngôn ngữ — đầu vào sinh mã khung [Nguồn: 02-bd/database/problem-bank.md:66-77] |
+| 5 | `problem.function_signatures` | Chữ ký hàm chung (tên theo từng ngôn ngữ do hệ thống suy ra) — đầu vào sinh mã khung [Nguồn: 02-bd/database/problem-bank.md:66-77] |
 | 6 | `problem.testcases` | **Chỉ dòng `visibility = SAMPLE`** [Nguồn: 02-bd/database/problem-bank.md:86-88] |
 | 7 | `problem.problem_stats` | Read model, nguồn chỉ số "AC rate" ở chân panel [Nguồn: 02-bd/database/problem-bank.md:138-139] |
 | 8 | `problem.bookmarks` | Nút "Lưu bài" (F2-13) [Nguồn: 02-bd/database/problem-bank.md:130-132] |
@@ -313,8 +314,9 @@ Câu hỏi mở Q7.
 | 10 | `judge.submission_testcase_results` | Dải ô trạng thái từng testcase — **chỉ đọc cột `verdict` và `testcase_order`** [Nguồn: 02-bd/database/judge-orchestration.md:46-57] |
 | 11 | `judge.language_configs` | Hệ số nhân giới hạn theo ngôn ngữ, để hiện giới hạn hiệu lực [Nguồn: 02-bd/database/judge-orchestration.md:95-103] |
 | 12 | `ai.solution_reviews` | Tóm tắt phân tích bài giải ở tab thứ ba [Nguồn: 02-bd/database/ai-review.md:36-57] |
+| 13 | `problem.problem_levels` | Nhãn độ khó (`display_name`) của bài, đọc qua join `level_id` [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`] |
 
-Bốn bảng cuối nằm ở schema của module khác. Màn không truy vấn thẳng: mỗi module tự phục vụ phần dữ liệu
+Bốn bảng NO 9-12 nằm ở schema của module khác. Màn không truy vấn thẳng: mỗi module tự phục vụ phần dữ liệu
 của nó qua endpoint riêng, đúng nguyên tắc mỗi schema một chủ
 [Nguồn: 02-bd/database/problem-bank.md:31-33].
 
@@ -390,7 +392,7 @@ từ ngoài, không tự gọi API.
 | Thanh tác vụ bài toán | | | | | | | | | | | | | |
 | | 1 | Liên kết Danh sách bài | `problemDetail.taskbar.linkProblemList` | - | - | Link | - | - | - | I | - | - | Quay về màn `problem_list` [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:99]<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] EVT-19 |
 | | 2 | Mã và tên bài | `problemDetail.taskbar.problemTitle` | `problem.problems` | `code`, `title` | Label | String | 240 | - | O | - | `{mã}. {tên}` | Định danh bài đang mở [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:101]<br>[Nguồn giá trị] Cột `code` và `title` [Nguồn: 02-bd/database/problem-bank.md:14-15]. Prototype hiển thị số thứ tự `1.` chứ không phải mã chuỗi — xem Câu hỏi mở Q13<br>[EVT liên quan] EVT-1 |
-| | 3 | Độ khó | `problemDetail.taskbar.difficulty` | `problem.problems` | `difficulty` | Badge | Enum | - | - | O | - | Nhãn tiếng Việt | Mức độ khó [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:102]<br>[Nguồn giá trị] `EASY` thành "Dễ", `MEDIUM` thành "Trung bình", `HARD` thành "Khó" [Nguồn: 02-bd/database/problem-bank.md:17]<br>[EVT liên quan] - |
+| | 3 | Độ khó | `problemDetail.taskbar.difficulty` | `problem.problem_levels` | `display_name` | Badge | String | - | - | O | - | Nhãn `display_name` | Mức độ khó [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:102]<br>[Nguồn giá trị] **đọc từ dữ liệu** `problem_levels.display_name` (qua `problems.level_id`), không còn ánh xạ cứng enum; mức khởi tạo giữ màu badge cũ, mức mới màu trung tính `DEC-2026-1001-admin-configurable-settings` mục (7) [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`]<br>[EVT liên quan] - |
 | | 4 | Đồng hồ phiên làm bài | `problemDetail.taskbar.sessionTimer` | - | - | Label | String | - | - | O | `00:00:00` | `HH:mm:ss` | Thời gian kể từ lúc mở workspace cho bài này [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:104,528]<br>[Công thức] Đếm ở phía trình duyệt từ mốc mở màn; **không có cột DB nào lưu mốc này** — xem Câu hỏi mở Q3<br>[EVT liên quan] EVT-1 |
 | | 5 | Nút Run Code | `problemDetail.taskbar.btnRun` | - | - | Button | - | - | - | I | - | - | Chạy thử mã hiện tại với toàn bộ testcase mẫu, không ghi nhận tiến độ (F4-02) [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:105]<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] EVT-10 |
 | | 6 | Nút Submit | `problemDetail.taskbar.btnSubmit` | `judge.submissions` | - | Button | - | - | - | I | - | - | Tạo một lượt nộp và chấm với testcase ẩn (F4-01) [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:106]<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] EVT-11 |
@@ -406,7 +408,7 @@ từ ngoài, không tự gọi API.
 | | 4 | Danh sách bài để chọn | `problemDetail.emptyState.suggestionList` | `problem.problems` | - | List | List | - | - | I/O | rỗng | - | Danh sách bài mở nhanh không cần rời màn [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:140-150]<br>[Nguồn giá trị] Prototype ghi tiêu đề "Gợi ý theo điểm yếu của bạn" [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:136] nhưng **không có mã `Fx-nn` nào cho gợi ý cá nhân hoá** — xem Câu hỏi mở Q2<br>[EVT liên quan] EVT-2 |
 | | 5 | Tên bài trong danh sách | `problemDetail.emptyState.col.title` | `problem.problems` | `code`, `title` | ListColumn | String | 240 | - | O | - | `{mã}. {tên}` | Tên bài của mục [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:143-144]<br>[Nguồn giá trị] Cột `code`, `title` [Nguồn: 02-bd/database/problem-bank.md:14-15]<br>[EVT liên quan] - |
 | | 6 | Chủ đề trong danh sách | `problemDetail.emptyState.col.topic` | `problem.topics` | `name` | ListColumn | String | - | - | O | `-` | - | Chủ đề của bài [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:145]<br>[Nguồn giá trị] `topics.name` qua `problem_topics.problem_id` [Nguồn: 02-bd/database/problem-bank.md:37-39]<br>[EVT liên quan] - |
-| | 7 | Độ khó trong danh sách | `problemDetail.emptyState.col.difficulty` | `problem.problems` | `difficulty` | ListColumn | Enum | - | - | O | - | Nhãn tiếng Việt | Mức độ khó của bài [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:146]<br>[Nguồn giá trị] Như Khu vực A NO 3<br>[EVT liên quan] - |
+| | 7 | Độ khó trong danh sách | `problemDetail.emptyState.col.difficulty` | `problem.problem_levels` | `display_name` | ListColumn | String | - | - | O | - | Nhãn `display_name` | Mức độ khó của bài [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:146]<br>[Nguồn giá trị] Như Khu vực A NO 3<br>[EVT liên quan] - |
 | | 8 | Liên kết xem toàn bộ bài | `problemDetail.emptyState.linkAllProblems` | - | - | Link | - | - | - | I | - | - | Sang màn `problem_list` [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:137]<br>[Nguồn giá trị] Nhãn tĩnh i18n. Prototype ghi kèm tổng số bài "640" — số này lấy từ cùng nguồn với dải chỉ số của `problem_list` [Nguồn: 02-bd/screens/users/USR0101_problem_list.md:299]<br>[EVT liên quan] EVT-19 |
 
 ### Khu vực C — Panel thông tin bài toán
@@ -426,7 +428,7 @@ từ ngoài, không tự gọi API.
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Tab Đề bài | | | | | | | | | | | | | |
 | | 1 | Tên bài | `problemDetail.statement.title` | `problem.problems` | `code`, `title` | Label | String | 240 | - | O | - | `{mã}. {tên}` | Tiêu đề đề bài [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:168]<br>[Nguồn giá trị] Cùng nguồn Khu vực A NO 2<br>[EVT liên quan] - |
-| | 2 | Nhãn độ khó | `problemDetail.statement.difficultyBadge` | `problem.problems` | `difficulty` | Badge | Enum | - | - | O | - | Nhãn tiếng Việt | [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:170]<br>[Nguồn giá trị] Như Khu vực A NO 3<br>[EVT liên quan] - |
+| | 2 | Nhãn độ khó | `problemDetail.statement.difficultyBadge` | `problem.problem_levels` | `display_name` | Badge | String | - | - | O | - | Nhãn `display_name` | [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:170]<br>[Nguồn giá trị] Như Khu vực A NO 3<br>[EVT liên quan] - |
 | | 3 | Nhãn chủ đề | `problemDetail.statement.topicBadge` | `problem.topics` | `name` | Badge | String | - | - | O | `-` | - | Chủ đề của bài, nhiều chủ đề thì mỗi chủ đề một nhãn [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:171]<br>[Nguồn giá trị] `topics.name` qua `problem_topics` [Nguồn: 02-bd/database/problem-bank.md:37-39]<br>[EVT liên quan] - |
 | | 4 | Nhãn mô hình đang chọn | `problemDetail.statement.modelBadge` | - | - | Badge | Enum | - | - | O | `Bọc hàm` | - | Cho biết mã đang viết theo mô hình nào [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:172]<br>[Công thức] Bám **trạng thái màn** của Khu vực G NO 3, không phải cột DB — mô hình do người học chọn mỗi lượt (`DEC-2026-0824-dual-submission-model-per-problem`)<br>[EVT liên quan] EVT-5 |
 | | 5 | Nội dung đề | `problemDetail.statement.body` | `problem.problems` | `statement_md` | Label | String | - | - | O | - | Markdown + LaTeX | Toàn văn đề bài [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:176-177]<br>[Nguồn giá trị] Cột `statement_md`, kết xuất Markdown + LaTeX (F2-01) [Nguồn: 02-bd/database/problem-bank.md:16]<br>[EVT liên quan] - |
@@ -642,7 +644,7 @@ từ ngoài, không tự gọi API.
 | --: | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :--- |
 | 1 | `ProblemWorkspaceDto` | `id` | UUID | `problem.problems` | `id` | - | Không | [Nguồn] Phản hồi của `GetProblemForWorkspace`<br>[Đích] Tham số của mọi lời gọi còn lại của màn. |
 | 2 | `ProblemWorkspaceDto` | `code`, `title` | String | `problem.problems` | `code`, `title` | Thanh tác vụ, tab Đề bài | Có | - |
-| 3 | `ProblemWorkspaceDto` | `difficulty` | Enum | `problem.problems` | `difficulty` | Thanh tác vụ, tab Đề bài | Có | [Chuyển đổi] `EASY`/`MEDIUM`/`HARD` thành "Dễ"/"Trung bình"/"Khó". |
+| 3 | `ProblemWorkspaceDto` | `levelCode`, `levelDisplayName` | String, String | `problem.problem_levels` | `code`, `display_name` | Thanh tác vụ, tab Đề bài, danh sách chọn bài | Có | [Nguồn] Join qua `problems.level_id` (thay trường `difficulty` kiểu Enum cũ, theo `DEC-2026-1001-admin-configurable-settings` mục (7))<br>[Chuyển đổi] Đọc `display_name` từ dữ liệu, bỏ ánh xạ "EASY/MEDIUM/HARD thành Dễ/Trung bình/Khó". |
 | 4 | `ProblemWorkspaceDto` | `topicNames` | List\<String\> | `problem.topics` | `name` | Tab Đề bài — nhãn chủ đề | Có | [Nguồn] `topics.name` qua `problem_topics.problem_id`<br>[Chuyển đổi] Mỗi chủ đề một nhãn, **không** nối bằng dấu phẩy như bảng của `problem_list`. |
 | 5 | `ProblemWorkspaceDto` | `statementMd` | String | `problem.problems` | `statement_md` | Tab Đề bài — nội dung đề | Có | [Chuyển đổi] Kết xuất Markdown + LaTeX ở phía giao diện; máy chủ trả nguyên văn. |
 | 6 | `ProblemWorkspaceDto` | `functionWrapperSupported` | Boolean | `problem.problems` | `function_wrapper_supported` | Thanh công cụ — nhóm nút mô hình | Có | [Chuyển đổi] `false` thì **ẩn** nút "Bọc hàm", chỉ còn Standard I/O (F3-13). |
@@ -662,11 +664,11 @@ từ ngoài, không tự gọi API.
 | 20 | `SampleRunResultDto` | `compileErrorMessage` | String | - | - | Khối kết quả dạng văn bản | Điều kiện | [Chuyển đổi] Như NO 18. Lượt chạy thử **không** tạo dòng `submissions`, xem Câu hỏi mở Q10. |
 | 21 | `SolutionReviewQuickInsightDto` | `submissionId`, `timeComplexity`, `spaceComplexity`, `highlights` | UUID, String, String, List\<String\> | `ai.solution_reviews` | `submission_id`, `result_json` | Tab Solution Review | Điều kiện | [Nguồn] Lời gọi **riêng** `GetMySolutionReviewQuickInsight` sang `ai-review`, không gộp vào lời gọi đề bài — để màn vẫn chạy đủ khi F5 chết (`CLAUDE.md` — AI suy giảm nhẹ nhàng), cùng nguyên tắc đã áp ở `problem_list` [Nguồn: 02-bd/screens/users/USR0101_problem_list.md:482]. |
 
-### 7.2 Truy cập bảng dữ liệu (12)
+### 7.2 Truy cập bảng dữ liệu (13)
 
 | NO | Tên logic | Bảng | Repository | CRUD | Mục đích | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :--- | :--- |
-| 1 | Bài toán | `problem.problems` | `ProblemRepository` | R | Đọc đề bài, độ khó, giới hạn cơ sở, cờ mô hình | `GetProblemForWorkspace`: R |
+| 1 | Bài toán | `problem.problems` | `ProblemRepository` | R | Đọc đề bài, `level_id` của độ khó, giới hạn cơ sở, cờ mô hình | `GetProblemForWorkspace`: R |
 | 2 | Chủ đề | `problem.topics` | `TopicRepository` | R | Nhãn chủ đề trên tab Đề bài | `GetProblemForWorkspace`: R |
 | 3 | Gán chủ đề cho bài | `problem.problem_topics` | `ProblemTopicRepository` | R | Nối bài với chủ đề | `GetProblemForWorkspace`: R |
 | 4 | Đặc tả bài toán | `problem.problem_specs` | `ProblemSpecRepository` | R | Định dạng `stdin`/`stdout` cho mô hình Standard I/O | `GetProblemForWorkspace`: R<br>`GetStarterCode`: R |
@@ -678,6 +680,7 @@ từ ngoài, không tự gọi API.
 | 10 | Kết quả từng testcase | `judge.submission_testcase_results` | `SubmissionTestcaseResultRepository` (module `judge-orchestration`) | R | Dựng dải ô trạng thái theo thứ tự testcase — **chỉ** đọc `testcase_order` và `verdict` | `SubscribeSubmissionProgress`: R |
 | 11 | Cấu hình ngôn ngữ | `judge.language_configs` | `LanguageConfigRepository` (module `judge-orchestration`) | R | Hệ số nhân giới hạn thời gian và bộ nhớ theo ngôn ngữ | `GetEffectiveExecutionLimits`: R |
 | 12 | Báo cáo phân tích bài giải | `ai.solution_reviews` | `SolutionReviewRepository` (module `ai-review`) | R | Lấy tóm tắt nhanh cho tab thứ ba | `GetMySolutionReviewQuickInsight`: R |
+| 13 | Danh mục độ khó | `problem.problem_levels` | `ProblemLevelRepository` | R | Đọc nhãn độ khó của bài qua join `level_id` | `GetProblemForWorkspace`: R, qua join. Màn này không ghi; ADMIN quản lý độ khó ở `SHR0201` [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`] |
 
 Màn có đúng **hai** loại thao tác ghi: tạo một dòng `submissions` khi nộp bài, và tạo/xoá một dòng
 `bookmarks` khi bật/tắt lưu bài. Mọi bảng còn lại chỉ đọc. Bốn bảng cuối thuộc module khác, truy cập qua

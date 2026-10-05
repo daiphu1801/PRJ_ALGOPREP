@@ -15,14 +15,18 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Search, Shuffle } from "lucide-react";
+import { Shuffle } from "lucide-react";
 import {
   fetchProblemListPage,
-  type Difficulty,
+  problemLevelLabel,
+  problemLevelRank,
+  problemLevelTone,
+  useProblemLevels,
   type ProblemListItem,
   type SolveState,
 } from "@/entities/problem";
 import { useT } from "@/shared/i18n";
+import { usePersistedPageSize } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
 import {
   Badge,
@@ -31,18 +35,12 @@ import {
   DataTable,
   PageHeader,
   Pagination,
-  SegmentedTabs,
-  StatCard,
-  TextField,
+  FilterBar,
+  FilterMenu,
+  StatCard,
   type BadgeVariant,
   type DataTableColumn,
 } from "@/shared/ui";
-
-const DIFFICULTY_VARIANT: Record<Difficulty, BadgeVariant> = {
-  easy: "success",
-  medium: "warn",
-  hard: "negative",
-};
 
 const SOLVE_STATE_VARIANT: Record<SolveState, BadgeVariant> = {
   solved: "success",
@@ -50,15 +48,17 @@ const SOLVE_STATE_VARIANT: Record<SolveState, BadgeVariant> = {
   todo: "neutral",
 };
 
-const PAGE_SIZE = 12;
+// 12 is the default (a multiple of the card grid's columns); the learner may pick another.
+const PAGE_SIZES = [12, 24, 48] as const;
 
 type StatusFilter = SolveState | "all";
-type DifficultyFilter = Difficulty | "all";
+type DifficultyFilter = string;
 type SortKey = "difficulty" | "acRate";
 
 export function ProblemListView() {
   const t = useT("problemList");
   const router = useRouter();
+  const levels = useProblemLevels();
   const [page] = useState(fetchProblemListPage);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<StatusFilter>("all");
@@ -69,6 +69,7 @@ export function ProblemListView() {
     direction: "asc",
   });
   const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = usePersistedPageSize("algoprep-problem-list-page-size", PAGE_SIZES, 12);
 
   const resetToFirstPage = () => setCurrentPage(1);
 
@@ -89,12 +90,11 @@ export function ProblemListView() {
       if (sort.key === "acRate") {
         return ((left.acRate ?? -1) - (right.acRate ?? -1)) * factor;
       }
-      const rank = { easy: 0, medium: 1, hard: 2 } as const;
-      return (rank[left.difficulty] - rank[right.difficulty]) * factor;
+      return (problemLevelRank(levels, left.difficulty) - problemLevelRank(levels, right.difficulty)) * factor;
     });
-  }, [page.items, query, status, difficulty, topicId, sort]);
+  }, [page.items, query, status, difficulty, topicId, sort, levels]);
 
-  const visible = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+  const visible = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   function pickRandom() {
     const problem = filtered[Math.floor(Math.random() * filtered.length)];
@@ -168,7 +168,9 @@ export function ProblemListView() {
       width: "108px",
       sortable: true,
       render: (problem) => (
-        <Badge variant={DIFFICULTY_VARIANT[problem.difficulty]}>{t(`difficulty.${problem.difficulty}`)}</Badge>
+        <Badge variant={problemLevelTone(levels, problem.difficulty)}>
+          {problemLevelLabel(levels, problem.difficulty)}
+        </Badge>
       ),
     },
     {
@@ -213,9 +215,11 @@ export function ProblemListView() {
 
       <div className="mb-4 grid gap-3.5 [grid-template-columns:repeat(auto-fit,minmax(160px,1fr))]">
         <StatCard label={t("summary.solvedTotal")} value={`${page.summary.solvedTotal.solved} / ${page.summary.solvedTotal.total}`} />
-        <StatCard label={t("difficulty.easy")} value={`${page.summary.solvedEasy.solved} / ${page.summary.solvedEasy.total}`} />
-        <StatCard label={t("difficulty.medium")} value={`${page.summary.solvedMedium.solved} / ${page.summary.solvedMedium.total}`} />
-        <StatCard label={t("difficulty.hard")} value={`${page.summary.solvedHard.solved} / ${page.summary.solvedHard.total}`} />
+        {/* One card per level in the admin-chosen order; a level with no problems yet reads 0 / 0. */}
+        {levels.map((level) => {
+          const ratio = page.summary.solvedByLevel[level.key] ?? { solved: 0, total: 0 };
+          return <StatCard key={level.key} label={level.label} value={`${ratio.solved} / ${ratio.total}`} />;
+        })}
       </div>
 
       <div className="mb-4 flex gap-2 overflow-x-auto pb-1" role="group" aria-label={t("topicNav.label")}>
@@ -256,23 +260,19 @@ export function ProblemListView() {
 
       <div className="grid gap-4 [grid-template-columns:minmax(0,1fr)_268px]">
         <Card className="min-w-0 px-[18px] py-4">
-          <div className="mb-3.5 flex flex-wrap items-center gap-2.5">
-            <TextField
-              label={t("filter.searchLabel")}
-              hideLabel
-              leadingIcon={<Search className="h-3.5 w-3.5" />}
-              placeholder={t("filter.searchPlaceholder")}
-              value={query}
-              onChange={(event) => {
-                setQuery(event.target.value);
+          <FilterBar
+            search={{
+              label: t("filter.searchLabel"),
+              placeholder: t("filter.searchPlaceholder"),
+              value: query,
+              onChange: (next) => {
+                setQuery(next);
                 resetToFirstPage();
-              }}
-              onKeyDown={(event) => {
-                if (event.key === "Enter") announceSearch();
-              }}
-              wrapperClassName="min-w-[220px] flex-1"
-            />
-            <SegmentedTabs
+              },
+              onSubmit: announceSearch,
+            }}
+          >
+            <FilterMenu
               label={t("filter.statusLabel")}
               value={status}
               onValueChange={(value) => {
@@ -286,7 +286,7 @@ export function ProblemListView() {
                 { value: "todo", label: t("state.todo") },
               ]}
             />
-            <SegmentedTabs
+            <FilterMenu
               label={t("filter.difficultyLabel")}
               value={difficulty}
               onValueChange={(value) => {
@@ -295,12 +295,10 @@ export function ProblemListView() {
               }}
               options={[
                 { value: "all", label: t("filter.all") },
-                { value: "easy", label: t("difficulty.easy") },
-                { value: "medium", label: t("difficulty.medium") },
-                { value: "hard", label: t("difficulty.hard") },
+                                ...levels.map((level) => ({ value: level.key, label: level.label })),
               ]}
             />
-          </div>
+          </FilterBar>
 
           <DataTable
             caption={t("table.caption")}
@@ -321,12 +319,18 @@ export function ProblemListView() {
 
           <Pagination
             page={currentPage}
-            pageSize={PAGE_SIZE}
+            pageSize={pageSize}
             total={filtered.length}
             onPageChange={setCurrentPage}
+            pageSizeOptions={PAGE_SIZES}
+            pageSizeLabel={t("pager.pageSizeLabel")}
+            onPageSizeChange={(size) => {
+              setPageSize(size);
+              setCurrentPage(1);
+            }}
             summary={t("pager.summary", {
-              from: filtered.length === 0 ? 0 : (currentPage - 1) * PAGE_SIZE + 1,
-              to: Math.min(currentPage * PAGE_SIZE, filtered.length),
+              from: filtered.length === 0 ? 0 : (currentPage - 1) * pageSize + 1,
+              to: Math.min(currentPage * pageSize, filtered.length),
               total: filtered.length,
             })}
             previousLabel={t("pager.previous")}

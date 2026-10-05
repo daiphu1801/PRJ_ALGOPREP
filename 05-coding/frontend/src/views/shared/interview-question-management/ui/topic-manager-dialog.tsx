@@ -7,6 +7,7 @@
 
 import {
   addInterviewTopic,
+  moveInterviewTopic,
   removeInterviewTopic,
   renameInterviewTopic,
   setInterviewTopicStar,
@@ -36,6 +37,7 @@ export function TopicManagerDialog({ open, onClose, usage }: Props) {
       onAdd={addInterviewTopic}
       onRename={renameInterviewTopic}
       onRemove={removeInterviewTopic}
+      onMove={moveInterviewTopic}
       renderExtra={(topic) => (
         <Toggle
           checked={topic.usesStarFramework}
@@ -60,6 +62,8 @@ export function TopicManagerDialog({ open, onClose, usage }: Props) {
         close: t("topicManager.close"),
         usage: (count) => t("topicManager.usage", { count }),
         deleteBlocked: (count) => t("topicManager.deleteBlocked", { count }),
+        moveUp: t("topicManager.moveUp"),
+        moveDown: t("topicManager.moveDown"),
         error: {
           empty: t("topicManager.error.empty"),
           duplicate: t("topicManager.error.duplicate"),

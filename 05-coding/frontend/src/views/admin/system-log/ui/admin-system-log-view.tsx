@@ -15,7 +15,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Search } from "lucide-react";
 import {
   AUDIT_CATEGORIES,
   fetchAuditLogPage,
@@ -34,9 +33,9 @@ import {
   PageHeader,
   ParamsDialog,
   RankedProgressList,
-  SegmentedTabs,
+  FilterBar,
+  FilterMenu,
   SettingRow,
-  TextField,
   type BadgeVariant,
 } from "@/shared/ui";
 
@@ -127,26 +126,22 @@ export function AdminSystemLogView() {
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(290px,0.42fr)]">
         <Card className="min-w-0 px-[18px] py-4">
-          <div className="mb-3.5 flex flex-wrap items-center gap-2.5">
-            <TextField
-              label={t("searchLabel")}
-              hideLabel
-              leadingIcon={<Search className="h-3.5 w-3.5" />}
-              placeholder={t("searchPlaceholder")}
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              wrapperClassName="min-w-[200px] flex-1"
-            />
-            <SegmentedTabs
+          <FilterBar
+            search={{
+              label: t("searchLabel"),
+              placeholder: t("searchPlaceholder"),
+              value: query,
+              onChange: (next) => setQuery(next),
+            }}
+            resultCount={t("resultCount", { shown: events.length, total: page.events.length })}
+          >
+            <FilterMenu
               label={t("categoryFilterLabel")}
               options={categoryOptions}
               value={category}
               onValueChange={setCategory}
             />
-            <span className="ml-auto text-[12.5px] whitespace-nowrap text-[var(--color-text-muted)]">
-              {t("resultCount", { shown: events.length, total: page.events.length })}
-            </span>
-          </div>
+          </FilterBar>
 
           {events.length === 0 ? (
             <EmptyState>

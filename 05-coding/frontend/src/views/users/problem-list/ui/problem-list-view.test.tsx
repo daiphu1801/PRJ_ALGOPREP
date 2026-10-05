@@ -1,5 +1,6 @@
-import { describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { act, fireEvent, render, renderHook, screen, within } from "@testing-library/react";
+import { addProblemLevel, removeProblemLevel, useProblemLevels } from "@/entities/problem";
 import { NextIntlClientProvider } from "@/shared/i18n";
 import messages from "../../../../../messages/vi.json";
 import { ProblemListView } from "./problem-list-view";
@@ -14,6 +15,12 @@ function renderView() {
       <ProblemListView />
     </NextIntlClientProvider>,
   );
+}
+
+// Filters are a button that opens a listbox; open it first, then pick from the options.
+function openFilter(label: string) {
+  fireEvent.click(screen.getByRole("button", { name: new RegExp(`^${label}`) }));
+  return screen.getByRole("listbox", { name: label });
 }
 
 describe("ProblemListView", () => {
@@ -35,5 +42,44 @@ describe("ProblemListView", () => {
     // search box), so assert on the unique row link instead of the bare title text.
     expect(screen.getByRole("link", { name: /#139/ })).toBeInTheDocument();
     expect(screen.queryByText("Two Sum")).not.toBeInTheDocument();
+  });
+});
+
+describe("ProblemListView difficulty tabs", () => {
+  afterEach(() => {
+    const { result } = renderHook(() => useProblemLevels());
+    const extra = result.current.find((l) => l.label === "Rất khó");
+    if (extra) act(() => void removeProblemLevel(extra.key));
+  });
+
+  it("shows one tab per level in admin order and filters by it", () => {
+    renderView();
+    const group = openFilter("Lọc theo độ khó");
+    expect(within(group).getAllByRole("option").map((b) => b.textContent)).toEqual([
+      "Tất cả",
+      "Dễ",
+      "Trung bình",
+      "Khó",
+    ]);
+
+    const rowsBefore = screen.getAllByRole("row").length;
+    fireEvent.click(within(group).getByRole("option", { name: "Khó" }));
+    expect(screen.getAllByRole("row").length).toBeLessThan(rowsBefore);
+  });
+
+  it("adds a tab for a level the admin created", () => {
+    act(() => void addProblemLevel("Rất khó"));
+    renderView();
+    const group = openFilter("Lọc theo độ khó");
+    expect(within(group).getByRole("option", { name: "Rất khó" })).toBeInTheDocument();
+  });
+
+  it("shows one progress card per level, and 0 / 0 for a level with no problems yet", () => {
+    act(() => void addProblemLevel("Rất khó"));
+    renderView();
+    // Seed levels carry the mock numbers; the level the admin just created has no problems.
+    expect(screen.getByText("20 / 40")).toBeInTheDocument();
+    expect(screen.getByText("4 / 28")).toBeInTheDocument();
+    expect(screen.getByText("0 / 0")).toBeInTheDocument();
   });
 });

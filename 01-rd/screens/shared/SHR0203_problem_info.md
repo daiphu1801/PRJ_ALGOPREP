@@ -27,8 +27,9 @@ màn soạn (thanh đầu trang, rồi nội dung rộng và cột thuộc tính
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Hiển thị tiêu đề, mã, chủ đề, độ khó, trạng thái `Chưa xuất bản` / `Đã xuất bản` | F2-01, F2-02, F2-15 | `01-rd/req/problem-bank.md` |
+| Hiển thị tiêu đề, mã, chủ đề, độ khó, trạng thái `Chưa xuất bản` / `Đã xuất bản`. Độ khó do ADMIN quản lý (danh mục dữ liệu; ba mức Dễ/Trung bình/Khó chỉ là dữ liệu khởi tạo), không gắn logic. | F2-01, F2-02, F2-15 | `01-rd/req/problem-bank.md` |
 | Hiển thị đề bài dưới dạng **Markdown + LaTeX đã render** (không phải văn bản thô; HTML thô không được phân tích), ràng buộc dữ liệu, các ví dụ mẫu | F2-01 | `01-rd/req/problem-bank.md` — F2-01; hiện thực ở `05-coding/frontend/src/views/shared/problem-info/ui/problem-info-view.tsx:98-104` |
+| Hiển thị đặc tả bài toán ở dạng chỉ đọc: chữ ký hàm chung và dòng chữ ký ở từng ngôn ngữ (Bọc hàm), định dạng stdin/stdout (Standard I/O), chiến lược so khớp (thêm 2026-10-03, `SHR0202` Q20) | F2-03, F2-04 | `01-rd/req/problem-bank.md` — F2-03, F2-04 |
 | Hiển thị giới hạn tài nguyên của bài (thời gian, bộ nhớ, output, stack) | F2-10 | `01-rd/req/problem-bank.md` — F2-10 |
 | Hiển thị số testcase đã duyệt, số testcase công khai, số testcase chờ duyệt, ma trận độ phủ theo loại ca | F2-05, F2-06, F2-14 | `01-rd/req/problem-bank.md` |
 | Hiển thị kết quả lần chạy kiểm đáp án mẫu gần nhất (đạt/tổng) và mã đáp án mẫu ở dạng thu gọn | F2-18 | `01-rd/req/problem-bank.md` — F2-18 |
@@ -72,6 +73,7 @@ Mã đáp án mẫu **chỉ A2/A3 thấy**, không bao giờ đưa vào prompt A
 | REQ-4 | Danh sách `problem_management` dẫn vào màn này khi bấm tiêu đề, dẫn vào `/edit` khi bấm biểu tượng Sửa. | `DEC-2026-1002-split-detail-and-edit-pages` |
 | REQ-5 | Mã đáp án mẫu ẩn mặc định (thu gọn), và chỉ hiển thị với người có quyền `PROBLEM_AUTHORING`. | F2-18 |
 | REQ-6 | Đề bài (`body`) hiển thị dưới dạng Markdown + LaTeX đã render (GFM, công thức); HTML thô trong đề bài không được phân tích. Văn bản Markdown gốc chỉ xuất hiện trong ô nhập của form soạn (`SHR0202`). Cập nhật 2026-10-03. | F2-01 |
+| REQ-7 | Màn hiển thị đặc tả bài toán ở dạng chỉ đọc (chữ ký hàm chung kèm dòng chữ ký từng ngôn ngữ, định dạng stdin/stdout, chiến lược so khớp); bài có kiểu ngoài lược đồ thì nêu rõ chỉ hỗ trợ Standard I/O. Sửa đặc tả chỉ ở `/edit`. | F2-03, F2-04 |
 
 ---
 

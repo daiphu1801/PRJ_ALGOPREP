@@ -33,6 +33,11 @@ import {
   setModelPriceValue,
   useModelPrices,
 } from "@/entities/ai-budget";
+import {
+  AI_GENERATION_LIMIT_MAX,
+  AI_GENERATION_LIMIT_MIN,
+  aiGenerationSettings,
+} from "@/entities/problem";
 import { useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
 import {
@@ -71,6 +76,7 @@ export function AdminAiConfigView() {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [pricesOpen, setPricesOpen] = useState(false);
   const budgetSettings = aiBudgetSettings.use();
+  const generationSettings = aiGenerationSettings.use();
   const modelPrices = useModelPrices();
 
   const total = totalWeight(page.rubricWeights);
@@ -260,6 +266,22 @@ export function AdminAiConfigView() {
                 </Button>
               </SettingRow>
             </div>
+          </Card>
+
+          <Card title={t("testcaseGen.title")} description={t("testcaseGen.subtitle")}>
+            <SettingRow label={t("testcaseGen.maxLabel")} description={t("testcaseGen.maxMeta")}>
+              <NumberStepper
+                value={generationSettings.maxPerProblem}
+                onValueChange={(maxPerProblem) => aiGenerationSettings.set({ maxPerProblem })}
+                label={t("testcaseGen.maxLabel")}
+                min={AI_GENERATION_LIMIT_MIN}
+                max={AI_GENERATION_LIMIT_MAX}
+                step={1}
+                format={(value) => t("testcaseGen.value", { count: value })}
+                decrementLabel={t("testcaseGen.decrement")}
+                incrementLabel={t("testcaseGen.increment")}
+              />
+            </SettingRow>
           </Card>
 
           <Card title={t("guardsTitle")}>

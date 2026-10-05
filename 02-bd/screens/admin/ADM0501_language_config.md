@@ -36,7 +36,7 @@
 | Tên vật lý (slug) | `admin_language_config` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A3 (`ADMIN`) |
-| Phiên bản | V0.3 |
+| Phiên bản | V0.6 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/15 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
@@ -51,6 +51,9 @@
 | V0.1 | Toàn bộ | Tạo mới theo cấu trúc 8 mục văn xuôi (bối cảnh, layout regions, component inventory, screen states, API tiêu thụ, navigation và access rights, câu hỏi mở, tham chiếu) | 2026/09/15 | Nhóm phát triển AlgoPrep |
 | V0.2 | Toàn bộ | Chuyển sang mẫu 9 sheet. Chốt công thức của hai cột dẫn xuất "Giới hạn TG" và "Bộ nhớ", chốt nguồn của các nhãn tĩnh, hạ 4 giá trị "Giới hạn mặc định" về hiển thị chỉ đọc đọc từ `application.yml` ở đợt này, bổ sung Sheet 8 danh sách sự kiện và Sheet 9 đặc tả kiểm tra, giữ nguyên toàn bộ câu hỏi mở của V0.1 và phát sinh thêm câu hỏi về hệ số bộ nhớ | 2026/09/20 | Nhóm phát triển AlgoPrep |
 | V0.3 | Sheet 8, 9 | Áp `DEC-2026-1003-toast-feedback-channel`: kết quả thao tác và lỗi nhập liệu ghi là toast dùng chung, ô sai chỉ đổi viền đỏ. | 2026/10/03 | AI |
+| V0.4 | Sheet 4, 5, 6, 7, 8, 9, Câu hỏi mở | Chủ dự án chốt 2026-10-03: giới hạn sandbox cho script sinh dữ liệu testcase (F2-14) cấu hình ở thẻ riêng; script chạy bằng Python. Thêm Khu vực F (thời gian chạy tối đa, kích thước output tối đa), DTO `GeneratorSandboxDto`, EVT-7, kiểm nhập liệu 9. Đóng Q9, thêm Q10 (nơi lưu, giá trị mặc định). Prototype chưa dựng thẻ | 2026/10/03 | AI |
+| V0.5 | Sheet 5, 7, Câu hỏi mở | Dựng thẻ "Script sinh dữ liệu testcase" ở prototype và chốt nơi lưu (2026-10-03): bảng singleton `judge.generator_sandbox_settings`, mặc định 30 giây và 100 MB; đóng Q10 | 2026/10/03 | AI |
+| V0.6 | Sheet 4 (4.5) | Ghi hiện trạng prototype: dữ liệu màn đi qua `queries.ts` + `withMockData`, có trạng thái đang tải, lỗi tải và toast lỗi khi lưu thất bại. Không đổi hành vi BD | 2026/10/03 | AI |
 
 ---
 
@@ -202,6 +205,7 @@ design system cuối cùng.
 | Cột trái — "Ngôn ngữ được hỗ trợ" | `:163-203` | Bảng 6 cột, đúng 3 dòng ngôn ngữ, công tắc bật hoặc tắt ở cột cuối |
 | Cột phải — "Giới hạn mặc định" | `:206-220` | 4 dòng nhãn kèm giá trị, áp dụng khi bài toán không khai riêng |
 | Cột phải — "Sandbox" | `:222-237` | 3 công tắc tham số sandbox go-judge |
+| Cột phải — "Script sinh dữ liệu" (thêm 2026-10-03, chưa có trong prototype) | không có | Thẻ riêng sau "Sandbox": ngôn ngữ script (Python, cố định), thời gian chạy tối đa, kích thước output tối đa |
 | Cột phải — "Lưu ý khi đổi giới hạn" | `:239-242` | Đoạn văn tĩnh, không có input |
 | Chân trang (khung chung Admin) | `:246-259` | Phiên bản, trạng thái dịch vụ, liên kết phụ — dùng lại khung chung |
 
@@ -222,6 +226,8 @@ BD. Ngưỡng breakpoint cụ thể chưa có nguồn, xem Câu hỏi mở Q8.
 | Lưu thay đổi | `features/language-config-save` | Prototype `:158` |
 
 `[Suy luận]` — ánh xạ slice do BD đề xuất, DD màn hình chốt lại.
+
+**Hiện trạng prototype (2026-10-03):** dữ liệu đi qua `views/admin/language-config/api/queries.ts` (`useLanguageConfigPage` cho `GetLanguageConfigs`, `useSaveLanguageConfigPage` cho `UpdateLanguageConfigs`, dùng `withMockData(mock, fetchReal)` như các màn khác). Màn có trạng thái đang tải (khung chờ) và lỗi tải; lưu thất bại hiện toast lỗi, giữ nguyên bản đang sửa. Chưa tách widget hay feature như bảng trên, mọi khối còn nằm trong `ui/admin-language-config-view.tsx`.
 
 > [Nội bộ] Ảnh minh hoạ đặt ở `08-diagram/02-bd/screens/admin/`, chụp bằng Playwright trên ứng dụng Next.js
 > thật khi đã có mã chạy được. Chưa có thì tham chiếu prototype, không vẽ tay.
@@ -281,6 +287,18 @@ BD. Ngưỡng breakpoint cụ thể chưa có nguồn, xem Câu hỏi mở Q8.
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Lưu ý khi đổi giới hạn | | | | | | | | | | | | | |
 | | 1 | Nội dung lưu ý | `adminLanguageConfig.notice.body` | - | - | Label | String | - | - | O | Thay đổi hệ số hoặc giới hạn tài nguyên chỉ áp dụng cho các lượt nộp mới kể từ thời điểm lưu. Các lượt nộp trước đó giữ nguyên kết quả đã chấm. | - | Đoạn văn tĩnh, không có input. **Bỏ liên kết "chấm lại"** của prototype vì tính năng đã bị loại khỏi phạm vi (`DEC-2026-0828-remove-rejudge-scope`)<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] - |
+
+### Khu vực F — Script sinh dữ liệu testcase (thêm 2026-10-03)
+
+> Thẻ riêng ở cột phải, sau "Sandbox" (chủ dự án chốt 2026-10-03: tách thẻ vì giới hạn này phục vụ chức năng "Sinh tự động" F2-14 mà cả A2 và A3 đều dùng, và là hai ô số chứ không phải công tắc như Khu vực D). **Prototype đã dựng** (`views/admin/language-config/ui/admin-language-config-view.tsx:302-340`, kiểm giá trị trong `save`). Hai giá trị áp dụng toàn hệ thống cho mọi bài; chỉ ADMIN có Function `LANGUAGE_CONFIG` sửa. Script do AI viết, chạy bằng **Python** (chủ dự án chốt 2026-10-03).
+
+| Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
+| :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
+| Script sinh dữ liệu | | | | | | | | | | | | | |
+| | 1 | Tiêu đề thẻ | `adminLanguageConfig.generator.title` | - | - | Label | String | - | - | O | Script sinh dữ liệu testcase | - | Tiêu đề thẻ, kèm mô tả phụ "Giới hạn khi hệ thống chạy script AI viết ra để sinh input (F2-14); riêng, không dùng chung với bài nộp"<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] - |
+| | 2 | Ngôn ngữ script | `adminLanguageConfig.generator.language` | - | - | Label | String | - | - | O | Python | - | Cố định Python, không sửa<br>[Nguồn giá trị] Nhãn tĩnh i18n (`DEC-2026-1003-ai-testcase-generation-quota`)<br>[EVT liên quan] - |
+| | 3 | Thời gian chạy tối đa | `adminLanguageConfig.generator.maxRuntimeSeconds` | `judge.generator_sandbox_settings` (`02-bd/database/judge-orchestration.md` mục 1.8) | `max_runtime_seconds` | NumberBox | Number | 3 | Có | I/O | 30 | `{số} giây` | Script chạy quá thời gian này thì loại cả script và báo lý do (RD F2-14 bước 4). Giá trị mặc định và khoảng 1 đến 300 là `[SoT: Suy luận]`<br>[Nguồn giá trị] Phản hồi của `GetLanguageConfigs`<br>[EVT liên quan] EVT-7 |
+| | 4 | Kích thước output tối đa | `adminLanguageConfig.generator.maxOutputMb` | `judge.generator_sandbox_settings` (`02-bd/database/judge-orchestration.md` mục 1.8) | `max_output_mb` | NumberBox | Number | 4 | Có | I/O | 100 | `{số} MB` | Tổng output của script vượt mức này thì loại cả script và báo lý do. Ràng buộc MỚI, không dùng chung kích thước output của bài nộp (RD `problem-bank.md:88-91`). Giá trị mặc định và khoảng 1 đến 1024 là `[SoT: Suy luận]`<br>[Nguồn giá trị] Phản hồi của `GetLanguageConfigs`<br>[EVT liên quan] EVT-7 |
 
 [Nguồn: 09-layoutBase/Admin - Ngôn ngữ và giới hạn.dc.html:150-151,158,166-167,190-198,392-395,402-405,
 416-421,424-428; 02-bd/database/judge-orchestration.md:95-103;
@@ -343,6 +361,16 @@ BD. Ngưỡng breakpoint cụ thể chưa có nguồn, xem Câu hỏi mở Q8.
 | Lưu ý khi đổi giới hạn | | | | |
 | | 1 | Nội dung lưu ý | Có | - |
 
+### Khu vực F — Script sinh dữ liệu testcase (thêm 2026-10-03)
+
+| Khu vực | NO | Tên item | Hiển thị | Ghi chú |
+| :--- | --: | :--- | :-: | :--- |
+| Script sinh dữ liệu | | | | |
+| | 1 | Tiêu đề thẻ | Có | - |
+| | 2 | Ngôn ngữ script | Có | - |
+| | 3 | Thời gian chạy tối đa | Có | [Điều kiện kích hoạt] Kích hoạt sau khi tải xong dữ liệu; không kích hoạt trong lúc đang lưu.<br>[Tự động đặt] Sau khi đổi, thẻ được đánh dấu "chưa lưu" cùng cơ chế với Khu vực B và D. |
+| | 4 | Kích thước output tối đa | Có | [Điều kiện kích hoạt] Như mục 3. |
+
 [Nguồn: 09-layoutBase/Admin - Ngôn ngữ và giới hạn.dc.html:194-198,216,231-233,268-271;
 01-rd/screens/admin/ADM0501_language_config.md:39-41]
 
@@ -366,6 +394,8 @@ BD. Ngưỡng breakpoint cụ thể chưa có nguồn, xem Câu hỏi mở Q8.
 | 10 | `SandboxConfigDto` | `networkAccessEnabled` | Boolean | `judge.language_configs` | `network_access_enabled` | Sandbox "Công tắc tham số" dòng 1 | Có | [Nguồn] Trạng thái công tắc người dùng đặt<br>[Đích] Tham số của `UpdateLanguageConfigs`. Mặc định `false` ở tầng DB. |
 | 11 | `SandboxConfigDto` | `maxChildProcesses` | Number | `judge.language_configs` | `max_child_processes` | Sandbox "Công tắc tham số" dòng 2 | Có | [Nguồn] Trạng thái công tắc người dùng đặt<br>[Chuyển đổi] Công tắc bật thành một giá trị số hữu hạn, tắt thành không giới hạn — ánh xạ chính xác chưa chốt, xem Q4. |
 | 12 | `SandboxConfigDto` | `returnStderrToStudent` | Boolean | `judge.language_configs` | `return_stderr_to_student` | Sandbox "Công tắc tham số" dòng 3 | Có | [Nguồn] Trạng thái công tắc người dùng đặt<br>[Đích] Tham số của `UpdateLanguageConfigs`. Quyết định có ghi `submission_testcase_results.stderr_snippet` hay không [Nguồn: 02-bd/database/judge-orchestration.md:55]. |
+| 13 | `GeneratorSandboxDto` | `maxRuntimeSeconds` | Number | `judge.generator_sandbox_settings` (`02-bd/database/judge-orchestration.md` mục 1.8) | `max_runtime_seconds` | Script sinh dữ liệu "Thời gian chạy tối đa" | Có | [Nguồn] Phản hồi của `GetLanguageConfigs`; giá trị người dùng nhập<br>[Đích] Tham số của `UpdateLanguageConfigs` |
+| 14 | `GeneratorSandboxDto` | `maxOutputMb` | Number | `judge.generator_sandbox_settings` (`02-bd/database/judge-orchestration.md` mục 1.8) | `max_output_mb` | Script sinh dữ liệu "Kích thước output tối đa" | Có | [Nguồn] Phản hồi của `GetLanguageConfigs`; giá trị người dùng nhập<br>[Đích] Tham số của `UpdateLanguageConfigs`. `problem-bank` đọc hai giá trị này khi chạy `GenerateTestcasesWithAi` (qua cổng đọc của `judge-orchestration`) |
 
 ### 7.2 Truy cập bảng dữ liệu (1)
 
@@ -385,8 +415,8 @@ Không có thao tác thêm (`C`) và xoá (`D`) trên màn này: ba dòng ngôn 
 
 | NO | Endpoint (tên nghiệp vụ) | Mục đích | BC sở hữu |
 | --: | :--- | :--- | :--- |
-| 1 | `GetLanguageConfigs` | Tải cấu hình ba ngôn ngữ, bộ giới hạn mặc định và ba tham số sandbox | `judge-orchestration` |
-| 2 | `UpdateLanguageConfigs` | Ghi toàn bộ thay đổi hệ số, trạng thái bật và tham số sandbox trong một lần | `judge-orchestration` |
+| 1 | `GetLanguageConfigs` | Tải cấu hình ba ngôn ngữ, bộ giới hạn mặc định, ba tham số sandbox và hai giới hạn của script sinh dữ liệu (`GeneratorSandboxDto`) | `judge-orchestration` |
+| 2 | `UpdateLanguageConfigs` | Ghi toàn bộ thay đổi hệ số, trạng thái bật, tham số sandbox và giới hạn script sinh dữ liệu trong một lần | `judge-orchestration` |
 
 Chưa có endpoint ghi cho bốn giá trị "Giới hạn mặc định" ở đợt này — chúng chỉ đọc, xem Câu hỏi mở Q2. Màn
 này không gọi endpoint nào của `problem-bank`: giới hạn theo từng bài thuộc màn `SHR0202_problem_authoring`.
@@ -409,6 +439,7 @@ này không gọi endpoint nào của `problem-bank`: giới hạn theo từng b
 | 4 | Công tắc | Bật hoặc tắt một tham số sandbox | Bấm công tắc trên một trong ba dòng sandbox. | Không | Không | - | [Các bước]<br>1. Đảo trạng thái công tắc trong trạng thái biên soạn.<br>[Khi thành công] Đánh dấu có thay đổi chưa lưu và kích hoạt nút "Lưu thay đổi". |
 | 5 | Nút | Lưu thay đổi | Bấm "Lưu thay đổi" ở thanh tiêu đề. | Không | Có | `UpdateLanguageConfigs` | [Các bước]<br>1. Kiểm lại toàn bộ ô hệ số thời gian theo Sheet 9 NO 2, NO 3.<br>2. Kiểm còn ít nhất một ngôn ngữ đang bật theo Sheet 9 NO 6.<br>3. Gửi toàn bộ thay đổi lên máy chủ, khoá mọi input trong lúc gửi.<br>4. Tải lại cấu hình từ phản hồi.<br>[Khi thành công] Trạng thái biên soạn được xoá, nút "Lưu thay đổi" trở về không kích hoạt, hai cột dẫn xuất hiển thị theo hệ số mới. Cấu hình mới chỉ áp dụng cho lượt nộp từ thời điểm này trở đi.<br>[Khi lỗi] Giữ nguyên toàn bộ giá trị người dùng đã nhập, **không** hoàn tác ngầm, mở khoá input và hiện toast lỗi; ô gây lỗi đổi viền đỏ.<br>[Thông báo hoàn tất] Toast "Đã lưu cấu hình ngôn ngữ và giới hạn chấm" [Nguồn: 05-coding/frontend/src/views/admin/language-config/ui/admin-language-config-view.tsx:105]. |
 | 6 | Liên kết | Rời màn khi còn thay đổi chưa lưu | Chọn một mục khác trên thanh điều hướng bên trái, hoặc bấm một liên kết ở chân trang của khung chung Admin. | Có | Không | - | [Các bước]<br>1. Kiểm tra còn thay đổi chưa lưu hay không.<br>2. Điều hướng sang đích đã chọn.<br>[Khi xác nhận] Còn thay đổi chưa lưu thì có hỏi xác nhận trước khi rời màn hay không là điểm mở, xem Q6.<br>[Khi thành công] Mở màn đích. Mọi thay đổi chưa lưu bị bỏ, cấu hình trên máy chủ không đổi. |
+| 7 | Nhập liệu | Đổi giới hạn script sinh dữ liệu | Sửa ô "Thời gian chạy tối đa" hoặc "Kích thước output tối đa". | Không | Không | - | [Các bước]<br>1. Ghi nhận giá trị mới vào trạng thái biên soạn.<br>[Khi thành công] Đánh dấu thẻ "chưa lưu"; giá trị chỉ ghi khi bấm "Lưu thay đổi" (EVT-5, `UpdateLanguageConfigs` mang thêm `GeneratorSandboxDto`).<br>[Khi lỗi] Giá trị không hợp lệ (Sheet 9 NO 9) thì ô đổi viền đỏ và hiện toast lỗi, không cho lưu. |
 
 [Nguồn: 09-layoutBase/Admin - Ngôn ngữ và giới hạn.dc.html:158,191,194-198,231-233,268-271,292-294;
 01-rd/screens/admin/ADM0501_language_config.md:39-46; 02-bd/screens/admin/_shell.md:19-21]
@@ -431,6 +462,7 @@ này không gọi endpoint nào của `problem-bank`: giới hạn theo từng b
 | 6 | Kiểm nghiệp vụ | Còn ít nhất một ngôn ngữ đang bật | [Nội dung kiểm] Không cho tắt ngôn ngữ cuối cùng — tắt hết ba ngôn ngữ thì không ai nộp được bài nào.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Công tắc của dòng vi phạm + toast. | Lỗi | Chưa có mã thông báo | Nội dung "Phải giữ ít nhất một ngôn ngữ đang bật." `[Suy luận]` — RD không nêu ràng buộc này, nhưng hệ quả đã ghi ở RD (ngôn ngữ tắt không còn chọn được ở `problem_detail`) áp cho cả ba thì màn giải bài không còn lựa chọn nào [Nguồn: 01-rd/screens/admin/ADM0501_language_config.md:44-46]. | EVT-3, EVT-5 | 1 |
 | 7 | Kiểm nghiệp vụ | Xung đột phiên bản khi lưu | [Nội dung kiểm] `updated_at` của một dòng đã đổi kể từ lúc tải màn thì dừng lưu, không ghi đè.<br>[Nơi thực thi] Máy chủ. | Lỗi | Mã lỗi trong phản hồi | Nội dung "Cấu hình đã được người khác cập nhật. Vui lòng tải lại màn hình." Cột `updated_at` / `updated_by` có sẵn trên bảng [Nguồn: 02-bd/database/judge-orchestration.md:103]. | EVT-5 | 5 |
 | 8 | Kiểm nghiệp vụ | Lỗi hệ thống hoặc lỗi gọi máy chủ | [Nội dung kiểm] Gọi máy chủ thất bại hoặc trả lỗi nghiệp vụ thì dừng thao tác, giữ nguyên dữ liệu đang hiển thị và giá trị người dùng đã nhập.<br>[Nơi thực thi] Màn hình. | Lỗi | Mã lỗi trong phản hồi | Phản hồi có mã lỗi đã đăng ký thì hiển thị nội dung tương ứng; chưa đăng ký thì hiển thị "Không kết nối được máy chủ." | EVT-1, EVT-5 | 6 |
+| 9 | Kiểm nhập liệu | Khoảng giá trị giới hạn script sinh dữ liệu | [Nội dung kiểm] Thời gian chạy tối đa phải là số nguyên từ 1 đến 300 giây, kích thước output tối đa phải là số nguyên từ 1 đến 1024 MB. Bỏ trống, chữ, số âm hoặc ngoài khoảng thì không cho lưu.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Viền ô sai + toast. | Lỗi | Chưa có mã thông báo | Nội dung "Thời gian chạy phải từ 1 đến 300 giây." và "Kích thước output phải từ 1 đến 1024 MB." `[SoT: Suy luận]` — nội dung và khoảng do BD đặt. | EVT-5, EVT-7 | 1 |
 
 Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 
@@ -451,4 +483,5 @@ Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 | Q6 | Rời màn khi còn thay đổi chưa lưu (chọn mục nav khác, bấm liên kết chân trang) thì có hỏi xác nhận không? | RD không có yêu cầu nào về việc này; ảnh hưởng cả điều hướng bằng sidebar lẫn liên kết của khung chung, nên phải chốt chung cho khu Admin chứ không riêng màn này | Chủ dự án |
 | Q7 | Hệ số bộ nhớ `memory_limit_multiplier` lấy số nào, và có cần ô sửa trên giao diện không? Prototype hiển thị Java 512 MB trên nền mặc định 256 MB, tức hệ số 2,0 [Nguồn: 09-layoutBase/Admin - Ngôn ngữ và giới hạn.dc.html:405,418], trong khi BD database đề xuất mặc định `1.00` cho cả ba ngôn ngữ [Nguồn: 02-bd/database/judge-orchestration.md:99]. Bảng trong prototype không có cột nào cho hệ số bộ nhớ. | Hai nguồn đưa ra hai con số khác nhau và không nguồn nào nói quản trị viên có được sửa hệ số bộ nhớ hay không | Chủ dự án |
 | Q8 | Ngưỡng breakpoint cho bố cục hai cột — số cụ thể. | Prototype không định nghĩa breakpoint; khung chung Admin mới chỉ chốt mốc 1024px cho sidebar [Nguồn: 02-bd/screens/admin/_shell.md:64] | Chủ dự án khi chốt design system |
-| Q9 | Giới hạn sandbox cho **script sinh dữ liệu testcase** (F2-14: thời gian chạy tối đa, kích thước output tối đa) có đặt ở màn này không? RD `problem-bank.md:88-91` nói đây là ràng buộc MỚI, không dùng chung với bài nộp học viên. Đề xuất: thêm một nhóm "Script sinh dữ liệu" cạnh các giới hạn chấm; số lần sinh mỗi bài thì thuộc `ADM0301` Khu vực H | Chủ dự án đồng ý hướng tách ngày 2026-10-03 (`ADM0301` Q13); màn này chưa có mục tương ứng | Chủ dự án + DD `judge-orchestration` |
+| Q9 | ~~Giới hạn sandbox cho script sinh dữ liệu testcase (F2-14) có đặt ở màn này không?~~ **ĐÃ CHỐT 2026-10-03 (chủ dự án):** có, thêm **một thẻ riêng** (Khu vực F) vì giới hạn này phục vụ chức năng "Sinh tự động" mà cả A2 và A3 đều dùng, và là hai ô số chứ không phải công tắc như Khu vực D. Script do AI viết chạy bằng Python. Số lần sinh mỗi bài thuộc `ADM0301` Khu vực H | Giá trị mặc định và nơi lưu còn mở ở Q10 | Đã đóng (Q10 mở) |
+| Q10 | ~~Hai giới hạn của script sinh dữ liệu lưu ở đâu và mặc định là bao nhiêu?~~ **ĐÃ CHỐT 2026-10-03 (chủ dự án đồng ý đề xuất):** bảng singleton riêng `judge.generator_sandbox_settings` (`02-bd/database/judge-orchestration.md` mục 1.8), cùng khuôn `cluster_settings`, không thêm cột vào `language_configs` vì đó là bảng theo từng ngôn ngữ; mặc định **30 giây** và **100 MB**, khoảng 1 đến 300 giây và 1 đến 1024 MB (số do BD đề xuất, chủ dự án đồng ý, vẫn có thể đổi bằng giao diện) | - | Đã đóng |

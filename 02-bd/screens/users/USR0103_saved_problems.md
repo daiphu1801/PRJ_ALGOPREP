@@ -48,7 +48,7 @@
 | Tên vật lý (slug) | `saved_problems` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`) |
-| Phiên bản | V0.2 |
+| Phiên bản | V0.3 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/22 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
@@ -62,6 +62,7 @@
 | :--- | :--- | :--- | :--- | :--- |
 | V0.1 | Toàn bộ | Tạo mới theo mẫu 9 sheet. Kế thừa nguyên bộ quy ước của `USR0101`: tên khối `filter`/`table`/`pager`, công thức ba trạng thái làm bài từ `user_problem_best_score`, bộ tham số lọc trên URL, nguyên tắc suy giảm êm. Chốt phần đặc thù: ghi chú riêng tư sửa tại chỗ trong bảng, bỏ lưu kèm hoàn tác thay cho popup xác nhận, nhãn cảnh báo cho bài đã bị rút khỏi ngân hàng. Trả lời `USR0101` Câu hỏi mở Q7. Phát sinh 7 câu hỏi mở | 2026/09/22 | Nhóm phát triển AlgoPrep |
 | V0.2 | Sheet 8, 9 | Đổi phản hồi sau thao tác (tìm kiếm, đổi trang, lưu ghi chú, bỏ lưu) và `[Tiêu điểm]` kiểm nhập liệu sang toast + viền ô; ghi nhận chỗ đặt nút Hoàn tác chờ owner chốt. Theo `DEC-2026-1003-toast-feedback-channel`. | 2026/10/03 | AI |
+| V0.3 | Sheet 4, 5, 6, 7, 8 | Đồng bộ `DEC-2026-1001-admin-configurable-settings` mục (7): độ khó bài tập là danh mục do ADMIN quản lý (bảng riêng `problem_levels`), không còn enum cố định. DTO `difficulty` thành `levelCode`/`levelDisplayName` đọc qua `problems.level_id`; nhãn cạnh tên bài đọc `display_name` từ dữ liệu; tab độ khó là "Tất cả" cộng một tab mỗi mức theo `sort_order`. Màn gọi thêm `ListProblemLevels` (chỉ đọc, dùng lại endpoint của `USR0101`), thêm `problem_levels` vào bảng liên quan và Truy cập bảng. Màn chỉ hiển thị nhãn và lọc; không có logic gắn với độ khó | 2026/10/03 | AI |
 
 ---
 
@@ -217,15 +218,16 @@ khác hẳn: màn này có thêm `note` và `savedAt`, bỏ `acRate` và `hasSol
 của màn quản trị, đúng quy ước "DTO khu người học đặt tên riêng"
 [Nguồn: 02-bd/screens/users/USR0101_problem_list.md:223-226].
 
-### 4.3 Bảng dữ liệu liên quan (5)
+### 4.3 Bảng dữ liệu liên quan (6)
 
 | NO | Bảng | Ghi chú |
 | --: | :--- | :--- |
 | 1 | `problem.bookmarks` | Bảng chủ của màn, nguồn của ghi chú và ngày lưu [Nguồn: 02-bd/database/problem-bank.md:130-134] |
-| 2 | `problem.problems` | Mã, tên, độ khó, trạng thái vòng đời của bài được lưu [Nguồn: 02-bd/database/problem-bank.md:11-29] |
+| 2 | `problem.problems` | Mã, tên, khoá `level_id` của độ khó, trạng thái vòng đời của bài được lưu [Nguồn: 02-bd/database/problem-bank.md:11-29] |
 | 3 | `problem.topics` | Tên chủ đề hiển thị ở cột "Chủ đề" [Nguồn: 02-bd/database/problem-bank.md:37-39] |
 | 4 | `problem.problem_topics` | Nối bài với chủ đề [Nguồn: 02-bd/database/problem-bank.md:37-39] |
 | 5 | `identity.user_problem_best_score` | Read model, nguồn trạng thái "Đã giải / Đang làm / Chưa làm" [Nguồn: 02-bd/database/identity.md:111-112] |
+| 6 | `problem.problem_levels` | Danh mục độ khó do ADMIN quản lý: nguồn nhãn cạnh tên bài và các tab độ khó [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`] |
 
 Bảng cuối nằm ở schema của module khác. Màn không truy vấn thẳng: `problem-bank` gọi qua cổng ra sang
 `identity`, đúng nguyên tắc mỗi schema một chủ [Nguồn: 02-bd/database/problem-bank.md:31-33] và đúng hướng
@@ -243,7 +245,7 @@ cuối cùng.
 | :--- | :--- | :--- |
 | Header ngang dính trên (khung chung Người học) | `:49-95` | Thương hiệu, nav, menu người dùng — dùng lại khung chung, không mô tả lại |
 | Dải chỉ số | `:99-109` | 3 chỉ số dạng "nhãn + số + đơn vị", cùng hàng với nút "Lưu thêm từ ngân hàng bài" đẩy sang phải (`:108`) |
-| Khối lọc (đầu bảng) | `:112-123` | Ô tìm kiếm (`:115`), nhóm tab độ khó 4 mục (`:118`), nhóm tab trạng thái 4 mục (`:121`) |
+| Khối lọc (đầu bảng) | `:112-123` | Ô tìm kiếm (`:115`), nhóm tab độ khó 4 mục với 3 mức khởi tạo (`:118`), nhóm tab trạng thái 4 mục (`:121`) |
 | Bảng danh sách | `:125-165` | 6 cột: Bài toán (mã + tên + độ khó, `:129`), Chủ đề (`:130`), Trạng thái (`:131`), Ghi chú (`:132`), Đã lưu (`:133`), cột hành động rộng cố định (`:134`) |
 | Khối trạng thái rỗng | `:167-172` | Tiêu đề và câu hướng dẫn, thay cho bảng khi không có dòng nào |
 | Chân bảng | `:174-177` | Dòng tóm tắt số dòng bên trái, dòng nhắc riêng tư bên phải (`:176`) |
@@ -310,7 +312,7 @@ thao tác lưu (xem Câu hỏi mở Q1) — viết hai slice cho hai chiều c�
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Bộ lọc | | | | | | | | | | | | | |
 | | 1 | Ô tìm kiếm | `savedProblems.filter.query` | `problem.problems` | `code`, `title` | TextBox | String | 100 | - | I/O | rỗng | - | Tìm trong tập bài đã lưu theo tên bài hoặc mã bài<br>[Nguồn giá trị] Tham số URL `q`; không có thì rỗng. Gợi ý trong ô là nhãn tĩnh i18n "Tìm trong bài đã lưu" [Nguồn: 09-layoutBase/Bài đã lưu.dc.html:239]<br>[EVT liên quan] EVT-2 |
-| | 2 | Tab độ khó | `savedProblems.filter.difficultyTabs` | `problem.problems` | `difficulty` | List | Enum | - | - | I/O | `Tất cả` | - | 4 tab: Tất cả / Dễ / Trung bình / Khó [Nguồn: 09-layoutBase/Bài đã lưu.dc.html:240]<br>[Nguồn giá trị] Nhãn tĩnh i18n map từ enum `EASY`/`MEDIUM`/`HARD` [Nguồn: 02-bd/database/problem-bank.md:17]; giá trị đang chọn lấy từ tham số URL `difficulty`<br>[EVT liên quan] EVT-3 |
+| | 2 | Tab độ khó | `savedProblems.filter.difficultyTabs` | `problem.problem_levels` | `code`, `display_name`, `sort_order` | List | List | - | - | I/O | `Tất cả` | - | Tab "Tất cả" cộng một tab mỗi mức trong `problem_levels` theo `sort_order`; số tab không cố định (prototype vẽ 4 tab với 3 mức khởi tạo [Nguồn: 09-layoutBase/Bài đã lưu.dc.html:240])<br>[Nguồn giá trị] Phản hồi của `ListProblemLevels` (Sheet 7.3 NO 5), đọc từ dữ liệu do ADMIN quản lý, không còn nhãn tĩnh i18n map từ enum [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`]; giá trị đang chọn lấy từ tham số URL `difficulty` (mang `code` của mức)<br>[EVT liên quan] EVT-3 |
 | | 3 | Tab trạng thái | `savedProblems.filter.statusTabs` | `identity.user_problem_best_score` | `best_verdict` | List | Enum | - | - | I/O | `Tất cả` | - | 4 tab: Tất cả / Đã giải / Đang làm / Chưa làm — cùng tập giá trị và cùng nhãn với `USR0101` [Nguồn: 02-bd/screens/users/USR0101_problem_list.md:321], không dùng câu chữ riêng của prototype [Nguồn: 09-layoutBase/Bài đã lưu.dc.html:242]<br>[Nguồn giá trị] Nhãn tĩnh i18n; giá trị đang chọn lấy từ tham số URL `status`<br>[EVT liên quan] EVT-4 |
 | | 4 | Xoá bộ lọc | `savedProblems.filter.linkReset` | - | - | Link | - | - | - | I | - | - | Đưa cả 3 bộ lọc về mặc định. Chỉ xuất hiện ở trạng thái không có kết quả **do lọc**<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] EVT-7 |
 
@@ -322,7 +324,7 @@ thao tác lưu (xem Câu hỏi mở Q1) — viết hai slice cho hai chiều c�
 | | 1 | Danh sách bài đã lưu | `savedProblems.table.list` | `problem.bookmarks` | - | List | List | - | - | O | rỗng | - | Bảng bookmark của chính người dùng, 20 dòng mỗi trang<br>[Nguồn giá trị] Kết quả gọi `ListMySavedProblems`<br>[EVT liên quan] EVT-1 |
 | | 2 | Mã bài | `savedProblems.table.col.code` | `problem.problems` | `code` | ListColumn | String | 40 | - | O | - | - | Mã ngắn hiển thị của bài toán<br>[Nguồn giá trị] Cột `code` [Nguồn: 02-bd/database/problem-bank.md:14]; prototype hiển thị ở đầu ô "Bài toán" [Nguồn: 09-layoutBase/Bài đã lưu.dc.html:142]<br>[EVT liên quan] - |
 | | 3 | Tên bài | `savedProblems.table.col.title` | `problem.problems` | `title` | ListColumn | String | 200 | - | O | - | - | Tiêu đề bài toán<br>[Nguồn giá trị] Cột `title` [Nguồn: 02-bd/database/problem-bank.md:15; 09-layoutBase/Bài đã lưu.dc.html:143]<br>[EVT liên quan] EVT-13 |
-| | 4 | Độ khó | `savedProblems.table.col.difficulty` | `problem.problems` | `difficulty` | ListColumn | Enum | - | - | O | - | Nhãn tiếng Việt | Mức độ khó, hiển thị ngay cạnh tên bài chứ không phải cột riêng [Nguồn: 09-layoutBase/Bài đã lưu.dc.html:144]<br>[Nguồn giá trị] `EASY` thành "Dễ", `MEDIUM` thành "Trung bình", `HARD` thành "Khó" [Nguồn: 02-bd/database/problem-bank.md:17]<br>[EVT liên quan] - |
+| | 4 | Độ khó | `savedProblems.table.col.difficulty` | `problem.problem_levels`, `problem.problems` | `display_name` | ListColumn | String | - | - | O | - | Nhãn `display_name`, badge | Mức độ khó, hiển thị ngay cạnh tên bài chứ không phải cột riêng [Nguồn: 09-layoutBase/Bài đã lưu.dc.html:144]<br>[Nguồn giá trị] Cột `problem_levels.display_name` (qua `problems.level_id`), **đọc từ dữ liệu**, không còn ánh xạ cứng enum; ba mức khởi tạo giữ màu badge cũ, mức mới màu trung tính `DEC-2026-1001-admin-configurable-settings` mục (7) [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`]<br>[EVT liên quan] - |
 | | 5 | Nhãn đã rút khỏi ngân hàng | `savedProblems.table.col.withdrawnBadge` | `problem.problems` | `status`, `deleted` | Badge | Boolean | - | - | O | Ẩn | - | Cảnh báo bài đã lưu nhưng nay không còn truy cập được<br>[Công thức] Hiện khi `status = UNPUBLISHED` **hoặc** `deleted = true` [Nguồn: 02-bd/database/problem-bank.md:18-19]; cùng cách xử lý đã áp ở `INS0202` [Nguồn: 02-bd/screens/teacher/INS0202_class_assignments.md:414]. Xem Câu hỏi mở Q6<br>[EVT liên quan] - |
 | | 6 | Chủ đề | `savedProblems.table.col.topics` | `problem.topics` | `name` | ListColumn | String | - | - | O | `-` | - | Chủ đề của bài toán, chỉ đọc, không lọc được<br>[Nguồn giá trị] `topics.name` qua `problem_topics.problem_id`; nhiều chủ đề thì nối bằng dấu phẩy, cùng cách đã dùng ở `USR0101` [Nguồn: 02-bd/screens/users/USR0101_problem_list.md:337; 09-layoutBase/Bài đã lưu.dc.html:147]<br>[EVT liên quan] - |
 | | 7 | Trạng thái làm bài | `savedProblems.table.col.solveState` | `identity.user_problem_best_score` | `best_verdict` | Badge | Enum | - | - | O | `Chưa làm` | - | Ba trạng thái: Đã giải / Đang làm / Chưa làm<br>[Công thức] Công thức ba trạng thái ghi ở đầu Sheet 5 [Nguồn: 02-bd/database/identity.md:111-112; 09-layoutBase/Bài đã lưu.dc.html:149]<br>[EVT liên quan] - |
@@ -448,7 +450,7 @@ thao tác lưu (xem Câu hỏi mở Q1) — viết hai slice cho hai chiều c�
 | 1 | `SavedProblemRowDto` | `problemId` | UUID | `problem.bookmarks` | `problem_id` | - | Không | [Nguồn] Phản hồi của `ListMySavedProblems`<br>[Đích] Tham số điều hướng sang `problem_detail`, và khoá của mọi thao tác ghi trên dòng. |
 | 2 | `SavedProblemRowDto` | `code` | String | `problem.problems` | `code` | Bảng "Mã bài" | Có | - |
 | 3 | `SavedProblemRowDto` | `title` | String | `problem.problems` | `title` | Bảng "Tên bài" | Có | - |
-| 4 | `SavedProblemRowDto` | `difficulty` | Enum | `problem.problems` | `difficulty` | Bảng "Độ khó", tab độ khó | Có | [Chuyển đổi] `EASY`/`MEDIUM`/`HARD` thành "Dễ"/"Trung bình"/"Khó". |
+| 4 | `SavedProblemRowDto` | `levelCode`, `levelDisplayName` | String, String | `problem.problem_levels` | `code`, `display_name` | Bảng "Độ khó", tab độ khó | Có | [Nguồn] Join qua `problems.level_id` (thay trường `difficulty` kiểu Enum cũ, theo `DEC-2026-1001-admin-configurable-settings` mục (7))<br>[Chuyển đổi] Đọc `display_name` từ dữ liệu; `levelCode` là giá trị tham số URL `difficulty`. |
 | 5 | `SavedProblemRowDto` | `topicNames` | List\<String\> | `problem.topics` | `name` | Bảng "Chủ đề" | Có | [Nguồn] `topics.name` qua `problem_topics.problem_id`<br>[Chuyển đổi] Nối bằng dấu phẩy khi hiển thị. |
 | 6 | `SavedProblemRowDto` | `solveState` | Enum | `identity.user_problem_best_score` | `best_verdict` | Bảng "Trạng thái làm bài", tab trạng thái, nhãn nút vào giải | Có | [Nguồn] `problem-bank` gọi cổng ra sang `identity` (`ListMyProblemSolveStates`), không đọc thẳng schema khác — dùng lại đúng cổng ra đã đề xuất ở `USR0101` [Nguồn: 02-bd/screens/users/USR0101_problem_list.md:601]<br>[Chuyển đổi] `SOLVED`/`ATTEMPTED`/`UNSOLVED` thành "Đã giải"/"Đang làm"/"Chưa làm". |
 | 7 | `SavedProblemRowDto` | `note` | String | `problem.bookmarks` | `note` | Bảng "Ghi chú riêng tư" | Có | [Nguồn] Chỉ trả về cho chính chủ tài khoản<br>[Chuyển đổi] `NULL` trả về chuỗi rỗng; màn hiển thị dấu gạch ngang. |
@@ -457,19 +459,21 @@ thao tác lưu (xem Câu hỏi mở Q1) — viết hai slice cho hai chiều c�
 | 10 | `SavedProblemsSummaryDto` | `savedTotal` | Number | `problem.bookmarks` | `user_id` | Dải chỉ số "Tổng số đã lưu" | Có | [Nguồn] Trả kèm trong phản hồi của `ListMySavedProblems`, tính trên **toàn bộ** tập bookmark chứ không trên tập đã lọc. |
 | 11 | `SavedProblemsSummaryDto` | `todoCount`, `attemptedCount` | Number | `identity.user_problem_best_score` | `best_verdict` | Dải chỉ số "Chưa bắt đầu", "Đang dở" | Có | [Nguồn] Cùng lời gọi NO 10<br>[Chuyển đổi] Gọi `identity` thất bại thì trả `null`, màn ẩn riêng hai ô này. |
 | 12 | `SavedProblemsSummaryDto` | `filteredTotal` | Number | - | - | Chân bảng "Tóm tắt kết quả", "Nút số trang" | Có | [Nguồn] Tổng số dòng khớp bộ lọc, dùng cho cả dòng tóm tắt lẫn việc tính số trang. |
+| 13 | `ProblemLevelDto` | `code`, `displayName`, `sortOrder` | String, String, Number | `problem.problem_levels` | `code`, `display_name`, `sort_order` | Bộ lọc "Tab độ khó" | Có | [Nguồn] Phản hồi của `ListProblemLevels`, **dùng lại** DTO của `USR0101` (Sheet 7 NO 16); chỉ đọc, mọi người dùng đã xác thực gọi được (`DEC-2026-1001-admin-configurable-settings` mục (7))<br>[Chuyển đổi] Giao diện tự thêm tab "Tất cả" ở đầu; thứ tự tab theo `sortOrder`. |
 
-### 7.2 Truy cập bảng dữ liệu (5)
+### 7.2 Truy cập bảng dữ liệu (6)
 
 | NO | Tên logic | Bảng | Repository | CRUD | Mục đích | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :--- | :--- |
 | 1 | Bài đã lưu | `problem.bookmarks` | `BookmarkRepository` | C/R/U/D | Đọc trang bài đã lưu, ghi ghi chú, tạo lại khi hoàn tác, xoá khi bỏ lưu | `ListMySavedProblems`: R<br>`SaveMyBookmark`: C khi hoàn tác, U khi sửa ghi chú (một lệnh upsert)<br>`RemoveMyBookmark`: D — xoá thật, bảng không có cột ẩn mềm [Nguồn: 02-bd/database/problem-bank.md:132] |
-| 2 | Bài toán | `problem.problems` | `ProblemRepository` | R | Lấy mã, tên, độ khó và trạng thái vòng đời của bài được lưu | `ListMySavedProblems`: R |
+| 2 | Bài toán | `problem.problems` | `ProblemRepository` | R | Lấy mã, tên, `level_id` của độ khó và trạng thái vòng đời của bài được lưu | `ListMySavedProblems`: R |
 | 3 | Chủ đề | `problem.topics` | `TopicRepository` | R | Lấy tên chủ đề cho cột "Chủ đề" | `ListMySavedProblems`: R |
 | 4 | Gán chủ đề cho bài | `problem.problem_topics` | `ProblemTopicRepository` | R | Nối bài với chủ đề | `ListMySavedProblems`: R |
 | 5 | Tiến độ theo bài của người dùng | `identity.user_problem_best_score` | `UserProblemBestScoreRepository` (module `identity`) | R | Suy ra trạng thái Đã giải / Đang làm / Chưa làm và hai ô chỉ số | `ListMyProblemSolveStates`: R — gọi qua cổng ra, `problem-bank` không đọc thẳng schema `identity` |
+| 6 | Danh mục độ khó | `problem.problem_levels` | `ProblemLevelRepository` | R | Đọc nhãn độ khó của từng dòng (qua join `level_id`) và danh mục cho tab lọc độ khó | `ListProblemLevels`: R<br>`ListMySavedProblems`: R, qua join. Màn này không ghi; ADMIN quản lý độ khó ở `SHR0201` [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`] |
 
 Khác `USR0101` ở đúng một điểm về CRUD: màn này **có thao tác ghi**, và toàn bộ thao tác ghi chỉ chạm
-**một** bảng là `bookmarks`. Bốn bảng còn lại chỉ đọc.
+**một** bảng là `bookmarks`. Năm bảng còn lại chỉ đọc.
 
 `[Suy luận]` — tên repository do BD này đề xuất, DD module chốt lại.
 
@@ -483,9 +487,10 @@ Khác `USR0101` ở đúng một điểm về CRUD: màn này **có thao tác gh
 | 2 | `SaveMyBookmark` | Tạo hoặc cập nhật bookmark của chính người dùng kèm ghi chú (một lệnh upsert) | `problem-bank` |
 | 3 | `RemoveMyBookmark` | Xoá bookmark của chính người dùng | `problem-bank` |
 | 4 | `ListMyProblemSolveStates` | Trả trạng thái Đã giải / Đang làm theo từng bài của chính người dùng | `identity` |
+| 5 | `ListProblemLevels` | Tải danh mục độ khó (đọc từ dữ liệu) cho tab lọc độ khó; chỉ đọc, mọi người dùng đã xác thực gọi được; **dùng lại** endpoint của `USR0101` | `problem-bank` |
 
 Ghi chú ranh giới:
-- **Chỉ có 4 endpoint, không có endpoint riêng cho dải chỉ số.** Ba chỉ số tóm tắt đi kèm phản hồi của
+- **Chỉ có 5 endpoint (4 endpoint nghiệp vụ của màn và `ListProblemLevels` dùng chung với `USR0101`), không có endpoint riêng cho dải chỉ số.** Ba chỉ số tóm tắt đi kèm phản hồi của
   `ListMySavedProblems` vì chúng tính trên cùng tập dữ liệu mà lời gọi đó vốn đã phải quét. Tách thành
   `GetMySavedProblemsSummary` sẽ thêm một vòng gọi mạng cho đúng ba con số `[SoT: Suy luận]`.
 - **`SaveMyBookmark` là một lệnh upsert dùng chung cho ba việc**: lưu bài lần đầu (ở `problem_detail`),
@@ -522,9 +527,9 @@ Ghi chú ranh giới:
 
 | NO | Loại | Sự kiện | Chi tiết | Chuyển màn | Gọi API | Tên xử lý | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :-: | :--- | :--- |
-| 1 | Màn hình | Khởi tạo màn | Vào màn thì đọc tham số lọc trên URL rồi tải dữ liệu. | Không | Có | `ListMySavedProblems`, `ListMyProblemSolveStates` | [Các bước]<br>1. Kiểm tra người dùng đã đăng nhập.<br>2. Đọc và chuẩn hoá tham số URL; giá trị lạ thì bỏ qua và dùng mặc định.<br>3. Hiển thị khung chờ cho dải chỉ số và bảng.<br>4. Tải song song hai nhóm dữ liệu.<br>[Khi thành công] Hiển thị đủ dải chỉ số, khối lọc, bảng và chân bảng. Không có dòng nào thì hiển thị khối trạng thái rỗng đúng biến thể (chưa lưu bài nào, hay lọc không khớp).<br>[Khi lỗi] Lỗi ở `ListMySavedProblems` thì hiển thị lỗi kèm nút thử lại tại vùng bảng. Lỗi ở `ListMyProblemSolveStates` thì **ẩn ô trạng thái, ẩn nhóm tab trạng thái và ẩn hai ô chỉ số phụ, không báo lỗi** — bảng bài đã lưu và ghi chú vẫn dùng được bình thường. |
+| 1 | Màn hình | Khởi tạo màn | Vào màn thì đọc tham số lọc trên URL rồi tải dữ liệu. | Không | Có | `ListMySavedProblems`, `ListMyProblemSolveStates`, `ListProblemLevels` | [Các bước]<br>1. Kiểm tra người dùng đã đăng nhập.<br>2. Đọc và chuẩn hoá tham số URL; giá trị lạ thì bỏ qua và dùng mặc định.<br>3. Hiển thị khung chờ cho dải chỉ số và bảng.<br>4. Tải song song hai nhóm dữ liệu.<br>[Khi thành công] Hiển thị đủ dải chỉ số, khối lọc, bảng và chân bảng. Không có dòng nào thì hiển thị khối trạng thái rỗng đúng biến thể (chưa lưu bài nào, hay lọc không khớp).<br>[Khi lỗi] Lỗi ở `ListMySavedProblems` thì hiển thị lỗi kèm nút thử lại tại vùng bảng. Lỗi ở `ListMyProblemSolveStates` thì **ẩn ô trạng thái, ẩn nhóm tab trạng thái và ẩn hai ô chỉ số phụ, không báo lỗi** — bảng bài đã lưu và ghi chú vẫn dùng được bình thường. |
 | 2 | Nhập liệu | Gõ từ khoá tìm kiếm | Gõ vào ô tìm kiếm. | Không | Có | `ListMySavedProblems` | [Các bước]<br>1. Chờ 400 ms sau lần gõ cuối.<br>2. Đặt trang về 1, cập nhật tham số URL `q` theo cơ chế thay thế.<br>3. Tải lại bảng.<br>[Khi thành công] Bảng và dòng tóm tắt cập nhật. Dải chỉ số giữ nguyên. Nhấn Enter trong ô tìm kiếm thì toast thông tin báo số bài đã lưu tìm thấy (hoặc không có bài nào); gõ dở thì không toast [Nguồn: 05-coding/frontend/src/views/users/saved-problems/ui/saved-problems-view.tsx:70-73].<br>[Khi lỗi] Giữ nguyên kết quả cũ, hiển thị toast lỗi. |
-| 3 | Nút | Chọn tab độ khó | Bấm một trong 4 tab Tất cả / Dễ / Trung bình / Khó. | Không | Có | `ListMySavedProblems` | [Các bước]<br>1. Đặt trang về 1, cập nhật tham số URL `difficulty`.<br>2. Tải lại bảng.<br>[Khi thành công] Bảng chỉ còn bài đã lưu đúng mức độ khó.<br>[Khi lỗi] Như EVT-2. |
+| 3 | Nút | Chọn tab độ khó | Bấm một trong các tab Tất cả hoặc một mức độ khó (mỗi mức trong `problem_levels` một tab, theo `sort_order`). | Không | Có | `ListMySavedProblems` | [Các bước]<br>1. Đặt trang về 1, cập nhật tham số URL `difficulty`.<br>2. Tải lại bảng.<br>[Khi thành công] Bảng chỉ còn bài đã lưu đúng mức độ khó.<br>[Khi lỗi] Như EVT-2. |
 | 4 | Nút | Chọn tab trạng thái | Bấm một trong 4 tab Tất cả / Đã giải / Đang làm / Chưa làm. | Không | Có | `ListMySavedProblems` | [Các bước]<br>1. Đặt trang về 1, cập nhật tham số URL `status`.<br>2. Tải lại bảng.<br>[Khi thành công] Bảng chỉ còn bài khớp trạng thái; ghi chú của từng dòng vẫn hiển thị đầy đủ [Nguồn: 01-rd/screens/users/USR0103_saved_problems.md:90]. Lọc chạy ở máy chủ, không lọc trên trang đang xem.<br>[Khi lỗi] Như EVT-2. |
 | 5 | Nút | Sắp xếp theo ngày lưu | Bấm tiêu đề cột "Đã lưu". | Không | Có | `ListMySavedProblems` | [Các bước]<br>1. Đảo chiều sắp xếp; mặc định ban đầu là mới lưu trước.<br>2. Cập nhật tham số URL `sort` và `dir`, giữ nguyên số trang.<br>3. Tải lại bảng.<br>[Khi thành công] Mũi tên chiều sắp xếp hiện trên tiêu đề cột. Sắp xếp chạy ở máy chủ, trên toàn bộ kết quả lọc chứ không chỉ trang đang xem.<br>[Khi lỗi] Như EVT-2. |
 | 6 | Nút | Chuyển trang | Bấm một nút số trang. | Không | Có | `ListMySavedProblems` | [Các bước]<br>1. Còn ghi chú đang sửa chưa lưu thì chạy EVT-15 trước.<br>2. Cập nhật tham số URL `page` bằng cơ chế thêm mục lịch sử.<br>3. Tải lại bảng và cuộn về đầu bảng.<br>[Khi thành công] Bảng hiển thị trang mới, dòng tóm tắt cập nhật theo.<br>[Khi lỗi] Giữ nguyên trang cũ và hiển thị toast lỗi. |
@@ -559,7 +564,7 @@ Ghi chú ranh giới:
 | 6 | Kiểm nghiệp vụ | Bookmark đã biến mất ở phiên khác | [Nội dung kiểm] Bỏ lưu một bookmark đã không còn, hoặc sửa ghi chú của một bookmark đã bị bỏ lưu ở thiết bị khác, thì không coi là lỗi hệ thống.<br>[Nơi thực thi] Máy chủ. | Cảnh báo | Mã lỗi trong phản hồi | Bỏ lưu: coi là đã đạt kết quả mong muốn, trả thành công — thao tác phải bất biến khi lặp. Sửa ghi chú: nội dung "Bài này đã được bỏ lưu ở nơi khác. Đang tải lại danh sách." hiện bằng toast, rồi tải lại bảng, **không** âm thầm tạo lại bookmark từ một lần gõ ghi chú. | EVT-9, EVT-11 | 2 |
 | 7 | Kiểm nghiệp vụ | Cửa sổ hoàn tác bỏ lưu | [Nội dung kiểm] Nút Hoàn tác chỉ còn tác dụng khi thông báo tương ứng còn hiển thị; thông báo tắt thì bookmark coi như đã xoá hẳn. Hoàn tác tạo lại bookmark kèm ghi chú cũ nhưng **ngày lưu là ngày tạo lại**.<br>[Nơi thực thi] Màn hình giữ bộ nhớ tạm, máy chủ thực hiện ghi. | Cảnh báo | Chưa có mã thông báo | Nội dung "Đã bỏ lưu {tên bài}." kèm nút "Hoàn tác". Đây là lý do BD chọn hoàn tác thay cho popup xác nhận — xem Câu hỏi mở Q2. Rủi ro đã biết: đóng thẻ ngay sau khi bỏ lưu thì mất luôn cơ hội hoàn tác. Chờ owner chốt: toast chuẩn (`DEC-2026-1003-toast-feedback-channel`) chỉ có nút X, chưa có nút hành động, và bản dựng hiện tại chỉ hiện toast xác nhận không kèm Hoàn tác [Nguồn: 05-coding/frontend/src/views/users/saved-problems/ui/saved-problems-view.tsx:67]. | EVT-11, EVT-12 | 1 |
 | 8 | Kiểm nghiệp vụ | Rời màn khi ghi chú chưa lưu | [Nội dung kiểm] Không được rời màn, chuyển trang hay mở bài khác khi đang có ô ghi chú sửa dở mà chưa hỏi người dùng.<br>[Nơi thực thi] Màn hình. | Cảnh báo | Chưa có mã thông báo | Nội dung "Ghi chú của bạn chưa được lưu. Rời khỏi trang sẽ mất phần vừa gõ." kèm hai lựa chọn "Ở lại" và "Rời đi". Bắt buộc theo luật bắt lỗi thứ hai của mẫu 9 sheet — màn này là màn duy nhất trong khu có dữ liệu nhập chưa lưu. | EVT-6, EVT-13, EVT-14, EVT-15 | 1 |
-| 9 | Kiểm nhập liệu | Tham số lọc trên URL | [Nội dung kiểm] Giá trị `status`, `difficulty`, `sort`, `dir`, `page` không nằm trong tập hợp lệ thì bỏ qua và dùng mặc định, **không** báo lỗi cho người dùng.<br>[Nơi thực thi] Màn hình khi khởi tạo, và máy chủ khi nhận tham số. | Cảnh báo | Không có thông báo | Cùng quy ước với `USR0101` [Nguồn: 02-bd/screens/users/USR0101_problem_list.md:584]. Tham số `topic` nếu có trên URL cũng rơi vào nhóm "tham số lạ" và bị bỏ qua, vì màn này không lọc theo chủ đề. | EVT-1 | 2 |
+| 9 | Kiểm nhập liệu | Tham số lọc trên URL | [Nội dung kiểm] Giá trị `status`, `difficulty`, `sort`, `dir`, `page` không nằm trong tập hợp lệ thì bỏ qua và dùng mặc định (với `difficulty`: không khớp `code` của mức nào trong `problem_levels` thì coi như "Tất cả"), **không** báo lỗi cho người dùng.<br>[Nơi thực thi] Màn hình khi khởi tạo, và máy chủ khi nhận tham số. | Cảnh báo | Không có thông báo | Cùng quy ước với `USR0101` [Nguồn: 02-bd/screens/users/USR0101_problem_list.md:584]. Tham số `topic` nếu có trên URL cũng rơi vào nhóm "tham số lạ" và bị bỏ qua, vì màn này không lọc theo chủ đề. | EVT-1 | 2 |
 | 10 | Kiểm nghiệp vụ | Số trang vượt phạm vi | [Nội dung kiểm] `page` lớn hơn số trang hiện có thì trả về trang cuối cùng.<br>[Nơi thực thi] Máy chủ. | Cảnh báo | Không có thông báo | Hay xảy ra hơn `USR0101` vì bỏ lưu làm tổng số dòng giảm ngay trong lúc dùng. | EVT-6, EVT-11 | 1 |
 | 11 | Kiểm nghiệp vụ | Suy giảm êm khi `identity` lỗi | [Nội dung kiểm] Gọi `ListMyProblemSolveStates` thất bại thì ẩn ô trạng thái làm bài, ẩn nhóm tab trạng thái, ẩn hai ô chỉ số phụ, và vẫn hiển thị đủ bảng bài đã lưu kèm ghi chú.<br>[Nơi thực thi] Màn hình. | Cảnh báo | Không có thông báo | Đây là **điều kiện hiển thị, không phải thông báo lỗi** — người học không có hành động khắc phục nào, báo lỗi chỉ gây nhiễu. Cùng nguyên tắc đã áp ở `USR0101` [Nguồn: 02-bd/screens/users/USR0101_problem_list.md:587]. Nhãn nút vào giải khi đó lùi về nhãn trung tính "Giải". | EVT-1 | 3 |
 | 12 | Kiểm nghiệp vụ | Lỗi hệ thống hoặc lỗi gọi máy chủ | [Nội dung kiểm] Gọi máy chủ cho bảng thất bại thì giữ nguyên dữ liệu đang hiển thị và cho thử lại.<br>[Nơi thực thi] Màn hình. | Lỗi | Mã lỗi trong phản hồi | Phản hồi có mã lỗi đã đăng ký thì hiển thị nội dung tương ứng; chưa đăng ký thì hiển thị "Không kết nối được máy chủ." Lỗi của EVT-1 hiện ở vùng bảng kèm nút thử lại (nội dung thay chỗ bảng); lỗi của các EVT còn lại hiện bằng toast. | EVT-1, EVT-2, EVT-3, EVT-4, EVT-5, EVT-6, EVT-7, EVT-9, EVT-11, EVT-12 | 1 |

@@ -22,6 +22,23 @@
   thẳng API ghi nhận `403 FORBIDDEN`. Mỗi thao tác thành công ghi `system_audit_logs` (F1-14) cùng giao dịch
   `[SoT: Suy luận]` — quyết định không nêu tên Function; chọn `PROBLEM_AUTHORING` vì chủ đề là siêu dữ liệu của
   bài toán.
+- **Quản lý danh mục độ khó bài toán** (`problem_levels`, F2-02; chốt 2026-10-03, `DEC-2026-1001-admin-configurable-settings` mục 7): **chỉ ADMIN**
+  tạo, đổi tên, sắp xếp lại, xoá mức; A2 chỉ chọn. Cùng cách với chủ đề: dùng lại Function `PROBLEM_AUTHORING` cộng kiểm vai trò `ADMIN` ở tầng
+  use case, **không tạo Function mới** (tên Function lấy đúng như bullet chủ đề ngay trên). `ListProblemLevels` mở cho mọi người dùng đã xác thực.
+  Bảng 1.1 tóm tắt.
+
+Bảng 1.1: Ma trận quyền thao tác trên danh mục độ khó bài toán (cùng quy tắc với bullet chủ đề ở trên; mirror Bảng 2.2 của `02-bd/security/interview-bank.md`).
+
+| Thao tác (endpoint) | Học viên (A1) | Giảng viên (A2) | Quản trị viên (A3) | Điều kiện |
+| :--- | :-: | :-: | :-: | :--- |
+| `ListProblemLevels` | Có | Có | Có | Mọi người dùng đã xác thực |
+| `CreateProblemLevel` | Không | Không | Có | `PROBLEM_AUTHORING:CREATE` + vai trò `ADMIN` |
+| `UpdateProblemLevel` | Không | Không | Có | `PROBLEM_AUTHORING:UPDATE` + vai trò `ADMIN`; đổi tên |
+| `ReorderProblemLevels` | Không | Không | Có | `PROBLEM_AUTHORING:UPDATE` + vai trò `ADMIN` |
+| `DeleteProblemLevel` | Không | Không | Có | `PROBLEM_AUTHORING:DELETE` + vai trò `ADMIN`; từ chối khi còn bài tham chiếu hoặc khi đây là mức cuối cùng |
+
+  Kiểm ở máy chủ kể cả khi giao diện đã ẩn nút; A2 gọi trực tiếp nhận `403 FORBIDDEN`. Mỗi thao tác thành công ghi một dòng `system_audit_logs`
+  (F1-14) cùng giao dịch. Việc A2 đổi độ khó của bài (tạo, sửa, đổi theo lô) vẫn thuộc `PROBLEM_AUTHORING:UPDATE`, chỉ được chọn mức có sẵn.
 - **Xuất CSV danh sách bài toán** (F2-17): cùng quyền `PROBLEM_AUTHORING:READ` — chỉ đọc metadata, không
   cần quyền ghi.
 

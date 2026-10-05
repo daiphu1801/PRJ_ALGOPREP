@@ -21,7 +21,8 @@ export type SubmissionLanguage = "PYTHON" | "CPP" | "JAVA";
 /** F3-13. */
 export type SubmissionMode = "FUNCTION_WRAPPER" | "STANDARD_IO";
 
-export type Difficulty = "EASY" | "MEDIUM" | "HARD";
+/** Key of an admin-managed problem level (entities/problem/model/level-store). */
+export type Difficulty = string;
 
 /** `problem.testcases.visibility` — never confuse with a boolean `is_sample`, per BD V0.2 fix. */
 export type TestcaseVisibility = "SAMPLE" | "HIDDEN";

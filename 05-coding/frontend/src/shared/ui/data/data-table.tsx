@@ -142,7 +142,7 @@ export function DataTable<T>({
             {columns.map((column) => {
               const active = sort?.key === column.key;
               const headerClass = cn(
-                "border-b border-[var(--color-border)] px-3 py-2.5 text-[11px] font-semibold tracking-[0.09em] text-[var(--color-text-subtle)] uppercase",
+                "border-b border-[var(--color-border)] px-3 py-2.5 text-[11px] font-semibold tracking-[0.09em] text-[var(--color-text-muted)] uppercase",
                 ALIGN[column.align ?? "left"],
               );
 

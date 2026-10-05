@@ -9,11 +9,11 @@
 // localStorage copy, so only a save made in this browser shows up.
 "use client";
 
-import { useProblemDraft } from "@/entities/problem";
+import { problemLevelLabel, problemLevelTone, useProblemDraft, useProblemLevels } from "@/entities/problem";
+import { isNotFound } from "@/shared/api";
 import { useT } from "@/shared/i18n";
-import { Badge, Card, ErrorState, MarkdownPreview, NoticeTile, Skeleton } from "@/shared/ui";
+import { Badge, Card, EmptyState, ErrorState, MarkdownPreview, NoticeTile, Skeleton } from "@/shared/ui";
 
-const DIFFICULTY_VARIANT = { easy: "success", medium: "warn", hard: "negative" } as const;
 
 type Props = {
   /** Route param, e.g. "121". */
@@ -23,8 +23,10 @@ type Props = {
 export function ProblemPreviewView({ problemId }: Props) {
   const t = useT("problemPreview");
   const ta = useT("problemAuthoring");
+  const levelList = useProblemLevels();
   const query = useProblemDraft(problemId);
 
+  if (isNotFound(query.error)) return <EmptyState>{t("notFound")}</EmptyState>;
   if (query.isError) return <ErrorState>{t("loadFailed")}</ErrorState>;
   if (!query.data) return <Skeleton className="mx-auto h-[320px] max-w-3xl" aria-busy="true" />;
   const { draft, savedAt } = query.data;
@@ -40,7 +42,9 @@ export function ProblemPreviewView({ problemId }: Props) {
       <Card
         title={draft.title}
         action={
-          <Badge variant={DIFFICULTY_VARIANT[draft.difficulty]}>{ta(`difficulty.${draft.difficulty}`)}</Badge>
+          <Badge variant={problemLevelTone(levelList, draft.difficulty)}>
+            {problemLevelLabel(levelList, draft.difficulty)}
+          </Badge>
         }
       >
         <h2 className="sr-only">{t("statementTitle")}</h2>

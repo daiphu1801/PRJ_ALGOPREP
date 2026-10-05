@@ -12,7 +12,6 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Search } from "lucide-react";
 import {
   fetchMySubmissionsPage,
   fetchMySubmissionStats,
@@ -21,6 +20,7 @@ import {
   type VerdictFilter,
 } from "@/entities/submission";
 import { useT } from "@/shared/i18n";
+import { usePersistedPageSize } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
 import {
   Badge,
@@ -28,9 +28,9 @@ import {
   DataTable,
   PageHeader,
   Pagination,
-  SegmentedTabs,
+  FilterBar,
+  FilterMenu,
   StatCard,
-  TextField,
   type BadgeVariant,
   type DataTableColumn,
 } from "@/shared/ui";
@@ -44,7 +44,8 @@ const VERDICT_VARIANT: Record<string, BadgeVariant> = {
   COMPILE_ERROR: "warn",
 };
 
-const PAGE_SIZE = 20;
+// 20 is the default; the picker lets the learner choose, remembered per browser.
+const PAGE_SIZES = [10, 20, 50] as const;
 
 export function MySubmissionsView() {
   const t = useT("mySubmissions");
@@ -53,10 +54,11 @@ export function MySubmissionsView() {
   const [verdict, setVerdict] = useState<VerdictFilter>("ALL");
   const [language, setLanguage] = useState<LanguageFilter>("ALL");
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = usePersistedPageSize("algoprep-my-submissions-page-size", PAGE_SIZES, 20);
 
   const listPage = useMemo(
-    () => fetchMySubmissionsPage({ query, verdict, language, page, pageSize: PAGE_SIZE }),
-    [query, verdict, language, page],
+    () => fetchMySubmissionsPage({ query, verdict, language, page, pageSize }),
+    [query, verdict, language, page, pageSize],
   );
 
   const acceptedRate =
@@ -187,20 +189,16 @@ export function MySubmissionsView() {
       </div>
 
       <div className="glass-card border border-[var(--color-border)] px-5 py-4">
-        <div className="mb-3.5 flex flex-wrap items-center gap-2.5">
-          <TextField
-            label={t("filter.searchLabel")}
-            hideLabel
-            leadingIcon={<Search className="h-3.5 w-3.5" />}
-            placeholder={t("filter.searchPlaceholder")}
-            value={query}
-            onChange={(event) => updateFilter(setQuery, event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") announceSearch();
-            }}
-            wrapperClassName="min-w-[220px] flex-1"
-          />
-          <SegmentedTabs
+        <FilterBar
+          search={{
+            label: t("filter.searchLabel"),
+            placeholder: t("filter.searchPlaceholder"),
+            value: query,
+            onChange: (next) => updateFilter(setQuery, next),
+            onSubmit: announceSearch,
+          }}
+        >
+          <FilterMenu
             label={t("filter.verdictLabel")}
             value={verdict}
             onValueChange={(value) => updateFilter(setVerdict, value)}
@@ -212,7 +210,7 @@ export function MySubmissionsView() {
               { value: "COMPILE_ERROR", label: t("verdict.COMPILE_ERROR") },
             ]}
           />
-          <SegmentedTabs
+          <FilterMenu
             label={t("filter.languageLabel")}
             value={language}
             onValueChange={(value) => updateFilter(setLanguage, value)}
@@ -223,7 +221,7 @@ export function MySubmissionsView() {
               { value: "CPP", label: t("language.CPP") },
             ]}
           />
-        </div>
+        </FilterBar>
 
         <DataTable
           caption={t("table.caption")}
@@ -239,6 +237,12 @@ export function MySubmissionsView() {
           pageSize={listPage.pageSize}
           total={listPage.totalItems}
           onPageChange={setPage}
+          pageSizeOptions={PAGE_SIZES}
+          pageSizeLabel={t("footer.pageSizeLabel")}
+          onPageSizeChange={(size) => {
+            setPageSize(size);
+            setPage(1);
+          }}
           summary={t("footer.summary", {
             from: listPage.totalItems === 0 ? 0 : (listPage.currentPage - 1) * listPage.pageSize + 1,
             to: Math.min(listPage.currentPage * listPage.pageSize, listPage.totalItems),

@@ -24,7 +24,7 @@ phải tồn tại** — khác `identity`.
 
 | Nhóm | Mã | Ghi chú |
 | :--- | :--- | :--- |
-| Soạn đề bài | F2-01, F2-02 | Markdown + LaTeX; độ khó, chủ đề, thẻ (tag) tự do nhiều-nhiều. Danh mục chủ đề là dữ liệu **do ADMIN quản lý** (đã chốt 2026-10-01, `DEC-2026-1001-admin-configurable-settings`): ADMIN tạo/đổi tên/sắp xếp/xoá, A2 chỉ chọn; endpoint `ListProblemTopics`, `CreateProblemTopic`, `UpdateProblemTopic`, `ReorderProblemTopics`, `DeleteProblemTopic` (xoá bị từ chối khi còn bài tham chiếu, trả số đếm); xem `database/problem-bank.md` mục 1.2 và `security/problem-bank.md` mục 1 |
+| Soạn đề bài | F2-01, F2-02 | Markdown + LaTeX; độ khó (danh mục do ADMIN quản lý, xem mục 2.1), chủ đề, thẻ (tag) tự do nhiều-nhiều. Danh mục chủ đề là dữ liệu **do ADMIN quản lý** (đã chốt 2026-10-01, `DEC-2026-1001-admin-configurable-settings`): ADMIN tạo/đổi tên/sắp xếp/xoá, A2 chỉ chọn; endpoint `ListProblemTopics`, `CreateProblemTopic`, `UpdateProblemTopic`, `ReorderProblemTopics`, `DeleteProblemTopic` (xoá bị từ chối khi còn bài tham chiếu, trả số đếm); xem `database/problem-bank.md` mục 1.2 và `security/problem-bank.md` mục 1 |
 | Đặc tả song song hai mô hình nộp bài | F2-03 | Chữ ký hàm theo Java/C++/Python (đầu vào cho F3 — bọc hàm) **và** định dạng stdin/stdout theo dòng chuẩn (đầu vào cho mô hình Standard I/O). Cả hai luôn cùng tồn tại cho một bài, trừ ngoại lệ F3-13 (kiểu dữ liệu vượt lược đồ, ẩn tuỳ chọn Bọc hàm — cờ đặt ở `problem-bank`, đọc bởi `harness`) [SoT: `01-rd/req/problem-bank.md:11-21`; `02-bd/architecture/harness.md` mục 2b] |
 | Chiến lược so khớp | F2-04 | `EXACT`/`TRIMMED`/`EPSILON`/`UNORDERED_SET`, khai theo bài toán, `harness` đọc để sinh mã so khớp |
 | Testcase Sample/Hidden | F2-05, F2-06, F2-08 | Sample công khai (Chạy thử), Hidden ẩn (Nộp bài); chống rò rỉ — API/log không bao giờ trả input hay diff của Hidden testcase |
@@ -38,6 +38,23 @@ phải tồn tại** — khác `identity`.
 | Vòng đời bài toán | F2-15 | Hai trạng thái `Chưa xuất bản`/`Đã xuất bản` + cờ `deleted` (ẩn mềm) — `DEC-2026-0830-problem-lifecycle-two-states`, `DEC-2026-0831-problem-management-lifecycle-details` |
 | Nhân bản bài toán | F2-16 | Sao chép toàn bộ nội dung, bản sao ở trạng thái `Chưa xuất bản` |
 | Xuất CSV | F2-17 | Chỉ metadata bảng, không xuất đề/đặc tả/testcase |
+
+### 2.1. Danh mục độ khó (F2-02) — dữ liệu do ADMIN quản lý (chốt 2026-10-03)
+
+Ba mức `Dễ`, `Trung bình`, `Khó` từng là ENUM `problems.difficulty`; từ 2026-10-03 chúng **chỉ là dữ liệu khởi tạo (seed)** của bảng
+`problem_levels` (`02-bd/database/problem-bank.md` mục 1.2a); `problems.level_id` là FK tới bảng này. Căn cứ: `DEC-2026-1001-admin-configurable-settings` mục 7.
+
+- **Không dùng chung** với `interview_bank.question_levels`: F2 và F6 là hai bounded context, mỗi bên một bảng, `problem-bank` không đọc bảng của `interview-bank`.
+- **Endpoint (tên nghiệp vụ, hợp đồng ở `03-dd/api/problem-bank.md`)**: `ListProblemLevels` (mọi người dùng đã xác thực), `CreateProblemLevel`,
+  `UpdateProblemLevel` (đổi tên), `ReorderProblemLevels`, `DeleteProblemLevel` (bốn endpoint này chỉ ADMIN).
+- **Quyền**: dùng lại Function `PROBLEM_AUTHORING` cộng kiểm vai trò `ADMIN` (cùng cách với `ListProblemTopics`...), không Function mới; chi tiết ở
+  `02-bd/security/problem-bank.md` mục 1, Bảng 1.1.
+- **Quy tắc**: A2 chỉ chọn; xoá bị từ chối khi còn bài tham chiếu (API trả số đếm) và khi là mức cuối cùng. Quy tắc nằm ở use case
+  `DeleteProblemLevelCommand`, không ở controller `[SoT: Suy luận]`. Mọi thao tác ghi `system_audit_logs` (F1-14).
+- **Độ khó không mang logic**: không điều khiển điểm, giới hạn tài nguyên hay luồng chấm; chỉ phân loại. Sắp xếp theo độ khó đi theo `sort_order`.
+- **Màu badge** không cấu hình: giao diện suy ra (ba mức seed giữ màu cũ, mức mới màu trung tính). `[SoT: Suy luận]` — thêm cột `color_token` nếu chủ dự án muốn ADMIN chọn màu.
+- Hệ quả ngoài module: các màn học viên (`USR0101` đến `USR0103`, `USR0201`, `USR0202`, `USR0501`, `USR0601`), `ADM0101`, `ADM0302`, `INS0101`, `INS0202` đọc nhãn độ khó từ dữ liệu
+  (danh sách theo `DEC-2026-1001-admin-configurable-settings` mục 7); BD các màn đó do agent khác cập nhật.
 
 ## 3. Giao tiếp liên module
 
@@ -134,6 +151,7 @@ mở bài mới phát hiện. Cờ này là dữ liệu, việc *ẩn UI* dựa 
 - **Chốt 2026-09-13 — chia sẻ type schema: shared kernel `algoprep-common`**, không dùng port. Đã khớp
   quyết định phía `harness` (`02-bd/architecture/harness.md` mục 4) — cả hai module cùng đọc một enum/AST
   kiểu dữ liệu từ `algoprep-common`, không module nào sở hữu bản sao riêng.
+- Cách sinh slug `code` cho mức độ khó mới (mục 2.1, chốt ở DD, cùng câu hỏi với chủ đề); màu badge không cấu hình (đã chốt).
 - Ngưỡng cụ thể "kích thước đầu ra tối đa"/"số lần nộp/giờ" mặc định khi A2 không tự khai (RD để ngỏ,
   `[SoT: Suy luận]` — BD đề xuất giá trị cụ thể ở mục 5 file `database`).
 

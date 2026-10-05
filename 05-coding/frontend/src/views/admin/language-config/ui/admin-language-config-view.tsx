@@ -29,7 +29,11 @@ import { useState } from "react";
 import {
   effectiveMemoryLimitMb,
   effectiveTimeLimitMs,
-  fetchLanguageConfigPage,
+  useLanguageConfigPage,
+  useSaveLanguageConfigPage,
+  GENERATOR_OUTPUT_RANGE,
+  GENERATOR_RUNTIME_RANGE,
+  type GeneratorSandbox,
   type JudgeDefaults,
   type LanguageConfig,
   type LanguageConfigPage,
@@ -41,8 +45,10 @@ import {
   Button,
   Card,
   DataTable,
+  ErrorState,
   PageHeader,
   SettingRow,
+  Skeleton,
   TextField,
   Toggle,
   type DataTableColumn,
@@ -54,22 +60,44 @@ const CHIP_STYLE: Record<LanguageConfig["key"], string> = {
   java: "bg-[var(--color-lang-java-bg)] text-[var(--color-lang-java-fg)]",
 };
 
+/** Loads the page, then hands it to the form, which owns the editable copy. */
 export function AdminLanguageConfigView() {
+  const t = useT("adminLanguageConfig");
+  const query = useLanguageConfigPage();
+
+  if (query.isError) return <ErrorState>{t("loadFailed")}</ErrorState>;
+  if (!query.data) {
+    return (
+      <div className="flex flex-col gap-4" aria-busy="true">
+        <Skeleton className="h-[62px] w-full" />
+        <Skeleton className="h-[320px] w-full" />
+      </div>
+    );
+  }
+  return <LanguageConfigForm initial={query.data} />;
+}
+
+function LanguageConfigForm({ initial }: { initial: LanguageConfigPage }) {
   const t = useT("adminLanguageConfig");
   const tCommon = useT("common");
   const locale = useLocale();
 
-  // Mock read happens once; `saved` is the baseline the dirty check compares against, so saving
-  // resets it rather than re-fetching (there is no endpoint to re-fetch from yet).
-  const [saved, setSaved] = useState<LanguageConfigPage>(fetchLanguageConfigPage);
+  // `saved` is the baseline the dirty check compares against: it starts as the loaded page and moves
+  // to the draft once a save succeeds.
+  const [saved, setSaved] = useState<LanguageConfigPage>(initial);
   const [draft, setDraft] = useState<LanguageConfigPage>(saved);
-  const [saving, setSaving] = useState(false);
+  const saveConfig = useSaveLanguageConfigPage();
+  const saving = saveConfig.isPending;
   const [attempted, setAttempted] = useState(false);
 
   const dirty = JSON.stringify(draft) !== JSON.stringify(saved);
   const number = (value: number) => value.toLocaleString(locale);
   const badMultiplier = (value: number) => !(value > 0);
   const badDefault = (value: number) => !Number.isInteger(value) || value < 1;
+  const outOfRange = (value: number, range: { min: number; max: number }) =>
+    !Number.isInteger(value) || value < range.min || value > range.max;
+  const badRuntime = (value: number) => outOfRange(value, GENERATOR_RUNTIME_RANGE);
+  const badOutput = (value: number) => outOfRange(value, GENERATOR_OUTPUT_RANGE);
 
   function patchLanguage(key: LanguageConfig["key"], patch: Partial<LanguageConfig>) {
     setDraft((prev) => ({
@@ -84,6 +112,10 @@ export function AdminLanguageConfigView() {
     setDraft((prev) => ({ ...prev, defaults: { ...prev.defaults, ...patch } }));
   }
 
+  function patchGenerator(patch: Partial<GeneratorSandbox>) {
+    setDraft((prev) => ({ ...prev, generator: { ...prev.generator, ...patch } }));
+  }
+
   function patchSandbox(patch: Partial<SandboxConfig>) {
     setDraft((prev) => ({ ...prev, sandbox: { ...prev.sandbox, ...patch } }));
   }
@@ -93,15 +125,21 @@ export function AdminLanguageConfigView() {
     const invalid =
       draft.languages.some((language) => badMultiplier(language.timeMultiplier)) ||
       Object.values(draft.defaults).some(badDefault);
+    if (badRuntime(draft.generator.maxRuntimeSeconds) || badOutput(draft.generator.maxOutputMb)) {
+      toast.error(t("errorInvalidGenerator"));
+      return;
+    }
     if (invalid) {
       toast.error(t("errorInvalidValue"));
       return;
     }
-    setSaving(true);
-    // No endpoint yet — the delay stands in for the round trip so the `saving` state is reviewable.
-    await new Promise((resolve) => setTimeout(resolve, 600));
-    setSaved(draft);
-    setSaving(false);
+    try {
+      await saveConfig.mutateAsync(draft);
+      setSaved(draft);
+      toast.success(t("saveDone"));
+    } catch {
+      toast.error(t("saveFailed"));
+    }
     toast.success(t("saveDone"));
   }
 
@@ -281,6 +319,50 @@ export function AdminLanguageConfigView() {
                   />
                 </SettingRow>
               ))}
+            </div>
+          </Card>
+
+          <Card title={t("generator.title")} description={t("generator.subtitle")}>
+            <div className="flex flex-col gap-2.5">
+              <SettingRow label={t("generator.languageLabel")} description={t("generator.languageMeta")}>
+                <span className="font-mono text-sm font-semibold">Python</span>
+              </SettingRow>
+              <SettingRow label={t("generator.runtime.label")} description={t("generator.runtime.meta")}>
+                <span className="flex items-center gap-1.5">
+                  <TextField
+                    label={t("generator.runtime.label")}
+                    hideLabel
+                    type="number"
+                    min={GENERATOR_RUNTIME_RANGE.min}
+                    max={GENERATOR_RUNTIME_RANGE.max}
+                    value={draft.generator.maxRuntimeSeconds}
+                    disabled={saving}
+                    onChange={(event) => patchGenerator({ maxRuntimeSeconds: Number(event.target.value) })}
+                    invalid={attempted && badRuntime(draft.generator.maxRuntimeSeconds)}
+                    className="h-8 w-24 font-mono"
+                    wrapperClassName="w-auto"
+                  />
+                  <span className="font-mono text-xs text-[var(--color-text-muted)]">{t("unitSec")}</span>
+                </span>
+              </SettingRow>
+              <SettingRow label={t("generator.output.label")} description={t("generator.output.meta")}>
+                <span className="flex items-center gap-1.5">
+                  <TextField
+                    label={t("generator.output.label")}
+                    hideLabel
+                    type="number"
+                    min={GENERATOR_OUTPUT_RANGE.min}
+                    max={GENERATOR_OUTPUT_RANGE.max}
+                    value={draft.generator.maxOutputMb}
+                    disabled={saving}
+                    onChange={(event) => patchGenerator({ maxOutputMb: Number(event.target.value) })}
+                    invalid={attempted && badOutput(draft.generator.maxOutputMb)}
+                    className="h-8 w-24 font-mono"
+                    wrapperClassName="w-auto"
+                  />
+                  <span className="font-mono text-xs text-[var(--color-text-muted)]">{t("unitMb")}</span>
+                </span>
+              </SettingRow>
             </div>
           </Card>
 

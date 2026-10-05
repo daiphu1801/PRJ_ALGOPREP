@@ -43,7 +43,7 @@ View nhận prop bắt buộc `basePath` (gốc của khu) cho liên kết quay 
 | :--- | :--- | :--- |
 | Soạn đề bài Markdown kèm LaTeX | F2-01 | `01-rd/req/problem-bank.md` — F2-01 |
 | Phân loại theo độ khó và chủ đề | F2-02 | `01-rd/req/problem-bank.md` — F2-02 |
-| Khai đặc tả bài toán cho cả hai mô hình nộp bài (chữ ký hàm theo ngôn ngữ + định dạng I/O chuẩn) | F2-03 | `01-rd/req/problem-bank.md` — F2-03 |
+| Khai đặc tả bài toán cho cả hai mô hình nộp bài (chữ ký hàm chung + định dạng I/O chuẩn) | F2-03 | `01-rd/req/problem-bank.md` — F2-03 |
 | Chiến lược so khớp kết quả `EXACT`/`TRIMMED`/`EPSILON`/`UNORDERED_SET` | F2-04 | `01-rd/req/problem-bank.md` — F2-04 |
 | Testcase Sample (công khai, dùng cho Chạy thử) và Hidden (ẩn, dùng cho Nộp bài) | F2-05, F2-06 | `01-rd/req/problem-bank.md` — F2-05, F2-06 |
 | Tải lên bộ testcase theo lô, bộ lớn lưu MinIO | F2-07 | `01-rd/req/problem-bank.md` — F2-07 |
@@ -157,7 +157,7 @@ liệu chạy máy) — prototype tách hai tab riêng và giữ đúng phân bi
 **Cột thuộc tính bên phải:**
 
 1. **"Thuộc tính"** (dòng 345-378): Chủ đề (dòng 349-351) và Độ khó Easy/Medium/Hard (dòng 353-358, 691) —
-   F2-02. **Trạng thái** — prototype dòng 360-367/692 còn hiện 3 lựa chọn (Nháp/Đã xuất bản/Ẩn), nhưng
+   F2-02. Độ khó do ADMIN quản lý (danh mục dữ liệu; ba mức Dễ/Trung bình/Khó chỉ là dữ liệu khởi tạo), không gắn logic. (`DEC-2026-1001-admin-configurable-settings` mục 7). **Trạng thái** — prototype dòng 360-367/692 còn hiện 3 lựa chọn (Nháp/Đã xuất bản/Ẩn), nhưng
    `problem-bank.md` — F2-15 (`DEC-2026-0830-problem-lifecycle-two-states`) đã chốt chỉ còn **hai** trạng thái
    `Chưa xuất bản` / `Đã xuất bản`, bỏ hẳn "Ẩn" — dựng UI thật theo F2-15, không theo prototype ở điểm này.
    **Thẻ** tự do (dòng 368-376, 699) — chưa có mã, xem Q7.
@@ -220,7 +220,7 @@ AI soạn nháp" (xem ghi chú ở Q6).
 |---|---|---|---|
 | REQ-01 | Soạn đề bài Markdown kèm LaTeX (F2-01) | Chức năng | `01-rd/req/problem-bank.md` — F2-01 |
 | REQ-02 | Phân loại theo độ khó và chủ đề (F2-02) | Chức năng | `01-rd/req/problem-bank.md` — F2-02 |
-| REQ-03 | Khai đặc tả bài toán cho cả hai mô hình nộp bài (chữ ký hàm theo ngôn ngữ + định dạng I/O chuẩn) (F2-03) | Chức năng | `01-rd/req/problem-bank.md` — F2-03 |
+| REQ-03 | Khai đặc tả bài toán cho cả hai mô hình nộp bài (chữ ký hàm chung + định dạng I/O chuẩn) (F2-03) | Chức năng | `01-rd/req/problem-bank.md` — F2-03 |
 | REQ-04 | Chiến lược so khớp kết quả `EXACT`/`TRIMMED`/`EPSILON`/`UNORDERED_SET` (F2-04) | Chức năng | `01-rd/req/problem-bank.md` — F2-04 |
 | REQ-05 | Testcase Sample (công khai, dùng cho Chạy thử) và Hidden (ẩn, dùng cho Nộp bài) (F2-05, F2-06) | Chức năng | `01-rd/req/problem-bank.md` — F2-05, F2-06 |
 | REQ-06 | Tải lên bộ testcase theo lô, bộ lớn lưu MinIO (F2-07) | Chức năng | `01-rd/req/problem-bank.md` — F2-07 |

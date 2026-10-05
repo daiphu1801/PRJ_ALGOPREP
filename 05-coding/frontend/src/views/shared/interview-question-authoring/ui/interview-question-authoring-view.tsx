@@ -25,8 +25,8 @@
 import { useState } from "react";
 import { ArrowLeft, Eye } from "lucide-react";
 import {
-  QUESTION_LEVELS,
   findInterviewQuestionByCode,
+  useInterviewLevels,
   useInterviewTopics,
   type QuestionLevel,
   type QuestionTopic,
@@ -56,10 +56,12 @@ type Draft = {
   rubric: RubricCriterion[];
 };
 
+// topic and level start empty: the create form fills them with the first row of the admin-managed lists,
+// which an admin may have renamed, reordered or deleted (DEC-2026-1001).
 const EMPTY_DRAFT: Draft = {
   question: "",
-  topic: "csTheory",
-  level: "medium",
+  topic: "",
+  level: "",
   followUps: [""],
   rubric: [],
 };
@@ -88,8 +90,11 @@ export function InterviewQuestionAuthoringView({ questionId, listHref }: Props) 
   const t = useT("interviewQuestionAuthoring");
   const isNew = questionId === "new";
   const topicList = useInterviewTopics();
+  const levelList = useInterviewLevels();
   const [loaded] = useState(() => draftFor(questionId));
-  const [draft, setDraft] = useState<Draft>(loaded ?? EMPTY_DRAFT);
+  const [draft, setDraft] = useState<Draft>(
+    loaded ?? { ...EMPTY_DRAFT, topic: topicList[0]?.key ?? "", level: levelList[0]?.key ?? "" },
+  );
   const [saving, setSaving] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
 
@@ -299,7 +304,7 @@ export function InterviewQuestionAuthoringView({ questionId, listHref }: Props) 
                 label={t("levelLabel")}
                 value={draft.level}
                 onChange={(event) => patch({ level: event.target.value as QuestionLevel })}
-                options={QUESTION_LEVELS.map((key) => ({ value: key, label: t(`level.${key}`) }))}
+                options={levelList.map((item) => ({ value: item.key, label: item.label }))}
               />
             </div>
           </Card>

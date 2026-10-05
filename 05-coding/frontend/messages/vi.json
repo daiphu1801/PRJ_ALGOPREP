@@ -151,11 +151,6 @@
       "attempted": "Đang làm",
       "todo": "Chưa làm"
     },
-    "difficulty": {
-      "easy": "Dễ",
-      "medium": "Trung bình",
-      "hard": "Khó"
-    },
     "submissionModel": {
       "both": "Cả hai",
       "stdioOnly": "Chỉ Standard I/O"
@@ -173,6 +168,7 @@
     },
     "pager": {
       "summary": "Hiển thị {from}–{to} trong {total} bài",
+      "pageSizeLabel": "Số dòng mỗi trang",
       "previous": "Trang trước",
       "next": "Trang sau",
       "goToPage": "Tới trang {page}"
@@ -215,11 +211,6 @@
       "attempted": "Đang làm",
       "todo": "Chưa làm"
     },
-    "difficulty": {
-      "easy": "Dễ",
-      "medium": "Trung bình",
-      "hard": "Khó"
-    },
     "table": {
       "caption": "Bảng bài đã lưu",
       "colProblem": "Bài toán",
@@ -249,11 +240,6 @@
       "linkList": "Danh sách bài",
       "btnRun": "Run Code",
       "btnSubmit": "Submit"
-    },
-    "difficulty": {
-      "easy": "Dễ",
-      "medium": "Trung bình",
-      "hard": "Khó"
     },
     "submissionModel": {
       "both": "Cả hai mô hình khả dụng",
@@ -445,6 +431,23 @@
         "meta": "Không tính vào giới hạn chạy"
       }
     },
+    "generator": {
+      "title": "Script sinh dữ liệu testcase",
+      "subtitle": "Giới hạn khi hệ thống chạy script AI viết ra để sinh input (F2-14). Riêng, không dùng chung với bài nộp",
+      "languageLabel": "Ngôn ngữ script",
+      "languageMeta": "Cố định, không sửa",
+      "runtime": {
+        "label": "Thời gian chạy tối đa",
+        "meta": "Script chạy quá thời gian này thì bị loại cả script"
+      },
+      "output": {
+        "label": "Kích thước output tối đa",
+        "meta": "Tổng output vượt mức này thì bị loại cả script"
+      }
+    },
+    "saveFailed": "Không lưu được cấu hình ngôn ngữ và giới hạn. Thử lại sau.",
+    "loadFailed": "Không tải được cấu hình ngôn ngữ và giới hạn. Thử lại sau.",
+    "errorInvalidGenerator": "Thời gian chạy phải từ 1 đến 300 giây và kích thước output phải từ 1 đến 1024 MB",
     "sandboxTitle": "Sandbox",
     "sandbox": {
       "networkAccess": {
@@ -653,11 +656,6 @@
     "columnProblem": "Bài toán",
     "columnAveragePerCall": "TB / lượt",
     "callCount": "{count} lượt gọi AI",
-    "difficulty": {
-      "easy": "Dễ",
-      "medium": "Trung bình",
-      "hard": "Khó"
-    },
     "emptyUsers": "Chưa có người học nào dùng AI trong khoảng này",
     "emptyProblems": "Chưa có bài toán nào tiêu thụ token trong khoảng này",
     "exportDone": "Đã xuất báo cáo sử dụng AI"
@@ -789,6 +787,15 @@
     "deleteRoleDone": "Đã xoá vai trò {role}"
   },
   "adminAiConfig": {
+    "testcaseGen": {
+      "title": "Sinh testcase tự động",
+      "subtitle": "Mỗi bài chỉ được sinh tối đa số lần này",
+      "maxLabel": "Số lần sinh tối đa mỗi bài",
+      "maxMeta": "Chỉ lần sinh thành công mới tính; duyệt hoặc loại testcase nháp không hoàn lại lượt",
+      "value": "{count} lần",
+      "decrement": "Giảm số lần sinh tối đa",
+      "increment": "Tăng số lần sinh tối đa"
+    },
     "budget": {
       "title": "Ngân sách và đơn giá",
       "subtitle": "Quản trị viên tự đặt, không giới hạn",
@@ -912,6 +919,7 @@
     "publishDone": "Đã lưu và phát hành cấu hình AI"
   },
   "problemManagement": {
+    "loadFailed": "Không tải được danh sách bài tập. Thử lại sau.",
     "title": "Quản lý bài tập",
     "subtitle": "{total} bài · {published} bài đang hiển thị ở Ngân hàng bài toán",
     "newProblem": "Bài tập mới",
@@ -965,15 +973,43 @@
       "error": {
         "empty": "Tên chủ đề không được để trống",
         "duplicate": "Đã có chủ đề trùng tên"
+      },
+      "moveUp": "Chuyển lên",
+      "moveDown": "Chuyển xuống"
+    },
+    "manageLevels": "Quản lý độ khó",
+    "levelManager": {
+      "title": "Quản lý độ khó bài tập",
+      "hint": "Độ khó do quản trị viên tự định nghĩa, không giới hạn số lượng và độ khó chỉ để phân loại. Chỉ xoá được độ khó chưa có bài tập nào; luôn phải còn ít nhất một độ khó.",
+      "nameLabel": "Tên độ khó",
+      "newLabel": "Độ khó mới",
+      "newPlaceholder": "Ví dụ: Rất khó",
+      "add": "Thêm",
+      "save": "Lưu tên",
+      "close": "Đóng",
+      "usage": "{count} bài",
+      "deleteBlocked": "Còn {count} bài, chưa xoá được",
+      "deleteLast": "Phải còn ít nhất một độ khó",
+      "moveUp": "Chuyển lên",
+      "moveDown": "Chuyển xuống",
+      "done": {
+        "add": "Đã thêm độ khó",
+        "rename": "Đã đổi tên độ khó",
+        "remove": "Đã xoá độ khó"
+      },
+      "error": {
+        "empty": "Tên độ khó không được để trống",
+        "duplicate": "Đã có độ khó trùng tên"
       }
+    },
+    "bulkLevel": {
+      "title": "Đổi độ khó cho {count} bài",
+      "label": "Độ khó mới",
+      "cancel": "Huỷ",
+      "apply": "Áp dụng"
     },
     "pageSizeLabel": "Số dòng mỗi trang",
     "filterAll": "Tất cả",
-    "difficulty": {
-      "easy": "Easy",
-      "medium": "Medium",
-      "hard": "Hard"
-    },
     "status": {
       "published": "Đã xuất bản",
       "draft": "Bản nháp"
@@ -1011,17 +1047,18 @@
     "next": "Sau",
     "goToPage": "Trang {page}",
     "confirmDeleteTitle": "Xoá bài {title}?",
+    "confirmBulkDeleteTitle": "Xoá {count} bài đã chọn?",
+    "confirmBulkDeleteHidden": "Cảnh báo: {count} bài trong số này đang không hiển thị do bộ lọc hiện tại.",
     "confirmDeleteBody": "Bài tập sẽ bị gỡ khỏi danh sách. Điều gì xảy ra với các lượt nộp đã có chưa được chốt — xem câu hỏi mở trong báo cáo.",
     "toast": {
+      "notWired": "{action}: chưa nối API trong bản mẫu, chưa có thay đổi nào",
       "deleted": "Đã xoá bài {title}",
       "searchResult": "Tìm thấy {count} bài tập",
       "searchEmpty": "Không tìm thấy bài tập nào",
       "bulkNeedsChoice": "Chọn giá trị áp dụng trước khi thực hiện (chưa có hộp chọn trong bản mẫu)",
       "bulk": {
-        "publish": "Đã xuất bản {count} bài",
-        "duplicate": "Đã nhân bản {count} bài",
-        "exportCsv": "Đã xuất CSV {count} bài",
-        "delete": "Đã xoá {count} bài"
+        "delete": "Đã xoá {count} bài",
+        "changeDifficulty": "Đã đổi độ khó của {count} bài"
       }
     }
   },
@@ -1051,7 +1088,34 @@
         "duplicate": "Đã có chủ đề trùng tên"
       },
       "starEnabled": "Đã bật khung STAR cho {name}",
-      "starDisabled": "Đã tắt khung STAR cho {name}"
+      "starDisabled": "Đã tắt khung STAR cho {name}",
+      "moveUp": "Chuyển lên",
+      "moveDown": "Chuyển xuống"
+    },
+    "manageLevels": "Quản lý độ khó",
+    "levelManager": {
+      "title": "Quản lý độ khó câu hỏi",
+      "hint": "Độ khó do quản trị viên tự định nghĩa, không giới hạn số lượng. Chỉ xoá được độ khó chưa có câu hỏi nào.",
+      "nameLabel": "Tên độ khó",
+      "newLabel": "Độ khó mới",
+      "newPlaceholder": "Ví dụ: Rất khó",
+      "add": "Thêm",
+      "save": "Lưu tên",
+      "close": "Đóng",
+      "usage": "{count} câu",
+      "deleteBlocked": "Còn {count} câu hỏi, chưa xoá được",
+      "deleteLast": "Phải còn ít nhất một độ khó",
+      "done": {
+        "add": "Đã thêm độ khó",
+        "rename": "Đã đổi tên độ khó",
+        "remove": "Đã xoá độ khó"
+      },
+      "error": {
+        "empty": "Tên độ khó không được để trống",
+        "duplicate": "Đã có độ khó trùng tên"
+      },
+      "moveUp": "Chuyển lên",
+      "moveDown": "Chuyển xuống"
     },
     "importCsv": "Nhập CSV",
     "newQuestion": "Câu hỏi mới",
@@ -1060,11 +1124,7 @@
     "topicFilterLabel": "Lọc theo chủ đề",
     "levelFilterLabel": "Lọc theo mức độ",
     "filterAll": "Tất cả",
-    "level": {
-      "easy": "Dễ",
-      "medium": "Trung bình",
-      "hard": "Khó"
-    },
+    "pageSizeLabel": "Số dòng mỗi trang",
     "columnCode": "Mã",
     "columnQuestion": "Câu hỏi",
     "columnTopic": "Chủ đề",
@@ -1090,12 +1150,21 @@
     "previous": "Trước",
     "next": "Sau",
     "goToPage": "Trang {page}",
+    "selectAll": "Chọn tất cả câu hỏi đang hiển thị",
+    "selectRow": "Chọn câu hỏi {code}",
+    "selectionLabel": "Đã chọn {count} câu hỏi",
+    "bulk": {
+      "duplicate": "Nhân bản",
+      "delete": "Xoá"
+    },
+    "confirmBulkDeleteTitle": "Xoá {count} câu hỏi đã chọn?",
+    "confirmBulkDeleteHidden": "Cảnh báo: {count} câu hỏi trong số này đang không hiển thị do bộ lọc hiện tại.",
     "confirmDeleteTitle": "Xoá câu hỏi {code}?",
     "confirmDeleteBody": "Câu hỏi sẽ bị gỡ khỏi ngân hàng. Các phiên phỏng vấn đã dùng câu này giữ nguyên lịch sử.",
     "toast": {
+      "bulkDeleted": "Đã xoá {count} câu hỏi",
+      "notWired": "{action}: chưa nối API trong bản mẫu, chưa có thay đổi nào",
       "deleted": "Đã xoá câu hỏi {code}",
-      "duplicated": "Đã nhân bản câu hỏi {code}",
-      "imported": "Đã nhập CSV từ tệp {name}",
       "searchResult": "Tìm thấy {count} câu hỏi",
       "searchEmpty": "Không tìm thấy câu hỏi nào"
     }
@@ -1120,11 +1189,6 @@
     "questionPlaceholder": "Ví dụ: Hash table xử lý collision bằng cách nào?",
     "topicLabel": "Chủ đề",
     "levelLabel": "Độ khó",
-    "level": {
-      "easy": "Dễ",
-      "medium": "Trung bình",
-      "hard": "Khó"
-    },
     "group2Title": "Câu hỏi đào sâu",
     "group2Subtitle": "Không giới hạn số lượng, không có độ khó riêng cho từng câu",
     "followUpLabel": "Câu đào sâu {index}",
@@ -1164,6 +1228,7 @@
     }
   },
   "problemAuthoring": {
+    "notFound": "Không tìm thấy bài tập.",
     "subtitle": "Chủ đề {topic} · lưu và xuất bản khi checklist đủ điều kiện",
     "back": "Quay lại",
     "previewAsLearner": "Xem như người học",
@@ -1192,7 +1257,8 @@
       "content": "Nội dung đề",
       "examples": "Ví dụ mẫu ({count})",
       "testcases": "Testcase ({count})",
-      "ai": "Gợi ý AI"
+      "ai": "Gợi ý AI",
+      "spec": "Đặc tả"
     },
     "statementTitle": "Đề bài",
     "statementSubtitle": "Nội dung viết bằng Markdown, hỗ trợ LaTeX",
@@ -1270,11 +1336,6 @@
     "topicLabel": "Chủ đề",
     "difficultyLabel": "Độ khó",
     "statusLabel": "Trạng thái",
-    "difficulty": {
-      "easy": "Easy",
-      "medium": "Medium",
-      "hard": "Hard"
-    },
     "status": {
       "draft": "Bản nháp",
       "published": "Đã xuất bản"
@@ -1288,7 +1349,8 @@
       "minTestcases": "Có ít nhất 8 testcase",
       "minPublic": "Có ít nhất 2 testcase công khai",
       "solutionPasses": "Đáp án mẫu chạy đúng mọi testcase",
-      "minExamples": "Có ít nhất 2 ví dụ mẫu"
+      "minExamples": "Có ít nhất 2 ví dụ mẫu",
+      "specDeclared": "Đã khai đặc tả bài toán (định dạng stdin/stdout, chiến lược so khớp, chữ ký hàm)"
     },
     "generateTitle": "Sinh testcase bằng AI",
     "generateSubtitle": "AI viết script sinh dữ liệu, hệ thống chạy script rồi lấy kết quả từ đáp án mẫu. AI không nhìn thấy đáp án mẫu.",
@@ -1337,9 +1399,79 @@
     "runBlocked": {
       "noSolution": "Hãy nhập đáp án mẫu trước khi chạy.",
       "noTestcase": "Cần ít nhất một testcase đã duyệt để chạy đáp án mẫu."
+    },
+    "spec": {
+      "wrapperUnsupportedTitle": "Chỉ hỗ trợ Standard I/O",
+      "wrapperUnsupportedBody": "Có kiểu dữ liệu nằm ngoài lược đồ kiểu của harness nên bài này không có mô hình Bọc hàm; học viên chỉ nộp được theo Standard I/O (F3-13). Chữ ký hàm không còn bắt buộc đầy đủ.",
+      "language": {
+        "java": "Java",
+        "cpp": "C++",
+        "python": "Python"
+      },
+      "languageShort": {
+        "java": "JV",
+        "cpp": "C+",
+        "python": "PY"
+      },
+      "functionName": "Tên hàm (tên chung)",
+      "returnType": "Kiểu trả về",
+      "parameters": "Tham số (thứ tự có ý nghĩa)",
+      "parameterName": "Tên tham số {index}",
+      "parameterType": "Kiểu tham số {index}",
+      "addParameter": "Thêm tham số",
+      "removeParameter": "Xoá tham số {index}",
+      "elementKind": "Kiểu phần tử của {type}",
+      "dimensions": "Số chiều của {type}",
+      "dimensionsValue": "{count} chiều",
+      "kind": {
+        "INT": "int",
+        "LONG": "long",
+        "DOUBLE": "double",
+        "BOOLEAN": "boolean",
+        "CHAR": "char",
+        "STRING": "string",
+        "ARRAY": "Mảng",
+        "LIST": "Danh sách",
+        "LINKED_LIST": "Danh sách liên kết",
+        "BINARY_TREE": "Cây nhị phân",
+        "OTHER": "Khác (chỉ Standard I/O)"
+      },
+      "ioTitle": "Định dạng nhập xuất chuẩn",
+      "ioSubtitle": "Mô hình Standard I/O: học viên tự đọc stdin và in stdout đúng theo hai mô tả này.",
+      "stdinFormat": "Định dạng đọc stdin",
+      "stdoutFormat": "Định dạng in stdout",
+      "matchingTitle": "Chiến lược so khớp",
+      "matchingSubtitle": "Cách so output của học viên với đáp án.",
+      "matchingStrategy": "Chiến lược so khớp",
+      "epsilon": "Sai số cho phép (epsilon)",
+      "strategy": {
+        "EXACT": {
+          "label": "EXACT",
+          "meta": "Khớp từng ký tự."
+        },
+        "TRIMMED": {
+          "label": "TRIMMED",
+          "meta": "Bỏ khoảng trắng thừa ở đầu và cuối rồi mới so."
+        },
+        "EPSILON": {
+          "label": "EPSILON",
+          "meta": "So số thực, chấp nhận sai số không vượt quá epsilon."
+        },
+        "UNORDERED_SET": {
+          "label": "UNORDERED_SET",
+          "meta": "So như một tập hợp, không phân biệt thứ tự phần tử. Không dùng được khi kiểu trả về là cây nhị phân hoặc danh sách liên kết."
+        }
+      },
+      "errorUnorderedSet": "UNORDERED_SET không dùng được khi kiểu trả về là cây nhị phân hoặc danh sách liên kết. Đổi chiến lược so khớp hoặc kiểu trả về.",
+      "signatureTitle": "Chữ ký hàm",
+      "signatureSubtitle": "Khai một lần cho cả ba ngôn ngữ. Harness tự đổi kiểu sang từng ngôn ngữ và sinh mã khung: học viên chỉ viết thân hàm, harness lo đọc input và in output. Tên tham số hiện trong mã khung và trong cách hiển thị testcase mẫu.",
+      "stubTitle": "Mã khung học viên sẽ thấy",
+      "stubSubtitle": "Minh hoạ từ chữ ký ở trên, mã khung thật do harness sinh. Tên hàm tự suy ra: Python viết snake_case, Java và C++ viết camelCase.",
+      "overrideName": "Tên hàm {language} (để trống = tự suy ra)"
     }
   },
   "problemPreview": {
+    "notFound": "Không tìm thấy bài tập.",
     "loadFailed": "Không tải được bài tập. Thử lại sau.",
     "savedAt": "Bản đã lưu lúc {time}. Thay đổi chưa lưu không hiện ở đây.",
     "neverSaved": "Chưa có bản lưu nào từ trình duyệt này, đang hiện bài mẫu.",
@@ -1354,6 +1486,7 @@
     "memoryLimit": "Bộ nhớ"
   },
   "problemInfo": {
+    "notFound": "Không tìm thấy bài tập.",
     "loadFailed": "Không tải được bài tập. Thử lại sau.",
     "back": "Quay lại danh sách",
     "edit": "Sửa bài",
@@ -1367,7 +1500,9 @@
     "solutionToggle": "Xem mã đáp án mẫu",
     "guardOn": "Bật",
     "guardOff": "Tắt",
-    "aiBriefEmpty": "Chưa có ngữ cảnh riêng cho bài này."
+    "aiBriefEmpty": "Chưa có ngữ cảnh riêng cho bài này.",
+    "specTitle": "Đặc tả bài toán",
+    "specSubtitle": "Chữ ký hàm (mô hình Bọc hàm), định dạng nhập xuất chuẩn và cách so khớp kết quả. Chỉ đọc, sửa ở trang Sửa bài."
   },
   "interviewQuestionInfo": {
     "back": "Quay lại danh sách",
@@ -1396,11 +1531,6 @@
       "MEMORY_LIMIT_EXCEEDED": "Quá bộ nhớ",
       "RUNTIME_ERROR": "Lỗi thực thi",
       "COMPILE_ERROR": "Lỗi biên dịch"
-    },
-    "difficulty": {
-      "EASY": "Dễ",
-      "MEDIUM": "Trung bình",
-      "HARD": "Khó"
     },
     "verdictSubtitle": "{passed}/{total} testcase đạt - nộp lúc {submittedAt}",
     "stats": {
@@ -1502,6 +1632,7 @@
     },
     "footer": {
       "summary": "Hiển thị {from} - {to} trong số {total} bài nộp",
+      "pageSizeLabel": "Số dòng mỗi trang",
       "previous": "‹",
       "next": "›",
       "pageLabel": "Trang {page}"
@@ -1531,12 +1662,8 @@
       "known": "Đã thuộc"
     },
     "topicFilterLabel": "Lọc theo chủ đề",
+    "levelFilterLabel": "Lọc theo độ khó",
     "filterAll": "Tất cả",
-    "level": {
-      "easy": "Dễ",
-      "medium": "Trung bình",
-      "hard": "Khó"
-    },
     "recall": {
       "unrated": "Chưa xem",
       "known": "Biết rõ",
@@ -1572,11 +1699,6 @@
       "linkBack": "Quay lại danh sách",
       "bookmark": "Đánh dấu xem lại",
       "bookmarked": "Đã đánh dấu"
-    },
-    "level": {
-      "easy": "Dễ",
-      "medium": "Trung bình",
-      "hard": "Khó"
     },
     "mode": {
       "groupLabel": "Chuyển chế độ",
@@ -1671,11 +1793,6 @@
     "diffTitle": "Bản đề xuất",
     "sourceCodeTitle": "Code đã nộp",
     "applyCta": "Áp dụng vào Workspace",
-    "difficulty": {
-      "easy": "Dễ",
-      "medium": "Trung bình",
-      "hard": "Khó"
-    },
     "errorTransientTitle": "Hệ thống AI đang bận",
     "errorTransientBody": "Hệ thống AI đang bận, thử lại sau ít phút.",
     "retry": "Thử lại",
@@ -1828,11 +1945,6 @@
         "btnRemove": "Gỡ khỏi lớp"
       }
     },
-    "difficulty": {
-      "EASY": "Dễ",
-      "MEDIUM": "Trung bình",
-      "HARD": "Khó"
-    },
     "filterAll": "Tất cả",
     "cancel": "Huỷ",
     "emptyAssignments": "Chưa có bài nào được gán",
@@ -1883,6 +1995,7 @@
       }
     },
     "filterAll": "Tất cả",
+    "pageSizeLabel": "Số dòng mỗi trang",
     "previous": "Trước",
     "next": "Sau",
     "pageSummary": "Trang {page} / {total}",
@@ -2035,11 +2148,6 @@
     "assignments": {
       "title": "Bài tập của tôi",
       "linkViewAll": "Xem tất cả"
-    },
-    "difficulty": {
-      "EASY": "Dễ",
-      "MEDIUM": "Trung bình",
-      "HARD": "Khó"
     },
     "empty": "Chưa có dữ liệu"
   },
@@ -2226,10 +2334,7 @@
       "tooltipCount": "Lượt nộp"
     },
     "difficulty": {
-      "title": "Theo độ khó",
-      "EASY": "Dễ",
-      "MEDIUM": "Trung bình",
-      "HARD": "Khó"
+      "title": "Theo độ khó"
     },
     "focus": {
       "title": "Nên ưu tiên",
@@ -2261,11 +2366,6 @@
     "emptyGeneric": "Chưa có dữ liệu",
     "errorGeneric": "Không tải được khối này",
     "errorAi": "Phân hệ AI đang không phản hồi — các khối còn lại vẫn hoạt động",
-    "difficulty": {
-      "easy": "Dễ",
-      "medium": "Trung bình",
-      "hard": "Khó"
-    },
     "solveState": {
       "solved": "Đã giải",
       "attempted": "Đang làm",

@@ -8,7 +8,8 @@
  */
 export type ProblemStatus = "draft" | "published";
 
-export type Difficulty = "easy" | "medium" | "hard";
+/** Stable key of an admin-managed problem difficulty level (entities/problem/model/level-store). */
+export type Difficulty = string;
 
 export type AdminProblem = {
   /** Display code, e.g. "#1143". Doubles as the row key. */

@@ -8,4 +8,4 @@ export {
   type ProblemStatus,
   type TopicDistributionItem,
 } from "../model/types";
-export { fetchAdminProblemPage } from "./__mock__/admin-problem-mocks";
+export { useAdminProblemPage } from "./queries";

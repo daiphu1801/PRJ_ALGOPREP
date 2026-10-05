@@ -90,35 +90,17 @@ export function fakeDifficultyBreakdown(): Promise<DifficultyBreakdown> {
   // deliberately NOT copied 1:1: 02-bd/screens/admin/ADM0101_overview.md section 2 point 4 already
   // decided (DEC-2026-0831-admin-overview-dashboard-stats) that "nguồn gốc bài toán" (AI-authored vs.
   // instructor-authored) is not a real attribute in problem-bank, and replaced the axis with
-  // Tổng lượt nộp / Accepted — a real, derivable pair. Visual shape (2 bars x 3 difficulty groups,
+  // Tổng lượt nộp / Accepted — a real, derivable pair. Visual shape (2 bars x one group per level,
   // cyan/slate) still matches dc.html; only the semantic label differs, on purpose.
   return delay({
     legend: [
       { label: "Tổng lượt nộp", value: 0, colorVar: "--color-admin-slate" },
       { label: "Accepted", value: 0, colorVar: "--color-admin-cyan" },
     ],
-    groups: [
-      {
-        label: "Dễ",
-        bars: [
-          { label: "Tổng", value: 260, colorVar: "--color-admin-slate" },
-          { label: "AC", value: 140, colorVar: "--color-admin-cyan" },
-        ],
-      },
-      {
-        label: "Trung bình",
-        bars: [
-          { label: "Tổng", value: 380, colorVar: "--color-admin-slate" },
-          { label: "AC", value: 260, colorVar: "--color-admin-cyan" },
-        ],
-      },
-      {
-        label: "Khó",
-        bars: [
-          { label: "Tổng", value: 300, colorVar: "--color-admin-slate" },
-          { label: "AC", value: 420, colorVar: "--color-admin-cyan" },
-        ],
-      },
+    levels: [
+      { key: "EASY", total: 260, accepted: 140 },
+      { key: "MEDIUM", total: 380, accepted: 260 },
+      { key: "HARD", total: 300, accepted: 420 },
     ],
   });
 }

@@ -36,7 +36,7 @@
 | Tên vật lý (slug) | `admin_ai_usage` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A3 (`ADMIN`) |
-| Phiên bản | V0.5 |
+| Phiên bản | V0.6 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/15 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
@@ -53,6 +53,7 @@
 | V0.3 | 3, 4, 5, 6, 7, 8, 9; Câu hỏi mở | Bỏ dải 4 thẻ chỉ số tổng (Token tháng này, Trung bình mỗi ngày, Chi phí tạm tính, Lượt gọi AI) khỏi UI theo `DEC-2026-1001-single-overview-page-kpi`: Khu vực B còn ghi chú "đã bỏ" (giữ chữ cái C trở đi), bỏ `AiUsageSummaryDto` (DTO NO 2-4) và endpoint `GetAiUsageSummary` (NO 1 mục 7.3), bộ chọn khoảng thời gian chỉ còn nạp lại biểu đồ theo ngày (7 khối thành 6 khối nội dung, 6 nhóm dữ liệu thành 5). Q2 chỉ còn ảnh hưởng cột "Chi phí" của bảng người học. Ba khối còn lại giữ nguyên. Thêm đề xuất cho Q2, Q7 theo nguyên tắc admin (chờ owner xác nhận) | 2026/10/01 | AI |
 | V0.4 | Sheet 5, 6, Câu hỏi mở | Đã chốt 2026-10-01 (owner uỷ quyền cân nhắc), xem `DEC-2026-1001-admin-configurable-settings`: Q2 (đơn giá token theo `model_name` do ADMIN nhập và sửa trên màn cấu hình AI, không hard-code `application.yml`, không giới hạn số model, model chưa có đơn giá hiển thị `-`) và Q7 (ngưỡng đổi màu thanh ngân sách do ADMIN đặt cùng chỗ với hạn mức token, mặc định 70%) đổi từ "Đề xuất (chờ owner xác nhận)" sang **đã chốt**. Hai tham số này cần nơi lưu và màn cấu hình ở `ai-review` (DD), chưa có | 2026/10/01 | AI |
 | V0.5 | Sheet 8 | Áp `DEC-2026-1003-toast-feedback-channel`: kết quả thao tác và lỗi nhập liệu ghi là toast dùng chung, ô sai chỉ đổi viền đỏ. | 2026/10/03 | AI |
+| V0.6 | Sheet 4, 5, 7 | Đồng bộ `DEC-2026-1001-admin-configurable-settings` mục (7): độ khó bài tập là danh mục do ADMIN quản lý (bảng riêng `problem_levels`), không còn enum cố định. Nhãn độ khó ở bảng "Bài toán tốn nhiều token" là `display_name` của mức, đọc qua port đọc của `problem-bank` cùng với tên bài (không thêm bảng `problem_levels` vào danh sách bảng của `ai`, vì `ai-review` không đọc bảng của module khác); `TopAiProblemDto.difficulty` thành `levelCode`/`levelDisplayName`. Màn chỉ hiển thị nhãn, không lọc và không gọi `ListProblemLevels` | 2026/10/03 | AI |
 
 ---
 
@@ -211,7 +212,7 @@ Hai bảng xếp hạng: 6 dòng mỗi bảng, không phân trang.
 
 Tên người học và tên bài toán hiển thị ở hai bảng xếp hạng **không** đọc trực tiếp từ `identity.users` hay
 `problem.problems` — `ai-review` không có quyền đọc bảng của module khác, phải đi qua port đọc do module sở
-hữu cung cấp; cách ghép cụ thể chốt ở DD, xem Câu hỏi mở Q6.
+hữu cung cấp; cách ghép cụ thể chốt ở DD, xem Câu hỏi mở Q6. Nhãn độ khó của bài (cột "Độ khó và số lượt") cũng đi đường này: port của `problem-bank` trả `problem_levels.display_name` cùng tên bài, nên `ai-review` không thêm bảng nào vào danh sách trên [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`].
 
 ### 4.4 Vùng bố cục
 
@@ -341,7 +342,7 @@ lại.
 | | 4 | Danh sách bài toán | `adminAiUsage.topProblem.list` | `ai.token_usage` | `owner_id` | List | List | - | - | O | 6 dòng | - | Xếp hạng bài toán theo lượng token tiêu thụ (F5-25)<br>[Công thức] Gộp `token_usage` theo bài toán trong 30 ngày gần nhất, sắp giảm dần theo tổng token, lấy 6 dòng đầu. `token_usage` không có cột `problem_id`, phải đi qua `owner_id` để về `solution_reviews.problem_id` hoặc `interview_sessions`, xem Q6<br>[EVT liên quan] EVT-1, EVT-4 |
 | | 5 | Thứ hạng | `adminAiUsage.topProblem.col.rank` | - | - | ListColumn | Number | 2 | - | O | - | Số nguyên | Vị trí của dòng trong bảng<br>[Công thức] Số thứ tự dòng sau khi sắp xếp ở NO 4<br>[EVT liên quan] - |
 | | 6 | Tên bài toán | `adminAiUsage.topProblem.col.name` | - | - | ListColumn | String | - | - | O | - | - | Tên bài toán hiển thị cho người dùng<br>[Nguồn giá trị] Tra qua port đọc của module `problem-bank`, `ai-review` không đọc thẳng bảng `problem.problems`; cách ghép chốt ở DD, xem Q6<br>[EVT liên quan] - |
-| | 7 | Độ khó và số lượt | `adminAiUsage.topProblem.col.meta` | - | - | ListColumn | String | - | - | O | - | - | Dòng phụ dưới tên bài: độ khó kèm số lượt gọi AI<br>[Công thức] Độ khó tra qua port đọc của `problem-bank`; số lượt là số dòng `token_usage` thuộc bài toán đó trong 30 ngày gần nhất. Prototype ghi "lượt gợi ý" — chữ này thuộc tính năng đã cắt, cần đổi cùng Q5<br>[EVT liên quan] - |
+| | 7 | Độ khó và số lượt | `adminAiUsage.topProblem.col.meta` | - | - | ListColumn | String | - | - | O | - | - | Dòng phụ dưới tên bài: độ khó kèm số lượt gọi AI<br>[Công thức] Độ khó là `display_name` của mức trong `problem_levels` (qua `problems.level_id`), **đọc từ dữ liệu** do ADMIN quản lý, không còn ánh xạ cứng enum; tra qua port đọc của `problem-bank` `DEC-2026-1001-admin-configurable-settings` mục (7) [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`]; số lượt là số dòng `token_usage` thuộc bài toán đó trong 30 ngày gần nhất. Prototype ghi "lượt gợi ý" — chữ này thuộc tính năng đã cắt, cần đổi cùng Q5<br>[EVT liên quan] - |
 | | 8 | Token | `adminAiUsage.topProblem.col.tokens` | `ai.token_usage` | `tokens_prompt`, `tokens_completion` | ListColumn | Number | 12 | - | O | - | Rút gọn đơn vị triệu | Lượng token của bài toán<br>[Công thức] Cộng `tokens_prompt + tokens_completion` của các dòng thuộc bài toán đó trong 30 ngày gần nhất<br>[EVT liên quan] - |
 | | 9 | Trung bình mỗi lượt | `adminAiUsage.topProblem.col.avg` | `ai.token_usage` | `tokens_prompt`, `tokens_completion` | ListColumn | Number | 8 | - | O | - | Số nguyên | Token trung bình một lượt gọi AI của bài toán<br>[Công thức] Giá trị NO 8 chia số lượt ở NO 7<br>[EVT liên quan] - |
 
@@ -463,8 +464,8 @@ Không còn item nào kể từ 2026-10-01, xem Sheet 5 Khu vực B.
 | 16 | `TopAiUserDto` | `userId` | UUID | `ai.token_usage` | `user_id` | - | Không | [Nguồn] Khoá gộp của bảng xếp hạng<br>[Đích] Khoá tra tên qua port đọc của `identity`, xem Q6. |
 | 17 | `TopAiUserDto` | `displayName`, `userMeta` | String | - | - | Người học "Người học" | Có | [Nguồn] Port đọc của module `identity`, không phải bảng của `ai`<br>[Chuyển đổi] Chữ cái đầu của tên dùng làm ảnh đại diện, tính ở màn. |
 | 18 | `TopAiUserDto` | `tokens`, `calls`, `costUsd` | Number | `ai.token_usage` | `tokens_prompt`, `tokens_completion`, `model_name` | Người học "Token", "Lượt", "Chi phí" | Có | [Nguồn] Backend gộp theo `user_id` trong 30 ngày gần nhất. |
-| 19 | `TopAiProblemDto` | `problemId` | UUID | - | - | - | Không | [Nguồn] Suy từ `token_usage.owner_id` về bài toán, xem Q6<br>[Đích] Khoá tra tên và độ khó qua port đọc của `problem-bank`. |
-| 20 | `TopAiProblemDto` | `problemTitle`, `difficulty` | String, Enum | - | - | Bài toán "Tên bài toán", "Độ khó và số lượt" | Có | [Nguồn] Port đọc của module `problem-bank`, không phải bảng của `ai`. |
+| 19 | `TopAiProblemDto` | `problemId` | UUID | - | - | - | Không | [Nguồn] Suy từ `token_usage.owner_id` về bài toán, xem Q6<br>[Đích] Khoá tra tên và nhãn độ khó qua port đọc của `problem-bank`. |
+| 20 | `TopAiProblemDto` | `problemTitle`, `levelCode`, `levelDisplayName` | String, String, String | - | - | Bài toán "Tên bài toán", "Độ khó và số lượt" | Có | [Nguồn] Port đọc của module `problem-bank` (join `problems.level_id` tới `problem_levels`), không phải bảng của `ai` (thay trường `difficulty` kiểu Enum cũ, theo `DEC-2026-1001-admin-configurable-settings` mục (7))<br>[Chuyển đổi] Đọc `display_name` từ dữ liệu, bỏ ánh xạ cứng. |
 | 21 | `TopAiProblemDto` | `tokens`, `calls`, `avgTokensPerCall` | Number | `ai.token_usage` | `tokens_prompt`, `tokens_completion` | Bài toán "Token", "Độ khó và số lượt", "Trung bình mỗi lượt" | Có | [Chuyển đổi] `avgTokensPerCall` backend tính sẵn để hai bảng dùng chung một cách làm tròn. |
 
 ### 7.2 Truy cập bảng dữ liệu (3)

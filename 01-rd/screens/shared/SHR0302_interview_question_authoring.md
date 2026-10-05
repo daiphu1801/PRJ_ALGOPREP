@@ -38,7 +38,7 @@ theo tiền lệ `problem_authoring`** (một màn soạn riêng cho một bản
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
 | Quản trị nội dung ngân hàng câu hỏi dùng chung: tạo, sửa, nhân bản, xoá | F6-13 | `01-rd/req/interview-bank.md` — F6-13 (bổ sung 2026-08-30) |
-| Nội dung + phân loại theo chủ đề/độ khó (chủ đề đọc từ danh mục do ADMIN quản lý; 5 chủ đề khởi tạo: Lý thuyết CS, System design, Database, Ngôn ngữ, Hành vi — cập nhật 2026-10-01) | F6-01 | `01-rd/req/interview-bank.md` — F6-01 |
+| Nội dung + phân loại theo chủ đề/độ khó (chủ đề đọc từ danh mục do ADMIN quản lý; 5 chủ đề khởi tạo: Lý thuyết CS, System design, Database, Ngôn ngữ, Hành vi — cập nhật 2026-10-01; cập nhật 2026-10-03: độ khó do ADMIN quản lý (danh mục dữ liệu, giống chủ đề; ba mức Dễ/Trung bình/Khó chỉ là dữ liệu khởi tạo)) | F6-01 | `01-rd/req/interview-bank.md` — F6-01 |
 | Bộ tiêu chí đánh giá có trọng số phần trăm — tiêu chí chuẩn mà F6-08 đối chiếu khi chấm Chế độ luyện | F6-13, F6-08 | `01-rd/req/interview-bank.md` — F6-13, F6-08 |
 | Câu hỏi thiếu tiêu chí đánh giá: vẫn hiện ở Chế độ học, ẩn khỏi Chế độ luyện | F6-13, F6-08 | `01-rd/req/interview-bank.md` — F6-13 |
 | Xoá mềm: đánh dấu ngừng dùng, ẩn khỏi màn phía học viên, không cascade xoá phiên cũ | F6-13 | `01-rd/req/interview-bank.md` — F6-13 |
@@ -61,7 +61,7 @@ bản) `[SoT: Suy luận, song song tiền lệ problem_authoring — không t�
    (`DEC-2026-1001-admin-configurable-settings`):** danh mục chủ đề không còn cố định 5 giá trị — do ADMIN
    quản lý ở hộp thoại "Quản lý chủ đề" của `interview_question_management` (`SHR0301`). Màn soạn này chỉ
    **chọn** chủ đề có sẵn, không tạo chủ đề mới; A2 không có đường tạo chủ đề, ADMIN thấy gợi ý/liên kết
-   "Quản lý chủ đề" ngay cạnh ô chọn để mở danh mục.
+   "Quản lý chủ đề" ngay cạnh ô chọn để mở danh mục. **Cập nhật 2026-10-03:** độ khó do ADMIN quản lý (danh mục dữ liệu, giống chủ đề; ba mức Dễ/Trung bình/Khó chỉ là dữ liệu khởi tạo). Màn soạn này chỉ chọn mức có sẵn, không tạo mức mới.
 3. **Nhóm 2 — Câu hỏi đào sâu** — danh sách văn bản tự do, không giới hạn số lượng, không có độ khó riêng
    (chốt 2026-09-01) các câu hỏi truy vấn tiếp theo cùng câu hỏi gốc, dùng ở giai đoạn Phản biện của Phỏng
    vấn giả lập (F5-11) — dữ liệu này **không phải** F6-04/05/06 (khung trả lời/từ khoá của Chế độ học), độc
@@ -125,7 +125,7 @@ bản) `[SoT: Suy luận, song song tiền lệ problem_authoring — không t�
 | ID | Yêu cầu | Loại | Nguồn/SoT |
 |---|---|---|---|
 | REQ-01 | Quản trị nội dung ngân hàng câu hỏi dùng chung: tạo, sửa, nhân bản, xoá (F6-13) | Chức năng | `01-rd/req/interview-bank.md` — F6-13 (bổ sung 2026-08-30) |
-| REQ-02 | Nội dung + phân loại theo chủ đề/độ khó (chủ đề chọn từ danh mục do ADMIN quản lý; 5 chủ đề khởi tạo: Lý thuyết CS, System design, Database, Ngôn ngữ, Hành vi) (F6-01) | Chức năng | `01-rd/req/interview-bank.md` — F6-01 |
+| REQ-02 | Nội dung + phân loại theo chủ đề/độ khó (chủ đề chọn từ danh mục do ADMIN quản lý; 5 chủ đề khởi tạo: Lý thuyết CS, System design, Database, Ngôn ngữ, Hành vi; độ khó do ADMIN quản lý, ba mức Dễ/Trung bình/Khó chỉ là dữ liệu khởi tạo, cập nhật 2026-10-03) (F6-01) | Chức năng | `01-rd/req/interview-bank.md` — F6-01 |
 | REQ-03 | Bộ tiêu chí đánh giá có trọng số phần trăm — tiêu chí chuẩn mà F6-08 đối chiếu khi chấm Chế độ luyện (F6-13, F6-08) | Chức năng | `01-rd/req/interview-bank.md` — F6-13, F6-08 |
 | REQ-04 | Câu hỏi thiếu tiêu chí đánh giá: vẫn hiện ở Chế độ học, ẩn khỏi Chế độ luyện (F6-13, F6-08) | Chức năng | `01-rd/req/interview-bank.md` — F6-13 |
 | REQ-05 | Xoá mềm: đánh dấu ngừng dùng, ẩn khỏi màn phía học viên, không cascade xoá phiên cũ (F6-13) | Chức năng | `01-rd/req/interview-bank.md` — F6-13 |

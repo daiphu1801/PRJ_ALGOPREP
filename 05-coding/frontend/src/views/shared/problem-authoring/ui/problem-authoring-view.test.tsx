@@ -3,6 +3,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { act, fireEvent, render, renderHook, screen, waitFor, within } from "@testing-library/react";
 import Link from "next/link";
+import { aiGenerationSettings } from "@/entities/problem";
 import { toast, useToasts } from "@/shared/lib/toast-store";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactElement } from "react";
@@ -235,4 +236,63 @@ describe("ProblemAuthoringView AI testcase generation (F2-14, BD EVT-16)", () =>
       window.history.pushState({}, "", "/");
     }
   }, 10000);
+});
+
+describe("ProblemAuthoringView generation cap set by ADMIN", () => {
+  it("shows and enforces the cap from the AI config screen", async () => {
+    aiGenerationSettings.set({ maxPerProblem: 1 });
+    try {
+      const toasts = renderHook(() => useToasts());
+      await renderLoaded(<ProblemAuthoringView basePath="/admin/problems" problemId="121" />);
+      fireEvent.click(screen.getByRole("button", { name: /tab\.ai/ }));
+      expect(screen.getByText('generateQuota {"left":1,"limit":1}')).toBeInTheDocument();
+
+      fireEvent.click(screen.getByRole("button", { name: "generateAction" }));
+      await screen.findByText('generateQuota {"left":0,"limit":1}', undefined, { timeout: 6000 });
+
+      fireEvent.click(screen.getByRole("button", { name: "generateAction" }));
+      expect(toasts.result.current.at(-1)).toMatchObject({
+        tone: "warning",
+        message: 'toast.generateLimitReached {"limit":1}',
+      });
+    } finally {
+      aiGenerationSettings.set({ maxPerProblem: 2 });
+    }
+  }, 15000);
+});
+
+describe("ProblemAuthoringView spec tab (F2-03, F2-04)", () => {
+  async function openSpecTab() {
+    await renderLoaded(<ProblemAuthoringView basePath="/admin/problems" problemId="121" />);
+    fireEvent.click(screen.getByRole("button", { name: /tab\.spec/ }));
+  }
+
+  it("shows the starter-code preview of each language for the sample problem", async () => {
+    await openSpecTab();
+    for (const language of ["java", "cpp", "python"]) {
+      expect(screen.getByRole("listitem", { name: `spec.language.${language}` })).toBeInTheDocument();
+    }
+  });
+
+  it("an edit makes the form dirty, and emptying stdin puts the spec back on the publish checklist", async () => {
+    const toasts = renderHook(() => useToasts());
+    await openSpecTab();
+    const save = screen.getByRole("button", { name: "save" });
+    expect(save).toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText("spec.stdinFormat"), { target: { value: "" } });
+    expect(save).toBeEnabled();
+
+    fireEvent.click(screen.getByRole("button", { name: "publish" }));
+    expect(toasts.result.current.at(-1)?.message).toContain("check.specDeclared");
+  });
+
+  it("an unmet spec item on the checklist jumps to the spec tab", async () => {
+    await openSpecTab();
+    fireEvent.change(screen.getByLabelText("spec.stdinFormat"), { target: { value: "" } });
+    fireEvent.click(screen.getByRole("button", { name: /tab\.content/ }));
+
+    fireEvent.click(screen.getByRole("button", { name: "check.specDeclared" }));
+    expect(screen.getByLabelText("spec.stdinFormat")).toBeInTheDocument();
+  });
 });

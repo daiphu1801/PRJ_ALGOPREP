@@ -15,24 +15,29 @@ import Link from "next/link";
 import { Search } from "lucide-react";
 import {
   topicLabel,
+  levelLabel,
+  levelTone,
+  useInterviewLevels,
   useInterviewTopics,
   fetchInterviewQuestionPage,
   useRecallAndBookmarkState,
   InterviewQuestionListRow,
   RecallLevelPicker,
   type InterviewQuestion,
+  type QuestionLevel,
   type QuestionTopic,
   type RecallLevel,
 } from "@/entities/interview-question";
 import { useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
-import { Badge, Button, Card, EmptyState, SegmentedTabs, StatCard, TextField } from "@/shared/ui";
+import { Badge, Button, Card, EmptyState, FilterMenu, StatCard, TextField } from "@/shared/ui";
 
 // Mặc định 10 thẻ, khoảng 5-20 [SoT: 09-layoutBase/Câu hỏi phỏng vấn.dc.html:235].
 const DRILL_SIZE = 10;
 
 type StatusFilter = "all" | "new" | "reviewing" | "known";
 type TopicFilter = QuestionTopic | "all";
+type LevelFilter = QuestionLevel | "all";
 
 function matchesStatus(recall: RecallLevel | null, filter: StatusFilter): boolean {
   if (filter === "all") return true;
@@ -54,11 +59,13 @@ export function InterviewBankListView() {
   const t = useT("interviewBankList");
   const [page] = useState(fetchInterviewQuestionPage);
   const topicList = useInterviewTopics();
+  const levelList = useInterviewLevels();
   const { recall, bookmarks, rate, toggleBookmark } = useRecallAndBookmarkState(page.questions);
 
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<StatusFilter>("all");
   const [topic, setTopic] = useState<TopicFilter>("all");
+  const [level, setLevel] = useState<LevelFilter>("all");
   const [selectedCode, setSelectedCode] = useState<string | null>(page.questions[0]?.code ?? null);
 
   const [view, setView] = useState<"browse" | "drill">("browse");
@@ -70,11 +77,12 @@ export function InterviewBankListView() {
     const needle = query.trim().toLowerCase();
     return page.questions.filter((question) => {
       if (topic !== "all" && question.topic !== topic) return false;
+      if (level !== "all" && question.level !== level) return false;
       if (!matchesStatus(recall[question.code] ?? null, status)) return false;
       if (needle && !question.question.toLowerCase().includes(needle)) return false;
       return true;
     });
-  }, [page.questions, recall, query, status, topic]);
+  }, [page.questions, recall, query, status, topic, level]);
 
   const selected = filtered.find((q) => q.code === selectedCode) ?? filtered[0] ?? null;
 
@@ -164,7 +172,7 @@ export function InterviewBankListView() {
               {topicLabel(topicList, card.topic)}
             </span>
             <span className="text-[11.5px] font-semibold text-[var(--color-text-muted)]">
-              {t(`level.${card.level}`)}
+              {levelLabel(levelList, card.level)}
             </span>
           </div>
           <h2 className="mb-6 min-h-[80px] text-center text-lg font-semibold text-pretty">
@@ -248,7 +256,7 @@ export function InterviewBankListView() {
                 }}
                 wrapperClassName="min-w-[180px] flex-1"
               />
-              <SegmentedTabs
+              <FilterMenu
                 label={t("statusFilterLabel")}
                 value={status}
                 onValueChange={setStatus}
@@ -261,13 +269,24 @@ export function InterviewBankListView() {
               />
             </div>
             <div className="flex flex-wrap gap-1.5">
-              <SegmentedTabs
+              <FilterMenu
                 label={t("topicFilterLabel")}
                 value={topic}
                 onValueChange={setTopic}
                 options={[
                   { value: "all" as const, label: t("filterAll") },
                   ...topicList.map((item) => ({ value: item.key, label: item.label })),
+                ]}
+              />
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              <FilterMenu
+                label={t("levelFilterLabel")}
+                value={level}
+                onValueChange={setLevel}
+                options={[
+                  { value: "all" as const, label: t("filterAll") },
+                  ...levelList.map((item) => ({ value: item.key, label: item.label })),
                 ]}
               />
             </div>
@@ -281,7 +300,8 @@ export function InterviewBankListView() {
                   key={question.code}
                   question={question}
                   topicLabel={topicLabel(topicList, question.topic)}
-                  levelLabel={t(`level.${question.level}`)}
+                  levelLabel={levelLabel(levelList, question.level)}
+                  levelTone={levelTone(levelList, question.level)}
                   recallLabel={recallBadgeLabel(recall[question.code] ?? null)}
                   recall={recall[question.code] ?? null}
                   selected={question.code === selected?.code}
@@ -301,7 +321,7 @@ export function InterviewBankListView() {
               <div className="mb-3 flex items-center gap-2">
                 <Badge variant="neutral">{topicLabel(topicList, selected.topic)}</Badge>
                 <span className="text-[11.5px] font-semibold text-[var(--color-text-muted)]">
-                  {t(`level.${selected.level}`)}
+                  {levelLabel(levelList, selected.level)}
                 </span>
               </div>
               <h2 className="mb-4 text-lg font-semibold text-pretty">{selected.question}</h2>

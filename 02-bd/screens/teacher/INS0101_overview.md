@@ -40,11 +40,11 @@
 | Tên vật lý (slug) | `instructor_overview` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A2 (`INSTRUCTOR`) |
-| Phiên bản | V0.1 |
+| Phiên bản | V0.2 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/21 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/09/21 |
+| Ngày cập nhật | 2026/10/03 |
 
 ---
 
@@ -53,6 +53,7 @@
 | Ver | Sheet bị sửa | Nội dung sửa | Ngày | Người sửa |
 | :--- | :--- | :--- | :--- | :--- |
 | V0.1 | Toàn bộ | Tạo mới theo mẫu 9 sheet. Màn BD đầu tiên của khu Giảng viên. Chốt nguồn dữ liệu cho mọi trường hiển thị của 6 khối dashboard, phát hiện 3 khoảng trống nguồn dữ liệu thật (phạm vi feed hoạt động, chỉ số "Hoàn thành TB" theo lớp, "lượt dùng" của bài tập) và 4 điểm prototype lạc hậu so với quyết định ACTIVE | 2026/09/21 | Nhóm phát triển AlgoPrep |
+| V0.2 | Sheet 4, 5, 7 | Đồng bộ `DEC-2026-1001-admin-configurable-settings` mục (7): độ khó bài tập là danh mục do ADMIN quản lý (bảng riêng `problem_levels`), không còn enum cố định. Dòng meta khối "Bài tập của tôi" đọc `display_name` của mức qua `problems.level_id`; `AssignedProblemSummaryDto.difficulty` thành `levelCode`/`levelDisplayName`; thêm `problem.problem_levels` vào bảng liên quan và Truy cập bảng. Màn chỉ hiển thị nhãn, không lọc và không gọi `ListProblemLevels` (nhãn nằm sẵn trong phản hồi); độ khó không gắn logic nào | 2026/10/03 | AI |
 
 ---
 
@@ -259,7 +260,7 @@ phân trang — muốn xem đầy đủ thì đi tiếp sang màn con.
 
 `[Suy luận]` — tên DTO do BD này đề xuất, `03-dd/api/identity.md` chốt lại.
 
-### 4.3 Bảng dữ liệu liên quan (7)
+### 4.3 Bảng dữ liệu liên quan (8)
 
 | NO | Bảng | Ghi chú |
 | --: | :--- | :--- |
@@ -269,7 +270,8 @@ phân trang — muốn xem đầy đủ thì đi tiếp sang màn con.
 | 4 | `ai.solution_reviews` | [Nguồn: 02-bd/database/ai-review.md:40-57] |
 | 5 | `judge.submissions` | [Nguồn: 02-bd/database/judge-orchestration.md:12-35] — chỉ dùng điều kiện `status = ACCEPTED` và mốc `submitted_at` |
 | 6 | `problem.class_assignments` | [Nguồn: 02-bd/database/problem-bank.md:116-128] |
-| 7 | `problem.problems` | [Nguồn: 02-bd/database/problem-bank.md:10-29] — lấy `title`, `difficulty` cho khối "Bài tập của tôi" |
+| 7 | `problem.problems` | [Nguồn: 02-bd/database/problem-bank.md:10-29] — lấy `title`, `level_id` (khoá của độ khó) cho khối "Bài tập của tôi" |
+| 8 | `problem.problem_levels` | Danh mục độ khó do ADMIN quản lý — nguồn nhãn độ khó ở dòng meta khối "Bài tập của tôi", đọc qua join `problems.level_id` [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`] |
 
 Cả 7 bảng đều **chỉ đọc** với màn này. Bốn bảng cuối thuộc module khác nên `identity` không truy cập trực
 tiếp: dữ liệu về `identity` qua read model dựng từ domain event, hoặc màn gọi thẳng endpoint của module sở
@@ -410,7 +412,7 @@ thay vì để trong `widgets` rồi phải nâng lên sau.
 | | 2 | Xem tất cả | `instructorOverview.problems.linkViewAll` | - | - | Link | - | - | - | I | - | Xem tất cả | Điều hướng sang màn `class_assignments`<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] EVT-8 |
 | | 3 | Danh sách bài tập | `instructorOverview.problems.list` | `problem.class_assignments` | - | List | List | - | - | O | rỗng | Tối đa 5 dòng | 5 bài được giao gần nhất cho các lớp phụ trách, sắp xếp theo `assigned_at` giảm dần, chỉ lấy dòng `removed_at IS NULL` [Nguồn: 02-bd/database/problem-bank.md:125]<br>[Nguồn giá trị] Kết quả gọi `ListMyAssignedProblems`<br>[EVT liên quan] EVT-1 |
 | | 4 | Tên bài | `instructorOverview.problems.col.title` | `problem.problems` | `title` | ListColumn | String | - | - | O | - | - | Tên bài toán<br>[Nguồn giá trị] Cột `title`<br>[EVT liên quan] - |
-| | 5 | Dòng meta | `instructorOverview.problems.col.meta` | `problem.problems` | `difficulty` | ListColumn | String | - | - | O | - | `{mức độ} · {chủ đề}` | Mức độ khó và chủ đề chính của bài<br>[Nguồn giá trị] `difficulty` (`EASY`/`MEDIUM`/`HARD` đổi sang "Dễ"/"Trung bình"/"Khó") ghép với chủ đề đầu tiên trong `problem_topics` [Nguồn: 02-bd/database/problem-bank.md:17,145]<br>[EVT liên quan] - |
+| | 5 | Dòng meta | `instructorOverview.problems.col.meta` | `problem.problem_levels` | `display_name` | ListColumn | String | - | - | O | - | `{mức độ} · {chủ đề}` | Mức độ khó và chủ đề chính của bài<br>[Nguồn giá trị] `problem_levels.display_name` (qua `problems.level_id`, **đọc từ dữ liệu** do ADMIN quản lý, không còn ánh xạ cứng enum sang "Dễ/Trung bình/Khó") ghép với chủ đề đầu tiên trong `problem_topics` [Nguồn: 02-bd/database/problem-bank.md:145] `DEC-2026-1001-admin-configurable-settings` mục (7) [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`]<br>[EVT liên quan] - |
 | | 6 | Lượt dùng | `instructorOverview.problems.col.useCount` | - | - | ListColumn | Number | 6 | - | O | 0 | `{số} lượt` | Số lượt học viên đã nộp bài này<br>[Công thức] Prototype không nói rõ đếm trong phạm vi nào. BD đề xuất **đếm trong phạm vi các lớp phụ trách**, không dùng `problem_stats.submission_count` vì cột đó là tổng toàn hệ thống [Nguồn: 02-bd/database/problem-bank.md:138] — xem Q9<br>[EVT liên quan] - |
 
 [Nguồn: 09-layoutBase/Giáo viên - Tổng quan.dc.html:115-125,127-138,141-158,160-174,177-196,199-213,215-232;
@@ -551,11 +553,11 @@ Mỗi dòng trong danh sách **không phải liên kết** ở đợt này, đú
 | 21 | `ClassScoreTrendDto` | `avgAiScore` | Number | `ai.solution_reviews` | `ai_score_10` | "Biểu đồ đường" | Có | [Chuyển đổi] `null` là tuần khuyết dữ liệu; giao diện để hở điểm đó, **không** vẽ giá trị 0. |
 | 22 | `AssignedProblemSummaryDto` | `problemId` | UUID | `problem.problems` | `id` | - | Không | [Đích] Khoá điều hướng nếu về sau dòng thành liên kết (Q11). Không hiển thị. |
 | 23 | `AssignedProblemSummaryDto` | `title` | String | `problem.problems` | `title` | "Tên bài" | Có | [Nguồn] Phản hồi của `ListMyAssignedProblems` |
-| 24 | `AssignedProblemSummaryDto` | `difficulty` | Enum | `problem.problems` | `difficulty` | "Dòng meta" | Có | [Chuyển đổi] `EASY`/`MEDIUM`/`HARD` đổi sang "Dễ"/"Trung bình"/"Khó". |
+| 24 | `AssignedProblemSummaryDto` | `levelCode`, `levelDisplayName` | String, String | `problem.problem_levels` | `code`, `display_name` | "Dòng meta" | Có | [Nguồn] Join qua `problems.level_id` (thay trường `difficulty` kiểu Enum cũ, theo `DEC-2026-1001-admin-configurable-settings` mục (7))<br>[Chuyển đổi] Đọc `display_name` từ dữ liệu, bỏ ánh xạ cứng. |
 | 25 | `AssignedProblemSummaryDto` | `primaryTopic` | String | `problem.problem_topics` | - | "Dòng meta" | Có | [Chuyển đổi] Chủ đề đầu tiên của bài; không có thì giao diện bỏ luôn dấu phân cách. |
 | 26 | `AssignedProblemSummaryDto` | `useCount` | Number | `judge.submissions` | `problem_id` | "Lượt dùng" | Có | [Nguồn] Phạm vi đếm chưa chốt, xem Q9<br>[Chuyển đổi] Hiển thị kèm hậu tố `lượt`. |
 
-### 7.2 Truy cập bảng dữ liệu (7)
+### 7.2 Truy cập bảng dữ liệu (8)
 
 | NO | Tên logic | Bảng | Repository | CRUD | Mục đích | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :--- | :--- |
@@ -566,10 +568,11 @@ Mỗi dòng trong danh sách **không phải liên kết** ở đợt này, đú
 | 5 | Bài nộp | `judge.submissions` | `SubmissionRepository` | R | Lọc `status = ACCEPTED` khi tính điểm trung bình, tỉ lệ hoàn thành và lượt dùng bài tập | `GetInstructorOverviewStats`: R<br>`ListMyClassesSummary`: R<br>`ListMyAssignedProblems`: R |
 | 6 | Bài giao cho lớp | `problem.class_assignments` | `ClassAssignmentRepository` | R | Dựng danh sách "Bài tập của tôi" và mẫu số của tỉ lệ hoàn thành | `ListMyAssignedProblems`: R<br>`ListMyClassesSummary`: R |
 | 7 | Bài toán | `problem.problems` | `ProblemRepository` | R | Lấy tên bài và mức độ khó cho hai khối "Cần chấm tay" và "Bài tập của tôi" | `ListPendingManualGradingTop`: R<br>`ListMyAssignedProblems`: R |
+| 8 | Danh mục độ khó | `problem.problem_levels` | `ProblemLevelRepository` | R | Lấy nhãn độ khó của bài cho khối "Bài tập của tôi" qua join `level_id` | `ListMyAssignedProblems`: R, qua join. Màn này không ghi; ADMIN quản lý độ khó ở `SHR0201`, INSTRUCTOR chỉ chọn [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`] |
 
 **Toàn bộ là `R`.** Màn này không có bất kỳ thao tác `C`, `U`, `D` nào — đây là màn chỉ đọc.
 
-`[Suy luận]` — tên repository do BD này đề xuất, DD của từng module chốt lại. Bốn bảng số 3, 5, 6, 7 nằm ở
+`[Suy luận]` — tên repository do BD này đề xuất, DD của từng module chốt lại. Năm bảng số 3, 5, 6, 7, 8 nằm ở
 schema khác `identity`; `identity` **không** đọc trực tiếp chúng, xem ghi chú ở 7.3.
 
 ### 7.3 Danh sách endpoint [Nội bộ]

@@ -12,8 +12,7 @@ Là **giảng viên**, tôi muốn soạn đề bài và khai báo đặc tả h
 
 - **Cho** tôi tạo bài toán mới, **Khi** tôi soạn đề bài, **Thì** tôi viết được bằng Markdown kèm công thức
   LaTeX, và phân loại bài theo độ khó và chủ đề (F2-01, F2-02).
-- **Cho** đề bài đã có, **Khi** tôi khai báo đặc tả bài toán, **Thì** tôi khai được chữ ký hàm riêng cho từng
-  ngôn ngữ trong ba ngôn ngữ, kiểu tham số và kiểu trả về (F2-03) — đây là đầu vào bắt buộc để F3 sinh mã
+- **Cho** đề bài đã có, **Khi** tôi khai báo đặc tả bài toán, **Thì** tôi khai **một chữ ký hàm chung** (tên hàm, kiểu trả về, và mỗi tham số có tên cùng kiểu) cho cả ba ngôn ngữ; hệ thống tự đổi sang từng ngôn ngữ và cách viết tên hàm theo quy ước của ngôn ngữ đó, tôi chỉ ghi đè tên khi cần (F2-03, sửa 2026-10-03) — đây là đầu vào bắt buộc để F3 sinh mã
   khung.
 - **Cho** đặc tả đã có, **Khi** tôi chọn chiến lược so khớp kết quả, **Thì** tôi chọn được một trong
   `EXACT`/`TRIMMED`/`EPSILON`/`UNORDERED_SET` cho bài đó (F2-04).

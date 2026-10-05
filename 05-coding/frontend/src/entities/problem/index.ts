@@ -57,8 +57,58 @@ export {
 export {
   addProblemTopic,
   problemTopicLabel,
+  moveProblemTopic,
   removeProblemTopic,
   renameProblemTopic,
   useProblemTopics,
   type ProblemTopic,
 } from "./model/topic-store";
+export {
+  addProblemLevel,
+  moveProblemLevel,
+  problemLevelLabel,
+  problemLevelRank,
+  problemLevelTone,
+  removeProblemLevel,
+  renameProblemLevel,
+  useProblemLevels,
+  type ProblemLevel,
+  type ProblemLevelError,
+} from "./model/level-store";
+export {
+  AI_GENERATION_LIMIT_MAX,
+  AI_GENERATION_LIMIT_MIN,
+  aiGenerationSettings,
+} from "./model/generation-settings-store";
+export { canViewerSeeProblem } from "./model/mock-ownership";
+export {
+  allowsUnorderedSet,
+  defaultType,
+  derivedName,
+  elementKinds,
+  epsilonValid,
+  exceedsSchema,
+  isIdentifier,
+  isSpecComplete,
+  isTypeValid,
+  languageName,
+  matchingValid,
+  renderSignature,
+  signatureIssues,
+} from "./model/spec";
+export {
+  CONTAINER_KINDS,
+  MAX_TYPE_NESTING,
+  MATCHING_STRATEGIES,
+  SCALAR_KINDS,
+  SPEC_LANGUAGES,
+  TYPE_KINDS,
+  type FunctionSignature,
+  type MatchingStrategy,
+  type ProblemSpec,
+  type ScalarKind,
+  type SpecLanguage,
+  type SpecParameter,
+  type SpecType,
+  type TypeKind,
+} from "./model/draft-types";

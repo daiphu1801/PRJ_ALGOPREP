@@ -46,7 +46,7 @@
 | Tên vật lý (slug) | `my_submissions` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`) |
-| Phiên bản | V0.2 |
+| Phiên bản | V0.3 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/22 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
@@ -61,6 +61,7 @@
 | V0.1 | Toàn bộ | Tạo mới theo mẫu 9 sheet. Chốt 4 thẻ thống kê tổng quan (khớp F1-07), bộ lọc kết hợp tìm kiếm và đa tiêu chí (F1-18), phân trang máy chủ và quy tắc mở khóa nút Phân tích AI F5-01 | 2026/09/22 | Nhóm phát triển AlgoPrep |
 | V0.2 | Sheet 3, 5, 7.3, Câu hỏi mở | Viết lại Sheet 3 theo khuôn "Danh sách chuyển màn" 6 thẻ + sơ đồ Mermaid; viết lại Sheet 5 theo khuôn 14 cột (thêm Bảng DB/Cột DB, mỗi item một dòng); bỏ cột "Phương thức & URL dự kiến" ở Sheet 7.3. Sửa nguồn 2 thẻ thống kê: "Được chấp nhận" và "Đúng ngay lần đầu" đổi công thức đúng theo cột thật của `identity.user_submission_stats` (không có `acceptedRate` lưu sẵn); phát hiện "Dùng nhiều nhất" (ngôn ngữ) chưa có cột read model nào — thêm Câu hỏi mở Q4 | 2026/09/24 | Nhóm phát triển AlgoPrep |
 | V0.2 | Sheet 8, 9 | Đổi báo lỗi tải sau thao tác lọc, tìm kiếm và `[Tiêu điểm]` ô tìm kiếm sang toast; giữ nguyên khối lỗi tải màn kèm nút thử lại ở EVT-1. Theo `DEC-2026-1003-toast-feedback-channel`. | 2026/10/03 | AI |
+| V0.3 | Sheet 4, 5, 7 | Đồng bộ `DEC-2026-1001-admin-configurable-settings` mục (7): độ khó bài tập là danh mục do ADMIN quản lý (bảng riêng `problem_levels`), không còn enum cố định. DTO `StudentSubmissionItemDto.difficulty` thành `levelCode`/`levelDisplayName` đọc qua `problems.level_id`; badge độ khó cạnh tên bài hiển thị `display_name` từ dữ liệu; thêm `problem.problem_levels` vào danh sách bảng và Truy cập bảng. Màn chỉ hiển thị nhãn, không lọc và không gọi `ListProblemLevels` (nhãn nằm sẵn trong phản hồi); độ khó không gắn logic nào | 2026/10/03 | AI |
 
 ---
 
@@ -165,7 +166,7 @@ flowchart LR
 | STT | Tên DTO | Mô tả | Chi tiết trường |
 | :-: | :--- | :--- | :--- |
 | 1 | `StudentSubmissionSummaryStatsDto` | Số liệu tổng quan lịch sử | `totalSubmissions`, `acceptedCount`, `acceptedRate`, `firstTryAcceptedCount`, `firstTryAcceptedRate`, `mostUsedLanguage`, `mostUsedLanguagePercent` |
-| 2 | `StudentSubmissionItemDto` | Một dòng trong bảng lịch sử | `id`, `problemId`, `problemCode`, `problemTitle`, `difficulty`, `language`, `verdict`, `passedCount`, `totalCount`, `runtimeMs`, `memoryMb`, `submittedAt` |
+| 2 | `StudentSubmissionItemDto` | Một dòng trong bảng lịch sử | `id`, `problemId`, `problemCode`, `problemTitle`, `levelCode`, `levelDisplayName`, `language`, `verdict`, `passedCount`, `totalCount`, `runtimeMs`, `memoryMb`, `submittedAt` |
 | 3 | `StudentSubmissionPageResponseDto` | Kết quả phân trang lịch sử bài nộp | `items` (List<StudentSubmissionItemDto>), `currentPage`, `pageSize`, `totalItems`, `totalPages`, `filteredAcceptedCount` |
 
 ### 4.3. Danh sách bảng dữ liệu
@@ -175,6 +176,7 @@ flowchart LR
 | 1 | `judge.submissions` | Bản ghi các bài nộp của người học | R | `judge-orchestration` |
 | 2 | `identity.user_submission_stats` | Read model tổng hợp lượt nộp và AC | R | `identity` |
 | 3 | `problem.problems` | Thông tin mã bài, tên bài, độ khó | R | `problem-bank` |
+| 4 | `problem.problem_levels` | Nhãn độ khó của bài (`display_name`), đọc qua join `problems.level_id` [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`] | R | `problem-bank` |
 
 ### 4.4. Vùng bố cục bám prototype
 
@@ -229,7 +231,7 @@ Bố cục dạng danh sách trung tâm một cột với các khối chức nă
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Submissions Table | | | | | | | | | | | | | |
 | | 1 | Cột Thời điểm | `mySubmissions.table.col.submittedAt` | `judge.submissions` | `submitted_at` | ListColumn | Date | 30 | Có | O | - | `HH:mm - dd/MM/yyyy` | Mốc thời gian nộp bài [Nguồn: 02-bd/database/judge-orchestration.md:31]<br>[EVT liên quan] - |
-| | 2 | Cột Bài toán | `mySubmissions.table.col.problem` | `problem.problems` | `code`, `title`, `difficulty` | ListColumn | Link | 150 | Có | O | - | `{code} · {title}` | Mã và tiêu đề bài toán kèm badge độ khó [Nguồn: 02-bd/database/problem-bank.md:14-17]<br>[EVT liên quan] EVT-5 |
+| | 2 | Cột Bài toán | `mySubmissions.table.col.problem` | `problem.problems`, `problem.problem_levels` | `code`, `title`, `display_name` | ListColumn | Link | 150 | Có | O | - | `{code} · {title}` | Mã và tiêu đề bài toán kèm badge độ khó [Nguồn: 02-bd/database/problem-bank.md:14-17]<br>[Nguồn giá trị] Nhãn badge là `problem_levels.display_name` qua `problems.level_id`, **đọc từ dữ liệu** do ADMIN quản lý, không còn ánh xạ cứng enum; ba mức khởi tạo giữ màu badge cũ, mức mới màu trung tính `DEC-2026-1001-admin-configurable-settings` mục (7) [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`]<br>[EVT liên quan] EVT-5 |
 | | 3 | Cột Ngôn ngữ | `mySubmissions.table.col.language` | `judge.submissions` | `language` | ListColumn | Badge | 20 | Có | O | - | - | Ngôn ngữ nộp bài [Nguồn: 02-bd/database/judge-orchestration.md:18]<br>[EVT liên quan] - |
 | | 4 | Cột Kết quả | `mySubmissions.table.col.verdict` | `judge.submissions` | `status` | ListColumn | Badge | 30 | Có | O | - | - | Badge trạng thái có màu đặc trưng [Nguồn: 02-bd/database/judge-orchestration.md:22]<br>[EVT liên quan] - |
 | | 5 | Cột Testcase | `mySubmissions.table.col.testcases` | `judge.submissions` | `passed_testcase_count`, `total_testcase_count` | ListColumn | String | 20 | Có | O | - | `{passed}/{total}` | Số testcase đạt / tổng số testcase [Nguồn: 02-bd/database/judge-orchestration.md:25-26]<br>[EVT liên quan] - |
@@ -317,6 +319,7 @@ Bố cục dạng danh sách trung tâm một cột với các khối chức nă
 | 1 | `judge.submissions` | - | Có | - | - | `user_id = :currentUserId [AND conditions] ORDER BY submitted_at DESC` |
 | 2 | `identity.user_submission_stats` | - | Có | - | - | `user_id = :currentUserId` |
 | 3 | `problem.problems` | - | Có | - | - | `id IN (:problemIds)` |
+| 4 | `problem.problem_levels` | - | Có | - | - | Qua join `problems.level_id` để lấy `display_name`; màn không ghi, ADMIN quản lý độ khó ở `SHR0201` |
 
 ### 7.3. Danh sách endpoint [Nội bộ]
 

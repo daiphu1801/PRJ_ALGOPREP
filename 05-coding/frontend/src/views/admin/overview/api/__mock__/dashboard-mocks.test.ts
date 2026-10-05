@@ -1,5 +1,7 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 import { describe, expect, it } from "vitest";
+import type { ProblemLevel } from "@/entities/problem";
+import { buildDifficultyGroups } from "../../model/difficulty-groups";
 import {
   difficultyBreakdownSchema,
   submissionsByDaySchema,
@@ -21,9 +23,21 @@ describe("admin-dashboard mocks", () => {
     expect(verdictDistributionSchema.parse(data).slices).toHaveLength(5);
   });
 
-  it("difficulty breakdown has exactly 3 groups (Dễ/Trung bình/Khó)", async () => {
-    const data = await fakeDifficultyBreakdown();
-    expect(difficultyBreakdownSchema.parse(data).groups).toHaveLength(3);
+  it("difficulty breakdown carries one row per seed level key", async () => {
+    const data = difficultyBreakdownSchema.parse(await fakeDifficultyBreakdown());
+    expect(data.levels.map((l) => l.key)).toEqual(["EASY", "MEDIUM", "HARD"]);
+  });
+
+  it("chart groups follow the level list: seed numbers kept, unknown level gets zero bars", async () => {
+    const data = difficultyBreakdownSchema.parse(await fakeDifficultyBreakdown());
+    const levels: readonly ProblemLevel[] = [
+      { key: "EASY", label: "Dễ", tone: "success" },
+      { key: "EXTRA", label: "Rất khó", tone: "neutral" },
+    ];
+    const groups = buildDifficultyGroups(levels, data);
+    expect(groups.map((g) => g.label)).toEqual(["Dễ", "Rất khó"]);
+    expect(groups[0]!.bars.map((b) => b.value)).toEqual([260, 140]);
+    expect(groups[1]!.bars.map((b) => b.value)).toEqual([0, 0]);
   });
 
   it("submissions-by-day has exactly 7 columns (T2..CN)", async () => {

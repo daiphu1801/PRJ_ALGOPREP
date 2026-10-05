@@ -19,6 +19,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useAssignmentSummary, useClassAssignments, useRemoveAssignment, type AssignedProblem } from "@/entities/class-assignment";
 import { useInstructorClasses } from "@/entities/class";
+import { problemLevelLabel, problemLevelTone, useProblemLevels } from "@/entities/problem";
 import { useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
 import {
@@ -31,18 +32,12 @@ import {
   SegmentedTabs,
   SelectField,
   TextField,
-  type BadgeVariant,
   type DataTableColumn,
 } from "@/shared/ui";
 
-const DIFFICULTY_VARIANT: Record<AssignedProblem["difficulty"], BadgeVariant> = {
-  EASY: "success",
-  MEDIUM: "warn",
-  HARD: "negative",
-};
-
 export function ClassAssignmentsView() {
   const t = useT("classAssignments");
+  const levelList = useProblemLevels();
   const summaryQuery = useAssignmentSummary();
   const assignmentsQuery = useClassAssignments();
   const classesQuery = useInstructorClasses();
@@ -69,7 +64,11 @@ export function ClassAssignmentsView() {
     {
       key: "difficulty",
       header: t("assignmentList.col.difficulty"),
-      render: (row) => <Badge variant={DIFFICULTY_VARIANT[row.difficulty]}>{t(`difficulty.${row.difficulty}`)}</Badge>,
+      render: (row) => (
+        <Badge variant={problemLevelTone(levelList, row.difficulty)}>
+          {problemLevelLabel(levelList, row.difficulty)}
+        </Badge>
+      ),
     },
     {
       key: "assignedClasses",

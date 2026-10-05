@@ -16,6 +16,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { problemLevelLabel, problemLevelTone, useProblemLevels } from "@/entities/problem";
 import { fetchSubmissionDetail, type SubmissionTestcaseResult } from "@/entities/submission";
 import { useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
@@ -51,6 +52,7 @@ function formatMb(kb: number | null): string {
 
 export function SubmissionResultView() {
   const t = useT("submissionResult");
+  const levels = useProblemLevels();
   const params = useParams<{ submissionId?: string }>();
   const submissionId = params?.submissionId ?? "";
   const submission = useMemo(() => fetchSubmissionDetail(submissionId), [submissionId]);
@@ -96,7 +98,9 @@ export function SubmissionResultView() {
           <Badge variant={VERDICT_VARIANT[submission.status] ?? "neutral"}>
             {t(`verdict.${submission.status}`)}
           </Badge>
-          <Badge variant="neutral">{t(`difficulty.${submission.difficulty}`)}</Badge>
+          <Badge variant={problemLevelTone(levels, submission.difficulty)}>
+            {problemLevelLabel(levels, submission.difficulty)}
+          </Badge>
           {submission.totalCount != null ? (
             <span className="font-mono text-sm font-semibold">
               {submission.passedCount}/{submission.totalCount}

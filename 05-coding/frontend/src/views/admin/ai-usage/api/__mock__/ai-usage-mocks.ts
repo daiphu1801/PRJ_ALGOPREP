@@ -64,12 +64,12 @@ const TOP_USERS: TopUser[] = [
 // dc.html:513-519. The mockup's meta column read "412 lượt gợi ý" etc.; the hint feature is gone,
 // so the same counts are relabelled as AI calls across the three features still in scope.
 const TOP_PROBLEMS: TopProblem[] = [
-  { rank: 1, name: "Đường đi ngắn nhất trên lưới", difficulty: "hard", calls: 412, tokens: "2,10 tr", averagePerCall: "5.100" },
-  { rank: 2, name: "Cây khung nhỏ nhất", difficulty: "hard", calls: 298, tokens: "1,52 tr", averagePerCall: "5.100" },
-  { rank: 3, name: "Chuỗi con chung dài nhất", difficulty: "medium", calls: 506, tokens: "1,44 tr", averagePerCall: "2.850" },
-  { rank: 4, name: "Dãy con tăng dài nhất", difficulty: "medium", calls: 618, tokens: "1,31 tr", averagePerCall: "2.120" },
-  { rank: 5, name: "Hai con trỏ trên mảng sắp xếp", difficulty: "easy", calls: 742, tokens: "0,89 tr", averagePerCall: "1.200" },
-  { rank: 6, name: "Đếm số đảo ngược", difficulty: "hard", calls: 184, tokens: "0,81 tr", averagePerCall: "4.400" },
+  { rank: 1, name: "Đường đi ngắn nhất trên lưới", difficulty: "HARD", calls: 412, tokens: "2,10 tr", averagePerCall: "5.100" },
+  { rank: 2, name: "Cây khung nhỏ nhất", difficulty: "HARD", calls: 298, tokens: "1,52 tr", averagePerCall: "5.100" },
+  { rank: 3, name: "Chuỗi con chung dài nhất", difficulty: "MEDIUM", calls: 506, tokens: "1,44 tr", averagePerCall: "2.850" },
+  { rank: 4, name: "Dãy con tăng dài nhất", difficulty: "MEDIUM", calls: 618, tokens: "1,31 tr", averagePerCall: "2.120" },
+  { rank: 5, name: "Hai con trỏ trên mảng sắp xếp", difficulty: "EASY", calls: 742, tokens: "0,89 tr", averagePerCall: "1.200" },
+  { rank: 6, name: "Đếm số đảo ngược", difficulty: "HARD", calls: 184, tokens: "0,81 tr", averagePerCall: "4.400" },
 ];
 
 export function fetchAiUsagePage(): AiUsagePage {

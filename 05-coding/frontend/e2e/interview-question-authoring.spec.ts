@@ -30,8 +30,10 @@ test("an empty rubric saves, a rubric that misses 100% does not", async ({ page 
 
   // One criterion at 0% means the total is not 100, which must block saving.
   await page.getByRole("button", { name: "+ Thêm tiêu chí" }).click();
-  await expect(page.getByText("Chưa lưu được — tổng trọng số phải bằng 100%")).toBeVisible();
+  // The button only looks disabled (aria-disabled); clicking it names the reason in a toast.
   await expect(save).toBeDisabled();
+  await save.click({ force: true });
+  await expect(page.getByText(/Chưa lưu được — tổng trọng số phải bằng 100%/)).toBeVisible();
 
   // Twenty clicks of +5 gets to 100.
   const increment = page.getByRole("button", { name: "Tăng trọng số tiêu chí 1" });
@@ -41,7 +43,7 @@ test("an empty rubric saves, a rubric that misses 100% does not", async ({ page 
   await expect(save).toBeEnabled();
 });
 
-test("follow-ups are a dynamic list and the topic cannot be a sixth value", async ({ page }) => {
+test("follow-ups are a dynamic list and the topic list comes from the admin-managed topics", async ({ page }) => {
   await page.goto("/admin/interview-questions/new");
 
   const remove = page.getByRole("button", { name: "Xoá câu đào sâu 1" });
@@ -52,7 +54,7 @@ test("follow-ups are a dynamic list and the topic cannot be a sixth value", asyn
   await expect(page.getByRole("button", { name: /^Xoá câu đào sâu/ })).toHaveCount(2);
   await expect(remove).toBeEnabled();
 
-  // Five seeded topics, no free text (BD section 1.2).
+  // The five seeded topics (DEC-2026-1001: admin-managed data, no free text here).
   await expect(page.getByLabel("Chủ đề").getByRole("option")).toHaveCount(5);
 });
 

@@ -19,6 +19,7 @@ import { Search } from "lucide-react";
 import { useClassAssignments } from "@/entities/class-assignment";
 import { useClassScoreTrend, useInstructorClasses } from "@/entities/class";
 import { usePendingManualGradingTop } from "@/entities/manual-grading";
+import { problemLevelLabel, useProblemLevels } from "@/entities/problem";
 import { useT } from "@/shared/i18n";
 import { Badge, Button, Card, LineChartWithTotal, ProgressBar, StatCard, TextField } from "@/shared/ui";
 
@@ -34,6 +35,7 @@ const ACTIVITY_FEED = [
 
 export function InstructorOverviewView() {
   const t = useT("instructorOverview");
+  const levelList = useProblemLevels();
   const [search, setSearch] = useState("");
 
   const classesQuery = useInstructorClasses();
@@ -220,7 +222,7 @@ export function InstructorOverviewView() {
                   <div className="min-w-0 flex-1">
                     <p className="truncate">{row.title}</p>
                     <p className="truncate text-[11.5px] text-[var(--color-text-muted)]">
-                      {t(`difficulty.${row.difficulty}`)} · {row.topic}
+                      {problemLevelLabel(levelList, row.difficulty)} · {row.topic}
                     </p>
                   </div>
                   <span className="shrink-0 font-mono text-[12.5px] text-[var(--color-text-muted)]">

@@ -21,7 +21,7 @@ Nguyên lý: `overview.md` mục 1.A. Nguồn phạm vi: `README.md` mục 3 và
 | **Đề bài** | `statement` | Nội dung mô tả bài toán, viết bằng Markdown kèm LaTeX | "description" lẫn với mô tả ngắn |
 | **Độ khó** | `difficulty` | Mức khó của bài toán | "level" |
 | **Chủ đề** | `topic` | Phân loại kiến thức (mảng, đồ thị, quy hoạch động...) | "tag", "category", "thể loại" |
-| **Đặc tả bài toán** | `problem_spec` | Khai báo để harness sinh mã được: chữ ký hàm theo ngôn ngữ, kiểu tham số và giá trị trả về, chiến lược so khớp | "config", "metadata" |
+| **Đặc tả bài toán** | `problem_spec` | Khai báo để harness sinh mã được: chữ ký hàm chung (hệ thống đổi sang từng ngôn ngữ), kiểu tham số và giá trị trả về, chiến lược so khớp | "config", "metadata" |
 | **Chữ ký hàm** | `function_signature` | Tên hàm và danh sách tham số của một ngôn ngữ cụ thể | "prototype", "interface" |
 | **Testcase** | `testcase` | Một cặp dữ liệu vào và kết quả mong đợi | "test", "case" một mình |
 | **Testcase mẫu** | `SAMPLE` | Testcase công khai, dùng cho chế độ Chạy thử | "public test", "visible test" |

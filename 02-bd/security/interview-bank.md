@@ -65,6 +65,21 @@ Bảng 2.1: Ma trận quyền thao tác trên danh mục chủ đề (đứng sa
 
   Kiểm ở máy chủ kể cả khi giao diện đã ẩn nút; A2 gọi trực tiếp API nhận `403 FORBIDDEN` (cùng chính sách lỗi
   ở mục 2). Mỗi thao tác thành công ghi một dòng `system_audit_logs` (F1-14) trong cùng giao dịch.
+- **Quản lý độ khó (`question_levels`) — chỉ ADMIN** (chốt 2026-10-03, `DEC-2026-1001-admin-configurable-settings` mục 6).
+  Cùng cách với chủ đề: dùng lại `INTERVIEW_BANK_MANAGEMENT` kết hợp kiểm vai trò `ADMIN` ở tầng use case, không Function
+  mới. Bảng 2.2 tóm tắt.
+
+Bảng 2.2: Ma trận quyền thao tác trên danh mục độ khó (cùng quy tắc với Bảng 2.1).
+
+| Thao tác (endpoint) | Học viên (A1) | Giảng viên (A2) | Quản trị viên (A3) | Điều kiện |
+| :--- | :-: | :-: | :-: | :--- |
+| `ListQuestionLevels` | Có | Có | Có | Mọi người dùng đã xác thực |
+| `CreateQuestionLevel` | Không | Không | Có | `INTERVIEW_BANK_MANAGEMENT:CREATE` + vai trò `ADMIN` |
+| `UpdateQuestionLevel` | Không | Không | Có | `INTERVIEW_BANK_MANAGEMENT:UPDATE` + vai trò `ADMIN`; đổi tên |
+| `ReorderQuestionLevels` | Không | Không | Có | `INTERVIEW_BANK_MANAGEMENT:UPDATE` + vai trò `ADMIN` |
+| `DeleteQuestionLevel` | Không | Không | Có | `INTERVIEW_BANK_MANAGEMENT:DELETE` + vai trò `ADMIN`; từ chối khi còn câu hỏi tham chiếu hoặc khi đây là mức cuối cùng |
+
+  Kiểm ở máy chủ kể cả khi giao diện đã ẩn nút; A2 gọi trực tiếp nhận `403 FORBIDDEN`. Mỗi thao tác thành công ghi một dòng `system_audit_logs` (F1-14).
 
 ## 3. `question_sets` — đã đóng 2026-09-13: không áp dụng
 

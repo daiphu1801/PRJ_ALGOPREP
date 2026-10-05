@@ -8,13 +8,19 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { Check, Plus, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, Check, Plus, Trash2 } from "lucide-react";
 import type { ManagedItem, ManagedListError } from "@/shared/lib/managed-list-store";
+import { cn } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
 import { Button } from "../primitives/button";
 import { IconAction } from "../primitives/icon-action";
 import { Modal } from "./modal";
 import { TextField } from "../form/text-field";
+
+// From this many items the list stops growing and scrolls. One row is h-9 (36px) with a 10px gap, so the
+// cap shows SCROLL_FROM - 1 rows plus the 6px padding that keeps the focus ring from being clipped.
+const SCROLL_FROM = 6;
+const SCROLL_MAX_HEIGHT = `${((SCROLL_FROM - 1) * 36 + (SCROLL_FROM - 2) * 10 + 12) / 16}rem`;
 
 export type ManagedListLabels = {
   title: string;
@@ -28,6 +34,11 @@ export type ManagedListLabels = {
   close: string;
   usage: (count: number) => string;
   deleteBlocked: (count: number) => string;
+  /** Tooltip of the delete control while the list is down to `keepAtLeast` items. */
+  deleteLast?: string;
+  /** Required when `onMove` is given. */
+  moveUp?: string;
+  moveDown?: string;
   error: Record<ManagedListError, string>;
   /** Success toasts, one per action. */
   done: { add: string; rename: string; remove: string };
@@ -43,6 +54,10 @@ type Props<T extends ManagedItem> = {
   onAdd: (label: string) => ManagedListError | null;
   onRename: (key: string, label: string) => ManagedListError | null;
   onRemove: (key: string) => void;
+  /** Adds up/down controls to every row when given. */
+  onMove?: (key: string, delta: -1 | 1) => void;
+  /** The list may never shrink below this many items; delete is disabled at the floor. Default 0. */
+  keepAtLeast?: number;
   /** Extra per-row control, e.g. a flag toggle. */
   renderExtra?: (item: T) => ReactNode;
 };
@@ -56,6 +71,8 @@ export function ManagedListDialog<T extends ManagedItem>({
   onAdd,
   onRename,
   onRemove,
+  onMove,
+  keepAtLeast = 0,
   renderExtra,
 }: Props<T>) {
   const [draftNames, setDraftNames] = useState<Record<string, string>>({});
@@ -100,9 +117,17 @@ export function ManagedListDialog<T extends ManagedItem>({
     >
       <p className="mb-3 text-[12.5px] text-[var(--color-text-muted)]">{labels.hint}</p>
 
-      <ul className="mb-4 flex flex-col gap-2.5">
-        {items.map((item) => {
+      <ul
+        className={cn(
+          "mb-4 flex flex-col gap-2.5",
+          // The padding and negative margin leave room for the focus ring, which overflow would clip.
+          items.length >= SCROLL_FROM && "-mx-1.5 mb-2.5 scrollbar-glass overflow-y-auto overscroll-contain px-1.5 py-1.5",
+        )}
+        style={items.length >= SCROLL_FROM ? { maxHeight: SCROLL_MAX_HEIGHT } : undefined}
+      >
+        {items.map((item, index) => {
           const used = usage[item.key] ?? 0;
+          const atFloor = items.length <= keepAtLeast;
           return (
             <li key={item.key}>
               <div className="flex items-start gap-2">
@@ -119,6 +144,22 @@ export function ManagedListDialog<T extends ManagedItem>({
                   invalid={invalidWhere === item.key}
                   wrapperClassName="flex-1"
                 />
+                {onMove ? (
+                  <>
+                    <IconAction
+                      icon={ArrowUp}
+                      label={labels.moveUp ?? ""}
+                      disabled={index === 0}
+                      onClick={() => onMove(item.key, -1)}
+                    />
+                    <IconAction
+                      icon={ArrowDown}
+                      label={labels.moveDown ?? ""}
+                      disabled={index === items.length - 1}
+                      onClick={() => onMove(item.key, 1)}
+                    />
+                  </>
+                ) : null}
                 {renderExtra ? <div className="mt-1.5 shrink-0">{renderExtra(item)}</div> : null}
                 <span className="mt-2 w-20 shrink-0 text-right font-mono text-xs text-[var(--color-text-muted)]">
                   {labels.usage(used)}
@@ -131,9 +172,15 @@ export function ManagedListDialog<T extends ManagedItem>({
                 />
                 <IconAction
                   icon={Trash2}
-                  label={used > 0 ? labels.deleteBlocked(used) : labels.delete}
+                  label={
+                    used > 0
+                      ? labels.deleteBlocked(used)
+                      : atFloor
+                        ? (labels.deleteLast ?? labels.delete)
+                        : labels.delete
+                  }
                   tone="danger"
-                  disabled={used > 0}
+                  disabled={used > 0 || atFloor}
                   onClick={() => {
                     onRemove(item.key);
                     toast.success(labels.done.remove);

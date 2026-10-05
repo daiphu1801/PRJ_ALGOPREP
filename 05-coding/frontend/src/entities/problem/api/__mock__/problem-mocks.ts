@@ -27,27 +27,29 @@ const TOPICS: TopicProgress[] = [
 ];
 
 const PROBLEMS: ProblemListItem[] = [
-  { id: "121", code: "#121", title: "Best Time to Buy and Sell Stock", solveState: "solved", submissionModel: "both", hasSolutionReview: true, topics: ["Array"], difficulty: "easy", acRate: 68 },
-  { id: "1", code: "#1", title: "Two Sum", solveState: "solved", submissionModel: "both", hasSolutionReview: true, topics: ["Array"], difficulty: "easy", acRate: 74 },
-  { id: "139", code: "#139", title: "Word Break", solveState: "attempted", submissionModel: "both", hasSolutionReview: false, topics: ["DP", "String"], difficulty: "medium", acRate: 46 },
-  { id: "200", code: "#200", title: "Number of Islands", solveState: "attempted", submissionModel: "both", hasSolutionReview: false, topics: ["Graph"], difficulty: "medium", acRate: 58 },
-  { id: "207", code: "#207", title: "Course Schedule", solveState: "todo", submissionModel: "both", hasSolutionReview: false, topics: ["Graph"], difficulty: "medium", acRate: 47 },
-  { id: "236", code: "#236", title: "Lowest Common Ancestor", solveState: "todo", submissionModel: "both", hasSolutionReview: false, topics: ["Tree"], difficulty: "medium", acRate: 59 },
-  { id: "297", code: "#297", title: "Serialize and Deserialize Binary Tree", solveState: "todo", submissionModel: "stdioOnly", hasSolutionReview: false, topics: ["Tree"], difficulty: "hard", acRate: 34 },
-  { id: "322", code: "#322", title: "Coin Change", solveState: "solved", submissionModel: "both", hasSolutionReview: false, topics: ["DP"], difficulty: "medium", acRate: 44 },
-  { id: "416", code: "#416", title: "Partition Equal Subset Sum", solveState: "todo", submissionModel: "both", hasSolutionReview: false, topics: ["DP"], difficulty: "medium", acRate: 48 },
-  { id: "435", code: "#435", title: "Non-overlapping Intervals", solveState: "todo", submissionModel: "both", hasSolutionReview: false, topics: ["Greedy"], difficulty: "medium", acRate: 51 },
-  { id: "704", code: "#704", title: "Binary Search", solveState: "solved", submissionModel: "both", hasSolutionReview: true, topics: ["Array"], difficulty: "easy", acRate: 74 },
-  { id: "895", code: "#895", title: "Maximum Frequency Stack", solveState: "todo", submissionModel: "stdioOnly", hasSolutionReview: false, topics: ["Stack"], difficulty: "hard", acRate: 38 },
-  { id: "1143", code: "#1143", title: "Longest Common Subsequence", solveState: "attempted", submissionModel: "both", hasSolutionReview: false, topics: ["DP"], difficulty: "medium", acRate: 57 },
-  { id: "1268", code: "#1268", title: "Search Suggestions System", solveState: "todo", submissionModel: "both", hasSolutionReview: false, topics: ["String"], difficulty: "medium", acRate: null },
+  { id: "121", code: "#121", title: "Best Time to Buy and Sell Stock", solveState: "solved", submissionModel: "both", hasSolutionReview: true, topics: ["Array"], difficulty: "EASY", acRate: 68 },
+  { id: "1", code: "#1", title: "Two Sum", solveState: "solved", submissionModel: "both", hasSolutionReview: true, topics: ["Array"], difficulty: "EASY", acRate: 74 },
+  { id: "139", code: "#139", title: "Word Break", solveState: "attempted", submissionModel: "both", hasSolutionReview: false, topics: ["DP", "String"], difficulty: "MEDIUM", acRate: 46 },
+  { id: "200", code: "#200", title: "Number of Islands", solveState: "attempted", submissionModel: "both", hasSolutionReview: false, topics: ["Graph"], difficulty: "MEDIUM", acRate: 58 },
+  { id: "207", code: "#207", title: "Course Schedule", solveState: "todo", submissionModel: "both", hasSolutionReview: false, topics: ["Graph"], difficulty: "MEDIUM", acRate: 47 },
+  { id: "236", code: "#236", title: "Lowest Common Ancestor", solveState: "todo", submissionModel: "both", hasSolutionReview: false, topics: ["Tree"], difficulty: "MEDIUM", acRate: 59 },
+  { id: "297", code: "#297", title: "Serialize and Deserialize Binary Tree", solveState: "todo", submissionModel: "stdioOnly", hasSolutionReview: false, topics: ["Tree"], difficulty: "HARD", acRate: 34 },
+  { id: "322", code: "#322", title: "Coin Change", solveState: "solved", submissionModel: "both", hasSolutionReview: false, topics: ["DP"], difficulty: "MEDIUM", acRate: 44 },
+  { id: "416", code: "#416", title: "Partition Equal Subset Sum", solveState: "todo", submissionModel: "both", hasSolutionReview: false, topics: ["DP"], difficulty: "MEDIUM", acRate: 48 },
+  { id: "435", code: "#435", title: "Non-overlapping Intervals", solveState: "todo", submissionModel: "both", hasSolutionReview: false, topics: ["Greedy"], difficulty: "MEDIUM", acRate: 51 },
+  { id: "704", code: "#704", title: "Binary Search", solveState: "solved", submissionModel: "both", hasSolutionReview: true, topics: ["Array"], difficulty: "EASY", acRate: 74 },
+  { id: "895", code: "#895", title: "Maximum Frequency Stack", solveState: "todo", submissionModel: "stdioOnly", hasSolutionReview: false, topics: ["Stack"], difficulty: "HARD", acRate: 38 },
+  { id: "1143", code: "#1143", title: "Longest Common Subsequence", solveState: "attempted", submissionModel: "both", hasSolutionReview: false, topics: ["DP"], difficulty: "MEDIUM", acRate: 57 },
+  { id: "1268", code: "#1268", title: "Search Suggestions System", solveState: "todo", submissionModel: "both", hasSolutionReview: false, topics: ["String"], difficulty: "MEDIUM", acRate: null },
 ];
 
 const SUMMARY: ProblemCatalogSummary = {
   solvedTotal: { solved: 42, total: 128 },
-  solvedEasy: { solved: 20, total: 40 },
-  solvedMedium: { solved: 18, total: 60 },
-  solvedHard: { solved: 4, total: 28 },
+  solvedByLevel: {
+    EASY: { solved: 20, total: 40 },
+    MEDIUM: { solved: 18, total: 60 },
+    HARD: { solved: 4, total: 28 },
+  },
 };
 
 const IN_PROGRESS: InProgressProblem[] = [
@@ -80,9 +82,9 @@ export function fetchProblemListPage(): ProblemListPage {
 }
 
 const SAVED: SavedProblem[] = [
-  { id: "1", code: "#1", title: "Two Sum", difficulty: "easy", topics: ["Array"], solveState: "solved", note: "Nhớ dùng HashMap thay vì hai vòng lặp lồng nhau.", savedAtLabel: "20/09/2026" },
-  { id: "139", code: "#139", title: "Word Break", difficulty: "medium", topics: ["DP", "String"], solveState: "attempted", note: "Ôn lại DP trên chuỗi trước khi thi giữa kỳ.", savedAtLabel: "18/09/2026" },
-  { id: "895", code: "#895", title: "Maximum Frequency Stack", difficulty: "hard", topics: ["Stack"], solveState: "todo", note: "", savedAtLabel: "12/09/2026" },
+  { id: "1", code: "#1", title: "Two Sum", difficulty: "EASY", topics: ["Array"], solveState: "solved", note: "Nhớ dùng HashMap thay vì hai vòng lặp lồng nhau.", savedAtLabel: "20/09/2026" },
+  { id: "139", code: "#139", title: "Word Break", difficulty: "MEDIUM", topics: ["DP", "String"], solveState: "attempted", note: "Ôn lại DP trên chuỗi trước khi thi giữa kỳ.", savedAtLabel: "18/09/2026" },
+  { id: "895", code: "#895", title: "Maximum Frequency Stack", difficulty: "HARD", topics: ["Stack"], solveState: "todo", note: "", savedAtLabel: "12/09/2026" },
 ];
 
 export function fetchSavedProblems(): SavedProblem[] {
@@ -99,7 +101,7 @@ const PROBLEM_DETAILS: Record<string, ProblemDetail> = {
     id: "1",
     code: "#1",
     title: "Two Sum",
-    difficulty: "easy",
+    difficulty: "EASY",
     topics: ["Array"],
     submissionModel: "both",
     statementMd:
@@ -140,7 +142,7 @@ const PROBLEM_DETAILS: Record<string, ProblemDetail> = {
     id: "139",
     code: "#139",
     title: "Word Break",
-    difficulty: "medium",
+    difficulty: "MEDIUM",
     topics: ["DP", "String"],
     submissionModel: "both",
     statementMd:

@@ -11,3 +11,8 @@ export class ApiError extends Error {
     this.status = status;
   }
 }
+
+/** True for a 404 from the server (also what A2 gets for a problem that is not theirs). */
+export function isNotFound(error: unknown): boolean {
+  return error instanceof ApiError && error.status === 404;
+}

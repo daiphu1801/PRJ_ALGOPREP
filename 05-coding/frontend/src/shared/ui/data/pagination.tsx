@@ -10,6 +10,7 @@
 
 import { cn } from "@/shared/lib";
 import { Button } from "../primitives/button";
+import { FilterMenu } from "./filter-menu";
 
 type PaginationProps = {
   page: number;
@@ -68,18 +69,16 @@ export function Pagination({
       <span className="text-[var(--color-text-muted)]">{summary}</span>
       <span className="flex items-center gap-1.5">
         {pageSizeOptions && onPageSizeChange ? (
-          <select
-            aria-label={pageSizeLabel}
-            value={pageSize}
-            onChange={(event) => onPageSizeChange(Number(event.target.value))}
-            className="mr-1.5 h-8 rounded-md border border-[var(--color-border)] bg-transparent px-2 font-mono text-[12.5px]"
-          >
-            {pageSizeOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
+          // Same glass pop-up as the list filters; opens upward because this bar sits at the card's foot.
+          <FilterMenu
+            compact
+            placement="top"
+            label={pageSizeLabel ?? ""}
+            options={pageSizeOptions.map((option) => ({ value: String(option), label: String(option) }))}
+            value={String(pageSize)}
+            onValueChange={(next) => onPageSizeChange(Number(next))}
+            className="mr-1.5"
+          />
         ) : null}
         <Button
           variant="ghost"

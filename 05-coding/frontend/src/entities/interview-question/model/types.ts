@@ -2,14 +2,13 @@
  * Interview question bank (F6-13, DEC-2026-0830-interview-bank-crud).
  *
  * A2 and A3 can edit the whole bank, not only questions they authored themselves.
- * Topics are admin-managed data (DEC-2026-1001-admin-configurable-settings), so a question carries
- * only the topic's stable key; labels come from `useInterviewTopics()` in ./topic-store.
+ * Topics and difficulty levels are admin-managed data (DEC-2026-1001-admin-configurable-settings), so a
+ * question carries only their stable keys; labels come from `useInterviewTopics()` / `useInterviewLevels()`.
  */
 export type QuestionTopic = string;
 
-export type QuestionLevel = "easy" | "medium" | "hard";
-
-export const QUESTION_LEVELS: QuestionLevel[] = ["easy", "medium", "hard"];
+/** Stable key of an admin-managed difficulty level (see ./level-store). */
+export type QuestionLevel = string;
 
 export type RubricCriterion = {
   label: string;

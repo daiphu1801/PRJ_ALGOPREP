@@ -21,8 +21,10 @@ import { useParams } from "next/navigation";
 import { Play, Send, Upload } from "lucide-react";
 import {
   fetchProblemDetail,
+  problemLevelLabel,
+  problemLevelTone,
+  useProblemLevels,
   simulateSubmission,
-  type Difficulty,
   type InputMethod,
   type StarterCodeKey,
   type SubmissionLanguage,
@@ -31,13 +33,7 @@ import {
 } from "@/entities/problem";
 import { useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
-import { Badge, Button, Card, EmptyState, SegmentedTabs, type BadgeVariant } from "@/shared/ui";
-
-const DIFFICULTY_VARIANT: Record<Difficulty, BadgeVariant> = {
-  easy: "success",
-  medium: "warn",
-  hard: "negative",
-};
+import { Badge, Button, Card, EmptyState, SegmentedTabs } from "@/shared/ui";
 
 const LANGUAGES: SubmissionLanguage[] = ["java", "cpp", "python"];
 const TOTAL_TESTCASES = 12;
@@ -49,6 +45,7 @@ export function ProblemDetailView() {
   const params = useParams<{ problemId?: string }>();
   const problemId = params?.problemId;
   const t = useT("problemDetail");
+  const levels = useProblemLevels();
   const problem = useMemo(() => (problemId ? fetchProblemDetail(problemId) : undefined), [problemId]);
 
   const [tab, setTab] = useState<Tab>("statement");
@@ -141,7 +138,7 @@ export function ProblemDetailView() {
         </Link>
         <span className="font-mono text-xs text-[var(--color-text-muted)]">{detail.code}</span>
         <h1 className="truncate text-[13.5px] font-semibold">{detail.title}</h1>
-        <Badge variant={DIFFICULTY_VARIANT[detail.difficulty]}>{t(`difficulty.${detail.difficulty}`)}</Badge>
+        <Badge variant={problemLevelTone(levels, detail.difficulty)}>{problemLevelLabel(levels, detail.difficulty)}</Badge>
         <div className="ml-auto flex gap-2">
           <Button variant="ghost" size="sm" className="border border-[var(--color-border)]" onClick={runSample} disabled={running}>
             <Play className="mr-1.5 h-3.5 w-3.5" />

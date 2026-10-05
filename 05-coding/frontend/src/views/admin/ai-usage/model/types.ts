@@ -48,7 +48,7 @@ export type TopUser = {
 export type TopProblem = {
   rank: number;
   name: string;
-  difficulty: "easy" | "medium" | "hard";
+  difficulty: string;
   /** Call count across the in-scope AI features. */
   calls: number;
   tokens: string;

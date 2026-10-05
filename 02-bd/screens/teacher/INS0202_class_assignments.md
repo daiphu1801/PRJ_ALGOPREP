@@ -47,7 +47,7 @@
 | Tên vật lý (slug) | `class_assignments` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A2 (`INSTRUCTOR`) |
-| Phiên bản | V0.2 |
+| Phiên bản | V0.3 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/21 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
@@ -61,6 +61,7 @@
 | :--- | :--- | :--- | :--- | :--- |
 | V0.1 | Toàn bộ | Tạo mới theo mẫu 9 sheet. Chốt nguồn dữ liệu của mọi trường hiển thị, ánh xạ về `problem.class_assignments` / `problems` / `problem_stats`. Thiết kế bổ sung hành động gỡ bài khỏi lớp (ẩn mềm) theo `DEC-2026-0831-class-assignments-round2` mà prototype chưa dựng. Phát sinh 10 câu hỏi mở | 2026/09/21 | Nhóm phát triển AlgoPrep |
 | V0.2 | 1, 8, 9 | Áp `DEC-2026-1003-toast-feedback-channel`: kết quả gỡ bài và lỗi gọi máy chủ ghi là toast, bỏ cụm "lỗi trên màn chính" | 2026-10-03 | AI |
+| V0.3 | Sheet 4, 5, 7 | Đồng bộ `DEC-2026-1001-admin-configurable-settings` mục (7): độ khó bài tập là danh mục do ADMIN quản lý (bảng riêng `problem_levels`), không còn enum cố định. Cột "Độ khó" đọc `display_name` của mức qua `problems.level_id`, bỏ câu "ba mức `EASY`/`MEDIUM`/`HARD`"; `AssignedProblemRowDto.difficulty` thành `levelCode`/`levelDisplayName`; thêm `problem.problem_levels` vào bảng liên quan và Truy cập bảng. Màu huy hiệu: ba mức khởi tạo giữ màu cũ, mức mới màu trung tính. Màn chỉ hiển thị nhãn, không lọc và không gọi `ListProblemLevels` (nhãn nằm sẵn trong phản hồi); độ khó không gắn logic nào | 2026/10/03 | AI |
 
 ---
 
@@ -223,16 +224,17 @@ xem Câu hỏi mở Q9 (prototype dựng 18 dòng liền một mạch).
 
 `[Suy luận]` — tên DTO do BD này đề xuất, `03-dd/api/problem-bank.md` chốt lại.
 
-### 4.3 Bảng dữ liệu liên quan (6)
+### 4.3 Bảng dữ liệu liên quan (7)
 
 | NO | Bảng | Ghi chú |
 | --: | :--- | :--- |
 | 1 | `problem.class_assignments` | Nguồn dữ liệu chính của bảng danh sách [Nguồn: 02-bd/database/problem-bank.md:116-128] |
-| 2 | `problem.problems` | Tên bài, độ khó, trạng thái xuất bản, cờ ẩn mềm [Nguồn: 02-bd/database/problem-bank.md:15,17,18,19] |
+| 2 | `problem.problems` | Tên bài, khoá `level_id` của độ khó, trạng thái xuất bản, cờ ẩn mềm [Nguồn: 02-bd/database/problem-bank.md:15,18,19] |
 | 3 | `problem.problem_topics` | Nối bài toán với chủ đề [Nguồn: 02-bd/database/problem-bank.md:35-39] |
 | 4 | `problem.topics` | Tên chủ đề hiển thị ở cột "Chủ đề" [Nguồn: 02-bd/database/problem-bank.md:37-38] |
 | 5 | `problem.problem_stats` | Read model lượt nộp và tỉ lệ AC [Nguồn: 02-bd/database/problem-bank.md:138-139]. Hiện là read model **toàn cục theo bài toán**, không theo lớp — xem Câu hỏi mở Q3 |
 | 6 | `identity.classes` | Tên lớp cho tab lọc và cột "Gán cho lớp" [Nguồn: 02-bd/database/identity.md:85-88]. Đọc **qua cổng ra** sang `identity`, không join chéo schema |
+| 7 | `problem.problem_levels` | Danh mục độ khó do ADMIN quản lý — nguồn nhãn cột "Độ khó", đọc qua join `problems.level_id` [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`] |
 
 Số "Cần chấm tay" **không đọc từ bảng của `problem-bank`**: nó thuộc `ai-review` (F5-27, cột
 `manual_graded_by` [Nguồn: 02-bd/database/ai-review.md:56]), lấy qua endpoint của module sở hữu — xem
@@ -317,7 +319,7 @@ Hai điều khiển dưới đây **không có trong prototype** và do BD này 
 | | 4 | Bảng bài đã gán | `classAssignments.assignmentList.table` | `problem.class_assignments` | - | List | List | - | - | O | rỗng | - | Bài đang được gán cho các lớp phụ trách, lọc theo tab và từ khoá<br>[Nguồn giá trị] Kết quả gọi `ListClassAssignments`<br>[EVT liên quan] EVT-1, EVT-3, EVT-4 |
 | | 5 | Bài tập | `classAssignments.assignmentList.col.title` | `problem.problems` | `title` | ListColumn | String | 200 | - | O | - | - | Tên bài toán, cắt bớt bằng dấu ba chấm khi tràn cột<br>[Nguồn giá trị] Cột `title` [Nguồn: 02-bd/database/problem-bank.md:15]<br>[EVT liên quan] - |
 | | 6 | Chủ đề | `classAssignments.assignmentList.col.topic` | `problem.topics` | `name` | ListColumn | String | 60 | - | O | - | - | Chủ đề của bài toán<br>[Nguồn giá trị] `topics.name` nối qua `problem_topics` [Nguồn: 02-bd/database/problem-bank.md:37-38]. Quan hệ là N-N nhưng cột chỉ có một ô — cách hiển thị khi bài có nhiều chủ đề xem Câu hỏi mở Q5<br>[EVT liên quan] - |
-| | 7 | Độ khó | `classAssignments.assignmentList.col.difficulty` | `problem.problems` | `difficulty` | Badge | Enum | - | - | O | - | Huy hiệu ba mức | Ba mức `EASY` / `MEDIUM` / `HARD` [Nguồn: 02-bd/database/problem-bank.md:17]<br>[Nguồn giá trị] Cột `difficulty`; nhãn hiển thị lấy từ i18n<br>[EVT liên quan] - |
+| | 7 | Độ khó | `classAssignments.assignmentList.col.difficulty` | `problem.problem_levels` | `display_name` | Badge | String | - | - | O | - | Huy hiệu `display_name` | Mức độ khó của bài, lấy qua `problems.level_id`<br>[Nguồn giá trị] Cột `problem_levels.display_name`, **đọc từ dữ liệu** do ADMIN quản lý, không còn ba mức cứng `EASY`/`MEDIUM`/`HARD` và không còn nhãn lấy từ i18n; ba mức khởi tạo giữ màu huy hiệu cũ, mức mới màu trung tính `DEC-2026-1001-admin-configurable-settings` mục (7) [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`]<br>[EVT liên quan] - |
 | | 8 | Gán cho lớp | `classAssignments.assignmentList.col.assignedClasses` | `identity.classes` | `name` | ListColumn | String | 200 | - | O | - | Tên lớp nối bằng dấu phẩy | Danh sách lớp mà bài này đang được gán, trong phạm vi lớp người đăng nhập phụ trách<br>[Công thức] Lấy `class_id` của các dòng `class_assignments` có `removed_at IS NULL` rồi đổi sang tên lớp qua cổng ra sang `identity`; tràn cột thì cắt bằng dấu ba chấm [Nguồn: 09-layoutBase/Giáo viên - Bài tập của tôi.dc.html:161]<br>[EVT liên quan] - |
 | | 9 | Lượt nộp | `classAssignments.assignmentList.col.submissionCount` | `problem.problem_stats` | `submission_count` | ListColumn | Number | 8 | - | O | 0 | Số nguyên, phân tách hàng nghìn | Tổng lượt nộp của bài toán<br>[Nguồn giá trị] Cột `submission_count` [Nguồn: 02-bd/database/problem-bank.md:138]. Là số **toàn hệ thống**, không giới hạn trong lớp — xem Câu hỏi mở Q3<br>[EVT liên quan] - |
 | | 10 | AC | `classAssignments.assignmentList.col.acRate` | `problem.problem_stats` | `ac_rate` | ListColumn | Number | 3 | - | O | - | `{số}%` | Tỉ lệ Accepted của bài toán<br>[Nguồn giá trị] Cột `ac_rate` [Nguồn: 02-bd/database/problem-bank.md:138]. Cùng phạm vi toàn hệ thống với NO 9 — xem Câu hỏi mở Q3<br>[EVT liên quan] - |
@@ -408,7 +410,7 @@ Hai điều khiển dưới đây **không có trong prototype** và do BD này 
 | 8 | `AssignedProblemRowDto` | `problemId` | UUID | `problem.problems` | `id` | - | Không | [Đích] Tham số điều hướng sang `problem_detail` và tham số của `RemoveClassAssignment`. |
 | 9 | `AssignedProblemRowDto` | `title` | String | `problem.problems` | `title` | Bảng "Bài tập" | Có | - |
 | 10 | `AssignedProblemRowDto` | `topicName` | String | `problem.topics` | `name` | Bảng "Chủ đề" | Có | [Chuyển đổi] Bài nhiều chủ đề thì rút gọn, quy tắc rút gọn xem Q5. |
-| 11 | `AssignedProblemRowDto` | `difficulty` | Enum | `problem.problems` | `difficulty` | Bảng "Độ khó" | Có | [Chuyển đổi] Máy chủ trả `EASY`/`MEDIUM`/`HARD`, giao diện đổi sang nhãn i18n và màu huy hiệu. |
+| 11 | `AssignedProblemRowDto` | `levelCode`, `levelDisplayName` | String, String | `problem.problem_levels` | `code`, `display_name` | Bảng "Độ khó" | Có | [Nguồn] Join qua `problems.level_id` (thay trường `difficulty` kiểu Enum cũ, theo `DEC-2026-1001-admin-configurable-settings` mục (7))<br>[Chuyển đổi] Máy chủ trả `display_name` đọc từ dữ liệu; giao diện chọn màu huy hiệu theo `levelCode` (mức khởi tạo màu cũ, mức khác trung tính), không còn đổi enum sang nhãn i18n. |
 | 12 | `AssignedProblemRowDto` | `assignedClasses` | List | `problem.class_assignments` | `class_id` | Bảng "Gán cho lớp", Popup "Lớp cần gỡ" | Có | [Chuyển đổi] Danh sách `AssignmentClassRefDto`; giao diện nối tên bằng dấu phẩy. |
 | 13 | `AssignedProblemRowDto` | `submissionCount` | Number | `problem.problem_stats` | `submission_count` | Bảng "Lượt nộp" | Có | [Nguồn] Read model toàn cục theo bài toán, xem Q3. |
 | 14 | `AssignedProblemRowDto` | `acRatePercent` | Number | `problem.problem_stats` | `ac_rate` | Bảng "AC" | Có | [Chuyển đổi] Chưa có lượt nộp nào thì trả rỗng, giao diện hiển thị `-`. |
@@ -417,16 +419,17 @@ Hai điều khiển dưới đây **không có trong prototype** và do BD này 
 | 17 | `AssignmentClassRefDto` | `className` | String | `identity.classes` | `name` | Bảng "Gán cho lớp", Popup "Lớp cần gỡ" | Có | [Nguồn] Lấy qua cổng ra sang `identity`, không join chéo schema. |
 | 18 | `RemoveAssignmentCommandDto` | `problemId`, `classId` | UUID | `problem.class_assignments` | `problem_id`, `class_id` | Popup "Xác nhận gỡ bài khỏi lớp" | Không | [Đích] Cặp khoá xác định dòng cần đặt `removed_at`; khớp partial unique index [Nguồn: 02-bd/database/problem-bank.md:127]. |
 
-### 7.2 Truy cập bảng dữ liệu (6)
+### 7.2 Truy cập bảng dữ liệu (7)
 
 | NO | Tên logic | Bảng | Repository | CRUD | Mục đích | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :--- | :--- |
 | 1 | Bài giao cho lớp | `problem.class_assignments` | `ClassAssignmentRepository` | R, U | Liệt kê bài đang giao cho các lớp phụ trách, đặt `removed_at` khi gỡ | `ListClassAssignments`: R<br>`GetInstructorAssignmentSummary`: R<br>`RemoveClassAssignment`: U (ẩn mềm, không xoá dòng) |
-| 2 | Bài toán | `problem.problems` | `ProblemRepository` | R | Lấy tên bài, độ khó, trạng thái xuất bản để dựng dòng | `ListClassAssignments`: R |
+| 2 | Bài toán | `problem.problems` | `ProblemRepository` | R | Lấy tên bài, `level_id` của độ khó, trạng thái xuất bản để dựng dòng | `ListClassAssignments`: R |
 | 3 | Chủ đề của bài | `problem.problem_topics` | `ProblemTopicRepository` | R | Nối bài toán với chủ đề cho cột "Chủ đề" | `ListClassAssignments`: R |
 | 4 | Danh mục chủ đề | `problem.topics` | `TopicRepository` | R | Lấy tên chủ đề hiển thị | `ListClassAssignments`: R |
 | 5 | Thống kê bài toán | `problem.problem_stats` | `ProblemStatsRepository` | R | Lấy lượt nộp và tỉ lệ AC cho cột số và thẻ "AC trung bình" | `ListClassAssignments`: R<br>`GetInstructorAssignmentSummary`: R |
 | 6 | Lớp học | `identity.classes` | Cổng ra `InstructorClassPort` | R | Lấy danh sách lớp phụ trách cho tab lọc và tên lớp cho cột "Gán cho lớp" | `ListInstructorClasses`: R. **Không** truy vấn trực tiếp schema `identity` — `class_assignments.class_id` cố ý không có FK vật lý xuyên schema [Nguồn: 02-bd/database/problem-bank.md:122] |
+| 7 | Danh mục độ khó | `problem.problem_levels` | `ProblemLevelRepository` | R | Lấy nhãn độ khó của bài qua join `level_id` | `ListClassAssignments`: R, qua join. Màn này không ghi; ADMIN quản lý độ khó ở `SHR0201`, INSTRUCTOR chỉ chọn [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`] |
 
 Màn này **không có thao tác xoá thật nào**. Gỡ bài khỏi lớp chỉ đặt `removed_at`, dòng vẫn còn để cho
 phép gán lại về sau [Nguồn: 02-bd/database/problem-bank.md:125,127], và **không** kéo theo xoá lịch sử

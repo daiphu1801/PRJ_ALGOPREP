@@ -26,12 +26,8 @@ export type VerdictDistribution = z.infer<typeof verdictDistributionSchema>;
 
 export const difficultyBreakdownSchema = z.object({
   legend: z.array(z.object({ label: z.string(), value: z.number(), colorVar: z.string() })),
-  groups: z.array(
-    z.object({
-      label: z.string(),
-      bars: z.array(z.object({ label: z.string(), value: z.number(), colorVar: z.string() })),
-    }),
-  ),
+  // Keyed by problem level key; the block lays them out in the admin-managed level order.
+  levels: z.array(z.object({ key: z.string(), total: z.number(), accepted: z.number() })),
 });
 export type DifficultyBreakdown = z.infer<typeof difficultyBreakdownSchema>;
 

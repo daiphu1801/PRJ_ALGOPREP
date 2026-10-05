@@ -42,6 +42,8 @@
   --color-admin-teal: #0f8a72;
   --color-admin-slate: rgba(12, 40, 36, 0.5);
   --color-admin-warn: #a9750f;
+  /* Text-grade variant of the warn accent: the vivid value is ~4.0:1 on white, short of AA. */
+  --color-admin-warn-text: #7d5517;
   --color-admin-negative: #c84046;
   /* Tokens the shared data/form primitives need (DataTable row hover, Toggle track, Badge success,
      Modal scrim, table column headers). Defined app-wide so those primitives render sanely outside
@@ -98,6 +100,7 @@
   --color-admin-teal: #14b8a6;
   --color-admin-slate: #7e8d8e;
   --color-admin-warn: #ffce78;
+  --color-admin-warn-text: #ffce78;
   --color-admin-negative: #ff8a8a;
   --color-text-subtle: #64748b;
   --color-row-hover: #1f2937;
@@ -286,7 +289,7 @@ button:not(:disabled):active,
   --color-row-hover: rgba(255, 255, 255, 0.72);
   --color-track: rgba(12, 90, 80, 0.1);
   --color-success: #17b57e;
-  --color-success-text: #12996b;
+  --color-success-text: #0d7350;
   --color-scrim: rgba(6, 32, 29, 0.45);
   /* Language chips, verbatim from 09-layoutBase/Admin - Ngôn ngữ và giới hạn.dc.html:396-400 (`chip`).
      The mockup keeps one background per language across both themes and swaps only the foreground. */
@@ -487,7 +490,7 @@ button:not(:disabled):active,
   --color-primary: #4a7ba6;
   --color-on-primary: #ffffff;
   --color-success: #6fae8c;
-  --color-success-text: #6fae8c;
+  --color-success-text: #346a4e;
   --color-danger: #c97a6e;
   --color-scrim: rgba(10, 25, 40, 0.45);
   /* dc.html:29 --blob1/2/3 — the three blurred backdrop circles (:56-58). */
@@ -500,6 +503,7 @@ button:not(:disabled):active,
   --color-admin-teal: #6fae8c;
   --color-admin-slate: rgba(20, 35, 50, 0.44);
   --color-admin-warn: #c99a4a;
+  --color-admin-warn-text: #7d5517;
   --color-admin-negative: #c97a6e;
   --color-accent-blue: #4a7ba6;
   --color-accent-blue-bg: rgba(127, 179, 219, 0.18);
@@ -547,6 +551,7 @@ button:not(:disabled):active,
   --color-admin-teal: #8fdcb4;
   --color-admin-slate: rgba(210, 225, 240, 0.45);
   --color-admin-warn: #e8c97e;
+  --color-admin-warn-text: #e8c97e;
   --color-admin-negative: #e89e92;
   --color-accent-blue: #9dcbef;
   --color-accent-blue-bg: rgba(127, 179, 219, 0.2);
@@ -582,4 +587,109 @@ button:not(:disabled):active,
 .instructor-shell [aria-pressed="true"] {
   background: var(--instructor-seg-bg);
   color: var(--instructor-seg-fg);
+}
+
+/* Dialog panel (shared Modal) - liquid-glass look: a very thin fill and a light blur so the page
+   behind stays readable as soft shapes, a bright specular rim on top, a faint refraction gradient.
+   Declared last, with the same two-class specificity as the shell overrides
+   (`.admin-shell .glass-card`, `.instructor-shell .glass-card`), so it wins in every scope. */
+.glass-card.glass-card--modal {
+  background:
+    linear-gradient(145deg, color-mix(in srgb, white 28%, transparent), transparent 45%),
+    color-mix(in srgb, var(--color-surface) 8%, transparent);
+  backdrop-filter: blur(14px) saturate(200%) brightness(1.06);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 85%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, white 40%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, white 20%, transparent),
+    0 24px 60px -12px rgba(6, 40, 36, 0.3);
+}
+
+.dark .glass-card.glass-card--modal {
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.1), transparent 45%),
+    color-mix(in srgb, var(--color-surface) 22%, transparent);
+  backdrop-filter: blur(14px) saturate(160%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 24px 60px -12px rgba(0, 0, 0, 0.6);
+}
+
+/* Fields inside the dialog become frosted too instead of solid white slabs. */
+.glass-card--modal :is(input, textarea, select) {
+  background: color-mix(in srgb, white 30%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+.dark .glass-card--modal :is(input, textarea, select) {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+/* Slim scrollbar for panels that sit on glass: a rounded translucent thumb, no track, no arrow buttons.
+   `scrollbar-width` / `scrollbar-color` are the standard route (Chrome 121+, Firefox); the -webkit rules
+   cover older Safari and are ignored where the standard properties apply. */
+.scrollbar-glass {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--color-text) 30%, transparent) transparent;
+}
+
+.scrollbar-glass::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollbar-glass::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-glass::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--color-text) 30%, transparent);
+  border-radius: 999px;
+}
+
+.scrollbar-glass::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--color-text) 50%, transparent);
+}
+
+/* Small pop-up over dense content (the filter menu). Same family as `.glass-card--modal` but a denser
+   fill: it sits directly on table text with no scrim behind it, so a thin fill lets the rows underneath
+   bleed through and collide with the options. Declared last for the same specificity reason as above. */
+.glass-card.glass-card--popover {
+  background: color-mix(in srgb, var(--color-surface) 82%, transparent);
+  backdrop-filter: blur(24px) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 70%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, white 30%, transparent),
+    0 18px 40px -12px rgba(6, 40, 36, 0.35);
+}
+
+.dark .glass-card.glass-card--popover {
+  background: color-mix(in srgb, var(--color-surface) 85%, transparent);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.07),
+    0 18px 40px -12px rgba(0, 0, 0, 0.6);
+}
+
+/* Selection pop-up (BulkActionBar) sliding in from the top edge. Animates `transform` and `opacity` only;
+   Tailwind's `-translate-x-1/2` uses the separate `translate` property, so the two compose. */
+@keyframes bulk-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.bulk-pop-in {
+  animation: bulk-pop-in 180ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bulk-pop-in {
+    animation: none;
+  }
 }

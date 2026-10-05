@@ -41,6 +41,7 @@ export const addInterviewTopic = (label: string) => store.add(label, { usesStarF
 export const renameInterviewTopic = (key: string, label: string) => store.update(key, { label });
 export const setInterviewTopicStar = (key: string, usesStarFramework: boolean) =>
   store.update(key, { usesStarFramework });
+export const moveInterviewTopic = store.move;
 export const removeInterviewTopic = store.remove;
 
 export const topicLabel = labelOf;

@@ -26,6 +26,8 @@ export function createSettingsStore<T extends object>(initial: T) {
         () => value,
         () => initial,
       ),
+    /** Current value outside React (a mock reading a setting another screen edits). */
+    get: (): T => value,
     set(patch: Partial<T>) {
       value = { ...value, ...patch };
       listeners.forEach((listener) => listener());

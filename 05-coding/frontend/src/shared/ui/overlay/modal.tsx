@@ -73,7 +73,7 @@ export function Modal({ open, onClose, title, children, footer, className }: Mod
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
-        className="absolute inset-0 bg-[var(--color-scrim)]"
+        className="absolute inset-0 bg-[color-mix(in_srgb,var(--color-scrim)_30%,transparent)]"
         aria-hidden="true"
         onClick={onClose}
       />
@@ -83,7 +83,7 @@ export function Modal({ open, onClose, title, children, footer, className }: Mod
         aria-modal="true"
         aria-label={title}
         className={cn(
-          "glass-card relative z-10 w-full max-w-md border border-[var(--color-border)] p-5",
+          "glass-card glass-card--modal relative z-10 w-full max-w-md border border-[var(--color-border)] p-5",
           className,
         )}
       >

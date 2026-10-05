@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { renderHook, act } from "@testing-library/react";
-import { createManagedListStore, labelOf } from "./managed-list-store";
+import { createManagedListStore, labelOf, slugify } from "./managed-list-store";
 
 type Row = { key: string; label: string; flag: boolean };
 const seed: Row[] = [
@@ -39,5 +39,33 @@ describe("createManagedListStore", () => {
   it("falls back to the key when the item is gone", () => {
     expect(labelOf(seed, "a")).toBe("Alpha");
     expect(labelOf(seed, "zzz")).toBe("zzz");
+  });
+
+  it("moves an item and ignores the ends", () => {
+    const store = createManagedListStore<Row>(seed, "row");
+    const { result } = renderHook(() => store.use());
+    act(() => store.move("a", -1));
+    expect(result.current.map((row) => row.key)).toEqual(["a", "b"]);
+    act(() => store.move("a", 1));
+    expect(result.current.map((row) => row.key)).toEqual(["b", "a"]);
+  });
+
+  it("refuses remove at minItems and reports it", () => {
+    const store = createManagedListStore<Row>(seed, "row", { minItems: 2 });
+    expect(store.remove("a")).toBe(false);
+    const free = createManagedListStore<Row>(seed, "row");
+    expect(free.remove("a")).toBe(true);
+  });
+
+  it("slugKeys makes upper-case slug keys, numbering a clash", () => {
+    const store = createManagedListStore<Row>(seed, "row", { slugKeys: true });
+    const { result } = renderHook(() => store.use());
+    act(() => void store.add("Rất khó", { flag: false }));
+    act(() => void store.add("rat-kho", { flag: false }));
+    expect(result.current.map((row) => row.key).slice(2)).toEqual(["RAT_KHO", "RAT_KHO_2"]);
+  });
+
+  it("slugify strips Vietnamese diacritics", () => {
+    expect(slugify("Đánh giá  nâng cao!")).toBe("DANH_GIA_NANG_CAO");
   });
 });

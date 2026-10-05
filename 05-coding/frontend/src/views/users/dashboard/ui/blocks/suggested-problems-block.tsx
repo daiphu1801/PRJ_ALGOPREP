@@ -3,11 +3,17 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { fetchProblemListPage, type Difficulty, type ProblemListItem } from "@/entities/problem";
+import {
+  fetchProblemListPage,
+  problemLevelLabel,
+  problemLevelTone,
+  useProblemLevels,
+  type ProblemListItem,
+} from "@/entities/problem";
 import { useTopicProgress } from "@/entities/progress";
 import { deriveSkillRadar } from "../../model/derive-skill-radar";
 import { useT } from "@/shared/i18n";
-import { Badge, DataTable, SegmentedTabs, type BadgeVariant, type DataTableColumn } from "@/shared/ui";
+import { Badge, DataTable, SegmentedTabs, type DataTableColumn } from "@/shared/ui";
 
 /**
  * 09-layoutBase/Dashboard AlgoPrep.dc.html:217-266 — "Bài toán gợi ý": difficulty tabs, topic
@@ -23,18 +29,13 @@ import { Badge, DataTable, SegmentedTabs, type BadgeVariant, type DataTableColum
  * the suggestion to the same weakness the greeting and radar call out, instead of being a third
  * independent opinion about what the learner is bad at.
  */
-const DIFFICULTY_VARIANT: Record<Difficulty, BadgeVariant> = {
-  easy: "success",
-  medium: "warn",
-  hard: "negative",
-};
-
 const SUGGESTION_COUNT = 7;
 
-type DifficultyFilter = Difficulty | "all";
+type DifficultyFilter = string;
 
 export function SuggestedProblemsBlock() {
   const t = useT("dashboard");
+  const levels = useProblemLevels();
   const [difficulty, setDifficulty] = useState<DifficultyFilter>("all");
   const [topicId, setTopicId] = useState<string>("all");
   const topicsQuery = useTopicProgress("all");
@@ -109,7 +110,9 @@ export function SuggestedProblemsBlock() {
       header: t("suggested.colDifficulty"),
       width: "104px",
       render: (problem) => (
-        <Badge variant={DIFFICULTY_VARIANT[problem.difficulty]}>{t(`difficulty.${problem.difficulty}`)}</Badge>
+        <Badge variant={problemLevelTone(levels, problem.difficulty)}>
+          {problemLevelLabel(levels, problem.difficulty)}
+        </Badge>
       ),
     },
     {
@@ -141,9 +144,7 @@ export function SuggestedProblemsBlock() {
           onValueChange={setDifficulty}
           options={[
             { value: "all", label: t("filterAll") },
-            { value: "easy", label: t("difficulty.easy") },
-            { value: "medium", label: t("difficulty.medium") },
-            { value: "hard", label: t("difficulty.hard") },
+                        ...levels.map((level) => ({ value: level.key, label: level.label })),
           ]}
         />
         <div className="flex flex-wrap gap-1.5" role="group" aria-label={t("suggested.topicLabel")}>

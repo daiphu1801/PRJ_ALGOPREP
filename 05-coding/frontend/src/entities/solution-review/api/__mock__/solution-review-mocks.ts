@@ -20,7 +20,7 @@ export const AI_PROVIDER_TIMEOUT_CODE = "AI_PROVIDER_TIMEOUT";
 const SOLUTION_REVIEW_MOCK: SolutionReviewDetail = {
   submissionId: "SUB-2841",
   problemTitle: "1. Two Sum",
-  difficulty: "easy",
+  difficulty: "EASY",
   approachTitle: "hash map",
   isApproachOptimal: true,
   readabilityScore: 4,

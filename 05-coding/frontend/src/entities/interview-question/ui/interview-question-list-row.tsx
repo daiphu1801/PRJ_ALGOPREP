@@ -9,13 +9,7 @@
 import { cn } from "@/shared/lib";
 import { Badge, type BadgeVariant } from "@/shared/ui";
 import { BookmarkToggle } from "./bookmark-toggle";
-import type { InterviewQuestion, QuestionLevel, RecallLevel } from "../model/types";
-
-const LEVEL_VARIANT: Record<QuestionLevel, BadgeVariant> = {
-  easy: "success",
-  medium: "blue",
-  hard: "purple",
-};
+import type { InterviewQuestion, RecallLevel } from "../model/types";
 
 const RECALL_VARIANT: Record<RecallLevel, BadgeVariant> = {
   known: "success",
@@ -27,6 +21,7 @@ export function InterviewQuestionListRow({
   question,
   topicLabel,
   levelLabel,
+  levelTone,
   recallLabel,
   recall,
   selected,
@@ -38,6 +33,7 @@ export function InterviewQuestionListRow({
   question: InterviewQuestion;
   topicLabel: string;
   levelLabel: string;
+  levelTone: BadgeVariant;
   recallLabel: string;
   recall: RecallLevel | null;
   selected: boolean;
@@ -58,7 +54,7 @@ export function InterviewQuestionListRow({
           <span className="text-[10.5px] font-semibold tracking-[0.06em] text-[var(--color-text-subtle)] uppercase">
             {topicLabel}
           </span>
-          <Badge variant={LEVEL_VARIANT[question.level]}>{levelLabel}</Badge>
+          <Badge variant={levelTone}>{levelLabel}</Badge>
           <span className="ml-auto">
             <Badge variant={recall ? RECALL_VARIANT[recall] : "neutral"}>{recallLabel}</Badge>
           </span>

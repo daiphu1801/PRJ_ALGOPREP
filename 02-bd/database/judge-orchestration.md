@@ -137,6 +137,18 @@ Một dòng duy nhất (ràng buộc `CHECK (id = 1)`), chỉ ADMIN (A3) sửa q
 | `updated_by` | UUID | Tham chiếu `identity.users.id`, không có FK vật lý chéo schema |
 | `updated_at` | TIMESTAMPTZ | |
 
+### 1.8. `generator_sandbox_settings` (F2-14, `DEC-2026-1003-ai-testcase-generation-quota`)
+
+Một dòng duy nhất (`CHECK (id = 1)`), cùng khuôn `cluster_settings`, chỉ ADMIN (A3) sửa qua khối "Script sinh dữ liệu testcase" của `ADM0501` (Khu vực F). Giới hạn khi hệ thống chạy **script Python do AI viết** để sinh input testcase; riêng, không dùng chung với giới hạn bài nộp (RD `problem-bank.md:88-91`). `problem-bank` đọc hai giá trị này khi chạy `GenerateTestcasesWithAi`, qua cổng đọc của module này (không đọc thẳng bảng).
+
+| Cột | Kiểu | Ghi chú |
+| :--- | :--- | :--- |
+| `id` | SMALLINT PK | Luôn `1` |
+| `max_runtime_seconds` | INT default `30`, CHECK từ 1 đến 300 | Script chạy quá thì loại cả script và báo lý do. Mặc định và khoảng là suy luận của BD `[SoT: Suy luận]`, ADMIN tự đổi |
+| `max_output_mb` | INT default `100`, CHECK từ 1 đến 1024 | Tổng output của script vượt thì loại cả script. Mặc định và khoảng là suy luận của BD `[SoT: Suy luận]` |
+| `updated_by` | UUID | Tham chiếu `identity.users.id`, không có FK vật lý chéo schema |
+| `updated_at` | TIMESTAMPTZ | |
+
 ## 2. Chỉ mục (index) đáng chú ý
 
 - `submissions(status, updated_at)` — job sweep quét theo điều kiện mục 1.1.

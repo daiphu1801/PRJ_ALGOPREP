@@ -3,8 +3,9 @@
 > Trạng thái: **BD lần đầu**, 2026-09-12. Module cuối cùng của trục Bounded Context theo
 > `06-plan/260912-1055-bd-rollout-order.md`. **Độc lập hoàn toàn với luồng nộp bài** — không đọc
 > `02-bd/architecture/harness.md` hay `02-bd/architecture/judge-orchestration.md`, không cần chờ hai
-> module đó xong [SoT: `.nexa/control/dependency-map.md` dòng 37, bảng thứ tự triển khai — hàng
-> `interview-bank` "có thể chạy song song bất kỳ lúc nào từ bước 2 trở đi"].
+> module đó xong [SoT: `.nexa/control/dependency-map.md` dòng 103, bảng thứ tự triển khai — `interview-bank`
+> nằm ở bước 4 cùng `ai-review` F5.2, "First to be cut if time runs short"; việc module không phụ thuộc luồng nộp
+> bài suy ra từ bảng hạ tầng ở dòng 52 — `[SoT: Suy luận]`, file đó không có câu "chạy song song từ bước 2"].
 
 ## 1. Vị trí trong kiến trúc
 
@@ -51,6 +52,7 @@ lời, tiêu chí, rubric) — không có file lớn hay nhị phân trong phạ
 | Theo dõi tiến độ | F6-09, F6-10 | Lịch sử luyện tập, danh sách "cần ôn lại", tỉ lệ hoàn thành theo chủ đề |
 | Tự chấm mức độ thuộc bài (spaced repetition) | F6-12 | Ba mức Biết rõ/Mơ hồ/Quên, tự xếp lịch ôn lại — mục 6 |
 | Quản trị danh mục chủ đề | F6-01 (mở rộng) | `DEC-2026-1001-admin-configurable-settings` — **chỉ ADMIN (A3)** thêm, đổi tên, sắp xếp lại, xoá chủ đề; A2 chỉ chọn. Xem mục 2.1 |
+| Quản trị danh mục độ khó | F6-01 (mở rộng) | `DEC-2026-1001-admin-configurable-settings` mục 6 (2026-10-03) — **chỉ ADMIN (A3)** thêm, đổi tên, sắp xếp lại, xoá độ khó; A2 chỉ chọn; luôn còn ít nhất một mức. Xem mục 2.1a |
 | Quản trị nội dung ngân hàng câu hỏi | F6-13 | `DEC-2026-0830-interview-bank-crud` — actor A2/A3, **cùng phạm vi dữ liệu, sửa được toàn bộ ngân hàng câu hỏi hệ thống** (đã đóng 2026-09-13, xem mục 2.2), tạo/sửa/nhân bản/xoá mềm, gác bởi Function `INTERVIEW_BANK_MANAGEMENT` (F1-12) |
 | **Đã cắt khỏi phạm vi — KHÔNG thiết kế lại** | F6-11 | "Bộ câu hỏi riêng theo lớp" — `DEC-2026-0828-remove-per-class-interview-set`. `question_set` **đã bỏ hoàn toàn khỏi scope** (đóng 2026-09-13, xem mục 2.2) — không chỉ phần "gán theo lớp" |
 
@@ -85,12 +87,34 @@ Khung STAR (mục 4.1) **không còn gắn vào mã `BEHAVIORAL`**: chủ đề 
 này nhưng xoá/đổi tên được như mọi chủ đề. Đã chốt 2026-10-01 (owner uỷ quyền), xem
 `DEC-2026-1001-admin-configurable-settings`.
 
+### 2.1a. Danh mục độ khó (F6-01) — dữ liệu do ADMIN quản lý (chốt 2026-10-03)
+
+Ba mức `Dễ`, `Trung bình`, `Khó` từng là ENUM `difficulty`; từ 2026-10-03 chúng **chỉ là dữ liệu khởi tạo (seed)** của bảng
+`question_levels` (`database/interview-bank.md` mục 1.1a). A3 (`ADMIN`) thêm, đổi tên, sắp xếp lại, xoá; A2 chỉ chọn khi
+soạn câu hỏi. Không giới hạn số mức. Hai bất biến: xoá bị từ chối khi còn câu hỏi tham chiếu (API trả số đếm), và
+**luôn còn ít nhất một mức** vì form soạn bắt buộc chọn độ khó. Căn cứ: `DEC-2026-1001-admin-configurable-settings` mục 6.
+
+Cùng nguyên tắc "một nguồn sự thật" như chủ đề: `question_levels` phục vụ cả ba màn học viên và hai màn quản trị
+(`interview_question_management`, `interview_question_authoring`), cùng màn chi tiết `interview_question_info`.
+
+- **Endpoint (tên nghiệp vụ, hợp đồng ở `03-dd/api/interview-bank.md`)**: `ListQuestionLevels` (mọi người dùng đã xác
+  thực), `CreateQuestionLevel`, `UpdateQuestionLevel` (đổi tên), `ReorderQuestionLevels`, `DeleteQuestionLevel` (bốn
+  endpoint này chỉ ADMIN).
+- **Quyền**: dùng lại `INTERVIEW_BANK_MANAGEMENT` cộng kiểm vai trò `ADMIN`, không tạo Function mới; chi tiết ở
+  `02-bd/security/interview-bank.md` mục 2, Bảng 2.2.
+- **Port/domain**: `QuestionLevel` là aggregate nhỏ giống `QuestionTopic`; quy tắc "không xoá khi còn tham chiếu" và
+  "luôn còn ít nhất một mức" nằm ở use case `DeleteQuestionLevelCommand`, không nằm ở controller `[SoT: Suy luận]`.
+  Mọi thao tác ghi `system_audit_logs` (F1-14).
+- **Màu badge** không cấu hình: do giao diện suy ra (ba mức seed giữ màu cũ, mức mới màu trung tính). `[SoT: Suy luận]`
+  — cần xác nhận lại nếu chủ dự án muốn ADMIN chọn màu (khi đó thêm cột `color_token`).
+- Cấp độ người phỏng vấn của F5 (`intern`..`senior`) là khái niệm khác, **không** thuộc danh mục này.
+
 ### 2.2. `question_set` — đã đóng 2026-09-13: bỏ hẳn khỏi phạm vi
 
 `domain-registry.json` liệt kê `question_set` trong scope của module (dòng 95) — ghi trước khi
 `DEC-2026-0828-remove-per-class-interview-set` chốt, và BD ban đầu (2026-09-12) từng cân nhắc giữ lại ở
 mức tối giản ("bộ câu hỏi do người soạn tự nhóm, không gán lớp"). **Đã bác bỏ phương án đó** bằng bằng
-chứng RD trục màn hình: `01-rd/screens/shared/SHR0301_interview_question_management.md` dòng 97-103 xác nhận rõ
+chứng RD trục màn hình: `01-rd/screens/shared/SHR0301_interview_question_management.md` dòng 126-131 xác nhận rõ
 màn quản trị nội dung — màn duy nhất có thể cần khái niệm nhóm câu hỏi — **không có bất kỳ điều khiển nào
 liên quan tới lớp học hoặc "bộ câu hỏi" trong toàn bộ prototype**, và ghi thẳng: "không cần khái niệm 'bộ
 câu hỏi theo lớp' nữa" sau khi F6-11 bị loại — không chỉ phần "theo lớp", mà toàn bộ khái niệm nhóm câu
@@ -136,9 +160,8 @@ ClassScopeQueryPort.getManagedClassIds(userId) -> List<ClassId>
 ```
 
 **Cách dùng đã chốt** (đóng cả hai câu hỏi mở cũ — phạm vi sửa của A2 và vai trò thật của port này):
-`01-rd/screens/shared/SHR0301_interview_question_management.md` dòng 110-112 (Given-When-Then) xác nhận rõ "Cho
-tôi có quyền `INTERVIEW_BANK_MANAGEMENT`, Khi tôi mở màn quản lý ngân hàng câu hỏi, Thì tôi thấy và sửa
-được **toàn bộ** kho câu hỏi hệ thống — không chia theo lớp (A2 và A3 cùng phạm vi dữ liệu)". Vậy:
+`01-rd/screens/shared/SHR0301_interview_question_management.md` dòng 18-21 xác nhận rõ "cả A2 và A3 đều thấy và
+sửa **toàn bộ** kho câu hỏi hệ thống (không chia theo lớp phụ trách)" — A2 và A3 cùng phạm vi dữ liệu. Vậy:
 
 - A2 sửa được **toàn bộ ngân hàng câu hỏi dùng chung**, không giới hạn theo `created_by` — cột đó (mục
   database) chỉ ghi ai tạo để hiển thị/audit, **không** dùng làm điều kiện lọc quyền sửa.
@@ -167,7 +190,7 @@ Học viên mở một câu hỏi (interview_question_detail)
 ```
 
 Câu hỏi **thiếu rubric** (`answer_rubrics` rỗng cho câu hỏi đó) vẫn hiện đầy đủ ở Chế độ học
-[SoT: `01-rd/req/interview-bank.md:56`, `DEC-2026-0830-interview-bank-crud` mục 3] — không có ràng buộc
+[SoT: `01-rd/req/interview-bank.md:62-63`, `DEC-2026-0830-interview-bank-crud` mục 3] — không có ràng buộc
 nào ở luồng này liên quan tới rubric.
 
 ### 4.2. Chế độ luyện (`PRACTICE`) — luồng duy nhất gọi AI
@@ -218,8 +241,8 @@ theo — cùng cơ chế phòng thủ hai lớp đã chốt ở `ai-review` mụ
 ## 6. Spaced repetition (F6-12) — tự chấm mức độ thuộc bài
 
 Ba mức tự chấm: `KNOWN` (Biết rõ) / `VAGUE` (Mơ hồ) / `FORGOTTEN` (Quên)
-[SoT: `01-rd/req/interview-bank.md:32-37`]. Thuật toán xếp lịch — kiểu SM-2 đơn giản hoá, `[SoT: Suy
-luận]` (RD tự nhận "chốt công thức chính xác khi viết DD cho F6", dòng 36-37), BD đề xuất khởi điểm:
+[SoT: `01-rd/req/interview-bank.md:34-37`]. Thuật toán xếp lịch — kiểu SM-2 đơn giản hoá, `[SoT: Suy
+luận]` (RD tự nhận "chốt công thức chính xác khi viết DD cho F6", dòng 39-40), BD đề xuất khởi điểm:
 
 ```
 interval_days_mới =
@@ -274,6 +297,7 @@ tắc `bd-generation` "không phải module nào cũng cần cả 4 file, không
 - **`feedback_prompt_templates` có cần bảng riêng có phiên bản** như `prompt_templates` của `ai-review`,
   hay một hằng số cấu hình đơn giản hơn (module F6 nhỏ hơn nhiều so với F5, có thể không cần versioning
   đầy đủ) — chốt ở DD.
+- **Quản lý độ khó (chốt 2026-10-03, mục 2.1a)**: cách sinh slug `code` cho mức mới (còn mở, chốt ở DD, cùng câu hỏi với chủ đề); màu badge không cấu hình (đã chốt).
 - **Quản lý chủ đề (chốt 2026-10-01, mục 2.1)**: (a) cách sinh slug `code` cho chủ đề mới (còn mở, chốt ở DD); (b) ~~khung STAR gắn vào mã `BEHAVIORAL`~~ — đã chốt 2026-10-01 (owner uỷ quyền), xem `DEC-2026-1001-admin-configurable-settings`: STAR là cờ `uses_star_framework` trên chủ đề; (c) ~~`topics` của `problem-bank` (F2-02) chưa đổi~~ — đã chốt cùng cách xử lý, xem `02-bd/database/problem-bank.md` mục 1.2.
 - **Thông báo nhắc ôn tập** (mục 6, cuối) — có tái dùng cơ chế email nhắc của F1-21 hay không, ngoài
   phạm vi chắc chắn của module này.
@@ -284,10 +308,10 @@ tắc `bd-generation` "không phải module nào cũng cần cả 4 file, không
 - `.nexa/domain-registry.json` — domain `interview-bank`, scope: `interview_question`, `question_topic`,
   `answer_rubric`, `user_answer`, `bookmark`, `practice_history`, `question_set` (scope liệt kê
   `question_set` đã lỗi thời — BD đóng 2026-09-13, không dùng thực thể này, xem mục 2.2).
-- `01-rd/screens/shared/SHR0301_interview_question_management.md` — dòng 97-103 (bỏ `question_set`), dòng 110-112
+- `01-rd/screens/shared/SHR0301_interview_question_management.md` — dòng 126-131 (bỏ `question_set`), dòng 18-21
   (A2 sửa toàn bộ ngân hàng).
-- `.nexa/control/dependency-map.md` dòng 52 (hạ tầng), dòng 37/103 (độc lập luồng nộp bài, hạng mục dễ bị
-  cắt thứ hai nếu thiếu thời gian).
+- `.nexa/control/dependency-map.md` dòng 52 (hạ tầng), dòng 103 (`interview-bank` cùng F5.2 là hạng mục đầu tiên bị
+  cắt nếu thiếu thời gian; việc độc lập luồng nộp bài suy ra từ dòng 52, `[SoT: Suy luận]`).
 - `.nexa/control/decision-registry.md` — `DEC-2026-0828-remove-per-class-interview-set`,
   `DEC-2026-0830-interview-bank-crud`, `DEC-2026-0831-outside-screens-closures`.
 - `02-bd/architecture/ai-review.md` mục 5 — mẫu ba lớp instruction tham chiếu lại ở mục 5 file này.

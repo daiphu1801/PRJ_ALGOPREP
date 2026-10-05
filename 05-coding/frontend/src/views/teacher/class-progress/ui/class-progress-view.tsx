@@ -30,6 +30,7 @@ import {
   type StudentStatus,
 } from "@/entities/class";
 import { useT } from "@/shared/i18n";
+import { usePersistedPageSize } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
 import {
   Badge,
@@ -53,7 +54,7 @@ const STATUS_VARIANT: Record<StudentStatus, BadgeVariant> = {
   on_track: "success",
 };
 
-const PAGE_SIZE = 10;
+const PAGE_SIZES = [10, 20, 50] as const;
 
 // Bare-svg sparkline for the "Xu hướng" column (dc.html:182) — point math mirrors
 // shared/ui/charts/stat-card-with-sparkline.tsx, kept local since this is the only table-cell use.
@@ -92,6 +93,7 @@ export function ClassProgressView() {
   const removeStudent = useRemoveStudent();
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = usePersistedPageSize("algoprep-class-progress-page-size", PAGE_SIZES, 10);
 
   const filterClassId = classTab === "all" ? undefined : classTab;
   const studentsQuery = useClassStudents(filterClassId);
@@ -101,7 +103,7 @@ export function ClassProgressView() {
     return (studentsQuery.data ?? []).filter((s) => !needle || s.name.toLowerCase().includes(needle));
   }, [studentsQuery.data, query]);
 
-  const pageRows = filteredStudents.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const pageRows = filteredStudents.slice((page - 1) * pageSize, page * pageSize);
 
 
   const columns: DataTableColumn<NonNullable<typeof studentsQuery.data>[number]>[] = [
@@ -192,10 +194,16 @@ export function ClassProgressView() {
 
         <Pagination
           page={page}
-          pageSize={PAGE_SIZE}
+          pageSize={pageSize}
           total={filteredStudents.length}
           onPageChange={setPage}
-          summary={t("pageSummary", { page, total: Math.max(1, Math.ceil(filteredStudents.length / PAGE_SIZE)) })}
+          pageSizeOptions={PAGE_SIZES}
+          pageSizeLabel={t("pageSizeLabel")}
+          onPageSizeChange={(size) => {
+            setPageSize(size);
+            setPage(1);
+          }}
+          summary={t("pageSummary", { page, total: Math.max(1, Math.ceil(filteredStudents.length / pageSize)) })}
           previousLabel={t("previous")}
           nextLabel={t("next")}
         />

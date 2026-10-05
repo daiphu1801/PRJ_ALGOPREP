@@ -151,11 +151,6 @@
       "attempted": "Attempted",
       "todo": "Todo"
     },
-    "difficulty": {
-      "easy": "Easy",
-      "medium": "Medium",
-      "hard": "Hard"
-    },
     "submissionModel": {
       "both": "Both",
       "stdioOnly": "Standard I/O only"
@@ -173,6 +168,7 @@
     },
     "pager": {
       "summary": "Showing {from}-{to} of {total} problems",
+      "pageSizeLabel": "Rows per page",
       "previous": "Previous page",
       "next": "Next page",
       "goToPage": "Go to page {page}"
@@ -215,11 +211,6 @@
       "attempted": "Attempted",
       "todo": "Todo"
     },
-    "difficulty": {
-      "easy": "Easy",
-      "medium": "Medium",
-      "hard": "Hard"
-    },
     "table": {
       "caption": "Saved problems table",
       "colProblem": "Problem",
@@ -249,11 +240,6 @@
       "linkList": "Problem list",
       "btnRun": "Run Code",
       "btnSubmit": "Submit"
-    },
-    "difficulty": {
-      "easy": "Easy",
-      "medium": "Medium",
-      "hard": "Hard"
     },
     "submissionModel": {
       "both": "Both models available",
@@ -445,6 +431,23 @@
         "meta": "Not counted toward the run limit"
       }
     },
+    "generator": {
+      "title": "Testcase data generator script",
+      "subtitle": "Limits applied when the system runs the script the AI wrote to generate inputs (F2-14). Separate from submissions",
+      "languageLabel": "Script language",
+      "languageMeta": "Fixed, not editable",
+      "runtime": {
+        "label": "Maximum run time",
+        "meta": "A script running longer than this is dropped entirely"
+      },
+      "output": {
+        "label": "Maximum output size",
+        "meta": "Total output above this drops the whole script"
+      }
+    },
+    "saveFailed": "Could not save the language and limits configuration. Try again later.",
+    "loadFailed": "Could not load the language and limits configuration. Try again later.",
+    "errorInvalidGenerator": "Run time must be 1 to 300 seconds and output size 1 to 1024 MB",
     "sandboxTitle": "Sandbox",
     "sandbox": {
       "networkAccess": {
@@ -653,11 +656,6 @@
     "columnProblem": "Problem",
     "columnAveragePerCall": "Avg / call",
     "callCount": "{count} AI calls",
-    "difficulty": {
-      "easy": "Easy",
-      "medium": "Medium",
-      "hard": "Hard"
-    },
     "emptyUsers": "No learner used AI in this range",
     "emptyProblems": "No problem consumed tokens in this range",
     "exportDone": "AI usage report exported"
@@ -789,6 +787,15 @@
     "deleteRoleDone": "Role {role} deleted"
   },
   "adminAiConfig": {
+    "testcaseGen": {
+      "title": "Automatic testcase generation",
+      "subtitle": "Each problem may be generated at most this many times",
+      "maxLabel": "Maximum generations per problem",
+      "maxMeta": "Only successful runs count; approving or rejecting drafts does not refund a run",
+      "value": "{count} runs",
+      "decrement": "Decrease the maximum generations",
+      "increment": "Increase the maximum generations"
+    },
     "budget": {
       "title": "Budget and pricing",
       "subtitle": "Set by the administrator, no limit",
@@ -912,6 +919,7 @@
     "publishDone": "AI configuration saved and published"
   },
   "problemManagement": {
+    "loadFailed": "Could not load the problem list. Try again later.",
     "title": "Problem management",
     "subtitle": "{total} problems · {published} visible in the problem bank",
     "newProblem": "New problem",
@@ -965,15 +973,43 @@
       "error": {
         "empty": "Topic name cannot be empty",
         "duplicate": "A topic with this name already exists"
+      },
+      "moveUp": "Move up",
+      "moveDown": "Move down"
+    },
+    "manageLevels": "Manage difficulty",
+    "levelManager": {
+      "title": "Manage problem difficulty",
+      "hint": "Difficulty levels are defined by admins with no limit on how many, and only classify problems. A level can only be deleted once no problem uses it; at least one level must remain.",
+      "nameLabel": "Level name",
+      "newLabel": "New level",
+      "newPlaceholder": "e.g. Very hard",
+      "add": "Add",
+      "save": "Save name",
+      "close": "Close",
+      "usage": "{count} problems",
+      "deleteBlocked": "{count} problems still use it, cannot delete",
+      "deleteLast": "At least one level must remain",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "done": {
+        "add": "Level added",
+        "rename": "Level renamed",
+        "remove": "Level deleted"
+      },
+      "error": {
+        "empty": "Level name cannot be empty",
+        "duplicate": "A level with this name already exists"
       }
+    },
+    "bulkLevel": {
+      "title": "Change difficulty of {count} problems",
+      "label": "New difficulty",
+      "cancel": "Cancel",
+      "apply": "Apply"
     },
     "pageSizeLabel": "Rows per page",
     "filterAll": "All",
-    "difficulty": {
-      "easy": "Easy",
-      "medium": "Medium",
-      "hard": "Hard"
-    },
     "status": {
       "published": "Published",
       "draft": "Draft"
@@ -1011,17 +1047,18 @@
     "next": "Next",
     "goToPage": "Page {page}",
     "confirmDeleteTitle": "Delete {title}?",
+    "confirmBulkDeleteTitle": "Delete {count} selected problems?",
+    "confirmBulkDeleteHidden": "Warning: {count} of these problems are hidden by the current filter.",
     "confirmDeleteBody": "The problem is removed from the list. What happens to its existing submissions is not settled — see the open question in the report.",
     "toast": {
+      "notWired": "{action}: not wired to an API in this prototype, nothing changed",
       "deleted": "Problem {title} deleted",
       "searchResult": "Found {count} problems",
       "searchEmpty": "No problems found",
       "bulkNeedsChoice": "Pick a value to apply first (the prototype has no picker yet)",
       "bulk": {
-        "publish": "Published {count} problems",
-        "duplicate": "Duplicated {count} problems",
-        "exportCsv": "Exported {count} problems to CSV",
-        "delete": "Deleted {count} problems"
+        "delete": "Deleted {count} problems",
+        "changeDifficulty": "Changed the difficulty of {count} problems"
       }
     }
   },
@@ -1051,7 +1088,34 @@
         "duplicate": "A topic with this name already exists"
       },
       "starEnabled": "STAR framework enabled for {name}",
-      "starDisabled": "STAR framework disabled for {name}"
+      "starDisabled": "STAR framework disabled for {name}",
+      "moveUp": "Move up",
+      "moveDown": "Move down"
+    },
+    "manageLevels": "Manage difficulty",
+    "levelManager": {
+      "title": "Manage question difficulty",
+      "hint": "Difficulty levels are defined by admins, with no limit on how many. A level can only be deleted once no question uses it.",
+      "nameLabel": "Level name",
+      "newLabel": "New level",
+      "newPlaceholder": "e.g. Very hard",
+      "add": "Add",
+      "save": "Save name",
+      "close": "Close",
+      "usage": "{count} questions",
+      "deleteBlocked": "{count} questions still use it, cannot delete",
+      "deleteLast": "At least one level must remain",
+      "done": {
+        "add": "Level added",
+        "rename": "Level renamed",
+        "remove": "Level deleted"
+      },
+      "error": {
+        "empty": "Level name cannot be empty",
+        "duplicate": "A level with this name already exists"
+      },
+      "moveUp": "Move up",
+      "moveDown": "Move down"
     },
     "importCsv": "Import CSV",
     "newQuestion": "New question",
@@ -1060,11 +1124,7 @@
     "topicFilterLabel": "Filter by topic",
     "levelFilterLabel": "Filter by level",
     "filterAll": "All",
-    "level": {
-      "easy": "Easy",
-      "medium": "Medium",
-      "hard": "Hard"
-    },
+    "pageSizeLabel": "Rows per page",
     "columnCode": "Code",
     "columnQuestion": "Question",
     "columnTopic": "Topic",
@@ -1090,12 +1150,21 @@
     "previous": "Previous",
     "next": "Next",
     "goToPage": "Page {page}",
+    "selectAll": "Select all questions shown",
+    "selectRow": "Select question {code}",
+    "selectionLabel": "{count} questions selected",
+    "bulk": {
+      "duplicate": "Duplicate",
+      "delete": "Delete"
+    },
+    "confirmBulkDeleteTitle": "Delete {count} selected questions?",
+    "confirmBulkDeleteHidden": "Warning: {count} of these questions are hidden by the current filter.",
     "confirmDeleteTitle": "Delete question {code}?",
     "confirmDeleteBody": "The question leaves the bank. Interview sessions that already used it keep their history.",
     "toast": {
+      "bulkDeleted": "{count} questions deleted",
+      "notWired": "{action}: not wired to an API in this prototype, nothing changed",
       "deleted": "Question {code} deleted",
-      "duplicated": "Question {code} duplicated",
-      "imported": "Imported CSV from {name}",
       "searchResult": "Found {count} questions",
       "searchEmpty": "No questions found"
     }
@@ -1120,11 +1189,6 @@
     "questionPlaceholder": "e.g. How does a hash table handle collisions?",
     "topicLabel": "Topic",
     "levelLabel": "Level",
-    "level": {
-      "easy": "Easy",
-      "medium": "Medium",
-      "hard": "Hard"
-    },
     "group2Title": "Follow-up probes",
     "group2Subtitle": "No limit on how many, and no per-probe difficulty",
     "followUpLabel": "Follow-up {index}",
@@ -1164,6 +1228,7 @@
     }
   },
   "problemAuthoring": {
+    "notFound": "Problem not found.",
     "subtitle": "Topic {topic} · publish once the checklist passes",
     "back": "Back",
     "previewAsLearner": "Preview as learner",
@@ -1192,7 +1257,8 @@
       "content": "Statement",
       "examples": "Examples ({count})",
       "testcases": "Testcases ({count})",
-      "ai": "AI guidance"
+      "ai": "AI guidance",
+      "spec": "Spec"
     },
     "statementTitle": "Statement",
     "statementSubtitle": "Written in Markdown with LaTeX support",
@@ -1270,11 +1336,6 @@
     "topicLabel": "Topic",
     "difficultyLabel": "Difficulty",
     "statusLabel": "Status",
-    "difficulty": {
-      "easy": "Easy",
-      "medium": "Medium",
-      "hard": "Hard"
-    },
     "status": {
       "draft": "Draft",
       "published": "Published"
@@ -1288,7 +1349,8 @@
       "minTestcases": "At least 8 testcases",
       "minPublic": "At least 2 public testcases",
       "solutionPasses": "Reference solution passes every testcase",
-      "minExamples": "At least 2 worked examples"
+      "minExamples": "At least 2 worked examples",
+      "specDeclared": "Problem spec declared (stdin/stdout formats, matching strategy, function signatures)"
     },
     "generateTitle": "Generate testcases with AI",
     "generateSubtitle": "AI writes a generator script; the system runs it, then takes outputs from the reference solution. AI never sees the reference solution.",
@@ -1337,9 +1399,79 @@
     "runBlocked": {
       "noSolution": "Enter the reference solution before running it.",
       "noTestcase": "At least one approved testcase is needed to run the reference solution."
+    },
+    "spec": {
+      "wrapperUnsupportedTitle": "Standard I/O only",
+      "wrapperUnsupportedBody": "A type falls outside the harness type schema, so this problem has no function-wrapper model; learners can only submit through Standard I/O (F3-13). Function signatures are no longer required to be complete.",
+      "language": {
+        "java": "Java",
+        "cpp": "C++",
+        "python": "Python"
+      },
+      "languageShort": {
+        "java": "JV",
+        "cpp": "C+",
+        "python": "PY"
+      },
+      "functionName": "Function name (shared)",
+      "returnType": "Return type",
+      "parameters": "Parameters (order matters)",
+      "parameterName": "Parameter {index} name",
+      "parameterType": "Parameter {index} type",
+      "addParameter": "Add parameter",
+      "removeParameter": "Remove parameter {index}",
+      "elementKind": "Element kind of {type}",
+      "dimensions": "Dimensions of {type}",
+      "dimensionsValue": "{count}-D",
+      "kind": {
+        "INT": "int",
+        "LONG": "long",
+        "DOUBLE": "double",
+        "BOOLEAN": "boolean",
+        "CHAR": "char",
+        "STRING": "string",
+        "ARRAY": "Array",
+        "LIST": "List",
+        "LINKED_LIST": "Linked list",
+        "BINARY_TREE": "Binary tree",
+        "OTHER": "Other (Standard I/O only)"
+      },
+      "ioTitle": "Standard input/output format",
+      "ioSubtitle": "Standard I/O model: learners read stdin and print stdout exactly as these two descriptions say.",
+      "stdinFormat": "stdin read format",
+      "stdoutFormat": "stdout print format",
+      "matchingTitle": "Matching strategy",
+      "matchingSubtitle": "How a learner's output is compared with the expected one.",
+      "matchingStrategy": "Matching strategy",
+      "epsilon": "Allowed error (epsilon)",
+      "strategy": {
+        "EXACT": {
+          "label": "EXACT",
+          "meta": "Character-for-character match."
+        },
+        "TRIMMED": {
+          "label": "TRIMMED",
+          "meta": "Leading and trailing whitespace is ignored before comparing."
+        },
+        "EPSILON": {
+          "label": "EPSILON",
+          "meta": "Compares real numbers, accepting an error up to epsilon."
+        },
+        "UNORDERED_SET": {
+          "label": "UNORDERED_SET",
+          "meta": "Compared as a set, element order ignored. Not available when the return type is a binary tree or a linked list."
+        }
+      },
+      "errorUnorderedSet": "UNORDERED_SET cannot be used when the return type is a binary tree or a linked list. Change the matching strategy or the return type.",
+      "signatureTitle": "Function signature",
+      "signatureSubtitle": "Declared once for all three languages. The harness maps the types to each language and generates the starter code: the learner writes only the function body, the harness reads the input and prints the output. Parameter names show up in the starter code and when a sample testcase is displayed.",
+      "stubTitle": "Starter code the learner will see",
+      "stubSubtitle": "Illustrated from the signature above; the real starter code is generated by the harness. The name is derived: Python uses snake_case, Java and C++ camelCase.",
+      "overrideName": "{language} function name (empty = derived)"
     }
   },
   "problemPreview": {
+    "notFound": "Problem not found.",
     "loadFailed": "Could not load the problem. Try again later.",
     "savedAt": "Saved version from {time}. Unsaved changes are not shown here.",
     "neverSaved": "Nothing saved from this browser yet, showing the sample problem.",
@@ -1354,6 +1486,7 @@
     "memoryLimit": "Memory"
   },
   "problemInfo": {
+    "notFound": "Problem not found.",
     "loadFailed": "Could not load the problem. Try again later.",
     "back": "Back to list",
     "edit": "Edit problem",
@@ -1367,7 +1500,9 @@
     "solutionToggle": "Show reference solution code",
     "guardOn": "On",
     "guardOff": "Off",
-    "aiBriefEmpty": "No problem-specific context yet."
+    "aiBriefEmpty": "No problem-specific context yet.",
+    "specTitle": "Problem spec",
+    "specSubtitle": "Function signature (function-wrapper model), standard I/O format and how results are matched. Read-only, edit it on the edit page."
   },
   "interviewQuestionInfo": {
     "back": "Back to list",
@@ -1396,11 +1531,6 @@
       "MEMORY_LIMIT_EXCEEDED": "Memory limit exceeded",
       "RUNTIME_ERROR": "Runtime error",
       "COMPILE_ERROR": "Compile error"
-    },
-    "difficulty": {
-      "EASY": "Easy",
-      "MEDIUM": "Medium",
-      "HARD": "Hard"
     },
     "verdictSubtitle": "{passed}/{total} testcases passed - submitted {submittedAt}",
     "stats": {
@@ -1502,6 +1632,7 @@
     },
     "footer": {
       "summary": "Showing {from}-{to} of {total} submissions",
+      "pageSizeLabel": "Rows per page",
       "previous": "Previous",
       "next": "Next",
       "pageLabel": "Page {page}"
@@ -1544,11 +1675,6 @@
     "diffTitle": "Suggested version",
     "sourceCodeTitle": "Submitted code",
     "applyCta": "Apply in Workspace",
-    "difficulty": {
-      "easy": "Easy",
-      "medium": "Medium",
-      "hard": "Hard"
-    },
     "errorTransientTitle": "The AI system is busy",
     "errorTransientBody": "The AI system is busy — try again in a few minutes.",
     "retry": "Retry",
@@ -1638,12 +1764,8 @@
       "known": "Known"
     },
     "topicFilterLabel": "Filter by topic",
+    "levelFilterLabel": "Filter by difficulty",
     "filterAll": "All",
-    "level": {
-      "easy": "Easy",
-      "medium": "Medium",
-      "hard": "Hard"
-    },
     "recall": {
       "unrated": "New",
       "known": "Known",
@@ -1679,11 +1801,6 @@
       "linkBack": "Back to list",
       "bookmark": "Bookmark for later",
       "bookmarked": "Bookmarked"
-    },
-    "level": {
-      "easy": "Easy",
-      "medium": "Medium",
-      "hard": "Hard"
     },
     "mode": {
       "groupLabel": "Mode",
@@ -1828,11 +1945,6 @@
         "btnRemove": "Remove from class"
       }
     },
-    "difficulty": {
-      "EASY": "Easy",
-      "MEDIUM": "Medium",
-      "HARD": "Hard"
-    },
     "filterAll": "All",
     "cancel": "Cancel",
     "emptyAssignments": "No problems assigned yet",
@@ -1883,6 +1995,7 @@
       }
     },
     "filterAll": "All",
+    "pageSizeLabel": "Rows per page",
     "previous": "Previous",
     "next": "Next",
     "pageSummary": "Page {page} / {total}",
@@ -2035,11 +2148,6 @@
     "assignments": {
       "title": "My assignments",
       "linkViewAll": "View all"
-    },
-    "difficulty": {
-      "EASY": "Easy",
-      "MEDIUM": "Medium",
-      "HARD": "Hard"
     },
     "empty": "No data yet"
   },
@@ -2226,10 +2334,7 @@
       "tooltipCount": "Submissions"
     },
     "difficulty": {
-      "title": "By difficulty",
-      "EASY": "Easy",
-      "MEDIUM": "Medium",
-      "HARD": "Hard"
+      "title": "By difficulty"
     },
     "focus": {
       "title": "Focus next",
@@ -2261,11 +2366,6 @@
     "emptyGeneric": "No data yet",
     "errorGeneric": "Could not load this block",
     "errorAi": "The AI subsystem is not responding — the other blocks still work",
-    "difficulty": {
-      "easy": "Easy",
-      "medium": "Medium",
-      "hard": "Hard"
-    },
     "solveState": {
       "solved": "Solved",
       "attempted": "Attempted",

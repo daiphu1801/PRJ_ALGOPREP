@@ -20,13 +20,43 @@ export type ManagedListError = "empty" | "duplicate";
 const sameName = (left: string, right: string) =>
   left.trim().toLocaleLowerCase("vi") === right.trim().toLocaleLowerCase("vi");
 
-export function createManagedListStore<T extends ManagedItem>(seed: readonly T[], keyPrefix: string) {
+export type ManagedListOptions = {
+  /** New keys become an upper-case slug of the name (`VERY_HARD`), like the BD's `code`; default is a time-based key. */
+  slugKeys?: boolean;
+  /** `remove` refuses once the list is down to this many items. Default 0. */
+  minItems?: number;
+};
+
+/** "Rất khó" -> "RAT_KHO": strip diacritics, upper-case, non-alphanumerics to underscores. */
+export function slugify(label: string): string {
+  return label
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/đ/gi, "d")
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+}
+
+export function createManagedListStore<T extends ManagedItem>(
+  seed: readonly T[],
+  keyPrefix: string,
+  { slugKeys = false, minItems = 0 }: ManagedListOptions = {},
+) {
   let items: readonly T[] = seed;
   const listeners = new Set<() => void>();
 
   function commit(next: readonly T[]) {
     items = next;
     listeners.forEach((listener) => listener());
+  }
+
+  // Slug taken by another item gets _2, _3 ... like the BD's slug rule for `code`.
+  function uniqueSlug(name: string): string {
+    const base = slugify(name) || keyPrefix.toUpperCase();
+    let key = base;
+    for (let n = 2; items.some((item) => item.key === key); n += 1) key = `${base}_${n}`;
+    return key;
   }
 
   function subscribe(listener: () => void) {
@@ -49,7 +79,7 @@ export function createManagedListStore<T extends ManagedItem>(seed: readonly T[]
       const name = label.trim();
       if (!name) return "empty";
       if (items.some((item) => sameName(item.label, name))) return "duplicate";
-      const key = `${keyPrefix}-${Date.now().toString(36)}`;
+      const key = slugKeys ? uniqueSlug(name) : `${keyPrefix}-${Date.now().toString(36)}`;
       commit([...items, { ...extra, key, label: name } as unknown as T]);
       return null;
     },
@@ -69,9 +99,24 @@ export function createManagedListStore<T extends ManagedItem>(seed: readonly T[]
       return null;
     },
 
-    /** Caller must have checked the item is unused: the BD refuses deleting a referenced item. */
-    remove(key: string) {
+    /** Moves an item one place up (-1) or down (+1); ignored at either end. */
+    move(key: string, delta: -1 | 1) {
+      const from = items.findIndex((item) => item.key === key);
+      const to = from + delta;
+      if (from < 0 || to < 0 || to >= items.length) return;
+      const next = [...items];
+      [next[from], next[to]] = [next[to]!, next[from]!];
+      commit(next);
+    },
+
+    /**
+     * Caller must have checked the item is unused: the BD refuses deleting a referenced item. Returns
+     * false, and changes nothing, when the list is already down to `minItems`.
+     */
+    remove(key: string): boolean {
+      if (items.length <= minItems) return false;
       commit(items.filter((item) => item.key !== key));
+      return true;
     },
   };
 }

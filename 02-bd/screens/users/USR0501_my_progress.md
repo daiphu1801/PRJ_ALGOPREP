@@ -45,7 +45,7 @@
 | Tên vật lý (slug) | `my_progress` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`) |
-| Phiên bản | V0.2 |
+| Phiên bản | V0.3 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/21 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
@@ -59,6 +59,7 @@
 | :--- | :--- | :--- | :--- | :--- |
 | V0.1 | Toàn bộ | Tạo mới theo mẫu 9 sheet. Chốt nguồn dữ liệu của mọi trường hiển thị; dùng lại tên nghiệp vụ `GetMySubmissionMetrics` của cụm màn lớp thay vì đặt tên mới. Thiết kế bổ sung danh sách phiên phỏng vấn (prototype thiếu, nhưng F1-08 bắt buộc), trạng thái rỗng, trạng thái lỗi theo từng khối và đường suy giảm khi phân hệ AI hỏng. Phát sinh 9 câu hỏi mở | 2026/09/21 | Nhóm phát triển AlgoPrep |
 | V0.2 | Sheet 9 | Đổi báo giá trị khoảng thời gian không hợp lệ sang toast; làm rõ lỗi tải từng khối giữ nguyên là nội dung thay chỗ khối. Theo `DEC-2026-1003-toast-feedback-channel`. | 2026/10/03 | AI |
+| V0.3 | Sheet 4, 5, 6, 7 | Đồng bộ `DEC-2026-1001-admin-configurable-settings` mục (7): độ khó bài tập là danh mục do ADMIN quản lý (bảng riêng `problem_levels`), không còn enum cố định. Khối "Theo độ khó" thành **một dòng mỗi mức** theo `sort_order`, số dòng không còn cố định 3; ba mức khởi tạo giữ màu thanh cũ, mức mới màu trung tính; mức chưa có dữ liệu hiển thị `0 / 0`. `DifficultyProgressDto.difficulty` thành `levelCode`/`levelDisplayName`; mẫu số lấy từ `byLevel` của `GetPublishedProblemCatalogSummary` (đọc `problem_levels` qua cổng ra). Thêm `problem_levels` vào bảng liên quan và Truy cập bảng. Màn chỉ hiển thị, không lọc và không gọi `ListProblemLevels` riêng | 2026/10/03 | AI |
 
 ---
 
@@ -192,7 +193,7 @@ phiên cũ (F1-08) [Nguồn: 01-rd/req/identity.md:26-32].
 
 [Số bản ghi tối đa] Bảng "Theo chủ đề": theo số chủ đề có thật trong `problem.topics`, prototype dựng 7
 dòng [Nguồn: 09-layoutBase/Tiến độ của tôi.dc.html:218-226]. Biểu đồ: đúng 14 cột. Khối "Theo độ khó":
-đúng 3 dòng. Khối "Nên ưu tiên": tối đa 3 mục. Lịch sử phiên phỏng vấn: 5 phiên gần nhất, không phân
+một dòng mỗi mức trong `problem_levels` (ba mức khởi tạo ra 3 dòng; số dòng không cố định vì ADMIN thêm/xoá mức được). Khối "Nên ưu tiên": tối đa 3 mục. Lịch sử phiên phỏng vấn: 5 phiên gần nhất, không phân
 trang. Toàn màn không có phân trang.
 
 [Nguồn: 01-rd/screens/users/USR0501_my_progress.md:31-36,82-83; 02-bd/database/identity.md:109-117]
@@ -208,7 +209,7 @@ trang. Toàn màn không có phân trang.
 
 `[Suy luận]` — tên DTO do BD này đề xuất, `03-dd/api/identity.md` và `03-dd/api/ai-review.md` chốt lại.
 
-### 4.3 Bảng dữ liệu liên quan (8)
+### 4.3 Bảng dữ liệu liên quan (9)
 
 | NO | Bảng | Ghi chú |
 | --: | :--- | :--- |
@@ -220,6 +221,7 @@ trang. Toàn màn không có phân trang.
 | 6 | `problem.problem_topics` | [Nguồn: 02-bd/database/problem-bank.md:35-39] |
 | 7 | `ai.interview_sessions` | [Nguồn: 02-bd/database/ai-review.md:66-83] |
 | 8 | `ai.rubric_scores` | [Nguồn: 02-bd/database/ai-review.md:89-102] |
+| 9 | `problem.problem_levels` | Danh mục độ khó do ADMIN quản lý: nguồn nhãn, thứ tự và mẫu số của từng dòng khối "Theo độ khó" [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`] |
 
 Màn này **không** đọc `identity.identity_recent_activity`: không có khối "Hoạt động gần đây" nào trên
 prototype, và bảng đó phục vụ F1-30 của khu Giảng viên [Nguồn: 02-bd/database/identity.md:115-116].
@@ -326,9 +328,9 @@ Giữ nguyên cấu trúc này khi dựng Next.js; không quy định màu sắc
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Theo độ khó | | | | | | | | | | | | | |
 | | 1 | Tiêu đề khối | `myProgress.difficultyProgress.title` | - | - | Label | String | - | - | O | Theo độ khó | - | Tiêu đề khối<br>[Nguồn giá trị] Nhãn tĩnh i18n [Nguồn: 09-layoutBase/Tiến độ của tôi.dc.html:167]<br>[EVT liên quan] - |
-| | 2 | Danh sách độ khó | `myProgress.difficultyProgress.list` | `problem.problems` | `difficulty` | List | List | - | - | O | 3 dòng | Đúng 3 dòng | Đúng ba dòng theo enum độ khó, luôn hiển thị đủ cả ba kể cả khi chưa giải bài nào<br>[Nguồn giá trị] Enum `difficulty` gồm `EASY`/`MEDIUM`/`HARD` [Nguồn: 02-bd/database/problem-bank.md:17]<br>[EVT liên quan] EVT-1 |
-| | 3 | Mức độ khó | `myProgress.difficultyProgress.col.label` | `problem.problems` | `difficulty` | ListColumn | Enum | - | - | O | - | Nhãn tiếng Việt | Tên mức độ khó<br>[Nguồn giá trị] `EASY` thành "Dễ"; `MEDIUM` thành "Trung bình"; `HARD` thành "Khó" [Nguồn: 09-layoutBase/Tiến độ của tôi.dc.html:287-289]<br>[EVT liên quan] - |
-| | 4 | Đã giải | `myProgress.difficultyProgress.col.solvedRatio` | `identity.user_problem_best_score` | `best_verdict` | ListColumn | String | 12 | - | O | - | `{số} / {số}` | Số bài đã giải trên tổng số bài đang xuất bản của mức đó<br>[Công thức] Cùng cách tính Khu vực B NO 5, nhưng gom nhóm theo `problems.difficulty` thay vì theo chủ đề. Luỹ kế toàn thời gian<br>[EVT liên quan] EVT-1 |
+| | 2 | Danh sách độ khó | `myProgress.difficultyProgress.list` | `problem.problem_levels` | `code`, `display_name`, `sort_order` | List | List | - | - | O | Một dòng mỗi mức | Số dòng bằng số mức | Một dòng cho **mỗi mức** trong `problem_levels` theo `sort_order`, luôn hiển thị đủ mọi mức kể cả khi chưa giải bài nào (dòng không có dữ liệu hiển thị `0 / 0`); số dòng không cố định<br>[Nguồn giá trị] Danh sách mức trong `byLevel` của `GetPublishedProblemCatalogSummary`, đọc từ dữ liệu do ADMIN quản lý, không còn enum cố định `DEC-2026-1001-admin-configurable-settings` mục (7) [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`]<br>[EVT liên quan] EVT-1 |
+| | 3 | Mức độ khó | `myProgress.difficultyProgress.col.label` | `problem.problem_levels` | `display_name` | ListColumn | String | - | - | O | - | Nhãn `display_name` | Tên mức độ khó<br>[Nguồn giá trị] Cột `problem_levels.display_name`, **đọc từ dữ liệu**, không còn ánh xạ cứng enum (prototype vẽ 3 dòng Dễ/Trung bình/Khó [Nguồn: 09-layoutBase/Tiến độ của tôi.dc.html:287-289]). Màu thanh: ba mức khởi tạo giữ màu cũ, mức ADMIN thêm sau dùng màu trung tính (không có cột màu) `DEC-2026-1001-admin-configurable-settings` mục (7)<br>[EVT liên quan] - |
+| | 4 | Đã giải | `myProgress.difficultyProgress.col.solvedRatio` | `identity.user_problem_best_score` | `best_verdict` | ListColumn | String | 12 | - | O | - | `{số} / {số}` | Số bài đã giải trên tổng số bài đang xuất bản của mức đó<br>[Công thức] Cùng cách tính Khu vực B NO 5, nhưng gom nhóm theo `problems.level_id` thay vì theo chủ đề; mức chưa có bài đã giải thì tử số `0`. Luỹ kế toàn thời gian<br>[EVT liên quan] EVT-1 |
 | | 5 | Thanh tiến độ | `myProgress.difficultyProgress.col.bar` | - | - | ProgressBar | Number | - | - | O | - | - | Biểu diễn trực quan tỉ lệ ở NO 4<br>[Công thức] Chiều rộng bằng tử số chia mẫu số của NO 4 [Nguồn: 09-layoutBase/Tiến độ của tôi.dc.html:288]<br>[EVT liên quan] - |
 
 ### Khu vực E — Nên ưu tiên
@@ -413,7 +415,7 @@ Giữ nguyên cấu trúc này khi dựng Next.js; không quy định màu sắc
 | :--- | --: | :--- | :-: | :--- |
 | Theo độ khó | | | | |
 | | 1 | Tiêu đề khối | Có | - |
-| | 2 | Danh sách độ khó | Có | [Điều kiện hiển thị] Trong lúc tải hiển thị khung chờ đúng 3 dòng. Luôn đủ 3 dòng, không có trạng thái rỗng. |
+| | 2 | Danh sách độ khó | Có | [Điều kiện hiển thị] Trong lúc tải hiển thị khung chờ 3 dòng (số dòng thật chỉ biết sau khi tải). Luôn đủ một dòng cho mỗi mức, không có trạng thái rỗng (chỉ khi `problem_levels` rỗng, điều không xảy ra vì luôn còn ít nhất một mức). |
 | | 3 | Mức độ khó | Có | - |
 | | 4 | Đã giải | Có | [Tự động đặt] Không tính lại khi đổi khoảng thời gian — số luỹ kế, cùng quy ước Khu vực B NO 5. |
 | | 5 | Thanh tiến độ | Có | [Tự động đặt] Chiều rộng cập nhật cùng lúc với giá trị ở NO 4. |
@@ -463,8 +465,8 @@ Giữ nguyên cấu trúc này khi dựng Next.js; không quy định màu sắc
 | 8 | `TopicProgressDto` | `solvedCount`, `totalCount` | Number | `identity.user_problem_best_score`, `problem.problem_topics` | `best_verdict` | Theo chủ đề "Đã giải", "Thanh tiến độ" | Có | [Chuyển đổi] Ghép thành `{số} / {số}`; tỉ lệ hai số này cũng là chiều rộng thanh tiến độ. |
 | 9 | `TopicProgressDto` | `acRate` | Number | `judge.submissions` | `status` | Theo chủ đề "Tỉ lệ AC" | Có | [Nguồn] Tính theo khoảng thời gian đang chọn, khác với NO 8 là số luỹ kế. |
 | 10 | `TopicProgressDto` | `lastSubmittedAt` | Date | `judge.submissions` | `submitted_at` | Theo chủ đề "Lần cuối" | Có | [Chuyển đổi] Hiển thị `dd/MM`; `null` thì hiển thị `-`. |
-| 11 | `DifficultyProgressDto` | `difficulty` | Enum | `problem.problems` | `difficulty` | Theo độ khó "Mức độ khó" | Có | [Chuyển đổi] `EASY`/`MEDIUM`/`HARD` đổi sang "Dễ"/"Trung bình"/"Khó". |
-| 12 | `DifficultyProgressDto` | `solvedCount`, `totalCount` | Number | `identity.user_problem_best_score`, `problem.problems` | `best_verdict`, `difficulty` | Theo độ khó "Đã giải", "Thanh tiến độ" | Có | [Chuyển đổi] Giống NO 8 nhưng gom nhóm theo độ khó. |
+| 11 | `DifficultyProgressDto` | `levelCode`, `levelDisplayName` | String, String | `problem.problem_levels` | `code`, `display_name` | Theo độ khó "Mức độ khó" | Có | [Nguồn] `problem-bank` qua cổng ra (`GetPublishedProblemCatalogSummary`, `byLevel`), thay trường `difficulty` kiểu Enum cũ (`DEC-2026-1001-admin-configurable-settings` mục (7))<br>[Chuyển đổi] Đọc `display_name` từ dữ liệu; danh sách một phần tử mỗi mức theo `sort_order`. |
+| 12 | `DifficultyProgressDto` | `solvedCount`, `totalCount` | Number | `identity.user_problem_best_score`, `problem.problems` | `best_verdict`, `level_id` | Theo độ khó "Đã giải", "Thanh tiến độ" | Có | [Chuyển đổi] Giống NO 8 nhưng gom nhóm theo mức độ khó; mức chưa có dữ liệu trả `0`/`totalCount` (hoặc `0`/`0`). |
 | 13 | `FocusSuggestionDto` | `topicId`, `reasonCode`, `reasonParams` | UUID, Enum, List | - | - | Nên ưu tiên "Tên chủ đề", "Lý do" | Có | [Nguồn] Dẫn xuất từ `TopicProgressDto`, không có lời gọi riêng<br>[Chuyển đổi] `reasonCode` là khoá tra nhãn tĩnh i18n có tham số; **không ghép câu ở backend** để nhãn dịch được sang tiếng Anh. |
 | 14 | `SubmissionDailyCountDto` | `day`, `count` | Date, Number | `judge.submissions` | `submitted_at` | Biểu đồ "Nhãn ngày", "Số lượt nộp trong ngày" | Có | [Nguồn] `judge-orchestration` qua `GetMySubmissionMetrics`<br>[Chuyển đổi] Ngày không có lượt nộp vẫn phải có một phần tử `count = 0`, backend trả đủ chuỗi, màn không tự vá lỗ hổng. |
 | 15 | `MyInterviewSummaryDto` | `completedSessionCount` | Number | `ai.interview_sessions` | `stage` | Dải chỉ số "Số phiên phỏng vấn"; Phỏng vấn "Số phiên" | Có | [Nguồn] Phản hồi của `GetMyInterviewSummary` (`ai-review`). |
@@ -472,20 +474,21 @@ Giữ nguyên cấu trúc này khi dựng Next.js; không quy định màu sắc
 | 17 | `MyInterviewSummaryDto` | `weakestCriterionCode` | Enum | `ai.rubric_scores` | `criterion_code` | Phỏng vấn "Mục yếu nhất" | Có | [Chuyển đổi] Là khoá tra nhãn tĩnh i18n của 4 tiêu chí F5-15; không trả chuỗi tiếng Việt từ backend. |
 | 18 | `MyInterviewSummaryDto` | `recentSessions` | List | `ai.interview_sessions` | `id`, `started_at` | Phỏng vấn "Lịch sử phiên" | Có | [Nguồn] 5 phiên `COMPLETED` gần nhất<br>[Đích] `id` là tham số truyền sang `mock_interview` khi mở lại rubric (EVT-5). |
 
-### 7.2 Truy cập bảng dữ liệu (8)
+### 7.2 Truy cập bảng dữ liệu (9)
 
 | NO | Tên logic | Bảng | Repository | CRUD | Mục đích | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :--- | :--- |
 | 1 | Thống kê nộp bài của người dùng | `identity.user_submission_stats` | `UserSubmissionStatsRepository` | R | Đọc tổng lượt nộp và số lượt Accepted luỹ kế | `GetMyProgressOverview`: R |
 | 2 | Điểm tốt nhất từng bài | `identity.user_problem_best_score` | `UserProblemBestScoreRepository` | R | Đếm bài đã giải toàn cục, theo chủ đề và theo độ khó | `GetMyProgressOverview`: R<br>`GetMyTopicProgress`: R |
 | 3 | Bài nộp | `judge.submissions` | Không truy cập trực tiếp — qua cổng ra | R | Chuỗi ngày, tỉ lệ AC theo chủ đề, mốc nộp cuối, chuỗi lượt nộp theo ngày | `GetMySubmissionMetrics`: R. `identity` **không** đọc chéo schema `judge` |
-| 4 | Bài toán | `problem.problems` | Không truy cập trực tiếp — qua cổng ra | R | Tổng số bài đang xuất bản, phân bố theo độ khó | `GetPublishedProblemCatalogSummary`: R |
+| 4 | Bài toán | `problem.problems` | Không truy cập trực tiếp — qua cổng ra | R | Tổng số bài đang xuất bản, phân bố theo mức độ khó (`level_id`) | `GetPublishedProblemCatalogSummary`: R |
 | 5 | Danh mục chủ đề | `problem.topics` | Không truy cập trực tiếp — qua cổng ra | R | Tên và danh sách chủ đề | `GetPublishedProblemCatalogSummary`: R |
 | 6 | Gắn chủ đề cho bài | `problem.problem_topics` | Không truy cập trực tiếp — qua cổng ra | R | Đếm tổng số bài của mỗi chủ đề và ánh xạ bài sang chủ đề | `GetPublishedProblemCatalogSummary`: R |
 | 7 | Phiên phỏng vấn | `ai.interview_sessions` | `InterviewSessionRepository` | R | Đếm phiên đã kết thúc và liệt kê 5 phiên gần nhất | `GetMyInterviewSummary`: R |
 | 8 | Điểm rubric | `ai.rubric_scores` | `RubricScoreRepository` | R | Điểm trung bình phiên và tiêu chí yếu nhất | `GetMyInterviewSummary`: R |
+| 9 | Danh mục độ khó | `problem.problem_levels` | Không truy cập trực tiếp — qua cổng ra | R | Danh sách mức theo `sort_order`, nhãn `display_name` và số bài đang xuất bản của từng mức | `GetPublishedProblemCatalogSummary`: R. Màn này không ghi; ADMIN quản lý độ khó ở `SHR0201` [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`] |
 
-Toàn màn **chỉ đọc**: không có thao tác `C`, `U`, `D` nào. Bốn bảng số 3 tới 6 thuộc schema của module
+Toàn màn **chỉ đọc**: không có thao tác `C`, `U`, `D` nào. Năm bảng số 3 tới 6 và số 9 thuộc schema của module
 khác, `identity` đọc qua cổng ra chứ không truy vấn chéo schema — cùng nguyên tắc đã áp ở cụm màn lớp
 [Nguồn: 02-bd/screens/teacher/INS0203_class_progress.md:445].
 
@@ -501,7 +504,7 @@ khác, `identity` đọc qua cổng ra chứ không truy vấn chéo schema — 
 | 1 | `GetMyProgressOverview` | Tải dải chỉ số tổng của người đăng nhập: đã giải, lượt nộp, tỉ lệ AC, chuỗi ngày, số lần nộp trên bài | `identity` |
 | 2 | `GetMyTopicProgress` | Tải tiến độ theo chủ đề và theo độ khó, kèm tỉ lệ AC và mốc nộp cuối theo khoảng thời gian đang chọn | `identity` |
 | 3 | `GetMySubmissionMetrics` | Cung cấp chuỗi ngày, mốc nộp gần nhất, tỉ lệ AC theo tập bài và chuỗi lượt nộp theo ngày | `judge-orchestration` |
-| 4 | `GetPublishedProblemCatalogSummary` | Cung cấp tổng số bài đang xuất bản, phân bố theo chủ đề và theo độ khó — mẫu số của mọi tỉ lệ trên màn | `problem-bank` |
+| 4 | `GetPublishedProblemCatalogSummary` | Cung cấp tổng số bài đang xuất bản, phân bố theo chủ đề và theo từng mức độ khó (một phần tử mỗi mức trong `problem_levels`, theo `sort_order`) — mẫu số của mọi tỉ lệ trên màn | `problem-bank` |
 | 5 | `GetMyInterviewSummary` | Tải số phiên, điểm trung bình, tiêu chí yếu nhất và 5 phiên gần nhất của người đăng nhập | `ai-review` |
 
 Ghi chú ranh giới:

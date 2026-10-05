@@ -12,6 +12,9 @@ import { ArrowLeft } from "lucide-react";
 import {
   findInterviewQuestionByCode,
   topicLabel,
+  levelLabel,
+  levelTone,
+  useInterviewLevels,
   useInterviewTopics,
 } from "@/entities/interview-question";
 import { useT } from "@/shared/i18n";
@@ -26,8 +29,6 @@ import {
   PageHeader,
 } from "@/shared/ui";
 
-const LEVEL_VARIANT = { easy: "success", medium: "warn", hard: "negative" } as const;
-
 type Props = {
   /** Route param: a question code such as "IQ-014". */
   questionId: string;
@@ -39,6 +40,7 @@ export function InterviewQuestionInfoView({ questionId, basePath }: Props) {
   const t = useT("interviewQuestionInfo");
   const ta = useT("interviewQuestionAuthoring");
   const topicList = useInterviewTopics();
+  const levelList = useInterviewLevels();
   const question = findInterviewQuestionByCode(questionId);
 
   if (!question) {
@@ -133,7 +135,9 @@ export function InterviewQuestionInfoView({ questionId, basePath }: Props) {
               <div className="flex items-center justify-between gap-2">
                 <dt className="text-[var(--color-text-subtle)]">{ta("levelLabel")}</dt>
                 <dd>
-                  <Badge variant={LEVEL_VARIANT[question.level]}>{ta(`level.${question.level}`)}</Badge>
+                  <Badge variant={levelTone(levelList, question.level)}>
+                    {levelLabel(levelList, question.level)}
+                  </Badge>
                 </dd>
               </div>
             </dl>

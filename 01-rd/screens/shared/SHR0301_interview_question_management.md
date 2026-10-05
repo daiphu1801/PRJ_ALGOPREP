@@ -45,7 +45,7 @@ Phân biệt rạch ròi với hai màn phía người học, **không trùng l�
 | :--- | :--- | :--- |
 | Tự chấm mức độ thuộc bài (spaced repetition) — mã được `INTERVIEW_BANK_MANAGEMENT` gác | F6-12 | `01-rd/req/interview-bank.md` — F6-12 |
 | Function `INTERVIEW_BANK_MANAGEMENT` gác F6-12 trong ma trận phân quyền | F1-10, F1-12 | `01-rd/req/identity.md` — F1-10, F1-12 |
-| Phân loại theo chủ đề và mức độ khó; tìm kiếm và lọc (đọc phía người học, màn này tái dùng cùng phân loại) | F6-01, F6-02 | `01-rd/req/interview-bank.md` — F6-01, F6-02 |
+| Phân loại theo chủ đề và mức độ khó; tìm kiếm và lọc (đọc phía người học, màn này tái dùng cùng phân loại). **Cập nhật 2026-10-03:** độ khó do ADMIN quản lý (danh mục dữ liệu, giống chủ đề; ba mức Dễ/Trung bình/Khó chỉ là dữ liệu khởi tạo). Bộ lọc theo mức độ khó giữ nguyên, nhưng tập mức không cố định | F6-01, F6-02 | `01-rd/req/interview-bank.md` — F6-01, F6-02 |
 | Tiêu chí chuẩn mà AI đối chiếu khi người học luyện — nội dung do màn này soạn ra | F6-08 | `01-rd/req/interview-bank.md` — F6-08 |
 | Mọi thao tác quản trị ghi vào Nhật ký hệ thống | F1-14 | `01-rd/req/identity.md` — F1-14 |
 
@@ -67,9 +67,9 @@ xoá** (`confirmOpen`) [SoT: 09-layoutBase/Admin - Câu hỏi phỏng vấn.dc.h
 bốn thẻ chỉ số; bản dựng Next.js đã đổi sang **danh sách dạng bảng** (cột Mã, Câu hỏi, Chủ đề, Mức độ,
 Đào sâu, Tiêu chí, Lượt dùng, Điểm TB, Thao tác; 8 dòng một trang) và **bỏ dải bốn thẻ chỉ số** — hệ thống
 chỉ có một trang tổng quan Admin/Giảng viên, các trang danh sách chỉ có bộ lọc và danh sách
-[SoT: 05-coding/frontend/src/views/shared/interview-question-management/ui/interview-question-management-view.tsx:7-10, 51, 107-208, 210-238].
+[SoT: 05-coding/frontend/src/views/shared/interview-question-management/ui/interview-question-management-view.tsx:7-10, 50-51, 188-302, 360-460].
 **Cập nhật 2026-10-03:** view nhận prop bắt buộc `basePath` (khu Admin `/admin/interview-questions`, khu Giảng viên `/instructor/interview-questions`); liên kết ở từng dòng và nút "Câu hỏi mới" dựng từ `basePath`, không còn cố định `/admin`
-[SoT: 05-coding/frontend/src/views/shared/interview-question-management/ui/interview-question-management-view.tsx:56-63, 121, 191, 232].
+[SoT: 05-coding/frontend/src/views/shared/interview-question-management/ui/interview-question-management-view.tsx:59-64, 205, 284, 354].
 Các mô tả dưới đây về prototype được giữ làm bằng chứng nguồn dữ liệu; chỗ nào khác với bản dựng thì ghi rõ.
 
 1. **Thanh tiêu đề** — "Ngân hàng câu hỏi phỏng vấn" kèm dòng phụ "148 câu · chủ đề, cấp độ, câu hỏi đào sâu
@@ -95,7 +95,8 @@ Các mô tả dưới đây về prototype được giữ làm bằng chứng ng
    / Trung bình / Khó — dòng 475), và bộ đếm kết quả dạng "N / 148 câu" (dòng 478). Khớp F6-01, F6-02 — danh
    mục chủ đề của prototype nay là chuẩn (F6-01 sửa lại 2026-08-30, đóng Q6). **Cập nhật 2026-10-01:** năm chủ
    đề này chỉ còn là dữ liệu khởi tạo; dải tab chủ đề đọc danh mục từ dữ liệu do ADMIN quản lý, số tab không
-   cố định (xem điểm 2 và Q6).
+   cố định (xem điểm 2 và Q6). **Cập nhật 2026-10-03:** dải tab cấp độ cũng đọc danh mục độ khó do ADMIN quản lý,
+   ba mức Dễ/Trung bình/Khó chỉ là dữ liệu khởi tạo, số tab không cố định.
 5. **Danh sách câu hỏi** (prototype: lưới thẻ, dòng 183-233, dữ liệu mẫu dòng 383-410, sáu thẻ mỗi trang —
    dòng 450; bản dựng: bảng 8 dòng một trang). Mỗi câu hỏi gồm:
    - **Mã câu hỏi** dạng `IQ-014`, **nhãn cấp độ** có màu theo Dễ/Trung bình/Khó, **chủ đề** (dòng 187-189) —
@@ -115,8 +116,12 @@ Các mô tả dưới đây về prototype được giữ làm bằng chứng ng
      và ba hành động "Sửa" / "Nhân bản" / nút xoá (dòng 226-228). Bản dựng: hai cột "Lượt dùng" và "Điểm
      TB", cùng cột "Thao tác" gồm ba nút **chỉ có biểu tượng** (bút chì = Sửa, hai tờ chồng = Nhân bản,
      thùng rác = Xoá); tên hành động hiện ở tooltip nhỏ bên dưới nút khi rê chuột hoặc focus; Nhân bản
-     áp dụng theo từng dòng [SoT: 05-coding/frontend/src/views/shared/interview-question-management/ui/interview-question-management-view.tsx:180-208; 05-coding/frontend/src/shared/ui/primitives/icon-action.tsx:25-30, 86-98].
-6. **Phân trang** (dòng 235-244) — cơ chế giao diện, không cần mã.
+     áp dụng theo từng dòng [SoT: 05-coding/frontend/src/views/shared/interview-question-management/ui/interview-question-management-view.tsx:273-301; 05-coding/frontend/src/shared/ui/primitives/icon-action.tsx:25-30, 86-98].
+6. **Phân trang** (dòng 235-244) — cơ chế giao diện, không cần mã. **Cập nhật 2026-10-05 (owner, phương án A cho
+   F6):** danh sách khớp hành vi danh sách bài tập — mọi cột đều bấm để sắp xếp được, bấm lại cùng cột thì
+   đảo chiều, khi mới vào màn thì chưa sắp xếp theo cột nào (giữ thứ tự tự nhiên của ngân hàng); người dùng
+   chọn số dòng mỗi trang trong 8 / 20 / 50 và lựa chọn được nhớ cho lần mở sau (chi tiết do BD ghi, **chưa duyệt**). **Cập nhật 2026-10-05 (owner yêu cầu cột chọn cho đồng bộ với danh sách bài tập; chưa duyệt):** người dùng có thể chọn nhiều dòng và áp dụng hai thao tác theo lô, "Nhân bản" và "Xoá", là dạng theo lô của hai thao tác theo dòng sẵn có của F6-13 (xoá vẫn là xoá mềm, giữ lịch sử phiên cũ); hai thao tác theo lô này do bên phát triển chọn, F6-13 chưa định nghĩa chúng ở dạng theo lô
+   [SoT: 05-coding/frontend/src/views/shared/interview-question-management/ui/interview-question-management-view.tsx:50-51, 77-82, 429-436, 439-447].
 7. **Hộp thoại xác nhận xoá** (dòng 259-271): tiêu đề "Xoá câu hỏi?", nội dung nêu mã và trích 60 ký tự đầu
    của câu hỏi (dòng 460), kèm ghi chú **"Các phiên phỏng vấn đã dùng câu hỏi này vẫn giữ bản ghi cũ. Hành
    động không thể hoàn tác."** (dòng 264). **Chốt 2026-08-30:** xoá mềm (đánh dấu ngừng dùng, ẩn khỏi màn
@@ -182,7 +187,7 @@ hỏi phỏng vấn.dc.html:56, 358-366].
 |---|---|---|---|
 | REQ-01 | Tự chấm mức độ thuộc bài (spaced repetition) — mã được `INTERVIEW_BANK_MANAGEMENT` gác (F6-12) | Chức năng | `01-rd/req/interview-bank.md` — F6-12 |
 | REQ-02 | Function `INTERVIEW_BANK_MANAGEMENT` gác F6-12 trong ma trận phân quyền (F1-10, F1-12) | Chức năng | `01-rd/req/identity.md` — F1-10, F1-12 |
-| REQ-03 | Phân loại theo chủ đề và mức độ khó; tìm kiếm và lọc (đọc phía người học, màn này tái dùng cùng phân loại) (F6-01, F6-02) | Chức năng | `01-rd/req/interview-bank.md` — F6-01, F6-02 |
+| REQ-03 | Phân loại theo chủ đề và mức độ khó; tìm kiếm và lọc (đọc phía người học, màn này tái dùng cùng phân loại). **Cập nhật 2026-10-03:** độ khó do ADMIN quản lý (danh mục dữ liệu, giống chủ đề; ba mức Dễ/Trung bình/Khó chỉ là dữ liệu khởi tạo). Bộ lọc theo mức độ khó giữ nguyên, nhưng tập mức không cố định (F6-01, F6-02) | Chức năng | `01-rd/req/interview-bank.md` — F6-01, F6-02 |
 | REQ-04 | Tiêu chí chuẩn mà AI đối chiếu khi người học luyện — nội dung do màn này soạn ra (F6-08) | Chức năng | `01-rd/req/interview-bank.md` — F6-08 |
 | REQ-05 | Mọi thao tác quản trị ghi vào Nhật ký hệ thống (F1-14) | Chức năng | `01-rd/req/identity.md` — F1-14 |
 

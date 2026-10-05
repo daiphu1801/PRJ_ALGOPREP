@@ -11,11 +11,12 @@
     **Đã chỉnh 2026-10-01 (`DEC-2026-1001-admin-configurable-settings`):** danh mục **chủ đề** của F2-02 là dữ liệu do `ADMIN` (A3)
     quản lý, cùng cách với chủ đề câu hỏi phỏng vấn (F6-01) — thêm, đổi tên, sắp xếp, xoá, không giới hạn số lượng; xoá bị từ chối khi còn
     bài tham chiếu; `INSTRUCTOR` (A2) chỉ chọn chủ đề có sẵn khi soạn đề. Thẻ tự do không đổi.
+    **Đã chỉnh 2026-10-03 (`DEC-2026-1001-admin-configurable-settings` mục 7):** Độ khó do ADMIN quản lý (danh mục dữ liệu; ba mức Dễ/Trung bình/Khó chỉ là dữ liệu khởi tạo), không gắn logic.
   - **Khai báo đặc tả bài toán cho CẢ HAI mô hình nộp bài song song (F2-03).** Sửa lại 2026-08-24 qua hỏi
     trực tiếp chủ dự án khi viết `01-rd/screens/users/USR0102_problem_detail.md` — bản trước chỉ nói tới đặc tả cho mô
     hình Bọc hàm, thu hẹp hơn phạm vi đã chốt ở `README.md` mục 5 dòng 179 ("Hỗ trợ cả 2 mô hình: Bọc hàm và
     Nhập/Xuất chuẩn") và mục 1.1 dòng 15 (so với HackerRank — "Cả hai"): mỗi bài toán khai báo
-    - **chữ ký hàm** theo từng ngôn ngữ trong ba ngôn ngữ (Java, C++, Python), kiểu tham số và kiểu trả về —
+    - **một chữ ký hàm chung** (tên hàm, kiểu trả về, và mỗi tham số có tên cùng kiểu; sửa 2026-10-03 theo chủ dự án, trước đó khai riêng cho từng ngôn ngữ) — hệ thống tự đổi kiểu sang ba ngôn ngữ (Java, C++, Python) và cách viết tên hàm theo quy ước từng ngôn ngữ (Python snake_case, Java và C++ camelCase), người soạn chỉ ghi đè tên khi cần —
       đầu vào bắt buộc cho mô hình **Bọc hàm** (bộ sinh mã F3), **và**
     - **định dạng input/output theo dòng chuẩn** (thứ tự đọc từ `stdin`, định dạng in ra `stdout`) — đầu
       vào bắt buộc cho mô hình **Standard I/O**, học viên tự đọc/ghi theo đúng định dạng này.
@@ -171,5 +172,5 @@
     bảng** (mã, tiêu đề, chủ đề, độ khó, trạng thái, lượt nộp, tỉ lệ AC, số testcase) của bài đã chọn hoặc
     toàn bộ kết quả đang lọc — **không xuất nội dung đề bài, đặc tả, hay testcase**. **Nhập CSV bài toán
     (nút "Nhập CSV" ở thanh tiêu đề `problem_management`) đã cắt khỏi phạm vi** — một CSV phẳng không chở
-    nổi đặc tả F2-03 (chữ ký hàm ba ngôn ngữ) hay nội dung Markdown/LaTeX của đề bài; xoá nút này khi dựng
+    nổi đặc tả F2-03 (chữ ký hàm) hay nội dung Markdown/LaTeX của đề bài; xoá nút này khi dựng
     UI thật.

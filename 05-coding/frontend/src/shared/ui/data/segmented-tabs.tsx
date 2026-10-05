@@ -8,6 +8,9 @@
 // role="tablist" is deliberately NOT used: these buttons filter a list in place, they do not swap
 // between tab panels, and announcing them as tabs would promise a panel relationship that does not
 // exist. `aria-pressed` on plain buttons says what is actually happening.
+//
+// List filters have moved to FilterMenu (a button opening a glass pop-up); this stays for the few
+// places that really are a mode switch or a tab row.
 "use client";
 
 import { cn } from "@/shared/lib";

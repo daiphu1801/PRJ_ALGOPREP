@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { openFilter, pickFilter } from "./filter-menu";
 
 /**
  * PROTOTYPE screen check for admin_system_log. Guards the hard boundary in
@@ -16,9 +17,10 @@ test("system log shows only human admin actions, with no rejudge leftovers", asy
   await expect(page.getByText(/Phiên chấm lại/i)).toHaveCount(0);
 
   // Four categories in the filter (plus "Tất cả"), no "Chấm lại".
-  const filter = page.getByRole("group", { name: "Lọc theo phân loại" });
-  await expect(filter.getByRole("button")).toHaveCount(5);
-  await expect(filter.getByRole("button", { name: /chấm lại/i })).toHaveCount(0);
+  const filter = await openFilter(page, "Lọc theo phân loại");
+  await expect(filter.getByRole("option")).toHaveCount(5);
+  await expect(filter.getByRole("option", { name: /chấm lại/i })).toHaveCount(0);
+  await page.keyboard.press("Escape");
 
   // No rejudge event survived into the sample data.
   await expect(page.getByText(/RJ-0139/)).toHaveCount(0);
@@ -31,7 +33,7 @@ test("category filter and search combine with AND", async ({ page }) => {
   const list = page.getByRole("list", { name: "Danh sách sự kiện" }).getByRole("listitem");
   await expect(list).toHaveCount(9);
 
-  await page.getByRole("button", { name: "Xác thực", exact: true }).click();
+  await pickFilter(page, "Lọc theo phân loại", "Xác thực");
   await expect(list).toHaveCount(3);
 
   // Search matches service/actor/event id — not the message, per BD section 2.

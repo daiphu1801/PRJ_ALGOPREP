@@ -42,7 +42,7 @@
 | Tên vật lý (slug) | `problem_info` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A2 (`INSTRUCTOR`) và A3 (`ADMIN`) — dùng chung một view; dựng cho cả hai khu (khu A2 từ 2026-10-03) |
-| Phiên bản | V1.3 |
+| Phiên bản | V1.6 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/10/02 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
@@ -58,6 +58,9 @@
 | V1.1 | Sheet 3, 4, 5; Câu hỏi mở; trích dẫn | (1) Khu A2 đã dựng (2026-10-03): `/instructor/problems/[problemId]` là `problem_info`, cùng view qua prop bắt buộc `basePath` [Nguồn: 05-coding/frontend/src/views/shared/problem-info/ui/problem-info-view.tsx:41-46, 65, 77]; bỏ các câu "khu A2 chưa tách". (2) Đề bài (`statement_md`) hiển thị Markdown + LaTeX đã render qua `MarkdownPreview` (react-markdown, remark-gfm, remark-math, rehype-katex; không phân tích HTML thô) thay cho văn bản thô; đổi Sheet 5 Khu vực C NO 1, thêm REQ-6 của RD. (3) Làm mới số dòng trích dẫn vào mã, RD `SHR0203`, BD `SHR0201`/`SHR0202`, `bd-template-9sheet.md`. (4) Theo quy ước chủ dự án 2026-10-03: mockup `09-layoutBase` chỉ tham chiếu, mã là hiện trạng | 2026/10/03 | AI |
 | V1.2 | Sheet 4 (4.4, 4.5), Sheet 5 khu vực B | Chủ dự án yêu cầu 2026-10-03 (chưa duyệt hình): bỏ hàng 4 thẻ số liệu phía trên, chuyển các số liệu vào thẻ Thuộc tính ở cột phải để đề bài nằm đầu khung nhìn; header và các thẻ còn lại giữ như V1.1. Hành vi và dữ liệu không đổi. Làm mới số dòng trích dẫn ở mục 4.4 | 2026/10/03 | AI |
 | V1.3 | Sheet 4 (4.5) | Đọc dữ liệu đi qua `useProblemDraft` (khuôn `queries.ts`); trang có trạng thái đang tải và lỗi tải | 2026/10/03 | AI |
+| V1.4 | Câu hỏi mở | Đóng Q8: A2 mở bài của người khác nhận 404 như mã không tồn tại; prototype đã dựng nhánh "không tìm thấy" | 2026/10/03 | AI |
+| V1.5 | Sheet 4 (4.2, 4.3, 4.4), Sheet 5, 6 (Khu vực C) | Thêm khối "Đặc tả" chỉ đọc theo `SHR0202` Q20 (chủ dự án đồng ý 2026-10-03): chữ ký hàm theo từng ngôn ngữ suy từ chữ ký chung, định dạng stdin/stdout, chiến lược so khớp; bài có kiểu ngoài lược đồ nêu "chỉ hỗ trợ Standard I/O". Thêm mục 9 đến 12 vào Khu vực C, hai bảng `problem_specs`, `function_signatures`, DTO `FunctionSignatureDto`, `ProblemSpecDto`. RD `SHR0203` thêm REQ-7 | 2026/10/03 | AI |
+| V1.6 | Sheet 5 (Khu vực D NO 1), Sheet 7 (7.1 NO 4, 7.2), Sheet 4 (4.3) | Đã chốt 2026-10-03 (`DEC-2026-1001-admin-configurable-settings` mục 7): nhãn badge "Độ khó" đọc từ bảng `problem_levels` (do ADMIN quản lý, không còn ba mức cố định); `problems.difficulty` ENUM đổi thành `level_id`; DTO `difficulty` của `ProblemAuthoringDetailDto` đổi thành `levelId`, nhãn lấy qua `ListProblemLevels` (cùng mẫu với chủ đề); thêm bảng `problem_levels` vào 4.3 và 7.2. Màu badge do giao diện suy ra (ba mức seed giữ màu cũ, mức mới trung tính). Màn vẫn chỉ đọc | 2026/10/03 | AI |
 
 ---
 
@@ -180,12 +183,13 @@ Dùng lại, **không định nghĩa lại**, từ `02-bd/screens/shared/SHR0202
 - `WorkedExampleDto`
 - `TestcaseDto`
 - `AiAuthoringContextDto`
+- `FunctionSignatureDto`, `ProblemSpecDto` (đặc tả, thêm 2026-10-03)
 
 `[SoT: Suy luận]` — `GetProblemForAuthoring` là cổng đọc chi tiết duy nhất của `problem-bank` nên màn đọc dùng chung; RD cũng nêu "cùng cổng
 đọc chi tiết bài" nhưng ghi đây là suy luận thuộc DD [Nguồn: 01-rd/screens/shared/SHR0203_problem_info.md:59-60]. Nếu DD tách DTO đọc riêng
 thì cập nhật mục này, không phải thêm trường ở đây.
 
-### 4.3 Bảng dữ liệu liên quan (5)
+### 4.3 Bảng dữ liệu liên quan (8)
 
 | NO | Bảng | Ghi chú |
 | --: | :--- | :--- |
@@ -194,10 +198,13 @@ thì cập nhật mục này, không phải thêm trường ở đây.
 | 3 | `testcases` | [Nguồn: 02-bd/database/problem-bank.md mục 1.6] |
 | 4 | `problem_ai_authoring_context` hoặc cột trong `problems` | **Chưa tồn tại** — xem Câu hỏi mở Q5 (kế thừa `SHR0202` Q4) |
 | 5 | Bảng đáp án mẫu | **Chưa tồn tại** — xem Câu hỏi mở Q2 (kế thừa `SHR0202` Q2) |
+| 6 | `problem_specs` | [Nguồn: 02-bd/database/problem-bank.md mục 1.4] — khối Đặc tả (thêm 2026-10-03) |
+| 7 | `function_signatures` | [Nguồn: 02-bd/database/problem-bank.md mục 1.5] — một chữ ký chung mỗi bài, khối Đặc tả (thêm 2026-10-03) |
+| 8 | `problem_levels` | [Nguồn: 02-bd/database/problem-bank.md mục 1.2a] — nhãn badge "Độ khó" (thêm 2026-10-03) |
 
-Hai dòng cuối là khoảng trống schema đã ghi nhận ở `SHR0202`, màn này chỉ đọc tiếp nên không tự quyết nơi lưu. Không dùng `tags`/`problem_tags`,
-`problem_stats`, `problem_specs`, `function_signatures` — màn này không hiển thị thẻ, số liệu bài hay đặc tả hàm
-(đối chiếu `problem-info-view.tsx:98-197`, không có khối nào đọc các thứ này).
+Hai dòng cuối là khoảng trống schema đã ghi nhận ở `SHR0202`, màn này chỉ đọc tiếp nên không tự quyết nơi lưu. Không dùng `tags`/`problem_tags` và `problem_stats` — màn này không hiển thị thẻ hay số liệu bài.
+
+**Thêm 2026-10-03 (`SHR0202` Q20):** màn đọc thêm `problem_specs` (định dạng stdin/stdout, chiến lược so khớp, epsilon) và `function_signatures` (chữ ký hàm chung, ghi đè tên; `02-bd/database/problem-bank.md` mục 1.4 và 1.5) để hiển thị khối đặc tả chỉ đọc; cả hai đã có trong schema nên không thêm khoảng trống mới.
 
 ### 4.4 Vùng bố cục
 
@@ -207,7 +214,7 @@ Hai dòng cuối là khoảng trống schema đã ghi nhận ở `SHR0202`, màn
 | Vùng | Vị trí trong mã | Nội dung |
 | :--- | :--- | :--- |
 | Thanh đầu trang | `problem-info-view.tsx:66-83` | Nút quay lại, tiêu đề bài, dòng phụ "Mã #{code} · chủ đề {topic}", nút "Xem như người học", nút "Sửa bài" |
-| Cột nội dung (rộng) | `:86-142` | 4 thẻ: Đề bài + ràng buộc, Ví dụ mẫu, Ma trận độ phủ, Đáp án mẫu (thu gọn); Đề bài nằm ngay dưới thanh đầu trang |
+| Cột nội dung (rộng) | `:86-142` | 5 thẻ: Đề bài + ràng buộc, Ví dụ mẫu, **Đặc tả** (thêm 2026-10-03: dòng chữ ký từng ngôn ngữ, định dạng stdin/stdout, chiến lược so khớp), Ma trận độ phủ, Đáp án mẫu (thu gọn); Đề bài nằm ngay dưới thanh đầu trang |
 | Cột thuộc tính (hẹp, dính) | `:144-207` | Thẻ Thuộc tính gồm độ khó, trạng thái, **các số liệu của khu vực B** (Testcase đã duyệt kèm số chờ duyệt, Testcase công khai, Đáp án mẫu đạt/tổng) và 4 giới hạn; thẻ Chỉ dẫn cho trợ lý AI (công tắc + ngữ cảnh) |
 
 Từ V1.2 không còn hàng 4 thẻ số liệu phía trên cột nội dung: các số liệu chuyển vào thẻ Thuộc tính để đề bài nằm đầu khung nhìn (chủ dự án yêu cầu 2026-10-03, chưa duyệt hình). Giới hạn thời gian không còn thẻ riêng vì đã nằm trong 4 giới hạn. Các khu vực Sheet 5 vẫn chia theo nhóm dữ liệu, không đổi.
@@ -270,13 +277,17 @@ Slug `problem_info` ↔ slice `views/shared/problem-info` ↔ `01-rd/screens/sha
 | | 6 | Giải thích | `problemInfo.examples.col.explanation` | - | - | ListColumn | String | - | - | O | - | - | **Không có cột DB** — `SHR0202` Q3<br>[Nguồn giá trị] `WorkedExampleDto.explanation` (`:126-129`)<br>[EVT liên quan] - |
 | | 7 | Ma trận độ phủ | `problemInfo.coverage.badges` | `testcases` | - | List | List | - | - | O | - | `{loại ca}: {n}` | **Không có cột loại ca trong `testcases`** — xem Q4<br>[Công thức] Với mỗi loại ca trong `TESTCASE_CATEGORIES`, đếm testcase đã duyệt thuộc loại đó; ô > 0 tô trạng thái thành công, ô = 0 tô trung tính (`:57-60,137-145`)<br>[EVT liên quan] - |
 | | 8 | Mã đáp án mẫu | `problemInfo.solution.code` | - | - | Label | String | - | - | O | Thu gọn | Chữ đơn cách; mở bằng `<details>` | **Không có bảng DB** — `SHR0202` Q2. Chỉ A2/A3 thấy (F2-18)<br>[Nguồn giá trị] DTO `sampleSolutionCode`, `sampleSolutionLanguage` (`:147-152`)<br>[EVT liên quan] - |
+| | 9 | Chữ ký hàm theo ngôn ngữ | `problemInfo.spec.signatures` | `function_signatures` | `function_name`, `return_type`, `parameters`, `name_overrides` | List | List | - | - | O | 3 dòng | Một dòng chữ ký mỗi ngôn ngữ (Java, C++, Python) | Suy từ MỘT chữ ký chung: tên hàm tự suy ra theo ngôn ngữ (có ghi đè thì dùng ghi đè), kiểu ánh xạ theo ngôn ngữ. Bài có kiểu ngoài lược đồ (`function_wrapper_supported = false`) thì thay ba dòng bằng câu "chỉ hỗ trợ Standard I/O"<br>[Nguồn giá trị] `FunctionSignatureDto`; cách dựng dòng giống mục 10 của Khu vực F ở `SHR0202`<br>[EVT liên quan] - |
+| | 10 | Định dạng đọc stdin | `problemInfo.spec.stdinFormat` | `problem_specs` | `stdin_format_md` | Label | String | - | - | O | - | Văn bản, giữ xuống dòng | [Nguồn giá trị] `ProblemSpecDto.stdinFormat`<br>[EVT liên quan] - |
+| | 11 | Định dạng in stdout | `problemInfo.spec.stdoutFormat` | `problem_specs` | `stdout_format_md` | Label | String | - | - | O | - | Văn bản, giữ xuống dòng | [Nguồn giá trị] `ProblemSpecDto.stdoutFormat`<br>[EVT liên quan] - |
+| | 12 | Chiến lược so khớp | `problemInfo.spec.matchingStrategy` | `problem_specs` | `matching_strategy`, `epsilon_value` | Badge | Enum | - | - | O | - | `EXACT`/`TRIMMED`/`EPSILON`/`UNORDERED_SET`; kèm giá trị epsilon khi là `EPSILON` | [Nguồn giá trị] `ProblemSpecDto.matchingStrategy`, `epsilonValue`<br>[EVT liên quan] - |
 
 ### Khu vực D — Cột thuộc tính
 
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Cột thuộc tính | | | | | | | | | | | | | |
-| | 1 | Độ khó | `problemInfo.properties.difficulty` | `problems` | `difficulty` | Badge | Enum | - | - | O | - | `EASY`/`MEDIUM`/`HARD` hiển thị theo nhãn i18n | [Nguồn giá trị] Cột `difficulty` (`:158-165`)<br>[EVT liên quan] - |
+| | 1 | Độ khó | `problemInfo.properties.difficulty` | `problems`, `problem_levels` | `level_id`; `display_name` | Badge | String | - | - | O | - | Nhãn `display_name` của mức | Nhãn đọc từ danh mục `problem_levels` do ADMIN quản lý, không còn ba mức cố định; màu badge do giao diện suy ra (mức seed giữ màu cũ, mức mới trung tính). [Hiện trạng bản dựng] `problemLevelLabel` và `problemLevelTone` trên `useProblemLevels()` (`problem-info-view.tsx`, khối `difficultyLabel`)<br>[Nguồn giá trị] Cột `problems.level_id` nối `problem_levels` qua `ListProblemLevels` đã chốt 2026-10-03; cũ: cột `difficulty` (`:158-165`)<br>[EVT liên quan] - |
 | | 2 | Trạng thái | `problemInfo.properties.status` | `problems` | `status` | Badge | Enum | - | - | O | - | `UNPUBLISHED`/`PUBLISHED` hiển thị "Chưa xuất bản"/"Đã xuất bản" | [Nguồn giá trị] Cột `status` (`:166-173`)<br>[EVT liên quan] - |
 | | 3 | Giới hạn thời gian (ms) | `problemInfo.properties.limit.timeLimitMs` | `problems` | `time_limit_ms` | Label | Number | - | - | O | - | Số nguyên | [Nguồn giá trị] Cột `time_limit_ms` (`:32-37,174-179`)<br>[EVT liên quan] - |
 | | 4 | Bộ nhớ (MB) | `problemInfo.properties.limit.memoryLimitMb` | `problems` | `memory_limit_mb` | Label | Number | - | - | O | - | Số nguyên | [Nguồn giá trị] Cột `memory_limit_mb`<br>[EVT liên quan] - |
@@ -325,6 +336,10 @@ Slug `problem_info` ↔ slice `views/shared/problem-info` ↔ `01-rd/screens/sha
 | | 6 | Giải thích | Điều kiện | [Điều kiện hiển thị] Có ít nhất một ví dụ mẫu.<br>[Điều kiện kích hoạt] - |
 | | 7 | Ma trận độ phủ | Có | [Điều kiện kích hoạt] -<br>[Tự động đặt] Ô có `n > 0` tô thành công, `n = 0` tô trung tính (loại ca còn thiếu). |
 | | 8 | Mã đáp án mẫu | Điều kiện | [Điều kiện hiển thị] Người xem có `PROBLEM_AUTHORING` (REQ-5, F2-18) — **kiểm quyền ở máy chủ, không chỉ ẩn UI**; prototype hiện vô điều kiện vì chưa có phân quyền.<br>[Điều kiện kích hoạt] Bấm tiêu đề "Xem mã đáp án mẫu" để mở/thu gọn.<br>[Tự động đặt] Mặc định thu gọn mỗi lần vào màn. |
+| | 9 | Chữ ký hàm theo ngôn ngữ | Có | [Điều kiện hiển thị] Bài chưa có kiểu ngoài lược đồ; ngược lại hiện câu "chỉ hỗ trợ Standard I/O". |
+| | 10 | Định dạng đọc stdin | Có | - |
+| | 11 | Định dạng in stdout | Có | - |
+| | 12 | Chiến lược so khớp | Có | - |
 
 ### Khu vực D — Cột thuộc tính
 
@@ -354,7 +369,7 @@ Màn này **không định nghĩa DTO mới**. Toàn bộ trường lấy từ c
 | 1 | `ProblemAuthoringDetailDto` | `code`, `title` | Khu A NO 2-3 | [Nguồn] Phản hồi `GetProblemForAuthoring` |
 | 2 | `ProblemAuthoringDetailDto` | `statementMd` | Khu C NO 1 | [Nguồn] như trên |
 | 3 | `ProblemAuthoringDetailDto` | `constraintsText` | Khu C NO 2 | Nguồn lưu chưa xác định (`SHR0202` Q1) |
-| 4 | `ProblemAuthoringDetailDto` | `difficulty`, `status` | Khu D NO 1-2 | [Chuyển đổi] `UNPUBLISHED`/`PUBLISHED` đổi sang "Chưa xuất bản"/"Đã xuất bản" |
+| 4 | `ProblemAuthoringDetailDto` | `levelId`, `status` | Khu D NO 1-2 | [Chuyển đổi] `levelId` đổi sang nhãn qua `ListProblemLevels` (cùng mẫu với `topicIds`; thay cho trường ENUM `difficulty` cũ); `UNPUBLISHED`/`PUBLISHED` đổi sang "Chưa xuất bản"/"Đã xuất bản" |
 | 5 | `ProblemAuthoringDetailDto` | `timeLimitMs`, `memoryLimitMb`, `maxOutputSizeKb` | Khu B NO 4, Khu D NO 3-5 | [Chuyển đổi] Hiển thị nguyên giá trị mili-giây, khác `SHR0202` hiển thị giây |
 | 6 | `ProblemAuthoringDetailDto` | `topicIds` | Khu A NO 3 | [Chuyển đổi] Id chủ đề đổi sang tên qua `ListProblemTopics` |
 | 7 | `ProblemAuthoringDetailDto` | `sampleSolutionLanguage`, `sampleSolutionCode` | Khu B NO 3 (dòng phụ), Khu C NO 8 | Nguồn lưu chưa xác định (`SHR0202` Q2) |
@@ -365,12 +380,13 @@ Màn này **không định nghĩa DTO mới**. Toàn bộ trường lấy từ c
 
 `[SoT: Suy luận]` — ánh xạ do BD đề xuất; `03-dd/api/problem-bank.md` chốt lại.
 
-### 7.2 Truy cập bảng dữ liệu (3)
+### 7.2 Truy cập bảng dữ liệu (4)
 
 | NO | Tên logic | Bảng | Repository | CRUD | Mục đích | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :--- | :--- |
 | 1 | Bài toán | `problems` | `ProblemRepository` | R | Đọc đề, giới hạn, độ khó, trạng thái | `GetProblemForAuthoring`: R |
 | 2 | Chủ đề | `topics`, `problem_topics` | `TopicRepository`, `ProblemTopicRepository` | R | Đọc tên chủ đề để hiện ở dòng phụ tiêu đề | `GetProblemForAuthoring`: R; `ListProblemTopics`: R |
+| 4 | Độ khó | `problem_levels` | `ProblemLevelRepository` | R | Đọc nhãn mức độ khó để hiện badge | `ListProblemLevels`: R |
 | 3 | Testcase | `testcases` | `TestcaseRepository` | R | Đọc để đếm đã duyệt, công khai, ví dụ mẫu | `GetProblemForAuthoring`: R |
 
 Không có thao tác `C`, `U`, `D` nào — màn chỉ đọc. Tên repository kế thừa `SHR0202` Sheet 7.2 (`[Suy luận]`, DD chốt lại).
@@ -432,6 +448,6 @@ Hàng "kiểm quyền" 1-2 giống `SHR0202`; không viết lại nội dung vư
 | Q5 | Số cờ hành vi AI: prototype chỉ có 2 (`noFullCode`, `socraticOnly`) vì cờ thứ 3 thuộc tính năng gợi ý theo cấp độ đã cắt (`draft-types.ts:62-69`, `DEC-2026-0831-remove-tiered-hints-ai-config`), trong khi `AiAuthoringContextDto` của `SHR0202` Sheet 7.1 NO 16 vẫn có `allowHiddenHint`. Bỏ trường đó khỏi DTO của `SHR0202`? Nơi lưu cả khối vẫn chưa chốt (`SHR0202` Q4) | `SHR0202` ghi nhận "Gợi ý theo cấp độ" đã cắt nhưng chưa dọn DTO; sửa DTO nằm ngoài phạm vi đợt này (chỉ thêm một dòng chuyển màn vào `SHR0202`) | BD `SHR0202` + DD |
 | Q6 | Nút "Xem như người học": mở route học viên hay popup xem trước? Dùng chung quyết định với `SHR0202` Q6 | Chưa có mã RD, `06-plan/PROTOTYPE_DEBT.md` mục 17.1 | Chủ dự án |
 | Q7 | Trạng thái "không tìm thấy" khi mã bài sai: RD yêu cầu `[SoT: Suy luận]`, prototype chưa dựng; lỗi tải khác (mạng, 403) hiển thị thế nào? | Prototype dùng mock đồng bộ không có nhánh lỗi; hợp đồng lỗi thuộc `03-dd/api/problem-bank.md` | DD |
-| Q8 | Khu A2 đã tách (2026-10-03, `/instructor/problems/[problemId]` là `problem_info`). A2 chỉ xem bài của mình — chốt cách xử lý khi A2 mở bài của người khác (404 hay 403)? | Bản dựng là mock không phân biệt id (`problem-info-view.tsx:8-11`) nên chưa có nhánh này `[SoT: Suy luận]`; hợp đồng lỗi thuộc DD | DD `identity` + `problem-bank` |
+| Q8 | ~~Khu A2 chỉ xem bài của mình: A2 mở bài của người khác thì 404 hay 403?~~ **ĐÃ CHỐT 2026-10-03 (chủ dự án, theo đề xuất):** trả **404 "Không tìm thấy bài tập"**, giống hệt mã không tồn tại, để câu trả lời không tiết lộ mã nào có thật. Áp cho cả `problem_info`, `problem_authoring` (`/edit`) và trang xem trước (`/preview`). Bản dựng: mock suy ra người xem từ khu vực của địa chỉ (`/instructor` là giảng viên mẫu, sở hữu một số mã), ném 404, ba màn hiện "Không tìm thấy bài tập."; `isNotFound` ở `shared/api` | Hợp đồng lỗi thật (mã lỗi, nội dung) thuộc `03-dd/api/problem-bank.md` | Đã đóng |
 
 **Hết tài liệu.** Mọi `[Nguồn: problem-info-view.tsx:n]` trỏ `05-coding/frontend/src/views/shared/problem-info/ui/problem-info-view.tsx`; `[Nguồn: ...problem-management-view.tsx:n]` trỏ `05-coding/frontend/src/views/shared/problem-management/ui/problem-management-view.tsx`.

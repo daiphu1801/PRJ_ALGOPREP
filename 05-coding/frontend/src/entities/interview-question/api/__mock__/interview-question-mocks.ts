@@ -10,7 +10,7 @@ const QUESTIONS: InterviewQuestion[] = [
   {
     code: "IQ-014",
     topic: "csTheory",
-    level: "medium",
+    level: "MEDIUM",
     question: "Hash table xử lý collision bằng cách nào? So sánh chaining và open addressing.",
     followUps: [
       "Ngưỡng load factor nào thì cần resize?",
@@ -44,7 +44,7 @@ const QUESTIONS: InterviewQuestion[] = [
   {
     code: "IQ-021",
     topic: "csTheory",
-    level: "easy",
+    level: "EASY",
     question:
       "Khác biệt giữa process và thread? Khi nào chọn multiprocessing thay vì multithreading?",
     followUps: [
@@ -77,7 +77,7 @@ const QUESTIONS: InterviewQuestion[] = [
   {
     code: "IQ-033",
     topic: "systemDesign",
-    level: "hard",
+    level: "HARD",
     question: "Thiết kế hệ thống rút gọn URL cho 100 triệu link mỗi ngày.",
     followUps: [
       "Bạn chốt QPS và tỉ lệ đọc/ghi trước hay sau khi vẽ kiến trúc?",
@@ -112,7 +112,7 @@ const QUESTIONS: InterviewQuestion[] = [
   {
     code: "IQ-040",
     topic: "systemDesign",
-    level: "medium",
+    level: "MEDIUM",
     question: "Cache invalidation: các chiến lược phổ biến và đánh đổi của từng cách.",
     followUps: [
       "Khi cache và DB lệch nhau, đâu là nguồn sự thật?",
@@ -144,7 +144,7 @@ const QUESTIONS: InterviewQuestion[] = [
   {
     code: "IQ-052",
     topic: "database",
-    level: "medium",
+    level: "MEDIUM",
     question: "Index B-tree hoạt động thế nào và khi nào một index bị bỏ qua?",
     followUps: [
       "Quy tắc tiền tố ngoài cùng bên trái áp dụng ra sao với composite index?",
@@ -175,7 +175,7 @@ const QUESTIONS: InterviewQuestion[] = [
   {
     code: "IQ-058",
     topic: "database",
-    level: "hard",
+    level: "HARD",
     question: "Giải thích các mức isolation của transaction và hiện tượng đi kèm.",
     followUps: [
       "MVCC của PostgreSQL khác cơ chế khoá của MySQL thế nào?",
@@ -206,7 +206,7 @@ const QUESTIONS: InterviewQuestion[] = [
   {
     code: "IQ-071",
     topic: "language",
-    level: "easy",
+    level: "EASY",
     question: "Truyền tham chiếu trong Python: vì sao sửa list trong hàm lại đổi cả biến ngoài?",
     followUps: ["Default argument dạng list gây lỗi gì?", "Copy nông và copy sâu khác nhau ở đâu?"],
     rubric: [
@@ -235,7 +235,7 @@ const QUESTIONS: InterviewQuestion[] = [
   {
     code: "IQ-084",
     topic: "behavioural",
-    level: "medium",
+    level: "MEDIUM",
     question: "Kể về một lần bạn đưa quyết định kỹ thuật sai. Bạn phát hiện và xử lý thế nào?",
     followUps: ["Tín hiệu nào giúp bạn phát hiện ra sai?", "Quy trình của nhóm thay đổi gì sau đó?"],
     rubric: [
@@ -266,7 +266,7 @@ const QUESTIONS: InterviewQuestion[] = [
   {
     code: "IQ-092",
     topic: "behavioural",
-    level: "easy",
+    level: "EASY",
     question: "Bạn xử lý thế nào khi review code của đồng nghiệp và không đồng ý về hướng làm?",
     followUps: ["Bạn dựa vào tiêu chí đo được nào?", "Khi nào thì leo thang và mốc thời gian ra sao?"],
     rubric: [

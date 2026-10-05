@@ -50,10 +50,24 @@ export type SandboxConfig = {
   returnStderr: boolean;
 };
 
+/**
+ * Limits applied when the system RUNS the Python script the AI wrote to generate testcase inputs
+ * (F2-14, BD ADM0301/ADM0501 Khu vực F). Separate from the submission limits: the script is meant to
+ * print a lot, so it gets its own run-time and output caps (RD problem-bank.md:88-91). Global, one set.
+ */
+export type GeneratorSandbox = {
+  maxRuntimeSeconds: number;
+  maxOutputMb: number;
+};
+
+export const GENERATOR_RUNTIME_RANGE = { min: 1, max: 300 } as const;
+export const GENERATOR_OUTPUT_RANGE = { min: 1, max: 1024 } as const;
+
 export type LanguageConfigPage = {
   languages: LanguageConfig[];
   defaults: JudgeDefaults;
   sandbox: SandboxConfig;
+  generator: GeneratorSandbox;
 };
 
 /** Effective limits shown read-only in the table: defaults scaled by the language multipliers. */

@@ -27,13 +27,35 @@ tham chiếu để UI yêu cầu ADMIN chuyển hoặc xoá các câu đó trư�
 toàn. Quyết định này **thay thế** tiểu quyết định 4 (Q6, "phân loại 5 chủ đề cố định") của
 `DEC-2026-0830-interview-bank-crud`; ghi lại như lịch sử, không còn hiệu lực.
 
+### 1.1a. `question_levels` (F6-01)
+
+Danh mục độ khó dùng chung — **dữ liệu do ADMIN quản lý**, cùng cách xử lý với `question_topics` (đã chốt 2026-10-03,
+`DEC-2026-1001-admin-configurable-settings` mục 6). Thay cho ENUM `EASY`/`MEDIUM`/`HARD` từng nằm ở
+`interview_questions.difficulty`; ba mức cũ chỉ còn là dữ liệu seed khởi tạo.
+
+| Cột | Kiểu | Ghi chú |
+| :--- | :--- | :--- |
+| `id` | UUID PK | |
+| `code` | VARCHAR UNIQUE NOT NULL | Slug ổn định, sinh một lần khi tạo, không đổi khi đổi tên. **Không phải ENUM.** 3 dòng seed giữ mã `EASY`, `MEDIUM`, `HARD` (Dễ / Trung bình / Khó). Mức tạo mới: slug sinh từ `display_name` theo cùng quy tắc với `question_topics.code` (cách sinh chốt ở DD) |
+| `display_name` | VARCHAR UNIQUE NOT NULL | Nhãn hiển thị tiếng Việt; ADMIN đổi tên được. Duy nhất không phân biệt hoa thường |
+| `sort_order` | SMALLINT | Thứ tự hiện ở bộ lọc và ô chọn; ADMIN sắp xếp lại được |
+
+**Không có cột màu.** Màu badge không do ADMIN cấu hình: ba mức seed giữ màu cũ ở tầng giao diện, mức ADMIN thêm hiện
+màu trung tính (quyết định 2026-10-03). Nếu sau này cần chọn màu thì thêm cột `color_token` kèm danh sách giá trị cho phép.
+
+Quyền thao tác: **chỉ ADMIN (A3)** tạo, đổi tên, sắp xếp lại, xoá độ khó; A2 (INSTRUCTOR) chỉ chọn. Không giới hạn số
+lượng. Hai bất biến: (1) xoá bị **từ chối khi còn bất kỳ `interview_questions.level_id` trỏ tới** (tính cả câu `RETIRED`);
+API trả số câu đang tham chiếu. (2) **Luôn còn ít nhất một mức**: xoá mức cuối bị từ chối, vì form soạn câu hỏi bắt buộc
+chọn độ khó. Hai lớp bảo vệ như `question_topics`: kiểm ở tầng use case (lỗi nghiệp vụ kèm số đếm) và FK
+`interview_questions.level_id` không `ON DELETE CASCADE`; bất biến (2) chỉ kiểm ở use case vì SQL không có ràng buộc "tối thiểu một dòng".
+
 ### 1.2. `interview_questions` (F6-01, F6-04, F6-05, F6-06, F6-13)
 
 | Cột | Kiểu | Ghi chú |
 | :--- | :--- | :--- |
 | `id` | UUID PK | |
 | `topic_id` | FK → `question_topics.id` | F6-01 |
-| `difficulty` | ENUM(`EASY`,`MEDIUM`,`HARD`) | F6-01 |
+| `level_id` | FK → `question_levels.id` | F6-01 — độ khó. Trước 2026-10-03 là cột `difficulty` ENUM(`EASY`,`MEDIUM`,`HARD`); migration ánh xạ ba giá trị cũ sang ba dòng seed cùng mã |
 | `title` | VARCHAR | |
 | `content_markdown` | TEXT | Nội dung câu hỏi, Markdown |
 | `suggested_approach` | TEXT | F6-04 — hướng tiếp cận gợi ý, dữ liệu tĩnh |
@@ -44,7 +66,7 @@ toàn. Quyết định này **thay thế** tiểu quyết định 4 (Q6, "phân 
 | `created_by` | tham chiếu `identity.users.id`, không FK vật lý | Actor A2/A3 |
 | `created_at` / `updated_at` | TIMESTAMPTZ | |
 
-Index: `(topic_id, difficulty, status)` — lọc danh sách (F6-02); full-text search trên `title` +
+Index: `(topic_id, level_id, status)` — lọc danh sách (F6-02); full-text search trên `title` +
 `content_markdown` (GIN + `to_tsvector`, tiếng Việt không dấu hoá ở tầng ứng dụng nếu cần, `[SoT: Suy
 luận]` — RD chỉ nói "tìm kiếm" F6-02, không chốt công nghệ).
 
@@ -164,7 +186,7 @@ khiển nào liên quan tới "bộ câu hỏi"**. Không tạo `question_sets`,
 
 ## 2. Chỉ mục (index) đáng chú ý — tổng hợp
 
-- `interview_questions(topic_id, difficulty, status)` — lọc danh sách F6-02.
+- `interview_questions(topic_id, level_id, status)` — lọc danh sách F6-02.
 - `interview_questions` full-text search trên `title`/`content_markdown` — tìm kiếm F6-02.
 - `answer_rubrics(question_id, criterion_code)` unique — cấu hình rubric.
 - `bookmarks(user_id, question_id)` unique — F6-03.
@@ -185,7 +207,7 @@ Chế độ luyện là một lượt hỏi-đáp, không phải hội thoại �
 
 ## 4. Migration — thứ tự tạo bảng
 
-`question_topics` (seed 5 dòng khởi tạo, sau đó ADMIN thêm/đổi tên/xoá qua API) → `interview_questions` → `answer_rubrics` → `bookmarks` →
+`question_topics` (seed 5 dòng khởi tạo, sau đó ADMIN thêm/đổi tên/xoá qua API) → `question_levels` (seed 3 dòng, cùng cách) → `interview_questions` → `answer_rubrics` → `bookmarks` →
 `user_answers` → `practice_history` → `recall_ratings`. Không có `question_sets`/`question_set_items` —
 đã bỏ khỏi phạm vi (mục 1.8).
 
@@ -227,6 +249,7 @@ chưa từng đụng tới.
   `DEC-2026-1001-admin-configurable-settings`**: STAR là cờ `question_topics.uses_star_framework`, `BEHAVIORAL`
   xoá/đổi tên được như mọi chủ đề; (c) ~~`topics` của problem-bank (F2-02) chưa đổi~~ — **đã chốt cùng cách
   xử lý**, xem `02-bd/database/problem-bank.md` mục 1.2.
+- Quản lý độ khó (mục 1.1a, chốt 2026-10-03): cách sinh slug `code` cho mức mới (còn mở, chốt ở DD, cùng câu hỏi với chủ đề); màu badge không cấu hình (đã chốt), mở lại nếu chủ dự án cần.
 - Số cụ thể rate-limit Chế độ luyện (mục 5).
 - Danh sách `criterion_code` cụ thể mặc định gợi ý cho A2/A3 khi soạn rubric mới (mục 1.3) — có seed sẵn
   vài tiêu chí phổ biến hay để trống hoàn toàn tự đặt.

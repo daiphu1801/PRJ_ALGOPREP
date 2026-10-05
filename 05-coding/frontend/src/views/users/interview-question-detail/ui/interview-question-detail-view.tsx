@@ -32,6 +32,8 @@ import { useRouter } from "next/navigation";
 import {
   findInterviewQuestionByCode,
   topicLabel,
+  levelLabel,
+  useInterviewLevels,
   useInterviewTopics,
   useRecallAndBookmarkState,
   RecallLevelPicker,
@@ -52,6 +54,7 @@ export function InterviewQuestionDetailView({ questionId }: { questionId: string
   const t = useT("interviewQuestionDetail");
   const router = useRouter();
   const topicList = useInterviewTopics();
+  const levelList = useInterviewLevels();
   const [question] = useState(() => findInterviewQuestionByCode(questionId));
 
   // Hook cần một mảng — câu hỏi đơn lẻ vẫn seed đúng một khoá. Câu hỏi không tồn tại thì mảng rỗng,
@@ -185,7 +188,7 @@ export function InterviewQuestionDetailView({ questionId }: { questionId: string
         <div className="mb-2 flex items-center gap-2">
           <Badge variant="neutral">{topicLabel(topicList, question.topic)}</Badge>
           <span className="text-[11.5px] font-semibold text-[var(--color-text-muted)]">
-            {t(`level.${question.level}`)}
+            {levelLabel(levelList, question.level)}
           </span>
         </div>
         <h1 className="mb-3 text-xl font-semibold text-pretty">{question.question}</h1>

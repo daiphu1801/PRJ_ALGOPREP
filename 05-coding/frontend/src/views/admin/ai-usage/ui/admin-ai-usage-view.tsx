@@ -28,6 +28,7 @@ import {
   type UsageRange,
 } from "../api";
 import { aiBudgetSettings, useModelPrices } from "@/entities/ai-budget";
+import { problemLevelLabel, problemLevelTone, useProblemLevels } from "@/entities/problem";
 import { useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
 import {
@@ -41,7 +42,6 @@ import {
   RankedProgressList,
   SegmentedTabs,
   StackedBarChart,
-  type BadgeVariant,
   type DataTableColumn,
 } from "@/shared/ui";
 
@@ -53,14 +53,9 @@ const FEATURE_COLOR_VAR: Record<AiFeature, string> = {
   testcase: "--color-admin-warn",
 };
 
-const DIFFICULTY_VARIANT: Record<TopProblem["difficulty"], BadgeVariant> = {
-  easy: "success",
-  medium: "warn",
-  hard: "negative",
-};
-
 export function AdminAiUsageView() {
   const t = useT("adminAiUsage");
+  const levelList = useProblemLevels();
   const [page] = useState(fetchAiUsagePage);
   const [range, setRange] = useState<UsageRange>("14d");
   const budgetSettings = aiBudgetSettings.use();
@@ -134,8 +129,8 @@ export function AdminAiUsageView() {
         <span className="block min-w-0">
           <span className="block truncate font-semibold">{problem.name}</span>
           <span className="mt-0.5 flex items-center gap-2 text-[11.5px] text-[var(--color-text-subtle)]">
-            <Badge variant={DIFFICULTY_VARIANT[problem.difficulty]}>
-              {t(`difficulty.${problem.difficulty}`)}
+            <Badge variant={problemLevelTone(levelList, problem.difficulty)}>
+              {problemLevelLabel(levelList, problem.difficulty)}
             </Badge>
             {t("callCount", { count: problem.calls })}
           </span>

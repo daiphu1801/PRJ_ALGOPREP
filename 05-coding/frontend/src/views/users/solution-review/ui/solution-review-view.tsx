@@ -26,6 +26,7 @@ import {
   type SolutionReviewDetail,
 } from "@/entities/solution-review";
 import { ApiError } from "@/shared/api";
+import { problemLevelLabel, useProblemLevels } from "@/entities/problem";
 import { useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
 import { Badge, Button, Card, ConfirmDialog, NoticeTile, Skeleton } from "@/shared/ui";
@@ -152,10 +153,11 @@ function ReadyReport({
   t: ReturnType<typeof useT>;
   onApplyClick: () => void;
 }) {
+  const levelList = useProblemLevels();
   return (
     <>
       <div className="mb-4 flex flex-wrap items-center gap-5">
-        <Stat label={t("statProblem")} value={data.problemTitle} unit={t(`difficulty.${data.difficulty}`)} />
+        <Stat label={t("statProblem")} value={data.problemTitle} unit={problemLevelLabel(levelList, data.difficulty)} />
         <Stat
           label={t("statApproach")}
           value={data.isApproachOptimal ? t("approachOptimal") : t("approachSuboptimal")}

@@ -7,8 +7,14 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Search } from "lucide-react";
-import { fetchSavedProblems, type Difficulty, type SavedProblem, type SolveState } from "@/entities/problem";
+import {
+  fetchSavedProblems,
+  problemLevelLabel,
+  problemLevelTone,
+  useProblemLevels,
+  type SavedProblem,
+  type SolveState,
+} from "@/entities/problem";
 import { useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
 import {
@@ -18,18 +24,12 @@ import {
   DataTable,
   EmptyState,
   PageHeader,
-  SegmentedTabs,
+  FilterBar,
+  FilterMenu,
   StatCard,
-  TextField,
   type BadgeVariant,
   type DataTableColumn,
 } from "@/shared/ui";
-
-const DIFFICULTY_VARIANT: Record<Difficulty, BadgeVariant> = {
-  easy: "success",
-  medium: "warn",
-  hard: "negative",
-};
 
 const SOLVE_STATE_VARIANT: Record<SolveState, BadgeVariant> = {
   solved: "success",
@@ -38,10 +38,11 @@ const SOLVE_STATE_VARIANT: Record<SolveState, BadgeVariant> = {
 };
 
 type StatusFilter = SolveState | "all";
-type DifficultyFilter = Difficulty | "all";
+type DifficultyFilter = string;
 
 export function SavedProblemsView() {
   const t = useT("savedProblems");
+  const levels = useProblemLevels();
   const [all, setAll] = useState(fetchSavedProblems);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<StatusFilter>("all");
@@ -82,8 +83,8 @@ export function SavedProblemsView() {
             <span className="mr-1.5 font-mono text-xs text-[var(--color-text-muted)]">{problem.code}</span>
             {problem.title}
           </Link>
-          <Badge variant={DIFFICULTY_VARIANT[problem.difficulty]} className="mt-1">
-            {t(`difficulty.${problem.difficulty}`)}
+          <Badge variant={problemLevelTone(levels, problem.difficulty)} className="mt-1">
+            {problemLevelLabel(levels, problem.difficulty)}
           </Badge>
         </div>
       ),
@@ -156,31 +157,25 @@ export function SavedProblemsView() {
       </div>
 
       <Card className="min-w-0 px-[18px] py-4">
-        <div className="mb-3.5 flex flex-wrap items-center gap-2.5">
-          <TextField
-            label={t("filter.searchLabel")}
-            hideLabel
-            leadingIcon={<Search className="h-3.5 w-3.5" />}
-            placeholder={t("filter.searchPlaceholder")}
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") announceSearch();
-            }}
-            wrapperClassName="min-w-[220px] flex-1"
-          />
-          <SegmentedTabs
+        <FilterBar
+          search={{
+            label: t("filter.searchLabel"),
+            placeholder: t("filter.searchPlaceholder"),
+            value: query,
+            onChange: (next) => setQuery(next),
+            onSubmit: announceSearch,
+          }}
+        >
+          <FilterMenu
             label={t("filter.difficultyLabel")}
             value={difficulty}
             onValueChange={setDifficulty}
             options={[
               { value: "all", label: t("filter.all") },
-              { value: "easy", label: t("difficulty.easy") },
-              { value: "medium", label: t("difficulty.medium") },
-              { value: "hard", label: t("difficulty.hard") },
+                            ...levels.map((level) => ({ value: level.key, label: level.label })),
             ]}
           />
-          <SegmentedTabs
+          <FilterMenu
             label={t("filter.statusLabel")}
             value={status}
             onValueChange={setStatus}
@@ -191,7 +186,7 @@ export function SavedProblemsView() {
               { value: "todo", label: t("state.todo") },
             ]}
           />
-        </div>
+        </FilterBar>
 
         {all.length === 0 ? (
           <EmptyState>{t("emptyAll")}</EmptyState>

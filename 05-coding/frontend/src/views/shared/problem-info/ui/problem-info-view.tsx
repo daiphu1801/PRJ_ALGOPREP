@@ -20,16 +20,33 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import {
   AI_GUARD_KEYS,
+  SPEC_LANGUAGES,
   TESTCASE_CATEGORIES,
+  exceedsSchema,
+  renderSignature,
   useProblemDraft,
+  problemLevelLabel,
+  problemLevelTone,
   problemTopicLabel,
+  useProblemLevels,
   useProblemTopics,
   type AiGuardKey,
   type ProblemLimits,
   type TestcaseCategory,
 } from "@/entities/problem";
+import { isNotFound } from "@/shared/api";
 import { useT } from "@/shared/i18n";
-import { Badge, Button, Card, ErrorState, IconAction, MarkdownPreview, PageHeader, Skeleton } from "@/shared/ui";
+import {
+  Badge,
+  Button,
+  Card,
+  EmptyState,
+  ErrorState,
+  IconAction,
+  MarkdownPreview,
+  PageHeader,
+  Skeleton,
+} from "@/shared/ui";
 
 const LIMIT_KEYS: (keyof ProblemLimits)[] = [
   "timeLimitMs",
@@ -37,8 +54,6 @@ const LIMIT_KEYS: (keyof ProblemLimits)[] = [
   "outputLimitKb",
   "stackLimitMb",
 ];
-
-const DIFFICULTY_VARIANT = { easy: "success", medium: "warn", hard: "negative" } as const;
 
 type Props = {
   /** Route param, e.g. "121" — the list links with the code minus its "#". */
@@ -50,9 +65,11 @@ type Props = {
 export function ProblemInfoView({ problemId, basePath }: Props) {
   const t = useT("problemInfo");
   const ta = useT("problemAuthoring");
+  const levelList = useProblemLevels();
   const topicList = useProblemTopics();
   const query = useProblemDraft(problemId);
 
+  if (isNotFound(query.error)) return <EmptyState>{t("notFound")}</EmptyState>;
   if (query.isError) return <ErrorState>{t("loadFailed")}</ErrorState>;
   if (!query.data) {
     return (
@@ -134,6 +151,50 @@ export function ProblemInfoView({ problemId, basePath }: Props) {
             </div>
           </Card>
 
+          <Card title={t("specTitle")} description={t("specSubtitle")}>
+            {exceedsSchema(draft.spec) ? (
+              <p className="mb-3 text-[12.5px] text-[var(--color-text-muted)]">{ta("spec.wrapperUnsupportedBody")}</p>
+            ) : (
+              <ul className="mb-4 flex flex-col gap-2">
+                {SPEC_LANGUAGES.map((language) => (
+                  <li key={language} className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
+                    <span className="w-16 shrink-0 text-[12px] font-semibold text-[var(--color-text-subtle)]">
+                      {ta(`spec.language.${language}`)}
+                    </span>
+                    <code className="min-w-0 overflow-x-auto font-mono text-[12.5px] whitespace-pre">
+                      {renderSignature(draft.spec.signature, language)}
+                    </code>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <dl className="flex flex-col gap-3 text-[12.5px]">
+              <div>
+                <dt className="mb-1 text-[11px] font-semibold tracking-[0.07em] text-[var(--color-text-subtle)] uppercase">
+                  {ta("spec.stdinFormat")}
+                </dt>
+                <dd className="whitespace-pre-wrap">{draft.spec.stdinFormat}</dd>
+              </div>
+              <div>
+                <dt className="mb-1 text-[11px] font-semibold tracking-[0.07em] text-[var(--color-text-subtle)] uppercase">
+                  {ta("spec.stdoutFormat")}
+                </dt>
+                <dd className="whitespace-pre-wrap">{draft.spec.stdoutFormat}</dd>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <dt className="text-[11px] font-semibold tracking-[0.07em] text-[var(--color-text-subtle)] uppercase">
+                  {ta("spec.matchingStrategy")}
+                </dt>
+                <dd className="flex items-center gap-2">
+                  <Badge variant="neutral">{draft.spec.matchingStrategy}</Badge>
+                  {draft.spec.matchingStrategy === "EPSILON" ? (
+                    <span className="font-mono">{draft.spec.epsilon}</span>
+                  ) : null}
+                </dd>
+              </div>
+            </dl>
+          </Card>
+
           <Card title={ta("coverageTitle")} description={ta("coverageSubtitle")}>
             <div className="flex flex-wrap gap-2">
               {coverage.map((row) => (
@@ -158,8 +219,8 @@ export function ProblemInfoView({ problemId, basePath }: Props) {
               <div className="flex items-center justify-between gap-2">
                 <dt className="text-[var(--color-text-subtle)]">{ta("difficultyLabel")}</dt>
                 <dd>
-                  <Badge variant={DIFFICULTY_VARIANT[draft.difficulty]}>
-                    {ta(`difficulty.${draft.difficulty}`)}
+                  <Badge variant={problemLevelTone(levelList, draft.difficulty)}>
+                    {problemLevelLabel(levelList, draft.difficulty)}
                   </Badge>
                 </dd>
               </div>

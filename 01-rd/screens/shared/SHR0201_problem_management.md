@@ -26,7 +26,7 @@ khu Giảng viên không có mockup riêng trong `09-layoutBase/`, xem `06-plan/
 **Cập nhật 2026-10-03:** khu Giảng viên đã dựng bằng code Next.js, cùng một view, nhận prop bắt buộc `basePath`
 (gốc của khu, `/admin/problems` hoặc `/instructor/problems`) nên liên kết dòng, nút "Bài tập mới" không còn
 gắn cứng `/admin`
-[SoT: 05-coding/frontend/src/views/shared/problem-management/ui/problem-management-view.tsx:69-76, 167-169, 261, 297].
+[SoT: 05-coding/frontend/src/views/shared/problem-management/ui/problem-management-view.tsx:81-86, 267, 361, 408].
 Từ đây, khi code và mockup lệch nhau thì **code là hiện trạng**; mockup chỉ còn là lịch sử. File này mô tả
 **hành vi và UX ở mức yêu cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/problem-bank.md` (mục F2), chỉ
 trỏ tới và bổ sung phần đặc thù của màn.
@@ -106,7 +106,7 @@ Q3 → Q5. **Trạng thái vòng đời bài toán đã có mã** — `F2-15` (c
    thanh tiêu đề (mục 2 dưới đây, điểm 2). Các chỉ số dẫn xuất của F2-15 (Q5) giữ nguyên là định nghĩa nghiệp
    vụ, chỉ không còn thẻ riêng trên màn này.
 4. **Thanh lọc và tìm kiếm** — ô tìm "theo mã bài hoặc tiêu đề"
-   [SoT: 09-layoutBase/Admin - Quản lý bài tập.dc.html:181], tab độ khó `Tất cả / Easy / Medium / Hard`, tab
+   [SoT: 09-layoutBase/Admin - Quản lý bài tập.dc.html:181], tab độ khó (prototype ghi `Tất cả / Easy / Medium / Hard`; Độ khó do ADMIN quản lý (danh mục dữ liệu; ba mức Dễ/Trung bình/Khó chỉ là dữ liệu khởi tạo), không gắn logic; `DEC-2026-1001-admin-configurable-settings` mục 7), tab
    trạng thái `Tất cả / Đã xuất bản / Chưa xuất bản` (nhãn prototype ghi "Bản nháp"), và bộ đếm kết quả
    [SoT: 09-layoutBase/Admin - Quản lý bài tập.dc.html:584-588]. Lọc và tìm đều reset về trang 1
    [SoT: 09-layoutBase/Admin - Quản lý bài tập.dc.html:473, 587].
@@ -122,9 +122,12 @@ Q3 → Q5. **Trạng thái vòng đời bài toán đã có mã** — `F2-15` (c
    sửa/xoá [SoT: 09-layoutBase/Admin - Quản lý bài tập.dc.html:209-232]. **Cập nhật 2026-10-01:** UI Next.js hiển
    thị nhóm nút này dưới dạng hai nút chỉ có icon (bút chì = Sửa, thùng rác = Xoá, màu cảnh báo cho Xoá),
    tên hành động hiện ở tooltip nhỏ bên dưới khi rê chuột hoặc focus bàn phím
-   [SoT: 05-coding/frontend/src/views/shared/problem-management/ui/problem-management-view.tsx:250-272]. 7 cột sắp xếp được, đảo chiều khi
-   bấm lại cùng cột [SoT: 09-layoutBase/Admin - Quản lý bài tập.dc.html:518-528]. Cột AC đổi màu theo ngưỡng
-   60% và 35% [SoT: 09-layoutBase/Admin - Quản lý bài tập.dc.html:539].
+   [SoT: 05-coding/frontend/src/views/shared/problem-management/ui/problem-management-view.tsx:351-372]. 7 cột sắp xếp được, đảo chiều khi
+   bấm lại cùng cột [SoT: 09-layoutBase/Admin - Quản lý bài tập.dc.html:518-528]. Cột AC hiển thị con số phần
+   trăm. ~~Cột AC đổi màu theo ngưỡng 60% và 35% [SoT: 09-layoutBase/Admin - Quản lý bài tập.dc.html:539].~~
+   **Đã bỏ yêu cầu đổi màu theo ngưỡng 60% và 35% (quyết định của owner 2026-10-05):** chỉ hiển thị con số,
+   không yêu cầu màu theo ngưỡng. Bản dựng hiện chỉ in số
+   [SoT: 05-coding/frontend/src/views/shared/problem-management/ui/problem-management-view.tsx:329-337].
 7. **Phân trang** — 8 dòng mỗi trang, nút Trước/Sau và số trang, nhãn "Trang x / y · hiển thị n dòng"
    [SoT: 09-layoutBase/Admin - Quản lý bài tập.dc.html:236-245, 513-516, 595].
 8. **Khối "Phân bố theo chủ đề"** — thanh tỉ lệ theo từng chủ đề
@@ -162,7 +165,7 @@ Q3 → Q5. **Trạng thái vòng đời bài toán đã có mã** — `F2-15` (c
   — thuộc BD (`02-bd/screens/shared/SHR0201_problem_management.md`).
 - Hợp đồng API (danh sách bài toán phía quản trị kèm phân trang/lọc/sắp xếp, đổi trạng thái, xoá, thao tác
   lô, thống kê kho) — thuộc DD (`03-dd/api/problem-bank.md`, chưa viết).
-- Đặc tả nội dung bài toán: Markdown + LaTeX, chữ ký hàm ba ngôn ngữ, chiến lược so khớp, giới hạn tài
+- Đặc tả nội dung bài toán: Markdown + LaTeX, chữ ký hàm, chiến lược so khớp, giới hạn tài
   nguyên, testcase — thuộc màn con `01-rd/screens/shared/SHR0202_problem_authoring.md`, không viết lại ở đây.
 - Xoá bài toán (Q2), vòng đời bài toán (Q2), nhập/xuất/nhân bản (Q4), thống kê kho (Q5) — **tất cả đã chốt
   2026-08-31**, xem `01-rd/req/problem-bank.md` F2-15, F2-16, F2-17.

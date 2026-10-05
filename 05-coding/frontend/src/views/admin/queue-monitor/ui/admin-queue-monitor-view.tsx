@@ -38,7 +38,7 @@ import {
   ParamsDialog,
   ProgressBar,
   RankedProgressList,
-  SegmentedTabs,
+  FilterMenu,
   SettingRow,
   Toggle,
   type BadgeVariant,
@@ -289,7 +289,7 @@ export function AdminQueueMonitorView() {
         description={t("jobsSubtitle")}
         className="mb-4 min-w-0"
         action={
-          <SegmentedTabs
+          <FilterMenu
             label={t("jobFilterLabel")}
             value={filter}
             onValueChange={setFilter}

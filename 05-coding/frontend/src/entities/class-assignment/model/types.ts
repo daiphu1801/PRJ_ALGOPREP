@@ -1,7 +1,8 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 import { z } from "zod";
 
-export const difficultySchema = z.enum(["EASY", "MEDIUM", "HARD"]);
+// A level key from the admin-managed problem levels (entities/problem/model/level-store), not a fixed enum.
+export const difficultySchema = z.string().min(1);
 export type Difficulty = z.infer<typeof difficultySchema>;
 
 // classAssignments.assignmentList.* (02-bd/screens/teacher/INS0202_class_assignments.md Sheet 5 Khu vực C).

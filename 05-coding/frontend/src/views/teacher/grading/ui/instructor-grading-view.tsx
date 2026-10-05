@@ -27,7 +27,7 @@ import {
 } from "@/entities/manual-grading";
 import { useT } from "@/shared/i18n";
 import { toast, toastFirstError } from "@/shared/lib/toast-store";
-import { Badge, Button, Card, DataTable, Modal, PageHeader, SegmentedTabs, TextArea, TextField, type DataTableColumn } from "@/shared/ui";
+import { Badge, Button, Card, DataTable, Modal, PageHeader, FilterMenu, TextArea, TextField, type DataTableColumn } from "@/shared/ui";
 
 export function InstructorGradingView() {
   const t = useT("instructorGrading");
@@ -83,7 +83,7 @@ export function InstructorGradingView() {
           their list + filter bar. Deliberate divergence from the mockup's own per-screen strip. */}
       <Card>
         <div className="mb-3.5 flex flex-wrap items-center gap-2.5">
-          <SegmentedTabs
+          <FilterMenu
             label={t("filter.statusTabs")}
             value={status}
             onValueChange={setStatus}
@@ -94,7 +94,7 @@ export function InstructorGradingView() {
             ]}
           />
           {classes.length > 1 ? (
-            <SegmentedTabs
+            <FilterMenu
               label={t("filter.classTabs")}
               value={classTab}
               onValueChange={setClassTab}

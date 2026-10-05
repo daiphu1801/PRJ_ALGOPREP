@@ -3,11 +3,14 @@
 // Reached only through entities/problem/api/queries.ts (`withMockData`), so wiring the backend is
 // a change there; the screens never import from here.
 import { ApiError } from "@/shared/api";
+import { aiGenerationSettings } from "../../model/generation-settings-store";
+import { assertViewerCanSeeProblem } from "../../model/mock-ownership";
 import type {
   GenerateTestcasesInput,
   GenerateTestcasesResult,
   ProblemDraft,
   ProblemDraftRecord,
+  ProblemSpec,
   Testcase,
 } from "../../model/draft-types";
 
@@ -43,16 +46,29 @@ function recall(problemId: string | undefined): StoredRecord | null {
   if (!problemId) return null;
   try {
     const raw = window.localStorage.getItem(SAVED_KEY(problemId));
-    return raw ? (JSON.parse(raw) as StoredRecord) : null;
+    if (!raw) return null;
+    const record = JSON.parse(raw) as StoredRecord;
+    // A copy saved before the spec tab (or with the old three-row spec) gets the sample spec.
+    if (!record.draft.spec?.signature || hasLegacyType(record.draft.spec)) record.draft.spec = sampleSpec();
+    return record;
   } catch {
     return null;
   }
 }
 
+// A copy saved while `of` was still a plain string (before nested types) cannot be read any more.
+function hasLegacyType(spec: ProblemSpec): boolean {
+  const legacy = (type: { of?: unknown } | undefined): boolean =>
+    !!type && (typeof type.of === "string" || legacy(type.of as { of?: unknown } | undefined));
+  const { returnType, parameters } = spec.signature;
+  return legacy(returnType) || parameters.some((parameter) => legacy(parameter.type));
+}
+
 /** `GetProblemForAuthoring`. Every id shows the sample problem until it has been saved here. */
 export async function loadProblemDraft(problemId?: string): Promise<ProblemDraftRecord> {
+  if (problemId) assertViewerCanSeeProblem(problemId);
   await wait(150);
-  const aiGeneration = { used: generationsUsed(problemId), limit: GENERATION_LIMIT };
+  const aiGeneration = { used: generationsUsed(problemId), limit: generationLimit() };
   return { ...(recall(problemId) ?? { draft: sampleProblemDraft(), savedAt: null }), aiGeneration };
 }
 
@@ -79,7 +95,8 @@ export async function publishProblem(draft: ProblemDraft, problemId?: string): P
 //   ?aiMock=error  the script exceeds the output-size cap, nothing is added, no attempt is counted
 //   ?aiMock=warn   only some inputs survive, and the largest case times out on the reference solution
 //   (absent)       four drafts per batch, one input dropped
-const GENERATION_LIMIT = 2;
+// The cap is the ADMIN setting on the AI config screen (default 2), read at call time.
+const generationLimit = () => aiGenerationSettings.get().maxPerProblem;
 const RUN_MS = 2400;
 
 function aiMockMode(): string | null {
@@ -118,7 +135,7 @@ const BATCHES: Generated[][] = [
 /** `GenerateTestcasesWithAi`: the reference solution is never an input (RD F2-14 step 2). */
 export async function generateTestcasesWithAi(input: GenerateTestcasesInput): Promise<GenerateTestcasesResult> {
   const used = generationsUsed(input.problemId);
-  if (used >= GENERATION_LIMIT) {
+  if (used >= generationLimit()) {
     throw new ApiError("AI_GENERATION_LIMIT_REACHED", 429, "Per-problem generation quota used up");
   }
   const mode = aiMockMode();
@@ -174,7 +191,7 @@ function sampleProblemDraft(): ProblemDraft {
       "s và t chỉ gồm chữ cái tiếng Anh in hoa và in thường",
     ].join("\n"),
     topic: "String",
-    difficulty: "hard",
+    difficulty: "HARD",
     status: "published",
     limits: {
       timeLimitMs: 2000,
@@ -236,9 +253,30 @@ function sampleProblemDraft(): ProblemDraft {
     ],
     // F2-18: the reference solution passed every testcase that existed when it was last run.
     solutionCheck: { ran: true, passed: 5, total: 5 },
+    spec: sampleSpec(),
     aiBrief:
       "Bài này dạy kỹ thuật cửa sổ trượt với bộ đếm. Nếu người học kẹt, hỏi ngược về cách theo dõi số ký tự còn thiếu thay vì đưa thẳng vòng lặp.",
     // The mockup's third flag belongs to the cut tiered-hint feature — see the model file.
     aiGuards: { noFullCode: true, socraticOnly: true },
+  };
+}
+
+// Spec of the sample problem (Minimum Window Substring): two strings in, one string out. One shared
+// signature; Java and C++ spell it minWindow, Python min_window, derived from the shared name.
+function sampleSpec(): ProblemSpec {
+  return {
+    signature: {
+      functionName: "min_window",
+      returnType: { kind: "STRING" },
+      parameters: [
+        { id: "p1", name: "s", type: { kind: "STRING" } },
+        { id: "p2", name: "t", type: { kind: "STRING" } },
+      ],
+      nameOverrides: {},
+    },
+    stdinFormat: "Dòng 1: chuỗi `s`.\nDòng 2: chuỗi `t`.",
+    stdoutFormat: "Một dòng: cửa sổ nhỏ nhất của `s` chứa đủ ký tự của `t`, hoặc dòng rỗng nếu không có.",
+    matchingStrategy: "EXACT",
+    epsilon: "",
   };
 }

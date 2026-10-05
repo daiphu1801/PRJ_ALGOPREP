@@ -74,7 +74,7 @@ export type ProblemDraft = {
   body: string;
   constraints: string;
   topic: string;
-  difficulty: "easy" | "medium" | "hard";
+  difficulty: string;
   status: "draft" | "published";
   limits: ProblemLimits;
   solutionLanguage: string;
@@ -86,6 +86,7 @@ export type ProblemDraft = {
    * (F2-14 needs >= 2 author-written Sample rows that the reference solution passes) and publish.
    */
   solutionCheck: { ran: boolean; passed: number; total: number };
+  spec: ProblemSpec;
   aiBrief: string;
   aiGuards: Record<AiGuardKey, boolean>;
 };
@@ -123,3 +124,71 @@ export type GenerateTestcasesResult = {
   /** The largest case failed or timed out on the reference solution: F2-10 limit may be wrong. */
   largestCaseWarning: boolean;
 };
+
+// ---------------------------------------------------------------------------------------------
+// Problem spec: the "Đặc tả" tab (F2-03, F2-04; BD SHR0202 Sheet 5 Khu vực F). It feeds the harness
+// (function-wrapper model) and Standard I/O. Simple prototype: one level of container type, no nested
+// type picker (BD SHR0202 Q10).
+// ---------------------------------------------------------------------------------------------
+
+/** Element-level kinds of the harness type schema (02-bd/architecture/harness.md section 4.2). */
+export type ScalarKind = "INT" | "LONG" | "DOUBLE" | "BOOLEAN" | "CHAR" | "STRING";
+
+export const SCALAR_KINDS: ScalarKind[] = ["INT", "LONG", "DOUBLE", "BOOLEAN", "CHAR", "STRING"];
+
+/**
+ * `OTHER` is a prototype affordance, not a schema kind: it stands for "a type the schema cannot
+ * express" so the F3-13 warning (problem falls back to Standard I/O only) can be shown. The real
+ * server derives that flag from the saved JSON.
+ */
+export type TypeKind = ScalarKind | "ARRAY" | "LIST" | "LINKED_LIST" | "BINARY_TREE" | "OTHER";
+
+export const TYPE_KINDS: TypeKind[] = [...SCALAR_KINDS, "ARRAY", "LIST", "LINKED_LIST", "BINARY_TREE", "OTHER"];
+
+/** Kinds that carry an element type (`of`); ARRAY also carries a dimension count. */
+export const CONTAINER_KINDS: TypeKind[] = ["ARRAY", "LIST", "LINKED_LIST", "BINARY_TREE"];
+
+export type SpecType = {
+  kind: TypeKind;
+  /** Element type of a container; only LIST may hold a container (nesting, up to MAX_TYPE_NESTING levels). */
+  of?: SpecType;
+  /** ARRAY only: 1 to 3. */
+  dimensions?: number;
+};
+
+export type SpecParameter = { id: string; name: string; type: SpecType };
+
+export type SpecLanguage = "java" | "cpp" | "python";
+
+export const SPEC_LANGUAGES: SpecLanguage[] = ["java", "cpp", "python"];
+
+/**
+ * ONE signature per problem (owner 2026-10-03, replaces three per-language rows): the harness maps
+ * the types to each language itself, so only the spelling of the function name differs.
+ */
+export type FunctionSignature = {
+  /** Shared name, typed in either snake_case or camelCase; each language's spelling is derived from it. */
+  functionName: string;
+  returnType: SpecType;
+  /** Order matters; names appear in the starter code and in how a sample testcase is displayed. */
+  parameters: SpecParameter[];
+  /** Optional spelling that replaces the derived name for one language. */
+  nameOverrides: Partial<Record<SpecLanguage, string>>;
+};
+
+export type MatchingStrategy = "EXACT" | "TRIMMED" | "EPSILON" | "UNORDERED_SET";
+
+export const MATCHING_STRATEGIES: MatchingStrategy[] = ["EXACT", "TRIMMED", "EPSILON", "UNORDERED_SET"];
+
+export type ProblemSpec = {
+  /** The one shared function signature. */
+  signature: FunctionSignature;
+  stdinFormat: string;
+  stdoutFormat: string;
+  matchingStrategy: MatchingStrategy;
+  /** Tolerance, kept as text so a half-typed number does not jump around; used when EPSILON. */
+  epsilon: string;
+};
+
+/** How many container levels one type may nest, e.g. `List<List<List<int>>>` is 3 (BD SHR0202 Q10). */
+export const MAX_TYPE_NESTING = 3;

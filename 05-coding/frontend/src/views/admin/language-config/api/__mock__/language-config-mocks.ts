@@ -1,7 +1,13 @@
 // PROTOTYPE mock — no backend endpoint exists yet (05-coding/backend has no Controller).
 // Values copied verbatim from 09-layoutBase/Admin - Ngôn ngữ và giới hạn.dc.html:402-428 so the
 // screen can be reviewed against the mockup without inventing numbers.
-import type { JudgeDefaults, LanguageConfig, LanguageConfigPage, SandboxConfig } from "../../model/types";
+import type {
+  GeneratorSandbox,
+  JudgeDefaults,
+  LanguageConfig,
+  LanguageConfigPage,
+  SandboxConfig,
+} from "../../model/types";
 
 // dc.html:402-405. `factor` there is a display string ("x3,0"); stored here as the number it means.
 const LANGUAGES: LanguageConfig[] = [
@@ -52,10 +58,30 @@ const SANDBOX: SandboxConfig = {
   returnStderr: true,
 };
 
-export function fetchLanguageConfigPage(): LanguageConfigPage {
+// BD ADM0501 Khu vực F: defaults are the BD's own guess, not an RD figure (Q10).
+const GENERATOR: GeneratorSandbox = { maxRuntimeSeconds: 30, maxOutputMb: 100 };
+
+// The last save, kept for the session so reopening the screen shows it; the real call reads the
+// server. Not persisted: a page reload goes back to the seed values above.
+let current: LanguageConfigPage | null = null;
+
+function seed(): LanguageConfigPage {
   return {
     languages: LANGUAGES.map((language) => ({ ...language })),
     defaults: { ...DEFAULTS },
     sandbox: { ...SANDBOX },
+    generator: { ...GENERATOR },
   };
+}
+
+/** `GetLanguageConfigs`. */
+export async function loadLanguageConfigPage(): Promise<LanguageConfigPage> {
+  await new Promise((resolve) => setTimeout(resolve, 150));
+  return structuredClone(current ?? seed());
+}
+
+/** `UpdateLanguageConfigs`. The delay stands in for the round trip so the saving state is reviewable. */
+export async function saveLanguageConfigPage(page: LanguageConfigPage): Promise<void> {
+  await new Promise((resolve) => setTimeout(resolve, 600));
+  current = structuredClone(page);
 }

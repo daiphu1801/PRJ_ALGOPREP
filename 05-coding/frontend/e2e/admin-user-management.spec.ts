@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { pickFilter } from "./filter-menu";
 
 /**
  * PROTOTYPE screen check for admin_user_management. Covers the selection + bulk-action flow, which
@@ -14,7 +15,7 @@ test("filters combine and the result count follows them", async ({ page }) => {
   const rows = page.getByRole("table", { name: "Danh sách tài khoản" }).locator("tbody tr");
   await expect(rows).toHaveCount(9);
 
-  await page.getByRole("group", { name: "Lọc theo vai trò" }).getByRole("button", { name: "Giảng viên" }).click();
+  await pickFilter(page, "Lọc theo vai trò", "Giảng viên");
   await expect(rows).toHaveCount(2);
 
   await page.getByLabel("Tìm người dùng").fill("bklinh");
@@ -30,7 +31,7 @@ test("selecting rows reveals bulk actions and locking asks for confirmation firs
 
   await page.getByRole("checkbox", { name: "Chọn Nguyễn Văn An" }).check();
   await page.getByRole("checkbox", { name: "Chọn Trần Thị Bích" }).check();
-  await expect(page.getByText("Đã chọn 2 tài khoản")).toBeVisible();
+  await expect(page.getByText("Đã chọn 2 tài khoản").last()).toBeVisible();
 
   await page.getByRole("button", { name: "Khóa tài khoản", exact: true }).first().click();
 
@@ -40,20 +41,20 @@ test("selecting rows reveals bulk actions and locking asks for confirmation firs
   await expect(dialog).toContainText("Khóa 2 tài khoản?");
 
   await dialog.getByRole("button", { name: "Huỷ" }).click();
-  await expect(page.getByText("Đã chọn 2 tài khoản")).toBeVisible();
+  await expect(page.getByText("Đã chọn 2 tài khoản").last()).toBeVisible();
 
   await page.getByRole("button", { name: "Khóa tài khoản", exact: true }).first().click();
   await page.getByRole("dialog").getByRole("button", { name: "Khóa tài khoản" }).click();
-  await expect(page.getByText("Đã chọn 2 tài khoản")).toHaveCount(0);
+  await expect(page.getByText("Đã chọn 2 tài khoản").last()).toHaveCount(0);
 });
 
 test("select-all covers only the rows currently visible", async ({ page }) => {
   await page.goto("/admin/users");
 
-  await page.getByRole("group", { name: "Lọc theo vai trò" }).getByRole("button", { name: "Quản trị" }).click();
+  await pickFilter(page, "Lọc theo vai trò", "Quản trị");
   await page.getByRole("checkbox", { name: "Chọn tất cả tài khoản đang hiển thị" }).check();
 
-  await expect(page.getByText("Đã chọn 1 tài khoản")).toBeVisible();
+  await expect(page.getByText("Đã chọn 1 tài khoản").last()).toBeVisible();
 });
 
 for (const theme of ["light", "dark"] as const) {

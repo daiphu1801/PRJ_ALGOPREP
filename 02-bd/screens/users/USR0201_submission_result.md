@@ -51,7 +51,7 @@
 | Tên vật lý (slug) | `submission_result` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`) |
-| Phiên bản | V0.2 |
+| Phiên bản | V0.3 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/22 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
@@ -66,6 +66,7 @@
 | V0.1 | Toàn bộ | Tạo mới theo mẫu 9 sheet. Chốt cơ chế realtime WebSocket per-testcase (`/topic/submissions/{id}`), công thức Beats F4-12, hiển thị điểm tỷ lệ F4-13, che giấu testcase ẩn F2-08, ánh xạ lỗi biên dịch F3-11/F3-12 và phân quyền truy cập kết quả bài nộp | 2026/09/22 | Nhóm phát triển AlgoPrep |
 | V0.2 | Sheet 3, 5, 7.3, 6, Câu hỏi mở | Viết lại Sheet 3 theo khuôn "Danh sách chuyển màn" 6 thẻ + sơ đồ Mermaid; viết lại Sheet 5 theo khuôn 14 cột (thêm Bảng DB/Cột DB, mỗi item một dòng); bỏ cột "Phương thức & URL dự kiến" ở Sheet 7.3 (đường dẫn API thuộc `03-dd/api/`, chưa viết). Sửa nguồn `beats_percent`: không phải cột DB, là giá trị tính tại thời điểm đọc theo công thức ở `02-bd/architecture/judge-orchestration.md:224-229`. Sửa cột testcase Mẫu/Ẩn về đúng tên thật `testcases.visibility` (không phải `is_sample`), input/expected về `input_inline`/`expected_output_inline`. Bổ sung điều kiện ẩn hẳn bảng testcase khi `status = COMPILE_ERROR` (Sheet 6 Khu vực D NO 1, theo Q3 đã chốt ở RD). Phát hiện thêm: chưa có cột lưu output thực tế của testcase mẫu — thêm Câu hỏi mở Q4 | 2026/09/24 | Nhóm phát triển AlgoPrep |
 | V0.2 | Sheet 6, 8 | Kết quả sao chép mã nguồn báo bằng toast thay vì đổi nhãn nút; giữ nguyên vùng không tìm thấy bài nộp và khối lỗi biên dịch. Theo `DEC-2026-1003-toast-feedback-channel`. | 2026/10/03 | AI |
+| V0.3 | Sheet 4, 5, 7 | Đồng bộ `DEC-2026-1001-admin-configurable-settings` mục (7): độ khó bài tập là danh mục do ADMIN quản lý (bảng riêng `problem_levels`), không còn enum cố định. DTO `SubmissionDetailDto.difficulty` thành `levelCode`/`levelDisplayName` đọc qua `problems.level_id`; badge độ khó hiển thị `display_name` từ dữ liệu; thêm `problem.problem_levels` vào danh sách bảng và Truy cập bảng. Màn chỉ hiển thị nhãn, không lọc và không gọi `ListProblemLevels` (nhãn nằm sẵn trong phản hồi); độ khó không gắn logic nào | 2026/10/03 | AI |
 
 ---
 
@@ -190,7 +191,7 @@ flowchart LR
 
 | STT | Tên DTO | Mô tả | Chi tiết trường |
 | :-: | :--- | :--- | :--- |
-| 1 | `SubmissionDetailDto` | Thông tin chi tiết một lượt nộp | `id`, `problemId`, `problemCode`, `problemTitle`, `difficulty`, `language`, `submissionMode`, `status`, `verdict`, `score`, `runtimeMs`, `memoryMb`, `beatsPercent`, `passedCount`, `totalCount`, `submittedAt`, `completedAt`, `errorMessage`, `sourceCode` |
+| 1 | `SubmissionDetailDto` | Thông tin chi tiết một lượt nộp | `id`, `problemId`, `problemCode`, `problemTitle`, `levelCode`, `levelDisplayName`, `language`, `submissionMode`, `status`, `verdict`, `score`, `runtimeMs`, `memoryMb`, `beatsPercent`, `passedCount`, `totalCount`, `submittedAt`, `completedAt`, `errorMessage`, `sourceCode` |
 | 2 | `SubmissionTestcaseResultDto` | Kết quả chi tiết một testcase | `testcaseIndex`, `isSample`, `status`, `runtimeMs`, `memoryMb`, `input` (nullable, chỉ sample), `expectedOutput` (nullable, chỉ sample), `actualOutput` (nullable, chỉ sample) |
 | 3 | `SubmissionProgressEventDto` | Sự kiện cập nhật qua WebSocket | `submissionId`, `testcaseIndex`, `status`, `runtimeMs`, `memoryMb`, `isCompleted`, `finalVerdict`, `score` |
 
@@ -202,6 +203,7 @@ flowchart LR
 | 2 | `judge.submission_testcase_results` | Kết quả chấm từng testcase | R | `judge-orchestration` |
 | 3 | `problem.problems` | Thông tin tiêu đề, mã bài, độ khó | R | `problem-bank` |
 | 4 | `problem.testcases` | Thông tin testcase mẫu để hiện input/output | R | `problem-bank` |
+| 5 | `problem.problem_levels` | Nhãn độ khó của bài (`display_name`), đọc qua join `problems.level_id` [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`] | R | `problem-bank` |
 
 ### 4.4. Vùng bố cục bám prototype
 
@@ -252,7 +254,7 @@ Bố cục dạng luồng dọc đơn cột (Single-column layout), chia thành 
 | | 2 | Nhãn Verdict chính | `submissionResult.verdict.lblTitle` | `judge.submissions` | `status` | Label | String | 50 | Có | O | - | Chữ hoa | Tên verdict<br>[Nguồn giá trị] Cột `status` [Nguồn: 02-bd/database/judge-orchestration.md:22]<br>[EVT liên quan] - |
 | | 3 | Điểm số tỷ lệ | `submissionResult.verdict.lblScore` | `judge.submissions` | `passed_testcase_count`, `total_testcase_count`, `score_ratio` | Badge | String | 20 | Có | O | - | `{passed}/{total}` | Điểm đạt theo tỷ lệ testcase F4-13<br>[Công thức] `score_ratio = passed_testcase_count / total_testcase_count`, `NULL` khi `COMPILE_ERROR`/`SYSTEM_ERROR` — hiển thị `-` [Nguồn: 02-bd/database/judge-orchestration.md:25-27]<br>[EVT liên quan] - |
 | | 4 | Dòng mô tả phụ | `submissionResult.verdict.lblSubtitle` | `judge.submissions` | `passed_testcase_count`, `total_testcase_count`, `submitted_at` | Label | String | 150 | Có | O | - | - | Thông tin chi tiết kết quả và thời gian nộp<br>[Công thức] Ghép số testcase đạt/tổng và `submitted_at` [Nguồn: 02-bd/database/judge-orchestration.md:25-26,31]<br>[EVT liên quan] - |
-| | 5 | Badge Độ khó bài | `submissionResult.verdict.badgeDifficulty` | `problem.problems` | `difficulty` | Badge | Enum | 20 | Có | O | - | Nhãn tiếng Việt | Độ khó bài toán<br>[Nguồn giá trị] Cột `difficulty` [Nguồn: 02-bd/database/problem-bank.md:17]<br>[EVT liên quan] - |
+| | 5 | Badge Độ khó bài | `submissionResult.verdict.badgeDifficulty` | `problem.problem_levels` | `display_name` | Badge | String | 20 | Có | O | - | Nhãn `display_name` | Độ khó bài toán<br>[Nguồn giá trị] Cột `problem_levels.display_name` qua `problems.level_id`, **đọc từ dữ liệu** do ADMIN quản lý, không còn ánh xạ cứng enum; ba mức khởi tạo giữ màu badge cũ, mức mới màu trung tính `DEC-2026-1001-admin-configurable-settings` mục (7) [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`]<br>[EVT liên quan] - |
 
 ### Khu vực C — Thanh 6 chỉ số vận hành (Run Stats)
 
@@ -398,6 +400,7 @@ Bố cục dạng luồng dọc đơn cột (Single-column layout), chia thành 
 | 2 | `judge.submission_testcase_results` | - | Có | - | - | `submission_id = :submissionId ORDER BY testcase_index ASC` |
 | 3 | `problem.problems` | - | Có | - | - | `id = :problemId` |
 | 4 | `problem.testcases` | - | Có | - | - | `problem_id = :problemId AND is_sample = true ORDER BY order_index ASC` |
+| 5 | `problem.problem_levels` | - | Có | - | - | Qua join `problems.level_id` để lấy `display_name`; màn không ghi, ADMIN quản lý độ khó ở `SHR0201` |
 
 ### 7.3. Danh sách endpoint [Nội bộ]
 

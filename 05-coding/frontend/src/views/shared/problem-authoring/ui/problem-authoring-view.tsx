@@ -20,11 +20,13 @@ import { ArrowLeft, Check, Eye, Pencil, Trash2, X } from "lucide-react";
 import {
   AI_GUARD_KEYS,
   TESTCASE_CATEGORIES,
+  isSpecComplete,
   useGenerateTestcases,
   useProblemDraft,
   usePublishProblem,
   useSaveProblemDraft,
   problemTopicLabel,
+  useProblemLevels,
   useProblemTopics,
   type AiGuardKey,
   type ProblemDraft,
@@ -33,7 +35,7 @@ import {
   type TestcaseCategory,
   type WorkedExample,
 } from "@/entities/problem";
-import { ApiError } from "@/shared/api";
+import { ApiError, isNotFound } from "@/shared/api";
 import { useT } from "@/shared/i18n";
 import { useUnsavedChangesGuard } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
@@ -43,6 +45,7 @@ import {
   Card,
   ConfirmDialog,
   DataTable,
+  EmptyState,
   ErrorState,
   IconAction,
   NoticeTile,
@@ -58,8 +61,9 @@ import {
   type DataTableColumn,
 } from "@/shared/ui";
 import { ExampleDialog, TestcaseDialog } from "./edit-dialogs";
+import { SpecEditor } from "./spec-editor";
 
-type TabKey = "content" | "examples" | "testcases" | "ai";
+type TabKey = "content" | "examples" | "testcases" | "spec" | "ai";
 
 const LIMIT_KEYS: (keyof ProblemLimits)[] = [
   "timeLimitMs",
@@ -86,6 +90,7 @@ export function ProblemAuthoringView({ basePath, problemId }: Props) {
   const t = useT("problemAuthoring");
   const query = useProblemDraft(problemId);
 
+  if (isNotFound(query.error)) return <EmptyState>{t("notFound")}</EmptyState>;
   if (query.isError) return <ErrorState>{t("loadFailed")}</ErrorState>;
   if (!query.data) {
     return (
@@ -115,6 +120,7 @@ function ProblemAuthoringForm({ basePath, problemId, initial, aiGeneration }: Fo
   const t = useT("problemAuthoring");
   const [draft, setDraft] = useState<ProblemDraft>(initial);
   const topicList = useProblemTopics();
+  const levelList = useProblemLevels();
   const saveDraft = useSaveProblemDraft();
   const publishDraft = usePublishProblem();
   const generate = useGenerateTestcases();
@@ -333,6 +339,7 @@ function ProblemAuthoringForm({ basePath, problemId, initial, aiGeneration }: Fo
     { key: "minPublic", done: publicTestcases >= 2, tab: "testcases" },
     { key: "solutionPasses", done: solutionPasses, tab: "testcases" },
     { key: "minExamples", done: draft.examples.length >= 2, tab: "examples" },
+    { key: "specDeclared", done: isSpecComplete(draft.spec), tab: "spec" },
   ] satisfies { key: string; done: boolean; tab: TabKey }[];
   const blocking = checklist.filter((item) => !item.done);
 
@@ -468,6 +475,7 @@ function ProblemAuthoringForm({ basePath, problemId, initial, aiGeneration }: Fo
                 { value: "content", label: t("tab.content") },
                 { value: "examples", label: t("tab.examples", { count: draft.examples.length }) },
                 { value: "testcases", label: t("tab.testcases", { count: draft.testcases.length }) },
+                { value: "spec", label: t("tab.spec") },
                 { value: "ai", label: t("tab.ai") },
               ]}
             />
@@ -633,6 +641,8 @@ function ProblemAuthoringForm({ basePath, problemId, initial, aiGeneration }: Fo
             </Card>
           ) : null}
 
+          {tab === "spec" ? <SpecEditor spec={draft.spec} onChange={(spec) => patch({ spec })} /> : null}
+
           {tab === "ai" ? (
             <div className="flex flex-col gap-3.5">
               <Card title={t("generateTitle")} description={t("generateSubtitle")}>
@@ -744,15 +754,17 @@ function ProblemAuthoringForm({ basePath, problemId, initial, aiGeneration }: Fo
                 <p className="mb-1.5 text-[11px] font-semibold tracking-[0.07em] text-[var(--color-text-subtle)] uppercase">
                   {t("difficultyLabel")}
                 </p>
-                <SegmentedTabs
+                <SelectField
                   label={t("difficultyLabel")}
+                  hideLabel
                   value={draft.difficulty}
-                  onValueChange={(value) => patch({ difficulty: value })}
-                  className="w-full"
+                  onChange={(event) => patch({ difficulty: event.target.value })}
                   options={[
-                    { value: "easy" as const, label: t("difficulty.easy") },
-                    { value: "medium" as const, label: t("difficulty.medium") },
-                    { value: "hard" as const, label: t("difficulty.hard") },
+                    // A level an admin deleted while this form was open stays visible, but cannot be re-picked.
+                    ...(levelList.some((level) => level.key === draft.difficulty)
+                      ? []
+                      : [{ value: draft.difficulty, label: draft.difficulty, disabled: true }]),
+                    ...levelList.map((level) => ({ value: level.key, label: level.label })),
                   ]}
                 />
               </div>

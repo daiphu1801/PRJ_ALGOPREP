@@ -5,7 +5,8 @@
 // separate DB columns — the exact JSON schema is deferred to 03-dd/api/ai-review.md. These types are
 // the FRONTEND shape after that JSON is parsed, which is the only thing this prototype needs.
 
-export type ReviewDifficulty = "easy" | "medium" | "hard";
+/** Key of an admin-managed problem level (entities/problem/model/level-store); the review only displays it. */
+export type ReviewDifficulty = string;
 
 /** Screen states from BD Sheet 5 Khu vực I — mutually exclusive. */
 export type SolutionReviewStatus = "loading" | "ready" | "errorTransient" | "errorBudgetLocked";

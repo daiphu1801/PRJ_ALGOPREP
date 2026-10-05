@@ -282,7 +282,7 @@ Việc chia nhỏ và đánh mã là [SoT: Suy luận]; **nội dung** từng ch
 | :--- | :--- | :--- | :--- |
 | F2-01 | Soạn đề bài bằng Markdown kèm công thức LaTeX | A2 | |
 | F2-02 | Phân loại bài toán theo độ khó và chủ đề | A2 | Danh mục chủ đề do ADMIN quản lý, A2 chỉ chọn (đã chỉnh 2026-10-01) |
-| F2-03 | Khai báo đặc tả bài toán cho CẢ HAI mô hình: chữ ký hàm theo từng ngôn ngữ (Bọc hàm) và định dạng input/output theo dòng chuẩn (Standard I/O) | A2 | Sửa 2026-08-24 (`DEC-2026-0824-dual-submission-model-per-problem`) — trước chỉ có chữ ký hàm, giờ bắt buộc cả hai vì học viên tự chọn mô hình lúc làm bài (F3-13) |
+| F2-03 | Khai báo đặc tả bài toán cho CẢ HAI mô hình: một chữ ký hàm chung, hệ thống đổi sang từng ngôn ngữ (Bọc hàm) và định dạng input/output theo dòng chuẩn (Standard I/O) | A2 | Sửa 2026-08-24 (`DEC-2026-0824-dual-submission-model-per-problem`) — trước chỉ có chữ ký hàm, giờ bắt buộc cả hai vì học viên tự chọn mô hình lúc làm bài (F3-13) |
 | F2-04 | Khai báo chiến lược so khớp kết quả cho bài toán | A2 | exact, chuẩn hoá khoảng trắng, epsilon, tập không thứ tự |
 | F2-05 | Tạo testcase mẫu (Sample) — công khai, dùng cho chạy thử | A2 | |
 | F2-06 | Tạo testcase ẩn (Hidden) — dùng cho nộp bài | A2 | |
@@ -495,7 +495,7 @@ hưởng** (F5-22).
 ### 6.3. Luồng soạn nội dung của giảng viên
 
 1. **A2** tạo bài toán mới: đề bài Markdown kèm LaTeX, độ khó, chủ đề (F2-01, F2-02).
-2. **A2** khai báo đặc tả: chữ ký hàm cho từng ngôn ngữ, kiểu tham số và kiểu trả về (F2-03).
+2. **A2** khai báo đặc tả: một chữ ký hàm chung, kiểu tham số và kiểu trả về (F2-03).
 3. **A2** chọn chiến lược so khớp kết quả (F2-04).
 4. **A2** tạo testcase mẫu và tải lên bộ testcase ẩn (F2-05 tới F2-07).
 5. **A2** tự chạy thử một bài giải mẫu để xác nhận harness sinh mã đúng cho cả ba ngôn ngữ.

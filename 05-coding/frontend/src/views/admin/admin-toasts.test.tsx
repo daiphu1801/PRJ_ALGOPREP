@@ -3,6 +3,8 @@
 // inline text. `useT` is mocked to return the key, so assertions read the i18n key.
 import { act, fireEvent, render, renderHook, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import type { ReactElement } from "react";
 import { toast, useToasts } from "@/shared/lib/toast-store";
 
 vi.mock("@/shared/i18n", () => ({
@@ -17,6 +19,12 @@ import { AdminPermissionMatrixView } from "./permission-matrix";
 import { AdminQueueMonitorView } from "./queue-monitor";
 import { ExportLogDialog } from "./system-log/ui/export-log-dialog";
 import { AdminUserManagementView } from "./user-management";
+
+// The language screen loads through TanStack Query, so it needs a provider and an async first paint.
+function withQuery(ui: ReactElement) {
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
+  return <QueryClientProvider client={client}>{ui}</QueryClientProvider>;
+}
 
 function watch() {
   const toasts = renderHook(() => useToasts());
@@ -95,7 +103,8 @@ describe("admin toasts", () => {
 
   it("language config: save raises a success toast after a change", async () => {
     const read = watch();
-    render(<AdminLanguageConfigView />);
+    render(withQuery(<AdminLanguageConfigView />));
+    await screen.findByRole("button", { name: "save" });
     fireEvent.click(screen.getAllByRole("switch")[0]!);
     fireEvent.click(screen.getByRole("button", { name: "save" }));
     await vi.waitFor(() => expect(read()).toEqual([["success", "saveDone"]]));

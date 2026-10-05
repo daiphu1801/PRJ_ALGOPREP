@@ -111,7 +111,7 @@ i18n; Q8 thêm 3 trạng thái theo từng khối.
    [SoT: 09-layoutBase/Admin - Tổng quan.dc.html:437-439]. **Mã: —.** Tập verdict thật của hệ thống là
    AC/WA/TLE/CE/RE... [SoT: 01-rd/req/identity.md — F1-18 liệt kê bộ lọc verdict], nên nhóm "Sai / lỗi" đang
    gộp WA + CE + RE thành một, quy tắc gộp chưa được định nghĩa ở đâu — xem Câu hỏi mở Q4.
-6. **"Độ khó bài toán"** (HTML dòng 184-209, dữ liệu dòng 455-468): cột đôi theo 3 mức Dễ / Trung bình / Khó,
+6. **"Độ khó bài toán"** (HTML dòng 184-209, dữ liệu dòng 455-468): cột đôi theo 3 mức Dễ / Trung bình / Khó (prototype vẽ 3 mức khởi tạo; độ khó do ADMIN quản lý nên bản thật vẽ một nhóm mỗi mức trong danh mục, `DEC-2026-1001-admin-configurable-settings` mục 7),
    legend **"AI sinh"** và **"Giảng viên soạn"** [SoT: 09-layoutBase/Admin - Tổng quan.dc.html:455-459]. Trục
    độ khó khớp F2-02 [SoT: 01-rd/req/problem-bank.md — F2-02]. **Mã: — cho trục phân loại nguồn gốc bài toán, và đây là
    phát hiện nghiêm trọng nhất của màn:** `problem-bank.md` chỉ có **F2-14 — AI hỗ trợ sinh testcase**

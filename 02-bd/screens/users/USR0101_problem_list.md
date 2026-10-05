@@ -42,7 +42,7 @@
 | Tên vật lý (slug) | `problem_list` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`) |
-| Phiên bản | V0.3 |
+| Phiên bản | V0.4 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/21 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
@@ -57,6 +57,7 @@
 | V0.1 | Toàn bộ | Tạo mới theo mẫu 9 sheet. Chốt nguồn dữ liệu của mọi trường hiển thị, chốt trạng thái lọc ghi vào URL, chốt cách suy ra trạng thái "Đã giải / Đang làm / Chưa làm" từ read model `user_problem_best_score`, chốt nguyên tắc suy giảm nhẹ nhàng khi `ai-review` hoặc `judge-orchestration` lỗi. Phát sinh 9 câu hỏi mở | 2026/09/21 | Nhóm phát triển AlgoPrep |
 | V0.2 | Sheet 5, 7 | Đã chốt 2026-10-01 (owner uỷ quyền), xem `DEC-2026-1001-admin-configurable-settings`: danh mục chủ đề bài toán là dữ liệu do ADMIN quản lý (không còn seed cố định); thanh chủ đề và chip lọc đọc từ `ListTopicsWithProgress` trên dữ liệu `topics`, số chủ đề không cố định, chủ đề mới chưa có bài hiển thị tiến độ `0 / 0`. Không đổi tên endpoint | 2026/10/01 | AI |
 | V0.3 | Sheet 8, 9 | Đổi cụm báo lỗi sau thao tác (tìm kiếm, đổi trang, bài ngẫu nhiên) và `[Tiêu điểm]` sang toast; giữ nguyên vùng lỗi tải bảng và các khối ẩn êm. Theo `DEC-2026-1003-toast-feedback-channel`. | 2026/10/03 | AI |
+| V0.4 | Sheet 4, 5, 6, 7, 8, Câu hỏi mở | Đồng bộ `DEC-2026-1001-admin-configurable-settings` mục (7): độ khó bài tập là danh mục do ADMIN quản lý (bảng riêng `problem_levels`, không dùng chung với độ khó câu hỏi phỏng vấn), không còn enum cố định `EASY`/`MEDIUM`/`HARD`. DTO `difficulty` thành `levelCode`/`levelDisplayName` đọc qua `problems.level_id`; cột "Độ khó" hiển thị `display_name` đọc từ dữ liệu; tab độ khó là "Tất cả" cộng một tab mỗi mức, theo `sort_order`; sắp xếp theo độ khó theo `sort_order`, không theo chữ. Dải chỉ số tiến độ theo độ khó thành một ô mỗi mức. Màn gọi thêm `ListProblemLevels` (chỉ đọc), thêm `problem_levels` vào bảng liên quan và Truy cập bảng. Màn chỉ hiển thị nhãn, lọc và sắp xếp; không có logic nào gắn với độ khó | 2026/10/03 | AI |
 
 ---
 
@@ -178,7 +179,7 @@ và trạng thái đã giải, đồng thời thấy ngay tiến độ của b�
 1. **Hiển thị ban đầu**: vào màn, hệ thống đọc tham số lọc trên URL rồi tải song song sáu nhóm dữ liệu —
    danh sách bài toán đã lọc, dải chỉ số tiến độ, tiến độ theo chủ đề, bài giao theo lớp, bài đang làm dở,
    tập bài đã có Solution Review. Trong lúc chờ, mỗi khối hiển thị khung chờ đúng số dòng dự kiến.
-2. **Lọc và tìm kiếm**: người học gõ từ khoá, chọn tab trạng thái, chọn tab độ khó hoặc chọn chủ đề. Mỗi
+2. **Lọc và tìm kiếm**: người học gõ từ khoá, chọn tab trạng thái, chọn tab độ khó (một tab mỗi mức do ADMIN quản lý) hoặc chọn chủ đề. Mỗi
    lần đổi bộ lọc, trang được đặt về 1 và bảng được tải lại từ máy chủ; trạng thái lọc ghi vào URL.
 3. **Sắp xếp**: bấm tiêu đề cột "Độ khó" hoặc "AC rate" để đổi chiều sắp xếp.
 4. **Phân trang**: chọn số trang ở cuối bảng. **Không dùng cuộn vô hạn**
@@ -195,7 +196,7 @@ mở, xem Câu hỏi mở Q1.
 [Phạm vi]
 - Chỉ hiển thị bài toán `status = PUBLISHED` **và** `deleted = false`
   (`DEC-2026-0830-problem-lifecycle-two-states`) [Nguồn: 02-bd/database/problem-bank.md:18-19].
-- Không có thao tác ghi nào lên `problems` — màn chỉ đọc.
+- Không có thao tác ghi nào lên `problems` — màn chỉ đọc. Độ khó là danh mục do ADMIN quản lý (`problem_levels`), màn chỉ hiển thị nhãn, lọc và sắp xếp theo thứ tự danh mục; độ khó không gắn logic nào [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`].
 - Không có nút đánh dấu lưu (bookmark) ngay trên dòng bảng: prototype không có control đó, và F2-13 đã có
   màn riêng `saved_problems`. Xem Câu hỏi mở Q7.
 - Không có bộ lọc theo **thẻ** (`tags`, F2-02 amendment) dù F2-11 có nhắc
@@ -227,7 +228,7 @@ tập lớp": theo số bài đang giao cho lớp của người học, prototyp
 vì hai màn nhìn cùng bảng nhưng khác tập cột: màn này không có `submissionCount`, `testcaseCount`,
 `updatedAt`, `status`; màn kia không có trạng thái đã giải theo người dùng.
 
-### 4.3 Bảng dữ liệu liên quan (8)
+### 4.3 Bảng dữ liệu liên quan (9)
 
 | NO | Bảng | Ghi chú |
 | --: | :--- | :--- |
@@ -239,8 +240,9 @@ vì hai màn nhìn cùng bảng nhưng khác tập cột: màn này không có `
 | 6 | `identity.user_problem_best_score` | Read model, nguồn trạng thái "Đã giải / Đang làm / Chưa làm" [Nguồn: 02-bd/database/identity.md:111-112] |
 | 7 | `judge.submissions` | Nguồn khối "Bài đang làm dở" [Nguồn: 02-bd/database/judge-orchestration.md:8-34] |
 | 8 | `ai.solution_reviews` | Nguồn nhãn "đã có Solution Review" [Nguồn: 02-bd/database/ai-review.md:44-47] |
+| 9 | `problem.problem_levels` | Danh mục độ khó do ADMIN quản lý: nguồn nhãn cột "Độ khó", các tab độ khó và các ô tiến độ theo độ khó [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`] |
 
-Ba bảng cuối nằm ở schema của module khác. Màn không truy vấn thẳng: `problem-bank` gọi qua cổng ra sang
+Ba bảng NO 6-8 nằm ở schema của module khác. Màn không truy vấn thẳng: `problem-bank` gọi qua cổng ra sang
 `identity` / `judge-orchestration` / `ai-review`, đúng nguyên tắc mỗi schema một chủ
 [Nguồn: 02-bd/database/problem-bank.md:31-33]. Ranh giới sở hữu cụ thể xem Câu hỏi mở Q2 và Q3.
 
@@ -254,7 +256,7 @@ system cuối cùng.
 | Header ngang dính trên (khung chung Người học) | `:51-98` | Thương hiệu, 6 mục nav, menu người dùng — dùng lại khung chung, không mô tả lại |
 | Dải chỉ số tiến độ | `:103-116` | 4 chỉ số "Đã giải / Easy / Medium / Hard" dạng `giá trị / tổng`, cùng hàng với 2 nút "Bài đã lưu" và "Bài ngẫu nhiên" đẩy sang phải |
 | Thanh chủ đề | `:118-125` | Hàng ngang cuộn được, mỗi mục là tên chủ đề kèm tỉ lệ `đã giải / tổng`, mục đang chọn gạch chân |
-| Khối lọc (đầu bảng) | `:131-153` | Ô tìm kiếm, tab trạng thái (4 tab), tab độ khó (4 tab), hàng chip chủ đề |
+| Khối lọc (đầu bảng) | `:131-153` | Ô tìm kiếm, tab trạng thái (4 tab), tab độ khó ("Tất cả" cộng một tab mỗi mức; prototype vẽ 4 tab với 3 mức khởi tạo), hàng chip chủ đề |
 | Bảng danh sách | `:155-192` | 5 cột: Bài toán (gộp chấm trạng thái, mã, tên, nhãn mô hình, nhãn Solution Review), Chủ đề, Độ khó, AC rate, cột hành động |
 | Phân trang | `:194-201` | Dòng tóm tắt kết quả bên trái, các nút số trang bên phải |
 | Cột phải — "Bài đang làm dở" | `:206-220` | Tối đa 3 thẻ, mỗi thẻ có tên bài, ngôn ngữ và trạng thái lần nộp gần nhất |
@@ -299,9 +301,9 @@ và `problem_detail` dùng lại, nên dòng bảng phải là component nhận 
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Dải chỉ số tiến độ | | | | | | | | | | | | | |
 | | 1 | Đã giải toàn bộ | `problemList.summary.solvedTotal` | `identity.user_problem_best_score`, `problem.problems` | `best_verdict`, `id` | Label | String | - | - | O | `0 / 0` | `{số} / {số}` | Số bài đã giải trên tổng số bài đã xuất bản<br>[Công thức] Tử số đếm dòng `user_problem_best_score` của người dùng có `best_verdict = ACCEPTED`; mẫu số đếm `problems` có `status = PUBLISHED AND deleted = false`<br>[EVT liên quan] EVT-1 |
-| | 2 | Đã giải mức Dễ | `problemList.summary.solvedEasy` | `identity.user_problem_best_score`, `problem.problems` | `best_verdict`, `difficulty` | Label | String | - | - | O | `0 / 0` | `{số} / {số}` | Tiến độ riêng cho `difficulty = EASY`<br>[Công thức] Như NO 1, lọc thêm `problems.difficulty = EASY`<br>[EVT liên quan] EVT-1 |
-| | 3 | Đã giải mức Trung bình | `problemList.summary.solvedMedium` | `identity.user_problem_best_score`, `problem.problems` | `best_verdict`, `difficulty` | Label | String | - | - | O | `0 / 0` | `{số} / {số}` | Tiến độ riêng cho `difficulty = MEDIUM`<br>[Công thức] Như NO 1, lọc thêm `problems.difficulty = MEDIUM`<br>[EVT liên quan] EVT-1 |
-| | 4 | Đã giải mức Khó | `problemList.summary.solvedHard` | `identity.user_problem_best_score`, `problem.problems` | `best_verdict`, `difficulty` | Label | String | - | - | O | `0 / 0` | `{số} / {số}` | Tiến độ riêng cho `difficulty = HARD`<br>[Công thức] Như NO 1, lọc thêm `problems.difficulty = HARD`<br>[EVT liên quan] EVT-1 |
+| | 2 | Đã giải theo từng mức độ khó (lặp theo mức) | `problemList.summary.solvedByLevel` | `identity.user_problem_best_score`, `problem.problems`, `problem.problem_levels` | `best_verdict`, `level_id`, `display_name`, `sort_order` | Label | List | - | - | O | `0 / 0` | `{số} / {số}` | Một ô cho mỗi mức trong `problem_levels`, theo `sort_order`; số ô không cố định vì ADMIN thêm/xoá mức được. Nhãn ô là `display_name` đọc từ dữ liệu; mức chưa có bài hiển thị `0 / 0`<br>[Công thức] Như NO 1, lọc thêm `problems.level_id = {mức của ô}`<br>[Nguồn giá trị] `byLevel` của `ProblemCatalogSummaryDto` (Sheet 7 NO 11); danh sách mức theo `DEC-2026-1001-admin-configurable-settings` mục (7) [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`]<br>[EVT liên quan] EVT-1 |
+| | 3 | (Gộp vào NO 2) | - | - | - | - | - | - | - | - | - | - | Dòng cũ "Đã giải mức Trung bình" nay là một phần tử của NO 2; giữ số thứ tự để các tham chiếu NO không đổi |
+| | 4 | (Gộp vào NO 2) | - | - | - | - | - | - | - | - | - | - | Dòng cũ "Đã giải mức Khó" nay là một phần tử của NO 2; giữ số thứ tự để các tham chiếu NO không đổi |
 | | 5 | Bài đã lưu | `problemList.summary.linkSaved` | - | - | Button | - | - | - | I | - | - | Điều hướng sang màn `saved_problems`<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] EVT-12 |
 | | 6 | Bài ngẫu nhiên | `problemList.summary.btnRandom` | - | - | Button | - | - | - | I | - | - | Bốc ngẫu nhiên một bài trong phạm vi bộ lọc đang áp dụng rồi mở `problem_detail`<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] EVT-11 |
 
@@ -321,7 +323,7 @@ và `problem_detail` dùng lại, nên dòng bảng phải là component nhận 
 | Bộ lọc | | | | | | | | | | | | | |
 | | 1 | Ô tìm kiếm | `problemList.filter.query` | `problem.problems` | `code`, `title` | TextBox | String | 100 | - | I/O | rỗng | - | Tìm theo tên bài hoặc mã bài<br>[Nguồn giá trị] Tham số URL `q`; không có thì rỗng. Gợi ý trong ô là nhãn tĩnh i18n "Tìm theo tên bài hoặc mã bài" [Nguồn: 09-layoutBase/Ngân hàng bài toán.dc.html:592]<br>[EVT liên quan] EVT-2 |
 | | 2 | Tab trạng thái | `problemList.filter.statusTabs` | `identity.user_problem_best_score` | `best_verdict` | List | Enum | - | - | I/O | `Tất cả` | - | 4 tab: Tất cả / Đã giải / Đang làm / Chưa làm [Nguồn: 09-layoutBase/Ngân hàng bài toán.dc.html:609]<br>[Nguồn giá trị] Nhãn tĩnh i18n; giá trị đang chọn lấy từ tham số URL `status`<br>[EVT liên quan] EVT-3 |
-| | 3 | Tab độ khó | `problemList.filter.difficultyTabs` | `problem.problems` | `difficulty` | List | Enum | - | - | I/O | `Tất cả` | - | 4 tab: Tất cả / Dễ / Trung bình / Khó<br>[Nguồn giá trị] Nhãn tĩnh i18n map từ enum `EASY`/`MEDIUM`/`HARD` [Nguồn: 02-bd/database/problem-bank.md:17]; giá trị đang chọn lấy từ tham số URL `difficulty`<br>[EVT liên quan] EVT-4 |
+| | 3 | Tab độ khó | `problemList.filter.difficultyTabs` | `problem.problem_levels` | `code`, `display_name`, `sort_order` | List | List | - | - | I/O | `Tất cả` | - | Tab "Tất cả" cộng một tab mỗi mức trong `problem_levels`, theo `sort_order`; số tab không cố định (ba mức khởi tạo ra 4 tab). Chọn một mức tại một thời điểm, cộng dồn `VÀ` với các bộ lọc khác<br>[Nguồn giá trị] Phản hồi của `ListProblemLevels` (Sheet 7 NO 16), đọc từ dữ liệu do ADMIN quản lý, không còn nhãn tĩnh i18n map từ enum [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`]; giá trị đang chọn lấy từ tham số URL `difficulty` (mang `code` của mức)<br>[EVT liên quan] EVT-4 |
 | | 4 | Chip chủ đề | `problemList.filter.topicChips` | `problem.topics` | `id`, `name` | List | List | - | - | I/O | `Tất cả` | - | Hàng chip lọc theo chủ đề. **Dùng chung một trạng thái lọc với Khu vực B** — hai control, một giá trị; bấm ở đâu cũng đổi cùng tham số URL `topic`. Có giữ cả hai hay không, xem Câu hỏi mở Q5<br>[Nguồn giá trị] Cùng nguồn với `problemList.topicNav.list`<br>[EVT liên quan] EVT-5 |
 | | 5 | Xoá bộ lọc | `problemList.filter.linkReset` | - | - | Link | - | - | - | I | - | - | Đưa cả 4 bộ lọc về mặc định. Chỉ xuất hiện ở trạng thái không có kết quả<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] EVT-6 |
 
@@ -337,7 +339,7 @@ và `problem_detail` dùng lại, nên dòng bảng phải là component nhận 
 | | 5 | Nhãn mô hình nộp bài | `problemList.table.col.submissionModel` | `problem.problems` | `function_wrapper_supported` | Badge | Enum | - | - | O | `Cả hai` | - | Hai giá trị: "Cả hai" khi `function_wrapper_supported = true`, "Chỉ Standard I/O" khi `false` — ngoại lệ lược đồ kiểu R2<br>[Nguồn giá trị] Cột `function_wrapper_supported` [Nguồn: 02-bd/database/problem-bank.md:20], nhãn là chữ tĩnh i18n theo chốt ở RD [Nguồn: 01-rd/screens/users/USR0101_problem_list.md:95]<br>[EVT liên quan] - |
 | | 6 | Nhãn đã có Solution Review | `problemList.table.col.hasReview` | `ai.solution_reviews` | `user_id`, `problem_id` | Badge | Boolean | - | - | O | Ẩn | - | Cho biết người học đã từng phân tích bài này bằng F5.1<br>[Công thức] Tồn tại dòng `solution_reviews` khớp `(user_id hiện tại, problem_id)` [Nguồn: 02-bd/database/ai-review.md:46-47]<br>[EVT liên quan] - |
 | | 7 | Chủ đề | `problemList.table.col.topics` | `problem.topics` | `name` | ListColumn | String | - | - | O | `-` | - | Chủ đề của bài toán<br>[Nguồn giá trị] `topics.name` qua `problem_topics.problem_id`; nhiều chủ đề thì nối bằng dấu phẩy, cùng cách đã dùng ở màn quản trị [Nguồn: 02-bd/screens/shared/SHR0201_problem_management.md:517]<br>[EVT liên quan] - |
-| | 8 | Độ khó | `problemList.table.col.difficulty` | `problem.problems` | `difficulty` | ListColumn | Enum | - | - | O | - | Nhãn tiếng Việt | Mức độ khó của bài toán<br>[Nguồn giá trị] `EASY` thành "Dễ", `MEDIUM` thành "Trung bình", `HARD` thành "Khó" [Nguồn: 02-bd/database/problem-bank.md:17]<br>[EVT liên quan] EVT-7 |
+| | 8 | Độ khó | `problemList.table.col.difficulty` | `problem.problem_levels`, `problem.problems` | `display_name` | ListColumn | String | - | - | O | - | Nhãn `display_name`, badge | Mức độ khó của bài toán, lấy qua `problems.level_id`<br>[Nguồn giá trị] Cột `problem_levels.display_name`, **đọc từ dữ liệu** do ADMIN quản lý, không còn ánh xạ cứng enum sang "Dễ/Trung bình/Khó". Màu badge: ba mức khởi tạo giữ màu cũ, mức ADMIN thêm sau dùng màu trung tính (không có cột màu) `DEC-2026-1001-admin-configurable-settings` mục (7) [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`]<br>[EVT liên quan] EVT-7 |
 | | 9 | AC rate | `problemList.table.col.acRate` | `problem.problem_stats` | `ac_rate` | ListColumn | Number | 5 | - | O | `-` | `{số}%` | Tỉ lệ bài nộp được chấp nhận trên tổng số lượt nộp của toàn hệ thống<br>[Nguồn giá trị] Read model `problem_stats.ac_rate` [Nguồn: 02-bd/database/problem-bank.md:138]. Chưa có dòng read model thì hiển thị `-`, không hiển thị `0%`<br>[EVT liên quan] EVT-8 |
 | | 10 | Nút Vào giải | `problemList.table.col.btnSolve` | - | - | Button | - | - | - | I | - | - | Mở `problem_detail` của dòng đang trỏ. Chỉ hiện khi rê chuột qua dòng [Nguồn: 09-layoutBase/Ngân hàng bài toán.dc.html:184-186]<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] EVT-10 |
 
@@ -477,21 +479,22 @@ và `problem_detail` dùng lại, nên dòng bảng phải là component nhận 
 | 2 | `ProblemListItemDto` | `code` | String | `problem.problems` | `code` | Bảng "Mã bài" | Có | [Nguồn] Phản hồi của `ListPublishedProblems` |
 | 3 | `ProblemListItemDto` | `title` | String | `problem.problems` | `title` | Bảng "Tên bài" | Có | - |
 | 4 | `ProblemListItemDto` | `topicNames` | List\<String\> | `problem.topics` | `name` | Bảng "Chủ đề" | Có | [Nguồn] `topics.name` qua `problem_topics.problem_id`<br>[Chuyển đổi] Nối bằng dấu phẩy khi hiển thị. |
-| 5 | `ProblemListItemDto` | `difficulty` | Enum | `problem.problems` | `difficulty` | Bảng "Độ khó", tab độ khó | Có | [Chuyển đổi] `EASY`/`MEDIUM`/`HARD` thành "Dễ"/"Trung bình"/"Khó". |
+| 5 | `ProblemListItemDto` | `levelCode`, `levelDisplayName` | String, String | `problem.problem_levels` | `code`, `display_name` | Bảng "Độ khó", tab độ khó | Có | [Nguồn] Join qua `problems.level_id` (thay trường `difficulty` kiểu Enum cũ, theo `DEC-2026-1001-admin-configurable-settings` mục (7))<br>[Chuyển đổi] Đọc `display_name` từ dữ liệu; `levelCode` là slug dùng làm giá trị tham số URL `difficulty`. Sắp xếp theo cột này chạy theo `sort_order` của mức. |
 | 6 | `ProblemListItemDto` | `acRate` | Number | `problem.problem_stats` | `ac_rate` | Bảng "AC rate" | Có | [Nguồn] Read model<br>[Chuyển đổi] Không có dòng read model thì trả `null`, màn hiển thị `-`. |
 | 7 | `ProblemListItemDto` | `functionWrapperSupported` | Boolean | `problem.problems` | `function_wrapper_supported` | Bảng "Nhãn mô hình nộp bài" | Có | [Chuyển đổi] `false` thành nhãn "Chỉ Standard I/O"; `true` thì không vẽ nhãn. |
 | 8 | `ProblemListItemDto` | `solveState` | Enum | `identity.user_problem_best_score` | `best_verdict` | Bảng "Chấm trạng thái", tab trạng thái | Có | [Nguồn] `problem-bank` gọi cổng ra sang `identity` (`ListMyProblemSolveStates`), không đọc thẳng schema khác<br>[Chuyển đổi] `SOLVED`/`ATTEMPTED`/`UNSOLVED` thành "Đã giải"/"Đang làm"/"Chưa làm". Ai ghép trường này, xem Câu hỏi mở Q2. |
 | 9 | `ProblemListItemDto` | `hasSolutionReview` | Boolean | `ai.solution_reviews` | `user_id`, `problem_id` | Bảng "Nhãn đã có Solution Review" | Có | [Nguồn] Lời gọi **riêng** `ListMyReviewedProblemIds` sang `ai-review`, không gộp vào lời gọi bảng — để bảng vẫn hiển thị khi F5 chết (`CLAUDE.md` — AI suy giảm nhẹ nhàng). Xem Câu hỏi mở Q3. |
 | 10 | `ProblemCatalogSummaryDto` | `solvedTotal`, `publishedTotal` | Number | `identity.user_problem_best_score`, `problem.problems` | `best_verdict`, `id` | Dải chỉ số "Đã giải toàn bộ" | Có | [Nguồn] Phản hồi của `GetProblemCatalogSummary` |
-| 11 | `ProblemCatalogSummaryDto` | `byDifficulty` | List | `problem.problems` | `difficulty` | Dải chỉ số 3 mức độ khó | Có | [Nguồn] Cùng lời gọi NO 10<br>[Chuyển đổi] Mỗi phần tử gồm `difficulty`, `solved`, `total`. |
+| 11 | `ProblemCatalogSummaryDto` | `byLevel` | List | `problem.problems`, `problem.problem_levels` | `level_id`, `code`, `display_name`, `sort_order` | Dải chỉ số theo từng mức độ khó | Có | [Nguồn] Cùng lời gọi NO 10<br>[Chuyển đổi] Mỗi phần tử gồm `levelCode`, `levelDisplayName`, `solved`, `total`, một phần tử cho **mỗi mức** trong `problem_levels` theo `sort_order` (thay `byDifficulty` cũ cố định 3 phần tử); mức chưa có bài trả `0`/`0`. |
 | 12 | `TopicProgressDto` | `topicId`, `topicName` | UUID, String | `problem.topics` | `id`, `name` | Thanh chủ đề, chip chủ đề | Có | [Nguồn] Phản hồi của `ListTopicsWithProgress`<br>[Đích] `topicId` là giá trị của tham số URL `topic`. |
 | 13 | `TopicProgressDto` | `solved`, `total` | Number | `identity.user_problem_best_score`, `problem.problem_topics` | `best_verdict`, `topic_id` | Thanh chủ đề "Tiến độ chủ đề" | Có | [Nguồn] Cùng lời gọi NO 12. |
 | 14 | `ClassAssignmentGroupDto` | `classId`, `className` | UUID, String | `identity.classes` | `id`, `name` | Khối "Bài tập lớp" — tên lớp | Có | [Nguồn] Phản hồi của `ListMyClassAssignments`. |
 | 15 | `ClassAssignmentGroupDto` | `items` | List | `problem.class_assignments` | `problem_id`, `assigned_at` | Khối "Bài tập lớp" — danh sách | Có | [Nguồn] Chỉ lấy dòng `removed_at IS NULL`<br>[Chuyển đổi] Mỗi phần tử gồm `problemId`, `title`, `solveState`, `assignedAt`. |
+| 16 | `ProblemLevelDto` | `code`, `displayName`, `sortOrder` | String, String, Number | `problem.problem_levels` | `code`, `display_name`, `sort_order` | Bộ lọc "Tab độ khó" | Có | [Nguồn] Phản hồi của `ListProblemLevels`, đọc từ dữ liệu do ADMIN quản lý; `code` là slug, không còn enum. Endpoint chỉ đọc, mọi người dùng đã xác thực gọi được (`DEC-2026-1001-admin-configurable-settings` mục (7))<br>[Chuyển đổi] Giao diện tự thêm tab "Tất cả" ở đầu; thứ tự tab theo `sortOrder`. |
 | 16 | `InProgressProblemDto` | `problemId`, `title` | UUID, String | `judge.submissions`, `problem.problems` | `problem_id`, `title` | Khối "Bài đang làm dở" | Có | [Nguồn] Phản hồi của `ListMyUnsolvedRecentProblems`<br>[Đích] `problemId` là tham số điều hướng sang `problem_detail`. |
 | 17 | `InProgressProblemDto` | `language`, `lastStatus`, `passedTestcaseCount`, `totalTestcaseCount` | Enum, Enum, Number, Number | `judge.submissions` | `language`, `status`, `passed_testcase_count`, `total_testcase_count` | Khối "Bài đang làm dở" — ngôn ngữ và kết quả | Có | [Chuyển đổi] Ghép chuỗi hiển thị ở tầng giao diện; DTO trả số thô, không trả câu đã ghép. |
 
-### 7.2 Truy cập bảng dữ liệu (8)
+### 7.2 Truy cập bảng dữ liệu (9)
 
 | NO | Tên logic | Bảng | Repository | CRUD | Mục đích | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :--- | :--- |
@@ -503,6 +506,7 @@ và `problem_detail` dùng lại, nên dòng bảng phải là component nhận 
 | 6 | Tiến độ theo bài của người dùng | `identity.user_problem_best_score` | `UserProblemBestScoreRepository` (module `identity`) | R | Suy ra trạng thái Đã giải / Đang làm / Chưa làm và mọi con số tiến độ | `ListMyProblemSolveStates`: R — gọi qua cổng ra, `problem-bank` không đọc thẳng schema `identity` |
 | 7 | Bài nộp | `judge.submissions` | `SubmissionRepository` (module `judge-orchestration`) | R | Lấy tối đa 3 bài nộp gần nhất chưa đạt `ACCEPTED` | `ListMyUnsolvedRecentProblems`: R |
 | 8 | Báo cáo phân tích bài giải | `ai.solution_reviews` | `SolutionReviewRepository` (module `ai-review`) | R | Lấy tập `problem_id` người học đã có báo cáo | `ListMyReviewedProblemIds`: R |
+| 9 | Danh mục độ khó | `problem.problem_levels` | `ProblemLevelRepository` | R | Đọc nhãn độ khó của từng dòng (qua join `level_id`), đọc danh mục cho tab lọc độ khó và các ô tiến độ theo độ khó | `ListProblemLevels`: R<br>`ListPublishedProblems`, `GetProblemCatalogSummary`: R, qua join. Màn này không ghi; ADMIN quản lý độ khó ở `SHR0201` [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`] |
 
 Màn này **không có thao tác ghi nào** — không `C`, không `U`, không `D`. Ba bảng cuối thuộc module khác,
 truy cập qua cổng ra chứ không qua repository của `problem-bank`.
@@ -516,13 +520,14 @@ truy cập qua cổng ra chứ không qua repository của `problem-bank`.
 | NO | Endpoint (tên nghiệp vụ) | Mục đích | BC sở hữu |
 | --: | :--- | :--- | :--- |
 | 1 | `ListPublishedProblems` | Tìm kiếm, lọc, sắp xếp và phân trang danh sách bài toán đã xuất bản cho người học | `problem-bank` |
-| 2 | `GetProblemCatalogSummary` | Tải dải chỉ số tiến độ tổng và theo ba mức độ khó | `problem-bank` |
+| 2 | `GetProblemCatalogSummary` | Tải dải chỉ số tiến độ tổng và theo từng mức độ khó (một phần tử mỗi mức trong `problem_levels`) | `problem-bank` |
 | 3 | `ListTopicsWithProgress` | Tải danh mục chủ đề kèm tiến độ đã giải trên tổng của từng chủ đề | `problem-bank` |
 | 4 | `GetRandomProblem` | Bốc ngẫu nhiên một bài trong phạm vi bộ lọc đang áp dụng | `problem-bank` |
 | 5 | `ListMyClassAssignments` | Tải bài đang được giao cho lớp của chính người học | `problem-bank` |
 | 6 | `ListMyProblemSolveStates` | Trả trạng thái Đã giải / Đang làm theo từng bài của chính người dùng | `identity` |
 | 7 | `ListMyUnsolvedRecentProblems` | Trả tối đa 3 bài nộp gần nhất chưa đạt `ACCEPTED` của chính người dùng | `judge-orchestration` |
 | 8 | `ListMyReviewedProblemIds` | Trả tập `problem_id` người học đã có báo cáo Solution Review | `ai-review` |
+| 9 | `ListProblemLevels` | Tải danh mục độ khó (đọc từ dữ liệu) cho tab lọc độ khó; chỉ đọc, mọi người dùng đã xác thực gọi được | `problem-bank` |
 
 Ghi chú ranh giới, để 11 màn còn lại của khu bám theo:
 - **Tên nghiệp vụ khác hẳn màn quản trị.** `ListPublishedProblems` (A1) không dùng lại
@@ -552,10 +557,10 @@ Ghi chú ranh giới, để 11 màn còn lại của khu bám theo:
 
 | NO | Loại | Sự kiện | Chi tiết | Chuyển màn | Gọi API | Tên xử lý | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :-: | :--- | :--- |
-| 1 | Màn hình | Khởi tạo màn | Vào màn thì đọc tham số lọc trên URL rồi tải dữ liệu. | Không | Có | `ListPublishedProblems`, `GetProblemCatalogSummary`, `ListTopicsWithProgress`, `ListMyClassAssignments`, `ListMyUnsolvedRecentProblems`, `ListMyReviewedProblemIds` | [Các bước]<br>1. Kiểm tra người dùng đã đăng nhập.<br>2. Đọc và chuẩn hoá tham số URL; giá trị lạ thì bỏ qua và dùng mặc định.<br>3. Hiển thị khung chờ cho cả 5 khối.<br>4. Tải song song các nhóm dữ liệu.<br>[Khi thành công] Hiển thị đủ dải chỉ số, thanh chủ đề, bộ lọc, bảng và hai khối phụ.<br>[Khi lỗi] Lỗi ở lời gọi bảng thì hiển thị lỗi kèm nút thử lại tại vùng bảng. Lỗi ở `ai-review` thì **ẩn nhãn Solution Review, không báo lỗi**. Lỗi ở `judge-orchestration` hoặc ở khối bài tập lớp thì ẩn đúng khối đó. Bảng danh sách **không bao giờ** bị chặn vì một module phụ chết. |
+| 1 | Màn hình | Khởi tạo màn | Vào màn thì đọc tham số lọc trên URL rồi tải dữ liệu. | Không | Có | `ListPublishedProblems`, `GetProblemCatalogSummary`, `ListTopicsWithProgress`, `ListProblemLevels`, `ListMyClassAssignments`, `ListMyUnsolvedRecentProblems`, `ListMyReviewedProblemIds` | [Các bước]<br>1. Kiểm tra người dùng đã đăng nhập.<br>2. Đọc và chuẩn hoá tham số URL; giá trị lạ thì bỏ qua và dùng mặc định.<br>3. Hiển thị khung chờ cho cả 5 khối.<br>4. Tải song song các nhóm dữ liệu.<br>[Khi thành công] Hiển thị đủ dải chỉ số, thanh chủ đề, bộ lọc, bảng và hai khối phụ.<br>[Khi lỗi] Lỗi ở lời gọi bảng thì hiển thị lỗi kèm nút thử lại tại vùng bảng. Lỗi ở `ai-review` thì **ẩn nhãn Solution Review, không báo lỗi**. Lỗi ở `judge-orchestration` hoặc ở khối bài tập lớp thì ẩn đúng khối đó. Bảng danh sách **không bao giờ** bị chặn vì một module phụ chết. |
 | 2 | Nhập liệu | Gõ từ khoá tìm kiếm | Gõ vào ô tìm kiếm. | Không | Có | `ListPublishedProblems` | [Các bước]<br>1. Chờ 400 ms sau lần gõ cuối.<br>2. Đặt trang về 1, cập nhật tham số URL `q` theo cơ chế thay thế.<br>3. Tải lại bảng.<br>[Khi thành công] Bảng và dòng tóm tắt kết quả cập nhật. Dải chỉ số và hai khối phụ giữ nguyên. Nhấn Enter trong ô tìm kiếm thì toast thông tin báo số bài tìm thấy (hoặc không có bài nào); gõ dở thì không toast, tránh một toast cho mỗi ký tự [Nguồn: 05-coding/frontend/src/views/users/problem-list/ui/problem-list-view.tsx:108-111].<br>[Khi lỗi] Giữ nguyên kết quả cũ, hiển thị toast lỗi. |
 | 3 | Nút | Chọn tab trạng thái | Bấm một trong 4 tab Tất cả / Đã giải / Đang làm / Chưa làm. | Không | Có | `ListPublishedProblems` | [Các bước]<br>1. Đặt trang về 1, cập nhật tham số URL `status`.<br>2. Tải lại bảng.<br>[Khi thành công] Bảng chỉ còn các bài khớp trạng thái. Lọc chạy ở máy chủ, không lọc trên trang đang xem.<br>[Khi lỗi] Như EVT-2. |
-| 4 | Nút | Chọn tab độ khó | Bấm một trong 4 tab Tất cả / Dễ / Trung bình / Khó. | Không | Có | `ListPublishedProblems` | [Các bước]<br>1. Đặt trang về 1, cập nhật tham số URL `difficulty`.<br>2. Tải lại bảng.<br>[Khi thành công] Bảng chỉ còn các bài đúng mức độ khó.<br>[Khi lỗi] Như EVT-2. |
+| 4 | Nút | Chọn tab độ khó | Bấm một trong các tab Tất cả hoặc một mức độ khó (mỗi mức trong `problem_levels` một tab, theo `sort_order`). | Không | Có | `ListPublishedProblems` | [Các bước]<br>1. Đặt trang về 1, cập nhật tham số URL `difficulty`.<br>2. Tải lại bảng.<br>[Khi thành công] Bảng chỉ còn các bài đúng mức độ khó đã chọn; số tab và nhãn tab lấy từ `ListProblemLevels`, nên mức ADMIN vừa thêm tự có tab.<br>[Khi lỗi] Như EVT-2. |
 | 5 | Nút | Chọn chủ đề | Bấm một mục trên thanh chủ đề hoặc một chip chủ đề. | Không | Có | `ListPublishedProblems` | [Các bước]<br>1. Bấm đúng chủ đề đang chọn thì bỏ lọc, về "Tất cả"; ngược lại đặt chủ đề mới.<br>2. Đặt trang về 1, cập nhật tham số URL `topic`.<br>3. Tải lại bảng.<br>[Khi thành công] Bảng chỉ còn bài thuộc chủ đề, đồng thời thanh chủ đề và hàng chip cùng làm nổi một giá trị.<br>[Khi lỗi] Như EVT-2. |
 | 6 | Liên kết | Xoá toàn bộ bộ lọc | Bấm liên kết "Xoá bộ lọc" ở trạng thái không có kết quả. | Không | Có | `ListPublishedProblems` | [Các bước]<br>1. Đặt lại cả 4 bộ lọc về mặc định và trang về 1.<br>2. Xoá các tham số lọc khỏi URL.<br>3. Tải lại bảng.<br>[Khi thành công] Bảng trở lại danh sách đầy đủ. |
 | 7 | Nút | Sắp xếp theo độ khó | Bấm tiêu đề cột "Độ khó". | Không | Có | `ListPublishedProblems` | [Các bước]<br>1. Đang sắp theo cột này thì đảo chiều; đang sắp theo cột khác thì chuyển sang cột này, chiều tăng dần.<br>2. Cập nhật tham số URL `sort` và `dir`, giữ nguyên số trang.<br>3. Tải lại bảng.<br>[Khi thành công] Mũi tên chiều sắp xếp hiện trên đúng tiêu đề cột, cột còn lại bỏ mũi tên. Sắp xếp chạy ở máy chủ, trên toàn bộ kết quả lọc chứ không chỉ trang đang xem [Nguồn: 09-layoutBase/Ngân hàng bài toán.dc.html:613-616]. |
@@ -583,7 +588,7 @@ Ghi chú ranh giới, để 11 màn còn lại của khu bám theo:
 | 3 | Kiểm nghiệp vụ | Phạm vi khối Bài tập lớp | [Nội dung kiểm] Chỉ trả về bài đang giao cho lớp mà chính người dùng có ghi danh, và chỉ dòng `removed_at IS NULL`.<br>[Nơi thực thi] Máy chủ. | Lỗi | Không có thông báo | Không nhận `class_id` từ giao diện; phạm vi lớp suy ra từ người dùng đăng nhập [Nguồn: 02-bd/database/problem-bank.md:125]. | EVT-1 | 2 |
 | 4 | Kiểm nghiệp vụ | Phạm vi dữ liệu cá nhân | [Nội dung kiểm] Trạng thái đã giải, bài đang làm dở và nhãn Solution Review chỉ được tính theo chính người dùng đăng nhập; không endpoint nào của màn này nhận `user_id` từ phía gọi.<br>[Nơi thực thi] Máy chủ. | Lỗi | Không có thông báo | Cùng nguyên tắc riêng tư đã áp cho bookmark ở F2-13 [Nguồn: 01-rd/req/problem-bank.md:59-62]. | EVT-1 | 3 |
 | 5 | Kiểm nhập liệu | Độ dài từ khoá tìm kiếm | [Nội dung kiểm] Từ khoá dài quá 100 ký tự thì cắt còn 100, không gọi máy chủ với chuỗi dài hơn.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Viền ô tìm kiếm + toast. | Cảnh báo | Chưa có mã thông báo | Nội dung "Từ khoá tìm kiếm tối đa 100 ký tự." | EVT-2 | 1 |
-| 6 | Kiểm nhập liệu | Tham số lọc trên URL | [Nội dung kiểm] Giá trị `status`, `difficulty`, `topic`, `sort`, `dir`, `page` không nằm trong tập hợp lệ thì bỏ qua và dùng mặc định, **không** báo lỗi cho người dùng.<br>[Nơi thực thi] Màn hình khi khởi tạo, và máy chủ khi nhận tham số. | Cảnh báo | Không có thông báo | URL do người dùng sửa tay hoặc đường dẫn cũ đã hỏng không được làm màn trắng. | EVT-1 | 2 |
+| 6 | Kiểm nhập liệu | Tham số lọc trên URL | [Nội dung kiểm] Giá trị `status`, `difficulty`, `topic`, `sort`, `dir`, `page` không nằm trong tập hợp lệ thì bỏ qua và dùng mặc định (với `difficulty`: không khớp `code` của mức nào trong `problem_levels` thì coi như "Tất cả"), **không** báo lỗi cho người dùng.<br>[Nơi thực thi] Màn hình khi khởi tạo, và máy chủ khi nhận tham số. | Cảnh báo | Không có thông báo | URL do người dùng sửa tay hoặc đường dẫn cũ đã hỏng không được làm màn trắng. | EVT-1 | 2 |
 | 7 | Kiểm nghiệp vụ | Số trang vượt phạm vi | [Nội dung kiểm] `page` lớn hơn số trang hiện có thì trả về trang cuối cùng.<br>[Nơi thực thi] Máy chủ. | Cảnh báo | Không có thông báo | Xảy ra khi bộ lọc đổi làm số trang giảm, hoặc khi mở lại một đường dẫn cũ. | EVT-9 | 1 |
 | 8 | Kiểm nghiệp vụ | Bốc ngẫu nhiên trên tập rỗng | [Nội dung kiểm] Bộ lọc hiện tại không còn bài nào thì không chuyển màn.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Nút "Bài ngẫu nhiên" + toast. | Cảnh báo | Chưa có mã thông báo | Nội dung "Không có bài nào khớp bộ lọc hiện tại." | EVT-11 | 1 |
 | 9 | Kiểm nghiệp vụ | Suy giảm nhẹ nhàng khi module phụ lỗi | [Nội dung kiểm] Gọi `ai-review` hoặc `judge-orchestration` thất bại thì ẩn đúng phần dữ liệu của module đó và vẫn hiển thị bảng danh sách.<br>[Nơi thực thi] Màn hình. | Cảnh báo | Không có thông báo | Bắt buộc theo nguyên tắc "phân hệ AI suy giảm nhẹ nhàng, F1-F4 vẫn chạy" (`CLAUDE.md` mục Rules). Không hiển thị thông báo lỗi cho phần này vì người học không có hành động khắc phục nào. | EVT-1 | 4 |

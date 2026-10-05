@@ -31,7 +31,8 @@ export type TopicProgress = {
   lastSubmittedAt: string | null;
 };
 
-export type Difficulty = "EASY" | "MEDIUM" | "HARD";
+/** Key of an admin-managed problem level (entities/problem/model/level-store). */
+export type Difficulty = string;
 
 /** `DifficultyProgressDto` — always cumulative, never range-filtered. */
 export type DifficultyProgress = {

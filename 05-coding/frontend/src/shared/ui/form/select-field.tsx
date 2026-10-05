@@ -14,7 +14,7 @@ import { FIELD_CONTROL } from "./text-field";
 type SelectFieldProps = Omit<ComponentPropsWithoutRef<"select">, "id" | "children"> & {
   label: string;
   hideLabel?: boolean;
-  options: { value: string; label: string }[];
+  options: { value: string; label: string; disabled?: boolean }[];
   wrapperClassName?: string;
 };
 
@@ -41,7 +41,7 @@ export function SelectField({
       </label>
       <select id={id} className={cn(FIELD_CONTROL, className)} {...props}>
         {options.map((option) => (
-          <option key={option.value} value={option.value}>
+          <option key={option.value} value={option.value} disabled={option.disabled}>
             {option.label}
           </option>
         ))}

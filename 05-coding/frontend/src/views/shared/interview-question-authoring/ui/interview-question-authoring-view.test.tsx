@@ -25,3 +25,22 @@ describe("InterviewQuestionAuthoringView toasts", () => {
     expect(toasts.result.current.at(-1)).toMatchObject({ tone: "success", message: "toast.softDeleted" });
   });
 });
+
+describe("InterviewQuestionAuthoringView classification", () => {
+  it("starts a new question on the first topic and the first level of the admin-managed lists", () => {
+    render(<InterviewQuestionAuthoringView questionId="new" listHref="/admin/interview-questions" />);
+    expect(screen.getByLabelText("levelLabel")).toHaveValue("EASY");
+    expect(screen.getByLabelText("topicLabel")).toHaveValue("csTheory");
+  });
+
+  it("offers every level and shows the level of the question being edited", () => {
+    render(<InterviewQuestionAuthoringView questionId="IQ-014" listHref="/admin/interview-questions" />);
+    const level = screen.getByLabelText("levelLabel");
+    expect(level).toHaveValue("MEDIUM");
+    expect(Array.from((level as HTMLSelectElement).options).map((option) => option.text)).toEqual([
+      "Dễ",
+      "Trung bình",
+      "Khó",
+    ]);
+  });
+});

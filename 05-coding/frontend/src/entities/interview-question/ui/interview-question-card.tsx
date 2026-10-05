@@ -11,14 +11,7 @@
 
 import type { ReactNode } from "react";
 import { Badge, Card, ProgressBar, type BadgeVariant } from "@/shared/ui";
-import type { InterviewQuestion, QuestionLevel } from "../model/types";
-
-// dc.html:437-441.
-const LEVEL_VARIANT: Record<QuestionLevel, BadgeVariant> = {
-  easy: "success",
-  medium: "blue",
-  hard: "purple",
-};
+import type { InterviewQuestion } from "../model/types";
 
 const RUBRIC_COLOR_VARS = [
   "--color-admin-teal",
@@ -31,6 +24,7 @@ export function InterviewQuestionCard({
   question,
   topicLabel,
   levelLabel,
+  levelTone,
   followUpsLabel,
   rubricLabel,
   usageLabel,
@@ -39,6 +33,7 @@ export function InterviewQuestionCard({
   question: InterviewQuestion;
   topicLabel: string;
   levelLabel: string;
+  levelTone: BadgeVariant;
   followUpsLabel: string;
   rubricLabel: string;
   /** Pre-formatted, e.g. "Dùng 184 lần · điểm TB 3.8/5". */
@@ -54,7 +49,7 @@ export function InterviewQuestionCard({
         <span className="font-mono text-[11.5px] text-[var(--color-text-subtle)]">
           {question.code}
         </span>
-        <Badge variant={LEVEL_VARIANT[question.level]}>{levelLabel}</Badge>
+        <Badge variant={levelTone}>{levelLabel}</Badge>
         <span className="ml-auto text-[11.5px] whitespace-nowrap text-[var(--color-text-muted)]">
           {topicLabel}
         </span>

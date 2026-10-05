@@ -51,7 +51,7 @@
 | Tên vật lý (slug) | `solution_review` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`) |
-| Phiên bản | V0.2 |
+| Phiên bản | V0.3 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/22 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
@@ -66,6 +66,7 @@
 | V0.1 | Toàn bộ | Tạo mới theo mẫu 9 sheet. Chốt cấu trúc JSON báo cáo phân tích F5-07, so sánh độ phức tạp F5-02/F5-03, rubric 5 tiêu chí F5-23, banner giáo dục F5-18, cơ chế cache mã băm F5-20, và popup xác nhận áp dụng mã F5-26 | 2026/09/22 | Nhóm phát triển AlgoPrep |
 | V0.2 | Sheet 3, 5, 6, 7.3, 8, 9, Câu hỏi mở | Viết lại Sheet 3 theo khuôn "Danh sách chuyển màn" 6 thẻ + sơ đồ Mermaid; viết lại Sheet 5 theo khuôn 14 cột (thêm Bảng DB/Cột DB); sửa nguồn phần lớn nội dung báo cáo về đúng cột thật `ai.solution_reviews.result_json` (JSONB) thay vì các cột riêng không tồn tại (`approach_title`, `strengths`...); bỏ cột "Phương thức & URL dự kiến" ở Sheet 7.3. Bổ sung Khu vực I (Trạng thái đang xử lý/lỗi AI) tách rõ ba trạng thái theo Câu hỏi mở Q3 của RD: đang tải, lỗi tạm thời (cho thử lại), bị khoá ngân sách F5-25 (không cho thử lại) — cập nhật đồng bộ Sheet 6, Sheet 8 (EVT-1, EVT-7 mới) và Sheet 9 (tách dòng kiểm 4 thành 4 và 5) | 2026/09/24 | Nhóm phát triển AlgoPrep |
 | V0.2 | Sheet 8, 9 | Bổ sung toast cho lỗi tạm thời, hết ngân sách và xác nhận áp dụng mã; giữ nguyên banner giáo dục F5-18 và khối trạng thái Khu vực I thay chỗ báo cáo. Theo `DEC-2026-1003-toast-feedback-channel`. | 2026/10/03 | AI |
+| V0.3 | Sheet 4, 5, 7 | Đồng bộ `DEC-2026-1001-admin-configurable-settings` mục (7): độ khó bài tập là danh mục do ADMIN quản lý (bảng riêng `problem_levels`), không còn enum cố định. Nhãn độ khó của bài (`SolutionReviewDetailDto.difficulty` thành `levelCode`/`levelDisplayName`) lấy từ `problem_levels.display_name` qua `problems.level_id`; thêm `problem.problem_levels` vào danh sách bảng và Truy cập bảng. Nhãn này là độ khó **của bài toán** (F2-02), không phải trường nào do F5 sinh ra; F5 không đổi. Màn chỉ hiển thị nhãn, không lọc và không gọi `ListProblemLevels` (nhãn nằm sẵn trong phản hồi); độ khó không gắn logic nào | 2026/10/03 | AI |
 
 ---
 
@@ -185,7 +186,7 @@ flowchart LR
 
 | STT | Tên DTO | Mô tả | Chi tiết trường |
 | :-: | :--- | :--- | :--- |
-| 1 | `SolutionReviewDetailDto` | Cấu trúc JSON báo cáo phân tích tĩnh | `id`, `submissionId`, `problemId`, `problemTitle`, `difficulty`, `approachTitle`, `isApproachOptimal`, `readabilityScore`, `createdAt`, `summaryText`, `timeComplexity`, `spaceComplexity`, `criteriaScores`, `strengths`, `improvements`, `edgeCases`, `suggestedCodeDiff` |
+| 1 | `SolutionReviewDetailDto` | Cấu trúc JSON báo cáo phân tích tĩnh | `id`, `submissionId`, `problemId`, `problemTitle`, `levelCode`, `levelDisplayName`, `approachTitle`, `isApproachOptimal`, `readabilityScore`, `createdAt`, `summaryText`, `timeComplexity`, `spaceComplexity`, `criteriaScores`, `strengths`, `improvements`, `edgeCases`, `suggestedCodeDiff` |
 | 2 | `ComplexityAnalysisDto` | Phân tích độ phức tạp chi tiết | `actualTime`, `optimalTime`, `timeExplanation`, `actualSpace`, `optimalSpace`, `spaceExplanation` |
 | 3 | `ReviewCriterionScoreDto` | Điểm và nhận xét theo tiêu chí rubric | `criterionCode`, `criterionName`, `score`, `maxScore`, `feedback` |
 | 4 | `CodeDiffProposalDto` | Bản mã đề xuất cải tiến | `originalCode`, `suggestedCode`, `diffText`, `explanation` |
@@ -197,6 +198,7 @@ flowchart LR
 | 1 | `ai.solution_reviews` | Lưu trữ báo cáo phân tích dạng JSON | C, R | `ai-review` |
 | 2 | `judge.submissions` | Bản ghi bài nộp gốc và mã nguồn | R | `judge-orchestration` |
 | 3 | `problem.problems` | Thông tin bài toán và độ phức tạp chuẩn | R | `problem-bank` |
+| 4 | `problem.problem_levels` | Nhãn độ khó của bài (`display_name`), đọc qua join `problems.level_id` [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`] | R | `problem-bank` |
 
 ### 4.4. Vùng bố cục bám prototype
 
@@ -250,7 +252,7 @@ Bố cục dạng tài liệu báo cáo dọc chuyên nghiệp:
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Top Stats | | | | | | | | | | | | | |
-| | 1 | Tên và độ khó bài | `solutionReview.stats.lblProblem` | `problem.problems` | `title`, `difficulty` | Label | String | 150 | Có | O | - | `{title} ({độ khó})` | Tiêu đề bài toán và badge độ khó [Nguồn: 02-bd/database/problem-bank.md:15,17]<br>[EVT liên quan] - |
+| | 1 | Tên và độ khó bài | `solutionReview.stats.lblProblem` | `problem.problems`, `problem.problem_levels` | `title`, `display_name` | Label | String | 150 | Có | O | - | `{title} ({độ khó})` | Tiêu đề bài toán và badge độ khó [Nguồn: 02-bd/database/problem-bank.md:15]<br>[Nguồn giá trị] Nhãn độ khó là `problem_levels.display_name` qua `problems.level_id`, **đọc từ dữ liệu** do ADMIN quản lý, không còn ánh xạ cứng enum; ba mức khởi tạo giữ màu badge cũ, mức mới màu trung tính `DEC-2026-1001-admin-configurable-settings` mục (7) [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`]<br>[EVT liên quan] - |
 | | 2 | Thẻ Hướng giải thuật | `solutionReview.stats.lblApproach` | `ai.solution_reviews` | `result_json` (path `approachTitle`, `isApproachOptimal`) | Badge | String | 60 | Có | O | - | - | Đánh giá hướng giải AI nhận diện — nằm trong báo cáo JSON F5-07, không phải cột riêng [Nguồn: 02-bd/database/ai-review.md:50]<br>[EVT liên quan] - |
 | | 3 | Thẻ Điểm dễ đọc | `solutionReview.stats.lblReadability` | `ai.solution_reviews` | `readability_score` | Badge | String | 20 | Có | O | - | `Dễ đọc: {score} / 5` | Điểm đánh giá độ sạch mã nguồn, AI tự chấm trong cùng lượt (F5-05) [Nguồn: 02-bd/database/ai-review.md:51]<br>[EVT liên quan] - |
 | | 4 | Thời điểm phân tích | `solutionReview.stats.lblGeneratedAt` | `ai.solution_reviews` | `created_at` | Label | String | 40 | Có | O | - | `Sinh lúc HH:mm - dd/MM/yyyy` | Mốc thời gian tạo báo cáo [Nguồn: 02-bd/database/ai-review.md:58]<br>[EVT liên quan] - |
@@ -443,6 +445,7 @@ sách cố định trong RD [Nguồn: 02-bd/database/ai-review.md:36].
 | 1 | `ai.solution_reviews` | Có | Có | - | - | `submission_id = :submissionId` |
 | 2 | `judge.submissions` | - | Có | - | - | `id = :submissionId AND user_id = :currentUserId` |
 | 3 | `problem.problems` | - | Có | - | - | `id = :problemId` |
+| 4 | `problem.problem_levels` | - | Có | - | - | Qua join `problems.level_id` để lấy `display_name`; màn không ghi, ADMIN quản lý độ khó ở `SHR0201` |
 
 ### 7.3. Danh sách endpoint [Nội bộ]
 
