@@ -46,16 +46,23 @@ export function ProblemDetailView() {
   const problemId = params?.problemId;
   const t = useT("problemDetail");
   const levels = useProblemLevels();
-  const problem = useMemo(() => (problemId ? fetchProblemDetail(problemId) : undefined), [problemId]);
+  const problem = useMemo(
+    () => (problemId ? fetchProblemDetail(problemId) : undefined),
+    [problemId],
+  );
 
   const [tab, setTab] = useState<Tab>("statement");
   const [language, setLanguage] = useState<SubmissionLanguage>("java");
   const [mode, setMode] = useState<WrapperMode>("function");
   const [inputMethod, setInputMethod] = useState<InputMethod>("type");
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
-  const [codeByKey, setCodeByKey] = useState<Partial<Record<StarterCodeKey, string>>>({});
+  const [codeByKey, setCodeByKey] = useState<
+    Partial<Record<StarterCodeKey, string>>
+  >({});
   const [consoleTab, setConsoleTab] = useState<ConsoleTab>("testcase");
-  const [sampleRun, setSampleRun] = useState<{ passed: boolean }[] | null>(null);
+  const [sampleRun, setSampleRun] = useState<{ passed: boolean }[] | null>(
+    null,
+  );
   const [running, setRunning] = useState(false);
   const [submitAttempt, setSubmitAttempt] = useState(0);
   const [result, setResult] = useState<SubmissionRunResult | null>(null);
@@ -77,7 +84,8 @@ export function ProblemDetailView() {
   // Rebound to a fresh const so its type is ProblemDetail (not ProblemDetail | undefined) for the
   // nested closures below — TS does not carry the guard's narrowing of `problem` itself into them.
   const detail = problem;
-  const effectiveMode: WrapperMode = detail.submissionModel === "stdioOnly" ? "stdio" : mode;
+  const effectiveMode: WrapperMode =
+    detail.submissionModel === "stdioOnly" ? "stdio" : mode;
   const key = `${language}:${effectiveMode}` as StarterCodeKey;
   const code = codeByKey[key] ?? detail.starterCode[key] ?? "";
 
@@ -97,7 +105,9 @@ export function ProblemDetailView() {
       // ponytail: giả lập luôn Pass hết testcase mẫu — không chạy mã thật (chưa nối go-judge).
       setSampleRun(detail.sampleTestcases.map(() => ({ passed: true })));
       setRunning(false);
-      toast.success(t("toast.runDone", { count: detail.sampleTestcases.length }));
+      toast.success(
+        t("toast.runDone", { count: detail.sampleTestcases.length }),
+      );
     }, 400);
   }
 
@@ -118,29 +128,52 @@ export function ProblemDetailView() {
               overallVerdict: "accepted" as const,
               passedCount: TOTAL_TESTCASES,
               totalCount: TOTAL_TESTCASES,
-              testcases: Array.from({ length: TOTAL_TESTCASES }, (_, index) => ({
-                order: index + 1,
-                verdict: "passed" as const,
-              })),
+              testcases: Array.from(
+                { length: TOTAL_TESTCASES },
+                (_, index) => ({
+                  order: index + 1,
+                  verdict: "passed" as const,
+                }),
+              ),
             };
       setResult(run);
       setRunning(false);
-      if (run.overallVerdict === "accepted") toast.success(t("toast.submitAccepted"));
-      else toast.error(t("toast.submitRejected", { passed: run.passedCount, total: run.totalCount }));
+      if (run.overallVerdict === "accepted")
+        toast.success(t("toast.submitAccepted"));
+      else
+        toast.error(
+          t("toast.submitRejected", {
+            passed: run.passedCount,
+            total: run.totalCount,
+          }),
+        );
     }, 700);
   }
 
   return (
     <div className="flex h-[calc(100vh-var(--app-header-h,0px))] flex-col overflow-hidden p-4">
       <div className="mb-3 flex shrink-0 items-center gap-3">
-        <Link href="/problems" className="text-[12.5px] font-semibold underline">
+        <Link
+          href="/problems"
+          className="text-[12.5px] font-semibold underline"
+        >
           {t("taskbar.linkList")}
         </Link>
-        <span className="font-mono text-xs text-[var(--color-text-muted)]">{detail.code}</span>
+        <span className="font-mono text-xs text-[var(--color-text-muted)]">
+          {detail.code}
+        </span>
         <h1 className="truncate text-[13.5px] font-semibold">{detail.title}</h1>
-        <Badge variant={problemLevelTone(levels, detail.difficulty)}>{problemLevelLabel(levels, detail.difficulty)}</Badge>
+        <Badge variant={problemLevelTone(levels, detail.difficulty)}>
+          {problemLevelLabel(levels, detail.difficulty)}
+        </Badge>
         <div className="ml-auto flex gap-2">
-          <Button variant="ghost" size="sm" className="border border-[var(--color-border)]" onClick={runSample} disabled={running}>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="border border-[var(--color-border)]"
+            onClick={runSample}
+            disabled={running}
+          >
             <Play className="mr-1.5 h-3.5 w-3.5" />
             {t("taskbar.btnRun")}
           </Button>
@@ -174,22 +207,45 @@ export function ProblemDetailView() {
                       {topicName}
                     </Badge>
                   ))}
-                  <Badge variant={detail.submissionModel === "both" ? "teal" : "neutral"}>
+                  <Badge
+                    variant={
+                      detail.submissionModel === "both" ? "teal" : "neutral"
+                    }
+                  >
                     {t(`submissionModel.${detail.submissionModel}`)}
                   </Badge>
                 </div>
-                <p className="mb-3 text-[13px] whitespace-pre-line">{detail.statementMd}</p>
-                <h3 className="mb-1.5 text-[12.5px] font-semibold">{t("panel.examplesTitle")}</h3>
+                <p className="mb-3 text-[13px] whitespace-pre-line">
+                  {detail.statementMd}
+                </p>
+                <h3 className="mb-1.5 text-[12.5px] font-semibold">
+                  {t("panel.examplesTitle")}
+                </h3>
                 <ul className="mb-3 flex flex-col gap-2">
                   {detail.examples.map((example, index) => (
-                    <li key={index} className="rounded-lg border border-[var(--color-border)] p-2.5 text-[12.5px]">
-                      <p><span className="font-semibold">Input:</span> {example.input}</p>
-                      <p><span className="font-semibold">Output:</span> {example.output}</p>
-                      {example.explanation ? <p className="text-[var(--color-text-muted)]">{example.explanation}</p> : null}
+                    <li
+                      key={index}
+                      className="rounded-lg border border-[var(--color-border)] p-2.5 text-[12.5px]"
+                    >
+                      <p>
+                        <span className="font-semibold">Input:</span>{" "}
+                        {example.input}
+                      </p>
+                      <p>
+                        <span className="font-semibold">Output:</span>{" "}
+                        {example.output}
+                      </p>
+                      {example.explanation ? (
+                        <p className="text-[var(--color-text-muted)]">
+                          {example.explanation}
+                        </p>
+                      ) : null}
                     </li>
                   ))}
                 </ul>
-                <h3 className="mb-1.5 text-[12.5px] font-semibold">{t("panel.constraintsTitle")}</h3>
+                <h3 className="mb-1.5 text-[12.5px] font-semibold">
+                  {t("panel.constraintsTitle")}
+                </h3>
                 <ul className="list-disc pl-4 text-[12.5px] text-[var(--color-text-muted)]">
                   {detail.constraints.map((constraint) => (
                     <li key={constraint}>{constraint}</li>
@@ -204,10 +260,16 @@ export function ProblemDetailView() {
               ) : (
                 <ul className="flex flex-col gap-2">
                   {detail.mySubmissions.map((submission) => (
-                    <li key={submission.id} className="flex items-center justify-between rounded-lg border border-[var(--color-border)] p-2.5 text-[12.5px]">
-                      <span className="font-semibold">{submission.verdictLabel}</span>
+                    <li
+                      key={submission.id}
+                      className="flex items-center justify-between rounded-lg border border-[var(--color-border)] p-2.5 text-[12.5px]"
+                    >
+                      <span className="font-semibold">
+                        {submission.verdictLabel}
+                      </span>
                       <span className="text-[var(--color-text-muted)]">
-                        {t(`language.${submission.language}`)} · {submission.submittedAtLabel}
+                        {t(`language.${submission.language}`)} ·{" "}
+                        {submission.submittedAtLabel}
                       </span>
                     </li>
                   ))}
@@ -220,12 +282,20 @@ export function ProblemDetailView() {
                 <div>
                   <div className="mb-3 grid grid-cols-2 gap-2">
                     <div className="rounded-lg border border-[var(--color-border)] p-2.5 text-center">
-                      <p className="text-[11px] text-[var(--color-text-muted)]">{t("panel.timeComplexity")}</p>
-                      <p className="font-mono text-[15px] font-semibold">{detail.solutionReview.timeComplexity}</p>
+                      <p className="text-[11px] text-[var(--color-text-muted)]">
+                        {t("panel.timeComplexity")}
+                      </p>
+                      <p className="font-mono text-[15px] font-semibold">
+                        {detail.solutionReview.timeComplexity}
+                      </p>
                     </div>
                     <div className="rounded-lg border border-[var(--color-border)] p-2.5 text-center">
-                      <p className="text-[11px] text-[var(--color-text-muted)]">{t("panel.spaceComplexity")}</p>
-                      <p className="font-mono text-[15px] font-semibold">{detail.solutionReview.spaceComplexity}</p>
+                      <p className="text-[11px] text-[var(--color-text-muted)]">
+                        {t("panel.spaceComplexity")}
+                      </p>
+                      <p className="font-mono text-[15px] font-semibold">
+                        {detail.solutionReview.spaceComplexity}
+                      </p>
                     </div>
                   </div>
                   <ul className="list-disc pl-4 text-[12.5px] text-[var(--color-text-muted)]">
@@ -233,7 +303,10 @@ export function ProblemDetailView() {
                       <li key={note}>{note}</li>
                     ))}
                   </ul>
-                  <Link href={`/submissions/${detail.mySubmissions[0]?.id ?? ""}/interview`} className="mt-3 inline-block text-[12.5px] font-semibold underline">
+                  <Link
+                    href={`/submissions/${detail.mySubmissions[0]?.id ?? ""}/interview`}
+                    className="mt-3 inline-block text-[12.5px] font-semibold underline"
+                  >
                     {t("panel.linkMockInterview")}
                   </Link>
                 </div>
@@ -247,7 +320,12 @@ export function ProblemDetailView() {
             <span className="text-[11.5px] text-[var(--color-text-muted)]">
               AC rate: {detail.acRate === null ? "-" : `${detail.acRate}%`}
             </span>
-            <Button variant="ghost" size="sm" className="border border-[var(--color-border)]" onClick={toggleSaved}>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="border border-[var(--color-border)]"
+              onClick={toggleSaved}
+            >
               {saved ? t("panel.btnUnsave") : t("panel.btnSave")}
             </Button>
           </div>
@@ -260,7 +338,10 @@ export function ProblemDetailView() {
                 label={t("toolbar.languageLabel")}
                 value={language}
                 onValueChange={setLanguage}
-                options={LANGUAGES.map((lang) => ({ value: lang, label: t(`language.${lang}`) }))}
+                options={LANGUAGES.map((lang) => ({
+                  value: lang,
+                  label: t(`language.${lang}`),
+                }))}
               />
               {detail.submissionModel === "both" ? (
                 <SegmentedTabs
@@ -304,7 +385,9 @@ export function ProblemDetailView() {
                   type="file"
                   accept=".java,.cpp,.py"
                   className="sr-only"
-                  onChange={(event) => setUploadedFileName(event.target.files?.[0]?.name ?? null)}
+                  onChange={(event) =>
+                    setUploadedFileName(event.target.files?.[0]?.name ?? null)
+                  }
                 />
               </label>
             )}
@@ -322,8 +405,15 @@ export function ProblemDetailView() {
                 ]}
               />
               {result ? (
-                <Badge variant={result.overallVerdict === "accepted" ? "success" : "negative"}>
-                  {t(`verdict.${result.overallVerdict}`)} {result.passedCount}/{result.totalCount}
+                <Badge
+                  variant={
+                    result.overallVerdict === "accepted"
+                      ? "success"
+                      : "negative"
+                  }
+                >
+                  {t(`verdict.${result.overallVerdict}`)} {result.passedCount}/
+                  {result.totalCount}
                 </Badge>
               ) : null}
             </div>
@@ -333,16 +423,29 @@ export function ProblemDetailView() {
                 sampleRun ? (
                   <ul className="flex flex-col gap-1.5">
                     {detail.sampleTestcases.map((testcase, index) => (
-                      <li key={index} className="flex items-center justify-between rounded-lg border border-[var(--color-border)] px-2.5 py-1.5 text-[12px]">
-                        <span className="font-mono truncate">{testcase.input}</span>
-                        <Badge variant={sampleRun[index]?.passed ? "success" : "negative"}>
-                          {sampleRun[index]?.passed ? t("console.passed") : t("console.failed")}
+                      <li
+                        key={index}
+                        className="flex items-center justify-between rounded-lg border border-[var(--color-border)] px-2.5 py-1.5 text-[12px]"
+                      >
+                        <span className="font-mono truncate">
+                          {testcase.input}
+                        </span>
+                        <Badge
+                          variant={
+                            sampleRun[index]?.passed ? "success" : "negative"
+                          }
+                        >
+                          {sampleRun[index]?.passed
+                            ? t("console.passed")
+                            : t("console.failed")}
                         </Badge>
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <p className="text-[12.5px] text-[var(--color-text-muted)]">{t("console.runHint")}</p>
+                  <p className="text-[12.5px] text-[var(--color-text-muted)]">
+                    {t("console.runHint")}
+                  </p>
                 )
               ) : result ? (
                 <div className="flex flex-wrap gap-1">
@@ -358,21 +461,34 @@ export function ProblemDetailView() {
                   ))}
                 </div>
               ) : running ? (
-                <p className="text-[12.5px] text-[var(--color-text-muted)]">{t("console.judging")}</p>
+                <p className="text-[12.5px] text-[var(--color-text-muted)]">
+                  {t("console.judging")}
+                </p>
               ) : (
-                <p className="text-[12.5px] text-[var(--color-text-muted)]">{t("console.submitHint")}</p>
+                <p className="text-[12.5px] text-[var(--color-text-muted)]">
+                  {t("console.submitHint")}
+                </p>
               )}
             </div>
 
             {result?.overallVerdict === "accepted" ? (
               <div className="mt-2 flex shrink-0 flex-wrap gap-2 border-t border-[var(--color-border)] pt-2">
-                <Link href={`/submissions/${result.submissionId}`} className="text-[12px] font-semibold underline">
+                <Link
+                  href={`/submissions/${result.submissionId}`}
+                  className="text-[12px] font-semibold underline"
+                >
                   {t("console.linkResult")}
                 </Link>
-                <Link href={`/submissions/${result.submissionId}/review`} className="text-[12px] font-semibold underline">
+                <Link
+                  href={`/submissions/${result.submissionId}/review`}
+                  className="text-[12px] font-semibold underline"
+                >
                   {t("console.linkReview")}
                 </Link>
-                <Link href={`/submissions/${result.submissionId}/interview`} className="text-[12px] font-semibold underline">
+                <Link
+                  href={`/submissions/${result.submissionId}/interview`}
+                  className="text-[12px] font-semibold underline"
+                >
                   {t("console.linkInterview")}
                 </Link>
               </div>

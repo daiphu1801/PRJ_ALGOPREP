@@ -1,5 +1,13 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
-import { act, fireEvent, render, renderHook, screen, waitFor, within } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { toast, useToasts } from "@/shared/lib/toast-store";
 import { withTestProviders } from "@/shared/test/render-with-providers";
@@ -26,10 +34,20 @@ describe("ClassProgressView", () => {
     render(withTestProviders(<ClassProgressView />));
 
     await screen.findByText("Nguyễn Văn An");
-    fireEvent.click((await screen.findAllByRole("button", { name: "Gỡ khỏi lớp" }))[0]!);
-    fireEvent.click(within(await screen.findByRole("dialog")).getByRole("button", { name: "Gỡ khỏi lớp" }));
+    fireEvent.click(
+      (await screen.findAllByRole("button", { name: "Gỡ khỏi lớp" }))[0]!,
+    );
+    fireEvent.click(
+      within(await screen.findByRole("dialog")).getByRole("button", {
+        name: "Gỡ khỏi lớp",
+      }),
+    );
 
-    await waitFor(() => expect(toasts.result.current.map((item) => item.tone)).toEqual(["success"]));
+    await waitFor(() =>
+      expect(toasts.result.current.map((item) => item.tone)).toEqual([
+        "success",
+      ]),
+    );
     expect(toasts.result.current[0]!.message).not.toMatch(/^toast\./);
   });
 });

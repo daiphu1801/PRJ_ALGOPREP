@@ -6,11 +6,18 @@
 // `UpdateLanguageConfigs`. The view imports only these hooks.
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiError, withMockData } from "@/shared/api";
-import { loadLanguageConfigPage, saveLanguageConfigPage } from "./__mock__/language-config-mocks";
+import {
+  loadLanguageConfigPage,
+  saveLanguageConfigPage,
+} from "./__mock__/language-config-mocks";
 import type { LanguageConfigPage } from "../model/types";
 
 function notImplemented(): never {
-  throw new ApiError("NOT_IMPLEMENTED", 501, "03-dd/api/judge-orchestration.md chưa định nghĩa endpoint này");
+  throw new ApiError(
+    "NOT_IMPLEMENTED",
+    501,
+    "03-dd/api/judge-orchestration.md chưa định nghĩa endpoint này",
+  );
 }
 
 const KEY = ["language-config"] as const;

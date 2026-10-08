@@ -54,7 +54,9 @@ function ExportButton({
       className="flex h-9 items-center justify-between rounded-lg border border-[var(--color-border)] px-3 text-sm font-semibold text-[var(--color-text)] hover:bg-[var(--color-surface-hover)] disabled:opacity-50"
     >
       <span>{label}</span>
-      <span className="font-mono text-xs text-[var(--color-text-subtle)]">{format}</span>
+      <span className="font-mono text-xs text-[var(--color-text-subtle)]">
+        {format}
+      </span>
     </button>
   );
 }

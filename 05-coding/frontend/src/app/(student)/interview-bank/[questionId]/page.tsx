@@ -1,6 +1,10 @@
 import { InterviewQuestionDetailView } from "@/views/users/interview-question-detail";
 
-export default async function Page({ params }: { params: Promise<{ questionId: string }> }) {
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ questionId: string }>;
+}) {
   const { questionId } = await params;
   return <InterviewQuestionDetailView questionId={questionId} />;
 }

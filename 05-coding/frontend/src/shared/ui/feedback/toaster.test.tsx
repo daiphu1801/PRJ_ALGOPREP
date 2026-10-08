@@ -6,7 +6,12 @@ import { Toaster } from "./toaster";
 const labels = {
   region: "Notifications",
   dismiss: "Close",
-  tone: { success: "Success", error: "Error", warning: "Warning", info: "Info" },
+  tone: {
+    success: "Success",
+    error: "Error",
+    warning: "Warning",
+    info: "Info",
+  },
 };
 
 beforeEach(() => vi.useFakeTimers());
@@ -22,7 +27,9 @@ describe("Toaster", () => {
       toast.success("Saved");
       toast.error("Failed");
     });
-    expect(screen.getByRole("region", { name: "Notifications" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("region", { name: "Notifications" }),
+    ).toBeInTheDocument();
     expect(screen.getByRole("status")).toHaveTextContent("Saved");
     expect(screen.getByRole("alert")).toHaveTextContent("Failed");
   });

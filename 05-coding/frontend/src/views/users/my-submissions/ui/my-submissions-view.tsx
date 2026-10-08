@@ -54,7 +54,11 @@ export function MySubmissionsView() {
   const [verdict, setVerdict] = useState<VerdictFilter>("ALL");
   const [language, setLanguage] = useState<LanguageFilter>("ALL");
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = usePersistedPageSize("algoprep-my-submissions-page-size", PAGE_SIZES, 20);
+  const [pageSize, setPageSize] = usePersistedPageSize(
+    "algoprep-my-submissions-page-size",
+    PAGE_SIZES,
+    20,
+  );
 
   const listPage = useMemo(
     () => fetchMySubmissionsPage({ query, verdict, language, page, pageSize }),
@@ -62,9 +66,13 @@ export function MySubmissionsView() {
   );
 
   const acceptedRate =
-    stats.totalSubmissions === 0 ? null : Math.round((stats.acceptedCount / stats.totalSubmissions) * 100);
+    stats.totalSubmissions === 0
+      ? null
+      : Math.round((stats.acceptedCount / stats.totalSubmissions) * 100);
   const firstTryRate =
-    stats.acceptedCount === 0 ? null : Math.round((stats.firstTryAcceptedCount / stats.acceptedCount) * 100);
+    stats.acceptedCount === 0
+      ? null
+      : Math.round((stats.firstTryAcceptedCount / stats.acceptedCount) * 100);
   const topLanguageRate =
     stats.totalSubmissions === 0 || !stats.topLanguage
       ? null
@@ -77,7 +85,11 @@ export function MySubmissionsView() {
 
   // The list filters live while typing (no toast per keystroke); Enter is the explicit search.
   function announceSearch() {
-    toast.info(listPage.totalItems > 0 ? t("toast.searchResult", { count: listPage.totalItems }) : t("toast.searchEmpty"));
+    toast.info(
+      listPage.totalItems > 0
+        ? t("toast.searchResult", { count: listPage.totalItems })
+        : t("toast.searchEmpty"),
+    );
   }
 
   const columns: DataTableColumn<SubmissionListItem>[] = [
@@ -95,7 +107,10 @@ export function MySubmissionsView() {
       key: "problem",
       header: t("table.col.problem"),
       render: (row) => (
-        <Link href={`/problems/${row.problemSlug}`} className="font-semibold hover:underline">
+        <Link
+          href={`/problems/${row.problemSlug}`}
+          className="font-semibold hover:underline"
+        >
           {row.problemCode} · {row.problemTitle}
         </Link>
       ),
@@ -104,13 +119,19 @@ export function MySubmissionsView() {
       key: "language",
       header: t("table.col.language"),
       width: "96px",
-      render: (row) => <Badge variant="neutral">{t(`language.${row.language}`)}</Badge>,
+      render: (row) => (
+        <Badge variant="neutral">{t(`language.${row.language}`)}</Badge>
+      ),
     },
     {
       key: "verdict",
       header: t("table.col.verdict"),
       width: "140px",
-      render: (row) => <Badge variant={VERDICT_VARIANT[row.status] ?? "neutral"}>{t(`verdict.${row.status}`)}</Badge>,
+      render: (row) => (
+        <Badge variant={VERDICT_VARIANT[row.status] ?? "neutral"}>
+          {t(`verdict.${row.status}`)}
+        </Badge>
+      ),
     },
     {
       key: "testcases",
@@ -118,7 +139,11 @@ export function MySubmissionsView() {
       width: "88px",
       align: "right",
       render: (row) => (
-        <span className="font-mono">{row.totalCount != null ? `${row.passedCount}/${row.totalCount}` : "-"}</span>
+        <span className="font-mono">
+          {row.totalCount != null
+            ? `${row.passedCount}/${row.totalCount}`
+            : "-"}
+        </span>
       ),
     },
     {
@@ -126,7 +151,11 @@ export function MySubmissionsView() {
       header: t("table.col.runtime"),
       width: "88px",
       align: "right",
-      render: (row) => <span className="font-mono">{row.runtimeMs != null ? `${row.runtimeMs} ms` : "-"}</span>,
+      render: (row) => (
+        <span className="font-mono">
+          {row.runtimeMs != null ? `${row.runtimeMs} ms` : "-"}
+        </span>
+      ),
     },
     {
       key: "actions",
@@ -135,19 +164,28 @@ export function MySubmissionsView() {
       align: "right",
       render: (row) => (
         <span className="flex justify-end gap-1.5">
-          <Button variant="ghost" size="sm" asChild className="border border-[var(--color-border)]">
+          <Button
+            variant="ghost"
+            size="sm"
+            asChild
+            className="border border-[var(--color-border)]"
+          >
             <Link href={`/submissions/${row.id}`}>{t("table.btnResult")}</Link>
           </Button>
           <Button
             variant="ghost"
             size="sm"
             disabled={row.status !== "ACCEPTED"}
-            title={row.status === "ACCEPTED" ? undefined : t("table.needAccepted")}
+            title={
+              row.status === "ACCEPTED" ? undefined : t("table.needAccepted")
+            }
             asChild={row.status === "ACCEPTED"}
             className="border border-[var(--color-border)]"
           >
             {row.status === "ACCEPTED" ? (
-              <Link href={`/submissions/${row.id}/review`}>{t("table.btnReview")}</Link>
+              <Link href={`/submissions/${row.id}/review`}>
+                {t("table.btnReview")}
+              </Link>
             ) : (
               <span>{t("table.btnReview")}</span>
             )}
@@ -165,7 +203,10 @@ export function MySubmissionsView() {
         <StatCard label={t("stats.total")} value={stats.totalSubmissions} />
         <StatCard
           label={t("stats.accepted")}
-          value={t("stats.acceptedValue", { count: stats.acceptedCount, rate: acceptedRate ?? "—" })}
+          value={t("stats.acceptedValue", {
+            count: stats.acceptedCount,
+            rate: acceptedRate ?? "—",
+          })}
         />
         <StatCard
           label={t("stats.firstTry")}
@@ -206,7 +247,10 @@ export function MySubmissionsView() {
               { value: "ALL", label: t("filter.all") },
               { value: "ACCEPTED", label: t("verdict.ACCEPTED") },
               { value: "WRONG_ANSWER", label: t("verdict.WRONG_ANSWER") },
-              { value: "TIME_LIMIT_EXCEEDED", label: t("verdict.TIME_LIMIT_EXCEEDED") },
+              {
+                value: "TIME_LIMIT_EXCEEDED",
+                label: t("verdict.TIME_LIMIT_EXCEEDED"),
+              },
               { value: "COMPILE_ERROR", label: t("verdict.COMPILE_ERROR") },
             ]}
           />
@@ -244,14 +288,22 @@ export function MySubmissionsView() {
             setPage(1);
           }}
           summary={t("footer.summary", {
-            from: listPage.totalItems === 0 ? 0 : (listPage.currentPage - 1) * listPage.pageSize + 1,
-            to: Math.min(listPage.currentPage * listPage.pageSize, listPage.totalItems),
+            from:
+              listPage.totalItems === 0
+                ? 0
+                : (listPage.currentPage - 1) * listPage.pageSize + 1,
+            to: Math.min(
+              listPage.currentPage * listPage.pageSize,
+              listPage.totalItems,
+            ),
             total: listPage.totalItems,
           })}
           previousLabel={t("footer.previous")}
           nextLabel={t("footer.next")}
           showPageNumbers
-          pageLabel={(pageNumber) => t("footer.pageLabel", { page: pageNumber })}
+          pageLabel={(pageNumber) =>
+            t("footer.pageLabel", { page: pageNumber })
+          }
         />
       </div>
     </div>

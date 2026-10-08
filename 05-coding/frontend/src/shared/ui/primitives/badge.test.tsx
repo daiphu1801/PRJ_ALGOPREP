@@ -2,7 +2,14 @@ import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { Badge, type BadgeVariant } from "./badge";
 
-const VARIANTS: BadgeVariant[] = ["neutral", "cyan", "teal", "success", "warn", "negative"];
+const VARIANTS: BadgeVariant[] = [
+  "neutral",
+  "cyan",
+  "teal",
+  "success",
+  "warn",
+  "negative",
+];
 
 describe("Badge", () => {
   it.each(VARIANTS)("renders the %s variant with a pill shape", (variant) => {

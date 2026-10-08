@@ -14,13 +14,22 @@ export function UserRetentionBlock() {
       title={t("blocks.userRetention")}
       isLoading={query.isLoading}
       isError={query.isError}
-      isEmpty={query.data ? query.data.groups.every((g) => g.bars.every((b) => b.value === 0)) : false}
+      isEmpty={
+        query.data
+          ? query.data.groups.every((g) => g.bars.every((b) => b.value === 0))
+          : false
+      }
       onRetry={() => query.refetch()}
       emptyMessage={t("emptyGeneric")}
       errorMessage={t("errorGeneric")}
       retryLabel={t("retry")}
     >
-      {query.data && <GroupedBarChart groups={query.data.groups} legend={query.data.legend} />}
+      {query.data && (
+        <GroupedBarChart
+          groups={query.data.groups}
+          legend={query.data.legend}
+        />
+      )}
     </DashboardBlockState>
   );
 }

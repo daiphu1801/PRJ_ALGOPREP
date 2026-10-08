@@ -5,26 +5,43 @@ import { expect, test } from "@playwright/test";
  * PROTOTYPE_DEBT 2.8 keeps the UI but defers the backend, so it must be visibly inactive rather
  * than wired to something that does not exist.
  */
-test("the comparison run is present but inert, per the deferred-backend decision", async ({ page }) => {
+test("the comparison run is present but inert, per the deferred-backend decision", async ({
+  page,
+}) => {
   await page.goto("/admin/ai-config");
 
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Cấu hình trợ lý AI");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "Cấu hình trợ lý AI",
+  );
 
   const run = page.getByRole("button", { name: "Chạy đối chiếu" });
   await expect(run).toBeVisible();
   await expect(run).toBeDisabled();
 });
 
-test("rubric weights add to 100 and warn when they stop doing so", async ({ page }) => {
+test("rubric weights add to 100 and warn when they stop doing so", async ({
+  page,
+}) => {
   await page.goto("/admin/ai-config");
 
   await expect(page.getByText("Tổng 100%")).toBeVisible();
-  await expect(page.getByText("Tổng trọng số chưa bằng 100%")).toHaveCount(0);
 
-  await page.getByRole("button", { name: "Tăng trọng số Tính đúng đắn" }).click();
+  // Publishing a balanced set is allowed: no warning toast.
+  await page.getByRole("button", { name: "Lưu và phát hành" }).click();
+  await expect(page.getByText(/Tổng trọng số chưa bằng 100%/)).toHaveCount(0);
 
+  await page
+    .getByRole("button", { name: "Tăng trọng số Tính đúng đắn" })
+    .click();
   await expect(page.getByText("Tổng 105%")).toBeVisible();
-  await expect(page.getByText("Tổng trọng số chưa bằng 100%")).toBeVisible();
+
+  // DEC-2026-1003-toast-feedback-channel: the warning is a toast raised on publish, not inline text.
+  // The button is aria-disabled while unbalanced but still answers a click with the warning, and
+  // Playwright treats aria-disabled as not actionable, hence force.
+  await page
+    .getByRole("button", { name: "Lưu và phát hành" })
+    .click({ force: true });
+  await expect(page.getByText(/Tổng trọng số chưa bằng 100%/)).toBeVisible();
 });
 
 test("version log opens as a dialog with entries", async ({ page }) => {
@@ -51,9 +68,15 @@ test("answer guards are switches, not decoration", async ({ page }) => {
 for (const theme of ["light", "dark"] as const) {
   test(`capture ${theme} theme for mockup comparison`, async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1020 });
-    await page.addInitScript((value) => localStorage.setItem("theme", value), theme);
+    await page.addInitScript(
+      (value) => localStorage.setItem("theme", value),
+      theme,
+    );
     await page.goto("/admin/ai-config");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-    await page.screenshot({ path: `e2e/__screenshots__/ai-config-${theme}.png`, caret: "initial" });
+    await page.screenshot({
+      path: `e2e/__screenshots__/ai-config-${theme}.png`,
+      caret: "initial",
+    });
   });
 }

@@ -59,7 +59,12 @@ export type FocusSuggestion = {
   reason: FocusReason;
 };
 
-export const RUBRIC_CRITERIA = ["CLARITY", "TECHNICAL_ACCURACY", "PUSHBACK_HANDLING", "COMPLEXITY_AWARENESS"] as const;
+export const RUBRIC_CRITERIA = [
+  "CLARITY",
+  "TECHNICAL_ACCURACY",
+  "PUSHBACK_HANDLING",
+  "COMPLEXITY_AWARENESS",
+] as const;
 export type RubricCriterionCode = (typeof RUBRIC_CRITERIA)[number];
 
 export type RecentInterviewSession = {

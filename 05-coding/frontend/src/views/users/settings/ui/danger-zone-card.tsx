@@ -20,7 +20,9 @@ export function DangerZoneCard({ email }: { email: string }) {
       className="border-[var(--color-danger)]"
     >
       <div className="flex flex-wrap items-center gap-4">
-        <p className="min-w-0 flex-1 text-sm text-[var(--color-text-muted)]">{t("dangerZone.consequenceText")}</p>
+        <p className="min-w-0 flex-1 text-sm text-[var(--color-text-muted)]">
+          {t("dangerZone.consequenceText")}
+        </p>
         <Button
           variant="ghost"
           size="sm"
@@ -30,7 +32,9 @@ export function DangerZoneCard({ email }: { email: string }) {
           {t("dangerZone.delete")}
         </Button>
       </div>
-      {open ? <DeleteAccountDialog email={email} onClose={() => setOpen(false)} /> : null}
+      {open ? (
+        <DeleteAccountDialog email={email} onClose={() => setOpen(false)} />
+      ) : null}
     </Card>
   );
 }

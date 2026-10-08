@@ -5,10 +5,14 @@ import { expect, test } from "@playwright/test";
  * (02-bd/screens/shared/SHR0302_interview_question_authoring.md:12-14). These assertions cover the rules
  * the BD states rather than any visual, since there is nothing to compare a visual against.
  */
-test("saving is a single action with no draft/publish split", async ({ page }) => {
+test("saving is a single action with no draft/publish split", async ({
+  page,
+}) => {
   await page.goto("/admin/interview-questions/new");
 
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Soạn câu hỏi phỏng vấn");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "Soạn câu hỏi phỏng vấn",
+  );
   await expect(page.getByRole("button", { name: "Lưu" })).toBeVisible();
   // RD Q5: a question is live once saved. Anything offering to publish separately is wrong.
   await expect(page.getByRole("button", { name: /xuất bản/i })).toHaveCount(0);
@@ -17,13 +21,17 @@ test("saving is a single action with no draft/publish split", async ({ page }) =
   await expect(page.getByText("Chưa lưu")).toHaveCount(0);
 });
 
-test("an empty rubric saves, a rubric that misses 100% does not", async ({ page }) => {
+test("an empty rubric saves, a rubric that misses 100% does not", async ({
+  page,
+}) => {
   await page.goto("/admin/interview-questions/new");
 
   const save = page.getByRole("button", { name: "Lưu" });
   await expect(save).toBeDisabled();
 
-  await page.getByLabel("Nội dung câu hỏi").fill("Hash table xử lý collision bằng cách nào?");
+  await page
+    .getByLabel("Nội dung câu hỏi")
+    .fill("Hash table xử lý collision bằng cách nào?");
   // Empty rubric is valid — BD section 1.4.
   await expect(page.getByText("Chưa có tiêu chí đánh giá")).toBeVisible();
   await expect(save).toBeEnabled();
@@ -33,17 +41,23 @@ test("an empty rubric saves, a rubric that misses 100% does not", async ({ page 
   // The button only looks disabled (aria-disabled); clicking it names the reason in a toast.
   await expect(save).toBeDisabled();
   await save.click({ force: true });
-  await expect(page.getByText(/Chưa lưu được — tổng trọng số phải bằng 100%/)).toBeVisible();
+  await expect(
+    page.getByText(/Chưa lưu được — tổng trọng số phải bằng 100%/),
+  ).toBeVisible();
 
   // Twenty clicks of +5 gets to 100.
-  const increment = page.getByRole("button", { name: "Tăng trọng số tiêu chí 1" });
+  const increment = page.getByRole("button", {
+    name: "Tăng trọng số tiêu chí 1",
+  });
   for (let index = 0; index < 20; index += 1) await increment.click();
 
   await expect(page.getByText("Tổng 100%")).toBeVisible();
   await expect(save).toBeEnabled();
 });
 
-test("follow-ups are a dynamic list and the topic list comes from the admin-managed topics", async ({ page }) => {
+test("follow-ups are a dynamic list and the topic list comes from the admin-managed topics", async ({
+  page,
+}) => {
   await page.goto("/admin/interview-questions/new");
 
   const remove = page.getByRole("button", { name: "Xoá câu đào sâu 1" });
@@ -51,7 +65,9 @@ test("follow-ups are a dynamic list and the topic list comes from the admin-mana
   await expect(remove).toBeDisabled();
 
   await page.getByRole("button", { name: "+ Thêm câu đào sâu" }).click();
-  await expect(page.getByRole("button", { name: /^Xoá câu đào sâu/ })).toHaveCount(2);
+  await expect(
+    page.getByRole("button", { name: /^Xoá câu đào sâu/ }),
+  ).toHaveCount(2);
   await expect(remove).toBeEnabled();
 
   // The five seeded topics (DEC-2026-1001: admin-managed data, no free text here).
@@ -61,7 +77,10 @@ test("follow-ups are a dynamic list and the topic list comes from the admin-mana
 for (const theme of ["light", "dark"] as const) {
   test(`capture ${theme} theme for owner review`, async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1020 });
-    await page.addInitScript((value) => localStorage.setItem("theme", value), theme);
+    await page.addInitScript(
+      (value) => localStorage.setItem("theme", value),
+      theme,
+    );
     await page.goto("/admin/interview-questions/new");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     await page.screenshot({

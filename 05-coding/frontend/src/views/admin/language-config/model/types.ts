@@ -71,7 +71,10 @@ export type LanguageConfigPage = {
 };
 
 /** Effective limits shown read-only in the table: defaults scaled by the language multipliers. */
-export function effectiveTimeLimitMs(defaults: JudgeDefaults, language: LanguageConfig): number {
+export function effectiveTimeLimitMs(
+  defaults: JudgeDefaults,
+  language: LanguageConfig,
+): number {
   return Math.round(defaults.timeLimitMs * language.timeMultiplier);
 }
 

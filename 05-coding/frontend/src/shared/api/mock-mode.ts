@@ -15,6 +15,9 @@ export function isMockMode(): boolean {
  * When the prototype graduates (see vibecode-pipeline SKILL.md Layer 3 "Graduation"), drop the
  * withMockData call and its __mock__/ folder, keeping fetchReal as-is.
  */
-export async function withMockData<T>(mockFn: () => Promise<T> | T, fetchReal: () => Promise<T>): Promise<T> {
+export async function withMockData<T>(
+  mockFn: () => Promise<T> | T,
+  fetchReal: () => Promise<T>,
+): Promise<T> {
   return isMockMode() ? mockFn() : fetchReal();
 }

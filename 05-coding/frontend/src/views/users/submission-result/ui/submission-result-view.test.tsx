@@ -34,7 +34,9 @@ describe("SubmissionResultView", () => {
     // The testcase table (identified by its accessible caption) must not be in the document at all —
     // not just empty — per BD Sheet 6 Khu vực D NO 1.
     expect(screen.queryByText("Kết quả từng testcase")).not.toBeInTheDocument();
-    expect(screen.getByText(/expected ';' after expression/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/expected ';' after expression/),
+    ).toBeInTheDocument();
   });
 
   it("shows a not-found state for an unknown submission id", () => {

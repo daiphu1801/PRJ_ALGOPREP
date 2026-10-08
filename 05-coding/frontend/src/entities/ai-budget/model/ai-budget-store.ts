@@ -5,7 +5,10 @@
 // config screen and read by the usage screen, hence an entity both views import.
 "use client";
 
-import { createManagedListStore, type ManagedItem } from "@/shared/lib/managed-list-store";
+import {
+  createManagedListStore,
+  type ManagedItem,
+} from "@/shared/lib/managed-list-store";
 import { createSettingsStore } from "@/shared/lib/settings-store";
 
 /** The bar changes colour once usage reaches this percent of the cap. 70 is the RD's own example. */
@@ -22,8 +25,10 @@ const prices = createManagedListStore<ModelPrice>(
 );
 
 export const useModelPrices = prices.use;
-export const addModelPrice = (label: string) => prices.add(label, { usdPerMillionTokens: 0 });
-export const renameModelPrice = (key: string, label: string) => prices.update(key, { label });
+export const addModelPrice = (label: string) =>
+  prices.add(label, { usdPerMillionTokens: 0 });
+export const renameModelPrice = (key: string, label: string) =>
+  prices.update(key, { label });
 export const setModelPriceValue = (key: string, usdPerMillionTokens: number) =>
   prices.update(key, { usdPerMillionTokens });
 export const removeModelPrice = prices.remove;

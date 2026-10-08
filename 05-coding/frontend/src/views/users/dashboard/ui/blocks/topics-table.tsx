@@ -5,15 +5,28 @@
 "use client";
 
 import { useT } from "@/shared/i18n";
-import { Card, DataTable, ProgressBar, type DataTableColumn } from "@/shared/ui";
-import { useTopicProgress, type ProgressRange, type TopicProgress } from "@/entities/progress";
+import {
+  Card,
+  DataTable,
+  ProgressBar,
+  type DataTableColumn,
+} from "@/shared/ui";
+import {
+  useTopicProgress,
+  type ProgressRange,
+  type TopicProgress,
+} from "@/entities/progress";
 
 export function TopicsTable({ range }: { range: ProgressRange }) {
   const t = useT("myProgress");
   const query = useTopicProgress(range);
 
   const columns: DataTableColumn<TopicProgress>[] = [
-    { key: "topicName", header: t("topics.colTopic"), render: (row) => row.topicName },
+    {
+      key: "topicName",
+      header: t("topics.colTopic"),
+      render: (row) => row.topicName,
+    },
     {
       key: "solved",
       header: t("topics.colSolved"),
@@ -44,7 +57,13 @@ export function TopicsTable({ range }: { range: ProgressRange }) {
       key: "lastSubmittedAt",
       header: t("topics.colLast"),
       align: "right",
-      render: (row) => (row.lastSubmittedAt ? new Date(row.lastSubmittedAt).toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit" }) : "-"),
+      render: (row) =>
+        row.lastSubmittedAt
+          ? new Date(row.lastSubmittedAt).toLocaleDateString("vi-VN", {
+              day: "2-digit",
+              month: "2-digit",
+            })
+          : "-",
     },
   ];
 

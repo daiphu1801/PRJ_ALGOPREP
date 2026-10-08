@@ -2,7 +2,11 @@ import { afterEach, describe, expect, it } from "vitest";
 import { act, render, renderHook, screen } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { NextIntlClientProvider } from "@/shared/i18n";
-import { addProblemLevel, removeProblemLevel, useProblemLevels } from "@/entities/problem";
+import {
+  addProblemLevel,
+  removeProblemLevel,
+  useProblemLevels,
+} from "@/entities/problem";
 import messages from "../../../../../../messages/vi.json";
 import { DifficultyCard } from "./difficulty-card";
 

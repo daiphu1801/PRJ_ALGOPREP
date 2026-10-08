@@ -50,10 +50,21 @@ function push(tone: ToastTone, message: string): number {
 
   // The same message again moves the existing card to the end under a new id: no duplicate stack,
   // and the new id restarts its dismiss timer.
-  const repeated = items.find((item) => item.tone === tone && item.message === text);
+  const repeated = items.find(
+    (item) => item.tone === tone && item.message === text,
+  );
   const id = ++nextId;
-  const item: ToastItem = { id, tone, message: text, durationMs: DURATION_MS[tone] };
-  commit([...items.filter((existing) => existing !== repeated), item].slice(-MAX_VISIBLE_TOASTS));
+  const item: ToastItem = {
+    id,
+    tone,
+    message: text,
+    durationMs: DURATION_MS[tone],
+  };
+  commit(
+    [...items.filter((existing) => existing !== repeated), item].slice(
+      -MAX_VISIBLE_TOASTS,
+    ),
+  );
   return id;
 }
 
@@ -63,7 +74,8 @@ export const toast = {
   warning: (message: string) => push("warning", message),
   info: (message: string) => push("info", message),
   dismiss(id: number) {
-    if (items.some((item) => item.id === id)) commit(items.filter((item) => item.id !== id));
+    if (items.some((item) => item.id === id))
+      commit(items.filter((item) => item.id !== id));
   },
   /** Drops every card. Tests and sign-out use it. */
   clear() {
@@ -75,7 +87,9 @@ export const toast = {
  * One error toast per failed submit: the first non-empty message wins. A form with several bad
  * fields would otherwise fire a burst of cards; the fields themselves already show a red border.
  */
-export function toastFirstError(messages: readonly (string | null | undefined | false)[]) {
+export function toastFirstError(
+  messages: readonly (string | null | undefined | false)[],
+) {
   const first = messages.find((message): message is string => Boolean(message));
   if (first) toast.error(first);
 }

@@ -55,6 +55,13 @@
 - **Audit không có ngoại lệ**: mọi thay đổi ma trận quyền, đổi vai trò, khoá/mở khoá, reset mật khẩu đều
   ghi `system_audit_logs`, kể cả khi ADMIN tự thao tác trên chính tài khoản ADMIN khác (`identity.md`
   dòng 69-70).
+- **Lý do khoá (F1-32, thêm 2026-10-05)**: dòng `system_audit_logs` của thao tác **khoá** phải kèm lý do
+  quản trị viên nhập, kể cả khi quyết định tắt gửi email cho người dùng — đây là thứ trả lời "ai khoá
+  tài khoản của tôi và vì sao" khi không có người dùng để hỏi. Lý do là văn bản tự do do quản trị viên
+  quyết định, không phải danh mục có sẵn, nên **không** dùng làm điều kiện truy vấn lọc được; xem
+  `02-bd/screens/admin/ADM0201_user_management.md` Sheet 9 NO 16. Email thông báo cho người dùng chỉ
+  được nêu tài khoản bị khoá, thời điểm, lý do và cách liên hệ quản trị viên — **không** lộ dữ liệu của
+  tài khoản khác trong cùng tập chọn.
 - **Xuất dữ liệu cá nhân (F1-22)**: chỉ cho phép xuất dữ liệu của chính người dùng đang đăng nhập —
   kiểm `user_id` trong token khớp `user_id` được yêu cầu xuất, không nhận tham số `user_id` tuỳ ý từ
   client.

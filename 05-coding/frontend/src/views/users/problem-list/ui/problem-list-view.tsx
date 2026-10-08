@@ -37,7 +37,7 @@ import {
   Pagination,
   FilterBar,
   FilterMenu,
-  StatCard,
+  StatCard,
   type BadgeVariant,
   type DataTableColumn,
 } from "@/shared/ui";
@@ -64,12 +64,18 @@ export function ProblemListView() {
   const [status, setStatus] = useState<StatusFilter>("all");
   const [difficulty, setDifficulty] = useState<DifficultyFilter>("all");
   const [topicId, setTopicId] = useState<string>("all");
-  const [sort, setSort] = useState<{ key: SortKey; direction: "asc" | "desc" }>({
-    key: "difficulty",
-    direction: "asc",
-  });
+  const [sort, setSort] = useState<{ key: SortKey; direction: "asc" | "desc" }>(
+    {
+      key: "difficulty",
+      direction: "asc",
+    },
+  );
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = usePersistedPageSize("algoprep-problem-list-page-size", PAGE_SIZES, 12);
+  const [pageSize, setPageSize] = usePersistedPageSize(
+    "algoprep-problem-list-page-size",
+    PAGE_SIZES,
+    12,
+  );
 
   const resetToFirstPage = () => setCurrentPage(1);
 
@@ -79,7 +85,8 @@ export function ProblemListView() {
       (problem) =>
         (status === "all" || problem.solveState === status) &&
         (difficulty === "all" || problem.difficulty === difficulty) &&
-        (topicId === "all" || problem.topics.some((topic) => topic.toLowerCase() === topicId)) &&
+        (topicId === "all" ||
+          problem.topics.some((topic) => topic.toLowerCase() === topicId)) &&
         (!needle ||
           problem.code.toLowerCase().includes(needle) ||
           problem.title.toLowerCase().includes(needle)),
@@ -90,11 +97,18 @@ export function ProblemListView() {
       if (sort.key === "acRate") {
         return ((left.acRate ?? -1) - (right.acRate ?? -1)) * factor;
       }
-      return (problemLevelRank(levels, left.difficulty) - problemLevelRank(levels, right.difficulty)) * factor;
+      return (
+        (problemLevelRank(levels, left.difficulty) -
+          problemLevelRank(levels, right.difficulty)) *
+        factor
+      );
     });
   }, [page.items, query, status, difficulty, topicId, sort, levels]);
 
-  const visible = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const visible = filtered.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize,
+  );
 
   function pickRandom() {
     const problem = filtered[Math.floor(Math.random() * filtered.length)];
@@ -107,7 +121,11 @@ export function ProblemListView() {
 
   // The list filters live while typing (no toast per keystroke); Enter is the explicit search.
   function announceSearch() {
-    toast.info(filtered.length > 0 ? t("toast.searchResult", { count: filtered.length }) : t("toast.searchEmpty"));
+    toast.info(
+      filtered.length > 0
+        ? t("toast.searchResult", { count: filtered.length })
+        : t("toast.searchEmpty"),
+    );
   }
 
   const columns: DataTableColumn<ProblemListItem>[] = [
@@ -137,12 +155,19 @@ export function ProblemListView() {
       sortable: false,
       render: (problem) => (
         <div className="min-w-0">
-          <Link href={`/problems/${problem.id}`} className="block truncate font-semibold hover:underline">
-            <span className="mr-1.5 font-mono text-xs text-[var(--color-text-muted)]">{problem.code}</span>
+          <Link
+            href={`/problems/${problem.id}`}
+            className="block truncate font-semibold hover:underline"
+          >
+            <span className="mr-1.5 font-mono text-xs text-[var(--color-text-muted)]">
+              {problem.code}
+            </span>
             {problem.title}
           </Link>
           <div className="mt-1 flex flex-wrap items-center gap-1.5">
-            <Badge variant={problem.submissionModel === "both" ? "cyan" : "neutral"}>
+            <Badge
+              variant={problem.submissionModel === "both" ? "cyan" : "neutral"}
+            >
               {t(`submissionModel.${problem.submissionModel}`)}
             </Badge>
             {problem.hasSolutionReview ? (
@@ -180,7 +205,9 @@ export function ProblemListView() {
       align: "right",
       sortable: true,
       render: (problem) => (
-        <span className="font-mono font-semibold">{problem.acRate === null ? "-" : `${problem.acRate}%`}</span>
+        <span className="font-mono font-semibold">
+          {problem.acRate === null ? "-" : `${problem.acRate}%`}
+        </span>
       ),
     },
     {
@@ -189,7 +216,12 @@ export function ProblemListView() {
       width: "96px",
       align: "right",
       render: (problem) => (
-        <Button asChild variant="ghost" size="sm" className="border border-[var(--color-border)]">
+        <Button
+          asChild
+          variant="ghost"
+          size="sm"
+          className="border border-[var(--color-border)]"
+        >
           <Link href={`/problems/${problem.id}`}>{t("table.btnSolve")}</Link>
         </Button>
       ),
@@ -202,7 +234,12 @@ export function ProblemListView() {
         title={t("title")}
         actions={
           <div className="flex gap-2">
-            <Button asChild variant="ghost" size="sm" className="border border-[var(--color-border)]">
+            <Button
+              asChild
+              variant="ghost"
+              size="sm"
+              className="border border-[var(--color-border)]"
+            >
               <Link href="/saved">{t("summary.linkSaved")}</Link>
             </Button>
             <Button variant="cta" size="sm" onClick={pickRandom}>
@@ -214,15 +251,31 @@ export function ProblemListView() {
       />
 
       <div className="mb-4 grid gap-3.5 [grid-template-columns:repeat(auto-fit,minmax(160px,1fr))]">
-        <StatCard label={t("summary.solvedTotal")} value={`${page.summary.solvedTotal.solved} / ${page.summary.solvedTotal.total}`} />
+        <StatCard
+          label={t("summary.solvedTotal")}
+          value={`${page.summary.solvedTotal.solved} / ${page.summary.solvedTotal.total}`}
+        />
         {/* One card per level in the admin-chosen order; a level with no problems yet reads 0 / 0. */}
         {levels.map((level) => {
-          const ratio = page.summary.solvedByLevel[level.key] ?? { solved: 0, total: 0 };
-          return <StatCard key={level.key} label={level.label} value={`${ratio.solved} / ${ratio.total}`} />;
+          const ratio = page.summary.solvedByLevel[level.key] ?? {
+            solved: 0,
+            total: 0,
+          };
+          return (
+            <StatCard
+              key={level.key}
+              label={level.label}
+              value={`${ratio.solved} / ${ratio.total}`}
+            />
+          );
         })}
       </div>
 
-      <div className="mb-4 flex gap-2 overflow-x-auto pb-1" role="group" aria-label={t("topicNav.label")}>
+      <div
+        className="mb-4 flex gap-2 overflow-x-auto pb-1"
+        role="group"
+        aria-label={t("topicNav.label")}
+      >
         <button
           type="button"
           aria-pressed={topicId === "all"}
@@ -295,7 +348,10 @@ export function ProblemListView() {
               }}
               options={[
                 { value: "all", label: t("filter.all") },
-                                ...levels.map((level) => ({ value: level.key, label: level.label })),
+                ...levels.map((level) => ({
+                  value: level.key,
+                  label: level.label,
+                })),
               ]}
             />
           </FilterBar>
@@ -329,7 +385,8 @@ export function ProblemListView() {
               setCurrentPage(1);
             }}
             summary={t("pager.summary", {
-              from: filtered.length === 0 ? 0 : (currentPage - 1) * pageSize + 1,
+              from:
+                filtered.length === 0 ? 0 : (currentPage - 1) * pageSize + 1,
               to: Math.min(currentPage * pageSize, filtered.length),
               total: filtered.length,
             })}
@@ -342,9 +399,13 @@ export function ProblemListView() {
 
         <div className="flex flex-col gap-4">
           <Card className="px-4 py-3.5">
-            <h2 className="mb-2 text-[13px] font-semibold">{t("inProgress.title")}</h2>
+            <h2 className="mb-2 text-[13px] font-semibold">
+              {t("inProgress.title")}
+            </h2>
             {page.inProgress.length === 0 ? (
-              <p className="text-[12.5px] text-[var(--color-text-muted)]">{t("inProgress.empty")}</p>
+              <p className="text-[12.5px] text-[var(--color-text-muted)]">
+                {t("inProgress.empty")}
+              </p>
             ) : (
               <ul className="flex flex-col gap-2">
                 {page.inProgress.map((item) => (
@@ -353,9 +414,12 @@ export function ProblemListView() {
                       href={`/problems/${item.problemId}`}
                       className="block rounded-lg border border-[var(--color-border)] px-2.5 py-2 hover:bg-[var(--color-row-hover)]"
                     >
-                      <p className="truncate text-[12.5px] font-semibold">{item.title}</p>
+                      <p className="truncate text-[12.5px] font-semibold">
+                        {item.title}
+                      </p>
                       <p className="text-[11.5px] text-[var(--color-text-muted)]">
-                        {t(`language.${item.language}`)} · {item.lastVerdictLabel}
+                        {t(`language.${item.language}`)} ·{" "}
+                        {item.lastVerdictLabel}
                       </p>
                     </Link>
                   </li>
@@ -365,9 +429,13 @@ export function ProblemListView() {
           </Card>
 
           <Card className="px-4 py-3.5">
-            <h2 className="mb-2 text-[13px] font-semibold">{t("assignment.title")}</h2>
+            <h2 className="mb-2 text-[13px] font-semibold">
+              {t("assignment.title")}
+            </h2>
             {page.classAssignments.length === 0 ? (
-              <p className="text-[12.5px] text-[var(--color-text-muted)]">{t("assignment.empty")}</p>
+              <p className="text-[12.5px] text-[var(--color-text-muted)]">
+                {t("assignment.empty")}
+              </p>
             ) : (
               page.classAssignments.map((group) => (
                 <div key={group.className} className="mb-3 last:mb-0">
@@ -382,12 +450,18 @@ export function ProblemListView() {
                           className="block rounded-lg border border-[var(--color-border)] px-2.5 py-2 hover:bg-[var(--color-row-hover)]"
                         >
                           <div className="flex items-center justify-between gap-2">
-                            <span className="truncate text-[12.5px] font-semibold">{item.title}</span>
-                            <Badge variant={SOLVE_STATE_VARIANT[item.solveState]}>
+                            <span className="truncate text-[12.5px] font-semibold">
+                              {item.title}
+                            </span>
+                            <Badge
+                              variant={SOLVE_STATE_VARIANT[item.solveState]}
+                            >
                               {t(`state.${item.solveState}`)}
                             </Badge>
                           </div>
-                          <p className="text-[11.5px] text-[var(--color-text-muted)]">{item.metaLabel}</p>
+                          <p className="text-[11.5px] text-[var(--color-text-muted)]">
+                            {item.metaLabel}
+                          </p>
                         </Link>
                       </li>
                     ))}

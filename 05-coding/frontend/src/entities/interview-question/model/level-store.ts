@@ -7,7 +7,10 @@
 // are the old enum values, upper-cased like the BD codes, so the mock questions keep resolving.
 "use client";
 
-import { createLevelListStore, type LevelItem } from "@/shared/lib/level-list-store";
+import {
+  createLevelListStore,
+  type LevelItem,
+} from "@/shared/lib/level-list-store";
 import type { ManagedListError } from "@/shared/lib/managed-list-store";
 import type { BadgeVariant } from "@/shared/ui";
 

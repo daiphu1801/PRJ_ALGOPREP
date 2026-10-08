@@ -309,6 +309,7 @@
     }
   },
   "adminNav": {
+    "skipToContent": "Bỏ qua tới nội dung chính",
     "sidebarLabel": "Điều hướng khu quản trị",
     "toggleSidebar": "Thu gọn / mở rộng",
     "collapseSidebar": "Thu gọn",
@@ -341,6 +342,7 @@
     "footerLinkSupport": "Hỗ trợ"
   },
   "instructorNav": {
+    "skipToContent": "Bỏ qua tới nội dung chính",
     "sidebarLabel": "Điều hướng khu giảng viên",
     "areaEyebrow": "GIÁO VIÊN",
     "toggleSidebar": "Thu gọn / mở rộng",
@@ -481,7 +483,11 @@
       "save": "Lưu",
       "cancel": "Huỷ",
       "errorMin": "Nhập số nguyên từ {min} trở lên",
-      "saved": "Đã lưu cài đặt lưu trữ nhật ký"
+      "saved": "Đã lưu cài đặt lưu trữ nhật ký",
+      "confirmShorter": "Giảm thời hạn xuống {days} ngày: log cũ hơn mốc này sẽ bị dọn ở lần chạy kế tiếp.",
+      "confirmDelete": "Chính sách Xoá hẳn: log quá hạn mất vĩnh viễn, không còn bản nén để đọc lại.",
+      "confirm": "Vẫn lưu",
+      "back": "Quay lại"
     },
     "exportDialog": {
       "title": "Tải nhật ký",
@@ -503,7 +509,12 @@
         "content": "Nội dung",
         "id": "Mã sự kiện"
       },
-      "errorNoColumns": "Chọn ít nhất một cột để tải"
+      "errorNoColumns": "Chọn ít nhất một cột để tải",
+      "scopeTitle": "Áp bộ lọc đang chọn trên màn:",
+      "scopeQuery": "từ khoá “{query}”",
+      "scopeCategory": "phân loại {category}",
+      "errorFuture": "Không chọn được ngày trong tương lai",
+      "errorRetention": "Nhật ký chỉ giữ {days} ngày gần nhất, ngày bắt đầu quá xa"
     },
     "title": "Nhật ký hệ thống",
     "subtitle": "Hành động quản trị của con người · sự kiện hạ tầng xem ở Hàng đợi chấm",
@@ -529,7 +540,11 @@
     "activeAdminsSubtitle": "Theo hành động gần nhất",
     "breakdownTitle": "Phân loại hành động · 7 ngày",
     "infraNote": "Sự kiện hạ tầng (worker, AI, sao lưu) xem ở màn Hàng đợi chấm",
-    "eventListLabel": "Danh sách sự kiện"
+    "eventListLabel": "Danh sách sự kiện",
+    "dateFrom": "Từ ngày",
+    "dateTo": "Đến ngày",
+    "rangeInvalid": "Ngày kết thúc phải sau ngày bắt đầu",
+    "reasonLabel": "Lý do"
   },
   "adminUserManagement": {
     "title": "Quản lý người dùng",
@@ -559,12 +574,11 @@
     "columnSubmissions": "Lượt nộp",
     "columnLastActive": "Hoạt động",
     "columnStatus": "Trạng thái",
-    "selectAll": "Chọn tất cả tài khoản đang hiển thị",
+    "selectAll": "Chọn {count} tài khoản đang hiển thị",
     "selectRow": "Chọn {name}",
     "selectionLabel": "Đã chọn {count} tài khoản",
-    "bulkResetPassword": "Đặt lại mật khẩu",
-    "bulkChangeRole": "Đổi vai trò",
     "bulkLock": "Khóa tài khoản",
+    "bulkUnlock": "Mở khóa tài khoản",
     "emptyFiltered": "Không có tài khoản nào khớp bộ lọc hiện tại",
     "pageLabel": "Trang {page} trong {totalPages} · hiển thị {shown} dòng",
     "previous": "Trước",
@@ -576,16 +590,11 @@
       "pendingEmail": {
         "label": "Chờ xác thực email",
         "meta": "Quá hạn 7 ngày sẽ tự huỷ"
-      },
-      "instructorRequest": {
-        "label": "Đề nghị cấp quyền giảng viên",
-        "meta": "Cần quản trị viên phê duyệt"
       }
     },
     "lockBlockedTitle": "Không khóa được",
     "lockBlockedBody": "Thao tác này sẽ khóa quản trị viên cuối cùng đang hoạt động. Hệ thống luôn phải còn ít nhất một quản trị viên để cấu hình. Hãy thêm hoặc mở khóa một quản trị viên khác trước.",
     "lockBlockedClose": "Đã hiểu",
-    "confirmLockSelfWarning": "Bạn đang khóa chính tài khoản của mình: bạn sẽ bị đăng xuất và không đăng nhập lại được cho tới khi quản trị viên khác mở khóa.",
     "addDialog": {
       "title": "Thêm tài khoản",
       "nameLabel": "Họ và tên",
@@ -600,13 +609,49 @@
       "createdTitle": "Đã tạo tài khoản",
       "createdBody": "Đã tạo tài khoản. Mật khẩu tạm đã được gửi tới {email}."
     },
-    "confirmLockTitle": "Khóa {count} tài khoản?",
-    "confirmLockBody": "{count} tài khoản sẽ không đăng nhập được cho tới khi được mở khóa. Bài nộp và tiến độ của họ giữ nguyên.",
-    "confirmLockAction": "Khóa tài khoản",
+    "lockDialog": {
+      "title": "Khóa {count} tài khoản?",
+      "body": "{count} tài khoản dưới đây sẽ không đăng nhập được cho tới khi được mở khóa. Bài nộp và tiến độ của họ giữ nguyên.",
+      "moreCount": "và {count} tài khoản khác",
+      "skipped": "{count} tài khoản đã bị khóa từ trước nên bị bỏ qua.",
+      "selfWarning": "Bạn đang khóa chính tài khoản của mình: bạn sẽ bị đăng xuất và không đăng nhập lại được cho tới khi quản trị viên khác mở khóa.",
+      "reasonLabel": "Lý do khóa tài khoản",
+      "reasonPlaceholder": "Ví dụ: phát hiện nhiều tài khoản đăng ký hàng loạt từ cùng một địa chỉ IP.",
+      "notifyLabel": "Gửi email thông báo cho {count} người dùng",
+      "notifyHint": "Email nêu tài khoản bị khóa, thời điểm khóa, lý do và cách liên hệ quản trị viên để mở khóa. Tài khoản chỉ đăng nhập bằng nhà cung cấp ngoài sẽ nhận cùng nội dung.",
+      "reasonHint": "Lý do được ghi vào Nhật ký hệ thống cùng thời điểm khóa, kể cả khi không gửi email.",
+      "errorReasonRequired": "Nhập lý do để thông báo cho người dùng",
+      "submit": "Khóa tài khoản"
+    },
+    "confirmUnlockTitle": "Mở khóa {count} tài khoản?",
+    "confirmUnlockBody": "{count} tài khoản dưới đây sẽ đăng nhập lại được ngay. Thao tác này được ghi vào Nhật ký hệ thống.",
+    "confirmUnlockAction": "Mở khóa",
     "cancel": "Huỷ",
-    "bulkResetDone": "Đã gửi email đặt lại mật khẩu cho {count} tài khoản",
-    "bulkRoleDone": "Đã đổi vai trò cho {count} tài khoản",
-    "bulkLockDone": "Đã khoá {count} tài khoản"
+    "lockDone": "Đã khóa {count} tài khoản",
+    "lockDoneNotified": "Đã khóa {count} tài khoản và gửi email thông báo",
+    "unlockDone": "Đã mở khóa {count} tài khoản",
+    "columnActions": "Thao tác",
+    "actionChangeRole": "Đổi vai trò",
+    "actionChangeRoleFor": "Đổi vai trò của {name}",
+    "actionResetPassword": "Đặt lại mật khẩu",
+    "actionResetPasswordFor": "Đặt lại mật khẩu của {name}",
+    "actionLock": "Khóa tài khoản",
+    "actionLockFor": "Khóa tài khoản {name}",
+    "actionUnlock": "Mở khóa tài khoản",
+    "actionUnlockFor": "Mở khóa tài khoản {name}",
+    "roleDialog": {
+      "title": "Đổi vai trò của {name}",
+      "label": "Vai trò mới",
+      "note": "Thay đổi có hiệu lực ngay và được ghi vào Nhật ký hệ thống.",
+      "selfWarning": "Bạn đang hạ vai trò của chính mình: bạn sẽ mất quyền vào khu quản trị cho tới khi quản trị viên khác cấp lại.",
+      "submit": "Đổi vai trò"
+    },
+    "roleBlockedBody": "Thao tác này sẽ hạ quản trị viên cuối cùng đang hoạt động. Hệ thống luôn phải còn ít nhất một quản trị viên. Hãy thêm hoặc mở khóa một quản trị viên khác trước.",
+    "roleDone": "Đã đổi vai trò của {name} thành {role}",
+    "resetTitle": "Đặt lại mật khẩu cho {name}?",
+    "resetBody": "Hệ thống gửi mật khẩu tạm tới {email}; người dùng phải đổi mật khẩu ở lần đăng nhập kế tiếp. Thao tác này được ghi vào Nhật ký hệ thống.",
+    "resetAction": "Đặt lại",
+    "resetDone": "Đã gửi mật khẩu tạm tới {email}"
   },
   "adminAiUsage": {
     "title": "Tiêu thụ token AI",
@@ -744,8 +789,6 @@
   "adminPermissionMatrix": {
     "title": "Ma trận phân quyền",
     "subtitle": "Role × Function × Action · thay đổi có hiệu lực ngay",
-    "save": "Lưu thay đổi",
-    "saved": "Đã lưu",
     "scopeNoticeTitle": "Phạm vi của ma trận này",
     "scopeNoticeBody": "Function và Action là dữ liệu seed cố định, chỉ đọc — chỉ Role tạo/sửa/xoá được. Quyền học tập cơ bản của STUDENT (xem/nộp bài, phân tích, phỏng vấn, ôn câu hỏi) không đi qua ma trận này.",
     "roleSwitcherLabel": "Chọn vai trò",
@@ -769,7 +812,7 @@
     "cellLabel": "{action} trên {function} cho vai trò {role}",
     "emptyFunctions": "Chưa có chức năng nào trong ma trận",
     "confirmDeleteTitle": "Xoá vai trò {role}?",
-    "confirmDeleteBody": "Vai trò này sẽ bị gỡ khỏi ma trận. Ràng buộc với tài khoản đang được gán vai trò chưa được chốt — xem câu hỏi mở trong báo cáo.",
+    "confirmDeleteBody": "Vai trò này và toàn bộ ô quyền của nó sẽ bị xoá, không hoàn tác được.",
     "function": {
       "PROBLEM_AUTHORING": "Soạn bài toán & đặc tả hàm",
       "TESTCASE_MANAGEMENT": "Quản lý testcase & phiên bản",
@@ -782,9 +825,24 @@
       "INTERVIEW_BANK_MANAGEMENT": "Quản lý ngân hàng câu hỏi",
       "PERMISSION_MATRIX": "Ma trận phân quyền"
     },
-    "saveDone": "Đã lưu ma trận phân quyền",
     "createRoleDone": "Đã tạo vai trò {role}",
-    "deleteRoleDone": "Đã xoá vai trò {role}"
+    "deleteRoleDone": "Đã xoá vai trò {role}",
+    "lastMatrixAdminBody": "Phải còn ít nhất một vai trò quản trị giữ quyền sửa ma trận phân quyền.",
+    "selfRevokeTitle": "Gỡ quyền của chính vai trò bạn đang giữ?",
+    "selfRevokeBody": "Bạn đang gỡ quyền của chính vai trò mình đang giữ. Thay đổi có hiệu lực ngay và bạn có thể mất quyền truy cập chức năng này. Tiếp tục?",
+    "selfRevokeConfirm": "Gỡ quyền",
+    "roleNameError": {
+      "empty": "Tên vai trò không được để trống.",
+      "tooLong": "Tên vai trò tối đa {max} ký tự.",
+      "duplicate": "Tên vai trò đã tồn tại."
+    },
+    "newRoleCategoryLabel": "Nhóm cơ bản của vai trò mới",
+    "baseCategory": {
+      "STUDENT": "Nhóm Người học",
+      "INSTRUCTOR": "Nhóm Giảng viên",
+      "ADMIN": "Nhóm Quản trị"
+    },
+    "deleteBlockedBody": "Vai trò {role} đang được gán cho {count} người dùng, không thể xoá. Chuyển họ sang vai trò khác trước."
   },
   "adminAiConfig": {
     "testcaseGen": {
@@ -1049,10 +1107,13 @@
     "confirmDeleteTitle": "Xoá bài {title}?",
     "confirmBulkDeleteTitle": "Xoá {count} bài đã chọn?",
     "confirmBulkDeleteHidden": "Cảnh báo: {count} bài trong số này đang không hiển thị do bộ lọc hiện tại.",
-    "confirmDeleteBody": "Bài tập sẽ bị gỡ khỏi danh sách. Điều gì xảy ra với các lượt nộp đã có chưa được chốt — xem câu hỏi mở trong báo cáo.",
+    "confirmDeleteBody": "Bài sẽ bị ẩn khỏi học viên và khỏi danh sách này. Lượt nộp, điểm, bookmark và lịch sử lớp vẫn được giữ nguyên.",
+    "confirmDeleteImpact": "Bài có {submissions} lượt nộp và đang giao cho {classes} lớp.",
+    "confirmBulkDeleteImpact": "Gồm {count} bài, {submissions} lượt nộp; {assigned} bài đang giao cho lớp.",
     "toast": {
       "notWired": "{action}: chưa nối API trong bản mẫu, chưa có thay đổi nào",
       "deleted": "Đã xoá bài {title}",
+      "duplicatePickOne": "Chọn đúng một bài để nhân bản",
       "searchResult": "Tìm thấy {count} bài tập",
       "searchEmpty": "Không tìm thấy bài tập nào",
       "bulkNeedsChoice": "Chọn giá trị áp dụng trước khi thực hiện (chưa có hộp chọn trong bản mẫu)",
@@ -1064,6 +1125,7 @@
   },
   "interviewQuestionManagement": {
     "title": "Ngân hàng câu hỏi phỏng vấn",
+    "loadFailed": "Không tải được danh sách câu hỏi. Thử lại sau.",
     "subtitle": "{total} câu hỏi · giảng viên và quản trị viên đều sửa được toàn bộ",
     "manageTopics": "Quản lý chủ đề",
     "topicManager": {
@@ -1118,6 +1180,36 @@
       "moveDown": "Chuyển xuống"
     },
     "importCsv": "Nhập CSV",
+    "csvImport": {
+      "title": "Nhập câu hỏi từ tệp CSV",
+      "hint": "Tệp CSV (UTF-8) có dòng tiêu đề. Dòng hợp lệ được thêm vào ngân hàng; dòng lỗi bị bỏ qua và được liệt kê bên dưới.",
+      "columns": "Cột bắt buộc: topic (chủ đề), level (mức độ), question (nội dung câu hỏi), rubric (ô có thể để trống). Cột tuỳ chọn: follow_ups, content, suggested_approach, core_keywords, sample_answer. Câu hỏi trùng nội dung với câu đã có bị bỏ qua, không ghi đè; tối đa 500 dòng. Chủ đề và mức độ ghi đúng tên đang hiển thị trên màn hoặc mã khoá.",
+      "listFormat": "follow_ups, suggested_approach, core_keywords: các mục ngăn cách bằng dấu |.",
+      "rubricFormat": "rubric: các tiêu chí dạng tên:trọng số, ngăn cách bằng dấu |; tổng trọng số phải bằng 100, bỏ trống nếu chưa có rubric.",
+      "downloadTemplate": "Tải tệp mẫu",
+      "close": "Đóng",
+      "choose": "Chọn tệp CSV",
+      "chooseAnother": "Chọn tệp khác",
+      "importing": "Đang nhập…",
+      "failed": "Không nhập được, thử lại sau.",
+      "errorsLabel": "Các dòng bị bỏ qua",
+      "summary": "Đã nhập {imported} / {total} câu hỏi",
+      "rowError": "Dòng {line}: {reason}",
+      "toast": "Đã nhập {count} câu hỏi từ tệp CSV",
+      "fileError": {
+        "empty": "Tệp không có dòng dữ liệu nào.",
+        "missingColumns": "Thiếu cột bắt buộc: {detail}.",
+        "tooManyRows": "Tệp có quá {detail} dòng dữ liệu, hãy tách nhỏ rồi nhập lại."
+      },
+      "reason": {
+        "missingField": "thiếu giá trị ở cột {detail}",
+        "unknownTopic": "chủ đề \"{detail}\" không có trong danh mục",
+        "unknownLevel": "mức độ \"{detail}\" không có trong danh mục",
+        "badRubric": "rubric sai định dạng (cần tên:trọng số, trọng số là số nguyên từ 0 đến 100)",
+        "rubricSum": "tổng trọng số rubric khác 100",
+        "duplicate": "câu hỏi trùng với câu đã có hoặc với một dòng trước trong tệp"
+      }
+    },
     "newQuestion": "Câu hỏi mới",
     "searchLabel": "Tìm câu hỏi",
     "searchPlaceholder": "Tìm theo nội dung câu hỏi hoặc mã",
@@ -1139,11 +1231,9 @@
     "rubric": "Tiêu chí đánh giá",
     "usage": "Dùng {count} lần · điểm TB {score}/5",
     "edit": "Sửa",
-    "duplicate": "Nhân bản",
     "delete": "Xoá",
     "cancel": "Huỷ",
     "editQuestion": "Sửa câu hỏi {code}",
-    "duplicateQuestion": "Nhân bản câu hỏi {code}",
     "deleteQuestion": "Xoá câu hỏi {code}",
     "emptyFiltered": "Không có câu hỏi nào khớp bộ lọc hiện tại",
     "pageLabel": "Trang {page} trong {totalPages} · hiển thị {shown} dòng",
@@ -1154,7 +1244,6 @@
     "selectRow": "Chọn câu hỏi {code}",
     "selectionLabel": "Đã chọn {count} câu hỏi",
     "bulk": {
-      "duplicate": "Nhân bản",
       "delete": "Xoá"
     },
     "confirmBulkDeleteTitle": "Xoá {count} câu hỏi đã chọn?",
@@ -1163,7 +1252,6 @@
     "confirmDeleteBody": "Câu hỏi sẽ bị gỡ khỏi ngân hàng. Các phiên phỏng vấn đã dùng câu này giữ nguyên lịch sử.",
     "toast": {
       "bulkDeleted": "Đã xoá {count} câu hỏi",
-      "notWired": "{action}: chưa nối API trong bản mẫu, chưa có thay đổi nào",
       "deleted": "Đã xoá câu hỏi {code}",
       "searchResult": "Tìm thấy {count} câu hỏi",
       "searchEmpty": "Không tìm thấy câu hỏi nào"
@@ -1211,8 +1299,7 @@
     "removeCriterion": "Xoá tiêu chí {index}",
     "remove": "Xoá",
     "group4Title": "Hành động quản trị",
-    "group4Subtitle": "Nhân bản sang bản ghi mới, hoặc ngừng dùng câu hỏi này",
-    "duplicate": "Nhân bản",
+    "group4Subtitle": "Ngừng dùng câu hỏi này",
     "softDelete": "Xoá mềm",
     "cancel": "Huỷ",
     "confirmSoftDeleteTitle": "Ngừng dùng câu hỏi này?",
@@ -1220,7 +1307,6 @@
     "toast": {
       "saved": "Đã lưu câu hỏi",
       "saveFailed": "Lưu thất bại, thử lại",
-      "duplicated": "Đã nhân bản câu hỏi",
       "softDeleted": "Đã ngừng dùng câu hỏi"
     },
     "saveBlocked": {
@@ -2450,6 +2536,7 @@
     "rangeAll": "Tất cả"
   },
   "studentShell": {
+    "skipToContent": "Bỏ qua tới nội dung chính",
     "footer": {
       "copyright": "© 2026 AlgoPrep — đồ án tốt nghiệp",
       "clusterStatus": "go-judge cluster hoạt động",

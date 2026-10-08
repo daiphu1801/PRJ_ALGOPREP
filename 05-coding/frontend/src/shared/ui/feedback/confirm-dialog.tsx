@@ -43,7 +43,12 @@ export function ConfirmDialog({
       title={title}
       footer={
         <>
-          <Button variant="ghost" size="sm" onClick={onClose} disabled={pending}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onClose}
+            disabled={pending}
+          >
             {cancelLabel}
           </Button>
           <Button
@@ -52,7 +57,9 @@ export function ConfirmDialog({
             disabled={pending}
             aria-busy={pending || undefined}
             className={
-              destructive ? "bg-[var(--color-danger)] text-[var(--color-background)]" : undefined
+              destructive
+                ? "bg-[var(--color-danger)] text-[var(--color-background)]"
+                : undefined
             }
           >
             {confirmLabel}

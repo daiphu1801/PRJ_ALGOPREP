@@ -22,7 +22,13 @@ type NavLinkProps = {
  * (i.e. outside `.admin-shell`), so it renders sanely if `student`/`instructor` ever grow a sidebar
  * nav too instead of only ever working inside the Admin shell.
  */
-export function NavLink({ href, label, isActive, collapsed, icon: Icon }: NavLinkProps) {
+export function NavLink({
+  href,
+  label,
+  isActive,
+  collapsed,
+  icon: Icon,
+}: NavLinkProps) {
   return (
     <Link
       href={href}
@@ -30,7 +36,9 @@ export function NavLink({ href, label, isActive, collapsed, icon: Icon }: NavLin
       aria-current={isActive ? "page" : undefined}
       className={cn(
         "block rounded-md border border-transparent px-3 py-1.5 text-sm transition-colors",
-        Icon ? "flex items-center gap-2.5" : collapsed && "truncate text-center",
+        Icon
+          ? "flex items-center gap-2.5"
+          : collapsed && "truncate text-center",
         Icon && collapsed && "justify-center",
         isActive
           ? "bg-[var(--color-primary)] text-[var(--color-on-primary)] [border-color:var(--admin-active-border,transparent)]"
@@ -38,7 +46,9 @@ export function NavLink({ href, label, isActive, collapsed, icon: Icon }: NavLin
       )}
     >
       {Icon && <Icon aria-hidden="true" className="h-4 w-4 shrink-0" />}
-      {Icon ? !collapsed && <span className="min-w-0 flex-1 truncate">{label}</span> : label}
+      {Icon
+        ? !collapsed && <span className="min-w-0 flex-1 truncate">{label}</span>
+        : label}
     </Link>
   );
 }

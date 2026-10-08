@@ -22,15 +22,20 @@ export function createLevelListStore<Tone extends string>(
   keyPrefix: string,
   newTone: Tone,
 ) {
-  const store = createManagedListStore<LevelItem<Tone>>(seed, keyPrefix, { slugKeys: true, minItems: 1 });
+  const store = createManagedListStore<LevelItem<Tone>>(seed, keyPrefix, {
+    slugKeys: true,
+    minItems: 1,
+  });
 
   return {
     use: store.use,
-    add: (label: string): ManagedListError | null => store.add(label, { tone: newTone }),
+    add: (label: string): ManagedListError | null =>
+      store.add(label, { tone: newTone }),
     rename: (key: string, label: string) => store.update(key, { label }),
     move: store.move,
     remove: store.remove,
-    label: (list: readonly LevelItem<Tone>[], key: string) => labelOf(list, key),
+    label: (list: readonly LevelItem<Tone>[], key: string) =>
+      labelOf(list, key),
     tone: (list: readonly LevelItem<Tone>[], key: string): Tone =>
       list.find((item) => item.key === key)?.tone ?? newTone,
     /** Position in the admin-chosen order, for sorting by difficulty; unknown keys sort last. */

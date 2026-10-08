@@ -15,16 +15,23 @@ test("student area renders the AppShell", async ({ page }) => {
   await expect(page.getByRole("banner")).toContainText("AlgoPrep");
 });
 
-test("auth screen renders and the signup/login mode switch is reachable (PROTOTYPE, views/shared/auth)", async ({ page }) => {
+test("auth screen renders and the signup/login mode switch is reachable (PROTOTYPE, views/shared/auth)", async ({
+  page,
+}) => {
   await page.goto("/login");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Đăng nhập");
 
   // Primary action: switch mode via the aside panel button (02-bd/screens/shared/SHR0101_auth.md Sheet 5, khu vực B).
-  await page.getByRole("button", { name: "Chưa có tài khoản? Đăng ký" }).first().click();
+  await page
+    .getByRole("button", { name: "Chưa có tài khoản? Đăng ký" })
+    .first()
+    .click();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Đăng ký");
 });
 
-test("admin overview renders the Admin shell with sidebar nav (PROTOTYPE, views/admin/overview)", async ({ page }) => {
+test("admin overview renders the Admin shell with sidebar nav (PROTOTYPE, views/admin/overview)", async ({
+  page,
+}) => {
   await page.goto("/admin/overview");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Tổng quan");
 
@@ -40,9 +47,14 @@ test("admin overview renders the Admin shell with sidebar nav (PROTOTYPE, views/
   await expect(page).toHaveURL(/\/admin\/problems$/);
 });
 
-test("default locale is Vietnamese and the cookie can switch it to English", async ({ page, context }) => {
+test("default locale is Vietnamese and the cookie can switch it to English", async ({
+  page,
+  context,
+}) => {
   await page.goto("/problems");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Danh sách bài toán");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "Danh sách bài toán",
+  );
 
   // Switch locale via cookie, NOT the URL — verifies the non-prefix i18n mechanism that was locked in.
   await context.addCookies([

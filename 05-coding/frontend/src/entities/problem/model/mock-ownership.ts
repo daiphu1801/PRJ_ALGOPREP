@@ -8,7 +8,21 @@
 import { ApiError } from "@/shared/api";
 
 /** Problem codes (without "#") written by the mock instructor. */
-const INSTRUCTOR_OWNED = new Set(["121", "139", "200", "322", "1143", "1268", "1462", "987"]);
+const INSTRUCTOR_OWNED = new Set([
+  "121",
+  "139",
+  "200",
+  "322",
+  "1143",
+  "1268",
+  "1462",
+  "987",
+]);
+
+/** A problem created in this session belongs to the mock instructor when created under `/instructor`. */
+export function claimProblemForViewer(code: string): void {
+  if (viewerIsInstructor()) INSTRUCTOR_OWNED.add(code.replace("#", ""));
+}
 
 export function viewerIsInstructor(): boolean {
   try {

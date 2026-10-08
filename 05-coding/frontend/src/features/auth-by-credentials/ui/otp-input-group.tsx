@@ -31,18 +31,25 @@ export function OtpInputGroup({
   disabled,
 }: OtpInputGroupProps) {
   const t = useT("auth");
-  const [secondsLeft, setSecondsLeft] = useState(() => Math.max(0, Math.ceil((cooldownUntil - Date.now()) / 1000)));
+  const [secondsLeft, setSecondsLeft] = useState(() =>
+    Math.max(0, Math.ceil((cooldownUntil - Date.now()) / 1000)),
+  );
 
   useEffect(() => {
     const id = setInterval(() => {
-      setSecondsLeft(Math.max(0, Math.ceil((cooldownUntil - Date.now()) / 1000)));
+      setSecondsLeft(
+        Math.max(0, Math.ceil((cooldownUntil - Date.now()) / 1000)),
+      );
     }, 1000);
     return () => clearInterval(id);
   }, [cooldownUntil]);
 
   return (
     <div>
-      <label htmlFor="otp" className="mb-1 block text-sm font-medium text-[var(--color-text)]">
+      <label
+        htmlFor="otp"
+        className="mb-1 block text-sm font-medium text-[var(--color-text)]"
+      >
         {t("otpLabel")}
       </label>
       <input
@@ -55,9 +62,20 @@ export function OtpInputGroup({
         aria-invalid={invalid || undefined}
         className={`w-full rounded-md border bg-transparent px-3 py-2 text-center text-lg tracking-[0.5em] text-[var(--color-text)] ${invalid ? "border-[var(--color-danger)]" : "border-[var(--color-border)]"}`}
       />
-      <p className="mt-1 text-xs text-[var(--color-text-muted)]">{t("otpAttemptsLeft", { count: attemptsLeft })}</p>
-      <Button type="button" variant="ghost" size="sm" disabled={secondsLeft > 0 || disabled} onClick={onResend} className="mt-2">
-        {secondsLeft > 0 ? t("otpResendCooldown", { seconds: secondsLeft }) : t("otpResend")}
+      <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+        {t("otpAttemptsLeft", { count: attemptsLeft })}
+      </p>
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        disabled={secondsLeft > 0 || disabled}
+        onClick={onResend}
+        className="mt-2"
+      >
+        {secondsLeft > 0
+          ? t("otpResendCooldown", { seconds: secondsLeft })
+          : t("otpResend")}
       </Button>
     </div>
   );

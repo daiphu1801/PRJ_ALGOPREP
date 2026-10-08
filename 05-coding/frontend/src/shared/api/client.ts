@@ -21,7 +21,9 @@ let refreshInFlight: Promise<string | null> | null = null;
 
 async function refreshAccessToken(): Promise<string | null> {
   refreshInFlight ??= axios
-    .post<{ accessToken: string }>(`${env.apiBaseUrl}/auth/refresh`, null, { withCredentials: true })
+    .post<{ accessToken: string }>(`${env.apiBaseUrl}/auth/refresh`, null, {
+      withCredentials: true,
+    })
     .then((res) => res.data.accessToken)
     .catch(() => null)
     .finally(() => {
@@ -34,7 +36,11 @@ httpClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError<{ code?: string }>) => {
     const original = error.config;
-    if (error.response?.status === 401 && original && !("_retried" in original)) {
+    if (
+      error.response?.status === 401 &&
+      original &&
+      !("_retried" in original)
+    ) {
       const newToken = await refreshAccessToken();
       if (newToken) {
         tokenStore.set(newToken);
@@ -51,7 +57,10 @@ httpClient.interceptors.response.use(
 );
 
 /** Common backend response envelope — the read path uses `data` directly via the entity's mapper. */
-export async function apiGet<T>(url: string, params?: Record<string, unknown>): Promise<T> {
+export async function apiGet<T>(
+  url: string,
+  params?: Record<string, unknown>,
+): Promise<T> {
   const res = await httpClient.get<T>(url, { params });
   return res.data;
 }

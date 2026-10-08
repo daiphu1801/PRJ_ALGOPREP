@@ -1,6 +1,12 @@
 import type { ReactNode } from "react";
 import type { AppArea } from "@/entities/user";
-import { LiquidGlassBackdrop, PageContainer } from "@/shared/ui";
+import { getT } from "@/shared/i18n/server";
+import {
+  LiquidGlassBackdrop,
+  MAIN_CONTENT_ID,
+  PageContainer,
+  SkipLink,
+} from "@/shared/ui";
 import { SHELL_MAX_WIDTH_PX } from "@/shared/api/config";
 import { AdminFooter } from "./admin-footer";
 import { AdminSidebar } from "./admin-sidebar";
@@ -37,6 +43,7 @@ type AppShellProps = {
  */
 export async function AppShell({ area, children }: AppShellProps) {
   if (area === "admin") {
+    const t = await getT("adminNav");
     // Sidebar + main are a flex ROW from the very top — no page-wide header sitting above them.
     // dc.html:55-101 puts `<aside>` and `<main>` as direct siblings of one flex row spanning the
     // full 100vh; the icon/user row (dc.html:106-122) is the FIRST child INSIDE `<main>`'s own
@@ -45,9 +52,14 @@ export async function AppShell({ area, children }: AppShellProps) {
     // the sidebar down instead of letting it run the full viewport height.
     return (
       <div className="admin-shell relative flex min-h-screen bg-[var(--color-background)] text-[var(--color-text)]">
+        <SkipLink label={t("skipToContent")} />
         <LiquidGlassBackdrop />
         <AdminSidebar />
-        <main className="min-w-0 flex-1 overflow-y-auto py-4">
+        <main
+          id={MAIN_CONTENT_ID}
+          tabIndex={-1}
+          className="min-w-0 flex-1 overflow-y-auto py-4 outline-none"
+        >
           {/* Shared by ALL 11 Admin screens (not just admin_overview) — dc.html:104 caps the inner
               content wrapper at 1320px. The cap now comes from shared/config/layout.ts through the
               same PageContainer the other two areas use, so all three are tuned in one place and
@@ -66,6 +78,7 @@ export async function AppShell({ area, children }: AppShellProps) {
   }
 
   if (area === "student") {
+    const t = await getT("studentShell");
     // Header, footer and content cap all belong to the AREA, not to any one screen: every Student
     // prototype repeats the same header block, and 02-bd/screens/users/_shell.md mục 3 puts the
     // footer on every screen of the area.
@@ -74,12 +87,19 @@ export async function AppShell({ area, children }: AppShellProps) {
       // (Admin - Tổng quan.dc.html:51-53). Every Student prototype instead sits on a plain neutral
       // canvas, so borrowing the admin blobs would paint in colors the Student screens never had.
       <div className="flex min-h-screen flex-col bg-[var(--color-background)] text-[var(--color-text)]">
+        <SkipLink label={t("skipToContent")} />
         <StudentHeader />
         {/* Header height published as a custom property so full-height views (Workspace,
             Mock Interview) can size themselves against the real chrome instead of each
             hard-coding its own guess — 14px top pad + 58px bar + 12px bottom pad. */}
-        <main className="flex-1 [--app-header-h:84px]">
-          <PageContainer maxWidthPx={SHELL_MAX_WIDTH_PX.student}>{children}</PageContainer>
+        <main
+          id={MAIN_CONTENT_ID}
+          tabIndex={-1}
+          className="flex-1 outline-none [--app-header-h:84px]"
+        >
+          <PageContainer maxWidthPx={SHELL_MAX_WIDTH_PX.student}>
+            {children}
+          </PageContainer>
         </main>
         {/* OUTSIDE `<main>` on purpose: a `<footer>` nested inside main/section/article is not
             exposed as the `contentinfo` landmark, so a screen reader loses the "page footer"
@@ -103,14 +123,22 @@ export async function AppShell({ area, children }: AppShellProps) {
   // it reads --color-blob-1/2/3, which the scope redefines to this mockup's own blob colors
   // (dc.html:29) — unlike the Student area, the Instructor prototypes really do draw the three
   // blurred circles (:56-58).
+  const t = await getT("instructorNav");
   return (
     <div className="instructor-shell relative flex min-h-screen bg-[var(--color-background)] text-[var(--color-text)]">
+      <SkipLink label={t("skipToContent")} />
       <LiquidGlassBackdrop />
       <InstructorSidebar />
-      <main className="min-w-0 flex-1 overflow-y-auto py-[18px]">
+      <main
+        id={MAIN_CONTENT_ID}
+        tabIndex={-1}
+        className="min-w-0 flex-1 overflow-y-auto py-[18px] outline-none"
+      >
         {/* dc.html:112 caps the content wrapper at 1320px on every Instructor screen — same shared
             container and same config entry as the other two areas. */}
-        <PageContainer maxWidthPx={SHELL_MAX_WIDTH_PX.instructor}>{children}</PageContainer>
+        <PageContainer maxWidthPx={SHELL_MAX_WIDTH_PX.instructor}>
+          {children}
+        </PageContainer>
       </main>
     </div>
   );

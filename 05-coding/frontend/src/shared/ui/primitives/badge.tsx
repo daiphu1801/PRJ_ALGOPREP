@@ -13,13 +13,14 @@ const VARIANT = {
   teal: "bg-[color-mix(in_srgb,var(--color-admin-teal)_16%,transparent)] text-[var(--color-admin-teal)]",
   success:
     "bg-[color-mix(in_srgb,var(--color-success)_16%,transparent)] text-[var(--color-success-text)]",
-  warn: "bg-[color-mix(in_srgb,var(--color-admin-warn)_18%,transparent)] text-[var(--color-admin-warn)]",
+  warn: "bg-[color-mix(in_srgb,var(--color-admin-warn)_18%,transparent)] text-[var(--color-admin-warn-text)]",
   negative:
-    "bg-[color-mix(in_srgb,var(--color-admin-negative)_16%,transparent)] text-[var(--color-admin-negative)]",
+    "bg-[color-mix(in_srgb,var(--color-admin-negative)_16%,transparent)] text-[var(--color-admin-negative-text)]",
   // These two carry their own background token rather than a color-mix: the mockups specify the
   // fill alpha directly and it differs between light and dark (globals.css, `--color-accent-*-bg`).
   blue: "bg-[var(--color-accent-blue-bg)] text-[var(--color-accent-blue)]",
-  purple: "bg-[var(--color-accent-purple-bg)] text-[var(--color-accent-purple)]",
+  purple:
+    "bg-[var(--color-accent-purple-bg)] text-[var(--color-accent-purple)]",
 } as const;
 
 export type BadgeVariant = keyof typeof VARIANT;
@@ -28,7 +29,12 @@ type BadgeProps = ComponentPropsWithoutRef<"span"> & {
   variant?: BadgeVariant;
 };
 
-export function Badge({ variant = "neutral", className, children, ...props }: BadgeProps) {
+export function Badge({
+  variant = "neutral",
+  className,
+  children,
+  ...props
+}: BadgeProps) {
   return (
     <span
       className={cn(

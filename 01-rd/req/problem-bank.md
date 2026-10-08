@@ -152,7 +152,9 @@
       `DEC-2026-0831-problem-management-lifecycle-details`):** ẩn mềm, không phải trạng thái thứ ba —
       xoá chuyển bài về `Chưa xuất bản` **cộng thêm một cờ `deleted` riêng**, để phân biệt "chưa xuất bản vì
       đang soạn" với "đã xoá". Dữ liệu liên quan (lượt nộp, bookmark, phiên phỏng vấn) không bị xoá — cùng
-      nguyên tắc F1-16. Áp dụng cho cả xoá một dòng và xoá theo lô.
+      nguyên tắc F1-16. Áp dụng cho cả xoá một dòng và xoá theo lô. **Xác nhận 2026-10-08 (owner chọn
+      Phương án A):** BD cơ sở dữ liệu đã sửa cho khớp (`status = UNPUBLISHED` và `deleted = true`); hộp xác
+      nhận cảnh báo không chặn số lượt nộp và số lớp đang giao.
     - **Điều kiện xuất bản chi tiết — amendment 2026-08-31** (Câu hỏi mở Q7(b) của
       `01-rd/screens/shared/SHR0202_problem_authoring.md`, cùng DEC trên): ngoài testcase Hidden (F2-06) và đặc tả
       đủ (F2-03), checklist "Sẵn sàng xuất bản" của `problem_authoring` chặn cứng nếu chưa đạt đủ **cả 5**:
@@ -167,7 +169,9 @@
     `01-rd/screens/shared/SHR0201_problem_management.md` (`DEC-2026-0831-problem-management-lifecycle-details`).
     Sao chép toàn bộ nội dung một bài toán (đề, đặc tả F2-03/F2-04, testcase, ví dụ mẫu, đáp án mẫu) thành
     một bài mới ở trạng thái `Chưa xuất bản`, actor A2/A3 có quyền `PROBLEM_AUTHORING:CREATE`. Hành động
-    theo lô (nhiều bài cùng lúc) được.
+    theo lô (nhiều bài cùng lúc) được. **Cập nhật 2026-10-08 (owner):** ở màn quản lý, "Nhân bản" nhận đúng
+    một bài mỗi lần và mở form soạn đã điền sẵn (tiêu đề thêm "(bản sao)"); bản ghi chỉ được tạo khi tác giả
+    bấm Lưu, thay cho việc tạo bản sao ngay cho từng bài đã chọn.
   - **F2-17 — Xuất CSV danh sách bài toán.** Bổ sung 2026-08-31, cùng DEC trên. Xuất **chỉ phần dữ liệu
     bảng** (mã, tiêu đề, chủ đề, độ khó, trạng thái, lượt nộp, tỉ lệ AC, số testcase) của bài đã chọn hoặc
     toàn bộ kết quả đang lọc — **không xuất nội dung đề bài, đặc tả, hay testcase**. **Nhập CSV bài toán

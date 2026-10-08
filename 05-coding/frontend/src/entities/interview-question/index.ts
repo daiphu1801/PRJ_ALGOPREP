@@ -31,12 +31,20 @@ export {
   type InterviewLevel,
   type LevelMutationError,
 } from "./model/level-store";
+export {
+  CSV_TEMPLATE,
+  parseQuestionsCsv,
+  type CsvImportParse,
+  type CsvRowError,
+  type QuestionDraft,
+} from "./model/csv-import";
 export { useRecallAndBookmarkState } from "./model/use-recall-state";
 export { InterviewQuestionCard } from "./ui/interview-question-card";
 export { InterviewQuestionListRow } from "./ui/interview-question-list-row";
 export { RecallLevelPicker } from "./ui/recall-level-picker";
 export { BookmarkToggle } from "./ui/bookmark-toggle";
 export {
+  appendImportedQuestions,
   fetchInterviewQuestionPage,
   findInterviewQuestionByCode,
 } from "./api/__mock__/interview-question-mocks";

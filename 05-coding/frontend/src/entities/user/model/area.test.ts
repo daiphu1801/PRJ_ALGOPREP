@@ -3,7 +3,11 @@ import { HOME_PATH_BY_ROLE, ROLE_BY_AREA } from "./area";
 
 describe("ROLE_BY_AREA", () => {
   it("covers all three permission-gated areas", () => {
-    expect(Object.keys(ROLE_BY_AREA).sort()).toEqual(["admin", "instructor", "student"]);
+    expect(Object.keys(ROLE_BY_AREA).sort()).toEqual([
+      "admin",
+      "instructor",
+      "student",
+    ]);
   });
 });
 

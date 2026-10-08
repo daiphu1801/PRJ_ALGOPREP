@@ -26,30 +26,40 @@ const COVERAGE_WEIGHT = 0.3;
 export const RADAR_AXIS_COUNT = 6;
 
 export function deriveSkillRadar(topics: TopicProgress[]): SkillRadarPoint[] {
-  return topics
-    .map((topic) => {
-      const coverage = topic.totalCount === 0 ? 0 : (topic.solvedCount / topic.totalCount) * 100;
-      const score = (topic.acRate ?? 0) * AC_WEIGHT + coverage * COVERAGE_WEIGHT;
-      return {
-        topicId: topic.topicId,
-        topicName: topic.topicName,
-        score: Math.round(Math.max(0, Math.min(100, score))),
-      };
-    })
-    // Strongest first so the 6 that survive the slice are the ones worth plotting, then back to the
-    // caller's original topic order — a radar whose axes are sorted by value draws a spiral, which
-    // reads as a trend that isn't there.
-    .sort((left, right) => right.score - left.score)
-    .slice(0, RADAR_AXIS_COUNT)
-    .sort(
-      (left, right) =>
-        topics.findIndex((t) => t.topicId === left.topicId) -
-        topics.findIndex((t) => t.topicId === right.topicId),
-    );
+  return (
+    topics
+      .map((topic) => {
+        const coverage =
+          topic.totalCount === 0
+            ? 0
+            : (topic.solvedCount / topic.totalCount) * 100;
+        const score =
+          (topic.acRate ?? 0) * AC_WEIGHT + coverage * COVERAGE_WEIGHT;
+        return {
+          topicId: topic.topicId,
+          topicName: topic.topicName,
+          score: Math.round(Math.max(0, Math.min(100, score))),
+        };
+      })
+      // Strongest first so the 6 that survive the slice are the ones worth plotting, then back to the
+      // caller's original topic order — a radar whose axes are sorted by value draws a spiral, which
+      // reads as a trend that isn't there.
+      .sort((left, right) => right.score - left.score)
+      .slice(0, RADAR_AXIS_COUNT)
+      .sort(
+        (left, right) =>
+          topics.findIndex((t) => t.topicId === left.topicId) -
+          topics.findIndex((t) => t.topicId === right.topicId),
+      )
+  );
 }
 
 /** The weakest of the plotted topics — the callout under the greeting (dc.html:102-103). */
-export function pickWeakestTopic(points: SkillRadarPoint[]): SkillRadarPoint | null {
+export function pickWeakestTopic(
+  points: SkillRadarPoint[],
+): SkillRadarPoint | null {
   if (points.length === 0) return null;
-  return points.reduce((weakest, point) => (point.score < weakest.score ? point : weakest));
+  return points.reduce((weakest, point) =>
+    point.score < weakest.score ? point : weakest,
+  );
 }

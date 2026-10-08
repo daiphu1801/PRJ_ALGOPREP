@@ -29,6 +29,8 @@
 > - **Áp dụng bản mã cải tiến (F5-26)**: cung cấp giao diện xem khác biệt (Diff Viewer); khi bấm áp dụng phải có
 >   hộp thoại xác nhận ghi đè trước khi chuyển người học về Workspace `problem_detail`.
 
+- **Bài đã rút khỏi ngân hàng** (`deleted = true`, G4 2026-10-08): báo cáo đã có vẫn xem được; liên kết về bài ở breadcrumb bị vô hiệu kèm nhãn "Đã rút khỏi ngân hàng"; không tạo báo cáo mới cho bài đã rút. Quy tắc đầy đủ ở `02-bd/database/problem-bank.md` mục 1.1a, không chép lại ở đây.
+
 > **Quy ước đặt tên khối** [Nội bộ]. Bảy khối: `breadcrumb` (đường dẫn phân cấp), `topStats` (thanh chỉ số
 > tổng hợp đầu trang), `eduNotice` (banner cảnh báo định hướng giáo dục F5-18), `complexityBlock` (khối phân
 > tích độ phức tạp thời gian/bộ nhớ thực tế vs tối ưu), `rubricCards` (5 thẻ tiêu chí đánh giá F5-23),
@@ -51,7 +53,7 @@
 | Tên vật lý (slug) | `solution_review` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`) |
-| Phiên bản | V0.3 |
+| Phiên bản | V0.4 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/22 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
@@ -67,6 +69,7 @@
 | V0.2 | Sheet 3, 5, 6, 7.3, 8, 9, Câu hỏi mở | Viết lại Sheet 3 theo khuôn "Danh sách chuyển màn" 6 thẻ + sơ đồ Mermaid; viết lại Sheet 5 theo khuôn 14 cột (thêm Bảng DB/Cột DB); sửa nguồn phần lớn nội dung báo cáo về đúng cột thật `ai.solution_reviews.result_json` (JSONB) thay vì các cột riêng không tồn tại (`approach_title`, `strengths`...); bỏ cột "Phương thức & URL dự kiến" ở Sheet 7.3. Bổ sung Khu vực I (Trạng thái đang xử lý/lỗi AI) tách rõ ba trạng thái theo Câu hỏi mở Q3 của RD: đang tải, lỗi tạm thời (cho thử lại), bị khoá ngân sách F5-25 (không cho thử lại) — cập nhật đồng bộ Sheet 6, Sheet 8 (EVT-1, EVT-7 mới) và Sheet 9 (tách dòng kiểm 4 thành 4 và 5) | 2026/09/24 | Nhóm phát triển AlgoPrep |
 | V0.2 | Sheet 8, 9 | Bổ sung toast cho lỗi tạm thời, hết ngân sách và xác nhận áp dụng mã; giữ nguyên banner giáo dục F5-18 và khối trạng thái Khu vực I thay chỗ báo cáo. Theo `DEC-2026-1003-toast-feedback-channel`. | 2026/10/03 | AI |
 | V0.3 | Sheet 4, 5, 7 | Đồng bộ `DEC-2026-1001-admin-configurable-settings` mục (7): độ khó bài tập là danh mục do ADMIN quản lý (bảng riêng `problem_levels`), không còn enum cố định. Nhãn độ khó của bài (`SolutionReviewDetailDto.difficulty` thành `levelCode`/`levelDisplayName`) lấy từ `problem_levels.display_name` qua `problems.level_id`; thêm `problem.problem_levels` vào danh sách bảng và Truy cập bảng. Nhãn này là độ khó **của bài toán** (F2-02), không phải trường nào do F5 sinh ra; F5 không đổi. Màn chỉ hiển thị nhãn, không lọc và không gọi `ListProblemLevels` (nhãn nằm sẵn trong phản hồi); độ khó không gắn logic nào | 2026/10/03 | AI |
+| V0.4 | Sheet 3, 5, 6, Câu hỏi mở | Theo `02-bd/database/problem-bank.md` mục 1.1a: báo cáo của bài đã rút vẫn xem được; liên kết về bài bị vô hiệu kèm nhãn "Đã rút khỏi ngân hàng"; không cho tạo báo cáo mới cho bài đã rút. Chỉ tài liệu, chưa đổi code | 2026/10/08 | AI |
 
 ---
 

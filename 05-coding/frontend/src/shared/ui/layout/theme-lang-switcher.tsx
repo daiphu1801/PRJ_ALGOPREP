@@ -44,7 +44,11 @@ const THEME_OPTIONS = [
  * fit both groups on one row again after 2026-09-16 (a rectangular language pill next to the theme
  * pill was the thing forcing them onto two stacked rows in the first place).
  */
-export function ThemeLangSwitcher({ variant = "inline", collapsed = false, className }: ThemeLangSwitcherProps) {
+export function ThemeLangSwitcher({
+  variant = "inline",
+  collapsed = false,
+  className,
+}: ThemeLangSwitcherProps) {
   const t = useT("common");
   const locale = useLocale();
   const { setTheme } = useTheme();
@@ -73,7 +77,8 @@ export function ThemeLangSwitcher({ variant = "inline", collapsed = false, class
   const [activeTheme, setActiveTheme] = useState<"light" | "dark">("light");
   useEffect(() => {
     const root = document.documentElement;
-    const sync = () => setActiveTheme(root.classList.contains("dark") ? "dark" : "light");
+    const sync = () =>
+      setActiveTheme(root.classList.contains("dark") ? "dark" : "light");
     sync();
     const observer = new MutationObserver(sync);
     observer.observe(root, { attributes: true, attributeFilter: ["class"] });
@@ -120,7 +125,10 @@ export function ThemeLangSwitcher({ variant = "inline", collapsed = false, class
       // labels ("Light") with `px-1.5` — see the sidebar-budget note above for why not wider.
       stacked ? "flex-1 px-1.5" : "min-w-[62px] px-1.5",
       active
-        ? cn("bg-[var(--color-primary)] text-[var(--color-on-primary)]", activeElevation)
+        ? cn(
+            "bg-[var(--color-primary)] text-[var(--color-on-primary)]",
+            activeElevation,
+          )
         : "text-[var(--color-text-muted)] hover:bg-[var(--color-surface-hover)] hover:text-[var(--color-text)]",
     );
   const circleButton = (active: boolean) =>
@@ -139,7 +147,10 @@ export function ThemeLangSwitcher({ variant = "inline", collapsed = false, class
       // each side. 20px circles with a 2px gap need 42px and leave real slack.
       stacked ? "h-5 w-5 text-[10px]" : "h-6 w-6 text-[10.5px]",
       active
-        ? cn("bg-[var(--color-primary)] text-[var(--color-on-primary)]", activeElevation)
+        ? cn(
+            "bg-[var(--color-primary)] text-[var(--color-on-primary)]",
+            activeElevation,
+          )
         : "text-[var(--color-text-muted)] hover:bg-[var(--color-surface-hover)] hover:text-[var(--color-text)]",
     );
 
@@ -152,7 +163,11 @@ export function ThemeLangSwitcher({ variant = "inline", collapsed = false, class
         className,
       )}
     >
-      <div role="group" aria-label={t("themeSwitcher")} className={segmentedTrack}>
+      <div
+        role="group"
+        aria-label={t("themeSwitcher")}
+        className={segmentedTrack}
+      >
         {THEME_OPTIONS.map(({ key: option, icon: Icon }) => (
           // suppressHydrationWarning: `activeTheme` is a plain useState starting at "light" (SSR
           // and first client paint agree, so there's no real mismatch to suppress) — kept as a
@@ -162,13 +177,20 @@ export function ThemeLangSwitcher({ variant = "inline", collapsed = false, class
             key={option}
             type="button"
             onClick={() => setTheme(option)}
-            title={collapsed ? (option === "dark" ? t("themeDark") : t("themeLight")) : undefined}
+            title={
+              collapsed
+                ? option === "dark"
+                  ? t("themeDark")
+                  : t("themeLight")
+                : undefined
+            }
             aria-pressed={activeTheme === option}
             className={segmentButton(activeTheme === option)}
             suppressHydrationWarning
           >
             <Icon aria-hidden="true" className="h-3.5 w-3.5" />
-            {!collapsed && (option === "dark" ? t("themeDark") : t("themeLight"))}
+            {!collapsed &&
+              (option === "dark" ? t("themeDark") : t("themeLight"))}
           </button>
         ))}
       </div>

@@ -81,7 +81,9 @@ export async function loadLanguageConfigPage(): Promise<LanguageConfigPage> {
 }
 
 /** `UpdateLanguageConfigs`. The delay stands in for the round trip so the saving state is reviewable. */
-export async function saveLanguageConfigPage(page: LanguageConfigPage): Promise<void> {
+export async function saveLanguageConfigPage(
+  page: LanguageConfigPage,
+): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve, 600));
   current = structuredClone(page);
 }

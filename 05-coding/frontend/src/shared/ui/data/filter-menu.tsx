@@ -49,8 +49,11 @@ export function FilterMenu<T extends string>({
 
   useEffect(() => {
     if (!open) return;
-    const items = listRef.current?.querySelectorAll<HTMLElement>('[role="option"]');
-    const selected = listRef.current?.querySelector<HTMLElement>('[aria-selected="true"]');
+    const items =
+      listRef.current?.querySelectorAll<HTMLElement>('[role="option"]');
+    const selected = listRef.current?.querySelector<HTMLElement>(
+      '[aria-selected="true"]',
+    );
     (selected ?? items?.[0])?.focus();
 
     function onPointerDown(event: PointerEvent) {
@@ -67,7 +70,9 @@ export function FilterMenu<T extends string>({
   }
 
   function onListKeyDown(event: KeyboardEvent<HTMLDivElement>) {
-    const items = Array.from(listRef.current?.querySelectorAll<HTMLElement>('[role="option"]') ?? []);
+    const items = Array.from(
+      listRef.current?.querySelectorAll<HTMLElement>('[role="option"]') ?? [],
+    );
     const index = items.indexOf(document.activeElement as HTMLElement);
     const move = (target: number) => {
       event.preventDefault();
@@ -106,11 +111,20 @@ export function FilterMenu<T extends string>({
           "hover:text-[var(--color-text)] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--color-primary)]",
         )}
       >
-        <span className={compact ? "sr-only" : "font-medium text-[var(--color-text-muted)]"}>{label}:</span>{" "}
+        <span
+          className={
+            compact ? "sr-only" : "font-medium text-[var(--color-text-muted)]"
+          }
+        >
+          {label}:
+        </span>{" "}
         <span className="font-semibold">{current?.label}</span>
         <ChevronDown
           aria-hidden="true"
-          className={cn("h-3.5 w-3.5 text-[var(--color-text-muted)] transition-transform", open && "rotate-180")}
+          className={cn(
+            "h-3.5 w-3.5 text-[var(--color-text-muted)] transition-transform",
+            open && "rotate-180",
+          )}
         />
       </button>
 
@@ -137,14 +151,19 @@ export function FilterMenu<T extends string>({
                 onClick={() => pick(option.value)}
                 className={cn(
                   "flex w-full items-center justify-between gap-4 rounded-lg px-3 py-2 text-left text-[13px] transition-colors",
-                  "hover:bg-[var(--color-row-hover)] focus-visible:bg-[var(--color-row-hover)] focus-visible:outline-none",
+                  // Hover and keyboard focus tint the row with the accent so it visibly lifts off the glass (the
+                  // neutral row-hover token is almost the same colour as the panel and showed nothing).
+                  "hover:bg-[color-mix(in_srgb,var(--color-admin-teal)_16%,transparent)] focus-visible:bg-[color-mix(in_srgb,var(--color-admin-teal)_16%,transparent)] focus-visible:outline-none",
                   selected && "font-semibold",
                 )}
               >
                 {option.label}
                 <Check
                   aria-hidden="true"
-                  className={cn("h-3.5 w-3.5 shrink-0 text-[var(--color-primary)]", !selected && "invisible")}
+                  className={cn(
+                    "h-3.5 w-3.5 shrink-0 text-[var(--color-primary)]",
+                    !selected && "invisible",
+                  )}
                 />
               </button>
             );

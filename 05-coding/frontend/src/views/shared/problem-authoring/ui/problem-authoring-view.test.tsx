@@ -1,7 +1,15 @@
 // Smoke test (PROTOTYPE lane): testcase add/delete invalidates the reference-solution run, and
 // re-running restores it (F2-18).
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { act, fireEvent, render, renderHook, screen, waitFor, within } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import Link from "next/link";
 import { aiGenerationSettings } from "@/entities/problem";
 import { toast, useToasts } from "@/shared/lib/toast-store";
@@ -23,7 +31,9 @@ beforeEach(() => {
 
 // The view loads its problem through TanStack Query, so every render waits for the form to appear.
 async function renderLoaded(ui: ReactElement) {
-  const client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+  });
   render(<QueryClientProvider client={client}>{ui}</QueryClientProvider>);
   await screen.findByLabelText("titleLabel");
 }
@@ -38,26 +48,36 @@ describe("ProblemAuthoringView testcase tab", () => {
     fireEvent.click(screen.getByRole("button", { name: "addTestcase" }));
     const dialog = screen.getByRole("dialog");
     // Empty form is rejected.
-    fireEvent.click(within(dialog).getByRole("button", { name: "dialog.save" }));
-    expect(toasts.result.current.map((item) => [item.tone, item.message])).toEqual([
-      ["error", "dialog.required"],
-    ]);
+    fireEvent.click(
+      within(dialog).getByRole("button", { name: "dialog.save" }),
+    );
+    expect(
+      toasts.result.current.map((item) => [item.tone, item.message]),
+    ).toEqual([["error", "dialog.required"]]);
 
     const fields = within(dialog).getAllByRole("textbox");
     fireEvent.change(fields[0]!, { target: { value: 's = "xyz", t = "y"' } });
     fireEvent.change(fields[1]!, { target: { value: '"y"' } });
-    fireEvent.click(within(dialog).getByRole("button", { name: "dialog.save" }));
+    fireEvent.click(
+      within(dialog).getByRole("button", { name: "dialog.save" }),
+    );
 
     expect(screen.getByText('s = "xyz", t = "y"')).toBeInTheDocument();
     // No inline notice any more: a stale run shows as the checklist item going back to pending.
-    const solutionItem = () => screen.getByText("check.solutionPasses").closest("li");
+    const solutionItem = () =>
+      screen.getByText("check.solutionPasses").closest("li");
     expect(solutionItem()).toHaveTextContent("checkPending");
-    expect(toasts.result.current.at(-1)).toMatchObject({ tone: "success", message: "toast.testcaseAdded" });
+    expect(toasts.result.current.at(-1)).toMatchObject({
+      tone: "success",
+      message: "toast.testcaseAdded",
+    });
 
     fireEvent.click(screen.getByRole("button", { name: "runSolution" }));
     expect(solutionItem()).toHaveTextContent("checkDone");
     expect(toasts.result.current.at(-1)).toMatchObject({ tone: "success" });
-    expect(toasts.result.current.at(-1)?.message).toMatch(/"passed":6,"total":6/);
+    expect(toasts.result.current.at(-1)?.message).toMatch(
+      /"passed":6,"total":6/,
+    );
   });
 });
 
@@ -68,12 +88,17 @@ describe("ProblemAuthoringView save and publish", () => {
     const save = screen.getByRole("button", { name: "save" });
     expect(save).toBeDisabled();
 
-    fireEvent.change(screen.getByLabelText("titleLabel"), { target: { value: "New title" } });
+    fireEvent.change(screen.getByLabelText("titleLabel"), {
+      target: { value: "New title" },
+    });
     expect(save).toBeEnabled();
 
     fireEvent.click(save);
     await waitFor(() =>
-      expect(toasts.result.current.at(-1)).toMatchObject({ tone: "success", message: "toast.saved" }),
+      expect(toasts.result.current.at(-1)).toMatchObject({
+        tone: "success",
+        message: "toast.saved",
+      }),
     );
     expect(save).toBeDisabled();
   });
@@ -99,7 +124,10 @@ describe("ProblemAuthoringView save and publish", () => {
 
     // The mock draft is published with exactly 2 examples (BD Sheet 6 area D item 6).
     fireEvent.click(screen.getAllByRole("button", { name: "delete" })[0]!);
-    expect(toasts.result.current.at(-1)).toMatchObject({ tone: "warning", message: "examplesFloorWarning" });
+    expect(toasts.result.current.at(-1)).toMatchObject({
+      tone: "warning",
+      message: "examplesFloorWarning",
+    });
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
@@ -108,7 +136,9 @@ describe("ProblemAuthoringView save and publish", () => {
     await renderLoaded(<ProblemAuthoringView basePath="/admin/problems" />);
 
     // Editing the reference solution makes the last run stale, which locks generation (F2-14).
-    fireEvent.change(screen.getByLabelText(/^solutionLabel/), { target: { value: "def f(): pass" } });
+    fireEvent.change(screen.getByLabelText(/^solutionLabel/), {
+      target: { value: "def f(): pass" },
+    });
     fireEvent.click(screen.getByRole("button", { name: /tab\.ai/ }));
 
     const generate = screen.getByRole("button", { name: "generateAction" });
@@ -123,7 +153,9 @@ describe("ProblemAuthoringView save and publish", () => {
 
 describe("ProblemAuthoringView preview, unsaved guard and checklist (BD Q6, Q7, Q8, Q12-Q14)", () => {
   it("opens the preview in a new tab for an existing problem", async () => {
-    await renderLoaded(<ProblemAuthoringView basePath="/admin/problems" problemId="121" />);
+    await renderLoaded(
+      <ProblemAuthoringView basePath="/admin/problems" problemId="121" />,
+    );
     const preview = screen.getByRole("link", { name: "previewAsLearner" });
     expect(preview).toHaveAttribute("href", "/admin/problems/121/preview");
     expect(preview).toHaveAttribute("target", "_blank");
@@ -131,8 +163,12 @@ describe("ProblemAuthoringView preview, unsaved guard and checklist (BD Q6, Q7, 
 
   it("has no preview link for a problem that was never saved", async () => {
     await renderLoaded(<ProblemAuthoringView basePath="/admin/problems" />);
-    expect(screen.queryByRole("link", { name: "previewAsLearner" })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "previewNeedsSave" })).toHaveAttribute("aria-disabled", "true");
+    expect(
+      screen.queryByRole("link", { name: "previewAsLearner" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "previewNeedsSave" }),
+    ).toHaveAttribute("aria-disabled", "true");
   });
 
   it("asks before leaving through a link while changes are unsaved", async () => {
@@ -142,7 +178,9 @@ describe("ProblemAuthoringView preview, unsaved guard and checklist (BD Q6, Q7, 
         <ProblemAuthoringView basePath="/admin/problems" problemId="121" />
       </>,
     );
-    fireEvent.change(screen.getByLabelText("titleLabel"), { target: { value: "Edited" } });
+    fireEvent.change(screen.getByLabelText("titleLabel"), {
+      target: { value: "Edited" },
+    });
 
     fireEvent.click(screen.getByText("sidebar"));
     expect(screen.getByRole("dialog")).toHaveTextContent("unsaved.title");
@@ -152,9 +190,13 @@ describe("ProblemAuthoringView preview, unsaved guard and checklist (BD Q6, Q7, 
 
   it("names every missing publish condition in the toast", async () => {
     const toasts = renderHook(() => useToasts());
-    await renderLoaded(<ProblemAuthoringView basePath="/admin/problems" problemId="121" />);
+    await renderLoaded(
+      <ProblemAuthoringView basePath="/admin/problems" problemId="121" />,
+    );
     // Editing the reference solution makes the last run stale, so a second condition goes unmet.
-    fireEvent.change(screen.getByLabelText(/^solutionLabel/), { target: { value: "def f(): pass" } });
+    fireEvent.change(screen.getByLabelText(/^solutionLabel/), {
+      target: { value: "def f(): pass" },
+    });
     fireEvent.click(screen.getByRole("button", { name: "publish" }));
     const message = toasts.result.current.at(-1)?.message ?? "";
     expect(message).toContain("check.minTestcases");
@@ -162,32 +204,50 @@ describe("ProblemAuthoringView preview, unsaved guard and checklist (BD Q6, Q7, 
   });
 
   it("jumps to the right tab from an unmet checklist item", async () => {
-    await renderLoaded(<ProblemAuthoringView basePath="/admin/problems" problemId="121" />);
+    await renderLoaded(
+      <ProblemAuthoringView basePath="/admin/problems" problemId="121" />,
+    );
     fireEvent.click(screen.getByRole("button", { name: "check.minTestcases" }));
-    expect(screen.getByRole("button", { name: "addTestcase" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "addTestcase" }),
+    ).toBeInTheDocument();
   });
 });
 
 describe("ProblemAuthoringView AI testcase generation (F2-14, BD EVT-16)", () => {
   async function openAiTab() {
-    await renderLoaded(<ProblemAuthoringView basePath="/admin/problems" problemId="121" />);
+    await renderLoaded(
+      <ProblemAuthoringView basePath="/admin/problems" problemId="121" />,
+    );
     fireEvent.click(screen.getByRole("button", { name: /tab\.ai/ }));
   }
 
-  const messages = (toasts: ReturnType<typeof renderHook<ReturnType<typeof useToasts>, unknown>>) =>
-    toasts.result.current.map((item) => [item.tone, item.message]);
+  const messages = (
+    toasts: ReturnType<
+      typeof renderHook<ReturnType<typeof useToasts>, unknown>
+    >,
+  ) => toasts.result.current.map((item) => [item.tone, item.message]);
 
   it("adds unapproved drafts, shows one generic running state, and reports what was dropped", async () => {
     const toasts = renderHook(() => useToasts());
     await openAiTab();
-    expect(screen.getByText('generateQuota {"left":2,"limit":2}')).toBeInTheDocument();
+    expect(
+      screen.getByText('generateQuota {"left":2,"limit":2}'),
+    ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "generateAction" }));
     expect(await screen.findByText("generatingBody")).toBeInTheDocument();
 
-    await waitFor(() => expect(messages(toasts)).toContainEqual(["success", 'toast.generated {"count":4}']), {
-      timeout: 6000,
-    });
+    await waitFor(
+      () =>
+        expect(messages(toasts)).toContainEqual([
+          "success",
+          'toast.generated {"count":4}',
+        ]),
+      {
+        timeout: 6000,
+      },
+    );
     expect(toasts.result.current.at(-1)).toMatchObject({
       tone: "warning",
       message: 'toast.droppedInvalidConstraint {"count":1}',
@@ -196,18 +256,25 @@ describe("ProblemAuthoringView AI testcase generation (F2-14, BD EVT-16)", () =>
     expect(screen.getByText('draftsSubtitle {"count":8}')).toBeInTheDocument();
     expect(screen.queryByText("generatingBody")).not.toBeInTheDocument();
     // The attempt is counted once the server record is refetched.
-    expect(await screen.findByText('generateQuota {"left":1,"limit":2}')).toBeInTheDocument();
+    expect(
+      await screen.findByText('generateQuota {"left":1,"limit":2}'),
+    ).toBeInTheDocument();
   }, 10000);
 
   it("allows two generations per problem, a second script gives other cases, a third is refused", async () => {
     const toasts = renderHook(() => useToasts());
     await openAiTab();
-    const generate = () => fireEvent.click(screen.getByRole("button", { name: "generateAction" }));
+    const generate = () =>
+      fireEvent.click(screen.getByRole("button", { name: "generateAction" }));
 
     generate();
-    await screen.findByText('generateQuota {"left":1,"limit":2}', undefined, { timeout: 6000 });
+    await screen.findByText('generateQuota {"left":1,"limit":2}', undefined, {
+      timeout: 6000,
+    });
     generate();
-    await screen.findByText('generateQuota {"left":0,"limit":2}', undefined, { timeout: 6000 });
+    await screen.findByText('generateQuota {"left":0,"limit":2}', undefined, {
+      timeout: 6000,
+    });
     // 4 waiting + 4 from the first script + 4 from the second, different one.
     expect(screen.getByText('draftsSubtitle {"count":12}')).toBeInTheDocument();
 
@@ -227,11 +294,19 @@ describe("ProblemAuthoringView AI testcase generation (F2-14, BD EVT-16)", () =>
 
       fireEvent.click(screen.getByRole("button", { name: "generateAction" }));
       await waitFor(
-        () => expect(toasts.result.current.at(-1)).toMatchObject({ tone: "error", message: "toast.generateFailed" }),
+        () =>
+          expect(toasts.result.current.at(-1)).toMatchObject({
+            tone: "error",
+            message: "toast.generateFailed",
+          }),
         { timeout: 6000 },
       );
-      expect(screen.getByText('draftsSubtitle {"count":4}')).toBeInTheDocument();
-      expect(screen.getByText('generateQuota {"left":2,"limit":2}')).toBeInTheDocument();
+      expect(
+        screen.getByText('draftsSubtitle {"count":4}'),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('generateQuota {"left":2,"limit":2}'),
+      ).toBeInTheDocument();
     } finally {
       window.history.pushState({}, "", "/");
     }
@@ -243,12 +318,18 @@ describe("ProblemAuthoringView generation cap set by ADMIN", () => {
     aiGenerationSettings.set({ maxPerProblem: 1 });
     try {
       const toasts = renderHook(() => useToasts());
-      await renderLoaded(<ProblemAuthoringView basePath="/admin/problems" problemId="121" />);
+      await renderLoaded(
+        <ProblemAuthoringView basePath="/admin/problems" problemId="121" />,
+      );
       fireEvent.click(screen.getByRole("button", { name: /tab\.ai/ }));
-      expect(screen.getByText('generateQuota {"left":1,"limit":1}')).toBeInTheDocument();
+      expect(
+        screen.getByText('generateQuota {"left":1,"limit":1}'),
+      ).toBeInTheDocument();
 
       fireEvent.click(screen.getByRole("button", { name: "generateAction" }));
-      await screen.findByText('generateQuota {"left":0,"limit":1}', undefined, { timeout: 6000 });
+      await screen.findByText('generateQuota {"left":0,"limit":1}', undefined, {
+        timeout: 6000,
+      });
 
       fireEvent.click(screen.getByRole("button", { name: "generateAction" }));
       expect(toasts.result.current.at(-1)).toMatchObject({
@@ -263,14 +344,18 @@ describe("ProblemAuthoringView generation cap set by ADMIN", () => {
 
 describe("ProblemAuthoringView spec tab (F2-03, F2-04)", () => {
   async function openSpecTab() {
-    await renderLoaded(<ProblemAuthoringView basePath="/admin/problems" problemId="121" />);
+    await renderLoaded(
+      <ProblemAuthoringView basePath="/admin/problems" problemId="121" />,
+    );
     fireEvent.click(screen.getByRole("button", { name: /tab\.spec/ }));
   }
 
   it("shows the starter-code preview of each language for the sample problem", async () => {
     await openSpecTab();
     for (const language of ["java", "cpp", "python"]) {
-      expect(screen.getByRole("listitem", { name: `spec.language.${language}` })).toBeInTheDocument();
+      expect(
+        screen.getByRole("listitem", { name: `spec.language.${language}` }),
+      ).toBeInTheDocument();
     }
   });
 
@@ -280,16 +365,22 @@ describe("ProblemAuthoringView spec tab (F2-03, F2-04)", () => {
     const save = screen.getByRole("button", { name: "save" });
     expect(save).toBeDisabled();
 
-    fireEvent.change(screen.getByLabelText("spec.stdinFormat"), { target: { value: "" } });
+    fireEvent.change(screen.getByLabelText("spec.stdinFormat"), {
+      target: { value: "" },
+    });
     expect(save).toBeEnabled();
 
     fireEvent.click(screen.getByRole("button", { name: "publish" }));
-    expect(toasts.result.current.at(-1)?.message).toContain("check.specDeclared");
+    expect(toasts.result.current.at(-1)?.message).toContain(
+      "check.specDeclared",
+    );
   });
 
   it("an unmet spec item on the checklist jumps to the spec tab", async () => {
     await openSpecTab();
-    fireEvent.change(screen.getByLabelText("spec.stdinFormat"), { target: { value: "" } });
+    fireEvent.change(screen.getByLabelText("spec.stdinFormat"), {
+      target: { value: "" },
+    });
     fireEvent.click(screen.getByRole("button", { name: /tab\.content/ }));
 
     fireEvent.click(screen.getByRole("button", { name: "check.specDeclared" }));

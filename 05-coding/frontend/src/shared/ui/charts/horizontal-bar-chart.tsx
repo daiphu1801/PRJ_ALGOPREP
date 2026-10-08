@@ -25,23 +25,41 @@ type HorizontalBarChartProps = {
 // via each bar-group's `title` tooltip, same as before.
 const MAX_VISIBLE_AXIS_LABELS = 6;
 
-export function HorizontalBarChart({ series, pointLabels }: HorizontalBarChartProps) {
+export function HorizontalBarChart({
+  series,
+  pointLabels,
+}: HorizontalBarChartProps) {
   const max = Math.max(...series.flatMap((s) => s.points), 1);
-  const labelStep = Math.max(1, Math.ceil(pointLabels.length / MAX_VISIBLE_AXIS_LABELS));
+  const labelStep = Math.max(
+    1,
+    Math.ceil(pointLabels.length / MAX_VISIBLE_AXIS_LABELS),
+  );
 
   return (
     <div>
       <div className="mb-3 flex flex-wrap gap-3 text-xs text-[var(--color-text-muted)]">
         {series.map((s) => (
           <span key={s.label} className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full" style={{ background: `var(${s.colorVar})` }} aria-hidden="true" />
+            <span
+              className="h-2 w-2 rounded-full"
+              style={{ background: `var(${s.colorVar})` }}
+              aria-hidden="true"
+            />
             {s.label}
           </span>
         ))}
       </div>
-      <div className="flex h-20 items-end gap-1" role="img" aria-label={series.map((s) => s.label).join(", ")}>
+      <div
+        className="flex h-20 items-end gap-1"
+        role="img"
+        aria-label={series.map((s) => s.label).join(", ")}
+      >
         {pointLabels.map((label, pointIndex) => (
-          <div key={label} className="flex flex-1 items-end gap-px" title={label}>
+          <div
+            key={label}
+            className="flex flex-1 items-end gap-px"
+            title={label}
+          >
             {series.map((s) => (
               <div
                 key={s.label}

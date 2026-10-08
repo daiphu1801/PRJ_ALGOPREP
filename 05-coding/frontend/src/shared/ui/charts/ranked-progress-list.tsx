@@ -78,7 +78,9 @@ export function RankedProgressList({
         </Link>
       ) : null}
       {footnote ? (
-        <p className="mt-3.5 text-[12.5px] text-[var(--color-text-subtle)]">{footnote}</p>
+        <p className="mt-3.5 text-[12.5px] text-[var(--color-text-subtle)]">
+          {footnote}
+        </p>
       ) : null}
     </div>
   );

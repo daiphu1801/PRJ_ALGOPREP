@@ -28,7 +28,12 @@ type DashboardBlockStateProps = {
 
 /** react-query resolves a failed refetch instead of throwing, with `isError` set on the result. */
 function failedAgain(result: unknown): boolean {
-  return typeof result === "object" && result !== null && "isError" in result && result.isError === true;
+  return (
+    typeof result === "object" &&
+    result !== null &&
+    "isError" in result &&
+    result.isError === true
+  );
 }
 
 export function DashboardBlockState({
@@ -55,7 +60,11 @@ export function DashboardBlockState({
       aria-label={title}
       className={`glass-card p-3 ${minHeightClassName}`}
     >
-      {!hideTitle && <h3 className="mb-2 text-sm font-semibold text-[var(--color-text)]">{title}</h3>}
+      {!hideTitle && (
+        <h3 className="mb-2 text-sm font-semibold text-[var(--color-text)]">
+          {title}
+        </h3>
+      )}
       {isLoading ? (
         <Skeleton className={minHeightClassName} />
       ) : isError ? (

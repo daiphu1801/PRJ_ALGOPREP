@@ -2,9 +2,16 @@
 // Shared A2+A3 screen (DEC-2026-0825-shared-content-authoring-screens) — admin mount only for now.
 import { InterviewQuestionInfoView } from "@/views/shared/interview-question-info";
 
-export default async function Page({ params }: { params: Promise<{ questionId: string }> }) {
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ questionId: string }>;
+}) {
   const { questionId } = await params;
   return (
-    <InterviewQuestionInfoView questionId={questionId} basePath="/admin/interview-questions" />
+    <InterviewQuestionInfoView
+      questionId={questionId}
+      basePath="/admin/interview-questions"
+    />
   );
 }

@@ -46,7 +46,12 @@ kiện hạ tầng" đã chốt trước ở `identity.md` — F1-14.
    (Quản trị viên hoạt động, Phân loại 7 ngày) vẫn giữ.
 4. **Danh sách sự kiện** — tìm kiếm, lọc theo phân loại (Xác thực/Ma trận quyền/Cấu hình/Nội dung), mỗi
    dòng: giờ, phân loại, nội dung, dịch vụ, người thực hiện, mã sự kiện (dòng 402-412) — khớp F1-14 ("ai
-   đổi, đổi gì, đổi lúc nào"). Phân loại "Nội dung" (ví dụ "Thêm testcase biên", "Xuất bản bài toán") mở
+   đổi, đổi gì, đổi lúc nào"). **Cập nhật 2026-10-08 (owner chốt, prototype Next.js đã dựng,
+   `DEC-2026-1008-admin-system-screens-review`):** thanh lọc có thêm **khoảng thời gian "Từ ngày" / "Đến ngày"** —
+   hai ô ngày gốc của trình duyệt, khoảng đóng ở cả hai đầu; khoảng ngược (từ ngày muộn hơn đến ngày) thì ô "Đến
+   ngày" đổi viền đỏ, hiện cảnh báo và không có dòng nào [Nguồn: 05-coding/frontend/src/views/admin/system-log/ui/admin-system-log-view.tsx:88,102-110,175-200]. Nút "Tải thêm 50 dòng"
+   nạp thêm 50 dòng mỗi lần và không kích hoạt khi đã tải hết [Nguồn: 05-coding/frontend/src/views/admin/system-log/ui/admin-system-log-view.tsx:112-114,238-247]. Mỗi dòng hiện **ngày
+   (dd/MM) dưới giờ**, để các dòng cách nhau nhiều ngày đọc được [Nguồn: 05-coding/frontend/src/views/admin/system-log/ui/admin-system-log-view.tsx:65-68,344-346]. Phân loại "Nội dung" (ví dụ "Thêm testcase biên", "Xuất bản bài toán") mở
    rộng hợp lý phạm vi F1-14 sang hành động quản trị nội dung của giảng viên, không chỉ hành động của ADMIN
    — khớp câu chữ gốc "mọi thao tác quản trị" (không giới hạn actor).
 5. **Quản trị viên hoạt động** — số hành động gần nhất theo từng người (dòng 431-436) — không có mã riêng,
@@ -56,6 +61,13 @@ kiện hạ tầng" đã chốt trước ở `identity.md` — F1-14.
    bằng chứng cho phát hiện gian lận mã nguồn đã ghi ở Câu hỏi mở Q1 của
    `01-rd/screens/admin/ADM0201_user_management.md`; không lặp lại chi tiết ở đây, chỉ xác nhận nó xuất hiện
    nhất quán ở cả hai màn (không phải lỗi dữ liệu mẫu một lần).
+   **Cập nhật 2026-10-05:** dòng log này nay có một nguồn thật — **lý do khoá do quản trị viên nhập** (F1-32,
+   `01-rd/req/identity.md`), lưu trong `after_json` cùng dòng nhật ký. Nội dung "trùng mã nguồn" trong dòng
+   mẫu vì thể là **lý do quản trị viên gõ**, không phải kết quả phát hiện tự động: cơ chế so khớp trùng mã
+   nguồn vẫn ngoài phạm vi (`DEC-2026-0831-remove-plagiarism-report`). Màn này hiển thị lý do đó nguyên văn,
+   và hiển thị khác với dòng mở khoá — mở khoá không có lý do. **Prototype Next.js 2026-10-08** dựng đúng như vậy:
+   dòng khoá có thêm một dòng phụ "Lý do: ..." dưới câu nội dung, dòng mở khoá không có [Nguồn: 05-coding/frontend/src/views/admin/system-log/ui/admin-system-log-view.tsx:352-356;
+   05-coding/frontend/src/views/admin/system-log/model/types.ts:27-34].
 
 ### 2.1 Cấu trúc hệ thống liên quan
 
@@ -95,6 +107,8 @@ lại để tránh trùng câu hỏi trên nhiều file):
 | REQ-02 | Given-When-Then liên quan (—) | Chức năng | `01-rd/req/user_stories/a3_admin.md` (rải trong `US-A3-01/02/05`) |
 | REQ-03 | **Cho** một quản trị viên đổi một ô trong ma trận phân quyền, **Khi** thay đổi được lưu, **Thì** một dòng log mới xuất hiện ngay ở đầu danh sách (nếu đang "Theo dõi trực tiếp"), phân loại "Ma trận quyền", ghi rõ quyền nào đổi cho vai trò nào [SoT: `09-layoutBase/Admin - Nhật ký hệ thống.dc.html:406, 412` — dòng mẫu "Cấp quyền UPDATE trên TESTCASE_MANAGEMENT cho vai trò Trợ giảng"]. | Chức năng | GWT bổ sung trong RD |
 | REQ-04 | **Cho** quản trị viên lọc theo phân loại "Cấu hình", **Khi** bộ lọc áp dụng, **Thì** danh sách chỉ hiện các hành động thuộc nhóm cấu hình (đổi giới hạn ngôn ngữ, cập nhật prompt AI...), không lẫn hành động xác thực hay ma trận quyền. | Chức năng | GWT bổ sung trong RD |
+| REQ-05 | **Cho** quản trị viên đặt "Từ ngày" và "Đến ngày", **Khi** khoảng hợp lệ, **Thì** danh sách chỉ hiện dòng log trong khoảng đó (gồm cả hai ngày biên); **Khi** từ ngày muộn hơn đến ngày, **Thì** hiện cảnh báo và không có dòng nào. | Chức năng | Chốt 2026-10-08 (`DEC-2026-1008-admin-system-screens-review`) |
+| REQ-06 | **Cho** một dòng log khoá tài khoản, **Khi** hiển thị, **Thì** có thêm dòng "Lý do: ..." nguyên văn lý do quản trị viên đã nhập (F1-32); dòng mở khoá không có lý do. | Chức năng | `01-rd/req/identity.md` — F1-32; mục 2 điểm 7 |
 
 ---
 

@@ -32,7 +32,10 @@ export function StatCard({
 }: StatCardProps) {
   return (
     <div
-      className={cn("glass-card border border-[var(--color-border)] px-[18px] py-4", className)}
+      className={cn(
+        "glass-card border border-[var(--color-border)] px-[18px] py-4",
+        className,
+      )}
     >
       <p className="mb-2.5 text-xs font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
         {label}
@@ -45,11 +48,15 @@ export function StatCard({
           {value}
         </span>
         {delta ? (
-          <span className="text-[12.5px] font-semibold text-[var(--color-text-muted)]">{delta}</span>
+          <span className="text-[12.5px] font-semibold text-[var(--color-text-muted)]">
+            {delta}
+          </span>
         ) : null}
       </p>
       {meta ? (
-        <p className="mt-1.5 text-[12.5px] text-[var(--color-text-muted)]">{meta}</p>
+        <p className="mt-1.5 text-[12.5px] text-[var(--color-text-muted)]">
+          {meta}
+        </p>
       ) : null}
     </div>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState, type MouseEventHandler } from "react";
+import { useState, type MouseEventHandler } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
@@ -27,6 +27,9 @@ type IconActionProps = {
 /**
  * Square icon-only action (edit / duplicate / delete in list rows) with a small tooltip below it.
  *
+ * The tooltip is visual only: the button's accessible name already carries the same words (the `label`,
+ * or the longer `ariaLabel`), so it is not linked with aria-describedby, which would read them twice.
+ *
  * The tooltip is portalled to <body> and positioned with `fixed` coordinates: the DataTable wrapper
  * is `overflow-x-auto`, which clips any in-flow tooltip on the last row.
  */
@@ -41,7 +44,6 @@ export function IconAction({
   disabled = false,
   className,
 }: IconActionProps) {
-  const tooltipId = useId();
   const [anchor, setAnchor] = useState<{ x: number; y: number } | null>(null);
 
   const show = (element: HTMLElement) => {
@@ -57,13 +59,14 @@ export function IconAction({
     className,
   );
   const handlers = {
-    onMouseEnter: (event: React.MouseEvent<HTMLElement>) => show(event.currentTarget),
+    onMouseEnter: (event: React.MouseEvent<HTMLElement>) =>
+      show(event.currentTarget),
     onMouseLeave: hide,
-    onFocus: (event: React.FocusEvent<HTMLElement>) => show(event.currentTarget),
+    onFocus: (event: React.FocusEvent<HTMLElement>) =>
+      show(event.currentTarget),
     onBlur: hide,
     "aria-label": ariaLabel ?? label,
     "aria-disabled": disabled || undefined,
-    "aria-describedby": anchor ? tooltipId : undefined,
   };
   const icon = <Icon aria-hidden="true" className="h-4 w-4" />;
 
@@ -74,7 +77,9 @@ export function IconAction({
           <Link
             href={href}
             onClick={onClick}
-            {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+            {...(external
+              ? { target: "_blank", rel: "noopener noreferrer" }
+              : {})}
             {...handlers}
           >
             {icon}
@@ -94,7 +99,6 @@ export function IconAction({
       {anchor
         ? createPortal(
             <span
-              id={tooltipId}
               role="tooltip"
               style={{ left: anchor.x, top: anchor.y }}
               className="pointer-events-none fixed z-50 -translate-x-1/2 rounded-md bg-[var(--color-text)] px-2 py-1 text-[11px] leading-none font-medium whitespace-nowrap text-[var(--color-background)] shadow-md"

@@ -11,7 +11,7 @@
 ## 1. Mục đích và bối cảnh
 
 Bảng quản trị **nội dung** của ngân hàng câu hỏi phỏng vấn lý thuyết: xem toàn bộ câu hỏi kèm chủ đề, cấp
-độ, câu hỏi đào sâu và tiêu chí đánh giá; lọc/tìm; thêm, sửa, nhân bản, xoá câu hỏi; nhập theo lô bằng CSV
+độ, câu hỏi đào sâu và tiêu chí đánh giá; lọc/tìm; thêm, sửa, xoá câu hỏi; nhập theo lô bằng CSV (hành động "Nhân bản" của prototype đã bỏ khỏi yêu cầu ngày 2026-10-08)
 [SoT: 09-layoutBase/Admin - Câu hỏi phỏng vấn.dc.html:140-141, 148-149, 226-228].
 
 Đã chốt ngày 2026-08-25 (owner instruction, kết thúc Câu hỏi mở Q1 cũ): mount ở cả
@@ -67,9 +67,9 @@ xoá** (`confirmOpen`) [SoT: 09-layoutBase/Admin - Câu hỏi phỏng vấn.dc.h
 bốn thẻ chỉ số; bản dựng Next.js đã đổi sang **danh sách dạng bảng** (cột Mã, Câu hỏi, Chủ đề, Mức độ,
 Đào sâu, Tiêu chí, Lượt dùng, Điểm TB, Thao tác; 8 dòng một trang) và **bỏ dải bốn thẻ chỉ số** — hệ thống
 chỉ có một trang tổng quan Admin/Giảng viên, các trang danh sách chỉ có bộ lọc và danh sách
-[SoT: 05-coding/frontend/src/views/shared/interview-question-management/ui/interview-question-management-view.tsx:7-10, 50-51, 188-302, 360-460].
+[SoT: 05-coding/frontend/src/views/shared/interview-question-management/ui/interview-question-management-view.tsx:7-10, 55-56, 212-316, 362-454].
 **Cập nhật 2026-10-03:** view nhận prop bắt buộc `basePath` (khu Admin `/admin/interview-questions`, khu Giảng viên `/instructor/interview-questions`); liên kết ở từng dòng và nút "Câu hỏi mới" dựng từ `basePath`, không còn cố định `/admin`
-[SoT: 05-coding/frontend/src/views/shared/interview-question-management/ui/interview-question-management-view.tsx:59-64, 205, 284, 354].
+[SoT: 05-coding/frontend/src/views/shared/interview-question-management/ui/interview-question-management-view.tsx:63-68, 228, 304, 356].
 Các mô tả dưới đây về prototype được giữ làm bằng chứng nguồn dữ liệu; chỗ nào khác với bản dựng thì ghi rõ.
 
 1. **Thanh tiêu đề** — "Ngân hàng câu hỏi phỏng vấn" kèm dòng phụ "148 câu · chủ đề, cấp độ, câu hỏi đào sâu
@@ -80,7 +80,7 @@ Các mô tả dưới đây về prototype được giữ làm bằng chứng ng
    ngoài phạm vi bản đầu, không cấp mã (đóng Q2 phần này); "Câu hỏi mới" trỏ sang màn soạn riêng
    `interview_question_authoring` (F6-13, đóng Q4) — chưa có prototype minh hoạ **[Đợi nextjs]**.
    **Cập nhật 2026-10-01 (owner):** nút "Nhập CSV" **vẫn hiển thị và kích hoạt** trên màn; bấm nút chưa có hành
-   vi (stub của bản dựng, nợ prototype), vì tính năng nhập CSV chưa được cấp mã nghiệp vụ.
+   vi (stub của bản dựng, nợ prototype), vì tính năng nhập CSV chưa được cấp mã nghiệp vụ. **Cập nhật 2026-10-08 (owner, thay cho hai dòng chốt 2026-08-30 và 2026-10-01 ở trên):** "Nhập CSV" **được làm thật** và thuộc `F6-13`: bấm nút mở hộp thoại chọn tệp `.csv`, hệ thống kiểm từng dòng, thêm các dòng hợp lệ vào ngân hàng và liệt kê dòng bị bỏ qua kèm lý do; có tệp mẫu để tải. **Định dạng tệp chốt 2026-10-08 (owner):** cột bắt buộc `topic`, `level`, `question`, `rubric` (ô rubric được để trống); cột tuỳ chọn `follow_ups`, `content`, `suggested_approach`, `core_keywords`, `sample_answer`; câu trùng nội dung với câu đã có bị bỏ qua, không ghi đè; tối đa 500 dòng, vượt thì từ chối cả tệp. Chi tiết quy tắc kiểm do BD ghi (BD `SHR0301` mục 4.1, Q11).
    **Cập nhật 2026-10-01 (owner uỷ quyền cân nhắc, `DEC-2026-1001-admin-configurable-settings`):** thêm hành
    động thứ ba **"Quản lý chủ đề"**, chỉ ADMIN (A3) thấy — mở hộp thoại để thêm, đổi tên, sắp xếp lại, xoá chủ
    đề câu hỏi; prototype HTML không vẽ nút này **[Đợi nextjs]**. Xoá bị từ chối khi còn câu hỏi tham chiếu
@@ -114,14 +114,14 @@ Các mô tả dưới đây về prototype được giữ làm bằng chứng ng
      rubric thứ ba trong hệ thống, độc lập với rubric F5-23/F5-15, trọng số giữ lại (`F6-13`) — đóng Q3.
    - **Thống kê sử dụng và hành động** — prototype: chân thẻ "Dùng 184 lần · điểm TB 3.8/5" (dòng 224, 385)
      và ba hành động "Sửa" / "Nhân bản" / nút xoá (dòng 226-228). Bản dựng: hai cột "Lượt dùng" và "Điểm
-     TB", cùng cột "Thao tác" gồm ba nút **chỉ có biểu tượng** (bút chì = Sửa, hai tờ chồng = Nhân bản,
-     thùng rác = Xoá); tên hành động hiện ở tooltip nhỏ bên dưới nút khi rê chuột hoặc focus; Nhân bản
-     áp dụng theo từng dòng [SoT: 05-coding/frontend/src/views/shared/interview-question-management/ui/interview-question-management-view.tsx:273-301; 05-coding/frontend/src/shared/ui/primitives/icon-action.tsx:25-30, 86-98].
+     TB", cùng cột "Thao tác" gồm hai nút **chỉ có biểu tượng** (bút chì = Sửa,
+     thùng rác = Xoá); tên hành động hiện ở tooltip nhỏ bên dưới nút khi rê chuột hoặc focus. **Cập nhật 2026-10-08 (owner):**
+     bỏ hành động "Nhân bản", không còn ở dòng lẫn thanh theo lô [SoT: 05-coding/frontend/src/views/shared/interview-question-management/ui/interview-question-management-view.tsx:293-315; 05-coding/frontend/src/shared/ui/primitives/icon-action.tsx:25-30, 86-98].
 6. **Phân trang** (dòng 235-244) — cơ chế giao diện, không cần mã. **Cập nhật 2026-10-05 (owner, phương án A cho
    F6):** danh sách khớp hành vi danh sách bài tập — mọi cột đều bấm để sắp xếp được, bấm lại cùng cột thì
    đảo chiều, khi mới vào màn thì chưa sắp xếp theo cột nào (giữ thứ tự tự nhiên của ngân hàng); người dùng
-   chọn số dòng mỗi trang trong 8 / 20 / 50 và lựa chọn được nhớ cho lần mở sau (chi tiết do BD ghi, **chưa duyệt**). **Cập nhật 2026-10-05 (owner yêu cầu cột chọn cho đồng bộ với danh sách bài tập; chưa duyệt):** người dùng có thể chọn nhiều dòng và áp dụng hai thao tác theo lô, "Nhân bản" và "Xoá", là dạng theo lô của hai thao tác theo dòng sẵn có của F6-13 (xoá vẫn là xoá mềm, giữ lịch sử phiên cũ); hai thao tác theo lô này do bên phát triển chọn, F6-13 chưa định nghĩa chúng ở dạng theo lô
-   [SoT: 05-coding/frontend/src/views/shared/interview-question-management/ui/interview-question-management-view.tsx:50-51, 77-82, 429-436, 439-447].
+   chọn số dòng mỗi trang trong 8 / 20 / 50 và lựa chọn được nhớ cho lần mở sau (chi tiết do BD ghi, **chưa duyệt**). **Cập nhật 2026-10-05 (owner yêu cầu cột chọn cho đồng bộ với danh sách bài tập; chưa duyệt):** người dùng có thể chọn nhiều dòng và áp dụng một thao tác theo lô, "Xoá" (xoá mềm, giữ lịch sử phiên cũ; "Nhân bản" theo lô đã bỏ từ 2026-10-05 và "Nhân bản" nói chung bỏ 2026-10-08); thao tác theo lô này do bên phát triển chọn, F6-13 chưa định nghĩa nó ở dạng theo lô
+   [SoT: 05-coding/frontend/src/views/shared/interview-question-management/ui/interview-question-management-view.tsx:55-56, 101-106, 423-430, 433-441].
 7. **Hộp thoại xác nhận xoá** (dòng 259-271): tiêu đề "Xoá câu hỏi?", nội dung nêu mã và trích 60 ký tự đầu
    của câu hỏi (dòng 460), kèm ghi chú **"Các phiên phỏng vấn đã dùng câu hỏi này vẫn giữ bản ghi cũ. Hành
    động không thể hoàn tác."** (dòng 264). **Chốt 2026-08-30:** xoá mềm (đánh dấu ngừng dùng, ẩn khỏi màn
@@ -152,7 +152,7 @@ hỏi phỏng vấn.dc.html:56, 358-366].
 
 - Bảng màu, spacing, component cụ thể, breakpoint responsive, bố cục danh sách và nút thao tác dạng biểu tượng — thuộc BD
   (`02-bd/screens/shared/SHR0301_interview_question_management.md`).
-- Hợp đồng API (danh sách câu hỏi có lọc/tìm/phân trang, tạo/sửa/nhân bản/xoá, nhập CSV) — dải chỉ số thống kê đã bỏ 2026-10-01 —
+- Hợp đồng API (danh sách câu hỏi có lọc/tìm/phân trang, tạo/sửa/xoá, nhập CSV; nhân bản đã bỏ 2026-10-08) — dải chỉ số thống kê đã bỏ 2026-10-01 —
   thuộc DD (`03-dd/api/interview-bank.md`, chưa viết).
 - Lược đồ dữ liệu của một câu hỏi (trường đào sâu, trường tiêu chí có trọng số, cơ chế xoá mềm) — thuộc
   `02-bd/database/interview-bank.md`, chưa viết).
@@ -176,9 +176,9 @@ hỏi phỏng vấn.dc.html:56, 358-366].
 | Q2 | ~~Có tồn tại một kho câu hỏi dùng chung toàn hệ thống do A2/A3 quản hay không? Cần mã mới cho CRUD kho dùng chung.~~ **ĐÃ CHỐT 2026-08-30 (owner instruction):** cấp `F6-13` — "quản trị nội dung ngân hàng câu hỏi dùng chung: tạo/sửa/nhân bản/xoá", gán vào Function `INTERVIEW_BANK_MANAGEMENT` (F1-12) cùng F6-12. Bổ sung `US-A2-10`. | — | Đã chốt — xem `F6-13`. | Đã đóng | — |
 | Q3 | ~~"Đào sâu" và "Tiêu chí đánh giá có trọng số" không gán được mã nào — độc lập với rubric F5 hay chính là tiêu chí chuẩn của F6-08?~~ **ĐÃ CHỐT 2026-08-30:** cả hai thuộc `F6-13`. "Tiêu chí đánh giá" chính là tiêu chí chuẩn F6-08 đối chiếu — rubric thứ ba, độc lập với F5-15/F5-23; giữ trọng số vì Chế độ luyện cần mốc tính điểm theo từng tiêu chí. | — | Đã chốt — xem `F6-13`. | Đã đóng | — |
 | Q4 | ~~Việc thêm/sửa câu hỏi diễn ra ở đâu — modal, drawer, hay màn riêng?~~ **ĐÃ CHỐT 2026-08-30:** một màn soạn riêng, slug `interview_question_authoring` (F6-13) — 4 nhóm trường lồng nhau quá nặng cho modal, song song tiền lệ `problem_authoring`. Chưa có prototype, đánh dấu **[Đợi nextjs]**; cần thêm slug vào `system_survey.md` khi viết BD/DD. | — | Đã chốt — xem `F6-13`. | Đã đóng | — |
-| Q5 | ~~"Nhập CSV" và 4 thẻ chỉ số chất lượng nội dung có thuộc phạm vi đồ án không? Câu hỏi thiếu tiêu chí thì Chế độ luyện xử lý thế nào?~~ **ĐÃ CHỐT 2026-08-30:** Nhập CSV ngoài phạm vi bản đầu, không cấp mã. 4 thẻ chỉ số là dẫn xuất trình bày, không cần mã riêng. Câu hỏi thiếu tiêu chí vẫn hiện ở Chế độ học, ẩn khỏi Chế độ luyện (F6-13, F6-08). | — | Đã chốt — xem `F6-13`. | Đã đóng | — |
+| Q5 | ~~"Nhập CSV" và 4 thẻ chỉ số chất lượng nội dung có thuộc phạm vi đồ án không? Câu hỏi thiếu tiêu chí thì Chế độ luyện xử lý thế nào?~~ **ĐÃ CHỐT 2026-08-30:** Nhập CSV ngoài phạm vi bản đầu, không cấp mã (**đảo lại 2026-10-08, owner: làm thật, thuộc `F6-13`** — xem mục 2 điểm 2). 4 thẻ chỉ số là dẫn xuất trình bày, không cần mã riêng. Câu hỏi thiếu tiêu chí vẫn hiện ở Chế độ học, ẩn khỏi Chế độ luyện (F6-13, F6-08). | — | Đã chốt — xem `F6-13`. | Đã đóng | — |
 | Q6 | ~~Danh mục chủ đề lệch giữa `interview-bank.md` (4 chủ đề) và prototype (5 chủ đề) — danh mục nào chuẩn?~~ **ĐÃ CHỐT 2026-08-30:** lấy danh mục prototype làm chuẩn — 5 chủ đề (Lý thuyết CS, System design, Database, Ngôn ngữ, Hành vi). `F6-01` trong `interview-bank.md` đã sửa lại cho khớp. **Bị thay thế 2026-10-01** (`DEC-2026-1001-admin-configurable-settings`, thay tiểu quyết định 4 của `DEC-2026-0830-interview-bank-crud`): 5 chủ đề chỉ là dữ liệu khởi tạo, ADMIN thêm/đổi tên/sắp xếp/xoá được; chữ "5 chủ đề" ở `F6-01` trong `01-rd/req/interview-bank.md` cần mở rộng (ngoài phạm vi đợt đồng bộ này). | — | Đã chốt. | Đã đóng | — |
-| Q7 | ~~Xoá một câu hỏi đã dùng — xoá mềm hay cứng? Có ghi Nhật ký hệ thống không?~~ **ĐÃ CHỐT 2026-08-30:** xoá mềm (đánh dấu ngừng dùng, ẩn khỏi màn phía học viên, không cascade xoá phiên cũ) — khớp đúng câu chữ hộp thoại prototype. Có, mọi thao tác thêm/sửa/nhân bản/xoá ghi vào F1-14 (F6-13). | — | Đã chốt — xem `F6-13`. | Đã đóng | — |
+| Q7 | ~~Xoá một câu hỏi đã dùng — xoá mềm hay cứng? Có ghi Nhật ký hệ thống không?~~ **ĐÃ CHỐT 2026-08-30:** xoá mềm (đánh dấu ngừng dùng, ẩn khỏi màn phía học viên, không cascade xoá phiên cũ) — khớp đúng câu chữ hộp thoại prototype. Có, mọi thao tác thêm/sửa/xoá và nhập CSV ghi vào F1-14 (F6-13; "nhân bản" bỏ 2026-10-08). | — | Đã chốt — xem `F6-13`. | Đã đóng | — |
 
 ---
 

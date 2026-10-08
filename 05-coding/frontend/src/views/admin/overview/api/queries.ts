@@ -20,7 +20,11 @@ import {
 } from "./__mock__/dashboard-mocks";
 
 function notImplemented(): never {
-  throw new ApiError("NOT_IMPLEMENTED", 501, "03-dd/api/identity.md does not define these endpoints yet");
+  throw new ApiError(
+    "NOT_IMPLEMENTED",
+    501,
+    "03-dd/api/identity.md does not define these endpoints yet",
+  );
 }
 
 const QUERY_OPTIONS = { staleTime: 30_000, retry: false } as const;

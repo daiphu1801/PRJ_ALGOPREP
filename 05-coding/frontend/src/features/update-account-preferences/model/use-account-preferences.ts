@@ -11,7 +11,10 @@ import {
 
 type Draft = AccountSettings & { interview: InterviewPracticePreferences };
 
-function toDraft(settings: AccountSettings, interview: InterviewPracticePreferences): Draft {
+function toDraft(
+  settings: AccountSettings,
+  interview: InterviewPracticePreferences,
+): Draft {
   return { ...settings, interview };
 }
 
@@ -23,28 +26,54 @@ function toDraft(settings: AccountSettings, interview: InterviewPracticePreferen
  * but this prototype does not build BD's full per-group dirty-flag machinery for that case; `save`
  * returns which call succeeded so the view can raise the right toast. Tracked as a simplification in the ledger row.
  */
-export function useAccountPreferences(initialSettings: AccountSettings, initialInterview: InterviewPracticePreferences) {
-  const [saved, setSaved] = useState(() => toDraft(initialSettings, initialInterview));
+export function useAccountPreferences(
+  initialSettings: AccountSettings,
+  initialInterview: InterviewPracticePreferences,
+) {
+  const [saved, setSaved] = useState(() =>
+    toDraft(initialSettings, initialInterview),
+  );
   const [draft, setDraft] = useState(saved);
   const [isSaving, setIsSaving] = useState(false);
 
-  const dirty = useMemo(() => JSON.stringify(draft) !== JSON.stringify(saved), [draft, saved]);
+  const dirty = useMemo(
+    () => JSON.stringify(draft) !== JSON.stringify(saved),
+    [draft, saved],
+  );
 
   const set = useCallback(<K extends keyof Draft>(key: K, value: Draft[K]) => {
     setDraft((prev) => ({ ...prev, [key]: value }));
   }, []);
 
-  const setWorkspace = useCallback((patch: Partial<AccountSettings["workspace"]>) => {
-    setDraft((prev) => ({ ...prev, workspace: { ...prev.workspace, ...patch } }));
-  }, []);
+  const setWorkspace = useCallback(
+    (patch: Partial<AccountSettings["workspace"]>) => {
+      setDraft((prev) => ({
+        ...prev,
+        workspace: { ...prev.workspace, ...patch },
+      }));
+    },
+    [],
+  );
 
-  const setNotifications = useCallback((patch: Partial<AccountSettings["notifications"]>) => {
-    setDraft((prev) => ({ ...prev, notifications: { ...prev.notifications, ...patch } }));
-  }, []);
+  const setNotifications = useCallback(
+    (patch: Partial<AccountSettings["notifications"]>) => {
+      setDraft((prev) => ({
+        ...prev,
+        notifications: { ...prev.notifications, ...patch },
+      }));
+    },
+    [],
+  );
 
-  const setInterview = useCallback((patch: Partial<InterviewPracticePreferences>) => {
-    setDraft((prev) => ({ ...prev, interview: { ...prev.interview, ...patch } }));
-  }, []);
+  const setInterview = useCallback(
+    (patch: Partial<InterviewPracticePreferences>) => {
+      setDraft((prev) => ({
+        ...prev,
+        interview: { ...prev.interview, ...patch },
+      }));
+    },
+    [],
+  );
 
   const save = useCallback(async () => {
     setIsSaving(true);
@@ -55,17 +84,37 @@ export function useAccountPreferences(initialSettings: AccountSettings, initialI
         updateInterviewPracticePreferences(interview),
       ]);
       if (results[0]!.status === "fulfilled") {
-        setSaved((prev) => ({ ...prev, ...(results[0] as PromiseFulfilledResult<AccountSettings>).value }));
+        setSaved((prev) => ({
+          ...prev,
+          ...(results[0] as PromiseFulfilledResult<AccountSettings>).value,
+        }));
       }
       if (results[1]!.status === "fulfilled") {
-        setSaved((prev) => ({ ...prev, interview: (results[1] as PromiseFulfilledResult<InterviewPracticePreferences>).value }));
+        setSaved((prev) => ({
+          ...prev,
+          interview: (
+            results[1] as PromiseFulfilledResult<InterviewPracticePreferences>
+          ).value,
+        }));
       }
       // The caller turns this outcome into toasts (success / partial failure / failure).
-      return { settingsOk: results[0]!.status === "fulfilled", interviewOk: results[1]!.status === "fulfilled" };
+      return {
+        settingsOk: results[0]!.status === "fulfilled",
+        interviewOk: results[1]!.status === "fulfilled",
+      };
     } finally {
       setIsSaving(false);
     }
   }, [draft]);
 
-  return { draft, dirty, isSaving, set, setWorkspace, setNotifications, setInterview, save };
+  return {
+    draft,
+    dirty,
+    isSaving,
+    set,
+    setWorkspace,
+    setNotifications,
+    setInterview,
+    save,
+  };
 }

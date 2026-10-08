@@ -9,10 +9,12 @@
 // 1. TEN functions, not eleven. `REJUDGE_MANAGEMENT` is gone with the rest of the rejudge feature
 //    (DEC-2026-0828-remove-rejudge-scope); 01-rd/req/identity.md F1-12 already lists ten, so the
 //    mockup is the stale copy here.
-// 2. Toggling a cell applies immediately rather than waiting for the header button. F1-10 says the
-//    change "có hiệu lực ngay", which the mockup's own subtitle repeats, so a pending-save model
-//    would contradict the requirement. The header button confirms rather than commits — whether it
-//    should exist at all is an open question carried into the phase report.
+// 2. Toggling a cell applies immediately and there is NO save button. F1-10 says the change "có hiệu
+//    lực ngay", which the mockup's own subtitle repeats; ADM0202 Q1 was closed 2026-10-08 on that
+//    reading (owner), so the mockup's header button is dropped and Q5 (confirm on leaving) goes away.
+// 3. Two guards from BD Sheet 9: turning off a cell of the role the acting admin holds asks first
+//    (NO 8, warning), and the last ADMIN-category PERMISSION_MATRIX:UPDATE cannot be removed (NO 9,
+//    hard block, ADM0202 Q4). A new role must have a unique name of at most 50 characters (NO 3-4).
 //
 // The grid is a DataTable, not a bespoke component: it is a Function column plus one column per
 // Action, which is exactly a column spec. The cells happen to be checkboxes.
@@ -25,11 +27,18 @@ import {
   fetchPermissionMatrix,
   grantsFor,
   type ActionKey,
+  type BaseCategory,
   type FunctionKey,
   type Role,
 } from "../api";
 import { useT } from "@/shared/i18n";
-import { toast } from "@/shared/lib/toast-store";
+import { toast, toastFirstError } from "@/shared/lib/toast-store";
+import {
+  ROLE_NAME_MAX,
+  checkCellToggle,
+  roleKeyFor,
+  validateRoleName,
+} from "../model/guards";
 import {
   Button,
   Card,
@@ -38,6 +47,7 @@ import {
   NoticeTile,
   PageHeader,
   SegmentedTabs,
+  SelectField,
   TextField,
   type DataTableColumn,
 } from "@/shared/ui";
@@ -48,17 +58,45 @@ export function AdminPermissionMatrixView() {
   const [activeRoleKey, setActiveRoleKey] = useState("INSTRUCTOR");
   const [addingRole, setAddingRole] = useState(false);
   const [newRoleName, setNewRoleName] = useState("");
+  const [newRoleCategory, setNewRoleCategory] =
+    useState<BaseCategory>("STUDENT");
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [nameTouched, setNameTouched] = useState(false);
+  // A cell waiting on the "you are removing your own role's right" confirmation.
+  const [pendingSelf, setPendingSelf] = useState<{
+    functionKey: FunctionKey;
+    action: ActionKey;
+  } | null>(null);
 
   const activeRole: Role =
     page.roles.find((role) => role.key === activeRoleKey) ?? page.roles[0]!;
   // STUDENT's rights live outside the matrix (F1-05), so its cells are shown for reference only.
   const readOnly = activeRole.key === "STUDENT";
 
-  function toggleCell(functionKey: FunctionKey, action: ActionKey) {
+  function requestToggle(functionKey: FunctionKey, action: ActionKey) {
     if (readOnly) return;
+    const granted = grantsFor(page.permissions, activeRole.key, functionKey)[
+      action
+    ];
+    const check = checkCellToggle(
+      page,
+      activeRole.key,
+      functionKey,
+      action,
+      granted,
+    );
+    if (check.blockedLastMatrixAdmin) toast.warning(t("lastMatrixAdminBody"));
+    else if (check.revokesOwnRole) setPendingSelf({ functionKey, action });
+    else applyToggle(functionKey, action);
+  }
+
+  function applyToggle(functionKey: FunctionKey, action: ActionKey) {
     setPage((previous) => {
-      const current = grantsFor(previous.permissions, activeRole.key, functionKey);
+      const current = grantsFor(
+        previous.permissions,
+        activeRole.key,
+        functionKey,
+      );
       return {
         ...previous,
         permissions: {
@@ -72,17 +110,40 @@ export function AdminPermissionMatrixView() {
     });
   }
 
+  const nameError = validateRoleName(newRoleName, page.roles);
+
   function createRole() {
+    setNameTouched(true);
+    if (nameError) {
+      toastFirstError([
+        t(`roleNameError.${nameError}`, { max: ROLE_NAME_MAX }),
+      ]);
+      return;
+    }
     const name = newRoleName.trim();
-    if (!name) return;
-    const key = `role_${name.toLowerCase().replace(/\s+/g, "_")}`;
+    const key = roleKeyFor(name);
     setPage((previous) => ({
-      roles: [...previous.roles, { key, label: name, system: false }],
+      ...previous,
+      // Owner 2026-10-08 (ADM0202 Q6, hướng 1): the form picks the category, STUDENT by default. The
+      // cells stay editable for every custom role because `readOnly` keys off the system role STUDENT,
+      // not off this category; BD Sheet 6 says otherwise, which is the part of Q6 still open.
+      roles: [
+        ...previous.roles,
+        {
+          key,
+          label: name,
+          system: false,
+          baseCategory: newRoleCategory,
+          userCount: 0,
+        },
+      ],
       permissions: { ...previous.permissions, [key]: {} },
     }));
     setActiveRoleKey(key);
     setAddingRole(false);
     setNewRoleName("");
+    setNewRoleCategory("STUDENT");
+    setNameTouched(false);
     toast.success(t("createRoleDone", { role: name }));
   }
 
@@ -91,6 +152,7 @@ export function AdminPermissionMatrixView() {
       const permissions = { ...previous.permissions };
       delete permissions[activeRole.key];
       return {
+        ...previous,
         roles: previous.roles.filter((role) => role.key !== activeRole.key),
         permissions,
       };
@@ -106,7 +168,9 @@ export function AdminPermissionMatrixView() {
       header: t("columnFunction"),
       render: (functionKey) => (
         <span className="block">
-          <span className="block text-[13px] font-semibold">{t(`function.${functionKey}`)}</span>
+          <span className="block text-[13px] font-semibold">
+            {t(`function.${functionKey}`)}
+          </span>
           <span className="mt-0.5 block font-mono text-[11px] text-[var(--color-text-subtle)]">
             {functionKey}
           </span>
@@ -119,13 +183,17 @@ export function AdminPermissionMatrixView() {
       width: "84px",
       align: "center",
       render: (functionKey) => {
-        const granted = grantsFor(page.permissions, activeRole.key, functionKey)[action];
+        const granted = grantsFor(
+          page.permissions,
+          activeRole.key,
+          functionKey,
+        )[action];
         return (
           <input
             type="checkbox"
             checked={granted}
             disabled={readOnly}
-            onChange={() => toggleCell(functionKey, action)}
+            onChange={() => requestToggle(functionKey, action)}
             aria-label={t("cellLabel", {
               action: t(`action.${action}`),
               function: t(`function.${functionKey}`),
@@ -140,15 +208,7 @@ export function AdminPermissionMatrixView() {
 
   return (
     <div>
-      <PageHeader
-        title={t("title")}
-        description={t("subtitle")}
-        actions={
-          <Button variant="cta" size="sm" onClick={() => toast.success(t("saveDone"))}>
-            {t("save")}
-          </Button>
-        }
-      />
+      <PageHeader title={t("title")} description={t("subtitle")} />
 
       <NoticeTile tone="info" title={t("scopeNoticeTitle")} className="mb-4">
         {t("scopeNoticeBody")}
@@ -160,7 +220,10 @@ export function AdminPermissionMatrixView() {
             label={t("roleSwitcherLabel")}
             value={activeRoleKey}
             onValueChange={setActiveRoleKey}
-            options={page.roles.map((role) => ({ value: role.key, label: role.label }))}
+            options={page.roles.map((role) => ({
+              value: role.key,
+              label: role.label,
+            }))}
           />
 
           {addingRole ? (
@@ -171,13 +234,45 @@ export function AdminPermissionMatrixView() {
                 placeholder={t("newRolePlaceholder")}
                 value={newRoleName}
                 onChange={(event) => setNewRoleName(event.target.value)}
+                maxLength={ROLE_NAME_MAX + 10}
+                invalid={nameTouched && Boolean(nameError)}
                 wrapperClassName="w-[170px]"
                 className="h-8"
               />
-              <Button variant="cta" size="sm" onClick={createRole} disabled={!newRoleName.trim()}>
+              <SelectField
+                label={t("newRoleCategoryLabel")}
+                hideLabel
+                value={newRoleCategory}
+                onChange={(event) =>
+                  setNewRoleCategory(event.target.value as BaseCategory)
+                }
+                options={(["STUDENT", "INSTRUCTOR", "ADMIN"] as const).map(
+                  (value) => ({
+                    value,
+                    label: t(`baseCategory.${value}`),
+                  }),
+                )}
+                wrapperClassName="w-[190px]"
+                className="h-8"
+              />
+              <Button
+                variant="cta"
+                size="sm"
+                onClick={createRole}
+                disabled={!newRoleName.trim()}
+              >
                 {t("createRole")}
               </Button>
-              <Button variant="ghost" size="sm" onClick={() => setAddingRole(false)}>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setAddingRole(false);
+                  setNewRoleName("");
+                  setNewRoleCategory("STUDENT");
+                  setNameTouched(false);
+                }}
+              >
                 {t("cancel")}
               </Button>
             </span>
@@ -200,7 +295,19 @@ export function AdminPermissionMatrixView() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setConfirmingDelete(true)}
+              onClick={() => {
+                // Q2: a role that accounts still hold is blocked, not silently reassigned.
+                if (activeRole.userCount > 0) {
+                  toast.warning(
+                    t("deleteBlockedBody", {
+                      role: activeRole.label,
+                      count: activeRole.userCount,
+                    }),
+                  );
+                } else {
+                  setConfirmingDelete(true);
+                }
+              }}
               className="ml-auto border border-[var(--color-admin-negative)] text-[var(--color-admin-negative)]"
             >
               {t("deleteRole")}
@@ -209,7 +316,11 @@ export function AdminPermissionMatrixView() {
         </div>
 
         {readOnly ? (
-          <NoticeTile tone="info" title={t("studentNoticeTitle")} className="mb-4">
+          <NoticeTile
+            tone="info"
+            title={t("studentNoticeTitle")}
+            className="mb-4"
+          >
             {t("studentNoticeBody")}
           </NoticeTile>
         ) : null}
@@ -223,6 +334,22 @@ export function AdminPermissionMatrixView() {
           minWidth={640}
         />
       </Card>
+
+      <ConfirmDialog
+        open={pendingSelf !== null}
+        onClose={() => setPendingSelf(null)}
+        onConfirm={() => {
+          if (pendingSelf)
+            applyToggle(pendingSelf.functionKey, pendingSelf.action);
+          setPendingSelf(null);
+        }}
+        title={t("selfRevokeTitle")}
+        confirmLabel={t("selfRevokeConfirm")}
+        cancelLabel={t("cancel")}
+        destructive
+      >
+        {t("selfRevokeBody")}
+      </ConfirmDialog>
 
       <ConfirmDialog
         open={confirmingDelete}

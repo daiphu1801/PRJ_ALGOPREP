@@ -12,7 +12,11 @@ export async function openFilter(page: Page, label: string): Promise<Locator> {
   return filterList(page, label);
 }
 
-export async function pickFilter(page: Page, label: string, option: string): Promise<void> {
+export async function pickFilter(
+  page: Page,
+  label: string,
+  option: string,
+): Promise<void> {
   const list = await openFilter(page, label);
   await list.getByRole("option", { name: option, exact: true }).click();
 }

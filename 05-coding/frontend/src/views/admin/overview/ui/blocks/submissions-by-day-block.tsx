@@ -22,7 +22,10 @@ export function SubmissionsByDayBlock() {
     >
       {query.data && (
         <div>
-          <DotGrid columns={query.data.columns} accentColorVar="--color-admin-teal" />
+          <DotGrid
+            columns={query.data.columns}
+            accentColorVar="--color-admin-teal"
+          />
           <p className="mt-3 flex justify-between text-xs text-[var(--color-text-muted)]">
             <span>
               {t("blocks.weekTotal")}: {query.data.weekTotal}

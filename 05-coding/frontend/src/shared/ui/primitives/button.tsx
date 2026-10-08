@@ -3,13 +3,15 @@ import { cloneElement, isValidElement } from "react";
 import { cn } from "@/shared/lib";
 
 const VARIANT = {
-  primary: "bg-[var(--color-primary)] text-[var(--color-on-primary)] hover:opacity-90",
+  primary:
+    "bg-[var(--color-primary)] text-[var(--color-on-primary)] hover:opacity-90",
   // The one dominant action on a screen. Reads --color-cta-*, which `.admin-shell` redefines as the
   // mockup's teal gradient (globals.css). `primary` is usable in that scope again since 2026-09-29
   // (--color-primary is the link cyan there now, not the near-white nav fill) — `cta` still means
   // the ONE dominant action, `primary` any other filled button.
   cta: "bg-[image:var(--color-cta-bg)] text-[var(--color-cta-fg)] shadow-[var(--color-cta-shadow)] hover:opacity-95",
-  ghost: "bg-transparent text-[var(--color-text)] hover:bg-[var(--color-surface-hover)]",
+  ghost:
+    "bg-transparent text-[var(--color-text)] hover:bg-[var(--color-surface-hover)]",
 } as const;
 
 const SIZE = {

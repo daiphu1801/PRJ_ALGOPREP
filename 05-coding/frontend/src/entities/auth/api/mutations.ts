@@ -31,7 +31,11 @@ import {
 } from "./__mock__/fake-auth";
 
 function notImplemented(): never {
-  throw new ApiError("NOT_IMPLEMENTED", 501, "03-dd/api/identity.md does not exist yet");
+  throw new ApiError(
+    "NOT_IMPLEMENTED",
+    501,
+    "03-dd/api/identity.md does not exist yet",
+  );
 }
 
 export const signup = (input: SignupInput): Promise<AuthOutcome> =>
@@ -45,19 +49,29 @@ export const login = (input: LoginInput): Promise<AuthOutcome> =>
 export const instructorLogin = (input: LoginInput): Promise<AuthOutcome> =>
   withMockData(() => fakeInstructorLogin(input), notImplemented);
 
-export const oauthLogin = (provider: "google" | "github"): Promise<AuthOutcome> =>
+export const oauthLogin = (
+  provider: "google" | "github",
+): Promise<AuthOutcome> =>
   withMockData(() => fakeOAuthLogin(provider), notImplemented);
 
 export const cancelDeactivation = (): Promise<{ ok: true }> =>
   withMockData(() => fakeCancelDeactivation(), notImplemented);
 
-export const forgotEmail = (input: ForgotEmailInput): Promise<ForgotEmailOutcome> =>
+export const forgotEmail = (
+  input: ForgotEmailInput,
+): Promise<ForgotEmailOutcome> =>
   withMockData(() => fakeForgotEmail(input), notImplemented);
 
-export const verifyOtp = (input: ForgotOtpInput, sessionKey: string): Promise<ForgotOtpOutcome> =>
+export const verifyOtp = (
+  input: ForgotOtpInput,
+  sessionKey: string,
+): Promise<ForgotOtpOutcome> =>
   withMockData(() => fakeVerifyOtp(input, sessionKey), notImplemented);
 
-export const resendOtp = (): Promise<{ ok: true }> => withMockData(() => fakeResendOtp(), notImplemented);
+export const resendOtp = (): Promise<{ ok: true }> =>
+  withMockData(() => fakeResendOtp(), notImplemented);
 
-export const resetPassword = (input: ForgotResetInput): Promise<ForgotResetOutcome> =>
+export const resetPassword = (
+  input: ForgotResetInput,
+): Promise<ForgotResetOutcome> =>
   withMockData(() => fakeResetPassword(input), notImplemented);

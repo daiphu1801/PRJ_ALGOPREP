@@ -20,7 +20,11 @@ import {
 } from "./__mock__/class-mocks";
 
 function notImplemented(): never {
-  throw new ApiError("NOT_IMPLEMENTED", 501, "03-dd/api/identity.md chưa định nghĩa endpoint này");
+  throw new ApiError(
+    "NOT_IMPLEMENTED",
+    501,
+    "03-dd/api/identity.md chưa định nghĩa endpoint này",
+  );
 }
 
 const QUERY_OPTIONS = { staleTime: 15_000, retry: false } as const;
@@ -35,14 +39,16 @@ export const useInstructorClasses = () =>
 export const useClassStudents = (classId?: string) =>
   useQuery({
     queryKey: ["classes", "students", classId ?? "all"],
-    queryFn: () => withMockData(() => listClassStudents(classId), notImplemented),
+    queryFn: () =>
+      withMockData(() => listClassStudents(classId), notImplemented),
     ...QUERY_OPTIONS,
   });
 
 export const useClassStudentDetail = (studentId: string, classId: string) =>
   useQuery({
     queryKey: ["classes", "student-detail", classId, studentId],
-    queryFn: () => withMockData(() => getClassStudent(studentId, classId), notImplemented),
+    queryFn: () =>
+      withMockData(() => getClassStudent(studentId, classId), notImplemented),
     ...QUERY_OPTIONS,
   });
 
@@ -57,7 +63,8 @@ export const useInviteCodes = (classId: string, enabled: boolean) =>
 export const useClassAttention = (classId?: string) =>
   useQuery({
     queryKey: ["classes", "attention", classId ?? "all"],
-    queryFn: () => withMockData(() => listClassAttention(classId), notImplemented),
+    queryFn: () =>
+      withMockData(() => listClassAttention(classId), notImplemented),
     ...QUERY_OPTIONS,
   });
 
@@ -76,7 +83,8 @@ function useInvalidateClasses() {
 export function useCreateClass() {
   const invalidate = useInvalidateClasses();
   return useMutation({
-    mutationFn: (form: ClassForm) => withMockData(() => createClass(form), notImplemented),
+    mutationFn: (form: ClassForm) =>
+      withMockData(() => createClass(form), notImplemented),
     onSuccess: invalidate,
   });
 }
@@ -93,7 +101,8 @@ export function useUpdateClass() {
 export function useDeleteClass() {
   const invalidate = useInvalidateClasses();
   return useMutation({
-    mutationFn: (id: string) => withMockData(() => deleteClass(id), notImplemented),
+    mutationFn: (id: string) =>
+      withMockData(() => deleteClass(id), notImplemented),
     onSuccess: invalidate,
   });
 }
@@ -101,7 +110,8 @@ export function useDeleteClass() {
 export function useCreateInviteCode() {
   const invalidate = useInvalidateClasses();
   return useMutation({
-    mutationFn: (classId: string) => withMockData(() => createInviteCode(classId), notImplemented),
+    mutationFn: (classId: string) =>
+      withMockData(() => createInviteCode(classId), notImplemented),
     onSuccess: invalidate,
   });
 }
@@ -109,7 +119,8 @@ export function useCreateInviteCode() {
 export function useRemoveStudent() {
   const invalidate = useInvalidateClasses();
   return useMutation({
-    mutationFn: (studentId: string) => withMockData(() => removeStudent(studentId), notImplemented),
+    mutationFn: (studentId: string) =>
+      withMockData(() => removeStudent(studentId), notImplemented),
     onSuccess: invalidate,
   });
 }

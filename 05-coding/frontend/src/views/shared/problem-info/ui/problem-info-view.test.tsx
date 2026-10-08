@@ -11,7 +11,9 @@ vi.mock("@/shared/i18n", () => ({
 
 describe("ProblemInfoView", () => {
   it("shows the problem and links the edit button to the edit route", async () => {
-    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const client = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
     render(
       <QueryClientProvider client={client}>
         <ProblemInfoView problemId="121" basePath="/admin/problems" />
@@ -19,16 +21,27 @@ describe("ProblemInfoView", () => {
     );
 
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Minimum Window Substring" }),
+      await screen.findByRole("heading", {
+        level: 1,
+        name: "Minimum Window Substring",
+      }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "edit" })).toHaveAttribute("href", "/admin/problems/121/edit");
-    expect(screen.getByRole("link", { name: "back" })).toHaveAttribute("href", "/admin/problems");
+    expect(screen.getByRole("link", { name: "edit" })).toHaveAttribute(
+      "href",
+      "/admin/problems/121/edit",
+    );
+    expect(screen.getByRole("link", { name: "back" })).toHaveAttribute(
+      "href",
+      "/admin/problems",
+    );
   });
 });
 
 describe("ProblemInfoView spec block (read-only, SHR0202 Q20)", () => {
   it("shows the starter line of each language, the I/O formats and the matching strategy", async () => {
-    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const client = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
     render(
       <QueryClientProvider client={client}>
         <ProblemInfoView problemId="121" basePath="/admin/problems" />
@@ -36,9 +49,15 @@ describe("ProblemInfoView spec block (read-only, SHR0202 Q20)", () => {
     );
 
     expect(await screen.findByText("specTitle")).toBeInTheDocument();
-    expect(screen.getByText("def min_window(s: str, t: str) -> str:")).toBeInTheDocument();
-    expect(screen.getByText("public String minWindow(String s, String t)")).toBeInTheDocument();
-    expect(screen.getByText("string minWindow(string s, string t)")).toBeInTheDocument();
+    expect(
+      screen.getByText("def min_window(s: str, t: str) -> str:"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("public String minWindow(String s, String t)"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("string minWindow(string s, string t)"),
+    ).toBeInTheDocument();
     expect(screen.getByText("spec.stdinFormat")).toBeInTheDocument();
     expect(screen.getByText("EXACT")).toBeInTheDocument();
   });

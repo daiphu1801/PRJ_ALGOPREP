@@ -6,7 +6,10 @@
 // for the table; resets on reload. Seed keys are the old enum values, upper-cased like the BD codes.
 "use client";
 
-import { createLevelListStore, type LevelItem } from "@/shared/lib/level-list-store";
+import {
+  createLevelListStore,
+  type LevelItem,
+} from "@/shared/lib/level-list-store";
 import type { ManagedListError } from "@/shared/lib/managed-list-store";
 import type { BadgeVariant } from "@/shared/ui";
 

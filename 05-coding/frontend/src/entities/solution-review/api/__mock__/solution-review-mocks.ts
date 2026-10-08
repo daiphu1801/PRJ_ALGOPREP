@@ -12,7 +12,8 @@
 import { ApiError } from "@/shared/api";
 import type { SolutionReviewDetail } from "../../model/types";
 
-export type SolutionReviewDemoOutcome = "ready" | "errorTransient" | "errorBudgetLocked";
+export type SolutionReviewDemoOutcome =
+  "ready" | "errorTransient" | "errorBudgetLocked";
 
 export const AI_BUDGET_LOCKED_CODE = "AI_BUDGET_LOCKED";
 export const AI_PROVIDER_TIMEOUT_CODE = "AI_PROVIDER_TIMEOUT";
@@ -44,14 +45,30 @@ const SOLUTION_REVIEW_MOCK: SolutionReviewDetail = {
     timeExplanation: "Một lượt duyệt, tra cứu O(1) trung bình.",
     actualSpace: "O(n)",
     optimalSpace: "O(n)",
-    spaceExplanation: "Dict lớn theo đầu vào; không tránh được nếu không sắp xếp trước.",
+    spaceExplanation:
+      "Dict lớn theo đầu vào; không tránh được nếu không sắp xếp trước.",
   },
   criteriaScores: [
-    { code: "correctness", feedback: "Đúng trên mọi testcase kể cả trùng giá trị như [3,3]." },
-    { code: "performance", feedback: "Một lượt duyệt O(n), không có vòng lặp lồng." },
-    { code: "cleanCode", feedback: "Dict `seen` chưa có type hint, tên biến `need` dùng một lần." },
-    { code: "scalability", feedback: "Không cần sửa gì để chạy tốt với input lớn hơn." },
-    { code: "dataStructure", feedback: "Hash map là lựa chọn đúng cho bài toán tra cứu bù trừ." },
+    {
+      code: "correctness",
+      feedback: "Đúng trên mọi testcase kể cả trùng giá trị như [3,3].",
+    },
+    {
+      code: "performance",
+      feedback: "Một lượt duyệt O(n), không có vòng lặp lồng.",
+    },
+    {
+      code: "cleanCode",
+      feedback: "Dict `seen` chưa có type hint, tên biến `need` dùng một lần.",
+    },
+    {
+      code: "scalability",
+      feedback: "Không cần sửa gì để chạy tốt với input lớn hơn.",
+    },
+    {
+      code: "dataStructure",
+      feedback: "Hash map là lựa chọn đúng cho bài toán tra cứu bù trừ.",
+    },
   ],
   strengths: [
     "Tra cứu trước khi ghi vào dict, nên [3,3] với target 6 đúng mà không cần xử lý riêng.",
@@ -72,7 +89,10 @@ const SOLUTION_REVIEW_MOCK: SolutionReviewDetail = {
     explanation:
       "Gộp bước tra cứu và tính hiệu số vào một lệnh .get(), thêm type hint cho dict để rõ ý nghĩa map giá trị → chỉ số.",
     diffLines: [
-      { kind: "same", text: "def two_sum(nums: list[int], target: int) -> list[int]:" },
+      {
+        kind: "same",
+        text: "def two_sum(nums: list[int], target: int) -> list[int]:",
+      },
       { kind: "del", text: "    seen = {}" },
       { kind: "add", text: "    seen: dict[int, int] = {}" },
       { kind: "same", text: "    for i, x in enumerate(nums):" },
@@ -96,7 +116,11 @@ export async function fetchSolutionReviewMock(
   demo: SolutionReviewDemoOutcome,
 ): Promise<SolutionReviewDetail> {
   if (demo === "errorBudgetLocked") {
-    throw new ApiError(AI_BUDGET_LOCKED_CODE, 429, "AI review budget exhausted for today");
+    throw new ApiError(
+      AI_BUDGET_LOCKED_CODE,
+      429,
+      "AI review budget exhausted for today",
+    );
   }
   if (demo === "errorTransient") {
     throw new ApiError(AI_PROVIDER_TIMEOUT_CODE, 503, "AI provider timed out");

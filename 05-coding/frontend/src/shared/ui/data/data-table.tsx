@@ -85,6 +85,10 @@ type DataTableProps<T> = {
   className?: string;
 };
 
+// A click on any of these inside a row belongs to that control, not to "select this row".
+const ROW_CONTROLS =
+  'a, button, input, select, textarea, label, [role="button"], [role="switch"]';
+
 const CHECKBOX_CLASS =
   "h-[18px] w-[18px] cursor-pointer rounded-[5px] accent-[var(--color-admin-teal)]";
 
@@ -108,9 +112,11 @@ export function DataTable<T>({
 
   const columnCount = columns.length + (selection ? 1 : 0);
   const allSelected =
-    rows.length > 0 && rows.every((row) => selection?.selectedKeys.has(rowKey(row)));
+    rows.length > 0 &&
+    rows.every((row) => selection?.selectedKeys.has(rowKey(row)));
   const someSelected =
-    !allSelected && rows.some((row) => selection?.selectedKeys.has(rowKey(row)));
+    !allSelected &&
+    rows.some((row) => selection?.selectedKeys.has(rowKey(row)));
 
   return (
     <div className={cn("w-full overflow-x-auto", className)}>
@@ -119,13 +125,19 @@ export function DataTable<T>({
         <colgroup>
           {selection ? <col style={{ width: "34px" }} /> : null}
           {columns.map((column) => (
-            <col key={column.key} style={column.width ? { width: column.width } : undefined} />
+            <col
+              key={column.key}
+              style={column.width ? { width: column.width } : undefined}
+            />
           ))}
         </colgroup>
         <thead>
           <tr>
             {selection ? (
-              <th scope="col" className="border-b border-[var(--color-border)] px-3 py-2.5">
+              <th
+                scope="col"
+                className="border-b border-[var(--color-border)] px-3 py-2.5"
+              >
                 <input
                   type="checkbox"
                   className={CHECKBOX_CLASS}
@@ -134,7 +146,9 @@ export function DataTable<T>({
                     // Mixed selection has no HTML attribute — it is a DOM property only.
                     if (node) node.indeterminate = someSelected;
                   }}
-                  onChange={(event) => selection.onToggleAll(event.target.checked)}
+                  onChange={(event) =>
+                    selection.onToggleAll(event.target.checked)
+                  }
                   aria-label={selection.selectAllLabel}
                 />
               </th>
@@ -158,7 +172,13 @@ export function DataTable<T>({
                 <th
                   key={column.key}
                   scope="col"
-                  aria-sort={active ? (sort.direction === "asc" ? "ascending" : "descending") : "none"}
+                  aria-sort={
+                    active
+                      ? sort.direction === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : "none"
+                  }
                   className={headerClass}
                 >
                   <button
@@ -178,7 +198,9 @@ export function DataTable<T>({
                     {column.header}
                     {/* Arrow, not a pictograph: a plain character carries the direction and stays
                         greppable, per .claude/rules/no-emoji.md. */}
-                    <span aria-hidden="true">{active ? (sort.direction === "asc" ? "↑" : "↓") : ""}</span>
+                    <span aria-hidden="true">
+                      {active ? (sort.direction === "asc" ? "↑" : "↓") : ""}
+                    </span>
                   </button>
                 </th>
               );
@@ -207,11 +229,33 @@ export function DataTable<T>({
               return (
                 <tr
                   key={key}
-                  // Selected fill is an image token because the mockup's dark value is a gradient
-                  // (dc.html:39 --active-bg), which background-color cannot carry.
+                  // With selection on, the whole row is a click target for its checkbox (mouse
+                  // convenience; the checkbox stays the keyboard and screen-reader control). Clicks
+                  // on links, buttons and fields inside the row keep their own meaning, and so does
+                  // dragging to select text.
+                  onClick={
+                    selection
+                      ? (event) => {
+                          if (
+                            (event.target as HTMLElement).closest(ROW_CONTROLS)
+                          )
+                            return;
+                          if (window.getSelection()?.toString()) return;
+                          selection.onToggleRow(key);
+                        }
+                      : undefined
+                  }
                   className={cn(
-                    "border-b border-[var(--color-border)] last:border-b-0 hover:bg-[var(--color-row-hover)]",
-                    selected && "bg-[image:var(--color-row-selected)]",
+                    "border-b border-[var(--color-border)] last:border-b-0",
+                    // Selectable rows tint with the accent on hover and stronger once selected, so
+                    // the pointer and the state are both visible; plain rows keep the neutral hover.
+                    // The tint is painted on the cells, not the <tr>: a row background cannot be
+                    // rounded, a cell background can, so the first and last cell round the band's ends.
+                    selection
+                      ? "cursor-pointer [&:hover>td]:bg-[color-mix(in_srgb,var(--color-admin-teal)_9%,transparent)] [&>td:first-child]:rounded-l-xl [&>td:last-child]:rounded-r-xl"
+                      : "hover:bg-[var(--color-row-hover)]",
+                    selected &&
+                      "[&>td]:bg-[color-mix(in_srgb,var(--color-admin-teal)_16%,transparent)] [&:hover>td]:bg-[color-mix(in_srgb,var(--color-admin-teal)_21%,transparent)]",
                   )}
                 >
                   {selection ? (
@@ -226,7 +270,10 @@ export function DataTable<T>({
                     </td>
                   ) : null}
                   {columns.map((column) => (
-                    <td key={column.key} className={cn("p-3", ALIGN[column.align ?? "left"])}>
+                    <td
+                      key={column.key}
+                      className={cn("p-3", ALIGN[column.align ?? "left"])}
+                    >
                       {column.render(row)}
                     </td>
                   ))}

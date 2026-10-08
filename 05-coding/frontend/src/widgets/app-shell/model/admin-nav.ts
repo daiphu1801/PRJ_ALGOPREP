@@ -13,7 +13,16 @@
 // `<i data-lucide>` on `grp.icon`/`ol.icon`, never on a plain `itm` row) — flagged by the owner
 // 2026-09-15 asking for a 1:1 icon pass, not "add icons everywhere".
 import type { LucideIcon } from "lucide-react";
-import { BookOpen, LayoutDashboard, ListChecks, LogIn, Settings, Shield, Sparkles, UserCircle } from "lucide-react";
+import {
+  BookOpen,
+  LayoutDashboard,
+  ListChecks,
+  LogIn,
+  Settings,
+  Shield,
+  Sparkles,
+  UserCircle,
+} from "lucide-react";
 
 export type AdminNavItem = {
   key: string;
@@ -47,7 +56,11 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     icon: BookOpen,
     items: [
       { key: "problems", href: "/admin/problems", labelKey: "problems" },
-      { key: "interviewQuestions", href: "/admin/interview-questions", labelKey: "interviewQuestions" },
+      {
+        key: "interviewQuestions",
+        href: "/admin/interview-questions",
+        labelKey: "interviewQuestions",
+      },
     ],
   },
   {
@@ -56,7 +69,11 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     icon: ListChecks,
     items: [
       { key: "queue", href: "/admin/queue", labelKey: "queue" },
-      { key: "languageConfig", href: "/admin/language-config", labelKey: "languageConfig" },
+      {
+        key: "languageConfig",
+        href: "/admin/language-config",
+        labelKey: "languageConfig",
+      },
     ],
   },
   {
@@ -75,7 +92,11 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     items: [
       { key: "users", href: "/admin/users", labelKey: "users" },
       { key: "systemLog", href: "/admin/system-log", labelKey: "systemLog" },
-      { key: "permissions", href: "/admin/permissions", labelKey: "permissions" },
+      {
+        key: "permissions",
+        href: "/admin/permissions",
+        labelKey: "permissions",
+      },
     ],
   },
 ];
@@ -87,7 +108,12 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
  * silently invented, [SoT: 02-bd/screens/admin/ADM0101_overview.md section 2 point 6].
  */
 export const ADMIN_NAV_MISC: AdminNavMiscItem[] = [
-  { key: "settings", href: "/admin/language-config", labelKey: "settings", icon: Settings },
+  {
+    key: "settings",
+    href: "/admin/language-config",
+    labelKey: "settings",
+    icon: Settings,
+  },
   { key: "auth", href: "/login", labelKey: "auth", icon: LogIn },
   { key: "profile", href: "/profile", labelKey: "profile", icon: UserCircle },
 ];

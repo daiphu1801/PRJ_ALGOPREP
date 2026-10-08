@@ -31,7 +31,9 @@ describe("SuggestedProblemsBlock", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Khó" }));
 
-    const rowsAfter = within(await screen.findByRole("table", { name: "Bài toán gợi ý" })).getAllByRole("row").length;
+    const rowsAfter = within(
+      await screen.findByRole("table", { name: "Bài toán gợi ý" }),
+    ).getAllByRole("row").length;
     expect(rowsAfter).toBeLessThan(rowsBefore);
     expect(screen.getByText(`${rowsAfter - 1} bài`)).toBeInTheDocument();
   });
@@ -44,6 +46,10 @@ describe("GreetingBlock", () => {
     renderBlock(<GreetingBlock />);
 
     expect(await screen.findByText(/Điểm yếu tuần này:/)).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Tiếp tục bài đang làm|Bắt đầu giải bài/ })).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", {
+        name: /Tiếp tục bài đang làm|Bắt đầu giải bài/,
+      }),
+    ).toBeInTheDocument();
   });
 });

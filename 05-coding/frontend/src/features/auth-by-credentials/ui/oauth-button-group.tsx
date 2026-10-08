@@ -14,7 +14,10 @@ type OAuthButtonGroupProps = {
  * (02-bd/screens/shared/SHR0101_auth.md, Câu hỏi mở Q2) — a real per-provider OAuth redirect is DD's job. Only
  * shown in `signup`/`login`, per the component inventory.
  */
-export function OAuthButtonGroup({ onSelect, disabled }: OAuthButtonGroupProps) {
+export function OAuthButtonGroup({
+  onSelect,
+  disabled,
+}: OAuthButtonGroupProps) {
   const t = useT("auth");
 
   return (
@@ -25,10 +28,20 @@ export function OAuthButtonGroup({ onSelect, disabled }: OAuthButtonGroupProps) 
         <span className="h-px flex-1 bg-[var(--color-border)]" />
       </div>
       <div className="grid grid-cols-2 gap-2">
-        <Button type="button" variant="ghost" disabled={disabled} onClick={() => onSelect("google")}>
+        <Button
+          type="button"
+          variant="ghost"
+          disabled={disabled}
+          onClick={() => onSelect("google")}
+        >
           Google
         </Button>
-        <Button type="button" variant="ghost" disabled={disabled} onClick={() => onSelect("github")}>
+        <Button
+          type="button"
+          variant="ghost"
+          disabled={disabled}
+          onClick={() => onSelect("github")}
+        >
           GitHub
         </Button>
       </div>

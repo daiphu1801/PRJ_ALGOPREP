@@ -49,7 +49,10 @@ export type SaveProfileResult = { ok: true } | { ok: false; errorKey: string };
  * of `UpdateMyProfileInput` (03-dd/api/identity.md endpoint 10 note) — changing it fires
  * `RequestMyEmailChange` and opens the OTP dialog, independent of whether the other 5 fields saved.
  */
-export function useEditProfile(profile: UserProfile, onProfileSaved: (next: UserProfile) => void) {
+export function useEditProfile(
+  profile: UserProfile,
+  onProfileSaved: (next: UserProfile) => void,
+) {
   const [saved, setSaved] = useState(() => toFormValues(profile));
   const [fields, setFields] = useState(saved);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -58,7 +61,10 @@ export function useEditProfile(profile: UserProfile, onProfileSaved: (next: User
   const [emailOtpTarget, setEmailOtpTarget] = useState<string | null>(null);
 
   const dirty = useMemo(
-    () => (Object.keys(saved) as (keyof FormValues)[]).some((key) => saved[key] !== fields[key]),
+    () =>
+      (Object.keys(saved) as (keyof FormValues)[]).some(
+        (key) => saved[key] !== fields[key],
+      ),
     [saved, fields],
   );
 
@@ -91,7 +97,10 @@ export function useEditProfile(profile: UserProfile, onProfileSaved: (next: User
     if (!parsed.success) {
       const errors = zodErrorsToFieldErrors(parsed.error);
       setFieldErrors(errors);
-      return { ok: false, errorKey: Object.values(errors)[0] ?? "form.invalid" };
+      return {
+        ok: false,
+        errorKey: Object.values(errors)[0] ?? "form.invalid",
+      };
     }
 
     setIsSaving(true);

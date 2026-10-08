@@ -96,10 +96,15 @@ function LanguageConfigForm({ initial }: { initial: LanguageConfigPage }) {
   const badDefault = (value: number) => !Number.isInteger(value) || value < 1;
   const outOfRange = (value: number, range: { min: number; max: number }) =>
     !Number.isInteger(value) || value < range.min || value > range.max;
-  const badRuntime = (value: number) => outOfRange(value, GENERATOR_RUNTIME_RANGE);
-  const badOutput = (value: number) => outOfRange(value, GENERATOR_OUTPUT_RANGE);
+  const badRuntime = (value: number) =>
+    outOfRange(value, GENERATOR_RUNTIME_RANGE);
+  const badOutput = (value: number) =>
+    outOfRange(value, GENERATOR_OUTPUT_RANGE);
 
-  function patchLanguage(key: LanguageConfig["key"], patch: Partial<LanguageConfig>) {
+  function patchLanguage(
+    key: LanguageConfig["key"],
+    patch: Partial<LanguageConfig>,
+  ) {
     setDraft((prev) => ({
       ...prev,
       languages: prev.languages.map((language) =>
@@ -113,7 +118,10 @@ function LanguageConfigForm({ initial }: { initial: LanguageConfigPage }) {
   }
 
   function patchGenerator(patch: Partial<GeneratorSandbox>) {
-    setDraft((prev) => ({ ...prev, generator: { ...prev.generator, ...patch } }));
+    setDraft((prev) => ({
+      ...prev,
+      generator: { ...prev.generator, ...patch },
+    }));
   }
 
   function patchSandbox(patch: Partial<SandboxConfig>) {
@@ -123,9 +131,13 @@ function LanguageConfigForm({ initial }: { initial: LanguageConfigPage }) {
   async function save() {
     setAttempted(true);
     const invalid =
-      draft.languages.some((language) => badMultiplier(language.timeMultiplier)) ||
-      Object.values(draft.defaults).some(badDefault);
-    if (badRuntime(draft.generator.maxRuntimeSeconds) || badOutput(draft.generator.maxOutputMb)) {
+      draft.languages.some((language) =>
+        badMultiplier(language.timeMultiplier),
+      ) || Object.values(draft.defaults).some(badDefault);
+    if (
+      badRuntime(draft.generator.maxRuntimeSeconds) ||
+      badOutput(draft.generator.maxOutputMb)
+    ) {
       toast.error(t("errorInvalidGenerator"));
       return;
     }
@@ -156,7 +168,9 @@ function LanguageConfigForm({ initial }: { initial: LanguageConfigPage }) {
             {language.short}
           </span>
           <span className="min-w-0">
-            <span className="block font-semibold whitespace-nowrap">{language.name}</span>
+            <span className="block font-semibold whitespace-nowrap">
+              {language.name}
+            </span>
             <span className="block font-mono text-[11.5px] whitespace-nowrap text-[var(--color-text-subtle)]">
               {language.judgeId}
             </span>
@@ -188,7 +202,9 @@ function LanguageConfigForm({ initial }: { initial: LanguageConfigPage }) {
           value={language.timeMultiplier}
           disabled={saving}
           onChange={(event) =>
-            patchLanguage(language.key, { timeMultiplier: Number(event.target.value) })
+            patchLanguage(language.key, {
+              timeMultiplier: Number(event.target.value),
+            })
           }
           invalid={attempted && badMultiplier(language.timeMultiplier)}
           className="h-8 font-mono"
@@ -201,7 +217,9 @@ function LanguageConfigForm({ initial }: { initial: LanguageConfigPage }) {
       width: "104px",
       render: (language) => (
         <span className="font-mono text-[12.5px] whitespace-nowrap">
-          {t("milliseconds", { value: number(effectiveTimeLimitMs(draft.defaults, language)) })}
+          {t("milliseconds", {
+            value: number(effectiveTimeLimitMs(draft.defaults, language)),
+          })}
         </span>
       ),
     },
@@ -211,7 +229,9 @@ function LanguageConfigForm({ initial }: { initial: LanguageConfigPage }) {
       width: "88px",
       render: (language) => (
         <span className="font-mono text-[12.5px] whitespace-nowrap">
-          {t("megabytes", { value: number(effectiveMemoryLimitMb(draft.defaults, language)) })}
+          {t("megabytes", {
+            value: number(effectiveMemoryLimitMb(draft.defaults, language)),
+          })}
         </span>
       ),
     },
@@ -223,7 +243,9 @@ function LanguageConfigForm({ initial }: { initial: LanguageConfigPage }) {
       render: (language) => (
         <Toggle
           checked={language.enabled}
-          onCheckedChange={(enabled) => patchLanguage(language.key, { enabled })}
+          onCheckedChange={(enabled) =>
+            patchLanguage(language.key, { enabled })
+          }
           label={t("enableLanguage", { language: language.name })}
           disabled={saving}
         />
@@ -263,7 +285,11 @@ function LanguageConfigForm({ initial }: { initial: LanguageConfigPage }) {
       />
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.65fr)_minmax(290px,1fr)]">
-        <Card title={t("languagesTitle")} description={t("languagesSubtitle")} className="min-w-0">
+        <Card
+          title={t("languagesTitle")}
+          description={t("languagesSubtitle")}
+          className="min-w-0"
+        >
           <DataTable
             caption={t("languagesTitle")}
             columns={columns}
@@ -291,12 +317,16 @@ function LanguageConfigForm({ initial }: { initial: LanguageConfigPage }) {
                       min={1}
                       value={draft.defaults[key]}
                       disabled={saving}
-                      onChange={(event) => patchDefaults({ [key]: Number(event.target.value) })}
+                      onChange={(event) =>
+                        patchDefaults({ [key]: Number(event.target.value) })
+                      }
                       invalid={attempted && badDefault(draft.defaults[key])}
                       className="h-8 w-24 font-mono"
                       wrapperClassName="w-auto"
                     />
-                    <span className="font-mono text-xs text-[var(--color-text-muted)]">{unit}</span>
+                    <span className="font-mono text-xs text-[var(--color-text-muted)]">
+                      {unit}
+                    </span>
                   </span>
                 </SettingRow>
               ))}
@@ -322,12 +352,21 @@ function LanguageConfigForm({ initial }: { initial: LanguageConfigPage }) {
             </div>
           </Card>
 
-          <Card title={t("generator.title")} description={t("generator.subtitle")}>
+          <Card
+            title={t("generator.title")}
+            description={t("generator.subtitle")}
+          >
             <div className="flex flex-col gap-2.5">
-              <SettingRow label={t("generator.languageLabel")} description={t("generator.languageMeta")}>
+              <SettingRow
+                label={t("generator.languageLabel")}
+                description={t("generator.languageMeta")}
+              >
                 <span className="font-mono text-sm font-semibold">Python</span>
               </SettingRow>
-              <SettingRow label={t("generator.runtime.label")} description={t("generator.runtime.meta")}>
+              <SettingRow
+                label={t("generator.runtime.label")}
+                description={t("generator.runtime.meta")}
+              >
                 <span className="flex items-center gap-1.5">
                   <TextField
                     label={t("generator.runtime.label")}
@@ -337,15 +376,26 @@ function LanguageConfigForm({ initial }: { initial: LanguageConfigPage }) {
                     max={GENERATOR_RUNTIME_RANGE.max}
                     value={draft.generator.maxRuntimeSeconds}
                     disabled={saving}
-                    onChange={(event) => patchGenerator({ maxRuntimeSeconds: Number(event.target.value) })}
-                    invalid={attempted && badRuntime(draft.generator.maxRuntimeSeconds)}
+                    onChange={(event) =>
+                      patchGenerator({
+                        maxRuntimeSeconds: Number(event.target.value),
+                      })
+                    }
+                    invalid={
+                      attempted && badRuntime(draft.generator.maxRuntimeSeconds)
+                    }
                     className="h-8 w-24 font-mono"
                     wrapperClassName="w-auto"
                   />
-                  <span className="font-mono text-xs text-[var(--color-text-muted)]">{t("unitSec")}</span>
+                  <span className="font-mono text-xs text-[var(--color-text-muted)]">
+                    {t("unitSec")}
+                  </span>
                 </span>
               </SettingRow>
-              <SettingRow label={t("generator.output.label")} description={t("generator.output.meta")}>
+              <SettingRow
+                label={t("generator.output.label")}
+                description={t("generator.output.meta")}
+              >
                 <span className="flex items-center gap-1.5">
                   <TextField
                     label={t("generator.output.label")}
@@ -355,12 +405,20 @@ function LanguageConfigForm({ initial }: { initial: LanguageConfigPage }) {
                     max={GENERATOR_OUTPUT_RANGE.max}
                     value={draft.generator.maxOutputMb}
                     disabled={saving}
-                    onChange={(event) => patchGenerator({ maxOutputMb: Number(event.target.value) })}
-                    invalid={attempted && badOutput(draft.generator.maxOutputMb)}
+                    onChange={(event) =>
+                      patchGenerator({
+                        maxOutputMb: Number(event.target.value),
+                      })
+                    }
+                    invalid={
+                      attempted && badOutput(draft.generator.maxOutputMb)
+                    }
                     className="h-8 w-24 font-mono"
                     wrapperClassName="w-auto"
                   />
-                  <span className="font-mono text-xs text-[var(--color-text-muted)]">{t("unitMb")}</span>
+                  <span className="font-mono text-xs text-[var(--color-text-muted)]">
+                    {t("unitMb")}
+                  </span>
                 </span>
               </SettingRow>
             </div>

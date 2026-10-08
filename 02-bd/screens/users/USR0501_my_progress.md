@@ -24,6 +24,8 @@
 > **Không thiết kế** phần hồ sơ cá nhân và thiết lập — thuộc `profile` (`USR0502`) và `settings`
 > (`USR0503`).
 
+- **Bài đã rút khỏi ngân hàng** (`deleted = true`, G4 2026-10-08): mẫu số "tổng số bài", tỉ lệ đã giải và các phân bố theo chủ đề, độ khó chỉ tính bài còn hiển thị (`PUBLISHED AND NOT deleted`); điểm bài đã rút vẫn lưu nhưng **không cộng vào "đã giải"**. Quy tắc đầy đủ ở `02-bd/database/problem-bank.md` mục 1.1a, không chép lại ở đây.
+
 > **Quy ước đặt tên khối** [Nội bộ]. Sáu khối: `stats` (dải chỉ số tổng và bộ lọc khoảng thời gian),
 > `topicProgress` (bảng "Theo chủ đề"), `submissionChart` (biểu đồ cột 14 ngày), `difficultyProgress`
 > (khối "Theo độ khó"), `focusNext` (khối "Nên ưu tiên"), `interviewSummary` (khối "Phỏng vấn giả lập").
@@ -45,7 +47,7 @@
 | Tên vật lý (slug) | `my_progress` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`) |
-| Phiên bản | V0.3 |
+| Phiên bản | V0.4 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/21 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
@@ -60,6 +62,7 @@
 | V0.1 | Toàn bộ | Tạo mới theo mẫu 9 sheet. Chốt nguồn dữ liệu của mọi trường hiển thị; dùng lại tên nghiệp vụ `GetMySubmissionMetrics` của cụm màn lớp thay vì đặt tên mới. Thiết kế bổ sung danh sách phiên phỏng vấn (prototype thiếu, nhưng F1-08 bắt buộc), trạng thái rỗng, trạng thái lỗi theo từng khối và đường suy giảm khi phân hệ AI hỏng. Phát sinh 9 câu hỏi mở | 2026/09/21 | Nhóm phát triển AlgoPrep |
 | V0.2 | Sheet 9 | Đổi báo giá trị khoảng thời gian không hợp lệ sang toast; làm rõ lỗi tải từng khối giữ nguyên là nội dung thay chỗ khối. Theo `DEC-2026-1003-toast-feedback-channel`. | 2026/10/03 | AI |
 | V0.3 | Sheet 4, 5, 6, 7 | Đồng bộ `DEC-2026-1001-admin-configurable-settings` mục (7): độ khó bài tập là danh mục do ADMIN quản lý (bảng riêng `problem_levels`), không còn enum cố định. Khối "Theo độ khó" thành **một dòng mỗi mức** theo `sort_order`, số dòng không còn cố định 3; ba mức khởi tạo giữ màu thanh cũ, mức mới màu trung tính; mức chưa có dữ liệu hiển thị `0 / 0`. `DifficultyProgressDto.difficulty` thành `levelCode`/`levelDisplayName`; mẫu số lấy từ `byLevel` của `GetPublishedProblemCatalogSummary` (đọc `problem_levels` qua cổng ra). Thêm `problem_levels` vào bảng liên quan và Truy cập bảng. Màn chỉ hiển thị, không lọc và không gọi `ListProblemLevels` riêng | 2026/10/03 | AI |
+| V0.4 | Sheet 5, 6, 7, Câu hỏi mở | Theo `02-bd/database/problem-bank.md` mục 1.1a: mẫu số "tổng số bài" và các phân bố chỉ tính bài `PUBLISHED AND NOT deleted`; điểm bài đã rút vẫn lưu nhưng không cộng vào "đã giải". Chỉ tài liệu, chưa đổi code | 2026/10/08 | AI |
 
 ---
 

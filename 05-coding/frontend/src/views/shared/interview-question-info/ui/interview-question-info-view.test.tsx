@@ -10,9 +10,16 @@ vi.mock("@/shared/i18n", () => ({
 
 describe("InterviewQuestionInfoView", () => {
   it("shows the question and links the edit button to the edit route", () => {
-    render(<InterviewQuestionInfoView questionId="IQ-014" basePath="/admin/interview-questions" />);
+    render(
+      <InterviewQuestionInfoView
+        questionId="IQ-014"
+        basePath="/admin/interview-questions"
+      />,
+    );
 
-    expect(screen.getByText(/Hash table xử lý collision bằng cách nào\?/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Hash table xử lý collision bằng cách nào\?/),
+    ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "edit" })).toHaveAttribute(
       "href",
       "/admin/interview-questions/IQ-014/edit",
@@ -20,7 +27,12 @@ describe("InterviewQuestionInfoView", () => {
   });
 
   it("shows the not-found state for an unknown code instead of crashing", () => {
-    render(<InterviewQuestionInfoView questionId="IQ-nope" basePath="/admin/interview-questions" />);
+    render(
+      <InterviewQuestionInfoView
+        questionId="IQ-nope"
+        basePath="/admin/interview-questions"
+      />,
+    );
 
     expect(screen.getByText(/notFoundBody/)).toBeInTheDocument();
   });

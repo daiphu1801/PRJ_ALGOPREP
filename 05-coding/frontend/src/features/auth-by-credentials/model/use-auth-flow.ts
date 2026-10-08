@@ -56,7 +56,10 @@ function zodErrorsToFieldErrors(error: ZodError): AuthFieldErrors {
  * everyone else keeps the default `login`. Same trick as `AuthForm`'s `showOAuth` prop: one shared
  * state machine, per-caller behavior through a parameter.
  */
-export function useAuthFlow(initialMode: AuthMode, loginFn: (input: LoginInput) => Promise<AuthOutcome> = login) {
+export function useAuthFlow(
+  initialMode: AuthMode,
+  loginFn: (input: LoginInput) => Promise<AuthOutcome> = login,
+) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -81,7 +84,10 @@ export function useAuthFlow(initialMode: AuthMode, loginFn: (input: LoginInput) 
     if (first) setFeedback({ tone: "error", key: first });
   }, []);
 
-  const confirm = useCallback((key: string) => setFeedback({ tone: "success", key }), []);
+  const confirm = useCallback(
+    (key: string) => setFeedback({ tone: "success", key }),
+    [],
+  );
 
   const setMode = useCallback((next: AuthMode) => {
     setModeState(next);
@@ -106,12 +112,19 @@ export function useAuthFlow(initialMode: AuthMode, loginFn: (input: LoginInput) 
         setLoadingStep(step);
         // Sequential by design (each step must visibly finish before the next starts), not
         // parallel work — awaiting inside the loop is intentional here.
-        await new Promise((resolve) => setTimeout(resolve, LOADING_STEP_DELAY_MS));
+        await new Promise((resolve) =>
+          setTimeout(resolve, LOADING_STEP_DELAY_MS),
+        );
       }
       // A saved `redirect`/`returnTo` wins over the role-default destination
       // (02-bd/screens/shared/SHR0101_auth.md Sheet 3).
-      const redirectTo = searchParams.get("redirect") ?? searchParams.get("returnTo");
-      router.push(redirectTo && redirectTo.startsWith("/") ? redirectTo : HOME_PATH_BY_ROLE[role]);
+      const redirectTo =
+        searchParams.get("redirect") ?? searchParams.get("returnTo");
+      router.push(
+        redirectTo && redirectTo.startsWith("/")
+          ? redirectTo
+          : HOME_PATH_BY_ROLE[role],
+      );
     },
     [router, searchParams],
   );
@@ -196,7 +209,11 @@ export function useAuthFlow(initialMode: AuthMode, loginFn: (input: LoginInput) 
       setFieldErrors({});
       setDeactivatedBanner(false);
       setFields({ identifier, password: QUICK_LOGIN_PASSWORD });
-      return runLogin({ identifier, password: QUICK_LOGIN_PASSWORD, rememberMe: false });
+      return runLogin({
+        identifier,
+        password: QUICK_LOGIN_PASSWORD,
+        rememberMe: false,
+      });
     },
     [runLogin],
   );
@@ -256,7 +273,10 @@ export function useAuthFlow(initialMode: AuthMode, loginFn: (input: LoginInput) 
     }
     setIsSubmitting(true);
     try {
-      const outcome = await verifyOtp(parsed.data, String(otpSessionKey.current));
+      const outcome = await verifyOtp(
+        parsed.data,
+        String(otpSessionKey.current),
+      );
       if (!outcome.ok) {
         raise(outcome.fieldErrors);
         setOtpAttemptsLeft(outcome.attemptsLeft);
@@ -321,7 +341,14 @@ export function useAuthFlow(initialMode: AuthMode, loginFn: (input: LoginInput) 
       default:
         return undefined;
     }
-  }, [mode, submitSignup, submitLogin, submitForgotEmail, submitForgotOtp, submitForgotReset]);
+  }, [
+    mode,
+    submitSignup,
+    submitLogin,
+    submitForgotEmail,
+    submitForgotOtp,
+    submitForgotReset,
+  ]);
 
   return {
     mode,

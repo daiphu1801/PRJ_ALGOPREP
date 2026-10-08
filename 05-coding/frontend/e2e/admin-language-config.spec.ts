@@ -8,7 +8,9 @@ import { expect, test } from "@playwright/test";
 test("language config screen matches the locked scope", async ({ page }) => {
   await page.goto("/admin/language-config");
 
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ngôn ngữ và giới hạn chấm");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "Ngôn ngữ và giới hạn chấm",
+  );
 
   const table = page.getByRole("table", { name: "Ngôn ngữ được hỗ trợ" });
   await expect(table).toBeVisible();
@@ -18,7 +20,9 @@ test("language config screen matches the locked scope", async ({ page }) => {
   for (const name of ["Python 3", "C++ 17", "Java 21"]) {
     await expect(table.getByText(name, { exact: true })).toBeVisible();
   }
-  await expect(page.getByRole("button", { name: /thêm ngôn ngữ/i })).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: /thêm ngôn ngữ/i }),
+  ).toHaveCount(0);
 
   // Rejudge is out of scope — the mockup's link to it must not have been carried over.
   await expect(page.getByRole("link", { name: /chấm lại/i })).toHaveCount(0);
@@ -41,12 +45,18 @@ test("language config screen matches the locked scope", async ({ page }) => {
 for (const theme of ["light", "dark"] as const) {
   test(`capture ${theme} theme for mockup comparison`, async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 940 });
-    await page.addInitScript((value) => localStorage.setItem("theme", value), theme);
+    await page.addInitScript(
+      (value) => localStorage.setItem("theme", value),
+      theme,
+    );
     await page.goto("/admin/language-config");
     await expect(page.getByRole("table")).toBeVisible();
     // caret: "initial" — Playwright's default caret hiding injects an inline
     // `caret-color: transparent` style, which React then reports as a hydration mismatch. The
     // warning is a test-harness artifact, not an app defect; this keeps it out of the logs.
-    await page.screenshot({ path: `e2e/__screenshots__/lang-config-${theme}.png`, caret: "initial" });
+    await page.screenshot({
+      path: `e2e/__screenshots__/lang-config-${theme}.png`,
+      caret: "initial",
+    });
   });
 }

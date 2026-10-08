@@ -6,7 +6,13 @@ type Row = { id: string; name: string; role: string };
 
 const COLUMNS: DataTableColumn<Row>[] = [
   { key: "name", header: "Người dùng", render: (row) => row.name },
-  { key: "role", header: "Vai trò", width: "116px", align: "right", render: (row) => row.role },
+  {
+    key: "role",
+    header: "Vai trò",
+    width: "116px",
+    align: "right",
+    render: (row) => row.role,
+  },
 ];
 
 const ROWS: Row[] = [
@@ -14,7 +20,9 @@ const ROWS: Row[] = [
   { id: "u2", name: "Tran Thi B", role: "ADMIN" },
 ];
 
-function renderTable(props: Partial<Parameters<typeof DataTable<Row>>[0]> = {}) {
+function renderTable(
+  props: Partial<Parameters<typeof DataTable<Row>>[0]> = {},
+) {
   return render(
     <DataTable
       caption="Danh sách người dùng"
@@ -30,11 +38,15 @@ function renderTable(props: Partial<Parameters<typeof DataTable<Row>>[0]> = {}) 
 describe("DataTable", () => {
   it("renders native table semantics with one column header per column", () => {
     renderTable();
-    expect(screen.getByRole("table", { name: "Danh sách người dùng" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("table", { name: "Danh sách người dùng" }),
+    ).toBeInTheDocument();
     expect(screen.getAllByRole("columnheader")).toHaveLength(COLUMNS.length);
     // Header row + one row per record.
     expect(screen.getAllByRole("row")).toHaveLength(ROWS.length + 1);
-    expect(screen.getAllByRole("cell")).toHaveLength(COLUMNS.length * ROWS.length);
+    expect(screen.getAllByRole("cell")).toHaveLength(
+      COLUMNS.length * ROWS.length,
+    );
   });
 
   it("drives column width from <colgroup> so header and body cannot drift apart", () => {
@@ -48,7 +60,9 @@ describe("DataTable", () => {
 
   it("shows the empty message instead of rows when there is no data", () => {
     renderTable({ rows: [] });
-    expect(screen.getByText("Không có tài khoản nào khớp bộ lọc")).toBeInTheDocument();
+    expect(
+      screen.getByText("Không có tài khoản nào khớp bộ lọc"),
+    ).toBeInTheDocument();
     expect(screen.queryByText("Nguyen Van A")).not.toBeInTheDocument();
   });
 
@@ -61,7 +75,9 @@ describe("DataTable", () => {
 
   it("replaces the table with an alert on error", () => {
     renderTable({ status: "error", errorMessage: "Không tải được danh sách" });
-    expect(screen.getByRole("alert")).toHaveTextContent("Không tải được danh sách");
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Không tải được danh sách",
+    );
     expect(screen.queryByRole("table")).not.toBeInTheDocument();
   });
 
@@ -83,28 +99,102 @@ describe("DataTable", () => {
 
     it("adds one checkbox per row plus a select-all in the header", () => {
       renderSelectable([]);
-      expect(screen.getByRole("checkbox", { name: "Chọn tất cả" })).toBeInTheDocument();
-      expect(screen.getByRole("checkbox", { name: "Chọn Nguyen Van A" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("checkbox", { name: "Chọn tất cả" }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("checkbox", { name: "Chọn Nguyen Van A" }),
+      ).toBeInTheDocument();
       // Selection adds a column to every row, header included.
-      expect(screen.getAllByRole("columnheader")).toHaveLength(COLUMNS.length + 1);
+      expect(screen.getAllByRole("columnheader")).toHaveLength(
+        COLUMNS.length + 1,
+      );
     });
 
     it("reports the row key, not the row object, when a row is toggled", () => {
       const { onToggleRow } = renderSelectable([]);
-      fireEvent.click(screen.getByRole("checkbox", { name: "Chọn Tran Thi B" }));
+      fireEvent.click(
+        screen.getByRole("checkbox", { name: "Chọn Tran Thi B" }),
+      );
       expect(onToggleRow).toHaveBeenCalledWith("u2");
+    });
+
+    it("toggles the row when any cell of it is clicked, and marks selectable rows as clickable", () => {
+      const { onToggleRow } = renderSelectable([]);
+      const row = screen.getByText("Tran Thi B").closest("tr")!;
+      expect(row).toHaveClass("cursor-pointer");
+      fireEvent.click(screen.getByText("Tran Thi B"));
+      expect(onToggleRow).toHaveBeenCalledTimes(1);
+      expect(onToggleRow).toHaveBeenCalledWith("u2");
+    });
+
+    it("toggles once, not twice, when the checkbox itself is clicked", () => {
+      const { onToggleRow } = renderSelectable([]);
+      fireEvent.click(
+        screen.getByRole("checkbox", { name: "Chọn Nguyen Van A" }),
+      );
+      expect(onToggleRow).toHaveBeenCalledTimes(1);
+    });
+
+    it("leaves clicks on a link or button inside the row to that control", () => {
+      const onToggleRow = vi.fn();
+      renderTable({
+        columns: [
+          {
+            key: "name",
+            header: "Người dùng",
+            render: (row) => <a href="/x">{row.name}</a>,
+          },
+          {
+            key: "role",
+            header: "Vai trò",
+            render: () => <button type="button">Sửa</button>,
+          },
+        ],
+        selection: {
+          selectedKeys: new Set<string>(),
+          onToggleRow,
+          onToggleAll: vi.fn(),
+          selectAllLabel: "Chọn tất cả",
+          rowLabel: (row) => `Chọn ${row.name}`,
+        },
+      });
+      fireEvent.click(screen.getByRole("link", { name: "Nguyen Van A" }));
+      fireEvent.click(screen.getAllByRole("button", { name: "Sửa" })[0]!);
+      expect(onToggleRow).not.toHaveBeenCalled();
+    });
+
+    it("tints a selected row with the accent", () => {
+      renderSelectable(["u1"]);
+      expect(
+        screen.getByText("Nguyen Van A").closest("tr")!.className,
+      ).toContain("admin-teal)_16%");
+      expect(
+        screen.getByText("Tran Thi B").closest("tr")!.className,
+      ).not.toContain("admin-teal)_16%");
+    });
+
+    it("does not make rows clickable when selection is off", () => {
+      renderTable();
+      expect(screen.getByText("Nguyen Van A").closest("tr")).not.toHaveClass(
+        "cursor-pointer",
+      );
     });
 
     it("marks select-all indeterminate on a partial selection", () => {
       renderSelectable(["u1"]);
-      const selectAll = screen.getByRole("checkbox", { name: "Chọn tất cả" }) as HTMLInputElement;
+      const selectAll = screen.getByRole("checkbox", {
+        name: "Chọn tất cả",
+      }) as HTMLInputElement;
       expect(selectAll.checked).toBe(false);
       expect(selectAll.indeterminate).toBe(true);
     });
 
     it("checks select-all only when every row is selected", () => {
       renderSelectable(["u1", "u2"]);
-      const selectAll = screen.getByRole("checkbox", { name: "Chọn tất cả" }) as HTMLInputElement;
+      const selectAll = screen.getByRole("checkbox", {
+        name: "Chọn tất cả",
+      }) as HTMLInputElement;
       expect(selectAll.checked).toBe(true);
       expect(selectAll.indeterminate).toBe(false);
     });
@@ -143,7 +233,9 @@ describe("DataTable", () => {
         sort: { key: "role", direction: "asc", onSortChange: vi.fn() },
       });
       // Claiming "none" on a column nobody can sort would promise a control that is not there.
-      expect(screen.getAllByRole("columnheader")[0]).not.toHaveAttribute("aria-sort");
+      expect(screen.getAllByRole("columnheader")[0]).not.toHaveAttribute(
+        "aria-sort",
+      );
     });
 
     it("flips direction on the active column and starts ascending on another", () => {

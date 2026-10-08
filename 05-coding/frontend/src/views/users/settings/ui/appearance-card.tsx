@@ -12,7 +12,9 @@ export function AppearanceCard() {
   return (
     <Card title={t("appearance.title")}>
       <div className="flex flex-col gap-3">
-        <p className="text-xs text-[var(--color-text-muted)]">{t("appearance.description")}</p>
+        <p className="text-xs text-[var(--color-text-muted)]">
+          {t("appearance.description")}
+        </p>
         <ThemeLangSwitcher variant="inline" />
       </div>
     </Card>

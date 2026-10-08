@@ -17,9 +17,15 @@ describe("MockInterviewView", () => {
   it("renders the 3 entry tabs and the 4-level session config", () => {
     renderView();
 
-    expect(screen.getByRole("button", { name: "Bài nộp Accepted" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Kho câu hỏi" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Tự chọn chủ đề" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Bài nộp Accepted" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Kho câu hỏi" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Tự chọn chủ đề" }),
+    ).toBeInTheDocument();
     for (const level of ["Intern", "Junior", "Middle", "Senior"]) {
       expect(screen.getByRole("button", { name: level })).toBeInTheDocument();
     }
@@ -28,9 +34,13 @@ describe("MockInterviewView", () => {
   it("keeps the Start button disabled until a submission is picked", () => {
     renderView();
 
-    expect(screen.getByRole("button", { name: "Bắt đầu phiên" })).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: "Bắt đầu phiên" }),
+    ).toBeDisabled();
     fireEvent.click(screen.getByText("1. Two Sum"));
-    expect(screen.getByRole("button", { name: "Bắt đầu phiên" })).not.toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: "Bắt đầu phiên" }),
+    ).not.toBeDisabled();
   });
 
   it("shows exactly the correct 4 rubric labels at result — never the old wrong set", async () => {
@@ -40,7 +50,9 @@ describe("MockInterviewView", () => {
     fireEvent.click(screen.getByRole("button", { name: "Bắt đầu phiên" }));
 
     // Ending early (H popup) skips straight to the result screen without playing out 12 turns.
-    fireEvent.click(await screen.findByRole("button", { name: "Kết thúc sớm" }));
+    fireEvent.click(
+      await screen.findByRole("button", { name: "Kết thúc sớm" }),
+    );
     fireEvent.click(screen.getByRole("button", { name: "Kết thúc" }));
 
     expect(await screen.findByText(/Độ rõ ràng/)).toBeInTheDocument();
@@ -48,7 +60,12 @@ describe("MockInterviewView", () => {
     expect(screen.getByText(/Khả năng phản biện/)).toBeInTheDocument();
     expect(screen.getByText(/Nhận thức độ phức tạp/)).toBeInTheDocument();
 
-    for (const wrongLabel of ["Kỹ thuật", "Giao tiếp", "Giải quyết vấn đề", "Chất lượng mã"]) {
+    for (const wrongLabel of [
+      "Kỹ thuật",
+      "Giao tiếp",
+      "Giải quyết vấn đề",
+      "Chất lượng mã",
+    ]) {
       expect(screen.queryByText(wrongLabel)).not.toBeInTheDocument();
     }
   });

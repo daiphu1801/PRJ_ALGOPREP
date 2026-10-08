@@ -91,14 +91,19 @@ export function AdminAiConfigView() {
 
   function publish() {
     if (!weightsBalanced) {
-      toast.warning(`${t("weightWarningTitle")}: ${t("weightWarningBody", { total })}`);
+      toast.warning(
+        `${t("weightWarningTitle")}: ${t("weightWarningBody", { total })}`,
+      );
       return;
     }
     toast.success(t("publishDone"));
   }
 
   function setGuard(key: GuardKey, value: boolean) {
-    setPage((previous) => ({ ...previous, guards: { ...previous.guards, [key]: value } }));
+    setPage((previous) => ({
+      ...previous,
+      guards: { ...previous.guards, [key]: value },
+    }));
   }
 
   return (
@@ -107,7 +112,12 @@ export function AdminAiConfigView() {
         title={t("title")}
         description={t("subtitle")}
         actions={
-          <Button variant="cta" size="sm" aria-disabled={!weightsBalanced || undefined} onClick={publish}>
+          <Button
+            variant="cta"
+            size="sm"
+            aria-disabled={!weightsBalanced || undefined}
+            onClick={publish}
+          >
             {t("publish")}
           </Button>
         }
@@ -155,7 +165,9 @@ export function AdminAiConfigView() {
                   <p className="flex flex-wrap gap-4 text-xs text-[var(--color-text-subtle)]">
                     <span>
                       {t("metaModel")}{" "}
-                      <span className="font-mono text-[var(--color-text-muted)]">{prompt.model}</span>
+                      <span className="font-mono text-[var(--color-text-muted)]">
+                        {prompt.model}
+                      </span>
                     </span>
                     <span>
                       {t("metaTemperature")}{" "}
@@ -197,7 +209,9 @@ export function AdminAiConfigView() {
                 <div key={key}>
                   <div className="mb-1.5 flex items-center justify-between gap-3">
                     <span className="min-w-0">
-                      <span className="text-[13.5px] font-semibold">{t(`rubric.${key}.label`)}</span>
+                      <span className="text-[13.5px] font-semibold">
+                        {t(`rubric.${key}.label`)}
+                      </span>
                       <span className="ml-2 text-xs text-[var(--color-text-subtle)]">
                         {t(`rubric.${key}.meta`)}
                       </span>
@@ -205,10 +219,16 @@ export function AdminAiConfigView() {
                     <NumberStepper
                       value={page.rubricWeights[key]}
                       onValueChange={(value) => setWeight(key, value)}
-                      label={t("weightLabel", { criterion: t(`rubric.${key}.label`) })}
+                      label={t("weightLabel", {
+                        criterion: t(`rubric.${key}.label`),
+                      })}
                       format={(value) => `${value}%`}
-                      decrementLabel={t("weightDecrement", { criterion: t(`rubric.${key}.label`) })}
-                      incrementLabel={t("weightIncrement", { criterion: t(`rubric.${key}.label`) })}
+                      decrementLabel={t("weightDecrement", {
+                        criterion: t(`rubric.${key}.label`),
+                      })}
+                      incrementLabel={t("weightIncrement", {
+                        criterion: t(`rubric.${key}.label`),
+                      })}
                     />
                   </div>
                   <ProgressBar
@@ -242,10 +262,15 @@ export function AdminAiConfigView() {
 
           <Card title={t("budget.title")} description={t("budget.subtitle")}>
             <div className="flex flex-col gap-2.5">
-              <SettingRow label={t("budget.warnLabel")} description={t("budget.warnMeta")}>
+              <SettingRow
+                label={t("budget.warnLabel")}
+                description={t("budget.warnMeta")}
+              >
                 <NumberStepper
                   value={budgetSettings.warnPercent}
-                  onValueChange={(warnPercent) => aiBudgetSettings.set({ warnPercent })}
+                  onValueChange={(warnPercent) =>
+                    aiBudgetSettings.set({ warnPercent })
+                  }
                   label={t("budget.warnLabel")}
                   min={1}
                   max={100}
@@ -255,7 +280,10 @@ export function AdminAiConfigView() {
                   incrementLabel={t("budget.warnIncrement")}
                 />
               </SettingRow>
-              <SettingRow label={t("budget.pricesLabel")} description={t("budget.pricesMeta")}>
+              <SettingRow
+                label={t("budget.pricesLabel")}
+                description={t("budget.pricesMeta")}
+              >
                 <Button
                   variant="ghost"
                   size="sm"
@@ -268,11 +296,19 @@ export function AdminAiConfigView() {
             </div>
           </Card>
 
-          <Card title={t("testcaseGen.title")} description={t("testcaseGen.subtitle")}>
-            <SettingRow label={t("testcaseGen.maxLabel")} description={t("testcaseGen.maxMeta")}>
+          <Card
+            title={t("testcaseGen.title")}
+            description={t("testcaseGen.subtitle")}
+          >
+            <SettingRow
+              label={t("testcaseGen.maxLabel")}
+              description={t("testcaseGen.maxMeta")}
+            >
               <NumberStepper
                 value={generationSettings.maxPerProblem}
-                onValueChange={(maxPerProblem) => aiGenerationSettings.set({ maxPerProblem })}
+                onValueChange={(maxPerProblem) =>
+                  aiGenerationSettings.set({ maxPerProblem })
+                }
                 label={t("testcaseGen.maxLabel")}
                 min={AI_GENERATION_LIMIT_MIN}
                 max={AI_GENERATION_LIMIT_MAX}
@@ -331,7 +367,11 @@ export function AdminAiConfigView() {
         onClose={() => setHistoryOpen(false)}
         title={t("versionLog")}
         footer={
-          <Button variant="ghost" size="sm" onClick={() => setHistoryOpen(false)}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setHistoryOpen(false)}
+          >
             {t("close")}
           </Button>
         }
@@ -370,7 +410,12 @@ export function AdminAiConfigView() {
             min={0}
             step="0.1"
             value={String(item.usdPerMillionTokens)}
-            onChange={(event) => setModelPriceValue(item.key, Math.max(0, Number(event.target.value) || 0))}
+            onChange={(event) =>
+              setModelPriceValue(
+                item.key,
+                Math.max(0, Number(event.target.value) || 0),
+              )
+            }
             wrapperClassName="w-24"
           />
         )}
@@ -386,7 +431,10 @@ export function AdminAiConfigView() {
           close: t("budget.dialog.close"),
           usage: () => "",
           deleteBlocked: () => "",
-          error: { empty: t("budget.dialog.errorEmpty"), duplicate: t("budget.dialog.errorDuplicate") },
+          error: {
+            empty: t("budget.dialog.errorEmpty"),
+            duplicate: t("budget.dialog.errorDuplicate"),
+          },
           done: {
             add: t("budget.dialog.doneAdd"),
             rename: t("budget.dialog.doneRename"),

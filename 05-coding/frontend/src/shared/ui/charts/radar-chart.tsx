@@ -32,18 +32,23 @@ export function RadarChart({
   if (points.length < 3) return null;
 
   // -PI/2 puts the first axis straight up, matching the prototype.
-  const angleAt = (index: number) => (Math.PI * 2 * index) / points.length - Math.PI / 2;
+  const angleAt = (index: number) =>
+    (Math.PI * 2 * index) / points.length - Math.PI / 2;
   const pointAt = (index: number, fraction: number) => ({
     x: CENTRE_X + Math.cos(angleAt(index)) * RADIUS * fraction,
     y: CENTRE_Y + Math.sin(angleAt(index)) * RADIUS * fraction,
   });
   const ringPoints = (fraction: number) =>
-    points.map((_, index) => {
-      const p = pointAt(index, fraction);
-      return `${p.x.toFixed(1)},${p.y.toFixed(1)}`;
-    }).join(" ");
+    points
+      .map((_, index) => {
+        const p = pointAt(index, fraction);
+        return `${p.x.toFixed(1)},${p.y.toFixed(1)}`;
+      })
+      .join(" ");
 
-  const clamped = points.map((point) => Math.max(0, Math.min(100, point.value)));
+  const clamped = points.map((point) =>
+    Math.max(0, Math.min(100, point.value)),
+  );
   const shape = clamped
     .map((value, index) => {
       const p = pointAt(index, value / 100);
@@ -52,7 +57,12 @@ export function RadarChart({
     .join(" ");
 
   return (
-    <svg viewBox="0 0 300 262" role="img" aria-label={ariaLabel} className="block h-[246px] w-full max-w-[300px] overflow-visible">
+    <svg
+      viewBox="0 0 300 262"
+      role="img"
+      aria-label={ariaLabel}
+      className="block h-[246px] w-full max-w-[300px] overflow-visible"
+    >
       {RINGS.map((fraction) => (
         <polygon
           key={fraction}
@@ -85,7 +95,15 @@ export function RadarChart({
       />
       {clamped.map((value, index) => {
         const p = pointAt(index, value / 100);
-        return <circle key={points[index]!.label} cx={p.x.toFixed(1)} cy={p.y.toFixed(1)} r="3" fill={`var(${accentColorVar})`} />;
+        return (
+          <circle
+            key={points[index]!.label}
+            cx={p.x.toFixed(1)}
+            cy={p.y.toFixed(1)}
+            r="3"
+            fill={`var(${accentColorVar})`}
+          />
+        );
       })}
       {points.map((point, index) => {
         // Label sits 22px beyond the outer ring; the nudges below stop the top and bottom labels
@@ -100,10 +118,24 @@ export function RadarChart({
         const anchor = cos > 0.3 ? "start" : cos < -0.3 ? "end" : "middle";
         return (
           <g key={`${point.label}-label`}>
-            <text x={x.toFixed(1)} y={labelY.toFixed(1)} textAnchor={anchor} fontSize="11.5" fontWeight="600" fill="var(--color-text-muted)">
+            <text
+              x={x.toFixed(1)}
+              y={labelY.toFixed(1)}
+              textAnchor={anchor}
+              fontSize="11.5"
+              fontWeight="600"
+              fill="var(--color-text-muted)"
+            >
               {point.label}
             </text>
-            <text x={x.toFixed(1)} y={valueY.toFixed(1)} textAnchor={anchor} fontSize="11" fill="var(--color-text-subtle)" className="font-mono">
+            <text
+              x={x.toFixed(1)}
+              y={valueY.toFixed(1)}
+              textAnchor={anchor}
+              fontSize="11"
+              fill="var(--color-text-subtle)"
+              className="font-mono"
+            >
               {clamped[index]}
             </text>
           </g>

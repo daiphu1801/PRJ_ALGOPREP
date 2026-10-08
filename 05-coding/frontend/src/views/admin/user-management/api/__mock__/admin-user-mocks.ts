@@ -9,15 +9,87 @@ import type {
 
 // dc.html:437-447. Counts are plain numbers here; the mockup pre-formatted them as strings.
 const USERS: AdminUser[] = [
-  { name: "Nguyễn Văn An", email: "nguyenvana@sv.edu.vn", role: "student", solvedCount: 142, submissionCount: 1284, lastActiveLabel: "5 phút trước", status: "active" },
-  { name: "Trần Thị Bích", email: "tranbich@sv.edu.vn", role: "student", solvedCount: 118, submissionCount: 964, lastActiveLabel: "22 phút trước", status: "active" },
-  { name: "Lê Hoàng Nam", email: "lhnam@sv.edu.vn", role: "student", solvedCount: 96, submissionCount: 812, lastActiveLabel: "1 giờ trước", status: "active" },
-  { name: "Phạm Thu Hương", email: "pthuong@gv.edu.vn", role: "instructor", solvedCount: 64, submissionCount: 210, lastActiveLabel: "3 giờ trước", status: "active" },
-  { name: "Đặng Phú Đại", email: "pdai@algoprep.vn", role: "admin", solvedCount: 38, submissionCount: 96, lastActiveLabel: "Đang trực tuyến", status: "active" },
-  { name: "Vũ Thu Hà", email: "vuthuha@sv.edu.vn", role: "student", solvedCount: 81, submissionCount: 702, lastActiveLabel: "6 giờ trước", status: "active" },
-  { name: "Đỗ Quốc Bảo", email: "dqbao@sv.edu.vn", role: "student", solvedCount: 12, submissionCount: 48, lastActiveLabel: "2 ngày trước", status: "pending" },
-  { name: "Hoàng Minh Trí", email: "hmtri@sv.edu.vn", role: "student", solvedCount: 54, submissionCount: 1910, lastActiveLabel: "4 ngày trước", status: "locked" },
-  { name: "Bùi Khánh Linh", email: "bklinh@gv.edu.vn", role: "instructor", solvedCount: 73, submissionCount: 304, lastActiveLabel: "1 ngày trước", status: "active" },
+  {
+    name: "Nguyễn Văn An",
+    email: "nguyenvana@sv.edu.vn",
+    role: "student",
+    solvedCount: 142,
+    submissionCount: 1284,
+    lastActiveLabel: "5 phút trước",
+    status: "active",
+  },
+  {
+    name: "Trần Thị Bích",
+    email: "tranbich@sv.edu.vn",
+    role: "student",
+    solvedCount: 118,
+    submissionCount: 964,
+    lastActiveLabel: "22 phút trước",
+    status: "active",
+  },
+  {
+    name: "Lê Hoàng Nam",
+    email: "lhnam@sv.edu.vn",
+    role: "student",
+    solvedCount: 96,
+    submissionCount: 812,
+    lastActiveLabel: "1 giờ trước",
+    status: "active",
+  },
+  {
+    name: "Phạm Thu Hương",
+    email: "pthuong@gv.edu.vn",
+    role: "instructor",
+    solvedCount: 64,
+    submissionCount: 210,
+    lastActiveLabel: "3 giờ trước",
+    status: "active",
+  },
+  {
+    name: "Đặng Phú Đại",
+    email: "pdai@algoprep.vn",
+    role: "admin",
+    solvedCount: 38,
+    submissionCount: 96,
+    lastActiveLabel: "Đang trực tuyến",
+    status: "active",
+  },
+  {
+    name: "Vũ Thu Hà",
+    email: "vuthuha@sv.edu.vn",
+    role: "student",
+    solvedCount: 81,
+    submissionCount: 702,
+    lastActiveLabel: "6 giờ trước",
+    status: "active",
+  },
+  {
+    name: "Đỗ Quốc Bảo",
+    email: "dqbao@sv.edu.vn",
+    role: "student",
+    solvedCount: 12,
+    submissionCount: 48,
+    lastActiveLabel: "2 ngày trước",
+    status: "pending",
+  },
+  {
+    name: "Hoàng Minh Trí",
+    email: "hmtri@sv.edu.vn",
+    role: "student",
+    solvedCount: 54,
+    submissionCount: 1910,
+    lastActiveLabel: "4 ngày trước",
+    status: "locked",
+  },
+  {
+    name: "Bùi Khánh Linh",
+    email: "bklinh@gv.edu.vn",
+    role: "instructor",
+    solvedCount: 73,
+    submissionCount: 304,
+    lastActiveLabel: "1 ngày trước",
+    status: "active",
+  },
 ];
 
 // dc.html:476-481.
@@ -28,10 +100,9 @@ const ROLE_DISTRIBUTION: RoleDistributionItem[] = [
   { role: "deactivated", label: "5 · <1%", percent: 4 },
 ];
 
-// dc.html:483-486.
+// dc.html:483-486. The "Đề nghị cấp quyền giảng viên" row is dropped: only ADMIN changes roles (ADM0201 Q2).
 const PENDING_TASKS: PendingTask[] = [
   { key: "pendingEmail", count: 18, colorVar: "--color-admin-warn" },
-  { key: "instructorRequest", count: 2, colorVar: "--color-accent-blue" },
 ];
 
 export function fetchAdminUserPage(): AdminUserPage {

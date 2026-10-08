@@ -36,7 +36,11 @@ describe("level store", () => {
     act(() => {
       expect(addInterviewLevel("Rất khó")).toBeNull();
     });
-    expect(levels.result.current.at(-1)).toMatchObject({ key: "RAT_KHO", label: "Rất khó", tone: "neutral" });
+    expect(levels.result.current.at(-1)).toMatchObject({
+      key: "RAT_KHO",
+      label: "Rất khó",
+      tone: "neutral",
+    });
     act(() => {
       expect(addInterviewLevel("RẤT-KHÓ!")).toBeNull();
     });
@@ -61,7 +65,8 @@ describe("level store", () => {
 
   it("refuses to delete the last remaining level", () => {
     const levels = renderHook(() => useInterviewLevels());
-    for (const item of [...levels.result.current]) act(() => void removeInterviewLevel(item.key));
+    for (const item of [...levels.result.current])
+      act(() => void removeInterviewLevel(item.key));
     expect(levels.result.current).toHaveLength(1);
     expect(removeInterviewLevel(levels.result.current[0]!.key)).toBe(false);
     expect(levels.result.current).toHaveLength(1);

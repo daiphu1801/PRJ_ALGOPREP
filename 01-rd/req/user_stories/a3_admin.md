@@ -27,6 +27,16 @@ vi phạm quy định...).
 - **Cho** một tài khoản cần xử lý, **Khi** tôi đổi vai trò, khoá/mở khoá, hoặc reset mật khẩu tài khoản đó,
   **Thì** thay đổi có hiệu lực ngay và được ghi vào Nhật ký hệ thống (F1-13, F1-14) — hành động này bị gác
   bởi quyền `USER_MANAGEMENT` trong ma trận F1-10.
+- **Cho** tôi đang khoá một hoặc nhiều tài khoản, **Khi** tôi bấm khoá, **Thì** tôi phải nhập lý do; **Thì** người
+  dùng bị khoá nhận được email nói rõ tài khoản nào bị khoá, lúc nào và vì sao, trừ khi tôi chủ động tắt
+  gửi email; lý do vẫn được ghi vào Nhật ký hệ thống (F1-32) — vì khi người dùng không nhận được email,
+  nhật ký là nguồn trả lời duy nhất cho câu hỏi "tại sao tôi mất đăng nhập".
+- **Cho** tôi đang chọn hàng loạt tài khoản, **Khi** trong đó có cả dòng đang hoạt động và dòng đã bị khoá,
+  **Thì** mỗi nút trạng thái chỉ tác động tới phần của mình, và nút không có việc gì thì không kích hoạt
+  (F1-32) — tránh gọi một hành động không đổi gì rồi báo thành công.
+- **Cho** tôi đang mở khoá tài khoản, **Khi** tôi xác nhận, **Thì** tôi không phải nhập lý do và người dùng không
+  nhận thêm email nào (F1-32) — mở khoá là hành động khôi phục quyền truy cập, người dùng vừa nhận thông báo
+  bị khoá thì đã biết chuyện gì xảy ra.
 
 ### US-A3-03: Giám sát cụm judge engine và hàng đợi
 

@@ -51,7 +51,12 @@ export function UnsavedChangesDialog({
           >
             {leaveLabel}
           </Button>
-          <Button size="sm" onClick={onSaveAndLeave} disabled={pending} aria-busy={pending || undefined}>
+          <Button
+            size="sm"
+            onClick={onSaveAndLeave}
+            disabled={pending}
+            aria-busy={pending || undefined}
+          >
             {saveAndLeaveLabel}
           </Button>
         </>

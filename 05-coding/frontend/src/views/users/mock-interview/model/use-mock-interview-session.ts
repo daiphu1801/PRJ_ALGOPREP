@@ -44,7 +44,9 @@ export function useMockInterviewSession() {
   const [currentStage, setCurrentStage] = useState<InterviewStage>("explain");
   const [turnCount, setTurnCount] = useState(0);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
-  const [streamingMessageId, setStreamingMessageId] = useState<string | null>(null);
+  const [streamingMessageId, setStreamingMessageId] = useState<string | null>(
+    null,
+  );
   const [streamedLength, setStreamedLength] = useState(0);
   const [result, setResult] = useState<InterviewResult | null>(null);
 
@@ -56,25 +58,29 @@ export function useMockInterviewSession() {
     (entryType === "bank" && questionId !== null) ||
     entryType === "custom";
 
-  const streamAiMessage = useCallback((content: string, stage: InterviewStage) => {
-    const id = nextId();
-    setMessages((prev) => [...prev, { id, role: "ai", content, stage }]);
-    setStreamingMessageId(id);
-    setStreamedLength(0);
+  const streamAiMessage = useCallback(
+    (content: string, stage: InterviewStage) => {
+      const id = nextId();
+      setMessages((prev) => [...prev, { id, role: "ai", content, stage }]);
+      setStreamingMessageId(id);
+      setStreamedLength(0);
 
-    if (streamIntervalRef.current) clearInterval(streamIntervalRef.current);
-    streamIntervalRef.current = setInterval(() => {
-      setStreamedLength((prevLength) => {
-        const nextLength = prevLength + STREAM_CHARS_PER_TICK;
-        if (nextLength >= content.length) {
-          if (streamIntervalRef.current) clearInterval(streamIntervalRef.current);
-          setStreamingMessageId(null);
-          return content.length;
-        }
-        return nextLength;
-      });
-    }, STREAM_TICK_MS);
-  }, []);
+      if (streamIntervalRef.current) clearInterval(streamIntervalRef.current);
+      streamIntervalRef.current = setInterval(() => {
+        setStreamedLength((prevLength) => {
+          const nextLength = prevLength + STREAM_CHARS_PER_TICK;
+          if (nextLength >= content.length) {
+            if (streamIntervalRef.current)
+              clearInterval(streamIntervalRef.current);
+            setStreamingMessageId(null);
+            return content.length;
+          }
+          return nextLength;
+        });
+      }, STREAM_TICK_MS);
+    },
+    [],
+  );
 
   const start = useCallback(() => {
     setScreenState("running");
@@ -87,7 +93,10 @@ export function useMockInterviewSession() {
     setCurrentStage(first.stage);
     streamAiMessage(first.content, first.stage);
 
-    timerIntervalRef.current = setInterval(() => setElapsedSeconds((s) => s + 1), 1000);
+    timerIntervalRef.current = setInterval(
+      () => setElapsedSeconds((s) => s + 1),
+      1000,
+    );
   }, [maxTurns, streamAiMessage]);
 
   const finish = useCallback(() => {
@@ -101,7 +110,10 @@ export function useMockInterviewSession() {
     (text: string) => {
       if (!text.trim() || streamingMessageId) return;
 
-      setMessages((prev) => [...prev, { id: nextId(), role: "user", content: text, stage: currentStage }]);
+      setMessages((prev) => [
+        ...prev,
+        { id: nextId(), role: "user", content: text, stage: currentStage },
+      ]);
       const nextTurn = turnCount + 1;
       setTurnCount(nextTurn);
 
@@ -114,7 +126,14 @@ export function useMockInterviewSession() {
       setCurrentStage(next.stage);
       streamAiMessage(next.content, next.stage);
     },
-    [currentStage, finish, maxTurns, streamAiMessage, streamingMessageId, turnCount],
+    [
+      currentStage,
+      finish,
+      maxTurns,
+      streamAiMessage,
+      streamingMessageId,
+      turnCount,
+    ],
   );
 
   const requestHint = useCallback(() => {

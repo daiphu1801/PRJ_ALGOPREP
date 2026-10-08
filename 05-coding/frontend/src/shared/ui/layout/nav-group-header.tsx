@@ -16,7 +16,13 @@ type NavGroupHeaderProps = {
  * expand/collapse chevron and its rotation are generic "toggle group" behavior, not admin-nav
  * specific — this component doesn't know `ADMIN_NAV_GROUPS` exists, the caller owns that state.
  */
-export function NavGroupHeader({ label, icon: Icon, isOpen, collapsed, onClick }: NavGroupHeaderProps) {
+export function NavGroupHeader({
+  label,
+  icon: Icon,
+  isOpen,
+  collapsed,
+  onClick,
+}: NavGroupHeaderProps) {
   return (
     <button
       type="button"
@@ -28,7 +34,12 @@ export function NavGroupHeader({ label, icon: Icon, isOpen, collapsed, onClick }
         collapsed ? "justify-center" : "justify-between",
       )}
     >
-      <span className={cn("flex min-w-0 items-center gap-2.5", collapsed && "justify-center")}>
+      <span
+        className={cn(
+          "flex min-w-0 items-center gap-2.5",
+          collapsed && "justify-center",
+        )}
+      >
         <Icon aria-hidden="true" className="h-4 w-4 shrink-0" />
         {!collapsed && <span className="truncate normal-case">{label}</span>}
       </span>
@@ -36,7 +47,10 @@ export function NavGroupHeader({ label, icon: Icon, isOpen, collapsed, onClick }
       {!collapsed && (
         <ChevronRight
           aria-hidden="true"
-          className={cn("h-3.5 w-3.5 shrink-0 text-[var(--color-text-muted)] transition-transform", isOpen && "rotate-90")}
+          className={cn(
+            "h-3.5 w-3.5 shrink-0 text-[var(--color-text-muted)] transition-transform",
+            isOpen && "rotate-90",
+          )}
         />
       )}
     </button>

@@ -47,7 +47,9 @@ export function InterviewQuestionInfoView({ questionId, basePath }: Props) {
     return (
       <div>
         <PageHeader
-          leading={<IconAction icon={ArrowLeft} label={t("back")} href={basePath} />}
+          leading={
+            <IconAction icon={ArrowLeft} label={t("back")} href={basePath} />
+          }
           title={ta("notFoundTitle")}
         />
         <Card>
@@ -57,21 +59,32 @@ export function InterviewQuestionInfoView({ questionId, basePath }: Props) {
     );
   }
 
-  const rubricTotal = question.rubric.reduce((sum, criterion) => sum + criterion.weight, 0);
+  const rubricTotal = question.rubric.reduce(
+    (sum, criterion) => sum + criterion.weight,
+    0,
+  );
 
   return (
     <div>
       <PageHeader
-        leading={<IconAction icon={ArrowLeft} label={t("back")} href={basePath} />}
+        leading={
+          <IconAction icon={ArrowLeft} label={t("back")} href={basePath} />
+        }
         title={t("title", { code: question.code })}
         description={topicLabel(topicList, question.topic)}
         actions={
           <>
-            <Button variant="ghost" size="sm" className="border border-[var(--color-border)]">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="border border-[var(--color-border)]"
+            >
               {ta("previewAsLearner")}
             </Button>
             <Button asChild variant="cta" size="sm">
-              <Link href={`${basePath}/${question.code}/edit`}>{t("edit")}</Link>
+              <Link href={`${basePath}/${question.code}/edit`}>
+                {t("edit")}
+              </Link>
             </Button>
           </>
         }
@@ -80,14 +93,16 @@ export function InterviewQuestionInfoView({ questionId, basePath }: Props) {
       <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div className="flex min-w-0 flex-col gap-4">
           <Card title={ta("group1Title")}>
-            <MarkdownPreview>{question.question}</MarkdownPreview>
+            <MarkdownPreview size="lg">{question.question}</MarkdownPreview>
           </Card>
 
           <Card title={ta("group2Title")}>
             {question.followUps.length === 0 ? (
-              <p className="text-[13px] text-[var(--color-text-muted)]">{t("followUpsEmpty")}</p>
+              <p className="text-[14px] text-[var(--color-text-muted)]">
+                {t("followUpsEmpty")}
+              </p>
             ) : (
-              <ol className="flex list-decimal flex-col gap-2 pl-5 text-[13px]">
+              <ol className="flex list-decimal flex-col gap-2.5 pl-5 text-[15px] leading-7">
                 {question.followUps.map((followUp) => (
                   <li key={followUp}>{followUp}</li>
                 ))}
@@ -114,10 +129,12 @@ export function InterviewQuestionInfoView({ questionId, basePath }: Props) {
                 {question.rubric.map((criterion) => (
                   <li
                     key={criterion.label}
-                    className="glass-surface flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-border)] px-3.5 py-2.5 text-[13px]"
+                    className="glass-surface flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-border)] px-3.5 py-2.5 text-[14px]"
                   >
                     <span>{criterion.label}</span>
-                    <span className="font-mono text-[var(--color-text-muted)]">{criterion.weight}%</span>
+                    <span className="font-mono text-[var(--color-text-muted)]">
+                      {criterion.weight}%
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -129,11 +146,15 @@ export function InterviewQuestionInfoView({ questionId, basePath }: Props) {
           <Card title={ta("classifyTitle")}>
             <dl className="flex flex-col gap-3 text-[13px]">
               <div className="flex items-center justify-between gap-2">
-                <dt className="text-[var(--color-text-subtle)]">{ta("topicLabel")}</dt>
+                <dt className="text-[var(--color-text-subtle)]">
+                  {ta("topicLabel")}
+                </dt>
                 <dd>{topicLabel(topicList, question.topic)}</dd>
               </div>
               <div className="flex items-center justify-between gap-2">
-                <dt className="text-[var(--color-text-subtle)]">{ta("levelLabel")}</dt>
+                <dt className="text-[var(--color-text-subtle)]">
+                  {ta("levelLabel")}
+                </dt>
                 <dd>
                   <Badge variant={levelTone(levelList, question.level)}>
                     {levelLabel(levelList, question.level)}
@@ -146,15 +167,23 @@ export function InterviewQuestionInfoView({ questionId, basePath }: Props) {
           <Card title={t("usageTitle")}>
             <dl className="flex flex-col gap-3 text-[13px]">
               <div className="flex items-center justify-between gap-2">
-                <dt className="text-[var(--color-text-subtle)]">{t("usageCount")}</dt>
+                <dt className="text-[var(--color-text-subtle)]">
+                  {t("usageCount")}
+                </dt>
                 <dd className="font-mono">{question.usageCount}</dd>
               </div>
               <div className="flex items-center justify-between gap-2">
-                <dt className="text-[var(--color-text-subtle)]">{t("averageScore")}</dt>
-                <dd className="font-mono">{question.averageScore.toFixed(1)} / 5</dd>
+                <dt className="text-[var(--color-text-subtle)]">
+                  {t("averageScore")}
+                </dt>
+                <dd className="font-mono">
+                  {question.averageScore.toFixed(1)} / 5
+                </dd>
               </div>
               <div className="flex items-center justify-between gap-2">
-                <dt className="text-[var(--color-text-subtle)]">{t("practiceMode")}</dt>
+                <dt className="text-[var(--color-text-subtle)]">
+                  {t("practiceMode")}
+                </dt>
                 <dd>
                   <Badge variant={question.hasRubric ? "success" : "neutral"}>
                     {question.hasRubric ? t("practiceOn") : t("practiceOff")}

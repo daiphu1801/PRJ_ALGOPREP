@@ -13,7 +13,11 @@ function initialsOf(displayName: string): string {
   return last2.map((p) => p[0]?.toUpperCase() ?? "").join("") || "?";
 }
 
-export function IdentityCard({ profile }: { profile: UserProfile | undefined }) {
+export function IdentityCard({
+  profile,
+}: {
+  profile: UserProfile | undefined;
+}) {
   if (!profile) {
     return (
       <section className="glass-card flex items-center gap-4 border border-[var(--color-border)] px-6 py-5">
@@ -32,8 +36,12 @@ export function IdentityCard({ profile }: { profile: UserProfile | undefined }) 
         {initialsOf(profile.displayName)}
       </div>
       <div className="min-w-0">
-        <p className="text-xl font-bold tracking-tight">{profile.displayName}</p>
-        <p className="mt-0.5 font-mono text-sm text-[var(--color-text-subtle)]">{profile.email}</p>
+        <p className="text-xl font-bold tracking-tight">
+          {profile.displayName}
+        </p>
+        <p className="mt-0.5 font-mono text-sm text-[var(--color-text-subtle)]">
+          {profile.email}
+        </p>
       </div>
     </section>
   );

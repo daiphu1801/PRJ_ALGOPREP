@@ -22,7 +22,9 @@ export function BulkLevelDialog({ open, onClose, count, onApply }: Props) {
   const levels = useProblemLevels();
   const [picked, setPicked] = useState<string | null>(null);
   // Falls back to the first level so the select never shows a stale or empty choice.
-  const value = levels.some((level) => level.key === picked) ? picked! : (levels[0]?.key ?? "");
+  const value = levels.some((level) => level.key === picked)
+    ? picked!
+    : (levels[0]?.key ?? "");
 
   return (
     <Modal
@@ -39,7 +41,12 @@ export function BulkLevelDialog({ open, onClose, count, onApply }: Props) {
           >
             {t("bulkLevel.cancel")}
           </Button>
-          <Button variant="cta" size="sm" onClick={() => onApply(value)} disabled={value === ""}>
+          <Button
+            variant="cta"
+            size="sm"
+            onClick={() => onApply(value)}
+            disabled={value === ""}
+          >
             {t("bulkLevel.apply")}
           </Button>
         </>
@@ -49,7 +56,10 @@ export function BulkLevelDialog({ open, onClose, count, onApply }: Props) {
         label={t("bulkLevel.label")}
         value={value}
         onChange={(event) => setPicked(event.target.value)}
-        options={levels.map((level) => ({ value: level.key, label: level.label }))}
+        options={levels.map((level) => ({
+          value: level.key,
+          label: level.label,
+        }))}
       />
     </Modal>
   );

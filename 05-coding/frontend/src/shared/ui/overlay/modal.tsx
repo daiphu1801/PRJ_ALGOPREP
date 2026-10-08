@@ -25,7 +25,14 @@ type ModalProps = {
   className?: string;
 };
 
-export function Modal({ open, onClose, title, children, footer, className }: ModalProps) {
+export function Modal({
+  open,
+  onClose,
+  title,
+  children,
+  footer,
+  className,
+}: ModalProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const openerRef = useRef<HTMLElement | null>(null);
 
@@ -44,7 +51,9 @@ export function Modal({ open, onClose, title, children, footer, className }: Mod
       }
       if (event.key !== "Tab" || !panel) return;
 
-      const focusable = Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE));
+      const focusable = Array.from(
+        panel.querySelectorAll<HTMLElement>(FOCUSABLE),
+      );
       const first = focusable[0];
       const last = focusable[focusable.length - 1];
       if (!first || !last) return;
@@ -88,8 +97,12 @@ export function Modal({ open, onClose, title, children, footer, className }: Mod
         )}
       >
         <h2 className="text-base font-semibold">{title}</h2>
-        <div className="mt-3 text-sm text-[var(--color-text-muted)]">{children}</div>
-        {footer ? <div className="mt-5 flex justify-end gap-2">{footer}</div> : null}
+        <div className="mt-3 text-sm text-[var(--color-text-muted)]">
+          {children}
+        </div>
+        {footer ? (
+          <div className="mt-5 flex justify-end gap-2">{footer}</div>
+        ) : null}
       </div>
     </div>
   );

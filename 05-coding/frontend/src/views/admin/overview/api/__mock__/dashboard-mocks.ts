@@ -58,13 +58,28 @@ export function fakeSubmissionsByLanguage(): Promise<SubmissionsByLanguage> {
   // static mock — kept as one representative wave per language here since the prototype's own bar
   // color cycles i%3 across a single shared series, not 3 independent series).
   const pointLabels = Array.from({ length: 20 }, (_, i) => `N${i + 1}`);
-  const barSeed = [40, 55, 30, 70, 45, 60, 35, 80, 50, 65, 42, 58, 38, 72, 48, 62, 33, 68, 52, 44];
+  const barSeed = [
+    40, 55, 30, 70, 45, 60, 35, 80, 50, 65, 42, 58, 38, 72, 48, 62, 33, 68, 52,
+    44,
+  ];
   return delay({
     pointLabels,
     series: [
-      { label: "Python", colorVar: "--color-admin-cyan", points: barSeed.map((v, i) => (i % 3 === 0 ? v : 0)) },
-      { label: "C++", colorVar: "--color-admin-teal", points: barSeed.map((v, i) => (i % 3 === 1 ? v : 0)) },
-      { label: "Java", colorVar: "--color-admin-slate", points: barSeed.map((v, i) => (i % 3 === 2 ? v : 0)) },
+      {
+        label: "Python",
+        colorVar: "--color-admin-cyan",
+        points: barSeed.map((v, i) => (i % 3 === 0 ? v : 0)),
+      },
+      {
+        label: "C++",
+        colorVar: "--color-admin-teal",
+        points: barSeed.map((v, i) => (i % 3 === 1 ? v : 0)),
+      },
+      {
+        label: "Java",
+        colorVar: "--color-admin-slate",
+        points: barSeed.map((v, i) => (i % 3 === 2 ? v : 0)),
+      },
     ],
   });
 }

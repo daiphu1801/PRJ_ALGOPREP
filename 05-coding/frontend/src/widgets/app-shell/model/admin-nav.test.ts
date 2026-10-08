@@ -1,6 +1,10 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 import { describe, expect, it } from "vitest";
-import { ADMIN_NAV_GROUPS, ADMIN_NAV_MISC, ADMIN_NAV_OVERVIEW } from "./admin-nav";
+import {
+  ADMIN_NAV_GROUPS,
+  ADMIN_NAV_MISC,
+  ADMIN_NAV_OVERVIEW,
+} from "./admin-nav";
 
 // Every route the admin sidebar links to must be a stub page that already exists under
 // app/(admin)/admin/** — this task's instruction: "the sidebar's links should point at real
@@ -21,7 +25,10 @@ const EXISTING_ADMIN_ROUTES = new Set([
 
 describe("admin nav config", () => {
   it("every grouped nav item and the overview item point at a route that exists", () => {
-    const hrefs = [ADMIN_NAV_OVERVIEW, ...ADMIN_NAV_GROUPS.flatMap((g) => g.items)].map((item) => item.href);
+    const hrefs = [
+      ADMIN_NAV_OVERVIEW,
+      ...ADMIN_NAV_GROUPS.flatMap((g) => g.items),
+    ].map((item) => item.href);
     for (const href of hrefs) {
       expect(EXISTING_ADMIN_ROUTES.has(href)).toBe(true);
     }

@@ -21,7 +21,11 @@ export {
   type EmailOtpInput,
   type ProfileFormInput,
 } from "./model/schema";
-export { useInterviewPreferences, useMyProfile, useMySettings } from "./api/queries";
+export {
+  useInterviewPreferences,
+  useMyProfile,
+  useMySettings,
+} from "./api/queries";
 export {
   changeMyPassword,
   confirmEmailChange,

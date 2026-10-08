@@ -56,10 +56,20 @@ export function EmailOtpDialog({
       title={t("emailOtp.title")}
       footer={
         <>
-          <Button variant="ghost" size="sm" onClick={onCancel} disabled={pending}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onCancel}
+            disabled={pending}
+          >
             {t("emailOtp.cancel")}
           </Button>
-          <Button size="sm" onClick={submit} disabled={pending || code.length !== 6} aria-busy={pending || undefined}>
+          <Button
+            size="sm"
+            onClick={submit}
+            disabled={pending || code.length !== 6}
+            aria-busy={pending || undefined}
+          >
             {t("emailOtp.confirm")}
           </Button>
         </>

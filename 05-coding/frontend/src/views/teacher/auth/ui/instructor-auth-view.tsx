@@ -4,9 +4,19 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { useT } from "@/shared/i18n";
-import { AuthAsideHighlights, AuthAsidePanel, LiquidGlassBackdrop, ThemeLangSwitcher } from "@/shared/ui";
+import {
+  AuthAsideHighlights,
+  AuthAsidePanel,
+  LiquidGlassBackdrop,
+  ThemeLangSwitcher,
+} from "@/shared/ui";
 import { instructorLogin } from "@/entities/auth";
-import { AuthForm, AuthLoadingOverlay, DevQuickLogin, useAuthFlow } from "@/features/auth-by-credentials";
+import {
+  AuthForm,
+  AuthLoadingOverlay,
+  DevQuickLogin,
+  useAuthFlow,
+} from "@/features/auth-by-credentials";
 
 /**
  * Dedicated Instructor login screen (`DEC-2026-0925-instructor-separate-login-route`) — a separate
@@ -37,9 +47,15 @@ function InstructorAuthViewContent() {
 
       <section className="glass-card relative z-10 grid w-full max-w-3xl grid-cols-1 overflow-hidden lg:grid-cols-[1.06fr_1fr]">
         <div className="p-8">
-          <p className="text-xs font-medium uppercase tracking-wide text-[var(--color-text-muted)]">AlgoPrep</p>
-          <h1 className="mt-2 text-2xl font-semibold text-[var(--color-text)]">{tInstructor("title")}</h1>
-          <p className="mt-2 text-sm leading-relaxed text-[var(--color-text-muted)]">{tInstructor("subtitle")}</p>
+          <p className="text-xs font-medium uppercase tracking-wide text-[var(--color-text-muted)]">
+            AlgoPrep
+          </p>
+          <h1 className="mt-2 text-2xl font-semibold text-[var(--color-text)]">
+            {tInstructor("title")}
+          </h1>
+          <p className="mt-2 text-sm leading-relaxed text-[var(--color-text-muted)]">
+            {tInstructor("subtitle")}
+          </p>
 
           <div className="mt-6">
             <AuthForm flow={flow} showOAuth={false} />
@@ -50,14 +66,21 @@ function InstructorAuthViewContent() {
 
           <p className="mt-6 text-center text-xs text-[var(--color-text-muted)]">
             {tInstructor("notInstructorHint")}{" "}
-            <Link href="/login" className="font-medium text-[var(--color-primary)] hover:underline">
+            <Link
+              href="/login"
+              className="font-medium text-[var(--color-primary)] hover:underline"
+            >
               {t("loginTitle")}
             </Link>
           </p>
         </div>
 
         <AuthAsidePanel
-          badges={[tInstructor("badgeClasses"), tInstructor("badgeGrading"), tInstructor("badgeProgress")]}
+          badges={[
+            tInstructor("badgeClasses"),
+            tInstructor("badgeGrading"),
+            tInstructor("badgeProgress"),
+          ]}
           title={tInstructor("asideTitle")}
           description={tInstructor("asideDescription")}
         >
@@ -70,7 +93,9 @@ function InstructorAuthViewContent() {
           />
         </AuthAsidePanel>
 
-        {loadingStep !== null && <AuthLoadingOverlay currentStep={loadingStep} />}
+        {loadingStep !== null && (
+          <AuthLoadingOverlay currentStep={loadingStep} />
+        )}
       </section>
     </div>
   );

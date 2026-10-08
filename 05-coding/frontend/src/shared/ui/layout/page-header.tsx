@@ -24,22 +24,34 @@ type PageHeaderProps = {
   className?: string;
 };
 
-export function PageHeader({ leading, title, description, actions, className }: PageHeaderProps) {
+export function PageHeader({
+  leading,
+  title,
+  description,
+  actions,
+  className,
+}: PageHeaderProps) {
   return (
     <header
       className={cn(
-        "glass-card sticky top-0 z-10 mb-4 flex min-h-[62px] items-center gap-3 border border-[var(--color-border)] px-4 py-2.5",
+        "glass-card sticky top-0 z-10 mb-4 flex min-h-[62px] flex-wrap items-center gap-x-3 gap-y-2 border border-[var(--color-border)] px-4 py-2.5",
         className,
       )}
     >
       {leading ? <div className="shrink-0">{leading}</div> : null}
-      <div className="min-w-0 flex-1">
+      <div className="min-w-[12rem] flex-1">
         <h1 className="truncate text-base font-bold tracking-tight">{title}</h1>
         {description ? (
-          <p className="truncate text-[12.5px] text-[var(--color-text-muted)]">{description}</p>
+          <p className="truncate text-[12.5px] text-[var(--color-text-muted)]">
+            {description}
+          </p>
         ) : null}
       </div>
-      {actions ? <div className="flex shrink-0 items-center gap-2">{actions}</div> : null}
+      {actions ? (
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          {actions}
+        </div>
+      ) : null}
     </header>
   );
 }

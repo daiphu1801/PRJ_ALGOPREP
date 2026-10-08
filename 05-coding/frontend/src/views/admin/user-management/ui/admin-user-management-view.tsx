@@ -6,11 +6,20 @@
 //
 // Divergences, each backed by a document:
 //
-// 1. Bulk lock goes through ConfirmDialog. BD section 3 defines a `bulk-action-confirming` state for
-//    it — "hành động phá huỷ khả năng đăng nhập" — and flags it [SoT: Suy luận] because the static
-//    mockup never drew a dialog. The mockup's button clears the selection instead of locking, which
-//    is plainly a stand-in.
-// 2. The selection bar's lock button is styled as destructive; the other two are not.
+// 1. Bulk lock goes through LockAccountsDialog. BD section 3 defines a `bulk-action-confirming` state
+//    for it — "hành động phá huỷ khả năng đăng nhập" — and flags it [SoT: Suy luận] because the
+//    static mockup never drew a dialog. The mockup's button clears the selection instead of locking,
+//    which is plainly a stand-in.
+// 2. Owner instruction 2026-10-05: bulk selection now carries only the status actions. "Đặt lại mật
+//    khẩu" and "Đổi vai trò" were dropped — resetting a stranger's password is per-person (F1-13 lists
+//    it as an account-troubleshooting act, and OAuth-only accounts cannot take a password at all,
+//    BD section 9 NO 10), and demoting a batch of instructors to one target role is a mistake with no
+//    undo. Locking is the one action that is genuinely the same decision for everyone in a selection,
+//    because it is what incident response looks like. Both survivors came out of BD section 4 Q2,
+//    which was still open.
+// 3. Locking a selection now also takes a reason and can mail the affected users. F1-13 never asked
+//    for either — this opens a new `Fx-nn` code and is NOT yet in 01-rd/req/identity.md. See
+//    lock-accounts-dialog.tsx.
 //
 // Known gap, deliberately left visible rather than papered over: the "Hoạt động" column and the
 // "Đang hoạt động 24 giờ" stat HAVE NO DATA SOURCE. `database/identity.md` has no last-seen column.
@@ -20,6 +29,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { KeyRound, Lock, LockOpen, UserCog } from "lucide-react";
 import {
   fetchAdminUserPage,
   initialsOf,
@@ -29,8 +39,10 @@ import {
 } from "../api";
 import { useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
-import { checkLock } from "../model/guards";
+import { checkLock, checkRoleChange, partitionByStatus } from "../model/guards";
 import { AddAccountDialog } from "./add-account-dialog";
+import { ChangeRoleDialog } from "./change-role-dialog";
+import { LockAccountsDialog } from "./lock-accounts-dialog";
 import {
   Badge,
   BulkActionBar,
@@ -43,6 +55,7 @@ import {
   RankedProgressList,
   FilterBar,
   FilterMenu,
+  IconAction,
   SettingRow,
   type BadgeVariant,
   type DataTableColumn,
@@ -82,7 +95,16 @@ export function AdminUserManagementView() {
   const [role, setRole] = useState<RoleFilter>("all");
   const [status, setStatus] = useState<StatusFilter>("all");
   const [selected, setSelected] = useState<ReadonlySet<string>>(new Set());
-  const [confirmingLock, setConfirmingLock] = useState(false);
+  // The lock and unlock dialogs act on whichever rows opened them: the bulk bar passes the selection,
+  // a row action passes that one account. `null` = closed.
+  const [lockRequest, setLockRequest] = useState<{
+    targets: AdminUser[];
+    skipped: number;
+    includesSelf: boolean;
+  } | null>(null);
+  const [unlockTargets, setUnlockTargets] = useState<AdminUser[] | null>(null);
+  const [roleTarget, setRoleTarget] = useState<AdminUser | null>(null);
+  const [resetTarget, setResetTarget] = useState<AdminUser | null>(null);
 
   // Role, status and free text combine with AND — same as the mockup's own filter (dc.html:449-453).
   const users = useMemo(() => {
@@ -97,7 +119,29 @@ export function AdminUserManagementView() {
     );
   }, [accounts, query, role, status]);
 
-  const lockCheck = checkLock(accounts, selected, page.currentUserEmail);
+  // A selection can mix active and locked rows, so each button acts on its own subset and reports
+  // what it would skip rather than firing a call that changes nothing.
+  const { lockable, unlockable } = partitionByStatus(accounts, selected);
+
+  // Every filter change drops the selection (BD section 6, Khu vực C NO 2: "Bỏ toàn bộ lựa chọn khi
+  // đổi trang, đổi bộ lọc"). Without this the admin filters down to one row, ticks it, filters back
+  // and the bar still reads "9 selected" — and "Khóa tài khoản" would then hit nine people they never
+  // looked at. Cleared in each setter rather than in an effect: an effect here would run one render
+  // late, so the bar would briefly show a stale count against the new filter.
+  function changeQuery(next: string) {
+    setQuery(next);
+    setSelected(new Set());
+  }
+
+  function changeRole(next: RoleFilter) {
+    setRole(next);
+    setSelected(new Set());
+  }
+
+  function changeStatus(next: StatusFilter) {
+    setStatus(next);
+    setSelected(new Set());
+  }
 
   function toggleRow(key: string) {
     setSelected((prev) => {
@@ -108,14 +152,78 @@ export function AdminUserManagementView() {
     });
   }
 
-  function requestBulkLock() {
+  function requestLock(targets: AdminUser[], skipped: number) {
+    const check = checkLock(
+      accounts,
+      new Set(targets.map((user) => user.email)),
+      page.currentUserEmail,
+    );
     // "At least one active ADMIN always remains" is a hard block; locking yourself only warns.
-    if (lockCheck.blockedLastAdmin) toast.warning(t("lockBlockedBody"));
-    else setConfirmingLock(true);
+    if (check.blockedLastAdmin) toast.warning(t("lockBlockedBody"));
+    else setLockRequest({ targets, skipped, includesSelf: check.includesSelf });
+  }
+
+  function applyLock(reason: string, notify: boolean) {
+    // No endpoint yet — the rows flip locally and the selection clears.
+    const target = new Set(
+      (lockRequest?.targets ?? []).map((user) => user.email),
+    );
+    setAccounts((previous) =>
+      previous.map((account) =>
+        target.has(account.email) ? { ...account, status: "locked" } : account,
+      ),
+    );
+    toast.success(
+      notify
+        ? t("lockDoneNotified", { count: target.size, reason })
+        : t("lockDone", { count: target.size, reason }),
+    );
+    setSelected(new Set());
+  }
+
+  function applyUnlock() {
+    const target = new Set((unlockTargets ?? []).map((user) => user.email));
+    setAccounts((previous) =>
+      previous.map((account) =>
+        target.has(account.email) ? { ...account, status: "active" } : account,
+      ),
+    );
+    toast.success(t("unlockDone", { count: target.size }));
+    setSelected(new Set());
+    setUnlockTargets(null);
+  }
+
+  function applyRoleChange(user: AdminUser, nextRole: AdminUserRole) {
+    const check = checkRoleChange(
+      accounts,
+      user.email,
+      nextRole,
+      page.currentUserEmail,
+    );
+    if (check.blockedLastAdmin) {
+      toast.warning(t("roleBlockedBody"));
+      return;
+    }
+    setAccounts((previous) =>
+      previous.map((account) =>
+        account.email === user.email ? { ...account, role: nextRole } : account,
+      ),
+    );
+    toast.success(
+      t("roleDone", { name: user.name, role: t(`role.${nextRole}`) }),
+    );
+  }
+
+  function applyResetPassword() {
+    if (resetTarget)
+      toast.success(t("resetDone", { email: resetTarget.email }));
+    setResetTarget(null);
   }
 
   function toggleAll(selectAll: boolean) {
-    setSelected(selectAll ? new Set(users.map((user) => user.email)) : new Set());
+    setSelected(
+      selectAll ? new Set(users.map((user) => user.email)) : new Set(),
+    );
   }
 
   const columns: DataTableColumn<AdminUser>[] = [
@@ -143,14 +251,20 @@ export function AdminUserManagementView() {
       key: "role",
       header: t("columnRole"),
       width: "116px",
-      render: (user) => <Badge variant={ROLE_VARIANT[user.role]}>{t(`role.${user.role}`)}</Badge>,
+      render: (user) => (
+        <Badge variant={ROLE_VARIANT[user.role]}>
+          {t(`role.${user.role}`)}
+        </Badge>
+      ),
     },
     {
       key: "solved",
       header: t("columnSolved"),
       width: "84px",
       align: "right",
-      render: (user) => <span className="font-mono font-semibold">{user.solvedCount}</span>,
+      render: (user) => (
+        <span className="font-mono font-semibold">{user.solvedCount}</span>
+      ),
     },
     {
       key: "submissions",
@@ -176,11 +290,11 @@ export function AdminUserManagementView() {
     {
       key: "status",
       header: t("columnStatus"),
-      width: "104px",
+      width: "132px",
       align: "right",
       render: (user) => (
         <span
-          className="flex items-center justify-end gap-1.5 text-[12.5px] font-semibold"
+          className="flex items-center justify-end gap-1.5 text-[12.5px] font-semibold whitespace-nowrap"
           style={{ color: `var(${STATUS_COLOR_VAR[user.status]})` }}
         >
           <span
@@ -189,6 +303,46 @@ export function AdminUserManagementView() {
             style={{ background: `var(${STATUS_COLOR_VAR[user.status]})` }}
           />
           {t(`status.${user.status}`)}
+        </span>
+      ),
+    },
+    {
+      // Per-account actions: the touchpoint ADM0201 Q7 left open once reset-password and change-role
+      // left the bulk bar. Lock/unlock sit here too so a single account never needs a selection.
+      key: "actions",
+      header: t("columnActions"),
+      width: "132px",
+      align: "right",
+      render: (user) => (
+        <span className="flex items-center justify-end gap-1.5">
+          <IconAction
+            icon={UserCog}
+            label={t("actionChangeRole")}
+            ariaLabel={t("actionChangeRoleFor", { name: user.name })}
+            onClick={() => setRoleTarget(user)}
+          />
+          <IconAction
+            icon={KeyRound}
+            label={t("actionResetPassword")}
+            ariaLabel={t("actionResetPasswordFor", { name: user.name })}
+            onClick={() => setResetTarget(user)}
+          />
+          {user.status === "locked" ? (
+            <IconAction
+              icon={LockOpen}
+              label={t("actionUnlock")}
+              ariaLabel={t("actionUnlockFor", { name: user.name })}
+              onClick={() => setUnlockTargets([user])}
+            />
+          ) : (
+            <IconAction
+              icon={Lock}
+              tone="danger"
+              label={t("actionLock")}
+              ariaLabel={t("actionLockFor", { name: user.name })}
+              onClick={() => requestLock([user], 0)}
+            />
+          )}
         </span>
       ),
     },
@@ -212,14 +366,17 @@ export function AdminUserManagementView() {
             label: t("searchLabel"),
             placeholder: t("searchPlaceholder"),
             value: query,
-            onChange: (next) => setQuery(next),
+            onChange: changeQuery,
           }}
-          resultCount={t("resultCount", { shown: users.length, total: accounts.length })}
+          resultCount={t("resultCount", {
+            shown: users.length,
+            total: accounts.length,
+          })}
         >
           <FilterMenu
             label={t("roleFilterLabel")}
             value={role}
-            onValueChange={setRole}
+            onValueChange={changeRole}
             options={[
               { value: "all", label: t("filterAll") },
               { value: "student", label: t("role.student") },
@@ -230,39 +387,40 @@ export function AdminUserManagementView() {
           <FilterMenu
             label={t("statusFilterLabel")}
             value={status}
-            onValueChange={setStatus}
+            onValueChange={changeStatus}
             options={[
               { value: "all", label: t("filterAll") },
               { value: "active", label: t("status.active") },
+              { value: "pending", label: t("status.pending") },
               { value: "locked", label: t("status.locked") },
             ]}
           />
         </FilterBar>
 
-        <BulkActionBar count={selected.size} label={t("selectionLabel", { count: selected.size })}>
+        <BulkActionBar
+          count={selected.size}
+          label={t("selectionLabel", { count: selected.size })}
+        >
+          {/* Disabled rather than hidden when the selection has nothing to change: a selection of only
+              locked rows still needs the unlock button, and one of only active rows still needs lock,
+              so hiding either would make the bar flicker as the admin ticks across the page. */}
           <Button
             variant="ghost"
             size="sm"
-            className="border border-[var(--color-border)]"
-            onClick={() => toast.success(t("bulkResetDone", { count: selected.size }))}
-          >
-            {t("bulkResetPassword")}
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="border border-[var(--color-border)]"
-            onClick={() => toast.success(t("bulkRoleDone", { count: selected.size }))}
-          >
-            {t("bulkChangeRole")}
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={requestBulkLock}
-            className="text-[var(--color-admin-negative)]"
+            className="border border-[var(--color-border)] text-[var(--color-admin-negative-text)]"
+            onClick={() => requestLock(lockable, unlockable.length)}
+            disabled={lockable.length === 0}
           >
             {t("bulkLock")}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="border border-[var(--color-border)]"
+            onClick={() => setUnlockTargets(unlockable)}
+            disabled={unlockable.length === 0}
+          >
+            {t("bulkUnlock")}
           </Button>
         </BulkActionBar>
 
@@ -272,12 +430,12 @@ export function AdminUserManagementView() {
           rows={users}
           rowKey={(user) => user.email}
           emptyMessage={t("emptyFiltered")}
-          minWidth={760}
+          minWidth={910}
           selection={{
             selectedKeys: selected,
             onToggleRow: toggleRow,
             onToggleAll: toggleAll,
-            selectAllLabel: t("selectAll"),
+            selectAllLabel: t("selectAll", { count: users.length }),
             rowLabel: (user) => t("selectRow", { name: user.name }),
           }}
         />
@@ -287,18 +445,28 @@ export function AdminUserManagementView() {
           pageSize={PAGE_SIZE}
           total={page.totalUsers}
           onPageChange={() => {}}
-          summary={t("pageLabel", { page: 1, totalPages: page.totalPages, shown: users.length })}
+          summary={t("pageLabel", {
+            page: 1,
+            totalPages: page.totalPages,
+            shown: users.length,
+          })}
           previousLabel={t("previous")}
           nextLabel={t("next")}
         />
       </Card>
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-        <Card title={t("roleDistributionTitle")} description={t("roleDistributionSubtitle")}>
+        <Card
+          title={t("roleDistributionTitle")}
+          description={t("roleDistributionSubtitle")}
+        >
           <RankedProgressList
             numbered={false}
             items={page.roleDistribution.map((item) => ({
-              label: item.role === "deactivated" ? t("role.deactivated") : t(`role.${item.role}`),
+              label:
+                item.role === "deactivated"
+                  ? t("role.deactivated")
+                  : t(`role.${item.role}`),
               value: item.percent,
               colorVar: ROLE_BAR_COLOR_VAR[item.role],
             }))}
@@ -332,31 +500,67 @@ export function AdminUserManagementView() {
         onCreate={(user) => setAccounts((previous) => [user, ...previous])}
       />
 
+      <LockAccountsDialog
+        open={lockRequest !== null}
+        onClose={() => setLockRequest(null)}
+        targets={lockRequest?.targets ?? []}
+        skippedCount={lockRequest?.skipped ?? 0}
+        includesSelf={lockRequest?.includesSelf ?? false}
+        onConfirm={applyLock}
+      />
+
+      <ChangeRoleDialog
+        user={roleTarget}
+        isSelf={roleTarget?.email === page.currentUserEmail}
+        onClose={() => setRoleTarget(null)}
+        onConfirm={applyRoleChange}
+      />
+
+      {/* Reset is per person (RD ADM0201 Q7): the temporary password goes to that one inbox, so the
+          dialog names the address instead of a count. */}
       <ConfirmDialog
-        open={confirmingLock}
-        onClose={() => setConfirmingLock(false)}
-        onConfirm={() => {
-          // No endpoint yet — the rows flip to locked locally and the selection clears.
-          setAccounts((previous) =>
-            previous.map((account) =>
-              selected.has(account.email) ? { ...account, status: "locked" } : account,
-            ),
-          );
-          toast.success(t("bulkLockDone", { count: selected.size }));
-          setSelected(new Set());
-          setConfirmingLock(false);
-        }}
-        title={t("confirmLockTitle", { count: selected.size })}
-        confirmLabel={t("confirmLockAction")}
+        open={resetTarget !== null}
+        onClose={() => setResetTarget(null)}
+        onConfirm={applyResetPassword}
+        title={t("resetTitle", { name: resetTarget?.name ?? "" })}
+        confirmLabel={t("resetAction")}
         cancelLabel={t("cancel")}
-        destructive
       >
-        {t("confirmLockBody", { count: selected.size })}
-        {lockCheck.includesSelf ? (
-          <span className="mt-2 block font-semibold text-[var(--color-admin-warn)]">
-            {t("confirmLockSelfWarning")}
-          </span>
-        ) : null}
+        <p>{t("resetBody", { email: resetTarget?.email ?? "" })}</p>
+      </ConfirmDialog>
+
+      {/* Unlock is not destructive — it restores access — so it needs a plain confirmation and no
+          reason field. The names are listed for the same reason as on the lock side: confirming
+          "yes, 3 accounts" says nothing about which three. */}
+      <ConfirmDialog
+        open={unlockTargets !== null}
+        onClose={() => setUnlockTargets(null)}
+        onConfirm={applyUnlock}
+        title={t("confirmUnlockTitle", { count: unlockTargets?.length ?? 0 })}
+        confirmLabel={t("confirmUnlockAction")}
+        cancelLabel={t("cancel")}
+      >
+        <p>{t("confirmUnlockBody", { count: unlockTargets?.length ?? 0 })}</p>
+        <ul className="mt-2 max-h-40 overflow-y-auto rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-[12.5px]">
+          {(unlockTargets ?? []).slice(0, 8).map((user) => (
+            <li
+              key={user.email}
+              className="flex items-baseline justify-between gap-3 py-0.5"
+            >
+              <span className="truncate font-semibold">{user.name}</span>
+              <span className="shrink-0 font-mono text-[11px] text-[var(--color-text-subtle)]">
+                {user.email}
+              </span>
+            </li>
+          ))}
+          {(unlockTargets?.length ?? 0) > 8 ? (
+            <li className="py-0.5 text-[var(--color-text-muted)]">
+              {t("lockDialog.moreCount", {
+                count: (unlockTargets?.length ?? 0) - 8,
+              })}
+            </li>
+          ) : null}
+        </ul>
       </ConfirmDialog>
     </div>
   );

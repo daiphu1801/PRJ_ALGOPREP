@@ -22,7 +22,9 @@ describe("ProfileView", () => {
 
     expect(await screen.findByText("Phú Đại")).toBeInTheDocument();
     expect(screen.getByText("phudai@fabbi.io")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Thông tin cá nhân" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Thông tin cá nhân" }),
+    ).toBeInTheDocument();
     expect(screen.getByLabelText("Họ và tên")).toHaveValue("Phú Đại");
   });
 });

@@ -44,7 +44,14 @@ export function TopicManagerDialog({ open, onClose, usage }: Props) {
           onCheckedChange={(checked) => {
             setInterviewTopicStar(topic.key, checked);
             toast.success(
-              t(checked ? "topicManager.starEnabled" : "topicManager.starDisabled", { name: topic.label }),
+              t(
+                checked
+                  ? "topicManager.starEnabled"
+                  : "topicManager.starDisabled",
+                {
+                  name: topic.label,
+                },
+              ),
             );
           }}
           label={t("topicManager.starLabel", { name: topic.label })}

@@ -42,7 +42,10 @@ export const forgotEmailSchema = z.object({
 });
 
 export const forgotOtpSchema = z.object({
-  otp: z.string().length(6, "errors.otpLength").regex(/^\d+$/, "errors.otpDigitsOnly"),
+  otp: z
+    .string()
+    .length(6, "errors.otpLength")
+    .regex(/^\d+$/, "errors.otpDigitsOnly"),
 });
 
 export const forgotResetSchema = z

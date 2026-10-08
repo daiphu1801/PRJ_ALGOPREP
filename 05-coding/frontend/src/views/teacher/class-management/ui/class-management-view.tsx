@@ -41,13 +41,13 @@ import {
   TextField,
 } from "@/shared/ui";
 
-type ClassDialog = { mode: "create" } | { mode: "edit"; target: ClassSummary } | null;
+type ClassDialog =
+  { mode: "create" } | { mode: "edit"; target: ClassSummary } | null;
 
 export function ClassManagementView() {
   const t = useT("classManagement");
   const classesQuery = useInstructorClasses();
   const classes = classesQuery.data ?? [];
-
 
   const [formDialog, setFormDialog] = useState<ClassDialog>(null);
   const [inviteClassId, setInviteClassId] = useState<string | null>(null);
@@ -63,9 +63,16 @@ export function ClassManagementView() {
     <div>
       <PageHeader
         title={t("header.title")}
-        description={t("header.summary", { classCount: classes.length, studentCount: totalStudents })}
+        description={t("header.summary", {
+          classCount: classes.length,
+          studentCount: totalStudents,
+        })}
         actions={
-          <Button variant="cta" size="sm" onClick={() => setFormDialog({ mode: "create" })}>
+          <Button
+            variant="cta"
+            size="sm"
+            onClick={() => setFormDialog({ mode: "create" })}
+          >
             {t("header.btnCreateClass")}
           </Button>
         }
@@ -77,32 +84,72 @@ export function ClassManagementView() {
           their list + filter bar. Deliberate divergence from the mockup's own per-screen strip. */}
       <div className="mb-4 grid gap-3.5 [grid-template-columns:repeat(auto-fit,minmax(300px,1fr))]">
         {classesQuery.isLoading
-          ? Array.from({ length: 3 }, (_, i) => <Card key={i} className="h-40 animate-pulse" title="">{null}</Card>)
+          ? Array.from({ length: 3 }, (_, i) => (
+              <Card key={i} className="h-40 animate-pulse" title="">
+                {null}
+              </Card>
+            ))
           : classes.map((klass) => (
               <Card
                 key={klass.id}
                 title={klass.name}
                 description={klass.scheduleNote}
-                action={<Badge variant="blue">{t("classList.col.studentCount", { count: klass.studentCount })}</Badge>}
+                action={
+                  <Badge variant="blue">
+                    {t("classList.col.studentCount", {
+                      count: klass.studentCount,
+                    })}
+                  </Badge>
+                }
               >
-                <ProgressBar fill="var(--instructor-progress-fill, var(--color-admin-teal))" value={klass.completionPct} label={t("classList.col.completionBar")} className="mb-2" />
-                <p className="mb-3 text-[12.5px] text-[var(--color-text-muted)]">{klass.completionPct}%</p>
+                <ProgressBar
+                  fill="var(--instructor-progress-fill, var(--color-admin-teal))"
+                  value={klass.completionPct}
+                  label={t("classList.col.completionBar")}
+                  className="mb-2"
+                />
+                <p className="mb-3 text-[12.5px] text-[var(--color-text-muted)]">
+                  {klass.completionPct}%
+                </p>
                 <div className="mb-3 flex gap-4 text-[12.5px] text-[var(--color-text-muted)]">
-                  <span>{t("classList.col.avgScore")}: {klass.avgScore ?? "-"}</span>
-                  <span>{t("classList.col.pendingGrading")}: {klass.pendingGrading}</span>
-                  <span>{t("classList.col.absentCount")}: {klass.absentCount}</span>
+                  <span>
+                    {t("classList.col.avgScore")}: {klass.avgScore ?? "-"}
+                  </span>
+                  <span>
+                    {t("classList.col.pendingGrading")}: {klass.pendingGrading}
+                  </span>
+                  <span>
+                    {t("classList.col.absentCount")}: {klass.absentCount}
+                  </span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Button variant="ghost" size="sm" asChild>
-                    <Link href={`/instructor/students?classId=${klass.id}`}>{t("btnViewStudents")}</Link>
+                    <Link href={`/instructor/students?classId=${klass.id}`}>
+                      {t("btnViewStudents")}
+                    </Link>
                   </Button>
-                  <Button variant="ghost" size="sm" onClick={() => setFormDialog({ mode: "edit", target: klass })}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() =>
+                      setFormDialog({ mode: "edit", target: klass })
+                    }
+                  >
                     {t("classList.col.menuEdit")}
                   </Button>
-                  <Button variant="ghost" size="sm" onClick={() => setInviteClassId(klass.id)}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setInviteClassId(klass.id)}
+                  >
                     {t("classList.col.menuInvite")}
                   </Button>
-                  <Button variant="ghost" size="sm" className="text-[var(--color-admin-negative)]" onClick={() => setDeleteTarget(klass)}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-[var(--color-admin-negative)]"
+                    onClick={() => setDeleteTarget(klass)}
+                  >
                     {t("classList.col.menuDelete")}
                   </Button>
                 </div>
@@ -115,17 +162,32 @@ export function ClassManagementView() {
         onClose={() => setFormDialog(null)}
         onSubmit={(form) => {
           const done = {
-            onSuccess: () => toast.success(t(formDialog?.mode === "edit" ? "toast.updated" : "toast.created", { name: form.name })),
+            onSuccess: () =>
+              toast.success(
+                t(
+                  formDialog?.mode === "edit"
+                    ? "toast.updated"
+                    : "toast.created",
+                  {
+                    name: form.name,
+                  },
+                ),
+              ),
             onError: () => toast.error(t("toast.failed")),
           };
-          if (formDialog?.mode === "edit") updateClass.mutate({ id: formDialog.target.id, form }, done);
+          if (formDialog?.mode === "edit")
+            updateClass.mutate({ id: formDialog.target.id, form }, done);
           else createClass.mutate(form, done);
           setFormDialog(null);
         }}
         t={t}
       />
 
-      <InviteCodeDialog classId={inviteClassId} onClose={() => setInviteClassId(null)} t={t} />
+      <InviteCodeDialog
+        classId={inviteClassId}
+        onClose={() => setInviteClassId(null)}
+        t={t}
+      />
 
       <ConfirmDialog
         open={deleteTarget !== null}
@@ -147,7 +209,6 @@ export function ClassManagementView() {
       >
         {t("popup.deleteClassBody")}
       </ConfirmDialog>
-
     </div>
   );
 }
@@ -160,7 +221,11 @@ function ClassFormDialog({
 }: {
   dialog: ClassDialog;
   onClose: () => void;
-  onSubmit: (form: { name: string; description?: string; scheduleNote?: string }) => void;
+  onSubmit: (form: {
+    name: string;
+    description?: string;
+    scheduleNote?: string;
+  }) => void;
   t: ReturnType<typeof useT>;
 }) {
   const editing = dialog?.mode === "edit" ? dialog.target : null;
@@ -177,14 +242,21 @@ function ClassFormDialog({
       toastFirstError([t("validation.nameRequired")]);
       return;
     }
-    onSubmit({ name: name.trim(), scheduleNote: scheduleNote.trim() || undefined });
+    onSubmit({
+      name: name.trim(),
+      scheduleNote: scheduleNote.trim() || undefined,
+    });
   }
 
   return (
     <Modal
       open
       onClose={onClose}
-      title={dialog.mode === "create" ? t("popup.createClassTitle") : t("popup.editClassTitle")}
+      title={
+        dialog.mode === "create"
+          ? t("popup.createClassTitle")
+          : t("popup.editClassTitle")
+      }
       footer={
         <>
           <Button variant="ghost" size="sm" onClick={onClose}>
@@ -197,14 +269,32 @@ function ClassFormDialog({
       }
     >
       <div className="flex flex-col gap-3">
-        <TextField label={t("popup.classNameLabel")} value={name} onChange={(e) => setName(e.target.value)} required invalid={nameInvalid} />
-        <TextField label={t("popup.scheduleLabel")} value={scheduleNote} onChange={(e) => setScheduleNote(e.target.value)} />
+        <TextField
+          label={t("popup.classNameLabel")}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+          invalid={nameInvalid}
+        />
+        <TextField
+          label={t("popup.scheduleLabel")}
+          value={scheduleNote}
+          onChange={(e) => setScheduleNote(e.target.value)}
+        />
       </div>
     </Modal>
   );
 }
 
-function InviteCodeDialog({ classId, onClose, t }: { classId: string | null; onClose: () => void; t: ReturnType<typeof useT> }) {
+function InviteCodeDialog({
+  classId,
+  onClose,
+  t,
+}: {
+  classId: string | null;
+  onClose: () => void;
+  t: ReturnType<typeof useT>;
+}) {
   const invitesQuery = useInviteCodes(classId ?? "", classId !== null);
   const createInvite = useCreateInviteCode();
 
@@ -231,9 +321,14 @@ function InviteCodeDialog({ classId, onClose, t }: { classId: string | null; onC
     >
       <ul className="flex flex-col gap-2">
         {(invitesQuery.data ?? []).map((invite) => (
-          <li key={invite.id} className="flex items-center justify-between rounded-lg border border-[var(--color-border)] px-3 py-2">
+          <li
+            key={invite.id}
+            className="flex items-center justify-between rounded-lg border border-[var(--color-border)] px-3 py-2"
+          >
             <span className="font-mono font-semibold">{invite.code}</span>
-            <span className="text-[12px] text-[var(--color-text-muted)]">{invite.expiresAtLabel}</span>
+            <span className="text-[12px] text-[var(--color-text-muted)]">
+              {invite.expiresAtLabel}
+            </span>
           </li>
         ))}
       </ul>

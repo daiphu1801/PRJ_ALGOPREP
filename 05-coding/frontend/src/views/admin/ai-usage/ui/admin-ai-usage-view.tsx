@@ -28,7 +28,11 @@ import {
   type UsageRange,
 } from "../api";
 import { aiBudgetSettings, useModelPrices } from "@/entities/ai-budget";
-import { problemLevelLabel, problemLevelTone, useProblemLevels } from "@/entities/problem";
+import {
+  problemLevelLabel,
+  problemLevelTone,
+  useProblemLevels,
+} from "@/entities/problem";
 import { useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
 import {
@@ -69,7 +73,9 @@ export function AdminAiUsageView() {
       header: "#",
       width: "28px",
       render: (user) => (
-        <span className="font-mono text-[11.5px] text-[var(--color-text-subtle)]">{user.rank}</span>
+        <span className="font-mono text-[11.5px] text-[var(--color-text-subtle)]">
+          {user.rank}
+        </span>
       ),
     },
     {
@@ -89,7 +95,9 @@ export function AdminAiUsageView() {
       header: t("columnTokens"),
       width: "84px",
       align: "right",
-      render: (user) => <span className="font-mono font-semibold">{user.tokens}</span>,
+      render: (user) => (
+        <span className="font-mono font-semibold">{user.tokens}</span>
+      ),
     },
     {
       key: "calls",
@@ -97,7 +105,9 @@ export function AdminAiUsageView() {
       width: "74px",
       align: "right",
       render: (user) => (
-        <span className="font-mono text-[var(--color-text-muted)]">{user.calls}</span>
+        <span className="font-mono text-[var(--color-text-muted)]">
+          {user.calls}
+        </span>
       ),
     },
     {
@@ -106,7 +116,9 @@ export function AdminAiUsageView() {
       width: "76px",
       align: "right",
       render: (user) => (
-        <span className="font-mono text-[var(--color-text-muted)]">{modelPrices.length === 0 ? "-" : user.cost}</span>
+        <span className="font-mono text-[var(--color-text-muted)]">
+          {modelPrices.length === 0 ? "-" : user.cost}
+        </span>
       ),
     },
   ];
@@ -142,7 +154,9 @@ export function AdminAiUsageView() {
       header: t("columnTokens"),
       width: "84px",
       align: "right",
-      render: (problem) => <span className="font-mono font-semibold">{problem.tokens}</span>,
+      render: (problem) => (
+        <span className="font-mono font-semibold">{problem.tokens}</span>
+      ),
     },
     {
       key: "average",
@@ -150,7 +164,9 @@ export function AdminAiUsageView() {
       width: "92px",
       align: "right",
       render: (problem) => (
-        <span className="font-mono text-[var(--color-text-muted)]">{problem.averagePerCall}</span>
+        <span className="font-mono text-[var(--color-text-muted)]">
+          {problem.averagePerCall}
+        </span>
       ),
     },
   ];
@@ -172,7 +188,11 @@ export function AdminAiUsageView() {
                 { value: "30d", label: t("range.30d") },
               ]}
             />
-            <Button variant="cta" size="sm" onClick={() => toast.success(t("exportDone"))}>
+            <Button
+              variant="cta"
+              size="sm"
+              onClick={() => toast.success(t("exportDone"))}
+            >
               {t("export")}
             </Button>
           </>
@@ -187,9 +207,21 @@ export function AdminAiUsageView() {
         >
           <StackedBarChart
             series={[
-              { key: "review", label: t("feature.review"), colorVar: FEATURE_COLOR_VAR.review },
-              { key: "interview", label: t("feature.interview"), colorVar: FEATURE_COLOR_VAR.interview },
-              { key: "testcase", label: t("feature.testcase"), colorVar: FEATURE_COLOR_VAR.testcase },
+              {
+                key: "review",
+                label: t("feature.review"),
+                colorVar: FEATURE_COLOR_VAR.review,
+              },
+              {
+                key: "interview",
+                label: t("feature.interview"),
+                colorVar: FEATURE_COLOR_VAR.interview,
+              },
+              {
+                key: "testcase",
+                label: t("feature.testcase"),
+                colorVar: FEATURE_COLOR_VAR.testcase,
+              },
             ]}
             bars={days.map((day) => ({
               label: day.label,
@@ -218,7 +250,9 @@ export function AdminAiUsageView() {
             />
             <p className="mt-2 mb-4 flex justify-between text-[12.5px] text-[var(--color-text-muted)]">
               <span>{t("budgetLeft", { left: page.budget.leftLabel })}</span>
-              <span>{t("budgetRunOut", { date: page.budget.runOutLabel })}</span>
+              <span>
+                {t("budgetRunOut", { date: page.budget.runOutLabel })}
+              </span>
             </p>
             <RankedProgressList
               numbered={false}

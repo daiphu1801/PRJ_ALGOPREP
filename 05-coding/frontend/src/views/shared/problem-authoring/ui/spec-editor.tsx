@@ -33,7 +33,15 @@ import {
 } from "@/entities/problem";
 import { useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
-import { Button, Card, IconAction, NoticeTile, SelectField, TextArea, TextField } from "@/shared/ui";
+import {
+  Button,
+  Card,
+  IconAction,
+  NoticeTile,
+  SelectField,
+  TextArea,
+  TextField,
+} from "@/shared/ui";
 
 type Props = {
   spec: ProblemSpec;
@@ -51,7 +59,8 @@ export function SpecEditor({ spec, onChange }: Props) {
   const { signature } = spec;
   const issues = signatureIssues(signature);
 
-  const patch = (changes: Partial<ProblemSpec>) => onChange({ ...spec, ...changes });
+  const patch = (changes: Partial<ProblemSpec>) =>
+    onChange({ ...spec, ...changes });
   const patchSignature = (changes: Partial<FunctionSignature>) =>
     patch({ signature: { ...signature, ...changes } });
 
@@ -59,7 +68,10 @@ export function SpecEditor({ spec, onChange }: Props) {
   // fixed (BD Sheet 9 mục 6): the author decides which of the two to change.
   function setReturnType(returnType: SpecType) {
     const next = { ...spec, signature: { ...signature, returnType } };
-    if (spec.matchingStrategy === "UNORDERED_SET" && !allowsUnorderedSet(next)) {
+    if (
+      spec.matchingStrategy === "UNORDERED_SET" &&
+      !allowsUnorderedSet(next)
+    ) {
       toast.error(t("spec.errorUnorderedSet"));
       return;
     }
@@ -86,12 +98,17 @@ export function SpecEditor({ spec, onChange }: Props) {
         </NoticeTile>
       ) : null}
 
-      <Card title={t("spec.signatureTitle")} description={t("spec.signatureSubtitle")}>
+      <Card
+        title={t("spec.signatureTitle")}
+        description={t("spec.signatureSubtitle")}
+      >
         <div className="grid gap-2.5 md:grid-cols-2">
           <TextField
             label={t("spec.functionName")}
             value={signature.functionName}
-            onChange={(event) => patchSignature({ functionName: event.target.value })}
+            onChange={(event) =>
+              patchSignature({ functionName: event.target.value })
+            }
             invalid={issues.includes("functionName")}
             className="font-mono"
           />
@@ -108,14 +125,19 @@ export function SpecEditor({ spec, onChange }: Props) {
         </p>
         <ul className="flex flex-col gap-2">
           {signature.parameters.map((parameter, index) => (
-            <li key={parameter.id} className="grid items-end gap-2 md:grid-cols-[1fr_1.4fr_auto]">
+            <li
+              key={parameter.id}
+              className="grid items-end gap-2 md:grid-cols-[1fr_1.4fr_auto]"
+            >
               <TextField
                 label={t("spec.parameterName", { index: index + 1 })}
                 value={parameter.name}
                 onChange={(event) =>
                   patchSignature({
                     parameters: signature.parameters.map((row) =>
-                      row.id === parameter.id ? { ...row, name: event.target.value } : row,
+                      row.id === parameter.id
+                        ? { ...row, name: event.target.value }
+                        : row,
                     ),
                   })
                 }
@@ -142,7 +164,11 @@ export function SpecEditor({ spec, onChange }: Props) {
                 label={t("spec.removeParameter", { index: index + 1 })}
                 tone="danger"
                 onClick={() =>
-                  patchSignature({ parameters: signature.parameters.filter((row) => row.id !== parameter.id) })
+                  patchSignature({
+                    parameters: signature.parameters.filter(
+                      (row) => row.id !== parameter.id,
+                    ),
+                  })
                 }
               />
             </li>
@@ -154,7 +180,10 @@ export function SpecEditor({ spec, onChange }: Props) {
           className="mt-2.5 border border-[var(--color-border)]"
           onClick={() =>
             patchSignature({
-              parameters: [...signature.parameters, { id: nextId(), name: "", type: defaultType("INT") }],
+              parameters: [
+                ...signature.parameters,
+                { id: nextId(), name: "", type: defaultType("INT") },
+              ],
             })
           }
         >
@@ -179,18 +208,27 @@ export function SpecEditor({ spec, onChange }: Props) {
                   >
                     {t(`spec.languageShort.${language}`)}
                   </span>
-                  <span className="text-[13px] font-semibold">{t(`spec.language.${language}`)}</span>
+                  <span className="text-[13px] font-semibold">
+                    {t(`spec.language.${language}`)}
+                  </span>
                 </div>
                 <code className="block overflow-x-auto font-mono text-[12.5px] whitespace-pre">
                   {renderSignature(signature, language)}
                 </code>
               </div>
               <TextField
-                label={t("spec.overrideName", { language: t(`spec.language.${language}`) })}
+                label={t("spec.overrideName", {
+                  language: t(`spec.language.${language}`),
+                })}
                 placeholder={derivedName(signature.functionName, language)}
                 value={signature.nameOverrides[language] ?? ""}
                 onChange={(event) =>
-                  patchSignature({ nameOverrides: { ...signature.nameOverrides, [language]: event.target.value } })
+                  patchSignature({
+                    nameOverrides: {
+                      ...signature.nameOverrides,
+                      [language]: event.target.value,
+                    },
+                  })
                 }
                 invalid={issues.includes(`override:${language}`)}
                 className="font-mono"
@@ -219,16 +257,22 @@ export function SpecEditor({ spec, onChange }: Props) {
         </div>
       </Card>
 
-      <Card title={t("spec.matchingTitle")} description={t("spec.matchingSubtitle")}>
+      <Card
+        title={t("spec.matchingTitle")}
+        description={t("spec.matchingSubtitle")}
+      >
         <div className="grid items-start gap-3 md:grid-cols-2">
           <SelectField
             label={t("spec.matchingStrategy")}
             value={spec.matchingStrategy}
-            onChange={(event) => setStrategy(event.target.value as MatchingStrategy)}
+            onChange={(event) =>
+              setStrategy(event.target.value as MatchingStrategy)
+            }
             options={MATCHING_STRATEGIES.map((strategy) => ({
               value: strategy,
               label: t(`spec.strategy.${strategy}.label`),
-              disabled: strategy === "UNORDERED_SET" && !allowsUnorderedSet(spec),
+              disabled:
+                strategy === "UNORDERED_SET" && !allowsUnorderedSet(spec),
             }))}
           />
           {spec.matchingStrategy === "EPSILON" ? (
@@ -279,8 +323,13 @@ function TypeField({
         <SelectField
           label={label}
           value={value.kind}
-          onChange={(event) => onChange(defaultType(event.target.value as TypeKind))}
-          options={kinds.map((kind) => ({ value: kind, label: t(`spec.kind.${kind}`) }))}
+          onChange={(event) =>
+            onChange(defaultType(event.target.value as TypeKind))
+          }
+          options={kinds.map((kind) => ({
+            value: kind,
+            label: t(`spec.kind.${kind}`),
+          }))}
           aria-invalid={invalid || undefined}
           wrapperClassName="min-w-[9rem] flex-1"
           className={invalid ? "border-[var(--color-danger)]" : undefined}
@@ -290,8 +339,13 @@ function TypeField({
             label={t("spec.dimensions", { type: label })}
             hideLabel
             value={String(value.dimensions ?? 1)}
-            onChange={(event) => onChange({ ...value, dimensions: Number(event.target.value) })}
-            options={[1, 2, 3].map((count) => ({ value: String(count), label: t("spec.dimensionsValue", { count }) }))}
+            onChange={(event) =>
+              onChange({ ...value, dimensions: Number(event.target.value) })
+            }
+            options={[1, 2, 3].map((count) => ({
+              value: String(count),
+              label: t("spec.dimensionsValue", { count }),
+            }))}
             wrapperClassName="w-24"
           />
         ) : null}

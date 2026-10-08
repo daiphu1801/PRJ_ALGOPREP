@@ -23,7 +23,15 @@ import {
 } from "@/entities/mock-interview";
 import { useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
-import { Badge, Button, ConfirmDialog, SegmentedTabs, StatCard, TextArea, Toggle } from "@/shared/ui";
+import {
+  Badge,
+  Button,
+  ConfirmDialog,
+  SegmentedTabs,
+  StatCard,
+  TextArea,
+  Toggle,
+} from "@/shared/ui";
 import { useMockInterviewSession } from "../model/use-mock-interview-session";
 
 const STAGE_ORDER: InterviewStage[] = ["explain", "challenge", "scaleUp"];
@@ -45,7 +53,8 @@ export function MockInterviewView() {
   // Finishing (all turns used or stopped early) is reported once, whichever path got there.
   const reportedResult = useRef(false);
   useEffect(() => {
-    if (session.screenState === "result" && !reportedResult.current) toast.success(t("toast.finished"));
+    if (session.screenState === "result" && !reportedResult.current)
+      toast.success(t("toast.finished"));
     reportedResult.current = session.screenState === "result";
   }, [session.screenState, t]);
 
@@ -58,14 +67,26 @@ export function MockInterviewView() {
     return (
       <section className="p-6">
         <div className="mb-4 grid gap-3.5 [grid-template-columns:repeat(auto-fit,minmax(190px,1fr))]">
-          <StatCard label={t("statSessions")} value={String(stats.sessionsCompleted)} meta={t("statSessionsMeta")} />
+          <StatCard
+            label={t("statSessions")}
+            value={String(stats.sessionsCompleted)}
+            meta={t("statSessionsMeta")}
+          />
           <StatCard
             label={t("statAverage")}
-            value={stats.averageScore !== null ? `${stats.averageScore} / 10` : "- / 10"}
+            value={
+              stats.averageScore !== null
+                ? `${stats.averageScore} / 10`
+                : "- / 10"
+            }
           />
           <StatCard
             label={t("statWeakest")}
-            value={stats.weakestCriterion ? t(`rubric.${stats.weakestCriterion}`) : "-"}
+            value={
+              stats.weakestCriterion
+                ? t(`rubric.${stats.weakestCriterion}`)
+                : "-"
+            }
           />
         </div>
 
@@ -104,7 +125,9 @@ export function MockInterviewView() {
                     <span className="font-mono text-[11px] text-[var(--color-text-subtle)]">
                       {submission.id}
                     </span>
-                    <span className="font-semibold">{submission.problemTitle}</span>
+                    <span className="font-semibold">
+                      {submission.problemTitle}
+                    </span>
                     <Badge variant="neutral" className="ml-auto">
                       {submission.language}
                     </Badge>
@@ -140,7 +163,9 @@ export function MockInterviewView() {
           ) : null}
 
           {session.entryType === "custom" ? (
-            <p className="mb-4 text-[13px] text-[var(--color-text-muted)]">{t("customTopicHint")}</p>
+            <p className="mb-4 text-[13px] text-[var(--color-text-muted)]">
+              {t("customTopicHint")}
+            </p>
           ) : null}
         </div>
 
@@ -148,21 +173,32 @@ export function MockInterviewView() {
           <h2 className="mb-3 text-[14.5px] font-bold">{t("configTitle")}</h2>
 
           <div className="mb-3">
-            <p className="mb-1.5 text-xs font-medium text-[var(--color-text-muted)]">{t("levelLabel")}</p>
+            <p className="mb-1.5 text-xs font-medium text-[var(--color-text-muted)]">
+              {t("levelLabel")}
+            </p>
             <SegmentedTabs
               label={t("levelLabel")}
               value={session.level}
               onValueChange={session.setLevel}
-              options={INTERVIEWER_LEVELS.map((level) => ({ value: level, label: t(`level.${level}`) }))}
+              options={INTERVIEWER_LEVELS.map((level) => ({
+                value: level,
+                label: t(`level.${level}`),
+              }))}
             />
           </div>
 
           <div className="mb-3">
-            <p className="mb-1.5 text-xs font-medium text-[var(--color-text-muted)]">{t("turnsLabel")}</p>
+            <p className="mb-1.5 text-xs font-medium text-[var(--color-text-muted)]">
+              {t("turnsLabel")}
+            </p>
             <SegmentedTabs
               label={t("turnsLabel")}
               value={String(session.maxTurns)}
-              onValueChange={(value) => session.setMaxTurns(Number(value) as (typeof MAX_TURNS_OPTIONS)[number])}
+              onValueChange={(value) =>
+                session.setMaxTurns(
+                  Number(value) as (typeof MAX_TURNS_OPTIONS)[number],
+                )
+              }
               options={MAX_TURNS_OPTIONS.map((turns) => ({
                 value: String(turns),
                 label: t("turnsOption", { count: turns }),
@@ -172,10 +208,20 @@ export function MockInterviewView() {
 
           <div className="mb-4 flex items-center justify-between">
             <span className="text-[13px] font-semibold">{t("hintLabel")}</span>
-            <Toggle checked={session.hintAllowed} onCheckedChange={session.setHintAllowed} label={t("hintLabel")} />
+            <Toggle
+              checked={session.hintAllowed}
+              onCheckedChange={session.setHintAllowed}
+              label={t("hintLabel")}
+            />
           </div>
 
-          <Button variant="cta" size="md" className="w-full" disabled={!session.canStart} onClick={session.start}>
+          <Button
+            variant="cta"
+            size="md"
+            className="w-full"
+            disabled={!session.canStart}
+            onClick={session.start}
+          >
             {t("startCta")}
           </Button>
         </div>
@@ -201,7 +247,10 @@ export function MockInterviewView() {
             </span>
           ))}
           <span className="ml-auto font-mono text-[12.5px] text-[var(--color-text-muted)]">
-            {t("turnCount", { current: session.turnCount, total: session.maxTurns })}
+            {t("turnCount", {
+              current: session.turnCount,
+              total: session.maxTurns,
+            })}
           </span>
           <span className="font-mono text-[12.5px] text-[var(--color-text-muted)]">
             {formatElapsed(session.elapsedSeconds)}
@@ -224,7 +273,9 @@ export function MockInterviewView() {
               </div>
             ))}
             {session.isAiTyping ? (
-              <span className="text-[12px] text-[var(--color-text-subtle)]">{t("aiTyping")}</span>
+              <span className="text-[12px] text-[var(--color-text-subtle)]">
+                {t("aiTyping")}
+              </span>
             ) : null}
             <div ref={chatEndRef} />
           </div>
@@ -253,11 +304,20 @@ export function MockInterviewView() {
             {t("send")}
           </Button>
           {session.hintAllowed ? (
-            <Button variant="ghost" size="md" disabled={session.isAiTyping} onClick={session.requestHint}>
+            <Button
+              variant="ghost"
+              size="md"
+              disabled={session.isAiTyping}
+              onClick={session.requestHint}
+            >
               {t("hintCta")}
             </Button>
           ) : null}
-          <Button variant="ghost" size="md" onClick={() => setEarlyExitOpen(true)}>
+          <Button
+            variant="ghost"
+            size="md"
+            onClick={() => setEarlyExitOpen(true)}
+          >
             {t("stopEarlyCta")}
           </Button>
         </div>
@@ -293,22 +353,33 @@ export function MockInterviewView() {
 
       <div className="mb-4 grid gap-3.5 sm:grid-cols-2">
         {RUBRIC_CRITERION_CODES.map((code) => {
-          const criterion = session.result?.criteria.find((c) => c.code === code);
+          const criterion = session.result?.criteria.find(
+            (c) => c.code === code,
+          );
           if (!criterion) return null;
           return (
-            <div key={code} className="glass-card border border-[var(--color-border)] p-4">
+            <div
+              key={code}
+              className="glass-card border border-[var(--color-border)] p-4"
+            >
               <p className="mb-1 text-[13.5px] font-semibold">
                 {t(`rubric.${code}`)} ({RUBRIC_WEIGHTS[code]}%)
               </p>
-              <p className="mb-1.5 font-mono text-sm font-semibold">{criterion.score} / 10</p>
-              <p className="text-[12.5px] text-[var(--color-text-muted)]">{criterion.comment}</p>
+              <p className="mb-1.5 font-mono text-sm font-semibold">
+                {criterion.score} / 10
+              </p>
+              <p className="text-[12.5px] text-[var(--color-text-muted)]">
+                {criterion.comment}
+              </p>
             </div>
           );
         })}
       </div>
 
       <div className="glass-card mb-4 border border-[var(--color-border)] p-5">
-        <p className="text-[13.5px] leading-relaxed text-pretty">{session.result.feedbackSummary}</p>
+        <p className="text-[13.5px] leading-relaxed text-pretty">
+          {session.result.feedbackSummary}
+        </p>
       </div>
 
       <div className="flex gap-3">

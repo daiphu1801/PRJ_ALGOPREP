@@ -54,7 +54,9 @@ export function StatCardsRow() {
             label={t("stats.solved")}
             value={overview.solvedProblemCount}
             delta={`/ ${overview.totalPublishedProblemCount}`}
-            meta={t("stats.solvedMeta", { total: overview.totalPublishedProblemCount })}
+            meta={t("stats.solvedMeta", {
+              total: overview.totalPublishedProblemCount,
+            })}
             className="border-0 p-0"
           />
         )}
@@ -102,7 +104,9 @@ export function StatCardsRow() {
             label={t("stats.streak")}
             value={overview.currentStreakDays}
             delta={t("stats.streakUnit")}
-            meta={t("stats.streakMeta", { avg: overview.avgAttemptsPerSolved ?? 0 })}
+            meta={t("stats.streakMeta", {
+              avg: overview.avgAttemptsPerSolved ?? 0,
+            })}
             className="border-0 p-0"
           />
         )}

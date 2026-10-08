@@ -32,7 +32,9 @@ const SHELL_ROOT = ".admin-shell, .instructor-shell";
 export function BulkActionBar({ count, label, children }: BulkActionBarProps) {
   // A callback ref into state: it also tells us when we are on the client and have a node to search from.
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
-  const target = anchor ? (anchor.closest<HTMLElement>(SHELL_ROOT) ?? document.body) : null;
+  const target = anchor
+    ? (anchor.closest<HTMLElement>(SHELL_ROOT) ?? document.body)
+    : null;
 
   return (
     <>
@@ -44,7 +46,7 @@ export function BulkActionBar({ count, label, children }: BulkActionBarProps) {
             <div
               role="region"
               aria-label={label}
-              className="glass-card glass-card--popover bulk-pop-in fixed top-3 left-1/2 z-40 flex max-w-[calc(100vw-2rem)] -translate-x-1/2 flex-wrap items-center gap-x-4 gap-y-2 border border-[var(--color-border)] px-4 py-2.5"
+              className="glass-card glass-card--popover bulk-pop-in fixed inset-x-4 top-3 z-40 mx-auto flex w-fit max-w-[calc(100vw-2rem)] flex-wrap items-center gap-x-4 gap-y-2 border border-[var(--color-border)] px-4 py-2.5"
             >
               <span className="text-[13px] font-semibold">{label}</span>
               <span className="flex flex-wrap gap-2">{children}</span>

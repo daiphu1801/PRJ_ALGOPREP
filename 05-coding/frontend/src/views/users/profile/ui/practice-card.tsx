@@ -20,13 +20,25 @@ export function PracticeCard() {
     <Card title={t("practice.title")}>
       <div className="flex flex-col gap-3 text-sm">
         <Row label={t("practice.solved")}>
-          {overview.isLoading ? <Skeleton className="h-5 w-10" /> : (overview.data?.solvedProblemCount ?? "-")}
+          {overview.isLoading ? (
+            <Skeleton className="h-5 w-10" />
+          ) : (
+            (overview.data?.solvedProblemCount ?? "-")
+          )}
         </Row>
         <Row label={t("practice.submissions")}>
-          {overview.isLoading ? <Skeleton className="h-5 w-10" /> : (overview.data?.totalSubmissions ?? "-")}
+          {overview.isLoading ? (
+            <Skeleton className="h-5 w-10" />
+          ) : (
+            (overview.data?.totalSubmissions ?? "-")
+          )}
         </Row>
         <Row label={t("practice.interviews")}>
-          {interview.isLoading ? <Skeleton className="h-5 w-10" /> : (interview.data?.completedSessionCount ?? "-")}
+          {interview.isLoading ? (
+            <Skeleton className="h-5 w-10" />
+          ) : (
+            (interview.data?.completedSessionCount ?? "-")
+          )}
         </Row>
       </div>
       <Link
@@ -42,9 +54,14 @@ export function PracticeCard() {
 function Row({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="flex items-center gap-2">
-      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-primary)]" aria-hidden="true" />
+      <span
+        className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-primary)]"
+        aria-hidden="true"
+      />
       <span className="text-[var(--color-text-muted)]">{label}</span>
-      <span className="ml-auto font-mono font-semibold text-[var(--color-text)]">{children}</span>
+      <span className="ml-auto font-mono font-semibold text-[var(--color-text)]">
+        {children}
+      </span>
     </div>
   );
 }

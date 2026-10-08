@@ -24,10 +24,14 @@ import {
 } from "./__mock__/fake-user";
 
 function notImplemented(): never {
-  throw new Error("03-dd/api/identity.md write endpoints have no real HTTP client wired up yet");
+  throw new Error(
+    "03-dd/api/identity.md write endpoints have no real HTTP client wired up yet",
+  );
 }
 
-export const updateMyProfile = (input: UpdateProfileInput): Promise<UserProfile> =>
+export const updateMyProfile = (
+  input: UpdateProfileInput,
+): Promise<UserProfile> =>
   withMockData(() => fakeUpdateMyProfile(input), notImplemented);
 
 export const requestEmailChange = (newEmail: string): Promise<{ ok: true }> =>
@@ -39,7 +43,9 @@ export const confirmEmailChange = (code: string, newEmail: string) =>
 export const changeMyPassword = (input: ChangePasswordInput) =>
   withMockData(() => fakeChangeMyPassword(input), notImplemented);
 
-export const updateMySettings = (input: AccountSettings): Promise<AccountSettings> =>
+export const updateMySettings = (
+  input: AccountSettings,
+): Promise<AccountSettings> =>
   withMockData(() => fakeUpdateMySettings(input), notImplemented);
 
 /** ai-review-owned — called INDEPENDENTLY of updateMySettings per BR-07, never Promise.all'd into one atomic unit. */

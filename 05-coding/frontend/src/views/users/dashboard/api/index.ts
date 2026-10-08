@@ -8,4 +8,8 @@ export type {
   RecentSolutionReview,
   SkillRadarPoint,
 } from "../model/types";
-export { useActivityCalendar, useDashboardDaily, useRecentSolutionReviews } from "./queries";
+export {
+  useActivityCalendar,
+  useDashboardDaily,
+  useRecentSolutionReviews,
+} from "./queries";

@@ -6,10 +6,14 @@ import { expect, test } from "@playwright/test";
  * queues remain, and the "Kỳ thi" label was confirmed a mislabelled priority tier, never an exam
  * feature (DEC-2026-0831-judge-orchestration-ops-details).
  */
-test("only two priority levels survive, with no rejudge queue or exam wording", async ({ page }) => {
+test("only two priority levels survive, with no rejudge queue or exam wording", async ({
+  page,
+}) => {
   await page.goto("/admin/queue");
 
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Hàng đợi chấm");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "Hàng đợi chấm",
+  );
 
   await expect(page.getByText("Hàng đợi thường")).toBeVisible();
   await expect(page.getByText("Hàng đợi ưu tiên cao")).toBeVisible();
@@ -17,15 +21,21 @@ test("only two priority levels survive, with no rejudge queue or exam wording", 
   await expect(page.getByText(/kỳ thi/i)).toHaveCount(0);
 });
 
-test("infrastructure events live here and point at the system log for admin actions", async ({ page }) => {
+test("infrastructure events live here and point at the system log for admin actions", async ({
+  page,
+}) => {
   await page.goto("/admin/queue");
 
   const list = page.getByRole("list", { name: "Sự kiện hạ tầng gần đây" });
   await expect(list.getByRole("listitem")).toHaveCount(6);
-  await expect(page.getByText(/xem hành động ở màn Nhật ký hệ thống/)).toBeVisible();
+  await expect(
+    page.getByText(/xem hành động ở màn Nhật ký hệ thống/),
+  ).toBeVisible();
 });
 
-test("column sort reorders the job table and announces itself", async ({ page }) => {
+test("column sort reorders the job table and announces itself", async ({
+  page,
+}) => {
   await page.goto("/admin/queue");
 
   const table = page.getByRole("table", { name: "Job trong hàng đợi" });
@@ -44,7 +54,9 @@ test("column sort reorders the job table and announces itself", async ({ page })
 test("cluster controls are real toggles, not decoration", async ({ page }) => {
   await page.goto("/admin/queue");
 
-  const pause = page.getByRole("switch", { name: "Tạm dừng tiêu thụ hàng đợi" });
+  const pause = page.getByRole("switch", {
+    name: "Tạm dừng tiêu thụ hàng đợi",
+  });
   await expect(pause).toHaveAttribute("aria-checked", "false");
   await pause.click();
   await expect(pause).toHaveAttribute("aria-checked", "true");
@@ -53,9 +65,15 @@ test("cluster controls are real toggles, not decoration", async ({ page }) => {
 for (const theme of ["light", "dark"] as const) {
   test(`capture ${theme} theme for mockup comparison`, async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 940 });
-    await page.addInitScript((value) => localStorage.setItem("theme", value), theme);
+    await page.addInitScript(
+      (value) => localStorage.setItem("theme", value),
+      theme,
+    );
     await page.goto("/admin/queue");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-    await page.screenshot({ path: `e2e/__screenshots__/queue-monitor-${theme}.png`, caret: "initial" });
+    await page.screenshot({
+      path: `e2e/__screenshots__/queue-monitor-${theme}.png`,
+      caret: "initial",
+    });
   });
 }

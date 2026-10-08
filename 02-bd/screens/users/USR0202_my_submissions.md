@@ -27,6 +27,8 @@
 > - **Phân trang phía máy chủ**: khác với prototype tĩnh vẽ 10 dòng cố định, thiết kế BD bắt buộc thực hiện phân
 >   trang tại máy chủ (20 dòng/trang) kèm sắp xếp giảm dần theo thời gian nộp bài (`submitted_at DESC`).
 
+- **Bài đã rút khỏi ngân hàng** (`deleted = true`, G4 2026-10-08): dòng lịch sử vẫn hiện tiêu đề bài kèm nhãn "Đã rút khỏi ngân hàng", **bỏ liên kết mở bài**; nút "Kết quả" và "Phân tích" vẫn dùng được. Ô tìm kiếm theo tên bài vẫn khớp bài đã rút. Quy tắc đầy đủ ở `02-bd/database/problem-bank.md` mục 1.1a, không chép lại ở đây.
+
 > **Quy ước đặt tên khối** [Nội bộ]. Bốn khối: `summaryStats` (dải 4 thẻ thống kê tổng quan), `filterToolbar`
 > (thanh công cụ tìm kiếm và lọc verdict/ngôn ngữ), `submissionsTable` (bảng lịch sử bài nộp), `tableFooter`
 > (dòng tổng kết số liệu và phân trang). Tiền tố ID item của toàn màn là `mySubmissions.`.
@@ -46,7 +48,7 @@
 | Tên vật lý (slug) | `my_submissions` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`) |
-| Phiên bản | V0.3 |
+| Phiên bản | V0.4 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/22 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
@@ -62,6 +64,7 @@
 | V0.2 | Sheet 3, 5, 7.3, Câu hỏi mở | Viết lại Sheet 3 theo khuôn "Danh sách chuyển màn" 6 thẻ + sơ đồ Mermaid; viết lại Sheet 5 theo khuôn 14 cột (thêm Bảng DB/Cột DB, mỗi item một dòng); bỏ cột "Phương thức & URL dự kiến" ở Sheet 7.3. Sửa nguồn 2 thẻ thống kê: "Được chấp nhận" và "Đúng ngay lần đầu" đổi công thức đúng theo cột thật của `identity.user_submission_stats` (không có `acceptedRate` lưu sẵn); phát hiện "Dùng nhiều nhất" (ngôn ngữ) chưa có cột read model nào — thêm Câu hỏi mở Q4 | 2026/09/24 | Nhóm phát triển AlgoPrep |
 | V0.2 | Sheet 8, 9 | Đổi báo lỗi tải sau thao tác lọc, tìm kiếm và `[Tiêu điểm]` ô tìm kiếm sang toast; giữ nguyên khối lỗi tải màn kèm nút thử lại ở EVT-1. Theo `DEC-2026-1003-toast-feedback-channel`. | 2026/10/03 | AI |
 | V0.3 | Sheet 4, 5, 7 | Đồng bộ `DEC-2026-1001-admin-configurable-settings` mục (7): độ khó bài tập là danh mục do ADMIN quản lý (bảng riêng `problem_levels`), không còn enum cố định. DTO `StudentSubmissionItemDto.difficulty` thành `levelCode`/`levelDisplayName` đọc qua `problems.level_id`; badge độ khó cạnh tên bài hiển thị `display_name` từ dữ liệu; thêm `problem.problem_levels` vào danh sách bảng và Truy cập bảng. Màn chỉ hiển thị nhãn, không lọc và không gọi `ListProblemLevels` (nhãn nằm sẵn trong phản hồi); độ khó không gắn logic nào | 2026/10/03 | AI |
+| V0.4 | Sheet 3, 5, 6, Câu hỏi mở | Theo `02-bd/database/problem-bank.md` mục 1.1a: dòng lịch sử của bài đã rút vẫn hiện tiêu đề kèm nhãn "Đã rút khỏi ngân hàng", bỏ liên kết mở bài; nút "Kết quả" và "Phân tích" vẫn dùng được. Chỉ tài liệu, chưa đổi code | 2026/10/08 | AI |
 
 ---
 

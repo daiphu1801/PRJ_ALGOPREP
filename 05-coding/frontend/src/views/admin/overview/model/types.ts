@@ -15,19 +15,31 @@ export type StatSummary = z.infer<typeof statSummarySchema>;
 
 export const submissionsByLanguageSchema = z.object({
   pointLabels: z.array(z.string()),
-  series: z.array(z.object({ label: z.string(), colorVar: z.string(), points: z.array(z.number()) })),
+  series: z.array(
+    z.object({
+      label: z.string(),
+      colorVar: z.string(),
+      points: z.array(z.number()),
+    }),
+  ),
 });
 export type SubmissionsByLanguage = z.infer<typeof submissionsByLanguageSchema>;
 
 export const verdictDistributionSchema = z.object({
-  slices: z.array(z.object({ label: z.string(), value: z.number(), colorVar: z.string() })),
+  slices: z.array(
+    z.object({ label: z.string(), value: z.number(), colorVar: z.string() }),
+  ),
 });
 export type VerdictDistribution = z.infer<typeof verdictDistributionSchema>;
 
 export const difficultyBreakdownSchema = z.object({
-  legend: z.array(z.object({ label: z.string(), value: z.number(), colorVar: z.string() })),
+  legend: z.array(
+    z.object({ label: z.string(), value: z.number(), colorVar: z.string() }),
+  ),
   // Keyed by problem level key; the block lays them out in the admin-managed level order.
-  levels: z.array(z.object({ key: z.string(), total: z.number(), accepted: z.number() })),
+  levels: z.array(
+    z.object({ key: z.string(), total: z.number(), accepted: z.number() }),
+  ),
 });
 export type DifficultyBreakdown = z.infer<typeof difficultyBreakdownSchema>;
 
@@ -50,11 +62,19 @@ export const topProblemsSchema = z.object({
 export type TopProblems = z.infer<typeof topProblemsSchema>;
 
 export const userRetentionSchema = z.object({
-  legend: z.array(z.object({ label: z.string(), value: z.number(), colorVar: z.string() })),
+  legend: z.array(
+    z.object({ label: z.string(), value: z.number(), colorVar: z.string() }),
+  ),
   groups: z.array(
     z.object({
       label: z.string(),
-      bars: z.array(z.object({ label: z.string(), value: z.number(), colorVar: z.string() })),
+      bars: z.array(
+        z.object({
+          label: z.string(),
+          value: z.number(),
+          colorVar: z.string(),
+        }),
+      ),
     }),
   ),
 });

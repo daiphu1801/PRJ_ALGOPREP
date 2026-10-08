@@ -64,7 +64,10 @@ export function Pagination({
   return (
     <nav
       aria-label={summary}
-      className={cn("flex items-center justify-between gap-3 pt-3 text-[13px]", className)}
+      className={cn(
+        "flex items-center justify-between gap-3 pt-3 text-[13px]",
+        className,
+      )}
     >
       <span className="text-[var(--color-text-muted)]">{summary}</span>
       <span className="flex items-center gap-1.5">
@@ -74,7 +77,10 @@ export function Pagination({
             compact
             placement="top"
             label={pageSizeLabel ?? ""}
-            options={pageSizeOptions.map((option) => ({ value: String(option), label: String(option) }))}
+            options={pageSizeOptions.map((option) => ({
+              value: String(option),
+              label: String(option),
+            }))}
             value={String(pageSize)}
             onValueChange={(next) => onPageSizeChange(Number(next))}
             className="mr-1.5"

@@ -21,7 +21,11 @@ function subscribe(listener: () => void) {
   };
 }
 
-function read(storageKey: string, options: readonly number[], fallback: number): number {
+function read(
+  storageKey: string,
+  options: readonly number[],
+  fallback: number,
+): number {
   let stored: number | undefined = visitChoice.get(storageKey);
   try {
     const persisted = Number(localStorage.getItem(storageKey));

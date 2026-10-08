@@ -30,13 +30,23 @@ export function defaultType(kind: TypeKind): SpecType {
  */
 export function elementKinds(parent: TypeKind, level: number): TypeKind[] {
   if (parent !== "LIST") return SCALAR_KINDS;
-  return level < MAX_TYPE_NESTING ? [...SCALAR_KINDS, "ARRAY", "LIST", "LINKED_LIST", "BINARY_TREE"] : SCALAR_KINDS;
+  return level < MAX_TYPE_NESTING
+    ? [...SCALAR_KINDS, "ARRAY", "LIST", "LINKED_LIST", "BINARY_TREE"]
+    : SCALAR_KINDS;
 }
 
 export function isTypeValid(type: SpecType, level = 1): boolean {
   if (!CONTAINER_KINDS.includes(type.kind)) return true;
-  if (!type.of || !elementKinds(type.kind, level).includes(type.of.kind)) return false;
-  if (type.kind === "ARRAY" && !(type.dimensions !== undefined && type.dimensions >= 1 && type.dimensions <= 3)) {
+  if (!type.of || !elementKinds(type.kind, level).includes(type.of.kind))
+    return false;
+  if (
+    type.kind === "ARRAY" &&
+    !(
+      type.dimensions !== undefined &&
+      type.dimensions >= 1 &&
+      type.dimensions <= 3
+    )
+  ) {
     return false;
   }
   return isTypeValid(type.of, level + 1);
@@ -45,7 +55,10 @@ export function isTypeValid(type: SpecType, level = 1): boolean {
 /** True when the signature uses a type the harness schema cannot express (F3-13). */
 export function exceedsSchema(spec: ProblemSpec): boolean {
   const { returnType, parameters } = spec.signature;
-  return returnType.kind === "OTHER" || parameters.some((parameter) => parameter.type.kind === "OTHER");
+  return (
+    returnType.kind === "OTHER" ||
+    parameters.some((parameter) => parameter.type.kind === "OTHER")
+  );
 }
 
 /** What is wrong with the signature; an empty list means it can drive the harness. */
@@ -59,10 +72,12 @@ export function signatureIssues(signature: FunctionSignature): string[] {
     if (!isIdentifier(name)) issues.push(`parameterName:${parameter.id}`);
     else if (seen.has(name)) issues.push(`parameterDuplicate:${parameter.id}`);
     seen.add(name);
-    if (!isTypeValid(parameter.type)) issues.push(`parameterType:${parameter.id}`);
+    if (!isTypeValid(parameter.type))
+      issues.push(`parameterType:${parameter.id}`);
   }
   for (const [language, name] of Object.entries(signature.nameOverrides)) {
-    if (name && name.trim() && !isIdentifier(name)) issues.push(`override:${language}`);
+    if (name && name.trim() && !isIdentifier(name))
+      issues.push(`override:${language}`);
   }
   return issues;
 }
@@ -80,7 +95,8 @@ export function epsilonValid(spec: ProblemSpec): boolean {
 
 export function matchingValid(spec: ProblemSpec): boolean {
   if (spec.matchingStrategy === "EPSILON") return epsilonValid(spec);
-  if (spec.matchingStrategy === "UNORDERED_SET") return allowsUnorderedSet(spec);
+  if (spec.matchingStrategy === "UNORDERED_SET")
+    return allowsUnorderedSet(spec);
   return true;
 }
 
@@ -115,11 +131,20 @@ export function derivedName(name: string, language: SpecLanguage): string {
   const parts = words(name);
   if (parts.length === 0) return "";
   if (language === "python") return parts.join("_");
-  return parts[0] + parts.slice(1).map((part) => part[0]!.toUpperCase() + part.slice(1)).join("");
+  return (
+    parts[0] +
+    parts
+      .slice(1)
+      .map((part) => part[0]!.toUpperCase() + part.slice(1))
+      .join("")
+  );
 }
 
 /** The name used for one language: the override when written, otherwise the derived spelling. */
-export function languageName(signature: FunctionSignature, language: SpecLanguage): string {
+export function languageName(
+  signature: FunctionSignature,
+  language: SpecLanguage,
+): string {
   const override = signature.nameOverrides[language]?.trim();
   return override || derivedName(signature.functionName, language);
 }
@@ -134,45 +159,93 @@ const JAVA_BOXED: Record<string, string> = {
 };
 
 const SCALAR: Record<SpecLanguage, Record<string, string>> = {
-  java: { INT: "int", LONG: "long", DOUBLE: "double", BOOLEAN: "boolean", CHAR: "char", STRING: "String" },
-  cpp: { INT: "int", LONG: "long long", DOUBLE: "double", BOOLEAN: "bool", CHAR: "char", STRING: "string" },
-  python: { INT: "int", LONG: "int", DOUBLE: "float", BOOLEAN: "bool", CHAR: "str", STRING: "str" },
+  java: {
+    INT: "int",
+    LONG: "long",
+    DOUBLE: "double",
+    BOOLEAN: "boolean",
+    CHAR: "char",
+    STRING: "String",
+  },
+  cpp: {
+    INT: "int",
+    LONG: "long long",
+    DOUBLE: "double",
+    BOOLEAN: "bool",
+    CHAR: "char",
+    STRING: "string",
+  },
+  python: {
+    INT: "int",
+    LONG: "int",
+    DOUBLE: "float",
+    BOOLEAN: "bool",
+    CHAR: "str",
+    STRING: "str",
+  },
 };
 
 /** `boxed`: inside Java generics a scalar must be its wrapper class (`List<Integer>`, never `List<int>`). */
-function typeText(type: SpecType, language: SpecLanguage, boxed = false): string {
-  const inner = (of: SpecType | undefined, asBoxed: boolean) => (of ? typeText(of, language, asBoxed) : "?");
+function typeText(
+  type: SpecType,
+  language: SpecLanguage,
+  boxed = false,
+): string {
+  const inner = (of: SpecType | undefined, asBoxed: boolean) =>
+    of ? typeText(of, language, asBoxed) : "?";
   switch (type.kind) {
     case "ARRAY": {
       const depth = type.dimensions ?? 1;
       const element = inner(type.of, false);
       if (language === "java") return element + "[]".repeat(depth);
-      if (language === "cpp") return "vector<".repeat(depth) + element + ">".repeat(depth);
+      if (language === "cpp")
+        return "vector<".repeat(depth) + element + ">".repeat(depth);
       return "List[".repeat(depth) + element + "]".repeat(depth);
     }
     case "LIST":
       if (language === "java") return `List<${inner(type.of, true)}>`;
-      return language === "cpp" ? `vector<${inner(type.of, false)}>` : `List[${inner(type.of, false)}]`;
+      return language === "cpp"
+        ? `vector<${inner(type.of, false)}>`
+        : `List[${inner(type.of, false)}]`;
     case "LINKED_LIST":
-      return language === "java" ? "ListNode" : language === "cpp" ? "ListNode*" : "Optional[ListNode]";
+      return language === "java"
+        ? "ListNode"
+        : language === "cpp"
+          ? "ListNode*"
+          : "Optional[ListNode]";
     case "BINARY_TREE":
-      return language === "java" ? "TreeNode" : language === "cpp" ? "TreeNode*" : "Optional[TreeNode]";
+      return language === "java"
+        ? "TreeNode"
+        : language === "cpp"
+          ? "TreeNode*"
+          : "Optional[TreeNode]";
     case "OTHER":
       return "?";
     default:
-      return language === "java" && boxed ? JAVA_BOXED[type.kind]! : SCALAR[language][type.kind]!;
+      return language === "java" && boxed
+        ? JAVA_BOXED[type.kind]!
+        : SCALAR[language][type.kind]!;
   }
 }
 
 /** One line showing the signature in a language, e.g. `def min_window(s: str, t: str) -> str:`. */
-export function renderSignature(signature: FunctionSignature, language: SpecLanguage): string {
+export function renderSignature(
+  signature: FunctionSignature,
+  language: SpecLanguage,
+): string {
   const name = languageName(signature, language) || "?";
   const parameters = signature.parameters;
   const returns = typeText(signature.returnType, language);
   if (language === "python") {
-    const list = parameters.map((row) => `${row.name || "?"}: ${typeText(row.type, language)}`).join(", ");
+    const list = parameters
+      .map((row) => `${row.name || "?"}: ${typeText(row.type, language)}`)
+      .join(", ");
     return `def ${name}(${list}) -> ${returns}:`;
   }
-  const list = parameters.map((row) => `${typeText(row.type, language)} ${row.name || "?"}`).join(", ");
-  return language === "java" ? `public ${returns} ${name}(${list})` : `${returns} ${name}(${list})`;
+  const list = parameters
+    .map((row) => `${typeText(row.type, language)} ${row.name || "?"}`)
+    .join(", ");
+  return language === "java"
+    ? `public ${returns} ${name}(${list})`
+    : `${returns} ${name}(${list})`;
 }

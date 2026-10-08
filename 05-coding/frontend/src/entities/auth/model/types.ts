@@ -1,7 +1,8 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 
 /** Mode of the `auth` screen state machine (02-bd/screens/shared/SHR0101_auth.md Sheet 3). */
-export type AuthMode = "signup" | "login" | "forgot_email" | "forgot_otp" | "forgot_reset";
+export type AuthMode =
+  "signup" | "login" | "forgot_email" | "forgot_otp" | "forgot_reset";
 
 /**
  * Duplicated from entities/user/model/types.ts's `Role`, NOT imported from it — FSD forbids
@@ -28,6 +29,9 @@ export type AuthOutcome =
 
 export type ForgotEmailOutcome = { ok: true };
 
-export type ForgotOtpOutcome = { ok: true } | { ok: false; fieldErrors: AuthFieldErrors; attemptsLeft: number };
+export type ForgotOtpOutcome =
+  | { ok: true }
+  | { ok: false; fieldErrors: AuthFieldErrors; attemptsLeft: number };
 
-export type ForgotResetOutcome = { ok: true } | { ok: false; fieldErrors: AuthFieldErrors };
+export type ForgotResetOutcome =
+  { ok: true } | { ok: false; fieldErrors: AuthFieldErrors };

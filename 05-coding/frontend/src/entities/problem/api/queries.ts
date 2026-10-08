@@ -11,19 +11,28 @@ import {
   publishProblem,
   saveProblemDraft,
 } from "./__mock__/problem-draft-mocks";
-import type { GenerateTestcasesInput, ProblemDraft } from "../model/draft-types";
+import type {
+  GenerateTestcasesInput,
+  ProblemDraft,
+} from "../model/draft-types";
 
 function notImplemented(): never {
-  throw new ApiError("NOT_IMPLEMENTED", 501, "03-dd/api/problem-bank.md chưa định nghĩa endpoint này");
+  throw new ApiError(
+    "NOT_IMPLEMENTED",
+    501,
+    "03-dd/api/problem-bank.md chưa định nghĩa endpoint này",
+  );
 }
 
-const draftKey = (problemId?: string) => ["problem-draft", problemId ?? "new"] as const;
+const draftKey = (problemId?: string, fromId?: string) =>
+  ["problem-draft", problemId ?? "new", fromId ?? null] as const;
 
 /** `GetProblemForAuthoring`. Stale at once: an editor opened after a save must see that save. */
-export const useProblemDraft = (problemId?: string) =>
+export const useProblemDraft = (problemId?: string, fromId?: string) =>
   useQuery({
-    queryKey: draftKey(problemId),
-    queryFn: () => withMockData(() => loadProblemDraft(problemId), notImplemented),
+    queryKey: draftKey(problemId, fromId),
+    queryFn: () =>
+      withMockData(() => loadProblemDraft(problemId, fromId), notImplemented),
     staleTime: 0,
     retry: false,
   });
@@ -36,7 +45,8 @@ export function useSaveProblemDraft() {
   return useMutation({
     mutationFn: ({ draft, problemId }: WriteVars) =>
       withMockData(() => saveProblemDraft(draft, problemId), notImplemented),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["problem-draft"] }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["problem-draft"] }),
   });
 }
 
@@ -46,7 +56,8 @@ export function usePublishProblem() {
   return useMutation({
     mutationFn: ({ draft, problemId }: WriteVars) =>
       withMockData(() => publishProblem(draft, problemId), notImplemented),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["problem-draft"] }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["problem-draft"] }),
   });
 }
 
@@ -56,6 +67,7 @@ export function useGenerateTestcases() {
   return useMutation({
     mutationFn: (input: GenerateTestcasesInput) =>
       withMockData(() => generateTestcasesWithAi(input), notImplemented),
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ["problem-draft"] }),
+    onSettled: () =>
+      queryClient.invalidateQueries({ queryKey: ["problem-draft"] }),
   });
 }

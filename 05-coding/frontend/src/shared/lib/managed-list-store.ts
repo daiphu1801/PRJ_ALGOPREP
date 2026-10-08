@@ -55,7 +55,8 @@ export function createManagedListStore<T extends ManagedItem>(
   function uniqueSlug(name: string): string {
     const base = slugify(name) || keyPrefix.toUpperCase();
     let key = base;
-    for (let n = 2; items.some((item) => item.key === key); n += 1) key = `${base}_${n}`;
+    for (let n = 2; items.some((item) => item.key === key); n += 1)
+      key = `${base}_${n}`;
     return key;
   }
 
@@ -75,25 +76,39 @@ export function createManagedListStore<T extends ManagedItem>(
         () => seed,
       ),
 
-    add(label: string, extra: Omit<T, keyof ManagedItem>): ManagedListError | null {
+    add(
+      label: string,
+      extra: Omit<T, keyof ManagedItem>,
+    ): ManagedListError | null {
       const name = label.trim();
       if (!name) return "empty";
       if (items.some((item) => sameName(item.label, name))) return "duplicate";
-      const key = slugKeys ? uniqueSlug(name) : `${keyPrefix}-${Date.now().toString(36)}`;
+      const key = slugKeys
+        ? uniqueSlug(name)
+        : `${keyPrefix}-${Date.now().toString(36)}`;
       commit([...items, { ...extra, key, label: name } as unknown as T]);
       return null;
     },
 
     /** Changes label and/or extra fields; the key never changes. */
-    update(key: string, changes: Partial<Omit<T, "key">>): ManagedListError | null {
-      const label = changes.label === undefined ? undefined : changes.label.trim();
+    update(
+      key: string,
+      changes: Partial<Omit<T, "key">>,
+    ): ManagedListError | null {
+      const label =
+        changes.label === undefined ? undefined : changes.label.trim();
       if (label !== undefined) {
         if (!label) return "empty";
-        if (items.some((item) => item.key !== key && sameName(item.label, label))) return "duplicate";
+        if (
+          items.some((item) => item.key !== key && sameName(item.label, label))
+        )
+          return "duplicate";
       }
       commit(
         items.map((item) =>
-          item.key === key ? { ...item, ...changes, ...(label === undefined ? {} : { label }) } : item,
+          item.key === key
+            ? { ...item, ...changes, ...(label === undefined ? {} : { label }) }
+            : item,
         ),
       );
       return null;

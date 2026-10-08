@@ -6,9 +6,16 @@ import { toast } from "@/shared/lib/toast-store";
 import { ConfirmDialog } from "@/shared/ui";
 import { useDeactivateAccount } from "../model/use-deactivate-account";
 
-export function DeleteAccountDialog({ email, onClose }: { email: string; onClose: () => void }) {
+export function DeleteAccountDialog({
+  email,
+  onClose,
+}: {
+  email: string;
+  onClose: () => void;
+}) {
   const t = useT("settings");
-  const { confirmPhrase, setConfirmPhrase, canConfirm, isSubmitting, confirm } = useDeactivateAccount(email);
+  const { confirmPhrase, setConfirmPhrase, canConfirm, isSubmitting, confirm } =
+    useDeactivateAccount(email);
 
   async function handleConfirm() {
     const result = await confirm();
@@ -30,7 +37,10 @@ export function DeleteAccountDialog({ email, onClose }: { email: string; onClose
       pending={isSubmitting || !canConfirm}
     >
       <p className="mb-3">{t("dangerZone.consequenceText")}</p>
-      <label htmlFor="confirm-phrase" className="mb-1 block text-xs font-medium text-[var(--color-text-muted)]">
+      <label
+        htmlFor="confirm-phrase"
+        className="mb-1 block text-xs font-medium text-[var(--color-text-muted)]"
+      >
         {t("deleteConfirm.confirmPhraseLabel", { email })}
       </label>
       <input

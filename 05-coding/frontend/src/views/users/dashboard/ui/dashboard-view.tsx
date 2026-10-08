@@ -39,7 +39,8 @@ import { SuggestedProblemsBlock } from "./blocks/suggested-problems-block";
 import { TopicsTable } from "./blocks/topics-table";
 
 /** Both halves of the merged screen use the same 1.55fr/1fr split the two prototypes shared. */
-const TWO_COLUMN = "grid grid-cols-1 items-start gap-3.5 lg:grid-cols-[1.55fr_1fr]";
+const TWO_COLUMN =
+  "grid grid-cols-1 items-start gap-3.5 lg:grid-cols-[1.55fr_1fr]";
 
 export function DashboardView() {
   const t = useT("dashboard");

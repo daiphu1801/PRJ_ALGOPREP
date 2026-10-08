@@ -41,7 +41,7 @@ phân loại và sử dụng bên hẹp) `[SoT: Suy luận]`; chủ dự án ch�
 
 | Hạng mục | Lý do |
 | :--- | :--- |
-| Sửa, nhân bản, xoá mềm | Thuộc `interview_question_authoring` (`SHR0302`) và `interview_question_management` (`SHR0301`). |
+| Sửa, xoá mềm | Thuộc `interview_question_authoring` (`SHR0302`) và `interview_question_management` (`SHR0301`). |
 | Các trường chỉ phục vụ học viên (ý cần nói, từ khoá cốt lõi, khung trả lời chuẩn, lịch sử luyện) | Là của `USR0402_interview_question_detail`; màn quản trị không đọc chúng. |
 | Quản lý danh mục chủ đề | Hộp thoại "Quản lý chủ đề" của `SHR0301`, chỉ ADMIN. |
 

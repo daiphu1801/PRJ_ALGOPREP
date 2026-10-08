@@ -21,7 +21,8 @@ export function DailySubmissionsBlock({ range }: { range: ProgressRange }) {
 
   const points = query.data ?? [];
   const total = points.reduce((sum, point) => sum + point.count, 0);
-  const average = points.length === 0 ? 0 : Math.round((total / points.length) * 10) / 10;
+  const average =
+    points.length === 0 ? 0 : Math.round((total / points.length) * 10) / 10;
 
   return (
     <DashboardBlockState
@@ -37,7 +38,10 @@ export function DailySubmissionsBlock({ range }: { range: ProgressRange }) {
     >
       <div>
         <LineChartWithTotal
-          points={points.map((point) => ({ label: point.label, value: point.count }))}
+          points={points.map((point) => ({
+            label: point.label,
+            value: point.count,
+          }))}
           totalLabel={t("daily.totalLabel", { average })}
           totalValue={String(total)}
         />

@@ -33,13 +33,26 @@ export function useUnsavedChangesGuard(dirty: boolean) {
     };
 
     const onClick = (event: MouseEvent) => {
-      if (bypass.current || event.defaultPrevented || event.button !== 0) return;
-      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-      const anchor = (event.target as Element | null)?.closest?.("a[href]") as HTMLAnchorElement | null;
-      if (!anchor || (anchor.target && anchor.target !== "_self") || anchor.hasAttribute("download")) return;
+      if (bypass.current || event.defaultPrevented || event.button !== 0)
+        return;
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
+        return;
+      const anchor = (event.target as Element | null)?.closest?.(
+        "a[href]",
+      ) as HTMLAnchorElement | null;
+      if (
+        !anchor ||
+        (anchor.target && anchor.target !== "_self") ||
+        anchor.hasAttribute("download")
+      )
+        return;
       const url = new URL(anchor.href, window.location.href);
       if (url.origin !== window.location.origin) return;
-      if (url.pathname + url.search === window.location.pathname + window.location.search) return;
+      if (
+        url.pathname + url.search ===
+        window.location.pathname + window.location.search
+      )
+        return;
       event.preventDefault();
       event.stopPropagation();
       setPending({ kind: "link", href: url.pathname + url.search + url.hash });

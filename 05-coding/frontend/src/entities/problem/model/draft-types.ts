@@ -132,21 +132,42 @@ export type GenerateTestcasesResult = {
 // ---------------------------------------------------------------------------------------------
 
 /** Element-level kinds of the harness type schema (02-bd/architecture/harness.md section 4.2). */
-export type ScalarKind = "INT" | "LONG" | "DOUBLE" | "BOOLEAN" | "CHAR" | "STRING";
+export type ScalarKind =
+  "INT" | "LONG" | "DOUBLE" | "BOOLEAN" | "CHAR" | "STRING";
 
-export const SCALAR_KINDS: ScalarKind[] = ["INT", "LONG", "DOUBLE", "BOOLEAN", "CHAR", "STRING"];
+export const SCALAR_KINDS: ScalarKind[] = [
+  "INT",
+  "LONG",
+  "DOUBLE",
+  "BOOLEAN",
+  "CHAR",
+  "STRING",
+];
 
 /**
  * `OTHER` is a prototype affordance, not a schema kind: it stands for "a type the schema cannot
  * express" so the F3-13 warning (problem falls back to Standard I/O only) can be shown. The real
  * server derives that flag from the saved JSON.
  */
-export type TypeKind = ScalarKind | "ARRAY" | "LIST" | "LINKED_LIST" | "BINARY_TREE" | "OTHER";
+export type TypeKind =
+  ScalarKind | "ARRAY" | "LIST" | "LINKED_LIST" | "BINARY_TREE" | "OTHER";
 
-export const TYPE_KINDS: TypeKind[] = [...SCALAR_KINDS, "ARRAY", "LIST", "LINKED_LIST", "BINARY_TREE", "OTHER"];
+export const TYPE_KINDS: TypeKind[] = [
+  ...SCALAR_KINDS,
+  "ARRAY",
+  "LIST",
+  "LINKED_LIST",
+  "BINARY_TREE",
+  "OTHER",
+];
 
 /** Kinds that carry an element type (`of`); ARRAY also carries a dimension count. */
-export const CONTAINER_KINDS: TypeKind[] = ["ARRAY", "LIST", "LINKED_LIST", "BINARY_TREE"];
+export const CONTAINER_KINDS: TypeKind[] = [
+  "ARRAY",
+  "LIST",
+  "LINKED_LIST",
+  "BINARY_TREE",
+];
 
 export type SpecType = {
   kind: TypeKind;
@@ -176,9 +197,15 @@ export type FunctionSignature = {
   nameOverrides: Partial<Record<SpecLanguage, string>>;
 };
 
-export type MatchingStrategy = "EXACT" | "TRIMMED" | "EPSILON" | "UNORDERED_SET";
+export type MatchingStrategy =
+  "EXACT" | "TRIMMED" | "EPSILON" | "UNORDERED_SET";
 
-export const MATCHING_STRATEGIES: MatchingStrategy[] = ["EXACT", "TRIMMED", "EPSILON", "UNORDERED_SET"];
+export const MATCHING_STRATEGIES: MatchingStrategy[] = [
+  "EXACT",
+  "TRIMMED",
+  "EPSILON",
+  "UNORDERED_SET",
+];
 
 export type ProblemSpec = {
   /** The one shared function signature. */

@@ -1,6 +1,17 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { act, fireEvent, render, renderHook, screen, within } from "@testing-library/react";
-import { addProblemLevel, removeProblemLevel, useProblemLevels } from "@/entities/problem";
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+  within,
+} from "@testing-library/react";
+import {
+  addProblemLevel,
+  removeProblemLevel,
+  useProblemLevels,
+} from "@/entities/problem";
 import { NextIntlClientProvider } from "@/shared/i18n";
 import messages from "../../../../../messages/vi.json";
 import { ProblemListView } from "./problem-list-view";
@@ -19,7 +30,9 @@ function renderView() {
 
 // Filters are a button that opens a listbox; open it first, then pick from the options.
 function openFilter(label: string) {
-  fireEvent.click(screen.getByRole("button", { name: new RegExp(`^${label}`) }));
+  fireEvent.click(
+    screen.getByRole("button", { name: new RegExp(`^${label}`) }),
+  );
   return screen.getByRole("listbox", { name: label });
 }
 
@@ -55,12 +68,11 @@ describe("ProblemListView difficulty tabs", () => {
   it("shows one tab per level in admin order and filters by it", () => {
     renderView();
     const group = openFilter("Lọc theo độ khó");
-    expect(within(group).getAllByRole("option").map((b) => b.textContent)).toEqual([
-      "Tất cả",
-      "Dễ",
-      "Trung bình",
-      "Khó",
-    ]);
+    expect(
+      within(group)
+        .getAllByRole("option")
+        .map((b) => b.textContent),
+    ).toEqual(["Tất cả", "Dễ", "Trung bình", "Khó"]);
 
     const rowsBefore = screen.getAllByRole("row").length;
     fireEvent.click(within(group).getByRole("option", { name: "Khó" }));
@@ -71,7 +83,9 @@ describe("ProblemListView difficulty tabs", () => {
     act(() => void addProblemLevel("Rất khó"));
     renderView();
     const group = openFilter("Lọc theo độ khó");
-    expect(within(group).getByRole("option", { name: "Rất khó" })).toBeInTheDocument();
+    expect(
+      within(group).getByRole("option", { name: "Rất khó" }),
+    ).toBeInTheDocument();
   });
 
   it("shows one progress card per level, and 0 / 0 for a level with no problems yet", () => {

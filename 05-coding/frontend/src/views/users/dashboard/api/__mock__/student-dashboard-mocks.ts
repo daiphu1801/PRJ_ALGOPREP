@@ -21,7 +21,11 @@ function delay<T>(value: T, ms = 500): Promise<T> {
 }
 
 /** dc.html `seriesFor()` — the same constants, so the shapes match the mockup screenshot. */
-function seededSeries(pointCount: number, seed: number, amplitude: number): number[] {
+function seededSeries(
+  pointCount: number,
+  seed: number,
+  amplitude: number,
+): number[] {
   const out: number[] = [];
   let state = seed;
   for (let i = 0; i < pointCount; i += 1) {
@@ -31,7 +35,10 @@ function seededSeries(pointCount: number, seed: number, amplitude: number): numb
   return out;
 }
 
-const RANGE_SHAPE: Record<DashboardRange, { points: number; amplitude: number }> = {
+const RANGE_SHAPE: Record<
+  DashboardRange,
+  { points: number; amplitude: number }
+> = {
   "7d": { points: 7, amplitude: 8 },
   "30d": { points: 15, amplitude: 11 },
   all: { points: 24, amplitude: 14 },
@@ -39,9 +46,15 @@ const RANGE_SHAPE: Record<DashboardRange, { points: number; amplitude: number }>
 
 // "all" is plotted as a 90-day window: the axis needs a finite span to label, and 90 days is what
 // the prototype's widest tab used (dc.html:134-140).
-const RANGE_DAYS: Record<DashboardRange, number> = { "7d": 7, "30d": 30, all: 90 };
+const RANGE_DAYS: Record<DashboardRange, number> = {
+  "7d": 7,
+  "30d": 30,
+  all: 90,
+};
 
-export function fakeGetDashboardDaily(range: DashboardRange): Promise<DashboardDailyPoint[]> {
+export function fakeGetDashboardDaily(
+  range: DashboardRange,
+): Promise<DashboardDailyPoint[]> {
   const { points, amplitude } = RANGE_SHAPE[range];
   // dc.html seeds from the label's length; reproduced as an explicit per-range number so the three
   // tabs keep drawing three visibly different curves instead of the same one rescaled.
@@ -57,7 +70,20 @@ export function fakeGetDashboardDaily(range: DashboardRange): Promise<DashboardD
 }
 
 const WEEK_COUNT = 52;
-const MONTH_LABELS = ["T9", "T10", "T11", "T12", "T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8"];
+const MONTH_LABELS = [
+  "T9",
+  "T10",
+  "T11",
+  "T12",
+  "T1",
+  "T2",
+  "T3",
+  "T4",
+  "T5",
+  "T6",
+  "T7",
+  "T8",
+];
 
 /**
  * Bucket thresholds copied from dc.html: >0.86 → 4, >0.7 → 3, >0.5 → 2, >0.28 → 1, else 0. Keeping
@@ -76,7 +102,9 @@ function levelFor(random: number): ActivityDay["level"] {
  * query below passes a fixed date for the same reason the rest of the mocks use fixed dates: a
  * prototype that renders differently tomorrow is not reviewable.
  */
-export function fakeGetActivityCalendar(endDay = "2026-09-27"): Promise<ActivityCalendar> {
+export function fakeGetActivityCalendar(
+  endDay = "2026-09-27",
+): Promise<ActivityCalendar> {
   const end = new Date(`${endDay}T00:00:00Z`);
   const totalDays = WEEK_COUNT * 7;
   let state = 987654321;
@@ -104,7 +132,9 @@ export function fakeGetActivityCalendar(endDay = "2026-09-27"): Promise<Activity
   return delay({ weeks, monthLabels: MONTH_LABELS, activeDayCount });
 }
 
-export function fakeGetRecentSolutionReviews(): Promise<RecentSolutionReview[]> {
+export function fakeGetRecentSolutionReviews(): Promise<
+  RecentSolutionReview[]
+> {
   return delay([
     {
       submissionId: "sub-4821",

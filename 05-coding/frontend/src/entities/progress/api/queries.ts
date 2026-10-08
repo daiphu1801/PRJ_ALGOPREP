@@ -13,7 +13,9 @@ import {
 const QUERY_OPTIONS = { staleTime: 30_000, retry: false } as const;
 
 function notImplemented(): never {
-  throw new Error("03-dd/api/identity.md / api/ai-review.md don't define these endpoints yet");
+  throw new Error(
+    "03-dd/api/identity.md / api/ai-review.md don't define these endpoints yet",
+  );
 }
 
 export const useProgressOverview = () =>
@@ -26,14 +28,16 @@ export const useProgressOverview = () =>
 export const useTopicProgress = (range: ProgressRange) =>
   useQuery({
     queryKey: ["progress", "topics", range],
-    queryFn: () => withMockData(() => fakeGetTopicProgress(range), notImplemented),
+    queryFn: () =>
+      withMockData(() => fakeGetTopicProgress(range), notImplemented),
     ...QUERY_OPTIONS,
   });
 
 export const useDailySubmissions = (range: ProgressRange) =>
   useQuery({
     queryKey: ["progress", "daily-submissions", range],
-    queryFn: () => withMockData(() => fakeGetDailySubmissions(range), notImplemented),
+    queryFn: () =>
+      withMockData(() => fakeGetDailySubmissions(range), notImplemented),
     ...QUERY_OPTIONS,
   });
 

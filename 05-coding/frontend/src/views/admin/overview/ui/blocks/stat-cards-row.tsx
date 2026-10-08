@@ -3,7 +3,11 @@
 
 import { useT } from "@/shared/i18n";
 import { DashboardBlockState, StatCardWithSparkline } from "@/shared/ui";
-import { useActiveUsersSummary, usePasswordResetsSummary, useSubmissionsSummary } from "../../api";
+import {
+  useActiveUsersSummary,
+  usePasswordResetsSummary,
+  useSubmissionsSummary,
+} from "../../api";
 
 // Row 1, left column: three vertical stat cards (the third was added 2026-10-01, see usePasswordResetsSummary) (02-bd/screens/admin/ADM0101_overview.md section 2 point 3).
 export function StatCardsRow() {

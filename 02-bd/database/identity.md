@@ -119,6 +119,15 @@ giờ lưu mã OTP**, không lưu email hay mật khẩu. Yêu cầu cho email k
 quyết định đã nêu, nhưng RD F1-14 (`01-rd/req/identity.md:68-75`) chưa nhắc, cần mở rộng RD `[SoT: Suy luận]`.
 Chỉ mục gợi ý `(action_type, created_at DESC)` để đếm 24 giờ/7 ngày nhanh `[SoT: Suy luận]`.
 
+**Bổ sung 2026-10-05 (F1-32) — lý do khoá nằm ở đâu:** thao tác khoá tài khoản ghi lý do trong
+`after_json` (ví dụ `{"status": "DEACTIVATED", "reason": "..."}`, kèm `notifyByEmail` để biết có gửi
+email không). **Không cột mới** và **không bảng lý do riêng**: cột mới thì phải migrate mọi bản ghi cũ,
+bảng riêng thì phải thêm khóa ngoại và một đường ghi thứ hai cho cùng một giao dịch — trong khi lý do chỉ
+được **đọc** cùng dòng nhật ký, không bao giờ lọc hay sửa, nên cột JSON sẵn có là chỗ đúng. Đổi lại, lý do
+không lọc được theo câu truy vấn; nếu sau này cần thống kê "khoá vì lý do gì" thì mở câu hỏi phạm vi riêng
+chứ không sửa ngược bản ghi cũ. Mở khoá **không** có lý do — nên cấu trúc `after_json` của hai hành
+động này không giống nhau, và màn nhật ký phải hiển thị khác nhau `[SoT: Suy luận]`.
+
 ### 1.12. Read model tổng hợp từ domain event (mục 3.1 kiến trúc)
 
 - `user_problem_best_score(user_id, problem_id, best_ratio, best_verdict, updated_at)` — phục vụ F1-06

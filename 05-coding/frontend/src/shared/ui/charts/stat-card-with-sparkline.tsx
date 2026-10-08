@@ -45,13 +45,22 @@ export function StatCardWithSparkline({
     <div className="glass-card flex items-center justify-between gap-3 p-3">
       <div>
         <p className="text-xs text-[var(--color-text-muted)]">{label}</p>
-        <p className="mt-1 text-2xl font-semibold text-[var(--color-text)]">{value}</p>
-        <p className="mt-1 text-xs font-medium" style={{ color: `var(${accentColorVar})` }}>
+        <p className="mt-1 text-2xl font-semibold text-[var(--color-text)]">
+          {value}
+        </p>
+        <p
+          className="mt-1 text-xs font-medium"
+          style={{ color: `var(${accentColorVar})` }}
+        >
           {deltaDirection === "up" ? "+" : "-"}
           {deltaLabel}%
         </p>
       </div>
-      <svg viewBox="0 0 100 24" className="h-7 w-16 shrink-0" aria-hidden="true">
+      <svg
+        viewBox="0 0 100 24"
+        className="h-7 w-16 shrink-0"
+        aria-hidden="true"
+      >
         <polyline
           points={points}
           fill="none"

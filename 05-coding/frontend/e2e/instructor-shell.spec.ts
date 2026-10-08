@@ -9,20 +9,32 @@ import { expect, test } from "@playwright/test";
  * actually applied (a screen on the generic tokens has a white background, not the mockup's
  * #F5F8FC).
  */
-test("the sidebar renders on every instructor route and marks the active one", async ({ page }) => {
+test("the sidebar renders on every instructor route and marks the active one", async ({
+  page,
+}) => {
   await page.goto("/instructor/overview");
 
-  const nav = page.getByRole("navigation", { name: "Điều hướng khu giảng viên" });
-  await expect(nav.getByRole("link", { name: "Tổng quan" })).toHaveAttribute("aria-current", "page");
+  const nav = page.getByRole("navigation", {
+    name: "Điều hướng khu giảng viên",
+  });
+  await expect(nav.getByRole("link", { name: "Tổng quan" })).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
   // 5 main destinations + 2 under "Khác".
   await expect(nav.getByRole("link")).toHaveCount(7);
 
   await nav.getByRole("link", { name: "Lớp của tôi" }).click();
   await expect(page).toHaveURL(/\/instructor\/classes$/);
-  await expect(nav.getByRole("link", { name: "Lớp của tôi" })).toHaveAttribute("aria-current", "page");
+  await expect(nav.getByRole("link", { name: "Lớp của tôi" })).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
 });
 
-test("instructor screens render in the mockup palette, not the generic tokens", async ({ page }) => {
+test("instructor screens render in the mockup palette, not the generic tokens", async ({
+  page,
+}) => {
   await page.goto("/instructor/grading");
 
   const shell = page.locator(".instructor-shell");
@@ -31,7 +43,10 @@ test("instructor screens render in the mockup palette, not the generic tokens", 
   // "the scope is applied" from "the scope silently did not match".
   await expect(shell).toHaveCSS("background-color", "rgb(245, 248, 252)");
 
-  await page.screenshot({ path: "e2e/__screenshots__/instructor-grading.png", fullPage: true });
+  await page.screenshot({
+    path: "e2e/__screenshots__/instructor-grading.png",
+    fullPage: true,
+  });
 });
 
 test("a nested route lights up exactly one nav item", async ({ page }) => {
@@ -39,12 +54,19 @@ test("a nested route lights up exactly one nav item", async ({ page }) => {
   // "Lớp của tôi" must be the ONLY item marked.
   await page.goto("/instructor/classes/c1/students/s1");
 
-  const nav = page.getByRole("navigation", { name: "Điều hướng khu giảng viên" });
-  await expect(nav.getByRole("link", { name: "Lớp của tôi" })).toHaveAttribute("aria-current", "page");
+  const nav = page.getByRole("navigation", {
+    name: "Điều hướng khu giảng viên",
+  });
+  await expect(nav.getByRole("link", { name: "Lớp của tôi" })).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
   await expect(nav.locator('[aria-current="page"]')).toHaveCount(1);
 });
 
-test("class management holds no student table; the student list does", async ({ page }) => {
+test("class management holds no student table; the student list does", async ({
+  page,
+}) => {
   // The two near-identical student tables were merged 2026-09-27: classes manage classes, the
   // student list manages students.
   await page.goto("/instructor/classes");
@@ -53,7 +75,9 @@ test("class management holds no student table; the student list does", async ({ 
   // "Xem học viên" carries the class through as a preselected filter.
   await page.getByRole("link", { name: "Xem học viên" }).first().click();
   await expect(page).toHaveURL(/\/instructor\/students\?classId=/);
-  await expect(page.getByRole("table", { name: "Danh sách học viên" })).toBeVisible();
+  await expect(
+    page.getByRole("table", { name: "Danh sách học viên" }),
+  ).toBeVisible();
 });
 
 test("the sidebar stays put while a long table scrolls", async ({ page }) => {
@@ -62,7 +86,9 @@ test("the sidebar stays put while a long table scrolls", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 800 });
   await page.goto("/instructor/students");
 
-  const nav = page.getByRole("navigation", { name: "Điều hướng khu giảng viên" });
+  const nav = page.getByRole("navigation", {
+    name: "Điều hướng khu giảng viên",
+  });
   await expect(nav).toBeVisible();
   await page.mouse.wheel(0, 2000);
 
@@ -70,7 +96,9 @@ test("the sidebar stays put while a long table scrolls", async ({ page }) => {
   await expect.poll(async () => (await nav.boundingBox())?.height).toBe(800);
 });
 
-test("the student list pages instead of rendering every row", async ({ page }) => {
+test("the student list pages instead of rendering every row", async ({
+  page,
+}) => {
   await page.goto("/instructor/students");
 
   const table = page.getByRole("table", { name: "Danh sách học viên" });

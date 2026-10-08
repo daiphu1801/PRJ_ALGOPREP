@@ -84,10 +84,12 @@ export function AdminQueueMonitorView() {
   const settings = queueSettings.use();
   const [editingParams, setEditingParams] = useState(false);
   const [filter, setFilter] = useState<JobFilter>("all");
-  const [sort, setSort] = useState<{ key: SortKey; direction: "asc" | "desc" }>({
-    key: "wait",
-    direction: "desc",
-  });
+  const [sort, setSort] = useState<{ key: SortKey; direction: "asc" | "desc" }>(
+    {
+      key: "wait",
+      direction: "desc",
+    },
+  );
 
   const jobs = useMemo(() => {
     const filtered = page.jobs.filter((job) => {
@@ -112,23 +114,34 @@ export function AdminQueueMonitorView() {
       header: t("columnJob"),
       width: "116px",
       render: (job) => (
-        <span className="font-mono text-[12.5px] text-[var(--color-text-muted)]">{job.id}</span>
+        <span className="font-mono text-[12.5px] text-[var(--color-text-muted)]">
+          {job.id}
+        </span>
       ),
     },
     {
       key: "submission",
       header: t("columnSubmission"),
       width: "124px",
-      render: (job) => <span className="font-mono text-[12.5px]">{job.submissionId}</span>,
+      render: (job) => (
+        <span className="font-mono text-[12.5px]">{job.submissionId}</span>
+      ),
     },
-    { key: "language", header: t("columnLanguage"), width: "110px", render: (job) => job.language },
+    {
+      key: "language",
+      header: t("columnLanguage"),
+      width: "110px",
+      render: (job) => job.language,
+    },
     {
       key: "priority",
       header: t("columnPriority"),
       width: "124px",
       sortable: true,
       render: (job) => (
-        <Badge variant={PRIORITY_VARIANT[job.priority]}>{t(`priority.${job.priority}`)}</Badge>
+        <Badge variant={PRIORITY_VARIANT[job.priority]}>
+          {t(`priority.${job.priority}`)}
+        </Badge>
       ),
     },
     {
@@ -136,7 +149,9 @@ export function AdminQueueMonitorView() {
       header: t("columnStatus"),
       width: "136px",
       render: (job) => (
-        <Badge variant={JOB_STATUS_VARIANT[job.status]}>{t(`jobStatus.${job.status}`)}</Badge>
+        <Badge variant={JOB_STATUS_VARIANT[job.status]}>
+          {t(`jobStatus.${job.status}`)}
+        </Badge>
       ),
     },
     {
@@ -173,7 +188,11 @@ export function AdminQueueMonitorView() {
             >
               {t("params.open")}
             </Button>
-            <Button variant="cta" size="sm" onClick={() => toast.success(t("refreshDone"))}>
+            <Button
+              variant="cta"
+              size="sm"
+              onClick={() => toast.success(t("refreshDone"))}
+            >
               {t("refresh")}
             </Button>
           </>
@@ -183,7 +202,10 @@ export function AdminQueueMonitorView() {
       <div className="mb-4 grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(280px,1fr)]">
         <Card
           title={t("workersTitle")}
-          description={t("workersSubtitle", { count: page.workerCount, max: page.maxWorkers })}
+          description={t("workersSubtitle", {
+            count: page.workerCount,
+            max: page.maxWorkers,
+          })}
           className="min-w-0"
         >
           <div className="grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
@@ -193,7 +215,9 @@ export function AdminQueueMonitorView() {
                 className="glass-surface rounded-2xl border border-[var(--color-border)] px-3.5 py-3"
               >
                 <div className="mb-2 flex items-center justify-between gap-2">
-                  <span className="font-mono text-[12.5px] font-semibold">{worker.id}</span>
+                  <span className="font-mono text-[12.5px] font-semibold">
+                    {worker.id}
+                  </span>
                   <Badge variant={WORKER_VARIANT[worker.status]}>
                     {t(`workerStatus.${worker.status}`)}
                   </Badge>
@@ -210,9 +234,13 @@ export function AdminQueueMonitorView() {
                 />
                 <p className="mt-2 flex justify-between text-xs text-[var(--color-text-muted)]">
                   <span>{t("workerLoad", { load: worker.load })}</span>
-                  <span className="font-mono">{t("workerJobs", { count: worker.jobs })}</span>
+                  <span className="font-mono">
+                    {t("workerJobs", { count: worker.jobs })}
+                  </span>
                 </p>
-                <p className="mt-1 text-[11.5px] text-[var(--color-text-subtle)]">{worker.meta}</p>
+                <p className="mt-1 text-[11.5px] text-[var(--color-text-subtle)]">
+                  {worker.meta}
+                </p>
               </div>
             ))}
           </div>
@@ -225,16 +253,21 @@ export function AdminQueueMonitorView() {
                 <SettingRow
                   key={key}
                   label={t(`control.${key}.label`)}
-                  description={t(`control.${key}.meta`, { threshold: settings.autoscaleThreshold })}
+                  description={t(`control.${key}.meta`, {
+                    threshold: settings.autoscaleThreshold,
+                  })}
                 >
                   <Toggle
                     checked={controls[key]}
-                    onCheckedChange={(value) =>
-                      {
-                        setControls((previous) => ({ ...previous, [key]: value }));
-                        toast.success(t(`control.${key}.${value ? "doneOn" : "doneOff"}`));
-                      }
-                    }
+                    onCheckedChange={(value) => {
+                      setControls((previous) => ({
+                        ...previous,
+                        [key]: value,
+                      }));
+                      toast.success(
+                        t(`control.${key}.${value ? "doneOn" : "doneOff"}`),
+                      );
+                    }}
                     label={t(`control.${key}.label`)}
                   />
                 </SettingRow>
@@ -250,7 +283,9 @@ export function AdminQueueMonitorView() {
                 value: item.percent,
                 valueLabel: item.label,
                 colorVar:
-                  item.percent > 70 ? "--color-admin-warn" : "--color-admin-teal",
+                  item.percent > 70
+                    ? "--color-admin-warn"
+                    : "--color-admin-teal",
               }))}
             />
           </Card>
@@ -268,10 +303,35 @@ export function AdminQueueMonitorView() {
           latencyCapSeconds: String(settings.latencyCapSeconds),
         }}
         fields={[
-          { type: "number", key: "autoscaleThreshold", label: t("params.autoscaleThreshold"), hint: t("params.autoscaleThresholdHint"), unit: t("params.unitJobs"), min: 1 },
-          { type: "number", key: "jobsPerPage", label: t("params.jobsPerPage"), unit: t("params.unitRows"), min: 1 },
-          { type: "number", key: "errorRetentionHours", label: t("params.errorRetention"), unit: t("params.unitHours"), min: 1 },
-          { type: "number", key: "latencyCapSeconds", label: t("params.latencyCap"), unit: t("params.unitSeconds"), min: 1 },
+          {
+            type: "number",
+            key: "autoscaleThreshold",
+            label: t("params.autoscaleThreshold"),
+            hint: t("params.autoscaleThresholdHint"),
+            unit: t("params.unitJobs"),
+            min: 1,
+          },
+          {
+            type: "number",
+            key: "jobsPerPage",
+            label: t("params.jobsPerPage"),
+            unit: t("params.unitRows"),
+            min: 1,
+          },
+          {
+            type: "number",
+            key: "errorRetentionHours",
+            label: t("params.errorRetention"),
+            unit: t("params.unitHours"),
+            min: 1,
+          },
+          {
+            type: "number",
+            key: "latencyCapSeconds",
+            label: t("params.latencyCap"),
+            unit: t("params.unitSeconds"),
+            min: 1,
+          },
         ]}
         onSave={(values) =>
           queueSettings.set({
@@ -281,7 +341,12 @@ export function AdminQueueMonitorView() {
             latencyCapSeconds: Number(values.latencyCapSeconds),
           })
         }
-        labels={{ save: t("params.save"), cancel: t("params.cancel"), saved: t("params.saved"), errorMin: (min) => t("params.errorMin", { min }) }}
+        labels={{
+          save: t("params.save"),
+          cancel: t("params.cancel"),
+          saved: t("params.saved"),
+          errorMin: (min) => t("params.errorMin", { min }),
+        }}
       />
 
       <Card
@@ -323,16 +388,23 @@ export function AdminQueueMonitorView() {
             <li
               key={event.id}
               className="grid grid-cols-[66px_84px_minmax(180px,1fr)] items-start gap-3 rounded-xl border-l-2 px-2.5 py-2.5 hover:bg-[var(--color-row-hover)]"
-              style={{ borderLeftColor: `var(${INFRA_COLOR_VAR[event.level]})` }}
+              style={{
+                borderLeftColor: `var(${INFRA_COLOR_VAR[event.level]})`,
+              }}
             >
               <span className="pt-px font-mono text-xs text-[var(--color-text-subtle)]">
                 {event.time}
               </span>
-              <Badge variant={INFRA_VARIANT[event.level]} className="w-full justify-center font-mono">
+              <Badge
+                variant={INFRA_VARIANT[event.level]}
+                className="w-full justify-center font-mono"
+              >
                 {t(`infraLevel.${event.level}`)}
               </Badge>
               <span className="min-w-0">
-                <span className="block text-[13px] font-semibold text-pretty">{event.message}</span>
+                <span className="block text-[13px] font-semibold text-pretty">
+                  {event.message}
+                </span>
                 <span className="mt-0.5 block font-mono text-[11.5px] text-[var(--color-text-subtle)]">
                   {event.service}
                 </span>

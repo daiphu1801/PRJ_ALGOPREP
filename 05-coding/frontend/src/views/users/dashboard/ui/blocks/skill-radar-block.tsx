@@ -34,9 +34,14 @@ export function SkillRadarBlock() {
       minHeightClassName="min-h-[260px]"
     >
       <div>
-        <p className="mb-1 text-xs text-[var(--color-text-muted)]">{t("radar.subtitle")}</p>
+        <p className="mb-1 text-xs text-[var(--color-text-muted)]">
+          {t("radar.subtitle")}
+        </p>
         <div className="flex justify-center">
-          <RadarChart points={points.map((p) => ({ label: p.topicName, value: p.score }))} ariaLabel={t("radar.title")} />
+          <RadarChart
+            points={points.map((p) => ({ label: p.topicName, value: p.score }))}
+            ariaLabel={t("radar.title")}
+          />
         </div>
       </div>
     </DashboardBlockState>

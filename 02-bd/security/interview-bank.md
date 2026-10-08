@@ -32,7 +32,7 @@ qua claim JWT, **`interview-bank` tự kiểm sở hữu ở tầng use case c�
   người dùng** — đây là dữ liệu dùng chung toàn hệ thống (F6-11 đã bỏ, không có khái niệm "câu hỏi của
   lớp tôi"), khác hẳn `user_answers` (dữ liệu cá nhân).
 - **Giảng viên/Quản trị viên qua `interview_question_management`/`interview_question_authoring`
-  (F6-13)**: tạo/sửa/nhân bản/xoá mềm `interview_questions`/`answer_rubrics` — gác bởi Function
+  (F6-13)**: tạo/sửa/xoá mềm `interview_questions`/`answer_rubrics` — gác bởi Function
   `INTERVIEW_BANK_MANAGEMENT` (`01-rd/req/identity.md:60`, F1-12). **Không có phạm vi "theo lớp"** cho
   thao tác này (khác `ai-review`'s `CLASS_MANAGEMENT` scope theo lớp phụ trách) — vì ngân hàng câu hỏi
   là dùng chung toàn hệ thống, một A2 có quyền `INTERVIEW_BANK_MANAGEMENT:CREATE`/`UPDATE` sửa được nội

@@ -16,12 +16,20 @@ import type {
 import { RUBRIC_WEIGHTS } from "../../model/types";
 
 export function fetchEntryStats(): EntryStats {
-  return { sessionsCompleted: 7, averageScore: 6.8, weakestCriterion: "pushbackHandling" };
+  return {
+    sessionsCompleted: 7,
+    averageScore: 6.8,
+    weakestCriterion: "pushbackHandling",
+  };
 }
 
 export const ACCEPTED_SUBMISSIONS: AcceptedSubmissionOption[] = [
   { id: "SUB-2841", problemTitle: "1. Two Sum", language: "Python 3" },
-  { id: "SUB-2799", problemTitle: "23. Merge k Sorted Lists", language: "Java 21" },
+  {
+    id: "SUB-2799",
+    problemTitle: "23. Merge k Sorted Lists",
+    language: "Java 21",
+  },
   { id: "SUB-2712", problemTitle: "127. Word Ladder", language: "C++ 17" },
 ];
 
@@ -49,7 +57,10 @@ const QUESTION_BANK: Record<InterviewStage, string[]> = {
 };
 
 /** Deterministic scripted question for a given 0-based turn index. */
-export function getScriptedQuestion(turnIndex: number, maxTurns: number): { stage: InterviewStage; content: string } {
+export function getScriptedQuestion(
+  turnIndex: number,
+  maxTurns: number,
+): { stage: InterviewStage; content: string } {
   const stageIndex = Math.min(
     STAGE_ORDER.length - 1,
     Math.floor((turnIndex / maxTurns) * STAGE_ORDER.length),
@@ -63,10 +74,14 @@ export const HINT_TEXT =
   "Gợi ý: thử nghĩ về việc đánh đổi giữa thời gian tra cứu và bộ nhớ sử dụng thêm.";
 
 const RESULT_COMMENTS: Record<RubricCriterionCode, string> = {
-  clarity: "Trình bày các bước rõ ràng, có dẫn dắt trước khi vào chi tiết cài đặt.",
-  technicalAccuracy: "Nhận diện đúng độ phức tạp và không có lỗi suy luận kỹ thuật lớn.",
-  pushbackHandling: "Còn lúng túng khi bị hỏi ngược về trường hợp biên, cần luyện thêm.",
-  complexityAwareness: "Nhận ra điểm nghẽn khi mở rộng quy mô nhưng chưa đề xuất cụ thể.",
+  clarity:
+    "Trình bày các bước rõ ràng, có dẫn dắt trước khi vào chi tiết cài đặt.",
+  technicalAccuracy:
+    "Nhận diện đúng độ phức tạp và không có lỗi suy luận kỹ thuật lớn.",
+  pushbackHandling:
+    "Còn lúng túng khi bị hỏi ngược về trường hợp biên, cần luyện thêm.",
+  complexityAwareness:
+    "Nhận ra điểm nghẽn khi mở rộng quy mô nhưng chưa đề xuất cụ thể.",
 };
 
 const RESULT_SCORES: Record<RubricCriterionCode, number> = {
@@ -77,14 +92,19 @@ const RESULT_SCORES: Record<RubricCriterionCode, number> = {
 };
 
 export function computeInterviewResult(): InterviewResult {
-  const criteria = (Object.keys(RUBRIC_WEIGHTS) as RubricCriterionCode[]).map((code) => ({
-    code,
-    score: RESULT_SCORES[code],
-    comment: RESULT_COMMENTS[code],
-  }));
+  const criteria = (Object.keys(RUBRIC_WEIGHTS) as RubricCriterionCode[]).map(
+    (code) => ({
+      code,
+      score: RESULT_SCORES[code],
+      comment: RESULT_COMMENTS[code],
+    }),
+  );
   const overallScore =
     Math.round(
-      criteria.reduce((sum, c) => sum + (c.score * RUBRIC_WEIGHTS[c.code]) / 100, 0) * 10,
+      criteria.reduce(
+        (sum, c) => sum + (c.score * RUBRIC_WEIGHTS[c.code]) / 100,
+        0,
+      ) * 10,
     ) / 10;
 
   return {
@@ -92,7 +112,10 @@ export function computeInterviewResult(): InterviewResult {
     criteria,
     feedbackSummary:
       "Diễn giải thuật toán tốt và nắm chắc độ phức tạp, nhưng cần luyện phản xạ khi bị phản biện về trường hợp biên và đề xuất cụ thể hơn cho bài toán mở rộng quy mô.",
-    strengths: ["Trình bày mạch lạc theo từng bước", "Nắm đúng độ phức tạp thời gian và bộ nhớ"],
+    strengths: [
+      "Trình bày mạch lạc theo từng bước",
+      "Nắm đúng độ phức tạp thời gian và bộ nhớ",
+    ],
     improvements: [
       "Chuẩn bị sẵn phản biện cho các trường hợp biên trước khi trình bày",
       "Luyện tập đề xuất phương án cụ thể khi dữ liệu vượt quá bộ nhớ",

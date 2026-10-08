@@ -1,4 +1,8 @@
-export type { GradingStatusFilter, ManualGradingItem, ManualGradingStats } from "./model/types";
+export type {
+  GradingStatusFilter,
+  ManualGradingItem,
+  ManualGradingStats,
+} from "./model/types";
 export {
   useManualGradingQueue,
   useManualGradingStats,

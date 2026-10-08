@@ -35,7 +35,11 @@ export function BookmarkToggle({
         className,
       )}
     >
-      <Bookmark className="h-4 w-4" fill={bookmarked ? "currentColor" : "none"} aria-hidden="true" />
+      <Bookmark
+        className="h-4 w-4"
+        fill={bookmarked ? "currentColor" : "none"}
+        aria-hidden="true"
+      />
     </button>
   );
 }

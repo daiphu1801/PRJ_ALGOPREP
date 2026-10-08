@@ -42,7 +42,15 @@ import {
 } from "@/entities/interview-question";
 import { useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
-import { Badge, Button, Card, ConfirmDialog, EmptyState, NoticeTile, TextArea } from "@/shared/ui";
+import {
+  Badge,
+  Button,
+  Card,
+  ConfirmDialog,
+  EmptyState,
+  NoticeTile,
+  TextArea,
+} from "@/shared/ui";
 
 // [SoT: Suy luận] — BD Sheet 9 NO 6 để ngỏ giới hạn độ dài cụ thể (Câu hỏi mở Q3); 4000 ký tự đủ
 // cho một câu trả lời phỏng vấn dài mà vẫn chặn được việc dán nguyên một tài liệu.
@@ -50,7 +58,11 @@ const ANSWER_MAX_LENGTH = 4000;
 
 type Mode = "study" | "practice";
 
-export function InterviewQuestionDetailView({ questionId }: { questionId: string }) {
+export function InterviewQuestionDetailView({
+  questionId,
+}: {
+  questionId: string;
+}) {
   const t = useT("interviewQuestionDetail");
   const router = useRouter();
   const topicList = useInterviewTopics();
@@ -65,7 +77,9 @@ export function InterviewQuestionDetailView({ questionId }: { questionId: string
 
   const [mode, setMode] = useState<Mode>("study");
   const [answerText, setAnswerText] = useState("");
-  const [attempts, setAttempts] = useState<AnswerAttempt[]>(question?.attempts ?? []);
+  const [attempts, setAttempts] = useState<AnswerAttempt[]>(
+    question?.attempts ?? [],
+  );
   const [pendingFeedback, setPendingFeedback] = useState(false);
   const [expandedAttempt, setExpandedAttempt] = useState<number | null>(null);
   const [leaveTarget, setLeaveTarget] = useState<string | null>(null);
@@ -76,7 +90,10 @@ export function InterviewQuestionDetailView({ questionId }: { questionId: string
         <Card>
           <EmptyState>{t("notFound")}</EmptyState>
           <div className="mt-3 text-center">
-            <Link href="/interview-bank" className="text-[13px] font-semibold text-[var(--color-primary)] hover:underline">
+            <Link
+              href="/interview-bank"
+              className="text-[13px] font-semibold text-[var(--color-primary)] hover:underline"
+            >
               {t("header.linkBack")}
             </Link>
           </div>
@@ -86,7 +103,8 @@ export function InterviewQuestionDetailView({ questionId }: { questionId: string
   }
 
   const latestAttempt = attempts[0] ?? null;
-  const hasDraft = mode === "practice" && answerText.trim().length > 0 && !latestAttempt;
+  const hasDraft =
+    mode === "practice" && answerText.trim().length > 0 && !latestAttempt;
 
   const recallLabels: Record<RecallLevel, string> = {
     known: t("study.recall.known"),
@@ -104,7 +122,8 @@ export function InterviewQuestionDetailView({ questionId }: { questionId: string
 
   function submitAnswer() {
     const trimmed = answerText.trim();
-    if (!trimmed || trimmed.length > ANSWER_MAX_LENGTH || pendingFeedback) return;
+    if (!trimmed || trimmed.length > ANSWER_MAX_LENGTH || pendingFeedback)
+      return;
     setPendingFeedback(true);
     const attemptNo = attempts.length + 1;
     // Không gọi AI thật (prototype) — mô phỏng độ trễ và một phản hồi mẫu bám theo rubric của câu
@@ -114,8 +133,14 @@ export function InterviewQuestionDetailView({ questionId }: { questionId: string
     // `| undefined` here. The value itself cannot actually change (seeded once via useState).
     const rubric = question!.rubric;
     window.setTimeout(() => {
-      const strengths = rubric.slice(0, 1).map((c) => t("practice.feedbackSample.strength", { criterion: c.label }));
-      const gaps = rubric.slice(1, 2).map((c) => t("practice.feedbackSample.gap", { criterion: c.label }));
+      const strengths = rubric
+        .slice(0, 1)
+        .map((c) =>
+          t("practice.feedbackSample.strength", { criterion: c.label }),
+        );
+      const gaps = rubric
+        .slice(1, 2)
+        .map((c) => t("practice.feedbackSample.gap", { criterion: c.label }));
       setAttempts((prev) => [
         {
           attemptNo,
@@ -140,7 +165,11 @@ export function InterviewQuestionDetailView({ questionId }: { questionId: string
 
   function toggleBookmarkWithToast() {
     toggleBookmark(question!.code);
-    toast.success((bookmarks[question!.code] ?? false) ? t("toast.unbookmarked") : t("toast.bookmarked"));
+    toast.success(
+      (bookmarks[question!.code] ?? false)
+        ? t("toast.unbookmarked")
+        : t("toast.bookmarked"),
+    );
   }
 
   function retryPractice() {
@@ -180,30 +209,42 @@ export function InterviewQuestionDetailView({ questionId }: { questionId: string
           aria-pressed={bookmarks[question.code] ?? false}
           onClick={toggleBookmarkWithToast}
         >
-          {(bookmarks[question.code] ?? false) ? t("header.bookmarked") : t("header.bookmark")}
+          {(bookmarks[question.code] ?? false)
+            ? t("header.bookmarked")
+            : t("header.bookmark")}
         </Button>
       </div>
 
       <Card className="mb-4">
         <div className="mb-2 flex items-center gap-2">
-          <Badge variant="neutral">{topicLabel(topicList, question.topic)}</Badge>
+          <Badge variant="neutral">
+            {topicLabel(topicList, question.topic)}
+          </Badge>
           <span className="text-[11.5px] font-semibold text-[var(--color-text-muted)]">
             {levelLabel(levelList, question.level)}
           </span>
         </div>
-        <h1 className="mb-3 text-xl font-semibold text-pretty">{question.question}</h1>
+        <h1 className="mb-3 text-xl font-semibold text-pretty">
+          {question.question}
+        </h1>
         <p className="text-[13.5px] whitespace-pre-line text-[var(--color-text-muted)]">
           {question.content}
         </p>
       </Card>
 
-      <div role="tablist" aria-label={t("mode.groupLabel")} className="mb-4 flex gap-2">
+      <div
+        role="tablist"
+        aria-label={t("mode.groupLabel")}
+        className="mb-4 flex gap-2"
+      >
         <Button
           role="tab"
           aria-selected={mode === "study"}
           variant={mode === "study" ? "primary" : "ghost"}
           size="sm"
-          className={mode !== "study" ? "border border-[var(--color-border)]" : undefined}
+          className={
+            mode !== "study" ? "border border-[var(--color-border)]" : undefined
+          }
           onClick={() => setMode("study")}
         >
           {t("mode.study")}
@@ -213,9 +254,15 @@ export function InterviewQuestionDetailView({ questionId }: { questionId: string
           aria-selected={mode === "practice"}
           variant={mode === "practice" ? "primary" : "ghost"}
           size="sm"
-          className={mode !== "practice" ? "border border-[var(--color-border)]" : undefined}
+          className={
+            mode !== "practice"
+              ? "border border-[var(--color-border)]"
+              : undefined
+          }
           aria-disabled={!question.hasRubric || undefined}
-          title={!question.hasRubric ? t("mode.practiceLockedReason") : undefined}
+          title={
+            !question.hasRubric ? t("mode.practiceLockedReason") : undefined
+          }
           onClick={() => {
             // Looks disabled but stays clickable so the click says why.
             if (!question.hasRubric) {
@@ -236,7 +283,10 @@ export function InterviewQuestionDetailView({ questionId }: { questionId: string
             </p>
             <ul className="flex flex-col gap-2">
               {question.suggestedApproach.map((point, index) => (
-                <li key={point} className="flex gap-2.5 text-[13.5px] text-[var(--color-text-muted)]">
+                <li
+                  key={point}
+                  className="flex gap-2.5 text-[13.5px] text-[var(--color-text-muted)]"
+                >
                   <span className="font-mono text-[11.5px] font-semibold text-[var(--color-primary)]">
                     {String(index + 1).padStart(2, "0")}
                   </span>
@@ -249,7 +299,8 @@ export function InterviewQuestionDetailView({ questionId }: { questionId: string
           <div>
             <p className="mb-2 flex items-center gap-2 text-[10.5px] font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
               {t("study.answerFrameworkLabel")}
-              {topicList.find((item) => item.key === question.topic)?.usesStarFramework ? (
+              {topicList.find((item) => item.key === question.topic)
+                ?.usesStarFramework ? (
                 <Badge variant="neutral">{t("study.starTag")}</Badge>
               ) : null}
             </p>
@@ -280,8 +331,14 @@ export function InterviewQuestionDetailView({ questionId }: { questionId: string
               </p>
               <ul className="flex flex-col gap-1.5">
                 {question.followUps.map((followUp) => (
-                  <li key={followUp} className="flex gap-2 text-[13px] text-[var(--color-text-muted)]">
-                    <span aria-hidden="true" className="shrink-0 text-[var(--color-text-subtle)]">
+                  <li
+                    key={followUp}
+                    className="flex gap-2 text-[13px] text-[var(--color-text-muted)]"
+                  >
+                    <span
+                      aria-hidden="true"
+                      className="shrink-0 text-[var(--color-text-subtle)]"
+                    >
                       →
                     </span>
                     <span>{followUp}</span>
@@ -308,27 +365,43 @@ export function InterviewQuestionDetailView({ questionId }: { questionId: string
           <TextArea
             label={t("practice.answerLabel")}
             value={answerText}
-            onChange={(event) => setAnswerText(event.target.value.slice(0, ANSWER_MAX_LENGTH))}
+            onChange={(event) =>
+              setAnswerText(event.target.value.slice(0, ANSWER_MAX_LENGTH))
+            }
             disabled={pendingFeedback || latestAttempt !== null}
             rows={8}
             placeholder={t("practice.answerPlaceholder")}
           />
           <div className="flex items-center justify-between gap-3">
             <span className="text-[12px] text-[var(--color-text-subtle)]">
-              {t("practice.charCounter", { count: answerText.length, max: ANSWER_MAX_LENGTH })}
+              {t("practice.charCounter", {
+                count: answerText.length,
+                max: ANSWER_MAX_LENGTH,
+              })}
             </span>
             {latestAttempt ? (
-              <Button variant="ghost" size="sm" className="border border-[var(--color-border)]" onClick={retryPractice}>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="border border-[var(--color-border)]"
+                onClick={retryPractice}
+              >
                 {t("practice.btnRetry")}
               </Button>
             ) : (
               <Button
                 size="sm"
-                disabled={!answerText.trim() || answerText.length > ANSWER_MAX_LENGTH || pendingFeedback}
+                disabled={
+                  !answerText.trim() ||
+                  answerText.length > ANSWER_MAX_LENGTH ||
+                  pendingFeedback
+                }
                 aria-busy={pendingFeedback || undefined}
                 onClick={submitAnswer}
               >
-                {pendingFeedback ? t("practice.pendingState") : t("practice.btnSubmit")}
+                {pendingFeedback
+                  ? t("practice.pendingState")
+                  : t("practice.btnSubmit")}
               </Button>
             )}
           </div>
@@ -368,10 +441,14 @@ export function InterviewQuestionDetailView({ questionId }: { questionId: string
                       <p className="mb-1.5 text-[10.5px] font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
                         {t("practice.nextStepsLabel")}
                       </p>
-                      <p className="text-[13px] text-[var(--color-text-muted)]">{latestAttempt.nextSteps}</p>
+                      <p className="text-[13px] text-[var(--color-text-muted)]">
+                        {latestAttempt.nextSteps}
+                      </p>
                     </div>
                   ) : null}
-                  <p className="text-[11.5px] text-[var(--color-text-subtle)]">{t("practice.eduDisclaimer")}</p>
+                  <p className="text-[11.5px] text-[var(--color-text-subtle)]">
+                    {t("practice.eduDisclaimer")}
+                  </p>
                   <button
                     type="button"
                     onClick={() => setMode("study")}
@@ -394,11 +471,16 @@ export function InterviewQuestionDetailView({ questionId }: { questionId: string
             {attempts.map((attempt) => {
               const expanded = expandedAttempt === attempt.attemptNo;
               return (
-                <li key={attempt.attemptNo} className="rounded-lg border border-[var(--color-border)]">
+                <li
+                  key={attempt.attemptNo}
+                  className="rounded-lg border border-[var(--color-border)]"
+                >
                   <button
                     type="button"
                     aria-expanded={expanded}
-                    onClick={() => setExpandedAttempt(expanded ? null : attempt.attemptNo)}
+                    onClick={() =>
+                      setExpandedAttempt(expanded ? null : attempt.attemptNo)
+                    }
                     className="flex w-full items-center gap-3 px-3 py-2.5 text-left"
                   >
                     <span className="text-[12.5px] font-semibold">
@@ -408,7 +490,15 @@ export function InterviewQuestionDetailView({ questionId }: { questionId: string
                       {new Date(attempt.createdAt).toLocaleString("vi-VN")}
                     </span>
                     <span className="ml-auto">
-                      <Badge variant={attempt.feedbackStatus === "completed" ? "success" : attempt.feedbackStatus === "pending" ? "blue" : "warn"}>
+                      <Badge
+                        variant={
+                          attempt.feedbackStatus === "completed"
+                            ? "success"
+                            : attempt.feedbackStatus === "pending"
+                              ? "blue"
+                              : "warn"
+                        }
+                      >
                         {t(`attempts.status.${attempt.feedbackStatus}`)}
                       </Badge>
                     </span>

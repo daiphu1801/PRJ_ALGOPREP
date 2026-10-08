@@ -4,13 +4,21 @@ import { BulkActionBar } from "./bulk-action-bar";
 
 describe("BulkActionBar", () => {
   it("renders nothing visible at zero, but keeps the status region mounted", () => {
-    render(<BulkActionBar count={0} label="Selected 0"><button type="button">Go</button></BulkActionBar>);
+    render(
+      <BulkActionBar count={0} label="Selected 0">
+        <button type="button">Go</button>
+      </BulkActionBar>,
+    );
     expect(screen.queryByRole("button", { name: "Go" })).toBeNull();
     expect(screen.getByRole("status")).toBeEmptyDOMElement();
   });
 
   it("shows the label, the actions and announces the count", () => {
-    render(<BulkActionBar count={2} label="Selected 2"><button type="button">Go</button></BulkActionBar>);
+    render(
+      <BulkActionBar count={2} label="Selected 2">
+        <button type="button">Go</button>
+      </BulkActionBar>,
+    );
     expect(screen.getByRole("button", { name: "Go" })).toBeInTheDocument();
     expect(screen.getByRole("status")).toHaveTextContent("Selected 2");
   });
@@ -19,7 +27,9 @@ describe("BulkActionBar", () => {
     const { container } = render(
       <div className="admin-shell" data-testid="shell">
         <section className="glass-card" data-testid="card">
-          <BulkActionBar count={1} label="Selected 1"><button type="button">Go</button></BulkActionBar>
+          <BulkActionBar count={1} label="Selected 1">
+            <button type="button">Go</button>
+          </BulkActionBar>
         </section>
       </div>,
     );

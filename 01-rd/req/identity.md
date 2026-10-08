@@ -70,6 +70,28 @@ gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang c�
     tài khoản `INSTRUCTOR` hoặc `STUDENT` từ màn quản lý người dùng; hệ thống sinh mật khẩu tạm và gửi qua email cho
     chủ tài khoản; thao tác được ghi Nhật ký hệ thống (F1-14). Không thêm mã `Fx-nn` mới; không tạo được tài khoản
     `ADMIN` bằng đường này `[SoT: Suy luận]` — quyết định chỉ nêu INSTRUCTOR/STUDENT.
+    - **F1-32 — Khi `ADMIN` khoá tài khoản, hệ thống ghi lý do và tuỳ chọn gửi email thông báo cho người dùng.**
+    Bổ sung 2026-10-05 (owner chỉ đạo trực tiếp khi review prototype `ADM0201`). **Vì sao là mã mới chứ không
+    nhét vào F1-13:** F1-13 chỉ nêu ba thao tác quản trị tài khoản, không có bất kỳ yêu cầu thông báo nào; F1-14
+    chỉ ghi nhật ký; F1-21 là thông báo **định kỳ tới chính người dùng**, khác hẳn thông báo **do quản trị viên
+    gửi khi thực hiện hành động**. Nội dung mã:
+    1. `ADMIN` nhập một **lý do** khoá tài khoản (văn bản tự do), bắt buộc khi bật gửi email — vì email nói
+       "tài khoản bị khoá" mà không nói vì sao thì không cho người dùng biết phải làm gì.
+    2. `ADMIN` bật/tắt **gửi email** cho các tài khoản bị khoá. Mặc định **bật**.
+    3. Lý do **luôn** được ghi vào `system_audit_logs` cùng thời điểm khoá, kể cả khi tắt gửi email — cần
+       truy vết khi người dùng khiếu nại "ai khoá tài khoản của tôi".
+    4. Nội dung email nêu: tài khoản bị khoá, thời điểm, lý do, và cách liên hệ quản trị viên để được mở
+       khoá. Không nêu chi tiết kỹ thuật hay dữ liệu nhạy cảm.
+    5. Tài khoản chỉ đăng nhập bằng OAuth (F1-15) nhận **cùng nội dung** — đã có tiền lệ ở F1-17 là gửi email
+       hướng dẫn thay vì mãOTP.
+    6. **Mở khoá không cần lý do và không gửi email** — đây là hành động khôi phục quyền truy cập, chỉ ghi
+       nhật ký như mọi thao tác quản trị khác.
+    **Chốt cùng ngày:** chọn hàng loạt chỉ còn hai hành động trạng thái (khoá / mở khoá). Bỏ "Đặt lại mật khẩu"
+    và "Đổi vai trò" khỏi thanh chọn hàng loạt — đặt lại mật khẩu là việc **riêng cho từng người** (tài khoản
+    OAuth không nhận mật khẩu mới, xem `02-bd/screens/admin/ADM0201_user_management.md` Sheet 9 NO 10), và hạ
+    cả một nhóm giảng viên xuống cùng một vai trò là thao tác sai nghĩa, không hoàn tác được. Khoá là hành động
+    duy nhất thực sự **giống nhau với mọi dòng trong tập chọn** — đó chính là hình dạng ứng cứu sự cố. Hai hành
+    động bị bỏ **không có `Fx-nn` mới** và không mất phạm vi: chúng thuộc F1-13, chỉ chuyển khỏi chế độ gộp.
   - **F1-14 — Mọi thay đổi ma trận phân quyền và mọi thao tác quản trị đều ghi vào Nhật ký hệ thống**, kèm
     ai đổi, đổi gì, đổi lúc nào — không có ngoại lệ cho chính thao tác đổi quyền. **Mở rộng (đã chỉnh 2026-10-01, `DEC-2026-1001-admin-configurable-settings`):** F1-14 còn ghi một số sự kiện xác thực do người dùng tự kích hoạt, trước hết `PASSWORD_RESET_REQUESTED` (ghi khi phát hành mã OTP đặt lại mật khẩu; **không bao giờ lưu mã OTP**; không ghi khi email không khớp tài khoản nào) — để thẻ tổng quan quản trị đếm được số mã đã phát hành. Phần "chỉ ghi hành động quản trị" ngay dưới đây áp dụng cho nhóm sự kiện hạ tầng, không áp dụng cho các sự kiện xác thực này. **Chốt phạm vi 2026-08-24
     (`06-plan/PROTOTYPE_DEBT.md` mục 2.5):** F1-14 chỉ ghi **hành động quản trị của người** (đổi ma trận

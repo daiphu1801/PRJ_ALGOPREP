@@ -15,7 +15,11 @@ export function DotGrid({
   accentColorVar?: string;
 }) {
   return (
-    <div className="flex justify-between gap-2" role="img" aria-label="Lượt nộp theo ngày">
+    <div
+      className="flex justify-between gap-2"
+      role="img"
+      aria-label="Lượt nộp theo ngày"
+    >
       {columns.map((column) => (
         <div key={column.label} className="flex flex-col items-center gap-1">
           <div className="flex flex-col-reverse gap-0.5">
@@ -25,12 +29,17 @@ export function DotGrid({
                 className="h-1.5 w-1.5 rounded-full"
                 style={{
                   background: `var(${accentColorVar})`,
-                  opacity: rowIndex < column.intensity ? 0.35 + (rowIndex / ROWS) * 0.65 : 0.12,
+                  opacity:
+                    rowIndex < column.intensity
+                      ? 0.35 + (rowIndex / ROWS) * 0.65
+                      : 0.12,
                 }}
               />
             ))}
           </div>
-          <span className="text-[10px] text-[var(--color-text-muted)]">{column.label}</span>
+          <span className="text-[10px] text-[var(--color-text-muted)]">
+            {column.label}
+          </span>
         </div>
       ))}
     </div>

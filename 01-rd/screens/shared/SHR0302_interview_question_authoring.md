@@ -37,12 +37,12 @@ theo tiền lệ `problem_authoring`** (một màn soạn riêng cho một bản
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Quản trị nội dung ngân hàng câu hỏi dùng chung: tạo, sửa, nhân bản, xoá | F6-13 | `01-rd/req/interview-bank.md` — F6-13 (bổ sung 2026-08-30) |
+| Quản trị nội dung ngân hàng câu hỏi dùng chung: tạo, sửa, xoá (nhân bản bỏ 2026-10-08) | F6-13 | `01-rd/req/interview-bank.md` — F6-13 (bổ sung 2026-08-30) |
 | Nội dung + phân loại theo chủ đề/độ khó (chủ đề đọc từ danh mục do ADMIN quản lý; 5 chủ đề khởi tạo: Lý thuyết CS, System design, Database, Ngôn ngữ, Hành vi — cập nhật 2026-10-01; cập nhật 2026-10-03: độ khó do ADMIN quản lý (danh mục dữ liệu, giống chủ đề; ba mức Dễ/Trung bình/Khó chỉ là dữ liệu khởi tạo)) | F6-01 | `01-rd/req/interview-bank.md` — F6-01 |
 | Bộ tiêu chí đánh giá có trọng số phần trăm — tiêu chí chuẩn mà F6-08 đối chiếu khi chấm Chế độ luyện | F6-13, F6-08 | `01-rd/req/interview-bank.md` — F6-13, F6-08 |
 | Câu hỏi thiếu tiêu chí đánh giá: vẫn hiện ở Chế độ học, ẩn khỏi Chế độ luyện | F6-13, F6-08 | `01-rd/req/interview-bank.md` — F6-13 |
 | Xoá mềm: đánh dấu ngừng dùng, ẩn khỏi màn phía học viên, không cascade xoá phiên cũ | F6-13 | `01-rd/req/interview-bank.md` — F6-13 |
-| Mọi thao tác thêm/sửa/nhân bản/xoá ghi vào Nhật ký hệ thống | F6-13, F1-14 | `01-rd/req/interview-bank.md` — F6-13; `01-rd/req/identity.md` — F1-14 |
+| Mọi thao tác thêm/sửa/xoá ghi vào Nhật ký hệ thống | F6-13, F1-14 | `01-rd/req/interview-bank.md` — F6-13; `01-rd/req/identity.md` — F1-14 |
 | Given-When-Then liên quan | — | `01-rd/req/user_stories/a2_instructor.md` (`US-A2-10`) |
 | Gác quyền: `INTERVIEW_BANK_MANAGEMENT` là một `FUNCTION` trong ma trận phân quyền, cùng nhóm F6-12 | F1-12 | `01-rd/req/identity.md` — F1-12 |
 
@@ -69,7 +69,7 @@ bản) `[SoT: Suy luận, song song tiền lệ problem_authoring — không t�
 4. **Nhóm 3 — Bộ tiêu chí đánh giá có trọng số** — danh sách tiêu chí, mỗi tiêu chí có trọng số phần trăm,
    **tổng bắt buộc = 100 (chặn lưu nếu sai, chốt 2026-09-01)**, dùng làm mốc tính điểm khi F6-08 đối chiếu
    Chế độ luyện — độc lập với hai rubric của F5 (F5-15, F5-23) [SoT: 01-rd/req/interview-bank.md — F6-13].
-5. **Nhóm 4 — Hành động quản trị** — nhân bản (toàn bộ 4 nhóm, chốt 2026-09-01), xoá mềm (đánh dấu ngừng
+5. **Nhóm 4 — Hành động quản trị** — xoá mềm (đánh dấu ngừng
    dùng) [SoT: 01-rd/req/interview-bank.md — F6-13].
 6. **Không có thẻ chỉ số chất lượng nội dung** ở màn soạn này. Dải bốn thẻ chỉ số từng nằm ở màn danh sách
    `interview_question_management` và đã bỏ ngày 2026-10-01 (hệ thống chỉ giữ một trang tổng quan
@@ -79,10 +79,10 @@ bản) `[SoT: Suy luận, song song tiền lệ problem_authoring — không t�
    Next.js trực tiếp `[Đợi nextjs]`. **Cập nhật 2026-10-01 (owner instruction, đồng bộ theo bản dựng UI):**
    bố cục là lưới hai cột rộng toàn trang — cột rộng chứa Nhóm 1 (nội dung câu hỏi), Nhóm 2 (câu hỏi đào
    sâu) và Nhóm 3 (bộ tiêu chí đánh giá); cột hẹp cố định khi cuộn chứa phân loại (chủ đề, độ khó thuộc
-   Nhóm 1) và, **chỉ ở chế độ sửa**, khối Hành động quản trị (Nhóm 4: Nhân bản, Ngừng dùng)
-   [SoT: 05-coding/frontend/src/views/shared/interview-question-authoring/ui/interview-question-authoring-view.tsx:9-12, 160-161, 287, 305-321].
+   Nhóm 1) và, **chỉ ở chế độ sửa**, khối Hành động quản trị (Nhóm 4: chỉ còn Xoá mềm; Nhân bản bỏ 2026-10-08, owner)
+   [SoT: 05-coding/frontend/src/views/shared/interview-question-authoring/ui/interview-question-authoring-view.tsx:9-13, 173, 294, 312-342].
    Màn tải câu hỏi theo mã trên route; mã không tồn tại thì hiện trạng thái "không tìm thấy" kèm nút quay lại
-   [SoT: 05-coding/frontend/src/views/shared/interview-question-authoring/ui/interview-question-authoring-view.tsx:124-136].
+   [SoT: 05-coding/frontend/src/views/shared/interview-question-authoring/ui/interview-question-authoring-view.tsx:143-155]. **Cập nhật 2026-10-08:** làm mới số dòng trích dẫn vào bản dựng hiện tại; tên nút Nhóm 4 thống nhất theo BD là "Xoá mềm" (trước ghi "Ngừng dùng"; ngữ nghĩa vẫn là đánh dấu ngừng dùng, F6-13).
 
 ### 2.1 Cấu trúc hệ thống liên quan
 
@@ -99,7 +99,7 @@ bản) `[SoT: Suy luận, song song tiền lệ problem_authoring — không t�
 - Bảng màu, spacing, breakpoint, component cụ thể — thuộc BD
   (`02-bd/screens/shared/SHR0302_interview_question_authoring.md`), viết khi dựng UI Next.js trực tiếp
   (chưa có prototype trung gian).
-- Hợp đồng API (tạo/sửa/nhân bản/xoá một câu hỏi, kiểm tra tổng trọng số) — thuộc DD
+- Hợp đồng API (tạo/sửa/xoá một câu hỏi, kiểm tra tổng trọng số) — thuộc DD
   (`03-dd/api/interview-bank.md`, chưa viết).
 - Nội dung và bố cục của `interview_question_management` (màn cha, danh sách có lọc) — thuộc file RD
   riêng của nó, không lặp lại ở đây.
@@ -115,7 +115,7 @@ bản) `[SoT: Suy luận, song song tiền lệ problem_authoring — không t�
 | Q1 | ~~Tổng trọng số của bộ tiêu chí đánh giá có bắt buộc bằng 100 không?~~ **ĐÃ CHỐT (2026-09-01, qua hỏi trực tiếp chủ dự án):** bắt buộc tổng = 100, chặn lưu nếu sai. | — | Đã chốt. | Đã đóng |
 | Q2 | ~~Có nút "Xem như học viên" (preview), giống `problem_authoring`, hay không?~~ **ĐÃ CHỐT (2026-09-01):** có, cùng khuôn mẫu — xem trước câu hỏi ở cả Chế độ học và Chế độ luyện trước khi lưu, không cần mã `Fx-nn` mới. | — | Đã chốt. | Đã đóng |
 | Q3 | ~~Câu hỏi đào sâu (nhóm 2) là văn bản tự do hay có cấu trúc?~~ **ĐÃ CHỐT (2026-09-01):** danh sách văn bản tự do, không giới hạn số lượng, không có độ khó riêng — AI dùng nguyên văn khi truy vấn ở giai đoạn Phản biện (F5-11). | — | Đã chốt. | Đã đóng |
-| Q4 | ~~Nhân bản một câu hỏi có nhân bản luôn cả bộ tiêu chí và câu hỏi đào sâu không?~~ **ĐÃ CHỐT (2026-09-01):** nhân bản toàn bộ 4 nhóm, giữ nguyên tiền lệ `problem_management`/F2-16 (nhân bản = sao chép toàn bộ nội dung). | — | Đã chốt. | Đã đóng |
+| Q4 | ~~Nhân bản một câu hỏi có nhân bản luôn cả bộ tiêu chí và câu hỏi đào sâu không?~~ **KHÔNG CÒN ÁP DỤNG từ 2026-10-08 (owner bỏ "Nhân bản" câu hỏi phỏng vấn).** Bản chốt 2026-09-01: nhân bản toàn bộ 4 nhóm, giữ nguyên tiền lệ `problem_management`/F2-16 (nhân bản = sao chép toàn bộ nội dung). | — | Đã chốt. | Đã đóng |
 | Q5 | ~~Nút "Lưu" có phân biệt "Lưu nháp" và "Lưu và công bố" như `problem_authoring`, hay câu hỏi hiện ngay khi lưu?~~ **ĐÃ CHỐT (2026-09-01):** không có vòng đời nháp/xuất bản riêng — câu hỏi hiện ngay cho học viên khi lưu (trừ khi tự động ẩn khỏi Chế độ luyện do thiếu tiêu chí, đã chốt ở mục 2). | — | Đã chốt. | Đã đóng |
 | Q6 | ~~Route chính xác — giữ đề xuất hay đổi khi build FE?~~ **ĐÃ CHỐT (2026-09-01):** giữ đề xuất `/instructor/interview-questions/[id]`, `/admin/interview-questions/[id]` — khớp đúng khuôn mẫu route của `problem_authoring`. **Phần khoá route bị thay thế** bởi `DEC-2026-1002-split-detail-and-edit-pages`: khu Admin từ 2026-10-02, khu Giảng viên từ 2026-10-03 (`[id]` là trang chỉ đọc, form soạn ở `[id]/edit` và `/new`). | — | Đã chốt. | Đã đóng |
 
@@ -124,12 +124,12 @@ bản) `[SoT: Suy luận, song song tiền lệ problem_authoring — không t�
 ## 5. Danh sách yêu cầu (REQ)
 | ID | Yêu cầu | Loại | Nguồn/SoT |
 |---|---|---|---|
-| REQ-01 | Quản trị nội dung ngân hàng câu hỏi dùng chung: tạo, sửa, nhân bản, xoá (F6-13) | Chức năng | `01-rd/req/interview-bank.md` — F6-13 (bổ sung 2026-08-30) |
+| REQ-01 | Quản trị nội dung ngân hàng câu hỏi dùng chung: tạo, sửa, xoá (F6-13) | Chức năng | `01-rd/req/interview-bank.md` — F6-13 (bổ sung 2026-08-30) |
 | REQ-02 | Nội dung + phân loại theo chủ đề/độ khó (chủ đề chọn từ danh mục do ADMIN quản lý; 5 chủ đề khởi tạo: Lý thuyết CS, System design, Database, Ngôn ngữ, Hành vi; độ khó do ADMIN quản lý, ba mức Dễ/Trung bình/Khó chỉ là dữ liệu khởi tạo, cập nhật 2026-10-03) (F6-01) | Chức năng | `01-rd/req/interview-bank.md` — F6-01 |
 | REQ-03 | Bộ tiêu chí đánh giá có trọng số phần trăm — tiêu chí chuẩn mà F6-08 đối chiếu khi chấm Chế độ luyện (F6-13, F6-08) | Chức năng | `01-rd/req/interview-bank.md` — F6-13, F6-08 |
 | REQ-04 | Câu hỏi thiếu tiêu chí đánh giá: vẫn hiện ở Chế độ học, ẩn khỏi Chế độ luyện (F6-13, F6-08) | Chức năng | `01-rd/req/interview-bank.md` — F6-13 |
 | REQ-05 | Xoá mềm: đánh dấu ngừng dùng, ẩn khỏi màn phía học viên, không cascade xoá phiên cũ (F6-13) | Chức năng | `01-rd/req/interview-bank.md` — F6-13 |
-| REQ-06 | Mọi thao tác thêm/sửa/nhân bản/xoá ghi vào Nhật ký hệ thống (F6-13, F1-14) | Chức năng | `01-rd/req/interview-bank.md` — F6-13; `01-rd/req/identity.md` — F1-14 |
+| REQ-06 | Mọi thao tác thêm/sửa/xoá ghi vào Nhật ký hệ thống (F6-13, F1-14) | Chức năng | `01-rd/req/interview-bank.md` — F6-13; `01-rd/req/identity.md` — F1-14 |
 | REQ-07 | Given-When-Then liên quan (—) | Chức năng | `01-rd/req/user_stories/a2_instructor.md` (`US-A2-10`) |
 | REQ-08 | Gác quyền: `INTERVIEW_BANK_MANAGEMENT` là một `FUNCTION` trong ma trận phân quyền, cùng nhóm F6-12 (F1-12) | Chức năng | `01-rd/req/identity.md` — F1-12 |
 

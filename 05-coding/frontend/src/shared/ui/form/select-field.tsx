@@ -11,7 +11,10 @@ import { useId, type ComponentPropsWithoutRef } from "react";
 import { cn } from "@/shared/lib";
 import { FIELD_CONTROL } from "./text-field";
 
-type SelectFieldProps = Omit<ComponentPropsWithoutRef<"select">, "id" | "children"> & {
+type SelectFieldProps = Omit<
+  ComponentPropsWithoutRef<"select">,
+  "id" | "children"
+> & {
   label: string;
   hideLabel?: boolean;
   options: { value: string; label: string; disabled?: boolean }[];
@@ -41,7 +44,11 @@ export function SelectField({
       </label>
       <select id={id} className={cn(FIELD_CONTROL, className)} {...props}>
         {options.map((option) => (
-          <option key={option.value} value={option.value} disabled={option.disabled}>
+          <option
+            key={option.value}
+            value={option.value}
+            disabled={option.disabled}
+          >
             {option.label}
           </option>
         ))}

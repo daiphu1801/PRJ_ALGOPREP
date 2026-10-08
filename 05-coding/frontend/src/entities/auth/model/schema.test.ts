@@ -31,9 +31,16 @@ describe("signupSchema", () => {
 
 describe("loginSchema", () => {
   it("requires a non-empty identifier and password", () => {
-    expect(loginSchema.safeParse({ identifier: "", password: "", rememberMe: false }).success).toBe(false);
     expect(
-      loginSchema.safeParse({ identifier: "learner01", password: "x", rememberMe: false }).success,
+      loginSchema.safeParse({ identifier: "", password: "", rememberMe: false })
+        .success,
+    ).toBe(false);
+    expect(
+      loginSchema.safeParse({
+        identifier: "learner01",
+        password: "x",
+        rememberMe: false,
+      }).success,
     ).toBe(true);
   });
 });
@@ -48,7 +55,10 @@ describe("forgotOtpSchema", () => {
 
 describe("forgotResetSchema", () => {
   it("rejects when the confirmation does not match (01-rd/screens/shared/auth.md:58-59)", () => {
-    const result = forgotResetSchema.safeParse({ newPassword: "newpassword1", confirmPassword: "different" });
+    const result = forgotResetSchema.safeParse({
+      newPassword: "newpassword1",
+      confirmPassword: "different",
+    });
     expect(result.success).toBe(false);
   });
 });

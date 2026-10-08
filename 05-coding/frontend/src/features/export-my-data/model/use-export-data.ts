@@ -18,7 +18,9 @@ function download(blob: Blob, filename: string) {
 
 // Both exporters resolve to true on success, false on failure; the view raises the toast.
 export function useExportData() {
-  const [pending, setPending] = useState<"submissions" | "interviews" | null>(null);
+  const [pending, setPending] = useState<"submissions" | "interviews" | null>(
+    null,
+  );
 
   const exportSubmissions = useCallback(async () => {
     setPending("submissions");
@@ -35,7 +37,10 @@ export function useExportData() {
   const exportInterviews = useCallback(async () => {
     setPending("interviews");
     try {
-      download(await exportMyInterviewTranscripts(), "interview-transcripts.json");
+      download(
+        await exportMyInterviewTranscripts(),
+        "interview-transcripts.json",
+      );
       return true;
     } catch {
       return false;

@@ -71,7 +71,11 @@ export type ClassForm = z.infer<typeof classFormSchema>;
 export const classScoreTrendSchema = z.object({
   weekLabels: z.array(z.string()),
   series: z.array(
-    z.object({ classId: z.string(), className: z.string(), points: z.array(z.number()) }),
+    z.object({
+      classId: z.string(),
+      className: z.string(),
+      points: z.array(z.number()),
+    }),
   ),
 });
 export type ClassScoreTrend = z.infer<typeof classScoreTrendSchema>;

@@ -9,7 +9,14 @@ const options = [
 ];
 
 function setup(onValueChange = vi.fn(), value = "all") {
-  render(<FilterMenu label="By level" options={options} value={value} onValueChange={onValueChange} />);
+  render(
+    <FilterMenu
+      label="By level"
+      options={options}
+      value={value}
+      onValueChange={onValueChange}
+    />,
+  );
   return screen.getByRole("button", { name: /^By level/ });
 }
 
@@ -25,7 +32,10 @@ describe("FilterMenu", () => {
     const onValueChange = vi.fn();
     const trigger = setup(onValueChange);
     fireEvent.click(trigger);
-    expect(screen.getByRole("option", { name: "All" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("option", { name: "All" })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
     fireEvent.click(screen.getByRole("option", { name: "Hard" }));
     expect(onValueChange).toHaveBeenCalledWith("hard");
     expect(screen.queryByRole("listbox")).toBeNull();
@@ -39,7 +49,9 @@ describe("FilterMenu", () => {
     expect(first).toHaveFocus();
     fireEvent.keyDown(first, { key: "ArrowDown" });
     expect(screen.getByRole("option", { name: "Easy" })).toHaveFocus();
-    fireEvent.keyDown(screen.getByRole("option", { name: "Easy" }), { key: "Escape" });
+    fireEvent.keyDown(screen.getByRole("option", { name: "Easy" }), {
+      key: "Escape",
+    });
     expect(screen.queryByRole("listbox")).toBeNull();
     expect(trigger).toHaveFocus();
   });

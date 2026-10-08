@@ -11,7 +11,12 @@ import { LOADING_STEP_COUNT } from "../model/use-auth-flow";
  */
 export function AuthLoadingOverlay({ currentStep }: { currentStep: number }) {
   const t = useT("auth");
-  const steps = [t("loadingStep1"), t("loadingStep2"), t("loadingStep3"), t("loadingStep4")];
+  const steps = [
+    t("loadingStep1"),
+    t("loadingStep2"),
+    t("loadingStep3"),
+    t("loadingStep4"),
+  ];
 
   return (
     <div
@@ -19,11 +24,15 @@ export function AuthLoadingOverlay({ currentStep }: { currentStep: number }) {
       aria-live="polite"
       className="glass-surface absolute inset-0 z-40 flex flex-col items-center justify-center gap-4 rounded-[inherit]"
     >
-      <p className="text-sm font-semibold text-[var(--color-text)]">{t("loadingTitle")}</p>
+      <p className="text-sm font-semibold text-[var(--color-text)]">
+        {t("loadingTitle")}
+      </p>
       <div className="h-1.5 w-48 overflow-hidden rounded-full bg-[var(--color-surface-hover)]">
         <div
           className="h-full rounded-full bg-[var(--color-primary)] transition-all"
-          style={{ width: `${((currentStep + 1) / LOADING_STEP_COUNT) * 100}%` }}
+          style={{
+            width: `${((currentStep + 1) / LOADING_STEP_COUNT) * 100}%`,
+          }}
         />
       </div>
       <ul className="w-56 space-y-1.5 text-sm">
@@ -32,12 +41,18 @@ export function AuthLoadingOverlay({ currentStep }: { currentStep: number }) {
           // step says so in words instead of a tick glyph; `→`/`·` stay because the no-emoji rule
           // explicitly allows arrows-as-operator and typographic punctuation.
           const isDone = index < currentStep;
-          const mark = isDone ? t("loadingStepDone") : index === currentStep ? "→" : "·";
+          const mark = isDone
+            ? t("loadingStepDone")
+            : index === currentStep
+              ? "→"
+              : "·";
           return (
             <li
               key={label}
               className={
-                index <= currentStep ? "text-[var(--color-text)]" : "text-[var(--color-text-muted)]"
+                index <= currentStep
+                  ? "text-[var(--color-text)]"
+                  : "text-[var(--color-text-muted)]"
               }
             >
               <span className="mr-2 text-xs" aria-hidden="true">

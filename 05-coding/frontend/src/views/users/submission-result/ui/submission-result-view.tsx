@@ -16,8 +16,15 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { problemLevelLabel, problemLevelTone, useProblemLevels } from "@/entities/problem";
-import { fetchSubmissionDetail, type SubmissionTestcaseResult } from "@/entities/submission";
+import {
+  problemLevelLabel,
+  problemLevelTone,
+  useProblemLevels,
+} from "@/entities/problem";
+import {
+  fetchSubmissionDetail,
+  type SubmissionTestcaseResult,
+} from "@/entities/submission";
 import { useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
 import { Badge, Button, EmptyState, type BadgeVariant } from "@/shared/ui";
@@ -55,7 +62,10 @@ export function SubmissionResultView() {
   const levels = useProblemLevels();
   const params = useParams<{ submissionId?: string }>();
   const submissionId = params?.submissionId ?? "";
-  const submission = useMemo(() => fetchSubmissionDetail(submissionId), [submissionId]);
+  const submission = useMemo(
+    () => fetchSubmissionDetail(submissionId),
+    [submissionId],
+  );
   const [expanded, setExpanded] = useState<string | null>(null);
 
   if (!submission) {
@@ -80,12 +90,18 @@ export function SubmissionResultView() {
   return (
     <div className="p-6">
       {/* Khu vực A — Breadcrumb */}
-      <nav aria-label={t("breadcrumbLabel")} className="mb-4 flex flex-wrap items-center gap-1.5 text-[12.5px] text-[var(--color-text-muted)]">
+      <nav
+        aria-label={t("breadcrumbLabel")}
+        className="mb-4 flex flex-wrap items-center gap-1.5 text-[12.5px] text-[var(--color-text-muted)]"
+      >
         <Link href="/problems" className="hover:text-[var(--color-text)]">
           {t("breadcrumbProblems")}
         </Link>
         <span aria-hidden="true">/</span>
-        <Link href={`/problems/${submission.problemSlug}`} className="hover:text-[var(--color-text)]">
+        <Link
+          href={`/problems/${submission.problemSlug}`}
+          className="hover:text-[var(--color-text)]"
+        >
           {submission.problemTitle}
         </Link>
         <span aria-hidden="true">/</span>
@@ -111,21 +127,43 @@ export function SubmissionResultView() {
           {t("verdictSubtitle", {
             passed: submission.passedCount ?? 0,
             total: submission.totalCount ?? 0,
-            submittedAt: new Date(submission.submittedAt).toLocaleString("vi-VN"),
+            submittedAt: new Date(submission.submittedAt).toLocaleString(
+              "vi-VN",
+            ),
           })}
         </p>
       </div>
 
       {/* Khu vực C — Run stats, 6 cards */}
       <div className="mb-4 grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(140px,1fr))]">
-        <StatTile label={t("stats.testcase")} value={submission.totalCount != null ? `${submission.passedCount}/${submission.totalCount}` : "-"} />
-        <StatTile label={t("stats.runtime")} value={formatMs(submission.runtimeMs)} />
-        <StatTile label={t("stats.memory")} value={formatMb(submission.memoryKb)} />
+        <StatTile
+          label={t("stats.testcase")}
+          value={
+            submission.totalCount != null
+              ? `${submission.passedCount}/${submission.totalCount}`
+              : "-"
+          }
+        />
+        <StatTile
+          label={t("stats.runtime")}
+          value={formatMs(submission.runtimeMs)}
+        />
+        <StatTile
+          label={t("stats.memory")}
+          value={formatMb(submission.memoryKb)}
+        />
         <StatTile
           label={t("stats.beats")}
-          value={submission.beatsPercent != null ? t("stats.beatsValue", { percent: submission.beatsPercent }) : "-"}
+          value={
+            submission.beatsPercent != null
+              ? t("stats.beatsValue", { percent: submission.beatsPercent })
+              : "-"
+          }
         />
-        <StatTile label={t("stats.mode")} value={t(`mode.${submission.submissionMode}`)} />
+        <StatTile
+          label={t("stats.mode")}
+          value={t(`mode.${submission.submissionMode}`)}
+        />
       </div>
 
       {/* Khu vực D — Testcase table. Hidden entirely on COMPILE_ERROR (BD Sheet 6 Khu vực D NO 1). */}
@@ -135,12 +173,24 @@ export function SubmissionResultView() {
             <caption className="sr-only">{t("testcaseTableCaption")}</caption>
             <thead>
               <tr className="border-b border-[var(--color-border)] text-[11px] font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
-                <th scope="col" className="px-3 py-2 text-left">{t("col.order")}</th>
-                <th scope="col" className="px-3 py-2 text-left">{t("col.visibility")}</th>
-                <th scope="col" className="px-3 py-2 text-left">{t("col.verdict")}</th>
-                <th scope="col" className="px-3 py-2 text-right">{t("col.runtime")}</th>
-                <th scope="col" className="px-3 py-2 text-right">{t("col.memory")}</th>
-                <th scope="col" className="px-3 py-2 text-right">{t("col.action")}</th>
+                <th scope="col" className="px-3 py-2 text-left">
+                  {t("col.order")}
+                </th>
+                <th scope="col" className="px-3 py-2 text-left">
+                  {t("col.visibility")}
+                </th>
+                <th scope="col" className="px-3 py-2 text-left">
+                  {t("col.verdict")}
+                </th>
+                <th scope="col" className="px-3 py-2 text-right">
+                  {t("col.runtime")}
+                </th>
+                <th scope="col" className="px-3 py-2 text-right">
+                  {t("col.memory")}
+                </th>
+                <th scope="col" className="px-3 py-2 text-right">
+                  {t("col.action")}
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -157,7 +207,9 @@ export function SubmissionResultView() {
                     testcase={tc}
                     expanded={expanded === tc.testcaseId}
                     onToggle={() =>
-                      setExpanded((prev) => (prev === tc.testcaseId ? null : tc.testcaseId))
+                      setExpanded((prev) =>
+                        prev === tc.testcaseId ? null : tc.testcaseId,
+                      )
                     }
                     t={t}
                   />
@@ -171,7 +223,9 @@ export function SubmissionResultView() {
       {/* Khu vực E — Code viewer */}
       <div className="glass-card mb-4 border border-[var(--color-border)] px-5 py-4">
         <div className="mb-2.5 flex items-center justify-between gap-2">
-          <Badge variant="neutral">{t(`language.${submission.language}`)}</Badge>
+          <Badge variant="neutral">
+            {t(`language.${submission.language}`)}
+          </Badge>
           <Button variant="ghost" size="sm" onClick={copyCode}>
             {t("code.copy")}
           </Button>
@@ -188,22 +242,43 @@ export function SubmissionResultView() {
 
       {/* Khu vực F — Next actions */}
       <div className="flex flex-wrap gap-2.5">
-        <Button variant="cta" disabled={!canOpenAi} title={canOpenAi ? undefined : t("actions.needAccepted")} asChild={canOpenAi}>
+        <Button
+          variant="cta"
+          disabled={!canOpenAi}
+          title={canOpenAi ? undefined : t("actions.needAccepted")}
+          asChild={canOpenAi}
+        >
           {canOpenAi ? (
-            <Link href={`/submissions/${submission.id}/review`}>{t("actions.solutionReview")}</Link>
+            <Link href={`/submissions/${submission.id}/review`}>
+              {t("actions.solutionReview")}
+            </Link>
           ) : (
             <span>{t("actions.solutionReview")}</span>
           )}
         </Button>
-        <Button variant="ghost" disabled={!canOpenAi} title={canOpenAi ? undefined : t("actions.needAccepted")} asChild={canOpenAi} className="border border-[var(--color-border)]">
+        <Button
+          variant="ghost"
+          disabled={!canOpenAi}
+          title={canOpenAi ? undefined : t("actions.needAccepted")}
+          asChild={canOpenAi}
+          className="border border-[var(--color-border)]"
+        >
           {canOpenAi ? (
-            <Link href={`/submissions/${submission.id}/interview`}>{t("actions.mockInterview")}</Link>
+            <Link href={`/submissions/${submission.id}/interview`}>
+              {t("actions.mockInterview")}
+            </Link>
           ) : (
             <span>{t("actions.mockInterview")}</span>
           )}
         </Button>
-        <Button variant="ghost" asChild className="border border-[var(--color-border)]">
-          <Link href={`/problems/${submission.problemSlug}`}>{t("actions.retry")}</Link>
+        <Button
+          variant="ghost"
+          asChild
+          className="border border-[var(--color-border)]"
+        >
+          <Link href={`/problems/${submission.problemSlug}`}>
+            {t("actions.retry")}
+          </Link>
         </Button>
       </div>
     </div>
@@ -238,15 +313,30 @@ function TestcaseRow({
       <tr className="border-b border-[var(--color-border)] last:border-b-0">
         <td className="px-3 py-2 font-mono">{testcase.order}</td>
         <td className="px-3 py-2">
-          <Badge variant={isSample ? "cyan" : "neutral"}>{t(`visibility.${testcase.visibility}`)}</Badge>
+          <Badge variant={isSample ? "cyan" : "neutral"}>
+            {t(`visibility.${testcase.visibility}`)}
+          </Badge>
         </td>
         <td className="px-3 py-2">
-          <Badge variant={TESTCASE_VERDICT_VARIANT[testcase.verdict] ?? "neutral"}>{testcase.verdict}</Badge>
+          <Badge
+            variant={TESTCASE_VERDICT_VARIANT[testcase.verdict] ?? "neutral"}
+          >
+            {testcase.verdict}
+          </Badge>
         </td>
-        <td className="px-3 py-2 text-right font-mono">{formatMs(testcase.runtimeMs)}</td>
-        <td className="px-3 py-2 text-right font-mono">{formatMb(testcase.memoryKb)}</td>
+        <td className="px-3 py-2 text-right font-mono">
+          {formatMs(testcase.runtimeMs)}
+        </td>
+        <td className="px-3 py-2 text-right font-mono">
+          {formatMb(testcase.memoryKb)}
+        </td>
         <td className="px-3 py-2 text-right">
-          <Button variant="ghost" size="sm" disabled={!isSample} onClick={onToggle}>
+          <Button
+            variant="ghost"
+            size="sm"
+            disabled={!isSample}
+            onClick={onToggle}
+          >
             {t("col.expand")}
           </Button>
         </td>
@@ -256,12 +346,23 @@ function TestcaseRow({
           <td colSpan={6} className="px-3 py-3">
             {isSample ? (
               <div className="grid gap-2 sm:grid-cols-3">
-                <TestcasePane label={t("sample.input")} value={testcase.sampleInput} />
-                <TestcasePane label={t("sample.expected")} value={testcase.sampleExpectedOutput} />
-                <TestcasePane label={t("sample.actual")} value={testcase.sampleActualOutput} />
+                <TestcasePane
+                  label={t("sample.input")}
+                  value={testcase.sampleInput}
+                />
+                <TestcasePane
+                  label={t("sample.expected")}
+                  value={testcase.sampleExpectedOutput}
+                />
+                <TestcasePane
+                  label={t("sample.actual")}
+                  value={testcase.sampleActualOutput}
+                />
               </div>
             ) : (
-              <p className="text-[12.5px] text-[var(--color-text-muted)]">{t("sample.hiddenNotice")}</p>
+              <p className="text-[12.5px] text-[var(--color-text-muted)]">
+                {t("sample.hiddenNotice")}
+              </p>
             )}
           </td>
         </tr>

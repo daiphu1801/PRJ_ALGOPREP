@@ -13,7 +13,12 @@ import {
 import { useTopicProgress } from "@/entities/progress";
 import { deriveSkillRadar } from "../../model/derive-skill-radar";
 import { useT } from "@/shared/i18n";
-import { Badge, DataTable, SegmentedTabs, type DataTableColumn } from "@/shared/ui";
+import {
+  Badge,
+  DataTable,
+  SegmentedTabs,
+  type DataTableColumn,
+} from "@/shared/ui";
 
 /**
  * 09-layoutBase/Dashboard AlgoPrep.dc.html:217-266 — "Bài toán gợi ý": difficulty tabs, topic
@@ -46,11 +51,18 @@ export function SuggestedProblemsBlock() {
   const [page] = useState(fetchProblemListPage);
   const weakestFirst = useMemo(() => {
     const radar = topicsQuery.data ? deriveSkillRadar(topicsQuery.data) : [];
-    const scoreByTopic = new Map(radar.map((point) => [point.topicName.toLowerCase(), point.score]));
+    const scoreByTopic = new Map(
+      radar.map((point) => [point.topicName.toLowerCase(), point.score]),
+    );
     // Topics with no radar score sort as 100 — "nothing known against them", so they rank below a
     // topic the learner is measurably weak at, rather than above everything on a missing value.
     const weaknessOf = (problem: ProblemListItem) =>
-      Math.min(...problem.topics.map((name) => scoreByTopic.get(name.toLowerCase()) ?? 100), 100);
+      Math.min(
+        ...problem.topics.map(
+          (name) => scoreByTopic.get(name.toLowerCase()) ?? 100,
+        ),
+        100,
+      );
 
     return [...page.items].sort((left, right) => {
       const leftUnsolved = left.solveState === "solved" ? 1 : 0;
@@ -64,7 +76,8 @@ export function SuggestedProblemsBlock() {
     .filter(
       (problem) =>
         (difficulty === "all" || problem.difficulty === difficulty) &&
-        (topicId === "all" || problem.topics.some((name) => name.toLowerCase() === topicId)),
+        (topicId === "all" ||
+          problem.topics.some((name) => name.toLowerCase() === topicId)),
     )
     .slice(0, SUGGESTION_COUNT);
 
@@ -87,8 +100,13 @@ export function SuggestedProblemsBlock() {
               })`,
             }}
           />
-          <span className="shrink-0 font-mono text-[11.5px] text-[var(--color-text-subtle)]">{problem.code}</span>
-          <Link href={`/problems/${problem.id}`} className="truncate font-medium hover:underline">
+          <span className="shrink-0 font-mono text-[11.5px] text-[var(--color-text-subtle)]">
+            {problem.code}
+          </span>
+          <Link
+            href={`/problems/${problem.id}`}
+            className="truncate font-medium hover:underline"
+          >
             {problem.title}
           </Link>
           {problem.submissionModel !== "stdioOnly" && (
@@ -102,7 +120,9 @@ export function SuggestedProblemsBlock() {
       header: t("suggested.colTopic"),
       width: "120px",
       render: (problem) => (
-        <span className="block truncate text-[13px] text-[var(--color-text-muted)]">{problem.topics[0]}</span>
+        <span className="block truncate text-[13px] text-[var(--color-text-muted)]">
+          {problem.topics[0]}
+        </span>
       ),
     },
     {
@@ -144,25 +164,34 @@ export function SuggestedProblemsBlock() {
           onValueChange={setDifficulty}
           options={[
             { value: "all", label: t("filterAll") },
-                        ...levels.map((level) => ({ value: level.key, label: level.label })),
+            ...levels.map((level) => ({
+              value: level.key,
+              label: level.label,
+            })),
           ]}
         />
-        <div className="flex flex-wrap gap-1.5" role="group" aria-label={t("suggested.topicLabel")}>
-          {[{ id: "all", name: t("filterAll") }, ...page.topics].map((topic) => (
-            <button
-              key={topic.id}
-              type="button"
-              aria-pressed={topicId === topic.id}
-              onClick={() => setTopicId(topic.id)}
-              className={`shrink-0 rounded-full border px-2.5 py-1 text-[12.5px] font-medium whitespace-nowrap ${
-                topicId === topic.id
-                  ? "border-[var(--color-primary)] text-[var(--color-primary)]"
-                  : "border-[var(--color-border)] text-[var(--color-text-muted)]"
-              }`}
-            >
-              {topic.name}
-            </button>
-          ))}
+        <div
+          className="flex flex-wrap gap-1.5"
+          role="group"
+          aria-label={t("suggested.topicLabel")}
+        >
+          {[{ id: "all", name: t("filterAll") }, ...page.topics].map(
+            (topic) => (
+              <button
+                key={topic.id}
+                type="button"
+                aria-pressed={topicId === topic.id}
+                onClick={() => setTopicId(topic.id)}
+                className={`shrink-0 rounded-full border px-2.5 py-1 text-[12.5px] font-medium whitespace-nowrap ${
+                  topicId === topic.id
+                    ? "border-[var(--color-primary)] text-[var(--color-primary)]"
+                    : "border-[var(--color-border)] text-[var(--color-text-muted)]"
+                }`}
+              >
+                {topic.name}
+              </button>
+            ),
+          )}
         </div>
       </div>
 

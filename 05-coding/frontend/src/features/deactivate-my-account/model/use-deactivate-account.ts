@@ -6,7 +6,10 @@ import { useRouter } from "next/navigation";
 import { deleteMyAccount } from "@/entities/user";
 
 /** Outcome of `confirm`: `idle` when the phrase did not match (nothing was sent), else done or the error key. */
-export type DeactivateResult = { status: "idle" } | { status: "done" } | { status: "error"; errorKey: string };
+export type DeactivateResult =
+  | { status: "idle" }
+  | { status: "done" }
+  | { status: "error"; errorKey: string };
 
 export function useDeactivateAccount(email: string) {
   const router = useRouter();
@@ -39,5 +42,14 @@ export function useDeactivateAccount(email: string) {
     }
   }, [canConfirm, confirmPhrase, router]);
 
-  return { open, openDialog, closeDialog, confirmPhrase, setConfirmPhrase, canConfirm, isSubmitting, confirm };
+  return {
+    open,
+    openDialog,
+    closeDialog,
+    confirmPhrase,
+    setConfirmPhrase,
+    canConfirm,
+    isSubmitting,
+    confirm,
+  };
 }

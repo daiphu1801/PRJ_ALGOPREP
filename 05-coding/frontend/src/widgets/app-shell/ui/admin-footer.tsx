@@ -24,11 +24,18 @@ export async function AdminFooter() {
   return (
     <div className="glass-surface mt-4 flex flex-wrap items-center gap-5 rounded-2xl px-5 py-4">
       <div className="min-w-0">
-        <p className="text-[13px] font-semibold text-[var(--color-text)]">{t("footerBrand")}</p>
-        <p className="text-xs text-[var(--color-text-muted)]">{t("footerCopyright")}</p>
+        <p className="text-[13px] font-semibold text-[var(--color-text)]">
+          {t("footerBrand")}
+        </p>
+        <p className="text-xs text-[var(--color-text-muted)]">
+          {t("footerCopyright")}
+        </p>
       </div>
       <div className="ml-auto flex items-center gap-2 text-[12.5px] text-[var(--color-text-muted)]">
-        <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-success)]" aria-hidden="true" />
+        <span
+          className="h-1.5 w-1.5 rounded-full bg-[var(--color-success)]"
+          aria-hidden="true"
+        />
         {t("footerStatusOk")}
       </div>
       <div className="flex gap-4 text-[12.5px] font-medium text-[var(--color-text-muted)]">

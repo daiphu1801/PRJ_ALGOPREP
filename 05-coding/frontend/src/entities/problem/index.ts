@@ -82,6 +82,10 @@ export {
 } from "./model/generation-settings-store";
 export { canViewerSeeProblem } from "./model/mock-ownership";
 export {
+  listCreatedProblems,
+  type CreatedProblem,
+} from "./model/created-problems";
+export {
   allowsUnorderedSet,
   defaultType,
   derivedName,

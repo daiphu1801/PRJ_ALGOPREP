@@ -1,7 +1,13 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 // Every admin view reports operation results and validation errors through the shared toast, not
 // inline text. `useT` is mocked to return the key, so assertions read the i18n key.
-import { act, fireEvent, render, renderHook, screen } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+} from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactElement } from "react";
@@ -22,7 +28,9 @@ import { AdminUserManagementView } from "./user-management";
 
 // The language screen loads through TanStack Query, so it needs a provider and an async first paint.
 function withQuery(ui: ReactElement) {
-  const client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+  });
   return <QueryClientProvider client={client}>{ui}</QueryClientProvider>;
 }
 
@@ -42,8 +50,12 @@ describe("admin toasts", () => {
     fireEvent.click(screen.getByRole("button", { name: "addDialog.submit" }));
     expect(read()).toEqual([["error", "addDialog.errorName"]]);
 
-    fireEvent.change(screen.getByLabelText("addDialog.nameLabel"), { target: { value: "An" } });
-    fireEvent.change(screen.getByLabelText("addDialog.emailLabel"), { target: { value: "an@x.vn" } });
+    fireEvent.change(screen.getByLabelText("addDialog.nameLabel"), {
+      target: { value: "An" },
+    });
+    fireEvent.change(screen.getByLabelText("addDialog.emailLabel"), {
+      target: { value: "an@x.vn" },
+    });
     fireEvent.click(screen.getByRole("button", { name: "addDialog.submit" }));
     expect(read().at(-1)).toEqual(["success", "addDialog.createdBody"]);
   });
@@ -51,21 +63,37 @@ describe("admin toasts", () => {
   it("export dialog: bad range errors, good range succeeds", () => {
     const read = watch();
     render(<ExportLogDialog open onClose={() => {}} />);
-    fireEvent.change(screen.getByLabelText("exportDialog.from"), { target: { value: "2026-02-01" } });
-    fireEvent.change(screen.getByLabelText("exportDialog.to"), { target: { value: "2026-01-01" } });
-    fireEvent.click(screen.getByRole("button", { name: "exportDialog.submit" }));
+    const day = (offset: number) =>
+      new Date(Date.now() + offset * 86_400_000).toISOString().slice(0, 10);
+    fireEvent.change(screen.getByLabelText("exportDialog.from"), {
+      target: { value: day(-1) },
+    });
+    fireEvent.change(screen.getByLabelText("exportDialog.to"), {
+      target: { value: day(-5) },
+    });
+    fireEvent.click(
+      screen.getByRole("button", { name: "exportDialog.submit" }),
+    );
     expect(read()).toEqual([["error", "exportDialog.errorRange"]]);
 
-    fireEvent.change(screen.getByLabelText("exportDialog.to"), { target: { value: "2026-03-01" } });
-    fireEvent.click(screen.getByRole("button", { name: "exportDialog.submit" }));
+    fireEvent.change(screen.getByLabelText("exportDialog.to"), {
+      target: { value: day(0) },
+    });
+    fireEvent.click(
+      screen.getByRole("button", { name: "exportDialog.submit" }),
+    );
     expect(read().at(-1)).toEqual(["success", "exportDialog.doneBody"]);
   });
 
-  it("permission matrix: save raises a success toast", () => {
+  it("permission matrix: a duplicate role name raises an error toast", () => {
     const read = watch();
     render(<AdminPermissionMatrixView />);
-    fireEvent.click(screen.getByRole("button", { name: "save" }));
-    expect(read()).toEqual([["success", "saveDone"]]);
+    fireEvent.click(screen.getByRole("button", { name: "addRole" }));
+    fireEvent.change(screen.getByLabelText("newRoleLabel"), {
+      target: { value: "admin" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "createRole" }));
+    expect(read()).toEqual([["error", "roleNameError.duplicate"]]);
   });
 
   it("queue monitor: refresh raises a success toast", () => {
@@ -86,12 +114,16 @@ describe("admin toasts", () => {
     const read = watch();
     render(<AdminAiConfigView />);
     // Seeded weights add up to 100; one step up on the first criterion makes the total 101.
-    fireEvent.click(screen.getAllByRole("button", { name: /^weightIncrement/ })[0]!);
+    fireEvent.click(
+      screen.getAllByRole("button", { name: /^weightIncrement/ })[0]!,
+    );
     const publish = screen.getByRole("button", { name: "publish" });
     expect(publish).toHaveAttribute("aria-disabled", "true");
 
     fireEvent.click(publish);
-    expect(read()).toEqual([["warning", expect.stringContaining("weightWarningTitle")]]);
+    expect(read()).toEqual([
+      ["warning", expect.stringContaining("weightWarningTitle")],
+    ]);
   });
 
   it("ai config: publish raises a success toast", () => {

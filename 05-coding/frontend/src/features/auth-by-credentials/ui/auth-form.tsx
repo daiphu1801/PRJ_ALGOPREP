@@ -67,9 +67,16 @@ export function AuthForm({ flow, showOAuth = true }: AuthFormProps) {
   const controlClass = (name: string, extra = "") =>
     `w-full rounded-md border bg-transparent px-3 py-2 text-sm text-[var(--color-text)] ${extra} ${isInvalid(name) ? "border-[var(--color-danger)]" : "border-[var(--color-border)]"}`;
 
-  const textField = (name: string, label: string, type: "text" | "email" = "text") => (
+  const textField = (
+    name: string,
+    label: string,
+    type: "text" | "email" = "text",
+  ) => (
     <div>
-      <label htmlFor={name} className="mb-1 block text-sm font-medium text-[var(--color-text)]">
+      <label
+        htmlFor={name}
+        className="mb-1 block text-sm font-medium text-[var(--color-text)]"
+      >
         {label}
       </label>
       <input
@@ -86,7 +93,10 @@ export function AuthForm({ flow, showOAuth = true }: AuthFormProps) {
 
   const passwordField = (name: string, label: string) => (
     <div>
-      <label htmlFor={name} className="mb-1 block text-sm font-medium text-[var(--color-text)]">
+      <label
+        htmlFor={name}
+        className="mb-1 block text-sm font-medium text-[var(--color-text)]"
+      >
         {label}
       </label>
       <div className="relative">
@@ -113,7 +123,9 @@ export function AuthForm({ flow, showOAuth = true }: AuthFormProps) {
   if (mode === "forgot_email") {
     return (
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <p className="text-sm text-[var(--color-text-muted)]">{t("forgotEmailHint")}</p>
+        <p className="text-sm text-[var(--color-text-muted)]">
+          {t("forgotEmailHint")}
+        </p>
         {textField("email", t("emailLabel"), "email")}
         <Button type="submit" disabled={isSubmitting}>
           {t("forgotEmailSubmit")}
@@ -128,7 +140,9 @@ export function AuthForm({ flow, showOAuth = true }: AuthFormProps) {
   if (mode === "forgot_otp") {
     return (
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <p className="text-sm text-[var(--color-text-muted)]">{t("forgotOtpHint", { email: forgotTargetEmail })}</p>
+        <p className="text-sm text-[var(--color-text-muted)]">
+          {t("forgotOtpHint", { email: forgotTargetEmail })}
+        </p>
         <OtpInputGroup
           value={typeof fields.otp === "string" ? fields.otp : ""}
           onChange={(value) => updateField("otp", value)}
@@ -164,15 +178,26 @@ export function AuthForm({ flow, showOAuth = true }: AuthFormProps) {
       {/* Page state with an action inside it (cancel the deletion), not a one-off result, so it
           stays on the page rather than becoming a toast. */}
       {deactivatedBanner && (
-        <div role="status" className="rounded-md border border-[var(--color-danger)] p-3 text-sm text-[var(--color-danger)]">
+        <div
+          role="status"
+          className="rounded-md border border-[var(--color-danger)] p-3 text-sm text-[var(--color-danger)]"
+        >
           <p>{t("deactivatedBannerMessage")}</p>
-          <Button type="button" size="sm" variant="ghost" className="mt-2" onClick={() => void submitCancelDeactivation()}>
+          <Button
+            type="button"
+            size="sm"
+            variant="ghost"
+            className="mt-2"
+            onClick={() => void submitCancelDeactivation()}
+          >
             {t("deactivatedBannerCancel")}
           </Button>
         </div>
       )}
 
-      {isSignup ? textField("username", t("usernameLabel")) : textField("identifier", t("identifierLabel"))}
+      {isSignup
+        ? textField("username", t("usernameLabel"))
+        : textField("identifier", t("identifierLabel"))}
       {passwordField("password", t("passwordLabel"))}
       {isSignup && textField("email", t("emailLabel"), "email")}
 
@@ -199,7 +224,11 @@ export function AuthForm({ flow, showOAuth = true }: AuthFormProps) {
             />
             {t("rememberMeLabel")}
           </label>
-          <button type="button" onClick={() => setMode("forgot_email")} className="text-[var(--color-primary)] hover:underline">
+          <button
+            type="button"
+            onClick={() => setMode("forgot_email")}
+            className="text-[var(--color-primary)] hover:underline"
+          >
             {t("forgotPasswordLink")}
           </button>
         </div>
@@ -209,7 +238,12 @@ export function AuthForm({ flow, showOAuth = true }: AuthFormProps) {
         {isSignup ? t("signupSubmit") : t("loginSubmit")}
       </Button>
 
-      {showOAuth && <OAuthButtonGroup onSelect={(provider) => void submitOAuth(provider)} disabled={isSubmitting} />}
+      {showOAuth && (
+        <OAuthButtonGroup
+          onSelect={(provider) => void submitOAuth(provider)}
+          disabled={isSubmitting}
+        />
+      )}
     </form>
   );
 }

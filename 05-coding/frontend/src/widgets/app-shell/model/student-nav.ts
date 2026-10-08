@@ -53,5 +53,11 @@ export const STUDENT_MENU_ITEMS: StudentMenuItem[] = [
   { key: "profile", href: "/profile", labelKey: "profile", icon: UserCircle },
   { key: "saved", href: "/saved", labelKey: "saved", icon: Bookmark },
   { key: "settings", href: "/settings", labelKey: "settings", icon: Settings },
-  { key: "logout", href: "/login", labelKey: "logout", icon: LogOut, danger: true },
+  {
+    key: "logout",
+    href: "/login",
+    labelKey: "logout",
+    icon: LogOut,
+    danger: true,
+  },
 ];

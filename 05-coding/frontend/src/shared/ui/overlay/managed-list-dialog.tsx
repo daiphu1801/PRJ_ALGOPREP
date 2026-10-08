@@ -9,7 +9,10 @@
 
 import { useState, type ReactNode } from "react";
 import { ArrowDown, ArrowUp, Check, Plus, Trash2 } from "lucide-react";
-import type { ManagedItem, ManagedListError } from "@/shared/lib/managed-list-store";
+import type {
+  ManagedItem,
+  ManagedListError,
+} from "@/shared/lib/managed-list-store";
 import { cn } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
 import { Button } from "../primitives/button";
@@ -80,7 +83,11 @@ export function ManagedListDialog<T extends ManagedItem>({
   // Which input last failed: it keeps a red border, the message itself is a toast.
   const [invalidWhere, setInvalidWhere] = useState<string | null>(null);
 
-  function report(where: string, result: ManagedListError | null, done: string) {
+  function report(
+    where: string,
+    result: ManagedListError | null,
+    done: string,
+  ) {
     setInvalidWhere(result ? where : null);
     if (result) toast.error(labels.error[result]);
     else toast.success(done);
@@ -115,15 +122,22 @@ export function ManagedListDialog<T extends ManagedItem>({
         </Button>
       }
     >
-      <p className="mb-3 text-[12.5px] text-[var(--color-text-muted)]">{labels.hint}</p>
+      <p className="mb-3 text-[12.5px] text-[var(--color-text-muted)]">
+        {labels.hint}
+      </p>
 
       <ul
         className={cn(
           "mb-4 flex flex-col gap-2.5",
           // The padding and negative margin leave room for the focus ring, which overflow would clip.
-          items.length >= SCROLL_FROM && "-mx-1.5 mb-2.5 scrollbar-glass overflow-y-auto overscroll-contain px-1.5 py-1.5",
+          items.length >= SCROLL_FROM &&
+            "-mx-1.5 mb-2.5 scrollbar-glass overflow-y-auto overscroll-contain px-1.5 py-1.5",
         )}
-        style={items.length >= SCROLL_FROM ? { maxHeight: SCROLL_MAX_HEIGHT } : undefined}
+        style={
+          items.length >= SCROLL_FROM
+            ? { maxHeight: SCROLL_MAX_HEIGHT }
+            : undefined
+        }
       >
         {items.map((item, index) => {
           const used = usage[item.key] ?? 0;
@@ -136,7 +150,10 @@ export function ManagedListDialog<T extends ManagedItem>({
                   hideLabel
                   value={draftNames[item.key] ?? item.label}
                   onChange={(event) =>
-                    setDraftNames((previous) => ({ ...previous, [item.key]: event.target.value }))
+                    setDraftNames((previous) => ({
+                      ...previous,
+                      [item.key]: event.target.value,
+                    }))
                   }
                   onKeyDown={(event) => {
                     if (event.key === "Enter") commitRename(item.key);
@@ -160,7 +177,9 @@ export function ManagedListDialog<T extends ManagedItem>({
                     />
                   </>
                 ) : null}
-                {renderExtra ? <div className="mt-1.5 shrink-0">{renderExtra(item)}</div> : null}
+                {renderExtra ? (
+                  <div className="mt-1.5 shrink-0">{renderExtra(item)}</div>
+                ) : null}
                 <span className="mt-2 w-20 shrink-0 text-right font-mono text-xs text-[var(--color-text-muted)]">
                   {labels.usage(used)}
                 </span>
@@ -168,7 +187,9 @@ export function ManagedListDialog<T extends ManagedItem>({
                   icon={Check}
                   label={labels.save}
                   onClick={() => commitRename(item.key)}
-                  className={draftNames[item.key] === undefined ? "invisible" : undefined}
+                  className={
+                    draftNames[item.key] === undefined ? "invisible" : undefined
+                  }
                 />
                 <IconAction
                   icon={Trash2}

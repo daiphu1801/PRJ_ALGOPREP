@@ -1,32 +1,60 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 import { describe, expect, it } from "vitest";
-import { fakeInstructorLogin, fakeLogin, fakeSignup, fakeVerifyOtp } from "./fake-auth";
+import {
+  fakeInstructorLogin,
+  fakeLogin,
+  fakeSignup,
+  fakeVerifyOtp,
+} from "./fake-auth";
 
 describe("fakeLogin", () => {
   it("returns the deactivated-recovery variant for the reserved 'deactivated' identifier (02-bd/screens/shared/SHR0101_auth.md Sheet 3)", async () => {
-    const outcome = await fakeLogin({ identifier: "deactivated", password: "anything", rememberMe: false });
+    const outcome = await fakeLogin({
+      identifier: "deactivated",
+      password: "anything",
+      rememberMe: false,
+    });
     expect(outcome).toEqual({ ok: true, role: "STUDENT", deactivated: true });
   });
 
   it("routes ADMIN/INSTRUCTOR by reserved identifier so role-based navigation can be demoed", async () => {
-    const admin = await fakeLogin({ identifier: "admin", password: "x", rememberMe: false });
+    const admin = await fakeLogin({
+      identifier: "admin",
+      password: "x",
+      rememberMe: false,
+    });
     expect(admin).toMatchObject({ ok: true, role: "ADMIN" });
   });
 
   it("returns a field error on the wrong password, not a thrown exception", async () => {
-    const outcome = await fakeLogin({ identifier: "learner01", password: "wrong", rememberMe: false });
+    const outcome = await fakeLogin({
+      identifier: "learner01",
+      password: "wrong",
+      rememberMe: false,
+    });
     expect(outcome.ok).toBe(false);
   });
 });
 
 describe("fakeInstructorLogin", () => {
   it("rejects a STUDENT account with a field error instead of logging it in (DEC-2026-0925-instructor-separate-login-route)", async () => {
-    const outcome = await fakeInstructorLogin({ identifier: "learner01", password: "x", rememberMe: false });
-    expect(outcome).toEqual({ ok: false, fieldErrors: { identifier: "errors.notInstructorAccount" } });
+    const outcome = await fakeInstructorLogin({
+      identifier: "learner01",
+      password: "x",
+      rememberMe: false,
+    });
+    expect(outcome).toEqual({
+      ok: false,
+      fieldErrors: { identifier: "errors.notInstructorAccount" },
+    });
   });
 
   it("logs in the reserved 'instructor' identifier", async () => {
-    const outcome = await fakeInstructorLogin({ identifier: "instructor", password: "x", rememberMe: false });
+    const outcome = await fakeInstructorLogin({
+      identifier: "instructor",
+      password: "x",
+      rememberMe: false,
+    });
     expect(outcome).toMatchObject({ ok: true, role: "INSTRUCTOR" });
   });
 });

@@ -42,7 +42,7 @@
 | Tên vật lý (slug) | `problem_info` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A2 (`INSTRUCTOR`) và A3 (`ADMIN`) — dùng chung một view; dựng cho cả hai khu (khu A2 từ 2026-10-03) |
-| Phiên bản | V1.6 |
+| Phiên bản | V1.7 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/10/02 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
@@ -61,6 +61,7 @@
 | V1.4 | Câu hỏi mở | Đóng Q8: A2 mở bài của người khác nhận 404 như mã không tồn tại; prototype đã dựng nhánh "không tìm thấy" | 2026/10/03 | AI |
 | V1.5 | Sheet 4 (4.2, 4.3, 4.4), Sheet 5, 6 (Khu vực C) | Thêm khối "Đặc tả" chỉ đọc theo `SHR0202` Q20 (chủ dự án đồng ý 2026-10-03): chữ ký hàm theo từng ngôn ngữ suy từ chữ ký chung, định dạng stdin/stdout, chiến lược so khớp; bài có kiểu ngoài lược đồ nêu "chỉ hỗ trợ Standard I/O". Thêm mục 9 đến 12 vào Khu vực C, hai bảng `problem_specs`, `function_signatures`, DTO `FunctionSignatureDto`, `ProblemSpecDto`. RD `SHR0203` thêm REQ-7 | 2026/10/03 | AI |
 | V1.6 | Sheet 5 (Khu vực D NO 1), Sheet 7 (7.1 NO 4, 7.2), Sheet 4 (4.3) | Đã chốt 2026-10-03 (`DEC-2026-1001-admin-configurable-settings` mục 7): nhãn badge "Độ khó" đọc từ bảng `problem_levels` (do ADMIN quản lý, không còn ba mức cố định); `problems.difficulty` ENUM đổi thành `level_id`; DTO `difficulty` của `ProblemAuthoringDetailDto` đổi thành `levelId`, nhãn lấy qua `ListProblemLevels` (cùng mẫu với chủ đề); thêm bảng `problem_levels` vào 4.3 và 7.2. Màu badge do giao diện suy ra (ba mức seed giữ màu cũ, mức mới trung tính). Màn vẫn chỉ đọc | 2026/10/03 | AI |
+| V1.7 | Sheet 4 (4.4, 4.5) | Phần thân trang chỉ đọc được phóng nhẹ theo yêu cầu của owner (2026-10-05, **chưa duyệt hình**, không đổi hành vi): `MarkdownPreview` dùng chung có thêm prop `size`, "base" (mặc định, 13.5 px, không đổi, màn soạn đề vẫn dùng) và "lg" (15 px, giãn dòng 1.75, tiêu đề xl/lg/base, mã 14 px); đề bài dùng `size="lg"`, ràng buộc dữ liệu 12.5 lên 14 px, các dòng đầu vào/đầu ra/giải thích của ví dụ mẫu 12.5 lên 14 px. Thẻ thuộc tính ở cột hẹp không đổi | 2026/10/05 | Nhóm phát triển AlgoPrep |
 
 ---
 
@@ -230,7 +231,8 @@ Lưới 2 cột `minmax(0,1fr) 300px` từ breakpoint `xl`, xếp chồng trên 
 | Dữ liệu | `entities/problem` (`useProblemDraft`, `useProblemTopics`, `problemTopicLabel`, `AI_GUARD_KEYS`, `TESTCASE_CATEGORIES`) | `problem-info-view.tsx:19-28` |
 | Khối giao diện | `shared/ui` (`PageHeader`, `Card`, `Badge`, `Button`, `IconAction`, `MarkdownPreview`) — không tạo widget riêng; `StatCard` không còn dùng ở màn này | `problem-info-view.tsx:31` |
 | Khu A2 | Cùng view, mount ở `app/(instructor)/instructor/problems/[problemId]/page.tsx` truyền `basePath="/instructor/problems"` (dựng 2026-10-03) | `05-coding/frontend/src/app/(instructor)/instructor/problems/[problemId]/page.tsx:6` |
-| Render đề bài | `shared/ui/data/markdown-preview.tsx` (`MarkdownPreview`): react-markdown + remark-gfm + remark-math + rehype-katex; không bật `rehype-raw` nên HTML thô hiển thị như văn bản | 05-coding/frontend/src/shared/ui/data/markdown-preview.tsx:1-41 |
+| Render đề bài | `shared/ui/data/markdown-preview.tsx` (`MarkdownPreview`; từ 2026-10-05 có prop `size` "base" hoặc "lg", màn này dùng "lg": 15 px, giãn dòng 1.75, mã 14 px, chưa duyệt hình; `05-coding/frontend/src/shared/ui/data/markdown-preview.tsx:17-18, 27-36`; dùng ở `05-coding/frontend/src/views/shared/problem-info/ui/problem-info-view.tsx:116`): react-markdown + remark-gfm + remark-math + rehype-katex; không bật `rehype-raw` nên HTML thô hiển thị như văn bản | 05-coding/frontend/src/shared/ui/data/markdown-preview.tsx:1-41 |
+| Cỡ chữ thân trang (2026-10-05, chưa duyệt) | `05-coding/frontend/src/views/shared/problem-info/ui/problem-info-view.tsx:116, 120, 133` | Đề bài `MarkdownPreview size="lg"` (15 px); ràng buộc dữ liệu `text-[14px]` (trước 12.5 px); khối ví dụ mẫu `dl` `text-[14px]` (trước 12.5 px). Các khối khác (thẻ thuộc tính, đặc tả chữ ký, nhãn) giữ cỡ cũ |
 
 Slug `problem_info` ↔ slice `views/shared/problem-info` ↔ `01-rd/screens/shared/SHR0203_problem_info.md`: thống nhất.
 

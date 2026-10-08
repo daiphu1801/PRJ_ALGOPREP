@@ -2,7 +2,13 @@
 // submit path are reachable. Full behavioural coverage per 04-tdd/interview_question_detail.md's
 // AC-nn comes later, once that file exists.
 import { describe, expect, it, vi } from "vitest";
-import { act, fireEvent, render, renderHook, screen } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+} from "@testing-library/react";
 import { toast, useToasts } from "@/shared/lib/toast-store";
 import { InterviewQuestionDetailView } from "./interview-question-detail-view";
 
@@ -36,7 +42,9 @@ describe("InterviewQuestionDetailView", () => {
 
     fireEvent.click(screen.getByText("mode.practice"));
     fireEvent.change(screen.getByLabelText("practice.answerLabel"), {
-      target: { value: "Chaining dùng linked list, open addressing dùng probing." },
+      target: {
+        value: "Chaining dùng linked list, open addressing dùng probing.",
+      },
     });
     fireEvent.click(screen.getByText("practice.btnSubmit"));
 
@@ -53,9 +61,9 @@ describe("InterviewQuestionDetailView", () => {
     expect(practice).toHaveAttribute("aria-disabled", "true");
     // Stays clickable: the click says why instead of doing nothing.
     fireEvent.click(practice);
-    expect(toasts.result.current.map((item) => [item.tone, item.message])).toEqual([
-      ["warning", "mode.practiceLockedReason"],
-    ]);
+    expect(
+      toasts.result.current.map((item) => [item.tone, item.message]),
+    ).toEqual([["warning", "mode.practiceLockedReason"]]);
     act(() => toast.clear());
   });
 });

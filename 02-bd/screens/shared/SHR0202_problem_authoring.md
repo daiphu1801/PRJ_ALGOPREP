@@ -41,7 +41,7 @@
 | Tên vật lý (slug) | `problem_authoring` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A2 (`INSTRUCTOR`) và A3 (`ADMIN`) — dùng chung một view |
-| Phiên bản | V1.23 |
+| Phiên bản | V1.25 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/20 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
@@ -78,6 +78,8 @@
 | V1.21 | Câu hỏi mở | Đóng Q20: khối Đặc tả chỉ đọc đã dựng ở màn chi tiết (`SHR0203` V1.5). Không đổi `SHR0202` | 2026/10/03 | AI |
 | V1.22 | Sheet 5 (mục 4), Sheet 9 (mục 6), Câu hỏi mở | Đóng Q10 (picker kiểu đệ quy, lồng tối đa 3 tầng, chỉ `LIST` chứa kiểu chứa) và Q11 (chốt câu báo lỗi `UNORDERED_SET`); bản dựng cập nhật theo | 2026/10/03 | AI |
 | V1.23 | Sheet 4 (4.2), Sheet 5 (khu vực H NO 2), 6, 7 (7.1 NO 4, 7.2, 7.3), Câu hỏi mở | Đã chốt 2026-10-03 (chủ dự án, `DEC-2026-1001-admin-configurable-settings` mục 7): **độ khó bài toán là danh mục do ADMIN quản lý ở bảng riêng `problem_levels`** (`02-bd/database/problem-bank.md` mục 1.2a); `problems.difficulty` ENUM đổi thành `level_id` FK. Ô "Độ khó" ở cột phải đọc danh sách qua `ListProblemLevels`, theo `sort_order`, số lựa chọn không cố định; mặc định bài mới là mức đầu tiên theo `sort_order` (không còn `EASY` cố định); màn này **không tạo, đổi tên, xoá mức** (việc của ADMIN ở `SHR0201`, nút "Quản lý độ khó"); DTO `difficulty` đổi thành `levelId` (nhãn lấy từ `ListProblemLevels`, cùng mẫu với `topicIds`); thêm bảng `problem_levels` vào 7.2 và `ListProblemLevels` vào 7.3; ghi hiện trạng bản dựng; thêm Câu hỏi mở Q21 (mức bị xoá khi form đang mở) | 2026/10/03 | AI |
+| V1.24 | Sheet 8 (EVT NO 2) | Owner giữ F2-16 và làm thật ở prototype (2026-10-08): route `new` nhận `?from=<mã>` để mở bản sao điền sẵn, chưa tạo bản ghi tới khi Lưu; xem `SHR0201` V1.25. Chi tiết giao diện **chưa duyệt hình** | 2026/10/08 | AI |
+| V1.25 | Sheet 8 (EVT NO 2) | Lưu từ form `new` (bản sao hoặc bài trống) **tạo bài mới** trong kho giả ở bản dựng (2026-10-08); form giữ mã mới nên Lưu lần hai không tạo thêm. Nợ "mock chưa lưu được bản sao" đã xử lý; xem `SHR0201` V1.26 | 2026/10/08 | AI |
 
 ---
 
@@ -668,7 +670,7 @@ port riêng của `problem-bank`, không qua hàng đợi của `judge-orchestra
 | NO | Loại | Sự kiện | Chi tiết | Chuyển màn | Gọi API | Tên xử lý | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :-: | :--- | :--- |
 | 1 | Màn hình | Khởi tạo màn — chế độ sửa | Vào màn với `id` hợp lệ (route `/edit`), từ icon "Sửa" ở `problem_management` hoặc nút "Sửa bài" ở `problem_info`. | Không | Có | `GetProblemForAuthoring`, `GetProblemStats`, `ListProblemTopics` | [Các bước]<br>1. Kiểm tra quyền `PROBLEM_AUTHORING`/`TESTCASE_MANAGEMENT` và quyền sở hữu (A2 chỉ bài của mình).<br>2. Hiển thị khung chờ toàn bộ 3 vùng chính.<br>3. Tải song song dữ liệu.<br>[Khi thành công] Hiển thị đầy đủ 5 tab và cột thuộc tính, mặc định mở Tab "Nội dung đề".<br>[Khi lỗi] Thông báo lỗi toàn màn kèm nút thử lại/quay về `problem_management`, không hiển thị dữ liệu cũ giả định. |
-| 2 | Màn hình | Khởi tạo màn — soạn mới | Vào màn không có `id` hợp lệ, hoặc từ nút "Bài tập mới" ở `problem_management` (route `{basePath}/new`). | Không | Không | - | [Các bước]<br>1. Khởi tạo form rỗng, `status = UNPUBLISHED`.<br>[Khi thành công] Toàn bộ trường rỗng, checklist hiện đủ 4 mục ở trạng thái chưa đạt. |
+| 2 | Màn hình | Khởi tạo màn — soạn mới | Vào màn không có `id` hợp lệ, hoặc từ nút "Bài tập mới" ở `problem_management` (route `{basePath}/new`), hoặc từ "Nhân bản" ở `problem_management` (route `{basePath}/new?from=<mã bài nguồn>`, F2-16). | Không | Không | - | [Các bước]<br>1. Khởi tạo form rỗng, `status = UNPUBLISHED`.<br>2. Có `from`: nạp nội dung bài nguồn (qua `GetProblemForAuthoring`), tiêu đề thêm hậu tố "(bản sao)", `status = UNPUBLISHED`, form ở trạng thái "có thay đổi chưa lưu"; chưa tạo bản ghi cho tới khi Lưu (khi Lưu ghi `duplicated_from_problem_id`).<br>[Khi thành công] Toàn bộ trường rỗng (không có `from`), hoặc điền sẵn nội dung bản sao (có `from`), checklist hiện đủ 4 mục. [Hiện trạng bản dựng, 2026-10-08] Đã nối cho `from`: `ProblemAuthoringView` nhận prop `fromId`, `loadProblemDraft(undefined, fromId)`; lần Lưu đầu của bản sao (hoặc của form `new` trống) tạo bài mới trong kho giả và trả mã mới cho form giữ cho các lần Lưu sau; bài hiện ở `problem_management` [Nguồn: 05-coding/frontend/src/entities/problem/api/__mock__/problem-draft-mocks.ts:90-110; 05-coding/frontend/src/views/shared/problem-authoring/ui/problem-authoring-view.tsx:131-134]. |
 | 3 | Liên kết | Quay lại danh sách bài tập | Bấm nút quay lại. | Có | Không | - | [Các bước]<br>1. Điều hướng về `problem_management`.<br>[Khi xác nhận] Còn thay đổi chưa lưu thì hiện popup cảnh báo (Q7, Q12 đã chốt; chi tiết ở Q14).<br>[Khi thành công] Mở `problem_management`, giữ nguyên bộ lọc/trang trước đó. |
 | 4 | Nút | Mở xem trước đề bài | Bấm "Xem như người học". | Không | Không | - | [Các bước]<br>1. Mở **tab trình duyệt mới** (Q6 đã chốt 2026-10-03).<br>[Khi thành công] Hiển thị đề bài dạng đọc đúng như A1 thấy, từ **dữ liệu đã lưu lần cuối**, không gồm thay đổi chưa lưu. Chi tiết còn mở ở Q13. |
 | 5 | Nút | Đóng xem trước đề bài | Bấm "Đóng" trong popup xem trước. | Không | Không | - | [Các bước]<br>1. Đóng popup.<br>[Khi thành công] Màn chính giữ nguyên trạng thái biên soạn trước đó. |

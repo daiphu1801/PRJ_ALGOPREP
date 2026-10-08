@@ -5,12 +5,25 @@
 // in this run that already had a real DD to read before coding.
 import { z } from "zod";
 
-const displayNameField = z.string().trim().min(1, "errors.displayNameRequired").max(100, "errors.displayNameTooLong");
+const displayNameField = z
+  .string()
+  .trim()
+  .min(1, "errors.displayNameRequired")
+  .max(100, "errors.displayNameTooLong");
 // `school_or_company` / `current_position` / `target_position` are optional free text — empty
 // string means "not set" (server stores NULL) [SoT: 03-dd/validation/identity.md mục 5].
-const schoolOrCompanyField = z.string().trim().max(150, "errors.schoolOrCompanyTooLong");
-const currentPositionField = z.string().trim().max(100, "errors.currentPositionTooLong");
-const targetPositionField = z.string().trim().max(100, "errors.targetPositionTooLong");
+const schoolOrCompanyField = z
+  .string()
+  .trim()
+  .max(150, "errors.schoolOrCompanyTooLong");
+const currentPositionField = z
+  .string()
+  .trim()
+  .max(100, "errors.currentPositionTooLong");
+const targetPositionField = z
+  .string()
+  .trim()
+  .max(100, "errors.targetPositionTooLong");
 
 export const profileFormSchema = z.object({
   displayName: displayNameField,
@@ -48,10 +61,17 @@ export function changePasswordSchema(hasPassword: boolean) {
     });
 }
 
-export type ChangePasswordInput = { currentPassword: string; newPassword: string; confirmPassword: string };
+export type ChangePasswordInput = {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+};
 
 export const emailOtpSchema = z.object({
-  code: z.string().length(6, "errors.otpLength").regex(/^\d+$/, "errors.otpDigitsOnly"),
+  code: z
+    .string()
+    .length(6, "errors.otpLength")
+    .regex(/^\d+$/, "errors.otpDigitsOnly"),
 });
 
 export type EmailOtpInput = z.infer<typeof emailOtpSchema>;
@@ -59,5 +79,7 @@ export type EmailOtpInput = z.infer<typeof emailOtpSchema>;
 /** Danger-zone confirm phrase must match the account's own email — checked client-side to unlock the button, server does the real check (Sheet 6 Khu vực I NO 5). */
 export const deleteAccountSchema = (email: string) =>
   z.object({
-    confirmPhrase: z.literal(email, { message: "errors.confirmPhraseMismatch" }),
+    confirmPhrase: z.literal(email, {
+      message: "errors.confirmPhraseMismatch",
+    }),
   });

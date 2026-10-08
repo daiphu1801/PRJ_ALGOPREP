@@ -24,7 +24,12 @@ function delay(ms: number): Promise<void> {
 
 // Deterministic canned identifiers so the reviewer can drive every branch of the state machine
 // without a real backend. Documented here instead of hidden in conditionals scattered around.
-const RESERVED_USERNAMES = new Set(["duplicate", "admin", "instructor", "deactivated"]);
+const RESERVED_USERNAMES = new Set([
+  "duplicate",
+  "admin",
+  "instructor",
+  "deactivated",
+]);
 const VALID_OTP = "123456";
 
 export async function fakeSignup(input: SignupInput): Promise<AuthOutcome> {
@@ -45,25 +50,38 @@ export async function fakeLogin(input: LoginInput): Promise<AuthOutcome> {
     return { ok: true, role: "STUDENT", deactivated: true };
   }
   if (input.password === "wrong") {
-    return { ok: false, fieldErrors: { password: "errors.credentialsInvalid" } };
+    return {
+      ok: false,
+      fieldErrors: { password: "errors.credentialsInvalid" },
+    };
   }
   if (id === "admin") return { ok: true, role: "ADMIN" };
   if (id === "instructor") return { ok: true, role: "INSTRUCTOR" };
   if (RESERVED_USERNAMES.has(id) === false && id.length === 0) {
-    return { ok: false, fieldErrors: { identifier: "errors.identifierRequired" } };
+    return {
+      ok: false,
+      fieldErrors: { identifier: "errors.identifierRequired" },
+    };
   }
   return { ok: true, role: "STUDENT" };
 }
 
 // `DEC-2026-0925-instructor-separate-login-route` — same credential check as `fakeLogin`, plus a
 // role gate applied only after credentials verify (mirrors the real endpoint's `403 IDT-111`).
-export async function fakeInstructorLogin(input: LoginInput): Promise<AuthOutcome> {
+export async function fakeInstructorLogin(
+  input: LoginInput,
+): Promise<AuthOutcome> {
   const outcome = await fakeLogin(input);
   if (!outcome.ok || outcome.role === "INSTRUCTOR") return outcome;
-  return { ok: false, fieldErrors: { identifier: "errors.notInstructorAccount" } };
+  return {
+    ok: false,
+    fieldErrors: { identifier: "errors.notInstructorAccount" },
+  };
 }
 
-export async function fakeOAuthLogin(_provider: "google" | "github"): Promise<AuthOutcome> {
+export async function fakeOAuthLogin(
+  _provider: "google" | "github",
+): Promise<AuthOutcome> {
   // Prototype note (BD Q2, 02-bd/screens/shared/SHR0101_auth.md, Câu hỏi mở): both OAuth buttons call the same
   // fake success path in the static prototype — a real redirect-based flow is DD's job.
   await delay(900);
@@ -75,7 +93,9 @@ export async function fakeCancelDeactivation(): Promise<{ ok: true }> {
   return { ok: true };
 }
 
-export async function fakeForgotEmail(_input: ForgotEmailInput): Promise<ForgotEmailOutcome> {
+export async function fakeForgotEmail(
+  _input: ForgotEmailInput,
+): Promise<ForgotEmailOutcome> {
   // Always succeeds, even for an email that doesn't exist — do not reveal account existence
   // [SoT: 01-rd/screens/shared/auth.md:50-55].
   await delay(500);
@@ -84,7 +104,10 @@ export async function fakeForgotEmail(_input: ForgotEmailInput): Promise<ForgotE
 
 const otpAttempts = new Map<string, number>();
 
-export async function fakeVerifyOtp(input: ForgotOtpInput, sessionKey: string): Promise<ForgotOtpOutcome> {
+export async function fakeVerifyOtp(
+  input: ForgotOtpInput,
+  sessionKey: string,
+): Promise<ForgotOtpOutcome> {
   await delay(500);
   if (input.otp === VALID_OTP) {
     otpAttempts.delete(sessionKey);
@@ -101,7 +124,9 @@ export async function fakeResendOtp(): Promise<{ ok: true }> {
   return { ok: true };
 }
 
-export async function fakeResetPassword(_input: ForgotResetInput): Promise<ForgotResetOutcome> {
+export async function fakeResetPassword(
+  _input: ForgotResetInput,
+): Promise<ForgotResetOutcome> {
   await delay(600);
   return { ok: true };
 }

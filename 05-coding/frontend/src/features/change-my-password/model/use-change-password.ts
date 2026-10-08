@@ -5,7 +5,8 @@ import { useCallback, useState } from "react";
 import { changeMyPassword, changePasswordSchema } from "@/entities/user";
 
 /** Outcome of `submit`: the i18n key (profile namespace) of the first error, so the dialog can toast it. */
-export type ChangePasswordResult = { ok: true } | { ok: false; errorKey: string };
+export type ChangePasswordResult =
+  { ok: true } | { ok: false; errorKey: string };
 
 export function useChangePassword(hasPassword: boolean, onChanged: () => void) {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -22,12 +23,20 @@ export function useChangePassword(hasPassword: boolean, onChanged: () => void) {
   }, []);
 
   const submit = useCallback(async (): Promise<ChangePasswordResult> => {
-    const parsed = changePasswordSchema(hasPassword).safeParse({ currentPassword, newPassword, confirmPassword });
+    const parsed = changePasswordSchema(hasPassword).safeParse({
+      currentPassword,
+      newPassword,
+      confirmPassword,
+    });
     if (!parsed.success) {
       const errors: Record<string, string> = {};
-      for (const issue of parsed.error.issues) errors[issue.path.join(".") || "form"] ??= issue.message;
+      for (const issue of parsed.error.issues)
+        errors[issue.path.join(".") || "form"] ??= issue.message;
       setFieldErrors(errors);
-      return { ok: false, errorKey: Object.values(errors)[0] ?? "passwordDialog.invalid" };
+      return {
+        ok: false,
+        errorKey: Object.values(errors)[0] ?? "passwordDialog.invalid",
+      };
     }
     setIsSubmitting(true);
     try {
@@ -42,7 +51,25 @@ export function useChangePassword(hasPassword: boolean, onChanged: () => void) {
     } finally {
       setIsSubmitting(false);
     }
-  }, [hasPassword, currentPassword, newPassword, confirmPassword, reset, onChanged]);
+  }, [
+    hasPassword,
+    currentPassword,
+    newPassword,
+    confirmPassword,
+    reset,
+    onChanged,
+  ]);
 
-  return { currentPassword, setCurrentPassword, newPassword, setNewPassword, confirmPassword, setConfirmPassword, fieldErrors, isSubmitting, submit, reset };
+  return {
+    currentPassword,
+    setCurrentPassword,
+    newPassword,
+    setNewPassword,
+    confirmPassword,
+    setConfirmPassword,
+    fieldErrors,
+    isSubmitting,
+    submit,
+    reset,
+  };
 }

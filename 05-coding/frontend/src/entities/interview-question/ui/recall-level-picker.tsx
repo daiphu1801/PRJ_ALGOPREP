@@ -25,7 +25,11 @@ export function RecallLevelPicker({
   className?: string;
 }) {
   return (
-    <div role="group" aria-label={groupLabel} className={cn("flex flex-wrap gap-1.5", className)}>
+    <div
+      role="group"
+      aria-label={groupLabel}
+      className={cn("flex flex-wrap gap-1.5", className)}
+    >
       {RECALL_LEVELS.map((level) => {
         const active = value === level;
         return (

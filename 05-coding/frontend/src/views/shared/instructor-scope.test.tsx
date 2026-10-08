@@ -18,7 +18,9 @@ vi.mock("@/shared/i18n", () => ({
 }));
 
 function withQuery(ui: ReactElement) {
-  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
   return <QueryClientProvider client={client}>{ui}</QueryClientProvider>;
 }
 
@@ -30,12 +32,16 @@ afterEach(() => at("/"));
 describe("problem list scope", () => {
   it("A3 sees every problem, A2 only their own", async () => {
     at("/admin/problems");
-    const admin = render(withQuery(<ProblemManagementView basePath="/admin/problems" />));
+    const admin = render(
+      withQuery(<ProblemManagementView basePath="/admin/problems" />),
+    );
     expect(await screen.findByText("#207")).toBeInTheDocument();
     admin.unmount();
 
     at("/instructor/problems");
-    render(withQuery(<ProblemManagementView basePath="/instructor/problems" />));
+    render(
+      withQuery(<ProblemManagementView basePath="/instructor/problems" />),
+    );
     expect(await screen.findByText("#139")).toBeInTheDocument();
     expect(screen.queryByText("#207")).not.toBeInTheDocument();
   });
@@ -45,8 +51,22 @@ describe("opening a problem that is not the instructor's", () => {
   beforeEach(() => at("/instructor/problems/207"));
 
   it.each([
-    ["detail", <ProblemInfoView key="i" problemId="207" basePath="/instructor/problems" />],
-    ["edit form", <ProblemAuthoringView key="a" problemId="207" basePath="/instructor/problems" />],
+    [
+      "detail",
+      <ProblemInfoView
+        key="i"
+        problemId="207"
+        basePath="/instructor/problems"
+      />,
+    ],
+    [
+      "edit form",
+      <ProblemAuthoringView
+        key="a"
+        problemId="207"
+        basePath="/instructor/problems"
+      />,
+    ],
     ["preview", <ProblemPreviewView key="p" problemId="207" />],
   ])("%s answers not found", async (_name, view) => {
     render(withQuery(view));
@@ -55,7 +75,16 @@ describe("opening a problem that is not the instructor's", () => {
 
   it("their own problem still loads", async () => {
     at("/instructor/problems/139");
-    render(withQuery(<ProblemInfoView problemId="139" basePath="/instructor/problems" />));
-    expect(await screen.findByRole("heading", { level: 1, name: "Minimum Window Substring" })).toBeInTheDocument();
+    render(
+      withQuery(
+        <ProblemInfoView problemId="139" basePath="/instructor/problems" />,
+      ),
+    );
+    expect(
+      await screen.findByRole("heading", {
+        level: 1,
+        name: "Minimum Window Substring",
+      }),
+    ).toBeInTheDocument();
   });
 });

@@ -13,7 +13,15 @@
 //     Rendering them would need counts no entity exposes for the sidebar yet, so they are left out
 //     rather than invented.
 import type { LucideIcon } from "lucide-react";
-import { BookOpen, ClipboardCheck, GraduationCap, LayoutDashboard, Settings, UserCircle, Users } from "lucide-react";
+import {
+  BookOpen,
+  ClipboardCheck,
+  GraduationCap,
+  LayoutDashboard,
+  Settings,
+  UserCircle,
+  Users,
+} from "lucide-react";
 
 export type InstructorNavItem = {
   key: string;
@@ -24,13 +32,38 @@ export type InstructorNavItem = {
 };
 
 export const INSTRUCTOR_NAV_MAIN: InstructorNavItem[] = [
-  { key: "overview", href: "/instructor/overview", labelKey: "overview", icon: LayoutDashboard },
-  { key: "classes", href: "/instructor/classes", labelKey: "classes", icon: Users },
-  { key: "assignments", href: "/instructor/assignments", labelKey: "assignments", icon: BookOpen },
-  { key: "grading", href: "/instructor/grading", labelKey: "grading", icon: ClipboardCheck },
+  {
+    key: "overview",
+    href: "/instructor/overview",
+    labelKey: "overview",
+    icon: LayoutDashboard,
+  },
+  {
+    key: "classes",
+    href: "/instructor/classes",
+    labelKey: "classes",
+    icon: Users,
+  },
+  {
+    key: "assignments",
+    href: "/instructor/assignments",
+    labelKey: "assignments",
+    icon: BookOpen,
+  },
+  {
+    key: "grading",
+    href: "/instructor/grading",
+    labelKey: "grading",
+    icon: ClipboardCheck,
+  },
   // Top-level route, not a child of /instructor/classes: since 2026-09-27 this is the student
   // list for ALL classes, with ?classId= only as a preselected filter.
-  { key: "students", href: "/instructor/students", labelKey: "students", icon: GraduationCap },
+  {
+    key: "students",
+    href: "/instructor/students",
+    labelKey: "students",
+    icon: GraduationCap,
+  },
 ];
 
 export const INSTRUCTOR_NAV_MISC: InstructorNavItem[] = [

@@ -31,11 +31,16 @@ export async function StudentFooter() {
               GO-JUDGE
             </span>
           </p>
-          <p className="mt-0.5 text-xs text-[var(--color-text-muted)]">{t("footer.copyright")}</p>
+          <p className="mt-0.5 text-xs text-[var(--color-text-muted)]">
+            {t("footer.copyright")}
+          </p>
         </div>
 
         <p className="flex items-center gap-2 text-[12.5px] text-[var(--color-text-muted)]">
-          <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-success)]" aria-hidden="true" />
+          <span
+            className="h-1.5 w-1.5 rounded-full bg-[var(--color-success)]"
+            aria-hidden="true"
+          />
           {t("footer.clusterStatus")}
         </p>
 

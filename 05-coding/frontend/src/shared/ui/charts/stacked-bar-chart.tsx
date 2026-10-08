@@ -75,7 +75,9 @@ export function StackedBarChart({
                     height: `${(value / max) * 100}%`,
                     background: `var(${item.colorVar})`,
                   }}
-                  className={cn(index === series.length - 1 && "rounded-t-[5px]")}
+                  className={cn(
+                    index === series.length - 1 && "rounded-t-[5px]",
+                  )}
                 />
               );
             })}

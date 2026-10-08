@@ -40,7 +40,7 @@ import {
   DataTable,
   PageHeader,
   Pagination,
-  SegmentedTabs,
+  FilterMenu,
   TextField,
   type BadgeVariant,
   type DataTableColumn,
@@ -59,12 +59,16 @@ const PAGE_SIZES = [10, 20, 50] as const;
 // Bare-svg sparkline for the "Xu hướng" column (dc.html:182) — point math mirrors
 // shared/ui/charts/stat-card-with-sparkline.tsx, kept local since this is the only table-cell use.
 function Sparkline({ points }: { points: number[] }) {
-  if (points.length < 2) return <span className="text-[var(--color-text-muted)]">-</span>;
+  if (points.length < 2)
+    return <span className="text-[var(--color-text-muted)]">-</span>;
   const max = Math.max(...points);
   const min = Math.min(...points);
   const range = max - min || 1;
   const path = points
-    .map((v, i) => `${(i / (points.length - 1)) * 100},${24 - ((v - min) / range) * 24}`)
+    .map(
+      (v, i) =>
+        `${(i / (points.length - 1)) * 100},${24 - ((v - min) / range) * 24}`,
+    )
     .join(" ");
   const up = points.at(-1)! >= points[0]!;
   return (
@@ -88,52 +92,104 @@ export function ClassProgressView() {
 
   // Seeded from ?classId= so "Xem học viên" on a class card lands here already filtered.
   const searchParams = useSearchParams();
-  const [classTab, setClassTab] = useState(searchParams.get("classId") ?? "all");
-  const [removeTarget, setRemoveTarget] = useState<{ id: string; name: string } | null>(null);
+  const [classTab, setClassTab] = useState(
+    searchParams.get("classId") ?? "all",
+  );
+  const [removeTarget, setRemoveTarget] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
   const removeStudent = useRemoveStudent();
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = usePersistedPageSize("algoprep-class-progress-page-size", PAGE_SIZES, 10);
+  const [pageSize, setPageSize] = usePersistedPageSize(
+    "algoprep-class-progress-page-size",
+    PAGE_SIZES,
+    10,
+  );
 
   const filterClassId = classTab === "all" ? undefined : classTab;
   const studentsQuery = useClassStudents(filterClassId);
 
   const filteredStudents = useMemo(() => {
     const needle = query.trim().toLowerCase();
-    return (studentsQuery.data ?? []).filter((s) => !needle || s.name.toLowerCase().includes(needle));
+    return (studentsQuery.data ?? []).filter(
+      (s) => !needle || s.name.toLowerCase().includes(needle),
+    );
   }, [studentsQuery.data, query]);
 
-  const pageRows = filteredStudents.slice((page - 1) * pageSize, page * pageSize);
+  const pageRows = filteredStudents.slice(
+    (page - 1) * pageSize,
+    page * pageSize,
+  );
 
-
-  const columns: DataTableColumn<NonNullable<typeof studentsQuery.data>[number]>[] = [
+  const columns: DataTableColumn<
+    NonNullable<typeof studentsQuery.data>[number]
+  >[] = [
     {
       key: "name",
       header: t("studentList.col.studentName"),
       render: (row) => (
-        <Link href={`/instructor/classes/${row.classId}/students/${row.id}`} className="flex items-center gap-2.5 font-semibold hover:underline">
-          <span aria-hidden="true" className="glass-surface flex h-[28px] w-[28px] shrink-0 items-center justify-center rounded-full border border-[var(--color-border)] text-[11px] font-semibold">
+        <Link
+          href={`/instructor/classes/${row.classId}/students/${row.id}`}
+          className="flex items-center gap-2.5 font-semibold hover:underline"
+        >
+          <span
+            aria-hidden="true"
+            className="glass-surface flex h-[28px] w-[28px] shrink-0 items-center justify-center rounded-full border border-[var(--color-border)] text-[11px] font-semibold"
+          >
             {initialsOfClassStudent(row.name)}
           </span>
           {row.name}
         </Link>
       ),
     },
-    { key: "className", header: t("studentList.col.className"), render: (row) => row.className },
-    { key: "avgScore", header: t("studentList.col.avgScore"), align: "right", render: (row) => (row.avgScore === null ? "-" : row.avgScore.toFixed(1)) },
-    { key: "completion", header: t("studentList.col.completion"), align: "right", render: (row) => `${row.completionPct}%` },
-    { key: "streak", header: t("studentList.col.streak"), align: "right", render: (row) => (row.streakDays > 0 ? `${row.streakDays} ngày` : "-") },
+    {
+      key: "className",
+      header: t("studentList.col.className"),
+      render: (row) => row.className,
+    },
+    {
+      key: "avgScore",
+      header: t("studentList.col.avgScore"),
+      align: "right",
+      render: (row) => (row.avgScore === null ? "-" : row.avgScore.toFixed(1)),
+    },
+    {
+      key: "completion",
+      header: t("studentList.col.completion"),
+      align: "right",
+      render: (row) => `${row.completionPct}%`,
+    },
+    {
+      key: "streak",
+      header: t("studentList.col.streak"),
+      align: "right",
+      render: (row) => (row.streakDays > 0 ? `${row.streakDays} ngày` : "-"),
+    },
     // dc.html:169 header "Xu hướng", :182 renders a per-student sparkline path from trend points.
-    { key: "trend", header: t("studentList.col.trend"), render: (row) => <Sparkline points={row.trend} /> },
+    {
+      key: "trend",
+      header: t("studentList.col.trend"),
+      render: (row) => <Sparkline points={row.trend} />,
+    },
     // Carried over from class_management's student table when the two merged: the status badge is
     // now the ONLY place a student's standing shows, so it cannot be dropped with the "Cần chú ý"
     // block it used to duplicate.
     {
       key: "status",
       header: t("studentList.col.status"),
-      render: (row) => <Badge variant={STATUS_VARIANT[row.status]}>{t(`status.${row.status}`)}</Badge>,
+      render: (row) => (
+        <Badge variant={STATUS_VARIANT[row.status]}>
+          {t(`status.${row.status}`)}
+        </Badge>
+      ),
     },
-    { key: "lastActive", header: t("studentList.col.lastActive"), render: (row) => row.lastActiveLabel },
+    {
+      key: "lastActive",
+      header: t("studentList.col.lastActive"),
+      render: (row) => row.lastActiveLabel,
+    },
     {
       key: "remove",
       header: "",
@@ -153,7 +209,10 @@ export function ClassProgressView() {
 
   return (
     <div>
-      <PageHeader title={t("header.title")} description={t("header.subtitle")} />
+      <PageHeader
+        title={t("header.title")}
+        description={t("header.subtitle")}
+      />
 
       <Card>
         <div className="mb-3.5 flex flex-wrap items-center gap-2.5">
@@ -168,17 +227,23 @@ export function ClassProgressView() {
             }}
             wrapperClassName="min-w-[220px] flex-1"
           />
-          <SegmentedTabs
+          <FilterMenu
             label={t("studentList.classTabs")}
             value={classTab}
             onValueChange={(value) => {
               setClassTab(value);
               setPage(1);
             }}
-            options={[{ value: "all", label: t("filterAll") }, ...classes.map((c) => ({ value: c.id, label: c.name }))]}
+            options={[
+              { value: "all", label: t("filterAll") },
+              ...classes.map((c) => ({ value: c.id, label: c.name })),
+            ]}
           />
           <span className="ml-auto text-[12.5px] text-[var(--color-text-muted)]">
-            {t("studentList.resultCount", { shown: filteredStudents.length, total: studentsQuery.data?.length ?? 0 })}
+            {t("studentList.resultCount", {
+              shown: filteredStudents.length,
+              total: studentsQuery.data?.length ?? 0,
+            })}
           </span>
         </div>
 
@@ -187,7 +252,13 @@ export function ClassProgressView() {
           columns={columns}
           rows={pageRows}
           rowKey={(row) => row.id}
-          status={studentsQuery.isLoading ? "loading" : studentsQuery.isError ? "error" : "ready"}
+          status={
+            studentsQuery.isLoading
+              ? "loading"
+              : studentsQuery.isError
+                ? "error"
+                : "ready"
+          }
           emptyMessage={t("empty")}
           minWidth={860}
         />
@@ -203,7 +274,10 @@ export function ClassProgressView() {
             setPageSize(size);
             setPage(1);
           }}
-          summary={t("pageSummary", { page, total: Math.max(1, Math.ceil(filteredStudents.length / pageSize)) })}
+          summary={t("pageSummary", {
+            page,
+            total: Math.max(1, Math.ceil(filteredStudents.length / pageSize)),
+          })}
           previousLabel={t("previous")}
           nextLabel={t("next")}
         />
@@ -222,7 +296,9 @@ export function ClassProgressView() {
           }
           setRemoveTarget(null);
         }}
-        title={t("popup.removeStudentTitle", { name: removeTarget?.name ?? "" })}
+        title={t("popup.removeStudentTitle", {
+          name: removeTarget?.name ?? "",
+        })}
         confirmLabel={t("popup.removeStudentConfirm")}
         cancelLabel={t("cancel")}
         destructive

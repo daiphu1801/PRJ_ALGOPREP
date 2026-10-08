@@ -21,10 +21,34 @@ type ProblemRef = {
 };
 
 const PROBLEMS: ProblemRef[] = [
-  { problemId: "p1", problemSlug: "two-sum", problemCode: "AP001", problemTitle: "Two Sum", difficulty: "EASY" },
-  { problemId: "p2", problemSlug: "binary-tree-zigzag", problemCode: "AP014", problemTitle: "Duyệt zigzag cây nhị phân", difficulty: "MEDIUM" },
-  { problemId: "p3", problemSlug: "lru-cache", problemCode: "AP027", problemTitle: "Thiết kế LRU Cache", difficulty: "HARD" },
-  { problemId: "p4", problemSlug: "merge-intervals", problemCode: "AP009", problemTitle: "Gộp khoảng giao nhau", difficulty: "MEDIUM" },
+  {
+    problemId: "p1",
+    problemSlug: "two-sum",
+    problemCode: "AP001",
+    problemTitle: "Two Sum",
+    difficulty: "EASY",
+  },
+  {
+    problemId: "p2",
+    problemSlug: "binary-tree-zigzag",
+    problemCode: "AP014",
+    problemTitle: "Duyệt zigzag cây nhị phân",
+    difficulty: "MEDIUM",
+  },
+  {
+    problemId: "p3",
+    problemSlug: "lru-cache",
+    problemCode: "AP027",
+    problemTitle: "Thiết kế LRU Cache",
+    difficulty: "HARD",
+  },
+  {
+    problemId: "p4",
+    problemSlug: "merge-intervals",
+    problemCode: "AP009",
+    problemTitle: "Gộp khoảng giao nhau",
+    difficulty: "MEDIUM",
+  },
 ];
 
 function problemOf(index: number): ProblemRef {
@@ -94,7 +118,8 @@ const DETAILS: Record<string, SubmissionDetail> = {
         ? {
             sampleInput: `root = [3,9,20,null,null,15,7]`,
             sampleExpectedOutput: `[[3],[20,9],[15,7]]`,
-            sampleActualOutput: i === 0 ? `[[3],[20,9],[15,7]]` : `[[3],[20,9],[7,15]]`,
+            sampleActualOutput:
+              i === 0 ? `[[3],[20,9],[15,7]]` : `[[3],[20,9],[7,15]]`,
           }
         : {}),
     })),
@@ -115,7 +140,8 @@ const DETAILS: Record<string, SubmissionDetail> = {
     submittedAt: "2026-09-24T08:30:00+07:00",
     sourceCode:
       "class LRUCache {\npublic:\n    LRUCache(int capacity) {\n        cap = capacity\n    }\n};\n",
-    compileErrorMessage: "main.cpp:4:24: error: expected ';' after expression\n        cap = capacity\n                      ^\n                      ;",
+    compileErrorMessage:
+      "main.cpp:4:24: error: expected ';' after expression\n        cap = capacity\n                      ^\n                      ;",
     testcases: [],
   },
 
@@ -179,15 +205,30 @@ const LIST_ITEMS: SubmissionListItem[] = Array.from({ length: 24 }, (_, i) => {
     difficulty: problem.difficulty,
     language: LANGUAGES[i % LANGUAGES.length]!,
     status,
-    passedCount: status === "COMPILE_ERROR" ? null : isAccepted ? total : Math.max(0, total - 3 - (i % 4)),
+    passedCount:
+      status === "COMPILE_ERROR"
+        ? null
+        : isAccepted
+          ? total
+          : Math.max(0, total - 3 - (i % 4)),
     totalCount: status === "COMPILE_ERROR" ? null : total,
     runtimeMs: status === "COMPILE_ERROR" ? null : 30 + i * 4,
-    submittedAt: new Date(Date.UTC(2026, 8, 24, 10, 0, 0) - i * 3600_000).toISOString(),
+    submittedAt: new Date(
+      Date.UTC(2026, 8, 24, 10, 0, 0) - i * 3600_000,
+    ).toISOString(),
   };
 });
 
-export function fetchMySubmissionsPage(params: ListMySubmissionsParams = {}): SubmissionListPage {
-  const { query = "", verdict = "ALL", language = "ALL", page = 1, pageSize = 20 } = params;
+export function fetchMySubmissionsPage(
+  params: ListMySubmissionsParams = {},
+): SubmissionListPage {
+  const {
+    query = "",
+    verdict = "ALL",
+    language = "ALL",
+    page = 1,
+    pageSize = 20,
+  } = params;
   const needle = query.trim().toLowerCase();
 
   const filtered = LIST_ITEMS.filter(
@@ -214,14 +255,17 @@ export function fetchMySubmissionsPage(params: ListMySubmissionsParams = {}): Su
  */
 export function fetchMySubmissionStats(): SubmissionStats {
   const totalSubmissions = LIST_ITEMS.length;
-  const acceptedCount = LIST_ITEMS.filter((item) => item.status === "ACCEPTED").length;
+  const acceptedCount = LIST_ITEMS.filter(
+    (item) => item.status === "ACCEPTED",
+  ).length;
   // First-try acceptance is [SoT: Suy luận] here: the mock treats every 3rd accepted item as first-try.
   const firstTryAcceptedCount = LIST_ITEMS.filter(
     (item, i) => item.status === "ACCEPTED" && i % 3 === 0,
   ).length;
 
   const counts = new Map<SubmissionLanguage, number>();
-  for (const item of LIST_ITEMS) counts.set(item.language, (counts.get(item.language) ?? 0) + 1);
+  for (const item of LIST_ITEMS)
+    counts.set(item.language, (counts.get(item.language) ?? 0) + 1);
   let topLanguage: SubmissionLanguage | null = null;
   let topLanguageCount = 0;
   for (const [lang, count] of counts) {
@@ -231,5 +275,11 @@ export function fetchMySubmissionStats(): SubmissionStats {
     }
   }
 
-  return { totalSubmissions, acceptedCount, firstTryAcceptedCount, topLanguage, topLanguageCount };
+  return {
+    totalSubmissions,
+    acceptedCount,
+    firstTryAcceptedCount,
+    topLanguage,
+    topLanguageCount,
+  };
 }

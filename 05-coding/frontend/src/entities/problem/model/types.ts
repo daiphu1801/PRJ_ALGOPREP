@@ -155,11 +155,7 @@ export type ProblemDetail = {
 export type TestcaseVerdict = "pending" | "running" | "passed" | "failed";
 
 export type OverallVerdict =
-  | "accepted"
-  | "wrongAnswer"
-  | "runtimeError"
-  | "timeLimitExceeded"
-  | "running";
+  "accepted" | "wrongAnswer" | "runtimeError" | "timeLimitExceeded" | "running";
 
 export type SubmissionRunResult = {
   submissionId: string;
@@ -170,5 +166,10 @@ export type SubmissionRunResult = {
 };
 
 export type SampleRunResult = {
-  cases: { input: string; expectedOutput: string; actualOutput: string; passed: boolean }[];
+  cases: {
+    input: string;
+    expectedOutput: string;
+    actualOutput: string;
+    passed: boolean;
+  }[];
 };

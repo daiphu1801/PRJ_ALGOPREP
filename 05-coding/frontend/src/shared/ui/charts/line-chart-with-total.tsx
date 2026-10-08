@@ -29,12 +29,33 @@ export function LineChartWithTotal({
 
   return (
     <div>
-      <p className="text-2xl font-semibold text-[var(--color-text)]">{totalValue}</p>
-      <p className="mb-2 text-xs text-[var(--color-text-muted)]">{totalLabel}</p>
-      <svg viewBox="0 0 100 40" className="h-16 w-full" role="img" aria-label={totalLabel} preserveAspectRatio="none">
-        <polyline points={polylinePoints} fill="none" stroke={`var(${accentColorVar})`} strokeWidth="1.5" />
+      <p className="text-2xl font-semibold text-[var(--color-text)]">
+        {totalValue}
+      </p>
+      <p className="mb-2 text-xs text-[var(--color-text-muted)]">
+        {totalLabel}
+      </p>
+      <svg
+        viewBox="0 0 100 40"
+        className="h-16 w-full"
+        role="img"
+        aria-label={totalLabel}
+        preserveAspectRatio="none"
+      >
+        <polyline
+          points={polylinePoints}
+          fill="none"
+          stroke={`var(${accentColorVar})`}
+          strokeWidth="1.5"
+        />
         {coords.map((c, index) => (
-          <circle key={points[index]!.label} cx={c.x} cy={c.y} r="1.4" fill={`var(${accentColorVar})`} />
+          <circle
+            key={points[index]!.label}
+            cx={c.x}
+            cy={c.y}
+            r="1.4"
+            fill={`var(${accentColorVar})`}
+          />
         ))}
       </svg>
       <div className="mt-1 flex justify-between text-[10px] text-[var(--color-text-muted)]">

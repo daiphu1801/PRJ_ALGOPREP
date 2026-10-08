@@ -25,7 +25,8 @@ export type PromptConfig = {
   updatedAt: string;
 };
 
-export type RubricKey = "correctness" | "complexity" | "codeQuality" | "edgeCases" | "explanation";
+export type RubricKey =
+  "correctness" | "complexity" | "codeQuality" | "edgeCases" | "explanation";
 
 export const RUBRIC_KEYS: RubricKey[] = [
   "correctness",
@@ -49,7 +50,11 @@ export const RATE_LIMIT_KEYS: RateLimitKey[] = [
  */
 export type GuardKey = "noFullSolution" | "citeLines" | "answerInVietnamese";
 
-export const GUARD_KEYS: GuardKey[] = ["noFullSolution", "citeLines", "answerInVietnamese"];
+export const GUARD_KEYS: GuardKey[] = [
+  "noFullSolution",
+  "citeLines",
+  "answerInVietnamese",
+];
 
 export type PromptVersionEntry = {
   id: string;

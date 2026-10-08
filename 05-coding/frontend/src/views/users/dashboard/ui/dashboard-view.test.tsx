@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { NextIntlClientProvider } from "@/shared/i18n";
 import messages from "../../../../../messages/vi.json";
@@ -21,10 +27,16 @@ describe("DashboardView", () => {
 
     // Dashboard half.
     expect(await screen.findByText(/Điểm yếu tuần này:/)).toBeInTheDocument();
-    expect(screen.getByRole("region", { name: "Năng lực theo chủ đề" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("region", { name: "Năng lực theo chủ đề" }),
+    ).toBeInTheDocument();
     // my_progress half, merged in by DEC-2026-0927-student-area-merge-and-shared-shell.
-    expect(await screen.findByRole("table", { name: "Theo chủ đề" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Nên ưu tiên" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("table", { name: "Theo chủ đề" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Nên ưu tiên" }),
+    ).toBeInTheDocument();
   });
 
   it("drives every range-aware block from the one screen-level control", async () => {
@@ -33,7 +45,9 @@ describe("DashboardView", () => {
     // Scoped to the chart's own region: the radar in the next column also draws <circle>, so a
     // container-wide query would count both and pass for the wrong reason.
     const plottedPoints = () =>
-      screen.getByRole("region", { name: "Bài nộp theo ngày" }).querySelectorAll("svg circle").length;
+      screen
+        .getByRole("region", { name: "Bài nộp theo ngày" })
+        .querySelectorAll("svg circle").length;
 
     const table = await screen.findByRole("table", { name: "Theo chủ đề" });
     const topicRowBefore = within(table).getAllByRole("row")[1]?.textContent;
@@ -47,7 +61,9 @@ describe("DashboardView", () => {
     await waitFor(() => expect(plottedPoints()).toBe(7));
     await waitFor(() =>
       expect(
-        within(screen.getByRole("table", { name: "Theo chủ đề" })).getAllByRole("row")[1]?.textContent,
+        within(screen.getByRole("table", { name: "Theo chủ đề" })).getAllByRole(
+          "row",
+        )[1]?.textContent,
       ).not.toBe(topicRowBefore),
     );
   });

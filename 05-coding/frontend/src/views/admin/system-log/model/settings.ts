@@ -7,7 +7,10 @@ import { createSettingsStore } from "@/shared/lib/settings-store";
 
 export type ExpiryPolicy = "delete" | "archive";
 
-export const logSettings = createSettingsStore<{ retentionDays: number; expiry: ExpiryPolicy }>({
+export const logSettings = createSettingsStore<{
+  retentionDays: number;
+  expiry: ExpiryPolicy;
+}>({
   retentionDays: 90,
   expiry: "delete",
 });

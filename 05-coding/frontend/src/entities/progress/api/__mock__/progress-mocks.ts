@@ -20,17 +20,64 @@ function delay<T>(value: T, ms = 500): Promise<T> {
 }
 
 const BASE_TOPICS: Omit<TopicProgress, "acRate" | "lastSubmittedAt">[] = [
-  { topicId: "hash-map", topicName: "Hash map", solvedCount: 34, totalCount: 42 },
-  { topicId: "two-pointers", topicName: "Two pointers", solvedCount: 28, totalCount: 35 },
-  { topicId: "sliding-window", topicName: "Sliding window", solvedCount: 19, totalCount: 30 },
-  { topicId: "graph-bfs-dfs", topicName: "Graph / BFS-DFS", solvedCount: 22, totalCount: 48 },
-  { topicId: "dp", topicName: "Dynamic programming", solvedCount: 17, totalCount: 52 },
-  { topicId: "binary-search", topicName: "Binary search", solvedCount: 24, totalCount: 28 },
-  { topicId: "heap", topicName: "Heap / priority queue", solvedCount: 12, totalCount: 26 },
+  {
+    topicId: "hash-map",
+    topicName: "Hash map",
+    solvedCount: 34,
+    totalCount: 42,
+  },
+  {
+    topicId: "two-pointers",
+    topicName: "Two pointers",
+    solvedCount: 28,
+    totalCount: 35,
+  },
+  {
+    topicId: "sliding-window",
+    topicName: "Sliding window",
+    solvedCount: 19,
+    totalCount: 30,
+  },
+  {
+    topicId: "graph-bfs-dfs",
+    topicName: "Graph / BFS-DFS",
+    solvedCount: 22,
+    totalCount: 48,
+  },
+  {
+    topicId: "dp",
+    topicName: "Dynamic programming",
+    solvedCount: 17,
+    totalCount: 52,
+  },
+  {
+    topicId: "binary-search",
+    topicName: "Binary search",
+    solvedCount: 24,
+    totalCount: 28,
+  },
+  {
+    topicId: "heap",
+    topicName: "Heap / priority queue",
+    solvedCount: 12,
+    totalCount: 26,
+  },
 ];
 const BASE_AC = [71, 66, 58, 44, 31, 74, 49];
-const BASE_LAST = ["2026-08-20", "2026-08-19", "2026-08-19", "2026-08-15", "2026-08-14", "2026-08-12", "2026-08-08"];
-const RANGE_SCALE: Record<ProgressRange, number> = { "7d": 0.6, "30d": 1, all: 1.3 };
+const BASE_LAST = [
+  "2026-08-20",
+  "2026-08-19",
+  "2026-08-19",
+  "2026-08-15",
+  "2026-08-14",
+  "2026-08-12",
+  "2026-08-08",
+];
+const RANGE_SCALE: Record<ProgressRange, number> = {
+  "7d": 0.6,
+  "30d": 1,
+  all: 1.3,
+};
 
 export function fakeGetProgressOverview(): Promise<ProgressOverview> {
   return delay({
@@ -43,7 +90,9 @@ export function fakeGetProgressOverview(): Promise<ProgressOverview> {
   });
 }
 
-export function fakeGetTopicProgress(range: ProgressRange): Promise<TopicProgress[]> {
+export function fakeGetTopicProgress(
+  range: ProgressRange,
+): Promise<TopicProgress[]> {
   const scale = RANGE_SCALE[range];
   return delay(
     BASE_TOPICS.map((topic, i) => ({
@@ -57,7 +106,9 @@ export function fakeGetTopicProgress(range: ProgressRange): Promise<TopicProgres
 
 const DAILY_COUNTS = [3, 0, 5, 2, 6, 4, 0, 1, 7, 5, 3, 8, 2, 6];
 
-export function fakeGetDailySubmissions(range: ProgressRange): Promise<SubmissionDailyCount[]> {
+export function fakeGetDailySubmissions(
+  range: ProgressRange,
+): Promise<SubmissionDailyCount[]> {
   const scale = RANGE_SCALE[range];
   return delay(
     DAILY_COUNTS.map((count, i) => ({
@@ -74,7 +125,14 @@ export function fakeGetDifficultyBreakdown(): Promise<DifficultyProgress[]> {
     ["MEDIUM", 77, 320],
     ["HARD", 17, 140],
   ];
-  return delay(rows.map(([difficulty, solvedCount, totalCount]) => ({ difficulty, solvedCount, totalCount })), 500);
+  return delay(
+    rows.map(([difficulty, solvedCount, totalCount]) => ({
+      difficulty,
+      solvedCount,
+      totalCount,
+    })),
+    500,
+  );
 }
 
 export function fakeGetInterviewSummary(): Promise<InterviewSummary> {

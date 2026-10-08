@@ -35,7 +35,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   clearCorruptedThemeStorage();
 
   return (
-    <NextThemesProvider attribute="class" defaultTheme="light" enableSystem={false}>
+    <NextThemesProvider
+      attribute="class"
+      defaultTheme="light"
+      enableSystem={false}
+    >
       {children}
     </NextThemesProvider>
   );

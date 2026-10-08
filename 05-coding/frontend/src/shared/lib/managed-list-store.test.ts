@@ -17,12 +17,20 @@ describe("createManagedListStore", () => {
     act(() => {
       expect(store.add("  Gamma ", { flag: false })).toBeNull();
     });
-    expect(result.current.map((row) => row.label)).toEqual(["Alpha", "Beta", "Gamma"]);
+    expect(result.current.map((row) => row.label)).toEqual([
+      "Alpha",
+      "Beta",
+      "Gamma",
+    ]);
 
     act(() => {
       store.update("a", { label: "Alpha 2", flag: true });
     });
-    expect(result.current[0]).toMatchObject({ key: "a", label: "Alpha 2", flag: true });
+    expect(result.current[0]).toMatchObject({
+      key: "a",
+      label: "Alpha 2",
+      flag: true,
+    });
 
     act(() => store.remove("b"));
     expect(result.current.map((row) => row.key)).not.toContain("b");
@@ -62,7 +70,10 @@ describe("createManagedListStore", () => {
     const { result } = renderHook(() => store.use());
     act(() => void store.add("Rất khó", { flag: false }));
     act(() => void store.add("rat-kho", { flag: false }));
-    expect(result.current.map((row) => row.key).slice(2)).toEqual(["RAT_KHO", "RAT_KHO_2"]);
+    expect(result.current.map((row) => row.key).slice(2)).toEqual([
+      "RAT_KHO",
+      "RAT_KHO_2",
+    ]);
   });
 
   it("slugify strips Vietnamese diacritics", () => {

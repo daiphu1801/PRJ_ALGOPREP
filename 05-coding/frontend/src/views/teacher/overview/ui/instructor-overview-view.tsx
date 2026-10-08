@@ -21,16 +21,44 @@ import { useClassScoreTrend, useInstructorClasses } from "@/entities/class";
 import { usePendingManualGradingTop } from "@/entities/manual-grading";
 import { problemLevelLabel, useProblemLevels } from "@/entities/problem";
 import { useT } from "@/shared/i18n";
-import { Badge, Button, Card, LineChartWithTotal, ProgressBar, StatCard, TextField } from "@/shared/ui";
+import {
+  Badge,
+  Button,
+  Card,
+  LineChartWithTotal,
+  ProgressBar,
+  StatCard,
+  TextField,
+} from "@/shared/ui";
 
 // No dedicated "recent activity" entity exists yet (identity.identity_recent_activity has no query
 // endpoint contract — 02-bd/screens/teacher/INS0101_overview.md Sheet 4.3 Q4 is still open), so the
 // feed is a small deterministic local list rather than an untyped fetch.
 const ACTIVITY_FEED = [
-  { id: "a1", text: "Nguyễn Văn An vừa nộp bài Two Sum — Accepted", timeLabel: "12 phút trước", attention: false },
-  { id: "a2", text: "Trần Thị Bích chưa nộp bài 9 ngày liên tiếp", timeLabel: "1 giờ trước", attention: true },
-  { id: "a3", text: "Lê Hoàng Cường tham gia lớp Lập trình Java K21", timeLabel: "Hôm qua", attention: false },
-  { id: "a4", text: "Đỗ Minh Đức bị AI chấm điểm thấp, cần xem lại", timeLabel: "Hôm qua", attention: true },
+  {
+    id: "a1",
+    text: "Nguyễn Văn An vừa nộp bài Two Sum — Accepted",
+    timeLabel: "12 phút trước",
+    attention: false,
+  },
+  {
+    id: "a2",
+    text: "Trần Thị Bích chưa nộp bài 9 ngày liên tiếp",
+    timeLabel: "1 giờ trước",
+    attention: true,
+  },
+  {
+    id: "a3",
+    text: "Lê Hoàng Cường tham gia lớp Lập trình Java K21",
+    timeLabel: "Hôm qua",
+    attention: false,
+  },
+  {
+    id: "a4",
+    text: "Đỗ Minh Đức bị AI chấm điểm thấp, cần xem lại",
+    timeLabel: "Hôm qua",
+    attention: true,
+  },
 ];
 
 export function InstructorOverviewView() {
@@ -47,10 +75,17 @@ export function InstructorOverviewView() {
   const totalStudents = classes.reduce((sum, c) => sum + c.studentCount, 0);
   const pendingGrading = classes.reduce((sum, c) => sum + c.pendingGrading, 0);
   const avgScore = classes.length
-    ? Math.round((classes.reduce((sum, c) => sum + (c.avgScore ?? 0), 0) / classes.length) * 10) / 10
+    ? Math.round(
+        (classes.reduce((sum, c) => sum + (c.avgScore ?? 0), 0) /
+          classes.length) *
+          10,
+      ) / 10
     : null;
 
-  const recentAssignments = useMemo(() => (assignmentsQuery.data ?? []).slice(0, 5), [assignmentsQuery.data]);
+  const recentAssignments = useMemo(
+    () => (assignmentsQuery.data ?? []).slice(0, 5),
+    [assignmentsQuery.data],
+  );
 
   // dc.html:198-213 plots a 4-week average line with week labels under it, not a single number.
   // Same aggregate-of-all-classes simplification as class-progress-view (LineChartWithTotal is
@@ -65,7 +100,11 @@ export function InstructorOverviewView() {
     return labels.map((label, i) => ({
       label,
       value: series.length
-        ? Math.round((series.reduce((sum, s) => sum + (s.points[offset + i] ?? 0), 0) / series.length) * 10) / 10
+        ? Math.round(
+            (series.reduce((sum, s) => sum + (s.points[offset + i] ?? 0), 0) /
+              series.length) *
+              10,
+          ) / 10
         : 0,
     }));
   }, [trendQuery.data]);
@@ -92,12 +131,18 @@ export function InstructorOverviewView() {
           wrapperClassName="min-w-[220px] flex-1"
         />
         <Button variant="cta" size="sm" asChild>
-          <Link href="/instructor/classes?create=1">{t("toolbar.btnCreateClass")}</Link>
+          <Link href="/instructor/classes?create=1">
+            {t("toolbar.btnCreateClass")}
+          </Link>
         </Button>
       </div>
 
       <div className="mb-4 grid gap-3.5 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
-        <StatCard label={t("stat.classCount")} value={classes.length} meta={t("stat.classCountMeta", { count: totalStudents })} />
+        <StatCard
+          label={t("stat.classCount")}
+          value={classes.length}
+          meta={t("stat.classCountMeta", { count: totalStudents })}
+        />
         <StatCard label={t("stat.studentCount")} value={totalStudents} />
         <StatCard label={t("stat.pendingGrading")} value={pendingGrading} />
         <StatCard
@@ -105,7 +150,11 @@ export function InstructorOverviewView() {
           value={avgScore ?? "-"}
           delta={
             avgScoreDelta === null || avgScoreDelta === 0 ? undefined : (
-              <span style={{ color: `var(${avgScoreDelta > 0 ? "--color-success" : "--color-admin-negative"})` }}>
+              <span
+                style={{
+                  color: `var(${avgScoreDelta > 0 ? "--color-success" : "--color-admin-negative"})`,
+                }}
+              >
                 {avgScoreDelta > 0 ? `+${avgScoreDelta}` : avgScoreDelta}
               </span>
             )
@@ -119,24 +168,39 @@ export function InstructorOverviewView() {
           title={t("grading.title")}
           description={t("grading.subtitle")}
           action={
-            <Link href="/instructor/grading" className="text-[12.5px] font-semibold text-[var(--color-primary)] hover:underline">
+            <Link
+              href="/instructor/grading"
+              className="text-[12.5px] font-semibold text-[var(--color-primary)] hover:underline"
+            >
               {t("grading.linkViewAll")}
             </Link>
           }
         >
           <ul className="flex flex-col gap-2.5">
             {(pendingTopQuery.data ?? []).length === 0 ? (
-              <li className="text-[13px] text-[var(--color-text-muted)]">{t("empty")}</li>
+              <li className="text-[13px] text-[var(--color-text-muted)]">
+                {t("empty")}
+              </li>
             ) : (
               pendingTopQuery.data!.map((item) => (
-                <li key={item.id} className="flex items-center justify-between gap-3 rounded-lg border border-[var(--color-border)] px-3 py-2">
+                <li
+                  key={item.id}
+                  className="flex items-center justify-between gap-3 rounded-lg border border-[var(--color-border)] px-3 py-2"
+                >
                   <div className="min-w-0">
-                    <p className="truncate font-semibold">{item.studentName} · {item.problemTitle}</p>
+                    <p className="truncate font-semibold">
+                      {item.studentName} · {item.problemTitle}
+                    </p>
                     <p className="truncate text-[12px] text-[var(--color-text-muted)]">
-                      {t("grading.col.meta", { score: item.aiScore10, time: item.submittedAtLabel })}
+                      {t("grading.col.meta", {
+                        score: item.aiScore10,
+                        time: item.submittedAtLabel,
+                      })}
                     </p>
                   </div>
-                  <Badge variant={item.aiScore10 <= 4 ? "negative" : "warn"}>{`${item.aiScore10}/10`}</Badge>
+                  <Badge
+                    variant={item.aiScore10 <= 4 ? "negative" : "warn"}
+                  >{`${item.aiScore10}/10`}</Badge>
                 </li>
               ))
             )}
@@ -150,11 +214,17 @@ export function InstructorOverviewView() {
                 <span
                   aria-hidden="true"
                   className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full"
-                  style={{ background: event.attention ? "var(--color-admin-warn)" : "var(--color-admin-teal)" }}
+                  style={{
+                    background: event.attention
+                      ? "var(--color-admin-warn)"
+                      : "var(--color-admin-teal)",
+                  }}
                 />
                 <div className="min-w-0">
                   <p className="text-[13px]">{event.text}</p>
-                  <p className="text-[11.5px] text-[var(--color-text-muted)]">{event.timeLabel}</p>
+                  <p className="text-[11.5px] text-[var(--color-text-muted)]">
+                    {event.timeLabel}
+                  </p>
                 </div>
               </li>
             ))}
@@ -166,18 +236,31 @@ export function InstructorOverviewView() {
         title={t("classes.title")}
         className="mb-4"
         action={
-          <Link href="/instructor/classes" className="text-[12.5px] font-semibold text-[var(--color-primary)] hover:underline">
+          <Link
+            href="/instructor/classes"
+            className="text-[12.5px] font-semibold text-[var(--color-primary)] hover:underline"
+          >
             {t("classes.linkManage")}
           </Link>
         }
       >
         <div className="grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
           {classes.map((klass) => (
-            <div key={klass.id} className="rounded-xl border border-[var(--color-border)] p-3">
+            <div
+              key={klass.id}
+              className="rounded-xl border border-[var(--color-border)] p-3"
+            >
               <p className="mb-2 truncate font-semibold">{klass.name}</p>
-              <ProgressBar fill="var(--instructor-progress-fill, var(--color-admin-teal))" value={klass.completionPct} label={klass.name} className="mb-1.5" />
+              <ProgressBar
+                fill="var(--instructor-progress-fill, var(--color-admin-teal))"
+                value={klass.completionPct}
+                label={klass.name}
+                className="mb-1.5"
+              />
               <p className="flex justify-between text-[12px] text-[var(--color-text-muted)]">
-                <span>{t("classes.col.studentCount", { count: klass.studentCount })}</span>
+                <span>
+                  {t("classes.col.studentCount", { count: klass.studentCount })}
+                </span>
                 <span>{klass.completionPct}%</span>
               </p>
             </div>
@@ -189,7 +272,10 @@ export function InstructorOverviewView() {
         <Card
           title={t("trend.title")}
           action={
-            <Link href="/instructor/students" className="text-[12.5px] font-semibold text-[var(--color-primary)] hover:underline">
+            <Link
+              href="/instructor/students"
+              className="text-[12.5px] font-semibold text-[var(--color-primary)] hover:underline"
+            >
               {t("trend.linkViewAll")}
             </Link>
           }
@@ -201,28 +287,39 @@ export function InstructorOverviewView() {
               totalValue={avgScore !== null ? `${avgScore}/10` : "-"}
             />
           ) : (
-            <p className="text-[13px] text-[var(--color-text-muted)]">{t("empty")}</p>
+            <p className="text-[13px] text-[var(--color-text-muted)]">
+              {t("empty")}
+            </p>
           )}
         </Card>
 
         <Card
           title={t("assignments.title")}
           action={
-            <Link href="/instructor/assignments" className="text-[12.5px] font-semibold text-[var(--color-primary)] hover:underline">
+            <Link
+              href="/instructor/assignments"
+              className="text-[12.5px] font-semibold text-[var(--color-primary)] hover:underline"
+            >
               {t("assignments.linkViewAll")}
             </Link>
           }
         >
           <ul className="flex flex-col gap-2">
             {recentAssignments.length === 0 ? (
-              <li className="text-[13px] text-[var(--color-text-muted)]">{t("empty")}</li>
+              <li className="text-[13px] text-[var(--color-text-muted)]">
+                {t("empty")}
+              </li>
             ) : (
               recentAssignments.map((row) => (
-                <li key={row.id} className="flex items-center gap-2.5 text-[13px]">
+                <li
+                  key={row.id}
+                  className="flex items-center gap-2.5 text-[13px]"
+                >
                   <div className="min-w-0 flex-1">
                     <p className="truncate">{row.title}</p>
                     <p className="truncate text-[11.5px] text-[var(--color-text-muted)]">
-                      {problemLevelLabel(levelList, row.difficulty)} · {row.topic}
+                      {problemLevelLabel(levelList, row.difficulty)} ·{" "}
+                      {row.topic}
                     </p>
                   </div>
                   <span className="shrink-0 font-mono text-[12.5px] text-[var(--color-text-muted)]">

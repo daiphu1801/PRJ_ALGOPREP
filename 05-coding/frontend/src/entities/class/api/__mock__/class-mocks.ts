@@ -57,18 +57,150 @@ const classes: ClassSummary[] = [
 ];
 
 const students: ClassStudent[] = [
-  { id: "s1", name: "Nguyễn Văn An", classId: "c1", className: "Lập trình Java K21", avgScore: 7.8, completionPct: 72, streakDays: 5, trend: [6.2, 6.8, 7.0, 7.8], lastActiveLabel: "2 giờ trước", status: "on_track" },
-  { id: "s2", name: "Trần Thị Bích", classId: "c1", className: "Lập trình Java K21", avgScore: 4.1, completionPct: 30, streakDays: 0, trend: [5.0, 4.8, 4.4, 4.1], lastActiveLabel: "9 ngày trước", status: "absent" },
-  { id: "s3", name: "Lê Hoàng Cường", classId: "c1", className: "Lập trình Java K21", avgScore: 6.0, completionPct: 42, streakDays: 2, trend: [6.8, 6.5, 6.2, 6.0], lastActiveLabel: "Hôm qua", status: "needs_support" },
-  { id: "s4", name: "Phạm Thu Duyên", classId: "c1", className: "Lập trình Java K21", avgScore: 8.5, completionPct: 90, streakDays: 12, trend: [7.9, 8.1, 8.3, 8.5], lastActiveLabel: "1 giờ trước", status: "on_track" },
-  { id: "s5", name: "Đỗ Minh Đức", classId: "c2", className: "Cấu trúc dữ liệu K22", avgScore: 5.5, completionPct: 46, streakDays: 1, trend: [6.0, 5.8, 5.6, 5.5], lastActiveLabel: "3 ngày trước", status: "watch" },
-  { id: "s6", name: "Vũ Ngọc Hà", classId: "c2", className: "Cấu trúc dữ liệu K22", avgScore: null, completionPct: 0, streakDays: 0, trend: [], lastActiveLabel: "-", status: "insufficient_data" },
-  { id: "s7", name: "Bùi Anh Khoa", classId: "c2", className: "Cấu trúc dữ liệu K22", avgScore: 6.9, completionPct: 60, streakDays: 4, trend: [6.1, 6.4, 6.7, 6.9], lastActiveLabel: "5 giờ trước", status: "on_track" },
-  { id: "s8", name: "Hoàng Gia Linh", classId: "c2", className: "Cấu trúc dữ liệu K22", avgScore: 3.8, completionPct: 22, streakDays: 0, trend: [4.5, 4.2, 4.0, 3.8], lastActiveLabel: "10 ngày trước", status: "absent" },
-  { id: "s9", name: "Ngô Thảo My", classId: "c3", className: "Giải thuật nâng cao K20", avgScore: 9.0, completionPct: 95, streakDays: 21, trend: [8.6, 8.8, 8.9, 9.0], lastActiveLabel: "30 phút trước", status: "on_track" },
-  { id: "s10", name: "Đặng Quốc Nam", classId: "c3", className: "Giải thuật nâng cao K20", avgScore: 7.4, completionPct: 71, streakDays: 6, trend: [7.0, 7.1, 7.3, 7.4], lastActiveLabel: "4 giờ trước", status: "on_track" },
-  { id: "s11", name: "Trịnh Bảo Ngọc", classId: "c3", className: "Giải thuật nâng cao K20", avgScore: 5.2, completionPct: 38, streakDays: 0, trend: [6.4, 6.0, 5.6, 5.2], lastActiveLabel: "Hôm qua", status: "needs_support" },
-  { id: "s12", name: "Lâm Thị Oanh", classId: "c3", className: "Giải thuật nâng cao K20", avgScore: 6.6, completionPct: 55, streakDays: 3, trend: [6.9, 6.8, 6.7, 6.6], lastActiveLabel: "1 ngày trước", status: "watch" },
+  {
+    id: "s1",
+    name: "Nguyễn Văn An",
+    classId: "c1",
+    className: "Lập trình Java K21",
+    avgScore: 7.8,
+    completionPct: 72,
+    streakDays: 5,
+    trend: [6.2, 6.8, 7.0, 7.8],
+    lastActiveLabel: "2 giờ trước",
+    status: "on_track",
+  },
+  {
+    id: "s2",
+    name: "Trần Thị Bích",
+    classId: "c1",
+    className: "Lập trình Java K21",
+    avgScore: 4.1,
+    completionPct: 30,
+    streakDays: 0,
+    trend: [5.0, 4.8, 4.4, 4.1],
+    lastActiveLabel: "9 ngày trước",
+    status: "absent",
+  },
+  {
+    id: "s3",
+    name: "Lê Hoàng Cường",
+    classId: "c1",
+    className: "Lập trình Java K21",
+    avgScore: 6.0,
+    completionPct: 42,
+    streakDays: 2,
+    trend: [6.8, 6.5, 6.2, 6.0],
+    lastActiveLabel: "Hôm qua",
+    status: "needs_support",
+  },
+  {
+    id: "s4",
+    name: "Phạm Thu Duyên",
+    classId: "c1",
+    className: "Lập trình Java K21",
+    avgScore: 8.5,
+    completionPct: 90,
+    streakDays: 12,
+    trend: [7.9, 8.1, 8.3, 8.5],
+    lastActiveLabel: "1 giờ trước",
+    status: "on_track",
+  },
+  {
+    id: "s5",
+    name: "Đỗ Minh Đức",
+    classId: "c2",
+    className: "Cấu trúc dữ liệu K22",
+    avgScore: 5.5,
+    completionPct: 46,
+    streakDays: 1,
+    trend: [6.0, 5.8, 5.6, 5.5],
+    lastActiveLabel: "3 ngày trước",
+    status: "watch",
+  },
+  {
+    id: "s6",
+    name: "Vũ Ngọc Hà",
+    classId: "c2",
+    className: "Cấu trúc dữ liệu K22",
+    avgScore: null,
+    completionPct: 0,
+    streakDays: 0,
+    trend: [],
+    lastActiveLabel: "-",
+    status: "insufficient_data",
+  },
+  {
+    id: "s7",
+    name: "Bùi Anh Khoa",
+    classId: "c2",
+    className: "Cấu trúc dữ liệu K22",
+    avgScore: 6.9,
+    completionPct: 60,
+    streakDays: 4,
+    trend: [6.1, 6.4, 6.7, 6.9],
+    lastActiveLabel: "5 giờ trước",
+    status: "on_track",
+  },
+  {
+    id: "s8",
+    name: "Hoàng Gia Linh",
+    classId: "c2",
+    className: "Cấu trúc dữ liệu K22",
+    avgScore: 3.8,
+    completionPct: 22,
+    streakDays: 0,
+    trend: [4.5, 4.2, 4.0, 3.8],
+    lastActiveLabel: "10 ngày trước",
+    status: "absent",
+  },
+  {
+    id: "s9",
+    name: "Ngô Thảo My",
+    classId: "c3",
+    className: "Giải thuật nâng cao K20",
+    avgScore: 9.0,
+    completionPct: 95,
+    streakDays: 21,
+    trend: [8.6, 8.8, 8.9, 9.0],
+    lastActiveLabel: "30 phút trước",
+    status: "on_track",
+  },
+  {
+    id: "s10",
+    name: "Đặng Quốc Nam",
+    classId: "c3",
+    className: "Giải thuật nâng cao K20",
+    avgScore: 7.4,
+    completionPct: 71,
+    streakDays: 6,
+    trend: [7.0, 7.1, 7.3, 7.4],
+    lastActiveLabel: "4 giờ trước",
+    status: "on_track",
+  },
+  {
+    id: "s11",
+    name: "Trịnh Bảo Ngọc",
+    classId: "c3",
+    className: "Giải thuật nâng cao K20",
+    avgScore: 5.2,
+    completionPct: 38,
+    streakDays: 0,
+    trend: [6.4, 6.0, 5.6, 5.2],
+    lastActiveLabel: "Hôm qua",
+    status: "needs_support",
+  },
+  {
+    id: "s12",
+    name: "Lâm Thị Oanh",
+    classId: "c3",
+    className: "Giải thuật nâng cao K20",
+    avgScore: 6.6,
+    completionPct: 55,
+    streakDays: 3,
+    trend: [6.9, 6.8, 6.7, 6.6],
+    lastActiveLabel: "1 ngày trước",
+    status: "watch",
+  },
 ];
 
 const inviteCodes: Record<string, InviteCode[]> = {
@@ -76,8 +208,12 @@ const inviteCodes: Record<string, InviteCode[]> = {
     { id: "i1", code: "JAVA21-XK9F", expiresAtLabel: "Còn hạn tới 30/09/2026" },
     { id: "i2", code: "JAVA21-2T4M", expiresAtLabel: "Còn hạn tới 15/10/2026" },
   ],
-  c2: [{ id: "i3", code: "DSA22-7QWE", expiresAtLabel: "Còn hạn tới 05/10/2026" }],
-  c3: [{ id: "i4", code: "ALGO20-P0K1", expiresAtLabel: "Còn hạn tới 20/10/2026" }],
+  c2: [
+    { id: "i3", code: "DSA22-7QWE", expiresAtLabel: "Còn hạn tới 05/10/2026" },
+  ],
+  c3: [
+    { id: "i4", code: "ALGO20-P0K1", expiresAtLabel: "Còn hạn tới 20/10/2026" },
+  ],
 };
 let inviteSeq = 5;
 
@@ -91,16 +227,25 @@ function reasonFor(student: ClassStudent): string {
 }
 
 export function listInstructorClasses(): Promise<ClassSummary[]> {
-  return delay([...classes].sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1)));
+  return delay(
+    [...classes].sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1)),
+  );
 }
 
 export function listClassStudents(classId?: string): Promise<ClassStudent[]> {
-  const rows = classId ? students.filter((s) => s.classId === classId) : students;
+  const rows = classId
+    ? students.filter((s) => s.classId === classId)
+    : students;
   return delay([...rows]);
 }
 
-export function getClassStudent(studentId: string, classId: string): Promise<ClassStudent | null> {
-  return delay(students.find((s) => s.id === studentId && s.classId === classId) ?? null);
+export function getClassStudent(
+  studentId: string,
+  classId: string,
+): Promise<ClassStudent | null> {
+  return delay(
+    students.find((s) => s.id === studentId && s.classId === classId) ?? null,
+  );
 }
 
 export function listInviteCodes(classId: string): Promise<InviteCode[]> {
@@ -130,11 +275,20 @@ export function createClass(form: ClassForm): Promise<ClassSummary> {
     createdAt: new Date().toISOString().slice(0, 10),
   };
   classes.unshift(created);
-  inviteCodes[created.id] = [{ id: `i${inviteSeq++}`, code: `${form.name.slice(0, 4).toUpperCase()}-INIT`, expiresAtLabel: "Còn hạn 30 ngày" }];
+  inviteCodes[created.id] = [
+    {
+      id: `i${inviteSeq++}`,
+      code: `${form.name.slice(0, 4).toUpperCase()}-INIT`,
+      expiresAtLabel: "Còn hạn 30 ngày",
+    },
+  ];
   return delay(created);
 }
 
-export function updateClass(id: string, form: ClassForm): Promise<ClassSummary> {
+export function updateClass(
+  id: string,
+  form: ClassForm,
+): Promise<ClassSummary> {
   const target = classes.find((c) => c.id === id);
   if (!target) throw new Error("Lớp không tồn tại");
   target.name = form.name;
@@ -155,19 +309,34 @@ export function removeStudent(studentId: string): Promise<void> {
 }
 
 export function listClassAttention(classId?: string): Promise<AttentionItem[]> {
-  const scoped = classId ? students.filter((s) => s.classId === classId) : students;
+  const scoped = classId
+    ? students.filter((s) => s.classId === classId)
+    : students;
   const order: StudentStatus[] = ["absent", "needs_support", "watch"];
   const items = scoped
     .filter((s) => order.includes(s.status))
     .sort((a, b) => order.indexOf(a.status) - order.indexOf(b.status))
     .slice(0, 5)
-    .map((s) => ({ studentId: s.id, classId: s.classId, name: s.name, reason: reasonFor(s), status: s.status }));
+    .map((s) => ({
+      studentId: s.id,
+      classId: s.classId,
+      name: s.name,
+      reason: reasonFor(s),
+      status: s.status,
+    }));
   return delay(items);
 }
 
 export function classScoreTrend(classId?: string): Promise<ClassScoreTrend> {
   const scoped = classId ? classes.filter((c) => c.id === classId) : classes;
-  const weekLabels = ["Tuần 1", "Tuần 2", "Tuần 3", "Tuần 4", "Tuần 5", "Tuần 6"];
+  const weekLabels = [
+    "Tuần 1",
+    "Tuần 2",
+    "Tuần 3",
+    "Tuần 4",
+    "Tuần 5",
+    "Tuần 6",
+  ];
   const series = scoped.map((c, index) => ({
     classId: c.id,
     className: c.name,

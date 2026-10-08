@@ -14,7 +14,9 @@ export function VerdictDistributionBlock() {
       title={t("blocks.verdictDistribution")}
       isLoading={query.isLoading}
       isError={query.isError}
-      isEmpty={query.data ? query.data.slices.every((s) => s.value === 0) : false}
+      isEmpty={
+        query.data ? query.data.slices.every((s) => s.value === 0) : false
+      }
       onRetry={() => query.refetch()}
       emptyMessage={t("emptyGeneric")}
       errorMessage={t("errorGeneric")}

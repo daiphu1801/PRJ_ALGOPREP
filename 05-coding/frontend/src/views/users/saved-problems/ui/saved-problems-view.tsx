@@ -60,7 +60,9 @@ export function SavedProblemsView() {
     );
   }, [all, query, status, difficulty]);
 
-  const solvedCount = all.filter((problem) => problem.solveState === "solved").length;
+  const solvedCount = all.filter(
+    (problem) => problem.solveState === "solved",
+  ).length;
 
   function unsave(id: string) {
     // Bỏ lưu xoá luôn ghi chú riêng tư gắn với bookmark đó — REQ-04.
@@ -70,7 +72,11 @@ export function SavedProblemsView() {
 
   // The list filters live while typing (no toast per keystroke); Enter is the explicit search.
   function announceSearch() {
-    toast.info(filtered.length > 0 ? t("toast.searchResult", { count: filtered.length }) : t("toast.searchEmpty"));
+    toast.info(
+      filtered.length > 0
+        ? t("toast.searchResult", { count: filtered.length })
+        : t("toast.searchEmpty"),
+    );
   }
 
   const columns: DataTableColumn<SavedProblem>[] = [
@@ -79,11 +85,19 @@ export function SavedProblemsView() {
       header: t("table.colProblem"),
       render: (problem) => (
         <div className="min-w-0">
-          <Link href={`/problems/${problem.id}`} className="block truncate font-semibold hover:underline">
-            <span className="mr-1.5 font-mono text-xs text-[var(--color-text-muted)]">{problem.code}</span>
+          <Link
+            href={`/problems/${problem.id}`}
+            className="block truncate font-semibold hover:underline"
+          >
+            <span className="mr-1.5 font-mono text-xs text-[var(--color-text-muted)]">
+              {problem.code}
+            </span>
             {problem.title}
           </Link>
-          <Badge variant={problemLevelTone(levels, problem.difficulty)} className="mt-1">
+          <Badge
+            variant={problemLevelTone(levels, problem.difficulty)}
+            className="mt-1"
+          >
             {problemLevelLabel(levels, problem.difficulty)}
           </Badge>
         </div>
@@ -104,7 +118,9 @@ export function SavedProblemsView() {
       header: t("table.colState"),
       width: "108px",
       render: (problem) => (
-        <Badge variant={SOLVE_STATE_VARIANT[problem.solveState]}>{t(`state.${problem.solveState}`)}</Badge>
+        <Badge variant={SOLVE_STATE_VARIANT[problem.solveState]}>
+          {t(`state.${problem.solveState}`)}
+        </Badge>
       ),
     },
     {
@@ -121,7 +137,9 @@ export function SavedProblemsView() {
       header: t("table.colSavedAt"),
       width: "104px",
       render: (problem) => (
-        <span className="text-[12.5px] text-[var(--color-text-muted)]">{problem.savedAtLabel}</span>
+        <span className="text-[12.5px] text-[var(--color-text-muted)]">
+          {problem.savedAtLabel}
+        </span>
       ),
     },
     {
@@ -131,7 +149,12 @@ export function SavedProblemsView() {
       align: "right",
       render: (problem) => (
         <span className="flex justify-end gap-1.5">
-          <Button asChild variant="ghost" size="sm" className="border border-[var(--color-border)]">
+          <Button
+            asChild
+            variant="ghost"
+            size="sm"
+            className="border border-[var(--color-border)]"
+          >
             <Link href={`/problems/${problem.id}`}>{t("table.btnSolve")}</Link>
           </Button>
           <Button
@@ -149,7 +172,10 @@ export function SavedProblemsView() {
 
   return (
     <div className="p-6">
-      <PageHeader title={t("title")} description={t("subtitle", { total: all.length, solved: solvedCount })} />
+      <PageHeader
+        title={t("title")}
+        description={t("subtitle", { total: all.length, solved: solvedCount })}
+      />
 
       <div className="mb-4 grid gap-3.5 [grid-template-columns:repeat(auto-fit,minmax(160px,1fr))]">
         <StatCard label={t("summary.total")} value={String(all.length)} />
@@ -172,7 +198,10 @@ export function SavedProblemsView() {
             onValueChange={setDifficulty}
             options={[
               { value: "all", label: t("filter.all") },
-                            ...levels.map((level) => ({ value: level.key, label: level.label })),
+              ...levels.map((level) => ({
+                value: level.key,
+                label: level.label,
+              })),
             ]}
           />
           <FilterMenu
@@ -201,7 +230,9 @@ export function SavedProblemsView() {
           />
         )}
 
-        <p className="mt-3 text-[11.5px] text-[var(--color-text-subtle)]">{t("footerPrivacyNote")}</p>
+        <p className="mt-3 text-[11.5px] text-[var(--color-text-subtle)]">
+          {t("footerPrivacyNote")}
+        </p>
       </Card>
     </div>
   );

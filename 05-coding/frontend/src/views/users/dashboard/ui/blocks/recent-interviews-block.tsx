@@ -52,7 +52,10 @@ export function RecentInterviewsBlock() {
             </li>
           ))}
         </ul>
-        <Link href="/submissions" className="mt-2.5 inline-block text-[12.5px] font-semibold underline">
+        <Link
+          href="/submissions"
+          className="mt-2.5 inline-block text-[12.5px] font-semibold underline"
+        >
           {t("seeAll")}
         </Link>
       </div>

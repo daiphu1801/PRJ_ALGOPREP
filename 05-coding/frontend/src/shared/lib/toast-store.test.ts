@@ -11,7 +11,9 @@ describe("toast store", () => {
       toast.success("Saved");
       toast.error("Failed");
     });
-    expect(result.current.map((item) => [item.tone, item.message, item.durationMs])).toEqual([
+    expect(
+      result.current.map((item) => [item.tone, item.message, item.durationMs]),
+    ).toEqual([
       ["success", "Saved", 4000],
       ["error", "Failed", 7000],
     ]);
@@ -24,13 +26,17 @@ describe("toast store", () => {
       toast.info("Other");
       toast.error("Same");
     });
-    expect(result.current.map((item) => item.message)).toEqual(["Other", "Same"]);
+    expect(result.current.map((item) => item.message)).toEqual([
+      "Other",
+      "Same",
+    ]);
   });
 
   it("keeps only the newest toasts when over the cap", () => {
     const { result } = renderHook(() => useToasts());
     act(() => {
-      for (let index = 0; index < MAX_VISIBLE_TOASTS + 2; index++) toast.info(`m${index}`);
+      for (let index = 0; index < MAX_VISIBLE_TOASTS + 2; index++)
+        toast.info(`m${index}`);
     });
     expect(result.current).toHaveLength(MAX_VISIBLE_TOASTS);
     expect(result.current.at(-1)?.message).toBe(`m${MAX_VISIBLE_TOASTS + 1}`);

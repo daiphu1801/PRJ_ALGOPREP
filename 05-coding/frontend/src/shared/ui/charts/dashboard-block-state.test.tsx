@@ -1,6 +1,13 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 import { describe, expect, it, vi } from "vitest";
-import { act, fireEvent, render, renderHook, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { toast, useToasts } from "@/shared/lib/toast-store";
 import { DashboardBlockState } from "./dashboard-block-state";
 
@@ -18,7 +25,12 @@ describe("DashboardBlockState", () => {
 
   it("shows a skeleton while loading", () => {
     render(
-      <DashboardBlockState {...baseProps} isLoading isError={false} isEmpty={false}>
+      <DashboardBlockState
+        {...baseProps}
+        isLoading
+        isError={false}
+        isEmpty={false}
+      >
         <p>content</p>
       </DashboardBlockState>,
     );
@@ -27,7 +39,12 @@ describe("DashboardBlockState", () => {
 
   it("shows the error message and a retry action on error", () => {
     render(
-      <DashboardBlockState {...baseProps} isLoading={false} isError isEmpty={false}>
+      <DashboardBlockState
+        {...baseProps}
+        isLoading={false}
+        isError
+        isEmpty={false}
+      >
         <p>content</p>
       </DashboardBlockState>,
     );
@@ -37,7 +54,12 @@ describe("DashboardBlockState", () => {
 
   it("shows the empty message when there is no error and no data", () => {
     render(
-      <DashboardBlockState {...baseProps} isLoading={false} isError={false} isEmpty>
+      <DashboardBlockState
+        {...baseProps}
+        isLoading={false}
+        isError={false}
+        isEmpty
+      >
         <p>content</p>
       </DashboardBlockState>,
     );
@@ -46,7 +68,12 @@ describe("DashboardBlockState", () => {
 
   it("renders children on success", () => {
     render(
-      <DashboardBlockState {...baseProps} isLoading={false} isError={false} isEmpty={false}>
+      <DashboardBlockState
+        {...baseProps}
+        isLoading={false}
+        isError={false}
+        isEmpty={false}
+      >
         <p>content</p>
       </DashboardBlockState>,
     );
@@ -55,16 +82,27 @@ describe("DashboardBlockState", () => {
 
   it("toasts when a user-pressed retry fails again, and stays quiet when it succeeds", async () => {
     const toasts = renderHook(() => useToasts());
-    const onRetry = vi.fn().mockResolvedValueOnce({ isError: true }).mockResolvedValueOnce({ isError: false });
+    const onRetry = vi
+      .fn()
+      .mockResolvedValueOnce({ isError: true })
+      .mockResolvedValueOnce({ isError: false });
     render(
-      <DashboardBlockState {...baseProps} onRetry={onRetry} isLoading={false} isError isEmpty={false}>
+      <DashboardBlockState
+        {...baseProps}
+        onRetry={onRetry}
+        isLoading={false}
+        isError
+        isEmpty={false}
+      >
         <p>content</p>
       </DashboardBlockState>,
     );
 
     fireEvent.click(screen.getByRole("button", { name: "retry" }));
     await waitFor(() =>
-      expect(toasts.result.current.map((item) => [item.tone, item.message])).toEqual([["error", "error"]]),
+      expect(
+        toasts.result.current.map((item) => [item.tone, item.message]),
+      ).toEqual([["error", "error"]]),
     );
 
     act(() => toast.clear());

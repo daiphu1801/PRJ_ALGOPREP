@@ -6,7 +6,10 @@ import { usePathname } from "next/navigation";
 import { NavLink, ThemeLangSwitcher } from "@/shared/ui";
 import { useT } from "@/shared/i18n";
 import { cn } from "@/shared/lib";
-import { INSTRUCTOR_NAV_MAIN, INSTRUCTOR_NAV_MISC } from "../model/instructor-nav";
+import {
+  INSTRUCTOR_NAV_MAIN,
+  INSTRUCTOR_NAV_MISC,
+} from "../model/instructor-nav";
 
 /**
  * Layout follows 09-layoutBase/Giáo viên - Tổng quan.dc.html:63-121 — the same sidebar markup is
@@ -40,7 +43,9 @@ export function InstructorSidebar() {
   // Longest-prefix wins, not "every prefix match wins": a child route can sit under more than one
   // nav href, and a plain startsWith test lit up both at once.
   const activeHref = [...INSTRUCTOR_NAV_MAIN, ...INSTRUCTOR_NAV_MISC]
-    .filter((item) => pathname === item.href || pathname.startsWith(`${item.href}/`))
+    .filter(
+      (item) => pathname === item.href || pathname.startsWith(`${item.href}/`),
+    )
     .sort((a, b) => b.href.length - a.href.length)[0]?.href;
 
   const toggleCollapsed = () => {
@@ -68,17 +73,27 @@ export function InstructorSidebar() {
         effectiveCollapsed ? "w-[72px]" : "w-[244px]",
       )}
     >
-      <div className={cn("flex items-center gap-2 px-1 pb-1", effectiveCollapsed && "justify-center")}>
+      <div
+        className={cn(
+          "flex items-center gap-2 px-1 pb-1",
+          effectiveCollapsed && "justify-center",
+        )}
+      >
         <span
           aria-hidden="true"
           className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[9px] text-[13px] font-extrabold"
-          style={{ background: "var(--instructor-logo-bg)", color: "var(--instructor-logo-fg)" }}
+          style={{
+            background: "var(--instructor-logo-bg)",
+            color: "var(--instructor-logo-fg)",
+          }}
         >
           A
         </span>
         {!effectiveCollapsed && (
           <span className="min-w-0">
-            <span className="block text-[15px] font-extrabold tracking-tight">AlgoPrep</span>
+            <span className="block text-[15px] font-extrabold tracking-tight">
+              AlgoPrep
+            </span>
             {/* dc.html:69 — the eyebrow under the wordmark is what tells the two areas apart. */}
             <span className="block font-mono text-[9.5px] tracking-[0.16em] text-[var(--color-text-subtle)]">
               {t("areaEyebrow")}
@@ -112,7 +127,12 @@ export function InstructorSidebar() {
           />
         ))}
 
-        <div className={cn("mt-3 border-t border-[var(--color-border)] pt-2", effectiveCollapsed && "text-center")}>
+        <div
+          className={cn(
+            "mt-3 border-t border-[var(--color-border)] pt-2",
+            effectiveCollapsed && "text-center",
+          )}
+        >
           {!effectiveCollapsed && (
             <p className="px-3 pb-1 text-xs font-semibold tracking-wide text-[var(--color-text-subtle)] uppercase">
               {t("groupMisc")}

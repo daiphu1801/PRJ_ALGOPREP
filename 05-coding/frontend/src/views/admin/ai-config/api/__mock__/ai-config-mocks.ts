@@ -1,6 +1,10 @@
 // PROTOTYPE mock — no backend endpoint exists yet.
 // Values from 09-layoutBase/Admin - Cấu hình AI.dc.html:418-470.
-import type { AiConfigPage, PromptConfig, PromptVersionEntry } from "../../model/types";
+import type {
+  AiConfigPage,
+  PromptConfig,
+  PromptVersionEntry,
+} from "../../model/types";
 
 // dc.html:418-422.
 const PROMPTS: PromptConfig[] = [
@@ -40,11 +44,41 @@ const PROMPTS: PromptConfig[] = [
  * an open question (level C in 07-review/bd_screens_admin_open_questions_260913.md).
  */
 const VERSION_HISTORY: PromptVersionEntry[] = [
-  { id: "v-1", feature: "testcase", version: "v1.9", publishedAt: "20/08", author: "pdai" },
-  { id: "v-2", feature: "interview", version: "v2.5", publishedAt: "19/08", author: "pdai" },
-  { id: "v-3", feature: "interview", version: "v2.4", publishedAt: "12/08", author: "pdai" },
-  { id: "v-4", feature: "review", version: "v3.8", publishedAt: "11/08", author: "minhtri" },
-  { id: "v-5", feature: "review", version: "v3.7", publishedAt: "02/08", author: "pdai" },
+  {
+    id: "v-1",
+    feature: "testcase",
+    version: "v1.9",
+    publishedAt: "20/08",
+    author: "pdai",
+  },
+  {
+    id: "v-2",
+    feature: "interview",
+    version: "v2.5",
+    publishedAt: "19/08",
+    author: "pdai",
+  },
+  {
+    id: "v-3",
+    feature: "interview",
+    version: "v2.4",
+    publishedAt: "12/08",
+    author: "pdai",
+  },
+  {
+    id: "v-4",
+    feature: "review",
+    version: "v3.8",
+    publishedAt: "11/08",
+    author: "minhtri",
+  },
+  {
+    id: "v-5",
+    feature: "review",
+    version: "v3.7",
+    publishedAt: "02/08",
+    author: "pdai",
+  },
 ];
 
 export function fetchAiConfigPage(): AiConfigPage {

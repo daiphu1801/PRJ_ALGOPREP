@@ -27,7 +27,8 @@ const store = createManagedListStore<ProblemTopic>(
 
 export const useProblemTopics = store.use;
 export const addProblemTopic = (label: string) => store.add(label, {});
-export const renameProblemTopic = (key: string, label: string) => store.update(key, { label });
+export const renameProblemTopic = (key: string, label: string) =>
+  store.update(key, { label });
 export const moveProblemTopic = store.move;
 export const removeProblemTopic = store.remove;
 export const problemTopicLabel = labelOf;

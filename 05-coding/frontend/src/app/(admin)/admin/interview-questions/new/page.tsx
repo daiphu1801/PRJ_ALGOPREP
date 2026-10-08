@@ -2,6 +2,9 @@ import { InterviewQuestionAuthoringView } from "@/views/shared/interview-questio
 
 export default function Page() {
   return (
-    <InterviewQuestionAuthoringView questionId="new" listHref="/admin/interview-questions" />
+    <InterviewQuestionAuthoringView
+      questionId="new"
+      listHref="/admin/interview-questions"
+    />
   );
 }

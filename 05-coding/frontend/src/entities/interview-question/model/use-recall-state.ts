@@ -24,8 +24,12 @@ function buildInitialBookmarks(questions: InterviewQuestion[]): BookmarkMap {
 }
 
 export function useRecallAndBookmarkState(questions: InterviewQuestion[]) {
-  const [recall, setRecall] = useState<RecallMap>(() => buildInitialRecall(questions));
-  const [bookmarks, setBookmarks] = useState<BookmarkMap>(() => buildInitialBookmarks(questions));
+  const [recall, setRecall] = useState<RecallMap>(() =>
+    buildInitialRecall(questions),
+  );
+  const [bookmarks, setBookmarks] = useState<BookmarkMap>(() =>
+    buildInitialBookmarks(questions),
+  );
 
   const rate = useCallback((code: string, level: RecallLevel) => {
     setRecall((prev) => ({ ...prev, [code]: level }));

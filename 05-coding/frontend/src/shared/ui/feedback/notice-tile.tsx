@@ -53,7 +53,9 @@ export function NoticeTile({
     >
       <p className={cn("text-[13px] font-semibold", TONE[tone].fg)}>{title}</p>
       {children ? (
-        <p className="mt-0.5 text-[12.5px] text-pretty text-[var(--color-text-muted)]">{children}</p>
+        <p className="mt-0.5 text-[12.5px] text-pretty text-[var(--color-text-muted)]">
+          {children}
+        </p>
       ) : null}
     </div>
   );

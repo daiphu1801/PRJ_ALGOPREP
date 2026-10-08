@@ -34,9 +34,15 @@ export function ProgressBar({
       aria-valuemax={max}
       aria-valuenow={value}
       style={{ height }}
-      className={cn("overflow-hidden rounded-full bg-[var(--color-track)]", className)}
+      className={cn(
+        "overflow-hidden rounded-full bg-[var(--color-track)]",
+        className,
+      )}
     >
-      <div style={{ width: `${percent}%`, background: fill }} className="h-full rounded-full" />
+      <div
+        style={{ width: `${percent}%`, background: fill }}
+        className="h-full rounded-full"
+      />
     </div>
   );
 }

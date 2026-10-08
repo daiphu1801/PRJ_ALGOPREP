@@ -36,13 +36,27 @@ export function ChangePasswordDialog({
     <Modal
       open
       onClose={onClose}
-      title={hasPassword ? t("passwordDialog.titleChange") : t("passwordDialog.titleSet")}
+      title={
+        hasPassword
+          ? t("passwordDialog.titleChange")
+          : t("passwordDialog.titleSet")
+      }
       footer={
         <>
-          <Button variant="ghost" size="sm" onClick={onClose} disabled={isSubmitting}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onClose}
+            disabled={isSubmitting}
+          >
             {t("passwordDialog.cancel")}
           </Button>
-          <Button size="sm" onClick={() => void handleSubmit()} disabled={isSubmitting} aria-busy={isSubmitting || undefined}>
+          <Button
+            size="sm"
+            onClick={() => void handleSubmit()}
+            disabled={isSubmitting}
+            aria-busy={isSubmitting || undefined}
+          >
             {t("passwordDialog.confirm")}
           </Button>
         </>
@@ -75,7 +89,9 @@ export function ChangePasswordDialog({
           invalid={Boolean(fieldErrors.confirmPassword)}
           maxLength={128}
         />
-        <p className="text-xs text-[var(--color-text-subtle)]">{t("passwordDialog.ruleHint")}</p>
+        <p className="text-xs text-[var(--color-text-subtle)]">
+          {t("passwordDialog.ruleHint")}
+        </p>
       </div>
     </Modal>
   );

@@ -9,11 +9,23 @@
 // localStorage copy, so only a save made in this browser shows up.
 "use client";
 
-import { problemLevelLabel, problemLevelTone, useProblemDraft, useProblemLevels } from "@/entities/problem";
+import {
+  problemLevelLabel,
+  problemLevelTone,
+  useProblemDraft,
+  useProblemLevels,
+} from "@/entities/problem";
 import { isNotFound } from "@/shared/api";
 import { useT } from "@/shared/i18n";
-import { Badge, Card, EmptyState, ErrorState, MarkdownPreview, NoticeTile, Skeleton } from "@/shared/ui";
-
+import {
+  Badge,
+  Card,
+  EmptyState,
+  ErrorState,
+  MarkdownPreview,
+  NoticeTile,
+  Skeleton,
+} from "@/shared/ui";
 
 type Props = {
   /** Route param, e.g. "121". */
@@ -28,7 +40,10 @@ export function ProblemPreviewView({ problemId }: Props) {
 
   if (isNotFound(query.error)) return <EmptyState>{t("notFound")}</EmptyState>;
   if (query.isError) return <ErrorState>{t("loadFailed")}</ErrorState>;
-  if (!query.data) return <Skeleton className="mx-auto h-[320px] max-w-3xl" aria-busy="true" />;
+  if (!query.data)
+    return (
+      <Skeleton className="mx-auto h-[320px] max-w-3xl" aria-busy="true" />
+    );
   const { draft, savedAt } = query.data;
 
   return (
@@ -53,33 +68,47 @@ export function ProblemPreviewView({ problemId }: Props) {
         <p className="mt-4 mb-1.5 text-[11px] font-semibold tracking-[0.07em] text-[var(--color-text-subtle)] uppercase">
           {t("constraintsLabel")}
         </p>
-        <pre className="font-mono text-[12.5px] whitespace-pre-wrap">{draft.constraints}</pre>
+        <pre className="font-mono text-[12.5px] whitespace-pre-wrap">
+          {draft.constraints}
+        </pre>
 
         <p className="mt-4 mb-1.5 text-[11px] font-semibold tracking-[0.07em] text-[var(--color-text-subtle)] uppercase">
           {t("limitsTitle")}
         </p>
         <p className="text-[12.5px] text-[var(--color-text-muted)]">
-          {t("timeLimit")}: {draft.limits.timeLimitMs} ms · {t("memoryLimit")}: {draft.limits.memoryLimitMb} MB
+          {t("timeLimit")}: {draft.limits.timeLimitMs} ms · {t("memoryLimit")}:{" "}
+          {draft.limits.memoryLimitMb} MB
         </p>
       </Card>
 
       <Card title={t("examplesTitle")}>
         <ol className="flex flex-col gap-2.5">
           {draft.examples.map((example) => (
-            <li key={example.id} className="glass-surface rounded-2xl border border-[var(--color-border)] px-3.5 py-3">
+            <li
+              key={example.id}
+              className="glass-surface rounded-2xl border border-[var(--color-border)] px-3.5 py-3"
+            >
               <dl className="flex flex-col gap-1.5 text-[12.5px]">
                 <div className="flex gap-2">
-                  <dt className="w-20 shrink-0 text-[var(--color-text-subtle)]">{t("exampleInput")}</dt>
+                  <dt className="w-20 shrink-0 text-[var(--color-text-subtle)]">
+                    {t("exampleInput")}
+                  </dt>
                   <dd className="min-w-0 font-mono">{example.input}</dd>
                 </div>
                 <div className="flex gap-2">
-                  <dt className="w-20 shrink-0 text-[var(--color-text-subtle)]">{t("exampleOutput")}</dt>
+                  <dt className="w-20 shrink-0 text-[var(--color-text-subtle)]">
+                    {t("exampleOutput")}
+                  </dt>
                   <dd className="min-w-0 font-mono">{example.output}</dd>
                 </div>
                 {example.explanation ? (
                   <div className="flex gap-2">
-                    <dt className="w-20 shrink-0 text-[var(--color-text-subtle)]">{t("exampleExplanation")}</dt>
-                    <dd className="min-w-0 text-[var(--color-text-muted)]">{example.explanation}</dd>
+                    <dt className="w-20 shrink-0 text-[var(--color-text-subtle)]">
+                      {t("exampleExplanation")}
+                    </dt>
+                    <dd className="min-w-0 text-[var(--color-text-muted)]">
+                      {example.explanation}
+                    </dd>
                   </div>
                 ) : null}
               </dl>

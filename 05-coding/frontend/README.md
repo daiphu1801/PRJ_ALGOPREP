@@ -22,12 +22,12 @@ này.
 Route group tách layout theo actor; instructor và admin có **prefix URL thật** để
 `middleware.ts` guard được theo `/admin/:path*` và `/instructor/:path*`.
 
-| Khu vực | Route group | URL |
-| :--- | :--- | :--- |
-| Công khai | `app/(public)/` | `/login` · `/register` |
-| Người học | `app/(student)/` | `/problems` · `/submissions` · `/progress` · `/saved` · `/interview-bank` · `/profile` · `/settings` |
-| Giảng viên | `app/(instructor)/instructor/` | `/instructor/classes` · `/instructor/grading` · `/instructor/overview` · `/instructor/problems[/[id]]` · `/instructor/interview-questions` |
-| Quản trị | `app/(admin)/admin/` | `/admin/overview` · `/admin/users` · `/admin/queue` · `/admin/ai-config` · `/admin/problems[/[id]][/edit]` · `/admin/interview-questions[/[id]][/edit]` · ... |
+| Khu vực    | Route group                    | URL                                                                                                                                                           |
+| :--------- | :----------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Công khai  | `app/(public)/`                | `/login` · `/register`                                                                                                                                        |
+| Người học  | `app/(student)/`               | `/problems` · `/submissions` · `/progress` · `/saved` · `/interview-bank` · `/profile` · `/settings`                                                          |
+| Giảng viên | `app/(instructor)/instructor/` | `/instructor/classes` · `/instructor/grading` · `/instructor/overview` · `/instructor/problems[/[id]]` · `/instructor/interview-questions`                    |
+| Quản trị   | `app/(admin)/admin/`           | `/admin/overview` · `/admin/users` · `/admin/queue` · `/admin/ai-config` · `/admin/problems[/[id]][/edit]` · `/admin/interview-questions[/[id]][/edit]` · ... |
 
 Role bắt buộc theo khu vực: `entities/user/model/area.ts` → `ROLE_BY_AREA`. **`middleware.ts`
 phải đọc map đó**, không viết lại — hai chỗ lệch nhau là một khu vực hở quyền không thấy trong
@@ -46,23 +46,23 @@ Slug trong `01-rd/screens/` là `snake_case`, slice FSD là `kebab-case`, URL ng
 màn. Bảng này giữ chuỗi tra ngược `01-rd → 02-bd → 03-dd → code` (luật chống trôi,
 `SYS0201_codebase_structure.md` mục 3):
 
-| Slug tài liệu | Slice `views/` | URL |
-| :--- | :--- | :--- |
-| `problem_list` | `problem-list` | `/problems` |
-| `my_progress` | `my-progress` | `/progress` |
-| `my_submissions` | `my-submissions` | `/submissions` |
-| `saved_problems` | `saved-problems` | `/saved` |
-| `interview_bank_list` | `interview-bank-list` | `/interview-bank` |
-| `admin_user_management` | `admin-user-management` | `/admin/users` |
-| `admin_queue_monitor` | `admin-queue-monitor` | `/admin/queue` |
-| `problem_management` | `problem-management` | `/admin/problems`, `/instructor/problems` |
-| `problem_authoring` | `problem-authoring` | `/admin/problems/[problemId]/edit`, `/admin/problems/new`; `/instructor/problems/[problemId]/edit`, `/instructor/problems/new` |
-| `problem_info` | `problem-info` | `/admin/problems/[problemId]`, `/instructor/problems/[problemId]` (trang chi tiết chỉ đọc, thêm 2026-10-02) |
-| `interview_question_management` | `interview-question-management` | `/admin/interview-questions`, `/instructor/interview-questions` |
-| `class_assignments` | `class-assignments` | `/instructor/assignments` |
-| `class_student_detail` | `class-student-detail` | `/instructor/classes/[classId]/students/[studentId]` |
-| `interview_question_authoring` | `interview-question-authoring` | `/admin/interview-questions/[questionId]/edit`, `/admin/interview-questions/new`; `/instructor/interview-questions/[questionId]/edit`, `/instructor/interview-questions/new` |
-| `interview_question_info` | `interview-question-info` | `/admin/interview-questions/[questionId]`, `/instructor/interview-questions/[questionId]` (trang chi tiết chỉ đọc, thêm 2026-10-02) |
+| Slug tài liệu                   | Slice `views/`                  | URL                                                                                                                                                                          |
+| :------------------------------ | :------------------------------ | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `problem_list`                  | `problem-list`                  | `/problems`                                                                                                                                                                  |
+| `my_progress`                   | `my-progress`                   | `/progress`                                                                                                                                                                  |
+| `my_submissions`                | `my-submissions`                | `/submissions`                                                                                                                                                               |
+| `saved_problems`                | `saved-problems`                | `/saved`                                                                                                                                                                     |
+| `interview_bank_list`           | `interview-bank-list`           | `/interview-bank`                                                                                                                                                            |
+| `admin_user_management`         | `admin-user-management`         | `/admin/users`                                                                                                                                                               |
+| `admin_queue_monitor`           | `admin-queue-monitor`           | `/admin/queue`                                                                                                                                                               |
+| `problem_management`            | `problem-management`            | `/admin/problems`, `/instructor/problems`                                                                                                                                    |
+| `problem_authoring`             | `problem-authoring`             | `/admin/problems/[problemId]/edit`, `/admin/problems/new`; `/instructor/problems/[problemId]/edit`, `/instructor/problems/new`                                               |
+| `problem_info`                  | `problem-info`                  | `/admin/problems/[problemId]`, `/instructor/problems/[problemId]` (trang chi tiết chỉ đọc, thêm 2026-10-02)                                                                  |
+| `interview_question_management` | `interview-question-management` | `/admin/interview-questions`, `/instructor/interview-questions`                                                                                                              |
+| `class_assignments`             | `class-assignments`             | `/instructor/assignments`                                                                                                                                                    |
+| `class_student_detail`          | `class-student-detail`          | `/instructor/classes/[classId]/students/[studentId]`                                                                                                                         |
+| `interview_question_authoring`  | `interview-question-authoring`  | `/admin/interview-questions/[questionId]/edit`, `/admin/interview-questions/new`; `/instructor/interview-questions/[questionId]/edit`, `/instructor/interview-questions/new` |
+| `interview_question_info`       | `interview-question-info`       | `/admin/interview-questions/[questionId]`, `/instructor/interview-questions/[questionId]` (trang chi tiết chỉ đọc, thêm 2026-10-02)                                          |
 
 ### Tách trang chi tiết và trang sửa (2026-10-02)
 
@@ -76,11 +76,11 @@ soạn và chi tiết nhận prop `basePath` (gốc của khu vực) nên không
 Đợt base 2026-08-25 thiếu `class_assignments` (RD của nó vào cùng commit với base mà không có slice), còn
 `class_student_detail` và `interview_question_authoring` có RD sau đó. Cả ba đã thêm ngày 2026-09-01.
 
-| Màn | URL đến từ đâu |
-| :--- | :--- |
-| `interview_question_authoring` | **RD chốt** — `01-rd/screens/shared/SHR0302_interview_question_authoring.md:14`, Câu hỏi mở Q6 đóng 2026-09-01 |
-| `class_assignments` | **Khung base tự chọn** `/instructor/assignments`. RD chỉ chốt nó là một mục nav độc lập trong sidebar giáo viên (`DEC-2026-0828-split-class-management-assignments`), không chốt URL. Chọn theo khuôn mẫu `/instructor/<danh-từ>` của các màn còn lại — **xác nhận lại khi viết DD** |
-| `class_student_detail` | **Khung base tự chọn** `/instructor/classes/[classId]/students/[studentId]`. RD chốt đây là màn/route riêng chứ không phải expand row (`class_student_detail.md:22-26`), không chốt URL. Chọn theo khuôn mẫu route lồng đã có của `class_progress` (`/instructor/classes/[classId]/progress`) — **xác nhận lại khi viết DD** |
+| Màn                            | URL đến từ đâu                                                                                                                                                                                                                                                                                                               |
+| :----------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `interview_question_authoring` | **RD chốt** — `01-rd/screens/shared/SHR0302_interview_question_authoring.md:14`, Câu hỏi mở Q6 đóng 2026-09-01                                                                                                                                                                                                               |
+| `class_assignments`            | **Khung base tự chọn** `/instructor/assignments`. RD chỉ chốt nó là một mục nav độc lập trong sidebar giáo viên (`DEC-2026-0828-split-class-management-assignments`), không chốt URL. Chọn theo khuôn mẫu `/instructor/<danh-từ>` của các màn còn lại — **xác nhận lại khi viết DD**                                         |
+| `class_student_detail`         | **Khung base tự chọn** `/instructor/classes/[classId]/students/[studentId]`. RD chốt đây là màn/route riêng chứ không phải expand row (`class_student_detail.md:22-26`), không chốt URL. Chọn theo khuôn mẫu route lồng đã có của `class_progress` (`/instructor/classes/[classId]/progress`) — **xác nhận lại khi viết DD** |
 
 Các màn còn lại: URL trùng tên slice. `problem_management`, `problem_authoring`,
 `interview_question_management` đều thuộc `01-rd/screens/shared/` (mục 7.0 của
@@ -116,27 +116,27 @@ route mà `.next` còn cũ thì `tsc` báo lỗi module không tồn tại cho r
 
 Quyết định: `DEC-2026-1003-toast-feedback-channel`. Kết quả thao tác và lỗi nhập liệu **không hiện thành chữ trên trang**, chỉ hiện bằng toast.
 
-| Việc | Cách làm |
-| :--- | :--- |
-| Báo kết quả | `import { toast } from "@/shared/lib/toast-store"` rồi `toast.success(t("..."))`, tương tự `error`, `warning`, `info`. Truyền **chuỗi đã dịch** |
-| Báo lỗi nhập liệu | Đặt `invalid` lên `TextField` / `TextArea` (viền đỏ và `aria-invalid`, không có chữ) và gọi `toastFirstError([...])` để chỉ bắn **một** toast |
-| Hiển thị | `shared/ui/toaster.tsx`, gắn một lần ở `app/providers`, nên phủ Admin, Giảng viên, Người học và màn đăng nhập. Góc phải-trên, tối đa 4 cái, tự tắt (success và info 4 giây, error và warning 7 giây), rê chuột hoặc focus thì dừng đếm, có nút `×`. Chuyển động (trượt vào có nảy nhẹ, trượt ra rồi thu gọn hàng, thanh tiến độ chạy ngược) nằm trong `globals.css` dưới `prefers-reduced-motion`, người tắt chuyển động thì thẻ chỉ hiện và mất |
-| Nút bị chặn | `aria-disabled` thay cho `disabled` (trông như bị khoá, `Button` có kiểu sẵn), và `onClick` bắn `toast.warning(lý do)`. Chỉ giữ `disabled` thật khi cần chặn bấm đúp lúc đang gửi |
-| Thử lại vẫn lỗi | `DashboardBlockState` tự toast lỗi khi `onRetry` trả về kết quả `isError`; lỗi tải lần đầu không toast |
-| Hook không có `t` | Trả về khoá i18n (xem `useAuthFlow`, `useChangePassword`), nơi có `t` dịch rồi bắn toast |
-| Kiểm thử | `renderHook(() => useToasts())` và `act(() => toast.clear())` (xem `shared/ui/params-dialog.test.tsx`) |
+| Việc              | Cách làm                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| :---------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Báo kết quả       | `import { toast } from "@/shared/lib/toast-store"` rồi `toast.success(t("..."))`, tương tự `error`, `warning`, `info`. Truyền **chuỗi đã dịch**                                                                                                                                                                                                                                                                                                  |
+| Báo lỗi nhập liệu | Đặt `invalid` lên `TextField` / `TextArea` (viền đỏ và `aria-invalid`, không có chữ) và gọi `toastFirstError([...])` để chỉ bắn **một** toast                                                                                                                                                                                                                                                                                                    |
+| Hiển thị          | `shared/ui/toaster.tsx`, gắn một lần ở `app/providers`, nên phủ Admin, Giảng viên, Người học và màn đăng nhập. Góc phải-trên, tối đa 4 cái, tự tắt (success và info 4 giây, error và warning 7 giây), rê chuột hoặc focus thì dừng đếm, có nút `×`. Chuyển động (trượt vào có nảy nhẹ, trượt ra rồi thu gọn hàng, thanh tiến độ chạy ngược) nằm trong `globals.css` dưới `prefers-reduced-motion`, người tắt chuyển động thì thẻ chỉ hiện và mất |
+| Nút bị chặn       | `aria-disabled` thay cho `disabled` (trông như bị khoá, `Button` có kiểu sẵn), và `onClick` bắn `toast.warning(lý do)`. Chỉ giữ `disabled` thật khi cần chặn bấm đúp lúc đang gửi                                                                                                                                                                                                                                                                |
+| Thử lại vẫn lỗi   | `DashboardBlockState` tự toast lỗi khi `onRetry` trả về kết quả `isError`; lỗi tải lần đầu không toast                                                                                                                                                                                                                                                                                                                                           |
+| Hook không có `t` | Trả về khoá i18n (xem `useAuthFlow`, `useChangePassword`), nơi có `t` dịch rồi bắn toast                                                                                                                                                                                                                                                                                                                                                         |
+| Kiểm thử          | `renderHook(() => useToasts())` và `act(() => toast.clear())` (xem `shared/ui/params-dialog.test.tsx`)                                                                                                                                                                                                                                                                                                                                           |
 
 Giữ nguyên, không phải thông báo: nội dung giải thích trạng thái trang (`NoticeTile` nêu lý do một nút bị khoá), vùng thay chỗ nội dung khi tải lỗi hoặc rỗng (`ErrorState`, `EmptyState`, khối dashboard), nhãn và gợi ý tĩnh.
 
 ## Điều ESLint chặn thật (không phải quy ước)
 
-| Luật | Cơ chế |
-| :--- | :--- |
-| Chiều import FSD một hướng | `boundaries/element-types` — đã kiểm bằng 3 chiều sai, đều đỏ |
-| Public API Rule (không deep import slice) | `no-restricted-imports` patterns — `@/entities/user/model/types` đỏ, `@/entities/user` xanh |
-| Không import `next-intl` ngoài `shared/i18n` | `no-restricted-imports` paths |
-| Không import `dompurify` trực tiếp | `no-restricted-imports` paths |
-| Key dịch phải có ở cả `vi.json` và `en.json` | `shared/i18n/messages.test.ts` |
+| Luật                                         | Cơ chế                                                                                      |
+| :------------------------------------------- | :------------------------------------------------------------------------------------------ |
+| Chiều import FSD một hướng                   | `boundaries/element-types` — đã kiểm bằng 3 chiều sai, đều đỏ                               |
+| Public API Rule (không deep import slice)    | `no-restricted-imports` patterns — `@/entities/user/model/types` đỏ, `@/entities/user` xanh |
+| Không import `next-intl` ngoài `shared/i18n` | `no-restricted-imports` paths                                                               |
+| Không import `dompurify` trực tiếp           | `no-restricted-imports` paths                                                               |
+| Key dịch phải có ở cả `vi.json` và `en.json` | `shared/i18n/messages.test.ts`                                                              |
 
 `shared/` được miễn luật Public API vì nó chia theo segment kỹ thuật, không có slice —
 `shared/i18n/server` là entry point hợp lệ.
@@ -157,10 +157,10 @@ Giữ nguyên, không phải thông báo: nội dung giải thích trạng thái
 
 ## Nợ kỹ thuật đã biết
 
-| # | Nợ | Gỡ khi |
-| :-: | :--- | :--- |
-| 1 | ~~`HOME_PATH_BY_ROLE.ADMIN` trỏ tạm `/admin/queue`~~ — **đã gỡ 2026-08-25**, trỏ `/admin/overview` (`admin_overview` đã có RD) | Đã xong |
-| 2 | 27/28 view là placeholder chỉ có tiêu đề + một dòng chờ BD | Có `02-bd/screens/<màn>.md` |
-| 3 | `shared/api` chỉ có `get`/`post` | Khi DD cần `put`/`patch`/`delete` |
-| 4 | Chưa có mapper/zod nào (Anti-Corruption Layer) | Khi có endpoint thật đầu tiên |
-| 5 | Ba route dùng chung (`problems`, `problems/[id]`, `interview-questions`) chưa có cơ chế lọc phạm vi dữ liệu theo role (A2 chỉ thấy bài của mình) — chỉ mount đúng view ở đúng URL, chưa gọi API thật | Khi có `03-dd/api/problem-bank.md` + `interview-bank.md` và middleware đọc ma trận quyền |
+|  #  | Nợ                                                                                                                                                                                                   | Gỡ khi                                                                                   |
+| :-: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------- |
+|  1  | ~~`HOME_PATH_BY_ROLE.ADMIN` trỏ tạm `/admin/queue`~~ — **đã gỡ 2026-08-25**, trỏ `/admin/overview` (`admin_overview` đã có RD)                                                                       | Đã xong                                                                                  |
+|  2  | 27/28 view là placeholder chỉ có tiêu đề + một dòng chờ BD                                                                                                                                           | Có `02-bd/screens/<màn>.md`                                                              |
+|  3  | `shared/api` chỉ có `get`/`post`                                                                                                                                                                     | Khi DD cần `put`/`patch`/`delete`                                                        |
+|  4  | Chưa có mapper/zod nào (Anti-Corruption Layer)                                                                                                                                                       | Khi có endpoint thật đầu tiên                                                            |
+|  5  | Ba route dùng chung (`problems`, `problems/[id]`, `interview-questions`) chưa có cơ chế lọc phạm vi dữ liệu theo role (A2 chỉ thấy bài của mình) — chỉ mount đúng view ở đúng URL, chưa gọi API thật | Khi có `03-dd/api/problem-bank.md` + `interview-bank.md` và middleware đọc ma trận quyền |

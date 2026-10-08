@@ -57,7 +57,9 @@ describe("useAuthFlow", () => {
       await result.current.quickLogin("admin");
     });
 
-    await waitFor(() => expect(push).toHaveBeenCalledWith("/admin/overview"), { timeout: 5000 });
+    await waitFor(() => expect(push).toHaveBeenCalledWith("/admin/overview"), {
+      timeout: 5000,
+    });
     expect(result.current.mode).toBe("login");
     expect(result.current.fields.identifier).toBe("admin");
   });

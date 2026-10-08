@@ -24,12 +24,16 @@ describe("admin-dashboard mocks", () => {
   });
 
   it("difficulty breakdown carries one row per seed level key", async () => {
-    const data = difficultyBreakdownSchema.parse(await fakeDifficultyBreakdown());
+    const data = difficultyBreakdownSchema.parse(
+      await fakeDifficultyBreakdown(),
+    );
     expect(data.levels.map((l) => l.key)).toEqual(["EASY", "MEDIUM", "HARD"]);
   });
 
   it("chart groups follow the level list: seed numbers kept, unknown level gets zero bars", async () => {
-    const data = difficultyBreakdownSchema.parse(await fakeDifficultyBreakdown());
+    const data = difficultyBreakdownSchema.parse(
+      await fakeDifficultyBreakdown(),
+    );
     const levels: readonly ProblemLevel[] = [
       { key: "EASY", label: "Dễ", tone: "success" },
       { key: "EXTRA", label: "Rất khó", tone: "neutral" },

@@ -9,7 +9,8 @@
 export type ReviewDifficulty = string;
 
 /** Screen states from BD Sheet 5 Khu vực I — mutually exclusive. */
-export type SolutionReviewStatus = "loading" | "ready" | "errorTransient" | "errorBudgetLocked";
+export type SolutionReviewStatus =
+  "loading" | "ready" | "errorTransient" | "errorBudgetLocked";
 
 export type ComplexityAnalysis = {
   actualTime: string;
@@ -22,11 +23,7 @@ export type ComplexityAnalysis = {
 
 /** 5 fixed rubric criteria, BD Sheet 5 Khu vực E — codes are [SoT: Suy luận], admin-configurable. */
 export type RubricCriterionCode =
-  | "correctness"
-  | "performance"
-  | "cleanCode"
-  | "scalability"
-  | "dataStructure";
+  "correctness" | "performance" | "cleanCode" | "scalability" | "dataStructure";
 
 export type RubricCriterionScore = {
   code: RubricCriterionCode;

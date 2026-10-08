@@ -14,9 +14,15 @@ export function AccountCard({ profile }: { profile: UserProfile | undefined }) {
     <Card title={t("account.title")}>
       <dl className="flex flex-col gap-2 text-sm">
         <Row label={t("account.joinedAt")}>
-          {profile ? new Date(profile.joinedAt).toLocaleDateString("vi-VN") : <Skeleton className="h-4 w-20" />}
+          {profile ? (
+            new Date(profile.joinedAt).toLocaleDateString("vi-VN")
+          ) : (
+            <Skeleton className="h-4 w-20" />
+          )}
         </Row>
-        <Row label={t("account.role")}>{profile ? profile.roleName : <Skeleton className="h-4 w-20" />}</Row>
+        <Row label={t("account.role")}>
+          {profile ? profile.roleName : <Skeleton className="h-4 w-20" />}
+        </Row>
       </dl>
     </Card>
   );

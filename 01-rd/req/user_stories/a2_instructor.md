@@ -155,14 +155,14 @@ màn, để phát hiện sớm học viên tụt lại mà không phải mở t�
 
 ### US-A2-10: Soạn và bảo trì ngân hàng câu hỏi phỏng vấn dùng chung
 
-Là **giảng viên hoặc quản trị viên**, tôi muốn tạo, sửa, nhân bản và xoá câu hỏi trong ngân hàng câu hỏi
+Là **giảng viên hoặc quản trị viên**, tôi muốn tạo, sửa, xoá và nhập theo lô bằng CSV câu hỏi trong ngân hàng câu hỏi
 phỏng vấn dùng chung, để có nội dung cho học viên học và luyện (F6-13, bổ sung 2026-08-30, gác bởi Function
 `INTERVIEW_BANK_MANAGEMENT`).
 
 - **Cho** tôi có quyền `INTERVIEW_BANK_MANAGEMENT`, **Khi** tôi tạo một câu hỏi mới, **Thì** tôi khai báo
   được nội dung, phân loại (chủ đề/cấp độ), danh sách câu hỏi đào sâu, và bộ tiêu chí đánh giá có trọng số ở
   một màn soạn riêng (F6-13).
-- **Cho** một câu hỏi đã có, **Khi** tôi sửa hoặc nhân bản, **Thì** thao tác được ghi vào Nhật ký hệ thống
+- **Cho** một câu hỏi đã có, **Khi** tôi sửa, xoá hoặc nhập CSV, **Thì** thao tác được ghi vào Nhật ký hệ thống
   kèm ai làm, làm gì, lúc nào (F6-13, F1-14).
 - **Cho** một câu hỏi thiếu bộ tiêu chí đánh giá, **Khi** học viên mở Chế độ luyện cho câu hỏi đó, **Thì**
   câu hỏi bị ẩn khỏi Chế độ luyện (vẫn hiện ở Chế độ học), vì AI không có mốc đối chiếu để chấm (F6-13,

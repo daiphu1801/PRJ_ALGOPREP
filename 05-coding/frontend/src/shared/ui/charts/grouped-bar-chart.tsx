@@ -6,7 +6,13 @@
 type Bar = { label: string; value: number; colorVar: string };
 type Group = { label: string; bars: Bar[] };
 
-export function GroupedBarChart({ groups, legend }: { groups: Group[]; legend: Bar[] }) {
+export function GroupedBarChart({
+  groups,
+  legend,
+}: {
+  groups: Group[];
+  legend: Bar[];
+}) {
   const max = Math.max(...groups.flatMap((g) => g.bars.map((b) => b.value)), 1);
 
   return (
@@ -14,25 +20,38 @@ export function GroupedBarChart({ groups, legend }: { groups: Group[]; legend: B
       <div className="mb-3 flex flex-wrap gap-3 text-xs text-[var(--color-text-muted)]">
         {legend.map((item) => (
           <span key={item.label} className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full" style={{ background: `var(${item.colorVar})` }} aria-hidden="true" />
+            <span
+              className="h-2 w-2 rounded-full"
+              style={{ background: `var(${item.colorVar})` }}
+              aria-hidden="true"
+            />
             {item.label}
           </span>
         ))}
       </div>
       <div className="flex h-24 items-end justify-around gap-3">
         {groups.map((group) => (
-          <div key={group.label} className="flex flex-1 flex-col items-center gap-1">
+          <div
+            key={group.label}
+            className="flex flex-1 flex-col items-center gap-1"
+          >
             <div className="flex h-16 items-end gap-1">
               {group.bars.map((bar) => (
                 <div
                   key={bar.label}
                   className="w-3 rounded-t-sm"
-                  style={{ height: `${(bar.value / max) * 100}%`, background: `var(${bar.colorVar})`, minHeight: 2 }}
+                  style={{
+                    height: `${(bar.value / max) * 100}%`,
+                    background: `var(${bar.colorVar})`,
+                    minHeight: 2,
+                  }}
                   title={`${bar.label}: ${bar.value}`}
                 />
               ))}
             </div>
-            <span className="text-xs text-[var(--color-text-muted)]">{group.label}</span>
+            <span className="text-xs text-[var(--color-text-muted)]">
+              {group.label}
+            </span>
           </div>
         ))}
       </div>

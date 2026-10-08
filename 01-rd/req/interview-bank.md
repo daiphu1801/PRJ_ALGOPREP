@@ -38,7 +38,7 @@ Màn hình độc lập, không gắn với bài nộp code (`README.md` mục 4
   xếp lịch** câu hỏi nào nên hiện lại sớm hơn trong danh sách "cần ôn lại" (F6-09) — thuật toán cụ thể (kiểu
   SM-2 đơn giản: khoảng cách ôn lại tăng dần nếu tự chấm tốt, rút ngắn lại nếu tự chấm kém) `[SoT: Suy
   luận]`, chốt công thức chính xác khi viết DD cho F6.
-- **F6-13 — Quản trị nội dung ngân hàng câu hỏi phỏng vấn dùng chung: tạo, sửa, nhân bản, xoá** — trả lời
+- **F6-13 — Quản trị nội dung ngân hàng câu hỏi phỏng vấn dùng chung: tạo, sửa, xoá, nhập CSV** — trả lời
   Câu hỏi mở Q2 (và gói theo Q3, Q4, Q5, Q7) của
   `01-rd/screens/shared/SHR0301_interview_question_management.md`. **Chốt 2026-08-30 (owner instruction):**
   - Actor A2 và A3, gác bởi Function `INTERVIEW_BANK_MANAGEMENT` (F1-12) cùng F6-12 — phạm vi theo quyền,
@@ -55,13 +55,13 @@ Màn hình độc lập, không gắn với bài nộp code (`README.md` mục 4
     quá nặng cho modal. Slug `interview_question_authoring`, RD ở
     `01-rd/screens/shared/SHR0302_interview_question_authoring.md` (viết 2026-09-01), chưa có prototype minh hoạ
     **[Đợi nextjs]**.
-  - **Nhập CSV theo lô: ngoài phạm vi bản đầu** — không cấp mã, giữ nút ở mức tham khảo, không cam kết hiện
-    thực trong đồ án này.
+  - **Nhập CSV theo lô: làm thật từ 2026-10-08 (owner, đảo lại quyết định 2026-08-30)** — thuộc F6-13; hệ thống kiểm
+    từng dòng, thêm dòng hợp lệ, liệt kê dòng lỗi. **"Nhân bản" bỏ khỏi F6-13 cùng ngày (owner).**
   - **4 thẻ chỉ số chất lượng nội dung** (tổng câu hỏi, thiếu rubric, điểm trung bình 30 ngày, chưa dùng lần
     nào) là **dẫn xuất trình bày** từ dữ liệu đã có, không cần mã riêng.
   - **Câu hỏi thiếu tiêu chí đánh giá:** vẫn hiện ở Chế độ học, nhưng **ẩn khỏi Chế độ luyện** (F6-08) vì AI
     không có mốc đối chiếu để chấm.
   - **Xoá câu hỏi: xoá mềm** — đánh dấu ngừng dùng, ẩn khỏi mọi màn phía học viên; phiên phỏng vấn đã dùng
     câu hỏi đó trước khi xoá vẫn giữ nguyên bản ghi cũ, không cascade xoá.
-  - **Mọi thao tác thêm/sửa/nhân bản/xoá ghi vào Nhật ký hệ thống** (F1-14) — đúng phạm vi "hành động quản
+  - **Mọi thao tác thêm/sửa/xoá và nhập CSV ghi vào Nhật ký hệ thống** (F1-14) — đúng phạm vi "hành động quản
     trị của người", cùng nhóm với các thao tác quản trị khác đã liệt kê ở F1-14.

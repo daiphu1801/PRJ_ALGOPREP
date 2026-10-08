@@ -44,14 +44,18 @@ export async function AdminToolbar() {
           matches the prototype without inventing a specific fake person's name. */}
       <div className="ml-2 flex items-center gap-2">
         <span
-          className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--color-primary)] text-xs font-semibold text-[var(--color-on-primary)]"
+          className="flex h-8 w-8 items-center justify-center rounded-full bg-[image:var(--color-cta-bg)] text-xs font-semibold text-[var(--color-cta-fg)]"
           aria-hidden="true"
         >
           A
         </span>
         <div className="leading-tight">
-          <p className="text-[12.5px] font-bold text-[var(--color-text)]">{t("identityNamePlaceholder")}</p>
-          <p className="text-[11px] text-[var(--color-text-muted)]">{t("adminIdentityPlaceholder")}</p>
+          <p className="text-[12.5px] font-bold text-[var(--color-text)]">
+            {t("identityNamePlaceholder")}
+          </p>
+          <p className="text-[11px] text-[var(--color-text-muted)]">
+            {t("adminIdentityPlaceholder")}
+          </p>
         </div>
       </div>
     </div>

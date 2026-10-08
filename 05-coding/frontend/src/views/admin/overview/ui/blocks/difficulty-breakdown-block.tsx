@@ -18,13 +18,19 @@ export function DifficultyBreakdownBlock() {
       title={t("blocks.difficultyBreakdown")}
       isLoading={query.isLoading}
       isError={query.isError}
-      isEmpty={query.data ? groups.every((g) => g.bars.every((b) => b.value === 0)) : false}
+      isEmpty={
+        query.data
+          ? groups.every((g) => g.bars.every((b) => b.value === 0))
+          : false
+      }
       onRetry={() => query.refetch()}
       emptyMessage={t("emptyGeneric")}
       errorMessage={t("errorGeneric")}
       retryLabel={t("retry")}
     >
-      {query.data && <GroupedBarChart groups={groups} legend={query.data.legend} />}
+      {query.data && (
+        <GroupedBarChart groups={groups} legend={query.data.legend} />
+      )}
     </DashboardBlockState>
   );
 }

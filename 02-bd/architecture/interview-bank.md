@@ -53,7 +53,7 @@ lời, tiêu chí, rubric) — không có file lớn hay nhị phân trong phạ
 | Tự chấm mức độ thuộc bài (spaced repetition) | F6-12 | Ba mức Biết rõ/Mơ hồ/Quên, tự xếp lịch ôn lại — mục 6 |
 | Quản trị danh mục chủ đề | F6-01 (mở rộng) | `DEC-2026-1001-admin-configurable-settings` — **chỉ ADMIN (A3)** thêm, đổi tên, sắp xếp lại, xoá chủ đề; A2 chỉ chọn. Xem mục 2.1 |
 | Quản trị danh mục độ khó | F6-01 (mở rộng) | `DEC-2026-1001-admin-configurable-settings` mục 6 (2026-10-03) — **chỉ ADMIN (A3)** thêm, đổi tên, sắp xếp lại, xoá độ khó; A2 chỉ chọn; luôn còn ít nhất một mức. Xem mục 2.1a |
-| Quản trị nội dung ngân hàng câu hỏi | F6-13 | `DEC-2026-0830-interview-bank-crud` — actor A2/A3, **cùng phạm vi dữ liệu, sửa được toàn bộ ngân hàng câu hỏi hệ thống** (đã đóng 2026-09-13, xem mục 2.2), tạo/sửa/nhân bản/xoá mềm, gác bởi Function `INTERVIEW_BANK_MANAGEMENT` (F1-12) |
+| Quản trị nội dung ngân hàng câu hỏi | F6-13 | `DEC-2026-0830-interview-bank-crud` — actor A2/A3, **cùng phạm vi dữ liệu, sửa được toàn bộ ngân hàng câu hỏi hệ thống** (đã đóng 2026-09-13, xem mục 2.2), tạo/sửa/xoá mềm (nhân bản bỏ 2026-10-08), gác bởi Function `INTERVIEW_BANK_MANAGEMENT` (F1-12) |
 | **Đã cắt khỏi phạm vi — KHÔNG thiết kế lại** | F6-11 | "Bộ câu hỏi riêng theo lớp" — `DEC-2026-0828-remove-per-class-interview-set`. `question_set` **đã bỏ hoàn toàn khỏi scope** (đóng 2026-09-13, xem mục 2.2) — không chỉ phần "gán theo lớp" |
 
 ### 2.1. Danh mục chủ đề (F6-01) — dữ liệu do ADMIN quản lý (chốt 2026-10-01)
@@ -80,7 +80,7 @@ không màn nào tự định nghĩa danh sách riêng. Hai thay đổi kéo the
 - **Port/domain**: `QuestionTopic` là aggregate nhỏ riêng trong `domain` (quy tắc "không xoá khi còn tham
   chiếu" nằm ở use case `DeleteQuestionTopicCommand` qua truy vấn đếm, không nằm ở controller)
   `[SoT: Suy luận]` — nhất quán mô hình bốn tầng ở mục 1. Mọi thao tác ghi `system_audit_logs` (F1-14) qua
-  cùng outbound port ghi nhật ký mà `interview-bank` đã dùng cho nhân bản/xoá câu hỏi.
+  cùng outbound port ghi nhật ký mà `interview-bank` đã dùng cho thêm/sửa/xoá câu hỏi.
 
 Khung STAR (mục 4.1) **không còn gắn vào mã `BEHAVIORAL`**: chủ đề có cờ `uses_star_framework = true`
 (`database/interview-bank.md` mục 1.1) kết xuất khung trả lời chuẩn theo 4 mục STAR; `BEHAVIORAL` seed bật cờ

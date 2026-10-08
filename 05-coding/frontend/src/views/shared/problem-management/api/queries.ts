@@ -9,7 +9,11 @@ import { ApiError, withMockData } from "@/shared/api";
 import { loadAdminProblemPage } from "./__mock__/admin-problem-mocks";
 
 function notImplemented(): never {
-  throw new ApiError("NOT_IMPLEMENTED", 501, "03-dd/api/problem-bank.md chưa định nghĩa endpoint này");
+  throw new ApiError(
+    "NOT_IMPLEMENTED",
+    501,
+    "03-dd/api/problem-bank.md chưa định nghĩa endpoint này",
+  );
 }
 
 export const useAdminProblemPage = () =>

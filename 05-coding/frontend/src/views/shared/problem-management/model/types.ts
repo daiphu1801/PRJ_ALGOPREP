@@ -19,6 +19,8 @@ export type AdminProblem = {
   difficulty: Difficulty;
   status: ProblemStatus;
   submissionCount: number;
+  /** Classes the problem is currently assigned to (shown as a warning when deleting; never blocks). */
+  assignedClassCount: number;
   /** Accepted rate, 0-100. */
   acceptedRate: number;
   testcaseCount: number;
@@ -34,7 +36,8 @@ export type TopicDistributionItem = {
   percent: number;
 };
 
-export type AttentionRuleCode = "noTestcase" | "lowAcceptRate" | "hiddenFromLearners" | "staleDraft";
+export type AttentionRuleCode =
+  "noTestcase" | "lowAcceptRate" | "hiddenFromLearners" | "staleDraft";
 
 /** One row of the "Bài cần chú ý" block (BD AttentionItemDto); `ruleCode` keys the i18n label. */
 export type AttentionItem = {

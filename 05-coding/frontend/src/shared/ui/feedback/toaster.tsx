@@ -18,7 +18,12 @@
 
 import { useEffect, useState } from "react";
 import { cn } from "@/shared/lib";
-import { toast, useToasts, type ToastItem, type ToastTone } from "@/shared/lib/toast-store";
+import {
+  toast,
+  useToasts,
+  type ToastItem,
+  type ToastTone,
+} from "@/shared/lib/toast-store";
 
 export type ToasterLabels = {
   /** Accessible name of the whole region. */
@@ -32,7 +37,10 @@ export type ToasterLabels = {
 /** Slide-out time; keep in step with `.toast-wrap` in globals.css. */
 const LEAVE_MS = 220;
 
-const TONE_CLASS: Record<ToastTone, { edge: string; label: string; bar: string }> = {
+const TONE_CLASS: Record<
+  ToastTone,
+  { edge: string; label: string; bar: string }
+> = {
   success: {
     edge: "border-l-[var(--color-success)]",
     label: "text-[var(--color-success-text)]",
@@ -55,7 +63,13 @@ const TONE_CLASS: Record<ToastTone, { edge: string; label: string; bar: string }
   },
 };
 
-function ToastCard({ item, labels }: { item: ToastItem; labels: ToasterLabels }) {
+function ToastCard({
+  item,
+  labels,
+}: {
+  item: ToastItem;
+  labels: ToasterLabels;
+}) {
   const [held, setHeld] = useState(false);
   const [leaving, setLeaving] = useState(false);
 
@@ -96,7 +110,12 @@ function ToastCard({ item, labels }: { item: ToastItem; labels: ToasterLabels })
           )}
         >
           <div className="min-w-0 flex-1">
-            <p className={cn("text-[11px] font-semibold tracking-[0.08em] uppercase", style.label)}>
+            <p
+              className={cn(
+                "text-[11px] font-semibold tracking-[0.08em] uppercase",
+                style.label,
+              )}
+            >
               {labels.tone[item.tone]}
             </p>
             <p className="mt-0.5 text-[13px] text-pretty break-words text-[var(--color-text)]">

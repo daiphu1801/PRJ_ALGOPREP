@@ -35,6 +35,11 @@ export function FilterBar({ search, children, resultCount }: FilterBarProps) {
         hideLabel
         leadingIcon={<Search className="h-3.5 w-3.5" />}
         placeholder={search.placeholder}
+        name="q"
+        autoComplete="off"
+        spellCheck={false}
+        inputMode="search"
+        enterKeyHint="search"
         value={search.value}
         onChange={(event) => search.onChange(event.target.value)}
         onKeyDown={

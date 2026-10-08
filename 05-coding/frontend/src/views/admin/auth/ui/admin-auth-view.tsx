@@ -4,8 +4,18 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { useT } from "@/shared/i18n";
-import { AuthAsideHighlights, AuthAsidePanel, LiquidGlassBackdrop, ThemeLangSwitcher } from "@/shared/ui";
-import { AuthForm, AuthLoadingOverlay, DevQuickLogin, useAuthFlow } from "@/features/auth-by-credentials";
+import {
+  AuthAsideHighlights,
+  AuthAsidePanel,
+  LiquidGlassBackdrop,
+  ThemeLangSwitcher,
+} from "@/shared/ui";
+import {
+  AuthForm,
+  AuthLoadingOverlay,
+  DevQuickLogin,
+  useAuthFlow,
+} from "@/features/auth-by-credentials";
 
 /**
  * Dedicated Admin login screen (`DEC-2026-0915-admin-separate-login-route`) — a separate route
@@ -47,7 +57,11 @@ function AdminAuthViewContent() {
       <div
         aria-hidden="true"
         className="pointer-events-none absolute z-0 h-[420px] w-[420px] max-w-[90vw] rounded-full blur-[90px]"
-        style={{ background: "radial-gradient(circle, var(--color-admin-cyan), transparent 70%)", opacity: 0.25 }}
+        style={{
+          background:
+            "radial-gradient(circle, var(--color-admin-cyan), transparent 70%)",
+          opacity: 0.25,
+        }}
       />
 
       {/* Two columns from `lg` up: the form alone on a max-w-md card left this screen reading as a
@@ -55,58 +69,82 @@ function AdminAuthViewContent() {
           `AuthAsidePanel` the student screen uses, so the fix costs content, not a second layout. */}
       <section
         className="glass-card glass-card--elevated relative z-10 grid w-full max-w-3xl grid-cols-1 overflow-hidden lg:grid-cols-[1.06fr_1fr]"
-        style={{ border: "1px solid color-mix(in srgb, white 35%, var(--color-border))" }}
+        style={{
+          border:
+            "1px solid color-mix(in srgb, white 35%, var(--color-border))",
+        }}
       >
         <div className="p-8">
-        <div className="mb-6 flex items-center gap-2.5">
-          <span
-            aria-hidden="true"
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-sm font-extrabold"
-            style={{ background: "var(--admin-logo-bg)", color: "var(--admin-logo-fg)" }}
-          >
-            A
-          </span>
-          <span className="text-base font-extrabold tracking-tight">AlgoPrep</span>
-        </div>
+          <div className="mb-6 flex items-center gap-2.5">
+            <span
+              aria-hidden="true"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-sm font-extrabold"
+              style={{
+                background: "var(--admin-logo-bg)",
+                color: "var(--admin-logo-fg)",
+              }}
+            >
+              A
+            </span>
+            <span className="text-base font-extrabold tracking-tight">
+              AlgoPrep
+            </span>
+          </div>
 
-        {mode === "login" && (
-          <p className="mb-2 text-[10.5px] font-semibold uppercase tracking-[0.16em] text-[var(--color-admin-cyan)]">
-            {tAdmin("eyebrow")}
-          </p>
-        )}
-        <h1 className="text-2xl font-bold text-[var(--color-text)]">{title}</h1>
-        {mode === "login" && (
-          <p className="mt-2 text-sm leading-relaxed text-[var(--color-text-muted)]">{tAdmin("subtitle")}</p>
-        )}
+          {mode === "login" && (
+            <p className="mb-2 text-[10.5px] font-semibold uppercase tracking-[0.16em] text-[var(--color-admin-cyan)]">
+              {tAdmin("eyebrow")}
+            </p>
+          )}
+          <h1 className="text-2xl font-bold text-[var(--color-text)]">
+            {title}
+          </h1>
+          {mode === "login" && (
+            <p className="mt-2 text-sm leading-relaxed text-[var(--color-text-muted)]">
+              {tAdmin("subtitle")}
+            </p>
+          )}
 
-        <div className="mt-6">
-          <AuthForm flow={flow} showOAuth={false} />
-        </div>
-        {/* Only the admin account — the other two would land outside this area anyway. */}
-        <DevQuickLogin flow={flow} roles={["ADMIN"]} />
+          <div className="mt-6">
+            <AuthForm flow={flow} showOAuth={false} />
+          </div>
+          {/* Only the admin account — the other two would land outside this area anyway. */}
+          <DevQuickLogin flow={flow} roles={["ADMIN"]} />
 
-        {mode === "login" && (
-          <p className="mt-6 text-center text-xs text-[var(--color-text-muted)]">
-            {tAdmin("notAdminHint")}{" "}
-            <Link href="/login" className="font-medium text-[var(--color-admin-cyan)] hover:underline">
-              {t("loginTitle")}
-            </Link>
-          </p>
-        )}
-
+          {mode === "login" && (
+            <p className="mt-6 text-center text-xs text-[var(--color-text-muted)]">
+              {tAdmin("notAdminHint")}{" "}
+              <Link
+                href="/login"
+                className="font-medium text-[var(--color-admin-cyan)] hover:underline"
+              >
+                {t("loginTitle")}
+              </Link>
+            </p>
+          )}
         </div>
 
         <AuthAsidePanel
-          badges={[tAdmin("badgeContent"), tAdmin("badgeOperations"), tAdmin("badgeAi")]}
+          badges={[
+            tAdmin("badgeContent"),
+            tAdmin("badgeOperations"),
+            tAdmin("badgeAi"),
+          ]}
           title={tAdmin("asideTitle")}
           description={tAdmin("asideDescription")}
         >
           <AuthAsideHighlights
-            items={[tAdmin("asideHighlight1"), tAdmin("asideHighlight2"), tAdmin("asideHighlight3")]}
+            items={[
+              tAdmin("asideHighlight1"),
+              tAdmin("asideHighlight2"),
+              tAdmin("asideHighlight3"),
+            ]}
           />
         </AuthAsidePanel>
 
-        {loadingStep !== null && <AuthLoadingOverlay currentStep={loadingStep} />}
+        {loadingStep !== null && (
+          <AuthLoadingOverlay currentStep={loadingStep} />
+        )}
       </section>
     </div>
   );

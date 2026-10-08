@@ -11,7 +11,9 @@ vi.mock("@/shared/i18n", () => ({
 
 // Filters are a button that opens a listbox; open it first, then pick from the options.
 function openFilter(label: string) {
-  fireEvent.click(screen.getByRole("button", { name: new RegExp(`^${label}`) }));
+  fireEvent.click(
+    screen.getByRole("button", { name: new RegExp(`^${label}`) }),
+  );
   return screen.getByRole("listbox", { name: label });
 }
 
@@ -19,10 +21,14 @@ describe("InterviewBankListView", () => {
   it("renders the browse list with the seeded questions", () => {
     render(<InterviewBankListView />);
 
-    expect(screen.getByPlaceholderText("searchPlaceholder")).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("searchPlaceholder"),
+    ).toBeInTheDocument();
     // Appears twice by design: once in the list row, once in the quick-view panel (the first
     // question is selected by default).
-    expect(screen.getAllByText(/Hash table xử lý collision bằng cách nào\?/).length).toBeGreaterThan(0);
+    expect(
+      screen.getAllByText(/Hash table xử lý collision bằng cách nào\?/).length,
+    ).toBeGreaterThan(0);
   });
 
   it("filters the list by search text", () => {
@@ -32,16 +38,26 @@ describe("InterviewBankListView", () => {
       target: { value: "process và thread" },
     });
 
-    expect(screen.queryByText(/Hash table xử lý collision/)).not.toBeInTheDocument();
-    expect(screen.getAllByText(/Khác biệt giữa process và thread/).length).toBeGreaterThan(0);
+    expect(
+      screen.queryByText(/Hash table xử lý collision/),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getAllByText(/Khác biệt giữa process và thread/).length,
+    ).toBeGreaterThan(0);
   });
 
   it("filters the list by difficulty level read from the admin-managed list", () => {
     render(<InterviewBankListView />);
 
-    fireEvent.click(within(openFilter("levelFilterLabel")).getByRole("option", { name: "Khó" }));
+    fireEvent.click(
+      within(openFilter("levelFilterLabel")).getByRole("option", {
+        name: "Khó",
+      }),
+    );
 
-    expect(screen.queryByText(/Hash table xử lý collision/)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/Hash table xử lý collision/),
+    ).not.toBeInTheDocument();
     expect(screen.getAllByText(/rút gọn URL/).length).toBeGreaterThan(0);
   });
 

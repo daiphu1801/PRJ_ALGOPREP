@@ -1,0 +1,6 @@
+.next
+node_modules
+test-results
+tsconfig.tsbuildinfo
+next-env.d.ts
+pnpm-lock.yaml

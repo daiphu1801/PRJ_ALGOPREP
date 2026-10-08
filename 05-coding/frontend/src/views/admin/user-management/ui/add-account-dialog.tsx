@@ -22,7 +22,12 @@ type Props = {
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export function AddAccountDialog({ open, onClose, existingEmails, onCreate }: Props) {
+export function AddAccountDialog({
+  open,
+  onClose,
+  existingEmails,
+  onCreate,
+}: Props) {
   const t = useT("adminUserManagement");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -71,7 +76,12 @@ export function AddAccountDialog({ open, onClose, existingEmails, onCreate }: Pr
       title={t("addDialog.title")}
       footer={
         <>
-          <Button variant="ghost" size="sm" className="border border-[var(--color-border)]" onClick={close}>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="border border-[var(--color-border)]"
+            onClick={close}
+          >
             {t("cancel")}
           </Button>
           <Button variant="cta" size="sm" onClick={submit}>
@@ -103,7 +113,9 @@ export function AddAccountDialog({ open, onClose, existingEmails, onCreate }: Pr
             { value: "instructor", label: t("role.instructor") },
           ]}
         />
-        <p className="text-[12.5px] text-[var(--color-text-muted)]">{t("addDialog.note")}</p>
+        <p className="text-[12.5px] text-[var(--color-text-muted)]">
+          {t("addDialog.note")}
+        </p>
       </div>
     </Modal>
   );

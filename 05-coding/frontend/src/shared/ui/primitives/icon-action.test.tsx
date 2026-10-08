@@ -5,7 +5,9 @@ import { IconAction } from "./icon-action";
 
 describe("IconAction", () => {
   it("names the button by ariaLabel but shows the short label as the tooltip", () => {
-    render(<IconAction icon={Pencil} label="Sửa" ariaLabel="Sửa bài Word Break" />);
+    render(
+      <IconAction icon={Pencil} label="Sửa" ariaLabel="Sửa bài Word Break" />,
+    );
     const button = screen.getByRole("button", { name: "Sửa bài Word Break" });
     expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
     fireEvent.mouseEnter(button);
@@ -21,7 +23,14 @@ describe("IconAction", () => {
 
   it("a disabled action ignores clicks but still shows its tooltip", () => {
     let clicks = 0;
-    render(<IconAction icon={Pencil} label="Còn 3 câu" disabled onClick={() => (clicks += 1)} />);
+    render(
+      <IconAction
+        icon={Pencil}
+        label="Còn 3 câu"
+        disabled
+        onClick={() => (clicks += 1)}
+      />,
+    );
     const button = screen.getByRole("button", { name: "Còn 3 câu" });
     fireEvent.click(button);
     expect(clicks).toBe(0);

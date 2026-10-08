@@ -1,9 +1,25 @@
 import { describe, expect, it } from "vitest";
 import type { TopicProgress } from "@/entities/progress";
-import { deriveSkillRadar, pickWeakestTopic, RADAR_AXIS_COUNT } from "./derive-skill-radar";
+import {
+  deriveSkillRadar,
+  pickWeakestTopic,
+  RADAR_AXIS_COUNT,
+} from "./derive-skill-radar";
 
-function topic(id: string, solved: number, total: number, acRate: number | null): TopicProgress {
-  return { topicId: id, topicName: id, solvedCount: solved, totalCount: total, acRate, lastSubmittedAt: null };
+function topic(
+  id: string,
+  solved: number,
+  total: number,
+  acRate: number | null,
+): TopicProgress {
+  return {
+    topicId: id,
+    topicName: id,
+    solvedCount: solved,
+    totalCount: total,
+    acRate,
+    lastSubmittedAt: null,
+  };
 }
 
 describe("deriveSkillRadar", () => {
@@ -17,20 +33,27 @@ describe("deriveSkillRadar", () => {
   it("keeps only the strongest RADAR_AXIS_COUNT topics but restores the caller's order", () => {
     const topics = [
       topic("weakest", 1, 100, 10),
-      ...Array.from({ length: RADAR_AXIS_COUNT }, (_, i) => topic(`strong-${i}`, 9, 10, 90)),
+      ...Array.from({ length: RADAR_AXIS_COUNT }, (_, i) =>
+        topic(`strong-${i}`, 9, 10, 90),
+      ),
     ];
     const points = deriveSkillRadar(topics);
 
     expect(points).toHaveLength(RADAR_AXIS_COUNT);
     // The weakest of 7 is dropped, and what remains is NOT sorted by score — a radar whose axes
     // are value-sorted draws a spiral that reads as a trend.
-    expect(points.map((p) => p.topicId)).toEqual(topics.slice(1).map((t) => t.topicId));
+    expect(points.map((p) => p.topicId)).toEqual(
+      topics.slice(1).map((t) => t.topicId),
+    );
   });
 });
 
 describe("pickWeakestTopic", () => {
   it("returns the lowest-scoring plotted topic, or null when nothing is plotted", () => {
-    const points = deriveSkillRadar([topic("strong", 9, 10, 90), topic("weak", 2, 10, 30)]);
+    const points = deriveSkillRadar([
+      topic("strong", 9, 10, 90),
+      topic("weak", 2, 10, 30),
+    ]);
     expect(pickWeakestTopic(points)?.topicId).toBe("weak");
     expect(pickWeakestTopic([])).toBeNull();
   });

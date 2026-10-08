@@ -55,7 +55,10 @@ export function TextField({
             className,
           )}
         >
-          <span aria-hidden="true" className="shrink-0 text-[var(--color-text-subtle)]">
+          <span
+            aria-hidden="true"
+            className="shrink-0 text-[var(--color-text-subtle)]"
+          >
             {leadingIcon}
           </span>
           <input
@@ -69,7 +72,11 @@ export function TextField({
         <input
           id={id}
           aria-invalid={invalid || undefined}
-          className={cn(FIELD_CONTROL, invalid && "border-[var(--color-danger)]", className)}
+          className={cn(
+            FIELD_CONTROL,
+            invalid && "border-[var(--color-danger)]",
+            className,
+          )}
           {...props}
         />
       )}

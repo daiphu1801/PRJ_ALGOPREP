@@ -40,9 +40,13 @@ export function Card({
       {title || action ? (
         <div className="mb-3 flex items-start justify-between gap-4">
           <div className="min-w-0">
-            {title ? <Heading className="text-[14.5px] font-bold">{title}</Heading> : null}
+            {title ? (
+              <Heading className="text-[14.5px] font-bold">{title}</Heading>
+            ) : null}
             {description ? (
-              <p className="text-[12.5px] text-[var(--color-text-muted)]">{description}</p>
+              <p className="text-[12.5px] text-[var(--color-text-muted)]">
+                {description}
+              </p>
             ) : null}
           </div>
           {action ? <div className="shrink-0">{action}</div> : null}

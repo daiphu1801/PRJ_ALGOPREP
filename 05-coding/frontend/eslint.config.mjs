@@ -5,7 +5,14 @@ import boundaries from "eslint-plugin-boundaries";
 // Chiều import FSD: app -> views -> widgets -> features -> entities -> shared.
 // Tầng dưới không bao giờ biết tầng trên; cùng tầng không import lẫn nhau.
 // Nguồn: 01-rd/system/SYS0102_frontend_architecture.md mục 2.
-const FSD_LAYERS = ["app", "views", "widgets", "features", "entities", "shared"];
+const FSD_LAYERS = [
+  "app",
+  "views",
+  "widgets",
+  "features",
+  "entities",
+  "shared",
+];
 
 // views/ has one extra level: an actor group mirroring 01-rd/screens/ (admin, teacher, users, shared).
 // A group folder holds slices only, never code of its own. DEC-2026-0929-fsd-views-grouped-entities-domain-only.
@@ -39,7 +46,10 @@ const eslintConfig = [
         "error",
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
       ],
-      "@typescript-eslint/consistent-type-imports": ["error", { prefer: "type-imports" }],
+      "@typescript-eslint/consistent-type-imports": [
+        "error",
+        { prefer: "type-imports" },
+      ],
       "no-restricted-imports": [
         "error",
         {
@@ -51,7 +61,8 @@ const eslintConfig = [
             },
             {
               name: "dompurify",
-              message: "Dùng sanitizeHtml() từ @/shared/lib, không import dompurify trực tiếp.",
+              message:
+                "Dùng sanitizeHtml() từ @/shared/lib, không import dompurify trực tiếp.",
             },
           ],
           // Public API Rule (quy tắc vàng số 1 của FSD, SYS0102_frontend_architecture.md:93-95):
@@ -81,8 +92,21 @@ const eslintConfig = [
         {
           default: "disallow",
           rules: [
-            { from: "app", allow: ["views", "widgets", "features", "entities", "shared", "app"] },
-            { from: "views", allow: ["widgets", "features", "entities", "shared"] },
+            {
+              from: "app",
+              allow: [
+                "views",
+                "widgets",
+                "features",
+                "entities",
+                "shared",
+                "app",
+              ],
+            },
+            {
+              from: "views",
+              allow: ["widgets", "features", "entities", "shared"],
+            },
             { from: "widgets", allow: ["features", "entities", "shared"] },
             { from: "features", allow: ["entities", "shared"] },
             { from: "entities", allow: ["shared"] },
@@ -103,7 +127,11 @@ const eslintConfig = [
     // toast, never a hand-written alert line on the page. The toaster itself and the data-load
     // error placeholder are the only places allowed to say role="alert".
     files: ["src/**/*.tsx"],
-    ignores: ["src/shared/ui/feedback/toaster.tsx", "src/shared/ui/feedback/error-state.tsx", "src/**/*.test.tsx"],
+    ignores: [
+      "src/shared/ui/feedback/toaster.tsx",
+      "src/shared/ui/feedback/error-state.tsx",
+      "src/**/*.test.tsx",
+    ],
     rules: {
       "no-restricted-syntax": [
         "error",
@@ -116,7 +144,12 @@ const eslintConfig = [
     },
   },
   {
-    ignores: [".next/**", "node_modules/**", "playwright-report/**", "test-results/**"],
+    ignores: [
+      ".next/**",
+      "node_modules/**",
+      "playwright-report/**",
+      "test-results/**",
+    ],
   },
 ];
 

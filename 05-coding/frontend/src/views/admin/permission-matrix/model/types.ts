@@ -42,11 +42,17 @@ export const FUNCTION_KEYS: FunctionKey[] = [
   "PERMISSION_MATRIX",
 ];
 
+/** Layer-one category (`roles.base_category`): decides which areas a role may even enter. */
+export type BaseCategory = "STUDENT" | "INSTRUCTOR" | "ADMIN";
+
 export type Role = {
   key: string;
   label: string;
   /** System roles (STUDENT/INSTRUCTOR/ADMIN) cannot be deleted. */
   system: boolean;
+  baseCategory: BaseCategory;
+  /** Accounts holding this role. A custom role with any cannot be deleted (ADM0202 Q2). */
+  userCount: number;
 };
 
 export type ActionGrant = Record<ActionKey, boolean>;
@@ -54,6 +60,8 @@ export type ActionGrant = Record<ActionKey, boolean>;
 export type RolePermissions = Partial<Record<FunctionKey, ActionGrant>>;
 
 export type PermissionMatrixPage = {
+  /** Role the acting admin holds. Revoking its cells locks them out, so it needs a confirmation. */
+  currentRoleKey: string;
   roles: Role[];
   permissions: Record<string, RolePermissions>;
 };

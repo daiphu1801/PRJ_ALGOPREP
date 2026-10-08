@@ -23,10 +23,7 @@ export type ChatMessage = {
 
 /** 4 fixed criteria, fixed weights — 02-bd/database/ai-review.md:96-97. */
 export type RubricCriterionCode =
-  | "clarity"
-  | "technicalAccuracy"
-  | "pushbackHandling"
-  | "complexityAwareness";
+  "clarity" | "technicalAccuracy" | "pushbackHandling" | "complexityAwareness";
 
 export const RUBRIC_WEIGHTS: Record<RubricCriterionCode, number> = {
   clarity: 25,
@@ -77,7 +74,12 @@ export type MaxTurns = 8 | 12 | 16;
 
 export const MAX_TURNS_OPTIONS: MaxTurns[] = [8, 12, 16];
 
-export const INTERVIEWER_LEVELS: InterviewerLevel[] = ["intern", "junior", "middle", "senior"];
+export const INTERVIEWER_LEVELS: InterviewerLevel[] = [
+  "intern",
+  "junior",
+  "middle",
+  "senior",
+];
 
 export type SessionConfig = {
   entryType: InterviewEntryType;

@@ -18,7 +18,9 @@ async function expectBottomRightCard(page: Page, text: RegExp) {
 }
 
 for (const area of ["admin", "instructor"] as const) {
-  test(`saving a problem toasts at the top right in the ${area} area, and X closes it`, async ({ page }) => {
+  test(`saving a problem toasts at the top right in the ${area} area, and X closes it`, async ({
+    page,
+  }) => {
     await page.goto(`/${area}/problems/1268/edit`);
 
     await page.getByLabel("Tiêu đề").fill("Minimum Window Substring (đã sửa)");
@@ -32,7 +34,9 @@ for (const area of ["admin", "instructor"] as const) {
   });
 }
 
-test("un-saving a problem toasts in the student area, and the toast dismisses itself", async ({ page }) => {
+test("un-saving a problem toasts in the student area, and the toast dismisses itself", async ({
+  page,
+}) => {
   await page.goto("/saved");
 
   await page.getByRole("button", { name: "Bỏ lưu" }).first().click();

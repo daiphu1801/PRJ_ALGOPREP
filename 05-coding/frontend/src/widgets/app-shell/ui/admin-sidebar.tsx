@@ -6,7 +6,11 @@ import { usePathname } from "next/navigation";
 import { NavGroupHeader, NavLink, ThemeLangSwitcher } from "@/shared/ui";
 import { useT } from "@/shared/i18n";
 import { cn } from "@/shared/lib";
-import { ADMIN_NAV_GROUPS, ADMIN_NAV_MISC, ADMIN_NAV_OVERVIEW } from "../model/admin-nav";
+import {
+  ADMIN_NAV_GROUPS,
+  ADMIN_NAV_MISC,
+  ADMIN_NAV_OVERVIEW,
+} from "../model/admin-nav";
 
 /**
  * Layout matches 09-layoutBase/Admin - Tổng quan.dc.html:57-101 1:1 (02-bd/screens/admin/ADM0101_overview.md
@@ -62,7 +66,10 @@ export function AdminSidebar() {
   const isGroupOpen = (key: string) => openGroups[key] ?? ownsActiveRoute(key);
 
   const toggleGroup = (key: string) =>
-    setOpenGroups((prev) => ({ ...prev, [key]: !(prev[key] ?? ownsActiveRoute(key)) }));
+    setOpenGroups((prev) => ({
+      ...prev,
+      [key]: !(prev[key] ?? ownsActiveRoute(key)),
+    }));
   const toggleCollapsed = () => {
     setCollapsed((prev) => {
       const next = !prev;
@@ -85,15 +92,27 @@ export function AdminSidebar() {
         effectiveCollapsed ? "w-[72px]" : "w-56",
       )}
     >
-      <div className={cn("flex items-center gap-2 px-1 pb-1", effectiveCollapsed && "justify-center")}>
+      <div
+        className={cn(
+          "flex items-center gap-2 px-1 pb-1",
+          effectiveCollapsed && "justify-center",
+        )}
+      >
         <span
           aria-hidden="true"
           className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-xs font-extrabold"
-          style={{ background: "var(--admin-logo-bg)", color: "var(--admin-logo-fg)" }}
+          style={{
+            background: "var(--admin-logo-bg)",
+            color: "var(--admin-logo-fg)",
+          }}
         >
           A
         </span>
-        {!effectiveCollapsed && <span className="text-[15px] font-extrabold tracking-tight">AlgoPrep</span>}
+        {!effectiveCollapsed && (
+          <span className="text-[15px] font-extrabold tracking-tight">
+            AlgoPrep
+          </span>
+        )}
       </div>
 
       <button
@@ -144,7 +163,12 @@ export function AdminSidebar() {
           );
         })}
 
-        <div className={cn("mt-3 border-t border-[var(--color-border)] pt-2", effectiveCollapsed && "text-center")}>
+        <div
+          className={cn(
+            "mt-3 border-t border-[var(--color-border)] pt-2",
+            effectiveCollapsed && "text-center",
+          )}
+        >
           {!effectiveCollapsed && (
             <p className="px-3 pb-1 text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
               {t("groupMisc")}

@@ -13,7 +13,9 @@ describe("TextField", () => {
   });
 
   it("keeps the label for screen readers when hidden visually", () => {
-    render(<TextField label="Tìm kiếm" hideLabel placeholder="Tìm người dùng…" />);
+    render(
+      <TextField label="Tìm kiếm" hideLabel placeholder="Tìm người dùng…" />,
+    );
     expect(screen.getByLabelText("Tìm kiếm")).toBeInTheDocument();
   });
 });

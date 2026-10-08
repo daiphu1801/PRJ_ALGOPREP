@@ -30,6 +30,8 @@
 > - **Chỉ số Beats (F4-12)**: tính theo phân phối thời gian chạy của các bài nộp `Accepted` khác cùng bài toán
 >   và cùng ngôn ngữ; chỉ hiển thị khi verdict là `Accepted`.
 
+- **Bài đã rút khỏi ngân hàng** (`deleted = true`, G4 2026-10-08): kết quả nộp vẫn mở được; liên kết về `problem_detail` ở breadcrumb và nút "Làm lại" bị vô hiệu kèm nhãn "Đã rút khỏi ngân hàng". Quy tắc đầy đủ ở `02-bd/database/problem-bank.md` mục 1.1a, không chép lại ở đây.
+
 > **Quy ước đặt tên khối** [Nội bộ]. Sáu khối: `breadcrumb` (đường dẫn phân cấp), `verdictBanner` (thẻ kết quả
 > tổng quan kèm điểm tỷ lệ), `runStats` (thanh 6 chỉ số vận hành), `testcaseList` (danh sách kết quả từng
 > testcase), `codeViewer` (vùng xem mã nguồn đã nộp kèm chỉ báo dòng lỗi biên dịch nếu có), `actionPanel`
@@ -51,7 +53,7 @@
 | Tên vật lý (slug) | `submission_result` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`) |
-| Phiên bản | V0.3 |
+| Phiên bản | V0.4 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/22 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
@@ -67,6 +69,7 @@
 | V0.2 | Sheet 3, 5, 7.3, 6, Câu hỏi mở | Viết lại Sheet 3 theo khuôn "Danh sách chuyển màn" 6 thẻ + sơ đồ Mermaid; viết lại Sheet 5 theo khuôn 14 cột (thêm Bảng DB/Cột DB, mỗi item một dòng); bỏ cột "Phương thức & URL dự kiến" ở Sheet 7.3 (đường dẫn API thuộc `03-dd/api/`, chưa viết). Sửa nguồn `beats_percent`: không phải cột DB, là giá trị tính tại thời điểm đọc theo công thức ở `02-bd/architecture/judge-orchestration.md:224-229`. Sửa cột testcase Mẫu/Ẩn về đúng tên thật `testcases.visibility` (không phải `is_sample`), input/expected về `input_inline`/`expected_output_inline`. Bổ sung điều kiện ẩn hẳn bảng testcase khi `status = COMPILE_ERROR` (Sheet 6 Khu vực D NO 1, theo Q3 đã chốt ở RD). Phát hiện thêm: chưa có cột lưu output thực tế của testcase mẫu — thêm Câu hỏi mở Q4 | 2026/09/24 | Nhóm phát triển AlgoPrep |
 | V0.2 | Sheet 6, 8 | Kết quả sao chép mã nguồn báo bằng toast thay vì đổi nhãn nút; giữ nguyên vùng không tìm thấy bài nộp và khối lỗi biên dịch. Theo `DEC-2026-1003-toast-feedback-channel`. | 2026/10/03 | AI |
 | V0.3 | Sheet 4, 5, 7 | Đồng bộ `DEC-2026-1001-admin-configurable-settings` mục (7): độ khó bài tập là danh mục do ADMIN quản lý (bảng riêng `problem_levels`), không còn enum cố định. DTO `SubmissionDetailDto.difficulty` thành `levelCode`/`levelDisplayName` đọc qua `problems.level_id`; badge độ khó hiển thị `display_name` từ dữ liệu; thêm `problem.problem_levels` vào danh sách bảng và Truy cập bảng. Màn chỉ hiển thị nhãn, không lọc và không gọi `ListProblemLevels` (nhãn nằm sẵn trong phản hồi); độ khó không gắn logic nào | 2026/10/03 | AI |
+| V0.4 | Sheet 3, 5, 6, Câu hỏi mở | Theo `02-bd/database/problem-bank.md` mục 1.1a: bài đã rút khỏi ngân hàng vẫn xem được kết quả nộp; breadcrumb và nút "Làm lại" về bài đó bị vô hiệu kèm nhãn "Đã rút khỏi ngân hàng". Chỉ tài liệu, chưa đổi code | 2026/10/08 | AI |
 
 ---
 

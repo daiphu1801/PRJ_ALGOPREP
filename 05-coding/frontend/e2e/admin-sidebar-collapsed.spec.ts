@@ -9,7 +9,9 @@ import { expect, test } from "@playwright/test";
  *
  * Budget: rail 72px with p-3 (12px) each side leaves 48px of content width.
  */
-test("collapsed Admin rail keeps both switcher groups inside the content box", async ({ page }) => {
+test("collapsed Admin rail keeps both switcher groups inside the content box", async ({
+  page,
+}) => {
   await page.goto("/admin/overview");
 
   const nav = page.getByRole("navigation", { name: "Điều hướng khu quản trị" });
@@ -21,7 +23,9 @@ test("collapsed Admin rail keeps both switcher groups inside the content box", a
   expect(railBox).not.toBeNull();
   if (!railBox) return;
 
-  const themeGroup = nav.getByRole("group", { name: "Chọn giao diện sáng/tối" });
+  const themeGroup = nav.getByRole("group", {
+    name: "Chọn giao diện sáng/tối",
+  });
   const langGroup = nav.getByRole("group", { name: "Chọn ngôn ngữ giao diện" });
 
   // Locate them explicitly rather than through a fallback: a locator that silently matches nothing
@@ -43,7 +47,10 @@ test("collapsed Admin rail keeps both switcher groups inside the content box", a
 
     // overflow-x-hidden on the sidebar means an overflowing child is CLIPPED, not scrollable — it
     // would vanish rather than degrade, so the rail edge is a hard bound.
-    expect(box.x, `${name} group overflows the rail's left edge`).toBeGreaterThanOrEqual(railBox.x);
+    expect(
+      box.x,
+      `${name} group overflows the rail's left edge`,
+    ).toBeGreaterThanOrEqual(railBox.x);
     expect(
       box.x + box.width,
       `${name} group overflows the rail's right edge`,
@@ -51,7 +58,10 @@ test("collapsed Admin rail keeps both switcher groups inside the content box", a
 
     // Softer bound: staying inside the 12px padding box is the intended look, and the 2026-09-16
     // regression was exactly a group eating into this gutter.
-    expect(box.x, `${name} group eats into the left gutter`).toBeGreaterThanOrEqual(contentLeft);
+    expect(
+      box.x,
+      `${name} group eats into the left gutter`,
+    ).toBeGreaterThanOrEqual(contentLeft);
     expect(
       box.x + box.width,
       `${name} group eats into the right gutter`,
@@ -60,6 +70,10 @@ test("collapsed Admin rail keeps both switcher groups inside the content box", a
 
   // Element screenshots rather than a page clip: the switcher sits at the very bottom of a
   // full-height rail, so a viewport-relative clip there gets clamped to a sliver.
-  await themeGroup.screenshot({ path: "e2e/__screenshots__/admin-rail-theme-group.png" });
-  await langGroup.screenshot({ path: "e2e/__screenshots__/admin-rail-lang-group.png" });
+  await themeGroup.screenshot({
+    path: "e2e/__screenshots__/admin-rail-theme-group.png",
+  });
+  await langGroup.screenshot({
+    path: "e2e/__screenshots__/admin-rail-lang-group.png",
+  });
 });

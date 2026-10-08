@@ -17,12 +17,15 @@
 import { useMemo, useState } from "react";
 import {
   AUDIT_CATEGORIES,
+  LOAD_MORE_COUNT,
   fetchAuditLogPage,
+  fetchMoreAuditEvents,
   initialsOf,
   type AuditCategory,
   type AuditEvent,
 } from "../api";
 import { useT } from "@/shared/i18n";
+import { toast } from "@/shared/lib/toast-store";
 import { logSettings, type ExpiryPolicy } from "../model/settings";
 import { ExportLogDialog } from "./export-log-dialog";
 import {
@@ -36,6 +39,7 @@ import {
   FilterBar,
   FilterMenu,
   SettingRow,
+  TextField,
   type BadgeVariant,
 } from "@/shared/ui";
 
@@ -58,11 +62,21 @@ const CATEGORY_COLOR_VAR: Record<AuditCategory, string> = {
 
 type CategoryFilter = AuditCategory | "all";
 
+/** "2026-10-08" -> "08/10". */
+function formatDay(date: string): string {
+  const [, month, day] = date.split("-");
+  return `${day}/${month}`;
+}
+
 export function AdminSystemLogView() {
   const t = useT("adminSystemLog");
   const [page] = useState(fetchAuditLogPage);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<CategoryFilter>("all");
+  // ADM0403 Q6: day range, inclusive on both ends. Empty string = open end.
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+  const [loaded, setLoaded] = useState<AuditEvent[]>(page.events);
   const [live, setLive] = useState(true);
   const settings = logSettings.use();
   const [editingRetention, setEditingRetention] = useState(false);
@@ -71,20 +85,47 @@ export function AdminSystemLogView() {
   // Category and free text combine with AND, matching the prototype's own filter (dc.html:414-418).
   // Search covers service, actor and event id — not the message — because the BD rules out a
   // full-text scan over the message column on a large table (BD section 2, AuditLogSearchBar).
+  const rangeInvalid = from !== "" && to !== "" && from > to;
   const events = useMemo(() => {
     const needle = query.trim().toLowerCase();
-    return page.events.filter((event) => {
+    return loaded.filter((event) => {
       const categoryOk = category === "all" || event.category === category;
+      const dateOk =
+        !rangeInvalid &&
+        (!from || event.date >= from) &&
+        (!to || event.date <= to);
       const textOk =
         !needle ||
-        `${event.service} ${event.actor} ${event.id}`.toLowerCase().includes(needle);
-      return categoryOk && textOk;
+        `${event.service} ${event.actor} ${event.id}`
+          .toLowerCase()
+          .includes(needle);
+      return categoryOk && dateOk && textOk;
     });
-  }, [page.events, query, category]);
+  }, [loaded, query, category, from, to, rangeInvalid]);
+
+  function changeFrom(next: string) {
+    setFrom(next);
+    if (next && to && next > to) toast.warning(t("rangeInvalid"));
+  }
+
+  function changeTo(next: string) {
+    setTo(next);
+    if (next && from && from > next) toast.warning(t("rangeInvalid"));
+  }
+
+  function loadMore() {
+    setLoaded((previous) => [
+      ...previous,
+      ...fetchMoreAuditEvents(previous.length),
+    ]);
+  }
 
   const categoryOptions = [
     { value: "all" as const, label: t("categoryAll") },
-    ...AUDIT_CATEGORIES.map((key) => ({ value: key, label: t(`category.${key}`) })),
+    ...AUDIT_CATEGORIES.map((key) => ({
+      value: key,
+      label: t(`category.${key}`),
+    })),
   ];
 
   return (
@@ -104,7 +145,9 @@ export function AdminSystemLogView() {
               <span
                 aria-hidden="true"
                 className={`mr-2 inline-block h-[7px] w-[7px] rounded-full ${
-                  live ? "animate-pulse bg-[var(--color-success)]" : "bg-[var(--color-text-subtle)]"
+                  live
+                    ? "animate-pulse bg-[var(--color-success)]"
+                    : "bg-[var(--color-text-subtle)]"
                 }`}
               />
               {live ? t("liveOn") : t("liveOff")}
@@ -133,7 +176,10 @@ export function AdminSystemLogView() {
               value: query,
               onChange: (next) => setQuery(next),
             }}
-            resultCount={t("resultCount", { shown: events.length, total: page.events.length })}
+            resultCount={t("resultCount", {
+              shown: events.length,
+              total: loaded.length,
+            })}
           >
             <FilterMenu
               label={t("categoryFilterLabel")}
@@ -141,6 +187,36 @@ export function AdminSystemLogView() {
               value={category}
               onValueChange={setCategory}
             />
+            {/* One unit, so the two ends wrap to the next line together rather than splitting. */}
+            <span className="flex flex-wrap items-center gap-x-4 gap-y-2">
+              <span className="flex items-center gap-1.5 text-[12.5px] font-medium whitespace-nowrap text-[var(--color-text-muted)]">
+                {t("dateFrom")}:
+                <TextField
+                  label={t("dateFrom")}
+                  hideLabel
+                  type="date"
+                  value={from}
+                  max={to || undefined}
+                  onChange={(event) => changeFrom(event.target.value)}
+                  wrapperClassName="w-[140px]"
+                  className="h-[34px]"
+                />
+              </span>
+              <span className="flex items-center gap-1.5 text-[12.5px] font-medium whitespace-nowrap text-[var(--color-text-muted)]">
+                {t("dateTo")}:
+                <TextField
+                  label={t("dateTo")}
+                  hideLabel
+                  type="date"
+                  value={to}
+                  min={from || undefined}
+                  onChange={(event) => changeTo(event.target.value)}
+                  invalid={rangeInvalid}
+                  wrapperClassName="w-[140px]"
+                  className="h-[34px]"
+                />
+              </span>
+            </span>
           </FilterBar>
 
           {events.length === 0 ? (
@@ -153,6 +229,8 @@ export function AdminSystemLogView() {
                   onClick={() => {
                     setQuery("");
                     setCategory("all");
+                    setFrom("");
+                    setTo("");
                   }}
                 >
                   {t("clearFilters")}
@@ -160,25 +238,45 @@ export function AdminSystemLogView() {
               </span>
             </EmptyState>
           ) : (
-            <ul aria-label={t("eventListLabel")} className="flex flex-col gap-0.5">
+            <ul
+              aria-label={t("eventListLabel")}
+              className="flex flex-col gap-0.5"
+            >
               {events.map((event) => (
-                <EventRow key={event.id} event={event} categoryLabel={t(`category.${event.category}`)} />
+                <EventRow
+                  key={event.id}
+                  event={event}
+                  categoryLabel={t(`category.${event.category}`)}
+                  reasonLabel={t("reasonLabel")}
+                />
               ))}
             </ul>
           )}
 
           <div className="mt-1.5 flex items-center gap-3 border-t border-[var(--color-border)] px-2.5 pt-3">
             <span className="text-[12.5px] text-[var(--color-text-muted)]">
-              {t("pageLabel", { shown: events.length, total: page.totalEvents.toLocaleString("vi-VN") })}
+              {t("pageLabel", {
+                shown: loaded.length,
+                total: page.totalEvents.toLocaleString("vi-VN"),
+              })}
             </span>
-            <Button variant="ghost" size="sm" className="ml-auto border border-[var(--color-border)]">
-              {t("loadMore", { count: 50 })}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="ml-auto border border-[var(--color-border)]"
+              onClick={loadMore}
+              disabled={loaded.length >= page.totalEvents}
+            >
+              {t("loadMore", { count: LOAD_MORE_COUNT })}
             </Button>
           </div>
         </Card>
 
         <div className="flex min-w-0 flex-col gap-4">
-          <Card title={t("activeAdminsTitle")} description={t("activeAdminsSubtitle")}>
+          <Card
+            title={t("activeAdminsTitle")}
+            description={t("activeAdminsSubtitle")}
+          >
             <div className="flex flex-col gap-2.5">
               {page.activeAdmins.map((admin) => (
                 <SettingRow
@@ -196,7 +294,11 @@ export function AdminSystemLogView() {
                 >
                   <span
                     className="font-mono text-xs font-semibold whitespace-nowrap"
-                    style={admin.colorVar ? { color: `var(${admin.colorVar})` } : undefined}
+                    style={
+                      admin.colorVar
+                        ? { color: `var(${admin.colorVar})` }
+                        : undefined
+                    }
                   >
                     {admin.lastActionAt}
                   </span>
@@ -223,9 +325,18 @@ export function AdminSystemLogView() {
         open={editingRetention}
         onClose={() => setEditingRetention(false)}
         title={t("retention.title")}
-        values={{ retentionDays: String(settings.retentionDays), expiry: settings.expiry }}
+        values={{
+          retentionDays: String(settings.retentionDays),
+          expiry: settings.expiry,
+        }}
         fields={[
-          { type: "number", key: "retentionDays", label: t("retention.days"), unit: t("retention.daysUnit"), min: 1 },
+          {
+            type: "number",
+            key: "retentionDays",
+            label: t("retention.days"),
+            unit: t("retention.daysUnit"),
+            min: 1,
+          },
           {
             type: "select",
             key: "expiry",
@@ -237,16 +348,51 @@ export function AdminSystemLogView() {
             ],
           },
         ]}
+        confirmSave={(draft) => {
+          // Shortening the period, or switching to "delete", is what makes old rows disappear (Q7a).
+          const warnings: string[] = [];
+          if (Number(draft.retentionDays) < settings.retentionDays) {
+            warnings.push(
+              t("retention.confirmShorter", {
+                days: draft.retentionDays ?? "",
+              }),
+            );
+          }
+          if (draft.expiry === "delete" && settings.expiry !== "delete") {
+            warnings.push(t("retention.confirmDelete"));
+          }
+          return warnings.length ? warnings.join(" ") : undefined;
+        }}
         onSave={(values) =>
           logSettings.set({
             retentionDays: Number(values.retentionDays),
             expiry: values.expiry as ExpiryPolicy,
           })
         }
-        labels={{ save: t("retention.save"), cancel: t("retention.cancel"), saved: t("retention.saved"), errorMin: (min) => t("retention.errorMin", { min }) }}
+        labels={{
+          save: t("retention.save"),
+          cancel: t("retention.cancel"),
+          saved: t("retention.saved"),
+          errorMin: (min) => t("retention.errorMin", { min }),
+          confirm: t("retention.confirm"),
+          back: t("retention.back"),
+        }}
       />
 
-      <ExportLogDialog open={exporting} onClose={() => setExporting(false)} />
+      {/* Mounted only while open so the dialog starts from the filters on screen now (Q8). */}
+      {exporting ? (
+        <ExportLogDialog
+          open
+          onClose={() => setExporting(false)}
+          scope={{
+            query: query.trim(),
+            categoryLabel:
+              category === "all" ? null : t(`category.${category}`),
+            from,
+            to,
+          }}
+        />
+      ) : null}
     </div>
   );
 }
@@ -255,18 +401,39 @@ export function AdminSystemLogView() {
  * One timeline entry. The left rule is coloured per category (dc.html:194) — it repeats the badge's
  * meaning visually, so it is aria-hidden and the badge carries the accessible text.
  */
-function EventRow({ event, categoryLabel }: { event: AuditEvent; categoryLabel: string }) {
+function EventRow({
+  event,
+  categoryLabel,
+  reasonLabel,
+}: {
+  event: AuditEvent;
+  categoryLabel: string;
+  reasonLabel: string;
+}) {
   return (
     <li
       className="grid grid-cols-[66px_96px_minmax(180px,1fr)] items-start gap-3 rounded-xl border-l-2 px-2.5 py-2.5 hover:bg-[var(--color-row-hover)]"
       style={{ borderLeftColor: `var(${CATEGORY_COLOR_VAR[event.category]})` }}
     >
-      <span className="pt-px font-mono text-xs text-[var(--color-text-subtle)]">{event.time}</span>
-      <Badge variant={CATEGORY_VARIANT[event.category]} className="w-full justify-center font-mono">
+      <span className="pt-px font-mono text-xs text-[var(--color-text-subtle)]">
+        {event.time}
+        <span className="block text-[10.5px]">{formatDay(event.date)}</span>
+      </span>
+      <Badge
+        variant={CATEGORY_VARIANT[event.category]}
+        className="w-full justify-center font-mono"
+      >
         {categoryLabel}
       </Badge>
       <span className="min-w-0">
-        <span className="block text-[13px] font-semibold text-pretty">{event.message}</span>
+        <span className="block text-[13px] font-semibold text-pretty">
+          {event.message}
+        </span>
+        {event.reason ? (
+          <span className="mt-0.5 block text-[12.5px] text-[var(--color-text-muted)]">
+            {reasonLabel}: {event.reason}
+          </span>
+        ) : null}
         <span className="mt-0.5 flex flex-wrap items-center gap-2 font-mono text-[11.5px] text-[var(--color-text-subtle)]">
           <span>{event.service}</span>
           <span aria-hidden="true">·</span>

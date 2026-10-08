@@ -46,22 +46,37 @@ export function InterviewQuestionListRow({
     <div
       className={cn(
         "flex items-start gap-2.5 border-b border-[var(--color-border)] px-4 py-3 last:border-b-0",
-        selected ? "bg-[var(--color-surface-hover)]" : "hover:bg-[var(--color-surface-hover)]",
+        selected
+          ? "bg-[var(--color-surface-hover)]"
+          : "hover:bg-[var(--color-surface-hover)]",
       )}
     >
-      <button type="button" onClick={onSelect} aria-pressed={selected} className="min-w-0 flex-1 text-left">
+      <button
+        type="button"
+        onClick={onSelect}
+        aria-pressed={selected}
+        className="min-w-0 flex-1 text-left"
+      >
         <div className="mb-1.5 flex flex-wrap items-center gap-2">
           <span className="text-[10.5px] font-semibold tracking-[0.06em] text-[var(--color-text-subtle)] uppercase">
             {topicLabel}
           </span>
           <Badge variant={levelTone}>{levelLabel}</Badge>
           <span className="ml-auto">
-            <Badge variant={recall ? RECALL_VARIANT[recall] : "neutral"}>{recallLabel}</Badge>
+            <Badge variant={recall ? RECALL_VARIANT[recall] : "neutral"}>
+              {recallLabel}
+            </Badge>
           </span>
         </div>
-        <p className="text-[13.5px] leading-snug font-medium text-pretty">{question.question}</p>
+        <p className="text-[13.5px] leading-snug font-medium text-pretty">
+          {question.question}
+        </p>
       </button>
-      <BookmarkToggle bookmarked={bookmarked} onToggle={onToggleBookmark} label={bookmarkLabel} />
+      <BookmarkToggle
+        bookmarked={bookmarked}
+        onToggle={onToggleBookmark}
+        label={bookmarkLabel}
+      />
     </div>
   );
 }

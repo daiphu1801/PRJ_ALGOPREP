@@ -15,6 +15,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Gauge, Pencil, Tags, Trash2 } from "lucide-react";
 import {
   useAdminProblemPage,
@@ -46,6 +47,7 @@ import {
   Card,
   ConfirmDialog,
   DataTable,
+  EllipsisLink,
   IconAction,
   ManagedListDialog,
   ErrorState,
@@ -73,8 +75,8 @@ const STATUS_TEXT_VAR: Record<ProblemStatus, string> = {
 // 8 is the default, 20 and 50 the other choices (SHR0201 Q4).
 const PAGE_SIZES = [8, 20, 50] as const;
 
-
-type BulkAction = "publish" | "changeDifficulty" | "assignTopic" | "duplicate" | "exportCsv";
+type BulkAction =
+  "publish" | "changeDifficulty" | "assignTopic" | "duplicate" | "exportCsv";
 type DifficultyFilter = Difficulty | "all";
 type StatusFilter = ProblemStatus | "all";
 
@@ -110,25 +112,38 @@ function ProblemManagementForm({
   const t = useT("problemManagement");
   const topicList = useProblemTopics();
   const levelList = useProblemLevels();
-  const [pageSize, setPageSize] = usePersistedPageSize("algoprep-problems-page-size", PAGE_SIZES, 8);
+  const [pageSize, setPageSize] = usePersistedPageSize(
+    "algoprep-problems-page-size",
+    PAGE_SIZES,
+    8,
+  );
   const [managingTopics, setManagingTopics] = useState(false);
   const [managingLevels, setManagingLevels] = useState(false);
   const [pickingLevel, setPickingLevel] = useState(false);
   // Level changes made through the bulk action; the mock rows themselves are read-only.
-  const [levelOverrides, setLevelOverrides] = useState<Readonly<Record<string, string>>>({});
-  const levelOf = (problem: AdminProblem) => levelOverrides[problem.code] ?? problem.difficulty;
+  const [levelOverrides, setLevelOverrides] = useState<
+    Readonly<Record<string, string>>
+  >({});
+  const levelOf = (problem: AdminProblem) =>
+    levelOverrides[problem.code] ?? problem.difficulty;
   const [query, setQuery] = useState("");
   const [difficulty, setDifficulty] = useState<DifficultyFilter>("all");
   const [status, setStatus] = useState<StatusFilter>("all");
   const [selected, setSelected] = useState<ReadonlySet<string>>(new Set());
-  const [sort, setSort] = useState<{ key: ProblemSortKey; direction: "asc" | "desc" }>({
+  const [sort, setSort] = useState<{
+    key: ProblemSortKey;
+    direction: "asc" | "desc";
+  }>({
     key: "edited",
     direction: "desc",
   });
   const [currentPage, setCurrentPage] = useState(1);
+  const router = useRouter();
   const [pendingDelete, setPendingDelete] = useState<AdminProblem | null>(null);
   const [confirmingBulkDelete, setConfirmingBulkDelete] = useState(false);
-  const [deletedCodes, setDeletedCodes] = useState<ReadonlySet<string>>(new Set());
+  const [deletedCodes, setDeletedCodes] = useState<ReadonlySet<string>>(
+    new Set(),
+  );
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -156,7 +171,11 @@ function ProblemManagementForm({
           return (left.acceptedRate - right.acceptedRate) * factor;
         case "difficulty": {
           // Admin-chosen order of the level list, not a fixed easy < medium < hard.
-          return (problemLevelRank(levelList, levelOf(left)) - problemLevelRank(levelList, levelOf(right))) * factor;
+          return (
+            (problemLevelRank(levelList, levelOf(left)) -
+              problemLevelRank(levelList, levelOf(right))) *
+            factor
+          );
         }
         case "status":
           return left.status.localeCompare(right.status) * factor;
@@ -167,14 +186,24 @@ function ProblemManagementForm({
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps -- levelOf only reads levelOverrides
-  }, [page.problems, deletedCodes, query, difficulty, status, sort, levelList, levelOverrides]);
+  }, [
+    page.problems,
+    deletedCodes,
+    query,
+    difficulty,
+    status,
+    sort,
+    levelList,
+    levelOverrides,
+  ]);
 
   // Rows still on screen (not locally deleted) per topic, so the manager can refuse deleting a topic
   // that is in use.
   const topicUsage = useMemo(() => {
     const counts: Record<string, number> = {};
     for (const problem of page.problems) {
-      if (!deletedCodes.has(problem.code)) counts[problem.topic] = (counts[problem.topic] ?? 0) + 1;
+      if (!deletedCodes.has(problem.code))
+        counts[problem.topic] = (counts[problem.topic] ?? 0) + 1;
     }
     return counts;
   }, [page.problems, deletedCodes]);
@@ -209,7 +238,18 @@ function ProblemManagementForm({
       toast.info(t("toast.bulkNeedsChoice"));
       return;
     }
-    // publish / duplicate / exportCsv have no API behind them yet: say so rather than report success.
+    if (action === "duplicate") {
+      // F2-16: the copy is an authoring form pre-filled from the source; nothing is created until Save.
+      // One source at a time, as opening several forms at once makes no sense.
+      if (count !== 1) {
+        toast.info(t("toast.duplicatePickOne"));
+        return;
+      }
+      const [source] = [...selected];
+      router.push(`${basePath}/new?from=${encodeURIComponent(source!)}`);
+      return;
+    }
+    // publish / exportCsv have no API behind them yet: say so rather than report success.
     toast.info(t("toast.notWired", { action: t(`bulk.${action}`), count }));
   }
 
@@ -229,6 +269,18 @@ function ProblemManagementForm({
     toast.success(t("toast.bulk.delete", { count }));
   }
 
+  // What the bulk delete hides from learners, shown as a warning (never blocks, BD SHR0201 Q7).
+  const bulkDeleteImpact = useMemo(() => {
+    const rows = page.problems.filter((problem) => selected.has(problem.code));
+    return {
+      submissions: rows.reduce(
+        (sum, problem) => sum + problem.submissionCount,
+        0,
+      ),
+      assigned: rows.filter((problem) => problem.assignedClassCount > 0).length,
+    };
+  }, [page.problems, selected]);
+
   // Selection survives filter changes, so a bulk delete can reach rows the filter now hides.
   const hiddenSelectedCount = useMemo(() => {
     const shown = new Set(filtered.map((problem) => problem.code));
@@ -238,7 +290,10 @@ function ProblemManagementForm({
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   // Deleting rows can leave the stored page past the last one; clamp rather than render an empty page.
   const safePage = Math.min(currentPage, totalPages);
-  const visible = filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
+  const visible = filtered.slice(
+    (safePage - 1) * pageSize,
+    safePage * pageSize,
+  );
 
   function toggleRow(code: string) {
     setSelected((previous) => {
@@ -255,21 +310,23 @@ function ProblemManagementForm({
       header: t("columnCode"),
       width: "92px",
       render: (problem) => (
-        <span className="font-mono text-xs text-[var(--color-text-muted)]">{problem.code}</span>
+        <span className="font-mono text-xs text-[var(--color-text-muted)]">
+          {problem.code}
+        </span>
       ),
     },
     {
       key: "title",
       header: t("columnTitle"),
+      width: "30%",
       sortable: true,
       render: (problem) => (
-        <Link
+        <EllipsisLink
           href={`${basePath}/${problem.code.replace("#", "")}`}
-          title={problem.title}
-          className="block truncate font-semibold hover:underline"
+          className="font-semibold"
         >
           {problem.title}
-        </Link>
+        </EllipsisLink>
       ),
     },
     {
@@ -343,7 +400,10 @@ function ProblemManagementForm({
       sortable: true,
       render: (problem) => (
         <span className="font-mono text-xs text-[var(--color-text-muted)]">
-          {t("testcasesAndEdit", { count: problem.testcaseCount, edited: problem.editedLabel })}
+          {t("testcasesAndEdit", {
+            count: problem.testcaseCount,
+            edited: problem.editedLabel,
+          })}
         </span>
       ),
     },
@@ -423,7 +483,10 @@ function ProblemManagementForm({
             },
             onSubmit: announceSearch,
           }}
-          resultCount={t("resultCount", { shown: filtered.length, total: page.problems.length })}
+          resultCount={t("resultCount", {
+            shown: filtered.length,
+            total: page.problems.length,
+          })}
         >
           <FilterMenu
             label={t("difficultyFilterLabel")}
@@ -434,7 +497,10 @@ function ProblemManagementForm({
             }}
             options={[
               { value: "all", label: t("filterAll") },
-              ...levelList.map((level) => ({ value: level.key, label: level.label })),
+              ...levelList.map((level) => ({
+                value: level.key,
+                label: level.label,
+              })),
             ]}
           />
           <FilterMenu
@@ -452,25 +518,34 @@ function ProblemManagementForm({
           />
         </FilterBar>
 
-        <BulkActionBar count={selected.size} label={t("selectionLabel", { count: selected.size })}>
+        <BulkActionBar
+          count={selected.size}
+          label={t("selectionLabel", { count: selected.size })}
+        >
           {/* "Xuất bản", not the mockup's "Xuất bản / ẩn": hiding is no longer a state. */}
-          {(["publish", "changeDifficulty", "assignTopic", "duplicate", "exportCsv"] as const satisfies readonly BulkAction[]).map(
-            (action) => (
-              <Button
-                key={action}
-                variant="ghost"
-                size="sm"
-                className="border border-[var(--color-border)]"
-                onClick={() => runBulk(action)}
-              >
-                {t(`bulk.${action}`)}
-              </Button>
-            ),
-          )}
+          {(
+            [
+              "publish",
+              "changeDifficulty",
+              "assignTopic",
+              "duplicate",
+              "exportCsv",
+            ] as const satisfies readonly BulkAction[]
+          ).map((action) => (
+            <Button
+              key={action}
+              variant="ghost"
+              size="sm"
+              className="border border-[var(--color-border)]"
+              onClick={() => runBulk(action)}
+            >
+              {t(`bulk.${action}`)}
+            </Button>
+          ))}
           <Button
             variant="ghost"
             size="sm"
-            className="text-[var(--color-admin-negative)]"
+            className="text-[var(--color-admin-negative-text)]"
             onClick={() => setConfirmingBulkDelete(true)}
           >
             {t("bulk.delete")}
@@ -488,7 +563,9 @@ function ProblemManagementForm({
             selectedKeys: selected,
             onToggleRow: toggleRow,
             onToggleAll: (selectAll) =>
-              setSelected(selectAll ? new Set(visible.map((row) => row.code)) : new Set()),
+              setSelected(
+                selectAll ? new Set(visible.map((row) => row.code)) : new Set(),
+              ),
             selectAllLabel: t("selectAll"),
             rowLabel: (problem) => t("selectRow", { title: problem.title }),
           }}
@@ -544,7 +621,11 @@ function ProblemManagementForm({
                     {item.count} · {item.percent}%
                   </span>
                 </div>
-                <ProgressBar value={item.percent} label={problemTopicLabel(topicList, item.topicName)} height={7} />
+                <ProgressBar
+                  value={item.percent}
+                  label={problemTopicLabel(topicList, item.topicName)}
+                  height={7}
+                />
               </li>
             ))}
           </ul>
@@ -562,33 +643,33 @@ function ProblemManagementForm({
             {page.attention
               .filter((item) => item.count > 0)
               .map((item) => (
-              <li
-                key={item.ruleCode}
-                className="glass-surface flex items-center gap-3 rounded-2xl border border-[var(--color-border)] px-3.5 py-2.5"
-              >
-                <div className="min-w-0 flex-1">
-                  <div className="text-[13.5px] font-semibold">
-                    {t(`attention.rule.${item.ruleCode}.title`)}
-                  </div>
-                  <div className="text-xs text-[var(--color-text-subtle)]">
-                    {t(`attention.rule.${item.ruleCode}.meta`)}
-                  </div>
-                </div>
-                <span
-                  className="font-mono text-[13px] font-semibold"
-                  style={{
-                    color:
-                      item.count === 0
-                        ? "var(--color-text-muted)"
-                        : item.ruleCode === "noTestcase"
-                          ? "var(--color-admin-negative)"
-                          : "var(--color-admin-warn)",
-                  }}
+                <li
+                  key={item.ruleCode}
+                  className="glass-surface flex items-center gap-3 rounded-2xl border border-[var(--color-border)] px-3.5 py-2.5"
                 >
-                  {item.count}
-                </span>
-              </li>
-            ))}
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[13.5px] font-semibold">
+                      {t(`attention.rule.${item.ruleCode}.title`)}
+                    </div>
+                    <div className="text-xs text-[var(--color-text-subtle)]">
+                      {t(`attention.rule.${item.ruleCode}.meta`)}
+                    </div>
+                  </div>
+                  <span
+                    className="font-mono text-[13px] font-semibold"
+                    style={{
+                      color:
+                        item.count === 0
+                          ? "var(--color-text-muted)"
+                          : item.ruleCode === "noTestcase"
+                            ? "var(--color-admin-negative-text)"
+                            : "var(--color-admin-warn-text)",
+                    }}
+                  >
+                    {item.count}
+                  </span>
+                </li>
+              ))}
           </ul>
         </Card>
       </div>
@@ -616,7 +697,10 @@ function ProblemManagementForm({
           deleteBlocked: (count) => t("topicManager.deleteBlocked", { count }),
           moveUp: t("topicManager.moveUp"),
           moveDown: t("topicManager.moveDown"),
-          error: { empty: t("topicManager.error.empty"), duplicate: t("topicManager.error.duplicate") },
+          error: {
+            empty: t("topicManager.error.empty"),
+            duplicate: t("topicManager.error.duplicate"),
+          },
           done: {
             add: t("topicManager.done.add"),
             rename: t("topicManager.done.rename"),
@@ -651,6 +735,13 @@ function ProblemManagementForm({
         destructive
       >
         {t("confirmDeleteBody")}
+        <span className="mt-2 block font-semibold text-[var(--color-admin-warn-text)]">
+          {t("confirmBulkDeleteImpact", {
+            count: selected.size,
+            submissions: bulkDeleteImpact.submissions,
+            assigned: bulkDeleteImpact.assigned,
+          })}
+        </span>
         {hiddenSelectedCount > 0 ? (
           <span className="mt-2 block font-semibold text-[var(--color-admin-warn-text)]">
             {t("confirmBulkDeleteHidden", { count: hiddenSelectedCount })}
@@ -663,7 +754,9 @@ function ProblemManagementForm({
         onClose={() => setPendingDelete(null)}
         onConfirm={() => {
           if (pendingDelete) {
-            setDeletedCodes((previous) => new Set(previous).add(pendingDelete.code));
+            setDeletedCodes((previous) =>
+              new Set(previous).add(pendingDelete.code),
+            );
             // A deleted row must not stay counted in the selection.
             setSelected((previous) => {
               const next = new Set(previous);
@@ -680,6 +773,16 @@ function ProblemManagementForm({
         destructive
       >
         {t("confirmDeleteBody")}
+        {pendingDelete &&
+        (pendingDelete.submissionCount > 0 ||
+          pendingDelete.assignedClassCount > 0) ? (
+          <span className="mt-2 block font-semibold text-[var(--color-admin-warn-text)]">
+            {t("confirmDeleteImpact", {
+              submissions: pendingDelete.submissionCount,
+              classes: pendingDelete.assignedClassCount,
+            })}
+          </span>
+        ) : null}
       </ConfirmDialog>
     </div>
   );

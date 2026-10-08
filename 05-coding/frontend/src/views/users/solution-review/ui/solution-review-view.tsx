@@ -29,7 +29,14 @@ import { ApiError } from "@/shared/api";
 import { problemLevelLabel, useProblemLevels } from "@/entities/problem";
 import { useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
-import { Badge, Button, Card, ConfirmDialog, NoticeTile, Skeleton } from "@/shared/ui";
+import {
+  Badge,
+  Button,
+  Card,
+  ConfirmDialog,
+  NoticeTile,
+  Skeleton,
+} from "@/shared/ui";
 
 const DIFF_LINE_CLASS: Record<string, string> = {
   same: "text-[var(--color-text-muted)]",
@@ -39,8 +46,14 @@ const DIFF_LINE_CLASS: Record<string, string> = {
 
 const DIFF_SIGN: Record<string, string> = { same: " ", add: "+", del: "−" };
 
-function isDemoOutcome(value: string | null): value is SolutionReviewDemoOutcome {
-  return value === "ready" || value === "errorTransient" || value === "errorBudgetLocked";
+function isDemoOutcome(
+  value: string | null,
+): value is SolutionReviewDemoOutcome {
+  return (
+    value === "ready" ||
+    value === "errorTransient" ||
+    value === "errorBudgetLocked"
+  );
 }
 
 export function SolutionReviewView() {
@@ -56,13 +69,17 @@ function SolutionReviewContent() {
   const t = useT("solutionReview");
   const searchParams = useSearchParams();
   const rawDemo = searchParams.get("demo");
-  const demo: SolutionReviewDemoOutcome = isDemoOutcome(rawDemo) ? rawDemo : "ready";
+  const demo: SolutionReviewDemoOutcome = isDemoOutcome(rawDemo)
+    ? rawDemo
+    : "ready";
 
   const query = useSolutionReview(demo);
   const [applyConfirmOpen, setApplyConfirmOpen] = useState(false);
 
   const isLoading = query.isLoading;
-  const isBudgetLocked = query.error instanceof ApiError && query.error.code === AI_BUDGET_LOCKED_CODE;
+  const isBudgetLocked =
+    query.error instanceof ApiError &&
+    query.error.code === AI_BUDGET_LOCKED_CODE;
   const isTransientError = query.isError && !isBudgetLocked;
   const data = query.data as SolutionReviewDetail | undefined;
 
@@ -78,8 +95,14 @@ function SolutionReviewContent() {
 
   return (
     <section className="p-6">
-      <nav aria-label={t("breadcrumbLabel")} className="mb-4 flex items-center gap-2 text-[13px]">
-        <Link href="/submissions" className="font-semibold text-[var(--color-text-muted)]">
+      <nav
+        aria-label={t("breadcrumbLabel")}
+        className="mb-4 flex items-center gap-2 text-[13px]"
+      >
+        <Link
+          href="/submissions"
+          className="font-semibold text-[var(--color-text-muted)]"
+        >
           {t("breadcrumbSubmissionResult")}
         </Link>
         <span aria-hidden="true">/</span>
@@ -87,7 +110,9 @@ function SolutionReviewContent() {
           {data?.submissionId ?? "SUB-2841"}
         </span>
         <span aria-hidden="true">/</span>
-        <span className="text-[var(--color-text)]">{t("breadcrumbCurrent")}</span>
+        <span className="text-[var(--color-text)]">
+          {t("breadcrumbCurrent")}
+        </span>
       </nav>
 
       {isLoading ? <LoadingSkeleton /> : null}
@@ -95,7 +120,12 @@ function SolutionReviewContent() {
       {isTransientError ? (
         <NoticeTile tone="warn" title={t("errorTransientTitle")}>
           {t("errorTransientBody")}
-          <Button variant="ghost" size="sm" className="mt-3" onClick={() => query.refetch()}>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="mt-3"
+            onClick={() => query.refetch()}
+          >
             {t("retry")}
           </Button>
         </NoticeTile>
@@ -114,7 +144,11 @@ function SolutionReviewContent() {
       ) : null}
 
       {!isLoading && !query.isError && data ? (
-        <ReadyReport data={data} t={t} onApplyClick={() => setApplyConfirmOpen(true)} />
+        <ReadyReport
+          data={data}
+          t={t}
+          onApplyClick={() => setApplyConfirmOpen(true)}
+        />
       ) : null}
 
       <ConfirmDialog
@@ -157,15 +191,29 @@ function ReadyReport({
   return (
     <>
       <div className="mb-4 flex flex-wrap items-center gap-5">
-        <Stat label={t("statProblem")} value={data.problemTitle} unit={problemLevelLabel(levelList, data.difficulty)} />
+        <Stat
+          label={t("statProblem")}
+          value={data.problemTitle}
+          unit={problemLevelLabel(levelList, data.difficulty)}
+        />
         <Stat
           label={t("statApproach")}
-          value={data.isApproachOptimal ? t("approachOptimal") : t("approachSuboptimal")}
+          value={
+            data.isApproachOptimal
+              ? t("approachOptimal")
+              : t("approachSuboptimal")
+          }
           unit={data.approachTitle}
         />
-        <Stat label={t("statReadability")} value={String(data.readabilityScore)} unit="/ 5" />
+        <Stat
+          label={t("statReadability")}
+          value={String(data.readabilityScore)}
+          unit="/ 5"
+        />
         <Button variant="cta" size="sm" className="ml-auto" asChild>
-          <Link href={`/submissions/${data.submissionId}/interview`}>{t("interviewCta")}</Link>
+          <Link href={`/submissions/${data.submissionId}/interview`}>
+            {t("interviewCta")}
+          </Link>
         </Button>
       </div>
 
@@ -176,7 +224,9 @@ function ReadyReport({
           </NoticeTile>
 
           <Card title={t("summaryTitle")}>
-            <p className="text-[15px] leading-relaxed text-pretty">{data.summaryText}</p>
+            <p className="text-[15px] leading-relaxed text-pretty">
+              {data.summaryText}
+            </p>
           </Card>
 
           <Card title={t("complexityTitle")}>
@@ -192,7 +242,9 @@ function ReadyReport({
                 </thead>
                 <tbody>
                   <tr className="border-t border-[var(--color-border)]">
-                    <td className="py-2 font-semibold">{t("complexityTime")}</td>
+                    <td className="py-2 font-semibold">
+                      {t("complexityTime")}
+                    </td>
                     <td className="py-2 font-mono font-semibold text-[var(--color-success-text)]">
                       {data.complexity.actualTime}
                     </td>
@@ -204,7 +256,9 @@ function ReadyReport({
                     </td>
                   </tr>
                   <tr className="border-t border-[var(--color-border)]">
-                    <td className="py-2 font-semibold">{t("complexitySpace")}</td>
+                    <td className="py-2 font-semibold">
+                      {t("complexitySpace")}
+                    </td>
                     <td className="py-2 font-mono font-semibold text-[var(--color-success-text)]">
                       {data.complexity.actualSpace}
                     </td>
@@ -223,14 +277,18 @@ function ReadyReport({
           <Card title={t("rubricTitle")}>
             <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
               {RUBRIC_CRITERION_CODES.map((code) => {
-                const criterion = data.criteriaScores.find((c) => c.code === code);
+                const criterion = data.criteriaScores.find(
+                  (c) => c.code === code,
+                );
                 if (!criterion) return null;
                 return (
                   <div
                     key={code}
                     className="rounded-xl border border-[var(--color-border)] px-3 py-2.5"
                   >
-                    <p className="mb-1 text-[13px] font-semibold">{t(`rubric.${code}`)}</p>
+                    <p className="mb-1 text-[13px] font-semibold">
+                      {t(`rubric.${code}`)}
+                    </p>
                     <p className="text-[12.5px] text-[var(--color-text-muted)]">
                       {criterion.feedback}
                     </p>
@@ -277,10 +335,7 @@ function ReadyReport({
             </ul>
           </Card>
 
-          <Card
-            title={t("diffTitle")}
-            description={data.codeDiff.diffNote}
-          >
+          <Card title={t("diffTitle")} description={data.codeDiff.diffNote}>
             <pre className="overflow-x-auto rounded-xl bg-[var(--color-track)] p-3.5 font-mono text-[12.5px] leading-[1.8]">
               {data.codeDiff.diffLines.map((line, index) => (
                 <div key={index} className={DIFF_LINE_CLASS[line.kind]}>
@@ -311,7 +366,12 @@ function ReadyReport({
             </pre>
           </Card>
 
-          <Button variant="ghost" size="md" className="w-full border border-[var(--color-border)]" onClick={onApplyClick}>
+          <Button
+            variant="ghost"
+            size="md"
+            className="w-full border border-[var(--color-border)]"
+            onClick={onApplyClick}
+          >
             {t("applyCta")}
           </Button>
         </div>
@@ -320,7 +380,15 @@ function ReadyReport({
   );
 }
 
-function Stat({ label, value, unit }: { label: string; value: string; unit: string }) {
+function Stat({
+  label,
+  value,
+  unit,
+}: {
+  label: string;
+  value: string;
+  unit: string;
+}) {
   return (
     <div className="flex items-center gap-2">
       <span className="text-[11px] font-semibold tracking-[0.07em] text-[var(--color-text-subtle)] uppercase">

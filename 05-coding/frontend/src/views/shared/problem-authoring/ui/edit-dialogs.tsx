@@ -5,7 +5,11 @@
 "use client";
 
 import { useState } from "react";
-import type { Testcase, TestcaseVisibility, WorkedExample } from "@/entities/problem";
+import type {
+  Testcase,
+  TestcaseVisibility,
+  WorkedExample,
+} from "@/entities/problem";
 import { useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
 import { Button, Modal, SelectField, TextArea } from "@/shared/ui";
@@ -36,9 +40,7 @@ function FormShell({ title, onClose, onSave, children }: FormShellProps) {
         </>
       }
     >
-      <div className="flex flex-col gap-3">
-        {children}
-      </div>
+      <div className="flex flex-col gap-3">{children}</div>
     </Modal>
   );
 }
@@ -50,11 +52,17 @@ type TestcaseDialogProps = {
   onSave: (values: Pick<Testcase, "input" | "expected" | "visibility">) => void;
 };
 
-export function TestcaseDialog({ testcase, onClose, onSave }: TestcaseDialogProps) {
+export function TestcaseDialog({
+  testcase,
+  onClose,
+  onSave,
+}: TestcaseDialogProps) {
   const t = useT("problemAuthoring");
   const [input, setInput] = useState(testcase?.input ?? "");
   const [expected, setExpected] = useState(testcase?.expected ?? "");
-  const [visibility, setVisibility] = useState<TestcaseVisibility>(testcase?.visibility ?? "hidden");
+  const [visibility, setVisibility] = useState<TestcaseVisibility>(
+    testcase?.visibility ?? "hidden",
+  );
   const [touched, setTouched] = useState(false);
   const invalid = !input.trim() || !expected.trim();
 
@@ -92,7 +100,9 @@ export function TestcaseDialog({ testcase, onClose, onSave }: TestcaseDialogProp
       <SelectField
         label={t("columnVisibility")}
         value={visibility}
-        onChange={(event) => setVisibility(event.target.value as TestcaseVisibility)}
+        onChange={(event) =>
+          setVisibility(event.target.value as TestcaseVisibility)
+        }
         options={[
           { value: "public", label: t("visibility.public") },
           { value: "hidden", label: t("visibility.hidden") },
@@ -105,10 +115,16 @@ export function TestcaseDialog({ testcase, onClose, onSave }: TestcaseDialogProp
 type ExampleDialogProps = {
   example?: WorkedExample;
   onClose: () => void;
-  onSave: (values: Pick<WorkedExample, "input" | "output" | "explanation">) => void;
+  onSave: (
+    values: Pick<WorkedExample, "input" | "output" | "explanation">,
+  ) => void;
 };
 
-export function ExampleDialog({ example, onClose, onSave }: ExampleDialogProps) {
+export function ExampleDialog({
+  example,
+  onClose,
+  onSave,
+}: ExampleDialogProps) {
   const t = useT("problemAuthoring");
   const [input, setInput] = useState(example?.input ?? "");
   const [output, setOutput] = useState(example?.output ?? "");
@@ -123,7 +139,11 @@ export function ExampleDialog({ example, onClose, onSave }: ExampleDialogProps) 
       toast.error(t("dialog.required"));
       return;
     }
-    onSave({ input: input.trim(), output: output.trim(), explanation: explanation.trim() });
+    onSave({
+      input: input.trim(),
+      output: output.trim(),
+      explanation: explanation.trim(),
+    });
   }
 
   return (

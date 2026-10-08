@@ -47,7 +47,10 @@ export function ProfileView() {
           <>
             <IdentityCard profile={query.data} />
             {query.data ? (
-              <PersonalInfoCard profile={query.data} onProfileSaved={() => query.refetch()} />
+              <PersonalInfoCard
+                profile={query.data}
+                onProfileSaved={() => query.refetch()}
+              />
             ) : null}
             {query.data ? <SecurityCard profile={query.data} /> : null}
           </>

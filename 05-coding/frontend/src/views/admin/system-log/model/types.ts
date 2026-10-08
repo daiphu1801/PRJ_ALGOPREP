@@ -10,12 +10,19 @@
  */
 export type AuditCategory = "auth" | "permission" | "config" | "content";
 
-export const AUDIT_CATEGORIES: AuditCategory[] = ["auth", "permission", "config", "content"];
+export const AUDIT_CATEGORIES: AuditCategory[] = [
+  "auth",
+  "permission",
+  "config",
+  "content",
+];
 
 export type AuditEvent = {
   /** Event id shown to the operator, e.g. "evt_9f2a53". */
   id: string;
-  /** Wall-clock time, HH:mm:ss. Kept as a string: the mock has no date component to format. */
+  /** Calendar day, YYYY-MM-DD. Drives the "Từ ngày / Đến ngày" filter (ADM0403 Q6). */
+  date: string;
+  /** Wall-clock time, HH:mm:ss. */
   time: string;
   category: AuditCategory;
   message: string;
@@ -23,6 +30,12 @@ export type AuditEvent = {
   service: string;
   /** Username of the person who acted. Never a machine — see the note above. */
   actor: string;
+  /**
+   * Free-text reason the admin typed when locking an account (F1-32). Shown verbatim under the
+   * message; an unlock row has none, which is how the two stay visually distinct (RD ADM0403 section 2
+   * point 7).
+   */
+  reason?: string;
 };
 
 export type ActiveAdmin = {

@@ -1,8 +1,17 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { act, fireEvent, render, renderHook, screen } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+} from "@testing-library/react";
 import { toast, useToasts } from "@/shared/lib/toast-store";
 import type { ManagedListError } from "@/shared/lib/managed-list-store";
-import { ManagedListDialog, type ManagedListLabels } from "./managed-list-dialog";
+import {
+  ManagedListDialog,
+  type ManagedListLabels,
+} from "./managed-list-dialog";
 
 const labels: ManagedListLabels = {
   title: "Quản lý chủ đề",
@@ -28,7 +37,11 @@ const items = [
 function setup(
   onRemove = vi.fn(),
   onAdd: (label: string) => ManagedListError | null = () => null,
-  options: { items?: typeof items; keepAtLeast?: number; onMove?: (key: string, delta: -1 | 1) => void } = {},
+  options: {
+    items?: typeof items;
+    keepAtLeast?: number;
+    onMove?: (key: string, delta: -1 | 1) => void;
+  } = {},
 ) {
   render(
     <ManagedListDialog
@@ -38,7 +51,12 @@ function setup(
       usage={{ a: 3 }}
       keepAtLeast={options.keepAtLeast}
       onMove={options.onMove}
-      labels={{ ...labels, deleteLast: "Phải còn một mục", moveUp: "Lên", moveDown: "Xuống" }}
+      labels={{
+        ...labels,
+        deleteLast: "Phải còn một mục",
+        moveUp: "Lên",
+        moveDown: "Xuống",
+      }}
       onAdd={onAdd}
       onRename={() => null}
       onRemove={onRemove}
@@ -67,10 +85,17 @@ describe("ManagedListDialog", () => {
   it("raises an error toast and flags the field when the store rejects an add", () => {
     const toasts = renderHook(() => useToasts());
     setup(vi.fn(), () => "duplicate");
-    fireEvent.change(screen.getByLabelText("Chủ đề mới"), { target: { value: "Alpha" } });
+    fireEvent.change(screen.getByLabelText("Chủ đề mới"), {
+      target: { value: "Alpha" },
+    });
     fireEvent.click(screen.getByRole("button", { name: "Thêm" }));
-    expect(toasts.result.current.map((item) => [item.tone, item.message])).toEqual([["error", "Trùng"]]);
-    expect(screen.getByLabelText("Chủ đề mới")).toHaveAttribute("aria-invalid", "true");
+    expect(
+      toasts.result.current.map((item) => [item.tone, item.message]),
+    ).toEqual([["error", "Trùng"]]);
+    expect(screen.getByLabelText("Chủ đề mới")).toHaveAttribute(
+      "aria-invalid",
+      "true",
+    );
     act(() => toast.clear());
   });
 
@@ -78,12 +103,17 @@ describe("ManagedListDialog", () => {
     const toasts = renderHook(() => useToasts());
     setup();
     fireEvent.click(screen.getByRole("button", { name: "Xoá" }));
-    expect(toasts.result.current.map((item) => [item.tone, item.message])).toEqual([["success", "Đã xoá"]]);
+    expect(
+      toasts.result.current.map((item) => [item.tone, item.message]),
+    ).toEqual([["success", "Đã xoá"]]);
     act(() => toast.clear());
   });
 
   it("disables delete once the list is down to keepAtLeast and says why", () => {
-    const { onRemove } = setup(vi.fn(), () => null, { items: [items[1]!], keepAtLeast: 1 });
+    const { onRemove } = setup(vi.fn(), () => null, {
+      items: [items[1]!],
+      keepAtLeast: 1,
+    });
     const last = screen.getByRole("button", { name: "Phải còn một mục" });
     fireEvent.click(last);
     expect(onRemove).not.toHaveBeenCalled();
@@ -111,13 +141,18 @@ describe("ManagedListDialog", () => {
 
   it("renders no move controls without onMove", () => {
     setup();
-    expect(screen.queryByRole("button", { name: "Lên" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Lên" }),
+    ).not.toBeInTheDocument();
   });
 });
 
 describe("ManagedListDialog long lists", () => {
   const many = (count: number) =>
-    Array.from({ length: count }, (_, index) => ({ key: `k${index}`, label: `Item ${index}` }));
+    Array.from({ length: count }, (_, index) => ({
+      key: `k${index}`,
+      label: `Item ${index}`,
+    }));
 
   it("grows freely up to 5 items", () => {
     setup(vi.fn(), () => null, { items: many(5) });

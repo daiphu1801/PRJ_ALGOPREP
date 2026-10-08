@@ -9,7 +9,11 @@ export const metadata: Metadata = {
   description: "Nền tảng luyện thuật toán và ôn phỏng vấn kỹ thuật tích hợp AI",
 };
 
-export default async function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
   const locale = await getLocale();
 
   return (

@@ -1,6 +1,10 @@
 import { InterviewQuestionAuthoringView } from "@/views/shared/interview-question-authoring";
 
-export default async function Page({ params }: { params: Promise<{ questionId: string }> }) {
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ questionId: string }>;
+}) {
   const { questionId } = await params;
   return (
     <InterviewQuestionAuthoringView

@@ -32,7 +32,8 @@ export function StudentHeader() {
   // behind one button while the brand and the user block stay put.
   const [navOpen, setNavOpen] = useState(false);
 
-  const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+  const isActive = (href: string) =>
+    pathname === href || pathname.startsWith(`${href}/`);
 
   return (
     <header className="sticky top-0 z-30 bg-[linear-gradient(var(--color-background)_82%,transparent)] px-5 pb-3 pt-3.5">
@@ -47,7 +48,10 @@ export function StudentHeader() {
           {navOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
         </button>
 
-        <Link href="/dashboard" className="flex shrink-0 items-center gap-2.5 text-[var(--color-text)]">
+        <Link
+          href="/dashboard"
+          className="flex shrink-0 items-center gap-2.5 text-[var(--color-text)]"
+        >
           <span className="text-[19px] font-bold tracking-tight">AlgoPrep</span>
           {/* dc.html:53 — the judge engine the project actually runs on
               (DEC-2026-0823-go-judge-default-engine), rendered as a small outlined tag. */}
@@ -56,7 +60,10 @@ export function StudentHeader() {
           </span>
         </Link>
 
-        <nav aria-label={t("area.student")} className="hidden min-w-0 flex-1 items-center gap-5 lg:flex">
+        <nav
+          aria-label={t("area.student")}
+          className="hidden min-w-0 flex-1 items-center gap-5 lg:flex"
+        >
           {STUDENT_NAV_ITEMS.map((item) => (
             <Link
               key={item.key}
@@ -110,18 +117,25 @@ export function StudentHeader() {
                 >
                   {STUDENT_MENU_ITEMS.map((item, index) => (
                     <div key={item.key}>
-                      {item.danger && <div className="-mx-2.5 my-2 h-px bg-[var(--color-border)]" />}
+                      {item.danger && (
+                        <div className="-mx-2.5 my-2 h-px bg-[var(--color-border)]" />
+                      )}
                       <Link
                         role="menuitem"
                         href={item.href}
                         onClick={() => setMenuOpen(false)}
                         className={cn(
                           "flex h-[34px] items-center gap-2.5 rounded-lg px-2.5 text-[13.5px] font-medium hover:bg-[var(--color-surface-hover)]",
-                          item.danger ? "text-[var(--color-danger)]" : "text-[var(--color-text)]",
+                          item.danger
+                            ? "text-[var(--color-danger)]"
+                            : "text-[var(--color-text)]",
                         )}
                         autoFocus={index === 0}
                       >
-                        <item.icon aria-hidden="true" className="h-4 w-4 shrink-0" />
+                        <item.icon
+                          aria-hidden="true"
+                          className="h-4 w-4 shrink-0"
+                        />
                         {t(item.labelKey)}
                       </Link>
                     </div>

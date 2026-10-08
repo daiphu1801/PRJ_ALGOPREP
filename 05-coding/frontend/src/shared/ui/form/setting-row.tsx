@@ -37,7 +37,9 @@ export function SettingRow({
       <div className="min-w-0 flex-1">
         <p className="text-[13.5px] font-semibold">{label}</p>
         {description ? (
-          <p className="text-xs text-[var(--color-text-subtle)]">{description}</p>
+          <p className="text-xs text-[var(--color-text-subtle)]">
+            {description}
+          </p>
         ) : null}
       </div>
       {children ? <div className="shrink-0">{children}</div> : null}

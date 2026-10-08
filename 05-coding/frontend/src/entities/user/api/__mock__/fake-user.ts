@@ -32,18 +32,28 @@ let profile: UserProfile = {
 };
 
 let settings: AccountSettings = {
-  workspace: { defaultLanguage: "PYTHON", editorFontSize: "14", autosaveDraft: true, vimMode: false },
+  workspace: {
+    defaultLanguage: "PYTHON",
+    editorFontSize: "14",
+    autosaveDraft: true,
+    vimMode: false,
+  },
   preferredInterviewLevel: "MIDDLE",
   notifications: { streakReminderEnabled: true, weeklyReportEnabled: false },
 };
 
-let interviewPreferences: InterviewPracticePreferences = { maxTurnsPerSession: "12", hintAllowed: true };
+let interviewPreferences: InterviewPracticePreferences = {
+  maxTurnsPerSession: "12",
+  hintAllowed: true,
+};
 
 export function fakeGetMyProfile(): Promise<UserProfile> {
   return delay(profile);
 }
 
-export function fakeUpdateMyProfile(input: UpdateProfileInput): Promise<UserProfile> {
+export function fakeUpdateMyProfile(
+  input: UpdateProfileInput,
+): Promise<UserProfile> {
   profile = {
     ...profile,
     displayName: input.displayName,
@@ -56,7 +66,9 @@ export function fakeUpdateMyProfile(input: UpdateProfileInput): Promise<UserProf
 }
 
 /** `RequestMyEmailChange` — always succeeds in the mock; the real endpoint rejects an already-used email directly (logged-in user, no enumeration concern). */
-export function fakeRequestEmailChange(_newEmail: string): Promise<{ ok: true }> {
+export function fakeRequestEmailChange(
+  _newEmail: string,
+): Promise<{ ok: true }> {
   return delay({ ok: true }, 500);
 }
 
@@ -82,7 +94,11 @@ export function fakeChangeMyPassword(
     // check, matching entities/auth's canned-credential approach (no real hashing to compare against).
     return delay({ ok: false, message: "errors.currentPasswordInvalid" }, 500);
   }
-  profile = { ...profile, hasPassword: true, passwordChangedAt: new Date().toISOString().slice(0, 10) };
+  profile = {
+    ...profile,
+    hasPassword: true,
+    passwordChangedAt: new Date().toISOString().slice(0, 10),
+  };
   return delay({ ok: true }, 500);
 }
 
@@ -90,7 +106,9 @@ export function fakeGetMySettings(): Promise<AccountSettings> {
   return delay(settings);
 }
 
-export function fakeUpdateMySettings(input: AccountSettings): Promise<AccountSettings> {
+export function fakeUpdateMySettings(
+  input: AccountSettings,
+): Promise<AccountSettings> {
   settings = input;
   return delay(settings, 600);
 }
@@ -108,9 +126,19 @@ export function fakeGetInterviewPreferences(): Promise<InterviewPracticePreferen
 }
 
 /** `ExportMyData` — mock returns a tiny in-memory file instead of a real report. */
-export function fakeExportMyData(scope: "profile" | "submissions"): Promise<Blob> {
-  const body = scope === "profile" ? JSON.stringify(profile, null, 2) : "id,problemId,verdict\n";
-  return delay(new Blob([body], { type: scope === "profile" ? "application/json" : "text/csv" }), 700);
+export function fakeExportMyData(
+  scope: "profile" | "submissions",
+): Promise<Blob> {
+  const body =
+    scope === "profile"
+      ? JSON.stringify(profile, null, 2)
+      : "id,problemId,verdict\n";
+  return delay(
+    new Blob([body], {
+      type: scope === "profile" ? "application/json" : "text/csv",
+    }),
+    700,
+  );
 }
 
 export function fakeExportInterviewTranscripts(): Promise<Blob> {

@@ -50,23 +50,41 @@ export function ActivityHeatmap({
   return (
     <div>
       <div className="mb-2 flex items-center justify-end gap-1.5">
-        <span className="text-[11.5px] text-[var(--color-text-subtle)]">{lessLabel}</span>
+        <span className="text-[11.5px] text-[var(--color-text-subtle)]">
+          {lessLabel}
+        </span>
         {LEGEND_LEVELS.map((level) => (
-          <span key={level} aria-hidden="true" className={cn("h-[11px] w-[11px] rounded-sm", LEVEL_STYLE[level])} />
+          <span
+            key={level}
+            aria-hidden="true"
+            className={cn("h-[11px] w-[11px] rounded-sm", LEVEL_STYLE[level])}
+          />
         ))}
-        <span className="text-[11.5px] text-[var(--color-text-subtle)]">{moreLabel}</span>
+        <span className="text-[11.5px] text-[var(--color-text-subtle)]">
+          {moreLabel}
+        </span>
       </div>
 
       {/* The grid is decoration over a figure already stated in words above it (the "N ngày có bài
           nộp" summary), so it is one labelled group rather than 364 focusable cells. */}
-      <div role="img" aria-label={ariaLabel} className="flex gap-[3px] overflow-x-auto pb-1">
+      <div
+        role="img"
+        aria-label={ariaLabel}
+        className="flex gap-[3px] overflow-x-auto pb-1"
+      >
         {weeks.map((week, index) => (
-          <div key={week[0]?.key ?? index} className="grid shrink-0 grid-rows-7 gap-[3px]">
+          <div
+            key={week[0]?.key ?? index}
+            className="grid shrink-0 grid-rows-7 gap-[3px]"
+          >
             {week.map((cell) => (
               <span
                 key={cell.key}
                 title={cell.title}
-                className={cn("h-[11px] w-[11px] rounded-sm", LEVEL_STYLE[cell.level])}
+                className={cn(
+                  "h-[11px] w-[11px] rounded-sm",
+                  LEVEL_STYLE[cell.level],
+                )}
               />
             ))}
           </div>
@@ -76,9 +94,16 @@ export function ActivityHeatmap({
       {/* Sized to the grid, not to the card: the cells are a fixed 11px + 3px gap, so a tick row
           measured in percent of the container drifts away from the columns it labels as soon as
           the card is wider than the grid. */}
-      <div className="mt-1.5 flex" style={{ width: weeks.length * (CELL_PX + GAP_PX) - GAP_PX }} aria-hidden="true">
+      <div
+        className="mt-1.5 flex"
+        style={{ width: weeks.length * (CELL_PX + GAP_PX) - GAP_PX }}
+        aria-hidden="true"
+      >
         {monthLabels.map((label) => (
-          <span key={label} className="flex-1 font-mono text-[11px] text-[var(--color-text-subtle)]">
+          <span
+            key={label}
+            className="flex-1 font-mono text-[11px] text-[var(--color-text-subtle)]"
+          >
             {label}
           </span>
         ))}

@@ -309,6 +309,7 @@
     }
   },
   "adminNav": {
+    "skipToContent": "Skip to main content",
     "sidebarLabel": "Admin area navigation",
     "toggleSidebar": "Collapse / expand",
     "collapseSidebar": "Collapse",
@@ -341,6 +342,7 @@
     "footerLinkSupport": "Support"
   },
   "instructorNav": {
+    "skipToContent": "Skip to main content",
     "sidebarLabel": "Instructor area navigation",
     "areaEyebrow": "INSTRUCTOR",
     "toggleSidebar": "Collapse / expand",
@@ -481,7 +483,11 @@
       "save": "Save",
       "cancel": "Cancel",
       "errorMin": "Enter a whole number of {min} or more",
-      "saved": "Log retention settings saved"
+      "saved": "Log retention settings saved",
+      "confirmShorter": "Shortening the period to {days} days: rows older than that are purged on the next run.",
+      "confirmDelete": "The Delete policy: expired rows are lost for good, with no archive to read back.",
+      "confirm": "Save anyway",
+      "back": "Go back"
     },
     "exportDialog": {
       "title": "Download log",
@@ -503,7 +509,12 @@
         "content": "Content",
         "id": "Event ID"
       },
-      "errorNoColumns": "Pick at least one column to export"
+      "errorNoColumns": "Pick at least one column to export",
+      "scopeTitle": "Applies the filters now on screen:",
+      "scopeQuery": "keyword “{query}”",
+      "scopeCategory": "category {category}",
+      "errorFuture": "A future date cannot be chosen",
+      "errorRetention": "The log keeps only the last {days} days; the start date is too far back"
     },
     "title": "System log",
     "subtitle": "Administrative actions taken by people · infrastructure events live in Judge queue",
@@ -529,7 +540,11 @@
     "activeAdminsSubtitle": "By most recent action",
     "breakdownTitle": "Actions by category · 7 days",
     "infraNote": "Infrastructure events (worker, AI, backup) live on the Judge queue screen",
-    "eventListLabel": "Event list"
+    "eventListLabel": "Event list",
+    "dateFrom": "From",
+    "dateTo": "To",
+    "rangeInvalid": "The end date must not be before the start date",
+    "reasonLabel": "Reason"
   },
   "adminUserManagement": {
     "title": "User management",
@@ -559,12 +574,11 @@
     "columnSubmissions": "Submissions",
     "columnLastActive": "Last active",
     "columnStatus": "Status",
-    "selectAll": "Select every visible account",
+    "selectAll": "Select the {count} visible accounts",
     "selectRow": "Select {name}",
     "selectionLabel": "{count} accounts selected",
-    "bulkResetPassword": "Reset password",
-    "bulkChangeRole": "Change role",
     "bulkLock": "Lock accounts",
+    "bulkUnlock": "Unlock accounts",
     "emptyFiltered": "No account matches the current filter",
     "pageLabel": "Page {page} of {totalPages} · showing {shown} rows",
     "previous": "Previous",
@@ -576,16 +590,11 @@
       "pendingEmail": {
         "label": "Awaiting email check",
         "meta": "Dropped after 7 days"
-      },
-      "instructorRequest": {
-        "label": "Instructor access requests",
-        "meta": "Needs admin approval"
       }
     },
     "lockBlockedTitle": "Cannot lock",
     "lockBlockedBody": "This would lock the last active administrator. The system must always keep at least one administrator able to configure it. Add or unlock another administrator first.",
     "lockBlockedClose": "Got it",
-    "confirmLockSelfWarning": "You are locking your own account: you will be signed out and cannot sign back in until another administrator unlocks it.",
     "addDialog": {
       "title": "Add account",
       "nameLabel": "Full name",
@@ -600,13 +609,49 @@
       "createdTitle": "Account created",
       "createdBody": "Account created. A temporary password was sent to {email}."
     },
-    "confirmLockTitle": "Lock {count} accounts?",
-    "confirmLockBody": "{count} accounts will not be able to sign in until unlocked. Their submissions and progress are kept.",
-    "confirmLockAction": "Lock accounts",
+    "lockDialog": {
+      "title": "Lock {count} accounts?",
+      "body": "The {count} accounts below will not be able to sign in until they are unlocked. Their submissions and progress are kept.",
+      "moreCount": "and {count} more",
+      "skipped": "{count} accounts were already locked and have been skipped.",
+      "selfWarning": "You are locking your own account: you will be signed out and cannot sign back in until another administrator unlocks it.",
+      "reasonLabel": "Reason for locking",
+      "reasonPlaceholder": "For example: many accounts registered in bulk from the same IP address.",
+      "notifyLabel": "Email the {count} affected users",
+      "notifyHint": "The email states which account was locked, when, why, and how to contact an administrator to get it unlocked. Accounts that only sign in through an external provider receive the same message.",
+      "reasonHint": "The reason is written to the system log along with the lock timestamp, even when no email is sent.",
+      "errorReasonRequired": "Enter a reason to notify the users",
+      "submit": "Lock accounts"
+    },
+    "confirmUnlockTitle": "Unlock {count} accounts?",
+    "confirmUnlockBody": "The {count} accounts below can sign in again immediately. This action is written to the system log.",
+    "confirmUnlockAction": "Unlock",
     "cancel": "Cancel",
-    "bulkResetDone": "Password reset email sent to {count} accounts",
-    "bulkRoleDone": "Role changed for {count} accounts",
-    "bulkLockDone": "{count} accounts locked"
+    "lockDone": "Locked {count} accounts",
+    "lockDoneNotified": "Locked {count} accounts and emailed the users",
+    "unlockDone": "Unlocked {count} accounts",
+    "columnActions": "Actions",
+    "actionChangeRole": "Change role",
+    "actionChangeRoleFor": "Change the role of {name}",
+    "actionResetPassword": "Reset password",
+    "actionResetPasswordFor": "Reset the password of {name}",
+    "actionLock": "Lock account",
+    "actionLockFor": "Lock the account of {name}",
+    "actionUnlock": "Unlock account",
+    "actionUnlockFor": "Unlock the account of {name}",
+    "roleDialog": {
+      "title": "Change the role of {name}",
+      "label": "New role",
+      "note": "The change takes effect immediately and is written to the System log.",
+      "selfWarning": "You are lowering your own role: you will lose access to the admin area until another admin restores it.",
+      "submit": "Change role"
+    },
+    "roleBlockedBody": "This would demote the last active admin. The system must always keep at least one admin. Add or unlock another admin first.",
+    "roleDone": "Changed the role of {name} to {role}",
+    "resetTitle": "Reset the password for {name}?",
+    "resetBody": "A temporary password is sent to {email}; the user must change it at their next sign-in. This action is written to the System log.",
+    "resetAction": "Reset",
+    "resetDone": "Sent a temporary password to {email}"
   },
   "adminAiUsage": {
     "title": "AI token usage",
@@ -744,8 +789,6 @@
   "adminPermissionMatrix": {
     "title": "Permission matrix",
     "subtitle": "Role × Function × Action · changes take effect immediately",
-    "save": "Save changes",
-    "saved": "Saved",
     "scopeNoticeTitle": "What this matrix governs",
     "scopeNoticeBody": "Functions and Actions are fixed seed data and read-only — only Roles can be created, edited or deleted. A STUDENT's basic learning rights (view/submit, review, interview, practise) do not go through this matrix.",
     "roleSwitcherLabel": "Select a role",
@@ -769,7 +812,7 @@
     "cellLabel": "{action} on {function} for role {role}",
     "emptyFunctions": "No function in the matrix yet",
     "confirmDeleteTitle": "Delete role {role}?",
-    "confirmDeleteBody": "The role will be removed from the matrix. What happens to accounts currently assigned to it is not settled — see the open question in the report.",
+    "confirmDeleteBody": "This role and all of its permission cells will be deleted. This cannot be undone.",
     "function": {
       "PROBLEM_AUTHORING": "Problem authoring & function specs",
       "TESTCASE_MANAGEMENT": "Testcases & versioning",
@@ -782,9 +825,24 @@
       "INTERVIEW_BANK_MANAGEMENT": "Interview question bank",
       "PERMISSION_MATRIX": "Permission matrix"
     },
-    "saveDone": "Permission matrix saved",
     "createRoleDone": "Role {role} created",
-    "deleteRoleDone": "Role {role} deleted"
+    "deleteRoleDone": "Role {role} deleted",
+    "lastMatrixAdminBody": "At least one admin role must keep the right to edit the permission matrix.",
+    "selfRevokeTitle": "Remove a right from the role you hold?",
+    "selfRevokeBody": "You are removing a right from the role you hold. The change takes effect immediately and you may lose access to this function. Continue?",
+    "selfRevokeConfirm": "Remove right",
+    "roleNameError": {
+      "empty": "The role name cannot be empty.",
+      "tooLong": "The role name is at most {max} characters.",
+      "duplicate": "A role with this name already exists."
+    },
+    "newRoleCategoryLabel": "Base category of the new role",
+    "baseCategory": {
+      "STUDENT": "Learner group",
+      "INSTRUCTOR": "Instructor group",
+      "ADMIN": "Admin group"
+    },
+    "deleteBlockedBody": "The role {role} is assigned to {count} users and cannot be deleted. Move them to another role first."
   },
   "adminAiConfig": {
     "testcaseGen": {
@@ -1049,10 +1107,13 @@
     "confirmDeleteTitle": "Delete {title}?",
     "confirmBulkDeleteTitle": "Delete {count} selected problems?",
     "confirmBulkDeleteHidden": "Warning: {count} of these problems are hidden by the current filter.",
-    "confirmDeleteBody": "The problem is removed from the list. What happens to its existing submissions is not settled — see the open question in the report.",
+    "confirmDeleteBody": "The problem will be hidden from learners and from this list. Submissions, scores, bookmarks and class history are kept.",
+    "confirmDeleteImpact": "The problem has {submissions} submissions and is assigned to {classes} classes.",
+    "confirmBulkDeleteImpact": "{count} problems, {submissions} submissions; {assigned} assigned to classes.",
     "toast": {
       "notWired": "{action}: not wired to an API in this prototype, nothing changed",
       "deleted": "Problem {title} deleted",
+      "duplicatePickOne": "Select exactly one problem to duplicate",
       "searchResult": "Found {count} problems",
       "searchEmpty": "No problems found",
       "bulkNeedsChoice": "Pick a value to apply first (the prototype has no picker yet)",
@@ -1064,6 +1125,7 @@
   },
   "interviewQuestionManagement": {
     "title": "Interview question bank",
+    "loadFailed": "Could not load the question list. Try again later.",
     "subtitle": "{total} questions · instructors and admins can edit all of them",
     "manageTopics": "Manage topics",
     "topicManager": {
@@ -1118,6 +1180,36 @@
       "moveDown": "Move down"
     },
     "importCsv": "Import CSV",
+    "csvImport": {
+      "title": "Import questions from a CSV file",
+      "hint": "A UTF-8 CSV file with a header row. Valid rows are added to the bank; invalid rows are skipped and listed below.",
+      "columns": "Required columns: topic, level, question, rubric (the cell may be empty). Optional: follow_ups, content, suggested_approach, core_keywords, sample_answer. A question whose text already exists is skipped, never overwritten; at most 500 rows. Topic and level take the name shown on screen or the key.",
+      "listFormat": "follow_ups, suggested_approach, core_keywords: items separated by |.",
+      "rubricFormat": "rubric: criteria as name:weight separated by |; weights must total 100. Leave empty for no rubric.",
+      "downloadTemplate": "Download template",
+      "close": "Close",
+      "choose": "Choose CSV file",
+      "chooseAnother": "Choose another file",
+      "importing": "Importing…",
+      "failed": "Import failed, try again later.",
+      "errorsLabel": "Skipped rows",
+      "summary": "Imported {imported} of {total} questions",
+      "rowError": "Line {line}: {reason}",
+      "toast": "Imported {count} questions from the CSV file",
+      "fileError": {
+        "empty": "The file has no data rows.",
+        "missingColumns": "Missing required columns: {detail}.",
+        "tooManyRows": "The file has more than {detail} data rows; split it and import again."
+      },
+      "reason": {
+        "missingField": "missing a value in column {detail}",
+        "unknownTopic": "topic \"{detail}\" is not in the list",
+        "unknownLevel": "level \"{detail}\" is not in the list",
+        "badRubric": "rubric is malformed (expected name:weight, weight a whole number from 0 to 100)",
+        "rubricSum": "rubric weights do not total 100",
+        "duplicate": "the question duplicates an existing one or an earlier row in the file"
+      }
+    },
     "newQuestion": "New question",
     "searchLabel": "Search questions",
     "searchPlaceholder": "Search by question text or code",
@@ -1139,11 +1231,9 @@
     "rubric": "Scoring criteria",
     "usage": "Used {count} times · avg {score}/5",
     "edit": "Edit",
-    "duplicate": "Duplicate",
     "delete": "Delete",
     "cancel": "Cancel",
     "editQuestion": "Edit question {code}",
-    "duplicateQuestion": "Duplicate question {code}",
     "deleteQuestion": "Delete question {code}",
     "emptyFiltered": "No question matches the current filter",
     "pageLabel": "Page {page} of {totalPages} · showing {shown} rows",
@@ -1154,7 +1244,6 @@
     "selectRow": "Select question {code}",
     "selectionLabel": "{count} questions selected",
     "bulk": {
-      "duplicate": "Duplicate",
       "delete": "Delete"
     },
     "confirmBulkDeleteTitle": "Delete {count} selected questions?",
@@ -1163,7 +1252,6 @@
     "confirmDeleteBody": "The question leaves the bank. Interview sessions that already used it keep their history.",
     "toast": {
       "bulkDeleted": "{count} questions deleted",
-      "notWired": "{action}: not wired to an API in this prototype, nothing changed",
       "deleted": "Question {code} deleted",
       "searchResult": "Found {count} questions",
       "searchEmpty": "No questions found"
@@ -1211,8 +1299,7 @@
     "removeCriterion": "Remove criterion {index}",
     "remove": "Remove",
     "group4Title": "Administrative actions",
-    "group4Subtitle": "Copy into a new record, or retire this question",
-    "duplicate": "Duplicate",
+    "group4Subtitle": "Retire this question",
     "softDelete": "Retire",
     "cancel": "Cancel",
     "confirmSoftDeleteTitle": "Retire this question?",
@@ -1220,7 +1307,6 @@
     "toast": {
       "saved": "Question saved",
       "saveFailed": "Save failed, try again",
-      "duplicated": "Question duplicated",
       "softDeleted": "Question retired"
     },
     "saveBlocked": {
@@ -2450,6 +2536,7 @@
     "rangeAll": "All"
   },
   "studentShell": {
+    "skipToContent": "Skip to main content",
     "footer": {
       "copyright": "© 2026 AlgoPrep — capstone project",
       "clusterStatus": "go-judge cluster healthy",

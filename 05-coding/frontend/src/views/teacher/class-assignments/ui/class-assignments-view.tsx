@@ -17,9 +17,18 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { useAssignmentSummary, useClassAssignments, useRemoveAssignment, type AssignedProblem } from "@/entities/class-assignment";
+import {
+  useAssignmentSummary,
+  useClassAssignments,
+  useRemoveAssignment,
+  type AssignedProblem,
+} from "@/entities/class-assignment";
 import { useInstructorClasses } from "@/entities/class";
-import { problemLevelLabel, problemLevelTone, useProblemLevels } from "@/entities/problem";
+import {
+  problemLevelLabel,
+  problemLevelTone,
+  useProblemLevels,
+} from "@/entities/problem";
 import { useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
 import {
@@ -29,7 +38,7 @@ import {
   ConfirmDialog,
   DataTable,
   PageHeader,
-  SegmentedTabs,
+  FilterMenu,
   SelectField,
   TextField,
   type DataTableColumn,
@@ -45,7 +54,9 @@ export function ClassAssignmentsView() {
 
   const [query, setQuery] = useState("");
   const [classTab, setClassTab] = useState("all");
-  const [removeTarget, setRemoveTarget] = useState<AssignedProblem | null>(null);
+  const [removeTarget, setRemoveTarget] = useState<AssignedProblem | null>(
+    null,
+  );
   const [removeClassChoice, setRemoveClassChoice] = useState<string>("");
   const removeAssignment = useRemoveAssignment();
 
@@ -59,8 +70,16 @@ export function ClassAssignmentsView() {
   }, [assignmentsQuery.data, query, classTab]);
 
   const columns: DataTableColumn<AssignedProblem>[] = [
-    { key: "title", header: t("assignmentList.col.title"), render: (row) => row.title },
-    { key: "topic", header: t("assignmentList.col.topic"), render: (row) => row.topic },
+    {
+      key: "title",
+      header: t("assignmentList.col.title"),
+      render: (row) => row.title,
+    },
+    {
+      key: "topic",
+      header: t("assignmentList.col.topic"),
+      render: (row) => row.topic,
+    },
     {
       key: "difficulty",
       header: t("assignmentList.col.difficulty"),
@@ -73,15 +92,26 @@ export function ClassAssignmentsView() {
     {
       key: "assignedClasses",
       header: t("assignmentList.col.assignedClasses"),
-      render: (row) => <span className="truncate">{row.assignedClassNames.join(", ")}</span>,
+      render: (row) => (
+        <span className="truncate">{row.assignedClassNames.join(", ")}</span>
+      ),
     },
     {
       key: "submissionCount",
       header: t("assignmentList.col.submissionCount"),
       align: "right",
-      render: (row) => <span className="font-mono">{row.submissionCount.toLocaleString("vi-VN")}</span>,
+      render: (row) => (
+        <span className="font-mono">
+          {row.submissionCount.toLocaleString("vi-VN")}
+        </span>
+      ),
     },
-    { key: "acRate", header: t("assignmentList.col.acRate"), align: "right", render: (row) => `${row.acRate}%` },
+    {
+      key: "acRate",
+      header: t("assignmentList.col.acRate"),
+      align: "right",
+      render: (row) => `${row.acRate}%`,
+    },
     {
       key: "actions",
       header: "",
@@ -89,7 +119,9 @@ export function ClassAssignmentsView() {
       render: (row) => (
         <div className="flex justify-end gap-2">
           <Button variant="ghost" size="sm" asChild>
-            <Link href={`/problems/${row.id}`}>{t("assignmentList.col.btnDetail")}</Link>
+            <Link href={`/problems/${row.id}`}>
+              {t("assignmentList.col.btnDetail")}
+            </Link>
           </Button>
           <Button
             variant="ghost"
@@ -97,7 +129,9 @@ export function ClassAssignmentsView() {
             className="text-[var(--color-admin-negative)]"
             onClick={() => {
               setRemoveTarget(row);
-              setRemoveClassChoice(classTab !== "all" ? classTab : row.assignedClassIds[0] ?? "");
+              setRemoveClassChoice(
+                classTab !== "all" ? classTab : (row.assignedClassIds[0] ?? ""),
+              );
             }}
           >
             {t("assignmentList.col.btnRemove")}
@@ -113,7 +147,9 @@ export function ClassAssignmentsView() {
     <div>
       <PageHeader
         title={t("header.title")}
-        description={t("header.summary", { count: summary?.assignedCount ?? 0 })}
+        description={t("header.summary", {
+          count: summary?.assignedCount ?? 0,
+        })}
         actions={
           <Button variant="cta" size="sm" asChild>
             <Link href="/problems">{t("header.btnAssignFromBank")}</Link>
@@ -135,14 +171,20 @@ export function ClassAssignmentsView() {
             onChange={(event) => setQuery(event.target.value)}
             wrapperClassName="min-w-[220px] flex-1"
           />
-          <SegmentedTabs
+          <FilterMenu
             label={t("assignmentList.classTabs")}
             value={classTab}
             onValueChange={setClassTab}
-            options={[{ value: "all", label: t("filterAll") }, ...classes.map((c) => ({ value: c.id, label: c.name }))]}
+            options={[
+              { value: "all", label: t("filterAll") },
+              ...classes.map((c) => ({ value: c.id, label: c.name })),
+            ]}
           />
           <span className="ml-auto text-[12.5px] text-[var(--color-text-muted)]">
-            {t("assignmentList.resultCount", { shown: rows.length, total: assignmentsQuery.data?.length ?? 0 })}
+            {t("assignmentList.resultCount", {
+              shown: rows.length,
+              total: assignmentsQuery.data?.length ?? 0,
+            })}
           </span>
         </div>
 
@@ -151,7 +193,13 @@ export function ClassAssignmentsView() {
           columns={columns}
           rows={rows}
           rowKey={(row) => row.id}
-          status={assignmentsQuery.isLoading ? "loading" : assignmentsQuery.isError ? "error" : "ready"}
+          status={
+            assignmentsQuery.isLoading
+              ? "loading"
+              : assignmentsQuery.isError
+                ? "error"
+                : "ready"
+          }
           emptyMessage={t("emptyAssignments")}
           minWidth={900}
         />
@@ -173,7 +221,9 @@ export function ClassAssignmentsView() {
           }
           setRemoveTarget(null);
         }}
-        title={t("popup.removeAssignmentTitle", { title: removeTarget?.title ?? "" })}
+        title={t("popup.removeAssignmentTitle", {
+          title: removeTarget?.title ?? "",
+        })}
         confirmLabel={t("popup.removeAssignmentConfirm")}
         cancelLabel={t("cancel")}
         destructive

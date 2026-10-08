@@ -11,20 +11,24 @@ import {
 const QUERY_OPTIONS = { staleTime: 30_000, retry: false } as const;
 
 function notImplemented(): never {
-  throw new Error("03-dd/api/identity.md / api/ai-review.md don't define these endpoints yet");
+  throw new Error(
+    "03-dd/api/identity.md / api/ai-review.md don't define these endpoints yet",
+  );
 }
 
 export const useDashboardDaily = (range: DashboardRange) =>
   useQuery({
     queryKey: ["student-dashboard", "daily", range],
-    queryFn: () => withMockData(() => fakeGetDashboardDaily(range), notImplemented),
+    queryFn: () =>
+      withMockData(() => fakeGetDashboardDaily(range), notImplemented),
     ...QUERY_OPTIONS,
   });
 
 export const useActivityCalendar = () =>
   useQuery({
     queryKey: ["student-dashboard", "activity"],
-    queryFn: () => withMockData(() => fakeGetActivityCalendar(), notImplemented),
+    queryFn: () =>
+      withMockData(() => fakeGetActivityCalendar(), notImplemented),
     ...QUERY_OPTIONS,
   });
 

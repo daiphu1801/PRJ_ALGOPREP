@@ -1,7 +1,14 @@
 // One toast assertion per migrated student view (DEC-2026-1003-toast-feedback-channel). Tests mock
 // useT to return the key, so the assertions read `[tone, key]` pairs.
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { act, fireEvent, render, renderHook, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { toast, useToasts } from "@/shared/lib/toast-store";
 import { InterviewBankListView } from "./interview-bank-list/ui/interview-bank-list-view";
@@ -37,14 +44,18 @@ describe("student views raise toasts for operation results", () => {
     render(<SavedProblemsView />);
     fireEvent.click(screen.getAllByText("table.btnUnsave")[0]!);
     expect(read()).toEqual([["success", "toast.unsaved"]]);
-    fireEvent.keyDown(screen.getByPlaceholderText("filter.searchPlaceholder"), { key: "Enter" });
+    fireEvent.keyDown(screen.getByPlaceholderText("filter.searchPlaceholder"), {
+      key: "Enter",
+    });
     expect(read().at(-1)?.[0]).toBe("info");
   });
 
   it("problem list: Enter in search announces the result count", () => {
     const read = observe();
     render(<ProblemListView />);
-    fireEvent.keyDown(screen.getByPlaceholderText("filter.searchPlaceholder"), { key: "Enter" });
+    fireEvent.keyDown(screen.getByPlaceholderText("filter.searchPlaceholder"), {
+      key: "Enter",
+    });
     expect(read()[0]?.[0]).toBe("info");
   });
 
@@ -122,6 +133,8 @@ describe("student views raise toasts for operation results", () => {
       throw new Error("download blocked");
     };
     fireEvent.click(screen.getByText("dataExport.exportSubmissions"));
-    await waitFor(() => expect(read()).toEqual([["error", "dataExport.exportFailed"]]));
+    await waitFor(() =>
+      expect(read()).toEqual([["error", "dataExport.exportFailed"]]),
+    );
   });
 });

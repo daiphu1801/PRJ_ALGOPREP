@@ -4,14 +4,25 @@
 import type { ProblemLevel } from "@/entities/problem";
 import type { DifficultyBreakdown } from "./types";
 
-export function buildDifficultyGroups(levels: readonly ProblemLevel[], data: DifficultyBreakdown) {
+export function buildDifficultyGroups(
+  levels: readonly ProblemLevel[],
+  data: DifficultyBreakdown,
+) {
   return levels.map((level) => {
     const row = data.levels.find((r) => r.key === level.key);
     return {
       label: level.label,
       bars: [
-        { label: "Tổng", value: row?.total ?? 0, colorVar: "--color-admin-slate" },
-        { label: "AC", value: row?.accepted ?? 0, colorVar: "--color-admin-cyan" },
+        {
+          label: "Tổng",
+          value: row?.total ?? 0,
+          colorVar: "--color-admin-slate",
+        },
+        {
+          label: "AC",
+          value: row?.accepted ?? 0,
+          colorVar: "--color-admin-cyan",
+        },
       ],
     };
   });

@@ -27,7 +27,18 @@ import {
 } from "@/entities/manual-grading";
 import { useT } from "@/shared/i18n";
 import { toast, toastFirstError } from "@/shared/lib/toast-store";
-import { Badge, Button, Card, DataTable, Modal, PageHeader, FilterMenu, TextArea, TextField, type DataTableColumn } from "@/shared/ui";
+import {
+  Badge,
+  Button,
+  Card,
+  DataTable,
+  Modal,
+  PageHeader,
+  FilterMenu,
+  TextArea,
+  TextField,
+  type DataTableColumn,
+} from "@/shared/ui";
 
 export function InstructorGradingView() {
   const t = useT("instructorGrading");
@@ -40,16 +51,38 @@ export function InstructorGradingView() {
 
   const [status, setStatus] = useState<GradingStatusFilter>("pending");
   const [classTab, setClassTab] = useState(initialClassId);
-  const [studentChip, setStudentChip] = useState<string | null>(initialStudentId);
+  const [studentChip, setStudentChip] = useState<string | null>(
+    initialStudentId,
+  );
   const [grading, setGrading] = useState<ManualGradingItem | null>(null);
 
-  const queueQuery = useManualGradingQueue(status, classTab === "all" ? undefined : classTab, studentChip ?? undefined);
+  const queueQuery = useManualGradingQueue(
+    status,
+    classTab === "all" ? undefined : classTab,
+    studentChip ?? undefined,
+  );
 
   const columns: DataTableColumn<ManualGradingItem>[] = [
-    { key: "student", header: t("queue.col.student"), render: (row) => row.studentName },
-    { key: "problem", header: t("queue.col.problem"), render: (row) => row.problemTitle },
-    { key: "className", header: t("queue.col.className"), render: (row) => row.className },
-    { key: "submittedAt", header: t("queue.col.submittedAt"), render: (row) => row.submittedAtLabel },
+    {
+      key: "student",
+      header: t("queue.col.student"),
+      render: (row) => row.studentName,
+    },
+    {
+      key: "problem",
+      header: t("queue.col.problem"),
+      render: (row) => row.problemTitle,
+    },
+    {
+      key: "className",
+      header: t("queue.col.className"),
+      render: (row) => row.className,
+    },
+    {
+      key: "submittedAt",
+      header: t("queue.col.submittedAt"),
+      render: (row) => row.submittedAtLabel,
+    },
     {
       key: "score",
       header: t("queue.col.score"),
@@ -75,7 +108,10 @@ export function InstructorGradingView() {
 
   return (
     <div>
-      <PageHeader title={t("header.title")} description={t("header.subtitle")} />
+      <PageHeader
+        title={t("header.title")}
+        description={t("header.subtitle")}
+      />
 
       {/* Stat strip dropped 2026-09-27 (owner): every figure on it — số lớp, tổng học viên, cần
           chấm tay, điểm TB — is already the stat strip of instructor_overview, and repeating it on
@@ -98,13 +134,21 @@ export function InstructorGradingView() {
               label={t("filter.classTabs")}
               value={classTab}
               onValueChange={setClassTab}
-              options={[{ value: "all", label: t("filterAll") }, ...classes.map((c) => ({ value: c.id, label: c.name }))]}
+              options={[
+                { value: "all", label: t("filterAll") },
+                ...classes.map((c) => ({ value: c.id, label: c.name })),
+              ]}
             />
           ) : null}
           {studentChip ? (
             <Badge variant="blue">
               {t("filter.studentChip", { name: studentChip })}
-              <button type="button" onClick={() => setStudentChip(null)} className="ml-1.5 font-bold" aria-label={t("filter.clearStudentChip")}>
+              <button
+                type="button"
+                onClick={() => setStudentChip(null)}
+                className="ml-1.5 font-bold"
+                aria-label={t("filter.clearStudentChip")}
+              >
                 ×
               </button>
             </Badge>
@@ -119,7 +163,13 @@ export function InstructorGradingView() {
           columns={columns}
           rows={queueQuery.data ?? []}
           rowKey={(row) => row.id}
-          status={queueQuery.isLoading ? "loading" : queueQuery.isError ? "error" : "ready"}
+          status={
+            queueQuery.isLoading
+              ? "loading"
+              : queueQuery.isError
+                ? "error"
+                : "ready"
+          }
           emptyMessage={t("empty")}
           minWidth={900}
         />
@@ -130,7 +180,15 @@ export function InstructorGradingView() {
   );
 }
 
-function GradeDialog({ item, onClose, t }: { item: ManualGradingItem | null; onClose: () => void; t: ReturnType<typeof useT> }) {
+function GradeDialog({
+  item,
+  onClose,
+  t,
+}: {
+  item: ManualGradingItem | null;
+  onClose: () => void;
+  t: ReturnType<typeof useT>;
+}) {
   const [score, setScore] = useState("");
   const [comment, setComment] = useState("");
   const [touched, setTouched] = useState(false);
@@ -139,7 +197,8 @@ function GradeDialog({ item, onClose, t }: { item: ManualGradingItem | null; onC
   if (!item) return null;
 
   const scoreValue = Number(score || item.manualScore || "");
-  const scoreInvalid = Number.isNaN(scoreValue) || scoreValue < 0 || scoreValue > 10;
+  const scoreInvalid =
+    Number.isNaN(scoreValue) || scoreValue < 0 || scoreValue > 10;
 
   function save() {
     if (!item) return;
@@ -149,9 +208,14 @@ function GradeDialog({ item, onClose, t }: { item: ManualGradingItem | null; onC
       return;
     }
     saveGrade.mutate(
-      { id: item.id, score: scoreValue, comment: comment || item.manualComment || "" },
       {
-        onSuccess: () => toast.success(t("toast.saved", { student: item.studentName })),
+        id: item.id,
+        score: scoreValue,
+        comment: comment || item.manualComment || "",
+      },
+      {
+        onSuccess: () =>
+          toast.success(t("toast.saved", { student: item.studentName })),
         onError: () => toast.error(t("toast.failed")),
       },
     );
@@ -162,7 +226,10 @@ function GradeDialog({ item, onClose, t }: { item: ManualGradingItem | null; onC
     <Modal
       open
       onClose={onClose}
-      title={t("popup.title", { student: item.studentName, problem: item.problemTitle })}
+      title={t("popup.title", {
+        student: item.studentName,
+        problem: item.problemTitle,
+      })}
       footer={
         <>
           <Button variant="ghost" size="sm" onClick={onClose}>
@@ -175,7 +242,10 @@ function GradeDialog({ item, onClose, t }: { item: ManualGradingItem | null; onC
       }
     >
       <p className="mb-3 text-[12.5px] text-[var(--color-text-muted)]">
-        {t("popup.meta", { ai: item.aiScore10, manual: item.manualScore ?? "chưa nhập" })}
+        {t("popup.meta", {
+          ai: item.aiScore10,
+          manual: item.manualScore ?? "chưa nhập",
+        })}
       </p>
       <div className="flex flex-col gap-3">
         <TextField
@@ -188,7 +258,11 @@ function GradeDialog({ item, onClose, t }: { item: ManualGradingItem | null; onC
           invalid={touched && scoreInvalid}
           onChange={(event) => setScore(event.target.value)}
         />
-        <TextArea label={t("popup.commentInput")} defaultValue={item.manualComment ?? ""} onChange={(event) => setComment(event.target.value)} />
+        <TextArea
+          label={t("popup.commentInput")}
+          defaultValue={item.manualComment ?? ""}
+          onChange={(event) => setComment(event.target.value)}
+        />
       </div>
     </Modal>
   );

@@ -45,6 +45,7 @@
   /* Text-grade variant of the warn accent: the vivid value is ~4.0:1 on white, short of AA. */
   --color-admin-warn-text: #7d5517;
   --color-admin-negative: #c84046;
+  --color-admin-negative-text: #a82a31;
   /* Tokens the shared data/form primitives need (DataTable row hover, Toggle track, Badge success,
      Modal scrim, table column headers). Defined app-wide so those primitives render sanely outside
      the Admin area too; `.admin-shell` below overrides them with the mockup's exact values, the
@@ -60,7 +61,11 @@
      is the near-white sidebar "active item" fill, which would render a white CTA on a white card. */
   /* Declared as a gradient even outside the Admin scope: the CTA is painted with background-image,
      which ignores a bare color value. Two identical stops render as a flat fill. */
-  --color-cta-bg: linear-gradient(160deg, var(--color-primary), var(--color-primary));
+  --color-cta-bg: linear-gradient(
+    160deg,
+    var(--color-primary),
+    var(--color-primary)
+  );
   --color-cta-fg: var(--color-on-primary);
   --color-cta-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
   /* Categorical accents for Badge. `.admin-shell` overrides them with the mockup's exact values. */
@@ -102,6 +107,7 @@
   --color-admin-warn: #ffce78;
   --color-admin-warn-text: #ffce78;
   --color-admin-negative: #ff8a8a;
+  --color-admin-negative-text: #ff8a8a;
   --color-text-subtle: #64748b;
   --color-row-hover: #1f2937;
   --color-track: #334155;
@@ -193,7 +199,9 @@ button:not(:disabled):active,
   *,
   *::before,
   *::after {
-    transition-property: background-color, border-color, color, fill, stroke, box-shadow, outline-color;
+    transition-property:
+      background-color, border-color, color, fill, stroke, box-shadow,
+      outline-color;
     transition-timing-function: ease;
     transition-duration: 150ms;
   }
@@ -263,7 +271,7 @@ button:not(:disabled):active,
   --color-surface: #ffffff;
   --color-surface-hover: rgba(12, 90, 80, 0.1);
   --color-text: #0c201d;
-  --color-text-muted: rgba(12, 40, 36, 0.6);
+  --color-text-muted: rgba(12, 40, 36, 0.72);
   --color-border: rgba(12, 90, 80, 0.14);
   /* dc.html:26 --cyan / --teal: inside this scope --color-primary is the LINK-and-accent colour,
      the same reading `.instructor-shell` gives it below. It used to hold the near-white nav-active
@@ -285,7 +293,7 @@ button:not(:disabled):active,
      --row-hover and --track (line 24), --ok and --ok-text (line 28). --color-scrim has no
      counterpart in the mockup (no modal was ever drawn) — [SoT: Suy luận], tinted toward the
      Admin palette's deep green instead of the app's slate. */
-  --color-text-subtle: rgba(12, 45, 40, 0.44);
+  --color-text-subtle: rgba(12, 45, 40, 0.66);
   --color-row-hover: rgba(255, 255, 255, 0.72);
   --color-track: rgba(12, 90, 80, 0.1);
   --color-success: #17b57e;
@@ -315,7 +323,7 @@ button:not(:disabled):active,
     rgba(255, 255, 255, 0.9)
   );
   /* dc.html:26 — the Admin CTA is a teal gradient, not a flat fill. */
-  --color-cta-bg: linear-gradient(160deg, #0ea5a4, #0c7a79);
+  --color-cta-bg: linear-gradient(160deg, #0b8f8e, #096a69);
   --color-cta-fg: #ffffff;
   --color-cta-shadow: 0 6px 16px rgba(14, 138, 114, 0.3);
 }
@@ -331,7 +339,11 @@ button:not(:disabled):active,
   --color-on-primary: #05201f;
   /* dc.html:39 --active-bg/--active-fg — dark really is a gradient, not the flat cyan the
      nav row was painting before the split above. */
-  --admin-active-bg: linear-gradient(135deg, rgba(34, 211, 238, 0.35), rgba(20, 184, 166, 0.22));
+  --admin-active-bg: linear-gradient(
+    135deg,
+    rgba(34, 211, 238, 0.35),
+    rgba(20, 184, 166, 0.22)
+  );
   --admin-active-fg: #eafeff;
   --admin-glass: rgba(6, 10, 9, 0.55);
   --admin-glass-strong: rgba(5, 9, 8, 0.6);
@@ -341,7 +353,7 @@ button:not(:disabled):active,
   --admin-nav-hover: rgba(255, 255, 255, 0.06);
   /* dc.html dark theme: --muted2 (line 32), --row-hover and --track (line 38), --ok/--ok-text
      (line 42) — dark collapses ok and ok-text to the same value. */
-  --color-text-subtle: rgba(210, 235, 230, 0.45);
+  --color-text-subtle: rgba(210, 235, 230, 0.55);
   --color-row-hover: rgba(120, 230, 220, 0.07);
   --color-track: rgba(120, 230, 220, 0.14);
   --color-success: #5ae0a8;
@@ -357,9 +369,17 @@ button:not(:disabled):active,
   --color-accent-purple: #c4b5fd;
   --color-accent-purple-bg: rgba(160, 140, 250, 0.18);
   /* dc.html:39 --active-bg (dark) — verbatim, this one really is a gradient. */
-  --color-row-selected: linear-gradient(135deg, rgba(34, 211, 238, 0.3), rgba(20, 184, 166, 0.2));
+  --color-row-selected: linear-gradient(
+    135deg,
+    rgba(34, 211, 238, 0.3),
+    rgba(20, 184, 166, 0.2)
+  );
   /* dc.html:41 — dark inverts the CTA to a pale mint fill with dark text. */
-  --color-cta-bg: linear-gradient(160deg, rgba(190, 255, 247, 0.94), rgba(150, 230, 220, 0.72));
+  --color-cta-bg: linear-gradient(
+    160deg,
+    rgba(190, 255, 247, 0.94),
+    rgba(150, 230, 220, 0.72)
+  );
   --color-cta-fg: #052422;
   --color-cta-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
 }
@@ -453,8 +473,8 @@ button:not(:disabled):active,
   --color-background: #f5f8fc;
   --color-surface: #ffffff;
   --color-text: #16202b;
-  --color-text-muted: rgba(20, 35, 50, 0.58);
-  --color-text-subtle: rgba(20, 35, 50, 0.44);
+  --color-text-muted: rgba(20, 35, 50, 0.72);
+  --color-text-subtle: rgba(20, 35, 50, 0.66);
   /* dc.html:22-23 --glass/--glass2/--glass3, --border2, --track, --nav-hover */
   --instructor-glass: rgba(255, 255, 255, 0.5);
   --instructor-glass-strong: rgba(255, 255, 255, 0.65);
@@ -471,7 +491,7 @@ button:not(:disabled):active,
   --admin-nav-hover: rgba(255, 255, 255, 0.75);
   /* dc.html:26 --cta-bg/--cta-fg/--cta-shadow */
   --color-cta-bg: linear-gradient(160deg, #7fb3db, #5b93c4);
-  --color-cta-fg: #ffffff;
+  --color-cta-fg: #0a1a26;
   --color-cta-shadow: 0 6px 16px rgba(91, 147, 196, 0.3);
   /* dc.html:27 --logo-bg/--logo-fg */
   --instructor-logo-bg: linear-gradient(135deg, #7fb3db, #a8cde8);
@@ -505,11 +525,16 @@ button:not(:disabled):active,
   --color-admin-warn: #c99a4a;
   --color-admin-warn-text: #7d5517;
   --color-admin-negative: #c97a6e;
+  --color-admin-negative-text: #a24a3f;
   --color-accent-blue: #4a7ba6;
   --color-accent-blue-bg: rgba(127, 179, 219, 0.18);
   --color-accent-purple: #5b93c4;
   --color-accent-purple-bg: rgba(91, 147, 196, 0.16);
-  --color-row-selected: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9));
+  --color-row-selected: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.9),
+    rgba(255, 255, 255, 0.9)
+  );
 }
 
 .dark .instructor-shell {
@@ -518,18 +543,26 @@ button:not(:disabled):active,
   --color-surface: #0f1720;
   --color-text: #e8eef5;
   --color-text-muted: rgba(210, 225, 240, 0.6);
-  --color-text-subtle: rgba(210, 225, 240, 0.45);
+  --color-text-subtle: rgba(210, 225, 240, 0.62);
   --instructor-glass: rgba(120, 170, 220, 0.07);
   --instructor-glass-strong: rgba(120, 170, 220, 0.1);
   --color-border: rgba(120, 170, 220, 0.12);
   --color-track: rgba(120, 170, 220, 0.13);
   --color-surface-hover: rgba(120, 170, 220, 0.12);
   --color-row-hover: rgba(120, 170, 220, 0.12);
-  --instructor-active-bg: linear-gradient(135deg, rgba(127, 179, 219, 0.3), rgba(168, 205, 232, 0.18));
+  --instructor-active-bg: linear-gradient(
+    135deg,
+    rgba(127, 179, 219, 0.3),
+    rgba(168, 205, 232, 0.18)
+  );
   --instructor-active-fg: #ffffff;
   --admin-active-border: rgba(168, 205, 232, 0.4);
   --admin-nav-hover: rgba(120, 170, 220, 0.12);
-  --color-cta-bg: linear-gradient(160deg, rgba(220, 238, 250, 0.94), rgba(180, 215, 235, 0.72));
+  --color-cta-bg: linear-gradient(
+    160deg,
+    rgba(220, 238, 250, 0.94),
+    rgba(180, 215, 235, 0.72)
+  );
   --color-cta-fg: #0a1a26;
   --color-cta-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
   --instructor-logo-bg: linear-gradient(135deg, #7fb3db, #1c3348);
@@ -553,11 +586,16 @@ button:not(:disabled):active,
   --color-admin-warn: #e8c97e;
   --color-admin-warn-text: #e8c97e;
   --color-admin-negative: #e89e92;
+  --color-admin-negative-text: #e89e92;
   --color-accent-blue: #9dcbef;
   --color-accent-blue-bg: rgba(127, 179, 219, 0.2);
   --color-accent-purple: #7fb3db;
   --color-accent-purple-bg: rgba(127, 179, 219, 0.16);
-  --color-row-selected: linear-gradient(135deg, rgba(127, 179, 219, 0.3), rgba(168, 205, 232, 0.18));
+  --color-row-selected: linear-gradient(
+    135deg,
+    rgba(127, 179, 219, 0.3),
+    rgba(168, 205, 232, 0.18)
+  );
 }
 
 /* Exact glass alpha from dc.html (:22, :34) instead of the generic color-mix formula — same reason
@@ -595,7 +633,11 @@ button:not(:disabled):active,
    (`.admin-shell .glass-card`, `.instructor-shell .glass-card`), so it wins in every scope. */
 .glass-card.glass-card--modal {
   background:
-    linear-gradient(145deg, color-mix(in srgb, white 28%, transparent), transparent 45%),
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, white 28%, transparent),
+      transparent 45%
+    ),
     color-mix(in srgb, var(--color-surface) 8%, transparent);
   backdrop-filter: blur(14px) saturate(200%) brightness(1.06);
   box-shadow:
@@ -631,7 +673,8 @@ button:not(:disabled):active,
    cover older Safari and are ignored where the standard properties apply. */
 .scrollbar-glass {
   scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--color-text) 30%, transparent) transparent;
+  scrollbar-color: color-mix(in srgb, var(--color-text) 30%, transparent)
+    transparent;
 }
 
 .scrollbar-glass::-webkit-scrollbar {

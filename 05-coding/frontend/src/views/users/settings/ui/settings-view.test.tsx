@@ -29,6 +29,8 @@ describe("SettingsView", () => {
     expect(screen.getByText("Giao diện")).toBeInTheDocument();
     expect(await screen.findByText("Workspace")).toBeInTheDocument();
     expect(screen.getByText("Phỏng vấn giả lập")).toBeInTheDocument();
-    expect(await screen.findByRole("heading", { name: "Vùng nguy hiểm" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: "Vùng nguy hiểm" }),
+    ).toBeInTheDocument();
   });
 });

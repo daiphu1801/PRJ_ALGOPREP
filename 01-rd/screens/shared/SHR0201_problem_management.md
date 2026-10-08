@@ -26,7 +26,7 @@ khu Giảng viên không có mockup riêng trong `09-layoutBase/`, xem `06-plan/
 **Cập nhật 2026-10-03:** khu Giảng viên đã dựng bằng code Next.js, cùng một view, nhận prop bắt buộc `basePath`
 (gốc của khu, `/admin/problems` hoặc `/instructor/problems`) nên liên kết dòng, nút "Bài tập mới" không còn
 gắn cứng `/admin`
-[SoT: 05-coding/frontend/src/views/shared/problem-management/ui/problem-management-view.tsx:81-86, 267, 361, 408].
+[SoT: 05-coding/frontend/src/views/shared/problem-management/ui/problem-management-view.tsx:81-86, 267, 358, 405].
 Từ đây, khi code và mockup lệch nhau thì **code là hiện trạng**; mockup chỉ còn là lịch sử. File này mô tả
 **hành vi và UX ở mức yêu cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/problem-bank.md` (mục F2), chỉ
 trỏ tới và bổ sung phần đặc thù của màn.
@@ -114,7 +114,7 @@ Q3 → Q5. **Trạng thái vòng đời bài toán đã có mã** — `F2-15` (c
    `Đã ẩn`. Theo `F2-15` (hai trạng thái, không có `Đã ẩn` riêng), 3 tab của prototype (`Tất cả` / `Đã xuất
    bản` / `Chưa xuất bản`) đã phủ đủ — không cần bổ sung tab nào nữa.
 5. **Thanh hành động theo lô** — chỉ hiện khi đã chọn ít nhất một dòng, gồm 5 hành động "Xuất bản / ẩn",
-   "Đổi độ khó", "Gán chủ đề", "Nhân bản", "Xuất CSV" cộng nút "Xoá"
+   "Đổi độ khó", "Gán chủ đề", "Nhân bản", "Xuất CSV" cộng nút "Xoá" (**Cập nhật 2026-10-08, owner:** "Nhân bản" áp cho đúng một bài đã chọn và mở form soạn đã điền sẵn, không tạo bản ghi ngay; bản sao chỉ có khi Lưu)
    [SoT: 09-layoutBase/Admin - Quản lý bài tập.dc.html:196-206, 591]. "Đổi độ khó" và "Gán chủ đề" là F2-02
    ở dạng thao tác lô; ba hành động còn lại và "Xoá" **không có mã** — xem Q2, Q3, Q4.
 6. **Bảng bài toán** — 10 cột: ô chọn, Mã, Tiêu đề (liên kết sang `problem_info`; biểu tượng Sửa ở cột thao tác sang `problem_authoring`, cập nhật 2026-10-02), Chủ đề, Độ khó,
@@ -122,12 +122,12 @@ Q3 → Q5. **Trạng thái vòng đời bài toán đã có mã** — `F2-15` (c
    sửa/xoá [SoT: 09-layoutBase/Admin - Quản lý bài tập.dc.html:209-232]. **Cập nhật 2026-10-01:** UI Next.js hiển
    thị nhóm nút này dưới dạng hai nút chỉ có icon (bút chì = Sửa, thùng rác = Xoá, màu cảnh báo cho Xoá),
    tên hành động hiện ở tooltip nhỏ bên dưới khi rê chuột hoặc focus bàn phím
-   [SoT: 05-coding/frontend/src/views/shared/problem-management/ui/problem-management-view.tsx:351-372]. 7 cột sắp xếp được, đảo chiều khi
+   [SoT: 05-coding/frontend/src/views/shared/problem-management/ui/problem-management-view.tsx:348-369]. 7 cột sắp xếp được, đảo chiều khi
    bấm lại cùng cột [SoT: 09-layoutBase/Admin - Quản lý bài tập.dc.html:518-528]. Cột AC hiển thị con số phần
    trăm. ~~Cột AC đổi màu theo ngưỡng 60% và 35% [SoT: 09-layoutBase/Admin - Quản lý bài tập.dc.html:539].~~
    **Đã bỏ yêu cầu đổi màu theo ngưỡng 60% và 35% (quyết định của owner 2026-10-05):** chỉ hiển thị con số,
    không yêu cầu màu theo ngưỡng. Bản dựng hiện chỉ in số
-   [SoT: 05-coding/frontend/src/views/shared/problem-management/ui/problem-management-view.tsx:329-337].
+   [SoT: 05-coding/frontend/src/views/shared/problem-management/ui/problem-management-view.tsx:326-334].
 7. **Phân trang** — 8 dòng mỗi trang, nút Trước/Sau và số trang, nhãn "Trang x / y · hiển thị n dòng"
    [SoT: 09-layoutBase/Admin - Quản lý bài tập.dc.html:236-245, 513-516, 595].
 8. **Khối "Phân bố theo chủ đề"** — thanh tỉ lệ theo từng chủ đề
@@ -148,6 +148,10 @@ Q3 → Q5. **Trạng thái vòng đời bài toán đã có mã** — `F2-15` (c
     "Toàn bộ testcase và lượt nộp liên quan sẽ bị ẩn khỏi trang người học. Hành động không thể hoàn tác."
     [SoT: 09-layoutBase/Admin - Quản lý bài tập.dc.html:305-317]. Dùng chung cho cả xoá một dòng và xoá theo
     lô [SoT: 09-layoutBase/Admin - Quản lý bài tập.dc.html:553, 592]. Câu chữ này tự mâu thuẫn — xem Q3.
+    **Cập nhật 2026-10-08 (owner chọn Phương án A):** bỏ câu "Hành động không thể hoàn tác" vì dữ liệu chỉ bị ẩn;
+    nội dung là "Bài sẽ bị ẩn khỏi học viên và khỏi danh sách này. Lượt nộp, điểm, bookmark và lịch sử lớp vẫn
+    được giữ nguyên." cộng một dòng cảnh báo không chặn số lượt nộp và số lớp đang giao (xoá theo lô: tổng hợp
+    cho cả lô) [SoT: 06-plan/reports/261008-1120-problem-delete-with-submissions/report.md mục 5].
 
 ### 2.1 Cấu trúc hệ thống liên quan
 

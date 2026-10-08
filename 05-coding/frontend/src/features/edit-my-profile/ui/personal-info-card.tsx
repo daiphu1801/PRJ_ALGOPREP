@@ -98,10 +98,21 @@ export function PersonalInfoCard({
 
         <div className="col-span-full flex flex-wrap items-center gap-3 border-t border-[var(--color-border)] pt-4">
           <div className="ml-auto flex gap-2">
-            <Button type="button" variant="ghost" size="sm" onClick={revert} disabled={!dirty || isSaving}>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={revert}
+              disabled={!dirty || isSaving}
+            >
               {t("form.revert")}
             </Button>
-            <Button type="submit" size="sm" disabled={!dirty || isSaving} aria-busy={isSaving || undefined}>
+            <Button
+              type="submit"
+              size="sm"
+              disabled={!dirty || isSaving}
+              aria-busy={isSaving || undefined}
+            >
               {t("form.save")}
             </Button>
           </div>
@@ -109,7 +120,11 @@ export function PersonalInfoCard({
       </form>
 
       {emailOtpTarget ? (
-        <EmailOtpDialog newEmail={emailOtpTarget} onCancel={closeEmailOtp} onConfirmed={onEmailConfirmed} />
+        <EmailOtpDialog
+          newEmail={emailOtpTarget}
+          onCancel={closeEmailOtp}
+          onConfirmed={onEmailConfirmed}
+        />
       ) : null}
     </Card>
   );

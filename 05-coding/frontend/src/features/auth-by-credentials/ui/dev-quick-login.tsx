@@ -60,7 +60,9 @@ export function DevQuickLogin({ flow, roles }: DevQuickLoginProps) {
           </button>
         ))}
       </div>
-      <p className="mt-2 text-[11px] leading-relaxed text-[var(--color-text-muted)]">{t("quickLoginHint")}</p>
+      <p className="mt-2 text-[11px] leading-relaxed text-[var(--color-text-muted)]">
+        {t("quickLoginHint")}
+      </p>
     </div>
   );
 }

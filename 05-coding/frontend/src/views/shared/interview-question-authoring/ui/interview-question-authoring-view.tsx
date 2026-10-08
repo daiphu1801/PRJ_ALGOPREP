@@ -86,34 +86,49 @@ function draftFor(questionId: string): Draft | null {
   };
 }
 
-export function InterviewQuestionAuthoringView({ questionId, listHref }: Props) {
+export function InterviewQuestionAuthoringView({
+  questionId,
+  listHref,
+}: Props) {
   const t = useT("interviewQuestionAuthoring");
   const isNew = questionId === "new";
   const topicList = useInterviewTopics();
   const levelList = useInterviewLevels();
   const [loaded] = useState(() => draftFor(questionId));
   const [draft, setDraft] = useState<Draft>(
-    loaded ?? { ...EMPTY_DRAFT, topic: topicList[0]?.key ?? "", level: levelList[0]?.key ?? "" },
+    loaded ?? {
+      ...EMPTY_DRAFT,
+      topic: topicList[0]?.key ?? "",
+      level: levelList[0]?.key ?? "",
+    },
   );
   const [saving, setSaving] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
 
-  const rubricTotal = draft.rubric.reduce((sum, criterion) => sum + criterion.weight, 0);
+  const rubricTotal = draft.rubric.reduce(
+    (sum, criterion) => sum + criterion.weight,
+    0,
+  );
   // Empty is fine; non-empty must add to exactly 100.
   const rubricBlocksSave = draft.rubric.length > 0 && rubricTotal !== 100;
-  const canSave = draft.question.trim().length > 0 && !rubricBlocksSave && !saving;
+  const canSave =
+    draft.question.trim().length > 0 && !rubricBlocksSave && !saving;
 
   function patch(changes: Partial<Draft>) {
     setDraft((previous) => ({ ...previous, ...changes }));
   }
 
   function setFollowUp(index: number, value: string) {
-    patch({ followUps: draft.followUps.map((item, i) => (i === index ? value : item)) });
+    patch({
+      followUps: draft.followUps.map((item, i) => (i === index ? value : item)),
+    });
   }
 
   function setCriterion(index: number, changes: Partial<RubricCriterion>) {
     patch({
-      rubric: draft.rubric.map((item, i) => (i === index ? { ...item, ...changes } : item)),
+      rubric: draft.rubric.map((item, i) =>
+        i === index ? { ...item, ...changes } : item,
+      ),
     });
   }
 
@@ -125,7 +140,9 @@ export function InterviewQuestionAuthoringView({ questionId, listHref }: Props) 
       return;
     }
     if (rubricBlocksSave) {
-      toast.warning(`${t("rubricBlockTitle")}: ${t("rubricBlockBody", { total: rubricTotal })}`);
+      toast.warning(
+        `${t("rubricBlockTitle")}: ${t("rubricBlockBody", { total: rubricTotal })}`,
+      );
       return;
     }
     setSaving(true);
@@ -144,7 +161,9 @@ export function InterviewQuestionAuthoringView({ questionId, listHref }: Props) 
     return (
       <div>
         <PageHeader
-          leading={<IconAction icon={ArrowLeft} label={t("back")} href={listHref} />}
+          leading={
+            <IconAction icon={ArrowLeft} label={t("back")} href={listHref} />
+          }
           title={t("notFoundTitle")}
         />
         <Card>
@@ -157,13 +176,21 @@ export function InterviewQuestionAuthoringView({ questionId, listHref }: Props) 
   return (
     <div>
       <PageHeader
-        leading={<IconAction icon={ArrowLeft} label={t("back")} href={listHref} />}
+        leading={
+          <IconAction icon={ArrowLeft} label={t("back")} href={listHref} />
+        }
         title={isNew ? t("titleNew") : t("titleEdit", { code: questionId })}
         description={t("subtitle")}
         actions={
           <>
             <IconAction icon={Eye} label={t("previewAsLearner")} />
-            <Button variant="cta" size="sm" onClick={save} disabled={saving} aria-disabled={!canSave || undefined}>
+            <Button
+              variant="cta"
+              size="sm"
+              onClick={save}
+              disabled={saving}
+              aria-disabled={!canSave || undefined}
+            >
               {t("save")}
             </Button>
           </>
@@ -200,7 +227,11 @@ export function InterviewQuestionAuthoringView({ questionId, listHref }: Props) 
                     aria-label={t("removeFollowUp", { index: index + 1 })}
                     disabled={draft.followUps.length === 1}
                     onClick={() =>
-                      patch({ followUps: draft.followUps.filter((_, i) => i !== index) })
+                      patch({
+                        followUps: draft.followUps.filter(
+                          (_, i) => i !== index,
+                        ),
+                      })
                     }
                     className="border border-[var(--color-border)] px-2"
                   >
@@ -238,7 +269,11 @@ export function InterviewQuestionAuthoringView({ questionId, listHref }: Props) 
             }
           >
             {draft.rubric.length === 0 ? (
-              <NoticeTile tone="info" title={t("rubricEmptyTitle")} className="mb-3">
+              <NoticeTile
+                tone="info"
+                title={t("rubricEmptyTitle")}
+                className="mb-3"
+              >
                 {t("rubricEmptyBody")}
               </NoticeTile>
             ) : (
@@ -252,23 +287,35 @@ export function InterviewQuestionAuthoringView({ questionId, listHref }: Props) 
                       label={t("criterionLabel", { index: index + 1 })}
                       placeholder={t("criterionPlaceholder")}
                       value={criterion.label}
-                      onChange={(event) => setCriterion(index, { label: event.target.value })}
+                      onChange={(event) =>
+                        setCriterion(index, { label: event.target.value })
+                      }
                       wrapperClassName="min-w-[200px] flex-1"
                     />
                     <NumberStepper
                       value={criterion.weight}
-                      onValueChange={(weight) => setCriterion(index, { weight })}
+                      onValueChange={(weight) =>
+                        setCriterion(index, { weight })
+                      }
                       label={t("criterionWeightLabel", { index: index + 1 })}
                       format={(value) => `${value}%`}
-                      decrementLabel={t("criterionWeightDecrement", { index: index + 1 })}
-                      incrementLabel={t("criterionWeightIncrement", { index: index + 1 })}
+                      decrementLabel={t("criterionWeightDecrement", {
+                        index: index + 1,
+                      })}
+                      incrementLabel={t("criterionWeightIncrement", {
+                        index: index + 1,
+                      })}
                       className="mb-1"
                     />
                     <Button
                       variant="ghost"
                       size="sm"
                       aria-label={t("removeCriterion", { index: index + 1 })}
-                      onClick={() => patch({ rubric: draft.rubric.filter((_, i) => i !== index) })}
+                      onClick={() =>
+                        patch({
+                          rubric: draft.rubric.filter((_, i) => i !== index),
+                        })
+                      }
                       className="mb-1 border border-[var(--color-border)] px-2"
                     >
                       {t("remove")}
@@ -281,7 +328,9 @@ export function InterviewQuestionAuthoringView({ questionId, listHref }: Props) 
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => patch({ rubric: [...draft.rubric, { label: "", weight: 0 }] })}
+              onClick={() =>
+                patch({ rubric: [...draft.rubric, { label: "", weight: 0 }] })
+              }
               className="self-start border border-dashed border-[var(--color-border)]"
             >
               {t("addCriterion")}
@@ -298,13 +347,21 @@ export function InterviewQuestionAuthoringView({ questionId, listHref }: Props) 
                 label={t("topicLabel")}
                 value={draft.topic}
                 onChange={(event) => patch({ topic: event.target.value })}
-                options={topicList.map((topic) => ({ value: topic.key, label: topic.label }))}
+                options={topicList.map((topic) => ({
+                  value: topic.key,
+                  label: topic.label,
+                }))}
               />
               <SelectField
                 label={t("levelLabel")}
                 value={draft.level}
-                onChange={(event) => patch({ level: event.target.value as QuestionLevel })}
-                options={levelList.map((item) => ({ value: item.key, label: item.label }))}
+                onChange={(event) =>
+                  patch({ level: event.target.value as QuestionLevel })
+                }
+                options={levelList.map((item) => ({
+                  value: item.key,
+                  label: item.label,
+                }))}
               />
             </div>
           </Card>
@@ -312,14 +369,6 @@ export function InterviewQuestionAuthoringView({ questionId, listHref }: Props) 
           {isNew ? null : (
             <Card title={t("group4Title")} description={t("group4Subtitle")}>
               <div className="flex flex-wrap gap-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => toast.success(t("toast.duplicated"))}
-                  className="border border-[var(--color-border)]"
-                >
-                  {t("duplicate")}
-                </Button>
                 <Button
                   variant="ghost"
                   size="sm"

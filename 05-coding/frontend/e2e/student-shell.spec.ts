@@ -7,11 +7,16 @@ import { expect, test } from "@playwright/test";
  * pins the header down: it shows up on every Student route, marks the current one, and the avatar
  * menu reaches the four account destinations.
  */
-test("the header renders on every student route and marks the active one", async ({ page }) => {
+test("the header renders on every student route and marks the active one", async ({
+  page,
+}) => {
   await page.goto("/problems");
 
   const nav = page.getByRole("navigation", { name: "Khu vực người học" });
-  await expect(nav.getByRole("link", { name: "Bài toán" })).toHaveAttribute("aria-current", "page");
+  await expect(nav.getByRole("link", { name: "Bài toán" })).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
   // 5 since DEC-2026-0927-student-dashboard-home added "Tổng quan"; the Workspace and Mock
   // Interview items of the prototype stay out (they need an id — see model/student-nav.ts).
   // 6 per 02-bd/screens/users/_shell.md mục 2.2 (5 items) plus "Tổng quan", which
@@ -21,10 +26,15 @@ test("the header renders on every student route and marks the active one", async
   // A problem detail route keeps its parent nav item marked (prefix match, not equality).
   await nav.getByRole("link", { name: "Bài nộp" }).click();
   await expect(page).toHaveURL(/\/submissions$/);
-  await expect(nav.getByRole("link", { name: "Bài nộp" })).toHaveAttribute("aria-current", "page");
+  await expect(nav.getByRole("link", { name: "Bài nộp" })).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
 });
 
-test("the avatar menu opens and reaches the account destinations", async ({ page }) => {
+test("the avatar menu opens and reaches the account destinations", async ({
+  page,
+}) => {
   await page.goto("/dashboard");
 
   await page.getByRole("button", { name: "Mở menu tài khoản" }).click();
@@ -36,7 +46,9 @@ test("the avatar menu opens and reaches the account destinations", async ({ page
   await expect(page.getByRole("menu")).toHaveCount(0);
 });
 
-test("collapses the nav behind one button on a narrow viewport", async ({ page }) => {
+test("collapses the nav behind one button on a narrow viewport", async ({
+  page,
+}) => {
   // 02-bd/screens/users/_shell.md mục 6 Q5: below the breakpoint the nav items go behind a menu
   // button while the brand and the user block stay on the bar.
   await page.setViewportSize({ width: 820, height: 900 });
@@ -51,5 +63,7 @@ test("collapses the nav behind one button on a narrow viewport", async ({ page }
   // Picking a destination closes the drawer rather than leaving it over the new page.
   await nav.getByRole("link", { name: "Bài toán" }).click();
   await expect(page).toHaveURL(/\/problems$/);
-  await expect(page.getByRole("navigation", { name: "Khu vực người học" })).toBeHidden();
+  await expect(
+    page.getByRole("navigation", { name: "Khu vực người học" }),
+  ).toBeHidden();
 });

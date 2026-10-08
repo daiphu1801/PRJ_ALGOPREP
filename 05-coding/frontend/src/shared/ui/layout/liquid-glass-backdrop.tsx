@@ -13,18 +13,27 @@ export function LiquidGlassBackdrop() {
   // paint on top of it in document order — simpler and less fragile than relying on a negative
   // z-index resolving correctly against whichever ancestor happens to own the stacking context.
   return (
-    <div aria-hidden="true" className="pointer-events-none fixed inset-0 overflow-hidden">
+    <div
+      aria-hidden="true"
+      className="pointer-events-none fixed inset-0 overflow-hidden"
+    >
       <div
         className="absolute -left-36 -top-56 h-[620px] w-[620px] rounded-full blur-[100px]"
-        style={{ background: `radial-gradient(circle, var(--color-blob-1), transparent 68%)` }}
+        style={{
+          background: `radial-gradient(circle, var(--color-blob-1), transparent 68%)`,
+        }}
       />
       <div
         className="absolute -bottom-64 -right-40 h-[720px] w-[720px] rounded-full blur-[110px]"
-        style={{ background: `radial-gradient(circle, var(--color-blob-2), transparent 68%)` }}
+        style={{
+          background: `radial-gradient(circle, var(--color-blob-2), transparent 68%)`,
+        }}
       />
       <div
         className="absolute left-[55%] top-[35%] h-[520px] w-[520px] rounded-full blur-[130px]"
-        style={{ background: `radial-gradient(circle, var(--color-blob-3), transparent 70%)` }}
+        style={{
+          background: `radial-gradient(circle, var(--color-blob-3), transparent 70%)`,
+        }}
       />
     </div>
   );

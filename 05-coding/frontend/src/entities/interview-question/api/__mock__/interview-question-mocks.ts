@@ -1,7 +1,11 @@
 // PROTOTYPE mock — no backend endpoint exists yet.
 // Questions from 09-layoutBase/Admin - Câu hỏi phỏng vấn.dc.html:381-409; the "Dùng N lần · điểm TB
 // X/5" string there is split into two fields so the screen can format it per locale.
-import type { InterviewQuestion, InterviewQuestionPage } from "../../model/types";
+import type { QuestionDraft } from "../../model/csv-import";
+import type {
+  InterviewQuestion,
+  InterviewQuestionPage,
+} from "../../model/types";
 
 // Student-facing fields below are [SoT: Suy luận] where noted — USR0402 has no prototype to
 // reference (01-rd/screens/users/USR0402_interview_question_detail.md mục 1), so content is
@@ -11,7 +15,8 @@ const QUESTIONS: InterviewQuestion[] = [
     code: "IQ-014",
     topic: "csTheory",
     level: "MEDIUM",
-    question: "Hash table xử lý collision bằng cách nào? So sánh chaining và open addressing.",
+    question:
+      "Hash table xử lý collision bằng cách nào? So sánh chaining và open addressing.",
     followUps: [
       "Ngưỡng load factor nào thì cần resize?",
       "Vì sao open addressing thắng khi load factor thấp?",
@@ -113,7 +118,8 @@ const QUESTIONS: InterviewQuestion[] = [
     code: "IQ-040",
     topic: "systemDesign",
     level: "MEDIUM",
-    question: "Cache invalidation: các chiến lược phổ biến và đánh đổi của từng cách.",
+    question:
+      "Cache invalidation: các chiến lược phổ biến và đánh đổi của từng cách.",
     followUps: [
       "Khi cache và DB lệch nhau, đâu là nguồn sự thật?",
       "Chống thundering herd bằng lock hay jitter TTL?",
@@ -167,7 +173,7 @@ const QUESTIONS: InterviewQuestion[] = [
     coreKeywords: ["B-tree", "Composite index", "Query planner"],
     sampleAnswerFramework:
       "Trình bày cấu trúc trước, quy tắc tiền tố của composite index sau, rồi liệt kê các nguyên " +
-      "nhân planner bỏ qua index — tránh chỉ nói \"thêm index thì nhanh hơn\".",
+      'nhân planner bỏ qua index — tránh chỉ nói "thêm index thì nhanh hơn".',
     hasRubric: true,
     defaultRecall: null,
     attempts: [],
@@ -176,7 +182,8 @@ const QUESTIONS: InterviewQuestion[] = [
     code: "IQ-058",
     topic: "database",
     level: "HARD",
-    question: "Giải thích các mức isolation của transaction và hiện tượng đi kèm.",
+    question:
+      "Giải thích các mức isolation của transaction và hiện tượng đi kèm.",
     followUps: [
       "MVCC của PostgreSQL khác cơ chế khoá của MySQL thế nào?",
       "Nghiệp vụ nào buộc phải serializable?",
@@ -207,8 +214,12 @@ const QUESTIONS: InterviewQuestion[] = [
     code: "IQ-071",
     topic: "language",
     level: "EASY",
-    question: "Truyền tham chiếu trong Python: vì sao sửa list trong hàm lại đổi cả biến ngoài?",
-    followUps: ["Default argument dạng list gây lỗi gì?", "Copy nông và copy sâu khác nhau ở đâu?"],
+    question:
+      "Truyền tham chiếu trong Python: vì sao sửa list trong hàm lại đổi cả biến ngoài?",
+    followUps: [
+      "Default argument dạng list gây lỗi gì?",
+      "Copy nông và copy sâu khác nhau ở đâu?",
+    ],
     rubric: [
       { label: "Hiểu cơ chế truyền", weight: 40 },
       { label: "Mutable và immutable", weight: 35 },
@@ -236,8 +247,12 @@ const QUESTIONS: InterviewQuestion[] = [
     code: "IQ-084",
     topic: "behavioural",
     level: "MEDIUM",
-    question: "Kể về một lần bạn đưa quyết định kỹ thuật sai. Bạn phát hiện và xử lý thế nào?",
-    followUps: ["Tín hiệu nào giúp bạn phát hiện ra sai?", "Quy trình của nhóm thay đổi gì sau đó?"],
+    question:
+      "Kể về một lần bạn đưa quyết định kỹ thuật sai. Bạn phát hiện và xử lý thế nào?",
+    followUps: [
+      "Tín hiệu nào giúp bạn phát hiện ra sai?",
+      "Quy trình của nhóm thay đổi gì sau đó?",
+    ],
     rubric: [
       { label: "Cấu trúc STAR", weight: 35 },
       { label: "Số liệu cụ thể", weight: 35 },
@@ -267,8 +282,12 @@ const QUESTIONS: InterviewQuestion[] = [
     code: "IQ-092",
     topic: "behavioural",
     level: "EASY",
-    question: "Bạn xử lý thế nào khi review code của đồng nghiệp và không đồng ý về hướng làm?",
-    followUps: ["Bạn dựa vào tiêu chí đo được nào?", "Khi nào thì leo thang và mốc thời gian ra sao?"],
+    question:
+      "Bạn xử lý thế nào khi review code của đồng nghiệp và không đồng ý về hướng làm?",
+    followUps: [
+      "Bạn dựa vào tiêu chí đo được nào?",
+      "Khi nào thì leo thang và mốc thời gian ra sao?",
+    ],
     rubric: [
       { label: "Tách kỹ thuật khỏi cá nhân", weight: 35 },
       { label: "Tiêu chí đo được", weight: 35 },
@@ -299,19 +318,55 @@ const QUESTIONS: InterviewQuestion[] = [
         answerText:
           "Em sẽ nói chuyện riêng với bạn ấy, chỉ ra tiêu chí hiệu năng và khả năng test, nếu vẫn " +
           "không đồng ý thì nhờ tech lead quyết trong buổi họp gần nhất.",
-        strengths: ["Tách được chuyện kỹ thuật khỏi cảm xúc cá nhân", "Có mốc leo thang rõ ràng"],
-        gaps: ["Chưa nêu số liệu đo được cụ thể (ví dụ thời gian chạy, coverage)"],
-        nextSteps: "Thêm một ví dụ số liệu thật để tiêu chí không còn chung chung.",
+        strengths: [
+          "Tách được chuyện kỹ thuật khỏi cảm xúc cá nhân",
+          "Có mốc leo thang rõ ràng",
+        ],
+        gaps: [
+          "Chưa nêu số liệu đo được cụ thể (ví dụ thời gian chạy, coverage)",
+        ],
+        nextSteps:
+          "Thêm một ví dụ số liệu thật để tiêu chí không còn chung chung.",
       },
     ],
   },
 ];
 
+// Questions added by the CSV import; they live in the module until the page reloads.
+let importedCount = 0;
+
 export function fetchInterviewQuestionPage(): InterviewQuestionPage {
   return {
     questions: QUESTIONS.map((question) => ({ ...question })),
-    totalQuestions: 148,
+    totalQuestions: 148 + importedCount,
   };
+}
+
+/** Stand-in for the import endpoint: gives each draft the next IQ-nnn code and adds it to the bank. */
+export function appendImportedQuestions(
+  drafts: readonly QuestionDraft[],
+): InterviewQuestion[] {
+  let next =
+    Math.max(
+      0,
+      ...QUESTIONS.map((question) => Number(question.code.replace(/\D/g, ""))),
+    ) + 1;
+  const created = drafts.map((draft): InterviewQuestion => ({
+    ...draft,
+    code: `IQ-${String(next++).padStart(3, "0")}`,
+    usageCount: 0,
+    averageScore: 0,
+    content: draft.content ?? draft.question,
+    suggestedApproach: draft.suggestedApproach ?? [],
+    coreKeywords: draft.coreKeywords ?? [],
+    sampleAnswerFramework: draft.sampleAnswerFramework ?? "",
+    hasRubric: draft.rubric.length > 0,
+    defaultRecall: null,
+    attempts: [],
+  }));
+  QUESTIONS.push(...created);
+  importedCount += created.length;
+  return created;
 }
 
 /**
@@ -319,7 +374,9 @@ export function fetchInterviewQuestionPage(): InterviewQuestionPage {
  * it a UUID, but the mock keeps the same human-readable `code` used everywhere else in this
  * prototype rather than inventing a second identifier scheme [SoT: Suy luận].
  */
-export function findInterviewQuestionByCode(code: string): InterviewQuestion | undefined {
+export function findInterviewQuestionByCode(
+  code: string,
+): InterviewQuestion | undefined {
   const question = QUESTIONS.find((candidate) => candidate.code === code);
   return question ? { ...question } : undefined;
 }

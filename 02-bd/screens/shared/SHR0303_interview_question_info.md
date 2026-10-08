@@ -43,7 +43,7 @@
 | Tên vật lý (slug) | `interview_question_info` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A2 (`INSTRUCTOR`) / A3 (`ADMIN`) — dùng chung; dựng cho cả hai khu |
-| Phiên bản | V0.4 |
+| Phiên bản | V0.5 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/10/02 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
@@ -59,6 +59,7 @@
 | V0.2 | Sheet 3, 4, 5, 7, 8 | Đồng bộ với bản dựng ngày 2026-10-03: (1) **nội dung câu hỏi hiển thị dưới dạng Markdown và công thức LaTeX đã dựng** (`MarkdownPreview`: GFM, `$...$`, `$$...$$`; HTML thô gõ trong nội dung hiện như văn bản, không dựng thành phần tử) — thay cho "hiển thị thô, chưa kết xuất Markdown" của V0.1, đóng phần "DD chốt có kết xuất hay không" ở Sheet 5 Khu vực B NO 1; (2) khu Giảng viên đã dựng cùng cấu trúc khu Admin; view nhận prop bắt buộc `basePath`, liên kết quay lại và liên kết `/edit` dựng từ `basePath` thay vì cố định `/admin`; (3) làm mới dẫn chiếu dòng tới bản dựng, RD (thêm REQ-5), `02-bd/database/interview-bank.md` (bảng `question_topics` thêm lên đầu nên các dòng cũ lệch) và các BD anh em. Không đổi DTO | 2026/10/03 | AI |
 | V0.3 | Sheet 4, 5, 6, 7 | Đồng bộ chốt 2026-10-03 (`DEC-2026-1001-admin-configurable-settings` mục 6, Round 5): **độ khó là danh mục do ADMIN quản lý** (bảng `question_levels`, `02-bd/database/interview-bank.md:30-50`), không còn enum `EASY`/`MEDIUM`/`HARD`. Badge "Độ khó" (Sheet 5 Khu vực C NO 2) đọc nhãn từ `question_levels` qua `QuestionLevelDto.displayName`; DTO `difficulty` đổi thành `levelId`, cột `difficulty` thay bằng `level_id`. Màu badge: ba mức khởi tạo giữ màu cũ (Dễ = thành công, Trung bình = cảnh báo, Khó = âm), mức ADMIN thêm sau có màu trung tính vì không có cột màu (chốt cùng quyết định) — theo bản dựng `level-store.ts:17-42`, `interview-question-info-view.tsx:138-139`. Thêm bảng `question_levels` vào Sheet 4.3, 7.2. Làm mới dẫn chiếu dòng tới `SHR0302` (chèn thêm dòng nên lệch) và `02-bd/database/interview-bank.md`. Không đổi bố cục | 2026/10/03 | AI |
 | V0.4 | Sheet 3, 4, 5, 7, Câu hỏi mở | Làm mới và kiểm chứng toàn bộ dẫn chiếu `file:line` (2026-10-03): (1) bản dựng `interview-question-info-view.tsx` và `interview-question-management-view.tsx` lệch dòng, nay cập nhật (liên kết sang chi tiết ở `management-view` :138, không còn :120-125); `messages/vi.json` khối `interviewQuestionInfo` ở :1492-1503; (2) `02-bd/database/interview-bank.md` lệch sau khi chèn mục 1.1a: `interview_questions` :52-76, `id` :56, rubric :73-76; dải `8-96`/`8-132` thay cho `30-74`/`8-110`; (3) dẫn chiếu `SHR0301` dòng 386/505-506/622 (đang được sửa song song) đổi sang dẫn theo mục; `SHR0302` :629 thành :637 (Q2); (4) sửa "`SHR0301` Q1" (câu về thẻ chỉ số, đã đóng) thành Q5 (mã hiển thị `IQ-nnn`); (5) màu badge độ khó theo `level-store.ts:41-42` (`levelTone`); khoá mức độ khó là slug chữ hoa (`EASY`/`MEDIUM`/`HARD`, mức mới dạng `VERY_HARD`). Không đổi bố cục, DTO, NO/EVT/Q | 2026/10/03 | AI |
+| V0.5 | Sheet 4 (4.4, 4.5) | Phần thân trang chỉ đọc được phóng nhẹ theo yêu cầu của owner (2026-10-05, **chưa duyệt hình**, không đổi hành vi): nội dung câu hỏi dùng `MarkdownPreview size="lg"` (15 px, giãn dòng 1.75); danh sách câu hỏi đào sâu 13 lên 15 px, giãn dòng 1.75; dòng thông báo "chưa có câu hỏi đào sâu" 13 lên 14 px; các dòng tiêu chí đánh giá 13 lên 14 px. Cột hẹp (phân loại, sử dụng) không đổi | 2026/10/05 | Nhóm phát triển AlgoPrep |
 
 ---
 
@@ -179,7 +180,7 @@ bộ câu hỏi [Nguồn: 01-rd/screens/shared/SHR0303_interview_question_info.m
 [Tệp liên quan] Không có.
 
 [Phạm vi]
-- Không có sửa, nhân bản, xoá mềm — thuộc `SHR0302` và `SHR0301`
+- Không có sửa, xoá mềm — thuộc `SHR0302` và `SHR0301`
   [Nguồn: 01-rd/screens/shared/SHR0303_interview_question_info.md:44].
 - Không hiển thị ý cần nói, từ khoá cốt lõi, khung trả lời chuẩn, lịch sử luyện — thuộc `USR0402`
   [Nguồn: 01-rd/screens/shared/SHR0303_interview_question_info.md:45]. Bản dựng có sẵn các trường đó trong mock nhưng màn không đọc.
@@ -224,9 +225,9 @@ không phải nguồn hành vi chính thức.
 | Vùng | Vị trí trong bản dựng UI | Nội dung |
 | :--- | :--- | :--- |
 | Thanh đầu trang | `interview-question-info-view.tsx:64-78` | Nút quay lại (biểu tượng mũi tên, bên trái); tiêu đề "Câu hỏi {mã}"; phụ đề tên chủ đề; bên phải: nút "Xem như học viên", nút "Sửa câu hỏi" |
-| Cột rộng — Nội dung câu hỏi | `:82-84` | Nội dung dựng dạng Markdown kèm công thức LaTeX (`MarkdownPreview`, `:83`); HTML thô hiện như văn bản |
-| Cột rộng — Câu hỏi đào sâu | `:86-96` | Danh sách đánh số; trống thì một dòng thông báo |
-| Cột rộng — Bộ tiêu chí đánh giá | `:98-125` | Tổng trọng số ở góc thẻ, danh sách tiêu chí (tên, trọng số); trống thì ghi chú |
+| Cột rộng — Nội dung câu hỏi | `:82-84` | Nội dung dựng dạng Markdown kèm công thức LaTeX (`MarkdownPreview`, `:83`); HTML thô hiện như văn bản Từ 2026-10-05 dùng `MarkdownPreview size="lg"` (15 px, giãn dòng 1.75; chưa duyệt hình) [Nguồn: 05-coding/frontend/src/views/shared/interview-question-info/ui/interview-question-info-view.tsx:83; 05-coding/frontend/src/shared/ui/data/markdown-preview.tsx:17-18, 27-36] |
+| Cột rộng — Câu hỏi đào sâu | `:86-96` | Danh sách đánh số; trống thì một dòng thông báo Từ 2026-10-05 mỗi mục 15 px, giãn dòng 1.75; dòng thông báo trống 14 px (chưa duyệt hình) [Nguồn: 05-coding/frontend/src/views/shared/interview-question-info/ui/interview-question-info-view.tsx:88-93] |
+| Cột rộng — Bộ tiêu chí đánh giá | `:98-125` | Tổng trọng số ở góc thẻ, danh sách tiêu chí (tên, trọng số); trống thì ghi chú Từ 2026-10-05 dòng tiêu chí 14 px (chưa duyệt hình) [Nguồn: 05-coding/frontend/src/views/shared/interview-question-info/ui/interview-question-info-view.tsx:117] |
 | Cột hẹp — Phân loại | `:129-144` | Chủ đề, độ khó (badge; nhãn và màu tra từ danh mục độ khó bằng `levelLabel`/`levelTone`, `:138-139`) |
 | Cột hẹp — Sử dụng | `:146-165` | Số lần dùng, điểm trung bình trên thang 5, trạng thái Chế độ luyện (badge) |
 | Trạng thái không tìm thấy | `:46-58` | Nút quay lại, tiêu đề và nội dung "không tìm thấy" |
@@ -241,7 +242,7 @@ cùng khuôn với `SHR0302`. Không quy định màu sắc, khoảng cách hay 
 | :--- | :--- | :--- |
 | Trang | `views/shared/interview-question-info` | Đã dựng; slug khớp `interview_question_info` |
 | Route (hai khu) | `app/(admin)/admin/interview-questions/[questionId]/page.tsx` và `app/(instructor)/instructor/interview-questions/[questionId]/page.tsx` | Đã dựng, truyền `basePath="/admin/interview-questions"` hoặc `basePath="/instructor/interview-questions"` |
-| Hiển thị Markdown | `shared/ui/markdown-preview` | Đã dựng (2026-10-03): `react-markdown` + `remark-gfm` + `remark-math` + `rehype-katex`, không có `rehype-raw` nên HTML thô không được dựng [Nguồn: 05-coding/frontend/src/shared/ui/data/markdown-preview.tsx:5-6, 36-38] |
+| Hiển thị Markdown | `shared/ui/markdown-preview` (từ 2026-10-05 có prop `size` "base"/"lg", màn này dùng "lg", chưa duyệt hình; `05-coding/frontend/src/shared/ui/data/markdown-preview.tsx:17-18, 27-36`) | Đã dựng (2026-10-03): `react-markdown` + `remark-gfm` + `remark-math` + `rehype-katex`, không có `rehype-raw` nên HTML thô không được dựng [Nguồn: 05-coding/frontend/src/shared/ui/data/markdown-preview.tsx:5-6, 36-38] |
 | Dữ liệu miền | `entities/interview-question` | Đã dựng: `findInterviewQuestionByCode`, `topicLabel`, `useInterviewTopics` (`interview-question-info-view.tsx:12-19`) |
 | Popup xem như học viên | `features/interview-question-preview` (dùng chung với `SHR0302`) | Chưa gắn hành vi |
 

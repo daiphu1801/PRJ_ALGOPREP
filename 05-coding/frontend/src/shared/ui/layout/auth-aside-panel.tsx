@@ -28,7 +28,14 @@ type AuthAsidePanelProps = {
  * palette from whichever shell scope wraps it (globals.css) with no per-actor variant: blue for
  * students, blue-grey inside `.instructor-shell`, cyan inside `.admin-shell`.
  */
-export function AuthAsidePanel({ badges, title, description, action, children, className }: AuthAsidePanelProps) {
+export function AuthAsidePanel({
+  badges,
+  title,
+  description,
+  action,
+  children,
+  className,
+}: AuthAsidePanelProps) {
   return (
     // Badges and dots are pinned to the panel's top and bottom while the copy and the illustration
     // stay ONE centred block, which is how the mockup lays the column out
@@ -81,7 +88,10 @@ export function AuthAsideHighlights({ items }: { items: string[] }) {
     <ul className="on-accent-tint space-y-2 rounded-lg p-4 text-[13px]">
       {items.map((item) => (
         <li key={item} className="flex items-center gap-2.5">
-          <span aria-hidden="true" className="h-1.5 w-1.5 shrink-0 rounded-full bg-current opacity-70" />
+          <span
+            aria-hidden="true"
+            className="h-1.5 w-1.5 shrink-0 rounded-full bg-current opacity-70"
+          />
           <span className="opacity-90">{item}</span>
         </li>
       ))}

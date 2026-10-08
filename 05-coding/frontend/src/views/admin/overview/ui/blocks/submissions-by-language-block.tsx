@@ -14,13 +14,22 @@ export function SubmissionsByLanguageBlock() {
       title={t("blocks.submissionsByLanguage")}
       isLoading={query.isLoading}
       isError={query.isError}
-      isEmpty={query.data ? query.data.series.every((s) => s.points.every((v) => v === 0)) : false}
+      isEmpty={
+        query.data
+          ? query.data.series.every((s) => s.points.every((v) => v === 0))
+          : false
+      }
       onRetry={() => query.refetch()}
       emptyMessage={t("emptyGeneric")}
       errorMessage={t("errorGeneric")}
       retryLabel={t("retry")}
     >
-      {query.data && <HorizontalBarChart series={query.data.series} pointLabels={query.data.pointLabels} />}
+      {query.data && (
+        <HorizontalBarChart
+          series={query.data.series}
+          pointLabels={query.data.pointLabels}
+        />
+      )}
     </DashboardBlockState>
   );
 }

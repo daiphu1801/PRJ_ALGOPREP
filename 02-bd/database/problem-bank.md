@@ -16,7 +16,7 @@ Cốt lõi F2-01, F2-02, F2-15, F2-16.
 | `statement_md` | TEXT | Nội dung đề bằng Markdown + LaTeX (F2-01) |
 | `level_id` | UUID FK → `problem_levels.id`, NOT NULL | F2-02, độ khó. Từ 2026-10-03 là danh mục **do ADMIN quản lý** (mục 1.2a), thay cho ENUM `EASY`/`MEDIUM`/`HARD` từng nằm ở cột `difficulty` (`DEC-2026-1001-admin-configurable-settings` mục 7). FK **không** `ON DELETE CASCADE`. Độ khó chỉ phân loại, không điều khiển điểm hay giới hạn tài nguyên |
 | `status` | ENUM(`UNPUBLISHED`,`PUBLISHED`) | F2-15 — đúng hai trạng thái, không có `HIDDEN` (`DEC-2026-0830-problem-lifecycle-two-states`) |
-| `deleted` | BOOLEAN default `false` | Ẩn mềm (`DEC-2026-0831-problem-management-lifecycle-details`) — xoá không đổi `status`, chỉ bật cờ này; bài `deleted=true` không hiện ở `problem_management` lẫn `problem_list` |
+| `deleted` | BOOLEAN default `false` | Ẩn mềm (`DEC-2026-0831-problem-management-lifecycle-details`) — xoá đặt `status = UNPUBLISHED` **và** bật cờ này (thống nhất 2026-10-08 theo RD và DEC, trước đây ghi "không đổi `status`"); lượt nộp, điểm, bookmark, lịch sử lớp giữ nguyên; bài `deleted=true` không hiện ở `problem_management` lẫn `problem_list` |
 | `function_wrapper_supported` | BOOLEAN default `true` | F3-13 — tự tính khi lưu `problem_spec`, xem kiến trúc mục 5 |
 | `time_limit_ms` | INT | F2-10, mốc cơ sở trước khi nhân hệ số ngôn ngữ |
 | `memory_limit_mb` | INT | F2-10 |
@@ -33,6 +33,24 @@ Cốt lõi F2-01, F2-02, F2-15, F2-16.
 `[SoT: Suy luận]` — `updated_by` tham chiếu `user_id` bên schema `identity` nhưng **không đặt FOREIGN KEY
 vật lý xuyên schema** (đúng nguyên tắc modular monolith — mỗi schema độc lập migration); ràng buộc toàn vẹn
 kiểm ở tầng ứng dụng khi ghi.
+
+### 1.1a. Quy tắc "bài đã rút khỏi ngân hàng" (`deleted = true`) ở phía người học (G4, chốt 2026-10-08)
+
+Một bài bị xoá mềm không còn hiện ở `problem_list` và `problem_detail` trả như không tồn tại, nhưng dữ liệu người học
+đã sinh ra từ bài đó vẫn còn. Quy tắc dưới đây là **nguồn duy nhất**; các BD màn người học chỉ dẫn về mục này
+(`USR0201`, `USR0202`, `USR0301`, `USR0501`), không chép lại.
+
+1. **Lịch sử và kết quả giữ nguyên.** Dòng lịch sử nộp, kết quả từng testcase và báo cáo Solution Review của bài đã
+   rút vẫn mở được; chỉ **liên kết sang `problem_detail` bị bỏ** (không có đích để mở), thay bằng nhãn "Đã rút khỏi
+   ngân hàng" cạnh tiêu đề. Tiêu đề và mã bài đọc từ bản ghi `problems` còn lại (xoá mềm nên vẫn đọc được).
+2. **Mẫu số tiến độ chỉ tính bài còn hiển thị.** Tổng số bài, tỉ lệ "đã giải / tổng số bài" và phân bố theo chủ đề,
+   độ khó đếm trên `status = PUBLISHED AND NOT deleted`. Điểm cao nhất của bài đã rút (`user_problem_best_score`)
+   **vẫn được lưu** nhưng **không cộng vào "đã giải"**.
+3. **Lượt nộp đang dở.** Lượt nộp đã vào hàng đợi trước lúc bài bị xoá **vẫn được chấm bình thường** (máy chủ đọc
+   bài và testcase đã khoá phiên bản); lượt nộp **mới** gửi sau khi xoá bị từ chối vì bài không tồn tại
+   (`PROBLEM_NOT_FOUND`). `[SoT: Suy luận]` — chưa có DD `judge-orchestration` xác nhận hành vi hàng đợi.
+4. **Nút hành động liên quan.** "Làm lại", "Mở bài", "Phân tích bài giải mới" trỏ về bài đã rút bị vô hiệu kèm
+   tooltip "Bài này đã rút khỏi ngân hàng"; không có nút khôi phục ở phía người học.
 
 ### 1.2. `topics` / `problem_topics` (F2-02)
 

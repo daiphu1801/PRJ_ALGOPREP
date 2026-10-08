@@ -17,7 +17,9 @@ export function SecurityCard({ profile }: { profile: UserProfile }) {
     ? profile.passwordChangedAt
       ? t("security.passwordChangedAt", { date: profile.passwordChangedAt })
       : t("security.passwordNoDate")
-    : t("security.noPassword", { provider: profile.linkedProviders[0] ?? "OAuth" });
+    : t("security.noPassword", {
+        provider: profile.linkedProviders[0] ?? "OAuth",
+      });
 
   return (
     <Card title={t("security.title")}>
@@ -27,12 +29,19 @@ export function SecurityCard({ profile }: { profile: UserProfile }) {
           description={passwordMeta}
         >
           <Button size="sm" variant="ghost" onClick={() => setDialogOpen(true)}>
-            {profile.hasPassword ? t("security.changePassword") : t("security.setPassword")}
+            {profile.hasPassword
+              ? t("security.changePassword")
+              : t("security.setPassword")}
           </Button>
         </SettingRow>
-        <SettingRow label={t("security.providerLabel")} description={t("security.providerDescription")}>
+        <SettingRow
+          label={t("security.providerLabel")}
+          description={t("security.providerDescription")}
+        >
           <div className="flex gap-1.5">
-            {profile.hasPassword ? <Badge>{t("security.providerCredentials")}</Badge> : null}
+            {profile.hasPassword ? (
+              <Badge>{t("security.providerCredentials")}</Badge>
+            ) : null}
             {profile.linkedProviders.map((provider) => (
               <Badge key={provider}>{provider}</Badge>
             ))}
@@ -40,7 +49,10 @@ export function SecurityCard({ profile }: { profile: UserProfile }) {
         </SettingRow>
       </div>
       {dialogOpen ? (
-        <ChangePasswordDialog hasPassword={profile.hasPassword} onClose={() => setDialogOpen(false)} />
+        <ChangePasswordDialog
+          hasPassword={profile.hasPassword}
+          onClose={() => setDialogOpen(false)}
+        />
       ) : null}
     </Card>
   );

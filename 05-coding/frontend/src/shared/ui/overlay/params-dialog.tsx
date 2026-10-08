@@ -14,7 +14,14 @@ import { SelectField } from "../form/select-field";
 import { TextField } from "../form/text-field";
 
 export type ParamField =
-  | { type: "number"; key: string; label: string; hint?: string; unit?: string; min: number }
+  | {
+      type: "number";
+      key: string;
+      label: string;
+      hint?: string;
+      unit?: string;
+      min: number;
+    }
   | {
       type: "select";
       key: string;
@@ -32,6 +39,9 @@ export type ParamsDialogLabels = {
   saved: string;
   /** Error text for a number below its minimum, e.g. "Nhập số nguyên từ 1 trở lên". */
   errorMin: (min: number) => string;
+  /** Confirm and back buttons of the optional `confirmSave` step. */
+  confirm?: string;
+  back?: string;
 };
 
 type Props = {
@@ -41,6 +51,12 @@ type Props = {
   fields: readonly ParamField[];
   values: ParamValues;
   onSave: (values: ParamValues) => void;
+  /**
+   * Returns a warning when this particular save needs a second look (shortening a retention period,
+   * switching to a destructive policy); the dialog then shows it and asks again before saving.
+   * Returning nothing saves straight away, which is every other caller.
+   */
+  confirmSave?: (draft: ParamValues) => string | undefined;
   labels: ParamsDialogLabels;
 };
 
@@ -49,15 +65,19 @@ function ParamsForm({
   fields,
   values,
   onSave,
+  confirmSave,
   labels,
 }: Omit<Props, "open" | "title">) {
   const [draft, setDraft] = useState<ParamValues>(values);
   const [touched, setTouched] = useState(false);
+  const [warning, setWarning] = useState<string | null>(null);
 
   const errorFor = (field: ParamField) => {
     if (field.type !== "number") return undefined;
     const value = Number(draft[field.key]);
-    return Number.isInteger(value) && value >= field.min ? undefined : labels.errorMin(field.min);
+    return Number.isInteger(value) && value >= field.min
+      ? undefined
+      : labels.errorMin(field.min);
   };
   const hasError = fields.some((field) => errorFor(field));
 
@@ -65,6 +85,11 @@ function ParamsForm({
     setTouched(true);
     if (hasError) {
       toastFirstError(fields.map(errorFor));
+      return;
+    }
+    const message = warning === null ? confirmSave?.(draft) : undefined;
+    if (message) {
+      setWarning(message);
       return;
     }
     onSave(draft);
@@ -76,11 +101,16 @@ function ParamsForm({
     <>
       <div className="flex flex-col gap-3.5">
         {fields.map((field) => {
-          const change = (value: string) => setDraft((previous) => ({ ...previous, [field.key]: value }));
+          const change = (value: string) => {
+            setWarning(null);
+            setDraft((previous) => ({ ...previous, [field.key]: value }));
+          };
           return field.type === "number" ? (
             <div key={field.key}>
               <TextField
-                label={field.unit ? `${field.label} (${field.unit})` : field.label}
+                label={
+                  field.unit ? `${field.label} (${field.unit})` : field.label
+                }
                 type="number"
                 min={field.min}
                 value={draft[field.key] ?? ""}
@@ -88,7 +118,9 @@ function ParamsForm({
                 invalid={touched && Boolean(errorFor(field))}
               />
               {field.hint ? (
-                <p className="mt-1 text-xs text-[var(--color-text-muted)]">{field.hint}</p>
+                <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+                  {field.hint}
+                </p>
               ) : null}
             </div>
           ) : (
@@ -100,18 +132,30 @@ function ParamsForm({
                 options={field.options}
               />
               {field.hint ? (
-                <p className="mt-1 text-xs text-[var(--color-text-muted)]">{field.hint}</p>
+                <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+                  {field.hint}
+                </p>
               ) : null}
             </div>
           );
         })}
       </div>
+      {warning ? (
+        <p className="mt-3.5 text-[12.5px] font-semibold text-[var(--color-admin-warn)]">
+          {warning}
+        </p>
+      ) : null}
       <div className="mt-5 flex justify-end gap-2">
-        <Button variant="ghost" size="sm" className="border border-[var(--color-border)]" onClick={onClose}>
-          {labels.cancel}
+        <Button
+          variant="ghost"
+          size="sm"
+          className="border border-[var(--color-border)]"
+          onClick={warning ? () => setWarning(null) : onClose}
+        >
+          {warning ? (labels.back ?? labels.cancel) : labels.cancel}
         </Button>
         <Button variant="cta" size="sm" onClick={save}>
-          {labels.save}
+          {warning ? (labels.confirm ?? labels.save) : labels.save}
         </Button>
       </div>
     </>

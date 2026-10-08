@@ -5,6 +5,7 @@ export {
   grantsFor,
   type ActionGrant,
   type ActionKey,
+  type BaseCategory,
   type FunctionKey,
   type PermissionMatrixPage,
   type Role,

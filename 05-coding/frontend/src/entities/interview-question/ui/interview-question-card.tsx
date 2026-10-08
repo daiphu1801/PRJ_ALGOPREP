@@ -55,7 +55,9 @@ export function InterviewQuestionCard({
         </span>
       </div>
 
-      <h3 className="text-[14.5px] leading-snug font-semibold text-pretty">{question.question}</h3>
+      <h3 className="text-[14.5px] leading-snug font-semibold text-pretty">
+        {question.question}
+      </h3>
 
       <div className="glass-surface rounded-2xl border border-[var(--color-border)] px-3 py-3">
         <p className={sectionHeading}>{followUpsLabel}</p>
@@ -66,7 +68,10 @@ export function InterviewQuestionCard({
               className="flex gap-2 text-[12.5px] leading-relaxed text-pretty text-[var(--color-text-muted)]"
             >
               {/* An arrow as a bullet, matching dc.html:460 — a plain character, not a pictograph. */}
-              <span aria-hidden="true" className="shrink-0 text-[var(--color-text-subtle)]">
+              <span
+                aria-hidden="true"
+                className="shrink-0 text-[var(--color-text-subtle)]"
+              >
                 →
               </span>
               <span>{followUp}</span>
@@ -81,7 +86,9 @@ export function InterviewQuestionCard({
           {question.rubric.map((criterion, index) => (
             <div key={criterion.label}>
               <div className="mb-1 flex items-center justify-between gap-2.5">
-                <span className="text-[12.5px] font-medium">{criterion.label}</span>
+                <span className="text-[12.5px] font-medium">
+                  {criterion.label}
+                </span>
                 <span className="font-mono text-[11.5px] text-[var(--color-text-subtle)]">
                   {criterion.weight}%
                 </span>
@@ -101,7 +108,9 @@ export function InterviewQuestionCard({
         <span className="text-xs whitespace-nowrap text-[var(--color-text-subtle)]">
           {usageLabel}
         </span>
-        {actions ? <span className="ml-auto flex gap-1.5">{actions}</span> : null}
+        {actions ? (
+          <span className="ml-auto flex gap-1.5">{actions}</span>
+        ) : null}
       </div>
     </Card>
   );
