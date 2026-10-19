@@ -43,9 +43,9 @@ lượt hội thoại, rubric), không phải file lớn.
 | Định hướng giáo dục (không phải điểm chính thức) | F5-18 | Hiện rõ trên giao diện — ràng buộc UI, BD chỉ đảm bảo trường dữ liệu không bị hiểu nhầm là điểm chính thức |
 | Kiểm soát chi phí | F5-19, F5-20, F5-21, F5-25 | Rate limit, cache theo hash, token budget, cảnh báo bất thường — mục 6 |
 | Suy giảm có kiểm soát | F5-22 | Kiến trúc, không phải lời hứa — mục 7 |
-| Cấu hình prompt/rubric | F5-23 | Actor A3, `AI_CONFIG` (F1-12) — mục database `prompt_templates`/`rubric_configs`. **Không thiết kế** nút "Chạy đối chiếu" backend — giữ ở tầng giao diện theo RD dòng 86-93 |
+| Cấu hình prompt | F5-23 | Actor A3, `AI_CONFIG` (F1-12) — mục database `prompt_templates`. **Không còn cấu hình rubric** (trọng số lẫn danh sách tiêu chí): báo cáo bài giải F5.1 không còn rubric nào, `DEC-2026-1014-drop-solution-review-rubric`. **Không thiết kế** nút "Chạy đối chiếu" backend — giữ ở tầng giao diện theo RD dòng 86-93 |
 | Áp dụng mã AI vào Workspace | F5-26 | Ghi vào module khác (`problem-bank`/frontend Workspace) — **không phải dữ liệu của `ai-review`**, chỉ phát một sự kiện/trả một DTO chứa đoạn mã đề xuất, hành vi ghi đè + snapshot khôi phục thuộc tầng Workspace/frontend, ngoài phạm vi BD này |
-| Điểm AI tham khảo + hàng đợi chấm tay | F5-27 | `DEC-2026-0831-instructor-grading-round2` — mục 4 (database), điểm quy đổi 0-10 lưu cạnh `solution_reviews`, không ghi đè |
+| **Đã cắt khỏi phạm vi** — điểm AI quy đổi thang 10 | F5.1 | Cột `solution_reviews.ai_score_10` và quy tắc quy đổi bỏ theo `DEC-2026-1014-drop-ai-score-10` (sửa 2026-10-14); chấm tay của giảng viên đã bỏ (`DEC-2026-1013-remove-instructor-manual-grading`). Báo cáo F5.1 còn `result_json`, `readability_score`; `rubric_scores` chỉ còn cho Mock Interview |
 | **Đã cắt khỏi phạm vi — KHÔNG thiết kế lại** | — | "Gợi ý theo bậc" (`DEC-2026-0831-remove-tiered-hints-ai-config`), "Báo cáo nghi gian lận" (`DEC-2026-0831-remove-plagiarism-report`) |
 
 ## 3. Giao tiếp liên module
@@ -135,7 +135,7 @@ Khớp tên đã dự kiến ở `02-bd/architecture/identity.md` mục 3.1:
 
 | Sự kiện | Khi nào | Payload chính | Ai tiêu thụ |
 | :--- | :--- | :--- | :--- |
-| `SolutionReviewCompleted` | Một lượt F5.1 hoàn tất (kể cả khi trả từ cache, mục 6.2) | `solutionReviewId`, `submissionId`, `userId`, `problemId`, `readabilityScore`, `aiScore10` | `identity` (`identity_recent_activity`, F1-08/F1-30) |
+| `SolutionReviewCompleted` | Một lượt F5.1 hoàn tất (kể cả khi trả từ cache, mục 6.2) | `solutionReviewId`, `submissionId`, `userId`, `problemId`, `readabilityScore` (bỏ `aiScore10` theo `DEC-2026-1014-drop-ai-score-10`) | `identity` (`identity_recent_activity`, F1-08/F1-30) |
 | `MockInterviewFinished` | Phiên F5.2 vào trạng thái `COMPLETED` (mục 4.2) | `interviewSessionId`, `userId`, `entryType`, `submissionId?`, rubric 4 tiêu chí | `identity` (`identity_recent_activity`, F1-08/F1-30) |
 
 Phát qua cùng cơ chế Outbox như `judge-orchestration` đã chọn (`DEC-2026-0912-judge-outbox-pattern`) —
@@ -158,7 +158,7 @@ Học viên bấm nút (chỉ hiện sau Accepted, không tự chạy — F5-01)
                -> SubmissionSnapshotPort.getAccepted() + ProblemContextPort.getContext()
                -> LlmProviderPort.completeStructured(...) theo prompt_templates bản ACTIVE của
                   feature_code = SOLUTION_REVIEW
-               -> ghi solution_reviews + rubric_scores (F5-23, trọng số admin cấu hình) + ai_cache_entries
+               -> ghi solution_reviews (F5.1, không ghi rubric_scores; sửa 2026-10-14, `DEC-2026-1014-drop-solution-review-rubric`) + ai_cache_entries
                -> phát SolutionReviewCompleted
 ```
 
@@ -247,8 +247,8 @@ xác định và yêu cầu đóng.
 
 ### 6.1. Rate limiting theo người dùng (F5-19)
 
-Bộ đếm Redis `ai:ratelimit:<userId>:<featureCode>` (feature = `SOLUTION_REVIEW` hoặc `MOCK_INTERVIEW`),
-cửa sổ trượt. `[SoT: Suy luận]` — RD không nêu số cụ thể, đề xuất khởi điểm: F5.1 tối đa 10 lượt gọi
+Bộ đếm Redis `ai:ratelimit:<userId>:<featureCode>:<epochHour>` (feature = `SOLUTION_REVIEW` hoặc `MOCK_INTERVIEW`),
+**cửa sổ cố định theo giờ** (INCR, hết hạn sau 1 giờ; `DEC-2026-1010-ai-rate-limit-fixed-window`, tiêu chí ponytail bậc 5: trần là có thể dồn gấp đôi lượt quanh ranh giới giờ, nâng lên cửa sổ trượt nếu bị lạm dụng). Thời gian chờ giữa hai yêu cầu là khoá riêng `ai:cooldown:<userId>`. `GENERATE_TESTCASE` không chịu giới hạn theo giờ vì đã có trần theo bài (`DEC-2026-1003-ai-testcase-generation-quota`). `[SoT: Suy luận]` — RD không nêu số cụ thể, đề xuất khởi điểm: F5.1 tối đa 10 lượt gọi
 LLM/giờ/người dùng (không tính cache hit — cache hit không tốn token nên không đếm vào giới hạn này);
 F5.2 tối đa 3 phiên mới/giờ/người dùng (một phiên có thể chứa nhiều lượt, giới hạn theo phiên chứ không
 theo lượt vì lượt trong cùng phiên là hội thoại liên tục, chặn giữa chừng phá hỏng trải nghiệm). Số cụ thể
@@ -272,7 +272,9 @@ quota** theo tốc độ tiêu thụ hiện tại (nội suy tuyến tính đơn
 luận]` — RD không nêu công thức dự báo cụ thể). Khi tổng tiêu thụ **vượt** hạn mức: hệ thống set
 `ai_token_budget_configs.locked_at = now()`, mọi lời gọi AI tiếp theo của `STUDENT`/`INSTRUCTOR` bị chặn
 ngay ở tầng use case (trả lỗi nghiệp vụ `AI_BUDGET_EXCEEDED`, không gọi tới `LlmProviderPort`) —
-`ADMIN` không bị khoá, chỉ `ADMIN` mở lại/tăng ngân sách (F5-25 đã chốt 2026-08-24).
+`ADMIN` không bị khoá, chỉ `ADMIN` mở lại/tăng ngân sách (F5-25 đã chốt 2026-08-24). Hành động này đặt ở màn `admin_ai_limits` (`ADM0303`, 2026-10-10).
+
+**Phạm vi (2026-10-11, `DEC-2026-1011-ai-practice-feedback-in-shared-budget`):** ngân sách và khoá phủ cả phản hồi AI của Chế độ luyện F6-08, không chỉ F5 và F2-14. `interview-bank` hỏi `ai-review` còn ngân sách không và ghi token (`feature_code = PRACTICE_FEEDBACK`) qua một cổng, không dùng chung bảng. Bị khoá thì phần AI của Chế độ luyện từ chối với `AI_BUDGET_EXCEEDED` (câu trả lời vẫn lưu, chỉ không có phản hồi AI).
 
 ### 6.4. Cảnh báo bất thường cấp tài khoản (F5-19/F5-25 amendment, `DEC-2026-0831-ai-usage-anomaly-alert`) — cơ chế 2/2
 
@@ -302,8 +304,7 @@ that depends on the AI path."
 ## 8. Bảo mật — tham chiếu
 
 Chi tiết ở `02-bd/security/ai-review.md`. Tóm tắt liên quan kiến trúc: quyền sở hữu dữ liệu (học viên chỉ
-đọc review/phiên phỏng vấn của chính mình), giảng viên xem qua `instructor_grading` (F5-27) gác bởi
-Function `CLASS_MANAGEMENT` (F1-12), cấu hình prompt/rubric/ngân sách gác bởi `AI_CONFIG`/`AI_TOKEN_BUDGET`
+đọc review/phiên phỏng vấn của chính mình), giảng viên không đọc dữ liệu AI của học viên (chấm tay đã bỏ, `DEC-2026-1013-remove-instructor-manual-grading`), cấu hình prompt/ngân sách gác bởi `AI_CONFIG`/`AI_TOKEN_BUDGET`
 — tất cả tra qua ma trận phân quyền của `identity`, `ai-review` không tự giữ bản sao ma trận.
 
 ## 9. Storage — xác nhận không cần MinIO
@@ -335,7 +336,7 @@ phải module nào cũng cần cả 4 file, không viết file rỗng".
 - `.nexa/control/dependency-map.md` mục 2, 4 — hạ tầng, thứ tự build (stage 3 trước stage 4).
 - `.nexa/control/decision-registry.md` — `DEC-2026-0831-ai-instruction-injection-guard`,
   `DEC-2026-0831-remove-tiered-hints-ai-config`, `DEC-2026-0831-remove-plagiarism-report`,
-  `DEC-2026-0831-ai-usage-anomaly-alert`, `DEC-2026-0831-instructor-grading-round2`,
+  `DEC-2026-0831-ai-usage-anomaly-alert`, `DEC-2026-1013-remove-instructor-manual-grading`,
   `DEC-2026-0912-judge-outbox-pattern` (mẫu tái dùng cho outbox của module này).
 - `02-bd/architecture/judge-orchestration.md` mục 6 — Outbox, tên sự kiện nguồn `SubmissionAccepted`.
 - `02-bd/architecture/identity.md` mục 3.1 — tên sự kiện `ai-review` phát ra đã được dự kiến trước.

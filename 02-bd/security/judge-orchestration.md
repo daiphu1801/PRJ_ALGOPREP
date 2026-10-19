@@ -22,10 +22,10 @@
 công cao nhất hệ thống.
 
 - **cgroup** (v1 hoặc v2, go-sandbox hỗ trợ cả hai — `DEC-2026-0823-go-judge-default-engine` điểm (1)):
-  giới hạn CPU, bộ nhớ, số tiến trình con (`language_configs.max_child_processes`, F4-11 tham số 2/3) cho
+  giới hạn CPU, bộ nhớ, số tiến trình con (`sandbox_settings.max_child_processes`, F4-11 tham số 2/3) cho
   **mỗi lần gọi `JudgeExecutionPort.run()`**, không chia sẻ giữa các testcase hay giữa các submission khác
   nhau — mỗi lần gọi là một sandbox instance độc lập, huỷ ngay sau khi trả kết quả.
-- **Mạng**: chặn mặc định (`language_configs.network_access_enabled = false`, F4-11 tham số 1/3) — mã
+- **Mạng**: chặn mặc định (`sandbox_settings.network_access_enabled = false`, F4-11 tham số 1/3) — mã
   người học không gọi được ra ngoài internet hay tới dịch vụ nội bộ khác (không đọc trộm Postgres/Redis
   của chính hệ thống, không dùng làm bàn đạp tấn công mạng nội bộ). Bật mạng chỉ là một tham số cấu hình
   A3 chỉnh được (F4-11), không có bài toán chuẩn nào trong phạm vi capstone cần mạng.
@@ -57,7 +57,7 @@ Thiết kế **trung lập ở tầng port** — `JudgeExecutionPort` không man
 - **Không trả input/expected-output của Hidden testcase** cho học viên qua bất kỳ API nào của
   `judge-orchestration` — chỉ trả `status`, `verdict`, `testcase_order` (chỉ số, không phải nội dung) của
   testcase thất bại đầu tiên, khớp nguyên tắc đã chốt ở `02-bd/security/problem-bank.md` mục 2.
-- **`stderr_snippet`** (nếu `language_configs.return_stderr_to_student = true`) chỉ chứa output lỗi từ
+- **`stderr_snippet`** (nếu `sandbox_settings.return_stderr_to_student = true`) chỉ chứa output lỗi từ
   chính chương trình người học (compiler/runtime báo lỗi) — không bao giờ chứa nội dung testcase hay mã
   khung harness (đã lọc ở tầng `harness`, F3-12), `judge-orchestration` chỉ lưu/chuyển tiếp nguyên văn,
   không tự parse thêm.
@@ -67,11 +67,14 @@ Thiết kế **trung lập ở tầng port** — `JudgeExecutionPort` không man
 
 ## 5. Phân quyền vận hành (F4-10, F4-11) — actor A3
 
-- **Xem trạng thái hàng đợi/cụm** và **điều khiển vận hành cơ bản** (pause/resume tiêu thụ hàng đợi,
-  bật/tắt autoscale worker, F4-10, `DEC-2026-0831-judge-orchestration-ops-details`): gác bởi Function
-  `JUDGE_MONITORING` (tên đề xuất, khớp danh sách Function của `identity`,
-  `02-bd/database/identity.md` mục 1.3) — chỉ `ADMIN`.
-- **Sửa `language_configs`** (F4-11): gác bởi Function `LANGUAGE_CONFIG` (tên đề xuất) — chỉ `ADMIN`, thay
+- **Xem trạng thái hàng đợi/cụm** (`ADM0401`, và sự kiện hạ tầng `ADM0404`): gác bởi Function
+  `JUDGE_QUEUE_MONITOR` (tên đã có trong danh sách Function của `identity`, `02-bd/database/identity.md`
+  mục 1.3). **Ghi** (pause/resume tiêu thụ hàng đợi, bật/tắt autoscale worker, đổi bốn tham số hàng đợi,
+  F4-10, `DEC-2026-0831-judge-orchestration-ops-details`, `DEC-2026-1010-admin-operations-regroup`): máy
+  chủ kiểm lại vai trò `ADMIN` ở mỗi lệnh. Mọi lệnh ghi vận hành (kể cả ở `ADM0501`) được ghi vào Nhật ký
+  hệ thống phân loại "Cấu hình" kèm giá trị cũ và mới (G2). Tên `JUDGE_MONITORING` ở các bản trước là
+  tên đề xuất chưa khớp `identity`, đã thay.
+- **Sửa `language_configs`, `grading_defaults`, `sandbox_settings`** (F4-11): gác bởi Function `LANGUAGE_CONFIG` (tên đề xuất) — chỉ `ADMIN`, thay
   đổi có hiệu lực ngay không cần khởi động lại dịch vụ (đọc trực tiếp từ DB mỗi lần build `RunRequest`,
   không cache tĩnh dài hạn — nếu có cache, phải invalidate chủ động khi `language_configs` đổi, cùng
   nguyên tắc đã áp cho ma trận phân quyền của `identity`, `02-bd/architecture/identity.md` mục 6).
@@ -82,7 +85,7 @@ Thiết kế **trung lập ở tầng port** — `JudgeExecutionPort` không man
 
 - Cấu hình xác thực thực tế giữa `judge-orchestration` và go-judge (`--auth-token` hay network policy
   thuần) — mục 1, cần xác nhận với chủ dự án khi vào giai đoạn hạ tầng/triển khai.
-- Tên Function chính xác `JUDGE_MONITORING`/`LANGUAGE_CONFIG` — đối chiếu lại danh sách 10 Function seed
+- Tên Function chính xác `JUDGE_QUEUE_MONITOR`/`LANGUAGE_CONFIG` — đối chiếu lại danh sách 10 Function seed
   đầy đủ ở `02-bd/database/identity.md` mục 1.3 khi viết DD, tránh tạo trùng tên khác đã có.
 - Endpoint callback thật của `Judge0Adapter` (đường dẫn, method, shape payload) — chỉ cần thiết kế nếu
   adapter này được kích hoạt lại, không phải việc của lần BD này.

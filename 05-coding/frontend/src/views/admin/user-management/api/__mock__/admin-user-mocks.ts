@@ -35,6 +35,7 @@ const USERS: AdminUser[] = [
     submissionCount: 812,
     lastActiveLabel: "1 giờ trước",
     status: "active",
+    hasPassword: false,
   },
   {
     name: "Phạm Thu Hương",
@@ -92,12 +93,13 @@ const USERS: AdminUser[] = [
   },
 ];
 
-// dc.html:476-481.
+// dc.html:476-481. Bar widths follow the printed share (dc.html drew 18/6/4 for 6%/1%/<1%,
+// admin UX review F13); the four counts add up to `totalUsers`.
 const ROLE_DISTRIBUTION: RoleDistributionItem[] = [
   { role: "student", label: "1.196 · 93%", percent: 93 },
-  { role: "instructor", label: "74 · 6%", percent: 18 },
-  { role: "admin", label: "9 · 1%", percent: 6 },
-  { role: "deactivated", label: "5 · <1%", percent: 4 },
+  { role: "instructor", label: "74 · 6%", percent: 6 },
+  { role: "admin", label: "9 · 1%", percent: 1 },
+  { role: "deactivated", label: "5 · <1%", percent: 1 },
 ];
 
 // dc.html:483-486. The "Đề nghị cấp quyền giảng viên" row is dropped: only ADMIN changes roles (ADM0201 Q2).

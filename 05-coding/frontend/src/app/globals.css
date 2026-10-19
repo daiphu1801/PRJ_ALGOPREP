@@ -267,7 +267,12 @@ button:not(:disabled):active,
  * changes — only the scope boundary changes, not the components.
  */
 .admin-shell {
-  --color-background: #f2f8f7;
+  /* Backdrop moved off the saturated cyan/teal glow (read as generic "AI" look) to warm stone with
+     muted sand/sage/slate blobs. Local to the admin scope: --color-blob-* stay cyan for the rest of the app. */
+  --color-background: #f4f3ef;
+  --color-blob-1: rgba(214, 196, 160, 0.4);
+  --color-blob-2: rgba(160, 184, 168, 0.3);
+  --color-blob-3: rgba(150, 165, 190, 0.22);
   --color-surface: #ffffff;
   --color-surface-hover: rgba(12, 90, 80, 0.1);
   --color-text: #0c201d;
@@ -278,8 +283,10 @@ button:not(:disabled):active,
      fill (dc.html:22 --active-bg), which painted white-on-white everywhere the token is used as a
      foreground or a button fill: the "Quên mật khẩu?" link, the password SHOW toggle and the
      `primary` Button on the /admin/login glass card all disappeared (owner screenshot 2026-09-29).
-     The nav-active fill moved to --admin-active-bg/-fg, applied by the two attribute rules below. */
-  --color-primary: #0891a8;
+     The nav-active fill moved to --admin-active-bg/-fg, applied by the two attribute rules below.
+     Darkened from dc.html's #0891a8 (3.4:1 on the page background, short of AA for 12-13px links)
+     to #067286 (5.0:1), same hue (admin UX review F3, owner approved 2026-10-14). */
+  --color-primary: #067286;
   --color-on-primary: #ffffff;
   --admin-active-bg: rgba(255, 255, 255, 0.85);
   --admin-active-fg: #063b37;
@@ -329,26 +336,37 @@ button:not(:disabled):active,
 }
 
 .dark .admin-shell {
-  --color-background: #050807;
+  /* Dark layout was unreadable as a layout: panels (rgba 6,10,9) sat on a near-black page with a 6%
+     border, so only the text showed. Page is a step lighter, panels are LIGHTER than the page
+     (white tint) and the border/ring is ~2.5x stronger (owner 2026-10-10). */
+  --color-background: #0c0e10;
+  --color-blob-1: rgba(150, 135, 105, 0.26);
+  --color-blob-2: rgba(105, 125, 130, 0.22);
+  --color-blob-3: rgba(100, 110, 140, 0.2);
   --color-surface: #06100e;
   --color-surface-hover: rgba(255, 255, 255, 0.06);
   --color-text: #f3f5f4;
-  --color-text-muted: #7e8d8e;
-  --color-border: rgba(255, 255, 255, 0.06);
-  --color-primary: #22d3ee;
+  /* #7e8d8e fell to 2.9:1 on the tinted chips/tracks (admin UX review F4); #a8b5b6 keeps 4.8:1 on
+     the darkest of them (#344545) and reads as the same slate (owner approved 2026-10-14). */
+  --color-text-muted: #a8b5b6;
+  --color-border: rgba(255, 255, 255, 0.15);
+  /* Desaturated accents: the stock #22d3ee/#14b8a6 glared on the dark panels (owner 2026-10-10). */
+  --color-admin-cyan: #5fb4c4;
+  --color-admin-teal: #4fa595;
+  --color-primary: #6cc3d1;
   --color-on-primary: #05201f;
   /* dc.html:39 --active-bg/--active-fg — dark really is a gradient, not the flat cyan the
      nav row was painting before the split above. */
   --admin-active-bg: linear-gradient(
     135deg,
-    rgba(34, 211, 238, 0.35),
-    rgba(20, 184, 166, 0.22)
+    rgba(108, 195, 209, 0.24),
+    rgba(79, 165, 149, 0.16)
   );
-  --admin-active-fg: #eafeff;
-  --admin-glass: rgba(6, 10, 9, 0.55);
-  --admin-glass-strong: rgba(5, 9, 8, 0.6);
+  --admin-active-fg: #e6f4f6;
+  --admin-glass: rgba(255, 255, 255, 0.05);
+  --admin-glass-strong: rgba(255, 255, 255, 0.07);
   --admin-active-border: rgba(103, 232, 249, 0.4);
-  --admin-logo-bg: linear-gradient(135deg, #22d3ee, #0e4243);
+  --admin-logo-bg: linear-gradient(135deg, #6cc3d1, #1d4a4d);
   --admin-logo-fg: #05201f;
   --admin-nav-hover: rgba(255, 255, 255, 0.06);
   /* dc.html dark theme: --muted2 (line 32), --row-hover and --track (line 38), --ok/--ok-text
@@ -371,8 +389,8 @@ button:not(:disabled):active,
   /* dc.html:39 --active-bg (dark) — verbatim, this one really is a gradient. */
   --color-row-selected: linear-gradient(
     135deg,
-    rgba(34, 211, 238, 0.3),
-    rgba(20, 184, 166, 0.2)
+    rgba(108, 195, 209, 0.22),
+    rgba(79, 165, 149, 0.15)
   );
   /* dc.html:41 — dark inverts the CTA to a pale mint fill with dark text. */
   --color-cta-bg: linear-gradient(
@@ -397,6 +415,13 @@ button:not(:disabled):active,
 
 /* Exact glass alpha from dc.html instead of the generic color-mix formula — the mockup's glass
    values are fixed constants (--glass/--glass2), not derived from a solid "surface" color. */
+/* Tailwind's preflight paints placeholders at 50% of currentColor (3.3:1 here). Inside the admin
+   shell they use the area's subtle text token instead, about 4.9:1 on the field (UX review F3). */
+.admin-shell input::placeholder,
+.admin-shell textarea::placeholder {
+  color: var(--color-text-subtle);
+}
+
 .admin-shell .glass-surface {
   background: var(--admin-glass-strong);
 }
@@ -429,6 +454,22 @@ button:not(:disabled):active,
     0 16px 36px rgba(0, 0, 0, 0.45);
 }
 
+/* A glass card is its own stacking context (backdrop-filter), so the pop-up of a FilterMenu inside it
+   cannot rise above the NEXT card however high its own z-index is, and the next card painted over the open list
+   (owner report 2026-10-11, model picker on ADM0301). Lift the card that currently holds an open list. */
+.glass-card:has([role="listbox"]) {
+  position: relative;
+  z-index: 30;
+}
+
+/* Same cause, second symptom: nested backdrop-filters (the card and an inner `.glass-surface` tile) made the text of
+   the card below show through the list's own panel, even at 95% fill. Verified in the browser: dropping the blur of BOTH
+   ancestors, only while a list is open inside them, removes the bleed; dropping one is not enough. */
+.glass-card:has([role="listbox"]),
+.glass-surface:has([role="listbox"]) {
+  backdrop-filter: none;
+}
+
 /* Elevated variant for the ONE dominant centered surface on a screen (Admin login card) rather
    than a grid of small dashboard widgets — `.glass-card` alone reads as flat here because a large
    panel has more area sitting flush against a similarly-pale background, so the same shadow that
@@ -446,6 +487,13 @@ button:not(:disabled):active,
     0 8px 12px -4px rgba(6, 40, 36, 0.18),
     0 24px 32px -8px rgba(6, 50, 46, 0.28),
     0 48px 80px -20px rgba(6, 50, 46, 0.42);
+}
+
+.dark .admin-shell .glass-card {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+    0 12px 28px rgba(0, 0, 0, 0.4);
 }
 
 .dark .admin-shell .glass-card--elevated {
@@ -598,6 +646,71 @@ button:not(:disabled):active,
   );
 }
 
+/*
+ * Student shell, Dark only (owner 2026-10-18): page background deeper, and every panel, text and border
+ * lifted off it. Scoped here instead of editing `.dark` so Admin/Instructor (which override most of
+ * these tokens anyway) and the auth screens keep their current look. Light is untouched.
+ */
+.dark .student-shell {
+  --color-background: #04070d;
+  --color-surface: #141c2c;
+  --color-surface-hover: #1d2840;
+  --color-row-hover: #1d2840;
+  --color-text: #f4f7fb;
+  --color-text-muted: #b6c2d3;
+  --color-text-subtle: #8d9bb0;
+  --color-border: #34425c;
+  --color-track: #3a4a66;
+}
+
+.dark .student-shell .glass-card {
+  background: color-mix(in srgb, var(--color-surface) 92%, transparent);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 1px 2px rgba(0, 0, 0, 0.5),
+    0 10px 28px rgba(0, 0, 0, 0.55);
+}
+
+.dark .student-shell .glass-surface {
+  background: color-mix(in srgb, var(--color-surface) 88%, transparent);
+}
+
+/*
+ * Full-screen workspace (LeetCode-style). A view opts in by rendering any element with
+ * `data-fullscreen-view`; the shell then fills the viewport: footer and the max-width cap go away and the
+ * remaining height is handed down by flex, so no view needs to know the header height. Desktop only: below
+ * `lg` the panes stack and the page scrolls normally.
+ */
+@media (min-width: 1024px) {
+  .student-shell:has([data-fullscreen-view]) {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .student-shell:has([data-fullscreen-view]) > main {
+    display: flex;
+    min-height: 0;
+    flex-direction: column;
+  }
+
+  .student-shell:has([data-fullscreen-view]) .student-main-inner {
+    display: flex;
+    min-height: 0;
+    max-width: none !important; /* beats PageContainer's inline max-width */
+    flex: 1;
+    flex-direction: column;
+    padding-bottom: 0.75rem;
+  }
+
+  .student-shell:has([data-fullscreen-view]) .student-footer-wrap {
+    display: none;
+  }
+
+  .student-shell:has([data-fullscreen-view]) .student-header-bar {
+    max-width: none;
+  }
+}
+
 /* Exact glass alpha from dc.html (:22, :34) instead of the generic color-mix formula — same reason
    as the `.admin-shell` pair above: these are fixed constants, not derived from a solid surface. */
 .instructor-shell .glass-surface {
@@ -638,7 +751,7 @@ button:not(:disabled):active,
       color-mix(in srgb, white 28%, transparent),
       transparent 45%
     ),
-    color-mix(in srgb, var(--color-surface) 8%, transparent);
+    color-mix(in srgb, var(--color-surface) 84%, transparent);
   backdrop-filter: blur(14px) saturate(200%) brightness(1.06);
   box-shadow:
     inset 0 1px 0 color-mix(in srgb, white 85%, transparent),
@@ -650,8 +763,8 @@ button:not(:disabled):active,
 .dark .glass-card.glass-card--modal {
   background:
     linear-gradient(145deg, rgba(255, 255, 255, 0.1), transparent 45%),
-    color-mix(in srgb, var(--color-surface) 22%, transparent);
-  backdrop-filter: blur(14px) saturate(160%);
+    color-mix(in srgb, var(--color-surface) 90%, transparent);
+  backdrop-filter: blur(20px) saturate(160%);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.18),
     inset 0 0 0 1px rgba(255, 255, 255, 0.08),
@@ -698,7 +811,7 @@ button:not(:disabled):active,
    fill: it sits directly on table text with no scrim behind it, so a thin fill lets the rows underneath
    bleed through and collide with the options. Declared last for the same specificity reason as above. */
 .glass-card.glass-card--popover {
-  background: color-mix(in srgb, var(--color-surface) 82%, transparent);
+  background: color-mix(in srgb, var(--color-surface) 95%, transparent);
   backdrop-filter: blur(24px) saturate(180%);
   box-shadow:
     inset 0 1px 0 color-mix(in srgb, white 70%, transparent),
@@ -707,7 +820,7 @@ button:not(:disabled):active,
 }
 
 .dark .glass-card.glass-card--popover {
-  background: color-mix(in srgb, var(--color-surface) 85%, transparent);
+  background: color-mix(in srgb, var(--color-surface) 96%, transparent);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.12),
     inset 0 0 0 1px rgba(255, 255, 255, 0.07),

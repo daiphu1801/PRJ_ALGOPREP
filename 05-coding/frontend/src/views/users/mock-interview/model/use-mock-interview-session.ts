@@ -36,6 +36,7 @@ export function useMockInterviewSession() {
   const [entryType, setEntryType] = useState<InterviewEntryType>("submission");
   const [submissionId, setSubmissionId] = useState<string | null>(null);
   const [questionId, setQuestionId] = useState<string | null>(null);
+  const [customTopics, setCustomTopics] = useState<string[]>([]);
   const [level, setLevel] = useState<InterviewerLevel>("middle");
   const [maxTurns, setMaxTurns] = useState<MaxTurns>(12);
   const [hintAllowed, setHintAllowed] = useState(true);
@@ -56,7 +57,13 @@ export function useMockInterviewSession() {
   const canStart =
     (entryType === "submission" && submissionId !== null) ||
     (entryType === "bank" && questionId !== null) ||
-    entryType === "custom";
+    (entryType === "custom" && customTopics.length > 0);
+
+  const toggleCustomTopic = useCallback((key: string) => {
+    setCustomTopics((prev) =>
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key],
+    );
+  }, []);
 
   const streamAiMessage = useCallback(
     (content: string, stage: InterviewStage) => {
@@ -66,17 +73,16 @@ export function useMockInterviewSession() {
       setStreamedLength(0);
 
       if (streamIntervalRef.current) clearInterval(streamIntervalRef.current);
+      // Progress lives in a local, so the state updaters stay pure.
+      let revealed = 0;
       streamIntervalRef.current = setInterval(() => {
-        setStreamedLength((prevLength) => {
-          const nextLength = prevLength + STREAM_CHARS_PER_TICK;
-          if (nextLength >= content.length) {
-            if (streamIntervalRef.current)
-              clearInterval(streamIntervalRef.current);
-            setStreamingMessageId(null);
-            return content.length;
-          }
-          return nextLength;
-        });
+        revealed = Math.min(content.length, revealed + STREAM_CHARS_PER_TICK);
+        setStreamedLength(revealed);
+        if (revealed >= content.length) {
+          if (streamIntervalRef.current)
+            clearInterval(streamIntervalRef.current);
+          setStreamingMessageId(null);
+        }
       }, STREAM_TICK_MS);
     },
     [],
@@ -102,6 +108,7 @@ export function useMockInterviewSession() {
   const finish = useCallback(() => {
     if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
     if (streamIntervalRef.current) clearInterval(streamIntervalRef.current);
+    setStreamingMessageId(null);
     setResult(computeInterviewResult());
     setScreenState("result");
   }, []);
@@ -177,6 +184,8 @@ export function useMockInterviewSession() {
     setMaxTurns,
     hintAllowed,
     setHintAllowed,
+    customTopics,
+    toggleCustomTopic,
     canStart,
     start,
     messages: displayedMessages,

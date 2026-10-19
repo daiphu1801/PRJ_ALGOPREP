@@ -10,8 +10,12 @@ export function DataExportCard() {
   const t = useT("settings");
   const { pending, exportSubmissions, exportInterviews } = useExportData();
 
+  // BD Q6 (closed 2026-10-18): a failed export reports an error toast and the button stays enabled
+  // (ai-review down must not look like "no data to export"). Errors go through the toast channel
+  // (DEC-2026-1003-toast-feedback-channel), not an inline role="alert".
   async function run(action: () => Promise<boolean>) {
-    if (await action()) toast.success(t("dataExport.exported"));
+    const ok = await action();
+    if (ok) toast.success(t("dataExport.exported"));
     else toast.error(t("dataExport.exportFailed"));
   }
 

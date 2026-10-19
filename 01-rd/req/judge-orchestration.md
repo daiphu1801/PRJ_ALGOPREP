@@ -41,6 +41,9 @@ Gọi qua cổng ra trung lập theo engine (`JudgeExecutionPort`), adapter mặ
     của RabbitMQ, không cần chủ động hỏi lại một hệ ngoài như khi dùng Judge0. **Amendment 2026-08-31** (lấp
     Câu hỏi mở Q4 của `01-rd/req/user_stories/open_questions.md`, `DEC-2026-0831-outside-screens-closures`): ngưỡng "treo"
     = **5 phút** không nhận được cập nhật trạng thái nào cho một job `[SoT: Suy luận]`, BD/DD chỉnh được.
+    **Amendment 2026-10-10 (`DEC-2026-1010-admin-operations-regroup`):** khi Admin đang **tạm dừng tiêu thụ hàng
+    đợi** (F4-10), sweep **bỏ qua** job `PENDING`: chúng chờ hợp lệ, không phải treo. Nếu không, tạm dừng quá 5
+    phút sẽ biến mọi bài nộp đang chờ thành lỗi hệ thống.
 - **Thời gian thực:**
   - Đẩy trạng thái từng testcase qua WebSocket (STOMP) theo kênh riêng của từng bài nộp, ngay sau mỗi lần
     gọi cổng ra trả kết quả (F4-08).
@@ -68,6 +71,16 @@ Gọi qua cổng ra trung lập theo engine (`JudgeExecutionPort`), adapter mặ
     cụm) và ghi chú "Tắt trong mọi kỳ thi" (sandbox mạng) trong prototype là **nhãn phân loại độ ưu tiên**,
     không phải một luồng nghiệp vụ "quản lý kỳ thi" riêng — đổi thành nhãn trung tính (ví dụ "Ưu tiên cao")
     khi dựng UI thật, không mở RD mới cho "chế độ thi".
+  - **Amendment 2026-10-10 (`DEC-2026-1010-admin-operations-regroup`), phần đã duyệt:** (a) mọi thao tác ghi
+    vận hành của Admin (tạm dừng/tiếp tục hàng đợi, bật/tắt tự động mở rộng, tham số hàng đợi, hệ số ngôn
+    ngữ, bật/tắt ngôn ngữ, giới hạn mặc định, sandbox, giới hạn script sinh testcase) được ghi vào Nhật ký
+    hệ thống, phân loại hiện có "Cấu hình", kèm giá trị cũ và mới (đúng F1-14 "mọi thao tác quản trị");
+    (b) cấu hình ngôn ngữ, giới hạn và sandbox đổi **có hiệu lực với một job từ lúc worker bắt đầu chấm job
+    đó**, không phải lúc bài được nộp; (c) tắt một ngôn ngữ **không** huỷ job đang chờ của ngôn ngữ đó, chúng
+    chạy nốt, chỉ bài nộp mới bị từ chối, và luôn phải còn ít nhất một ngôn ngữ bật; (d) sự kiện hạ tầng (log
+    máy) có màn riêng `ADM0404`, tách khỏi màn giám sát hàng đợi. **Phần đề xuất, chờ chủ dự án xác nhận:** bỏ
+    khái niệm "ưu tiên" của job (và mức độ trễ thứ hai) khỏi `ADM0401` vì không có nguồn dữ liệu; nếu được
+    xác nhận thì đoạn "nhãn phân loại độ ưu tiên" ngay trên đây coi như bị thay thế.
   - **F4-12 — Chỉ số "Beats" trên trang kết quả nộp bài.** Bổ sung 2026-08-25 (chốt qua
     `01-rd/screens/users/USR0201_submission_result.md` Câu hỏi mở Q4, chốt theo RD): với một bài nộp `Accepted`,
     tính tỉ lệ phần trăm bài nộp khác **nhanh hơn hoặc bằng** (theo runtime) chậm hơn bài nộp hiện tại, trong

@@ -11,6 +11,7 @@ import {
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactElement } from "react";
+import { aiTokenBudget } from "@/entities/ai-budget";
 import { toast, useToasts } from "@/shared/lib/toast-store";
 
 vi.mock("@/shared/i18n", () => ({
@@ -18,8 +19,11 @@ vi.mock("@/shared/i18n", () => ({
   useLocale: () => "vi",
 }));
 
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
+
 import { AdminAiConfigView } from "./ai-config";
 import { AdminAiUsageView } from "./ai-usage";
+import { AdminAiLimitsView } from "./ai-limits";
 import { AdminLanguageConfigView } from "./language-config";
 import { AdminPermissionMatrixView } from "./permission-matrix";
 import { AdminQueueMonitorView } from "./queue-monitor";
@@ -90,7 +94,7 @@ describe("admin toasts", () => {
     render(<AdminPermissionMatrixView />);
     fireEvent.click(screen.getByRole("button", { name: "addRole" }));
     fireEvent.change(screen.getByLabelText("newRoleLabel"), {
-      target: { value: "admin" },
+      target: { value: "quản trị" },
     });
     fireEvent.click(screen.getByRole("button", { name: "createRole" }));
     expect(read()).toEqual([["error", "roleNameError.duplicate"]]);
@@ -103,42 +107,82 @@ describe("admin toasts", () => {
     expect(read()).toEqual([["success", "refreshDone"]]);
   });
 
-  it("ai usage: export raises a success toast", () => {
-    const read = watch();
-    render(<AdminAiUsageView />);
-    fireEvent.click(screen.getByRole("button", { name: "export" }));
-    expect(read()).toEqual([["success", "exportDone"]]);
-  });
-
-  it("ai config: publish is blocked while the rubric total is not 100%, and explains why", () => {
+  it("ai config: the anti-leak guard can be turned off and warns", () => {
     const read = watch();
     render(<AdminAiConfigView />);
-    // Seeded weights add up to 100; one step up on the first criterion makes the total 101.
-    fireEvent.click(
-      screen.getAllByRole("button", { name: /^weightIncrement/ })[0]!,
-    );
+    const locked = screen.getByRole("switch", {
+      name: "guard.noFullSolution.label",
+    });
+    expect(locked).not.toBeDisabled();
+    fireEvent.click(locked);
+    expect(locked).toHaveAttribute("aria-checked", "false");
+    expect(read()).toEqual([["warning", "guardOffWarning"]]);
+  });
+
+  it("ai config: publish has nothing to publish until something changes, then raises a success toast", () => {
+    const read = watch();
+    render(<AdminAiConfigView />);
     const publish = screen.getByRole("button", { name: "publish" });
     expect(publish).toHaveAttribute("aria-disabled", "true");
-
     fireEvent.click(publish);
-    expect(read()).toEqual([
-      ["warning", expect.stringContaining("weightWarningTitle")],
-    ]);
+    expect(read().at(-1)).toEqual(["info", "noChanges"]);
+
+    // A guard toggle on the review tab is a change.
+    fireEvent.click(screen.getAllByRole("switch")[1]!);
+    expect(publish).not.toHaveAttribute("aria-disabled");
+    fireEvent.click(publish);
+    // The confirmation lists what is about to replace the live prompt; nothing is published yet.
+    expect(read().at(-1)).toEqual(["info", "noChanges"]);
+    fireEvent.click(
+      screen.getByRole("button", { name: "publishDialog.confirm" }),
+    );
+    expect(read().at(-1)).toEqual(["success", "publishDone"]);
   });
 
-  it("ai config: publish raises a success toast", () => {
+  it("ai config: saving an empty instruction is refused, a real one lands in the draft", () => {
     const read = watch();
     render(<AdminAiConfigView />);
-    fireEvent.click(screen.getByRole("button", { name: "publish" }));
-    expect(read().at(-1)).toEqual(["success", "publishDone"]);
+    fireEvent.click(screen.getByRole("button", { name: "editPrompt" }));
+    const box = screen.getByLabelText("editDialog.label");
+    fireEvent.change(box, { target: { value: "  " } });
+    fireEvent.click(screen.getByRole("button", { name: "editDialog.save" }));
+    expect(read().at(-1)).toEqual(["error", "editDialog.errorEmpty"]);
+
+    fireEvent.change(box, { target: { value: "Chi thi moi" } });
+    fireEvent.click(screen.getByRole("button", { name: "editDialog.save" }));
+    expect(read().at(-1)).toEqual(["success", "editDialog.saved"]);
+    expect(screen.getByText("pendingCount")).toBeInTheDocument();
+  });
+
+  it("ai limits: saving a bad cap raises an error toast, a good one a success toast", () => {
+    const read = watch();
+    render(<AdminAiLimitsView />);
+    const input = screen.getByLabelText("budget.limitLabel");
+    fireEvent.change(input, { target: { value: "0" } });
+    fireEvent.click(screen.getByRole("button", { name: "budget.saveLimit" }));
+    expect(read().at(-1)).toEqual(["error", "budget.errorLimit"]);
+
+    fireEvent.change(input, { target: { value: "60000000" } });
+    fireEvent.click(screen.getByRole("button", { name: "budget.saveLimit" }));
+    expect(read().at(-1)).toEqual(["success", "budget.savedLimit"]);
+    aiTokenBudget.set({ limitTokens: 52_000_000, locked: false });
   });
 
   it("language config: save raises a success toast after a change", async () => {
     const read = watch();
     render(withQuery(<AdminLanguageConfigView />));
-    await screen.findByRole("button", { name: "save" });
-    fireEvent.click(screen.getAllByRole("switch")[0]!);
+    const multipliers = await screen.findAllByLabelText("timeMultiplierFor");
+    fireEvent.change(multipliers[0]!, { target: { value: "4" } });
     fireEvent.click(screen.getByRole("button", { name: "save" }));
     await vi.waitFor(() => expect(read()).toEqual([["success", "saveDone"]]));
+  });
+  it("ai usage: marking the anomaly alert reviewed removes it and raises a success toast (BD ADM0302 EVT-5)", () => {
+    const read = watch();
+    render(<AdminAiUsageView />);
+    expect(screen.queryByText("noAlerts")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "markReviewed" }));
+    expect(screen.queryByText("alert.anomalousAccount.title")).toBeNull();
+    expect(screen.getByText("alert.budgetRunningOut.title")).toBeTruthy();
+    expect(read()).toEqual([["success", "markReviewedDone"]]);
   });
 });

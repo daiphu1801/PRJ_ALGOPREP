@@ -48,7 +48,6 @@ export type UpdateProfileInput = {
   displayName: string;
   schoolOrCompany: string;
   currentPosition: string;
-  defaultLanguage: SubmissionLanguage;
   targetPosition: string;
 };
 

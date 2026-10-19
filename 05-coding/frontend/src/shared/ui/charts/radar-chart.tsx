@@ -23,11 +23,14 @@ export function RadarChart({
   points,
   ariaLabel,
   accentColorVar = "--color-primary",
+  emphasizeLowest = false,
 }: {
   points: RadarPoint[];
   /** Required: an SVG with role="img" is invisible to a screen reader without one. */
   ariaLabel: string;
   accentColorVar?: string;
+  /** Draws the lowest axis label in the warning colour, so the eye lands on what to improve first. */
+  emphasizeLowest?: boolean;
 }) {
   if (points.length < 3) return null;
 
@@ -46,6 +49,12 @@ export function RadarChart({
       })
       .join(" ");
 
+  const lowest = emphasizeLowest
+    ? points.reduce(
+        (low, point, index) => (point.value < points[low]!.value ? index : low),
+        0,
+      )
+    : -1;
   const clamped = points.map((point) =>
     Math.max(0, Math.min(100, point.value)),
   );
@@ -58,10 +67,12 @@ export function RadarChart({
 
   return (
     <svg
-      viewBox="0 0 300 262"
+      // The viewBox is wider than the 300px the prototype drew in so a long label ("Heap / priority queue")
+      // stays inside it on a phone, and starts above y=0 so the top label clears the text over the chart.
+      viewBox="-50 -14 400 276"
       role="img"
       aria-label={ariaLabel}
-      className="block h-[246px] w-full max-w-[300px] overflow-visible"
+      className="block h-auto w-full max-w-[400px] overflow-visible"
     >
       {RINGS.map((fraction) => (
         <polygon
@@ -123,8 +134,12 @@ export function RadarChart({
               y={labelY.toFixed(1)}
               textAnchor={anchor}
               fontSize="11.5"
-              fontWeight="600"
-              fill="var(--color-text-muted)"
+              fontWeight={index === lowest ? "700" : "600"}
+              fill={
+                index === lowest
+                  ? "var(--color-admin-warn)"
+                  : "var(--color-text-muted)"
+              }
             >
               {point.label}
             </text>

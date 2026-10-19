@@ -38,11 +38,11 @@
 | Tên vật lý (slug) | `admin_overview` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A3 (`ADMIN`) |
-| Phiên bản | V0.6 |
+| Phiên bản | V0.8 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/15 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/10/03 |
+| Ngày cập nhật | 2026/10/10 |
 
 ---
 
@@ -56,6 +56,8 @@
 | V0.4 | Sheet 5, 7, Câu hỏi mở | Đã chốt 2026-10-01 (owner uỷ quyền cân nhắc), xem `DEC-2026-1001-admin-configurable-settings`: Q4 đóng — thẻ "Yêu cầu đặt lại mật khẩu" lấy số liệu từ **nhật ký hệ thống, không dùng Redis**: giá trị = `COUNT` dòng `identity.system_audit_logs` có `action_type = PASSWORD_RESET_REQUESTED` trong 24 giờ gần nhất, delta so với 24 giờ liền trước, sparkline 7 điểm theo ngày. Sửa NO 10, 11, 12 (Sheet 5), bảng DTO NO 1, thêm `identity.system_audit_logs` vào bảng dữ liệu (4 thành 5 bảng), bỏ câu "không đọc bảng nào" | 2026/10/01 | AI |
 | V0.5 | Sheet 5, Câu hỏi mở | Đã chốt 2026-10-01 (owner uỷ quyền), xem `DEC-2026-1001-admin-configurable-settings`: thẻ "Yêu cầu đặt lại mật khẩu" đếm **số mã OTP đã phát hành** (dòng `PASSWORD_RESET_REQUESTED`), không đếm mọi lần bấm "Quên mật khẩu"; yêu cầu cho email không khớp tài khoản nào không ghi dòng nên không vào số. Nhãn và ghi chú NO 9-10 nêu rõ nghĩa của số. Q4 giữ đóng | 2026/10/01 | AI |
 | V0.6 | Sheet 4, 5, 6, 7 | Đồng bộ `DEC-2026-1001-admin-configurable-settings` mục (7): độ khó bài tập là danh mục do ADMIN quản lý (bảng riêng `problem_levels`), không còn enum cố định. Biểu đồ "Độ khó bài toán" (`difficulty-breakdown-block.tsx`) vẽ **một nhóm mỗi mức** trong danh mục theo thứ tự `sort_order`, mỗi nhóm 2 cột (Tổng lượt nộp / Lượt Accepted); số nhóm không còn cố định 3. Màu cột theo chuỗi, không theo mức, nên mức ADMIN thêm sau không cần màu. Đổi `DifficultyBreakdown.groups`: mỗi phần tử mang `levelCode`, `levelDisplayName`, `totalSubmissions`, `acceptedSubmissions`; mức chưa có bài hoặc chưa có lượt nộp vẫn hiện với hai cột bằng 0. Thêm `problem.problem_levels` vào bảng liên quan và Truy cập bảng (đọc qua cổng ra của `problem-bank`). Màn chỉ hiển thị; không lọc theo độ khó | 2026/10/03 | AI |
+| V0.7 | Sheet 3 | Khung điều hướng Admin có 12 đích sau khi thêm `ADM0404` Sự kiện hạ tầng (`DEC-2026-1010-admin-operations-regroup`): nhãn sơ đồ 3.2 "9 đích quản trị còn lại" sửa thành 11 đích còn lại ngoài Tổng quan. Không đổi hành vi của màn Tổng quan | 2026/10/10 | AI |
+| V0.8 | Sheet 6 | Theo báo cáo `06-plan/reports/261014-1054-admin-ux-review/` (B5, F12): "Xem tất cả" của khối Bài phổ biến nhất luôn hiện kể cả khi khối rỗng hoặc lỗi (prop `footer` của `DashboardBlockState`); tuần trống vẫn vẽ lưới chấm mờ; tỉ lệ verdict dồn phần dư vào lát có phần dư lớn nhất cho tổng 100% (`wholePercents`); mock độ khó sửa cho Accepted không vượt Tổng lượt nộp. Không đổi spec | 2026-10-14 | Claude |
 
 ---
 
@@ -116,7 +118,7 @@ biến nhất".
 #### Tổng quan quản trị → Các đích khác của khung điều hướng Admin
 
 [Điều kiện mở] Bấm một item con trong 4 nhóm gập (Nội dung, Vận hành, AI, Hệ thống) hoặc một liên kết trong
-nhóm "KHÁC". Bấm chính **tên nhóm** chỉ mở hoặc đóng nhóm, không rời màn.
+menu pop-up của khối danh tính (trước 2026-10-10 là nhóm "KHÁC" ở sidebar, xem `_shell.md` mục 3.1). Bấm chính **tên nhóm** chỉ mở hoặc đóng nhóm, không rời màn.
 
 [Chế độ mở] Không có.
 
@@ -136,7 +138,7 @@ flowchart LR
     auth["Đăng nhập và đăng ký<br/>auth"] -->|"đăng nhập với vai trò ADMIN"| main["Tổng quan quản trị<br/>admin_overview"]
     nav["Khung điều hướng Admin<br/>mục đơn Tổng quan"] -->|"chọn Tổng quan"| main
     main -->|"Xem tất cả"| pm["Quản lý bài tập<br/>problem_management"]
-    main -->|"item con của 4 nhóm gập"| others["9 đích quản trị còn lại<br/>khung chung _shell"]
+    main -->|"item con của 4 nhóm gập"| others["11 đích quản trị còn lại<br/>khung chung _shell"]
 
     classDef source fill:#F3E5F5,stroke:#9C5CC4,color:#000
     classDef screen fill:#E3F2FD,stroke:#3B82F6,color:#000
@@ -263,7 +265,7 @@ cuối cùng.
 
 | Vùng | Vị trí trong prototype | Nội dung |
 | :--- | :--- | :--- |
-| Thanh điều hướng bên trái (khung chung Admin) | `:57-101` | Thương hiệu, nút thu gọn, mục đơn "Tổng quan" đang chọn, 4 nhóm gập, nhóm "KHÁC", công tắc theme — dùng lại khung chung |
+| Thanh điều hướng bên trái (khung chung Admin) | `:57-101` | Thương hiệu, nút thu gọn, mục đơn "Tổng quan" đang chọn, 4 nhóm gập, công tắc theme (prototype có thêm nhóm "KHÁC"; bản dựng đã chuyển nhóm này sang menu pop-up ở toolbar, 2026-10-10) — dùng lại khung chung |
 | Thanh công cụ đầu trang (khung chung Admin) | `:106-122` | Khoảng đệm co giãn, 3 nút biểu tượng trang trí, khối danh tính — dùng lại khung chung. **Ô tìm kiếm đã bỏ** theo quyết định |
 | Vùng nội dung | `:104` | Container căn giữa, `max-width: 1320px` — áp ở khung chung, màn không tự khai |
 | Hàng 1 — lưới 3 cột `1fr 1.25fr 1fr` | `:124-178` | Ba khối đầu tiên |
@@ -639,7 +641,7 @@ cho màn này. Cách `identity` lấy được số liệu của hai module đó
 | 1 | Màn hình | Khởi tạo màn | Vào màn thì tải song song 10 khối số liệu. | Không | Có | `GetSubmissionsSummary`, `GetActiveUsersSummary`, `GetPasswordResetsSummary`, `GetSubmissionsByLanguage`, `GetVerdictDistribution`, `GetDifficultyBreakdown`, `GetSubmissionsByDay`, `GetSubmissionsByMonth`, `GetTopProblems`, `GetUserRetention` | [Các bước]<br>1. Kiểm tra tài khoản có `base_category = ADMIN` và `status = ACTIVE`.<br>2. Render ngay khung Admin — khung không gọi API nào nên không bao giờ phải chờ.<br>3. Hiện khung chờ cho cả 10 khối rồi gọi song song 10 endpoint.<br>[Khi thành công] Mỗi khối thay khung chờ bằng nội dung của chính nó, khối nào có dữ liệu trước thì hiện trước.<br>[Khi lỗi] Khối gọi thất bại hiện thông báo lỗi cục bộ kèm nút "Thử lại"; 9 khối còn lại **không bị ảnh hưởng**, không rời màn, không hiện lỗi cấp màn. |
 | 2 | Nút | Tải lại một khối | Bấm "Thử lại" trong khung của một khối đang lỗi. | Không | Có | Đúng một endpoint của khối đó | [Các bước]<br>1. Đưa riêng khối đó về trạng thái đang tải.<br>2. Gọi lại đúng endpoint của khối.<br>[Khi thành công] Khối hiện dữ liệu, thông báo lỗi biến mất.<br>[Khi lỗi] Giữ nguyên thông báo lỗi, nút "Thử lại" kích hoạt lại để bấm tiếp. Không giới hạn số lần bấm ở phía giao diện. |
 | 3 | Liên kết | Xem tất cả bài toán | Bấm "Xem tất cả" ở khối "Bài phổ biến nhất". | Có | Không | - | [Các bước]<br>1. Điều hướng sang màn `problem_management`.<br>[Khi thành công] Mở `problem_management` ở bộ lọc mặc định. **Không hỏi xác nhận trước khi rời màn**: màn chỉ đọc, không có trạng thái biên soạn nên không tồn tại thay đổi chưa lưu. Các lời gọi API đang dang dở bị huỷ. |
-| 4 | Liên kết | Điều hướng bằng thanh bên | Bấm một item con của 4 nhóm gập, hoặc một liên kết trong nhóm "KHÁC". | Có | Không | - | [Các bước]<br>1. Điều hướng sang màn tương ứng.<br>[Khi thành công] Mở màn đích. Cũng không hỏi xác nhận, cùng lý do như EVT-3. Bấm chính **tên nhóm** thì chỉ mở hoặc đóng nhóm, không rời màn và không gọi API — hành vi này thuộc khung chung `02-bd/screens/admin/_shell.md` mục 2.2. |
+| 4 | Liên kết | Điều hướng bằng thanh bên | Bấm một item con của 4 nhóm gập, hoặc một liên kết trong menu pop-up khối danh tính (cũ: nhóm "KHÁC"). | Có | Không | - | [Các bước]<br>1. Điều hướng sang màn tương ứng.<br>[Khi thành công] Mở màn đích. Cũng không hỏi xác nhận, cùng lý do như EVT-3. Bấm chính **tên nhóm** thì chỉ mở hoặc đóng nhóm, không rời màn và không gọi API — hành vi này thuộc khung chung `02-bd/screens/admin/_shell.md` mục 2.2. |
 
 Ba nút biểu tượng ở thanh công cụ (`layout-grid`, `moon`, `shield-check`) **không có sự kiện nào**: chúng là
 phần trang trí, được đánh dấu `aria-hidden` và `disabled` để không thành điểm dừng bàn phím chết

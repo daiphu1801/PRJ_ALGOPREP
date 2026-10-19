@@ -3,8 +3,10 @@
 // X/5" string there is split into two fields so the screen can format it per locale.
 import type { QuestionDraft } from "../../model/csv-import";
 import type {
+  AnswerCriterionResult,
   InterviewQuestion,
   InterviewQuestionPage,
+  RubricCriterion,
 } from "../../model/types";
 
 // Student-facing fields below are [SoT: Suy luận] where noted — USR0402 has no prototype to
@@ -333,13 +335,28 @@ const QUESTIONS: InterviewQuestion[] = [
 ];
 
 // Questions added by the CSV import; they live in the module until the page reloads.
-let importedCount = 0;
 
 export function fetchInterviewQuestionPage(): InterviewQuestionPage {
   return {
     questions: QUESTIONS.map((question) => ({ ...question })),
-    totalQuestions: 148 + importedCount,
+    totalQuestions: QUESTIONS.length,
   };
+}
+
+/**
+ * MOCK RULE for practice feedback (USR0402 Q9): one row per rubric criterion, achievement falling
+ * 15 points per row from 90 (floor 20) so the screen shows different values. The real AI returns
+ * `achievementPercent`; the rubric label doubles as `criterionCode` because the prototype rubric has
+ * no separate code.
+ */
+export function mockCriterionResults(
+  rubric: RubricCriterion[],
+): AnswerCriterionResult[] {
+  return rubric.map((criterion, index) => ({
+    criterionCode: criterion.label,
+    achievementPercent: Math.max(20, 90 - index * 15),
+    weightPercent: criterion.weight,
+  }));
 }
 
 /** Stand-in for the import endpoint: gives each draft the next IQ-nnn code and adds it to the bank. */
@@ -365,7 +382,6 @@ export function appendImportedQuestions(
     attempts: [],
   }));
   QUESTIONS.push(...created);
-  importedCount += created.length;
   return created;
 }
 

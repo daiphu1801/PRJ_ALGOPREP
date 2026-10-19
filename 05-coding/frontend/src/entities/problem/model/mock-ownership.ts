@@ -37,12 +37,25 @@ export function canViewerSeeProblem(code: string): boolean {
   return !viewerIsInstructor() || INSTRUCTOR_OWNED.has(code.replace("#", ""));
 }
 
+/** Edit form and duplicate ("new") are the write routes; everything else only reads. */
+function viewerIsWriting(): boolean {
+  try {
+    const path = window.location.pathname;
+    return path.endsWith("/edit") || path.endsWith("/new");
+  } catch {
+    return false;
+  }
+}
+
 /**
- * A2 opening someone else's problem gets the same 404 as a code that does not exist, so the answer
- * does not reveal which codes exist (BD SHR0203 Q8, decided 2026-10-03).
+ * A2 reads (read-only) any published problem, but edits and duplicates only their own; a write route
+ * on someone else's problem gets the same 404 as a code that does not exist, so the answer does not
+ * reveal which codes exist (BD SHR0203 Q8, decided 2026-10-03, relaxed for reading 2026-10-11 by
+ * DEC-2026-1011-a2-read-published-problems-of-others). Every problem in this mock that is not the
+ * instructor's is published; the real server must still 404 another author's draft.
  */
 export function assertViewerCanSeeProblem(code: string): void {
-  if (!canViewerSeeProblem(code)) {
+  if (!canViewerSeeProblem(code) && viewerIsWriting()) {
     throw new ApiError("PROBLEM_NOT_FOUND", 404, "Problem not found");
   }
 }

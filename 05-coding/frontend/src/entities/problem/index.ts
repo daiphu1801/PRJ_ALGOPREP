@@ -6,7 +6,6 @@ export type {
   InProgressProblem,
   InputMethod,
   OverallVerdict,
-  ProblemCatalogSummary,
   ProblemDetail,
   ProblemExample,
   ProblemListFilter,
@@ -27,9 +26,15 @@ export type {
   WrapperMode,
 } from "./model/types";
 export {
+  saveWorkspaceDraft,
+  workspaceDraftKey,
+  type DraftModel,
+} from "./model/workspace-draft";
+export {
   fetchProblemDetail,
   fetchProblemListPage,
   fetchSavedProblems,
+  simulateSampleRun,
   simulateSubmission,
 } from "./api/__mock__/problem-mocks";
 export {

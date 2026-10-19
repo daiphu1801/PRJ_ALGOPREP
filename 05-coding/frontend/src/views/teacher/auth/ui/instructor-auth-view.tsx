@@ -7,6 +7,7 @@ import { useT } from "@/shared/i18n";
 import {
   AuthAsideHighlights,
   AuthAsidePanel,
+  BrandMark,
   LiquidGlassBackdrop,
   ThemeLangSwitcher,
 } from "@/shared/ui";
@@ -47,9 +48,12 @@ function InstructorAuthViewContent() {
 
       <section className="glass-card relative z-10 grid w-full max-w-3xl grid-cols-1 overflow-hidden lg:grid-cols-[1.06fr_1fr]">
         <div className="p-8">
-          <p className="text-xs font-medium uppercase tracking-wide text-[var(--color-text-muted)]">
-            AlgoPrep
-          </p>
+          <div className="flex items-center gap-2.5">
+            <BrandMark size={36} />
+            <p className="text-xs font-medium uppercase tracking-wide text-[var(--color-text-muted)]">
+              AlgoPrep
+            </p>
+          </div>
           <h1 className="mt-2 text-2xl font-semibold text-[var(--color-text)]">
             {tInstructor("title")}
           </h1>
@@ -78,7 +82,6 @@ function InstructorAuthViewContent() {
         <AuthAsidePanel
           badges={[
             tInstructor("badgeClasses"),
-            tInstructor("badgeGrading"),
             tInstructor("badgeProgress"),
           ]}
           title={tInstructor("asideTitle")}

@@ -32,7 +32,7 @@ duy nhất** phụ thuộc một dịch vụ ngoài monolith [SoT: `dependency-m
 | Sweep timeout | F4-07 | Ngưỡng 5 phút (`DEC-2026-0831-outside-screens-closures`) |
 | Đẩy trạng thái thời gian thực | F4-08 | WebSocket/STOMP, kênh riêng theo `submissionId` |
 | ~~Chấm lại~~ | ~~F4-09a→e~~ | **Đã loại bỏ khỏi phạm vi** (`DEC-2026-0828-remove-rejudge-scope`) — không thiết kế lại ở đây |
-| Giám sát + điều khiển cụm | F4-10 | Bao gồm pause/resume tiêu thụ hàng đợi, bật/tắt autoscale worker (`DEC-2026-0831-judge-orchestration-ops-details`) |
+| Giám sát + điều khiển cụm | F4-10 | Bao gồm pause/resume tiêu thụ hàng đợi, bật/tắt autoscale worker (`DEC-2026-0831-judge-orchestration-ops-details`); sweep bỏ qua `PENDING` lúc đang tạm dừng (mục 5.3); số liệu cụm đọc từ Prometheus, không có bảng (`DEC-2026-1010-admin-operations-regroup`) |
 | Cấu hình ngôn ngữ và giới hạn tài nguyên | F4-11 | 3 tham số sandbox go-judge: mạng (mặc định chặn), giới hạn tiến trình con, có trả `stderr` hay không |
 | Chỉ số "Beats" | F4-12 | Chỉ hiện với `ACCEPTED`, so cùng bài + cùng ngôn ngữ |
 
@@ -105,6 +105,8 @@ GetClassStudentSubmissionMetrics(classId, studentIds[], problemIds[], weekCount)
 GetMySubmissionMetrics(range | dayCount, topicIds[]?)        // userId LẤY TỪ TOKEN
   -> { streakDays, lastSubmittedAt, acRateByTopic[], dailyCounts[] }
 ```
+
+**Quy tắc tuần và cache của `GetClassStudentSubmissionMetrics`** (`DEC-2026-1014-instructor-batch2-weekly-rules`): số liệu theo tuần (`weeklyTrend[]` và nhãn trạng thái "Cần hỗ trợ" dựa trên nó) **tính lúc truy vấn** từ `judge.submissions`, kết quả cache Redis **15 phút**; không có bảng ảnh chụp theo tuần và không có job định kỳ. Tuần bắt đầu **thứ Hai** (ISO), tuần đang chạy chưa đủ 7 ngày **không được tính**, nên `weekCount` là số tuần đủ gần nhất. Mốc "Vắng bài" (không nộp trong 7 ngày gần nhất) là cửa sổ trượt tính từ thời điểm truy vấn, không theo tuần ISO. Chỉ xét lại bằng bảng ảnh chụp nếu đo được truy vấn chậm. Nguồn: `02-bd/screens/teacher/INS0203_class_progress.md` Câu hỏi mở Q3.
 
 **Vì sao tách chứ không tham số hoá.** Ba lý do, lý do đầu là lý do quyết định:
 
@@ -210,6 +212,11 @@ hành đúng: không có callback nào tồn tại trong luồng đồng bộ.
   nghiệm chờ của học viên quá lâu sau ngưỡng 5 phút, đủ thưa để không tạo tải quét liên tục lên Postgres.
 - **Truy vấn**: quét `submissions` có `status IN (PENDING, COMPILING, JUDGING)` và `updated_at <
   now() - interval '5 minutes'`.
+- **Khi hàng đợi đang tạm dừng (G1, `DEC-2026-1010-admin-operations-regroup`)**: nếu `cluster_settings.queue_paused = true`
+  thì job sweep **bỏ qua** job `PENDING` (chưa có worker nào nhận nên không có cập nhật trạng thái nào là
+  hợp lệ) và chỉ quét `COMPILING` và `JUDGING`. Nếu không, tạm dừng quá 5 phút sẽ đẩy mọi bài nộp đang chờ
+  sang `SYSTEM_ERROR`. Đồng hồ 5 phút của job `PENDING` chỉ bắt đầu tính lại từ lúc hàng đợi được mở lại
+  (`updated_at` được chạm khi tiếp tục tiêu thụ) `[SoT: Suy luận]`, DD chốt cách chạm.
 - **Hành động**: `UPDATE ... SET status = 'SYSTEM_ERROR', failure_reason = 'WORKER_TIMEOUT' WHERE id = ?
   AND status NOT IN (<7 trạng thái cuối>)` — mệnh đề `WHERE` có điều kiện là bắt buộc, không phải tối ưu:
   nó là cơ chế chống ghi đè khi một worker "chậm" hoàn tất đúng lúc job sweep chạy (race hiếm nhưng có
@@ -267,7 +274,7 @@ lớn đã thuộc về `problem-bank` (`02-bd/storage/problem-bank.md`). `judge
 
 - `source_code` của bài nộp — TEXT trong Postgres (mã nguồn một bài giải hiếm khi vượt vài chục KB, không
   cần object storage).
-- `stderr` thực tế của một lần chạy (nếu `language_configs.return_stderr_to_student = true`) — cắt ngắn
+- `stderr` thực tế của một lần chạy (nếu `sandbox_settings.return_stderr_to_student = true`) — cắt ngắn
   theo giới hạn ký tự cố định (đề xuất 4KB `[SoT: Suy luận]`) lưu trực tiếp trong
   `submission_testcase_results.stderr_snippet`, không cần MinIO vì đây là output lỗi ngắn để hiển thị,
   không phải dữ liệu testcase lớn.

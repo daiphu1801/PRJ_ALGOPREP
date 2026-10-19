@@ -36,14 +36,14 @@ từ đúng phần dữ liệu đã có trong khối "xem nhanh", **không có U
 | Chế độ học: khung trả lời chuẩn, áp dụng STAR cho câu hành vi | F6-05 | `01-rd/req/interview-bank.md` — F6-05 |
 | Chế độ học: danh sách từ khoá kỹ thuật cốt lõi | F6-06 | `01-rd/req/interview-bank.md` — F6-06 |
 | Chế độ luyện: người dùng tự soạn câu trả lời | F6-07 | `01-rd/req/interview-bank.md` — F6-07 |
-| Chế độ luyện: AI đối chiếu tiêu chí chuẩn, trả điểm đã đạt/điểm còn thiếu/hướng bổ sung | F6-08 | `01-rd/req/interview-bank.md` — F6-08 |
+| Chế độ luyện: AI đối chiếu tiêu chí chuẩn, trả điểm đã đạt/điểm còn thiếu/hướng bổ sung, kèm phần trăm theo từng tiêu chí (không điểm tổng, không ngưỡng) | F6-08 | `01-rd/req/interview-bank.md` — F6-08 |
 | Đánh dấu để xem lại; tự chấm mức độ thuộc bài | F6-03, F6-12 | `01-rd/req/interview-bank.md` — F6-03, F6-12 |
 | Chống prompt injection, rate limit — Chế độ luyện đi qua phân hệ AI, chịu chung ràng buộc F5 | F5-17 tới F5-22 | `01-rd/req/ai-review.md` — F5-17 tới F5-22; `01-rd/req/interview-bank.md` — F6-08 |
 | Given-When-Then Chế độ học/luyện | — | `01-rd/req/user_stories/a1_student.md` (`US-A1-08`) |
 
 **Phần chung cho cả hai chế độ — có prototype tham khảo (khối "xem nhanh")**
 
-1. **Đầu trang câu hỏi** — chủ đề, độ khó, tần suất xuất hiện, tiêu đề đầy đủ, tag liên quan [SoT:
+1. **Đầu trang câu hỏi** — chủ đề, độ khó, tiêu đề đầy đủ, tag liên quan (không có "tần suất xuất hiện", đã chốt bỏ 2026-10-18) [SoT:
    09-layoutBase/Câu hỏi phỏng vấn.dc.html:148-156, 174-178, 406-412] — tái dùng nguyên từ khối "xem nhanh"
    của `interview_bank_list`, không đổi.
 2. **Toggle Chế độ học / Chế độ luyện** — **chưa có trong prototype**, tự thêm khi dựng UI thật
@@ -73,7 +73,7 @@ từ đúng phần dữ liệu đã có trong khối "xem nhanh", **không có U
 8. **Phản hồi AI sau khi gửi** (F6-08: điểm đã đạt, điểm còn thiếu, hướng bổ sung) — **[Đợi nextjs]**. Đề
    xuất tham khảo cấu trúc hiển thị dạng "Làm tốt"/"Nên sửa" đã dùng ở `solution_review`
    (`01-rd/screens/users/USR0301_solution_review.md` mục 3.7) để giữ ngôn ngữ hình ảnh nhất quán giữa các tính năng
-   AI, dù đây là hai luồng dữ liệu độc lập (F6-08 không dùng chung schema với F5-07).
+   AI, dù đây là hai luồng dữ liệu độc lập (F6-08 không dùng chung schema với F5-07). Phản hồi là định tính cộng phần trăm theo từng tiêu chí; tiêu chí chỉ hiện sau khi có phản hồi.
 9. **Trạng thái loading/lỗi khi gọi AI** — **[Đợi nextjs]**, cùng loại khoảng trống đã ghi nhận ở
    `solution_review` (Phase 3, Câu hỏi mở Q3) và đã có mẫu tốt hơn ở `mock_interview` (khối `aiError`) — nên
    tái dùng mẫu của `mock_interview` làm chuẩn khi dựng UI thật.
@@ -128,12 +128,12 @@ từ đúng phần dữ liệu đã có trong khối "xem nhanh", **không có U
 | REQ-02 | Chế độ học: khung trả lời chuẩn, áp dụng STAR cho câu hành vi (F6-05) | Chức năng | `01-rd/req/interview-bank.md` — F6-05 |
 | REQ-03 | Chế độ học: danh sách từ khoá kỹ thuật cốt lõi (F6-06) | Chức năng | `01-rd/req/interview-bank.md` — F6-06 |
 | REQ-04 | Chế độ luyện: người dùng tự soạn câu trả lời (F6-07) | Chức năng | `01-rd/req/interview-bank.md` — F6-07 |
-| REQ-05 | Chế độ luyện: AI đối chiếu tiêu chí chuẩn, trả điểm đã đạt/điểm còn thiếu/hướng bổ sung (F6-08) | Chức năng | `01-rd/req/interview-bank.md` — F6-08 |
+| REQ-05 | Chế độ luyện: AI đối chiếu tiêu chí chuẩn, trả điểm đã đạt/điểm còn thiếu/hướng bổ sung kèm mức đạt từ 0 đến 100 của từng tiêu chí, hiện cùng trọng số của tiêu chí đó (không nhân với trọng số), không điểm tổng, không ngưỡng đạt/không đạt (F6-08) | Chức năng | `01-rd/req/interview-bank.md` — F6-08 |
 | REQ-06 | Đánh dấu để xem lại; tự chấm mức độ thuộc bài (F6-03, F6-12) | Chức năng | `01-rd/req/interview-bank.md` — F6-03, F6-12 |
 | REQ-07 | Chống prompt injection, rate limit — Chế độ luyện đi qua phân hệ AI, chịu chung ràng buộc F5 (F5-17 tới F5-22) | Chức năng | `01-rd/req/ai-review.md` — F5-17 tới F5-22; `01-rd/req/interview-bank.md` — F6-08 |
 | REQ-08 | Given-When-Then Chế độ học/luyện (—) | Chức năng | `01-rd/req/user_stories/a1_student.md` (`US-A1-08`) |
 | REQ-09 | **Cho** tôi đang xem một câu hỏi ở Chế độ học, **Khi** tôi chuyển sang Chế độ luyện, **Thì** tôi thấy một ô trống để tự soạn câu trả lời, không thấy trước "Ý cần nói"/khung trả lời chuẩn của Chế độ học (tránh nhìn đáp án trước khi tự làm) — **[Đợi nextjs]**, chưa có prototype xác nhận hành vi ẩn/hiện chéo hai chế độ | Chức năng (GWT) | [SoT: Suy luận — chưa có prototype cho Chế độ luyện] |
-| REQ-10 | **Cho** tôi vừa gửi câu trả lời ở Chế độ luyện, **Khi** AI chấm xong, **Thì** tôi thấy điểm đã đạt/điểm còn thiếu/hướng bổ sung (F6-08), và giao diện ghi rõ đây là phản hồi học tập — áp dụng chung nguyên tắc F5-18 dù F6-08 không thuộc F5 | Chức năng (GWT) | [SoT: 01-rd/req/interview-bank.md — F6-08] |
+| REQ-10 | **Cho** tôi vừa gửi câu trả lời ở Chế độ luyện, **Khi** AI chấm xong, **Thì** tôi thấy điểm đã đạt/điểm còn thiếu/hướng bổ sung (F6-08) cùng mức đạt (0 đến 100) của từng tiêu chí kèm trọng số (tiêu chí chỉ hiện từ lúc này, không hiện trước khi nộp; không có điểm tổng, không có ngưỡng), và giao diện ghi rõ đây là phản hồi học tập — áp dụng chung nguyên tắc F5-18 dù F6-08 không thuộc F5 | Chức năng (GWT) | [SoT: 01-rd/req/interview-bank.md — F6-08] |
 | REQ-11 | **Cho** ngân sách token AI đã cạn cho vai trò của tôi (F5-25, áp dụng cả F6-08 theo `interview-bank.md`), **Khi** tôi gửi câu trả lời ở Chế độ luyện, **Thì** tôi thấy thông báo tính năng AI đang tạm khoá — cùng loại trạng thái đã ghi ở `01-rd/screens/users/USR0301_solution_review.md` mục 4 | Chức năng (GWT) | [SoT: 01-rd/req/ai-review.md — F5-25] |
 
 ---
@@ -179,3 +179,17 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 | Màn hình liên quan | `01-rd/screens/users/USR0401_interview_bank_list.md` — màn nguồn, mục 2 và mục 4 Câu hỏi mở Q1 (quyết định tách hai màn). |
 | Tài liệu tham khảo | `01-rd/screens/users/USR0301_solution_review.md`, `01-rd/screens/users/USR0302_mock_interview.md` — tham chiếu mẫu trình bày cho trạng thái loading/lỗi AI khi dựng UI thật. |
 | Kế hoạch | `06-plan/nexa-plan/260824-2043-bd-screens-common-first.md` — kế hoạch Phase 4 sinh ra file này. |
+
+---
+
+## 10. Ghi nhận quyết định 2026-10-18
+
+Owner chốt theo đề xuất, ghi ở `DEC-2026-1018-usr-open-questions-phase1-scope`. Bảng dưới liệt kê phần quyết định chạm RD của màn này; chi tiết thiết kế ở `02-bd/screens/users/USR0402_interview_question_detail.md` (Câu hỏi mở Q2, Q3, Q4 đến Q9). Câu hỏi mở Q1 ở mục 4 vẫn mở.
+
+| Nội dung | Thay đổi ở RD | Tiêu chí ponytail |
+| :--- | :--- | :-: |
+| "Tần suất xuất hiện" ở đầu trang | Bỏ khỏi phạm vi (mục 2 phần chung, hạng mục 1) — không có yêu cầu F6 và không có dữ liệu | Bậc 1, 2 |
+| Phản hồi F6-08 | Định tính (ba danh sách ý) cộng phần trăm theo từng tiêu chí; không điểm tổng, không ngưỡng đạt/không đạt; tiêu chí ẩn trước khi nộp (mục 2 hạng mục 8, REQ-05, REQ-10) | Bậc 1 |
+| Nộp bất đồng bộ, lưu nháp câu trả lời, lịch sử các lượt | Không đổi yêu cầu: nộp đồng bộ, không lưu nháp và giữ lịch sử ở cả hai màn là thiết kế (BD), không phải yêu cầu mới | Bậc 4, 5 |
+| Giới hạn độ dài câu trả lời | Không đổi REQ: giới hạn 5000 ký tự (hằng số cấu hình máy chủ), có bộ đếm ký tự hiển thị; chốt 2026-10-18 theo `DEC-2026-1018-usr-open-questions-phase2-5` | Bậc 5 |
+| Nghĩa của "phần trăm theo từng tiêu chí" | REQ-05 và REQ-10: là mức đạt của từng tiêu chí trên thang 0 đến 100, hiện cùng trọng số, không nhân với trọng số, không điểm tổng, không ngưỡng; chốt 2026-10-18 theo `DEC-2026-1018-usr-open-questions-phase2-5` (BD Câu hỏi mở Q9) | Bậc 5 |

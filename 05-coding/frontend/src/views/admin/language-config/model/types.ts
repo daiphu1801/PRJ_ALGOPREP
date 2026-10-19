@@ -13,8 +13,6 @@ export type LanguageConfig = {
   short: string;
   /** Compiler/runtime string, e.g. "CPython 3.11.6". */
   compiler: string;
-  /** Internal go-judge environment id, e.g. "go-judge #71". */
-  judgeId: string;
   /** Multiplies the system-wide default time limit for this language (F2-10). */
   timeMultiplier: number;
   /**

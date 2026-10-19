@@ -1,42 +1,74 @@
-// PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md.
+// PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 //
 // Shared by both USR0401 (interview-bank-list) and USR0402 (interview-question-detail): F6-12
 // self-rating and F6-03 bookmarking write the same two per-user, per-question facts, and both
 // screens read/write them for the same `InterviewQuestion.code` — [SoT:
 // 02-bd/screens/users/USR0402_interview_question_detail.md:310-313] calls this out explicitly as
-// "reuse, not a new slice". No backend yet, so state lives in this hook instead of TanStack Query;
-// each screen seeds it from `InterviewQuestion.defaultRecall` and keeps its own React state — this
-// is per-mount, not cross-tab, and resets on refresh (acceptable for a prototype with no API).
+// "reuse, not a new slice". No backend yet, so the facts live in a module-level store (user changes
+// layered over `InterviewQuestion.defaultRecall`) that both screens read, so a rating made on the
+// detail screen is still there on the list. It resets on reload.
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useSyncExternalStore } from "react";
 import type { InterviewQuestion, RecallLevel } from "./types";
 
 export type RecallMap = Record<string, RecallLevel | null>;
 export type BookmarkMap = Record<string, boolean>;
 
-function buildInitialRecall(questions: InterviewQuestion[]): RecallMap {
-  return Object.fromEntries(questions.map((q) => [q.code, q.defaultRecall]));
+type Overrides = { recall: RecallMap; bookmarks: BookmarkMap };
+
+let state: Overrides = { recall: {}, bookmarks: {} };
+const listeners = new Set<() => void>();
+
+function update(next: Overrides) {
+  state = next;
+  listeners.forEach((listener) => listener());
 }
 
-function buildInitialBookmarks(questions: InterviewQuestion[]): BookmarkMap {
-  return Object.fromEntries(questions.map((q) => [q.code, false]));
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+}
+
+const getSnapshot = () => state;
+
+/** Test helper: drop every user change and go back to the seeded values. */
+export function resetRecallAndBookmarkState() {
+  update({ recall: {}, bookmarks: {} });
 }
 
 export function useRecallAndBookmarkState(questions: InterviewQuestion[]) {
-  const [recall, setRecall] = useState<RecallMap>(() =>
-    buildInitialRecall(questions),
+  const overrides = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+
+  const recall = useMemo<RecallMap>(
+    () =>
+      Object.fromEntries(
+        questions.map((q) => [
+          q.code,
+          q.code in overrides.recall
+            ? overrides.recall[q.code]!
+            : q.defaultRecall,
+        ]),
+      ),
+    [questions, overrides.recall],
   );
-  const [bookmarks, setBookmarks] = useState<BookmarkMap>(() =>
-    buildInitialBookmarks(questions),
+  const bookmarks = useMemo<BookmarkMap>(
+    () =>
+      Object.fromEntries(
+        questions.map((q) => [q.code, overrides.bookmarks[q.code] ?? false]),
+      ),
+    [questions, overrides.bookmarks],
   );
 
   const rate = useCallback((code: string, level: RecallLevel) => {
-    setRecall((prev) => ({ ...prev, [code]: level }));
+    update({ ...state, recall: { ...state.recall, [code]: level } });
   }, []);
 
   const toggleBookmark = useCallback((code: string) => {
-    setBookmarks((prev) => ({ ...prev, [code]: !prev[code] }));
+    update({
+      ...state,
+      bookmarks: { ...state.bookmarks, [code]: !state.bookmarks[code] },
+    });
   }, []);
 
   return { recall, bookmarks, rate, toggleBookmark };

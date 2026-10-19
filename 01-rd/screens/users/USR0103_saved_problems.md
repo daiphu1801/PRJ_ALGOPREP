@@ -33,7 +33,7 @@ bổ sung phần đặc thù của màn. Đây là màn **khớp tốt nhất** 
 Đối chiếu `09-layoutBase/Bài đã lưu.dc.html` [SoT: 09-layoutBase/Bài đã lưu.dc.html], phạm vi trên thể hiện
 qua các khối màn sau:
 
-1. **Dải chỉ số** — số liệu tóm tắt tập bài đã lưu (dòng 100-107, ví dụ tổng số đã lưu/đã giải trong số đó).
+1. **Đầu trang (tiêu đề + dòng mô tả)** — dòng mô tả dưới tiêu đề nêu tổng số bài đã lưu và số bài đã giải trong số đó; không có dải chỉ số (prototype dòng 100-107 vẽ dải, đã bỏ theo owner 2026-10-18, `DEC-2026-1018-usr-open-questions-phase1-scope`; bản dựng: `05-coding/frontend/src/views/users/saved-problems/ui/saved-problems-view.tsx:177`).
 2. **Thanh công cụ** — tìm kiếm theo tên/mã bài, tab lọc theo độ khó, tab lọc theo trạng thái làm bài (dòng
    112-123).
 3. **Bảng danh sách** — mỗi dòng: bài toán (mã + tên + độ khó), chủ đề, trạng thái (`attempted`/`todo`/
@@ -88,7 +88,9 @@ qua các khối màn sau:
 | REQ-01 | Lưu bài toán (bookmark) kèm ghi chú riêng tư tuyệt đối theo `(user_id, problem_id)` (F2-13) | Chức năng | `01-rd/req/problem-bank.md` — F2-13 |
 | REQ-02 | Given-When-Then đầy đủ (—) | Chức năng | `01-rd/req/user_stories/a1_student.md` (`US-A1-09`) |
 | REQ-03 | **Cho** tôi lọc theo một trạng thái làm bài (ví dụ `todo`), **Khi** bộ lọc áp dụng, **Thì** danh sách chỉ hiện các bookmark có đúng trạng thái đó, ghi chú của từng dòng vẫn hiển thị đầy đủ | Chức năng (GWT) | [SoT: 09-layoutBase/Bài đã lưu.dc.html:213-214, 148-151] |
-| REQ-04 | **Cho** tôi bấm "Bỏ lưu" một bài, **Khi** tôi xác nhận (nếu có), **Thì** bài đó biến mất khỏi danh sách ngay, và ghi chú riêng tư gắn với bookmark đó cũng không còn truy cập được qua màn này | Chức năng (GWT) | [SoT: 09-layoutBase/Bài đã lưu.dc.html:156, 212] |
+| REQ-04 | **Cho** tôi bấm "Bỏ lưu" một bài, **Khi** tôi bấm (không có hộp xác nhận), **Thì** bài đó biến mất khỏi danh sách ngay và màn hiện lựa chọn "Hoàn tác"; nếu tôi bấm Hoàn tác thì bookmark và ghi chú riêng tư của nó trở lại như cũ, nếu không thì ghi chú riêng tư gắn với bookmark đó không còn truy cập được qua màn này | Chức năng (GWT) | [SoT: 09-layoutBase/Bài đã lưu.dc.html:156, 212] |
+
+**Ghi chú 2026-10-18** (chủ dự án chốt theo đề xuất, `DEC-2026-1018-usr-open-questions-phase2-5` giai đoạn 3; BD `USR0103` Q2 đến Q5): REQ-04 bỏ lưu dùng Hoàn tác thay cho hộp xác nhận; ghi chú sửa tại chỗ trong bảng, tối đa 1000 ký tự, văn bản thuần; danh sách phân trang 20 dòng một trang, ẩn khi chỉ có một trang.
 
 ---
 

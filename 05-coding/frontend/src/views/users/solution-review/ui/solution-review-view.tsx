@@ -16,18 +16,25 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   AI_BUDGET_LOCKED_CODE,
-  RUBRIC_CRITERION_CODES,
+  REVIEW_FORBIDDEN_CODE,
+  REVIEW_NOT_ACCEPTED_CODE,
+  REVIEW_NOT_FOUND_CODE,
   useSolutionReview,
   type SolutionReviewDemoOutcome,
   type SolutionReviewDetail,
 } from "@/entities/solution-review";
 import { ApiError } from "@/shared/api";
-import { problemLevelLabel, useProblemLevels } from "@/entities/problem";
-import { useT } from "@/shared/i18n";
+import {
+  problemLevelLabel,
+  saveWorkspaceDraft,
+  useProblemLevels,
+} from "@/entities/problem";
+import { useLocale, useT } from "@/shared/i18n";
+import { formatDateVN, type DateLocale } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
 import {
   Badge,
@@ -59,7 +66,7 @@ function isDemoOutcome(
 export function SolutionReviewView() {
   // useSearchParams requires a Suspense boundary in the App Router (see views/auth/ui/auth-view.tsx).
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<LoadingSkeleton />}>
       <SolutionReviewContent />
     </Suspense>
   );
@@ -67,20 +74,30 @@ export function SolutionReviewView() {
 
 function SolutionReviewContent() {
   const t = useT("solutionReview");
+  const router = useRouter();
+  const params = useParams<{ submissionId?: string }>();
+  const submissionId = params?.submissionId ?? "";
   const searchParams = useSearchParams();
   const rawDemo = searchParams.get("demo");
   const demo: SolutionReviewDemoOutcome = isDemoOutcome(rawDemo)
     ? rawDemo
     : "ready";
 
-  const query = useSolutionReview(demo);
+  const query = useSolutionReview(submissionId, demo);
   const [applyConfirmOpen, setApplyConfirmOpen] = useState(false);
 
-  const isLoading = query.isLoading;
+  // isFetching (not isLoading) so Retry from the error state shows the skeleton again and cannot be
+  // double-clicked (EVT-7).
+  const isLoading = query.isFetching;
   const isBudgetLocked =
     query.error instanceof ApiError &&
     query.error.code === AI_BUDGET_LOCKED_CODE;
-  const isTransientError = query.isError && !isBudgetLocked;
+  const isUnavailable =
+    query.error instanceof ApiError &&
+    (query.error.code === REVIEW_NOT_FOUND_CODE ||
+      query.error.code === REVIEW_FORBIDDEN_CODE ||
+      query.error.code === REVIEW_NOT_ACCEPTED_CODE);
+  const isTransientError = query.isError && !isBudgetLocked && !isUnavailable;
   const data = query.data as SolutionReviewDetail | undefined;
 
   // The error blocks below replace the report; the toast announces the failure at the moment it
@@ -89,6 +106,7 @@ function SolutionReviewContent() {
   useEffect(() => {
     if (!errorUpdatedAt) return;
     if (isBudgetLocked) toast.error(t("toast.budgetLocked"));
+    else if (isUnavailable) toast.error(t("toast.unavailable"));
     else if (isTransientError) toast.error(t("toast.transientError"));
     // eslint-disable-next-line react-hooks/exhaustive-deps -- t is stable per locale; only a new failure should toast
   }, [errorUpdatedAt]);
@@ -100,15 +118,18 @@ function SolutionReviewContent() {
         className="mb-4 flex items-center gap-2 text-[13px]"
       >
         <Link
-          href="/submissions"
+          href={`/submissions/${submissionId}`}
           className="font-semibold text-[var(--color-text-muted)]"
         >
           {t("breadcrumbSubmissionResult")}
         </Link>
         <span aria-hidden="true">/</span>
-        <span className="font-mono text-[var(--color-text-muted)]">
-          {data?.submissionId ?? "SUB-2841"}
-        </span>
+        <Link
+          href={`/submissions/${submissionId}`}
+          className="font-mono text-[var(--color-text-muted)]"
+        >
+          {submissionId}
+        </Link>
         <span aria-hidden="true">/</span>
         <span className="text-[var(--color-text)]">
           {t("breadcrumbCurrent")}
@@ -117,7 +138,7 @@ function SolutionReviewContent() {
 
       {isLoading ? <LoadingSkeleton /> : null}
 
-      {isTransientError ? (
+      {!isLoading && isTransientError ? (
         <NoticeTile tone="warn" title={t("errorTransientTitle")}>
           {t("errorTransientBody")}
           <Button
@@ -131,7 +152,19 @@ function SolutionReviewContent() {
         </NoticeTile>
       ) : null}
 
-      {isBudgetLocked ? (
+      {!isLoading && isUnavailable ? (
+        <NoticeTile tone="warn" title={t("errorUnavailableTitle")}>
+          {t("errorUnavailableBody")}
+          <Link
+            href="/submissions"
+            className="mt-3 block font-semibold text-[var(--color-primary)] underline"
+          >
+            {t("backToSubmissions")}
+          </Link>
+        </NoticeTile>
+      ) : null}
+
+      {!isLoading && isBudgetLocked ? (
         <NoticeTile tone="negative" title={t("errorBudgetLockedTitle")}>
           {t("errorBudgetLockedBody")}
           <Link
@@ -156,7 +189,21 @@ function SolutionReviewContent() {
         onClose={() => setApplyConfirmOpen(false)}
         onConfirm={() => {
           setApplyConfirmOpen(false);
+          if (!data) return;
+          // EVT-6: the suggestion becomes the browser draft of that problem, then the workspace opens
+          // on it. The previous-draft history entry from BD is not built yet (PROTOTYPE_DEBT).
+          const ok = saveWorkspaceDraft(
+            data.problemId,
+            data.languageKey,
+            data.submissionModel,
+            data.suggestedCode,
+          );
+          if (!ok) {
+            toast.error(t("toast.applyFailed"));
+            return;
+          }
           toast.success(t("toast.applied"));
+          router.push(`/problems/${data.problemId}`);
         }}
         title={t("applyConfirmTitle")}
         confirmLabel={t("applyConfirmConfirm")}
@@ -188,6 +235,7 @@ function ReadyReport({
   onApplyClick: () => void;
 }) {
   const levelList = useProblemLevels();
+  const locale = useLocale() as DateLocale;
   return (
     <>
       <div className="mb-4 flex flex-wrap items-center gap-5">
@@ -209,6 +257,11 @@ function ReadyReport({
           label={t("statReadability")}
           value={String(data.readabilityScore)}
           unit="/ 5"
+        />
+        <Stat
+          label={t("statCreatedAt")}
+          value={formatDateVN(data.createdAt, { locale, withTime: true })}
+          unit="UTC+7"
         />
         <Button variant="cta" size="sm" className="ml-auto" asChild>
           <Link href={`/submissions/${data.submissionId}/interview`}>
@@ -274,35 +327,11 @@ function ReadyReport({
             </div>
           </Card>
 
-          <Card title={t("rubricTitle")}>
-            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-              {RUBRIC_CRITERION_CODES.map((code) => {
-                const criterion = data.criteriaScores.find(
-                  (c) => c.code === code,
-                );
-                if (!criterion) return null;
-                return (
-                  <div
-                    key={code}
-                    className="rounded-xl border border-[var(--color-border)] px-3 py-2.5"
-                  >
-                    <p className="mb-1 text-[13px] font-semibold">
-                      {t(`rubric.${code}`)}
-                    </p>
-                    <p className="text-[12.5px] text-[var(--color-text-muted)]">
-                      {criterion.feedback}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-          </Card>
-
           <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
             <Card title={t("strengthsTitle")}>
               <ul className="flex flex-col gap-2.5 text-[13.5px]">
-                {data.strengths.map((item) => (
-                  <li key={item} className="flex gap-2.5">
+                {data.strengths.map((item, index) => (
+                  <li key={`${index}-${item}`} className="flex gap-2.5">
                     <span
                       aria-hidden="true"
                       className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-success)]"
@@ -314,8 +343,8 @@ function ReadyReport({
             </Card>
             <Card title={t("improvementsTitle")}>
               <ul className="flex flex-col gap-2.5 text-[13.5px]">
-                {data.improvements.map((item) => (
-                  <li key={item} className="flex gap-2.5">
+                {data.improvements.map((item, index) => (
+                  <li key={`${index}-${item}`} className="flex gap-2.5">
                     <span
                       aria-hidden="true"
                       className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-admin-warn)]"
@@ -329,8 +358,8 @@ function ReadyReport({
 
           <Card title={t("edgeCasesTitle")}>
             <ul className="flex flex-col gap-2 text-[13.5px]">
-              {data.edgeCases.map((item) => (
-                <li key={item}>{item}</li>
+              {data.edgeCases.map((item, index) => (
+                <li key={`${index}-${item}`}>{item}</li>
               ))}
             </ul>
           </Card>
@@ -353,7 +382,7 @@ function ReadyReport({
         </div>
 
         <div className="flex flex-col gap-3.5">
-          <Card title={t("sourceCodeTitle")} description={data.language}>
+          <Card title={t("sourceCodeTitle")} description={t(`language.${data.languageKey}`)}>
             <pre className="overflow-x-auto rounded-xl bg-[var(--color-track)] p-3.5 font-mono text-xs leading-[1.8]">
               {data.sourceCode.map((line, index) => (
                 <div key={index}>

@@ -47,19 +47,45 @@ let interviewPreferences: InterviewPracticePreferences = {
   hintAllowed: true,
 };
 
-export function fakeGetMyProfile(): Promise<UserProfile> {
-  return delay(profile);
+let profileEdited = false;
+
+/** Same account, shown with the identity fields that fit the area it is opened from. */
+const AREA_IDENTITY: Record<
+  "instructor" | "admin",
+  Pick<UserProfile, "schoolOrCompany" | "currentPosition" | "targetPosition">
+> = {
+  instructor: {
+    schoolOrCompany: "Khoa Công nghệ thông tin, Đại học Cần Thơ",
+    currentPosition: "Giảng viên",
+    targetPosition: "Giảng viên chính",
+  },
+  admin: {
+    schoolOrCompany: "AlgoPrep",
+    currentPosition: "Quản trị hệ thống",
+    targetPosition: "Quản trị hệ thống",
+  },
+};
+
+export function fakeGetMyProfile(
+  area: "student" | "instructor" | "admin" = "student",
+): Promise<UserProfile> {
+  // Once the user saves the form, their own values win over the per-area sample identity.
+  return delay(
+    area === "student" || profileEdited
+      ? profile
+      : { ...profile, ...AREA_IDENTITY[area] },
+  );
 }
 
 export function fakeUpdateMyProfile(
   input: UpdateProfileInput,
 ): Promise<UserProfile> {
+  profileEdited = true;
   profile = {
     ...profile,
     displayName: input.displayName,
     schoolOrCompany: input.schoolOrCompany || null,
     currentPosition: input.currentPosition || null,
-    defaultLanguage: input.defaultLanguage,
     targetPosition: input.targetPosition || null,
   };
   return delay(profile, 600);
@@ -148,7 +174,10 @@ export function fakeExportInterviewTranscripts(): Promise<Blob> {
 export function fakeDeleteMyAccount(
   emailConfirmation: string,
 ): Promise<{ ok: true } | { ok: false; message: string }> {
-  if (emailConfirmation !== profile.email) {
+  // Same rule as the client: trim + case-insensitive (D38).
+  if (
+    emailConfirmation.trim().toLowerCase() !== profile.email.trim().toLowerCase()
+  ) {
     return delay({ ok: false, message: "errors.confirmPhraseMismatch" }, 400);
   }
   return delay({ ok: true }, 600);

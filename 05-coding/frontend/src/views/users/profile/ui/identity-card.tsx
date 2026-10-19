@@ -1,7 +1,7 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 //
-// Khu vực A. No "Đổi ảnh" button — BD Sheet 6 Khu vực A NO 4 says to skip it entirely until an
-// avatar storage source is confirmed (Câu hỏi mở Q1), rather than ship a button that does nothing.
+// Khu vực A. No "Đổi ảnh" button — BD Q1 was closed 2026-10-18 (owner): the button is dropped and
+// the avatar stays the initials circle (no avatar column, no storage).
 import { Skeleton } from "@/shared/ui";
 import type { UserProfile } from "@/entities/user";
 

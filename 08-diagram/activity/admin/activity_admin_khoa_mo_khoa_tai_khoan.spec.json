@@ -1,0 +1,84 @@
+{
+  "_": "Tach tu activity_admin_doi_vai_tro_nguoi_dung (2026-10-18). Nguon: RD ADM0201 REQ-04, REQ-05 va BD popup Khoa. Khong ve nhanh mo khoa: chi la mot buoc xac nhan roi doi trang thai, khong co o ly do, khong gui email (xem sequence phan 2/2, giai doan 3); ve ra lam hinh rong ngang qua kho.",
+  "kind": "activity",
+  "title": "Sơ đồ hoạt động - Khoá tài khoản kèm lý do (Quản trị viên)",
+  "covers": [
+    "F1-13",
+    "F1-14",
+    "F1-32"
+  ],
+  "mode": "mono",
+  "activity": {
+    "nodes": [
+      {
+        "id": "start",
+        "type": "start"
+      },
+      {
+        "id": "n1",
+        "type": "action",
+        "text": "Chọn một hoặc nhiều tài khoản, bấm Khoá"
+      },
+      {
+        "id": "n2",
+        "type": "action",
+        "text": "Nhập lý do bắt buộc, chọn gửi email thông báo"
+      },
+      {
+        "id": "d2",
+        "type": "decision",
+        "text": "Khoá xong còn quản trị viên hoạt động?"
+      },
+      {
+        "id": "n3",
+        "type": "action",
+        "text": "Đổi sang Bị khoá, thu hồi phiên, ghi nhật ký kèm lý do, gửi email nếu đã chọn"
+      },
+      {
+        "id": "end",
+        "type": "end"
+      },
+      {
+        "id": "n6",
+        "type": "action",
+        "text": "Chặn, không tài khoản nào đổi"
+      },
+      {
+        "id": "end2",
+        "type": "end"
+      }
+    ],
+    "edges": [
+      {
+        "from": "start",
+        "to": "n1"
+      },
+      {
+        "from": "n1",
+        "to": "n2"
+      },
+      {
+        "from": "n2",
+        "to": "d2"
+      },
+      {
+        "from": "d2",
+        "to": "n3",
+        "guard": "còn"
+      },
+      {
+        "from": "d2",
+        "to": "n6",
+        "guard": "hết"
+      },
+      {
+        "from": "n3",
+        "to": "end"
+      },
+      {
+        "from": "n6",
+        "to": "end2"
+      }
+    ]
+  }
+}

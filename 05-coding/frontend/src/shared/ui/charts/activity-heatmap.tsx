@@ -9,6 +9,9 @@
 // only had a dark-mode branch written out (dc.html `heatColors`); `color-mix` against
 // `--color-primary` gives both themes one ramp that tracks the theme instead of two hand-picked
 // lists that drift.
+"use client";
+
+import { useEffect, useRef } from "react";
 import { cn } from "@/shared/lib";
 
 type HeatmapCell = {
@@ -29,8 +32,8 @@ const LEVEL_STYLE: Record<HeatmapCell["level"], string> = {
 
 const LEGEND_LEVELS: HeatmapCell["level"][] = [0, 1, 2, 3, 4];
 
-/** Cell size and gap are fixed (dc.html:203) and the month-tick row below is measured from them. */
-const CELL_PX = 11;
+/** dc.html:203 draws 11px cells with 3px gaps; here 11px is the smallest cell, the grid grows from it. */
+const MIN_CELL_PX = 11;
 const GAP_PX = 3;
 
 export function ActivityHeatmap({
@@ -47,6 +50,14 @@ export function ActivityHeatmap({
   moreLabel: string;
   ariaLabel: string;
 }) {
+  // On a phone the grid is wider than the card and scrolls; the newest weeks are the ones that matter, so
+  // it opens at the right end. Where the grid fits (tablet and up) there is nothing to scroll and this is a no-op.
+  const scrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const box = scrollRef.current;
+    if (box) box.scrollLeft = box.scrollWidth;
+  }, [weeks.length]);
+
   return (
     <div>
       <div className="mb-2 flex items-center justify-end gap-1.5">
@@ -66,47 +77,49 @@ export function ActivityHeatmap({
       </div>
 
       {/* The grid is decoration over a figure already stated in words above it (the "N ngày có bài
-          nộp" summary), so it is one labelled group rather than 364 focusable cells. */}
-      <div
-        role="img"
-        aria-label={ariaLabel}
-        className="flex gap-[3px] overflow-x-auto pb-1"
-      >
-        {weeks.map((week, index) => (
+          nộp" summary), so it is one labelled group rather than 364 focusable cells.
+          The cells share the width (square, `auto-cols-fr`) so the grid is as wide as the card and the
+          legend sits over its right edge; below the minimum cell size a cell would be unreadably small,
+          so the grid keeps that width and the box scrolls. The month ticks are INSIDE the same
+          scrolling box and the same width, so they never come loose from the columns they label. */}
+      <div ref={scrollRef} className="overflow-x-auto pb-1">
+        <div
+          style={{ minWidth: weeks.length * (MIN_CELL_PX + GAP_PX) - GAP_PX }}
+        >
           <div
-            key={week[0]?.key ?? index}
-            className="grid shrink-0 grid-rows-7 gap-[3px]"
+            role="img"
+            aria-label={ariaLabel}
+            className="grid auto-cols-fr grid-flow-col gap-[3px]"
           >
-            {week.map((cell) => (
-              <span
-                key={cell.key}
-                title={cell.title}
-                className={cn(
-                  "h-[11px] w-[11px] rounded-sm",
-                  LEVEL_STYLE[cell.level],
-                )}
-              />
+            {weeks.map((week, index) => (
+              <div
+                key={week[0]?.key ?? index}
+                className="grid grid-rows-7 gap-[3px]"
+              >
+                {week.map((cell) => (
+                  <span
+                    key={cell.key}
+                    title={cell.title}
+                    className={cn(
+                      "aspect-square w-full rounded-sm",
+                      LEVEL_STYLE[cell.level],
+                    )}
+                  />
+                ))}
+              </div>
             ))}
           </div>
-        ))}
-      </div>
-
-      {/* Sized to the grid, not to the card: the cells are a fixed 11px + 3px gap, so a tick row
-          measured in percent of the container drifts away from the columns it labels as soon as
-          the card is wider than the grid. */}
-      <div
-        className="mt-1.5 flex"
-        style={{ width: weeks.length * (CELL_PX + GAP_PX) - GAP_PX }}
-        aria-hidden="true"
-      >
-        {monthLabels.map((label) => (
-          <span
-            key={label}
-            className="flex-1 font-mono text-[11px] text-[var(--color-text-subtle)]"
-          >
-            {label}
-          </span>
-        ))}
+          <div className="mt-1.5 flex" aria-hidden="true">
+            {monthLabels.map((label) => (
+              <span
+                key={label}
+                className="flex-1 font-mono text-[11px] text-[var(--color-text-subtle)]"
+              >
+                {label}
+              </span>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

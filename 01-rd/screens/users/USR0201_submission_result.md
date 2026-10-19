@@ -4,7 +4,7 @@
 > Slug chính tắc: `submission_result` [SoT: 01-rd/overview/system_survey.md — mục 7.1 dòng `submission_result`].
 > Phạm vi/Bounded Context: `judge-orchestration` (F4), có đọc thêm từ `problem-bank` (siêu dữ liệu bài toán,
 > độ khó) [SoT: 01-rd/overview/system_survey.md mục 7.1 — cột "Bounded Context liên quan", dòng
-> `submission_result`]. Actor: A1 (chính — chủ sở hữu bài nộp).
+> `submission_result`]. Actor: A1 (chính — chủ sở hữu bài nộp); A2 chỉ đọc ở vùng giảng viên, xem chương 10.
 > Nguồn sự thật (SoT): `01-rd/req/judge-orchestration.md` (mục F4), `01-rd/req/user_stories/a1_student.md`
 > (`US-A1-04`), `09-layoutBase/Kết quả nộp bài.dc.html` (prototype), `01-rd/overview/system_survey.md` (mục
 > 7.1, ghi chú "`problem_detail` và `submission_result` là hai màn riêng, đừng gộp").
@@ -55,7 +55,7 @@ cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/
    hơn các bài nộp khác), và Cách nộp (`wrapper`/`stdio`, khớp F3-13) [SoT:
    09-layoutBase/Kết quả nộp bài.dc.html:123-131, 314-320]. Bốn chỉ số rỗng (`—`) khi bài nộp không
    `Accepted` [SoT: 09-layoutBase/Kết quả nộp bài.dc.html:316-319]. Chỉ số "Beats" chưa có mã `Fx-nn` nào mô
-   tả cách tính — đã chốt ở Câu hỏi mở Q4 (đã đóng): mã **F4-12** mới, xem `01-rd/req/judge-orchestration.md`. **Amendment
+   tả cách tính — đã chốt ở Câu hỏi mở Q4 (đã đóng): mã **F4-12** mới, xem `01-rd/req/judge-orchestration.md`. **Ghi chú 2026-10-18** (chủ dự án, BD `USR0201` Q2): "Beats" chỉ hiển thị khi hệ thống có ít nhất 10 bài nộp `Accepted` cùng bài, cùng ngôn ngữ; ít hơn thì in "Chưa đủ dữ liệu so sánh" thay cho số %. **Amendment
    2026-08-31** (`DEC-2026-0831-partial-score-testcase-ratio`): thêm chỉ số thứ sáu **"Điểm"** (F4-13, ví dụ
    "0.6/1") ngay cạnh banner verdict, hiển thị cho **mọi** verdict (không rỗng khi không `Accepted`, khác
    bốn chỉ số kia) — vì bây giờ mọi testcase đều được chạy hết, luôn có đủ dữ liệu tính tỷ lệ.
@@ -204,3 +204,36 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` — mục 7.1 dòng `submission_result`, cùng ghi chú "`problem_detail` và `submission_result` là hai màn riêng, đừng gộp"; mục 7.1 — Bounded Context chạm bởi `submission_result`. |
 | Prototype | `09-layoutBase/Kết quả nộp bài.dc.html`. |
 | Kế hoạch | `06-plan/nexa-plan/260824-2043-bd-screens-common-first.md` — kế hoạch Phase 1 sinh ra file này. |
+
+---
+
+## 10. Vùng giảng viên (A2) đọc bài nộp của học viên
+
+> Mục thêm 2026-10-14, nối sau chương 9, không đánh số lại các chương trước. Chương 1 đến 9 mô tả vùng học viên (A1);
+> chương này chỉ bổ sung vùng giảng viên của **cùng một trang kết quả**, không tạo tài liệu trùng
+> (`DEC-2026-1014-instructor-submissions-list-rules`, mục (9) [SoT: .nexa/control/decision-registry.md:3908-3910]).
+> Giảng viên đọc được bài nộp của học viên trong lớp mình phụ trách, chỉ đọc, ngoài lớp trả 404
+> [SoT: .nexa/control/decision-registry.md:3412-3414] (`DEC-2026-1013-instructor-avatar-menu-and-read-source`).
+> Điểm vào của vùng này là màn `INS0206` (`01-rd/screens/teacher/INS0206_submission_management.md`), `INS0204` hoặc `INS0205`.
+> Route do prototype dùng: `/instructor/submissions/{id}` [SoT: 01-rd/screens/teacher/INS0206_submission_management.md:5].
+> Cập nhật 2026-10-14: áp `DEC-2026-1014-instructor-submissions-list-details` [SoT: .nexa/control/decision-registry.md:3975-4004]: sửa REQ-14, REQ-16 và thêm REQ-17 đến REQ-19 (màn gọi tới qua `from`, không realtime, máy chủ lấy học viên và lớp từ lượt nộp).
+
+Bảng 10.1 liệt kê các yêu cầu của vùng giảng viên.
+
+| ID | Yêu cầu | Nguồn/SoT |
+|---|---|---|
+| REQ-13 | **Chỉ đọc.** Giảng viên không có hành động nào của học viên trên trang: không Phân tích bài giải (F5-01), không vào Phỏng vấn giả lập (F5-09), không "Sửa lại và nộp tiếp". **GWT:** Cho giảng viên mở một bài `Accepted` của học viên trong lớp, khi trang tải xong, thì thấy verdict, chỉ số chạy, bảng testcase và mã đã nộp, nhưng không có nút nào dẫn sang AI hay quay lại Workspace | `DEC-2026-1013-instructor-avatar-menu-and-read-source`; `DEC-2026-1014-instructor-submissions-list-rules`; prototype `05-coding/frontend/src/views/users/submission-result/ui/submission-result-view.tsx:312-313` (khu vực "Next actions" không dựng cho giảng viên) |
+| REQ-14 | Trang hiện **học viên đã nộp và lớp** của bài nộp. **ĐÃ CHỐT 2026-10-14 (DEC-2026-1014-instructor-submissions-list-details)**: tên học viên và lớp lấy từ **chính lượt nộp** ở máy chủ, không suy từ phiên của giảng viên và không tin `studentId`, `classId` trên URL (xem REQ-19). **GWT:** Cho giảng viên mở bài nộp từ danh sách, khi trang tải xong, thì thấy tên học viên và lớp của bài nộp đó | `DEC-2026-1013-instructor-submissions-list` (mang học viên và lớp trên query) [SoT: .nexa/control/decision-registry.md:3467-3469]; `DEC-2026-1014-instructor-submissions-list-details` mục (7); prototype `submission-result-view.tsx:59-61,145-151` (thẻ ngữ cảnh "ai đã nộp", hiện tra tên theo query) |
+| REQ-15 | **Phạm vi:** bài nộp ngoài các lớp giảng viên phụ trách trả **404**, giống một mã không tồn tại, không lộ việc bài nộp có tồn tại. **Ngoại lệ:** học viên đã rời lớp vẫn cho giảng viên đọc các bài nộp làm lúc còn trong lớp. **GWT:** Cho bài nộp của học viên chưa từng ở lớp nào của giảng viên, khi giảng viên mở thẳng URL, thì nhận trang "không tìm thấy"; cho bài nộp học viên làm lúc còn trong lớp rồi rời lớp, thì trang mở bình thường | `DEC-2026-1013-instructor-avatar-menu-and-read-source`; `DEC-2026-1014-instructor-submissions-list-rules` mục (5); prototype `submission-result-view.tsx:73-85` (404 ngoài phạm vi, chưa mô phỏng ngoại lệ rời lớp) |
+| REQ-16 | **Breadcrumb** dẫn về đúng màn đã gọi tới: chi tiết học viên (`INS0204`), chi tiết lớp (`INS0205`) hoặc danh sách bài nộp (`INS0206`); khi trang được mở từ màn đó thì quay lại bằng cách lùi lịch sử trình duyệt, nên bộ lọc, từ khoá, trang của màn gọi tới được khôi phục (**ĐÃ CHỐT 2026-10-14 (DEC-2026-1014-instructor-submissions-list-details)** mục (2)). **Sidebar** giữ sáng mục của màn gọi tới (không sáng mục riêng cho trang kết quả). **GWT:** Cho giảng viên đi từ `INS0204` sang trang kết quả, khi bấm mục breadcrumb đầu, thì về `INS0204`, và sidebar vẫn sáng mục của `INS0204` | `.nexa/control/decision-registry.md:3761-3762` (quy tắc sáng sidebar theo màn gọi tới, trích ở `INS0206_submission_management.md` REQ-10); prototype `submission-result-view.tsx:56-59,105-122` (breadcrumb mặc định về `/instructor/submissions`, có thể thay bằng breadcrumb biết học viên và lớp). Việc có đủ ba đích gọi tới trong prototype chưa kiểm chứng ở file này: [SoT: Suy luận] từ prop `renderBreadcrumb` |
+
+| REQ-17 | **Màn gọi tới** được báo qua tham số query `from` với giá trị `submissions`, `student` hoặc `class` (mặc định `submissions` khi vắng hoặc giá trị lạ). `from` chỉ dùng để dựng breadcrumb và sáng đúng mục sidebar, không cấp quyền, không đổi dữ liệu. **GWT:** Cho giảng viên mở lượt nộp từ `INS0204`, khi trang tải xong, thì breadcrumb về `INS0204` và sidebar sáng mục của `INS0204`; cho giảng viên mở thẳng URL không có `from`, thì breadcrumb về danh sách bài nộp | `DEC-2026-1014-instructor-submissions-list-details` mục (5) [SoT: .nexa/control/decision-registry.md:3975-4004] |
+| REQ-18 | **Không realtime.** Trang kết quả vùng giảng viên không đăng ký kênh realtime (STOMP): tải một lần và hiện trạng thái hiện tại của lượt nộp; muốn cập nhật thì tải lại trang. **GWT:** Cho giảng viên mở lượt nộp đang chấm, khi trang tải xong, thì thấy trạng thái đang chấm hiện tại và bảng testcase không tự cập nhật khi chấm xong | `DEC-2026-1014-instructor-submissions-list-details` mục (6) |
+| REQ-19 | **Máy chủ là nguồn của học viên và lớp.** Học viên và lớp hiện trên trang lấy từ lượt nộp; `studentId`, `classId` trên URL bị bỏ qua (chỉ gợi ý breadcrumb), nên URL giả mạo không làm hiện sai học viên hay lớp. **GWT:** Cho giảng viên mở lượt nộp của học viên H ở lớp L nhưng URL ghi `studentId` và `classId` của học viên khác, khi trang tải xong, thì thẻ ngữ cảnh vẫn hiện H và L | `DEC-2026-1014-instructor-submissions-list-details` mục (7) |
+
+Bảng 10.1: Yêu cầu của vùng giảng viên trên trang kết quả bài nộp.
+
+Quy tắc bảo vệ testcase ẩn (REQ-10, REQ-11 ở chương 5, F2-08) áp dụng nguyên vẹn cho giảng viên: vùng này không mở thêm
+dữ liệu testcase nào. Phần này là [SoT: Suy luận]: các chương trước không nói về A2 và quyết định không nêu ngoại lệ.
+
+BD `02-bd/screens/users/USR0201_submission_result.md` đã bổ sung mục tương ứng (V0.5, V0.6). Chưa xác định (không tự suy luận): mã `Fx-nn` cho vùng này chưa cấp (`DEC-2026-1014-instructor-submissions-list-rules`, mục (10)).

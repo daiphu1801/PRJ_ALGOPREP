@@ -59,21 +59,25 @@ dòng từ `screens/` đã trôi hết (xem mục 7.1). Neo theo dòng chỉ cò
 
 ### `screens/` — trục màn hình
 
-**34 file, đã xong** (thêm `problem_info` và `interview_question_info` ngày 2026-10-02). Mỗi màn một file `<slug>.md`, slug viết `snake_case`; slice frontend tương ứng viết
+**35 file, đã xong** (thêm `problem_info` và `interview_question_info` ngày 2026-10-02; thêm `class_detail` ngày 2026-10-11). Mỗi màn một file `<slug>.md`, slug viết `snake_case`; slice frontend tương ứng viết
 `kebab-case` (`SYS0201_codebase_structure.md` mục 3). Khu vực đặt theo **actor chính** của màn.
 
 | Khu vực | Actor | Số màn | Slug |
 | :--- | :--- | :-: | :--- |
 | `shared/` | dùng chung nhiều actor | 7 | `auth`, `interview_question_authoring`, `interview_question_info`, `interview_question_management`, `problem_authoring`, `problem_info`, `problem_management` |
 | `users/` | A1 học viên | 12 | `interview_bank_list`, `interview_question_detail`, `mock_interview`, `my_progress`, `my_submissions`, `problem_detail`, `problem_list`, `profile`, `saved_problems`, `settings`, `solution_review`, `submission_result` |
-| `teacher/` | A2 giảng viên | 6 | `class_assignments`, `class_management`, `class_progress`, `class_student_detail`, `instructor_grading`, `instructor_overview` |
-| `admin/` | A3 quản trị | 9 | `admin_ai_config`, `admin_ai_usage`, `admin_language_config`, `admin_overview`, `admin_permission_matrix`, `admin_queue_monitor`, `admin_rejudge`, `admin_system_log`, `admin_user_management` |
+| `teacher/` | A2 giảng viên | 6 sống + 1 đã bỏ | `class_assignments`, `class_detail`, `class_management`, `class_progress`, `class_student_detail`, `instructor_overview` (+ `instructor_grading` đã bỏ 2026-10-13, file giữ làm thông báo gỡ bỏ) |
+| `admin/` | A3 quản trị | 10 | `admin_ai_config`, `admin_ai_limits`, `admin_ai_usage`, `admin_language_config`, `admin_overview`, `admin_permission_matrix`, `admin_queue_monitor`, `admin_rejudge`, `admin_system_log`, `admin_user_management` |
 
 Hai lưu ý:
 
 * `admin/ADM0402_rejudge.md` **không phải màn sống** — rejudge đã bị loại khỏi phạm vi
   (`DEC-2026-0828-remove-rejudge-scope`), file giữ lại chỉ để lưu vết và **không dùng làm căn cứ viết
   BD/DD**. Route `/admin/rejudge` mà khung base FE từng dựng đã bị xoá ngày 2026-09-01.
+* **Cập nhật 2026-10-11:** thêm `class_detail` (`INS0205`, `DEC-2026-1011-class-detail-page`) nên nay 35 file RD,
+  **34 màn sống**; slice `class-detail` chưa dựng (prototype đang làm), các số "33" ngay dưới là của thời điểm
+  trước đó.
+* **Cập nhật 2026-10-13:** màn `instructor_grading` (`INS0301`) bị bỏ (`DEC-2026-1013-remove-instructor-manual-grading`); file `INS0301_grading.md` vẫn còn để link không gãy nhưng chỉ chứa thông báo gỡ bỏ. Nay vẫn 35 file RD, **33 màn sống**. Slice frontend `views/teacher/grading` chưa gỡ (nợ prototype).
 * Frontend đã **soi 1-1 với trục màn**: 34 file RD, **33 màn sống**; **33 slice** trong
   `05-coding/frontend/src/views/`. Màn duy nhất không có slice là `admin_rejudge` — đúng, vì nó ngoài
   phạm vi. Ba slice `class_assignments`, `class_student_detail`, `interview_question_authoring` được bổ
@@ -218,6 +222,8 @@ Bảy việc đã sửa, ngoài bốn trục trên:
 
 **Câu hỏi mở:** vẫn **0 câu treo**. 61 marker `[Đợi nextjs]` trong 18 file là nợ prototype có chủ đích,
 không phải câu hỏi mở — ai dựng màn nào phải grep marker đó trong file RD của màn trước.
+
+**Cập nhật 2026-10-13:** phần `F5-27` / `instructor_grading` trong đoạn dưới và đoạn kế tiếp đã bị bỏ (`DEC-2026-1013-remove-instructor-manual-grading`); đoạn giữ nguyên làm lịch sử.
 
 **Phê duyệt 2026-09-05 — hết hạng mục treo.** `F1-30` (`instructor_overview`) và phần bổ sung của `F5-27`
 (`instructor_grading`) chốt nội dung từ 2026-08-31 theo phương án kỹ thuật khuyến nghị, nhưng vòng xác nhận

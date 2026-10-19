@@ -30,7 +30,6 @@ import {
   useProblemTopics,
   type AiGuardKey,
   type ProblemDraft,
-  type ProblemLimits,
   type Testcase,
   type TestcaseCategory,
   type WorkedExample,
@@ -65,12 +64,17 @@ import { SpecEditor } from "./spec-editor";
 
 type TabKey = "content" | "examples" | "testcases" | "spec" | "ai";
 
-const LIMIT_KEYS: (keyof ProblemLimits)[] = [
+// BD SHR0202 NO4-6: required positive integers. NO7 (submissions per hour) is optional and rendered
+// separately because an empty box means "system default", not zero.
+const LIMIT_KEYS: ("timeLimitMs" | "memoryLimitMb" | "outputLimitKb")[] = [
   "timeLimitMs",
   "memoryLimitMb",
   "outputLimitKb",
-  "stackLimitMb",
 ];
+
+const SOLUTION_LANGUAGES = ["Java", "C++", "Python"] as const;
+
+const isPositiveInt = (value: number) => Number.isInteger(value) && value > 0;
 
 // F2-18: the check covers the testcase set and solution as they were when it ran, so any edit to
 // either one makes the last result stale and the author has to run it again.
@@ -109,6 +113,8 @@ export function ProblemAuthoringView({ basePath, problemId, fromId }: Props) {
       isCopy={!problemId && !!fromId}
       initial={query.data.draft}
       aiGeneration={query.data.aiGeneration}
+      stats={query.data.stats}
+      initialSavedAt={query.data.savedAt}
     />
   );
 }
@@ -119,6 +125,8 @@ type FormProps = Props & {
   isCopy?: boolean;
   /** F2-14 quota read from the server: attempts used and the cap. */
   aiGeneration: { used: number; limit: number };
+  stats: { submissionCount: number; acRate: number };
+  initialSavedAt: string | null;
 };
 
 function ProblemAuthoringForm({
@@ -127,9 +135,12 @@ function ProblemAuthoringForm({
   initial,
   isCopy,
   aiGeneration,
+  stats,
+  initialSavedAt,
 }: FormProps) {
   const t = useT("problemAuthoring");
   const [draft, setDraft] = useState<ProblemDraft>(initial);
+  const [savedAt, setSavedAt] = useState(initialSavedAt);
   const topicList = useProblemTopics();
   const levelList = useProblemLevels();
   const saveDraft = useSaveProblemDraft();
@@ -244,6 +255,28 @@ function ProblemAuthoringForm({
   // Manual save (BD Q7). Resolves true when the save went through, so "save and leave" can wait on it.
   async function save(): Promise<boolean> {
     const snapshot = draft;
+    // BD SHR0202 Sheet 9 NO3-4: required Tab 1 fields and positive integer limits. Before 2026-10-14
+    // Save sent anything (UX review B8). One toast names the first problem (toast channel decision).
+    const invalidLimit = LIMIT_KEYS.find(
+      (key) => !isPositiveInt(snapshot.limits[key]),
+    );
+    const problemText = !snapshot.title.trim()
+      ? t("validation.titleRequired")
+      : !snapshot.body.trim()
+        ? t("validation.bodyRequired")
+        : invalidLimit
+          ? t("validation.limitPositive", { field: t(`limit.${invalidLimit}`) })
+          : snapshot.limits.maxSubmissionsPerHour !== null &&
+              !isPositiveInt(snapshot.limits.maxSubmissionsPerHour)
+            ? t("validation.limitPositive", {
+                field: t("limit.maxSubmissionsPerHour"),
+              })
+            : null;
+    if (problemText) {
+      setTab("content");
+      toast.error(problemText);
+      return false;
+    }
     setSaveState("saving");
     try {
       const created = await saveDraft.mutateAsync({
@@ -252,6 +285,7 @@ function ProblemAuthoringForm({
       });
       if (created) setCreatedId(created);
       setSavedJson(JSON.stringify(snapshot));
+      setSavedAt(new Date().toISOString());
       setSaveState("saved");
       toast.success(t("toast.saved"));
       return true;
@@ -626,6 +660,25 @@ function ProblemAuthoringForm({
                       className="font-mono"
                     />
                   ))}
+                  <TextField
+                    label={t("limit.maxSubmissionsPerHour")}
+                    type="number"
+                    min={1}
+                    placeholder={t("limit.systemDefault")}
+                    value={draft.limits.maxSubmissionsPerHour ?? ""}
+                    onChange={(event) =>
+                      patch({
+                        limits: {
+                          ...draft.limits,
+                          maxSubmissionsPerHour:
+                            event.target.value === ""
+                              ? null
+                              : Number(event.target.value),
+                        },
+                      })
+                    }
+                    className="font-mono"
+                  />
                 </div>
                 <TextArea
                   label={t("constraintsLabel")}
@@ -642,6 +695,22 @@ function ProblemAuthoringForm({
                 title={t("solutionTitle")}
                 description={t("solutionSubtitle")}
               >
+                {/* BD SHR0202 NO9: the reference solution's language, one of the three judged ones. */}
+                <SelectField
+                  label={t("solutionLanguageLabel")}
+                  value={draft.solutionLanguage}
+                  onChange={(event) =>
+                    patch({
+                      solutionLanguage: event.target.value,
+                      solutionCheck: STALE_CHECK,
+                    })
+                  }
+                  options={SOLUTION_LANGUAGES.map((language) => ({
+                    value: language,
+                    label: language,
+                  }))}
+                  wrapperClassName="mb-3 max-w-[220px]"
+                />
                 <TextArea
                   label={t("solutionLabel", {
                     language: draft.solutionLanguage,
@@ -977,7 +1046,55 @@ function ProblemAuthoringForm({
                   ]}
                 />
               </div>
+              {/* BD SHR0202 props NO4: free tags, comma separated in the prototype. */}
+              <TextField
+                label={t("tagsLabel")}
+                placeholder={t("tagsPlaceholder")}
+                value={draft.tags.join(", ")}
+                onChange={(event) =>
+                  patch({
+                    tags: event.target.value
+                      .split(",")
+                      .map((tag) => tag.trim())
+                      .filter(
+                        (tag, index, all) =>
+                          // Keep the trailing empty entry while typing so "a, " can become "a, b".
+                          tag !== "" || index === all.length - 1,
+                      ),
+                  })
+                }
+              />
             </div>
+          </Card>
+
+          {/* BD SHR0202 props NO6, 7, 10. NO8-9 have no column (Q5), so they are not shown. */}
+          <Card title={t("metricsTitle")}>
+            <dl className="flex flex-col gap-2 text-[13px]">
+              <div className="flex justify-between gap-2">
+                <dt className="text-[var(--color-text-muted)]">
+                  {t("metrics.submissions")}
+                </dt>
+                <dd className="font-mono">
+                  {stats.submissionCount.toLocaleString("vi-VN")}
+                </dd>
+              </div>
+              <div className="flex justify-between gap-2">
+                <dt className="text-[var(--color-text-muted)]">
+                  {t("metrics.acRate")}
+                </dt>
+                <dd className="font-mono">{stats.acRate}%</dd>
+              </div>
+              <div className="flex justify-between gap-2">
+                <dt className="text-[var(--color-text-muted)]">
+                  {t("metrics.lastEdited")}
+                </dt>
+                <dd>
+                  {savedAt
+                    ? new Date(savedAt).toLocaleString("vi-VN")
+                    : t("metrics.neverSaved")}
+                </dd>
+              </div>
+            </dl>
           </Card>
 
           <Card title={t("checklistTitle")}>

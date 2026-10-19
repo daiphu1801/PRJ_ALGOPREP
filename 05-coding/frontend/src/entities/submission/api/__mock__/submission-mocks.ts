@@ -9,7 +9,6 @@ import type {
   SubmissionLanguage,
   SubmissionListItem,
   SubmissionListPage,
-  SubmissionStats,
 } from "../../model/types";
 
 type ProblemRef = {
@@ -171,6 +170,20 @@ const DETAILS: Record<string, SubmissionDetail> = {
   },
 };
 
+// The mock submissions an instructor may read; the
+// student history and the submission list of the instructor area are built from them.
+export const READABLE_SUBMISSION_IDS = [
+  "SB-90412",
+  "SB-90408",
+  "SB-90403",
+  "SB-90420",
+];
+
+/** A2 reads a submission only when it belongs to a student in one of their classes. */
+export function isSubmissionInInstructorScope(submissionId: string): boolean {
+  return READABLE_SUBMISSION_IDS.includes(submissionId);
+}
+
 export function fetchSubmissionDetail(id: string): SubmissionDetail | null {
   return DETAILS[id] ?? null;
 }
@@ -249,37 +262,3 @@ export function fetchMySubmissionsPage(
   };
 }
 
-/**
- * Raw counters, computed once from LIST_ITEMS — mirrors the read model
- * `identity.user_submission_stats` (no `acceptedRate` column, per BD V0.2 fix).
- */
-export function fetchMySubmissionStats(): SubmissionStats {
-  const totalSubmissions = LIST_ITEMS.length;
-  const acceptedCount = LIST_ITEMS.filter(
-    (item) => item.status === "ACCEPTED",
-  ).length;
-  // First-try acceptance is [SoT: Suy luận] here: the mock treats every 3rd accepted item as first-try.
-  const firstTryAcceptedCount = LIST_ITEMS.filter(
-    (item, i) => item.status === "ACCEPTED" && i % 3 === 0,
-  ).length;
-
-  const counts = new Map<SubmissionLanguage, number>();
-  for (const item of LIST_ITEMS)
-    counts.set(item.language, (counts.get(item.language) ?? 0) + 1);
-  let topLanguage: SubmissionLanguage | null = null;
-  let topLanguageCount = 0;
-  for (const [lang, count] of counts) {
-    if (count > topLanguageCount) {
-      topLanguage = lang;
-      topLanguageCount = count;
-    }
-  }
-
-  return {
-    totalSubmissions,
-    acceptedCount,
-    firstTryAcceptedCount,
-    topLanguage,
-    topLanguageCount,
-  };
-}

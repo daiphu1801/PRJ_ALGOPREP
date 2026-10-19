@@ -10,10 +10,17 @@ import {
   useTopicProgress,
   type ProgressRange,
 } from "@/entities/progress";
+import { pickWeakestTopic, scoreTopics } from "../../model/derive-skill-radar";
 
 export function FocusCard({ range }: { range: ProgressRange }) {
   const t = useT("myProgress");
   const query = useTopicProgress(range);
+  // The greeting's weakest topic is global (it ignores the range tab), so it reads the widest range too;
+  // it is pinned first so the greeting and this block never name different topics.
+  const allQuery = useTopicProgress("all");
+
+  // Sheet 6 Khu vực E NO 2: same source as the topics table — hide together on error.
+  if (query.isError) return null;
 
   if (query.isLoading || !query.data) {
     return (
@@ -27,9 +34,14 @@ export function FocusCard({ range }: { range: ProgressRange }) {
     );
   }
 
-  if (query.isError) return null; // Sheet 6 Khu vực E NO 2: same source as the topics table — hide together.
-
-  const suggestions = deriveFocusSuggestions(query.data);
+  const weakest = allQuery.data
+    ? pickWeakestTopic(scoreTopics(allQuery.data))
+    : null;
+  const suggestions = deriveFocusSuggestions(
+    query.data,
+    new Date(),
+    weakest ? { topicId: weakest.topicId, score: weakest.score } : null,
+  );
 
   return (
     <Card title={t("focus.title")}>
@@ -52,6 +64,8 @@ export function FocusCard({ range }: { range: ProgressRange }) {
                   {s.topicName}
                 </span>
                 <span className="mt-0.5 block text-xs text-[var(--color-text-muted)]">
+                  {s.reason.code === "weakestSkill" &&
+                    t("focus.reasonWeakest", { score: s.reason.score })}
                   {s.reason.code === "lowestAcRate" &&
                     t("focus.reasonLowestAc", { rate: s.reason.acRate })}
                   {s.reason.code === "mostUnsolved" &&

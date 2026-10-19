@@ -21,15 +21,6 @@ export type ComplexityAnalysis = {
   spaceExplanation: string;
 };
 
-/** 5 fixed rubric criteria, BD Sheet 5 Khu vực E — codes are [SoT: Suy luận], admin-configurable. */
-export type RubricCriterionCode =
-  "correctness" | "performance" | "cleanCode" | "scalability" | "dataStructure";
-
-export type RubricCriterionScore = {
-  code: RubricCriterionCode;
-  feedback: string;
-};
-
 export type DiffLineKind = "same" | "add" | "del";
 
 export type CodeDiffLine = {
@@ -45,6 +36,10 @@ export type CodeDiffProposal = {
 
 export type SolutionReviewDetail = {
   submissionId: string;
+  /** Where "apply to workspace" writes the suggestion (browser draft key = problem + language + model). */
+  problemId: string;
+  languageKey: "java" | "cpp" | "python";
+  submissionModel: "function" | "stdio";
   problemTitle: string;
   difficulty: ReviewDifficulty;
   approachTitle: string;
@@ -52,20 +47,12 @@ export type SolutionReviewDetail = {
   readabilityScore: number;
   createdAt: string;
   summaryText: string;
-  language: string;
   sourceCode: string[];
   complexity: ComplexityAnalysis;
-  criteriaScores: RubricCriterionScore[];
   strengths: string[];
   improvements: string[];
   edgeCases: string[];
   codeDiff: CodeDiffProposal;
+  /** Full proposed source, what the workspace draft receives. */
+  suggestedCode: string;
 };
-
-export const RUBRIC_CRITERION_CODES: RubricCriterionCode[] = [
-  "correctness",
-  "performance",
-  "cleanCode",
-  "scalability",
-  "dataStructure",
-];

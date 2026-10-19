@@ -38,7 +38,7 @@ cần một trang riêng
 | Giáo viên xem hồ sơ chi tiết một học viên trong lớp mình phụ trách (thông tin cơ bản, tiến độ, lịch sử nộp bài) — chỉ trong phạm vi lớp phụ trách | F1-27 | `01-rd/req/identity.md` — F1-27 (bổ sung 2026-08-28) |
 | Given-When-Then mở hồ sơ chi tiết từ bảng danh sách học viên; từ chối nếu không phụ trách lớp đó | — | `01-rd/req/user_stories/a2_instructor.md` (`US-A2-08`) |
 | Ma trận phân quyền — Function `CLASS_MANAGEMENT` gác quyền, phạm vi theo lớp phụ trách | F1-12 | `01-rd/req/identity.md` — F1-12 |
-| Gỡ học viên khỏi lớp — xoá luôn lịch sử làm bài trong phạm vi lớp. **Chốt 2026-09-01:** nút đặt ở cả bảng danh sách `class_management` và ở đây | F1-26 | `01-rd/req/identity.md` — F1-26 |
+| ~~Gỡ học viên khỏi lớp — xoá luôn lịch sử làm bài trong phạm vi lớp.~~ **ĐÃ ĐỔI 2026-10-14 (DEC-2026-1014-keep-learning-history-on-leave):** gỡ học viên khỏi lớp — giữ lịch sử làm bài, chỉ đánh dấu đã rời lớp. **Chốt 2026-09-01:** nút đặt ở cả bảng danh sách `class_management` và ở đây | F1-26 | `01-rd/req/identity.md` — F1-26 |
 | Điểm tỷ lệ testcase mỗi bài, tính trên best-attempt | F4-13, F1-06 | `01-rd/req/judge-orchestration.md` — F4-13; `01-rd/req/identity.md` — F1-06 |
 
 ### 2.1 Cấu trúc hệ thống liên quan
@@ -57,17 +57,25 @@ Chưa có prototype để đối chiếu — cấu trúc dưới đây là đề
 
 1. **Header hồ sơ** — tên, email, ngày tham gia lớp (qua mã mời, F1-23), lớp hiện tại (link ngược lại
    `class_management`), nút "Gỡ khỏi lớp" (F1-26, chốt 2026-09-01 — cả hai nơi). `[SoT: Suy luận]`.
+   **Chốt 2026-10-14 (DEC-2026-1014-instructor-batch3-4-contracts-and-removal):** gỡ xong ở màn này thì rời
+   trang, quay lại màn đã gọi tới, và danh sách ở màn đó được tải lại
+   [SoT: .nexa/control/decision-registry.md:3740-3741]. **Chốt 2026-10-14
+   (`DEC-2026-1014-instructor-batch5-6-nav-pagination-rubric`):** ở màn này sidebar sáng mục của màn đã gọi tới
+   [SoT: .nexa/control/decision-registry.md:3761-3762].
 2. **Khối "Tiến độ"** — dẫn xuất từ F1-06/F1-07 nhưng thu hẹp về phạm vi một học viên: số bài đã giải theo
    chủ đề, tỉ lệ chấp thuận, điểm tốt nhất mỗi bài (F4-13, best-attempt) — cùng công thức đã dùng ở
    `class_progress` và `my_progress`, không phát sinh công thức mới
    [SoT: 01-rd/req/identity.md — F1-06, F1-07]. Trạng thái phân loại "Đang tốt/Cần hỗ trợ/Vắng bài" nêu ở
    `class_management` — **ngưỡng cụ thể để BD/DD tự đề xuất** (chốt lại 2026-09-01, giữ nguyên quyết định
    gốc) [SoT: 01-rd/screens/teacher/INS0201_class_management.md:95]. **Không hiện điểm AI tham khảo/chấm tay
-   (F5-27)** ở khối này — chỉ một liên kết "Xem chấm bài của học viên này" sang `instructor_grading`
-   (chốt 2026-09-01).
+   (F5-27, đã bỏ 2026-10-13)** ở khối này. ~~Liên kết "Xem chấm bài của học viên này" sang `instructor_grading`
+   (chốt 2026-09-01)~~ **đã bỏ 2026-10-13** (`DEC-2026-1013-remove-instructor-manual-grading`).
 3. **Khối "Lịch sử nộp bài"** — danh sách các lượt nộp của học viên này, **chỉ tính bài toán đã giao qua
    `class_assignments` (F2-12) của đúng lớp đang xem** (chốt 2026-09-01, không tính bài tự luyện ngoài
-   phạm vi lớp); mỗi dòng dẫn sang `submission_result` của đúng bài nộp đó.
+   phạm vi lớp); mỗi dòng dẫn sang `submission_result` của đúng bài nộp đó. **Chốt 2026-10-14
+   (DEC-2026-1014-instructor-batch2-weekly-rules):** lượt nộp của một bài đã bị gỡ mềm khỏi lớp (xem
+   `INS0202` Q9) vẫn được giữ trong lịch sử, kèm ghi chú "Bài đã gỡ khỏi lớp"
+   [SoT: .nexa/control/decision-registry.md:3710-3711].
 4. **Trạng thái rỗng/đang tải/lỗi** — theo cùng nguyên tắc ba trạng thái mỗi khối đã áp dụng ở
    `admin_overview`/F1-29 và `instructor_overview`/F1-30 `[SoT: Suy luận]`.
 5. **Không có prototype minh hoạ** — mọi chi tiết bố cục, màu sắc, breakpoint thuộc BD, viết sau khi có
@@ -91,9 +99,12 @@ Chưa có prototype để đối chiếu — cấu trúc dưới đây là đề
 | # | Câu hỏi | Vì sao chưa trả lời được | Đề xuất | Chủ sở hữu |
 | :-: | :--- | :--- | :--- | :--- |
 | Q1 | ~~Nút "Gỡ học viên khỏi lớp" (F1-26) đặt ở đây, hay chỉ ở bảng danh sách của `class_management`, hay cả hai?~~ **ĐÃ CHỐT (2026-09-01, qua hỏi trực tiếp chủ dự án):** đặt ở **cả hai nơi** — bảng danh sách của `class_management` và hồ sơ chi tiết ở đây — điểm vào khác nhau nhưng cùng một hành vi F1-26, không cần mã mới. | — | Đã chốt. | Đã đóng |
-| Q2 | ~~Hồ sơ chi tiết có hiện điểm AI tham khảo/chấm tay (F5-27) của học viên đó không, hay chỉ có ở `instructor_grading`?~~ **ĐÃ CHỐT (2026-09-01):** **không hiện ở đây** — chỉ thêm liên kết "Xem chấm bài của học viên này" sang `instructor_grading` (lọc theo học viên). Tránh trùng lặp UI, giữ hồ sơ chi tiết tập trung vào tiến độ/lịch sử. | — | Đã chốt. | Đã đóng |
+| Q2 | ~~Hồ sơ chi tiết có hiện điểm AI tham khảo/chấm tay (F5-27) của học viên đó không, hay chỉ có ở `instructor_grading`?~~ **ĐÃ CHỐT (2026-09-01):** **không hiện ở đây** — chỉ thêm liên kết "Xem chấm bài của học viên này" sang `instructor_grading` (lọc theo học viên). Tránh trùng lặp UI, giữ hồ sơ chi tiết tập trung vào tiến độ/lịch sử. **Đã đóng: màn bị bỏ 2026-10-13** (liên kết và màn `instructor_grading` không còn, `DEC-2026-1013-remove-instructor-manual-grading`). | — | Đã chốt, nay vô hiệu. | Đã đóng |
 | Q3 | ~~Nếu một học viên tham gia nhiều lớp, khối "Lịch sử nộp bài" ở đây chỉ tính bài nộp nào?~~ **ĐÃ CHỐT (2026-09-01):** chỉ tính bài nộp cho các bài toán đã giao qua `class_assignments` (F2-12) của đúng lớp đang xem — không tính bài tự luyện ngoài phạm vi lớp. | — | Đã chốt. | Đã đóng |
 | Q4 | ~~Công thức phân loại trạng thái học viên (Đang tốt/Cần hỗ trợ/Vắng bài) — ngưỡng cụ thể là gì?~~ **ĐÃ CHỐT (2026-09-01):** giữ nguyên quyết định gốc — để BD/DD tự đề xuất ngưỡng, không phải yêu cầu chức năng cứng ở RD. | — | Đã chốt. | BD/DD |
+| 204-Q9 | Lịch sử nộp có giữ lượt nộp của bài đã bị gỡ khỏi lớp không. **ĐÃ CHỐT 2026-10-14 (DEC-2026-1014-instructor-batch2-weekly-rules):** giữ, kèm ghi chú "Bài đã gỡ khỏi lớp" (khớp việc gỡ bài giữ nguyên lịch sử nộp, `INS0202` Q9). | — | Số thứ tự là của BD `02-bd/screens/teacher/INS0204_class_student_detail.md`; RD file này không có câu hỏi mang số đó trước đây. | Đã đóng |
+| 204-Q10 | Sau khi gỡ học viên ở màn chi tiết thì đi đâu. **ĐÃ CHỐT 2026-10-14 (DEC-2026-1014-instructor-batch3-4-contracts-and-removal):** rời trang, quay lại màn gọi tới, danh sách tải lại. | — | Số thứ tự là của BD `02-bd/screens/teacher/INS0204_class_student_detail.md`; RD file này không có câu hỏi mang số đó trước đây. | Đã đóng |
+| Q5 | **ĐÃ CHỐT 2026-10-14 (`DEC-2026-1014-instructor-overview-trim-and-nav-label`):** các lối vào trang đọc-chỉ `/instructor/submissions/{id}` giữ nguyên — nút "Xem kết quả" trong "Lịch sử nộp bài" của màn này và mục nav "Bài nộp"; không thêm lối vào mới (không thêm từ `INS0203`, `INS0201`). Câu hỏi nguyên văn bên dưới giữ làm lịch sử. [SoT: .nexa/control/decision-registry.md:3597-3598] ~~**CÂU HỎI MỞ (2026-10-13):** lối vào trang đọc-chỉ bài nộp của học viên cho giảng viên, route `/instructor/submissions/{id}` (`DEC-2026-1013-instructor-avatar-menu-and-read-source`). Trước đây lối vào là popup của màn chấm bài `INS0301`; màn đó đã bỏ nên hiện **chưa còn lối vào nào** [SoT: .nexa/control/decision-registry.md:3541-3545]. Đề xuất `[SoT: Suy luận]`: mỗi dòng của khối "Lịch sử nộp bài" ở đây dẫn tới trang đọc-chỉ đó (thay vì `submission_result` của người học, vốn dành cho chủ bài nộp). Ý này chưa được chủ dự án duyệt; các lối khác (từ `INS0203`, từ `INS0201`) cũng chưa xét. | Tránh làm lộ lối vào ngoài phạm vi lớp: mọi lối vào phải qua kiểm tra `CLASS_MANAGEMENT` theo lớp. | Chủ dự án quyết lối vào; ưu tiên Cao vì không có lối vào thì quyền đọc mã nguồn không dùng được.~~ | Đã đóng |
 
 ---
 
@@ -104,7 +115,7 @@ Chưa có prototype để đối chiếu — cấu trúc dưới đây là đề
 | REQ-01 | Giáo viên xem hồ sơ chi tiết một học viên trong lớp mình phụ trách (thông tin cơ bản, tiến độ, lịch sử nộp bài) — chỉ trong phạm vi lớp phụ trách (F1-27) | Chức năng | `01-rd/req/identity.md` — F1-27 (bổ sung 2026-08-28) |
 | REQ-02 | Given-When-Then mở hồ sơ chi tiết từ bảng danh sách học viên; từ chối nếu không phụ trách lớp đó (—) | Chức năng | `01-rd/req/user_stories/a2_instructor.md` (`US-A2-08`) |
 | REQ-03 | Ma trận phân quyền — Function `CLASS_MANAGEMENT` gác quyền, phạm vi theo lớp phụ trách (F1-12) | Chức năng | `01-rd/req/identity.md` — F1-12 |
-| REQ-04 | Gỡ học viên khỏi lớp — xoá luôn lịch sử làm bài trong phạm vi lớp. **Chốt 2026-09-01:** nút đặt ở cả bảng danh sách `class_management` và ở đây (F1-26) | Chức năng | `01-rd/req/identity.md` — F1-26 |
+| REQ-04 | ~~Gỡ học viên khỏi lớp — xoá luôn lịch sử làm bài trong phạm vi lớp.~~ **ĐÃ ĐỔI 2026-10-14 (DEC-2026-1014-keep-learning-history-on-leave):** gỡ học viên khỏi lớp — giữ lịch sử làm bài, chỉ đánh dấu đã rời lớp. **Chốt 2026-09-01:** nút đặt ở cả bảng danh sách `class_management` và ở đây (F1-26) | Chức năng | `01-rd/req/identity.md` — F1-26 |
 | REQ-05 | Điểm tỷ lệ testcase mỗi bài, tính trên best-attempt (F4-13, F1-06) | Chức năng | `01-rd/req/judge-orchestration.md` — F4-13; `01-rd/req/identity.md` — F1-06 |
 
 ---

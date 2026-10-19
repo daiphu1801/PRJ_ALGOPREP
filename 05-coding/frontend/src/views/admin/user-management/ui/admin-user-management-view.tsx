@@ -28,6 +28,7 @@
 // settled contract.
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { KeyRound, Lock, LockOpen, UserCog } from "lucide-react";
 import {
@@ -38,6 +39,7 @@ import {
   type AdminUserStatus,
 } from "../api";
 import { useT } from "@/shared/i18n";
+import { textTone } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
 import { checkLock, checkRoleChange, partitionByStatus } from "../model/guards";
 import { AddAccountDialog } from "./add-account-dialog";
@@ -216,7 +218,11 @@ export function AdminUserManagementView() {
 
   function applyResetPassword() {
     if (resetTarget)
-      toast.success(t("resetDone", { email: resetTarget.email }));
+      toast.success(
+        t(resetTarget.hasPassword === false ? "resetDoneOAuth" : "resetDone", {
+          email: resetTarget.email,
+        }),
+      );
     setResetTarget(null);
   }
 
@@ -295,7 +301,7 @@ export function AdminUserManagementView() {
       render: (user) => (
         <span
           className="flex items-center justify-end gap-1.5 text-[12.5px] font-semibold whitespace-nowrap"
-          style={{ color: `var(${STATUS_COLOR_VAR[user.status]})` }}
+          style={{ color: textTone(STATUS_COLOR_VAR[user.status]) }}
         >
           <span
             aria-hidden="true"
@@ -370,7 +376,7 @@ export function AdminUserManagementView() {
           }}
           resultCount={t("resultCount", {
             shown: users.length,
-            total: accounts.length,
+            total: page.totalUsers.toLocaleString("vi-VN"),
           })}
         >
           <FilterMenu
@@ -401,15 +407,17 @@ export function AdminUserManagementView() {
           count={selected.size}
           label={t("selectionLabel", { count: selected.size })}
         >
-          {/* Disabled rather than hidden when the selection has nothing to change: a selection of only
-              locked rows still needs the unlock button, and one of only active rows still needs lock,
-              so hiding either would make the bar flicker as the admin ticks across the page. */}
+          {/* Always enabled: a disabled button cannot say why. With nothing to change it raises a
+              warning toast that explains instead (owner instruction 2026-10-11). */}
           <Button
             variant="ghost"
             size="sm"
             className="border border-[var(--color-border)] text-[var(--color-admin-negative-text)]"
-            onClick={() => requestLock(lockable, unlockable.length)}
-            disabled={lockable.length === 0}
+            onClick={() =>
+              lockable.length === 0
+                ? toast.warning(t("lockNothing"))
+                : requestLock(lockable, unlockable.length)
+            }
           >
             {t("bulkLock")}
           </Button>
@@ -417,8 +425,11 @@ export function AdminUserManagementView() {
             variant="ghost"
             size="sm"
             className="border border-[var(--color-border)]"
-            onClick={() => setUnlockTargets(unlockable)}
-            disabled={unlockable.length === 0}
+            onClick={() =>
+              unlockable.length === 0
+                ? toast.warning(t("unlockNothing"))
+                : setUnlockTargets(unlockable)
+            }
           >
             {t("bulkUnlock")}
           </Button>
@@ -458,7 +469,9 @@ export function AdminUserManagementView() {
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
         <Card
           title={t("roleDistributionTitle")}
-          description={t("roleDistributionSubtitle")}
+          description={t("roleDistributionSubtitle", {
+            total: page.totalUsers.toLocaleString("vi-VN"),
+          })}
         >
           <RankedProgressList
             numbered={false}
@@ -473,7 +486,18 @@ export function AdminUserManagementView() {
           />
         </Card>
 
-        <Card title={t("pendingTitle")}>
+        <Card
+          title={t("pendingTitle")}
+          // BD ADM0201 F NO2 / EVT-16: plain navigation, no leave-confirm (nothing unsaved here).
+          action={
+            <Link
+              href="/admin/system-log"
+              className="text-[12.5px] font-semibold text-[var(--color-primary)] hover:underline"
+            >
+              {t("auditLogLink")}
+            </Link>
+          }
+        >
           <div className="flex flex-col gap-2.5">
             {page.pendingTasks.map((task) => (
               <SettingRow
@@ -483,7 +507,7 @@ export function AdminUserManagementView() {
               >
                 <span
                   className="font-mono text-[13px] font-semibold"
-                  style={{ color: `var(${task.colorVar})` }}
+                  style={{ color: textTone(task.colorVar) }}
                 >
                   {task.count}
                 </span>
@@ -526,7 +550,14 @@ export function AdminUserManagementView() {
         confirmLabel={t("resetAction")}
         cancelLabel={t("cancel")}
       >
-        <p>{t("resetBody", { email: resetTarget?.email ?? "" })}</p>
+        <p>
+          {t(
+            resetTarget?.hasPassword === false ? "resetBodyOAuth" : "resetBody",
+            {
+              email: resetTarget?.email ?? "",
+            },
+          )}
+        </p>
       </ConfirmDialog>
 
       {/* Unlock is not destructive — it restores access — so it needs a plain confirmation and no

@@ -1,10 +1,10 @@
 {
-  "_": "Luong quan tri tai khoan nguoi dung (doi vai tro, khoa/mo khoa) cua actor A3. Nguon: US-A3-02 (01-rd/req/user_stories/a3_admin.md), 01-rd/req/identity.md (F1-13, F1-14), 02-bd/security/identity.md:64-66 (filter kiem status MOI request, khong chi kiem exp).",
-  "_diem_mau_chot": "Khoa tai khoan phai thu hoi refresh token, va Access Token cu (con han toi 15 phut) bi chan o filter vi filter kiem status moi request -- neu khong, nguoi bi khoa van dung he thong duoc them 15 phut.",
+  "_": "Nguon: 01-rd/screens/admin/ADM0201_user_management.md, 02-bd/screens/admin/ADM0201_user_management.md (muc 7.3 endpoint, DTO, popup), DEC-2026-1011-admin-system-open-questions-closed, DEC-2026-1008-admin-system-screens-review. Duong dan REST la [SoT: Suy luan] vi chua co DD; ten endpoint la ten nghiep vu cua BD. Quy tac: khong cho ha quan tri vien hoat dong cuoi cung (RD ADM0201 REQ-05). Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Đổi vai trò và khoá tài khoản người dùng (Quản trị viên) (2/3)",
+  "title": "Sơ đồ tuần tự chi tiết - Tìm và đổi vai trò tài khoản (Quản trị viên) (2/2)",
   "covers": [
-    "F1-13"
+    "F1-13",
+    "F1-14"
   ],
   "mode": "color",
   "sequence": {
@@ -37,7 +37,45 @@
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 2 - Đổi vai trò, chặn tự hạ quyền chính mình (F1-13)"
+        "phase": "Giai đoạn 2 - Đổi vai trò một tài khoản, chặn hạ quản trị viên hoạt động cuối cùng (F1-13)"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Bấm Đổi vai trò trên dòng, popup mở"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "UserAdminController",
+        "text": "GET /identity/admin/roles"
+      },
+      {
+        "from": "UserAdminController",
+        "to": "UserAdminService",
+        "text": "Yêu cầu danh sách vai trò"
+      },
+      {
+        "from": "UserAdminService",
+        "to": "PostgreSQL",
+        "text": "Đọc các vai trò có thể chọn"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "UserAdminService",
+        "text": "Danh sách vai trò đích",
+        "kind": "return"
+      },
+      {
+        "from": "UserAdminService",
+        "to": "UserAdminController",
+        "text": "Các vai trò để chọn",
+        "kind": "return"
+      },
+      {
+        "from": "UserAdminController",
+        "to": "Quản trị viên",
+        "text": "200 OK",
+        "kind": "return"
       },
       {
         "from": "Quản trị viên",
@@ -47,71 +85,89 @@
       {
         "from": "Quản trị viên",
         "to": "UserAdminController",
-        "text": "PATCH /identity/admin/users/{userId}/role { roleId }"
+        "text": "PATCH /identity/admin/users/{userId}/role"
+      },
+      {
+        "from": "UserAdminController",
+        "to": "UserAdminController",
+        "text": "Kiểm tra quyền sửa tài khoản (USER_MANAGEMENT:UPDATE)"
       },
       {
         "from": "UserAdminController",
         "to": "UserAdminService",
-        "text": "changeRole(command, adminId)"
+        "text": "Yêu cầu đổi vai trò"
       },
       {
         "from": "UserAdminService",
         "to": "PostgreSQL",
-        "text": "findById(userId) và findRole(roleId)"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "PostgreSQL",
-        "text": "SELECT users, roles (UserRepository)"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "PostgreSQL",
-        "text": "Tài khoản đích và vai trò đích (UserRepository)"
+        "text": "Đọc tài khoản, vai trò đích, số ADMIN hoạt động"
       },
       {
         "from": "PostgreSQL",
         "to": "UserAdminService",
-        "text": "User, Role",
+        "text": "Tài khoản, vai trò, số ADMIN hoạt động",
         "kind": "return"
       },
       {
         "alt": {
-          "label": "Người gọi đang tự hạ quyền chính mình?",
+          "label": "Hạ ADMIN hoạt động cuối?",
           "then": [
             {
               "from": "UserAdminService",
+              "to": "UserAdminService",
+              "text": "Sẽ không còn ADMIN hoạt động nào"
+            },
+            {
+              "from": "UserAdminService",
               "to": "UserAdminController",
-              "text": "Từ chối - tránh khoá mất lối vào khu quản trị",
+              "text": "Từ chối, không đổi gì",
               "kind": "return"
             },
             {
               "from": "UserAdminController",
               "to": "Quản trị viên",
-              "text": "422 kèm lý do",
+              "text": "409 - phải còn ít nhất một quản trị viên hoạt động",
               "kind": "return"
             }
           ],
           "else": [
             {
               "from": "UserAdminService",
+              "to": "UserAdminService",
+              "text": "Hợp lệ, tiến hành đổi"
+            },
+            {
+              "from": "UserAdminService",
               "to": "PostgreSQL",
-              "text": "UPDATE users SET role_id = ?"
+              "text": "Đổi vai trò và ghi nhật ký hệ thống"
             },
             {
               "from": "PostgreSQL",
-              "to": "PostgreSQL",
-              "text": "UPDATE users (UserRepository)"
+              "to": "UserAdminService",
+              "text": "Đã ghi",
+              "kind": "return"
             },
             {
               "from": "UserAdminService",
               "to": "Redis",
-              "text": "Xoá cache quyền của tài khoản vừa đổi"
+              "text": "Xoá cache quyền của tài khoản vừa đổi",
+              "kind": "async"
+            },
+            {
+              "from": "UserAdminService",
+              "to": "UserAdminController",
+              "text": "Tài khoản kèm vai trò mới",
+              "kind": "return"
+            },
+            {
+              "from": "UserAdminController",
+              "to": "Quản trị viên",
+              "text": "200 OK",
+              "kind": "return"
             }
           ]
         }
       }
     ]
-  },
-  "_cat": "Tach tu sequence_admin_doi_vai_tro_nguoi_dung.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 2/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+  }
 }

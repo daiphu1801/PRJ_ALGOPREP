@@ -33,6 +33,15 @@ export function RecentReviewsBlock() {
       emptyMessage={t("reviews.empty")}
       errorMessage={t("errorAi")}
       retryLabel={t("retry")}
+      headingLevel={2}
+      footer={
+        <Link
+          href="/submissions"
+          className="mt-2.5 inline-block text-[12.5px] font-semibold underline"
+        >
+          {t("seeAll")}
+        </Link>
+      }
     >
       <div>
         <ul className="flex flex-col gap-3">
@@ -62,12 +71,6 @@ export function RecentReviewsBlock() {
             </li>
           ))}
         </ul>
-        <Link
-          href="/submissions"
-          className="mt-2.5 inline-block text-[12.5px] font-semibold underline"
-        >
-          {t("seeAll")}
-        </Link>
       </div>
     </DashboardBlockState>
   );

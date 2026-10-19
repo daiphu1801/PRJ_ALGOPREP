@@ -12,7 +12,7 @@ export type SubmissionStatus =
   | "ACCEPTED"
   | "WRONG_ANSWER"
   | "TIME_LIMIT_EXCEEDED"
-  | "MEMORY_LIMIT_EXCEEDED"
+  | "SYSTEM_ERROR"
   | "RUNTIME_ERROR"
   | "COMPILE_ERROR";
 
@@ -80,18 +80,6 @@ export type SubmissionListItem = {
   totalCount: number | null;
   runtimeMs: number | null;
   submittedAt: string;
-};
-
-/**
- * Raw counters only — no `acceptedRate` column exists (BD V0.2 fix note). The screen computes every
- * rate from these at render time.
- */
-export type SubmissionStats = {
-  totalSubmissions: number;
-  acceptedCount: number;
-  firstTryAcceptedCount: number;
-  topLanguage: SubmissionLanguage | null;
-  topLanguageCount: number;
 };
 
 export type VerdictFilter = SubmissionStatus | "ALL";

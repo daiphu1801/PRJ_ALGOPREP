@@ -33,7 +33,7 @@ quản trị chỉ liệt kê 8 màn và không có `admin_overview`, trong khi 
 tồn tại và là item đầu tiên của nav (`key: 'overview'`, `items: []`, `activeKey = 'overview'`)
 [SoT: 09-layoutBase/Admin - Tổng quan.dc.html:359-362]. Cùng loại việc mà `06-plan/PROTOTYPE_DEBT.md` mục
 6.2.b đã làm cho khu Giảng viên — phát hiện `instructor_overview` và `instructor_grading` là slug **phát
-sinh khi dựng prototype**, không nằm trong danh sách hạt giống, rồi đồng bộ lại bảng slug và tổng số màn
+sinh khi dựng prototype** (`instructor_grading` về sau đã bỏ 2026-10-13, `DEC-2026-1013-remove-instructor-manual-grading`), không nằm trong danh sách hạt giống, rồi đồng bộ lại bảng slug và tổng số màn
 [SoT: 06-plan/PROTOTYPE_DEBT.md:534-545]. Đã đồng bộ trong cùng đợt: dòng `admin_overview` thêm vào bảng
 [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng khối "Cập nhật 2026-08-25" (quản trị 8 → 11 slug)], khu
 quản trị từ 8 lên 11 slug, tổng số màn dự kiến 27 → 30
@@ -58,7 +58,7 @@ có màn thật; việc sửa `HOME_PATH_BY_ROLE` là việc của code, không 
 | Giám sát hàng đợi và cụm judge engine (đích nav "Hàng đợi chấm") | F4-10 | `01-rd/req/judge-orchestration.md` — F4-10 |
 | Cấu hình ngôn ngữ và giới hạn tài nguyên (đích nav "Ngôn ngữ và giới hạn") | F4-11 | `01-rd/req/judge-orchestration.md` — F4-11 |
 | ~~Chấm lại quy mô lớn (đích nav "Chấm lại")~~ | — | **Đã loại khỏi phạm vi 2026-08-28** — `DEC-2026-0828-remove-rejudge-scope`. Đích nav "Chấm lại" cần gỡ khỏi màn khi build FE thật. |
-| Cấu hình prompt/rubric AI (đích nav "Cấu hình AI") | F5-23 | `01-rd/req/ai-review.md` — F5-23 |
+| Cấu hình prompt/rubric AI (đích nav "Prompt và chất lượng") | F5-23 | `01-rd/req/ai-review.md` — F5-23 |
 | Ngân sách và token AI (đích nav "Token AI") | F5-21, F5-25 | `01-rd/req/ai-review.md` — F5-21, F5-25 |
 | Quản lý ngân hàng câu hỏi phỏng vấn (đích nav "Câu hỏi phỏng vấn") | F6-12 | `01-rd/req/identity.md` — F1-12 (danh sách Function `INTERVIEW_BANK_MANAGEMENT`), `01-rd/req/interview-bank.md` — F6-12. F6-11 đã loại khỏi phạm vi 2026-08-28, `DEC-2026-0828-remove-per-class-interview-set` |
 | Ba ngôn ngữ nộp bài — trục dữ liệu của biểu đồ "Lượt nộp theo ngôn ngữ" | (giới hạn phạm vi, không phải mã `Fx-nn`) | `01-rd/overview/system_survey.md` — mục 8, bảng giới hạn phạm vi, dòng "Ngôn ngữ nộp bài" |
@@ -79,7 +79,7 @@ i18n; Q8 thêm 3 trạng thái theo từng khối.
 
 1. **Shell khu Admin, nav 5 nhóm / 11 đích** (HTML dòng 68-94, dữ liệu dòng 361-381): Tổng quan (không có
    item con, `items: []`) · Nội dung (Quản lý bài tập, Câu hỏi phỏng vấn) · Vận hành (Hàng đợi chấm, Chấm
-   lại, Ngôn ngữ và giới hạn) · AI (Cấu hình AI, Token AI) · Hệ thống (Người dùng, Nhật ký hệ thống, Ma trận
+   lại, Ngôn ngữ và giới hạn) · AI (Prompt và chất lượng, Hạn mức AI, Token AI) · Hệ thống (Người dùng, Nhật ký hệ thống, Ma trận
    phân quyền) [SoT: 09-layoutBase/Admin - Tổng quan.dc.html:361-381]. Nhóm có item con thì bấm vào chỉ mở/
    đóng nhóm (`toggleGroup`, `href: '#'`), không điều hướng; chỉ "Tổng quan" điều hướng trực tiếp vì không có
    con [SoT: 09-layoutBase/Admin - Tổng quan.dc.html:386-389]. **Mã: —** cho chính cơ chế nav; từng đích thì
@@ -172,7 +172,7 @@ i18n; Q8 thêm 3 trạng thái theo từng khối.
 | :--- | :--- | :--- |
 | `01-rd/screens/admin/ADM0201_user_management.md` | Màn con — đích nav "Người dùng" | [SoT: 01-rd/req/identity.md — F1-13] |
 | `01-rd/screens/admin/ADM0202_permission_matrix.md` | Màn con — ma trận phân quyền | [SoT: 01-rd/req/identity.md — F1-10 tới F1-12] |
-| `01-rd/screens/admin/ADM0301_ai_config.md`, `ADM0302_ai_usage.md` | Màn con — cấu hình và ngân sách AI | [SoT: 01-rd/req/ai-review.md — F5-21, F5-23, F5-25] |
+| `01-rd/screens/admin/ADM0301_ai_config.md`, `ADM0302_ai_usage.md`, `ADM0303_ai_limits.md` | Màn con — chất lượng, theo dõi token, hạn mức và chi phí AI | [SoT: 01-rd/req/ai-review.md — F5-21, F5-23, F5-25] |
 | `01-rd/screens/admin/ADM0401_queue_monitor.md`, `ADM0501_language_config.md` | Màn con — vận hành judge engine | [SoT: 01-rd/req/judge-orchestration.md — F4-10, F4-11] |
 | `01-rd/screens/admin/ADM0403_system_log.md` | Màn con — nhật ký hệ thống | [SoT: 01-rd/req/identity.md — F1-14] |
 | `01-rd/screens/shared/SHR0201_problem_management.md`, `SHR0301_interview_question_management.md` | Đích nav "Quản lý bài tập", "Câu hỏi phỏng vấn" — màn dùng chung A2+A3, không riêng Admin | [SoT: 01-rd/req/identity.md — F1-12 danh sách Function] |
@@ -230,7 +230,7 @@ thành "Trạng thái" cho khớp dữ liệu thật. Nội dung từng ô khôn
 | REQ-06 | Giám sát hàng đợi và cụm judge engine (đích nav "Hàng đợi chấm") (F4-10) | Chức năng | `01-rd/req/judge-orchestration.md` — F4-10 |
 | REQ-07 | Cấu hình ngôn ngữ và giới hạn tài nguyên (đích nav "Ngôn ngữ và giới hạn") (F4-11) | Chức năng | `01-rd/req/judge-orchestration.md` — F4-11 |
 | REQ-08 | ~~Chấm lại quy mô lớn (đích nav "Chấm lại")~~ (—) | Chức năng | **Đã loại khỏi phạm vi 2026-08-28** — `DEC-2026-0828-remove-rejudge-scope`. Đích nav "Chấm lại" cần gỡ khỏi màn khi build FE thật. |
-| REQ-09 | Cấu hình prompt/rubric AI (đích nav "Cấu hình AI") (F5-23) | Chức năng | `01-rd/req/ai-review.md` — F5-23 |
+| REQ-09 | Cấu hình prompt/rubric AI (đích nav "Prompt và chất lượng") (F5-23) | Chức năng | `01-rd/req/ai-review.md` — F5-23 |
 | REQ-10 | Ngân sách và token AI (đích nav "Token AI") (F5-21, F5-25) | Chức năng | `01-rd/req/ai-review.md` — F5-21, F5-25 |
 | REQ-11 | Quản lý ngân hàng câu hỏi phỏng vấn (đích nav "Câu hỏi phỏng vấn") (F6-12) | Chức năng | `01-rd/req/identity.md` — F1-12 (danh sách Function `INTERVIEW_BANK_MANAGEMENT`), `01-rd/req/interview-bank.md` — F6-12. F6-11 đã loại khỏi phạm vi 2026-08-28, `DEC-2026-0828-remove-per-class-interview-set` |
 | REQ-12 | Ba ngôn ngữ nộp bài — trục dữ liệu của biểu đồ "Lượt nộp theo ngôn ngữ" ((giới hạn phạm vi, không phải mã `Fx-nn`)) | Chức năng | `01-rd/overview/system_survey.md` — mục 8, bảng giới hạn phạm vi, dòng "Ngôn ngữ nộp bài" |

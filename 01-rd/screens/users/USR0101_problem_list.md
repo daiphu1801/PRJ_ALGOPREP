@@ -42,8 +42,8 @@ vi trên thể hiện qua các khối màn sau:
    khi rê chuột qua dòng (dòng 167-189). **Cập nhật 2026-08-25 theo `DEC-2026-0824-dual-submission-model-per-problem`**:
    dữ liệu mẫu của prototype gán `mode` cố định 1-trong-2 cho từng bài (dòng 501-524), khớp cách hiểu **cũ**
    của F3-13 — theo quyết định mới, cả hai mô hình luôn song song cho mọi bài (trừ ngoại lệ lược đồ kiểu ở
-   dưới). **Đã chốt (Câu hỏi mở Q3, đã đóng):** nhãn đổi thành "Cả hai" mặc định, chỉ "Chỉ Standard I/O" cho
-   ngoại lệ — chưa dựng vào prototype, để lúc build FE Next.js thật.
+   dưới). **Đã chốt (Câu hỏi mở Q3, đã đóng; điều chỉnh 2026-10-19):** chỉ vẽ nhãn "Chỉ Standard I/O" cho
+   ngoại lệ, bài hỗ trợ cả hai mô hình thì không vẽ nhãn; đã dựng vào prototype.
 2. **Bộ lọc** — tab trạng thái (Tất cả/Đã giải/Đang làm/Chưa làm), chip chủ đề, thanh tìm kiếm, sắp xếp theo
    độ khó hoặc tỉ lệ Accepted (dòng 546-563, 609-611) — khớp F2-11.
 3. **Sidebar chủ đề** — danh sách chủ đề kèm tiến độ `đã giải/tổng số` riêng theo từng chủ đề (dòng 572-579)
@@ -92,7 +92,7 @@ lại ở đây.
 | :-: | :--- | :--- | :--- | :--- |
 | Q1 | ~~`problem-bank.md` — F2-12 mô tả bài giao theo lớp "lồng thành một nhóm riêng"...~~ **ĐÃ CHỐT (phiên 2026-08-25, chốt theo RD):** giữ nguyên dạng khối tổng hợp như prototype (đơn giản hơn khi có nhiều lớp/nhiều bài được giao cùng lúc); đã sửa câu chữ `01-rd/req/problem-bank.md` mục F2-12 cho khớp thực tế (đổi "lồng thành một nhóm riêng" thành "hiển thị thành một khối riêng ngay trong cùng trang danh sách bài toán"). | — | Đã sửa `problem-bank.md`, không cần hành động thêm ở màn này. | Đã đóng |
 | Q2 | ~~Nhánh `isSolve`...~~ **ĐÃ CHỐT (phiên 2026-08-25, chốt theo RD):** coi là code thừa của một hướng thiết kế cũ (danh sách + giải bài trong cùng trang), không đưa vào BD. **Không dọn ở `09-layoutBase/Ngân hàng bài toán.dc.html`** — prototype chỉ tham khảo, khi dựng FE Next.js thật sẽ không mang theo nhánh này. | — | Không đưa vào BD; không cần dọn prototype (sẽ viết lại từ đầu ở FE thật). | Đã đóng |
-| Q3 | ~~(Mới, phát hiện khi rà Phase 1...) Nhãn "mô hình nộp bài" trong bảng danh sách...~~ **ĐÃ CHỐT (phiên 2026-08-25, chốt theo RD):** đổi nhãn thành "Cả hai" mặc định cho mọi bài có cả hai mô hình song song; chỉ hiện "Chỉ Standard I/O" cho các bài rơi vào ngoại lệ lược đồ kiểu (R2, `harness.md` — F3-13) — giữ được thông tin hữu ích (biết trước bài nào bị giới hạn) mà không gây hiểu nhầm là chọn cố định. **Chưa dựng vào prototype** (dữ liệu mẫu vẫn gán `mode` cố định 1-trong-2, dòng 501-524) — để lúc build FE Next.js thật. | — | Đã chốt quyết định, chưa dựng prototype. | Đã đóng |
+| Q3 | ~~(Mới, phát hiện khi rà Phase 1...) Nhãn "mô hình nộp bài" trong bảng danh sách...~~ **ĐÃ CHỐT (phiên 2026-08-25, chốt theo RD; điều chỉnh 2026-10-19: không vẽ nhãn "Cả hai", theo BD):** bài có cả hai mô hình song song không vẽ nhãn; chỉ hiện "Chỉ Standard I/O" cho các bài rơi vào ngoại lệ lược đồ kiểu (R2, `harness.md` — F3-13) — giữ được thông tin hữu ích (biết trước bài nào bị giới hạn) mà không gây hiểu nhầm là chọn cố định. **Đã dựng vào prototype 2026-10-19** (`problem-list-view.tsx`, nhãn chỉ khi `submissionModel = stdioOnly`). | — | Đã chốt và đã dựng. | Đã đóng |
 
 ---
 
@@ -104,7 +104,7 @@ lại ở đây.
 | REQ-02 | Bài giao theo lớp hiển thị thành nhóm riêng trong cùng màn (F2-12) | Chức năng | `01-rd/req/problem-bank.md` — F2-12 |
 | REQ-03 | Cả hai mô hình nộp bài luôn song song cho mỗi bài toán; học viên tự chọn mỗi lượt làm ở `problem_detail`, trừ khi lược đồ kiểu chưa phủ được thì chỉ còn Standard I/O (F3-13) | Chức năng | `01-rd/req/harness.md` — F3-13 |
 | REQ-04 | **Cho** một bài toán rơi vào ngoại lệ lược đồ kiểu (kiểu dữ liệu vượt lược đồ độc lập ngôn ngữ của F3-01), **khi** tôi xem bài đó trong danh sách, **thì** nhãn mô hình cho biết bài này chỉ còn Standard I/O (Bọc hàm bị ẩn) — ngoại lệ duy nhất còn mang tính cố định theo bài toán, không phải lựa chọn của người học | Chức năng (GWT) | [SoT: 01-rd/req/harness.md — F3-13 ngoại lệ R2] |
-| REQ-05 | **Cho** một bài toán không rơi vào ngoại lệ trên (đa số), **khi** tôi xem bài đó trong danh sách, **thì** nhãn mô hình thể hiện "cả hai mô hình khả dụng", không còn là giá trị cố định `function`/`stdio` — mô hình thực sự chỉ được chọn khi vào màn `problem_detail`, mỗi lượt làm một lần | Chức năng (GWT) | [SoT: 01-rd/req/harness.md — F3-13 sau `DEC-2026-0824-dual-submission-model-per-problem`, đã chốt ở Câu hỏi mở Q3] |
+| REQ-05 | **Cho** một bài toán không rơi vào ngoại lệ trên (đa số), **khi** tôi xem bài đó trong danh sách, **thì** dòng bài **không vẽ nhãn mô hình nào** (bài hỗ trợ cả hai mô hình là đa số, vẽ nhãn "Cả hai" trên mọi dòng chỉ gây nhiễu; owner chốt 2026-10-19 theo BD) — mô hình thực sự chỉ được chọn khi vào màn `problem_detail`, mỗi lượt làm một lần | Chức năng (GWT) | [SoT: 01-rd/req/harness.md — F3-13 sau `DEC-2026-0824-dual-submission-model-per-problem`, đã chốt ở Câu hỏi mở Q3] |
 | REQ-06 | **Cho** tôi đã từng yêu cầu Solution Review cho một bài đã `Accepted` (F5-01), **khi** tôi xem lại danh sách, **thì** bài đó hiện thêm nhãn "đã có Solution Review" để mở lại báo cáo cũ mà không cần phân tích lại | Chức năng (GWT) | [SoT: 09-layoutBase/Ngân hàng bài toán.dc.html:175-177] |
 
 ---

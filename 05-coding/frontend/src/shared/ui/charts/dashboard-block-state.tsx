@@ -23,6 +23,11 @@ type DashboardBlockStateProps = {
   minHeightClassName?: string;
   /** Compact stat cards already show their own label — skip the redundant section heading. */
   hideTitle?: boolean;
+  /** Level of the block heading; Admin keeps 3 under its page title, the Student dashboard sits at 2. */
+  headingLevel?: 2 | 3;
+  /** Rendered under the body in EVERY state (loading, error, empty, data), e.g. a "Xem tất cả" link
+   * the BD requires to stay reachable when the block itself has nothing to show. */
+  footer?: ReactNode;
   children: ReactNode;
 };
 
@@ -47,8 +52,11 @@ export function DashboardBlockState({
   retryLabel,
   minHeightClassName = "min-h-[176px]",
   hideTitle = false,
+  headingLevel = 3,
+  footer,
   children,
 }: DashboardBlockStateProps) {
+  const Heading = headingLevel === 2 ? "h2" : "h3";
   // The block already says it failed. A retry the user just pressed that fails again is a new event,
   // so it gets a toast; the first load failure does not (a dashboard can have many blocks failing).
   async function retry() {
@@ -61,9 +69,9 @@ export function DashboardBlockState({
       className={`glass-card p-3 ${minHeightClassName}`}
     >
       {!hideTitle && (
-        <h3 className="mb-2 text-sm font-semibold text-[var(--color-text)]">
+        <Heading className="mb-2 text-sm font-semibold text-[var(--color-text)]">
           {title}
-        </h3>
+        </Heading>
       )}
       {isLoading ? (
         <Skeleton className={minHeightClassName} />
@@ -81,6 +89,7 @@ export function DashboardBlockState({
       ) : (
         children
       )}
+      {footer}
     </section>
   );
 }

@@ -1,5 +1,5 @@
 {
-  "_": "Luong giam sat hang doi va cum judge engine cua actor A3, ke ca job quet bai nop treo. Nguon: US-A3-03 (01-rd/req/user_stories/a3_admin.md), 01-rd/req/judge-orchestration.md (F4-07, F4-10), 02-bd/architecture/judge-orchestration.md muc 5.3 (sweep 5 phut, chu ky quet 60 giay, menh de WHERE chong ghi de).",
+  "_": "Luong giam sat hang doi va cum judge engine cua actor A3, ke ca job quet bai nop treo. Nguon: US-A3-03 (01-rd/req/user_stories/a3_admin.md), 01-rd/req/judge-orchestration.md (F4-07, F4-10), 02-bd/architecture/judge-orchestration.md muc 5.3 (sweep 5 phut, chu ky quet 60 giay, menh de WHERE chong ghi de). Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen.",
   "_diem_mau_chot": "Menh de WHERE status NOT IN (7 trang thai cuoi) cua job sweep KHONG phai toi uu truy van -- no la co che chong ghi de khi mot worker cham hoan tat dung luc job chay.",
   "kind": "sequence",
   "title": "Sơ đồ tuần tự chi tiết - Giám sát hàng đợi và quét bài nộp treo (Quản trị viên) (1/3)",
@@ -53,39 +53,39 @@
       {
         "from": "JudgeOpsController",
         "to": "JudgeOpsController",
-        "text": "Kiểm quyền JUDGE_OPS:READ theo ma trận F1-10"
+        "text": "Kiểm tra quyền giám sát chấm bài (JUDGE_OPS:READ)"
       },
       {
         "from": "JudgeOpsController",
         "to": "JudgeOpsService",
-        "text": "getOverview()"
+        "text": "Yêu cầu tổng quan hệ thống chấm"
       },
       {
         "from": "JudgeOpsService",
         "to": "RabbitMQ",
-        "text": "Đọc độ dài hàng đợi và số consumer đang gắn"
+        "text": "Đọc độ dài hàng đợi và số consumer"
       },
       {
         "from": "RabbitMQ",
         "to": "JudgeOpsService",
-        "text": "queueDepth, consumerCount",
+        "text": "Độ dài hàng đợi, số consumer",
         "kind": "return"
       },
       {
         "from": "JudgeOpsService",
         "to": "PostgreSQL",
-        "text": "COUNT submissions theo từng trạng thái chưa kết thúc"
+        "text": "Đếm bài nộp theo trạng thái chưa kết thúc"
       },
       {
         "from": "PostgreSQL",
         "to": "JudgeOpsService",
-        "text": "Số bài PENDING / COMPILING / JUDGING",
+        "text": "Số bài chờ, đang biên dịch, đang chấm",
         "kind": "return"
       },
       {
         "from": "JudgeOpsService",
         "to": "JudgeOpsController",
-        "text": "JudgeOverviewDto",
+        "text": "Tổng quan hàng đợi và cụm",
         "kind": "return"
       },
       {

@@ -106,6 +106,10 @@ describe("ProblemManagementView toasts", () => {
     fireEvent.change(screen.getByLabelText("searchLabel"), {
       target: { value: "zzzz-no-match" },
     });
+    // The bulk pop-up itself says how many selected rows the filter hides (F3).
+    expect(screen.getByRole("region")).toHaveAccessibleName(
+      /^selectionLabelHidden/,
+    );
     fireEvent.click(screen.getByRole("button", { name: "bulk.delete" }));
     expect(
       within(screen.getByRole("dialog")).getByText(/^confirmBulkDeleteHidden/),

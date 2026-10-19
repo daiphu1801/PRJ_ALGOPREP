@@ -1,8 +1,8 @@
 {
-  "_": "Luong quan tri tai khoan nguoi dung (doi vai tro, khoa/mo khoa) cua actor A3. Nguon: US-A3-02 (01-rd/req/user_stories/a3_admin.md), 01-rd/req/identity.md (F1-13, F1-14), 02-bd/security/identity.md:64-66 (filter kiem status MOI request, khong chi kiem exp).",
+  "_": "Nguon: 01-rd/screens/admin/ADM0201_user_management.md, 02-bd/screens/admin/ADM0201_user_management.md (muc 7.3 endpoint, DTO, popup), DEC-2026-1011-admin-system-open-questions-closed, DEC-2026-1008-admin-system-screens-review. Duong dan REST la [SoT: Suy luan] vi chua co DD; ten endpoint la ten nghiep vu cua BD. Cap nhat 2026-10-18: tach khoa/mo khoa ra sequence rieng. Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen.",
   "_diem_mau_chot": "Khoa tai khoan phai thu hoi refresh token, va Access Token cu (con han toi 15 phut) bi chan o filter vi filter kiem status moi request -- neu khong, nguoi bi khoa van dung he thong duoc them 15 phut.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Đổi vai trò và khoá tài khoản người dùng (Quản trị viên) (1/3)",
+  "title": "Sơ đồ tuần tự chi tiết - Tìm và đổi vai trò tài khoản (Quản trị viên) (1/2)",
   "covers": [
     "F1-10",
     "F1-13"
@@ -38,42 +38,32 @@
       {
         "from": "Quản trị viên",
         "to": "Quản trị viên",
-        "text": "Tìm theo email hoặc họ tên"
+        "text": "Chọn tab vai trò, tìm theo email hoặc họ tên"
       },
       {
         "from": "Quản trị viên",
         "to": "UserAdminController",
-        "text": "GET /identity/admin/users?keyword=..."
+        "text": "GET /identity/admin/users?role=&keyword=&page="
       },
       {
         "from": "UserAdminController",
         "to": "UserAdminController",
-        "text": "Kiểm quyền USER_MANAGEMENT:READ theo ma trận F1-10"
+        "text": "Kiểm tra quyền xem tài khoản (USER_MANAGEMENT:READ)"
       },
       {
         "from": "UserAdminController",
         "to": "UserAdminService",
-        "text": "searchUsers(query)"
+        "text": "Yêu cầu danh sách tài khoản"
       },
       {
         "from": "UserAdminService",
         "to": "PostgreSQL",
-        "text": "search(keyword, phân trang)"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "PostgreSQL",
-        "text": "SELECT users JOIN roles (UserRepository)"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "PostgreSQL",
-        "text": "Danh sách tài khoản kèm vai trò và trạng thái (UserRepository)"
+        "text": "Tìm theo vai trò và từ khoá, có phân trang"
       },
       {
         "from": "PostgreSQL",
         "to": "UserAdminService",
-        "text": "Page<User>",
+        "text": "Tài khoản kèm vai trò, trạng thái, có mật khẩu hay không",
         "kind": "return"
       },
       {

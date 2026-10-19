@@ -103,6 +103,37 @@ describe("ProblemAuthoringView save and publish", () => {
     expect(save).toBeDisabled();
   });
 
+  it("refuses to save an empty title or a non-positive limit (BD Sheet 9 NO3-4)", async () => {
+    const toasts = renderHook(() => useToasts());
+    await renderLoaded(<ProblemAuthoringView basePath="/admin/problems" />);
+    const save = screen.getByRole("button", { name: "save" });
+
+    fireEvent.change(screen.getByLabelText("titleLabel"), {
+      target: { value: "  " },
+    });
+    fireEvent.click(save);
+    await waitFor(() =>
+      expect(toasts.result.current.at(-1)).toMatchObject({
+        tone: "error",
+        message: "validation.titleRequired",
+      }),
+    );
+
+    fireEvent.change(screen.getByLabelText("titleLabel"), {
+      target: { value: "Ok" },
+    });
+    fireEvent.change(screen.getByLabelText("limit.memoryLimitMb"), {
+      target: { value: "0" },
+    });
+    fireEvent.click(save);
+    await waitFor(() =>
+      expect(toasts.result.current.at(-1)).toMatchObject({
+        tone: "error",
+        message: 'validation.limitPositive {"field":"limit.memoryLimitMb"}',
+      }),
+    );
+  });
+
   it("blocks Publish while the checklist has unmet items and a click names the missing condition", async () => {
     const toasts = renderHook(() => useToasts());
     await renderLoaded(<ProblemAuthoringView basePath="/admin/problems" />);

@@ -1,6 +1,8 @@
 export {
   addModelPrice,
   aiBudgetSettings,
+  aiRateLimits,
+  aiTokenBudget,
   removeModelPrice,
   renameModelPrice,
   setModelPriceValue,

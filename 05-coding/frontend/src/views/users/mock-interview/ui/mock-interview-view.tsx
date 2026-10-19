@@ -1,6 +1,6 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md section 10.2 (USR0302_mock_interview).
 //
-// Layout follows 09-layoutBase/Phỏng vấn giả lập.dc.html: entry stats + source tabs + session config
+// Layout follows 09-layoutBase/Phỏng vấn giả lập.dc.html: source tabs + session config
 // (:104-196), a running header with a 3-stage progress strip + chat timeline (:202-340), and a result
 // scorecard (:350-410). State machine lives in ./model/use-mock-interview-session.ts.
 //
@@ -18,9 +18,9 @@ import {
   MAX_TURNS_OPTIONS,
   RUBRIC_CRITERION_CODES,
   RUBRIC_WEIGHTS,
-  fetchEntryStats,
   type InterviewStage,
 } from "@/entities/mock-interview";
+import { useInterviewTopics } from "@/entities/interview-question";
 import { useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
 import {
@@ -28,11 +28,13 @@ import {
   Button,
   ConfirmDialog,
   SegmentedTabs,
-  StatCard,
   TextArea,
   Toggle,
 } from "@/shared/ui";
 import { useMockInterviewSession } from "../model/use-mock-interview-session";
+
+// Per-message cap [SoT: 02-bd/screens/users/USR0302_mock_interview.md Sheet 5 khu vực F NO 1].
+const MESSAGE_MAX_LENGTH = 4000;
 
 const STAGE_ORDER: InterviewStage[] = ["explain", "challenge", "scaleUp"];
 
@@ -45,7 +47,7 @@ function formatElapsed(seconds: number): string {
 export function MockInterviewView() {
   const t = useT("mockInterview");
   const session = useMockInterviewSession();
-  const stats = fetchEntryStats();
+  const topicList = useInterviewTopics();
   const [draft, setDraft] = useState("");
   const [earlyExitOpen, setEarlyExitOpen] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -66,30 +68,6 @@ export function MockInterviewView() {
   if (session.screenState === "entry") {
     return (
       <section className="p-6">
-        <div className="mb-4 grid gap-3.5 [grid-template-columns:repeat(auto-fit,minmax(190px,1fr))]">
-          <StatCard
-            label={t("statSessions")}
-            value={String(stats.sessionsCompleted)}
-            meta={t("statSessionsMeta")}
-          />
-          <StatCard
-            label={t("statAverage")}
-            value={
-              stats.averageScore !== null
-                ? `${stats.averageScore} / 10`
-                : "- / 10"
-            }
-          />
-          <StatCard
-            label={t("statWeakest")}
-            value={
-              stats.weakestCriterion
-                ? t(`rubric.${stats.weakestCriterion}`)
-                : "-"
-            }
-          />
-        </div>
-
         <div className="glass-card mb-4 border border-[var(--color-border)] p-5">
           <div className="mb-4 flex items-center gap-3">
             <span className="text-[11.5px] font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
@@ -122,9 +100,6 @@ export function MockInterviewView() {
                         : "border-[var(--color-border)]")
                     }
                   >
-                    <span className="font-mono text-[11px] text-[var(--color-text-subtle)]">
-                      {submission.id}
-                    </span>
                     <span className="font-semibold">
                       {submission.problemTitle}
                     </span>
@@ -152,9 +127,6 @@ export function MockInterviewView() {
                         : "border-[var(--color-border)]")
                     }
                   >
-                    <span className="font-mono text-[11px] text-[var(--color-text-subtle)]">
-                      {question.id}
-                    </span>
                     <span className="font-semibold">{question.title}</span>
                   </button>
                 </li>
@@ -163,9 +135,34 @@ export function MockInterviewView() {
           ) : null}
 
           {session.entryType === "custom" ? (
-            <p className="mb-4 text-[13px] text-[var(--color-text-muted)]">
-              {t("customTopicHint")}
-            </p>
+            <div className="mb-4">
+              <p className="mb-2 text-[13px] text-[var(--color-text-muted)]">
+                {t("customTopicHint")}
+              </p>
+              <div
+                role="group"
+                aria-label={t("customTopicsLabel")}
+                className="flex flex-wrap gap-2"
+              >
+                {topicList.map((topic) => {
+                  const on = session.customTopics.includes(topic.key);
+                  return (
+                    <Button
+                      key={topic.key}
+                      variant={on ? "primary" : "ghost"}
+                      size="sm"
+                      aria-pressed={on}
+                      className={
+                        on ? undefined : "border border-[var(--color-border)]"
+                      }
+                      onClick={() => session.toggleCustomTopic(topic.key)}
+                    >
+                      {topic.label}
+                    </Button>
+                  );
+                })}
+              </div>
+            </div>
           ) : null}
         </div>
 
@@ -220,7 +217,10 @@ export function MockInterviewView() {
             size="md"
             className="w-full"
             disabled={!session.canStart}
-            onClick={session.start}
+            onClick={() => {
+              setDraft("");
+              session.start();
+            }}
           >
             {t("startCta")}
           </Button>
@@ -231,7 +231,11 @@ export function MockInterviewView() {
 
   if (session.screenState === "running") {
     return (
-      <section className="flex h-[calc(100vh-var(--app-header-h,0px))] flex-col p-6">
+      // The chat fills the viewport (globals.css `[data-fullscreen-view]`); below `lg` it is a stacked page.
+      <section
+        data-fullscreen-view
+        className="flex min-h-[80dvh] flex-col lg:min-h-0 lg:flex-1"
+      >
         <div className="glass-card mb-3 flex items-center gap-4 border border-[var(--color-border)] px-4 py-3">
           {STAGE_ORDER.map((stage, index) => (
             <span
@@ -258,7 +262,13 @@ export function MockInterviewView() {
         </div>
 
         <div className="glass-card flex-1 overflow-y-auto border border-[var(--color-border)] p-4">
-          <div className="flex flex-col gap-3">
+          <div
+            role="log"
+            aria-label={t("chatLogLabel")}
+            aria-live="polite"
+            aria-busy={session.isAiTyping}
+            className="flex flex-col gap-3"
+          >
             {session.messages.map((message) => (
               <div
                 key={message.id}
@@ -273,7 +283,10 @@ export function MockInterviewView() {
               </div>
             ))}
             {session.isAiTyping ? (
-              <span className="text-[12px] text-[var(--color-text-subtle)]">
+              <span
+                role="status"
+                className="text-[12px] text-[var(--color-text-subtle)]"
+              >
                 {t("aiTyping")}
               </span>
             ) : null}
@@ -287,8 +300,20 @@ export function MockInterviewView() {
             hideLabel
             value={draft}
             rows={2}
-            disabled={session.isAiTyping}
+            readOnly={session.isAiTyping}
+            maxLength={MESSAGE_MAX_LENGTH}
             onChange={(event) => setDraft(event.target.value)}
+            onKeyDown={(event) => {
+              if (
+                event.key === "Enter" &&
+                (event.ctrlKey || event.metaKey) &&
+                !session.isAiTyping &&
+                draft.trim()
+              ) {
+                session.sendMessage(draft);
+                setDraft("");
+              }
+            }}
             wrapperClassName="flex-1"
             placeholder={t("messageInputPlaceholder")}
           />
@@ -327,6 +352,7 @@ export function MockInterviewView() {
           onClose={() => setEarlyExitOpen(false)}
           onConfirm={() => {
             setEarlyExitOpen(false);
+            setDraft("");
             session.stopEarly();
           }}
           title={t("earlyExitTitle")}
@@ -383,7 +409,14 @@ export function MockInterviewView() {
       </div>
 
       <div className="flex gap-3">
-        <Button variant="cta" size="md" onClick={session.retryPractice}>
+        <Button
+          variant="cta"
+          size="md"
+          onClick={() => {
+            setDraft("");
+            session.retryPractice();
+          }}
+        >
           {t("retryCta")}
         </Button>
         <Button variant="ghost" size="md" asChild>

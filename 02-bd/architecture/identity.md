@@ -30,7 +30,7 @@ cũng cần cả 4 file, xác nhận theo RD, không viết file rỗng").
 | Quên mật khẩu | F1-17 | OTP 6 số qua email, không áp dụng cho tài khoản chỉ đăng ký OAuth |
 | Tự xoá tài khoản | F1-16 | Khoá mềm → ẩn danh hoá sau ân hạn |
 | Quản lý người dùng (ADMIN) | F1-13 | Đổi vai trò, khoá/mở khoá, reset mật khẩu hộ |
-| Lớp học | F1-23→28 | Tạo/xoá/sửa lớp, mã mời, gỡ học viên, chi tiết học viên, dashboard tiến độ lớp |
+| Lớp học | F1-23→28 | Tạo/xoá/sửa lớp, mã mời, gỡ học viên (đánh dấu đã rời lớp, giữ lịch sử làm bài — `DEC-2026-1014-keep-learning-history-on-leave`), chi tiết học viên, dashboard tiến độ lớp |
 | Nhật ký hệ thống | F1-14 | Chỉ hành động quản trị của người, không gộp sự kiện hạ tầng (đó là F4-10) |
 | Tiến độ cá nhân | F1-06, F1-07, F1-08 | Bài giải theo chủ đề, tỉ lệ Accepted, lịch sử phỏng vấn |
 | Dashboard tổng quan | F1-29 (`admin_overview`), F1-30 (`instructor_overview`) | Đọc chéo dữ liệu module khác qua domain event |

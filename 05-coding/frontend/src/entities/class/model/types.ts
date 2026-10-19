@@ -15,15 +15,29 @@ export const studentStatusSchema = z.enum([
 ]);
 export type StudentStatus = z.infer<typeof studentStatusSchema>;
 
+// Structured class schedule (owner 2026-10-11: "phần lịch học nên chi tiết hơn"), replacing the free
+// text `schedule_note`. Days are ISO weekdays, 1 = Monday ... 7 = Sunday; times are "HH:mm", dates
+// "yyyy-mm-dd". Every part is optional, a class may have no schedule at all.
+export const classScheduleSchema = z.object({
+  days: z.array(z.number().int().min(1).max(7)),
+  startTime: z.string().optional(),
+  endTime: z.string().optional(),
+  room: z.string().optional(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+  note: z.string().optional(),
+});
+export type ClassSchedule = z.infer<typeof classScheduleSchema>;
+
 // classManagement.classList.* (02-bd/screens/teacher/INS0201_class_management.md Sheet 5 Khu vực C).
 export const classSummarySchema = z.object({
   id: z.string(),
   name: z.string(),
-  scheduleNote: z.string().optional(),
+  description: z.string().optional(),
+  schedule: classScheduleSchema.optional(),
   studentCount: z.number(),
   completionPct: z.number(),
   avgScore: z.number().nullable(),
-  pendingGrading: z.number(),
   absentCount: z.number(),
   createdAt: z.string(),
 });
@@ -41,6 +55,13 @@ export const classStudentSchema = z.object({
   trend: z.array(z.number()),
   lastActiveLabel: z.string(),
   status: studentStatusSchema,
+  // Contact details the instructor uses to reach the student (owner, 2026-10-13). Optional until
+  // the identity DD fixes which profile fields an A2 may read.
+  email: z.string().optional(),
+  phone: z.string().optional(),
+  // Set when the instructor removes the learner: the enrolment row stays as history
+  // (DEC-2026-1014-keep-learning-history-on-leave), the learner just leaves the active lists.
+  leftAt: z.string().optional(),
 });
 export type ClassStudent = z.infer<typeof classStudentSchema>;
 
@@ -61,10 +82,18 @@ export const attentionItemSchema = z.object({
 });
 export type AttentionItem = z.infer<typeof attentionItemSchema>;
 
+export const classActivitySchema = z.object({
+  id: z.string(),
+  text: z.string(),
+  timeLabel: z.string(),
+  attention: z.boolean(),
+});
+export type ClassActivity = z.infer<typeof classActivitySchema>;
+
 export const classFormSchema = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
-  scheduleNote: z.string().optional(),
+  schedule: classScheduleSchema.optional(),
 });
 export type ClassForm = z.infer<typeof classFormSchema>;
 

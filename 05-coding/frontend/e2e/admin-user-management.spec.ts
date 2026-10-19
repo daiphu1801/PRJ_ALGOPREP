@@ -74,13 +74,18 @@ test("unlocking asks for confirmation and does not ask for a reason", async ({
   await page.goto("/admin/users");
 
   await page.getByRole("checkbox", { name: "Chọn Hoàng Minh Trí" }).check();
-  // The other two buttons act on rows a selection can only partly contain, so they disable.
-  await expect(
-    page.getByRole("button", { name: "Khóa tài khoản", exact: true }),
-  ).toBeDisabled();
+  // The buttons stay enabled so they can say why nothing happens: locking a selection of only
+  // locked accounts raises a warning toast instead of opening the dialog.
   await expect(
     page.getByRole("button", { name: "Mở khóa tài khoản", exact: true }),
   ).toBeEnabled();
+  await page
+    .getByRole("button", { name: "Khóa tài khoản", exact: true })
+    .click();
+  await expect(
+    page.getByText(/Không có tài khoản nào để khoá/).last(),
+  ).toBeVisible();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
 
   await page
     .getByRole("button", { name: "Mở khóa tài khoản", exact: true })

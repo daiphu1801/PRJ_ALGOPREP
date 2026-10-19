@@ -43,12 +43,6 @@ export type ProblemListItem = {
 
 export type RatioStat = { solved: number; total: number };
 
-export type ProblemCatalogSummary = {
-  solvedTotal: RatioStat;
-  /** Solved / total per level key (admin-managed list); a level missing here has no problems yet. */
-  solvedByLevel: Readonly<Record<string, RatioStat>>;
-};
-
 export type TopicProgress = { id: string; name: string } & RatioStat;
 
 export type SubmissionLanguage = "java" | "cpp" | "python";
@@ -57,16 +51,21 @@ export type InProgressProblem = {
   problemId: string;
   title: string;
   language: SubmissionLanguage;
-  /** Already display-mapped, e.g. "Sai kết quả 8/12" — mapping from `submissions.status` is BD/DD's job. */
-  lastVerdictLabel: string;
+  /** Raw `submissions.status` plus the pass ratio; the view maps it to text through i18n (F4-13). */
+  lastVerdict: OverallVerdict;
+  passedCount: number;
+  totalCount: number;
 };
 
 export type ClassAssignmentItem = {
   problemId: string;
   title: string;
   solveState: SolveState;
-  /** e.g. "3 / 5 bài · giao 24/08" — see BD Q9, hạn nộp chưa có cột DB thật. */
-  metaLabel: string;
+  /** Learner progress inside the class assignment; the view formats the label (BD Q9: no due date column). */
+  solvedCount: number;
+  totalCount: number;
+  /** ISO timestamp the assignment was given. */
+  assignedAt: string;
 };
 
 export type ClassAssignmentGroup = {
@@ -75,7 +74,6 @@ export type ClassAssignmentGroup = {
 };
 
 export type ProblemListPage = {
-  summary: ProblemCatalogSummary;
   topics: TopicProgress[];
   items: ProblemListItem[];
   inProgress: InProgressProblem[];
@@ -104,6 +102,8 @@ export type SavedProblem = {
   /** Private note, absolute per (user_id, problem_id) — F2-13. Never shared, not even with A2/A3. */
   note: string;
   savedAtLabel: string;
+  /** Unpublished or soft-hidden after the learner saved it (USR0103 Q6): still listed, cannot be opened. */
+  withdrawn?: boolean;
 };
 
 // --- Chi tiết bài tập / Workspace (USR0102) ---------------------------------------------------
@@ -121,10 +121,14 @@ export type StarterCodeKey = `${SubmissionLanguage}:${WrapperMode}`;
 
 export type SubmissionHistoryItem = {
   id: string;
-  verdictLabel: string;
+  verdict: OverallVerdict;
+  passedCount: number;
+  totalCount: number;
   language: SubmissionLanguage;
   runtimeMs: number | null;
-  submittedAtLabel: string;
+  memoryKb: number | null;
+  /** ISO timestamp; the view formats it (UTC+7). */
+  submittedAt: string;
 };
 
 export type SolutionReviewQuickInsight = {
@@ -140,12 +144,19 @@ export type ProblemDetail = {
   difficulty: Difficulty;
   topics: string[];
   submissionModel: SubmissionModel;
+  /** Markdown incl. the `## Ràng buộc` and `## Câu hỏi mở rộng` sections (USR0102 Q5): no separate column. */
   statementMd: string;
   examples: ProblemExample[];
-  constraints: string[];
-  timeLimitMs: number;
-  memoryLimitMb: number;
+  /** Effective limits per language = base limit x language multiplier (BD Sheet 5 khu H NO 7). */
+  limitsByLanguage: Record<
+    SubmissionLanguage,
+    { timeLimitMs: number; memoryLimitMb: number }
+  >;
   acRate: number | null;
+  /** Whether the current learner bookmarked this problem (`problem.bookmarks`). */
+  saved: boolean;
+  /** Only the count of hidden testcases is ever disclosed, never their content (BD Sheet 9 NO 3). */
+  hiddenTestcaseCount: number;
   starterCode: Record<StarterCodeKey, string>;
   sampleTestcases: { input: string; expectedOutput: string }[];
   mySubmissions: SubmissionHistoryItem[];
@@ -163,6 +174,9 @@ export type SubmissionRunResult = {
   passedCount: number;
   totalCount: number;
   testcases: { order: number; verdict: TestcaseVerdict }[];
+  /** Slowest testcase and largest memory among the testcases that ran (BD khu I NO 6). */
+  runtimeMs: number;
+  memoryKb: number;
 };
 
 export type SampleRunResult = {
@@ -171,5 +185,7 @@ export type SampleRunResult = {
     expectedOutput: string;
     actualOutput: string;
     passed: boolean;
+    runtimeMs: number;
+    memoryKb: number;
   }[];
 };

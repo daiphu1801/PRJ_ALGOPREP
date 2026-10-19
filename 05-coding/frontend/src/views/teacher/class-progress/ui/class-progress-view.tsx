@@ -19,42 +19,34 @@
 // class's tab.
 "use client";
 
+import { UserMinus } from "lucide-react";
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   initialsOfClassStudent,
   useClassStudents,
   useInstructorClasses,
   useRemoveStudent,
-  type StudentStatus,
+  STUDENT_STATUS_VARIANT,
 } from "@/entities/class";
 import { useT } from "@/shared/i18n";
-import { usePersistedPageSize } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
 import {
   Badge,
-  Button,
   Card,
   ConfirmDialog,
   DataTable,
+  IconAction,
   PageHeader,
   Pagination,
   FilterMenu,
   TextField,
-  type BadgeVariant,
   type DataTableColumn,
 } from "@/shared/ui";
 
-const STATUS_VARIANT: Record<StudentStatus, BadgeVariant> = {
-  insufficient_data: "neutral",
-  absent: "negative",
-  needs_support: "warn",
-  watch: "blue",
-  on_track: "success",
-};
-
-const PAGE_SIZES = [10, 20, 50] as const;
+// 20 rows per page, fixed (DEC-2026-1014-instructor-batch5-6-nav-pagination-rubric): no size picker.
+const PAGE_SIZE = 20;
 
 // Bare-svg sparkline for the "Xu hướng" column (dc.html:182) — point math mirrors
 // shared/ui/charts/stat-card-with-sparkline.tsx, kept local since this is the only table-cell use.
@@ -90,23 +82,31 @@ export function ClassProgressView() {
   const classesQuery = useInstructorClasses();
   const classes = classesQuery.data ?? [];
 
-  // Seeded from ?classId= so "Xem học viên" on a class card lands here already filtered.
+  // Class tab, search text and page live in the URL (?classId=&q=&page=, INS0203 Q6, owner
+  // 2026-10-13) so Back from a student's detail page restores them. "Xem học viên" on a class card
+  // lands here already filtered the same way.
   const searchParams = useSearchParams();
-  const [classTab, setClassTab] = useState(
-    searchParams.get("classId") ?? "all",
-  );
+  const router = useRouter();
+  const pathname = usePathname();
+  const classTab = searchParams.get("classId") ?? "all";
+  const page = Math.max(1, Number(searchParams.get("page")) || 1);
+  const [query, setQuery] = useState(searchParams.get("q") ?? "");
+  const setUrlParams = (patch: Record<string, string | null>) => {
+    const next = new URLSearchParams(searchParams.toString());
+    for (const [key, value] of Object.entries(patch)) {
+      if (value === null || value === "") next.delete(key);
+      else next.set(key, value);
+    }
+    const qs = next.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  };
+  const setPage = (value: number) =>
+    setUrlParams({ page: value > 1 ? String(value) : null });
   const [removeTarget, setRemoveTarget] = useState<{
     id: string;
     name: string;
   } | null>(null);
   const removeStudent = useRemoveStudent();
-  const [query, setQuery] = useState("");
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = usePersistedPageSize(
-    "algoprep-class-progress-page-size",
-    PAGE_SIZES,
-    10,
-  );
 
   const filterClassId = classTab === "all" ? undefined : classTab;
   const studentsQuery = useClassStudents(filterClassId);
@@ -119,8 +119,8 @@ export function ClassProgressView() {
   }, [studentsQuery.data, query]);
 
   const pageRows = filteredStudents.slice(
-    (page - 1) * pageSize,
-    page * pageSize,
+    (page - 1) * PAGE_SIZE,
+    page * PAGE_SIZE,
   );
 
   const columns: DataTableColumn<
@@ -131,7 +131,7 @@ export function ClassProgressView() {
       header: t("studentList.col.studentName"),
       render: (row) => (
         <Link
-          href={`/instructor/classes/${row.classId}/students/${row.id}`}
+          href={`/instructor/classes/${row.classId}/students/${row.id}?from=students`}
           className="flex items-center gap-2.5 font-semibold hover:underline"
         >
           <span
@@ -180,7 +180,7 @@ export function ClassProgressView() {
       key: "status",
       header: t("studentList.col.status"),
       render: (row) => (
-        <Badge variant={STATUS_VARIANT[row.status]}>
+        <Badge variant={STUDENT_STATUS_VARIANT[row.status]}>
           {t(`status.${row.status}`)}
         </Badge>
       ),
@@ -195,14 +195,13 @@ export function ClassProgressView() {
       header: "",
       align: "right",
       render: (row) => (
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-[var(--color-admin-negative)]"
+        <IconAction
+          icon={UserMinus}
+          label={t("btnRemoveStudent")}
+          ariaLabel={`${t("btnRemoveStudent")} ${row.name}`}
+          tone="danger"
           onClick={() => setRemoveTarget({ id: row.id, name: row.name })}
-        >
-          {t("btnRemoveStudent")}
-        </Button>
+        />
       ),
     },
   ];
@@ -223,17 +222,19 @@ export function ClassProgressView() {
             value={query}
             onChange={(event) => {
               setQuery(event.target.value);
-              setPage(1);
+              setUrlParams({ q: event.target.value.trim(), page: null });
             }}
             wrapperClassName="min-w-[220px] flex-1"
           />
           <FilterMenu
             label={t("studentList.classTabs")}
             value={classTab}
-            onValueChange={(value) => {
-              setClassTab(value);
-              setPage(1);
-            }}
+            onValueChange={(value) =>
+              setUrlParams({
+                classId: value === "all" ? null : value,
+                page: null,
+              })
+            }
             options={[
               { value: "all", label: t("filterAll") },
               ...classes.map((c) => ({ value: c.id, label: c.name })),
@@ -265,18 +266,12 @@ export function ClassProgressView() {
 
         <Pagination
           page={page}
-          pageSize={pageSize}
+          pageSize={PAGE_SIZE}
           total={filteredStudents.length}
           onPageChange={setPage}
-          pageSizeOptions={PAGE_SIZES}
-          pageSizeLabel={t("pageSizeLabel")}
-          onPageSizeChange={(size) => {
-            setPageSize(size);
-            setPage(1);
-          }}
           summary={t("pageSummary", {
             page,
-            total: Math.max(1, Math.ceil(filteredStudents.length / pageSize)),
+            total: Math.max(1, Math.ceil(filteredStudents.length / PAGE_SIZE)),
           })}
           previousLabel={t("previous")}
           nextLabel={t("next")}

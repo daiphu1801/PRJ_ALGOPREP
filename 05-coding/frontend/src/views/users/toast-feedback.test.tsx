@@ -10,6 +10,7 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { resetRecallAndBookmarkState } from "@/entities/interview-question";
 import { toast, useToasts } from "@/shared/lib/toast-store";
 import { InterviewBankListView } from "./interview-bank-list/ui/interview-bank-list-view";
 import { InterviewQuestionDetailView } from "./interview-question-detail/ui/interview-question-detail-view";
@@ -24,6 +25,7 @@ import { SubmissionResultView } from "./submission-result/ui/submission-result-v
 
 vi.mock("@/shared/i18n", () => ({
   useT: () => (key: string) => key,
+  useLocale: () => "vi",
 }));
 vi.mock("next/navigation", () => ({
   useParams: () => ({ problemId: "1", submissionId: "SB-90412" }),
@@ -36,14 +38,19 @@ function observe() {
   return () => toasts.result.current.map((item) => [item.tone, item.message]);
 }
 
-afterEach(() => act(() => toast.clear()));
+afterEach(() => {
+  vi.useRealTimers();
+  act(() => toast.clear());
+  resetRecallAndBookmarkState();
+});
 
 describe("student views raise toasts for operation results", () => {
-  it("saved problems: un-saving a bookmark and Enter in search", () => {
+  it("saved problems: un-saving offers Undo (no toast) and Enter in search", () => {
     const read = observe();
     render(<SavedProblemsView />);
     fireEvent.click(screen.getAllByText("table.btnUnsave")[0]!);
-    expect(read()).toEqual([["success", "toast.unsaved"]]);
+    // Un-save is confirmed by an info toast that carries the Undo action.
+    expect(read()).toEqual([["info", "undo.message"]]);
     fireEvent.keyDown(screen.getByPlaceholderText("filter.searchPlaceholder"), {
       key: "Enter",
     });
@@ -87,12 +94,15 @@ describe("student views raise toasts for operation results", () => {
     vi.useFakeTimers();
     const read = observe();
     render(<ProblemDetailView />);
+    // Problem 1 starts saved: first click un-saves, second saves again.
+    fireEvent.click(screen.getByText("panel.btnUnsave"));
+    expect(read()).toEqual([["success", "toast.unsaved"]]);
     fireEvent.click(screen.getByText("panel.btnSave"));
-    expect(read()).toEqual([["success", "toast.saved"]]);
+    expect(read().at(-1)).toEqual(["success", "toast.saved"]);
     fireEvent.click(screen.getByText("taskbar.btnRun"));
     act(() => void vi.advanceTimersByTime(500));
-    expect(read().at(-1)?.[0]).toBe("success");
-    vi.useRealTimers();
+    // The mock run alternates pass and fail, so either tone is a valid result.
+    expect(["success", "warning"]).toContain(read().at(-1)?.[0]);
   });
 
   it("submission result: copy without clipboard support raises error", () => {

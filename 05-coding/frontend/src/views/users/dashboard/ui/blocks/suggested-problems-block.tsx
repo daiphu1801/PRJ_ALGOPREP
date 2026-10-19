@@ -11,7 +11,7 @@ import {
   type ProblemListItem,
 } from "@/entities/problem";
 import { useTopicProgress } from "@/entities/progress";
-import { deriveSkillRadar } from "../../model/derive-skill-radar";
+import { scoreTopics } from "../../model/derive-skill-radar";
 import { useT } from "@/shared/i18n";
 import {
   Badge,
@@ -30,7 +30,7 @@ import {
  * problem titles to keep in step with the first.
  *
  * Ranking rule (01-rd/screens/users/USR0601_dashboard.md mục 4 Q2 — plain rule, no AI call):
- * unsolved problems first, then problems whose topic scores lowest on the skill radar. That ties
+ * unsolved problems first, then problems whose topic scores lowest by the same score the skill radar plots. That ties
  * the suggestion to the same weakness the greeting and radar call out, instead of being a third
  * independent opinion about what the learner is bad at.
  */
@@ -50,11 +50,11 @@ export function SuggestedProblemsBlock() {
   // re-sort the whole catalogue for nothing.
   const [page] = useState(fetchProblemListPage);
   const weakestFirst = useMemo(() => {
-    const radar = topicsQuery.data ? deriveSkillRadar(topicsQuery.data) : [];
+    const scored = topicsQuery.data ? scoreTopics(topicsQuery.data) : [];
     const scoreByTopic = new Map(
-      radar.map((point) => [point.topicName.toLowerCase(), point.score]),
+      scored.map((point) => [point.topicName.toLowerCase(), point.score]),
     );
-    // Topics with no radar score sort as 100 — "nothing known against them", so they rank below a
+    // Topics with no score sort as 100 — "nothing known against them", so they rank below a
     // topic the learner is measurably weak at, rather than above everything on a missing value.
     const weaknessOf = (problem: ProblemListItem) =>
       Math.min(
@@ -81,25 +81,30 @@ export function SuggestedProblemsBlock() {
     )
     .slice(0, SUGGESTION_COUNT);
 
+  const solveDot = (problem: ProblemListItem) => (
+    <span
+      role="img"
+      aria-label={t(`solveState.${problem.solveState}`)}
+      className="inline-block h-2 w-2 shrink-0 rounded-full"
+      style={{
+        background: `var(${
+          problem.solveState === "solved"
+            ? "--color-success"
+            : problem.solveState === "attempted"
+              ? "--color-admin-warn"
+              : "--color-border"
+        })`,
+      }}
+    />
+  );
+
   const columns: DataTableColumn<ProblemListItem>[] = [
     {
       key: "title",
       header: t("suggested.colProblem"),
       render: (problem) => (
         <div className="flex min-w-0 items-center gap-2.5">
-          <span
-            aria-label={t(`solveState.${problem.solveState}`)}
-            className="inline-block h-2 w-2 shrink-0 rounded-full"
-            style={{
-              background: `var(${
-                problem.solveState === "solved"
-                  ? "--color-success"
-                  : problem.solveState === "attempted"
-                    ? "--color-admin-warn"
-                    : "--color-border"
-              })`,
-            }}
-          />
+          {solveDot(problem)}
           <span className="shrink-0 font-mono text-[11.5px] text-[var(--color-text-subtle)]">
             {problem.code}
           </span>
@@ -151,7 +156,7 @@ export function SuggestedProblemsBlock() {
   return (
     <section aria-label={t("suggested.title")} className="glass-card p-3">
       <div className="mb-3 flex items-baseline justify-between gap-3">
-        <h3 className="text-sm font-semibold">{t("suggested.title")}</h3>
+        <h2 className="text-sm font-semibold">{t("suggested.title")}</h2>
         <span className="font-mono text-xs text-[var(--color-text-subtle)]">
           {t("suggested.count", { count: rows.length })}
         </span>
@@ -182,7 +187,7 @@ export function SuggestedProblemsBlock() {
                 type="button"
                 aria-pressed={topicId === topic.id}
                 onClick={() => setTopicId(topic.id)}
-                className={`shrink-0 rounded-full border px-2.5 py-1 text-[12.5px] font-medium whitespace-nowrap ${
+                className={`shrink-0 rounded-full border px-3 py-2 text-[12.5px] md:px-2.5 md:py-1 font-medium whitespace-nowrap ${
                   topicId === topic.id
                     ? "border-[var(--color-primary)] text-[var(--color-primary)]"
                     : "border-[var(--color-border)] text-[var(--color-text-muted)]"
@@ -195,14 +200,65 @@ export function SuggestedProblemsBlock() {
         </div>
       </div>
 
-      <DataTable
-        caption={t("suggested.title")}
-        columns={columns}
-        rows={rows}
-        rowKey={(problem) => problem.id}
-        emptyMessage={t("suggested.empty")}
-        minWidth={520}
-      />
+      {/* A phone cannot hold four columns: the table scrolled sideways and cut the topic off with no sign
+          that more was there. Below `md` each problem is a card (title line, then topic, level, AC rate);
+          from `md` up the table is unchanged. Both are in the page, CSS picks one. */}
+      <div className="hidden md:block">
+        <DataTable
+          caption={t("suggested.title")}
+          columns={columns}
+          rows={rows}
+          rowKey={(problem) => problem.id}
+          emptyMessage={t("suggested.empty")}
+          minWidth={520}
+        />
+      </div>
+      <ul className="flex flex-col gap-2 md:hidden">
+        {rows.length === 0 ? (
+          <li className="py-6 text-center text-[13px] text-[var(--color-text-muted)]">
+            {t("suggested.empty")}
+          </li>
+        ) : (
+          rows.map((problem) => (
+            <li
+              key={problem.id}
+              className="rounded-lg border border-[var(--color-border)] p-3"
+            >
+              <div className="flex items-start gap-2.5">
+                <span className="mt-[7px]">{solveDot(problem)}</span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                    <span className="font-mono text-[11.5px] text-[var(--color-text-subtle)]">
+                      {problem.code}
+                    </span>
+                    <Link
+                      href={`/problems/${problem.id}`}
+                      className="font-medium hover:underline"
+                    >
+                      {problem.title}
+                    </Link>
+                    {problem.submissionModel !== "stdioOnly" && (
+                      <Badge variant="cyan">{t("suggested.tagFunction")}</Badge>
+                    )}
+                  </div>
+                  <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[12.5px] text-[var(--color-text-muted)]">
+                    <span>{problem.topics[0]}</span>
+                    <Badge
+                      variant={problemLevelTone(levels, problem.difficulty)}
+                    >
+                      {problemLevelLabel(levels, problem.difficulty)}
+                    </Badge>
+                    <span className="ml-auto font-mono">
+                      {t("suggested.colAcRate")}{" "}
+                      {problem.acRate === null ? "-" : `${problem.acRate}%`}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </li>
+          ))
+        )}
+      </ul>
     </section>
   );
 }

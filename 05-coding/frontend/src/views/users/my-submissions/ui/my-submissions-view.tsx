@@ -1,11 +1,8 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md section 10.2 (USR0202_my_submissions).
 //
-// Layout follows 02-bd/screens/users/USR0202_my_submissions.md Sheet 4.4: stats strip (A), filter
-// toolbar (B), history table (C), footer + pagination (D). Reference mockup:
-// 09-layoutBase/Bài đã nộp.dc.html.
-//
-// Stats are computed from raw counters only (`total_submissions`, `accepted_count`,
-// `first_try_accepted_count`) — there is no `acceptedRate` column, per the BD V0.2 fix note. Filter
+// Layout follows 02-bd/screens/users/USR0202_my_submissions.md Sheet 4.4: filter toolbar (B),
+// history table (C), footer + pagination (D). The stats strip (A) was removed 2026-10-18 (owner: no
+// list screen carries a KPI strip). Reference mockup: 09-layoutBase/Bài đã nộp.dc.html. Filter
 // state lives in local state here rather than the URL (BD calls for `q`/`verdict`/`language`/`page`
 // query params, deferred: no DD yet to lock the param names against).
 "use client";
@@ -13,14 +10,22 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
+  problemLevelLabel,
+  problemLevelTone,
+  useProblemLevels,
+} from "@/entities/problem";
+import {
   fetchMySubmissionsPage,
-  fetchMySubmissionStats,
   type LanguageFilter,
   type SubmissionListItem,
   type VerdictFilter,
 } from "@/entities/submission";
-import { useT } from "@/shared/i18n";
-import { usePersistedPageSize } from "@/shared/lib";
+import { useLocale, useT } from "@/shared/i18n";
+import {
+  formatDateVN,
+  usePersistedPageSize,
+  type DateLocale,
+} from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
 import {
   Badge,
@@ -30,7 +35,6 @@ import {
   Pagination,
   FilterBar,
   FilterMenu,
-  StatCard,
   type BadgeVariant,
   type DataTableColumn,
 } from "@/shared/ui";
@@ -39,17 +43,20 @@ const VERDICT_VARIANT: Record<string, BadgeVariant> = {
   ACCEPTED: "success",
   WRONG_ANSWER: "negative",
   TIME_LIMIT_EXCEEDED: "warn",
-  MEMORY_LIMIT_EXCEEDED: "warn",
+  SYSTEM_ERROR: "warn",
   RUNTIME_ERROR: "negative",
   COMPILE_ERROR: "warn",
 };
 
 // 20 is the default; the picker lets the learner choose, remembered per browser.
 const PAGE_SIZES = [10, 20, 50] as const;
+// BD USR0202 Sheet 9 NO 3: the search box takes at most 100 characters.
+const SEARCH_MAX_LENGTH = 100;
 
 export function MySubmissionsView() {
   const t = useT("mySubmissions");
-  const [stats] = useState(fetchMySubmissionStats);
+  const locale = useLocale() as DateLocale;
+  const levels = useProblemLevels();
   const [query, setQuery] = useState("");
   const [verdict, setVerdict] = useState<VerdictFilter>("ALL");
   const [language, setLanguage] = useState<LanguageFilter>("ALL");
@@ -64,19 +71,6 @@ export function MySubmissionsView() {
     () => fetchMySubmissionsPage({ query, verdict, language, page, pageSize }),
     [query, verdict, language, page, pageSize],
   );
-
-  const acceptedRate =
-    stats.totalSubmissions === 0
-      ? null
-      : Math.round((stats.acceptedCount / stats.totalSubmissions) * 100);
-  const firstTryRate =
-    stats.acceptedCount === 0
-      ? null
-      : Math.round((stats.firstTryAcceptedCount / stats.acceptedCount) * 100);
-  const topLanguageRate =
-    stats.totalSubmissions === 0 || !stats.topLanguage
-      ? null
-      : Math.round((stats.topLanguageCount / stats.totalSubmissions) * 100);
 
   function updateFilter<T>(setter: (value: T) => void, value: T) {
     setter(value);
@@ -99,7 +93,7 @@ export function MySubmissionsView() {
       width: "160px",
       render: (row) => (
         <span className="text-[12.5px] text-[var(--color-text-muted)]">
-          {new Date(row.submittedAt).toLocaleString("vi-VN")}
+          {formatDateVN(row.submittedAt, { locale, withTime: true })}
         </span>
       ),
     },
@@ -107,12 +101,19 @@ export function MySubmissionsView() {
       key: "problem",
       header: t("table.col.problem"),
       render: (row) => (
-        <Link
-          href={`/problems/${row.problemSlug}`}
-          className="font-semibold hover:underline"
-        >
-          {row.problemCode} · {row.problemTitle}
-        </Link>
+        <div className="min-w-0">
+          <Link
+            href={`/problems/${row.problemSlug}`}
+            className="font-semibold hover:underline"
+          >
+            {row.problemCode} · {row.problemTitle}
+          </Link>
+          <span className="mt-1 flex">
+            <Badge variant={problemLevelTone(levels, row.difficulty)}>
+              {problemLevelLabel(levels, row.difficulty)}
+            </Badge>
+          </span>
+        </div>
       ),
     },
     {
@@ -199,42 +200,13 @@ export function MySubmissionsView() {
     <div className="p-6">
       <PageHeader title={t("title")} description={t("subtitle")} />
 
-      <div className="mb-4 grid gap-3.5 [grid-template-columns:repeat(auto-fit,minmax(200px,1fr))]">
-        <StatCard label={t("stats.total")} value={stats.totalSubmissions} />
-        <StatCard
-          label={t("stats.accepted")}
-          value={t("stats.acceptedValue", {
-            count: stats.acceptedCount,
-            rate: acceptedRate ?? "—",
-          })}
-        />
-        <StatCard
-          label={t("stats.firstTry")}
-          value={t("stats.firstTryValue", {
-            firstTry: stats.firstTryAcceptedCount,
-            accepted: stats.acceptedCount,
-            rate: firstTryRate ?? "—",
-          })}
-        />
-        <StatCard
-          label={t("stats.topLanguage")}
-          value={
-            stats.topLanguage
-              ? t("stats.topLanguageValue", {
-                  language: t(`language.${stats.topLanguage}`),
-                  rate: topLanguageRate ?? "—",
-                })
-              : "-"
-          }
-        />
-      </div>
-
       <div className="glass-card border border-[var(--color-border)] px-5 py-4">
         <FilterBar
           search={{
             label: t("filter.searchLabel"),
             placeholder: t("filter.searchPlaceholder"),
             value: query,
+            maxLength: SEARCH_MAX_LENGTH,
             onChange: (next) => updateFilter(setQuery, next),
             onSubmit: announceSearch,
           }}
@@ -252,6 +224,7 @@ export function MySubmissionsView() {
                 label: t("verdict.TIME_LIMIT_EXCEEDED"),
               },
               { value: "COMPILE_ERROR", label: t("verdict.COMPILE_ERROR") },
+              { value: "RUNTIME_ERROR", label: t("verdict.RUNTIME_ERROR") },
             ]}
           />
           <FilterMenu

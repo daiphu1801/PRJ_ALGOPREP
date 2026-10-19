@@ -5,14 +5,16 @@
 // of acRate/lastSubmittedAt/daily bars is [SoT: Suy luận] (RD mục 3 leaves the exact algorithm open,
 // Q1/Q3) — the mock scales the prototype's 30-day numbers down for "7d" and up for "all" so the tabs
 // visibly do something, not a real time-window query.
-import type {
-  Difficulty,
-  DifficultyProgress,
-  InterviewSummary,
-  ProgressOverview,
-  ProgressRange,
-  SubmissionDailyCount,
-  TopicProgress,
+import {
+  RUBRIC_CRITERIA,
+  type Difficulty,
+  type DifficultyProgress,
+  type InterviewSummary,
+  type ProgressOverview,
+  type ProgressRange,
+  type RecentInterviewSession,
+  type SubmissionDailyCount,
+  type TopicProgress,
 } from "../../model/types";
 
 function delay<T>(value: T, ms = 500): Promise<T> {
@@ -135,17 +137,73 @@ export function fakeGetDifficultyBreakdown(): Promise<DifficultyProgress[]> {
   );
 }
 
-export function fakeGetInterviewSummary(): Promise<InterviewSummary> {
+// Interview sessions, newest first, rubric scores on the 0 to 10 scale (owner decision 2026-10-18:
+// the former 0-5 numbers doubled). `score` is derived as the mean of the 4 criteria, so the card's
+// bars and its total never disagree. Fixed anchor date instead of "now": the range filter stays
+// deterministic (no clock, no randomness).
+const INTERVIEW_ANCHOR = "2026-09-20";
+const RANGE_DAYS: Record<ProgressRange, number> = {
+  "7d": 7,
+  "30d": 30,
+  all: Number.POSITIVE_INFINITY,
+};
+// Owner decision (D3): the dashboard block shows the 3 most recent sessions.
+const RECENT_SESSION_LIMIT = 3;
+
+const round1 = (n: number) => Math.round(n * 10) / 10;
+const mean = (values: number[]) =>
+  values.reduce((sum, v) => sum + v, 0) / values.length;
+
+// Order matches RUBRIC_CRITERIA: CLARITY, TECHNICAL_ACCURACY, PUSHBACK_HANDLING, COMPLEXITY_AWARENESS.
+const SESSION_ROWS: [string, string, number, number, number, number][] = [
+  ["sess-1", "2026-09-18", 8.5, 8.5, 7, 8.5],
+  ["sess-2", "2026-09-16", 8, 8, 6.5, 8],
+  ["sess-3", "2026-09-10", 7.5, 7.5, 6, 7.5],
+  ["sess-4", "2026-09-03", 8, 7.5, 6.5, 7],
+  ["sess-5", "2026-08-29", 8, 8, 6.5, 7.5],
+  ["sess-6", "2026-08-21", 7, 7.5, 6, 7],
+  ["sess-7", "2026-08-05", 6.5, 7, 5.5, 6.5],
+  ["sess-8", "2026-07-22", 6, 6.5, 5.5, 6],
+];
+
+export function fakeGetInterviewSummary(
+  range: ProgressRange = "all",
+): Promise<InterviewSummary> {
+  const anchor = Date.parse(INTERVIEW_ANCHOR);
+  const sessions: RecentInterviewSession[] = SESSION_ROWS.filter(
+    ([, startedAt]) =>
+      (anchor - Date.parse(startedAt)) / 86_400_000 < RANGE_DAYS[range],
+  ).map(([sessionId, startedAt, ...scores]) => ({
+    sessionId,
+    startedAt,
+    score: round1(mean(scores)),
+    rubricScores: {
+      CLARITY: scores[0],
+      TECHNICAL_ACCURACY: scores[1],
+      PUSHBACK_HANDLING: scores[2],
+      COMPLEXITY_AWARENESS: scores[3],
+    },
+  }));
+
+  const scored = sessions.filter((s) => s.rubricScores !== null);
+  // Weakest = lowest mean over the sessions in range; a tie goes to the earlier criterion.
+  const weakest = scored.length
+    ? RUBRIC_CRITERIA.reduce((low, code) =>
+        mean(scored.map((s) => s.rubricScores![code])) <
+        mean(scored.map((s) => s.rubricScores![low]))
+          ? code
+          : low,
+      )
+    : null;
+
   return delay(
     {
-      completedSessionCount: 23,
-      averageScore: 3.8,
-      weakestCriterionCode: "PUSHBACK_HANDLING",
-      recentSessions: [
-        { sessionId: "sess-1", startedAt: "2026-09-18", score: 4.1 },
-        { sessionId: "sess-2", startedAt: "2026-09-10", score: 3.6 },
-        { sessionId: "sess-3", startedAt: "2026-08-29", score: 3.9 },
-      ],
+      completedSessionCount: sessions.length,
+      averageScore: scored.length
+        ? round1(mean(scored.map((s) => s.score!)))
+        : null,
+      weakestCriterionCode: weakest,
+      recentSessions: sessions.slice(0, RECENT_SESSION_LIMIT),
     },
     500,
   );

@@ -21,6 +21,7 @@ export function ActivityBlock() {
       emptyMessage={t("activity.empty")}
       errorMessage={t("errorGeneric")}
       retryLabel={t("retry")}
+      headingLevel={2}
       minHeightClassName="min-h-[180px]"
     >
       {calendar && (

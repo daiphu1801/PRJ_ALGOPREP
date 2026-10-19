@@ -41,7 +41,11 @@ export function NavGroupHeader({
         )}
       >
         <Icon aria-hidden="true" className="h-4 w-4 shrink-0" />
-        {!collapsed && <span className="truncate normal-case">{label}</span>}
+        {!collapsed && (
+          <span className="min-w-0 text-left normal-case leading-snug">
+            {label}
+          </span>
+        )}
       </span>
       {/* Hidden entirely in the collapsed rail rather than shown rotated-but-cramped. */}
       {!collapsed && (

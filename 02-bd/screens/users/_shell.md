@@ -1,5 +1,9 @@
 # BD — Khung điều hướng dùng chung khu Người học (`_shell`)
 
+> **Cập nhật 2026-10-18 (Claude):** ghi các quyết định owner `DEC-2026-1018-usr-open-questions-phase1-scope` và `DEC-2026-1018-usr-open-questions-phase2-5`: đóng Q3 (chân trang câu trạng thái tĩnh), Q4 (bắt buộc đăng nhập), Q5 (hamburger dưới ngưỡng hẹp); sửa mục 3 theo. File này không có bảng lịch sử sửa đổi, nên ghi chú cập nhật nằm ở đây.
+
+> **Cập nhật 2026-10-19 (Claude):** rà soát bản dựng. (1) Ngăn kéo nav (hamburger) và menu avatar đóng bằng phím Escape và trả focus về nút mở; menu avatar là danh sách liên kết thường, không còn `role="menu"` vì chưa có điều hướng bằng phím mũi tên; lớp phủ bấm-để-đóng nằm ngoài thứ tự Tab (`widgets/app-shell/ui/student-header.tsx`). (2) Thẻ "GO-JUDGE" ở header và chân trang dùng chung một component `judge-engine-tag.tsx`. (3) **Ngoại lệ chân trang:** màn `problem_detail` gắn `data-fullscreen-view` nên chân trang bị ẩn từ `lg` trở lên (`globals.css:684-712`); owner chốt giữ, ghi ở `USR0102` mục 4.4 điểm lệch (4). Dưới `lg` chân trang vẫn hiện.
+>
 > Không phải một màn trong `01-rd/screens/` — đây là **khung bao** mà mọi màn của khu Người học (A1) dùng
 > chung, nên không cấp mã màn và giữ nguyên tên file
 > [Nguồn: 02-bd/_rules/bd-template-9sheet.md:174-175]. Vì không phải màn, file này **không** theo mẫu
@@ -102,11 +106,12 @@ Ba nội dung, lấy từ prototype duy nhất có chân trang
 | Khu | Nội dung |
 | :--- | :--- |
 | Trái | "AlgoPrep" + thẻ "GO-JUDGE" + dòng bản quyền "© 2026 AlgoPrep — đồ án tốt nghiệp" |
-| Giữa | Trạng thái cụm: "go-judge cluster hoạt động · hàng đợi {n} bài" |
+| Giữa | Trạng thái cụm, câu tĩnh: "go-judge cluster hoạt động" (không có số hàng đợi, Q3) |
 | Phải | Số phiên bản |
 
-Khác chân trang khu Admin ở một điểm đáng chú ý: dòng trạng thái ở đây có **số bài đang chờ trong hàng
-đợi**, tức là một con số thật đọc từ `judge-orchestration`, không phải câu tĩnh. Xem mục 6 Q3.
+Prototype tĩnh có thêm **số bài đang chờ trong hàng đợi** ở dòng trạng thái (một con số thật đọc từ
+`judge-orchestration`). **Bản thiết kế bỏ con số đó**: dòng trạng thái là câu tĩnh, không polling máy chủ
+(đã chốt 2026-10-18, xem mục 6 Q3). Bản dựng khớp: `05-coding/frontend/src/widgets/app-shell/ui/student-footer.tsx:39-45`.
 
 ## 4. Vùng nội dung
 
@@ -121,15 +126,15 @@ Scope màu riêng của khu Người học, cùng cơ chế token ngữ nghĩa �
 `09-layoutBase/**` là bằng chứng bố cục chỉ-đọc, không phải design system
 [Nguồn: 02-bd/_rules/bd-template-9sheet.md:82].
 
-## 6. Câu hỏi mở — **ĐÃ ĐÓNG 3 CÂU THEO DEC-2026-0922**
+## 6. Câu hỏi mở — **ĐÃ ĐÓNG CẢ 5 CÂU**
 
 | # | Câu hỏi | Ghi chú & Phương án đã chốt | Chủ sở hữu |
 | :-: | :--- | :--- | :--- |
 | Q1 | **Mục nav "Tổng quan" trỏ đi đâu?** | **ĐÃ ĐÓNG 2026-09-22** (`DEC-2026-0922-users-and-admin-conflict-resolutions`): Bỏ hẳn mục này; `problem_list` làm cửa vào chính của khu Người học; dashboard nằm tại `my_progress`. | Đã đóng |
 | Q2 | **Mục nav "Workspace" mở bài nào khi người dùng chưa chọn bài?** | **ĐÃ ĐÓNG 2026-09-22** (`DEC-2026-0922-users-and-admin-conflict-resolutions`): Mở bài đang làm dở gần nhất từ `judge.submissions`; nếu chưa làm bài nào thì chuyển về `problem_list`. | Đã đóng |
-| Q3 | **Số "hàng đợi {n} bài" ở chân trang lấy ở đâu, làm mới thế nào?** | Đề xuất: giữ câu trạng thái cụm tĩnh ("go-judge cluster hoạt động"), bỏ số đếm động để tránh mọi màn phải polling máy chủ. | DD `judge-orchestration` |
-| Q4 | **Khu Người học có cần trạng thái đăng nhập hay không trên khung?** | **ĐÃ ĐÓNG 2026-09-22** (`DEC-2026-0922-users-and-admin-conflict-resolutions`): Bắt buộc đăng nhập cho mọi tính năng ở đợt này; chưa đăng nhập chuyển hướng về `auth`. | Đã đóng |
-| Q5 | **Header có thu gọn trên màn hẹp không?** | Dưới ngưỡng hẹp (mobile) gom 5 mục nav vào menu hamburger, giữ thương hiệu và khối người dùng. | DD Frontend |
+| Q3 | **Số "hàng đợi {n} bài" ở chân trang lấy ở đâu, làm mới thế nào?** | **Đã chốt 2026-10-18 (owner), theo đề xuất** (`DEC-2026-1018-usr-open-questions-phase2-5`): chân trang giữ câu trạng thái cụm **tĩnh** ("go-judge cluster hoạt động"), bỏ số đếm động để mọi màn không phải polling máy chủ. Tiêu chí ponytail bậc 5 (câu hằng thay cho một lời gọi lặp). Bản dựng đã khớp (`widgets/app-shell/ui/student-footer.tsx:39-45`). | Đã đóng |
+| Q4 | **Khu Người học có cần trạng thái đăng nhập hay không trên khung?** | **ĐÃ ĐÓNG 2026-09-22** (`DEC-2026-0922-users-and-admin-conflict-resolutions`): Bắt buộc đăng nhập cho mọi tính năng ở đợt này; chưa đăng nhập chuyển hướng về `auth`. **Đã chốt lại 2026-10-18 (owner), theo đề xuất**: "chưa đăng nhập: bắt buộc đăng nhập", không có trạng thái khách, cùng câu trả lời với `02-bd/screens/users/USR0101_problem_list.md` Q1 (`DEC-2026-1018-usr-open-questions-phase1-scope`). Tiêu chí ponytail bậc 3 (không người dùng demo nào xem khu này với tư cách khách). | Đã đóng |
+| Q5 | **Header có thu gọn trên màn hẹp không?** | **Đã chốt 2026-10-18 (owner), theo đề xuất**: dưới ngưỡng hẹp (dưới `lg`) gom các mục nav vào menu hamburger, giữ thương hiệu và khối người dùng. Tiêu chí ponytail bậc 5 (một ngưỡng responsive thay cho cấu hình). Bản dựng đã khớp: nút hamburger chỉ hiện dưới `lg` (`student-header.tsx:41-49`), nav ngang ẩn dưới `lg` (`:63-66`), ngăn kéo nav mở bằng `navOpen` (`:149-158`) và thương hiệu cùng khối người dùng vẫn nằm trên thanh. | Đã đóng |
 
 ## 7. Tham chiếu
 

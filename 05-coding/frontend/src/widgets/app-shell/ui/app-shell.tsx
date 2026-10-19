@@ -8,10 +8,11 @@ import {
   SkipLink,
 } from "@/shared/ui";
 import { SHELL_MAX_WIDTH_PX } from "@/shared/api/config";
-import { AdminFooter } from "./admin-footer";
+import { AreaFooter } from "./area-footer";
 import { AdminSidebar } from "./admin-sidebar";
 import { AdminToolbar } from "./admin-toolbar";
 import { InstructorSidebar } from "./instructor-sidebar";
+import { InstructorToolbar } from "./instructor-toolbar";
 import { StudentFooter } from "./student-footer";
 import { StudentHeader } from "./student-header";
 
@@ -58,19 +59,24 @@ export async function AppShell({ area, children }: AppShellProps) {
         <main
           id={MAIN_CONTENT_ID}
           tabIndex={-1}
-          className="min-w-0 flex-1 overflow-y-auto py-4 outline-none"
+          className="flex min-w-0 flex-1 flex-col overflow-y-auto py-4 outline-none"
         >
           {/* Shared by ALL 11 Admin screens (not just admin_overview) — dc.html:104 caps the inner
               content wrapper at 1320px. The cap now comes from shared/config/layout.ts through the
               same PageContainer the other two areas use, so all three are tuned in one place and
               share one responsive gutter (owner instruction 2026-09-27). */}
-          <PageContainer maxWidthPx={SHELL_MAX_WIDTH_PX.admin}>
+          <PageContainer
+            maxWidthPx={SHELL_MAX_WIDTH_PX.admin}
+            className="flex flex-1 flex-col"
+          >
             <AdminToolbar />
-            {children}
+            {/* `flex-1` takes the spare room, so on a short screen the footer sits at the bottom of
+                the viewport instead of right under the content (same as the Instructor area). */}
+            <div className="flex-1">{children}</div>
             {/* Shared by ALL 11 Admin screens, decided 2026-09-21 (02-bd/screens/admin/_shell.md
                 section 9) — deliberately overrides admin_overview's own footerless prototype so the
                 whole Admin area has one consistent chrome instead of one screen missing it. */}
-            <AdminFooter />
+            <AreaFooter />
           </PageContainer>
         </main>
       </div>
@@ -86,18 +92,20 @@ export async function AppShell({ area, children }: AppShellProps) {
       // No LiquidGlassBackdrop here: those 3 colored blobs are a 1:1 port of the ADMIN prototype
       // (Admin - Tổng quan.dc.html:51-53). Every Student prototype instead sits on a plain neutral
       // canvas, so borrowing the admin blobs would paint in colors the Student screens never had.
-      <div className="flex min-h-screen flex-col bg-[var(--color-background)] text-[var(--color-text)]">
+      <div className="student-shell flex min-h-screen flex-col bg-[var(--color-background)] text-[var(--color-text)]">
         <SkipLink label={t("skipToContent")} />
         <StudentHeader />
-        {/* Header height published as a custom property so full-height views (Workspace,
-            Mock Interview) can size themselves against the real chrome instead of each
-            hard-coding its own guess — 14px top pad + 58px bar + 12px bottom pad. */}
+        {/* Full-height views (Workspace, running Mock Interview) opt in with `data-fullscreen-view`
+            (globals.css) and take the leftover height from flex — no header-height constant. */}
         <main
           id={MAIN_CONTENT_ID}
           tabIndex={-1}
-          className="flex-1 outline-none [--app-header-h:84px]"
+          className="flex-1 outline-none"
         >
-          <PageContainer maxWidthPx={SHELL_MAX_WIDTH_PX.student}>
+          <PageContainer
+            maxWidthPx={SHELL_MAX_WIDTH_PX.student}
+            className="student-main-inner"
+          >
             {children}
           </PageContainer>
         </main>
@@ -105,7 +113,10 @@ export async function AppShell({ area, children }: AppShellProps) {
             exposed as the `contentinfo` landmark, so a screen reader loses the "page footer"
             jump target. It still goes through the same PageContainer so it lines up with the
             content above it. */}
-        <PageContainer maxWidthPx={SHELL_MAX_WIDTH_PX.student}>
+        <PageContainer
+          maxWidthPx={SHELL_MAX_WIDTH_PX.student}
+          className="student-footer-wrap"
+        >
           <StudentFooter />
         </PageContainer>
       </div>
@@ -132,12 +143,19 @@ export async function AppShell({ area, children }: AppShellProps) {
       <main
         id={MAIN_CONTENT_ID}
         tabIndex={-1}
-        className="min-w-0 flex-1 overflow-y-auto py-[18px] outline-none"
+        className="flex min-w-0 flex-1 flex-col overflow-y-auto py-4 outline-none"
       >
         {/* dc.html:112 caps the content wrapper at 1320px on every Instructor screen — same shared
-            container and same config entry as the other two areas. */}
-        <PageContainer maxWidthPx={SHELL_MAX_WIDTH_PX.instructor}>
-          {children}
+            container and same config entry as the other two areas. The container grows to the full
+            height of <main> and the screen takes the spare room (`flex-1`), so on a short screen
+            the footer sits at the bottom of the viewport instead of right under the content. */}
+        <PageContainer
+          maxWidthPx={SHELL_MAX_WIDTH_PX.instructor}
+          className="flex flex-1 flex-col"
+        >
+          <InstructorToolbar />
+          <div className="flex-1">{children}</div>
+          <AreaFooter namespace="instructorNav" />
         </PageContainer>
       </main>
     </div>

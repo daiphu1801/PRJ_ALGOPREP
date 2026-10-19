@@ -1,8 +1,8 @@
 {
-  "_": "Luong cau hinh prompt va trong so rubric cua AI, co phien ban va khoi phuc duoc, cua actor A3. Nguon: US-A3-04 (01-rd/req/user_stories/a3_admin.md), 01-rd/req/ai-review.md (F5-23), 02-bd/architecture/ai-review.md muc 2 (prompt_templates / rubric_configs, KHONG thiet ke backend cho nut Chay doi chieu), muc 5 (Lop 1 chua cau chi dan rang buoc, A2/A3 khong sua duoc).",
+  "_": "Cap nhat 2026-10-18 theo ADM0301 V2.x (02-bd/screens/admin/ADM0301_ai_config.md): bo rubric (DEC-2026-1014-drop-solution-review-rubric), ADMIN chon model theo prompt (DEC-2026-1010-admin-selects-model-per-prompt), luong nhap roi \"Luu va phat hanh\" mot giao dich nguyen tu (DEC-2026-1014-batch7-remaining-open-questions Q3). Ten endpoint la ten nghiep vu cua BD muc 7.3; duong dan REST la [SoT: Suy luan] vi chua co 03-dd/api/ai-review.md. KHONG ve nut Chay doi chieu (khong co backend). Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen.",
   "_pham_vi": "RD dong 86-93 giu nut \"Chay doi chieu\" o tang giao dien; so do nay khong ve mot endpoint backend cho no.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Cấu hình prompt và rubric của AI (Quản trị viên) (1/3)",
+  "title": "Sơ đồ tuần tự chi tiết - Cấu hình prompt và model của AI (Quản trị viên) (1/4)",
   "covers": [
     "F5-23"
   ],
@@ -27,17 +27,17 @@
       {
         "name": "PostgreSQL",
         "role": "datastore",
-        "stereo": "schema ai"
+        "stereo": "ai.prompt_templates"
       }
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 1 - Nạp bản đang hiệu lực và lịch sử phiên bản (F5-23)"
+        "phase": "Giai đoạn 1 - Nạp prompt của ba tính năng và danh sách model được duyệt (F5-23)"
       },
       {
         "from": "Quản trị viên",
         "to": "Quản trị viên",
-        "text": "Mở màn Cấu hình AI"
+        "text": "Mở màn Prompt và chất lượng AI"
       },
       {
         "from": "Quản trị viên",
@@ -47,38 +47,33 @@
       {
         "from": "AiConfigController",
         "to": "AiConfigController",
-        "text": "Kiểm quyền AI_CONFIG:READ - khác quyền soạn đề của giảng viên"
+        "text": "Kiểm tra quyền xem cấu hình AI (AI_CONFIG:READ)"
       },
       {
         "from": "AiConfigController",
         "to": "AiConfigService",
-        "text": "getActiveTemplateWithHistory()"
+        "text": "Yêu cầu danh sách prompt"
       },
       {
         "from": "AiConfigService",
         "to": "PostgreSQL",
-        "text": "findActiveAndVersions()"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "PostgreSQL",
-        "text": "SELECT prompt_templates, rubric_configs ORDER BY version DESC (PromptRepository)"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "PostgreSQL",
-        "text": "Bản đang dùng + danh sách phiên bản cũ (PromptRepository)"
+        "text": "Đọc bản đang chạy và bản nháp từng tính năng"
       },
       {
         "from": "PostgreSQL",
         "to": "AiConfigService",
-        "text": "PromptTemplate, List<Version>",
+        "text": "Bản đang chạy, bản nháp nếu có",
         "kind": "return"
       },
       {
         "from": "AiConfigService",
+        "to": "AiConfigService",
+        "text": "Lấy danh sách model được duyệt từ cấu hình"
+      },
+      {
+        "from": "AiConfigService",
         "to": "AiConfigController",
-        "text": "AiConfigDto",
+        "text": "Prompt của ba tính năng kèm model",
         "kind": "return"
       },
       {
@@ -90,7 +85,7 @@
       {
         "from": "Quản trị viên",
         "to": "Quản trị viên",
-        "text": "Nội dung prompt, trọng số rubric, lịch sử phiên bản"
+        "text": "Ba tab tính năng, mỗi tab kèm model và nguyên tắc trả lời"
       }
     ]
   },

@@ -23,6 +23,11 @@ export type AdminUser = {
    */
   lastActiveLabel: string;
   status: AdminUserStatus;
+  /**
+   * `password_hash IS NOT NULL` on the server (DD `ListUsers`, DEC-2026-1011). Absent means true;
+   * false marks an OAuth-only account, whose reset sends provider guidance instead of a temporary password.
+   */
+  hasPassword?: boolean;
 };
 
 export type RoleDistributionItem = {

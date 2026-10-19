@@ -415,7 +415,7 @@ Hình 10.33 là luồng duy nhất trong nhóm có điểm rẽ nhánh thật: "
 
 #### 10.3.1. Sơ đồ Use Case
 
-Giảng viên có ba nhóm chức năng: quản lý lớp, theo dõi tiến độ, và chấm nhận xét bài nộp.
+Giảng viên có ba nhóm chức năng: quản lý lớp, theo dõi tiến độ, và xem bài nộp của học viên trong lớp (chỉ đọc; chấm tay đã bỏ ngày 2026-10-13).
 
 Ở Hình 10.36, học viên tự tham gia lớp bằng mã mời chứ giảng viên không thêm thủ công — chi tiết này quyết định thiết kế bảng dữ liệu và luồng màn hình phía sau.
 
@@ -423,42 +423,39 @@ Giảng viên có ba nhóm chức năng: quản lý lớp, theo dõi tiến đ�
 
 ![Hình 10.37: Use Case chi tiết - Theo dõi tiến độ lớp và học viên (Giảng viên)](08-diagram/usecase/gv/usecase_gv_theo_doi_tien_do_lop.png)
 
-![Hình 10.38: Use Case chi tiết - Chấm và nhận xét bài nộp (Giảng viên)](08-diagram/usecase/gv/usecase_gv_cham_va_nhan_xet_bai_nop.png)
+![Hình 10.38: Use Case chi tiết - Xem bài nộp của học viên trong lớp (Giảng viên)](08-diagram/usecase/gv/usecase_gv_xem_bai_nop_cua_lop.png)
 
 #### 10.3.2. Sơ đồ tuần tự
 
-Năm luồng nghiệp vụ của giảng viên. Đáng chú ý là luồng chấm tay ở Hình 10.48 đến 10.50: điểm AI chỉ mang tính tham khảo, điểm giảng viên nhập vào đè lên điểm đó và hiển thị song song để người học thấy cả hai.
+Sáu luồng nghiệp vụ của giảng viên: tạo lớp, giao bài, gỡ bài khỏi lớp, gỡ học viên và vào lại, xem tiến độ, xem bài nộp của học viên.
 
 ![Hình 10.39: Sơ đồ tuần tự - Tạo lớp học và tham gia bằng mã mời (Giảng viên) (phần 1/3)](08-diagram/sequence/gv/sequence_gv_tao_lop_va_ma_moi_p1.png)
 ![Hình 10.40: Sơ đồ tuần tự - Tạo lớp học và tham gia bằng mã mời (Giảng viên) (phần 2/3)](08-diagram/sequence/gv/sequence_gv_tao_lop_va_ma_moi_p2.png)
 ![Hình 10.41: Sơ đồ tuần tự - Tạo lớp học và tham gia bằng mã mời (Giảng viên) (phần 3/3)](08-diagram/sequence/gv/sequence_gv_tao_lop_va_ma_moi_p3.png)
 
-![Hình 10.42: Sơ đồ tuần tự - Giao bài toán cho lớp (Giảng viên) (phần 1/2)](08-diagram/sequence/gv/sequence_gv_giao_bai_cho_lop_p1.png)
-![Hình 10.43: Sơ đồ tuần tự - Giao bài toán cho lớp (Giảng viên) (phần 2/2)](08-diagram/sequence/gv/sequence_gv_giao_bai_cho_lop_p2.png)
+![Hình 10.42: Sơ đồ tuần tự - Giao bài toán cho lớp (Giảng viên)](08-diagram/sequence/gv/sequence_gv_giao_bai_cho_lop.png)
+![Hình 10.43: Sơ đồ tuần tự - Gỡ bài đã giao khỏi lớp (Giảng viên)](08-diagram/sequence/gv/sequence_gv_go_bai_khoi_lop.png)
 
-![Hình 10.44: Sơ đồ tuần tự - Gỡ học viên khỏi lớp (Giảng viên) (phần 1/2)](08-diagram/sequence/gv/sequence_gv_go_hoc_vien_khoi_lop_p1.png)
-![Hình 10.45: Sơ đồ tuần tự - Gỡ học viên khỏi lớp (Giảng viên) (phần 2/2)](08-diagram/sequence/gv/sequence_gv_go_hoc_vien_khoi_lop_p2.png)
+![Hình 10.44: Sơ đồ tuần tự - Gỡ học viên khỏi lớp và vào lại bằng mã mời (Giảng viên) (phần 1/2)](08-diagram/sequence/gv/sequence_gv_go_hoc_vien_khoi_lop_p1.png)
+![Hình 10.45: Sơ đồ tuần tự - Gỡ học viên khỏi lớp và vào lại bằng mã mời (Giảng viên) (phần 2/2)](08-diagram/sequence/gv/sequence_gv_go_hoc_vien_khoi_lop_p2.png)
 
 ![Hình 10.46: Sơ đồ tuần tự - Xem tiến độ lớp và hồ sơ học viên (Giảng viên) (phần 1/2)](08-diagram/sequence/gv/sequence_gv_xem_tien_do_lop_p1.png)
 ![Hình 10.47: Sơ đồ tuần tự - Xem tiến độ lớp và hồ sơ học viên (Giảng viên) (phần 2/2)](08-diagram/sequence/gv/sequence_gv_xem_tien_do_lop_p2.png)
+![Hình 10.48: Sơ đồ tuần tự - Xem bài nộp của học viên trong lớp (Giảng viên)](08-diagram/sequence/gv/sequence_gv_xem_bai_nop_cua_lop.png)
 
-![Hình 10.48: Sơ đồ tuần tự - Chấm tay đè lên điểm AI tham khảo (Giảng viên) (phần 1/3)](08-diagram/sequence/gv/sequence_gv_cham_tay_de_len_diem_ai_p1.png)
-![Hình 10.49: Sơ đồ tuần tự - Chấm tay đè lên điểm AI tham khảo (Giảng viên) (phần 2/3)](08-diagram/sequence/gv/sequence_gv_cham_tay_de_len_diem_ai_p2.png)
-![Hình 10.50: Sơ đồ tuần tự - Chấm tay đè lên điểm AI tham khảo (Giảng viên) (phần 3/3)](08-diagram/sequence/gv/sequence_gv_cham_tay_de_len_diem_ai_p3.png)
 
 #### 10.3.3. Sơ đồ hoạt động
 
-Ở Hình 10.52, hai bước cuối cố ý nhìn từ phía sinh viên, để thấy hệ quả của việc gán bài: bài chỉ hiện trong nhóm "bài được giao" của đúng lớp đó. Danh sách chọn bài chỉ liệt kê những bài đã xuất bản — một điều kiện lọc dữ liệu chứ không phải điểm rẽ nhánh, nên không vẽ thành nút quyết định.
+Ở Hình 10.50, hai bước cuối cố ý nhìn từ phía sinh viên, để thấy hệ quả của việc gán bài: bài chỉ hiện trong nhóm "bài được giao" của đúng lớp đó. Danh sách chọn bài chỉ liệt kê những bài đã xuất bản — một điều kiện lọc dữ liệu chứ không phải điểm rẽ nhánh, nên không vẽ thành nút quyết định.
 
-![Hình 10.51: Sơ đồ hoạt động - Tạo lớp học và tham gia bằng mã mời (Giảng viên)](08-diagram/activity/gv/activity_gv_tao_lop_va_ma_moi.png)
+![Hình 10.49: Sơ đồ hoạt động - Tạo lớp học và tham gia bằng mã mời (Giảng viên)](08-diagram/activity/gv/activity_gv_tao_lop_va_ma_moi.png)
 
-![Hình 10.52: Sơ đồ hoạt động - Giao bài toán cho lớp (Giảng viên)](08-diagram/activity/gv/activity_gv_giao_bai_cho_lop.png)
+![Hình 10.50: Sơ đồ hoạt động - Giao bài toán cho lớp (Giảng viên)](08-diagram/activity/gv/activity_gv_giao_bai_cho_lop.png)
 
-![Hình 10.53: Sơ đồ hoạt động - Gỡ học viên khỏi lớp (Giảng viên)](08-diagram/activity/gv/activity_gv_go_hoc_vien_khoi_lop.png)
+![Hình 10.51: Sơ đồ hoạt động - Gỡ học viên khỏi lớp (Giảng viên)](08-diagram/activity/gv/activity_gv_go_hoc_vien_khoi_lop.png)
 
-![Hình 10.54: Sơ đồ hoạt động - Xem tiến độ lớp và hồ sơ học viên (Giảng viên)](08-diagram/activity/gv/activity_gv_xem_tien_do_lop.png)
+![Hình 10.52: Sơ đồ hoạt động - Xem tiến độ lớp và hồ sơ học viên (Giảng viên)](08-diagram/activity/gv/activity_gv_xem_tien_do_lop.png)
 
-![Hình 10.55: Sơ đồ hoạt động - Chấm tay đè lên điểm AI tham khảo (Giảng viên)](08-diagram/activity/gv/activity_gv_cham_tay_de_len_diem_ai.png)
 
 ### 10.4. Vai trò Quản trị viên (A3)
 
@@ -466,79 +463,87 @@ Năm luồng nghiệp vụ của giảng viên. Đáng chú ý là luồng chấ
 
 Quản trị viên có năm nhóm chức năng: giám sát bộ máy chấm, quản lý người dùng và phân quyền, cấu hình ngôn ngữ cùng tham số AI, kiểm soát ngân sách token, và tra nhật ký hệ thống.
 
-Nhóm ở Hình 10.56 từng có thêm phần chấm lại hàng loạt; phần đó đã ra khỏi phạm vi nên sơ đồ cũng bỏ theo, giữ cho mô hình khớp đúng với phạm vi đã chốt ở mục 7.
+Nhóm ở Hình 10.53 từng có thêm phần chấm lại hàng loạt; phần đó đã ra khỏi phạm vi nên sơ đồ cũng bỏ theo, giữ cho mô hình khớp đúng với phạm vi đã chốt ở mục 7.
 
-![Hình 10.56: Use Case chi tiết - Giám sát vận hành judge engine (Quản trị viên)](08-diagram/usecase/admin/usecase_admin_giam_sat_judge_engine.png)
+![Hình 10.53: Use Case chi tiết - Giám sát vận hành judge engine (Quản trị viên)](08-diagram/usecase/admin/usecase_admin_giam_sat_judge_engine.png)
 
-![Hình 10.57: Use Case chi tiết - Quản lý người dùng và phân quyền (Quản trị viên)](08-diagram/usecase/admin/usecase_admin_quan_ly_nguoi_dung_phan_quyen.png)
+![Hình 10.54: Use Case chi tiết - Quản lý tài khoản người dùng (Quản trị viên)](08-diagram/usecase/admin/usecase_admin_quan_ly_nguoi_dung.png)
 
-![Hình 10.58: Use Case chi tiết - Cấu hình ngôn ngữ và AI (Quản trị viên)](08-diagram/usecase/admin/usecase_admin_cau_hinh_ngon_ngu_ai.png)
+![Hình 10.55: Use Case chi tiết - Ma trận phân quyền (Quản trị viên)](08-diagram/usecase/admin/usecase_admin_ma_tran_phan_quyen.png)
 
-![Hình 10.59: Use Case chi tiết - Ngân sách và mức tiêu thụ token AI (Quản trị viên)](08-diagram/usecase/admin/usecase_admin_ngan_sach_token_ai.png)
+![Hình 10.56: Use Case chi tiết - Cấu hình ngôn ngữ và prompt AI (Quản trị viên)](08-diagram/usecase/admin/usecase_admin_cau_hinh_ngon_ngu_ai.png)
 
-![Hình 10.60: Use Case chi tiết - Nhật ký hệ thống (Quản trị viên)](08-diagram/usecase/admin/usecase_admin_nhat_ky_he_thong.png)
+![Hình 10.57: Use Case chi tiết - Theo dõi, ngân sách và hạn mức AI (Quản trị viên)](08-diagram/usecase/admin/usecase_admin_ngan_sach_token_ai.png)
+
+![Hình 10.58: Use Case chi tiết - Nhật ký hệ thống (Quản trị viên)](08-diagram/usecase/admin/usecase_admin_nhat_ky_he_thong.png)
 
 #### 10.4.2. Sơ đồ tuần tự
 
-Hình 10.61 đến 10.63 là luồng vận hành chính: quản trị viên mở màn giám sát, máy chủ đọc độ dài hàng đợi từ RabbitMQ, hỏi tình trạng worker và thông lượng từ go-judge, đọc số bài nộp treo quá ngưỡng từ cơ sở dữ liệu, rồi gộp lại thành bảng số liệu. Sơ đồ này cho thấy rõ ba hệ thống nằm ngoài tiến trình ứng dụng.
+Hình 10.59 đến 10.61 là luồng vận hành chính: quản trị viên mở màn giám sát, máy chủ đọc độ dài hàng đợi từ RabbitMQ, hỏi tình trạng worker và thông lượng từ go-judge, đọc số bài nộp treo quá ngưỡng từ cơ sở dữ liệu, rồi gộp lại thành bảng số liệu. Sơ đồ này cho thấy rõ ba hệ thống nằm ngoài tiến trình ứng dụng.
 
-![Hình 10.61: Sơ đồ tuần tự - Giám sát hàng đợi và cụm judge engine (Quản trị viên) (phần 1/3)](08-diagram/sequence/admin/sequence_admin_giam_sat_hang_doi_p1.png)
-![Hình 10.62: Sơ đồ tuần tự - Giám sát hàng đợi và cụm judge engine (Quản trị viên) (phần 2/3)](08-diagram/sequence/admin/sequence_admin_giam_sat_hang_doi_p2.png)
-![Hình 10.63: Sơ đồ tuần tự - Giám sát hàng đợi và cụm judge engine (Quản trị viên) (phần 3/3)](08-diagram/sequence/admin/sequence_admin_giam_sat_hang_doi_p3.png)
+![Hình 10.59: Sơ đồ tuần tự - Giám sát hàng đợi và cụm judge engine (Quản trị viên) (phần 1/3)](08-diagram/sequence/admin/sequence_admin_giam_sat_hang_doi_p1.png)
+![Hình 10.60: Sơ đồ tuần tự - Giám sát hàng đợi và cụm judge engine (Quản trị viên) (phần 2/3)](08-diagram/sequence/admin/sequence_admin_giam_sat_hang_doi_p2.png)
+![Hình 10.61: Sơ đồ tuần tự - Giám sát hàng đợi và cụm judge engine (Quản trị viên) (phần 3/3)](08-diagram/sequence/admin/sequence_admin_giam_sat_hang_doi_p3.png)
 
-![Hình 10.64: Sơ đồ tuần tự - Đổi vai trò người dùng (Quản trị viên) (phần 1/3)](08-diagram/sequence/admin/sequence_admin_doi_vai_tro_nguoi_dung_p1.png)
-![Hình 10.65: Sơ đồ tuần tự - Đổi vai trò người dùng (Quản trị viên) (phần 2/3)](08-diagram/sequence/admin/sequence_admin_doi_vai_tro_nguoi_dung_p2.png)
-![Hình 10.66: Sơ đồ tuần tự - Đổi vai trò người dùng (Quản trị viên) (phần 3/3)](08-diagram/sequence/admin/sequence_admin_doi_vai_tro_nguoi_dung_p3.png)
+![Hình 10.62: Sơ đồ tuần tự - Tìm và đổi vai trò tài khoản (Quản trị viên) (phần 1/2)](08-diagram/sequence/admin/sequence_admin_doi_vai_tro_nguoi_dung_p1.png)
+![Hình 10.63: Sơ đồ tuần tự - Tìm và đổi vai trò tài khoản (Quản trị viên) (phần 2/2)](08-diagram/sequence/admin/sequence_admin_doi_vai_tro_nguoi_dung_p2.png)
+![Hình 10.64: Sơ đồ tuần tự - Khoá và mở khoá tài khoản (Quản trị viên) (phần 1/2)](08-diagram/sequence/admin/sequence_admin_khoa_mo_khoa_tai_khoan_p1.png)
+![Hình 10.65: Sơ đồ tuần tự - Khoá và mở khoá tài khoản (Quản trị viên) (phần 2/2)](08-diagram/sequence/admin/sequence_admin_khoa_mo_khoa_tai_khoan_p2.png)
+![Hình 10.66: Sơ đồ tuần tự - Thêm tài khoản bằng mật khẩu tạm (Quản trị viên)](08-diagram/sequence/admin/sequence_admin_them_tai_khoan.png)
+![Hình 10.67: Sơ đồ tuần tự - Đặt lại mật khẩu cho tài khoản (Quản trị viên)](08-diagram/sequence/admin/sequence_admin_dat_lai_mat_khau.png)
 
-![Hình 10.67: Sơ đồ tuần tự - Đổi quyền trong ma trận phân quyền (Quản trị viên) (phần 1/2)](08-diagram/sequence/admin/sequence_admin_doi_ma_tran_phan_quyen_p1.png)
-![Hình 10.68: Sơ đồ tuần tự - Đổi quyền trong ma trận phân quyền (Quản trị viên) (phần 2/2)](08-diagram/sequence/admin/sequence_admin_doi_ma_tran_phan_quyen_p2.png)
+![Hình 10.68: Sơ đồ tuần tự - Đổi quyền trong ma trận phân quyền (Quản trị viên) (phần 1/2)](08-diagram/sequence/admin/sequence_admin_doi_ma_tran_phan_quyen_p1.png)
+![Hình 10.69: Sơ đồ tuần tự - Đổi quyền trong ma trận phân quyền (Quản trị viên) (phần 2/2)](08-diagram/sequence/admin/sequence_admin_doi_ma_tran_phan_quyen_p2.png)
 
 Hai luồng cuối cho thấy cơ chế kiểm soát chi phí đã nêu ở mục 4: prompt được quản lý theo phiên bản, còn ngân sách token vượt ngưỡng thì hệ thống tự khóa.
 
-![Hình 10.69: Sơ đồ tuần tự - Cấu hình prompt AI theo phiên bản (Quản trị viên) (phần 1/3)](08-diagram/sequence/admin/sequence_admin_cau_hinh_prompt_ai_p1.png)
-![Hình 10.70: Sơ đồ tuần tự - Cấu hình prompt AI theo phiên bản (Quản trị viên) (phần 2/3)](08-diagram/sequence/admin/sequence_admin_cau_hinh_prompt_ai_p2.png)
-![Hình 10.71: Sơ đồ tuần tự - Cấu hình prompt AI theo phiên bản (Quản trị viên) (phần 3/3)](08-diagram/sequence/admin/sequence_admin_cau_hinh_prompt_ai_p3.png)
+![Hình 10.70: Sơ đồ tuần tự - Cấu hình prompt và model của AI (Quản trị viên) (phần 1/4)](08-diagram/sequence/admin/sequence_admin_cau_hinh_prompt_ai_p1.png)
+![Hình 10.71: Sơ đồ tuần tự - Cấu hình prompt và model của AI (Quản trị viên) (phần 2/4)](08-diagram/sequence/admin/sequence_admin_cau_hinh_prompt_ai_p2.png)
+![Hình 10.72: Sơ đồ tuần tự - Cấu hình prompt và model của AI (Quản trị viên) (phần 3/4)](08-diagram/sequence/admin/sequence_admin_cau_hinh_prompt_ai_p3.png)
+![Hình 10.73: Sơ đồ tuần tự - Cấu hình prompt và model của AI (Quản trị viên) (phần 4/4)](08-diagram/sequence/admin/sequence_admin_cau_hinh_prompt_ai_p4.png)
 
-![Hình 10.72: Sơ đồ tuần tự - Đặt ngân sách token AI và tự động khóa khi vượt (Quản trị viên) (phần 1/2)](08-diagram/sequence/admin/sequence_admin_dat_ngan_sach_token_p1.png)
-![Hình 10.73: Sơ đồ tuần tự - Đặt ngân sách token AI và tự động khóa khi vượt (Quản trị viên) (phần 2/2)](08-diagram/sequence/admin/sequence_admin_dat_ngan_sach_token_p2.png)
+![Hình 10.74: Sơ đồ tuần tự - Đặt ngân sách token AI và tự động khóa khi vượt (Quản trị viên) (phần 1/2)](08-diagram/sequence/admin/sequence_admin_dat_ngan_sach_token_p1.png)
+![Hình 10.75: Sơ đồ tuần tự - Đặt ngân sách token AI và tự động khóa khi vượt (Quản trị viên) (phần 2/2)](08-diagram/sequence/admin/sequence_admin_dat_ngan_sach_token_p2.png)
 
 #### 10.4.3. Sơ đồ hoạt động
 
-![Hình 10.74: Sơ đồ hoạt động - Giám sát hàng đợi và cụm judge engine (Quản trị viên)](08-diagram/activity/admin/activity_admin_giam_sat_hang_doi.png)
+![Hình 10.76: Sơ đồ hoạt động - Giám sát hàng đợi và cụm judge engine (Quản trị viên)](08-diagram/activity/admin/activity_admin_giam_sat_hang_doi.png)
 
-![Hình 10.75: Sơ đồ hoạt động - Đổi vai trò người dùng (Quản trị viên)](08-diagram/activity/admin/activity_admin_doi_vai_tro_nguoi_dung.png)
+![Hình 10.77: Sơ đồ hoạt động - Đổi vai trò người dùng (Quản trị viên)](08-diagram/activity/admin/activity_admin_doi_vai_tro_nguoi_dung.png)
 
-![Hình 10.76: Sơ đồ hoạt động - Đổi quyền trong ma trận phân quyền (Quản trị viên)](08-diagram/activity/admin/activity_admin_doi_ma_tran_phan_quyen.png)
+![Hình 10.78: Sơ đồ hoạt động - Khoá tài khoản kèm lý do (Quản trị viên)](08-diagram/activity/admin/activity_admin_khoa_mo_khoa_tai_khoan.png)
 
-![Hình 10.77: Sơ đồ hoạt động - Cấu hình prompt AI theo phiên bản (Quản trị viên)](08-diagram/activity/admin/activity_admin_cau_hinh_prompt_ai.png)
+![Hình 10.79: Sơ đồ hoạt động - Đổi quyền trong ma trận phân quyền (Quản trị viên)](08-diagram/activity/admin/activity_admin_doi_ma_tran_phan_quyen.png)
 
-![Hình 10.78: Sơ đồ hoạt động - Đặt ngân sách token AI và tự động khóa khi vượt (Quản trị viên)](08-diagram/activity/admin/activity_admin_dat_ngan_sach_token.png)
+![Hình 10.80: Sơ đồ hoạt động - Cấu hình prompt và model của AI theo phiên bản (Quản trị viên)](08-diagram/activity/admin/activity_admin_cau_hinh_prompt_ai.png)
+
+![Hình 10.81: Sơ đồ hoạt động - Đặt ngân sách token AI và tự động khóa khi vượt (Quản trị viên)](08-diagram/activity/admin/activity_admin_dat_ngan_sach_token.png)
 
 ### 10.5. Nhóm chức năng dùng chung nhiều vai trò
 
 Năm nhóm dưới đây không thuộc riêng vai trò nào. Đăng nhập là chức năng chung của cả ba vai trò; bốn nhóm còn lại là màn hình quản trị nội dung được gắn vào cả khu vực giảng viên lẫn khu vực quản trị, phạm vi dữ liệu do ma trận phân quyền quyết định — vẽ chúng dưới một vai trò duy nhất sẽ sai mô hình. Phần Use Case của nhóm này nằm ngay dưới; riêng hai luồng soạn nội dung có sơ đồ tuần tự riêng vì chúng chạy giống hệt nhau dù người thực hiện là giảng viên hay quản trị viên.
 
-![Hình 10.79: Use Case chi tiết - Đăng nhập và đăng ký (dùng chung)](08-diagram/usecase/shared/usecase_shared_dang_nhap_dang_ky.png)
+![Hình 10.82: Use Case chi tiết - Đăng nhập và đăng ký (dùng chung)](08-diagram/usecase/shared/usecase_shared_dang_nhap_dang_ky.png)
 
-![Hình 10.80: Use Case chi tiết - Soạn đề bài (dùng chung)](08-diagram/usecase/shared/usecase_shared_soan_de_bai.png)
+![Hình 10.83: Use Case chi tiết - Soạn đề bài (dùng chung)](08-diagram/usecase/shared/usecase_shared_soan_de_bai.png)
 
-![Hình 10.81: Use Case chi tiết - Quản lý danh sách bài toán (dùng chung)](08-diagram/usecase/shared/usecase_shared_quan_ly_danh_sach_bai_toan.png)
+![Hình 10.84: Use Case chi tiết - Quản lý danh sách bài toán (dùng chung)](08-diagram/usecase/shared/usecase_shared_quan_ly_danh_sach_bai_toan.png)
 
-![Hình 10.82: Use Case chi tiết - Quản lý testcase (dùng chung)](08-diagram/usecase/shared/usecase_shared_quan_ly_testcase.png)
+![Hình 10.85: Use Case chi tiết - Quản lý testcase (dùng chung)](08-diagram/usecase/shared/usecase_shared_quan_ly_testcase.png)
 
-![Hình 10.83: Use Case chi tiết - Quản lý ngân hàng câu hỏi phỏng vấn (dùng chung)](08-diagram/usecase/shared/usecase_shared_quan_ly_ngan_hang_cau_hoi.png)
+![Hình 10.86: Use Case chi tiết - Quản lý ngân hàng câu hỏi phỏng vấn (dùng chung)](08-diagram/usecase/shared/usecase_shared_quan_ly_ngan_hang_cau_hoi.png)
 
 #### 10.5.1. Sơ đồ tuần tự của hai luồng soạn nội dung
 
 Luồng soạn đề bài khai đặc tả hàm cho cả hai mô hình nộp bài rồi mới qua được checklist xuất bản: thiếu testcase ẩn hoặc thiếu đặc tả thì hệ thống chặn, không cho xuất bản một bài không chấm được. Luồng quản lý testcase là luồng duy nhất trong toàn hệ thống chạm tới kho lưu trữ đối tượng, vì bộ testcase lớn không nhét vào cơ sở dữ liệu quan hệ.
 
-![Hình 10.84: Sơ đồ tuần tự - Soạn đề bài và khai đặc tả hàm (dùng chung) (phần 1/3)](08-diagram/sequence/shared/sequence_shared_soan_de_va_dac_ta_ham_p1.png)
-![Hình 10.85: Sơ đồ tuần tự - Soạn đề bài và khai đặc tả hàm (dùng chung) (phần 2/3)](08-diagram/sequence/shared/sequence_shared_soan_de_va_dac_ta_ham_p2.png)
-![Hình 10.86: Sơ đồ tuần tự - Soạn đề bài và khai đặc tả hàm (dùng chung) (phần 3/3)](08-diagram/sequence/shared/sequence_shared_soan_de_va_dac_ta_ham_p3.png)
+![Hình 10.87: Sơ đồ tuần tự - Soạn đề bài và khai đặc tả hàm (dùng chung) (phần 1/3)](08-diagram/sequence/shared/sequence_shared_soan_de_va_dac_ta_ham_p1.png)
+![Hình 10.88: Sơ đồ tuần tự - Soạn đề bài và khai đặc tả hàm (dùng chung) (phần 2/3)](08-diagram/sequence/shared/sequence_shared_soan_de_va_dac_ta_ham_p2.png)
+![Hình 10.89: Sơ đồ tuần tự - Soạn đề bài và khai đặc tả hàm (dùng chung) (phần 3/3)](08-diagram/sequence/shared/sequence_shared_soan_de_va_dac_ta_ham_p3.png)
 
-![Hình 10.87: Sơ đồ tuần tự - Quản lý testcase và sinh testcase bằng AI (dùng chung) (phần 1/3)](08-diagram/sequence/shared/sequence_shared_quan_ly_testcase_p1.png)
-![Hình 10.88: Sơ đồ tuần tự - Quản lý testcase và sinh testcase bằng AI (dùng chung) (phần 2/3)](08-diagram/sequence/shared/sequence_shared_quan_ly_testcase_p2.png)
-![Hình 10.89: Sơ đồ tuần tự - Quản lý testcase và sinh testcase bằng AI (dùng chung) (phần 3/3)](08-diagram/sequence/shared/sequence_shared_quan_ly_testcase_p3.png)
+![Hình 10.90: Sơ đồ tuần tự - Quản lý testcase và sinh testcase bằng AI (dùng chung) (phần 1/3)](08-diagram/sequence/shared/sequence_shared_quan_ly_testcase_p1.png)
+![Hình 10.91: Sơ đồ tuần tự - Quản lý testcase và sinh testcase bằng AI (dùng chung) (phần 2/3)](08-diagram/sequence/shared/sequence_shared_quan_ly_testcase_p2.png)
+![Hình 10.92: Sơ đồ tuần tự - Quản lý testcase và sinh testcase bằng AI (dùng chung) (phần 3/3)](08-diagram/sequence/shared/sequence_shared_quan_ly_testcase_p3.png)
 
 ### 10.6. Lõi kỹ thuật chạy tự động (A4)
 
@@ -546,13 +551,13 @@ Ba sơ đồ dưới đây không thuộc actor người nào. Chúng mô tả p
 
 Sơ đồ thứ nhất là bộ sinh mã bọc hàm: tuỳ mô hình nộp bài mà sinh khung khác nhau, ghi lại vị trí dòng bắt đầu của mã người học, rồi khi biên dịch lỗi thì quy đổi số dòng về đúng dòng người học nhìn thấy. Lỗi rơi vào phần khung do hệ thống sinh ra bị che hoàn toàn, chỉ ghi log nội bộ — người học không bao giờ thấy mã khung.
 
-![Hình 10.90: Sơ đồ hoạt động - Sinh mã bọc hàm và ánh xạ lỗi biên dịch (hệ thống)](08-diagram/activity/shared/activity_shared_sinh_ma_boc_ham.png)
+![Hình 10.93: Sơ đồ hoạt động - Sinh mã bọc hàm và ánh xạ lỗi biên dịch (hệ thống)](08-diagram/activity/shared/activity_shared_sinh_ma_boc_ham.png)
 
 Hai sơ đồ còn lại là bốn chiến lược so khớp kết quả. Chúng tách làm hai hình theo đúng ranh giới mà thiết kế cơ bản đã vạch: hai chiến lược đầu so sánh trực tiếp trên chuỗi đã chuẩn hoá, hai chiến lược sau phải parse chuỗi trở lại thành số hoặc thành tập hợp rồi mới so được. Bước chuẩn hoá theo định dạng in ấn của từng kiểu dữ liệu nằm trước điểm rẽ nhánh, vì cả bốn chiến lược đều so trên chuỗi đã chuẩn hoá chứ không so từng byte thô.
 
-![Hình 10.91: Sơ đồ hoạt động - So khớp kết quả trên chuỗi: EXACT và TRIMMED (hệ thống)](08-diagram/activity/shared/activity_shared_so_khop_chuoi.png)
+![Hình 10.94: Sơ đồ hoạt động - So khớp kết quả trên chuỗi: EXACT và TRIMMED (hệ thống)](08-diagram/activity/shared/activity_shared_so_khop_chuoi.png)
 
-![Hình 10.92: Sơ đồ hoạt động - So khớp kết quả sau khi parse lại: EPSILON và UNORDERED_SET (hệ thống)](08-diagram/activity/shared/activity_shared_so_khop_parse.png)
+![Hình 10.95: Sơ đồ hoạt động - So khớp kết quả sau khi parse lại: EPSILON và UNORDERED_SET (hệ thống)](08-diagram/activity/shared/activity_shared_so_khop_parse.png)
 
 ### 10.7. Tổng hợp bộ sơ đồ thiết kế
 

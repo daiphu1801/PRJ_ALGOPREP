@@ -13,17 +13,34 @@ export const assignedProblemSchema = z.object({
   difficulty: difficultySchema,
   assignedClassIds: z.array(z.string()),
   assignedClassNames: z.array(z.string()),
+  /** Every topic of the problem (N-N); the list shows the first one alphabetically plus "+n". */
+  topics: z.array(z.string()).optional(),
+  /** Whole-system counters of the problem, or the sum over the instructor's classes. */
   submissionCount: z.number(),
   acRate: z.number(),
+  /**
+   * The same two figures inside each class of the instructor (INS0202 Q11, DEC-2026-1014-instructor-batch2-weekly-rules):
+   * the list shows them when a class tab is selected; learners who left the class do not count.
+   */
+  classStats: z
+    .record(
+      z.string(),
+      z.object({ submissionCount: z.number(), acRate: z.number() }),
+    )
+    .optional(),
+  // Unpublished after it was assigned (INS0202 Q10): stays listed, flagged, cannot be assigned again.
+  withdrawn: z.boolean().optional(),
 });
 export type AssignedProblem = z.infer<typeof assignedProblemSchema>;
 
 export const assignmentSummarySchema = z.object({
   assignedCount: z.number(),
   classCount: z.number(),
-  weeklySubmissionCount: z.number(),
-  weeklySubmissionDelta: z.number(),
-  avgAcRate: z.number().nullable(),
-  pendingGrading: z.number(),
 });
 export type AssignmentSummary = z.infer<typeof assignmentSummarySchema>;
+
+// A published bank problem that can still be given to a class (02-bd/screens/teacher/INS0202_class_assignments.md).
+export type AssignableProblem = Pick<
+  AssignedProblem,
+  "id" | "title" | "topic" | "difficulty"
+>;

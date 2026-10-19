@@ -23,6 +23,8 @@ type ConfirmDialogProps = {
   destructive?: boolean;
   /** Confirm request in flight — blocks a double submit. */
   pending?: boolean;
+  /** Disables only the confirm button (e.g. until a typed value matches); Cancel stays enabled. */
+  confirmDisabled?: boolean;
 };
 
 export function ConfirmDialog({
@@ -35,6 +37,7 @@ export function ConfirmDialog({
   cancelLabel,
   destructive = false,
   pending = false,
+  confirmDisabled = false,
 }: ConfirmDialogProps) {
   return (
     <Modal
@@ -54,7 +57,7 @@ export function ConfirmDialog({
           <Button
             size="sm"
             onClick={onConfirm}
-            disabled={pending}
+            disabled={pending || confirmDisabled}
             aria-busy={pending || undefined}
             className={
               destructive

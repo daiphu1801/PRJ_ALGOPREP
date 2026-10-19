@@ -191,6 +191,9 @@ export function DataTable<T>({
                     }
                     className={cn(
                       "inline-flex items-center gap-1 uppercase hover:text-[var(--color-text)]",
+                      // The 11px label is ~16px tall; a transparent ::before grows the hit area to
+                      // 24px without making the header row taller (admin UX review F6).
+                      "relative before:absolute before:-inset-y-1 before:inset-x-0 before:content-['']",
                       "focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--color-primary)]",
                       active && "text-[var(--color-text)]",
                     )}

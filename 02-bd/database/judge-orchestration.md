@@ -52,9 +52,19 @@ testcase, luôn có đúng N dòng (trừ khi dừng ở `COMPILE_ERROR`/`SYSTEM
 | `verdict` | ENUM(`AC`,`WA`,`TLE`,`MLE`,`RE`) | Kết quả so khớp của `harness` (F3-07→10), module này chỉ ghi lại, không tự tính |
 | `runtime_ms` | INT | |
 | `memory_kb` | INT | |
-| `stderr_snippet` | TEXT nullable, cắt tối đa 4096 ký tự | Chỉ ghi khi `language_configs.return_stderr_to_student = true` **và** `verdict != AC` |
+| `stderr_snippet` | TEXT nullable, cắt tối đa 4096 ký tự | Chỉ ghi khi `sandbox_settings.return_stderr_to_student = true` **và** `verdict != AC` |
+| `actual_output_snippet` | TEXT nullable, cắt tối đa 4096 ký tự (cùng giới hạn `stderr_snippet`) | **Cột MỚI, 2026-10-18, `DEC-2026-1018-usr-open-questions-phase2-5`.** Output thực tế của chương trình học viên; **chỉ ghi khi `problem.testcases.visibility = SAMPLE`**, testcase `HIDDEN` luôn `NULL` (không lộ dữ liệu ẩn). Dùng cho màn kết quả nộp bài khi so với output mong đợi của testcase mẫu |
 | `judge_run_token_id` | FK → `judge_run_tokens.id` | Liên kết idempotency — kiến trúc mục 5.1 |
 | `created_at` | TIMESTAMPTZ | |
+
+**Quy tắc lưu giữ (2026-10-18, `DEC-2026-1018-usr-open-questions-phase2-5`):** dòng `submission_testcase_results`
+được giữ **90 ngày** tính từ `created_at`; sau đó chỉ còn verdict tổng và các số thống kê nằm trên `submissions`
+(`status`, `passed_testcase_count`, `total_testcase_count`, `score_ratio`, `runtime_ms`, `memory_kb`). Bản thân
+`submissions` và `source_code` không bị xoá, và một lượt nộp không bao giờ bị xoá hay ẩn. Chi tiết job dọn thuộc
+`03-dd/jobs` (không thiết kế ở đây).
+
+**Múi giờ cắt ngày (2026-10-18, cùng quyết định):** mọi chỗ "ngày" của module này dùng một múi giờ hệ thống cố
+định **UTC+7** (giờ Việt Nam); cột thời gian vẫn lưu `TIMESTAMPTZ`, chỉ khi cắt theo ngày mới quy đổi sang UTC+7.
 
 Unique `(submission_id, testcase_id)` — đúng một kết quả mỗi testcase mỗi submission, và là ràng buộc DB
 tầng cuối chống ghi trùng nếu logic idempotency ở tầng ứng dụng có sơ suất.
@@ -96,15 +106,12 @@ không tạo/xoá dòng (khớp phạm vi đã khoá ở `02-bd/architecture/har
 | :--- | :--- | :--- |
 | `language` | ENUM(`JAVA`,`CPP`,`PYTHON`) PK | |
 | `time_limit_multiplier` | DECIMAL(3,2) | F2-10 — nhân với `problems.time_limit_ms` của từng bài. Đề xuất mặc định `[SoT: Suy luận]`: Java `2.00`, C++ `1.00`, Python `3.00` — Java/Python chậm hơn C++ đáng kể trên cùng thuật toán, số cụ thể chủ dự án xác nhận hoặc chỉnh |
-| `memory_limit_multiplier` | DECIMAL(3,2) default `1.00` | Tương tự cho bộ nhớ — RD không nhấn mạnh chênh lệch bộ nhớ giữa ba ngôn ngữ bằng thời gian, mặc định `1.00` cho cả ba, chủ dự án chỉnh nếu cần |
-| `network_access_enabled` | BOOLEAN default `false` | Tham số sandbox 1/3 (F4-11, `DEC-2026-0831-judge-orchestration-ops-details`) — mặc định chặn. Áp dụng cấp toàn cục hệ thống (`DEC-2026-0922-users-and-admin-conflict-resolutions`) |
-| `max_child_processes` | INT default `1` | Tham số sandbox 2/3 — số cụ thể, đa số bài không cần spawn tiến trình con. Áp dụng cấp toàn cục hệ thống (`DEC-2026-0922-users-and-admin-conflict-resolutions`) |
-| `return_stderr_to_student` | BOOLEAN default `false` | Tham số sandbox 3/3 — Áp dụng cấp toàn cục hệ thống (`DEC-2026-0922-users-and-admin-conflict-resolutions`) |
+| `memory_limit_multiplier` | DECIMAL(3,2) default `1.00` | Tương tự cho bộ nhớ. Seed `[SoT: Suy luận]`: Java `2.00` (JVM cần nhiều bộ nhớ hơn trên cùng thuật toán), C++ `1.00`, Python `1.00`; chủ dự án chỉnh được trên `ADM0501` (chốt 2026-10-10, `DEC-2026-1010-admin-operations-regroup`, đóng Q7 của BD `ADM0501`). Cùng khoảng hợp lệ với hệ số thời gian: 0,10 đến 9,99 |
+| `enabled` | BOOLEAN default `true` | Ngôn ngữ có được chọn ở `problem_detail` cho lượt nộp **mới** hay không (thêm 2026-10-10, đóng Q1 của BD `ADM0501`). Tắt ngôn ngữ **không** huỷ job đang chờ của ngôn ngữ đó: chúng chạy nốt, chỉ bài nộp mới bị từ chối. Ràng buộc ở tầng ứng dụng: luôn còn ít nhất một dòng `enabled = true` |
 | `updated_at` / `updated_by` | TIMESTAMPTZ / tham chiếu user id | `updated_by` không FK vật lý, giống quy ước `problems.updated_by` |
 
 > [!NOTE]
-> **Quy định cấu hình Sandbox toàn cục (`DEC-2026-0922-users-and-admin-conflict-resolutions`)**:
-> Ba tham số sandbox (`network_access_enabled`, `max_child_processes`, `return_stderr_to_student`) được quản lý chung ở cấp toàn hệ thống (hạ tầng docker/cgroup của go-judge runner), đồng bộ giữa các ngôn ngữ thay vì tách riêng per-language, vừa khớp prototype ADM0501 vừa tuân thủ tiêu chí ponytail tinh gọn.
+> **Ba tham số sandbox không còn nằm ở bảng này** (`network_access_enabled`, `max_child_processes`, `return_stderr_to_student`). Chúng là thuộc tính của lệnh chạy chứ không của ngôn ngữ nên đã được áp ở cấp toàn hệ thống (`DEC-2026-0922-users-and-admin-conflict-resolutions`); từ 2026-10-10 chúng chuyển sang bảng một dòng `sandbox_settings` (mục 1.10, `DEC-2026-1010-admin-operations-regroup`, đóng Q4 của BD `ADM0501`). Migration: bỏ ba cột khỏi `language_configs` và seed `sandbox_settings` từ giá trị mặc định của ba cột cũ.
 
 ### 1.6. `outbox_events` (kiến trúc mục 6, `DEC-2026-0912-judge-outbox-pattern`)
 
@@ -124,7 +131,7 @@ tập con này.
 
 ### 1.7. `cluster_settings` (F4-10, `DEC-2026-1001-admin-configurable-settings`)
 
-Một dòng duy nhất (ràng buộc `CHECK (id = 1)`), chỉ ADMIN (A3) sửa qua khối "Điều khiển cụm" của
+Một dòng duy nhất (ràng buộc `CHECK (id = 1)`), chỉ ADMIN (A3) sửa qua khối "Điều khiển" và popup "Tham số hàng đợi" của
 `ADM0401`. Lưu ở PostgreSQL để còn nguyên sau khi khởi động lại; module này cố ý không dùng Redis
 (mục 3) nên không đặt ở đó `[SoT: Suy luận]`.
 
@@ -134,6 +141,9 @@ Một dòng duy nhất (ràng buộc `CHECK (id = 1)`), chỉ ADMIN (A3) sửa q
 | `queue_paused` | BOOLEAN default `false` | Bật thì worker ngừng nhận job mới, job đang chấm vẫn chạy hết |
 | `autoscale_enabled` | BOOLEAN default `true` | Bật thì cụm tự thêm worker khi hàng đợi vượt ngưỡng |
 | `autoscale_job_threshold` | INT default `20`, CHECK `> 0` | Ngưỡng số job đang chờ để thêm worker; mặc định 20 là suy luận của BD `[SoT: Suy luận]`, ADMIN tự đổi |
+| `jobs_per_page` | INT default `20`, CHECK `> 0` | Số dòng mỗi trang của bảng job `ADM0401` (thêm 2026-10-10, đóng Q7). Mặc định là suy luận của BD `[SoT: Suy luận]`, ADMIN tự đổi, không trần cứng |
+| `error_retention_hours` | INT default `24`, CHECK `> 0` | Job `SYSTEM_ERROR` còn nằm trong bảng job bao lâu trước khi bị dọn khỏi danh sách (thêm 2026-10-10). Chỉ ảnh hưởng danh sách hiển thị, **không** xoá `submissions` |
+| `latency_cap_seconds` | INT default `10`, CHECK `> 0` | Mẫu số tính chiều rộng thanh độ trễ (thêm 2026-10-10) |
 | `updated_by` | UUID | Tham chiếu `identity.users.id`, không có FK vật lý chéo schema |
 | `updated_at` | TIMESTAMPTZ | |
 
@@ -149,10 +159,42 @@ Một dòng duy nhất (`CHECK (id = 1)`), cùng khuôn `cluster_settings`, ch�
 | `updated_by` | UUID | Tham chiếu `identity.users.id`, không có FK vật lý chéo schema |
 | `updated_at` | TIMESTAMPTZ | |
 
+### 1.9. `grading_defaults` (F4-11, `DEC-2026-1010-admin-operations-regroup`)
+
+Một dòng duy nhất (`CHECK (id = 1)`), cùng khuôn `cluster_settings`, chỉ ADMIN (A3) có Function `LANGUAGE_CONFIG` sửa qua hàng "Giới hạn mặc định" của `ADM0501`. Đây là giới hạn dùng khi một bài toán không khai riêng; thay cho việc đọc từ `application.yml` (đóng Q2 của BD `ADM0501`, theo nguyên tắc `DEC-2026-1001-admin-configurable-settings`). Tách khỏi `cluster_settings` vì hai mối quan tâm khác nhau (giới hạn chấm và điều khiển cụm).
+
+| Cột | Kiểu | Ghi chú |
+| :--- | :--- | :--- |
+| `id` | SMALLINT PK | Luôn `1` |
+| `time_limit_ms` | INT default `1000`, CHECK `> 0` | Giới hạn thời gian mặc định; hiệu dụng của một ngôn ngữ = giá trị này nhân `time_limit_multiplier`, phải nằm trong 100 đến 30.000 ms |
+| `memory_limit_mb` | INT default `256`, CHECK `> 0` | Giới hạn bộ nhớ mặc định; hiệu dụng = giá trị này nhân `memory_limit_multiplier`, phải nằm trong 64 đến 1.024 MB |
+| `output_limit_kb` | INT default `64`, CHECK `> 0` | Kích thước output mặc định. Khác `problems.max_output_size_kb` khai theo từng bài |
+| `compile_timeout_sec` | INT default `10`, CHECK `> 0` | Thời gian biên dịch tối đa, không tính vào giới hạn chạy |
+| `updated_by` | UUID | Tham chiếu `identity.users.id`, không có FK vật lý chéo schema |
+| `updated_at` | TIMESTAMPTZ | |
+
+Giá trị mặc định là số của prototype `[SoT: Suy luận]`, ADMIN tự đổi. Áp dụng cho job từ lúc **bắt đầu chấm**, không phải lúc nộp (xem mục 1.10).
+
+### 1.10. `sandbox_settings` (F4-11, `DEC-2026-1010-admin-operations-regroup`)
+
+Một dòng duy nhất (`CHECK (id = 1)`), chỉ ADMIN sửa qua thẻ "Sandbox" của `ADM0501` (tab "Sandbox và sinh testcase"). Thay ba cột sandbox từng nằm ở `language_configs` (mục 1.5): ba tham số này là thuộc tính của **lệnh chạy** (cgroup và namespace của go-sandbox không đọc `language`), nên toàn cục (đóng Q4 của BD `ADM0501`).
+
+| Cột | Kiểu | Ghi chú |
+| :--- | :--- | :--- |
+| `id` | SMALLINT PK | Luôn `1` |
+| `network_access_enabled` | BOOLEAN default `false` | Mặc định chặn (F4-11) |
+| `child_process_limit_enabled` | BOOLEAN default `true` | Bật thì áp `max_child_processes`; tắt thì không giới hạn tiến trình con |
+| `max_child_processes` | INT default `60`, CHECK `> 0` | Số tiến trình con tối đa khi công tắc bật. Mặc định 60 là số prototype `[SoT: Suy luận]`; UI là công tắc kèm một ô số khi bật |
+| `return_stderr_to_student` | BOOLEAN default `true` | Quyết định có ghi `submission_testcase_results.stderr_snippet` hay không |
+| `updated_by` | UUID | Tham chiếu `identity.users.id`, không có FK vật lý chéo schema |
+| `updated_at` | TIMESTAMPTZ | |
+
+**Quy tắc thời điểm áp dụng (G3).** Một thay đổi ở `language_configs`, `grading_defaults` hoặc `sandbox_settings` có hiệu lực với một job từ lúc worker **bắt đầu chấm** nó, không phải lúc bài được nộp; job đã bắt đầu chấm thì chạy nốt với cấu hình nó đã đọc. Cấu hình đã dùng nên được ghi cùng kết quả chấm để truy vết `[SoT: Suy luận]`, chốt ở DD.
+
 ## 2. Chỉ mục (index) đáng chú ý
 
 - `submissions(status, updated_at)` — job sweep quét theo điều kiện mục 1.1.
-- `submissions(user_id, problem_id, created_at DESC)` — lịch sử nộp bài của một học viên cho một bài.
+- `submissions(user_id, problem_id, submitted_at DESC)` — lịch sử nộp bài của một học viên cho một bài. ~~Cột cũ ghi `created_at`~~: bảng không có `created_at`, mốc nộp là `submitted_at` (dòng 31); sửa 2026-10-14 (`DEC-2026-1014-instructor-submissions-list-details`). Chỉ mục `submissions(status, updated_at)` ở dòng trên đúng với cột `updated_at` của bảng (dòng 34), không đổi.
 - `submissions(problem_id, language, status) WHERE status = 'ACCEPTED'` — phục vụ F4-12 "Beats" (so runtime
   giữa các bài nộp Accepted cùng bài + cùng ngôn ngữ).
 - `submission_testcase_results(submission_id, testcase_order)` — dựng lại kết quả theo đúng thứ tự chạy.
@@ -167,7 +209,7 @@ trung gian; hàng đợi công việc đã có RabbitMQ đảm nhiệm.
 
 ## 4. Migration — thứ tự tạo bảng
 
-`language_configs` (seed 3 dòng) → `submissions` → `submission_testcase_results` → `judge_run_tokens` →
+`language_configs` (seed 3 dòng), `grading_defaults` và `sandbox_settings` (seed 1 dòng mỗi bảng) → `submissions` → `submission_testcase_results` → `judge_run_tokens` →
 `callback_logs` → `outbox_events` → `cluster_settings` (seed 1 dòng).
 
 ## 5. Giá trị mặc định BD chốt (RD để ngỏ, `[SoT: Suy luận]`)
@@ -178,7 +220,8 @@ trung gian; hàng đợi công việc đã có RabbitMQ đảm nhiệm.
 | Chu kỳ chạy job sweep | 60 giây | RD chỉ nói "bản nhẹ", không nêu chu kỳ — BD đề xuất |
 | Giới hạn cắt `stderr_snippet` | 4096 ký tự | RD không nêu, BD đề xuất để tránh phình bảng khi chương trình học viên in log dài |
 | `time_limit_multiplier` mặc định | Java `2.00`, C++ `1.00`, Python `3.00` | RD chỉ xác nhận có hệ số (F2-10), không nêu số — BD đề xuất |
-| `max_child_processes` mặc định | `1` | RD chỉ xác nhận có tham số này (F4-11), không nêu số — BD đề xuất |
+| `max_child_processes` mặc định | `60` (chỉ áp khi công tắc giới hạn bật) | RD chỉ xác nhận có tham số này (F4-11), không nêu số — đổi từ `1` sang `60` ngày 2026-10-10 theo số prototype, ADMIN tự đổi (mục 1.10) |
+| `memory_limit_multiplier` mặc định | Java `2.00`, C++ `1.00`, Python `1.00` | Sửa 2026-10-10 (trước đó `1.00` cho cả ba), mục 1.5 |
 | Làm tròn F4-12 "Beats" | Số nguyên gần nhất | Xem kiến trúc mục 8 |
 
 ## 6. Việc còn mở — chuyển sang DD
@@ -186,8 +229,7 @@ trung gian; hàng đợi công việc đã có RabbitMQ đảm nhiệm.
 - Cấu trúc JSON đầy đủ của `outbox_events.payload` cho từng `event_type`.
 - Số cụ thể của mọi hàng ở mục 5 cần chủ dự án xác nhận trước khi seed migration thật.
 - `ProblemGradingSpecPort` (kiến trúc mục 3.2) — DTO trả về khi đọc đặc tả bài từ `problem-bank`.
-- Cơ chế đánh dấu "một dòng outbox kẹt quá nhiều lần" (`publish_attempts` vượt ngưỡng nào thì cảnh báo A3
-  qua `admin_queue_monitor`, F4-10) — chưa có số cụ thể.
+- ~~Cơ chế đánh dấu "một dòng outbox kẹt quá nhiều lần" (`publish_attempts` vượt ngưỡng nào thì cảnh báo A3 qua `admin_queue_monitor`, F4-10) — chưa có số cụ thể.~~ **Đã chốt 2026-10-10** (`DEC-2026-1010-admin-operations-regroup`, tiêu chí ponytail bậc 5): hằng số trong `application.yml`, từ 3 lần thử là `WARN`, từ 5 lần là `ERROR`; hiển thị ở `ADM0404` và thẻ liên kết của `ADM0401`, không thêm cột hay bảng.
 
 ## 7. Tham chiếu
 

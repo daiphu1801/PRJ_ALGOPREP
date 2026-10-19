@@ -29,9 +29,18 @@ export const profileFormSchema = z.object({
   displayName: displayNameField,
   schoolOrCompany: schoolOrCompanyField,
   currentPosition: currentPositionField,
-  defaultLanguage: z.enum(["JAVA", "CPP", "PYTHON"]),
   targetPosition: targetPositionField,
 });
+
+// D23: the default language is written only from Settings (BD USR0502 Q6), so it is not part of this form.
+
+/** Email change request (D20): trimmed, shaped like an address, at most 254 chars (RFC 5321). */
+export const emailChangeSchema = z
+  .string()
+  .trim()
+  .min(1, "errors.emailRequired")
+  .max(254, "errors.emailTooLong")
+  .email("errors.emailInvalid");
 
 export type ProfileFormInput = z.infer<typeof profileFormSchema>;
 

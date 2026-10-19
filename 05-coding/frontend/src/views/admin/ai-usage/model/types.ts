@@ -1,19 +1,24 @@
 /**
- * AI token consumption (F5-21, F5-25). Three AI features remain in scope:
- * solution review (F5.1), mock interview (F5.2) and testcase generation (F2-14).
+ * AI token consumption (F5-21, F5-25). Four AI features remain in scope:
+ * solution review (F5.1), mock interview (F5.2), testcase generation (F2-14) and practice feedback (F6-08).
  *
  * "Gợi ý theo bậc" (tiered in-progress hints) was cut entirely by
  * DEC-2026-0831-remove-tiered-hints-ai-config, so it is absent here even though the static mockup
  * still charts it as a fourth series and labels the top-problems column "lượt gợi ý".
  *
- * `testcase` carries a known ownership gap: `prompt_templates.feature_code` in
- * 02-bd/database/ai-review.md section 1.1 only enumerates SOLUTION_REVIEW and MOCK_INTERVIEW, with
- * no GENERATE_TESTCASE. Level B2 in 07-review/bd_screens_admin_open_questions_260913.md — it needs
- * an ai-review / problem-bank reconciliation before DD.
+ * `testcase` maps to `feature_code = GENERATE_TESTCASE` and its tokens are keyed by the problem id
+ * (DEC-2026-1010-ai-generate-testcase-feature-code, 02-bd/database/ai-review.md sections 1.1 and 1.6).
+ * `practice` maps to `feature_code = PRACTICE_FEEDBACK`: the AI feedback of the interview-bank practice mode
+ * (F6-08), counted in the shared budget by DEC-2026-1011-ai-practice-feedback-in-shared-budget.
  */
-export type AiFeature = "review" | "interview" | "testcase";
+export type AiFeature = "review" | "interview" | "testcase" | "practice";
 
-export const AI_FEATURES: AiFeature[] = ["review", "interview", "testcase"];
+export const AI_FEATURES: AiFeature[] = [
+  "review",
+  "interview",
+  "testcase",
+  "practice",
+];
 
 export type UsageRange = "7d" | "14d" | "30d";
 
@@ -62,10 +67,6 @@ export type AiUsagePage = {
   topUsers: TopUser[];
   topProblems: TopProblem[];
   budget: {
-    usedLabel: string;
-    capLabel: string;
-    leftLabel: string;
-    percent: number;
     runOutLabel: string;
   };
 };

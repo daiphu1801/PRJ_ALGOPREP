@@ -1,8 +1,12 @@
 {
-  "_": "Chi tiet oval 'Giam sat van hanh va tong quan he thong' o ban tong quan. Truoc day file nay ten '..._va_rejudge' va co ca nhom Re-judge (F4-09a->e) -- toan bo re-judge da HET HIEU LUC tu DEC-2026-0828-remove-rejudge-scope. Con lai F4-10 (giam sat hang doi/cum) + F4-07 (timeout sweep), dung theo luong 6.4 cua system_survey.md.",
+  "_": "Chi tiet oval 'Giam sat van hanh va tong quan he thong' o ban tong quan. Truoc day file nay ten '..._va_rejudge' va co ca nhom Re-judge (F4-09a->e) -- toan bo re-judge da HET HIEU LUC tu DEC-2026-0828-remove-rejudge-scope. Con lai F4-10 (giam sat hang doi/cum) + F4-07 (timeout sweep), dung theo luong 6.4 cua system_survey.md. | Cap nhat 2026-10-18: bo oval \"Xu ly thu cong bai nop treo\" vi ADM0401 chi co timeout sweep tu dong (F4-07), khong co thao tac thu cong (tieu chi ponytail bac 1); them dieu khien cum co xac nhan (F4-10, ADM0401 REQ-05) va xem su kien ha tang (ADM0404).",
   "kind": "usecase",
   "title": "Sơ đồ Use Case chi tiết - Giám sát vận hành và tổng quan hệ thống (Quản trị viên)",
-  "covers": ["F1-29", "F4-07", "F4-10"],
+  "covers": [
+    "F1-29",
+    "F4-07",
+    "F4-10"
+  ],
   "mode": "color",
   "usecase": {
     "system": "Chức năng Giám sát vận hành và tổng quan hệ thống",
@@ -18,23 +22,23 @@
         ]
       },
       {
-        "name": "Giám sát hàng đợi và cụm (F4-10)",
+        "name": "Hàng đợi và cụm judge (F4-10)",
         "actors": [
           "Quản trị viên"
         ],
         "usecases": [
-          "Xem trạng thái hàng đợi chấm bài",
-          "Xem tình trạng cụm judge engine"
+          "Xem trạng thái hàng đợi và cụm judge engine",
+          "Tạm dừng hàng đợi, tắt tự mở rộng worker (có xác nhận)",
+          "Xem sự kiện hạ tầng"
         ]
       },
       {
-        "name": "Xử lý bài nộp treo (F4-07)",
+        "name": "Bài nộp treo (F4-07)",
         "actors": [
           "Quản trị viên"
         ],
         "usecases": [
-          "Quét và phát hiện bài nộp treo quá ngưỡng",
-          "Xử lý thủ công bài nộp treo"
+          "Quét và phát hiện bài nộp treo quá ngưỡng"
         ]
       }
     ],
@@ -42,7 +46,7 @@
       {
         "name": "go-judge",
         "from": [
-          "Xem tình trạng cụm judge engine"
+          "Xem trạng thái hàng đợi và cụm judge engine"
         ]
       }
     ]

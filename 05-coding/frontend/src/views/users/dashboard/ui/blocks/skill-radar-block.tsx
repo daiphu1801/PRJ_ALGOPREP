@@ -12,8 +12,9 @@ import { DashboardBlockState, RadarChart } from "@/shared/ui";
  *
  * No endpoint and no mock of its own: the score is derived client-side from the same
  * `entities/progress` topic rows the table on `my_progress` shows
- * (01-rd/screens/users/USR0601_dashboard.md mục 4 Q2 — derived display, never an AI call). Same
- * derivation feeds `GreetingBlock`, so the two always name the same weakest topic.
+ * (01-rd/screens/users/USR0601_dashboard.md mục 4 Q2 — derived display, never an AI call). The radar
+ * plots the weakest few topics, scored by the same `scoreTopics` the greeting reads, so the two name the
+ * same weakest topic (owner, 2026-10-13: the dashboard must show what to improve).
  */
 export function SkillRadarBlock() {
   const t = useT("dashboard");
@@ -31,18 +32,26 @@ export function SkillRadarBlock() {
       emptyMessage={t("radar.empty")}
       errorMessage={t("errorGeneric")}
       retryLabel={t("retry")}
+      headingLevel={2}
       minHeightClassName="min-h-[260px]"
     >
       <div>
         <p className="mb-1 text-xs text-[var(--color-text-muted)]">
-          {t("radar.subtitle")}
+          {t("radar.subtitle", { count: points.length })}
         </p>
         <div className="flex justify-center">
           <RadarChart
             points={points.map((p) => ({ label: p.topicName, value: p.score }))}
             ariaLabel={t("radar.title")}
+            emphasizeLowest
           />
         </div>
+        {/* The chart carries the scores only as drawing; this is the same data in words. */}
+        <ul className="sr-only">
+          {points.map((p) => (
+            <li key={p.topicId}>{`${p.topicName}: ${p.score}`}</li>
+          ))}
+        </ul>
       </div>
     </DashboardBlockState>
   );

@@ -21,11 +21,11 @@ function openFilter(label: string) {
 }
 
 describe("MySubmissionsView", () => {
-  it("renders the stats strip and the submission history table", () => {
+  it("renders the submission history table without a stats strip", () => {
     renderView();
 
     expect(screen.getByText("Bài đã nộp")).toBeInTheDocument();
-    expect(screen.getByText("Tổng lượt nộp")).toBeInTheDocument();
+    expect(screen.queryByText("Tổng lượt nộp")).not.toBeInTheDocument();
     expect(screen.getByText("Lịch sử nộp bài")).toBeInTheDocument();
   });
 
@@ -52,5 +52,25 @@ describe("MySubmissionsView", () => {
     expect(
       screen.getByRole("button", { name: /^Số dòng mỗi trang/ }),
     ).toHaveTextContent("10");
+  });
+
+  it("offers all six verdict values in the filter (BD Sheet 5 B NO 2)", () => {
+    renderView();
+
+    const options = within(openFilter("Lọc theo kết quả")).getAllByRole("option");
+    // BD lists six values: "Tất cả" plus five verdicts.
+    expect(options.map((option) => option.textContent)).toEqual(
+      expect.arrayContaining(["Lỗi thực thi"]),
+    );
+    expect(options).toHaveLength(6);
+  });
+
+  it("limits the search box to 100 characters", () => {
+    renderView();
+
+    expect(screen.getByRole("textbox", { name: /Tìm/ })).toHaveAttribute(
+      "maxlength",
+      "100",
+    );
   });
 });

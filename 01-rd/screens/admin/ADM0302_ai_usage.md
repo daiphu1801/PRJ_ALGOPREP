@@ -40,6 +40,7 @@ trong biểu đồ theo ngày và dòng "Gợi ý theo bậc" (45%) trong khối
 2. **Biểu đồ token theo ngày, tách theo tính năng** — 3 dải màu: Gợi ý, Phân tích, Phỏng vấn (dòng 476-480)
    — **thiếu dải cho "Sinh testcase" (F2-14) dù dải đó có xuất hiện ở khối "Theo tính năng" phía dưới** —
    không phải xung đột nghiêm trọng, chỉ là biểu đồ chọn hiện 3/4 tính năng có khối lượng lớn nhất. **Cập
+   nhật 2026-10-11:** thêm dải thứ tư "Chấm câu luyện" (F6-08) vì ngân sách token chung phủ cả F6-08 (`DEC-2026-1011-ai-practice-feedback-in-shared-budget`). **Cập
    nhật 2026-08-31:** dải "Gợi ý" đã cắt khỏi phạm vi (`DEC-2026-0831-remove-tiered-hints-ai-config`) — xoá
    khi dựng UI thật.
 3. **Hạn mức tháng 8** — đã dùng / hạn mức, % thanh tiến độ, còn lại, dự kiến hết ngày nào (dòng 210-215,
@@ -49,7 +50,7 @@ trong biểu đồ theo ngày và dòng "Gợi ý theo bậc" (45%) trong khối
    trọng lớn nhất trong dữ liệu mẫu) đã cắt khỏi phạm vi cùng quyết định trên — xoá khi dựng UI thật, 3 tính
    năng còn lại giữ nguyên.
 5. **Cảnh báo** — "Sắp cạn hạn mức", "Một tài khoản dùng bất thường" (214 lượt/24 giờ, gấp 7 lần trung
-   bình), "Prompt sinh testcase tốn hơn dự kiến" (dòng 489-498). Cảnh báo thứ hai ("dùng bất thường") ngụ ý
+   bình), (dòng 489-498; cảnh báo "Prompt sinh testcase tốn hơn dự kiến" của mockup **đã bỏ 2026-10-10**, không có nguồn dữ liệu). Cảnh báo thứ hai ("dùng bất thường") ngụ ý
    một ngưỡng phát hiện lạm dụng cấp tài khoản — chưa có mã `Fx-nn`, xem Câu hỏi mở Q1 dưới.
 6. **Người học dùng nhiều nhất / Bài toán tốn token nhất** — hai bảng xếp hạng (dòng 500-523) — khớp đúng
    F5-25 ("bảng xếp hạng người dùng/bài toán tốn token nhiều nhất").
@@ -67,7 +68,7 @@ trong biểu đồ theo ngày và dòng "Gợi ý theo bậc" (45%) trong khối
 | Thành phần | Vai trò | Nguồn |
 | :--- | :--- | :--- |
 | `01-rd/screens/admin/ADM0101_overview.md` | Màn cha — nav nhóm "AI" trỏ tới màn này | [SoT: 01-rd/screens/admin/ADM0101_overview.md:160] |
-| `01-rd/screens/admin/ADM0301_ai_config.md` | Màn liên quan — cùng nhóm nav "AI", cùng chờ chung quyết định cắt "Gợi ý theo bậc" | [SoT: 01-rd/screens/admin/ADM0301_ai_config.md:67] |
+| `01-rd/screens/admin/ADM0301_ai_config.md`, `ADM0303_ai_limits.md` | Màn liên quan — cùng nhóm nav "AI"; `ADM0303` giữ hạn mức token tháng, mở khoá và ngưỡng/đơn giá mà màn này đọc (`DEC-2026-1010-split-ai-admin-screens`) | [SoT: 01-rd/screens/admin/ADM0301_ai_config.md:67] |
 | `09-layoutBase/Admin - Token AI.dc.html` | Prototype đối chiếu chính của file này | [SoT: 09-layoutBase/Admin - Token AI.dc.html] |
 | Bounded Context `ai-review` | BC sở hữu toàn bộ hành vi của màn | [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_ai_usage`] |
 
@@ -75,7 +76,7 @@ trong biểu đồ theo ngày và dòng "Gợi ý theo bậc" (45%) trong khối
 
 ## 3. Ngoài phạm vi (Out of Scope)
 
-- Bảng màu, spacing, component cụ thể — thuộc BD (`02-bd/screens/admin/ADM0302_ai_usage.md`, chưa viết).
+- Bảng màu, spacing, component cụ thể — thuộc BD (`02-bd/screens/admin/ADM0302_ai_usage.md`).
 - Hợp đồng API (số liệu token theo ngày/tính năng/người dùng, cảnh báo) — thuộc DD
   (`03-dd/api/ai-review.md`, chưa viết). Không viết DD cho "Gợi ý theo bậc" — đã cắt khỏi phạm vi.
 
@@ -119,7 +120,7 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 | Bàn giao | Trạng thái |
 |---|---|
 | RD màn hình | Có tài liệu này |
-| BD màn hình | Chưa xác định — không tự suy luận |
+| BD màn hình | `02-bd/screens/admin/ADM0302_ai_usage.md` V0.11 |
 | DD/API liên quan | Chưa xác định — không tự suy luận |
 
 ---
@@ -141,4 +142,4 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 | User story | `01-rd/req/user_stories/a3_admin.md` — `US-A3-04` (GWT 3-4). |
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` mục 7.3 — dòng `admin_ai_usage`. |
 | Prototype | `09-layoutBase/Admin - Token AI.dc.html` — prototype. |
-| Màn liên quan | `01-rd/screens/admin/ADM0301_ai_config.md` mục 4 Q1 — câu hỏi trung tâm, hai file cùng chờ một quyết định. |
+| Màn liên quan | `01-rd/screens/admin/ADM0301_ai_config.md` (Q1 đã đóng 2026-08-31), `ADM0303_ai_limits.md` (hạn mức, ngưỡng, đơn giá). |

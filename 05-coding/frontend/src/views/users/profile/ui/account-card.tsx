@@ -1,27 +1,54 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 //
-// Khu vực D. No "Mã người dùng" row — Sheet 6 Khu vực D NO 2 says to drop it until the UUID-vs-
-// display-code format question (Q5) is resolved, rather than show a raw UUID to a learner.
+// Khu vực D. "Mã người dùng" is the first 8 characters of the user id, uppercased (BD Q5, closed
+// 2026-10-18: no extra column, the full UUID is never shown to the learner).
 import type { ReactNode } from "react";
 import { useT } from "@/shared/i18n";
+import { formatDateVN } from "@/shared/lib";
 import { Card, Skeleton } from "@/shared/ui";
 import type { UserProfile } from "@/entities/user";
 
-export function AccountCard({ profile }: { profile: UserProfile | undefined }) {
+export function AccountCard({
+  profile,
+  roleKey,
+}: {
+  profile: UserProfile | undefined;
+  /** Overrides the mock learner role for the instructor and admin shells. */
+  roleKey?: "instructor" | "admin";
+}) {
   const t = useT("profile");
 
   return (
     <Card title={t("account.title")}>
       <dl className="flex flex-col gap-2 text-sm">
+        <Row label={t("account.userCode")}>
+          {profile ? (
+            profile.userId.slice(0, 8).toUpperCase()
+          ) : (
+            <Skeleton className="h-4 w-20" />
+          )}
+        </Row>
         <Row label={t("account.joinedAt")}>
           {profile ? (
-            new Date(profile.joinedAt).toLocaleDateString("vi-VN")
+            formatDateVN(profile.joinedAt)
           ) : (
             <Skeleton className="h-4 w-20" />
           )}
         </Row>
         <Row label={t("account.role")}>
-          {profile ? profile.roleName : <Skeleton className="h-4 w-20" />}
+          {profile ? (
+            roleKey ? (
+              t(
+                roleKey === "admin"
+                  ? "account.roleAdmin"
+                  : "account.roleInstructor",
+              )
+            ) : (
+              profile.roleName
+            )
+          ) : (
+            <Skeleton className="h-4 w-20" />
+          )}
         </Row>
       </dl>
     </Card>

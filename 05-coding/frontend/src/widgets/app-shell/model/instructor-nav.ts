@@ -1,72 +1,95 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 //
-// The 5 Instructor nav destinations, in the order and with the labels the prototype's own sidebar
-// uses (09-layoutBase/Giáo viên - Tổng quan.dc.html:245-251 `navDefs`), plus the "KHÁC" group
-// below it (:262-265). Every href points at a route that already exists under
-// app/(instructor)/** or app/(student)/**, never at a 404.
+// Instructor navigation in the same shape as the Admin one (admin-nav.ts): an overview link, then
+// collapsible groups, then the "misc" links that live in the toolbar user menu. Regrouped
+// 2026-10-11 on the owner's instruction that the instructor layout follows the admin layout; the
+// 5 destinations of 09-layoutBase/Giáo viên - Tổng quan.dc.html:245-251 `navDefs` and the "Nội dung"
+// group of DEC-2026-0922-users-and-admin-conflict-resolutions are all still here, only the
+// grouping is new. Every href points at a route that exists under app/(instructor)/**.
 //
-// Two deliberate divergences from the mockup, both already precedented on the Admin side:
-//   - Icons are lucide glyphs, not the mockup's 2-letter mono chips (TQ/LH/BT/CB/TĐ). Reuses the
-//     shared NavLink primitive instead of forking it for one area, and keeps both authenticated
-//     areas visually consistent.
-//   - The unread badges (3 / 18 / 9 at dc.html:246-249) are hardcoded constants in the mockup.
-//     Rendering them would need counts no entity exposes for the sidebar yet, so they are left out
-//     rather than invented.
-import type { LucideIcon } from "lucide-react";
+// Group icons are lucide glyphs on the group headers only (items carry none), like Admin. The
+// unread badges (3 / 18 / 9) of the mockup are dropped for good (DEC-2026-1011-teacher-nav-badge-dropped).
 import {
   BookOpen,
   ClipboardCheck,
-  GraduationCap,
   LayoutDashboard,
+  LogOut,
   Settings,
   UserCircle,
   Users,
 } from "lucide-react";
+import type {
+  AdminNavGroup,
+  AdminNavItem,
+  AdminNavMiscItem,
+} from "./admin-nav";
+import type { LucideIcon } from "lucide-react";
 
-export type InstructorNavItem = {
-  key: string;
-  href: string;
-  /** Resolves under the `instructorNav` message namespace. */
-  labelKey: string;
-  icon: LucideIcon;
+/** Resolves under the `instructorNav` message namespace. */
+export const INSTRUCTOR_NAV_OVERVIEW: AdminNavItem & { icon: LucideIcon } = {
+  key: "overview",
+  href: "/instructor/overview",
+  labelKey: "overview",
+  icon: LayoutDashboard,
 };
 
-export const INSTRUCTOR_NAV_MAIN: InstructorNavItem[] = [
-  {
-    key: "overview",
-    href: "/instructor/overview",
-    labelKey: "overview",
-    icon: LayoutDashboard,
-  },
+export const INSTRUCTOR_NAV_GROUPS: AdminNavGroup[] = [
   {
     key: "classes",
-    href: "/instructor/classes",
-    labelKey: "classes",
+    labelKey: "groupClasses",
     icon: Users,
+    items: [
+      { key: "classes", href: "/instructor/classes", labelKey: "classes" },
+      // Top-level route, not a child of /instructor/classes: since 2026-09-27 this is the student
+      // list for ALL classes, with ?classId= only as a preselected filter.
+      { key: "students", href: "/instructor/students", labelKey: "students" },
+    ],
   },
   {
-    key: "assignments",
-    href: "/instructor/assignments",
-    labelKey: "assignments",
-    icon: BookOpen,
-  },
-  {
-    key: "grading",
-    href: "/instructor/grading",
-    labelKey: "grading",
+    key: "work",
+    labelKey: "groupWork",
     icon: ClipboardCheck,
+    items: [
+      {
+        key: "assignments",
+        href: "/instructor/assignments",
+        labelKey: "assignments",
+      },
+      {
+        key: "submissions",
+        href: "/instructor/submissions",
+        labelKey: "submissions",
+      },
+    ],
   },
-  // Top-level route, not a child of /instructor/classes: since 2026-09-27 this is the student
-  // list for ALL classes, with ?classId= only as a preselected filter.
   {
-    key: "students",
-    href: "/instructor/students",
-    labelKey: "students",
-    icon: GraduationCap,
+    key: "content",
+    labelKey: "groupContent",
+    icon: BookOpen,
+    items: [
+      { key: "problems", href: "/instructor/problems", labelKey: "problems" },
+      {
+        key: "interviewQuestions",
+        href: "/instructor/interview-questions",
+        labelKey: "interviewQuestions",
+      },
+    ],
   },
 ];
 
-export const INSTRUCTOR_NAV_MISC: InstructorNavItem[] = [
-  { key: "settings", href: "/settings", labelKey: "settings", icon: Settings },
-  { key: "profile", href: "/profile", labelKey: "profile", icon: UserCircle },
+/** Toolbar user menu: own settings and profile stay in the instructor area, "Thoát" signs out. */
+export const INSTRUCTOR_NAV_MISC: AdminNavMiscItem[] = [
+  {
+    key: "settings",
+    href: "/instructor/settings",
+    labelKey: "settings",
+    icon: Settings,
+  },
+  {
+    key: "profile",
+    href: "/instructor/profile",
+    labelKey: "profile",
+    icon: UserCircle,
+  },
+  { key: "logout", href: "/login", labelKey: "logout", icon: LogOut },
 ];

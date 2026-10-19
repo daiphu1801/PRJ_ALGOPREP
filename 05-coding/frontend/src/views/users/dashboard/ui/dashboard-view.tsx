@@ -17,9 +17,10 @@
 // controls with different vocabularies on one page. This is why the view is a Client Component,
 // unlike admin_overview which is a server shell over client blocks.
 //
-// Still not built, both deliberate: "Xem lộ trình" (RD mục 4 Q1 — no Fx-nn describes a roadmap
-// feature) and the prototype's per-criterion rubric bars (the DTO has no such field). Ledger
-// section 12.
+// Still not built: "Xem lộ trình" (dropped for good, RD mục 4 Q1 — no Fx-nn describes a roadmap
+// feature). Waiting on the entity: the per-topic interview-question completion of F6-10
+// (BD Khu vực F, NO 10-14); see BD section 4.6. The range control also drives the interview block.
+// Ledger section 12.
 "use client";
 
 import { useState } from "react";
@@ -41,6 +42,16 @@ import { TopicsTable } from "./blocks/topics-table";
 /** Both halves of the merged screen use the same 1.55fr/1fr split the two prototypes shared. */
 const TWO_COLUMN =
   "grid grid-cols-1 items-start gap-3.5 lg:grid-cols-[1.55fr_1fr]";
+
+/** Chart row: both blocks are the same height, otherwise the shorter card ends above its neighbour. */
+const TWO_COLUMN_EVEN =
+  "grid grid-cols-1 items-stretch gap-3.5 lg:grid-cols-[1.55fr_1fr]";
+
+const RANGE_LABEL_KEY = {
+  "7d": "range7d",
+  "30d": "range30d",
+  all: "rangeAll",
+} as const;
 
 export function DashboardView() {
   const t = useT("dashboard");
@@ -64,9 +75,14 @@ export function DashboardView() {
         />
       </div>
 
+      {/* Changing the range recomputes the range-aware blocks silently; this tells a screen reader which range now applies. */}
+      <p role="status" className="sr-only">
+        {t("rangeAnnounce", { range: t(RANGE_LABEL_KEY[range]) })}
+      </p>
+
       <StatCardsRow />
 
-      <div className={`${TWO_COLUMN} mb-3.5`}>
+      <div className={`${TWO_COLUMN_EVEN} mb-3.5`}>
         <DailySubmissionsBlock range={range} />
         <SkillRadarBlock />
       </div>
@@ -88,7 +104,7 @@ export function DashboardView() {
       <div className={TWO_COLUMN}>
         <SuggestedProblemsBlock />
         <div className="flex flex-col gap-3.5">
-          <RecentInterviewsBlock />
+          <RecentInterviewsBlock range={range} />
           <RecentReviewsBlock />
         </div>
       </div>

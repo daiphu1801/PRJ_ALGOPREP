@@ -3,7 +3,7 @@
 
 import { useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
-import { Button, Card, SelectField, TextField } from "@/shared/ui";
+import { Button, Card, TextField } from "@/shared/ui";
 import type { UserProfile } from "@/entities/user";
 import { useEditProfile } from "../model/use-edit-profile";
 import { EmailOtpDialog } from "./email-otp-dialog";
@@ -57,6 +57,7 @@ export function PersonalInfoCard({
           type="email"
           value={fields.email}
           onChange={(e) => update("email", e.target.value)}
+          invalid={Boolean(fieldErrors.email)}
           disabled={isSaving || Boolean(emailOtpTarget)}
           maxLength={254}
         />
@@ -75,17 +76,6 @@ export function PersonalInfoCard({
           invalid={Boolean(fieldErrors.currentPosition)}
           disabled={isSaving}
           maxLength={100}
-        />
-        <SelectField
-          label={t("form.defaultLanguage")}
-          value={fields.defaultLanguage}
-          onChange={(e) => update("defaultLanguage", e.target.value)}
-          disabled={isSaving}
-          options={[
-            { value: "PYTHON", label: "Python 3" },
-            { value: "JAVA", label: "Java 21" },
-            { value: "CPP", label: "C++ 17" },
-          ]}
         />
         <TextField
           label={t("form.targetPosition")}

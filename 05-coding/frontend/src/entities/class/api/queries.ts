@@ -11,6 +11,7 @@ import {
   createInviteCode,
   deleteClass,
   getClassStudent,
+  listClassActivity,
   listClassAttention,
   listClassStudents,
   listInstructorClasses,
@@ -36,19 +37,29 @@ export const useInstructorClasses = () =>
     ...QUERY_OPTIONS,
   });
 
-export const useClassStudents = (classId?: string) =>
+export const useClassStudents = (classId?: string, includeLeft = false) =>
   useQuery({
-    queryKey: ["classes", "students", classId ?? "all"],
+    queryKey: ["classes", "students", classId ?? "all", includeLeft],
     queryFn: () =>
-      withMockData(() => listClassStudents(classId), notImplemented),
+      withMockData(
+        () => listClassStudents(classId, includeLeft),
+        notImplemented,
+      ),
     ...QUERY_OPTIONS,
   });
 
-export const useClassStudentDetail = (studentId: string, classId: string) =>
+export const useClassStudentDetail = (
+  studentId: string,
+  classId: string,
+  includeLeft = false,
+) =>
   useQuery({
-    queryKey: ["classes", "student-detail", classId, studentId],
+    queryKey: ["classes", "student-detail", classId, studentId, includeLeft],
     queryFn: () =>
-      withMockData(() => getClassStudent(studentId, classId), notImplemented),
+      withMockData(
+        () => getClassStudent(studentId, classId, includeLeft),
+        notImplemented,
+      ),
     ...QUERY_OPTIONS,
   });
 
@@ -57,6 +68,13 @@ export const useInviteCodes = (classId: string, enabled: boolean) =>
     queryKey: ["classes", "invite-codes", classId],
     queryFn: () => withMockData(() => listInviteCodes(classId), notImplemented),
     enabled,
+    ...QUERY_OPTIONS,
+  });
+
+export const useClassActivity = () =>
+  useQuery({
+    queryKey: ["classes", "activity"],
+    queryFn: () => withMockData(listClassActivity, notImplemented),
     ...QUERY_OPTIONS,
   });
 

@@ -1,0 +1,28 @@
+{
+  "_": "Tach tu usecase_admin_quan_ly_nguoi_dung_phan_quyen (2026-10-18). Nguon: RD/BD ADM0202.",
+  "kind": "usecase",
+  "title": "Sơ đồ Use Case chi tiết - Ma trận phân quyền (Quản trị viên)",
+  "covers": [
+    "F1-10",
+    "F1-11"
+  ],
+  "mode": "color",
+  "usecase": {
+    "system": "Ma trận phân quyền",
+    "groups": [
+      {
+        "name": "Ma trận phân quyền (F1-10, F1-11)",
+        "actors": [
+          "Quản trị viên"
+        ],
+        "usecases": [
+          "Xem ma trận phân quyền",
+          "Bật tắt quyền theo vai trò và chức năng",
+          "Thêm vai trò mới",
+          "Sửa vai trò",
+          "Xoá vai trò"
+        ]
+      }
+    ]
+  }
+}

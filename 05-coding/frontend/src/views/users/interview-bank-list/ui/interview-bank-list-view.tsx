@@ -22,6 +22,7 @@ import {
   fetchInterviewQuestionPage,
   useRecallAndBookmarkState,
   InterviewQuestionListRow,
+  RECALL_NEXT_REVIEW_DAYS,
   RecallLevelPicker,
   type InterviewQuestion,
   type QuestionLevel,
@@ -36,12 +37,19 @@ import {
   Card,
   EmptyState,
   FilterMenu,
-  StatCard,
+  ProgressBar,
   TextField,
+  Toggle,
 } from "@/shared/ui";
 
-// Mặc định 10 thẻ, khoảng 5-20 [SoT: 09-layoutBase/Câu hỏi phỏng vấn.dc.html:235].
+// Quick drill is a fixed 10 cards: a named configuration constant, no card-count control on screen
+// [SoT: 02-bd/screens/users/USR0401_interview_bank_list.md Câu hỏi mở Q9, owner 2026-10-18].
 const DRILL_SIZE = 10;
+
+// Search box cap [SoT: 02-bd/screens/users/USR0401_interview_bank_list.md Sheet 9 NO 3].
+const SEARCH_MAX_LENGTH = 100;
+
+const NO_PINS: string[] = [];
 
 type StatusFilter = "all" | "new" | "reviewing" | "known";
 type TopicFilter = QuestionTopic | "all";
@@ -83,9 +91,24 @@ export function InterviewBankListView() {
   const [status, setStatus] = useState<StatusFilter>("all");
   const [topic, setTopic] = useState<TopicFilter>("all");
   const [level, setLevel] = useState<LevelFilter>("all");
+  // Independent axis next to the four status tabs, not a fifth tab [SoT: USR0401 BD Q8].
+  const [bookmarkedOnly, setBookmarkedOnly] = useState(false);
   const [selectedCode, setSelectedCode] = useState<string | null>(
     page.questions[0]?.code ?? null,
   );
+
+  // Questions the learner just rated or un-bookmarked stay in the list (and the quick view) while
+  // the active filter would drop them; the pin is tied to a filter signature, so changing any
+  // filter or the search text releases it [SoT: USR0401 BD Sheet 8 EVT-8, owner 2026-10-19].
+  const filterSignature = [query, status, topic, level, bookmarkedOnly].join(
+    "|",
+  );
+  const [pinned, setPinned] = useState<{ signature: string; codes: string[] }>({
+    signature: "",
+    codes: [],
+  });
+  const pinnedCodes =
+    pinned.signature === filterSignature ? pinned.codes : NO_PINS;
 
   const [view, setView] = useState<"browse" | "drill">("browse");
   const [drillQueue, setDrillQueue] = useState<InterviewQuestion[]>([]);
@@ -95,29 +118,35 @@ export function InterviewBankListView() {
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
     return page.questions.filter((question) => {
+      if (pinnedCodes.includes(question.code)) return true;
       if (topic !== "all" && question.topic !== topic) return false;
       if (level !== "all" && question.level !== level) return false;
+      if (bookmarkedOnly && !bookmarks[question.code]) return false;
       if (!matchesStatus(recall[question.code] ?? null, status)) return false;
-      if (needle && !question.question.toLowerCase().includes(needle))
+      if (
+        needle &&
+        ![question.question, question.content, ...question.coreKeywords].some(
+          (text) => text.toLowerCase().includes(needle),
+        )
+      )
         return false;
       return true;
     });
-  }, [page.questions, recall, query, status, topic, level]);
+  }, [
+    page.questions,
+    recall,
+    bookmarks,
+    query,
+    status,
+    topic,
+    level,
+    bookmarkedOnly,
+    pinnedCodes,
+  ]);
 
   const selected =
     filtered.find((q) => q.code === selectedCode) ?? filtered[0] ?? null;
-
-  const known = page.questions.filter((q) => recall[q.code] === "known").length;
-  const reviewing = page.questions.filter((q) => {
-    const r = recall[q.code];
-    return r === "vague" || r === "forgotten";
-  }).length;
-  // [SoT: Suy luận] — mock has no `rated_at` timestamps, so "drilled this week" approximates as
-  // "has ever been rated" rather than counting last-7-days events (Câu hỏi mở Q2 of the BD flags
-  // the same under-count risk even with a real recall_ratings table).
-  const drilledThisWeek = page.questions.filter(
-    (q) => recall[q.code] !== null,
-  ).length;
+  const selectedRecall = selected ? (recall[selected.code] ?? null) : null;
 
   function startDrill() {
     if (filtered.length === 0) return;
@@ -151,13 +180,22 @@ export function InterviewBankListView() {
     setRevealed(false);
   }
 
+  function pin(code: string) {
+    setPinned({
+      signature: filterSignature,
+      codes: pinnedCodes.includes(code) ? pinnedCodes : [...pinnedCodes, code],
+    });
+  }
+
   function rateSelected(code: string, level: RecallLevel) {
+    pin(code);
     rate(code, level);
     toast.success(t("toast.rated"));
   }
 
   function toggleBookmarkWithToast(code: string) {
     const wasBookmarked = bookmarks[code] ?? false;
+    pin(code);
     toggleBookmark(code);
     toast.success(
       wasBookmarked ? t("toast.unbookmarked") : t("toast.bookmarked"),
@@ -202,14 +240,14 @@ export function InterviewBankListView() {
             {t("drill.exit")}
           </Button>
         </div>
-        <div className="mb-4 h-1 overflow-hidden rounded-full bg-[var(--color-track)]">
-          <div
-            className="h-1 rounded-full bg-[var(--color-primary)] transition-[width]"
-            style={{
-              width: `${Math.round(((drillIndex + 1) / drillQueue.length) * 100)}%`,
-            }}
-          />
-        </div>
+        <ProgressBar
+          value={drillIndex + 1}
+          max={drillQueue.length}
+          label={t("drill.progressLabel")}
+          fill="var(--color-primary)"
+          height={4}
+          className="mb-4"
+        />
         <Card>
           <div className="mb-4 flex items-center gap-2">
             <span className="text-[10.5px] font-semibold tracking-[0.06em] text-[var(--color-text-subtle)] uppercase">
@@ -222,11 +260,11 @@ export function InterviewBankListView() {
           <h2 className="mb-6 min-h-[80px] text-center text-lg font-semibold text-pretty">
             {card.question}
           </h2>
-          {revealed ? (
+          {revealed && card.suggestedApproach.length > 0 ? (
             <ul className="mb-6 flex flex-col gap-2 border-t border-[var(--color-border)] pt-4">
               {card.suggestedApproach.map((point, index) => (
                 <li
-                  key={point}
+                  key={`${index}-${point}`}
                   className="flex gap-2.5 text-[13.5px] text-[var(--color-text-muted)]"
                 >
                   <span className="font-mono text-[11.5px] font-semibold text-[var(--color-primary)]">
@@ -242,6 +280,7 @@ export function InterviewBankListView() {
               variant="ghost"
               size="sm"
               className="border border-[var(--color-border)]"
+              aria-expanded={revealed}
               onClick={() => setRevealed((r) => !r)}
             >
               {revealed ? t("drill.hide") : t("drill.reveal")}
@@ -260,22 +299,7 @@ export function InterviewBankListView() {
 
   return (
     <div className="p-6">
-      <div className="mb-4 flex flex-wrap items-center gap-4">
-        <div className="grid flex-1 grid-cols-2 gap-3 sm:grid-cols-4">
-          <StatCard label={t("stats.total")} value={page.totalQuestions} />
-          <StatCard
-            label={t("stats.known")}
-            value={`${known} / ${page.questions.length}`}
-          />
-          <StatCard
-            label={t("stats.reviewing")}
-            value={`${reviewing} / ${page.questions.length}`}
-          />
-          <StatCard
-            label={t("stats.drilledThisWeek")}
-            value={drilledThisWeek}
-          />
-        </div>
+      <div className="mb-4 flex flex-wrap items-center justify-end gap-4">
         <div className="flex gap-2">
           <Button
             variant="ghost"
@@ -311,6 +335,7 @@ export function InterviewBankListView() {
                 leadingIcon={<Search className="h-3.5 w-3.5" />}
                 placeholder={t("searchPlaceholder")}
                 value={query}
+                maxLength={SEARCH_MAX_LENGTH}
                 onChange={(event) => setQuery(event.target.value)}
                 onKeyDown={(event) => {
                   if (event.key === "Enter") announceSearch();
@@ -330,6 +355,12 @@ export function InterviewBankListView() {
                   },
                   { value: "known" as const, label: t("statusTabs.known") },
                 ]}
+              />
+              <Toggle
+                showLabel
+                checked={bookmarkedOnly}
+                onCheckedChange={setBookmarkedOnly}
+                label={t("bookmarkedOnly")}
               />
             </div>
             <div className="flex flex-wrap gap-1.5">
@@ -402,22 +433,26 @@ export function InterviewBankListView() {
                 {selected.question}
               </h2>
 
-              <p className="mb-2 text-[10.5px] font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
-                {t("quickView.outlineLabel")}
-              </p>
-              <ul className="mb-4 flex flex-col gap-2">
-                {selected.suggestedApproach.map((point, index) => (
-                  <li
-                    key={point}
-                    className="flex gap-2.5 text-[13px] text-[var(--color-text-muted)]"
-                  >
-                    <span className="font-mono text-[11px] font-semibold text-[var(--color-primary)]">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    <span>{point}</span>
-                  </li>
-                ))}
-              </ul>
+              {selected.suggestedApproach.length > 0 ? (
+                <>
+                  <p className="mb-2 text-[10.5px] font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
+                    {t("quickView.outlineLabel")}
+                  </p>
+                  <ul className="mb-4 flex flex-col gap-2">
+                    {selected.suggestedApproach.map((point, index) => (
+                      <li
+                        key={`${index}-${point}`}
+                        className="flex gap-2.5 text-[13px] text-[var(--color-text-muted)]"
+                      >
+                        <span className="font-mono text-[11px] font-semibold text-[var(--color-primary)]">
+                          {String(index + 1).padStart(2, "0")}
+                        </span>
+                        <span>{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              ) : null}
 
               {selected.coreKeywords.length > 0 ? (
                 <div className="mb-4 flex flex-wrap gap-1.5">
@@ -434,12 +469,19 @@ export function InterviewBankListView() {
                   {t("quickView.recallLabel")}
                 </p>
                 <RecallLevelPicker
-                  value={recall[selected.code] ?? null}
+                  value={selectedRecall}
                   onRate={(level) => rateSelected(selected.code, level)}
                   labels={recallLabels}
                   groupLabel={t("quickView.recallLabel")}
-                  className="mb-3"
+                  className="mb-2"
                 />
+                {selectedRecall ? (
+                  <p className="mb-3 text-[12px] text-[var(--color-text-subtle)]">
+                    {t("quickView.nextReview", {
+                      n: RECALL_NEXT_REVIEW_DAYS[selectedRecall],
+                    })}
+                  </p>
+                ) : null}
                 <Link
                   href={`/interview-bank/${selected.code}`}
                   className="text-[12.5px] font-semibold text-[var(--color-primary)] hover:underline"

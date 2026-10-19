@@ -33,6 +33,7 @@ import {
   type AiGuardKey,
   type ProblemLimits,
   type TestcaseCategory,
+  canViewerSeeProblem,
 } from "@/entities/problem";
 import { isNotFound } from "@/shared/api";
 import { useT } from "@/shared/i18n";
@@ -52,7 +53,7 @@ const LIMIT_KEYS: (keyof ProblemLimits)[] = [
   "timeLimitMs",
   "memoryLimitMb",
   "outputLimitKb",
-  "stackLimitMb",
+  "maxSubmissionsPerHour",
 ];
 
 type Props = {
@@ -104,16 +105,28 @@ export function ProblemInfoView({ problemId, basePath }: Props) {
         })}
         actions={
           <>
+            {/* Same target as the authoring screen's eye icon: SHR0202 Q6 (owner 2026-10-03) opens
+                the last saved data in a new tab. The button did nothing before (UX review B9). */}
             <Button
+              asChild
               variant="ghost"
               size="sm"
               className="border border-[var(--color-border)]"
             >
-              {ta("previewAsLearner")}
+              <a
+                href={`${basePath}/${problemId}/preview`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {ta("previewAsLearner")}
+              </a>
             </Button>
-            <Button asChild variant="cta" size="sm">
-              <Link href={`${basePath}/${problemId}/edit`}>{t("edit")}</Link>
-            </Button>
+            {/* A2 reads other authors' published problems but never edits them. */}
+            {canViewerSeeProblem(problemId) ? (
+              <Button asChild variant="cta" size="sm">
+                <Link href={`${basePath}/${problemId}/edit`}>{t("edit")}</Link>
+              </Button>
+            ) : null}
           </>
         }
       />
@@ -320,7 +333,9 @@ export function ProblemInfoView({ problemId, basePath }: Props) {
                   <dt className="text-[var(--color-text-subtle)]">
                     {ta(`limit.${key}`)}
                   </dt>
-                  <dd className="font-mono">{draft.limits[key]}</dd>
+                  <dd className="font-mono">
+                    {draft.limits[key] ?? ta("limit.systemDefault")}
+                  </dd>
                 </div>
               ))}
             </dl>

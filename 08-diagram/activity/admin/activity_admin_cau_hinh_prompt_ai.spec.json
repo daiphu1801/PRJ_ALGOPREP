@@ -1,9 +1,10 @@
 {
-  "_": "Chuyen tu sequence_admin_cau_hinh_prompt_ai.spec.json (F5-23). Hai buoc nghiep vu lien tiep -- luu phien ban prompt moi, roi khoi phuc mot phien ban cu -- ghep thanh MOT chuoi hanh dong tuan tu vi day la mo ta trinh tu thao tac cua Admin, khong phai mot quyet dinh re nhanh: khong co diem nao trong luong that su re thanh hai huong loai tru nhau.",
-  "_khong_decision": "Khong co node decision: ca hai 'nhanh' (luu ban moi / khoi phuc ban cu) deu la hanh dong Admin chu dong chon lam, khong phai he thong danh gia dieu kien roi re nhanh.",
+  "_": "Chuyen tu sequence_admin_cau_hinh_prompt_ai (F5-23). Cap nhat 2026-10-18: bo trong so rubric; luong moi la sua ban nhap (co the chep chi thi cu tu Nhat ky phien ban), roi Luu va phat hanh mot giao dich. Khong ve nhanh \"khoi phuc\" rieng: khoi phuc chi la mot cach dien noi dung vao ban nhap [SoT: 02-bd/screens/admin/ADM0301_ai_config.md V1.2], chi tiet o sequence phan 4/4.",
   "kind": "activity",
-  "title": "Sơ đồ hoạt động - Cấu hình prompt AI theo phiên bản (Quản trị viên)",
-  "covers": ["F5-23"],
+  "title": "Sơ đồ hoạt động - Cấu hình prompt và model của AI theo phiên bản (Quản trị viên)",
+  "covers": [
+    "F5-23"
+  ],
   "mode": "mono",
   "activity": {
     "nodes": [
@@ -14,50 +15,39 @@
       {
         "id": "n1",
         "type": "action",
-        "text": "Sửa prompt và trọng số rubric, gửi bản mới"
+        "text": "Chọn tính năng, sửa chỉ thị (hoặc chép chỉ thị bản cũ) và chọn model được duyệt"
       },
       {
         "id": "d1",
         "type": "decision",
-        "text": "Trọng số rubric hợp lệ?"
-      },
-      {
-        "id": "n2",
-        "type": "action",
-        "text": "Báo lỗi trường sai, không tạo phiên bản nào"
+        "text": "Chỉ thị không rỗng và model hợp lệ?"
       },
       {
         "id": "n3",
         "type": "action",
-        "text": "Lưu thành phiên bản mới, giữ nguyên câu chỉ dẫn ràng buộc của Lớp 1"
-      },
-      {
-        "id": "n4",
-        "type": "action",
-        "text": "Ghi Nhật ký hệ thống và xoá cache prompt"
+        "text": "Lưu vào bản nháp, bản đang chạy giữ nguyên"
       },
       {
         "id": "n5",
         "type": "action",
-        "text": "Hiện phiên bản đang áp dụng"
-      },
-      {
-        "id": "d2",
-        "type": "decision",
-        "text": "Bản mới có vấn đề, cần quay lại bản cũ?"
+        "text": "Bấm Lưu và phát hành, xem tóm tắt rồi xác nhận"
       },
       {
         "id": "n6",
         "type": "action",
-        "text": "Chọn một phiên bản cũ trong lịch sử"
-      },
-      {
-        "id": "n7",
-        "type": "action",
-        "text": "Tạo phiên bản mới sao chép nội dung bản cũ, lịch sử giữ nguyên"
+        "text": "Chuyển mọi bản nháp thành bản đang chạy trong một giao dịch, ghi Nhật ký hệ thống, xoá cache prompt"
       },
       {
         "id": "end",
+        "type": "end"
+      },
+      {
+        "id": "n2",
+        "type": "action",
+        "text": "Báo lỗi trường sai, không lưu bản nháp"
+      },
+      {
+        "id": "end2",
         "type": "end"
       }
     ],
@@ -81,40 +71,22 @@
         "guard": "không hợp lệ"
       },
       {
-        "from": "n2",
-        "to": "end"
-      },
-      {
         "from": "n3",
-        "to": "n4"
-      },
-      {
-        "from": "n4",
         "to": "n5"
       },
       {
         "from": "n5",
-        "to": "d2"
-      },
-      {
-        "from": "d2",
-        "to": "n6",
-        "guard": "có"
-      },
-      {
-        "from": "d2",
-        "to": "end",
-        "guard": "không"
+        "to": "n6"
       },
       {
         "from": "n6",
-        "to": "n7"
+        "to": "end"
       },
       {
-        "from": "n7",
-        "to": "end"
+        "from": "n2",
+        "to": "end2"
       }
     ]
   },
-  "_nhanh_re": "Nhanh re: trong so rubric khong hop le thi khong tao phien ban nao [SoT: 02-bd/architecture/ai-review.md muc 2 -- F5-23 luu co phien ban]."
+  "_nhanh_re": "Nhanh re: chi thi rong hoac model ngoai danh sach thi khong luu ban nhap [SoT: 02-bd/screens/admin/ADM0301_ai_config.md muc 7.3, endpoint UpdatePromptTemplateDraft]."
 }

@@ -9,7 +9,9 @@
     "groups": [
       {
         "name": "Chức năng Sinh viên",
-        "actors": ["Sinh viên"],
+        "actors": [
+          "Sinh viên"
+        ],
         "usecases": [
           "Tìm và lọc bài toán",
           "Lưu bài toán (Bài đã lưu)",
@@ -22,20 +24,30 @@
       },
       {
         "name": "Chức năng Giảng viên",
-        "actors": ["Giảng viên"],
+        "actors": [
+          "Giảng viên"
+        ],
         "usecases": [
           "Quản lý lớp học và tiến độ học viên",
-          "Chấm và nhận xét bài nộp"
+          "Xem bài nộp của học viên trong lớp"
         ]
       },
       {
         "name": "Dùng chung (Giảng viên & Quản trị viên)",
-        "actors": ["Giảng viên", "Quản trị viên"],
-        "usecases": ["Quản lý bài toán và testcase", "Quản lý ngân hàng câu hỏi phỏng vấn"]
+        "actors": [
+          "Giảng viên",
+          "Quản trị viên"
+        ],
+        "usecases": [
+          "Quản lý bài toán và testcase",
+          "Quản lý ngân hàng câu hỏi phỏng vấn"
+        ]
       },
       {
         "name": "Chức năng Quản trị viên",
-        "actors": ["Quản trị viên"],
+        "actors": [
+          "Quản trị viên"
+        ],
         "usecases": [
           "Quản lý người dùng, phân quyền",
           "Giám sát vận hành và tổng quan hệ thống",
@@ -46,11 +58,29 @@
       }
     ],
     "common": [
-      { "name": "Đăng nhập / Đăng ký", "actors": ["Sinh viên", "Giảng viên", "Quản trị viên"] }
+      {
+        "name": "Đăng nhập / Đăng ký",
+        "actors": [
+          "Sinh viên",
+          "Giảng viên",
+          "Quản trị viên"
+        ]
+      }
     ],
     "externals": [
-      { "name": "go-judge", "from": ["Giải và nộp bài"] },
-      { "name": "Nhà cung cấp LLM", "from": ["Phân tích bài giải bằng AI", "Phỏng vấn giả lập với AI"] }
+      {
+        "name": "go-judge",
+        "from": [
+          "Giải và nộp bài"
+        ]
+      },
+      {
+        "name": "Nhà cung cấp LLM",
+        "from": [
+          "Phân tích bài giải bằng AI",
+          "Phỏng vấn giả lập với AI"
+        ]
+      }
     ]
   }
 }

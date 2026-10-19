@@ -40,6 +40,9 @@ gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang c�
     prototype là dữ liệu mẫu không có ý nghĩa — AlgoPrep không có mô hình phân hạng tài khoản, bỏ khỏi giao
     diện thật **[Đợi nextjs]**. Mục "Xác thực hai lớp (2FA)" trong prototype nằm ngoài phạm vi đồ án — bỏ
     khỏi giao diện thật **[Đợi nextjs]**.
+    **Bổ sung 2026-10-13** (`DEC-2026-1013-a2-reads-student-contact`): thêm trường thứ 7 **Số điện thoại**,
+    không bắt buộc, để giảng viên phụ trách lớp liên lạc với học viên. Giảng viên chỉ đọc được email và số
+    điện thoại của học viên thuộc lớp mình phụ trách.
   - **F1-19 — Tự đổi mật khẩu khi đã đăng nhập.** Khác F1-17 (quên mật khẩu, chưa đăng nhập): người dùng nhập
     mật khẩu hiện tại + mật khẩu mới ngay tại trang cá nhân/bảo mật, không qua email. **Chốt 2026-08-25.**
 - **Ma trận phân quyền Role × Function × Action** — chốt 2026-08-23 theo `06-plan/PROTOTYPE_DEBT.md` mục
@@ -54,7 +57,7 @@ gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang c�
     vai trò hệ thống (`STUDENT`, `INSTRUCTOR`, `ADMIN`) và không xoá được vai trò đang có người dùng.
   - **F1-12 — Danh sách chức năng quản trị/nội dung nằm trong phạm vi ma trận** (đề xuất khởi điểm,
     `[SoT: Suy luận]` — chốt số lượng chính xác khi viết BD):
-    `PROBLEM_AUTHORING` (F2-01→04) · `TESTCASE_MANAGEMENT` (F2-05→09, F2-14) · `CLASS_MANAGEMENT` (F1-23→28, F2-12, F5-27) ·
+    `PROBLEM_AUTHORING` (F2-01→04) · `TESTCASE_MANAGEMENT` (F2-05→09, F2-14) · `CLASS_MANAGEMENT` (F1-23→28, F2-12; ~~F5-27~~ đã bỏ 2026-10-13, `DEC-2026-1013-remove-instructor-manual-grading`) ·
     `USER_MANAGEMENT` (F1-13) · `JUDGE_QUEUE_MONITOR` (F4-10) ·
     `AI_CONFIG` (F5-23) ·
     `AI_TOKEN_BUDGET` (F5-21, F5-25) · `SYSTEM_AUDIT_LOG` (F1-14) · `INTERVIEW_BANK_MANAGEMENT` (F6-12, F6-13) ·
@@ -103,7 +106,9 @@ gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang c�
   `01-rd/screens/teacher/INS0201_class_management.md` Câu hỏi mở Q2 (chưa có mã `Fx-nn` nào cho CRUD lớp học). Chốt
   qua hỏi trực tiếp chủ dự án:
   - **F1-23 — Giáo viên (A2) tạo lớp học mới** với thông tin cơ bản (tên lớp, có thể kèm mô tả/lịch học —
-    danh sách trường cụ thể để BD/DD quyết định). Khi tạo xong, hệ thống sinh một **mã mời (invite code)**
+    danh sách trường cụ thể để BD/DD quyết định). _(Ghi chú 2026-10-11: lịch học là dữ liệu **có cấu trúc**
+    — ngày trong tuần, giờ, phòng, từ ngày đến ngày, ghi chú — chứ không còn là ghi chú tự do; ý của yêu cầu
+    không đổi, chi tiết ở `02-bd/database/identity.md` mục 1.14, `DEC-2026-1011-class-schedule-structured`.)_ Khi tạo xong, hệ thống sinh một **mã mời (invite code)**
     duy nhất gắn với lớp đó. **Chốt 2026-08-28 — qua hỏi trực tiếp chủ dự án:** học viên (A1) **tự tham
     gia lớp bằng cách nhập mã mời** (self-service join) — không phải giáo viên hay quản trị viên thêm thủ
     công từng học viên. Gác bởi Function `CLASS_MANAGEMENT` trong ma trận phân quyền (F1-12) cho thao tác
@@ -114,19 +119,16 @@ gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang c�
     chủ đích khác với F1-16, không phải sơ suất thiếu nhất quán. Sửa thông tin lớp (đổi tên, mô tả, lịch
     học) dùng chung API/luồng với F1-23, không cần mã riêng.
   - **F1-25 — Mã mời có thời hạn dùng; giáo viên tạo được nhiều mã mời mới cho cùng một lớp.** **Chốt
-    2026-08-28:** mã mời sinh ra ở F1-23 hết hạn sau một khoảng thời gian `[SoT: Suy luận — số ngày/giờ cụ
-    thể chưa chốt, để BD quyết định giá trị mặc định]`; mã hết hạn thì học viên nhập vào bị từ chối tham
+    2026-08-28:** mã mời sinh ra ở F1-23 hết hạn sau một khoảng thời gian ~~`[SoT: Suy luận — số ngày/giờ cụ
+    thể chưa chốt, để BD quyết định giá trị mặc định]`~~ **(chốt 2026-10-14, `DEC-2026-1014-instructor-batch3-4-contracts-and-removal`:
+    cố định 7 ngày, không có ô nhập hạn dùng, tạo mã mới được bất cứ lúc nào
+    [SoT: .nexa/control/decision-registry.md:3734-3735])**; mã hết hạn thì học viên nhập vào bị từ chối tham
     gia. **Chốt 2026-08-28 (tiếp) — qua hỏi trực tiếp chủ dự án:** giáo viên có quyền **tạo nhiều mã mời
     mới** cho cùng một lớp bất cứ lúc nào (không giới hạn tạo lại một lần); **mỗi mã mời mới có thời hạn
     dùng riêng của nó**, độc lập với các mã cũ (mã cũ hết hạn không tự động ảnh hưởng mã mới). Không nói rõ
     mã cũ còn hiệu lực có bị vô hiệu hoá khi tạo mã mới hay không — `[SoT: Suy luận — để BD quyết định, hợp
     lý là cho phép nhiều mã cùng hiệu lực song song, không cần thu hồi mã cũ]`.
-  - **F1-26 — Giáo viên gỡ một học viên khỏi lớp.** **Chốt 2026-08-28 — qua hỏi trực tiếp chủ dự án:** gỡ
-    học viên khỏi lớp thì **xoá luôn lịch sử làm bài của học viên đó trong phạm vi lớp này** (lượt nộp, điểm,
-    tiến độ gắn với lớp) — không giữ lại, vì "đã gỡ rồi thì giữ cũng không làm gì". Đây là **xoá thật, có
-    cascade**, khác hẳn cách dữ liệu người dùng thường được giữ lại ở nơi khác trong hệ thống (ví dụ F1-16 —
-    xoá tài khoản chỉ khoá mềm) — ghi rõ ở đây để BD/DD không lỡ áp cùng một khuôn mẫu "giữ lại dữ liệu" cho
-    mọi thao tác xoá.
+  - **F1-26 — Giáo viên gỡ một học viên khỏi lớp.** ~~**Chốt 2026-08-28 — qua hỏi trực tiếp chủ dự án:** gỡ học viên khỏi lớp thì **xoá luôn lịch sử làm bài của học viên đó trong phạm vi lớp này** (lượt nộp, điểm, tiến độ gắn với lớp) — không giữ lại, vì "đã gỡ rồi thì giữ cũng không làm gì". Đây là **xoá thật, có cascade**, khác hẳn cách dữ liệu người dùng thường được giữ lại ở nơi khác trong hệ thống (ví dụ F1-16 — xoá tài khoản chỉ khoá mềm) — ghi rõ ở đây để BD/DD không lỡ áp cùng một khuôn mẫu "giữ lại dữ liệu" cho mọi thao tác xoá.~~ **ĐÃ ĐỔI 2026-10-14 (DEC-2026-1014-keep-learning-history-on-leave):** gỡ học viên khỏi lớp thì **giữ lịch sử làm bài và lịch sử học**; học viên chỉ được đánh dấu "đã rời lớp" (ghi danh giữ lại làm lịch sử, kèm ngày rời); giảng viên vẫn xem được bài nộp từ lúc học viên còn trong lớp; dữ liệu của học viên không bị đụng tới; học viên đã rời không còn tính vào tổng số học viên và tiến độ lớp (F1-26) [SoT: .nexa/control/decision-registry.md:3933-3940]. Ghi chú: F1-24 (xoá lớp) vẫn là xoá thật; quyết định này chỉ đổi việc gỡ một học viên.
   - **F1-27 — Giáo viên xem hồ sơ chi tiết một học viên trong lớp mình phụ trách** (thông tin cơ bản, tiến
     độ, lịch sử nộp bài — phạm vi giới hạn trong lớp giáo viên đó quản lý). **Chốt 2026-08-28 — qua hỏi
     trực tiếp chủ dự án, lấp Q4 của `class_management.md`:** đây **cần một màn/route riêng**, không phải
@@ -140,7 +142,7 @@ gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang c�
     2026-08-30 (owner instruction — "tạo dashboard ở mức tốt là được", tức chốt ở mức hợp lý, không cần đàm
     phán từng ngưỡng số; các con số cụ thể đánh dấu `[SoT: Suy luận]` để BD/DD tinh chỉnh):**
     - **Điểm trung bình (thang 10, theo học viên)** = tỉ lệ Accepted/tổng lượt nộp của học viên đó trong lớp
-      (F1-07) quy đổi ×10 — không dùng điểm AI tham khảo của F5-27 (đó là điểm theo từng bài nộp, không phải
+      (F1-07) quy đổi ×10 — không dùng điểm AI quy đổi `ai_score_10` (cột đã bỏ 2026-10-14, `DEC-2026-1014-drop-ai-score-10`; F5-27 đã bỏ 2026-10-13; đó là điểm theo từng bài nộp, không phải
       điểm đại diện một học viên). Biểu đồ đường "Điểm trung bình theo lớp" = trung bình cộng điểm này của
       mọi học viên trong lớp, vẽ theo từng mốc tuần.
     - **Hoàn thành (%)** = số bài trong danh sách được giao cho lớp (F2-12) mà học viên đã Accepted ít nhất
@@ -150,8 +152,15 @@ gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang c�
       nộp bài — cùng khái niệm "chuỗi ngày luyện tập" đã dùng ở F1-21 (nhắc nhở qua email khi chuỗi sắp
       mất), không phải khái niệm mới cần định nghĩa lại.
     - **Xu hướng (sparkline)** = điểm trung bình của riêng học viên đó theo 6 mốc tuần gần nhất — cùng nguồn
-      dữ liệu với biểu đồ đường ở trên nhưng theo từng cá nhân thay vì gộp lớp; cơ chế lưu (snapshot định kỳ
-      hay tính runtime từ lịch sử lượt nộp) để BD/DD quyết định.
+      dữ liệu với biểu đồ đường ở trên nhưng theo từng cá nhân thay vì gộp lớp. **ĐÃ CHỐT 2026-10-14
+      (DEC-2026-1014-instructor-batch2-weekly-rules):** cơ chế lưu là tính lúc truy vấn từ bảng lượt nộp, cache
+      15 phút, không có bảng hay job chụp số liệu theo tuần.
+    - **Quy tắc tuần (ĐÃ CHỐT 2026-10-14, DEC-2026-1014-instructor-batch2-weekly-rules):** "mốc tuần" ở biểu
+      đồ, Xu hướng và nhãn "Cần hỗ trợ" là tuần ISO bắt đầu từ thứ Hai; tuần hiện tại chưa kết thúc không được
+      tính (chỉ dùng các tuần đủ 7 ngày). Quy tắc này không đổi ngưỡng của ba nhãn ở trên.
+      **Xác nhận 2026-10-14 (`DEC-2026-1014-instructor-batch5-6-nav-pagination-rubric`, chủ dự án):** quy tắc tuần ISO
+      (bắt đầu thứ Hai, không tính tuần chưa kết thúc) áp dụng cả cho sparkline "Xu hướng" của bảng học viên.
+      [SoT: .nexa/control/decision-registry.md:3699-3704]
     - **Nhãn "Cần chú ý"** — ba loại, ngưỡng đề xuất mặc định, BD/DD chỉnh được: "Vắng bài" — không có lượt
       nộp nào trong 7 ngày gần nhất `[SoT: Suy luận]`; "Theo dõi" — Hoàn thành dưới 50% và đã được giao ít
       nhất một bài `[SoT: Suy luận]`; "Cần hỗ trợ" — điểm trung bình giảm liên tiếp qua từ hai mốc tuần gần
@@ -161,7 +170,7 @@ gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang c�
       rỗng riêng khi lớp chưa có học viên, và trạng thái lỗi tải dữ liệu kèm nút thử lại — chi tiết UI để
       BD/DD.
     - Gác bởi Function `CLASS_MANAGEMENT` (F1-12); phạm vi hiển thị theo lớp giảng viên phụ trách, cùng cơ
-      chế đã dùng ở F2-12/F5-27.
+      chế đã dùng ở F2-12.
 - **Quản trị viên (A3) xem tổng quan vận hành hệ thống** — bổ sung 2026-08-31, lấp Câu hỏi mở Q2 và Q5 của
   `01-rd/screens/admin/ADM0101_overview.md` (`07-review/rd_review_report_260826.html` mục 6.2, mức Cao). Chốt
   qua hỏi trực tiếp chủ dự án, cả hai theo phương án khuyến nghị:
@@ -193,21 +202,33 @@ gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang c�
   Chốt theo phương án khuyến nghị đã đề xuất sẵn trong RD (mẫu hình giống cách `class_progress`/F1-28 và
   `admin_overview`/F1-29 đã chốt trong phiên này — chủ dự án uỷ quyền áp phương án hợp lý nhất thay vì
   duyệt từng dòng, đánh dấu rõ `[SoT: Suy luận]` ở mọi con số chưa có căn cứ cứng):
-  - **F1-30 — Dashboard tổng quan khối lượng công việc** (`instructor_overview`) bao trùm 4 thẻ thống kê
-    (Lớp phụ trách, Tổng học viên, Cần chấm tay, Điểm TB lớp), widget "Cần chấm tay", "Hoạt động gần đây",
-    "Lớp của tôi", "Tiến độ học viên", "Bài tập của tôi" — một mã tổng hợp duy nhất, không phải một `FUNCTION`
+  - **F1-30 — Dashboard tổng quan khối lượng công việc** (`instructor_overview`) bao trùm ~~4~~ **2** thẻ thống kê
+    (Lớp phụ trách, Tổng học viên; ~~Điểm TB lớp~~ **ĐÃ BỎ 2026-10-14**, `DEC-2026-1014-instructor-overview-trim-and-nav-label`; ~~thẻ "Cần chấm tay"~~ và ~~widget "Cần chấm tay"~~ **đã bỏ 2026-10-13**, `DEC-2026-1013-remove-instructor-manual-grading`), "Hoạt động gần đây",
+    "Lớp của tôi", ~~"Tiến độ học viên"~~ **(ĐÃ BỎ 2026-10-14)**, "Bài tập của tôi" — một mã tổng hợp duy nhất, không phải một `FUNCTION`
     riêng trong ma trận F1-10 (mọi vai trò `INSTRUCTOR` đều thấy trang này, là đích mặc định sau đăng nhập,
     `auth.md` Q3 đã chốt). Trả lời `US-A2-11` mới trong `01-rd/req/user_stories/a2_instructor.md`.
-    - **Điểm TB lớp** = điểm AI tham khảo (F5-27), gộp trung bình trên mọi bài `Accepted` có báo cáo F5.1 của
-      (các) lớp phụ trách — sẵn có cho mọi bài `Accepted`, không phụ thuộc giảng viên đã chấm tay hay chưa.
-    - **Badge số trên nav** ("3" lớp, "18" bài tập, "9" cần chấm) làm mới khi tải lại trang/chuyển màn, không
+    - ~~**Điểm TB lớp** = điểm AI quy đổi `ai_score_10`, gộp trung bình trên mọi bài `Accepted` có báo cáo F5.1 của
+      (các) lớp phụ trách. **Lưu ý 2026-10-13:** F5-27 đã bỏ; thẻ này là nơi duy nhất còn dùng `ai_score_10`, nên số phận
+      của thẻ phụ thuộc câu hỏi mở OQ-F5-A trong `01-rd/req/ai-review.md` (giữ hay bỏ `ai_score_10`) — chưa quyết.~~
+      **ĐÃ BỎ 2026-10-14 (`DEC-2026-1014-instructor-overview-trim-and-nav-label`):** thẻ và định nghĩa bị bỏ cùng
+      DTO/sự kiện của nó; `INS0101` không còn đọc `ai_score_10`. ~~OQ-F5-A vẫn mở.~~ **ĐÃ BỎ 2026-10-14
+      (`DEC-2026-1014-drop-ai-score-10`):** chính cột `ai_score_10` bị bỏ, OQ-F5-A đã đóng.
+    - **Badge số trên nav** ("3" lớp, "18" bài tập; ~~"9" cần chấm~~ đã bỏ 2026-10-13) làm mới khi tải lại trang/chuyển màn, không
       cần kênh WebSocket riêng cho badge dashboard.
+    - **Quy tắc đếm (chốt 2026-10-14, `DEC-2026-1014-instructor-batch1-counting-rules`):** "Tổng học viên" đếm theo người
+      (`DISTINCT student_id` qua các lớp phụ trách); số lượt nộp của bài giao tính trong phạm vi các lớp của giảng
+      viên, không dùng bộ đếm toàn hệ thống; ~~số "học viên mới 30 ngày" và chênh lệch của nó~~ **ĐÃ BỎ 2026-10-14
+      (DEC-2026-1014-instructor-batch1-counting-rules)**; ~~endpoint tổng hợp `GetInstructorOverviewStats`~~ **ĐÃ BỎ** (màn đọc danh sách tóm tắt lớp).
     - **"Hoạt động gần đây"** là một **read model riêng của `identity`** tổng hợp sự kiện từ `problem-bank`/
       `judge-orchestration`/`ai-review` — không tái dùng bảng Nhật ký hệ thống (F1-14, vốn dành cho audit
-      hành động quản trị của A3, khác mục đích và khác actor xem). Giới hạn số lượng/thời gian giữ log để
+      hành động quản trị của A3, khác mục đích và khác actor xem). **Từ 2026-10-14 chỉ giữ sự kiện tức thời**
+      (submit, publish, streak, join); ~~loại sự kiện suy ra từ quét định kỳ ("vắng 9 ngày", "cần hỗ trợ") và cụm "kèm điểm AI"~~
+      **ĐÃ BỎ 2026-10-14 (DEC-2026-1014-instructor-batch1-counting-rules)**. Giới hạn số lượng/thời gian giữ log để
       BD/DD quyết định.
-    - Widget "Tiến độ học viên" có liên kết "Xem tất cả" dẫn sang `class_progress`, nhất quán với hai widget
-      còn lại ("Lớp của tôi" → `class_management`, "Bài tập của tôi" → `class_assignments`).
+    - ~~Widget "Tiến độ học viên" có liên kết "Xem tất cả" dẫn sang `class_progress`, nhất quán với hai widget
+      còn lại ("Lớp của tôi" → `class_management`, "Bài tập của tôi" → `class_assignments`).~~
+      **ĐÃ BỎ 2026-10-14 (`DEC-2026-1014-instructor-overview-trim-and-nav-label`):** widget và liên kết bị bỏ; hai
+      widget còn lại giữ nguyên liên kết. Màn `class_progress` (F1-28) không đổi.
     - Màn cần 3 trạng thái — `empty`, `loading`, `error` — theo **từng khối riêng**, cùng nguyên tắc đã áp
       cho `admin_overview` (F1-29).
   - **F1-31 — Dashboard tổng quan luyện tập của người học** (`dashboard`) bao trùm 4 thẻ thống kê (Đã giải,

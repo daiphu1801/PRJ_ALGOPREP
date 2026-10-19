@@ -147,6 +147,7 @@ lịch sử chỉ cần cho `testcase_set_version`, xem mục 1.6).
 | `expected_output_inline` | TEXT nullable | |
 | `expected_output_object_key` | VARCHAR nullable | |
 | `is_worked_example` | BOOLEAN default `false` | Đánh dấu ví dụ mẫu hiển thị kèm giải thích trong đề — phục vụ ngưỡng "≥2 ví dụ mẫu" của checklist xuất bản (`DEC-2026-0831-problem-management-lifecycle-details`); chỉ có ý nghĩa khi `visibility = SAMPLE` |
+| `explanation_md` | TEXT nullable | **Cột MỚI, 2026-10-18, `DEC-2026-1018-usr-open-questions-phase2-5`** (tiêu chí ponytail bậc 1). Lời giải thích của ví dụ, Markdown; chỉ có ý nghĩa khi `is_worked_example = true` (khi `false` bỏ qua, không bắt buộc NULL). Hiển thị dưới từng ví dụ ở tab đề bài. Không thuộc bộ chấm, đổi cột này **không** tăng `current_testcase_set_version` |
 | `is_ai_generated_draft` | BOOLEAN default `false` | F2-14 — testcase AI sinh, **chưa gộp vào Hidden khi xuất bản** cho tới khi Admin xác nhận |
 | `testcase_set_version` | INT | Phiên bản bộ testcase tại thời điểm testcase này đang hiệu lực — xem mục versioning dưới |
 | `created_at` / `updated_at` | TIMESTAMPTZ | |
@@ -193,7 +194,7 @@ khác** — ràng buộc ở tầng ứng dụng/security, không phải chỉ �
 
 ### 1.10. `problem_bank_settings` (F2-14, `DEC-2026-1003-ai-testcase-generation-quota`)
 
-Một dòng duy nhất (`CHECK (id = 1)`), cùng khuôn `judge.cluster_settings`, chỉ ADMIN (A3) sửa qua thẻ "Sinh testcase tự động" của `ADM0301` (Khu vực H). Đặt ở module này, không đặt ở schema `ai`, vì quy tắc "tối đa N lần" và bộ đếm `problems.ai_testcase_generations_used` cùng thuộc F2: kiểm trần và tăng bộ đếm trong một câu lệnh, không gọi chéo module.
+Một dòng duy nhất (`CHECK (id = 1)`), cùng khuôn `judge.cluster_settings`, chỉ ADMIN (A3) sửa qua thẻ "Sinh testcase tự động" của `ADM0303` (Khu vực E; trước 2026-10-10 là `ADM0301` Khu vực H). Đặt ở module này, không đặt ở schema `ai`, vì quy tắc "tối đa N lần" và bộ đếm `problems.ai_testcase_generations_used` cùng thuộc F2: kiểm trần và tăng bộ đếm trong một câu lệnh, không gọi chéo module.
 
 | Cột | Kiểu | Ghi chú |
 | :--- | :--- | :--- |

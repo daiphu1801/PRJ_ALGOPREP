@@ -81,22 +81,13 @@ input mà vẫn tin tưởng được output là chính xác.
   chưa được gộp vào bộ Hidden dùng để chấm bài (F2-14) — tôi luôn là người quyết định cuối cùng có dùng hay
   không.
 
-### US-A2-06: Xem điểm AI tham khảo và chấm tay cho bài nộp của lớp mình
+### ~~US-A2-06: Xem điểm AI tham khảo và chấm tay cho bài nộp của lớp mình~~ — ĐÃ BỎ 2026-10-13
 
-Là **giảng viên**, tôi muốn xem một điểm tham khảo nhanh cho từng bài nộp của lớp mình và tự chấm tay khi
-cần, để lướt qua chất lượng bài làm mà không phải đọc lại toàn bộ báo cáo phân tích của từng bài.
-
-- **Cho** một bài nộp `Accepted` đã có báo cáo phân tích bài giải (F5.1), **Khi** tôi mở màn Chấm bài của lớp
-  mình phụ trách, **Thì** tôi thấy một điểm quy đổi trên thang 10 từ báo cáo đó, gắn nhãn rõ là điểm tham
-  khảo (F5-27) — không phải kết quả Pass/Fail chính thức của bài nộp, và cũng không phải điểm tỷ lệ testcase
-  hiện cho học viên (F4-13). _(Sửa 2026-09-05: câu trước ghi "(F4-04 không đổi)"; `F4-04` đã hết hiệu lực
-  theo `DEC-2026-0831-partial-score-testcase-ratio`. Ý của tiêu chí không đổi — điểm AI vẫn tách bạch khỏi
-  kết quả chấm chính thức.)_
-- **Cho** điểm tham khảo đang hiển thị, **Khi** tôi bấm "Chấm ngay" và nhập điểm 0-10 kèm nhận xét, **Thì**
-  điểm chấm tay của tôi được lưu lại cạnh điểm AI, không ghi đè hay ảnh hưởng trạng thái submission của
-  người học (F5-27).
-- **Cho** tôi không có quyền trên lớp đó, **Khi** tôi mở màn Chấm bài, **Thì** tôi chỉ thấy bài nộp của lớp
-  mình phụ trách — gác bởi Function `CLASS_MANAGEMENT` trong ma trận quyền (F1-10, F1-12).
+**ĐÃ BỎ 2026-10-13** (`DEC-2026-1013-remove-instructor-manual-grading`). Câu chuyện cũ: giảng viên xem điểm AI
+tham khảo thang 10 và chấm tay đè kèm nhận xét cho bài nộp `Accepted` của lớp mình ở màn Chấm bài (`INS0301`).
+Chủ dự án bỏ hẳn chấm tay của giảng viên; `F5-27` và màn `INS0301` cũng bị bỏ theo. Mã `US-A2-06` không được cấp
+lại. Ba tiêu chí Given-When-Then cũ (điểm tham khảo, chấm tay lưu cạnh điểm AI, chỉ thấy bài của lớp mình) hết hiệu
+lực. Quyền đọc mã nguồn của học viên trong lớp vẫn giữ (`DEC-2026-1013-instructor-avatar-menu-and-read-source`).
 
 ### US-A2-07: Tạo lớp học và mời học viên tham gia bằng mã mời
 
@@ -118,8 +109,11 @@ không phải thêm thủ công từng người.
   mới cho cùng lớp, **Thì** hệ thống sinh mã mới với thời hạn dùng riêng của nó, không phụ thuộc các mã mời
   cũ (F1-25).
 - **Cho** một học viên đang là thành viên của lớp tôi phụ trách, **Khi** tôi gỡ học viên đó khỏi lớp, **Thì**
-  hệ thống xoá luôn lịch sử làm bài (lượt nộp, điểm, tiến độ) của học viên đó gắn với lớp này — không giữ
-  lại (F1-26).
+  hệ thống ~~xoá luôn lịch sử làm bài (lượt nộp, điểm, tiến độ) của học viên đó gắn với lớp này — không giữ lại (F1-26).~~ **ĐÃ ĐỔI 2026-10-14 (DEC-2026-1014-keep-learning-history-on-leave):** giữ lịch sử làm bài (lượt nộp, điểm, tiến độ); học viên chỉ được đánh dấu đã rời lớp, tôi vẫn xem được bài nộp từ lúc em còn trong lớp, và em không còn tính vào tổng số học viên và tiến độ lớp (F1-26).
+- **Cho** tôi đang xem danh sách "Lớp của tôi", **Khi** tôi bấm tên một lớp (hoặc icon "Xem chi tiết"),
+  **Thì** tôi vào một trang chi tiết lớp và thấy ở đó, trên một trang, lịch học, các mã mời còn hiệu lực
+  (kèm nút tạo mã mới) và danh sách học viên của lớp (F1-23 tới F1-26, `INS0205`,
+  `DEC-2026-1011-class-detail-page`).
 
 ### US-A2-08: Xem hồ sơ chi tiết một học viên trong lớp mình phụ trách
 
@@ -173,13 +167,19 @@ phỏng vấn dùng chung, để có nội dung cho học viên học và luyệ
 
 ### US-A2-11: Xem tổng quan khối lượng công việc
 
-Là **giảng viên**, tôi muốn thấy ngay số lớp, số học viên, số bài cần chấm và điểm trung bình lớp khi vừa
+Là **giảng viên**, tôi muốn thấy ngay số lớp và số học viên (~~và điểm trung bình lớp~~ **ĐÃ BỎ 2026-10-14**, `DEC-2026-1014-instructor-overview-trim-and-nav-label`) khi vừa
 đăng nhập, để biết việc cần làm hôm nay mà không phải mở lần lượt từng màn con (F1-30, bổ sung 2026-08-31).
 
 - **Cho** tôi vừa đăng nhập với vai trò `INSTRUCTOR`, **Khi** hệ thống điều hướng theo vai trò, **Thì** tôi
-  được đưa thẳng tới màn tổng quan, thấy 4 thẻ thống kê và các widget tóm tắt lớp/bài tập/việc cần chấm
-  (F1-30).
+  được đưa thẳng tới màn tổng quan, thấy 2 thẻ thống kê ("Lớp phụ trách", "Tổng học viên") và các khối
+  "Hoạt động gần đây", "Lớp của tôi", "Bài tập của tôi"
+  (F1-30; thẻ và widget "Cần chấm tay" đã bỏ 2026-10-13; thẻ "Điểm TB lớp" và widget "Tiến độ học viên"
+  ĐÃ BỎ 2026-10-14, `DEC-2026-1014-instructor-overview-trim-and-nav-label`).
 - **Cho** tôi phụ trách nhiều hơn một lớp, **Khi** các thẻ thống kê hiển thị, **Thì** số liệu là tổng hợp
-  trên tất cả các lớp tôi phụ trách (F1-30, F2-12, F5-27).
+  trên tất cả các lớp tôi phụ trách (F1-30, F2-12). Từ 2026-10-14
+  (`DEC-2026-1014-instructor-batch1-counting-rules`): "Tổng học viên" đếm theo người (một học viên ở hai lớp
+  của tôi chỉ tính một lần); số lượt nộp của bài giao tính trong các lớp của tôi; không có số "học viên mới
+  30 ngày" hay chênh lệch theo tuần; "Hoạt động gần đây" chỉ gồm sự kiện tức thời (nộp bài, xuất bản bài,
+  đạt chuỗi ngày, vào lớp).
 - **Cho** một nguồn số liệu (`problem-bank`/`judge-orchestration`/`ai-review`) không phản hồi, **Khi** tôi mở
   màn, **Thì** các khối còn lại vẫn hiển thị bình thường, chỉ khối bị ảnh hưởng báo lỗi (F1-30).

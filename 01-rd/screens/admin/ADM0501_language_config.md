@@ -4,7 +4,7 @@
 > Slug chính tắc: `admin_language_config` [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_language_config`].
 > Phạm vi/Bounded Context: `judge-orchestration` + `problem-bank` [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_language_config`]. Actor: A3 (Quản trị viên).
 > Nguồn sự thật (SoT): `01-rd/req/problem-bank.md` (F2-10), `01-rd/req/judge-orchestration.md` (F4-11), `09-layoutBase/Admin - Ngôn ngữ và giới hạn.dc.html` (prototype), `01-rd/req/user_stories/a3_admin.md` (`US-A3-04`).
-> Tài liệu này có thể đọc độc lập.
+> Phiên bản RD: sửa 2026-10-10 theo `DEC-2026-1010-admin-operations-regroup`. Tài liệu này có thể đọc độc lập.
 
 ---
 
@@ -13,7 +13,11 @@
 Cấu hình ba ngôn ngữ hỗ trợ (hệ số thời gian, giới hạn tài nguyên mặc định, sandbox), để vận hành đúng năng
 lực hạ tầng thật [SoT: 01-rd/req/problem-bank.md — F2-10; 01-rd/req/judge-orchestration.md — F4-11].
 
-Đối chiếu prototype: `09-layoutBase/Admin - Ngôn ngữ và giới hạn.dc.html`. File này mô tả **hành vi và UX
+Màn chia **hai tab** để phần dùng hằng ngày ngắn gọn: tab **"Ngôn ngữ và giới hạn"** (bảng ba ngôn ngữ và hàng
+giới hạn mặc định) và tab **"Sandbox và sinh testcase"** (ba tham số sandbox, giới hạn script sinh testcase;
+gần như không đổi sau khi cài). Một thanh lưu dính đáy cho cả hai tab.
+
+Đối chiếu prototype: `09-layoutBase/Admin - Ngôn ngữ và giới hạn.dc.html` (chỉ tham khảo từ 2026-10-03). File này mô tả **hành vi và UX
 ở mức yêu cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/problem-bank.md` (F2-10) và
 `01-rd/req/judge-orchestration.md` (F4-11), chỉ trỏ tới và bổ sung phần đặc thù của màn.
 
@@ -30,20 +34,30 @@ lực hạ tầng thật [SoT: 01-rd/req/problem-bank.md — F2-10; 01-rd/req/ju
 Đối chiếu `09-layoutBase/Admin - Ngôn ngữ và giới hạn.dc.html`:
 
 1. **Bảng ngôn ngữ hỗ trợ** — đúng 3 ngôn ngữ đã khoá (Python 3, C++ 17, Java 21, khớp `CLAUDE.md` mục
-   "Submission languages"), mỗi dòng: trình biên dịch, hệ số thời gian, giới hạn thời gian tuyệt đối, bộ
-   nhớ, bật/tắt (dòng 402-414) — khớp F2-10 (hệ số) + F4-11 (giới hạn theo ngôn ngữ). Hệ số mẫu (Python x3,
+   "Submission languages"). **Sửa 2026-10-10: bảng 4 cột** — Ngôn ngữ (tên kèm trình biên dịch ở dòng phụ), Hệ số
+   (thời gian và RAM), Giới hạn hiệu dụng ("x ms · y MB" trong một ô), Bật. Cột "Mã môi trường chấm"
+   (`go-judge #71`...) **bỏ**: chỉ là chuỗi trang trí của bản mẫu, không có nguồn dữ liệu — khớp F2-10 (hệ số) + F4-11 (giới hạn theo ngôn ngữ). Hệ số mẫu (Python x3,
    C++ x1, Java x2) khớp đúng ví dụ ở `problem-bank.md` — F2-10 ("Java chậm hơn C++ nên cùng một bài phải khác hệ
    số").
 2. **Giới hạn mặc định** — thời gian/bộ nhớ/kích thước output/thời gian biên dịch, áp dụng khi bài toán
-   không khai báo riêng (dòng 416-421) — khớp F4-11.
-3. **Sandbox** — 3 toggle: "Cho phép truy cập mạng" (mặc định tắt, ghi chú "Tắt trong mọi kỳ thi" — cùng
+   không khai báo riêng — khớp F4-11. **Sửa 2026-10-10:** là **bốn ô nhập sửa được**, đặt thành một hàng gọn ngay
+   trên bảng (chúng là đầu vào của cột "Giới hạn hiệu dụng"), không còn là thẻ riêng chỉ đọc
+   (`DEC-2026-1001-admin-configurable-settings`).
+3. **Sandbox** (chuyển sang tab "Sandbox và sinh testcase", **áp dụng toàn cục**, không theo ngôn ngữ) — 3 toggle: "Cho phép truy cập mạng" (mặc định tắt, ghi chú "Tắt trong mọi kỳ thi" — cùng
    phát hiện khái niệm "kỳ thi" ở `admin_queue_monitor.md` Q2, **đã chốt 2026-08-31: chỉ là nhãn ưu tiên**),
    "Giới hạn tiến trình con", "Trả stderr cho người học" (dòng 424-428). **Đã chốt 2026-08-31** — xem Câu
    hỏi mở Q1.
 4. **Lưu ý khi đổi giới hạn** — prototype ghi đổi hệ số/giới hạn không tự áp dụng cho lượt nộp cũ, phải tạo
    phiên chấm lại riêng (dòng 241, liên kết sang `admin_rejudge`). **Cập nhật 2026-08-28:** `admin_rejudge`
    và F4-09 đã loại khỏi phạm vi (`DEC-2026-0828-remove-rejudge-scope`) — đổi giới hạn chỉ áp dụng cho lượt
-   nộp mới từ lúc đổi trở đi (F4-11); lượt nộp cũ giữ nguyên kết quả, không có luồng chấm lại để đồng bộ.
+   nộp mới; lượt nộp cũ giữ nguyên kết quả, không có luồng chấm lại để đồng bộ. **Sửa 2026-10-10:** thẻ lưu ý
+   **bỏ**, thay bằng một dòng ghi chú cạnh nút Lưu: "Áp dụng cho lượt chấm bắt đầu từ lúc lưu". Mốc áp dụng chốt
+   là **lúc worker bắt đầu chấm** job, không phải lúc nộp; job đã bắt đầu chấm thì chạy nốt cấu hình cũ.
+5. **Thanh lưu dính đáy** — hiện số thay đổi chưa lưu, nút "Hoàn tác" và "Lưu". Hộp xác nhận **một lần duy nhất
+   lúc Lưu**, chỉ khi có ngôn ngữ chuyển từ bật sang tắt. Luôn phải còn ít nhất một ngôn ngữ bật; tắt một
+   ngôn ngữ không huỷ job đang chờ của ngôn ngữ đó, chỉ chặn bài nộp mới.
+6. **Nhật ký** — mọi lần Lưu được ghi vào Nhật ký hệ thống, phân loại "Cấu hình", kèm giá trị cũ và mới
+   (F1-14, `DEC-2026-1010-admin-operations-regroup`).
 
 ### 2.1 Cấu trúc hệ thống liên quan
 
@@ -57,7 +71,7 @@ lực hạ tầng thật [SoT: 01-rd/req/problem-bank.md — F2-10; 01-rd/req/ju
 
 ## 3. Ngoài phạm vi (Out of Scope)
 
-- Bảng màu, spacing, component cụ thể — thuộc BD (`02-bd/screens/admin/ADM0501_language_config.md`, chưa viết).
+- Bảng màu, spacing, component cụ thể — thuộc BD (`02-bd/screens/admin/ADM0501_language_config.md`, V1.0).
 - Hợp đồng API (đổi hệ số, giới hạn, sandbox) — thuộc DD (`03-dd/api/judge-orchestration.md`, chưa viết).
 - Khái niệm "kỳ thi" ở ghi chú "Tắt trong mọi kỳ thi" — cùng phát hiện Q2 của
   `01-rd/screens/admin/ADM0401_queue_monitor.md`, **đã chốt 2026-08-31** (nhãn ưu tiên, không phải tính năng
@@ -69,6 +83,7 @@ lực hạ tầng thật [SoT: 01-rd/req/problem-bank.md — F2-10; 01-rd/req/ju
 
 | # | Câu hỏi | Vì sao chưa trả lời được | Đề xuất | Chủ sở hữu |
 | :-: | :--- | :--- | :--- | :--- |
+| — | Các câu hỏi mở cấp BD của màn này (cột `enabled`, nơi lưu giới hạn mặc định, sandbox toàn cục hay theo ngôn ngữ, hệ số RAM, xác nhận khi tắt, cảnh báo rời màn) **đã đóng ở BD `ADM0501` V1.0 ngày 2026-10-10**, xem `DEC-2026-1010-admin-operations-regroup`. | — | RD không lặp lại | Đã đóng |
 | Q1 | ~~3 toggle Sandbox (mạng, giới hạn tiến trình con, kích thước stderr)...~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** mở rộng F4-11, không cần mã mới. | — | Đã liệt kê rõ 3 tham số vào `01-rd/req/judge-orchestration.md` (amendment F4-11). Xem `DEC-2026-0831-judge-orchestration-ops-details`. | Đã đóng |
 
 ---
@@ -79,6 +94,9 @@ lực hạ tầng thật [SoT: 01-rd/req/problem-bank.md — F2-10; 01-rd/req/ju
 | REQ-01 | Hệ số nhân thời gian theo ngôn ngữ (F2-10) | Chức năng | `01-rd/req/problem-bank.md` — F2-10 |
 | REQ-02 | Cấu hình ngôn ngữ và giới hạn tài nguyên mặc định (F4-11) | Chức năng | `01-rd/req/judge-orchestration.md` — F4-11 |
 | REQ-03 | Given-When-Then liên quan (—) | Chức năng | `01-rd/req/user_stories/a3_admin.md` (`US-A3-04`, GWT đầu) |
+| REQ-04 | **Cho** quản trị viên đổi một ô hoặc một công tắc, **Khi** có thay đổi chưa lưu, **Thì** thanh lưu dính đáy hiện số thay đổi cùng nút "Hoàn tác" và "Lưu"; **Khi** bấm "Hoàn tác", **Thì** mọi thay đổi chưa lưu bị bỏ. | Chức năng | Chốt 2026-10-10 (`DEC-2026-1010-admin-operations-regroup`) |
+| REQ-05 | **Cho** quản trị viên tắt một ngôn ngữ, **Khi** bấm "Lưu", **Thì** hiện **một** hộp xác nhận nêu hậu quả (người học không chọn được ngôn ngữ đó cho bài nộp mới, job đang chờ vẫn chạy nốt); **Khi** là ngôn ngữ cuối cùng còn bật, **Thì** không cho tắt. | Chức năng | Chốt 2026-10-10 |
+| REQ-06 | **Cho** quản trị viên đổi hệ số, giới hạn mặc định hoặc sandbox, **Khi** lưu thành công, **Thì** cấu hình mới áp cho mọi job bắt đầu chấm từ lúc đó và một dòng được ghi vào Nhật ký hệ thống (phân loại "Cấu hình") kèm giá trị cũ và mới. | Chức năng | Chốt 2026-10-10; F1-14 |
 
 ---
 
@@ -99,7 +117,7 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 | Bàn giao | Trạng thái |
 |---|---|
 | RD màn hình | Có tài liệu này |
-| BD màn hình | Chưa xác định — không tự suy luận |
+| BD màn hình | `02-bd/screens/admin/ADM0501_language_config.md` (V1.0) |
 | DD/API liên quan | Chưa xác định — không tự suy luận |
 
 ---

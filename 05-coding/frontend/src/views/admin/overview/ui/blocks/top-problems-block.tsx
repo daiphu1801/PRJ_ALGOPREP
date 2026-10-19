@@ -1,7 +1,9 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 "use client";
 
+import Link from "next/link";
 import { useT } from "@/shared/i18n";
+import { textTone } from "@/shared/lib";
 import { DashboardBlockState, RankedProgressList } from "@/shared/ui";
 import { useTopProblems } from "../../api";
 
@@ -21,12 +23,21 @@ export function TopProblemsBlock() {
       emptyMessage={t("emptyGeneric")}
       errorMessage={t("errorGeneric")}
       retryLabel={t("retry")}
+      // BD ADM0101 Sheet 6 (:527): "Xem tất cả" stays visible when the block is empty or failed,
+      // so it lives in the always-rendered footer rather than inside the data branch (UX review B5).
+      footer={
+        <Link
+          href="/admin/problems"
+          className="mt-3 inline-block text-xs font-medium hover:underline"
+          style={{ color: textTone("--color-admin-cyan") }}
+        >
+          {t("blocks.viewAll")}
+        </Link>
+      }
     >
       {query.data && (
         <RankedProgressList
           items={query.data.items}
-          viewAllHref="/admin/problems"
-          viewAllLabel={t("blocks.viewAll")}
           accentColorVar="--color-admin-cyan"
         />
       )}

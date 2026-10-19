@@ -1,0 +1,129 @@
+{
+  "_": "Nguon: 02-bd/screens/teacher/INS0202_class_assignments.md (popup Giao bai cho lop, V0.4-V0.10), 02-bd/database/problem-bank.md muc 1.7 (class_assignments: assigned_by, assigned_at, removed_at, partial unique index), DEC-2026-1011-class-assignment-popup-on-assignments-screen. Bo \"han nop\" vi BD khong co cot due. Ten endpoint giao bai va duong dan REST la [SoT: Suy luan]: BD muc 7.3 chi liet ke RemoveClassAssignment, ListClassAssignments. Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Giao bài toán cho lớp (Giảng viên)",
+  "covers": [
+    "F1-10",
+    "F2-12"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Giảng viên",
+        "role": "actor"
+      },
+      {
+        "name": "AssignmentController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "AssignmentService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "problem.class_assignments"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giao bài từ popup Giao bài cho lớp (F2-12)"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Chọn lớp và bài đã xuất bản, bấm Giao"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "AssignmentController",
+        "text": "POST .../classes/{classId}/assignments"
+      },
+      {
+        "from": "AssignmentController",
+        "to": "AssignmentController",
+        "text": "Kiểm tra quyền quản lý lớp (CLASS_MANAGEMENT:UPDATE)"
+      },
+      {
+        "from": "AssignmentController",
+        "to": "AssignmentService",
+        "text": "Yêu cầu giao bài cho lớp"
+      },
+      {
+        "from": "AssignmentService",
+        "to": "AssignmentService",
+        "text": "Kiểm tra lớp thuộc giảng viên này"
+      },
+      {
+        "from": "AssignmentService",
+        "to": "PostgreSQL",
+        "text": "Đọc trạng thái bài toán và bài đã giao cho lớp"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "AssignmentService",
+        "text": "Bài đã xuất bản chưa, đã giao cho lớp chưa",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Bài hợp lệ để giao?",
+          "then": [
+            {
+              "from": "AssignmentService",
+              "to": "AssignmentService",
+              "text": "Bài hợp lệ, tiến hành giao"
+            },
+            {
+              "from": "AssignmentService",
+              "to": "PostgreSQL",
+              "text": "Lưu bài giao và ghi nhật ký hệ thống"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "AssignmentService",
+              "text": "Đã lưu",
+              "kind": "return"
+            },
+            {
+              "from": "AssignmentService",
+              "to": "AssignmentController",
+              "text": "Bài giao vừa tạo",
+              "kind": "return"
+            },
+            {
+              "from": "AssignmentController",
+              "to": "Giảng viên",
+              "text": "201 Created",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "AssignmentService",
+              "to": "AssignmentController",
+              "text": "Từ chối, không ghi gì",
+              "kind": "return"
+            },
+            {
+              "from": "AssignmentController",
+              "to": "Giảng viên",
+              "text": "422 - bài chưa xuất bản hoặc đã giao cho lớp này",
+              "kind": "return"
+            }
+          ]
+        }
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Bài hiện trong danh sách; học viên của lớp thấy ở khối Bài tập lớp"
+      }
+    ]
+  }
+}

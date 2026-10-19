@@ -1,5 +1,27 @@
 # DD — Logic module `identity` (F1)
 
+## BR-19 — Ánh xạ `action_type` ra phần hiển thị của nhật ký
+
+- **Cấu trúc**: một enum `AuditAction` trong `identity`, mỗi giá trị mang `category` (nhóm phân loại hiển thị:
+  Xác thực, Người dùng, Ma trận quyền, Cấu hình...), `service` (tên dịch vụ hiển thị) và `messageKey` (khoá i18n của
+  mẫu câu). `ListSystemAuditLogs` (#39) trả `action_type` cùng ba trường suy ra từ enum; giao diện dựng câu từ
+  `messageKey` kèm tham số lấy từ `after_json`. **Không** thêm cột vào `system_audit_logs`
+  [SoT: `02-bd/database/identity.md` mục 1.11, `DEC-2026-1011-admin-system-open-questions-closed`].
+- **Mã sự kiện rút gọn**: bảy ký tự đầu của `id` (UUID); trùng thì lọc theo `id` đầy đủ ở tầng truy vấn, không
+  cần đảm bảo duy nhất `[SoT: Suy luận]`.
+- **Danh sách khoá che**: dùng nguyên BR-16, không thêm cấu hình.
+- **Hành động mới thêm 2026-10-11**: `USER_CREATED` (nhóm Người dùng), `AUDIT_LOG_SETTINGS_CHANGED` (nhóm Cấu hình).
+
+## BR-20 — Dọn nhật ký quá hạn
+
+- **Điều kiện chạy**: job định kỳ hằng ngày đọc `system_settings` (`02-bd/database/identity.md` mục 1.13).
+- **Hành vi**: `expired_policy = DELETE` thì xoá dòng có `created_at < now() - retention_days` theo lô (ví dụ 5.000
+  dòng mỗi lô). `ARCHIVE` **hoãn**: không xoá, ghi cảnh báo "chính sách nén chưa hỗ trợ". Lý do giữ thay vì xoá: tính
+  bất biến của dấu vết kiểm toán (bậc 6, `.claude/rules/ponytail-criteria.md`).
+- **Ghi chú không khớp đã biết**: BR-15 ở trên vẫn mô tả "tự khoá chính mình" và "tự hạ vai trò" là chặn cứng
+  (`IDT-430`, `IDT-431`), trong khi BD `ADM0201` Q6 đã đổi chúng thành cảnh báo xác nhận từ 2026-10-01. Chưa sửa ở đây
+  vì ngoài phạm vi lượt này; cần một lượt riêng và có thể cần `DEC-`.
+
 > Các khối quy tắc nghiệp vụ (BR) trải dài nhiều sự kiện/endpoint. Không lặp lại nội dung đã chốt ở
 > `02-bd/security/identity.md` — chỉ đặc tả thêm phần thuật toán/luồng cụ thể. Mỗi BR tham chiếu ngược
 > endpoint liên quan ở `03-dd/api/identity.md` mục 0.
@@ -114,8 +136,8 @@
 - **Các bước**:
   1. Tra `class_invite_codes WHERE code = :code AND expires_at > now()`.
   2. Không tìm thấy/hết hạn → `422 IDT-410`.
-  3. Tìm thấy → `INSERT class_enrollments (class_id, student_id, joined_at)`, `ON CONFLICT (class_id,
-     student_id) DO NOTHING` trả `200` idempotent nếu đã tham gia trước đó (không báo lỗi trùng).
+  3. Tìm thấy → ĐÃ CHỐT 2026-10-14 (DEC-2026-1014-class-leave-details): `INSERT class_enrollments (class_id, student_id, joined_at) ... ON CONFLICT (class_id, student_id) DO UPDATE SET left_at = NULL WHERE class_enrollments.left_at IS NOT NULL`. Ba trường hợp: (a) chưa có dòng → tạo mới; (b) dòng đang `left_at IS NULL` → không đổi gì, trả `200` idempotent (không báo lỗi trùng); (c) dòng cũ đã rời (`left_at` khác rỗng) → **dùng lại dòng cũ**, đặt `left_at` = NULL, `joined_at` giữ nguyên, không sinh dòng thứ hai, trả `200`. ~~`ON CONFLICT (class_id, student_id) DO NOTHING` trả `200` idempotent nếu đã tham gia trước đó~~ (câu cũ làm học viên đã bị gỡ không vào lại được vì dòng cũ vẫn còn).
+  4. Học viên quay lại xuất hiện lại trong "học viên của lớp" và được tính lại vào tổng số, tiến độ, số liệu `INS0202`.
 - **Kết quả**: học viên xuất hiện trong danh sách của `INS0201_class_management`.
 
 ## BR-10 — Phân loại trạng thái học viên trong lớp (F1-27)
@@ -138,16 +160,15 @@ tiên khớp điều kiện thắng):
   toàn cục — read model đó không lọc theo bài đã giao của một lớp cụ thể)
   [SoT: `07-review/bd_open_questions_with_solutions_260924.md:184`].
 
-## BR-11 — Gỡ học viên khỏi lớp kèm cascade
+## BR-11 — Gỡ học viên khỏi lớp (ĐÃ ĐỔI 2026-10-14 (DEC-2026-1014-keep-learning-history-on-leave): chỉ đánh dấu đã rời lớp, giữ lịch sử; trước đây "kèm cascade")
 
-- **Input**: `DELETE /classes/{classId}/students/{studentId}`, gọi bởi giảng viên sở hữu lớp.
-- **Điều kiện**: kiểm `classes.instructor_id = :callerId` trước khi xoá.
+- **Input**: ĐÃ CHỐT 2026-10-14 (DEC-2026-1014-class-leave-details): `POST /classes/{classId}/students/{studentId}/leave` ~~`DELETE /classes/{classId}/students/{studentId}`~~, gọi bởi giảng viên sở hữu lớp.
+- **Điều kiện**: kiểm `classes.instructor_id = :callerId` trước khi ghi.
 - **Các bước**:
-  1. `DELETE FROM class_enrollments WHERE class_id = :classId AND student_id = :studentId` (transaction
-     của `identity`, chỉ xoá đúng bảng này — [SoT: `02-bd/database/identity.md:99-102`]).
+  1. ĐÃ ĐỔI 2026-10-14 (DEC-2026-1014-keep-learning-history-on-leave): `UPDATE class_enrollments SET left_at = now() WHERE class_id = :classId AND student_id = :studentId AND left_at IS NULL` (transaction
+     của `identity`, chỉ ghi đúng bảng này — [SoT: `02-bd/database/identity.md` mục 1.10]). ~~`DELETE FROM class_enrollments ...`~~
   2. Sau khi commit, publish `StudentRemovedFromClass { classId, studentId, occurredAt }` lên RabbitMQ.
-  3. `judge-orchestration` tự lắng nghe và xoá/ẩn dữ liệu lượt nộp thuộc phạm vi lớp đó của học viên (nằm
-     ngoài phạm vi DD `identity` — thuộc DD `judge-orchestration`).
+  3. ĐÃ ĐỔI 2026-10-14 (DEC-2026-1014-keep-learning-history-on-leave): `judge-orchestration` **không** xoá/ẩn lượt nộp khi nhận sự kiện; lịch sử làm bài được giữ. ~~`judge-orchestration` tự lắng nghe và xoá/ẩn dữ liệu lượt nộp~~
 - **Kết quả**: `identity` không bao giờ viết trực tiếp vào schema `judge`.
 - **Xử lý lỗi**: publish thất bại (RabbitMQ down) → dùng outbox pattern tương tự `judge-orchestration` nếu
   cần đảm bảo at-least-once; ở quy mô đồ án, chấp nhận log lỗi + retry thủ công qua endpoint idempotent nếu

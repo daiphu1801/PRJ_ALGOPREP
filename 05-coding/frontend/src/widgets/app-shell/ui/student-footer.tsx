@@ -1,5 +1,7 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 import { getT } from "@/shared/i18n/server";
+import { BrandMark } from "@/shared/ui";
+import { JudgeEngineTag } from "./judge-engine-tag";
 
 /**
  * Applies to EVERY Student screen — 02-bd/screens/users/_shell.md mục 3, decided 2026-09-21 in the
@@ -26,10 +28,9 @@ export async function StudentFooter() {
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
         <div className="min-w-0">
           <p className="flex items-center gap-2 text-[13px] font-semibold text-[var(--color-text)]">
+            <BrandMark size={20} />
             AlgoPrep
-            <span className="rounded border border-[var(--color-admin-warn)] px-1.5 pb-px pt-0.5 font-mono text-[10px] font-semibold tracking-[0.14em] text-[var(--color-admin-warn)]">
-              GO-JUDGE
-            </span>
+            <JudgeEngineTag />
           </p>
           <p className="mt-0.5 text-xs text-[var(--color-text-muted)]">
             {t("footer.copyright")}

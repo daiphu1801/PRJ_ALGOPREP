@@ -1,0 +1,121 @@
+{
+  "_": "Cap nhat 2026-10-18 theo ADM0301 V2.x (02-bd/screens/admin/ADM0301_ai_config.md): bo rubric (DEC-2026-1014-drop-solution-review-rubric), ADMIN chon model theo prompt (DEC-2026-1010-admin-selects-model-per-prompt), luong nhap roi \"Luu va phat hanh\" mot giao dich nguyen tu (DEC-2026-1014-batch7-remaining-open-questions Q3). Ten endpoint la ten nghiep vu cua BD muc 7.3; duong dan REST la [SoT: Suy luan] vi chua co 03-dd/api/ai-review.md. KHONG ve nut Chay doi chieu (khong co backend). Khoi phuc chi chep chi thi ve ban nhap, khong chep model [SoT: 02-bd/screens/admin/ADM0301_ai_config.md V1.2]. Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen.",
+  "_pham_vi": "RD dong 86-93 giu nut \"Chay doi chieu\" o tang giao dien; so do nay khong ve mot endpoint backend cho no.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Cấu hình prompt và model của AI (Quản trị viên) (4/4)",
+  "covers": [
+    "F5-23"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Quản trị viên",
+        "role": "actor"
+      },
+      {
+        "name": "AiConfigController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "AiConfigService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "ai.prompt_templates"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 4 - Xem lịch sử và khôi phục chỉ thị cũ vào bản nháp (F5-23)"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Bấm Nhật ký phiên bản của một prompt"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "AiConfigController",
+        "text": "GET .../{featureCode}/history"
+      },
+      {
+        "from": "AiConfigController",
+        "to": "AiConfigService",
+        "text": "Yêu cầu lịch sử phiên bản"
+      },
+      {
+        "from": "AiConfigService",
+        "to": "PostgreSQL",
+        "text": "Đọc các phiên bản của prompt, mới nhất trước"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "AiConfigService",
+        "text": "Danh sách phiên bản",
+        "kind": "return"
+      },
+      {
+        "from": "AiConfigService",
+        "to": "AiConfigController",
+        "text": "Lịch sử phiên bản",
+        "kind": "return"
+      },
+      {
+        "from": "AiConfigController",
+        "to": "Quản trị viên",
+        "text": "200 OK",
+        "kind": "return"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Chọn một phiên bản cũ, bấm Khôi phục, xác nhận"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "AiConfigController",
+        "text": "PUT .../{featureCode}/draft"
+      },
+      {
+        "from": "AiConfigController",
+        "to": "AiConfigService",
+        "text": "Yêu cầu khôi phục vào bản nháp"
+      },
+      {
+        "from": "AiConfigService",
+        "to": "PostgreSQL",
+        "text": "Chép chỉ thị cũ vào bản nháp, không chép model"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "AiConfigService",
+        "text": "Đã lưu",
+        "kind": "return"
+      },
+      {
+        "from": "AiConfigService",
+        "to": "AiConfigController",
+        "text": "Bản nháp đã lưu",
+        "kind": "return"
+      },
+      {
+        "from": "AiConfigController",
+        "to": "Quản trị viên",
+        "text": "200 OK",
+        "kind": "return"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Chỉ thị cũ vào bản nháp, chưa có hiệu lực tới khi phát hành"
+      }
+    ]
+  },
+  "_cat": "Tach tu sequence_admin_cau_hinh_prompt_ai.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 3/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+}

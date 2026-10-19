@@ -121,18 +121,16 @@
     "subtitle": "For AlgoPrep instructors only — sign in with your granted account.",
     "notInstructorHint": "Not an instructor? Use the regular sign-in page instead.",
     "badgeClasses": "Classes",
-    "badgeGrading": "Grading",
     "badgeProgress": "Progress",
     "asideTitle": "The instructor workspace",
-    "asideDescription": "Assign problems to a class, grade what needs a human eye, and follow each student's progress in one place.",
+    "asideDescription": "Assign problems to a class and follow each student's progress in one place.",
     "asideHighlight1": "Assign and manage problems per class",
-    "asideHighlight2": "Manually grade the submissions that need review",
+    "asideHighlight2": "Read your students' submissions, read-only",
     "asideHighlight3": "Track student progress and results"
   },
   "problemList": {
     "title": "Problems",
     "summary": {
-      "solvedTotal": "Solved",
       "linkSaved": "Saved problems",
       "btnRandom": "Random problem"
     },
@@ -152,7 +150,6 @@
       "todo": "Todo"
     },
     "submissionModel": {
-      "both": "Both",
       "stdioOnly": "Standard I/O only"
     },
     "table": {
@@ -164,7 +161,8 @@
       "colAcRate": "AC rate",
       "btnSolve": "Solve",
       "hasReview": "Has Solution Review",
-      "empty": "No problem matches this filter"
+      "empty": "No problem matches this filter",
+      "clearFilters": "Clear filters"
     },
     "pager": {
       "summary": "Showing {from}-{to} of {total} problems",
@@ -175,11 +173,13 @@
     },
     "inProgress": {
       "title": "In progress",
-      "empty": "No problem in progress"
+      "empty": "No problem in progress",
+      "lastVerdict": "{verdict} {passed}/{total}"
     },
     "assignment": {
       "title": "Class assignments",
-      "empty": "No problem assigned yet"
+      "empty": "No problem assigned yet",
+      "meta": "{solved} / {total} problems · assigned {date}"
     },
     "language": {
       "java": "Java",
@@ -190,15 +190,22 @@
       "randomEmpty": "No problem matches the filters to pick from.",
       "searchResult": "Found {count} problems.",
       "searchEmpty": "No problems found."
+    },
+    "verdict": {
+      "accepted": "Accepted",
+
+      "wrongAnswer": "Wrong Answer",
+
+      "runtimeError": "Runtime Error",
+
+      "timeLimitExceeded": "Time Limit Exceeded",
+
+      "running": "Judging"
     }
   },
   "savedProblems": {
     "title": "Saved problems",
     "subtitle": "{total} saved, {solved} solved",
-    "summary": {
-      "total": "Total saved",
-      "solved": "Solved among these"
-    },
     "filter": {
       "all": "All",
       "searchLabel": "Search problems",
@@ -219,21 +226,56 @@
       "colNote": "Private note",
       "noNote": "No note yet",
       "colSavedAt": "Saved on",
-      "btnSolve": "Solve",
       "btnUnsave": "Unsave",
-      "emptyFiltered": "No problem matches this filter"
+      "emptyFiltered": "No problem matches this filter",
+      "noteEditLabel": "Private note",
+
+      "noteEditHint": "Click to edit the note",
+
+      "noteCounter": "{count}/{max}",
+
+      "noteSave": "Save",
+
+      "noteCancel": "Cancel",
+      "withdrawn": "Withdrawn",
+      "solveLabel": {
+        "solved": "Review",
+
+        "attempted": "Continue",
+
+        "todo": "Solve"
+      },
+      "withdrawnHint": "This problem was withdrawn from the problem bank and cannot be opened."
     },
-    "emptyAll": "You haven't saved any problem yet.",
+    "emptyAll": "You haven't saved any problem yet. Open a problem and press Save on its detail page to add it here.",
     "footerPrivacyNote": "Saved problems and notes are visible to you only.",
     "toast": {
-      "unsaved": "Problem removed from saved.",
       "searchResult": "Found {count} saved problems.",
-      "searchEmpty": "No saved problems found."
+      "searchEmpty": "No saved problems found.",
+      "noteSaved": "Note saved."
+    },
+    "undo": {
+      "message": "Removed {title} from saved.",
+
+      "button": "Undo"
+    },
+    "footer": {
+      "summary": "Showing {from} - {to} of {total} saved problems",
+
+      "previous": "‹",
+
+      "next": "›",
+
+      "pageLabel": "Page {page}"
     }
   },
   "problemDetail": {
+    "workspace": {
+      "resizeColumns": "Drag to resize the two columns",
+      "resizeRows": "Drag to resize the editor and results"
+    },
     "empty": {
-      "title": "No problem selected",
+      "title": "Problem not found.",
       "linkList": "Back to problem list"
     },
     "taskbar": {
@@ -251,21 +293,33 @@
       "tabSubmissions": "Submissions",
       "tabReview": "Solution Review",
       "examplesTitle": "Examples",
-      "constraintsTitle": "Constraints",
       "noSubmissions": "You haven't submitted this problem yet.",
       "timeComplexity": "Time complexity",
       "spaceComplexity": "Space complexity",
       "linkMockInterview": "Open mock interview",
       "noReview": "No Solution Review for this problem yet.",
       "btnSave": "Save",
-      "btnUnsave": "Unsave"
+      "btnUnsave": "Unsave",
+      "input": "Input:",
+
+      "output": "Output:",
+
+      "acRate": "AC rate:",
+
+      "metrics": "{ms} ms · {mb} MB",
+
+      "linkFullReport": "Open full report"
     },
     "toolbar": {
       "languageLabel": "Select language",
       "modeLabel": "Select submission model",
       "inputMethodLabel": "Select input method",
       "codeAreaLabel": "Code editor area",
-      "uploadHint": "Drag and drop or pick a source file (.java, .cpp, .py, max 64 KB)"
+      "draftSaved": "Saved in this browser",
+      "uploadHint": "Drag and drop or pick a source file ({ext}, max 64 KB)",
+      "btnViewFile": "View content",
+
+      "limits": "Time {time}s · Memory {memory}MB"
     },
     "mode": {
       "stdio": "Has main",
@@ -286,12 +340,31 @@
       "tabResult": "Result",
       "passed": "Passed",
       "failed": "Failed",
-      "runHint": "Click \"Run Code\" to run against sample testcases.",
+      "runHint": "Click \"Run Code\" to run against {samples} sample testcases. {hidden} hidden testcases only run on submit.",
       "judging": "Judging...",
       "submitHint": "Click \"Submit\" to submit your solution.",
       "linkResult": "View full result",
       "linkReview": "Solution review",
-      "linkInterview": "Mock interview"
+      "linkInterview": "Mock interview",
+      "running": "Running...",
+
+      "sampleSummary": "{passed}/{total} sample testcases passed",
+
+      "caseTabsLabel": "Select a sample testcase",
+
+      "caseTab": "Case {n}",
+
+      "caseTabWithVerdict": "Case {n} · {verdict}",
+
+      "fieldInput": "Input",
+
+      "fieldActual": "Actual output",
+
+      "fieldExpected": "Expected output",
+
+      "metrics": "Time {ms} ms · Memory {mb} MB",
+
+      "caseDot": "Testcase {n}: {verdict}"
     },
     "verdict": {
       "accepted": "Accepted",
@@ -305,7 +378,19 @@
       "submitAccepted": "Submission accepted.",
       "submitRejected": "Submission not accepted: {passed}/{total} testcases passed.",
       "saved": "Problem saved.",
-      "unsaved": "Problem removed from saved."
+      "unsaved": "Problem removed from saved.",
+      "codeTooLarge": "Source code is larger than 64 KB. Shorten it before running or submitting.",
+      "runFailed": "Run not passing: {passed}/{total} sample testcases correct.",
+
+      "fileExtension": "The file must have the {ext} extension that matches the selected language.",
+
+      "fileTooLarge": "The file is larger than 64 KB.",
+
+      "noFile": "Choose a source file before running or submitting.",
+
+      "codeEmpty": "Write some code before running or submitting.",
+
+      "openSaved": "View saved problems"
     }
   },
   "adminNav": {
@@ -322,8 +407,10 @@
     "problems": "Problem management",
     "interviewQuestions": "Interview questions",
     "queue": "Judge queue",
+    "infraEvents": "Infrastructure events",
     "languageConfig": "Languages and limits",
-    "aiConfig": "AI configuration",
+    "aiConfig": "Prompt and quality",
+    "aiLimits": "AI limits",
     "aiUsage": "AI token usage",
     "users": "Users",
     "systemLog": "System log",
@@ -348,10 +435,24 @@
     "toggleSidebar": "Collapse / expand",
     "collapseSidebar": "Collapse",
     "groupMisc": "Other",
+    "groupContent": "Content",
+    "groupClasses": "Classes",
+    "groupWork": "Manage submitted work",
+    "logout": "Sign out",
+    "roleLabel": "Instructor",
+    "footerBrand": "AlgoPrep Instructor · v2.4.1",
+    "footerCopyright": "© 2026 AlgoPrep. Instructor area.",
+    "footerStatusOk": "All services operating normally",
+    "footerLinkApiDocs": "API docs",
+    "footerLinkJudgeStatus": "go-judge status",
+    "footerLinkChangelog": "Changelog",
+    "footerLinkSupport": "Support",
+    "problems": "Problem management",
+    "interviewQuestions": "Interview questions",
     "overview": "Overview",
     "classes": "My classes",
-    "assignments": "My assignments",
-    "grading": "Grading",
+    "assignments": "Class assignments",
+    "submissions": "Submissions",
     "settings": "Settings",
     "profile": "Profile",
     "students": "Student list"
@@ -396,19 +497,13 @@
   "adminLanguageConfig": {
     "title": "Languages and judge limits",
     "subtitle": "Per-language time multipliers applied to every problem",
-    "save": "Save changes",
+    "save": "Save",
     "languagesTitle": "Supported languages",
     "languagesSubtitle": "Enable or disable a language and adjust its multiplier",
     "columnLanguage": "Language",
-    "columnCompiler": "Compiler",
-    "columnTimeMultiplier": "Time factor",
-    "columnTimeLimit": "Time limit",
-    "columnMemory": "Memory",
     "columnEnabled": "On",
     "timeMultiplierFor": "Time multiplier for {language}",
     "enableLanguage": "Enable {language}",
-    "milliseconds": "{value} ms",
-    "megabytes": "{value} MB",
     "unitMs": "ms",
     "unitMb": "MB",
     "unitKb": "KB",
@@ -465,14 +560,44 @@
         "meta": "Truncated to the first 2 KB"
       }
     },
-    "noticeTitle": "Before you change a limit",
-    "noticeBody": "Changes to a multiplier or a resource limit apply only to submissions made after you save. Earlier submissions keep the verdict they already have.",
     "saveDone": "Language and limit configuration saved",
-    "errorInvalidValue": "Time multipliers must be above 0 and limits must be whole numbers of 1 or more"
+    "errorInvalidValue": "Default limits must be whole numbers of 1 or more",
+    "saving": "Saving...",
+    "discard": "Discard",
+    "historyLink": "View change history",
+    "tabsLabel": "Configuration groups",
+    "tabLanguages": "Languages and limits",
+    "tabAdvanced": "Sandbox and testcase generation",
+    "columnMultipliers": "Multipliers",
+    "multiplierTime": "TIME",
+    "multiplierMemory": "RAM",
+    "memoryMultiplierFor": "Memory multiplier for {language}",
+    "columnEffective": "Effective limit",
+    "effectiveLimit": "{time} ms · {memory} MB",
+    "unsavedCount": "{count} unsaved changes",
+    "appliesNote": "Applies to new submissions from the moment you save",
+    "confirmDisable": {
+      "title": "Turn off a language?",
+      "body": "You are about to turn off: {languages}. A disabled language can no longer be picked on the solving screen for new submissions. Earlier submissions keep their verdict.",
+      "yes": "Turn off and save",
+      "no": "Cancel"
+    },
+    "unsaved": {
+      "title": "Unsaved changes",
+      "body": "Save and leave, leave without saving (changes are lost), or stay and keep editing.",
+      "saveAndLeave": "Save and leave",
+      "leave": "Leave without saving",
+      "stay": "Stay"
+    },
+    "errorMultiplier": "A multiplier must be between 0.10 and 9.99 with at most 2 decimals.",
+    "errorTimeRange": "The time limit after applying the multiplier must be between 100 and 30,000 ms.",
+    "errorMemoryRange": "The memory limit after applying the multiplier must be between 64 and 1,024 MB.",
+    "errorLastLanguage": "At least one language must stay enabled."
   },
   "adminSystemLog": {
     "retention": {
       "open": "Retention",
+      "footer": "Logs are kept for {days} days",
       "title": "Log retention",
       "days": "Keep logs for",
       "daysUnit": "days",
@@ -579,12 +704,15 @@
     "selectionLabel": "{count} accounts selected",
     "bulkLock": "Lock accounts",
     "bulkUnlock": "Unlock accounts",
+    "lockNothing": "No account to lock: every selected row is already locked. Deselect them or add an active account.",
+    "unlockNothing": "No account to unlock: every selected row is already active. Deselect them or add a locked account.",
     "emptyFiltered": "No account matches the current filter",
     "pageLabel": "Page {page} of {totalPages} · showing {shown} rows",
     "previous": "Previous",
     "next": "Next",
     "roleDistributionTitle": "Role distribution",
-    "roleDistributionSubtitle": "1,284 active accounts in total",
+    "roleDistributionSubtitle": "{total} accounts in total",
+    "auditLogLink": "Audit log",
     "pendingTitle": "Needs attention",
     "pending": {
       "pendingEmail": {
@@ -651,12 +779,13 @@
     "resetTitle": "Reset the password for {name}?",
     "resetBody": "A temporary password is sent to {email}; the user must change it at their next sign-in. This action is written to the System log.",
     "resetAction": "Reset",
-    "resetDone": "Sent a temporary password to {email}"
+    "resetDone": "Sent a temporary password to {email}",
+    "resetBodyOAuth": "This account signs in only through an external provider, so it has no password to reset. The system sends instructions for returning to the provider to {email}. This action is written to the System log.",
+    "resetDoneOAuth": "Sent provider sign-in instructions to {email}"
   },
   "adminAiUsage": {
     "title": "AI token usage",
     "subtitle": "Track consumption by day, by feature and by learner",
-    "export": "Export report",
     "rangeLabel": "Time range",
     "range": {
       "7d": "7 days",
@@ -668,12 +797,17 @@
     "feature": {
       "review": "Solution review",
       "interview": "Mock interview",
-      "testcase": "Testcase generation"
+      "testcase": "Testcase generation",
+      "practice": "Practice feedback"
     },
     "budgetTitle": "Monthly budget",
     "budgetSubtitle": "{used} of {cap} used",
     "budgetLeft": "{left} left",
     "budgetRunOut": "Runs out around {date}",
+    "noAlerts": "No alerts",
+    "markReviewed": "Mark as reviewed",
+    "markReviewedDone": "Alert marked as reviewed.",
+    "problemBankLink": "Problem bank",
     "alertsTitle": "Alerts",
     "alert": {
       "budgetRunningOut": {
@@ -684,16 +818,15 @@
         "title": "One account is using AI abnormally",
         "meta": "nguyenvana made 214 calls in 24 hours, 7x the average. An admin should review it; the system does not lock the account."
       },
-      "testcasePromptCost": {
-        "title": "Testcase prompt costs more than expected",
-        "meta": "2,480 tokens per call on average, above the 2,000 target."
+      "budgetLocked": {
+        "title": "Budget locked",
+        "meta": "AI is locked for students and instructors. Raise the cap, then unlock it on the AI limits screen."
       }
     },
-    "alertsFootnote": "Adjust limits on the AI configuration screen",
     "topUsersTitle": "Heaviest learners",
     "topUsersSubtitle": "Over the last 30 days",
     "topProblemsTitle": "Most token-hungry problems",
-    "topProblemsSubtitle": "Solution review and mock interview combined",
+    "topProblemsSubtitle": "Solution review, mock interview and testcase generation combined",
     "columnLearner": "Learner",
     "columnTokens": "Tokens",
     "columnCalls": "Calls",
@@ -703,88 +836,125 @@
     "callCount": "{count} AI calls",
     "emptyUsers": "No learner used AI in this range",
     "emptyProblems": "No problem consumed tokens in this range",
-    "exportDone": "AI usage report exported"
+    "editLimits": "Edit limits",
+    "budgetLocked": "Locked automatically"
   },
   "adminQueueMonitor": {
     "params": {
-      "open": "Parameters",
+      "open": "Settings",
       "title": "Queue parameters",
       "save": "Save",
       "cancel": "Cancel",
       "errorMin": "Enter a whole number of {min} or more",
       "autoscaleThreshold": "Worker autoscale threshold",
-      "autoscaleThresholdHint": "Waiting jobs before the cluster adds a worker.",
+      "autoscaleThresholdHint": "Waiting jobs needed before the cluster adds a worker.",
       "jobsPerPage": "Rows per page in the job table",
-      "errorRetention": "Keep system-error jobs for",
-      "latencyCap": "Latency bar cap",
+      "errorRetention": "How long failed system jobs stay",
+      "latencyCap": "Latency bar ceiling",
       "unitJobs": "jobs",
       "unitRows": "rows",
       "unitHours": "hours",
       "unitSeconds": "seconds",
       "saved": "Queue settings saved"
     },
-    "title": "Judge queue",
-    "subtitle": "go-judge worker cluster, waiting jobs and infrastructure events",
+    "title": "Grading queue",
+    "subtitle": "go-judge worker cluster, waiting jobs and queue controls",
     "refresh": "Refresh",
+    "refreshDone": "Queue data refreshed",
+    "state": {
+      "ok": "Normal",
+      "paused": "Paused",
+      "overloaded": "Worker overloaded",
+      "backlog": "{count} jobs backed up",
+      "stale": "Stale data",
+      "staleHint": "No newer data for over a minute. Press Refresh."
+    },
+    "updatedAt": "Updated at {time}",
     "workersTitle": "go-judge worker cluster",
-    "workersSubtitle": "{count} workers · autoscales up to {max}",
+    "workersSubtitle": "{count} workers · autoscale up to {max}",
     "workerStatus": {
       "running": "Running",
       "idle": "Idle",
       "overloaded": "Overloaded"
     },
     "workerLoadLabel": "Load of {id}",
-    "workerLoad": "Load {load}%",
     "workerJobs": "{count} jobs",
-    "controlsTitle": "Cluster controls",
+    "controlsTitle": "Controls",
+    "historyLink": "View change history",
+    "latencyTitle": "Average wait",
     "control": {
       "paused": {
         "label": "Pause queue consumption",
-        "meta": "Hold jobs back instead of handing them to workers",
-        "doneOn": "New submissions paused",
-        "doneOff": "New submissions resumed"
+        "meta": "Hold jobs back, do not hand them to workers",
+        "doneOn": "Paused accepting new submissions",
+        "doneOff": "Resumed accepting new submissions",
+        "confirmTitle": "Pause queue consumption?",
+        "confirmBody": "Pausing queue consumption makes new submissions wait. Jobs already being graded run to completion. Continue?"
       },
       "autoscale": {
         "label": "Autoscale workers",
-        "meta": "Add a worker when the queue passes {threshold} jobs",
+        "meta": "Add workers when the queue exceeds {threshold} jobs",
         "doneOn": "Worker autoscaling turned on",
-        "doneOff": "Worker autoscaling turned off"
+        "doneOff": "Worker autoscaling turned off",
+        "confirmTitle": "Turn off worker autoscaling?",
+        "confirmBody": "Turning autoscaling off means the cluster will not add workers when the queue backs up. Continue?"
       }
     },
-    "latencyTitle": "Latency per queue",
-    "latencyQueue": {
-      "normal": "Normal queue",
-      "high": "High-priority queue"
+    "confirm": {
+      "yes": "Continue",
+      "no": "Cancel"
     },
     "jobsTitle": "Jobs in the queue",
-    "jobsSubtitle": "Click a column header to change the sort",
-    "jobFilterLabel": "Filter jobs",
-    "filterAll": "All",
-    "filterFailed": "Failed",
-    "columnJob": "Job",
+    "jobsSubtitle": "Click the Wait column header to change the sort order",
+    "jobTabsLabel": "Filter jobs by status",
+    "tabWaiting": "Waiting {count}",
+    "tabFailed": "Failed {count}",
+    "tabAll": "All {count}",
     "columnSubmission": "Submission",
     "columnLanguage": "Language",
-    "columnPriority": "Priority",
     "columnStatus": "Status",
     "columnWait": "Wait",
-    "priority": {
-      "high": "High",
-      "normal": "Normal"
-    },
     "jobStatus": {
-      "running": "Judging",
+      "running": "Grading",
       "waiting": "Waiting",
       "sandboxError": "Sandbox error"
     },
-    "emptyJobs": "No job matches the current filter",
-    "infraTitle": "Recent infrastructure events",
-    "infraSubtitle": "Worker, AI gateway, backup · not administrative actions, those live on the System log screen",
-    "infraLevel": {
-      "error": "ERROR",
-      "warn": "WARN",
-      "info": "INFO"
+    "emptyJobs": "No jobs in this group",
+    "pageSummary": "{from}-{to} of {total}",
+    "pagePrevious": "Previous",
+    "pageNext": "Next",
+    "infraTitle": "Infrastructure events",
+    "infraSummary": "{warn} warnings, {error} errors on the latest day",
+    "infraLink": "See all events"
+  },
+  "adminInfraEvents": {
+    "title": "Infrastructure events",
+    "subtitle": "Stuck outbox records, sandbox-failed submissions",
+    "backToQueue": "Back to judge queue",
+    "caption": "Machine logs, not administrative actions; see those in the",
+    "captionLink": "System log",
+    "searchLabel": "Search infrastructure events",
+    "searchPlaceholder": "Search by message, service, event id",
+    "resultCount": "{shown} / {total}",
+    "levelFilterLabel": "Level",
+    "levelAll": "All levels",
+    "level": {
+      "error": "Error",
+      "warn": "Warning",
+      "info": "Info"
     },
-    "refreshDone": "Queue data refreshed"
+    "serviceFilterLabel": "Service",
+    "serviceAll": "All services",
+    "dateFrom": "From date",
+    "dateTo": "To date",
+    "rangeInvalid": "The start date cannot be later than the end date",
+    "emptyFiltered": "No events match the filters",
+    "clearFilters": "Clear filters",
+    "listLabel": "Infrastructure event list",
+    "pageLabel": "Showing {shown} of {total} events",
+    "refresh": "Refresh",
+    "refreshDone": "Event list refreshed",
+    "loadMore": "Load {count} more"
   },
   "adminPermissionMatrix": {
     "title": "Permission matrix",
@@ -819,7 +989,7 @@
       "CLASS_MANAGEMENT": "Classes & assignments",
       "USER_MANAGEMENT": "User accounts",
       "JUDGE_QUEUE_MONITOR": "Judge queue & cluster",
-      "AI_CONFIG": "AI prompts & rubrics",
+      "AI_CONFIG": "AI prompts",
       "AI_TOKEN_BUDGET": "AI token budget",
       "SYSTEM_AUDIT_LOG": "System log",
       "INTERVIEW_BANK_MANAGEMENT": "Interview question bank",
@@ -845,16 +1015,151 @@
     "deleteBlockedBody": "The role {role} is assigned to {count} users and cannot be deleted. Move them to another role first."
   },
   "adminAiConfig": {
-    "testcaseGen": {
-      "title": "Automatic testcase generation",
-      "subtitle": "Each problem may be generated at most this many times",
-      "maxLabel": "Maximum generations per problem",
-      "maxMeta": "Only successful runs count; approving or rejecting drafts does not refund a run",
-      "value": "{count} runs",
-      "decrement": "Decrease the maximum generations",
-      "increment": "Increase the maximum generations"
+    "title": "Prompt and AI quality",
+    "subtitle": "Prompt, model and answer rules per feature",
+    "publish": "Save and publish",
+    "versionLog": "Version log",
+    "close": "Close",
+    "editPrompt": "Edit",
+    "promptsTitle": "Prompt per feature",
+    "promptsSubtitle": "Each feature uses its own versioned prompt",
+    "feature": {
+      "review": "Solution review",
+      "interview": "Mock interview",
+      "testcase": "Testcase generation"
     },
+    "promptDescription": {
+      "review": "Analyses the solution, calls out complexity and what to fix, quoting the code.",
+      "interview": "Plays the interviewer, follows up on each answer, grades at the end of the session.",
+      "testcase": "Generates edge-case testcases from the statement; an instructor approves before use."
+    },
+    "promptStatus": {
+      "live": "Live",
+      "draft": "Draft"
+    },
+    "metaModel": "Model",
+    "metaMaxTokens": "Limit",
+    "metaUpdated": "Updated {date}",
+    "guardsTitle": "Answer guards",
+    "guard": {
+      "noFullSolution": {
+        "label": "Never give a full solution",
+        "meta": "Point at an approach and short snippets only"
+      },
+      "citeLines": {
+        "label": "Quote the learner's lines",
+        "meta": "Every remark must name the line it is about"
+      },
+      "answerInVietnamese": {
+        "label": "Answer in Vietnamese",
+        "meta": "Keep English technical terms as they are"
+      }
+    },
+    "preReleaseTitle": "Before publishing",
+    "preReleaseBody": "Run the 30 sample solutions to compare report results between the draft and the live prompt. The backend for this is deferred to a later phase, so the button is inactive.",
+    "runComparison": "Run comparison",
+    "publishDone": "AI configuration saved and published",
+    "tabsLabel": "AI feature",
+    "pendingCount": "{count} unpublished changes",
+    "discard": "Discard changes",
+    "discardTitle": "Discard changes?",
+    "discardBody": "Every unpublished change on all three tabs will be dropped.",
+    "discardConfirm": "Discard changes",
+    "discardCancel": "Keep",
+    "discarded": "Changes discarded",
+    "noChanges": "No changes to publish",
+    "guardRecommended": "Should stay on",
+    "guardOffWarning": "Turned off: the AI may give learners a full solution, against the educational intent",
+    "historyEmpty": "No versions yet",
+    "unsaved": {
+      "title": "Unpublished changes",
+      "body": "Publish and leave, leave without publishing (changes are lost), or stay and keep editing.",
+      "saveAndLeave": "Publish and leave",
+      "leave": "Leave without publishing",
+      "stay": "Stay"
+    },
+    "editDialog": {
+      "title": "Edit prompt: {feature}",
+      "label": "System instruction",
+      "hint": "This is the system instruction. Learner code and answers are always sent separately as data and never joined to it.",
+      "save": "Save draft",
+      "cancel": "Cancel",
+      "errorEmpty": "The system instruction cannot be empty.",
+      "saved": "Draft saved",
+      "closeTitle": "Discard edits?",
+      "closeBody": "Text you edited and did not save will be lost.",
+      "closeConfirm": "Discard",
+      "closeStay": "Keep editing"
+    },
+    "publishDialog": {
+      "title": "Publish changes?",
+      "intro": "These changes will replace the live prompt:",
+      "warn": "The live prompt of the features above is replaced and takes effect at once for every AI user.",
+      "confirm": "Publish",
+      "cancel": "Cancel",
+      "item": {
+        "instruction": "System instruction edited",
+        "model": "Model: {from} to {to}",
+        "guards": "Answer rules: {count} items"
+      }
+    },
+    "restore": {
+      "button": "Restore",
+      "current": "Live",
+      "title": "Restore {version}?",
+      "body": "Only this version's system instruction is restored into the draft; the model and answer rules stay as they are. The live prompt does not change until you publish.",
+      "confirm": "Restore",
+      "cancel": "Cancel",
+      "done": "Restored {version} into the draft"
+    }
+  },
+  "adminAiLimits": {
+    "title": "AI limits and cost",
+    "subtitle": "Token cap, rate limits and prices",
+    "linkUsage": "View token usage",
     "budget": {
+      "title": "Monthly token cap",
+      "subtitle": "Past the cap, AI is locked for students and instructors",
+      "statusOpen": "Open",
+      "statusLocked": "Locked automatically",
+      "usedLabel": "Used this month",
+      "used": "Used {used} / {cap} tokens",
+      "limitLabel": "Monthly token cap",
+      "saveLimit": "Save cap",
+      "savedLimit": "Cap saved",
+      "errorLimit": "The cap must be a whole number above 0.",
+      "unlock": "Unlock",
+      "unlockBlocked": "Raise the cap before unlocking.",
+      "unlockTitle": "Unlock AI?",
+      "unlockBody": "Students and instructors can call AI again right away. Used {used} / {cap} tokens.",
+      "unlockConfirm": "Unlock",
+      "unlockCancel": "Cancel",
+      "unlocked": "AI unlocked"
+    },
+    "limitsTitle": "Rate limits",
+    "limitsSubtitle": "Prevent abuse and keep cost in budget, counted per hour",
+    "limit": {
+      "reviewPerHour": {
+        "label": "Reviews per hour",
+        "meta": "Per learner account, each hour"
+      },
+      "interviewPerHour": {
+        "label": "Interviews per hour",
+        "meta": "New sessions each hour"
+      },
+      "cooldownSeconds": {
+        "label": "Wait between two requests",
+        "meta": "Applies to Solution review and Mock interview"
+      },
+      "unit": {
+        "count": "{count} per hour",
+        "sessions": "{count} sessions per hour",
+        "seconds": "{count} s"
+      },
+      "decrement": "Decrease {name}",
+      "increment": "Increase {name}"
+    },
+    "cost": {
       "title": "Budget and pricing",
       "subtitle": "Set by the administrator, no limit",
       "warnLabel": "Budget warning threshold",
@@ -882,99 +1187,15 @@
         "doneRemove": "Model removed"
       }
     },
-    "title": "AI assistant configuration",
-    "subtitle": "Prompts, grading rubric and rate limits",
-    "publish": "Save and publish",
-    "versionLog": "Version log",
-    "close": "Close",
-    "editPrompt": "Edit",
-    "promptsTitle": "Prompt per feature",
-    "promptsSubtitle": "Each feature uses its own versioned prompt",
-    "feature": {
-      "review": "Solution review",
-      "interview": "Mock interview",
-      "testcase": "Testcase generation"
-    },
-    "promptDescription": {
-      "review": "Grades against the rubric, calls out complexity and what to fix, quoting the code.",
-      "interview": "Plays the interviewer, follows up on each answer, grades at the end of the session.",
-      "testcase": "Generates edge-case testcases from the statement; an instructor approves before use."
-    },
-    "promptStatus": {
-      "live": "Live",
-      "draft": "Draft",
-      "abTest": "A/B test"
-    },
-    "metaModel": "Model",
-    "metaTemperature": "Temperature",
-    "metaMaxTokens": "Limit",
-    "metaUpdated": "Updated {date}",
-    "rubricTitle": "Solution grading rubric",
-    "rubricSubtitle": "Weights behind the overall score in the review report",
-    "weightTotal": "Total {total}%",
-    "weightLabel": "Weight for {criterion}",
-    "weightDecrement": "Decrease {criterion}",
-    "weightIncrement": "Increase {criterion}",
-    "weightWarningTitle": "Weights do not add up to 100%",
-    "weightWarningBody": "Currently {total}%. Adjust the weights to add up to 100% before publishing.",
-    "rubric": {
-      "correctness": {
-        "label": "Correctness",
-        "meta": "testcase results"
-      },
-      "complexity": {
-        "label": "Complexity",
-        "meta": "time and memory"
-      },
-      "codeQuality": {
-        "label": "Code quality",
-        "meta": "naming, structure"
-      },
-      "edgeCases": {
-        "label": "Edge cases",
-        "meta": "special inputs"
-      },
-      "explanation": {
-        "label": "Explanation",
-        "meta": "reasoning about the approach"
-      }
-    },
-    "limitsTitle": "Rate limits",
-    "limitsSubtitle": "Curb abuse and keep cost inside the budget",
-    "limit": {
-      "reviewPerDay": {
-        "label": "Reviews per day",
-        "meta": "Per learner account"
-      },
-      "interviewPerWeek": {
-        "label": "Interviews per week",
-        "meta": "Up to 30 minutes each"
-      },
-      "cooldown": {
-        "label": "Cooldown between requests",
-        "meta": "Applies to every AI feature"
-      }
-    },
-    "guardsTitle": "Answer guards",
-    "guard": {
-      "noFullSolution": {
-        "label": "Never give a full solution",
-        "meta": "Point at an approach and short snippets only"
-      },
-      "citeLines": {
-        "label": "Quote the learner's lines",
-        "meta": "Every remark must name the line it is about"
-      },
-      "answerInVietnamese": {
-        "label": "Answer in Vietnamese",
-        "meta": "Keep English technical terms as they are"
-      }
-    },
-    "preReleaseTitle": "Before publishing",
-    "preReleaseBody": "Run the 30 sample solutions to compare rubric scores between the draft and the live prompt. The backend for this is deferred to a later phase, so the button is inactive.",
-    "runComparison": "Run comparison",
-    "lastComparison": "Last run: {date}, average delta {delta}.",
-    "publishDone": "AI configuration saved and published"
+    "testcaseGen": {
+      "title": "Automatic testcase generation",
+      "subtitle": "Each problem may be generated at most this many times",
+      "maxLabel": "Maximum generations per problem",
+      "maxMeta": "Only successful runs count; approving or rejecting drafts does not refund a run",
+      "value": "{count} runs",
+      "decrement": "Decrease the maximum generations",
+      "increment": "Increase the maximum generations"
+    }
   },
   "problemManagement": {
     "loadFailed": "Could not load the problem list. Try again later.",
@@ -1082,10 +1303,11 @@
     "columnSubmissions": "Submissions",
     "columnAccepted": "AC",
     "columnTestcasesAndEdit": "TC · Edited",
-    "testcasesAndEdit": "{count} TC · {edited}",
+    "testcasesCount": "{count} TC",
     "selectAll": "Select every visible problem",
     "selectRow": "Select {title}",
     "selectionLabel": "{count} problems selected",
+    "selectionLabelHidden": "{count} problems selected ({hidden} hidden by the filter)",
     "bulk": {
       "publish": "Publish",
       "changeDifficulty": "Change difficulty",
@@ -1243,6 +1465,7 @@
     "selectAll": "Select all questions shown",
     "selectRow": "Select question {code}",
     "selectionLabel": "{count} questions selected",
+    "selectionLabelHidden": "{count} questions selected ({hidden} hidden by the filter)",
     "bulk": {
       "delete": "Delete"
     },
@@ -1356,7 +1579,8 @@
       "timeLimitMs": "Time limit (ms)",
       "memoryLimitMb": "Memory (MB)",
       "outputLimitKb": "Output (KB)",
-      "stackLimitMb": "Stack (MB)"
+      "maxSubmissionsPerHour": "Submissions / hour",
+      "systemDefault": "System default"
     },
     "constraintsLabel": "Input constraints",
     "solutionTitle": "Reference solution",
@@ -1417,6 +1641,21 @@
         "label": "Ask back, never solve it",
         "meta": "Lead with questions instead of handing over a solution"
       }
+    },
+    "solutionLanguageLabel": "Reference solution language",
+    "tagsLabel": "Tags",
+    "tagsPlaceholder": "e.g. sliding-window, hash-map",
+    "metricsTitle": "Problem stats",
+    "metrics": {
+      "submissions": "Submissions",
+      "acRate": "AC rate",
+      "lastEdited": "Last edited",
+      "neverSaved": "Never saved"
+    },
+    "validation": {
+      "titleRequired": "Enter a title",
+      "bodyRequired": "Enter the statement",
+      "limitPositive": "{field} must be a positive integer"
     },
     "propertiesTitle": "Properties",
     "topicLabel": "Topic",
@@ -1603,9 +1842,12 @@
     "practiceOff": "Not available, no rubric"
   },
   "submissionResult": {
+    "pageTitle": "Submission result",
     "breadcrumbLabel": "Breadcrumb",
     "breadcrumbProblems": "Problem bank",
     "breadcrumbCurrent": "Submission #{id}",
+    "breadcrumbSubmissions": "Submissions",
+    "instructorReadOnly": "Read-only: you are viewing a submission of a learner in a class you teach.",
     "notFound": "Submission not found.",
     "verdict": {
       "PENDING": "Queued",
@@ -1614,18 +1856,18 @@
       "ACCEPTED": "Accepted",
       "WRONG_ANSWER": "Wrong answer",
       "TIME_LIMIT_EXCEEDED": "Time limit exceeded",
-      "MEMORY_LIMIT_EXCEEDED": "Memory limit exceeded",
+      "SYSTEM_ERROR": "System error",
       "RUNTIME_ERROR": "Runtime error",
       "COMPILE_ERROR": "Compile error"
     },
     "verdictSubtitle": "{passed}/{total} testcases passed - submitted {submittedAt}",
     "stats": {
-      "testcase": "Testcases",
       "runtime": "Runtime",
       "memory": "Memory",
       "beats": "Beats",
       "beatsValue": "Faster than {percent}%",
-      "mode": "Submission mode"
+      "mode": "Submission mode",
+      "beatsNoData": "Not enough data to compare"
     },
     "mode": {
       "FUNCTION_WRAPPER": "Function wrapper",
@@ -1654,8 +1896,7 @@
     "sample": {
       "input": "Input",
       "expected": "Expected output",
-      "actual": "Actual output",
-      "hiddenNotice": "Hidden testcase input/output is never shown, to prevent leaking the answer."
+      "actual": "Actual output"
     },
     "code": {
       "copy": "Copy code",
@@ -1672,15 +1913,6 @@
   "mySubmissions": {
     "title": "My submissions",
     "subtitle": "Your full submission history",
-    "stats": {
-      "total": "Total submissions",
-      "accepted": "Accepted",
-      "acceptedValue": "{count} ({rate}%)",
-      "firstTry": "First-try accepted",
-      "firstTryValue": "{firstTry} / {accepted} ({rate}%)",
-      "topLanguage": "Most used",
-      "topLanguageValue": "{language} ({rate}%)"
-    },
     "filter": {
       "searchLabel": "Search problems",
       "searchPlaceholder": "Search by problem code or title",
@@ -1692,7 +1924,7 @@
       "ACCEPTED": "Accepted",
       "WRONG_ANSWER": "Wrong answer",
       "TIME_LIMIT_EXCEEDED": "Time limit exceeded",
-      "MEMORY_LIMIT_EXCEEDED": "Memory limit exceeded",
+      "SYSTEM_ERROR": "System error",
       "RUNTIME_ERROR": "Runtime error",
       "COMPILE_ERROR": "Compile error"
     },
@@ -1747,14 +1979,6 @@
     "complexityNote": "Note",
     "complexityTime": "Time",
     "complexitySpace": "Memory",
-    "rubricTitle": "Solution review rubric",
-    "rubric": {
-      "correctness": "Correctness",
-      "performance": "Performance",
-      "cleanCode": "Code quality",
-      "scalability": "Scalability",
-      "dataStructure": "Data structure"
-    },
     "strengthsTitle": "Done well",
     "improvementsTitle": "To improve",
     "edgeCasesTitle": "Edge cases to watch",
@@ -1774,21 +1998,35 @@
     "toast": {
       "budgetLocked": "The AI budget is used up, so the solution review cannot be generated.",
       "transientError": "Could not generate the solution review. Please try again.",
-      "applied": "Suggestion applied to your solution."
+      "applied": "Draft overwritten with the suggestion. Opening the workspace.",
+      "unavailable": "Cannot open the solution review for this submission.",
+
+      "applyFailed": "Could not save the code in this browser. Check the browser storage permission."
+    },
+    "statCreatedAt": "Analyzed at",
+
+    "errorUnavailableTitle": "Cannot open the solution review",
+
+    "errorUnavailableBody": "This submission does not exist, is not yours, or is not accepted yet, so it has no solution review.",
+
+    "backToSubmissions": "Back to My submissions",
+
+    "language": {
+      "java": "Java 21",
+
+      "cpp": "C++ 17",
+
+      "python": "Python 3"
     }
   },
   "mockInterview": {
-    "statSessions": "Sessions completed",
-    "statSessionsMeta": "Total completed sessions",
-    "statAverage": "Average score",
-    "statWeakest": "Criterion to improve",
     "startFrom": "Start from",
     "tab": {
       "submission": "Accepted submission",
       "bank": "Question bank",
       "custom": "Custom topic"
     },
-    "customTopicHint": "Pick a topic, level and language for a self-practice session.",
+    "customTopicHint": "Pick at least one topic for a self-practice session.",
     "configTitle": "Session settings",
     "levelLabel": "Level",
     "level": {
@@ -1828,20 +2066,17 @@
     "backCta": "Back to list",
     "toast": {
       "finished": "Interview session finished. Your evaluation is ready."
-    }
+    },
+    "customTopicsLabel": "Interview topics",
+
+    "chatLogLabel": "Interview conversation"
   },
   "interviewBankList": {
-    "stats": {
-      "total": "Total questions",
-      "known": "Known",
-      "reviewing": "Reviewing",
-      "drilledThisWeek": "Self-rated"
-    },
     "startDrill": "Quick drill · {count}",
     "startMockInterview": "Start mock session",
     "startMockInterviewUnavailable": "No standalone entry point for a mock session in this build yet",
     "searchLabel": "Search questions",
-    "searchPlaceholder": "Search question or tag",
+    "searchPlaceholder": "Search by question, content or keyword",
     "statusFilterLabel": "Filter by recall status",
     "statusTabs": {
       "all": "All",
@@ -1864,13 +2099,15 @@
       "selectPrompt": "Select a question to preview it.",
       "outlineLabel": "Answer outline",
       "recallLabel": "Recall level",
-      "viewDetail": "View details"
+      "viewDetail": "View details",
+      "nextReview": "Next review in {n} days"
     },
     "drill": {
       "counter": "Card {current} / {total}",
       "exit": "Exit",
       "reveal": "Show answer outline",
-      "hide": "Hide answer"
+      "hide": "Hide answer",
+      "progressLabel": "Quick drill progress"
     },
     "toast": {
       "drillDone": "Finished reviewing {count} cards.",
@@ -1879,7 +2116,8 @@
       "unbookmarked": "Question removed from saved.",
       "searchResult": "Found {count} questions.",
       "searchEmpty": "No questions found."
-    }
+    },
+    "bookmarkedOnly": "Bookmarked only"
   },
   "interviewQuestionDetail": {
     "notFound": "This question was not found, or is no longer active.",
@@ -1905,7 +2143,8 @@
         "known": "Known",
         "vague": "Vague",
         "forgotten": "Forgotten"
-      }
+      },
+      "nextReviewHint": "Next review in {n} days"
     },
     "practice": {
       "answerLabel": "Your answer",
@@ -1924,7 +2163,10 @@
         "strength": "Covered well: {criterion}",
         "gap": "Needs more detail on: {criterion}",
         "nextSteps": "Review Study mode's outline and framework before trying again."
-      }
+      },
+      "criteriaLabel": "Achievement per criterion",
+
+      "criterionRow": "{achievement}% · weight {weight}%"
     },
     "attempts": {
       "title": "Attempt history",
@@ -1939,13 +2181,15 @@
     "leaveConfirm": {
       "message": "Your unsubmitted answer will be lost. Leave anyway?",
       "btnStay": "Stay",
-      "btnLeave": "Leave"
+      "btnLeave": "Leave",
+      "title": "Leave this screen?"
     },
     "toast": {
       "answerSubmitted": "Answer submitted. The AI feedback is ready.",
       "rated": "Recall level recorded.",
       "bookmarked": "Question saved.",
-      "unbookmarked": "Question removed from saved."
+      "unbookmarked": "Question removed from saved.",
+      "answerTooLong": "Answers are limited to {max} characters."
     }
   },
   "classManagement": {
@@ -1958,20 +2202,24 @@
       "classCount": "Total classes",
       "classCountMeta": "{count} students",
       "avgCompletion": "Average completion",
-      "pendingGrading": "Pending manual grading",
       "absentStudents": "Absent students"
     },
     "classList": {
       "col": {
+        "name": "Class",
+        "studentHeader": "Students",
         "studentCount": "{count} students",
         "completionBar": "Completion rate",
         "avgScore": "Avg score",
-        "pendingGrading": "Pending",
         "absentCount": "Absent",
         "menuEdit": "Edit class",
-        "menuInvite": "Invite codes",
-        "menuDelete": "Delete class"
-      }
+        "menuDelete": "Delete class",
+        "menuEditOf": "Edit class {name}",
+        "menuDeleteOf": "Delete class {name}"
+      },
+      "search": "Search by class name",
+      "resultCount": "{shown} / {total} classes",
+      "empty": "No classes yet"
     },
     "filterAll": "All",
     "cancel": "Cancel",
@@ -1979,18 +2227,36 @@
       "createClassTitle": "Create class",
       "editClassTitle": "Edit class",
       "classNameLabel": "Class name",
-      "scheduleLabel": "Schedule",
+      "descriptionLabel": "Description",
       "saveClass": "Save",
-      "inviteCodeTitle": "Invite codes",
-      "createInviteCode": "Create new code",
       "deleteClassTitle": "Delete {name}?",
       "deleteClassBody": "This permanently deletes the class and cannot be undone.",
       "deleteClassConfirm": "Delete class",
       "removeStudentTitle": "Remove {name} from class?",
-      "removeStudentBody": "This also deletes the student's submission history within this class.",
+      "removeStudentBody": "The learner will leave the class. Their learning history in this class is kept.",
       "removeStudentConfirm": "Remove student"
     },
-    "btnViewStudents": "View students",
+    "schedule": {
+      "heading": "Schedule",
+      "daysLabel": "Days of the week",
+      "startTime": "Start time",
+      "endTime": "End time",
+      "room": "Room / place",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "note": "Schedule note",
+      "dayShort": {
+        "1": "Mon",
+        "2": "Tue",
+        "3": "Wed",
+        "4": "Thu",
+        "5": "Fri",
+        "6": "Sat",
+        "7": "Sun"
+      }
+    },
+    "btnViewDetail": "View class details",
+    "btnViewDetailOf": "View class details {name}",
     "toast": {
       "created": "Class \"{name}\" created",
       "updated": "Changes to class \"{name}\" saved",
@@ -1999,22 +2265,70 @@
       "failed": "The action failed, please try again"
     },
     "validation": {
-      "nameRequired": "Enter a class name"
+      "nameRequired": "The class name cannot be empty.",
+      "tooLong": "The text is longer than allowed.",
+      "scheduleDaysRequired": "Pick at least one day once a time is set.",
+      "timePairRequired": "Enter both the start and the end time.",
+      "timeOrder": "The end time must be after the start time.",
+      "dateOrder": "The end date cannot be before the start date."
+    }
+  },
+  "classDetail": {
+    "backToList": "Back to my classes",
+    "notFoundTitle": "Class not found",
+    "notFound": "This class does not exist or is not yours.",
+    "noDescription": "This class has no description yet.",
+    "edit": "Edit details",
+    "delete": "Delete class",
+    "schedule": {
+      "title": "Schedule",
+      "days": "Days",
+      "time": "Time",
+      "room": "Room / place",
+      "period": "Period",
+      "note": "Note",
+      "empty": "This class has no schedule yet. Use Edit details to add one."
+    },
+    "invite": {
+      "title": "Invite codes",
+      "subtitle": "Students enter a code to join the class. Several codes can be valid at once.",
+      "create": "New code",
+      "empty": "This class has no invite codes yet."
+    },
+    "students": {
+      "title": "Students in this class",
+      "subtitle": "{count} students",
+      "openFull": "Open in the student list",
+      "empty": "This class has no students yet.",
+      "remove": "Remove from class",
+      "col": {
+        "name": "Student",
+        "status": "Status",
+        "avgScore": "Avg score",
+        "completion": "Completion",
+        "lastActive": "Last active"
+      }
+    },
+    "status": {
+      "insufficient_data": "Not enough data",
+      "absent": "Absent",
+      "needs_support": "Needs support",
+      "watch": "Watch",
+      "on_track": "On track"
+    },
+    "toast": {
+      "studentRemoved": "Removed {name} from the class"
     }
   },
   "classAssignments": {
     "header": {
-      "title": "My Assignments",
+      "title": "Class assignments",
       "summary": "{count} problems assigned to your classes · from the shared problem bank",
       "btnAssignFromBank": "+ Assign from problem bank"
     },
     "stats": {
       "assignedCount": "Assigned problems",
-      "assignedCountMeta": "Across {count} classes",
-      "weeklySubmissions": "Submissions this week",
-      "weeklySubmissionsMeta": "Compared to last week",
-      "avgAcRate": "Average AC rate",
-      "pendingGrading": "Pending manual grading"
+      "assignedCountMeta": "Across {count} classes"
     },
     "assignmentList": {
       "search": "Search by problem name",
@@ -2028,11 +2342,15 @@
         "submissionCount": "Submissions",
         "acRate": "AC",
         "btnDetail": "Details",
-        "btnRemove": "Remove from class"
+        "btnRemove": "Remove from class",
+        "withdrawn": "Withdrawn"
       }
     },
     "filterAll": "All",
     "cancel": "Cancel",
+    "pageSummary": "Page {page} / {total}",
+    "previous": "Previous",
+    "next": "Next",
     "emptyAssignments": "No problems assigned yet",
     "popup": {
       "removeAssignmentTitle": "Remove {title} from class?",
@@ -2042,7 +2360,17 @@
     },
     "toast": {
       "removed": "Removed \"{title}\" from the class",
-      "failed": "Could not remove the assignment, please try again"
+      "failed": "Could not remove the assignment, please try again",
+      "assigned": "Assigned {count} problems to {className}",
+      "assignFailed": "Could not assign the problems, please try again"
+    },
+    "assign": {
+      "title": "Assign problems to a class",
+      "classLabel": "Class",
+      "listLabel": "Bank problems not yet given to this class",
+      "loading": "Loading…",
+      "empty": "No problems left to assign to this class",
+      "confirm": "Assign {count}"
     }
   },
   "classProgress": {
@@ -2090,7 +2418,7 @@
     "cancel": "Cancel",
     "popup": {
       "removeStudentTitle": "Remove {name} from the class?",
-      "removeStudentBody": "The student loses access to the class assignments. Past submissions are kept.",
+      "removeStudentBody": "The learner will leave the class. Their learning history in this class is kept.",
       "removeStudentConfirm": "Remove"
     },
     "toast": {
@@ -2103,12 +2431,22 @@
     "notFound": "Student not found in this class",
     "backLink": "Back",
     "btnRemoveFromClass": "Remove from class",
-    "linkViewGrading": "View this student's manual grading",
-    "stats": {
-      "avgScore": "Avg score",
-      "completion": "Completion",
-      "streak": "Streak",
-      "lastActive": "Last active"
+    "info": {
+      "contactTitle": "Contact",
+      "studyTitle": "Study",
+      "email": "Email",
+      "phone": "Phone",
+      "name": "Full name",
+      "class": "Class",
+      "status": "Status",
+
+      "statusValue": {
+        "insufficient_data": "Not enough data",
+        "absent": "Absent",
+        "needs_support": "Needs support",
+        "watch": "Watch",
+        "on_track": "On track"
+      }
     },
     "topicProgress": {
       "title": "By topic",
@@ -2131,13 +2469,21 @@
         "ratio": "Testcase ratio",
         "submittedAt": "Submitted at"
       },
-      "btnViewResult": "View result"
+      "btnViewResult": "View result",
+      "btnViewResultOf": "View the result of {problem}",
+      "filter": {
+        "label": "Filter by result",
+        "all": "All",
+        "accepted": "Accepted",
+        "failed": "Not passed"
+      },
+      "resultCount": "{count} submissions"
     },
     "empty": "No data yet",
     "cancel": "Cancel",
     "popup": {
       "removeTitle": "Remove {name} from class?",
-      "removeBody": "This is a real deletion with cascade, wiping submission history within this class.",
+      "removeBody": "The learner will leave the class. Their learning history in this class is kept.",
       "removeConfirm": "Remove student"
     },
     "toast": {
@@ -2145,99 +2491,116 @@
       "failed": "Could not remove the student, please try again"
     }
   },
-  "instructorGrading": {
-    "header": {
-      "title": "Grading",
-      "subtitle": "Accepted submissions AI scored below 6/10 in your classes"
-    },
-    "stats": {
-      "pendingCount": "Pending",
-      "gradedCount": "Graded this week",
-      "avgManualScore": "Average score after grading"
-    },
-    "filter": {
-      "statusTabs": "Filter by grading status",
-      "classTabs": "Filter by class",
-      "studentChip": "Student: {name}",
-      "clearStudentChip": "Clear student filter",
-      "resultCount": "{count} submissions"
-    },
-    "statusFilter": {
-      "pending": "Pending",
-      "graded": "Graded"
-    },
-    "filterAll": "All",
-    "queue": {
-      "col": {
-        "student": "Student",
-        "problem": "Problem",
-        "className": "Class",
-        "submittedAt": "Submitted at",
-        "score": "Score",
-        "btnGrade": "Grade now"
-      }
-    },
-    "empty": "No submissions match this filter",
-    "popup": {
-      "title": "{student} · {problem}",
-      "meta": "AI: {ai}/10 · Instructor: {manual}",
-      "scoreInput": "Score (0-10)",
-      "commentInput": "Comment",
-      "btnCancel": "Cancel",
-      "btnSave": "Save score"
-    },
-    "toast": {
-      "saved": "Grade saved for {student}",
-      "failed": "Could not save the grade, please try again"
-    },
-    "validation": {
-      "scoreRange": "The score must be between 0 and 10"
+  "instructorSubmission": {
+    "contextLabel": "Learner's submission",
+    "readOnlyBadge": "Read-only",
+    "readOnlyNote": "Read-only: you are viewing a submission of a learner in a class you teach.",
+    "breadcrumb": {
+      "classes": "My classes",
+      "submissions": "Submissions",
+      "current": "Submission #{id}"
     }
   },
+  "instructorSubmissions": {
+    "header": {
+      "title": "Submissions",
+      "subtitle": "Every submission of the learners in the classes you teach"
+    },
+    "search": "Search by learner or problem",
+    "classFilter": "Filter by class",
+    "resultFilter": "Filter by result",
+    "filterAll": "All",
+    "result": {
+      "accepted": "Accepted",
+      "failed": "Not passed"
+    },
+    "resultCount": "{shown} / {total} submissions",
+    "col": {
+      "student": "Learner",
+      "class": "Class",
+      "problem": "Problem",
+      "language": "Language",
+      "status": "Status",
+      "ratio": "Testcases",
+      "submittedAt": "Submitted",
+      "btnView": "View submission",
+      "btnViewOf": "View the submission of {student}: {problem}"
+    },
+    "empty": "No submission matches the filters",
+    "emptyNoClass": "You are not in charge of any class yet",
+    "emptyNoSubmission": "Your classes have no submissions yet",
+    "leftClass": "Left the class",
+    "pageSizeLabel": "Rows",
+    "pageSummary": "Page {page} / {total}",
+    "previous": "Previous",
+    "next": "Next"
+  },
   "instructorOverview": {
-    "toolbar": {
-      "searchBox": "Search classes, students, problems…",
-      "btnCreateClass": "+ Create class"
+    "title": "Instructor overview",
+    "kpi": {
+      "classes": "Classes in charge",
+      "classesMeta": "{count} students",
+      "students": "Total students",
+      "studentsMeta": "{count} absent"
     },
-    "stat": {
-      "classCount": "Classes",
-      "classCountMeta": "{count} students",
-      "studentCount": "Total students",
-      "pendingGrading": "Pending manual grading",
-      "avgScore": "Average class score",
-      "avgScoreMeta": "vs. last week"
-    },
-    "grading": {
-      "title": "Needs manual grading",
-      "subtitle": "AI-scored submissions below threshold",
-      "linkViewAll": "View all",
-      "col": {
-        "meta": "AI scored {score}/10 · submitted {time}"
-      }
-    },
-    "activity": {
-      "title": "Recent activity",
-      "subtitle": "Last 10 events"
+    "students": {
+      "title": "Students",
+      "subtitle": "Activity status",
+      "active": "Active",
+      "absent": "Absent",
+      "activeRate": "active",
+      "byClass": "Absent by class",
+      "absentCount": "{count} absent"
     },
     "classes": {
       "title": "My classes",
+      "subtitle": "Completion rate",
       "linkManage": "Manage classes",
-      "col": {
-        "studentCount": "{count} students"
-      }
-    },
-    "trend": {
-      "title": "Student progress",
-      "subtitle": "Average score, last 4 weeks",
-      "linkViewAll": "View all"
+      "students": "{count} students"
     },
     "assignments": {
-      "title": "My assignments",
+      "title": "Assigned to classes",
+      "subtitle": "Submissions",
       "linkViewAll": "View all"
+    },
+    "schedule": {
+      "title": "Teaching this week",
+      "subtitle": "From the schedules of your classes",
+      "empty": "No schedule yet",
+      "day": {
+        "1": "Mon",
+        "2": "Tue",
+        "3": "Wed",
+        "4": "Thu",
+        "5": "Fri",
+        "6": "Sat",
+        "7": "Sun"
+      }
+    },
+    "chart": {
+      "title": "Submissions per day",
+      "subtitle": "Latest 7 days with submissions",
+      "empty": "No submissions yet",
+      "series": {
+        "accepted": "Accepted",
+        "failed": "Not passed",
+        "other": "Other"
+      }
+    },
+    "submissions": {
+      "title": "Recent submissions",
+      "subtitle": "Newest in your classes",
+      "linkViewAll": "View all",
+      "empty": "No submissions yet"
+    },
+    "activity": {
+      "title": "Recent activity",
+      "subtitle": "Latest 10 items"
     },
     "empty": "No data yet"
   },
   "profile": {
+    "pageTitle": "Profile",
     "loadError": "Could not load the profile.",
     "retry": "Retry",
     "settingsShortcut": "Account settings",
@@ -2247,16 +2610,14 @@
       "email": "Email",
       "schoolOrCompany": "School / company",
       "currentPosition": "Current role",
-      "defaultLanguage": "Default language",
       "targetPosition": "Target position",
       "revert": "Revert",
       "save": "Save changes",
-      "saved": "Saved",
-      "statusIdle": "Email is used for sign-in and reminders.",
-      "statusDirty": "Unsaved changes.",
-      "statusSaved": "Profile updated.",
       "savedToast": "Profile saved",
-      "invalid": "The profile details are not valid"
+      "invalid": "The profile details are not valid",
+      "saveFailed": "Could not save the profile. Try again later.",
+
+      "emailRequestFailed": "Could not send the email change request. Try again later."
     },
     "security": {
       "title": "Security",
@@ -2264,7 +2625,7 @@
       "changePassword": "Change",
       "setPassword": "Set password",
       "passwordChangedAt": "Last changed {date}",
-      "passwordNoDate": "Last-changed date unknown",
+      "passwordNoDate": "Password never changed",
       "noPassword": "No password set — signing in via {provider}",
       "providerLabel": "Signed in with",
       "providerDescription": "Sign-in methods linked to this account",
@@ -2273,7 +2634,10 @@
     "account": {
       "title": "Account",
       "joinedAt": "Joined",
-      "role": "Role"
+      "role": "Role",
+      "roleInstructor": "Instructor",
+      "roleAdmin": "Administrator",
+      "userCode": "User code"
     },
     "practice": {
       "title": "Practice",
@@ -2299,7 +2663,7 @@
       "newPassword": "New password",
       "confirmPassword": "Confirm new password",
       "ruleHint": "At least 8 characters, with both letters and digits.",
-      "done": "Password changed",
+      "done": "Password changed. Other devices need to sign in again.",
       "invalid": "The password details are not valid"
     },
     "errors": {
@@ -2317,10 +2681,16 @@
       "currentPasswordInvalid": "Current password is incorrect",
       "otpLength": "The code must be 6 digits",
       "otpDigitsOnly": "The code must contain digits only",
-      "otpInvalid": "The code is invalid or has expired"
+      "otpInvalid": "The code is invalid or has expired",
+      "emailRequired": "Please enter an email",
+
+      "emailTooLong": "Email is at most 254 characters",
+
+      "emailInvalid": "Invalid email"
     }
   },
   "settings": {
+    "pageTitle": "Account settings",
     "loadError": "Could not load settings.",
     "retry": "Retry",
     "backToProfile": "Back to profile",
@@ -2349,7 +2719,8 @@
       "hintAllowed": "Allow hints",
       "hintAllowedDescription": "The interviewer may nudge you when an answer stalls.",
       "scopeNote": "These three options only apply to sessions you start yourself from the question bank or a chosen topic. A session opened from an Accepted submission always uses the standard parameters.",
-      "saveFailedWarning": "Could not save mock-interview preferences (ai-review). Workspace and Notifications were still saved."
+      "saveFailedWarning": "Could not save mock interview options (ai-review). Please try again.",
+      "saved": "Mock interview options saved."
     },
     "notification": {
       "title": "Notifications",
@@ -2362,10 +2733,10 @@
       "title": "Status",
       "statusIdle": "Theme and language apply immediately; the rest is saved with the button below.",
       "statusDirty": "You have unsaved changes.",
-      "statusSaved": "Settings applied to this account.",
       "save": "Save settings",
       "saved": "Settings saved.",
-      "saveFailed": "Could not save settings. Please try again."
+      "saveFailed": "Could not save Workspace and Notifications. Please try again.",
+      "savedSettings": "Workspace and Notifications saved."
     },
     "dataExport": {
       "title": "Your data",
@@ -2376,7 +2747,7 @@
     },
     "dangerZone": {
       "title": "Danger zone",
-      "consequenceText": "Your account is deactivated immediately and you will not be able to sign in again. After 30 days your identity details are anonymized; your submissions, saved problems and interview sessions are kept.",
+      "consequenceText": "Your account is deactivated immediately. During the 30-day grace period you can sign in again to cancel the deletion. After 30 days your identity details are anonymized; your submissions, saved problems and interview sessions are kept.",
       "delete": "Delete account"
     },
     "deleteConfirm": {
@@ -2384,11 +2755,21 @@
       "confirm": "Delete my account",
       "cancel": "Cancel",
       "confirmPhraseLabel": "Type your email ({email}) to confirm",
-      "phraseHint": "Email does not match yet.",
       "done": "Account deletion requested"
     },
     "errors": {
       "confirmPhraseMismatch": "Email does not match"
+    },
+    "unsaved": {
+      "title": "You have unsaved changes",
+
+      "body": "Save and leave, leave without saving (changes are lost), or stay to keep editing.",
+
+      "saveAndLeave": "Save and leave",
+
+      "leave": "Leave without saving",
+
+      "stay": "Stay"
     }
   },
   "myProgress": {
@@ -2425,6 +2806,7 @@
     "focus": {
       "title": "Focus next",
       "allSolved": "You have solved every topic's problems",
+      "reasonWeakest": "Skill {score}/100 — the lowest",
       "reasonLowestAc": "{rate}% AC — the weakest topic",
       "reasonMostUnsolved": "{remaining} problems left, {rate}% AC",
       "reasonStale": "No submission in {days} days"
@@ -2457,6 +2839,7 @@
       "attempted": "Attempted",
       "todo": "Todo"
     },
+    "rangeAnnounce": "Showing data for {range}",
     "greeting": {
       "title": "Welcome back",
       "weakestTopic": "Weakest topic this week: {topic} — skill {rate}/100, the lowest of {count} topics.",
@@ -2466,16 +2849,16 @@
     },
     "stats": {
       "solved": "Solved",
-      "solvedMeta": "of {total} published problems",
+      "solvedMeta": "{avg} submissions per solved problem on average",
       "acRate": "Acceptance rate",
       "acRateMeta": "{submissions} submissions · {accepted} accepted",
       "acRateEmpty": "No submissions yet",
       "streak": "Streak",
       "streakUnit": "days",
-      "streakMeta": "{avg} submissions per solved problem on average",
+      "streakMeta": "Submit at least one problem a day to keep the streak",
       "interview": "Mock Interview",
       "interviewUnit": "sessions",
-      "interviewMeta": "Average rubric {score} / 5",
+      "interviewMeta": "Average rubric {score} / 10",
       "interviewNoScore": "No session has a rubric yet",
       "interviewEmpty": "No interview sessions yet",
       "regionLabel": "{metric} stat"
@@ -2483,11 +2866,12 @@
     "daily": {
       "title": "Submissions per day",
       "totalLabel": "submissions · {average} per day on average",
+      "chartLabel": "Submissions per day: {total} submissions, {average} per day on average",
       "empty": "No submissions in this range"
     },
     "radar": {
       "title": "Skill by topic",
-      "subtitle": "Scored 0-100 from acceptance rate and how much of the topic is solved",
+      "subtitle": "Scored 0-100. Shows the {count} lowest-scoring topics, from acceptance rate and how much of the topic is solved; the topic to improve first is in orange",
       "empty": "At least 3 topics with data are needed to draw this chart"
     },
     "activity": {
@@ -2519,7 +2903,12 @@
     "interviews": {
       "title": "Mock Interview",
       "session": "Session on {date}",
-      "empty": "No interview sessions yet"
+      "empty": "No interview sessions yet",
+      "summary": "{count} sessions · average {score} / 10",
+
+      "summaryNoScore": "{count} sessions · no session scored yet",
+
+      "weakest": "weakest: {criterion}"
     },
     "reviews": {
       "title": "Solution Review",

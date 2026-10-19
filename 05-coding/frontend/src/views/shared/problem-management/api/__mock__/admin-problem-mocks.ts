@@ -298,7 +298,7 @@ function attention(rows: AdminProblem[]): AttentionItem[] {
 /**
  * `ListProblemsAdmin`. A2 only gets the problems they wrote (BD SHR0201 Q1); the blocks and totals
  * are derived from the rows returned, so A2 never sees counts that include other people's work. A3
- * keeps the mockup's own totals (27 / 25), which the 21 sample rows cannot reproduce.
+ * sees every sample row, so the totals equal the rows listed.
  */
 export async function loadAdminProblemPage(): Promise<AdminProblemPage> {
   await new Promise((resolve) => setTimeout(resolve, 150));
@@ -319,17 +319,14 @@ export async function loadAdminProblemPage(): Promise<AdminProblemPage> {
       editedLabel: "Vừa xong",
     }))
     .reverse();
-  const scoped = rows.length !== PROBLEMS.length;
   const all = [...fresh, ...rows];
+  // Header totals come from the same rows as the table, so the subtitle and the "n / total" counter agree.
   return {
     topicDistribution: topicDistribution(all),
     attention: attention(all),
     problems: all,
-    totalProblems: (scoped ? rows.length : 27) + fresh.length,
-    publishedCount:
-      (scoped
-        ? rows.filter((problem) => problem.status === "published").length
-        : 25) +
-      fresh.filter((problem) => problem.status === "published").length,
+    totalProblems: all.length,
+    publishedCount: all.filter((problem) => problem.status === "published")
+      .length,
   };
 }

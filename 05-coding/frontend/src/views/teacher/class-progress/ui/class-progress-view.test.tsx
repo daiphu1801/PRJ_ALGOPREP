@@ -13,8 +13,11 @@ import { toast, useToasts } from "@/shared/lib/toast-store";
 import { withTestProviders } from "@/shared/test/render-with-providers";
 import { ClassProgressView } from "./class-progress-view";
 
+const replace = vi.fn();
 vi.mock("next/navigation", () => ({
   useSearchParams: () => new URLSearchParams(),
+  useRouter: () => ({ replace }),
+  usePathname: () => "/instructor/students",
 }));
 
 describe("ClassProgressView", () => {
@@ -28,6 +31,20 @@ describe("ClassProgressView", () => {
     expect(screen.queryByText("Cần chú ý")).not.toBeInTheDocument();
   });
 
+  it("writes the search text into the URL so Back keeps it (INS0203 Q6)", async () => {
+    replace.mockClear();
+    render(withTestProviders(<ClassProgressView />));
+    await screen.findByText("Nguyễn Văn An");
+
+    fireEvent.change(screen.getByPlaceholderText("Tìm học viên"), {
+      target: { value: "An" },
+    });
+
+    expect(replace).toHaveBeenCalledWith("/instructor/students?q=An", {
+      scroll: false,
+    });
+  });
+
   it("raises a success toast after removing a student", async () => {
     const toasts = renderHook(() => useToasts());
     act(() => toast.clear());
@@ -35,7 +52,7 @@ describe("ClassProgressView", () => {
 
     await screen.findByText("Nguyễn Văn An");
     fireEvent.click(
-      (await screen.findAllByRole("button", { name: "Gỡ khỏi lớp" }))[0]!,
+      (await screen.findAllByRole("button", { name: /^Gỡ khỏi lớp / }))[0]!,
     );
     fireEvent.click(
       within(await screen.findByRole("dialog")).getByRole("button", {

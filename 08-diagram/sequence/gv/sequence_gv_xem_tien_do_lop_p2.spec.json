@@ -1,5 +1,5 @@
 {
-  "_": "Luong xem dashboard tien do lop cua actor A2. Nguon: US-A2-09 (01-rd/req/user_stories/a2_instructor.md:140-155), 01-rd/req/identity.md (F1-27, F1-28), 03-dd/api/identity.md muc 0.4 (endpoint #26, #29), 02-bd/architecture/identity.md muc 3.1 (read model dung tu domain event SubmissionGraded, KHONG doc thang schema judge).",
+  "_": "Luong xem dashboard tien do lop cua actor A2. Nguon: US-A2-09 (01-rd/req/user_stories/a2_instructor.md:140-155), 01-rd/req/identity.md (F1-27, F1-28), 03-dd/api/identity.md muc 0.4 (endpoint #26, #29), 02-bd/architecture/identity.md muc 3.1 (read model dung tu domain event SubmissionGraded, KHONG doc thang schema judge). Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen.",
   "_suy_giam": "US-A2-11 (a2_instructor.md:185): mot nguon so lieu khong phan hoi thi man van len, phan do bao loi tai cho -- ve thanh nhanh alt vi day la nghiep vu that, khong phai xu ly loi trang tri.",
   "kind": "sequence",
   "title": "Sơ đồ tuần tự chi tiết - Xem tiến độ lớp học (Giảng viên) (2/2)",
@@ -38,16 +38,16 @@
       {
         "from": "ClassProgressService",
         "to": "ClassProgressService",
-        "text": "Không nộp bài trong 7 ngày gần nhất thì xếp nhãn Vắng bài"
+        "text": "Không nộp bài trong 7 ngày gần nhất thì gắn nhãn Vắng bài"
       },
       {
         "from": "ClassProgressService",
         "to": "ClassProgressService",
-        "text": "Tỉ lệ hoàn thành dưới ngưỡng thì xếp nhãn Cần hỗ trợ"
+        "text": "Tỉ lệ hoàn thành dưới ngưỡng thì gắn nhãn Cần hỗ trợ"
       },
       {
         "alt": {
-          "label": "Một nguồn số liệu không phản hồi?",
+          "label": "Thiếu nguồn số liệu?",
           "then": [
             {
               "from": "ClassProgressService",
@@ -58,7 +58,7 @@
             {
               "from": "ClassProgressController",
               "to": "Giảng viên",
-              "text": "200 OK kèm cờ nguồn lỗi - KHÔNG chặn cả màn",
+              "text": "200 OK kèm cờ nguồn lỗi - không chặn cả màn",
               "kind": "return"
             }
           ],
@@ -66,7 +66,7 @@
             {
               "from": "ClassProgressService",
               "to": "ClassProgressController",
-              "text": "ClassProgressDto đầy đủ",
+              "text": "Số liệu đầy đủ",
               "kind": "return"
             },
             {
@@ -81,12 +81,7 @@
       {
         "from": "Giảng viên",
         "to": "Giảng viên",
-        "text": "Vẽ bảng học viên và biểu đồ theo đúng lớp đang chọn"
-      },
-      {
-        "from": "Giảng viên",
-        "to": "Giảng viên",
-        "text": "Điểm trung bình lớp, tỉ lệ hoàn thành, danh sách cần hỗ trợ"
+        "text": "Vẽ bảng học viên, biểu đồ, điểm trung bình lớp và danh sách cần hỗ trợ"
       },
       {
         "from": "Giảng viên",
@@ -101,33 +96,23 @@
       {
         "from": "ClassProgressController",
         "to": "ClassProgressService",
-        "text": "getStudentDetail(classId, studentId, instructorId)"
+        "text": "Yêu cầu hồ sơ học viên trong lớp"
       },
       {
         "from": "ClassProgressService",
         "to": "PostgreSQL",
-        "text": "Đọc chỉ số bài nộp trong phạm vi lớp đang xét"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "PostgreSQL",
-        "text": "SELECT theo class_id, không lấy toàn bộ lịch sử ngoài lớp (ProgressRepository)"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "PostgreSQL",
-        "text": "Chỉ số của riêng học viên trong lớp (ProgressRepository)"
+        "text": "Đọc chỉ số của học viên, chỉ trong lớp này"
       },
       {
         "from": "PostgreSQL",
         "to": "ClassProgressService",
-        "text": "StudentMetrics",
+        "text": "Chỉ số của học viên",
         "kind": "return"
       },
       {
         "from": "ClassProgressService",
         "to": "ClassProgressController",
-        "text": "StudentDetailDto",
+        "text": "Hồ sơ chi tiết học viên",
         "kind": "return"
       },
       {
@@ -139,7 +124,7 @@
       {
         "from": "Giảng viên",
         "to": "Giảng viên",
-        "text": "Hồ sơ chi tiết học viên trong phạm vi lớp mình phụ trách"
+        "text": "Hiện hồ sơ chi tiết trong phạm vi lớp mình phụ trách"
       }
     ]
   },

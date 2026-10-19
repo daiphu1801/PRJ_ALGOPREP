@@ -5,6 +5,7 @@
 "use client";
 
 import { useT } from "@/shared/i18n";
+import { formatDateVN } from "@/shared/lib";
 import {
   Card,
   DataTable,
@@ -59,10 +60,7 @@ export function TopicsTable({ range }: { range: ProgressRange }) {
       align: "right",
       render: (row) =>
         row.lastSubmittedAt
-          ? new Date(row.lastSubmittedAt).toLocaleDateString("vi-VN", {
-              day: "2-digit",
-              month: "2-digit",
-            })
+          ? formatDateVN(row.lastSubmittedAt)
           : "-",
     },
   ];

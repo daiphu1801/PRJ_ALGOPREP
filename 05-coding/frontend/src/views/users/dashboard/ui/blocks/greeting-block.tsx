@@ -5,10 +5,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { fetchProblemListPage } from "@/entities/problem";
 import { useTopicProgress } from "@/entities/progress";
-import {
-  deriveSkillRadar,
-  pickWeakestTopic,
-} from "../../model/derive-skill-radar";
+import { pickWeakestTopic, scoreTopics } from "../../model/derive-skill-radar";
 import { useT } from "@/shared/i18n";
 import { Button, Skeleton } from "@/shared/ui";
 
@@ -23,9 +20,9 @@ import { Button, Skeleton } from "@/shared/ui";
  * - The name is a placeholder until `app/providers/auth-provider.tsx` bootstraps a real session —
  *   same call already made in AdminToolbar and the student header's avatar.
  *
- * The weakest topic is derived, never fetched (REQ-04 + mục 4 Q2): `deriveSkillRadar` scores each
- * topic from AC rate and coverage, `pickWeakestTopic` takes the minimum. That keeps this line and
- * the radar block below telling the SAME story — computing "weakest" separately here is how the
+ * The weakest topic is derived, never fetched (REQ-04 + mục 4 Q2): `scoreTopics` scores every
+ * topic from AC rate and coverage, `pickWeakestTopic` takes the minimum. The radar below plots the
+ * weakest few of those same scores, so this line and the radar tell the SAME story — computing "weakest" separately here is how the
  * two would end up naming different topics.
  */
 export function GreetingBlock() {
@@ -33,8 +30,9 @@ export function GreetingBlock() {
   // The greeting's weakest-topic callout is a global statement, not a windowed one, so it reads the
   // widest range rather than following any tab.
   const topicsQuery = useTopicProgress("all");
-  const radar = topicsQuery.data ? deriveSkillRadar(topicsQuery.data) : [];
-  const weakest = pickWeakestTopic(radar);
+  // Over ALL topics, not the radar subset: the weakest topic must be the true weakest.
+  const scored = topicsQuery.data ? scoreTopics(topicsQuery.data) : [];
+  const weakest = pickWeakestTopic(scored);
 
   // Resume target per REQ-03: the most recent unfinished draft, falling back to the problem list
   // when there is none, so the primary button is never a dead end for a new account.
@@ -51,12 +49,12 @@ export function GreetingBlock() {
         </h2>
         {topicsQuery.isLoading ? (
           <Skeleton className="h-5 w-[320px]" />
-        ) : weakest ? (
+        ) : topicsQuery.isError ? null : weakest ? (
           <p className="text-sm text-[var(--color-text-muted)]">
             {t("greeting.weakestTopic", {
               topic: weakest.topicName,
               rate: weakest.score,
-              count: radar.length,
+              count: scored.length,
             })}
           </p>
         ) : (

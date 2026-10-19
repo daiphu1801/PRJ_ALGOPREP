@@ -69,4 +69,25 @@ describe("MockInterviewView", () => {
       expect(screen.queryByText(wrongLabel)).not.toBeInTheDocument();
     }
   });
+
+  it("does not show technical codes in the source lists", () => {
+    renderView();
+
+    expect(screen.queryByText("SUB-2841")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Kho câu hỏi" }));
+    expect(screen.queryByText("IQ-014")).not.toBeInTheDocument();
+  });
+
+  it("requires at least one topic chip in the custom tab before starting", () => {
+    renderView();
+
+    fireEvent.click(screen.getByRole("button", { name: "Tự chọn chủ đề" }));
+    expect(
+      screen.getByRole("button", { name: "Bắt đầu phiên" }),
+    ).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "Database" }));
+    expect(
+      screen.getByRole("button", { name: "Bắt đầu phiên" }),
+    ).not.toBeDisabled();
+  });
 });

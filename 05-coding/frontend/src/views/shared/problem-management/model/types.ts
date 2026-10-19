@@ -55,7 +55,7 @@ export type AdminProblemPage = {
 
 export type ProblemSortKey =
   | "title"
-  | "topic"
+  | "code"
   | "difficulty"
   | "status"
   | "submissions"

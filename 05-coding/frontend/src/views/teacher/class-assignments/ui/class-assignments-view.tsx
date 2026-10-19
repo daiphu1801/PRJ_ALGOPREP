@@ -4,19 +4,20 @@
 // toán" button (:115-120), 4 stat cards — bài đã gán, lượt nộp tuần này, AC trung bình, cần chấm
 // tay (:123-134, values :259-264), filter row: search + class tabs + result count (:138-149,
 // :266-271), assigned-problem table incl. the "Gán cho lớp" column (:151-170, :152-153, :161).
-// "+ Gán từ ngân hàng bài toán" links to problem_list (not built by this screen —
-// DEC-2026-0831-class-assignments-round2); "Chi tiết" wires to problem_detail per RD Q8 (closed),
+// "+ Gán từ ngân hàng bài toán" opens the "Giao bài cho lớp" popup on this screen (2026-10-11;
+// DEC-2026-0831-class-assignments-round2 put it on problem_list, which is a learner screen); "Chi tiết" wires to problem_detail per RD Q8 (closed),
 // not the interview-bank link the prototype file is described as having in
 // 01-rd/screens/teacher/INS0202_class_assignments.md:80-84. The remove popup asks for a class
 // first only when the row spans more than one class, matching the N-N problem-class relation
 // carried by "Gán cho lớp" (:161) — RD Q9 (closed).
 //
-// Nav sibling, not a tab of one page: this screen is the "Bài tập của tôi" (BT) sidebar item,
+// Nav sibling, not a tab of one page: this screen is the "Bài giao cho lớp" (BT) sidebar item,
 // independent from "Lớp của tôi" (LH) [09-layoutBase/Giáo viên - Lớp của tôi.dc.html:221-222].
 "use client";
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   useAssignmentSummary,
   useClassAssignments,
@@ -31,6 +32,7 @@ import {
 } from "@/entities/problem";
 import { useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
+import { AssignProblemDialog } from "./assign-problem-dialog";
 import {
   Badge,
   Button,
@@ -38,11 +40,26 @@ import {
   ConfirmDialog,
   DataTable,
   PageHeader,
+  Pagination,
   FilterMenu,
   SelectField,
   TextField,
   type DataTableColumn,
 } from "@/shared/ui";
+
+// 20 rows per page for a table that merges many rows (DEC-2026-1014-instructor-batch5-6-nav-pagination-rubric).
+const PAGE_SIZE = 20;
+
+/** First topic alphabetically plus "+n"; the full list stays in the tooltip (INS0202 Q5). */
+function topicSummary(row: AssignedProblem): { text: string; title: string } {
+  const all = [...(row.topics?.length ? row.topics : [row.topic])].sort(
+    (a, b) => a.localeCompare(b, "vi"),
+  );
+  return {
+    text: all.length > 1 ? `${all[0]} +${all.length - 1}` : (all[0] ?? ""),
+    title: all.join(", "),
+  };
+}
 
 export function ClassAssignmentsView() {
   const t = useT("classAssignments");
@@ -52,8 +69,23 @@ export function ClassAssignmentsView() {
   const classesQuery = useInstructorClasses();
   const classes = classesQuery.data ?? [];
 
-  const [query, setQuery] = useState("");
-  const [classTab, setClassTab] = useState("all");
+  // Class, search text and page live in the URL (?classId=&q=&page=), the one convention of every list.
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const classTab = searchParams.get("classId") ?? "all";
+  const page = Math.max(1, Number(searchParams.get("page")) || 1);
+  const [query, setQuery] = useState(searchParams.get("q") ?? "");
+  const setUrlParams = (patch: Record<string, string | null>) => {
+    const next = new URLSearchParams(searchParams.toString());
+    for (const [key, value] of Object.entries(patch)) {
+      if (value === null || value === "") next.delete(key);
+      else next.set(key, value);
+    }
+    const qs = next.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  };
+  const [assigning, setAssigning] = useState(false);
   const [removeTarget, setRemoveTarget] = useState<AssignedProblem | null>(
     null,
   );
@@ -61,24 +93,39 @@ export function ClassAssignmentsView() {
   const removeAssignment = useRemoveAssignment();
 
   const rows = useMemo(() => {
-    const needle = query.trim().toLowerCase();
+    const needle = (searchParams.get("q") ?? "").trim().toLowerCase();
     return (assignmentsQuery.data ?? []).filter(
       (row) =>
         (classTab === "all" || row.assignedClassIds.includes(classTab)) &&
         (!needle || row.title.toLowerCase().includes(needle)),
     );
-  }, [assignmentsQuery.data, query, classTab]);
+  }, [assignmentsQuery.data, searchParams, classTab]);
+  const pageRows = rows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  // Figures inside the selected class; "Tất cả" shows the problem's totals (INS0202 Q11).
+  const statsFor = (row: AssignedProblem) =>
+    (classTab !== "all" ? row.classStats?.[classTab] : undefined) ?? row;
 
   const columns: DataTableColumn<AssignedProblem>[] = [
     {
       key: "title",
       header: t("assignmentList.col.title"),
-      render: (row) => row.title,
+      render: (row) => (
+        <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <span className="whitespace-nowrap">{row.title}</span>
+          {row.withdrawn ? (
+            <Badge variant="warn">{t("assignmentList.col.withdrawn")}</Badge>
+          ) : null}
+        </span>
+      ),
     },
     {
       key: "topic",
       header: t("assignmentList.col.topic"),
-      render: (row) => row.topic,
+      render: (row) => {
+        const topic = topicSummary(row);
+        return <span title={topic.title}>{topic.text}</span>;
+      },
     },
     {
       key: "difficulty",
@@ -102,7 +149,7 @@ export function ClassAssignmentsView() {
       align: "right",
       render: (row) => (
         <span className="font-mono">
-          {row.submissionCount.toLocaleString("vi-VN")}
+          {statsFor(row).submissionCount.toLocaleString("vi-VN")}
         </span>
       ),
     },
@@ -110,7 +157,7 @@ export function ClassAssignmentsView() {
       key: "acRate",
       header: t("assignmentList.col.acRate"),
       align: "right",
-      render: (row) => `${row.acRate}%`,
+      render: (row) => `${statsFor(row).acRate}%`,
     },
     {
       key: "actions",
@@ -119,7 +166,7 @@ export function ClassAssignmentsView() {
       render: (row) => (
         <div className="flex justify-end gap-2">
           <Button variant="ghost" size="sm" asChild>
-            <Link href={`/problems/${row.id}`}>
+            <Link href={`/instructor/problems/${row.id}`}>
               {t("assignmentList.col.btnDetail")}
             </Link>
           </Button>
@@ -151,8 +198,8 @@ export function ClassAssignmentsView() {
           count: summary?.assignedCount ?? 0,
         })}
         actions={
-          <Button variant="cta" size="sm" asChild>
-            <Link href="/problems">{t("header.btnAssignFromBank")}</Link>
+          <Button variant="cta" size="sm" onClick={() => setAssigning(true)}>
+            {t("header.btnAssignFromBank")}
           </Button>
         }
       />
@@ -168,13 +215,21 @@ export function ClassAssignmentsView() {
             hideLabel
             placeholder={t("assignmentList.search")}
             value={query}
-            onChange={(event) => setQuery(event.target.value)}
+            onChange={(event) => {
+              setQuery(event.target.value);
+              setUrlParams({ q: event.target.value.trim(), page: null });
+            }}
             wrapperClassName="min-w-[220px] flex-1"
           />
           <FilterMenu
             label={t("assignmentList.classTabs")}
             value={classTab}
-            onValueChange={setClassTab}
+            onValueChange={(value) =>
+              setUrlParams({
+                classId: value === "all" ? null : value,
+                page: null,
+              })
+            }
             options={[
               { value: "all", label: t("filterAll") },
               ...classes.map((c) => ({ value: c.id, label: c.name })),
@@ -191,7 +246,7 @@ export function ClassAssignmentsView() {
         <DataTable
           caption={t("header.title")}
           columns={columns}
-          rows={rows}
+          rows={pageRows}
           rowKey={(row) => row.id}
           status={
             assignmentsQuery.isLoading
@@ -203,7 +258,28 @@ export function ClassAssignmentsView() {
           emptyMessage={t("emptyAssignments")}
           minWidth={900}
         />
+
+        <Pagination
+          page={page}
+          pageSize={PAGE_SIZE}
+          total={rows.length}
+          onPageChange={(value) =>
+            setUrlParams({ page: value > 1 ? String(value) : null })
+          }
+          summary={t("pageSummary", {
+            page,
+            total: Math.max(1, Math.ceil(rows.length / PAGE_SIZE)),
+          })}
+          previousLabel={t("previous")}
+          nextLabel={t("next")}
+        />
       </Card>
+
+      <AssignProblemDialog
+        open={assigning}
+        onClose={() => setAssigning(false)}
+        defaultClassId={classTab === "all" ? undefined : classTab}
+      />
 
       <ConfirmDialog
         open={removeTarget !== null}
@@ -229,7 +305,9 @@ export function ClassAssignmentsView() {
         destructive
       >
         <p className="mb-3">{t("popup.removeAssignmentBody")}</p>
-        {removeTarget && removeTarget.assignedClassIds.length > 1 ? (
+        {removeTarget &&
+        classTab === "all" &&
+        removeTarget.assignedClassIds.length > 1 ? (
           <SelectField
             label={t("popup.removeClassChoice")}
             value={removeClassChoice}

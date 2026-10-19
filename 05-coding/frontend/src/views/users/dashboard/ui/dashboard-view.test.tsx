@@ -39,20 +39,45 @@ describe("DashboardView", () => {
     ).toBeInTheDocument();
   });
 
+  // Owner decision 2026-10-13: the greeting and "Nên ưu tiên" never name different weakest topics.
+  it("pins the greeting's weakest topic at the top of Nên ưu tiên", async () => {
+    renderView();
+
+    const greeting = await screen.findByText(/Điểm yếu tuần này:/);
+    const topic = /Điểm yếu tuần này: (.+) — năng lực/.exec(
+      greeting.textContent ?? "",
+    )![1]!;
+
+    await screen.findByRole("table", { name: "Theo chủ đề" });
+    const firstFocus = await waitFor(() => {
+      const links = screen
+        .getAllByRole("link")
+        .filter((a) =>
+          a.getAttribute("href")?.startsWith("/problems?topicId="),
+        );
+      expect(links.length).toBeGreaterThan(0);
+      return links[0]!;
+    });
+    expect(firstFocus.textContent).toContain(topic);
+    expect(firstFocus.textContent).toContain("thấp nhất");
+  });
+
   it("drives every range-aware block from the one screen-level control", async () => {
     renderView();
 
-    // Scoped to the chart's own region: the radar in the next column also draws <circle>, so a
-    // container-wide query would count both and pass for the wrong reason.
+    // Scoped to the chart's own region, and counted on the line's points rather than on dots: a dense
+    // series draws no dots (they would stretch into ellipses), and the radar beside it draws circles.
     const plottedPoints = () =>
       screen
         .getByRole("region", { name: "Bài nộp theo ngày" })
-        .querySelectorAll("svg circle").length;
+        .querySelector("polyline")
+        ?.getAttribute("points")
+        ?.split(" ").length ?? 0;
 
     const table = await screen.findByRole("table", { name: "Theo chủ đề" });
     const topicRowBefore = within(table).getAllByRole("row")[1]?.textContent;
-    // 15 plotted points on "30d", 7 on "7d" — a deterministic witness that the chart replotted.
-    await waitFor(() => expect(plottedPoints()).toBe(15));
+    // 14 plotted points on "30d", 7 on "7d" — a deterministic witness that the chart replotted.
+    await waitFor(() => expect(plottedPoints()).toBe(14));
 
     fireEvent.click(screen.getByRole("button", { name: "7 ngày" }));
 
@@ -66,5 +91,23 @@ describe("DashboardView", () => {
         )[1]?.textContent,
       ).not.toBe(topicRowBefore),
     );
+  });
+
+  // Owner decision 2026-10-18: the range also filters the interview block, scores are 0 to 10, and
+  // each session card draws one bar per rubric criterion.
+  it("filters the interview block by range and draws 4 rubric bars per session", async () => {
+    renderView();
+
+    // 30d: 6 sessions in range, the card lists the last 3 (owner D3), each with its own 4 bars.
+    expect(await screen.findAllByText(/^Phiên ngày /)).toHaveLength(3);
+    expect(screen.getAllByText(/ \/ 10$/).length).toBeGreaterThanOrEqual(3);
+    expect(screen.getAllByRole("progressbar", { name: "Độ rõ ràng" })).toHaveLength(3);
+
+    fireEvent.click(screen.getByRole("button", { name: "7 ngày" }));
+
+    await waitFor(() =>
+      expect(screen.getAllByText(/^Phiên ngày /)).toHaveLength(2),
+    );
+    expect(screen.getAllByRole("progressbar", { name: "Độ rõ ràng" })).toHaveLength(2);
   });
 });

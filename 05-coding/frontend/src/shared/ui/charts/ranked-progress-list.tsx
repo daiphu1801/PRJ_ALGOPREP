@@ -8,6 +8,7 @@
 //
 // Generic items in, the link is a plain href/label pair — no domain type, so shared/ui.
 import Link from "next/link";
+import { textTone } from "@/shared/lib";
 
 type RankedItem = {
   label: string;
@@ -72,7 +73,7 @@ export function RankedProgressList({
         <Link
           href={viewAllHref}
           className="mt-3 inline-block text-xs font-medium hover:underline"
-          style={{ color: `var(${accentColorVar})` }}
+          style={{ color: textTone(accentColorVar) }}
         >
           {viewAllLabel}
         </Link>

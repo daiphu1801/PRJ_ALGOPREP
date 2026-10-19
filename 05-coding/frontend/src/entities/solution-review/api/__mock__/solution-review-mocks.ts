@@ -17,9 +17,21 @@ export type SolutionReviewDemoOutcome =
 
 export const AI_BUDGET_LOCKED_CODE = "AI_BUDGET_LOCKED";
 export const AI_PROVIDER_TIMEOUT_CODE = "AI_PROVIDER_TIMEOUT";
+/** Unknown id, or one the caller does not own (BD Sheet 9 NO 2); the view shows one notice for both. */
+export const REVIEW_NOT_FOUND_CODE = "NOT_FOUND";
+export const REVIEW_FORBIDDEN_CODE = "FORBIDDEN";
+/** Submission is not ACCEPTED, so no review exists (BD Sheet 9 NO 3). */
+export const REVIEW_NOT_ACCEPTED_CODE = "NOT_ACCEPTED";
+
+// Mock id check: any "SB-n" / "SUB-n" id has a review (the list mock hands out SB-*, the interview
+// mock SUB-*); anything else is a 404. A real backend resolves ownership and status instead.
+const KNOWN_ID = /^(SB|SUB)-\d+$/;
 
 const SOLUTION_REVIEW_MOCK: SolutionReviewDetail = {
   submissionId: "SUB-2841",
+  problemId: "1",
+  languageKey: "python",
+  submissionModel: "function",
   problemTitle: "1. Two Sum",
   difficulty: "EASY",
   approachTitle: "hash map",
@@ -28,7 +40,6 @@ const SOLUTION_REVIEW_MOCK: SolutionReviewDetail = {
   createdAt: "2026-08-20T21:15:00+07:00",
   summaryText:
     "Hướng giải đã là hướng tối ưu cho bài này: một lượt duyệt với hash map, thời gian O(n). Thứ tự tra cứu trước rồi mới ghi vào dict là đúng, và đây chính là chỗ phần lớn bài nộp sai với đầu vào như [3,3]. Điểm còn lại không nằm ở thuật toán mà ở cách viết: ý nghĩa của biến need chưa nói rõ, hàm chưa có type hint, và câu return rỗng ở cuối làm mờ chi tiết là đề đã bảo đảm luôn có đáp án.",
-  language: "Python 3",
   sourceCode: [
     "def two_sum(nums, target):",
     "    seen = {}",
@@ -48,28 +59,6 @@ const SOLUTION_REVIEW_MOCK: SolutionReviewDetail = {
     spaceExplanation:
       "Dict lớn theo đầu vào; không tránh được nếu không sắp xếp trước.",
   },
-  criteriaScores: [
-    {
-      code: "correctness",
-      feedback: "Đúng trên mọi testcase kể cả trùng giá trị như [3,3].",
-    },
-    {
-      code: "performance",
-      feedback: "Một lượt duyệt O(n), không có vòng lặp lồng.",
-    },
-    {
-      code: "cleanCode",
-      feedback: "Dict `seen` chưa có type hint, tên biến `need` dùng một lần.",
-    },
-    {
-      code: "scalability",
-      feedback: "Không cần sửa gì để chạy tốt với input lớn hơn.",
-    },
-    {
-      code: "dataStructure",
-      feedback: "Hash map là lựa chọn đúng cho bài toán tra cứu bù trừ.",
-    },
-  ],
   strengths: [
     "Tra cứu trước khi ghi vào dict, nên [3,3] với target 6 đúng mà không cần xử lý riêng.",
     "Chỉ một lượt duyệt, không có vòng lặp lồng và không quét mảng lần hai.",
@@ -106,6 +95,17 @@ const SOLUTION_REVIEW_MOCK: SolutionReviewDetail = {
       { kind: "same", text: "    return []" },
     ],
   },
+  suggestedCode: [
+    "def two_sum(nums: list[int], target: int) -> list[int]:",
+    "    seen: dict[int, int] = {}",
+    "    for i, x in enumerate(nums):",
+    "        j = seen.get(target - x)",
+    "        if j is not None:",
+    "            return [j, i]",
+    "        seen[x] = i",
+    "    return []",
+    "",
+  ].join("\n"),
 };
 
 function delay<T>(value: T, ms = 350): Promise<T> {
@@ -114,7 +114,11 @@ function delay<T>(value: T, ms = 350): Promise<T> {
 
 export async function fetchSolutionReviewMock(
   demo: SolutionReviewDemoOutcome,
+  submissionId: string,
 ): Promise<SolutionReviewDetail> {
+  if (!KNOWN_ID.test(submissionId)) {
+    throw new ApiError(REVIEW_NOT_FOUND_CODE, 404, "Submission not found");
+  }
   if (demo === "errorBudgetLocked") {
     throw new ApiError(
       AI_BUDGET_LOCKED_CODE,
@@ -125,5 +129,5 @@ export async function fetchSolutionReviewMock(
   if (demo === "errorTransient") {
     throw new ApiError(AI_PROVIDER_TIMEOUT_CODE, 503, "AI provider timed out");
   }
-  return delay(SOLUTION_REVIEW_MOCK);
+  return delay({ ...SOLUTION_REVIEW_MOCK, submissionId });
 }

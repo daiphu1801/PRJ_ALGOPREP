@@ -40,11 +40,11 @@
 | Tên vật lý (slug) | `admin_permission_matrix` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A3 (`ADMIN`) |
-| Phiên bản | V0.6 |
+| Phiên bản | V0.7 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/15 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/10/08 |
+| Ngày cập nhật | 2026/10/14 |
 
 ---
 
@@ -58,6 +58,7 @@
 | V0.4 | Phương châm, Sheet 3, 4, 5, 6, 7, 8, 9, Câu hỏi mở | Đồng bộ prototype 2026-10-08 và chốt của owner cùng ngày (`DEC-2026-1008-admin-system-screens-review`). (1) **Q1 đã chốt: lưu tức thời từng ô; bỏ nút "Lưu thay đổi"** — Sheet 5/6 Khu vực A NO 3 đánh dấu đã bỏ, EVT-9 đã bỏ, EVT-2 và EVT-10 bỏ bước hỏi "thay đổi chưa lưu", Q5 tự đóng, Sheet 7.3 không còn endpoint lô. (2) **Q4 đã chốt: chặn cứng** việc gỡ ô `PERMISSION_MATRIX:UPDATE` cuối cùng của mọi vai trò `base_category = ADMIN` (Sheet 9 NO 9 vẫn mức Lỗi); NO 8 (tự gỡ quyền vai trò mình giữ) vẫn là cảnh báo xác nhận, câu chữ nay nói thay đổi có hiệu lực ngay. (3) Ghi nhận prototype: tên vai trò mới tối đa 50 ký tự (độ dài vẫn `[Suy luận]`), kiểm trùng so cả `code` sinh ra lẫn nhãn không phân biệt hoa thường, vai trò tuỳ biến mới mang `base_category = INSTRUCTOR` `[Suy luận]` — thêm Q6 | 2026/10/08 | AI |
 | V0.5 | Sheet 5, 6, 8, 9, Câu hỏi mở | Form tạo vai trò có ô chọn nhóm cơ bản, mặc định `STUDENT` (Sheet 5 và 6 Khu vực C NO 8); Q6 phần 1 chốt (owner, 2026-10-08), phần 2 (khoá ô theo nhóm hay theo vai trò hệ thống) còn mở. | 2026/10/08 | AI |
 | V0.6 | Phương châm, Sheet 3, 4, 5, 6, 7, 8, 9, Câu hỏi mở | Đồng bộ prototype vòng 2 ngày 2026-10-08 và chốt của owner (`DEC-2026-1008-admin-system-open-questions-closed`). (1) **Q2 đã chốt: chặn xoá** vai trò tuỳ biến còn tài khoản gán, không tự chuyển — `RoleDto` thêm `userCount` (Sheet 7.1 NO 12), nút xoá hiện toast cảnh báo kèm tên vai trò và số tài khoản, không mở hộp xác nhận; hộp xác nhận chỉ dành cho `userCount = 0` (Sheet 8 EVT-7, Sheet 9 NO 7). (2) **Q3 đã chốt: không đổi tên vai trò**; "sửa" của F1-11 là sửa ô ma trận. (3) **Q6 phần 2 đã chốt: khoá ô chỉ theo vai trò hệ thống `STUDENT` (theo `code`), không theo nhóm cơ bản**; vai trò tuỳ biến luôn chỉnh được kể cả khi nhóm là `STUDENT` — viết lại Sheet 3, 4, 5, 6, 7, 8 (EVT-2, EVT-8), 9 (NO 5). Q6 đóng hẳn. | 2026/10/08 | AI |
+| V0.7 | Sheet 5 | Sửa lỗi Minor review UX khu Admin F9 (`06-plan/reports/261014-1054-admin-ux-review/`), **chưa duyệt hình**: tab vai trò hiển thị `roles.name` ("Người học", "Giảng viên", "Quản trị", "Trợ giảng") thay cho mã `STUDENT`/`INSTRUCTOR`/`ADMIN`; `code` chỉ dùng làm khoá (Khu vực A tab vai trò NO 1) | 2026/10/14 | Claude |
 
 ---
 
@@ -264,7 +265,7 @@ cho DD quyết định thêm dòng phụ hay bỏ, không phải phần của kh
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Vai trò | | | | | | | | | | | | | |
-| | 1 | Tab vai trò | `adminPermissionMatrix.role.tabs` | `identity.roles` | `code`, `name` | List | List | - | - | I/O | Vai trò `INSTRUCTOR` (vai trò hệ thống đầu tiên chỉnh được; STUDENT chỉ đọc nên không mở mặc định) | - | Danh sách vai trò dạng chip, chọn đúng một vai trò tại một thời điểm. Tối thiểu 3 vai trò hệ thống cộng N vai trò tuỳ biến<br>[Nguồn giá trị] Kết quả gọi `ListRoles`<br>[EVT liên quan] EVT-1, EVT-2 |
+| | 1 | Tab vai trò | `adminPermissionMatrix.role.tabs` | `identity.roles` | `code`, `name` | List | List | - | - | I/O | Vai trò `INSTRUCTOR` (vai trò hệ thống đầu tiên chỉnh được; STUDENT chỉ đọc nên không mở mặc định) | - | Danh sách vai trò dạng chip, chọn đúng một vai trò tại một thời điểm. Tối thiểu 3 vai trò hệ thống cộng N vai trò tuỳ biến. **Nhãn tab là `name`**, `code` chỉ là khoá chọn và khoá tra quyền; sửa 2026-10-14 (review UX F9, chưa duyệt hình), trước đó prototype in mã `STUDENT`/`INSTRUCTOR`/`ADMIN` lên tab [Nguồn: 05-coding/frontend/src/views/admin/permission-matrix/api/__mock__/permission-matrix-mocks.ts:25-56] [Nguồn: 05-coding/frontend/src/views/admin/permission-matrix/ui/admin-permission-matrix-view.tsx:225]<br>[Nguồn giá trị] Kết quả gọi `ListRoles`<br>[EVT liên quan] EVT-1, EVT-2 |
 | | 2 | Thêm vai trò mới | `adminPermissionMatrix.role.btnAdd` | - | - | Button | - | - | - | I | - | + Vai trò mới | Mở form nội tuyến nhập tên vai trò<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] EVT-3 |
 | | 3 | Tên vai trò mới | `adminPermissionMatrix.role.inputNewName` | `identity.roles` | `name` | TextBox | String | 50 | Có | I | rỗng | - | Ô nhập tên vai trò tuỳ biến. Độ dài 50 là `[Suy luận]` — cột `name` khai kiểu VARCHAR không kèm độ dài, DD chốt lại. **Prototype 2026-10-08 đã chặn** tên dài hơn 50 ký tự (hằng `ROLE_NAME_MAX`) [Nguồn: 05-coding/frontend/src/views/admin/permission-matrix/model/guards.ts:3,16-28]<br>[Nguồn giá trị] Người dùng nhập<br>[EVT liên quan] EVT-4 |
 | | 4 | Tạo vai trò | `adminPermissionMatrix.role.btnCreateConfirm` | - | - | Button | - | - | - | I | - | Tạo | Xác nhận tạo vai trò với tên đã nhập. Vai trò tạo ra mang `base_category` do người dùng chọn ở ô "Nhóm cơ bản của vai trò mới" (mặc định `STUDENT`, owner chốt 2026-10-08, Q6) [Nguồn: 05-coding/frontend/src/views/admin/permission-matrix/ui/admin-permission-matrix-view.tsx:101-103]<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] EVT-5 |

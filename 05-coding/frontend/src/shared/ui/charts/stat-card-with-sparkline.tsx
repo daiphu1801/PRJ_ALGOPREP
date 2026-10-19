@@ -4,6 +4,8 @@
 // SYS0102_frontend_architecture.md section 2.A-B. No charting library added (none was in package.json);
 // the sparkline is a tiny inline SVG polyline, good enough to show real shape/proportions
 // (vibecode-pipeline PROTOTYPE lane, "not pixel-perfect").
+import { textTone } from "@/shared/lib";
+
 type StatCardWithSparklineProps = {
   label: string;
   value: string;
@@ -50,7 +52,7 @@ export function StatCardWithSparkline({
         </p>
         <p
           className="mt-1 text-xs font-medium"
-          style={{ color: `var(${accentColorVar})` }}
+          style={{ color: textTone(accentColorVar) }}
         >
           {deltaDirection === "up" ? "+" : "-"}
           {deltaLabel}%

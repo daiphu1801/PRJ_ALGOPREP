@@ -57,7 +57,9 @@ export function HorizontalBarChart({
         {pointLabels.map((label, pointIndex) => (
           <div
             key={label}
-            className="flex flex-1 items-end gap-px"
+            // h-full gives each bar's `height: %` a box to resolve against; without it the group is
+            // content-height (0) and every bar collapsed to its 2px minHeight.
+            className="flex h-full flex-1 items-end gap-px"
             title={label}
           >
             {series.map((s) => (

@@ -35,35 +35,36 @@ function seededSeries(
   return out;
 }
 
+// Bar counts follow the owner decision of 2026-10-18 (DEC-2026-1018-usr-open-questions-phase2-5):
+// "7d" draws 7 bars, "30d" draws 14 bars (about 2 days each), "all" groups by week. The window for
+// "all" is 13 weeks (about the 90 days the prototype's widest tab used, dc.html:134-140): the axis
+// needs a finite span to label. `unit` decides the axis label, "d" = days ago, "w" = weeks ago.
 const RANGE_SHAPE: Record<
   DashboardRange,
-  { points: number; amplitude: number }
+  {
+    points: number;
+    amplitude: number;
+    seed: number;
+    unit: "d" | "w";
+    step: number;
+  }
 > = {
-  "7d": { points: 7, amplitude: 8 },
-  "30d": { points: 15, amplitude: 11 },
-  all: { points: 24, amplitude: 14 },
-};
-
-// "all" is plotted as a 90-day window: the axis needs a finite span to label, and 90 days is what
-// the prototype's widest tab used (dc.html:134-140).
-const RANGE_DAYS: Record<DashboardRange, number> = {
-  "7d": 7,
-  "30d": 30,
-  all: 90,
+  "7d": { points: 7, amplitude: 8, seed: 52, unit: "d", step: 1 },
+  "30d": { points: 14, amplitude: 11, seed: 213, unit: "d", step: 30 / 14 },
+  // Weekly buckets hold up to 7 days of submissions, hence the larger amplitude.
+  all: { points: 13, amplitude: 40, seed: 633, unit: "w", step: 1 },
 };
 
 export function fakeGetDashboardDaily(
   range: DashboardRange,
 ): Promise<DashboardDailyPoint[]> {
-  const { points, amplitude } = RANGE_SHAPE[range];
+  const { points, amplitude, seed, unit, step } = RANGE_SHAPE[range];
   // dc.html seeds from the label's length; reproduced as an explicit per-range number so the three
   // tabs keep drawing three visibly different curves instead of the same one rescaled.
-  const seed = RANGE_DAYS[range] * 7 + 3;
   const counts = seededSeries(points, seed, amplitude);
-  const dayStep = RANGE_DAYS[range] / points;
   return delay(
     counts.map((count, index) => ({
-      label: `${Math.round((points - index) * dayStep)}d`,
+      label: `${Math.round((points - index) * step)}${unit}`,
       count,
     })),
   );

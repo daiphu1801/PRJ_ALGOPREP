@@ -49,6 +49,7 @@ export type SubmissionDailyCount = {
 
 /** `FocusSuggestionDto` — derived from `TopicProgress`, no dedicated endpoint (Sheet 7.1 NO 13). */
 export type FocusReason =
+  | { code: "weakestSkill"; score: number }
   | { code: "lowestAcRate"; acRate: number }
   | { code: "mostUnsolved"; remaining: number; acRate: number }
   | { code: "leastRecentlySubmitted"; daysSince: number };
@@ -70,8 +71,10 @@ export type RubricCriterionCode = (typeof RUBRIC_CRITERIA)[number];
 export type RecentInterviewSession = {
   sessionId: string;
   startedAt: string;
-  /** `null` when the session has no rubric yet. */
+  /** Overall rubric score on a 0 to 10 scale; `null` when the session has no rubric yet. */
   score: number | null;
+  /** Per-criterion rubric scores, each 0 to 10; `null` together with `score`. */
+  rubricScores: Record<RubricCriterionCode, number> | null;
 };
 
 /** `MyInterviewSummaryDto` — ai-review-owned, degrades independently of the rest of the screen. */

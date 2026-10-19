@@ -1,5 +1,5 @@
 {
-  "_": "Luong tao lop hoc va phat ma moi cua actor A2, ke ca buoc hoc vien dung ma de tham gia. Nguon: US-A2-07 (01-rd/req/user_stories/a2_instructor.md:102-123), 01-rd/req/identity.md (F1-23, F1-25, F1-26), 03-dd/api/identity.md muc 0.4 (endpoint #20, #23, #25), 02-bd/architecture/identity.md muc 5 (ma moi TTL 7 ngay), 02-bd/database/identity.md:93-94 (nhieu ma hieu luc song song).",
+  "_": "Luong tao lop hoc va phat ma moi cua actor A2, ke ca buoc hoc vien dung ma de tham gia. Nguon: US-A2-07 (01-rd/req/user_stories/a2_instructor.md:102-123), 01-rd/req/identity.md (F1-23, F1-25, F1-26), 03-dd/api/identity.md muc 0.4 (endpoint #20, #23, #25), 02-bd/architecture/identity.md muc 5 (ma moi TTL 7 ngay), 02-bd/database/identity.md:93-94 (nhieu ma hieu luc song song). Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen.",
   "kind": "sequence",
   "title": "Sơ đồ tuần tự chi tiết - Tạo lớp học và phát mã mời (Giảng viên) (3/3)",
   "covers": [
@@ -11,6 +11,10 @@
     "participants": [
       {
         "name": "Giảng viên",
+        "role": "actor"
+      },
+      {
+        "name": "Học viên",
         "role": "actor"
       },
       {
@@ -27,10 +31,6 @@
         "name": "PostgreSQL",
         "role": "datastore",
         "stereo": "schema identity"
-      },
-      {
-        "name": "Học viên",
-        "role": "actor"
       }
     ],
     "messages": [
@@ -40,43 +40,32 @@
       {
         "from": "Giảng viên",
         "to": "Học viên",
-        "text": "Chia sẻ mã mời ngoài hệ thống",
-        "kind": "async"
+        "text": "Chia sẻ mã mời ngoài hệ thống"
       },
       {
         "from": "Học viên",
-        "to": "Giảng viên",
-        "text": "Nhập mã mời rồi bấm \"Tham gia lớp\""
+        "to": "Học viên",
+        "text": "Nhập mã mời, bấm Tham gia lớp"
       },
       {
-        "from": "Giảng viên",
+        "from": "Học viên",
         "to": "ClassController",
-        "text": "POST /identity/classes/join { code }"
+        "text": "POST /identity/classes/join"
       },
       {
         "from": "ClassController",
         "to": "ClassService",
-        "text": "joinClass(code, studentId)"
+        "text": "Yêu cầu vào lớp bằng mã mời"
       },
       {
         "from": "ClassService",
         "to": "PostgreSQL",
-        "text": "findActiveInviteCode(code)"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "PostgreSQL",
-        "text": "SELECT class_invite_codes WHERE code = ? AND expires_at > now() (ClassRepository)"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "PostgreSQL",
-        "text": "Mã còn hiệu lực hoặc rỗng (ClassRepository)"
+        "text": "Tìm mã mời còn hiệu lực"
       },
       {
         "from": "PostgreSQL",
         "to": "ClassService",
-        "text": "Optional<InviteCode>",
+        "text": "Mã còn hiệu lực hoặc không",
         "kind": "return"
       },
       {
@@ -85,37 +74,48 @@
           "then": [
             {
               "from": "ClassService",
+              "to": "ClassService",
+              "text": "Không có mã hợp lệ"
+            },
+            {
+              "from": "ClassService",
               "to": "ClassController",
-              "text": "IDT-410",
+              "text": "Mã không hợp lệ hoặc đã hết hạn (IDT-410)",
               "kind": "return"
             },
             {
               "from": "ClassController",
-              "to": "Giảng viên",
-              "text": "422 \"Mã không hợp lệ hoặc đã hết hạn\"",
+              "to": "Học viên",
+              "text": "422 Unprocessable Entity",
               "kind": "return"
             }
           ],
           "else": [
             {
               "from": "ClassService",
+              "to": "ClassService",
+              "text": "Mã hợp lệ, tiến hành ghi danh"
+            },
+            {
+              "from": "ClassService",
               "to": "PostgreSQL",
-              "text": "save(class_members) nếu chưa là thành viên"
+              "text": "Ghi danh, dùng lại dòng cũ nếu từng rời"
             },
             {
               "from": "PostgreSQL",
-              "to": "PostgreSQL",
-              "text": "INSERT INTO class_members (ClassRepository)"
+              "to": "ClassService",
+              "text": "Đã ghi",
+              "kind": "return"
             },
             {
               "from": "ClassService",
               "to": "ClassController",
-              "text": "ClassDto của lớp vừa tham gia",
+              "text": "Thông tin lớp vừa vào",
               "kind": "return"
             },
             {
               "from": "ClassController",
-              "to": "Giảng viên",
+              "to": "Học viên",
               "text": "200 OK",
               "kind": "return"
             }
@@ -123,10 +123,9 @@
         }
       },
       {
-        "from": "Giảng viên",
+        "from": "Học viên",
         "to": "Học viên",
-        "text": "Khối \"Bài tập lớp\" xuất hiện ở màn Danh sách bài toán",
-        "kind": "return"
+        "text": "Khối Bài tập lớp xuất hiện ở màn Danh sách bài toán"
       }
     ]
   },

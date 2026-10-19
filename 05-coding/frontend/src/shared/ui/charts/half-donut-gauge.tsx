@@ -29,8 +29,34 @@ function arcPath(startAngle: number, endAngle: number): string {
   return `M ${start.x} ${start.y} A ${RADIUS} ${RADIUS} 0 ${largeArc} 1 ${end.x} ${end.y}`;
 }
 
+/**
+ * Whole-number percents that always add up to 100: floor every share, then hand the leftover points
+ * to the largest remainders (BD ADM0101 :485 asks for the remainder to go to the biggest slice; with
+ * ties that is the same thing). Rounding each slice alone could print 99 or 101 (UX review B5).
+ */
+export function wholePercents(values: number[]): number[] {
+  const total = values.reduce((sum, value) => sum + value, 0);
+  if (total === 0) return values.map(() => 0);
+  const exact = values.map((value) => (value / total) * 100);
+  const floors = exact.map(Math.floor);
+  let leftover = 100 - floors.reduce((sum, value) => sum + value, 0);
+  const byRemainder = exact
+    .map((value, index) => ({ index, remainder: value - floors[index]! }))
+    .sort(
+      (a, b) =>
+        b.remainder - a.remainder || values[b.index]! - values[a.index]!,
+    );
+  for (const { index } of byRemainder) {
+    if (leftover <= 0) break;
+    floors[index]! += 1;
+    leftover -= 1;
+  }
+  return floors;
+}
+
 export function HalfDonutGauge({ slices }: { slices: GaugeSlice[] }) {
   const total = slices.reduce((sum, slice) => sum + slice.value, 0) || 1;
+  const percents = wholePercents(slices.map((slice) => slice.value));
 
   // Built with reduce (not a `let cursor` mutated across `.map`) — react-hooks/immutability
   // flags reassigning a variable captured by a render-time closure.
@@ -38,7 +64,7 @@ export function HalfDonutGauge({ slices }: { slices: GaugeSlice[] }) {
     Array<
       GaugeSlice & { startAngle: number; endAngle: number; percent: number }
     >
-  >((acc, slice) => {
+  >((acc, slice, index) => {
     const cursor = acc.length > 0 ? acc[acc.length - 1]!.endAngle : 180;
     const sweep = (slice.value / total) * 180;
     const endAngle = cursor - sweep;
@@ -46,7 +72,7 @@ export function HalfDonutGauge({ slices }: { slices: GaugeSlice[] }) {
       ...slice,
       startAngle: cursor,
       endAngle,
-      percent: Math.round((slice.value / total) * 100),
+      percent: percents[index]!,
     });
     return acc;
   }, []);

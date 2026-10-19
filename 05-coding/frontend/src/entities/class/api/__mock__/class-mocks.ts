@@ -7,6 +7,7 @@
 // `identity` endpoints wholesale at graduation, not patched incrementally.
 import type {
   AttentionItem,
+  ClassActivity,
   ClassForm,
   ClassScoreTrend,
   ClassStudent,
@@ -24,33 +25,56 @@ const classes: ClassSummary[] = [
   {
     id: "c1",
     name: "Lập trình Java K21",
-    scheduleNote: "Thứ 2 · 4 · 6 — 19:00",
+    description: "Lập trình hướng đối tượng với Java cho sinh viên năm hai.",
+    schedule: {
+      days: [1, 3, 5],
+      startTime: "19:00",
+      endTime: "21:00",
+      room: "Phòng B203",
+      startDate: "2026-08-17",
+      endDate: "2026-12-20",
+    },
     studentCount: 34,
     completionPct: 68,
     avgScore: 7.2,
-    pendingGrading: 4,
     absentCount: 3,
     createdAt: "2026-08-01",
   },
   {
     id: "c2",
     name: "Cấu trúc dữ liệu K22",
-    scheduleNote: "Thứ 3 · 5 — 18:30",
+    description:
+      "Mảng, danh sách liên kết, cây và đồ thị, luyện qua bài tập trên AlgoPrep.",
+    schedule: {
+      days: [2, 4],
+      startTime: "18:30",
+      endTime: "20:30",
+      room: "Phòng A105",
+      startDate: "2026-08-18",
+      endDate: "2026-12-18",
+    },
     studentCount: 29,
     completionPct: 54,
     avgScore: 6.5,
-    pendingGrading: 3,
     absentCount: 5,
     createdAt: "2026-08-10",
   },
   {
     id: "c3",
     name: "Giải thuật nâng cao K20",
-    scheduleNote: "Thứ 7 — 08:00",
+    description: "Quy hoạch động, đồ thị nâng cao và phân tích độ phức tạp.",
+    schedule: {
+      days: [6],
+      startTime: "08:00",
+      endTime: "11:00",
+      room: "Phòng C301",
+      startDate: "2026-08-22",
+      endDate: "2026-12-12",
+      note: "Học bù khi trùng lịch thi",
+    },
     studentCount: 19,
     completionPct: 81,
     avgScore: 8.1,
-    pendingGrading: 2,
     absentCount: 1,
     createdAt: "2026-08-15",
   },
@@ -201,7 +225,36 @@ const students: ClassStudent[] = [
     lastActiveLabel: "1 ngày trước",
     status: "watch",
   },
+  // Already removed from the class: the row stays as history (DEC-2026-1014-keep-learning-history-on-leave),
+  // so the instructor submission list still shows this learner's submissions with "Đã rời lớp".
+  {
+    id: "s13",
+    name: "Lý Văn Tâm",
+    classId: "c1",
+    className: "Lập trình Java K21",
+    avgScore: 6.4,
+    completionPct: 55,
+    streakDays: 0,
+    trend: [6.0, 6.2, 6.4, 6.4],
+    lastActiveLabel: "10 ngày trước",
+    status: "watch",
+    leftAt: "2026-10-05",
+  },
 ];
+
+// Mock contact details derived from the name ("Nguyễn Văn An" -> an.nguyenvan@student.algoprep.edu.vn)
+// so every row has one without hand-writing twelve addresses.
+students.forEach((student, index) => {
+  const parts = student.name
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/đ/gi, "d")
+    .toLowerCase()
+    .split(" ");
+  const given = parts.pop()!;
+  student.email = `${given}.${parts.join("")}@student.algoprep.edu.vn`;
+  student.phone = `09${String(12345670 + index * 1111).padStart(8, "0")}`;
+});
 
 const inviteCodes: Record<string, InviteCode[]> = {
   c1: [
@@ -232,20 +285,34 @@ export function listInstructorClasses(): Promise<ClassSummary[]> {
   );
 }
 
-export function listClassStudents(classId?: string): Promise<ClassStudent[]> {
-  const rows = classId
-    ? students.filter((s) => s.classId === classId)
-    : students;
-  return delay([...rows]);
+/** Learners currently in a class: a removed learner keeps the row but has `leftAt`. */
+function activeStudents(classId?: string): ClassStudent[] {
+  return students.filter(
+    (s) => !s.leftAt && (classId === undefined || s.classId === classId),
+  );
 }
 
+/** With `includeLeft` the learners who left stay in the result (the instructor submission list keeps their history). */
+export function listClassStudents(
+  classId?: string,
+  includeLeft = false,
+): Promise<ClassStudent[]> {
+  if (!includeLeft) return delay(activeStudents(classId));
+  return delay(
+    students.filter((s) => classId === undefined || s.classId === classId),
+  );
+}
+
+/** `includeLeft` lets the instructor result page name a learner who left (the submission history stays). */
 export function getClassStudent(
   studentId: string,
   classId: string,
+  includeLeft = false,
 ): Promise<ClassStudent | null> {
-  return delay(
-    students.find((s) => s.id === studentId && s.classId === classId) ?? null,
-  );
+  const pool = includeLeft
+    ? students.filter((s) => s.classId === classId)
+    : activeStudents(classId);
+  return delay(pool.find((s) => s.id === studentId) ?? null);
 }
 
 export function listInviteCodes(classId: string): Promise<InviteCode[]> {
@@ -266,11 +333,11 @@ export function createClass(form: ClassForm): Promise<ClassSummary> {
   const created: ClassSummary = {
     id: `c${classSeq++}`,
     name: form.name,
-    scheduleNote: form.scheduleNote,
+    description: form.description,
+    schedule: form.schedule,
     studentCount: 0,
     completionPct: 0,
     avgScore: null,
-    pendingGrading: 0,
     absentCount: 0,
     createdAt: new Date().toISOString().slice(0, 10),
   };
@@ -292,7 +359,8 @@ export function updateClass(
   const target = classes.find((c) => c.id === id);
   if (!target) throw new Error("Lớp không tồn tại");
   target.name = form.name;
-  target.scheduleNote = form.scheduleNote;
+  target.description = form.description;
+  target.schedule = form.schedule;
   return delay(target);
 }
 
@@ -302,16 +370,27 @@ export function deleteClass(id: string): Promise<void> {
   return delay(undefined);
 }
 
+/**
+ * "Gỡ khỏi lớp" only marks the learner as left (F1-26, DEC-2026-1014-keep-learning-history-on-leave):
+ * the learning history stays, the learner no longer counts in the class totals.
+ */
 export function removeStudent(studentId: string): Promise<void> {
-  const index = students.findIndex((s) => s.id === studentId);
-  if (index >= 0) students.splice(index, 1);
+  const student = students.find((s) => s.id === studentId && !s.leftAt);
+  if (student) {
+    student.leftAt = new Date().toISOString().slice(0, 10);
+    const klass = classes.find((c) => c.id === student.classId);
+    if (klass) {
+      klass.studentCount = Math.max(0, klass.studentCount - 1);
+      if (student.status === "absent") {
+        klass.absentCount = Math.max(0, klass.absentCount - 1);
+      }
+    }
+  }
   return delay(undefined);
 }
 
 export function listClassAttention(classId?: string): Promise<AttentionItem[]> {
-  const scoped = classId
-    ? students.filter((s) => s.classId === classId)
-    : students;
+  const scoped = activeStudents(classId);
   const order: StudentStatus[] = ["absent", "needs_support", "watch"];
   const items = scoped
     .filter((s) => order.includes(s.status))
@@ -348,4 +427,36 @@ export function classScoreTrend(classId?: string): Promise<ClassScoreTrend> {
     }),
   }));
   return delay({ weekLabels, series });
+}
+
+// ponytail: fixed list, not derived from the other mocks; swap for the identity recent-activity query at graduation.
+const activityFeed: ClassActivity[] = [
+  {
+    id: "a1",
+    text: "Nguyễn Văn An vừa nộp bài Two Sum — Accepted",
+    timeLabel: "12 phút trước",
+    attention: false,
+  },
+  {
+    id: "a2",
+    text: "Trần Thị Bích chưa nộp bài 9 ngày liên tiếp",
+    timeLabel: "1 giờ trước",
+    attention: true,
+  },
+  {
+    id: "a3",
+    text: "Lê Hoàng Cường tham gia lớp Lập trình Java K21",
+    timeLabel: "Hôm qua",
+    attention: false,
+  },
+  {
+    id: "a4",
+    text: "Đỗ Minh Đức cần hỗ trợ bài Course Schedule",
+    timeLabel: "Hôm qua",
+    attention: true,
+  },
+];
+
+export function listClassActivity(): Promise<ClassActivity[]> {
+  return delay(activityFeed);
 }

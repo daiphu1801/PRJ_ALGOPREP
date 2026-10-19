@@ -56,7 +56,11 @@ export type ProblemLimits = {
   timeLimitMs: number;
   memoryLimitMb: number;
   outputLimitKb: number;
-  stackLimitMb: number;
+  /**
+   * BD SHR0202 NO7 (`problems.max_submissions_per_hour`): null means "use the system default".
+   * Replaced the mock-only "Stack (MB)" field, which had no column (UX review B8, owner 2026-10-14).
+   */
+  maxSubmissionsPerHour: number | null;
 };
 
 /**
@@ -79,6 +83,8 @@ export type ProblemDraft = {
   limits: ProblemLimits;
   solutionLanguage: string;
   solution: string;
+  /** BD SHR0202 props NO4 (`problem_tags`), free-form; RD Q7(d) keeps it. */
+  tags: string[];
   examples: WorkedExample[];
   testcases: Testcase[];
   /**
@@ -102,6 +108,11 @@ export type ProblemDraftRecord = {
    * ADMIN-configurable setting (DEC-2026-1001-admin-configurable-settings), default 2.
    */
   aiGeneration: { used: number; limit: number };
+  /**
+   * BD SHR0202 props NO6-7 (`problem_stats`): zero for a problem that was never saved. Average solve
+   * time and hint requests (NO8-9) have no column (BD Q5), so they are not modelled.
+   */
+  stats: { submissionCount: number; acRate: number };
 };
 
 /** Why a generated input was thrown away instead of becoming a draft testcase. */

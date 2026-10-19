@@ -1,5 +1,5 @@
 {
-  "_": "Luong xem dashboard tien do lop cua actor A2. Nguon: US-A2-09 (01-rd/req/user_stories/a2_instructor.md:140-155), 01-rd/req/identity.md (F1-27, F1-28), 03-dd/api/identity.md muc 0.4 (endpoint #26, #29), 02-bd/architecture/identity.md muc 3.1 (read model dung tu domain event SubmissionGraded, KHONG doc thang schema judge).",
+  "_": "Luong xem dashboard tien do lop cua actor A2. Nguon: US-A2-09 (01-rd/req/user_stories/a2_instructor.md:140-155), 01-rd/req/identity.md (F1-27, F1-28), 03-dd/api/identity.md muc 0.4 (endpoint #26, #29), 02-bd/architecture/identity.md muc 3.1 (read model dung tu domain event SubmissionGraded, KHONG doc thang schema judge). Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen.",
   "_suy_giam": "US-A2-11 (a2_instructor.md:185): mot nguon so lieu khong phan hoi thi man van len, phan do bao loi tai cho -- ve thanh nhanh alt vi day la nghiep vu that, khong phai xu ly loi trang tri.",
   "kind": "sequence",
   "title": "Sơ đồ tuần tự chi tiết - Xem tiến độ lớp học (Giảng viên) (1/2)",
@@ -38,28 +38,28 @@
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 1 - Read model được dựng sẵn từ sự kiện, không đọc chéo schema"
+        "phase": "Giai đoạn 1 - Số liệu tiến độ được dựng sẵn từ sự kiện, không đọc chéo schema"
       },
       {
         "from": "RabbitMQ",
         "to": "ClassProgressService",
-        "text": "SubmissionGraded { userId, problemId, verdict, passedCount, totalCount }",
-        "kind": "async"
+        "text": "Có bài nộp vừa chấm xong (sự kiện SubmissionGraded)"
       },
       {
         "from": "ClassProgressService",
         "to": "ClassProgressService",
-        "text": "Kiểm tra event_id đã xử lý chưa, chống xử lý trùng khi redeliver"
+        "text": "Bỏ qua nếu sự kiện này đã xử lý rồi"
       },
       {
         "from": "ClassProgressService",
         "to": "PostgreSQL",
-        "text": "upsert(user_problem_best_score, user_submission_stats)"
+        "text": "Cập nhật điểm tốt nhất, thống kê bài nộp"
       },
       {
         "from": "PostgreSQL",
-        "to": "PostgreSQL",
-        "text": "UPDATE read model của identity (ProgressRepository)"
+        "to": "ClassProgressService",
+        "text": "Đã cập nhật",
+        "kind": "return"
       },
       {
         "phase": "Giai đoạn 2 - Mở màn, đọc danh sách học viên và số liệu tổng hợp (F1-27, F1-28)"
@@ -77,53 +77,33 @@
       {
         "from": "ClassProgressController",
         "to": "ClassProgressController",
-        "text": "Kiểm quyền và kiểm lớp thuộc quyền phụ trách"
+        "text": "Kiểm tra quyền và lớp thuộc quyền phụ trách"
       },
       {
         "from": "ClassProgressController",
         "to": "ClassProgressService",
-        "text": "getClassProgress(classId, instructorId)"
+        "text": "Yêu cầu tiến độ lớp"
       },
       {
         "from": "ClassProgressService",
         "to": "PostgreSQL",
-        "text": "findClassCompletionStats(classId)"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "PostgreSQL",
-        "text": "SELECT class_completion_stats JOIN class_members (ProgressRepository)"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "PostgreSQL",
-        "text": "Tỉ lệ hoàn thành, điểm trung bình quy đổi theo phạm vi lớp (ProgressRepository)"
+        "text": "Đọc tỉ lệ hoàn thành, điểm trung bình lớp"
       },
       {
         "from": "PostgreSQL",
         "to": "ClassProgressService",
-        "text": "ClassCompletionStats",
+        "text": "Số liệu tổng hợp của lớp",
         "kind": "return"
       },
       {
         "from": "ClassProgressService",
         "to": "PostgreSQL",
-        "text": "findStudentsWithActivity(classId)"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "PostgreSQL",
-        "text": "SELECT lần nộp gần nhất của từng học viên trong lớp (ProgressRepository)"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "PostgreSQL",
-        "text": "Mốc hoạt động của từng học viên (ProgressRepository)"
+        "text": "Đọc lần nộp gần nhất của từng học viên"
       },
       {
         "from": "PostgreSQL",
         "to": "ClassProgressService",
-        "text": "List<StudentActivity>",
+        "text": "Mốc hoạt động từng học viên",
         "kind": "return"
       }
     ]

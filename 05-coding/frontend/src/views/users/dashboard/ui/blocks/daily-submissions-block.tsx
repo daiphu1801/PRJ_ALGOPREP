@@ -7,8 +7,8 @@ import { useT } from "@/shared/i18n";
 import { DashboardBlockState, LineChartWithTotal } from "@/shared/ui";
 
 /**
- * 09-layoutBase/Dashboard AlgoPrep.dc.html:130-157 — "Bài nộp theo ngày" with 7/30/90-day tabs and
- * a summary line reading total + per-day average.
+ * 09-layoutBase/Dashboard AlgoPrep.dc.html:130-157 — "Bài nộp theo ngày" with a summary line reading
+ * total + per-day average. Bars: 7 for "7d", 14 for "30d", one per week for "all" (owner, 2026-10-18).
  *
  * The range arrives as a PROP, not local state. It used to be local (REQ-05 said the tabs
  * re-compute this block only), but after `my_progress` merged into this screen there is one
@@ -21,8 +21,10 @@ export function DailySubmissionsBlock({ range }: { range: ProgressRange }) {
 
   const points = query.data ?? [];
   const total = points.reduce((sum, point) => sum + point.count, 0);
-  const average =
-    points.length === 0 ? 0 : Math.round((total / points.length) * 10) / 10;
+  // D6: divide by the real number of days in the range, not by the column count (a column is 2 days
+  // for "30d" and a week for "all").
+  const days = range === "7d" ? 7 : range === "30d" ? 30 : points.length * 7;
+  const average = days === 0 ? 0 : Math.round((total / days) * 10) / 10;
 
   return (
     <DashboardBlockState
@@ -34,6 +36,7 @@ export function DailySubmissionsBlock({ range }: { range: ProgressRange }) {
       emptyMessage={t("daily.empty")}
       errorMessage={t("errorGeneric")}
       retryLabel={t("retry")}
+      headingLevel={2}
       minHeightClassName="min-h-[260px]"
     >
       <div>
@@ -44,6 +47,8 @@ export function DailySubmissionsBlock({ range }: { range: ProgressRange }) {
           }))}
           totalLabel={t("daily.totalLabel", { average })}
           totalValue={String(total)}
+          chartClassName="h-40"
+          ariaLabel={t("daily.chartLabel", { total, average })}
         />
       </div>
     </DashboardBlockState>

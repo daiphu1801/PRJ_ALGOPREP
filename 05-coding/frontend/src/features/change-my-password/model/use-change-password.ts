@@ -2,6 +2,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { changeMyPassword, changePasswordSchema } from "@/entities/user";
 
 /** Outcome of `submit`: the i18n key (profile namespace) of the first error, so the dialog can toast it. */
@@ -14,6 +15,7 @@ export function useChangePassword(hasPassword: boolean, onChanged: () => void) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const queryClient = useQueryClient();
 
   const reset = useCallback(() => {
     setCurrentPassword("");
@@ -46,6 +48,8 @@ export function useChangePassword(hasPassword: boolean, onChanged: () => void) {
         return { ok: false, errorKey: outcome.message };
       }
       reset();
+      // D22: refresh "changed at" / hasPassword on the profile screen.
+      void queryClient.invalidateQueries({ queryKey: ["user", "my-profile"] });
       onChanged();
       return { ok: true };
     } finally {
@@ -58,6 +62,7 @@ export function useChangePassword(hasPassword: boolean, onChanged: () => void) {
     confirmPassword,
     reset,
     onChanged,
+    queryClient,
   ]);
 
   return {

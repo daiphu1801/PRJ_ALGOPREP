@@ -1,5 +1,5 @@
 {
-  "_": "Luong tao lop hoc va phat ma moi cua actor A2, ke ca buoc hoc vien dung ma de tham gia. Nguon: US-A2-07 (01-rd/req/user_stories/a2_instructor.md:102-123), 01-rd/req/identity.md (F1-23, F1-25, F1-26), 03-dd/api/identity.md muc 0.4 (endpoint #20, #23, #25), 02-bd/architecture/identity.md muc 5 (ma moi TTL 7 ngay), 02-bd/database/identity.md:93-94 (nhieu ma hieu luc song song).",
+  "_": "Luong tao lop hoc va phat ma moi cua actor A2, ke ca buoc hoc vien dung ma de tham gia. Nguon: US-A2-07 (01-rd/req/user_stories/a2_instructor.md:102-123), 01-rd/req/identity.md (F1-23, F1-25, F1-26), 03-dd/api/identity.md muc 0.4 (endpoint #20, #23, #25), 02-bd/architecture/identity.md muc 5 (ma moi TTL 7 ngay), 02-bd/database/identity.md:93-94 (nhieu ma hieu luc song song). Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen.",
   "kind": "sequence",
   "title": "Sơ đồ tuần tự chi tiết - Tạo lớp học và phát mã mời (Giảng viên) (2/3)",
   "covers": [
@@ -36,7 +36,7 @@
       {
         "from": "Giảng viên",
         "to": "Giảng viên",
-        "text": "Bấm \"Tạo mã mời\" cho lớp vừa tạo"
+        "text": "Bấm Tạo mã mời cho lớp vừa tạo"
       },
       {
         "from": "Giảng viên",
@@ -46,48 +46,39 @@
       {
         "from": "ClassController",
         "to": "ClassService",
-        "text": "createInviteCode(classId, instructorId)"
+        "text": "Yêu cầu tạo mã mời"
       },
       {
         "from": "ClassService",
         "to": "PostgreSQL",
-        "text": "Kiểm tra instructor_id của lớp khớp người gọi"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "PostgreSQL",
-        "text": "SELECT classes WHERE id = ? AND instructor_id = ? (ClassRepository)"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "PostgreSQL",
-        "text": "Lớp thuộc sở hữu hoặc rỗng (ClassRepository)"
+        "text": "Kiểm tra lớp thuộc giảng viên này"
       },
       {
         "from": "PostgreSQL",
         "to": "ClassService",
-        "text": "Optional<Class>",
+        "text": "Lớp thuộc quyền phụ trách hoặc không",
         "kind": "return"
       },
       {
         "from": "ClassService",
         "to": "ClassService",
-        "text": "Sinh chuỗi mã ngẫu nhiên, đặt expires_at = now() + 7 ngày"
+        "text": "Sinh mã ngẫu nhiên, hạn dùng 7 ngày"
       },
       {
         "from": "ClassService",
         "to": "PostgreSQL",
-        "text": "save(inviteCode) - mã cũ vẫn còn hiệu lực song song"
+        "text": "Lưu mã mới; mã cũ vẫn dùng được"
       },
       {
         "from": "PostgreSQL",
-        "to": "PostgreSQL",
-        "text": "INSERT INTO class_invite_codes (ClassRepository)"
+        "to": "ClassService",
+        "text": "Đã lưu",
+        "kind": "return"
       },
       {
         "from": "ClassService",
         "to": "ClassController",
-        "text": "InviteCodeDto { code, expiresAt }",
+        "text": "Mã mời và hạn dùng",
         "kind": "return"
       },
       {

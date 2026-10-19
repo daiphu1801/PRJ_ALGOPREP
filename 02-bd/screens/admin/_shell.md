@@ -1,12 +1,12 @@
 # BD — Khung điều hướng dùng chung khu Admin (`_shell`)
 
-> Không phải một màn trong `01-rd/screens/` — đây là **khung bao** mà cả 11 đích nav của khu Admin dùng
+> Không phải một màn trong `01-rd/screens/` — đây là **khung bao** mà cả 12 đích nav của khu Admin dùng (11 đến 2026-10-10, thêm `ADM0404` Sự kiện hạ tầng ngày 2026-10-10, `DEC-2026-1010-admin-operations-regroup`)
 > chung. Viết tách ra vì mỗi BD màn đang phải mô tả lại sidebar/toolbar cho "tự đủ", dẫn tới 8 bản mô tả
 > gần giống nhau và sẽ lệch nhau khi khung đổi.
 >
 > Yêu cầu viết file này đến từ `07-review/bd_screens_admin_open_questions_260913.md` mục 4, dòng
 > `admin_queue_monitor`: "Viết BD khung điều hướng dùng chung (`02-bd/screens/admin/_shell.md`) khi bắt
-> đầu màn admin thứ hai". Viết 2026-09-17, sau khi cả 11 màn đã dựng — muộn hơn mốc đó, ghi nhận đúng
+> đầu màn admin thứ hai". Viết 2026-09-17, sau khi cả 11 màn lúc đó đã dựng — muộn hơn mốc đó, ghi nhận đúng
 > như vậy thay vì im lặng.
 >
 > Bằng chứng layout: `09-layoutBase/Admin - Tổng quan.dc.html` và các file `Admin - *.dc.html` khác,
@@ -19,8 +19,8 @@ Khung này gồm bốn phần, áp cho **mọi** route `/admin/*` trừ `/admin/
 
 | Phần | File hiện thực | Vai trò |
 | :--- | :--- | :--- |
-| Sidebar | `widgets/app-shell/ui/admin-sidebar.tsx` | Điều hướng 11 đích + thu gọn + chuyển theme/ngôn ngữ |
-| Toolbar | `widgets/app-shell/ui/admin-toolbar.tsx` | Hàng đầu trong `<main>`: icon trang trí + khối danh tính |
+| Sidebar | `widgets/app-shell/ui/admin-sidebar.tsx` | Điều hướng 12 đích + thu gọn + chuyển theme/ngôn ngữ |
+| Toolbar | `widgets/app-shell/ui/admin-toolbar.tsx` + `admin-user-menu.tsx` | Hàng đầu trong `<main>`: icon trang trí + khối danh tính mở menu pop-up (mục 3) |
 | Nền và scope màu | `widgets/app-shell/ui/app-shell.tsx` + `shared/ui/layout/liquid-glass-backdrop.tsx` + `app/globals.css` | Nền liquid-glass, scope `.admin-shell` ghi đè token màu |
 
 `/admin/login` **không** dùng khung này — nó là màn đứng riêng theo
@@ -36,11 +36,11 @@ Chiều rộng hai trạng thái: **224px** mở rộng, **72px** thu gọn (rai
 | Khối | Nội dung |
 | :--- | :--- |
 | Thương hiệu | Ô logo `A` + chữ "AlgoPrep" (ẩn khi thu gọn) |
-| Nút thu gọn | Ghi trạng thái vào `localStorage` khoá `algoprep-admin-collapsed` |
+| Nút thu gọn | Ghi trạng thái vào `localStorage` khoá `algoprep-admin-collapsed` và đọc lại khi mở trang (prototype chỉ ghi mà không đọc tới 2026-10-14, sửa theo báo cáo `06-plan/reports/261014-1054-admin-ux-review/` F7) |
 | Mục đơn | Tổng quan (`/admin/overview`) |
-| 4 nhóm gập | Nội dung · Vận hành · AI · Hệ thống — mỗi nhóm 2-3 đích |
-| Nhóm KHÁC | Cài đặt · Đăng nhập & Đăng ký · Trang cá nhân |
-| Chân sidebar | `ThemeLangSwitcher` (chuyển sáng/tối và vi/en) |
+| 4 nhóm gập | Nội dung · Vận hành · AI · Hệ thống — mỗi nhóm 2-3 đích; nhóm Vận hành có 3 đích: Hàng đợi chấm, Sự kiện hạ tầng, Ngôn ngữ và giới hạn |
+| ~~Nhóm KHÁC~~ | **Đã chuyển** sang menu pop-up của khối danh tính ở toolbar (2026-10-10, mục 3.1). Sidebar không còn nhóm này |
+| Chân sidebar | `ThemeLangSwitcher` (chuyển sáng/tối và vi/en) — **giữ ở sidebar** theo yêu cầu chủ dự án 2026-10-10 (đã thử chuyển sang menu pop-up rồi đưa về) |
 
 ### 2.2. Hai hành vi đã chốt trong lúc dựng, khác prototype
 
@@ -55,13 +55,13 @@ Chiều rộng hai trạng thái: **224px** mở rộng, **72px** thu gọn (rai
 Rail 72px với `p-3` hai bên chỉ còn **48px** nội dung. Mọi thứ đặt trong rail phải nằm gọn trong 48px
 đó — `ThemeLangSwitcher` từng vi phạm (hai vòng tròn 24px + gap 4px = 52px) và bị phát hiện bằng đo
 `boundingBox()` chứ không phải nhìn mắt. Có e2e giữ ràng buộc này:
-`05-coding/frontend/e2e/admin-sidebar-collapsed.spec.ts`.
+`05-coding/frontend/e2e/admin-sidebar-collapsed.spec.ts`. **Sửa 2026-10-14 (review UX F6, chưa duyệt hình):** ở rail thu gọn, hai vòng VI/EN xếp **dọc** (VI trên EN), mỗi vòng 24px (`h-6 w-6`); trước đó là hai vòng 20px đặt cạnh nhau và chạm nhau, dưới mức 24px tối thiểu của vùng bấm [Nguồn: 05-coding/frontend/src/shared/ui/layout/theme-lang-switcher.tsx:141-149,202]. Mục 10 ghi thêm phần đầu cột sắp xếp của bảng.
 
 Dưới 1024px (`lg`) sidebar **luôn** ở dạng rail bất kể tuỳ chọn đã lưu.
 
 ### 2.4. Sidebar ghim cố định (chốt 2026-10-01)
 
-Sidebar dùng `sticky top-0 h-screen self-start` và tự cuộn dọc bên trong (`overflow-y-auto`), giống sidebar khu
+Sidebar dùng `sticky top-0 h-screen self-start` và **chỉ danh sách nav tự cuộn** (`min-h-0 overflow-y-auto`, thanh cuộn mỏng `.scrollbar-glass`); thương hiệu, nút thu gọn và `ThemeLangSwitcher` đứng yên (sửa 2026-10-10: trước đó cả `<nav>` cuộn lồng với danh sách bên trong nên hiện thanh cuộn hệ thống dày). Giống sidebar khu
 Giảng viên: khi một bảng dài kéo trang cuộn xuống, thanh điều hướng vẫn đứng yên theo khung nhìn thay vì trôi đi
 cùng nội dung [SoT: 05-coding/frontend/src/widgets/app-shell/ui/admin-sidebar.tsx:82-84]. Trước đó sidebar chỉ là
 một phần tử flex cao bằng nội dung nên bị cuộn mất.
@@ -73,6 +73,10 @@ spacer co giãn, 3 icon trang trí (`layout-grid`/`moon`/`shield-check`), và kh
 
 Ba icon **không có hành vi** và được đánh dấu `aria-hidden` + `disabled` để không thành điểm dừng bàn
 phím chết. BD `admin_overview` mục 3 đã chốt chúng là trang trí, không đưa vào component inventory.
+
+### 3.1. Menu pop-up của khối danh tính (thêm 2026-10-10, chưa duyệt)
+
+Khối danh tính (avatar + tên + vai trò + mũi tên) là một nút mở menu `role="menu"` chứa ba liên kết lấy từ `ADMIN_NAV_MISC`: Cài đặt, Đăng nhập & Đăng ký, Trang cá nhân (cũ là nhóm KHÁC ở sidebar). Menu đóng khi bấm ra ngoài, nhấn Esc hoặc chọn một mục. Mục đích: sidebar ngắn hơn. Hiện thực: `widgets/app-shell/ui/admin-user-menu.tsx`. Menu tự viết trong widget vì `shared/ui` chưa có popover; dựng nếu màn thứ hai cần. Liên kết Cài đặt vẫn trỏ `/admin/language-config`, lệch đã được ADM0101 ghi nhận.
 
 Khối danh tính hiện là placeholder: chưa có phiên đăng nhập thật
 (`app/providers/auth-provider.tsx` chưa viết), nên nó hiển thị nhãn chung chứ không bịa tên người.
@@ -137,6 +141,17 @@ dựng, ghi `06-plan/PROTOTYPE_DEBT.md` mục 16.2.
 Scope `.admin-shell` ghi đè các token ngữ nghĩa (`--color-background`, `--color-surface`, `--color-text`,
 `--color-border`, `--color-primary`...) bằng giá trị riêng của khu Admin. Nhờ vậy mọi component đã đọc
 `--color-*` tự động đổi sang bảng màu Admin mà không sửa dòng nào trong component.
+
+### 5.1. Chỉnh màu 2026-10-10 (chưa duyệt)
+
+| Phạm vi | Thay đổi | Lý do |
+| :--- | :--- | :--- |
+| Nền, cả hai theme | Sáng `#f4f3ef` (xám đá ấm); tối `#0c0e10`; ba vệt `--color-blob-*` ghi đè riêng trong `.admin-shell` thành cát / xanh xô / xám xanh (tối: nâu xám / xám lục / xám chàm), không đụng blob của khu khác | Nền cyan-teal bão hoà bị chủ dự án đánh giá "hơi AI" |
+| Tối: viền | `--color-border` từ trắng 6% lên 15% | Viền quá mờ, chỉ thấy chữ mà không thấy bố cục |
+| Tối: panel | `--admin-glass` / `--admin-glass-strong` thành tint trắng 5% / 7% (sáng hơn nền trang), thêm viền kính 1px trắng 10% và vệt sáng mép trên trên `.glass-card` | Panel cũ tối hơn nền nên chìm |
+| Tối: màu nhấn | `--color-admin-cyan` `#22d3ee` thành `#5fb4c4`, `--color-admin-teal` `#14b8a6` thành `#4fa595`, `--color-primary` thành `#6cc3d1`, gradient mục đang chọn và logo giảm độ bão hoà | Cyan quá chói trên panel tối |
+
+Các giá trị này không chép từ `.dc.html` [SoT: Suy luận từ phản hồi của chủ dự án]; theo `CLAUDE.md` và memory về prototype, bản dựng đã cải tiến là nguồn sự thật về hình. Chế độ sáng chưa tinh chỉnh độ tương phản như chế độ tối. Nguồn: `05-coding/frontend/src/app/globals.css` (khối `.admin-shell` và `.dark .admin-shell`).
 
 Nguyên tắc khi thêm token: giá trị phải chép từ `.dc.html` kèm số dòng trong comment, hoặc đánh dấu
 `[SoT: Suy luận]` ngay tại chỗ. Chi tiết danh sách token: `05-coding/frontend/src/app/globals.css`.
@@ -209,8 +224,20 @@ render dạng chữ tĩnh, không phải `<a>` sống, không `tabindex`.
 trong khối `max-width: 1320px` — đúng vị trí "cuối `<main>`" ở mục 9.1, không phải một `<footer>` cố định
 đáy viewport.
 
+Cập nhật 2026-10-14 (chưa duyệt hình): file hiện thực nay là `widgets/app-shell/ui/area-footer.tsx` (dùng chung khu Admin và Giảng viên), `admin-footer.tsx` không còn. Theo review UX F10, mỗi liên kết giữ trên một dòng (`whitespace-nowrap`) và cả nhóm liên kết xuống dòng như một khối (`flex flex-wrap gap-x-4 gap-y-1`), không còn cảnh một liên kết bị bẻ đôi giữa chừng [Nguồn: 05-coding/frontend/src/widgets/app-shell/ui/area-footer.tsx:49-55].
+
 ### 9.5 Cần đồng bộ ngược
 
 Hai file sau ghi "chân trang: không dựng" từ trước quyết định này, cần sửa theo quyết định 9 này:
 `02-bd/screens/admin/ADM0101_overview.md` mục 4, `02-bd/screens/admin/ADM0202_permission_matrix.md`
 đoạn ngay trước mục 4.5.
+
+## 10. Lịch sử sửa đổi
+
+File này chưa có bảng phiên bản trước 2026-10-14; bảng mở từ lần sửa này và đặt cuối file để không làm lệch các số dòng đã bị BD khác trích (xem mục 9). Phiên bản tính từ V1.0 cho nội dung đến 2026-10-13.
+
+Bảng dưới liệt kê các lần sửa từ 2026-10-14.
+
+| Phiên bản | Ngày | Nội dung |
+| :--- | :--- | :--- |
+| V1.1 | 2026-10-14 | Sửa lỗi Minor review UX khu Admin F6, F10 (`06-plan/reports/261014-1054-admin-ux-review/`), **chưa duyệt hình**. F6: vòng VI/EN ở rail thu gọn xếp dọc 24px (mục 2.3); nút đầu cột sắp xếp của `DataTable` có vùng bấm trong suốt `::before` cao 24px, hàng tiêu đề không cao thêm, áp cho **mọi** bảng có cột sắp xếp [Nguồn: 05-coding/frontend/src/shared/ui/data/data-table.tsx:194-196]. F10: liên kết chân trang không bị bẻ dòng (mục 9.4) |

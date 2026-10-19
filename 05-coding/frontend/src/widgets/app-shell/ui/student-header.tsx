@@ -1,13 +1,14 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 "use client";
 
-import { useState } from "react";
+import { useRef, useState, type KeyboardEvent } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ThemeLangSwitcher } from "@/shared/ui";
+import { BrandMark, ThemeLangSwitcher } from "@/shared/ui";
 import { useT } from "@/shared/i18n";
 import { cn } from "@/shared/lib";
 import { Menu, User, X } from "lucide-react";
+import { JudgeEngineTag } from "./judge-engine-tag";
 import { STUDENT_MENU_ITEMS, STUDENT_NAV_ITEMS } from "../model/student-nav";
 
 /**
@@ -32,13 +33,31 @@ export function StudentHeader() {
   // behind one button while the brand and the user block stay put.
   const [navOpen, setNavOpen] = useState(false);
 
+  const navButtonRef = useRef<HTMLButtonElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Escape closes whichever popup is open and hands focus back to the button that opened it.
+  function onKeyDown(event: KeyboardEvent<HTMLElement>) {
+    if (event.key !== "Escape") return;
+    if (menuOpen) {
+      setMenuOpen(false);
+      menuButtonRef.current?.focus();
+    } else if (navOpen) {
+      setNavOpen(false);
+      navButtonRef.current?.focus();
+    }
+  }
+
   const isActive = (href: string) =>
     pathname === href || pathname.startsWith(`${href}/`);
 
   return (
-    <header className="sticky top-0 z-30 bg-[linear-gradient(var(--color-background)_82%,transparent)] px-5 pb-3 pt-3.5">
-      <div className="glass-surface relative mx-auto flex h-[58px] max-w-[1400px] items-center gap-4 rounded-2xl border border-[var(--color-border)] px-4 shadow-sm lg:gap-7 lg:px-5">
+    <header
+      onKeyDown={onKeyDown}
+      className="sticky top-0 z-30 bg-[linear-gradient(var(--color-background)_82%,transparent)] px-5 pb-3 pt-3.5">
+      <div className="student-header-bar glass-surface relative mx-auto flex h-[58px] max-w-[1400px] items-center gap-4 rounded-2xl border border-[var(--color-border)] px-4 shadow-sm lg:gap-7 lg:px-5">
         <button
+          ref={navButtonRef}
           type="button"
           onClick={() => setNavOpen((open) => !open)}
           aria-expanded={navOpen}
@@ -52,12 +71,9 @@ export function StudentHeader() {
           href="/dashboard"
           className="flex shrink-0 items-center gap-2.5 text-[var(--color-text)]"
         >
+          <BrandMark size={32} />
           <span className="text-[19px] font-bold tracking-tight">AlgoPrep</span>
-          {/* dc.html:53 — the judge engine the project actually runs on
-              (DEC-2026-0823-go-judge-default-engine), rendered as a small outlined tag. */}
-          <span className="rounded border border-[var(--color-admin-warn)] px-1.5 pb-px pt-0.5 font-mono text-[10px] font-semibold tracking-[0.14em] text-[var(--color-admin-warn)]">
-            GO-JUDGE
-          </span>
+          <JudgeEngineTag />
         </Link>
 
         <nav
@@ -90,10 +106,10 @@ export function StudentHeader() {
 
           <div className="relative">
             <button
+              ref={menuButtonRef}
               type="button"
               onClick={() => setMenuOpen((open) => !open)}
               aria-expanded={menuOpen}
-              aria-haspopup="menu"
               aria-label={t("accountMenu")}
               className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--color-border)] bg-[var(--color-surface-hover)] text-[11.5px] font-semibold text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
             >
@@ -104,15 +120,18 @@ export function StudentHeader() {
 
             {menuOpen && (
               <>
-                {/* Click-anywhere-to-close scrim, 1:1 with dc.html:78. */}
+                {/* Click-anywhere-to-close scrim, 1:1 with dc.html:78. Out of the tab order: Escape and the
+                    opener button already close the menu for keyboard users. */}
                 <button
                   type="button"
+                  tabIndex={-1}
                   aria-label={t("closeMenu")}
                   onClick={() => setMenuOpen(false)}
                   className="fixed inset-0 z-40 cursor-default"
                 />
+                {/* Plain links, not role="menu": arrow-key navigation is not implemented, so the menu role
+                    would promise more than the keyboard gets. */}
                 <div
-                  role="menu"
                   className="absolute right-0 top-10 z-50 w-[258px] rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-2.5 shadow-lg"
                 >
                   {STUDENT_MENU_ITEMS.map((item, index) => (
@@ -121,7 +140,6 @@ export function StudentHeader() {
                         <div className="-mx-2.5 my-2 h-px bg-[var(--color-border)]" />
                       )}
                       <Link
-                        role="menuitem"
                         href={item.href}
                         onClick={() => setMenuOpen(false)}
                         className={cn(
@@ -154,7 +172,7 @@ export function StudentHeader() {
             aria-label={t("area.student")}
             // Opaque, not `glass-surface`: a translucent panel over a dense dashboard leaves the
             // page text legible straight through the menu.
-            className="absolute left-0 right-0 top-[64px] z-40 flex flex-col rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-2 shadow-lg lg:hidden"
+            className="absolute left-0 right-0 top-full z-40 mt-2 flex flex-col rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-2 shadow-lg lg:hidden"
           >
             {STUDENT_NAV_ITEMS.map((item) => (
               <Link

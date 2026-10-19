@@ -48,6 +48,9 @@ export function Toggle({
       onClick={() => onCheckedChange(!checked)}
       className={cn(
         "relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors",
+        // Drawn track stays 36x20; a transparent ::before grows the hit area to 44x28 so the target
+        // clears the 24px minimum without moving any row (admin UX review F5, owner 2026-10-14).
+        "before:absolute before:-inset-x-1 before:-inset-y-1 before:content-['']",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]",
         checked ? "bg-[var(--color-admin-teal)]" : "bg-[var(--color-track)]",
         locked ? "cursor-not-allowed opacity-50" : "cursor-pointer",

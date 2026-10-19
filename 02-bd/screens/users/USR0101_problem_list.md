@@ -42,11 +42,11 @@
 | Tên vật lý (slug) | `problem_list` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`) |
-| Phiên bản | V0.4 |
+| Phiên bản | V0.9 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/21 |
-| Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/10/03 |
+| Người cập nhật | Claude |
+| Ngày cập nhật | 2026/10/19 |
 
 ---
 
@@ -58,6 +58,11 @@
 | V0.2 | Sheet 5, 7 | Đã chốt 2026-10-01 (owner uỷ quyền), xem `DEC-2026-1001-admin-configurable-settings`: danh mục chủ đề bài toán là dữ liệu do ADMIN quản lý (không còn seed cố định); thanh chủ đề và chip lọc đọc từ `ListTopicsWithProgress` trên dữ liệu `topics`, số chủ đề không cố định, chủ đề mới chưa có bài hiển thị tiến độ `0 / 0`. Không đổi tên endpoint | 2026/10/01 | AI |
 | V0.3 | Sheet 8, 9 | Đổi cụm báo lỗi sau thao tác (tìm kiếm, đổi trang, bài ngẫu nhiên) và `[Tiêu điểm]` sang toast; giữ nguyên vùng lỗi tải bảng và các khối ẩn êm. Theo `DEC-2026-1003-toast-feedback-channel`. | 2026/10/03 | AI |
 | V0.4 | Sheet 4, 5, 6, 7, 8, Câu hỏi mở | Đồng bộ `DEC-2026-1001-admin-configurable-settings` mục (7): độ khó bài tập là danh mục do ADMIN quản lý (bảng riêng `problem_levels`, không dùng chung với độ khó câu hỏi phỏng vấn), không còn enum cố định `EASY`/`MEDIUM`/`HARD`. DTO `difficulty` thành `levelCode`/`levelDisplayName` đọc qua `problems.level_id`; cột "Độ khó" hiển thị `display_name` đọc từ dữ liệu; tab độ khó là "Tất cả" cộng một tab mỗi mức, theo `sort_order`; sắp xếp theo độ khó theo `sort_order`, không theo chữ. Dải chỉ số tiến độ theo độ khó thành một ô mỗi mức. Màn gọi thêm `ListProblemLevels` (chỉ đọc), thêm `problem_levels` vào bảng liên quan và Truy cập bảng. Màn chỉ hiển thị nhãn, lọc và sắp xếp; không có logic nào gắn với độ khó | 2026/10/03 | AI |
+| V0.5 | Sheet 3, 4, 5, 6, 7, 8, Câu hỏi mở | Owner bỏ hẳn dải chỉ số tiến độ (4 ô "Đã giải toàn bộ" và một ô mỗi mức độ khó) khỏi màn, ngày 2026-10-18, mở rộng quy tắc owner 2026-10-13 "không dải KPI trên màn danh sách"; tiêu chí ponytail bậc 1/3 (owner). Hai nút "Bài đã lưu" và "Bài ngẫu nhiên" chuyển sang cụm hành động của tiêu đề trang (`PageHeader`). Bỏ: Sheet 5 Khu vực A cũ (item `solvedTotal`, `solvedByLevel`), `ProblemCatalogSummaryDto` (Sheet 7 NO 10-11), endpoint `GetProblemCatalogSummary`, widget `widgets/problem-catalog-summary`; Khu vực A còn 2 nút, đánh số lại NO 1-2; Sheet 7.1, 7.3 đánh số lại. Đóng Q3 phần `GetProblemCatalogSummary` (rút). Làm mới các trích dẫn `problem-list-view.tsx`. Việc còn treo: DD cho `GetProblemCatalogSummary` — grep `03-dd/` không có chỗ nào nhắc tới, chưa cần sửa; RD và `PROTOTYPE_DEBT.md` xử lý riêng | 2026/10/18 | AI |
+| V0.6 | Sheet 3, 4, 5, 6, 7, 8, 9, Câu hỏi mở | Ghi các quyết định owner ngày 2026-10-18 (`DEC-2026-1018-usr-open-questions-phase1-scope`), owner lấy đề xuất mặc định: đóng Q1 (bắt buộc đăng nhập, không có trạng thái khách), Q4 ("Bài đang làm dở" = bài nộp gần nhất chưa `ACCEPTED` đọc từ `judge.submissions`, không có bảng nháp; bản nháp mã nguồn lưu ở trình duyệt, thuộc `USR0102` Q4), Q5 (bỏ hàng chip chủ đề, chỉ giữ thanh chủ đề; đã bỏ item `problemList.filter.topicChips`, Khu vực C đánh số lại NO 1-4), Q6 (hoãn lọc theo thẻ), Q7 (không có nút lưu trên dòng bảng), Q8 (nhóm theo lớp, tối đa 3 lớp kèm liên kết xem tất cả; thêm item `problemList.assignment.linkViewAll` và EVT-15), Q9 (bài giao không có hạn nộp, dòng phụ chỉ hiện ngày giao). Làm mới trích dẫn `problem-list-view.tsx` và thêm ghi chú nợ prototype ở mục 4.4. Q2 và Q3 giữ mở (chưa thuộc đợt này). Không bỏ endpoint hay DTO nào | 2026/10/18 | Claude |
+| V0.7 | Sheet 3, 4, 5, 6, 7, 8, Câu hỏi mở | Ghi các quyết định owner ngày 2026-10-18 (`DEC-2026-1018-usr-open-questions-phase2-5`, owner lấy đề xuất mặc định): đóng Q2 (`identity` cung cấp `ListMyProblemSolveStates`, cache Redis 60 giây theo người dùng; `problem-bank` nhận qua cổng ra, lọc theo trạng thái rồi mới phân trang; tiêu chí ponytail bậc 4) và Q3 (`ListTopicsWithProgress` đặt ở `problem-bank`, phần `GetProblemCatalogSummary` vẫn rút; bậc 4). Khối "Bài tập lớp" tối đa 3 lớp gần nhất theo `assigned_at` và **không có liên kết "Xem tất cả"** (owner bác mọi liên kết vì không có màn đích): bỏ chuyển màn "Xem tất cả bài tập lớp" và nhánh nét đứt ở Sheet 3, bỏ item `problemList.assignment.linkViewAll` (Sheet 5, 6), bỏ EVT-15 (Sheet 8), bỏ cờ `hasMoreClasses` (Sheet 7); đóng nốt nợ Q8. Bản dựng đã cắt 3 lớp bằng hằng `MAX_ASSIGNMENT_CLASSES` (`problem-list-view.tsx:56,117-121`). Làm mới trích dẫn `problem-list-view.tsx` (mã dịch xuống 9 dòng). Không có khoá i18n `problemList.assignment.linkViewAll` trong `messages/*.json` nên không có gì để gỡ | 2026/10/18 | Claude |
+| V0.8 | Sheet 4, 5, Câu hỏi mở | Rà soát bản dựng 2026-10-19: owner chốt **giữ** chọn số dòng mỗi trang 12/24/48 (mặc định 12, nhớ ở trình duyệt) và **giữ** hai `FilterMenu` thay cho hai hàng tab; sửa BD cho khớp (mục 4.4, Sheet 5 NO 1, Sheet 8). Bản dựng sửa theo BD: nhãn mô hình chỉ vẽ cho bài `Chỉ Standard I/O` (RD REQ-05 sửa theo, bỏ nhãn "Cả hai"), bấm lại chủ đề đang chọn thì về "Tất cả" (EVT-5), trạng thái rỗng có nút "Xóa bộ lọc" (EVT-6), ô tìm kiếm cắt 100 ký tự, khối "Bài đang làm dở" cắt 3 mục, giao diện dưới `lg` xếp một cột, nhãn kết quả và dòng phụ bài giao đi qua i18n (DTO mock trả enum, số testcase, ngày giao). Làm mới trích dẫn `problem-list-view.tsx`. Không đổi endpoint hay DTO | 2026/10/19 | Claude |
+| V0.9 | Sheet 9 (NO 5) | Owner chốt 2026/10/19 (`DEC-2026-1019-usr-fe-audit-fixes`, chốt nốt câu hỏi mở còn lại sau rà prototype). Chỉ tài liệu, không đổi code, chưa duyệt hình. Bỏ yêu cầu toast khi ô tìm kiếm chạm 100 ký tự: `maxLength` của trình duyệt dừng việc nhập là đủ (owner 2026/10/19, ponytail bậc 3); Sheet 9 dòng độ dài từ khoá đổi `[Tiêu điểm]` còn viền ô, không còn câu thông báo. | 2026/10/19 | Claude |
 
 ---
 
@@ -80,8 +85,8 @@
 
 [Giá trị trả về] Không có.
 
-[Khi thành công] Hiển thị dải chỉ số, thanh chủ đề, bộ lọc, bảng danh sách bài toán đã xuất bản và hai
-khối phụ bên phải.
+[Khi thành công] Hiển thị tiêu đề trang kèm hai nút hành động, thanh chủ đề, bộ lọc, bảng danh sách bài
+toán đã xuất bản và hai khối phụ bên phải. Không có dải chỉ số (đã bỏ 2026-10-18).
 
 [Khi huỷ] Không có.
 
@@ -102,7 +107,8 @@ khối phụ bên phải.
 
 #### Danh sách bài tập → Chi tiết bài tập (bài ngẫu nhiên)
 
-[Điều kiện mở] Bấm nút "Bài ngẫu nhiên" [Nguồn: 09-layoutBase/Ngân hàng bài toán.dc.html:114].
+[Điều kiện mở] Bấm nút "Bài ngẫu nhiên" trong cụm hành động của tiêu đề trang
+[Nguồn: 05-coding/frontend/src/views/users/problem-list/ui/problem-list-view.tsx:254-257; 09-layoutBase/Ngân hàng bài toán.dc.html:114].
 
 [Chế độ mở] Chế độ giải bài.
 
@@ -131,8 +137,8 @@ khối phụ bên phải.
 
 #### Danh sách bài tập → Bài đã lưu
 
-[Điều kiện mở] Bấm nút "Bài đã lưu" trên dải chỉ số
-[Nguồn: 09-layoutBase/Ngân hàng bài toán.dc.html:113].
+[Điều kiện mở] Bấm nút "Bài đã lưu" trong cụm hành động của tiêu đề trang (không còn dải chỉ số)
+[Nguồn: 05-coding/frontend/src/views/users/problem-list/ui/problem-list-view.tsx:246-253; 09-layoutBase/Ngân hàng bài toán.dc.html:113].
 
 [Chế độ mở] Không có.
 
@@ -161,8 +167,8 @@ flowchart LR
     class main screen
 ```
 
-[Nguồn: 09-layoutBase/Ngân hàng bài toán.dc.html:113,114,168,184-186,211,226-234;
-02-bd/screens/users/_shell.md:54]
+[Nguồn: 05-coding/frontend/src/views/users/problem-list/ui/problem-list-view.tsx:246-257;
+09-layoutBase/Ngân hàng bài toán.dc.html:113,114,168,184-186,211,226-234; 02-bd/screens/users/_shell.md:54]
 
 ---
 
@@ -176,9 +182,9 @@ và trạng thái đã giải, đồng thời thấy ngay tiến độ của b�
 
 [Luồng nghiệp vụ chính]
 
-1. **Hiển thị ban đầu**: vào màn, hệ thống đọc tham số lọc trên URL rồi tải song song sáu nhóm dữ liệu —
-   danh sách bài toán đã lọc, dải chỉ số tiến độ, tiến độ theo chủ đề, bài giao theo lớp, bài đang làm dở,
-   tập bài đã có Solution Review. Trong lúc chờ, mỗi khối hiển thị khung chờ đúng số dòng dự kiến.
+1. **Hiển thị ban đầu**: vào màn, hệ thống đọc tham số lọc trên URL rồi tải song song năm nhóm dữ liệu —
+   danh sách bài toán đã lọc, tiến độ theo chủ đề, bài giao theo lớp, bài đang làm dở, tập bài đã có
+   Solution Review (cộng danh mục độ khó cho tab lọc). Màn không có dải chỉ số tiến độ tổng (owner bỏ 2026-10-18). Trong lúc chờ, mỗi khối hiển thị khung chờ đúng số dòng dự kiến.
 2. **Lọc và tìm kiếm**: người học gõ từ khoá, chọn tab trạng thái, chọn tab độ khó (một tab mỗi mức do ADMIN quản lý) hoặc chọn chủ đề. Mỗi
    lần đổi bộ lọc, trang được đặt về 1 và bảng được tải lại từ máy chủ; trạng thái lọc ghi vào URL.
 3. **Sắp xếp**: bấm tiêu đề cột "Độ khó" hoặc "AC rate" để đổi chiều sắp xếp.
@@ -187,8 +193,10 @@ và trạng thái đã giải, đồng thời thấy ngay tiến độ của b�
 5. **Vào giải**: bấm một dòng, hoặc bấm "Bài ngẫu nhiên", hoặc bấm một mục trong hai khối phụ — mọi đường
    đều dẫn sang `problem_detail`.
 
-[Người dùng] Người học đã đăng nhập (`STUDENT`). Người chưa đăng nhập có xem được màn này hay không còn
-mở, xem Câu hỏi mở Q1.
+[Người dùng] Người học đã đăng nhập (`STUDENT`). **Bắt buộc đăng nhập, không có trạng thái khách**: người
+chưa đăng nhập bị chuyển về màn `auth` (đã chốt 2026-10-18, Câu hỏi mở Q1; tiêu chí ponytail bậc 3 — không
+người dùng demo nào xem danh sách với tư cách khách; cùng câu với `02-bd/screens/users/_shell.md` mục 6 Q4,
+file đó do bên khác cập nhật).
 
 [Tệp liên quan] Không có. Màn này không xuất hay nhập tệp — xuất CSV (F2-17) chỉ có ở `problem_management`
 [Nguồn: 02-bd/screens/shared/SHR0201_problem_management.md:560].
@@ -197,10 +205,13 @@ mở, xem Câu hỏi mở Q1.
 - Chỉ hiển thị bài toán `status = PUBLISHED` **và** `deleted = false`
   (`DEC-2026-0830-problem-lifecycle-two-states`) [Nguồn: 02-bd/database/problem-bank.md:18-19].
 - Không có thao tác ghi nào lên `problems` — màn chỉ đọc. Độ khó là danh mục do ADMIN quản lý (`problem_levels`), màn chỉ hiển thị nhãn, lọc và sắp xếp theo thứ tự danh mục; độ khó không gắn logic nào [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`].
-- Không có nút đánh dấu lưu (bookmark) ngay trên dòng bảng: prototype không có control đó, và F2-13 đã có
-  màn riêng `saved_problems`. Xem Câu hỏi mở Q7.
+- **Không có** nút đánh dấu lưu (bookmark) trên dòng bảng: F2-13 đã có màn riêng `saved_problems`, người học
+  lưu bài ở `problem_detail`. Đã chốt 2026-10-18, Câu hỏi mở Q7 (tiêu chí ponytail bậc 3).
 - Không có bộ lọc theo **thẻ** (`tags`, F2-02 amendment) dù F2-11 có nhắc
-  [Nguồn: 01-rd/req/problem-bank.md:42-43] — prototype không có control nào cho thẻ. Xem Câu hỏi mở Q6.
+  [Nguồn: 01-rd/req/problem-bank.md:42-43]: **hoãn sang đợt sau**, đã chốt 2026-10-18, Câu hỏi mở Q6 (tiêu
+  chí ponytail bậc 3).
+- Không có hàng chip chủ đề: chủ đề chỉ lọc bằng thanh chủ đề (Câu hỏi mở Q5, đã chốt 2026-10-18).
+- Bài giao theo lớp **không có hạn nộp** (Câu hỏi mở Q9, đã chốt 2026-10-18).
 - Không hiển thị điểm theo tỉ lệ testcase (F4-13) trên từng dòng. Tỉ lệ chỉ dùng **bên trong** để suy ra
   trạng thái "Đã giải / Đang làm" (`DEC-2026-0831-partial-score-testcase-ratio`).
 
@@ -208,17 +219,17 @@ mở, xem Câu hỏi mở Q1.
 - Xem: được, với người học đã đăng nhập.
 - Thêm / Sửa / Xoá: không. Màn chỉ đọc.
 
-[Số bản ghi tối đa] Bảng danh sách: 12 dòng mỗi trang, phân trang phía máy chủ
-[Nguồn: 09-layoutBase/Ngân hàng bài toán.dc.html:561]. Dải chỉ số: đúng 4 mục. Thanh chủ đề: theo số dòng
+[Số bản ghi tối đa] Bảng danh sách: mặc định 12 dòng mỗi trang, người học chọn 12/24/48 (nhớ ở trình duyệt, owner chốt 2026-10-19), phân trang phía máy chủ
+[Nguồn: 09-layoutBase/Ngân hàng bài toán.dc.html:561]. Thanh chủ đề: theo số dòng
 thật của bảng `topics`, prototype minh hoạ 7 mục [Nguồn: 09-layoutBase/Ngân hàng bài toán.dc.html:572-580].
 Khối "Bài đang làm dở": tối đa 3 mục [Nguồn: 09-layoutBase/Ngân hàng bài toán.dc.html:737-741]. Khối "Bài
-tập lớp": theo số bài đang giao cho lớp của người học, prototype minh hoạ 2 mục
+tập lớp": nhóm theo lớp, **tối đa 3 lớp** (3 lớp có bài giao gần nhất), **không có liên kết "Xem tất cả"** vì
+không có màn đích (Câu hỏi mở Q8, đã chốt 2026-10-18); trong mỗi lớp là số bài đang giao cho lớp đó, prototype minh hoạ 2 mục
 [Nguồn: 09-layoutBase/Ngân hàng bài toán.dc.html:754-757].
 
 ### 4.2 DTO liên quan
 
 - `ProblemListItemDto`
-- `ProblemCatalogSummaryDto`
 - `TopicProgressDto`
 - `ClassAssignmentGroupDto`
 - `InProgressProblemDto`
@@ -240,11 +251,11 @@ vì hai màn nhìn cùng bảng nhưng khác tập cột: màn này không có `
 | 6 | `identity.user_problem_best_score` | Read model, nguồn trạng thái "Đã giải / Đang làm / Chưa làm" [Nguồn: 02-bd/database/identity.md:111-112] |
 | 7 | `judge.submissions` | Nguồn khối "Bài đang làm dở" [Nguồn: 02-bd/database/judge-orchestration.md:8-34] |
 | 8 | `ai.solution_reviews` | Nguồn nhãn "đã có Solution Review" [Nguồn: 02-bd/database/ai-review.md:44-47] |
-| 9 | `problem.problem_levels` | Danh mục độ khó do ADMIN quản lý: nguồn nhãn cột "Độ khó", các tab độ khó và các ô tiến độ theo độ khó [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`] |
+| 9 | `problem.problem_levels` | Danh mục độ khó do ADMIN quản lý: nguồn nhãn cột "Độ khó" và các tab độ khó (không còn các ô tiến độ theo độ khó, đã bỏ 2026-10-18) [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`] |
 
 Ba bảng NO 6-8 nằm ở schema của module khác. Màn không truy vấn thẳng: `problem-bank` gọi qua cổng ra sang
 `identity` / `judge-orchestration` / `ai-review`, đúng nguyên tắc mỗi schema một chủ
-[Nguồn: 02-bd/database/problem-bank.md:31-33]. Ranh giới sở hữu cụ thể xem Câu hỏi mở Q2 và Q3.
+[Nguồn: 02-bd/database/problem-bank.md:31-33]. Ranh giới sở hữu đã chốt 2026-10-18 ở Câu hỏi mở Q2 (`identity` cung cấp map trạng thái, `problem-bank` nhận qua cổng ra) và Q3 (`ListTopicsWithProgress` ở `problem-bank`).
 
 ### 4.4 Vùng bố cục
 
@@ -254,18 +265,34 @@ system cuối cùng.
 | Vùng | Vị trí trong prototype | Nội dung |
 | :--- | :--- | :--- |
 | Header ngang dính trên (khung chung Người học) | `:51-98` | Thương hiệu, 6 mục nav, menu người dùng — dùng lại khung chung, không mô tả lại |
-| Dải chỉ số tiến độ | `:103-116` | 4 chỉ số "Đã giải / Easy / Medium / Hard" dạng `giá trị / tổng`, cùng hàng với 2 nút "Bài đã lưu" và "Bài ngẫu nhiên" đẩy sang phải |
+| Tiêu đề trang + cụm hành động | Bản dựng `problem-list-view.tsx:267-285` (prototype `:103-116`) | `PageHeader` với 2 nút trong `actions`: "Bài đã lưu" (liên kết sang `/saved`, `:271-278`) và "Bài ngẫu nhiên" (`pickRandom`, `:279-283`). **Không còn dải 4 chỉ số "Đã giải / Easy / Medium / Hard"** của prototype — owner bỏ 2026-10-18, tiêu chí ponytail bậc 1/3 |
 | Thanh chủ đề | `:118-125` | Hàng ngang cuộn được, mỗi mục là tên chủ đề kèm tỉ lệ `đã giải / tổng`, mục đang chọn gạch chân |
-| Khối lọc (đầu bảng) | `:131-153` | Ô tìm kiếm, tab trạng thái (4 tab), tab độ khó ("Tất cả" cộng một tab mỗi mức; prototype vẽ 4 tab với 3 mức khởi tạo), hàng chip chủ đề |
+| Khối lọc (đầu bảng) | `:131-153` | Ô tìm kiếm, tab trạng thái (4 tab), tab độ khó ("Tất cả" cộng một tab mỗi mức; prototype vẽ 4 tab với 3 mức khởi tạo). Hàng chip chủ đề của prototype `:148-152` **đã bỏ** (Q5, 2026-10-18). Bản dựng dùng hai menu thả xuống `FilterMenu` thay cho hai hàng tab (`problem-list-view.tsx:343-370`) |
 | Bảng danh sách | `:155-192` | 5 cột: Bài toán (gộp chấm trạng thái, mã, tên, nhãn mô hình, nhãn Solution Review), Chủ đề, Độ khó, AC rate, cột hành động |
 | Phân trang | `:194-201` | Dòng tóm tắt kết quả bên trái, các nút số trang bên phải |
-| Cột phải — "Bài đang làm dở" | `:206-220` | Tối đa 3 thẻ, mỗi thẻ có tên bài, ngôn ngữ và trạng thái lần nộp gần nhất |
-| Cột phải — "Bài tập lớp" | `:222-236` | Tên lớp ở phụ đề, danh sách bài đã giao kèm dòng phụ tiến độ và hạn nộp |
+| Cột phải — "Bài đang làm dở" | `:206-220` | Tối đa 3 thẻ, mỗi thẻ có tên bài, ngôn ngữ và trạng thái lần nộp gần nhất; nguồn là `judge.submissions`, không có bản nháp (Q4) — bản dựng `problem-list-view.tsx:430-462` (cắt tối đa 3 thẻ bằng `MAX_IN_PROGRESS`) |
+| Cột phải — "Bài tập lớp" | `:222-236` | Nhóm theo lớp (tối đa 3 lớp, **không có liên kết "Xem tất cả"**), mỗi nhóm có tên lớp và danh sách bài đã giao kèm dòng phụ chỉ có ngày giao (bỏ hạn nộp, Q9). Bản dựng nhóm theo lớp và cắt tối đa 3 lớp bằng `MAX_ASSIGNMENT_CLASSES` (`problem-list-view.tsx:56,140-144`), không có liên kết (`:464-509`) |
 | Chân trang (khung chung Người học) | `:428-455` | Bản quyền, trạng thái cụm go-judge, phiên bản — dùng lại khung chung |
 
-Bố cục hai cột `minmax(0, 1fr) 268px` (`:127`): cột trái là bảng danh sách, cột phải là hai khối phụ cố
-định bề rộng. Dải chỉ số và thanh chủ đề nằm **trên** lưới hai cột, chiếm trọn bề ngang. Giữ nguyên cấu
+Bố cục hai cột `minmax(0, 1fr) 268px` (prototype `:127`; bản dựng `problem-list-view.tsx:328`, dưới `lg` xếp một cột, cột phải xuống dưới bảng): cột trái là
+bảng danh sách, cột phải là hai khối phụ cố định bề rộng. Tiêu đề trang (kèm hai nút hành động, `:267-285`)
+và thanh chủ đề (`:287-326`) nằm **trên** lưới hai cột, chiếm trọn bề ngang; không có dải chỉ số. Giữ nguyên cấu
 trúc này khi dựng Next.js; không quy định màu sắc, khoảng cách hay typography ở BD.
+
+**Hiện trạng bản dựng so với các quyết định 2026-10-18** (đọc lại `problem-list-view.tsx`; riêng Q8 đã sửa mã ngày 2026-10-18):
+
+| Quyết định | Bản dựng | Khoảng lệch (nợ prototype) |
+| :--- | :--- | :--- |
+| Q5 bỏ hàng chip chủ đề | Chỉ có thanh chủ đề dạng nút tròn cuộn ngang, kèm `{solved}/{total}` (`:287-326`); bấm lại chủ đề đang chọn thì về "Tất cả" (EVT-5); không có hàng chip | Khớp. Không phải sửa |
+| Q7 không có nút lưu trên dòng | Cột hành động chỉ có nút "Vào giải" (`:248-263`) | Khớp |
+| Q4 bài đang làm dở = bài nộp chưa `ACCEPTED` | Thẻ hiển thị tên, ngôn ngữ, nhãn kết quả ghép từ enum và số testcase qua i18n (`:430-462`), không có nhãn nháp | Khớp về hiển thị; dữ liệu là mock |
+| Q8 nhóm theo lớp, tối đa 3 lớp, không có liên kết | Nhóm theo lớp, `page.classAssignments.slice(0, MAX_ASSIGNMENT_CLASSES)` (`:140-144,464`); không có liên kết. Mock không có `assigned_at` nên 3 nhóm đầu thay cho "3 lớp gần nhất"; mock chỉ có 1 lớp (`entities/problem/api/__mock__/problem-mocks.ts:206-224`) | Khớp về hiển thị. **Nợ prototype**: chưa sắp theo `assigned_at` giảm dần vì dữ liệu mock chưa có trường này |
+| Q9 dòng phụ chỉ có ngày giao | Mock trả `solvedCount`, `totalCount`, `assignedAt`; view ghép "0 / 5 bài · giao 24/08/2026" qua `assignment.meta` và `formatDateVN` (`problem-mocks.ts:214,220`): có ngày giao, không có hạn nộp, nhưng có thêm chỉ số "0 / 5 bài" mà DTO ở Sheet 7 không có | **Lệch nhẹ**: số "0 / 5 bài" chưa có nguồn trong `ClassAssignmentGroupDto`; hoặc bỏ khỏi mock, hoặc thêm trường (cần quyết định) |
+| Q1 bắt buộc đăng nhập | Không có kiểm đăng nhập ở view này (prototype, chưa nối `identity`) | Chờ nối `identity`; chưa phải nợ của view |
+
+Hai điểm khác đã được owner chốt 2026-10-19 là **giữ** như bản dựng, BD đã sửa theo: chọn số dòng mỗi trang
+12/24/48 (mặc định 12, `:52,405-420`) và bộ lọc trạng thái, độ khó là `FilterMenu` thay vì tab. Nợ còn lại: tìm kiếm
+chưa chờ 400 ms và chưa ghi vào URL (ghi ở đầu `problem-list-view.tsx`).
 
 Nhánh `isSolve` của prototype (`:242-426`) là mã thừa của một hướng thiết kế cũ, **không đưa vào BD** —
 đã chốt ở RD [Nguồn: 01-rd/screens/users/USR0101_problem_list.md:94].
@@ -276,8 +303,8 @@ Nhánh `isSolve` của prototype (`:242-426`) là mã thừa của một hướn
 | :--- | :--- | :--- |
 | Trang | `views/users/problem-list` | Quy ước FSD của dự án |
 | Khung Người học | Dùng lại `widgets/app-shell` (biến thể `student-header`) | `02-bd/screens/users/_shell.md` mục 1 |
-| Dải chỉ số | `widgets/problem-catalog-summary` | Prototype `:103-116` |
-| Thanh chủ đề + chip chủ đề | `features/problem-topic-filter` | Prototype `:118-125,148-152` |
+| Tiêu đề trang + hai nút hành động | Dùng lại `PageHeader` của `shared/ui`, không có widget riêng (`widgets/problem-catalog-summary` đã bỏ 2026-10-18) | `problem-list-view.tsx:241-260` |
+| Thanh chủ đề (không còn chip chủ đề, Q5 2026-10-18) | `features/problem-topic-filter` | Prototype `:118-125` |
 | Ô tìm kiếm, tab trạng thái, tab độ khó, sắp xếp | `features/problem-filter` | Prototype `:131-147,161-162` |
 | Bảng danh sách + phân trang | `widgets/problem-table` + `entities/problem` | Prototype `:155-201` |
 | Khối "Bài đang làm dở" | `widgets/in-progress-problems` | Prototype `:206-220` |
@@ -295,17 +322,15 @@ và `problem_detail` dùng lại, nên dòng bảng phải là component nhận 
 
 > Quy ước ID, bộ thẻ và giá trị chuẩn: `02-bd/_rules/bd-template-9sheet.md` mục 2, 3, 4.
 
-### Khu vực A — Dải chỉ số tiến độ
+### Khu vực A — Tiêu đề trang và hành động
+
+> Dải chỉ số tiến độ (item `problemList.summary.solvedTotal`, `problemList.summary.solvedByLevel`, cũ NO 1-4) **đã bỏ 2026-10-18** theo owner, tiêu chí ponytail bậc 1/3. Khu vực A chỉ còn cụm hành động trong `actions` của `PageHeader` [Nguồn: 05-coding/frontend/src/views/users/problem-list/ui/problem-list-view.tsx:232-250]. NO đánh số lại: "Bài đã lưu" cũ NO 5 thành NO 1, "Bài ngẫu nhiên" cũ NO 6 thành NO 2.
 
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
-| Dải chỉ số tiến độ | | | | | | | | | | | | | |
-| | 1 | Đã giải toàn bộ | `problemList.summary.solvedTotal` | `identity.user_problem_best_score`, `problem.problems` | `best_verdict`, `id` | Label | String | - | - | O | `0 / 0` | `{số} / {số}` | Số bài đã giải trên tổng số bài đã xuất bản<br>[Công thức] Tử số đếm dòng `user_problem_best_score` của người dùng có `best_verdict = ACCEPTED`; mẫu số đếm `problems` có `status = PUBLISHED AND deleted = false`<br>[EVT liên quan] EVT-1 |
-| | 2 | Đã giải theo từng mức độ khó (lặp theo mức) | `problemList.summary.solvedByLevel` | `identity.user_problem_best_score`, `problem.problems`, `problem.problem_levels` | `best_verdict`, `level_id`, `display_name`, `sort_order` | Label | List | - | - | O | `0 / 0` | `{số} / {số}` | Một ô cho mỗi mức trong `problem_levels`, theo `sort_order`; số ô không cố định vì ADMIN thêm/xoá mức được. Nhãn ô là `display_name` đọc từ dữ liệu; mức chưa có bài hiển thị `0 / 0`<br>[Công thức] Như NO 1, lọc thêm `problems.level_id = {mức của ô}`<br>[Nguồn giá trị] `byLevel` của `ProblemCatalogSummaryDto` (Sheet 7 NO 11); danh sách mức theo `DEC-2026-1001-admin-configurable-settings` mục (7) [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`]<br>[EVT liên quan] EVT-1 |
-| | 3 | (Gộp vào NO 2) | - | - | - | - | - | - | - | - | - | - | Dòng cũ "Đã giải mức Trung bình" nay là một phần tử của NO 2; giữ số thứ tự để các tham chiếu NO không đổi |
-| | 4 | (Gộp vào NO 2) | - | - | - | - | - | - | - | - | - | - | Dòng cũ "Đã giải mức Khó" nay là một phần tử của NO 2; giữ số thứ tự để các tham chiếu NO không đổi |
-| | 5 | Bài đã lưu | `problemList.summary.linkSaved` | - | - | Button | - | - | - | I | - | - | Điều hướng sang màn `saved_problems`<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] EVT-12 |
-| | 6 | Bài ngẫu nhiên | `problemList.summary.btnRandom` | - | - | Button | - | - | - | I | - | - | Bốc ngẫu nhiên một bài trong phạm vi bộ lọc đang áp dụng rồi mở `problem_detail`<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] EVT-11 |
+| Tiêu đề trang và hành động | | | | | | | | | | | | | |
+| | 1 | Bài đã lưu | `problemList.summary.linkSaved` | - | - | Button | - | - | - | I | - | - | Điều hướng sang màn `saved_problems`<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] EVT-12 |
+| | 2 | Bài ngẫu nhiên | `problemList.summary.btnRandom` | - | - | Button | - | - | - | I | - | - | Bốc ngẫu nhiên một bài trong phạm vi bộ lọc đang áp dụng rồi mở `problem_detail`<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] EVT-11 |
 
 ### Khu vực B — Thanh chủ đề
 
@@ -314,7 +339,7 @@ và `problem_detail` dùng lại, nên dòng bảng phải là component nhận 
 | Thanh chủ đề | | | | | | | | | | | | | |
 | | 1 | Danh sách chủ đề | `problemList.topicNav.list` | `problem.topics` | - | List | List | - | - | I/O | rỗng | - | Hàng ngang các chủ đề kèm tiến độ riêng từng chủ đề, vừa là chỉ số vừa là bộ lọc<br>[Nguồn giá trị] Kết quả gọi `ListTopicsWithProgress`<br>[EVT liên quan] EVT-1, EVT-5 |
 | | 2 | Tên chủ đề | `problemList.topicNav.col.name` | `problem.topics` | `name` | ListColumn | String | - | - | O | - | - | Tên chủ đề đọc từ dữ liệu `topics` do ADMIN quản lý, số chủ đề không cố định (đã chốt 2026-10-01)<br>[Nguồn giá trị] Cột `topics.name` [Nguồn: 02-bd/database/problem-bank.md:35-55]<br>[EVT liên quan] - |
-| | 3 | Tiến độ chủ đề | `problemList.topicNav.col.ratio` | `identity.user_problem_best_score`, `problem.problem_topics` | `best_verdict`, `topic_id` | ListColumn | String | - | - | O | `0 / 0` | `{số} / {số}` | Số bài đã giải trên tổng số bài đã xuất bản thuộc chủ đề đó<br>[Công thức] Cùng công thức Khu vực A NO 1, giới hạn theo `problem_topics.topic_id`<br>[EVT liên quan] - |
+| | 3 | Tiến độ chủ đề | `problemList.topicNav.col.ratio` | `identity.user_problem_best_score`, `problem.problem_topics` | `best_verdict`, `topic_id` | ListColumn | String | - | - | O | `0 / 0` | `{số} / {số}` | Số bài đã giải trên tổng số bài đã xuất bản thuộc chủ đề đó<br>[Công thức] Tử số đếm dòng `user_problem_best_score` của người dùng có `best_verdict = ACCEPTED` thuộc chủ đề; mẫu số đếm `problems` có `status = PUBLISHED AND deleted = false` thuộc chủ đề, giới hạn theo `problem_topics.topic_id` (công thức từng đặt ở dải chỉ số đã bỏ 2026-10-18, nay chỉ còn ở đây)<br>[EVT liên quan] - |
 
 ### Khu vực C — Bộ lọc
 
@@ -323,20 +348,19 @@ và `problem_detail` dùng lại, nên dòng bảng phải là component nhận 
 | Bộ lọc | | | | | | | | | | | | | |
 | | 1 | Ô tìm kiếm | `problemList.filter.query` | `problem.problems` | `code`, `title` | TextBox | String | 100 | - | I/O | rỗng | - | Tìm theo tên bài hoặc mã bài<br>[Nguồn giá trị] Tham số URL `q`; không có thì rỗng. Gợi ý trong ô là nhãn tĩnh i18n "Tìm theo tên bài hoặc mã bài" [Nguồn: 09-layoutBase/Ngân hàng bài toán.dc.html:592]<br>[EVT liên quan] EVT-2 |
 | | 2 | Tab trạng thái | `problemList.filter.statusTabs` | `identity.user_problem_best_score` | `best_verdict` | List | Enum | - | - | I/O | `Tất cả` | - | 4 tab: Tất cả / Đã giải / Đang làm / Chưa làm [Nguồn: 09-layoutBase/Ngân hàng bài toán.dc.html:609]<br>[Nguồn giá trị] Nhãn tĩnh i18n; giá trị đang chọn lấy từ tham số URL `status`<br>[EVT liên quan] EVT-3 |
-| | 3 | Tab độ khó | `problemList.filter.difficultyTabs` | `problem.problem_levels` | `code`, `display_name`, `sort_order` | List | List | - | - | I/O | `Tất cả` | - | Tab "Tất cả" cộng một tab mỗi mức trong `problem_levels`, theo `sort_order`; số tab không cố định (ba mức khởi tạo ra 4 tab). Chọn một mức tại một thời điểm, cộng dồn `VÀ` với các bộ lọc khác<br>[Nguồn giá trị] Phản hồi của `ListProblemLevels` (Sheet 7 NO 16), đọc từ dữ liệu do ADMIN quản lý, không còn nhãn tĩnh i18n map từ enum [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`]; giá trị đang chọn lấy từ tham số URL `difficulty` (mang `code` của mức)<br>[EVT liên quan] EVT-4 |
-| | 4 | Chip chủ đề | `problemList.filter.topicChips` | `problem.topics` | `id`, `name` | List | List | - | - | I/O | `Tất cả` | - | Hàng chip lọc theo chủ đề. **Dùng chung một trạng thái lọc với Khu vực B** — hai control, một giá trị; bấm ở đâu cũng đổi cùng tham số URL `topic`. Có giữ cả hai hay không, xem Câu hỏi mở Q5<br>[Nguồn giá trị] Cùng nguồn với `problemList.topicNav.list`<br>[EVT liên quan] EVT-5 |
-| | 5 | Xoá bộ lọc | `problemList.filter.linkReset` | - | - | Link | - | - | - | I | - | - | Đưa cả 4 bộ lọc về mặc định. Chỉ xuất hiện ở trạng thái không có kết quả<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] EVT-6 |
+| | 3 | Tab độ khó | `problemList.filter.difficultyTabs` | `problem.problem_levels` | `code`, `display_name`, `sort_order` | List | List | - | - | I/O | `Tất cả` | - | Tab "Tất cả" cộng một tab mỗi mức trong `problem_levels`, theo `sort_order`; số tab không cố định (ba mức khởi tạo ra 4 tab). Chọn một mức tại một thời điểm, cộng dồn `VÀ` với các bộ lọc khác<br>[Nguồn giá trị] Phản hồi của `ListProblemLevels` (Sheet 7 NO 14), đọc từ dữ liệu do ADMIN quản lý, không còn nhãn tĩnh i18n map từ enum [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`]; giá trị đang chọn lấy từ tham số URL `difficulty` (mang `code` của mức)<br>[EVT liên quan] EVT-4 |
+| | 4 | Xoá bộ lọc | `problemList.filter.linkReset` | - | - | Link | - | - | - | I | - | - | Đưa cả 4 bộ lọc (tìm kiếm, trạng thái, độ khó, chủ đề) về mặc định. Chỉ xuất hiện ở trạng thái không có kết quả<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] EVT-6 |
 
 ### Khu vực D — Bảng danh sách bài toán
 
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Bảng danh sách bài toán | | | | | | | | | | | | | |
-| | 1 | Danh sách bài toán | `problemList.table.list` | `problem.problems` | - | List | List | - | - | O | rỗng | - | Bảng bài toán đã xuất bản, 12 dòng mỗi trang<br>[Nguồn giá trị] Kết quả gọi `ListPublishedProblems`<br>[EVT liên quan] EVT-1 |
+| | 1 | Danh sách bài toán | `problemList.table.list` | `problem.problems` | - | List | List | - | - | O | rỗng | - | Bảng bài toán đã xuất bản, mặc định 12 dòng mỗi trang (chọn được 12/24/48)<br>[Nguồn giá trị] Kết quả gọi `ListPublishedProblems`<br>[EVT liên quan] EVT-1 |
 | | 2 | Chấm trạng thái | `problemList.table.col.solveState` | `identity.user_problem_best_score` | `best_verdict` | Badge | Enum | - | - | O | `Chưa làm` | - | Ba trạng thái: Đã giải / Đang làm / Chưa làm<br>[Công thức] Không có dòng `user_problem_best_score` thành "Chưa làm"; có dòng và `best_verdict = ACCEPTED` thành "Đã giải"; có dòng mà khác `ACCEPTED` thành "Đang làm" [Nguồn: 02-bd/database/identity.md:111-112]<br>[EVT liên quan] - |
 | | 3 | Mã bài | `problemList.table.col.code` | `problem.problems` | `code` | ListColumn | String | 40 | - | O | - | - | Mã ngắn hiển thị của bài toán<br>[Nguồn giá trị] Cột `code` [Nguồn: 02-bd/database/problem-bank.md:14]<br>[EVT liên quan] - |
 | | 4 | Tên bài | `problemList.table.col.title` | `problem.problems` | `title` | ListColumn | String | 200 | - | O | - | - | Tiêu đề bài toán<br>[Nguồn giá trị] Cột `title` [Nguồn: 02-bd/database/problem-bank.md:15]<br>[EVT liên quan] EVT-10 |
-| | 5 | Nhãn mô hình nộp bài | `problemList.table.col.submissionModel` | `problem.problems` | `function_wrapper_supported` | Badge | Enum | - | - | O | `Cả hai` | - | Hai giá trị: "Cả hai" khi `function_wrapper_supported = true`, "Chỉ Standard I/O" khi `false` — ngoại lệ lược đồ kiểu R2<br>[Nguồn giá trị] Cột `function_wrapper_supported` [Nguồn: 02-bd/database/problem-bank.md:20], nhãn là chữ tĩnh i18n theo chốt ở RD [Nguồn: 01-rd/screens/users/USR0101_problem_list.md:95]<br>[EVT liên quan] - |
+| | 5 | Nhãn mô hình nộp bài | `problemList.table.col.submissionModel` | `problem.problems` | `function_wrapper_supported` | Badge | Enum | - | - | O | Ẩn | - | Chỉ vẽ nhãn "Chỉ Standard I/O" khi `function_wrapper_supported = false` — ngoại lệ lược đồ kiểu R2; `true` (đa số) không vẽ nhãn nào (khu D NO 5 ở Sheet 6)<br>[Nguồn giá trị] Cột `function_wrapper_supported` [Nguồn: 02-bd/database/problem-bank.md:20], nhãn là chữ tĩnh i18n; RD REQ-05 đã sửa theo BD 2026-10-19 [Nguồn: 01-rd/screens/users/USR0101_problem_list.md:107]<br>[EVT liên quan] - |
 | | 6 | Nhãn đã có Solution Review | `problemList.table.col.hasReview` | `ai.solution_reviews` | `user_id`, `problem_id` | Badge | Boolean | - | - | O | Ẩn | - | Cho biết người học đã từng phân tích bài này bằng F5.1<br>[Công thức] Tồn tại dòng `solution_reviews` khớp `(user_id hiện tại, problem_id)` [Nguồn: 02-bd/database/ai-review.md:46-47]<br>[EVT liên quan] - |
 | | 7 | Chủ đề | `problemList.table.col.topics` | `problem.topics` | `name` | ListColumn | String | - | - | O | `-` | - | Chủ đề của bài toán<br>[Nguồn giá trị] `topics.name` qua `problem_topics.problem_id`; nhiều chủ đề thì nối bằng dấu phẩy, cùng cách đã dùng ở màn quản trị [Nguồn: 02-bd/screens/shared/SHR0201_problem_management.md:517]<br>[EVT liên quan] - |
 | | 8 | Độ khó | `problemList.table.col.difficulty` | `problem.problem_levels`, `problem.problems` | `display_name` | ListColumn | String | - | - | O | - | Nhãn `display_name`, badge | Mức độ khó của bài toán, lấy qua `problems.level_id`<br>[Nguồn giá trị] Cột `problem_levels.display_name`, **đọc từ dữ liệu** do ADMIN quản lý, không còn ánh xạ cứng enum sang "Dễ/Trung bình/Khó". Màu badge: ba mức khởi tạo giữ màu cũ, mức ADMIN thêm sau dùng màu trung tính (không có cột màu) `DEC-2026-1001-admin-configurable-settings` mục (7) [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`]<br>[EVT liên quan] EVT-7 |
@@ -356,8 +380,8 @@ và `problem_detail` dùng lại, nên dòng bảng phải là component nhận 
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Bài đang làm dở | | | | | | | | | | | | | |
-| | 1 | Tiêu đề khối | `problemList.inProgress.title` | - | - | Label | String | - | - | O | Bài đang làm dở | - | Tiêu đề và câu phụ của khối<br>[Nguồn giá trị] Nhãn tĩnh i18n. Câu phụ "Bản nháp lưu trong Workspace" của prototype **không dùng** vì chưa có nơi lưu bản nháp, xem Câu hỏi mở Q4<br>[EVT liên quan] - |
-| | 2 | Danh sách bài dở | `problemList.inProgress.list` | `judge.submissions` | - | List | List | - | - | O | rỗng | - | Tối đa 3 bài người học đã nộp gần nhất mà chưa đạt `ACCEPTED`<br>[Nguồn giá trị] Kết quả gọi `ListMyUnsolvedRecentProblems`<br>[EVT liên quan] EVT-1, EVT-13 |
+| | 1 | Tiêu đề khối | `problemList.inProgress.title` | - | - | Label | String | - | - | O | Bài đang làm dở | - | Tiêu đề và câu phụ của khối<br>[Nguồn giá trị] Nhãn tĩnh i18n. Câu phụ "Bản nháp lưu trong Workspace" của prototype **không dùng**: khối này đọc từ `judge.submissions`, không có bảng nháp (Câu hỏi mở Q4, đã chốt 2026-10-18)<br>[EVT liên quan] - |
+| | 2 | Danh sách bài dở | `problemList.inProgress.list` | `judge.submissions` | - | List | List | - | - | O | rỗng | - | Tối đa 3 bài mà lượt nộp gần nhất của chính người học chưa đạt `ACCEPTED` (định nghĩa chốt ở Q4; không có bảng nháp)<br>[Nguồn giá trị] Kết quả gọi `ListMyUnsolvedRecentProblems`<br>[EVT liên quan] EVT-1, EVT-13 |
 | | 3 | Tên bài dở | `problemList.inProgress.col.title` | `problem.problems` | `title` | ListColumn | String | 200 | - | O | - | - | Tên bài toán của mục<br>[Nguồn giá trị] Cột `title`, tra theo `submissions.problem_id` [Nguồn: 02-bd/database/judge-orchestration.md:16]<br>[EVT liên quan] - |
 | | 4 | Ngôn ngữ lần nộp gần nhất | `problemList.inProgress.col.language` | `judge.submissions` | `language` | ListColumn | Enum | - | - | O | - | Nhãn cố định | Ngôn ngữ của lượt nộp gần nhất<br>[Nguồn giá trị] `JAVA` thành "Java", `CPP` thành "C++", `PYTHON` thành "Python" [Nguồn: 02-bd/database/judge-orchestration.md:18]<br>[EVT liên quan] - |
 | | 5 | Kết quả lần nộp gần nhất | `problemList.inProgress.col.lastVerdict` | `judge.submissions` | `status`, `passed_testcase_count`, `total_testcase_count` | ListColumn | String | - | - | O | - | `{nhãn} {đạt}/{tổng}` | Trạng thái lượt nộp gần nhất, kèm số testcase đạt khi có<br>[Công thức] Nhãn tĩnh i18n map từ `status`; `status = WRONG_ANSWER` thì ghép thêm `passed_testcase_count`/`total_testcase_count` (F4-13, `DEC-2026-0831-partial-score-testcase-ratio`) [Nguồn: 02-bd/database/judge-orchestration.md:22,25-26]<br>[EVT liên quan] - |
@@ -368,11 +392,11 @@ và `problem_detail` dùng lại, nên dòng bảng phải là component nhận 
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Bài tập lớp | | | | | | | | | | | | | |
 | | 1 | Tiêu đề khối | `problemList.assignment.title` | - | - | Label | String | - | - | O | Bài tập lớp | - | Tiêu đề khối<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] - |
-| | 2 | Tên lớp | `problemList.assignment.className` | `identity.classes` | `name` | Label | String | 200 | - | O | - | - | Tên lớp người học đang tham gia, hiển thị ở dòng phụ<br>[Nguồn giá trị] Trả kèm trong `ListMyClassAssignments`. Người học thuộc nhiều lớp thì hiển thị thế nào, xem Câu hỏi mở Q8<br>[EVT liên quan] - |
+| | 2 | Tên lớp | `problemList.assignment.className` | `identity.classes` | `name` | Label | String | 200 | - | O | - | - | Tên lớp người học đang tham gia, hiển thị ở dòng phụ<br>[Nguồn giá trị] Trả kèm trong `ListMyClassAssignments`. Người học thuộc nhiều lớp thì nhóm theo lớp, mỗi lớp một tiêu đề phụ, tối đa 3 lớp có bài giao gần nhất (Câu hỏi mở Q8, đã chốt 2026-10-18)<br>[EVT liên quan] - |
 | | 3 | Danh sách bài được giao | `problemList.assignment.list` | `problem.class_assignments` | - | List | List | - | - | O | rỗng | - | Các bài đang được giao cho lớp của người học, chỉ tính dòng `removed_at IS NULL` [Nguồn: 02-bd/database/problem-bank.md:125,147]<br>[Nguồn giá trị] Kết quả gọi `ListMyClassAssignments`<br>[EVT liên quan] EVT-1, EVT-14 |
 | | 4 | Tên bài được giao | `problemList.assignment.col.title` | `problem.problems` | `title` | ListColumn | String | 200 | - | O | - | - | Tên bài toán được giao<br>[Nguồn giá trị] Cột `title` qua `class_assignments.problem_id` [Nguồn: 02-bd/database/problem-bank.md:121]<br>[EVT liên quan] - |
 | | 5 | Chấm trạng thái bài được giao | `problemList.assignment.col.solveState` | `identity.user_problem_best_score` | `best_verdict` | Badge | Enum | - | - | O | `Chưa làm` | - | Cùng ba trạng thái và cùng công thức với Khu vực D NO 2<br>[Công thức] Xem Khu vực D NO 2<br>[EVT liên quan] - |
-| | 6 | Dòng phụ bài được giao | `problemList.assignment.col.meta` | `problem.class_assignments` | `assigned_at` | ListColumn | String | - | - | O | - | - | Câu phụ dưới tên bài. Prototype ghi "3 / 5 bài · hạn 24/08" [Nguồn: 09-layoutBase/Ngân hàng bài toán.dc.html:754-757] nhưng **không có cột hạn nộp** trong `class_assignments` [Nguồn: 02-bd/database/problem-bank.md:117-128]<br>[Nguồn giá trị] Chỉ hiển thị ngày giao từ `assigned_at`; phần hạn nộp là Câu hỏi mở Q9<br>[EVT liên quan] - |
+| | 6 | Dòng phụ bài được giao | `problemList.assignment.col.meta` | `problem.class_assignments` | `assigned_at` | ListColumn | String | - | - | O | - | - | Câu phụ dưới tên bài. Prototype ghi "3 / 5 bài · hạn 24/08" [Nguồn: 09-layoutBase/Ngân hàng bài toán.dc.html:754-757] nhưng bài giao **không có hạn nộp**: `class_assignments` không có cột hạn nộp [Nguồn: 02-bd/database/problem-bank.md:117-128] (Câu hỏi mở Q9, đã chốt 2026-10-18, tiêu chí ponytail bậc 1/3)<br>[Nguồn giá trị] Chỉ hiển thị ngày giao từ `assigned_at`. Chỉ số "x / y bài" của prototype chưa có nguồn trong DTO, xem ghi chú nợ ở mục 4.4<br>[EVT liên quan] - |
 
 [Nguồn: 09-layoutBase/Ngân hàng bài toán.dc.html:103-116,118-125,131-153,155-201,206-220,222-236;
 02-bd/database/problem-bank.md:11-29,37-39,117-128,138; 02-bd/database/identity.md:111-112;
@@ -385,17 +409,13 @@ và `problem_detail` dùng lại, nên dòng bảng phải là component nhận 
 > Ký hiệu cột `Hiển thị` và thứ tự thẻ: `02-bd/_rules/bd-template-9sheet.md` mục 2, 3. Dùng đúng NO, tên
 > item và thứ tự của Sheet 5. Lỗi nhập liệu ghi ở Sheet 9, xử lý nghiệp vụ ghi ở Sheet 8.
 
-### Khu vực A — Dải chỉ số tiến độ
+### Khu vực A — Tiêu đề trang và hành động
 
 | Khu vực | NO | Tên item | Hiển thị | Ghi chú |
 | :--- | --: | :--- | :-: | :--- |
-| Dải chỉ số tiến độ | | | | |
-| | 1 | Đã giải toàn bộ | Có | [Điều kiện hiển thị] Trong lúc tải hiển thị khung chờ đúng 4 ô chỉ số.<br>[Tự động đặt] **Không** tính lại khi đổi bộ lọc — đây là tiến độ trên toàn bộ danh mục, không phải trên tập kết quả đang lọc. |
-| | 2 | Đã giải mức Dễ | Có | [Tự động đặt] Như NO 1. |
-| | 3 | Đã giải mức Trung bình | Có | [Tự động đặt] Như NO 1. |
-| | 4 | Đã giải mức Khó | Có | [Tự động đặt] Như NO 1. |
-| | 5 | Bài đã lưu | Có | [Điều kiện kích hoạt] Luôn kích hoạt. |
-| | 6 | Bài ngẫu nhiên | Có | [Điều kiện kích hoạt] Không kích hoạt khi bộ lọc hiện tại không cho kết quả nào, và trong lúc đang tải bảng. |
+| Tiêu đề trang và hành động | | | | |
+| | 1 | Bài đã lưu | Có | [Điều kiện kích hoạt] Luôn kích hoạt. |
+| | 2 | Bài ngẫu nhiên | Có | [Điều kiện kích hoạt] Không kích hoạt khi bộ lọc hiện tại không cho kết quả nào, và trong lúc đang tải bảng. |
 
 ### Khu vực B — Thanh chủ đề
 
@@ -414,15 +434,14 @@ và `problem_detail` dùng lại, nên dòng bảng phải là component nhận 
 | | 1 | Ô tìm kiếm | Có | [Điều kiện kích hoạt] Luôn kích hoạt, kể cả khi bảng đang tải.<br>[Tự động đặt] Nhận giá trị ban đầu từ tham số URL `q`. Gõ xong dừng 400 ms mới gọi máy chủ, không gọi theo từng ký tự. |
 | | 2 | Tab trạng thái | Có | [Điều kiện kích hoạt] Kích hoạt sau khi tải xong lần đầu.<br>[Tự động đặt] Tab đang chọn lấy từ tham số URL `status`, mặc định "Tất cả". |
 | | 3 | Tab độ khó | Có | [Tự động đặt] Tab đang chọn lấy từ tham số URL `difficulty`, mặc định "Tất cả". |
-| | 4 | Chip chủ đề | Có | [Tự động đặt] Chip đang chọn đồng bộ với mục đang chọn ở Khu vực B — cùng một giá trị lọc, hai nơi hiển thị. |
-| | 5 | Xoá bộ lọc | Điều kiện | [Điều kiện hiển thị] Chỉ hiển thị khi bảng không có dòng nào **và** đang có ít nhất một bộ lọc khác mặc định. Bảng rỗng vì danh mục chưa có bài nào thì không hiển thị liên kết này. |
+| | 4 | Xoá bộ lọc | Điều kiện | [Điều kiện hiển thị] Chỉ hiển thị khi bảng không có dòng nào **và** đang có ít nhất một bộ lọc khác mặc định. Bảng rỗng vì danh mục chưa có bài nào thì không hiển thị liên kết này. |
 
 ### Khu vực D — Bảng danh sách bài toán
 
 | Khu vực | NO | Tên item | Hiển thị | Ghi chú |
 | :--- | --: | :--- | :-: | :--- |
 | Bảng danh sách bài toán | | | | |
-| | 1 | Danh sách bài toán | Có | [Điều kiện hiển thị] Trong lúc tải hiển thị khung chờ đúng 12 dòng. Tải xong mà không có dòng nào thì thay bảng bằng dòng "Không có bài nào khớp bộ lọc" kèm liên kết xoá bộ lọc. Tải lỗi thì hiển thị thông báo lỗi kèm nút thử lại, giữ nguyên bộ lọc. |
+| | 1 | Danh sách bài toán | Có | [Điều kiện hiển thị] Trong lúc tải hiển thị khung chờ theo số dòng mỗi trang đang chọn (mặc định 12). Tải xong mà không có dòng nào thì thay bảng bằng dòng "Không có bài nào khớp bộ lọc" kèm liên kết xoá bộ lọc. Tải lỗi thì hiển thị thông báo lỗi kèm nút thử lại, giữ nguyên bộ lọc. |
 | | 2 | Chấm trạng thái | Điều kiện | [Điều kiện hiển thị] Chỉ hiển thị khi lấy được dữ liệu trạng thái theo người dùng. Không lấy được thì ẩn chấm trạng thái trên mọi dòng và bảng vẫn hiển thị bình thường, xem EVT-1. |
 | | 3 | Mã bài | Có | - |
 | | 4 | Tên bài | Có | - |
@@ -459,7 +478,7 @@ và `problem_detail` dùng lại, nên dòng bảng phải là component nhận 
 | Bài tập lớp | | | | |
 | | 1 | Tiêu đề khối | Điều kiện | [Điều kiện hiển thị] Ẩn cả khối khi người học không thuộc lớp nào, hoặc lớp không có bài nào đang được giao. |
 | | 2 | Tên lớp | Điều kiện | [Điều kiện hiển thị] Như NO 1. |
-| | 3 | Danh sách bài được giao | Điều kiện | [Điều kiện hiển thị] Như NO 1. Trong lúc tải hiển thị khung chờ 2 mục.<br>[Tự động đặt] **Không** tải lại khi đổi bộ lọc — khối này độc lập với bộ lọc của bảng. |
+| | 3 | Danh sách bài được giao | Điều kiện | [Điều kiện hiển thị] Như NO 1. Hiển thị tối đa 3 lớp, không có liên kết xem tất cả. Trong lúc tải hiển thị khung chờ 2 mục.<br>[Tự động đặt] **Không** tải lại khi đổi bộ lọc — khối này độc lập với bộ lọc của bảng. |
 | | 4 | Tên bài được giao | Có | - |
 | | 5 | Chấm trạng thái bài được giao | Điều kiện | [Điều kiện hiển thị] Cùng điều kiện với Khu vực D NO 2 — không lấy được dữ liệu trạng thái thì ẩn chấm, giữ nguyên danh sách. |
 | | 6 | Dòng phụ bài được giao | Có | - |
@@ -482,31 +501,29 @@ và `problem_detail` dùng lại, nên dòng bảng phải là component nhận 
 | 5 | `ProblemListItemDto` | `levelCode`, `levelDisplayName` | String, String | `problem.problem_levels` | `code`, `display_name` | Bảng "Độ khó", tab độ khó | Có | [Nguồn] Join qua `problems.level_id` (thay trường `difficulty` kiểu Enum cũ, theo `DEC-2026-1001-admin-configurable-settings` mục (7))<br>[Chuyển đổi] Đọc `display_name` từ dữ liệu; `levelCode` là slug dùng làm giá trị tham số URL `difficulty`. Sắp xếp theo cột này chạy theo `sort_order` của mức. |
 | 6 | `ProblemListItemDto` | `acRate` | Number | `problem.problem_stats` | `ac_rate` | Bảng "AC rate" | Có | [Nguồn] Read model<br>[Chuyển đổi] Không có dòng read model thì trả `null`, màn hiển thị `-`. |
 | 7 | `ProblemListItemDto` | `functionWrapperSupported` | Boolean | `problem.problems` | `function_wrapper_supported` | Bảng "Nhãn mô hình nộp bài" | Có | [Chuyển đổi] `false` thành nhãn "Chỉ Standard I/O"; `true` thì không vẽ nhãn. |
-| 8 | `ProblemListItemDto` | `solveState` | Enum | `identity.user_problem_best_score` | `best_verdict` | Bảng "Chấm trạng thái", tab trạng thái | Có | [Nguồn] `problem-bank` gọi cổng ra sang `identity` (`ListMyProblemSolveStates`), không đọc thẳng schema khác<br>[Chuyển đổi] `SOLVED`/`ATTEMPTED`/`UNSOLVED` thành "Đã giải"/"Đang làm"/"Chưa làm". Ai ghép trường này, xem Câu hỏi mở Q2. |
+| 8 | `ProblemListItemDto` | `solveState` | Enum | `identity.user_problem_best_score` | `best_verdict` | Bảng "Chấm trạng thái", tab trạng thái | Có | [Nguồn] `problem-bank` gọi cổng ra sang `identity` (`ListMyProblemSolveStates`), không đọc thẳng schema khác<br>[Chuyển đổi] `SOLVED`/`ATTEMPTED`/`UNSOLVED` thành "Đã giải"/"Đang làm"/"Chưa làm". Ai ghép trường này: `problem-bank` ghép từ map của `identity`, xem Câu hỏi mở Q2 (đã chốt). |
 | 9 | `ProblemListItemDto` | `hasSolutionReview` | Boolean | `ai.solution_reviews` | `user_id`, `problem_id` | Bảng "Nhãn đã có Solution Review" | Có | [Nguồn] Lời gọi **riêng** `ListMyReviewedProblemIds` sang `ai-review`, không gộp vào lời gọi bảng — để bảng vẫn hiển thị khi F5 chết (`CLAUDE.md` — AI suy giảm nhẹ nhàng). Xem Câu hỏi mở Q3. |
-| 10 | `ProblemCatalogSummaryDto` | `solvedTotal`, `publishedTotal` | Number | `identity.user_problem_best_score`, `problem.problems` | `best_verdict`, `id` | Dải chỉ số "Đã giải toàn bộ" | Có | [Nguồn] Phản hồi của `GetProblemCatalogSummary` |
-| 11 | `ProblemCatalogSummaryDto` | `byLevel` | List | `problem.problems`, `problem.problem_levels` | `level_id`, `code`, `display_name`, `sort_order` | Dải chỉ số theo từng mức độ khó | Có | [Nguồn] Cùng lời gọi NO 10<br>[Chuyển đổi] Mỗi phần tử gồm `levelCode`, `levelDisplayName`, `solved`, `total`, một phần tử cho **mỗi mức** trong `problem_levels` theo `sort_order` (thay `byDifficulty` cũ cố định 3 phần tử); mức chưa có bài trả `0`/`0`. |
-| 12 | `TopicProgressDto` | `topicId`, `topicName` | UUID, String | `problem.topics` | `id`, `name` | Thanh chủ đề, chip chủ đề | Có | [Nguồn] Phản hồi của `ListTopicsWithProgress`<br>[Đích] `topicId` là giá trị của tham số URL `topic`. |
-| 13 | `TopicProgressDto` | `solved`, `total` | Number | `identity.user_problem_best_score`, `problem.problem_topics` | `best_verdict`, `topic_id` | Thanh chủ đề "Tiến độ chủ đề" | Có | [Nguồn] Cùng lời gọi NO 12. |
-| 14 | `ClassAssignmentGroupDto` | `classId`, `className` | UUID, String | `identity.classes` | `id`, `name` | Khối "Bài tập lớp" — tên lớp | Có | [Nguồn] Phản hồi của `ListMyClassAssignments`. |
-| 15 | `ClassAssignmentGroupDto` | `items` | List | `problem.class_assignments` | `problem_id`, `assigned_at` | Khối "Bài tập lớp" — danh sách | Có | [Nguồn] Chỉ lấy dòng `removed_at IS NULL`<br>[Chuyển đổi] Mỗi phần tử gồm `problemId`, `title`, `solveState`, `assignedAt`. |
-| 16 | `ProblemLevelDto` | `code`, `displayName`, `sortOrder` | String, String, Number | `problem.problem_levels` | `code`, `display_name`, `sort_order` | Bộ lọc "Tab độ khó" | Có | [Nguồn] Phản hồi của `ListProblemLevels`, đọc từ dữ liệu do ADMIN quản lý; `code` là slug, không còn enum. Endpoint chỉ đọc, mọi người dùng đã xác thực gọi được (`DEC-2026-1001-admin-configurable-settings` mục (7))<br>[Chuyển đổi] Giao diện tự thêm tab "Tất cả" ở đầu; thứ tự tab theo `sortOrder`. |
-| 16 | `InProgressProblemDto` | `problemId`, `title` | UUID, String | `judge.submissions`, `problem.problems` | `problem_id`, `title` | Khối "Bài đang làm dở" | Có | [Nguồn] Phản hồi của `ListMyUnsolvedRecentProblems`<br>[Đích] `problemId` là tham số điều hướng sang `problem_detail`. |
-| 17 | `InProgressProblemDto` | `language`, `lastStatus`, `passedTestcaseCount`, `totalTestcaseCount` | Enum, Enum, Number, Number | `judge.submissions` | `language`, `status`, `passed_testcase_count`, `total_testcase_count` | Khối "Bài đang làm dở" — ngôn ngữ và kết quả | Có | [Chuyển đổi] Ghép chuỗi hiển thị ở tầng giao diện; DTO trả số thô, không trả câu đã ghép. |
+| 10 | `TopicProgressDto` | `topicId`, `topicName` | UUID, String | `problem.topics` | `id`, `name` | Thanh chủ đề, chip chủ đề | Có | [Nguồn] Phản hồi của `ListTopicsWithProgress`<br>[Đích] `topicId` là giá trị của tham số URL `topic`. |
+| 11 | `TopicProgressDto` | `solved`, `total` | Number | `identity.user_problem_best_score`, `problem.problem_topics` | `best_verdict`, `topic_id` | Thanh chủ đề "Tiến độ chủ đề" | Có | [Nguồn] Cùng lời gọi NO 10. |
+| 12 | `ClassAssignmentGroupDto` | `classId`, `className` | UUID, String | `identity.classes` | `id`, `name` | Khối "Bài tập lớp" — tên lớp | Có | [Nguồn] Phản hồi của `ListMyClassAssignments`<br>[Chuyển đổi] Máy chủ trả tối đa 3 nhóm, xếp theo bài giao gần nhất (`assigned_at` lớn nhất) trước (Q8, 2026-10-18). Không có cờ "còn lớp bị cắt": màn không có liên kết xem tất cả (đã bỏ 2026-10-18). |
+| 13 | `ClassAssignmentGroupDto` | `items` | List | `problem.class_assignments` | `problem_id`, `assigned_at` | Khối "Bài tập lớp" — danh sách | Có | [Nguồn] Chỉ lấy dòng `removed_at IS NULL`<br>[Chuyển đổi] Mỗi phần tử gồm `problemId`, `title`, `solveState`, `assignedAt`. Không có trường hạn nộp (Q9, 2026-10-18). |
+| 14 | `ProblemLevelDto` | `code`, `displayName`, `sortOrder` | String, String, Number | `problem.problem_levels` | `code`, `display_name`, `sort_order` | Bộ lọc "Tab độ khó" | Có | [Nguồn] Phản hồi của `ListProblemLevels`, đọc từ dữ liệu do ADMIN quản lý; `code` là slug, không còn enum. Endpoint chỉ đọc, mọi người dùng đã xác thực gọi được (`DEC-2026-1001-admin-configurable-settings` mục (7))<br>[Chuyển đổi] Giao diện tự thêm tab "Tất cả" ở đầu; thứ tự tab theo `sortOrder`. |
+| 15 | `InProgressProblemDto` | `problemId`, `title` | UUID, String | `judge.submissions`, `problem.problems` | `problem_id`, `title` | Khối "Bài đang làm dở" | Có | [Nguồn] Phản hồi của `ListMyUnsolvedRecentProblems`<br>[Đích] `problemId` là tham số điều hướng sang `problem_detail`. |
+| 16 | `InProgressProblemDto` | `language`, `lastStatus`, `passedTestcaseCount`, `totalTestcaseCount` | Enum, Enum, Number, Number | `judge.submissions` | `language`, `status`, `passed_testcase_count`, `total_testcase_count` | Khối "Bài đang làm dở" — ngôn ngữ và kết quả | Có | [Chuyển đổi] Ghép chuỗi hiển thị ở tầng giao diện; DTO trả số thô, không trả câu đã ghép. |
 
 ### 7.2 Truy cập bảng dữ liệu (9)
 
 | NO | Tên logic | Bảng | Repository | CRUD | Mục đích | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :--- | :--- |
-| 1 | Bài toán | `problem.problems` | `ProblemRepository` | R | Đọc danh sách bài đã xuất bản theo bộ lọc, đếm tổng theo độ khó | `ListPublishedProblems`: R<br>`GetProblemCatalogSummary`: R<br>`GetRandomProblem`: R |
+| 1 | Bài toán | `problem.problems` | `ProblemRepository` | R | Đọc danh sách bài đã xuất bản theo bộ lọc | `ListPublishedProblems`: R<br>`GetRandomProblem`: R |
 | 2 | Chủ đề | `problem.topics` | `TopicRepository` | R | Đọc danh mục chủ đề cho thanh chủ đề và chip lọc | `ListTopicsWithProgress`: R |
 | 3 | Gán chủ đề cho bài | `problem.problem_topics` | `ProblemTopicRepository` | R | Lọc theo chủ đề và đếm tiến độ theo chủ đề | `ListPublishedProblems`: R<br>`ListTopicsWithProgress`: R |
 | 4 | Thống kê bài toán | `problem.problem_stats` | `ProblemStatsRepository` | R | Đọc `ac_rate` cho cột AC rate và cho việc sắp xếp | `ListPublishedProblems`: R |
 | 5 | Bài giao theo lớp | `problem.class_assignments` | `ClassAssignmentRepository` | R | Đọc bài đang giao cho lớp của chính người học | `ListMyClassAssignments`: R |
-| 6 | Tiến độ theo bài của người dùng | `identity.user_problem_best_score` | `UserProblemBestScoreRepository` (module `identity`) | R | Suy ra trạng thái Đã giải / Đang làm / Chưa làm và mọi con số tiến độ | `ListMyProblemSolveStates`: R — gọi qua cổng ra, `problem-bank` không đọc thẳng schema `identity` |
+| 6 | Tiến độ theo bài của người dùng | `identity.user_problem_best_score` | `UserProblemBestScoreRepository` (module `identity`) | R | Suy ra trạng thái Đã giải / Đang làm / Chưa làm và tiến độ theo chủ đề | `ListMyProblemSolveStates`: R — gọi qua cổng ra, `problem-bank` không đọc thẳng schema `identity` |
 | 7 | Bài nộp | `judge.submissions` | `SubmissionRepository` (module `judge-orchestration`) | R | Lấy tối đa 3 bài nộp gần nhất chưa đạt `ACCEPTED` | `ListMyUnsolvedRecentProblems`: R |
 | 8 | Báo cáo phân tích bài giải | `ai.solution_reviews` | `SolutionReviewRepository` (module `ai-review`) | R | Lấy tập `problem_id` người học đã có báo cáo | `ListMyReviewedProblemIds`: R |
-| 9 | Danh mục độ khó | `problem.problem_levels` | `ProblemLevelRepository` | R | Đọc nhãn độ khó của từng dòng (qua join `level_id`), đọc danh mục cho tab lọc độ khó và các ô tiến độ theo độ khó | `ListProblemLevels`: R<br>`ListPublishedProblems`, `GetProblemCatalogSummary`: R, qua join. Màn này không ghi; ADMIN quản lý độ khó ở `SHR0201` [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`] |
+| 9 | Danh mục độ khó | `problem.problem_levels` | `ProblemLevelRepository` | R | Đọc nhãn độ khó của từng dòng (qua join `level_id`), đọc danh mục cho tab lọc độ khó | `ListProblemLevels`: R<br>`ListPublishedProblems`: R, qua join (`GetProblemCatalogSummary` đã bỏ 2026-10-18, tiêu chí ponytail bậc 1/3, owner). Màn này không ghi; ADMIN quản lý độ khó ở `SHR0201` [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`] |
 
 Màn này **không có thao tác ghi nào** — không `C`, không `U`, không `D`. Ba bảng cuối thuộc module khác,
 truy cập qua cổng ra chứ không qua repository của `problem-bank`.
@@ -520,14 +537,13 @@ truy cập qua cổng ra chứ không qua repository của `problem-bank`.
 | NO | Endpoint (tên nghiệp vụ) | Mục đích | BC sở hữu |
 | --: | :--- | :--- | :--- |
 | 1 | `ListPublishedProblems` | Tìm kiếm, lọc, sắp xếp và phân trang danh sách bài toán đã xuất bản cho người học | `problem-bank` |
-| 2 | `GetProblemCatalogSummary` | Tải dải chỉ số tiến độ tổng và theo từng mức độ khó (một phần tử mỗi mức trong `problem_levels`) | `problem-bank` |
-| 3 | `ListTopicsWithProgress` | Tải danh mục chủ đề kèm tiến độ đã giải trên tổng của từng chủ đề | `problem-bank` |
-| 4 | `GetRandomProblem` | Bốc ngẫu nhiên một bài trong phạm vi bộ lọc đang áp dụng | `problem-bank` |
-| 5 | `ListMyClassAssignments` | Tải bài đang được giao cho lớp của chính người học | `problem-bank` |
-| 6 | `ListMyProblemSolveStates` | Trả trạng thái Đã giải / Đang làm theo từng bài của chính người dùng | `identity` |
-| 7 | `ListMyUnsolvedRecentProblems` | Trả tối đa 3 bài nộp gần nhất chưa đạt `ACCEPTED` của chính người dùng | `judge-orchestration` |
-| 8 | `ListMyReviewedProblemIds` | Trả tập `problem_id` người học đã có báo cáo Solution Review | `ai-review` |
-| 9 | `ListProblemLevels` | Tải danh mục độ khó (đọc từ dữ liệu) cho tab lọc độ khó; chỉ đọc, mọi người dùng đã xác thực gọi được | `problem-bank` |
+| 2 | `ListTopicsWithProgress` | Tải danh mục chủ đề kèm tiến độ đã giải trên tổng của từng chủ đề | `problem-bank` |
+| 3 | `GetRandomProblem` | Bốc ngẫu nhiên một bài trong phạm vi bộ lọc đang áp dụng | `problem-bank` |
+| 4 | `ListMyClassAssignments` | Tải bài đang được giao cho lớp của chính người học, nhóm theo lớp, tối đa 3 lớp gần nhất (không có cờ `hasMoreClasses`) | `problem-bank` |
+| 5 | `ListMyProblemSolveStates` | Trả map `problem_id` → trạng thái Đã giải / Đang làm của chính người dùng (kích thước bị chặn bởi số bài người dùng từng nộp; cache Redis 60 giây theo người dùng) | `identity` |
+| 6 | `ListMyUnsolvedRecentProblems` | Trả tối đa 3 bài mà lượt nộp gần nhất của chính người dùng chưa đạt `ACCEPTED`, đọc từ `judge.submissions` (không có bảng nháp, Q4) | `judge-orchestration` |
+| 7 | `ListMyReviewedProblemIds` | Trả tập `problem_id` người học đã có báo cáo Solution Review | `ai-review` |
+| 8 | `ListProblemLevels` | Tải danh mục độ khó (đọc từ dữ liệu) cho tab lọc độ khó; chỉ đọc, mọi người dùng đã xác thực gọi được | `problem-bank` |
 
 Ghi chú ranh giới, để 11 màn còn lại của khu bám theo:
 - **Tên nghiệp vụ khác hẳn màn quản trị.** `ListPublishedProblems` (A1) không dùng lại
@@ -557,19 +573,19 @@ Ghi chú ranh giới, để 11 màn còn lại của khu bám theo:
 
 | NO | Loại | Sự kiện | Chi tiết | Chuyển màn | Gọi API | Tên xử lý | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :-: | :--- | :--- |
-| 1 | Màn hình | Khởi tạo màn | Vào màn thì đọc tham số lọc trên URL rồi tải dữ liệu. | Không | Có | `ListPublishedProblems`, `GetProblemCatalogSummary`, `ListTopicsWithProgress`, `ListProblemLevels`, `ListMyClassAssignments`, `ListMyUnsolvedRecentProblems`, `ListMyReviewedProblemIds` | [Các bước]<br>1. Kiểm tra người dùng đã đăng nhập.<br>2. Đọc và chuẩn hoá tham số URL; giá trị lạ thì bỏ qua và dùng mặc định.<br>3. Hiển thị khung chờ cho cả 5 khối.<br>4. Tải song song các nhóm dữ liệu.<br>[Khi thành công] Hiển thị đủ dải chỉ số, thanh chủ đề, bộ lọc, bảng và hai khối phụ.<br>[Khi lỗi] Lỗi ở lời gọi bảng thì hiển thị lỗi kèm nút thử lại tại vùng bảng. Lỗi ở `ai-review` thì **ẩn nhãn Solution Review, không báo lỗi**. Lỗi ở `judge-orchestration` hoặc ở khối bài tập lớp thì ẩn đúng khối đó. Bảng danh sách **không bao giờ** bị chặn vì một module phụ chết. |
-| 2 | Nhập liệu | Gõ từ khoá tìm kiếm | Gõ vào ô tìm kiếm. | Không | Có | `ListPublishedProblems` | [Các bước]<br>1. Chờ 400 ms sau lần gõ cuối.<br>2. Đặt trang về 1, cập nhật tham số URL `q` theo cơ chế thay thế.<br>3. Tải lại bảng.<br>[Khi thành công] Bảng và dòng tóm tắt kết quả cập nhật. Dải chỉ số và hai khối phụ giữ nguyên. Nhấn Enter trong ô tìm kiếm thì toast thông tin báo số bài tìm thấy (hoặc không có bài nào); gõ dở thì không toast, tránh một toast cho mỗi ký tự [Nguồn: 05-coding/frontend/src/views/users/problem-list/ui/problem-list-view.tsx:108-111].<br>[Khi lỗi] Giữ nguyên kết quả cũ, hiển thị toast lỗi. |
+| 1 | Màn hình | Khởi tạo màn | Vào màn thì đọc tham số lọc trên URL rồi tải dữ liệu. | Không | Có | `ListPublishedProblems`, `ListTopicsWithProgress`, `ListProblemLevels`, `ListMyClassAssignments`, `ListMyUnsolvedRecentProblems`, `ListMyReviewedProblemIds` | [Các bước]<br>1. Kiểm tra người dùng đã đăng nhập.<br>2. Đọc và chuẩn hoá tham số URL; giá trị lạ thì bỏ qua và dùng mặc định.<br>3. Hiển thị khung chờ cho cả 4 khối (thanh chủ đề, bảng, hai khối phụ).<br>4. Tải song song các nhóm dữ liệu.<br>[Khi thành công] Hiển thị đủ thanh chủ đề, bộ lọc, bảng và hai khối phụ.<br>[Khi lỗi] Lỗi ở lời gọi bảng thì hiển thị lỗi kèm nút thử lại tại vùng bảng. Lỗi ở `ai-review` thì **ẩn nhãn Solution Review, không báo lỗi**. Lỗi ở `judge-orchestration` hoặc ở khối bài tập lớp thì ẩn đúng khối đó. Bảng danh sách **không bao giờ** bị chặn vì một module phụ chết. |
+| 2 | Nhập liệu | Gõ từ khoá tìm kiếm | Gõ vào ô tìm kiếm. | Không | Có | `ListPublishedProblems` | [Các bước]<br>1. Chờ 400 ms sau lần gõ cuối.<br>2. Đặt trang về 1, cập nhật tham số URL `q` theo cơ chế thay thế.<br>3. Tải lại bảng.<br>[Khi thành công] Bảng và dòng tóm tắt kết quả cập nhật. Hai khối phụ giữ nguyên. Nhấn Enter trong ô tìm kiếm thì toast thông tin báo số bài tìm thấy (hoặc không có bài nào); gõ dở thì không toast, tránh một toast cho mỗi ký tự [Nguồn: 05-coding/frontend/src/views/users/problem-list/ui/problem-list-view.tsx:122-128].<br>[Khi lỗi] Giữ nguyên kết quả cũ, hiển thị toast lỗi. |
 | 3 | Nút | Chọn tab trạng thái | Bấm một trong 4 tab Tất cả / Đã giải / Đang làm / Chưa làm. | Không | Có | `ListPublishedProblems` | [Các bước]<br>1. Đặt trang về 1, cập nhật tham số URL `status`.<br>2. Tải lại bảng.<br>[Khi thành công] Bảng chỉ còn các bài khớp trạng thái. Lọc chạy ở máy chủ, không lọc trên trang đang xem.<br>[Khi lỗi] Như EVT-2. |
 | 4 | Nút | Chọn tab độ khó | Bấm một trong các tab Tất cả hoặc một mức độ khó (mỗi mức trong `problem_levels` một tab, theo `sort_order`). | Không | Có | `ListPublishedProblems` | [Các bước]<br>1. Đặt trang về 1, cập nhật tham số URL `difficulty`.<br>2. Tải lại bảng.<br>[Khi thành công] Bảng chỉ còn các bài đúng mức độ khó đã chọn; số tab và nhãn tab lấy từ `ListProblemLevels`, nên mức ADMIN vừa thêm tự có tab.<br>[Khi lỗi] Như EVT-2. |
-| 5 | Nút | Chọn chủ đề | Bấm một mục trên thanh chủ đề hoặc một chip chủ đề. | Không | Có | `ListPublishedProblems` | [Các bước]<br>1. Bấm đúng chủ đề đang chọn thì bỏ lọc, về "Tất cả"; ngược lại đặt chủ đề mới.<br>2. Đặt trang về 1, cập nhật tham số URL `topic`.<br>3. Tải lại bảng.<br>[Khi thành công] Bảng chỉ còn bài thuộc chủ đề, đồng thời thanh chủ đề và hàng chip cùng làm nổi một giá trị.<br>[Khi lỗi] Như EVT-2. |
+| 5 | Nút | Chọn chủ đề | Bấm một mục trên thanh chủ đề. | Không | Có | `ListPublishedProblems` | [Các bước]<br>1. Bấm đúng chủ đề đang chọn thì bỏ lọc, về "Tất cả"; ngược lại đặt chủ đề mới.<br>2. Đặt trang về 1, cập nhật tham số URL `topic`.<br>3. Tải lại bảng.<br>[Khi thành công] Bảng chỉ còn bài thuộc chủ đề, thanh chủ đề làm nổi mục đang chọn.<br>[Khi lỗi] Như EVT-2. |
 | 6 | Liên kết | Xoá toàn bộ bộ lọc | Bấm liên kết "Xoá bộ lọc" ở trạng thái không có kết quả. | Không | Có | `ListPublishedProblems` | [Các bước]<br>1. Đặt lại cả 4 bộ lọc về mặc định và trang về 1.<br>2. Xoá các tham số lọc khỏi URL.<br>3. Tải lại bảng.<br>[Khi thành công] Bảng trở lại danh sách đầy đủ. |
 | 7 | Nút | Sắp xếp theo độ khó | Bấm tiêu đề cột "Độ khó". | Không | Có | `ListPublishedProblems` | [Các bước]<br>1. Đang sắp theo cột này thì đảo chiều; đang sắp theo cột khác thì chuyển sang cột này, chiều tăng dần.<br>2. Cập nhật tham số URL `sort` và `dir`, giữ nguyên số trang.<br>3. Tải lại bảng.<br>[Khi thành công] Mũi tên chiều sắp xếp hiện trên đúng tiêu đề cột, cột còn lại bỏ mũi tên. Sắp xếp chạy ở máy chủ, trên toàn bộ kết quả lọc chứ không chỉ trang đang xem [Nguồn: 09-layoutBase/Ngân hàng bài toán.dc.html:613-616]. |
 | 8 | Nút | Sắp xếp theo AC rate | Bấm tiêu đề cột "AC rate". | Không | Có | `ListPublishedProblems` | [Các bước]<br>1. Như EVT-7, áp cho cột AC rate.<br>[Khi thành công] Như EVT-7.<br>[Khi lỗi] Như EVT-2. |
 | 9 | Nút | Chuyển trang | Bấm một nút số trang. | Không | Có | `ListPublishedProblems` | [Các bước]<br>1. Cập nhật tham số URL `page` bằng cơ chế thêm mục lịch sử.<br>2. Tải lại bảng và cuộn về đầu bảng.<br>[Khi thành công] Bảng hiển thị trang mới, dòng tóm tắt kết quả cập nhật theo.<br>[Khi lỗi] Giữ nguyên trang cũ và hiển thị toast lỗi. |
 | 10 | Liên kết | Mở bài toán | Bấm một dòng trong bảng, hoặc bấm nút "Vào giải" của dòng đó. | Có | Không | - | [Các bước]<br>1. Điều hướng sang `problem_detail` kèm `problem_id` của dòng.<br>[Khi thành công] Mở màn `problem_detail`. Không có dữ liệu chưa lưu nên **không hỏi xác nhận**. Bộ lọc còn nguyên trên URL của màn này, quay lại là thấy đúng trạng thái cũ. |
-| 11 | Nút | Bài ngẫu nhiên | Bấm nút "Bài ngẫu nhiên". | Có | Có | `GetRandomProblem` | [Các bước]<br>1. Gửi bộ lọc hiện tại lên máy chủ để bốc ngẫu nhiên trong đúng phạm vi đó.<br>2. Nhận `problem_id` rồi điều hướng.<br>[Khi thành công] Mở `problem_detail` của bài được bốc.<br>[Khi lỗi] Bộ lọc không còn bài nào thì **không chuyển màn**, hiển thị toast cảnh báo [Nguồn: 05-coding/frontend/src/views/users/problem-list/ui/problem-list-view.tsx:101-103]. |
-| 12 | Nút | Bài đã lưu | Bấm nút "Bài đã lưu". | Có | Không | - | [Các bước]<br>1. Điều hướng sang `saved_problems`.<br>[Khi thành công] Mở màn `saved_problems`. Bộ lọc của màn này **không** mang theo. |
-| 13 | Liên kết | Mở bài đang làm dở | Bấm một thẻ trong khối "Bài đang làm dở". | Có | Không | - | [Các bước]<br>1. Điều hướng sang `problem_detail` kèm `problem_id` của thẻ.<br>[Khi thành công] Mở `problem_detail`. Có khôi phục lại mã nguồn của lượt nộp trước hay không thuộc màn `problem_detail`, không thuộc màn này. |
+| 11 | Nút | Bài ngẫu nhiên | Bấm nút "Bài ngẫu nhiên" trong cụm hành động của tiêu đề trang. | Có | Có | `GetRandomProblem` | [Các bước]<br>1. Gửi bộ lọc hiện tại lên máy chủ để bốc ngẫu nhiên trong đúng phạm vi đó.<br>2. Nhận `problem_id` rồi điều hướng.<br>[Khi thành công] Mở `problem_detail` của bài được bốc.<br>[Khi lỗi] Bộ lọc không còn bài nào thì **không chuyển màn**, hiển thị toast cảnh báo [Nguồn: 05-coding/frontend/src/views/users/problem-list/ui/problem-list-view.tsx:112-117]. |
+| 12 | Nút | Bài đã lưu | Bấm nút "Bài đã lưu" trong cụm hành động của tiêu đề trang. | Có | Không | - | [Các bước]<br>1. Điều hướng sang `saved_problems`.<br>[Khi thành công] Mở màn `saved_problems`. Bộ lọc của màn này **không** mang theo. |
+| 13 | Liên kết | Mở bài đang làm dở | Bấm một thẻ trong khối "Bài đang làm dở". | Có | Không | - | [Các bước]<br>1. Điều hướng sang `problem_detail` kèm `problem_id` của thẻ.<br>[Khi thành công] Mở `problem_detail`. Bản nháp mã nguồn (nếu có) lưu ở trình duyệt theo (bài, ngôn ngữ, mô hình nộp) và do `problem_detail` khôi phục — thuộc `USR0102` Câu hỏi mở Q4, không thuộc màn này; màn này không có bảng nháp. |
 | 14 | Liên kết | Mở bài tập lớp | Bấm một bài trong khối "Bài tập lớp". | Có | Không | - | [Các bước]<br>1. Điều hướng sang `problem_detail` kèm `problem_id` của bài.<br>[Khi thành công] Mở `problem_detail`. |
 
 [Nguồn: 09-layoutBase/Ngân hàng bài toán.dc.html:113,114,135,139,144,150,161-162,168,184-186,197-199,211,226-234,539,613-616]
@@ -583,11 +599,11 @@ Ghi chú ranh giới, để 11 màn còn lại của khu bám theo:
 
 | NO | Loại | Tóm tắt kiểm | Chi tiết | Mức | Mã thông báo | Ghi chú | EVT gọi | Thứ tự |
 | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: |
-| 1 | Kiểm quyền | Yêu cầu đăng nhập | [Nội dung kiểm] Người dùng chưa đăng nhập thì chuyển về màn `auth`.<br>[Nơi thực thi] Chặn ở cả tầng định tuyến phía giao diện và tầng phân quyền phía máy chủ. Áp dụng **nếu** chốt màn này bắt buộc đăng nhập, xem Câu hỏi mở Q1. | Lỗi | Chưa có mã thông báo | Nội dung "Vui lòng đăng nhập để tiếp tục." | EVT-1 | 1 |
+| 1 | Kiểm quyền | Yêu cầu đăng nhập | [Nội dung kiểm] Người dùng chưa đăng nhập thì chuyển về màn `auth`.<br>[Nơi thực thi] Chặn ở cả tầng định tuyến phía giao diện và tầng phân quyền phía máy chủ. Màn này bắt buộc đăng nhập, không có trạng thái khách (Câu hỏi mở Q1, đã chốt 2026-10-18, tiêu chí ponytail bậc 3). | Lỗi | Chưa có mã thông báo | Nội dung "Vui lòng đăng nhập để tiếp tục." | EVT-1 | 1 |
 | 2 | Kiểm nghiệp vụ | Phạm vi bài toán hiển thị | [Nội dung kiểm] Chỉ trả về bài có `status = PUBLISHED` và `deleted = false`; bài chưa xuất bản hoặc đã ẩn mềm không được lọt vào kết quả kể cả khi người dùng gõ đúng mã bài.<br>[Nơi thực thi] Máy chủ, trong điều kiện truy vấn — không lọc ở giao diện. | Lỗi | Không có thông báo | Bài không thuộc phạm vi thì coi như không tồn tại, **không** báo "bạn không có quyền" — tránh lộ sự tồn tại của bài chưa xuất bản (`DEC-2026-0830-problem-lifecycle-two-states`) [Nguồn: 02-bd/database/problem-bank.md:18-19]. | EVT-1, EVT-2, EVT-11 | 1 |
 | 3 | Kiểm nghiệp vụ | Phạm vi khối Bài tập lớp | [Nội dung kiểm] Chỉ trả về bài đang giao cho lớp mà chính người dùng có ghi danh, và chỉ dòng `removed_at IS NULL`.<br>[Nơi thực thi] Máy chủ. | Lỗi | Không có thông báo | Không nhận `class_id` từ giao diện; phạm vi lớp suy ra từ người dùng đăng nhập [Nguồn: 02-bd/database/problem-bank.md:125]. | EVT-1 | 2 |
 | 4 | Kiểm nghiệp vụ | Phạm vi dữ liệu cá nhân | [Nội dung kiểm] Trạng thái đã giải, bài đang làm dở và nhãn Solution Review chỉ được tính theo chính người dùng đăng nhập; không endpoint nào của màn này nhận `user_id` từ phía gọi.<br>[Nơi thực thi] Máy chủ. | Lỗi | Không có thông báo | Cùng nguyên tắc riêng tư đã áp cho bookmark ở F2-13 [Nguồn: 01-rd/req/problem-bank.md:59-62]. | EVT-1 | 3 |
-| 5 | Kiểm nhập liệu | Độ dài từ khoá tìm kiếm | [Nội dung kiểm] Từ khoá dài quá 100 ký tự thì cắt còn 100, không gọi máy chủ với chuỗi dài hơn.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Viền ô tìm kiếm + toast. | Cảnh báo | Chưa có mã thông báo | Nội dung "Từ khoá tìm kiếm tối đa 100 ký tự." | EVT-2 | 1 |
+| 5 | Kiểm nhập liệu | Độ dài từ khoá tìm kiếm | [Nội dung kiểm] Từ khoá dài quá 100 ký tự thì cắt còn 100, không gọi máy chủ với chuỗi dài hơn.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Viền ô tìm kiếm. | Không báo | Không có thông báo | Không hiện toast: `maxLength` của trình duyệt dừng việc nhập ở 100 ký tự là đủ (owner chốt 2026/10/19, ponytail bậc 3). | EVT-2 | 1 |
 | 6 | Kiểm nhập liệu | Tham số lọc trên URL | [Nội dung kiểm] Giá trị `status`, `difficulty`, `topic`, `sort`, `dir`, `page` không nằm trong tập hợp lệ thì bỏ qua và dùng mặc định (với `difficulty`: không khớp `code` của mức nào trong `problem_levels` thì coi như "Tất cả"), **không** báo lỗi cho người dùng.<br>[Nơi thực thi] Màn hình khi khởi tạo, và máy chủ khi nhận tham số. | Cảnh báo | Không có thông báo | URL do người dùng sửa tay hoặc đường dẫn cũ đã hỏng không được làm màn trắng. | EVT-1 | 2 |
 | 7 | Kiểm nghiệp vụ | Số trang vượt phạm vi | [Nội dung kiểm] `page` lớn hơn số trang hiện có thì trả về trang cuối cùng.<br>[Nơi thực thi] Máy chủ. | Cảnh báo | Không có thông báo | Xảy ra khi bộ lọc đổi làm số trang giảm, hoặc khi mở lại một đường dẫn cũ. | EVT-9 | 1 |
 | 8 | Kiểm nghiệp vụ | Bốc ngẫu nhiên trên tập rỗng | [Nội dung kiểm] Bộ lọc hiện tại không còn bài nào thì không chuyển màn.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Nút "Bài ngẫu nhiên" + toast. | Cảnh báo | Chưa có mã thông báo | Nội dung "Không có bài nào khớp bộ lọc hiện tại." | EVT-11 | 1 |
@@ -604,12 +620,12 @@ Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 
 | # | Câu hỏi | Vì sao chưa trả lời được | Đề xuất | Chủ sở hữu |
 | :-: | :--- | :--- | :--- | :--- |
-| Q1 | **Chưa đăng nhập có xem được danh sách bài toán không?** | Đây là cửa vào chính của hệ thống. Nếu cho xem, gần như mọi trường theo người dùng — chấm trạng thái, dải chỉ số, thanh tiến độ chủ đề, hai khối phụ — phải có trạng thái "khách". Prototype luôn vẽ người đã đăng nhập; RD màn không nói gì. Cùng một câu với `02-bd/screens/users/_shell.md` mục 6 Q4, chưa đóng | Bắt buộc đăng nhập ở đợt này: rẻ hơn hẳn, và giá trị của màn nằm ở phần cá nhân hoá. Cho khách xem là việc của marketing, thêm sau vẫn kịp | Chủ dự án |
-| Q2 | **Ai ghép trường `solveState` vào từng dòng bảng, và lọc theo trạng thái chạy ở đâu?** | `problems` nằm ở schema `problem`, `user_problem_best_score` nằm ở schema `identity` [Nguồn: 02-bd/database/identity.md:111-112] — không được join xuyên schema. Nhưng tab trạng thái phải lọc **rồi mới** phân trang, nên không thể ghép sau khi đã phân trang | `identity` cung cấp `ListMyProblemSolveStates` trả về map `problem_id → trạng thái` của riêng người dùng (kích thước bị chặn bởi số bài họ từng nộp, không phải cả danh mục); `problem-bank` nhận map qua cổng ra, cache Redis theo người dùng 60 giây rồi lọc và phân trang trong tầng ứng dụng. Cùng tinh thần `DEC-2026-0921-class-completion-owned-by-identity` — bên nào sở hữu read model thì bên đó tính | DD `problem-bank` + `identity` |
-| Q3 | **`GetProblemCatalogSummary` và `ListTopicsWithProgress` đặt ở module nào?** | Cả hai đều cần đồng thời `difficulty` / `topic_id` (thuộc `problem-bank`) và tập bài đã giải (thuộc `identity`). Đặt ở đâu cũng phải có một lời gọi xuyên module | Đặt ở `problem-bank` vì phần phân loại nặng hơn phần tiến độ, dùng lại đúng cổng ra của Q2. Nếu Q2 chốt hướng khác thì hai endpoint này đi theo, không chốt riêng | DD `problem-bank` |
-| Q4 | **Khối "Bài đang làm dở" định nghĩa thế nào — bài nộp chưa đạt, hay bản nháp chưa nộp?** | Prototype ghi rõ "Bản nháp lưu trong Workspace" [Nguồn: 09-layoutBase/Ngân hàng bài toán.dc.html:208] và có một mục trạng thái "Nháp chưa nộp" [Nguồn: 09-layoutBase/Ngân hàng bài toán.dc.html:739], nhưng **không có bảng nào lưu bản nháp mã nguồn** trong toàn bộ BD database, cũng không có mã `Fx-nn` nào cho việc đó. RD của màn cũng không liệt kê khối này trong phạm vi [Nguồn: 01-rd/screens/users/USR0101_problem_list.md:39-55] | Định nghĩa lại là "bài đã nộp gần nhất mà chưa `ACCEPTED`", lấy từ `judge.submissions` — không cần bảng mới, không cần mã mới, vẫn đúng tinh thần "quay lại chỗ đang dở". Bỏ hẳn trạng thái "Nháp chưa nộp". Nếu chủ dự án muốn lưu bản nháp thật thì đó là tính năng mới của `problem_detail`, cần mã riêng và bảng riêng | Chủ dự án |
-| Q5 | **Giữ cả thanh chủ đề lẫn hàng chip chủ đề, hay bỏ một?** | Prototype có hai control cho **cùng một** giá trị lọc: thanh chủ đề ở `:118-125` và hàng chip ở `:148-152`, cả hai đều gọi cùng một hàm đặt `topic` [Nguồn: 09-layoutBase/Ngân hàng bài toán.dc.html:611,750]. Hai danh sách còn **lệch nhau**: thanh có 7 chủ đề, chip có 8 mục khác tập | Bỏ hàng chip, giữ thanh chủ đề vì nó mang thêm tiến độ từng chủ đề. Ít control hơn thì ít khả năng hai nơi hiển thị lệch nhau. BD này vẫn mô tả cả hai để không tự ý cắt phạm vi | Chủ dự án |
-| Q6 | **Lọc theo thẻ (`tags`) có nằm trong màn này không?** | F2-11 sau amendment 2026-08-31 có nhắc lọc theo thẻ [Nguồn: 01-rd/req/problem-bank.md:42-43] và bảng `tags`/`problem_tags` đã tồn tại [Nguồn: 02-bd/database/problem-bank.md:41-45], nhưng prototype không có control nào cho thẻ và RD màn không liệt kê | Hoãn sang đợt sau. Thẻ là danh mục tự do, số lượng không chặn trên — dựng UI cho nó cần chốt trước cách hiển thị khi có hàng trăm thẻ, tốn hơn hẳn giá trị mang lại ở đợt đầu | Chủ dự án |
-| Q7 | **Có nút đánh dấu lưu ngay trên dòng bảng không?** | F2-13 cho phép lưu bài kèm ghi chú riêng tư, và màn này có nút dẫn sang `saved_problems`, nhưng prototype không có control lưu trên từng dòng — người học phải vào `problem_detail` mới lưu được | Giữ nguyên như prototype ở đợt này. Nếu thêm thì đó là một thao tác ghi đầu tiên của màn, kéo theo kiểm quyền và xử lý lỗi cho một màn hiện đang thuần đọc. Nên chốt cùng lúc với BD `saved_problems` | Chủ dự án + BD `saved_problems` |
-| Q8 | **Người học thuộc nhiều lớp thì khối "Bài tập lớp" hiển thị ra sao?** | Prototype chỉ vẽ đúng một tên lớp ở dòng phụ [Nguồn: 09-layoutBase/Ngân hàng bài toán.dc.html:224]. `class_enrollments` không chặn một học viên ở nhiều lớp [Nguồn: 02-bd/database/identity.md:95-97] | Nhóm theo lớp trong cùng một khối, mỗi lớp một tiêu đề phụ; quá 3 lớp thì chỉ hiện 3 lớp có bài giao gần nhất kèm liên kết xem tất cả. DTO đã thiết kế dạng nhóm (`ClassAssignmentGroupDto`) nên không phải sửa hợp đồng khi chốt | Chủ dự án |
-| Q9 | **Bài giao theo lớp có hạn nộp không?** | Prototype hiển thị "hạn 24/08" [Nguồn: 09-layoutBase/Ngân hàng bài toán.dc.html:755] nhưng `class_assignments` **không có cột hạn nộp** [Nguồn: 02-bd/database/problem-bank.md:117-128], và F2-12 không nhắc tới hạn [Nguồn: 01-rd/req/problem-bank.md:44-56] | Không thêm cột ở đợt này: hạn nộp kéo theo cả một nhánh nghiệp vụ (nộp muộn có tính không, ai nhắc, hiển thị ở đâu) mà chưa yêu cầu nào đòi. Dòng phụ chỉ hiển thị ngày giao. Nếu chủ dự án xác nhận cần hạn nộp thì đó là amendment của F2-12 và thuộc màn `class_assignments` của A2, không phải màn này | Chủ dự án |
+| Q1 | **[Đã chốt 2026-10-18 (owner), theo đề xuất]** Chưa đăng nhập có xem được danh sách bài toán không? | Quyết định: **bắt buộc đăng nhập, không có trạng thái khách**; tiêu chí ponytail bậc 3 (không người dùng demo nào xem với tư cách khách). `DEC-2026-1018-usr-open-questions-phase1-scope`. Cùng câu với `02-bd/screens/users/_shell.md` mục 6 Q4 (file đó do bên khác cập nhật, ở đây chỉ ghi nhận) | Đóng. Sheet 4.1 và Sheet 9 NO 1 đã sửa theo | Chủ dự án |
+| Q2 | **[Đã chốt 2026-10-18 (owner), theo đề xuất]** Ai ghép trường `solveState` vào từng dòng bảng, và lọc theo trạng thái chạy ở đâu? | Quyết định: `identity` cung cấp `ListMyProblemSolveStates` trả map `problem_id` → trạng thái của riêng người dùng (kích thước bị chặn bởi số bài họ từng nộp, không phải cả danh mục), **cache Redis 60 giây theo người dùng**; `problem-bank` nhận map qua cổng ra (outbound port), **lọc theo trạng thái rồi mới phân trang** trong tầng ứng dụng. Tiêu chí ponytail bậc 4 (dùng lại read model `user_problem_best_score` của `identity` và Redis đã có, không dựng bảng hay join xuyên schema). `DEC-2026-1018-usr-open-questions-phase2-5`. Cùng tinh thần `DEC-2026-0921-class-completion-owned-by-identity` | Đóng. Sheet 4.3, Sheet 7 NO 8, 7.2 NO 6, 7.3 NO 5 đã sửa theo; DD `problem-bank` + `identity` chốt chữ ký cổng ra khi viết | DD `problem-bank` + `identity` |
+| Q3 | **[Đã chốt 2026-10-18 (owner), theo đề xuất]** `ListTopicsWithProgress` đặt ở module nào? (`GetProblemCatalogSummary` đã rút 2026-10-18) | Quyết định: `ListTopicsWithProgress` đặt ở `problem-bank`, dùng lại đúng cổng ra và map trạng thái của Q2 (cùng một lời gọi `identity`); phần `GetProblemCatalogSummary` **vẫn rút** (owner bỏ dải chỉ số, tiêu chí ponytail bậc 1/3). Tiêu chí ponytail bậc 4 (một chủ cho `topic_id`, không nhân đôi cổng). `DEC-2026-1018-usr-open-questions-phase2-5` | Đóng | DD `problem-bank` |
+| Q4 | **[Đã chốt 2026-10-18 (owner), theo đề xuất]** Khối "Bài đang làm dở" định nghĩa thế nào — bài nộp chưa đạt, hay bản nháp chưa nộp? | Quyết định: "Bài đang làm dở" = **bài nộp gần nhất của chính người học mà chưa `ACCEPTED`**, đọc từ `judge.submissions`; **không có bảng nháp**; bỏ trạng thái "Nháp chưa nộp" của prototype [Nguồn: 09-layoutBase/Ngân hàng bài toán.dc.html:208,739]. Bản nháp mã nguồn lưu ở trình duyệt (localStorage) theo (bài, ngôn ngữ, mô hình nộp) — thuộc `USR0102` Q4, ở đây chỉ tham chiếu. Tiêu chí ponytail bậc 4/5 (dùng lại `judge.submissions` và trình duyệt, không dựng bảng mới) | Đóng. Sheet 5 Khu vực F, Sheet 7 NO 15-16, EVT-13 đã sửa theo | Chủ dự án |
+| Q5 | **[Đã chốt 2026-10-18 (owner), theo đề xuất]** Giữ cả thanh chủ đề lẫn hàng chip chủ đề, hay bỏ một? | Quyết định: **giữ thanh chủ đề, bỏ hàng chip chủ đề**; tiêu chí ponytail bậc 4/5 (một control cho một giá trị lọc, thanh đã mang thêm tiến độ). Bản dựng vốn chỉ có thanh chủ đề (`problem-list-view.tsx:253-291`) nên không lệch. Đã bỏ item `problemList.filter.topicChips`; Khu vực C Sheet 5, 6 đánh số lại NO 1-4 | Đóng | Chủ dự án |
+| Q6 | **[Đã chốt 2026-10-18 (owner), theo đề xuất]** Lọc theo thẻ (`tags`) có nằm trong màn này không? | Quyết định: **hoãn lọc theo thẻ sang đợt sau**; tiêu chí ponytail bậc 3 (prototype không có control, không người dùng demo nào lọc theo thẻ; thẻ là danh mục tự do, chưa chốt cách hiển thị khi có hàng trăm thẻ). Bảng `tags`/`problem_tags` vẫn giữ nguyên [Nguồn: 02-bd/database/problem-bank.md:41-45] | Đóng (hoãn). Mở lại khi có yêu cầu | Chủ dự án |
+| Q7 | **[Đã chốt 2026-10-18 (owner), theo đề xuất]** Có nút đánh dấu lưu ngay trên dòng bảng không? | Quyết định: **không có nút lưu trên dòng bảng**; tiêu chí ponytail bậc 3. Người học lưu bài ở `problem_detail`, màn này giữ nguyên thuần đọc. Bản dựng khớp (`problem-list-view.tsx:213-228`) | Đóng | Chủ dự án |
+| Q8 | **[Đã chốt 2026-10-18 (owner), theo đề xuất; bổ sung cùng ngày]** Người học thuộc nhiều lớp thì khối "Bài tập lớp" hiển thị ra sao? | Quyết định: **nhóm theo lớp, tối đa 3 lớp có bài giao gần nhất (`assigned_at` giảm dần), KHÔNG có liên kết "Xem tất cả"**. Bổ sung của owner cùng ngày: không có màn đích nào cho liên kết nên bác mọi liên kết (trước đó đề xuất có liên kết và cờ `hasMoreClasses`). `ClassAssignmentGroupDto` đã dạng nhóm nên không đổi hợp đồng, **không** thêm cờ `hasMoreClasses`. Tiêu chí ponytail bậc 3/5. Bản dựng đã cắt 3 lớp (`problem-list-view.tsx:56,117-121`); còn nợ prototype nhỏ: mock chưa có `assigned_at` nên chưa sắp theo ngày giao | Đóng hoàn toàn (không còn nợ màn đích) | Chủ dự án |
+| Q9 | **[Đã chốt 2026-10-18 (owner), theo đề xuất]** Bài giao theo lớp có hạn nộp không? | Quyết định: **bài giao không có hạn nộp**, dòng phụ chỉ hiển thị ngày giao; tiêu chí ponytail bậc 1/3 (F2-12 không nhắc hạn [Nguồn: 01-rd/req/problem-bank.md:44-56], `class_assignments` không có cột hạn [Nguồn: 02-bd/database/problem-bank.md:117-128]). Prototype "hạn 24/08" [Nguồn: 09-layoutBase/Ngân hàng bài toán.dc.html:755] không theo | Đóng. Nếu sau này cần hạn nộp thì là amendment F2-12 của màn `class_assignments` (A2) | Chủ dự án |

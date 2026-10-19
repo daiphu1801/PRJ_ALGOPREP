@@ -8,12 +8,16 @@ import { useSyncExternalStore } from "react";
 
 export type ToastTone = "success" | "error" | "warning" | "info";
 
+export type ToastAction = { label: string; onClick: () => void };
+
 export type ToastItem = {
   id: number;
   tone: ToastTone;
   message: string;
   /** How long the card stays before it dismisses itself. */
   durationMs: number;
+  /** Optional inline action button (e.g. Undo). */
+  action?: ToastAction;
 };
 
 // Errors and warnings are read slower and are the ones a user cannot afford to miss.
@@ -44,7 +48,11 @@ function subscribe(listener: () => void) {
   };
 }
 
-function push(tone: ToastTone, message: string): number {
+function push(
+  tone: ToastTone,
+  message: string,
+  action?: ToastAction,
+): number {
   const text = message.trim();
   if (!text) return -1;
 
@@ -59,6 +67,7 @@ function push(tone: ToastTone, message: string): number {
     tone,
     message: text,
     durationMs: DURATION_MS[tone],
+    ...(action ? { action } : {}),
   };
   commit(
     [...items.filter((existing) => existing !== repeated), item].slice(
@@ -69,10 +78,14 @@ function push(tone: ToastTone, message: string): number {
 }
 
 export const toast = {
-  success: (message: string) => push("success", message),
-  error: (message: string) => push("error", message),
-  warning: (message: string) => push("warning", message),
-  info: (message: string) => push("info", message),
+  success: (message: string, action?: ToastAction) =>
+    push("success", message, action),
+  error: (message: string, action?: ToastAction) =>
+    push("error", message, action),
+  warning: (message: string, action?: ToastAction) =>
+    push("warning", message, action),
+  info: (message: string, action?: ToastAction) =>
+    push("info", message, action),
   dismiss(id: number) {
     if (items.some((item) => item.id === id))
       commit(items.filter((item) => item.id !== id));

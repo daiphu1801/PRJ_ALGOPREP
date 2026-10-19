@@ -1,5 +1,5 @@
-import { describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { NextIntlClientProvider } from "@/shared/i18n";
 import messages from "../../../../../messages/vi.json";
 import { ProblemDetailView } from "./problem-detail-view";
@@ -7,6 +7,7 @@ import { ProblemDetailView } from "./problem-detail-view";
 let currentProblemId: string | undefined = "1";
 vi.mock("next/navigation", () => ({
   useParams: () => ({ problemId: currentProblemId }),
+  useRouter: () => ({ push: vi.fn() }),
 }));
 
 function renderView() {
@@ -17,9 +18,17 @@ function renderView() {
   );
 }
 
+beforeEach(() => {
+  currentProblemId = "1";
+  window.localStorage.clear();
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
 describe("ProblemDetailView", () => {
   it("renders the problem statement and the primary actions (Run Code / Submit)", () => {
-    currentProblemId = "1";
     renderView();
 
     expect(screen.getByText("Two Sum")).toBeInTheDocument();
@@ -27,10 +36,93 @@ describe("ProblemDetailView", () => {
     expect(screen.getByText("Submit")).toBeInTheDocument();
   });
 
-  it("shows the empty state for an unknown problem id", () => {
+  it("shows a not-found state for an unknown problem id", () => {
     currentProblemId = "does-not-exist";
     renderView();
 
-    expect(screen.getByText("Chưa chọn bài toán")).toBeInTheDocument();
+    expect(screen.getByText("Không tìm thấy bài toán.")).toBeInTheDocument();
+  });
+
+  it("renders constraints from the statement Markdown, not from a separate field", () => {
+    renderView();
+
+    expect(screen.getByText("Ràng buộc")).toBeInTheDocument();
+    expect(
+      screen.getByText("Chỉ có đúng một đáp án hợp lệ"),
+    ).toBeInTheDocument();
+  });
+
+  it("starts the save button from the stored state of the problem", () => {
+    renderView();
+
+    expect(screen.getByRole("button", { name: "Bỏ lưu" })).toBeInTheDocument();
+  });
+
+  it("shows the effective time and memory limits of the selected language", () => {
+    renderView();
+
+    // Java is 2x the base 1000 ms / 256 MB in the mock language config.
+    expect(screen.getByText("Time 2s · Memory 512MB")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "C++" }));
+    expect(screen.getByText("Time 1s · Memory 256MB")).toBeInTheDocument();
+  });
+
+  it("Run Code shows actual output, expected output and metrics per sample testcase", async () => {
+    renderView();
+
+    expect(
+      screen.getByText(/Còn 9 testcase ẩn, chỉ chạy khi nộp bài/),
+    ).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /Run Code/ }));
+
+    // First run: case 1 passes, the last sample comes back wrong.
+    expect(await screen.findByText("Kết quả thực tế")).toBeInTheDocument();
+    expect(screen.getByText("Kết quả mong đợi")).toBeInTheDocument();
+    expect(screen.getByText(/Thời gian 3 ms · Bộ nhớ 36 MB/)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /Case 3/ }));
+    expect(screen.getByText("[]")).toBeInTheDocument();
+    // The statement example also prints [0,1]; the console block is the extra occurrence.
+    expect(screen.getAllByText("[0,1]").length).toBeGreaterThan(1);
+    expect(screen.getByText("2/3 testcase mẫu đạt")).toBeInTheDocument();
+  });
+
+  it("does not run blank code and leaves the buttons usable", () => {
+    renderView();
+
+    fireEvent.change(screen.getByLabelText("Vùng soạn mã"), {
+      target: { value: "   " },
+    });
+    const run = screen.getByRole("button", { name: /Run Code/ });
+    fireEvent.click(run);
+
+    expect(run).not.toBeDisabled();
+    expect(screen.queryByText("Kết quả thực tế")).not.toBeInTheDocument();
+  });
+
+  it("keeps a draft per problem, language and model and says so only when it was stored", () => {
+    renderView();
+
+    fireEvent.change(screen.getByLabelText("Vùng soạn mã"), {
+      target: { value: "class Solution {}" },
+    });
+    expect(
+      window.localStorage.getItem("algoprep-draft:1:java:function"),
+    ).toBe("class Solution {}");
+    expect(screen.getByText("Đã lưu trên trình duyệt này")).toBeInTheDocument();
+  });
+
+  it("does not claim the draft was saved when the browser blocks storage", () => {
+    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+      throw new Error("blocked");
+    });
+    renderView();
+
+    fireEvent.change(screen.getByLabelText("Vùng soạn mã"), {
+      target: { value: "class Solution {}" },
+    });
+    expect(
+      screen.queryByText("Đã lưu trên trình duyệt này"),
+    ).not.toBeInTheDocument();
   });
 });

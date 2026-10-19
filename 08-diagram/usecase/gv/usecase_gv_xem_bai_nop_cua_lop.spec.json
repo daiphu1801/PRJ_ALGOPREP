@@ -1,0 +1,36 @@
+{
+  "_": "Use case chi tiet oval 'Xem bai nop cua hoc vien trong lop' o ban tong quan, actor A2 Giang vien. Nguon: 01-rd/screens/teacher/INS0206_submission_management.md (REQ-01 den REQ-19), thay cho oval 'Cham va nhan xet bai nop' da bo 2026-10-13 (DEC-2026-1013-remove-instructor-manual-grading). Khong ve: sap xep, phan trang (chi tiet giao dien), diem AI.",
+  "kind": "usecase",
+  "title": "Sơ đồ Use Case chi tiết - Xem bài nộp của học viên trong lớp (Giảng viên)",
+  "covers": [
+    "F4-13"
+  ],
+  "mode": "color",
+  "usecase": {
+    "system": "Xem bài nộp của lớp",
+    "groups": [
+      {
+        "name": "Danh sách bài nộp của lớp (INS0206)",
+        "actors": [
+          "Giảng viên"
+        ],
+        "usecases": [
+          "Xem mọi lượt nộp trong các lớp phụ trách",
+          "Lọc theo lớp, kết quả và từ khoá",
+          "Xem tỉ lệ testcase đạt của mỗi lượt nộp",
+          "Xem bài nộp của học viên đã rời lớp"
+        ]
+      },
+      {
+        "name": "Đọc một bài nộp (chỉ đọc)",
+        "actors": [
+          "Giảng viên"
+        ],
+        "usecases": [
+          "Mở kết quả và mã nguồn của một lượt nộp",
+          "Quay lại danh sách giữ nguyên bộ lọc"
+        ]
+      }
+    ]
+  }
+}

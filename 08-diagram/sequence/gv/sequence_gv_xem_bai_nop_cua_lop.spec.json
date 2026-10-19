@@ -1,0 +1,185 @@
+{
+  "_": "Nguon: 01-rd/screens/teacher/INS0206_submission_management.md (REQ-01 den REQ-19), 02-bd/screens/teacher/INS0206_submission_management.md (muc 7.3: ListInstructorSubmissions, ListInstructorClasses, ListClassAssignments; DTO), DEC-2026-1013-instructor-submissions-list, DEC-2026-1014-instructor-submissions-list-rules, DEC-2026-1014-instructor-submissions-list-details, DEC-2026-1013-instructor-avatar-menu-and-read-source. Duong dan REST va ten endpoint doc mot bai nop la [SoT: Suy luan] vi chua co DD. Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Xem bài nộp của học viên trong lớp (Giảng viên)",
+  "covers": [
+    "F4-13"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Giảng viên",
+        "role": "actor"
+      },
+      {
+        "name": "SubmissionController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "SubmissionService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema judge"
+      },
+      {
+        "name": "identity, problem-bank",
+        "role": "external",
+        "stereo": "cổng ra"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 1 - Mở danh sách bài nộp của các lớp mình phụ trách và lọc (INS0206)"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Mở Bài nộp, chọn lớp, kết quả hoặc gõ từ khoá"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "SubmissionController",
+        "text": "GET .../instructor/submissions?classId=&result=&q=&page="
+      },
+      {
+        "from": "SubmissionController",
+        "to": "SubmissionController",
+        "text": "Kiểm tra quyền xem lớp (CLASS_MANAGEMENT:READ); lớp phải do mình phụ trách"
+      },
+      {
+        "from": "SubmissionController",
+        "to": "SubmissionService",
+        "text": "Yêu cầu danh sách bài nộp"
+      },
+      {
+        "from": "SubmissionService",
+        "to": "identity, problem-bank",
+        "text": "Lấy lớp, bài đã giao, ghi danh kể cả đã rời"
+      },
+      {
+        "from": "identity, problem-bank",
+        "to": "SubmissionService",
+        "text": "Lớp, bài đã giao, mốc rời lớp",
+        "kind": "return"
+      },
+      {
+        "from": "SubmissionService",
+        "to": "PostgreSQL",
+        "text": "Đọc bài nộp theo bộ lọc, 20 dòng mỗi trang"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "SubmissionService",
+        "text": "Một trang bài nộp",
+        "kind": "return"
+      },
+      {
+        "from": "SubmissionService",
+        "to": "SubmissionService",
+        "text": "Gắn mỗi lượt vào lớp giao bài gần nhất; đánh dấu học viên đã rời lớp"
+      },
+      {
+        "from": "SubmissionService",
+        "to": "SubmissionController",
+        "text": "Trang danh sách bài nộp",
+        "kind": "return"
+      },
+      {
+        "from": "SubmissionController",
+        "to": "Giảng viên",
+        "text": "200 OK",
+        "kind": "return"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Bảng bài nộp có cột tỉ lệ testcase; học viên đã rời lớp hiện ghi chú Đã rời lớp"
+      },
+      {
+        "phase": "Giai đoạn 2 - Mở một bài nộp ở chế độ chỉ đọc, ngoài lớp thì trả 404 (INS0206)"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Bấm Xem bài nộp ở một dòng"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "SubmissionController",
+        "text": "GET .../submissions/{submissionId}?classId=&studentId="
+      },
+      {
+        "from": "SubmissionController",
+        "to": "SubmissionService",
+        "text": "Yêu cầu xem một bài nộp"
+      },
+      {
+        "from": "SubmissionService",
+        "to": "identity, problem-bank",
+        "text": "Kiểm tra học viên và bài thuộc phạm vi lớp mình phụ trách"
+      },
+      {
+        "from": "identity, problem-bank",
+        "to": "SubmissionService",
+        "text": "Thuộc hoặc không thuộc phạm vi",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Bài thuộc lớp mình?",
+          "then": [
+            {
+              "from": "SubmissionService",
+              "to": "PostgreSQL",
+              "text": "Đọc bài nộp, mã nguồn, kết quả từng testcase"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "SubmissionService",
+              "text": "Bài nộp",
+              "kind": "return"
+            },
+            {
+              "from": "SubmissionService",
+              "to": "SubmissionController",
+              "text": "Kết quả bài nộp, chỉ đọc",
+              "kind": "return"
+            },
+            {
+              "from": "SubmissionController",
+              "to": "Giảng viên",
+              "text": "200 OK",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "SubmissionService",
+              "to": "SubmissionController",
+              "text": "Không tìm thấy",
+              "kind": "return"
+            },
+            {
+              "from": "SubmissionController",
+              "to": "Giảng viên",
+              "text": "404 Not Found - bài ngoài lớp không lộ là có tồn tại",
+              "kind": "return"
+            }
+          ]
+        }
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Trang kết quả chỉ đọc; bấm Quay lại thì danh sách khôi phục bộ lọc và trang"
+      }
+    ]
+  }
+}

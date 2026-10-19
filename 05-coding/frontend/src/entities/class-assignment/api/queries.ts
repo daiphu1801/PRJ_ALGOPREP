@@ -2,7 +2,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiError, withMockData } from "@/shared/api";
 import {
+  assignProblemsToClass,
   assignmentSummary,
+  listAssignableProblems,
   listClassAssignments,
   removeAssignmentFromClass,
 } from "./__mock__/class-assignment-mocks";
@@ -43,6 +45,34 @@ export function useRemoveAssignment() {
     }) =>
       withMockData(
         () => removeAssignmentFromClass(problemId, classId),
+        notImplemented,
+      ),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["class-assignments"] }),
+  });
+}
+
+export const useAssignableProblems = (classId: string) =>
+  useQuery({
+    queryKey: ["class-assignments", "assignable", classId],
+    queryFn: () =>
+      withMockData(() => listAssignableProblems(classId), notImplemented),
+    enabled: classId !== "",
+    ...QUERY_OPTIONS,
+  });
+
+export function useAssignProblems() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      classId,
+      problemIds,
+    }: {
+      classId: string;
+      problemIds: string[];
+    }) =>
+      withMockData(
+        () => assignProblemsToClass(classId, problemIds),
         notImplemented,
       ),
     onSuccess: () =>

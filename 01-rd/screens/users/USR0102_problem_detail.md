@@ -47,17 +47,21 @@ dưới) cho thấy học viên **tự do chọn mô hình mỗi lượt làm b�
 Đối chiếu `09-layoutBase/Workspace giải bài.dc.html` [SoT: 09-layoutBase/Workspace giải bài.dc.html], phạm
 vi trên thể hiện qua các khối màn sau:
 
-1. **Chưa chọn bài** (`hasProblem = false`) — màn gợi ý chọn bài đang làm dở hoặc chọn từ danh sách gợi ý
-   (dòng 113-150).
-2. **Bố cục hai cột chia đôi được (resizable split)** khi đã có bài — cột trái là panel Đề bài/Gợi ý/Bài
-   nộp/Solution Review (tab, dòng 160-247); cột phải chia hai hàng: Editor (trên) và Console kết quả (dưới)
+1. **Chưa chọn bài** (`hasProblem = false`) — chỉ hiện bài đang làm dở gần nhất kèm liên kết sang danh sách
+   bài (`problem_list`); khối "Gợi ý theo điểm yếu của bạn" (dòng 136-150) **bỏ**. Vào Workspace từ thanh điều
+   hướng khi chưa chọn bài thì chuyển hướng sang bài đang làm dở gần nhất, không có thì sang danh sách bài
+   [SoT: .nexa/control/decision-registry.md — `DEC-2026-1018-usr-open-questions-phase1-scope`, chốt 2026-10-18].
+2. **Bố cục hai cột chia đôi được (resizable split)** khi đã có bài — cột trái là panel Đề bài/Bài
+   nộp/Solution Review (**ba** tab; tab "Gợi ý" của prototype tĩnh đã lỗi thời, dòng 160-247); cột phải chia hai hàng: Editor (trên) và Console kết quả (dưới)
    (dòng 156-330).
 3. **Tab "Đề bài"** — tiêu đề, badge độ khó/chủ đề/**mô hình nộp bài hiện tại** (`{{ problem.mode }}`, dòng
    172), câu giải thích rõ ràng mô hình đang chọn ("Bài này đang ở mô hình bọc hàm: bạn chỉ viết thân hàm…",
-   dòng 178), ví dụ, ràng buộc, câu hỏi mở rộng gợi mở Solution Review (dòng 166-202).
-4. **Tab "Gợi ý"**, **Tab "Bài nộp"** (lịch sử nộp bài cho riêng bài này: verdict, ngôn ngữ, thời gian chạy,
+   dòng 178), ví dụ, ràng buộc, câu hỏi mở rộng gợi mở Solution Review (dòng 166-202); ràng buộc và câu hỏi mở rộng là
+   mục Markdown nằm trong nội dung đề, không phải trường riêng. Mã bài hiển thị nguyên dạng `problems.code`
+   (chuỗi), không dựng số thứ tự. Màn **không** có đồng hồ phiên làm bài.
+4. **Tab "Bài nộp"** (lịch sử nộp bài cho riêng bài này: verdict, ngôn ngữ, thời gian chạy,
    thời điểm — dòng 216-227), **Tab "Solution Review"** (số liệu tóm tắt + nhận xét — dòng 229-247) — xem
-   Câu hỏi mở Q1 về tab này.
+   Câu hỏi mở Q1 về tab này. Tab "Gợi ý" của prototype đã bị cắt (`DEC-2026-0831-remove-tiered-hints-ai-config`).
 5. **Chọn ngôn ngữ** (3 tab Java/C++/Python, dòng 268-270), **chọn mô hình** (2 nút "Có hàm main"/"Bọc hàm",
    dòng 272-276, 596-601) **và chọn phương thức nhập mã** (2 nút "Gõ trực tiếp"/"Tải file", tách riêng bằng
    một đường kẻ dọc khỏi nhóm chọn mô hình, dòng 277-282, 602-608) — đổi mã khung (starter code) ngay khi đổi
@@ -67,7 +71,9 @@ vi trên thể hiện qua các khối màn sau:
    biến `inputMethod` riêng, áp dụng cho mô hình đang chọn.
 6. **`isEditorMode`** — editor dòng-số + textarea gõ trực tiếp (dòng 281-294). **`isUploadMode`** (khi chọn
    "Tải file") — vùng kéo-thả hoặc chọn file, giới hạn đúng phần mở rộng ngôn ngữ và tối đa 64 KB, xem lại
-   nội dung đã tải (dòng 297-312) — khớp F4-01 mục bổ sung "tải file, cùng luồng với gõ trực tiếp".
+   nội dung đã tải (dòng 297-312) — khớp F4-01 mục bổ sung "tải file, cùng luồng với gõ trực tiếp". Mã đang soạn được giữ ở trình duyệt
+   này theo từng cặp (bài, ngôn ngữ, mô hình) và gắn nhãn "Đã lưu trên trình duyệt này"; không có bản nháp ở máy chủ.
+   Console kết quả không hiển thị chỉ số "Beats" (chỉ có ở `submission_result`).
 7. **Console kết quả** — tab "Testcase" (xem input mẫu theo từng case, dòng 333-350) và tab "Kết quả" (sau
    khi Run/Submit): dải ô màu theo từng testcase, chỉ số thời gian/bộ nhớ, output, và — **chỉ khi
    Accepted** — ba liên kết "Xem kết quả chấm" (`submission_result`), "Phân tích bài giải" (`solution_review`,
@@ -110,6 +116,10 @@ vi trên thể hiện qua các khối màn sau:
 ---
 
 ## 4. Tiền đề và ràng buộc
+
+> Cập nhật 2026-10-18: chủ dự án đã chốt các câu hỏi mở của màn ở BD (`02-bd/screens/users/USR0102_problem_detail.md`,
+> Q1-Q5, Q11-Q13; `DEC-2026-1018-usr-open-questions-phase1-scope`), phần tác động đến phạm vi nằm ở mục 2. Ba câu hỏi
+> RD dưới đây đã đóng từ 2026-08-25, không đổi.
 
 | # | Câu hỏi | Vì sao chưa trả lời được | Đề xuất | Chủ sở hữu |
 | :-: | :--- | :--- | :--- | :--- |

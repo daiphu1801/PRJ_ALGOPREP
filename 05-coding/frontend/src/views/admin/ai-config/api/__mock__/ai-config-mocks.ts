@@ -6,23 +6,28 @@ import type {
   PromptVersionEntry,
 } from "../../model/types";
 
+// Declared by the dev in the backend config (BD ADM0301 Q14); the admin only chooses among them.
+const MODEL_OPTIONS = ["claude-sonnet", "claude-haiku", "claude-opus"];
+
 // dc.html:418-422.
 const PROMPTS: PromptConfig[] = [
   {
     feature: "review",
     version: "v3.8",
     status: "live",
-    model: "claude-sonnet",
-    temperature: "0,2",
+    modelId: "claude-sonnet",
+    systemInstruction:
+      "Bạn là trợ lý chấm bài giải thuật toán. Chỉ ra độ phức tạp và điểm cần sửa, trích đoạn mã liên quan. Không đưa lời giải đầy đủ.",
     maxTokens: "1.600 token",
     updatedAt: "11/08",
   },
   {
     feature: "interview",
     version: "v2.5",
-    status: "abTest",
-    model: "claude-sonnet",
-    temperature: "0,6",
+    status: "live",
+    modelId: "claude-sonnet",
+    systemInstruction:
+      "Bạn là người phỏng vấn kỹ thuật. Hỏi tiếp theo câu trả lời của ứng viên qua ba giai đoạn: Giải trình, Phản biện, Mở rộng quy mô; cuối phiên chấm theo rubric bốn tiêu chí.",
     maxTokens: "1.200 token",
     updatedAt: "19/08",
   },
@@ -30,8 +35,9 @@ const PROMPTS: PromptConfig[] = [
     feature: "testcase",
     version: "v1.9",
     status: "draft",
-    model: "claude-haiku",
-    temperature: "0,4",
+    modelId: "claude-haiku",
+    systemInstruction:
+      "Bạn viết script sinh dữ liệu testcase từ đề bài. Chỉ sinh input, không tự viết output; output chạy thật từ đáp án mẫu.",
     maxTokens: "2.000 token",
     updatedAt: "20/08",
   },
@@ -49,6 +55,8 @@ const VERSION_HISTORY: PromptVersionEntry[] = [
     feature: "testcase",
     version: "v1.9",
     publishedAt: "20/08",
+    systemInstruction:
+      "Bạn viết script sinh dữ liệu testcase từ đề bài. Chỉ sinh input, không tự viết output; output chạy thật từ đáp án mẫu.",
     author: "pdai",
   },
   {
@@ -56,6 +64,8 @@ const VERSION_HISTORY: PromptVersionEntry[] = [
     feature: "interview",
     version: "v2.5",
     publishedAt: "19/08",
+    systemInstruction:
+      "Bạn là người phỏng vấn kỹ thuật. Hỏi tiếp theo câu trả lời của ứng viên qua ba giai đoạn: Giải trình, Phản biện, Mở rộng quy mô; cuối phiên chấm theo rubric bốn tiêu chí.",
     author: "pdai",
   },
   {
@@ -63,6 +73,8 @@ const VERSION_HISTORY: PromptVersionEntry[] = [
     feature: "interview",
     version: "v2.4",
     publishedAt: "12/08",
+    systemInstruction:
+      "Bạn là người phỏng vấn kỹ thuật. Hỏi tiếp theo câu trả lời của ứng viên, chấm cuối phiên.",
     author: "pdai",
   },
   {
@@ -70,6 +82,8 @@ const VERSION_HISTORY: PromptVersionEntry[] = [
     feature: "review",
     version: "v3.8",
     publishedAt: "11/08",
+    systemInstruction:
+      "Bạn là trợ lý chấm bài giải thuật toán. Chỉ ra độ phức tạp và điểm cần sửa, trích đoạn mã liên quan. Không đưa lời giải đầy đủ.",
     author: "minhtri",
   },
   {
@@ -77,35 +91,30 @@ const VERSION_HISTORY: PromptVersionEntry[] = [
     feature: "review",
     version: "v3.7",
     publishedAt: "02/08",
+    systemInstruction:
+      "Bạn là trợ lý chấm bài giải thuật toán. Nêu độ phức tạp và điểm cần sửa.",
     author: "pdai",
   },
 ];
 
 export function fetchAiConfigPage(): AiConfigPage {
   return {
+    modelOptions: MODEL_OPTIONS,
     prompts: PROMPTS.map((prompt) => ({ ...prompt })),
-    // dc.html:433 `state.weights`.
-    rubricWeights: {
-      correctness: 30,
-      complexity: 25,
-      codeQuality: 20,
-      edgeCases: 15,
-      explanation: 10,
-    },
-    // dc.html:451-455.
-    rateLimits: {
-      reviewPerDay: "10 lượt",
-      interviewPerWeek: "5 phiên",
-      cooldown: "20 giây",
-    },
-    // dc.html:434 `state.guards`.
+    // Per feature (D5, 2026-10-10); noFullSolution is locked on (D4).
     guards: {
-      noFullSolution: true,
-      citeLines: true,
-      answerInVietnamese: true,
+      review: {
+        noFullSolution: true,
+        citeLines: true,
+        answerInVietnamese: true,
+      },
+      interview: {
+        noFullSolution: true,
+        citeLines: false,
+        answerInVietnamese: true,
+      },
     },
     versionHistory: VERSION_HISTORY.map((entry) => ({ ...entry })),
     // dc.html:259.
-    lastComparison: { date: "19/08", averageDelta: "0,4 điểm" },
   };
 }

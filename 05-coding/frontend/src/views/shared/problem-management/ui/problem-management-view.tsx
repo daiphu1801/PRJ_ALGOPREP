@@ -179,8 +179,12 @@ function ProblemManagementForm({
         }
         case "status":
           return left.status.localeCompare(right.status) * factor;
-        case "topic":
-          return left.topic.localeCompare(right.topic, "vi") * factor;
+        case "code":
+          return (
+            (Number(left.code.replace("#", "")) -
+              Number(right.code.replace("#", ""))) *
+            factor
+          );
         default:
           return left.title.localeCompare(right.title, "vi") * factor;
       }
@@ -309,6 +313,7 @@ function ProblemManagementForm({
       key: "code",
       header: t("columnCode"),
       width: "92px",
+      sortable: true,
       render: (problem) => (
         <span className="font-mono text-xs text-[var(--color-text-muted)]">
           {problem.code}
@@ -333,7 +338,6 @@ function ProblemManagementForm({
       key: "topic",
       header: t("columnTopic"),
       width: "132px",
-      sortable: true,
       render: (problem) => (
         <span className="block truncate text-[12.5px] text-[var(--color-text-muted)]">
           {problemTopicLabel(topicList, problem.topic)}
@@ -358,7 +362,7 @@ function ProblemManagementForm({
       sortable: true,
       render: (problem) => (
         <span
-          className="flex items-center gap-1.5 text-[12.5px] font-semibold"
+          className="flex items-center gap-1.5 text-[12.5px] font-semibold whitespace-nowrap"
           style={{ color: `var(${STATUS_TEXT_VAR[problem.status]})` }}
         >
           <span
@@ -372,8 +376,12 @@ function ProblemManagementForm({
     },
     {
       key: "submissions",
-      header: t("columnSubmissions"),
-      width: "88px",
+      // Auto table layout treats the width as a hint, so the label itself must not wrap (admin UX
+      // review F11).
+      header: (
+        <span className="whitespace-nowrap">{t("columnSubmissions")}</span>
+      ),
+      width: "100px",
       align: "right",
       sortable: true,
       render: (problem) => (
@@ -399,11 +407,12 @@ function ProblemManagementForm({
       align: "right",
       sortable: true,
       render: (problem) => (
-        <span className="font-mono text-xs text-[var(--color-text-muted)]">
-          {t("testcasesAndEdit", {
-            count: problem.testcaseCount,
-            edited: problem.editedLabel,
-          })}
+        // Two deliberate lines instead of a wrap that split "3 ngày" (admin UX review F11).
+        <span className="flex flex-col font-mono text-xs leading-tight text-[var(--color-text-muted)]">
+          <span className="whitespace-nowrap">
+            {t("testcasesCount", { count: problem.testcaseCount })}
+          </span>
+          <span className="whitespace-nowrap">{problem.editedLabel}</span>
         </span>
       ),
     },
@@ -520,7 +529,14 @@ function ProblemManagementForm({
 
         <BulkActionBar
           count={selected.size}
-          label={t("selectionLabel", { count: selected.size })}
+          label={
+            hiddenSelectedCount > 0
+              ? t("selectionLabelHidden", {
+                  count: selected.size,
+                  hidden: hiddenSelectedCount,
+                })
+              : t("selectionLabel", { count: selected.size })
+          }
         >
           {/* "Xuất bản", not the mockup's "Xuất bản / ẩn": hiding is no longer a state. */}
           {(

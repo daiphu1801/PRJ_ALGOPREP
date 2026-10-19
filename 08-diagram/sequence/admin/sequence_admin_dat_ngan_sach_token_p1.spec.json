@@ -1,5 +1,5 @@
 {
-  "_": "Luong dat ngan sach token, tu dong khoa khi can quota, va canh bao bat thuong cap tai khoan cua actor A3. Nguon: US-A3-04 (01-rd/req/user_stories/a3_admin.md), 01-rd/req/ai-review.md (F5-19, F5-21, F5-25), 02-bd/architecture/ai-review.md muc 6.3 (ngan sach + locked_at, ADMIN khong bi khoa) va muc 6.4 (DEC-2026-0831-ai-usage-anomaly-alert -- canh bao mem, KHONG tu khoa tai khoan).",
+  "_": "Luong dat ngan sach token, tu dong khoa khi can quota, va canh bao bat thuong cap tai khoan cua actor A3. Nguon: US-A3-04 (01-rd/req/user_stories/a3_admin.md), 01-rd/req/ai-review.md (F5-19, F5-21, F5-25), 02-bd/architecture/ai-review.md muc 6.3 (ngan sach + locked_at, ADMIN khong bi khoa) va muc 6.4 (DEC-2026-0831-ai-usage-anomaly-alert -- canh bao mem, KHONG tu khoa tai khoan). Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen.",
   "_hai_co_che": "Muc 6.3 va 6.4 la HAI co che tach biet: mot cai tu khoa theo ngan sach toan he thong, mot cai chi canh bao de ADMIN xem xet thu cong. Ve chung mot so do de thay ro chung khong dinh vao nhau.",
   "kind": "sequence",
   "title": "Sơ đồ tuần tự chi tiết - Đặt ngân sách token và cảnh báo bất thường (Quản trị viên) (1/2)",
@@ -53,28 +53,28 @@
       {
         "from": "TokenBudgetController",
         "to": "TokenBudgetService",
-        "text": "getUsageOverview()"
+        "text": "Yêu cầu mức tiêu thụ token"
       },
       {
         "from": "TokenBudgetService",
         "to": "PostgreSQL",
-        "text": "Tổng hợp token_usage theo chu kỳ hiện tại"
+        "text": "Tổng hợp token đã dùng theo chu kỳ hiện tại"
       },
       {
         "from": "PostgreSQL",
         "to": "TokenBudgetService",
-        "text": "Tổng tiêu thụ, hạn mức, xếp hạng người dùng và bài toán tốn token",
+        "text": "Tổng tiêu thụ, hạn mức, xếp hạng người dùng và bài toán",
         "kind": "return"
       },
       {
         "from": "TokenBudgetService",
         "to": "TokenBudgetService",
-        "text": "Nội suy tốc độ 7 ngày gần nhất ra thời điểm cạn quota"
+        "text": "Dự báo thời điểm cạn quota từ tốc độ 7 ngày gần nhất"
       },
       {
         "from": "TokenBudgetService",
         "to": "TokenBudgetController",
-        "text": "TokenUsageDto",
+        "text": "Số liệu tiêu thụ và dự báo",
         "kind": "return"
       },
       {
@@ -99,27 +99,28 @@
       {
         "from": "Quản trị viên",
         "to": "TokenBudgetController",
-        "text": "PATCH /ai/admin/token-budget { limit, period }"
+        "text": "PATCH /ai/admin/token-budget"
       },
       {
         "from": "TokenBudgetController",
         "to": "TokenBudgetController",
-        "text": "Kiểm quyền AI_TOKEN_BUDGET:UPDATE"
+        "text": "Kiểm tra quyền đổi ngân sách (AI_TOKEN_BUDGET:UPDATE)"
       },
       {
         "from": "TokenBudgetController",
         "to": "TokenBudgetService",
-        "text": "updateBudget(command, adminId)"
+        "text": "Yêu cầu đổi hạn mức"
       },
       {
         "from": "TokenBudgetService",
         "to": "PostgreSQL",
-        "text": "UPDATE ai_token_budget_configs, xoá locked_at nếu đang khoá"
+        "text": "Lưu hạn mức mới; ghi nhật ký giá trị cũ và mới"
       },
       {
-        "from": "TokenBudgetService",
-        "to": "PostgreSQL",
-        "text": "Ghi system_audit_logs: ai đổi ngân sách, giá trị cũ và mới"
+        "from": "PostgreSQL",
+        "to": "TokenBudgetService",
+        "text": "Đã lưu",
+        "kind": "return"
       },
       {
         "from": "TokenBudgetService",
@@ -145,7 +146,7 @@
             {
               "from": "TokenBudgetService",
               "to": "Sinh viên",
-              "text": "Cho đi tiếp - ADMIN không bị khoá theo ngân sách",
+              "text": "Cho đi tiếp, ADMIN không bị khoá theo ngân sách",
               "kind": "return"
             }
           ],
@@ -153,7 +154,7 @@
             {
               "from": "TokenBudgetService",
               "to": "Sinh viên",
-              "text": "AI_BUDGET_EXCEEDED - chặn ngay ở tầng use case, không gọi tới LLM",
+              "text": "AI_BUDGET_EXCEEDED, chặn trước khi gọi LLM",
               "kind": "return"
             }
           ]

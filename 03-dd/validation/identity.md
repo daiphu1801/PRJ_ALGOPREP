@@ -46,7 +46,7 @@ BR-05/BR-06 ở `03-dd/logic/identity.md`).
 | `current_position` | `users` | 100 ký tự [SoT: `02-bd/screens/users/USR0502_profile.md:362`] | `IDT-V07` |
 | `target_position` (mới, xem `03-dd/api/identity.md` mục 4 và `07-review/...:130`) | `users` | 100 ký tự, cùng giới hạn `current_position` | `IDT-V08` |
 | `school_or_company` | `users` | 150 ký tự [SoT: `02-bd/screens/users/USR0502_profile.md:361`] | `IDT-V09` |
-| Ghi chú lớp (`schedule_note`) | `classes` | 500 ký tự — chưa có nguồn nào chốt, đề xuất mới `[SoT: Suy luận]` vì đủ cho một dòng lịch học, không cần dài như ghi chú bookmark (1000 ký tự đã chốt ở `problem-bank`) | `IDT-V10` |
+| ~~Ghi chú lớp (`schedule_note`)~~ — **đã thay 2026-10-11** bởi lịch học có cấu trúc `classes.schedule` (`DEC-2026-1011-class-schedule-structured`, `02-bd/database/identity.md` mục 1.14); giới hạn 500 ký tự cũ không còn áp dụng | `classes` | Quy tắc mới, mọi phần tuỳ chọn: `note` tối đa 200 ký tự; `room` tối đa 100 ký tự; `days` là số nguyên 1 tới 7, không trùng; `startTime`/`endTime` dạng `HH:mm`, đi cùng nhau, kết thúc sau bắt đầu; có giờ thì phải có ít nhất một ngày; `startDate`/`endDate` dạng `yyyy-MM-dd`, ngày kết thúc không trước ngày bắt đầu. Hai giới hạn 100 và 200 là đề xuất của chủ dự án, **chưa chốt** `[SoT: Suy luận]` | `IDT-V10` (giữ mã cho giới hạn độ dài `room`/`note`; các quy tắc còn lại chờ DD `INS0201`/`INS0205` cấp mã) |
 | Xác nhận email tự xoá tài khoản (`emailConfirmation`) | không lưu | phải khớp tuyệt đối `users.email` hiện tại (case-sensitive theo giá trị đã lưu, không lower-case hoá để người dùng gõ đúng những gì họ thấy) | `IDT-201` |
 
 ## 6. Token/Session

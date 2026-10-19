@@ -4,7 +4,7 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="sys" value="Chức năng Theo dõi tiến độ lớp và học viên" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F7F7F7;strokeColor=#999999;verticalAlign=top;align=left;spacingLeft=8;spacingTop=6;fontColor=#1A1A1A;fontStyle=1;" vertex="1" parent="1">
+        <mxCell id="sys" value="Theo dõi tiến độ lớp" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F7F7F7;strokeColor=#999999;verticalAlign=top;align=left;spacingLeft=8;spacingTop=6;fontColor=#1A1A1A;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="250" y="55" width="280" height="500" as="geometry" />
         </mxCell>
         <mxCell id="title" value="Sơ đồ Use Case chi tiết - Theo dõi tiến độ lớp và học viên (Giảng viên)" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
@@ -28,7 +28,7 @@
         <mxCell id="v6" value="Mở hồ sơ chi tiết một học viên trong lớp phụ trách" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFF3B0;strokeColor=#8C7B00;fontColor=#1A1A1A;" vertex="1" parent="1">
           <mxGeometry x="270" y="340" width="240" height="45" as="geometry" />
         </mxCell>
-        <mxCell id="v7" value="Xem tiến độ và điểm tốt nhất mỗi bài của học viên" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFF3B0;strokeColor=#8C7B00;fontColor=#1A1A1A;" vertex="1" parent="1">
+        <mxCell id="v7" value="Xem tiến độ và tỉ lệ testcase đạt mỗi bài của học viên" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFF3B0;strokeColor=#8C7B00;fontColor=#1A1A1A;" vertex="1" parent="1">
           <mxGeometry x="270" y="395" width="240" height="45" as="geometry" />
         </mxCell>
         <mxCell id="v8" value="Xem lịch sử nộp bài của học viên" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFF3B0;strokeColor=#8C7B00;fontColor=#1A1A1A;" vertex="1" parent="1">

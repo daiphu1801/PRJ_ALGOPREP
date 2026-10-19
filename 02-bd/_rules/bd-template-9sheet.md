@@ -162,15 +162,19 @@ thứ phải giống nhau xuyên `01-rd` → `02-bd` → `03-dd` theo luật ch�
 | `INS0202` | `INS0202_class_assignments.md` | `class_assignments` | Giao bài cho lớp | Lớp học |
 | `INS0203` | `INS0203_class_progress.md` | `class_progress` | Tiến độ lớp | Lớp học |
 | `INS0204` | `INS0204_class_student_detail.md` | `class_student_detail` | Chi tiết học viên | Lớp học |
-| `INS0301` | `INS0301_grading.md` | `instructor_grading` | Chấm tay | Chấm bài |
+| `INS0205` | `INS0205_class_detail.md` | `class_detail` | Chi tiết lớp (thêm 2026-10-11, `DEC-2026-1011-class-detail-page`) | Lớp học |
+| `INS0206` | `INS0206_submission_management.md` | `submission_management` | Danh sách bài nộp của giảng viên (thêm 2026-10-14, `DEC-2026-1013-instructor-submissions-list`) | Lớp học |
+| ~~`INS0301`~~ | `INS0301_grading.md` (chỉ còn thông báo gỡ) | ~~`instructor_grading`~~ | **Đã bỏ 2026/10/13** (`DEC-2026-1013-remove-instructor-manual-grading`), mã không dùng lại | ~~Chấm bài~~ |
 | `ADM0101` | `ADM0101_overview.md` | `admin_overview` | Tổng quan quản trị | Tổng quan |
 | `ADM0201` | `ADM0201_user_management.md` | `admin_user_management` | Quản lý người dùng | Người dùng và quyền |
 | `ADM0202` | `ADM0202_permission_matrix.md` | `admin_permission_matrix` | Ma trận phân quyền | Người dùng và quyền |
-| `ADM0301` | `ADM0301_ai_config.md` | `admin_ai_config` | Cấu hình trợ lý AI | AI |
+| `ADM0301` | `ADM0301_ai_config.md` | `admin_ai_config` | Prompt và chất lượng AI | AI |
 | `ADM0302` | `ADM0302_ai_usage.md` | `admin_ai_usage` | Tiêu thụ token AI | AI |
+| `ADM0303` | `ADM0303_ai_limits.md` | `admin_ai_limits` | Hạn mức và chi phí AI | AI |
 | `ADM0401` | `ADM0401_queue_monitor.md` | `admin_queue_monitor` | Giám sát hàng đợi | Vận hành |
 | `ADM0402` | `ADM0402_rejudge.md` | `admin_rejudge` | Chấm lại — **đã loại khỏi phạm vi**, chỉ còn RD, không viết BD/DD (`DEC-2026-0828-remove-rejudge-scope`) | Vận hành |
 | `ADM0403` | `ADM0403_system_log.md` | `admin_system_log` | Nhật ký hệ thống | Vận hành |
+| `ADM0404` | `ADM0404_infra_events.md` | `admin_infra_events` | Sự kiện hạ tầng (thêm 2026-10-10, `DEC-2026-1010-admin-operations-regroup`) | Vận hành |
 | `ADM0501` | `ADM0501_language_config.md` | `admin_language_config` | Cấu hình ngôn ngữ | Hệ thống |
 | `SHR0101` | `SHR0101_auth.md` | `auth` | Đăng nhập và đăng ký | Xác thực |
 | `SHR0201` | `SHR0201_problem_management.md` | `problem_management` | Quản lý bài tập | Nội dung bài tập |

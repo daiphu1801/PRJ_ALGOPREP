@@ -1,5 +1,5 @@
 {
-  "_": "Luong giam sat hang doi va cum judge engine cua actor A3, ke ca job quet bai nop treo. Nguon: US-A3-03 (01-rd/req/user_stories/a3_admin.md), 01-rd/req/judge-orchestration.md (F4-07, F4-10), 02-bd/architecture/judge-orchestration.md muc 5.3 (sweep 5 phut, chu ky quet 60 giay, menh de WHERE chong ghi de).",
+  "_": "Luong giam sat hang doi va cum judge engine cua actor A3, ke ca job quet bai nop treo. Nguon: US-A3-03 (01-rd/req/user_stories/a3_admin.md), 01-rd/req/judge-orchestration.md (F4-07, F4-10), 02-bd/architecture/judge-orchestration.md muc 5.3 (sweep 5 phut, chu ky quet 60 giay, menh de WHERE chong ghi de). Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen.",
   "_diem_mau_chot": "Menh de WHERE status NOT IN (7 trang thai cuoi) cua job sweep KHONG phai toi uu truy van -- no la co che chong ghi de khi mot worker cham hoan tat dung luc job chay.",
   "kind": "sequence",
   "title": "Sơ đồ tuần tự chi tiết - Giám sát hàng đợi và quét bài nộp treo (Quản trị viên) (3/3)",
@@ -42,17 +42,12 @@
       {
         "from": "Quản trị viên",
         "to": "Quản trị viên",
-        "text": "Bấm \"Tạm dừng tiêu thụ hàng đợi\""
+        "text": "Bấm Tạm dừng tiêu thụ hàng đợi"
       },
       {
         "from": "Quản trị viên",
         "to": "Quản trị viên",
-        "text": "Hiện hộp xác nhận nêu rõ bài nộp mới sẽ xếp hàng chờ"
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "Quản trị viên",
-        "text": "Xác nhận"
+        "text": "Xác nhận ở hộp nêu rõ bài nộp mới sẽ xếp hàng chờ"
       },
       {
         "from": "Quản trị viên",
@@ -62,7 +57,7 @@
       {
         "from": "JudgeOpsController",
         "to": "JudgeOpsService",
-        "text": "pauseConsumption(adminId)"
+        "text": "Yêu cầu tạm dừng tiêu thụ hàng đợi"
       },
       {
         "from": "JudgeOpsService",
@@ -70,14 +65,26 @@
         "text": "Dừng consumer, không huỷ message đang chờ"
       },
       {
+        "from": "RabbitMQ",
+        "to": "JudgeOpsService",
+        "text": "Đã dừng",
+        "kind": "return"
+      },
+      {
         "from": "JudgeOpsService",
         "to": "PostgreSQL",
-        "text": "Ghi system_audit_logs: ai tạm dừng, lúc nào"
+        "text": "Ghi nhật ký hệ thống: ai tạm dừng, lúc nào"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "JudgeOpsService",
+        "text": "Đã ghi",
+        "kind": "return"
       },
       {
         "from": "JudgeOpsService",
         "to": "JudgeOpsController",
-        "text": "Trạng thái cụm đã tạm dừng",
+        "text": "Cụm đã tạm dừng",
         "kind": "return"
       },
       {
@@ -89,7 +96,7 @@
       {
         "from": "Quản trị viên",
         "to": "Quản trị viên",
-        "text": "Bảng giám sát chuyển sang trạng thái Đang tạm dừng"
+        "text": "Bảng giám sát chuyển sang Đang tạm dừng"
       },
       {
         "from": "Quản trị viên",

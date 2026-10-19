@@ -15,8 +15,10 @@ const EXISTING_ADMIN_ROUTES = new Set([
   "/admin/problems",
   "/admin/interview-questions",
   "/admin/queue",
+  "/admin/infra-events",
   "/admin/language-config",
   "/admin/ai-config",
+  "/admin/ai-limits",
   "/admin/ai-usage",
   "/admin/users",
   "/admin/system-log",
@@ -32,6 +34,15 @@ describe("admin nav config", () => {
     for (const href of hrefs) {
       expect(EXISTING_ADMIN_ROUTES.has(href)).toBe(true);
     }
+  });
+
+  it("keeps the operations group at queue, infra events, language config in that order", () => {
+    const operations = ADMIN_NAV_GROUPS.find((g) => g.key === "operations");
+    expect(operations?.items.map((item) => item.key)).toEqual([
+      "queue",
+      "infraEvents",
+      "languageConfig",
+    ]);
   });
 
   it("does not contain admin_rejudge (removed from scope, DEC-2026-0828-remove-rejudge-scope)", () => {

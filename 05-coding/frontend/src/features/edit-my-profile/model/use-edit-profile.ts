@@ -2,13 +2,14 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import type { ZodError } from "zod";
 import {
+  emailChangeSchema,
   profileFormSchema,
   requestEmailChange,
   updateMyProfile,
   type ProfileFormInput,
-  type SubmissionLanguage,
   type UserProfile,
 } from "@/entities/user";
 
@@ -17,7 +18,6 @@ type FormValues = {
   email: string;
   schoolOrCompany: string;
   currentPosition: string;
-  defaultLanguage: SubmissionLanguage;
   targetPosition: string;
 };
 
@@ -27,7 +27,6 @@ function toFormValues(profile: UserProfile): FormValues {
     email: profile.email,
     schoolOrCompany: profile.schoolOrCompany ?? "",
     currentPosition: profile.currentPosition ?? "",
-    defaultLanguage: profile.defaultLanguage,
     targetPosition: profile.targetPosition ?? "",
   };
 }
@@ -57,7 +56,6 @@ export function useEditProfile(
   const [fields, setFields] = useState(saved);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isSaving, setIsSaving] = useState(false);
-  const [justSaved, setJustSaved] = useState(false);
   const [emailOtpTarget, setEmailOtpTarget] = useState<string | null>(null);
 
   const dirty = useMemo(
@@ -70,7 +68,6 @@ export function useEditProfile(
 
   const update = useCallback((name: keyof FormValues, value: string) => {
     setFields((prev) => ({ ...prev, [name]: value }));
-    setJustSaved(false);
     setFieldErrors((prev) => {
       if (!(name in prev)) return prev;
       const next = { ...prev };
@@ -82,7 +79,6 @@ export function useEditProfile(
   const revert = useCallback(() => {
     setFields(saved);
     setFieldErrors({});
-    setJustSaved(false);
   }, [saved]);
 
   const save = useCallback(async (): Promise<SaveProfileResult> => {
@@ -90,7 +86,6 @@ export function useEditProfile(
       displayName: fields.displayName,
       schoolOrCompany: fields.schoolOrCompany,
       currentPosition: fields.currentPosition,
-      defaultLanguage: fields.defaultLanguage,
       targetPosition: fields.targetPosition,
     };
     const parsed = profileFormSchema.safeParse(input);
@@ -103,17 +98,40 @@ export function useEditProfile(
       };
     }
 
+    const emailChanged = fields.email.trim() !== saved.email;
+    let nextEmail = saved.email;
+    if (emailChanged) {
+      const email = emailChangeSchema.safeParse(fields.email);
+      if (!email.success) {
+        const errorKey = email.error.issues[0]?.message ?? "form.invalid";
+        setFieldErrors({ email: errorKey });
+        return { ok: false, errorKey };
+      }
+      nextEmail = email.data;
+    }
+
     setIsSaving(true);
     try {
-      const emailChanged = fields.email !== saved.email;
-      const [nextProfile] = await Promise.all([
+      // D19: allSettled, so one failing path never hides the other one's success (email change is
+      // independent of the profile fields per BD Sheet 7.1).
+      const [profileRes, emailRes] = await Promise.allSettled([
         updateMyProfile(parsed.data),
-        emailChanged ? requestEmailChange(fields.email) : Promise.resolve(null),
+        emailChanged ? requestEmailChange(nextEmail) : Promise.resolve(null),
       ]);
-      onProfileSaved(nextProfile);
-      setSaved((prev) => ({ ...toFormValues(nextProfile), email: prev.email }));
-      setJustSaved(true);
-      if (emailChanged) setEmailOtpTarget(fields.email);
+      if (profileRes.status === "fulfilled") {
+        onProfileSaved(profileRes.value);
+        setSaved((prev) => ({
+          ...toFormValues(profileRes.value),
+          email: prev.email,
+        }));
+      }
+      if (emailRes.status === "fulfilled" && emailChanged) {
+        setEmailOtpTarget(nextEmail);
+      }
+      if (profileRes.status === "rejected")
+        return { ok: false, errorKey: "form.saveFailed" };
+      if (emailRes.status === "rejected")
+        return { ok: false, errorKey: "form.emailRequestFailed" };
       return { ok: true };
     } finally {
       setIsSaving(false);
@@ -122,17 +140,20 @@ export function useEditProfile(
 
   const closeEmailOtp = useCallback(() => setEmailOtpTarget(null), []);
 
+  const queryClient = useQueryClient();
   const onEmailConfirmed = useCallback(() => {
-    setSaved((prev) => ({ ...prev, email: fields.email }));
+    setSaved((prev) => ({ ...prev, email: emailOtpTarget ?? prev.email }));
+    setFields((prev) => ({ ...prev, email: emailOtpTarget ?? prev.email }));
     setEmailOtpTarget(null);
-  }, [fields.email]);
+    // D21: the identity card and Settings read the email from the profile cache.
+    void queryClient.invalidateQueries({ queryKey: ["user", "my-profile"] });
+  }, [emailOtpTarget, queryClient]);
 
   return {
     fields,
     fieldErrors,
     dirty,
     isSaving,
-    justSaved,
     emailOtpTarget,
     update,
     revert,

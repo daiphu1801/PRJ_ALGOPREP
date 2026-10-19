@@ -45,7 +45,7 @@ rectangle "Hệ thống AlgoPrep" {
   package "Chức năng Giảng viên" {
     usecase "Quản lý lớp học" as u7
     usecase "Theo dõi tiến độ lớp" as u8
-    usecase "Chấm và nhận xét bài nộp" as u9
+    usecase "Xem bài nộp của học viên trong lớp" as u9
   }
   package "Dùng chung (Giảng viên & Quản trị viên)" {
     usecase "Quản lý bài toán, câu hỏi" as u10

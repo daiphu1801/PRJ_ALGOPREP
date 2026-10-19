@@ -1,9 +1,10 @@
 // PROTOTYPE — chưa có DD. Xem 06-plan/PROTOTYPE_DEBT.md mục 9.
 //
-// Layout theo 09-layoutBase/Ngân hàng bài toán.dc.html: dải chỉ số (:103-116), thanh chủ đề
+// Layout theo 09-layoutBase/Ngân hàng bài toán.dc.html: thanh chủ đề
 // (:118-125), bộ lọc (:131-153), bảng danh sách (:155-192), phân trang (:194-201), hai khối phụ
 // "Bài đang làm dở" (:206-220) và "Bài tập lớp" (:222-236) ở cột phải.
-// Bố cục hai cột minmax(0,1fr) 268px theo 02-bd/screens/users/USR0101_problem_list.md:262-264.
+// Bố cục hai cột minmax(0,1fr) 268px theo 02-bd/screens/users/USR0101_problem_list.md (Sheet 4.4).
+// Dải chỉ số (:103-116) đã BỎ 2026-10-18 (owner: màn danh sách không có dải KPI).
 //
 // Nhánh `isSolve` của prototype KHÔNG mang theo — chốt ở RD Câu hỏi mở Q2 (đã đóng), là mã thừa
 // của một hướng thiết kế cũ.
@@ -25,8 +26,8 @@ import {
   type ProblemListItem,
   type SolveState,
 } from "@/entities/problem";
-import { useT } from "@/shared/i18n";
-import { usePersistedPageSize } from "@/shared/lib";
+import { useLocale, useT } from "@/shared/i18n";
+import { formatDateVN, usePersistedPageSize } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
 import {
   Badge,
@@ -37,7 +38,6 @@ import {
   Pagination,
   FilterBar,
   FilterMenu,
-  StatCard,
   type BadgeVariant,
   type DataTableColumn,
 } from "@/shared/ui";
@@ -51,12 +51,22 @@ const SOLVE_STATE_VARIANT: Record<SolveState, BadgeVariant> = {
 // 12 is the default (a multiple of the card grid's columns); the learner may pick another.
 const PAGE_SIZES = [12, 24, 48] as const;
 
+// Class assignments block: at most the 3 most recently assigned classes, no "view all" link
+// (owner 2026-10-18). The mock has no assigned_at, so the first 3 groups stand in for "most recent".
+const MAX_ASSIGNMENT_CLASSES = 3;
+
+// "Bài đang làm dở" shows at most 3 items (BD Sheet 4.4); the real endpoint also caps it.
+const MAX_IN_PROGRESS = 3;
+
+const SEARCH_MAX_LENGTH = 100;
+
 type StatusFilter = SolveState | "all";
 type DifficultyFilter = string;
 type SortKey = "difficulty" | "acRate";
 
 export function ProblemListView() {
   const t = useT("problemList");
+  const locale = useLocale() === "en" ? "en" : "vi";
   const router = useRouter();
   const levels = useProblemLevels();
   const [page] = useState(fetchProblemListPage);
@@ -78,6 +88,21 @@ export function ProblemListView() {
   );
 
   const resetToFirstPage = () => setCurrentPage(1);
+
+  const hasActiveFilter =
+    query.trim() !== "" ||
+    status !== "all" ||
+    difficulty !== "all" ||
+    topicId !== "all";
+
+  // BD EVT-6: one link resets all four filters and returns to page 1.
+  function clearFilters() {
+    setQuery("");
+    setStatus("all");
+    setDifficulty("all");
+    setTopicId("all");
+    resetToFirstPage();
+  }
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -110,6 +135,13 @@ export function ProblemListView() {
     currentPage * pageSize,
   );
 
+  const inProgressItems = page.inProgress.slice(0, MAX_IN_PROGRESS);
+
+  const assignmentGroups = page.classAssignments.slice(
+    0,
+    MAX_ASSIGNMENT_CLASSES,
+  );
+
   function pickRandom() {
     const problem = filtered[Math.floor(Math.random() * filtered.length)];
     if (!problem) {
@@ -134,19 +166,22 @@ export function ProblemListView() {
       header: t("table.colState"),
       width: "48px",
       render: (problem) => (
-        <span
-          aria-label={t(`state.${problem.solveState}`)}
-          className="inline-block h-2 w-2 rounded-full"
-          style={{
-            background: `var(${
-              problem.solveState === "solved"
-                ? "--color-success"
-                : problem.solveState === "attempted"
-                  ? "--color-admin-warn"
-                  : "--color-border"
-            })`,
-          }}
-        />
+        <>
+          <span
+            aria-hidden="true"
+            className="inline-block h-2 w-2 rounded-full"
+            style={{
+              background: `var(${
+                problem.solveState === "solved"
+                  ? "--color-success"
+                  : problem.solveState === "attempted"
+                    ? "--color-admin-warn"
+                    : "--color-border"
+              })`,
+            }}
+          />
+          <span className="sr-only">{t(`state.${problem.solveState}`)}</span>
+        </>
       ),
     },
     {
@@ -165,11 +200,10 @@ export function ProblemListView() {
             {problem.title}
           </Link>
           <div className="mt-1 flex flex-wrap items-center gap-1.5">
-            <Badge
-              variant={problem.submissionModel === "both" ? "cyan" : "neutral"}
-            >
-              {t(`submissionModel.${problem.submissionModel}`)}
-            </Badge>
+            {/* BD Sheet 5 khu D NO 5: only the exception is labelled; "both" is the norm and stays silent. */}
+            {problem.submissionModel === "stdioOnly" ? (
+              <Badge variant="neutral">{t("submissionModel.stdioOnly")}</Badge>
+            ) : null}
             {problem.hasSolutionReview ? (
               <Badge variant="teal">{t("table.hasReview")}</Badge>
             ) : null}
@@ -250,27 +284,6 @@ export function ProblemListView() {
         }
       />
 
-      <div className="mb-4 grid gap-3.5 [grid-template-columns:repeat(auto-fit,minmax(160px,1fr))]">
-        <StatCard
-          label={t("summary.solvedTotal")}
-          value={`${page.summary.solvedTotal.solved} / ${page.summary.solvedTotal.total}`}
-        />
-        {/* One card per level in the admin-chosen order; a level with no problems yet reads 0 / 0. */}
-        {levels.map((level) => {
-          const ratio = page.summary.solvedByLevel[level.key] ?? {
-            solved: 0,
-            total: 0,
-          };
-          return (
-            <StatCard
-              key={level.key}
-              label={level.label}
-              value={`${ratio.solved} / ${ratio.total}`}
-            />
-          );
-        })}
-      </div>
-
       <div
         className="mb-4 flex gap-2 overflow-x-auto pb-1"
         role="group"
@@ -297,7 +310,8 @@ export function ProblemListView() {
             type="button"
             aria-pressed={topicId === topic.id}
             onClick={() => {
-              setTopicId(topic.id);
+              // BD EVT-5: pressing the active topic clears the filter.
+              setTopicId(topicId === topic.id ? "all" : topic.id);
               resetToFirstPage();
             }}
             className={`shrink-0 rounded-full border px-3 py-1.5 text-[12.5px] font-semibold whitespace-nowrap ${
@@ -311,13 +325,14 @@ export function ProblemListView() {
         ))}
       </div>
 
-      <div className="grid gap-4 [grid-template-columns:minmax(0,1fr)_268px]">
+      <div className="grid grid-cols-1 gap-4 lg:[grid-template-columns:minmax(0,1fr)_268px]">
         <Card className="min-w-0 px-[18px] py-4">
           <FilterBar
             search={{
               label: t("filter.searchLabel"),
               placeholder: t("filter.searchPlaceholder"),
               value: query,
+              maxLength: SEARCH_MAX_LENGTH,
               onChange: (next) => {
                 setQuery(next);
                 resetToFirstPage();
@@ -361,7 +376,21 @@ export function ProblemListView() {
             columns={columns}
             rows={visible}
             rowKey={(problem) => problem.id}
-            emptyMessage={t("table.empty")}
+            emptyMessage={
+              <span className="flex flex-col items-center gap-2">
+                {t("table.empty")}
+                {hasActiveFilter ? (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="border border-[var(--color-border)]"
+                    onClick={clearFilters}
+                  >
+                    {t("table.clearFilters")}
+                  </Button>
+                ) : null}
+              </span>
+            }
             minWidth={640}
             sort={{
               key: sort.key,
@@ -402,13 +431,13 @@ export function ProblemListView() {
             <h2 className="mb-2 text-[13px] font-semibold">
               {t("inProgress.title")}
             </h2>
-            {page.inProgress.length === 0 ? (
+            {inProgressItems.length === 0 ? (
               <p className="text-[12.5px] text-[var(--color-text-muted)]">
                 {t("inProgress.empty")}
               </p>
             ) : (
               <ul className="flex flex-col gap-2">
-                {page.inProgress.map((item) => (
+                {inProgressItems.map((item) => (
                   <li key={item.problemId}>
                     <Link
                       href={`/problems/${item.problemId}`}
@@ -419,7 +448,11 @@ export function ProblemListView() {
                       </p>
                       <p className="text-[11.5px] text-[var(--color-text-muted)]">
                         {t(`language.${item.language}`)} ·{" "}
-                        {item.lastVerdictLabel}
+                        {t("inProgress.lastVerdict", {
+                          verdict: t(`verdict.${item.lastVerdict}`),
+                          passed: item.passedCount,
+                          total: item.totalCount,
+                        })}
                       </p>
                     </Link>
                   </li>
@@ -437,7 +470,7 @@ export function ProblemListView() {
                 {t("assignment.empty")}
               </p>
             ) : (
-              page.classAssignments.map((group) => (
+              assignmentGroups.map((group) => (
                 <div key={group.className} className="mb-3 last:mb-0">
                   <p className="mb-1.5 text-[11.5px] font-semibold text-[var(--color-text-muted)]">
                     {group.className}
@@ -460,7 +493,11 @@ export function ProblemListView() {
                             </Badge>
                           </div>
                           <p className="text-[11.5px] text-[var(--color-text-muted)]">
-                            {item.metaLabel}
+                            {t("assignment.meta", {
+                              solved: item.solvedCount,
+                              total: item.totalCount,
+                              date: formatDateVN(item.assignedAt, { locale }),
+                            })}
                           </p>
                         </Link>
                       </li>

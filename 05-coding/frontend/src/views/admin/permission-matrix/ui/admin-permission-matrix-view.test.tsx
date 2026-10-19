@@ -16,14 +16,21 @@ vi.mock("@/shared/i18n", () => ({
     values ? `${key}:${Object.values(values).join(",")}` : key,
 }));
 
+// Tabs and cell labels show roles.name; tests address the three system roles by code.
+const ROLE_NAME: Record<string, string> = {
+  STUDENT: "Người học",
+  INSTRUCTOR: "Giảng viên",
+  ADMIN: "Quản trị",
+};
+
 function cell(action: string, fn: string, role: string) {
   return screen.getByLabelText(
-    `cellLabel:action.${action},function.${fn},${role}`,
+    `cellLabel:action.${action},function.${fn},${ROLE_NAME[role] ?? role}`,
   );
 }
 
 function openRole(role: string) {
-  fireEvent.click(screen.getByRole("button", { name: role }));
+  fireEvent.click(screen.getByRole("button", { name: ROLE_NAME[role] ?? role }));
 }
 
 describe("AdminPermissionMatrixView", () => {

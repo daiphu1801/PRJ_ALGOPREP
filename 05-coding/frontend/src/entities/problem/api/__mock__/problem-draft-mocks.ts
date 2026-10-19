@@ -36,7 +36,7 @@ const SAVED_KEY = (problemId: string) =>
 const GENERATIONS_KEY = (problemId: string | undefined) =>
   `algoprep.problem-ai-generations.${problemId ?? "new"}`;
 
-type StoredRecord = Omit<ProblemDraftRecord, "aiGeneration">;
+type StoredRecord = Omit<ProblemDraftRecord, "aiGeneration" | "stats">;
 
 function remember(draft: ProblemDraft, problemId: string | undefined) {
   if (!problemId) return;
@@ -96,11 +96,14 @@ export async function loadProblemDraft(
       draft: { ...source, title: `${source.title} (bản sao)`, status: "draft" },
       savedAt: null,
       aiGeneration,
+      stats: NO_STATS,
     };
   }
   return {
     ...(recall(problemId) ?? { draft: sampleProblemDraft(), savedAt: null }),
     aiGeneration,
+    // Mock figures for the shared sample problem; a brand-new form has no submissions yet.
+    stats: problemId ? SAMPLE_STATS : NO_STATS,
   };
 }
 
@@ -279,6 +282,9 @@ export async function generateTestcasesWithAi(
   };
 }
 
+const NO_STATS = { submissionCount: 0, acRate: 0 };
+const SAMPLE_STATS = { submissionCount: 1840, acRate: 41 };
+
 function sampleProblemDraft(): ProblemDraft {
   return {
     title: "Minimum Window Substring",
@@ -306,8 +312,9 @@ function sampleProblemDraft(): ProblemDraft {
       timeLimitMs: 2000,
       memoryLimitMb: 256,
       outputLimitKb: 64,
-      stackLimitMb: 8,
+      maxSubmissionsPerHour: null,
     },
+    tags: ["sliding-window", "hash-map"],
     solutionLanguage: "Python",
     solution: [
       "from collections import Counter",

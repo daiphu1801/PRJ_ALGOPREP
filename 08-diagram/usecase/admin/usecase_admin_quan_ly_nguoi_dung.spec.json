@@ -1,0 +1,28 @@
+{
+  "_": "Tach tu usecase_admin_quan_ly_nguoi_dung_phan_quyen (2026-10-18) vi hai nhom o hai cot lam duong noi cat qua oval. Nguon: RD/BD ADM0201. Them \"Them tai khoan\"; khoa kem ly do va gui email (F1-32), hang loat chi cho khoa/mo khoa; doi vai tro va dat lai mat khau chi mot tai khoan (RD ADM0201 Q7).",
+  "kind": "usecase",
+  "title": "Sơ đồ Use Case chi tiết - Quản lý tài khoản người dùng (Quản trị viên)",
+  "covers": [
+    "F1-13",
+    "F1-32"
+  ],
+  "mode": "color",
+  "usecase": {
+    "system": "Quản lý tài khoản",
+    "groups": [
+      {
+        "name": "Quản lý tài khoản (F1-13, F1-32)",
+        "actors": [
+          "Quản trị viên"
+        ],
+        "usecases": [
+          "Xem và tìm danh sách người dùng",
+          "Thêm tài khoản bằng mật khẩu tạm",
+          "Đổi vai trò một tài khoản",
+          "Khoá (kèm lý do) hoặc mở khoá tài khoản",
+          "Đặt lại mật khẩu một tài khoản"
+        ]
+      }
+    ]
+  }
+}

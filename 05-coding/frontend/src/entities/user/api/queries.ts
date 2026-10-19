@@ -15,10 +15,12 @@ function notImplemented(): never {
   );
 }
 
-export const useMyProfile = () =>
+export const useMyProfile = (
+  area: "student" | "instructor" | "admin" = "student",
+) =>
   useQuery({
-    queryKey: ["user", "my-profile"],
-    queryFn: () => withMockData(fakeGetMyProfile, notImplemented),
+    queryKey: ["user", "my-profile", area],
+    queryFn: () => withMockData(() => fakeGetMyProfile(area), notImplemented),
     ...QUERY_OPTIONS,
   });
 

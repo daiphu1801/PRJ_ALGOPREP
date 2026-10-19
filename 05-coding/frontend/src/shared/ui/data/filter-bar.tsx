@@ -20,6 +20,8 @@ type FilterBarProps = {
     onChange: (value: string) => void;
     /** Called when Enter is pressed in the box. */
     onSubmit?: () => void;
+    /** Optional cap on the typed length; unset means no limit. */
+    maxLength?: number;
   };
   /** The filter controls, normally FilterMenu elements. */
   children?: ReactNode;
@@ -38,6 +40,7 @@ export function FilterBar({ search, children, resultCount }: FilterBarProps) {
         name="q"
         autoComplete="off"
         spellCheck={false}
+        maxLength={search.maxLength}
         inputMode="search"
         enterKeyHint="search"
         value={search.value}

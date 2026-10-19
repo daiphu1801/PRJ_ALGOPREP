@@ -1,0 +1,129 @@
+{
+  "_": "Nguon: 01-rd/screens/admin/ADM0201_user_management.md, 02-bd/screens/admin/ADM0201_user_management.md (muc 7.3 endpoint, DTO, popup), DEC-2026-1011-admin-system-open-questions-closed, DEC-2026-1008-admin-system-screens-review. Duong dan REST la [SoT: Suy luan] vi chua co DD; ten endpoint la ten nghiep vu cua BD. Tach khoi sequence doi vai tro (2026-10-18): luong khoa co nhieu quy tac nhat. Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Khoá và mở khoá tài khoản (Quản trị viên) (1/2)",
+  "covers": [
+    "F1-13",
+    "F1-32"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Quản trị viên",
+        "role": "actor"
+      },
+      {
+        "name": "UserAdminController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "UserAdminService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema identity"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 1 - Khoá một hoặc nhiều tài khoản: bắt buộc lý do, chặn khi hết quản trị viên (F1-13, F1-32)"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Chọn tài khoản, bấm Khoá, nhập lý do, chọn gửi email, xác nhận"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "UserAdminController",
+        "text": "POST .../users/status"
+      },
+      {
+        "from": "UserAdminController",
+        "to": "UserAdminController",
+        "text": "Kiểm tra quyền (USER_MANAGEMENT:UPDATE); khoá thì bắt buộc có lý do"
+      },
+      {
+        "from": "UserAdminController",
+        "to": "UserAdminService",
+        "text": "Yêu cầu khoá các tài khoản đã chọn"
+      },
+      {
+        "from": "UserAdminService",
+        "to": "PostgreSQL",
+        "text": "Đọc tài khoản đích và số ADMIN hoạt động"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "UserAdminService",
+        "text": "Tài khoản đích, số ADMIN hoạt động",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Còn ADMIN hoạt động?",
+          "then": [
+            {
+              "from": "UserAdminService",
+              "to": "UserAdminService",
+              "text": "Đủ điều kiện, khoá từng tài khoản"
+            },
+            {
+              "from": "UserAdminService",
+              "to": "PostgreSQL",
+              "text": "Đặt trạng thái Bị khoá, mỗi tài khoản một lệnh"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "UserAdminService",
+              "text": "Đã ghi",
+              "kind": "return"
+            },
+            {
+              "from": "UserAdminService",
+              "to": "UserAdminController",
+              "text": "Kết quả từng tài khoản: thành công, thất bại",
+              "kind": "return"
+            },
+            {
+              "from": "UserAdminController",
+              "to": "Quản trị viên",
+              "text": "200 OK",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "UserAdminService",
+              "to": "UserAdminService",
+              "text": "Khoá xong sẽ hết ADMIN hoạt động"
+            },
+            {
+              "from": "UserAdminService",
+              "to": "UserAdminController",
+              "text": "Từ chối, không tài khoản nào đổi",
+              "kind": "return"
+            },
+            {
+              "from": "UserAdminController",
+              "to": "Quản trị viên",
+              "text": "409 - không còn quản trị viên hoạt động",
+              "kind": "return"
+            }
+          ]
+        }
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Danh sách hiện nhãn Bị khoá; hậu quả ở phần 2/2"
+      }
+    ]
+  }
+}

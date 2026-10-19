@@ -170,7 +170,7 @@ Theo `README.md` mục 3:
 | :--- | :--- | :--- | :--- |
 | **A1** | Sinh viên / người dùng cuối | Tìm và giải bài toán, chạy thử và nộp bài, xem kết quả từng testcase, chọn phân tích bài giải hoặc phỏng vấn giả lập sau khi đạt Accepted, theo dõi tiến độ cá nhân | Biết mình sai ở đâu, và sau khi đúng thì biết mình đã tốt chưa |
 | **A2** | Giảng viên (hoặc quản trị viên nội dung) | Soạn đề bài và đặc tả hàm, tải lên bộ testcase, quản lý câu hỏi và giao bài tập theo lớp | Gán được bài tập và thấy được lớp mình đang tắc ở đâu |
-| **A3** | Quản trị viên hệ thống | Giám sát cụm judge engine (go-judge) và hàng đợi, quản lý ngôn ngữ và giới hạn tài nguyên, cấu hình prompt và rubric AI, ma trận phân quyền, quản lý tài khoản _(sửa 2026-09-05: bỏ "kích hoạt chấm lại" — `DEC-2026-0828-remove-rejudge-scope`)_ | Biết hệ thống có đang khoẻ không, và sửa được khi không |
+| **A3** | Quản trị viên hệ thống | Giám sát cụm judge engine (go-judge) và hàng đợi, quản lý ngôn ngữ và giới hạn tài nguyên, cấu hình prompt AI, ma trận phân quyền, quản lý tài khoản _(sửa 2026-09-05: bỏ "kích hoạt chấm lại" — `DEC-2026-0828-remove-rejudge-scope`)_ | Biết hệ thống có đang khoẻ không, và sửa được khi không |
 | **A4** | Hệ thống tự động | Điều phối bài nộp sang judge engine qua `JudgeExecutionPort`, phát hiện bài nộp bị treo (timeout sweep), sinh báo cáo phân tích và điều phối phiên phỏng vấn | (không phải người — là các job và consumer) |
 
 **A4 không phải người dùng.** Nó được liệt kê như một actor vì nó **khởi phát hành động** trong hệ thống mà
@@ -209,7 +209,7 @@ menu. Ma trận này **không** ảnh hưởng quyền học tập cơ bản c�
 | Quản trị nội dung ngân hàng câu hỏi phỏng vấn (F6-13) | Không | Có | Có |
 | Giám sát hàng đợi và cụm judge engine | Không | Không | Có |
 | Cấu hình ngôn ngữ và giới hạn tài nguyên | Không | Không | Có |
-| Cấu hình prompt và rubric AI | Không | Không | Có |
+| Cấu hình prompt AI | Không | Không | Có |
 
 **Sửa 2026-09-05.** Bảng trên bỏ hàng "Kích hoạt chấm lại" — tính năng đã loại khỏi phạm vi
 (`DEC-2026-0828-remove-rejudge-scope`), và bảng ma trận thật ở
@@ -273,7 +273,7 @@ Việc chia nhỏ và đánh mã là [SoT: Suy luận]; **nội dung** từng ch
 | F1-27 | Giáo viên xem hồ sơ chi tiết một học viên trong lớp mình phụ trách: thông tin cơ bản, tiến độ, lịch sử nộp bài | A2 | Bổ sung 2026-08-28 (`class_management` Q4). Cần màn/route riêng — slug `class_student_detail`; ngưỡng phân loại "Đang tốt"/"Cần hỗ trợ"/"Vắng bài" để BD/DD đề xuất `[SoT: Suy luận]`. Chưa có prototype **[Đợi nextjs]** |
 | F1-28 | Giảng viên xem tổng hợp tiến độ nhiều học viên trong (các) lớp phụ trách — dashboard `class_progress` | A2 | Bổ sung 2026-08-30, **một mã tổng hợp** cho cả dashboard (`DEC-2026-0830-class-progress-dashboard`), trả lời Q1-Q6 của `class_progress.md`. Các con số ngưỡng `[SoT: Suy luận]`, BD/DD tinh chỉnh |
 | F1-29 | Dashboard tổng quan vận hành — `admin_overview` | A3 | Bổ sung 2026-08-31, **một mã tổng hợp** bao trùm 8/9 khối thống kê (`DEC-2026-0831-admin-overview-dashboard-stats`). Không phải một `FUNCTION` riêng trong ma trận F1-10 — mọi vai trò `ADMIN` đều thấy vì đây là đích mặc định sau đăng nhập |
-| F1-30 | Dashboard tổng quan khối lượng công việc — `instructor_overview` | A2 | Bổ sung 2026-08-31, **một mã tổng hợp** cho 4 thẻ chỉ số cộng 5 widget (`DEC-2026-0831-instructor-overview-dashboard`); trả lời `US-A2-11`. Không phải một `FUNCTION` riêng trong ma trận F1-10. **Chủ dự án phê duyệt chính thức 2026-09-05** |
+| F1-30 | Dashboard tổng quan khối lượng công việc — `instructor_overview` | A2 | Bổ sung 2026-08-31, **một mã tổng hợp** cho 4 thẻ chỉ số cộng 5 widget (`DEC-2026-0831-instructor-overview-dashboard`); **2026-10-14:** còn 2 thẻ (bỏ "Điểm TB lớp") và bỏ widget "Tiến độ học viên" (`DEC-2026-1014-instructor-overview-trim-and-nav-label`); trả lời `US-A2-11`. Không phải một `FUNCTION` riêng trong ma trận F1-10. **Chủ dự án phê duyệt chính thức 2026-09-05** |
 | F1-31 | Dashboard tổng quan luyện tập của người học — `dashboard` | A1 | Bổ sung 2026-09-27, **một mã tổng hợp** cho 4 thẻ chỉ số cộng 6 khối (`DEC-2026-0927-student-dashboard-home`). Không phải một `FUNCTION` riêng trong ma trận F1-10 — mọi vai trò `STUDENT` đều thấy vì đây là đích mặc định sau đăng nhập. `my_progress` (F1-06 tới F1-08) đã gộp vào màn này cùng ngày (`DEC-2026-0927-student-area-merge-and-shared-shell`), nên F1-31 nay bao cả phần đó |
 
 ### 5.2. F2 — Ngân hàng bài toán và testcase
@@ -297,6 +297,7 @@ Việc chia nhỏ và đánh mã là [SoT: Suy luận]; **nội dung** từng ch
 | F2-15 | Vòng đời bài toán: hai trạng thái `Chưa xuất bản` / `Đã xuất bản`, kèm rút xuống và xoá mềm | A2 A3 | Bổ sung 2026-08-30 (`problem_management` Q2, `DEC-2026-0830-problem-lifecycle-two-states`). Đúng hai trạng thái, không có `Đã ẩn`; xuất bản cần tối thiểu một testcase Hidden (F2-06) + đặc tả đủ theo F2-03. Xoá = `Chưa xuất bản` cộng cờ `deleted` riêng, dữ liệu liên quan không mất — amendment 2026-08-31 (`DEC-2026-0831-problem-management-lifecycle-details`) |
 | F2-16 | Nhân bản bài toán (kể cả theo lô) | A2 A3 | Bổ sung 2026-08-31 (`problem_management` Q4, cùng DEC trên). Sao chép đề, đặc tả F2-03/F2-04, testcase, ví dụ mẫu, đáp án mẫu thành bài mới ở trạng thái `Chưa xuất bản`; quyền `PROBLEM_AUTHORING:CREATE` |
 | F2-17 | Xuất CSV danh sách bài toán | A2 A3 | Bổ sung 2026-08-31, cùng DEC trên. Chỉ xuất **phần dữ liệu bảng** (mã, tiêu đề, chủ đề, độ khó, trạng thái, lượt nộp, tỉ lệ AC, số testcase), không xuất đề bài/đặc tả/testcase. **Nhập CSV bài toán đã cắt khỏi phạm vi** — CSV phẳng không chở nổi đặc tả F2-03 ba ngôn ngữ |
+| F2-18 | Khai và chạy kiểm Đáp án mẫu (golden solution): gác hai cửa, mở tính năng F2-14 và cho phép xuất bản F2-15; không bao giờ đưa vào prompt AI | A2 | Tách thành mã riêng 2026-09-28, định nghĩa ở `01-rd/req/problem-bank.md:126`. Dòng thêm vào bảng này 2026-10-14 (số liệu rà lại: trước đây bảng survey thiếu mã này) |
 
 ### 5.3. F3 — Bộ sinh mã bọc hàm
 
@@ -357,7 +358,7 @@ Kích hoạt **sau khi** bài nộp đạt Accepted. Hai chức năng độc l�
 | F5-07 | Trả kết quả dưới dạng dữ liệu có cấu trúc (JSON theo lược đồ) | A4 | Để giao diện render báo cáo tĩnh |
 | F5-08 | Lưu báo cáo kèm bài nộp, tra cứu lại được từ trang tiến độ | A4 | |
 | F5-26 | Áp dụng bản mã AI đề xuất vào Workspace, ghi đè mã đang có | A1 | Bổ sung mục 2.13. Bắt buộc xác nhận trước khi ghi đè; giữ lại bản mã cũ (khôi phục được), không mất luôn |
-| F5-27 | Điểm quy đổi trên thang 10 từ báo cáo F5.1, cho giảng viên xem nhanh + chấm tay đè lên trong lớp mình phụ trách | A2 A4 | Bổ sung mục 6.2.a (`06-plan/PROTOTYPE_DEBT.md`). Chốt 2026-08-24: chỉ là lớp tham khảo nội bộ của giảng viên, tách bạch khỏi Pass/Fail chính thức của bài nộp và không mâu thuẫn F5-18 vì không hiện cho người học như điểm chính thức |
+| ~~F5-27~~ | ~~Điểm quy đổi trên thang 10 từ báo cáo F5.1, cho giảng viên xem nhanh + chấm tay đè lên trong lớp mình phụ trách~~ **ĐÃ BỎ 2026-10-13** (`DEC-2026-1013-remove-instructor-manual-grading`; mã không cấp lại) | ~~A2 A4~~ | Bổ sung mục 6.2.a (`06-plan/PROTOTYPE_DEBT.md`). Chốt 2026-08-24: chỉ là lớp tham khảo nội bộ của giảng viên, tách bạch khỏi Pass/Fail chính thức của bài nộp và không mâu thuẫn F5-18 vì không hiện cho người học như điểm chính thức |
 
 #### F5.2 — Phỏng vấn giả lập 1:1 (nhiều lượt)
 
@@ -372,7 +373,7 @@ Kích hoạt **sau khi** bài nộp đạt Accepted. Hai chức năng độc l�
 | F5-15 | Xuất bảng đánh giá rubric khi kết phiên: độ rõ ràng khi trình bày, độ chính xác kỹ thuật, khả năng phản biện, nhận thức về độ phức tạp — kèm nhận xét từng tiêu chí | A4 | |
 | F5-16 | Lưu phiên và rubric, mở lại được từ trang tiến độ | A4 | |
 | F5-24 | Ba lối vào phiên phỏng vấn: từ bài nộp Accepted, từ kho câu hỏi F6, hoặc tự chọn chủ đề | A1 | Chốt 2026-08-24 (mục 1.4). Cùng chung luồng 3 giai đoạn và mọi ràng buộc AI, chỉ khác nguồn đề bài/chủ đề |
-| F5-28 | Tự chỉnh tham số phiên tự luyện: Mức người phỏng vấn (Junior/Middle/Senior), Số lượt tối đa mỗi phiên, Cho phép gợi ý khi bí | A1 | Bổ sung 2026-08-25 (`settings` Q1). **Chỉ áp cho hai lối vào tự luyện của F5-24** (kho câu hỏi / tự chọn chủ đề) — không áp cho lối vào từ bài nộp `Accepted` (F5-09), để giữ tính khách quan của phiên gắn với một bài giải thật |
+| F5-28 | Tự chỉnh tham số phiên tự luyện: Mức người phỏng vấn (danh sách mức do admin cấu hình động, không cố định 3 mức; chốt 2026-10-19), Số lượt tối đa mỗi phiên, Cho phép gợi ý khi bí | A1 | Bổ sung 2026-08-25 (`settings` Q1). **Chỉ áp cho hai lối vào tự luyện của F5-24** (kho câu hỏi / tự chọn chủ đề) — không áp cho lối vào từ bài nộp `Accepted` (F5-09), để giữ tính khách quan của phiên gắn với một bài giải thật |
 
 #### Ràng buộc chung của phân hệ AI
 
@@ -385,7 +386,7 @@ Kích hoạt **sau khi** bài nộp đạt Accepted. Hai chức năng độc l�
 | F5-21 | Theo dõi và ghi nhận lượng token tiêu thụ theo từng phiên | |
 | F5-25 | Ngân sách token AI theo khoảng thời gian, dự báo cạn quota, bảng xếp hạng người dùng/bài toán tốn token nhiều nhất | Bổ sung mục 2.9. Chốt 2026-08-24: vượt ngân sách → tự động tạm khoá gọi AI cho STUDENT/INSTRUCTOR; ADMIN không bị khoá |
 | F5-22 | Suy giảm có kiểm soát: AI hỏng hoặc hết quota thì F1-F4 vẫn hoạt động bình thường | Ràng buộc kiến trúc, không phải lời hứa |
-| F5-23 | Cấu hình prompt (có phiên bản, xem lại/khôi phục), trọng số rubric **của Solution Review**, giới hạn tần suất | Actor A3. Chốt 2026-08-24 (mục 2.8): "Chạy đối chiếu" (regression test 30 bài mẫu) giữ trên UI, backend thật hoãn sang giai đoạn mở rộng. **Làm rõ 2026-09-09:** phần "trọng số rubric" của F5-23 chỉ phủ rubric của **F5.1 Solution Review** — đúng theo câu chữ gốc "rubric chấm bài giải" ở `01-rd/req/ai-review.md` (F5-23). Rubric bốn tiêu chí của **F5.2 Mock Interview** là rubric khác, thuộc `F5-15`; rubric của Chế độ luyện F6 là rubric thứ ba, thuộc `F6-13`. Ba rubric độc lập nhau |
+| F5-23 | Cấu hình prompt (có phiên bản, xem lại/khôi phục), ~~trọng số rubric **của Solution Review**~~ (ĐÃ BỎ 2026-10-14, DEC-2026-1014-drop-solution-review-rubric: không còn rubric chấm bài giải), giới hạn tần suất | Actor A3. Chốt 2026-08-24 (mục 2.8): "Chạy đối chiếu" (regression test 30 bài mẫu) giữ trên UI, backend thật hoãn sang giai đoạn mở rộng. **Làm rõ 2026-09-09:** phần "trọng số rubric" của F5-23 chỉ phủ rubric của **F5.1 Solution Review** — đúng theo câu chữ gốc "rubric chấm bài giải" ở `01-rd/req/ai-review.md` (F5-23). Rubric bốn tiêu chí của **F5.2 Mock Interview** là rubric khác, thuộc `F5-15`; rubric của Chế độ luyện F6 là rubric thứ ba, thuộc `F6-13`. Ba rubric độc lập nhau |
 
 ### 5.6. F6 — Ngân hàng câu hỏi phỏng vấn
 
@@ -416,14 +417,16 @@ chiếu với mã thực dùng trong toàn `01-rd/`: **0 mã sống nào còn n�
 | Phân hệ | Số chức năng | Trọng số công việc dự kiến |
 | :--- | :---: | :--- |
 | F1 — Danh tính và phân quyền | 31 | Trung bình, **tăng mạnh sau 2026-08-25**. 31 mã (F1-01 tới F1-31): ma trận quyền Role × Function × Action, OAuth, danger zone, tự đặt lại mật khẩu; cộng thêm tuỳ chọn cá nhân (F1-18 tới F1-22), CRUD lớp học và mã mời (F1-23 tới F1-27), và **bốn dashboard tổng hợp** (F1-28 `class_progress`, F1-29 `admin_overview`, F1-30 `instructor_overview`, F1-31 `dashboard` của người học) — mỗi dashboard là một mã duy nhất thay vì cấp mã rời cho từng widget |
-| F2 — Ngân hàng bài toán và testcase | 17 | Trung bình. 17 mã (F2-01 tới F2-17): giao diện soạn đề A2, bookmark note riêng tư, AI sinh input testcase, cộng vòng đời hai trạng thái (F2-15), nhân bản (F2-16), xuất CSV (F2-17) |
+| F2 — Ngân hàng bài toán và testcase | 18 | Trung bình. 18 mã (F2-01 tới F2-18): giao diện soạn đề A2, bookmark note riêng tư, AI sinh input testcase, cộng vòng đời hai trạng thái (F2-15), nhân bản (F2-16), xuất CSV (F2-17), Đáp án mẫu (F2-18). Số liệu rà lại 2026-10-14: ~~17~~ thiếu F2-18 |
 | F3 — Bộ sinh mã bọc hàm | 13 | **Cao nhất, tăng thêm sau 2026-08-24.** 13 mã (F3-01 tới F3-13): trọng tâm kỹ thuật, nhân ba theo số ngôn ngữ — và từ `DEC-2026-0824-dual-submission-model-per-problem`, codegen tăng gần gấp đôi vì mỗi ngôn ngữ giờ cần sinh cả mã Bọc hàm lẫn khung Standard I/O cho hầu hết bài toán, không còn là trường hợp hiếm |
 | F4 — Điều phối judge engine | 11 | **Cao.** 11 mã hiệu lực (F4-01 tới F4-03, F4-05 tới F4-08, F4-10 tới F4-13): điều phối concurrency Virtual Threads, realtime WebSocket từng testcase. **Cập nhật 2026-08-28:** F4-09a tới F4-09e (chấm lại) đã loại khỏi phạm vi, `DEC-2026-0828-remove-rejudge-scope`. **Cập nhật 2026-08-31:** F4-04 (fail-fast) hết hiệu lực, thêm F4-12 (Beats) và F4-13 (điểm tỷ lệ testcase), `DEC-2026-0831-partial-score-testcase-ratio` |
-| F5 — Phân hệ AI | 28 | Cao. 28 mã (F5-01 tới F5-28): hai luồng phân tích bài giải và phỏng vấn giả lập, ngân sách token tự khoá, điểm AI tham khảo và chấm tay F5-27, tham số phiên tự luyện F5-28. `F5-29` từng được đề xuất cho "Gợi ý theo bậc" nhưng **không bao giờ được cấp** — tính năng cắt khỏi phạm vi, `DEC-2026-0831-remove-tiered-hints-ai-config` |
+| F5 — Phân hệ AI | 27 | Cao. 27 mã sống (F5-01 tới F5-28 trừ `F5-27` đã bỏ 2026-10-13, `DEC-2026-1013-remove-instructor-manual-grading`): hai luồng phân tích bài giải và phỏng vấn giả lập, ngân sách token tự khoá, tham số phiên tự luyện F5-28. `F5-29` từng được đề xuất cho "Gợi ý theo bậc" nhưng **không bao giờ được cấp** — tính năng cắt khỏi phạm vi, `DEC-2026-0831-remove-tiered-hints-ai-config` |
 | F6 — Ngân hàng câu hỏi | 12 | Thấp. 12 mã (F6-01 tới F6-10, F6-12, F6-13): chế độ học và luyện, spaced-repetition tự chấm, quản trị nội dung kho câu hỏi F6-13. **Cập nhật 2026-08-28:** F6-11 (bộ câu hỏi riêng theo lớp) đã loại khỏi phạm vi, `DEC-2026-0828-remove-per-class-interview-set` |
-| **Tổng** | **111** | Mã **sống**. Ngoài ra 7 mã hết hiệu lực còn giữ trong bảng để lưu vết: `F4-04`, `F4-09a` tới `F4-09e`, `F6-11` |
+| **Tổng** | **112** | Mã **sống** = 31 + 18 + 13 + 11 + 27 + 12. Ngoài ra 8 mã hết hiệu lực còn giữ trong bảng để lưu vết: `F4-04`, `F4-09a` tới `F4-09e` (5 mã), `F6-11`, `F5-27`. Số liệu rà lại 2026-10-14 (`DEC-2026-1014-batch7-remaining-open-questions`, mục 8): ~~110~~ (cũ, lệch cả với cộng các dòng 111) nay là 112 theo đếm dòng bảng 5.1-5.6; `feature_catalog.md` khớp 112 |
 
-**Toàn bộ 111 mã đã được phê duyệt.** Hai mã cuối cùng còn treo — `F1-30` (`instructor_overview`) và
+**Cập nhật 2026-10-13:** `F5-27` bị bỏ (`DEC-2026-1013-remove-instructor-manual-grading`), phần bổ sung `instructor_grading` bên dưới không còn hiệu lực.
+
+**Toàn bộ 111 mã (tính tới trước 2026-10-13) đã được phê duyệt.** Hai mã cuối cùng còn treo — `F1-30` (`instructor_overview`) và
 phần bổ sung của `F5-27` (`instructor_grading`) — được **chủ dự án phê duyệt chính thức ngày 2026-09-05**.
 Hai mã đó chốt nội dung từ 2026-08-31 theo phương án kỹ thuật khuyến nghị, nhưng vòng xác nhận bị gián đoạn
 giữa chừng nên mang nhãn "chờ xác nhận" tới 2026-09-05. Xem
@@ -512,7 +515,7 @@ hưởng** (F5-22).
 2. Phát hiện bài nộp treo: xử lý qua timeout sweep (F4-07).
 3. Quản lý cấu hình ngôn ngữ, giới hạn thời gian và bộ nhớ, hệ số nhân theo ngôn ngữ (F4-11, F2-10).
 4. Theo dõi lượng token AI đã tiêu thụ, điều chỉnh giới hạn tần suất (F5-19, F5-21).
-5. Cập nhật prompt và rubric của phân hệ AI (F5-23).
+5. Cập nhật prompt của phân hệ AI (F5-23).
 
 ---
 
@@ -649,9 +652,10 @@ riêng theo lớp, `DEC-2026-0828-remove-per-class-interview-set`) và F4-09a→
 | `class_management` | Quản lý lớp — Lớp của tôi (tổng quan, danh sách học viên) | F1-10, F1-12 | `identity` | `Giáo viên - Lớp của tôi.dc.html` |
 | `class_assignments` | Giao bài tập theo lớp — Bài tập của tôi | F2-12 | `problem-bank` | `Giáo viên - Bài tập của tôi.dc.html` (gán bài từ ngân hàng cho lớp) |
 | `class_student_detail` | Hồ sơ chi tiết một học viên trong lớp phụ trách | F1-27 | `identity` | Chưa có prototype `[Đợi nextjs]` — slug bổ sung 2026-08-28, lấp Câu hỏi mở Q4 của `class_management.md`. **RD: `01-rd/screens/teacher/INS0204_class_student_detail.md` (viết 2026-09-01)** |
+| `class_detail` | Chi tiết lớp: lịch học có cấu trúc, mã mời, danh sách học viên của một lớp (màn con của `class_management`) | F1-23 tới F1-26 | `identity` | Chưa có prototype `.dc.html`, route Next.js `/instructor/classes/[classId]`. Thêm 2026-10-11, `DEC-2026-1011-class-detail-page` (đảo Q3 của `class_management.md`). **RD: `01-rd/screens/teacher/INS0205_class_detail.md`**. Bảng này nay có 7 hàng; các số tổng theo khu ở cuối mục 7 chưa cập nhật lại (xem `01-rd/README.md` mục `screens/` cho số mới) |
 | `class_progress` | Tiến độ lớp | (dẫn xuất từ F1-06, F1-07) | `identity`, `judge-orchestration` | `Giáo viên - Tiến độ học viên.dc.html` |
-| `instructor_overview` | Tổng quan khu Giảng viên | (tổng hợp F2-12, F5-27) | `identity` | `Giáo viên - Tổng quan.dc.html`. Slug mới phát sinh khi dựng prototype, không nằm trong 4 slug hạt giống ban đầu — hợp lý vì mỗi khu vực có shell riêng thường cần một dashboard riêng |
-| `instructor_grading` | Điểm AI tham khảo và chấm tay theo lớp | F5-27 | `ai-review`, `problem-bank` | `Giáo viên - Chấm bài.dc.html`. Slug mới, gắn mã F5-27 (chốt 2026-08-24, mục 6.2.a) |
+| `instructor_overview` | Tổng quan khu Giảng viên | (tổng hợp F2-12; F5-27 đã bỏ 2026-10-13) | `identity` | `Giáo viên - Tổng quan.dc.html`. Slug mới phát sinh khi dựng prototype, không nằm trong 4 slug hạt giống ban đầu — hợp lý vì mỗi khu vực có shell riêng thường cần một dashboard riêng |
+| ~~`instructor_grading`~~ | ~~Điểm AI tham khảo và chấm tay theo lớp~~ **ĐÃ BỎ 2026-10-13** (`DEC-2026-1013-remove-instructor-manual-grading`; file RD `INS0301_grading.md` giữ làm thông báo gỡ bỏ) | ~~F5-27~~ | ~~`ai-review`, `problem-bank`~~ | ~~`Giáo viên - Chấm bài.dc.html`~~ |
 
 ### 7.3. Khu vực quản trị
 
@@ -661,20 +665,24 @@ trong khi bảng này trước đó chỉ có 8 slug. `admin_overview` là slug 
 (`Admin - Tổng quan.dc.html`), chỉ chưa từng được liệt kê. Hai đích nội dung còn lại của nav ("Quản lý bài
 tập", "Câu hỏi phỏng vấn") đã chốt **dùng chung với khu Giảng viên** — xem mục 7.0, không lặp lại ở đây. Nav
 thật: Tổng quan · Nội dung (Quản lý bài tập, Câu hỏi phỏng vấn — mục 7.0) · Vận hành (Hàng đợi chấm, Chấm
-lại, Ngôn ngữ và giới hạn) · AI (Cấu hình AI, Token AI) · Hệ thống (Người dùng, Nhật ký hệ thống, Ma trận
+lại, Ngôn ngữ và giới hạn) · AI (Prompt và chất lượng, Hạn mức AI, Token AI) · Hệ thống (Người dùng, Nhật ký hệ thống, Ma trận
 phân quyền) [SoT: 09-layoutBase/Admin - Tổng quan.dc.html:360-380].
 
 | Slug | Tên màn | Chức năng chính | Bounded Context liên quan | Prototype |
 | :--- | :--- | :--- | :--- | :--- |
 | `admin_overview` | Tổng quan khu Quản trị — chỉ số hệ thống, lượt nộp theo ngôn ngữ/ngày/tháng, kết quả chấm, độ khó, bài phổ biến, người dùng mới/cũ | (tổng hợp, chưa gắn mã riêng) | `identity`, `judge-orchestration`, `problem-bank` | `Admin - Tổng quan.dc.html`. Slug bổ sung 2026-08-25. **Là đích điều hướng của `ADMIN` sau đăng nhập** theo `01-rd/screens/shared/SHR0101_auth.md:90` |
-| `admin_queue_monitor` | Giám sát hàng đợi và cụm judge engine | F4-10 | `judge-orchestration` | `Admin - Hàng đợi chấm.dc.html` |
+| `admin_queue_monitor` | Giám sát hàng đợi và cụm judge engine: dải trạng thái, bảng worker gọn, điều khiển cụm có xác nhận, bảng job có tab đếm (thiết kế lại 2026-10-10, `DEC-2026-1010-admin-operations-regroup`; khối sự kiện hạ tầng chuyển sang `admin_infra_events`) | F4-10 | `judge-orchestration` | `Admin - Hàng đợi chấm.dc.html` |
+| `admin_infra_events` | Sự kiện hạ tầng: log máy (bản ghi Outbox kẹt, lượt nộp lỗi sandbox), chỉ đọc, có lọc và tìm kiếm. **Màn thêm 2026-10-10** (`DEC-2026-1010-admin-operations-regroup`), nằm trong nhóm Vận hành | F4-10 | `judge-orchestration` | chưa có mockup (khối cuối của `Admin - Hàng đợi chấm.dc.html`) |
 | ~~`admin_rejudge`~~ | ~~Kích hoạt và theo dõi chấm lại~~ | — | — | **ĐÃ LOẠI BỎ KHỎI PHẠM VI (2026-08-28)** — xem `DEC-2026-0828-remove-rejudge-scope`. Route `/admin/rejudge` và view code (nếu có) cần gỡ khi dọn khung base FE. |
 | `admin_language_config` | Cấu hình ngôn ngữ và giới hạn tài nguyên | F4-11, F2-10 | `judge-orchestration`, `problem-bank` | `Admin - Ngôn ngữ và giới hạn.dc.html` |
-| `admin_ai_config` | Cấu hình prompt, rubric và giới hạn tần suất AI | F5-19, F5-23 | `ai-review` | `Admin - Cấu hình AI.dc.html` |
+| `admin_ai_config` | Prompt và chất lượng AI: prompt có phiên bản, model, ~~rubric~~ (ĐÃ BỎ 2026-10-14, DEC-2026-1014-drop-solution-review-rubric), nguyên tắc trả lời, chia tab theo tính năng | F5-17, F5-23 | `ai-review` | `Admin - Cấu hình AI.dc.html` |
+| `admin_ai_limits` | Hạn mức và chi phí AI: hạn mức token tháng và mở khoá, giới hạn tần suất theo giờ, ngưỡng cảnh báo, đơn giá token, trần sinh testcase (`DEC-2026-1010-split-ai-admin-screens`) | F5-19, F5-25, F2-14 | `ai-review`, `problem-bank` | chưa có mockup |
 | `admin_ai_usage` | Theo dõi lượng token tiêu thụ, ngân sách và dự báo cạn quota | F5-21, F5-25 | `ai-review` | `Admin - Token AI.dc.html` |
 | `admin_permission_matrix` | Ma trận phân quyền Role × Function × Action | F1-10, F1-11, F1-12 | `identity` | `Admin - Ma trận phân quyền.dc.html` |
 | `admin_user_management` | Quản lý tài khoản: đổi vai trò, khoá/mở khoá, reset mật khẩu | F1-13 | `identity` | `Admin - Người dùng.dc.html` |
 | `admin_system_log` | Nhật ký hệ thống: audit hành động quản trị | F1-14 | `identity` | `Admin - Nhật ký hệ thống.dc.html` |
+
+**Cập nhật 2026-10-10:** thêm `admin_infra_events` (`ADM0404`, `DEC-2026-1010-admin-operations-regroup`); số màn sống ở dòng tổng ngay dưới tăng thêm 1 (nav khu Admin có 12 đích). Số theo khu ghi dưới đây chưa đếm lại sau đợt thêm `admin_ai_limits` và `admin_infra_events`.
 
 Tổng: **31 màn sống** — 12 người học, 6 giảng viên, 8 quản trị, 5 dùng chung (mục 7.0). Cộng
 `admin_rejudge` chỉ giữ file RD để lưu vết (ngoài phạm vi, `DEC-2026-0828-remove-rejudge-scope`) thì
@@ -748,7 +756,7 @@ thuộc `identity`. Xem `01-rd/req/identity.md` (F1-21) và `01-rd/screens/users
 
 **Đã chốt 2026-08-24** (`06-plan/PROTOTYPE_DEBT.md` mục 2.8, qua hỏi trực tiếp chủ dự án) — một mục hoãn lại
 chứ không loại hẳn: **backend thật cho "Chạy đối chiếu" (regression test) prompt AI trước khi publish**
-(F5-23) — chạy 30 bài giải mẫu qua AI để so sánh điểm rubric giữa bản nháp và bản đang chạy. Nút này **giữ
+(F5-23) — chạy 30 bài giải mẫu qua AI để so sánh ~~điểm rubric~~ kết quả báo cáo (ĐÃ BỎ chữ "rubric" 2026-10-14, DEC-2026-1014-drop-solution-review-rubric) giữa bản nháp và bản đang chạy. Nút này **giữ
 nguyên trên `09-layoutBase/Admin - Cấu hình AI.dc.html`** để thể hiện tầm nhìn thiết kế, nhưng phần logic
 chạy batch AI thật xếp vào hướng phát triển mở rộng — không nằm trong cam kết DD/test đợt này, theo đúng thứ
 tự cắt giảm để tránh vỡ tiến độ đã cảnh báo ở rủi ro R3 (mục 9 dưới đây).

@@ -12,11 +12,11 @@ import { cn } from "@/shared/lib";
 
 const TONE = {
   warn: {
-    fg: "text-[var(--color-admin-warn)]",
+    fg: "text-[var(--color-admin-warn-text)]",
     bg: "bg-[color-mix(in_srgb,var(--color-admin-warn)_11%,transparent)]",
   },
   negative: {
-    fg: "text-[var(--color-admin-negative)]",
+    fg: "text-[var(--color-admin-negative-text)]",
     bg: "bg-[color-mix(in_srgb,var(--color-admin-negative)_9%,transparent)]",
   },
   info: {
@@ -35,11 +35,14 @@ export function NoticeTile({
   tone = "info",
   title,
   children,
+  action,
   className,
 }: {
   tone?: NoticeTone;
   title: ReactNode;
   children?: ReactNode;
+  /** Optional control on the title row (e.g. "Đánh dấu đã xem"). Callers without it render as before. */
+  action?: ReactNode;
   className?: string;
 }) {
   return (
@@ -51,7 +54,16 @@ export function NoticeTile({
         className,
       )}
     >
-      <p className={cn("text-[13px] font-semibold", TONE[tone].fg)}>{title}</p>
+      {action ? (
+        <div className="flex items-start justify-between gap-3">
+          <p className={cn("text-[13px] font-semibold", TONE[tone].fg)}>
+            {title}
+          </p>
+          <div className="shrink-0">{action}</div>
+        </div>
+      ) : (
+        <p className={cn("text-[13px] font-semibold", TONE[tone].fg)}>{title}</p>
+      )}
       {children ? (
         <p className="mt-0.5 text-[12.5px] text-pretty text-[var(--color-text-muted)]">
           {children}

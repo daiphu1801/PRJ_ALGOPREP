@@ -25,6 +25,7 @@ import {
   type AuditEvent,
 } from "../api";
 import { useT } from "@/shared/i18n";
+import { textTone } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
 import { logSettings, type ExpiryPolicy } from "../model/settings";
 import { ExportLogDialog } from "./export-log-dialog";
@@ -296,7 +297,7 @@ export function AdminSystemLogView() {
                     className="font-mono text-xs font-semibold whitespace-nowrap"
                     style={
                       admin.colorVar
-                        ? { color: `var(${admin.colorVar})` }
+                        ? { color: textTone(admin.colorVar) }
                         : undefined
                     }
                   >
@@ -315,11 +316,17 @@ export function AdminSystemLogView() {
                 value: item.count,
                 colorVar: CATEGORY_COLOR_VAR[item.category],
               }))}
-              footnote={t("infraNote")}
+              viewAllHref="/admin/queue"
+              viewAllLabel={t("infraNote")}
             />
           </Card>
         </div>
       </div>
+
+      {/* BD ADM0403 area G: read-only; the number is edited in the Lưu trữ dialog. */}
+      <p className="mt-4 text-[12.5px] text-[var(--color-text-subtle)]">
+        {t("retention.footer", { days: String(settings.retentionDays) })}
+      </p>
 
       <ParamsDialog
         open={editingRetention}

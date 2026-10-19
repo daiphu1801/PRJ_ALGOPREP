@@ -59,7 +59,29 @@ export type RecallLevel = "known" | "vague" | "forgotten";
 
 export const RECALL_LEVELS: RecallLevel[] = ["known", "vague", "forgotten"];
 
+/**
+ * Days until the next review after a self-rating (USR0401 Q7, owner 2026-10-18).
+ * MOCK RULE: the real value is `recall_ratings.next_review_at` computed by the server (spaced
+ * repetition, 02-bd/architecture/interview-bank.md); the prototype has no server, so it uses this table.
+ */
+export const RECALL_NEXT_REVIEW_DAYS: Record<RecallLevel, number> = {
+  forgotten: 1,
+  vague: 3,
+  known: 7,
+};
+
 export type AnswerAttemptFeedbackStatus = "pending" | "completed" | "failed";
+
+/**
+ * Per-criterion result of a practice answer (USR0402 Q9, owner 2026-10-18). `achievementPercent` is the
+ * 0-100 level the learner reached on that criterion; `weightPercent` is the author's weight, shown
+ * beside it and never multiplied in. No combined score, no pass threshold.
+ */
+export type AnswerCriterionResult = {
+  criterionCode: string;
+  achievementPercent: number;
+  weightPercent: number;
+};
 
 export type AnswerAttempt = {
   attemptNo: number;
@@ -70,6 +92,8 @@ export type AnswerAttempt = {
   strengths?: string[];
   gaps?: string[];
   nextSteps?: string;
+  /** Present only when `feedbackStatus` is "completed". */
+  criteria?: AnswerCriterionResult[];
 };
 
 export type InterviewQuestionPage = {

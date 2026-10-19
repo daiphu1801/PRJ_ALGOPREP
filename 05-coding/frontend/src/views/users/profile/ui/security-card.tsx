@@ -3,6 +3,7 @@
 
 import { useState } from "react";
 import { useT } from "@/shared/i18n";
+import { formatDateVN } from "@/shared/lib";
 import { Badge, Button, Card, SettingRow } from "@/shared/ui";
 import type { UserProfile } from "@/entities/user";
 import { ChangePasswordDialog } from "@/features/change-my-password";
@@ -11,11 +12,13 @@ export function SecurityCard({ profile }: { profile: UserProfile }) {
   const t = useT("profile");
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  // Sheet 5 Khu vực C NO 3 — Q3 (last-changed date column) is unresolved, so `passwordChangedAt`
-  // being null just means "don't show a date", never a fabricated one.
+  // Sheet 5 Khu vực C NO 3 — Q3 closed 2026-10-18: `users.password_changed_at`, NULL = never
+  // changed, shown as "chưa từng đổi" instead of a date.
   const passwordMeta = profile.hasPassword
     ? profile.passwordChangedAt
-      ? t("security.passwordChangedAt", { date: profile.passwordChangedAt })
+      ? t("security.passwordChangedAt", {
+          date: formatDateVN(profile.passwordChangedAt),
+        })
       : t("security.passwordNoDate")
     : t("security.noPassword", {
         provider: profile.linkedProviders[0] ?? "OAuth",

@@ -5,6 +5,7 @@
 "use client";
 
 import { useT } from "@/shared/i18n";
+import { useUnsavedChangesGuard } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
 import {
   Button,
@@ -15,16 +16,32 @@ import {
   SettingRow,
   Skeleton,
   Toggle,
+  UnsavedChangesDialog,
 } from "@/shared/ui";
 import { useInterviewPreferences, useMySettings } from "@/entities/user";
 import { useAccountPreferences } from "@/features/update-account-preferences";
+
+// BD Q4 (closed 2026-10-18): the default-language control is a dynamic list of the languages with
+// `judge.language_configs.enabled = true`. Mock until the judge-orchestration read exists; flip an
+// `enabled` flag here to see the fallback.
+const LANGUAGE_OPTIONS: {
+  value: "PYTHON" | "JAVA" | "CPP";
+  label: string;
+  enabled: boolean;
+}[] = [
+  { value: "PYTHON", label: "Python 3", enabled: true },
+  { value: "JAVA", label: "Java 21", enabled: true },
+  { value: "CPP", label: "C++ 17", enabled: true },
+];
 
 export function PreferencesForm() {
   const t = useT("settings");
   const settingsQuery = useMySettings();
   const interviewQuery = useInterviewPreferences();
 
-  if (settingsQuery.isLoading) {
+  // D31: wait for both reads, otherwise the draft would be seeded with defaults and a later Save
+  // would overwrite the real interview preferences.
+  if (settingsQuery.isLoading || interviewQuery.isLoading) {
     return (
       <div className="flex flex-col gap-3.5">
         <Skeleton className="h-40" />
@@ -84,16 +101,41 @@ function Body({
   } = useAccountPreferences(
     settings,
     interview ?? { maxTurnsPerSession: "12", hintAllowed: true },
+    // D31: while the ai-review group is degraded its defaults are placeholders, never sent.
+    !interviewDegraded,
   );
+  const leaveGuard = useUnsavedChangesGuard(dirty);
 
-  async function handleSave() {
+  // Saved language switched off by an admin: show the first enabled one (BD Q4). Display only (D35):
+  // the draft keeps the stored value and nothing is written until the learner picks a language.
+  const enabledLanguages = LANGUAGE_OPTIONS.filter((o) => o.enabled);
+  const shownLanguage = enabledLanguages.some(
+    (o) => o.value === draft.workspace.defaultLanguage,
+  )
+    ? draft.workspace.defaultLanguage
+    : (enabledLanguages[0]?.value ?? draft.workspace.defaultLanguage);
+
+  // BD Q11 (closed 2026-10-18): the button writes to two modules, each group reports its own result.
+  async function handleSave(): Promise<boolean> {
     try {
       const { settingsOk, interviewOk } = await save();
-      if (settingsOk && interviewOk) toast.success(t("saveBar.saved"));
-      else if (settingsOk) toast.warning(t("interview.saveFailedWarning"));
+      if (interviewOk === null) {
+        if (settingsOk) toast.success(t("saveBar.saved"));
+        else toast.error(t("saveBar.saveFailed"));
+        return settingsOk;
+      }
+      if (settingsOk && interviewOk) {
+        toast.success(t("saveBar.saved"));
+        return true;
+      }
+      if (settingsOk) toast.success(t("saveBar.savedSettings"));
       else toast.error(t("saveBar.saveFailed"));
+      if (interviewOk) toast.success(t("interview.saved"));
+      else toast.warning(t("interview.saveFailedWarning"));
+      return settingsOk && interviewOk;
     } catch {
       toast.error(t("saveBar.saveFailed"));
+      return false;
     }
   }
 
@@ -107,13 +149,12 @@ function Body({
           >
             <SegmentedTabs
               label={t("workspace.defaultLanguage")}
-              value={draft.workspace.defaultLanguage}
+              value={shownLanguage}
               onValueChange={(v) => setWorkspace({ defaultLanguage: v })}
-              options={[
-                { value: "PYTHON", label: "Python 3" },
-                { value: "JAVA", label: "Java 21" },
-                { value: "CPP", label: "C++ 17" },
-              ]}
+              options={enabledLanguages.map(({ value, label }) => ({
+                value,
+                label,
+              }))}
             />
           </SettingRow>
           <SettingRow
@@ -238,7 +279,7 @@ function Body({
 
       <Card title={t("saveBar.title")}>
         <p className="mb-3 text-sm text-[var(--color-text-muted)]">
-          {t("saveBar.statusIdle")}
+          {dirty ? t("saveBar.statusDirty") : t("saveBar.statusIdle")}
         </p>
         <Button
           className="w-full"
@@ -249,6 +290,24 @@ function Body({
           {t("saveBar.save")}
         </Button>
       </Card>
+
+      <UnsavedChangesDialog
+        open={leaveGuard.pending}
+        title={t("unsaved.title")}
+        saveAndLeaveLabel={t("unsaved.saveAndLeave")}
+        leaveLabel={t("unsaved.leave")}
+        stayLabel={t("unsaved.stay")}
+        pending={isSaving}
+        onSaveAndLeave={() => {
+          void handleSave().then((ok) =>
+            ok ? leaveGuard.leave() : leaveGuard.stay(),
+          );
+        }}
+        onLeave={leaveGuard.leave}
+        onStay={leaveGuard.stay}
+      >
+        {t("unsaved.body")}
+      </UnsavedChangesDialog>
     </div>
   );
 }

@@ -9,11 +9,31 @@
 // from that same list client-side per BD 4.1 point 1 ("dẫn xuất từ nhóm trước, không gọi riêng").
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import {
+  Activity,
+  ArrowLeft,
+  GraduationCap,
+  Mail,
+  Phone,
+  Eye,
+  Tags,
+  User,
+  type LucideIcon,
+} from "lucide-react";
 import { useClassAssignments } from "@/entities/class-assignment";
 import {
-  initialsOfClassStudent,
+  fetchSubmissionDetail,
+  matchesResultFilter,
+  READABLE_SUBMISSION_IDS,
+  SUBMISSION_LANGUAGE_LABEL,
+  SUBMISSION_STATUS_VARIANT,
+  type SubmissionResultFilter,
+} from "@/entities/submission";
+import {
+  STUDENT_STATUS_VARIANT,
   useClassStudentDetail,
   useInstructorClasses,
   useRemoveStudent,
@@ -26,29 +46,67 @@ import {
   Card,
   ConfirmDialog,
   DataTable,
+  FilterMenu,
+  IconAction,
   PageHeader,
-  StatCard,
   type DataTableColumn,
 } from "@/shared/ui";
 
-// Deterministic mock submission history — no dedicated entity yet (this screen has no
-// 03-dd/api/judge-orchestration.md contract to type a mock against), so it is generated in-view
-// from the assigned-problem list rather than invented in a separate untyped file.
-function buildSubmissionHistory(problemTitles: string[]) {
-  return problemTitles.slice(0, 6).map((title, index) => ({
-    id: `sub-${index}`,
-    problemTitle: title,
-    language: index % 2 === 0 ? "Java" : "Python",
-    status:
-      index % 3 === 0
-        ? "ACCEPTED"
-        : index % 3 === 1
-          ? "WRONG_ANSWER"
-          : "TIME_LIMIT",
-    testcaseRatio:
-      index % 3 === 0 ? "10/10" : index % 3 === 1 ? "4/10" : "7/10",
-    submittedAtLabel: `${index + 1} ngày trước`,
-  }));
+function InfoItem({
+  icon: Icon,
+  label,
+  children,
+}: {
+  icon: LucideIcon;
+  label: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="flex items-start gap-3">
+      <span
+        aria-hidden="true"
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--color-primary)_12%,transparent)] text-[var(--color-primary)]"
+      >
+        <Icon className="h-4 w-4" />
+      </span>
+      <div className="min-w-0">
+        <dt className="text-xs font-medium text-[var(--color-text-muted)]">
+          {label}
+        </dt>
+        <dd className="mt-0.5 font-medium break-words text-[var(--color-text)]">
+          {children}
+        </dd>
+      </div>
+    </div>
+  );
+}
+
+// Mock submission history — no dedicated entity yet (this screen has no
+// 03-dd/api/judge-orchestration.md contract to type a mock against). Rows ARE the mock submissions the
+// instructor may read (entities/submission details, the same ids the instructor submission list uses), so
+// language, verdict, testcase ratio and time here match what "Xem kết quả" opens.
+function buildSubmissionHistory() {
+  return READABLE_SUBMISSION_IDS.flatMap((id) => {
+    const detail = fetchSubmissionDetail(id);
+    if (!detail) return [];
+    return [
+      {
+        id,
+        submissionId: id,
+        problemTitle: detail.problemTitle,
+        language: SUBMISSION_LANGUAGE_LABEL[detail.language],
+        status: detail.status,
+        ratio:
+          detail.totalCount == null
+            ? "-"
+            : `${detail.passedCount ?? 0}/${detail.totalCount}`,
+        submittedAtLabel: new Date(detail.submittedAt).toLocaleString("vi-VN", {
+          dateStyle: "short",
+          timeStyle: "short",
+        }),
+      },
+    ];
+  });
 }
 
 export function ClassStudentDetailView({
@@ -63,7 +121,11 @@ export function ClassStudentDetailView({
   const studentQuery = useClassStudentDetail(studentId, classId);
   const assignmentsQuery = useClassAssignments();
   const removeStudent = useRemoveStudent();
+  const router = useRouter();
   const [confirmingRemove, setConfirmingRemove] = useState(false);
+  const tVerdict = useT("submissionResult");
+  const [historyFilter, setHistoryFilter] =
+    useState<SubmissionResultFilter>("all");
 
   const className =
     classesQuery.data?.find((c) => c.id === classId)?.name ?? classId;
@@ -83,9 +145,14 @@ export function ClassStudentDetailView({
     return [...byTopic.entries()];
   }, [classAssignments]);
 
-  const submissionHistory = useMemo(
-    () => buildSubmissionHistory(classAssignments.map((row) => row.title)),
-    [classAssignments],
+  const submissionHistory = useMemo(() => buildSubmissionHistory(), []);
+
+  const visibleHistory = useMemo(
+    () =>
+      submissionHistory.filter((row) =>
+        matchesResultFilter(row.status, historyFilter),
+      ),
+    [submissionHistory, historyFilter],
   );
 
   const student = studentQuery.data;
@@ -121,14 +188,14 @@ export function ClassStudentDetailView({
       {
         key: "language",
         header: t("submissionHistory.col.language"),
-        render: (row) => row.language,
+        render: (row) => <Badge variant="neutral">{row.language}</Badge>,
       },
       {
         key: "status",
         header: t("submissionHistory.col.status"),
         render: (row) => (
-          <Badge variant={row.status === "ACCEPTED" ? "success" : "negative"}>
-            {row.status}
+          <Badge variant={SUBMISSION_STATUS_VARIANT[row.status]}>
+            {tVerdict(`verdict.${row.status}`)}
           </Badge>
         ),
       },
@@ -136,7 +203,7 @@ export function ClassStudentDetailView({
         key: "ratio",
         header: t("submissionHistory.col.ratio"),
         align: "right",
-        render: (row) => row.testcaseRatio,
+        render: (row) => <span className="font-mono">{row.ratio}</span>,
       },
       {
         key: "submittedAt",
@@ -148,11 +215,14 @@ export function ClassStudentDetailView({
         header: "",
         align: "right",
         render: (row) => (
-          <Button variant="ghost" size="sm" asChild>
-            <Link href={`/submissions/${row.id}`}>
-              {t("submissionHistory.btnViewResult")}
-            </Link>
-          </Button>
+          <IconAction
+            icon={Eye}
+            label={t("submissionHistory.btnViewResult")}
+            ariaLabel={t("submissionHistory.btnViewResultOf", {
+              problem: row.problemTitle,
+            })}
+            href={`/instructor/submissions/${row.submissionId}?studentId=${studentId}&classId=${classId}&from=student`}
+          />
         ),
       },
     ];
@@ -184,84 +254,110 @@ export function ClassStudentDetailView({
   return (
     <div>
       <PageHeader
+        leading={
+          <IconAction
+            icon={ArrowLeft}
+            label={t("backLink")}
+            href={`/instructor/students?classId=${classId}`}
+            // Back restores the list's own filter and page (INS0204 Q6); the href is the fallback
+            // when this page was opened directly and there is nothing to go back to.
+            onClick={(event) => {
+              if (window.history.length > 1) {
+                event.preventDefault();
+                router.back();
+              }
+            }}
+          />
+        }
         title={student.name}
         description={
-          <Link href={`/instructor/classes`} className="hover:underline">
+          <Link
+            href={`/instructor/classes/${classId}`}
+            className="hover:underline"
+          >
             {className}
           </Link>
         }
         actions={
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-[var(--color-admin-negative)]"
-            onClick={() => setConfirmingRemove(true)}
-          >
-            {t("btnRemoveFromClass")}
-          </Button>
+          <>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-[var(--color-admin-negative)]"
+              onClick={() => setConfirmingRemove(true)}
+            >
+              {t("btnRemoveFromClass")}
+            </Button>
+          </>
         }
       />
 
-      <div className="mb-4 flex items-center gap-3">
-        <span
-          aria-hidden="true"
-          className="glass-surface flex h-12 w-12 items-center justify-center rounded-full border border-[var(--color-border)] text-base font-semibold"
-        >
-          {initialsOfClassStudent(student.name)}
-        </span>
-        <div>
-          <Link
-            href={`/instructor/students?classId=${classId}`}
-            className="text-[13px] font-semibold text-[var(--color-text-muted)] hover:underline"
-          >
-            {t("backLink")}
-          </Link>
-        </div>
-      </div>
+      <div className="mb-4 grid gap-4 lg:grid-cols-2">
+        <Card title={t("info.contactTitle")} className="h-full">
+          <dl className="flex flex-col gap-4 text-sm">
+            <InfoItem icon={User} label={t("info.name")}>
+              {student.name}
+            </InfoItem>
+            <InfoItem icon={Mail} label={t("info.email")}>
+              {student.email ? (
+                <a
+                  href={`mailto:${student.email}`}
+                  className="text-[var(--color-primary)] hover:underline"
+                >
+                  {student.email}
+                </a>
+              ) : (
+                "-"
+              )}
+            </InfoItem>
+            <InfoItem icon={Phone} label={t("info.phone")}>
+              {student.phone ? (
+                <a
+                  href={`tel:${student.phone}`}
+                  className="text-[var(--color-primary)] hover:underline"
+                >
+                  {student.phone}
+                </a>
+              ) : (
+                "-"
+              )}
+            </InfoItem>
+          </dl>
+        </Card>
 
-      <div className="mb-4 grid gap-3.5 [grid-template-columns:repeat(auto-fit,minmax(200px,1fr))]">
-        <StatCard
-          label={t("stats.avgScore")}
-          value={student.avgScore === null ? "-" : student.avgScore.toFixed(1)}
-        />
-        <StatCard
-          label={t("stats.completion")}
-          value={`${student.completionPct}%`}
-        />
-        <StatCard
-          label={t("stats.streak")}
-          value={student.streakDays > 0 ? `${student.streakDays} ngày` : "-"}
-        />
-        <StatCard
-          label={t("stats.lastActive")}
-          value={student.lastActiveLabel}
-        />
-      </div>
-
-      <Button
-        variant="ghost"
-        size="sm"
-        asChild
-        className="mb-4 border border-[var(--color-border)]"
-      >
-        <Link
-          href={`/instructor/grading?studentId=${studentId}&classId=${classId}`}
-        >
-          {t("linkViewGrading")}
-        </Link>
-      </Button>
-
-      <Card title={t("topicProgress.title")} className="mb-4">
-        <ul className="flex flex-wrap gap-2">
-          {topicBreakdown.map(([topic, count]) => (
-            <li key={topic}>
-              <Badge variant="blue">
-                {t("topicProgress.item", { topic, count })}
+        <Card title={t("info.studyTitle")} className="h-full">
+          <dl className="flex flex-col gap-4 text-sm">
+            <InfoItem icon={GraduationCap} label={t("info.class")}>
+              <Link
+                href={`/instructor/classes/${classId}`}
+                className="text-[var(--color-primary)] hover:underline"
+              >
+                {className}
+              </Link>
+            </InfoItem>
+            <InfoItem icon={Activity} label={t("info.status")}>
+              <Badge variant={STUDENT_STATUS_VARIANT[student.status]}>
+                {t(`info.statusValue.${student.status}`)}
               </Badge>
-            </li>
-          ))}
-        </ul>
-      </Card>
+            </InfoItem>
+            <InfoItem icon={Tags} label={t("topicProgress.title")}>
+              {topicBreakdown.length === 0 ? (
+                "-"
+              ) : (
+                <ul className="flex flex-wrap gap-1.5">
+                  {topicBreakdown.map(([topic, count]) => (
+                    <li key={topic}>
+                      <Badge variant="blue">
+                        {t("topicProgress.item", { topic, count })}
+                      </Badge>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </InfoItem>
+          </dl>
+        </Card>
+      </div>
 
       <Card title={t("assignmentProgress.title")} className="mb-4">
         <DataTable
@@ -275,10 +371,32 @@ export function ClassStudentDetailView({
       </Card>
 
       <Card title={t("submissionHistory.title")}>
+        <div className="mb-3.5 flex flex-wrap items-center gap-2.5">
+          <FilterMenu
+            label={t("submissionHistory.filter.label")}
+            value={historyFilter}
+            onValueChange={(value) =>
+              setHistoryFilter(value as SubmissionResultFilter)
+            }
+            options={[
+              { value: "all", label: t("submissionHistory.filter.all") },
+              {
+                value: "accepted",
+                label: t("submissionHistory.filter.accepted"),
+              },
+              { value: "failed", label: t("submissionHistory.filter.failed") },
+            ]}
+          />
+          <span className="ml-auto text-[12.5px] text-[var(--color-text-muted)]">
+            {t("submissionHistory.resultCount", {
+              count: visibleHistory.length,
+            })}
+          </span>
+        </div>
         <DataTable
           caption={t("submissionHistory.title")}
           columns={historyColumns}
-          rows={submissionHistory}
+          rows={visibleHistory}
           rowKey={(row) => row.id}
           emptyMessage={t("empty")}
           minWidth={760}
@@ -290,8 +408,12 @@ export function ClassStudentDetailView({
         onClose={() => setConfirmingRemove(false)}
         onConfirm={() => {
           removeStudent.mutate(studentId, {
-            onSuccess: () =>
-              toast.success(t("toast.removed", { name: student.name })),
+            onSuccess: () => {
+              toast.success(t("toast.removed", { name: student.name }));
+              // The learner left the class, so this page has nothing left to show: back to the caller
+              // (BD INS0204 Q10, DEC-2026-1014-instructor-batch3-4-contracts-and-removal).
+              router.back();
+            },
             onError: () => toast.error(t("toast.failed")),
           });
           setConfirmingRemove(false);

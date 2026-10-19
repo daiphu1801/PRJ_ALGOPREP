@@ -59,13 +59,13 @@ Quét toàn bộ `02-bd/screens/**` (Sheet 7.3 "Danh sách endpoint") tìm mọi
 | :-: | :--- | :--- | :--- | :--- | :--- |
 | 19 | GET | `/api/v1/identity/classes/my` | Danh sách lớp của giảng viên đang đăng nhập | `INS0101_overview`, `INS0201_class_management` | |
 | 20 | POST | `/api/v1/identity/classes` | Tạo lớp (F1-23) | `INS0201_class_management` | |
-| 21 | PATCH | `/api/v1/identity/classes/{classId}` | Sửa tên/mô tả/ghi chú lịch (F1-23) | `INS0201_class_management` | Kiểm sở hữu: `instructor_id` khớp người gọi |
+| 21 | PATCH | `/api/v1/identity/classes/{classId}` | Sửa tên/mô tả/lịch học (F1-23); `schedule` là jsonb có cấu trúc từ 2026-10-11, `DEC-2026-1011-class-schedule-structured` | `INS0201_class_management`, `INS0205_class_detail` | Kiểm sở hữu: `instructor_id` khớp người gọi |
 | 22 | DELETE | `/api/v1/identity/classes/{classId}` | Xoá lớp — hard delete (F1-24) | `INS0201_class_management` | `02-bd/database/identity.md:88-89` |
 | 23 | POST | `/api/v1/identity/classes/{classId}/invite-codes` | Sinh mã mời mới, TTL 7 ngày (F1-25) | `INS0201_class_management` | Nhiều mã hiệu lực song song [SoT: `02-bd/database/identity.md:93-94`] |
 | 24 | GET | `/api/v1/identity/classes/{classId}/invite-codes` | Liệt kê mã mời còn hiệu lực của lớp | `INS0201_class_management` | |
-| 25 | POST | `/api/v1/identity/classes/join` | Học viên tham gia lớp bằng mã mời (F1-23) | `USR0101_problem_list` (khối "Bài tập lớp"), luồng nhập mã | BR-09: hết hạn/không tồn tại → `422 IDT-410` |
+| 25 | POST | `/api/v1/identity/classes/join` | Học viên tham gia lớp bằng mã mời (F1-23) | `USR0101_problem_list` (khối "Bài tập lớp"), luồng nhập mã | BR-09: hết hạn/không tồn tại → `422 IDT-410`. ĐÃ CHỐT 2026-10-14 (DEC-2026-1014-class-leave-details): học viên từng bị gỡ vào lại bằng mã → dùng lại dòng ghi danh cũ, đặt `left_at` = NULL, vẫn `200`; đã ở trong lớp → `200` không đổi gì |
 | 26 | GET | `/api/v1/identity/classes/{classId}/students` | Danh sách học viên trong lớp, kèm trạng thái phân loại (F1-27) | `INS0201_class_management`, `INS0203_class_progress` | Ngưỡng phân loại theo BR-10 |
-| 27 | DELETE | `/api/v1/identity/classes/{classId}/students/{studentId}` | Gỡ học viên khỏi lớp (F1-26) | `INS0201_class_management` | Phát `StudentRemovedFromClass`, xem BR-11 |
+| 27 | POST | `/api/v1/identity/classes/{classId}/students/{studentId}/leave` | Gỡ học viên khỏi lớp (F1-26) — ĐÃ ĐỔI 2026-10-14 (DEC-2026-1014-keep-learning-history-on-leave): đặt `left_at`, giữ lịch sử, không xoá dòng. ĐÃ CHỐT 2026-10-14 (DEC-2026-1014-class-leave-details): đổi từ ~~`DELETE /api/v1/identity/classes/{classId}/students/{studentId}`~~ sang `POST .../leave`, không có body; gọi lặp là idempotent (dòng đã có `left_at` thì không ghi đè mốc cũ, vẫn `200`) | `INS0201_class_management` | Phát `StudentRemovedFromClass`, xem BR-11 |
 | 28 | GET | `/api/v1/identity/classes/{classId}/students/{studentId}/detail` | Chi tiết một học viên trong lớp (F1-28) | `INS0204_class_student_detail` | Điểm TB tính theo phạm vi lớp [SoT: `07-review/...:184`, `DEC-2026-0921-teacher-screens-conflict-resolutions`] — đọc từ `judge-orchestration.GetClassStudentSubmissionMetrics` |
 | 29 | GET | `/api/v1/identity/classes/{classId}/progress` | Dashboard tiến độ lớp: hoàn thành TB, phân loại 5 nhãn (F1-28) | `INS0203_class_progress` | Đọc `class_completion_stats` (BR-12); nhãn theo `DEC-2026-0921-teacher-screens-conflict-resolutions` |
 
@@ -83,14 +83,27 @@ Quét toàn bộ `02-bd/screens/**` (Sheet 7.3 "Danh sách endpoint") tìm mọi
 
 | # | Method | Path | Mô tả | Nguồn BD | Ghi chú |
 | :-: | :--- | :--- | :--- | :--- | :--- |
-| 35 | GET | `/api/v1/identity/admin/users?status=&role=&q=&page=` | Danh sách người dùng, lọc + phân trang | `ListUsers` [SoT: Suy luận] | |
+| 35 | GET | `/api/v1/identity/admin/users?status=&role=&q=&page=&pageSize=` | Danh sách người dùng, lọc + phân trang | `ListUsers` [SoT: Suy luận] | `status` nhận thêm `PENDING_VERIFICATION`. Mỗi phần tử trả thêm `hasPassword: boolean` = `password_hash IS NOT NULL`, **không thêm cột** (`DEC-2026-1011-admin-system-open-questions-closed`, H2). `pageSize` mặc định 20 (nợ `PROTOTYPE_DEBT.md` về phân trang giả) |
 | 36 | PATCH | `/api/v1/identity/admin/users/{userId}/role` | Đổi vai trò (F1-13) | `ChangeUserRole` [SoT: Suy luận] | BR-15 (bảo vệ admin cuối cùng) |
 | 37 | PATCH | `/api/v1/identity/admin/users/{userId}/status` | Khoá/mở khoá tài khoản (F1-13) | `ChangeUserStatus` [SoT: `07-review/bd_open_questions_with_solutions_260924.md:268`] | Đổi hai chiều cùng một endpoint; BR-15 |
-| 38 | POST | `/api/v1/identity/admin/users/{userId}/reset-password` | Đặt lại mật khẩu hộ (F1-13) | `ResetUserPassword` [SoT: Suy luận] | Sinh mật khẩu tạm, gửi email, thu hồi mọi refresh token của user đó |
+| 38 | POST | `/api/v1/identity/admin/users/{userId}/reset-password` | Đặt lại mật khẩu hộ (F1-13) | `ResetUserPassword` [SoT: Suy luận] | Sinh mật khẩu tạm, gửi email, thu hồi mọi refresh token của user đó. Tài khoản `hasPassword = false` (chỉ OAuth): **không** sinh mật khẩu, gửi email hướng dẫn quay lại nhà cung cấp (cùng tinh thần `422 IDT-108` ở luồng quên mật khẩu) (H2) |
+| 50 | POST | `/api/v1/identity/admin/users` | Admin tạo tài khoản thủ công (F1-13 mở rộng) | `CreateUserAccount` [SoT: `02-bd/screens/admin/ADM0201_user_management.md` Q1] | Xem mục 0.6.1. Đánh số #50 (nối cuối danh sách) để không đổi số các endpoint đã được trích dẫn |
 
-**Chưa đưa vào phạm vi** (theo đề xuất BD, chưa xác nhận): "Thêm tài khoản" thủ công [SoT: `07-review/...:267`],
-trạng thái "Chờ xác thực email" (chưa có cột nguồn) [SoT: `07-review/...:269`] — không tạo endpoint cho tới
-khi chủ dự án xác nhận.
+**Đã đưa vào phạm vi 2026-10-11** (`DEC-2026-1001-admin-configurable-settings` đã chốt "Thêm tài khoản";
+`DEC-2026-1011-admin-system-open-questions-closed` chốt nơi lưu trạng thái "Chờ xác thực" là
+`users.status = PENDING_VERIFICATION`). Thay cho đoạn "chưa đưa vào phạm vi" cũ.
+
+#### 0.6.1. `POST /admin/users` (`CreateUserAccount`)
+
+- **Quyền**: vai trò `ADMIN` (Lớp 1) và Function quản lý người dùng, giống #36 đến #38 `[SoT: Suy luận]`.
+- **Request**: `{ "displayName": string, "email": string, "roleId": uuid }`. `roleId` phải thuộc role có
+  `base_category` khác `ADMIN`; danh sách vai trò của popup lấy từ `GET /rbac/roles` (#32) lọc cùng điều kiện.
+- **Hành vi**: tạo `users` với `status = PENDING_VERIFICATION`, sinh mật khẩu tạm gửi email, đánh dấu bắt đổi mật
+  khẩu ở lần đăng nhập đầu, ghi một dòng `system_audit_logs` (`action_type = USER_CREATED`, `target_id` = id mới).
+  Không lưu mật khẩu tạm dạng rõ, không ghi nó vào `after_json` (BR-16).
+- **Response**: `201` với phần tử cùng dạng #35.
+- **Lỗi**: `409 IDT-440` email đã tồn tại; `422 IDT-441` `roleId` thuộc nhóm `ADMIN` hoặc không tồn tại; kiểm định dạng
+  email như `POST /auth/register` (mục 1).
 
 ### 0.7. Nhật ký hệ thống — `ADM0403_system_log.md`
 
@@ -98,6 +111,17 @@ khi chủ dự án xác nhận.
 | :-: | :--- | :--- | :--- | :--- | :--- |
 | 39 | GET | `/api/v1/identity/admin/audit-logs?actor=&actionType=&from=&to=&page=` | Đọc nhật ký hệ thống | `ListSystemAuditLogs` [SoT: Suy luận] | Mọi `base_category = ADMIN` đọc được, **không qua** `permissions` [SoT: `02-bd/security/identity.md:38-41`] |
 | 40 | GET | `/api/v1/identity/admin/audit-logs/export?format=csv` | Tải nhật ký dạng CSV | `ExportSystemAuditLogs` [SoT: `07-review/bd_open_questions_with_solutions_260924.md:328`] | Cột xuất: `occurred_at, actor_email, action_type, target_type, target_id`; che giá trị nhạy cảm trong `before_json`/`after_json` theo BR-16 |
+
+#### 0.7.1. Cấu hình lưu nhật ký (popup "Lưu trữ")
+
+| # | Method | Path | Mô tả | Nguồn BD | Ghi chú |
+| :-: | :--- | :--- | :--- | :--- | :--- |
+| 51 | GET | `/api/v1/identity/admin/settings/log-retention` | Đọc thời hạn và chính sách log quá hạn | `GetLogRetentionSettings` [SoT: `02-bd/database/identity.md` mục 1.13] | Mọi `ADMIN` đọc được |
+| 52 | PUT | `/api/v1/identity/admin/settings/log-retention` | Sửa thời hạn và chính sách | `UpdateLogRetentionSettings` [SoT: `02-bd/screens/admin/ADM0403_system_log.md` Q1, Q2, Q7] | Cần Function `SYSTEM_AUDIT_LOG` (chỉ gác việc **sửa** cấu hình, không gác việc xem log). Request `{ "retentionDays": int >= 1, "expiredPolicy": "DELETE" hoặc "ARCHIVE" }`. Lỗi `422 IDT-442` `retentionDays < 1`. Ghi `system_audit_logs` phân loại "Cấu hình" kèm giá trị cũ và mới |
+
+Job dọn log đọc `audit_log.retention_days` và `audit_log.expired_policy` (BR-20 ở `03-dd/logic/identity.md`). `ARCHIVE`
+**hoãn** (`DEC-2026-1011-admin-system-open-questions-closed`): job giữ nguyên dòng, không xoá. Không bao giờ có
+endpoint xoá tay từng dòng (BD `ADM0403` Q2).
 
 ### 0.8. Dashboard — `ADM0101_overview.md`, `INS0101_overview.md`, `USR0501_my_progress.md`
 
@@ -187,8 +211,8 @@ Tập giá trị `activity_type` chốt tại đây (BD chỉ khai cột, chưa 
 trong enum này — đó là kết quả job quét, xem `03-dd/logic/identity.md` BR-18.
 
 `identity` là **producer** của `StudentRemovedFromClass` (không tiêu thụ event này) khi endpoint 27 chạy
-xong, để `judge-orchestration` tự xử lý dữ liệu lượt nộp trong phạm vi lớp
-[SoT: `02-bd/database/identity.md:99-102`].
+xong. ĐÃ ĐỔI 2026-10-14 (DEC-2026-1014-keep-learning-history-on-leave): `judge-orchestration` không còn xử lý/xoá dữ liệu lượt nộp khi nhận sự kiện; ~~để `judge-orchestration` tự xử lý dữ liệu lượt nộp trong phạm vi lớp~~
+[SoT: `02-bd/database/identity.md` mục 1.10].
 
 ## 3. Đặc tả khoá tranh chấp/giao dịch
 

@@ -29,6 +29,8 @@ function toDraft(
 export function useAccountPreferences(
   initialSettings: AccountSettings,
   initialInterview: InterviewPracticePreferences,
+  /** False while the ai-review group is unavailable: its call is skipped (D31). */
+  saveInterview = true,
 ) {
   const [saved, setSaved] = useState(() =>
     toDraft(initialSettings, initialInterview),
@@ -81,7 +83,9 @@ export function useAccountPreferences(
       const { interview, ...settings } = draft;
       const results = await Promise.allSettled([
         updateMySettings(settings),
-        updateInterviewPracticePreferences(interview),
+        saveInterview
+          ? updateInterviewPracticePreferences(interview)
+          : Promise.resolve(null),
       ]);
       if (results[0]!.status === "fulfilled") {
         setSaved((prev) => ({
@@ -89,7 +93,7 @@ export function useAccountPreferences(
           ...(results[0] as PromiseFulfilledResult<AccountSettings>).value,
         }));
       }
-      if (results[1]!.status === "fulfilled") {
+      if (saveInterview && results[1]!.status === "fulfilled") {
         setSaved((prev) => ({
           ...prev,
           interview: (
@@ -100,12 +104,15 @@ export function useAccountPreferences(
       // The caller turns this outcome into toasts (success / partial failure / failure).
       return {
         settingsOk: results[0]!.status === "fulfilled",
-        interviewOk: results[1]!.status === "fulfilled",
+        // null = the interview group was not sent at all.
+        interviewOk: saveInterview
+          ? results[1]!.status === "fulfilled"
+          : (null as boolean | null),
       };
     } finally {
       setIsSaving(false);
     }
-  }, [draft]);
+  }, [draft, saveInterview]);
 
   return {
     draft,

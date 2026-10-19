@@ -32,3 +32,23 @@ export const renameModelPrice = (key: string, label: string) =>
 export const setModelPriceValue = (key: string, usdPerMillionTokens: number) =>
   prices.update(key, { usdPerMillionTokens });
 export const removeModelPrice = prices.remove;
+
+/**
+ * Per-user AI rate limits, per HOUR (owner 2026-10-10, BD ADM0303 Khu vực C). Defaults follow
+ * 02-bd/database/ai-review.md section 6; the 20 s wait comes from the old mockup.
+ */
+export const aiRateLimits = createSettingsStore({
+  reviewPerHour: 10,
+  interviewPerHour: 3,
+  cooldownSeconds: 20,
+});
+
+/**
+ * Monthly token cap and its lock (F5-25, BD ADM0303 Khu vực B). The real lock is set by the server
+ * when usage passes the cap; the screen mock sets it when the cap is saved at or below usage.
+ */
+export const aiTokenBudget = createSettingsStore({
+  limitTokens: 52_000_000,
+  usedTokens: 38_400_000,
+  locked: false,
+});

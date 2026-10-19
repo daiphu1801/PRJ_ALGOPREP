@@ -2,12 +2,11 @@
 // reads a STOMP topic per BD section 7).
 // Values from 09-layoutBase/Admin - Hàng đợi chấm.dc.html:440-530, with every rejudge remnant
 // removed (DEC-2026-0828-remove-rejudge-scope):
-//   - the "Hàng đợi chấm lại" latency row is gone (2 queues, not 3),
-//   - the "Chấm lại" priority is gone (2 levels, not 3); the two jobs that carried it are now
-//     normal priority, which is what they would be once rejudge no longer exists.
+//   - the "Hàng đợi chấm lại" latency row is gone, and so is job priority altogether (BD ADM0401 Q4):
+//     latency is one average-wait figure.
+//   - infrastructure events live in entities/infra-event now.
 import type {
   ClusterControls,
-  InfraEvent,
   QueueJob,
   QueueLatency,
   QueuePage,
@@ -38,10 +37,11 @@ const WORKERS: Worker[] = [
     meta: "Uptime 6 giờ · vCPU 2",
   },
   {
+    // Busy like the rest: an idle worker beside a backed-up queue read as a bug (admin UX review F14).
     id: "go-judge-w4",
-    status: "idle",
-    load: 12,
-    jobs: 0,
+    status: "running",
+    load: 41,
+    jobs: 1,
     meta: "Uptime 3 ngày · vCPU 4",
   },
 ];
@@ -52,19 +52,12 @@ const CONTROLS: ClusterControls = {
   autoscale: true,
 };
 
-// dc.html:477 minus the rejudge queue.
-const LATENCY: QueueLatency[] = [
-  { priority: "normal", label: "1,8s", percent: 30 },
-  { priority: "high", label: "0,9s", percent: 16 },
-];
-
-// dc.html:506-512. #J-77404 and #J-77401 were "Chấm lại" — now normal.
+// dc.html:506-512.
 const JOBS: QueueJob[] = [
   {
     id: "#J-77410",
     submissionId: "#SB-90412",
     language: "Python 3",
-    priority: "high",
     status: "running",
     waitSeconds: 0.4,
     waitLabel: "0,4s",
@@ -73,7 +66,6 @@ const JOBS: QueueJob[] = [
     id: "#J-77409",
     submissionId: "#SB-90411",
     language: "C++ 17",
-    priority: "high",
     status: "running",
     waitSeconds: 0.9,
     waitLabel: "0,9s",
@@ -82,7 +74,6 @@ const JOBS: QueueJob[] = [
     id: "#J-77406",
     submissionId: "#SB-90408",
     language: "Java 21",
-    priority: "normal",
     status: "waiting",
     waitSeconds: 12,
     waitLabel: "12s",
@@ -91,7 +82,6 @@ const JOBS: QueueJob[] = [
     id: "#J-77404",
     submissionId: "#SB-90406",
     language: "Python 3",
-    priority: "normal",
     status: "waiting",
     waitSeconds: 31,
     waitLabel: "31s",
@@ -100,7 +90,6 @@ const JOBS: QueueJob[] = [
     id: "#J-77401",
     submissionId: "#SB-90403",
     language: "C++ 17",
-    priority: "normal",
     status: "waiting",
     waitSeconds: 46,
     waitLabel: "46s",
@@ -109,67 +98,44 @@ const JOBS: QueueJob[] = [
     id: "#J-77398",
     submissionId: "#SB-90399",
     language: "Java 21",
-    priority: "normal",
     status: "sandboxError",
     waitSeconds: -1,
     waitLabel: "—",
   },
 ];
 
-// dc.html:526-533.
-const INFRA_EVENTS: InfraEvent[] = [
-  {
-    id: "inf-1",
-    time: "15:41:02",
-    level: "error",
-    message: "go-judge worker 3 mất kết nối, 4 job được xếp lại hàng đợi",
-    service: "go-judge",
-  },
-  {
-    id: "inf-2",
-    time: "15:38:44",
-    level: "warn",
-    message: "Lượt nộp #48207 vượt thời gian chạy trên testcase 14",
-    service: "go-judge",
-  },
-  {
-    id: "inf-3",
-    time: "15:34:12",
-    level: "error",
-    message: "Gọi Claude API thất bại sau 3 lần thử, mã 529",
-    service: "ai-gateway",
-  },
-  {
-    id: "inf-4",
-    time: "15:32:20",
-    level: "warn",
-    message: "Bộ nhớ worker 2 đạt 87% giới hạn 512 MB",
-    service: "go-judge",
-  },
-  {
-    id: "inf-5",
-    time: "15:30:41",
-    level: "info",
-    message: "Sao lưu cơ sở dữ liệu hằng ngày hoàn tất, 4,2 GB",
-    service: "db",
-  },
-  {
-    id: "inf-6",
-    time: "15:22:15",
-    level: "info",
-    message: "Worker go-judge-w4 khởi động lại sau khi mở rộng tự động",
-    service: "go-judge",
-  },
-];
+// Extra waiting jobs so the table spans more than one page at the default 20 rows.
+const MORE_JOBS: QueueJob[] = Array.from({ length: 18 }, (_, index) => {
+  const seconds = 2 + index * 2;
+  const languages = ["Python 3", "C++ 17", "Java 21"];
+  return {
+    id: `#J-774${20 + index}`,
+    submissionId: `#SB-904${20 + index}`,
+    language: languages[index % 3]!,
+    status: "waiting" as const,
+    waitSeconds: seconds,
+    waitLabel: `${seconds}s`,
+  };
+});
+
+// Average wait of the jobs on screen (sandbox errors have no wait), not a fixed figure that
+// disagreed with the list (admin UX review F14).
+function averageWait(jobs: QueueJob[]): QueueLatency {
+  const waits = jobs.map((job) => job.waitSeconds).filter((s) => s >= 0);
+  const seconds =
+    Math.round((waits.reduce((sum, s) => sum + s, 0) / waits.length) * 10) / 10;
+  return { seconds, label: `${seconds.toLocaleString("vi-VN")}s` };
+}
 
 export function fetchQueuePage(): QueuePage {
+  const jobs = [...JOBS, ...MORE_JOBS];
   return {
     workers: WORKERS.map((worker) => ({ ...worker })),
     controls: { ...CONTROLS },
-    latency: LATENCY.map((item) => ({ ...item })),
-    jobs: JOBS.map((job) => ({ ...job })),
-    infraEvents: INFRA_EVENTS.map((event) => ({ ...event })),
+    latency: averageWait(jobs),
+    jobs: jobs.map((job) => ({ ...job })),
     workerCount: 4,
     maxWorkers: 8,
+    generatedAt: Date.now(),
   };
 }

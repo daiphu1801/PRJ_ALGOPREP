@@ -2,7 +2,7 @@
 
 > Mã màn hình: `USR0502`, theo `02-bd/_rules/bd-template-9sheet.md` mục 8.
 > Slug chính tắc: `profile`, khớp `01-rd/overview/system_survey.md` mục 7.1 dòng `profile`.
-> Phạm vi/Bounded Context: `identity` (F1). Actor chính: A1; A2/A3 dùng chung cấu trúc màn và khác biệt (nếu có) được xử lý khi viết BD.
+> Phạm vi/Bounded Context: `identity` (F1). Actor chính: A1. Màn chỉ dựng cho A1 (chốt 2026-10-18, owner, `DEC-2026-1018-usr-open-questions-phase2-5`); A2/A3 có khung và màn hồ sơ riêng ở lát cắt sau.
 > Nguồn sự thật (SoT): `01-rd/req/identity.md` (F1-09, F1-19), `01-rd/req/user_stories/a1_student.md` (`US-A1-05`) và `09-layoutBase/Trang cá nhân.dc.html`.
 > Tài liệu này mô tả hành vi và UX mức yêu cầu của màn hình, không lặp lại đặc tả chức năng nguồn.
 > Tài liệu này có thể đọc độc lập.
@@ -19,7 +19,7 @@ Màn `profile` cho phép xem và sửa thông tin cá nhân, quản lý bảo m�
 
 | # | Phạm vi | Nội dung | Nguồn/SoT |
 |---|---|---|---|
-| S-1 | Khối định danh | Avatar chữ viết tắt, tên, email và nút “Đổi ảnh”; nút đổi ảnh trong prototype chỉ là placeholder, chưa là input file thật. | `09-layoutBase/Trang cá nhân.dc.html`:101-110 |
+| S-1 | Khối định danh | Avatar chữ viết tắt, tên, email. Nút “Đổi ảnh” của prototype (chỉ là placeholder, chưa là input file thật) **bỏ khỏi yêu cầu — đã chốt 2026-10-18 (owner)**: không làm ảnh đại diện thật (`DEC-2026-1018-usr-open-questions-phase1-scope` mục 4). | `09-layoutBase/Trang cá nhân.dc.html`:101-110 |
 | S-2 | Thông tin cá nhân | Xem và cập nhật Họ và tên, Email, Trường/công ty, Vai trò hiện tại, Ngôn ngữ mặc định, Vị trí mục tiêu; có Hoàn tác, Lưu thay đổi, trạng thái thay đổi chưa lưu và thông báo cập nhật. | F1-09; prototype:125-127, 214-230 |
 | S-3 | Bảo mật | Đổi mật khẩu tự chọn theo F1-19; hiển thị ngày đổi mật khẩu gần nhất. | F1-19; prototype:232-235 |
 | S-4 | Tóm tắt tài khoản và luyện tập | Hiển thị mã người dùng, ngày tham gia, quyền; hiển thị Bài đã giải, Lượt nộp, Phiên phỏng vấn và liên kết `my_progress`. | Prototype:237-248; F1-06/07/08 |
@@ -50,7 +50,7 @@ Màn `profile` cho phép xem và sửa thông tin cá nhân, quản lý bảo m�
 | # | Hạng mục ngoài phạm vi | Lý do/đích đến |
 |---|---|---|
 | O-1 | Bảng màu, spacing, component, breakpoint responsive | Thuộc BD: `02-bd/screens/users/USR0502_profile.md` (chưa viết). |
-| O-2 | Hợp đồng API sửa hồ sơ, đổi mật khẩu, upload avatar | Thuộc DD: `03-dd/api/identity.md` (chưa viết). |
+| O-2 | Hợp đồng API sửa hồ sơ, đổi mật khẩu (không có upload avatar — đã bỏ 2026-10-18, owner) | Thuộc DD: `03-dd/api/identity.md` (chưa viết). |
 | O-3 | Validate chi tiết từng trường | Thuộc DD, không thuộc RD màn hình. |
 | O-4 | Xác thực hai lớp (2FA) | Ngoài phạm vi đồ án; bỏ khỏi giao diện thật. |
 | O-5 | Mô hình gói tài khoản Free/Pro | AlgoPrep không có mô hình phân hạng tài khoản; bỏ dữ liệu mẫu `Pro` khỏi giao diện thật. |
@@ -76,9 +76,10 @@ Màn `profile` cho phép xem và sửa thông tin cá nhân, quản lý bảo m�
 | REQ-01 | Hiển thị thông tin định danh của người dùng gồm avatar, tên và email. | Chức năng | Prototype:101-110 |
 | REQ-02 | Cho phép xem, cập nhật và hoàn tác sáu trường thông tin cá nhân; hiển thị đúng trạng thái chưa lưu và đã cập nhật. | Chức năng | F1-09; prototype:125-127, 214-230 |
 | REQ-03 | Khi email thay đổi, xác thực email mới bằng mã sáu số trước khi thay thế email đăng nhập hiện hành. | Chức năng | F1-09; quyết định 2026-08-25 |
-| REQ-04 | Cho phép đổi mật khẩu tự chọn và hiển thị ngày đổi mật khẩu gần nhất. | Chức năng | F1-19; prototype:232-235 |
+| REQ-04 | Cho phép đổi mật khẩu tự chọn và hiển thị ngày đổi mật khẩu gần nhất; tài khoản chưa từng đổi mật khẩu thì hiển thị "Chưa từng đổi mật khẩu" (chốt 2026-10-18, owner). Đổi mật khẩu xong, các phiên đăng nhập khác bị đăng xuất, phiên đang thao tác được giữ. | Chức năng | F1-19; prototype:232-235 |
 | REQ-05 | Hiển thị tóm tắt luyện tập và điều hướng tới `my_progress`; hiển thị lối vào `settings` cho luồng xoá tài khoản. | Chức năng | F1-06/07/08, F1-16; prototype:174, 244-248 |
 | REQ-06 | Không hiển thị 2FA hoặc gói tài khoản `Pro` trong giao diện thật. | Ràng buộc phạm vi | Quyết định 2026-08-25 |
+| REQ-07 | Không có nút “Đổi ảnh” và không có ảnh đại diện thật; avatar luôn là chữ viết tắt của tên hiển thị (chốt 2026-10-18, owner). | Ràng buộc phạm vi | `DEC-2026-1018-usr-open-questions-phase1-scope` mục 4 |
 
 ---
 
@@ -95,7 +96,7 @@ Màn `profile` cho phép xem và sửa thông tin cá nhân, quản lý bảo m�
 
 ### 6.2 Luồng dữ liệu
 
-Hợp đồng API, upload avatar và quy tắc validate chi tiết chưa được xác định ở RD; các nội dung này thuộc DD. Khi đổi email, hệ thống giữ email cũ hiệu lực cho đến khi xác thực mã sáu số gửi tới email mới hoàn tất [SoT: F1-09; quyết định 2026-08-25].
+Hợp đồng API và quy tắc validate chi tiết chưa được xác định ở RD; các nội dung này thuộc DD. Khi đổi email, hệ thống giữ email cũ hiệu lực cho đến khi xác thực mã sáu số gửi tới email mới hoàn tất [SoT: F1-09; quyết định 2026-08-25].
 
 ---
 
@@ -116,7 +117,7 @@ Hợp đồng API, upload avatar và quy tắc validate chi tiết chưa đượ
 | Trường hồ sơ | 6 | REQ-02 |
 | Nhóm dữ liệu bảo mật trong phạm vi | 1 (mật khẩu) | REQ-04 |
 | Chỉ số luyện tập tóm tắt | 3 | REQ-05 |
-| Hạng mục loại khỏi giao diện thật | 2 (2FA, gói `Pro`) | REQ-06 |
+| Hạng mục loại khỏi giao diện thật | 3 (2FA, gói `Pro`, ảnh đại diện thật) | REQ-06, REQ-07 |
 | Lịch, nhân sự, công sức | Chưa xác định — không tự suy luận | Chưa có kế hoạch được phê duyệt |
 
 ---

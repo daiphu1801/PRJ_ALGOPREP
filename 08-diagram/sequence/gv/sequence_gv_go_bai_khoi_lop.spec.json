@@ -1,0 +1,129 @@
+{
+  "_": "Nguon: 02-bd/screens/teacher/INS0202_class_assignments.md (popup Xac nhan go bai khoi lop, endpoint RemoveClassAssignment muc 7.3), 02-bd/database/problem-bank.md muc 1.7 (removed_at, DEC-2026-0831-class-assignments-round2). Duong dan REST la [SoT: Suy luan]. Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Gỡ bài đã giao khỏi lớp (Giảng viên)",
+  "covers": [
+    "F1-10",
+    "F2-12"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Giảng viên",
+        "role": "actor"
+      },
+      {
+        "name": "AssignmentController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "AssignmentService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "problem.class_assignments"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Gỡ một bài khỏi một lớp: ẩn mềm, giữ nguyên lượt nộp cũ (F2-12)"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Bấm Gỡ khỏi lớp ở dòng bài, chọn lớp, xác nhận"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "AssignmentController",
+        "text": "DELETE .../classes/{classId}/assignments/{problemId}"
+      },
+      {
+        "from": "AssignmentController",
+        "to": "AssignmentController",
+        "text": "Kiểm tra quyền quản lý lớp (CLASS_MANAGEMENT:UPDATE)"
+      },
+      {
+        "from": "AssignmentController",
+        "to": "AssignmentService",
+        "text": "Yêu cầu gỡ bài khỏi lớp"
+      },
+      {
+        "from": "AssignmentService",
+        "to": "AssignmentService",
+        "text": "Kiểm tra lớp thuộc giảng viên này"
+      },
+      {
+        "from": "AssignmentService",
+        "to": "PostgreSQL",
+        "text": "Đọc bài đang được giao cho lớp"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "AssignmentService",
+        "text": "Có hoặc không có bài giao đang hiệu lực",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Bài đang được giao?",
+          "then": [
+            {
+              "from": "AssignmentService",
+              "to": "AssignmentService",
+              "text": "Đang có bài giao, tiến hành gỡ"
+            },
+            {
+              "from": "AssignmentService",
+              "to": "PostgreSQL",
+              "text": "Đánh dấu đã gỡ, ghi nhật ký hệ thống"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "AssignmentService",
+              "text": "Đã ghi",
+              "kind": "return"
+            },
+            {
+              "from": "AssignmentService",
+              "to": "AssignmentController",
+              "text": "Đã gỡ",
+              "kind": "return"
+            },
+            {
+              "from": "AssignmentController",
+              "to": "Giảng viên",
+              "text": "204 No Content",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "AssignmentService",
+              "to": "AssignmentController",
+              "text": "Không có bài giao để gỡ",
+              "kind": "return"
+            },
+            {
+              "from": "AssignmentController",
+              "to": "Giảng viên",
+              "text": "404 Not Found",
+              "kind": "return"
+            }
+          ]
+        }
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Bài rời danh sách của lớp; bài nộp cũ vẫn giữ, giao lại được sau này"
+      }
+    ]
+  }
+}

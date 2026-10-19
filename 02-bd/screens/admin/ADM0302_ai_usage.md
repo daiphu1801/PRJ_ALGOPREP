@@ -19,7 +19,7 @@
 > [Nguồn: 01-rd/screens/admin/ADM0302_ai_usage.md:8-10,33-35,38-41]. Prototype vẽ trước quyết định này nên còn
 > hiện chúng; bằng chứng bố cục vẫn dùng được, riêng hai chỗ đó bỏ.
 > **Không thiết kế** hành động khoá hoặc mở khoá ngân sách token tại màn này — màn chỉ đọc trạng thái
-> `locked_at`, hành động sửa hạn mức thuộc `admin_ai_config` [Nguồn: 02-bd/architecture/ai-review.md:272-275].
+> `locked_at`, hành động sửa hạn mức và mở khoá thuộc `admin_ai_limits` (`ADM0303`, V0.1 2026-10-10) [Nguồn: 02-bd/architecture/ai-review.md:272-275].
 
 ---
 
@@ -36,11 +36,11 @@
 | Tên vật lý (slug) | `admin_ai_usage` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A3 (`ADMIN`) |
-| Phiên bản | V0.6 |
+| Phiên bản | V0.12 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/15 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/10/03 |
+| Ngày cập nhật | 2026/10/10 |
 
 ---
 
@@ -54,6 +54,12 @@
 | V0.4 | Sheet 5, 6, Câu hỏi mở | Đã chốt 2026-10-01 (owner uỷ quyền cân nhắc), xem `DEC-2026-1001-admin-configurable-settings`: Q2 (đơn giá token theo `model_name` do ADMIN nhập và sửa trên màn cấu hình AI, không hard-code `application.yml`, không giới hạn số model, model chưa có đơn giá hiển thị `-`) và Q7 (ngưỡng đổi màu thanh ngân sách do ADMIN đặt cùng chỗ với hạn mức token, mặc định 70%) đổi từ "Đề xuất (chờ owner xác nhận)" sang **đã chốt**. Hai tham số này cần nơi lưu và màn cấu hình ở `ai-review` (DD), chưa có | 2026/10/01 | AI |
 | V0.5 | Sheet 8 | Áp `DEC-2026-1003-toast-feedback-channel`: kết quả thao tác và lỗi nhập liệu ghi là toast dùng chung, ô sai chỉ đổi viền đỏ. | 2026/10/03 | AI |
 | V0.6 | Sheet 4, 5, 7 | Đồng bộ `DEC-2026-1001-admin-configurable-settings` mục (7): độ khó bài tập là danh mục do ADMIN quản lý (bảng riêng `problem_levels`), không còn enum cố định. Nhãn độ khó ở bảng "Bài toán tốn nhiều token" là `display_name` của mức, đọc qua port đọc của `problem-bank` cùng với tên bài (không thêm bảng `problem_levels` vào danh sách bảng của `ai`, vì `ai-review` không đọc bảng của module khác); `TopAiProblemDto.difficulty` thành `levelCode`/`levelDisplayName`. Màn chỉ hiển thị nhãn, không lọc và không gọi `ListProblemLevels` | 2026/10/03 | AI |
+| V0.7 | Sheet 3, 4, 5, 6, 8, phạm vi | Theo `DEC-2026-1010-split-ai-admin-screens`: hạn mức token và mở khoá thuộc màn mới `admin_ai_limits` (`ADM0303`), không còn "thuộc `admin_ai_config`" (đóng vòng tròn M-01); liên kết "Sửa giới hạn tại Cấu hình AI" đổi thành "Chỉnh hạn mức" trỏ `ADM0303`; ngưỡng cảnh báo đọc từ `ADM0303` Khu vực D. Màn vẫn chỉ đọc. Prototype chưa đổi nhãn và đích liên kết | 2026/10/10 | AI |
+| V0.8 | Sheet 5 | Prototype thêm liên kết "Chỉnh hạn mức" sang `/admin/ai-limits` ở thẻ hạn mức tháng (`admin-ai-usage-view.tsx`), cùng mục đích với liên kết ở khối Cảnh báo ở BD; chưa dựng liên kết ở khối Cảnh báo | 2026/10/10 | AI |
+| V0.9 | Sheet 4, 5, 6, 8, Câu hỏi mở | Theo báo cáo đối chiếu `06-plan/reports/261010-2041-ai-admin-doi-chieu-hien-trang/` và tiêu chí ponytail (2026-10-10). **Bỏ** nút "Xuất báo cáo" (RD không có mã yêu cầu, bậc 1), liên kết "Xem tất cả" (không có đích, bậc 1 và 3) và cảnh báo "Prompt sinh testcase tốn hơn dự kiến" (không có bảng nguồn, bậc 2); đóng Q1, Q4, Q8. Khối hạn mức tháng nay **đọc cùng kho với `ADM0303`**: đổi hạn mức hay khoá ở `ADM0303` thì hiện ngay ở đây, và khi đã khoá thì dòng "Dự kiến hết" thành "Đã khoá tự động" và thẻ "Sắp cạn hạn mức" được thay bằng "Ngân sách đã khoá". Bỏ dòng chữ "Sửa giới hạn tại màn Cấu hình AI" vì đã có liên kết "Chỉnh hạn mức" ở thẻ hạn mức. Cột Chi phí vẫn là giá trị mock, chỉ hiện `-` khi bảng đơn giá hết dòng | 2026/10/10 | AI |
+| V0.10 | Câu hỏi mở | Đóng Q3 theo `DEC-2026-1010-ai-generate-testcase-feature-code` (2026-10-10): "Sinh testcase" ghi token vào `ai.token_usage` với `feature_code = GENERATE_TESTCASE`, `owner_id` là `problems.id`; khối "Theo tính năng", chú giải biểu đồ và bảng "Bài toán tốn token nhất" nay có bảng nguồn. Không đổi giao diện | 2026/10/10 | AI |
+| V0.11 | Sheet 5, 6, Câu hỏi mở | Theo `DEC-2026-1011-ai-practice-feedback-in-shared-budget` (2026-10-11): thêm tính năng thứ tư "Chấm câu luyện" (F6-08, `feature_code = PRACTICE_FEEDBACK`) vào chú giải và danh sách theo tính năng, prototype dựng dải và dòng này. Cập nhật dòng bằng chứng bị cũ (dòng chữ "Sửa giới hạn tại Cấu hình AI"). Đóng Q5 (phụ đề bảng bài toán). | 2026-10-11 | Claude |
+| V0.12 | Sheet 5, 6 | Theo báo cáo `06-plan/reports/261014-1054-admin-ux-review/` (B1, mức Blocker): prototype dựng nút "Đánh dấu đã xem" trên thẻ cảnh báo bất thường (Khu vực E NO 4, EVT-5; bấm thì thẻ rời danh sách và có toast "Đã đánh dấu cảnh báo là đã xem."), dòng "Không có cảnh báo nào" khi danh sách rỗng (Sheet 6 E NO 1) và liên kết "Ngân hàng bài" sang `/admin/problems` ở khối G (G NO 3, EVT-8). Chỉ đổi state cục bộ, chưa có API. Không đổi spec | 2026-10-14 | Claude |
 
 ---
 
@@ -79,13 +85,13 @@
 
 [Khi huỷ] Không có.
 
-#### Cấu hình trợ lý AI → Tiêu thụ token AI
+#### Hạn mức và chi phí AI → Tiêu thụ token AI
 
-[Điều kiện mở] Bấm liên kết "Xem tiêu thụ token" ở khối "Trước khi phát hành" của màn `admin_ai_config`.
+[Điều kiện mở] Bấm liên kết "Xem tiêu thụ token" ở thanh tiêu đề của màn `admin_ai_limits`.
 
 [Chế độ mở] Chế độ chỉ xem.
 
-[Thông tin truyền] Không có. Các thay đổi chưa phát hành ở `admin_ai_config` **không** được mang theo.
+[Thông tin truyền] Không có. Màn `admin_ai_limits` ghi ngay nên không có thay đổi chưa lưu nào để mang theo.
 
 [Giá trị trả về] Không có.
 
@@ -93,9 +99,9 @@
 
 [Khi huỷ] Không có.
 
-#### Tiêu thụ token AI → Cấu hình trợ lý AI
+#### Tiêu thụ token AI → Hạn mức và chi phí AI
 
-[Điều kiện mở] Bấm liên kết "Cấu hình AI" trong dòng "Sửa giới hạn tại Cấu hình AI" ở cuối khối "Cảnh báo".
+[Điều kiện mở] Bấm liên kết "Hạn mức AI" trong dòng "Chỉnh hạn mức" ở cuối khối "Cảnh báo" (và ở khối hạn mức tháng khi dựng).
 
 [Chế độ mở] Không có.
 
@@ -103,7 +109,7 @@
 
 [Giá trị trả về] Không có.
 
-[Khi thành công] Điều hướng sang màn `admin_ai_config`. Không có cảnh báo rời màn vì màn này không giữ thay
+[Khi thành công] Điều hướng sang màn `admin_ai_limits`. Không có cảnh báo rời màn vì màn này không giữ thay
 đổi chưa lưu nào.
 
 [Khi huỷ] Không có.
@@ -127,8 +133,8 @@
 ```mermaid
 flowchart LR
     nav["Khung điều hướng Admin<br/>nhóm AI"] -->|"chọn Token AI"| main["Tiêu thụ token AI<br/>admin_ai_usage"]
-    config["Cấu hình trợ lý AI<br/>admin_ai_config"] -->|"Xem tiêu thụ token"| main
-    main -->|"Sửa giới hạn tại Cấu hình AI"| config
+    config["Hạn mức và chi phí AI<br/>admin_ai_limits"] -->|"Xem tiêu thụ token"| main
+    main -->|"Chỉnh hạn mức"| config
     main -->|"Ngân hàng bài"| problems["Quản lý bài tập<br/>problem_management"]
 
     classDef source fill:#F3E5F5,stroke:#9C5CC4,color:#000
@@ -138,7 +144,7 @@ flowchart LR
     class main screen
 ```
 
-[Nguồn: 09-layoutBase/Admin - Token AI.dc.html:365-368,241,284; 02-bd/screens/admin/ADM0301_ai_config.md:131-144]
+[Nguồn: 09-layoutBase/Admin - Token AI.dc.html:365-368,241,284; 02-bd/screens/admin/ADM0303_ai_limits.md, Sheet 3]
 
 ---
 
@@ -158,17 +164,16 @@ nhất [Nguồn: 01-rd/screens/admin/ADM0302_ai_usage.md:14-15].
    theo ngày nạp lại theo khoảng mới; hai bảng xếp hạng giữ nguyên phạm vi cố định 30 ngày.
 3. **Đọc cảnh báo**: quản trị viên xem khối "Cảnh báo", đánh dấu một cảnh báo bất thường là đã xem khi đã xử
    lý xong. Đây là hành động ghi **duy nhất** trên màn.
-4. **Đi tiếp**: từ đây quản trị viên sang `admin_ai_config` để sửa giới hạn, hoặc sang `problem_management`
+4. **Đi tiếp**: từ đây quản trị viên sang `admin_ai_limits` để chỉnh hạn mức, hoặc sang `problem_management`
    để xem bài toán tốn token.
 5. **Làm mới định kỳ**: số liệu làm mới theo chu kỳ 5 phút, đúng như dòng trạng thái ở chân trang.
 
 [Người dùng] Quản trị viên đã đăng nhập, có Function `AI_TOKEN_BUDGET`.
 
-[Tệp liên quan] Nút "Xuất báo cáo" ở thanh tiêu đề sinh một tệp báo cáo tải về — định dạng và phạm vi chưa
-chốt, xem Câu hỏi mở Q1. Ngoài nút đó, màn không xuất hay nhập tệp nào.
+[Tệp liên quan] Không có. Nút "Xuất báo cáo" đã bỏ ở V0.9 (không có mã yêu cầu); màn không xuất hay nhập tệp nào.
 
 [Phạm vi]
-- Không sửa hạn mức token và không mở khoá ngân sách ở màn này — thuộc `admin_ai_config`, tránh hai nơi cùng
+- Không sửa hạn mức token và không mở khoá ngân sách ở màn này — thuộc `admin_ai_limits` (`ADM0303`), tránh hai nơi cùng
   ghi `ai_token_budget_configs` [Nguồn: 02-bd/architecture/ai-review.md:272-275].
 - Không tự động khoá tài khoản từ cảnh báo bất thường — cảnh báo mềm, người xem xét
   [Nguồn: 02-bd/security/ai-review.md:83-86].
@@ -221,12 +226,12 @@ cuối cùng.
 
 | Vùng | Vị trí trong prototype | Nội dung |
 | :--- | :--- | :--- |
-| Thanh điều hướng bên trái (khung chung Admin) | `:67-143` | Nhóm "AI" đang mở, mục con "Token AI" đang chọn, mục con "Cấu hình AI" liền kề — dùng lại khung chung của mọi màn Admin |
+| Thanh điều hướng bên trái (khung chung Admin) | `:67-143` | Nhóm "AI" đang mở, mục con "Token AI" đang chọn, mục con "Prompt và chất lượng" và "Hạn mức AI" liền kề — dùng lại khung chung của mọi màn Admin |
 | Thanh tiêu đề dính trên | `:147-163` | Tiêu đề, mô tả phụ, bộ chọn khoảng thời gian 7/14/30 ngày, bộ chuyển nền sáng tối (thuộc khung chung), nút "Xuất báo cáo" |
 | Hàng bốn thẻ chỉ số tổng (đã bỏ 2026-10-01) | `:165-176` | Không dựng nữa; bằng chứng prototype giữ lại để truy vết, xem `DEC-2026-1001-single-overview-page-kpi` |
 | Cột trái — "Token theo ngày" | `:180-206` | Biểu đồ cột chồng theo ngày, chú giải theo tính năng, nhãn ngày trục hoành |
 | Cột phải trên — "Hạn mức tháng" | `:209-229` | Dòng đã dùng trong hạn mức, thanh tiến độ, còn lại, dự kiến hết, kèm khối con "Theo tính năng" |
-| Cột phải dưới — "Cảnh báo" | `:231-242` | Danh sách thẻ cảnh báo, dòng "Sửa giới hạn tại Cấu hình AI" |
+| Cột phải dưới — "Cảnh báo" | `:231-242` | Danh sách thẻ cảnh báo, (dòng chữ "Sửa giới hạn tại Cấu hình AI" đã bỏ ở V0.9) |
 | Hàng dưới trái — "Người học dùng nhiều nhất" | `:248-276` | Bảng xếp hạng 6 dòng, liên kết "Xem tất cả" |
 | Hàng dưới phải — "Bài toán tốn token nhất" | `:278-304` | Bảng xếp hạng 6 dòng, liên kết "Ngân hàng bài" |
 | Chân trang (khung chung Admin) | `:307-320` | Phiên bản, dòng "Số liệu cập nhật 5 phút một lần", liên kết phụ — dùng lại khung chung |
@@ -269,7 +274,7 @@ khoảng cách hay typography ở BD.
 | | 1 | Tiêu đề màn | `adminAiUsage.header.title` | - | - | Label | String | - | - | O | Tiêu thụ token AI | - | Tên màn hiển thị cố định<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] - |
 | | 2 | Mô tả phụ | `adminAiUsage.header.subtitle` | - | - | Label | String | - | - | O | Theo dõi mức dùng theo ngày, theo tính năng và theo người học | - | Mô tả ngắn phạm vi màn<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] - |
 | | 3 | Bộ chọn khoảng thời gian | `adminAiUsage.header.rangeSelector` | - | - | Button | Enum | - | - | I/O | 14 ngày | `{số} ngày` | Ba lựa chọn 7, 14, 30 ngày; đổi lựa chọn thì nạp lại khu vực C (khu vực B đã bỏ)<br>[Nguồn giá trị] Danh sách lựa chọn là nhãn tĩnh i18n, giá trị đang chọn giữ ở trạng thái màn<br>[EVT liên quan] EVT-2 |
-| | 4 | Xuất báo cáo | `adminAiUsage.header.btnExport` | - | - | Button | - | - | - | I | - | - | Tải về báo cáo tiêu thụ token; định dạng và phạm vi chưa chốt, xem Q1<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-3 |
+| | 4 | ~~Xuất báo cáo~~ (đã bỏ V0.9) | `adminAiUsage.header.btnExport` | - | - | Button | - | - | - | I | - | - | Tải về báo cáo tiêu thụ token; định dạng và phạm vi chưa chốt, xem Q1<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-3 |
 
 ### Khu vực B — Chỉ số tổng (đã bỏ)
 
@@ -286,7 +291,7 @@ lại.
 | Token theo ngày | | | | | | | | | | | | | |
 | | 1 | Tiêu đề khối | `adminAiUsage.daily.title` | - | - | Label | String | - | - | O | Token theo ngày | - | Tên khối biểu đồ<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] - |
 | | 2 | Phụ đề khoảng thời gian | `adminAiUsage.daily.caption` | - | - | Label | String | - | - | O | - | `Tách theo tính năng, {số} ngày gần nhất` | Nhắc lại khoảng thời gian đang áp dụng<br>[Công thức] Nhãn tĩnh i18n ghép với số ngày của khu vực A NO 3<br>[EVT liên quan] EVT-2 |
-| | 3 | Chú giải theo tính năng | `adminAiUsage.daily.legend` | `ai.token_usage` | `feature_code` | List | List | - | - | O | 3 mục | - | Ba tính năng còn trong phạm vi: Phân tích bài giải, Phỏng vấn giả lập, Sinh testcase. Dải "Gợi ý" đã cắt<br>[Nguồn giá trị] Nhãn tĩnh i18n map từ `feature_code`; "Sinh testcase" chưa có trong enum `feature_code`, xem Q3<br>[EVT liên quan] - |
+| | 3 | Chú giải theo tính năng | `adminAiUsage.daily.legend` | `ai.token_usage` | `feature_code` | List | List | - | - | O | 4 mục | - | Bốn tính năng còn trong phạm vi: Phân tích bài giải, Phỏng vấn giả lập, Sinh testcase, Chấm câu luyện. Dải "Gợi ý" đã cắt<br>[Nguồn giá trị] Nhãn tĩnh i18n map từ `feature_code`; "Sinh testcase" ứng `feature_code = GENERATE_TESTCASE` (V0.10); "Chấm câu luyện" ứng `PRACTICE_FEEDBACK` (V0.11)<br>[EVT liên quan] - |
 | | 4 | Cột token theo ngày | `adminAiUsage.daily.col.bar` | `ai.token_usage` | `created_at`, `feature_code` | ListColumn | Number | 12 | - | O | - | Đoạn chồng theo tính năng | Mỗi cột là một ngày, chia đoạn theo tính năng<br>[Công thức] Cộng `tokens_prompt + tokens_completion` của `token_usage`, gộp hai chiều: theo ngày của `created_at` và theo `feature_code`, trong khoảng ngày đang chọn<br>[EVT liên quan] EVT-1, EVT-2 |
 | | 5 | Nhãn ngày trục hoành | `adminAiUsage.daily.col.dayLabel` | - | - | ListColumn | Date | 5 | - | O | - | `d/M` | Ngày tương ứng của cột<br>[Công thức] Lấy ngày của cột, hiển thị theo `d/M`<br>[EVT liên quan] - |
 
@@ -300,8 +305,8 @@ lại.
 | | 3 | Thanh tiến độ ngân sách | `adminAiUsage.budget.progressBar` | `ai.ai_token_budget_configs` | `limit_tokens` | ProgressBar | Number | 3 | - | O | - | `{số}%` | Tỉ lệ phần trăm ngân sách đã tiêu<br>[Công thức] Lượng đã dùng ở NO 2 chia `limit_tokens`, chặn trên ở 100%<br>[EVT liên quan] EVT-1, EVT-4 |
 | | 4 | Còn lại | `adminAiUsage.budget.remaining` | `ai.ai_token_budget_configs` | `limit_tokens` | Label | Number | 12 | - | O | - | `Còn {số}` | Số token còn được dùng trong chu kỳ<br>[Công thức] `limit_tokens` trừ lượng đã dùng ở NO 2; âm thì hiển thị 0<br>[EVT liên quan] EVT-1, EVT-4 |
 | | 5 | Dự kiến hết hoặc đã khoá | `adminAiUsage.budget.runOutOrLocked` | `ai.ai_token_budget_configs` | `locked_at` | Label | String | - | - | O | - | `Dự kiến hết {d/M}` hoặc `Đã khoá lúc {d/M HH:mm}` | Dự báo ngày cạn quota, hoặc thời điểm đã khoá nếu đã vượt hạn mức<br>[Công thức] `locked_at` rỗng thì nội suy tuyến tính từ tốc độ tiêu thụ 7 ngày gần nhất của `token_usage` [Nguồn: 02-bd/architecture/ai-review.md:270-272]; `locked_at` có giá trị thì hiển thị thẳng mốc đó<br>[EVT liên quan] EVT-1, EVT-4 |
-| | 6 | Danh sách theo tính năng | `adminAiUsage.feature.list` | `ai.token_usage` | `feature_code` | List | List | - | - | O | 3 dòng | - | 3 dòng sau khi cắt "Gợi ý theo bậc": Phân tích bài giải, Phỏng vấn giả lập, Sinh testcase<br>[Công thức] Gộp `token_usage` theo `feature_code` trong chu kỳ hiện hành<br>[EVT liên quan] EVT-1, EVT-4 |
-| | 7 | Tên tính năng | `adminAiUsage.feature.col.name` | `ai.token_usage` | `feature_code` | ListColumn | Enum | - | - | O | - | Nhãn tiếng Việt | Tên tính năng AI hiển thị cho người dùng<br>[Nguồn giá trị] `SOLUTION_REVIEW` thành "Phân tích bài giải"; `MOCK_INTERVIEW` thành "Phỏng vấn giả lập"; "Sinh testcase" chưa có mã enum, xem Q3<br>[EVT liên quan] - |
+| | 6 | Danh sách theo tính năng | `adminAiUsage.feature.list` | `ai.token_usage` | `feature_code` | List | List | - | - | O | 4 dòng | - | 3 dòng sau khi cắt "Gợi ý theo bậc": Phân tích bài giải, Phỏng vấn giả lập, Sinh testcase, Chấm câu luyện<br>[Công thức] Gộp `token_usage` theo `feature_code` trong chu kỳ hiện hành<br>[EVT liên quan] EVT-1, EVT-4 |
+| | 7 | Tên tính năng | `adminAiUsage.feature.col.name` | `ai.token_usage` | `feature_code` | ListColumn | Enum | - | - | O | - | Nhãn tiếng Việt | Tên tính năng AI hiển thị cho người dùng<br>[Nguồn giá trị] `SOLUTION_REVIEW` thành "Phân tích bài giải"; `MOCK_INTERVIEW` thành "Phỏng vấn giả lập"; `GENERATE_TESTCASE` thành "Sinh testcase" (V0.10)<br>[EVT liên quan] - |
 | | 8 | Token theo tính năng | `adminAiUsage.feature.col.tokens` | `ai.token_usage` | `tokens_prompt`, `tokens_completion` | ListColumn | Number | 12 | - | O | - | Rút gọn đơn vị triệu | Lượng token của tính năng trong chu kỳ<br>[Công thức] Cộng `tokens_prompt + tokens_completion` của các dòng cùng `feature_code` trong chu kỳ hiện hành<br>[EVT liên quan] - |
 | | 9 | Thanh tỉ lệ tính năng | `adminAiUsage.feature.col.shareBar` | - | - | ProgressBar | Number | 3 | - | O | - | `{số}%` | Tỉ trọng của tính năng trong tổng tiêu thụ<br>[Công thức] Giá trị NO 8 của dòng chia tổng NO 8 của cả 3 dòng<br>[EVT liên quan] - |
 
@@ -313,8 +318,8 @@ lại.
 | | 1 | Danh sách cảnh báo | `adminAiUsage.alert.list` | `ai.ai_usage_anomaly_alerts` | `status` | List | List | - | - | O | rỗng | - | Gộp hai nguồn khác nhau trong cùng một danh sách giao diện nhưng **không gộp ở tầng dữ liệu**: cảnh báo ngân sách suy ra từ `ai_token_budget_configs`, cảnh báo bất thường đọc từ `ai_usage_anomaly_alerts` với `status = OPEN`<br>[Nguồn giá trị] Kết quả gọi `ListAiUsageAlerts`<br>[EVT liên quan] EVT-1, EVT-4 |
 | | 2 | Tiêu đề cảnh báo | `adminAiUsage.alert.col.title` | - | - | ListColumn | String | - | - | O | - | - | Tên ngắn của cảnh báo<br>[Nguồn giá trị] Nhãn tĩnh i18n map từ loại cảnh báo<br>[EVT liên quan] - |
 | | 3 | Nội dung cảnh báo | `adminAiUsage.alert.col.meta` | `ai.ai_usage_anomaly_alerts` | `call_count`, `baseline_avg`, `ratio` | ListColumn | String | - | - | O | - | - | Câu mô tả kèm số liệu của cảnh báo<br>[Công thức] Cảnh báo bất thường: ghép nhãn tĩnh i18n với `call_count`, `ratio` và cửa sổ `window_start`-`window_end` của dòng. Cảnh báo ngân sách: ghép nhãn tĩnh với ngày dự báo ở khu vực D NO 5<br>[EVT liên quan] - |
-| | 4 | Đánh dấu đã xem | `adminAiUsage.alert.col.btnReview` | `ai.ai_usage_anomaly_alerts` | `status`, `reviewed_at` | Button | - | - | - | I | - | - | Chuyển `status` từ `OPEN` sang `REVIEWED`. **Không có trong prototype**, BD bổ sung vì nếu không có cách đóng thì danh sách chỉ dài thêm mãi; cột `status`/`reviewed_at` đã có sẵn đúng mục đích này [Nguồn: 02-bd/database/ai-review.md:157]<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-5 |
-| | 5 | Sửa giới hạn tại Cấu hình AI | `adminAiUsage.alert.linkAiConfig` | - | - | Link | - | - | - | I | - | - | Điều hướng sang màn `admin_ai_config`<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-6 |
+| | 4 | Đánh dấu đã xem | `adminAiUsage.alert.col.btnReview` | `ai.ai_usage_anomaly_alerts` | `status`, `reviewed_at` | Button | - | - | - | I | - | - | Chuyển `status` từ `OPEN` sang `REVIEWED`. BD bổ sung (dc.html không có) vì nếu không có cách đóng thì danh sách chỉ dài thêm mãi; prototype dựng từ V0.12 (`admin-ai-usage-view.tsx`, nút ở hàng tiêu đề thẻ, chỉ đổi state cục bộ, chưa gọi `MarkAiUsageAlertReviewed`); cột `status`/`reviewed_at` đã có sẵn đúng mục đích này [Nguồn: 02-bd/database/ai-review.md:157]<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-5 |
+| | 5 | Chỉnh hạn mức | `adminAiUsage.alert.linkAiLimits` | - | - | Link | - | - | - | I | - | - | Điều hướng sang màn `admin_ai_limits`<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-6 |
 
 ### Khu vực F — Người học dùng nhiều nhất
 
@@ -323,7 +328,7 @@ lại.
 | Người học dùng nhiều nhất | | | | | | | | | | | | | |
 | | 1 | Tiêu đề bảng | `adminAiUsage.topUser.title` | - | - | Label | String | - | - | O | Người học dùng nhiều nhất | - | Tên khối bảng xếp hạng<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] - |
 | | 2 | Phụ đề phạm vi | `adminAiUsage.topUser.caption` | - | - | Label | String | - | - | O | Trong 30 ngày gần nhất | - | Ghi rõ bảng này cố định 30 ngày, không đổi theo bộ chọn ở khu vực A<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] - |
-| | 3 | Xem tất cả | `adminAiUsage.topUser.linkViewAll` | - | - | Link | - | - | - | I | - | - | Mở danh sách đầy đủ; đích đến chưa chốt, xem Q4<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-7 |
+| | 3 | ~~Xem tất cả~~ (đã bỏ V0.9) | `adminAiUsage.topUser.linkViewAll` | - | - | Link | - | - | - | I | - | - | Mở danh sách đầy đủ; đích đến chưa chốt, xem Q4<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-7 |
 | | 4 | Danh sách người học | `adminAiUsage.topUser.list` | `ai.token_usage` | `user_id` | List | List | - | - | O | 6 dòng | - | Xếp hạng người học theo lượng token tiêu thụ (F5-25)<br>[Công thức] Gộp `token_usage` theo `user_id` trong 30 ngày gần nhất, sắp giảm dần theo tổng token, lấy 6 dòng đầu<br>[EVT liên quan] EVT-1, EVT-4 |
 | | 5 | Thứ hạng | `adminAiUsage.topUser.col.rank` | - | - | ListColumn | Number | 2 | - | O | - | Số nguyên | Vị trí của dòng trong bảng<br>[Công thức] Số thứ tự dòng sau khi sắp xếp ở NO 4<br>[EVT liên quan] - |
 | | 6 | Người học | `adminAiUsage.topUser.col.user` | `ai.token_usage` | `user_id` | ListColumn | String | - | - | O | - | Tên đầy đủ, dòng phụ là tên đăng nhập và khoá | Danh tính người học kèm chữ cái đầu làm ảnh đại diện<br>[Nguồn giá trị] `user_id` là khoá tra tên qua port đọc của module `identity`, `ai-review` không đọc thẳng bảng `identity.users`; cách ghép chốt ở DD, xem Q6<br>[EVT liên quan] - |
@@ -363,7 +368,7 @@ lại.
 | | 1 | Tiêu đề màn | Có | - |
 | | 2 | Mô tả phụ | Có | - |
 | | 3 | Bộ chọn khoảng thời gian | Có | [Điều kiện kích hoạt] Không kích hoạt trong lúc khu vực C đang tải, kích hoạt lại sau khi tải xong.<br>[Tự động đặt] Lựa chọn đang chọn được đánh dấu nổi; lần đầu vào màn mặc định "14 ngày". |
-| | 4 | Xuất báo cáo | Có | [Điều kiện kích hoạt] Không kích hoạt trong lúc đang sinh tệp báo cáo, kích hoạt lại khi tệp đã tải xong hoặc thất bại. |
+| | 4 | ~~Xuất báo cáo~~ (đã bỏ V0.9) | Không | [Điều kiện kích hoạt] Không kích hoạt trong lúc đang sinh tệp báo cáo, kích hoạt lại khi tệp đã tải xong hoặc thất bại. |
 
 ### Khu vực B — Chỉ số tổng (đã bỏ)
 
@@ -387,7 +392,7 @@ Không còn item nào kể từ 2026-10-01, xem Sheet 5 Khu vực B.
 | Hạn mức tháng | | | | |
 | | 1 | Tiêu đề hạn mức | Có | - |
 | | 2 | Đã dùng trong hạn mức | Có | - |
-| | 3 | Thanh tiến độ ngân sách | Có | [Tự động đặt] Chuyển sang màu cảnh báo khi tỉ lệ đạt hoặc vượt ngưỡng cảnh báo, giữ màu trung tính khi dưới ngưỡng. Ngưỡng do ADMIN đặt ở thẻ "Ngân sách và đơn giá" của màn cấu hình AI (`ADM0301_ai_config.md`, khu vực G), mặc định 70% (đã chốt 2026-10-01, xem Q7). Màn này chỉ đọc giá trị đó. |
+| | 3 | Thanh tiến độ ngân sách | Có | [Tự động đặt] Chuyển sang màu cảnh báo khi tỉ lệ đạt hoặc vượt ngưỡng cảnh báo, giữ màu trung tính khi dưới ngưỡng. Ngưỡng do ADMIN đặt ở khối "Ngân sách và đơn giá" của màn `admin_ai_limits` (`ADM0303_ai_limits.md`, Khu vực D; từ V0.9 nằm ở `ADM0301` Khu vực G), mặc định 70% (đã chốt 2026-10-01, xem Q7). Màn này chỉ đọc giá trị đó. |
 | | 4 | Còn lại | Có | - |
 | | 5 | Dự kiến hết hoặc đã khoá | Có | [Điều kiện hiển thị] `locked_at` rỗng thì hiển thị dạng "Dự kiến hết {ngày}"; `locked_at` có giá trị thì hiển thị "Đã khoá lúc {thời điểm}". Không hiển thị ngày dự báo đã trôi qua. |
 | | 6 | Danh sách theo tính năng | Có | [Điều kiện hiển thị] Trong lúc tải hiển thị khung chờ đúng 3 dòng. |
@@ -404,7 +409,7 @@ Không còn item nào kể từ 2026-10-01, xem Sheet 5 Khu vực B.
 | | 2 | Tiêu đề cảnh báo | Có | - |
 | | 3 | Nội dung cảnh báo | Có | - |
 | | 4 | Đánh dấu đã xem | Điều kiện | [Điều kiện hiển thị] Chỉ hiển thị trên thẻ cảnh báo bất thường có `status = OPEN`; thẻ cảnh báo ngân sách không có nút này vì không có bản ghi để đánh dấu.<br>[Điều kiện kích hoạt] Không kích hoạt trong lúc lời gọi đánh dấu đang chạy.<br>[Tự động đặt] Đánh dấu xong thì thẻ rời khỏi danh sách. |
-| | 5 | Sửa giới hạn tại Cấu hình AI | Có | - |
+| | 5 | Chỉnh hạn mức | Có | - |
 
 ### Khu vực F — Người học dùng nhiều nhất
 
@@ -413,7 +418,7 @@ Không còn item nào kể từ 2026-10-01, xem Sheet 5 Khu vực B.
 | Người học dùng nhiều nhất | | | | |
 | | 1 | Tiêu đề bảng | Có | - |
 | | 2 | Phụ đề phạm vi | Có | - |
-| | 3 | Xem tất cả | Có | [Điều kiện kích hoạt] Đích đến chưa chốt nên ở đợt này liên kết không kích hoạt, xem Q4. |
+| | 3 | ~~Xem tất cả~~ (đã bỏ V0.9) | Không | [Điều kiện kích hoạt] Đích đến chưa chốt nên ở đợt này liên kết không kích hoạt, xem Q4. |
 | | 4 | Danh sách người học | Có | [Điều kiện hiển thị] Trong lúc tải hiển thị khung chờ đúng 6 dòng. Không có dữ liệu thì hiện dòng trung tính "Chưa có dữ liệu".<br>[Tự động đặt] Không nạp lại khi đổi khoảng thời gian ở khu vực A — bảng này cố định 30 ngày. |
 | | 5 | Thứ hạng | Có | - |
 | | 6 | Người học | Có | - |
@@ -514,11 +519,11 @@ Endpoint số 8 chưa có mã yêu cầu trong RD — xem Câu hỏi mở Q1.
 | --: | :--- | :--- | :--- | :-: | :-: | :--- | :--- |
 | 1 | Màn hình | Khởi tạo màn | Vào màn thì tải toàn bộ số liệu với khoảng mặc định 14 ngày. | Không | Có | `GetAiUsageDailyBreakdown`, `GetAiTokenBudgetStatus`, `ListAiUsageAlerts`, `ListTopAiUsers`, `ListTopAiProblems` | [Các bước]<br>1. Kiểm tra quyền `AI_TOKEN_BUDGET` action `READ`.<br>2. Hiển thị khung chờ cho từng khối theo đúng số dòng dự kiến.<br>3. Tải song song năm nhóm dữ liệu, mỗi nhóm độc lập.<br>[Khi thành công] Hiển thị đủ sáu khối nội dung ở trạng thái chỉ xem.<br>[Khi lỗi] Hiển thị lỗi cục bộ tại đúng khối tải thất bại kèm nút "Thử lại"; các khối tải được vẫn hiển thị bình thường, không rời màn. |
 | 2 | Nút | Đổi khoảng thời gian | Chọn 7, 14 hoặc 30 ngày ở thanh tiêu đề. | Không | Có | `GetAiUsageDailyBreakdown` | [Các bước]<br>1. Ghi nhận lựa chọn mới vào trạng thái màn.<br>2. Nạp lại khu vực C theo khoảng mới.<br>[Khi thành công] Biểu đồ và phụ đề khoảng thời gian cập nhật. Khu vực D, E, F, G **không** nạp lại — hai bảng xếp hạng cố định 30 ngày theo đúng hành vi prototype.<br>[Khi lỗi] Giữ nguyên lựa chọn mới, hiển thị lỗi tại khối tải thất bại. |
-| 3 | Nút | Xuất báo cáo | Bấm "Xuất báo cáo". | Không | Có | `ExportAiUsageReport` | [Các bước]<br>1. Gửi yêu cầu sinh báo cáo theo khoảng thời gian đang chọn.<br>2. Trình duyệt tải tệp về.<br>[Khi thành công] Tệp tải về, màn không đổi nội dung, không rời màn.<br>[Khi lỗi] Hiện toast lỗi, không tải tệp, nút kích hoạt lại.<br>[Thông báo hoàn tất] Toast "Đã xuất báo cáo" [Nguồn: 05-coding/frontend/src/views/admin/ai-usage/ui/admin-ai-usage-view.tsx:180].<br>Định dạng và phạm vi tệp chưa chốt, xem Q1. |
+| 3 | Nút | ~~Xuất báo cáo~~ (đã bỏ V0.9) | Bấm "Xuất báo cáo". | Không | Có | `ExportAiUsageReport` | [Các bước]<br>1. Gửi yêu cầu sinh báo cáo theo khoảng thời gian đang chọn.<br>2. Trình duyệt tải tệp về.<br>[Khi thành công] Tệp tải về, màn không đổi nội dung, không rời màn.<br>[Khi lỗi] Hiện toast lỗi, không tải tệp, nút kích hoạt lại.<br>[Thông báo hoàn tất] Toast "Đã xuất báo cáo" [Nguồn: 05-coding/frontend/src/views/admin/ai-usage/ui/admin-ai-usage-view.tsx:180].<br>Định dạng và phạm vi tệp chưa chốt, xem Q1. |
 | 4 | Màn hình | Làm mới định kỳ | Hết chu kỳ 5 phút thì tải lại số liệu. | Không | Có | `GetAiUsageDailyBreakdown`, `GetAiTokenBudgetStatus`, `ListAiUsageAlerts`, `ListTopAiUsers`, `ListTopAiProblems` | [Các bước]<br>1. Tải lại năm nhóm dữ liệu với khoảng thời gian đang chọn.<br>2. Thay nội dung tại chỗ, **không** hiện lại khung chờ để tránh nhấp nháy.<br>[Khi thành công] Số liệu cập nhật, vị trí cuộn và lựa chọn khoảng thời gian giữ nguyên.<br>[Khi lỗi] Giữ nguyên số liệu cũ đang hiển thị, không hiện lỗi toàn màn, thử lại ở chu kỳ sau.<br>Chu kỳ 5 phút suy ra từ dòng trạng thái ở chân trang [Nguồn: 09-layoutBase/Admin - Token AI.dc.html:313]. |
 | 5 | Nút | Đánh dấu cảnh báo đã xem | Bấm "Đánh dấu đã xem" trên một thẻ cảnh báo bất thường. | Không | Có | `MarkAiUsageAlertReviewed` | [Các bước]<br>1. Kiểm tra quyền `AI_TOKEN_BUDGET` action `UPDATE`.<br>2. Gửi yêu cầu chuyển `status` sang `REVIEWED`.<br>3. Bỏ thẻ khỏi danh sách đang hiển thị.<br>[Khi thành công] Thẻ biến mất khỏi khối "Cảnh báo"; khối rỗng thì hiện dòng "Không có cảnh báo nào". Tài khoản bị cảnh báo **không** bị khoá — đây là cảnh báo mềm [Nguồn: 02-bd/security/ai-review.md:83-86].<br>[Khi lỗi] Giữ nguyên thẻ trong danh sách, hiện toast lỗi.<br>[Thông báo hoàn tất] Toast "Đã đánh dấu cảnh báo là đã xem." |
-| 6 | Liên kết | Mở Cấu hình AI | Bấm "Cấu hình AI" trong dòng "Sửa giới hạn tại Cấu hình AI". | Có | Không | - | [Các bước]<br>1. Điều hướng sang màn `admin_ai_config`.<br>[Khi thành công] Mở màn `admin_ai_config`. Không hỏi xác nhận rời màn vì màn này không giữ thay đổi chưa lưu nào — thao tác ghi duy nhất (EVT-5) gửi lên máy chủ ngay tại chỗ. |
-| 7 | Liên kết | Xem tất cả người học | Bấm "Xem tất cả" ở khối "Người học dùng nhiều nhất". | Không | Không | - | [Các bước]<br>1. Ở đợt này liên kết không kích hoạt nên không có gì xảy ra.<br>[Khi thành công] Không thay đổi dữ liệu và không rời màn. Đích đến chưa chốt, xem Q4 — chốt xong mới quyết cột `Chuyển màn` là `Có` hay `Không`. |
+| 6 | Liên kết | Mở Hạn mức AI | Bấm "Hạn mức AI" trong dòng "Chỉnh hạn mức". | Có | Không | - | [Các bước]<br>1. Điều hướng sang màn `admin_ai_limits`.<br>[Khi thành công] Mở màn `admin_ai_limits`. Không hỏi xác nhận rời màn vì màn này không giữ thay đổi chưa lưu nào — thao tác ghi duy nhất (EVT-5) gửi lên máy chủ ngay tại chỗ. |
+| 7 | Liên kết | ~~Xem tất cả người học~~ (đã bỏ V0.9) | Bấm "Xem tất cả" ở khối "Người học dùng nhiều nhất". | Không | Không | - | [Các bước]<br>1. Ở đợt này liên kết không kích hoạt nên không có gì xảy ra.<br>[Khi thành công] Không thay đổi dữ liệu và không rời màn. Đích đến chưa chốt, xem Q4 — chốt xong mới quyết cột `Chuyển màn` là `Có` hay `Không`. |
 | 8 | Liên kết | Mở Ngân hàng bài | Bấm "Ngân hàng bài" ở khối "Bài toán tốn token nhất". | Có | Không | - | [Các bước]<br>1. Điều hướng sang màn `problem_management`.<br>[Khi thành công] Mở màn `problem_management`, không truyền bộ lọc token. Không hỏi xác nhận rời màn, cùng lý do EVT-6. |
 | 9 | Nút | Thử lại một khối lỗi | Bấm "Thử lại" trong khối đang báo lỗi. | Không | Có | Đúng endpoint của khối đó | [Các bước]<br>1. Gọi lại đúng endpoint phục vụ khối đó, không gọi lại toàn màn.<br>[Khi thành công] Khối đó hiển thị dữ liệu, các khối khác giữ nguyên.<br>[Khi lỗi] Giữ thông báo lỗi tại khối, nút "Thử lại" vẫn kích hoạt. |
 
@@ -551,11 +556,11 @@ Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 
 | # | Câu hỏi | Vì sao chưa trả lời được | Chủ sở hữu |
 | :-: | :--- | :--- | :--- |
-| Q1 | Nút "Xuất báo cáo" xuất định dạng gì (CSV hay PDF) và phạm vi dữ liệu nào — đúng khoảng đang chọn, hay cả chu kỳ ngân sách? | RD không có mã `Fx-nn` cho hành vi này, chỉ có nút trong prototype [Nguồn: 09-layoutBase/Admin - Token AI.dc.html:162] | Chủ dự án |
+| Q1 | ~~Nút "Xuất báo cáo" xuất định dạng gì~~ **ĐÃ CHỐT 2026-10-10:** bỏ nút (RD không có mã `Fx-nn`, tiêu chí ponytail bậc 1); làm lại khi có yêu cầu | - | Đã đóng |
 | Q2 | ~~Đơn giá quy đổi token sang USD theo từng `model_name` lấy ở đâu — `application.yml`, một bảng cấu hình mới, hay nhập tay?~~ Từ 2026-10-01 chỉ còn ảnh hưởng cột "Chi phí" của bảng xếp hạng người học (thẻ "Chi phí tạm tính" đã bỏ). **ĐÃ CHỐT 2026-10-01 (owner uỷ quyền cân nhắc), xem `DEC-2026-1001-admin-configurable-settings`:** đơn giá từng `model_name` do ADMIN tự nhập và sửa trên màn cấu hình AI, không hard-code trong `application.yml`, không giới hạn số model; model chưa có đơn giá thì cột "Chi phí" hiển thị `-` thay vì ước tính. Nơi lưu đơn giá (bảng cấu hình mới trong `ai-review`) thuộc DD, `02-bd/database/ai-review.md` chưa thiết kế. | `token_usage` chỉ lưu `model_name` và số token, không có cột đơn giá; `02-bd/database/ai-review.md` không thiết kế nơi lưu đơn giá | DD `ai-review` |
-| Q3 | Tính năng "Sinh testcase" (F2-14) ghi tiêu thụ token vào đâu? Enum `feature_code` của `token_usage` hiện chỉ có `SOLUTION_REVIEW` và `MOCK_INTERVIEW` [Nguồn: 02-bd/database/ai-review.md:110], nhưng khối "Theo tính năng" và chú giải biểu đồ đều có dòng này. | Cùng gốc với câu hỏi Q1 của `ADM0301`: chưa rõ `problem-bank` hay `ai-review` sở hữu prompt sinh testcase | DD `ai-review` + `problem-bank` |
-| Q4 | Liên kết "Xem tất cả" ở bảng "Người học dùng nhiều nhất" dẫn tới đâu — một trang danh sách đầy đủ riêng, hay `admin_user_management` có lọc theo token? | Prototype chỉ để `href="#"` [Nguồn: 09-layoutBase/Admin - Token AI.dc.html:254] | Chủ dự án |
-| Q5 | Phụ đề bảng "Bài toán tốn token nhất" và chữ "lượt gợi ý" ở dòng phụ mỗi bài cần đổi thành gì sau khi cắt "Gợi ý theo bậc"? | Câu chữ prototype [Nguồn: 09-layoutBase/Admin - Token AI.dc.html:282,514] viết trước quyết định cắt phạm vi, không còn đúng | Chủ dự án |
+| Q3 | ~~Tính năng "Sinh testcase" (F2-14) ghi tiêu thụ token vào đâu?~~ **ĐÃ CHỐT 2026-10-10 (chủ dự án chấp nhận đề xuất, bậc 4):** vào `ai.token_usage` với `feature_code = GENERATE_TESTCASE` và `owner_id = problems.id` (`DEC-2026-1010-ai-generate-testcase-feature-code`) | - | Đã đóng |
+| Q4 | ~~Liên kết "Xem tất cả" dẫn tới đâu~~ **ĐÃ CHỐT 2026-10-10:** bỏ liên kết (không có đích, bậc 1 và 3) | - | Đã đóng |
+| Q5 | ~~Phụ đề bảng "Bài toán tốn token nhất" và chữ "lượt gợi ý" cần đổi thành gì~~ **ĐÃ CHỐT 2026-10-11:** phụ đề "Phân tích, phỏng vấn và sinh testcase cộng lại"; cột "lượt gợi ý" đã bỏ. Chấm câu luyện không vào bảng này vì `owner_id` của nó là `user_answers.id`, không gắn bài toán | - | Đã đóng |
 | Q6 | Ghép tên người học và tên bài toán vào hai bảng xếp hạng bằng cách nào — gọi port đọc của `identity`/`problem-bank` cho từng dòng, hay `ai-review` giữ một bản sao tên? Riêng bài toán còn phải đi từ `token_usage.owner_id` về `problem_id` vì `token_usage` không có cột đó [Nguồn: 02-bd/database/ai-review.md:104-115]. | BD module `ai-review` chưa thiết kế port đọc phục vụ thống kê | DD `ai-review` + `problem-bank` |
 | Q7 | ~~Ngưỡng phần trăm để thanh tiến độ ngân sách đổi sang màu cảnh báo là bao nhiêu?~~ **ĐÃ CHỐT 2026-10-01 (owner uỷ quyền cân nhắc), xem `DEC-2026-1001-admin-configurable-settings`:** ngưỡng do ADMIN tự đặt cùng chỗ với hạn mức token, mặc định 70% theo ví dụ của RD, không khoá cứng. | RD nêu "ví dụ 70%" [Nguồn: 01-rd/screens/admin/ADM0302_ai_usage.md:50-52] nhưng không chốt; prototype chỉ có một dữ liệu mẫu 74% [Nguồn: 09-layoutBase/Admin - Token AI.dc.html:527] | Đã đóng |
-| Q8 | Cảnh báo "Prompt sinh testcase tốn hơn dự kiến" [Nguồn: 09-layoutBase/Admin - Token AI.dc.html:491] thuộc cơ chế nào — không khớp `ai_token_budget_configs` cũng không khớp `ai_usage_anomaly_alerts`. Có thiết kế thêm loại cảnh báo thứ ba hay bỏ? | Không có bảng dữ liệu nào ở `02-bd/database/ai-review.md` sinh ra cảnh báo này; phụ thuộc Q3 xác định module sở hữu trước | Chủ dự án + DD `ai-review`/`problem-bank` |
+| Q8 | ~~Cảnh báo "Prompt sinh testcase tốn hơn dự kiến" thuộc cơ chế nào~~ **ĐÃ CHỐT 2026-10-10:** bỏ cảnh báo (không khớp `ai_token_budget_configs` lẫn `ai_usage_anomaly_alerts`, bậc 2); giữ hai cảnh báo có nguồn | - | Đã đóng |

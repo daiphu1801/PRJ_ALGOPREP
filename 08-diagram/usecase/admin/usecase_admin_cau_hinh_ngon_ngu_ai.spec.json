@@ -1,36 +1,39 @@
 {
-  "_": "Chi tiet nhom 'Cau hinh ngon ngu va AI' (u13 o ban tong quan): F4-11 (ngon ngu & tai nguyen) + F5-23 (cau hinh prompt/rubric AI).",
+  "_": "Chi tiet nhom 'Cau hinh ngon ngu va AI' (u13 o ban tong quan): F4-11 (ngon ngu & tai nguyen) + F5-23 (cau hinh prompt/rubric AI). | Cap nhat 2026-10-18: bo oval trong so rubric (DEC-2026-1014-drop-solution-review-rubric); oval gioi han tan suat goi AI chuyen sang usecase_admin_ngan_sach_token_ai vi ADM0303 nhan viec do (DEC-2026-1010-split-ai-admin-screens); them chon model theo prompt va nguyen tac tra loi.",
   "kind": "usecase",
-  "title": "Sơ đồ Use Case chi tiết - Cấu hình ngôn ngữ và AI (Quản trị viên)",
+  "title": "Sơ đồ Use Case chi tiết - Cấu hình ngôn ngữ và prompt AI (Quản trị viên)",
   "covers": [
+    "F2-10",
     "F4-11",
-    "F5-19",
+    "F5-17",
     "F5-23"
   ],
   "mode": "color",
   "usecase": {
-    "system": "Chức năng Cấu hình ngôn ngữ & AI",
+    "system": "Cấu hình ngôn ngữ và prompt AI",
     "groups": [
       {
-        "name": "Cấu hình ngôn ngữ và tài nguyên (F4-11)",
+        "name": "Ngôn ngữ và tài nguyên (F2-10, F4-11)",
         "actors": [
           "Quản trị viên"
         ],
         "usecases": [
-          "Cấu hình ngôn ngữ hỗ trợ",
-          "Cấu hình giới hạn thời gian và bộ nhớ"
+          "Bật tắt ngôn ngữ hỗ trợ",
+          "Cấu hình hệ số thời gian theo ngôn ngữ",
+          "Cấu hình giới hạn thời gian và bộ nhớ mặc định"
         ]
       },
       {
-        "name": "Cấu hình AI (F5-23)",
+        "name": "Prompt và model AI (F5-17, F5-23)",
         "actors": [
           "Quản trị viên"
         ],
         "usecases": [
-          "Soạn prompt AI theo phiên bản",
-          "Xem lại và khôi phục phiên bản prompt",
-          "Cấu hình trọng số tiêu chí rubric",
-          "Cấu hình giới hạn tần suất gọi AI"
+          "Sửa chỉ thị hệ thống vào bản nháp",
+          "Chọn model cho từng prompt",
+          "Bật tắt nguyên tắc trả lời",
+          "Xem lịch sử và khôi phục chỉ thị cũ",
+          "Lưu và phát hành các bản nháp"
         ]
       }
     ]

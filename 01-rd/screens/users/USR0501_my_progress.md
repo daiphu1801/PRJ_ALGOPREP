@@ -72,7 +72,7 @@ File này mô tả **hành vi và UX ở mức yêu cầu** — không lặp l�
 
 | # | Câu hỏi | Quyết định | Ghi chú |
 |---|---|---|---|
-| Q1 | Chỉ số **Chuỗi ngày luyện tập** (streak) và **Số lần nộp trung bình / bài** không có mã `Fx-nn` riêng. | **Không cần mã mới** — là suy luận hiển thị từ dữ liệu lượt nộp đã có (F1-07), không phải tính năng mới. Định nghĩa: streak = số ngày liên tiếp tính đến hôm nay có ít nhất một lượt nộp; trung bình lần nộp/bài = tổng lượt nộp / số bài đã giải. | `[SoT: Suy luận]`. Cách tính chính xác cạnh biên (múi giờ tính "ngày", làm tròn số trung bình) **[Đợi nextjs]**. |
+| Q1 | Chỉ số **Chuỗi ngày luyện tập** (streak) và **Số lần nộp trung bình / bài** không có mã `Fx-nn` riêng. | **Không cần mã mới** — là suy luận hiển thị từ dữ liệu lượt nộp đã có (F1-07), không phải tính năng mới. Định nghĩa: streak = số ngày liên tiếp tính đến hôm nay có ít nhất một lượt nộp; trung bình lần nộp/bài = tổng lượt nộp / số bài đã giải. | `[SoT: Suy luận]`. Cách tính chính xác cạnh biên (làm tròn số trung bình) **[Đợi nextjs]**. Múi giờ tính "ngày" đã chốt 2026-10-18: UTC+7 cố định của hệ thống (`DEC-2026-1018-usr-open-questions-phase2-5`, ponytail bậc 5). |
 | Q2 | Khối "Nên ưu tiên" và "mục yếu nhất" (phỏng vấn) là logic gợi ý/xếp hạng chưa có mã. | **Chốt: quy tắc xếp hạng đơn giản trên dữ liệu đã có, không gọi AI.** "Nên ưu tiên": ưu tiên chủ đề có tỉ lệ AC thấp nhất, sau đó chủ đề còn nhiều bài chưa giải nhất, sau đó chủ đề lâu chưa nộp bài nhất — dẫn xuất từ F1-06/F1-07, không cần mã `Fx-nn` mới. "Mục yếu nhất" (phỏng vấn): tiêu chí rubric có điểm trung bình thấp nhất tính trên toàn bộ lịch sử phiên (F1-08 + F5-15), cũng là suy luận hiển thị, không gọi AI thêm. | `[SoT: Suy luận]`. Nếu sau này muốn nâng cấp thành gợi ý có AI, đó là mở rộng phạm vi F5/F6 mới, cần quyết định riêng — không nằm trong phạm vi hiện tại. |
 
 ---
@@ -87,6 +87,14 @@ File này mô tả **hành vi và UX ở mức yêu cầu** — không lặp l�
 | REQ-04 | Given-When-Then đầy đủ (—) | Chức năng | `01-rd/req/user_stories/a1_student.md` (`US-A1-05`, 2 GWT đầu) |
 | REQ-05 | **Cho** tôi đã có ít nhất một phiên phỏng vấn giả lập trước đó (F1-08), **Khi** tôi xem khối "Phỏng vấn giả lập" ở trang tiến độ, **Thì** tôi thấy số phiên, điểm trung bình, và tiêu chí rubric tôi yếu nhất tính trên toàn bộ lịch sử — không phải của riêng phiên gần nhất | Chức năng (GWT) | [SoT: `09-layoutBase/Tiến độ của tôi.dc.html`:199-210] |
 | REQ-06 | **Cho** tôi chọn khoảng thời gian khác ("7 ngày"/"Tất cả") ở góc trên bên phải, **Khi** tôi đổi lựa chọn, **Thì** bảng "Theo chủ đề" và biểu đồ lượt nộp cùng lọc lại theo khoảng đó | Chức năng (GWT) | [SoT: `09-layoutBase/Tiến độ của tôi.dc.html`:106-108, 266] |
+| REQ-07 | **Cho** tôi đã nộp ít nhất một bài, **Khi** tôi xem dải chỉ số tổng, **Thì** tôi thấy tổng số lượt nộp kèm tỉ lệ chấp thuận (Accepted / tổng số đã nộp) và số bài đã giải trên tổng số bài. Đây là **nơi duy nhất** hiển thị chỉ số tổng F1-07 và số liệu tổng lượt nộp của người học: màn `USR0202` không còn dải chỉ số (owner 2026-10-18, `DEC-2026-1018-usr-open-questions-phase1-scope`). Làm rõ REQ-02, không thêm mã `Fx-nn` | Chức năng (GWT) | `01-rd/req/identity.md` — F1-07; [SoT: `09-layoutBase/Tiến độ của tôi.dc.html`:258-264] |
+
+
+> **Ghi chú quy ước 2026-10-18** (owner, `DEC-2026-1018-usr-open-questions-phase2-5`, không thêm REQ mới; chi tiết ở `02-bd/screens/users/USR0501_my_progress.md` mục Câu hỏi mở Q2-Q6):
+> (1) REQ-06: bộ lọc khoảng thời gian chỉ áp cho biểu đồ, cột "Tỉ lệ AC" và "Lần cuối" của bảng "Theo chủ đề" và khối phiên phỏng vấn; số luỹ kế, cột "Đã giải" và khối "Theo độ khó" không đổi theo bộ lọc;
+> (2) biểu đồ: "7 ngày" 7 cột, "30 ngày" 14 cột, "Tất cả" gom theo tuần;
+> (3) mọi phép cắt ngày dùng múi giờ UTC+7 cố định;
+> (4) điểm rubric thang 0-10; REQ-05 "tiêu chí yếu nhất" là một trong 4 tiêu chí rubric thật (`CLARITY`, `TECHNICAL_ACCURACY`, `PUSHBACK_HANDLING`, `COMPLEXITY_AWARENESS`), nay tính trong khoảng thời gian đang chọn của bộ lọc ở (1).
 
 ---
 

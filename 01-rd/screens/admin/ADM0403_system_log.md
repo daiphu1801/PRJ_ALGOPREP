@@ -84,8 +84,8 @@ kiện hạ tầng" đã chốt trước ở `identity.md` — F1-14.
 - Bảng màu, spacing, component cụ thể — thuộc BD (`02-bd/screens/admin/ADM0403_system_log.md`, chưa viết).
 - Hợp đồng API (ghi log, tìm kiếm/lọc, live update qua WebSocket hoặc polling) — thuộc DD
   (`03-dd/api/identity.md`, chưa viết).
-- Thời hạn lưu log (footer ghi "Nhật ký giữ 90 ngày", dòng 256) — số ngày cụ thể `[SoT: Suy luận]` từ chính
-  prototype, chốt chính xác khi viết BD.
+- Thời hạn lưu log (footer ghi "Nhật ký giữ 90 ngày", dòng 256): **đã chốt ở BD** — cấu hình do ADMIN đặt, mặc định 90 ngày
+  (BD `ADM0403` Q2, `DEC-2026-1001-admin-configurable-settings`; cập nhật 2026-10-11).
 
 ---
 
@@ -106,7 +106,7 @@ lại để tránh trùng câu hỏi trên nhiều file):
 | REQ-01 | Ghi mọi thay đổi ma trận phân quyền và thao tác quản trị vào Nhật ký hệ thống (F1-14) | Chức năng | `01-rd/req/identity.md` — F1-14 |
 | REQ-02 | Given-When-Then liên quan (—) | Chức năng | `01-rd/req/user_stories/a3_admin.md` (rải trong `US-A3-01/02/05`) |
 | REQ-03 | **Cho** một quản trị viên đổi một ô trong ma trận phân quyền, **Khi** thay đổi được lưu, **Thì** một dòng log mới xuất hiện ngay ở đầu danh sách (nếu đang "Theo dõi trực tiếp"), phân loại "Ma trận quyền", ghi rõ quyền nào đổi cho vai trò nào [SoT: `09-layoutBase/Admin - Nhật ký hệ thống.dc.html:406, 412` — dòng mẫu "Cấp quyền UPDATE trên TESTCASE_MANAGEMENT cho vai trò Trợ giảng"]. | Chức năng | GWT bổ sung trong RD |
-| REQ-04 | **Cho** quản trị viên lọc theo phân loại "Cấu hình", **Khi** bộ lọc áp dụng, **Thì** danh sách chỉ hiện các hành động thuộc nhóm cấu hình (đổi giới hạn ngôn ngữ, cập nhật prompt AI...), không lẫn hành động xác thực hay ma trận quyền. | Chức năng | GWT bổ sung trong RD |
+| REQ-04 | **Cho** quản trị viên lọc theo phân loại "Cấu hình", **Khi** bộ lọc áp dụng, **Thì** danh sách chỉ hiện các hành động thuộc nhóm cấu hình (đổi giới hạn ngôn ngữ, tạm dừng hoặc tiếp tục hàng đợi chấm, bật/tắt tự động mở rộng worker, đổi tham số hàng đợi, cập nhật prompt AI...; thêm 2026-10-10 theo `DEC-2026-1010-admin-operations-regroup`), không lẫn hành động xác thực hay ma trận quyền. | Chức năng | GWT bổ sung trong RD |
 | REQ-05 | **Cho** quản trị viên đặt "Từ ngày" và "Đến ngày", **Khi** khoảng hợp lệ, **Thì** danh sách chỉ hiện dòng log trong khoảng đó (gồm cả hai ngày biên); **Khi** từ ngày muộn hơn đến ngày, **Thì** hiện cảnh báo và không có dòng nào. | Chức năng | Chốt 2026-10-08 (`DEC-2026-1008-admin-system-screens-review`) |
 | REQ-06 | **Cho** một dòng log khoá tài khoản, **Khi** hiển thị, **Thì** có thêm dòng "Lý do: ..." nguyên văn lý do quản trị viên đã nhập (F1-32); dòng mở khoá không có lý do. | Chức năng | `01-rd/req/identity.md` — F1-32; mục 2 điểm 7 |
 

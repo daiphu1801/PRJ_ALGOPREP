@@ -75,11 +75,10 @@ luận]` — RD chỉ nói "tìm kiếm" F6-02, không chốt công nghệ).
 (`WHERE EXISTS (SELECT 1 FROM answer_rubrics WHERE question_id = iq.id)`) — không phải một cột trạng thái
 riêng, tính bằng join.
 
-### 1.3. `answer_rubrics` (F6-13 — rubric thứ ba, độc lập với F5-15/F5-23)
+### 1.3. `answer_rubrics` (F6-13 — rubric độc lập với rubric Mock Interview F5-15)
 
 Tiêu chí đánh giá có trọng số phần trăm, do người soạn câu hỏi cấu hình — chính là "tiêu chí chuẩn" mà
-F6-08 đối chiếu. **Rõ ràng khác** `ai_review.rubric_configs` (F5-23) và `ai_review.rubric_scores` với
-`owner_type = MOCK_INTERVIEW` (F5-15) — ba rubric độc lập trong hệ thống
+F6-08 đối chiếu. **Rõ ràng khác** `ai_review.rubric_scores` (chỉ còn rubric Mock Interview F5-15; rubric bài giải F5-23 và `rubric_configs` đã bỏ, `DEC-2026-1014-drop-solution-review-rubric`) — hai rubric độc lập trong hệ thống
 [SoT: `07-review/rd_drift_repair_260909.md` mục 3.1, `DEC-2026-0830-interview-bank-crud` mục 1].
 
 | Cột | Kiểu | Ghi chú |
@@ -121,9 +120,22 @@ Mỗi lần nộp ở Chế độ luyện là một bản ghi độc lập —
 | `answer_text` | TEXT | Câu trả lời tự do của học viên — luôn là DATA truyền vào AI (kiến trúc mục 5), không bao giờ đọc như instruction |
 | `attempt_no` | INT | Thứ tự lượt nộp của chính `user_id` cho chính `question_id`, tăng dần từ 1 — tính ở tầng ứng dụng (đếm số dòng hiện có + 1) khi tạo bản ghi mới, không phải cột tự tăng toàn bảng |
 | `feedback_status` | ENUM(`PENDING`,`COMPLETED`,`FAILED`) | Tách rời việc ghi nhận đã nộp khỏi việc có phản hồi AI hay không (kiến trúc mục 8) — `FAILED` khi `AnswerFeedbackPort` lỗi, KHÔNG xoá dòng `user_answers`, chỉ đánh dấu để học viên biết chưa có phản hồi |
-| `feedback_result_json` | JSONB nullable | F6-08 — điểm đã đạt / điểm còn thiếu / hướng bổ sung; NULL khi `feedback_status != COMPLETED` |
-| `rubric_snapshot_json` | JSONB | Chốt lại toàn bộ `answer_rubrics` của câu hỏi này **tại thời điểm nộp** (không tham chiếu sống) — đổi rubric sau này không làm lệch phản hồi đã chấm trước đó, cùng nguyên tắc `weight_percent_snapshot` của `ai_review.rubric_scores` |
+| `feedback_result_json` | JSONB nullable | F6-08 — điểm đã đạt / điểm còn thiếu / hướng bổ sung, **kèm mảng theo từng tiêu chí `criteria[]`** (thêm 2026-10-18, `DEC-2026-1018-usr-open-questions-phase2-5`, ghi chú dưới bảng); NULL khi `feedback_status != COMPLETED` |
+| `rubric_snapshot_json` | JSONB | Chốt lại toàn bộ `answer_rubrics` của câu hỏi này **tại thời điểm nộp** (không tham chiếu sống) — đổi rubric sau này không làm lệch phản hồi đã chấm trước đó |
 | `created_at` | TIMESTAMPTZ | Không có `updated_at` — bảng này không bao giờ `UPDATE` sau khi tạo, thiếu cột này là chủ ý thiết kế, không phải thiếu sót |
+
+**Mảng `feedback_result_json.criteria[]` (2026-10-18, `DEC-2026-1018-usr-open-questions-phase2-5`, không thêm cột):** mỗi
+phần tử ứng với một dòng `answer_rubrics` của câu hỏi (cùng tập với `rubric_snapshot_json`):
+
+| Khoá | Kiểu | Ý nghĩa |
+| :--- | :--- | :--- |
+| `criterionCode` | string | = `answer_rubrics.criterion_code` |
+| `achievementPercent` | số nguyên 0 đến 100 | **Mức đạt** của tiêu chí đó. **Không** nhân với trọng số |
+| `weightPercent` | số, sao chép `answer_rubrics.weight_percent` (từ `rubric_snapshot_json` tại thời điểm nộp) | Chỉ để hiển thị cạnh mức đạt |
+
+Vẫn **không có điểm tổng hợp và không có ngưỡng đạt/không đạt** (phản hồi là định tính cộng phần trăm theo tiêu chí,
+`DEC-2026-1018-usr-open-questions-phase1-scope`). Ứng dụng kiểm khi ghi: `achievementPercent` nguyên trong `[0,100]`, một
+phần tử cho mỗi `criterionCode` của snapshot, không trùng.
 
 Index: `(user_id, question_id, attempt_no DESC)` — xem lịch sử các lượt của một câu hỏi (F6-09);
 `(user_id, created_at DESC)` — lịch sử luyện tập toàn cục. Unique `(user_id, question_id, attempt_no)`.

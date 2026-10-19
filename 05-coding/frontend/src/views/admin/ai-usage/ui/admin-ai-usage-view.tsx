@@ -1,7 +1,7 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md section 9.
 //
-// Layout follows 09-layoutBase/Admin - Token AI.dc.html: sticky header with a range switch and an
-// export CTA (:147-162), stat cards (:164-176), a 1.6fr / minmax(300px,1fr) grid holding the daily
+// Layout follows 09-layoutBase/Admin - Token AI.dc.html: sticky header with a range switch (the
+// mockup's export CTA was dropped 2026-10-10, no F-code behind it), stat cards (:164-176), a 1.6fr / minmax(300px,1fr) grid holding the daily
 // chart and the budget/alert column (:178-244), then two ranked tables side by side (:246-300).
 //
 // The cut "Gợi ý theo bậc" feature (DEC-2026-0831-remove-tiered-hints-ai-config) is stripped in
@@ -12,22 +12,29 @@
 // Two documented behaviours worth not getting wrong:
 // - The anomalous-account notice is a SOFT warning for an admin to review, never an automatic lock
 //   (DEC-2026-0831-ai-usage-anomaly-alert). It renders as a notice with no action attached.
-// - The budget panel stays read-only; unlocking belongs to admin_ai_config, so two screens do not
-//   both write `ai_token_budget_configs` (BD section 7).
+// - The budget panel stays read-only; unlocking belongs to admin_ai_limits (ADM0303), so two screens do not
+//   both write `ai_token_budget_configs` (BD section 7). It reads the same `aiTokenBudget` store
+//   ADM0303 writes, so a new cap or a lock shows here at once (BD ADM0302 Sheet 5 Khu vực D).
 //
-// Known gap: the "Sinh testcase" feature has no owning module. `prompt_templates.feature_code` has
-// no GENERATE_TESTCASE — level B2 in 07-review/bd_screens_admin_open_questions_260913.md.
+// "Sinh testcase" is feature_code GENERATE_TESTCASE (DEC-2026-1010-ai-generate-testcase-feature-code),
+// so its prompt and token ledger live in the same tables as the other two features.
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import {
   fetchAiUsagePage,
   type AiFeature,
   type TopProblem,
   type TopUser,
+  type UsageAlert,
   type UsageRange,
 } from "../api";
-import { aiBudgetSettings, useModelPrices } from "@/entities/ai-budget";
+import {
+  aiBudgetSettings,
+  aiTokenBudget,
+  useModelPrices,
+} from "@/entities/ai-budget";
 import {
   problemLevelLabel,
   problemLevelTone,
@@ -55,17 +62,52 @@ const FEATURE_COLOR_VAR: Record<AiFeature, string> = {
   review: "--color-admin-teal",
   interview: "--color-admin-cyan",
   testcase: "--color-admin-warn",
+  practice: "--color-admin-slate",
 };
+
+/** 38400000 becomes "38,4 tr", the unit the mockup used for every token figure. */
+function formatMillions(tokens: number): string {
+  return `${(tokens / 1_000_000).toFixed(1).replace(".", ",")} tr`;
+}
 
 export function AdminAiUsageView() {
   const t = useT("adminAiUsage");
   const levelList = useProblemLevels();
   const [page] = useState(fetchAiUsagePage);
   const [range, setRange] = useState<UsageRange>("14d");
+  // EVT-5: a reviewed anomaly alert leaves the list. Mock-only: no MarkAiUsageAlertReviewed call yet.
+  const [reviewedKeys, setReviewedKeys] = useState<ReadonlySet<string>>(
+    () => new Set(),
+  );
   const budgetSettings = aiBudgetSettings.use();
+  const tokenBudget = aiTokenBudget.use();
   const modelPrices = useModelPrices();
 
   const days = page.daily[range];
+  // "Sắp cạn hạn mức" would contradict a budget that is already locked, so the lock replaces it.
+  const alerts = (tokenBudget.locked
+    ? page.alerts.map((alert): UsageAlert =>
+        alert.key === "budgetRunningOut"
+          ? { key: "budgetLocked", tone: "negative" }
+          : alert,
+      )
+    : page.alerts
+  ).filter((alert) => !reviewedKeys.has(alert.key));
+  const markReviewed = (key: string) => {
+    setReviewedKeys((previous) => new Set(previous).add(key));
+    toast.success(t("markReviewedDone"));
+  };
+  const budget = {
+    used: formatMillions(tokenBudget.usedTokens),
+    cap: formatMillions(tokenBudget.limitTokens),
+    left: formatMillions(
+      Math.max(0, tokenBudget.limitTokens - tokenBudget.usedTokens),
+    ),
+    percent: Math.min(
+      100,
+      Math.round((tokenBudget.usedTokens / tokenBudget.limitTokens) * 100),
+    ),
+  };
 
   const userColumns: DataTableColumn<TopUser>[] = [
     {
@@ -177,25 +219,16 @@ export function AdminAiUsageView() {
         title={t("title")}
         description={t("subtitle")}
         actions={
-          <>
-            <SegmentedTabs
-              label={t("rangeLabel")}
-              value={range}
-              onValueChange={setRange}
-              options={[
-                { value: "7d", label: t("range.7d") },
-                { value: "14d", label: t("range.14d") },
-                { value: "30d", label: t("range.30d") },
-              ]}
-            />
-            <Button
-              variant="cta"
-              size="sm"
-              onClick={() => toast.success(t("exportDone"))}
-            >
-              {t("export")}
-            </Button>
-          </>
+          <SegmentedTabs
+            label={t("rangeLabel")}
+            value={range}
+            onValueChange={setRange}
+            options={[
+              { value: "7d", label: t("range.7d") },
+              { value: "14d", label: t("range.14d") },
+              { value: "30d", label: t("range.30d") },
+            ]}
+          />
         }
       />
 
@@ -222,6 +255,11 @@ export function AdminAiUsageView() {
                 label: t("feature.testcase"),
                 colorVar: FEATURE_COLOR_VAR.testcase,
               },
+              {
+                key: "practice",
+                label: t("feature.practice"),
+                colorVar: FEATURE_COLOR_VAR.practice,
+              },
             ]}
             bars={days.map((day) => ({
               label: day.label,
@@ -235,23 +273,33 @@ export function AdminAiUsageView() {
           <Card
             title={t("budgetTitle")}
             description={t("budgetSubtitle", {
-              used: page.budget.usedLabel,
-              cap: page.budget.capLabel,
+              used: budget.used,
+              cap: budget.cap,
             })}
+            action={
+              <Link
+                href="/admin/ai-limits"
+                className="text-[12.5px] font-semibold text-[var(--color-primary)] hover:underline"
+              >
+                {t("editLimits")}
+              </Link>
+            }
           >
             <ProgressBar
-              value={page.budget.percent}
+              value={budget.percent}
               label={t("budgetTitle")}
               fill={
-                page.budget.percent >= budgetSettings.warnPercent
+                budget.percent >= budgetSettings.warnPercent
                   ? "var(--color-admin-warn)"
                   : "var(--color-admin-teal)"
               }
             />
             <p className="mt-2 mb-4 flex justify-between text-[12.5px] text-[var(--color-text-muted)]">
-              <span>{t("budgetLeft", { left: page.budget.leftLabel })}</span>
+              <span>{t("budgetLeft", { left: budget.left })}</span>
               <span>
-                {t("budgetRunOut", { date: page.budget.runOutLabel })}
+                {tokenBudget.locked
+                  ? t("budgetLocked")
+                  : t("budgetRunOut", { date: page.budget.runOutLabel })}
               </span>
             </p>
             <RankedProgressList
@@ -266,20 +314,37 @@ export function AdminAiUsageView() {
           </Card>
 
           <Card title={t("alertsTitle")}>
-            <div className="flex flex-col gap-2.5">
-              {page.alerts.map((alert) => (
-                <NoticeTile
-                  key={alert.key}
-                  tone={alert.tone}
-                  title={t(`alert.${alert.key}.title`)}
-                >
-                  {t(`alert.${alert.key}.meta`)}
-                </NoticeTile>
-              ))}
-            </div>
-            <p className="mt-3.5 text-[12.5px] text-[var(--color-text-subtle)]">
-              {t("alertsFootnote")}
-            </p>
+            {alerts.length === 0 ? (
+              // BD ADM0302 Sheet 6 E NO1: a neutral line, never an empty block.
+              <p className="text-[13px] text-[var(--color-text-muted)]">
+                {t("noAlerts")}
+              </p>
+            ) : (
+              <div className="flex flex-col gap-2.5">
+                {alerts.map((alert) => (
+                  <NoticeTile
+                    key={alert.key}
+                    tone={alert.tone}
+                    title={t(`alert.${alert.key}.title`)}
+                    // E NO4: only the anomaly alert has a record to mark; budget alerts do not.
+                    action={
+                      alert.key === "anomalousAccount" ? (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="border border-[var(--color-border)]"
+                          onClick={() => markReviewed(alert.key)}
+                        >
+                          {t("markReviewed")}
+                        </Button>
+                      ) : undefined
+                    }
+                  >
+                    {t(`alert.${alert.key}.meta`)}
+                  </NoticeTile>
+                ))}
+              </div>
+            )}
           </Card>
         </div>
       </div>
@@ -304,6 +369,15 @@ export function AdminAiUsageView() {
           title={t("topProblemsTitle")}
           description={t("topProblemsSubtitle")}
           className="min-w-0 px-[18px]"
+          // BD ADM0302 G NO3 / EVT-8: opens problem_management with no token filter.
+          action={
+            <Link
+              href="/admin/problems"
+              className="text-[12.5px] font-semibold text-[var(--color-primary)] hover:underline"
+            >
+              {t("problemBankLink")}
+            </Link>
+          }
         >
           <DataTable
             caption={t("topProblemsTitle")}

@@ -56,4 +56,15 @@ describe("toast store", () => {
     act(() => toast.dismiss(id));
     expect(result.current).toHaveLength(0);
   });
+
+  it("keeps an optional action on the toast", () => {
+    const { result } = renderHook(() => useToasts());
+    const onClick = () => {};
+    act(() => {
+      toast.success("Deleted", { label: "Undo", onClick });
+      toast.info("Plain");
+    });
+    expect(result.current[0]?.action).toEqual({ label: "Undo", onClick });
+    expect(result.current[1]?.action).toBeUndefined();
+  });
 });

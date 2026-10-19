@@ -31,9 +31,9 @@
 
 - **Bài đã rút khỏi ngân hàng** (`deleted = true`, G4 2026-10-08): báo cáo đã có vẫn xem được; liên kết về bài ở breadcrumb bị vô hiệu kèm nhãn "Đã rút khỏi ngân hàng"; không tạo báo cáo mới cho bài đã rút. Quy tắc đầy đủ ở `02-bd/database/problem-bank.md` mục 1.1a, không chép lại ở đây.
 
-> **Quy ước đặt tên khối** [Nội bộ]. Bảy khối: `breadcrumb` (đường dẫn phân cấp), `topStats` (thanh chỉ số
+> **Quy ước đặt tên khối** [Nội bộ]. Bảy khối (khối `rubricCards` đã bỏ ở V1.0): `breadcrumb` (đường dẫn phân cấp), `topStats` (thanh chỉ số
 > tổng hợp đầu trang), `eduNotice` (banner cảnh báo định hướng giáo dục F5-18), `complexityBlock` (khối phân
-> tích độ phức tạp thời gian/bộ nhớ thực tế vs tối ưu), `rubricCards` (5 thẻ tiêu chí đánh giá F5-23),
+> tích độ phức tạp thời gian/bộ nhớ thực tế vs tối ưu),
 > `strengthsAndWeaknesses` (danh sách điểm mạnh, điểm cần sửa và trường hợp biên), `codeDiffSection` (khối mã
 > đề xuất kèm Diff và nút áp dụng), `applyConfirm` (popup xác nhận ghi đè mã vào Workspace). Tiền tố ID item
 > của toàn màn là `solutionReview.`.
@@ -53,11 +53,11 @@
 | Tên vật lý (slug) | `solution_review` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`) |
-| Phiên bản | V0.4 |
+| Phiên bản | V1.4 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/22 |
-| Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/10/03 |
+| Người cập nhật | Claude |
+| Ngày cập nhật | 2026/10/19 |
 
 ---
 
@@ -70,6 +70,13 @@
 | V0.2 | Sheet 8, 9 | Bổ sung toast cho lỗi tạm thời, hết ngân sách và xác nhận áp dụng mã; giữ nguyên banner giáo dục F5-18 và khối trạng thái Khu vực I thay chỗ báo cáo. Theo `DEC-2026-1003-toast-feedback-channel`. | 2026/10/03 | AI |
 | V0.3 | Sheet 4, 5, 7 | Đồng bộ `DEC-2026-1001-admin-configurable-settings` mục (7): độ khó bài tập là danh mục do ADMIN quản lý (bảng riêng `problem_levels`), không còn enum cố định. Nhãn độ khó của bài (`SolutionReviewDetailDto.difficulty` thành `levelCode`/`levelDisplayName`) lấy từ `problem_levels.display_name` qua `problems.level_id`; thêm `problem.problem_levels` vào danh sách bảng và Truy cập bảng. Nhãn này là độ khó **của bài toán** (F2-02), không phải trường nào do F5 sinh ra; F5 không đổi. Màn chỉ hiển thị nhãn, không lọc và không gọi `ListProblemLevels` (nhãn nằm sẵn trong phản hồi); độ khó không gắn logic nào | 2026/10/03 | AI |
 | V0.4 | Sheet 3, 5, 6, Câu hỏi mở | Theo `02-bd/database/problem-bank.md` mục 1.1a: báo cáo của bài đã rút vẫn xem được; liên kết về bài bị vô hiệu kèm nhãn "Đã rút khỏi ngân hàng"; không cho tạo báo cáo mới cho bài đã rút. Chỉ tài liệu, chưa đổi code | 2026/10/08 | AI |
+| V0.5 | Câu hỏi mở | Thêm Q4 theo chủ dự án (2026-10-10): cách rubric của `ADM0301` hiện cho học viên chưa chốt, xem khi làm khu Người học. Không đổi thiết kế | 2026/10/10 | AI |
+| V0.6 | Sheet 5 (Khu vực E), Câu hỏi mở | (Bị V1.0 thay thế) Theo `DEC-2026-1014-drop-admin-rubric-config` (2026-10-14): 5 tiêu chí của báo cáo là **cố định theo `response_schema_version`** của bản prompt, không còn do ADM0301 cấu hình (không trọng số, không danh sách chỉnh được); bảng `rubric_configs` bỏ. Sửa ghi chú Khu vực E và nguồn dữ liệu 5 thẻ. Q4: đóng phần "ADM0301 cấu hình rubric" (moot), giữ phần còn mở về điểm tổng. Không đổi bố cục màn | 2026/10/14 | Claude |
+| V1.0 | Sheet 4, 5, 6, 7, Câu hỏi mở, Hiện trạng bản dựng | Theo `DEC-2026-1014-drop-solution-review-rubric` (thay `DEC-2026-1014-drop-admin-rubric-config`): **bỏ hẳn rubric của báo cáo bài giải**. Bỏ Khu vực E (5 thẻ tiêu chí) ở Sheet 4.4, 5, 6; bỏ DTO `ReviewCriterionScoreDto` và trường `criteriaScores` của `SolutionReviewDetailDto`; bỏ item `solutionReview.rubric.*` ở Sheet 7.1; bỏ file FSD `ui/rubric-criteria-grid.tsx`; bỏ nội dung V0.6 về "5 mã `criterionCode` cố định". Báo cáo giữ: độ phức tạp, ca biên và rủi ro, nhận xét chất lượng mã kèm `readabilityScore` 1-5, điểm mạnh, cải thiện, mã đề xuất. Mã khu vực F-I giữ nguyên, không đánh số lại. Q4 đóng hẳn (không còn tiêu chí nên không còn câu hỏi điểm tổng). Thêm mục Hiện trạng bản dựng | 2026/10/14 | Claude |
+| V1.1 | Sheet 5 (Khu vực I NO 1, 2), 6 (Khu vực I NO 1), 8 (EVT-1, EVT-6), 9 (NO 7, 8, 9), Câu hỏi mở Q1, Q2, Q3 | Áp `DEC-2026-1014-batch7-remaining-open-questions`: đóng Q1 (giữ mã cũ vào lịch sử nháp, hoàn tác một nút bấm), Q2 (không sinh lại, cache cứng theo `source_code_hash`), Q3 (timeout LLM 30 giây, skeleton). Thêm Sheet 9 NO 7-9 | 2026/10/14 | AI |
+| V1.2 | Sheet 5 (Khu vực G NO 1) | Đổi path nguồn của trình xem Diff từ `suggestedCode` sang `codeDiff.suggestedCode` cho khớp lược đồ `result_json` ở `02-bd/database/ai-review.md` (mục 1.3a, `DEC-2026-1018-usr-open-questions-phase2-5`) | 2026/10/18 | Claude |
+| V1.3 | Sheet 8 (EVT-1, EVT-2, EVT-6, EVT-7), Hiện trạng bản dựng (thêm 6 dòng) | Sửa theo đợt rà soát prototype 2026/10/19 (area B). Màn **đọc `submissionId` từ route** (bỏ hằng "SUB-2841", `queryKey` có id), hai mục breadcrumb dẫn về `/submissions/{id}`, id lạ hoặc không phải của mình hoặc chưa Accepted thì hiện khối thông báo không có nút Thử lại (BD Sheet 9 NO 2, NO 3). "Ghi đè & Mở Workspace" **thật sự áp dụng**: ghi mã đề xuất vào nháp trình duyệt khoá `algoprep-draft:{problemId}:{language}:{model}` (hàm `saveWorkspaceDraft` của `entities/problem`, dùng chung với Workspace) rồi chuyển sang `/problems/{problemId}`; **chưa dựng** bước lưu bản trước vào lịch sử nháp với nhãn "Bản trước khi áp dụng AI Diff" (nợ prototype). Thử lại dùng `isFetching` nên hiện lại khung chờ. **Owner chấp nhận trình xem Diff rút gọn** (danh sách dòng thường dựng từ `diffLines`, không phải Monaco Diff Editor) ở prototype, ghi vào Hiện trạng; xét Monaco khi nối API. Thêm "Thời điểm phân tích" (giờ UTC+7) ở chỉ số đầu trang. Chưa duyệt hình | 2026/10/19 | Claude |
+| V1.4 | Sheet 8 (EVT-6), Câu hỏi mở Q5, Hiện trạng bản dựng | Owner chốt 2026/10/19 (`DEC-2026-1019-usr-fe-audit-fixes`, chốt nốt câu hỏi mở còn lại sau rà prototype). Chỉ tài liệu, không đổi code, chưa duyệt hình. Thêm Q5 và đóng ngay: sau "Ghi đè & Mở Workspace" chỉ ghi đè nháp và điều hướng, không mở khung gợi ý AI trong Workspace (ponytail bậc 3). | 2026/10/19 | Claude |
 
 ---
 
@@ -177,7 +184,7 @@ flowchart LR
 
 ### 4.1. Tổng quan theo thẻ
 
-- `[Mục đích màn]` Trình bày báo cáo phản hồi sư phạm chuyên sâu của AI về bài giải đã đạt chuẩn: phân tích độ phức tạp, đánh giá phong cách lập trình theo rubric, chỉ ra các bẫy tiềm ẩn và đề xuất mã nguồn tối ưu hơn.
+- `[Mục đích màn]` Trình bày báo cáo phản hồi sư phạm chuyên sâu của AI về bài giải đã đạt chuẩn: phân tích độ phức tạp, nhận xét chất lượng mã kèm điểm dễ đọc 1-5, chỉ ra các bẫy tiềm ẩn và đề xuất mã nguồn tối ưu hơn.
 - `[Luồng nghiệp vụ chính]` Sau khi giải thành công một bài toán, người học xem báo cáo phân tích để hiểu rõ điểm mạnh, điểm yếu, đối chiếu độ phức tạp thuật toán với giải pháp tối ưu đã biết, và có thể áp dụng mã gợi ý vào Workspace để thực nghiệm.
 - `[Người dùng]` Học viên (A1 — chủ sở hữu bài nộp).
 - `[Tệp liên quan]` `01-rd/screens/users/USR0301_solution_review.md`, `09-layoutBase/Phân tích bài giải.dc.html`.
@@ -189,9 +196,9 @@ flowchart LR
 
 | STT | Tên DTO | Mô tả | Chi tiết trường |
 | :-: | :--- | :--- | :--- |
-| 1 | `SolutionReviewDetailDto` | Cấu trúc JSON báo cáo phân tích tĩnh | `id`, `submissionId`, `problemId`, `problemTitle`, `levelCode`, `levelDisplayName`, `approachTitle`, `isApproachOptimal`, `readabilityScore`, `createdAt`, `summaryText`, `timeComplexity`, `spaceComplexity`, `criteriaScores`, `strengths`, `improvements`, `edgeCases`, `suggestedCodeDiff` |
+| 1 | `SolutionReviewDetailDto` | Cấu trúc JSON báo cáo phân tích tĩnh | `id`, `submissionId`, `problemId`, `problemTitle`, `levelCode`, `levelDisplayName`, `approachTitle`, `isApproachOptimal`, `readabilityScore`, `createdAt`, `summaryText`, `timeComplexity`, `spaceComplexity`, `strengths`, `improvements`, `edgeCases`, `suggestedCodeDiff` |
 | 2 | `ComplexityAnalysisDto` | Phân tích độ phức tạp chi tiết | `actualTime`, `optimalTime`, `timeExplanation`, `actualSpace`, `optimalSpace`, `spaceExplanation` |
-| 3 | `ReviewCriterionScoreDto` | Điểm và nhận xét theo tiêu chí rubric | `criterionCode`, `criterionName`, `score`, `maxScore`, `feedback` |
+| 3 | ~~`ReviewCriterionScoreDto`~~ | Đã bỏ (`DEC-2026-1014-drop-solution-review-rubric`), không còn rubric của báo cáo bài giải | - |
 | 4 | `CodeDiffProposalDto` | Bản mã đề xuất cải tiến | `originalCode`, `suggestedCode`, `diffText`, `explanation` |
 
 ### 4.3. Danh sách bảng dữ liệu
@@ -213,7 +220,7 @@ Bố cục dạng tài liệu báo cáo dọc chuyên nghiệp:
 | **B** | Thanh chỉ số đầu trang (Top Stats) | `Phân tích bài giải.dc.html:107-117` | Tên bài, Hướng giải, Điểm dễ đọc, nút Phỏng vấn |
 | **C** | Banner định hướng giáo dục (Edu Notice) | `Phân tích bài giải.dc.html:124-127` | Thông báo bản quyền & giá trị phản hồi học tập (F5-18) |
 | **D** | Khối so sánh độ phức tạp (Complexity) | `Phân tích bài giải.dc.html:130-155` | Bảng đối chiếu Time / Space thực tế vs tối ưu |
-| **E** | 5 thẻ tiêu chí Rubric (Rubric Cards) | `Phân tích bài giải.dc.html:158-190` | 5 thẻ tiêu chuẩn theo F5-23 |
+| ~~**E**~~ | ~~5 thẻ tiêu chí Rubric~~ | `Phân tích bài giải.dc.html:158-190` (prototype tĩnh cũ, chỉ để tham khảo) | Đã bỏ (`DEC-2026-1014-drop-solution-review-rubric`); giữ ký hiệu E để F-I không đổi |
 | **F** | Điểm mạnh, cải thiện & ca biên | `Phân tích bài giải.dc.html:193-230` | Danh sách gạch đầu dòng phân tích chi tiết |
 | **G** | Đề xuất mã nguồn & Diff Viewer | `Phân tích bài giải.dc.html:233-275` | Monaco Diff Editor và nút "Áp dụng vào Workspace" |
 | **H** | Popup xác nhận áp dụng mã | `[SoT: Suy luận]` | Hộp thoại cảnh báo ghi đè mã nguồn hiện tại trong Workspace |
@@ -226,7 +233,6 @@ Bố cục dạng tài liệu báo cáo dọc chuyên nghiệp:
   - `ui/review-header-stats.tsx`
   - `ui/educational-disclaimer-banner.tsx`
   - `ui/complexity-comparison-card.tsx`
-  - `ui/rubric-criteria-grid.tsx`
   - `ui/insights-and-edge-cases.tsx`
   - `ui/code-diff-viewer.tsx`
   - `ui/apply-code-confirm-modal.tsx`
@@ -280,20 +286,9 @@ Bố cục dạng tài liệu báo cáo dọc chuyên nghiệp:
 | | 5 | Nhãn Bộ nhớ tối ưu | `solutionReview.complexity.optimalSpace` | `ai.solution_reviews` | `result_json` (path `complexity.optimalSpace`) | Label | String | 30 | Có | O | - | - | Độ phức tạp không gian tối ưu đã biết [Nguồn: 02-bd/database/ai-review.md:50]<br>[EVT liên quan] - |
 | | 6 | Đoạn lập luận bộ nhớ | `solutionReview.complexity.spaceExplain` | `ai.solution_reviews` | `result_json` (path `complexity.spaceExplanation`) | TextArea | String | 500 | Có | O | - | - | Lập luận chứng minh độ phức tạp bộ nhớ [Nguồn: 02-bd/database/ai-review.md:50]<br>[EVT liên quan] - |
 
-### Khu vực E — 5 thẻ tiêu chí Rubric (Rubric Cards)
+### Khu vực E — Đã bỏ
 
-| Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
-| :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
-| Rubric Cards | | | | | | | | | | | | | |
-| | 1 | Thẻ Tính đúng đắn | `solutionReview.rubric.cardCorrectness` | `ai.solution_reviews` | `result_json` (path `criteriaScores[].feedback` khớp `criterionCode = CORRECTNESS`) | Label | String | 200 | Có | O | - | - | Tiêu chí 1: Tính đúng đắn và ca biên F5-23, trọng số cấu hình ở `rubric_configs` [Nguồn: 02-bd/database/ai-review.md:27-38,50]<br>[EVT liên quan] - |
-| | 2 | Thẻ Hiệu năng | `solutionReview.rubric.cardPerformance` | `ai.solution_reviews` | `result_json` (path `criteriaScores[]` khớp `criterionCode = PERFORMANCE`) | Label | String | 200 | Có | O | - | - | Tiêu chí 2: Tối ưu thời gian & bộ nhớ [Nguồn: 02-bd/database/ai-review.md:50]<br>[EVT liên quan] - |
-| | 3 | Thẻ Chất lượng mã | `solutionReview.rubric.cardCleanCode` | `ai.solution_reviews` | `result_json` (path `criteriaScores[]` khớp `criterionCode = CLEAN_CODE`) | Label | String | 200 | Có | O | - | - | Tiêu chí 3: Độ sạch và quy chuẩn đặt tên [Nguồn: 02-bd/database/ai-review.md:50]<br>[EVT liên quan] - |
-| | 4 | Thẻ Khả năng mở rộng | `solutionReview.rubric.cardScalability` | `ai.solution_reviews` | `result_json` (path `criteriaScores[]` khớp `criterionCode = SCALABILITY`) | Label | String | 200 | Có | O | - | - | Tiêu chí 4: Tính tổng quát hóa của mã [Nguồn: 02-bd/database/ai-review.md:50]<br>[EVT liên quan] - |
-| | 5 | Thẻ Cấu trúc dữ liệu | `solutionReview.rubric.cardDataStructure` | `ai.solution_reviews` | `result_json` (path `criteriaScores[]` khớp `criterionCode = DATA_STRUCTURE`) | Label | String | 200 | Có | O | - | - | Tiêu chí 5: Lựa chọn CTDL & giải thuật [Nguồn: 02-bd/database/ai-review.md:50]<br>[EVT liên quan] - |
-
-5 mã `criterionCode` cụ thể (`CORRECTNESS`, `PERFORMANCE`, `CLEAN_CODE`, `SCALABILITY`, `DATA_STRUCTURE`)
-là `[SoT: Suy luận]` — `rubric_configs.criterion_code` để A3 tự đặt qua giao diện cấu hình, chưa có danh
-sách cố định trong RD [Nguồn: 02-bd/database/ai-review.md:36].
+Khu vực E (5 thẻ tiêu chí Rubric: `solutionReview.rubric.cardCorrectness`, `cardPerformance`, `cardCleanCode`, `cardScalability`, `cardDataStructure`) bị bỏ hẳn theo `DEC-2026-1014-drop-solution-review-rubric`: báo cáo bài giải không còn rubric, không còn `criteriaScores` trong `result_json`, không còn dòng `ai.rubric_scores` cho chủ sở hữu `SOLUTION_REVIEW`. Mã khu vực giữ nguyên để F-I không đổi.
 
 ### Khu vực F — Điểm mạnh, cải thiện & ca biên
 
@@ -309,7 +304,7 @@ sách cố định trong RD [Nguồn: 02-bd/database/ai-review.md:36].
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Diff Viewer | | | | | | | | | | | | | |
-| | 1 | Trình xem so sánh Diff | `solutionReview.diff.viewerMonaco` | `ai.solution_reviews`, `judge.submissions` | `result_json` (path `suggestedCode`), `source_code` | TextArea | String | 50000 | Có | O | - | - | Monaco Diff Editor chỉ đọc so sánh mã gốc (`submissions.source_code`) và mã đề xuất trong báo cáo [Nguồn: 02-bd/database/judge-orchestration.md:20; 02-bd/database/ai-review.md:50]<br>[EVT liên quan] - |
+| | 1 | Trình xem so sánh Diff | `solutionReview.diff.viewerMonaco` | `ai.solution_reviews`, `judge.submissions` | `result_json` (path `codeDiff.suggestedCode`), `source_code` | TextArea | String | 50000 | Có | O | - | - | Monaco Diff Editor chỉ đọc so sánh mã gốc (`submissions.source_code`) và mã đề xuất trong báo cáo [Nguồn: 02-bd/database/judge-orchestration.md:20; 02-bd/database/ai-review.md:50]<br>[EVT liên quan] - |
 | | 2 | Đoạn giải thích mã mới | `solutionReview.diff.txtExplanation` | `ai.solution_reviews` | `result_json` (path `codeDiff.explanation`) | TextArea | String | 1000 | Có | O | - | - | Giải thích lý do sửa đổi (F5-26) [Nguồn: 02-bd/database/ai-review.md:50]<br>[EVT liên quan] - |
 | | 3 | Nút Áp dụng vào Workspace | `solutionReview.diff.btnApply` | - | - | Button | String | 50 | Có | I | - | "Áp dụng vào Workspace" | Kích hoạt popup xác nhận áp dụng mã F5-26<br>[Nguồn giá trị] Nhãn tĩnh<br>[EVT liên quan] EVT-4 |
 
@@ -333,8 +328,8 @@ sách cố định trong RD [Nguồn: 02-bd/database/ai-review.md:36].
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Trạng thái xử lý | | | | | | | | | | | | | |
-| | 1 | Khung chờ đang phân tích | `solutionReview.status.loadingSkeleton` | - | - | Label | String | - | - | O | - | - | Hiện khi báo cáo chưa có sẵn và hệ thống đang gọi AI sinh mới (F5-01); thay thế toàn bộ Khu vực B-G<br>[Nguồn giá trị] Trạng thái suy ra: gọi `GetOrCreateSolutionReview` chưa trả kết quả [Nguồn: 01-rd/screens/users/USR0301_solution_review.md:158]<br>[EVT liên quan] EVT-1 |
-| | 2 | Thông báo lỗi tạm thời | `solutionReview.status.errorTransient` | - | - | Label | String | 200 | - | O | - | - | AI provider lỗi hoặc timeout gọi model (không phải hết ngân sách) — cho phép bấm thử lại (F5-22)<br>[Nguồn giá trị] Mã lỗi trong phản hồi khác nhóm ngân sách<br>[EVT liên quan] EVT-1 |
+| | 1 | Khung chờ đang phân tích | `solutionReview.status.loadingSkeleton` | - | - | Label | String | - | - | O | - | - | Hiện khi báo cáo chưa có sẵn và hệ thống đang gọi AI sinh mới (F5-01); thay thế toàn bộ Khu vực B-G; dạng skeleton, tối đa 30 giây (timeout LLM, `DEC-2026-1014-batch7-remaining-open-questions`)<br>[Nguồn giá trị] Trạng thái suy ra: gọi `GetOrCreateSolutionReview` chưa trả kết quả [Nguồn: 01-rd/screens/users/USR0301_solution_review.md:158]<br>[EVT liên quan] EVT-1 |
+| | 2 | Thông báo lỗi tạm thời | `solutionReview.status.errorTransient` | - | - | Label | String | 200 | - | O | - | - | AI provider lỗi hoặc timeout 30 giây gọi model (không phải hết ngân sách) — cho phép bấm thử lại (F5-22)<br>[Nguồn giá trị] Mã lỗi trong phản hồi khác nhóm ngân sách<br>[EVT liên quan] EVT-1 |
 | | 3 | Nút Thử lại | `solutionReview.status.btnRetry` | - | - | Button | String | 30 | - | I | - | "Thử lại" | Gọi lại `GetOrCreateSolutionReview`; chỉ xuất hiện cùng lỗi tạm thời (NO 2), không xuất hiện cùng lỗi ngân sách (NO 4)<br>[Nguồn giá trị] Nhãn tĩnh<br>[EVT liên quan] EVT-1 |
 | | 4 | Thông báo bị khoá ngân sách | `solutionReview.status.errorBudgetLocked` | - | - | Label | String | 200 | - | O | - | - | Vượt ngân sách token AI (F5-25) — không cho thử lại, chỉ hiện lý do và lối thoát về Workspace/kết quả<br>[Nguồn giá trị] Mã lỗi ngân sách trong phản hồi [Nguồn: 01-rd/req/ai-review.md — F5-25]<br>[EVT liên quan] EVT-1 |
 
@@ -381,15 +376,9 @@ sách cố định trong RD [Nguồn: 02-bd/database/ai-review.md:36].
 | 5 | Nhãn Bộ nhớ tối ưu | Có | Không | [Điều kiện hiển thị] Luôn hiển thị.<br>[Điều kiện kích hoạt] Không áp dụng.<br>[Tự động đặt] - |
 | 6 | Đoạn lập luận bộ nhớ | Có | Không | [Điều kiện hiển thị] Luôn hiển thị.<br>[Điều kiện kích hoạt] Không áp dụng.<br>[Tự động đặt] - |
 
-### Khu vực E: 5 thẻ tiêu chí Rubric
+### Khu vực E: Đã bỏ
 
-| NO | Tên item | Hiển thị | Kích hoạt | Ghi chú |
-| --: | :--- | :--- | :--- | :--- |
-| 1 | Thẻ Tính đúng đắn | Có | Không | [Điều kiện hiển thị] Luôn hiển thị.<br>[Điều kiện kích hoạt] Không áp dụng.<br>[Tự động đặt] - |
-| 2 | Thẻ Hiệu năng | Có | Không | [Điều kiện hiển thị] Luôn hiển thị.<br>[Điều kiện kích hoạt] Không áp dụng.<br>[Tự động đặt] - |
-| 3 | Thẻ Chất lượng mã | Có | Không | [Điều kiện hiển thị] Luôn hiển thị.<br>[Điều kiện kích hoạt] Không áp dụng.<br>[Tự động đặt] - |
-| 4 | Thẻ Khả năng mở rộng | Có | Không | [Điều kiện hiển thị] Luôn hiển thị.<br>[Điều kiện kích hoạt] Không áp dụng.<br>[Tự động đặt] - |
-| 5 | Thẻ Cấu trúc dữ liệu | Có | Không | [Điều kiện hiển thị] Luôn hiển thị.<br>[Điều kiện kích hoạt] Không áp dụng.<br>[Tự động đặt] - |
+Không còn item (xem Sheet 5 Khu vực E).
 
 ### Khu vực F: Điểm mạnh, cải thiện & ca biên
 
@@ -420,7 +409,7 @@ sách cố định trong RD [Nguồn: 02-bd/database/ai-review.md:36].
 
 | NO | Tên item | Hiển thị | Kích hoạt | Ghi chú |
 | --: | :--- | :--- | :--- | :--- |
-| 1 | Khung chờ đang phân tích | Điều kiện | Không | [Điều kiện hiển thị] Chỉ hiển thị khi báo cáo chưa có sẵn và đang gọi AI; **thay thế hoàn toàn** Khu vực B-G trong lúc chờ, không hiển thị đồng thời.<br>[Điều kiện kích hoạt] Không áp dụng.<br>[Tự động đặt] Tự ẩn ngay khi nhận được báo cáo hoặc lỗi. |
+| 1 | Khung chờ đang phân tích | Điều kiện | Không | [Điều kiện hiển thị] Chỉ hiển thị khi báo cáo chưa có sẵn và đang gọi AI; **thay thế hoàn toàn** Khu vực B-G trong lúc chờ, không hiển thị đồng thời.<br>[Điều kiện kích hoạt] Không áp dụng.<br>[Tự động đặt] Tự ẩn ngay khi nhận được báo cáo hoặc lỗi; máy chủ cắt sau 30 giây (timeout LLM) và chuyển sang lỗi tạm thời (NO 2). |
 | 2 | Thông báo lỗi tạm thời | Điều kiện | Không | [Điều kiện hiển thị] Chỉ hiển thị khi gọi AI thất bại vì lý do tạm thời (timeout, lỗi provider) — phân biệt với NO 4.<br>[Điều kiện kích hoạt] Không áp dụng.<br>[Tự động đặt] - |
 | 3 | Nút Thử lại | Điều kiện | Có | [Điều kiện hiển thị] Chỉ hiển thị cùng NO 2, **không** hiển thị cùng NO 4 — bị khoá ngân sách thì không có gì để thử lại ngay.<br>[Điều kiện kích hoạt] Luôn kích hoạt khi hiển thị.<br>[Tự động đặt] - |
 | 4 | Thông báo bị khoá ngân sách | Điều kiện | Không | [Điều kiện hiển thị] Chỉ hiển thị khi tài khoản đã vượt ngân sách token AI (F5-25) — loại trừ lẫn nhau với NO 2.<br>[Điều kiện kích hoạt] Không áp dụng.<br>[Tự động đặt] - |
@@ -437,7 +426,6 @@ sách cố định trong RD [Nguồn: 02-bd/database/ai-review.md:36].
 | 2 | `solutionReview.stats.lblReadability` | Number | `SolutionReviewDetailDto.readabilityScore` | O | Điểm dễ đọc thang 1-5 |
 | 3 | `solutionReview.complexity.actualTime` | String | `ComplexityAnalysisDto.actualTime` | O | Phức tạp thời gian |
 | 4 | `solutionReview.complexity.actualSpace` | String | `ComplexityAnalysisDto.actualSpace` | O | Phức tạp bộ nhớ |
-| 5 | `solutionReview.rubric.cardCorrectness` | String | `ReviewCriterionScoreDto.feedback` | O | Nhận xét tiêu chí 1 |
 | 6 | `solutionReview.diff.viewerMonaco` | String | `CodeDiffProposalDto.diffText` | O | Hiển thị khác biệt mã |
 | 7 | `solutionReview.diff.btnApply` | Button | State chuyển trang `applied_code` | I | Chuyển mã sang Workspace |
 
@@ -466,12 +454,12 @@ sách cố định trong RD [Nguồn: 02-bd/database/ai-review.md:36].
 
 | NO | Loại | Sự kiện | Chi tiết | Chuyển màn | Gọi API | Tên xử lý | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :-: | :--- | :--- |
-| 1 | Khởi tạo | Mở màn hình | Đọc `submission_id` từ URL, gọi API lấy hoặc sinh báo cáo phân tích. | Không | Có | `GetOrCreateSolutionReview` | [Các bước]<br>1. Kiểm tra đăng nhập và kiểm tra bài nộp đạt `ACCEPTED`.<br>2. Nếu báo cáo đã có (cache/DB theo F5-20), gọi xong trả ngay, bỏ qua bước 3.<br>3. Nếu chưa có, hiển thị khung chờ đang phân tích (Khu vực I NO 1) trong lúc gọi AI.<br>[Khi thành công] Ẩn khung chờ, hiển thị toàn bộ báo cáo phân tích tĩnh (Khu vực A-G).<br>[Khi lỗi] Phân biệt hai loại theo F5-22/F5-25: lỗi tạm thời (timeout, provider lỗi) hiển thị Khu vực I NO 2 kèm nút Thử lại (NO 3); vượt ngân sách token hiển thị Khu vực I NO 4, không có nút thử lại, chỉ có lối thoát về `submission_result` hoặc Workspace. Khối Khu vực I thay chỗ báo cáo nên giữ nguyên; ngoài ra, ngay lúc lỗi xảy ra có một toast lỗi tương ứng (tạm thời hoặc hết ngân sách), và mỗi lần thử lại thất bại lại có thêm một toast [Nguồn: 05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:68-77]. |
+| 1 | Khởi tạo | Mở màn hình | Đọc `submission_id` từ URL, gọi API lấy hoặc sinh báo cáo phân tích. | Không | Có | `GetOrCreateSolutionReview` | [Các bước]<br>1. Kiểm tra đăng nhập và kiểm tra bài nộp đạt `ACCEPTED`.<br>2. Nếu báo cáo đã có (cache/DB theo F5-20), gọi xong trả ngay, bỏ qua bước 3.<br>3. Nếu chưa có, hiển thị khung chờ đang phân tích dạng skeleton (Khu vực I NO 1) trong lúc gọi AI; máy chủ đặt timeout gọi LLM **30 giây**, quá hạn thì coi là lỗi tạm thời (Khu vực I NO 2) [Nguồn: Câu hỏi mở Q3, chốt 2026-10-14].<br>[Khi thành công] Ẩn khung chờ, hiển thị toàn bộ báo cáo phân tích tĩnh (Khu vực A-G).<br>[Khi lỗi] Phân biệt hai loại theo F5-22/F5-25: lỗi tạm thời (timeout, provider lỗi) hiển thị Khu vực I NO 2 kèm nút Thử lại (NO 3); vượt ngân sách token hiển thị Khu vực I NO 4, không có nút thử lại, chỉ có lối thoát về `submission_result` hoặc Workspace. Khối Khu vực I thay chỗ báo cáo nên giữ nguyên; ngoài ra, ngay lúc lỗi xảy ra có một toast lỗi tương ứng (tạm thời hoặc hết ngân sách), và mỗi lần thử lại thất bại lại có thêm một toast [Nguồn: 05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:68-77]. |
 | 2 | Điều hướng | Bấm link Breadcrumb | Người dùng bấm quay lại Kết quả nộp bài. | Có | Không | - | [Các bước]<br>1. Điều hướng về `submission_result` (`USR0201`) kèm `submission_id`. |
 | 3 | Điều hướng | Bấm Phỏng vấn bài này | Bấm nút "Phỏng vấn về bài này" tại góc phải đầu trang. | Có | Không | - | [Các bước]<br>1. Điều hướng sang `mock_interview` (`USR0302`) kèm query `submission_id={id}`. |
 | 4 | Giao diện | Bấm Áp dụng vào Workspace | Bấm nút "Áp dụng vào Workspace" tại khối Diff. | Không | Không | - | [Các bước]<br>1. Mở popup `applyConfirm`. |
 | 5 | Giao diện | Bấm Huỷ áp dụng | Bấm nút "Huỷ" tại popup xác nhận. | Không | Không | - | [Các bước]<br>1. Đóng popup `applyConfirm`, giữ nguyên màn hình. |
-| 6 | Điều hướng | Xác nhận áp dụng mã | Bấm "Ghi đè & Mở Workspace" tại popup. | Có | Không | - | [Các bước]<br>1. Lưu bản mã `suggestedCode` vào bộ nhớ tạm trình duyệt (Session Storage).<br>2. Điều hướng sang `problem_detail` (`USR0102`) của bài toán tương ứng kèm cờ khôi phục mã.<br>[Khi thành công] Workspace mở ra với mã nguồn cải tiến đã được nạp sẵn. Xác nhận xong thì hiện toast thành công "Đã áp dụng gợi ý vào bài làm." (bản dựng hiện tại chỉ hiện toast này, chưa điều hướng) [Nguồn: 05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:121-125]. |
+| 6 | Điều hướng | Xác nhận áp dụng mã | Bấm "Ghi đè & Mở Workspace" tại popup. | Có | Không | - | [Các bước]<br>1. **Trước khi ghi đè**, lưu mã hiện có của học viên vào lịch sử nháp (`localStorage`) với nhãn "Bản trước khi áp dụng AI Diff" để hoàn tác bằng một nút bấm trong Workspace (F5-26; DD `problem_detail` sở hữu cơ chế lịch sử nháp và nút hoàn tác; chốt 2026-10-14, `DEC-2026-1014-batch7-remaining-open-questions`, Q1).<br>2. Lưu bản mã `suggestedCode` vào bộ nhớ tạm trình duyệt (Session Storage).<br>3. Điều hướng sang `problem_detail` (`USR0102`) của bài toán tương ứng kèm cờ khôi phục mã. Chỉ ghi đè nháp và điều hướng; Workspace không mở khung gợi ý AI nào (Q5, chốt 2026/10/19).<br>[Khi thành công] Workspace mở ra với mã nguồn cải tiến đã được nạp sẵn. Xác nhận xong thì hiện toast thành công "Đã áp dụng gợi ý vào bài làm." (bản dựng hiện tại chỉ hiện toast này, chưa điều hướng) [Nguồn: 05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:121-125]. |
 | 7 | Nút | Bấm Thử lại | Bấm nút "Thử lại" khi đang ở trạng thái lỗi tạm thời (Khu vực I NO 2/3). | Không | Có | `GetOrCreateSolutionReview` | [Các bước]<br>1. Ẩn thông báo lỗi tạm thời, hiện lại khung chờ đang phân tích.<br>2. Gọi lại `GetOrCreateSolutionReview`.<br>[Khi thành công] Hiển thị báo cáo như EVT-1.<br>[Khi lỗi] Lỗi tạm thời lặp lại thì hiện lại Khu vực I NO 2/3 kèm một toast lỗi mới; nếu lần này là lỗi ngân sách thì chuyển sang NO 4, không còn nút Thử lại. |
 
 ---
@@ -486,6 +474,9 @@ sách cố định trong RD [Nguồn: 02-bd/database/ai-review.md:36].
 | 4 | Kiểm nghiệp vụ | Suy giảm êm khi lỗi tạm thời | [Nội dung kiểm] AI provider lỗi hoặc timeout (không phải hết ngân sách): hiển thị Khu vực I NO 2 kèm nút Thử lại, cho phép học viên gọi lại (F5-22).<br>[Nơi thực thi] Màn hình.<br>[Tiêu điểm] Toàn màn. | Cảnh báo | Chưa có mã thông báo | Nội dung "Hệ thống AI đang bận, thử lại sau ít phút." Hiện ở khối trạng thái thay chỗ báo cáo (Khu vực I NO 2) và đồng thời bằng một toast lỗi ngay lúc xảy ra [Nguồn: 05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:72-76]. | EVT-1, EVT-7 | 4 |
 | 5 | Kiểm nghiệp vụ | Suy giảm êm khi bị khoá ngân sách | [Nội dung kiểm] Vượt ngân sách token AI (F5-25): hiển thị Khu vực I NO 4, **không** hiện nút Thử lại — gọi lại ngay cũng sẽ thất bại cùng lý do. Học viên vẫn dùng được F1-F4 (xem lại kết quả, làm bài mới) bình thường.<br>[Nơi thực thi] Máy chủ (chặn trước khi gọi LLM) và màn hình.<br>[Tiêu điểm] Toàn màn. | Cảnh báo | Chưa có mã thông báo | Nội dung "Bạn đã đạt giới hạn phân tích AI trong ngày. Bạn vẫn có thể tiếp tục làm bài bình thường." Hiện ở khối khoá ngân sách thay chỗ báo cáo (Khu vực I NO 4) và đồng thời bằng một toast lỗi ngay lúc xảy ra [Nguồn: 05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:72-76]. | EVT-1 | 4 |
 | 6 | Kiểm nghiệp vụ | Xác nhận trước khi ghi đè mã | [Nội dung kiểm] Tuyệt đối không tự động ghi đè mã nguồn của học viên trong Workspace mà không có xác nhận rõ ràng (F5-26).<br>[Nơi thực thi] Màn hình.<br>[Tiêu điểm] Popup xác nhận. | Cảnh báo | Không có thông báo | Bảo vệ mã gốc của người học tránh mất mát dữ liệu ngoài ý muốn. | EVT-4, EVT-6 | 1 |
+| 7 | Kiểm nghiệp vụ | Giữ bản mã cũ khi áp dụng gợi ý | [Nội dung kiểm] Xác nhận áp dụng mã AI thì mã hiện có của học viên phải được lưu vào lịch sử nháp (`localStorage`, nhãn "Bản trước khi áp dụng AI Diff") trước khi ghi đè; học viên hoàn tác bằng một nút bấm (F5-26). Không lưu được thì không ghi đè.<br>[Nơi thực thi] Màn hình; cơ chế hoàn tác thuộc DD `problem_detail`.<br>[Tiêu điểm] Popup xác nhận. | Lỗi | Chưa có mã thông báo | Chốt 2026-10-14 (`DEC-2026-1014-batch7-remaining-open-questions`, Q1, ponytail bậc 6). | EVT-6 | 2 |
+| 8 | Kiểm nghiệp vụ | Không sinh lại báo cáo | [Nội dung kiểm] Không có thao tác "sinh lại" báo cáo. Cache cứng theo `source_code_hash` (F5-20): cùng mã trả đúng báo cáo đã lưu, chỉ mã khác (bài nộp mới) mới sinh báo cáo mới. Nút "Thử lại" (EVT-7) chỉ áp dụng cho lần gọi lỗi chưa có báo cáo, không ghi đè báo cáo đã có.<br>[Nơi thực thi] Máy chủ.<br>[Tiêu điểm] Toàn màn. | Lỗi | Chưa có mã thông báo | Chốt 2026-10-14 (`DEC-2026-1014-batch7-remaining-open-questions`, Q2, ponytail bậc 5). | EVT-1, EVT-7 | 4 |
+| 9 | Kiểm nghiệp vụ | Timeout gọi LLM 30 giây | [Nội dung kiểm] Máy chủ cắt lần gọi LLM sinh báo cáo sau 30 giây và trả lỗi tạm thời (F5-22); giao diện hiện skeleton trong lúc chờ rồi chuyển sang Khu vực I NO 2 kèm nút Thử lại.<br>[Nơi thực thi] Máy chủ (timeout) và màn hình (skeleton).<br>[Tiêu điểm] Toàn màn. | Cảnh báo | Mã lỗi trong phản hồi | Hằng số 30 giây, chốt 2026-10-14 (`DEC-2026-1014-batch7-remaining-open-questions`, Q3, ponytail bậc 5). | EVT-1 | 5 |
 
 ---
 
@@ -493,9 +484,31 @@ sách cố định trong RD [Nguồn: 02-bd/database/ai-review.md:36].
 
 | # | Câu hỏi | Vì sao chưa trả lời được | Đề xuất | Chủ sở hữu |
 | :-: | :--- | :--- | :--- | :--- |
-| Q1 | **Khi áp dụng mã đề xuất vào Workspace, mã cũ có được sao lưu không?** | F5-26 yêu cầu "giữ lại bản cũ" để người học không bị mất code gốc nếu muốn quay lại | Lưu mã cũ vào lịch sử nháp `localStorage` với nhãn "Bản trước khi áp dụng AI Diff", cho phép hoàn tác bằng một nút bấm | DD `problem_detail` |
-| Q2 | **Có cho phép sinh lại báo cáo phân tích nếu người học chưa hài lòng không?** | Sinh lại tốn chi phí token và có thể dẫn đến lạm dụng | Mặc định cache cứng theo `source_code_hash` (F5-20); chỉ cho phép sinh lại khi nộp một bản mã khác biệt | BD `ai-review` |
-| Q3 | **Thời gian timeout khi gọi LLM sinh báo cáo phân tích JSON là bao lâu?** | Sinh báo cáo đầy đủ 5 tiêu chí kèm Diff có thể mất 10-25 giây | Đặt timeout 30 giây phía gateway; phía giao diện hiển thị hiệu ứng skeleton loading kèm các câu đố/mẹo giải thuật vui trong lúc chờ | DD `ai-review` + Frontend |
+| ~~Q1~~ | ~~Khi áp dụng mã đề xuất vào Workspace, mã cũ có được sao lưu không?~~ **ĐÃ CHỐT 2026-10-14 (DEC-2026-1014-batch7-remaining-open-questions)**: có, mã cũ được giữ trong lịch sử nháp (`localStorage`, nhãn "Bản trước khi áp dụng AI Diff") và hoàn tác bằng một nút bấm (F5-26); DD `problem_detail` sở hữu cơ chế. Ghi ở Sheet 8 EVT-6 và Sheet 9 NO 7 (ponytail bậc 6). | Đã đóng | - | - |
+| ~~Q2~~ | ~~Có cho phép sinh lại báo cáo phân tích nếu người học chưa hài lòng không?~~ **ĐÃ CHỐT 2026-10-14 (DEC-2026-1014-batch7-remaining-open-questions)**: không sinh lại; cache cứng theo `source_code_hash` (F5-20), báo cáo mới chỉ cho mã khác. Ghi ở Sheet 9 NO 8 (ponytail bậc 5). | Đã đóng | - | - |
+| ~~Q3~~ | ~~Thời gian timeout khi gọi LLM sinh báo cáo phân tích JSON là bao lâu?~~ **ĐÃ CHỐT 2026-10-14 (DEC-2026-1014-batch7-remaining-open-questions)**: timeout LLM 30 giây, giao diện hiện skeleton trong lúc chờ (không làm câu đố/mẹo giải thuật vì chưa có yêu cầu nguồn, ponytail bậc 1). Ghi ở Sheet 5 Khu vực I NO 1, Sheet 8 EVT-1, Sheet 9 NO 9 (ponytail bậc 5). | Đã đóng | - | - |
+| Q4 | ~~Điểm tổng của báo cáo: có hiện không, đặt thế nào?~~ **Đóng hẳn 2026-10-14 (moot, `DEC-2026-1014-drop-solution-review-rubric`)**: chủ dự án bỏ cả 5 thẻ tiêu chí lẫn cấu hình rubric ở `ADM0301`, nên không còn điểm (a) bộ tiêu chí lệch, (c) trọng số, và điểm (b) điểm tổng cũng không còn đối tượng để tổng hợp. Màn chỉ giữ điểm dễ đọc 1 đến 5 (F5-05); F5-18 vẫn áp dụng (phản hồi hỗ trợ học tập, không phải điểm chính thức) | - | - | - |
+| Q5 | **Sau "Ghi đè & Mở Workspace", Workspace có tự mở khung gợi ý AI không?** | **ĐÃ CHỐT 2026-10-19 (owner)**: không. Xác nhận xong chỉ ghi đè nháp trình duyệt rồi chuyển sang `/problems/{problemId}`; Workspace không mở khung gợi ý AI nào. Bản dựng đã đúng (`solution-review-view.tsx`, `ConfirmDialog` `onConfirm`). Ponytail bậc 3 (không có yêu cầu nguồn và không có cảnh demo cần khung này). | Đã đóng, ghi ở Sheet 8 EVT-6 và Hiện trạng bản dựng | - |
+
+---
+
+## Hiện trạng bản dựng
+
+Bảng này ghi điều prototype frontend đang có, để đối chiếu với BD (đọc ngày 2026/10/14). Bảng 5.1: hiện trạng liên quan đến việc bỏ rubric.
+
+| Hạng mục | Hiện trạng | Nguồn |
+| :--- | :--- | :--- |
+| Kiểu dữ liệu báo cáo | `SolutionReviewDetail` chỉ có `readabilityScore`, `complexity`, `strengths`, `improvements`, `edgeCases`, `codeDiff`; không có `criteriaScores` | `05-coding/frontend/src/entities/solution-review/model/types.ts:37-53` |
+| Chỉ số đầu trang | Điểm dễ đọc hiển thị bằng `data.readabilityScore` | `05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:208-209` |
+| Khối độ phức tạp | Bảng đối chiếu thời gian và bộ nhớ ngay trong `ReadyReport` | `05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:231-268` |
+| 5 thẻ tiêu chí | Không còn trong `ReadyReport`, không còn key rubric trong file view (grep `criteri`, `rubric` không khớp) | `05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:180-` |
+| Slice `rubric-criteria-grid.tsx` | Không tồn tại trong thư mục `ui/` của view | `05-coding/frontend/src/views/users/solution-review/ui/` |
+| Route và id lượt nộp | `useParams` lấy `submissionId`, truyền vào `useSolutionReview(submissionId, demo)` và `queryKey`; breadcrumb hai mục đều là `Link` tới `/submissions/{id}`; nút Phỏng vấn dùng id của route. Mock: id dạng `SB-n` hoặc `SUB-n` có báo cáo, id khác trả `NOT_FOUND` | `solution-review-view.tsx` (`SolutionReviewContent`); `entities/solution-review/api/__mock__/solution-review-mocks.ts` |
+| Trạng thái không mở được | `NOT_FOUND`, `FORBIDDEN`, `NOT_ACCEPTED` hiện một `NoticeTile` kèm liên kết về Bài đã nộp, không có nút Thử lại; lỗi khác vẫn là lỗi tạm thời có Thử lại. Mock chỉ phát ra `NOT_FOUND` | `solution-review-view.tsx` (`isUnavailable`) |
+| Thử lại (EVT-7) | Dùng `query.isFetching`: khi thử lại, khối lỗi ẩn và hiện khung chờ nên không bấm liên tiếp được | `solution-review-view.tsx` (`isLoading`) |
+| Áp dụng vào Workspace (EVT-6) | Xác nhận thì `saveWorkspaceDraft(problemId, language, model, suggestedCode)` rồi `router.push("/problems/{problemId}")`; Workspace nạp nháp khi mở. Lưu trình duyệt bị chặn thì toast lỗi và ở lại màn. **Chưa có** bước lưu bản trước vào lịch sử nháp (nhãn "Bản trước khi áp dụng AI Diff"). **Owner chốt 2026/10/19 (Q5):** chỉ ghi đè nháp và điều hướng, không mở khung gợi ý AI trong Workspace | `solution-review-view.tsx` (`ConfirmDialog` `onConfirm`); `entities/problem/model/workspace-draft.ts` |
+| Trình xem Diff (Khu vực G NO 1) | **Bản rút gọn được owner chấp nhận 2026/10/19**: danh sách dòng chữ thường tô màu từ `codeDiff.diffLines`, không dùng Monaco Diff Editor, không so `source_code` với `suggestedCode` ở phía máy khách. Xét Monaco khi nối API | `solution-review-view.tsx` (Card `diffTitle`) |
+| Chỉ số đầu trang | Thêm "Thời điểm phân tích" từ `createdAt` qua `formatDateVN` (UTC+7). Ngôn ngữ hiện nhãn dịch (`solutionReview.language.*`) thay vì mã thô; điểm dễ đọc vẫn in `{n} / 5` (chưa theo mẫu "Dễ đọc: {n} / 5", nợ nhỏ) | `solution-review-view.tsx` (`ReadyReport`) |
 
 ---
 
@@ -503,5 +516,5 @@ sách cố định trong RD [Nguồn: 02-bd/database/ai-review.md:36].
 
 - `01-rd/screens/users/USR0301_solution_review.md` — Yêu cầu màn hình.
 - `09-layoutBase/Phân tích bài giải.dc.html` — Bằng chứng bố cục prototype.
-- `01-rd/req/ai-review.md` — F5-01→F5-08, F5-17, F5-18, F5-20, F5-22, F5-23, F5-25, F5-26.
+- `01-rd/req/ai-review.md` — F5-01→F5-08, F5-17, F5-18, F5-20, F5-22, F5-23 (đã bỏ phần rubric bài giải), F5-25, F5-26.
 - `02-bd/_rules/bd-template-9sheet.md` — Quy ước mẫu 9 sheet.

@@ -64,12 +64,6 @@ export type BankQuestionOption = {
   title: string;
 };
 
-export type EntryStats = {
-  sessionsCompleted: number;
-  averageScore: number | null;
-  weakestCriterion: RubricCriterionCode | null;
-};
-
 export type MaxTurns = 8 | 12 | 16;
 
 export const MAX_TURNS_OPTIONS: MaxTurns[] = [8, 12, 16];

@@ -1,24 +1,19 @@
 /**
  * Judge queue monitoring (F4-10, F4-11). Covers the go-judge worker cluster, the jobs waiting on it
- * and the infrastructure events it emits.
+ * and the two cluster controls.
  *
- * Boundary: infrastructure/service events live HERE, not in the system log. `admin_system_log`
- * carries only administrative actions taken by a human (F1-14) —
- * 02-bd/screens/admin/admin_system_log.md section 0 calls that a hard boundary.
- *
- * Only TWO priority levels exist. The mockup still carries a third, "Chấm lại", plus a matching
- * rejudge latency queue; rejudge is out of scope entirely (DEC-2026-0828-remove-rejudge-scope), and
- * DEC-2026-0831-judge-orchestration-ops-details confirms the remaining pair.
+ * Scope notes:
+ * - Infrastructure events moved to their own screen (`admin_infra_events`, ADM0404, entity
+ *   `infra-event`); this screen only links to it.
+ * - There is no job priority: no source table defines one (BD ADM0401 Q4), and rejudge is out of
+ *   scope (DEC-2026-0828-remove-rejudge-scope). Latency is a single average-wait figure.
  */
-export type JobPriority = "normal" | "high";
-
 export type JobStatus = "running" | "waiting" | "sandboxError";
 
 export type QueueJob = {
   id: string;
   submissionId: string;
   language: string;
-  priority: JobPriority;
   status: JobStatus;
   /** Seconds waited. -1 means "not applicable" (the mockup prints an em dash for failed jobs). */
   waitSeconds: number;
@@ -43,29 +38,19 @@ export type ClusterControls = {
   autoscale: boolean;
 };
 
+/** Average wait from submit to a worker picking the job up. */
 export type QueueLatency = {
-  priority: JobPriority;
+  seconds: number;
   label: string;
-  /** Bar fill, 0-100. */
-  percent: number;
-};
-
-export type InfraLevel = "error" | "warn" | "info";
-
-export type InfraEvent = {
-  id: string;
-  time: string;
-  level: InfraLevel;
-  message: string;
-  service: string;
 };
 
 export type QueuePage = {
   workers: Worker[];
   controls: ClusterControls;
-  latency: QueueLatency[];
+  latency: QueueLatency;
   jobs: QueueJob[];
-  infraEvents: InfraEvent[];
   workerCount: number;
   maxWorkers: number;
+  /** Epoch ms the snapshot was taken, for "Cập nhật lúc" and the stale check. */
+  generatedAt: number;
 };

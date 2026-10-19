@@ -3,7 +3,7 @@
 
 import { Suspense } from "react";
 import { useT } from "@/shared/i18n";
-import { AuthAsidePanel, ThemeLangSwitcher } from "@/shared/ui";
+import { AuthAsidePanel, BrandMark, ThemeLangSwitcher } from "@/shared/ui";
 import type { AuthMode } from "@/entities/auth";
 import {
   AuthForm,
@@ -38,9 +38,12 @@ function AuthViewContent({ initialMode = "signup" }: AuthViewProps) {
       <ThemeLangSwitcher variant="floating" />
       <section className="glass-surface relative grid w-full max-w-3xl grid-cols-1 overflow-hidden rounded-2xl border border-[var(--color-border)] shadow-lg lg:grid-cols-[1.06fr_1fr]">
         <div className="p-8">
-          <p className="text-xs font-medium uppercase tracking-wide text-[var(--color-text-muted)]">
-            AlgoPrep
-          </p>
+          <div className="flex items-center gap-2.5">
+            <BrandMark size={36} />
+            <p className="text-xs font-medium uppercase tracking-wide text-[var(--color-text-muted)]">
+              AlgoPrep
+            </p>
+          </div>
           <h1 className="mt-2 text-2xl font-semibold text-[var(--color-text)]">
             {title}
           </h1>

@@ -6,10 +6,10 @@
 import type {
   ClassAssignmentGroup,
   InProgressProblem,
-  ProblemCatalogSummary,
   ProblemDetail,
   ProblemListItem,
   ProblemListPage,
+  SampleRunResult,
   SavedProblem,
   StarterCodeKey,
   SubmissionRunResult,
@@ -183,33 +183,30 @@ const PROBLEMS: ProblemListItem[] = [
   },
 ];
 
-const SUMMARY: ProblemCatalogSummary = {
-  solvedTotal: { solved: 42, total: 128 },
-  solvedByLevel: {
-    EASY: { solved: 20, total: 40 },
-    MEDIUM: { solved: 18, total: 60 },
-    HARD: { solved: 4, total: 28 },
-  },
-};
-
 const IN_PROGRESS: InProgressProblem[] = [
   {
     problemId: "139",
     title: "Word Break",
     language: "python",
-    lastVerdictLabel: "Sai kết quả 6/10",
+    lastVerdict: "wrongAnswer",
+    passedCount: 6,
+    totalCount: 10,
   },
   {
     problemId: "200",
     title: "Number of Islands",
     language: "java",
-    lastVerdictLabel: "Sai kết quả 8/12",
+    lastVerdict: "wrongAnswer",
+    passedCount: 8,
+    totalCount: 12,
   },
   {
     problemId: "1143",
     title: "Longest Common Subsequence",
     language: "cpp",
-    lastVerdictLabel: "Quá thời gian 5/20",
+    lastVerdict: "timeLimitExceeded",
+    passedCount: 5,
+    totalCount: 20,
   },
 ];
 
@@ -221,13 +218,17 @@ const CLASS_ASSIGNMENTS: ClassAssignmentGroup[] = [
         problemId: "207",
         title: "Course Schedule",
         solveState: "todo",
-        metaLabel: "0 / 5 bài · giao 24/08",
+        solvedCount: 0,
+        totalCount: 5,
+        assignedAt: "2026-08-24T02:00:00Z",
       },
       {
         problemId: "236",
         title: "Lowest Common Ancestor",
         solveState: "todo",
-        metaLabel: "0 / 5 bài · giao 24/08",
+        solvedCount: 0,
+        totalCount: 5,
+        assignedAt: "2026-08-24T02:00:00Z",
       },
     ],
   },
@@ -235,7 +236,6 @@ const CLASS_ASSIGNMENTS: ClassAssignmentGroup[] = [
 
 export function fetchProblemListPage(): ProblemListPage {
   return {
-    summary: { ...SUMMARY },
     topics: TOPICS.map((topic) => ({ ...topic })),
     items: PROBLEMS.map((problem) => ({ ...problem })),
     inProgress: IN_PROGRESS.map((item) => ({ ...item })),
@@ -276,6 +276,7 @@ const SAVED: SavedProblem[] = [
     solveState: "todo",
     note: "",
     savedAtLabel: "12/09/2026",
+    withdrawn: true,
   },
 ];
 
@@ -290,6 +291,15 @@ const STARTER: Record<string, string> = {
     "class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        // TODO: implement\n        return new int[0];\n    }\n}\n",
 };
 
+// Mock language multipliers (admin language config): Java 2x time/2x memory, C++ 1x, Python 3x time.
+function limits(timeLimitMs: number, memoryLimitMb: number) {
+  return {
+    java: { timeLimitMs: timeLimitMs * 2, memoryLimitMb: memoryLimitMb * 2 },
+    cpp: { timeLimitMs, memoryLimitMb },
+    python: { timeLimitMs: timeLimitMs * 3, memoryLimitMb },
+  };
+}
+
 const PROBLEM_DETAILS: Record<string, ProblemDetail> = {
   "1": {
     id: "1",
@@ -299,7 +309,7 @@ const PROBLEM_DETAILS: Record<string, ProblemDetail> = {
     topics: ["Array"],
     submissionModel: "both",
     statementMd:
-      "Cho một mảng số nguyên `nums` và một số nguyên `target`, trả về chỉ số của hai số sao cho tổng của chúng bằng `target`.\n\nGiả định mỗi input có đúng một lời giải, và không được dùng cùng một phần tử hai lần.",
+      "Cho một mảng số nguyên `nums` và một số nguyên `target`, trả về chỉ số của hai số sao cho tổng của chúng bằng `target`.\n\nGiả định mỗi input có đúng một lời giải, và không được dùng cùng một phần tử hai lần.\n\n## Ràng buộc\n\n- `2 <= nums.length <= 10^4`\n- `-10^9 <= nums[i] <= 10^9`\n- Chỉ có đúng một đáp án hợp lệ",
     examples: [
       {
         input: "nums = [2,7,11,15], target = 9",
@@ -309,14 +319,10 @@ const PROBLEM_DETAILS: Record<string, ProblemDetail> = {
       { input: "nums = [3,2,4], target = 6", output: "[1,2]" },
       { input: "nums = [3,3], target = 6", output: "[0,1]" },
     ],
-    constraints: [
-      "2 <= nums.length <= 10^4",
-      "-10^9 <= nums[i] <= 10^9",
-      "Chỉ có đúng một đáp án hợp lệ",
-    ],
-    timeLimitMs: 1000,
-    memoryLimitMb: 256,
+    limitsByLanguage: limits(1000, 256),
     acRate: 74,
+    saved: true,
+    hiddenTestcaseCount: 9,
     starterCode: {
       "java:stdio": STARTER.stdio,
       "java:function":
@@ -338,17 +344,23 @@ const PROBLEM_DETAILS: Record<string, ProblemDetail> = {
     mySubmissions: [
       {
         id: "s1",
-        verdictLabel: "Accepted",
+        verdict: "accepted",
+        passedCount: 12,
+        totalCount: 12,
         language: "java",
         runtimeMs: 4,
-        submittedAtLabel: "20/09/2026 14:02",
+        memoryKb: 38400,
+        submittedAt: "2026-09-20T07:02:00Z",
       },
       {
         id: "s2",
-        verdictLabel: "Sai kết quả 2/6",
+        verdict: "wrongAnswer",
+        passedCount: 2,
+        totalCount: 12,
         language: "java",
         runtimeMs: null,
-        submittedAtLabel: "20/09/2026 13:58",
+        memoryKb: null,
+        submittedAt: "2026-09-20T06:58:00Z",
       },
     ],
     solutionReview: {
@@ -368,14 +380,14 @@ const PROBLEM_DETAILS: Record<string, ProblemDetail> = {
     topics: ["DP", "String"],
     submissionModel: "both",
     statementMd:
-      "Cho một chuỗi `s` và một từ điển `wordDict`, trả về `true` nếu `s` có thể tách thành một dãy các từ trong từ điển.",
+      "Cho một chuỗi `s` và một từ điển `wordDict`, trả về `true` nếu `s` có thể tách thành một dãy các từ trong từ điển.\n\n## Ràng buộc\n\n- `1 <= s.length <= 300`\n- `1 <= wordDict.length <= 1000`",
     examples: [
       { input: 's = "leetcode", wordDict = ["leet","code"]', output: "true" },
     ],
-    constraints: ["1 <= s.length <= 300", "1 <= wordDict.length <= 1000"],
-    timeLimitMs: 2000,
-    memoryLimitMb: 256,
+    limitsByLanguage: limits(2000, 256),
     acRate: 46,
+    saved: true,
+    hiddenTestcaseCount: 11,
     starterCode: {
       "java:stdio": STARTER.stdio,
       "java:function":
@@ -395,10 +407,13 @@ const PROBLEM_DETAILS: Record<string, ProblemDetail> = {
     mySubmissions: [
       {
         id: "s3",
-        verdictLabel: "Sai kết quả 6/10",
+        verdict: "wrongAnswer",
+        passedCount: 6,
+        totalCount: 12,
         language: "python",
         runtimeMs: null,
-        submittedAtLabel: "19/09/2026 09:11",
+        memoryKb: null,
+        submittedAt: "2026-09-19T02:11:00Z",
       },
     ],
     solutionReview: null,
@@ -413,23 +428,51 @@ export function fetchProblemDetail(
 }
 
 /**
- * ponytail: no real judge, no STOMP channel — a deterministic script the view reveals testcase by
- * testcase to preserve the "per-testcase status streams in" feel from F4-08 without wiring a fake
- * websocket for a prototype. Swap for the real channel at graduation
- * (`shared/api/stomp` per BD Sheet 4.5).
+ * ponytail: no real judge, no STOMP channel. Odd attempts fail from the 5th testcase on and even attempts
+ * are accepted, so both UI branches show without grading logic; the view reveals the finished script after
+ * a fixed delay. Swap for the real channel at graduation (`shared/api/stomp` per BD Sheet 4.5).
  */
-export function simulateSubmission(totalCount: number): SubmissionRunResult {
-  const failAt = totalCount > 4 ? 4 : totalCount; // 0-based index of the first failing case, if any
+export function simulateSubmission(
+  totalCount: number,
+  attempt: number,
+): SubmissionRunResult {
+  const failAt = attempt % 2 === 1 ? Math.min(4, totalCount) : totalCount;
   const testcases = Array.from({ length: totalCount }, (_, index) => ({
     order: index + 1,
     verdict: (index < failAt ? "passed" : "failed") as "passed" | "failed",
   }));
   const passedCount = testcases.filter((tc) => tc.verdict === "passed").length;
   return {
-    submissionId: `sub-${Date.now()}`,
+    submissionId: `sub-${attempt}`,
     overallVerdict: passedCount === totalCount ? "accepted" : "wrongAnswer",
     passedCount,
     totalCount,
     testcases,
+    runtimeMs: 12,
+    memoryKb: 41984,
+  };
+}
+
+/**
+ * ponytail: no real judge for Run Code either. Odd runs fail the last sample with a wrong output so both
+ * the comparison block and the pass state are visible; even runs pass everything. Only Sample testcases
+ * ever appear here (BD Sheet 9 NO 3/4); swap for the synchronous `RunSampleTestcases` call at graduation.
+ */
+export function simulateSampleRun(
+  samples: { input: string; expectedOutput: string }[],
+  attempt: number,
+): SampleRunResult {
+  return {
+    cases: samples.map((sample, index) => {
+      const wrong = attempt % 2 === 1 && index === samples.length - 1;
+      return {
+        input: sample.input,
+        expectedOutput: sample.expectedOutput,
+        actualOutput: wrong ? "[]" : sample.expectedOutput,
+        passed: !wrong,
+        runtimeMs: 3 + index * 2,
+        memoryKb: 36864 + index * 512,
+      };
+    }),
   };
 }

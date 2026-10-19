@@ -19,22 +19,22 @@
         <mxCell id="v3" value="Xem thống kê người dùng và bài toán phổ biến" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFF3B0;strokeColor=#8C7B00;fontColor=#1A1A1A;" vertex="1" parent="1">
           <mxGeometry x="270" y="165" width="240" height="45" as="geometry" />
         </mxCell>
-        <mxCell id="v4" value="Giám sát hàng đợi và cụm (F4-10)" style="rounded=0;dashed=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#AAAAAA;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="260" y="245" width="260" height="155" as="geometry" />
+        <mxCell id="v4" value="Hàng đợi và cụm judge (F4-10)" style="rounded=0;dashed=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#AAAAAA;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="260" y="245" width="260" height="210" as="geometry" />
         </mxCell>
-        <mxCell id="v5" value="Xem trạng thái hàng đợi chấm bài" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFF3B0;strokeColor=#8C7B00;fontColor=#1A1A1A;" vertex="1" parent="1">
+        <mxCell id="v5" value="Xem trạng thái hàng đợi và cụm judge engine" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFF3B0;strokeColor=#8C7B00;fontColor=#1A1A1A;" vertex="1" parent="1">
           <mxGeometry x="270" y="285" width="240" height="45" as="geometry" />
         </mxCell>
-        <mxCell id="v6" value="Xem tình trạng cụm judge engine" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFF3B0;strokeColor=#8C7B00;fontColor=#1A1A1A;" vertex="1" parent="1">
+        <mxCell id="v6" value="Tạm dừng hàng đợi, tắt tự mở rộng worker (có xác nhận)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFF3B0;strokeColor=#8C7B00;fontColor=#1A1A1A;" vertex="1" parent="1">
           <mxGeometry x="270" y="340" width="240" height="45" as="geometry" />
         </mxCell>
-        <mxCell id="v7" value="Xử lý bài nộp treo (F4-07)" style="rounded=0;dashed=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#AAAAAA;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="260" y="420" width="260" height="155" as="geometry" />
+        <mxCell id="v7" value="Xem sự kiện hạ tầng" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFF3B0;strokeColor=#8C7B00;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="270" y="395" width="240" height="45" as="geometry" />
         </mxCell>
-        <mxCell id="v8" value="Quét và phát hiện bài nộp treo quá ngưỡng" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFF3B0;strokeColor=#8C7B00;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="270" y="460" width="240" height="45" as="geometry" />
+        <mxCell id="v8" value="Bài nộp treo (F4-07)" style="rounded=0;dashed=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#AAAAAA;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="260" y="475" width="260" height="100" as="geometry" />
         </mxCell>
-        <mxCell id="v9" value="Xử lý thủ công bài nộp treo" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFF3B0;strokeColor=#8C7B00;fontColor=#1A1A1A;" vertex="1" parent="1">
+        <mxCell id="v9" value="Quét và phát hiện bài nộp treo quá ngưỡng" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFF3B0;strokeColor=#8C7B00;fontColor=#1A1A1A;" vertex="1" parent="1">
           <mxGeometry x="270" y="515" width="240" height="45" as="geometry" />
         </mxCell>
         <mxCell id="v10" value="Quản trị viên" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
@@ -43,10 +43,10 @@
         <mxCell id="v11" value="go-judge" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8E8E8;strokeColor=#666666;fontColor=#1A1A1A;" vertex="1" parent="1">
           <mxGeometry x="610" y="70" width="200" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="e12" value="&amp;lt;&amp;lt;use&amp;gt;&amp;gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v11">
+        <mxCell id="e12" value="&amp;lt;&amp;lt;use&amp;gt;&amp;gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v11">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="550" y="362.5" />
+            <mxPoint x="550" y="307.5" />
             <mxPoint x="550" y="90" />
             </Array>
           </mxGeometry>
@@ -63,7 +63,7 @@
         <mxCell id="e16" style="edgeStyle=none;html=1;endArrow=none;startArrow=none;strokeColor=#333333;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="v10" target="v6">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e17" style="edgeStyle=none;html=1;endArrow=none;startArrow=none;strokeColor=#333333;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="v10" target="v8">
+        <mxCell id="e17" style="edgeStyle=none;html=1;endArrow=none;startArrow=none;strokeColor=#333333;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="v10" target="v7">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e18" style="edgeStyle=none;html=1;endArrow=none;startArrow=none;strokeColor=#333333;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="v10" target="v9">

@@ -14,7 +14,7 @@
 - Màn này **không có popup**. Tất cả hành động xem chi tiết đều chuyển màn.
 
 > Đọc cùng `01-rd/screens/users/USR0202_my_submissions.md` (hành vi ở mức yêu cầu, không lặp lại ở đây),
-> `01-rd/req/identity.md` (F1-07, F1-18), `01-rd/req/judge-orchestration.md` (F4-01→F4-08),
+> `01-rd/req/identity.md` (F1-18; F1-07 ở `USR0501`), `01-rd/req/judge-orchestration.md` (F4-01→F4-08),
 > `01-rd/req/ai-review.md` (F5-01), `02-bd/architecture/judge-orchestration.md`,
 > `02-bd/database/judge-orchestration.md`, `02-bd/database/identity.md`.
 >
@@ -29,9 +29,18 @@
 
 - **Bài đã rút khỏi ngân hàng** (`deleted = true`, G4 2026-10-08): dòng lịch sử vẫn hiện tiêu đề bài kèm nhãn "Đã rút khỏi ngân hàng", **bỏ liên kết mở bài**; nút "Kết quả" và "Phân tích" vẫn dùng được. Ô tìm kiếm theo tên bài vẫn khớp bài đã rút. Quy tắc đầy đủ ở `02-bd/database/problem-bank.md` mục 1.1a, không chép lại ở đây.
 
-> **Quy ước đặt tên khối** [Nội bộ]. Bốn khối: `summaryStats` (dải 4 thẻ thống kê tổng quan), `filterToolbar`
-> (thanh công cụ tìm kiếm và lọc verdict/ngôn ngữ), `submissionsTable` (bảng lịch sử bài nộp), `tableFooter`
-> (dòng tổng kết số liệu và phân trang). Tiền tố ID item của toàn màn là `mySubmissions.`.
+> **Quy ước đặt tên khối** [Nội bộ]. Ba khối: `filterToolbar` (thanh công cụ tìm kiếm và lọc
+> verdict/ngôn ngữ), `submissionsTable` (bảng lịch sử bài nộp), `tableFooter` (dòng tổng kết số liệu và
+> phân trang). Khối `summaryStats` (dải 4 thẻ thống kê) **đã bỏ 2026-10-18** theo quyết định của owner (mở rộng
+> quy tắc "không dải KPI ở màn danh sách" ngày 2026-10-13); ký hiệu khu vực B/C/D giữ nguyên, không đổi lại thành
+> A/B/C vì chú thích đầu file code trích theo B/C/D
+> [Nguồn: 05-coding/frontend/src/views/users/my-submissions/ui/my-submissions-view.tsx:3-5]. Tiền tố ID item
+> của toàn màn là `mySubmissions.`.
+>
+> **Lệch RD đã đóng 2026-10-18** [Nội bộ]: owner chọn phương án (a). RD `USR0202` đã bỏ yêu cầu dải chỉ số,
+> F1-07 (tỉ lệ chấp thuận) hiển thị ở màn tiến độ `USR0501`, Khu vực A "Dải chỉ số tổng" NO 3
+> [Nguồn: 01-rd/screens/users/USR0202_my_submissions.md:32,108; 01-rd/screens/users/USR0501_my_progress.md:90;
+> 02-bd/screens/users/USR0501_my_progress.md:295]. Bản dựng không hiển thị là đúng thiết kế. Xem Câu hỏi mở Q5.
 
 ---
 
@@ -48,11 +57,11 @@
 | Tên vật lý (slug) | `my_submissions` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`) |
-| Phiên bản | V0.4 |
+| Phiên bản | V0.9 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/22 |
-| Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/10/03 |
+| Người cập nhật | Claude |
+| Ngày cập nhật | 2026/10/19 |
 
 ---
 
@@ -65,6 +74,11 @@
 | V0.2 | Sheet 8, 9 | Đổi báo lỗi tải sau thao tác lọc, tìm kiếm và `[Tiêu điểm]` ô tìm kiếm sang toast; giữ nguyên khối lỗi tải màn kèm nút thử lại ở EVT-1. Theo `DEC-2026-1003-toast-feedback-channel`. | 2026/10/03 | AI |
 | V0.3 | Sheet 4, 5, 7 | Đồng bộ `DEC-2026-1001-admin-configurable-settings` mục (7): độ khó bài tập là danh mục do ADMIN quản lý (bảng riêng `problem_levels`), không còn enum cố định. DTO `StudentSubmissionItemDto.difficulty` thành `levelCode`/`levelDisplayName` đọc qua `problems.level_id`; badge độ khó cạnh tên bài hiển thị `display_name` từ dữ liệu; thêm `problem.problem_levels` vào danh sách bảng và Truy cập bảng. Màn chỉ hiển thị nhãn, không lọc và không gọi `ListProblemLevels` (nhãn nằm sẵn trong phản hồi); độ khó không gắn logic nào | 2026/10/03 | AI |
 | V0.4 | Sheet 3, 5, 6, Câu hỏi mở | Theo `02-bd/database/problem-bank.md` mục 1.1a: dòng lịch sử của bài đã rút vẫn hiện tiêu đề kèm nhãn "Đã rút khỏi ngân hàng", bỏ liên kết mở bài; nút "Kết quả" và "Phân tích" vẫn dùng được. Chỉ tài liệu, chưa đổi code | 2026/10/08 | AI |
+| V0.5 | Phương châm, Sheet 1, 3, 4, 5, 6, 7, 8, Câu hỏi mở | Bỏ dải 4 thẻ thống kê (khu vực A) theo quyết định owner 2026/10/18, mở rộng quy tắc "không dải KPI ở màn danh sách" 2026/10/13: bỏ DTO `StudentSubmissionSummaryStatsDto`, endpoint `GetMySubmissionSummaryStats`, truy cập `identity.user_submission_stats`, item và đặc tả khu vực A; tải màn không còn gọi thống kê. Giữ ký hiệu khu vực B/C/D. Đóng Q1, Q4 (không còn đối tượng). Thêm Q5: lệch RD F1-07 (RD yêu cầu hiển thị, bản dựng đã bỏ). Sửa Sheet 4.5 theo code thật (file tách nhỏ chỉ là dự kiến, chưa từng có). Không sửa RD | 2026/10/18 | AI |
+| V0.6 | Phương châm, Câu hỏi mở (Q5), Tham chiếu | Owner chốt Q5 phương án (a) 2026/10/18 (`DEC-2026-1018-usr-open-questions-phase1-scope`): RD `USR0202` đã bỏ yêu cầu dải chỉ số và REQ-01, F1-07 chuyển sang `USR0501`. Đổi đoạn "Lệch RD cần owner quyết" thành ghi chú đã đóng, bỏ câu nói RD yêu cầu hiển thị chỉ số. Không đổi thiết kế, không đổi code | 2026/10/18 | AI |
+| V0.7 | Câu hỏi mở (đóng Q2, Q3), mục "Hiện trạng bản dựng" | Owner chốt Q2 và Q3 ngày 2026/10/18 theo đề xuất (`DEC-2026-1018-usr-open-questions-phase2-5`, giai đoạn 3): bản đầu không có bộ lọc khoảng ngày (ponytail bậc 3); lượt nộp không bao giờ bị xoá hay ẩn (bậc 6). Không có item hay sự kiện mới, vì cả hai đều là "không làm". Đã đọc lại code: không có điều khiển lọc ngày hay xoá/ẩn. Không đổi code | 2026/10/18 | Claude |
+| V0.8 | Sheet 5 (Khu vực B NO 2, C NO 1, 2), Hiện trạng bản dựng | Sửa theo đợt rà soát prototype 2026/10/19 (area B), owner chốt: menu lọc verdict có **đủ 6 giá trị theo BD** (Tất cả, Accepted, Sai kết quả, Quá thời gian, Lỗi biên dịch, Lỗi thực thi; thêm Lỗi thực thi, `SYSTEM_ERROR` vẫn hiện trong bảng nhưng không có trong menu lọc). Cột Bài toán thêm badge độ khó (`problemLevelTone/Label` + `useProblemLevels`). Cột Thời điểm dùng `formatDateVN` (UTC+7, theo locale; định dạng `HH:mm dd/MM/yyyy`, khác BD ở dấu gạch giữa giờ và ngày, chấp nhận ở prototype). Ô tìm kiếm có `maxLength` 100 qua `FilterBar` (cắt im lặng, chưa có toast cảnh báo). Chưa duyệt hình | 2026/10/19 | Claude |
+| V0.9 | Sheet 9 (NO 3) | Owner chốt 2026/10/19 (`DEC-2026-1019-usr-fe-audit-fixes`, chốt nốt câu hỏi mở còn lại sau rà prototype). Chỉ tài liệu, không đổi code, chưa duyệt hình. Bỏ yêu cầu toast khi ô tìm kiếm chạm 100 ký tự: `maxLength` của trình duyệt dừng việc nhập là đủ (owner 2026/10/19, ponytail bậc 3); Sheet 9 dòng độ dài từ khoá đổi `[Tiêu điểm]` còn viền ô, không còn câu thông báo. | 2026/10/19 | Claude |
 
 ---
 
@@ -85,7 +99,7 @@
 
 [Giá trị trả về] Không có.
 
-[Khi thành công] Hiển thị dải thống kê, thanh lọc và bảng lịch sử nộp bài của chính học viên.
+[Khi thành công] Hiển thị thanh lọc, bảng lịch sử nộp bài của chính học viên và chân bảng kèm phân trang (không còn dải thống kê, bỏ 2026/10/18).
 
 [Khi huỷ] Không có.
 
@@ -156,7 +170,7 @@ flowchart LR
 
 ### 4.1. Tổng quan theo thẻ
 
-- `[Mục đích màn]` Cho phép người học xem lại toàn bộ lịch sử các lần nộp bài của mình, theo dõi tỷ lệ thành công, phân tích thói quen ngôn ngữ, tìm kiếm bài đã nộp và mở lại kết quả chi tiết hoặc phân tích AI.
+- `[Mục đích màn]` Cho phép người học xem lại toàn bộ lịch sử các lần nộp bài của mình, tìm kiếm bài đã nộp và mở lại kết quả chi tiết hoặc phân tích AI.
 - `[Luồng nghiệp vụ chính]` Người học vào màn hình để tra cứu bài đã nộp, sử dụng bộ lọc trạng thái verdict hoặc ngôn ngữ lập trình, tìm kiếm theo từ khóa bài toán, sau đó xem kết quả testcase tại `submission_result` hoặc nhận phản hồi sư phạm AI tại `solution_review`.
 - `[Người dùng]` Học viên (A1 — sở hữu lịch sử nộp bài).
 - `[Tệp liên quan]` `01-rd/screens/users/USR0202_my_submissions.md`, `09-layoutBase/Bài đã nộp.dc.html`.
@@ -168,18 +182,20 @@ flowchart LR
 
 | STT | Tên DTO | Mô tả | Chi tiết trường |
 | :-: | :--- | :--- | :--- |
-| 1 | `StudentSubmissionSummaryStatsDto` | Số liệu tổng quan lịch sử | `totalSubmissions`, `acceptedCount`, `acceptedRate`, `firstTryAcceptedCount`, `firstTryAcceptedRate`, `mostUsedLanguage`, `mostUsedLanguagePercent` |
-| 2 | `StudentSubmissionItemDto` | Một dòng trong bảng lịch sử | `id`, `problemId`, `problemCode`, `problemTitle`, `levelCode`, `levelDisplayName`, `language`, `verdict`, `passedCount`, `totalCount`, `runtimeMs`, `memoryMb`, `submittedAt` |
-| 3 | `StudentSubmissionPageResponseDto` | Kết quả phân trang lịch sử bài nộp | `items` (List<StudentSubmissionItemDto>), `currentPage`, `pageSize`, `totalItems`, `totalPages`, `filteredAcceptedCount` |
+| 1 | `StudentSubmissionItemDto` | Một dòng trong bảng lịch sử | `id`, `problemId`, `problemCode`, `problemTitle`, `levelCode`, `levelDisplayName`, `language`, `verdict`, `passedCount`, `totalCount`, `runtimeMs`, `memoryMb`, `submittedAt` |
+| 2 | `StudentSubmissionPageResponseDto` | Kết quả phân trang lịch sử bài nộp | `items` (List<StudentSubmissionItemDto>), `currentPage`, `pageSize`, `totalItems`, `totalPages`, `filteredAcceptedCount` |
+
+> Đã bỏ 2026/10/18 (owner): `StudentSubmissionSummaryStatsDto` (`totalSubmissions`, `acceptedCount`, `acceptedRate`, `firstTryAcceptedCount`, `firstTryAcceptedRate`, `mostUsedLanguage`, `mostUsedLanguagePercent`) cùng dải thống kê.
 
 ### 4.3. Danh sách bảng dữ liệu
 
 | STT | Tên bảng | Mô tả | Thao tác | Bounded Context |
 | :-: | :--- | :--- | :--- | :--- |
 | 1 | `judge.submissions` | Bản ghi các bài nộp của người học | R | `judge-orchestration` |
-| 2 | `identity.user_submission_stats` | Read model tổng hợp lượt nộp và AC | R | `identity` |
-| 3 | `problem.problems` | Thông tin mã bài, tên bài, độ khó | R | `problem-bank` |
-| 4 | `problem.problem_levels` | Nhãn độ khó của bài (`display_name`), đọc qua join `problems.level_id` [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`] | R | `problem-bank` |
+| 2 | `problem.problems` | Thông tin mã bài, tên bài, độ khó | R | `problem-bank` |
+| 3 | `problem.problem_levels` | Nhãn độ khó của bài (`display_name`), đọc qua join `problems.level_id` [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`] | R | `problem-bank` |
+
+> Đã bỏ 2026/10/18 (owner): `identity.user_submission_stats` (R) — màn không còn đọc read model thống kê; không item nào khác của màn dùng bảng này.
 
 ### 4.4. Vùng bố cục bám prototype
 
@@ -187,21 +203,24 @@ Bố cục dạng danh sách trung tâm một cột với các khối chức nă
 
 | Ký hiệu | Tên khu vực | Tham chiếu prototype | Ghi chú |
 | :-: | :--- | :--- | :--- |
-| **A** | Dải 4 thẻ thống kê (Summary Stats) | `Bài đã nộp.dc.html:104-110,238-243` | 4 thẻ ngang: Lượt nộp, Được chấp nhận (F1-07), Đúng lần đầu, Ngôn ngữ chính |
-| **B** | Thanh công cụ lọc & tìm kiếm (Filter Toolbar) | `Bài đã nộp.dc.html:112-123` | Ô tìm kiếm bài, tab lọc Verdict, tab lọc Ngôn ngữ |
-| **C** | Bảng lịch sử nộp bài (Submissions Table) | `Bài đã nộp.dc.html:126-170` | Bảng dữ liệu có hover action (Xem kết quả, Phân tích AI) |
-| **D** | Chân bảng & phân trang (Table Footer) | `Bài đã nộp.dc.html:171-174` | Dòng tóm tắt số bản ghi và thanh chuyển trang |
+| **A** | ~~Dải 4 thẻ thống kê (Summary Stats)~~ — **đã bỏ 2026-10-18, owner** | `Bài đã nộp.dc.html:104-110,238-243` (chỉ còn là bằng chứng mockup, bản dựng không có) | Từng gồm 4 thẻ: Lượt nộp, Được chấp nhận (F1-07), Đúng lần đầu, Ngôn ngữ chính. Lệch RD, xem Q5 |
+| **B** | Thanh công cụ lọc & tìm kiếm (Filter Toolbar) | `Bài đã nộp.dc.html:112-123`; code `my-submissions-view.tsx:184-219` | Ô tìm kiếm bài, menu lọc Verdict, menu lọc Ngôn ngữ (`FilterBar` + `FilterMenu`) |
+| **C** | Bảng lịch sử nộp bài (Submissions Table) | `Bài đã nộp.dc.html:126-170`; code `my-submissions-view.tsx:76-177,221-228` | Bảng dữ liệu (`DataTable`), cột thao tác Kết quả / Phân tích |
+| **D** | Chân bảng & phân trang (Table Footer) | `Bài đã nộp.dc.html:171-174`; code `my-submissions-view.tsx:230-258` | Dòng tóm tắt số bản ghi, chọn cỡ trang (10/20/50), thanh chuyển trang (`Pagination`) |
+
+Trang hiện tại = `PageHeader` [Nguồn: 05-coding/frontend/src/views/users/my-submissions/ui/my-submissions-view.tsx:181], rồi một thẻ chứa B, C, D theo thứ tự [Nguồn: 05-coding/frontend/src/views/users/my-submissions/ui/my-submissions-view.tsx:183-259].
+
+**Hiện trạng bản dựng** (2026-10-18, đọc lại code): trạng thái lọc và trang giữ trong state cục bộ, chưa đưa lên query param `q`/`verdict`/`language`/`page` [Nguồn: 05-coding/frontend/src/views/users/my-submissions/ui/my-submissions-view.tsx:5-7,47-50]; menu lọc verdict có 6 giá trị đúng BD (Tất cả, ACCEPTED, WRONG_ANSWER, TIME_LIMIT_EXCEEDED, COMPILE_ERROR, RUNTIME_ERROR), chốt 2026/10/19 [Nguồn: 05-coding/frontend/src/views/users/my-submissions/ui/my-submissions-view.tsx, `FilterMenu` verdict]; có chọn cỡ trang 10/20/50 nhớ theo trình duyệt, mặc định 20 [Nguồn: 05-coding/frontend/src/views/users/my-submissions/ui/my-submissions-view.tsx:42-55]; dữ liệu lấy qua `fetchMySubmissionsPage` (mock), không còn gọi `fetchMySubmissionStats` [Nguồn: 05-coding/frontend/src/views/users/my-submissions/ui/my-submissions-view.tsx:12-17,57-60]. **Đối chiếu Q2, Q3 (2026-10-18, đã đọc lại code):** thanh lọc chỉ có ô tìm, Verdict, Ngôn ngữ, không có bộ chọn ngày [Nguồn: 05-coding/frontend/src/views/users/my-submissions/ui/my-submissions-view.tsx:184-219]; cột hành động chỉ có nút "Kết quả" và "Phân tích", không có nút xoá hay ẩn [Nguồn: 05-coding/frontend/src/views/users/my-submissions/ui/my-submissions-view.tsx:141-176]. Khớp quyết định, không đổi code.
 
 ### 4.5. Cấu trúc slice FSD [Nội bộ]
 
 - Route: `/my-submissions`
-- View slice: `src/views/users/my-submissions/`
-  - `ui/my-submissions-page.tsx`
-  - `ui/submission-stats-cards.tsx`
-  - `ui/submission-filter-toolbar.tsx`
-  - `ui/submissions-data-table.tsx`
-  - `ui/submissions-table-footer.tsx`
-  - `model/use-my-submissions.ts` (quản lý state URL query params: `q`, `verdict`, `language`, `page`)
+- View slice thực tế: `src/views/users/my-submissions/` gồm `index.ts`, `ui/my-submissions-view.tsx` (một
+  file chứa B, C, D) và `ui/my-submissions-view.test.tsx` (Glob 2026-10-18).
+- Các file `ui/my-submissions-page.tsx`, `ui/submission-stats-cards.tsx`, `ui/submission-filter-toolbar.tsx`,
+  `ui/submissions-data-table.tsx`, `ui/submissions-table-footer.tsx`, `model/use-my-submissions.ts` (state URL
+  query params `q`, `verdict`, `language`, `page`) chỉ là **dự kiến ở V0.1-V0.4, chưa từng tồn tại trong code**;
+  `submission-stats-cards.tsx` bỏ hẳn cùng khu vực A. Việc tách file còn lại hoãn đến khi viết DD.
 
 ---
 
@@ -209,15 +228,9 @@ Bố cục dạng danh sách trung tâm một cột với các khối chức nă
 
 > Quy ước ID, bộ thẻ và giá trị chuẩn: `02-bd/_rules/bd-template-9sheet.md` mục 2, 3, 4.
 
-### Khu vực A — Dải 4 thẻ thống kê (Summary Stats)
+### Khu vực A — Dải 4 thẻ thống kê (Summary Stats) — đã bỏ 2026/10/18 (owner)
 
-| Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
-| :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
-| Summary Stats | | | | | | | | | | | | | |
-| | 1 | Thẻ Tổng lượt nộp | `mySubmissions.stats.cardTotal` | `identity.user_submission_stats` | `total_submissions` | Label | String | 30 | Có | O | `0` | `{số} lượt` | Tổng số lượt nộp bài mọi thời đại của chính học viên [Nguồn: 02-bd/database/identity.md:114]<br>[EVT liên quan] - |
-| | 2 | Thẻ Được chấp nhận | `mySubmissions.stats.cardAccepted` | `identity.user_submission_stats` | `accepted_count`, `total_submissions` | Label | String | 40 | Có | O | `0 (0%)` | `{count} ({rate}%)` | Số bài đạt AC và tỷ lệ chấp thuận (F1-07)<br>[Công thức] `rate = ROUND(accepted_count / total_submissions * 100)` — `total_submissions = 0` thì hiển thị `0 (—%)` [Nguồn: 02-bd/database/identity.md:114]<br>[EVT liên quan] - |
-| | 3 | Thẻ Đúng ngay lần đầu | `mySubmissions.stats.cardFirstTry` | `identity.user_submission_stats` | `first_try_accepted_count`, `accepted_count` | Label | String | 40 | Có | O | `0 / 0 (0%)` | `{firstTry} / {accepted} ({rate}%)` | Số bài Accepted ngay lần nộp đầu tiên<br>[Công thức] `rate = ROUND(first_try_accepted_count / accepted_count * 100)` [Nguồn: 02-bd/database/identity.md:114]. Cột này tính sẵn ở read model, không quét lại lịch sử mỗi lần tải (Câu hỏi mở Q1)<br>[EVT liên quan] - |
-| | 4 | Thẻ Dùng nhiều nhất | `mySubmissions.stats.cardTopLang` | `judge.submissions` | `language` | Label | String | 40 | Có | O | `-` | `{ngôn ngữ} ({rate}%)` | Ngôn ngữ lập trình có lượt nộp nhiều nhất<br>[Công thức] `GROUP BY language, COUNT(*)` trên toàn bộ lượt nộp của chính học viên, lấy nhóm lớn nhất — **không có cột read model riêng**, tính trực tiếp trên `judge.submissions` [Nguồn: 02-bd/database/judge-orchestration.md:18]. Chi phí quét, xem Câu hỏi mở Q4<br>[EVT liên quan] - |
+4 item `mySubmissions.stats.cardTotal`, `cardAccepted`, `cardFirstTry`, `cardTopLang` đã bỏ, kèm công thức đọc `identity.user_submission_stats` và `GROUP BY language` trên `judge.submissions`. Khu vực B/C/D giữ nguyên NO riêng của từng khu vực. Lệch RD F1-07: xem Câu hỏi mở Q5.
 
 ### Khu vực B — Thanh công cụ lọc & tìm kiếm (Filter Toolbar)
 
@@ -259,14 +272,9 @@ Bố cục dạng danh sách trung tâm một cột với các khối chức nă
 
 ## Sheet 6. Đặc tả điều khiển item
 
-### Khu vực A: Dải 4 thẻ thống kê
+### Khu vực A: Dải 4 thẻ thống kê — đã bỏ 2026/10/18 (owner)
 
-| NO | Tên item | Hiển thị | Kích hoạt | Ghi chú |
-| --: | :--- | :--- | :--- | :--- |
-| 1 | Thẻ Tổng lượt nộp | Có | Không | [Điều kiện hiển thị] Luôn hiển thị.<br>[Điều kiện kích hoạt] Không áp dụng.<br>[Tự động đặt] - |
-| 2 | Thẻ Được chấp nhận | Có | Không | [Điều kiện hiển thị] Luôn hiển thị.<br>[Điều kiện kích hoạt] Không áp dụng.<br>[Tự động đặt] - |
-| 3 | Thẻ Đúng ngay lần đầu | Có | Không | [Điều kiện hiển thị] Luôn hiển thị.<br>[Điều kiện kích hoạt] Không áp dụng.<br>[Tự động đặt] - |
-| 4 | Thẻ Dùng nhiều nhất | Có | Không | [Điều kiện hiển thị] Luôn hiển thị.<br>[Điều kiện kích hoạt] Không áp dụng.<br>[Tự động đặt] - |
+Toàn bộ 4 dòng đặc tả (Thẻ Tổng lượt nộp, Được chấp nhận, Đúng ngay lần đầu, Dùng nhiều nhất) đã bỏ cùng khu vực A.
 
 ### Khu vực B: Thanh công cụ lọc & tìm kiếm
 
@@ -306,23 +314,22 @@ Bố cục dạng danh sách trung tâm một cột với các khối chức nă
 
 | STT | Trường giao diện | Kiểu | Trường DTO | Hướng | Ghi chú |
 | :-: | :--- | :--- | :--- | :-: | :--- |
-| 1 | `mySubmissions.stats.cardTotal` | Number | `StudentSubmissionSummaryStatsDto.totalSubmissions` | O | Hiển thị tổng số bài nộp |
-| 2 | `mySubmissions.stats.cardAccepted` | String | `StudentSubmissionSummaryStatsDto.acceptedCount` + `acceptedRate` | O | Định dạng `{count} ({rate}%)` |
-| 3 | `mySubmissions.filter.txtSearch` | String | Query parameter `q` | I | Lọc theo mã hoặc tên bài |
-| 4 | `mySubmissions.filter.tabVerdict` | String | Query parameter `verdict` | I | Lọc theo kết quả verdict |
-| 5 | `mySubmissions.filter.tabLanguage` | String | Query parameter `language` | I | Lọc theo ngôn ngữ lập trình |
-| 6 | `mySubmissions.table.col.problem` | String | `StudentSubmissionItemDto.problemTitle` | O | Tên bài toán kèm link |
-| 7 | `mySubmissions.table.col.verdict` | String | `StudentSubmissionItemDto.verdict` | O | Ánh xạ sang nhãn và badge |
-| 8 | `mySubmissions.footer.lblSummary` | String | `StudentSubmissionPageResponseDto.totalItems` | O | Tổng số kết quả phù hợp |
+| 1 | `mySubmissions.filter.txtSearch` | String | Query parameter `q` | I | Lọc theo mã hoặc tên bài |
+| 2 | `mySubmissions.filter.tabVerdict` | String | Query parameter `verdict` | I | Lọc theo kết quả verdict |
+| 3 | `mySubmissions.filter.tabLanguage` | String | Query parameter `language` | I | Lọc theo ngôn ngữ lập trình |
+| 4 | `mySubmissions.table.col.problem` | String | `StudentSubmissionItemDto.problemTitle` | O | Tên bài toán kèm link |
+| 5 | `mySubmissions.table.col.verdict` | String | `StudentSubmissionItemDto.verdict` | O | Ánh xạ sang nhãn và badge |
+| 6 | `mySubmissions.footer.lblSummary` | String | `StudentSubmissionPageResponseDto.totalItems` | O | Tổng số kết quả phù hợp |
+
+> Đã bỏ 2026/10/18 (owner): 2 trường `mySubmissions.stats.cardTotal`, `mySubmissions.stats.cardAccepted` (DTO `StudentSubmissionSummaryStatsDto`).
 
 ### 7.2. Truy cập bảng dữ liệu
 
 | STT | Tên bảng | C | R | U | D | Điều kiện lọc |
 | :-: | :--- | :-: | :-: | :-: | :-: | :--- |
 | 1 | `judge.submissions` | - | Có | - | - | `user_id = :currentUserId [AND conditions] ORDER BY submitted_at DESC` |
-| 2 | `identity.user_submission_stats` | - | Có | - | - | `user_id = :currentUserId` |
-| 3 | `problem.problems` | - | Có | - | - | `id IN (:problemIds)` |
-| 4 | `problem.problem_levels` | - | Có | - | - | Qua join `problems.level_id` để lấy `display_name`; màn không ghi, ADMIN quản lý độ khó ở `SHR0201` |
+| 2 | `problem.problems` | - | Có | - | - | `id IN (:problemIds)` |
+| 3 | `problem.problem_levels` | - | Có | - | - | Qua join `problems.level_id` để lấy `display_name`; màn không ghi, ADMIN quản lý độ khó ở `SHR0201` |
 
 ### 7.3. Danh sách endpoint [Nội bộ]
 
@@ -332,7 +339,8 @@ Bố cục dạng danh sách trung tâm một cột với các khối chức nă
 | NO | Endpoint (tên nghiệp vụ) | Mục đích | BC sở hữu |
 | --: | :--- | :--- | :--- |
 | 1 | `ListMySubmissions` | Lấy danh sách lịch sử nộp bài có phân trang, tìm kiếm và lọc theo verdict/ngôn ngữ | `judge-orchestration` |
-| 2 | `GetMySubmissionSummaryStats` | Lấy 4 chỉ số tổng quan (tổng lượt nộp, tỉ lệ AC, đúng lần đầu, ngôn ngữ dùng nhiều nhất) | `identity` |
+
+> Đã bỏ 2026/10/18 (owner): endpoint `GetMySubmissionSummaryStats` (BC `identity`, 4 chỉ số tổng quan); không còn endpoint nào của `identity` trên màn này.
 
 Ghi chú ranh giới: tiền tố `My` khoá cứng phạm vi theo người dùng đăng nhập, không nhận `user_id` làm tham
 số — cùng quy ước đã chốt ở `02-bd/screens/users/USR0101_problem_list.md` mục 7.3.
@@ -343,7 +351,7 @@ số — cùng quy ước đã chốt ở `02-bd/screens/users/USR0101_problem_l
 
 | NO | Loại | Sự kiện | Chi tiết | Chuyển màn | Gọi API | Tên xử lý | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :-: | :--- | :--- |
-| 1 | Khởi tạo | Tải màn hình | Đọc tham số URL, tải 4 thẻ thống kê và trang danh sách bài nộp đầu tiên. | Không | Có | `GetMySubmissionSummaryStats`, `ListMySubmissions` | [Các bước]<br>1. Kiểm tra đăng nhập.<br>2. Đọc các tham số `q`, `verdict`, `language`, `page` từ URL.<br>3. Tải song song thống kê và bảng dữ liệu.<br>[Khi thành công] Hiển thị các thẻ chỉ số và bảng lịch sử.<br>[Khi lỗi] Hiển thị thông báo lỗi và nút thử lại. |
+| 1 | Khởi tạo | Tải màn hình | Đọc tham số URL và tải trang danh sách bài nộp đầu tiên. | Không | Có | `ListMySubmissions` | [Các bước]<br>1. Kiểm tra đăng nhập.<br>2. Đọc các tham số `q`, `verdict`, `language`, `page` từ URL.<br>3. Tải bảng dữ liệu (không còn gọi thống kê, bỏ 2026/10/18, owner).<br>[Khi thành công] Hiển thị thanh lọc, bảng lịch sử và phân trang.<br>[Khi lỗi] Hiển thị thông báo lỗi và nút thử lại. |
 | 2 | Nhập liệu | Nhập tìm kiếm bài | Gõ từ khóa vào ô tìm kiếm bài toán. | Không | Có | `ListMySubmissions` | [Các bước]<br>1. Debounce 400ms.<br>2. Đặt `page = 1`, cập nhật param `q` vào URL.<br>3. Gọi `ListMySubmissions` tải lại bảng.<br>[Khi thành công] Bảng cập nhật danh sách bài khớp từ khóa. Nhấn Enter trong ô tìm kiếm thì toast thông tin báo số lượt nộp tìm thấy (hoặc không có lượt nào); gõ dở thì không toast [Nguồn: 05-coding/frontend/src/views/users/my-submissions/ui/my-submissions-view.tsx:75-78].<br>[Khi lỗi] Hiển thị toast lỗi tải dữ liệu. |
 | 3 | Lọc | Chọn tab Verdict | Bấm chọn một tab verdict (Accepted, WA, TLE...). | Không | Có | `ListMySubmissions` | [Các bước]<br>1. Đặt `page = 1`, cập nhật param `verdict` vào URL.<br>2. Gọi `ListMySubmissions`.<br>[Khi thành công] Bảng chỉ hiện bài nộp đúng verdict đang chọn.<br>[Khi lỗi] Hiển thị toast lỗi tải dữ liệu. |
 | 4 | Lọc | Chọn tab Ngôn ngữ | Bấm chọn một tab ngôn ngữ (Python, Java, C++). | Không | Có | `ListMySubmissions` | [Các bước]<br>1. Đặt `page = 1`, cập nhật param `language` vào URL.<br>2. Gọi `ListMySubmissions`.<br>[Khi thành công] Bảng chỉ hiện bài nộp bằng ngôn ngữ đang chọn.<br>[Khi lỗi] Hiển thị toast lỗi tải dữ liệu. |
@@ -362,7 +370,7 @@ số — cùng quy ước đã chốt ở `02-bd/screens/users/USR0101_problem_l
 | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: |
 | 1 | Kiểm quyền | Phải đăng nhập | [Nội dung kiểm] Học viên chưa đăng nhập không được truy cập lịch sử bài nộp.<br>[Nơi thực thi] Giao diện và API gateway.<br>[Tiêu điểm] Toàn màn. | Lỗi | Chưa có mã thông báo | Nội dung "Vui lòng đăng nhập để xem lịch sử bài nộp." | EVT-1 | 1 |
 | 2 | Kiểm quyền | Giới hạn dữ liệu cá nhân | [Nội dung kiểm] API chỉ quét các bài nộp có `user_id` trùng với ID trong token phiên đăng nhập.<br>[Nơi thực thi] Máy chủ tầng truy vấn.<br>[Tiêu điểm] Toàn màn. | Lỗi | Mã lỗi trong phản hồi | Bảo đảm quyền riêng tư tuyệt đối cho học viên. | EVT-1, EVT-2, EVT-3, EVT-4 | 2 |
-| 3 | Kiểm nhập liệu | Độ dài từ khóa tìm kiếm | [Nội dung kiểm] Cắt gọn chuỗi tìm kiếm tối đa 100 ký tự.<br>[Nơi thực thi] Màn hình.<br>[Tiêu điểm] Viền ô tìm kiếm + toast. | Cảnh báo | Chưa có mã thông báo | Nội dung "Từ khóa tìm kiếm tối đa 100 ký tự." | EVT-2 | 1 |
+| 3 | Kiểm nhập liệu | Độ dài từ khóa tìm kiếm | [Nội dung kiểm] Cắt gọn chuỗi tìm kiếm tối đa 100 ký tự.<br>[Nơi thực thi] Màn hình.<br>[Tiêu điểm] Viền ô tìm kiếm. | Không báo | Không có thông báo | Không hiện toast: `maxLength` của trình duyệt dừng việc nhập ở 100 ký tự là đủ (owner chốt 2026/10/19, ponytail bậc 3). | EVT-2 | 1 |
 | 4 | Kiểm nghiệp vụ | Tham số lọc URL không hợp lệ | [Nội dung kiểm] Nếu người dùng chỉnh tay tham số `verdict` hoặc `language` trên URL thành giá trị lạ, tự động fallback về `ALL`.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Thanh lọc. | Cảnh báo | Không có thông báo | Tránh lỗi làm trắng màn hình khi mở link cũ. | EVT-1 | 3 |
 | 5 | Kiểm nghiệp vụ | Trạng thái nút Phân tích | [Nội dung kiểm] Kiểm tra các dòng có verdict khác `ACCEPTED` không được phép click nút Phân tích AI.<br>[Nơi thực thi] Màn hình.<br>[Tiêu điểm] Nút Phân tích. | Cảnh báo | Không có thông báo | Tuân thủ nghiêm ngặt quy tắc F5-01. | EVT-7 | 1 |
 
@@ -372,10 +380,11 @@ số — cùng quy ước đã chốt ở `02-bd/screens/users/USR0101_problem_l
 
 | # | Câu hỏi | Vì sao chưa trả lời được | Đề xuất | Chủ sở hữu |
 | :-: | :--- | :--- | :--- | :--- |
-| Q1 | **Chỉ số "Đúng ngay lần đầu" tính toán realtime hay lưu trong read model?** | Tính toán realtime bằng cách quét toàn bộ bài nộp trong lịch sử có thể tốn tài nguyên khi người học có hàng nghìn lượt nộp | Lưu thêm cột `first_try_accepted_count` trong bảng `identity.user_submission_stats` để đọc tức thì O(1) | BD Database `identity` |
-| Q2 | **Có hỗ trợ lọc theo khoảng thời gian nộp bài không (ví dụ: tuần này, tháng này)?** | Prototype chỉ có bộ lọc Verdict và Ngôn ngữ, chưa có DatePicker | Ở phiên bản đầu giữ nguyên bộ lọc theo prototype; bổ sung bộ lọc thời gian khi có phản hồi của người học | Chủ dự án |
-| Q3 | **Có cho phép học viên xóa hoặc ẩn một lượt nộp bài không?** | RD F1-18 và F4 không nhắc tới quyền xóa bài nộp; việc xóa bài nộp sẽ làm sai lệch chỉ số AC rate và tiến độ học tập | Nghiêm cấm xóa bài nộp để đảm bảo tính toàn vẹn và chống gian lận | Chủ dự án + Security |
-| Q4 | **Thẻ "Dùng nhiều nhất" (ngôn ngữ) tính trực tiếp trên `judge.submissions` mỗi lần tải màn có chấp nhận được không?** | Không có cột read model nào lưu sẵn ngôn ngữ dùng nhiều nhất — khác ba chỉ số còn lại đã có cột trong `identity.user_submission_stats` [Nguồn: 02-bd/database/identity.md:114]. Quét `GROUP BY language` trên toàn bộ lịch sử của một học viên có hàng nghìn lượt nộp có thể chậm dần theo thời gian | Thêm cột `top_language`, `top_language_count` vào `identity.user_submission_stats`, cập nhật cùng lúc với `total_submissions` qua domain event, cùng cơ chế đã dùng cho `first_try_accepted_count` | BD Database `identity` |
+| Q1 | **(Đã đóng 2026/10/18 — không còn đối tượng)** Chỉ số "Đúng ngay lần đầu" tính realtime hay lưu trong read model? | Thẻ thống kê đã bỏ khỏi màn theo quyết định owner, màn không còn hiển thị chỉ số này. Câu hỏi về read model `first_try_accepted_count` vẫn thuộc `identity` / màn tiến độ `USR0501` nếu chỉ số được dùng ở đó | Rút lại ở màn này; không xoá để giữ số thứ tự | BD Database `identity` |
+| Q2 | ~~**Có hỗ trợ lọc theo khoảng thời gian nộp bài không (ví dụ: tuần này, tháng này)?**~~ **Đã chốt 2026-10-18 (owner), theo đề xuất.** | ~~Prototype chỉ có bộ lọc Verdict và Ngôn ngữ, chưa có DatePicker~~ | **Quyết định:** phiên bản đầu không có bộ lọc khoảng ngày; giữ tìm kiếm, Verdict và Ngôn ngữ. Ponytail bậc 3 (không demo nào cần). Bổ sung khi có phản hồi của người học | Chủ dự án |
+| Q3 | ~~**Có cho phép học viên xóa hoặc ẩn một lượt nộp bài không?**~~ **Đã chốt 2026-10-18 (owner), theo đề xuất.** | ~~RD F1-18 và F4 không nhắc tới quyền xóa bài nộp~~ | **Quyết định:** không bao giờ xoá hay ẩn lượt nộp (xoá làm sai chỉ số AC rate và tiến độ, mở đường gian lận). Ponytail bậc 6 (bảo toàn dữ liệu). Màn không có nút xoá/ẩn, API không có thao tác ghi nào trên lượt nộp | Chủ dự án + Security |
+| Q4 | **(Đã đóng 2026/10/18 — không còn đối tượng)** Thẻ "Dùng nhiều nhất" (ngôn ngữ) tính trực tiếp trên `judge.submissions` có chấp nhận được không? | Thẻ đã bỏ khỏi màn nên không còn truy vấn `GROUP BY language` ở đây. Nếu chỉ số này cần ở nơi khác thì xét lại ở màn đó (`03-dd/api/identity.md:140` đã có ngôn ngữ dùng nhiều nhất trong `GET /api/v1/identity/me/progress/summary`) | Rút lại ở màn này; không xoá để giữ số thứ tự | BD Database `identity` |
+| Q5 | **(Đã chốt 2026/10/18, owner, phương án (a))** Lệch RD: F1-07 (tỉ lệ chấp thuận) không hiển thị trên màn này — giữ bỏ hay khôi phục? | Trước đây RD yêu cầu hiển thị chỉ số tổng (REQ-01) còn owner đã bỏ dải thống kê. Nay RD đã sửa: REQ-01 đã chuyển, mục 2 khối 1 ghi dải đã bỏ, thêm Q3 đã chốt [Nguồn: 01-rd/screens/users/USR0202_my_submissions.md:32,100,108] | Giữ bỏ: F1-07 hiển thị ở `USR0501`, Khu vực A NO 3 "Tỉ lệ AC" [Nguồn: 02-bd/screens/users/USR0501_my_progress.md:295]; không khôi phục dòng chữ tỉ lệ AC ở `PageHeader` (phương án (b) không chọn) | Owner (đã chốt) |
 
 ---
 
@@ -383,7 +392,7 @@ số — cùng quy ước đã chốt ở `02-bd/screens/users/USR0101_problem_l
 
 - `01-rd/screens/users/USR0202_my_submissions.md` — Yêu cầu màn hình.
 - `09-layoutBase/Bài đã nộp.dc.html` — Bằng chứng bố cục prototype.
-- `01-rd/req/identity.md` — F1-07, F1-18.
+- `01-rd/req/identity.md` — F1-18 (F1-07 chuyển sang `02-bd/screens/users/USR0501_my_progress.md`).
 - `01-rd/req/judge-orchestration.md` — F4-01→F4-08.
 - `01-rd/req/ai-review.md` — F5-01.
 - `02-bd/_rules/bd-template-9sheet.md` — Quy ước mẫu 9 sheet.

@@ -16,12 +16,15 @@ test("only the three in-scope AI features are shown", async ({ page }) => {
     "Phân tích bài giải",
     "Phỏng vấn giả lập",
     "Sinh testcase",
+    "Chấm câu luyện",
   ]) {
     await expect(page.getByText(feature).first()).toBeVisible();
   }
   // "Gợi ý" must not survive anywhere — legend, column label or subtitle.
   await expect(page.getByText(/gợi ý/i)).toHaveCount(0);
-  await expect(page.getByText("Phân tích và phỏng vấn cộng lại")).toBeVisible();
+  await expect(
+    page.getByText("Phân tích, phỏng vấn và sinh testcase cộng lại"),
+  ).toBeVisible();
 });
 
 test("the anomaly notice warns without claiming the account was locked", async ({
@@ -33,6 +36,41 @@ test("the anomaly notice warns without claiming the account was locked", async (
   const notice = page.getByText("Một tài khoản dùng bất thường").locator("..");
   await expect(notice).toContainText("hệ thống không tự khoá");
   await expect(notice.getByRole("button")).toHaveCount(0);
+});
+
+test("only items with a source remain: no export button, no testcase-cost notice, no stale footnote", async ({
+  page,
+}) => {
+  await page.goto("/admin/ai-usage");
+
+  await expect(page.getByRole("button", { name: "Xuất báo cáo" })).toHaveCount(
+    0,
+  );
+  await expect(
+    page.getByText("Prompt sinh testcase tốn hơn dự kiến"),
+  ).toHaveCount(0);
+  await expect(page.getByText("Sửa giới hạn tại màn Cấu hình AI")).toHaveCount(
+    0,
+  );
+  // The two alerts that have a data source stay.
+  await expect(page.getByText("Sắp cạn hạn mức")).toBeVisible();
+  await expect(page.getByText("Một tài khoản dùng bất thường")).toBeVisible();
+});
+
+test("the budget panel follows the cap and the lock set on the limits screen", async ({
+  page,
+}) => {
+  await page.goto("/admin/ai-limits");
+  await page.getByLabel("Hạn mức token tháng").fill("30000000");
+  await page.getByRole("button", { name: "Lưu hạn mức" }).click();
+  await page.getByRole("link", { name: "Xem tiêu thụ token" }).click();
+
+  await expect(page.getByText("Đã dùng 38,4 tr trong 30,0 tr")).toBeVisible();
+  await expect(page.getByText("Đã khoá tự động")).toBeVisible();
+  await expect(page.getByText("Dự kiến hết 28/08")).toHaveCount(0);
+  // The "running out" notice would contradict a budget that is already locked.
+  await expect(page.getByText("Sắp cạn hạn mức")).toHaveCount(0);
+  await expect(page.getByText("Ngân sách đã khoá")).toBeVisible();
 });
 
 test("range switch changes how many days the chart plots", async ({ page }) => {

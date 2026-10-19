@@ -101,14 +101,19 @@
 ### AC-20 — Tham gia lớp trùng lặp (idempotent, BR-09)
 - **Tiền điều kiện**: học viên đã ở trong lớp.
 - **Hành động**: `POST /classes/join` lại với mã hợp lệ của cùng lớp.
-- **Kết quả mong đợi**: `200`, không tạo dòng `class_enrollments` thứ hai.
+- **Kết quả mong đợi**: `200`, không tạo dòng `class_enrollments` thứ hai, `left_at` vẫn NULL.
 
-### AC-21 — Gỡ học viên phát sự kiện, không đụng schema khác (BR-11)
-- **Hành động**: `DELETE /classes/{classId}/students/{studentId}` bởi đúng giảng viên sở hữu lớp.
-- **Kết quả mong đợi**: `200`, dòng `class_enrollments` bị xoá, message `StudentRemovedFromClass` được publish; `identity` không có câu lệnh nào ghi vào schema `judge`.
+### AC-20b — Vào lại lớp bằng mã mời sau khi đã bị gỡ (BR-09, ĐÃ CHỐT 2026-10-14 DEC-2026-1014-class-leave-details)
+- **Tiền điều kiện**: học viên đã bị gỡ khỏi lớp (dòng `class_enrollments` có `left_at` khác rỗng); có mã mời còn hạn của lớp đó.
+- **Hành động**: `POST /classes/join` với mã hợp lệ.
+- **Kết quả mong đợi**: `200`; dòng `class_enrollments` cũ được dùng lại, `left_at` = NULL, `joined_at` giữ nguyên; tổng số dòng của cặp (lớp, học viên) vẫn là 1; học viên xuất hiện lại trong danh sách học viên của lớp và được tính lại vào tổng số, tiến độ, số lượt nộp và tỉ lệ AC của `INS0202`; lịch sử làm bài cũ còn nguyên.
+
+### AC-21 — Học viên rời lớp (gỡ): phát sự kiện, không đụng schema khác (BR-11)
+- **Hành động**: ĐÃ CHỐT 2026-10-14 (DEC-2026-1014-class-leave-details): `POST /classes/{classId}/students/{studentId}/leave` ~~`DELETE /classes/{classId}/students/{studentId}`~~ bởi đúng giảng viên sở hữu lớp.
+- **Kết quả mong đợi**: `200`, ĐÃ ĐỔI 2026-10-14 (DEC-2026-1014-keep-learning-history-on-leave): dòng `class_enrollments` còn nguyên và có `left_at` khác rỗng, lượt nộp của học viên không bị xoá, ~~dòng `class_enrollments` bị xoá~~; message `StudentRemovedFromClass` được publish; `identity` không có câu lệnh nào ghi vào schema `judge`.
 
 ### AC-22 — Gỡ học viên bởi giảng viên không sở hữu lớp
-- **Hành động**: giảng viên B gọi `DELETE` trên lớp của giảng viên A.
+- **Hành động**: giảng viên B gọi `POST .../leave` (ĐÃ CHỐT 2026-10-14, DEC-2026-1014-class-leave-details; ~~`DELETE`~~) trên lớp của giảng viên A.
 - **Kết quả mong đợi**: `403`.
 
 ### AC-23 — Phân loại "Vắng bài" theo cửa sổ trượt 7 ngày (BR-10)

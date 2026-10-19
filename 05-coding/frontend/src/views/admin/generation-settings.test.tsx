@@ -17,7 +17,9 @@ vi.mock("@/shared/i18n", () => ({
   useLocale: () => "vi",
 }));
 
-import { AdminAiConfigView } from "./ai-config";
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
+
+import { AdminAiLimitsView } from "./ai-limits";
 import { AdminLanguageConfigView } from "./language-config";
 
 function withQuery(ui: ReactElement) {
@@ -32,9 +34,9 @@ afterEach(() => {
   act(() => toast.clear());
 });
 
-describe("per-problem generation cap on the AI config screen", () => {
+describe("per-problem generation cap on the AI limits screen", () => {
   it("starts at 2 and the stepper moves the shared setting within 1 to 10", () => {
-    render(<AdminAiConfigView />);
+    render(<AdminAiLimitsView />);
     expect(aiGenerationSettings.get().maxPerProblem).toBe(2);
 
     fireEvent.click(
@@ -59,6 +61,8 @@ describe("generator script limits on the language config screen", () => {
   it("rejects a run time outside 1 to 300 seconds and an output size outside 1 to 1024 MB", async () => {
     const toasts = renderHook(() => useToasts());
     render(withQuery(<AdminLanguageConfigView />));
+    // The generator limits sit on the second tab.
+    fireEvent.click(await screen.findByRole("button", { name: "tabAdvanced" }));
     await screen.findByText("Python");
 
     fireEvent.change(screen.getByLabelText("generator.runtime.label"), {
@@ -86,6 +90,7 @@ describe("generator script limits on the language config screen", () => {
 
   it("shows Python as the fixed script language with the BD default limits", async () => {
     render(withQuery(<AdminLanguageConfigView />));
+    fireEvent.click(await screen.findByRole("button", { name: "tabAdvanced" }));
     await screen.findByText("Python");
     expect(screen.getByText("Python")).toBeInTheDocument();
     expect(screen.getByLabelText("generator.runtime.label")).toHaveValue(30);

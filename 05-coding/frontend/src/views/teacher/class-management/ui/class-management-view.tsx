@@ -7,7 +7,8 @@
 // per-class view is one click away.
 //
 // Layout theo 09-layoutBase/Giáo viên - Lớp của tôi.dc.html: header + nút "+ Tạo lớp mới"
-// (:115-121), lưới thẻ lớp (:136-157, dữ liệu :260-265).
+// (:115-121). The class grid of the mockup (:136-157) became a LIST (a table inside a card, search on
+// top, icon actions per row) on 2026-10-11 by owner instruction, like the other list screens.
 //
 // Layout follows 02-bd/screens/teacher/INS0201_class_management.md Sheet 4.4 for the rest of the
 // structure (header row, 4 stat cards, class card grid, student table with class tabs).
@@ -17,47 +18,143 @@
 // does not justify adding it).
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Eye, Pencil, Trash2 } from "lucide-react";
 import {
   useCreateClass,
-  useCreateInviteCode,
   useDeleteClass,
   useInstructorClasses,
-  useInviteCodes,
+  formatClassSchedule,
   useUpdateClass,
   type ClassSummary,
 } from "@/entities/class";
+import { ClassFormDialog, type ClassDialogState } from "@/features/edit-class";
 import { useT } from "@/shared/i18n";
-import { toast, toastFirstError } from "@/shared/lib/toast-store";
+import { toast } from "@/shared/lib/toast-store";
 import {
-  Badge,
   Button,
   Card,
   ConfirmDialog,
-  Modal,
+  DataTable,
+  FilterBar,
+  IconAction,
   PageHeader,
   ProgressBar,
-  TextField,
+  type DataTableColumn,
 } from "@/shared/ui";
-
-type ClassDialog =
-  { mode: "create" } | { mode: "edit"; target: ClassSummary } | null;
 
 export function ClassManagementView() {
   const t = useT("classManagement");
   const classesQuery = useInstructorClasses();
-  const classes = classesQuery.data ?? [];
+  const classes = useMemo(() => classesQuery.data ?? [], [classesQuery.data]);
 
-  const [formDialog, setFormDialog] = useState<ClassDialog>(null);
-  const [inviteClassId, setInviteClassId] = useState<string | null>(null);
+  const [formDialog, setFormDialog] = useState<ClassDialogState>(null);
+  const router = useRouter();
   const [deleteTarget, setDeleteTarget] = useState<ClassSummary | null>(null);
 
   const createClass = useCreateClass();
   const updateClass = useUpdateClass();
   const deleteClass = useDeleteClass();
 
+  const dayLabel = (day: number) => t(`schedule.dayShort.${day}`);
+  const [search, setSearch] = useState("");
+  const rows = useMemo(() => {
+    const needle = search.trim().toLowerCase();
+    return classes.filter(
+      (klass) => !needle || klass.name.toLowerCase().includes(needle),
+    );
+  }, [classes, search]);
+
   const totalStudents = classes.reduce((sum, c) => sum + c.studentCount, 0);
+
+  const columns: DataTableColumn<ClassSummary>[] = [
+    {
+      key: "name",
+      header: t("classList.col.name"),
+      render: (klass) => (
+        <span className="block min-w-0">
+          <Link
+            href={`/instructor/classes/${klass.id}`}
+            className="block font-semibold hover:underline"
+          >
+            {klass.name}
+          </Link>
+          {formatClassSchedule(klass.schedule, dayLabel) ? (
+            <span className="block text-[12px] text-[var(--color-text-muted)]">
+              {formatClassSchedule(klass.schedule, dayLabel)}
+            </span>
+          ) : null}
+        </span>
+      ),
+    },
+    {
+      key: "studentCount",
+      header: t("classList.col.studentHeader"),
+      align: "right",
+      render: (klass) => (
+        <span className="font-mono">{klass.studentCount}</span>
+      ),
+    },
+    {
+      key: "completion",
+      header: t("classList.col.completionBar"),
+      render: (klass) => (
+        <span className="flex min-w-[120px] items-center gap-2">
+          <ProgressBar
+            fill="var(--instructor-progress-fill, var(--color-admin-teal))"
+            value={klass.completionPct}
+            label={t("classList.col.completionBar")}
+            className="flex-1"
+          />
+          <span className="w-9 text-right text-[12.5px] text-[var(--color-text-muted)]">
+            {klass.completionPct}%
+          </span>
+        </span>
+      ),
+    },
+    {
+      key: "avgScore",
+      header: t("classList.col.avgScore"),
+      align: "right",
+      render: (klass) => klass.avgScore ?? "-",
+    },
+    {
+      key: "absentCount",
+      header: t("classList.col.absentCount"),
+      align: "right",
+      render: (klass) => klass.absentCount,
+    },
+    {
+      key: "actions",
+      header: "",
+      align: "right",
+      render: (klass) => (
+        <div className="flex justify-end gap-1.5">
+          <IconAction
+            icon={Eye}
+            label={t("btnViewDetail")}
+            ariaLabel={t("btnViewDetailOf", { name: klass.name })}
+            href={`/instructor/classes/${klass.id}`}
+          />
+          <IconAction
+            icon={Pencil}
+            label={t("classList.col.menuEdit")}
+            ariaLabel={t("classList.col.menuEditOf", { name: klass.name })}
+            onClick={() => setFormDialog({ mode: "edit", target: klass })}
+          />
+          <IconAction
+            icon={Trash2}
+            tone="danger"
+            label={t("classList.col.menuDelete")}
+            ariaLabel={t("classList.col.menuDeleteOf", { name: klass.name })}
+            onClick={() => setDeleteTarget(klass)}
+          />
+        </div>
+      ),
+    },
+  ];
 
   return (
     <div>
@@ -82,110 +179,68 @@ export function ClassManagementView() {
           chấm tay, điểm TB — is already the stat strip of instructor_overview, and repeating it on
           each screen pushed the actual worklist below the fold. These screens now open straight on
           their list + filter bar. Deliberate divergence from the mockup's own per-screen strip. */}
-      <div className="mb-4 grid gap-3.5 [grid-template-columns:repeat(auto-fit,minmax(300px,1fr))]">
-        {classesQuery.isLoading
-          ? Array.from({ length: 3 }, (_, i) => (
-              <Card key={i} className="h-40 animate-pulse" title="">
-                {null}
-              </Card>
-            ))
-          : classes.map((klass) => (
-              <Card
-                key={klass.id}
-                title={klass.name}
-                description={klass.scheduleNote}
-                action={
-                  <Badge variant="blue">
-                    {t("classList.col.studentCount", {
-                      count: klass.studentCount,
-                    })}
-                  </Badge>
-                }
-              >
-                <ProgressBar
-                  fill="var(--instructor-progress-fill, var(--color-admin-teal))"
-                  value={klass.completionPct}
-                  label={t("classList.col.completionBar")}
-                  className="mb-2"
-                />
-                <p className="mb-3 text-[12.5px] text-[var(--color-text-muted)]">
-                  {klass.completionPct}%
-                </p>
-                <div className="mb-3 flex gap-4 text-[12.5px] text-[var(--color-text-muted)]">
-                  <span>
-                    {t("classList.col.avgScore")}: {klass.avgScore ?? "-"}
-                  </span>
-                  <span>
-                    {t("classList.col.pendingGrading")}: {klass.pendingGrading}
-                  </span>
-                  <span>
-                    {t("classList.col.absentCount")}: {klass.absentCount}
-                  </span>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  <Button variant="ghost" size="sm" asChild>
-                    <Link href={`/instructor/students?classId=${klass.id}`}>
-                      {t("btnViewStudents")}
-                    </Link>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() =>
-                      setFormDialog({ mode: "edit", target: klass })
-                    }
-                  >
-                    {t("classList.col.menuEdit")}
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setInviteClassId(klass.id)}
-                  >
-                    {t("classList.col.menuInvite")}
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-[var(--color-admin-negative)]"
-                    onClick={() => setDeleteTarget(klass)}
-                  >
-                    {t("classList.col.menuDelete")}
-                  </Button>
-                </div>
-              </Card>
-            ))}
-      </div>
+      <Card>
+        <FilterBar
+          search={{
+            label: t("classList.search"),
+            placeholder: t("classList.search"),
+            value: search,
+            onChange: setSearch,
+          }}
+          resultCount={t("classList.resultCount", {
+            shown: rows.length,
+            total: classes.length,
+          })}
+        />
+        <DataTable
+          caption={t("header.title")}
+          columns={columns}
+          rows={rows}
+          rowKey={(row) => row.id}
+          status={
+            classesQuery.isLoading
+              ? "loading"
+              : classesQuery.isError
+                ? "error"
+                : "ready"
+          }
+          emptyMessage={t("classList.empty")}
+          minWidth={860}
+        />
+      </Card>
 
       <ClassFormDialog
+        key={
+          formDialog === null
+            ? "closed"
+            : formDialog.mode === "edit"
+              ? formDialog.target.id
+              : "create"
+        }
         dialog={formDialog}
         onClose={() => setFormDialog(null)}
         onSubmit={(form) => {
-          const done = {
-            onSuccess: () =>
-              toast.success(
-                t(
-                  formDialog?.mode === "edit"
-                    ? "toast.updated"
-                    : "toast.created",
-                  {
-                    name: form.name,
-                  },
-                ),
-              ),
-            onError: () => toast.error(t("toast.failed")),
-          };
-          if (formDialog?.mode === "edit")
-            updateClass.mutate({ id: formDialog.target.id, form }, done);
-          else createClass.mutate(form, done);
+          const onError = () => toast.error(t("toast.failed"));
+          if (formDialog?.mode === "edit") {
+            updateClass.mutate(
+              { id: formDialog.target.id, form },
+              {
+                onSuccess: () =>
+                  toast.success(t("toast.updated", { name: form.name })),
+                onError,
+              },
+            );
+          } else {
+            createClass.mutate(form, {
+              onSuccess: (created) => {
+                toast.success(t("toast.created", { name: form.name }));
+                router.push(`/instructor/classes/${created.id}`);
+              },
+              onError,
+            });
+          }
           setFormDialog(null);
         }}
-        t={t}
-      />
-
-      <InviteCodeDialog
-        classId={inviteClassId}
-        onClose={() => setInviteClassId(null)}
         t={t}
       />
 
@@ -210,128 +265,5 @@ export function ClassManagementView() {
         {t("popup.deleteClassBody")}
       </ConfirmDialog>
     </div>
-  );
-}
-
-function ClassFormDialog({
-  dialog,
-  onClose,
-  onSubmit,
-  t,
-}: {
-  dialog: ClassDialog;
-  onClose: () => void;
-  onSubmit: (form: {
-    name: string;
-    description?: string;
-    scheduleNote?: string;
-  }) => void;
-  t: ReturnType<typeof useT>;
-}) {
-  const editing = dialog?.mode === "edit" ? dialog.target : null;
-  const [name, setName] = useState(editing?.name ?? "");
-  const [scheduleNote, setScheduleNote] = useState(editing?.scheduleNote ?? "");
-  const [touched, setTouched] = useState(false);
-
-  if (!dialog) return null;
-
-  const nameInvalid = touched && !name.trim();
-  function submit() {
-    setTouched(true);
-    if (!name.trim()) {
-      toastFirstError([t("validation.nameRequired")]);
-      return;
-    }
-    onSubmit({
-      name: name.trim(),
-      scheduleNote: scheduleNote.trim() || undefined,
-    });
-  }
-
-  return (
-    <Modal
-      open
-      onClose={onClose}
-      title={
-        dialog.mode === "create"
-          ? t("popup.createClassTitle")
-          : t("popup.editClassTitle")
-      }
-      footer={
-        <>
-          <Button variant="ghost" size="sm" onClick={onClose}>
-            {t("cancel")}
-          </Button>
-          <Button size="sm" onClick={submit}>
-            {t("popup.saveClass")}
-          </Button>
-        </>
-      }
-    >
-      <div className="flex flex-col gap-3">
-        <TextField
-          label={t("popup.classNameLabel")}
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-          invalid={nameInvalid}
-        />
-        <TextField
-          label={t("popup.scheduleLabel")}
-          value={scheduleNote}
-          onChange={(e) => setScheduleNote(e.target.value)}
-        />
-      </div>
-    </Modal>
-  );
-}
-
-function InviteCodeDialog({
-  classId,
-  onClose,
-  t,
-}: {
-  classId: string | null;
-  onClose: () => void;
-  t: ReturnType<typeof useT>;
-}) {
-  const invitesQuery = useInviteCodes(classId ?? "", classId !== null);
-  const createInvite = useCreateInviteCode();
-
-  if (!classId) return null;
-
-  return (
-    <Modal
-      open
-      onClose={onClose}
-      title={t("popup.inviteCodeTitle")}
-      footer={
-        <Button
-          size="sm"
-          onClick={() =>
-            createInvite.mutate(classId, {
-              onSuccess: () => toast.success(t("toast.inviteCreated")),
-              onError: () => toast.error(t("toast.failed")),
-            })
-          }
-        >
-          {t("popup.createInviteCode")}
-        </Button>
-      }
-    >
-      <ul className="flex flex-col gap-2">
-        {(invitesQuery.data ?? []).map((invite) => (
-          <li
-            key={invite.id}
-            className="flex items-center justify-between rounded-lg border border-[var(--color-border)] px-3 py-2"
-          >
-            <span className="font-mono font-semibold">{invite.code}</span>
-            <span className="text-[12px] text-[var(--color-text-muted)]">
-              {invite.expiresAtLabel}
-            </span>
-          </li>
-        ))}
-      </ul>
-    </Modal>
   );
 }

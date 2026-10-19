@@ -71,6 +71,7 @@
 - Bấm xoá → `status = DEACTIVATED` ngay, mọi Access Token đang có bị coi là hết hiệu lực từ lần kiểm
   quyền tiếp theo (kiểm `status` mỗi request, không chỉ dựa `exp` của JWT) — ngăn dùng token cũ trong
   15 phút còn lại sau khi tự xoá.
+- Trong 30 ngày ân hạn, đăng nhập đúng thông tin vào tài khoản `DEACTIVATED` không cấp phiên làm việc đầy đủ mà chỉ mở banner khôi phục (`RestoreDeactivatedAccount`, `02-bd/screens/shared/SHR0101_auth.md` Khu vực E); người dùng bấm huỷ yêu cầu xoá thì `status` về `ACTIVE` (`DEC-2026-1018-account-deletion-grace-cancel`, 2026-10-18).
 - Job định kỳ (sau 30 ngày ân hạn) ẩn danh hoá `email`/`display_name`, giữ nguyên `id` và mọi bảng liên
   quan ở module khác — không cascade xoá, đúng nguyên tắc "không phá vỡ thống kê lớp" (`identity.md`
   dòng 200-202).

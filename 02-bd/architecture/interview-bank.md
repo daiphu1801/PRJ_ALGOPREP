@@ -146,14 +146,11 @@ AnswerFeedbackPort.compareAnswer(SystemInstruction, ReferenceRubric, UserAnswerT
 Ba tham số **tách rời tường minh ở chữ ký port** — cùng nguyên tắc chống prompt injection đã áp dụng ở
 `ai-review` (mục 5 dưới). Adapter `SpringAiFeedbackAdapter` implement port này bằng `ChatClient` của
 Spring AI — **cùng công nghệ nền (Spring AI) nhưng là một adapter Java riêng biệt**, cấu hình
-system-instruction/rate-limit/token-budget độc lập với `ai-review`.
+system-instruction và rate-limit độc lập với `ai-review`. **Token-budget thì dùng chung** (2026-10-11, `DEC-2026-1011-ai-practice-feedback-in-shared-budget`): trước mỗi lần gọi phải hỏi `ai-review` qua cổng xem ngân sách còn không, gọi xong ghi token với `feature_code = PRACTICE_FEEDBACK`. Cổng này là cổng ra mới của `interview-bank`, DD định nghĩa chữ ký.
 
 ### 3.2. Outbound port — xác định quyền A2 (từ `identity`) — đã đóng 2026-09-13
 
-`ClassScopeQueryPort` — tên đề xuất trùng với port đã nêu ở `02-bd/security/ai-review.md` mục 6
-(`[SoT: Suy luận]`, module đó cũng cần tra `identity.class_enrollments` cho F5-27). **Đề xuất tái dùng
-cùng một outbound port do `identity` phơi ra**, không mỗi module tự định nghĩa một cổng đọc phạm vi lớp
-tương đương — chốt tên/chữ ký cụ thể khi `identity`, `ai-review`, `interview-bank` cùng vào DD.
+`ClassScopeQueryPort` — tên đề xuất do `identity` phơi ra (`[SoT: Suy luận]`). Từ 2026-10-13 `ai-review` không còn dùng port này (chấm tay F5-27 đã bỏ, `DEC-2026-1013-remove-instructor-manual-grading`); chốt tên/chữ ký cụ thể khi `identity` và `interview-bank` vào DD.
 
 ```
 ClassScopeQueryPort.getManagedClassIds(userId) -> List<ClassId>
@@ -167,8 +164,7 @@ sửa **toàn bộ** kho câu hỏi hệ thống (không chia theo lớp phụ t
   database) chỉ ghi ai tạo để hiển thị/audit, **không** dùng làm điều kiện lọc quyền sửa.
 - `ClassScopeQueryPort` ở đây **chỉ dùng để xác định A2 có phụ trách ít nhất một lớp** (điều kiện để có
   quyền `INTERVIEW_BANK_MANAGEMENT` nói chung, tương tự cách F1-12 gán Function theo vai trò), **không**
-  dùng để lọc phạm vi câu hỏi theo lớp cụ thể như cách `ai-review` dùng cho F5-27 — hai module dùng port
-  cùng tên nhưng khác mục đích lọc, cần ghi rõ khi cả hai vào DD để tránh nhầm.
+  dùng để lọc phạm vi câu hỏi theo lớp cụ thể.
 
 ### 3.3. Không có phụ thuộc ngược
 
@@ -199,7 +195,7 @@ nào ở luồng này liên quan tới rubric.
 Học viên mở một câu hỏi ĐÃ CÓ rubric (câu thiếu rubric bị ẩn khỏi danh sách chọn ở luồng này — F6-08)
   -> viết câu trả lời (tự do, không giới hạn cấu trúc)
   -> bấm Nộp
-       -> kiểm rate limit (Redis, mục 6)
+       -> kiểm rate limit (Redis, mục 6) và ngân sách token chung (cổng sang `ai-review`; khoá thì bỏ qua phản hồi AI, vẫn lưu câu trả lời)
        -> AnswerFeedbackPort.compareAnswer(
             SystemInstruction (cố định, đã bao gồm câu chặn injection — mục 5),
             ReferenceRubric (đọc từ answer_rubrics của CHÍNH câu hỏi này),
@@ -291,7 +287,7 @@ tắc `bd-generation` "không phải module nào cũng cần cả 4 file, không
 - ~~`question_set` giữ ở mức nào~~ — **đã đóng 2026-09-13: bỏ hẳn**, xem mục 2.2.
 - ~~`ClassScopeQueryPort` dùng để làm gì chính xác~~ — **đã đóng 2026-09-13**, xem mục 3.2.
 - **Tên/chữ ký chính xác `AnswerFeedbackPort`, `ClassScopeQueryPort`** — chốt cùng `identity` khi cả hai
-  vào DD; cân nhắc port `identity` dùng chung với `ai-review` mục 3.2 của `02-bd/security/ai-review.md`.
+  vào DD.
 - **Công thức spaced repetition** (mục 6) — BD đề xuất biến thể SM-2 đơn giản, RD chưa chốt công thức
   chính xác, cần chủ dự án xác nhận hệ số nhân (đề xuất ×2.0) và trần khoảng cách (đề xuất 60 ngày).
 - **`feedback_prompt_templates` có cần bảng riêng có phiên bản** như `prompt_templates` của `ai-review`,

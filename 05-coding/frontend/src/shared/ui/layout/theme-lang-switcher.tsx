@@ -144,8 +144,10 @@ export function ThemeLangSwitcher({
       // re-measured after the 2026-09-16 padding pass: 72px rail with p-3 leaves 48px of content,
       // while two 24px circles plus gap-1 need 52px. Measured 2026-09-17 (Playwright bounding box):
       // the group started 9.5px from the rail edge instead of 12px, eating 2.5px of the gutter on
-      // each side. 20px circles with a 2px gap need 42px and leave real slack.
-      stacked ? "h-5 w-5 text-[10px]" : "h-6 w-6 text-[10.5px]",
+      // each side. The rail now stacks VI over EN instead (admin UX review F6, 2026-10-14): side by
+      // side, 20px circles touching each other were under the 24px target minimum.
+      "h-6 w-6",
+      stacked ? "text-[10px]" : "text-[10.5px]",
       active
         ? cn(
             "bg-[var(--color-primary)] text-[var(--color-on-primary)]",
@@ -197,7 +199,7 @@ export function ThemeLangSwitcher({
       <div
         role="group"
         aria-label={t("languageSwitcher")}
-        className={cn("flex items-center", stacked ? "gap-0.5" : "gap-1")}
+        className={cn("flex items-center gap-1", stacked && "flex-col")}
       >
         {locales.map((candidate) => (
           <button

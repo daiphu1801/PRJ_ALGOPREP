@@ -457,7 +457,14 @@ function InterviewQuestionManagementForm({
 
         <BulkActionBar
           count={selected.size}
-          label={t("selectionLabel", { count: selected.size })}
+          label={
+            hiddenSelectedCount > 0
+              ? t("selectionLabelHidden", {
+                  count: selected.size,
+                  hidden: hiddenSelectedCount,
+                })
+              : t("selectionLabel", { count: selected.size })
+          }
         >
           {/* Bulk delete only. There is no duplicate action anywhere on this list (owner, 2026-10-08). */}
           <Button

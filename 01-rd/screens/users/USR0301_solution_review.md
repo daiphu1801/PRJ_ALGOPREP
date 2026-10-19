@@ -120,8 +120,10 @@ Hai chế độ hiển thị không đổi hành vi nghiệp vụ, chỉ đổi 
   chưa viết).
 - Hợp đồng API (yêu cầu phân tích, lấy lại báo cáo đã lưu) và lược đồ JSON chi tiết của báo cáo — thuộc DD
   (`03-dd/api/ai-review.md`, chưa viết).
-- Cơ chế cache theo hash mã nguồn (F5-20), rate limit (F5-19), ngân sách token (F5-25), cấu hình prompt/rubric
-  (F5-23) — thuộc logic của `ai-review`, không thuộc file theo trục màn này.
+- Cơ chế cache theo hash mã nguồn (F5-20), rate limit (F5-19), ngân sách token (F5-25), cấu hình prompt
+  (F5-23; ~~rubric~~ ĐÃ BỎ 2026-10-14, DEC-2026-1014-drop-admin-rubric-config: ~~năm tiêu chí của báo cáo là cố định theo
+  phiên bản lược đồ F5.1, admin không cấu hình~~ ĐÃ BỎ 2026-10-14 (DEC-2026-1014-drop-solution-review-rubric): báo cáo
+  không còn năm thẻ tiêu chí, không còn rubric chấm bài giải nào) — thuộc logic của `ai-review`, không thuộc file theo trục màn này.
 - Nội dung và bố cục của `mock_interview` (đích của nút "Phỏng vấn về bài này") và của `problem_detail`
   (đích của nút "Áp bản đề xuất trong Workspace") — thuộc các file RD riêng của chúng.
 - Chi tiết trình bày cụ thể của khối "Kiến thức nên ôn" (số lượng liên kết, bố cục) và của hai trạng thái

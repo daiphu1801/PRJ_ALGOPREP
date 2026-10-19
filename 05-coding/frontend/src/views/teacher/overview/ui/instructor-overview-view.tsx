@@ -1,334 +1,379 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 //
-// Layout theo 09-layoutBase/Giáo viên - Tổng quan.dc.html: thanh công cụ tìm lớp/học viên/bài tập +
-// nút "+ Tạo lớp mới" + avatar (dòng 115-125), dải 4 thẻ thống kê (dòng 127-138), hai khối "Cần chấm
-// tay" (dòng 140-158) và "Hoạt động gần đây" (dòng 160-174) xếp hai cột, khối "Lớp của tôi" full
-// width (dòng 177-196), hai khối "Tiến độ học viên" (dòng 198-213) và "Bài tập của tôi" (dòng
-// 215-231) xếp hai cột [SoT: 01-rd/screens/teacher/INS0101_instructor_overview.md — mục 2.1, các
-// điểm 3-4, 5-6, 7-9].
-//
-// 02-bd/screens/teacher/INS0101_overview.md Sheet 4.4: toolbar (search + "Tạo lớp mới") + 4 stat
-// cards + "Cần chấm tay" / "Hoạt động gần đây" (two columns) + "Lớp của tôi" (full width) +
-// "Tiến độ học viên" / "Bài tập của tôi" (two columns). Each block reads its own query so one dead
-// source does not blank the others (same per-block isolation rule as admin_overview).
+// Instructor overview (INS0101), rebuilt 2026-10-18 on the owner's request "đẹp và đầy đủ" from shared parts
+// (shared first): row 1 = two figure cards (Lớp phụ trách, Tổng học viên) + the half-donut of learners who are
+// active or absent; row 2 = "Lớp của tôi" (completion bars), "Bài giao cho lớp" (submission bars), "Lịch dạy
+// trong tuần" (agenda from the class schedules); row 3 = daily submission chart, "Bài nộp gần đây" and "Hoạt động
+// gần đây". The old blocks "Cần chấm tay", the card "Điểm TB lớp" and the chart "Tiến độ học viên" stay dropped
+// (DEC-2026-1013-remove-instructor-manual-grading, DEC-2026-1014-instructor-overview-trim-and-nav-label).
+// Not yet approved by the owner: the three added blocks (daily chart, recent submissions, weekly schedule).
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { GraduationCap, Users } from "lucide-react";
 import { useClassAssignments } from "@/entities/class-assignment";
-import { useClassScoreTrend, useInstructorClasses } from "@/entities/class";
-import { usePendingManualGradingTop } from "@/entities/manual-grading";
-import { problemLevelLabel, useProblemLevels } from "@/entities/problem";
+import {
+  initialsOfClassStudent,
+  useClassStudents,
+  useClassActivity,
+  useInstructorClasses,
+} from "@/entities/class";
+import { SUBMISSION_STATUS_VARIANT } from "@/entities/submission";
+import { buildSubmissionRows } from "@/features/submission-rows";
 import { useT } from "@/shared/i18n";
 import {
+  AgendaList,
   Badge,
-  Button,
   Card,
-  LineChartWithTotal,
-  ProgressBar,
+  HalfDonutGauge,
+  RankedProgressList,
+  RecentList,
+  StackedBarChart,
   StatCard,
-  TextField,
+  type AgendaDay,
 } from "@/shared/ui";
 
-// No dedicated "recent activity" entity exists yet (identity.identity_recent_activity has no query
-// endpoint contract — 02-bd/screens/teacher/INS0101_overview.md Sheet 4.3 Q4 is still open), so the
-// feed is a small deterministic local list rather than an untyped fetch.
-const ACTIVITY_FEED = [
-  {
-    id: "a1",
-    text: "Nguyễn Văn An vừa nộp bài Two Sum — Accepted",
-    timeLabel: "12 phút trước",
-    attention: false,
-  },
-  {
-    id: "a2",
-    text: "Trần Thị Bích chưa nộp bài 9 ngày liên tiếp",
-    timeLabel: "1 giờ trước",
-    attention: true,
-  },
-  {
-    id: "a3",
-    text: "Lê Hoàng Cường tham gia lớp Lập trình Java K21",
-    timeLabel: "Hôm qua",
-    attention: false,
-  },
-  {
-    id: "a4",
-    text: "Đỗ Minh Đức bị AI chấm điểm thấp, cần xem lại",
-    timeLabel: "Hôm qua",
-    attention: true,
-  },
+const LINK_CLASS =
+  "text-[12.5px] font-semibold text-[var(--color-primary)] hover:underline";
+const CLASS_COLOR_VARS = [
+  "--color-admin-teal",
+  "--color-admin-cyan",
+  "--color-admin-warn",
 ];
+const DAY_KEYS = [1, 2, 3, 4, 5, 6, 7] as const;
+const DAY_MS = 86_400_000;
+const FAILED_STATUSES = [
+  "WRONG_ANSWER",
+  "TIME_LIMIT_EXCEEDED",
+  "RUNTIME_ERROR",
+  "COMPILE_ERROR",
+];
+
+// ISO weekday of today (1 = Monday ... 7 = Sunday); 0 on the server so the first paint carries no highlight.
+const noSubscription = () => () => {};
+const useToday = () =>
+  useSyncExternalStore(
+    noSubscription,
+    () => new Date().getDay() || 7,
+    () => 0,
+  );
+
+const dayMonth = (time: number) =>
+  new Date(time).toLocaleDateString("vi-VN", {
+    day: "2-digit",
+    month: "2-digit",
+  });
 
 export function InstructorOverviewView() {
   const t = useT("instructorOverview");
-  const levelList = useProblemLevels();
-  const [search, setSearch] = useState("");
+  const tVerdict = useT("submissionResult");
+  const today = useToday();
 
-  const classesQuery = useInstructorClasses();
-  const classes = classesQuery.data ?? [];
-  const pendingTopQuery = usePendingManualGradingTop(5);
+  const classes = useInstructorClasses().data ?? [];
+  const activity = useClassActivity().data;
   const assignmentsQuery = useClassAssignments();
-  const trendQuery = useClassScoreTrend();
+  const students = useClassStudents().data;
 
   const totalStudents = classes.reduce((sum, c) => sum + c.studentCount, 0);
-  const pendingGrading = classes.reduce((sum, c) => sum + c.pendingGrading, 0);
-  const avgScore = classes.length
-    ? Math.round(
-        (classes.reduce((sum, c) => sum + (c.avgScore ?? 0), 0) /
-          classes.length) *
-          10,
-      ) / 10
-    : null;
+  const absentStudents = classes.reduce((sum, c) => sum + c.absentCount, 0);
+  const activeStudents = totalStudents - absentStudents;
+  const activePercent =
+    totalStudents > 0 ? Math.round((activeStudents / totalStudents) * 100) : 0;
 
-  const recentAssignments = useMemo(
-    () => (assignmentsQuery.data ?? []).slice(0, 5),
+  const topAssignments = useMemo(
+    () =>
+      [...(assignmentsQuery.data ?? [])]
+        .sort((a, b) => b.submissionCount - a.submissionCount)
+        .slice(0, 5),
     [assignmentsQuery.data],
   );
 
-  // dc.html:198-213 plots a 4-week average line with week labels under it, not a single number.
-  // Same aggregate-of-all-classes simplification as class-progress-view (LineChartWithTotal is
-  // single-series); here the mockup itself draws only one line, so nothing is lost.
-  const trendPoints = useMemo(() => {
-    const series = trendQuery.data?.series ?? [];
-    // Last 4 weeks only: the block's own subtitle says "4 tuần gần nhất" (dc.html:203 plots 4
-    // points), while the shared trend query returns 6 — class_progress is the screen that shows
-    // all of them.
-    const labels = (trendQuery.data?.weekLabels ?? []).slice(-4);
-    const offset = (trendQuery.data?.weekLabels.length ?? 0) - labels.length;
-    return labels.map((label, i) => ({
-      label,
-      value: series.length
-        ? Math.round(
-            (series.reduce((sum, s) => sum + (s.points[offset + i] ?? 0), 0) /
-              series.length) *
-              10,
-          ) / 10
-        : 0,
-    }));
-  }, [trendQuery.data]);
+  const rows = useMemo(() => buildSubmissionRows(students ?? []), [students]);
+  const recentRows = rows.slice(0, 5);
 
-  // dc.html:265 puts a week-over-week delta on the "Điểm TB lớp" tile. Derived from the two last
-  // points of the trend series that the block below already plots — null when there is no previous
-  // week to compare against, rather than a "+0.0" that pretends there was one.
-  const avgScoreDelta = useMemo(() => {
-    if (trendPoints.length < 2) return null;
-    const diff = trendPoints.at(-1)!.value - trendPoints.at(-2)!.value;
-    return Math.round(diff * 10) / 10;
-  }, [trendPoints]);
+  // Daily chart: the 7 days that END at the newest submission, so the mock data (fixed dates) still shows.
+  // ponytail: the real chart ends today and is computed at query time from the submissions (cache 15 min).
+  const dailyBars = useMemo(() => {
+    if (rows.length === 0) return [];
+    const last = new Date(rows[0]!.submittedAt);
+    last.setHours(0, 0, 0, 0);
+    return Array.from({ length: 7 }, (_, index) => {
+      const start = last.getTime() - (6 - index) * DAY_MS;
+      const day = rows.filter(
+        (row) => row.submittedAt >= start && row.submittedAt < start + DAY_MS,
+      );
+      const accepted = day.filter((row) => row.status === "ACCEPTED").length;
+      const failed = day.filter((row) =>
+        FAILED_STATUSES.includes(row.status),
+      ).length;
+      return {
+        label: dayMonth(start),
+        title: `${dayMonth(start)}: ${day.length}`,
+        values: { accepted, failed, other: day.length - accepted - failed },
+      };
+    });
+  }, [rows]);
+
+  const agendaDays: AgendaDay[] = DAY_KEYS.map((day) => ({
+    key: String(day),
+    label: t(`schedule.day.${day}`),
+    highlighted: day === today,
+    entries: classes
+      .filter((klass) => klass.schedule?.days.includes(day))
+      .sort((a, b) =>
+        (a.schedule?.startTime ?? "").localeCompare(
+          b.schedule?.startTime ?? "",
+        ),
+      )
+      .map((klass) => ({
+        id: `${klass.id}-${day}`,
+        time: klass.schedule?.startTime ?? "",
+        title: klass.name,
+        meta: [
+          klass.schedule?.startTime && klass.schedule?.endTime
+            ? `${klass.schedule.startTime}–${klass.schedule.endTime}`
+            : "",
+          klass.schedule?.room,
+        ]
+          .filter(Boolean)
+          .join(" · "),
+        colorVar:
+          CLASS_COLOR_VARS[
+            Math.max(0, classes.indexOf(klass)) % CLASS_COLOR_VARS.length
+          ],
+      })),
+  }));
 
   return (
-    <div>
-      <div className="mb-4 flex flex-wrap items-center gap-2.5">
-        <TextField
-          label={t("toolbar.searchBox")}
-          hideLabel
-          leadingIcon={<Search className="h-3.5 w-3.5" />}
-          placeholder={t("toolbar.searchBox")}
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-          wrapperClassName="min-w-[220px] flex-1"
-        />
-        <Button variant="cta" size="sm" asChild>
-          <Link href="/instructor/classes?create=1">
-            {t("toolbar.btnCreateClass")}
-          </Link>
-        </Button>
-      </div>
+    <div className="flex flex-col gap-3.5">
+      <h1 className="sr-only">{t("title")}</h1>
 
-      <div className="mb-4 grid gap-3.5 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
-        <StatCard
-          label={t("stat.classCount")}
-          value={classes.length}
-          meta={t("stat.classCountMeta", { count: totalStudents })}
-        />
-        <StatCard label={t("stat.studentCount")} value={totalStudents} />
-        <StatCard label={t("stat.pendingGrading")} value={pendingGrading} />
-        <StatCard
-          label={t("stat.avgScore")}
-          value={avgScore ?? "-"}
-          delta={
-            avgScoreDelta === null || avgScoreDelta === 0 ? undefined : (
-              <span
-                style={{
-                  color: `var(${avgScoreDelta > 0 ? "--color-success" : "--color-admin-negative"})`,
-                }}
-              >
-                {avgScoreDelta > 0 ? `+${avgScoreDelta}` : avgScoreDelta}
-              </span>
-            )
-          }
-          meta={avgScoreDelta === null ? undefined : t("stat.avgScoreMeta")}
-        />
-      </div>
-
-      <div className="mb-4 grid grid-cols-1 items-start gap-3.5 lg:grid-cols-[1.4fr_1fr]">
+      <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-3">
+        <div className="grid grid-cols-2 gap-3.5 lg:flex lg:flex-col">
+          <StatCard
+            className="lg:flex-1"
+            icon={GraduationCap}
+            iconColorVar="--color-admin-teal"
+            label={t("kpi.classes")}
+            value={classes.length}
+            meta={t("kpi.classesMeta", { count: totalStudents })}
+          />
+          <StatCard
+            className="lg:flex-1"
+            icon={Users}
+            iconColorVar="--color-admin-cyan"
+            label={t("kpi.students")}
+            value={totalStudents}
+            meta={t("kpi.studentsMeta", { count: absentStudents })}
+          />
+        </div>
         <Card
-          title={t("grading.title")}
-          description={t("grading.subtitle")}
+          className="h-full lg:col-span-2"
+          title={t("students.title")}
+          description={t("students.subtitle")}
+        >
+          <div className="grid items-center gap-5 md:grid-cols-2">
+            <div className="relative mx-auto w-full max-w-[300px]">
+              <HalfDonutGauge
+                slices={[
+                  {
+                    label: t("students.active"),
+                    value: activeStudents,
+                    colorVar: "--color-admin-teal",
+                  },
+                  {
+                    label: t("students.absent"),
+                    value: absentStudents,
+                    colorVar: "--color-admin-warn",
+                  },
+                ]}
+              />
+              <p className="pointer-events-none absolute inset-x-0 top-[34px] text-center">
+                <span className="block text-[26px] leading-none font-bold">
+                  {activePercent}%
+                </span>
+                <span className="text-[11.5px] text-[var(--color-text-muted)]">
+                  {t("students.activeRate")}
+                </span>
+              </p>
+            </div>
+            <div>
+              <p className="mb-2 text-[12px] font-semibold text-[var(--color-text-muted)]">
+                {t("students.byClass")}
+              </p>
+              <RankedProgressList
+                numbered={false}
+                accentColorVar="--color-admin-warn"
+                items={classes.map((klass) => ({
+                  label: klass.name,
+                  value: klass.absentCount,
+                  valueLabel: t("students.absentCount", {
+                    count: klass.absentCount,
+                  }),
+                }))}
+              />
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-3">
+        <Card
+          className="h-full"
+          title={t("classes.title")}
+          description={t("classes.subtitle")}
           action={
-            <Link
-              href="/instructor/grading"
-              className="text-[12.5px] font-semibold text-[var(--color-primary)] hover:underline"
-            >
-              {t("grading.linkViewAll")}
+            <Link href="/instructor/classes" className={LINK_CLASS}>
+              {t("classes.linkManage")}
             </Link>
           }
         >
-          <ul className="flex flex-col gap-2.5">
-            {(pendingTopQuery.data ?? []).length === 0 ? (
-              <li className="text-[13px] text-[var(--color-text-muted)]">
-                {t("empty")}
-              </li>
-            ) : (
-              pendingTopQuery.data!.map((item) => (
-                <li
-                  key={item.id}
-                  className="flex items-center justify-between gap-3 rounded-lg border border-[var(--color-border)] px-3 py-2"
-                >
-                  <div className="min-w-0">
-                    <p className="truncate font-semibold">
-                      {item.studentName} · {item.problemTitle}
-                    </p>
-                    <p className="truncate text-[12px] text-[var(--color-text-muted)]">
-                      {t("grading.col.meta", {
-                        score: item.aiScore10,
-                        time: item.submittedAtLabel,
-                      })}
-                    </p>
-                  </div>
-                  <Badge
-                    variant={item.aiScore10 <= 4 ? "negative" : "warn"}
-                  >{`${item.aiScore10}/10`}</Badge>
-                </li>
-              ))
-            )}
-          </ul>
+          <RankedProgressList
+            numbered={false}
+            accentColorVar="--color-admin-teal"
+            items={classes.map((klass) => ({
+              label: `${klass.name} · ${t("classes.students", { count: klass.studentCount })}`,
+              value: klass.completionPct,
+              valueLabel: `${klass.completionPct}%`,
+            }))}
+          />
         </Card>
 
-        <Card title={t("activity.title")} description={t("activity.subtitle")}>
-          <ul className="flex flex-col gap-2.5">
-            {ACTIVITY_FEED.map((event) => (
-              <li key={event.id} className="flex items-start gap-2.5">
+        <Card
+          className="h-full"
+          title={t("assignments.title")}
+          description={t("assignments.subtitle")}
+          action={
+            <Link href="/instructor/assignments" className={LINK_CLASS}>
+              {t("assignments.linkViewAll")}
+            </Link>
+          }
+        >
+          {topAssignments.length === 0 ? (
+            <p className="text-[13px] text-[var(--color-text-muted)]">
+              {t("empty")}
+            </p>
+          ) : (
+            <RankedProgressList
+              numbered={false}
+              accentColorVar="--color-admin-cyan"
+              items={topAssignments.map((row) => ({
+                label: row.title,
+                value: row.submissionCount,
+                valueLabel: row.submissionCount.toLocaleString("vi-VN"),
+              }))}
+            />
+          )}
+        </Card>
+
+        <Card
+          className="h-full"
+          title={t("schedule.title")}
+          description={t("schedule.subtitle")}
+        >
+          <AgendaList days={agendaDays} emptyLabel={t("schedule.empty")} />
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-3">
+        <Card
+          className="h-full"
+          title={t("chart.title")}
+          description={t("chart.subtitle")}
+        >
+          {dailyBars.length === 0 ? (
+            <p className="text-[13px] text-[var(--color-text-muted)]">
+              {t("chart.empty")}
+            </p>
+          ) : (
+            <StackedBarChart
+              height={150}
+              series={[
+                {
+                  key: "accepted",
+                  label: t("chart.series.accepted"),
+                  colorVar: "--color-admin-teal",
+                },
+                {
+                  key: "failed",
+                  label: t("chart.series.failed"),
+                  colorVar: "--color-admin-warn",
+                },
+                {
+                  key: "other",
+                  label: t("chart.series.other"),
+                  colorVar: "--color-admin-slate",
+                },
+              ]}
+              bars={dailyBars}
+            />
+          )}
+        </Card>
+
+        <Card
+          className="h-full"
+          title={t("submissions.title")}
+          description={t("submissions.subtitle")}
+          action={
+            <Link href="/instructor/submissions" className={LINK_CLASS}>
+              {t("submissions.linkViewAll")}
+            </Link>
+          }
+        >
+          <RecentList
+            emptyLabel={t("submissions.empty")}
+            items={recentRows.map((row) => ({
+              id: row.key,
+              href: `/instructor/submissions/${row.submissionId}?studentId=${row.studentId}&classId=${row.classId}&from=submissions`,
+              leading: (
                 <span
                   aria-hidden="true"
-                  className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full"
+                  className="glass-surface flex h-8 w-8 items-center justify-center rounded-full border border-[var(--color-border)] text-[11px] font-semibold"
+                >
+                  {initialsOfClassStudent(row.studentName)}
+                </span>
+              ),
+              title: row.studentName,
+              subtitle: `${row.problemTitle} · ${new Date(
+                row.submittedAt,
+              ).toLocaleString("vi-VN", {
+                dateStyle: "short",
+                timeStyle: "short",
+              })}`,
+              trailing: (
+                <Badge variant={SUBMISSION_STATUS_VARIANT[row.status]}>
+                  {tVerdict(`verdict.${row.status}`)}
+                </Badge>
+              ),
+            }))}
+          />
+        </Card>
+
+        <Card
+          className="h-full"
+          title={t("activity.title")}
+          description={t("activity.subtitle")}
+        >
+          <RecentList
+            emptyLabel={t("empty")}
+            items={(activity ?? []).map((event) => ({
+              id: event.id,
+              leading: (
+                <span
+                  aria-hidden="true"
+                  className="block h-2 w-2 rounded-full"
                   style={{
                     background: event.attention
                       ? "var(--color-admin-warn)"
                       : "var(--color-admin-teal)",
                   }}
                 />
-                <div className="min-w-0">
-                  <p className="text-[13px]">{event.text}</p>
-                  <p className="text-[11.5px] text-[var(--color-text-muted)]">
-                    {event.timeLabel}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </Card>
-      </div>
-
-      <Card
-        title={t("classes.title")}
-        className="mb-4"
-        action={
-          <Link
-            href="/instructor/classes"
-            className="text-[12.5px] font-semibold text-[var(--color-primary)] hover:underline"
-          >
-            {t("classes.linkManage")}
-          </Link>
-        }
-      >
-        <div className="grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
-          {classes.map((klass) => (
-            <div
-              key={klass.id}
-              className="rounded-xl border border-[var(--color-border)] p-3"
-            >
-              <p className="mb-2 truncate font-semibold">{klass.name}</p>
-              <ProgressBar
-                fill="var(--instructor-progress-fill, var(--color-admin-teal))"
-                value={klass.completionPct}
-                label={klass.name}
-                className="mb-1.5"
-              />
-              <p className="flex justify-between text-[12px] text-[var(--color-text-muted)]">
-                <span>
-                  {t("classes.col.studentCount", { count: klass.studentCount })}
-                </span>
-                <span>{klass.completionPct}%</span>
-              </p>
-            </div>
-          ))}
-        </div>
-      </Card>
-
-      <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-2">
-        <Card
-          title={t("trend.title")}
-          action={
-            <Link
-              href="/instructor/students"
-              className="text-[12.5px] font-semibold text-[var(--color-primary)] hover:underline"
-            >
-              {t("trend.linkViewAll")}
-            </Link>
-          }
-        >
-          {trendPoints.length ? (
-            <LineChartWithTotal
-              points={trendPoints}
-              totalLabel={t("trend.subtitle")}
-              totalValue={avgScore !== null ? `${avgScore}/10` : "-"}
-            />
-          ) : (
-            <p className="text-[13px] text-[var(--color-text-muted)]">
-              {t("empty")}
-            </p>
-          )}
-        </Card>
-
-        <Card
-          title={t("assignments.title")}
-          action={
-            <Link
-              href="/instructor/assignments"
-              className="text-[12.5px] font-semibold text-[var(--color-primary)] hover:underline"
-            >
-              {t("assignments.linkViewAll")}
-            </Link>
-          }
-        >
-          <ul className="flex flex-col gap-2">
-            {recentAssignments.length === 0 ? (
-              <li className="text-[13px] text-[var(--color-text-muted)]">
-                {t("empty")}
-              </li>
-            ) : (
-              recentAssignments.map((row) => (
-                <li
-                  key={row.id}
-                  className="flex items-center gap-2.5 text-[13px]"
-                >
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate">{row.title}</p>
-                    <p className="truncate text-[11.5px] text-[var(--color-text-muted)]">
-                      {problemLevelLabel(levelList, row.difficulty)} ·{" "}
-                      {row.topic}
-                    </p>
-                  </div>
-                  <span className="shrink-0 font-mono text-[12.5px] text-[var(--color-text-muted)]">
-                    {row.submissionCount.toLocaleString("vi-VN")}
-                  </span>
-                </li>
-              ))
-            )}
-          </ul>
+              ),
+              title: <span className="whitespace-normal">{event.text}</span>,
+              subtitle: event.timeLabel,
+            }))}
+          />
         </Card>
       </div>
     </div>

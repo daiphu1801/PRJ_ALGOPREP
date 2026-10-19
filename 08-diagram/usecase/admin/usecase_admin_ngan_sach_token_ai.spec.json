@@ -1,21 +1,39 @@
 {
-  "_": "Chi tiet nhom 'Theo doi muc tieu thu AI' (u15 o ban tong quan): F5-21 (theo doi token) + F5-25 (ngan sach va du bao).",
+  "_": "Chi tiet nhom 'Theo doi muc tieu thu AI' (u15 o ban tong quan): F5-21 (theo doi token) + F5-25 (ngan sach va du bao). | Cap nhat 2026-10-18: ADM0302 chi theo doi, ADM0303 ghi ngay han muc (DEC-2026-1010-split-ai-admin-screens); them gioi han tan suat theo gio (F5-19), nguong canh bao va don gia, tran sinh testcase (F2-14). F6-08 cham cau luyen tinh vao ngan sach chung (DEC-2026-1011-ai-practice-feedback-in-shared-budget).",
   "kind": "usecase",
-  "title": "Sơ đồ Use Case chi tiết - Ngân sách và mức tiêu thụ token AI (Quản trị viên)",
-  "covers": ["F5-21", "F5-25"],
+  "title": "Sơ đồ Use Case chi tiết - Theo dõi, ngân sách và hạn mức AI (Quản trị viên)",
+  "covers": [
+    "F2-14",
+    "F5-19",
+    "F5-21",
+    "F5-25"
+  ],
   "mode": "color",
   "usecase": {
-    "system": "Chức năng Ngân sách token AI",
+    "system": "Theo dõi và hạn mức AI",
     "groups": [
       {
-        "name": "Ngân sách token AI (F5-21, F5-25)",
-        "actors": ["Quản trị viên"],
+        "name": "Theo dõi tiêu thụ (ADM0302)",
+        "actors": [
+          "Quản trị viên"
+        ],
         "usecases": [
           "Xem thống kê tiêu thụ token",
-          "Đặt ngân sách token theo kỳ",
           "Xem dự báo cạn ngân sách",
-          "Xem bảng xếp hạng tiêu thụ token",
-          "Mở lại hoặc tăng ngân sách khi bị khoá"
+          "Xem bảng xếp hạng tiêu thụ token"
+        ]
+      },
+      {
+        "name": "Hạn mức và chi phí (ADM0303)",
+        "actors": [
+          "Quản trị viên"
+        ],
+        "usecases": [
+          "Đặt hạn mức token theo tháng",
+          "Mở khoá ngân sách khi bị khoá",
+          "Đặt giới hạn tần suất gọi AI",
+          "Đặt ngưỡng cảnh báo và đơn giá token",
+          "Đặt số lần sinh testcase mỗi bài"
         ]
       }
     ]

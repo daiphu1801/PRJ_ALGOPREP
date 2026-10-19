@@ -13,7 +13,7 @@
 // prototype; the fixture for a JUDGING submission just renders a fixed partial state.
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import {
@@ -23,23 +23,15 @@ import {
 } from "@/entities/problem";
 import {
   fetchSubmissionDetail,
+  isSubmissionInInstructorScope,
+  SUBMISSION_STATUS_VARIANT,
+  type SubmissionDetail,
   type SubmissionTestcaseResult,
 } from "@/entities/submission";
-import { useT } from "@/shared/i18n";
+import { useLocale, useT } from "@/shared/i18n";
+import { formatDateVN, type DateLocale } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
 import { Badge, Button, EmptyState, type BadgeVariant } from "@/shared/ui";
-
-const VERDICT_VARIANT: Record<string, BadgeVariant> = {
-  ACCEPTED: "success",
-  WRONG_ANSWER: "negative",
-  TIME_LIMIT_EXCEEDED: "warn",
-  MEMORY_LIMIT_EXCEEDED: "warn",
-  RUNTIME_ERROR: "negative",
-  COMPILE_ERROR: "warn",
-  PENDING: "neutral",
-  COMPILING: "neutral",
-  JUDGING: "cyan",
-};
 
 const TESTCASE_VERDICT_VARIANT: Record<string, BadgeVariant> = {
   AC: "success",
@@ -49,6 +41,10 @@ const TESTCASE_VERDICT_VARIANT: Record<string, BadgeVariant> = {
   RE: "negative",
 };
 
+// BD USR0201 Q2 (owner 2026-10-18): Beats needs at least this many Accepted submissions for the same
+// problem and language; below it the tile prints "not enough data" instead of a percentage.
+const BEATS_MIN_ACCEPTED = 10;
+
 function formatMs(ms: number | null): string {
   return ms == null ? "-" : `${ms} ms`;
 }
@@ -57,8 +53,35 @@ function formatMb(kb: number | null): string {
   return kb == null ? "-" : `${(kb / 1024).toFixed(1)} MB`;
 }
 
-export function SubmissionResultView() {
+// `beatsSampleSize` (Accepted submissions behind the percentage) is not in the entity yet; the mock
+// leaves it out, which counts as "enough". The real API returns it next to beatsPercent.
+function beatsTileValue(
+  submission: SubmissionDetail & { beatsSampleSize?: number },
+  t: ReturnType<typeof useT>,
+): string {
+  if (submission.status !== "ACCEPTED") return "-";
+  const percent = submission.beatsPercent;
+  const enough =
+    (submission.beatsSampleSize ?? BEATS_MIN_ACCEPTED) >= BEATS_MIN_ACCEPTED;
+  return percent != null && enough
+    ? t("stats.beatsValue", { percent })
+    : t("stats.beatsNoData");
+}
+
+export function SubmissionResultView({
+  area = "student",
+  renderBreadcrumb,
+  renderContext,
+}: {
+  /** "instructor": read-only for A2 (DEC-2026-1013), breadcrumb back to the submission list, no learner actions. */
+  area?: "student" | "instructor";
+  /** Instructor only: breadcrumb trail that knows the student and class the submission belongs to. */
+  renderBreadcrumb?: (submission: SubmissionDetail) => ReactNode;
+  /** Instructor only: context card (who submitted, shortcuts) in place of the plain read-only note. */
+  renderContext?: (submission: SubmissionDetail) => ReactNode;
+}) {
   const t = useT("submissionResult");
+  const locale = useLocale() as DateLocale;
   const levels = useProblemLevels();
   const params = useParams<{ submissionId?: string }>();
   const submissionId = params?.submissionId ?? "";
@@ -68,8 +91,18 @@ export function SubmissionResultView() {
   );
   const [expanded, setExpanded] = useState<string | null>(null);
 
-  if (!submission) {
-    return <EmptyState>{t("notFound")}</EmptyState>;
+  const isInstructor = area === "instructor";
+  // Outside the instructor's classes it is a 404, same as an unknown id (no existence leak).
+  if (
+    !submission ||
+    (isInstructor && !isSubmissionInInstructorScope(submissionId))
+  ) {
+    return (
+      <>
+        <h1 className="sr-only">{t("pageTitle")}</h1>
+        <EmptyState>{t("notFound")}</EmptyState>
+      </>
+    );
   }
 
   const isCompileError = submission.status === "COMPILE_ERROR";
@@ -88,30 +121,60 @@ export function SubmissionResultView() {
   }
 
   return (
-    <div className="p-6">
+    <div className={isInstructor ? "flex flex-col p-6" : "p-6"}>
+      <h1 className="sr-only">{t("pageTitle")}</h1>
       {/* Khu vực A — Breadcrumb */}
       <nav
         aria-label={t("breadcrumbLabel")}
         className="mb-4 flex flex-wrap items-center gap-1.5 text-[12.5px] text-[var(--color-text-muted)]"
       >
-        <Link href="/problems" className="hover:text-[var(--color-text)]">
-          {t("breadcrumbProblems")}
-        </Link>
-        <span aria-hidden="true">/</span>
-        <Link
-          href={`/problems/${submission.problemSlug}`}
-          className="hover:text-[var(--color-text)]"
-        >
-          {submission.problemTitle}
-        </Link>
-        <span aria-hidden="true">/</span>
-        <span>{t("breadcrumbCurrent", { id: submission.id })}</span>
+        {isInstructor && renderBreadcrumb ? (
+          renderBreadcrumb(submission)
+        ) : isInstructor ? (
+          <>
+            <Link
+              href="/instructor/submissions"
+              className="hover:text-[var(--color-text)]"
+            >
+              {t("breadcrumbSubmissions")}
+            </Link>
+            <span aria-hidden="true">/</span>
+            <span>{submission.problemTitle}</span>
+          </>
+        ) : (
+          <>
+            <Link href="/problems" className="hover:text-[var(--color-text)]">
+              {t("breadcrumbProblems")}
+            </Link>
+            <span aria-hidden="true">/</span>
+            <Link
+              href={`/problems/${submission.problemSlug}`}
+              className="hover:text-[var(--color-text)]"
+            >
+              {submission.problemTitle}
+            </Link>
+          </>
+        )}
+        {isInstructor && renderBreadcrumb ? null : (
+          <>
+            <span aria-hidden="true">/</span>
+            <span>{t("breadcrumbCurrent", { id: submission.id })}</span>
+          </>
+        )}
       </nav>
+
+      {isInstructor && renderContext ? (
+        renderContext(submission)
+      ) : isInstructor ? (
+        <p className="glass-card mb-4 border border-[var(--color-border)] px-4 py-2.5 text-[12.5px] text-[var(--color-text-muted)]">
+          {t("instructorReadOnly")}
+        </p>
+      ) : null}
 
       {/* Khu vực B — Verdict banner */}
       <div className="glass-card mb-4 border border-[var(--color-border)] px-5 py-4">
         <div className="flex flex-wrap items-center gap-3">
-          <Badge variant={VERDICT_VARIANT[submission.status] ?? "neutral"}>
+          <Badge variant={SUBMISSION_STATUS_VARIANT[submission.status]}>
             {t(`verdict.${submission.status}`)}
           </Badge>
           <Badge variant={problemLevelTone(levels, submission.difficulty)}>
@@ -127,48 +190,34 @@ export function SubmissionResultView() {
           {t("verdictSubtitle", {
             passed: submission.passedCount ?? 0,
             total: submission.totalCount ?? 0,
-            submittedAt: new Date(submission.submittedAt).toLocaleString(
-              "vi-VN",
-            ),
+            submittedAt: formatDateVN(submission.submittedAt, {
+              locale,
+              withTime: true,
+            }),
           })}
         </p>
-      </div>
-
-      {/* Khu vực C — Run stats, 6 cards */}
-      <div className="mb-4 grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(140px,1fr))]">
-        <StatTile
-          label={t("stats.testcase")}
-          value={
-            submission.totalCount != null
-              ? `${submission.passedCount}/${submission.totalCount}`
-              : "-"
-          }
-        />
-        <StatTile
-          label={t("stats.runtime")}
-          value={formatMs(submission.runtimeMs)}
-        />
-        <StatTile
-          label={t("stats.memory")}
-          value={formatMb(submission.memoryKb)}
-        />
-        <StatTile
-          label={t("stats.beats")}
-          value={
-            submission.beatsPercent != null
-              ? t("stats.beatsValue", { percent: submission.beatsPercent })
-              : "-"
-          }
-        />
-        <StatTile
-          label={t("stats.mode")}
-          value={t(`mode.${submission.submissionMode}`)}
-        />
+        {/* Khu vực C — run stats as one text line (owner rule 2026-10-13: no KPI strip on a detail screen). */}
+        <p className="mt-1 font-mono text-[12.5px] text-[var(--color-text-muted)]">
+          {[
+            `${t("stats.runtime")} ${formatMs(submission.runtimeMs)}`,
+            `${t("stats.memory")} ${formatMb(submission.memoryKb)}`,
+            ...(isInstructor
+              ? []
+              : [`${t("stats.beats")} ${beatsTileValue(submission, t)}`]),
+            t(`mode.${submission.submissionMode}`),
+          ].join(" · ")}
+        </p>
       </div>
 
       {/* Khu vực D — Testcase table. Hidden entirely on COMPILE_ERROR (BD Sheet 6 Khu vực D NO 1). */}
       {!isCompileError ? (
-        <div className="glass-card mb-4 overflow-hidden border border-[var(--color-border)]">
+        <div
+          className={
+            isInstructor
+              ? "glass-card order-3 mb-4 overflow-hidden border border-[var(--color-border)]"
+              : "glass-card mb-4 overflow-hidden border border-[var(--color-border)]"
+          }
+        >
           <table className="w-full text-[13px]">
             <caption className="sr-only">{t("testcaseTableCaption")}</caption>
             <thead>
@@ -220,8 +269,14 @@ export function SubmissionResultView() {
         </div>
       ) : null}
 
-      {/* Khu vực E — Code viewer */}
-      <div className="glass-card mb-4 border border-[var(--color-border)] px-5 py-4">
+      {/* Khu vực E — Code viewer. Instructor: first block after the banner, the code is what they came for. */}
+      <div
+        className={
+          isInstructor
+            ? "glass-card order-2 mb-4 border border-[var(--color-border)] px-5 py-4"
+            : "glass-card mb-4 border border-[var(--color-border)] px-5 py-4"
+        }
+      >
         <div className="mb-2.5 flex items-center justify-between gap-2">
           <Badge variant="neutral">
             {t(`language.${submission.language}`)}
@@ -240,58 +295,49 @@ export function SubmissionResultView() {
         ) : null}
       </div>
 
-      {/* Khu vực F — Next actions */}
-      <div className="flex flex-wrap gap-2.5">
-        <Button
-          variant="cta"
-          disabled={!canOpenAi}
-          title={canOpenAi ? undefined : t("actions.needAccepted")}
-          asChild={canOpenAi}
-        >
-          {canOpenAi ? (
-            <Link href={`/submissions/${submission.id}/review`}>
-              {t("actions.solutionReview")}
+      {/* Khu vực F — Next actions. Learner-only: the instructor reads, never retries or opens the AI flows. */}
+      {isInstructor ? null : (
+        <div className="flex flex-wrap gap-2.5">
+          <Button
+            variant="cta"
+            disabled={!canOpenAi}
+            title={canOpenAi ? undefined : t("actions.needAccepted")}
+            asChild={canOpenAi}
+          >
+            {canOpenAi ? (
+              <Link href={`/submissions/${submission.id}/review`}>
+                {t("actions.solutionReview")}
+              </Link>
+            ) : (
+              <span>{t("actions.solutionReview")}</span>
+            )}
+          </Button>
+          <Button
+            variant="ghost"
+            disabled={!canOpenAi}
+            title={canOpenAi ? undefined : t("actions.needAccepted")}
+            asChild={canOpenAi}
+            className="border border-[var(--color-border)]"
+          >
+            {canOpenAi ? (
+              <Link href={`/submissions/${submission.id}/interview`}>
+                {t("actions.mockInterview")}
+              </Link>
+            ) : (
+              <span>{t("actions.mockInterview")}</span>
+            )}
+          </Button>
+          <Button
+            variant="ghost"
+            asChild
+            className="border border-[var(--color-border)]"
+          >
+            <Link href={`/problems/${submission.problemSlug}`}>
+              {t("actions.retry")}
             </Link>
-          ) : (
-            <span>{t("actions.solutionReview")}</span>
-          )}
-        </Button>
-        <Button
-          variant="ghost"
-          disabled={!canOpenAi}
-          title={canOpenAi ? undefined : t("actions.needAccepted")}
-          asChild={canOpenAi}
-          className="border border-[var(--color-border)]"
-        >
-          {canOpenAi ? (
-            <Link href={`/submissions/${submission.id}/interview`}>
-              {t("actions.mockInterview")}
-            </Link>
-          ) : (
-            <span>{t("actions.mockInterview")}</span>
-          )}
-        </Button>
-        <Button
-          variant="ghost"
-          asChild
-          className="border border-[var(--color-border)]"
-        >
-          <Link href={`/problems/${submission.problemSlug}`}>
-            {t("actions.retry")}
-          </Link>
-        </Button>
-      </div>
-    </div>
-  );
-}
-
-function StatTile({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="glass-card border border-[var(--color-border)] px-3.5 py-3">
-      <p className="mb-1 text-[11px] font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
-        {label}
-      </p>
-      <p className="font-mono text-[16px] font-bold">{value}</p>
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
@@ -335,6 +381,7 @@ function TestcaseRow({
             variant="ghost"
             size="sm"
             disabled={!isSample}
+            aria-expanded={isSample ? expanded : undefined}
             onClick={onToggle}
           >
             {t("col.expand")}
@@ -344,26 +391,20 @@ function TestcaseRow({
       {expanded ? (
         <tr className="border-b border-[var(--color-border)] last:border-b-0 bg-[var(--color-surface-hover)]">
           <td colSpan={6} className="px-3 py-3">
-            {isSample ? (
-              <div className="grid gap-2 sm:grid-cols-3">
-                <TestcasePane
-                  label={t("sample.input")}
-                  value={testcase.sampleInput}
-                />
-                <TestcasePane
-                  label={t("sample.expected")}
-                  value={testcase.sampleExpectedOutput}
-                />
-                <TestcasePane
-                  label={t("sample.actual")}
-                  value={testcase.sampleActualOutput}
-                />
-              </div>
-            ) : (
-              <p className="text-[12.5px] text-[var(--color-text-muted)]">
-                {t("sample.hiddenNotice")}
-              </p>
-            )}
+            <div className="grid gap-2 sm:grid-cols-3">
+              <TestcasePane
+                label={t("sample.input")}
+                value={testcase.sampleInput}
+              />
+              <TestcasePane
+                label={t("sample.expected")}
+                value={testcase.sampleExpectedOutput}
+              />
+              <TestcasePane
+                label={t("sample.actual")}
+                value={testcase.sampleActualOutput}
+              />
+            </div>
           </td>
         </tr>
       ) : null}

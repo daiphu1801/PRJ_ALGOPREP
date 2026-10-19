@@ -70,6 +70,11 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     items: [
       { key: "queue", href: "/admin/queue", labelKey: "queue" },
       {
+        key: "infraEvents",
+        href: "/admin/infra-events",
+        labelKey: "infraEvents",
+      },
+      {
         key: "languageConfig",
         href: "/admin/language-config",
         labelKey: "languageConfig",
@@ -82,6 +87,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     icon: Sparkles,
     items: [
       { key: "aiConfig", href: "/admin/ai-config", labelKey: "aiConfig" },
+      { key: "aiLimits", href: "/admin/ai-limits", labelKey: "aiLimits" },
       { key: "aiUsage", href: "/admin/ai-usage", labelKey: "aiUsage" },
     ],
   },
@@ -115,5 +121,10 @@ export const ADMIN_NAV_MISC: AdminNavMiscItem[] = [
     icon: Settings,
   },
   { key: "auth", href: "/login", labelKey: "auth", icon: LogIn },
-  { key: "profile", href: "/profile", labelKey: "profile", icon: UserCircle },
+  {
+    key: "profile",
+    href: "/admin/profile",
+    labelKey: "profile",
+    icon: UserCircle,
+  },
 ];

@@ -42,11 +42,11 @@
 | Tên vật lý (slug) | `problem_info` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A2 (`INSTRUCTOR`) và A3 (`ADMIN`) — dùng chung một view; dựng cho cả hai khu (khu A2 từ 2026-10-03) |
-| Phiên bản | V1.7 |
+| Phiên bản | V1.9 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/10/02 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/10/03 |
+| Ngày cập nhật | 2026/10/11 |
 
 ---
 
@@ -62,6 +62,8 @@
 | V1.5 | Sheet 4 (4.2, 4.3, 4.4), Sheet 5, 6 (Khu vực C) | Thêm khối "Đặc tả" chỉ đọc theo `SHR0202` Q20 (chủ dự án đồng ý 2026-10-03): chữ ký hàm theo từng ngôn ngữ suy từ chữ ký chung, định dạng stdin/stdout, chiến lược so khớp; bài có kiểu ngoài lược đồ nêu "chỉ hỗ trợ Standard I/O". Thêm mục 9 đến 12 vào Khu vực C, hai bảng `problem_specs`, `function_signatures`, DTO `FunctionSignatureDto`, `ProblemSpecDto`. RD `SHR0203` thêm REQ-7 | 2026/10/03 | AI |
 | V1.6 | Sheet 5 (Khu vực D NO 1), Sheet 7 (7.1 NO 4, 7.2), Sheet 4 (4.3) | Đã chốt 2026-10-03 (`DEC-2026-1001-admin-configurable-settings` mục 7): nhãn badge "Độ khó" đọc từ bảng `problem_levels` (do ADMIN quản lý, không còn ba mức cố định); `problems.difficulty` ENUM đổi thành `level_id`; DTO `difficulty` của `ProblemAuthoringDetailDto` đổi thành `levelId`, nhãn lấy qua `ListProblemLevels` (cùng mẫu với chủ đề); thêm bảng `problem_levels` vào 4.3 và 7.2. Màu badge do giao diện suy ra (ba mức seed giữ màu cũ, mức mới trung tính). Màn vẫn chỉ đọc | 2026/10/03 | AI |
 | V1.7 | Sheet 4 (4.4, 4.5) | Phần thân trang chỉ đọc được phóng nhẹ theo yêu cầu của owner (2026-10-05, **chưa duyệt hình**, không đổi hành vi): `MarkdownPreview` dùng chung có thêm prop `size`, "base" (mặc định, 13.5 px, không đổi, màn soạn đề vẫn dùng) và "lg" (15 px, giãn dòng 1.75, tiêu đề xl/lg/base, mã 14 px); đề bài dùng `size="lg"`, ràng buộc dữ liệu 12.5 lên 14 px, các dòng đầu vào/đầu ra/giải thích của ví dụ mẫu 12.5 lên 14 px. Thẻ thuộc tính ở cột hẹp không đổi | 2026/10/05 | Nhóm phát triển AlgoPrep |
+| V1.8 | Sheet 3, 5, 9 (NO 2), Câu hỏi mở (Q8) | Chủ dự án duyệt 2026-10-11 (`DEC-2026-1011-a2-read-published-problems-of-others`): A2 xem chỉ đọc bài `Đã xuất bản` của người khác; bản nháp của người khác vẫn 404; sửa/xoá chỉ bài của mình. Điều chỉnh Q8 và Sheet 9 NO 2; mã đang sửa song song | 2026/10/11 | AI |
+| V1.9 | Sheet 6, 8, Câu hỏi mở | Theo báo cáo `06-plan/reports/261014-1054-admin-ux-review/` (B9): nút "Xem như người học" nay mở `/preview` ở tab mới, cùng đích với icon con mắt ở màn biên soạn theo `SHR0202` Q6 (đã chốt 2026-10-03). Q6 của màn này **đề xuất đóng** theo `SHR0202` Q6, chờ chủ dự án xác nhận | 2026-10-14 | Claude |
 
 ---
 
@@ -154,7 +156,7 @@ cấu hình AI) mà không có nguy cơ sửa nhầm; mọi thao tác sửa đi 
    ví dụ, độ phủ, đáp án mẫu thu gọn), cột thuộc tính (độ khó, trạng thái, giới hạn, cấu hình AI).
 3. **Rời màn**: quay lại danh sách, hoặc bấm "Sửa bài" sang `problem_authoring`.
 
-[Người dùng] A2 (`INSTRUCTOR`, chỉ bài của mình) và A3 (`ADMIN`, toàn kho), có Function `PROBLEM_AUTHORING`
+[Người dùng] A2 (`INSTRUCTOR`, bài của mình; bài đã xuất bản của người khác chỉ xem, 2026-10-11) và A3 (`ADMIN`, toàn kho), có Function `PROBLEM_AUTHORING`
 [Nguồn: 01-rd/screens/shared/SHR0203_problem_info.md:37; 02-bd/security/problem-bank.md:5-10].
 
 [Tệp liên quan] Không có.
@@ -166,7 +168,7 @@ cấu hình AI) mà không có nguy cơ sửa nhầm; mọi thao tác sửa đi 
   [Nguồn: 01-rd/screens/shared/SHR0203_problem_info.md:39,73].
 
 [Quyền sử dụng]
-- Xem: được, khi có `PROBLEM_AUTHORING:READ` (A2: chỉ bài do mình tạo, dựa trên `problems.author_id`; A3: toàn bộ)
+- Xem: được, khi có `PROBLEM_AUTHORING:READ` (A2: bài do mình tạo, dựa trên `problems.author_id`, **cộng** bài `Đã xuất bản` của người khác ở chế độ chỉ đọc, ngoại lệ chốt 2026-10-11 theo `DEC-2026-1011-a2-read-published-problems-of-others`; bản nháp của người khác trả 404; A3: toàn bộ)
   [Nguồn: 02-bd/screens/shared/SHR0201_problem_management.md:267 (Xem), 263 (phạm vi tác giả cho A2)].
 - Thêm, Sửa, Xoá: không có trên màn này.
 
@@ -431,7 +433,7 @@ Khi mã bài không tồn tại, RD yêu cầu hiện trạng thái không tìm 
 | NO | Loại | Tóm tắt kiểm | Chi tiết | Mức | Mã thông báo | Ghi chú | EVT gọi | Thứ tự |
 | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: |
 | 1 | Kiểm quyền | Quyền truy cập màn | [Nội dung kiểm] Không có Function `PROBLEM_AUTHORING` thì không được vào màn.<br>[Nơi thực thi] Cả tầng định tuyến phía giao diện và tầng phân quyền phía máy chủ.<br>[Tiêu điểm] Toàn màn. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn không có quyền truy cập màn này." (theo mẫu `SHR0202` Sheet 9 NO 1) | - | 1 |
-| 2 | Kiểm quyền | Quyền sở hữu bài (A2) | [Nội dung kiểm] A2 mở bài không do mình tạo thì bị chặn, dù có `PROBLEM_AUTHORING`.<br>[Nơi thực thi] Tầng application phía máy chủ, không chỉ ẩn UI.<br>[Tiêu điểm] Toàn màn. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn không có quyền xem bài toán này." `[SoT: Suy luận — theo SHR0202 Sheet 9 NO 2]` | - | 2 |
+| 2 | Kiểm quyền | Quyền sở hữu bài (A2) | [Nội dung kiểm] A2 mở bài không do mình tạo **và chưa xuất bản** thì bị chặn (trả 404, như mã không tồn tại), dù có `PROBLEM_AUTHORING`; bài `Đã xuất bản` của người khác thì xem được ở chế độ chỉ đọc (2026-10-11, `DEC-2026-1011-a2-read-published-problems-of-others`). Sửa, xoá, `/edit`, `/preview` vẫn chỉ trên bài của mình.<br>[Nơi thực thi] Tầng application phía máy chủ, không chỉ ẩn UI.<br>[Tiêu điểm] Toàn màn. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn không có quyền xem bài toán này." `[SoT: Suy luận — theo SHR0202 Sheet 9 NO 2]` | - | 2 |
 | 3 | Kiểm quyền | Hiển thị mã đáp án mẫu | [Nội dung kiểm] Mã đáp án mẫu chỉ có trong phản hồi khi người gọi có `PROBLEM_AUTHORING`; học viên không bao giờ nhận.<br>[Nơi thực thi] Phía máy chủ khi dựng phản hồi (F2-18).<br>[Tiêu điểm] Khu vực C NO 8. | Lỗi | Chưa có mã thông báo | Không thông báo riêng — trường vắng khỏi phản hồi, mục ẩn khỏi màn | - | 3 |
 
 Hàng "kiểm quyền" 1-2 giống `SHR0202`; không viết lại nội dung vượt quá những gì đã có ở file đó.
@@ -450,6 +452,6 @@ Hàng "kiểm quyền" 1-2 giống `SHR0202`; không viết lại nội dung vư
 | Q5 | Số cờ hành vi AI: prototype chỉ có 2 (`noFullCode`, `socraticOnly`) vì cờ thứ 3 thuộc tính năng gợi ý theo cấp độ đã cắt (`draft-types.ts:62-69`, `DEC-2026-0831-remove-tiered-hints-ai-config`), trong khi `AiAuthoringContextDto` của `SHR0202` Sheet 7.1 NO 16 vẫn có `allowHiddenHint`. Bỏ trường đó khỏi DTO của `SHR0202`? Nơi lưu cả khối vẫn chưa chốt (`SHR0202` Q4) | `SHR0202` ghi nhận "Gợi ý theo cấp độ" đã cắt nhưng chưa dọn DTO; sửa DTO nằm ngoài phạm vi đợt này (chỉ thêm một dòng chuyển màn vào `SHR0202`) | BD `SHR0202` + DD |
 | Q6 | Nút "Xem như người học": mở route học viên hay popup xem trước? Dùng chung quyết định với `SHR0202` Q6 | Chưa có mã RD, `06-plan/PROTOTYPE_DEBT.md` mục 17.1 | Chủ dự án |
 | Q7 | Trạng thái "không tìm thấy" khi mã bài sai: RD yêu cầu `[SoT: Suy luận]`, prototype chưa dựng; lỗi tải khác (mạng, 403) hiển thị thế nào? | Prototype dùng mock đồng bộ không có nhánh lỗi; hợp đồng lỗi thuộc `03-dd/api/problem-bank.md` | DD |
-| Q8 | ~~Khu A2 chỉ xem bài của mình: A2 mở bài của người khác thì 404 hay 403?~~ **ĐÃ CHỐT 2026-10-03 (chủ dự án, theo đề xuất):** trả **404 "Không tìm thấy bài tập"**, giống hệt mã không tồn tại, để câu trả lời không tiết lộ mã nào có thật. Áp cho cả `problem_info`, `problem_authoring` (`/edit`) và trang xem trước (`/preview`). Bản dựng: mock suy ra người xem từ khu vực của địa chỉ (`/instructor` là giảng viên mẫu, sở hữu một số mã), ném 404, ba màn hiện "Không tìm thấy bài tập."; `isNotFound` ở `shared/api` | Hợp đồng lỗi thật (mã lỗi, nội dung) thuộc `03-dd/api/problem-bank.md` | Đã đóng |
+| Q8 | ~~Khu A2 chỉ xem bài của mình: A2 mở bài của người khác thì 404 hay 403?~~ **ĐÃ CHỐT 2026-10-03 (chủ dự án, theo đề xuất), ĐIỀU CHỈNH 2026-10-11 (chủ dự án duyệt, `DEC-2026-1011-a2-read-published-problems-of-others`, tiêu chí ponytail bậc 6):** A2 mở bài của người khác: bài **đã xuất bản** thì xem **chỉ đọc** (`problem_info`); bài **chưa xuất bản** thì vẫn trả **404 "Không tìm thấy bài tập"**, giống hệt mã không tồn tại, để câu trả lời không tiết lộ mã nào có thật; máy chủ kiểm ở tầng application, không chỉ ẩn nút. Sửa, xoá, `/edit`, `/preview` vẫn chỉ trên bài của mình; lý do điều chỉnh: giảng viên cần xem đề trước khi giao bài từ ngân hàng chung (F2-12). Phần 404 cho bài nháp người khác của bản chốt 2026-10-03 giữ nguyên. Áp cho cả `problem_info`, `problem_authoring` (`/edit`) và trang xem trước (`/preview`). Bản dựng: mock suy ra người xem từ khu vực của địa chỉ (`/instructor` là giảng viên mẫu, sở hữu một số mã), ném 404, ba màn hiện "Không tìm thấy bài tập."; `isNotFound` ở `shared/api` | Hợp đồng lỗi thật (mã lỗi, nội dung) thuộc `03-dd/api/problem-bank.md` | Đã đóng |
 
 **Hết tài liệu.** Mọi `[Nguồn: problem-info-view.tsx:n]` trỏ `05-coding/frontend/src/views/shared/problem-info/ui/problem-info-view.tsx`; `[Nguồn: ...problem-management-view.tsx:n]` trỏ `05-coding/frontend/src/views/shared/problem-management/ui/problem-management-view.tsx`.

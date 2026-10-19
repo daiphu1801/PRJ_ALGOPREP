@@ -3,6 +3,11 @@
 // Pure ranking rule, ported verbatim from RD's decision (no AI call):
 // 01-rd/screens/users/USR0501_my_progress.md mục 4 Q2 — (1) lowest AC rate, (2) most problems left
 // unsolved, (3) longest since last submission, each topic appears at most once, top 3.
+//
+// Owner decision 2026-10-13: the topic the dashboard greeting calls the weakest is the first
+// suggestion (while it still has unsolved problems, D9), so the two never name different topics. The caller scores that topic (the 0-100 skill
+// score lives in the dashboard view, which this entity must not import) and passes it as `pinned`;
+// the three rules above then fill the remaining slots, skipping the pinned topic.
 import type { FocusSuggestion, TopicProgress } from "./types";
 
 function daysSince(isoDate: string | null, now: Date): number {
@@ -13,16 +18,32 @@ function daysSince(isoDate: string | null, now: Date): number {
 export function deriveFocusSuggestions(
   topics: TopicProgress[],
   now = new Date(),
+  pinned?: { topicId: string; score: number } | null,
 ): FocusSuggestion[] {
   const withUnsolved = topics.filter((t) => t.totalCount > t.solvedCount);
+  // D9 (owner): the weakest topic is pinned only while it still has unsolved problems; otherwise
+  // the list can be empty and the card shows its "all solved" message.
+  const pinnedTopic = pinned
+    ? withUnsolved.find((t) => t.topicId === pinned.topicId)
+    : undefined;
   if (withUnsolved.length === 0) return [];
 
   const used = new Set<string>();
   const pick: FocusSuggestion[] = [];
 
-  const byLowestAc = [...withUnsolved].sort(
-    (a, b) => (a.acRate ?? 0) - (b.acRate ?? 0),
-  )[0];
+  if (pinned && pinnedTopic) {
+    pick.push({
+      topicId: pinnedTopic.topicId,
+      topicName: pinnedTopic.topicName,
+      reason: { code: "weakestSkill", score: pinned.score },
+    });
+    used.add(pinnedTopic.topicId);
+  }
+
+  const byLowestAc = [...withUnsolved]
+    // A topic with no submissions in the range has no AC rate: rank it by other rules, never as 0%.
+    .filter((t) => !used.has(t.topicId) && t.acRate !== null)
+    .sort((a, b) => (a.acRate ?? 0) - (b.acRate ?? 0))[0];
   if (byLowestAc) {
     pick.push({
       topicId: byLowestAc.topicId,

@@ -8,6 +8,7 @@
 // Admin screens that show a bare figure (system log, ai usage, queue monitor) have no series to
 // plot, and passing a fake one to reuse that component would invent data.
 import type { ReactNode } from "react";
+import type { LucideIcon } from "lucide-react";
 import { cn } from "@/shared/lib";
 
 type StatCardProps = {
@@ -20,6 +21,16 @@ type StatCardProps = {
   /** CSS custom-property name (e.g. "--color-admin-warn") colouring the value. */
   valueColorVar?: string;
   className?: string;
+  /**
+   * For a tile that already sits inside another card (DashboardBlockState): drops the glass chrome so the
+   * tile does not draw a second box in the first, and gives the three lines more air. Default tiles keep
+   * their look.
+   */
+  bare?: boolean;
+  /** Optional tinted icon chip in the top-right corner (decorative: the label already names the figure). */
+  icon?: LucideIcon;
+  /** CSS custom-property name colouring the icon chip; defaults to the generic accent. */
+  iconColorVar?: string;
 };
 
 export function StatCard({
@@ -29,15 +40,38 @@ export function StatCard({
   meta,
   valueColorVar,
   className,
+  bare = false,
+  icon: Icon,
+  iconColorVar = "--color-primary",
 }: StatCardProps) {
   return (
     <div
       className={cn(
-        "glass-card border border-[var(--color-border)] px-[18px] py-4",
+        "relative",
+        bare
+          ? "px-2 py-1.5"
+          : "glass-card border border-[var(--color-border)] px-[18px] py-4",
         className,
       )}
     >
-      <p className="mb-2.5 text-xs font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
+      {Icon ? (
+        <span
+          aria-hidden="true"
+          className="absolute top-4 right-[18px] flex h-9 w-9 items-center justify-center rounded-xl"
+          style={{
+            color: `var(${iconColorVar})`,
+            background: `color-mix(in srgb, var(${iconColorVar}) 14%, transparent)`,
+          }}
+        >
+          <Icon className="h-[18px] w-[18px]" />
+        </span>
+      ) : null}
+      <p
+        className={cn(
+          "text-xs font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase",
+          bare ? "mb-4" : "mb-2.5",
+        )}
+      >
         {label}
       </p>
       <p className="flex items-baseline gap-2">
@@ -54,7 +88,12 @@ export function StatCard({
         ) : null}
       </p>
       {meta ? (
-        <p className="mt-1.5 text-[12.5px] text-[var(--color-text-muted)]">
+        <p
+          className={cn(
+            "text-[12.5px] text-[var(--color-text-muted)]",
+            bare ? "mt-3" : "mt-1.5",
+          )}
+        >
           {meta}
         </p>
       ) : null}

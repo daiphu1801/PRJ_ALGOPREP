@@ -25,21 +25,22 @@ const NONE: ActionGrant = {
 const ROLES: Role[] = [
   {
     key: "STUDENT",
-    label: "STUDENT",
+    // roles.name, not the code (BD ADM0202 role.tabs; admin UX review F9).
+    label: "Người học",
     system: true,
     baseCategory: "STUDENT",
     userCount: 1196,
   },
   {
     key: "INSTRUCTOR",
-    label: "INSTRUCTOR",
+    label: "Giảng viên",
     system: true,
     baseCategory: "INSTRUCTOR",
     userCount: 74,
   },
   {
     key: "ADMIN",
-    label: "ADMIN",
+    label: "Quản trị",
     system: true,
     baseCategory: "ADMIN",
     userCount: 9,

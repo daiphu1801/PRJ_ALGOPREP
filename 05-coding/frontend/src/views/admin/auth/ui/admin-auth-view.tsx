@@ -7,6 +7,7 @@ import { useT } from "@/shared/i18n";
 import {
   AuthAsideHighlights,
   AuthAsidePanel,
+  BrandMark,
   LiquidGlassBackdrop,
   ThemeLangSwitcher,
 } from "@/shared/ui";
@@ -76,16 +77,7 @@ function AdminAuthViewContent() {
       >
         <div className="p-8">
           <div className="mb-6 flex items-center gap-2.5">
-            <span
-              aria-hidden="true"
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-sm font-extrabold"
-              style={{
-                background: "var(--admin-logo-bg)",
-                color: "var(--admin-logo-fg)",
-              }}
-            >
-              A
-            </span>
+            <BrandMark size={36} />
             <span className="text-base font-extrabold tracking-tight">
               AlgoPrep
             </span>

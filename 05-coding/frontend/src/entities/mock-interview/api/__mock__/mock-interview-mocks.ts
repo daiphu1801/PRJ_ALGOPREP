@@ -8,20 +8,11 @@
 import type {
   AcceptedSubmissionOption,
   BankQuestionOption,
-  EntryStats,
   InterviewResult,
   InterviewStage,
   RubricCriterionCode,
 } from "../../model/types";
 import { RUBRIC_WEIGHTS } from "../../model/types";
-
-export function fetchEntryStats(): EntryStats {
-  return {
-    sessionsCompleted: 7,
-    averageScore: 6.8,
-    weakestCriterion: "pushbackHandling",
-  };
-}
 
 export const ACCEPTED_SUBMISSIONS: AcceptedSubmissionOption[] = [
   { id: "SUB-2841", problemTitle: "1. Two Sum", language: "Python 3" },

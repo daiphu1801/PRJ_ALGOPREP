@@ -48,9 +48,11 @@ export const useDifficultyBreakdown = () =>
     ...QUERY_OPTIONS,
   });
 
-export const useInterviewSummary = () =>
+/** `range` filters the whole summary (count, average, weakest, recent sessions); default "all". */
+export const useInterviewSummary = (range: ProgressRange = "all") =>
   useQuery({
-    queryKey: ["progress", "interview-summary"],
-    queryFn: () => withMockData(fakeGetInterviewSummary, notImplemented),
+    queryKey: ["progress", "interview-summary", range],
+    queryFn: () =>
+      withMockData(() => fakeGetInterviewSummary(range), notImplemented),
     ...QUERY_OPTIONS,
   });

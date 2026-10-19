@@ -10,11 +10,10 @@
 // failure replaces areas A-D with one error state (Sheet 6 Khu vực B NO 10) — area E/F keep
 // rendering, since they read from entities/progress independently.
 //
-// Two deliberate cuts from the mockup's `account` array (:237-243), already tracked as open BD
-// questions, not this file's citation bug: IdentityCard drops the "Đổi ảnh" button (BD Sheet 6
-// Khu vực A NO 4, Q1 avatar storage source unresolved) and AccountCard drops "Mã người dùng" plus
-// the `Pro` plan row (BD Sheet 6 Khu vực D NO 2, Q5 UUID-vs-display-code; RD USR0502 O-5 — AlgoPrep
-// has no account-tier model).
+// Two deliberate cuts from the mockup's `account` array (:237-243): IdentityCard has no "Đổi ảnh"
+// button (BD Q1, closed 2026-10-18: button dropped, avatar stays initials) and AccountCard has no
+// `Pro` plan row (RD USR0502 O-5 — AlgoPrep has no account-tier model). "Mã người dùng" is shown
+// as the first 8 characters of the user id (BD Q5, closed 2026-10-18).
 "use client";
 
 import Link from "next/link";
@@ -27,12 +26,24 @@ import { IdentityCard } from "./identity-card";
 import { PracticeCard } from "./practice-card";
 import { SecurityCard } from "./security-card";
 
-export function ProfileView() {
+/**
+ * `area` keeps the instructor or admin shell around the same screen: the role row reads "Giảng viên" /
+ * "Quản trị viên", the learner practice card is left out, and the settings shortcut stays in the area
+ * (Admin has no personal settings screen, so the shortcut is hidden there).
+ * Mock identity fields are still the student sample (06-plan/PROTOTYPE_DEBT.md).
+ */
+export function ProfileView({
+  area = "student",
+}: {
+  area?: "student" | "instructor" | "admin";
+}) {
+  const isStudent = area === "student";
   const t = useT("profile");
-  const query = useMyProfile();
+  const query = useMyProfile(area);
 
   return (
     <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-[minmax(0,1fr)_340px]">
+      <h1 className="sr-only">{t("pageTitle")}</h1>
       <div className="flex min-w-0 flex-col gap-3.5">
         {query.isError ? (
           <ErrorState>
@@ -58,14 +69,21 @@ export function ProfileView() {
       </div>
 
       <div className="flex flex-col gap-3.5">
-        <AccountCard profile={query.data} />
-        <PracticeCard />
-        <Link
-          href="/settings"
-          className="flex h-9 items-center justify-center rounded-lg border border-[var(--color-border)] text-sm font-semibold hover:bg-[var(--color-surface-hover)]"
-        >
-          {t("settingsShortcut")}
-        </Link>
+        {query.isError ? null : (
+          <AccountCard
+            profile={query.data}
+            roleKey={area === "student" ? undefined : area}
+          />
+        )}
+        {isStudent ? <PracticeCard /> : null}
+        {area === "admin" ? null : (
+          <Link
+            href={area === "instructor" ? "/instructor/settings" : "/settings"}
+            className="flex h-9 items-center justify-center rounded-lg border border-[var(--color-border)] text-sm font-semibold hover:bg-[var(--color-surface-hover)]"
+          >
+            {t("settingsShortcut")}
+          </Link>
+        )}
       </div>
     </div>
   );

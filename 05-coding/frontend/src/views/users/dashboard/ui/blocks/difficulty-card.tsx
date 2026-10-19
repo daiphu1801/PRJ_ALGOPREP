@@ -3,7 +3,14 @@
 "use client";
 
 import { useT } from "@/shared/i18n";
-import { Card, ProgressBar, Skeleton, type BadgeVariant } from "@/shared/ui";
+import {
+  Button,
+  Card,
+  ErrorState,
+  ProgressBar,
+  Skeleton,
+  type BadgeVariant,
+} from "@/shared/ui";
 import {
   problemLevelLabel,
   problemLevelTone,
@@ -20,8 +27,24 @@ const TONE_COLOR_VAR: Partial<Record<BadgeVariant, string>> = {
 
 export function DifficultyCard() {
   const t = useT("myProgress");
+  const td = useT("dashboard");
   const query = useDifficultyBreakdown();
   const levels = useProblemLevels();
+
+  if (query.isError) {
+    return (
+      <Card title={t("difficulty.title")}>
+        <ErrorState>
+          <div className="flex flex-col items-center gap-2">
+            <span>{td("errorGeneric")}</span>
+            <Button size="sm" variant="ghost" onClick={() => query.refetch()}>
+              {td("retry")}
+            </Button>
+          </div>
+        </ErrorState>
+      </Card>
+    );
+  }
 
   return (
     <Card title={t("difficulty.title")}>

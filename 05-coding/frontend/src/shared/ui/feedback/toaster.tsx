@@ -121,6 +121,18 @@ function ToastCard({
             <p className="mt-0.5 text-[13px] text-pretty break-words text-[var(--color-text)]">
               {item.message}
             </p>
+            {item.action ? (
+              <button
+                type="button"
+                onClick={() => {
+                  item.action?.onClick();
+                  setLeaving(true);
+                }}
+                className="mt-1.5 cursor-pointer text-[12.5px] font-semibold text-[var(--color-primary)] underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--color-primary)]"
+              >
+                {item.action.label}
+              </button>
+            ) : null}
           </div>
           <button
             type="button"

@@ -50,12 +50,12 @@ Là **quản trị viên**, tôi muốn giám sát hàng đợi bài nộp và t
 
 ### US-A3-04: Cấu hình ngôn ngữ, giới hạn tài nguyên, và AI
 
-Là **quản trị viên**, tôi muốn cấu hình ngôn ngữ, giới hạn tài nguyên mặc định, và prompt/rubric của AI, để
+Là **quản trị viên**, tôi muốn cấu hình ngôn ngữ, giới hạn tài nguyên mặc định, và prompt của AI, để
 vận hành hệ thống đúng với năng lực hạ tầng thật.
 
 - **Cho** tôi mở cấu hình hệ thống, **Khi** tôi đổi cấu hình ngôn ngữ hoặc giới hạn tài nguyên mặc định,
   **Thì** thay đổi áp dụng cho các bài toán mới hoặc theo phạm vi tôi chọn (F4-11).
-- **Cho** tôi mở cấu hình AI, **Khi** tôi sửa prompt hoặc trọng số rubric, **Thì** một phiên bản mới được
+- **Cho** tôi mở cấu hình AI, **Khi** tôi sửa prompt hoặc chọn model, **Thì** một phiên bản mới được
   lưu lại (kèm lịch sử các phiên bản trước) và dùng cho các yêu cầu AI tiếp theo — tôi xem lại hoặc khôi
   phục được một phiên bản cũ nếu bản mới có vấn đề (F5-23).
 - **Cho** tôi muốn kiểm soát chi phí AI, **Khi** tôi xem trang theo dõi token, **Thì** tôi thấy lượng token

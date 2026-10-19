@@ -1,7 +1,8 @@
 // Smoke test (PROTOTYPE lane) — route renders, filter + drill entry are reachable. Full behavioural
 // coverage per 04-tdd/interview_bank_list.md's AC-nn comes later, once that file exists.
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, within } from "@testing-library/react";
+import { resetRecallAndBookmarkState } from "@/entities/interview-question";
 import { InterviewBankListView } from "./interview-bank-list-view";
 
 vi.mock("@/shared/i18n", () => ({
@@ -16,6 +17,8 @@ function openFilter(label: string) {
   );
   return screen.getByRole("listbox", { name: label });
 }
+
+afterEach(() => resetRecallAndBookmarkState());
 
 describe("InterviewBankListView", () => {
   it("renders the browse list with the seeded questions", () => {
@@ -68,5 +71,37 @@ describe("InterviewBankListView", () => {
 
     expect(screen.getByText("drill.exit")).toBeInTheDocument();
     expect(screen.getByText("drill.reveal")).toBeInTheDocument();
+  });
+
+  it("searches the question content and core keywords, not only the title", () => {
+    render(<InterviewBankListView />);
+
+    fireEvent.change(screen.getByPlaceholderText("searchPlaceholder"), {
+      target: { value: "collision" },
+    });
+
+    expect(
+      screen.getAllByText(/Hash table xử lý collision bằng cách nào\?/).length,
+    ).toBeGreaterThan(0);
+  });
+
+  it("keeps a just-rated question in the list while a status filter would drop it", () => {
+    render(<InterviewBankListView />);
+
+    fireEvent.click(
+      within(openFilter("statusFilterLabel")).getByRole("option", {
+        name: "statusTabs.new",
+      }),
+    );
+    const before = screen.getAllByRole("button", {
+      name: "recall.known",
+    }).length;
+    expect(before).toBeGreaterThan(0);
+    fireEvent.click(
+      screen.getAllByRole("button", { name: "recall.known" })[0]!,
+    );
+
+    // Quick view still shows the touched question and its next-review line.
+    expect(screen.getByText(/quickView.nextReview/)).toBeInTheDocument();
   });
 });

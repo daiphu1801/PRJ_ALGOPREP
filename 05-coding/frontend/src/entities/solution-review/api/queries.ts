@@ -17,11 +17,14 @@ function notImplemented(): never {
   );
 }
 
-export function useSolutionReview(demo: SolutionReviewDemoOutcome) {
+export function useSolutionReview(
+  submissionId: string,
+  demo: SolutionReviewDemoOutcome,
+) {
   return useQuery({
-    queryKey: ["solution-review", demo],
+    queryKey: ["solution-review", submissionId, demo],
     queryFn: () =>
-      withMockData(() => fetchSolutionReviewMock(demo), notImplemented),
+      withMockData(() => fetchSolutionReviewMock(demo, submissionId), notImplemented),
     retry: false,
     staleTime: 30_000,
   });

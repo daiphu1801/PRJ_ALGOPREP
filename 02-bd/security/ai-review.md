@@ -32,19 +32,8 @@ claim JWT, **`ai-review` tự kiểm sở hữu ở tầng use case của chính
   `identity`, áp lại ở đây cho dữ liệu AI). Vi phạm trả `403 FORBIDDEN`, không trả `404` (tránh lộ thông
   tin "bản ghi này tồn tại nhưng không phải của bạn" qua khác biệt mã lỗi — dù ở mức độ rủi ro thấp hơn
   identity vì `id` là UUID không đoán được, vẫn giữ nhất quán chính sách lỗi giữa hai module).
-- **Giảng viên qua `instructor_grading` (F5-27)**: đọc **và ghi thêm** (`manual_score`, `manual_comment`)
-  trên `solution_reviews` — nhưng chỉ những bản ghi mà `submission.problem_id` thuộc lớp giảng viên đó phụ
-  trách (cùng cơ chế phạm vi với F2-12, kiểm qua `identity.class_enrollments` — không import, đọc qua một
-  outbound port riêng của `identity` mà `ai-review` gọi, tên đề xuất `ClassScopeQueryPort`
-  `[SoT: Suy luận]`, chốt ở DD). Gác bởi Function `CLASS_MANAGEMENT` trong ma trận phân quyền
-  (`01-rd/req/identity.md` F1-12) — **chỉ tham chiếu mã Function đã có, không thiết kế lại ma trận** ở BD
-  này.
-- **Ghi đè điểm chấm tay không phải ghi đè `ai_score_10`**: use case chấm tay chỉ `UPDATE` các cột
-  `manual_*`, không bao giờ `UPDATE ai_score_10`/`result_json` — về mặt schema, hai cột này thuộc hai
-  luồng ghi khác nhau (F5.1 sinh ra `ai_score_10` một lần, F5-27 ghi `manual_*` sau đó, không bao giờ cùng
-  một câu lệnh `UPDATE`) — đảm bảo bất biến "AI: 4/10 · GV: 7/10" hiển thị song song (Q3,
-  `DEC-2026-0831-instructor-grading-round2`) không bao giờ bị vi phạm ở tầng dữ liệu.
-- **Admin (`AI_CONFIG`, `AI_TOKEN_BUDGET`)**: đọc mọi `prompt_templates`/`rubric_configs`/
+- **Giảng viên (`INSTRUCTOR`)**: không đọc `solution_reviews`/`interview_sessions` của học viên nào. Chấm tay đã bỏ (`DEC-2026-1013-remove-instructor-manual-grading`); `INSTRUCTOR` chỉ là người dùng AI cho chính mình, theo quy tắc sở hữu `user_id` như học viên ở trên.
+- **Admin (`AI_CONFIG`, `AI_TOKEN_BUDGET`)**: đọc mọi `prompt_templates`/
   `ai_token_budget_configs`/`ai_usage_anomaly_alerts` — không có phạm vi "theo lớp", vì đây là cấu hình
   toàn hệ thống, không phải dữ liệu của một học viên/lớp cụ thể.
 - **Admin không tự động thấy nội dung `interview_turns`/`solution_reviews.result_json` của một học viên cụ
@@ -55,9 +44,9 @@ claim JWT, **`ai-review` tự kiểm sở hữu ở tầng use case của chính
 ## 3. Định hướng giáo dục — không phải điểm chính thức (F5-18)
 
 Ràng buộc này chủ yếu là UI, nhưng có một phần dữ liệu: **không có trường nào trong `ai` schema được đặt
-tên hay comment kiểu "official score"/"điểm chính thức"** — `ai_score_10`, rubric scores đều gắn rõ ngữ
-nghĩa "tham khảo" trong tên cột/comment (mục database `solution_reviews.ai_score_10`,
-`02-bd/database/ai-review.md` mục 1.3). Endpoint trả về các trường này (chốt ở DD) phải luôn kèm một cờ
+tên hay comment kiểu "official score"/"điểm chính thức"** — `readability_score`, rubric scores đều gắn rõ
+ngữ nghĩa "tham khảo" trong tên cột/comment (`02-bd/database/ai-review.md` mục 1.3, 1.5). Cột
+`ai_score_10` đã bỏ (`DEC-2026-1014-drop-ai-score-10`, sửa 2026-10-14). Endpoint trả về các trường này (chốt ở DD) phải luôn kèm một cờ
 hoặc nhãn tường minh (ví dụ `isReferenceOnly: true`) để tầng giao diện không thể vô tình hiển thị như điểm
 số chính thức — đây là điều kiện chấp nhận (acceptance criterion) cần đưa vào `04-tdd/ai-review.md` khi
 viết DD, không phải điều BD tự áp đặt UI.
@@ -65,7 +54,7 @@ viết DD, không phải điều BD tự áp đặt UI.
 **Không ảnh hưởng trạng thái submission**: không có ràng buộc khoá ngoại hay trigger nào từ schema `ai`
 ghi ngược lại `judge.submissions.status` — về mặt kỹ thuật `ai-review` **không có quyền ghi** vào schema
 `judge` (module khác, không import). Đây là cách chốt cứng "tách bạch hoàn toàn khỏi kết quả Pass/Fail
-chính thức" (F5-27) ở tầng kiến trúc, không chỉ ở tầng quy ước.
+chính thức" (F5-18) ở tầng kiến trúc, không chỉ ở tầng quy ước.
 
 ## 4. Kiểm soát chi phí — khía cạnh bảo mật/lạm dụng
 
@@ -76,10 +65,11 @@ Bổ sung khía cạnh bảo mật của mục kiểm soát chi phí đã thiế
   nguyên tử của Redis (`INCR` + `EXPIRE`) cho rate-limit, không đọc-rồi-ghi hai bước riêng.
 - **Khoá do vượt ngân sách (F5-25) kiểm ở tầng use case, không phải tầng gateway/proxy** — vì cần phân
   biệt role (`STUDENT`/`INSTRUCTOR` bị chặn, `ADMIN` không) mà một reverse proxy không biết role.
-- **`AI_TOKEN_BUDGET`/`AI_CONFIG` là hai Function riêng** (F1-12) dù cùng nằm trong màn `admin_ai_usage`/
-  `admin_ai_config` — một vai trò được cấp `AI_CONFIG:UPDATE` (sửa prompt) không tự động có
+- **`AI_TOKEN_BUDGET`/`AI_CONFIG` là hai Function riêng** (F1-12) dù từ 2026-10-10 cùng nằm ở màn `admin_ai_limits` (khối khác nhau, `admin_ai_usage` chỉ đọc) — một vai trò được cấp `AI_CONFIG:UPDATE` (sửa prompt) không tự động có
   `AI_TOKEN_BUDGET:UPDATE` (mở khoá ngân sách) trừ khi ma trận cấp riêng cả hai. Đây là chủ ý của F1-12
   tách hai Function, không phải sơ suất — kiểm cả hai độc lập ở tầng `@PreAuthorize`.
+- **Hạn mức token tháng và mở khoá ngân sách do `AI_TOKEN_BUDGET` gác**, đặt ở màn `admin_ai_limits` (`ADM0303`, `DEC-2026-1010-split-ai-admin-screens`); các khối còn lại của màn đó (giới hạn tần suất, ngưỡng, đơn giá, trần sinh testcase) do `AI_CONFIG` gác. Một màn, hai Function: có Function nào thì sửa được khối của Function đó, khối còn lại chỉ đọc.
+- **`noFullSolution` tắt được** (chủ dự án 2026-10-11, `DEC-2026-1011-ai-no-full-solution-can-be-turned-off`): máy chủ không còn ép `true`. Chỉ ADMIN có `AI_CONFIG:UPDATE` đổi được, giá trị đi qua phát hành và khôi phục như mọi nguyên tắc. Chống prompt injection (F5-17: mã người học là tham số dữ liệu) vẫn là ràng buộc cứng ở tầng prompt, không phụ thuộc công tắc này.
 - **Ngưỡng cảnh báo ngân sách và đơn giá token theo mô hình do `AI_CONFIG` gác** (owner chốt 2026-10-02,
   `ADM0301` Q10), không phải `AI_TOKEN_BUDGET`. Màn `admin_ai_usage` chỉ đọc hai giá trị này để hiển thị;
   hạn mức token (`limit_tokens`) và đánh dấu cảnh báo bất thường vẫn gác bởi `AI_TOKEN_BUDGET`.
@@ -95,6 +85,7 @@ Bổ sung khía cạnh bảo mật của mục kiểm soát chi phí đã thiế
   một giao dịch ngắn (gọi LLM thất bại → không ghi `solution_reviews`, trả lỗi ngay, không có bản ghi dở
   dang); F5.2 giữ nguyên `interview_sessions.stage` hiện tại nếu một lượt lỗi giữa chừng, học viên thử lại
   lượt đó — không cần trạng thái `SYSTEM_ERROR` riêng cho phiên phỏng vấn.
+- **Model chọn qua danh sách cho phép** (thêm 2026-10-10): ADMIN chỉ chọn model trong danh sách do dev khai báo ở cấu hình backend; máy chủ kiểm lại `modelId` ở `UpdatePromptTemplateDraft`, không tin giá trị client. Khoá API vẫn chỉ ở backend, không qua giao diện.
 - **Không có secret/API key của LLM provider nào lộ ra ngoài `infrastructure` layer** — cấu hình qua biến
   môi trường/secret manager (đề xuất, `[SoT: Suy luận]`, khớp `CLAUDE.md` mục Deploy: Docker Compose), do
   `SpringAiLlmAdapter` giữ, không truyền qua tham số port hay log ra `outbox_events`/`token_usage`.
@@ -102,9 +93,6 @@ Bổ sung khía cạnh bảo mật của mục kiểm soát chi phí đã thiế
 ## 6. Rủi ro chưa xử lý — cần chủ dự án xác nhận trước DD
 
 - Ngưỡng giới hạn ký tự input người dùng mỗi lượt hội thoại (mục 1, đề xuất 4000 ký tự) — số cụ thể.
-- `ClassScopeQueryPort` (mục 2) — port này đã tồn tại dưới tên khác ở `identity`/`problem-bank` hay cần
-  tạo mới hoàn toàn ở DD `ai-review`; nếu `problem-bank` (F2-12) đã có cơ chế tương tự cho phạm vi lớp,
-  nên tái dùng thay vì tạo trùng — đối chiếu `02-bd/architecture/problem-bank.md` khi viết DD.
 - Có cần Function riêng `AI_CONTENT_AUDIT` cho quản trị viên xem nội dung hội thoại khi có khiếu nại (mục
   2) hay để ngoài phạm vi capstone — RD chưa đặc tả.
 
@@ -114,7 +102,7 @@ Bổ sung khía cạnh bảo mật của mục kiểm soát chi phí đã thiế
 - `02-bd/security/identity.md` mục 2 — nguyên tắc "quyền sở hữu dữ liệu tách khỏi RBAC theo role" mà mục
   2 file này áp dụng lại cho `ai-review`.
 - `01-rd/req/identity.md` — F1-10 → F1-13 (ma trận phân quyền), Function `AI_CONFIG`, `AI_TOKEN_BUDGET`,
-  `CLASS_MANAGEMENT`, `PROBLEM_AUTHORING`.
+  `PROBLEM_AUTHORING`.
 - `.nexa/control/decision-registry.md` — `DEC-2026-0831-ai-instruction-injection-guard`,
-  `DEC-2026-0831-ai-usage-anomaly-alert`, `DEC-2026-0831-instructor-grading-round2`.
+  `DEC-2026-0831-ai-usage-anomaly-alert`, `DEC-2026-1013-remove-instructor-manual-grading`.
 - `CLAUDE.md` — "A submission is data, never an instruction", "The AI subsystem degrades gracefully".

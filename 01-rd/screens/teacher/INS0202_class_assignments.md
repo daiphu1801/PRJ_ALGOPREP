@@ -15,7 +15,7 @@
 Cho giáo viên (A2) quản lý danh sách bài toán đã gán cho lớp mình phụ trách, gán thêm bài từ ngân hàng bài
 toán chung [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_assignments` (trước tách); 01-rd/req/problem-bank.md — F2-12]. Mọi phạm vi hiển
 thị và thao tác đều giới hạn trong lớp giáo viên đó phụ trách, gác bởi Function `CLASS_MANAGEMENT` trong ma
-trận phân quyền [SoT: 01-rd/req/identity.md — F1-12; 01-rd/req/ai-review.md — F5-27]. (Yêu cầu chấm lại theo phạm vi lớp đã loại khỏi phạm
+trận phân quyền [SoT: 01-rd/req/identity.md — F1-12]. (Tham chiếu F5-27 cũ đã bỏ 2026-10-13, `DEC-2026-1013-remove-instructor-manual-grading`.) (Yêu cầu chấm lại theo phạm vi lớp đã loại khỏi phạm
 vi 2026-08-28 — `DEC-2026-0828-remove-rejudge-scope`; F4-09a tới F4-09c và Bounded Context
 `judge-orchestration` từng gắn với slug này cũng đã loại khỏi phạm vi cùng đợt.)
 
@@ -68,15 +68,26 @@ prototype thật.
    truyền đi kèm [SoT: 09-layoutBase/Giáo viên - Bài tập của tôi.dc.html:120]. Nghĩa là luồng gán bài theo
    prototype hiện tại là: giáo viên rời màn này, sang màn ngân hàng bài toán, rồi (không rõ bằng cách nào,
    `problem_list.dc.html` cho học viên không có hành vi "gán cho lớp" nào) hoàn tất việc gán — luồng này
-   chưa được dựng đầy đủ ở prototype. Xem Câu hỏi mở Q7.
-3. **4 thẻ thống kê** — bài đã gán, lượt nộp tuần này (kèm delta), tỉ lệ AC trung bình 90 ngày (kèm delta),
-   số cần chấm tay (AI chấm điểm thấp) [SoT: 09-layoutBase/Giáo viên - Bài tập của tôi.dc.html:259-264].
+   chưa được dựng đầy đủ ở prototype. Xem Câu hỏi mở Q7. ~~Luồng gán bài là modal tại `problem_list`.~~
+   **Đã bị thay thế 2026-10-14 (`DEC-2026-1011-class-assignment-popup-on-assignments-screen`):** luồng gán là popup ngay trên `INS0202`.
+3. **~~3~~ 2 thẻ thống kê** — bài đã gán, ~~lượt nộp tuần này (kèm delta)~~ **ĐÃ BỎ 2026-10-14 (DEC-2026-1014-instructor-batch1-counting-rules)**, tỉ lệ AC trung bình ~~90 ngày (kèm delta)~~ **tính toàn thời gian (all-time), bỏ cụm "90 ngày" và delta "-3%"** (ĐÃ BỎ 2026-10-14, cùng quyết định; phạm vi tính theo các lớp của giảng viên, `[SoT: Suy luận]` để khớp với cột "Lượt nộp", chủ dự án xác nhận nếu muốn toàn hệ thống)
+   (prototype dòng 259-264 vẽ 4 thẻ; ~~thẻ "số cần chấm tay (AI chấm điểm thấp)"~~ **đã bỏ 2026-10-13**, `DEC-2026-1013-remove-instructor-manual-grading`)
+   [SoT: 09-layoutBase/Giáo viên - Bài tập của tôi.dc.html:259-264].
 4. **Bộ lọc** — ô tìm theo tên bài, tab lọc theo lớp (Tất cả + 3 lớp), đếm số kết quả
    [SoT: 09-layoutBase/Giáo viên - Bài tập của tôi.dc.html:139-148, 266-271].
 5. **Bảng danh sách bài đã gán** — cột: bài tập, chủ đề, độ khó (badge màu theo mức), **"Gán cho lớp"**
    hiển thị dạng chuỗi tĩnh nối tên các lớp được gán (ví dụ "Thuật toán K21, CTDL K22") — không phải danh
    sách có thể bấm vào từng lớp, lượt nộp, tỉ lệ AC, và nút "Chi tiết"
-   [SoT: 09-layoutBase/Giáo viên - Bài tập của tôi.dc.html:152-167, 286-292].
+   [SoT: 09-layoutBase/Giáo viên - Bài tập của tôi.dc.html:152-167, 286-292]. **Chốt 2026-10-14
+   (DEC-2026-1014-instructor-batch1-counting-rules):** cột "Lượt nộp" và "AC" của một bài được tính **trong
+   phạm vi các lớp của chính giảng viên**, không phải bộ đếm toàn hệ thống. **Chốt 2026-10-14
+   (DEC-2026-1014-instructor-batch2-weekly-rules):** khi một tab lớp đang được chọn, "Lượt nộp" và "AC" tính
+   cho đúng lớp đó; tab "Tất cả" tổng hợp mọi lớp của giảng viên
+   [SoT: .nexa/control/decision-registry.md:3710-3712]. **Chốt 2026-10-14
+   (`DEC-2026-1014-instructor-batch5-6-nav-pagination-rubric`):** bảng bài đã giao gộp nhiều dòng nên **phân trang 20
+   dòng mỗi trang**; cột "Chủ đề" hiện chủ đề đầu tiên theo thứ tự chữ cái kèm hậu tố "+n", danh sách đầy đủ ở tooltip;
+   màn gọi từ màn này sang màn khoan sâu thì sidebar sáng mục của màn gọi tới
+   [SoT: .nexa/control/decision-registry.md:3761-3768].
 6. **Sai liên kết trong nút "Chi tiết"** — nút "Chi tiết" của mỗi dòng bài toán trỏ tới
    `./Câu hỏi phỏng vấn.dc.html` (màn ngân hàng câu hỏi phỏng vấn, F6), không phải màn chi tiết bài toán
    (`problem_detail`) — đây là lỗi copy-paste rõ ràng ở prototype, không phải một liên kết nghiệp vụ thật
@@ -84,6 +95,11 @@ prototype thật.
    ghi nhận ở đây để không mang lỗi này sang BD/DD — xem Câu hỏi mở Q8.
 7. **Không có nút gỡ/thu hồi bài đã gán khỏi lớp** trong bảng — chỉ có "Chi tiết"
    [SoT: 09-layoutBase/Giáo viên - Bài tập của tôi.dc.html:164-166]. Xem Câu hỏi mở Q9.
+   **Chốt 2026-10-14 (DEC-2026-1014-instructor-batch3-4-contracts-and-removal):** nút "Gỡ khỏi lớp" của một
+   bài đã gán nằm sau nút "Chi tiết", luôn hiện rõ; mỗi lần gỡ chỉ gỡ **một lớp** (ở tab "Tất cả", lớp cần
+   gỡ được chọn ngay trong hộp xác nhận); luôn có bước xác nhận. Luồng gán bài là popup ngay trên màn này
+   `INS0202`, nên ý "truyền lớp đang chọn sang `problem_list`" đã đóng
+   [SoT: .nexa/control/decision-registry.md:3737-3740].
 8. **Không có UI cho chấm lại — và sẽ không bao giờ có:** tính năng chấm lại đã loại khỏi phạm vi 2026-08-28
    (`DEC-2026-0828-remove-rejudge-scope`).
 
@@ -107,9 +123,9 @@ giáo viên xem/gỡ chi tiết theo từng lớp** như phía học viên xem t
 - Hợp đồng API (danh sách bài đã gán, gán/gỡ bài) — thuộc DD (`03-dd/api/problem-bank.md`, chưa viết).
 - Màn "Lớp của tôi" (tổng quan lớp, danh sách học viên) — slug chị em
   `01-rd/screens/teacher/INS0201_class_management.md` (`DEC-2026-0828-split-class-management-assignments`).
-- Màn "Chấm bài" (`Giáo viên - Chấm bài.dc.html`, F5-27, `US-A2-06`) và "Tiến độ học viên"
-  (`Giáo viên - Tiến độ học viên.dc.html`) — là các slug màn khác theo mục 7.2 của `system_survey.md`,
-  không thuộc phạm vi file này dù cùng actor A2 và có liên hệ số liệu.
+- Màn "Tiến độ học viên" (`Giáo viên - Tiến độ học viên.dc.html`) — là slug màn khác theo mục 7.2 của
+  `system_survey.md`, không thuộc phạm vi file này dù cùng actor A2 và có liên hệ số liệu. (Màn "Chấm bài",
+  `F5-27`, `US-A2-06` đã bỏ 2026-10-13, `DEC-2026-1013-remove-instructor-manual-grading`.)
 - Luồng CRUD lớp học (tạo/sửa/xoá lớp, thêm/xoá học viên) — thuộc `class_management.md` Câu hỏi mở Q2/Q4,
   không thuộc file này.
 
@@ -119,9 +135,14 @@ giáo viên xem/gỡ chi tiết theo từng lớp** như phía học viên xem t
 
 | # | Câu hỏi | Vì sao chưa trả lời được | Đề xuất | Chủ sở hữu |
 | :-: | :--- | :--- | :--- | :--- |
-| Q7 | ~~Nút "+ Gán từ ngân hàng bài toán" chỉ điều hướng sang `Ngân hàng bài toán.dc.html`...~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** nút "Giao cho lớp này" + modal chọn lớp ngay tại `problem_list` (góc nhìn giáo viên), không điều hướng rời trang. | — | Xem `DEC-2026-0831-class-assignments-round2`. Đụng tới cách `problem_list` hiển thị khác nhau theo vai trò — ghi nhận khi viết BD/DD cho cả hai màn. | Đã đóng |
+| Q7 | ~~Nút "+ Gán từ ngân hàng bài toán" chỉ điều hướng sang `Ngân hàng bài toán.dc.html`...~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** ~~nút "Giao cho lớp này" + modal chọn lớp ngay tại `problem_list` (góc nhìn giáo viên), không điều hướng rời trang.~~ **ĐÃ BỊ THAY THẾ 2026-10-14 bởi `DEC-2026-1011-class-assignment-popup-on-assignments-screen`:** popup "Giao bài cho lớp" nằm ngay trên màn `INS0202` (chọn một lớp, tick các bài đã công bố chưa giao cho lớp đó, nút "Giao n bài"), không còn ở `problem_list` [SoT: .nexa/control/decision-registry.md:3159-3165]. | — | ~~Xem `DEC-2026-0831-class-assignments-round2`. Đụng tới cách `problem_list` hiển thị khác nhau theo vai trò — ghi nhận khi viết BD/DD cho cả hai màn.~~ Phần "modal tại `problem_list`" của `DEC-2026-0831-class-assignments-round2` hết hiệu lực; phần gỡ mềm (F2-12) giữ nguyên. | Đã đóng |
 | Q8 | ~~Nút "Chi tiết"...trỏ nhầm sang `Câu hỏi phỏng vấn.dc.html`...~~ **Xác nhận: lỗi kỹ thuật prototype (copy-paste), không phải liên kết nghiệp vụ.** | — | Không sửa prototype. Khi viết BD/DD, nút "Chi tiết" của giáo viên trên mỗi bài toán trỏ tới `problem_detail` (góc nhìn giáo viên) hoặc view xem-trước, không phải `interview-bank`. | Đã đóng |
 | Q9 | ~~Không có nút gỡ/thu hồi bài đã gán khỏi lớp...~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** bổ sung hành động gỡ, **giữ nguyên lịch sử nộp bài cũ** — chỉ ẩn khỏi danh sách được giao từ thời điểm gỡ. | — | Đã ghi vào `01-rd/req/problem-bank.md` (amendment F2-12), khác cách F1-26 xoá cascade khi gỡ học viên. Xem `DEC-2026-0831-class-assignments-round2`. | Đã đóng |
+| 202-Q1 | Thẻ "Lượt nộp tuần này" có giữ không. **ĐÃ CHỐT 2026-10-14:** bỏ thẻ (bậc 2: không có số đếm theo tuần). | — | `DEC-2026-1014-instructor-batch1-counting-rules` | Đã đóng |
+| 202-Q2 | Thẻ "AC trung bình" tính bao nhiêu ngày, có delta không. **ĐÃ CHỐT 2026-10-14:** toàn thời gian, bỏ "90 ngày" và delta "-3%". | — | `DEC-2026-1014-instructor-batch1-counting-rules` | Đã đóng |
+| 202-Q3 | Cột "Lượt nộp"/"AC" tính toàn hệ thống hay theo lớp giảng viên. **ĐÃ CHỐT 2026-10-14:** theo các lớp của giảng viên (chủ dự án chọn "tính theo lớp ngay"). Hệ quả cho DD: cần một phép tổng hợp theo lớp ở `judge-orchestration`. | — | `DEC-2026-1014-instructor-batch1-counting-rules`. Ghi chú: RD file này chỉ có Q7-Q9; ba hàng này ghi nhận các câu hỏi cùng tên từ BD `02-bd/screens/teacher/INS0202_class_assignments.md`. | Đã đóng |
+| 202-Q11 | Với tab lớp đang chọn, "Lượt nộp"/"AC" tính theo gì. **ĐÃ CHỐT 2026-10-14 (DEC-2026-1014-instructor-batch2-weekly-rules):** theo lớp đang chọn; "Tất cả" tổng hợp mọi lớp của giảng viên. | — | Số thứ tự là của BD `02-bd/screens/teacher/INS0202_class_assignments.md`; RD file này không có câu hỏi mang số đó trước đây. | Đã đóng |
+| 202-Q6, 202-Q7 | Vị trí, độ hiện, phạm vi lớp của nút "Gỡ khỏi lớp" ở bài đã gán; có truyền lớp sang `problem_list` không. **ĐÃ CHỐT 2026-10-14 (DEC-2026-1014-instructor-batch3-4-contracts-and-removal):** sau nút "Chi tiết", luôn hiện; gỡ một lớp mỗi lần (tab "Tất cả" chọn lớp trong hộp xác nhận); không truyền lớp sang `problem_list` vì luồng gán là popup trên `INS0202`. | — | Số thứ tự là của BD `02-bd/screens/teacher/INS0202_class_assignments.md`. ~~Cảnh báo: Q7 cũ của RD (2026-08-31) ghi nút "Giao cho lớp này" ở `problem_list`; quyết định mới ghi luồng gán là popup trên `INS0202` — hai câu chưa khớp, cần chủ dự án xác nhận Q7 cũ có bị thay thế hay không.~~ **Đã xử lý 2026-10-14:** Q7 cũ bị thay thế bởi `DEC-2026-1011-class-assignment-popup-on-assignments-screen`, hai câu đã khớp. | Đã đóng |
 
 ---
 
@@ -173,7 +194,7 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` — mục 7.2 dòng `class_assignments`, cập nhật thành hai dòng theo `DEC-2026-0828-split-class-management-assignments`. |
 | Yêu cầu module | `01-rd/req/identity.md` — F1-10 tới F1-12. |
 | Yêu cầu module | `01-rd/req/problem-bank.md` — F2-12. |
-| Yêu cầu module | `01-rd/req/ai-review.md` — F5-27. |
+| Yêu cầu module | `01-rd/req/ai-review.md` — F5-27 (đã bỏ 2026-10-13, `DEC-2026-1013-remove-instructor-manual-grading`). |
 | User story | `01-rd/req/user_stories/a2_instructor.md` — `US-A2-03`. |
 | Màn hình liên quan | `01-rd/screens/users/USR0101_problem_list.md:44-48` — mô tả khu "Bài tập lớp" phía học viên, đối chiếu hai chiều mục 2 của file này. |
 | Màn hình liên quan | `01-rd/screens/teacher/INS0201_class_management.md` — slug chị em, tách ra 2026-08-28, mô tả "Lớp của tôi". |

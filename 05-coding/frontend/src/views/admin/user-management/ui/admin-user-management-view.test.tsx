@@ -85,18 +85,25 @@ describe("AdminUserManagementView bulk status actions", () => {
     expect(screen.queryByRole("button", { name: "bulkChangeRole" })).toBeNull();
   });
 
-  it("disables unlock while the selection holds nothing locked", () => {
+  it("keeps unlock enabled and warns when the selection holds nothing locked", () => {
+    const toasts = renderHook(() => useToasts());
+    act(() => toast.clear());
     render(<AdminUserManagementView />);
     tickRow(ACTIVE_ROW);
     expect(screen.getByRole("button", { name: "bulkLock" })).toBeEnabled();
-    expect(screen.getByRole("button", { name: "bulkUnlock" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "bulkUnlock" })).toBeEnabled();
+    clickButton("bulkUnlock");
+    expect(toasts.result.current.at(-1)?.message).toBe("unlockNothing");
   });
 
-  it("disables lock while the selection holds only locked rows", () => {
+  it("keeps lock enabled and warns when the selection holds only locked rows", () => {
+    const toasts = renderHook(() => useToasts());
+    act(() => toast.clear());
     render(<AdminUserManagementView />);
     tickRow(LOCKED_ROW);
-    expect(screen.getByRole("button", { name: "bulkLock" })).toBeDisabled();
-    expect(screen.getByRole("button", { name: "bulkUnlock" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "bulkLock" })).toBeEnabled();
+    clickButton("bulkLock");
+    expect(toasts.result.current.at(-1)?.message).toBe("lockNothing");
   });
 
   it("names the affected accounts and refuses to lock without a reason", () => {
@@ -260,6 +267,23 @@ describe("AdminUserManagementView per-account actions", () => {
     await waitFor(() =>
       expect(toasts.result.current.at(-1)?.message).toBe(
         "resetDone:nguyenvana@sv.edu.vn",
+      ),
+    );
+  });
+
+  it("sends provider guidance, not a temporary password, for an OAuth-only account", async () => {
+    const toasts = renderHook(() => useToasts());
+    act(() => toast.clear());
+    render(<AdminUserManagementView />);
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "actionResetPasswordFor:Lê Hoàng Nam",
+      }),
+    );
+    clickButton("resetAction");
+    await waitFor(() =>
+      expect(toasts.result.current.at(-1)?.message).toBe(
+        "resetDoneOAuth:lhnam@sv.edu.vn",
       ),
     );
   });

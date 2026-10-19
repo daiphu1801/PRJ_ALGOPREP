@@ -115,7 +115,8 @@ export function fakeDifficultyBreakdown(): Promise<DifficultyBreakdown> {
     levels: [
       { key: "EASY", total: 260, accepted: 140 },
       { key: "MEDIUM", total: 380, accepted: 260 },
-      { key: "HARD", total: 300, accepted: 420 },
+      // Accepted can never exceed total (admin UX review F12: the mock had 420 of 300).
+      { key: "HARD", total: 420, accepted: 130 },
     ],
   });
 }

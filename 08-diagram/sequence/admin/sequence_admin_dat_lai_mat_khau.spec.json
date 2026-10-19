@@ -1,0 +1,145 @@
+{
+  "_": "Nguon: 01-rd/screens/admin/ADM0201_user_management.md, 02-bd/screens/admin/ADM0201_user_management.md (muc 7.3 endpoint, DTO, popup), DEC-2026-1011-admin-system-open-questions-closed, DEC-2026-1008-admin-system-screens-review. Duong dan REST la [SoT: Suy luan] vi chua co DD; ten endpoint la ten nghiep vu cua BD. hasPassword suy tu password_hash IS NOT NULL (DEC-2026-1011, Q8); may chu kiem lai lan nua. Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Đặt lại mật khẩu cho tài khoản (Quản trị viên)",
+  "covers": [
+    "F1-13",
+    "F1-14"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Quản trị viên",
+        "role": "actor"
+      },
+      {
+        "name": "UserAdminController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "UserAdminService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema identity"
+      },
+      {
+        "name": "Dịch vụ email",
+        "role": "external",
+        "stereo": "gửi thư"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Đặt lại mật khẩu hộ một tài khoản (F1-13)"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Bấm Đặt lại mật khẩu trên dòng, xem email nhận, xác nhận"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "UserAdminController",
+        "text": "POST /identity/admin/users/{userId}/password-reset"
+      },
+      {
+        "from": "UserAdminController",
+        "to": "UserAdminController",
+        "text": "Kiểm tra quyền quản lý tài khoản (USER_MANAGEMENT:UPDATE)"
+      },
+      {
+        "from": "UserAdminController",
+        "to": "UserAdminService",
+        "text": "Yêu cầu đặt lại mật khẩu"
+      },
+      {
+        "from": "UserAdminService",
+        "to": "PostgreSQL",
+        "text": "Đọc tài khoản, biết có mật khẩu hay không"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "UserAdminService",
+        "text": "Tài khoản, có mật khẩu hay không",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Tài khoản có mật khẩu?",
+          "then": [
+            {
+              "from": "UserAdminService",
+              "to": "UserAdminService",
+              "text": "Sinh mật khẩu tạm, băm trước khi lưu"
+            },
+            {
+              "from": "UserAdminService",
+              "to": "PostgreSQL",
+              "text": "Lưu mật khẩu tạm đã băm"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "UserAdminService",
+              "text": "Đã lưu",
+              "kind": "return"
+            },
+            {
+              "from": "UserAdminService",
+              "to": "Dịch vụ email",
+              "text": "Gửi mật khẩu tạm tới email tài khoản",
+              "kind": "async"
+            }
+          ],
+          "else": [
+            {
+              "from": "UserAdminService",
+              "to": "UserAdminService",
+              "text": "Tài khoản đăng nhập bên thứ ba, không đổi mật khẩu"
+            },
+            {
+              "from": "UserAdminService",
+              "to": "Dịch vụ email",
+              "text": "Gửi hướng dẫn quay lại nhà cung cấp OAuth",
+              "kind": "async"
+            }
+          ]
+        }
+      },
+      {
+        "from": "UserAdminService",
+        "to": "PostgreSQL",
+        "text": "Ghi nhật ký hệ thống: ai đặt lại mật khẩu của ai"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "UserAdminService",
+        "text": "Đã ghi",
+        "kind": "return"
+      },
+      {
+        "from": "UserAdminService",
+        "to": "UserAdminController",
+        "text": "Đã gửi",
+        "kind": "return"
+      },
+      {
+        "from": "UserAdminController",
+        "to": "Quản trị viên",
+        "text": "200 OK",
+        "kind": "return"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Toast Đã gửi mật khẩu tạm tới email; mật khẩu không hiện cho quản trị viên"
+      }
+    ]
+  }
+}

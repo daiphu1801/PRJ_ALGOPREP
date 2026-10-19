@@ -14,7 +14,8 @@ export function SubmissionsByDayBlock() {
       title={t("blocks.submissionsByDay")}
       isLoading={query.isLoading}
       isError={query.isError}
-      isEmpty={query.data ? query.data.weekTotal === 0 : false}
+      // BD ADM0101 (:506): an empty week still draws the faded dot grid, never the empty caption.
+      isEmpty={false}
       onRetry={() => query.refetch()}
       emptyMessage={t("emptyGeneric")}
       errorMessage={t("errorGeneric")}

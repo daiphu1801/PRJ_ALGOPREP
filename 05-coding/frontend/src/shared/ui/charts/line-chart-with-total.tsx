@@ -9,12 +9,18 @@ export function LineChartWithTotal({
   totalLabel,
   totalValue,
   accentColorVar = "--color-primary",
+  chartClassName = "h-16",
+  ariaLabel,
 }: {
   points: LinePoint[];
   totalLabel: string;
   totalValue: string;
   /** CSS custom-property name (e.g. "--color-admin-cyan"), read via var(). */
   accentColorVar?: string;
+  /** Height of the plot; the default suits a short admin tile, a dashboard block passes a taller one. */
+  chartClassName?: string;
+  /** Accessible name of the plot; defaults to `totalLabel`, which alone does not say WHAT was counted. */
+  ariaLabel?: string;
 }) {
   const values = points.map((p) => p.value);
   const max = Math.max(...values, 1);
@@ -37,9 +43,9 @@ export function LineChartWithTotal({
       </p>
       <svg
         viewBox="0 0 100 40"
-        className="h-16 w-full"
+        className={`${chartClassName} w-full`}
         role="img"
-        aria-label={totalLabel}
+        aria-label={ariaLabel ?? totalLabel}
         preserveAspectRatio="none"
       >
         <polyline
@@ -47,16 +53,22 @@ export function LineChartWithTotal({
           fill="none"
           stroke={`var(${accentColorVar})`}
           strokeWidth="1.5"
+          // The viewBox is stretched to the box (preserveAspectRatio none), which would draw the line thick
+          // where it runs steep and thin where it runs flat; this keeps the stroke 1.5px everywhere.
+          vectorEffect="non-scaling-stroke"
         />
-        {coords.map((c, index) => (
-          <circle
-            key={points[index]!.label}
-            cx={c.x}
-            cy={c.y}
-            r="1.4"
-            fill={`var(${accentColorVar})`}
-          />
-        ))}
+        {/* The same stretch turns a dot into an ellipse, which a dense series (a month of days) makes
+            look like ink blots, so dots are drawn only for a short series. */}
+        {points.length <= 12 &&
+          coords.map((c, index) => (
+            <circle
+              key={points[index]!.label}
+              cx={c.x}
+              cy={c.y}
+              r="1.4"
+              fill={`var(${accentColorVar})`}
+            />
+          ))}
       </svg>
       <div className="mt-1 flex justify-between text-[10px] text-[var(--color-text-muted)]">
         {points.map((p) => (

@@ -36,7 +36,7 @@ export function StatCardsRow() {
       : null;
 
   return (
-    <div className="mb-3.5 grid gap-3.5 [grid-template-columns:repeat(auto-fit,minmax(190px,1fr))]">
+    <div className="mb-3.5 grid gap-3.5 grid-cols-2 lg:grid-cols-4">
       <DashboardBlockState
         title={t("stats.regionLabel", { metric: t("stats.solved") })}
         hideTitle
@@ -55,9 +55,9 @@ export function StatCardsRow() {
             value={overview.solvedProblemCount}
             delta={`/ ${overview.totalPublishedProblemCount}`}
             meta={t("stats.solvedMeta", {
-              total: overview.totalPublishedProblemCount,
+              avg: overview.avgAttemptsPerSolved ?? 0,
             })}
-            className="border-0 p-0"
+            bare
           />
         )}
       </DashboardBlockState>
@@ -82,7 +82,7 @@ export function StatCardsRow() {
               submissions: overview.totalSubmissions,
               accepted: overview.acceptedCount,
             })}
-            className="border-0 p-0"
+            bare
           />
         )}
       </DashboardBlockState>
@@ -104,10 +104,8 @@ export function StatCardsRow() {
             label={t("stats.streak")}
             value={overview.currentStreakDays}
             delta={t("stats.streakUnit")}
-            meta={t("stats.streakMeta", {
-              avg: overview.avgAttemptsPerSolved ?? 0,
-            })}
-            className="border-0 p-0"
+            meta={t("stats.streakMeta")}
+            bare
           />
         )}
       </DashboardBlockState>
@@ -134,7 +132,7 @@ export function StatCardsRow() {
                 ? t("stats.interviewNoScore")
                 : t("stats.interviewMeta", { score: interview.averageScore })
             }
-            className="border-0 p-0"
+            bare
           />
         )}
       </DashboardBlockState>

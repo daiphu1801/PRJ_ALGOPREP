@@ -17,6 +17,7 @@ export {
   deleteAccountSchema,
   emailOtpSchema,
   profileFormSchema,
+  emailChangeSchema,
   type ChangePasswordInput,
   type EmailOtpInput,
   type ProfileFormInput,

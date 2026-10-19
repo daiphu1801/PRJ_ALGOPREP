@@ -30,6 +30,7 @@ function buildDays(count: number): DailyUsage[] {
         review: Number((30 * weekendFactor * jitter * 0.94).toFixed(1)),
         interview: Number((16 * weekendFactor * jitter * 1.08).toFixed(1)),
         testcase: Number((9 * weekendFactor * jitter * 0.7).toFixed(1)),
+        practice: Number((5 * weekendFactor * jitter * 0.5).toFixed(1)),
       },
     });
   }
@@ -38,9 +39,10 @@ function buildDays(count: number): DailyUsage[] {
 
 // dc.html:482-486.
 const FEATURE_SHARES: FeatureShare[] = [
-  { feature: "review", label: "21,9 tr", percent: 57 },
-  { feature: "interview", label: "12,3 tr", percent: 32 },
-  { feature: "testcase", label: "4,2 tr", percent: 11 },
+  { feature: "review", label: "20,9 tr", percent: 54 },
+  { feature: "interview", label: "11,8 tr", percent: 31 },
+  { feature: "testcase", label: "3,7 tr", percent: 10 },
+  { feature: "practice", label: "2,0 tr", percent: 5 },
 ];
 
 // dc.html:488-491. The second one is the anomaly warning that
@@ -48,7 +50,6 @@ const FEATURE_SHARES: FeatureShare[] = [
 const ALERTS: UsageAlert[] = [
   { key: "budgetRunningOut", tone: "warn" },
   { key: "anomalousAccount", tone: "negative" },
-  { key: "testcasePromptCost", tone: "warn" },
 ];
 
 // dc.html:499-504.
@@ -170,12 +171,8 @@ export function fetchAiUsagePage(): AiUsagePage {
     topUsers: TOP_USERS.map((user) => ({ ...user })),
     topProblems: TOP_PROBLEMS.map((problem) => ({ ...problem })),
     // dc.html:527-528.
-    budget: {
-      usedLabel: "38,4 tr",
-      capLabel: "52,0 tr",
-      leftLabel: "13,6 tr",
-      percent: 74,
-      runOutLabel: "28/08",
-    },
+    // Used, cap and percent come from the `aiTokenBudget` store ADM0303 writes; only the projected
+    // run-out date stays here because the mock has no usage history to project from.
+    budget: { runOutLabel: "28/08" },
   };
 }

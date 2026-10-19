@@ -13,39 +13,29 @@ export type DeactivateResult =
 
 export function useDeactivateAccount(email: string) {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
   const [confirmPhrase, setConfirmPhrase] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const openDialog = useCallback(() => {
-    setConfirmPhrase("");
-    setOpen(true);
-  }, []);
-  const closeDialog = useCallback(() => setOpen(false), []);
-
-  const canConfirm = confirmPhrase === email;
+  // D38: trim + case-insensitive on both sides (owner decision).
+  const normalize = (v: string) => v.trim().toLowerCase();
+  const canConfirm = normalize(confirmPhrase) === normalize(email);
 
   const confirm = useCallback(async (): Promise<DeactivateResult> => {
     if (!canConfirm) return { status: "idle" };
     setIsSubmitting(true);
-    try {
-      const outcome = await deleteMyAccount(confirmPhrase);
-      if (!outcome.ok) {
-        return { status: "error", errorKey: outcome.message };
-      }
-      setOpen(false);
-      // Deactivation revokes every session — send the learner to the sign-in screen, matching BR-08.
-      router.push("/login");
-      return { status: "done" };
-    } finally {
+    const outcome = await deleteMyAccount(confirmPhrase.trim());
+    if (!outcome.ok) {
       setIsSubmitting(false);
+      return { status: "error", errorKey: outcome.message };
     }
+    // D34: stay "submitting" on success so the confirm button cannot fire a second request while
+    // the router leaves the page.
+    // Deactivation revokes every session — send the learner to the sign-in screen, matching BR-08.
+    router.push("/login");
+    return { status: "done" };
   }, [canConfirm, confirmPhrase, router]);
 
   return {
-    open,
-    openDialog,
-    closeDialog,
     confirmPhrase,
     setConfirmPhrase,
     canConfirm,

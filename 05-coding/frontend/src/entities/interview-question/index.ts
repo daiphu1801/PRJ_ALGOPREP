@@ -1,6 +1,8 @@
 export {
   RECALL_LEVELS,
+  RECALL_NEXT_REVIEW_DAYS,
   type AnswerAttempt,
+  type AnswerCriterionResult,
   type AnswerAttemptFeedbackStatus,
   type InterviewQuestion,
   type InterviewQuestionPage,
@@ -38,7 +40,10 @@ export {
   type CsvRowError,
   type QuestionDraft,
 } from "./model/csv-import";
-export { useRecallAndBookmarkState } from "./model/use-recall-state";
+export {
+  useRecallAndBookmarkState,
+  resetRecallAndBookmarkState,
+} from "./model/use-recall-state";
 export { InterviewQuestionCard } from "./ui/interview-question-card";
 export { InterviewQuestionListRow } from "./ui/interview-question-list-row";
 export { RecallLevelPicker } from "./ui/recall-level-picker";
@@ -47,4 +52,5 @@ export {
   appendImportedQuestions,
   fetchInterviewQuestionPage,
   findInterviewQuestionByCode,
+  mockCriterionResults,
 } from "./api/__mock__/interview-question-mocks";

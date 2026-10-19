@@ -1,0 +1,140 @@
+{
+  "_": "Nguon: 01-rd/screens/admin/ADM0201_user_management.md, 02-bd/screens/admin/ADM0201_user_management.md (muc 7.3 endpoint, DTO, popup), DEC-2026-1011-admin-system-open-questions-closed, DEC-2026-1008-admin-system-screens-review. Duong dan REST la [SoT: Suy luan] vi chua co DD; ten endpoint la ten nghiep vu cua BD. Nhanh 409 trung email la [SoT: Suy luan]: BD chi noi prototype bao trung o giao dien. Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Thêm tài khoản bằng mật khẩu tạm (Quản trị viên)",
+  "covers": [
+    "F1-13",
+    "F1-14"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Quản trị viên",
+        "role": "actor"
+      },
+      {
+        "name": "UserAdminController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "UserAdminService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema identity"
+      },
+      {
+        "name": "Dịch vụ email",
+        "role": "external",
+        "stereo": "gửi thư"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Thêm tài khoản bằng mật khẩu tạm gửi qua email (F1-13)"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Bấm Thêm tài khoản, nhập họ tên, email, chọn vai trò Người học hoặc Giảng viên"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "UserAdminController",
+        "text": "POST /identity/admin/users"
+      },
+      {
+        "from": "UserAdminController",
+        "to": "UserAdminController",
+        "text": "Kiểm tra quyền (USER_MANAGEMENT:CREATE); vai trò chỉ Người học hoặc Giảng viên"
+      },
+      {
+        "from": "UserAdminController",
+        "to": "UserAdminService",
+        "text": "Yêu cầu tạo tài khoản"
+      },
+      {
+        "from": "UserAdminService",
+        "to": "PostgreSQL",
+        "text": "Kiểm tra email đã có tài khoản chưa"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "UserAdminService",
+        "text": "Đã có hoặc chưa",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Email chưa có tài khoản?",
+          "then": [
+            {
+              "from": "UserAdminService",
+              "to": "UserAdminService",
+              "text": "Sinh mật khẩu tạm, bắt đổi ở lần đăng nhập đầu"
+            },
+            {
+              "from": "UserAdminService",
+              "to": "PostgreSQL",
+              "text": "Tạo tài khoản Chờ xác thực, ghi nhật ký hệ thống"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "UserAdminService",
+              "text": "Đã lưu",
+              "kind": "return"
+            },
+            {
+              "from": "UserAdminService",
+              "to": "Dịch vụ email",
+              "text": "Gửi mật khẩu tạm tới email vừa nhập",
+              "kind": "async"
+            },
+            {
+              "from": "UserAdminService",
+              "to": "UserAdminController",
+              "text": "Tài khoản vừa tạo",
+              "kind": "return"
+            },
+            {
+              "from": "UserAdminController",
+              "to": "Quản trị viên",
+              "text": "201 Created",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "UserAdminService",
+              "to": "UserAdminService",
+              "text": "Email đã có tài khoản"
+            },
+            {
+              "from": "UserAdminService",
+              "to": "UserAdminController",
+              "text": "Từ chối, không tạo gì",
+              "kind": "return"
+            },
+            {
+              "from": "UserAdminController",
+              "to": "Quản trị viên",
+              "text": "409 Conflict - email đã tồn tại",
+              "kind": "return"
+            }
+          ]
+        }
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Tài khoản mới hiện đầu danh sách, nhãn Chờ xác thực; mật khẩu tạm không hiện cho quản trị viên"
+      }
+    ]
+  }
+}

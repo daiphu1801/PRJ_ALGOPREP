@@ -7,7 +7,6 @@ export {
   type BankQuestionOption,
   type ChatMessage,
   type ChatRole,
-  type EntryStats,
   type InterviewEntryType,
   type InterviewResult,
   type InterviewStage,
@@ -22,6 +21,5 @@ export {
   BANK_QUESTIONS,
   HINT_TEXT,
   computeInterviewResult,
-  fetchEntryStats,
   getScriptedQuestion,
 } from "./api/__mock__/mock-interview-mocks";

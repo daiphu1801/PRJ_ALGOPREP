@@ -50,7 +50,10 @@ export function TextField({
         <div
           className={cn(
             FIELD_CONTROL,
-            "flex items-center gap-2",
+            // The wrapper never takes focus itself, so FIELD_CONTROL's focus-visible ring never
+            // fired here and the borderless input had none either (admin UX review F2). Draw the
+            // same ring when the input inside is focused.
+            "flex items-center gap-2 focus-within:outline-2 focus-within:outline-offset-1 focus-within:outline-[var(--color-primary)]",
             invalid && "border-[var(--color-danger)]",
             className,
           )}
@@ -61,10 +64,12 @@ export function TextField({
           >
             {leadingIcon}
           </span>
+          {/* self-stretch: the input fills the box height, so a click anywhere right of the icon
+              lands in it instead of on a 20px strip in the middle. */}
           <input
             id={id}
             aria-invalid={invalid || undefined}
-            className="min-w-0 flex-1 bg-transparent text-[13px] text-[var(--color-text)] outline-none"
+            className="min-w-0 flex-1 self-stretch bg-transparent text-[13px] text-[var(--color-text)] outline-none"
             {...props}
           />
         </div>

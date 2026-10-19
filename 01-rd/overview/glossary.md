@@ -111,7 +111,7 @@ Nguyên lý: `overview.md` mục 1.A. Nguồn phạm vi: `README.md` mục 3 và
 | **Vai trò** | `role` | `STUDENT` · `INSTRUCTOR` · `ADMIN` | "permission" (permission là quyền cụ thể, role là nhóm quyền) |
 | **Người học** | `STUDENT` | Actor A1 — giải bài, nộp bài, dùng AI, xem tiến độ | "learner", "player" |
 | **Giảng viên** | `INSTRUCTOR` | Actor A2 — soạn đề, tải testcase, giao bài theo lớp, quản trị nội dung kho câu hỏi phỏng vấn **dùng chung** (F6-13). Sửa 2026-09-03: trước ghi "tạo bộ câu hỏi", dễ hiểu thành bộ câu hỏi riêng theo lớp (F6-11) — F6-11 đã loại khỏi phạm vi, `DEC-2026-0828-remove-per-class-interview-set` | "teacher", "author" |
-| **Quản trị viên** | `ADMIN` | Actor A3 — giám sát judge engine và hàng đợi (F4-10), cấu hình ngôn ngữ và giới hạn tài nguyên (F4-11), cấu hình prompt và rubric (F5-23), ngân sách token (F5-25), ma trận phân quyền (F1-10), quản lý tài khoản (F1-13). Sửa 2026-09-03: bỏ "chấm lại" khỏi mô tả vai trò, `DEC-2026-0828-remove-rejudge-scope` | "root", "superuser" |
+| **Quản trị viên** | `ADMIN` | Actor A3 — giám sát judge engine và hàng đợi (F4-10), cấu hình ngôn ngữ và giới hạn tài nguyên (F4-11), cấu hình prompt (F5-23), ngân sách token (F5-25), ma trận phân quyền (F1-10), quản lý tài khoản (F1-13). Sửa 2026-09-03: bỏ "chấm lại" khỏi mô tả vai trò, `DEC-2026-0828-remove-rejudge-scope` | "root", "superuser" |
 | **Access Token** | `access_token` | JWT thời hạn ngắn, đi trong header `Authorization`, giữ trong bộ nhớ ở client | "token" một mình |
 | **Refresh Token** | `refresh_token` | Thời hạn dài, nằm trong cookie HTTP-Only | "session" |
 | **Tiến độ** | `user_progress` | Bài đã giải theo chủ đề, tỉ lệ chấp thuận, lịch sử phỏng vấn | "stats", "dashboard" |
