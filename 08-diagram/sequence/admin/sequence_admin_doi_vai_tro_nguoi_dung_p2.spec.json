@@ -1,5 +1,5 @@
 {
-  "_": "Nguon: 01-rd/screens/admin/ADM0201_user_management.md, 02-bd/screens/admin/ADM0201_user_management.md (muc 7.3 endpoint, DTO, popup), DEC-2026-1011-admin-system-open-questions-closed, DEC-2026-1008-admin-system-screens-review. Duong dan REST la [SoT: Suy luan] vi chua co DD; ten endpoint la ten nghiep vu cua BD. Quy tac: khong cho ha quan tri vien hoat dong cuoi cung (RD ADM0201 REQ-05). Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen.",
+  "_": "Nguon: 01-rd/screens/admin/ADM0201_user_management.md, 02-bd/screens/admin/ADM0201_user_management.md (muc 7.3 endpoint, DTO, popup), DEC-2026-1011-admin-system-open-questions-closed, DEC-2026-1008-admin-system-screens-review. Duong dan REST la [SoT: Suy luan] vi chua co DD; ten endpoint la ten nghiep vu cua BD. Quy tac: khong cho ha quan tri vien hoat dong cuoi cung (RD ADM0201 REQ-05). Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen. | 2026-10-20 (owner): nhan mui ten bo han duong dan, ma HTTP, ma quyen, thuat ngu ky thuat (cache, job, worker, model...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
   "kind": "sequence",
   "title": "Sơ đồ tuần tự chi tiết - Tìm và đổi vai trò tài khoản (Quản trị viên) (2/2)",
   "covers": [
@@ -42,12 +42,12 @@
       {
         "from": "Quản trị viên",
         "to": "Quản trị viên",
-        "text": "Bấm Đổi vai trò trên dòng, popup mở"
+        "text": "Bấm Đổi vai trò trên dòng, hộp thoại mở"
       },
       {
         "from": "Quản trị viên",
         "to": "UserAdminController",
-        "text": "GET /identity/admin/roles"
+        "text": "Gửi yêu cầu xem danh sách vai trò"
       },
       {
         "from": "UserAdminController",
@@ -74,7 +74,7 @@
       {
         "from": "UserAdminController",
         "to": "Quản trị viên",
-        "text": "200 OK",
+        "text": "Báo thành công",
         "kind": "return"
       },
       {
@@ -85,12 +85,12 @@
       {
         "from": "Quản trị viên",
         "to": "UserAdminController",
-        "text": "PATCH /identity/admin/users/{userId}/role"
+        "text": "Gửi yêu cầu đổi vai trò"
       },
       {
         "from": "UserAdminController",
         "to": "UserAdminController",
-        "text": "Kiểm tra quyền sửa tài khoản (USER_MANAGEMENT:UPDATE)"
+        "text": "Kiểm tra quyền sửa tài khoản"
       },
       {
         "from": "UserAdminController",
@@ -100,22 +100,22 @@
       {
         "from": "UserAdminService",
         "to": "PostgreSQL",
-        "text": "Đọc tài khoản, vai trò đích, số ADMIN hoạt động"
+        "text": "Đọc tài khoản, vai trò đích, số quản trị viên hoạt động"
       },
       {
         "from": "PostgreSQL",
         "to": "UserAdminService",
-        "text": "Tài khoản, vai trò, số ADMIN hoạt động",
+        "text": "Tài khoản, vai trò, số quản trị viên hoạt động",
         "kind": "return"
       },
       {
         "alt": {
-          "label": "Hạ ADMIN hoạt động cuối?",
+          "label": "Hạ quản trị viên cuối?",
           "then": [
             {
               "from": "UserAdminService",
               "to": "UserAdminService",
-              "text": "Sẽ không còn ADMIN hoạt động nào"
+              "text": "Sẽ không còn quản trị viên hoạt động nào"
             },
             {
               "from": "UserAdminService",
@@ -126,7 +126,7 @@
             {
               "from": "UserAdminController",
               "to": "Quản trị viên",
-              "text": "409 - phải còn ít nhất một quản trị viên hoạt động",
+              "text": "Báo lỗi: phải còn một quản trị viên hoạt động",
               "kind": "return"
             }
           ],
@@ -150,7 +150,7 @@
             {
               "from": "UserAdminService",
               "to": "Redis",
-              "text": "Xoá cache quyền của tài khoản vừa đổi",
+              "text": "Làm mới quyền đã lưu tạm của tài khoản vừa đổi",
               "kind": "async"
             },
             {
@@ -162,7 +162,7 @@
             {
               "from": "UserAdminController",
               "to": "Quản trị viên",
-              "text": "200 OK",
+              "text": "Báo thành công",
               "kind": "return"
             }
           ]

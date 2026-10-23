@@ -34,12 +34,12 @@ const SOLUTION_REVIEW_MOCK: SolutionReviewDetail = {
   submissionModel: "function",
   problemTitle: "1. Two Sum",
   difficulty: "EASY",
+  schemaVersion: "1",
   approachTitle: "hash map",
+  verdict: "OPTIMAL",
   isApproachOptimal: true,
   readabilityScore: 4,
   createdAt: "2026-08-20T21:15:00+07:00",
-  summaryText:
-    "Hướng giải đã là hướng tối ưu cho bài này: một lượt duyệt với hash map, thời gian O(n). Thứ tự tra cứu trước rồi mới ghi vào dict là đúng, và đây chính là chỗ phần lớn bài nộp sai với đầu vào như [3,3]. Điểm còn lại không nằm ở thuật toán mà ở cách viết: ý nghĩa của biến need chưa nói rõ, hàm chưa có type hint, và câu return rỗng ở cuối làm mờ chi tiết là đề đã bảo đảm luôn có đáp án.",
   sourceCode: [
     "def two_sum(nums, target):",
     "    seen = {}",
@@ -73,39 +73,22 @@ const SOLUTION_REVIEW_MOCK: SolutionReviewDetail = {
     "Mảng có phần tử trùng nhau (ví dụ [3,3], target 6) — đã xử lý đúng nhờ tra cứu trước khi ghi.",
     "Đề bài đảm bảo luôn có đúng một đáp án, nên nhánh return [] cuối hàm không bao giờ chạy tới.",
   ],
+  followUpTopics: ["hash map", "two pointers", "3Sum"],
   codeDiff: {
-    diffNote: "4 dòng thay đổi · độ phức tạp không đổi",
     explanation:
       "Gộp bước tra cứu và tính hiệu số vào một lệnh .get(), thêm type hint cho dict để rõ ý nghĩa map giá trị → chỉ số.",
-    diffLines: [
-      {
-        kind: "same",
-        text: "def two_sum(nums: list[int], target: int) -> list[int]:",
-      },
-      { kind: "del", text: "    seen = {}" },
-      { kind: "add", text: "    seen: dict[int, int] = {}" },
-      { kind: "same", text: "    for i, x in enumerate(nums):" },
-      { kind: "del", text: "        need = target - x" },
-      { kind: "del", text: "        if need in seen:" },
-      { kind: "del", text: "            return [seen[need], i]" },
-      { kind: "add", text: "        j = seen.get(target - x)" },
-      { kind: "add", text: "        if j is not None:" },
-      { kind: "add", text: "            return [j, i]" },
-      { kind: "same", text: "        seen[x] = i" },
-      { kind: "same", text: "    return []" },
-    ],
+    suggestedCode: [
+      "def two_sum(nums: list[int], target: int) -> list[int]:",
+      "    seen: dict[int, int] = {}",
+      "    for i, x in enumerate(nums):",
+      "        j = seen.get(target - x)",
+      "        if j is not None:",
+      "            return [j, i]",
+      "        seen[x] = i",
+      "    return []",
+      "",
+    ].join("\n"),
   },
-  suggestedCode: [
-    "def two_sum(nums: list[int], target: int) -> list[int]:",
-    "    seen: dict[int, int] = {}",
-    "    for i, x in enumerate(nums):",
-    "        j = seen.get(target - x)",
-    "        if j is not None:",
-    "            return [j, i]",
-    "        seen[x] = i",
-    "    return []",
-    "",
-  ].join("\n"),
 };
 
 function delay<T>(value: T, ms = 350): Promise<T> {

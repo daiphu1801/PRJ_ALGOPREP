@@ -53,11 +53,12 @@
 | Tên vật lý (slug) | `solution_review` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`) |
-| Phiên bản | V1.4 |
+| Phiên bản | V1.7 |
+| V1.8 | Sheet 5 (Khu vực F NO 4), Câu hỏi mở Q6, Hiện trạng bản dựng | Owner chốt 2026/10/23 (`DEC-2026-1023-db-actor-review-decisions`): thêm item hiển thị `followUpTopics` (chip chủ đề và một liên kết sang ngân hàng câu hỏi); **không** thêm thẻ `summaryText` (không item nào của RD F5-02 đến F5-07 đòi nó, `strengths` và `improvements` đã đủ ý); giữ trình xem Diff rút gọn cho prototype, dùng Monaco Diff Editor khi nối API. Chưa duyệt hình | 2026/10/23 | Claude |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/22 |
 | Người cập nhật | Claude |
-| Ngày cập nhật | 2026/10/19 |
+| Ngày cập nhật | 2026/10/21 |
 
 ---
 
@@ -77,6 +78,9 @@
 | V1.2 | Sheet 5 (Khu vực G NO 1) | Đổi path nguồn của trình xem Diff từ `suggestedCode` sang `codeDiff.suggestedCode` cho khớp lược đồ `result_json` ở `02-bd/database/ai-review.md` (mục 1.3a, `DEC-2026-1018-usr-open-questions-phase2-5`) | 2026/10/18 | Claude |
 | V1.3 | Sheet 8 (EVT-1, EVT-2, EVT-6, EVT-7), Hiện trạng bản dựng (thêm 6 dòng) | Sửa theo đợt rà soát prototype 2026/10/19 (area B). Màn **đọc `submissionId` từ route** (bỏ hằng "SUB-2841", `queryKey` có id), hai mục breadcrumb dẫn về `/submissions/{id}`, id lạ hoặc không phải của mình hoặc chưa Accepted thì hiện khối thông báo không có nút Thử lại (BD Sheet 9 NO 2, NO 3). "Ghi đè & Mở Workspace" **thật sự áp dụng**: ghi mã đề xuất vào nháp trình duyệt khoá `algoprep-draft:{problemId}:{language}:{model}` (hàm `saveWorkspaceDraft` của `entities/problem`, dùng chung với Workspace) rồi chuyển sang `/problems/{problemId}`; **chưa dựng** bước lưu bản trước vào lịch sử nháp với nhãn "Bản trước khi áp dụng AI Diff" (nợ prototype). Thử lại dùng `isFetching` nên hiện lại khung chờ. **Owner chấp nhận trình xem Diff rút gọn** (danh sách dòng thường dựng từ `diffLines`, không phải Monaco Diff Editor) ở prototype, ghi vào Hiện trạng; xét Monaco khi nối API. Thêm "Thời điểm phân tích" (giờ UTC+7) ở chỉ số đầu trang. Chưa duyệt hình | 2026/10/19 | Claude |
 | V1.4 | Sheet 8 (EVT-6), Câu hỏi mở Q5, Hiện trạng bản dựng | Owner chốt 2026/10/19 (`DEC-2026-1019-usr-fe-audit-fixes`, chốt nốt câu hỏi mở còn lại sau rà prototype). Chỉ tài liệu, không đổi code, chưa duyệt hình. Thêm Q5 và đóng ngay: sau "Ghi đè & Mở Workspace" chỉ ghi đè nháp và điều hướng, không mở khung gợi ý AI trong Workspace (ponytail bậc 3). | 2026/10/19 | Claude |
+| V1.5 | Sheet 3, 8 (EVT-6), Câu hỏi mở (Q5), Hiện trạng bản dựng | Đồng bộ bản dựng 2026/10/20 (`DEC-2026-1020-student-workspace-split-and-password-in-settings`): màn soạn mã `problem_detail` (`USR0102`) nay ở `/workspace/{problemId}`, còn `/problems/{id}` là trang tổng quan chỉ-đọc. Sau khi lưu nháp, "Ghi đè & Mở Workspace" điều hướng sang `/workspace/{problemId}` [Nguồn: 05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:190-207], không còn `/problems/{id}`. Sửa Sheet 3 (đích, chế độ mở, sơ đồ), EVT-6, ghi chú đích ở Q5 và dòng Hiện trạng "Áp dụng vào Workspace". Sửa câu "bản dựng hiện tại chỉ hiện toast, chưa điều hướng" ở EVT-6 vì đã cũ (bản dựng có `router.push`). Làm mới số dòng `solution-review-view.tsx`: `:121-125` thành `:190-207`, `:68-77` thành `:103-112`, `:72-76` thành `:105-112`, `:208-209` thành `:256-260`, `:231-268` thành `:285-328`, `:180-` thành `:179-185`. Cơ chế `?restore=ai_diff` ở Sheet 3 là thiết kế cũ, bản dựng nạp nháp qua `saveWorkspaceDraft` (`:196-201`) và không dùng tham số đó. Chưa duyệt hình | 2026/10/20 | Claude |
+| V1.6 | Sheet 3 (Phỏng vấn giả lập), Sheet 8 (sự kiện "Bấm Phỏng vấn bài này") | Owner chốt 2026/10/21: lối vào phỏng vấn từ bài nộp là `/submissions/{submission_id}/interview` (theo bản dựng `solution-review-view.tsx:267`), thay cho `/mock-interview?submission_id=`. Màn phỏng vấn chưa đọc mã bài nộp (nợ prototype, `USR0302` Q8). Chưa duyệt hình | 2026/10/21 | Claude |
+| V1.7 | Sheet 4.2, Hiện trạng bản dựng | Owner chọn 2026/10/23: sửa prototype theo lược đồ `result_json` ở `02-bd/database/ai-review.md` mục 1.3a (không thêm khoá vào lược đồ). Prototype nay có `schemaVersion`, `verdict`, `followUpTopics`, `codeDiff.{suggestedCode, explanation}` (hai khoá nullable); bỏ `summaryText` (thẻ "Nhận xét tổng quan" bị gỡ), `diffLines`, `diffNote`, `suggestedCode` ở gốc. Diff tính ở máy khách từ `source_code` và `codeDiff.suggestedCode`. Mục 4.2 ghi ánh xạ `complexity.actualTime`, `complexity.actualSpace`, `codeDiff` sang DTO. | 2026/10/23 | Claude |
 
 ---
 
@@ -120,7 +124,7 @@ báo cáo chưa từng được sinh cho bài nộp này (REQ-13, Câu hỏi m�
 
 [Điều kiện mở] Bấm "Phỏng vấn về bài này" tại góc phải đầu trang.
 
-[Chế độ mở] Điều hướng URL `/mock-interview?submission_id={submission_id}`.
+[Chế độ mở] Điều hướng URL `/submissions/{submission_id}/interview` (owner chốt 2026/10/21, theo bản dựng `solution-review-view.tsx:267`).
 
 [Thông tin truyền] `submission_id`, `problem_id`.
 
@@ -130,18 +134,18 @@ báo cáo chưa từng được sinh cho bài nộp này (REQ-13, Câu hỏi m�
 
 [Khi huỷ] Không có.
 
-#### Phân tích bài giải → Chi tiết bài tập (áp dụng mã đề xuất)
+#### Phân tích bài giải → Soạn mã (áp dụng mã đề xuất)
 
 [Điều kiện mở] Bấm "Áp dụng vào Workspace" và xác nhận tại popup (F5-26)
-[Nguồn: 01-rd/req/ai-review.md — F5-26].
+[Nguồn: 01-rd/req/ai-review.md — F5-26; 05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:187-207].
 
-[Chế độ mở] Điều hướng URL `/problems/{problem_slug}?restore=ai_diff`.
+[Chế độ mở] Điều hướng URL `/workspace/{problemId}` (màn soạn mã `problem_detail`, `USR0102`). Từ 2026/10/20 đích không còn là `/problems/{id}`, vì đó là trang tổng quan chỉ-đọc [Nguồn: 05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:206].
 
-[Thông tin truyền] Bản mã nguồn cải tiến truyền qua state trình duyệt/Session Storage.
+[Thông tin truyền] Bản mã nguồn cải tiến truyền qua bản nháp trình duyệt của bài (bản dựng gọi `saveWorkspaceDraft(problemId, language, model, suggestedCode)` rồi mới điều hướng, `05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:196-201`). Thiết kế cũ dùng tham số `?restore=ai_diff` và Session Storage; bản dựng không dùng tham số đó.
 
 [Giá trị trả về] Không có.
 
-[Khi thành công] Workspace mở ra với mã mới nạp sẵn vào editor.
+[Khi thành công] Workspace (`/workspace/{problemId}`) mở ra với mã mới nạp sẵn vào editor.
 
 [Khi huỷ] Đóng popup xác nhận, ở lại màn hiện tại — không ghi đè mã.
 
@@ -166,7 +170,7 @@ flowchart LR
     SR["USR0201 submission_result"] -->|"Phân tích bài giải"| SOL["USR0301 solution_review"]
     MS["USR0202 my_submissions"] -->|"Xem phân tích"| SOL
     SOL -->|"Phỏng vấn bài này"| MI["USR0302 mock_interview"]
-    SOL -->|"Áp dụng mã cải tiến"| PD["USR0102 problem_detail"]
+    SOL -->|"Áp dụng mã cải tiến (/workspace/{id})"| PD["USR0102 problem_detail"]
     SOL -->|"Breadcrumb"| SR
 
     classDef source fill:#F3E5F5,stroke:#9C5CC4,color:#000
@@ -196,10 +200,10 @@ flowchart LR
 
 | STT | Tên DTO | Mô tả | Chi tiết trường |
 | :-: | :--- | :--- | :--- |
-| 1 | `SolutionReviewDetailDto` | Cấu trúc JSON báo cáo phân tích tĩnh | `id`, `submissionId`, `problemId`, `problemTitle`, `levelCode`, `levelDisplayName`, `approachTitle`, `isApproachOptimal`, `readabilityScore`, `createdAt`, `summaryText`, `timeComplexity`, `spaceComplexity`, `strengths`, `improvements`, `edgeCases`, `suggestedCodeDiff` |
+| 1 | `SolutionReviewDetailDto` | Cấu trúc JSON báo cáo phân tích tĩnh | `id`, `submissionId`, `problemId`, `problemTitle`, `levelCode`, `levelDisplayName`, `approachTitle`, `isApproachOptimal`, `readabilityScore`, `createdAt`, `timeComplexity`, `spaceComplexity`, `strengths`, `improvements`, `edgeCases`, `suggestedCodeDiff` (V1.7: bỏ `summaryText` vì lược đồ `result_json` không có). **Ánh xạ từ `result_json` ở `02-bd/database/ai-review.md` mục 1.3a:** `timeComplexity` đọc từ `complexity.actualTime`, `spaceComplexity` từ `complexity.actualSpace`, `suggestedCodeDiff` từ `codeDiff` (`suggestedCode`, `explanation`); `readabilityScore` là cột riêng `solution_reviews.readability_score`, không nằm trong JSON |
 | 2 | `ComplexityAnalysisDto` | Phân tích độ phức tạp chi tiết | `actualTime`, `optimalTime`, `timeExplanation`, `actualSpace`, `optimalSpace`, `spaceExplanation` |
 | 3 | ~~`ReviewCriterionScoreDto`~~ | Đã bỏ (`DEC-2026-1014-drop-solution-review-rubric`), không còn rubric của báo cáo bài giải | - |
-| 4 | `CodeDiffProposalDto` | Bản mã đề xuất cải tiến | `originalCode`, `suggestedCode`, `diffText`, `explanation` |
+| 4 | `CodeDiffProposalDto` | Bản mã đề xuất cải tiến | `originalCode`, `suggestedCode`, `diffText`, `explanation` (`suggestedCode` và `explanation` có thể `null` khi hướng giải đã tối ưu; `originalCode` lấy từ `judge.submissions.source_code`, `diffText` do máy khách tính, không lưu DB) |
 
 ### 4.3. Danh sách bảng dữ liệu
 
@@ -298,6 +302,7 @@ Khu vực E (5 thẻ tiêu chí Rubric: `solutionReview.rubric.cardCorrectness`,
 | | 1 | Danh sách Điểm mạnh | `solutionReview.insights.listStrengths` | `ai.solution_reviews` | `result_json` (path `strengths[]`) | List | String | 2000 | Có | O | - | - | Các điểm làm tốt của giải pháp (F5-05) [Nguồn: 02-bd/database/ai-review.md:50]<br>[EVT liên quan] - |
 | | 2 | Danh sách Cần cải thiện | `solutionReview.insights.listImprovements` | `ai.solution_reviews` | `result_json` (path `improvements[]`) | List | String | 2000 | Có | O | - | - | Các gợi ý cải tiến mã nguồn (F5-05) [Nguồn: 02-bd/database/ai-review.md:50]<br>[EVT liên quan] - |
 | | 3 | Danh sách Ca biên tiềm ẩn | `solutionReview.insights.listEdgeCases` | `ai.solution_reviews` | `result_json` (path `edgeCases[]`) | List | String | 2000 | Có | O | - | - | Ca biên, giả định ngầm, rủi ro tràn số F5-04 [Nguồn: 02-bd/database/ai-review.md:50]<br>[EVT liên quan] - |
+| | 4 | Danh sách Chủ đề nên học tiếp | `solutionReview.insights.listFollowUpTopics` | `ai.solution_reviews` | `result_json` (path `followUpTopics[]`) | List | String | 100 | Không | O | - | Chip chủ đề, kèm một liên kết "Mở ngân hàng câu hỏi" sang `interview_bank_list` | Chủ đề hoặc từ khoá gợi ý học tiếp (F5-06); **chỉ là chuỗi, không chứa id câu hỏi F6** vì `ai-review` không đọc `interview-bank`. Mảng rỗng thì ẩn cả thẻ. Danh sách `interview_bank_list` chưa nhận tham số tìm kiếm, nên liên kết mở danh sách chưa lọc (mở ở Câu hỏi mở Q6) [Nguồn: 02-bd/database/ai-review.md:79]<br>[EVT liên quan] - |
 
 ### Khu vực G — Đề xuất mã nguồn & Diff Viewer
 
@@ -454,12 +459,12 @@ Không còn item (xem Sheet 5 Khu vực E).
 
 | NO | Loại | Sự kiện | Chi tiết | Chuyển màn | Gọi API | Tên xử lý | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :-: | :--- | :--- |
-| 1 | Khởi tạo | Mở màn hình | Đọc `submission_id` từ URL, gọi API lấy hoặc sinh báo cáo phân tích. | Không | Có | `GetOrCreateSolutionReview` | [Các bước]<br>1. Kiểm tra đăng nhập và kiểm tra bài nộp đạt `ACCEPTED`.<br>2. Nếu báo cáo đã có (cache/DB theo F5-20), gọi xong trả ngay, bỏ qua bước 3.<br>3. Nếu chưa có, hiển thị khung chờ đang phân tích dạng skeleton (Khu vực I NO 1) trong lúc gọi AI; máy chủ đặt timeout gọi LLM **30 giây**, quá hạn thì coi là lỗi tạm thời (Khu vực I NO 2) [Nguồn: Câu hỏi mở Q3, chốt 2026-10-14].<br>[Khi thành công] Ẩn khung chờ, hiển thị toàn bộ báo cáo phân tích tĩnh (Khu vực A-G).<br>[Khi lỗi] Phân biệt hai loại theo F5-22/F5-25: lỗi tạm thời (timeout, provider lỗi) hiển thị Khu vực I NO 2 kèm nút Thử lại (NO 3); vượt ngân sách token hiển thị Khu vực I NO 4, không có nút thử lại, chỉ có lối thoát về `submission_result` hoặc Workspace. Khối Khu vực I thay chỗ báo cáo nên giữ nguyên; ngoài ra, ngay lúc lỗi xảy ra có một toast lỗi tương ứng (tạm thời hoặc hết ngân sách), và mỗi lần thử lại thất bại lại có thêm một toast [Nguồn: 05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:68-77]. |
+| 1 | Khởi tạo | Mở màn hình | Đọc `submission_id` từ URL, gọi API lấy hoặc sinh báo cáo phân tích. | Không | Có | `GetOrCreateSolutionReview` | [Các bước]<br>1. Kiểm tra đăng nhập và kiểm tra bài nộp đạt `ACCEPTED`.<br>2. Nếu báo cáo đã có (cache/DB theo F5-20), gọi xong trả ngay, bỏ qua bước 3.<br>3. Nếu chưa có, hiển thị khung chờ đang phân tích dạng skeleton (Khu vực I NO 1) trong lúc gọi AI; máy chủ đặt timeout gọi LLM **30 giây**, quá hạn thì coi là lỗi tạm thời (Khu vực I NO 2) [Nguồn: Câu hỏi mở Q3, chốt 2026-10-14].<br>[Khi thành công] Ẩn khung chờ, hiển thị toàn bộ báo cáo phân tích tĩnh (Khu vực A-G).<br>[Khi lỗi] Phân biệt hai loại theo F5-22/F5-25: lỗi tạm thời (timeout, provider lỗi) hiển thị Khu vực I NO 2 kèm nút Thử lại (NO 3); vượt ngân sách token hiển thị Khu vực I NO 4, không có nút thử lại, chỉ có lối thoát về `submission_result` hoặc Workspace. Khối Khu vực I thay chỗ báo cáo nên giữ nguyên; ngoài ra, ngay lúc lỗi xảy ra có một toast lỗi tương ứng (tạm thời hoặc hết ngân sách), và mỗi lần thử lại thất bại lại có thêm một toast [Nguồn: 05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:103-112]. |
 | 2 | Điều hướng | Bấm link Breadcrumb | Người dùng bấm quay lại Kết quả nộp bài. | Có | Không | - | [Các bước]<br>1. Điều hướng về `submission_result` (`USR0201`) kèm `submission_id`. |
-| 3 | Điều hướng | Bấm Phỏng vấn bài này | Bấm nút "Phỏng vấn về bài này" tại góc phải đầu trang. | Có | Không | - | [Các bước]<br>1. Điều hướng sang `mock_interview` (`USR0302`) kèm query `submission_id={id}`. |
+| 3 | Điều hướng | Bấm Phỏng vấn bài này | Bấm nút "Phỏng vấn về bài này" tại góc phải đầu trang. | Có | Không | - | [Các bước]<br>1. Điều hướng sang `mock_interview` (`USR0302`) tại `/submissions/{id}/interview` (bản dựng `solution-review-view.tsx:267`; màn chưa đọc mã bài nộp từ URL, xem `USR0302` Q8). |
 | 4 | Giao diện | Bấm Áp dụng vào Workspace | Bấm nút "Áp dụng vào Workspace" tại khối Diff. | Không | Không | - | [Các bước]<br>1. Mở popup `applyConfirm`. |
 | 5 | Giao diện | Bấm Huỷ áp dụng | Bấm nút "Huỷ" tại popup xác nhận. | Không | Không | - | [Các bước]<br>1. Đóng popup `applyConfirm`, giữ nguyên màn hình. |
-| 6 | Điều hướng | Xác nhận áp dụng mã | Bấm "Ghi đè & Mở Workspace" tại popup. | Có | Không | - | [Các bước]<br>1. **Trước khi ghi đè**, lưu mã hiện có của học viên vào lịch sử nháp (`localStorage`) với nhãn "Bản trước khi áp dụng AI Diff" để hoàn tác bằng một nút bấm trong Workspace (F5-26; DD `problem_detail` sở hữu cơ chế lịch sử nháp và nút hoàn tác; chốt 2026-10-14, `DEC-2026-1014-batch7-remaining-open-questions`, Q1).<br>2. Lưu bản mã `suggestedCode` vào bộ nhớ tạm trình duyệt (Session Storage).<br>3. Điều hướng sang `problem_detail` (`USR0102`) của bài toán tương ứng kèm cờ khôi phục mã. Chỉ ghi đè nháp và điều hướng; Workspace không mở khung gợi ý AI nào (Q5, chốt 2026/10/19).<br>[Khi thành công] Workspace mở ra với mã nguồn cải tiến đã được nạp sẵn. Xác nhận xong thì hiện toast thành công "Đã áp dụng gợi ý vào bài làm." (bản dựng hiện tại chỉ hiện toast này, chưa điều hướng) [Nguồn: 05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:121-125]. |
+| 6 | Điều hướng | Xác nhận áp dụng mã | Bấm "Ghi đè & Mở Workspace" tại popup. | Có | Không | - | [Các bước]<br>1. **Trước khi ghi đè**, lưu mã hiện có của học viên vào lịch sử nháp (`localStorage`) với nhãn "Bản trước khi áp dụng AI Diff" để hoàn tác bằng một nút bấm trong Workspace (F5-26; DD `problem_detail` sở hữu cơ chế lịch sử nháp và nút hoàn tác; chốt 2026-10-14, `DEC-2026-1014-batch7-remaining-open-questions`, Q1).<br>2. Lưu bản mã `suggestedCode` vào bộ nhớ tạm trình duyệt (Session Storage).<br>3. Điều hướng sang `/workspace/{problemId}` (`problem_detail`, `USR0102`) của bài toán tương ứng; mã đã nằm trong nháp trình duyệt nên màn soạn mã nạp từ đó. Chỉ ghi đè nháp và điều hướng; Workspace không mở khung gợi ý AI nào (Q5, chốt 2026/10/19).<br>[Khi thành công] Workspace mở ra với mã nguồn cải tiến đã được nạp sẵn. Xác nhận xong thì hiện toast thành công "Đã áp dụng gợi ý vào bài làm." (bản dựng hiện toast này rồi điều hướng sang `/workspace/{problemId}`) [Nguồn: 05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:190-207]. |
 | 7 | Nút | Bấm Thử lại | Bấm nút "Thử lại" khi đang ở trạng thái lỗi tạm thời (Khu vực I NO 2/3). | Không | Có | `GetOrCreateSolutionReview` | [Các bước]<br>1. Ẩn thông báo lỗi tạm thời, hiện lại khung chờ đang phân tích.<br>2. Gọi lại `GetOrCreateSolutionReview`.<br>[Khi thành công] Hiển thị báo cáo như EVT-1.<br>[Khi lỗi] Lỗi tạm thời lặp lại thì hiện lại Khu vực I NO 2/3 kèm một toast lỗi mới; nếu lần này là lỗi ngân sách thì chuyển sang NO 4, không còn nút Thử lại. |
 
 ---
@@ -471,8 +476,8 @@ Không còn item (xem Sheet 5 Khu vực E).
 | 1 | Kiểm quyền | Phải đăng nhập | [Nội dung kiểm] Chưa đăng nhập thì chuyển hướng về `auth`.<br>[Nơi thực thi] Giao diện và API gateway.<br>[Tiêu điểm] Toàn màn. | Lỗi | Chưa có mã thông báo | Nội dung "Vui lòng đăng nhập để xem phân tích bài giải." | EVT-1 | 1 |
 | 2 | Kiểm quyền | Quyền sở hữu bài nộp | [Nội dung kiểm] Chỉ chủ sở hữu bài nộp mới được xem báo cáo phân tích; người khác mở bị chặn 403.<br>[Nơi thực thi] Máy chủ.<br>[Tiêu điểm] Toàn màn. | Lỗi | Mã lỗi trong phản hồi | Tránh rò rỉ phân tích cá nhân. | EVT-1 | 2 |
 | 3 | Kiểm nghiệp vụ | Bắt buộc verdict ACCEPTED | [Nội dung kiểm] Nếu bài nộp chưa đạt `ACCEPTED`, từ chối yêu cầu sinh phân tích (F5-01).<br>[Nơi thực thi] Máy chủ.<br>[Tiêu điểm] Toàn màn. | Lỗi | Chưa có mã thông báo | Nội dung "Tính năng phân tích bài giải chỉ áp dụng cho các lượt nộp đạt Accepted." | EVT-1 | 3 |
-| 4 | Kiểm nghiệp vụ | Suy giảm êm khi lỗi tạm thời | [Nội dung kiểm] AI provider lỗi hoặc timeout (không phải hết ngân sách): hiển thị Khu vực I NO 2 kèm nút Thử lại, cho phép học viên gọi lại (F5-22).<br>[Nơi thực thi] Màn hình.<br>[Tiêu điểm] Toàn màn. | Cảnh báo | Chưa có mã thông báo | Nội dung "Hệ thống AI đang bận, thử lại sau ít phút." Hiện ở khối trạng thái thay chỗ báo cáo (Khu vực I NO 2) và đồng thời bằng một toast lỗi ngay lúc xảy ra [Nguồn: 05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:72-76]. | EVT-1, EVT-7 | 4 |
-| 5 | Kiểm nghiệp vụ | Suy giảm êm khi bị khoá ngân sách | [Nội dung kiểm] Vượt ngân sách token AI (F5-25): hiển thị Khu vực I NO 4, **không** hiện nút Thử lại — gọi lại ngay cũng sẽ thất bại cùng lý do. Học viên vẫn dùng được F1-F4 (xem lại kết quả, làm bài mới) bình thường.<br>[Nơi thực thi] Máy chủ (chặn trước khi gọi LLM) và màn hình.<br>[Tiêu điểm] Toàn màn. | Cảnh báo | Chưa có mã thông báo | Nội dung "Bạn đã đạt giới hạn phân tích AI trong ngày. Bạn vẫn có thể tiếp tục làm bài bình thường." Hiện ở khối khoá ngân sách thay chỗ báo cáo (Khu vực I NO 4) và đồng thời bằng một toast lỗi ngay lúc xảy ra [Nguồn: 05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:72-76]. | EVT-1 | 4 |
+| 4 | Kiểm nghiệp vụ | Suy giảm êm khi lỗi tạm thời | [Nội dung kiểm] AI provider lỗi hoặc timeout (không phải hết ngân sách): hiển thị Khu vực I NO 2 kèm nút Thử lại, cho phép học viên gọi lại (F5-22).<br>[Nơi thực thi] Màn hình.<br>[Tiêu điểm] Toàn màn. | Cảnh báo | Chưa có mã thông báo | Nội dung "Hệ thống AI đang bận, thử lại sau ít phút." Hiện ở khối trạng thái thay chỗ báo cáo (Khu vực I NO 2) và đồng thời bằng một toast lỗi ngay lúc xảy ra [Nguồn: 05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:105-112]. | EVT-1, EVT-7 | 4 |
+| 5 | Kiểm nghiệp vụ | Suy giảm êm khi bị khoá ngân sách | [Nội dung kiểm] Vượt ngân sách token AI (F5-25): hiển thị Khu vực I NO 4, **không** hiện nút Thử lại — gọi lại ngay cũng sẽ thất bại cùng lý do. Học viên vẫn dùng được F1-F4 (xem lại kết quả, làm bài mới) bình thường.<br>[Nơi thực thi] Máy chủ (chặn trước khi gọi LLM) và màn hình.<br>[Tiêu điểm] Toàn màn. | Cảnh báo | Chưa có mã thông báo | Nội dung "Bạn đã đạt giới hạn phân tích AI trong ngày. Bạn vẫn có thể tiếp tục làm bài bình thường." Hiện ở khối khoá ngân sách thay chỗ báo cáo (Khu vực I NO 4) và đồng thời bằng một toast lỗi ngay lúc xảy ra [Nguồn: 05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:105-112]. | EVT-1 | 4 |
 | 6 | Kiểm nghiệp vụ | Xác nhận trước khi ghi đè mã | [Nội dung kiểm] Tuyệt đối không tự động ghi đè mã nguồn của học viên trong Workspace mà không có xác nhận rõ ràng (F5-26).<br>[Nơi thực thi] Màn hình.<br>[Tiêu điểm] Popup xác nhận. | Cảnh báo | Không có thông báo | Bảo vệ mã gốc của người học tránh mất mát dữ liệu ngoài ý muốn. | EVT-4, EVT-6 | 1 |
 | 7 | Kiểm nghiệp vụ | Giữ bản mã cũ khi áp dụng gợi ý | [Nội dung kiểm] Xác nhận áp dụng mã AI thì mã hiện có của học viên phải được lưu vào lịch sử nháp (`localStorage`, nhãn "Bản trước khi áp dụng AI Diff") trước khi ghi đè; học viên hoàn tác bằng một nút bấm (F5-26). Không lưu được thì không ghi đè.<br>[Nơi thực thi] Màn hình; cơ chế hoàn tác thuộc DD `problem_detail`.<br>[Tiêu điểm] Popup xác nhận. | Lỗi | Chưa có mã thông báo | Chốt 2026-10-14 (`DEC-2026-1014-batch7-remaining-open-questions`, Q1, ponytail bậc 6). | EVT-6 | 2 |
 | 8 | Kiểm nghiệp vụ | Không sinh lại báo cáo | [Nội dung kiểm] Không có thao tác "sinh lại" báo cáo. Cache cứng theo `source_code_hash` (F5-20): cùng mã trả đúng báo cáo đã lưu, chỉ mã khác (bài nộp mới) mới sinh báo cáo mới. Nút "Thử lại" (EVT-7) chỉ áp dụng cho lần gọi lỗi chưa có báo cáo, không ghi đè báo cáo đã có.<br>[Nơi thực thi] Máy chủ.<br>[Tiêu điểm] Toàn màn. | Lỗi | Chưa có mã thông báo | Chốt 2026-10-14 (`DEC-2026-1014-batch7-remaining-open-questions`, Q2, ponytail bậc 5). | EVT-1, EVT-7 | 4 |
@@ -488,7 +493,8 @@ Không còn item (xem Sheet 5 Khu vực E).
 | ~~Q2~~ | ~~Có cho phép sinh lại báo cáo phân tích nếu người học chưa hài lòng không?~~ **ĐÃ CHỐT 2026-10-14 (DEC-2026-1014-batch7-remaining-open-questions)**: không sinh lại; cache cứng theo `source_code_hash` (F5-20), báo cáo mới chỉ cho mã khác. Ghi ở Sheet 9 NO 8 (ponytail bậc 5). | Đã đóng | - | - |
 | ~~Q3~~ | ~~Thời gian timeout khi gọi LLM sinh báo cáo phân tích JSON là bao lâu?~~ **ĐÃ CHỐT 2026-10-14 (DEC-2026-1014-batch7-remaining-open-questions)**: timeout LLM 30 giây, giao diện hiện skeleton trong lúc chờ (không làm câu đố/mẹo giải thuật vì chưa có yêu cầu nguồn, ponytail bậc 1). Ghi ở Sheet 5 Khu vực I NO 1, Sheet 8 EVT-1, Sheet 9 NO 9 (ponytail bậc 5). | Đã đóng | - | - |
 | Q4 | ~~Điểm tổng của báo cáo: có hiện không, đặt thế nào?~~ **Đóng hẳn 2026-10-14 (moot, `DEC-2026-1014-drop-solution-review-rubric`)**: chủ dự án bỏ cả 5 thẻ tiêu chí lẫn cấu hình rubric ở `ADM0301`, nên không còn điểm (a) bộ tiêu chí lệch, (c) trọng số, và điểm (b) điểm tổng cũng không còn đối tượng để tổng hợp. Màn chỉ giữ điểm dễ đọc 1 đến 5 (F5-05); F5-18 vẫn áp dụng (phản hồi hỗ trợ học tập, không phải điểm chính thức) | - | - | - |
-| Q5 | **Sau "Ghi đè & Mở Workspace", Workspace có tự mở khung gợi ý AI không?** | **ĐÃ CHỐT 2026-10-19 (owner)**: không. Xác nhận xong chỉ ghi đè nháp trình duyệt rồi chuyển sang `/problems/{problemId}`; Workspace không mở khung gợi ý AI nào. Bản dựng đã đúng (`solution-review-view.tsx`, `ConfirmDialog` `onConfirm`). Ponytail bậc 3 (không có yêu cầu nguồn và không có cảnh demo cần khung này). | Đã đóng, ghi ở Sheet 8 EVT-6 và Hiện trạng bản dựng | - |
+| Q5 | **Sau "Ghi đè & Mở Workspace", Workspace có tự mở khung gợi ý AI không?** | **ĐÃ CHỐT 2026-10-19 (owner)**: không. Xác nhận xong chỉ ghi đè nháp trình duyệt rồi chuyển sang màn soạn mã (lúc chốt là `/problems/{problemId}`, từ 2026/10/20 là `/workspace/{problemId}`); Workspace không mở khung gợi ý AI nào. Bản dựng đã đúng (`solution-review-view.tsx`, `ConfirmDialog` `onConfirm`). Ponytail bậc 3 (không có yêu cầu nguồn và không có cảnh demo cần khung này). | Đã đóng, ghi ở Sheet 8 EVT-6 và Hiện trạng bản dựng | - |
+| Q6 | Liên kết từ khối "Chủ đề nên học tiếp" sang `interview_bank_list` có cần lọc theo chủ đề gợi ý không? | `USR0401` hiện chưa nhận tham số tìm kiếm trên đường dẫn, và chủ đề gợi ý là chuỗi tự do, chưa khớp với danh mục chủ đề do ADMIN quản lý | Giữ một liên kết mở danh sách chưa lọc (ponytail bậc 3); mở lại nếu `USR0401` hỗ trợ tham số tìm kiếm | Chủ dự án + DD `interview-bank` |
 
 ---
 
@@ -498,16 +504,17 @@ Bảng này ghi điều prototype frontend đang có, để đối chiếu với
 
 | Hạng mục | Hiện trạng | Nguồn |
 | :--- | :--- | :--- |
-| Kiểu dữ liệu báo cáo | `SolutionReviewDetail` chỉ có `readabilityScore`, `complexity`, `strengths`, `improvements`, `edgeCases`, `codeDiff`; không có `criteriaScores` | `05-coding/frontend/src/entities/solution-review/model/types.ts:37-53` |
-| Chỉ số đầu trang | Điểm dễ đọc hiển thị bằng `data.readabilityScore` | `05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:208-209` |
-| Khối độ phức tạp | Bảng đối chiếu thời gian và bộ nhớ ngay trong `ReadyReport` | `05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:231-268` |
-| 5 thẻ tiêu chí | Không còn trong `ReadyReport`, không còn key rubric trong file view (grep `criteri`, `rubric` không khớp) | `05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:180-` |
+| Kiểu dữ liệu báo cáo | `SolutionReviewDetail` chỉ có `readabilityScore`, `complexity`, `strengths`, `improvements`, `edgeCases`, `codeDiff`; không có `criteriaScores` | `05-coding/frontend/src/entities/solution-review/model/types.ts:35-61` (V1.7: theo đúng lược đồ 1.3a, thêm `schemaVersion`, `verdict`, `followUpTopics`, `codeDiff` nullable; bỏ `summaryText`) |
+| Chủ đề nên học tiếp | Thẻ chip từ `data.followUpTopics`, một liên kết `/interview-bank` (không lọc); ẩn khi mảng rỗng; không có `summaryText` | `05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:364-383` |
+| Chỉ số đầu trang | Điểm dễ đọc hiển thị bằng `data.readabilityScore` | `05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:261` |
+| Khối độ phức tạp | Bảng đối chiếu thời gian và bộ nhớ ngay trong `ReadyReport` | `05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:282` (`optimalTime`, `optimalSpace` có thể `null`, hiện "—") |
+| 5 thẻ tiêu chí | Không còn trong `ReadyReport`, không còn key rubric trong file view (grep `criteri`, `rubric` không khớp) | `05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:179-185` |
 | Slice `rubric-criteria-grid.tsx` | Không tồn tại trong thư mục `ui/` của view | `05-coding/frontend/src/views/users/solution-review/ui/` |
 | Route và id lượt nộp | `useParams` lấy `submissionId`, truyền vào `useSolutionReview(submissionId, demo)` và `queryKey`; breadcrumb hai mục đều là `Link` tới `/submissions/{id}`; nút Phỏng vấn dùng id của route. Mock: id dạng `SB-n` hoặc `SUB-n` có báo cáo, id khác trả `NOT_FOUND` | `solution-review-view.tsx` (`SolutionReviewContent`); `entities/solution-review/api/__mock__/solution-review-mocks.ts` |
 | Trạng thái không mở được | `NOT_FOUND`, `FORBIDDEN`, `NOT_ACCEPTED` hiện một `NoticeTile` kèm liên kết về Bài đã nộp, không có nút Thử lại; lỗi khác vẫn là lỗi tạm thời có Thử lại. Mock chỉ phát ra `NOT_FOUND` | `solution-review-view.tsx` (`isUnavailable`) |
 | Thử lại (EVT-7) | Dùng `query.isFetching`: khi thử lại, khối lỗi ẩn và hiện khung chờ nên không bấm liên tiếp được | `solution-review-view.tsx` (`isLoading`) |
-| Áp dụng vào Workspace (EVT-6) | Xác nhận thì `saveWorkspaceDraft(problemId, language, model, suggestedCode)` rồi `router.push("/problems/{problemId}")`; Workspace nạp nháp khi mở. Lưu trình duyệt bị chặn thì toast lỗi và ở lại màn. **Chưa có** bước lưu bản trước vào lịch sử nháp (nhãn "Bản trước khi áp dụng AI Diff"). **Owner chốt 2026/10/19 (Q5):** chỉ ghi đè nháp và điều hướng, không mở khung gợi ý AI trong Workspace | `solution-review-view.tsx` (`ConfirmDialog` `onConfirm`); `entities/problem/model/workspace-draft.ts` |
-| Trình xem Diff (Khu vực G NO 1) | **Bản rút gọn được owner chấp nhận 2026/10/19**: danh sách dòng chữ thường tô màu từ `codeDiff.diffLines`, không dùng Monaco Diff Editor, không so `source_code` với `suggestedCode` ở phía máy khách. Xét Monaco khi nối API | `solution-review-view.tsx` (Card `diffTitle`) |
+| Áp dụng vào Workspace (EVT-6) | Xác nhận thì `saveWorkspaceDraft(problemId, language, model, codeDiff.suggestedCode)` rồi `router.push("/workspace/{problemId}")` (từ 2026/10/20); Workspace nạp nháp khi mở. Lưu trình duyệt bị chặn thì toast lỗi và ở lại màn. **Chưa có** bước lưu bản trước vào lịch sử nháp (nhãn "Bản trước khi áp dụng AI Diff"). **Owner chốt 2026/10/19 (Q5):** chỉ ghi đè nháp và điều hướng, không mở khung gợi ý AI trong Workspace | `solution-review-view.tsx` (`ConfirmDialog` `onConfirm`); `entities/problem/model/workspace-draft.ts` |
+| Trình xem Diff (Khu vực G NO 1) | **Bản rút gọn được owner chấp nhận 2026/10/19**: danh sách dòng chữ thường tô màu, không dùng Monaco Diff Editor. **V1.7 (2026/10/23):** không còn `diffLines`/`diffNote` trong dữ liệu; `lineDiff` (`05-coding/frontend/src/entities/solution-review/lib/line-diff.ts`) tính diff ở máy khách từ `sourceCode` và `codeDiff.suggestedCode`; ẩn thẻ Diff và nút Áp dụng khi `suggestedCode` là `null`. Xét Monaco khi nối API | `solution-review-view.tsx:364-369` (Card `diffTitle`) |
 | Chỉ số đầu trang | Thêm "Thời điểm phân tích" từ `createdAt` qua `formatDateVN` (UTC+7). Ngôn ngữ hiện nhãn dịch (`solutionReview.language.*`) thay vì mã thô; điểm dễ đọc vẫn in `{n} / 5` (chưa theo mẫu "Dễ đọc: {n} / 5", nợ nhỏ) | `solution-review-view.tsx` (`ReadyReport`) |
 
 ---

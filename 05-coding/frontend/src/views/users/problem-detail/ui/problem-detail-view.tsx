@@ -27,7 +27,7 @@ import {
 } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { Play, Send, Upload } from "lucide-react";
+import { Bookmark, Play, Send, Upload } from "lucide-react";
 import {
   fetchProblemDetail,
   problemLevelLabel,
@@ -57,6 +57,7 @@ import {
   SegmentedTabs,
   SplitPane,
 } from "@/shared/ui";
+import { RunResultsDialog } from "./run-results-dialog";
 
 const LANGUAGES: SubmissionLanguage[] = ["java", "cpp", "python"];
 const FILE_EXTENSION: Record<SubmissionLanguage, string> = {
@@ -130,13 +131,14 @@ function Workspace({
     Partial<Record<StarterCodeKey, true>>
   >({});
   const [consoleTab, setConsoleTab] = useState<ConsoleTab>("testcase");
-  const [caseIndex, setCaseIndex] = useState(0);
   const [sampleRun, setSampleRun] = useState<SampleRunResult | null>(null);
   const [runCount, setRunCount] = useState(0);
   const [running, setRunning] = useState(false);
   const [submitAttempt, setSubmitAttempt] = useState(0);
   const [result, setResult] = useState<SubmissionRunResult | null>(null);
   const [saved, setSaved] = useState(detail.saved);
+  // Sub-screen listing every testcase of the latest Run Code / Submit (owner 2026-10-21).
+  const [dialog, setDialog] = useState<"run" | "submit" | null>(null);
   const timerRef = useRef<number | undefined>(undefined);
 
   const totalTestcases =
@@ -288,11 +290,16 @@ function Workspace({
     if (sourceToSend() === null) return;
     setRunning(true);
     setConsoleTab("testcase");
+    setSampleRun(null);
+    setDialog("run");
     window.clearTimeout(timerRef.current);
     timerRef.current = window.setTimeout(() => {
       const attempt = runCount + 1;
       setRunCount(attempt);
-      const run = simulateSampleRun(detail.sampleTestcases, attempt);
+      const run = simulateSampleRun(
+        detail.sampleTestcases,
+        detail.mockAlwaysPass ? 2 : attempt,
+      );
       setSampleRun(run);
       setRunning(false);
       const passed = run.cases.filter((item) => item.passed).length;
@@ -310,11 +317,15 @@ function Workspace({
     setRunning(true);
     setConsoleTab("result");
     setResult(null);
+    setDialog("submit");
     window.clearTimeout(timerRef.current);
     timerRef.current = window.setTimeout(() => {
       const attempt = submitAttempt + 1;
       setSubmitAttempt(attempt);
-      const run = simulateSubmission(totalTestcases, attempt);
+      const run = simulateSubmission(
+        totalTestcases,
+        detail.mockAlwaysPass ? 2 : attempt,
+      );
       setResult(run);
       setRunning(false);
       if (run.overallVerdict === "accepted")
@@ -330,8 +341,7 @@ function Workspace({
   }
 
   const latestSubmission = detail.mySubmissions[0];
-  const selectedCase = detail.sampleTestcases[caseIndex];
-  const selectedRun = sampleRun?.cases[caseIndex];
+  const samplePassed = sampleRun?.cases.filter((item) => item.passed).length ?? 0;
 
   const statementPane = (
     <Card className="flex min-h-0 flex-1 flex-col px-4 py-3">
@@ -493,9 +503,17 @@ function Workspace({
         <Button
           variant="ghost"
           size="sm"
-          className="border border-[var(--color-border)]"
+          aria-pressed={saved}
+          className={`border ${
+            saved
+              ? "border-[var(--color-admin-warn)] bg-[color-mix(in_srgb,var(--color-admin-warn)_18%,transparent)] text-[var(--color-admin-warn-text)]"
+              : "border-[var(--color-border)]"
+          }`}
           onClick={toggleSaved}
         >
+          <Bookmark
+            className={`mr-1.5 h-3.5 w-3.5 ${saved ? "fill-current" : ""}`}
+          />
           {saved ? t("panel.btnUnsave") : t("panel.btnSave")}
         </Button>
       </div>
@@ -646,94 +664,71 @@ function Workspace({
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {consoleTab === "testcase" ? (
-          <div className="flex flex-col gap-2">
-            <SegmentedTabs
-              label={t("console.caseTabsLabel")}
-              value={String(caseIndex)}
-              onValueChange={(value) => setCaseIndex(Number(value))}
-              options={detail.sampleTestcases.map((_, index) => ({
-                value: String(index),
-                label: sampleRun
-                  ? t("console.caseTabWithVerdict", {
-                      n: index + 1,
-                      verdict: sampleRun.cases[index]?.passed
-                        ? t("console.passed")
-                        : t("console.failed"),
-                    })
-                  : t("console.caseTab", { n: index + 1 }),
-              }))}
-              className="self-start"
-            />
-            {selectedCase ? (
-              <div className="flex flex-col gap-2 text-[12px]">
-                <CaseField label={t("console.fieldInput")}>
-                  {selectedCase.input}
-                </CaseField>
-                {selectedRun ? (
-                  <>
-                    <CaseField
-                      label={t("console.fieldActual")}
-                      failed={!selectedRun.passed}
-                    >
-                      {selectedRun.actualOutput}
-                    </CaseField>
-                    <CaseField label={t("console.fieldExpected")}>
-                      {selectedRun.expectedOutput}
-                    </CaseField>
-                    <p className="text-[11.5px] text-[var(--color-text-muted)]">
-                      {t("console.metrics", {
-                        ms: selectedRun.runtimeMs,
-                        mb: Math.round(selectedRun.memoryKb / 1024),
-                      })}
-                    </p>
-                  </>
-                ) : running ? (
-                  <p className="text-[12.5px] text-[var(--color-text-muted)]">
-                    {t("console.running")}
-                  </p>
-                ) : null}
-              </div>
-            ) : null}
-            {!sampleRun && !running ? (
-              <p className="text-[12.5px] text-[var(--color-text-muted)]">
-                {t("console.runHint", {
-                  samples: detail.sampleTestcases.length,
-                  hidden: detail.hiddenTestcaseCount,
-                })}
+          sampleRun ? (
+            <div className="flex flex-col items-start gap-2 text-[12.5px]">
+              <p>
+                <span className="font-semibold text-[var(--color-success)]">
+                  {t("console.summaryPassed", { n: samplePassed })}
+                </span>
+                {" · "}
+                <span
+                  className={`font-semibold ${sampleRun.cases.length - samplePassed > 0 ? "text-[var(--color-admin-negative)]" : ""}`}
+                >
+                  {t("console.summaryFailed", {
+                    n: sampleRun.cases.length - samplePassed,
+                  })}
+                </span>
               </p>
-            ) : null}
-          </div>
-        ) : result ? (
-          <div>
-            <div className="flex flex-wrap gap-1">
-              {result.testcases.map((testcase) => {
-                const label = t("console.caseDot", {
-                  n: testcase.order,
-                  verdict:
-                    testcase.verdict === "passed"
-                      ? t("console.passed")
-                      : t("console.failed"),
-                });
-                return (
-                  <span
-                    key={testcase.order}
-                    role="img"
-                    aria-label={label}
-                    title={label}
-                    className="inline-block h-4 w-4 rounded-sm"
-                    style={{
-                      background: `var(${testcase.verdict === "passed" ? "--color-success" : "--color-admin-negative"})`,
-                    }}
-                  />
-                );
-              })}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="border border-[var(--color-border)]"
+                onClick={() => setDialog("run")}
+              >
+                {t("console.btnDetail")}
+              </Button>
             </div>
-            <p className="mt-2 text-[11.5px] text-[var(--color-text-muted)]">
+          ) : running ? (
+            <p className="text-[12.5px] text-[var(--color-text-muted)]">
+              {t("console.running")}
+            </p>
+          ) : (
+            <p className="text-[12.5px] text-[var(--color-text-muted)]">
+              {t("console.runHint", {
+                samples: detail.sampleTestcases.length,
+                hidden: detail.hiddenTestcaseCount,
+              })}
+            </p>
+          )
+        ) : result ? (
+          <div className="flex flex-col items-start gap-2 text-[12.5px]">
+            <p>
+              <span className="font-semibold text-[var(--color-success)]">
+                {t("console.summaryPassed", { n: result.passedCount })}
+              </span>
+              {" · "}
+              <span
+                className={`font-semibold ${result.totalCount - result.passedCount > 0 ? "text-[var(--color-admin-negative)]" : ""}`}
+              >
+                {t("console.summaryFailed", {
+                  n: result.totalCount - result.passedCount,
+                })}
+              </span>
+            </p>
+            <p className="text-[11.5px] text-[var(--color-text-muted)]">
               {t("console.metrics", {
                 ms: result.runtimeMs,
                 mb: Math.round(result.memoryKb / 1024),
               })}
             </p>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="border border-[var(--color-border)]"
+              onClick={() => setDialog("submit")}
+            >
+              {t("console.btnDetail")}
+            </Button>
           </div>
         ) : running ? (
           <p className="text-[12.5px] text-[var(--color-text-muted)]">
@@ -835,34 +830,15 @@ function Workspace({
           />
         }
       />
-    </div>
-  );
-}
-
-// One labelled block of testcase text; `failed` outlines a wrong actual output with the negative token.
-function CaseField({
-  label,
-  failed = false,
-  children,
-}: {
-  label: string;
-  failed?: boolean;
-  children: string;
-}) {
-  return (
-    <div>
-      <p className="mb-0.5 text-[11px] font-semibold text-[var(--color-text-muted)]">
-        {label}
-      </p>
-      <pre
-        className={`overflow-x-auto rounded-md border bg-[var(--color-surface-hover)] px-2 py-1.5 font-mono text-[12px] ${
-          failed
-            ? "border-[var(--color-admin-negative)]"
-            : "border-[var(--color-border)]"
-        }`}
-      >
-        {children}
-      </pre>
+      {dialog ? (
+        <RunResultsDialog
+          mode={dialog}
+          running={running}
+          sampleRun={sampleRun}
+          result={result}
+          onClose={() => setDialog(null)}
+        />
+      ) : null}
     </div>
   );
 }

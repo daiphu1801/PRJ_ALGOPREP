@@ -171,171 +171,354 @@ export function SubmissionResultView({
         </p>
       ) : null}
 
-      {/* Khu vực B — Verdict banner */}
-      <div className="glass-card mb-4 border border-[var(--color-border)] px-5 py-4">
-        <div className="flex flex-wrap items-center gap-3">
-          <Badge variant={SUBMISSION_STATUS_VARIANT[submission.status]}>
-            {t(`verdict.${submission.status}`)}
-          </Badge>
-          <Badge variant={problemLevelTone(levels, submission.difficulty)}>
-            {problemLevelLabel(levels, submission.difficulty)}
-          </Badge>
-          {submission.totalCount != null ? (
-            <span className="font-mono text-sm font-semibold">
-              {submission.passedCount}/{submission.totalCount}
-            </span>
+      {isInstructor ? (
+        <>
+          {/* Khu vực B — Verdict banner */}
+          <div className="glass-card mb-4 border border-[var(--color-border)] px-5 py-4">
+            <div className="flex flex-wrap items-center gap-3">
+              <Badge variant={SUBMISSION_STATUS_VARIANT[submission.status]}>
+                {t(`verdict.${submission.status}`)}
+              </Badge>
+              <Badge variant={problemLevelTone(levels, submission.difficulty)}>
+                {problemLevelLabel(levels, submission.difficulty)}
+              </Badge>
+              {submission.totalCount != null ? (
+                <span className="font-mono text-sm font-semibold">
+                  {submission.passedCount}/{submission.totalCount}
+                </span>
+              ) : null}
+            </div>
+            <p className="mt-1.5 text-[12.5px] text-[var(--color-text-muted)]">
+              {t("verdictSubtitle", {
+                passed: submission.passedCount ?? 0,
+                total: submission.totalCount ?? 0,
+                submittedAt: formatDateVN(submission.submittedAt, {
+                  locale,
+                  withTime: true,
+                }),
+              })}
+            </p>
+            {/* Khu vực C — run stats as one text line (owner rule 2026-10-13: no KPI strip on a detail screen). */}
+            <p className="mt-1 font-mono text-[12.5px] text-[var(--color-text-muted)]">
+              {[
+                `${t("stats.runtime")} ${formatMs(submission.runtimeMs)}`,
+                `${t("stats.memory")} ${formatMb(submission.memoryKb)}`,
+                ...(isInstructor
+                  ? []
+                  : [`${t("stats.beats")} ${beatsTileValue(submission, t)}`]),
+                t(`mode.${submission.submissionMode}`),
+              ].join(" · ")}
+            </p>
+          </div>
+
+          {/* Khu vực D — Testcase table. Hidden entirely on COMPILE_ERROR (BD Sheet 6 Khu vực D NO 1). */}
+          {!isCompileError ? (
+            <div
+              className={
+                isInstructor
+                  ? "glass-card order-3 mb-4 overflow-hidden border border-[var(--color-border)]"
+                  : "glass-card mb-4 overflow-hidden border border-[var(--color-border)]"
+              }
+            >
+              <table className="w-full text-[13px]">
+                <caption className="sr-only">
+                  {t("testcaseTableCaption")}
+                </caption>
+                <thead>
+                  <tr className="border-b border-[var(--color-border)] text-[11px] font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
+                    <th scope="col" className="px-3 py-2 text-left">
+                      {t("col.order")}
+                    </th>
+                    <th scope="col" className="px-3 py-2 text-left">
+                      {t("col.visibility")}
+                    </th>
+                    <th scope="col" className="px-3 py-2 text-left">
+                      {t("col.verdict")}
+                    </th>
+                    <th scope="col" className="px-3 py-2 text-right">
+                      {t("col.runtime")}
+                    </th>
+                    <th scope="col" className="px-3 py-2 text-right">
+                      {t("col.memory")}
+                    </th>
+                    <th scope="col" className="px-3 py-2 text-right">
+                      {t("col.action")}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {submission.testcases.length === 0 ? (
+                    <tr>
+                      <td colSpan={6}>
+                        <EmptyState>{t("testcaseEmpty")}</EmptyState>
+                      </td>
+                    </tr>
+                  ) : (
+                    submission.testcases.map((tc) => (
+                      <TestcaseRow
+                        key={tc.testcaseId}
+                        testcase={tc}
+                        expanded={expanded === tc.testcaseId}
+                        onToggle={() =>
+                          setExpanded((prev) =>
+                            prev === tc.testcaseId ? null : tc.testcaseId,
+                          )
+                        }
+                        t={t}
+                      />
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           ) : null}
-        </div>
-        <p className="mt-1.5 text-[12.5px] text-[var(--color-text-muted)]">
-          {t("verdictSubtitle", {
-            passed: submission.passedCount ?? 0,
-            total: submission.totalCount ?? 0,
-            submittedAt: formatDateVN(submission.submittedAt, {
-              locale,
-              withTime: true,
-            }),
-          })}
-        </p>
-        {/* Khu vực C — run stats as one text line (owner rule 2026-10-13: no KPI strip on a detail screen). */}
-        <p className="mt-1 font-mono text-[12.5px] text-[var(--color-text-muted)]">
-          {[
-            `${t("stats.runtime")} ${formatMs(submission.runtimeMs)}`,
-            `${t("stats.memory")} ${formatMb(submission.memoryKb)}`,
-            ...(isInstructor
-              ? []
-              : [`${t("stats.beats")} ${beatsTileValue(submission, t)}`]),
-            t(`mode.${submission.submissionMode}`),
-          ].join(" · ")}
-        </p>
-      </div>
 
-      {/* Khu vực D — Testcase table. Hidden entirely on COMPILE_ERROR (BD Sheet 6 Khu vực D NO 1). */}
-      {!isCompileError ? (
-        <div
-          className={
-            isInstructor
-              ? "glass-card order-3 mb-4 overflow-hidden border border-[var(--color-border)]"
-              : "glass-card mb-4 overflow-hidden border border-[var(--color-border)]"
-          }
-        >
-          <table className="w-full text-[13px]">
-            <caption className="sr-only">{t("testcaseTableCaption")}</caption>
-            <thead>
-              <tr className="border-b border-[var(--color-border)] text-[11px] font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
-                <th scope="col" className="px-3 py-2 text-left">
-                  {t("col.order")}
-                </th>
-                <th scope="col" className="px-3 py-2 text-left">
-                  {t("col.visibility")}
-                </th>
-                <th scope="col" className="px-3 py-2 text-left">
-                  {t("col.verdict")}
-                </th>
-                <th scope="col" className="px-3 py-2 text-right">
-                  {t("col.runtime")}
-                </th>
-                <th scope="col" className="px-3 py-2 text-right">
-                  {t("col.memory")}
-                </th>
-                <th scope="col" className="px-3 py-2 text-right">
-                  {t("col.action")}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {submission.testcases.length === 0 ? (
-                <tr>
-                  <td colSpan={6}>
-                    <EmptyState>{t("testcaseEmpty")}</EmptyState>
-                  </td>
-                </tr>
-              ) : (
-                submission.testcases.map((tc) => (
-                  <TestcaseRow
-                    key={tc.testcaseId}
-                    testcase={tc}
-                    expanded={expanded === tc.testcaseId}
-                    onToggle={() =>
-                      setExpanded((prev) =>
-                        prev === tc.testcaseId ? null : tc.testcaseId,
-                      )
-                    }
-                    t={t}
-                  />
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      ) : null}
-
-      {/* Khu vực E — Code viewer. Instructor: first block after the banner, the code is what they came for. */}
-      <div
-        className={
-          isInstructor
-            ? "glass-card order-2 mb-4 border border-[var(--color-border)] px-5 py-4"
-            : "glass-card mb-4 border border-[var(--color-border)] px-5 py-4"
-        }
-      >
-        <div className="mb-2.5 flex items-center justify-between gap-2">
-          <Badge variant="neutral">
-            {t(`language.${submission.language}`)}
-          </Badge>
-          <Button variant="ghost" size="sm" onClick={copyCode}>
-            {t("code.copy")}
-          </Button>
-        </div>
-        <pre className="max-h-[420px] overflow-auto rounded-lg bg-[var(--color-surface-hover)] p-3 font-mono text-[12.5px] whitespace-pre-wrap">
-          {submission.sourceCode}
-        </pre>
-        {isCompileError && submission.compileErrorMessage ? (
-          <pre className="mt-3 max-h-[240px] overflow-auto rounded-lg border border-[var(--color-admin-negative)] bg-[color-mix(in_srgb,var(--color-admin-negative)_10%,transparent)] p-3 font-mono text-[12.5px] whitespace-pre-wrap text-[var(--color-admin-negative)]">
-            {submission.compileErrorMessage}
-          </pre>
-        ) : null}
-      </div>
-
-      {/* Khu vực F — Next actions. Learner-only: the instructor reads, never retries or opens the AI flows. */}
-      {isInstructor ? null : (
-        <div className="flex flex-wrap gap-2.5">
-          <Button
-            variant="cta"
-            disabled={!canOpenAi}
-            title={canOpenAi ? undefined : t("actions.needAccepted")}
-            asChild={canOpenAi}
+          {/* Khu vực E — Code viewer. Instructor: first block after the banner, the code is what they came for. */}
+          <div
+            className={
+              isInstructor
+                ? "glass-card order-2 mb-4 border border-[var(--color-border)] px-5 py-4"
+                : "glass-card mb-4 border border-[var(--color-border)] px-5 py-4"
+            }
           >
-            {canOpenAi ? (
-              <Link href={`/submissions/${submission.id}/review`}>
-                {t("actions.solutionReview")}
-              </Link>
-            ) : (
-              <span>{t("actions.solutionReview")}</span>
+            <div className="mb-2.5 flex items-center justify-between gap-2">
+              <Badge variant="neutral">
+                {t(`language.${submission.language}`)}
+              </Badge>
+              <Button variant="ghost" size="sm" onClick={copyCode}>
+                {t("code.copy")}
+              </Button>
+            </div>
+            <pre className="max-h-[420px] overflow-auto rounded-lg bg-[var(--color-surface-hover)] p-3 font-mono text-[12.5px] whitespace-pre-wrap">
+              {submission.sourceCode}
+            </pre>
+            {isCompileError && submission.compileErrorMessage ? (
+              <pre className="mt-3 max-h-[240px] overflow-auto rounded-lg border border-[var(--color-admin-negative)] bg-[color-mix(in_srgb,var(--color-admin-negative)_10%,transparent)] p-3 font-mono text-[12.5px] whitespace-pre-wrap text-[var(--color-admin-negative)]">
+                {submission.compileErrorMessage}
+              </pre>
+            ) : null}
+          </div>
+
+          {/* Khu vực F — Next actions. Learner-only: the instructor reads, never retries or opens the AI flows. */}
+          {isInstructor ? null : (
+            <div className="flex flex-wrap gap-2.5">
+              <Button
+                variant="cta"
+                disabled={!canOpenAi}
+                title={canOpenAi ? undefined : t("actions.needAccepted")}
+                asChild={canOpenAi}
+              >
+                {canOpenAi ? (
+                  <Link href={`/submissions/${submission.id}/review`}>
+                    {t("actions.solutionReview")}
+                  </Link>
+                ) : (
+                  <span>{t("actions.solutionReview")}</span>
+                )}
+              </Button>
+              <Button
+                variant="ghost"
+                disabled={!canOpenAi}
+                title={canOpenAi ? undefined : t("actions.needAccepted")}
+                asChild={canOpenAi}
+                className="border border-[var(--color-border)]"
+              >
+                {canOpenAi ? (
+                  <Link href={`/submissions/${submission.id}/interview`}>
+                    {t("actions.mockInterview")}
+                  </Link>
+                ) : (
+                  <span>{t("actions.mockInterview")}</span>
+                )}
+              </Button>
+              <Button
+                variant="ghost"
+                asChild
+                className="border border-[var(--color-border)]"
+              >
+                <Link href={`/workspace/${submission.problemSlug}`}>
+                  {t("actions.retry")}
+                </Link>
+              </Button>
+            </div>
+          )}
+        </>
+      ) : (
+        <div className="grid grid-cols-1 items-start gap-x-6 lg:[grid-template-columns:minmax(0,1fr)_320px]">
+          <div className="min-w-0 lg:order-1">
+            {/* Khu vực D — Testcase table. Hidden entirely on COMPILE_ERROR (BD Sheet 6 Khu vực D NO 1). */}
+            {!isCompileError ? (
+              <div
+                className={
+                  isInstructor
+                    ? "glass-card order-3 mb-4 overflow-hidden border border-[var(--color-border)]"
+                    : "glass-card mb-4 overflow-hidden border border-[var(--color-border)]"
+                }
+              >
+                <table className="w-full text-[13px]">
+                  <caption className="sr-only">
+                    {t("testcaseTableCaption")}
+                  </caption>
+                  <thead>
+                    <tr className="border-b border-[var(--color-border)] text-[11px] font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
+                      <th scope="col" className="px-3 py-2 text-left">
+                        {t("col.order")}
+                      </th>
+                      <th scope="col" className="px-3 py-2 text-left">
+                        {t("col.visibility")}
+                      </th>
+                      <th scope="col" className="px-3 py-2 text-left">
+                        {t("col.verdict")}
+                      </th>
+                      <th scope="col" className="px-3 py-2 text-right">
+                        {t("col.runtime")}
+                      </th>
+                      <th scope="col" className="px-3 py-2 text-right">
+                        {t("col.memory")}
+                      </th>
+                      <th scope="col" className="px-3 py-2 text-right">
+                        {t("col.action")}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {submission.testcases.length === 0 ? (
+                      <tr>
+                        <td colSpan={6}>
+                          <EmptyState>{t("testcaseEmpty")}</EmptyState>
+                        </td>
+                      </tr>
+                    ) : (
+                      submission.testcases.map((tc) => (
+                        <TestcaseRow
+                          key={tc.testcaseId}
+                          testcase={tc}
+                          expanded={expanded === tc.testcaseId}
+                          onToggle={() =>
+                            setExpanded((prev) =>
+                              prev === tc.testcaseId ? null : tc.testcaseId,
+                            )
+                          }
+                          t={t}
+                        />
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            ) : null}
+
+            {/* Khu vực E — Code viewer. Instructor: first block after the banner, the code is what they came for. */}
+            <div
+              className={
+                isInstructor
+                  ? "glass-card order-2 mb-4 border border-[var(--color-border)] px-5 py-4"
+                  : "glass-card mb-4 border border-[var(--color-border)] px-5 py-4"
+              }
+            >
+              <div className="mb-2.5 flex items-center justify-between gap-2">
+                <Badge variant="neutral">
+                  {t(`language.${submission.language}`)}
+                </Badge>
+                <Button variant="ghost" size="sm" onClick={copyCode}>
+                  {t("code.copy")}
+                </Button>
+              </div>
+              <pre className="max-h-[420px] overflow-auto rounded-lg bg-[var(--color-surface-hover)] p-3 font-mono text-[12.5px] whitespace-pre-wrap">
+                {submission.sourceCode}
+              </pre>
+              {isCompileError && submission.compileErrorMessage ? (
+                <pre className="mt-3 max-h-[240px] overflow-auto rounded-lg border border-[var(--color-admin-negative)] bg-[color-mix(in_srgb,var(--color-admin-negative)_10%,transparent)] p-3 font-mono text-[12.5px] whitespace-pre-wrap text-[var(--color-admin-negative)]">
+                  {submission.compileErrorMessage}
+                </pre>
+              ) : null}
+            </div>
+          </div>
+          <aside className="lg:sticky lg:top-24 lg:order-2">
+            {/* Khu vực B — Verdict banner */}
+            <div className="glass-card mb-4 border border-[var(--color-border)] px-5 py-4">
+              <div className="flex flex-wrap items-center gap-3">
+                <Badge variant={SUBMISSION_STATUS_VARIANT[submission.status]}>
+                  {t(`verdict.${submission.status}`)}
+                </Badge>
+                <Badge
+                  variant={problemLevelTone(levels, submission.difficulty)}
+                >
+                  {problemLevelLabel(levels, submission.difficulty)}
+                </Badge>
+                {submission.totalCount != null ? (
+                  <span className="font-mono text-sm font-semibold">
+                    {submission.passedCount}/{submission.totalCount}
+                  </span>
+                ) : null}
+              </div>
+              <p className="mt-1.5 text-[12.5px] text-[var(--color-text-muted)]">
+                {t("verdictSubtitle", {
+                  passed: submission.passedCount ?? 0,
+                  total: submission.totalCount ?? 0,
+                  submittedAt: formatDateVN(submission.submittedAt, {
+                    locale,
+                    withTime: true,
+                  }),
+                })}
+              </p>
+              {/* Khu vực C — run stats as one text line (owner rule 2026-10-13: no KPI strip on a detail screen). */}
+              <p className="mt-1 font-mono text-[12.5px] text-[var(--color-text-muted)]">
+                {[
+                  `${t("stats.runtime")} ${formatMs(submission.runtimeMs)}`,
+                  `${t("stats.memory")} ${formatMb(submission.memoryKb)}`,
+                  ...(isInstructor
+                    ? []
+                    : [`${t("stats.beats")} ${beatsTileValue(submission, t)}`]),
+                  t(`mode.${submission.submissionMode}`),
+                ].join(" · ")}
+              </p>
+            </div>
+
+            {/* Khu vực F — Next actions. Learner-only: the instructor reads, never retries or opens the AI flows. */}
+            {isInstructor ? null : (
+              <div className="flex flex-col gap-2.5 [&>*]:w-full">
+                <Button
+                  variant="cta"
+                  disabled={!canOpenAi}
+                  title={canOpenAi ? undefined : t("actions.needAccepted")}
+                  asChild={canOpenAi}
+                >
+                  {canOpenAi ? (
+                    <Link href={`/submissions/${submission.id}/review`}>
+                      {t("actions.solutionReview")}
+                    </Link>
+                  ) : (
+                    <span>{t("actions.solutionReview")}</span>
+                  )}
+                </Button>
+                <Button
+                  variant="ghost"
+                  disabled={!canOpenAi}
+                  title={canOpenAi ? undefined : t("actions.needAccepted")}
+                  asChild={canOpenAi}
+                  className="border border-[var(--color-border)]"
+                >
+                  {canOpenAi ? (
+                    <Link href={`/submissions/${submission.id}/interview`}>
+                      {t("actions.mockInterview")}
+                    </Link>
+                  ) : (
+                    <span>{t("actions.mockInterview")}</span>
+                  )}
+                </Button>
+                <Button
+                  variant="ghost"
+                  asChild
+                  className="border border-[var(--color-border)]"
+                >
+                  <Link href={`/workspace/${submission.problemSlug}`}>
+                    {t("actions.retry")}
+                  </Link>
+                </Button>
+              </div>
             )}
-          </Button>
-          <Button
-            variant="ghost"
-            disabled={!canOpenAi}
-            title={canOpenAi ? undefined : t("actions.needAccepted")}
-            asChild={canOpenAi}
-            className="border border-[var(--color-border)]"
-          >
-            {canOpenAi ? (
-              <Link href={`/submissions/${submission.id}/interview`}>
-                {t("actions.mockInterview")}
-              </Link>
-            ) : (
-              <span>{t("actions.mockInterview")}</span>
-            )}
-          </Button>
-          <Button
-            variant="ghost"
-            asChild
-            className="border border-[var(--color-border)]"
-          >
-            <Link href={`/problems/${submission.problemSlug}`}>
-              {t("actions.retry")}
-            </Link>
-          </Button>
+          </aside>
         </div>
       )}
     </div>

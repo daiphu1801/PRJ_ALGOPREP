@@ -34,11 +34,12 @@
 | Tên vật lý (slug) | `admin_ai_limits` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A3 (`ADMIN`) |
-| Phiên bản | V0.6 |
+| Phiên bản | V0.7 |
+| V0.8 | Sheet 9, Câu hỏi mở | Sửa 2026-10-23 (`DEC-2026-1023-db-actor-review-decisions`). Đóng Q4: giữ hành vi prototype (đơn giá âm tự về 0, không báo lỗi), xoá mô hình không bị chặn, đổi tên làm dòng cũ mất khớp đơn giá. Sửa Sheet 9 NO 7 cho khớp. Không đổi giao diện | 2026/10/23 | Nhóm phát triển AlgoPrep |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/10/10 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/10/14 |
+| Ngày cập nhật | 2026/10/22 |
 
 ---
 
@@ -52,6 +53,7 @@
 | V0.4 | Sheet 5, Câu hỏi mở | Đóng Q1 theo `DEC-2026-1010-ai-rate-limit-fixed-window` (2026-10-10): giới hạn theo giờ đếm bằng **cửa sổ cố định mỗi giờ** trên Redis, thời gian chờ là khoá riêng; chỉ áp cho phân tích bài giải và phỏng vấn giả lập. Không đổi giao diện | 2026/10/10 | AI |
 | V0.5 | Sheet 5 | Làm rõ phạm vi giới hạn tần suất theo `DEC-2026-1011-ai-practice-feedback-in-shared-budget` (2026-10-11): chỉ Phân tích và Phỏng vấn; chữ trên màn đổi từ "mọi tính năng AI". Hạn mức token tháng và khoá thì phủ cả F6-08. Sửa nguồn trỏ tới prototype cũ. | 2026-10-11 | Claude |
 | V0.6 | Sheet 5 | Sửa lỗi Minor review UX khu Admin F8 (`06-plan/reports/261014-1054-admin-ux-review/`), **chưa duyệt hình**: ô số của bộ chỉnh cao 26px bằng nút giảm, tăng; bộ chỉnh có thêm prop tuỳ chọn `unitWidth` để cố định bề rộng phần đơn vị, màn này truyền `9ch` nên nút của ba dòng giới hạn tần suất thẳng cột (Khu vực C mục 4) | 2026-10-14 | Claude |
+| V0.7 | Sheet 4.3, 5, 7, Câu hỏi mở | Sửa 2026-10-22 đồng bộ DB, `DEC-2026-1022-ai-judge-schema-sync`. (1) Đóng Q3: ngưỡng cảnh báo và ba giới hạn tần suất là **cột** của singleton `ai.ai_token_budget_configs` (`warn_percent`, `review_per_hour`, `interview_per_hour`, `cooldown_seconds`), đơn giá nằm ở bảng mới `ai.ai_model_prices`; Redis chỉ giữ **bộ đếm**. Gỡ câu mục 4.3 "không dùng bảng PostgreSQL", gỡ nhãn "Chưa có bảng". (2) Khoá bộ đếm đủ `ai:ratelimit:<userId>:<featureCode>:<epochHour>` (trước thiếu `<epochHour>`). (3) Giới hạn 20 lượt/giờ của F6-08 là hằng số do `interview-bank` sở hữu (`interview_bank:ratelimit:<userId>`), không nằm ở màn này. (4) Ghi job đầu tháng đặt lại `period_start` và xoá `locked_at` (nhãn "Đã khoá tự động" tự về "Đang mở"). (5) Sửa số dòng trích `02-bd/database/ai-review.md`. | 2026/10/22 | Nhóm phát triển AlgoPrep |
 
 ---
 
@@ -177,7 +179,7 @@ flowchart LR
 
 [Phạm vi]
 - Không có prompt, rubric, nguyên tắc trả lời, model — thuộc `ADM0301`.
-- Không có biểu đồ, bảng xếp hạng, cảnh báo bất thường — thuộc `ADM0302`.
+- Không có biểu đồ, bảng xếp hạng, cảnh báo bất thường — thuộc `ADM0302` (job hằng giờ chỉ ghi thêm một dòng `OPEN` khi người dùng đó chưa có dòng `OPEN` nào, `02-bd/database/ai-review.md:240`).
 - Không thiết kế gói đăng ký trả phí (Q6).
 - Giới hạn sandbox của script sinh dữ liệu — thuộc `ADM0501` Khu vực F.
 
@@ -189,7 +191,7 @@ flowchart LR
 
 [Số bản ghi tối đa] Giới hạn tần suất: 3 dòng. Hạn mức token: đúng 1 giá trị. Ngưỡng cảnh báo: đúng 1 giá trị. Đơn giá token: không giới hạn số mô hình. Trần sinh testcase: đúng 1 giá trị. Không phân trang.
 
-[Nguồn: 02-bd/screens/admin/ADM0301_ai_config.md V0.9, Khu vực D, G, H; 02-bd/database/ai-review.md:136-146 (mục 1.8)]
+[Nguồn: 02-bd/screens/admin/ADM0301_ai_config.md V0.9, Khu vực D, G, H; 02-bd/database/ai-review.md:196-212 (mục 1.8), 214-225 (mục 1.8a)]
 
 ### 4.2 DTO liên quan
 
@@ -205,10 +207,11 @@ flowchart LR
 
 | NO | Bảng | Ghi chú |
 | --: | :--- | :--- |
-| 1 | `ai.ai_token_budget_configs` | `limit_tokens`, `period_start`, `locked_at`, `updated_by` [Nguồn: 02-bd/database/ai-review.md:136-146] |
-| 2 | `problem_bank_settings` | Singleton của `problem-bank`, cột `max_ai_generations_per_problem` [Nguồn: 02-bd/database/problem-bank.md mục 1.10] |
+| 1 | `ai.ai_token_budget_configs` | Singleton (`id = 1`). `limit_tokens`, `period_start`, `locked_at`, `updated_by`; từ 2026-10-22 thêm `warn_percent` (mặc định 70), `review_per_hour` (10), `interview_per_hour` (3), `cooldown_seconds` (20), mỗi cột `CHECK` 1-100 hoặc 1-999 [Nguồn: 02-bd/database/ai-review.md:196-209] |
+| 2 | `ai.ai_model_prices` | Đơn giá theo mô hình: `model_name` VARCHAR(100), `usd_per_million_tokens` NUMERIC(10,4) không âm, unique `lower(model_name)`; không FK từ `token_usage` [Nguồn: 02-bd/database/ai-review.md:214-225] |
+| 3 | `problem_bank_settings` | Singleton của `problem-bank`, cột `max_ai_generations_per_problem` [Nguồn: 02-bd/database/problem-bank.md mục 1.10] |
 
-Giới hạn tần suất lưu ở cấu hình rate-limit trên Redis (khoá `ai:ratelimit:<userId>:<featureCode>`, [Nguồn: 02-bd/database/ai-review.md:200]), không dùng bảng PostgreSQL. Ngưỡng cảnh báo ngân sách và đơn giá token chưa có bảng, xem Q3.
+Ba giới hạn tần suất và ngưỡng cảnh báo ngân sách là **cột trong PostgreSQL** (`ai_token_budget_configs`), lưu ở DB để cấu hình admin đã đặt không mất khi Redis khởi động lại [Nguồn: 02-bd/database/ai-review.md:205-208]. Redis chỉ giữ **bộ đếm**: `ai:ratelimit:<userId>:<featureCode>:<epochHour>` (chỉ `SOLUTION_REVIEW`, `MOCK_INTERVIEW`, cửa sổ cố định theo giờ, hết hạn sau 1 giờ) và `ai:cooldown:<userId>` (TTL = `cooldown_seconds`) [Nguồn: 02-bd/database/ai-review.md:282-283]. Đơn giá token ở `ai_model_prices`. **Sửa 2026-10-22:** câu cũ "không dùng bảng PostgreSQL ... chưa có bảng, xem Q3" đã lỗi thời (Q3 đã chốt).
 
 ### 4.4 Vùng bố cục
 
@@ -254,10 +257,10 @@ Màn dựng mới, **chưa có mockup trong `09-layoutBase`** (`[SoT: Suy luận
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Hạn mức token tháng | | | | | | | | | | | | | |
-| | 1 | Trạng thái ngân sách | `adminAiLimits.budget.statusBadge` | `ai.ai_token_budget_configs` | `locked_at` | Badge | Enum | - | - | O | Đang mở | Nhãn tiếng Việt | `locked_at` rỗng thành "Đang mở"; có giá trị thành "Đã khoá tự động"<br>[EVT liên quan] EVT-1 |
+| | 1 | Trạng thái ngân sách | `adminAiLimits.budget.statusBadge` | `ai.ai_token_budget_configs` | `locked_at` | Badge | Enum | - | - | O | Đang mở | Nhãn tiếng Việt | `locked_at` rỗng thành "Đang mở"; có giá trị thành "Đã khoá tự động". Đầu mỗi tháng một job `@Scheduled` đặt `period_start` về ngày 1 và xoá `locked_at`, nên khoá tự động tự mở ở chu kỳ mới (`DEC-2026-1022-ai-judge-schema-sync` mục 4) [Nguồn: 02-bd/database/ai-review.md:212]<br>[EVT liên quan] EVT-1 |
 | | 2 | Hạn mức token tháng | `adminAiLimits.budget.limitTokens` | `ai.ai_token_budget_configs` | `limit_tokens` | NumberBox | Number | 12 | Có | I/O | Giá trị đang lưu | Số nguyên dương, tách nghìn | Hạn mức token của chu kỳ tháng hiện hành. Nhập số rồi bấm "Lưu hạn mức"; **không ghi khi gõ** vì sai một chữ số là đổi hạn mức gấp nhiều lần<br>[EVT liên quan] EVT-2 |
 | | 3 | Lưu hạn mức | `adminAiLimits.budget.btnSaveLimit` | - | - | Button | - | - | - | I | - | - | Ghi hạn mức mới<br>[EVT liên quan] EVT-2 |
-| | 4 | Đã dùng trong chu kỳ | `adminAiLimits.budget.usedTokens` | `ai.token_usage` | `total_tokens` | Label | Number | - | - | O | - | `{số} / {hạn mức}` | Tổng token đã dùng từ `period_start`, tổng hợp từ `token_usage` [Nguồn: 02-bd/architecture/ai-review.md:266-269]<br>[EVT liên quan] EVT-1 |
+| | 4 | Đã dùng trong chu kỳ | `adminAiLimits.budget.usedTokens` | `ai.token_usage` | `total_tokens` | Label | Number | - | - | O | - | `{số} / {hạn mức}` | Tổng token đã dùng từ `period_start`, tổng hợp từ `token_usage` [Nguồn: 02-bd/architecture/ai-review.md:266-269]. Sang chu kỳ mới `period_start` đổi nên số này tự về 0, không có thao tác xoá `token_usage` [Nguồn: 02-bd/database/ai-review.md:212]<br>[EVT liên quan] EVT-1 |
 | | 5 | Mở khoá | `adminAiLimits.budget.btnUnlock` | `ai.ai_token_budget_configs` | `locked_at` | Button | - | - | - | I | - | - | Xoá dấu khoá để `STUDENT`, `INSTRUCTOR` gọi AI lại<br>[EVT liên quan] EVT-3 |
 
 ### Khu vực C — Giới hạn tần suất (theo giờ)
@@ -265,10 +268,10 @@ Màn dựng mới, **chưa có mockup trong `09-layoutBase`** (`[SoT: Suy luận
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Giới hạn tần suất | | | | | | | | | | | | | |
-| | 1 | Danh sách giới hạn | `adminAiLimits.rateLimit.list` | - | - | List | List | - | - | I/O | 3 dòng | - | 3 giới hạn chống lạm dụng và giữ chi phí (F5-19): Phân tích mỗi giờ, Phỏng vấn mỗi giờ, Chờ giữa hai yêu cầu (ba giới hạn chỉ áp cho Phân tích bài giải và Phỏng vấn giả lập; Chế độ luyện F6-08 giữ hằng số riêng 20 lượt mỗi giờ, không chỉnh ở đây)<br>[Nguồn giá trị] Cấu hình rate-limit trên **Redis**<br>[EVT liên quan] EVT-1 |
+| | 1 | Danh sách giới hạn | `adminAiLimits.rateLimit.list` | - | - | List | List | - | - | I/O | 3 dòng | - | 3 giới hạn chống lạm dụng và giữ chi phí (F5-19): Phân tích mỗi giờ, Phỏng vấn mỗi giờ, Chờ giữa hai yêu cầu (ba giới hạn chỉ áp cho Phân tích bài giải và Phỏng vấn giả lập; Chế độ luyện F6-08 giữ hằng số riêng 20 lượt mỗi giờ do `interview-bank` sở hữu, bộ đếm ở khoá `interview_bank:ratelimit:<userId>`, không chỉnh ở đây [Nguồn: 02-bd/database/interview-bank.md:236, 252])<br>[Nguồn giá trị] Ba cột `review_per_hour`, `interview_per_hour`, `cooldown_seconds` của `ai.ai_token_budget_configs`; Redis chỉ giữ bộ đếm [Nguồn: 02-bd/database/ai-review.md:206-208, 282]<br>[EVT liên quan] EVT-1 |
 | | 2 | Tên giới hạn | `adminAiLimits.rateLimit.col.label` | - | - | ListColumn | String | - | - | O | - | - | Nhãn tĩnh i18n map từ mã giới hạn<br>[EVT liên quan] - |
 | | 3 | Đơn vị | `adminAiLimits.rateLimit.col.meta` | - | - | ListColumn | String | - | - | O | - | - | Câu giải thích cách tính, ví dụ "Theo từng tài khoản người học, mỗi giờ"<br>[EVT liên quan] - |
-| | 4 | Giá trị giới hạn | `adminAiLimits.rateLimit.col.value` | - | - | NumberBox | Number | 4 | Có | I/O | 10 lượt/giờ (Phân tích), 3 phiên/giờ (Phỏng vấn), 20 giây (chờ) | Số nguyên kèm đơn vị | Ngưỡng áp dụng cho mỗi người dùng. **Theo giờ** (chủ dự án chốt 2026-10-10), khớp `02-bd/database/ai-review.md` mục 6; giây chờ 20 lấy từ prototype `[SoT: Suy luận]`. Dùng bộ chỉnh bước 1 và **nhập tay được** (V0.3); khoảng 1 đến 999 là `[SoT: Suy luận]`. Sửa 2026-10-14 (review UX F8, chưa duyệt hình): ô số cao 26px bằng nút giảm, tăng; phần đơn vị có bề rộng tối thiểu `9ch` nên nút của ba dòng thẳng cột dù đơn vị dài ngắn khác nhau ("lượt/giờ", "phiên/giờ", "giây") [Nguồn: 05-coding/frontend/src/shared/ui/primitives/number-stepper.tsx:54,103,124] [Nguồn: 05-coding/frontend/src/views/admin/ai-limits/ui/admin-ai-limits-view.tsx:193]<br>[EVT liên quan] EVT-4 |
+| | 4 | Giá trị giới hạn | `adminAiLimits.rateLimit.col.value` | `ai.ai_token_budget_configs` | `review_per_hour`, `interview_per_hour`, `cooldown_seconds` | NumberBox | Number | 4 | Có | I/O | 10 lượt/giờ (Phân tích), 3 phiên/giờ (Phỏng vấn), 20 giây (chờ) | Số nguyên kèm đơn vị | Ngưỡng áp dụng cho mỗi người dùng. **Theo giờ** (chủ dự án chốt 2026-10-10), khớp `02-bd/database/ai-review.md` mục 6; giây chờ 20 lấy từ prototype `[SoT: Suy luận]`. Dùng bộ chỉnh bước 1 và **nhập tay được** (V0.3); khoảng 1 đến 999 là `[SoT: Suy luận]` và đã thành `CHECK BETWEEN 1 AND 999` ở DB (mặc định 10 / 3 / 20) [Nguồn: 02-bd/database/ai-review.md:206-208]. Sửa 2026-10-14 (review UX F8, chưa duyệt hình): ô số cao 26px bằng nút giảm, tăng; phần đơn vị có bề rộng tối thiểu `9ch` nên nút của ba dòng thẳng cột dù đơn vị dài ngắn khác nhau ("lượt/giờ", "phiên/giờ", "giây") [Nguồn: 05-coding/frontend/src/shared/ui/primitives/number-stepper.tsx:54,103,124] [Nguồn: 05-coding/frontend/src/views/admin/ai-limits/ui/admin-ai-limits-view.tsx:193]<br>[EVT liên quan] EVT-4 |
 
 ### Khu vực D — Ngân sách và đơn giá
 
@@ -277,7 +280,7 @@ Màn dựng mới, **chưa có mockup trong `09-layoutBase`** (`[SoT: Suy luận
 | Ngân sách và đơn giá | | | | | | | | | | | | | |
 | | 1 | Tiêu đề khối | `adminAiLimits.cost.title` | - | - | Label | String | - | - | O | Ngân sách và đơn giá | - | Kèm mô tả phụ "Quản trị viên tự đặt, không giới hạn"<br>[EVT liên quan] - |
 | | 2 | Giảm ngưỡng | `adminAiLimits.cost.btnWarnDecrease` | - | - | Button | - | - | - | I | - | `−` | Trừ 5, không xuống dưới 1<br>[EVT liên quan] EVT-5 |
-| | 3 | Ngưỡng cảnh báo ngân sách | `adminAiLimits.cost.warnPercent` | **Chưa có bảng** (Q3) | `warn_percent` (đề xuất) | NumberBox | Number | 3 | Có | I/O | 70 | `{số}%` | Ngưỡng phần trăm mức dùng so với hạn mức token mà tại đó thanh ngân sách ở `admin_ai_usage` đổi sang màu cảnh báo. Số nguyên 1 đến 100, bước 5. Mặc định 70 [Nguồn: 01-rd/screens/admin/ADM0302_ai_usage.md:50-52]<br>[EVT liên quan] EVT-5 |
+| | 3 | Ngưỡng cảnh báo ngân sách | `adminAiLimits.cost.warnPercent` | `ai.ai_token_budget_configs` | `warn_percent` | NumberBox | Number | 3 | Có | I/O | 70 | `{số}%` | Ngưỡng phần trăm mức dùng so với hạn mức token mà tại đó thanh ngân sách ở `admin_ai_usage` đổi sang màu cảnh báo. Số nguyên 1 đến 100, bước 5 (`CHECK warn_percent BETWEEN 1 AND 100`). Mặc định 70 [Nguồn: 01-rd/screens/admin/ADM0302_ai_usage.md:50-52; 02-bd/database/ai-review.md:205]<br>[EVT liên quan] EVT-5 |
 | | 4 | Tăng ngưỡng | `adminAiLimits.cost.btnWarnIncrease` | - | - | Button | - | - | - | I | - | `+` | Cộng 5, không vượt quá 100<br>[EVT liên quan] EVT-5 |
 | | 5 | Quản lý đơn giá | `adminAiLimits.cost.btnManagePrices` | - | - | Button | - | - | - | I | - | - | Mở popup quản lý đơn giá token theo mô hình, kèm mô tả "Mô hình chưa có đơn giá thì cột Chi phí hiện dấu -"<br>[EVT liên quan] EVT-6 |
 
@@ -295,11 +298,11 @@ Màn dựng mới, **chưa có mockup trong `09-layoutBase`** (`[SoT: Suy luận
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Popup | | | | | | | | | | | | | |
-| | 1 | Đơn giá token theo mô hình | `adminAiLimits.popup.modelPrices` | **Chưa có bảng** (Q3) | - | Popup | - | - | - | I/O | - | - | Popup quản lý danh sách mô hình và đơn giá. Dòng hướng dẫn: "Nhập đơn giá (USD cho mỗi 1 triệu token) của từng mô hình. Không giới hạn số mô hình."<br>[EVT liên quan] EVT-6 đến 9 |
-| | 2 | Danh sách mô hình | `adminAiLimits.popup.modelPrices.list` | **Chưa có bảng** | - | List | List | - | - | I/O | 1 dòng mẫu "Mô hình mặc định", 3 USD (dữ liệu mẫu prototype) | - | Mỗi dòng gồm tên mô hình, ô đơn giá, nút lưu tên, nút xoá. Không giới hạn số dòng<br>[EVT liên quan] EVT-6 |
-| | 3 | Tên mô hình | `adminAiLimits.popup.modelPrices.name` | **Chưa có bảng** | `model_name` (đề xuất, khớp `ai.token_usage.model_name`) | TextBox | String | - | Có | I/O | - | Văn bản tự do, cắt khoảng trắng hai đầu | Là chuỗi dữ liệu, không phải khoá i18n. Sửa xong bấm nút lưu tên hoặc Enter mới ghi<br>[EVT liên quan] EVT-7 |
-| | 4 | Đơn giá | `adminAiLimits.popup.modelPrices.usdPerMillion` | **Chưa có bảng** | `usd_per_million_tokens` (đề xuất) | NumberBox | Number | - | Có | I/O | 0 (mô hình mới) | `{số}` USD mỗi 1 triệu token, bước 0.1 | Không âm. Ghi ngay khi đổi<br>[EVT liên quan] EVT-8 |
-| | 5 | Xoá mô hình | `adminAiLimits.popup.modelPrices.btnDelete` | **Chưa có bảng** | - | Button | - | - | - | I | - | - | Xoá mô hình khỏi bảng đơn giá, không kiểm "đang được tham chiếu"; cột Chi phí của dòng dùng mô hình đó hiện `-`<br>[EVT liên quan] EVT-9 |
+| | 1 | Đơn giá token theo mô hình | `adminAiLimits.popup.modelPrices` | `ai.ai_model_prices` | - | Popup | - | - | - | I/O | - | - | Popup quản lý danh sách mô hình và đơn giá. Dòng hướng dẫn: "Nhập đơn giá (USD cho mỗi 1 triệu token) của từng mô hình. Không giới hạn số mô hình."<br>[EVT liên quan] EVT-6 đến 9 |
+| | 2 | Danh sách mô hình | `adminAiLimits.popup.modelPrices.list` | `ai.ai_model_prices` | - | List | List | - | - | I/O | 1 dòng mẫu "Mô hình mặc định", 3 USD (dữ liệu mẫu prototype) | - | Mỗi dòng gồm tên mô hình, ô đơn giá, nút lưu tên, nút xoá. Không giới hạn số dòng<br>[EVT liên quan] EVT-6 |
+| | 3 | Tên mô hình | `adminAiLimits.popup.modelPrices.name` | `ai.ai_model_prices` | `model_name` (khớp `ai.token_usage.model_name`) | TextBox | String | 100 | Có | I/O | - | Văn bản tự do, cắt khoảng trắng hai đầu | Là chuỗi dữ liệu, không phải khoá i18n. Sửa xong bấm nút lưu tên hoặc Enter mới ghi<br>[EVT liên quan] EVT-7 |
+| | 4 | Đơn giá | `adminAiLimits.popup.modelPrices.usdPerMillion` | `ai.ai_model_prices` | `usd_per_million_tokens` (NUMERIC(10,4), `CHECK >= 0`) | NumberBox | Number | - | Có | I/O | 0 (mô hình mới) | `{số}` USD mỗi 1 triệu token, bước 0.1 | Không âm. Ghi ngay khi đổi<br>[EVT liên quan] EVT-8 |
+| | 5 | Xoá mô hình | `adminAiLimits.popup.modelPrices.btnDelete` | `ai.ai_model_prices` | - | Button | - | - | - | I | - | - | Xoá mô hình khỏi bảng đơn giá, không kiểm "đang được tham chiếu"; cột Chi phí của dòng dùng mô hình đó hiện `-`<br>[EVT liên quan] EVT-9 |
 | | 6 | Tên mô hình mới | `adminAiLimits.popup.modelPrices.newName` | - | - | TextBox | String | - | Có | I | rỗng | Văn bản tự do | Gợi ý "Ví dụ: claude-sonnet"<br>[EVT liên quan] EVT-7 |
 | | 7 | Thêm | `adminAiLimits.popup.modelPrices.btnAdd` | - | - | Button | - | - | - | I | - | - | Thêm mô hình mới với đơn giá 0<br>[EVT liên quan] EVT-7 |
 | | 8 | Đóng | `adminAiLimits.popup.modelPrices.btnClose` | - | - | Button | - | - | - | I | - | - | Đóng popup |
@@ -391,21 +394,22 @@ Màn dựng mới, **chưa có mockup trong `09-layoutBase`** (`[SoT: Suy luận
 | 1 | `AiTokenBudgetDto` | `limitTokens` | Number | `ai.ai_token_budget_configs` | `limit_tokens` | Hạn mức "Hạn mức token tháng" | Có | [Nguồn] Phản hồi của `GetAiTokenBudget`; giá trị người dùng nhập<br>[Đích] Tham số của `UpdateAiTokenBudgetLimit` |
 | 2 | `AiTokenBudgetDto` | `usedTokens` | Number | `ai.token_usage` | tổng `total_tokens` | Hạn mức "Đã dùng trong chu kỳ" | Có | [Nguồn] Tổng hợp từ `token_usage` từ `period_start`. Không có đường ghi ngược |
 | 3 | `AiTokenBudgetDto` | `lockedAt` | Timestamp | `ai.ai_token_budget_configs` | `locked_at` | Hạn mức "Trạng thái ngân sách", "Mở khoá" | Có | [Chuyển đổi] Rỗng thành "Đang mở", có giá trị thành "Đã khoá tự động". Xoá bằng `UnlockAiTokenBudget` |
-| 4 | `RateLimitConfigDto` | `limitCode` | String | - | - | Giới hạn "Tên giới hạn", "Đơn vị" | Có | [Nguồn] Khoá cấu hình trên Redis; khoá tra nhãn tĩnh i18n |
-| 5 | `RateLimitConfigDto` | `value` | Number | - | - | Giới hạn "Giá trị giới hạn" | Có | [Nguồn] Giá trị người dùng nhập<br>[Đích] Tham số của `UpdateRateLimitConfig`, ghi xuống cấu hình rate-limit trên Redis. Đơn vị cố định là theo giờ (trừ giây chờ) |
-| 6 | `AiBudgetSettingsDto` | `warnPercent` | Number | **Chưa có bảng** (Q3) | `warn_percent` (đề xuất) | Ngân sách "Ngưỡng cảnh báo ngân sách" | Có | [Nguồn] Phản hồi của `GetAiBudgetSettings`<br>[Đích] Tham số của `UpdateAiBudgetSettings`<br>[Chuyển đổi] Số nguyên 1 đến 100. **Đọc lại ở `admin_ai_usage`** để quyết định màu thanh ngân sách [Nguồn: 02-bd/screens/admin/ADM0302_ai_usage.md:388] |
-| 7 | `ModelPriceDto` | `id`, `modelName` | UUID, String | **Chưa có bảng** | `id`, `model_name` (đề xuất) | Popup đơn giá "Tên mô hình" | Có (`modelName`) | [Nguồn] Phản hồi của `ListModelPrices`; giá trị người dùng nhập<br>[Đích] `CreateModelPrice`, `UpdateModelPrice`, `DeleteModelPrice`<br>[Chuyển đổi] `modelName` là khoá nối với `ai.token_usage.model_name` khi tính cột Chi phí; so khớp không phân biệt hoa thường, cắt khoảng trắng hai đầu. Đổi tên làm bản ghi `token_usage` cũ không còn khớp, xem Q4 |
-| 8 | `ModelPriceDto` | `usdPerMillionTokens` | Number | **Chưa có bảng** | `usd_per_million_tokens` (đề xuất) | Popup đơn giá "Đơn giá" | Có | [Chuyển đổi] Không âm. **Đọc lại ở `admin_ai_usage`** (cột Chi phí) [Nguồn: 02-bd/screens/admin/ADM0302_ai_usage.md:330]. Không có đơn giá nào thì cột Chi phí hiện `-` |
+| 4 | `RateLimitConfigDto` | `limitCode` | String | `ai.ai_token_budget_configs` | `review_per_hour` / `interview_per_hour` / `cooldown_seconds` | Giới hạn "Tên giới hạn", "Đơn vị" | Có | [Nguồn] Ánh xạ mã giới hạn sang tên cột của singleton; khoá tra nhãn tĩnh i18n |
+| 5 | `RateLimitConfigDto` | `value` | Number | `ai.ai_token_budget_configs` | `review_per_hour` / `interview_per_hour` / `cooldown_seconds` | Giới hạn "Giá trị giới hạn" | Có | [Nguồn] Giá trị người dùng nhập<br>[Đích] Tham số của `UpdateRateLimitConfig`, ghi vào cột tương ứng của `ai_token_budget_configs` (bộ đếm Redis không đổi). Đơn vị cố định là theo giờ (trừ giây chờ) |
+| 6 | `AiBudgetSettingsDto` | `warnPercent` | Number | `ai.ai_token_budget_configs` | `warn_percent` | Ngân sách "Ngưỡng cảnh báo ngân sách" | Có | [Nguồn] Phản hồi của `GetAiBudgetSettings`<br>[Đích] Tham số của `UpdateAiBudgetSettings`<br>[Chuyển đổi] Số nguyên 1 đến 100. **Đọc lại ở `admin_ai_usage`** để quyết định màu thanh ngân sách [Nguồn: 02-bd/screens/admin/ADM0302_ai_usage.md:388] |
+| 7 | `ModelPriceDto` | `id`, `modelName` | UUID, String | `ai.ai_model_prices` | `id`, `model_name` | Popup đơn giá "Tên mô hình" | Có (`modelName`) | [Nguồn] Phản hồi của `ListModelPrices`; giá trị người dùng nhập<br>[Đích] `CreateModelPrice`, `UpdateModelPrice`, `DeleteModelPrice`<br>[Chuyển đổi] `modelName` là khoá nối với `ai.token_usage.model_name` khi tính cột Chi phí; so khớp không phân biệt hoa thường, cắt khoảng trắng hai đầu. Đổi tên làm bản ghi `token_usage` cũ không còn khớp, xem Q4 |
+| 8 | `ModelPriceDto` | `usdPerMillionTokens` | Number | `ai.ai_model_prices` | `usd_per_million_tokens` | Popup đơn giá "Đơn giá" | Có | [Chuyển đổi] Không âm. **Đọc lại ở `admin_ai_usage`** (cột Chi phí) [Nguồn: 02-bd/screens/admin/ADM0302_ai_usage.md:330]. Không có đơn giá nào thì cột Chi phí hiện `-` |
 | 9 | `AiTestcaseGenerationSettingsDto` | `maxPerProblem` | Number | `problem_bank_settings` | `max_ai_generations_per_problem` | Sinh testcase "Số lần sinh tối đa mỗi bài" | Có | [Nguồn] Phản hồi của `GetAiTestcaseGenerationSettings`<br>[Đích] `UpdateAiTestcaseGenerationSettings`. Màn soạn bài (`SHR0202`) không đọc con số này, chỉ nhận "đã dùng / tối đa" của từng bài |
 
-### 7.2 Truy cập bảng dữ liệu (2)
+### 7.2 Truy cập bảng dữ liệu (3)
 
 | NO | Tên logic | Bảng | Repository | CRUD | Mục đích | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :--- | :--- |
-| 1 | Cấu hình ngân sách token | `ai.ai_token_budget_configs` | `AiTokenBudgetConfigRepository` | R, U | Đọc và cập nhật hạn mức, xoá `locked_at` khi mở khoá | `GetAiTokenBudget`: R<br>`UpdateAiTokenBudgetLimit`: U<br>`UnlockAiTokenBudget`: U |
-| 2 | Cài đặt sinh testcase | `problem_bank_settings` | `ProblemBankSettingsRepository` | R, U | Đọc và cập nhật trần sinh testcase | Thuộc `problem-bank` |
+| 1 | Cấu hình ngân sách token | `ai.ai_token_budget_configs` | `AiTokenBudgetConfigRepository` | R, U | Đọc và cập nhật hạn mức, `warn_percent`, ba giới hạn tần suất; xoá `locked_at` khi mở khoá | `GetAiTokenBudget`: R<br>`UpdateAiTokenBudgetLimit`: U<br>`UnlockAiTokenBudget`: U<br>`GetAiBudgetSettings`, `UpdateAiBudgetSettings`, `UpdateRateLimitConfig`: R, U |
+| 2 | Đơn giá mô hình | `ai.ai_model_prices` | `AiModelPriceRepository` | C, R, U, D | Danh mục đơn giá USD mỗi 1 triệu token | `ListModelPrices`: R<br>`CreateModelPrice`: C<br>`UpdateModelPrice`: U<br>`DeleteModelPrice`: D |
+| 3 | Cài đặt sinh testcase | `problem_bank_settings` | `ProblemBankSettingsRepository` | R, U | Đọc và cập nhật trần sinh testcase | Thuộc `problem-bank` |
 
-Giới hạn tần suất đọc và ghi trên Redis, không qua repository JPA. Ngưỡng cảnh báo và đơn giá token chưa có bảng (Q3).
+Giới hạn tần suất và ngưỡng cảnh báo đọc/ghi qua `AiTokenBudgetConfigRepository` (cột DB). Redis chỉ giữ bộ đếm của người dùng, màn này không đọc bộ đếm.
 
 `[Suy luận]` — tên repository do BD này đề xuất, DD chốt lại.
 
@@ -431,7 +435,7 @@ Giới hạn tần suất đọc và ghi trên Redis, không qua repository JPA.
 
 `[Suy luận]` — tên endpoint do BD này đề xuất; tên và quyền thật do `03-dd/api/ai-review.md` chốt.
 
-[Nguồn: 02-bd/database/ai-review.md:136-146; 02-bd/screens/admin/ADM0301_ai_config.md V0.9, Sheet 7]
+[Nguồn: 02-bd/database/ai-review.md:196-225; 02-bd/screens/admin/ADM0301_ai_config.md V0.9, Sheet 7]
 
 ---
 
@@ -472,7 +476,7 @@ Giới hạn tần suất đọc và ghi trên Redis, không qua repository JPA.
 | 4 | Kiểm nhập liệu | Giá trị giới hạn tần suất | [Nội dung kiểm] Giá trị không phải số nguyên dương thì không ghi; khoảng 1 đến 999 là `[SoT: Suy luận]`.<br>[Nơi thực thi] Màn hình: ô số gõ tay đưa số ngoài khoảng về cận gần nhất và giữ giá trị cũ khi không phải số nguyên, không báo lỗi (V0.3, `ADM0301` V1.4). Máy chủ: vẫn kiểm lại, từ chối thì hiện toast lỗi và giữ giá trị cũ.<br>[Tiêu điểm] Toast khi máy chủ từ chối. | Lỗi | Chưa có mã thông báo | Nội dung "Giá trị phải là số nguyên lớn hơn 0." | EVT-4 | 1 |
 | 5 | Kiểm nhập liệu | Khoảng giá trị ngưỡng cảnh báo ngân sách | [Nội dung kiểm] Ngưỡng không phải số nguyên từ 1 đến 100 thì không đặt.<br>[Nơi thực thi] Màn hình: ô số gõ tay đưa số ngoài khoảng về cận gần nhất và giữ giá trị cũ khi không phải số nguyên, không báo lỗi (V0.3, `ADM0301` V1.4). Máy chủ: vẫn kiểm lại, từ chối thì hiện toast lỗi và giữ giá trị cũ.<br>[Tiêu điểm] Toast khi máy chủ từ chối. | Lỗi | Chưa có mã thông báo | Nội dung "Ngưỡng phải là số nguyên từ 1 đến 100." `[SoT: Suy luận]` | EVT-5 | 1 |
 | 6 | Kiểm nhập liệu | Tên mô hình không rỗng, không trùng | [Nội dung kiểm] Tên rỗng (sau khi cắt khoảng trắng) hoặc trùng mô hình khác (không phân biệt hoa thường theo locale `vi`) thì không thêm, không đổi tên.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Viền ô tên + toast. | Lỗi | Chưa có mã thông báo | Nội dung "Tên mô hình không được để trống" và "Đã có mô hình trùng tên" (đúng chữ prototype). | EVT-7 | 1 |
-| 7 | Kiểm nhập liệu | Đơn giá không âm | [Nội dung kiểm] Đơn giá nhỏ hơn 0 hoặc không phải số thì không lưu.<br>[Nơi thực thi] Màn hình và máy chủ. Prototype tự đưa giá trị về 0 thay vì báo lỗi (`Math.max(0, Number(...) \|\| 0)`).<br>[Tiêu điểm] Viền ô đơn giá + toast. | Lỗi | Chưa có mã thông báo | Nội dung "Đơn giá phải là số không âm." `[SoT: Suy luận]` — BD đề xuất báo lỗi thay vì ép về 0, chờ chủ dự án, xem Q4. | EVT-8 | 1 |
+| 7 | Kiểm nhập liệu | Đơn giá không âm | [Nội dung kiểm] Đơn giá nhỏ hơn 0 hoặc không phải số thì không lưu.<br>[Nơi thực thi] Màn hình và máy chủ. Prototype tự đưa giá trị về 0 thay vì báo lỗi (`Math.max(0, Number(...) \|\| 0)`).<br>[Tiêu điểm] Viền ô đơn giá + toast. | Lỗi | Chưa có mã thông báo | Prototype ép giá trị về 0 thay vì báo lỗi; **đã chốt 2026-10-23 giữ nguyên hành vi này** (Q4), không có thông báo lỗi. | EVT-8 | 1 |
 | 8 | Kiểm nhập liệu | Khoảng giá trị số lần sinh testcase tối đa | [Nội dung kiểm] Số lần không phải số nguyên từ 1 đến 10 thì không đặt.<br>[Nơi thực thi] Màn hình: ô số gõ tay đưa số ngoài khoảng về cận gần nhất và giữ giá trị cũ khi không phải số nguyên, không báo lỗi (V0.3, `ADM0301` V1.4). Máy chủ: vẫn kiểm lại, từ chối thì hiện toast lỗi và giữ giá trị cũ.<br>[Tiêu điểm] Toast khi máy chủ từ chối. | Lỗi | Chưa có mã thông báo | Nội dung "Số lần phải là số nguyên từ 1 đến 10." `[SoT: Suy luận]` | EVT-10 | 1 |
 | 9 | Kiểm nghiệp vụ | Lỗi hệ thống hoặc lỗi gọi máy chủ | [Nội dung kiểm] Gọi máy chủ thất bại hoặc trả lỗi nghiệp vụ thì dừng thao tác, giữ nguyên dữ liệu đang hiển thị.<br>[Nơi thực thi] Màn hình. | Lỗi | Mã lỗi trong phản hồi | Mã lỗi đã đăng ký thì hiển thị nội dung tương ứng; chưa đăng ký thì "Không kết nối được máy chủ." | EVT-1, 2, 3, 4 | 2 |
 
@@ -488,7 +492,8 @@ Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 | :-: | :--- | :--- | :--- |
 | Q1 | ~~Giới hạn tần suất theo giờ: cửa sổ trượt hay cố định?~~ **ĐÃ CHỐT 2026-10-10 (chủ dự án chấp nhận đề xuất, tiêu chí ponytail bậc 5):** cửa sổ cố định mỗi giờ, INCR và hết hạn sau 1 giờ trên Redis; thời gian chờ là khoá `ai:cooldown:<userId>`. Trần: có thể dồn gấp đôi lượt quanh ranh giới giờ, nâng lên cửa sổ trượt nếu bị lạm dụng. Con số mặc định (10 lượt, 3 phiên, 20 giây) vẫn là `[SoT: Suy luận]`, do `AI_CONFIG` chỉnh | - | Đã đóng |
 | Q2 | Nhật ký thao tác "Mở khoá" và "Lưu hạn mức" ghi vào nhật ký hệ thống (`ADM0403`) hay chỉ cột `updated_by`? `ADM0403` chỉ audit hành động quản trị của người (F1-14), mở khoá ngân sách là một hành động quản trị | Chưa đối chiếu danh sách hành động của `ADM0403` | Chủ dự án + DD `identity` |
-| Q3 | Bảng lưu ngưỡng cảnh báo (một dòng) và đơn giá theo mô hình (nhiều dòng, tên duy nhất) đặt ở đâu trong schema `ai`? Có thể gộp ngưỡng vào `ai.ai_token_budget_configs` (đã có `limit_tokens`) và thêm bảng đơn giá riêng. Chuyển từ `ADM0301` Q11 | `02-bd/database/ai-review.md` chưa có | DD `ai-review` |
-| Q4 | Ba chi tiết do prototype tự chọn: (a) đơn giá âm hoặc không phải số tự đưa về 0 thay vì báo lỗi; (b) xoá mô hình không bị chặn dù còn bản ghi `token_usage` mang tên đó; (c) đổi tên mô hình làm bản ghi cũ mất khớp đơn giá vì khoá nối là tên. Nếu cổng nhà cung cấp (ví dụ OpenRouter) tự trả chi phí từng lần gọi thì bảng đơn giá có thể bỏ hoặc chỉ làm giá dự phòng (`ADM0301` Q14). Chuyển từ `ADM0301` Q9 | Chưa kiểm tài liệu nhà cung cấp | Chủ dự án + DD `ai-review` |
+| Q3 | ~~Bảng lưu ngưỡng cảnh báo (một dòng) và đơn giá theo mô hình (nhiều dòng, tên duy nhất) đặt ở đâu trong schema `ai`?~~ **ĐÃ CHỐT 2026-10-22 (đồng bộ DB phase 1, `02-bd/database/ai-review.md:196-225`):** ngưỡng cảnh báo gộp vào singleton `ai.ai_token_budget_configs` (cột `warn_percent`, cùng ba cột giới hạn tần suất); đơn giá ở bảng riêng `ai.ai_model_prices` (unique `lower(model_name)`). Chuyển từ `ADM0301` Q11 | Đã đóng | Đã đóng |
+| Q4 | ~~Ba chi tiết do prototype tự chọn: (a) đơn giá âm hoặc không phải số tự đưa về 0 thay vì báo lỗi; (b) xoá mô hình không bị chặn dù còn bản ghi `token_usage` mang tên đó; (c) đổi tên mô hình làm bản ghi cũ mất khớp đơn giá vì khoá nối là tên. Nếu cổng nhà cung cấp (ví dụ OpenRouter) tự trả chi phí từng lần gọi thì bảng đơn giá có thể bỏ hoặc chỉ làm giá dự phòng (`ADM0301` Q14). Chuyển từ `ADM0301` Q9. Phần (b), (c) khớp DB: `ai_model_prices` không FK từ `token_usage` và đổi tên làm `token_usage` cũ mất khớp, DB ghi "chưa quyết" [Nguồn: 02-bd/database/ai-review.md:225]~~ **ĐÃ CHỐT 2026-10-23 (`DEC-2026-1023-db-actor-review-decisions`, mặc định ponytail bậc 5, đảo được):** (a) giữ hành vi của prototype, đơn giá âm hoặc không phải số tự về 0, không báo lỗi (ô chỉ nhận số, nên không cần thêm thông báo; sửa dòng Sheet 9 NO 7 cho khớp); (b) xoá mô hình không bị chặn dù còn `token_usage` mang tên đó; (c) đổi tên mô hình làm dòng cũ mất khớp đơn giá, cột Chi phí hiện `-`, đúng ghi chú ở `02-bd/database/ai-review.md` mục 1.8a. Bảng đơn giá giữ nguyên (chưa có cổng nhà cung cấp tự trả chi phí) | Đã đóng | Đã đóng |
 | Q5 | Điều kiện nút "Mở khoá": BD đề xuất chỉ kích hoạt khi hạn mức lớn hơn số đã dùng (vì nếu không, hệ thống khoá lại ngay ở lần gọi tiếp theo). Có cho mở khoá "một lần" bất chấp hạn mức không? `[SoT: Suy luận]` | RD F5-25 chỉ nói ADMIN mở lại hoặc tăng ngân sách, chưa nói ràng buộc | Chủ dự án |
 | Q6 | **Gói đăng ký trả phí** (chủ dự án nêu 2026-10-10): người dùng ngoài đăng ký thêm tiền tháng để có hạn mức AI cao hơn. Ngoài phạm vi đợt này. Nếu làm sẽ cần: bounded context mới cho thanh toán và gói, giới hạn tần suất theo gói thay vì một giá trị chung, ngân sách token theo gói, thay đổi rule F5-25 (hiện khoá mọi `STUDENT`, `INSTRUCTOR` khi vượt ngân sách chung). Khối "Giới hạn tần suất" nên giữ khoá theo `limitCode` để sau này thêm chiều "gói" mà không đập đi làm lại | Chưa có yêu cầu, chưa quyết có làm trong đồ án | Chủ dự án |
+

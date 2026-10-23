@@ -66,5 +66,6 @@ export {
   type StackedSeries,
 } from "./charts/stacked-bar-chart";
 export { DashboardBlockState } from "./charts/dashboard-block-state";
+export { SeeAllLink } from "./charts/see-all-link";
 export { RadarChart } from "./charts/radar-chart";
 export { ActivityHeatmap } from "./charts/activity-heatmap";

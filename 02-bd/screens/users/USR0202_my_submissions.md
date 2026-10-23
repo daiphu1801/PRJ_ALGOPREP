@@ -57,11 +57,11 @@
 | Tên vật lý (slug) | `my_submissions` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`) |
-| Phiên bản | V0.9 |
+| Phiên bản | V1.0 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/22 |
 | Người cập nhật | Claude |
-| Ngày cập nhật | 2026/10/19 |
+| Ngày cập nhật | 2026/10/20 |
 
 ---
 
@@ -79,6 +79,7 @@
 | V0.7 | Câu hỏi mở (đóng Q2, Q3), mục "Hiện trạng bản dựng" | Owner chốt Q2 và Q3 ngày 2026/10/18 theo đề xuất (`DEC-2026-1018-usr-open-questions-phase2-5`, giai đoạn 3): bản đầu không có bộ lọc khoảng ngày (ponytail bậc 3); lượt nộp không bao giờ bị xoá hay ẩn (bậc 6). Không có item hay sự kiện mới, vì cả hai đều là "không làm". Đã đọc lại code: không có điều khiển lọc ngày hay xoá/ẩn. Không đổi code | 2026/10/18 | Claude |
 | V0.8 | Sheet 5 (Khu vực B NO 2, C NO 1, 2), Hiện trạng bản dựng | Sửa theo đợt rà soát prototype 2026/10/19 (area B), owner chốt: menu lọc verdict có **đủ 6 giá trị theo BD** (Tất cả, Accepted, Sai kết quả, Quá thời gian, Lỗi biên dịch, Lỗi thực thi; thêm Lỗi thực thi, `SYSTEM_ERROR` vẫn hiện trong bảng nhưng không có trong menu lọc). Cột Bài toán thêm badge độ khó (`problemLevelTone/Label` + `useProblemLevels`). Cột Thời điểm dùng `formatDateVN` (UTC+7, theo locale; định dạng `HH:mm dd/MM/yyyy`, khác BD ở dấu gạch giữa giờ và ngày, chấp nhận ở prototype). Ô tìm kiếm có `maxLength` 100 qua `FilterBar` (cắt im lặng, chưa có toast cảnh báo). Chưa duyệt hình | 2026/10/19 | Claude |
 | V0.9 | Sheet 9 (NO 3) | Owner chốt 2026/10/19 (`DEC-2026-1019-usr-fe-audit-fixes`, chốt nốt câu hỏi mở còn lại sau rà prototype). Chỉ tài liệu, không đổi code, chưa duyệt hình. Bỏ yêu cầu toast khi ô tìm kiếm chạm 100 ký tự: `maxLength` của trình duyệt dừng việc nhập là đủ (owner 2026/10/19, ponytail bậc 3); Sheet 9 dòng độ dài từ khoá đổi `[Tiêu điểm]` còn viền ô, không còn câu thông báo. | 2026/10/19 | Claude |
+| V1.0 | Sheet 3, 4 (4.4), 8 (EVT-5), Hiện trạng bản dựng | Đồng bộ bản dựng 2026/10/20 (`DEC-2026-1020-student-workspace-split-and-password-in-settings`): bỏ khung `PageHeader`, đầu trang là hàng tiêu đề thường (`<h1>` và một dòng phụ), rồi thẻ chứa B, C, D (mục 4.4). Liên kết tên bài sang `/problems/{slug}` nay mở trang tổng quan chỉ-đọc `problem_overview` (`USR0104`), không còn là màn soạn mã `USR0102` (Sheet 3, mermaid, EVT-5). Làm mới số dòng `my-submissions-view.tsx` (mã dịch xuống so với V0.9): `:184-219` thành `:207-245`, `:76-177,221-228` thành `:88-196,247-254`, `:230-258` thành `:256-284`, `:181` thành `:198-205`, `:183-259` thành `:207-285`, `:47-50` thành `:59-67`, `:42-55` thành `:50-53,63-67`, `:12-17,57-60` thành `:17-22,69-72`, `:141-176` thành `:160-195`, `:75-78` thành `:79-86`. Không đổi endpoint, DTO hay item. Chưa duyệt hình | 2026/10/20 | Claude |
 
 ---
 
@@ -132,17 +133,18 @@
 
 [Khi huỷ] Không có — nút bị vô hiệu hoá khi verdict khác `ACCEPTED`.
 
-#### Bài đã nộp → Chi tiết bài tập
+#### Bài đã nộp → Tổng quan bài toán
 
-[Điều kiện mở] Bấm vào tên hoặc mã bài toán trong bảng.
+[Điều kiện mở] Bấm vào tên hoặc mã bài toán trong bảng
+[Nguồn: 05-coding/frontend/src/views/users/my-submissions/ui/my-submissions-view.tsx:104-109].
 
-[Chế độ mở] Điều hướng URL `/problems/{problem_slug}`.
+[Chế độ mở] Điều hướng URL `/problems/{problem_slug}`, trang tổng quan chỉ-đọc (từ 2026/10/20, trước đó là màn soạn mã).
 
 [Thông tin truyền] `problem_slug`.
 
 [Giá trị trả về] Không có.
 
-[Khi thành công] Mở Workspace giải bài.
+[Khi thành công] Mở màn `problem_overview` (`USR0104`) của bài. Muốn soạn mã lại thì bấm tiếp ở màn đó, đích `/workspace/{problem_id}` do `USR0104` mô tả [Nguồn: 02-bd/screens/users/USR0104_problem_overview.md:169].
 
 [Khi huỷ] Không có.
 
@@ -153,7 +155,7 @@ flowchart LR
     SHELL["Khung Người học<br/>mục Bài đã nộp"] -->|"chọn Bài đã nộp"| MS["USR0202 my_submissions"]
     MS -->|"Xem kết quả"| SR["USR0201 submission_result"]
     MS -->|"Phân tích, nếu ACCEPTED"| SOL["USR0301 solution_review"]
-    MS -->|"Bấm tên bài toán"| PD["USR0102 problem_detail"]
+    MS -->|"Bấm tên bài toán"| PD["USR0104 problem_overview"]
 
     classDef source fill:#F3E5F5,stroke:#9C5CC4,color:#000
     classDef screen fill:#E3F2FD,stroke:#3B82F6,color:#000
@@ -204,13 +206,13 @@ Bố cục dạng danh sách trung tâm một cột với các khối chức nă
 | Ký hiệu | Tên khu vực | Tham chiếu prototype | Ghi chú |
 | :-: | :--- | :--- | :--- |
 | **A** | ~~Dải 4 thẻ thống kê (Summary Stats)~~ — **đã bỏ 2026-10-18, owner** | `Bài đã nộp.dc.html:104-110,238-243` (chỉ còn là bằng chứng mockup, bản dựng không có) | Từng gồm 4 thẻ: Lượt nộp, Được chấp nhận (F1-07), Đúng lần đầu, Ngôn ngữ chính. Lệch RD, xem Q5 |
-| **B** | Thanh công cụ lọc & tìm kiếm (Filter Toolbar) | `Bài đã nộp.dc.html:112-123`; code `my-submissions-view.tsx:184-219` | Ô tìm kiếm bài, menu lọc Verdict, menu lọc Ngôn ngữ (`FilterBar` + `FilterMenu`) |
-| **C** | Bảng lịch sử nộp bài (Submissions Table) | `Bài đã nộp.dc.html:126-170`; code `my-submissions-view.tsx:76-177,221-228` | Bảng dữ liệu (`DataTable`), cột thao tác Kết quả / Phân tích |
-| **D** | Chân bảng & phân trang (Table Footer) | `Bài đã nộp.dc.html:171-174`; code `my-submissions-view.tsx:230-258` | Dòng tóm tắt số bản ghi, chọn cỡ trang (10/20/50), thanh chuyển trang (`Pagination`) |
+| **B** | Thanh công cụ lọc & tìm kiếm (Filter Toolbar) | `Bài đã nộp.dc.html:112-123`; code `my-submissions-view.tsx:207-245` | Ô tìm kiếm bài, menu lọc Verdict, menu lọc Ngôn ngữ (`FilterBar` + `FilterMenu`) |
+| **C** | Bảng lịch sử nộp bài (Submissions Table) | `Bài đã nộp.dc.html:126-170`; code `my-submissions-view.tsx:88-196,247-254` | Bảng dữ liệu (`DataTable`), cột thao tác Kết quả / Phân tích |
+| **D** | Chân bảng & phân trang (Table Footer) | `Bài đã nộp.dc.html:171-174`; code `my-submissions-view.tsx:256-284` | Dòng tóm tắt số bản ghi, chọn cỡ trang (10/20/50), thanh chuyển trang (`Pagination`) |
 
-Trang hiện tại = `PageHeader` [Nguồn: 05-coding/frontend/src/views/users/my-submissions/ui/my-submissions-view.tsx:181], rồi một thẻ chứa B, C, D theo thứ tự [Nguồn: 05-coding/frontend/src/views/users/my-submissions/ui/my-submissions-view.tsx:183-259].
+Trang hiện tại = hàng tiêu đề thường: `<h1>` "Bài đã nộp" và dòng phụ "Toàn bộ lịch sử nộp bài của bạn", **không còn khung `PageHeader`** (bỏ 2026/10/20) [Nguồn: 05-coding/frontend/src/views/users/my-submissions/ui/my-submissions-view.tsx:198-205], rồi một thẻ chứa B, C, D theo thứ tự [Nguồn: 05-coding/frontend/src/views/users/my-submissions/ui/my-submissions-view.tsx:207-285].
 
-**Hiện trạng bản dựng** (2026-10-18, đọc lại code): trạng thái lọc và trang giữ trong state cục bộ, chưa đưa lên query param `q`/`verdict`/`language`/`page` [Nguồn: 05-coding/frontend/src/views/users/my-submissions/ui/my-submissions-view.tsx:5-7,47-50]; menu lọc verdict có 6 giá trị đúng BD (Tất cả, ACCEPTED, WRONG_ANSWER, TIME_LIMIT_EXCEEDED, COMPILE_ERROR, RUNTIME_ERROR), chốt 2026/10/19 [Nguồn: 05-coding/frontend/src/views/users/my-submissions/ui/my-submissions-view.tsx, `FilterMenu` verdict]; có chọn cỡ trang 10/20/50 nhớ theo trình duyệt, mặc định 20 [Nguồn: 05-coding/frontend/src/views/users/my-submissions/ui/my-submissions-view.tsx:42-55]; dữ liệu lấy qua `fetchMySubmissionsPage` (mock), không còn gọi `fetchMySubmissionStats` [Nguồn: 05-coding/frontend/src/views/users/my-submissions/ui/my-submissions-view.tsx:12-17,57-60]. **Đối chiếu Q2, Q3 (2026-10-18, đã đọc lại code):** thanh lọc chỉ có ô tìm, Verdict, Ngôn ngữ, không có bộ chọn ngày [Nguồn: 05-coding/frontend/src/views/users/my-submissions/ui/my-submissions-view.tsx:184-219]; cột hành động chỉ có nút "Kết quả" và "Phân tích", không có nút xoá hay ẩn [Nguồn: 05-coding/frontend/src/views/users/my-submissions/ui/my-submissions-view.tsx:141-176]. Khớp quyết định, không đổi code.
+**Hiện trạng bản dựng** (2026-10-20, đọc lại code; số dòng đã làm mới): trạng thái lọc và trang giữ trong state cục bộ, chưa đưa lên query param `q`/`verdict`/`language`/`page` [Nguồn: 05-coding/frontend/src/views/users/my-submissions/ui/my-submissions-view.tsx:5-7,59-67]; menu lọc verdict có 6 giá trị đúng BD (Tất cả, ACCEPTED, WRONG_ANSWER, TIME_LIMIT_EXCEEDED, COMPILE_ERROR, RUNTIME_ERROR), chốt 2026/10/19 [Nguồn: 05-coding/frontend/src/views/users/my-submissions/ui/my-submissions-view.tsx, `FilterMenu` verdict, `:218-233`]; có chọn cỡ trang 10/20/50 nhớ theo trình duyệt, mặc định 20 [Nguồn: 05-coding/frontend/src/views/users/my-submissions/ui/my-submissions-view.tsx:50-53,63-67]; dữ liệu lấy qua `fetchMySubmissionsPage` (mock), không còn gọi `fetchMySubmissionStats` [Nguồn: 05-coding/frontend/src/views/users/my-submissions/ui/my-submissions-view.tsx:17-22,69-72]. **Đối chiếu Q2, Q3 (2026-10-18, đã đọc lại code):** thanh lọc chỉ có ô tìm, Verdict, Ngôn ngữ, không có bộ chọn ngày [Nguồn: 05-coding/frontend/src/views/users/my-submissions/ui/my-submissions-view.tsx:207-245]; cột hành động chỉ có nút "Kết quả" và "Phân tích", không có nút xoá hay ẩn [Nguồn: 05-coding/frontend/src/views/users/my-submissions/ui/my-submissions-view.tsx:160-195]. Khớp quyết định, không đổi code.
 
 ### 4.5. Cấu trúc slice FSD [Nội bộ]
 
@@ -352,10 +354,10 @@ số — cùng quy ước đã chốt ở `02-bd/screens/users/USR0101_problem_l
 | NO | Loại | Sự kiện | Chi tiết | Chuyển màn | Gọi API | Tên xử lý | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :-: | :--- | :--- |
 | 1 | Khởi tạo | Tải màn hình | Đọc tham số URL và tải trang danh sách bài nộp đầu tiên. | Không | Có | `ListMySubmissions` | [Các bước]<br>1. Kiểm tra đăng nhập.<br>2. Đọc các tham số `q`, `verdict`, `language`, `page` từ URL.<br>3. Tải bảng dữ liệu (không còn gọi thống kê, bỏ 2026/10/18, owner).<br>[Khi thành công] Hiển thị thanh lọc, bảng lịch sử và phân trang.<br>[Khi lỗi] Hiển thị thông báo lỗi và nút thử lại. |
-| 2 | Nhập liệu | Nhập tìm kiếm bài | Gõ từ khóa vào ô tìm kiếm bài toán. | Không | Có | `ListMySubmissions` | [Các bước]<br>1. Debounce 400ms.<br>2. Đặt `page = 1`, cập nhật param `q` vào URL.<br>3. Gọi `ListMySubmissions` tải lại bảng.<br>[Khi thành công] Bảng cập nhật danh sách bài khớp từ khóa. Nhấn Enter trong ô tìm kiếm thì toast thông tin báo số lượt nộp tìm thấy (hoặc không có lượt nào); gõ dở thì không toast [Nguồn: 05-coding/frontend/src/views/users/my-submissions/ui/my-submissions-view.tsx:75-78].<br>[Khi lỗi] Hiển thị toast lỗi tải dữ liệu. |
+| 2 | Nhập liệu | Nhập tìm kiếm bài | Gõ từ khóa vào ô tìm kiếm bài toán. | Không | Có | `ListMySubmissions` | [Các bước]<br>1. Debounce 400ms.<br>2. Đặt `page = 1`, cập nhật param `q` vào URL.<br>3. Gọi `ListMySubmissions` tải lại bảng.<br>[Khi thành công] Bảng cập nhật danh sách bài khớp từ khóa. Nhấn Enter trong ô tìm kiếm thì toast thông tin báo số lượt nộp tìm thấy (hoặc không có lượt nào); gõ dở thì không toast [Nguồn: 05-coding/frontend/src/views/users/my-submissions/ui/my-submissions-view.tsx:79-86].<br>[Khi lỗi] Hiển thị toast lỗi tải dữ liệu. |
 | 3 | Lọc | Chọn tab Verdict | Bấm chọn một tab verdict (Accepted, WA, TLE...). | Không | Có | `ListMySubmissions` | [Các bước]<br>1. Đặt `page = 1`, cập nhật param `verdict` vào URL.<br>2. Gọi `ListMySubmissions`.<br>[Khi thành công] Bảng chỉ hiện bài nộp đúng verdict đang chọn.<br>[Khi lỗi] Hiển thị toast lỗi tải dữ liệu. |
 | 4 | Lọc | Chọn tab Ngôn ngữ | Bấm chọn một tab ngôn ngữ (Python, Java, C++). | Không | Có | `ListMySubmissions` | [Các bước]<br>1. Đặt `page = 1`, cập nhật param `language` vào URL.<br>2. Gọi `ListMySubmissions`.<br>[Khi thành công] Bảng chỉ hiện bài nộp bằng ngôn ngữ đang chọn.<br>[Khi lỗi] Hiển thị toast lỗi tải dữ liệu. |
-| 5 | Điều hướng | Bấm link bài toán | Bấm vào tên bài toán trong bảng. | Có | Không | - | [Các bước]<br>1. Điều hướng sang `problem_detail` (`USR0102`) của bài tương ứng. |
+| 5 | Điều hướng | Bấm link bài toán | Bấm vào tên bài toán trong bảng. | Có | Không | - | [Các bước]<br>1. Điều hướng sang `/problems/{problem_slug}` [Nguồn: 05-coding/frontend/src/views/users/my-submissions/ui/my-submissions-view.tsx:105].<br>[Khi thành công] Mở `problem_overview` (`USR0104`) của bài tương ứng, không còn mở thẳng màn soạn mã (2026/10/20). |
 | 6 | Điều hướng | Bấm nút Kết quả | Bấm nút "Kết quả" trên dòng bài nộp. | Có | Không | - | [Các bước]<br>1. Điều hướng sang `submission_result` (`USR0201`) kèm `submission_id`. |
 | 7 | Điều hướng | Bấm nút Phân tích | Bấm nút "Phân tích" trên dòng bài nộp Accepted. | Có | Không | - | [Các bước]<br>1. Kiểm tra verdict = `ACCEPTED`.<br>2. Điều hướng sang `solution_review` (`USR0301`) kèm `submission_id`. |
 | 8 | Phân trang | Bấm Trang trước | Bấm nút ‹ trang trước. | Không | Có | `ListMySubmissions` | [Các bước]<br>1. Giảm `page = page - 1`, cập nhật URL.<br>2. Gọi `ListMySubmissions` và cuộn lên đầu bảng. |

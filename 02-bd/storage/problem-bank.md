@@ -36,8 +36,8 @@ theo `problem_id` trước để: (a) xoá/nhân bản một bài (F2-16) có th
 `problems/<problem_id>/` mà không cần quét toàn bucket, (b) dễ áp policy lifecycle theo bài nếu về sau cần
 dọn testcase của bài đã xoá mềm quá lâu.
 
-Không tạo bucket riêng cho `is_ai_generated_draft = true` (F2-14) — testcase nháp AI sinh vẫn nằm cùng cây
-thư mục bài toán đó, phân biệt bằng cột `is_ai_generated_draft` trong Postgres, không phải bằng vị trí lưu
+Không tạo bucket riêng cho testcase nháp AI (`origin = 'AI'` và `approved = false`, F2-14; thay cột cũ `is_ai_generated_draft`, Sửa 2026-10-22 (đồng bộ DB vòng 3, DEC-2026-1022-problem-bank-schema-sync) [Nguồn: 02-bd/database/problem-bank.md:151-152]) — testcase nháp AI sinh vẫn nằm cùng cây
+thư mục bài toán đó, phân biệt bằng hai cột `origin`/`approved` trong Postgres, không phải bằng vị trí lưu
 trữ, để nhân bản/xuất bản không phải di chuyển object giữa hai vị trí.
 
 ## 3. Chính sách presigned URL
@@ -58,7 +58,7 @@ cho học viên, thời hạn ngắn tương tự.
 - Testcase của bài `deleted = true`: **không xoá object MinIO ngay** — theo nguyên tắc "ẩn mềm, dữ liệu
   không mất" áp dụng xuyên suốt RD (F1-16, F2-15). Dọn dẹp vật lý (nếu cần) là một job định kỳ riêng,
   ngoài phạm vi BD lần này — không có yêu cầu RD nào đòi xoá vật lý.
-- Testcase nháp AI sinh (F2-14) không dùng để chấm (`is_ai_generated_draft = true`) không có retention
+- Testcase nháp AI sinh (F2-14) không dùng để chấm (`origin = 'AI'` và `approved = false`; Sửa 2026-10-22 (đồng bộ DB vòng 3, DEC-2026-1022-problem-bank-schema-sync)) không có retention
   riêng — theo vòng đời chung của bài toán, vì Admin có thể quay lại xác nhận muộn.
 
 ## 5. Việc còn mở — chuyển sang DD

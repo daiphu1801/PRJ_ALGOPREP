@@ -19,6 +19,7 @@ import { AppearanceCard } from "./appearance-card";
 import { DangerZoneCard } from "./danger-zone-card";
 import { DataExportCard } from "./data-export-card";
 import { PreferencesForm } from "./preferences-form";
+import { SecurityCard } from "./security-card";
 
 export function SettingsView({
   area = "student",
@@ -34,13 +35,20 @@ export function SettingsView({
       <div className="flex min-w-0 flex-col gap-3.5">
         <AppearanceCard />
         <PreferencesForm />
+        {profile.data ? (
+          <SecurityCard profile={profile.data} />
+        ) : null}
         {profile.isError ? (
           // D33: without the profile there is no email to confirm against, so say so instead of a
           // skeleton that never resolves.
           <ErrorState>
             <div className="flex flex-col items-center gap-2">
               <span>{t("loadError")}</span>
-              <Button size="sm" variant="ghost" onClick={() => profile.refetch()}>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => profile.refetch()}
+              >
                 {t("retry")}
               </Button>
             </div>

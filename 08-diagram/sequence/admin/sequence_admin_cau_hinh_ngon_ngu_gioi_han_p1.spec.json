@@ -1,0 +1,82 @@
+{
+  "_": "Nguon: 01-rd/screens/admin/ADM0501_language_config.md (REQ-04..06), 02-bd/screens/admin/ADM0501_language_config.md (muc 7.3 GetLanguageConfigs/UpdateLanguageConfigs, Sheet 9 NO 6-7), 02-bd/security/judge-orchestration.md:77 (Function LANGUAGE_CONFIG, ten de xuat). Duong dan REST va ma 409/422 la [SoT: Suy luan] vi 03-dd/api/judge-orchestration.md chua viet. Nhan mui ten la hanh dong nghiep vu tieng Viet; ten ham va truy van thuoc DD. Hop xac nhan tat ngon ngu va kiem tra o man hinh (tab, hoan tac) khong ve vi khong goi may chu. Tach 2 phan 2026-10-20 vi ban 1 phan qua cao (lint: cao 1.47 lan be ngang). | 2026-10-20 (owner): nhan mui ten bo han duong dan, ma HTTP, ma quyen, thuat ngu ky thuat (cache, job, worker, model...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Tải cấu hình ngôn ngữ, giới hạn và sandbox (Quản trị viên) (1/2)",
+  "covers": [
+    "F2-10",
+    "F4-11"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Quản trị viên",
+        "role": "actor"
+      },
+      {
+        "name": "LanguageConfigController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "LanguageConfigService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema judge"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 1 - Mở màn: tải cấu hình ba ngôn ngữ, giới hạn mặc định, sandbox (F2-10, F4-11)"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Mở màn Ngôn ngữ và giới hạn"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "LanguageConfigController",
+        "text": "Gửi yêu cầu xem cấu hình"
+      },
+      {
+        "from": "LanguageConfigController",
+        "to": "LanguageConfigController",
+        "text": "Kiểm tra quyền cấu hình ngôn ngữ"
+      },
+      {
+        "from": "LanguageConfigController",
+        "to": "LanguageConfigService",
+        "text": "Yêu cầu tải cấu hình"
+      },
+      {
+        "from": "LanguageConfigService",
+        "to": "PostgreSQL",
+        "text": "Đọc cấu hình ngôn ngữ, giới hạn, sandbox"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "LanguageConfigService",
+        "text": "Cấu hình hiện hành kèm thời điểm cập nhật",
+        "kind": "return"
+      },
+      {
+        "from": "LanguageConfigService",
+        "to": "LanguageConfigController",
+        "text": "Cấu hình và số bài đang chờ chấm theo ngôn ngữ",
+        "kind": "return"
+      },
+      {
+        "from": "LanguageConfigController",
+        "to": "Quản trị viên",
+        "text": "Báo thành công",
+        "kind": "return"
+      }
+    ]
+  }
+}

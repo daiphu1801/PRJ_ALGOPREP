@@ -20,16 +20,16 @@
 > **Phạm vi đã chốt trước khi viết BD** — theo RD mục 5 (Q1 → Q5, đã đóng), không mở lại:
 > - Dùng chung một view cho A2 và A3; A2 chỉ thấy/sửa bài do chính mình soạn (quyền tác giả, không theo
 >   lớp phụ trách), A3 thấy toàn bộ kho [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:176 (Q1)].
->   **Xem Câu hỏi mở Q1 của file này** — đã chốt 2026-10-01 thêm cột `problems.author_id` bất biến; schema `problem-bank` chưa cập nhật (`02-bd/database/problem-bank.md`, ngoài phạm vi đợt này). A3 không bị lọc phạm vi.
+>   **Xem Câu hỏi mở Q1 của file này** — đã chốt 2026-10-01 thêm cột `problems.author_id` bất biến; cột đã có trong `02-bd/database/problem-bank.md:28` (mục 1.1). A3 không bị lọc phạm vi.
 > - Vòng đời bài toán đúng hai trạng thái `Chưa xuất bản`/`Đã xuất bản` (F2-15), không có `Đã ẩn`
->   [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:177 (Q2); 02-bd/database/problem-bank.md:18].
+>   [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:177 (Q2); 02-bd/database/problem-bank.md:19].
 > - Xoá là ẩn mềm: đặt `problems.status = UNPUBLISHED` **và** bật `problems.deleted = true` (đã thống nhất 2026-10-08, theo RD và `DEC-2026-0831-problem-management-lifecycle-details`)
->   [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:178 (Q3); 02-bd/database/problem-bank.md:19].
+>   [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:178 (Q3); 02-bd/database/problem-bank.md:20].
 > - Giữ "Nhân bản" (F2-16) và "Xuất CSV" (F2-17); **cắt bỏ "Nhập CSV"** khỏi phạm vi
 >   [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:179 (Q4)].
 > - Khối "Bài cần chú ý" là chỉ số dẫn xuất, ngưỡng đã chốt: AC < 30%, chưa xuất bản > 7 ngày
 >   (dải 4 thẻ chỉ số tổng **đã bỏ khỏi UI từ 2026-10-01**: chỉ trang tổng quan mới hiển thị KPI, trang danh sách
->   chỉ có tiêu đề, bộ lọc, danh sách — xem `02-bd/screens/admin/_shell.md`) [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:180 (Q5); 02-bd/database/problem-bank.md:181].
+>   chỉ có tiêu đề, bộ lọc, danh sách — xem `02-bd/screens/admin/_shell.md`) [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:180 (Q5); 02-bd/database/problem-bank.md:281].
 > - Không có "chấm lại hàng loạt" (rejudge) trên màn này — ngoài phạm vi toàn hệ thống
 >   (`DEC-2026-0828-remove-rejudge-scope`).
 
@@ -48,11 +48,11 @@
 | Tên vật lý (slug) | `problem_management` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A2 (`INSTRUCTOR`) / A3 (`ADMIN`) — dùng chung |
-| Phiên bản | V1.28 |
+| Phiên bản | V1.29 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/20 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/10/14 |
+| Ngày cập nhật | 2026/10/22 |
 
 ---
 
@@ -89,6 +89,7 @@
 | V1.26 | Sheet 8 (EVT NO 14), Câu hỏi mở | Bản sao nhân bản **lưu được** ở bản dựng (2026-10-08): lần Lưu đầu tạo bài mới trong kho giả và hiện đầu danh sách (số bài và số bài đã xuất bản của dải thống kê tính thêm), các lần Lưu sau cập nhật cùng bài. Nợ cũ "mock chưa lưu được bản sao" đã xử lý | 2026/10/08 | AI |
 | V1.27 | Sheet 4, 5, Câu hỏi mở | Owner xem báo cáo ảnh `06-plan/reports/261008-1500-ux-screenshots-shr0201-shr0301/report.html` (2026-10-09): **F2 giữ nguyên** (hiệu ứng kính của hộp thoại là thiết kế), **F1 và F3 xử lý**. F1: số ở mô tả phụ (`{tổng}`, `{đã xuất bản}`) ở dữ liệu giả nay tính từ chính các dòng bảng, bỏ hằng 27 và 25 của mockup, nên mô tả phụ khớp nhãn đếm "n / tổng bài" và khối Phân bố (`admin-problem-mocks.ts`, `loadAdminProblemPage`). F3: khi có dòng đã chọn bị bộ lọc ẩn, nhãn pop-up thao tác theo lô đọc thêm "({n} đang bị ẩn bởi bộ lọc)" (khoá `selectionLabelHidden`), hành vi giữ lựa chọn xuyên bộ lọc không đổi. RD không đổi (chỉ là cách thể hiện). |
 | V1.28 | Sheet 4, 5 | Sửa lỗi Minor review UX khu Admin F11, B10 (`06-plan/reports/261014-1054-admin-ux-review/`), **chưa duyệt hình**. F11: tiêu đề "Lượt nộp" không xuống dòng, cột rộng 100px; nhãn trạng thái không xuống dòng; ô "TC · Sửa cuối" thành hai dòng có chủ đích (trên "{n} TC", dưới thời điểm sửa tương đối), khoá i18n `testcasesAndEdit` thay bằng `testcasesCount`. B10: cột Mã sắp xếp được (theo số của mã), cột Chủ đề **không** sắp xếp, khớp NO 3 và NO 5. Chưa làm: cột Chủ đề vẫn hiện một giá trị (NO 5 muốn danh sách phân cách dấu phẩy), cần đổi model `topic` thành `topics[]`, ghi nợ `06-plan/PROTOTYPE_DEBT.md` mục 38. RD không đổi | 2026/10/14 | Claude |
+| V1.29 | Phạm vi, Sheet 3, 4, 5, 6, 7, 8, 9 (trích dẫn) | Sửa 2026-10-22 đồng bộ DB, `DEC-2026-1022-problem-bank-schema-sync`: (1) `problem_stats` là bảng đủ cột (`problem_id` PK, `submission_count`, `accepted_count`, `ac_rate`, `updated_at`), dòng có thể chưa tồn tại nên truy vấn `LEFT JOIN`, `ac_rate NULL` hiện `-` (`02-bd/database/problem-bank.md:197-207`, mục 1.9); trích dẫn cũ `:152` (3 chỗ, dòng 361, 497, 676) trỏ sai, đã sửa; (2) dời toàn bộ số dòng trích dẫn vào DB doc đã lệch sau khi DB doc thêm cột và bảng: `problems` `:8-33`, `status` `:19`, `deleted` `:20`, `topics`/`problem_topics` `:63-67`, `testcases` `:136-158`, ngưỡng checklist và ngưỡng "Bài cần chú ý" `:280-281`, quy ước không FK xuyên schema `:35-37`; (3) bỏ câu "schema `problem-bank` chưa cập nhật" ở phần Phạm vi vì `problems.author_id` đã có từ 2026-10-01 (`:28`); (4) `problems.code` do máy chủ sinh slug, `problems.title` VARCHAR(255) không ảnh hưởng cột hiển thị. Hành vi và giao diện không đổi; Câu hỏi mở không có mục nào đóng thêm (Q2 vẫn "không còn áp dụng") | 2026/10/22 | Claude |
 
 ---
 
@@ -298,7 +299,7 @@ xử lý theo lô, và mở luồng tạo/sửa đề bài
    huỷ [Nguồn: 09-layoutBase/Admin - Quản lý bài tập.dc.html:196-206].
 5. **Chặn xuất bản thiếu điều kiện**: bài chưa đạt checklist xuất bản (không đủ testcase Hidden/Sample,
    thiếu đặc tả) bị chặn cứng kèm lý do khi cố chuyển sang `Đã xuất bản`
-   [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:177 (Q2); 02-bd/database/problem-bank.md:180].
+   [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:177 (Q2); 02-bd/database/problem-bank.md:280].
 6. **Làm mới**: sau khi một hành động ghi thành công, tải lại bảng và hai khối phụ; bỏ
    danh sách đang chọn. Nếu số trang sau khi xoá ít hơn trang hiện tại thì lùi về trang cuối (không hiện trang rỗng).
 
@@ -332,7 +333,7 @@ xử lý theo lô, và mở luồng tạo/sửa đề bài
 [Nguồn: 09-layoutBase/Admin - Quản lý bài tập.dc.html:236-245]. Đã chốt 2026-10-01 (Q4): người dùng tự chọn số dòng mỗi trang (ví dụ 8, 20, 50), nhớ theo tài khoản, mặc định 8, không trần riêng cho ADMIN. Khối "Bài
 cần chú ý": tối đa 4 dòng (một dòng mỗi quy tắc phát hiện).
 
-[Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:11-170; 02-bd/database/problem-bank.md:8-30,180-181;
+[Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:11-170; 02-bd/database/problem-bank.md:8-33,280-281;
 02-bd/security/problem-bank.md:1-64]
 
 ### 4.2 DTO liên quan
@@ -354,16 +355,16 @@ cần chú ý": tối đa 4 dòng (một dòng mỗi quy tắc phát hiện).
 
 | NO | Bảng | Ghi chú |
 | --: | :--- | :--- |
-| 1 | `problems` | [Nguồn: 02-bd/database/problem-bank.md:8-30] |
-| 2 | `topics` | [Nguồn: 02-bd/database/problem-bank.md:42-43] |
-| 3 | `problem_topics` | [Nguồn: 02-bd/database/problem-bank.md:44-45] |
-| 4 | `testcases` | [Nguồn: 02-bd/database/problem-bank.md:97-113] |
-| 5 | `problem_stats` (read model) | [Nguồn: 02-bd/database/problem-bank.md:152] |
+| 1 | `problems` | [Nguồn: 02-bd/database/problem-bank.md:8-33] |
+| 2 | `topics` | [Nguồn: 02-bd/database/problem-bank.md:63-65] |
+| 3 | `problem_topics` | [Nguồn: 02-bd/database/problem-bank.md:66-67] |
+| 4 | `testcases` | [Nguồn: 02-bd/database/problem-bank.md:136-158] |
+| 5 | `problem_stats` (read model, bảng đủ cột `problem_id`, `submission_count`, `accepted_count`, `ac_rate`, `updated_at`; dòng có thể chưa tồn tại nên truy vấn `LEFT JOIN`) | [Nguồn: 02-bd/database/problem-bank.md:197-207 (mục 1.9)] |
 | 6 | `problem_levels` | Danh mục độ khó do ADMIN quản lý [Nguồn: 02-bd/database/problem-bank.md mục 1.2a; `DEC-2026-1001-admin-configurable-settings` mục 7] |
 
 Bảng `tags`/`problem_tags` không dùng ở màn này — cột "Chủ đề" và khối "Phân bố theo chủ đề" đọc `topics`
 (danh mục do ADMIN quản lý, F2-02, đã chốt 2026-10-01), không phải `tags` (nhãn tự do, dùng để lọc chi tiết hơn ở `problem_list`)
-[Nguồn: 02-bd/database/problem-bank.md:36-59]. Bảng `bookmarks` không xuất hiện — màn này không có quyền
+[Nguồn: 02-bd/database/problem-bank.md:57-67,101-106]. Bảng `bookmarks` không xuất hiện — màn này không có quyền
 đọc bookmark của học viên [Nguồn: 02-bd/security/problem-bank.md:56-64].
 
 ### 4.4 Vùng bố cục
@@ -493,8 +494,8 @@ số lại. Hai số tổng còn lại dùng ở dòng phụ tiêu đề (Khu v�
 | | 5 | Chủ đề | `problemManagement.list.col.topics` | `topics` | `name` | ListColumn | String | - | - | O | - | Danh sách phân cách bởi dấu phẩy | Các chủ đề đã gán cho bài, qua bảng nối; danh mục đọc từ dữ liệu `topics`, không phải danh sách cố định. **Không** sắp xếp được: bản dựng bỏ `sortable` ở cột này 2026-10-14 (review UX B10, chưa duyệt hình) [Nguồn: 05-coding/frontend/src/views/shared/problem-management/ui/problem-management-view.tsx:337-346]. **Hiện trạng bản dựng lệch:** ô vẫn hiện **một** chủ đề vì model mock chỉ có `topic` đơn; cần đổi thành `topics[]` mới hiện được danh sách phân cách dấu phẩy (nợ mở, `06-plan/PROTOTYPE_DEBT.md` mục 38)<br>[Nguồn giá trị] `topics.name` qua `problem_topics.problem_id` [Nguồn: 02-bd/database/problem-bank.md:42-45]<br>[EVT liên quan] - |
 | | 6 | Độ khó | `problemManagement.list.col.difficulty` | `problems`, `problem_levels` | `level_id`; `display_name`, `sort_order` | Badge | String | - | - | O | - | Nhãn tiếng Việt theo `display_name` | Mức độ khó của bài, đọc từ danh mục `problem_levels` (không còn ba mức cố định); sắp xếp được, **thứ tự sắp theo `sort_order`** chứ không theo tên. Ba mức seed giữ màu cũ, mức mới màu trung tính<br>[Nguồn giá trị] `problems.level_id` nối `problem_levels` [Nguồn: 02-bd/database/problem-bank.md mục 1.1, 1.2a]<br>[EVT liên quan] EVT-6 |
 | | 7 | Trạng thái | `problemManagement.list.col.status` | `problems` | `status` | Badge | Enum | - | - | O | - | Nhãn tiếng Việt kèm chấm màu | Hai giá trị `PUBLISHED`/`UNPUBLISHED`, sắp xếp được. Nhãn không xuống dòng (review UX F11, 2026-10-14, chưa duyệt hình) [Nguồn: 05-coding/frontend/src/views/shared/problem-management/ui/problem-management-view.tsx:365]<br>[Nguồn giá trị] `PUBLISHED` thành "Đã xuất bản", `UNPUBLISHED` thành "Chưa xuất bản" [Nguồn: 02-bd/database/problem-bank.md:18]<br>[EVT liên quan] EVT-6 |
-| | 8 | Lượt nộp | `problemManagement.list.col.submissionCount` | `problem_stats` | `submission_count` | ListColumn | Number | 8 | - | O | 0 | Số nguyên phân cách nghìn | Tổng số lượt nộp của bài, sắp xếp được. Tiêu đề cột không xuống dòng, cột rộng 100px (review UX F11, 2026-10-14, chưa duyệt hình) [Nguồn: 05-coding/frontend/src/views/shared/problem-management/ui/problem-management-view.tsx:381-384]<br>[Nguồn giá trị] Read model tổng hợp từ domain event [Nguồn: 02-bd/database/problem-bank.md:152]<br>[EVT liên quan] EVT-6 |
-| | 9 | AC | `problemManagement.list.col.acRate` | `problem_stats` | `ac_rate` | ListColumn | Number | 5 | - | O | 0 | Phần trăm | Tỉ lệ Accepted, sắp xếp được<br>[Nguồn giá trị] Cột `ac_rate` [Nguồn: 02-bd/database/problem-bank.md:152]<br>[Công thức] ~~Màu xanh khi ≥ 60%, màu vàng khi 35–59%, màu đỏ khi < 35%~~ **Đã bỏ 2026-10-05** theo quyết định của owner (RD bỏ yêu cầu đổi màu theo ngưỡng): chỉ hiển thị con số phần trăm [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:126-130; 05-coding/frontend/src/views/shared/problem-management/ui/problem-management-view.tsx:326-334]<br>[EVT liên quan] EVT-6 |
+| | 8 | Lượt nộp | `problemManagement.list.col.submissionCount` | `problem_stats` | `submission_count` | ListColumn | Number | 8 | - | O | 0 | Số nguyên phân cách nghìn | Tổng số lượt nộp của bài, sắp xếp được. Tiêu đề cột không xuống dòng, cột rộng 100px (review UX F11, 2026-10-14, chưa duyệt hình) [Nguồn: 05-coding/frontend/src/views/shared/problem-management/ui/problem-management-view.tsx:381-384]<br>[Nguồn giá trị] Read model tổng hợp từ domain event [Nguồn: 02-bd/database/problem-bank.md:197-207 (mục 1.9)]<br>[EVT liên quan] EVT-6 |
+| | 9 | AC | `problemManagement.list.col.acRate` | `problem_stats` | `ac_rate` | ListColumn | Number | 5 | - | O | 0 | Phần trăm | Tỉ lệ Accepted, sắp xếp được<br>[Nguồn giá trị] Cột `ac_rate` [Nguồn: 02-bd/database/problem-bank.md:197-207 (mục 1.9)]<br>[Công thức] ~~Màu xanh khi ≥ 60%, màu vàng khi 35–59%, màu đỏ khi < 35%~~ **Đã bỏ 2026-10-05** theo quyết định của owner (RD bỏ yêu cầu đổi màu theo ngưỡng): chỉ hiển thị con số phần trăm [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:126-130; 05-coding/frontend/src/views/shared/problem-management/ui/problem-management-view.tsx:326-334]<br>[EVT liên quan] EVT-6 |
 | | 10 | TC · Sửa cuối | `problemManagement.list.col.testcaseAndUpdated` | `testcases`, `problems` | -, `updated_at` | ListColumn | String | - | - | O | - | `{số testcase} TC · {mô tả tương đối}` | Số testcase hiện có và thời điểm sửa cuối, gộp một cột. **Từ 2026-10-14** (review UX F11, chưa duyệt hình) bản dựng tách thành hai dòng có chủ đích: dòng trên "{n} TC" (khoá `testcasesCount`, thay `testcasesAndEdit`), dòng dưới mô tả tương đối, mỗi dòng không xuống dòng, thay cho cảnh chữ tự bẻ giữa "3 ngày" [Nguồn: 05-coding/frontend/src/views/shared/problem-management/ui/problem-management-view.tsx:410-416] [Nguồn: 05-coding/frontend/messages/vi.json:1220]<br>[Công thức] Số testcase = COUNT(`testcases` WHERE `problem_id` khớp dòng); mô tả tương đối tính từ `problems.updated_at` [Nguồn: 09-layoutBase/Admin - Quản lý bài tập.dc.html:210-211 (RD mục 3.6)]<br>[EVT liên quan] - |
 | | 11 | Sửa | `problemManagement.list.col.btnEdit` | - | - | Button | - | - | - | I | - | - | Mở `problem_authoring` chế độ sửa cho dòng đó (`{basePath}/[problemId]/edit`) — **khác đích với bấm tiêu đề** từ 2026-10-02. Hiển thị là nút vuông chỉ có icon bút chì (`IconAction`), tên "Sửa" nằm ở tooltip bên dưới (hiện khi rê chuột hoặc focus bàn phím) và ở `aria-label` — xem `02-bd/screens/admin/_shell.md`, mục "Quy ước icon thao tác + tooltip"<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-10 |
 | | 12 | Xoá | `problemManagement.list.col.btnDelete` | - | - | Button | - | - | - | I | - | - | Mở popup xác nhận xoá cho một dòng (ẩn mềm). Hiển thị là nút vuông chỉ có icon thùng rác, tông cảnh báo (`tone="danger"`), tên "Xoá" ở tooltip và `aria-label`<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-16 |
@@ -524,7 +525,7 @@ số lại. Hai số tổng còn lại dùng ở dòng phụ tiêu đề (Khu v�
 | | 2 | Danh sách quy tắc | `problemManagement.attention.list` | `problems`, `testcases`, `problem_stats` | - | List | List | - | - | O | tối đa 4 dòng | - | Đúng 4 quy tắc phát hiện (mục 3 chi tiết bên dưới)<br>[Nguồn giá trị] Kết quả gọi `GetAttentionList`<br>[EVT liên quan] EVT-1 |
 | | 3 | Tên quy tắc | `problemManagement.attention.col.title` | - | - | ListColumn | String | - | - | O | - | - | Nhãn tĩnh i18n map từ mã quy tắc: "Chưa có testcase", "Tỉ lệ AC thấp", "Đang ẩn khỏi người học", "Bản nháp quá hạn"<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] - |
 | | 4 | Chú thích quy tắc | `problemManagement.attention.col.meta` | - | - | ListColumn | String | - | - | O | - | - | Câu giải thích ngưỡng, ví dụ "Tỉ lệ AC dưới 30%" hoặc "Chưa xuất bản quá 7 ngày"<br>[Nguồn giá trị] Nhãn tĩnh i18n map từ mã quy tắc<br>[EVT liên quan] - |
-| | 5 | Số lượng | `problemManagement.attention.col.count` | `problems`, `testcases`, `problem_stats` | - | ListColumn | Number | 6 | - | O | 0 | Số nguyên | Số bài khớp quy tắc, phạm vi theo actor<br>[Công thức] Quy tắc "Chưa có testcase": COUNT(`problems` không có dòng `testcases` khớp). "Tỉ lệ AC thấp": COUNT(`problem_stats.ac_rate < 0.30`). "Đang ẩn khỏi người học": COUNT(`status = 'UNPUBLISHED' AND published_at IS NOT NULL`). "Bản nháp quá hạn": COUNT(`status = 'UNPUBLISHED' AND published_at IS NULL AND created_at < now() - interval '7 days'`) [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:138-143; 02-bd/database/problem-bank.md:181]<br>[EVT liên quan] - |
+| | 5 | Số lượng | `problemManagement.attention.col.count` | `problems`, `testcases`, `problem_stats` | - | ListColumn | Number | 6 | - | O | 0 | Số nguyên | Số bài khớp quy tắc, phạm vi theo actor<br>[Công thức] Quy tắc "Chưa có testcase": COUNT(`problems` không có dòng `testcases` khớp). "Tỉ lệ AC thấp": COUNT(`problem_stats.ac_rate < 0.30`). "Đang ẩn khỏi người học": COUNT(`status = 'UNPUBLISHED' AND published_at IS NOT NULL`). "Bản nháp quá hạn": COUNT(`status = 'UNPUBLISHED' AND published_at IS NULL AND created_at < now() - interval '7 days'`) [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:138-143; 02-bd/database/problem-bank.md:281]<br>[EVT liên quan] - |
 
 ### Popup
 
@@ -549,7 +550,7 @@ số lại. Hai số tổng còn lại dùng ở dòng phụ tiêu đề (Khu v�
 | | 16 | Hộp chọn độ khó đích | `problemManagement.popup.bulkLevel` | `problem_levels` | `display_name` | Popup | - | - | Có | I | Mức đầu tiên theo `sort_order` | Áp dụng / Huỷ | Hộp của hành động theo lô "Đổi độ khó": một ô chọn liệt kê các mức theo `sort_order`, tiêu đề nêu số bài đã chọn. A2 và A3 đều dùng được<br>[Nguồn giá trị] Phản hồi `ListProblemLevels`<br>[EVT liên quan] EVT-12 |
 
 [Nguồn: 09-layoutBase/Admin - Quản lý bài tập.dc.html:150-317,477-482,513-528,539,566-579,591-595;
-02-bd/database/problem-bank.md:8-30,42-45,97-113,152,180-181; 01-rd/screens/shared/SHR0201_problem_management.md:11-170]
+02-bd/database/problem-bank.md:8-33,63-67,136-158,197-207,280-281; 01-rd/screens/shared/SHR0201_problem_management.md:11-170]
 
 ---
 
@@ -673,7 +674,7 @@ Không còn item nào — xem Sheet 5, Khu vực B.
 | 4 | `ProblemManagementListItemDto` | `topicNames` | List\<String\> | `topics` | `name` | Bảng "Chủ đề" | Có | [Nguồn] `topics.name` qua `problem_topics.problem_id`<br>[Chuyển đổi] Nối bằng dấu phẩy khi hiển thị. |
 | 5 | `ProblemManagementListItemDto` | `levelId`, `levelCode`, `levelName` | UUID, String, String | `problems`, `problem_levels` | `level_id`; `code`, `display_name` | Bảng "Độ khó", tab độ khó | Có | [Nguồn] Phản hồi của `ListProblemsAdmin`, nối `problem_levels`<br>[Chuyển đổi] Hiển thị `levelName`; màu badge do giao diện suy ra từ `levelCode` (ba mã seed `EASY`/`MEDIUM`/`HARD` giữ màu cũ, mã khác trung tính). `levelId` là tham số lọc và tham số đích của `ChangeDifficulty`. Thay cho trường ENUM `difficulty` cũ (đã chốt 2026-10-03). |
 | 6 | `ProblemManagementListItemDto` | `status` | Enum | `problems` | `status` | Bảng "Trạng thái", tab trạng thái | Có | [Chuyển đổi] `PUBLISHED` thành "Đã xuất bản", `UNPUBLISHED` thành "Chưa xuất bản". |
-| 7 | `ProblemManagementListItemDto` | `submissionCount`, `assignedClassCount` | Number, Number | `problem_stats`, `class_assignments` | `submission_count`, - | Bảng "Lượt nộp"; hộp xác nhận xoá | Có | [Nguồn] Read model [Nguồn: 02-bd/database/problem-bank.md:152]<br>[Chuyển đổi] `assignedClassCount` đếm số lớp có dòng `class_assignments` với `removed_at IS NULL` cho bài đó (02-bd/database/problem-bank.md mục 1.7); chỉ để hộp xác nhận xoá hiện cảnh báo, không hiện thành cột (thêm 2026-10-08) |
+| 7 | `ProblemManagementListItemDto` | `submissionCount`, `assignedClassCount` | Number, Number | `problem_stats`, `class_assignments` | `submission_count`, - | Bảng "Lượt nộp"; hộp xác nhận xoá | Có | [Nguồn] Read model [Nguồn: 02-bd/database/problem-bank.md:197-207 (mục 1.9)]<br>[Chuyển đổi] `assignedClassCount` đếm số lớp có dòng `class_assignments` với `removed_at IS NULL` cho bài đó (02-bd/database/problem-bank.md mục 1.7); chỉ để hộp xác nhận xoá hiện cảnh báo, không hiện thành cột (thêm 2026-10-08) |
 | 8 | `ProblemManagementListItemDto` | `acRate` | Number | `problem_stats` | `ac_rate` | Bảng "AC" | Có | [Chuyển đổi] Chỉ hiển thị con số phần trăm; yêu cầu đổi màu theo ngưỡng 60%/35% đã bỏ ngày 2026-10-05. |
 | 9 | `ProblemManagementListItemDto` | `testcaseCount`, `updatedAt` | Number, Date | `testcases`, `problems` | -, `updated_at` | Bảng "TC · Sửa cuối" | Có | [Nguồn] `testcaseCount` đếm ở tầng application; `updatedAt` đọc trực tiếp cột `problems.updated_at`. |
 | 10 | `TopicDistributionItemDto` | `topicId`, `topicName`, `count`, `percent` | UUID, String, Number, Number | `topics`, `problem_topics` | `id`, `name` | Khối "Phân bố theo chủ đề" | Có | [Nguồn] Phản hồi của `GetTopicDistribution`. |
@@ -730,7 +731,7 @@ xuất hiện — màn này không có quyền đọc [Nguồn: 02-bd/security/p
 Việc gộp "Xuất bản"/"Rút xuống" thành một endpoint hay tách hai, và việc gộp nhiều bài vào một lời gọi hay
 gọi nhiều lần, là quyết định kỹ thuật của DD, không phải BD.
 
-[Nguồn: 02-bd/database/problem-bank.md:8-30,42-45,97-113,152]
+[Nguồn: 02-bd/database/problem-bank.md:8-33,63-67,136-158,197-207]
 
 ---
 
@@ -776,7 +777,7 @@ gọi nhiều lần, là quyết định kỹ thuật của DD, không phải BD
 | 32 | Nút | Bấm vào dòng để chọn (mới 2026-10-05, hình chưa duyệt) | Bấm vào một ô bất kỳ của dòng dữ liệu, ngoài liên kết tiêu đề, icon Sửa/Xoá và ô chọn. | Không | Không | - | [Các bước]<br>1. Bỏ qua nếu cú bấm nằm trong liên kết, nút, ô nhập, ô chọn, vùng văn bản, nhãn, `[role=button]`, `[role=switch]`, hoặc nếu đang có văn bản được bôi đen.<br>2. Ngược lại đảo trạng thái chọn của dòng đó, như EVT-5.<br>[Khi thành công] Thanh chọn theo lô hiện hoặc ẩn theo EVT-5; liên kết tiêu đề vẫn mở `problem_info` và không đảo chọn. Ô chọn vẫn là điều khiển cho bàn phím và trình đọc màn hình [Nguồn: 05-coding/frontend/src/shared/ui/data/data-table.tsx:217-224]. |
 
 [Nguồn: 09-layoutBase/Admin - Quản lý bài tập.dc.html:151-317,518-528; 01-rd/screens/shared/SHR0201_problem_management.md:95-170;
-02-bd/database/problem-bank.md:18-19,180-181]
+02-bd/database/problem-bank.md:19-20,280-281]
 
 ---
 
@@ -794,7 +795,7 @@ gọi nhiều lần, là quyết định kỹ thuật của DD, không phải BD
 | 4 | Kiểm nhập liệu | Độ dài từ khoá tìm kiếm | [Nội dung kiểm] Từ khoá dài quá 100 ký tự thì không gửi lên máy chủ.<br>[Nơi thực thi] Màn hình.<br>[Tiêu điểm] Viền ô + toast; ô tìm kiếm. | Lỗi | Chưa có mã thông báo | Nội dung "Từ khoá tìm kiếm tối đa 100 ký tự." Giới hạn 100 là `[Suy luận]` theo độ dài thực tế của mã và tiêu đề, DD chốt số chính xác. | EVT-2 | 1 |
 | 5 | Kiểm nhập liệu | Tập bài toán không rỗng | [Nội dung kiểm] Danh sách `problem_id` gửi lên rỗng thì từ chối lời gọi.<br>[Nơi thực thi] Máy chủ. | Lỗi | Chưa có mã thông báo | Nội dung "Chưa chọn bài toán nào." Thanh hành động theo lô chỉ hiện khi có lựa chọn, nên lỗi này chỉ xảy ra khi gọi thẳng máy chủ. | EVT-11, EVT-12, EVT-13, EVT-14, EVT-15, EVT-18 | 3 |
 | 6 | Kiểm nghiệp vụ | Phải chọn giá trị đích | [Nội dung kiểm] "Gán chủ đề" chưa chọn chủ đề đích thì không cho xác nhận. "Đổi độ khó": hộp chọn luôn có sẵn một mức (mặc định mức đầu theo `sort_order`) nên trường hợp "chưa chọn" chỉ còn khi gọi thẳng máy chủ không kèm `levelId`.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Viền ô + toast; vùng chọn giá trị đích trong thao tác lô. | Lỗi | Chưa có mã thông báo | Nội dung "Hãy chọn giá trị muốn áp dụng." | EVT-12, EVT-13 | 1 |
-| 7 | Kiểm nghiệp vụ | Chặn xuất bản thiếu điều kiện | [Nội dung kiểm] Bài chưa đạt checklist xuất bản (thiếu testcase Hidden/Sample theo ngưỡng đã chốt, thiếu đặc tả) thì từ chối chuyển sang `Đã xuất bản`.<br>[Nơi thực thi] Máy chủ.<br>[Tiêu điểm] Toast; dòng vi phạm trong tập chọn. | Lỗi | Chưa có mã thông báo | Nội dung "Bài chưa đủ điều kiện xuất bản: {lý do cụ thể}." Chặn cứng, không phải cảnh báo (chốt 2026-08-30) [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:177 (Q2); 02-bd/database/problem-bank.md:180]. Các bài còn lại trong lô vẫn được xử lý. | EVT-11 | 2 |
+| 7 | Kiểm nghiệp vụ | Chặn xuất bản thiếu điều kiện | [Nội dung kiểm] Bài chưa đạt checklist xuất bản (thiếu testcase Hidden/Sample theo ngưỡng đã chốt, thiếu đặc tả) thì từ chối chuyển sang `Đã xuất bản`.<br>[Nơi thực thi] Máy chủ.<br>[Tiêu điểm] Toast; dòng vi phạm trong tập chọn. | Lỗi | Chưa có mã thông báo | Nội dung "Bài chưa đủ điều kiện xuất bản: {lý do cụ thể}." Chặn cứng, không phải cảnh báo (chốt 2026-08-30) [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:177 (Q2); 02-bd/database/problem-bank.md:280]. Các bài còn lại trong lô vẫn được xử lý. | EVT-11 | 2 |
 | 8 | Kiểm nghiệp vụ | Xoá không xoá dữ liệu liên quan | [Nội dung kiểm] Xoá một bài chỉ bật `problems.deleted = true`, không xoá `testcases`, `problem_topics`, lượt nộp hay bookmark liên quan.<br>[Nơi thực thi] Máy chủ. | Lỗi | Chưa có mã thông báo | Vi phạm nguyên tắc ẩn mềm [Nguồn: 02-bd/database/problem-bank.md:19] là lỗi triển khai, không phải điều kiện người dùng gặp trực tiếp — ghi lại để DD và review code không bỏ sót. | EVT-18 | 3 |
 | 9 | Kiểm nghiệp vụ | Ghi nhật ký không ngoại lệ | [Nội dung kiểm] Mỗi bài toán chịu tác động của một hành động ghi phải ghi đúng một dòng `system_audit_logs`.<br>[Nơi thực thi] Máy chủ, trong cùng giao dịch với thao tác ghi. | Lỗi | Chưa có mã thông báo | Ghi nhật ký thất bại thì thao tác trên bài đó coi như thất bại và không áp dụng — cùng nguyên tắc đã áp dụng ở `ADM0201` [Nguồn: 02-bd/security/identity.md:55-57]. | EVT-11, EVT-12, EVT-13, EVT-14, EVT-18 | 4 |
 | 10 | Kiểm nghiệp vụ | Lỗi hệ thống hoặc lỗi gọi máy chủ | [Nội dung kiểm] Gọi máy chủ thất bại hoặc trả lỗi nghiệp vụ thì dừng thao tác, không hiển thị dữ liệu cũ của khối lỗi.<br>[Nơi thực thi] Màn hình. | Lỗi | Mã lỗi trong phản hồi | Phản hồi có mã lỗi đã đăng ký thì nêu nội dung tương ứng; chưa đăng ký thì nêu "Không kết nối được máy chủ." — với thao tác ghi thì nội dung đi qua toast lỗi, với lỗi tải một khối dữ liệu thì hiển thị ở khối đó kèm nút thử lại. | EVT-1, EVT-2, EVT-3, EVT-4, EVT-6, EVT-7, EVT-8, EVT-11, EVT-12, EVT-13, EVT-14, EVT-15, EVT-18, EVT-20, EVT-21, EVT-22, EVT-23, EVT-24, EVT-25, EVT-26, EVT-27, EVT-28, EVT-29, EVT-30, EVT-31 | 1 |
@@ -811,7 +812,7 @@ gọi nhiều lần, là quyết định kỹ thuật của DD, không phải BD
 
 Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 
-[Nguồn: 02-bd/security/problem-bank.md:5-30; 02-bd/database/problem-bank.md:18-19,180-181;
+[Nguồn: 02-bd/security/problem-bank.md:5-30; 02-bd/database/problem-bank.md:19-20,280-281;
 01-rd/screens/shared/SHR0201_problem_management.md:95-170]
 
 ---
@@ -820,7 +821,7 @@ Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 
 | # | Câu hỏi | Vì sao chưa trả lời được | Chủ sở hữu |
 | :-: | :--- | :--- | :--- |
-| Q1 | ~~Cột nào lưu "tác giả gốc" của một bài toán để lọc phạm vi dữ liệu cho A2?~~ RD đã chốt A2 chỉ thấy/sửa bài do chính mình soạn theo quyền tác giả [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:6,176]. Bảng `problems` (`02-bd/database/problem-bank.md` mục 1.1) chỉ có `updated_by` (người sửa **gần nhất**, không phải người tạo) — **không có cột `author_id`/`created_by`**. **ĐÃ CHỐT 2026-10-01 (owner uỷ quyền cân nhắc), xem `DEC-2026-1001-admin-configurable-settings`:** thêm cột `problems.author_id` (đặt một lần khi tạo, bất biến, tham chiếu `user_id` bên schema `identity` theo nguyên tắc không FK vật lý xuyên schema đã áp dụng cho `updated_by` [Nguồn: 02-bd/database/problem-bank.md:32-34]); bộ lọc theo tác giả chỉ áp cho A2, còn A3 (`ADMIN`) thấy, sửa và xuất bản mọi bài, không bị lọc phạm vi, kể cả bài của A2. **Đã thêm cột** vào `02-bd/database/problem-bank.md` mục 1.1 (2026-10-01, vòng 4). | Đã đóng | Đã đóng |
+| Q1 | ~~Cột nào lưu "tác giả gốc" của một bài toán để lọc phạm vi dữ liệu cho A2?~~ RD đã chốt A2 chỉ thấy/sửa bài do chính mình soạn theo quyền tác giả [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:6,176]. Bảng `problems` (`02-bd/database/problem-bank.md` mục 1.1) chỉ có `updated_by` (người sửa **gần nhất**, không phải người tạo) — **không có cột `author_id`/`created_by`**. **ĐÃ CHỐT 2026-10-01 (owner uỷ quyền cân nhắc), xem `DEC-2026-1001-admin-configurable-settings`:** thêm cột `problems.author_id` (đặt một lần khi tạo, bất biến, tham chiếu `user_id` bên schema `identity` theo nguyên tắc không FK vật lý xuyên schema đã áp dụng cho `updated_by` [Nguồn: 02-bd/database/problem-bank.md:35-37]); bộ lọc theo tác giả chỉ áp cho A2, còn A3 (`ADMIN`) thấy, sửa và xuất bản mọi bài, không bị lọc phạm vi, kể cả bài của A2. **Đã thêm cột** vào `02-bd/database/problem-bank.md` mục 1.1 (2026-10-01, vòng 4). | Đã đóng | Đã đóng |
 | Q2 | **Không còn áp dụng từ 2026-10-01** (thẻ "Tỉ lệ AC trung bình" đã bỏ khỏi UI cùng dải chỉ số; câu hỏi chỉ sống lại nếu trang tổng quan cần chỉ số này). Chỉ số "Tỉ lệ AC trung bình (90 ngày gần nhất)" lấy nguồn ở đâu? Prototype và RD đều nêu cửa sổ 90 ngày [Nguồn: 01-rd/screens/shared/SHR0201_problem_management.md:98-101; 09-layoutBase/Admin - Quản lý bài tập.dc.html:478-483]. | Read model `problem_stats` (`02-bd/database/problem-bank.md` mục 1.9) chỉ có `submission_count`, `accepted_count`, `ac_rate` toàn thời gian — không có trường theo cửa sổ thời gian trượt. Tính đúng "90 ngày gần nhất" cần hoặc (a) đọc trực tiếp bảng lượt nộp gốc bên `judge-orchestration` theo mốc thời gian mỗi lần tải màn (tốn hơn, xuyên module), hoặc (b) mở rộng read model thêm cột `ac_rate_90d` cập nhật theo lịch (rẻ hơn khi đọc, cần thêm job tính lại định kỳ). BD không tự chọn phương án. | BD `database/problem-bank.md` + Chủ dự án |
 | Q3 | **Đã chốt 2026-10-05 (owner chấp nhận đề xuất), `DEC-2026-1005-list-screens-open-questions-closed`:** xuất bản/ẩn theo lô trúng tập hỗn hợp xử lý độc lập từng bài: bài đủ điều kiện được xuất bản, bài thiếu bị từ chối riêng kèm lý do, và có một toast tổng hợp nêu số bài thành công, số bài thất bại (khớp Sheet 8 EVT-11). Câu hỏi gốc: Hành vi khi thao tác "Xuất bản/ẩn" theo lô trúng một tập hỗn hợp (một số bài đủ điều kiện, một số chưa) — kế thừa từ BD cũ (`BD-Q1`), chưa được owner xác nhận chính thức. Sheet 8 EVT-11 và Sheet 7.1 `BulkProblemActionResultDto` đã tạm dùng phương án "xử lý độc lập từng bài, báo lỗi riêng phần không đạt" làm mặc định thiết kế. | RD chỉ mô tả GWT cho một bài đơn lẻ (RD mục 4), không nói rõ hành vi khi trộn nhiều bài trong một lô. Phương án hiện dùng nhất quán với nguyên tắc "chặn cứng kèm lý do" đã chốt cho từng bài, nhưng chưa có xác nhận chính thức bằng văn bản. | Đã đóng |
 | Q4 | ~~Số dòng/trang (8 theo prototype) có cấu hình được hay cố định?~~ Kế thừa từ BD cũ (`BD-Q2`). **ĐÃ CHỐT 2026-10-01 (owner uỷ quyền cân nhắc), xem `DEC-2026-1001-admin-configurable-settings`:** số dòng/trang là lựa chọn của người dùng trên màn (ví dụ 8, 20, 50), nhớ theo từng tài khoản, mặc định 8 theo prototype; không đặt trần cứng riêng cho ADMIN. Bộ chọn chưa dựng (nợ prototype). | RD không đề cập, chỉ mô tả đúng số của prototype [Nguồn: 09-layoutBase/Admin - Quản lý bài tập.dc.html:236-245]. | Đã đóng |

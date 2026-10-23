@@ -5,12 +5,21 @@
 // and flags it [SoT: Suy luận] precisely because 09-layoutBase never drew one. So the BD, not the
 // prototype, is the source here.
 //
+// Placement: `.glass-card` carries a backdrop-filter, and a filtered ancestor becomes the containing block
+// for `position: fixed` descendants. A dialog rendered in place inside a Card would pin to that card and
+// be painted over by the cards below it, so the dialog is portalled out to the nearest shell root (which
+// keeps that shell's colour tokens); outside any shell it falls back to <body>. Same approach as
+// BulkActionBar.
+//
 // Focus handling is the reason this is a shared primitive rather than a per-screen div: a dialog
 // that does not trap focus, close on Escape, or restore focus to its opener is a keyboard trap.
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { cn } from "@/shared/lib";
+
+const SHELL_ROOT = ".admin-shell, .instructor-shell, .student-shell";
 
 const FOCUSABLE =
   'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -35,6 +44,11 @@ export function Modal({
 }: ModalProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const openerRef = useRef<HTMLElement | null>(null);
+  // A callback ref into state: it also tells us when we are on the client and have a node to search from.
+  const [anchor, setAnchor] = useState<HTMLElement | null>(null);
+  const target = anchor
+    ? (anchor.closest<HTMLElement>(SHELL_ROOT) ?? document.body)
+    : null;
 
   useEffect(() => {
     if (!open) return;
@@ -75,11 +89,11 @@ export function Modal({
       document.removeEventListener("keydown", onKeyDown, true);
       openerRef.current?.focus();
     };
-  }, [open, onClose]);
+  }, [open, onClose, target]);
 
   if (!open) return null;
 
-  return (
+  const dialog = (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
         className="absolute inset-0 bg-[color-mix(in_srgb,var(--color-scrim)_30%,transparent)]"
@@ -105,5 +119,12 @@ export function Modal({
         ) : null}
       </div>
     </div>
+  );
+
+  return (
+    <>
+      <span ref={setAnchor} hidden />
+      {target ? createPortal(dialog, target) : null}
+    </>
   );
 }

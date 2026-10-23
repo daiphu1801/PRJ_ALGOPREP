@@ -10,7 +10,7 @@
   cache quyền, giống cách mọi module khác tra quyền — `02-bd/security/identity.md` mục 2).
 - **Quản lý testcase** (upload theo lô, sửa Hidden testcase, xác nhận testcase nháp AI sinh — F2-06,
   F2-07, F2-14): gác bởi Function `TESTCASE_MANAGEMENT`, tách riêng khỏi `PROBLEM_AUTHORING` vì đây là
-  hai loại thao tác rủi ro khác nhau (sửa đề vs sửa dữ liệu chấm điểm) — khớp danh sách 10 Function seed
+  hai loại thao tác rủi ro khác nhau (sửa đề vs sửa dữ liệu chấm điểm) — khớp danh sách 11 Function seed
   đã liệt kê ở `02-bd/database/identity.md` mục 1.3.
 - **Giao/gỡ bài theo lớp** (F2-12): gác bởi Function `CLASS_MANAGEMENT:UPDATE`
   (`DEC-2026-0831-class-assignments-round2` xác nhận đúng mã quyền này cho hành động gỡ).
@@ -19,9 +19,10 @@
   chọn. Dùng lại Function `PROBLEM_AUTHORING` (`CREATE`/`UPDATE`/`DELETE` tương ứng thao tác) cộng kiểm vai trò
   `ADMIN` ở tầng use case — **không tạo Function mới**, cùng cách `interview-bank` làm
   (`02-bd/security/interview-bank.md` mục 2). `ListProblemTopics` mở cho mọi người dùng đã xác thực. A2 gọi
-  thẳng API ghi nhận `403 FORBIDDEN`. Mỗi thao tác thành công ghi `system_audit_logs` (F1-14) cùng giao dịch
+  thẳng API ghi nhận `403 FORBIDDEN`. Mỗi thao tác thành công được ghi nhật ký (F1-14) qua `AuditLogPort` của `identity` trong cùng giao dịch (không ghi thẳng bảng `system_audit_logs` từ `problem-bank`)
   `[SoT: Suy luận]` — quyết định không nêu tên Function; chọn `PROBLEM_AUTHORING` vì chủ đề là siêu dữ liệu của
   bài toán.
+  Lưu ý (2026-10-23, `DEC-2026-1023-db-actor-review-fixes`): ma trận phân quyền **không** điều khiển danh mục chủ đề và độ khó. Các thao tác này đòi kiểm vai trò `ADMIN` ở use case, cộng `PROBLEM_AUTHORING`; vì vậy một ô INSTRUCTOR trên ma trận không phải thứ giới hạn A2 ở đây.
 - **Quản lý danh mục độ khó bài toán** (`problem_levels`, F2-02; chốt 2026-10-03, `DEC-2026-1001-admin-configurable-settings` mục 7): **chỉ ADMIN**
   tạo, đổi tên, sắp xếp lại, xoá mức; A2 chỉ chọn. Cùng cách với chủ đề: dùng lại Function `PROBLEM_AUTHORING` cộng kiểm vai trò `ADMIN` ở tầng
   use case, **không tạo Function mới** (tên Function lấy đúng như bullet chủ đề ngay trên). `ListProblemLevels` mở cho mọi người dùng đã xác thực.
@@ -37,8 +38,7 @@ Bảng 1.1: Ma trận quyền thao tác trên danh mục độ khó bài toán (
 | `ReorderProblemLevels` | Không | Không | Có | `PROBLEM_AUTHORING:UPDATE` + vai trò `ADMIN` |
 | `DeleteProblemLevel` | Không | Không | Có | `PROBLEM_AUTHORING:DELETE` + vai trò `ADMIN`; từ chối khi còn bài tham chiếu hoặc khi đây là mức cuối cùng |
 
-  Kiểm ở máy chủ kể cả khi giao diện đã ẩn nút; A2 gọi trực tiếp nhận `403 FORBIDDEN`. Mỗi thao tác thành công ghi một dòng `system_audit_logs`
-  (F1-14) cùng giao dịch. Việc A2 đổi độ khó của bài (tạo, sửa, đổi theo lô) vẫn thuộc `PROBLEM_AUTHORING:UPDATE`, chỉ được chọn mức có sẵn.
+  Kiểm ở máy chủ kể cả khi giao diện đã ẩn nút; A2 gọi trực tiếp nhận `403 FORBIDDEN`. Mỗi thao tác thành công được ghi nhật ký (F1-14) qua `AuditLogPort` của `identity` trong cùng giao dịch (không ghi thẳng bảng `system_audit_logs` từ `problem-bank`). Việc A2 đổi độ khó của bài (tạo, sửa, đổi theo lô) vẫn thuộc `PROBLEM_AUTHORING:UPDATE`, chỉ được chọn mức có sẵn.
 - **Xuất CSV danh sách bài toán** (F2-17): cùng quyền `PROBLEM_AUTHORING:READ` — chỉ đọc metadata, không
   cần quyền ghi.
 
@@ -101,10 +101,10 @@ suốt dự án, không phải đặc thù riêng module.
   `JudgeExecutionPort`/`SampleSolutionRunnerPort` (kiến trúc mục 3.2). Đây là kiểm soát bắt buộc, không
   phải tuỳ chọn cấu hình — loại bỏ hoàn toàn khả năng "AI bịa expected-output sai khiến bài đúng bị chấm
   Wrong Answer" (`01-rd/req/problem-bank.md:70-75`).
-- Testcase AI sinh ở trạng thái nháp (`is_ai_generated_draft = true`) không được tự động gộp vào bộ Hidden
-  dùng để chấm cho tới khi Admin xác nhận thủ công — enforce ở tầng application: mọi truy vấn xây "bộ
-  testcase Hidden đang hiệu lực" cho một submission phải lọc `is_ai_generated_draft = false`, không có
-  đường tắt nào bỏ qua điều kiện lọc này.
+- Testcase AI sinh ở trạng thái nháp (`origin = AI`, `approved = false`) không được tự động gộp vào bộ Hidden
+  dùng để chấm cho tới khi người soạn đề duyệt thủ công — enforce ở tầng application: mọi truy vấn xây "bộ
+  testcase Hidden đang hiệu lực" cho một submission phải lọc `approved = true`, không có
+  đường tắt nào bỏ qua điều kiện lọc này. Sửa 2026-10-22 (đồng bộ DB, phase 3, `DEC-2026-1022-problem-bank-schema-sync` mục 3): thay cờ `is_ai_generated_draft` bằng cặp `origin`/`approved` (`02-bd/database/problem-bank.md:151-152`). Điều kiện lọc chỉ cần `approved = true`: testcase `MANUAL` do A2/A3 nhập tạo với `approved = true` nên vẫn vào bộ chấm, nháp AI chưa duyệt (`approved = false`) thì không bao giờ vào; `origin` chỉ để truy vết xuất xứ, không tham gia điều kiện chấm. Tài liệu này không liệt kê bảng nên không thêm mục cho `problem_reference_solutions`/`worked_examples`.
 
 ## 5. OWASP / input validation chung
 

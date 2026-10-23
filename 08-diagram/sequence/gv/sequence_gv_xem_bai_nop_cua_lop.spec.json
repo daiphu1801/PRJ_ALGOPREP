@@ -1,5 +1,5 @@
 {
-  "_": "Nguon: 01-rd/screens/teacher/INS0206_submission_management.md (REQ-01 den REQ-19), 02-bd/screens/teacher/INS0206_submission_management.md (muc 7.3: ListInstructorSubmissions, ListInstructorClasses, ListClassAssignments; DTO), DEC-2026-1013-instructor-submissions-list, DEC-2026-1014-instructor-submissions-list-rules, DEC-2026-1014-instructor-submissions-list-details, DEC-2026-1013-instructor-avatar-menu-and-read-source. Duong dan REST va ten endpoint doc mot bai nop la [SoT: Suy luan] vi chua co DD. Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen.",
+  "_": "Nguon: 01-rd/screens/teacher/INS0206_submission_management.md (REQ-01 den REQ-19), 02-bd/screens/teacher/INS0206_submission_management.md (muc 7.3: ListInstructorSubmissions, ListInstructorClasses, ListClassAssignments; DTO), DEC-2026-1013-instructor-submissions-list, DEC-2026-1014-instructor-submissions-list-rules, DEC-2026-1014-instructor-submissions-list-details, DEC-2026-1013-instructor-avatar-menu-and-read-source. Duong dan REST va ten endpoint doc mot bai nop la [SoT: Suy luan] vi chua co DD. Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen. | Cap nhat 2026-10-20: siet theo quy tac moi, nhan mui ten la cau tieng Viet thuong, khong duong dan endpoint, ma HTTP, ma quyen, ten su kien, thuat ngu ky thuat; duong dan, ma HTTP va ma quyen nam o DD.",
   "kind": "sequence",
   "title": "Sơ đồ tuần tự chi tiết - Xem bài nộp của học viên trong lớp (Giảng viên)",
   "covers": [
@@ -46,12 +46,12 @@
       {
         "from": "Giảng viên",
         "to": "SubmissionController",
-        "text": "GET .../instructor/submissions?classId=&result=&q=&page="
+        "text": "Gửi yêu cầu xem danh sách bài nộp"
       },
       {
         "from": "SubmissionController",
         "to": "SubmissionController",
-        "text": "Kiểm tra quyền xem lớp (CLASS_MANAGEMENT:READ); lớp phải do mình phụ trách"
+        "text": "Kiểm tra quyền xem lớp và lớp do mình phụ trách"
       },
       {
         "from": "SubmissionController",
@@ -61,7 +61,7 @@
       {
         "from": "SubmissionService",
         "to": "identity, problem-bank",
-        "text": "Lấy lớp, bài đã giao, ghi danh kể cả đã rời"
+        "text": "Lấy danh sách lớp, bài đã giao và học viên, kể cả người đã rời lớp"
       },
       {
         "from": "identity, problem-bank",
@@ -94,7 +94,7 @@
       {
         "from": "SubmissionController",
         "to": "Giảng viên",
-        "text": "200 OK",
+        "text": "Báo thành công",
         "kind": "return"
       },
       {
@@ -103,7 +103,7 @@
         "text": "Bảng bài nộp có cột tỉ lệ testcase; học viên đã rời lớp hiện ghi chú Đã rời lớp"
       },
       {
-        "phase": "Giai đoạn 2 - Mở một bài nộp ở chế độ chỉ đọc, ngoài lớp thì trả 404 (INS0206)"
+        "phase": "Giai đoạn 2 - Mở một bài nộp ở chế độ chỉ đọc, bài ngoài lớp thì báo không tìm thấy (INS0206)"
       },
       {
         "from": "Giảng viên",
@@ -113,7 +113,7 @@
       {
         "from": "Giảng viên",
         "to": "SubmissionController",
-        "text": "GET .../submissions/{submissionId}?classId=&studentId="
+        "text": "Gửi yêu cầu xem một bài nộp"
       },
       {
         "from": "SubmissionController",
@@ -137,6 +137,11 @@
           "then": [
             {
               "from": "SubmissionService",
+              "to": "SubmissionService",
+              "text": "Trường hợp có"
+            },
+            {
+              "from": "SubmissionService",
               "to": "PostgreSQL",
               "text": "Đọc bài nộp, mã nguồn, kết quả từng testcase"
             },
@@ -155,7 +160,7 @@
             {
               "from": "SubmissionController",
               "to": "Giảng viên",
-              "text": "200 OK",
+              "text": "Báo thành công",
               "kind": "return"
             }
           ],
@@ -169,7 +174,7 @@
             {
               "from": "SubmissionController",
               "to": "Giảng viên",
-              "text": "404 Not Found - bài ngoài lớp không lộ là có tồn tại",
+              "text": "Báo lỗi: không tìm thấy, không lộ bài có tồn tại",
               "kind": "return"
             }
           ]

@@ -145,4 +145,19 @@ describe("ProblemListView behaviour from the BD", () => {
     expect(screen.getByText(/Sai kết quả 8\/12/)).toBeInTheDocument();
     expect(screen.getAllByText("0 / 5 bài · giao 24/08/2026").length).toBe(2);
   });
+
+  it("caps the in-progress block at 3 cards and links to the workspace", () => {
+    renderView();
+    const panel = screen
+      .getByRole("heading", { name: "Bài đang làm dở" })
+      .closest("div") as HTMLElement;
+    expect(
+      within(panel)
+        .getAllByRole("link")
+        .filter((a) => a.getAttribute("href")?.startsWith("/workspace/")).length,
+    ).toBeLessThanOrEqual(3);
+    expect(
+      within(panel).getByRole("link", { name: "Xem tất cả" }),
+    ).toHaveAttribute("href", "/workspace");
+  });
 });

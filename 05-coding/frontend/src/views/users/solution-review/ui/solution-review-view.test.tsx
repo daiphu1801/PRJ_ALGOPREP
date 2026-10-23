@@ -38,6 +38,17 @@ describe("SolutionReviewView", () => {
     expect(screen.getByText(/Phản hồi để học/)).toBeInTheDocument();
   });
 
+  it("lists the follow-up topics as plain chips with one link to the question bank (F5-06)", async () => {
+    renderView();
+
+    expect(await screen.findByText("Chủ đề nên học tiếp")).toBeInTheDocument();
+    // "hash map" is also a topic badge in the page header, so read the chips from the list items.
+    const chips = screen.getAllByRole("listitem").map((item) => item.textContent);
+    expect(chips).toEqual(expect.arrayContaining(["hash map", "two pointers", "3Sum"]));
+    const cta = screen.getByRole("link", { name: "Mở ngân hàng câu hỏi" });
+    expect(cta).toHaveAttribute("href", "/interview-bank");
+  });
+
   it("takes the submission id from the route, in the breadcrumb and the interview link", async () => {
     currentSubmissionId = "SB-90305";
     renderView();
@@ -79,7 +90,7 @@ describe("SolutionReviewView", () => {
       "algoprep-draft:1:python:function",
     );
     expect(saved).toContain("seen.get(target - x)");
-    expect(push).toHaveBeenCalledWith("/problems/1");
+    expect(push).toHaveBeenCalledWith("/workspace/1");
   });
 
   it("offers Retry on a transient error", async () => {

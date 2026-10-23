@@ -1,5 +1,5 @@
 {
-  "_": "Luong soan de bai, khai dac ta ham cho CA HAI mo hinh nop bai, va checklist chan xuat ban. Nguon: US-A2-01 va US-A2-01b (01-rd/req/user_stories/a2_instructor.md:8-35), 01-rd/req/problem-bank.md (F2-01 den F2-04, F2-15), 01-rd/req/harness.md (F3-01 luoc do kieu, F3-13 hai mo hinh song song), 02-bd/architecture/harness.md muc 4 (luoc do kieu).",
+  "_": "Luong soan de bai, khai dac ta ham cho CA HAI mo hinh nop bai, va checklist chan xuat ban. Nguon: US-A2-01 va US-A2-01b (01-rd/req/user_stories/a2_instructor.md:8-35), 01-rd/req/problem-bank.md (F2-01 den F2-04, F2-15), 01-rd/req/harness.md (F3-01 luoc do kieu, F3-13 hai mo hinh song song), 02-bd/architecture/harness.md muc 4 (luoc do kieu). | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen. Siet 2026-10-20: nhan mui ten viet ngon ngu nghiep vu, endpoint, ma HTTP, ma quyen, ten ham va cau SQL thuoc 03-dd/api va 03-dd/logic, khong ve trong hinh.",
   "_shared": "Man soan de duoc gan cho CA giang vien va quan tri vien, chia pham vi bang quyen PROBLEM_AUTHORING (DEC-2026-0825-shared-content-authoring-screens) -- vi vay dat o sequence/shared/ chu khong phai gv/.",
   "_chan_xuat_ban": "F2-15: thieu testcase Hidden hoac thieu dac ta thi CHAN, khong cho xuat ban mot bai khong cham duoc.",
   "kind": "sequence",
@@ -45,42 +45,47 @@
       {
         "from": "Người soạn đề",
         "to": "Người soạn đề",
-        "text": "Khai định dạng stdin và stdout cho mô hình Standard I/O"
+        "text": "Khai định dạng vào ra cho mô hình Standard I/O"
       },
       {
         "from": "Người soạn đề",
         "to": "ProblemController",
-        "text": "PUT /problems/{id}/specs { functionSignatures, ioFormat, matchingStrategy }"
+        "text": "Gửi đặc tả: khai báo hàm, định dạng vào ra, cách so khớp"
       },
       {
         "from": "ProblemController",
         "to": "ProblemService",
-        "text": "updateSpecs(command, authorId)"
+        "text": "Xử lý cập nhật đặc tả"
       },
       {
         "from": "ProblemService",
         "to": "ProblemService",
-        "text": "validate(kiểu tham số và kiểu trả về) (TypeSchemaValidator)"
+        "text": "Kiểm tra kiểu tham số và kiểu trả về"
       },
       {
         "from": "ProblemService",
         "to": "ProblemService",
-        "text": "Đối chiếu với lược đồ kiểu độc lập ngôn ngữ: nguyên thuỷ, mảng, danh sách lồng, danh sách liên kết, cây nhị phân"
+        "text": "Đối chiếu với các kiểu dữ liệu chung: mảng, danh sách liên kết, cây nhị phân..."
       },
       {
         "from": "ProblemService",
         "to": "ProblemService",
-        "text": "Chặn tổ hợp vô nghĩa: UNORDERED_SET trên cây nhị phân hoặc danh sách liên kết"
+        "text": "Chặn tổ hợp vô nghĩa, ví dụ so khớp không thứ tự trên cây nhị phân"
       },
       {
         "from": "ProblemService",
         "to": "ProblemService",
-        "text": "Kết quả kiểm lược đồ kiểu (TypeSchemaValidator)"
+        "text": "Kết quả kiểm tra kiểu"
       },
       {
         "alt": {
-          "label": "Kiểu dữ liệu vượt quá lược đồ kiểu của F3?",
+          "label": "Kiểu dữ liệu ngoài phạm vi hỗ trợ?",
           "then": [
+            {
+              "from": "ProblemService",
+              "to": "ProblemService",
+              "text": "Trường hợp có"
+            },
             {
               "from": "ProblemService",
               "to": "PostgreSQL",
@@ -95,31 +100,36 @@
             {
               "from": "ProblemController",
               "to": "Người soạn đề",
-              "text": "200 OK kèm cảnh báo, không phải lỗi",
+              "text": "Báo thành công kèm cảnh báo, không phải lỗi",
               "kind": "return"
             }
           ],
           "else": [
             {
               "from": "ProblemService",
+              "to": "ProblemService",
+              "text": "Trường hợp không"
+            },
+            {
+              "from": "ProblemService",
               "to": "PostgreSQL",
-              "text": "save(problem_specs cho cả ba ngôn ngữ và cả hai mô hình)"
+              "text": "Lưu đặc tả cho cả ba ngôn ngữ và cả hai mô hình nộp bài"
             },
             {
               "from": "PostgreSQL",
               "to": "PostgreSQL",
-              "text": "UPSERT problem_specs (ProblemRepository)"
+              "text": "Ghi đặc tả, có thì sửa chưa có thì thêm"
             },
             {
               "from": "ProblemService",
               "to": "ProblemController",
-              "text": "ProblemSpecDto",
+              "text": "Đặc tả đã lưu",
               "kind": "return"
             },
             {
               "from": "ProblemController",
               "to": "Người soạn đề",
-              "text": "200 OK",
+              "text": "Báo thành công",
               "kind": "return"
             }
           ]

@@ -1,0 +1,130 @@
+{
+  "_": "Nguon: 01-rd/screens/admin/ADM0501_language_config.md (REQ-04..06), 02-bd/screens/admin/ADM0501_language_config.md (muc 7.3 GetLanguageConfigs/UpdateLanguageConfigs, Sheet 9 NO 6-7), 02-bd/security/judge-orchestration.md:77 (Function LANGUAGE_CONFIG, ten de xuat). Duong dan REST va ma 409/422 la [SoT: Suy luan] vi 03-dd/api/judge-orchestration.md chua viet. Nhan mui ten la hanh dong nghiep vu tieng Viet; ten ham va truy van thuoc DD. Hop xac nhan tat ngon ngu va kiem tra o man hinh (tab, hoan tac) khong ve vi khong goi may chu. Tach 2 phan 2026-10-20 vi ban 1 phan qua cao (lint: cao 1.47 lan be ngang). | 2026-10-20 (owner): nhan mui ten bo han duong dan, ma HTTP, ma quyen, thuat ngu ky thuat (cache, job, worker, model...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Lưu cấu hình ngôn ngữ, giới hạn và sandbox (Quản trị viên) (2/2)",
+  "covers": [
+    "F4-11",
+    "F2-14",
+    "F1-14"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Quản trị viên",
+        "role": "actor"
+      },
+      {
+        "name": "LanguageConfigController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "LanguageConfigService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema judge"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 2 - Sửa và lưu một lần: kiểm tra, ghi cấu hình, ghi nhật ký (F4-11, F1-14)"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Sửa hệ số, công tắc, sandbox; bấm Lưu; xác nhận nếu có ngôn ngữ bị tắt"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "LanguageConfigController",
+        "text": "Gửi các thay đổi cần lưu"
+      },
+      {
+        "from": "LanguageConfigController",
+        "to": "LanguageConfigController",
+        "text": "Kiểm tra quyền và khoảng giá trị"
+      },
+      {
+        "from": "LanguageConfigController",
+        "to": "LanguageConfigService",
+        "text": "Yêu cầu lưu toàn bộ thay đổi"
+      },
+      {
+        "from": "LanguageConfigService",
+        "to": "PostgreSQL",
+        "text": "Đọc cấu hình hiện hành"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "LanguageConfigService",
+        "text": "Cấu hình hiện hành và thời điểm cập nhật",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Hợp lệ?",
+          "then": [
+            {
+              "from": "LanguageConfigService",
+              "to": "LanguageConfigService",
+              "text": "Còn ngôn ngữ bật, không xung đột phiên bản"
+            },
+            {
+              "from": "LanguageConfigService",
+              "to": "PostgreSQL",
+              "text": "Lưu cấu hình mới và ghi nhật ký hệ thống"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "LanguageConfigService",
+              "text": "Đã ghi",
+              "kind": "return"
+            },
+            {
+              "from": "LanguageConfigService",
+              "to": "LanguageConfigController",
+              "text": "Cấu hình mới",
+              "kind": "return"
+            },
+            {
+              "from": "LanguageConfigController",
+              "to": "Quản trị viên",
+              "text": "Báo thành công",
+              "kind": "return"
+            },
+            {
+              "from": "Quản trị viên",
+              "to": "Quản trị viên",
+              "text": "Hiện thông báo đã lưu; bài chấm mới dùng cấu hình mới"
+            }
+          ],
+          "else": [
+            {
+              "from": "LanguageConfigService",
+              "to": "LanguageConfigService",
+              "text": "Tắt hết ngôn ngữ hoặc cấu hình đã bị đổi"
+            },
+            {
+              "from": "LanguageConfigService",
+              "to": "LanguageConfigController",
+              "text": "Từ chối, không thay đổi nào được ghi",
+              "kind": "return"
+            },
+            {
+              "from": "LanguageConfigController",
+              "to": "Quản trị viên",
+              "text": "Báo lỗi dữ liệu hoặc cấu hình đã đổi; giữ giá trị đã nhập",
+              "kind": "return"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

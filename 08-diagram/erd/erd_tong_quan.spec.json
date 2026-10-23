@@ -1,0 +1,300 @@
+{
+  "_": "Nguon: 02-bd/database/{identity,problem-bank,harness,judge-orchestration,ai-review,interview-bank}.md, ngay 2026-10-22. ERD tong quan: chi ten bang, quan he la tham chieu logic lien schema (net dut), nhan = cot giu tham chieu; canh toi identity.users khong ghi nhan de bot roi (cot la user_id, author_id, created_by, updated_by, assigned_by tuy bang). Bo qua: khoa ngoai trong cung schema; khoa da hinh (outbox aggregate_id, rubric_scores.owner_id, token_usage.owner_id tro vao bang cung schema); bang khong co tham chieu lien schema va khong trung tam (functions, actions, permissions, oauth_identities, class_invite_codes, user_preferences, system_settings, user_daily_submission_stats, tags, problem_tags, problem_topics, problem_reference_solutions, worked_examples, callback_logs, outbox_events cua judge va ai, ai_model_prices, question_levels); judge.submissions.spec_version la so phien ban, khong ve. Schema harness khong co bang. | 2026-10-22 (sau khi render that): bo 21 lien ket toi identity.users khoi hinh vi 21 duong cung do ve mot bang lam hinh thanh mot dai ngang kho doc; chuyen thanh mot dong ghi chu duoi hinh.",
+  "kind": "erd",
+  "title": "ERD tổng quan các schema",
+  "covers": [],
+  "erd": {
+    "scope": "overview",
+    "schemas": [
+      {
+        "id": "identity",
+        "label": "identity (F1)",
+        "entities": [
+          {
+            "id": "identity.users",
+            "name": "users"
+          },
+          {
+            "id": "identity.roles",
+            "name": "roles"
+          },
+          {
+            "id": "identity.classes",
+            "name": "classes"
+          },
+          {
+            "id": "identity.class_enrollments",
+            "name": "class_enrollments"
+          },
+          {
+            "id": "identity.refresh_tokens",
+            "name": "refresh_tokens"
+          },
+          {
+            "id": "identity.system_audit_logs",
+            "name": "system_audit_logs"
+          },
+          {
+            "id": "identity.user_problem_best_score",
+            "name": "user_problem_best_score",
+            "stereotype": "read_model"
+          },
+          {
+            "id": "identity.user_submission_stats",
+            "name": "user_submission_stats",
+            "stereotype": "read_model"
+          },
+          {
+            "id": "identity.identity_recent_activity",
+            "name": "identity_recent_activity",
+            "stereotype": "read_model"
+          }
+        ]
+      },
+      {
+        "id": "problem",
+        "label": "problem (F2)",
+        "entities": [
+          {
+            "id": "problem.problems",
+            "name": "problems"
+          },
+          {
+            "id": "problem.problem_specs",
+            "name": "problem_specs"
+          },
+          {
+            "id": "problem.testcases",
+            "name": "testcases"
+          },
+          {
+            "id": "problem.topics",
+            "name": "topics"
+          },
+          {
+            "id": "problem.problem_levels",
+            "name": "problem_levels"
+          },
+          {
+            "id": "problem.class_assignments",
+            "name": "class_assignments"
+          },
+          {
+            "id": "problem.bookmarks",
+            "name": "bookmarks"
+          },
+          {
+            "id": "problem.problem_stats",
+            "name": "problem_stats",
+            "stereotype": "read_model"
+          },
+          {
+            "id": "problem.problem_bank_settings",
+            "name": "problem_bank_settings",
+            "stereotype": "singleton"
+          }
+        ]
+      },
+      {
+        "id": "judge",
+        "label": "judge (F4)",
+        "entities": [
+          {
+            "id": "judge.submissions",
+            "name": "submissions"
+          },
+          {
+            "id": "judge.submission_testcase_results",
+            "name": "submission_testcase_results"
+          },
+          {
+            "id": "judge.judge_run_tokens",
+            "name": "judge_run_tokens"
+          },
+          {
+            "id": "judge.language_configs",
+            "name": "language_configs",
+            "stereotype": "seed"
+          },
+          {
+            "id": "judge.cluster_settings",
+            "name": "cluster_settings",
+            "stereotype": "singleton"
+          },
+          {
+            "id": "judge.grading_defaults",
+            "name": "grading_defaults",
+            "stereotype": "singleton"
+          },
+          {
+            "id": "judge.sandbox_settings",
+            "name": "sandbox_settings",
+            "stereotype": "singleton"
+          },
+          {
+            "id": "judge.generator_sandbox_settings",
+            "name": "generator_sandbox_settings",
+            "stereotype": "singleton"
+          }
+        ]
+      },
+      {
+        "id": "ai",
+        "label": "ai (F5)",
+        "entities": [
+          {
+            "id": "ai.solution_reviews",
+            "name": "solution_reviews"
+          },
+          {
+            "id": "ai.interview_sessions",
+            "name": "interview_sessions"
+          },
+          {
+            "id": "ai.interview_turns",
+            "name": "interview_turns"
+          },
+          {
+            "id": "ai.rubric_scores",
+            "name": "rubric_scores"
+          },
+          {
+            "id": "ai.token_usage",
+            "name": "token_usage"
+          },
+          {
+            "id": "ai.ai_cache_entries",
+            "name": "ai_cache_entries"
+          },
+          {
+            "id": "ai.prompt_templates",
+            "name": "prompt_templates"
+          },
+          {
+            "id": "ai.ai_usage_anomaly_alerts",
+            "name": "ai_usage_anomaly_alerts"
+          },
+          {
+            "id": "ai.ai_token_budget_configs",
+            "name": "ai_token_budget_configs",
+            "stereotype": "singleton"
+          }
+        ]
+      },
+      {
+        "id": "interview_bank",
+        "label": "interview_bank (F6)",
+        "entities": [
+          {
+            "id": "interview_bank.interview_questions",
+            "name": "interview_questions"
+          },
+          {
+            "id": "interview_bank.question_topics",
+            "name": "question_topics"
+          },
+          {
+            "id": "interview_bank.answer_rubrics",
+            "name": "answer_rubrics"
+          },
+          {
+            "id": "interview_bank.bookmarks",
+            "name": "bookmarks"
+          },
+          {
+            "id": "interview_bank.user_answers",
+            "name": "user_answers"
+          },
+          {
+            "id": "interview_bank.practice_history",
+            "name": "practice_history"
+          },
+          {
+            "id": "interview_bank.recall_ratings",
+            "name": "recall_ratings"
+          }
+        ]
+      },
+      {
+        "id": "harness",
+        "label": "harness (F3)",
+        "entities": [
+          {
+            "id": "harness.none",
+            "name": "không có bảng"
+          }
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "from": "identity.users",
+        "to": "judge.language_configs",
+        "label": "default_language"
+      },
+      {
+        "from": "identity.user_problem_best_score",
+        "to": "problem.problems",
+        "label": "problem_id"
+      },
+      {
+        "from": "problem.class_assignments",
+        "to": "identity.classes",
+        "label": "class_id"
+      },
+      {
+        "from": "judge.submissions",
+        "to": "problem.problems",
+        "label": "problem_id"
+      },
+      {
+        "from": "judge.submission_testcase_results",
+        "to": "problem.testcases",
+        "label": "testcase_id"
+      },
+      {
+        "from": "judge.judge_run_tokens",
+        "to": "problem.testcases",
+        "label": "testcase_id"
+      },
+      {
+        "from": "ai.solution_reviews",
+        "to": "judge.submissions",
+        "label": "submission_id"
+      },
+      {
+        "from": "ai.solution_reviews",
+        "to": "problem.problems",
+        "label": "problem_id"
+      },
+      {
+        "from": "ai.interview_sessions",
+        "to": "judge.submissions",
+        "label": "submission_id"
+      },
+      {
+        "from": "ai.interview_sessions",
+        "to": "interview_bank.interview_questions",
+        "label": "question_ref"
+      },
+      {
+        "from": "ai.token_usage",
+        "to": "problem.problems",
+        "label": "problem_id"
+      },
+      {
+        "from": "ai.token_usage",
+        "to": "interview_bank.user_answers",
+        "label": "owner_id"
+      },
+      {
+        "from": "ai.ai_cache_entries",
+        "to": "problem.problems",
+        "label": "problem_id"
+      }
+    ],
+    "notes": [
+      "Mọi schema đều tham chiếu identity.users (user_id, author_id, created_by, updated_by, assigned_by); 21 liên kết này không vẽ để hình đỡ rối, xem ERD từng schema."
+    ]
+  }
+}

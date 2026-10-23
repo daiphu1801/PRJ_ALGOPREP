@@ -64,11 +64,11 @@
 | Tên vật lý (slug) | `class_student_detail` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A2 (`INSTRUCTOR`) |
-| Phiên bản | V0.20 |
+| Phiên bản | V0.21 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/21 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/10/18 |
+| Ngày cập nhật | 2026/10/22 |
 
 ---
 
@@ -98,6 +98,7 @@
 | V0.18 | Sheet 4.4 (hiện trạng bản dựng) | Dựng prototype gỡ học viên (giữ lịch sử, đánh dấu đã rời): thêm hàng hiện trạng cho hành vi sau khi gỡ (`router.back()`, mock chỉ đặt `leftAt`). Không đổi yêu cầu, item, EVT hay quyết định thiết kế. **Chưa duyệt hình** | 2026/10/14 | AI |
 | V0.19 | Sheet 4.4 (hiện trạng bản dựng, hàng "Lịch sử nộp bài") | Dựng prototype trang kết quả của giảng viên (`from=`, breadcrumb, sidebar): nút "Xem kết quả" ở bảng lịch sử nay mang `from=student`. Không đổi yêu cầu, item, EVT hay quyết định thiết kế. **Chưa duyệt hình** | 2026/10/14 | AI |
 | V0.20 | Sheet 4.4 (hàng "Thanh điều hướng bên trái") | Dựng prototype Phase 4-5 (bài giao theo lớp, phân trang 20, from=). Ghi hiện trạng: sidebar sáng mục của màn gọi tới đã dựng qua query `from=` (`from=students` sáng "Danh sách học viên", `from=submissions` sáng "Bài nộp", không có `from` hoặc giá trị lạ thì "Lớp của tôi" theo khớp tiền tố). Hai màn gọi tới (`INS0203`, `INS0206`) đã gắn `from=` vào liên kết tên học viên. Không đổi yêu cầu hay quyết định thiết kế. **Chưa duyệt hình** | 2026/10/18 | AI |
+| V0.21 | Sheet 5 (Khu vực lịch sử nộp bài, cột Kết quả), Câu hỏi mở | Sửa 2026-10-22 (đồng bộ DB vòng 3, DEC-2026-1022-problem-bank-schema-sync): "Bảy trạng thái cuối" sửa thành "Sáu" theo DB (`status` có chín giá trị, ba chưa cuối). Không đổi hành vi màn. Không phát sinh câu hỏi mở mới; các Q còn mở giữ nguyên | 2026/10/22 | Claude |
 
 ---
 
@@ -500,7 +501,7 @@ Căn cứ suy diễn, theo đúng thứ tự ưu tiên đã dùng:
 | | 2 | Bảng lịch sử | `classStudentDetail.submissionHistory.table` | - | - | List | List | - | - | O | rỗng | 20 dòng mỗi trang | Các lượt nộp của học viên này cho **các bài đã giao cho đúng lớp đang xem**, kể cả bài đã bị gỡ mềm khỏi lớp, sắp xếp theo `submitted_at` giảm dần (`DEC-2026-1014-instructor-batch2-weekly-rules`, Q9)<br>[Nguồn giá trị] Kết quả gọi `ListStudentClassSubmissions` (`judge-orchestration`) [Nguồn: 02-bd/database/judge-orchestration.md:8-34]<br>[EVT liên quan] EVT-1, EVT-7 |
 | | 3 | Bài tập | `classStudentDetail.submissionHistory.col.problemTitle` | `problem.problems` | `title` | ListColumn | String | 200 | - | O | - | - | Tên bài tập của lượt nộp; bài đã bị gỡ mềm khỏi lớp thì kèm ghi chú nhỏ "Bài đã gỡ khỏi lớp" ngay dưới tên (nhãn tĩnh i18n, `DEC-2026-1014-instructor-batch2-weekly-rules`)<br>[Nguồn giá trị] `problem.problems.title`, tra theo `judge.submissions.problem_id` [Nguồn: 02-bd/database/problem-bank.md:15; 02-bd/database/judge-orchestration.md:16]. Ghi chú suy từ `problem.class_assignments.removed_at` khác rỗng của đúng cặp lớp và bài [Nguồn: 02-bd/database/problem-bank.md:124]<br>[EVT liên quan] - |
 | | 4 | Ngôn ngữ | `classStudentDetail.submissionHistory.col.language` | `judge.submissions` | `language` | ListColumn | Enum | - | - | O | - | `Java` / `C++` / `Python` | Ngôn ngữ của lượt nộp — đúng ba giá trị<br>[Nguồn giá trị] Cột `language` [Nguồn: 02-bd/database/judge-orchestration.md:18]<br>[EVT liên quan] - |
-| | 5 | Kết quả | `classStudentDetail.submissionHistory.col.status` | `judge.submissions` | `status` | Badge | Enum | - | - | O | - | Nhãn tiếng Việt | Bảy trạng thái cuối của state machine (`DEC-2026-0912-judge-callback-contract`); lượt nộp chưa xong thì hiển thị trạng thái đang chạy<br>[Nguồn giá trị] Cột `status` [Nguồn: 02-bd/database/judge-orchestration.md:22]<br>[EVT liên quan] - |
+| | 5 | Kết quả | `classStudentDetail.submissionHistory.col.status` | `judge.submissions` | `status` | Badge | Enum | - | - | O | - | Nhãn tiếng Việt | Sáu trạng thái cuối của state machine (Sửa 2026-10-22 (đồng bộ DB vòng 3, DEC-2026-1022-problem-bank-schema-sync): trước ghi "bảy"; chín giá trị `status` trừ ba trạng thái chưa cuối `PENDING`, `COMPILING`, `JUDGING`, khớp `02-bd/database/judge-orchestration.md:22,33`) (`DEC-2026-0912-judge-callback-contract`); lượt nộp chưa xong thì hiển thị trạng thái đang chạy<br>[Nguồn giá trị] Cột `status` [Nguồn: 02-bd/database/judge-orchestration.md:22]<br>[EVT liên quan] - |
 | | 6 | Điểm tỉ lệ | `classStudentDetail.submissionHistory.col.scoreRatio` | `judge.submissions` | `score_ratio` | ListColumn | Number | 4 | - | O | - | `{số}%` | Tỉ lệ testcase đạt của lượt nộp đó (F4-13)<br>[Nguồn giá trị] Cột `score_ratio`; `NULL` với `COMPILE_ERROR`/`SYSTEM_ERROR` thì hiển thị `-`, **không** hiển thị `0%` [Nguồn: 02-bd/database/judge-orchestration.md:27]<br>[EVT liên quan] - |
 | | 7 | Nộp lúc | `classStudentDetail.submissionHistory.col.submittedAt` | `judge.submissions` | `submitted_at` | ListColumn | Date | - | - | O | - | Thời gian tương đối | Thời điểm nộp bài, hiển thị dạng tương đối<br>[Nguồn giá trị] Cột `submitted_at` [Nguồn: 02-bd/database/judge-orchestration.md:31]<br>[EVT liên quan] - |
 | | 8 | Xem kết quả | `classStudentDetail.submissionHistory.col.btnViewResult` | - | - | Link | - | - | - | I | - | Xem kết quả | Mở `submission_result` của đúng lượt nộp đó [Nguồn: 01-rd/screens/teacher/INS0204_class_student_detail.md:68-70]<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] EVT-9 |

@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { useRecentSolutionReviews, type RecentSolutionReview } from "../../api";
 import { useT } from "@/shared/i18n";
-import { DashboardBlockState } from "@/shared/ui";
+import { DashboardBlockState, SeeAllLink } from "@/shared/ui";
 
 /**
  * 09-layoutBase/Dashboard AlgoPrep.dc.html:315-340 — "Solution Review": three recent reports, each
@@ -13,9 +13,9 @@ import { DashboardBlockState } from "@/shared/ui";
  * ai-review-owned (F5.1) like the interviews block, so it too fails on its own (REQ-07).
  */
 const VERDICT_COLOR: Record<RecentSolutionReview["verdict"], string> = {
-  optimal: "--color-success",
-  improvable: "--color-admin-warn",
-  suboptimal: "--color-danger",
+  OPTIMAL: "--color-success",
+  IMPROVABLE: "--color-admin-warn",
+  NOT_OPTIMAL: "--color-danger",
 };
 
 export function RecentReviewsBlock() {
@@ -35,12 +35,7 @@ export function RecentReviewsBlock() {
       retryLabel={t("retry")}
       headingLevel={2}
       footer={
-        <Link
-          href="/submissions"
-          className="mt-2.5 inline-block text-[12.5px] font-semibold underline"
-        >
-          {t("seeAll")}
-        </Link>
+        <SeeAllLink href="/submissions">{t("seeAll")}</SeeAllLink>
       }
     >
       <div>
@@ -65,7 +60,7 @@ export function RecentReviewsBlock() {
                   </span>
                 </div>
                 <p className="mt-0.5 font-mono text-xs text-[var(--color-text-muted)]">
-                  {review.timeComplexity}
+                  {review.complexity.actualTime}
                 </p>
               </div>
             </li>

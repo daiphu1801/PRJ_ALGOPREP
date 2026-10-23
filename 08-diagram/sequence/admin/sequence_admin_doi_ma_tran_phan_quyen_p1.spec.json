@@ -1,5 +1,5 @@
 {
-  "_": "Luong doi mot o trong ma tran phan quyen Role x Function x Action cua actor A3. Nguon: US-A3-01 (01-rd/req/user_stories/a3_admin.md), 01-rd/req/identity.md (F1-10, F1-11, F1-14), 03-dd/api/identity.md muc 0.5 (endpoint #31, BR-13), 02-bd/architecture/identity.md muc 6 (quyen KHONG nhung vao claim JWT tinh, phai tra tai thoi diem request). Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen.",
+  "_": "Luong doi mot o trong ma tran phan quyen Role x Function x Action cua actor A3. Nguon: US-A3-01 (01-rd/req/user_stories/a3_admin.md), 01-rd/req/identity.md (F1-10, F1-11, F1-14), 03-dd/api/identity.md muc 0.5 (endpoint #31, BR-13), 02-bd/architecture/identity.md muc 6 (quyen KHONG nhung vao claim JWT tinh, phai tra tai thoi diem request). Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen. | 2026-10-20 (owner): nhan mui ten bo han duong dan, ma HTTP, ma quyen, thuat ngu ky thuat (cache, job, worker, model...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
   "_diem_mau_chot": "Doi o co hieu luc NGAY, khong can khoi dong lai dich vu -- vi vay phai vo hieu cache quyen chu khong doi token het han.",
   "kind": "sequence",
   "title": "Sơ đồ tuần tự chi tiết - Đổi ma trận phân quyền (Quản trị viên) (1/2)",
@@ -32,7 +32,7 @@
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 1 - Nạp ma trận, Function và Action chỉ đọc (F1-10)"
+        "phase": "Giai đoạn 1 - Nạp ma trận; chức năng và hành động chỉ đọc (F1-10)"
       },
       {
         "from": "Quản trị viên",
@@ -42,7 +42,7 @@
       {
         "from": "Quản trị viên",
         "to": "RbacController",
-        "text": "GET /identity/rbac/matrix"
+        "text": "Gửi yêu cầu xem ma trận"
       },
       {
         "from": "RbacController",
@@ -69,13 +69,13 @@
       {
         "from": "RbacController",
         "to": "Quản trị viên",
-        "text": "200 OK",
+        "text": "Báo thành công",
         "kind": "return"
       },
       {
         "from": "Quản trị viên",
         "to": "Quản trị viên",
-        "text": "Lưới Role x Function x Action kèm tab chọn vai trò"
+        "text": "Lưới vai trò x chức năng x hành động kèm tab chọn vai trò"
       }
     ]
   },

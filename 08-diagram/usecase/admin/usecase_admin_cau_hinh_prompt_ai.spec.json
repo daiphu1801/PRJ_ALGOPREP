@@ -1,0 +1,28 @@
+{
+  "_": "Chi tiet nhom 'Cau hinh ngon ngu va AI' (u13 o ban tong quan): F4-11 (ngon ngu & tai nguyen) + F5-23 (cau hinh prompt/rubric AI). | Cap nhat 2026-10-18: bo oval trong so rubric (DEC-2026-1014-drop-solution-review-rubric); oval gioi han tan suat goi AI chuyen sang usecase_admin_ngan_sach_token_ai vi ADM0303 nhan viec do (DEC-2026-1010-split-ai-admin-screens); them chon model theo prompt va nguyen tac tra loi. | Cap nhat 2026-10-20: them oval sandbox go-judge (3 tham so toan cuc) va gioi han script sinh testcase theo BD ADM0501 tab 2 (RD ADM0501 REQ-06; feature_catalog F4-11). | 2026-10-20: tach file (doi ten tu ..._ngon_ngu_ai), chi con nhom prompt va model AI (ADM0301); nhom ngon ngu chuyen sang usecase_admin_cau_hinh_ngon_ngu_gioi_han de actor khong noi cheo hai cot.",
+  "kind": "usecase",
+  "title": "Sơ đồ Use Case chi tiết - Cấu hình prompt và model AI (Quản trị viên)",
+  "covers": [
+    "F5-17",
+    "F5-23"
+  ],
+  "mode": "color",
+  "usecase": {
+    "system": "Cấu hình prompt và model AI",
+    "groups": [
+      {
+        "name": "Prompt và model AI (F5-17, F5-23)",
+        "actors": [
+          "Quản trị viên"
+        ],
+        "usecases": [
+          "Sửa chỉ thị hệ thống vào bản nháp",
+          "Chọn model cho từng prompt",
+          "Bật tắt nguyên tắc trả lời",
+          "Xem lịch sử và khôi phục chỉ thị cũ",
+          "Lưu và phát hành các bản nháp"
+        ]
+      }
+    ]
+  }
+}

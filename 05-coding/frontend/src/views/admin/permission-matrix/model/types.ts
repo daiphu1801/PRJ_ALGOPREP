@@ -8,9 +8,11 @@
  * - STUDENT's basic learning rights (view/submit, review, interview, practise questions) do NOT go
  *   through this matrix at all — F1-05, layer one.
  *
- * The function list is F1-12 from 01-rd/req/identity.md verbatim: TEN functions. The static mockup
- * carries an eleventh, REJUDGE_MANAGEMENT, which DEC-2026-0828-remove-rejudge-scope removed
- * together with the whole rejudge feature.
+ * The function list is F1-12 from 01-rd/req/identity.md: ELEVEN functions. LANGUAGE_CONFIG was added
+ * as the eleventh by the owner decision of 2026-10-23: it gates screen ADM0501 and the tables
+ * language_configs, grading_defaults, sandbox_settings, generator_sandbox_settings
+ * (01-rd/req/identity.md F1-12, 02-bd/database/identity.md section 1.3). The static mockup's
+ * REJUDGE_MANAGEMENT stays removed (DEC-2026-0828-remove-rejudge-scope).
  */
 export type ActionKey = "create" | "read" | "update" | "delete";
 
@@ -22,6 +24,7 @@ export type FunctionKey =
   | "CLASS_MANAGEMENT"
   | "USER_MANAGEMENT"
   | "JUDGE_QUEUE_MONITOR"
+  | "LANGUAGE_CONFIG"
   | "AI_CONFIG"
   | "AI_TOKEN_BUDGET"
   | "SYSTEM_AUDIT_LOG"
@@ -35,6 +38,7 @@ export const FUNCTION_KEYS: FunctionKey[] = [
   "CLASS_MANAGEMENT",
   "USER_MANAGEMENT",
   "JUDGE_QUEUE_MONITOR",
+  "LANGUAGE_CONFIG",
   "AI_CONFIG",
   "AI_TOKEN_BUDGET",
   "SYSTEM_AUDIT_LOG",

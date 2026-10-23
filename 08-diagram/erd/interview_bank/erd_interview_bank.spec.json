@@ -1,0 +1,105 @@
+{
+  "_": "Nguon: 02-bd/database/interview-bank.md (muc 1.1-1.7), ngay 2026-10-22. Ve du 8 bang cua schema interview_bank. Rang buoc ghep (unique nhieu cot), index, CHECK khong ve. user_id/created_by la tham chieu logic den identity.users (khong FK vat ly); ai.interview_sessions (question_ref) va ai.token_usage (owner_id, PRACTICE_FEEDBACK -> user_answers) la tham chieu den tu schema ai.",
+  "kind": "erd",
+  "title": "ERD schema interview_bank",
+  "covers": [],
+  "erd": {
+    "scope": "schema",
+    "entities": [
+      {"id": "question_topics", "name": "question_topics", "columns": [
+        {"name": "id", "type": "UUID", "key": "PK"},
+        {"name": "code", "type": "VARCHAR(64)", "key": "UQ"},
+        {"name": "display_name", "type": "VARCHAR(60)"},
+        {"name": "sort_order", "type": "SMALLINT"},
+        {"name": "uses_star_framework", "type": "BOOLEAN"}
+      ]},
+      {"id": "question_levels", "name": "question_levels", "columns": [
+        {"name": "id", "type": "UUID", "key": "PK"},
+        {"name": "code", "type": "VARCHAR(64)", "key": "UQ"},
+        {"name": "display_name", "type": "VARCHAR(60)"},
+        {"name": "sort_order", "type": "SMALLINT"}
+      ]},
+      {"id": "interview_questions", "name": "interview_questions", "columns": [
+        {"name": "id", "type": "UUID", "key": "PK"},
+        {"name": "display_no", "type": "INT", "key": "UQ"},
+        {"name": "topic_id", "type": "UUID", "key": "FK"},
+        {"name": "level_id", "type": "UUID", "key": "FK"},
+        {"name": "title", "type": "VARCHAR(255)"},
+        {"name": "content_markdown", "type": "TEXT", "null": true},
+        {"name": "suggested_approach", "type": "TEXT", "null": true},
+        {"name": "sample_answer_framework", "type": "TEXT", "null": true},
+        {"name": "core_keywords", "type": "JSONB", "null": true},
+        {"name": "follow_up_questions", "type": "JSONB"},
+        {"name": "status", "type": "ENUM(ACTIVE,RETIRED)"},
+        {"name": "created_by", "type": ""},
+        {"name": "created_at", "type": "TIMESTAMPTZ"},
+        {"name": "updated_at", "type": "TIMESTAMPTZ"}
+      ]},
+      {"id": "answer_rubrics", "name": "answer_rubrics", "columns": [
+        {"name": "id", "type": "UUID", "key": "PK"},
+        {"name": "question_id", "type": "UUID", "key": "FK"},
+        {"name": "criterion_code", "type": "VARCHAR(100)"},
+        {"name": "description", "type": "TEXT", "null": true},
+        {"name": "weight_percent", "type": "DECIMAL(5,2)"},
+        {"name": "sort_order", "type": "SMALLINT"},
+        {"name": "created_at", "type": "TIMESTAMPTZ"},
+        {"name": "updated_at", "type": "TIMESTAMPTZ"}
+      ]},
+      {"id": "bookmarks", "name": "bookmarks", "columns": [
+        {"name": "id", "type": "UUID", "key": "PK"},
+        {"name": "user_id", "type": ""},
+        {"name": "question_id", "type": "UUID", "key": "FK"},
+        {"name": "created_at", "type": "TIMESTAMPTZ"}
+      ]},
+      {"id": "user_answers", "name": "user_answers", "columns": [
+        {"name": "id", "type": "UUID", "key": "PK"},
+        {"name": "user_id", "type": ""},
+        {"name": "question_id", "type": "UUID", "key": "FK"},
+        {"name": "answer_text", "type": "TEXT"},
+        {"name": "attempt_no", "type": "INT"},
+        {"name": "feedback_status", "type": "ENUM(PENDING,COMPLETED,FAILED)"},
+        {"name": "feedback_result_json", "type": "JSONB", "null": true},
+        {"name": "rubric_snapshot_json", "type": "JSONB"},
+        {"name": "created_at", "type": "TIMESTAMPTZ"}
+      ]},
+      {"id": "practice_history", "name": "practice_history", "stereotype": "read_model", "columns": [
+        {"name": "id", "type": "UUID", "key": "PK"},
+        {"name": "user_id", "type": ""},
+        {"name": "topic_id", "type": "UUID", "key": "FK"},
+        {"name": "questions_attempted", "type": "INT"},
+        {"name": "last_practiced_at", "type": "TIMESTAMPTZ"},
+        {"name": "updated_at", "type": "TIMESTAMPTZ"}
+      ]},
+      {"id": "recall_ratings", "name": "recall_ratings", "columns": [
+        {"name": "id", "type": "UUID", "key": "PK"},
+        {"name": "user_id", "type": ""},
+        {"name": "question_id", "type": "UUID", "key": "FK"},
+        {"name": "rating", "type": "ENUM(KNOWN,VAGUE,FORGOTTEN)"},
+        {"name": "interval_days", "type": "INT"},
+        {"name": "next_review_at", "type": "TIMESTAMPTZ"},
+        {"name": "rated_at", "type": "TIMESTAMPTZ"}
+      ]}
+    ],
+    "externals": [
+      {"id": "identity.users", "name": "identity.users"},
+      {"id": "ai.interview_sessions", "name": "ai.interview_sessions"},
+      {"id": "ai.token_usage", "name": "ai.token_usage"}
+    ],
+    "relations": [
+      {"from": "interview_questions", "to": "question_topics", "kind": "fk", "label": "topic_id"},
+      {"from": "interview_questions", "to": "question_levels", "kind": "fk", "label": "level_id"},
+      {"from": "answer_rubrics", "to": "interview_questions", "kind": "fk", "label": "question_id"},
+      {"from": "bookmarks", "to": "interview_questions", "kind": "fk", "label": "question_id"},
+      {"from": "user_answers", "to": "interview_questions", "kind": "fk", "label": "question_id"},
+      {"from": "recall_ratings", "to": "interview_questions", "kind": "fk", "label": "question_id"},
+      {"from": "practice_history", "to": "question_topics", "kind": "fk", "label": "topic_id"},
+      {"from": "interview_questions", "to": "identity.users", "kind": "ref", "label": "created_by"},
+      {"from": "bookmarks", "to": "identity.users", "kind": "ref", "label": "user_id"},
+      {"from": "user_answers", "to": "identity.users", "kind": "ref", "label": "user_id"},
+      {"from": "practice_history", "to": "identity.users", "kind": "ref", "label": "user_id"},
+      {"from": "recall_ratings", "to": "identity.users", "kind": "ref", "label": "user_id"},
+      {"from": "ai.interview_sessions", "to": "interview_questions", "kind": "ref", "label": "question_ref"},
+      {"from": "ai.token_usage", "to": "user_answers", "kind": "ref", "label": "owner_id (PRACTICE_FEEDBACK)"}
+    ]
+  }
+}

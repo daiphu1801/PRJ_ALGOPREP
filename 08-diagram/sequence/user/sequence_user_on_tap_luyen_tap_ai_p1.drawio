@@ -39,16 +39,16 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e10" value="2. GET /interview-bank/questions/{id}?mode=STUDY" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.3411;exitDx=0;exitDy=0;entryX=0.5;entryY=0.3411;entryDx=0;entryDy=0;" edge="1" parent="1" source="v2" target="v3">
+        <mxCell id="e10" value="2. Gửi yêu cầu xem câu hỏi ở chế độ học" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.3411;exitDx=0;exitDy=0;entryX=0.5;entryY=0.3411;entryDx=0;entryDy=0;" edge="1" parent="1" source="v2" target="v3">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e11" value="2.1. getQuestionForStudy(query, userId)" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.4031;exitDx=0;exitDy=0;entryX=0.5;entryY=0.4031;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v4">
+        <mxCell id="e11" value="2.1. Lấy nội dung câu hỏi để học" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.4031;exitDx=0;exitDy=0;entryX=0.5;entryY=0.4031;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v4">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e12" value="2.1.1. findById(questionId)" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.4651;exitDx=0;exitDy=0;entryX=0.5;entryY=0.4651;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v5">
+        <mxCell id="e12" value="2.1.1. Tìm câu hỏi theo mã" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.4651;exitDx=0;exitDy=0;entryX=0.5;entryY=0.4651;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v5">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e13" value="2.1.1.1. SELECT interview_questions JOIN answer_rubric_criteria (QuestionRepository)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.5271;exitDx=0;exitDy=0;entryX=0.5;entryY=0.5659;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v5">
+        <mxCell id="e13" value="2.1.1.1. Đọc câu hỏi kèm tiêu chí trả lời chuẩn" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.5271;exitDx=0;exitDy=0;entryX=0.5;entryY=0.5659;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v5">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
             <mxPoint x="645" y="332" />
@@ -56,7 +56,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e14" value="2.1.1.2. Câu hỏi, hướng tiếp cận, khung STAR, từ khoá cốt lõi (QuestionRepository)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.6163;exitDx=0;exitDy=0;entryX=0.5;entryY=0.6550;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v5">
+        <mxCell id="e14" value="2.1.1.2. Câu hỏi, hướng tiếp cận, khung STAR, từ khoá cốt lõi" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.6163;exitDx=0;exitDy=0;entryX=0.5;entryY=0.6550;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v5">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
             <mxPoint x="645" y="378" />
@@ -64,13 +64,13 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e15" value="InterviewQuestion" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.7054;exitDx=0;exitDy=0;entryX=0.5;entryY=0.7054;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v4">
+        <mxCell id="e15" value="Nội dung câu hỏi" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.7054;exitDx=0;exitDy=0;entryX=0.5;entryY=0.7054;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v4">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e16" value="QuestionStudyDto - không gọi LLM ở chế độ này" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.7674;exitDx=0;exitDy=0;entryX=0.5;entryY=0.7674;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v3">
+        <mxCell id="e16" value="Nội dung học soạn sẵn, không gọi AI ở chế độ này" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.7674;exitDx=0;exitDy=0;entryX=0.5;entryY=0.7674;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v3">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e17" value="200 OK" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8295;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8295;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v2">
+        <mxCell id="e17" value="Báo thành công" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8295;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8295;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v2">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e18" value="3. Hiển thị nội dung ôn tập soạn sẵn" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8915;exitDx=0;exitDy=0;entryX=0.5;entryY=0.9302;entryDx=0;entryDy=0;" edge="1" parent="1" source="v2" target="v2">

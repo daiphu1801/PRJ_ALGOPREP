@@ -11,7 +11,7 @@
   `harness` (F3), `judge-orchestration` (F4), `ai-review` (F5)
   [Nguồn: 01-rd/screens/users/USR0102_problem_detail.md:7-9].
 - Kế thừa quy ước đặt tên khối, ID item và tên nghiệp vụ endpoint từ `02-bd/screens/users/USR0101_problem_list.md`
-  — file BD đầu tiên của khu Người học [Nguồn: 02-bd/screens/users/USR0101_problem_list.md:11-12].
+  — file BD đầu tiên của khu Người học [Nguồn: 02-bd/screens/users/USR0101_problem_list.md phần Phương châm tài liệu].
 
 > **Ranh giới bắt buộc giữ — đọc trước khi sửa file này.** Màn chạm bốn module nên rất dễ biến thành nơi
 > chứa mọi thứ. File này **chỉ** mô tả giao diện, item, trạng thái màn, sự kiện và **tên nghiệp vụ** của
@@ -29,10 +29,16 @@
 > Đọc cùng `01-rd/screens/users/USR0102_problem_detail.md` (hành vi ở mức yêu cầu, không lặp lại ở đây) và
 > `02-bd/screens/users/_shell.md` (khung điều hướng khu Người học).
 >
+> - **Đường dẫn của màn là `/workspace/{problemId}`** (từ 2026-10-20, `DEC-2026-1020-student-workspace-split-and-password-in-settings`
+>   [Nguồn: .nexa/control/decision-registry.md:4239-4244]). `/problems/{problemId}` **không còn** là màn giải bài: đó là màn
+>   tổng quan chỉ-đọc `USR0104` (`02-bd/screens/users/USR0104_problem_overview.md`), có nút "Giải bài toán" dẫn sang đây.
+>   `/workspace` (không có id) là trang đầu `USR0105` (`02-bd/screens/users/USR0105_workspace_home.md`), nơi chọn tiếp một
+>   bài đang làm dở. Nội dung và hành vi của màn này **giữ nguyên**, chỉ đổi đường dẫn và các lối vào
+>   [Nguồn: 05-coding/frontend/src/app/(student)/workspace/[problemId]/page.tsx:3-5].
 > - **Header dùng chung khung khu Người học nhưng ở biến thể thu gọn** — giữ nguyên thương hiệu và 6 mục
 >   nav, lược tên và email trong khối người dùng, chỉ còn avatar
->   [Nguồn: 02-bd/screens/users/_shell.md:78-81]. Đây là khác biệt về mật độ, vẫn một component
->   [Nguồn: 02-bd/screens/users/_shell.md:83-84].
+>   [Nguồn: 02-bd/screens/users/_shell.md:89-91]. Đây là khác biệt về mật độ, vẫn một component
+>   [Nguồn: 02-bd/screens/users/_shell.md:94-95].
 > - **Không có chân trang.** Prototype của màn này không có thẻ `<footer>`; bố cục chiếm trọn chiều cao
 >   màn hình (`height: 100vh`, `overflow: hidden`)
 >   [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:30,47]. Trạng thái cụm chấm được đưa vào chân panel
@@ -60,13 +66,14 @@
 | Tên màn | Chi tiết bài tập (Workspace giải bài) |
 | Mã màn hình | `USR0102` |
 | Tên vật lý (slug) | `problem_detail` |
+| Đường dẫn | `/workspace/{problemId}` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`) |
-| Phiên bản | V0.8 |
+| Phiên bản | V0.13 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/22 |
 | Người cập nhật | Claude |
-| Ngày cập nhật | 2026/10/19 |
+| Ngày cập nhật | 2026/10/22 |
 
 ---
 
@@ -82,6 +89,11 @@
 | V0.6 | Sheet 3, 4, 5, 6, 7, 8, 9, Câu hỏi mở | Ghi quyết định của chủ dự án 2026-10-18 (`DEC-2026-1018-usr-open-questions-phase2-5`), đề xuất mặc định được chấp nhận: đóng Q6 (giải thích ví dụ lưu ở cột mới `testcases.explanation_md`), Q7 (mã gõ trực tiếp giới hạn 64 KB như file tải lên; bản dựng chặn Run Code và Submit bằng toast lỗi), Q8 (chấm trạng thái cụm chấm vẫn ẩn, không gọi định kỳ), Q9 (nhớ ngôn ngữ và mô hình gần nhất ở `localStorage`, khoá `algoprep-workspace-prefs`), Q10 (Run Code không tạo dòng `submissions`), Q14 (bỏ hộp xác nhận rời màn và hộp xác nhận ghi đè mã). **Giữ nguyên số EVT, không đánh số lại:** EVT-21 và Sheet 9 NO 16 gạch bỏ vì còn nhiều tham chiếu chéo (EVT-16 đến EVT-19, EVT-22); mọi bước "Chạy EVT-21" đổi thành điều hướng thẳng. Bỏ bước hỏi xác nhận ở EVT-4, EVT-5 | 2026/10/18 | Claude |
 | V0.7 | Sheet 4, 5, 9, Câu hỏi mở | Rà soát bản dựng 2026-10-19. Owner chốt: bỏ trạng thái "chưa chọn bài" (Khu vực B) vì không còn đường vào (`/workspace` chuyển hướng, `/problems/[id]` luôn có id), id không có thì hiện "Không tìm thấy bài toán." (Sheet 9 NO 2); giữ việc ẩn chân trang từ `lg` ở màn này (điểm lệch 4). Bản dựng sửa theo BD: Run Code hiện từng testcase mẫu với tab "Case n", dữ liệu vào, output thực tế, kết quả mong đợi, thời gian và bộ nhớ (Khu vực I NO 3, 4, 6, 7, 11), giới hạn Time/Memory hiệu lực theo ngôn ngữ (Khu vực H NO 7); ràng buộc và câu hỏi mở rộng kết xuất từ `statement_md` (Q5); tải file đọc nội dung, kiểm phần mở rộng và 64 KB, thẻ file và "Xem nội dung" (Sheet 9 NO 5, 6), mã rỗng hoặc chưa chọn file thì không chạy (NO 7); nhãn lưu nháp chỉ hiện khi ghi `localStorage` thành công; trạng thái màn gắn theo `problemId`; nút "Lưu bài" lấy trạng thái đã lưu của bài; liên kết "Mở báo cáo đầy đủ" (EVT-17); nhãn, ngày giờ và kết quả lượt nộp đi qua i18n. Làm mới trích dẫn `problem-detail-view.tsx`. Khu vực B giữ lại trong Sheet 5, 6 dưới dạng đã bỏ | 2026/10/19 | Claude |
 | V0.8 | Sheet 4 (4.4), 8 (EVT-20), Câu hỏi mở Q15 | Owner chốt 2026/10/19 (`DEC-2026-1019-usr-fe-audit-fixes`, chốt nốt câu hỏi mở còn lại sau rà prototype). Chỉ tài liệu, không đổi code, chưa duyệt hình. Chấp nhận ba điểm lệch bố cục (thanh kéo thứ hai giữa mã và kết quả, xếp dọc dưới `lg`, header vẫn hiện) làm thiết kế chính thức; viết lại mục 4.4 theo bản dựng (ponytail bậc 3). | 2026/10/19 | Claude |
+| V0.9 | Phương châm, Sheet 1, 3, 4, 5, 7, 8, Câu hỏi mở Q12 | Theo `DEC-2026-1020-student-workspace-split-and-password-in-settings`: màn đổi đường dẫn từ `/problems/{id}` sang `/workspace/{problemId}`, nội dung và hành vi không đổi. Sheet 3 viết lại hai lối vào: từ nút "Giải bài toán" của `USR0104` và từ thẻ bài đang làm dở của `USR0105`; bỏ lối "nav chuyển hướng" (mục nav Workspace nay mở `USR0105`, `_shell` mục 2.2). Bỏ `ListMyUnsolvedRecentProblems` khỏi EVT-1 và Sheet 7.3 NO 10 vì màn này không còn dựng thẻ bài đang làm dở (việc đó thuộc `USR0105`). Q12 ghi nhận phần chuyển hướng đã thay, không xoá. Sửa các trích dẫn đã lệch tới `problem-bank.md`, `judge-orchestration.md`, `ai-review.md`, `identity.md`, `USR0101`, `_shell.md`, `01-rd/req/*`, `globals.css`, `problem-detail-view.tsx`. Chưa duyệt hình | 2026/10/20 | Claude |
+| V0.10 | Sheet 5 (Khu vực B NO 3), Sheet 6 | Nút "Lưu bài" ở chân panel đổi sang màu vàng khi đã lưu (viền, nền nhạt, icon tô đặc, `aria-pressed`), cùng kiểu với nút Lưu của `USR0104`; `problem-detail-view.tsx` phần nút ở chân panel. Chưa duyệt hình | 2026/10/21 | Claude |
+| V0.11 | Sheet 4 (Khu vực B), Sheet 8 | Bấm Run Code hoặc Submit mở thêm màn phụ (hộp thoại) liệt kê từng testcase: Run Code có danh sách testcase mẫu bên trái và chi tiết dữ liệu vào, thực tế, mong đợi bên phải (mở sẵn testcase sai đầu tiên); Submit liệt kê mọi testcase Đạt hoặc Không đạt, testcase ẩn không lộ dữ liệu. Bảng kết quả nhỏ chỉ còn tổng số đạt / không đạt, thời gian, bộ nhớ và nút "Xem chi tiết" mở lại màn phụ (bỏ hàng nút Case vì nhiều testcase bị tràn). `run-results-dialog.tsx`. Chưa duyệt hình | 2026/10/21 | Claude |
+| V0.12 | Sheet 4 (4.3), 5 (Khu vực D NO 7-11), 7 (7.1 NO 10, 11, thêm NO 22, 23; 7.2 NO 4, 5, 6; 7.3 NO 2), 8 (EVT-12), 6 (Khu vực D NO 7, 10, 11), Câu hỏi mở Q5, Q6, thêm Q18, các dòng `[Nguồn]` | Sửa 2026-10-22 đồng bộ DB, `DEC-2026-1022-problem-bank-schema-sync` (PB-03, PB-08, PB-10) và `DEC-2026-1022-ai-judge-schema-sync`: (1) "Ràng buộc" là cột riêng `problems.constraints_md`, màn ghép với `statement_md` (Q5 viết lại; "Câu hỏi mở rộng" vẫn trong `statement_md`); (2) ví dụ mẫu và lời giải thích đọc từ bảng `problem.worked_examples`, không còn `testcases.is_worked_example`/`explanation_md` (Q6, thêm Q17 về endpoint mang ví dụ); (3) `function_signatures` đã gộp vào `problem_specs`, sửa 4.3, 7.1, 7.2; (4) EVT-12: "bảy" thành sáu trạng thái cuối `ACCEPTED`, `WRONG_ANSWER`, `TIME_LIMIT_EXCEEDED`, `RUNTIME_ERROR`, `COMPILE_ERROR`, `SYSTEM_ERROR`; (5) đọc lại số dòng trích dẫn `02-bd/database/{problem-bank,judge-orchestration,ai-review}.md`. Không đổi: Run Code không tạo dòng `submissions` (Q10), giới hạn 64 KB. Không đổi RD, không đổi code | 2026/10/22 | Claude |
+| V0.13 | Sheet 7 (7.1 NO 23; 7.2 NO 5), Câu hỏi mở (Q5, Q18) | Sửa 2026-10-22 (đồng bộ DB vòng 2, DEC-2026-1022-db-sync-round2) mục 12 và 13: (1) đóng Q18, bỏ chữ `[Suy luận]` ở 7.1 NO 23 và 7.2 NO 5: ví dụ mẫu trả cùng `GetProblemForWorkspace`; (2) Q5 thêm một dòng: greenfield, bài cũ có mục `## Ràng buộc` (nếu có) tách một lần sang `constraints_md`. **Không đổi:** giao diện | 2026/10/22 | Claude |
 
 ---
 
@@ -92,15 +104,17 @@
 
 ### 3.1 Danh sách chuyển màn
 
-#### Danh sách bài tập → Chi tiết bài tập
+#### Tổng quan bài toán → Chi tiết bài tập
 
-[Điều kiện mở] Bấm một dòng trong bảng danh sách, bấm nút "Vào giải", bấm "Bài ngẫu nhiên", hoặc bấm một
-mục trong hai khối phụ của màn danh sách
-[Nguồn: 02-bd/screens/users/USR0101_problem_list.md:562-563,565-566].
+[Điều kiện mở] Bấm nút "Giải bài toán" ở đầu cột phải của màn `problem_overview` (`USR0104`)
+[Nguồn: 02-bd/screens/users/USR0104_problem_overview.md:164,169,664]. Đây là lối vào chính: mọi đường "chọn một bài"
+(bấm dòng hay "Vào giải" ở `problem_list`, "Bài ngẫu nhiên", mục trong hai khối phụ, `saved_problems`) đều mở `USR0104` trước
+rồi mới sang đây [Nguồn: 02-bd/screens/users/USR0101_problem_list.md Sheet 3.1 và Sheet 4.1 bước 5; .nexa/control/decision-registry.md:4239-4243].
 
 [Chế độ mở] Chế độ giải bài, có ghi (nộp bài, lưu bài).
 
-[Thông tin truyền] `problem_id` của bài được chọn. Không mang theo bộ lọc của màn danh sách.
+[Thông tin truyền] `problem_id` trên đường dẫn `/workspace/{problemId}`. Không mang theo ngôn ngữ hay mô hình nộp nào
+[Nguồn: 02-bd/screens/users/USR0104_problem_overview.md:169] và không mang theo bộ lọc của màn danh sách.
 
 [Giá trị trả về] Không có.
 
@@ -109,30 +123,31 @@ bên phải.
 
 [Khi huỷ] Không có.
 
-#### Khung điều hướng Người học → Chi tiết bài tập
+#### Trang đầu Workspace → Chi tiết bài tập
 
-[Điều kiện mở] Chọn mục "Workspace" trên thanh điều hướng ngang của khung khu Người học
-[Nguồn: 02-bd/screens/users/_shell.md:55].
+[Điều kiện mở] Bấm một thẻ trong khối "Bài đang làm dở" ở `workspace_home` (`USR0105`, đường dẫn `/workspace`)
+[Nguồn: 02-bd/screens/users/USR0105_workspace_home.md:110,176]. Mục nav "Workspace" của khung khu Người học nay dẫn tới
+`USR0105`, **không còn chuyển hướng** thẳng vào màn này [Nguồn: 02-bd/screens/users/_shell.md:63,163].
 
 [Chế độ mở] Chế độ giải bài.
 
-[Thông tin truyền] Không có `problem_id` từ người dùng. Lối này **chuyển hướng** sang bài đang làm dở gần
-nhất của chính người học (lượt nộp gần nhất chưa đạt `ACCEPTED`, đọc từ `judge.submissions`); chưa làm bài nào
-thì chuyển sang `problem_list` (chủ dự án chốt 2026-10-18, Câu hỏi mở Q12; cùng kết luận
-`02-bd/screens/users/_shell.md` mục 6 Q2) [Nguồn: 05-coding/frontend/src/app/(student)/workspace/page.tsx:16-18].
-Bản dựng hiện lấy bài từ dữ liệu mẫu, chờ `03-dd/api/judge-orchestration.md`.
+[Thông tin truyền] `problem_id` của thẻ được bấm, ghi lên đường dẫn `/workspace/{problemId}`. Nguồn danh sách bài đang
+làm dở (lượt nộp gần nhất chưa đạt `ACCEPTED`) thuộc `USR0105`, không thuộc màn này.
 
 [Giá trị trả về] Không có.
 
-[Khi thành công] Mở workspace của bài đang làm dở gần nhất, hoặc màn `problem_list` nếu không có. Trạng thái chưa chọn bài (Khu vực B) đã bỏ 2026-10-19.
+[Khi thành công] Mở workspace của đúng bài đã chọn.
 
 [Khi huỷ] Không có.
 
 #### Chi tiết bài tập → Danh sách bài tập
 
 [Điều kiện mở] Bấm liên kết "Danh sách bài" trên thanh tác vụ
-[Nguồn: 09-layoutBase/Workspace giải bài.dc.html:99], hoặc liên kết sang danh sách bài ở trạng thái chưa
-chọn bài [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:137].
+[Nguồn: 09-layoutBase/Workspace giải bài.dc.html:99; 05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:782-787],
+hoặc liên kết sang danh sách ở thông báo "Không tìm thấy bài toán."
+[Nguồn: 05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:94-96]. Liên kết đích là `/problems`
+(danh sách), không phải `/problems/{id}` (tổng quan). Bản dựng không có liên kết ngược sang `USR0104` từ màn này
+`[SoT: Suy luận]` (không tìm thấy trong `problem-detail-view.tsx`).
 
 [Chế độ mở] Chế độ duyệt, chỉ đọc.
 
@@ -186,7 +201,7 @@ tab "Solution Review" [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:245]
 [Chế độ mở] Chế độ hội thoại nhiều lượt.
 
 [Thông tin truyền] `submission_id` của lượt nộp `ACCEPTED`. Lối vào này ứng với
-`interview_sessions.entry_type = SUBMISSION` [Nguồn: 02-bd/database/ai-review.md:87-89].
+`interview_sessions.entry_type = SUBMISSION` [Nguồn: 02-bd/database/ai-review.md:101-102].
 
 [Giá trị trả về] Không có.
 
@@ -198,9 +213,10 @@ tab "Solution Review" [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:245]
 
 ```mermaid
 flowchart LR
-    list["Danh sách bài tập<br/>problem_list"] -->|"chọn bài"| main["Chi tiết bài tập<br/>problem_detail"]
-    nav["Khung Người học<br/>mục Workspace"] -->|"chuyển hướng: bài đang làm dở gần nhất"| main
-    nav -->|"chưa làm bài nào"| list
+    list["Danh sách bài tập<br/>problem_list"] -->|"chọn bài"| overview["Tổng quan bài toán<br/>problem_overview"]
+    overview -->|"Giải bài toán"| main["Chi tiết bài tập<br/>problem_detail"]
+    nav["Khung Người học<br/>mục Workspace"] -->|"mở trang đầu"| home["Trang đầu Workspace<br/>workspace_home"]
+    home -->|"bấm thẻ bài đang làm dở"| main
     main -->|"Danh sách bài"| list
     main -->|"Xem kết quả chấm / tab Bài nộp"| result["Kết quả nộp bài<br/>submission_result"]
     main -->|"Phân tích bài giải"| review["Phân tích bài giải<br/>solution_review"]
@@ -209,12 +225,13 @@ flowchart LR
     classDef source fill:#F3E5F5,stroke:#9C5CC4,color:#000
     classDef screen fill:#E3F2FD,stroke:#3B82F6,color:#000
 
-    class list,nav,result,review,interview source
+    class list,nav,overview,home,result,review,interview source
     class main screen
 ```
 
-[Nguồn: 09-layoutBase/Workspace giải bài.dc.html:99,112-152,137,218-225,379,380,381,245;
-02-bd/screens/users/_shell.md:55]
+[Nguồn: 09-layoutBase/Workspace giải bài.dc.html:99,218-225,379,380,381,245;
+02-bd/screens/users/_shell.md:63; 02-bd/screens/users/USR0104_problem_overview.md:164,169;
+02-bd/screens/users/USR0105_workspace_home.md:110,176]
 
 ---
 
@@ -230,8 +247,8 @@ với testcase mẫu, và nộp bài để chấm với testcase ẩn — cho **
 
 1. **Hiển thị ban đầu**: vào màn với `problem_id`, hệ thống tải song song năm nhóm dữ liệu — đề bài và
    giới hạn, mã khung theo cặp (ngôn ngữ, mô hình) đang chọn, testcase mẫu, lịch sử nộp bài của chính
-   người học cho bài này, và tóm tắt phân tích bài giải nếu đã có. Vào màn không có `problem_id` thì hiển
-   thị trạng thái chưa chọn bài (chỉ bài đang làm dở gần nhất và liên kết sang `problem_list`). Mã người học đã
+   người học cho bài này, và tóm tắt phân tích bài giải nếu đã có. Đường dẫn `/workspace/{problemId}` luôn mang
+   `problem_id`; id không mở được thì hiện "Không tìm thấy bài toán." (Sheet 9 NO 2). Việc chọn bài đang làm dở thuộc `USR0105`. Mã người học đã
    gõ cho cặp (ngôn ngữ, mô hình) này được khôi phục từ bản nháp ở trình duyệt nếu có, thay cho mã khung.
 2. **Chọn ngôn ngữ và mô hình**: ba tab ngôn ngữ (Java / C++ / Python) và hai nút mô hình ("Có hàm main" /
    "Bọc hàm"). Đổi một trong hai thì **mã khung được sinh lại** theo đúng cặp mới
@@ -245,13 +262,13 @@ với testcase mẫu, và nộp bài để chấm với testcase ẩn — cho **
 5. **Nộp bài**: bấm "Submit", máy chủ trả về `submissionId` ngay và không chờ kết quả (F4-01)
    [Nguồn: 01-rd/req/judge-orchestration.md:10-11]; màn chuyển sang tab "Kết quả", mở kênh thời gian thực
    theo `submissionId` và cập nhật dần trạng thái từng testcase (F4-08)
-   [Nguồn: 01-rd/req/judge-orchestration.md:45-46].
+   [Nguồn: 01-rd/req/judge-orchestration.md:48-49].
 6. **Sau khi Accepted**: bảng kết quả hiện ba lối đi tiếp theo — xem kết quả chấm đầy đủ, phân tích bài
    giải, phỏng vấn giả lập [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:377-383].
 
 [Người dùng] Người học đã đăng nhập (`STUDENT`). Màn có thao tác ghi (nộp bài, lưu bài) nên **bắt buộc
 đăng nhập**, không có chế độ khách — khác `problem_list` vốn còn để ngỏ
-[Nguồn: 02-bd/screens/users/USR0101_problem_list.md:600].
+[Nguồn: 02-bd/screens/users/USR0101_problem_list.md Sheet 4.1 mục [Người dùng]].
 
 [Tệp liên quan] **Có nhập tệp**: file mã nguồn tải lên, giới hạn đúng phần mở rộng của ba ngôn ngữ
 (`.java`, `.cpp`, `.py`) và tối đa 64 KB
@@ -261,7 +278,7 @@ file nạp vào cùng một luồng nộp bài F4-01, **không phải một kên
 
 [Phạm vi]
 - Chỉ mở được bài có `status = PUBLISHED` và `deleted = false`
-  (`DEC-2026-0830-problem-lifecycle-two-states`) [Nguồn: 02-bd/database/problem-bank.md:18-19].
+  (`DEC-2026-0830-problem-lifecycle-two-states`) [Nguồn: 02-bd/database/problem-bank.md:19-20].
 - **Ba tab** ở panel trái: "Đề bài", "Bài nộp", "Solution Review". Tab "Gợi ý" của prototype đã bị cắt
   khỏi phạm vi (`DEC-2026-0831-remove-tiered-hints-ai-config`); prototype tĩnh lỗi thời ở điểm này, Câu hỏi mở Q1
   đã chốt 2026-10-18.
@@ -270,11 +287,11 @@ file nạp vào cùng một luồng nộp bài F4-01, **không phải một kên
 - **Bản nháp mã chỉ lưu ở trình duyệt** (`localStorage`), không có bảng nháp ở máy chủ (Câu hỏi mở Q4).
 - **Không có nút "Yêu cầu review"** (`DEC-2026-0830-remove-student-review-request`).
 - Không hiển thị nội dung testcase ẩn dưới mọi hình thức. Testcase hiển thị được **chỉ** là
-  `testcases.visibility = SAMPLE` [Nguồn: 02-bd/database/problem-bank.md:88].
+  `testcases.visibility = SAMPLE` [Nguồn: 02-bd/database/problem-bank.md:142].
 - Không mô tả lại state machine bài nộp — chỉ ánh xạ chín trạng thái của `submissions.status` sang nhãn
   hiển thị [Nguồn: 02-bd/database/judge-orchestration.md:22].
 - Không có fail-fast: mọi testcase đều chạy, nhãn kết quả luôn kèm tỉ lệ đạt
-  (`DEC-2026-0831-partial-score-testcase-ratio`) [Nguồn: 02-bd/architecture/judge-orchestration.md:94-96].
+  (`DEC-2026-0831-partial-score-testcase-ratio`) [Nguồn: 02-bd/architecture/judge-orchestration.md:30,161].
 - Chỉ số "Beats" (F4-12) **không** hiển thị ở màn này dù prototype có vẽ; chỉ có ở `submission_result` (Câu hỏi mở Q11, chốt 2026-10-18).
 
 [Quyền sử dụng]
@@ -307,7 +324,7 @@ Câu hỏi mở Q7.
 `[Suy luận]` — tên DTO do BD này đề xuất, `03-dd/api/problem-bank.md`, `03-dd/api/harness.md` và
 `03-dd/api/judge-orchestration.md` chốt lại. Đặt tên **khác** DTO của màn quản trị và của màn danh sách:
 `ProblemWorkspaceDto` không dùng lại `ProblemListItemDto`
-[Nguồn: 02-bd/screens/users/USR0101_problem_list.md:217] vì hai màn khác hẳn tập trường — màn này cần
+[Nguồn: 02-bd/screens/users/USR0101_problem_list.md Sheet 4.2] vì hai màn khác hẳn tập trường — màn này cần
 `statement_md`, giới hạn thời gian/bộ nhớ, cờ `function_wrapper_supported`, chữ ký hàm; màn kia cần
 `acRate`, `solveState`, `topicNames`.
 
@@ -315,23 +332,23 @@ Câu hỏi mở Q7.
 
 | NO | Bảng | Ghi chú |
 | --: | :--- | :--- |
-| 1 | `problem.problems` | Đề bài, khoá `level_id` của độ khó, giới hạn cơ sở, cờ mô hình [Nguồn: 02-bd/database/problem-bank.md:11-29] |
-| 2 | `problem.topics` | Nhãn chủ đề trên tab Đề bài [Nguồn: 02-bd/database/problem-bank.md:37-39] |
-| 3 | `problem.problem_topics` | Nối bài với chủ đề [Nguồn: 02-bd/database/problem-bank.md:37-39] |
-| 4 | `problem.problem_specs` | Định dạng `stdin`/`stdout` cho mô hình Standard I/O [Nguồn: 02-bd/database/problem-bank.md:58-60] |
-| 5 | `problem.function_signatures` | Chữ ký hàm chung (tên theo từng ngôn ngữ do hệ thống suy ra) — đầu vào sinh mã khung [Nguồn: 02-bd/database/problem-bank.md:66-77] |
-| 6 | `problem.testcases` | **Chỉ dòng `visibility = SAMPLE`** [Nguồn: 02-bd/database/problem-bank.md:86-88] |
-| 7 | `problem.problem_stats` | Read model, nguồn chỉ số "AC rate" ở chân panel [Nguồn: 02-bd/database/problem-bank.md:138-139] |
-| 8 | `problem.bookmarks` | Nút "Lưu bài" (F2-13) [Nguồn: 02-bd/database/problem-bank.md:130-132] |
+| 1 | `problem.problems` | Đề bài, khoá `level_id` của độ khó, giới hạn cơ sở, cờ mô hình [Nguồn: 02-bd/database/problem-bank.md:8-37] |
+| 2 | `problem.topics` | Nhãn chủ đề trên tab Đề bài [Nguồn: 02-bd/database/problem-bank.md:57-75] |
+| 3 | `problem.problem_topics` | Nối bài với chủ đề [Nguồn: 02-bd/database/problem-bank.md:57-75] |
+| 4 | `problem.problem_specs` | Định dạng `stdin`/`stdout` cho mô hình Standard I/O **và chữ ký hàm chung** (`function_name`, `return_type`, `parameters`, `name_overrides`; tên theo từng ngôn ngữ do hệ thống suy ra) — đầu vào sinh mã khung. Chữ ký hàm trước nằm ở bảng `function_signatures`, đã gộp vào đây (PB-10, `DEC-2026-1022-problem-bank-schema-sync` mục 5) [Nguồn: 02-bd/database/problem-bank.md:108-129] |
+| 5 | `problem.worked_examples` | Ví dụ mẫu hiển thị kèm đề (`position`, `input`, `output`, `explanation_md`); **tách khỏi `testcases`**, không dùng để chấm (PB-08, `DEC-2026-1022-problem-bank-schema-sync` mục 4) [Nguồn: 02-bd/database/problem-bank.md:234-247] |
+| 6 | `problem.testcases` | **Chỉ dòng `visibility = SAMPLE`** [Nguồn: 02-bd/database/problem-bank.md:136-155] |
+| 7 | `problem.problem_stats` | Read model, nguồn chỉ số "AC rate" ở chân panel [Nguồn: 02-bd/database/problem-bank.md:195-208] |
+| 8 | `problem.bookmarks` | Nút "Lưu bài" (F2-13) [Nguồn: 02-bd/database/problem-bank.md:189-194] |
 | 9 | `judge.submissions` | Tạo lượt nộp, lịch sử nộp bài của bài này [Nguồn: 02-bd/database/judge-orchestration.md:12-34] |
-| 10 | `judge.submission_testcase_results` | Dải ô trạng thái từng testcase — **chỉ đọc cột `verdict` và `testcase_order`** [Nguồn: 02-bd/database/judge-orchestration.md:46-57] |
-| 11 | `judge.language_configs` | Hệ số nhân giới hạn theo ngôn ngữ, để hiện giới hạn hiệu lực [Nguồn: 02-bd/database/judge-orchestration.md:95-103] |
-| 12 | `ai.solution_reviews` | Tóm tắt phân tích bài giải ở tab thứ ba [Nguồn: 02-bd/database/ai-review.md:36-57] |
+| 10 | `judge.submission_testcase_results` | Dải ô trạng thái từng testcase — **chỉ đọc cột `verdict` và `testcase_order`** [Nguồn: 02-bd/database/judge-orchestration.md:50-61] |
+| 11 | `judge.language_configs` | Hệ số nhân giới hạn theo ngôn ngữ, để hiện giới hạn hiệu lực [Nguồn: 02-bd/database/judge-orchestration.md:101-112] |
+| 12 | `ai.solution_reviews` | Tóm tắt phân tích bài giải ở tab thứ ba [Nguồn: 02-bd/database/ai-review.md:35-50] |
 | 13 | `problem.problem_levels` | Nhãn độ khó (`display_name`) của bài, đọc qua join `level_id` [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`] |
 
 Bốn bảng NO 9-12 nằm ở schema của module khác. Màn không truy vấn thẳng: mỗi module tự phục vụ phần dữ liệu
 của nó qua endpoint riêng, đúng nguyên tắc mỗi schema một chủ
-[Nguồn: 02-bd/database/problem-bank.md:31-33].
+[Nguồn: 02-bd/database/problem-bank.md:35-36].
 
 ### 4.4 Vùng bố cục
 
@@ -363,27 +380,32 @@ hiện** phía trên Workspace (không ẩn như prototype `.dc.html`). Không q
 **thiết kế chính thức**; bản dựng là đặc tả, không còn là lệch BD. Prototype `Workspace giải bài.dc.html` (lưới hai hàng
 `minmax(300px, 1fr) minmax(180px, 246px)` cố định, header thu gọn) chỉ còn là bằng chứng tham khảo.
 
-**Hiện trạng bản dựng (2026-10-19, chưa duyệt hình)** [Nguồn: 05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:815-835]:
-đúng như đoạn đặc tả ở trên. Điểm còn lại đã chốt trước đó: **chân trang khung chung bị ẩn hoàn toàn từ `lg` trở lên** khi màn gắn
-`data-fullscreen-view` (`05-coding/frontend/src/app/globals.css:684-712`), trong khi `_shell.md` mục 3 quy định chân trang có
-trên mọi màn khu học viên; chủ dự án chốt 2026-10-19 là **giữ** như vậy cho màn này, dưới `lg` chân trang vẫn hiện.
+**Hiện trạng bản dựng (2026-10-20, chưa duyệt hình)** [Nguồn: 05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:810-841]:
+bố cục đúng như đoạn đặc tả ở trên. **Đường dẫn (2026-10-20):** màn nằm ở `app/(student)/workspace/[problemId]/page.tsx`, chỉ render
+`ProblemDetailView` (`:3-5`); view đọc `problemId` từ `useParams` (`05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:80-81`) và khi id lạ thì hiện "Không tìm thấy bài toán." kèm liên
+kết về `/problems` (`:89-99`). `/problems/[problemId]` giờ là màn tổng quan `USR0104` (`app/(student)/problems/[problemId]/page.tsx`), không còn
+chứa Workspace. **Chưa khớp BD (nợ prototype):** Sheet 8 ghi `lang`, `model`, `tab` vào tham số truy vấn, nhưng bản dựng giữ chúng bằng
+`useState` cục bộ (`:119-122`), không ghi vào URL. Điểm đã chốt trước đó: **chân trang khung chung bị ẩn hoàn toàn từ `lg` trở lên** khi màn gắn
+`data-fullscreen-view` (`05-coding/frontend/src/app/globals.css:705-733`; thuộc tính đặt ở `05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:773`), trong khi `_shell.md` mục 3 quy định chân trang có
+trên mọi màn khu học viên; chủ dự án chốt 2026-10-19 là **giữ** như vậy cho màn này, dưới `lg` chân trang vẫn hiện. Màu nền sáng của khu này đã đổi ngày
+2026-10-20 (xem `_shell.md` mục 5.1), chưa duyệt hình cho màn này.
 
-**Bản nháp mã (2026-10-18, theo Câu hỏi mở Q4)** [Nguồn: 05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:147,156-168,210-220,594-598]:
-khoá `localStorage` là `algoprep-draft:{problemId}:{language}:{model}` (`draftStorageKey`, dòng 85-87; bài chỉ có
-Standard I/O dùng `stdio`); mở màn thì khôi phục (dòng 89-98), mỗi lần gõ thì ghi lại trong `setCode` (dòng 167-175),
+**Bản nháp mã (2026-10-18, theo Câu hỏi mở Q4)** [Nguồn: 05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:147,156-166,210-220,595-597; 05-coding/frontend/src/entities/problem/model/workspace-draft.ts:7-12]:
+khoá `localStorage` là `algoprep-draft:{problemId}:{language}:{model}` (`workspaceDraftKey`, nay nằm ở `entities/problem`, `workspace-draft.ts:7-12`; view gọi
+ở `:147`; bài chỉ có Standard I/O dùng `stdio`); mở màn thì khôi phục (`:156-166`), mỗi lần gõ thì ghi lại trong `setCode` qua `saveWorkspaceDraft` (`:210-220`),
 lỗi ghi (trình duyệt chặn hoặc đầy) thì vẫn sửa được nhưng không nhớ. Từ 2026-10-19 nhãn chỉ hiện khi `saveWorkspaceDraft` ghi thành công (`persistedKeys`), không còn hiện khi `localStorage` bị chặn. Nhãn lấy từ i18n `toolbar.draftSaved`
-("Đã lưu trên trình duyệt này", `05-coding/frontend/messages/vi.json:266`) và chỉ hiện khi cặp đang chọn đã có mã
-người học (dòng 431-435). Bản dựng không có hộp xác nhận rời màn hay ghi đè mã, và theo Câu hỏi mở Q14 (đã chốt) cũng sẽ không có.
+("Đã lưu trên trình duyệt này", `05-coding/frontend/messages/vi.json:300`) và chỉ hiện khi phương thức nhập là gõ trực tiếp và cặp đang chọn đã có bản đã lưu
+(`:595-597`). Bản dựng không có hộp xác nhận rời màn hay ghi đè mã, và theo Câu hỏi mở Q14 (đã chốt) cũng sẽ không có.
 
-**Thiết lập nhớ, giới hạn mã và chạy thử (2026-10-18, theo Câu hỏi mở Q6 đến Q10)** [Nguồn: 05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:66-69,170-190,192-210,258-273,287-306,386-388]:
+**Thiết lập nhớ, giới hạn mã và chạy thử (2026-10-18, theo Câu hỏi mở Q6 đến Q10)** [Nguồn: 05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:69-71,172-192,194-210,260-275,289-313,396-398]:
 khoá `localStorage` `algoprep-workspace-prefs` lưu `{language, mode}` của lần chọn gần nhất; ghi trong hai hàm đổi ngôn ngữ
-và đổi mô hình (dòng 138-155), khôi phục trong một effect sau khi màn gắn vào (dòng 101-116), lỗi đọc hoặc ghi thì bỏ qua và dùng
-mặc định. Bài chỉ có Standard I/O luôn dùng Standard I/O bất kể lựa chọn đã nhớ (`effectiveMode`). Hằng `MAX_CODE_BYTES` = 64 KB
-(dòng 50), hàm `codeTooLarge` (dòng 157-165) đo kích thước bằng `TextEncoder` và chặn Run Code, Submit bằng toast lỗi
-`problemDetail.toast.codeTooLarge`; chỉ áp dụng khi phương thức nhập là gõ trực tiếp. Kiểm tra thật vẫn ở máy chủ. Run Code
-(`runSample`, dòng 181-193) chỉ giả lập kết quả ở phía trình duyệt và không tạo bản ghi nào, đúng với Q10. Bản dựng không có chấm
+và đổi mô hình (`:186-210`), khôi phục trong một effect sau khi màn gắn vào (`:172-184`), lỗi đọc hoặc ghi thì bỏ qua và dùng
+mặc định. Bài chỉ có Standard I/O luôn dùng Standard I/O bất kể lựa chọn đã nhớ (`effectiveMode`, `:146-147`). Hằng `MAX_CODE_BYTES` = 64 KB
+(`:69`); hàm `sourceToSend` (`:260-275`) kiểm mã rỗng, chưa chọn file và quá 64 KB (đo bằng `TextEncoder` qua `byteLength`, `:76-78`) rồi chặn Run Code, Submit bằng toast
+(`problemDetail.toast.codeTooLarge` khi vượt); kiểm file tải lên ở `handleFile` (`:224-246`). Kiểm tra thật vẫn ở máy chủ. Run Code
+(`runSample`, `:289-313`) chỉ giả lập kết quả ở phía trình duyệt và không tạo bản ghi nào, đúng với Q10. Bản dựng không có chấm
 trạng thái cụm chấm go-judge nào, đúng với Q8. Giải thích ví dụ đã in khi dữ liệu có `example.explanation`
-(dòng 287-291), đúng với Q6 (cột nguồn `testcases.explanation_md` do BD database ghi nhận).
+(`:396-398`), đúng với Q6 (cột nguồn nay là `worked_examples.explanation_md`, PB-08).
 
 **Prototype tĩnh `09-layoutBase/Workspace giải bài.dc.html` đã lỗi thời ở các điểm sau** (chủ dự án chốt
 2026-10-18; file chỉ-đọc nên chỉ đánh dấu ở đây, không sửa): tab "Gợi ý" (Q1), khối "Gợi ý theo điểm yếu" (Q2),
@@ -405,7 +427,7 @@ trạng thái cụm chấm go-judge nào, đúng với Q8. Giải thích ví d�
 | Khung Người học (thu gọn) | Dùng lại `widgets/app-shell` (biến thể `student-header`, tham số thu gọn) | `02-bd/screens/users/_shell.md` mục 2.5 |
 | Thanh tác vụ bài toán | `widgets/problem-taskbar` | Prototype `:98-107` |
 | Panel thông tin bài toán | `widgets/problem-info-panel` | Prototype `:158-256` |
-| Nội dung đề bài (Markdown + LaTeX) | `entities/problem` (dùng lại với `problem_list`, `saved_problems`) | `02-bd/screens/users/USR0101_problem_list.md:282-283` |
+| Nội dung đề bài (Markdown + LaTeX) | `entities/problem` (dùng lại với `problem_list`, `saved_problems`) | `02-bd/screens/users/USR0101_problem_list.md Sheet 4.5 (ghi chú sau bảng slice)` |
 | Lịch sử nộp bài của bài này | `entities/submission` | Prototype `:216-227` |
 | Tóm tắt phân tích bài giải | `widgets/solution-review-summary` | Prototype `:229-247` |
 | Thanh chia đôi | `shared/ui/split-pane` | Prototype `:258-260` |
@@ -441,7 +463,7 @@ từ ngoài, không tự gọi API.
 
 ### Khu vực B — Trạng thái chưa chọn bài
 
-**Đã bỏ (owner chốt 2026-10-19).** Màn không còn đường vào trạng thái chưa chọn bài: mục nav Workspace chuyển hướng (Q12) và `/problems/[id]` luôn mang id. Id không mở được thì hiện "Không tìm thấy bài toán." (Sheet 9 NO 2). Bốn item cũ (`problemDetail.emptyState.*`) và widget `workspace-empty-state` bị gỡ; giữ tiêu đề mục để không lệch tham chiếu.
+**Đã bỏ (owner chốt 2026-10-19).** Màn không còn đường vào trạng thái chưa chọn bài: đường dẫn `/workspace/{problemId}` luôn mang id (từ 2026-10-20 mục nav Workspace mở `USR0105`, không còn chuyển hướng, Q12). Id không mở được thì hiện "Không tìm thấy bài toán." (Sheet 9 NO 2). Bốn item cũ (`problemDetail.emptyState.*`) và widget `workspace-empty-state` bị gỡ; giữ tiêu đề mục để không lệch tham chiếu.
 
 ### Khu vực C — Panel thông tin bài toán
 
@@ -449,9 +471,9 @@ từ ngoài, không tự gọi API.
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Panel thông tin bài toán | | | | | | | | | | | | | |
 | | 1 | Dải tab panel | `problemDetail.infoPanel.tabs` | - | - | List | Enum | - | - | I/O | `Đề bài` | - | **Ba** tab: Đề bài / Bài nộp / Solution Review [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:159-163]. Tab thứ tư "Gợi ý" của prototype [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:552] đã bị cắt (`DEC-2026-0831-remove-tiered-hints-ai-config`)<br>[Nguồn giá trị] Nhãn tĩnh i18n; tab đang chọn lấy từ tham số URL `tab`<br>[EVT liên quan] EVT-3 |
-| | 2 | AC rate | `problemDetail.infoPanel.acRate` | `problem.problem_stats` | `ac_rate` | Label | Number | 5 | - | O | `-` | `{số}%` | Tỉ lệ bài nộp được chấp nhận trên toàn hệ thống cho bài này [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:251]<br>[Nguồn giá trị] Read model `problem_stats.ac_rate` [Nguồn: 02-bd/database/problem-bank.md:138-139]. Chưa có dòng read model thì hiển thị `-`, không hiển thị `0%` — cùng quy ước với `problem_list` [Nguồn: 02-bd/screens/users/USR0101_problem_list.md:339]<br>[EVT liên quan] EVT-1 |
-| | 3 | Nút Lưu bài | `problemDetail.infoPanel.btnBookmark` | `problem.bookmarks` | `user_id`, `problem_id` | Button | Boolean | - | - | I/O | Chưa lưu | - | Bật/tắt đánh dấu lưu bài của chính người học (F2-13) [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:253]<br>[Công thức] Đã lưu khi tồn tại dòng `bookmarks` khớp `(user_id hiện tại, problem_id)` [Nguồn: 02-bd/database/problem-bank.md:130-132]; nhãn đổi giữa "Lưu bài" và "Bỏ lưu"<br>[EVT liên quan] EVT-15 |
-| | 4 | Trạng thái cụm chấm | `problemDetail.infoPanel.judgeClusterStatus` | - | - | Badge | Enum | - | - | O | Ẩn | - | Cho biết cụm go-judge có sẵn sàng nhận bài hay không [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:254]<br>[Nguồn giá trị] Ẩn cho tới khi có dữ liệu, không gọi định kỳ — theo kết luận của khung chung [Nguồn: 02-bd/screens/users/_shell.md:128], xem Câu hỏi mở Q8 (đã chốt 2026-10-18)<br>[EVT liên quan] EVT-1 |
+| | 2 | AC rate | `problemDetail.infoPanel.acRate` | `problem.problem_stats` | `ac_rate` | Label | Number | 5 | - | O | `-` | `{số}%` | Tỉ lệ bài nộp được chấp nhận trên toàn hệ thống cho bài này [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:251]<br>[Nguồn giá trị] Read model `problem_stats.ac_rate` [Nguồn: 02-bd/database/problem-bank.md:195-208]. Chưa có dòng read model thì hiển thị `-`, không hiển thị `0%` — cùng quy ước với `problem_list` [Nguồn: 02-bd/screens/users/USR0101_problem_list.md Sheet 5 Khu vực D, item AC rate]<br>[EVT liên quan] EVT-1 |
+| | 3 | Nút Lưu bài | `problemDetail.infoPanel.btnBookmark` | `problem.bookmarks` | `user_id`, `problem_id` | Button | Boolean | - | - | I/O | Chưa lưu | - | Bật/tắt đánh dấu lưu bài của chính người học (F2-13) [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:253]<br>[Công thức] Đã lưu khi tồn tại dòng `bookmarks` khớp `(user_id hiện tại, problem_id)` [Nguồn: 02-bd/database/problem-bank.md:189-194]; nhãn đổi giữa "Lưu bài" và "Bỏ lưu"<br>[EVT liên quan] EVT-15 |
+| | 4 | Trạng thái cụm chấm | `problemDetail.infoPanel.judgeClusterStatus` | - | - | Badge | Enum | - | - | O | Ẩn | - | Cho biết cụm go-judge có sẵn sàng nhận bài hay không [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:254]<br>[Nguồn giá trị] Ẩn cho tới khi có dữ liệu, không gọi định kỳ — theo kết luận của khung chung [Nguồn: 02-bd/screens/users/_shell.md:164], xem Câu hỏi mở Q8 (đã chốt 2026-10-18)<br>[EVT liên quan] EVT-1 |
 | | 5 | Thanh chia đôi bố cục | `problemDetail.infoPanel.splitHandle` | - | - | Button | Number | - | - | I/O | `47` | `{số}%` | Kéo ngang để đổi tỉ lệ hai cột [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:258-260]<br>[Công thức] Tỉ lệ bề rộng cột trái, chặn trong khoảng 22–74 [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:441]; giá trị lưu ở phía trình duyệt, không lưu DB<br>[EVT liên quan] EVT-20 |
 
 ### Khu vực D — Tab Đề bài
@@ -461,15 +483,15 @@ từ ngoài, không tự gọi API.
 | Tab Đề bài | | | | | | | | | | | | | |
 | | 1 | Tên bài | `problemDetail.statement.title` | `problem.problems` | `code`, `title` | Label | String | 240 | - | O | - | `{mã}. {tên}` | Tiêu đề đề bài [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:168]<br>[Nguồn giá trị] Cùng nguồn Khu vực A NO 2<br>[EVT liên quan] - |
 | | 2 | Nhãn độ khó | `problemDetail.statement.difficultyBadge` | `problem.problem_levels` | `display_name` | Badge | String | - | - | O | - | Nhãn `display_name` | [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:170]<br>[Nguồn giá trị] Như Khu vực A NO 3<br>[EVT liên quan] - |
-| | 3 | Nhãn chủ đề | `problemDetail.statement.topicBadge` | `problem.topics` | `name` | Badge | String | - | - | O | `-` | - | Chủ đề của bài, nhiều chủ đề thì mỗi chủ đề một nhãn [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:171]<br>[Nguồn giá trị] `topics.name` qua `problem_topics` [Nguồn: 02-bd/database/problem-bank.md:37-39]<br>[EVT liên quan] - |
+| | 3 | Nhãn chủ đề | `problemDetail.statement.topicBadge` | `problem.topics` | `name` | Badge | String | - | - | O | `-` | - | Chủ đề của bài, nhiều chủ đề thì mỗi chủ đề một nhãn [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:171]<br>[Nguồn giá trị] `topics.name` qua `problem_topics` [Nguồn: 02-bd/database/problem-bank.md:57-75]<br>[EVT liên quan] - |
 | | 4 | Nhãn mô hình đang chọn | `problemDetail.statement.modelBadge` | - | - | Badge | Enum | - | - | O | `Bọc hàm` | - | Cho biết mã đang viết theo mô hình nào [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:172]<br>[Công thức] Bám **trạng thái màn** của Khu vực G NO 3, không phải cột DB — mô hình do người học chọn mỗi lượt (`DEC-2026-0824-dual-submission-model-per-problem`)<br>[EVT liên quan] EVT-5 |
 | | 5 | Nội dung đề | `problemDetail.statement.body` | `problem.problems` | `statement_md` | Label | String | - | - | O | - | Markdown + LaTeX | Toàn văn đề bài [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:176-177]<br>[Nguồn giá trị] Cột `statement_md`, kết xuất Markdown + LaTeX (F2-01) [Nguồn: 02-bd/database/problem-bank.md:16]<br>[EVT liên quan] - |
-| | 6 | Câu giải thích mô hình | `problemDetail.statement.modelNote` | - | - | Label | String | - | - | O | - | - | Câu nói rõ người học phải viết gì ở mô hình đang chọn [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:178]<br>[Nguồn giá trị] Hai nhãn tĩnh i18n, chọn theo Khu vực G NO 3. Ở mô hình Standard I/O, câu này kèm định dạng `stdin`/`stdout` từ `problem_specs.stdin_format_md`/`stdout_format_md` [Nguồn: 02-bd/database/problem-bank.md:59-60]<br>[EVT liên quan] EVT-5 |
-| | 7 | Danh sách ví dụ | `problemDetail.statement.exampleList` | `problem.testcases` | `visibility`, `is_worked_example` | List | List | - | - | O | rỗng | - | Các ví dụ mẫu hiển thị kèm đề [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:180-189]<br>[Nguồn giá trị] Dòng `testcases` có `visibility = SAMPLE AND is_worked_example = true` [Nguồn: 02-bd/database/problem-bank.md:88,96]<br>[EVT liên quan] EVT-1 |
-| | 8 | Dữ liệu vào của ví dụ | `problemDetail.statement.col.exampleInput` | `problem.testcases` | `input_inline` | ListColumn | String | - | - | O | - | - | [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:184]<br>[Nguồn giá trị] Cột `input_inline` khi `input_storage = INLINE` [Nguồn: 02-bd/database/problem-bank.md:89-91]. Testcase Sample luôn đủ nhỏ để `INLINE` `[SoT: Suy luận]`<br>[EVT liên quan] - |
-| | 9 | Kết quả của ví dụ | `problemDetail.statement.col.exampleOutput` | `problem.testcases` | `expected_output_inline` | ListColumn | String | - | - | O | - | - | [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:185]<br>[Nguồn giá trị] Cột `expected_output_inline` [Nguồn: 02-bd/database/problem-bank.md:93-94]<br>[EVT liên quan] - |
-| | 10 | Giải thích ví dụ | `problemDetail.statement.col.exampleNote` | - | - | ListColumn | String | - | - | O | Ẩn | - | Câu giải thích vì sao ví dụ cho kết quả đó [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:186]<br>[Nguồn giá trị] Cột mới `testcases.explanation_md` (nullable, chỉ có nghĩa với ví dụ mẫu `is_worked_example = true`), chủ dự án chốt 2026-10-18 — xem Câu hỏi mở Q6<br>[EVT liên quan] - |
-| | 11 | Danh sách ràng buộc | `problemDetail.statement.constraintList` | `problem.problems` | `statement_md` | List | List | - | - | O | rỗng | - | Các ràng buộc về miền giá trị của bài [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:191-196]<br>[Nguồn giá trị] Không có cột riêng: là mục Markdown quy ước (`## Ràng buộc`) trong `statement_md`, giao diện kết xuất thẳng (Câu hỏi mở Q5, chốt 2026-10-18)<br>[EVT liên quan] - |
+| | 6 | Câu giải thích mô hình | `problemDetail.statement.modelNote` | - | - | Label | String | - | - | O | - | - | Câu nói rõ người học phải viết gì ở mô hình đang chọn [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:178]<br>[Nguồn giá trị] Hai nhãn tĩnh i18n, chọn theo Khu vực G NO 3. Ở mô hình Standard I/O, câu này kèm định dạng `stdin`/`stdout` từ `problem_specs.stdin_format_md`/`stdout_format_md` [Nguồn: 02-bd/database/problem-bank.md:121-122]<br>[EVT liên quan] EVT-5 |
+| | 7 | Danh sách ví dụ | `problemDetail.statement.exampleList` | `problem.worked_examples` | `position`, `input`, `output`, `explanation_md` | List | List | - | - | O | rỗng | - | Các ví dụ mẫu hiển thị kèm đề [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:180-189]<br>[Nguồn giá trị] Các dòng `worked_examples` của bài, sắp theo `position`; **không đọc `testcases`** (cột `testcases.is_worked_example` và `testcases.explanation_md` đã bỏ, PB-08, `DEC-2026-1022-problem-bank-schema-sync` mục 4) [Nguồn: 02-bd/database/problem-bank.md:149-150,234-247]<br>[EVT liên quan] EVT-1 |
+| | 8 | Dữ liệu vào của ví dụ | `problemDetail.statement.col.exampleInput` | `problem.worked_examples` | `input` | ListColumn | String | - | - | O | - | - | [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:184]<br>[Nguồn giá trị] Cột `input` (TEXT NOT NULL, văn bản ngắn, không có nhánh MinIO) [Nguồn: 02-bd/database/problem-bank.md:240]<br>[EVT liên quan] - |
+| | 9 | Kết quả của ví dụ | `problemDetail.statement.col.exampleOutput` | `problem.worked_examples` | `output` | ListColumn | String | - | - | O | - | - | [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:185]<br>[Nguồn giá trị] Cột `output` (TEXT NOT NULL) [Nguồn: 02-bd/database/problem-bank.md:241]<br>[EVT liên quan] - |
+| | 10 | Giải thích ví dụ | `problemDetail.statement.col.exampleNote` | `problem.worked_examples` | `explanation_md` | ListColumn | String | - | - | O | Ẩn | - | Câu giải thích vì sao ví dụ cho kết quả đó [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:186]<br>[Nguồn giá trị] Cột `worked_examples.explanation_md` (TEXT nullable, Markdown), nơi lưu đã đổi từ `testcases.explanation_md` sang bảng `worked_examples` ngày 2026-10-22 — xem Câu hỏi mở Q6 [Nguồn: 02-bd/database/problem-bank.md:242]<br>[EVT liên quan] - |
+| | 11 | Danh sách ràng buộc | `problemDetail.statement.constraintList` | `problem.problems` | `constraints_md` | List | List | - | - | O | rỗng | - | Các ràng buộc về miền giá trị của bài [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:191-196]<br>[Nguồn giá trị] Cột riêng `problems.constraints_md` (TEXT NOT NULL default rỗng, Markdown); màn ghép `statement_md` rồi `constraints_md` thành một trang đề; chuỗi rỗng thì không vẽ khối (Câu hỏi mở Q5, đổi 2026-10-22, PB-03) [Nguồn: 02-bd/database/problem-bank.md:17]<br>[EVT liên quan] - |
 | | 12 | Khối câu hỏi mở rộng | `problemDetail.statement.followUp` | `problem.problems` | `statement_md` | Label | String | - | - | O | Ẩn | - | Gợi mở hướng tối ưu, dẫn sang phân tích bài giải [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:198-201]<br>[Nguồn giá trị] Không có cột riêng: là mục Markdown quy ước (`## Câu hỏi mở rộng`) trong `statement_md` (Câu hỏi mở Q5, chốt 2026-10-18)<br>[EVT liên quan] - |
 
 ### Khu vực E — Tab Bài nộp
@@ -477,7 +499,7 @@ từ ngoài, không tự gọi API.
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Tab Bài nộp | | | | | | | | | | | | | |
-| | 1 | Danh sách lượt nộp | `problemDetail.submissionHistory.list` | `judge.submissions` | `user_id`, `problem_id` | List | List | - | - | O | rỗng | - | 10 lượt nộp gần nhất của **chính người học** cho **chính bài này** [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:216-227]<br>[Nguồn giá trị] Kết quả gọi `ListMySubmissionsForProblem`, dùng index `submissions(user_id, problem_id, created_at DESC)` [Nguồn: 02-bd/database/judge-orchestration.md:124]<br>[EVT liên quan] EVT-1, EVT-22 |
+| | 1 | Danh sách lượt nộp | `problemDetail.submissionHistory.list` | `judge.submissions` | `user_id`, `problem_id` | List | List | - | - | O | rỗng | - | 10 lượt nộp gần nhất của **chính người học** cho **chính bài này** [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:216-227]<br>[Nguồn giá trị] Kết quả gọi `ListMySubmissionsForProblem`, dùng index `submissions(user_id, problem_id, created_at DESC)` [Nguồn: 02-bd/database/judge-orchestration.md:197]<br>[EVT liên quan] EVT-1, EVT-22 |
 | | 2 | Kết quả lượt nộp | `problemDetail.submissionHistory.col.verdict` | `judge.submissions` | `status`, `passed_testcase_count`, `total_testcase_count` | ListColumn | String | - | - | O | - | `{nhãn} {đạt}/{tổng}` | Trạng thái cuối của lượt nộp kèm tỉ lệ testcase đạt [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:220]<br>[Công thức] Nhãn tĩnh i18n map từ `status`; trạng thái khác `ACCEPTED`/`COMPILE_ERROR`/`SYSTEM_ERROR` thì ghép thêm `passed_testcase_count`/`total_testcase_count` (F4-13, `DEC-2026-0831-partial-score-testcase-ratio`) [Nguồn: 02-bd/database/judge-orchestration.md:22,25-26]<br>[EVT liên quan] - |
 | | 3 | Ngôn ngữ | `problemDetail.submissionHistory.col.language` | `judge.submissions` | `language` | ListColumn | Enum | - | - | O | - | Nhãn cố định | [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:221]<br>[Nguồn giá trị] `JAVA` thành "Java", `CPP` thành "C++", `PYTHON` thành "Python" [Nguồn: 02-bd/database/judge-orchestration.md:18]<br>[EVT liên quan] - |
 | | 4 | Thời gian và bộ nhớ | `problemDetail.submissionHistory.col.metrics` | `judge.submissions` | `runtime_ms`, `memory_kb` | ListColumn | String | - | - | O | `-` | `{số} ms · {số} MB` | Chỉ số của lượt nộp [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:222]<br>[Nguồn giá trị] Cột `runtime_ms`, `memory_kb`; cả hai `NULL` khi chưa chấm xong hoặc dừng ở `COMPILE_ERROR` thì hiển thị `-` [Nguồn: 02-bd/database/judge-orchestration.md:28-29]<br>[EVT liên quan] - |
@@ -488,7 +510,7 @@ từ ngoài, không tự gọi API.
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Tab Solution Review | | | | | | | | | | | | | |
-| | 1 | Chỉ số độ phức tạp | `problemDetail.reviewSummary.metrics` | `ai.solution_reviews` | `result_json` | Label | String | - | - | O | Ẩn | - | Hai ô "Thời gian" và "Bộ nhớ" dạng ký hiệu Big-O [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:231-238]<br>[Nguồn giá trị] Trường độ phức tạp trong `result_json` của báo cáo đã có (F5-07) [Nguồn: 02-bd/database/ai-review.md:44]. Đây là **bản tóm tắt nhanh đọc lại từ báo cáo đã có**, không tạo dữ liệu mới [Nguồn: 01-rd/screens/users/USR0102_problem_detail.md:116]<br>[EVT liên quan] EVT-1 |
+| | 1 | Chỉ số độ phức tạp | `problemDetail.reviewSummary.metrics` | `ai.solution_reviews` | `result_json` | Label | String | - | - | O | Ẩn | - | Hai ô "Thời gian" và "Bộ nhớ" dạng ký hiệu Big-O [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:231-238]<br>[Nguồn giá trị] Trường độ phức tạp trong `result_json` của báo cáo đã có (F5-07) [Nguồn: 02-bd/database/ai-review.md:46,64-67]. Đây là **bản tóm tắt nhanh đọc lại từ báo cáo đã có**, không tạo dữ liệu mới [Nguồn: 01-rd/screens/users/USR0102_problem_detail.md:116]<br>[EVT liên quan] EVT-1 |
 | | 2 | Khối nhận xét rút gọn | `problemDetail.reviewSummary.blocks` | `ai.solution_reviews` | `result_json` | List | List | - | - | O | rỗng | - | 1-2 nhận xét chính rút từ báo cáo [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:239-244]<br>[Nguồn giá trị] Cùng nguồn NO 1. Bản đầy đủ nằm ở màn `solution_review` [Nguồn: 01-rd/screens/users/USR0102_problem_detail.md:116]<br>[EVT liên quan] EVT-1 |
 | | 3 | Liên kết mở báo cáo đầy đủ | `problemDetail.reviewSummary.linkFullReport` | - | - | Link | - | - | - | I | - | - | Mở màn `solution_review` của lượt nộp tương ứng<br>[Nguồn giá trị] Nhãn tĩnh i18n. Prototype không vẽ liên kết này nhưng RD đã chốt "mở từ nút trong tab hoặc từ console kết quả" [Nguồn: 01-rd/screens/users/USR0102_problem_detail.md:116]<br>[EVT liên quan] EVT-17 |
 | | 4 | Nút bắt đầu phỏng vấn giả lập | `problemDetail.reviewSummary.btnMockInterview` | - | - | Button | - | - | - | I | - | - | Mở màn `mock_interview` với lối vào từ bài nộp [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:245]<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] EVT-18 |
@@ -514,8 +536,8 @@ từ ngoài, không tự gọi API.
 | | 3 | Nút Chọn file | `problemDetail.codeInput.btnChooseFile` | - | - | Button | - | - | - | I | - | - | Mở hộp thoại chọn file của hệ điều hành [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:308]<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] EVT-8 |
 | | 4 | Thẻ file đã tải | `problemDetail.codeInput.uploadedFileCard` | - | - | Label | String | - | - | O | Ẩn | `{tên file} · {kích thước}` | Thông tin file vừa tải lên [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:310-314]<br>[Nguồn giá trị] Siêu dữ liệu của file do trình duyệt cung cấp; **không lưu file lên máy chủ** — nội dung nạp vào cùng trường `source_code` của luồng nộp bài F4-01 [Nguồn: 01-rd/req/judge-orchestration.md:13-14]<br>[EVT liên quan] EVT-8 |
 | | 5 | Nút Xem nội dung | `problemDetail.codeInput.btnViewUploaded` | - | - | Button | - | - | - | I | - | - | Xem lại nội dung file đã tải trước khi nộp [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:315]<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] EVT-9 |
-| | 6 | Trạng thái lưu nháp | `problemDetail.codeInput.draftStatus` | - | - | Label | String | - | - | O | Ẩn | - | Cho biết mã đang soạn đã được giữ lại ở trình duyệt này [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:321,531]<br>[Nguồn giá trị] Nhãn tĩnh i18n "Đã lưu trên trình duyệt này" (`toolbar.draftSaved`), **không** phải "Đã lưu nháp" chung chung. Bản nháp nằm ở `localStorage` theo khoá `(problem_id, language, submission_model)`, **không có bảng nào ở máy chủ** (Câu hỏi mở Q4, chốt 2026-10-18) [Nguồn: 05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:147,156-168,594-598]<br>[EVT liên quan] EVT-7 |
-| | 7 | Giới hạn thời gian và bộ nhớ | `problemDetail.codeInput.limits` | `problem.problems`, `judge.language_configs` | `time_limit_ms`, `memory_limit_mb`, `time_limit_multiplier`, `memory_limit_multiplier` | Label | String | - | - | O | `-` | `Time {số}s · Memory {số}MB` | Giới hạn **hiệu lực** cho ngôn ngữ đang chọn [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:323,530]<br>[Công thức] `time_limit_ms` nhân `time_limit_multiplier` của ngôn ngữ đang chọn; tương tự cho bộ nhớ [Nguồn: 02-bd/database/problem-bank.md:21-22; 02-bd/database/judge-orchestration.md:98-99]<br>[EVT liên quan] EVT-1, EVT-4 |
+| | 6 | Trạng thái lưu nháp | `problemDetail.codeInput.draftStatus` | - | - | Label | String | - | - | O | Ẩn | - | Cho biết mã đang soạn đã được giữ lại ở trình duyệt này [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:321,531]<br>[Nguồn giá trị] Nhãn tĩnh i18n "Đã lưu trên trình duyệt này" (`toolbar.draftSaved`), **không** phải "Đã lưu nháp" chung chung. Bản nháp nằm ở `localStorage` theo khoá `(problem_id, language, submission_model)`, **không có bảng nào ở máy chủ** (Câu hỏi mở Q4, chốt 2026-10-18) [Nguồn: 05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:147,156-166,595-597]<br>[EVT liên quan] EVT-7 |
+| | 7 | Giới hạn thời gian và bộ nhớ | `problemDetail.codeInput.limits` | `problem.problems`, `judge.language_configs` | `time_limit_ms`, `memory_limit_mb`, `time_limit_multiplier`, `memory_limit_multiplier` | Label | String | - | - | O | `-` | `Time {số}s · Memory {số}MB` | Giới hạn **hiệu lực** cho ngôn ngữ đang chọn [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:323,530]<br>[Công thức] `time_limit_ms` nhân `time_limit_multiplier` của ngôn ngữ đang chọn; tương tự cho bộ nhớ [Nguồn: 02-bd/database/problem-bank.md:22-23; 02-bd/database/judge-orchestration.md:109-110]<br>[EVT liên quan] EVT-1, EVT-4 |
 
 ### Khu vực I — Bảng kết quả
 
@@ -524,9 +546,9 @@ từ ngoài, không tự gọi API.
 | Bảng kết quả | | | | | | | | | | | | | |
 | | 1 | Dải tab bảng kết quả | `problemDetail.console.tabs` | - | - | List | Enum | - | - | I/O | `Testcase` | - | Hai tab "Testcase" và "Kết quả" [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:328-332,620]<br>[Nguồn giá trị] Nhãn tĩnh i18n; trạng thái tab là trạng thái màn, không ghi vào URL<br>[EVT liên quan] EVT-13 |
 | | 2 | Nhãn kết quả tổng hợp | `problemDetail.console.verdict` | `judge.submissions` | `status`, `passed_testcase_count`, `total_testcase_count` | Badge | String | - | - | O | Ẩn | `{nhãn} · {đạt}/{tổng}` | Kết quả của lượt chạy thử hoặc lượt nộp gần nhất [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:334,638]<br>[Công thức] Như Khu vực E NO 2. Trong lúc chấm, hiển thị nhãn trạng thái trung gian (`PENDING`/`COMPILING`/`JUDGING`) kèm số testcase đã chạy [Nguồn: 02-bd/database/judge-orchestration.md:22]<br>[EVT liên quan] EVT-10, EVT-11, EVT-12 |
-| | 3 | Tab chọn testcase mẫu | `problemDetail.console.sampleCaseTabs` | `problem.testcases` | `visibility` | List | Number | - | - | I/O | `1` | `Case {số}` | Mỗi testcase Sample một nút [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:341-345]<br>[Nguồn giá trị] Số dòng `testcases` có `visibility = SAMPLE` [Nguồn: 02-bd/database/problem-bank.md:88]<br>[EVT liên quan] EVT-14 |
-| | 4 | Nội dung testcase mẫu | `problemDetail.console.sampleCaseBody` | `problem.testcases` | `input_inline` | Label | String | - | - | O | - | - | Dữ liệu vào của testcase Sample đang chọn, tách theo từng tham số ở mô hình Bọc hàm [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:346-355]<br>[Nguồn giá trị] Cột `input_inline`; tên tham số lấy từ `function_signatures.parameters` [Nguồn: 02-bd/database/problem-bank.md:74]. **Chỉ Sample** — testcase ẩn không bao giờ hiển thị ở đây<br>[EVT liên quan] EVT-14 |
-| | 5 | Dải ô trạng thái từng testcase | `problemDetail.console.caseDots` | `judge.submission_testcase_results` | `verdict`, `testcase_order` | List | List | - | - | O | rỗng | - | Mỗi testcase một ô, màu theo trạng thái [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:363-367]<br>[Nguồn giá trị] Cột `verdict` và `testcase_order` [Nguồn: 02-bd/database/judge-orchestration.md:51-52]. **Chỉ trạng thái và số thứ tự** — chú giải của ô không được chứa dữ liệu vào, kết quả mong đợi hay diff, kể cả với testcase ẩn (Sheet 9 NO 3)<br>[EVT liên quan] EVT-10, EVT-11, EVT-12 |
+| | 3 | Tổng kết lượt chạy và nút "Xem chi tiết" | `problemDetail.console.summaryPassed`, `summaryFailed`, `btnDetail` | `problem.testcases` | `visibility` | Label + Button | Number | - | - | O | - | `{n} đạt · {m} không đạt` | Bảng nhỏ chỉ hiện tổng số testcase đạt và không đạt của lượt chạy gần nhất (Run Code: testcase Sample; Submit: mọi testcase), thời gian, bộ nhớ và nút "Xem chi tiết" mở lại màn phụ (owner 2026-10-21; bỏ hàng nút Case vì nhiều testcase bị tràn) [Nguồn: 05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx]<br>[Nguồn giá trị] Số dòng `testcases` có `visibility = SAMPLE` [Nguồn: 02-bd/database/problem-bank.md:142]<br>[EVT liên quan] EVT-14 |
+| | 4 | Chi tiết testcase mẫu (trong màn phụ) | `problemDetail.console.sampleCaseBody` | `problem.testcases` | `input_inline` | Label | String | - | - | O | - | - | Dữ liệu vào, kết quả thực tế, kết quả mong đợi của testcase Sample đang chọn trong màn phụ (mở sẵn testcase sai đầu tiên), tách theo từng tham số ở mô hình Bọc hàm [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:346-355]<br>[Nguồn giá trị] Cột `input_inline`; tên tham số lấy từ `problem_specs.parameters` (đã gộp từ `function_signatures`) [Nguồn: 02-bd/database/problem-bank.md:125]. **Chỉ Sample** — testcase ẩn không bao giờ hiển thị ở đây<br>[EVT liên quan] EVT-14 |
+| | 5 | Dải ô trạng thái từng testcase | `problemDetail.console.caseDots` | `judge.submission_testcase_results` | `verdict`, `testcase_order` | List | List | - | - | O | rỗng | - | Mỗi testcase một ô, màu theo trạng thái [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:363-367]<br>[Nguồn giá trị] Cột `verdict` và `testcase_order` [Nguồn: 02-bd/database/judge-orchestration.md:55-56]. **Chỉ trạng thái và số thứ tự** — chú giải của ô không được chứa dữ liệu vào, kết quả mong đợi hay diff, kể cả với testcase ẩn (Sheet 9 NO 3)<br>[EVT liên quan] EVT-10, EVT-11, EVT-12 |
 | | 6 | Chỉ số lượt chạy | `problemDetail.console.runMetrics` | `judge.submissions` | `runtime_ms`, `memory_kb` | List | List | - | - | O | `-` | - | Thời gian chạy và bộ nhớ lớn nhất trong các testcase đã chạy [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:368-375]<br>[Nguồn giá trị] Cột `runtime_ms`, `memory_kb` [Nguồn: 02-bd/database/judge-orchestration.md:28-29]. Ô "Beats" của prototype [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:645] **không** đưa vào màn này, xem Câu hỏi mở Q11<br>[EVT liên quan] EVT-10, EVT-11, EVT-12 |
 | | 7 | Khối kết quả dạng văn bản | `problemDetail.console.output` | `judge.submissions` | `compile_error_message` | Label | String | - | - | O | - | - | Với lượt chạy thử: bảng đối chiếu output thực tế và kết quả mong đợi của từng testcase Sample. Với lượt nộp: câu tổng kết và thông báo lỗi biên dịch nếu có [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:376,647-649]<br>[Nguồn giá trị] Cột `compile_error_message` **đã qua bước ánh xạ dòng của `harness`** (F3-11) [Nguồn: 02-bd/database/judge-orchestration.md:24]; phần thuộc mã khung bị lọc bỏ hoàn toàn (F3-12), xem Sheet 9 NO 15<br>[EVT liên quan] EVT-10, EVT-11 |
 | | 8 | Liên kết Xem kết quả chấm | `problemDetail.console.linkFullResult` | - | - | Link | - | - | - | I | - | - | Sang màn `submission_result` của lượt nộp vừa xong [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:379]<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] EVT-16 |
@@ -535,8 +557,8 @@ từ ngoài, không tự gọi API.
 | | 11 | Hướng dẫn khi chưa chạy | `problemDetail.console.emptyHint` | - | - | Label | String | - | - | O | - | - | Câu hướng dẫn khi chưa có lượt chạy nào [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:386-388]<br>[Nguồn giá trị] Nhãn tĩnh i18n, chèn số testcase Sample và số testcase ẩn. **Số testcase ẩn là con số duy nhất được tiết lộ**, không kèm bất kỳ nội dung nào<br>[EVT liên quan] EVT-1 |
 
 [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:99-107,112-152,159-163,166-202,216-227,229-247,250-255,
-258-260,265-285,287-324,327-392; 02-bd/database/problem-bank.md:11-29,37-39,58-60,66-77,86-97,130-139;
-02-bd/database/judge-orchestration.md:12-34,46-57,95-103; 02-bd/database/ai-review.md:36-57]
+258-260,265-285,287-324,327-392; 02-bd/database/problem-bank.md:8-37,57-76,108-129,136-155,189-208,234-247;
+02-bd/database/judge-orchestration.md:12-34,50-61,101-112; 02-bd/database/ai-review.md:35-50]
 
 ---
 
@@ -558,7 +580,7 @@ từ ngoài, không tự gọi API.
 
 ### Khu vực B — Trạng thái chưa chọn bài
 
-**Đã bỏ (owner chốt 2026-10-19).** Màn không còn đường vào trạng thái chưa chọn bài: mục nav Workspace chuyển hướng (Q12) và `/problems/[id]` luôn mang id. Id không mở được thì hiện "Không tìm thấy bài toán." (Sheet 9 NO 2). Bốn item cũ (`problemDetail.emptyState.*`) và widget `workspace-empty-state` bị gỡ; giữ tiêu đề mục để không lệch tham chiếu.
+**Đã bỏ (owner chốt 2026-10-19).** Màn không còn đường vào trạng thái chưa chọn bài: đường dẫn `/workspace/{problemId}` luôn mang id (từ 2026-10-20 mục nav Workspace mở `USR0105`, không còn chuyển hướng, Q12). Id không mở được thì hiện "Không tìm thấy bài toán." (Sheet 9 NO 2). Bốn item cũ (`problemDetail.emptyState.*`) và widget `workspace-empty-state` bị gỡ; giữ tiêu đề mục để không lệch tham chiếu.
 
 ### Khu vực C — Panel thông tin bài toán
 
@@ -582,11 +604,11 @@ từ ngoài, không tự gọi API.
 | | 4 | Nhãn mô hình đang chọn | Điều kiện | [Điều kiện hiển thị] Như NO 1.<br>[Tự động đặt] Đổi ngay khi đổi mô hình ở Khu vực G NO 3, không cần tải lại đề. |
 | | 5 | Nội dung đề | Điều kiện | [Điều kiện hiển thị] Như NO 1. Trong lúc tải hiển thị khung chờ dạng đoạn văn. |
 | | 6 | Câu giải thích mô hình | Điều kiện | [Điều kiện hiển thị] Như NO 1.<br>[Tự động đặt] Đổi nội dung theo mô hình đang chọn: mô hình Bọc hàm hiển thị câu "chỉ viết thân hàm"; mô hình Có hàm main hiển thị câu kèm định dạng `stdin`/`stdout`. |
-| | 7 | Danh sách ví dụ | Điều kiện | [Điều kiện hiển thị] Như NO 1; không có testcase Sample nào đánh dấu ví dụ mẫu thì ẩn cả khối, không để tiêu đề trống. |
+| | 7 | Danh sách ví dụ | Điều kiện | [Điều kiện hiển thị] Như NO 1; bài không có dòng `worked_examples` nào thì ẩn cả khối, không để tiêu đề trống. |
 | | 8 | Dữ liệu vào của ví dụ | Có | - |
 | | 9 | Kết quả của ví dụ | Có | - |
-| | 10 | Giải thích ví dụ | Điều kiện | [Điều kiện hiển thị] Chỉ hiện khi `testcases.explanation_md` của ví dụ có giá trị (Câu hỏi mở Q6, đã chốt 2026-10-18); rỗng thì ẩn. Không tự bịa câu giải thích. |
-| | 11 | Danh sách ràng buộc | Điều kiện | [Điều kiện hiển thị] Như NO 1; phần này nằm trong `statement_md` nên không có trạng thái tải riêng. |
+| | 10 | Giải thích ví dụ | Điều kiện | [Điều kiện hiển thị] Chỉ hiện khi `worked_examples.explanation_md` của ví dụ có giá trị (Câu hỏi mở Q6, đã chốt 2026-10-18, nơi lưu đổi 2026-10-22); rỗng thì ẩn. Không tự bịa câu giải thích. |
+| | 11 | Danh sách ràng buộc | Điều kiện | [Điều kiện hiển thị] Như NO 1; `constraints_md` đi cùng phản hồi `GetProblemForWorkspace` nên không có trạng thái tải riêng; chuỗi rỗng thì không vẽ khối. |
 | | 12 | Khối câu hỏi mở rộng | Điều kiện | [Điều kiện hiển thị] Như NO 11; đề không có mục này thì không vẽ khối. |
 
 ### Khu vực E — Tab Bài nộp
@@ -595,7 +617,7 @@ từ ngoài, không tự gọi API.
 | :--- | --: | :--- | :-: | :--- |
 | Tab Bài nộp | | | | |
 | | 1 | Danh sách lượt nộp | Điều kiện | [Điều kiện hiển thị] Chỉ khi tab đang chọn là "Bài nộp". Trong lúc tải hiển thị khung chờ 4 dòng; chưa nộp lần nào thì hiển thị một câu trống kèm hướng dẫn bấm Submit.<br>[Tự động đặt] Nạp lại sau mỗi lượt nộp vào trạng thái cuối (EVT-12), không cần người dùng làm mới. |
-| | 2 | Kết quả lượt nộp | Có | [Điều kiện hiển thị] Lượt nộp còn đang chấm (`PENDING`, `COMPILING`, `JUDGING`) thì hiển thị nhãn "Đang chấm" thay cho tỉ lệ testcase — cùng quy ước đã dùng ở `problem_list` [Nguồn: 02-bd/screens/users/USR0101_problem_list.md:449]. |
+| | 2 | Kết quả lượt nộp | Có | [Điều kiện hiển thị] Lượt nộp còn đang chấm (`PENDING`, `COMPILING`, `JUDGING`) thì hiển thị nhãn "Đang chấm" thay cho tỉ lệ testcase — cùng quy ước đã dùng ở `problem_list` [Nguồn: 02-bd/screens/users/USR0101_problem_list.md Sheet 6 Khu vực F, item Kết quả lần nộp gần nhất]. |
 | | 3 | Ngôn ngữ | Có | - |
 | | 4 | Thời gian và bộ nhớ | Có | [Điều kiện hiển thị] `NULL` thì hiển thị `-`, không hiển thị `0 ms`. |
 | | 5 | Thời điểm nộp | Có | - |
@@ -617,7 +639,7 @@ từ ngoài, không tự gọi API.
 | Thanh công cụ soạn mã | | | | |
 | | 1 | Nhãn khối soạn mã | Điều kiện | [Điều kiện hiển thị] Chỉ khi đã chọn bài. |
 | | 2 | Chọn ngôn ngữ | Điều kiện | [Điều kiện hiển thị] Đúng ba nút, luôn đủ ba — không ngôn ngữ nào bị ẩn theo bài.<br>[Điều kiện kích hoạt] Không kích hoạt trong lúc đang chấm một lượt nộp.<br>[Tự động đặt] Đổi ngôn ngữ thì mã trong ô soạn mã được thay bằng mã khung mới; không hỏi xác nhận vì mã của cặp cũ vẫn nằm ở bản nháp theo khoá `(problem_id, language, submission_model)` (Câu hỏi mở Q14). |
-| | 3 | Chọn mô hình nộp bài | Điều kiện | [Điều kiện hiển thị] Nút "Bọc hàm" **ẩn hẳn** khi `problems.function_wrapper_supported = false` — trường hợp kiểu dữ liệu của bài vượt lược đồ kiểu của F3, chỉ còn Standard I/O (F3-13, phương án xử lý rủi ro R2) [Nguồn: 01-rd/req/harness.md:29-33]. Khi đó không vẽ nhóm hai nút mà hiển thị một nhãn tĩnh cho biết bài chỉ hỗ trợ Standard I/O.<br>[Điều kiện kích hoạt] Như NO 2.<br>[Tự động đặt] Như NO 2 — đổi mô hình cũng sinh lại mã khung. |
+| | 3 | Chọn mô hình nộp bài | Điều kiện | [Điều kiện hiển thị] Nút "Bọc hàm" **ẩn hẳn** khi `problems.function_wrapper_supported = false` — trường hợp kiểu dữ liệu của bài vượt lược đồ kiểu của F3, chỉ còn Standard I/O (F3-13, phương án xử lý rủi ro R2) [Nguồn: 01-rd/req/harness.md:30-34]. Khi đó không vẽ nhóm hai nút mà hiển thị một nhãn tĩnh cho biết bài chỉ hỗ trợ Standard I/O.<br>[Điều kiện kích hoạt] Như NO 2.<br>[Tự động đặt] Như NO 2 — đổi mô hình cũng sinh lại mã khung. |
 | | 4 | Chọn phương thức nhập mã | Điều kiện | [Điều kiện hiển thị] Chỉ khi đã chọn bài.<br>[Tự động đặt] Đổi từ "Tải file" về "Gõ trực tiếp" thì nạp lại mã khung theo cặp (ngôn ngữ, mô hình) đang chọn [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:606]; đổi theo chiều ngược lại **không** xoá mã đã gõ. Đổi mô hình hoặc ngôn ngữ **không** đặt lại giá trị của mục này [Nguồn: 01-rd/screens/users/USR0102_problem_detail.md:136]. |
 | | 5 | Thông tin vùng soạn mã | Có | [Tự động đặt] Đổi theo phương thức nhập và theo ngôn ngữ đang chọn. |
 
@@ -631,7 +653,7 @@ từ ngoài, không tự gọi API.
 | | 3 | Nút Chọn file | Điều kiện | [Điều kiện hiển thị] Như NO 2. |
 | | 4 | Thẻ file đã tải | Điều kiện | [Điều kiện hiển thị] Chỉ sau khi đã tải lên thành công một file hợp lệ. Lỗi từ chối file hiển thị **ngay trong vùng tải**, không dùng hộp thoại [Nguồn: 01-rd/screens/users/USR0102_problem_detail.md:118]. |
 | | 5 | Nút Xem nội dung | Điều kiện | [Điều kiện hiển thị] Đi kèm NO 4. |
-| | 6 | Trạng thái lưu nháp | Điều kiện | [Điều kiện hiển thị] Chỉ hiện khi cặp (ngôn ngữ, mô hình) đang chọn đã có mã do người học nhập hoặc đã khôi phục từ bản nháp; chưa có thì ẩn [Nguồn: 05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:594-598]. Nhãn phải nói đúng nơi lưu ("trên trình duyệt này"), không hứa lưu ở máy chủ.<br>[Tự động đặt] Trình duyệt chặn hoặc đầy `localStorage` thì vẫn soạn được, mã chỉ giữ trong phiên (dòng 118-125). |
+| | 6 | Trạng thái lưu nháp | Điều kiện | [Điều kiện hiển thị] Chỉ hiện khi cặp (ngôn ngữ, mô hình) đang chọn đã có mã do người học nhập hoặc đã khôi phục từ bản nháp; chưa có thì ẩn [Nguồn: 05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:595-597]. Nhãn phải nói đúng nơi lưu ("trên trình duyệt này"), không hứa lưu ở máy chủ.<br>[Tự động đặt] Trình duyệt chặn hoặc đầy `localStorage` thì vẫn soạn được, mã chỉ giữ trong phiên (dòng 118-125). |
 | | 7 | Giới hạn thời gian và bộ nhớ | Điều kiện | [Điều kiện hiển thị] Không lấy được hệ số ngôn ngữ thì hiển thị giới hạn cơ sở của bài kèm chú thích là giá trị chưa nhân hệ số, thay vì ẩn hẳn.<br>[Tự động đặt] Tính lại khi đổi ngôn ngữ. |
 
 ### Khu vực I — Bảng kết quả
@@ -639,7 +661,7 @@ từ ngoài, không tự gọi API.
 | Khu vực | NO | Tên item | Hiển thị | Ghi chú |
 | :--- | --: | :--- | :-: | :--- |
 | Bảng kết quả | | | | |
-| | 1 | Dải tab bảng kết quả | Điều kiện | [Điều kiện hiển thị] Chỉ khi đã chọn bài.<br>[Tự động đặt] Tự chuyển sang tab "Kết quả" ngay khi bấm Run Code hoặc Submit [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:640-641]. |
+| | 1 | Dải tab bảng kết quả | Điều kiện | [Điều kiện hiển thị] Chỉ khi đã chọn bài.<br>[Tự động đặt] Tự chuyển tab theo thao tác (Run Code sang "Testcase", Submit sang "Kết quả") và mở thêm màn phụ liệt kê từng testcase ngay khi bấm (owner 2026-10-21) [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:640-641; 05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:289-313,315-340]. |
 | | 2 | Nhãn kết quả tổng hợp | Điều kiện | [Điều kiện hiển thị] Ẩn khi chưa có lượt chạy nào trong phiên.<br>[Tự động đặt] Cập nhật theo từng thông điệp thời gian thực (EVT-12), không chờ tới khi chấm xong. |
 | | 3 | Tab chọn testcase mẫu | Điều kiện | [Điều kiện hiển thị] Chỉ khi tab đang chọn là "Testcase". Bài không có testcase Sample nào thì hiển thị một câu trống thay cho dải nút. |
 | | 4 | Nội dung testcase mẫu | Điều kiện | [Điều kiện hiển thị] Như NO 3. |
@@ -652,7 +674,7 @@ từ ngoài, không tự gọi API.
 | | 11 | Hướng dẫn khi chưa chạy | Điều kiện | [Điều kiện hiển thị] Chỉ khi tab đang chọn là "Kết quả" và chưa có lượt chạy nào trong phiên [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:386]. |
 
 [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:97,112,377,386,606,608,609,640-641;
-02-bd/database/problem-bank.md:20; 01-rd/req/harness.md:29-33;
+02-bd/database/problem-bank.md:21; 01-rd/req/harness.md:30-34;
 01-rd/screens/users/USR0102_problem_detail.md:118,129]
 
 ---
@@ -672,18 +694,20 @@ từ ngoài, không tự gọi API.
 | 7 | `ProblemWorkspaceDto` | `stdinFormatMd`, `stdoutFormatMd` | String | `problem.problem_specs` | `stdin_format_md`, `stdout_format_md` | Tab Đề bài — câu giải thích mô hình | Điều kiện | [Chuyển đổi] Chỉ hiển thị khi mô hình đang chọn là Standard I/O. |
 | 8 | `ProblemWorkspaceDto` | `acRate` | Number | `problem.problem_stats` | `ac_rate` | Chân panel — AC rate | Có | [Nguồn] Read model<br>[Chuyển đổi] Không có dòng read model thì trả `null`, màn hiển thị `-`. |
 | 9 | `ProblemWorkspaceDto` | `bookmarked` | Boolean | `problem.bookmarks` | `user_id`, `problem_id` | Chân panel — nút Lưu bài | Có | [Nguồn] Tính theo người dùng đăng nhập; endpoint **không** nhận `user_id`. |
-| 10 | `StarterCodeDto` | `language`, `submissionModel`, `sourceCode` | Enum, Enum, String | - | - | Ô soạn mã | Có | [Nguồn] Phản hồi của `GetStarterCode`<br>[Chuyển đổi] Sinh từ `function_signatures` và `problem_specs` bởi `harness`; thuật toán sinh mã thuộc `02-bd/architecture/harness.md`, không mô tả ở đây. |
-| 11 | `SampleTestcaseDto` | `order`, `input`, `expectedOutput` | Number, String, String | `problem.testcases` | `testcase_order` suy từ thứ tự, `input_inline`, `expected_output_inline` | Tab Testcase, ví dụ trong đề | Có | [Nguồn] Phản hồi của `ListSampleTestcases` — **chỉ** dòng `visibility = SAMPLE`.<br>[Chuyển đổi] Ở mô hình Bọc hàm, tách input theo tên tham số trong `function_signatures.parameters`. |
+| 10 | `StarterCodeDto` | `language`, `submissionModel`, `sourceCode` | Enum, Enum, String | - | - | Ô soạn mã | Có | [Nguồn] Phản hồi của `GetStarterCode`<br>[Chuyển đổi] Sinh từ `problem_specs` (gồm chữ ký hàm: `function_name`, `return_type`, `parameters`, `name_overrides`) bởi `harness`; thuật toán sinh mã thuộc `02-bd/architecture/harness.md`, không mô tả ở đây. |
+| 11 | `SampleTestcaseDto` | `order`, `input`, `expectedOutput` | Number, String, String | `problem.testcases` | `testcase_order` suy từ thứ tự, `input_inline`, `expected_output_inline` | Tab Testcase | Có | [Nguồn] Phản hồi của `ListSampleTestcases` — **chỉ** dòng `visibility = SAMPLE`.<br>[Chuyển đổi] Ở mô hình Bọc hàm, tách input theo tên tham số trong `problem_specs.parameters`. |
 | 12 | `ExecutionLimitsDto` | `effectiveTimeLimitMs`, `effectiveMemoryLimitMb` | Number, Number | `problem.problems`, `judge.language_configs` | `time_limit_ms`, `memory_limit_mb`, `time_limit_multiplier`, `memory_limit_multiplier` | Chân vùng soạn mã — giới hạn | Có | [Nguồn] Phản hồi của `GetEffectiveExecutionLimits`<br>[Chuyển đổi] Nhân hệ số theo ngôn ngữ ở phía máy chủ; màn không tự nhân để tránh hai nơi tính lệch nhau. |
 | 13 | `MySubmissionSummaryDto` | `submissionId` | UUID | `judge.submissions` | `id` | - | Không | [Đích] Tham số điều hướng sang `submission_result`, `solution_review`, `mock_interview`. |
-| 14 | `MySubmissionSummaryDto` | `status`, `passedTestcaseCount`, `totalTestcaseCount` | Enum, Number, Number | `judge.submissions` | `status`, `passed_testcase_count`, `total_testcase_count` | Tab Bài nộp — kết quả | Có | [Chuyển đổi] Ghép chuỗi hiển thị ở tầng giao diện; DTO trả số thô, không trả câu đã ghép — cùng quy ước với `problem_list` [Nguồn: 02-bd/screens/users/USR0101_problem_list.md:490]. |
+| 14 | `MySubmissionSummaryDto` | `status`, `passedTestcaseCount`, `totalTestcaseCount` | Enum, Number, Number | `judge.submissions` | `status`, `passed_testcase_count`, `total_testcase_count` | Tab Bài nộp — kết quả | Có | [Chuyển đổi] Ghép chuỗi hiển thị ở tầng giao diện; DTO trả số thô, không trả câu đã ghép — cùng quy ước với `problem_list` [Nguồn: 02-bd/screens/users/USR0101_problem_list.md Sheet 7.1, DTO `InProgressProblemDto`]. |
 | 15 | `MySubmissionSummaryDto` | `language`, `runtimeMs`, `memoryKb`, `submittedAt` | Enum, Number, Number, Date | `judge.submissions` | `language`, `runtime_ms`, `memory_kb`, `submitted_at` | Tab Bài nộp — các cột còn lại | Có | - |
 | 16 | `SubmissionTicketDto` | `submissionId`, `status` | UUID, Enum | `judge.submissions` | `id`, `status` | Nhãn kết quả tổng hợp | Có | [Nguồn] Phản hồi của `CreateSubmission`, trả **ngay** với `status = PENDING`, không chờ chấm (F4-01).<br>[Đích] `submissionId` dùng làm khoá kênh thời gian thực. |
 | 17 | `SubmissionProgressDto` | `submissionId`, `status`, `testcaseOrder`, `testcaseVerdict`, `passedCount`, `totalCount` | UUID, Enum, Number, Enum, Number, Number | `judge.submissions`, `judge.submission_testcase_results` | `status`, `testcase_order`, `verdict`, `passed_testcase_count`, `total_testcase_count` | Dải ô trạng thái, nhãn kết quả | Có | [Nguồn] Thông điệp đẩy trên kênh thời gian thực theo `submissionId` (F4-08).<br>[Chuyển đổi] **Không** chứa dữ liệu vào, kết quả mong đợi, output thực tế hay diff của testcase ẩn — chỉ thứ tự và trạng thái (Sheet 9 NO 3). |
 | 18 | `SubmissionProgressDto` | `compileErrorMessage` | String | `judge.submissions` | `compile_error_message` | Khối kết quả dạng văn bản | Điều kiện | [Chuyển đổi] Chỉ có giá trị khi `status = COMPILE_ERROR`, và **đã qua** bước ánh xạ dòng của `harness` (F3-11), phần thuộc mã khung đã bị lọc bỏ (F3-12). |
 | 19 | `SampleRunResultDto` | `cases` | List | `problem.testcases` | - | Khối kết quả dạng văn bản, dải ô trạng thái | Có | [Nguồn] Phản hồi của `RunSampleTestcases`<br>[Chuyển đổi] Mỗi phần tử gồm `order`, `verdict`, `actualOutput`, `expectedOutput`, `runtimeMs`. Được phép trả kết quả mong đợi vì **toàn bộ là testcase Sample công khai**. |
 | 20 | `SampleRunResultDto` | `compileErrorMessage` | String | - | - | Khối kết quả dạng văn bản | Điều kiện | [Chuyển đổi] Như NO 18. Lượt chạy thử **không** tạo dòng `submissions`, xem Câu hỏi mở Q10. |
-| 21 | `SolutionReviewQuickInsightDto` | `submissionId`, `timeComplexity`, `spaceComplexity`, `highlights` | UUID, String, String, List\<String\> | `ai.solution_reviews` | `submission_id`, `result_json` | Tab Solution Review | Điều kiện | [Nguồn] Lời gọi **riêng** `GetMySolutionReviewQuickInsight` sang `ai-review`, không gộp vào lời gọi đề bài — để màn vẫn chạy đủ khi F5 chết (`CLAUDE.md` — AI suy giảm nhẹ nhàng), cùng nguyên tắc đã áp ở `problem_list` [Nguồn: 02-bd/screens/users/USR0101_problem_list.md:482]. |
+| 21 | `SolutionReviewQuickInsightDto` | `submissionId`, `timeComplexity`, `spaceComplexity`, `highlights` | UUID, String, String, List\<String\> | `ai.solution_reviews` | `submission_id`, `result_json` | Tab Solution Review | Điều kiện | [Nguồn] Lời gọi **riêng** `GetMySolutionReviewQuickInsight` sang `ai-review`, không gộp vào lời gọi đề bài — để màn vẫn chạy đủ khi F5 chết (`CLAUDE.md` — AI suy giảm nhẹ nhàng), cùng nguyên tắc đã áp ở `problem_list` [Nguồn: 02-bd/screens/users/USR0101_problem_list.md Sheet 6 Khu vực D, item Nhãn đã có Solution Review]. |
+| 22 | `ProblemWorkspaceDto` | `constraintsMd` | String | `problem.problems` | `constraints_md` | Tab Đề bài — danh sách ràng buộc | Có | [Nguồn] Phản hồi của `GetProblemForWorkspace`<br>[Chuyển đổi] Kết xuất Markdown ở phía giao diện; chuỗi rỗng thì không vẽ khối. Thêm 2026-10-22 (PB-03). |
+| 23 | `WorkedExampleDto` | `order`, `input`, `output`, `explanationMd` | Number, String, String, String | `problem.worked_examples` | `position`, `input`, `output`, `explanation_md` | Tab Đề bài — danh sách ví dụ | Có | [Nguồn] trả cùng `GetProblemForWorkspace`, một lần tải tab Đề bài (đã chốt, Câu hỏi mở Q18)<br>[Chuyển đổi] `explanationMd` rỗng thì ẩn dòng giải thích; danh sách rỗng thì ẩn cả khối. Thêm 2026-10-22 (PB-08). |
 
 ### 7.2 Truy cập bảng dữ liệu (13)
 
@@ -692,9 +716,9 @@ từ ngoài, không tự gọi API.
 | 1 | Bài toán | `problem.problems` | `ProblemRepository` | R | Đọc đề bài, `level_id` của độ khó, giới hạn cơ sở, cờ mô hình | `GetProblemForWorkspace`: R |
 | 2 | Chủ đề | `problem.topics` | `TopicRepository` | R | Nhãn chủ đề trên tab Đề bài | `GetProblemForWorkspace`: R |
 | 3 | Gán chủ đề cho bài | `problem.problem_topics` | `ProblemTopicRepository` | R | Nối bài với chủ đề | `GetProblemForWorkspace`: R |
-| 4 | Đặc tả bài toán | `problem.problem_specs` | `ProblemSpecRepository` | R | Định dạng `stdin`/`stdout` cho mô hình Standard I/O | `GetProblemForWorkspace`: R<br>`GetStarterCode`: R |
-| 5 | Chữ ký hàm | `problem.function_signatures` | `FunctionSignatureRepository` | R | Đầu vào sinh mã khung và tách tên tham số của testcase mẫu | `GetStarterCode`: R<br>`ListSampleTestcases`: R |
-| 6 | Testcase | `problem.testcases` | `TestcaseRepository` | R | Đọc **chỉ** testcase `visibility = SAMPLE` cho tab Testcase, ví dụ trong đề và lượt chạy thử | `ListSampleTestcases`: R<br>`RunSampleTestcases`: R |
+| 4 | Đặc tả bài toán | `problem.problem_specs` | `ProblemSpecRepository` | R | Định dạng `stdin`/`stdout` cho mô hình Standard I/O; chữ ký hàm (đã gộp từ `function_signatures`) làm đầu vào sinh mã khung và tách tên tham số của testcase mẫu | `GetProblemForWorkspace`: R<br>`GetStarterCode`: R |
+| 5 | Ví dụ mẫu | `problem.worked_examples` | `WorkedExampleRepository` `[Suy luận]` tên do BD đề xuất | R | Đọc ví dụ mẫu kèm lời giải thích cho tab Đề bài | `GetProblemForWorkspace`: R, ví dụ mẫu trả cùng lần tải đề (đã chốt, xem Câu hỏi mở Q18) |
+| 6 | Testcase | `problem.testcases` | `TestcaseRepository` | R | Đọc **chỉ** testcase `visibility = SAMPLE` cho tab Testcase và lượt chạy thử (ví dụ trong đề lấy từ `worked_examples`, không từ đây) | `ListSampleTestcases`: R<br>`RunSampleTestcases`: R |
 | 7 | Thống kê bài toán | `problem.problem_stats` | `ProblemStatsRepository` | R | Đọc `ac_rate` cho chân panel | `GetProblemForWorkspace`: R |
 | 8 | Bài đã lưu | `problem.bookmarks` | `BookmarkRepository` | C, R, D | Đọc trạng thái đã lưu; tạo dòng khi lưu, xoá dòng khi bỏ lưu | `GetProblemForWorkspace`: R<br>`ToggleMyProblemBookmark`: C, D |
 | 9 | Bài nộp | `judge.submissions` | `SubmissionRepository` (module `judge-orchestration`) | C, R | Tạo lượt nộp mới; đọc lịch sử nộp bài của chính người học cho bài này | `CreateSubmission`: C<br>`ListMySubmissionsForProblem`: R<br>`ListMyUnsolvedRecentProblems`: R |
@@ -716,7 +740,7 @@ endpoint của module sở hữu chứ không qua repository của `problem-bank
 | NO | Endpoint (tên nghiệp vụ) | Mục đích | BC sở hữu |
 | --: | :--- | :--- | :--- |
 | 1 | `GetProblemForWorkspace` | Tải đề bài, độ khó, chủ đề, giới hạn cơ sở, cờ mô hình, AC rate và trạng thái đã lưu của một bài đã xuất bản | `problem-bank` |
-| 2 | `ListSampleTestcases` | Tải toàn bộ testcase `SAMPLE` của bài để hiển thị ví dụ và tab Testcase | `problem-bank` |
+| 2 | `ListSampleTestcases` | Tải toàn bộ testcase `SAMPLE` của bài để hiển thị tab Testcase (ví dụ trong đề đọc từ `worked_examples`, Câu hỏi mở Q18) | `problem-bank` |
 | 3 | `ToggleMyProblemBookmark` | Bật hoặc tắt đánh dấu lưu bài của chính người dùng | `problem-bank` |
 | 4 | `GetStarterCode` | Sinh mã khung cho cặp (ngôn ngữ, mô hình) đang chọn của một bài | `harness` |
 | 5 | `GetEffectiveExecutionLimits` | Trả giới hạn thời gian và bộ nhớ đã nhân hệ số của ngôn ngữ đang chọn | `judge-orchestration` |
@@ -724,12 +748,12 @@ endpoint của module sở hữu chứ không qua repository của `problem-bank
 | 7 | `CreateSubmission` | Tạo một lượt nộp và trả `submissionId` ngay, không chờ kết quả chấm (F4-01) | `judge-orchestration` |
 | 8 | `SubscribeSubmissionProgress` | Kênh thời gian thực đẩy trạng thái từng testcase theo `submissionId` (F4-08) | `judge-orchestration` |
 | 9 | `ListMySubmissionsForProblem` | Trả các lượt nộp gần nhất của chính người dùng cho chính bài đang mở | `judge-orchestration` |
-| 10 | `ListMyUnsolvedRecentProblems` | Trả bài nộp gần nhất chưa đạt `ACCEPTED`, dùng cho thẻ bài đang làm dở và cho chuyển hướng của mục nav Workspace (Sheet 3, Q12) — **dùng lại** endpoint của `problem_list` [Nguồn: 02-bd/screens/users/USR0101_problem_list.md:522] | `judge-orchestration` |
+| 10 | ~~`ListMyUnsolvedRecentProblems`~~ (ĐÃ BỎ khỏi màn này 2026-10-20, giữ số NO) | Trước đây dùng cho thẻ bài đang làm dở và chuyển hướng của mục nav Workspace (Q12). Màn này không còn trạng thái chưa chọn bài và mục nav nay mở `USR0105`, nơi dùng endpoint này [Nguồn: 02-bd/screens/users/USR0101_problem_list.md Sheet 7.3 NO 6; 02-bd/screens/users/USR0105_workspace_home.md:176] | `judge-orchestration` |
 | 11 | `GetMySolutionReviewQuickInsight` | Trả tóm tắt nhanh báo cáo phân tích bài giải của chính người dùng cho bài này | `ai-review` |
 
 Ghi chú ranh giới:
 - **Tiền tố `My` nghĩa là phạm vi khoá cứng theo người dùng đăng nhập**, không nhận `user_id` làm tham số.
-  Quy ước kế thừa từ `problem_list` [Nguồn: 02-bd/screens/users/USR0101_problem_list.md:530-531] và áp cho
+  Quy ước kế thừa từ `problem_list` [Nguồn: 02-bd/screens/users/USR0101_problem_list.md Sheet 7.3, phần ghi chú ranh giới] và áp cho
   cả `ListMySubmissionsForProblem`, `ToggleMyProblemBookmark`, `GetMySolutionReviewQuickInsight`.
 - **Không dùng lại tên nghiệp vụ của màn quản trị.** `GetProblemForWorkspace` (A1) khác hẳn endpoint đọc
   bài của `problem_management` (A2/A3) — khác phạm vi dữ liệu (chỉ bài đã xuất bản), khác tập trường
@@ -740,8 +764,8 @@ Ghi chú ranh giới:
 - **Chỉ một kênh thời gian thực**, khoá theo `submissionId` — không có kênh theo `problem_id` hay theo
   người dùng [Nguồn: 02-bd/architecture/judge-orchestration.md:33].
 
-[Nguồn: 02-bd/database/problem-bank.md:11-29,37-39,58-60,66-77,86-97,130-139;
-02-bd/database/judge-orchestration.md:12-34,46-57,95-103,124; 02-bd/database/ai-review.md:36-57]
+[Nguồn: 02-bd/database/problem-bank.md:8-37,57-76,108-129,136-155,189-208,234-247;
+02-bd/database/judge-orchestration.md:12-34,50-61,101-112,197; 02-bd/database/ai-review.md:35-50]
 
 ---
 
@@ -749,10 +773,10 @@ Ghi chú ranh giới:
 
 > Bộ thẻ và quy ước cột `Chuyển màn`: `02-bd/_rules/bd-template-9sheet.md` mục 2, 3.
 >
-> **Trạng thái ghi vào URL ở màn này:** `problem_id` nằm trên đường dẫn; ba giá trị `lang`, `model`, `tab`
+> **Trạng thái ghi vào URL ở màn này:** `problem_id` nằm trên đường dẫn `/workspace/{problemId}`; ba giá trị `lang`, `model`, `tab`
 > nằm ở tham số truy vấn, dùng cơ chế thay thế mục lịch sử (replace) để không sinh một mục lịch sử cho mỗi
 > lần bấm đổi tab. Lý do giữ đúng tinh thần đã chốt ở `problem_list`
-> [Nguồn: 02-bd/screens/users/USR0101_problem_list.md:542-547]: một đường dẫn phải mở lại được đúng ngữ
+> [Nguồn: 02-bd/screens/users/USR0101_problem_list.md Sheet 8, ghi chú "Quy ước trạng thái lọc của khu Người học"]: một đường dẫn phải mở lại được đúng ngữ
 > cảnh cũ và chia sẻ được. **Phương thức nhập mã và mã nguồn không ghi vào URL** — mã nguồn là dữ liệu
 > lớn và riêng tư `[SoT: Suy luận]`.
 >
@@ -763,7 +787,7 @@ Ghi chú ranh giới:
 
 | NO | Loại | Sự kiện | Chi tiết | Chuyển màn | Gọi API | Tên xử lý | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :-: | :--- | :--- |
-| 1 | Màn hình | Khởi tạo màn | Vào màn, đọc `problem_id` trên đường dẫn và ba tham số `lang`, `model`, `tab`. | Không | Có | `GetProblemForWorkspace`, `GetStarterCode`, `ListSampleTestcases`, `GetEffectiveExecutionLimits`, `ListMySubmissionsForProblem`, `GetMySolutionReviewQuickInsight`, `ListMyUnsolvedRecentProblems` | [Các bước]<br>1. Kiểm tra người dùng đã đăng nhập.<br>2. Không có `problem_id` (và không đi qua chuyển hướng của mục nav Workspace) thì vào trạng thái chưa chọn bài, chỉ gọi `ListMyUnsolvedRecentProblems` để dựng thẻ bài đang làm dở, dừng ở đây.<br>3. Chuẩn hoá `lang`, `model`, `tab`; giá trị lạ thì bỏ qua và dùng mặc định.<br>4. Hiển thị khung chờ cho panel đề bài, vùng soạn mã và bảng kết quả.<br>5. Tải song song các nhóm dữ liệu; `GetStarterCode` chờ `GetProblemForWorkspace` xong vì cần biết `functionWrapperSupported` mới chốt được mô hình.<br>6. Đọc bản nháp ở `localStorage` theo khoá `(problem_id, language, submission_model)`; có thì dùng thay cho mã khung, không có thì dùng mã khung [Nguồn: 05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:156-168].<br>[Khi thành công] Hiển thị đủ ba tab panel, mã khung trong ô soạn mã, testcase mẫu và hướng dẫn ở bảng kết quả.<br>[Khi lỗi] Lỗi ở `GetProblemForWorkspace` thì hiển thị lỗi toàn màn kèm nút thử lại — không có đề bài thì không làm gì được. Lỗi ở `ai-review` thì **ẩn tab Solution Review, không báo lỗi**. Lỗi ở `ListMySubmissionsForProblem` thì tab Bài nộp hiển thị lỗi riêng kèm nút thử lại, hai tab còn lại vẫn dùng được. Lỗi ở `GetEffectiveExecutionLimits` thì hiển thị giới hạn cơ sở chưa nhân hệ số. Vùng soạn mã và nút Submit **không bao giờ** bị chặn vì một module phụ chết. |
+| 1 | Màn hình | Khởi tạo màn | Vào màn, đọc `problem_id` trên đường dẫn và ba tham số `lang`, `model`, `tab`. | Không | Có | `GetProblemForWorkspace`, `GetStarterCode`, `ListSampleTestcases`, `GetEffectiveExecutionLimits`, `ListMySubmissionsForProblem`, `GetMySolutionReviewQuickInsight` | [Các bước]<br>1. Kiểm tra người dùng đã đăng nhập.<br>2. Đọc `problem_id` từ đường dẫn `/workspace/{problemId}`; id không mở được thì hiện "Không tìm thấy bài toán." (Sheet 9 NO 2) và dừng. Trạng thái chưa chọn bài và thẻ bài đang làm dở không còn ở màn này (thuộc `USR0105`, 2026-10-20).<br>3. Chuẩn hoá `lang`, `model`, `tab`; giá trị lạ thì bỏ qua và dùng mặc định.<br>4. Hiển thị khung chờ cho panel đề bài, vùng soạn mã và bảng kết quả.<br>5. Tải song song các nhóm dữ liệu; `GetStarterCode` chờ `GetProblemForWorkspace` xong vì cần biết `functionWrapperSupported` mới chốt được mô hình.<br>6. Đọc bản nháp ở `localStorage` theo khoá `(problem_id, language, submission_model)`; có thì dùng thay cho mã khung, không có thì dùng mã khung [Nguồn: 05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:156-166].<br>[Khi thành công] Hiển thị đủ ba tab panel, mã khung trong ô soạn mã, testcase mẫu và hướng dẫn ở bảng kết quả.<br>[Khi lỗi] Lỗi ở `GetProblemForWorkspace` thì hiển thị lỗi toàn màn kèm nút thử lại — không có đề bài thì không làm gì được. Lỗi ở `ai-review` thì **ẩn tab Solution Review, không báo lỗi**. Lỗi ở `ListMySubmissionsForProblem` thì tab Bài nộp hiển thị lỗi riêng kèm nút thử lại, hai tab còn lại vẫn dùng được. Lỗi ở `GetEffectiveExecutionLimits` thì hiển thị giới hạn cơ sở chưa nhân hệ số. Vùng soạn mã và nút Submit **không bao giờ** bị chặn vì một module phụ chết. |
 | 2 | ~~Liên kết~~ | ~~Chọn bài ở trạng thái chưa chọn bài~~ (ĐÃ BỎ 2026-10-19, giữ số EVT; Khu vực B đã bỏ) | Bấm nút "Tiếp tục" ở thẻ bài đang làm dở. | Không | Có | Như EVT-1 | [Các bước]<br>1. Ghi `problem_id` vào đường dẫn bằng cơ chế thay thế.<br>2. Chạy lại toàn bộ EVT-1 cho bài được chọn.<br>[Khi thành công] Màn chuyển từ trạng thái trống sang bố cục hai cột. Không rời màn nên **không hỏi xác nhận** — chưa có mã nào để mất. |
 | 3 | Nút | Chuyển tab panel thông tin | Bấm một trong ba tab Đề bài / Bài nộp / Solution Review. | Không | Điều kiện | `ListMySubmissionsForProblem` | [Các bước]<br>1. Cập nhật tham số URL `tab` bằng cơ chế thay thế.<br>2. Tab "Bài nộp" mà dữ liệu đã cũ hơn lượt nộp gần nhất thì tải lại; hai tab còn lại dùng dữ liệu đã tải ở EVT-1.<br>[Khi thành công] Nội dung panel đổi, mã trong ô soạn mã và kết quả ở bảng dưới **không đổi**.<br>[Khi lỗi] Hiển thị lỗi trong phạm vi panel, giữ nguyên tab đang chọn. |
 | 4 | Nút | Đổi ngôn ngữ | Bấm một trong ba tab Java / C++ / Python. | Không | Có | `GetStarterCode`, `GetEffectiveExecutionLimits` | [Các bước]<br>1. Không hỏi xác nhận ghi đè (Câu hỏi mở Q14): mã của cặp cũ nằm ở bản nháp riêng theo khoá `(problem_id, language, submission_model)`.<br>2. Cập nhật tham số URL `lang` và ghi ngôn ngữ vào `algoprep-workspace-prefs` (Câu hỏi mở Q9).<br>3. Khôi phục bản nháp của cặp mới nếu có, không có thì sinh lại mã khung cho cặp (ngôn ngữ mới, mô hình đang chọn) và tính lại giới hạn hiệu lực.<br>[Khi thành công] Ô soạn mã, nhãn thông tin và dòng giới hạn cập nhật.<br>[Khi lỗi] Không sinh được mã khung thì giữ nguyên ngôn ngữ cũ và hiển thị toast lỗi. |
@@ -772,23 +796,23 @@ Ghi chú ranh giới:
 | 7 | Nhập liệu | Soạn mã trong trình soạn thảo | Gõ hoặc dán mã vào ô soạn mã. | Không | Không | - | [Các bước]<br>1. Cập nhật trạng thái mã ở phía trình duyệt.<br>2. Ghi mã vào `localStorage` theo khoá `(problem_id, language, submission_model)` [Nguồn: 05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:210-220].<br>3. Không đánh dấu "chưa nộp" vì không còn hộp xác nhận rời màn (EVT-21 đã bỏ).<br>[Khi thành công] Số dòng và nhãn thông tin cập nhật, nhãn "Đã lưu trên trình duyệt này" hiện ở chân vùng soạn mã. **Không gọi máy chủ theo từng phím** — mã chỉ đi lên máy chủ khi bấm Run Code hoặc Submit. Ghi `localStorage` thất bại thì bỏ qua, không báo lỗi, vẫn soạn được. |
 | 8 | Nhập liệu | Tải file mã nguồn lên | Kéo-thả hoặc chọn một file. | Không | Không | - | [Các bước]<br>1. Kiểm tra phần mở rộng đúng ngôn ngữ đang chọn và kích thước tối đa 64 KB (Sheet 9 NO 5, NO 6).<br>2. Đọc nội dung file ở phía trình duyệt, nạp vào cùng trường mã nguồn của luồng nộp bài.<br>[Khi thành công] Hiện thẻ file đã tải kèm tên và kích thước.<br>[Khi lỗi] Hiển thị toast lỗi (một toast cho lỗi đầu tiên), viền vùng tải đổi sang đỏ, không dùng hộp thoại; giữ nguyên file đã tải trước đó nếu có. |
 | 9 | Nút | Xem nội dung file đã tải | Bấm "Xem nội dung". | Không | Không | - | [Các bước]<br>1. Hiển thị nội dung file ở chế độ chỉ đọc trong chính vùng soạn mã.<br>[Khi thành công] Người học đối chiếu được nội dung trước khi nộp. Không đổi phương thức nhập mã. |
-| 10 | Nút | Chạy thử với testcase mẫu | Bấm "Run Code". | Không | Có | `RunSampleTestcases` | [Các bước]<br>1. Kiểm tra mã không rỗng và không quá 64 KB (đo bằng byte, Sheet 9 NO 8); vượt thì hiện toast lỗi và dừng, không gửi [Nguồn: 05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:258-273].<br>2. Chuyển bảng kết quả sang tab "Kết quả", hiển thị trạng thái đang chạy.<br>3. Gửi mã, ngôn ngữ và mô hình đang chọn lên máy chủ.<br>[Khi thành công] Hiển thị dải ô trạng thái từng testcase Sample, chỉ số thời gian và bộ nhớ, và bảng đối chiếu output thực tế với kết quả mong đợi. **Không tạo dòng `submissions` nào** (Câu hỏi mở Q10, chốt 2026-10-18): kết quả chỉ trả trong lời gọi đồng bộ và không lưu. **Không ghi nhận vào tiến độ** (F4-02) [Nguồn: 01-rd/req/judge-orchestration.md:16] — tab "Bài nộp" không đổi, dải chỉ số ở `my_progress` không đổi. Chạy xong thì hiện một toast thành công nêu số testcase mẫu đã chạy [Nguồn: 05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:300-302].<br>[Khi lỗi] Lỗi biên dịch thì nội dung lỗi đã ánh xạ về dòng của người học (F3-11) hiển thị trong bảng kết quả (là nội dung kết quả chấm, không phải thông báo thao tác); lỗi hệ thống thì hiển thị toast lỗi, nút Run Code dùng lại được để chạy lại. |
+| 10 | Nút | Chạy thử với testcase mẫu | Bấm "Run Code". | Không | Có | `RunSampleTestcases` | [Các bước]<br>1. Kiểm tra mã không rỗng và không quá 64 KB (đo bằng byte, Sheet 9 NO 8); vượt thì hiện toast lỗi và dừng, không gửi [Nguồn: 05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:258-273].<br>2. Chuyển bảng kết quả sang tab "Kết quả", hiển thị trạng thái đang chạy.<br>3. Gửi mã, ngôn ngữ và mô hình đang chọn lên máy chủ.<br>[Khi thành công] Hiển thị dải ô trạng thái từng testcase Sample, chỉ số thời gian và bộ nhớ, và bảng đối chiếu output thực tế với kết quả mong đợi. **Không tạo dòng `submissions` nào** (Câu hỏi mở Q10, chốt 2026-10-18): kết quả chỉ trả trong lời gọi đồng bộ và không lưu. **Không ghi nhận vào tiến độ** (F4-02) [Nguồn: 01-rd/req/judge-orchestration.md:16] — tab "Bài nộp" không đổi, dải chỉ số ở `my_progress` không đổi. Chạy xong thì hiện một toast thành công nêu số testcase mẫu đã chạy [Nguồn: 05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:300-304].<br>[Khi lỗi] Lỗi biên dịch thì nội dung lỗi đã ánh xạ về dòng của người học (F3-11) hiển thị trong bảng kết quả (là nội dung kết quả chấm, không phải thông báo thao tác); lỗi hệ thống thì hiển thị toast lỗi, nút Run Code dùng lại được để chạy lại. |
 | 11 | Nút | Nộp bài | Bấm "Submit". | Không | Có | `CreateSubmission` | [Các bước]<br>1. Kiểm tra mã không rỗng, không quá 64 KB (vượt thì toast lỗi và dừng) và chưa vượt giới hạn số lượt nộp mỗi giờ (Sheet 9 NO 10).<br>2. Gửi mã, ngôn ngữ, mô hình và phương thức nhập mã lên máy chủ.<br>3. Nhận `submissionId` ngay, **không chờ kết quả chấm** (F4-01) [Nguồn: 01-rd/req/judge-orchestration.md:10-11].<br>4. Chuyển bảng kết quả sang tab "Kết quả", mở kênh thời gian thực theo `submissionId` (EVT-12).<br>[Khi thành công] Nhãn kết quả hiển thị "Đang chờ", dải ô trạng thái dựng sẵn đủ số testcase ở trạng thái chờ.<br>[Khi lỗi] Vượt giới hạn số lượt nộp thì không tạo lượt nộp và hiển thị toast lỗi. Lỗi mạng thì hiển thị toast lỗi, giữ nguyên mã, cho nộp lại — **không** tự nộp lại để tránh tạo hai lượt nộp trùng. |
-| 12 | Màn hình | Nhận cập nhật trạng thái theo thời gian thực | Kênh theo `submissionId` đẩy về một thông điệp trạng thái. | Không | Có | `SubscribeSubmissionProgress` | [Các bước]<br>1. Nhận thông điệp, đối chiếu `submissionId` với lượt nộp đang theo dõi; lệch thì bỏ qua.<br>2. Tô ô trạng thái của testcase tương ứng theo thứ tự.<br>3. Cập nhật nhãn kết quả tổng hợp và số testcase đạt trên tổng.<br>4. Thông điệp mang một trong bảy trạng thái cuối thì đóng kênh, nạp lại tab "Bài nộp", và hiển thị các liên kết đi tiếp.<br>[Khi thành công] Người học thấy tiến trình chấm chạy dần, **không dừng ở testcase hỏng đầu tiên** (`DEC-2026-0831-partial-score-testcase-ratio`). Khi nhận trạng thái cuối thì hiện một toast kết quả: Accepted là toast thành công, kết quả khác là toast lỗi kèm số testcase đạt trên tổng [Nguồn: 05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:321-326].<br>[Khi lỗi] Mất kết nối thì thử nối lại vài lần; vẫn không được thì chuyển sang hỏi lại trạng thái theo chu kỳ và hiển thị một dòng nhắc rằng cập nhật đang chậm. **Không** kết luận bài trượt khi chỉ mất kênh. |
+| 12 | Màn hình | Nhận cập nhật trạng thái theo thời gian thực | Kênh theo `submissionId` đẩy về một thông điệp trạng thái. | Không | Có | `SubscribeSubmissionProgress` | [Các bước]<br>1. Nhận thông điệp, đối chiếu `submissionId` với lượt nộp đang theo dõi; lệch thì bỏ qua.<br>2. Tô ô trạng thái của testcase tương ứng theo thứ tự.<br>3. Cập nhật nhãn kết quả tổng hợp và số testcase đạt trên tổng.<br>4. Thông điệp mang một trong sáu trạng thái cuối (`ACCEPTED`, `WRONG_ANSWER`, `TIME_LIMIT_EXCEEDED`, `RUNTIME_ERROR`, `COMPILE_ERROR`, `SYSTEM_ERROR`, `02-bd/database/judge-orchestration.md:22`) thì đóng kênh, nạp lại tab "Bài nộp", và hiển thị các liên kết đi tiếp.<br>[Khi thành công] Người học thấy tiến trình chấm chạy dần, **không dừng ở testcase hỏng đầu tiên** (`DEC-2026-0831-partial-score-testcase-ratio`). Khi nhận trạng thái cuối thì hiện một toast kết quả: Accepted là toast thành công, kết quả khác là toast lỗi kèm số testcase đạt trên tổng [Nguồn: 05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:321-328].<br>[Khi lỗi] Mất kết nối thì thử nối lại vài lần; vẫn không được thì chuyển sang hỏi lại trạng thái theo chu kỳ và hiển thị một dòng nhắc rằng cập nhật đang chậm. **Không** kết luận bài trượt khi chỉ mất kênh. |
 | 13 | Nút | Chuyển tab bảng kết quả | Bấm "Testcase" hoặc "Kết quả". | Không | Không | - | [Các bước]<br>1. Đổi nội dung bảng kết quả.<br>[Khi thành công] Trạng thái tab không ghi vào URL; mọi dữ liệu đã có sẵn ở phía trình duyệt. |
-| 14 | Nút | Chọn testcase mẫu | Bấm một nút "Case n". | Không | Không | - | [Các bước]<br>1. Đổi nội dung hiển thị sang testcase Sample được chọn.<br>[Khi thành công] Hiển thị dữ liệu vào của đúng case đó. **Chỉ testcase Sample** — không có nút nào mở được testcase ẩn. |
+| 14 | Nút | Xem chi tiết lượt chạy (màn phụ) | Bấm "Xem chi tiết" ở bảng kết quả, hoặc tự mở khi bấm Run Code / Submit. Đóng bằng nút "Đóng", phím Esc hoặc bấm ra ngoài. | Không | Không | - | [Các bước]<br>1. Mở hộp thoại: Run Code có danh sách testcase Sample bên trái (nhãn Đạt / Không đạt) và chi tiết dữ liệu vào, thực tế, mong đợi bên phải, mở sẵn testcase sai đầu tiên; Submit liệt kê mọi testcase với Đạt / Không đạt.<br>[Khi thành công] Hiển thị đúng kết quả lượt gần nhất. **Chỉ testcase Sample hiện dữ liệu**; testcase ẩn chỉ hiện Đạt / Không đạt, không lộ dữ liệu [Nguồn: 05-coding/frontend/src/views/users/problem-detail/ui/run-results-dialog.tsx]. |
 | 15 | Nút | Bật hoặc tắt lưu bài | Bấm "Lưu bài" / "Bỏ lưu". | Không | Có | `ToggleMyProblemBookmark` | [Các bước]<br>1. Đổi nhãn nút ngay (cập nhật lạc quan).<br>2. Gửi yêu cầu bật/tắt cho bài đang mở.<br>[Khi thành công] Nút giữ trạng thái mới, hiện toast thành công "đã lưu" hoặc "đã bỏ lưu" [Nguồn: 05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:275-285]; bài xuất hiện hoặc biến mất ở màn `saved_problems`.<br>[Khi lỗi] Hoàn nguyên nhãn nút và hiển thị toast lỗi. Không rời màn, không mất mã đang soạn. |
 | 16 | Liên kết | Mở kết quả chấm đầy đủ | Bấm "Xem kết quả chấm", hoặc bấm một dòng trong tab "Bài nộp". | Có | Không | - | [Các bước]<br>1. Điều hướng thẳng, không hỏi xác nhận (EVT-21 đã bỏ, Câu hỏi mở Q14); điều hướng sang `submission_result` kèm `submission_id`.<br>[Khi thành công] Mở màn `submission_result`. |
 | 17 | Liên kết | Mở phân tích bài giải | Bấm "Phân tích bài giải" ở bảng kết quả, hoặc liên kết mở báo cáo đầy đủ trong tab Solution Review. | Có | Không | - | [Các bước]<br>1. Điều hướng thẳng, không hỏi xác nhận (EVT-21 đã bỏ, Câu hỏi mở Q14); điều hướng sang `solution_review` kèm `submission_id` của lượt nộp `ACCEPTED`.<br>[Khi thành công] Mở màn `solution_review`. Việc chạy phân tích là hành động tự chọn ở màn đích, màn này **không** tự kích hoạt F5 (`DEC-2026-0831-outside-screens-closures`). |
-| 18 | Liên kết | Mở phỏng vấn giả lập | Bấm "Phỏng vấn giả lập" ở bảng kết quả, hoặc nút trong tab Solution Review. | Có | Không | - | [Các bước]<br>1. Điều hướng thẳng, không hỏi xác nhận (EVT-21 đã bỏ, Câu hỏi mở Q14); điều hướng sang `mock_interview` kèm `submission_id`, lối vào ứng với `entry_type = SUBMISSION` [Nguồn: 02-bd/database/ai-review.md:87-89].<br>[Khi thành công] Mở màn `mock_interview`. |
-| 19 | Liên kết | Quay lại danh sách bài | Bấm "Danh sách bài" trên thanh tác vụ, hoặc "Xem toàn bộ bài" ở trạng thái chưa chọn bài. | Có | Không | - | [Các bước]<br>1. Điều hướng thẳng, không hỏi xác nhận (EVT-21 đã bỏ, Câu hỏi mở Q14); điều hướng sang `problem_list`.<br>[Khi thành công] Mở màn `problem_list`. Bộ lọc cũ của màn đó còn nguyên trên lịch sử trình duyệt. |
+| 18 | Liên kết | Mở phỏng vấn giả lập | Bấm "Phỏng vấn giả lập" ở bảng kết quả, hoặc nút trong tab Solution Review. | Có | Không | - | [Các bước]<br>1. Điều hướng thẳng, không hỏi xác nhận (EVT-21 đã bỏ, Câu hỏi mở Q14); điều hướng sang `mock_interview` kèm `submission_id`, lối vào ứng với `entry_type = SUBMISSION` [Nguồn: 02-bd/database/ai-review.md:101-102].<br>[Khi thành công] Mở màn `mock_interview`. |
+| 19 | Liên kết | Quay lại danh sách bài | Bấm "Danh sách bài" trên thanh tác vụ, hoặc liên kết ở thông báo "Không tìm thấy bài toán.". | Có | Không | - | [Các bước]<br>1. Điều hướng thẳng, không hỏi xác nhận (EVT-21 đã bỏ, Câu hỏi mở Q14); điều hướng sang `problem_list`.<br>[Khi thành công] Mở màn `problem_list`. Bộ lọc cũ của màn đó còn nguyên trên lịch sử trình duyệt. |
 | 20 | Nút | Kéo thanh chia đôi | Kéo ngang thanh giữa hai cột. | Không | Không | - | [Các bước]<br>1. Cập nhật tỉ lệ bề rộng cột trái, chặn trong khoảng 22–74 [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:441].<br>2. Ghi lại giá trị ở phía trình duyệt khi thả chuột.<br>[Khi thành công] Bố cục đổi ngay; trình soạn thảo tính lại kích thước. Không gọi máy chủ, không ghi vào URL. Thanh kéo ngang thứ hai giữa vùng soạn mã và bảng kết quả hoạt động tương tự: mặc định 62/38, chặn 25–85%, nhớ ở `algoprep-workspace-split-y` (Q15, chốt 2026-10-19). |
 | 21 | Màn hình | ~~Rời màn khi còn mã chưa nộp~~ (ĐÃ BỎ) | ~~Bất kỳ thao tác nào rời khỏi màn.~~ | - | - | - | **Đã bỏ theo Câu hỏi mở Q14 (chủ dự án chốt 2026-10-18, ponytail bậc 4).** Giữ lại số EVT để không phải đánh số lại các tham chiếu chéo. Lý do: mã được ghi vào `localStorage` theo khoá `(problem_id, language, submission_model)` ngay khi gõ nên rời màn hay đóng thẻ đều không mất mã; chỉ mất khi đổi trình duyệt hoặc xoá dữ liệu trang, và đó là chấp nhận được. Không có hộp xác nhận nào ở màn này. |
 | 22 | Liên kết | Mở một lượt nộp trong lịch sử | Bấm một dòng trong tab "Bài nộp". | Có | Không | - | [Các bước]<br>1. Điều hướng thẳng, không hỏi xác nhận (EVT-21 đã bỏ, Câu hỏi mở Q14); điều hướng sang `submission_result` kèm `submission_id` của dòng.<br>[Khi thành công] Mở màn `submission_result`. Mã nguồn của lượt nộp cũ **không** được nạp ngược vào ô soạn mã của màn này — nếu cần chức năng đó thì đó là yêu cầu mới, chưa có mã `Fx-nn`. |
 
 [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:105,106,159-163,218-225,253,258-260,379,380,381,441,
 606,640-641; 01-rd/req/judge-orchestration.md:10-11,16; 01-rd/screens/users/USR0102_problem_detail.md:118,129;
-02-bd/database/ai-review.md:87-89]
+02-bd/database/ai-review.md:101-102]
 
 ---
 
@@ -800,16 +824,16 @@ Ghi chú ranh giới:
 | NO | Loại | Tóm tắt kiểm | Chi tiết | Mức | Mã thông báo | Ghi chú | EVT gọi | Thứ tự |
 | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: |
 | 1 | Kiểm quyền | Yêu cầu đăng nhập | [Nội dung kiểm] Người dùng chưa đăng nhập thì chuyển về màn `auth`.<br>[Nơi thực thi] Chặn ở cả tầng định tuyến phía giao diện và tầng phân quyền phía máy chủ. Màn có thao tác ghi nên **không có** chế độ khách. | Lỗi | Chưa có mã thông báo | Nội dung "Vui lòng đăng nhập để tiếp tục." | EVT-1 | 1 |
-| 2 | Kiểm nghiệp vụ | Phạm vi bài toán mở được | [Nội dung kiểm] Chỉ mở được bài có `status = PUBLISHED` và `deleted = false`; bài chưa xuất bản hoặc đã ẩn mềm trả về như không tồn tại.<br>[Nơi thực thi] Máy chủ, trong điều kiện truy vấn. | Lỗi | Chưa có mã thông báo | Nội dung "Không tìm thấy bài toán." **Không** báo "bạn không có quyền" — tránh lộ sự tồn tại của bài chưa xuất bản (`DEC-2026-0830-problem-lifecycle-two-states`) [Nguồn: 02-bd/database/problem-bank.md:18-19]. | EVT-1, EVT-2 | 1 |
+| 2 | Kiểm nghiệp vụ | Phạm vi bài toán mở được | [Nội dung kiểm] Chỉ mở được bài có `status = PUBLISHED` và `deleted = false`; bài chưa xuất bản hoặc đã ẩn mềm trả về như không tồn tại.<br>[Nơi thực thi] Máy chủ, trong điều kiện truy vấn. | Lỗi | Chưa có mã thông báo | Nội dung "Không tìm thấy bài toán." **Không** báo "bạn không có quyền" — tránh lộ sự tồn tại của bài chưa xuất bản (`DEC-2026-0830-problem-lifecycle-two-states`) [Nguồn: 02-bd/database/problem-bank.md:19-20]. | EVT-1, EVT-2 | 1 |
 | 3 | Kiểm nghiệp vụ | **Không lộ testcase ẩn dưới mọi hình thức** | [Nội dung kiểm] Không endpoint nào của màn trả về dữ liệu vào, kết quả mong đợi, output thực tế hay diff của testcase có `visibility = HIDDEN`. Thông điệp thời gian thực chỉ mang `testcase_order` và `verdict`. Kết quả tổng hợp chỉ mang số testcase đạt trên tổng và chỉ số testcase hỏng đầu tiên.<br>[Nơi thực thi] **Máy chủ** — lọc ở tầng dựng phản hồi, không phải ẩn ở giao diện.<br>[Tiêu điểm] Dải ô trạng thái, khối kết quả dạng văn bản, kênh thời gian thực. | Lỗi | Không có thông báo | **Bắt buộc.** Ràng buộc cứng của dự án. Ẩn ở giao diện là không đủ: bất kỳ ai mở công cụ mạng của trình duyệt cũng đọc được phản hồi thô. Chú giải của mỗi ô chỉ được ghi dạng "Testcase {số}: {trạng thái}". | EVT-11, EVT-12 | 1 |
-| 4 | Kiểm nghiệp vụ | Chỉ đọc testcase Sample | [Nội dung kiểm] `ListSampleTestcases` và `RunSampleTestcases` chỉ nhận dòng `testcases.visibility = SAMPLE`; điều kiện này đặt trong truy vấn, không phải lọc sau khi đã lấy hết.<br>[Nơi thực thi] Máy chủ. | Lỗi | Không có thông báo | Hai lớp độc lập với NO 3: một lớp chặn ở nguồn, một lớp chặn ở phản hồi [Nguồn: 02-bd/database/problem-bank.md:88]. | EVT-1, EVT-10 | 2 |
+| 4 | Kiểm nghiệp vụ | Chỉ đọc testcase Sample | [Nội dung kiểm] `ListSampleTestcases` và `RunSampleTestcases` chỉ nhận dòng `testcases.visibility = SAMPLE`; điều kiện này đặt trong truy vấn, không phải lọc sau khi đã lấy hết.<br>[Nơi thực thi] Máy chủ. | Lỗi | Không có thông báo | Hai lớp độc lập với NO 3: một lớp chặn ở nguồn, một lớp chặn ở phản hồi [Nguồn: 02-bd/database/problem-bank.md:142]. | EVT-1, EVT-10 | 2 |
 | 5 | Kiểm nhập liệu | Phần mở rộng file tải lên | [Nội dung kiểm] Chỉ nhận đúng phần mở rộng của ngôn ngữ đang chọn: `.java`, `.cpp`, `.py`.<br>[Nơi thực thi] Màn hình khi chọn file, và máy chủ khi nhận nội dung.<br>[Tiêu điểm] Viền vùng kéo thả file + toast. | Lỗi | Chưa có mã thông báo | Nội dung "File phải có phần mở rộng {ext} đúng với ngôn ngữ đang chọn." Hiển thị bằng toast, không dùng hộp thoại [Nguồn: 01-rd/req/judge-orchestration.md:14-15]. | EVT-8 | 1 |
 | 6 | Kiểm nhập liệu | Kích thước file tải lên | [Nội dung kiểm] File lớn hơn 64 KB thì từ chối, không đọc nội dung.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Viền vùng kéo thả file + toast. | Lỗi | Chưa có mã thông báo | Nội dung "File vượt quá 64 KB." [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:307]. | EVT-8 | 2 |
 | 7 | Kiểm nhập liệu | Mã nguồn rỗng | [Nội dung kiểm] Mã chỉ gồm khoảng trắng thì không cho chạy thử và không cho nộp.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Viền ô soạn mã + toast. | Cảnh báo | Chưa có mã thông báo | Nội dung "Hãy viết mã trước khi chạy thử hoặc nộp bài." Hai nút Run Code và Submit không kích hoạt. | EVT-10, EVT-11 | 1 |
-| 8 | Kiểm nhập liệu | Độ dài mã nguồn | [Nội dung kiểm] Mã nguồn vượt 64 KB thì từ chối, kể cả khi gõ trực tiếp.<br>[Nơi thực thi] Máy chủ là nơi kiểm thật; màn hình đo bằng byte (`TextEncoder`) và chặn trước khi gửi [Nguồn: 05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:68,258-273].<br>[Tiêu điểm] Viền ô soạn mã + toast. | Lỗi | Chưa có mã thông báo | Nội dung "Mã nguồn vượt 64 KB, hãy rút gọn trước khi chạy hoặc nộp." (khoá `problemDetail.toast.codeTooLarge`). Dùng cùng ngưỡng với file tải lên để hai đường vào không lệch nhau — đã chốt ở Câu hỏi mở Q7 (2026-10-18). | EVT-10, EVT-11 | 2 |
-| 9 | Kiểm nghiệp vụ | Mô hình nộp bài hợp lệ cho bài | [Nội dung kiểm] Bài có `function_wrapper_supported = false` thì từ chối mọi lượt nộp có `submission_model = FUNCTION_WRAPPER`, kể cả khi tham số URL `model` bị sửa tay.<br>[Nơi thực thi] Máy chủ. | Lỗi | Chưa có mã thông báo | Nội dung "Bài toán này chỉ hỗ trợ mô hình Standard I/O." Giao diện đã ẩn nút nhưng ẩn ở giao diện không phải là kiểm tra (F3-13) [Nguồn: 02-bd/database/problem-bank.md:20; 01-rd/req/harness.md:29-33]. | EVT-5, EVT-10, EVT-11 | 1 |
-| 10 | Kiểm nghiệp vụ | Giới hạn số lượt nộp mỗi giờ | [Nội dung kiểm] Số lượt nộp của người học cho bài này trong một giờ gần nhất vượt `problems.max_submissions_per_hour` thì từ chối; cột `NULL` thì dùng mặc định hệ thống 60 lần/giờ.<br>[Nơi thực thi] Máy chủ. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn đã nộp quá số lần cho phép trong một giờ, thử lại sau." [Nguồn: 02-bd/database/problem-bank.md:23; 02-bd/database/problem-bank.md:170]. | EVT-11 | 2 |
-| 11 | Kiểm nghiệp vụ | Phạm vi dữ liệu cá nhân | [Nội dung kiểm] Lịch sử nộp bài, trạng thái lưu bài và tóm tắt phân tích bài giải chỉ tính theo chính người dùng đăng nhập; không endpoint nào của màn nhận `user_id` từ phía gọi.<br>[Nơi thực thi] Máy chủ. | Lỗi | Không có thông báo | Quy ước tiền tố `My` của khu Người học [Nguồn: 02-bd/screens/users/USR0101_problem_list.md:530-531]. Áp cho `ListMySubmissionsForProblem`, `ToggleMyProblemBookmark`, `GetMySolutionReviewQuickInsight`, `ListMyUnsolvedRecentProblems`. | EVT-1, EVT-3, EVT-15 | 1 |
+| 8 | Kiểm nhập liệu | Độ dài mã nguồn | [Nội dung kiểm] Mã nguồn vượt 64 KB thì từ chối, kể cả khi gõ trực tiếp.<br>[Nơi thực thi] Máy chủ là nơi kiểm thật; màn hình đo bằng byte (`TextEncoder`) và chặn trước khi gửi [Nguồn: 05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:67-68,258-273].<br>[Tiêu điểm] Viền ô soạn mã + toast. | Lỗi | Chưa có mã thông báo | Nội dung "Mã nguồn vượt 64 KB, hãy rút gọn trước khi chạy hoặc nộp." (khoá `problemDetail.toast.codeTooLarge`). Dùng cùng ngưỡng với file tải lên để hai đường vào không lệch nhau — đã chốt ở Câu hỏi mở Q7 (2026-10-18). | EVT-10, EVT-11 | 2 |
+| 9 | Kiểm nghiệp vụ | Mô hình nộp bài hợp lệ cho bài | [Nội dung kiểm] Bài có `function_wrapper_supported = false` thì từ chối mọi lượt nộp có `submission_model = FUNCTION_WRAPPER`, kể cả khi tham số URL `model` bị sửa tay.<br>[Nơi thực thi] Máy chủ. | Lỗi | Chưa có mã thông báo | Nội dung "Bài toán này chỉ hỗ trợ mô hình Standard I/O." Giao diện đã ẩn nút nhưng ẩn ở giao diện không phải là kiểm tra (F3-13) [Nguồn: 02-bd/database/problem-bank.md:21; 01-rd/req/harness.md:30-34]. | EVT-5, EVT-10, EVT-11 | 1 |
+| 10 | Kiểm nghiệp vụ | Giới hạn số lượt nộp mỗi giờ | [Nội dung kiểm] Số lượt nộp của người học cho bài này trong một giờ gần nhất vượt `problems.max_submissions_per_hour` thì từ chối; cột `NULL` thì dùng mặc định hệ thống 60 lần/giờ.<br>[Nơi thực thi] Máy chủ. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn đã nộp quá số lần cho phép trong một giờ, thử lại sau." [Nguồn: 02-bd/database/problem-bank.md:25; 02-bd/database/problem-bank.md:282]. | EVT-11 | 2 |
+| 11 | Kiểm nghiệp vụ | Phạm vi dữ liệu cá nhân | [Nội dung kiểm] Lịch sử nộp bài, trạng thái lưu bài và tóm tắt phân tích bài giải chỉ tính theo chính người dùng đăng nhập; không endpoint nào của màn nhận `user_id` từ phía gọi.<br>[Nơi thực thi] Máy chủ. | Lỗi | Không có thông báo | Quy ước tiền tố `My` của khu Người học [Nguồn: 02-bd/screens/users/USR0101_problem_list.md Sheet 7.3, phần ghi chú ranh giới]. Áp cho `ListMySubmissionsForProblem`, `ToggleMyProblemBookmark`, `GetMySolutionReviewQuickInsight`, `ListMyUnsolvedRecentProblems`. | EVT-1, EVT-3, EVT-15 | 1 |
 | 12 | Kiểm quyền | Chủ sở hữu kênh thời gian thực | [Nội dung kiểm] Chỉ người tạo ra một lượt nộp mới đăng ký được kênh trạng thái của `submissionId` đó.<br>[Nơi thực thi] Máy chủ, tại bước bắt tay của kênh. | Lỗi | Không có thông báo | Không có kênh này thì đoán `submissionId` là đọc được tiến trình chấm của người khác. Từ chối im lặng, không xác nhận `submissionId` có tồn tại hay không. | EVT-12 | 1 |
 | 13 | Kiểm nghiệp vụ | Suy giảm êm khi phân hệ AI lỗi | [Nội dung kiểm] Gọi `ai-review` thất bại hoặc hết hạn mức thì ẩn tab "Solution Review" và hai liên kết "Phân tích bài giải", "Phỏng vấn giả lập"; **không** hiển thị thông báo lỗi.<br>[Nơi thực thi] Màn hình. | Cảnh báo | Không có thông báo | **Bắt buộc.** Luồng đọc đề, soạn mã, chạy thử, nộp bài, xem kết quả phải chạy đủ khi F5 chết (`CLAUDE.md` mục Rules). Người học không có hành động khắc phục nào nên không báo lỗi. | EVT-1, EVT-3, EVT-12 | 2 |
 | 14 | Kiểm nghiệp vụ | Mã nguồn là dữ liệu, không phải chỉ thị | [Nội dung kiểm] Mọi nơi mã nguồn của người học được đưa sang phân hệ AI, nó phải là tham số dữ liệu tách hẳn khỏi chỉ thị hệ thống.<br>[Nơi thực thi] Máy chủ, ở module `ai-review`. | Lỗi | Không có thông báo | **Bắt buộc.** Màn này không tự gọi mô hình ngôn ngữ; nó chỉ chuyển `submission_id` sang màn đích. Ghi ở đây để bên nhận không coi mã nguồn là một phần lời nhắc (`CLAUDE.md` mục Rules, `DEC-2026-0831-ai-instruction-injection-guard`). | EVT-17, EVT-18 | 1 |
@@ -819,9 +843,9 @@ Ghi chú ranh giới:
 
 Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 
-[Nguồn: 02-bd/database/problem-bank.md:18-20,23,88,170; 02-bd/database/judge-orchestration.md:24;
+[Nguồn: 02-bd/database/problem-bank.md:19-21,25,142,282; 02-bd/database/judge-orchestration.md:24;
 02-bd/architecture/harness.md:274; 01-rd/req/judge-orchestration.md:14-15;
-01-rd/req/harness.md:29-33; 09-layoutBase/Workspace giải bài.dc.html:307;
+01-rd/req/harness.md:30-34; 09-layoutBase/Workspace giải bài.dc.html:307;
 01-rd/screens/users/USR0102_problem_detail.md:118]
 
 ---
@@ -831,17 +855,20 @@ Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 | # | Câu hỏi | Vì sao chưa trả lời được | Đề xuất | Chủ sở hữu |
 | :-: | :--- | :--- | :--- | :--- |
 | Q1 | **Prototype còn nguyên tab "Gợi ý" đã bị cắt khỏi phạm vi — cập nhật prototype hay đánh dấu lỗi thời?** | **Đã chốt 2026-10-18 (owner), theo đề xuất** (`DEC-2026-1018-usr-open-questions-phase1-scope`). Hai nguồn từng mâu thuẫn: prototype tĩnh khai tab "Gợi ý" ở `:552`, `:205-214`, `:559`, `:574-578`, `:173`; `DEC-2026-0831-remove-tiered-hints-ai-config` cắt hẳn tính năng. | Giữ **ba** tab (Đề bài / Bài nộp / Solution Review). `09-layoutBase/Workspace giải bài.dc.html` **lỗi thời** ở điểm này — chỉ đánh dấu ở mục 4.4, không sửa `.dc.html` (thư mục chỉ-đọc). Tiêu chí ponytail bậc 1 (không có yêu cầu nguồn). Dòng nợ prototype do bên khác ghi, BD này không sửa `06-plan/PROTOTYPE_DEBT.md` | Đã đóng |
-| Q2 | **Khối "Gợi ý theo điểm yếu của bạn" ở trạng thái chưa chọn bài lấy dữ liệu ở đâu?** | **Đã chốt 2026-10-18 (owner), theo đề xuất** (`DEC-2026-1018-usr-open-questions-phase1-scope`). Không có mã `Fx-nn` nào cho gợi ý bài theo điểm yếu, không có bảng lưu "điểm yếu" [Nguồn: 02-bd/database/identity.md:111-112]. | **Bỏ** khối "Gợi ý theo điểm yếu của bạn". Trạng thái chưa chọn bài chỉ hiển thị bài đang làm dở gần nhất kèm liên kết sang `problem_list`. Tiêu chí ponytail bậc 1 và 2 | Đã đóng |
+| Q2 | **Khối "Gợi ý theo điểm yếu của bạn" ở trạng thái chưa chọn bài lấy dữ liệu ở đâu?** | **Đã chốt 2026-10-18 (owner), theo đề xuất** (`DEC-2026-1018-usr-open-questions-phase1-scope`). Không có mã `Fx-nn` nào cho gợi ý bài theo điểm yếu, không có bảng lưu "điểm yếu" `[SoT: Suy luận]` — rà các bảng ở `02-bd/database/identity.md` mục 1.1-1.15 (`:8-243`) không thấy bảng nào lưu điểm yếu. | **Bỏ** khối "Gợi ý theo điểm yếu của bạn". Trạng thái chưa chọn bài chỉ hiển thị bài đang làm dở gần nhất kèm liên kết sang `problem_list`. Tiêu chí ponytail bậc 1 và 2 | Đã đóng |
 | Q3 | **Đồng hồ phiên làm bài lấy mốc từ đâu và có lưu lại không?** | **Đã chốt 2026-10-18 (owner), theo đề xuất** (`DEC-2026-1018-usr-open-questions-phase1-scope`). Prototype hiển thị `00:12:41` cứng; không có cột nào lưu mốc bắt đầu, không có mã `Fx-nn` nào đòi đo thời gian làm bài. | **Bỏ hẳn** đồng hồ phiên làm bài, không hiển thị số bịa. Đã xoá item Khu vực A NO 4 ở Sheet 5, 6. Tiêu chí ponytail bậc 1 và 2 | Đã đóng |
-| Q4 | **Mã đang soạn có được lưu nháp không, lưu ở đâu?** | **Đã chốt 2026-10-18 (owner), theo đề xuất** (`DEC-2026-1018-usr-open-questions-phase1-scope`). Không có bảng nào lưu bản nháp mã nguồn trong BD database; cùng khoảng trống ở `problem_list` Q4. | Bản nháp lưu ở **trình duyệt** (`localStorage`) theo khoá `(problem_id, language, submission_model)`, nhãn "Đã lưu trên trình duyệt này"; **không có bảng nháp ở máy chủ**. Đã dựng [Nguồn: 05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:147,156-168,210-220,594-598]. Tiêu chí ponytail bậc 4 và 5 (dùng sẵn trình duyệt, không thêm bảng). Hộp xác nhận rời màn đã bỏ ở Q14 | Đã đóng |
-| Q5 | **"Ràng buộc" và "Câu hỏi mở rộng" là cột riêng hay nằm trong `statement_md`?** | **Đã chốt 2026-10-18 (owner), theo đề xuất** (`DEC-2026-1018-usr-open-questions-phase1-scope`). Prototype tách hai khối riêng; `problems` chỉ có cột `statement_md` [Nguồn: 02-bd/database/problem-bank.md:16]. | "Ràng buộc" và "Câu hỏi mở rộng" **nằm trong `statement_md`** như hai mục Markdown quy ước (`## Ràng buộc`, `## Câu hỏi mở rộng`), không tách cột. Tiêu chí ponytail bậc 4 (dùng lại cột sẵn có). BD `problem_authoring` ghi quy ước mục khi viết | Đã đóng |
-| Q6 | **Câu giải thích cho từng ví dụ lưu ở đâu?** | **Đã chốt 2026-10-18 (owner), theo đề xuất** (`DEC-2026-1018-usr-open-questions-phase2-5`). Prototype hiển thị một dòng giải thích dưới mỗi ví dụ [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:186,564-566]; trước đó bảng `testcases` không có cột nào cho câu giải thích. | Giải thích từng ví dụ lưu ở cột mới `testcases.explanation_md TEXT nullable`, chỉ có nghĩa khi `is_worked_example = true` (khai báo ở BD database `problem-bank`). Bản dựng đã in `example.explanation` khi có [05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:386-388]. Tiêu chí ponytail bậc 1. | Đã đóng |
-| Q7 | **Giới hạn kích thước mã gõ trực tiếp có bằng 64 KB của file tải lên không?** | **Đã chốt 2026-10-18 (owner), theo đề xuất** (`DEC-2026-1018-usr-open-questions-phase2-5`). RD chốt 64 KB cho file tải lên nhưng chưa nói về mã gõ trực tiếp; hai đường vào cùng đổ vào `submissions.source_code`. | Mã gõ trực tiếp giới hạn **64 KB** như file tải lên; kiểm thật ở máy chủ (DD `judge-orchestration`). Bản dựng chặn Run Code và Submit bằng toast lỗi khi vượt, đo bằng byte [05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:68,258-273]. Tiêu chí ponytail bậc 6. | Đã đóng |
+| Q4 | **Mã đang soạn có được lưu nháp không, lưu ở đâu?** | **Đã chốt 2026-10-18 (owner), theo đề xuất** (`DEC-2026-1018-usr-open-questions-phase1-scope`). Không có bảng nào lưu bản nháp mã nguồn trong BD database; cùng khoảng trống ở `problem_list` Q4. | Bản nháp lưu ở **trình duyệt** (`localStorage`) theo khoá `(problem_id, language, submission_model)`, nhãn "Đã lưu trên trình duyệt này"; **không có bảng nháp ở máy chủ**. Đã dựng [Nguồn: 05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:147,156-166,210-220,595-597]. Tiêu chí ponytail bậc 4 và 5 (dùng sẵn trình duyệt, không thêm bảng). Hộp xác nhận rời màn đã bỏ ở Q14 | Đã đóng |
+| Q5 | **"Ràng buộc" và "Câu hỏi mở rộng" là cột riêng hay nằm trong `statement_md`?** | **Đã chốt 2026-10-18 (owner), theo đề xuất** (`DEC-2026-1018-usr-open-questions-phase1-scope`), **phần "Ràng buộc" bị thay ngày 2026-10-22** (PB-03, `DEC-2026-1022-problem-bank-schema-sync` mục 1). Prototype tách hai khối riêng; lúc chốt, `problems` chỉ có cột `statement_md` [Nguồn: 02-bd/database/problem-bank.md:16]. | **"Ràng buộc" là cột riêng `problems.constraints_md`** (TEXT NOT NULL default rỗng, Markdown; RD F2-14 và AI sinh testcase cần nó tách khỏi đề). `statement_md` giữ nguyên là phần đề cho người học và **màn này ghép `statement_md` rồi `constraints_md`** thành một trang đề (`02-bd/database/problem-bank.md:16-17`). **"Câu hỏi mở rộng" vẫn nằm trong `statement_md`** như mục Markdown quy ước `## Câu hỏi mở rộng` (không có quyết định tách cột). Quyết định cũ "ràng buộc là mục `## Ràng buộc` trong `statement_md`" không còn đúng; dự án greenfield nên không có dữ liệu cũ; nếu sau này có bài cũ mang mục `## Ràng buộc` trong `statement_md` thì tách một lần sang `constraints_md` (DEC-2026-1022-db-sync-round2, mục 13) | Đã đóng |
+| Q6 | **Câu giải thích cho từng ví dụ lưu ở đâu?** | **Đã chốt 2026-10-18 (owner), theo đề xuất** (`DEC-2026-1018-usr-open-questions-phase2-5`). Prototype hiển thị một dòng giải thích dưới mỗi ví dụ [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:186,564-566]; trước đó bảng `testcases` không có cột nào cho câu giải thích. | Giải thích từng ví dụ ban đầu lưu ở cột `testcases.explanation_md`; **từ 2026-10-22 (PB-08) cột đó và `is_worked_example` đã bỏ, ví dụ mẫu và lời giải thích nằm ở bảng riêng `problem.worked_examples.explanation_md TEXT nullable`** (`02-bd/database/problem-bank.md:234-247`), tách khỏi `testcases` vì không thuộc bộ chấm. Bản dựng đã in `example.explanation` khi có [05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:386-388]. Tiêu chí ponytail bậc 1. | Đã đóng |
+| Q7 | **Giới hạn kích thước mã gõ trực tiếp có bằng 64 KB của file tải lên không?** | **Đã chốt 2026-10-18 (owner), theo đề xuất** (`DEC-2026-1018-usr-open-questions-phase2-5`). RD chốt 64 KB cho file tải lên nhưng chưa nói về mã gõ trực tiếp; hai đường vào cùng đổ vào `submissions.source_code`. | Mã gõ trực tiếp giới hạn **64 KB** như file tải lên; kiểm thật ở máy chủ (DD `judge-orchestration`). Bản dựng chặn Run Code và Submit bằng toast lỗi khi vượt, đo bằng byte [05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:67-68,258-273]. Tiêu chí ponytail bậc 6. | Đã đóng |
 | Q8 | **Trạng thái cụm chấm ở chân panel lấy ở đâu, làm mới thế nào?** | **Đã chốt 2026-10-18 (owner), theo đề xuất** (`DEC-2026-1018-usr-open-questions-phase2-5`). Số liệu trạng thái cụm chấm thuộc `judge-orchestration` và là cùng câu hỏi với chân trang khung chung. | Chấm trạng thái cụm chấm **vẫn ẩn cho tới khi có dữ liệu**, theo kết luận `_shell` Q3 (câu tĩnh, không gọi định kỳ). Bản dựng không có chấm nào (đã đọc toàn bộ `problem-detail-view.tsx`). Tiêu chí ponytail bậc 5. | Đã đóng |
-| Q9 | **Ngôn ngữ và mô hình đang chọn có nhớ giữa các lần vào không, và mặc định là gì?** | **Đã chốt 2026-10-18 (owner), theo đề xuất** (`DEC-2026-1018-usr-open-questions-phase2-5`). Chưa có nguồn mặc định ngôn ngữ và mô hình khi vào bài mới. | Nhớ ngôn ngữ và mô hình gần nhất ở `localStorage` (khoá `algoprep-workspace-prefs`), dùng làm mặc định cho bài tiếp theo; bài chỉ có Standard I/O luôn dùng Standard I/O. Không thêm cột ở `identity`. Đã dựng [05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:170-190,192-210]. Tiêu chí ponytail bậc 4. | Đã đóng |
+| Q9 | **Ngôn ngữ và mô hình đang chọn có nhớ giữa các lần vào không, và mặc định là gì?** | **Đã chốt 2026-10-18 (owner), theo đề xuất** (`DEC-2026-1018-usr-open-questions-phase2-5`). Chưa có nguồn mặc định ngôn ngữ và mô hình khi vào bài mới. | Nhớ ngôn ngữ và mô hình gần nhất ở `localStorage` (khoá `algoprep-workspace-prefs`), dùng làm mặc định cho bài tiếp theo; bài chỉ có Standard I/O luôn dùng Standard I/O. Không thêm cột ở `identity`. Đã dựng [05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:170-190,192-208]. Tiêu chí ponytail bậc 4. | Đã đóng |
 | Q10 | **Lượt chạy thử có tạo dòng dữ liệu nào không?** | **Đã chốt 2026-10-18 (owner), theo đề xuất** (`DEC-2026-1018-usr-open-questions-phase2-5`). `submissions` không có cột phân biệt lượt chạy thử với lượt nộp. | Run Code **không** tạo dòng `submissions`; kết quả trả trong lời gọi đồng bộ và không lưu (ghi vào DD `judge-orchestration`, không thêm cột `is_trial`). Bản dựng chỉ giả lập ở phía trình duyệt [05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:287-306]. Tiêu chí ponytail bậc 5. | Đã đóng |
 | Q11 | **Chỉ số "Beats" (F4-12) hiển thị ở màn nào?** | **Đã chốt 2026-10-18 (owner), theo đề xuất** (`DEC-2026-1018-usr-open-questions-phase1-scope`). F4-12 không nói hiển thị ở màn nào. | "Beats" **chỉ ở `submission_result`**, không đưa vào màn này; ô "Beats" ở `:645` của prototype lỗi thời. Tiêu chí ponytail bậc 4 (dùng lại màn kết quả đầy đủ) | Đã đóng |
-| Q12 | **Vào Workspace từ mục nav khi chưa chọn bài thì mở bài nào?** | **Đã chốt 2026-10-18 (owner), theo đề xuất** (`DEC-2026-1018-usr-open-questions-phase1-scope`). Mục nav "Workspace" trỏ vào màn cần `problem_id` [Nguồn: 02-bd/screens/users/_shell.md:55]; trùng `_shell` mục 6 Q2 (đã đóng 2026-09-22). | Vào từ nav khi chưa chọn bài thì **chuyển hướng** sang bài đang làm dở gần nhất, không có thì sang `problem_list`. Đã dựng, nguồn bài hiện là dữ liệu mẫu [Nguồn: 05-coding/frontend/src/app/(student)/workspace/page.tsx:16-18]. Tiêu chí ponytail bậc 4 (dùng lại danh sách thay vì màn chọn riêng) | Đã đóng |
+| Q12 | **Vào Workspace từ mục nav khi chưa chọn bài thì mở bài nào?** | **Đã chốt 2026-10-18 (owner), theo đề xuất** (`DEC-2026-1018-usr-open-questions-phase1-scope`): chuyển hướng sang bài đang làm dở gần nhất, không có thì sang `problem_list` (trùng `_shell` mục 6 Q2). **Phần chuyển hướng đã được thay thế 2026-10-20** bởi `DEC-2026-1020-student-workspace-split-and-password-in-settings` [Nguồn: .nexa/control/decision-registry.md:4244-4245; 02-bd/screens/users/_shell.md:163]. | Mục nav "Workspace" mở trang đầu `/workspace` (`USR0105`) liệt kê bài đang làm dở để chọn tiếp; màn này (nay `/workspace/{problemId}`) luôn có `problem_id`. Câu trả lời gốc giữ làm lịch sử; `workspace/page.tsx` nay chỉ render `WorkspaceHomeView` [Nguồn: 05-coding/frontend/src/app/(student)/workspace/page.tsx:1-5]. | Đã đóng (phần chuyển hướng đã thay) |
 | Q13 | **Hiển thị "1. Two Sum" — số thứ tự bài lấy ở đâu?** | **Đã chốt 2026-10-18 (owner), theo đề xuất** (`DEC-2026-1018-usr-open-questions-phase1-scope`). `problems.code` là chuỗi tự do, không phải số thứ tự [Nguồn: 02-bd/database/problem-bank.md:14]. | Hiển thị `problems.code` **nguyên dạng chuỗi** [Nguồn: 05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:788-790]; muốn kiểu đánh số LeetCode thì đặt `code` là `1`, `207`... Tiêu chí ponytail bậc 5 (mặc định hợp lý, không thêm cột). BD `problem_authoring` xác nhận quy ước đặt `code` | Đã đóng |
 | Q14 | **Hộp xác nhận rời màn (EVT-21, Sheet 9 NO 16) và hộp xác nhận ghi đè mã khi đổi ngôn ngữ hoặc mô hình (EVT-4, EVT-5) còn cần không, khi mã đã có bản nháp ở trình duyệt?** | **Đã chốt 2026-10-18 (owner), theo đề xuất** (`DEC-2026-1018-usr-open-questions-phase2-5`). Bản nháp theo khoá `(problem_id, language, submission_model)` đã chặn mất mã khi đổi cặp hoặc rời màn cùng trình duyệt. | **Bỏ** hộp xác nhận rời màn (EVT-21, Sheet 9 NO 16) và hộp xác nhận ghi đè mã khi đổi ngôn ngữ hoặc mô hình (EVT-4, EVT-5); giữ nhãn "Đã lưu trên trình duyệt này". Bản dựng không có hộp nào. Đã bỏ khỏi Sheet 3, 5, 6, 8, 9, giữ số EVT/NO (gạch bỏ) thay vì đánh số lại. Tiêu chí ponytail bậc 4. | Đã đóng |
 | Q15 | **Ba điểm bản dựng lệch BD ở bố cục Workspace (thanh kéo thứ hai giữa mã và kết quả, xếp dọc dưới `lg`, header vẫn hiện) giữ hay sửa?** | **Đã chốt 2026-10-19 (owner)**: chấp nhận cả ba làm thiết kế chính thức; viết lại mục 4.4 và Sheet 8 EVT-20 cho bản dựng là đặc tả. Ponytail bậc 3 (không có yêu cầu nguồn đòi lưới cố định; thanh kéo dùng lại `shared/ui` `SplitPane`, đã có). | - | Đã đóng |
+| Q16 | **Màn phụ kết quả từng testcase (Run Code, Submit) mở lúc nào?** | Bản dựng thêm màn phụ ngày 2026-10-21; BD chưa nói thời điểm mở. | **Đã chốt 2026-10-21 (owner), theo đề xuất** (`DEC-2026-1021-student-open-questions-batch-and-run-results-dialog`): mở ngay khi bấm Run Code hoặc Submit, hiện "Đang chạy..." cho tới khi có kết quả; có thể mở lại bằng nút "Xem chi tiết" ở bảng kết quả. | Đã đóng |
+| Q17 | **Khi Submit sai ở testcase ẩn, có cho xem dữ liệu vào, mong đợi, thực tế của testcase đó không?** | Kiểu LeetCode cho xem testcase sai đầu tiên, nhưng làm lộ dần bộ test ẩn. | **Đã chốt 2026-10-21 (owner), theo đề xuất**: **không**, testcase ẩn chỉ hiện Đạt hoặc Không đạt, kể cả khi nộp sai. Tiêu chí ponytail bậc 6 (lộ nội dung testcase ẩn làm hỏng việc chống học thuộc đáp án và phiên bản bộ testcase của F2). | Đã đóng |
+| Q18 | **Ví dụ mẫu (`worked_examples`) do endpoint nào trả về?** (thêm 2026-10-22) | Trước đây ví dụ là dòng `testcases` nên đi cùng `ListSampleTestcases`; nay là bảng riêng không dính khoá nào với `testcases`. DB doc không nêu endpoint. Chưa sửa hợp đồng API (thuộc `03-dd/api/problem-bank.md`) | **ĐÃ CHỐT 2026-10-22 (chủ dự án, DEC-2026-1022-db-sync-round2 mục 12, tiêu chí ponytail bậc 4):** ví dụ mẫu trả cùng `GetProblemForWorkspace` (tab Đề bài tải một lần, đã có `statementMd` và `constraintsMd`), không có endpoint riêng; `ListSampleTestcases` chỉ còn tab Testcase và lượt chạy thử. Hợp đồng API vẫn thuộc `03-dd/api/problem-bank.md`, cần ghi `workedExamples` vào response khi viết DD | Đã đóng |

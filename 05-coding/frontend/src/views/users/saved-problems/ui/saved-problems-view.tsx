@@ -26,7 +26,6 @@ import {
   Card,
   DataTable,
   EmptyState,
-  PageHeader,
   Pagination,
   TextArea,
   FilterBar,
@@ -263,7 +262,7 @@ export function SavedProblemsView() {
               disabled
               title={t("table.withdrawnHint")}
             >
-              {t(`table.solveLabel.${problem.solveState}`)}
+              {t("table.btnOpen")}
             </Button>
           ) : (
             <Button
@@ -273,7 +272,7 @@ export function SavedProblemsView() {
               className="border border-[var(--color-border)]"
             >
               <Link href={`/problems/${problem.id}`}>
-                {t(`table.solveLabel.${problem.solveState}`)}
+                {t("table.btnOpen")}
               </Link>
             </Button>
           )}
@@ -292,10 +291,12 @@ export function SavedProblemsView() {
 
   return (
     <div className="p-6">
-      <PageHeader
-        title={t("title")}
-        description={t("subtitle", { total: all.length, solved: solvedCount })}
-      />
+      <div className="mb-4">
+        <h1 className="text-lg font-bold tracking-tight">{t("title")}</h1>
+        <p className="text-[12.5px] text-[var(--color-text-muted)]">
+          {t("subtitle", { total: all.length, solved: solvedCount })}
+        </p>
+      </div>
 
       <Card className="min-w-0 px-[18px] py-4">
         <FilterBar

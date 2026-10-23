@@ -1,28 +1,16 @@
 {
-  "_": "Chi tiet nhom 'Theo doi muc tieu thu AI' (u15 o ban tong quan): F5-21 (theo doi token) + F5-25 (ngan sach va du bao). | Cap nhat 2026-10-18: ADM0302 chi theo doi, ADM0303 ghi ngay han muc (DEC-2026-1010-split-ai-admin-screens); them gioi han tan suat theo gio (F5-19), nguong canh bao va don gia, tran sinh testcase (F2-14). F6-08 cham cau luyen tinh vao ngan sach chung (DEC-2026-1011-ai-practice-feedback-in-shared-budget).",
+  "_": "Chi tiet nhom 'Theo doi muc tieu thu AI' (u15 o ban tong quan): F5-21 (theo doi token) + F5-25 (ngan sach va du bao). | Cap nhat 2026-10-18: ADM0302 chi theo doi, ADM0303 ghi ngay han muc (DEC-2026-1010-split-ai-admin-screens); them gioi han tan suat theo gio (F5-19), nguong canh bao va don gia, tran sinh testcase (F2-14). F6-08 cham cau luyen tinh vao ngan sach chung (DEC-2026-1011-ai-practice-feedback-in-shared-budget). | Cap nhat 2026-10-20: them 2 oval canh bao bat thuong (RD ADM0302 Q1, BD ADM0302 V0.12 'Danh dau da xem') cho khop sequence dat_ngan_sach_token_p2. | 2026-10-20: tach nhom ADM0302 sang usecase_admin_theo_doi_token_ai; file nay chi con ADM0303.",
   "kind": "usecase",
-  "title": "Sơ đồ Use Case chi tiết - Theo dõi, ngân sách và hạn mức AI (Quản trị viên)",
+  "title": "Sơ đồ Use Case chi tiết - Hạn mức và chi phí AI (Quản trị viên)",
   "covers": [
     "F2-14",
     "F5-19",
-    "F5-21",
     "F5-25"
   ],
   "mode": "color",
   "usecase": {
-    "system": "Theo dõi và hạn mức AI",
+    "system": "Hạn mức và chi phí AI",
     "groups": [
-      {
-        "name": "Theo dõi tiêu thụ (ADM0302)",
-        "actors": [
-          "Quản trị viên"
-        ],
-        "usecases": [
-          "Xem thống kê tiêu thụ token",
-          "Xem dự báo cạn ngân sách",
-          "Xem bảng xếp hạng tiêu thụ token"
-        ]
-      },
       {
         "name": "Hạn mức và chi phí (ADM0303)",
         "actors": [

@@ -1,5 +1,5 @@
 {
-  "_": "Luong quan ly testcase: tai len theo lo (bo lon di MinIO), phien ban hoa khi sua sau luc da co nguoi nop, va AI sinh testcase voi output lay tu chay that Dap an mau. Nguon: US-A2-02 va US-A2-05 (01-rd/req/user_stories/a2_instructor.md:37-50, 70-83), 01-rd/req/problem-bank.md (F2-05 den F2-10, F2-14), 02-bd/database/problem-bank.md muc 1.6 (su kien TestcaseSetVersionBumped).",
+  "_": "Luong quan ly testcase: tai len theo lo (bo lon di MinIO), phien ban hoa khi sua sau luc da co nguoi nop, va AI sinh testcase voi output lay tu chay that Dap an mau. Nguon: US-A2-02 va US-A2-05 (01-rd/req/user_stories/a2_instructor.md:37-50, 70-83), 01-rd/req/problem-bank.md (F2-05 den F2-10, F2-14), 02-bd/database/problem-bank.md muc 1.6 (su kien TestcaseSetVersionBumped). | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen. Siet 2026-10-20: nhan mui ten viet ngon ngu nghiep vu, endpoint, ma HTTP, ma quyen, ten ham va cau SQL thuoc 03-dd/api va 03-dd/logic, khong ve trong hinh.",
   "_minio": "Day la luong DUY NHAT trong toan he thong cham toi MinIO (.nexa/control/dependency-map.md) -- truoc dot nay khong co ban ve nao cho no.",
   "_su_kien": "TestcaseSetVersionBumped ve duoi dang INSERT outbox_events, khong ve lifeline RabbitMQ rieng: them mot cot nua thanh 9 duong doi, be ngang vuot xa kho in ma khong noi them duoc gi -- co che Outbox da duoc ve day du o sequence_user_nop_bai_va_xem_ket_qua_realtime.",
   "kind": "sequence",
@@ -43,12 +43,12 @@
       {
         "from": "Người soạn đề",
         "to": "TestcaseController",
-        "text": "PATCH /problems/{id}/testcases/{tcId}"
+        "text": "Gửi nội dung testcase đã sửa"
       },
       {
         "from": "TestcaseController",
         "to": "TestcaseService",
-        "text": "updateTestcase(command, authorId)"
+        "text": "Xử lý sửa testcase"
       },
       {
         "from": "TestcaseService",
@@ -67,13 +67,18 @@
           "then": [
             {
               "from": "TestcaseService",
+              "to": "TestcaseService",
+              "text": "Trường hợp có"
+            },
+            {
+              "from": "TestcaseService",
               "to": "PostgreSQL",
-              "text": "UPDATE testcase + tăng testcase_set_version + INSERT outbox_events"
+              "text": "Lưu testcase và tăng phiên bản bộ testcase"
             },
             {
               "from": "TestcaseService",
               "to": "TestcaseService",
-              "text": "Phát TestcaseSetVersionBumped để judge ghi đúng số hiệu lúc bắt đầu chấm"
+              "text": "Báo máy chấm ghi đúng phiên bản lúc bắt đầu chấm"
             },
             {
               "from": "TestcaseService",
@@ -84,15 +89,20 @@
             {
               "from": "TestcaseController",
               "to": "Người soạn đề",
-              "text": "200 OK kèm cảnh báo lượt nộp cũ vẫn truy vết theo phiên bản cũ",
+              "text": "Báo thành công kèm cảnh báo: lượt nộp cũ vẫn tính theo phiên bản cũ",
               "kind": "return"
             }
           ],
           "else": [
             {
               "from": "TestcaseService",
+              "to": "TestcaseService",
+              "text": "Trường hợp không"
+            },
+            {
+              "from": "TestcaseService",
               "to": "PostgreSQL",
-              "text": "UPDATE testcase, giữ nguyên phiên bản"
+              "text": "Lưu testcase, giữ nguyên phiên bản"
             },
             {
               "from": "TestcaseService",
@@ -103,7 +113,7 @@
             {
               "from": "TestcaseController",
               "to": "Người soạn đề",
-              "text": "200 OK",
+              "text": "Báo thành công",
               "kind": "return"
             }
           ]

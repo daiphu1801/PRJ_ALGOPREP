@@ -28,13 +28,14 @@ describe("Modal", () => {
 
   it("closes when the scrim behind the panel is clicked", () => {
     const onClose = vi.fn();
-    const { container } = render(
+    render(
       <Modal open onClose={onClose} title="Xác nhận">
         <button type="button">Trong hộp thoại</button>
       </Modal>,
     );
 
-    const scrim = container.querySelector("[aria-hidden='true']");
+    // The dialog is portalled out of the render container, so look in the whole document.
+    const scrim = document.querySelector("[aria-hidden='true']");
     expect(scrim).not.toBeNull();
     fireEvent.click(scrim as Element);
 

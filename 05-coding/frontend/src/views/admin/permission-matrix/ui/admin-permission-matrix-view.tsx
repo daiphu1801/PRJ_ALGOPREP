@@ -6,9 +6,9 @@
 //
 // Divergences:
 //
-// 1. TEN functions, not eleven. `REJUDGE_MANAGEMENT` is gone with the rest of the rejudge feature
-//    (DEC-2026-0828-remove-rejudge-scope); 01-rd/req/identity.md F1-12 already lists ten, so the
-//    mockup is the stale copy here.
+// 1. ELEVEN functions (owner 2026-10-23 added LANGUAGE_CONFIG, 01-rd/req/identity.md F1-12).
+//    `REJUDGE_MANAGEMENT` stays gone with the rest of the rejudge feature
+//    (DEC-2026-0828-remove-rejudge-scope), so the mockup is the stale copy here.
 // 2. Toggling a cell applies immediately and there is NO save button. F1-10 says the change "có hiệu
 //    lực ngay", which the mockup's own subtitle repeats; ADM0202 Q1 was closed 2026-10-08 on that
 //    reading (owner), so the mockup's header button is dropped and Q5 (confirm on leaving) goes away.

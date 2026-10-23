@@ -61,7 +61,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e14" value="4. POST /submissions { problemId, language, sourceCode }" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.4512;exitDx=0;exitDy=0;entryX=0.5;entryY=0.4512;entryDx=0;entryDy=0;" edge="1" parent="1" source="v2" target="v3">
+        <mxCell id="e14" value="4. Gửi bài nộp: đề, ngôn ngữ, mã nguồn" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.4512;exitDx=0;exitDy=0;entryX=0.5;entryY=0.4512;entryDx=0;entryDy=0;" edge="1" parent="1" source="v2" target="v3">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e15" value="4.1. Kiểm tra ngôn ngữ thuộc Java / C++ / Python" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.5051;exitDx=0;exitDy=0;entryX=0.5;entryY=0.5387;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v3">
@@ -72,25 +72,25 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e16" value="4.2. submit(command, userId)" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.5825;exitDx=0;exitDy=0;entryX=0.5;entryY=0.5825;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v4">
+        <mxCell id="e16" value="4.2. Xử lý nộp bài của người học" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.5825;exitDx=0;exitDy=0;entryX=0.5;entryY=0.5825;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v4">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e17" value="4.2.1. INSERT submissions, status = PENDING" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.6364;exitDx=0;exitDy=0;entryX=0.5;entryY=0.6364;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v6">
+        <mxCell id="e17" value="4.2.1. Lưu bài nộp, trạng thái Đang chờ" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.6364;exitDx=0;exitDy=0;entryX=0.5;entryY=0.6364;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v6">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e18" value="submissionId" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.6902;exitDx=0;exitDy=0;entryX=0.5;entryY=0.6902;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v4">
+        <mxCell id="e18" value="Mã bài nộp" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.6902;exitDx=0;exitDy=0;entryX=0.5;entryY=0.6902;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v4">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e19" value="4.2.2. Đẩy job chấm vào hàng đợi" style="edgeStyle=none;html=1;endArrow=open;endFill=0;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.7441;exitDx=0;exitDy=0;entryX=0.5;entryY=0.7441;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v5">
+        <mxCell id="e19" value="4.2.2. Đưa bài vào hàng đợi chấm" style="edgeStyle=none;html=1;endArrow=open;endFill=0;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.7441;exitDx=0;exitDy=0;entryX=0.5;entryY=0.7441;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v5">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e20" value="submissionId" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.7980;exitDx=0;exitDy=0;entryX=0.5;entryY=0.7980;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v3">
+        <mxCell id="e20" value="Mã bài nộp" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.7980;exitDx=0;exitDy=0;entryX=0.5;entryY=0.7980;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v3">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e21" value="202 Accepted - không chờ chấm xong" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8519;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8519;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v2">
+        <mxCell id="e21" value="Báo đã nhận bài, không chờ chấm xong" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8519;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8519;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v2">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e22" value="5. Mở kênh WebSocket /topic/submissions/{id}" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.9057;exitDx=0;exitDy=0;entryX=0.5;entryY=0.9394;entryDx=0;entryDy=0;" edge="1" parent="1" source="v2" target="v2">
+        <mxCell id="e22" value="5. Mở kênh nhận kết quả chấm trực tiếp" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.9057;exitDx=0;exitDy=0;entryX=0.5;entryY=0.9394;entryDx=0;entryDy=0;" edge="1" parent="1" source="v2" target="v2">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
             <mxPoint x="180" y="598" />

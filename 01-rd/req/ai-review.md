@@ -16,6 +16,7 @@ hoạt **sau khi** bài nộp đạt `Accepted`. F5.2 (Mock Interview) có lối
   prototype `submission_result` đã dựng (nút bấm, không tự chạy).
 - Phân tích độ phức tạp thời gian và bộ nhớ thực tế kèm lập luận (F5-02); đối chiếu với độ phức tạp tối ưu
   đã biết của bài toán, gợi ý hướng tiếp cận tốt hơn nếu chưa tối ưu (F5-03).
+  Sửa 2026-10-22 (đồng bộ DB vòng 2, DEC-2026-1022-db-sync-round2), mục 10: **giới hạn phạm vi** — chủ dự án chốt 2026-10-22: không có ô nhập độ phức tạp tối ưu ở bất kỳ màn nào (`problems.known_optimal_complexity` giữ NULL), nên bước đối chiếu với optimum bị bỏ qua khi giá trị là NULL; báo cáo vẫn có phân tích độ phức tạp thực tế (F5-02) và gợi ý hướng tốt hơn do AI đưa ra.
 - Chỉ ra trường hợp biên bộ test chưa phủ, giả định ngầm trong mã, nguy cơ tràn số, rủi ro khi dữ liệu lớn
   hơn ràng buộc (F5-04); nhận xét chất lượng mã — đặt tên, phân rã, trùng lặp, độ dễ đọc, **kèm một điểm số
   dễ đọc quy ước thang 1-5 do chính AI tự chấm trong cùng lượt phân tích** (không gọi thêm lần nào, chỉ là
@@ -121,7 +122,7 @@ hoạt **sau khi** bài nộp đạt `Accepted`. F5.2 (Mock Interview) có lối
   Accepted, hoặc mở độc lập để tự luyện**, không phải điều kiện bắt buộc.
 - **F5-28 — Tự chỉnh tham số phiên tự luyện** (chốt 2026-08-25, tự quyết theo yêu cầu trực tiếp của chủ dự
   án, đối chiếu `09-layoutBase/Cài đặt.dc.html` mục "Phỏng vấn giả lập"): người học đặt trước Mức người
-  phỏng vấn (danh sách mức do admin cấu hình động, không cố định 3 mức; chốt 2026-10-19, `DEC-2026-1001-admin-configurable-settings`; ví dụ mặc định Junior/Middle/Senior), Số lượt tối đa mỗi phiên, và Cho phép gợi ý khi bí — **chỉ áp dụng cho
+  phỏng vấn (danh sách cố định 4 mức `INTERN`/`JUNIOR`/`MIDDLE`/`SENIOR`; **sửa 2026-10-22**, `DEC-2026-1022-ai-judge-schema-sync` mục 1: ~~danh sách mức do admin cấu hình động, không cố định 3 mức; chốt 2026-10-19, `DEC-2026-1001-admin-configurable-settings`~~, admin không thêm/bớt mức), Số lượt tối đa mỗi phiên, và Cho phép gợi ý khi bí — **chỉ áp dụng cho
   hai lối vào tự luyện của F5-24** (kho câu hỏi/tự chọn chủ đề), không áp dụng cho lối vào từ bài nộp
   `Accepted` (F5-09) để giữ tính khách quan của phiên gắn với một bài giải thật.
 - **Áp dụng bản mã AI đề xuất vào Workspace** (F5-26) — bổ sung theo `06-plan/PROTOTYPE_DEBT.md` mục 2.13,

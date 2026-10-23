@@ -31,7 +31,7 @@
 >   và cùng ngôn ngữ; chỉ hiển thị khi verdict là `Accepted` **và** hệ thống có ít nhất 10 bài nộp `Accepted`
 >   cùng bài, cùng ngôn ngữ; ít hơn thì in "Chưa đủ dữ liệu so sánh" thay cho số % (Q2, chốt 2026/10/18).
 
-- **Bài đã rút khỏi ngân hàng** (`deleted = true`, G4 2026-10-08): kết quả nộp vẫn mở được; liên kết về `problem_detail` ở breadcrumb và nút "Làm lại" bị vô hiệu kèm nhãn "Đã rút khỏi ngân hàng". Quy tắc đầy đủ ở `02-bd/database/problem-bank.md` mục 1.1a, không chép lại ở đây.
+- **Bài đã rút khỏi ngân hàng** (`deleted = true`, G4 2026-10-08): kết quả nộp vẫn mở được; liên kết về `problem_overview` (`USR0104`) ở breadcrumb và nút "Làm lại" (về `problem_detail`) bị vô hiệu kèm nhãn "Đã rút khỏi ngân hàng". Quy tắc đầy đủ ở `02-bd/database/problem-bank.md` mục 1.1a, không chép lại ở đây.
 
 > **Quy ước đặt tên khối** [Nội bộ]. Sáu khối: `breadcrumb` (đường dẫn phân cấp), `verdictBanner` (thẻ kết quả
 > tổng quan kèm điểm tỷ lệ), `runStats` (thanh 6 chỉ số vận hành), `testcaseList` (danh sách kết quả từng
@@ -54,11 +54,11 @@
 | Tên vật lý (slug) | `submission_result` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`); A2 (`INSTRUCTOR`) ở chế độ chỉ đọc, xem mục "Vùng giảng viên (A2)" |
-| Phiên bản | V0.9 |
+| Phiên bản | V0.11 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/22 |
 | Người cập nhật | Claude |
-| Ngày cập nhật | 2026/10/19 |
+| Ngày cập nhật | 2026/10/22 |
 
 ---
 
@@ -76,6 +76,8 @@
 | V0.7 | Mục "Vùng giảng viên (A2)" (Hiện trạng bản dựng NO 2, 3, 4, thêm NO 6, 7; cột "Bản dựng" của bảng khác biệt item NO A1, A3, Ngữ cảnh 1 đến 3) | Dựng prototype trang kết quả của giảng viên (`from=`, breadcrumb, sidebar). Breadcrumb theo `from` (`submissions` lùi lịch sử bằng `router.back()`, `student` và `class` có chuỗi lớp), sidebar sáng mục màn gọi tới, gợi ý `studentId`/`classId` được kiểm với lớp, trang không đăng ký realtime. Đóng NO 2 và NO 3; NO 4 còn lệch một phần; thêm NO 6 (chủ lượt nộp không đọc được từ lượt nộp mẫu) và NO 7 (`from=class` chưa có nơi gọi). Không đổi yêu cầu hay quyết định thiết kế. **Chưa duyệt hình** | 2026/10/14 | AI |
 | V0.8 | Phương châm, Sheet 3.1, 4.1 (DTO), 5 (C NO 5, D NO 10), 6 (C NO 5, D NO 10), 7.1, 7.3, 9 (thêm NO 6, 7), Vùng A2 (Truyền dữ liệu, Hiện trạng), Câu hỏi mở (đóng Q1 đến Q4) | Áp `DEC-2026-1018-usr-open-questions-phase1-scope` và `DEC-2026-1018-usr-open-questions-phase2-5` cho màn này, chủ dự án chốt theo đề xuất: (1) Q1 kênh STOMP dùng user-destination `/user/queue/submissions`, interceptor kiểm quyền sở hữu bài nộp (ponytail bậc 6); (2) Q2 Beats chỉ hiện khi hệ thống có từ 10 bài nộp `Accepted` cùng bài, cùng ngôn ngữ, ít hơn in "Chưa đủ dữ liệu so sánh" (bậc 5), hằng `BEATS_MIN_ACCEPTED`; (3) Q3 giữ kết quả từng testcase 90 ngày, sau đó chỉ còn verdict tổng (bậc 5); (4) Q4 cột `submission_testcase_results.actual_output_snippet`, chỉ ghi cho testcase `SAMPLE` (bậc 1), tài liệu cơ sở dữ liệu do bên khác sửa nên ở đây chỉ gọi tên cột. Code: thẻ Beats trong `submission-result-view.tsx` theo ngưỡng; hộp "Kết quả thực tế mẫu" đã có sẵn. Chưa duyệt hình | 2026/10/18 | Claude |
 | V0.9 | Sheet 5 (Khu vực C, Khu vực D NO 11), 6 (Khu vực C, Khu vực D NO 11), 8 (mở rộng testcase), Hiện trạng bản dựng vùng học viên (NO 4, 5) | Sửa theo đợt rà soát prototype 2026/10/19 (area B), owner chốt: (1) **Khu vực C của vùng học viên bỏ dải 5 thẻ**, gộp thành **một dòng chữ trong banner** như vùng giảng viên (quy tắc owner 2026-10-13; Runtime, Memory, Beats, Cách nộp; Testcase đã nằm trong banner, thẻ Điểm trùng điểm tỷ lệ ở Khu vực B NO 3 nên không lặp); (2) **bỏ Khu vực D NO 11** (dòng thông báo testcase ẩn): nút mở rộng của testcase ẩn bị vô hiệu theo Sheet 6 NO 7 nên dòng này không bao giờ hiện, hai dòng BD mâu thuẫn nhau; không phải đổi hành vi, chỉ bỏ mã chết và khoá i18n `sample.hiddenNotice`. Nút mở rộng có `aria-expanded`. Giờ nộp in bằng `formatDateVN` (UTC+7, theo locale hiện hành). Chưa duyệt hình | 2026/10/19 | Claude |
+| V0.10 | Sheet 3 (Làm lại bài, breadcrumb, sơ đồ), 4 (4.4), 6 (NO 3, NO 8), Hiện trạng bản dựng vùng học viên (2026-10-20) | Đồng bộ bản dựng 2026/10/20 theo `DEC-2026-1020-student-workspace-split-and-password-in-settings`: vùng học viên đổi sang hai cột (banner và nút hành động ở cột phải dính khi cuộn); "Làm lại" đi `/workspace/{slug}`; tên bài ở breadcrumb đi trang đọc đề `USR0104`; ghi nhận mock bài nộp dùng mã danh mục; route Phỏng vấn giả lập sửa BD theo code (`/submissions/{id}/interview`). Chưa duyệt hình | 2026/10/21 | Claude |
+| V0.11 | Sheet 5 (Khu vực D NO 3, 8, 9, 10), Sheet 7 (dòng `[Nguồn]`), Câu hỏi mở Q4 | Sửa 2026-10-22 đồng bộ DB (JD-15 và trích dẫn): (1) Khu vực D NO 10 ghi rõ DB lưu tối đa 4096 ký tự còn màn hiển thị 2000 ký tự (hai số cố ý khác nhau, `02-bd/database/judge-orchestration.md:60`), và `actual_output_snippet` chỉ ghi cho testcase `SAMPLE`, `HIDDEN` luôn `NULL`; (2) đọc lại số dòng trích dẫn: `submission_testcase_results` dịch +4 (ví dụ `testcase_order` `:51` thành `:55`), cột `problem.testcases` `visibility`/`input_*`/`expected_output_*` trước đó trỏ nhầm vào vùng `problem_levels` nay sửa thành `:142`, `:143-145`, `:146-148`, `identity.class_enrollments` thành `:118-140`. Không đổi quyết định, không đổi RD | 2026/10/22 | Claude |
 
 ---
 
@@ -138,27 +140,43 @@ thì tự động subscribe kênh WebSocket riêng của người dùng `/user/q
 [Điều kiện mở] Bài nộp có verdict `ACCEPTED`, bấm nút "Phỏng vấn giả lập"
 [Nguồn: 01-rd/req/ai-review.md — F5-09].
 
-[Chế độ mở] Điều hướng URL `/mock-interview?submission_id={submission_id}`.
+[Chế độ mở] Điều hướng URL `/submissions/{submission_id}/interview` (owner chốt 2026/10/21: lấy route của bản dựng làm chuẩn; `/mock-interview` là lối vào tự do từ thanh nav).
 
 [Thông tin truyền] `submission_id`, `problem_id`.
 
 [Giá trị trả về] Không có.
 
-[Khi thành công] Mở màn `mock_interview` gắn với bài nộp hiện tại.
+[Khi thành công] Mở màn `mock_interview` gắn với bài nộp hiện tại. Bản dựng hiện vẫn mở màn chọn đầu vào và chưa đọc `submission_id` từ URL (nợ prototype).
 
 [Khi huỷ] Không có.
 
 #### Kết quả nộp bài → Chi tiết bài tập (Làm lại bài)
 
-[Điều kiện mở] Bấm nút "Làm lại bài" hoặc bấm tiêu đề bài toán ở breadcrumb.
+[Điều kiện mở] Bấm nút "Làm lại bài" (từ 2026-10-20 đi thẳng vào màn soạn mã, không qua trang đọc đề)
+[Nguồn: 05-coding/frontend/src/views/users/submission-result/ui/submission-result-view.tsx:515].
 
-[Chế độ mở] Điều hướng URL `/problems/{problem_slug}`.
+[Chế độ mở] Điều hướng URL `/workspace/{problem_slug}`.
 
 [Thông tin truyền] `problem_slug` hoặc `problem_id`.
 
 [Giá trị trả về] Không có.
 
-[Khi thành công] Mở Workspace giải bài của đúng bài toán.
+[Khi thành công] Mở Workspace giải bài (`problem_detail`, `USR0102`) của đúng bài toán.
+
+[Khi huỷ] Không có.
+
+#### Kết quả nộp bài → Tổng quan bài toán (breadcrumb)
+
+[Điều kiện mở] Bấm tên bài toán ở breadcrumb
+[Nguồn: 05-coding/frontend/src/views/users/submission-result/ui/submission-result-view.tsx:151].
+
+[Chế độ mở] Điều hướng URL `/problems/{problem_slug}`.
+
+[Thông tin truyền] `problem_slug`.
+
+[Giá trị trả về] Không có.
+
+[Khi thành công] Mở `problem_overview` (`USR0104`), trang đọc đề chỉ đọc. Bấm "Bài toán" ở breadcrumb thì về `/problems` (`:146`).
 
 [Khi huỷ] Không có.
 
@@ -171,11 +189,12 @@ flowchart LR
     SR -->|"Verdict ACCEPTED"| SOL["USR0301 solution_review"]
     SR -->|"Verdict ACCEPTED"| MI["USR0302 mock_interview"]
     SR -->|"Làm lại bài"| PD
+    SR -->|"Tên bài ở breadcrumb"| PO["USR0104 problem_overview"]
 
     classDef source fill:#F3E5F5,stroke:#9C5CC4,color:#000
     classDef screen fill:#E3F2FD,stroke:#3B82F6,color:#000
 
-    class PD,MS,SOL,MI source
+    class PD,MS,SOL,MI,PO source
     class SR screen
 ```
 
@@ -216,7 +235,7 @@ flowchart LR
 
 ### 4.4. Vùng bố cục bám prototype
 
-Bố cục dạng luồng dọc đơn cột (Single-column layout), chia thành 6 khu vực chính:
+Từ 2026-10-20, vùng học viên bố cục **hai cột**: cột trái gồm bảng testcase (D) và mã nguồn (E); cột phải rộng 320px, dính khi cuộn (`sticky`), gồm banner kết quả (B, kèm dòng chỉ số C) và các nút hành động (F); breadcrumb (A) nằm trên cùng. Dưới `lg` các khối xếp một cột theo thứ tự cũ. Vùng giảng viên (A2) vẫn một cột. Sáu khu vực:
 
 | Ký hiệu | Tên khu vực | Tham chiếu prototype | Ghi chú |
 | :-: | :--- | :--- | :--- |
@@ -225,7 +244,7 @@ Bố cục dạng luồng dọc đơn cột (Single-column layout), chia thành 
 | **C** | Thanh 6 chỉ số vận hành (Run Stats) | `Kết quả nộp bài.dc.html:123-131,314-320` | Testcase, Điểm, Runtime, Memory, Beats, Cách nộp |
 | **D** | Bảng kết quả từng testcase | `Kết quả nộp bài.dc.html:134-170` | Danh sách testcase, mở rộng chi tiết mẫu, che ẩn testcase bảo mật |
 | **E** | Trình xem mã nguồn đã nộp | `Kết quả nộp bài.dc.html:173-195` | Monaco Editor chỉ đọc, syntax highlight, chỉ báo lỗi biên dịch |
-| **F** | Thanh hành động tiếp theo | `Kết quả nộp bài.dc.html:198-215` | Nút Phân tích bài giải, Phỏng vấn giả lập, Nộp lại bài |
+| **F** | Thanh hành động tiếp theo | `Kết quả nộp bài.dc.html:198-215` | Nút Phân tích bài giải, Phỏng vấn giả lập, Nộp lại bài. Bản dựng xếp ba nút thành một cột dọc, rộng bằng cột phải |
 
 ### 4.5. Cấu trúc slice FSD [Nội bộ]
 
@@ -284,16 +303,16 @@ Bố cục dạng luồng dọc đơn cột (Single-column layout), chia thành 
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Bảng kết quả testcase | | | | | | | | | | | | | |
-| | 1 | Danh sách kết quả testcase | `submissionResult.testcase.list` | `judge.submission_testcase_results` | - | List | List | - | - | O | rỗng | - | Toàn bộ dòng kết quả của submission, sắp theo `testcase_order` [Nguồn: 02-bd/database/judge-orchestration.md:51]. **Ẩn hẳn khối này** khi `status = COMPILE_ERROR` — chưa có testcase nào chạy [Nguồn: 01-rd/screens/users/USR0201_submission_result.md:142]<br>[EVT liên quan] EVT-1 |
-| | 2 | Cột Số thứ tự | `submissionResult.testcase.col.index` | `judge.submission_testcase_results` | `testcase_order` | ListColumn | Number | 5 | - | O | - | - | Thứ tự chạy trong submission [Nguồn: 02-bd/database/judge-orchestration.md:51]<br>[EVT liên quan] - |
-| | 3 | Cột Loại testcase | `submissionResult.testcase.col.isSample` | `problem.testcases` | `visibility` | ListColumn | Badge | 20 | - | O | - | "Mẫu" / "Ẩn" | Phân biệt `SAMPLE`/`HIDDEN`, tra theo `submission_testcase_results.testcase_id` [Nguồn: 02-bd/database/problem-bank.md:89]<br>[EVT liên quan] - |
-| | 4 | Cột Trạng thái | `submissionResult.testcase.col.verdict` | `judge.submission_testcase_results` | `verdict` | ListColumn | Badge | 30 | - | O | - | - | Verdict riêng của testcase: `AC`/`WA`/`TLE`/`MLE`/`RE` [Nguồn: 02-bd/database/judge-orchestration.md:52]<br>[EVT liên quan] - |
-| | 5 | Cột Runtime | `submissionResult.testcase.col.runtime` | `judge.submission_testcase_results` | `runtime_ms` | ListColumn | String | 20 | - | O | - | `{runtime} ms` | Thời gian thực thi của riêng testcase [Nguồn: 02-bd/database/judge-orchestration.md:53]<br>[EVT liên quan] - |
-| | 6 | Cột Memory | `submissionResult.testcase.col.memory` | `judge.submission_testcase_results` | `memory_kb` | ListColumn | String | 20 | - | O | - | `{memory/1024} MB` | Bộ nhớ của riêng testcase<br>[Chuyển đổi] Cột lưu KB, hiển thị quy đổi MB [Nguồn: 02-bd/database/judge-orchestration.md:54]<br>[EVT liên quan] - |
+| | 1 | Danh sách kết quả testcase | `submissionResult.testcase.list` | `judge.submission_testcase_results` | - | List | List | - | - | O | rỗng | - | Toàn bộ dòng kết quả của submission, sắp theo `testcase_order` [Nguồn: 02-bd/database/judge-orchestration.md:55]. **Ẩn hẳn khối này** khi `status = COMPILE_ERROR` — chưa có testcase nào chạy [Nguồn: 01-rd/screens/users/USR0201_submission_result.md:142]<br>[EVT liên quan] EVT-1 |
+| | 2 | Cột Số thứ tự | `submissionResult.testcase.col.index` | `judge.submission_testcase_results` | `testcase_order` | ListColumn | Number | 5 | - | O | - | - | Thứ tự chạy trong submission [Nguồn: 02-bd/database/judge-orchestration.md:55]<br>[EVT liên quan] - |
+| | 3 | Cột Loại testcase | `submissionResult.testcase.col.isSample` | `problem.testcases` | `visibility` | ListColumn | Badge | 20 | - | O | - | "Mẫu" / "Ẩn" | Phân biệt `SAMPLE`/`HIDDEN`, tra theo `submission_testcase_results.testcase_id` [Nguồn: 02-bd/database/problem-bank.md:142]<br>[EVT liên quan] - |
+| | 4 | Cột Trạng thái | `submissionResult.testcase.col.verdict` | `judge.submission_testcase_results` | `verdict` | ListColumn | Badge | 30 | - | O | - | - | Verdict riêng của testcase: `AC`/`WA`/`TLE`/`MLE`/`RE` [Nguồn: 02-bd/database/judge-orchestration.md:56]<br>[EVT liên quan] - |
+| | 5 | Cột Runtime | `submissionResult.testcase.col.runtime` | `judge.submission_testcase_results` | `runtime_ms` | ListColumn | String | 20 | - | O | - | `{runtime} ms` | Thời gian thực thi của riêng testcase [Nguồn: 02-bd/database/judge-orchestration.md:57]<br>[EVT liên quan] - |
+| | 6 | Cột Memory | `submissionResult.testcase.col.memory` | `judge.submission_testcase_results` | `memory_kb` | ListColumn | String | 20 | - | O | - | `{memory/1024} MB` | Bộ nhớ của riêng testcase<br>[Chuyển đổi] Cột lưu KB, hiển thị quy đổi MB [Nguồn: 02-bd/database/judge-orchestration.md:58]<br>[EVT liên quan] - |
 | | 7 | Nút Mở rộng chi tiết | `submissionResult.testcase.btnExpand` | - | - | Button | - | 20 | - | I | - | "Chi tiết" | Chỉ kích hoạt với testcase Mẫu (`visibility = SAMPLE`)<br>[Nguồn giá trị] Nhãn tĩnh<br>[EVT liên quan] EVT-4 |
-| | 8 | Hộp Dữ liệu đầu vào mẫu | `submissionResult.testcase.sampleInput` | `problem.testcases` | `input_inline` (hoặc `input_object_key` trên MinIO nếu `input_storage = MINIO`) | TextArea | String | 2000 | - | O | - | - | Input của testcase mẫu [Nguồn: 02-bd/database/problem-bank.md:90-92]<br>[EVT liên quan] - |
-| | 9 | Hộp Kết quả kỳ vọng mẫu | `submissionResult.testcase.sampleExpected` | `problem.testcases` | `expected_output_inline` (hoặc `expected_output_object_key` trên MinIO) | TextArea | String | 2000 | - | O | - | - | Output kỳ vọng của testcase mẫu [Nguồn: 02-bd/database/problem-bank.md:93-95]<br>[EVT liên quan] - |
-| | 10 | Hộp Kết quả thực tế mẫu | `submissionResult.testcase.sampleActual` | `judge.submission_testcase_results` | `actual_output_snippet` | TextArea | String | 2000 | - | O | - | - | Output chương trình học viên trả về cho testcase mẫu. Cột `actual_output_snippet` (cắt như `stderr_snippet`, **chỉ ghi cho testcase `SAMPLE`**) do chủ dự án chốt ở Q4 ngày 2026/10/18 (`DEC-2026-1018-usr-open-questions-phase2-5`); định nghĩa cột nằm ở `02-bd/database/judge-orchestration.md`, tài liệu đó do bên khác cập nhật, ở đây chỉ gọi tên cột. Testcase `HIDDEN` không có giá trị<br>[EVT liên quan] - |
+| | 8 | Hộp Dữ liệu đầu vào mẫu | `submissionResult.testcase.sampleInput` | `problem.testcases` | `input_inline` (hoặc `input_object_key` trên MinIO nếu `input_storage = MINIO`) | TextArea | String | 2000 | - | O | - | - | Input của testcase mẫu [Nguồn: 02-bd/database/problem-bank.md:143-145]<br>[EVT liên quan] - |
+| | 9 | Hộp Kết quả kỳ vọng mẫu | `submissionResult.testcase.sampleExpected` | `problem.testcases` | `expected_output_inline` (hoặc `expected_output_object_key` trên MinIO) | TextArea | String | 2000 | - | O | - | - | Output kỳ vọng của testcase mẫu [Nguồn: 02-bd/database/problem-bank.md:146-148]<br>[EVT liên quan] - |
+| | 10 | Hộp Kết quả thực tế mẫu | `submissionResult.testcase.sampleActual` | `judge.submission_testcase_results` | `actual_output_snippet` | TextArea | String | 2000 | - | O | - | - | Output chương trình học viên trả về cho testcase mẫu. Cột `actual_output_snippet` (**chỉ ghi cho testcase `SAMPLE`**) do chủ dự án chốt ở Q4 ngày 2026/10/18 (`DEC-2026-1018-usr-open-questions-phase2-5`); định nghĩa cột ở `02-bd/database/judge-orchestration.md:60`. **Độ dài: DB lưu tối đa 4096 ký tự (cùng giới hạn `stderr_snippet`), màn này chỉ hiển thị 2000 ký tự, hai con số khác nhau có chủ ý** (cột Độ dài 2000 là độ dài hiển thị; phần quá 2000 không hiện, không có nút xem thêm). Testcase `HIDDEN` luôn `NULL`, không bao giờ lộ<br>[EVT liên quan] - |
 
 ### Khu vực E — Trình xem mã nguồn đã nộp
 
@@ -314,8 +333,8 @@ Bố cục dạng luồng dọc đơn cột (Single-column layout), chia thành 
 | | 2 | Nút Phỏng vấn giả lập | `submissionResult.action.btnMockInterview` | - | - | Button | String | 50 | Có | I | - | "Phỏng vấn giả lập (AI)" | Mở phỏng vấn 1:1 F5-09, chỉ bật khi `status = ACCEPTED`<br>[Nguồn giá trị] Nhãn tĩnh<br>[EVT liên quan] EVT-7 |
 | | 3 | Nút Làm lại bài | `submissionResult.action.btnRetry` | - | - | Button | String | 50 | Có | I | - | "Quay lại Workspace" | Trở lại Workspace của bài toán hiện tại<br>[Nguồn giá trị] Nhãn tĩnh<br>[EVT liên quan] EVT-8 |
 
-[Nguồn: 02-bd/database/judge-orchestration.md:14,18-31,46-57;
-02-bd/database/problem-bank.md:15,17,89-95;
+[Nguồn: 02-bd/database/judge-orchestration.md:14,18-31,50-61;
+02-bd/database/problem-bank.md:15,18,142-148;
 02-bd/architecture/judge-orchestration.md:216-233;
 01-rd/screens/users/USR0201_submission_result.md:36,93-96,141-142]
 
@@ -432,12 +451,12 @@ Bố cục dạng luồng dọc đơn cột (Single-column layout), chia thành 
 | --: | :--- | :--- | :--- | :-: | :-: | :--- | :--- |
 | 1 | Khởi tạo | Mở màn hình | Tải thông tin ban đầu của bài nộp dựa trên `submission_id` từ URL. | Không | Có | `GetSubmissionDetail` | [Các bước]<br>1. Đọc `submission_id` từ URL.<br>2. Gọi `GetSubmissionDetail`.<br>3. Nếu trạng thái là `PENDING` hoặc `JUDGING`, kích hoạt kết nối STOMP.<br>[Khi thành công] Hiển thị các khối dữ liệu.<br>[Khi lỗi] Báo lỗi không tìm thấy bài nộp hoặc không có quyền truy cập. |
 | 2 | Điều hướng | Bấm link Ngân hàng bài | Người dùng bấm link quay về danh sách bài tập. | Có | Không | - | [Các bước]<br>1. Điều hướng sang `problem_list` (`USR0101`). |
-| 3 | Điều hướng | Bấm link Tiêu đề bài | Người dùng bấm vào tiêu đề bài toán. | Có | Không | - | [Các bước]<br>1. Điều hướng sang `problem_detail` (`USR0102`) của bài toán tương ứng. |
+| 3 | Điều hướng | Bấm link Tiêu đề bài | Người dùng bấm vào tiêu đề bài toán. | Có | Không | - | [Các bước]<br>1. Điều hướng sang `problem_overview` (`USR0104`, `/problems/{slug}`) của bài toán tương ứng. |
 | 4 | Giao diện | Mở rộng chi tiết testcase | Bấm mở rộng hàng kết quả testcase. | Không | Không | - | [Các bước]<br>1. Nếu là testcase mẫu: toggle mở rộng hiển thị Input, Expected, Actual.<br>2. Nếu là testcase ẩn: nút bị vô hiệu, không mở rộng (Khu vực D NO 7); không có dòng thông báo (bỏ NO 11 ở V0.9). |
 | 5 | Giao diện | Sao chép mã nguồn | Bấm nút Sao chép mã. | Không | Không | - | [Các bước]<br>1. Gọi Clipboard API sao chép toàn bộ `sourceCode`.<br>[Khi thành công] Hiện toast thành công "Đã sao chép mã nguồn."<br>[Khi lỗi] Trình duyệt không hỗ trợ Clipboard API hoặc ghi vào clipboard bị từ chối thì hiện toast lỗi "Không sao chép được mã nguồn." [Nguồn: 05-coding/frontend/src/views/users/submission-result/ui/submission-result-view.tsx:109-119]. |
 | 6 | Điều hướng | Bấm Phân tích bài giải | Bấm nút Phân tích bài giải AI. | Có | Không | - | [Các bước]<br>1. Kiểm tra verdict = `ACCEPTED`.<br>2. Điều hướng sang `solution_review` (`USR0301`) kèm `submission_id`. |
 | 7 | Điều hướng | Bấm Phỏng vấn giả lập | Bấm nút Phỏng vấn giả lập AI. | Có | Không | - | [Các bước]<br>1. Kiểm tra verdict = `ACCEPTED`.<br>2. Điều hướng sang `mock_interview` (`USR0302`) kèm `submission_id`. |
-| 8 | Điều hướng | Bấm Làm lại bài | Bấm nút Làm lại bài. | Có | Không | - | [Các bước]<br>1. Điều hướng về `problem_detail` (`USR0102`) của bài toán tương ứng để mở lại Workspace. |
+| 8 | Điều hướng | Bấm Làm lại bài | Bấm nút Làm lại bài. | Có | Không | - | [Các bước]<br>1. Điều hướng về `problem_detail` (`USR0102`, `/workspace/{slug}`) của bài toán tương ứng để mở lại Workspace. |
 | 9 | Realtime | Nhận event testcase xong | Nhận bản tin STOMP cập nhật tiến độ từ máy chủ. | Không | Không | - | [Các bước]<br>1. Cập nhật trạng thái dòng testcase tương ứng trong bảng.<br>2. Tăng số đếm testcase hoàn thành.<br>3. Nếu `isCompleted = true`, cập nhật verdict tổng và đóng kết nối WebSocket. |
 
 ---
@@ -528,7 +547,7 @@ Trạng thái trang: đang tải, không tìm thấy dùng nhãn `submissionResu
 
 - **Endpoint:** vẫn `GetSubmissionDetail` (mục 7.3 NO 1), **thêm biến thể cho A2**: điều kiện lọc không còn `user_id = :currentUserId` mà là kiểm phạm vi lớp (quy tắc ở "Kiểm tra" bên dưới); phản hồi thêm `studentId`, `studentName`, `classId`, `className`, `leftClass` và không cần `beatsPercent`. Tên DTO và biến thể chốt ở `03-dd/api/judge-orchestration.md` `[SoT: Suy luận]`.
 - **Không có** `SubscribeSubmissionRealtime` cho A2. **ĐÃ CHỐT 2026-10-14 (DEC-2026-1014-instructor-submissions-list-details):** trang kết quả vùng giảng viên **không đăng ký kênh STOMP**: tải một lần bằng `GetSubmissionDetail`, lượt nộp đang chạy hiện trạng thái hiện tại, muốn cập nhật thì tải lại trang. Lý do: không mở thêm cửa nghe kênh realtime của học viên (kênh người dùng `/user/queue/submissions`, Câu hỏi mở Q1, đã chốt 2026/10/18 là kênh gắn với chủ bài nộp) [Nguồn: .nexa/control/decision-registry.md:3989-3993].
-- Phạm vi lớp (kiểm ở máy chủ) cần từ `identity` dữ liệu ghi danh kèm `joined_at`, `left_at` và từ `problem-bank` bài đã giao, qua cổng ra; `identity` giữ lịch sử ghi danh (đã có `left_at`) [Nguồn: 02-bd/database/identity.md:98-115].
+- Phạm vi lớp (kiểm ở máy chủ) cần từ `identity` dữ liệu ghi danh kèm `joined_at`, `left_at` và từ `problem-bank` bài đã giao, qua cổng ra; `identity` giữ lịch sử ghi danh (đã có `left_at`) [Nguồn: 02-bd/database/identity.md:118-140].
 - Bảng truy cập thêm so với Sheet 7.2: `identity.classes`, `identity.class_enrollments`, `problem.class_assignments` (đều R, gián tiếp qua cổng).
 
 ### Kiểm tra (chỉ chỗ khác, mã thông báo `Chưa có mã thông báo`)
@@ -572,6 +591,20 @@ Bản dựng prototype so với các quyết định ngày 2026/10/18 (Q1 đến
 | 3 | Không có STOMP thật, trang đọc dữ liệu mock một lần | `submission-result-view.tsx:11-13` | Q1, Sheet 9 NO 7 | Còn nợ (chờ backend) |
 | 4 | Khu vực C vùng học viên: một dòng chữ dưới banner (`Runtime · Memory · Beats · Cách nộp`), không còn dải 5 thẻ; giờ nộp qua `formatDateVN` | `submission-result-view.tsx` (khối Khu vực B, C) | Sheet 5 C, quy tắc owner 2026-10-13 | Khớp, owner chốt 2026/10/19 |
 | 5 | Nút mở rộng testcase có `aria-expanded`; testcase ẩn vô hiệu, không còn nhánh `hiddenNotice`. Mã verdict từng testcase (`AC`, `WA`, `TLE`...) in mã quốc tế, chưa qua i18n | `submission-result-view.tsx` (`TestcaseRow`) | Sheet 5 D NO 4, Sheet 6 D NO 7 | Mã verdict là nợ nhỏ (Thấp), chấp nhận ở prototype |
+
+---
+
+## Hiện trạng bản dựng vùng học viên (2026-10-20)
+
+Bản dựng prototype sau đợt chỉnh giao diện ngày 2026/10/20, theo `DEC-2026-1020-student-workspace-split-and-password-in-settings`. Chưa duyệt hình.
+
+| # | Điều quan sát | Vị trí | Thiết kế | Tình trạng |
+| :-: | :--- | :--- | :--- | :--- |
+| 1 | Vùng học viên hai cột: lưới `minmax(0,1fr)` và 320px, cột trái bảng testcase và mã nguồn, cột phải `aside` dính khi cuộn gồm banner (B, C) và ba nút (F) xếp dọc rộng bằng cột | `submission-result-view.tsx:347,437-521` | Sheet 4.4 | Khớp BD V0.10, chưa duyệt hình |
+| 2 | Nút "Làm lại" đi `/workspace/{problemSlug}`; tên bài ở breadcrumb đi `/problems/{problemSlug}` (trang đọc đề); "Bài toán" ở breadcrumb đi `/problems` | `:515`, `:151`, `:146` | Sheet 3, Sheet 6 NO 3, NO 8 | Khớp BD V0.10 |
+| 3 | Nút "Phỏng vấn giả lập" đi `/submissions/{id}/interview` (route `app/(student)/submissions/[submissionId]/interview/page.tsx`), trước đây Sheet 3 ghi `/mock-interview?submission_id={id}`; owner chốt 2026/10/21 sửa BD theo code. Trang route này chỉ render `MockInterviewView`, màn chưa đọc `submission_id` từ URL | `:503` | Sheet 3 thẻ "Phỏng vấn giả lập" | Đã sửa BD; còn nợ prototype: màn chưa đọc mã bài nộp để chọn sẵn đầu vào |
+| 4 | Mock bài nộp đã đổi mã bài sang danh mục (`#1` Two Sum, `#435`, `#297`, `#139`) để breadcrumb và link bài không còn "không tìm thấy"; mọi dòng lịch sử đều có chi tiết dựng từ dòng danh sách (trạng thái, số testcase, mã nguồn giả lập) | `entities/submission/api/__mock__/submission-mocks.ts` | - | Nợ prototype (xem `PROTOTYPE_DEBT.md`): 4 dòng đầu có fixture riêng lệch với dòng danh sách |
+| 5 | Dòng trích dẫn `submission-result-view.tsx:` ở các bảng "Hiện trạng" cũ (2026-10-14, 2026-10-18) có thể đã lệch do file đổi bố cục | các bảng trên | - | Cần rà lại khi duyệt hình |
 
 ---
 

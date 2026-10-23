@@ -1,5 +1,5 @@
 {
-  "_": "Nguon: 01-rd/screens/admin/ADM0201_user_management.md, 02-bd/screens/admin/ADM0201_user_management.md (muc 7.3 endpoint, DTO, popup), DEC-2026-1011-admin-system-open-questions-closed, DEC-2026-1008-admin-system-screens-review. Duong dan REST la [SoT: Suy luan] vi chua co DD; ten endpoint la ten nghiep vu cua BD. Tach khoi sequence doi vai tro (2026-10-18): luong khoa co nhieu quy tac nhat. Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen.",
+  "_": "Nguon: 01-rd/screens/admin/ADM0201_user_management.md, 02-bd/screens/admin/ADM0201_user_management.md (muc 7.3 endpoint, DTO, popup), DEC-2026-1011-admin-system-open-questions-closed, DEC-2026-1008-admin-system-screens-review. Duong dan REST la [SoT: Suy luan] vi chua co DD; ten endpoint la ten nghiep vu cua BD. Tach khoi sequence doi vai tro (2026-10-18): luong khoa co nhieu quy tac nhat. Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen. | 2026-10-20 (owner): nhan mui ten bo han duong dan, ma HTTP, ma quyen, thuat ngu ky thuat (cache, job, worker, model...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
   "kind": "sequence",
   "title": "Sơ đồ tuần tự chi tiết - Khoá và mở khoá tài khoản (Quản trị viên) (1/2)",
   "covers": [
@@ -42,12 +42,12 @@
       {
         "from": "Quản trị viên",
         "to": "UserAdminController",
-        "text": "POST .../users/status"
+        "text": "Gửi yêu cầu khoá tài khoản"
       },
       {
         "from": "UserAdminController",
         "to": "UserAdminController",
-        "text": "Kiểm tra quyền (USER_MANAGEMENT:UPDATE); khoá thì bắt buộc có lý do"
+        "text": "Kiểm tra quyền; khoá thì bắt buộc có lý do"
       },
       {
         "from": "UserAdminController",
@@ -57,17 +57,17 @@
       {
         "from": "UserAdminService",
         "to": "PostgreSQL",
-        "text": "Đọc tài khoản đích và số ADMIN hoạt động"
+        "text": "Đọc tài khoản đích và số quản trị viên hoạt động"
       },
       {
         "from": "PostgreSQL",
         "to": "UserAdminService",
-        "text": "Tài khoản đích, số ADMIN hoạt động",
+        "text": "Tài khoản đích, số quản trị viên hoạt động",
         "kind": "return"
       },
       {
         "alt": {
-          "label": "Còn ADMIN hoạt động?",
+          "label": "Còn quản trị viên?",
           "then": [
             {
               "from": "UserAdminService",
@@ -77,7 +77,7 @@
             {
               "from": "UserAdminService",
               "to": "PostgreSQL",
-              "text": "Đặt trạng thái Bị khoá, mỗi tài khoản một lệnh"
+              "text": "Đặt trạng thái Bị khoá cho từng tài khoản"
             },
             {
               "from": "PostgreSQL",
@@ -94,7 +94,7 @@
             {
               "from": "UserAdminController",
               "to": "Quản trị viên",
-              "text": "200 OK",
+              "text": "Báo thành công",
               "kind": "return"
             }
           ],
@@ -102,7 +102,7 @@
             {
               "from": "UserAdminService",
               "to": "UserAdminService",
-              "text": "Khoá xong sẽ hết ADMIN hoạt động"
+              "text": "Khoá xong sẽ hết quản trị viên hoạt động"
             },
             {
               "from": "UserAdminService",
@@ -113,7 +113,7 @@
             {
               "from": "UserAdminController",
               "to": "Quản trị viên",
-              "text": "409 - không còn quản trị viên hoạt động",
+              "text": "Báo lỗi: không còn quản trị viên hoạt động",
               "kind": "return"
             }
           ]

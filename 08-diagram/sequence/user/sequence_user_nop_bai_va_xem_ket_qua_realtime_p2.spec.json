@@ -1,5 +1,5 @@
 {
-  "_": "Luong nop bai va xem ket qua tung testcase theo thoi gian thuc cua actor A1. Nguon: US-A1-04 (01-rd/req/user_stories/a1_student.md), 01-rd/req/judge-orchestration.md (F4-01, F4-03, F4-08, F4-13), 02-bd/architecture/judge-orchestration.md muc 4 (state machine) va muc 6 (Outbox), 02-bd/architecture/harness.md muc 5 (plugin sinh ma, anh xa loi bien dich).",
+  "_": "Luong nop bai va xem ket qua tung testcase theo thoi gian thuc cua actor A1. Nguon: US-A1-04 (01-rd/req/user_stories/a1_student.md), 01-rd/req/judge-orchestration.md (F4-01, F4-03, F4-08, F4-13), 02-bd/architecture/judge-orchestration.md muc 4 (state machine) va muc 6 (Outbox), 02-bd/architecture/harness.md muc 5 (plugin sinh ma, anh xa loi bien dich). | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
   "_khong_fail_fast": "F4-04 (dung som khi gap testcase sai) da het hieu luc theo DEC-2026-0831-partial-score-testcase-ratio -- vong lap chay het N testcase de co du lieu tinh ty le F4-13.",
   "_tran": "8 participant -> be ngang 1310px, vuot canh dai A4. Chap nhan co y: day la luong xuyen 4 tang cong 2 ranh gioi tien trinh that (RabbitMQ, go-judge), gom bot bat ky cot nao cung xoa mat mot ranh gioi kien truc. In A3 hoac xuat SVG.",
   "kind": "sequence",
@@ -49,12 +49,12 @@
       {
         "from": "JudgeWorker",
         "to": "JudgeWorker",
-        "text": "Phân phối job cho worker rảnh (RabbitMQ)"
+        "text": "Giao bài cho máy chấm đang rảnh"
       },
       {
         "from": "JudgeWorker",
         "to": "PostgreSQL",
-        "text": "UPDATE status = COMPILING"
+        "text": "Ghi trạng thái Đang biên dịch"
       },
       {
         "from": "JudgeWorker",
@@ -64,7 +64,7 @@
       {
         "from": "PostgreSQL",
         "to": "JudgeWorker",
-        "text": "function_spec, N testcase, limits",
+        "text": "Đặc tả hàm, N testcase, giới hạn thời gian và bộ nhớ",
         "kind": "return"
       },
       {
@@ -85,7 +85,7 @@
       {
         "from": "go-judge",
         "to": "JudgeWorker",
-        "text": "exitCode, stderr thô",
+        "text": "Mã kết thúc và thông báo lỗi gốc của trình biên dịch",
         "kind": "return"
       },
       {
@@ -100,26 +100,31 @@
             {
               "from": "JudgeWorker",
               "to": "PostgreSQL",
-              "text": "UPDATE status = COMPILE_ERROR (trạng thái cuối)"
+              "text": "Ghi trạng thái Lỗi biên dịch (trạng thái cuối)"
             },
             {
               "from": "JudgeWorker",
               "to": "SubmissionController",
-              "text": "Đẩy COMPILE_ERROR kèm danh sách lỗi",
+              "text": "Gửi trạng thái Lỗi biên dịch kèm danh sách lỗi",
               "kind": "async"
             },
             {
               "from": "SubmissionController",
               "to": "Sinh viên",
-              "text": "STOMP - hiện lỗi ngay tại dòng người học viết",
+              "text": "Hiện lỗi ngay tại dòng người học viết",
               "kind": "async"
             }
           ],
           "else": [
             {
               "from": "JudgeWorker",
+              "to": "JudgeWorker",
+              "text": "Trường hợp không"
+            },
+            {
+              "from": "JudgeWorker",
               "to": "PostgreSQL",
-              "text": "UPDATE status = JUDGING"
+              "text": "Ghi trạng thái Đang chấm"
             }
           ]
         }

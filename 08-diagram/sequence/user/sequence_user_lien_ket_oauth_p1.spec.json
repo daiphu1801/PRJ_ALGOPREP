@@ -1,5 +1,5 @@
 {
-  "_": "Luong dang nhap bang OAuth (GitHub, Google) va tu lien ket theo email cua actor A1. Nguon: 01-rd/req/identity.md (F1-15), 03-dd/api/identity.md muc 0.1 (endpoint #5, #6), 03-dd/logic/identity.md BR-03, 02-bd/architecture/identity.md muc 2 (OAuth tu lien ket theo email).",
+  "_": "Luong dang nhap bang OAuth (GitHub, Google) va tu lien ket theo email cua actor A1. Nguon: 01-rd/req/identity.md (F1-15), 03-dd/api/identity.md muc 0.1 (endpoint #5, #6), 03-dd/logic/identity.md BR-03, 02-bd/architecture/identity.md muc 2 (OAuth tu lien ket theo email). | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
   "_bao_mat": "Hai chot chan chiem tai khoan: (1) doi chieu `state` luu Redis TTL 10 phut -- chong CSRF o buoc callback; (2) provider tra `email_verified = false` thi TU CHOI, khong tao oauth_identities va khong tao users -- neu bo buoc nay, ai dang ky mot tai khoan provider bang email nguoi khac deu chiem duoc tai khoan AlgoPrep tuong ung.",
   "kind": "sequence",
   "title": "Sơ đồ tuần tự chi tiết - Đăng nhập và tự liên kết tài khoản OAuth (Sinh viên) (1/3)",
@@ -37,7 +37,7 @@
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 1 - Khởi tạo luồng, sinh state chống giả mạo (BR-03)"
+        "phase": "Giai đoạn 1 - Khởi tạo luồng, sinh mã chống giả mạo (BR-03)"
       },
       {
         "from": "Sinh viên",
@@ -47,39 +47,39 @@
       {
         "from": "Sinh viên",
         "to": "AuthController",
-        "text": "GET /auth/oauth/{provider}/redirect"
+        "text": "Gửi yêu cầu liên kết tài khoản ngoài"
       },
       {
         "from": "AuthController",
         "to": "OAuthService",
-        "text": "buildAuthorizeUrl(provider)"
+        "text": "Tạo địa chỉ xin phép của nhà cung cấp"
       },
       {
         "from": "OAuthService",
         "to": "OAuthService",
-        "text": "Sinh chuỗi state ngẫu nhiên"
+        "text": "Sinh mã chống giả mạo ngẫu nhiên"
       },
       {
         "from": "OAuthService",
         "to": "Redis",
-        "text": "SET identity:oauthstate:<state> TTL 10 phút"
+        "text": "Lưu mã chống giả mạo, hạn 10 phút"
       },
       {
         "from": "OAuthService",
         "to": "AuthController",
-        "text": "URL uỷ quyền kèm state",
+        "text": "Địa chỉ xin phép kèm mã chống giả mạo",
         "kind": "return"
       },
       {
         "from": "AuthController",
         "to": "Sinh viên",
-        "text": "200 OK kèm URL",
+        "text": "Báo thành công kèm địa chỉ xin phép",
         "kind": "return"
       },
       {
         "from": "Sinh viên",
         "to": "Sinh viên",
-        "text": "Chuyển hướng sang trang đăng nhập của provider"
+        "text": "Chuyển sang trang đăng nhập của nhà cung cấp"
       },
       {
         "from": "Sinh viên",
@@ -89,7 +89,7 @@
       {
         "from": "Nhà cung cấp OAuth",
         "to": "Sinh viên",
-        "text": "Chuyển hướng về kèm code và state",
+        "text": "Nhà cung cấp chuyển về kèm mã cho phép và mã chống giả mạo",
         "kind": "return"
       }
     ]

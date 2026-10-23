@@ -22,7 +22,7 @@
 công cao nhất hệ thống.
 
 - **cgroup** (v1 hoặc v2, go-sandbox hỗ trợ cả hai — `DEC-2026-0823-go-judge-default-engine` điểm (1)):
-  giới hạn CPU, bộ nhớ, số tiến trình con (`sandbox_settings.max_child_processes`, F4-11 tham số 2/3) cho
+  giới hạn CPU, bộ nhớ, số tiến trình con (công tắc `sandbox_settings.child_process_limit_enabled`, F4-11 tham số 2/3; trần là **hằng số 60 ở `application.yml`**, không còn cột `max_child_processes` — sửa 2026-10-22, đồng bộ DB phase 3, `DEC-2026-1014-sandbox-child-process-cap-constant`; `02-bd/database/judge-orchestration.md:187`, `02-bd/screens/admin/ADM0501_language_config.md:59,265`) cho
   **mỗi lần gọi `JudgeExecutionPort.run()`**, không chia sẻ giữa các testcase hay giữa các submission khác
   nhau — mỗi lần gọi là một sandbox instance độc lập, huỷ ngay sau khi trả kết quả.
 - **Mạng**: chặn mặc định (`sandbox_settings.network_access_enabled = false`, F4-11 tham số 1/3) — mã
@@ -72,9 +72,9 @@ Thiết kế **trung lập ở tầng port** — `JudgeExecutionPort` không man
   mục 1.3). **Ghi** (pause/resume tiêu thụ hàng đợi, bật/tắt autoscale worker, đổi bốn tham số hàng đợi,
   F4-10, `DEC-2026-0831-judge-orchestration-ops-details`, `DEC-2026-1010-admin-operations-regroup`): máy
   chủ kiểm lại vai trò `ADMIN` ở mỗi lệnh. Mọi lệnh ghi vận hành (kể cả ở `ADM0501`) được ghi vào Nhật ký
-  hệ thống phân loại "Cấu hình" kèm giá trị cũ và mới (G2). Tên `JUDGE_MONITORING` ở các bản trước là
+  hệ thống phân loại "Cấu hình" kèm giá trị cũ và mới (G2). Sửa 2026-10-23 (`DEC-2026-1023-db-actor-review-fixes`, `DEC-2026-1023-db-actor-review-decisions`): `judge-orchestration` ghi qua cổng vào `AuditLogPort` của `identity` trong cùng giao dịch với thay đổi, không ghi thẳng schema `identity`; các thao tác ghi được kiểm toán gồm `language_configs`, `grading_defaults`, `sandbox_settings`, `generator_sandbox_settings` và `cluster_settings`. Tên `JUDGE_MONITORING` ở các bản trước là
   tên đề xuất chưa khớp `identity`, đã thay.
-- **Sửa `language_configs`, `grading_defaults`, `sandbox_settings`** (F4-11): gác bởi Function `LANGUAGE_CONFIG` (tên đề xuất) — chỉ `ADMIN`, thay
+- **Sửa `language_configs`, `grading_defaults`, `sandbox_settings`** (F4-11): gác bởi Function `LANGUAGE_CONFIG` (function thứ 11 trong seed, chốt 2026-10-23, `DEC-2026-1023-db-actor-review-fixes`; áp cho cả `generator_sandbox_settings`) — chỉ `ADMIN`, thay
   đổi có hiệu lực ngay không cần khởi động lại dịch vụ (đọc trực tiếp từ DB mỗi lần build `RunRequest`,
   không cache tĩnh dài hạn — nếu có cache, phải invalidate chủ động khi `language_configs` đổi, cùng
   nguyên tắc đã áp cho ma trận phân quyền của `identity`, `02-bd/architecture/identity.md` mục 6).
@@ -85,8 +85,7 @@ Thiết kế **trung lập ở tầng port** — `JudgeExecutionPort` không man
 
 - Cấu hình xác thực thực tế giữa `judge-orchestration` và go-judge (`--auth-token` hay network policy
   thuần) — mục 1, cần xác nhận với chủ dự án khi vào giai đoạn hạ tầng/triển khai.
-- Tên Function chính xác `JUDGE_QUEUE_MONITOR`/`LANGUAGE_CONFIG` — đối chiếu lại danh sách 10 Function seed
-  đầy đủ ở `02-bd/database/identity.md` mục 1.3 khi viết DD, tránh tạo trùng tên khác đã có.
+- ~~Tên Function chính xác `JUDGE_QUEUE_MONITOR`/`LANGUAGE_CONFIG`~~ — **đã đóng 2026-10-23** (`DEC-2026-1023-db-actor-review-fixes`): cả hai nằm trong 11 Function seed ở `02-bd/database/identity.md` mục 1.3.
 - Endpoint callback thật của `Judge0Adapter` (đường dẫn, method, shape payload) — chỉ cần thiết kế nếu
   adapter này được kích hoạt lại, không phải việc của lần BD này.
 

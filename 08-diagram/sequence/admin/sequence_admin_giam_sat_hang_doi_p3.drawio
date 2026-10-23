@@ -56,13 +56,13 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e14" value="3. POST /judge/ops/queue/pause" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.3922;exitDx=0;exitDy=0;entryX=0.5;entryY=0.3922;entryDx=0;entryDy=0;" edge="1" parent="1" source="v2" target="v3">
+        <mxCell id="e14" value="3. Gửi yêu cầu tạm dừng" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.3922;exitDx=0;exitDy=0;entryX=0.5;entryY=0.3922;entryDx=0;entryDy=0;" edge="1" parent="1" source="v2" target="v3">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e15" value="3.1. Yêu cầu tạm dừng tiêu thụ hàng đợi" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.4488;exitDx=0;exitDy=0;entryX=0.5;entryY=0.4488;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v4">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e16" value="3.1.1. Dừng consumer, không huỷ message đang chờ" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.5053;exitDx=0;exitDy=0;entryX=0.5;entryY=0.5053;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v5">
+        <mxCell id="e16" value="3.1.1. Dừng nhận bài mới, không huỷ bài đang chờ" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.5053;exitDx=0;exitDy=0;entryX=0.5;entryY=0.5053;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v5">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e17" value="Đã dừng" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.5618;exitDx=0;exitDy=0;entryX=0.5;entryY=0.5618;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v4">
@@ -77,7 +77,7 @@
         <mxCell id="e20" value="Cụm đã tạm dừng" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.7314;exitDx=0;exitDy=0;entryX=0.5;entryY=0.7314;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v3">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e21" value="200 OK" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.7880;exitDx=0;exitDy=0;entryX=0.5;entryY=0.7880;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v2">
+        <mxCell id="e21" value="Báo thành công" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.7880;exitDx=0;exitDy=0;entryX=0.5;entryY=0.7880;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v2">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e22" value="4. Bảng giám sát chuyển sang Đang tạm dừng" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8445;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8799;entryDx=0;entryDy=0;" edge="1" parent="1" source="v2" target="v2">

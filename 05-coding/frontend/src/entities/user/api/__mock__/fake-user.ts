@@ -22,7 +22,6 @@ let profile: UserProfile = {
   email: "phudai@fabbi.io",
   schoolOrCompany: "Đại học Cần Thơ",
   currentPosition: "Sinh viên năm 4",
-  defaultLanguage: "PYTHON",
   targetPosition: "Middle Backend",
   hasPassword: true,
   passwordChangedAt: "2026-06-12",

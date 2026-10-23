@@ -1,5 +1,5 @@
 {
-  "_": "Nguon: 01-rd/screens/admin/ADM0201_user_management.md, 02-bd/screens/admin/ADM0201_user_management.md (muc 7.3 endpoint, DTO, popup), DEC-2026-1011-admin-system-open-questions-closed, DEC-2026-1008-admin-system-screens-review. Duong dan REST la [SoT: Suy luan] vi chua co DD; ten endpoint la ten nghiep vu cua BD. Filter kiem status moi request nen Access Token cu bi chan ngay [SoT: 02-bd/security/identity.md:64-66]. Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen.",
+  "_": "Nguon: 01-rd/screens/admin/ADM0201_user_management.md, 02-bd/screens/admin/ADM0201_user_management.md (muc 7.3 endpoint, DTO, popup), DEC-2026-1011-admin-system-open-questions-closed, DEC-2026-1008-admin-system-screens-review. Duong dan REST la [SoT: Suy luan] vi chua co DD; ten endpoint la ten nghiep vu cua BD. Filter kiem status moi request nen Access Token cu bi chan ngay [SoT: 02-bd/security/identity.md:64-66]. Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen. | 2026-10-20 (owner): nhan mui ten bo han duong dan, ma HTTP, ma quyen, thuat ngu ky thuat (cache, job, worker, model...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
   "kind": "sequence",
   "title": "Sơ đồ tuần tự chi tiết - Khoá và mở khoá tài khoản (Quản trị viên) (2/2)",
   "covers": [
@@ -70,13 +70,13 @@
       {
         "from": "UserAdminService",
         "to": "Redis",
-        "text": "Xoá cache quyền để request kế tiếp đọc lại trạng thái",
+        "text": "Làm mới quyền đã lưu tạm để lần truy cập kế tiếp đọc lại trạng thái",
         "kind": "async"
       },
       {
         "from": "UserAdminService",
         "to": "UserAdminService",
-        "text": "Access Token còn hạn bị chặn ngay vì mỗi request đều kiểm trạng thái"
+        "text": "Phiên đăng nhập còn hạn vẫn bị chặn ngay vì mỗi lần truy cập đều kiểm tra trạng thái"
       },
       {
         "from": "UserAdminService",
@@ -87,6 +87,11 @@
         "alt": {
           "label": "Chọn gửi email?",
           "then": [
+            {
+              "from": "UserAdminService",
+              "to": "UserAdminService",
+              "text": "Trường hợp có"
+            },
             {
               "from": "UserAdminService",
               "to": "Dịch vụ email",
@@ -112,7 +117,7 @@
       {
         "from": "Quản trị viên",
         "to": "UserAdminController",
-        "text": "POST .../users/status"
+        "text": "Gửi yêu cầu mở khoá"
       },
       {
         "from": "UserAdminController",
@@ -133,7 +138,7 @@
       {
         "from": "UserAdminService",
         "to": "Redis",
-        "text": "Xoá cache quyền",
+        "text": "Làm mới quyền đã lưu tạm",
         "kind": "async"
       },
       {
@@ -145,7 +150,7 @@
       {
         "from": "UserAdminController",
         "to": "Quản trị viên",
-        "text": "200 OK",
+        "text": "Báo thành công",
         "kind": "return"
       }
     ]

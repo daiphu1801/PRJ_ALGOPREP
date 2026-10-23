@@ -1,5 +1,5 @@
-import { ProblemDetailView } from "@/views/users/problem-detail";
+import { ProblemOverviewView } from "@/views/users/problem-overview";
 
 export default function Page() {
-  return <ProblemDetailView />;
+  return <ProblemOverviewView />;
 }

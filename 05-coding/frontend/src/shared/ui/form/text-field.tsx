@@ -17,6 +17,8 @@ type TextFieldProps = Omit<ComponentPropsWithoutRef<"input">, "id"> & {
   hideLabel?: boolean;
   /** Decorative glyph inside the control, before the text (search boxes carry one). */
   leadingIcon?: ReactNode;
+  /** Control pinned inside the right edge (e.g. a show/hide toggle). Plain-input fields only. */
+  trailing?: ReactNode;
   /** Marks the field as failed validation. Draws no text: the message goes to a toast. */
   invalid?: boolean;
   wrapperClassName?: string;
@@ -26,6 +28,7 @@ export function TextField({
   label,
   hideLabel = false,
   leadingIcon,
+  trailing,
   invalid = false,
   className,
   wrapperClassName,
@@ -72,6 +75,23 @@ export function TextField({
             className="min-w-0 flex-1 self-stretch bg-transparent text-[13px] text-[var(--color-text)] outline-none"
             {...props}
           />
+        </div>
+      ) : trailing ? (
+        <div className="relative">
+          <input
+            id={id}
+            aria-invalid={invalid || undefined}
+            className={cn(
+              FIELD_CONTROL,
+              "pr-10",
+              invalid && "border-[var(--color-danger)]",
+              className,
+            )}
+            {...props}
+          />
+          <span className="absolute inset-y-0 right-1 flex items-center">
+            {trailing}
+          </span>
         </div>
       ) : (
         <input

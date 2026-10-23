@@ -1,5 +1,5 @@
 {
-  "_": "Luong quan ly testcase: tai len theo lo (bo lon di MinIO), phien ban hoa khi sua sau luc da co nguoi nop, va AI sinh testcase voi output lay tu chay that Dap an mau. Nguon: US-A2-02 va US-A2-05 (01-rd/req/user_stories/a2_instructor.md:37-50, 70-83), 01-rd/req/problem-bank.md (F2-05 den F2-10, F2-14), 02-bd/database/problem-bank.md muc 1.6 (su kien TestcaseSetVersionBumped).",
+  "_": "Luong quan ly testcase: tai len theo lo (bo lon di MinIO), phien ban hoa khi sua sau luc da co nguoi nop, va AI sinh testcase voi output lay tu chay that Dap an mau. Nguon: US-A2-02 va US-A2-05 (01-rd/req/user_stories/a2_instructor.md:37-50, 70-83), 01-rd/req/problem-bank.md (F2-05 den F2-10, F2-14), 02-bd/database/problem-bank.md muc 1.6 (su kien TestcaseSetVersionBumped). | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen. Siet 2026-10-20: nhan mui ten viet ngon ngu nghiep vu, endpoint, ma HTTP, ma quyen, ten ham va cau SQL thuoc 03-dd/api va 03-dd/logic, khong ve trong hinh.",
   "_minio": "Day la luong DUY NHAT trong toan he thong cham toi MinIO (.nexa/control/dependency-map.md) -- truoc dot nay khong co ban ve nao cho no.",
   "_su_kien": "TestcaseSetVersionBumped ve duoi dang INSERT outbox_events, khong ve lifeline RabbitMQ rieng: them mot cot nua thanh 9 duong doi, be ngang vuot xa kho in ma khong noi them duoc gi -- co che Outbox da duoc ve day du o sequence_user_nop_bai_va_xem_ket_qua_realtime.",
   "kind": "sequence",
@@ -40,7 +40,7 @@
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 1 - Tải bộ testcase theo lô, bộ lớn đẩy sang MinIO (F2-05, F2-06, F2-07)"
+        "phase": "Giai đoạn 1 - Tải bộ testcase theo lô, bộ lớn lưu ở kho tệp (F2-05, F2-06, F2-07)"
       },
       {
         "from": "Người soạn đề",
@@ -50,44 +50,54 @@
       {
         "from": "Người soạn đề",
         "to": "TestcaseController",
-        "text": "POST /problems/{id}/testcases/batch (multipart)"
+        "text": "Gửi tệp testcase tải lên theo lô"
       },
       {
         "from": "TestcaseController",
         "to": "TestcaseController",
-        "text": "Kiểm quyền PROBLEM_AUTHORING:UPDATE và kiểm định dạng tệp"
+        "text": "Kiểm tra quyền soạn đề và định dạng tệp"
       },
       {
         "from": "TestcaseController",
         "to": "TestcaseService",
-        "text": "importBatch(command, authorId)"
+        "text": "Xử lý nhập testcase theo lô"
       },
       {
         "alt": {
-          "label": "Bộ testcase vượt ngưỡng kích thước lưu trực tiếp?",
+          "label": "Bộ testcase quá lớn?",
           "then": [
             {
               "from": "TestcaseService",
+              "to": "TestcaseService",
+              "text": "Trường hợp có"
+            },
+            {
+              "from": "TestcaseService",
               "to": "MinIO",
-              "text": "Tải nội dung lên object storage"
+              "text": "Đưa nội dung lên kho lưu trữ tệp lớn"
             },
             {
               "from": "MinIO",
               "to": "TestcaseService",
-              "text": "objectKey",
+              "text": "Địa chỉ tệp đã lưu",
               "kind": "return"
             },
             {
               "from": "TestcaseService",
               "to": "PostgreSQL",
-              "text": "INSERT testcases (payload_ref = objectKey, không nhét nội dung vào bảng)"
+              "text": "Lưu testcase kèm địa chỉ tệp, không chép nội dung vào bảng"
             }
           ],
           "else": [
             {
               "from": "TestcaseService",
+              "to": "TestcaseService",
+              "text": "Trường hợp không"
+            },
+            {
+              "from": "TestcaseService",
               "to": "PostgreSQL",
-              "text": "INSERT testcases (input và expected_output lưu thẳng)"
+              "text": "Lưu testcase kèm đầu vào và đầu ra mong đợi"
             }
           ]
         }
@@ -101,7 +111,7 @@
       {
         "from": "TestcaseController",
         "to": "Người soạn đề",
-        "text": "201 Created",
+        "text": "Báo tạo thành công",
         "kind": "return"
       },
       {

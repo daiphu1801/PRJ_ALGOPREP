@@ -54,10 +54,10 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e15" value="2. POST .../classes/{classId}/students/{studentId}/leave" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.2286;exitDx=0;exitDy=0;entryX=0.5;entryY=0.2286;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v5">
+        <mxCell id="e15" value="2. Gửi yêu cầu gỡ học viên khỏi lớp" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.2286;exitDx=0;exitDy=0;entryX=0.5;entryY=0.2286;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v5">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e16" value="2.1. Kiểm tra quyền quản lý lớp (CLASS_MANAGEMENT:DELETE)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.2701;exitDx=0;exitDy=0;entryX=0.5;entryY=0.2961;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v5">
+        <mxCell id="e16" value="2.1. Kiểm tra quyền quản lý lớp" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.2701;exitDx=0;exitDy=0;entryX=0.5;entryY=0.2961;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v5">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
             <mxPoint x="330" y="268" />
@@ -82,10 +82,10 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e21" value="Từ chối ở tầng ứng dụng, không chỉ ẩn nút trên giao diện" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.5481;exitDx=0;exitDy=0;entryX=0.5;entryY=0.5481;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v5">
+        <mxCell id="e21" value="Từ chối ngay ở máy chủ, không chỉ ẩn nút trên giao diện" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.5481;exitDx=0;exitDy=0;entryX=0.5;entryY=0.5481;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v5">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e22" value="403 Forbidden" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.5896;exitDx=0;exitDy=0;entryX=0.5;entryY=0.5896;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v4">
+        <mxCell id="e22" value="Báo lỗi: không có quyền với lớp này" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.5896;exitDx=0;exitDy=0;entryX=0.5;entryY=0.5896;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v4">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e23" value="3. Lớp hợp lệ, tiến hành gỡ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.6597;exitDx=0;exitDy=0;entryX=0.5;entryY=0.6857;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v6">
@@ -102,13 +102,13 @@
         <mxCell id="e25" value="Đã ghi" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.7610;exitDx=0;exitDy=0;entryX=0.5;entryY=0.7610;entryDx=0;entryDy=0;" edge="1" parent="1" source="v7" target="v6">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e26" value="5. Phát sự kiện học viên đã bị gỡ khỏi lớp" style="edgeStyle=none;html=1;endArrow=open;endFill=0;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8026;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8026;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v8">
+        <mxCell id="e26" value="5. Thông báo nội bộ: học viên đã bị gỡ khỏi lớp" style="edgeStyle=none;html=1;endArrow=open;endFill=0;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8026;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8026;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v8">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e27" value="Đã gỡ; gọi lặp vẫn thành công và không ghi đè mốc cũ" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8442;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8442;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v5">
+        <mxCell id="e27" value="Đã gỡ; bấm lặp lại vẫn thành công và không đổi mốc cũ" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8442;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8442;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v5">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e28" value="200 OK" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8857;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8857;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v4">
+        <mxCell id="e28" value="Báo thành công" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8857;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8857;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v4">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e29" value="6. Học viên rời bảng, sĩ số giảm; bài nộp cũ hiện ghi chú Đã rời lớp" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.9273;exitDx=0;exitDy=0;entryX=0.5;entryY=0.9532;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v4">

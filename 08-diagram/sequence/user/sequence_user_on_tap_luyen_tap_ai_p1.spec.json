@@ -1,5 +1,5 @@
 {
-  "_": "Luong F6 Chế độ học + Chế độ luyện cua actor A1 tren ngan hang cau hoi phong van. Nguon: 01-rd/req/interview-bank.md (F6-04 den F6-08, F6-09, F6-12), 02-bd/architecture/interview-bank.md muc 1 (AnswerFeedbackPort, SpringAiFeedbackAdapter, job spaced repetition), muc 2 (Chế độ luyện la NOI DUY NHAT module nay goi AI).",
+  "_": "Luong F6 Chế độ học + Chế độ luyện cua actor A1 tren ngan hang cau hoi phong van. Nguon: 01-rd/req/interview-bank.md (F6-04 den F6-08, F6-09, F6-12), 02-bd/architecture/interview-bank.md muc 1 (AnswerFeedbackPort, SpringAiFeedbackAdapter, job spaced repetition), muc 2 (Chế độ luyện la NOI DUY NHAT module nay goi AI). | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
   "_bat_bien": "F6-07 amendment (DEC-2026-0831-outside-screens-closures): moi lan nop la mot attempt doc lap, khong UPDATE cau tra loi cu.",
   "kind": "sequence",
   "title": "Sơ đồ tuần tự chi tiết - Ôn tập và luyện tập câu hỏi phỏng vấn (Sinh viên) (1/3)",
@@ -43,44 +43,44 @@
       {
         "from": "Sinh viên",
         "to": "PracticeController",
-        "text": "GET /interview-bank/questions/{id}?mode=STUDY"
+        "text": "Gửi yêu cầu xem câu hỏi ở chế độ học"
       },
       {
         "from": "PracticeController",
         "to": "PracticeService",
-        "text": "getQuestionForStudy(query, userId)"
+        "text": "Lấy nội dung câu hỏi để học"
       },
       {
         "from": "PracticeService",
         "to": "PostgreSQL",
-        "text": "findById(questionId)"
+        "text": "Tìm câu hỏi theo mã"
       },
       {
         "from": "PostgreSQL",
         "to": "PostgreSQL",
-        "text": "SELECT interview_questions JOIN answer_rubric_criteria (QuestionRepository)"
+        "text": "Đọc câu hỏi kèm tiêu chí trả lời chuẩn"
       },
       {
         "from": "PostgreSQL",
         "to": "PostgreSQL",
-        "text": "Câu hỏi, hướng tiếp cận, khung STAR, từ khoá cốt lõi (QuestionRepository)"
+        "text": "Câu hỏi, hướng tiếp cận, khung STAR, từ khoá cốt lõi"
       },
       {
         "from": "PostgreSQL",
         "to": "PracticeService",
-        "text": "InterviewQuestion",
+        "text": "Nội dung câu hỏi",
         "kind": "return"
       },
       {
         "from": "PracticeService",
         "to": "PracticeController",
-        "text": "QuestionStudyDto - không gọi LLM ở chế độ này",
+        "text": "Nội dung học soạn sẵn, không gọi AI ở chế độ này",
         "kind": "return"
       },
       {
         "from": "PracticeController",
         "to": "Sinh viên",
-        "text": "200 OK",
+        "text": "Báo thành công",
         "kind": "return"
       },
       {

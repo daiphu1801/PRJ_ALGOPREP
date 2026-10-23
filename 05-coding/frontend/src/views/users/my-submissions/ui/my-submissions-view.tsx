@@ -31,7 +31,6 @@ import {
   Badge,
   Button,
   DataTable,
-  PageHeader,
   Pagination,
   FilterBar,
   FilterMenu,
@@ -198,7 +197,12 @@ export function MySubmissionsView() {
 
   return (
     <div className="p-6">
-      <PageHeader title={t("title")} description={t("subtitle")} />
+      <div className="mb-4">
+        <h1 className="text-lg font-bold tracking-tight">{t("title")}</h1>
+        <p className="text-[12.5px] text-[var(--color-text-muted)]">
+          {t("subtitle")}
+        </p>
+      </div>
 
       <div className="glass-card border border-[var(--color-border)] px-5 py-4">
         <FilterBar

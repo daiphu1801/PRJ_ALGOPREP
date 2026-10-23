@@ -19,7 +19,7 @@ cũng cần cả 4 file, xác nhận theo RD, không viết file rỗng").
 
 ## 2. Phạm vi nghiệp vụ module này bao trùm
 
-Đọc từ `01-rd/req/identity.md` (F1-01 → F1-30):
+Đọc từ `01-rd/req/identity.md` (F1-01 → F1-32; sửa 2026-10-22, đồng bộ DB phase 3, ID-39: trước ghi "F1-01 → F1-30", RD có thêm F1-31 dashboard luyện tập của người học `01-rd/req/identity.md:234` và F1-32 lý do khoá tài khoản `:76`):
 
 | Nhóm | Mã | Ghi chú |
 | :--- | :--- | :--- |
@@ -28,8 +28,9 @@ cũng cần cả 4 file, xác nhận theo RD, không viết file rỗng").
 | RBAC hai lớp | F1-05, F1-10→14 | Lớp 1 (học tập cơ bản, theo vai trò) tách biệt Lớp 2 (ma trận phân quyền quản trị/nội dung) |
 | Quản lý hồ sơ | F1-09, F1-19, F1-20 | Sửa thông tin, đổi mật khẩu khi đã đăng nhập, cá nhân hoá workspace |
 | Quên mật khẩu | F1-17 | OTP 6 số qua email, không áp dụng cho tài khoản chỉ đăng ký OAuth |
-| Tự xoá tài khoản | F1-16 | Khoá mềm → ẩn danh hoá sau ân hạn |
-| Quản lý người dùng (ADMIN) | F1-13 | Đổi vai trò, khoá/mở khoá, reset mật khẩu hộ |
+| Tự xoá tài khoản | F1-16 | Khoá mềm → ẩn danh hoá sau ân hạn. Sửa 2026-10-22 (đồng bộ DB, phase 3, `DEC-2026-1022-identity-schema-sync` mục 1): cột `users.deactivation_source` (`SELF`/`ADMIN`) phân biệt hai nguồn `status = DEACTIVATED`; job ẩn danh hoá **chỉ quét `SELF`** quá ân hạn 30 ngày, tài khoản Admin khoá không bao giờ bị job ẩn danh (`database/identity.md:28-32`; DD `03-dd/logic/identity.md` BR-08 bước 1 đặt `SELF`/`ADMIN`) |
+| Quản lý người dùng (ADMIN) | F1-13, F1-32 | Đổi vai trò, khoá/mở khoá (khoá ghi lý do, tuỳ chọn gửi email — F1-32), reset mật khẩu hộ. Sửa 2026-10-22 (phase 3, mục 2 của DEC): Admin tạo tài khoản đặt `users.must_change_password = true` để buộc đổi mật khẩu ở lần đăng nhập đầu (`database/identity.md:26`). **Sửa vòng 2 (mục 4 của DEC `DEC-2026-1022-db-sync-round2`):** buộc đổi là mềm, chỉ giao diện chuyển hướng theo cờ ở phản hồi đăng nhập/`GET /me`, máy chủ không chặn endpoint khác |
+| Xác thực email | F1-33 (đề xuất) | Sửa 2026-10-22 (phase 3, mục 3 của DEC): tài khoản `PENDING_VERIFICATION` **tự đăng ký** (F1-01) xác thực bằng OTP email, **Sửa 2026-10-22 (đồng bộ DB vòng 2, DEC-2026-1022-db-sync-round2 mục 1):** ~~tự đăng ký hoặc Admin tạo~~ — tài khoản Admin tạo (F1-13) cũng khởi tạo `PENDING_VERIFICATION` nhưng không có OTP, chuyển `ACTIVE` ở lần đăng nhập thành công đầu tiên bằng mật khẩu tạm;  cùng cơ chế F1-17 (khoá Redis `identity:emailverify:<userId>`, hạn 10 phút, `database/identity.md:220`); xác thực đúng → `ACTIVE`. RD đã thêm F1-33 (OTP) và F1-34 (buộc đổi mật khẩu) dạng đề xuất `01-rd/req/identity.md:101,111` |
 | Lớp học | F1-23→28 | Tạo/xoá/sửa lớp, mã mời, gỡ học viên (đánh dấu đã rời lớp, giữ lịch sử làm bài — `DEC-2026-1014-keep-learning-history-on-leave`), chi tiết học viên, dashboard tiến độ lớp |
 | Nhật ký hệ thống | F1-14 | Chỉ hành động quản trị của người, không gộp sự kiện hạ tầng (đó là F4-10) |
 | Tiến độ cá nhân | F1-06, F1-07, F1-08 | Bài giải theo chủ đề, tỉ lệ Accepted, lịch sử phỏng vấn |
@@ -49,7 +50,7 @@ mình:
 
 | Sự kiện lắng nghe | Từ module | Dùng để cập nhật | Phục vụ |
 | :--- | :--- | :--- | :--- |
-| `SubmissionGraded` (verdict + tỉ lệ testcase F4-13) | `judge-orchestration` | `user_problem_best_score`, `user_submission_stats` | F1-06 (best-attempt theo bài), F1-07 (tỉ lệ Accepted) |
+| `SubmissionGraded` (verdict + tỉ lệ testcase F4-13; vòng 2: thêm `submittedAt` UTC và `firstAttemptForProblem`) | `judge-orchestration` | `user_problem_best_score`, `user_submission_stats`, `user_daily_submission_stats` | F1-06 (best-attempt theo bài), F1-07 (tỉ lệ Accepted), lưới hoạt động 12 tháng của USR0601 qua `GET /me/activity-calendar` (DEC `DEC-2026-1022-db-sync-round2` mục 3, 6) |
 | `SolutionReviewCompleted` / `MockInterviewFinished` | `ai-review` | `identity_recent_activity` (read model của F1-30) | F1-08 (lịch sử phỏng vấn mở lại rubric), F1-30 ("Hoạt động gần đây") |
 | `SubmissionAccepted` | `judge-orchestration` | `identity_recent_activity` | F1-29, F1-30 |
 | Sự kiện tạo/nộp bài từ `problem-bank` (đề xuất, tên cụ thể chốt ở DD) | `problem-bank` | `identity_recent_activity` | F1-30 |
@@ -57,13 +58,40 @@ mình:
 `[SoT: Suy luận]` — tên sự kiện cụ thể (payload, versioning) chốt ở `03-dd/api/identity.md` khi vào DD;
 BD chỉ chốt **có kênh event, không có import trực tiếp**.
 
+### 3.1b. Sự kiện `identity` phát ra (producer)
+
+**Sửa 2026-10-22 (đồng bộ DB vòng 4, DEC-2026-1022-db-sync-round4):** bảng dưới liệt kê sự kiện do `identity` **phát**, không tiêu thụ. Payload chi tiết ở `03-dd/api/identity.md` mục 2.
+
+| Sự kiện phát ra | Khi nào | Người nhận | Hệ quả |
+| :--- | :--- | :--- | :--- |
+| `StudentRemovedFromClass { classId, studentId, occurredAt }` | Giảng viên gỡ học viên khỏi lớp (F1-26), BR-11 | Không module nào phải xử lý dữ liệu (`DEC-2026-1014-keep-learning-history-on-leave`) | Chỉ `class_enrollments.left_at` đổi |
+| `ClassDeleted { classId, occurredAt }` | Giảng viên xoá cứng lớp (F1-24), BR-22 | `problem-bank` đặt `removed_at = now()` cho các dòng `class_assignments` của lớp | `class_invite_codes`, `class_enrollments` đi theo bằng CASCADE; `identity_recent_activity.scope_class_id` về NULL bằng SET NULL (`02-bd/database/identity.md` mục 1.8, 1.12) |
+
+`ClassDeleted` thuộc `DEC-2026-1022-db-sync-round4` mục 3 (tiêu chí ponytail bậc 6: không để tham chiếu treo sau xoá cứng). Phát sau khi giao dịch xoá commit; cơ chế phát đi theo BR-22 (cùng kiểu `StudentRemovedFromClass`, chưa có outbox riêng cho `identity`).
+
 ### 3.2. Cung cấp outbound cho module khác gọi vào (bị gọi, không phải identity gọi ra)
 
 `identity` là bên bị các module khác cần xác thực/phân quyền — không tự nó cần gọi ra module khác để
-hoàn thành nghiệp vụ lõi của chính nó (đăng ký, đăng nhập không phụ thuộc module nào khác). Việc kiểm
+hoàn thành nghiệp vụ lõi của chính nó (đăng ký, đăng nhập không phụ thuộc module nào khác). Sửa 2026-10-22 (đồng bộ DB, phase 3, XS-05): ngoại lệ ở phần **hiển thị** (không phải nghiệp vụ lõi) — dashboard `USR0601` có phụ thuộc đọc qua outbound port của `identity` sang `problem-bank`, `judge-orchestration`, `ai-review` và `interview-bank` (F6-10: `practice_history`, `question_topics`), không truy vấn chéo schema (`02-bd/screens/users/USR0601_dashboard.md:50,786-796 (số dòng sửa 2026-10-22 vòng 2, trước ghi 782-791)`; phía `interview-bank`: `architecture/interview-bank.md` mục 3.3). Việc kiểm
 JWT + RBAC ở các module khác dùng chung một thư viện/filter đọc claim từ Access Token
 (`algoprep-common`), không phải một lời gọi đồng bộ tới `identity` mỗi request — tránh biến `identity`
 thành điểm nghẽn đồng bộ cho toàn hệ thống.
+
+### 3.3. Cổng vào `AuditLogPort` (bổ sung 2026-10-23, `DEC-2026-1023-db-actor-review-decisions`)
+
+Các module khác (`problem-bank`, `interview-bank`, `judge-orchestration`) có thao tác quản trị cần ghi nhật ký F1-14 nhưng **không được ghi trực tiếp vào schema `identity`**. `identity` cung cấp một cổng vào (inbound port) tên `AuditLogPort` trong `algoprep-identity`:
+
+`record(actorUserId, actionType, targetType, targetId, beforeJson, afterJson)` → một dòng `identity.system_audit_logs`.
+
+| Nơi gọi | Thao tác quản trị cần ghi |
+| :--- | :--- |
+| `problem-bank` | quản lý `topics`, `problem_levels` |
+| `interview-bank` | quản lý `topics`, `levels` của ngân hàng câu hỏi |
+| `judge-orchestration` | ghi cấu hình admin: `language_configs`, `grading_defaults`, `sandbox_settings`, `generator_sandbox_settings`, `cluster_settings` |
+
+Quy tắc: (1) gọi **trong cùng JVM và cùng giao dịch DB** với thay đổi nghiệp vụ, nên thay đổi và dòng nhật ký cùng commit hoặc cùng rollback; (2) module gọi chỉ biết cổng, không biết tên bảng; (3) che dữ liệu nhạy cảm ở tầng đọc nhật ký (DD `03-dd/logic/identity.md` BR-16), không ở nơi gọi.
+
+**Ngoại lệ không ghi nhật ký:** runner khởi tạo `ADMIN` đầu tiên lúc khởi động ứng dụng (`02-bd/database/identity.md` mục 4) và job ẩn danh hoá, vì `actor_user_id` NOT NULL và không có người thao tác. Runner này nằm trong `algoprep-identity`, chạy một lần khi khởi động, idempotent; đặc tả ở `03-dd/jobs/identity.md`.
 
 ## 4. Ma trận phân quyền — mô hình dữ liệu (chi tiết ở `02-bd/database/identity.md`)
 
@@ -96,8 +124,8 @@ nguyên, không cần đổi. Xem `07-review/bd_open_questions_260913.md` mục 
 | OTP quên mật khẩu — hạn dùng | 10 phút | `identity.md` dòng 209 (RD đã đề xuất số) |
 | OTP quên mật khẩu — số lần sai tối đa | 5 lần | `identity.md` dòng 212 |
 | OTP quên mật khẩu — cooldown gửi lại | 60 giây | `identity.md` dòng 213 |
-| Ân hạn trước khi ẩn danh hoá tài khoản tự xoá | 30 ngày | `identity.md` dòng 199 |
-| Mã mời lớp học — hạn dùng | 7 ngày | `identity.md` dòng 91-92 (RD chưa nêu số cụ thể, BD đề xuất mới) |
+| Ân hạn trước khi ẩn danh hoá tài khoản tự xoá | 30 ngày, tính từ `deactivated_at`; **chỉ áp cho `deactivation_source = SELF`**, tài khoản `ADMIN` khoá không bao giờ bị ẩn danh (`02-bd/database/identity.md` mục 1.1; sửa 2026-10-23, `DEC-2026-1023-db-actor-review-fixes`) | `identity.md` dòng 199 |
+| Mã mời lớp học — hạn dùng | 7 ngày, cố định, không có ô nhập hạn | `01-rd/req/identity.md:121-124` (F1-25). Sửa 2026-10-22 (đồng bộ DB, phase 3, ID-39): trước ghi "RD chưa nêu số, BD đề xuất mới" — RD đã chốt 7 ngày. Định dạng mã `VARCHAR(8)`, chữ hoa và số bỏ `0`/`O`/`1`/`I`, máy chủ sinh (`DEC-2026-1022-identity-schema-sync` mục 7; `database/identity.md:115`) |
 | "Người dùng hoạt động" (admin_overview) | đăng nhập trong 30 ngày gần nhất | `identity.md` dòng 148 |
 | "Hoạt động gần đây" (instructor_overview) | giữ 90 ngày, hiển thị 10 mục gần nhất | `identity.md` dòng 181-182 (RD để BD quyết định) |
 
@@ -116,7 +144,7 @@ nguyên, không cần đổi. Xem `07-review/bd_open_questions_260913.md` mục 
 
 - Tên sự kiện domain cụ thể và payload (mục 3.1).
 - Chữ ký outbound port nếu phát sinh (hiện tại BD không thấy `identity` cần gọi ra module nào để hoàn
-  thành nghiệp vụ lõi của mình).
+  thành nghiệp vụ lõi của mình; ngoại lệ đọc cho dashboard `USR0601`, mục 3.2).
 - Ngưỡng phân loại trạng thái học viên ("Đang tốt"/"Cần hỗ trợ"/"Vắng bài") ở F1-27 — RD để ngỏ
   (`identity.md` dòng 108-111), không có screen nào cho số cụ thể. BD đề xuất: "Vắng bài" = không nộp bài
   trong 7 ngày gần nhất; "Cần hỗ trợ" = tỉ lệ Accepted giảm liên tục qua ≥2 mốc tuần gần nhất; "Đang tốt" =

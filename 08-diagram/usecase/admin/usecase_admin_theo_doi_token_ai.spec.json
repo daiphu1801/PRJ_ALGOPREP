@@ -1,0 +1,29 @@
+{
+  "_": "Tach tu usecase_admin_ngan_sach_token_ai (2026-10-20). Nguon: RD/BD ADM0302 (theo doi tieu thu, du bao, canh bao bat thuong; man chi doc ngoai nut Danh dau da xem).",
+  "kind": "usecase",
+  "title": "Sơ đồ Use Case chi tiết - Theo dõi tiêu thụ token và cảnh báo AI (Quản trị viên)",
+  "covers": [
+    "F5-19",
+    "F5-21",
+    "F5-25"
+  ],
+  "mode": "color",
+  "usecase": {
+    "system": "Theo dõi tiêu thụ AI",
+    "groups": [
+      {
+        "name": "Theo dõi tiêu thụ (ADM0302)",
+        "actors": [
+          "Quản trị viên"
+        ],
+        "usecases": [
+          "Xem thống kê tiêu thụ token",
+          "Xem dự báo cạn ngân sách",
+          "Xem bảng xếp hạng tiêu thụ token",
+          "Xem cảnh báo tài khoản dùng bất thường",
+          "Đánh dấu cảnh báo đã xem"
+        ]
+      }
+    ]
+  }
+}

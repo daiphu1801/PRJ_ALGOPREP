@@ -42,11 +42,11 @@
 | Tên vật lý (slug) | `problem_info` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A2 (`INSTRUCTOR`) và A3 (`ADMIN`) — dùng chung một view; dựng cho cả hai khu (khu A2 từ 2026-10-03) |
-| Phiên bản | V1.9 |
+| Phiên bản | V1.11 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/10/02 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/10/11 |
+| Ngày cập nhật | 2026/10/22 |
 
 ---
 
@@ -64,6 +64,9 @@
 | V1.7 | Sheet 4 (4.4, 4.5) | Phần thân trang chỉ đọc được phóng nhẹ theo yêu cầu của owner (2026-10-05, **chưa duyệt hình**, không đổi hành vi): `MarkdownPreview` dùng chung có thêm prop `size`, "base" (mặc định, 13.5 px, không đổi, màn soạn đề vẫn dùng) và "lg" (15 px, giãn dòng 1.75, tiêu đề xl/lg/base, mã 14 px); đề bài dùng `size="lg"`, ràng buộc dữ liệu 12.5 lên 14 px, các dòng đầu vào/đầu ra/giải thích của ví dụ mẫu 12.5 lên 14 px. Thẻ thuộc tính ở cột hẹp không đổi | 2026/10/05 | Nhóm phát triển AlgoPrep |
 | V1.8 | Sheet 3, 5, 9 (NO 2), Câu hỏi mở (Q8) | Chủ dự án duyệt 2026-10-11 (`DEC-2026-1011-a2-read-published-problems-of-others`): A2 xem chỉ đọc bài `Đã xuất bản` của người khác; bản nháp của người khác vẫn 404; sửa/xoá chỉ bài của mình. Điều chỉnh Q8 và Sheet 9 NO 2; mã đang sửa song song | 2026/10/11 | AI |
 | V1.9 | Sheet 6, 8, Câu hỏi mở | Theo báo cáo `06-plan/reports/261014-1054-admin-ux-review/` (B9): nút "Xem như người học" nay mở `/preview` ở tab mới, cùng đích với icon con mắt ở màn biên soạn theo `SHR0202` Q6 (đã chốt 2026-10-03). Q6 của màn này **đề xuất đóng** theo `SHR0202` Q6, chờ chủ dự án xác nhận | 2026-10-14 | Claude |
+| V1.10 | Sheet 4 (4.3), 5 (Khu B, C), 7 (7.1), Câu hỏi mở | Sửa 2026-10-22 đồng bộ DB, `DEC-2026-1022-problem-bank-schema-sync`: (1) Q3 đóng: `testcases.approved` thay `is_ai_generated_draft` (mục 3); (2) Q2 đóng một phần: đáp án mẫu ở bảng `problem_reference_solutions`, kết quả chạy không lưu nên ô `{passed}/{total}` mất nguồn (đề xuất bỏ, chờ chủ dự án) (mục 2); (3) Q4 đóng một phần: `testcases.category` đã có cột, `stack_limit_mb` vẫn không có (mục 3); (4) ràng buộc dữ liệu đọc `problems.constraints_md` (mục 1); (5) ví dụ mẫu đọc bảng `worked_examples` thay cho cờ `testcases.is_worked_example` (mục 4); (6) khối Đặc tả đọc một bảng `problem_specs`, bảng `function_signatures` đã gộp (mục 5); (7) 4.3 đổi dòng "chưa tồn tại" thành `problem_reference_solutions` và thêm `worked_examples`. **Không đổi:** Q5 và hàng công tắc AI (PB-07 còn mở), `allowHiddenHint`. Giao diện không đổi | 2026/10/22 | Claude |
+| V1.11 | Sheet 4 (4.1, 4.4), 5 (Khu B NO 3), 6 (Khu B NO 3), 7 (7.1 NO 11), Câu hỏi mở (Q2) | Sửa 2026-10-22 (đồng bộ DB vòng 2, DEC-2026-1022-db-sync-round2 mục 9): bỏ ô `{passed}/{total}` của đáp án mẫu (Khu B NO 3), chỉ giữ ngôn ngữ đáp án; bỏ `solutionCheck` khỏi Sheet 7.1 NO 11; đóng phần còn mở của Q2. Giữ nguyên các phần còn lại (Q4 stack, Q5 công tắc AI, Q6, Q7) | 2026/10/22 | Claude |
+| V1.12 | Sheet 4 (4.3), 5 (Khu D NO 7-8), 7 (7.1 NO 10), Câu hỏi mở (Q5) | Sửa 2026-10-22 (đồng bộ DB vòng 4, DEC-2026-1022-db-sync-round4), PB-07: (1) Q5 đóng: `allowHiddenHint` đã bỏ khỏi `AiAuthoringContextDto` của `SHR0202` (còn `briefText`, `noFullCode`, `questionOnly`); (2) nguồn dữ liệu khối AI là ba cột `problems.ai_brief`, `no_full_code`, `socratic_only` (`02-bd/database/problem-bank.md` mục 1.1), không có bảng riêng. Giao diện không đổi | 2026/10/22 | Claude |
 
 ---
 
@@ -145,14 +148,14 @@ Nút "Xem như người học" có hiện trên màn nhưng **chưa gắn hành 
 
 ### 4.1 Tổng quan màn
 
-[Mục đích màn] Cho A2/A3 xem trọn một bài toán đã soạn (đề, giới hạn, ví dụ, tóm tắt testcase, kết quả chạy đáp án mẫu, thuộc tính,
+[Mục đích màn] Cho A2/A3 xem trọn một bài toán đã soạn (đề, giới hạn, ví dụ, tóm tắt testcase, ngôn ngữ đáp án mẫu, thuộc tính,
 cấu hình AI) mà không có nguy cơ sửa nhầm; mọi thao tác sửa đi qua nút "Sửa bài" sang `problem_authoring`
 [Nguồn: 01-rd/screens/shared/SHR0203_problem_info.md:13-19].
 
 [Luồng nghiệp vụ chính]
 
 1. **Mở màn**: từ `problem_management` bấm tiêu đề bài; kiểm quyền, tải chi tiết bài toán.
-2. **Đọc**: xem hàng số liệu (testcase đã duyệt, công khai, kết quả đáp án mẫu, giới hạn thời gian), cột nội dung (đề, ràng buộc,
+2. **Đọc**: xem hàng số liệu (testcase đã duyệt, công khai, ngôn ngữ đáp án mẫu, giới hạn thời gian), cột nội dung (đề, ràng buộc,
    ví dụ, độ phủ, đáp án mẫu thu gọn), cột thuộc tính (độ khó, trạng thái, giới hạn, cấu hình AI).
 3. **Rời màn**: quay lại danh sách, hoặc bấm "Sửa bài" sang `problem_authoring`.
 
@@ -198,16 +201,16 @@ thì cập nhật mục này, không phải thêm trường ở đây.
 | --: | :--- | :--- |
 | 1 | `problems` | [Nguồn: 02-bd/database/problem-bank.md mục 1.1] |
 | 2 | `problem_topics` / `topics` | [Nguồn: 02-bd/database/problem-bank.md mục 1.2] — dòng phụ tiêu đề hiện tên chủ đề (`problemInfo.subtitle`) |
-| 3 | `testcases` | [Nguồn: 02-bd/database/problem-bank.md mục 1.6] |
-| 4 | `problem_ai_authoring_context` hoặc cột trong `problems` | **Chưa tồn tại** — xem Câu hỏi mở Q5 (kế thừa `SHR0202` Q4) |
-| 5 | Bảng đáp án mẫu | **Chưa tồn tại** — xem Câu hỏi mở Q2 (kế thừa `SHR0202` Q2) |
-| 6 | `problem_specs` | [Nguồn: 02-bd/database/problem-bank.md mục 1.4] — khối Đặc tả (thêm 2026-10-03) |
-| 7 | `function_signatures` | [Nguồn: 02-bd/database/problem-bank.md mục 1.5] — một chữ ký chung mỗi bài, khối Đặc tả (thêm 2026-10-03) |
+| 3 | `testcases` | Chỉ đọc các cột `visibility`, `approved`, `category` để đếm [Nguồn: 02-bd/database/problem-bank.md:136-158 (mục 1.6)] |
+| 4 | `problems.ai_brief`, `problems.no_full_code`, `problems.socratic_only` | Đã có từ 2026-10-22 (`DEC-2026-1022-db-sync-round4`, PB-07), `02-bd/database/problem-bank.md` mục 1.1; thay cho phương án bảng `problem_ai_authoring_context` |
+| 5 | `problem_reference_solutions` | Mã và ngôn ngữ đáp án mẫu, một dòng mỗi bài [Nguồn: 02-bd/database/problem-bank.md:220-232 (mục 1.11)]; thay cho dòng "chưa tồn tại" cũ (Q2, đóng 2026-10-22) |
+| 6 | `problem_specs` | Khối Đặc tả (thêm 2026-10-03); từ 2026-10-22 gồm cả chữ ký hàm [Nguồn: 02-bd/database/problem-bank.md:108-128 (mục 1.4)] |
+| 7 | `worked_examples` | Ví dụ mẫu kèm giải thích, bảng riêng [Nguồn: 02-bd/database/problem-bank.md:234-247 (mục 1.12)] |
 | 8 | `problem_levels` | [Nguồn: 02-bd/database/problem-bank.md mục 1.2a] — nhãn badge "Độ khó" (thêm 2026-10-03) |
 
-Hai dòng cuối là khoảng trống schema đã ghi nhận ở `SHR0202`, màn này chỉ đọc tiếp nên không tự quyết nơi lưu. Không dùng `tags`/`problem_tags` và `problem_stats` — màn này không hiển thị thẻ hay số liệu bài.
+Dòng 4 là khoảng trống schema duy nhất còn lại ở `SHR0202`, màn này chỉ đọc tiếp nên không tự quyết nơi lưu. Không dùng `tags`/`problem_tags` và `problem_stats` — màn này không hiển thị thẻ hay số liệu bài.
 
-**Thêm 2026-10-03 (`SHR0202` Q20):** màn đọc thêm `problem_specs` (định dạng stdin/stdout, chiến lược so khớp, epsilon) và `function_signatures` (chữ ký hàm chung, ghi đè tên; `02-bd/database/problem-bank.md` mục 1.4 và 1.5) để hiển thị khối đặc tả chỉ đọc; cả hai đã có trong schema nên không thêm khoảng trống mới.
+**Thêm 2026-10-03 (`SHR0202` Q20):** màn đọc thêm `problem_specs` (định dạng stdin/stdout, chiến lược so khớp, epsilon) và chữ ký hàm chung, ghi đè tên (`02-bd/database/problem-bank.md:108-128`, mục 1.4) để hiển thị khối đặc tả chỉ đọc; **sửa 2026-10-22:** bảng `function_signatures` đã gộp vào `problem_specs` (`DEC-2026-1022-problem-bank-schema-sync` mục 5, `02-bd/database/problem-bank.md:130-134`), nên màn chỉ đọc một bảng cho khối này; không thêm khoảng trống mới.
 
 ### 4.4 Vùng bố cục
 
@@ -218,7 +221,7 @@ Hai dòng cuối là khoảng trống schema đã ghi nhận ở `SHR0202`, màn
 | :--- | :--- | :--- |
 | Thanh đầu trang | `problem-info-view.tsx:66-83` | Nút quay lại, tiêu đề bài, dòng phụ "Mã #{code} · chủ đề {topic}", nút "Xem như người học", nút "Sửa bài" |
 | Cột nội dung (rộng) | `:86-142` | 5 thẻ: Đề bài + ràng buộc, Ví dụ mẫu, **Đặc tả** (thêm 2026-10-03: dòng chữ ký từng ngôn ngữ, định dạng stdin/stdout, chiến lược so khớp), Ma trận độ phủ, Đáp án mẫu (thu gọn); Đề bài nằm ngay dưới thanh đầu trang |
-| Cột thuộc tính (hẹp, dính) | `:144-207` | Thẻ Thuộc tính gồm độ khó, trạng thái, **các số liệu của khu vực B** (Testcase đã duyệt kèm số chờ duyệt, Testcase công khai, Đáp án mẫu đạt/tổng) và 4 giới hạn; thẻ Chỉ dẫn cho trợ lý AI (công tắc + ngữ cảnh) |
+| Cột thuộc tính (hẹp, dính) | `:144-207` | Thẻ Thuộc tính gồm độ khó, trạng thái, **các số liệu của khu vực B** (Testcase đã duyệt kèm số chờ duyệt, Testcase công khai, Ngôn ngữ đáp án mẫu) và 4 giới hạn; thẻ Chỉ dẫn cho trợ lý AI (công tắc + ngữ cảnh) |
 
 Từ V1.2 không còn hàng 4 thẻ số liệu phía trên cột nội dung: các số liệu chuyển vào thẻ Thuộc tính để đề bài nằm đầu khung nhìn (chủ dự án yêu cầu 2026-10-03, chưa duyệt hình). Giới hạn thời gian không còn thẻ riêng vì đã nằm trong 4 giới hạn. Các khu vực Sheet 5 vẫn chia theo nhóm dữ liệu, không đổi.
 
@@ -263,9 +266,9 @@ Slug `problem_info` ↔ slice `views/shared/problem-info` ↔ `01-rd/screens/sha
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Hàng số liệu | | | | | | | | | | | | | |
-| | 1 | Testcase đã duyệt | `problemInfo.stats.approved` | `testcases` | `is_ai_generated_draft` | Label | Number | - | - | O | 0 | Số nguyên; dòng phụ `{n} testcase chờ duyệt` | [Công thức] Đã duyệt = số dòng testcase **không** là nháp AI chưa duyệt; chờ duyệt = tổng trừ đã duyệt (`:54-55`). Ánh xạ "approved" sang `is_ai_generated_draft = false` là `[SoT: Suy luận]`, xem Q3<br>[EVT liên quan] - |
-| | 2 | Testcase công khai | `problemInfo.stats.public` | `testcases` | `visibility` | Label | Number | - | - | O | 0 | Số nguyên | [Công thức] Số testcase đã duyệt có `visibility = SAMPLE` (`:56`)<br>[EVT liên quan] - |
-| | 3 | Đáp án mẫu | `problemInfo.stats.solution` | - | - | Label | String | - | - | O | `-` | `{passed}/{total}`; dòng phụ = ngôn ngữ đáp án | **Không có cột DB lưu kết quả chạy**: `SHR0202` ghi kết quả chạy là dữ liệu tạm, không lưu DB — xem Q2<br>[Công thức] Nếu đã có lần chạy thì `{passed}/{total}`, chưa chạy thì `-` (`:86-92`)<br>[EVT liên quan] - |
+| | 1 | Testcase đã duyệt | `problemInfo.stats.approved` | `testcases` | `approved` | Label | Number | - | - | O | 0 | Số nguyên; dòng phụ `{n} testcase chờ duyệt` | [Công thức] Đã duyệt = số dòng `testcases` có `approved = true`; chờ duyệt = số dòng `approved = false` (nháp AI chưa duyệt, `origin = AI`) (`:54-55`). Testcase tay tạo với `approved = true` [Nguồn: 02-bd/database/problem-bank.md:151-152]; Q3 đã đóng 2026-10-22<br>[EVT liên quan] - |
+| | 2 | Testcase công khai | `problemInfo.stats.public` | `testcases` | `visibility` | Label | Number | - | - | O | 0 | Số nguyên | [Công thức] Số testcase có `approved = true` và `visibility = SAMPLE` (`:56`) [Nguồn: 02-bd/database/problem-bank.md:142,152]<br>[EVT liên quan] - |
+| | 3 | Đáp án mẫu | `problemInfo.stats.solution` | `problem_reference_solutions` | `language` | Label | String | - | - | O | `-` | Chỉ tên ngôn ngữ đáp án (Java, C++ hoặc Python) | Sửa 2026-10-22 (đồng bộ DB vòng 2, DEC-2026-1022-db-sync-round2 mục 9): **bỏ ô `{passed}/{total}`**, vì kết quả chạy đáp án mẫu không được lưu [Nguồn: 02-bd/database/problem-bank.md:232]; chỉ hiện ngôn ngữ đọc từ cột `language` [Nguồn: 02-bd/database/problem-bank.md:228]. Prototype còn hiển thị `{passed}/{total}` (`problem-info-view.tsx:86-92`), ghi nợ prototype<br>[Công thức] Có dòng đáp án mẫu thì hiện `language`, chưa có thì `-`<br>[EVT liên quan] - |
 | | 4 | Giới hạn thời gian | `problemInfo.stats.timeLimit` | `problems` | `time_limit_ms` | Label | Number | - | - | O | - | `{n} ms` | [Nguồn giá trị] Cột `time_limit_ms` (`:93`)<br>[EVT liên quan] - |
 
 ### Khu vực C — Cột nội dung
@@ -274,14 +277,14 @@ Slug `problem_info` ↔ slice `views/shared/problem-info` ↔ `01-rd/screens/sha
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Cột nội dung | | | | | | | | | | | | | |
 | | 1 | Đề bài | `problemInfo.content.statement` | `problems` | `statement_md` | Label | String | - | - | O | - | Markdown + LaTeX đã render (GFM, công thức inline và khối); HTML thô không được phân tích | Hiển thị bằng `MarkdownPreview` (cập nhật 2026-10-03, REQ-6); văn bản Markdown gốc chỉ có trong ô nhập của `SHR0202`<br>[Nguồn giá trị] Cột `statement_md`, DTO `statementMd` (`:98-99`); thành phần render `05-coding/frontend/src/shared/ui/data/markdown-preview.tsx:20-41`<br>[EVT liên quan] - |
-| | 2 | Ràng buộc dữ liệu | `problemInfo.content.constraints` | - | - | Label | String | - | - | O | - | Chữ đơn cách | **Không có cột DB** — kế thừa `SHR0202` Q1<br>[Nguồn giá trị] DTO `constraintsText` (nguồn lưu chưa xác định) (`:100-103`)<br>[EVT liên quan] - |
-| | 3 | Danh sách ví dụ mẫu | `problemInfo.examples.list` | `testcases` | `is_worked_example` | List | List | - | - | O | rỗng | Mỗi ví dụ một khối "Ví dụ {n}" | [Nguồn giá trị] `WorkedExampleDto[]` (`:106-135`); nơi lưu theo `SHR0202` Q3 (chưa chốt)<br>[EVT liên quan] - |
-| | 4 | Đầu vào | `problemInfo.examples.col.input` | `testcases` | `input_inline` | ListColumn | String | - | - | O | - | Chữ đơn cách | [Nguồn giá trị] `WorkedExampleDto.input` (`:118-119`)<br>[EVT liên quan] - |
-| | 5 | Đầu ra | `problemInfo.examples.col.output` | `testcases` | `expected_output_inline` | ListColumn | String | - | - | O | - | Chữ đơn cách | [Nguồn giá trị] `WorkedExampleDto.output` (`:122-123`)<br>[EVT liên quan] - |
-| | 6 | Giải thích | `problemInfo.examples.col.explanation` | - | - | ListColumn | String | - | - | O | - | - | **Không có cột DB** — `SHR0202` Q3<br>[Nguồn giá trị] `WorkedExampleDto.explanation` (`:126-129`)<br>[EVT liên quan] - |
-| | 7 | Ma trận độ phủ | `problemInfo.coverage.badges` | `testcases` | - | List | List | - | - | O | - | `{loại ca}: {n}` | **Không có cột loại ca trong `testcases`** — xem Q4<br>[Công thức] Với mỗi loại ca trong `TESTCASE_CATEGORIES`, đếm testcase đã duyệt thuộc loại đó; ô > 0 tô trạng thái thành công, ô = 0 tô trung tính (`:57-60,137-145`)<br>[EVT liên quan] - |
-| | 8 | Mã đáp án mẫu | `problemInfo.solution.code` | - | - | Label | String | - | - | O | Thu gọn | Chữ đơn cách; mở bằng `<details>` | **Không có bảng DB** — `SHR0202` Q2. Chỉ A2/A3 thấy (F2-18)<br>[Nguồn giá trị] DTO `sampleSolutionCode`, `sampleSolutionLanguage` (`:147-152`)<br>[EVT liên quan] - |
-| | 9 | Chữ ký hàm theo ngôn ngữ | `problemInfo.spec.signatures` | `function_signatures` | `function_name`, `return_type`, `parameters`, `name_overrides` | List | List | - | - | O | 3 dòng | Một dòng chữ ký mỗi ngôn ngữ (Java, C++, Python) | Suy từ MỘT chữ ký chung: tên hàm tự suy ra theo ngôn ngữ (có ghi đè thì dùng ghi đè), kiểu ánh xạ theo ngôn ngữ. Bài có kiểu ngoài lược đồ (`function_wrapper_supported = false`) thì thay ba dòng bằng câu "chỉ hỗ trợ Standard I/O"<br>[Nguồn giá trị] `FunctionSignatureDto`; cách dựng dòng giống mục 10 của Khu vực F ở `SHR0202`<br>[EVT liên quan] - |
+| | 2 | Ràng buộc dữ liệu | `problemInfo.content.constraints` | `problems` | `constraints_md` | Label | String | - | - | O | - | Chữ đơn cách | Cột `TEXT NOT NULL` mặc định rỗng; chuỗi rỗng thì không hiện khối. Màn người học (`USR0102`) ghép với `statement_md`, màn này giữ hai khối riêng như prototype<br>[Nguồn giá trị] Cột `constraints_md` [Nguồn: 02-bd/database/problem-bank.md:17]; DTO `constraintsText` (`:100-103`); `SHR0202` Q1 đã đóng 2026-10-22<br>[EVT liên quan] - |
+| | 3 | Danh sách ví dụ mẫu | `problemInfo.examples.list` | `worked_examples` | `position` | List | List | - | - | O | rỗng | Mỗi ví dụ một khối "Ví dụ {n}" | [Nguồn giá trị] `worked_examples WHERE problem_id = :id ORDER BY position` [Nguồn: 02-bd/database/problem-bank.md:234-247]; `WorkedExampleDto[]` (`:106-135`); `SHR0202` Q3 đã đóng 2026-10-22<br>[EVT liên quan] - |
+| | 4 | Đầu vào | `problemInfo.examples.col.input` | `worked_examples` | `input` | ListColumn | String | - | - | O | - | Chữ đơn cách | [Nguồn giá trị] `WorkedExampleDto.input` (`:118-119`)<br>[EVT liên quan] - |
+| | 5 | Đầu ra | `problemInfo.examples.col.output` | `worked_examples` | `output` | ListColumn | String | - | - | O | - | Chữ đơn cách | [Nguồn giá trị] `WorkedExampleDto.output` (`:122-123`)<br>[EVT liên quan] - |
+| | 6 | Giải thích | `problemInfo.examples.col.explanation` | `worked_examples` | `explanation_md` | ListColumn | String | - | - | O | - | - | Cột `TEXT` nullable; không có giải thích thì không hiện dòng<br>[Nguồn giá trị] `WorkedExampleDto.explanation` (`:126-129`) [Nguồn: 02-bd/database/problem-bank.md:245]; `SHR0202` Q3 đã đóng 2026-10-22<br>[EVT liên quan] - |
+| | 7 | Ma trận độ phủ | `problemInfo.coverage.badges` | `testcases` | `category`, `approved` | List | List | - | - | O | - | `{loại ca}: {n}` | Cột `category` ENUM nullable (7 giá trị `TYPICAL`, `BOUNDARY_LOW`, `BOUNDARY_HIGH`, `DEGENERATE`, `DUPLICATE`, `SORTED`, `EXTREME`; NULL = testcase tay chưa gán nhãn) [Nguồn: 02-bd/database/problem-bank.md:153]; Q4 phần loại ca đã đóng 2026-10-22<br>[Công thức] Với mỗi loại ca trong `TESTCASE_CATEGORIES`, đếm testcase đã duyệt (`approved = true`) thuộc loại đó; ô > 0 tô trạng thái thành công, ô = 0 tô trung tính (`:57-60,137-145`)<br>[EVT liên quan] - |
+| | 8 | Mã đáp án mẫu | `problemInfo.solution.code` | `problem_reference_solutions` | `source_code`, `language` | Label | String | - | - | O | Thu gọn | Chữ đơn cách; mở bằng `<details>` | Đọc dòng đáp án mẫu của bài [Nguồn: 02-bd/database/problem-bank.md:228-229]; `SHR0202` Q2 đã đóng 2026-10-22. Chỉ A2/A3 thấy (F2-18); không bao giờ đưa vào prompt AI<br>[Nguồn giá trị] DTO `sampleSolutionCode`, `sampleSolutionLanguage` (`:147-152`)<br>[EVT liên quan] - |
+| | 9 | Chữ ký hàm theo ngôn ngữ | `problemInfo.spec.signatures` | `problem_specs` | `function_name`, `return_type`, `parameters`, `name_overrides` | List | List | - | - | O | 3 dòng (hiển thị) | Một dòng chữ ký mỗi ngôn ngữ (Java, C++, Python) | Suy từ MỘT chữ ký chung: tên hàm tự suy ra theo ngôn ngữ (có ghi đè thì dùng ghi đè), kiểu ánh xạ theo ngôn ngữ. Bài có kiểu ngoài lược đồ (`function_wrapper_supported = false`) thì thay ba dòng bằng câu "chỉ hỗ trợ Standard I/O"<br>[Nguồn giá trị] `FunctionSignatureDto` (bốn cột của dòng `problem_specs`, không còn bảng `function_signatures`) [Nguồn: 02-bd/database/problem-bank.md:123-126]; cách dựng dòng giống mục 10 của Khu vực F ở `SHR0202`. Ba dòng là kết quả hiển thị suy từ một chữ ký chung, không phải ba dòng lưu trữ<br>[EVT liên quan] - |
 | | 10 | Định dạng đọc stdin | `problemInfo.spec.stdinFormat` | `problem_specs` | `stdin_format_md` | Label | String | - | - | O | - | Văn bản, giữ xuống dòng | [Nguồn giá trị] `ProblemSpecDto.stdinFormat`<br>[EVT liên quan] - |
 | | 11 | Định dạng in stdout | `problemInfo.spec.stdoutFormat` | `problem_specs` | `stdout_format_md` | Label | String | - | - | O | - | Văn bản, giữ xuống dòng | [Nguồn giá trị] `ProblemSpecDto.stdoutFormat`<br>[EVT liên quan] - |
 | | 12 | Chiến lược so khớp | `problemInfo.spec.matchingStrategy` | `problem_specs` | `matching_strategy`, `epsilon_value` | Badge | Enum | - | - | O | - | `EXACT`/`TRIMMED`/`EPSILON`/`UNORDERED_SET`; kèm giá trị epsilon khi là `EPSILON` | [Nguồn giá trị] `ProblemSpecDto.matchingStrategy`, `epsilonValue`<br>[EVT liên quan] - |
@@ -297,8 +300,8 @@ Slug `problem_info` ↔ slice `views/shared/problem-info` ↔ `01-rd/screens/sha
 | | 4 | Bộ nhớ (MB) | `problemInfo.properties.limit.memoryLimitMb` | `problems` | `memory_limit_mb` | Label | Number | - | - | O | - | Số nguyên | [Nguồn giá trị] Cột `memory_limit_mb`<br>[EVT liên quan] - |
 | | 5 | Output (KB) | `problemInfo.properties.limit.outputLimitKb` | `problems` | `max_output_size_kb` | Label | Number | - | - | O | - | Số nguyên | [Nguồn giá trị] Cột `max_output_size_kb`<br>[EVT liên quan] - |
 | | 6 | Stack (MB) | `problemInfo.properties.limit.stackLimitMb` | - | - | Label | Number | - | - | O | - | Số nguyên | **Không có cột `stack` trong `problems`** (`02-bd/database/problem-bank.md` mục 1.1 chỉ có thời gian, bộ nhớ, output, số lần nộp/giờ) — xem Q4<br>[Nguồn giá trị] `ProblemLimits.stackLimitMb` của mock (`draft-types.ts:55-60`)<br>[EVT liên quan] - |
-| | 7 | Công tắc AI | `problemInfo.ai.guards` | - | - | List | List | - | - | O | - | Mỗi dòng: nhãn + Badge `Bật`/`Tắt` | **Không có bảng DB** — `SHR0202` Q4; prototype có **2** công tắc (`noFullCode`, `socraticOnly`), DTO của `SHR0202` có 3 cờ — xem Q5<br>[Nguồn giá trị] `AiAuthoringContextDto.noFullCode`, `questionOnly` (`:184-193`)<br>[EVT liên quan] - |
-| | 8 | Ngữ cảnh AI riêng của bài | `problemInfo.ai.brief` | - | - | Label | String | - | - | O | "Chưa có ngữ cảnh riêng cho bài này." | Văn bản | [Nguồn giá trị] `AiAuthoringContextDto.briefText`; rỗng thì hiện nhãn tĩnh `problemInfo.aiBriefEmpty` (`:194-196`)<br>[EVT liên quan] - |
+| | 7 | Công tắc AI | `problemInfo.ai.guards` | - | - | List | List | - | - | O | - | Mỗi dòng: nhãn + Badge `Bật`/`Tắt` | Đọc `problems.no_full_code`, `problems.socratic_only`; **2** công tắc, khớp DTO của `SHR0202` sau khi bỏ `allowHiddenHint` (Q5 đã đóng)<br>[Nguồn giá trị] `AiAuthoringContextDto.noFullCode`, `questionOnly` (`:184-193`)<br>[EVT liên quan] - |
+| | 8 | Ngữ cảnh AI riêng của bài | `problemInfo.ai.brief` | - | - | Label | String | - | - | O | "Chưa có ngữ cảnh riêng cho bài này." | Văn bản | [Nguồn giá trị] `AiAuthoringContextDto.briefText` (cột `problems.ai_brief`); rỗng thì hiện nhãn tĩnh `problemInfo.aiBriefEmpty` (`:194-196`)<br>[EVT liên quan] - |
 
 ---
 
@@ -324,7 +327,7 @@ Slug `problem_info` ↔ slice `views/shared/problem-info` ↔ `01-rd/screens/sha
 | Hàng số liệu | | | | |
 | | 1 | Testcase đã duyệt | Có | [Điều kiện kích hoạt] - |
 | | 2 | Testcase công khai | Có | [Điều kiện kích hoạt] - |
-| | 3 | Đáp án mẫu | Có | [Điều kiện kích hoạt] -<br>[Tự động đặt] Chưa có lần chạy nào thì giá trị là `-`. |
+| | 3 | Đáp án mẫu | Có | [Điều kiện kích hoạt] -<br>[Tự động đặt] Chưa có đáp án mẫu thì giá trị là `-`. |
 | | 4 | Giới hạn thời gian | Có | [Điều kiện kích hoạt] - |
 
 ### Khu vực C — Cột nội dung
@@ -372,15 +375,15 @@ Màn này **không định nghĩa DTO mới**. Toàn bộ trường lấy từ c
 | --: | :--- | :--- | :--- | :--- |
 | 1 | `ProblemAuthoringDetailDto` | `code`, `title` | Khu A NO 2-3 | [Nguồn] Phản hồi `GetProblemForAuthoring` |
 | 2 | `ProblemAuthoringDetailDto` | `statementMd` | Khu C NO 1 | [Nguồn] như trên |
-| 3 | `ProblemAuthoringDetailDto` | `constraintsText` | Khu C NO 2 | Nguồn lưu chưa xác định (`SHR0202` Q1) |
+| 3 | `ProblemAuthoringDetailDto` | `constraintsText` | Khu C NO 2 | Cột `problems.constraints_md` (`SHR0202` Q1 đã đóng 2026-10-22) |
 | 4 | `ProblemAuthoringDetailDto` | `levelId`, `status` | Khu D NO 1-2 | [Chuyển đổi] `levelId` đổi sang nhãn qua `ListProblemLevels` (cùng mẫu với `topicIds`; thay cho trường ENUM `difficulty` cũ); `UNPUBLISHED`/`PUBLISHED` đổi sang "Chưa xuất bản"/"Đã xuất bản" |
 | 5 | `ProblemAuthoringDetailDto` | `timeLimitMs`, `memoryLimitMb`, `maxOutputSizeKb` | Khu B NO 4, Khu D NO 3-5 | [Chuyển đổi] Hiển thị nguyên giá trị mili-giây, khác `SHR0202` hiển thị giây |
 | 6 | `ProblemAuthoringDetailDto` | `topicIds` | Khu A NO 3 | [Chuyển đổi] Id chủ đề đổi sang tên qua `ListProblemTopics` |
-| 7 | `ProblemAuthoringDetailDto` | `sampleSolutionLanguage`, `sampleSolutionCode` | Khu B NO 3 (dòng phụ), Khu C NO 8 | Nguồn lưu chưa xác định (`SHR0202` Q2) |
-| 8 | `WorkedExampleDto` | `input`, `output`, `explanation` | Khu C NO 3-6 | `explanation` chưa có cột (`SHR0202` Q3) |
-| 9 | `TestcaseDto` | `visibility`, `isAiGeneratedDraft` | Khu B NO 1-2, Khu C NO 7 | [Chuyển đổi] Đếm phía client trên danh sách trả về (prototype `:54-60`); DD cân nhắc trả số đếm có sẵn từ backend |
-| 10 | `AiAuthoringContextDto` | `briefText`, `noFullCode`, `questionOnly` | Khu D NO 7-8 | `allowHiddenHint` không hiển thị (prototype bỏ cờ này, `draft-types.ts:62-69`); xem Q5 |
-| 11 | - (chưa có DTO) | `solutionCheck {ran, passed, total}`, loại ca testcase, `stackLimitMb` | Khu B NO 3, Khu C NO 7, Khu D NO 6 | **Không có trường DTO tương ứng ở `SHR0202`** — xem Q2, Q4 |
+| 7 | `ProblemAuthoringDetailDto` | `sampleSolutionLanguage`, `sampleSolutionCode` | Khu B NO 3 (dòng phụ), Khu C NO 8 | Bảng `problem_reference_solutions` (`language`, `source_code`) (`SHR0202` Q2 đã đóng 2026-10-22) |
+| 8 | `WorkedExampleDto` | `input`, `output`, `explanation` | Khu C NO 3-6 | Bảng `worked_examples` (`input`, `output`, `explanation_md`) (`SHR0202` Q3 đã đóng 2026-10-22) |
+| 9 | `TestcaseDto` | `visibility`, `approved`, `origin`, `category` | Khu B NO 1-2, Khu C NO 7 | [Chuyển đổi] Đếm phía client trên danh sách trả về (prototype `:54-60`); DD cân nhắc trả số đếm có sẵn từ backend |
+| 10 | `AiAuthoringContextDto` | `briefText`, `noFullCode`, `questionOnly` | Khu D NO 7-8 | `allowHiddenHint` đã bỏ khỏi DTO (2026-10-22, PB-07; prototype không có cờ này, `draft-types.ts:62-73`); xem Q5 (đã đóng) |
+| 11 | - (chưa có DTO) | `stackLimitMb` | Khu D NO 6 | **Không có trường DTO tương ứng ở `SHR0202`, và không có nguồn lưu ở DB** (không có cột `stack`) — xem Q4. `solutionCheck {ran, passed, total}` đã bỏ 2026-10-22 (kết quả chạy đáp án mẫu không lưu, Q2 đã đóng). Loại ca (`category`) đã có cột, đã chuyển sang dòng 9 |
 
 `[SoT: Suy luận]` — ánh xạ do BD đề xuất; `03-dd/api/problem-bank.md` chốt lại.
 
@@ -446,10 +449,10 @@ Hàng "kiểm quyền" 1-2 giống `SHR0202`; không viết lại nội dung vư
 | # | Câu hỏi | Vì sao chưa trả lời được | Chủ sở hữu |
 | :-: | :--- | :--- | :--- |
 | Q1 | ~~Bảng mã ở `02-bd/_rules/bd-template-9sheet.md` mục 8 chưa có `SHR0203`/`SHR0303`, `system_survey.md` mục 7.0 chưa có slug `problem_info`.~~ **ĐÃ XỬ LÝ 2026-10-02:** đã thêm hai dòng vào bảng mã và hai slug vào `system_survey.md` mục 7.0. | — | Đã đóng |
-| Q2 | Kết quả "chạy với đáp án mẫu" (`{passed}/{total}`) và mã đáp án mẫu: lưu ở đâu? `SHR0202` ghi kết quả chạy là dữ liệu tạm không lưu DB, nhưng màn chi tiết cần xem lại **lần chạy gần nhất** sau khi rời form sửa | Chưa có bảng đáp án mẫu (`SHR0202` Q2); thêm cột lưu kết quả chạy cần quyết định kiến trúc, không phải việc của BD màn | DD `problem-bank` + chủ dự án |
-| Q3 | "Testcase đã duyệt" ánh xạ vào cột nào? Prototype có cờ `approved` riêng, DB chỉ có `is_ai_generated_draft`; hai khái niệm trùng nhau hay khác nhau (testcase tác giả viết tay có mặc định "đã duyệt" không)? | RD sửa quy tắc 2026-09-28 chỉ đếm testcase đã duyệt (`01-rd/screens/shared/SHR0203_problem_info.md:70`) nhưng chưa nói cột nguồn `[SoT: Suy luận]` | DD `problem-bank` |
-| Q4 | "Loại ca" của testcase (cho ma trận độ phủ) và "Stack (MB)" không có cột trong `testcases`/`problems`. Thêm cột (`testcases.category`, `problems.stack_limit_mb`) hay bỏ khỏi UI? | Schema `02-bd/database/problem-bank.md` mục 1.1, 1.6 không có hai cột này; mock có (`draft-types.ts:44-45,55-60`); thêm cột kéo theo migration, thuộc BD module | BD `database/problem-bank.md` + chủ dự án |
-| Q5 | Số cờ hành vi AI: prototype chỉ có 2 (`noFullCode`, `socraticOnly`) vì cờ thứ 3 thuộc tính năng gợi ý theo cấp độ đã cắt (`draft-types.ts:62-69`, `DEC-2026-0831-remove-tiered-hints-ai-config`), trong khi `AiAuthoringContextDto` của `SHR0202` Sheet 7.1 NO 16 vẫn có `allowHiddenHint`. Bỏ trường đó khỏi DTO của `SHR0202`? Nơi lưu cả khối vẫn chưa chốt (`SHR0202` Q4) | `SHR0202` ghi nhận "Gợi ý theo cấp độ" đã cắt nhưng chưa dọn DTO; sửa DTO nằm ngoài phạm vi đợt này (chỉ thêm một dòng chuyển màn vào `SHR0202`) | BD `SHR0202` + DD |
+| Q2 | ~~Kết quả "chạy với đáp án mẫu" (`{passed}/{total}`) và mã đáp án mẫu: lưu ở đâu?~~ **ĐÃ CHỐT 2026-10-22 (`DEC-2026-1022-problem-bank-schema-sync` mục 2, PB-04; `DEC-2026-1022-db-sync-round2` mục 9, tiêu chí ponytail bậc 2):** mã và ngôn ngữ đáp án mẫu lưu ở bảng `problem_reference_solutions`; kết quả chạy không lưu nên màn chỉ đọc **bỏ ô `{passed}/{total}`**, chỉ hiện ngôn ngữ đáp án [Nguồn: 02-bd/database/problem-bank.md:232]. Đã sửa Khu B NO 3, Sheet 6, Sheet 7.1 NO 11 | Đã đóng | Đã đóng |
+| Q3 | ~~"Testcase đã duyệt" ánh xạ vào cột nào? Prototype có cờ `approved` riêng, DB chỉ có `is_ai_generated_draft`; hai khái niệm trùng nhau hay khác nhau (testcase tác giả viết tay có mặc định "đã duyệt" không)?~~ **ĐÃ CHỐT 2026-10-22 (`DEC-2026-1022-problem-bank-schema-sync` mục 3, PB-05):** cột `testcases.approved` BOOLEAN riêng, kèm `origin` (`MANUAL`/`AI`) và `category`; thay cho `is_ai_generated_draft`. Testcase tay mặc định `approved = true` là suy luận của DB doc (RD chỉ nói rõ nháp AI chưa duyệt) [Nguồn: 02-bd/database/problem-bank.md:151-153]. Đã sửa Khu B NO 1-2, Khu C NO 7, Sheet 7.1 NO 9 | Đã đóng | Đã đóng |
+| Q4 | **Đóng một phần 2026-10-22 (PB-05):** "Loại ca" đã có cột `testcases.category` (ENUM nullable, 7 giá trị) [Nguồn: 02-bd/database/problem-bank.md:153]. **Còn mở:** "Stack (MB)" không có cột trong `problems` (DB doc không thêm); đề xuất BD giữ nguyên: bỏ khỏi UI thật. Câu hỏi gốc: "Loại ca" của testcase (cho ma trận độ phủ) và "Stack (MB)" không có cột trong `testcases`/`problems`. Thêm cột (`testcases.category`, `problems.stack_limit_mb`) hay bỏ khỏi UI? | Với `stack_limit_mb`: schema `02-bd/database/problem-bank.md` mục 1.1 không có cột; mock có (`draft-types.ts:55-60`); thêm cột kéo theo migration, thuộc BD module | BD `database/problem-bank.md` + chủ dự án |
+| Q5 | ~~Số cờ hành vi AI: prototype chỉ có 2, DTO của `SHR0202` có 3 (`allowHiddenHint`); bỏ khỏi DTO? Nơi lưu khối vẫn chưa chốt.~~ **Đã đóng 2026-10-22 (`DEC-2026-1022-db-sync-round4`, PB-07):** bỏ `allowHiddenHint` khỏi DTO (cờ thuộc tính năng gợi ý theo cấp độ đã cắt, `DEC-2026-0831-remove-tiered-hints-ai-config`); nơi lưu là ba cột `problems.ai_brief`, `no_full_code`, `socratic_only`. | Đã đóng cùng `SHR0202` Q4 | Đã đóng |
 | Q6 | Nút "Xem như người học": mở route học viên hay popup xem trước? Dùng chung quyết định với `SHR0202` Q6 | Chưa có mã RD, `06-plan/PROTOTYPE_DEBT.md` mục 17.1 | Chủ dự án |
 | Q7 | Trạng thái "không tìm thấy" khi mã bài sai: RD yêu cầu `[SoT: Suy luận]`, prototype chưa dựng; lỗi tải khác (mạng, 403) hiển thị thế nào? | Prototype dùng mock đồng bộ không có nhánh lỗi; hợp đồng lỗi thuộc `03-dd/api/problem-bank.md` | DD |
 | Q8 | ~~Khu A2 chỉ xem bài của mình: A2 mở bài của người khác thì 404 hay 403?~~ **ĐÃ CHỐT 2026-10-03 (chủ dự án, theo đề xuất), ĐIỀU CHỈNH 2026-10-11 (chủ dự án duyệt, `DEC-2026-1011-a2-read-published-problems-of-others`, tiêu chí ponytail bậc 6):** A2 mở bài của người khác: bài **đã xuất bản** thì xem **chỉ đọc** (`problem_info`); bài **chưa xuất bản** thì vẫn trả **404 "Không tìm thấy bài tập"**, giống hệt mã không tồn tại, để câu trả lời không tiết lộ mã nào có thật; máy chủ kiểm ở tầng application, không chỉ ẩn nút. Sửa, xoá, `/edit`, `/preview` vẫn chỉ trên bài của mình; lý do điều chỉnh: giảng viên cần xem đề trước khi giao bài từ ngân hàng chung (F2-12). Phần 404 cho bài nháp người khác của bản chốt 2026-10-03 giữ nguyên. Áp cho cả `problem_info`, `problem_authoring` (`/edit`) và trang xem trước (`/preview`). Bản dựng: mock suy ra người xem từ khu vực của địa chỉ (`/instructor` là giảng viên mẫu, sở hữu một số mã), ném 404, ba màn hiện "Không tìm thấy bài tập."; `isNotFound` ở `shared/api` | Hợp đồng lỗi thật (mã lỗi, nội dung) thuộc `03-dd/api/problem-bank.md` | Đã đóng |

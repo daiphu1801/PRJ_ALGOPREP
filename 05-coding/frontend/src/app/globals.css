@@ -651,6 +651,27 @@ button:not(:disabled):active,
  * lifted off it. Scoped here instead of editing `.dark` so Admin/Instructor (which override most of
  * these tokens anyway) and the auth screens keep their current look. Light is untouched.
  */
+/*
+ * Student shell, Light (owner 2026-10-20): panels sat almost flush against the white page (surface
+ * #f8fafc on #ffffff, 55% glass fill). The page now takes a cool grey tint, panels are solid white with
+ * a stronger border and a soft shadow, so cards lift off the background. Dark overrides follow below.
+ */
+.student-shell {
+  --color-background: #eaeff6;
+  --color-surface: #ffffff;
+  --color-surface-hover: #e3e9f2;
+  --color-row-hover: #eef2f8;
+  --color-border: #cbd5e1;
+  --color-track: #d5dde9;
+}
+
+.student-shell .glass-card {
+  background: color-mix(in srgb, var(--color-surface) 96%, transparent);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.08),
+    0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
 .dark .student-shell {
   --color-background: #04070d;
   --color-surface: #141c2c;

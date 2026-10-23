@@ -31,9 +31,8 @@ export type StudentNavItem = {
 export const STUDENT_NAV_ITEMS: StudentNavItem[] = [
   { key: "dashboard", href: "/dashboard", labelKey: "dashboard" },
   { key: "problems", href: "/problems", labelKey: "problems" },
-  // `/workspace` carries no id on purpose: _shell.md mục 6 Q2 (closed 2026-09-22) says this entry
-  // opens the most recent unfinished draft and falls back to the problem list when there is none.
-  // The route itself does that redirect — app/(student)/workspace/page.tsx.
+  // `/workspace` carries no id on purpose: it is the Workspace landing page (USR0105, owner
+  // 2026-10-20) listing unfinished drafts. It replaced the redirect of _shell.md mục 6 Q2.
   { key: "workspace", href: "/workspace", labelKey: "workspace" },
   { key: "submissions", href: "/submissions", labelKey: "submissions" },
   // Likewise id-less: MockInterviewView opens on its own entry screen (pick a source, configure the

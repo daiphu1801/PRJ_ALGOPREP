@@ -25,7 +25,7 @@ phải tồn tại** — khác `identity`.
 | Nhóm | Mã | Ghi chú |
 | :--- | :--- | :--- |
 | Soạn đề bài | F2-01, F2-02 | Markdown + LaTeX; độ khó (danh mục do ADMIN quản lý, xem mục 2.1), chủ đề, thẻ (tag) tự do nhiều-nhiều. Danh mục chủ đề là dữ liệu **do ADMIN quản lý** (đã chốt 2026-10-01, `DEC-2026-1001-admin-configurable-settings`): ADMIN tạo/đổi tên/sắp xếp/xoá, A2 chỉ chọn; endpoint `ListProblemTopics`, `CreateProblemTopic`, `UpdateProblemTopic`, `ReorderProblemTopics`, `DeleteProblemTopic` (xoá bị từ chối khi còn bài tham chiếu, trả số đếm); xem `database/problem-bank.md` mục 1.2 và `security/problem-bank.md` mục 1 |
-| Đặc tả song song hai mô hình nộp bài | F2-03 | Chữ ký hàm theo Java/C++/Python (đầu vào cho F3 — bọc hàm) **và** định dạng stdin/stdout theo dòng chuẩn (đầu vào cho mô hình Standard I/O). Cả hai luôn cùng tồn tại cho một bài, trừ ngoại lệ F3-13 (kiểu dữ liệu vượt lược đồ, ẩn tuỳ chọn Bọc hàm — cờ đặt ở `problem-bank`, đọc bởi `harness`) [SoT: `01-rd/req/problem-bank.md:11-21`; `02-bd/architecture/harness.md` mục 2b] |
+| Đặc tả song song hai mô hình nộp bài | F2-03 | Sửa 2026-10-22 (đồng bộ DB, phase 3, DEC-2026-1022-problem-bank-schema-sync): chữ ký hàm nay là cột của `problem_specs` (bảng `function_signatures` đã gộp vào, `database/problem-bank.md` mục 1.4 và 1.5). Chữ ký hàm theo Java/C++/Python (đầu vào cho F3 — bọc hàm) **và** định dạng stdin/stdout theo dòng chuẩn (đầu vào cho mô hình Standard I/O). Cả hai luôn cùng tồn tại cho một bài, trừ ngoại lệ F3-13 (kiểu dữ liệu vượt lược đồ, ẩn tuỳ chọn Bọc hàm — cờ đặt ở `problem-bank`, đọc bởi `harness`) [SoT: `01-rd/req/problem-bank.md:11-21`; `02-bd/architecture/harness.md` mục 2b] |
 | Chiến lược so khớp | F2-04 | `EXACT`/`TRIMMED`/`EPSILON`/`UNORDERED_SET`, khai theo bài toán, `harness` đọc để sinh mã so khớp |
 | Testcase Sample/Hidden | F2-05, F2-06, F2-08 | Sample công khai (Chạy thử), Hidden ẩn (Nộp bài); chống rò rỉ — API/log không bao giờ trả input hay diff của Hidden testcase |
 | Tải lên theo lô + MinIO | F2-07 | Chi tiết ở `02-bd/storage/problem-bank.md` |
@@ -34,7 +34,7 @@ phải tồn tại** — khác `identity`.
 | Tìm kiếm/lọc | F2-11 | Theo chủ đề, độ khó, trạng thái đã giải (đọc từ `identity` qua event), thẻ |
 | Giao bài theo lớp | F2-12 | Gán/gỡ bài cho lớp; gỡ là ẩn mềm, không xoá lịch sử (`DEC-2026-0831-class-assignments-round2`) |
 | Bookmark riêng tư | F2-13 | Ghi chú theo (`user_id`, `problem_id`), tuyệt đối riêng tư — kể cả với `INSTRUCTOR`/`ADMIN` |
-| Sinh testcase bằng AI | F2-14 | AI chỉ sinh input; output lấy từ chạy Đáp án mẫu thật qua `JudgeExecutionPort` (outbound port `problem-bank` tự khai báo, gọi sang hạ tầng judge engine dùng chung — không import module `judge-orchestration`) |
+| Sinh testcase bằng AI | F2-14 | Sửa 2026-10-22 (đồng bộ DB, phase 3, DEC-2026-1022-problem-bank-schema-sync): testcase AI mang `origin = AI`, `approved = false` đến khi người soạn duyệt (thay cờ `is_ai_generated_draft`); Đáp án mẫu lưu ở `problem_reference_solutions` (một dòng mỗi bài), ràng buộc dữ liệu đề ở `problems.constraints_md` là đầu vào của bước sinh (`database/problem-bank.md` mục 1.1, 1.6, 1.11). AI chỉ sinh input; output lấy từ chạy Đáp án mẫu thật qua `JudgeExecutionPort` (outbound port `problem-bank` tự khai báo, gọi sang hạ tầng judge engine dùng chung — không import module `judge-orchestration`) |
 | Vòng đời bài toán | F2-15 | Hai trạng thái `Chưa xuất bản`/`Đã xuất bản` + cờ `deleted` (ẩn mềm) — `DEC-2026-0830-problem-lifecycle-two-states`, `DEC-2026-0831-problem-management-lifecycle-details` |
 | Nhân bản bài toán | F2-16 | Sao chép toàn bộ nội dung, bản sao ở trạng thái `Chưa xuất bản` |
 | Xuất CSV | F2-17 | Chỉ metadata bảng, không xuất đề/đặc tả/testcase |
@@ -64,7 +64,7 @@ Theo `DEC-2026-0820-architecture-baseline`: không import schema khác. `problem
 
 | Sự kiện phát ra | Ai lắng nghe | Payload tối thiểu | Dùng để |
 | :--- | :--- | :--- | :--- |
-| `ProblemSpecChanged` | `harness` | `problem_id`, `spec_version` (không phải `testcase_set_version` — hai khái niệm khác nhau, xem mục 2 database), diff chữ ký hàm | Vô hiệu hoá/tái sinh mã bọc hàm đã cache cho bài đó nếu `harness` có cache theo `problem_id` |
+| `ProblemSpecChanged` | `harness` | `problem_id`, `spec_version` (không phải `testcase_set_version` — hai khái niệm khác nhau, xem mục 2 database), diff chữ ký hàm. Sửa 2026-10-22 (đồng bộ DB, phase 3, DEC-2026-1022-problem-bank-schema-sync): `spec_version` tăng khi **bất kỳ cột nào** của `problem_specs` đổi (chiến lược so khớp, định dạng stdin/stdout, tên hàm, kiểu trả về, tham số, ghi đè tên; `database/problem-bank.md` mục 1.4), không chỉ chữ ký hàm | Vô hiệu hoá/tái sinh mã bọc hàm đã cache cho bài đó nếu `harness` có cache theo `problem_id` |
 | `ProblemPublished` / `ProblemUnpublished` | `identity` (read model `identity_recent_activity`), `judge-orchestration` (nếu có cache `language_config` theo bài) | `problem_id`, `actor_user_id`, `occurred_at` | F1-30, và để `judge-orchestration` biết bài nào đang nhận submission |
 | `TestcaseSetVersionBumped` | `judge-orchestration` | `problem_id`, `testcase_set_version`, `bumped_at` | Ghi lại submission mới được chấm theo version nào (F2-09 mục truy vết) — `judge-orchestration` tự lưu `testcase_set_version` trên bảng `submission` của nó khi nhận sự kiện, không đọc trực tiếp bảng `testcase` của `problem-bank` |
 | `ProblemAssignedToClass` / `ProblemUnassignedFromClass` | `identity` (nếu `class_management` cần hiển thị) | `problem_id`, `class_id`, `actor_user_id` | F2-12, hiển thị khối bài giao trong `problem_list` |
@@ -94,11 +94,16 @@ Theo `DEC-2026-0820-architecture-baseline`: không import schema khác. `problem
   nhiều) và **hạt giống ngẫu nhiên cố định** (không cố định thì F2-09 phiên bản hoá mất ý nghĩa).
   Nới hợp đồng port hay thêm một hàm riêng — chốt ở DD.
 
+### 3.2a. Outbound port — ghi nhật ký hệ thống (từ `identity`, thêm 2026-10-23)
+
+`AuditLogPort` do `identity` phơi ra (xem `identity`, mục cổng `AuditLogPort`): `problem-bank` gọi cổng này để ghi dòng `system_audit_logs` trong cùng JVM và cùng giao dịch DB với thay đổi nghiệp vụ, không ghi thẳng schema `identity` (`DEC-2026-1023-db-actor-review-decisions`).
+
 ### 3.3. Consume domain event (xây read model nội bộ)
 
 | Sự kiện lắng nghe | Từ module | Dùng để cập nhật | Phục vụ |
 | :--- | :--- | :--- | :--- |
 | `SubmissionGraded` / `SubmissionAccepted` (verdict + tỉ lệ F4-13) | `judge-orchestration` | `problem_stats(problem_id, submission_count, accepted_count, ac_rate)` | F2-11 (trạng thái đã giải, dù việc "đã giải chưa" của **một học viên** cụ thể có thể đọc trực tiếp từ event theo `user_id` thay vì tổng hợp), ngưỡng "Bài cần chú ý" AC < 30% (`DEC-2026-0831-problem-management-lifecycle-details`) |
+| `ClassDeleted` | `identity` | Gỡ mềm mọi dòng `class_assignments` của lớp đã xoá: `removed_at = now()` với dòng có `class_id` khớp và `removed_at IS NULL` (không xoá dòng, không FK tới `identity.classes`; idempotent) | F2-12, ID-13. Sửa 2026-10-22 (đồng bộ DB vòng 4, DEC-2026-1022-db-sync-round4) (`DEC-2026-1022-db-sync-round4` mục 3, `02-bd/database/problem-bank.md` mục 1.7) |
 
 `identity` sở hữu "đã giải hay chưa" theo góc nhìn cá nhân học viên (F1-06) qua chính event này; `problem-bank`
 chỉ cần góc nhìn tổng hợp theo bài toán (tỉ lệ AC toàn hệ thống) để phục vụ `problem_management` — hai read
@@ -124,7 +129,7 @@ kernel không phải là import module `harness`). Chốt ở DD của cả hai 
 biến không có trong type schema của F3) để ẩn tuỳ chọn Bọc hàm ở `problem_detail`
 [SoT: `02-bd/architecture/harness.md` mục 2b]. `problem-bank` chốt: khi A2/A3 khai chữ ký hàm, hệ thống
 tự kiểm tra kiểu tham số/trả về có nằm trong type schema hay không (đọc shared kernel mục 4); nếu không,
-đặt cờ `function_wrapper_supported = false` trên `problem_spec` ngay lúc lưu, không chờ tới khi học viên
+đặt cờ `function_wrapper_supported = false` trên bảng `problems` (cột `problems.function_wrapper_supported`, không phải trên `problem_specs`) ngay lúc lưu đặc tả — sửa 2026-10-22 (đồng bộ DB, phase 3, DEC-2026-1022-problem-bank-schema-sync; `database/problem-bank.md:21`) — không chờ tới khi học viên
 mở bài mới phát hiện. Cờ này là dữ liệu, việc *ẩn UI* dựa vào cờ là trách nhiệm của tầng trình bày
 (`problem_detail`), không phải của `problem-bank`.
 

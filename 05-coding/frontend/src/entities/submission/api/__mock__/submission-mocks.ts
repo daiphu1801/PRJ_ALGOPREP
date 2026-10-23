@@ -9,6 +9,7 @@ import type {
   SubmissionLanguage,
   SubmissionListItem,
   SubmissionListPage,
+  TestcaseVerdict,
 } from "../../model/types";
 
 type ProblemRef = {
@@ -21,31 +22,31 @@ type ProblemRef = {
 
 const PROBLEMS: ProblemRef[] = [
   {
-    problemId: "p1",
-    problemSlug: "two-sum",
-    problemCode: "AP001",
+    problemId: "1",
+    problemSlug: "1",
+    problemCode: "#1",
     problemTitle: "Two Sum",
     difficulty: "EASY",
   },
   {
-    problemId: "p2",
-    problemSlug: "binary-tree-zigzag",
-    problemCode: "AP014",
-    problemTitle: "Duyệt zigzag cây nhị phân",
+    problemId: "435",
+    problemSlug: "435",
+    problemCode: "#435",
+    problemTitle: "Non-overlapping Intervals",
     difficulty: "MEDIUM",
   },
   {
-    problemId: "p3",
-    problemSlug: "lru-cache",
-    problemCode: "AP027",
-    problemTitle: "Thiết kế LRU Cache",
+    problemId: "297",
+    problemSlug: "297",
+    problemCode: "#297",
+    problemTitle: "Serialize and Deserialize Binary Tree",
     difficulty: "HARD",
   },
   {
-    problemId: "p4",
-    problemSlug: "merge-intervals",
-    problemCode: "AP009",
-    problemTitle: "Gộp khoảng giao nhau",
+    problemId: "139",
+    problemSlug: "139",
+    problemCode: "#139",
+    problemTitle: "Word Break",
     difficulty: "MEDIUM",
   },
 ];
@@ -104,7 +105,7 @@ const DETAILS: Record<string, SubmissionDetail> = {
     beatsPercent: null,
     submittedAt: "2026-09-24T08:47:00+07:00",
     sourceCode:
-      "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        // ... zigzag traversal, off-by-one on the last level\n    }\n}\n",
+      "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        // ... greedy by end time, off-by-one on touching intervals\n    }\n}\n",
     compileErrorMessage: null,
     testcases: Array.from({ length: 20 }, (_, i) => ({
       testcaseId: `tc-${i + 1}`,
@@ -138,9 +139,9 @@ const DETAILS: Record<string, SubmissionDetail> = {
     beatsPercent: null,
     submittedAt: "2026-09-24T08:30:00+07:00",
     sourceCode:
-      "class LRUCache {\npublic:\n    LRUCache(int capacity) {\n        cap = capacity\n    }\n};\n",
+      'class Codec {\npublic:\n    string serialize(TreeNode* root) {\n        return ""\n    }\n};\n',
     compileErrorMessage:
-      "main.cpp:4:24: error: expected ';' after expression\n        cap = capacity\n                      ^\n                      ;",
+      "main.cpp:5:19: error: expected ';' after return statement\n        return \"\"\n                  ^\n                  ;",
     testcases: [],
   },
 
@@ -157,7 +158,8 @@ const DETAILS: Record<string, SubmissionDetail> = {
     memoryKb: 16200,
     beatsPercent: null,
     submittedAt: "2026-09-25T10:02:00+07:00",
-    sourceCode: "def merge(intervals):\n    intervals.sort()\n    # ...\n",
+    sourceCode:
+      "def word_break(s, words):\n    dp = [True] + [False] * len(s)\n    # ...\n",
     compileErrorMessage: null,
     testcases: Array.from({ length: 5 }, (_, i) => ({
       testcaseId: `tc-${i + 1}`,
@@ -185,7 +187,74 @@ export function isSubmissionInInstructorScope(submissionId: string): boolean {
 }
 
 export function fetchSubmissionDetail(id: string): SubmissionDetail | null {
-  return DETAILS[id] ?? null;
+  const fixture = DETAILS[id];
+  if (fixture) return fixture;
+  // ponytail: only four ids have a hand-written fixture. Any other row of the history list gets a
+  // detail derived from its list item, so "Kết quả" never dead-ends on "not found". Source code and
+  // sample cases are placeholders; the real data comes from `judge.submissions`.
+  const item = LIST_ITEMS.find((row) => row.id === id);
+  return item ? detailFromListItem(item) : null;
+}
+
+const FAIL_VERDICT: Partial<
+  Record<SubmissionListItem["status"], TestcaseVerdict>
+> = {
+  WRONG_ANSWER: "WA",
+  TIME_LIMIT_EXCEEDED: "TLE",
+  RUNTIME_ERROR: "RE",
+};
+
+const PLACEHOLDER_CODE: Record<SubmissionLanguage, string> = {
+  PYTHON:
+    "def solve(data):\n    # placeholder source for the mock\n    return data\n",
+  CPP: "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    // placeholder source for the mock\n    return 0;\n}\n",
+  JAVA: "public class Main {\n    public static void main(String[] args) {\n        // placeholder source for the mock\n    }\n}\n",
+};
+
+function detailFromListItem(item: SubmissionListItem): SubmissionDetail {
+  const compileError = item.status === "COMPILE_ERROR";
+  const total = item.totalCount ?? 0;
+  const passed = item.passedCount ?? 0;
+  const failVerdict = FAIL_VERDICT[item.status] ?? "WA";
+  const order = Number(item.id.replace(/\D/g, "")) || 0;
+  return {
+    id: item.id,
+    problemId: item.problemId,
+    problemSlug: item.problemSlug,
+    problemTitle: item.problemTitle,
+    difficulty: item.difficulty,
+    language: item.language,
+    submissionMode: "FUNCTION_WRAPPER",
+    status: item.status,
+    passedCount: item.passedCount,
+    totalCount: item.totalCount,
+    runtimeMs: item.runtimeMs,
+    memoryKb: compileError ? null : 14000 + (order % 20) * 512,
+    beatsPercent: item.status === "ACCEPTED" ? 40 + (order % 55) : null,
+    submittedAt: item.submittedAt,
+    sourceCode: PLACEHOLDER_CODE[item.language],
+    compileErrorMessage: compileError
+      ? "main: error: expected ';' before '}' token"
+      : null,
+    testcases: compileError
+      ? []
+      : Array.from({ length: total }, (_, i) => ({
+          testcaseId: `tc-${i + 1}`,
+          order: i + 1,
+          visibility: i < 2 ? ("SAMPLE" as const) : ("HIDDEN" as const),
+          verdict: i < passed ? ("AC" as const) : failVerdict,
+          runtimeMs: (item.runtimeMs ?? 30) - 8 + (i % 9),
+          memoryKb: 14000 + i * 16,
+          ...(i < 2
+            ? {
+                sampleInput: "input (mock)",
+                sampleExpectedOutput: "expected (mock)",
+                sampleActualOutput:
+                  i < passed ? "expected (mock)" : "actual (mock)",
+              }
+            : {}),
+        })),
+  };
 }
 
 // -- List + stats for USR0202 -----------------------------------------------------------------
@@ -261,4 +330,3 @@ export function fetchMySubmissionsPage(
     totalItems: filtered.length,
   };
 }
-

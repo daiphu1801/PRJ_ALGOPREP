@@ -35,7 +35,7 @@ describe("SubmissionResultView", () => {
     // not just empty — per BD Sheet 6 Khu vực D NO 1.
     expect(screen.queryByText("Kết quả từng testcase")).not.toBeInTheDocument();
     expect(
-      screen.getByText(/expected ';' after expression/),
+      screen.getByText(/expected ';' after return statement/),
     ).toBeInTheDocument();
   });
 

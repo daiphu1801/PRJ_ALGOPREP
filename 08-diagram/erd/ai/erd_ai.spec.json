@@ -1,0 +1,202 @@
+{
+  "_": "Nguon: 02-bd/database/ai-review.md (schema ai, muc 1.1 den 1.10), ngay 2026-10-22. Unique ghep: prompt_templates(feature_code,version); interview_turns(interview_session_id,turn_index); rubric_scores(owner_type,owner_id,criterion_code); ai_cache_entries(problem_id,language,source_hash,prompt_template_id); danh dau UQ tren tung cot thanh vien. ai_model_prices.model_name unique theo lower(model_name). Cot tham chieu lien schema (user_id, created_by, updated_by, submission_id, problem_id, question_ref) khong co FK vat ly nen de trong cot key. owner_id cua token_usage con tro toi problems.id (GENERATE_TESTCASE) va interview_bank.user_answers.id (PRACTICE_FEEDBACK).",
+  "kind": "erd",
+  "title": "ERD schema ai",
+  "covers": [],
+  "erd": {
+    "scope": "schema",
+    "entities": [
+      {
+        "id": "prompt_templates", "name": "prompt_templates",
+        "columns": [
+          {"name": "id", "type": "UUID", "key": "PK"},
+          {"name": "feature_code", "type": "ENUM(SOLUTION_REVIEW,MOCK_INTERVIEW,GENERATE_TESTCASE)", "key": "UQ"},
+          {"name": "version", "type": "VARCHAR(20)", "key": "UQ"},
+          {"name": "status", "type": "ENUM(DRAFT,ACTIVE,ARCHIVED)"},
+          {"name": "system_instruction", "type": "TEXT"},
+          {"name": "response_schema_version", "type": "VARCHAR"},
+          {"name": "model_id", "type": "VARCHAR(50)"},
+          {"name": "response_guards", "type": "JSONB", "null": true},
+          {"name": "created_by", "type": ""},
+          {"name": "created_at", "type": "TIMESTAMPTZ"},
+          {"name": "published_at", "type": "TIMESTAMPTZ", "null": true}
+        ]
+      },
+      {
+        "id": "solution_reviews", "name": "solution_reviews",
+        "columns": [
+          {"name": "id", "type": "UUID", "key": "PK"},
+          {"name": "submission_id", "type": "", "key": "UQ"},
+          {"name": "user_id", "type": ""},
+          {"name": "problem_id", "type": ""},
+          {"name": "language", "type": "ENUM(JAVA,CPP,PYTHON)"},
+          {"name": "source_hash", "type": "CHAR(64)"},
+          {"name": "prompt_template_id", "type": "", "key": "FK"},
+          {"name": "result_json", "type": "JSONB"},
+          {"name": "readability_score", "type": "SMALLINT (1-5)"},
+          {"name": "served_from_cache", "type": "BOOLEAN default false"},
+          {"name": "created_at", "type": "TIMESTAMPTZ"}
+        ]
+      },
+      {
+        "id": "interview_sessions", "name": "interview_sessions",
+        "columns": [
+          {"name": "id", "type": "UUID", "key": "PK"},
+          {"name": "user_id", "type": ""},
+          {"name": "entry_type", "type": "ENUM(SUBMISSION,QUESTION_BANK,TOPIC_SELECTION)"},
+          {"name": "submission_id", "type": "", "null": true},
+          {"name": "question_ref", "type": "VARCHAR", "null": true},
+          {"name": "topics", "type": "JSONB", "null": true},
+          {"name": "interviewer_level", "type": "ENUM(INTERN,JUNIOR,MIDDLE,SENIOR)", "null": true},
+          {"name": "max_turns", "type": "SMALLINT", "null": true},
+          {"name": "hint_allowed", "type": "BOOLEAN", "null": true},
+          {"name": "stage", "type": "ENUM(EXPLAIN,CHALLENGE,SCALE_UP,COMPLETED,ABANDONED)"},
+          {"name": "turn_count", "type": "INT default 0"},
+          {"name": "started_at", "type": "TIMESTAMPTZ"},
+          {"name": "ended_at", "type": "TIMESTAMPTZ", "null": true},
+          {"name": "updated_at", "type": "TIMESTAMPTZ"}
+        ]
+      },
+      {
+        "id": "interview_turns", "name": "interview_turns",
+        "columns": [
+          {"name": "id", "type": "UUID", "key": "PK"},
+          {"name": "interview_session_id", "type": "", "key": "FK UQ"},
+          {"name": "turn_index", "type": "INT", "key": "UQ"},
+          {"name": "role", "type": "ENUM(USER,AI)"},
+          {"name": "stage_at_turn", "type": "ENUM(EXPLAIN,CHALLENGE,SCALE_UP)"},
+          {"name": "content", "type": "TEXT"},
+          {"name": "created_at", "type": "TIMESTAMPTZ"}
+        ]
+      },
+      {
+        "id": "rubric_scores", "name": "rubric_scores",
+        "columns": [
+          {"name": "id", "type": "UUID", "key": "PK"},
+          {"name": "owner_type", "type": "ENUM(MOCK_INTERVIEW)", "key": "UQ"},
+          {"name": "owner_id", "type": "UUID", "key": "UQ"},
+          {"name": "criterion_code", "type": "VARCHAR", "key": "UQ"},
+          {"name": "score", "type": "DECIMAL(4,2)"},
+          {"name": "comment", "type": "TEXT"},
+          {"name": "created_at", "type": "TIMESTAMPTZ"}
+        ]
+      },
+      {
+        "id": "token_usage", "name": "token_usage",
+        "columns": [
+          {"name": "id", "type": "UUID", "key": "PK"},
+          {"name": "user_id", "type": ""},
+          {"name": "feature_code", "type": "ENUM(SOLUTION_REVIEW,MOCK_INTERVIEW,GENERATE_TESTCASE,PRACTICE_FEEDBACK)"},
+          {"name": "problem_id", "type": "", "null": true},
+          {"name": "owner_id", "type": "UUID"},
+          {"name": "tokens_prompt", "type": "INT"},
+          {"name": "tokens_completion", "type": "INT"},
+          {"name": "model_name", "type": "VARCHAR(100)"},
+          {"name": "created_at", "type": "TIMESTAMPTZ"}
+        ]
+      },
+      {
+        "id": "ai_cache_entries", "name": "ai_cache_entries",
+        "columns": [
+          {"name": "id", "type": "UUID", "key": "PK"},
+          {"name": "problem_id", "type": "", "key": "UQ"},
+          {"name": "language", "type": "ENUM(JAVA,CPP,PYTHON)", "key": "UQ"},
+          {"name": "source_hash", "type": "CHAR(64)", "key": "UQ"},
+          {"name": "prompt_template_id", "type": "", "key": "FK UQ"},
+          {"name": "solution_review_id", "type": "", "key": "FK"},
+          {"name": "hit_count", "type": "INT default 0"},
+          {"name": "created_at", "type": "TIMESTAMPTZ"}
+        ]
+      },
+      {
+        "id": "ai_token_budget_configs", "name": "ai_token_budget_configs", "stereotype": "singleton",
+        "columns": [
+          {"name": "id", "type": "SMALLINT CHECK (id = 1)", "key": "PK"},
+          {"name": "period", "type": "ENUM(MONTHLY)"},
+          {"name": "limit_tokens", "type": "BIGINT"},
+          {"name": "period_start", "type": "DATE"},
+          {"name": "locked_at", "type": "TIMESTAMPTZ", "null": true},
+          {"name": "warn_percent", "type": "SMALLINT (1-100) default 70"},
+          {"name": "review_per_hour", "type": "SMALLINT (1-999) default 10"},
+          {"name": "interview_per_hour", "type": "SMALLINT (1-999) default 3"},
+          {"name": "cooldown_seconds", "type": "SMALLINT (1-999) default 20"},
+          {"name": "updated_by", "type": ""},
+          {"name": "updated_at", "type": "TIMESTAMPTZ"}
+        ]
+      },
+      {
+        "id": "ai_model_prices", "name": "ai_model_prices",
+        "columns": [
+          {"name": "id", "type": "UUID", "key": "PK"},
+          {"name": "model_name", "type": "VARCHAR(100)", "key": "UQ"},
+          {"name": "usd_per_million_tokens", "type": "NUMERIC(10,4) default 0"},
+          {"name": "updated_at", "type": "TIMESTAMPTZ"}
+        ]
+      },
+      {
+        "id": "ai_usage_anomaly_alerts", "name": "ai_usage_anomaly_alerts",
+        "columns": [
+          {"name": "id", "type": "UUID", "key": "PK"},
+          {"name": "user_id", "type": ""},
+          {"name": "window_start", "type": "TIMESTAMPTZ"},
+          {"name": "window_end", "type": "TIMESTAMPTZ"},
+          {"name": "call_count", "type": "INT"},
+          {"name": "baseline_avg", "type": "DECIMAL(8,2)"},
+          {"name": "ratio", "type": "DECIMAL(5,2)"},
+          {"name": "status", "type": "ENUM(OPEN,REVIEWED)"},
+          {"name": "created_at", "type": "TIMESTAMPTZ"},
+          {"name": "reviewed_at", "type": "TIMESTAMPTZ", "null": true}
+        ]
+      },
+      {
+        "id": "outbox_events", "name": "outbox_events",
+        "columns": [
+          {"name": "id", "type": "UUID", "key": "PK"},
+          {"name": "aggregate_type", "type": "VARCHAR"},
+          {"name": "aggregate_id", "type": "UUID"},
+          {"name": "event_type", "type": "VARCHAR"},
+          {"name": "payload", "type": "JSONB"},
+          {"name": "created_at", "type": "TIMESTAMPTZ"},
+          {"name": "published_at", "type": "TIMESTAMPTZ", "null": true},
+          {"name": "publish_attempts", "type": "INT default 0"}
+        ]
+      }
+    ],
+    "externals": [
+      {"id": "identity.users", "name": "identity.users"},
+      {"id": "judge.submissions", "name": "judge.submissions"},
+      {"id": "problem.problems", "name": "problem.problems"},
+      {"id": "interview_bank.interview_questions", "name": "interview_bank.interview_questions"},
+      {"id": "interview_bank.user_answers", "name": "interview_bank.user_answers"}
+    ],
+    "relations": [
+      {"from": "solution_reviews", "to": "prompt_templates", "kind": "fk", "label": "prompt_template_id"},
+      {"from": "interview_turns", "to": "interview_sessions", "kind": "fk", "label": "interview_session_id"},
+      {"from": "ai_cache_entries", "to": "prompt_templates", "kind": "fk", "label": "prompt_template_id"},
+      {"from": "ai_cache_entries", "to": "solution_reviews", "kind": "fk", "label": "solution_review_id"},
+
+      {"from": "rubric_scores", "to": "interview_sessions", "kind": "ref", "label": "owner_id"},
+      {"from": "outbox_events", "to": "solution_reviews", "kind": "ref", "label": "aggregate_id"},
+      {"from": "outbox_events", "to": "interview_sessions", "kind": "ref", "label": "aggregate_id"},
+      {"from": "token_usage", "to": "solution_reviews", "kind": "ref", "label": "owner_id"},
+      {"from": "token_usage", "to": "interview_sessions", "kind": "ref", "label": "owner_id"},
+
+      {"from": "prompt_templates", "to": "identity.users", "kind": "ref", "label": "created_by"},
+      {"from": "solution_reviews", "to": "identity.users", "kind": "ref", "label": "user_id"},
+      {"from": "interview_sessions", "to": "identity.users", "kind": "ref", "label": "user_id"},
+      {"from": "token_usage", "to": "identity.users", "kind": "ref", "label": "user_id"},
+      {"from": "ai_usage_anomaly_alerts", "to": "identity.users", "kind": "ref", "label": "user_id"},
+      {"from": "ai_token_budget_configs", "to": "identity.users", "kind": "ref", "label": "updated_by"},
+
+      {"from": "solution_reviews", "to": "judge.submissions", "kind": "ref", "label": "submission_id"},
+      {"from": "interview_sessions", "to": "judge.submissions", "kind": "ref", "label": "submission_id", "optional": true},
+
+      {"from": "solution_reviews", "to": "problem.problems", "kind": "ref", "label": "problem_id"},
+      {"from": "ai_cache_entries", "to": "problem.problems", "kind": "ref", "label": "problem_id"},
+      {"from": "token_usage", "to": "problem.problems", "kind": "ref", "label": "problem_id", "optional": true},
+
+      {"from": "interview_sessions", "to": "interview_bank.interview_questions", "kind": "ref", "label": "question_ref", "optional": true},
+      {"from": "token_usage", "to": "interview_bank.user_answers", "kind": "ref", "label": "owner_id", "optional": true}
+    ]
+  }
+}

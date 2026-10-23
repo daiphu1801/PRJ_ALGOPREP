@@ -1,0 +1,357 @@
+{
+  "_": "ERD tong quan kieu Chen (khai niem), ten thuc the va dong tu bang tieng Anh cho khop ten bang trong DB. Nguon: 02-bd/database/*.md va 5 spec ERD theo schema, ngay 2026-10-22. 13 thuc the gom tu 60 bang: User=identity.users, Role=identity.roles, Class=identity.classes, Problem=problem.problems, Testcase=problem.testcases, Submission=judge.submissions, Testcase Result=judge.submission_testcase_results, Solution Review=ai.solution_reviews, Interview Session=ai.interview_sessions, Interview Turn=ai.interview_turns, Interview Question=interview_bank.interview_questions, Question Topic=interview_bank.question_topics, User Answer=interview_bank.user_answers. Enrolls in = identity.class_enrollments (N:M), Assigned to = problem.class_assignments (N:M); cac hinh thoi con lai la khoa ngoai (1:N) hoac tham chieu logic lien schema. [SoT: Suy luan] cho viec chon thuc the, dong tu va nhan so luong: BD khong co mo hinh khai niem san. Analyzed by tinh 1:N vi co cache theo noi dung (ai_cache_entries); Opens interview va Asked in la tuy chon (submission_id, question_ref cho phep NULL). Khong ve: bang cau hinh, bang tong hop doc, nhat ky, token, outbox, tag.",
+  "kind": "erd",
+  "title": "ERD khái niệm tổng quan (Chen)",
+  "covers": [],
+  "erd": {
+    "scope": "chen",
+    "schemas": [
+      {
+        "id": "identity",
+        "label": "identity (F1)"
+      },
+      {
+        "id": "problem",
+        "label": "problem (F2)"
+      },
+      {
+        "id": "judge",
+        "label": "judge (F4)"
+      },
+      {
+        "id": "ai",
+        "label": "ai (F5)"
+      },
+      {
+        "id": "interview_bank",
+        "label": "interview_bank (F6)"
+      }
+    ],
+    "entities": [
+      {
+        "id": "role",
+        "name": "Role",
+        "schema": "identity",
+        "col": 0,
+        "row": 0
+      },
+      {
+        "id": "user",
+        "name": "User",
+        "schema": "identity",
+        "col": 0,
+        "row": 1
+      },
+      {
+        "id": "class",
+        "name": "Class",
+        "schema": "identity",
+        "col": 1,
+        "row": 1
+      },
+      {
+        "id": "problem",
+        "name": "Problem",
+        "schema": "problem",
+        "col": 2,
+        "row": 1
+      },
+      {
+        "id": "testcase",
+        "name": "Testcase",
+        "schema": "problem",
+        "col": 3,
+        "row": 1
+      },
+      {
+        "id": "submission",
+        "name": "Submission",
+        "schema": "judge",
+        "col": 2,
+        "row": 2
+      },
+      {
+        "id": "result",
+        "name": "Testcase Result",
+        "schema": "judge",
+        "col": 3,
+        "row": 2
+      },
+      {
+        "id": "answer",
+        "name": "User Answer",
+        "schema": "interview_bank",
+        "col": 0,
+        "row": 3
+      },
+      {
+        "id": "question",
+        "name": "Interview Question",
+        "schema": "interview_bank",
+        "col": 1,
+        "row": 3
+      },
+      {
+        "id": "session",
+        "name": "Interview Session",
+        "schema": "ai",
+        "col": 2,
+        "row": 3
+      },
+      {
+        "id": "review",
+        "name": "Solution Review",
+        "schema": "ai",
+        "col": 3,
+        "row": 3
+      },
+      {
+        "id": "topic",
+        "name": "Question Topic",
+        "schema": "interview_bank",
+        "col": 1,
+        "row": 4
+      },
+      {
+        "id": "turn",
+        "name": "Interview Turn",
+        "schema": "ai",
+        "col": 2,
+        "row": 4
+      }
+    ],
+    "relationships": [
+      {
+        "id": "r_role",
+        "label": "Has",
+        "between": [
+          {
+            "entity": "role",
+            "card": "1"
+          },
+          {
+            "entity": "user",
+            "card": "N"
+          }
+        ]
+      },
+      {
+        "id": "r_phutrach",
+        "label": "Manages",
+        "dy": -100,
+        "between": [
+          {
+            "entity": "user",
+            "card": "1"
+          },
+          {
+            "entity": "class",
+            "card": "N"
+          }
+        ]
+      },
+      {
+        "id": "r_ghidanh",
+        "label": "Enrolls in",
+        "between": [
+          {
+            "entity": "user",
+            "card": "N"
+          },
+          {
+            "entity": "class",
+            "card": "M"
+          }
+        ]
+      },
+      {
+        "id": "r_giao",
+        "label": "Assigned to",
+        "between": [
+          {
+            "entity": "problem",
+            "card": "N"
+          },
+          {
+            "entity": "class",
+            "card": "M"
+          }
+        ]
+      },
+      {
+        "id": "r_gom",
+        "label": "Contains",
+        "between": [
+          {
+            "entity": "problem",
+            "card": "1"
+          },
+          {
+            "entity": "testcase",
+            "card": "N"
+          }
+        ]
+      },
+      {
+        "id": "r_nop",
+        "label": "Submits",
+        "between": [
+          {
+            "entity": "user",
+            "card": "1"
+          },
+          {
+            "entity": "submission",
+            "card": "N"
+          }
+        ],
+        "dx": -50,
+        "dy": 45
+      },
+      {
+        "id": "r_cobai",
+        "label": "Receives",
+        "between": [
+          {
+            "entity": "problem",
+            "card": "1"
+          },
+          {
+            "entity": "submission",
+            "card": "N"
+          }
+        ]
+      },
+      {
+        "id": "r_ketqua",
+        "label": "Has results",
+        "between": [
+          {
+            "entity": "submission",
+            "card": "1"
+          },
+          {
+            "entity": "result",
+            "card": "N"
+          }
+        ]
+      },
+      {
+        "id": "r_cham",
+        "label": "Checked in",
+        "between": [
+          {
+            "entity": "testcase",
+            "card": "1"
+          },
+          {
+            "entity": "result",
+            "card": "N"
+          }
+        ]
+      },
+      {
+        "id": "r_phantich",
+        "label": "Analyzed by",
+        "between": [
+          {
+            "entity": "submission",
+            "card": "1"
+          },
+          {
+            "entity": "review",
+            "card": "N"
+          }
+        ]
+      },
+      {
+        "id": "r_mopv",
+        "label": "Opens interview",
+        "between": [
+          {
+            "entity": "submission",
+            "card": "1"
+          },
+          {
+            "entity": "session",
+            "card": "N"
+          }
+        ]
+      },
+      {
+        "id": "r_luot",
+        "label": "Has turns",
+        "between": [
+          {
+            "entity": "session",
+            "card": "1"
+          },
+          {
+            "entity": "turn",
+            "card": "N"
+          }
+        ]
+      },
+      {
+        "id": "r_hoitheo",
+        "label": "Asked in",
+        "between": [
+          {
+            "entity": "question",
+            "card": "1"
+          },
+          {
+            "entity": "session",
+            "card": "N"
+          }
+        ]
+      },
+      {
+        "id": "r_gomch",
+        "label": "Groups",
+        "between": [
+          {
+            "entity": "topic",
+            "card": "1"
+          },
+          {
+            "entity": "question",
+            "card": "N"
+          }
+        ]
+      },
+      {
+        "id": "r_luyen",
+        "label": "Practices",
+        "between": [
+          {
+            "entity": "user",
+            "card": "1"
+          },
+          {
+            "entity": "answer",
+            "card": "N"
+          }
+        ]
+      },
+      {
+        "id": "r_duoctl",
+        "label": "Answered by",
+        "between": [
+          {
+            "entity": "question",
+            "card": "1"
+          },
+          {
+            "entity": "answer",
+            "card": "N"
+          }
+        ]
+      }
+    ],
+    "notes": [
+      "Không vẽ liên kết từ các bảng khác tới User (tác giả bài toán, người tạo câu hỏi, người giao bài, chủ phiên AI) để hình gọn; xem ERD tổng quan theo bảng và 5 ERD theo schema.",
+      "Mọi liên kết giữa các schema là tham chiếu logic ở tầng ứng dụng, không có khoá ngoại vật lý. Interview Session có thể không gắn Submission hoặc Interview Question (tuỳ chọn)."
+    ]
+  }
+}

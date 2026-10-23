@@ -4,7 +4,7 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="title" value="Sơ đồ tuần tự chi tiết - Đặt ngân sách token và cảnh báo bất thường (Quản trị viên) (2/2)" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
+        <mxCell id="title" value="Sơ đồ tuần tự chi tiết - Đặt ngân sách token và cảnh báo bất thường (Quản trị viên) (2/3)" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
           <mxGeometry x="60" y="10" width="750" height="30" as="geometry" />
         </mxCell>
         <mxCell id="v1" value="alt [Có tài khoản vượt ngưỡng?]" style="algoprep=alt;rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#999999;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;fontColor=#1A1A1A;fontSize=13;fontStyle=1;dashed=0;" vertex="1" parent="1">
@@ -98,7 +98,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e23" value="8. GET /ai/admin/anomaly-alerts?status=OPEN" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.6837;exitDx=0;exitDy=0;entryX=0.5;entryY=0.6837;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v5">
+        <mxCell id="e23" value="8. Gửi yêu cầu xem cảnh báo đang mở" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.6837;exitDx=0;exitDy=0;entryX=0.5;entryY=0.6837;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v5">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e24" value="8.1. Yêu cầu cảnh báo đang mở" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.7245;exitDx=0;exitDy=0;entryX=0.5;entryY=0.7245;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v6">
@@ -113,7 +113,7 @@
         <mxCell id="e27" value="Danh sách cảnh báo" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8469;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8469;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v5">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e28" value="200 OK" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8878;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8878;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v4">
+        <mxCell id="e28" value="Báo thành công" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8878;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8878;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v4">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e29" value="9. Danh sách tài khoản nghi bất thường để xem xét thủ công" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.9286;exitDx=0;exitDy=0;entryX=0.5;entryY=0.9541;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v4">

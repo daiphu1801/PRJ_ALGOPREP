@@ -1,5 +1,5 @@
 {
-  "_": "Luong quan ly testcase: tai len theo lo (bo lon di MinIO), phien ban hoa khi sua sau luc da co nguoi nop, va AI sinh testcase voi output lay tu chay that Dap an mau. Nguon: US-A2-02 va US-A2-05 (01-rd/req/user_stories/a2_instructor.md:37-50, 70-83), 01-rd/req/problem-bank.md (F2-05 den F2-10, F2-14), 02-bd/database/problem-bank.md muc 1.6 (su kien TestcaseSetVersionBumped).",
+  "_": "Luong quan ly testcase: tai len theo lo (bo lon di MinIO), phien ban hoa khi sua sau luc da co nguoi nop, va AI sinh testcase voi output lay tu chay that Dap an mau. Nguon: US-A2-02 va US-A2-05 (01-rd/req/user_stories/a2_instructor.md:37-50, 70-83), 01-rd/req/problem-bank.md (F2-05 den F2-10, F2-14), 02-bd/database/problem-bank.md muc 1.6 (su kien TestcaseSetVersionBumped). | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen. Siet 2026-10-20: nhan mui ten viet ngon ngu nghiep vu, endpoint, ma HTTP, ma quyen, ten ham va cau SQL thuoc 03-dd/api va 03-dd/logic, khong ve trong hinh.",
   "_minio": "Day la luong DUY NHAT trong toan he thong cham toi MinIO (.nexa/control/dependency-map.md) -- truoc dot nay khong co ban ve nao cho no.",
   "_su_kien": "TestcaseSetVersionBumped ve duoi dang INSERT outbox_events, khong ve lifeline RabbitMQ rieng: them mot cot nua thanh 9 duong doi, be ngang vuot xa kho in ma khong noi them duoc gi -- co che Outbox da duoc ve day du o sequence_user_nop_bai_va_xem_ket_qua_realtime.",
   "kind": "sequence",
@@ -43,7 +43,7 @@
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 3 - AI sinh testcase nháp, output lấy từ chạy THẬT đáp án mẫu (F2-14)"
+        "phase": "Giai đoạn 3 - AI sinh testcase nháp, đầu ra lấy từ chạy THẬT đáp án mẫu (F2-14)"
       },
       {
         "from": "Người soạn đề",
@@ -53,12 +53,12 @@
       {
         "from": "Người soạn đề",
         "to": "TestcaseController",
-        "text": "POST /problems/{id}/testcases/generate"
+        "text": "Gửi yêu cầu AI sinh testcase nháp"
       },
       {
         "from": "TestcaseController",
         "to": "TestcaseService",
-        "text": "generateTestcases(problemId, authorId)"
+        "text": "Xử lý sinh testcase nháp"
       },
       {
         "from": "TestcaseService",
@@ -77,44 +77,54 @@
           "then": [
             {
               "from": "TestcaseService",
+              "to": "TestcaseService",
+              "text": "Trường hợp có"
+            },
+            {
+              "from": "TestcaseService",
               "to": "TestcaseController",
-              "text": "Từ chối - không có gì để lấy output thật",
+              "text": "Từ chối, chưa có gì để lấy đầu ra thật",
               "kind": "return"
             },
             {
               "from": "TestcaseController",
               "to": "Người soạn đề",
-              "text": "422 kèm hướng dẫn thêm đáp án mẫu trước",
+              "text": "Báo lỗi kèm hướng dẫn thêm đáp án mẫu trước",
               "kind": "return"
             }
           ],
           "else": [
             {
               "from": "TestcaseService",
+              "to": "TestcaseService",
+              "text": "Trường hợp không"
+            },
+            {
+              "from": "TestcaseService",
               "to": "Nhà cung cấp LLM",
-              "text": "Sinh dữ liệu ĐẦU VÀO theo đặc tả, không sinh output"
+              "text": "Sinh dữ liệu ĐẦU VÀO theo đặc tả, không sinh đầu ra"
             },
             {
               "from": "Nhà cung cấp LLM",
               "to": "TestcaseService",
-              "text": "Danh sách input đề xuất",
+              "text": "Danh sách đầu vào đề xuất",
               "kind": "return"
             },
             {
               "from": "TestcaseService",
               "to": "go-judge",
-              "text": "Chạy đáp án mẫu với từng input vừa sinh"
+              "text": "Chạy đáp án mẫu với từng đầu vào vừa sinh"
             },
             {
               "from": "go-judge",
               "to": "TestcaseService",
-              "text": "Output thật của đáp án mẫu",
+              "text": "Đầu ra thật của đáp án mẫu",
               "kind": "return"
             },
             {
               "from": "TestcaseService",
               "to": "PostgreSQL",
-              "text": "INSERT testcases ở trạng thái NHÁP, chưa dùng để chấm"
+              "text": "Lưu testcase ở trạng thái NHÁP, chưa dùng để chấm"
             }
           ]
         }
@@ -128,7 +138,7 @@
       {
         "from": "TestcaseController",
         "to": "Người soạn đề",
-        "text": "200 OK",
+        "text": "Báo thành công",
         "kind": "return"
       },
       {

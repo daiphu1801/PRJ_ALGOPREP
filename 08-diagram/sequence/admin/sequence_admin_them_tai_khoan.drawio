@@ -54,10 +54,10 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e15" value="2. POST /identity/admin/users" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.2286;exitDx=0;exitDy=0;entryX=0.5;entryY=0.2286;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v5">
+        <mxCell id="e15" value="2. Gửi yêu cầu tạo tài khoản" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.2286;exitDx=0;exitDy=0;entryX=0.5;entryY=0.2286;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v5">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e16" value="2.1. Kiểm tra quyền (USER_MANAGEMENT:CREATE); vai trò chỉ Người học hoặc Giảng viên" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.2701;exitDx=0;exitDy=0;entryX=0.5;entryY=0.2961;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v5">
+        <mxCell id="e16" value="2.1. Kiểm tra quyền; vai trò chỉ Người học hoặc Giảng viên" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.2701;exitDx=0;exitDy=0;entryX=0.5;entryY=0.2961;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v5">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
             <mxPoint x="335" y="268" />
@@ -94,7 +94,7 @@
         <mxCell id="e24" value="Tài khoản vừa tạo" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.6727;exitDx=0;exitDy=0;entryX=0.5;entryY=0.6727;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v5">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e25" value="201 Created" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.7143;exitDx=0;exitDy=0;entryX=0.5;entryY=0.7143;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v4">
+        <mxCell id="e25" value="Báo tạo thành công" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.7143;exitDx=0;exitDy=0;entryX=0.5;entryY=0.7143;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v4">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e26" value="3. Email đã có tài khoản" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.7844;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8104;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v6">
@@ -108,7 +108,7 @@
         <mxCell id="e27" value="Từ chối, không tạo gì" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8442;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8442;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v5">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e28" value="409 Conflict - email đã tồn tại" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8857;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8857;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v4">
+        <mxCell id="e28" value="Báo lỗi: email đã có tài khoản" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8857;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8857;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v4">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e29" value="4. Tài khoản mới hiện đầu danh sách, nhãn Chờ xác thực; mật khẩu tạm không hiện cho quản trị viên" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.9273;exitDx=0;exitDy=0;entryX=0.5;entryY=0.9532;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v4">

@@ -1,5 +1,5 @@
 {
-  "_": "Luong dang ky + dang nhap cua actor A1. Nguon: 01-rd/req/identity.md (F1-01, F1-02), 03-dd/api/identity.md muc 0.1 (endpoint #1, #2), 03-dd/logic/identity.md (BR-01 rate-limit, BR-02 rotation).",
+  "_": "Luong dang ky + dang nhap cua actor A1. Nguon: 01-rd/req/identity.md (F1-01, F1-02), 03-dd/api/identity.md muc 0.1 (endpoint #1, #2), 03-dd/logic/identity.md (BR-01 rate-limit, BR-02 rotation). | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
   "_tang": "Tach dung 4 tang cua DEC-2026-0820-architecture-baseline: presentation (AuthController) / application (AuthService) / infrastructure (UserRepository, Redis) / du lieu (PostgreSQL schema identity).",
   "_phase": "Ba giai doan: dang ky -> dang nhap -> cap token va dieu huong theo vai tro.",
   "kind": "sequence",
@@ -53,37 +53,32 @@
       {
         "from": "Sinh viên",
         "to": "AuthController",
-        "text": "POST /auth/register { email, fullName, password }"
+        "text": "Gửi yêu cầu đăng ký: email, họ tên, mật khẩu"
       },
       {
         "from": "AuthController",
         "to": "AuthController",
-        "text": "Kiểm tra body theo registerSchema"
+        "text": "Kiểm tra dữ liệu nhập theo quy tắc đăng ký"
       },
       {
         "from": "AuthController",
         "to": "AuthService",
-        "text": "register(command)"
+        "text": "Xử lý đăng ký tài khoản"
       },
       {
         "from": "AuthService",
         "to": "PostgreSQL",
-        "text": "findByEmail(email)"
+        "text": "Tìm tài khoản theo email"
       },
       {
         "from": "PostgreSQL",
         "to": "PostgreSQL",
-        "text": "SELECT * FROM users WHERE email = ? (UserRepository)"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "PostgreSQL",
-        "text": "0 hoặc 1 bản ghi (UserRepository)"
+        "text": "Đọc tài khoản có email này"
       },
       {
         "from": "PostgreSQL",
         "to": "AuthService",
-        "text": "Optional<User>",
+        "text": "Có hoặc chưa có tài khoản",
         "kind": "return"
       },
       {
@@ -92,14 +87,19 @@
           "then": [
             {
               "from": "AuthService",
+              "to": "AuthService",
+              "text": "Trường hợp có"
+            },
+            {
+              "from": "AuthService",
               "to": "AuthController",
-              "text": "Lỗi nghiệp vụ IDT-101",
+              "text": "Email đã có tài khoản, dừng đăng ký",
               "kind": "return"
             },
             {
               "from": "AuthController",
               "to": "Sinh viên",
-              "text": "409 \"Email đã được đăng ký\"",
+              "text": "Báo lỗi: \"Email đã được đăng ký\"",
               "kind": "return"
             }
           ],
@@ -107,39 +107,34 @@
             {
               "from": "AuthService",
               "to": "AuthService",
-              "text": "Băm mật khẩu bằng BCrypt"
+              "text": "Mã hoá mật khẩu trước khi lưu"
             },
             {
               "from": "AuthService",
               "to": "PostgreSQL",
-              "text": "save(user, role = STUDENT, status = ACTIVE)"
+              "text": "Lưu tài khoản mới, vai trò Người học, đang hoạt động"
             },
             {
               "from": "PostgreSQL",
               "to": "PostgreSQL",
-              "text": "INSERT INTO users (UserRepository)"
-            },
-            {
-              "from": "PostgreSQL",
-              "to": "PostgreSQL",
-              "text": "userId (UserRepository)"
+              "text": "Ghi tài khoản mới"
             },
             {
               "from": "PostgreSQL",
               "to": "AuthService",
-              "text": "User đã lưu",
+              "text": "Tài khoản đã lưu",
               "kind": "return"
             },
             {
               "from": "AuthService",
               "to": "AuthController",
-              "text": "UserDto",
+              "text": "Thông tin tài khoản vừa tạo",
               "kind": "return"
             },
             {
               "from": "AuthController",
               "to": "Sinh viên",
-              "text": "201 Created - chuyển sang tab Đăng nhập",
+              "text": "Báo tạo thành công, chuyển sang tab Đăng nhập",
               "kind": "return"
             }
           ]

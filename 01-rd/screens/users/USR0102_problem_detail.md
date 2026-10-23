@@ -10,6 +10,11 @@
 > `01-rd/req/judge-orchestration.md` (F4), `01-rd/req/user_stories/a1_student.md` (`US-A1-03`),
 > `09-layoutBase/Workspace giải bài.dc.html` (prototype).
 > Tài liệu này có thể đọc độc lập.
+>
+> **Cập nhật 2026-10-20:** đường dẫn của màn là `/workspace/{problemId}`. Trước đó bài toán mở thẳng vào màn soạn mã; nay có một
+> trang **tổng quan chỉ-đọc** đứng trước (`USR0104`, `01-rd/screens/users/USR0104_problem_overview.md`), và mục "Workspace" trên
+> thanh điều hướng mở trang đầu `/workspace` (`USR0105`, `01-rd/screens/users/USR0105_workspace_home.md`) thay cho việc tự nhảy vào
+> một bài. Nội dung và hành vi của màn soạn mã giữ nguyên [SoT: .nexa/control/decision-registry.md:4239-4250 — `DEC-2026-1020-student-workspace-split-and-password-in-settings`].
 
 ---
 
@@ -18,6 +23,8 @@
 Nơi học viên đọc đề, viết mã (hoặc tải file mã nguồn lên), chạy thử với testcase mẫu, và nộp bài để chấm
 với testcase ẩn — cho cả hai mô hình nộp bài song song
 [SoT: 01-rd/req/harness.md — F3-01 tới F3-13; 01-rd/req/judge-orchestration.md — F4-01, F4-02].
+
+**Luồng vào màn (đổi 2026-10-20):** người học không còn vào thẳng màn soạn mã khi chọn một bài. Họ vào **trang tổng quan** của bài (đọc đề, xem giới hạn, bài nộp gần đây, tóm tắt Solution Review) rồi chủ động bấm "Giải bài toán" để sang màn này; hoặc tiếp tục một bài đang làm dở từ trang đầu Workspace. Đây là thay đổi về **luồng**, nên ghi ở RD [SoT: .nexa/control/decision-registry.md:4239-4250 — `DEC-2026-1020-student-workspace-split-and-password-in-settings`].
 
 File này mô tả **hành vi và UX ở mức yêu cầu** — không lặp lại đặc tả chức năng đã có ở
 `01-rd/req/problem-bank.md` (mục F2), `01-rd/req/harness.md` (mục F3), `01-rd/req/judge-orchestration.md`
@@ -47,10 +54,7 @@ dưới) cho thấy học viên **tự do chọn mô hình mỗi lượt làm b�
 Đối chiếu `09-layoutBase/Workspace giải bài.dc.html` [SoT: 09-layoutBase/Workspace giải bài.dc.html], phạm
 vi trên thể hiện qua các khối màn sau:
 
-1. **Chưa chọn bài** (`hasProblem = false`) — chỉ hiện bài đang làm dở gần nhất kèm liên kết sang danh sách
-   bài (`problem_list`); khối "Gợi ý theo điểm yếu của bạn" (dòng 136-150) **bỏ**. Vào Workspace từ thanh điều
-   hướng khi chưa chọn bài thì chuyển hướng sang bài đang làm dở gần nhất, không có thì sang danh sách bài
-   [SoT: .nexa/control/decision-registry.md — `DEC-2026-1018-usr-open-questions-phase1-scope`, chốt 2026-10-18].
+1. **Lối vào màn** (đổi 2026-10-20) — màn luôn mở cho một bài cụ thể ở đường dẫn `/workspace/{problemId}`; **không còn trạng thái "chưa chọn bài"**. Có hai lối vào: (a) nút "Giải bài toán" ở trang tổng quan bài toán `USR0104` (đường `/problems/{problemId}`, chỉ đọc); (b) thẻ bài đang làm dở ở trang đầu Workspace `USR0105` (đường `/workspace`). Mục "Workspace" trên thanh điều hướng mở `USR0105`, **không còn chuyển hướng** sang bài đang làm dở gần nhất; phần chuyển hướng của chốt 2026-10-18 đã bị thay thế [SoT: .nexa/control/decision-registry.md:4239-4250 — `DEC-2026-1020-student-workspace-split-and-password-in-settings`]. Khối "Gợi ý theo điểm yếu của bạn" của prototype (dòng 136-150) vẫn **bỏ** [SoT: .nexa/control/decision-registry.md — `DEC-2026-1018-usr-open-questions-phase1-scope`, chốt 2026-10-18]. Id không mở được (bài chưa xuất bản hoặc đã ẩn) thì báo không tìm thấy bài toán.
 2. **Bố cục hai cột chia đôi được (resizable split)** khi đã có bài — cột trái là panel Đề bài/Bài
    nộp/Solution Review (**ba** tab; tab "Gợi ý" của prototype tĩnh đã lỗi thời, dòng 160-247); cột phải chia hai hàng: Editor (trên) và Console kết quả (dưới)
    (dòng 156-330).
@@ -85,7 +89,9 @@ vi trên thể hiện qua các khối màn sau:
 
 | Màn/tài liệu | Vai trò | Bounded Context |
 |---|---|---|
-| Màn hiện tại | `USR0102` / `problem_detail` | `problem-bank` + `harness` + `judge-orchestration` |
+| Màn hiện tại | `USR0102` / `problem_detail`, đường dẫn `/workspace/{problemId}` | `problem-bank` + `harness` + `judge-orchestration` |
+| `01-rd/screens/users/USR0104_problem_overview.md` | Màn đứng trước — tổng quan bài toán chỉ-đọc, có nút "Giải bài toán" dẫn sang màn này | [SoT: .nexa/control/decision-registry.md:4239-4243] |
+| `01-rd/screens/users/USR0105_workspace_home.md` | Màn đứng trước — trang đầu Workspace, liệt kê bài đang làm dở để tiếp tục | [SoT: .nexa/control/decision-registry.md:4241-4243] |
 | Tài liệu yêu cầu | `01-rd/req/problem-bank.md` (F2), `01-rd/req/harness.md` (F3), `01-rd/req/judge-orchestration.md` (F4) | Nguồn SoT của màn |
 | Prototype | `09-layoutBase/Workspace giải bài.dc.html` | Bằng chứng bố cục và trạng thái |
 
@@ -104,7 +110,7 @@ vi trên thể hiện qua các khối màn sau:
 ## 3. Ngoài phạm vi (Out of Scope)
 
 - Bảng màu, spacing, chi tiết component Monaco Editor thật (prototype dùng textarea giả lập) — thuộc BD
-  (`02-bd/screens/users/USR0102_problem_detail.md`, chưa viết).
+  (`02-bd/screens/users/USR0102_problem_detail.md`).
 - Hợp đồng API (nộp bài, chạy thử, WebSocket per-testcase) — thuộc DD (`03-dd/api/judge-orchestration.md`,
   `03-dd/api/harness.md`, chưa viết).
 - Thuật toán sinh mã harness theo từng ngôn ngữ và từng mô hình — thuộc logic của `harness`
@@ -144,6 +150,8 @@ vi trên thể hiện qua các khối màn sau:
 | REQ-09 | **Cho** bài nộp của tôi đạt `Accepted`, **Khi** tôi xem console kết quả, **Thì** tôi thấy đồng thời ba lối đi tiếp theo (xem kết quả đầy đủ, phân tích bài giải, phỏng vấn giả lập) ngay tại đây, không cần quay lại danh sách bài toán | Chức năng (GWT) | [SoT: 09-layoutBase/Workspace giải bài.dc.html:371-377] |
 | REQ-10 | **Cho** tôi chọn "Tải file" làm phương thức nhập mã, **Khi** tôi chọn file không đúng phần mở rộng của ngôn ngữ đang chọn hoặc file lớn hơn 64 KB, **Thì** hệ thống từ chối và báo lý do — hành vi từ chối cụ thể chưa được dựng trong prototype (chỉ có state đã tải thành công) — đã chốt ở Câu hỏi mở Q3 (đã đóng): báo lỗi inline ngay trong vùng tải | Chức năng (GWT) | [SoT: 09-layoutBase/Workspace giải bài.dc.html — state "đã tải thành công"; Câu hỏi mở Q3 đã đóng] |
 | REQ-11 | **Cho** tôi đang ở phương thức "Tải file", **Khi** tôi bấm đổi mô hình (Có hàm main / Bọc hàm), **Thì** mô hình đổi ngay nhưng phương thức nhập mã vẫn giữ nguyên "Tải file" — hai lựa chọn độc lập nhau, đổi cái này không reset cái kia | Chức năng (GWT) | [SoT: 09-layoutBase/Workspace giải bài.dc.html:596-608 — `mode` và `inputMethod` là hai biến state tách rời] |
+| REQ-12 | **Cho** tôi chọn một bài ở danh sách bài, bài đã lưu hoặc "Bài ngẫu nhiên", **Khi** bài mở ra, **Thì** tôi thấy trước một **trang tổng quan chỉ-đọc** của bài (đề bài, giới hạn, bài nộp gần đây, tóm tắt Solution Review) và **chưa** vào trình soạn mã; chỉ khi tôi bấm "Giải bài toán" thì hệ thống mở màn này ở `/workspace/{problemId}` | Chức năng (GWT) | [SoT: .nexa/control/decision-registry.md:4239-4250 — `DEC-2026-1020-student-workspace-split-and-password-in-settings`]; `01-rd/screens/users/USR0104_problem_overview.md` |
+| REQ-13 | **Cho** tôi bấm mục "Workspace" trên thanh điều hướng, **Khi** trang mở ra, **Thì** tôi vào trang đầu Workspace để chọn tiếp một bài đang làm dở (hoặc chọn bài khác); hệ thống **không** tự nhảy thẳng vào một bài | Chức năng (GWT) | [SoT: .nexa/control/decision-registry.md:4239-4250 — `DEC-2026-1020-student-workspace-split-and-password-in-settings`]; `01-rd/screens/users/USR0105_workspace_home.md` |
 
 ---
 
@@ -164,7 +172,7 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 | Bàn giao | Trạng thái |
 |---|---|
 | RD màn hình | Có tài liệu này |
-| BD màn hình | Chưa xác định — không tự suy luận |
+| BD màn hình | Có: `02-bd/screens/users/USR0102_problem_detail.md` |
 | DD/API liên quan | Chưa xác định — không tự suy luận |
 
 ---
@@ -186,6 +194,6 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 | User story | `01-rd/req/user_stories/a1_student.md` — `US-A1-03`. |
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` — mục 7.1 dòng `problem_detail`, cùng hai ghi chú ngay dưới bảng: "Màn nặng nhất là `problem_detail`" và "hai màn riêng, đừng gộp" với `submission_result`. |
 | Prototype | `09-layoutBase/Workspace giải bài.dc.html`. |
-| Quyết định | `DEC-2026-0824-dual-submission-model-per-problem` (phát sinh từ chính việc viết file này). |
+| Quyết định | `DEC-2026-0824-dual-submission-model-per-problem` (phát sinh từ chính việc viết file này); `DEC-2026-1020-student-workspace-split-and-password-in-settings` (tách trang tổng quan, trang đầu Workspace và màn soạn mã, đổi đường dẫn). |
 | Kiến trúc BD | `02-bd/architecture/harness.md` mục 2b — hệ quả kiến trúc của quyết định trên. |
 | Kế hoạch | `06-plan/nexa-plan/260824-2043-bd-screens-common-first.md` — kế hoạch Phase 1 sinh ra file này. |

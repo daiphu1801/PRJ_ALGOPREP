@@ -1,5 +1,5 @@
 {
-  "_": "Luong quen mat khau bang OTP 6 so cua actor A1. Nguon: 01-rd/req/identity.md (F1-17, dong 209-217), 03-dd/api/identity.md muc 0.1 (endpoint #7, #8), 03-dd/logic/identity.md BR-04, 02-bd/architecture/identity.md muc 5 (OTP 10 phut, 5 lan sai, cooldown 60 giay), 02-bd/security/identity.md:45-46 va :50-52.",
+  "_": "Luong quen mat khau bang OTP 6 so cua actor A1. Nguon: 01-rd/req/identity.md (F1-17, dong 209-217), 03-dd/api/identity.md muc 0.1 (endpoint #7, #8), 03-dd/logic/identity.md BR-04, 02-bd/architecture/identity.md muc 5 (OTP 10 phut, 5 lan sai, cooldown 60 giay), 02-bd/security/identity.md:45-46 va :50-52. | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
   "_bao_mat": "Hai diem bao mat la ly do luong nay dang mot so do rieng: (1) endpoint forgot LUON tra 200 du email co ton tai hay khong -- chong do email theo OWASP user enumeration; (2) buoc reset khong re nhanh som khi email khong ton tai, di het toi buoc tra loi chung o cuoi de khong lo thong tin qua thoi gian phan hoi.",
   "kind": "sequence",
   "title": "Sơ đồ tuần tự chi tiết - Quên mật khẩu bằng OTP (Sinh viên) (1/3)",
@@ -37,7 +37,7 @@
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 1 - Gửi OTP, luôn trả 200 để không lộ email có tồn tại hay không"
+        "phase": "Giai đoạn 1 - Gửi mã xác nhận, luôn báo thành công để không lộ email có tồn tại hay không"
       },
       {
         "from": "Sinh viên",
@@ -47,12 +47,12 @@
       {
         "from": "Sinh viên",
         "to": "AuthController",
-        "text": "POST /auth/password/forgot { email }"
+        "text": "Gửi yêu cầu quên mật khẩu kèm email"
       },
       {
         "from": "AuthController",
         "to": "PasswordResetService",
-        "text": "requestOtp(email)"
+        "text": "Xử lý yêu cầu gửi mã xác nhận"
       },
       {
         "from": "PasswordResetService",
@@ -68,7 +68,7 @@
       {
         "from": "PasswordResetService",
         "to": "PostgreSQL",
-        "text": "SELECT users WHERE email = ?"
+        "text": "Đọc tài khoản có email này"
       },
       {
         "from": "PostgreSQL",
@@ -83,24 +83,24 @@
             {
               "from": "PasswordResetService",
               "to": "PasswordResetService",
-              "text": "Sinh OTP 6 số ngẫu nhiên"
+              "text": "Sinh mã xác nhận 6 số ngẫu nhiên"
             },
             {
               "from": "PasswordResetService",
               "to": "Redis",
-              "text": "SET identity:pwreset:<userId> TTL 10 phút, bộ đếm sai = 0"
+              "text": "Lưu mã xác nhận, hạn 10 phút, số lần nhập sai = 0"
             },
             {
               "from": "PasswordResetService",
               "to": "PasswordResetService",
-              "text": "Gửi OTP tới hộp thư (EmailSender)"
+              "text": "Gửi mã xác nhận tới hộp thư"
             }
           ],
           "else": [
             {
               "from": "PasswordResetService",
               "to": "PasswordResetService",
-              "text": "Không sinh OTP, không gửi thư, không báo lỗi ra ngoài"
+              "text": "Không sinh mã, không gửi thư, không báo lỗi ra ngoài"
             }
           ]
         }
@@ -114,7 +114,7 @@
       {
         "from": "AuthController",
         "to": "Sinh viên",
-        "text": "200 \"Nếu email tồn tại, mã đã được gửi\"",
+        "text": "Báo thành công: \"Nếu email tồn tại, mã đã được gửi\"",
         "kind": "return"
       },
       {

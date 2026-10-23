@@ -157,6 +157,8 @@ export type ProblemDetail = {
   saved: boolean;
   /** Only the count of hidden testcases is ever disclosed, never their content (BD Sheet 9 NO 3). */
   hiddenTestcaseCount: number;
+  /** Mock only: every simulated Run Code / Submit passes (to review the all-passed UI). */
+  mockAlwaysPass?: boolean;
   starterCode: Record<StarterCodeKey, string>;
   sampleTestcases: { input: string; expectedOutput: string }[];
   mySubmissions: SubmissionHistoryItem[];
@@ -165,8 +167,17 @@ export type ProblemDetail = {
 
 export type TestcaseVerdict = "pending" | "running" | "passed" | "failed";
 
+// Covers every `judge.submissions.status` (USR0104 Q5: one label per status, no raw keys).
 export type OverallVerdict =
-  "accepted" | "wrongAnswer" | "runtimeError" | "timeLimitExceeded" | "running";
+  | "accepted"
+  | "wrongAnswer"
+  | "runtimeError"
+  | "timeLimitExceeded"
+  | "running"
+  | "pending"
+  | "compiling"
+  | "compileError"
+  | "systemError";
 
 export type SubmissionRunResult = {
   submissionId: string;

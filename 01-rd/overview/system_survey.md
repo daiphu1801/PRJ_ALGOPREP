@@ -255,7 +255,7 @@ Việc chia nhỏ và đánh mã là [SoT: Suy luận]; **nội dung** từng ch
 | F1-09 | Quản lý thông tin cá nhân | A1 | [SoT: Suy luận — `README.md` không nêu, nhưng đăng ký mà không sửa được gì là thiếu] |
 | F1-10 | Ma trận phân quyền Role × Function × Action, đổi tức thời | A3 | Chốt 2026-08-23, `06-plan/PROTOTYPE_DEBT.md` mục 1.2. Giải quyết A2/A3 dùng chung một khu Admin |
 | F1-11 | Function/Action là dữ liệu seed chỉ đọc; Role tạo/sửa/xoá được trên giao diện | A3 | Không xoá được vai trò hệ thống hoặc vai trò đang có người dùng |
-| F1-12 | Danh sách chức năng nằm trong phạm vi ma trận (`PROBLEM_AUTHORING`, `TESTCASE_MANAGEMENT`, `CLASS_MANAGEMENT`, `USER_MANAGEMENT`, `JUDGE_QUEUE_MONITOR`, `AI_CONFIG`, `AI_TOKEN_BUDGET`, `SYSTEM_AUDIT_LOG`, `INTERVIEW_BANK_MANAGEMENT`, `PERMISSION_MATRIX`) | A3 | [SoT: Suy luận — danh sách khởi điểm, chốt số lượng chính xác ở BD]. `AI_TOKEN_BUDGET` nay gồm cả F5-21 và F5-25; `INTERVIEW_BANK_MANAGEMENT` nay chỉ còn F6-12 (F6-12); `CLASS_MANAGEMENT` nay gồm cả F1-23 tới F1-27. **Cập nhật 2026-08-28:** `REJUDGE_MANAGEMENT` loại bỏ (`DEC-2026-0828-remove-rejudge-scope`); F6-11 loại bỏ khỏi `INTERVIEW_BANK_MANAGEMENT` (`DEC-2026-0828-remove-per-class-interview-set`) |
+| F1-12 | Danh sách chức năng nằm trong phạm vi ma trận (`PROBLEM_AUTHORING`, `TESTCASE_MANAGEMENT`, `CLASS_MANAGEMENT`, `USER_MANAGEMENT`, `JUDGE_QUEUE_MONITOR`, `LANGUAGE_CONFIG`, `AI_CONFIG`, `AI_TOKEN_BUDGET`, `SYSTEM_AUDIT_LOG`, `INTERVIEW_BANK_MANAGEMENT`, `PERMISSION_MATRIX`) | A3 | [SoT: Suy luận — danh sách khởi điểm, chốt số lượng chính xác ở BD]. `AI_TOKEN_BUDGET` nay gồm cả F5-21 và F5-25; `INTERVIEW_BANK_MANAGEMENT` nay chỉ còn F6-12 (F6-12); `CLASS_MANAGEMENT` nay gồm cả F1-23 tới F1-27. **Cập nhật 2026-08-28:** `REJUDGE_MANAGEMENT` loại bỏ (`DEC-2026-0828-remove-rejudge-scope`); F6-11 loại bỏ khỏi `INTERVIEW_BANK_MANAGEMENT` (`DEC-2026-0828-remove-per-class-interview-set`) |
 | F1-13 | Quản lý tài khoản người dùng: đổi vai trò, khoá/mở khoá, reset mật khẩu, thêm tài khoản | A3 | Gác bởi `USER_MANAGEMENT` trong ma trận F1-10. "Thêm tài khoản" (INSTRUCTOR/STUDENT, mật khẩu tạm qua email, ghi nhật ký) đã chỉnh 2026-10-01 |
 | F1-14 | Ghi Nhật ký hệ thống cho mọi thay đổi ma trận phân quyền và mọi thao tác quản trị | A4 | Không có ngoại lệ, kể cả đổi quyền. Chốt 2026-08-24 (mục 2.5): chỉ hành động quản trị của người, không gộp sự kiện hạ tầng — sự kiện hạ tầng xem ở `admin_queue_monitor` (F4-10). Đã chỉnh 2026-10-01: ghi thêm sự kiện xác thực do người dùng kích hoạt (`PASSWORD_RESET_REQUESTED`, không lưu OTP) |
 | F1-15 | Đăng nhập/đăng ký qua OAuth (GitHub, Google) | A1 A2 A3 | Bổ sung `06-plan/PROTOTYPE_DEBT.md` mục 2.2. Trùng email với tài khoản email/mật khẩu → tự động liên kết, không tạo tài khoản thứ hai |
@@ -373,7 +373,7 @@ Kích hoạt **sau khi** bài nộp đạt Accepted. Hai chức năng độc l�
 | F5-15 | Xuất bảng đánh giá rubric khi kết phiên: độ rõ ràng khi trình bày, độ chính xác kỹ thuật, khả năng phản biện, nhận thức về độ phức tạp — kèm nhận xét từng tiêu chí | A4 | |
 | F5-16 | Lưu phiên và rubric, mở lại được từ trang tiến độ | A4 | |
 | F5-24 | Ba lối vào phiên phỏng vấn: từ bài nộp Accepted, từ kho câu hỏi F6, hoặc tự chọn chủ đề | A1 | Chốt 2026-08-24 (mục 1.4). Cùng chung luồng 3 giai đoạn và mọi ràng buộc AI, chỉ khác nguồn đề bài/chủ đề |
-| F5-28 | Tự chỉnh tham số phiên tự luyện: Mức người phỏng vấn (danh sách mức do admin cấu hình động, không cố định 3 mức; chốt 2026-10-19), Số lượt tối đa mỗi phiên, Cho phép gợi ý khi bí | A1 | Bổ sung 2026-08-25 (`settings` Q1). **Chỉ áp cho hai lối vào tự luyện của F5-24** (kho câu hỏi / tự chọn chủ đề) — không áp cho lối vào từ bài nộp `Accepted` (F5-09), để giữ tính khách quan của phiên gắn với một bài giải thật |
+| F5-28 | Tự chỉnh tham số phiên tự luyện: Mức người phỏng vấn (danh sách cố định 4 mức INTERN/JUNIOR/MIDDLE/SENIOR, admin không cấu hình động; sửa 2026-10-22, `DEC-2026-1022-ai-judge-schema-sync`), Số lượt tối đa mỗi phiên, Cho phép gợi ý khi bí | A1 | Bổ sung 2026-08-25 (`settings` Q1). **Chỉ áp cho hai lối vào tự luyện của F5-24** (kho câu hỏi / tự chọn chủ đề) — không áp cho lối vào từ bài nộp `Accepted` (F5-09), để giữ tính khách quan của phiên gắn với một bài giải thật |
 
 #### Ràng buộc chung của phân hệ AI
 
@@ -572,16 +572,18 @@ Chưa có prototype. Khu dùng chung 3 → 4 slug, tổng 30 → 31 màn.
 | :--- | :--- | :--- | :--- |
 | `dashboard` | Tổng quan — trang đích sau đăng nhập của người học; **đã gộp cả `my_progress`** | F1-31, F1-06 tới F1-08, F6-09, F6-10 | `identity`, `problem-bank`, `judge-orchestration`, `ai-review`, `interview-bank` |
 | `problem_list` | Danh sách bài toán | F2-11 | `problem-bank`, `identity` |
-| `problem_detail` | Chi tiết bài toán: đề bài, soạn mã, chạy thử, nộp bài | F2-01, F3-*, F4-01, F4-02, F4-08 | `problem-bank`, `harness`, `judge-orchestration` |
+| `problem_detail` | Màn soạn mã tại `/workspace/{id}`: soạn mã, chạy thử, nộp bài (từ 2026-10-20 phần đọc đề tách sang `problem_overview`) | F2-01, F3-*, F4-01, F4-02, F4-08 | `problem-bank`, `harness`, `judge-orchestration` |
 | `submission_result` | Kết quả một bài nộp | F4-08, F2-08 | `judge-orchestration` |
 | `solution_review` | Báo cáo phân tích bài giải | F5-01 tới F5-08 | `ai-review` |
 | `mock_interview` | Phiên phỏng vấn giả lập | F5-09 tới F5-16 | `ai-review` |
 | `interview_bank_list` | Danh sách câu hỏi phỏng vấn | F6-01 tới F6-03 | `interview-bank` |
 | `interview_question_detail` | Chi tiết câu hỏi: chế độ học và chế độ luyện | F6-04 tới F6-08 | `interview-bank`, `ai-review` |
 | `my_submissions` | Lịch sử bài nộp của tôi | F1-07, F1-18 | `judge-orchestration` |
-| `profile` | Trang cá nhân — thông tin hiển thị, đổi mật khẩu | F1-09, F1-19 | `identity` |
-| `settings` | Cài đặt — chủ đề màu, ngôn ngữ giao diện, Workspace, phỏng vấn tự luyện, thông báo, xuất dữ liệu, xoá tài khoản | F1-16, F1-20, F1-21, F1-22, F5-28 | `identity`, `ai-review` |
+| `profile` | Trang cá nhân — thông tin hiển thị (đổi mật khẩu chuyển sang `settings` từ 2026-10-20, `DEC-2026-1020-student-workspace-split-and-password-in-settings`) | F1-09 | `identity` |
+| `settings` | Cài đặt — chủ đề màu, ngôn ngữ giao diện, Workspace, phỏng vấn tự luyện, thông báo, đổi hoặc đặt mật khẩu (từ 2026-10-20), xuất dữ liệu, xoá tài khoản | F1-16, F1-19, F1-20, F1-21, F1-22, F5-28 | `identity`, `ai-review` |
 | `saved_problems` | Bài đã lưu — bookmark kèm ghi chú riêng tư | F2-13 | `problem-bank` |
+| `problem_overview` | Chi tiết bài toán — đọc đề, ví dụ, giới hạn, bài nộp gần đây trước khi vào Workspace (2026-10-20, `DEC-2026-1020-student-workspace-split-and-password-in-settings`) | F2-01 | `problem-bank` |
+| `workspace_home` | Trang đầu Workspace — bài đang làm dở để tiếp tục, chọn bài, bài ngẫu nhiên (2026-10-20, cùng quyết định) | F2-01, F4-08 | `problem-bank`, `judge-orchestration` |
 
 **Sửa 2026-08-24 theo `06-plan/PROTOTYPE_DEBT.md` mục 3.1/3.2:** `profile_settings` (1 slug suy luận ban
 đầu) tách thành 2 màn thật `profile` và `settings` theo đúng prototype (`Trang cá nhân.dc.html`,

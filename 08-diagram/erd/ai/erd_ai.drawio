@@ -1,0 +1,272 @@
+<mxfile host="app.diagrams.net" agent="drawio-uml-architect" type="device">
+  <diagram id="erd-schema-ai" name="erd-schema-ai">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2671" pageHeight="1758" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t_prompt_templates" value='&lt;div style="text-align:center"&gt;&lt;b&gt;prompt_templates&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;&lt;b&gt;PK&lt;/b&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;id&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;&lt;b&gt;UQ&lt;/b&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;feature_code&amp;nbsp;:&amp;nbsp;ENUM(SOLUTION_REVIEW,MOCK_INTERVIEW,GENERATE_TESTCASE)&lt;br&gt;&lt;b&gt;UQ&lt;/b&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;version&amp;nbsp;:&amp;nbsp;VARCHAR(20)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;status&amp;nbsp;:&amp;nbsp;ENUM(DRAFT,ACTIVE,ARCHIVED)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;system_instruction&amp;nbsp;:&amp;nbsp;TEXT&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;response_schema_version&amp;nbsp;:&amp;nbsp;VARCHAR&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;model_id&amp;nbsp;:&amp;nbsp;VARCHAR(50)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;response_guards&amp;nbsp;:&amp;nbsp;JSONB?&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;created_by&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;created_at&amp;nbsp;:&amp;nbsp;TIMESTAMPTZ&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;published_at&amp;nbsp;:&amp;nbsp;TIMESTAMPTZ?' style="algoprep=erd;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Courier New;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="30" y="266" width="637.8" height="227" as="geometry" />
+        </mxCell>
+        <mxCell id="t_interview_sessions" value='&lt;div style="text-align:center"&gt;&lt;b&gt;interview_sessions&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;&lt;b&gt;PK&lt;/b&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;id&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;user_id&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;entry_type&amp;nbsp;:&amp;nbsp;ENUM(SUBMISSION,QUESTION_BANK,TOPIC_SELECTION)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;submission_id?&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;question_ref&amp;nbsp;:&amp;nbsp;VARCHAR?&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;topics&amp;nbsp;:&amp;nbsp;JSONB?&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;interviewer_level&amp;nbsp;:&amp;nbsp;ENUM(INTERN,JUNIOR,MIDDLE,SENIOR)?&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;max_turns&amp;nbsp;:&amp;nbsp;SMALLINT?&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;hint_allowed&amp;nbsp;:&amp;nbsp;BOOLEAN?&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;stage&amp;nbsp;:&amp;nbsp;ENUM(EXPLAIN,CHALLENGE,SCALE_UP,COMPLETED,ABANDONED)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;turn_count&amp;nbsp;:&amp;nbsp;INT&amp;nbsp;default&amp;nbsp;0&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;started_at&amp;nbsp;:&amp;nbsp;TIMESTAMPTZ&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ended_at&amp;nbsp;:&amp;nbsp;TIMESTAMPTZ?&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;updated_at&amp;nbsp;:&amp;nbsp;TIMESTAMPTZ' style="algoprep=erd;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Courier New;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="30" y="523" width="637.8" height="278" as="geometry" />
+        </mxCell>
+        <mxCell id="t_rubric_scores" value='&lt;div style="text-align:center"&gt;&lt;b&gt;rubric_scores&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;&lt;b&gt;PK&lt;/b&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;id&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;&lt;b&gt;UQ&lt;/b&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;owner_type&amp;nbsp;:&amp;nbsp;ENUM(MOCK_INTERVIEW)&lt;br&gt;&lt;b&gt;UQ&lt;/b&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;owner_id&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;&lt;b&gt;UQ&lt;/b&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;criterion_code&amp;nbsp;:&amp;nbsp;VARCHAR&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;score&amp;nbsp;:&amp;nbsp;DECIMAL(4,2)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;comment&amp;nbsp;:&amp;nbsp;TEXT&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;created_at&amp;nbsp;:&amp;nbsp;TIMESTAMPTZ' style="algoprep=erd;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Courier New;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="30" y="831" width="637.8" height="159" as="geometry" />
+        </mxCell>
+        <mxCell id="t_token_usage" value='&lt;div style="text-align:center"&gt;&lt;b&gt;token_usage&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;&lt;b&gt;PK&lt;/b&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;id&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;user_id&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;feature_code&amp;nbsp;:&amp;nbsp;ENUM(SOLUTION_REVIEW,MOCK_INTERVIEW,GENERATE_TESTCASE,PRACTICE_FEEDBACK)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;problem_id?&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;owner_id&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;tokens_prompt&amp;nbsp;:&amp;nbsp;INT&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;tokens_completion&amp;nbsp;:&amp;nbsp;INT&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;model_name&amp;nbsp;:&amp;nbsp;VARCHAR(100)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;created_at&amp;nbsp;:&amp;nbsp;TIMESTAMPTZ' style="algoprep=erd;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Courier New;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="30" y="1020" width="637.8" height="193" as="geometry" />
+        </mxCell>
+        <mxCell id="t_ai_token_budget_configs" value='&lt;div style="text-align:center"&gt;&lt;b&gt;ai_token_budget_configs&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;singleton&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;&lt;b&gt;PK&lt;/b&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;id&amp;nbsp;:&amp;nbsp;SMALLINT&amp;nbsp;CHECK&amp;nbsp;(id&amp;nbsp;=&amp;nbsp;1)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;period&amp;nbsp;:&amp;nbsp;ENUM(MONTHLY)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;limit_tokens&amp;nbsp;:&amp;nbsp;BIGINT&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;period_start&amp;nbsp;:&amp;nbsp;DATE&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;locked_at&amp;nbsp;:&amp;nbsp;TIMESTAMPTZ?&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;warn_percent&amp;nbsp;:&amp;nbsp;SMALLINT&amp;nbsp;(1-100)&amp;nbsp;default&amp;nbsp;70&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;review_per_hour&amp;nbsp;:&amp;nbsp;SMALLINT&amp;nbsp;(1-999)&amp;nbsp;default&amp;nbsp;10&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;interview_per_hour&amp;nbsp;:&amp;nbsp;SMALLINT&amp;nbsp;(1-999)&amp;nbsp;default&amp;nbsp;3&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;cooldown_seconds&amp;nbsp;:&amp;nbsp;SMALLINT&amp;nbsp;(1-999)&amp;nbsp;default&amp;nbsp;20&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;updated_by&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;updated_at&amp;nbsp;:&amp;nbsp;TIMESTAMPTZ' style="algoprep=erd;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Courier New;fillColor=#E8E8E8;strokeColor=#666666;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="30" y="1243" width="637.8" height="241" as="geometry" />
+        </mxCell>
+        <mxCell id="t_ai_model_prices" value='&lt;div style="text-align:center"&gt;&lt;b&gt;ai_model_prices&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;&lt;b&gt;PK&lt;/b&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;id&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;&lt;b&gt;UQ&lt;/b&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;model_name&amp;nbsp;:&amp;nbsp;VARCHAR(100)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;usd_per_million_tokens&amp;nbsp;:&amp;nbsp;NUMERIC(10,4)&amp;nbsp;default&amp;nbsp;0&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;updated_at&amp;nbsp;:&amp;nbsp;TIMESTAMPTZ' style="algoprep=erd;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Courier New;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="30" y="1514" width="637.8" height="108" as="geometry" />
+        </mxCell>
+        <mxCell id="t_ai_usage_anomaly_alerts" value='&lt;div style="text-align:center"&gt;&lt;b&gt;ai_usage_anomaly_alerts&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;&lt;b&gt;PK&lt;/b&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;id&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;user_id&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;window_start&amp;nbsp;:&amp;nbsp;TIMESTAMPTZ&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;window_end&amp;nbsp;:&amp;nbsp;TIMESTAMPTZ&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;call_count&amp;nbsp;:&amp;nbsp;INT&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;baseline_avg&amp;nbsp;:&amp;nbsp;DECIMAL(8,2)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ratio&amp;nbsp;:&amp;nbsp;DECIMAL(5,2)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;status&amp;nbsp;:&amp;nbsp;ENUM(OPEN,REVIEWED)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;created_at&amp;nbsp;:&amp;nbsp;TIMESTAMPTZ&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;reviewed_at&amp;nbsp;:&amp;nbsp;TIMESTAMPTZ?' style="algoprep=erd;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Courier New;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="923.8" y="266" width="274.79999999999995" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="t_outbox_events" value='&lt;div style="text-align:center"&gt;&lt;b&gt;outbox_events&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;&lt;b&gt;PK&lt;/b&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;id&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;aggregate_type&amp;nbsp;:&amp;nbsp;VARCHAR&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;aggregate_id&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;event_type&amp;nbsp;:&amp;nbsp;VARCHAR&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;payload&amp;nbsp;:&amp;nbsp;JSONB&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;created_at&amp;nbsp;:&amp;nbsp;TIMESTAMPTZ&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;published_at&amp;nbsp;:&amp;nbsp;TIMESTAMPTZ?&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;publish_attempts&amp;nbsp;:&amp;nbsp;INT&amp;nbsp;default&amp;nbsp;0' style="algoprep=erd;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Courier New;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="923.8" y="506" width="274.79999999999995" height="176" as="geometry" />
+        </mxCell>
+        <mxCell id="t_solution_reviews" value='&lt;div style="text-align:center"&gt;&lt;b&gt;solution_reviews&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;&lt;b&gt;PK&lt;/b&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;id&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;&lt;b&gt;UQ&lt;/b&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;submission_id&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;user_id&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;problem_id&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;language&amp;nbsp;:&amp;nbsp;ENUM(JAVA,CPP,PYTHON)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;source_hash&amp;nbsp;:&amp;nbsp;CHAR(64)&lt;br&gt;&lt;b&gt;FK&lt;/b&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;prompt_template_id&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;result_json&amp;nbsp;:&amp;nbsp;JSONB&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;readability_score&amp;nbsp;:&amp;nbsp;SMALLINT&amp;nbsp;(1-5)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;served_from_cache&amp;nbsp;:&amp;nbsp;BOOLEAN&amp;nbsp;default&amp;nbsp;false&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;created_at&amp;nbsp;:&amp;nbsp;TIMESTAMPTZ' style="algoprep=erd;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Courier New;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="1294.6" y="266" width="380.4" height="227" as="geometry" />
+        </mxCell>
+        <mxCell id="t_interview_turns" value='&lt;div style="text-align:center"&gt;&lt;b&gt;interview_turns&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;&lt;b&gt;PK&lt;/b&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;id&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;&lt;b&gt;FK&amp;nbsp;UQ&lt;/b&gt;&amp;nbsp;interview_session_id&lt;br&gt;&lt;b&gt;UQ&lt;/b&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;turn_index&amp;nbsp;:&amp;nbsp;INT&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;role&amp;nbsp;:&amp;nbsp;ENUM(USER,AI)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;stage_at_turn&amp;nbsp;:&amp;nbsp;ENUM(EXPLAIN,CHALLENGE,SCALE_UP)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;content&amp;nbsp;:&amp;nbsp;TEXT&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;created_at&amp;nbsp;:&amp;nbsp;TIMESTAMPTZ' style="algoprep=erd;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Courier New;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="1294.6" y="523" width="380.4" height="159" as="geometry" />
+        </mxCell>
+        <mxCell id="t_ai_cache_entries" value='&lt;div style="text-align:center"&gt;&lt;b&gt;ai_cache_entries&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;&lt;b&gt;PK&lt;/b&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;id&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;&lt;b&gt;UQ&lt;/b&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;problem_id&lt;br&gt;&lt;b&gt;UQ&lt;/b&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;language&amp;nbsp;:&amp;nbsp;ENUM(JAVA,CPP,PYTHON)&lt;br&gt;&lt;b&gt;UQ&lt;/b&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;source_hash&amp;nbsp;:&amp;nbsp;CHAR(64)&lt;br&gt;&lt;b&gt;FK&amp;nbsp;UQ&lt;/b&gt;&amp;nbsp;prompt_template_id&lt;br&gt;&lt;b&gt;FK&lt;/b&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;solution_review_id&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;hit_count&amp;nbsp;:&amp;nbsp;INT&amp;nbsp;default&amp;nbsp;0&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;created_at&amp;nbsp;:&amp;nbsp;TIMESTAMPTZ' style="algoprep=erd;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Courier New;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="1771" y="266" width="274.79999999999995" height="176" as="geometry" />
+        </mxCell>
+        <mxCell id="t_identity_users" value='&lt;div style="text-align:center"&gt;&lt;b&gt;identity.users&lt;/b&gt;&lt;/div&gt;' style="algoprep=erd;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Courier New;fillColor=#F7F7F7;strokeColor=#999999;fontColor=#1A1A1A;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="2269.8" y="266" width="261.6" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="t_judge_submissions" value='&lt;div style="text-align:center"&gt;&lt;b&gt;judge.submissions&lt;/b&gt;&lt;/div&gt;' style="algoprep=erd;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Courier New;fillColor=#F7F7F7;strokeColor=#999999;fontColor=#1A1A1A;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="2269.8" y="376" width="261.6" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="t_problem_problems" value='&lt;div style="text-align:center"&gt;&lt;b&gt;problem.problems&lt;/b&gt;&lt;/div&gt;' style="algoprep=erd;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Courier New;fillColor=#F7F7F7;strokeColor=#999999;fontColor=#1A1A1A;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="2269.8" y="446" width="261.6" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="t_interview_bank_interview_questions" value='&lt;div style="text-align:center"&gt;&lt;b&gt;interview_bank.interview_questions&lt;/b&gt;&lt;/div&gt;' style="algoprep=erd;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Courier New;fillColor=#F7F7F7;strokeColor=#999999;fontColor=#1A1A1A;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="2269.8" y="526" width="261.6" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="t_interview_bank_user_answers" value='&lt;div style="text-align:center"&gt;&lt;b&gt;interview_bank.user_answers&lt;/b&gt;&lt;/div&gt;' style="algoprep=erd;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Courier New;fillColor=#F7F7F7;strokeColor=#999999;fontColor=#1A1A1A;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="2269.8" y="592" width="261.6" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" value="prompt_template_id" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0;exitY=0.196;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.804;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=ERmany;startFill=0;endArrow=ERmandOne;endFill=0;" edge="1" parent="1" source="t_solution_reviews" target="t_prompt_templates">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="1230.6" y="310.5" />
+            <mxPoint x="1230.6" y="50" />
+            <mxPoint x="715.8" y="50" />
+            <mxPoint x="715.8" y="448.5" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e2" value="interview_session_id" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0;exitY=0.500;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.633;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=ERmany;startFill=0;endArrow=ERmandOne;endFill=0;" edge="1" parent="1" source="t_interview_turns" target="t_interview_sessions">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="1262.6" y="602.5" />
+            <mxPoint x="1262.6" y="62" />
+            <mxPoint x="795.8" y="62" />
+            <mxPoint x="795.8" y="698.8571428571429" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e3" value="prompt_template_id" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0;exitY=0.278;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.500;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=ERmany;startFill=0;endArrow=ERmandOne;endFill=0;" edge="1" parent="1" source="t_ai_cache_entries" target="t_prompt_templates">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="1707" y="315" />
+            <mxPoint x="1707" y="74" />
+            <mxPoint x="699.8" y="74" />
+            <mxPoint x="699.8" y="379.5" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e4" value="solution_review_id" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0;exitY=0.722;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.386;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=ERmany;startFill=0;endArrow=ERmandOne;endFill=0;" edge="1" parent="1" source="t_ai_cache_entries" target="t_solution_reviews">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="1723" y="393" />
+            <mxPoint x="1723" y="353.625" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e5" value="owner_id" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.500;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.765;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_rubric_scores" target="t_interview_sessions">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="859.8" y="910.5" />
+            <mxPoint x="859.8" y="735.7142857142858" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e6" value="aggregate_id" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.500;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.500;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_outbox_events" target="t_solution_reviews">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="1246.6" y="594" />
+            <mxPoint x="1246.6" y="379.5" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e7" value="aggregate_id" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0;exitY=0.500;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.500;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_outbox_events" target="t_interview_sessions">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="779.8" y="594" />
+            <mxPoint x="779.8" y="662" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e8" value="owner_id" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.321;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.804;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_token_usage" target="t_solution_reviews">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="827.8" y="1081.9" />
+            <mxPoint x="827.8" y="86" />
+            <mxPoint x="1278.6" y="86" />
+            <mxPoint x="1278.6" y="448.5" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e9" value="owner_id" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.859;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.898;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_token_usage" target="t_interview_sessions">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="907.8" y="1185.7" />
+            <mxPoint x="907.8" y="772.5714285714286" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e10" value="created_by" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.196;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.312;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_prompt_templates" target="t_identity_users">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="683.8" y="310.5" />
+            <mxPoint x="683.8" y="98" />
+            <mxPoint x="2061.8" y="98" />
+            <mxPoint x="2061.8" y="291" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e11" value="user_id" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.158;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.438;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_solution_reviews" target="t_identity_users">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="1691" y="301.875" />
+            <mxPoint x="1691" y="110" />
+            <mxPoint x="2077.8" y="110" />
+            <mxPoint x="2077.8" y="301" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e12" value="user_id" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.102;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.562;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_interview_sessions" target="t_identity_users">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="731.8" y="551.4285714285714" />
+            <mxPoint x="731.8" y="122" />
+            <mxPoint x="2141.8" y="122" />
+            <mxPoint x="2141.8" y="311" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e13" value="user_id" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.141;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.688;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_token_usage" target="t_identity_users">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="811.8" y="1047.3" />
+            <mxPoint x="811.8" y="134" />
+            <mxPoint x="2205.8" y="134" />
+            <mxPoint x="2205.8" y="321" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e14" value="user_id" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.500;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.188;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_ai_usage_anomaly_alerts" target="t_identity_users">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="1214.6" y="371" />
+            <mxPoint x="1214.6" y="146" />
+            <mxPoint x="2093.8" y="146" />
+            <mxPoint x="2093.8" y="281" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e15" value="updated_by" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.500;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.812;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_ai_token_budget_configs" target="t_identity_users">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="875.8" y="1363.5" />
+            <mxPoint x="875.8" y="158" />
+            <mxPoint x="2237.8" y="158" />
+            <mxPoint x="2237.8" y="331" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e16" value="submission_id" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.614;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.375;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_solution_reviews" target="t_judge_submissions">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="1739" y="405.375" />
+            <mxPoint x="1739" y="170" />
+            <mxPoint x="2109.8" y="170" />
+            <mxPoint x="2109.8" y="391" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e17" value="submission_id" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.235;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.625;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_interview_sessions" target="t_judge_submissions">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="747.8" y="588.2857142857143" />
+            <mxPoint x="747.8" y="182" />
+            <mxPoint x="2173.8" y="182" />
+            <mxPoint x="2173.8" y="401" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e18" value="problem_id" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.842;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.500;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_solution_reviews" target="t_problem_problems">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="1755" y="457.125" />
+            <mxPoint x="1755" y="194" />
+            <mxPoint x="2157.8" y="194" />
+            <mxPoint x="2157.8" y="471" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e19" value="problem_id" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.500;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.300;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_ai_cache_entries" target="t_problem_problems">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="2125.8" y="354" />
+            <mxPoint x="2125.8" y="461" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e20" value="problem_id" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.500;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.700;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_token_usage" target="t_problem_problems">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="843.8" y="1116.5" />
+            <mxPoint x="843.8" y="206" />
+            <mxPoint x="2221.8" y="206" />
+            <mxPoint x="2221.8" y="481" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e21" value="question_ref" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.367;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.500;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_interview_sessions" target="t_interview_bank_interview_questions">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="763.8" y="625.1428571428571" />
+            <mxPoint x="763.8" y="218" />
+            <mxPoint x="2189.8" y="218" />
+            <mxPoint x="2189.8" y="544" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e22" value="owner_id" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.679;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.500;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_token_usage" target="t_interview_bank_user_answers">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="891.8" y="1151.1" />
+            <mxPoint x="891.8" y="230" />
+            <mxPoint x="2253.8" y="230" />
+            <mxPoint x="2253.8" y="610" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="title" value="ERD schema ai" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="0" y="10" width="2631.4" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="v23" value="Chú giải: PK khoá chính; FK khoá ngoại; UQ duy nhất; ? cho phép NULL.&lt;br&gt;Nét đứt, mũi tên mở: tham chiếu logic liên schema (không có khoá ngoại vật lý).&lt;br&gt;Nét liền, chân gạc: khoá ngoại trong cùng schema (chân gạc = phía nhiều; vạch đơn = phía một; vạch kèm vòng tròn = phía một, tuỳ chọn)." style="text;html=1;align=left;verticalAlign=top;fontSize=11;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="30" y="1662" width="1100" height="56" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

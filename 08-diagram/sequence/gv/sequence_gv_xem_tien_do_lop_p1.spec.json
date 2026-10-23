@@ -1,5 +1,5 @@
 {
-  "_": "Luong xem dashboard tien do lop cua actor A2. Nguon: US-A2-09 (01-rd/req/user_stories/a2_instructor.md:140-155), 01-rd/req/identity.md (F1-27, F1-28), 03-dd/api/identity.md muc 0.4 (endpoint #26, #29), 02-bd/architecture/identity.md muc 3.1 (read model dung tu domain event SubmissionGraded, KHONG doc thang schema judge). Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen.",
+  "_": "Luong xem dashboard tien do lop cua actor A2. Nguon: US-A2-09 (01-rd/req/user_stories/a2_instructor.md:140-155), 01-rd/req/identity.md (F1-27, F1-28), 03-dd/api/identity.md muc 0.4 (endpoint #26, #29), 02-bd/architecture/identity.md muc 3.1 (read model dung tu domain event SubmissionGraded, KHONG doc thang schema judge). Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen. | Cap nhat 2026-10-20: siet theo quy tac moi, nhan mui ten la cau tieng Viet thuong, khong duong dan endpoint, ma HTTP, ma quyen, ten su kien, thuat ngu ky thuat; duong dan, ma HTTP va ma quyen nam o DD.",
   "_suy_giam": "US-A2-11 (a2_instructor.md:185): mot nguon so lieu khong phan hoi thi man van len, phan do bao loi tai cho -- ve thanh nhanh alt vi day la nghiep vu that, khong phai xu ly loi trang tri.",
   "kind": "sequence",
   "title": "Sơ đồ tuần tự chi tiết - Xem tiến độ lớp học (Giảng viên) (1/2)",
@@ -38,17 +38,17 @@
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 1 - Số liệu tiến độ được dựng sẵn từ sự kiện, không đọc chéo schema"
+        "phase": "Giai đoạn 1 - Số liệu tiến độ được tính sẵn mỗi khi có bài chấm xong"
       },
       {
         "from": "RabbitMQ",
         "to": "ClassProgressService",
-        "text": "Có bài nộp vừa chấm xong (sự kiện SubmissionGraded)"
+        "text": "Có bài nộp vừa chấm xong"
       },
       {
         "from": "ClassProgressService",
         "to": "ClassProgressService",
-        "text": "Bỏ qua nếu sự kiện này đã xử lý rồi"
+        "text": "Bỏ qua nếu bài này đã được tính rồi"
       },
       {
         "from": "ClassProgressService",
@@ -72,7 +72,7 @@
       {
         "from": "Giảng viên",
         "to": "ClassProgressController",
-        "text": "GET /identity/classes/{classId}/progress"
+        "text": "Gửi yêu cầu xem tiến độ lớp"
       },
       {
         "from": "ClassProgressController",

@@ -57,8 +57,8 @@ JudgeExecutionPort.run(RunRequest) -> RunResult   // đồng bộ, một lần g
 chỉ chuyển tiếp payload harness đã tạo cho từng testcase kèm giới hạn thời gian/bộ nhớ đã nhân hệ số
 ngôn ngữ (`language_configs`, mục 6 file `database/judge-orchestration.md`).
 
-`RunResult` trả về khái niệm: `exitCode`, `stdout`, `stderr` (chỉ giữ nếu `language_configs.return_stderr_
-to_student = true`), `runtimeMs`, `memoryKb`, `verdict` sơ bộ theo testcase (`AC`/`WA`/`TLE`/`MLE`/`RE`) —
+`RunResult` trả về khái niệm: `exitCode`, `stdout`, `stderr` (chỉ giữ nếu `sandbox_settings.return_stderr_
+to_student = true` — sửa 2026-10-22, đồng bộ DB phase 3: cột nằm ở `sandbox_settings` toàn cục, không còn ở `language_configs`; `database/judge-orchestration.md:181,188`), `runtimeMs`, `memoryKb`, `verdict` sơ bộ theo testcase (`AC`/`WA`/`TLE`/`MLE`/`RE`) —
 verdict này do `harness` tính qua bước so khớp kết quả (F3-07→10), `judge-orchestration` chỉ **tổng hợp**,
 không tự so khớp output.
 
@@ -71,6 +71,10 @@ mục đích: một cái gọi engine ngoài, một cái đọc dữ liệu nộ
 câu hỏi mở đã ghi ở `02-bd/architecture/problem-bank.md` mục 3.2 về việc F2-14 có dùng chung
 `JudgeExecutionPort` hay không; câu trả lời ở đây là **không dùng chung**, vì hai chiều gọi khác hẳn nhau
 (một là "chấm bài của học viên", một là "đọc đặc tả bài toán").
+
+### 3.2a. Outbound port — ghi nhật ký hệ thống (từ `identity`, thêm 2026-10-23)
+
+`AuditLogPort` do `identity` phơi ra (xem `identity`, mục cổng `AuditLogPort`): `judge-orchestration` gọi cổng này để ghi dòng `system_audit_logs` trong cùng JVM và cùng giao dịch DB với thay đổi nghiệp vụ, không ghi thẳng schema `identity` (`DEC-2026-1023-db-actor-review-decisions`).
 
 ### 3.3. Cổng đọc số liệu nộp bài cho module khác — **hai luồng tách riêng**
 
@@ -150,7 +154,7 @@ theo version nào").
 
 ## 4. Luồng chấm bài (đồng bộ, go-judge mặc định) — state machine
 
-**Bảy trạng thái cuối, không bao giờ bị ghi đè** (`glossary.md` mục 3, giữ nguyên bất kể adapter) — chốt
+**Sáu trạng thái cuối, không bao giờ bị ghi đè** (sửa 2026-10-22, đồng bộ DB phase 3: trước ghi "bảy"; sáu = `ACCEPTED`, `WRONG_ANSWER`, `TIME_LIMIT_EXCEEDED`, `RUNTIME_ERROR`, `COMPILE_ERROR`, `SYSTEM_ERROR`, khớp `database/judge-orchestration.md:33`) (`glossary.md` mục 3, giữ nguyên bất kể adapter) — chốt
 chính thức ở `DEC-2026-0912-judge-callback-contract`:
 
 ```
@@ -167,6 +171,8 @@ JUDGING --(đã chạy hết N testcase, tổng hợp verdict)--> một trong:
 (bất kỳ trạng thái không-cuối) --(worker crash, không cập nhật > 5 phút, job sweep quét thấy)-->
     SYSTEM_ERROR [CUỐI], failure_reason = WORKER_TIMEOUT
 ```
+
+Sửa 2026-10-22 (đồng bộ DB, phase 3, JD-14): sơ đồ trên chỉ có đường ghi `failure_reason = WORKER_TIMEOUT` (job sweep). Giá trị `SANDBOX_FAULT` của cột (`database/judge-orchestration.md:23`, "lỗi sandbox tức thời") được **worker ghi** khi go-judge báo lỗi hạ tầng không phải verdict của testcase (ví dụ không khởi tạo được sandbox, mất kết nối go-judge): submission sang `SYSTEM_ERROR`, `failure_reason = SANDBOX_FAULT`, cùng giao dịch với dòng outbox như mọi trạng thái cuối. Còn `WORKER_TIMEOUT` do job sweep ghi. Hai nguồn này phân biệt được trên `ADM0401`/`ADM0404`. Sửa 2026-10-22 (đồng bộ DB vòng 2, DEC-2026-1022-db-sync-round2, mục 5): chủ dự án chốt; thay câu "chưa có luồng ghi" của phase 3. Ngưỡng và cách nhận diện lỗi hạ tầng cụ thể (mã lỗi nào của go-judge) để DD.
 
 `[SoT: Suy luận]` — nguyên tắc "verdict tổng hợp = verdict của testcase thất bại đầu tiên theo thứ tự"
 không có trong RD (RD chỉ nói Accepted là pass hết, chưa nói pattern hỗn hợp WA+TLE+RE trong cùng một lần
@@ -218,7 +224,7 @@ hành đúng: không có callback nào tồn tại trong luồng đồng bộ.
   sang `SYSTEM_ERROR`. Đồng hồ 5 phút của job `PENDING` chỉ bắt đầu tính lại từ lúc hàng đợi được mở lại
   (`updated_at` được chạm khi tiếp tục tiêu thụ) `[SoT: Suy luận]`, DD chốt cách chạm.
 - **Hành động**: `UPDATE ... SET status = 'SYSTEM_ERROR', failure_reason = 'WORKER_TIMEOUT' WHERE id = ?
-  AND status NOT IN (<7 trạng thái cuối>)` — mệnh đề `WHERE` có điều kiện là bắt buộc, không phải tối ưu:
+  AND status NOT IN (<6 trạng thái cuối>)` — mệnh đề `WHERE` có điều kiện là bắt buộc, không phải tối ưu:
   nó là cơ chế chống ghi đè khi một worker "chậm" hoàn tất đúng lúc job sweep chạy (race hiếm nhưng có
   thể xảy ra).
 - **Ý nghĩa với adapter đồng bộ**: gần như luôn là worker crash (OOM, pod bị kill, hạ tầng go-judge tự nó
@@ -236,7 +242,7 @@ code — đúng nguyên tắc `dependency-map.md` mục 3: "complexity is adapte
 
 ## 6. Transactional Outbox cho F4 → F5/F1 (`DEC-2026-0912-judge-outbox-pattern`)
 
-**Chốt: có Outbox.** Khi một submission đạt một trong bảy trạng thái cuối, `judge-orchestration`:
+**Chốt: có Outbox.** Khi một submission đạt một trong sáu trạng thái cuối (sửa 2026-10-22, đồng bộ DB phase 3), `judge-orchestration`:
 
 1. Trong **cùng giao dịch DB** cập nhật `submissions.status`, ghi một dòng vào `outbox_events` (payload
    JSON, loại sự kiện, thời điểm tạo, `published_at = NULL`).
@@ -250,7 +256,9 @@ Hai sự kiện phát ra, khớp tên đã dùng ở `02-bd/architecture/identit
 | Sự kiện | Khi nào | Payload chính | Ai tiêu thụ |
 | :--- | :--- | :--- | :--- |
 | `SubmissionAccepted` | `status → ACCEPTED` | `submissionId`, `userId`, `problemId`, `language` | `ai-review` (kích hoạt F5.1/F5.2), `identity` (`identity_recent_activity`) |
-| `SubmissionGraded` | Mọi trạng thái cuối (bao gồm cả `ACCEPTED`) | `submissionId`, `userId`, `problemId`, `verdict`, `passedCount`, `totalCount`, tỉ lệ F4-13 | `identity` (`user_problem_best_score`, `user_submission_stats`) |
+| `SubmissionGraded` | Mọi trạng thái cuối (bao gồm cả `ACCEPTED`) | `submissionId`, `userId`, `problemId`, `verdict`, `passedCount`, `totalCount`, tỉ lệ F4-13, `language`, `submittedAt`, `firstAttemptForProblem` (Sửa 2026-10-22, đồng bộ DB vòng 2) | `identity` (`user_problem_best_score`, `user_submission_stats`, `user_daily_submission_stats`) |
+
+Sửa 2026-10-22 (đồng bộ DB, phase 3, JD-18): payload `SubmissionGraded` còn phải mang `language` (nuôi `user_submission_stats.top_language`/`language_counts`, `database/identity.md:191`) và một mốc thời gian của lượt nộp để `identity` quy ra `day` UTC+7 cho `user_daily_submission_stats` (`database/identity.md:193`). Sửa 2026-10-22 (đồng bộ DB vòng 2, DEC-2026-1022-db-sync-round2, mục 6): **đã chốt** payload `SubmissionGraded` mang thêm `submittedAt` (mốc nộp, UTC; `identity` quy ra ngày UTC+7) và `firstAttemptForProblem` (boolean, `judge` tính từ lịch sử `submissions` của cùng user và bài; nuôi `first_try_accepted_count`). Bảng trên: payload chính của `SubmissionGraded` = `submissionId`, `userId`, `problemId`, `language`, `verdict`, `passedCount`, `totalCount`, tỉ lệ F4-13, `submittedAt`, `firstAttemptForProblem`. Phía `identity` do agent khác sửa (`03-dd/api/identity.md`); cấu trúc JSON và version payload vẫn để DD.
 
 **Phương án bị loại: `@TransactionalEventListener(phase = AFTER_COMMIT)` publish thẳng RabbitMQ.** Đảm bảo
 listener chỉ chạy sau khi commit thành công, nhưng **không đảm bảo chính lời gọi publish thành công** — nếu

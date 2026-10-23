@@ -1,5 +1,5 @@
 {
-  "_": "Luong dang nhap bang OAuth (GitHub, Google) va tu lien ket theo email cua actor A1. Nguon: 01-rd/req/identity.md (F1-15), 03-dd/api/identity.md muc 0.1 (endpoint #5, #6), 03-dd/logic/identity.md BR-03, 02-bd/architecture/identity.md muc 2 (OAuth tu lien ket theo email).",
+  "_": "Luong dang nhap bang OAuth (GitHub, Google) va tu lien ket theo email cua actor A1. Nguon: 01-rd/req/identity.md (F1-15), 03-dd/api/identity.md muc 0.1 (endpoint #5, #6), 03-dd/logic/identity.md BR-03, 02-bd/architecture/identity.md muc 2 (OAuth tu lien ket theo email). | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
   "_bao_mat": "Hai chot chan chiem tai khoan: (1) doi chieu `state` luu Redis TTL 10 phut -- chong CSRF o buoc callback; (2) provider tra `email_verified = false` thi TU CHOI, khong tao oauth_identities va khong tao users -- neu bo buoc nay, ai dang ky mot tai khoan provider bang email nguoi khac deu chiem duoc tai khoan AlgoPrep tuong ung.",
   "kind": "sequence",
   "title": "Sơ đồ tuần tự chi tiết - Đăng nhập và tự liên kết tài khoản OAuth (Sinh viên) (3/3)",
@@ -37,7 +37,7 @@
       {
         "from": "OAuthService",
         "to": "PostgreSQL",
-        "text": "SELECT users WHERE email = providerEmail"
+        "text": "Tìm tài khoản có email của nhà cung cấp"
       },
       {
         "from": "PostgreSQL",
@@ -51,20 +51,30 @@
           "then": [
             {
               "from": "OAuthService",
+              "to": "OAuthService",
+              "text": "Trường hợp có"
+            },
+            {
+              "from": "OAuthService",
               "to": "PostgreSQL",
-              "text": "INSERT oauth_identities, liên kết vào tài khoản sẵn có"
+              "text": "Lưu liên kết vào tài khoản sẵn có"
             }
           ],
           "else": [
             {
               "from": "OAuthService",
-              "to": "PostgreSQL",
-              "text": "INSERT users (password_hash = NULL, vai trò STUDENT)"
+              "to": "OAuthService",
+              "text": "Trường hợp không"
             },
             {
               "from": "OAuthService",
               "to": "PostgreSQL",
-              "text": "INSERT oauth_identities trỏ về tài khoản vừa tạo"
+              "text": "Tạo tài khoản mới chưa có mật khẩu, vai trò Người học"
+            },
+            {
+              "from": "OAuthService",
+              "to": "PostgreSQL",
+              "text": "Lưu liên kết vào tài khoản vừa tạo"
             }
           ]
         }
@@ -72,23 +82,23 @@
       {
         "from": "OAuthService",
         "to": "OAuthService",
-        "text": "Phát hành Access Token và Refresh Token y như đăng nhập thường"
+        "text": "Cấp mã truy cập và mã duy trì đăng nhập như đăng nhập thường"
       },
       {
         "from": "OAuthService",
         "to": "PostgreSQL",
-        "text": "INSERT refresh_tokens (token_hash, family_id)"
+        "text": "Ghi mã duy trì đăng nhập đã mã hoá"
       },
       {
         "from": "OAuthService",
         "to": "AuthController",
-        "text": "AuthSessionDto",
+        "text": "Phiên đăng nhập",
         "kind": "return"
       },
       {
         "from": "AuthController",
         "to": "Sinh viên",
-        "text": "200 OK + Set-Cookie refresh_token (HttpOnly)",
+        "text": "Báo thành công, gửi kèm mã duy trì đăng nhập",
         "kind": "return"
       },
       {

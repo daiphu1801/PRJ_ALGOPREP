@@ -48,7 +48,7 @@ export function useChangePassword(hasPassword: boolean, onChanged: () => void) {
         return { ok: false, errorKey: outcome.message };
       }
       reset();
-      // D22: refresh "changed at" / hasPassword on the profile screen.
+      // D22: refresh "changed at" / hasPassword on the Settings Security card.
       void queryClient.invalidateQueries({ queryKey: ["user", "my-profile"] });
       onChanged();
       return { ok: true };

@@ -1,5 +1,5 @@
 {
-  "_": "Luong nop bai va xem ket qua tung testcase theo thoi gian thuc cua actor A1. Nguon: US-A1-04 (01-rd/req/user_stories/a1_student.md), 01-rd/req/judge-orchestration.md (F4-01, F4-03, F4-08, F4-13), 02-bd/architecture/judge-orchestration.md muc 4 (state machine) va muc 6 (Outbox), 02-bd/architecture/harness.md muc 5 (plugin sinh ma, anh xa loi bien dich).",
+  "_": "Luong nop bai va xem ket qua tung testcase theo thoi gian thuc cua actor A1. Nguon: US-A1-04 (01-rd/req/user_stories/a1_student.md), 01-rd/req/judge-orchestration.md (F4-01, F4-03, F4-08, F4-13), 02-bd/architecture/judge-orchestration.md muc 4 (state machine) va muc 6 (Outbox), 02-bd/architecture/harness.md muc 5 (plugin sinh ma, anh xa loi bien dich). | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
   "_khong_fail_fast": "F4-04 (dung som khi gap testcase sai) da het hieu luc theo DEC-2026-0831-partial-score-testcase-ratio -- vong lap chay het N testcase de co du lieu tinh ty le F4-13.",
   "_tran": "8 participant -> be ngang 1310px, vuot canh dai A4. Chap nhan co y: day la luong xuyen 4 tang cong 2 ranh gioi tien trinh that (RabbitMQ, go-judge), gom bot bat ky cot nao cung xoa mat mot ranh gioi kien truc. In A3 hoac xuat SVG.",
   "kind": "sequence",
@@ -62,7 +62,7 @@
       {
         "from": "Sinh viên",
         "to": "SubmissionController",
-        "text": "POST /submissions { problemId, language, sourceCode }"
+        "text": "Gửi bài nộp: đề, ngôn ngữ, mã nguồn"
       },
       {
         "from": "SubmissionController",
@@ -72,41 +72,41 @@
       {
         "from": "SubmissionController",
         "to": "SubmissionService",
-        "text": "submit(command, userId)"
+        "text": "Xử lý nộp bài của người học"
       },
       {
         "from": "SubmissionService",
         "to": "PostgreSQL",
-        "text": "INSERT submissions, status = PENDING"
+        "text": "Lưu bài nộp, trạng thái Đang chờ"
       },
       {
         "from": "PostgreSQL",
         "to": "SubmissionService",
-        "text": "submissionId",
+        "text": "Mã bài nộp",
         "kind": "return"
       },
       {
         "from": "SubmissionService",
         "to": "RabbitMQ",
-        "text": "Đẩy job chấm vào hàng đợi",
+        "text": "Đưa bài vào hàng đợi chấm",
         "kind": "async"
       },
       {
         "from": "SubmissionService",
         "to": "SubmissionController",
-        "text": "submissionId",
+        "text": "Mã bài nộp",
         "kind": "return"
       },
       {
         "from": "SubmissionController",
         "to": "Sinh viên",
-        "text": "202 Accepted - không chờ chấm xong",
+        "text": "Báo đã nhận bài, không chờ chấm xong",
         "kind": "return"
       },
       {
         "from": "Sinh viên",
         "to": "Sinh viên",
-        "text": "Mở kênh WebSocket /topic/submissions/{id}"
+        "text": "Mở kênh nhận kết quả chấm trực tiếp"
       }
     ]
   },

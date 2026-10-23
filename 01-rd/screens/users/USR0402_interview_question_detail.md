@@ -115,7 +115,7 @@ từ đúng phần dữ liệu đã có trong khối "xem nhanh", **không có U
 
 | # | Câu hỏi | Vì sao chưa trả lời được | Đề xuất | Chủ sở hữu |
 | :-: | :--- | :--- | :--- | :--- |
-| Q1 | Toàn bộ Chế độ luyện (F6-07/F6-08) và khung trả lời chuẩn STAR (F6-05) chưa có bản dựng nào để đối chiếu — mức độ chi tiết UI phải suy luận hoàn toàn từ `interview-bank.md`. | Không có prototype; đây là phần duy nhất của Phase 3-4 phải suy luận UI từ đầu thay vì đối chiếu bản dựng có sẵn. | **[Đợi nextjs]** — dựng prototype hoặc UI thật cho Chế độ luyện trước khi viết BD cho phần này; RD ở đây chỉ đủ để mô tả hành vi nghiệp vụ, không mô tả bố cục cụ thể. | Đợi nextjs |
+| Q1 | **[Đã có bản dựng Chế độ luyện, cập nhật 2026-10-19; BD `USR0402` là nguồn chi tiết UI]** Toàn bộ Chế độ luyện (F6-07/F6-08) và khung trả lời chuẩn STAR (F6-05) chưa có bản dựng nào để đối chiếu — mức độ chi tiết UI phải suy luận hoàn toàn từ `interview-bank.md`. | Không có prototype; đây là phần duy nhất của Phase 3-4 phải suy luận UI từ đầu thay vì đối chiếu bản dựng có sẵn. | **[Đợi nextjs]** — dựng prototype hoặc UI thật cho Chế độ luyện trước khi viết BD cho phần này; RD ở đây chỉ đủ để mô tả hành vi nghiệp vụ, không mô tả bố cục cụ thể. | Đợi nextjs |
 | Q2 | ~~Sinh viên có sửa được câu trả lời đã nộp ở Chế độ luyện sau khi đã nhận phản hồi AI không?~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** không sửa được — mỗi lần nộp là một lượt độc lập. | — | Đã ghi vào `01-rd/req/interview-bank.md` (amendment F6-07) và đóng cùng lúc ở `01-rd/req/user_stories/open_questions.md` Q1. Xem `DEC-2026-0831-outside-screens-closures`. | Đã đóng |
 
 ---

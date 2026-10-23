@@ -58,7 +58,7 @@ gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang c�
   - **F1-12 — Danh sách chức năng quản trị/nội dung nằm trong phạm vi ma trận** (đề xuất khởi điểm,
     `[SoT: Suy luận]` — chốt số lượng chính xác khi viết BD):
     `PROBLEM_AUTHORING` (F2-01→04) · `TESTCASE_MANAGEMENT` (F2-05→09, F2-14) · `CLASS_MANAGEMENT` (F1-23→28, F2-12; ~~F5-27~~ đã bỏ 2026-10-13, `DEC-2026-1013-remove-instructor-manual-grading`) ·
-    `USER_MANAGEMENT` (F1-13) · `JUDGE_QUEUE_MONITOR` (F4-10) ·
+    `USER_MANAGEMENT` (F1-13) · `JUDGE_QUEUE_MONITOR` (F4-10) · `LANGUAGE_CONFIG` (F4-11; thêm 2026-10-23, `DEC-2026-1023-db-actor-review-fixes`, vì `ADM0501` cần một function riêng để kiểm quyền) ·
     `AI_CONFIG` (F5-23) ·
     `AI_TOKEN_BUDGET` (F5-21, F5-25) · `SYSTEM_AUDIT_LOG` (F1-14) · `INTERVIEW_BANK_MANAGEMENT` (F6-12, F6-13) ·
     `PERMISSION_MATRIX` (chính F1-10 — tự tham chiếu, mặc định chỉ `ADMIN` có toàn quyền).
@@ -72,7 +72,7 @@ gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang c�
     **Bổ sung "Thêm tài khoản" (đã chỉnh 2026-10-01, `DEC-2026-1001-admin-configurable-settings`):** `ADMIN` tạo tay
     tài khoản `INSTRUCTOR` hoặc `STUDENT` từ màn quản lý người dùng; hệ thống sinh mật khẩu tạm và gửi qua email cho
     chủ tài khoản; thao tác được ghi Nhật ký hệ thống (F1-14). Không thêm mã `Fx-nn` mới; không tạo được tài khoản
-    `ADMIN` bằng đường này `[SoT: Suy luận]` — quyết định chỉ nêu INSTRUCTOR/STUDENT.
+    `ADMIN` bằng đường này `[SoT: Suy luận]` — quyết định chỉ nêu INSTRUCTOR/STUDENT. **Bổ sung 2026-10-23 (`DEC-2026-1023-db-actor-review-fixes`):** tài khoản `ADMIN` đầu tiên không tạo bằng giao diện mà được seed lúc khởi động ứng dụng khi hệ thống chưa có `ADMIN` nào (`02-bd/database/identity.md` mục 4); buộc đổi mật khẩu ở lần đăng nhập đầu.
     - **F1-32 — Khi `ADMIN` khoá tài khoản, hệ thống ghi lý do và tuỳ chọn gửi email thông báo cho người dùng.**
     Bổ sung 2026-10-05 (owner chỉ đạo trực tiếp khi review prototype `ADM0201`). **Vì sao là mã mới chứ không
     nhét vào F1-13:** F1-13 chỉ nêu ba thao tác quản trị tài khoản, không có bất kỳ yêu cầu thông báo nào; F1-14
@@ -95,6 +95,27 @@ gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang c�
     cả một nhóm giảng viên xuống cùng một vai trò là thao tác sai nghĩa, không hoàn tác được. Khoá là hành động
     duy nhất thực sự **giống nhau với mọi dòng trong tập chọn** — đó chính là hình dạng ứng cứu sự cố. Hai hành
     động bị bỏ **không có `Fx-nn` mới** và không mất phạm vi: chúng thuộc F1-13, chỉ chuyển khỏi chế độ gộp.
+    **Bổ sung 2026-10-22 (đồng bộ DB, phase 5, `DEC-2026-1022-identity-schema-sync` mục 1):** tài khoản bị `ADMIN` khoá khác
+    tài khoản tự xoá (F1-16) ở chỗ **không bao giờ bị ẩn danh hoá**: hệ thống ghi nguồn khoá (`ADMIN`) để job ẩn danh hoá bỏ
+    qua; chỉ có mở khoá của `ADMIN` khôi phục được [SoT: `02-bd/database/identity.md:27`].
+    - **F1-33 — Xác thực email bằng mã 6 chữ số cho tài khoản mới.** `[SoT: Suy luận — mã đề xuất]`: số F1-33 là số tiếp theo
+      còn trống sau F1-32, do phase 5 đề xuất; nội dung dựa trên `DEC-2026-1022-identity-schema-sync` mục 3 (chủ dự án chốt giữ
+      trạng thái `PENDING_VERIFICATION` và thêm luồng mã xác thực email tái dùng cơ chế F1-17), chờ chủ dự án xác nhận mã. Nội dung:
+      1. Tài khoản **tự đăng ký** (F1-01) ở trạng thái "chờ xác thực"; hệ thống gửi một mã 6 chữ số tới email của tài khoản.
+         **Sửa 2026-10-22 (đồng bộ DB vòng 2, DEC-2026-1022-db-sync-round2 mục 1):** ~~tự đăng ký hoặc `ADMIN` tạo ở F1-13~~ — tài khoản
+         `ADMIN` tạo **không** nhận mã này: nó cũng ở "chờ xác thực" nhưng chuyển sang hoạt động ở lần đăng nhập thành công đầu tiên
+         bằng mật khẩu tạm (người nhận đã chứng minh truy cập được email), rồi áp dụng F1-34.
+      2. Nhập đúng mã trong thời hạn (đề xuất 10 phút, cùng F1-17) thì tài khoản chuyển sang hoạt động; mã dùng một lần.
+      3. Giới hạn số lần nhập sai (đề xuất 5 lần) và tần suất gửi lại (đề xuất 60 giây), cùng giá trị F1-17
+         `[SoT: Suy luận]`.
+      4. Câu thông báo sau khi bấm gửi lại luôn là câu chung, không tiết lộ email có tồn tại hay không (cùng nguyên tắc F1-17).
+      Tài khoản tự đăng ký còn chờ xác thực có được đăng nhập hay không: vẫn chưa chốt (xem câu hỏi mở ở báo cáo phase 5).
+    - **F1-34 — Tài khoản do `ADMIN` tạo bị buộc đổi mật khẩu ở lần đăng nhập đầu.** `[SoT: Suy luận — mã đề xuất]`: F1-13 chỉ nêu
+      "sinh mật khẩu tạm và gửi qua email", không nêu việc bắt đổi; việc bắt đổi đã có trong BD (`users.must_change_password`,
+      `02-bd/database/identity.md:26`, `02-bd/screens/admin/ADM0201_user_management.md:634`) và trong
+      `DEC-2026-1022-identity-schema-sync` mục 2. Nội dung: sau lần đăng nhập đầu bằng mật khẩu tạm, giao diện chuyển người dùng tới màn đổi mật khẩu; sau lần đổi
+      đầu tiên hệ thống bỏ yêu cầu này. Tài khoản tự đăng ký và OAuth không bị áp dụng. **Sửa 2026-10-22 (đồng bộ DB vòng 2,
+      DEC-2026-1022-db-sync-round2 mục 4):** việc buộc đổi là **mềm** — chỉ giao diện chuyển hướng, máy chủ không chặn các endpoint khác.
   - **F1-14 — Mọi thay đổi ma trận phân quyền và mọi thao tác quản trị đều ghi vào Nhật ký hệ thống**, kèm
     ai đổi, đổi gì, đổi lúc nào — không có ngoại lệ cho chính thao tác đổi quyền. **Mở rộng (đã chỉnh 2026-10-01, `DEC-2026-1001-admin-configurable-settings`):** F1-14 còn ghi một số sự kiện xác thực do người dùng tự kích hoạt, trước hết `PASSWORD_RESET_REQUESTED` (ghi khi phát hành mã OTP đặt lại mật khẩu; **không bao giờ lưu mã OTP**; không ghi khi email không khớp tài khoản nào) — để thẻ tổng quan quản trị đếm được số mã đã phát hành. Phần "chỉ ghi hành động quản trị" ngay dưới đây áp dụng cho nhóm sự kiện hạ tầng, không áp dụng cho các sự kiện xác thực này. **Chốt phạm vi 2026-08-24
     (`06-plan/PROTOTYPE_DEBT.md` mục 2.5):** F1-14 chỉ ghi **hành động quản trị của người** (đổi ma trận
@@ -222,8 +243,11 @@ gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang c�
     - **"Hoạt động gần đây"** là một **read model riêng của `identity`** tổng hợp sự kiện từ `problem-bank`/
       `judge-orchestration`/`ai-review` — không tái dùng bảng Nhật ký hệ thống (F1-14, vốn dành cho audit
       hành động quản trị của A3, khác mục đích và khác actor xem). **Từ 2026-10-14 chỉ giữ sự kiện tức thời**
-      (submit, publish, streak, join); ~~loại sự kiện suy ra từ quét định kỳ ("vắng 9 ngày", "cần hỗ trợ") và cụm "kèm điểm AI"~~
-      **ĐÃ BỎ 2026-10-14 (DEC-2026-1014-instructor-batch1-counting-rules)**. Giới hạn số lượng/thời gian giữ log để
+      (submit, publish, streak; ~~join~~); ~~loại sự kiện suy ra từ quét định kỳ ("vắng 9 ngày", "cần hỗ trợ") và cụm "kèm điểm AI"~~
+      **ĐÃ BỎ 2026-10-14 (DEC-2026-1014-instructor-batch1-counting-rules)**. **Sửa 2026-10-22 (đồng bộ DB, phase 5):** bỏ chữ "join" khỏi
+      danh sách: BD chốt tập `activity_type` có đúng năm loại (nộp bài Accepted, hoàn tất phân tích bài giải, kết thúc phỏng vấn thử,
+      giao bài cho lớp, đạt chuỗi ngày) và không có sự kiện tham gia lớp [SoT: `02-bd/database/identity.md:195, 302`]; nếu cần sự kiện
+      này phải mở lại quyết định. Giới hạn số lượng/thời gian giữ log để
       BD/DD quyết định.
     - ~~Widget "Tiến độ học viên" có liên kết "Xem tất cả" dẫn sang `class_progress`, nhất quán với hai widget
       còn lại ("Lớp của tôi" → `class_management`, "Bài tập của tôi" → `class_assignments`).~~
@@ -265,6 +289,11 @@ gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang c�
     một job định kỳ ẩn danh hoá thông tin định danh (email, tên hiển thị) của tài khoản — bài nộp, bài giải
     đã lưu, phiên phỏng vấn **không bị xoá**, chỉ gỡ liên kết tới danh tính cá nhân, để không phá vỡ thống
     kê tiến độ lớp của giảng viên khi một học viên xoá tài khoản giữa kỳ.
+    **Bổ sung 2026-10-22 (đồng bộ DB, phase 5, `DEC-2026-1022-identity-schema-sync` mục 1):** `DEACTIVATED` dùng chung cho hai
+    trường hợp nên hệ thống ghi **nguồn khoá**: `SELF` (người dùng tự xoá, đúng F1-16) và `ADMIN` (quản trị viên khoá, F1-13/F1-32).
+    Chỉ tài khoản `SELF` được ẩn danh hoá sau ân hạn; tài khoản bị `ADMIN` khoá **không bao giờ** bị ẩn danh hoá. Khi ẩn danh hoá,
+    ngoài email và tên hiển thị, hệ thống còn xoá số điện thoại, trường/công ty, vai trò hiện tại, vị trí mục tiêu và các liên kết
+    OAuth của tài khoản [SoT: `02-bd/database/identity.md:32-38`; ba trường tự khai là suy luận chờ chốt].
 - **Tự đặt lại mật khẩu (quên mật khẩu)** — bổ sung theo `01-rd/screens/shared/SHR0101_auth.md` mục 5 câu hỏi mở Q4, phát
   hiện khi đối chiếu `09-layoutBase/Đăng nhập & Đăng ký.dc.html` (liên kết "Quên mật khẩu?" có thật ở màn
   đăng nhập nhưng trước đó chưa có mã `Fx-nn` nào phủ luồng này — khác `F1-13` là ADMIN reset hộ người
@@ -293,8 +322,11 @@ gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang c�
   (đánh dấu **[Đợi nextjs]** ở phần thuần UI):
   - **F1-18 — Xem lịch sử nộp bài của chính mình**, lọc theo verdict (AC/WA/TLE/CE/RE...) và ngôn ngữ, tìm
     theo tên/mã bài; phân trang cuối bảng giống `problem_list` (F2-11) **[Đợi nextjs]** cho chi tiết UI.
-  - **F1-20 — Tuỳ chọn cá nhân hoá Workspace lưu theo tài khoản**: ngôn ngữ mặc định, cỡ chữ editor, tự lưu
-    bản nháp, phím tắt Vim — áp dụng khi mở màn giải bài (F3/F4), không ảnh hưởng chấm bài.
+  - **F1-20 — Tuỳ chọn cá nhân hoá Workspace**: ngôn ngữ mặc định, cỡ chữ editor, tự lưu
+    bản nháp, phím tắt Vim — áp dụng khi mở màn giải bài (F3/F4), không ảnh hưởng chấm bài. **Sửa 2026-10-22 (đồng bộ DB, phase 5, ID-40):**
+    ~~lưu theo tài khoản~~ chỉ **ngôn ngữ mặc định** lưu theo tài khoản (`users.default_language`); các tuỳ chọn editor (cỡ chữ, phím
+    tắt Vim, tự lưu nháp) lưu ở `localStorage` của trình duyệt, không có bảng riêng, nên không đi theo tài khoản sang thiết bị khác
+    [SoT: `02-bd/database/identity.md:23, 196`].
   - **F1-21 — Thông báo email định kỳ**: nhắc luyện tập khi chuỗi ngày sắp mất, báo cáo tiến độ hằng tuần
     theo chủ đề — job định kỳ thuộc `identity`, tắt/mở được theo từng loại. Không thuộc luồng OTP của F1-17.
   - **F1-22 — Xuất dữ liệu cá nhân**: lượt nộp (CSV), hội thoại phỏng vấn (JSON) — chỉ xuất dữ liệu của

@@ -7,7 +7,7 @@
         <mxCell id="title" value="Sơ đồ tuần tự chi tiết - Đổi ma trận phân quyền (Quản trị viên) (1/2)" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
           <mxGeometry x="60" y="10" width="580" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="v1" value="Giai đoạn 1 - Nạp ma trận, Function và Action chỉ đọc (F1-10)" style="algoprep=phase;rounded=0;whiteSpace=wrap;html=1;fillColor=#EFEFEF;strokeColor=#999999;dashed=1;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#1A1A1A;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+        <mxCell id="v1" value="Giai đoạn 1 - Nạp ma trận; chức năng và hành động chỉ đọc (F1-10)" style="algoprep=phase;rounded=0;whiteSpace=wrap;html=1;fillColor=#EFEFEF;strokeColor=#999999;dashed=1;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#1A1A1A;fontSize=13;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="40" y="142" width="600" height="26" as="geometry" />
         </mxCell>
         <mxCell id="v2" value="Quản trị viên" style="shape=umlLifeline;participant=umlActor;perimeter=lifelinePerimeter;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;verticalAlign=top;spacingTop=40;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
@@ -39,7 +39,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e10" value="2. GET /identity/rbac/matrix" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.4151;exitDx=0;exitDy=0;entryX=0.5;entryY=0.4151;entryDx=0;entryDy=0;" edge="1" parent="1" source="v2" target="v3">
+        <mxCell id="e10" value="2. Gửi yêu cầu xem ma trận" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.4151;exitDx=0;exitDy=0;entryX=0.5;entryY=0.4151;entryDx=0;entryDy=0;" edge="1" parent="1" source="v2" target="v3">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e11" value="2.1. Yêu cầu ma trận phân quyền" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.4906;exitDx=0;exitDy=0;entryX=0.5;entryY=0.4906;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v4">
@@ -54,10 +54,10 @@
         <mxCell id="e14" value="Ma trận; chức năng và hành động chỉ đọc" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.7170;exitDx=0;exitDy=0;entryX=0.5;entryY=0.7170;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v3">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e15" value="200 OK" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.7925;exitDx=0;exitDy=0;entryX=0.5;entryY=0.7925;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v2">
+        <mxCell id="e15" value="Báo thành công" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.7925;exitDx=0;exitDy=0;entryX=0.5;entryY=0.7925;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v2">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e16" value="3. Lưới Role x Function x Action kèm tab chọn vai trò" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8679;exitDx=0;exitDy=0;entryX=0.5;entryY=0.9151;entryDx=0;entryDy=0;" edge="1" parent="1" source="v2" target="v2">
+        <mxCell id="e16" value="3. Lưới vai trò x chức năng x hành động kèm tab chọn vai trò" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8679;exitDx=0;exitDy=0;entryX=0.5;entryY=0.9151;entryDx=0;entryDy=0;" edge="1" parent="1" source="v2" target="v2">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
             <mxPoint x="180" y="428" />

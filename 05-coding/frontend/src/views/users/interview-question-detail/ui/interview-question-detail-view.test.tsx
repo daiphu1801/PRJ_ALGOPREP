@@ -99,4 +99,21 @@ describe("InterviewQuestionDetailView", () => {
     expect(screen.getByText(/study.nextReviewHint/)).toBeInTheDocument();
     act(() => toast.clear());
   });
+
+  it("toggles the bookmark label, shows History in both modes and Keywords only in study", () => {
+    render(<InterviewQuestionDetailView questionId="IQ-014" />);
+
+    const bookmark = screen.getByRole("button", { name: "header.bookmark" });
+    expect(bookmark).toHaveAttribute("aria-pressed", "false");
+    fireEvent.click(bookmark);
+    expect(
+      screen.getByRole("button", { name: "header.bookmarked" }),
+    ).toHaveAttribute("aria-pressed", "true");
+
+    expect(screen.getByText("attempts.title")).toBeInTheDocument();
+    expect(screen.getByText("study.keywordsLabel")).toBeInTheDocument();
+    fireEvent.click(screen.getByText("mode.practice"));
+    expect(screen.getByText("attempts.title")).toBeInTheDocument();
+    expect(screen.queryByText("study.keywordsLabel")).not.toBeInTheDocument();
+  });
 });

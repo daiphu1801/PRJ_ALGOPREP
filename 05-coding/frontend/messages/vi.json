@@ -174,7 +174,8 @@
     "inProgress": {
       "title": "Bài đang làm dở",
       "empty": "Chưa có bài đang làm dở",
-      "lastVerdict": "{verdict} {passed}/{total}"
+      "lastVerdict": "{verdict} {passed}/{total}",
+      "viewAll": "Xem tất cả"
     },
     "assignment": {
       "title": "Bài tập lớp",
@@ -193,14 +194,14 @@
     },
     "verdict": {
       "accepted": "Accepted",
-
       "wrongAnswer": "Sai kết quả",
-
       "runtimeError": "Lỗi runtime",
-
       "timeLimitExceeded": "Quá thời gian",
-
-      "running": "Đang chấm"
+      "running": "Đang chấm",
+      "pending": "Đang chờ",
+      "compiling": "Đang biên dịch",
+      "compileError": "Lỗi biên dịch",
+      "systemError": "Lỗi hệ thống"
     }
   },
   "savedProblems": {
@@ -229,23 +230,13 @@
       "btnUnsave": "Bỏ lưu",
       "emptyFiltered": "Không có bài nào khớp bộ lọc",
       "noteEditLabel": "Ghi chú riêng tư",
-
       "noteEditHint": "Bấm để sửa ghi chú",
-
       "noteCounter": "{count}/{max}",
-
       "noteSave": "Lưu",
-
       "noteCancel": "Hủy",
       "withdrawn": "Đã rút xuống",
-      "solveLabel": {
-        "solved": "Xem lại",
-
-        "attempted": "Làm tiếp",
-
-        "todo": "Giải"
-      },
-      "withdrawnHint": "Bài này đã bị rút khỏi ngân hàng bài toán, không thể mở để giải."
+      "withdrawnHint": "Bài này đã bị rút khỏi ngân hàng bài toán, không thể mở để giải.",
+      "btnOpen": "Mở bài"
     },
     "emptyAll": "Bạn chưa lưu bài toán nào. Mở một bài toán và bấm Lưu bài ở trang chi tiết để thêm vào đây.",
     "footerPrivacyNote": "Bài đã lưu và ghi chú chỉ hiển thị với bạn.",
@@ -256,16 +247,12 @@
     },
     "undo": {
       "message": "Đã bỏ lưu {title}.",
-
       "button": "Hoàn tác"
     },
     "footer": {
       "summary": "Hiển thị {from} - {to} trong số {total} bài đã lưu",
-
       "previous": "‹",
-
       "next": "›",
-
       "pageLabel": "Trang {page}"
     }
   },
@@ -301,13 +288,9 @@
       "btnSave": "Lưu bài",
       "btnUnsave": "Bỏ lưu",
       "input": "Input:",
-
       "output": "Output:",
-
       "acRate": "AC rate:",
-
       "metrics": "{ms} ms · {mb} MB",
-
       "linkFullReport": "Mở báo cáo đầy đủ"
     },
     "toolbar": {
@@ -318,7 +301,6 @@
       "draftSaved": "Đã lưu trên trình duyệt này",
       "uploadHint": "Kéo thả hoặc chọn file mã nguồn ({ext}, tối đa 64 KB)",
       "btnViewFile": "Xem nội dung",
-
       "limits": "Time {time}s · Memory {memory}MB"
     },
     "mode": {
@@ -347,31 +329,34 @@
       "linkReview": "Phân tích bài giải",
       "linkInterview": "Phỏng vấn giả lập",
       "running": "Đang chạy...",
-
       "sampleSummary": "{passed}/{total} testcase mẫu đạt",
-
-      "caseTabsLabel": "Chọn testcase mẫu",
-
-      "caseTab": "Case {n}",
-
-      "caseTabWithVerdict": "Case {n} · {verdict}",
-
       "fieldInput": "Dữ liệu vào",
-
       "fieldActual": "Kết quả thực tế",
-
       "fieldExpected": "Kết quả mong đợi",
-
       "metrics": "Thời gian {ms} ms · Bộ nhớ {mb} MB",
-
-      "caseDot": "Testcase {n}: {verdict}"
+      "dialog": {
+        "titleRun": "Kết quả chạy thử",
+        "titleSubmit": "Kết quả nộp bài",
+        "close": "Đóng",
+        "listLabel": "Danh sách testcase",
+        "caseRow": "Case {n}",
+        "testcaseRow": "Testcase {n}",
+        "hiddenNote": "Testcase ẩn chỉ hiện Đạt hoặc Không đạt, không hiện dữ liệu."
+      },
+      "summaryPassed": "{n} đạt",
+      "summaryFailed": "{n} không đạt",
+      "btnDetail": "Xem chi tiết"
     },
     "verdict": {
       "accepted": "Accepted",
       "wrongAnswer": "Sai kết quả",
       "runtimeError": "Lỗi runtime",
       "timeLimitExceeded": "Quá thời gian",
-      "running": "Đang chấm"
+      "running": "Đang chấm",
+      "pending": "Đang chờ",
+      "compiling": "Đang biên dịch",
+      "compileError": "Lỗi biên dịch",
+      "systemError": "Lỗi hệ thống"
     },
     "toast": {
       "runDone": "Đã chạy xong {count} testcase mẫu.",
@@ -381,15 +366,10 @@
       "unsaved": "Đã bỏ lưu bài.",
       "codeTooLarge": "Mã nguồn vượt 64 KB, hãy rút gọn trước khi chạy hoặc nộp.",
       "runFailed": "Chạy thử chưa đạt: {passed}/{total} testcase mẫu đúng.",
-
       "fileExtension": "File phải có phần mở rộng {ext} đúng với ngôn ngữ đang chọn.",
-
       "fileTooLarge": "File vượt quá 64 KB.",
-
       "noFile": "Hãy chọn file mã nguồn trước khi chạy thử hoặc nộp bài.",
-
       "codeEmpty": "Hãy viết mã trước khi chạy thử hoặc nộp bài.",
-
       "openSaved": "Xem bài đã lưu"
     }
   },
@@ -989,6 +969,7 @@
       "CLASS_MANAGEMENT": "Quản lý lớp & giao bài tập",
       "USER_MANAGEMENT": "Quản lý tài khoản người dùng",
       "JUDGE_QUEUE_MONITOR": "Giám sát hàng đợi & cụm judge",
+      "LANGUAGE_CONFIG": "Cấu hình ngôn ngữ & sandbox",
       "AI_CONFIG": "Cấu hình prompt AI",
       "AI_TOKEN_BUDGET": "Ngân sách token AI",
       "SYSTEM_AUDIT_LOG": "Nhật ký hệ thống",
@@ -1989,7 +1970,8 @@
       "outlineLabel": "Ý cần nói",
       "recallLabel": "Mức độ nắm",
       "viewDetail": "Xem chi tiết",
-      "nextReview": "Sẽ nhắc ôn lại sau {n} ngày"
+      "nextReview": "Sẽ nhắc ôn lại sau {n} ngày",
+      "keywordsLabel": "Từ khoá cốt lõi"
     },
     "drill": {
       "counter": "Thẻ {current} / {total}",
@@ -2006,7 +1988,10 @@
       "searchResult": "Tìm thấy {count} câu hỏi.",
       "searchEmpty": "Không tìm thấy câu hỏi nào."
     },
-    "bookmarkedOnly": "Chỉ câu đã đánh dấu"
+    "bookmarkedOnly": "Chỉ câu đã đánh dấu",
+    "title": "Ngân hàng câu hỏi",
+    "subtitle": "Ôn lý thuyết phỏng vấn theo chủ đề, tự chấm mức nhớ và luyện nhanh bằng thẻ.",
+    "shownCount": "Hiển thị {shown} / {total} câu"
   },
   "interviewQuestionDetail": {
     "notFound": "Không tìm thấy câu hỏi này, hoặc câu hỏi đã ngừng dùng.",
@@ -2054,7 +2039,6 @@
         "nextSteps": "Xem lại Chế độ học để đối chiếu ý cần nói và khung trả lời chuẩn trước khi thử lại."
       },
       "criteriaLabel": "Mức đạt theo tiêu chí",
-
       "criterionRow": "{achievement}% · trọng số {weight}%"
     },
     "attempts": {
@@ -2093,7 +2077,6 @@
     "approachSuboptimal": "chưa tối ưu",
     "eduNoticeTitle": "Phản hồi để học, không phải điểm chính thức",
     "eduNoticeBody": "Báo cáo do AI sinh một lượt từ code đã nộp. Là phản hồi để học, không phải điểm chính thức.",
-    "summaryTitle": "Nhận xét tổng quan",
     "complexityTitle": "Độ phức tạp",
     "complexityYours": "Bài của bạn",
     "complexityBest": "Tốt nhất đã biết",
@@ -2103,6 +2086,8 @@
     "strengthsTitle": "Làm tốt",
     "improvementsTitle": "Nên sửa",
     "edgeCasesTitle": "Ca biên tiềm ẩn",
+    "followUpTitle": "Chủ đề nên học tiếp",
+    "followUpCta": "Mở ngân hàng câu hỏi",
     "diffTitle": "Bản đề xuất",
     "sourceCodeTitle": "Code đã nộp",
     "applyCta": "Áp dụng vào Workspace",
@@ -2121,22 +2106,15 @@
       "transientError": "Chưa tạo được phân tích bài giải. Vui lòng thử lại.",
       "applied": "Đã ghi đè mã nháp bằng bản đề xuất. Đang mở Workspace.",
       "unavailable": "Không mở được phân tích bài giải của lượt nộp này.",
-
       "applyFailed": "Không lưu được mã vào trình duyệt. Hãy kiểm tra quyền lưu trữ của trình duyệt."
     },
     "statCreatedAt": "Thời điểm phân tích",
-
     "errorUnavailableTitle": "Chưa mở được phân tích bài giải",
-
     "errorUnavailableBody": "Lượt nộp này không tồn tại, không thuộc về bạn hoặc chưa được chấp nhận nên chưa có phân tích bài giải.",
-
     "backToSubmissions": "Về Bài đã nộp",
-
     "language": {
       "java": "Java 21",
-
       "cpp": "C++ 17",
-
       "python": "Python 3"
     }
   },
@@ -2189,8 +2167,33 @@
       "finished": "Phiên phỏng vấn đã kết thúc. Kết quả đánh giá đã sẵn sàng."
     },
     "customTopicsLabel": "Chủ đề phỏng vấn",
-
-    "chatLogLabel": "Cuộc trò chuyện phỏng vấn"
+    "chatLogLabel": "Cuộc trò chuyện phỏng vấn",
+    "title": "Phỏng vấn giả lập",
+    "subtitle": "Luyện trả lời với người phỏng vấn AI qua ba giai đoạn, kết thúc bằng bảng điểm theo tiêu chí.",
+    "howTitle": "Phiên diễn ra thế nào",
+    "how": {
+      "explain": "Trình bày hướng giải và lý do chọn cấu trúc dữ liệu.",
+      "challenge": "Người phỏng vấn đặt trường hợp biên, bạn bảo vệ lời giải.",
+      "scaleUp": "Mở rộng bài toán: dữ liệu lớn, tải cao, điểm nghẽn."
+    },
+    "levelDesc": {
+      "intern": "Câu hỏi nền tảng, gợi mở nhiều, ít phản biện.",
+      "junior": "Hỏi sâu vừa phải, có vài tình huống biên.",
+      "middle": "Phản biện chặt, yêu cầu phân tích độ phức tạp.",
+      "senior": "Đào sâu thiết kế, đánh đổi và khả năng mở rộng."
+    },
+    "aiName": "Người phỏng vấn AI",
+    "youName": "Bạn",
+    "sessionTitle": "Phiên hiện tại",
+    "sourceLabel": "Nguồn",
+    "turnsLeftLabel": "Lượt còn lại",
+    "hintOn": "Bật",
+    "hintOff": "Tắt",
+    "tipsTitle": "Mẹo trả lời",
+    "tip1": "Nêu hướng giải trước, chi tiết cài đặt sau.",
+    "tip2": "Nói rõ độ phức tạp thời gian và bộ nhớ.",
+    "tip3": "Chủ động nhắc tới trường hợp biên trước khi bị hỏi.",
+    "sendShortcut": "Ctrl + Enter để gửi"
   },
   "classManagement": {
     "header": {
@@ -2439,7 +2442,6 @@
       "name": "Họ tên",
       "class": "Lớp",
       "status": "Trạng thái",
-
       "statusValue": {
         "insufficient_data": "Chưa đủ dữ liệu",
         "absent": "Vắng bài",
@@ -2616,14 +2618,11 @@
       "savedToast": "Đã lưu hồ sơ",
       "invalid": "Thông tin hồ sơ chưa hợp lệ",
       "saveFailed": "Không lưu được hồ sơ. Thử lại sau.",
-
       "emailRequestFailed": "Không gửi được yêu cầu đổi email. Thử lại sau."
     },
     "security": {
       "title": "Bảo mật",
       "passwordLabel": "Mật khẩu",
-      "changePassword": "Đổi",
-      "setPassword": "Đặt mật khẩu",
       "passwordChangedAt": "Đổi lần cuối {date}",
       "passwordNoDate": "Chưa từng đổi mật khẩu",
       "noPassword": "Chưa đặt mật khẩu — đang đăng nhập bằng {provider}",
@@ -2664,7 +2663,23 @@
       "confirmPassword": "Nhập lại mật khẩu mới",
       "ruleHint": "Tối thiểu 8 ký tự, có cả chữ và số.",
       "done": "Đã đổi mật khẩu. Các thiết bị khác cần đăng nhập lại.",
-      "invalid": "Thông tin mật khẩu chưa hợp lệ"
+      "invalid": "Thông tin mật khẩu chưa hợp lệ",
+      "show": "Hiện mật khẩu",
+      "hide": "Ẩn mật khẩu",
+      "strengthLabel": "Độ mạnh",
+      "strength": {
+        "weak": "Yếu",
+        "fair": "Trung bình",
+        "good": "Tốt",
+        "strong": "Mạnh"
+      },
+      "rule": {
+        "length": "Tối thiểu 8 ký tự",
+        "letter": "Có ít nhất một chữ cái",
+        "digit": "Có ít nhất một chữ số",
+        "match": "Hai mật khẩu khớp nhau"
+      },
+      "doneSet": "Đã đặt mật khẩu."
     },
     "errors": {
       "displayNameRequired": "Vui lòng nhập họ và tên",
@@ -2683,9 +2698,7 @@
       "otpDigitsOnly": "Mã xác nhận chỉ gồm chữ số",
       "otpInvalid": "Mã xác nhận không đúng hoặc đã hết hạn",
       "emailRequired": "Vui lòng nhập email",
-
       "emailTooLong": "Email tối đa 254 ký tự",
-
       "emailInvalid": "Email không hợp lệ"
     }
   },
@@ -2762,14 +2775,16 @@
     },
     "unsaved": {
       "title": "Còn thay đổi chưa lưu",
-
       "body": "Lưu rồi thoát, thoát mà không lưu (mất thay đổi), hoặc ở lại để sửa tiếp.",
-
       "saveAndLeave": "Lưu và thoát",
-
       "leave": "Thoát không lưu",
-
       "stay": "Ở lại"
+    },
+    "security": {
+      "title": "Bảo mật",
+      "passwordLabel": "Mật khẩu",
+      "changeBtn": "Đổi mật khẩu",
+      "setBtn": "Đặt mật khẩu"
     }
   },
   "myProgress": {
@@ -2905,18 +2920,16 @@
       "session": "Phiên ngày {date}",
       "empty": "Chưa có phiên phỏng vấn nào",
       "summary": "{count} phiên · trung bình {score} / 10",
-
       "summaryNoScore": "{count} phiên · chưa có phiên nào được chấm rubric",
-
       "weakest": "mục yếu nhất: {criterion}"
     },
     "reviews": {
       "title": "Solution Review",
       "empty": "Chưa có báo cáo phân tích nào",
       "verdict": {
-        "optimal": "Đã tối ưu",
-        "improvable": "Còn cải thiện được",
-        "suboptimal": "Chưa tối ưu"
+        "OPTIMAL": "Đã tối ưu",
+        "IMPROVABLE": "Còn cải thiện được",
+        "NOT_OPTIMAL": "Chưa tối ưu"
       }
     },
     "rangeLabel": "Chọn khoảng thời gian",
@@ -2930,6 +2943,36 @@
       "copyright": "© 2026 AlgoPrep — đồ án tốt nghiệp",
       "clusterStatus": "go-judge cluster hoạt động",
       "version": "v0.4.2"
+    }
+  },
+  "problemOverview": {
+    "btnSolve": "Giải bài toán",
+    "infoTitle": "Thông tin",
+    "hiddenTestcases": "Testcase ẩn",
+    "limitsCaption": "Giới hạn theo ngôn ngữ",
+    "colLanguage": "Ngôn ngữ",
+    "colTime": "Thời gian",
+    "colMemory": "Bộ nhớ",
+    "recentTitle": "Bài nộp gần đây",
+    "linkAllSubmissions": "Xem tất cả bài nộp",
+    "btnBack": "Quay về danh sách",
+    "btnCopy": "Copy",
+    "copied": "Đã sao chép.",
+    "copyFailed": "Không sao chép được, hãy chọn và copy thủ công.",
+    "exampleInput": "Input {no}",
+    "exampleOutput": "Output {no}",
+    "topicsTitle": "Dạng bài",
+    "languagesTitle": "Ngôn ngữ cho phép",
+    "btnUndo": "Hoàn tác"
+  },
+  "workspaceHome": {
+    "title": "Workspace",
+    "subtitle": "Tiếp tục bài đang làm dở hoặc chọn một bài mới để bắt đầu viết mã.",
+    "linkProblems": "Chọn bài trong danh sách",
+    "resumeTitle": "Bài đang làm dở",
+    "empty": "Chưa có bài đang làm dở. Hãy chọn một bài trong danh sách.",
+    "toast": {
+      "randomEmpty": "Bạn đã giải hết mọi bài hiện có."
     }
   }
 }

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { NextIntlClientProvider } from "@/shared/i18n";
 import messages from "../../../../../messages/vi.json";
 import { ProblemDetailView } from "./problem-detail-view";
@@ -75,15 +75,19 @@ describe("ProblemDetailView", () => {
     ).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /Run Code/ }));
 
-    // First run: case 1 passes, the last sample comes back wrong.
-    expect(await screen.findByText("Kết quả thực tế")).toBeInTheDocument();
-    expect(screen.getByText("Kết quả mong đợi")).toBeInTheDocument();
-    expect(screen.getByText(/Thời gian 3 ms · Bộ nhớ 36 MB/)).toBeInTheDocument();
+    // The sub-screen opens on the first failing sample (case 3) and lists every sample.
+    const dialog = within(await screen.findByRole("dialog"));
+    expect(await dialog.findByText("Kết quả thực tế")).toBeInTheDocument();
+    expect(dialog.getByText("Kết quả mong đợi")).toBeInTheDocument();
+    expect(dialog.getByText("[]")).toBeInTheDocument();
+    expect(dialog.getByText(/Thời gian \d+ ms · Bộ nhớ \d+ MB/)).toBeInTheDocument();
+    expect(dialog.getByText("2/3 testcase mẫu đạt")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: /Case 3/ }));
-    expect(screen.getByText("[]")).toBeInTheDocument();
-    // The statement example also prints [0,1]; the console block is the extra occurrence.
-    expect(screen.getAllByText("[0,1]").length).toBeGreaterThan(1);
+    fireEvent.click(dialog.getByRole("button", { name: /Case 1/ }));
+    expect(dialog.getByText(/Thời gian 3 ms · Bộ nhớ 36 MB/)).toBeInTheDocument();
+
+    fireEvent.click(dialog.getByRole("button", { name: "Đóng" }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(screen.getByText("2/3 testcase mẫu đạt")).toBeInTheDocument();
   });
 

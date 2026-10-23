@@ -372,6 +372,56 @@ const PROBLEM_DETAILS: Record<string, ProblemDetail> = {
       ],
     },
   },
+  "121": {
+    id: "121",
+    code: "#121",
+    title: "Best Time to Buy and Sell Stock",
+    difficulty: "EASY",
+    topics: ["Array"],
+    submissionModel: "both",
+    mockAlwaysPass: true,
+    statementMd:
+      "Cho mảng `prices` với `prices[i]` là giá cổ phiếu ở ngày thứ `i`. Chọn một ngày để mua và một ngày sau đó để bán sao cho lợi nhuận lớn nhất; trả về lợi nhuận, hoặc `0` nếu không có lãi.\n\n## Ràng buộc\n\n- `1 <= prices.length <= 10^5`\n- `0 <= prices[i] <= 10^4`",
+    examples: [
+      {
+        input: "prices = [7,1,5,3,6,4]",
+        output: "5",
+        explanation: "Mua ngày 2 (giá 1), bán ngày 5 (giá 6): lãi 5.",
+      },
+      { input: "prices = [7,6,4,3,1]", output: "0" },
+    ],
+    limitsByLanguage: limits(1000, 256),
+    acRate: 68,
+    saved: false,
+    hiddenTestcaseCount: 20,
+    starterCode: {
+      "java:stdio": STARTER.stdio,
+      "java:function":
+        "class Solution {\n    public int maxProfit(int[] prices) {\n        return 0;\n    }\n}\n",
+      "cpp:stdio":
+        "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    return 0;\n}\n",
+      "cpp:function":
+        "class Solution {\npublic:\n    int maxProfit(vector<int>& prices) {\n        return 0;\n    }\n};\n",
+      "python:stdio":
+        'def main():\n    pass\n\nif __name__ == "__main__":\n    main()\n',
+      "python:function":
+        "class Solution:\n    def maxProfit(self, prices: list[int]) -> int:\n        return 0\n",
+    } as Record<StarterCodeKey, string>,
+    sampleTestcases: [
+      { input: "[7,1,5,3,6,4]", expectedOutput: "5" },
+      { input: "[7,6,4,3,1]", expectedOutput: "0" },
+      { input: "[1,2]", expectedOutput: "1" },
+      { input: "[2,1]", expectedOutput: "0" },
+      { input: "[1]", expectedOutput: "0" },
+      { input: "[2,4,1]", expectedOutput: "2" },
+      { input: "[3,2,6,5,0,3]", expectedOutput: "4" },
+      { input: "[1,2,3,4,5]", expectedOutput: "4" },
+      { input: "[5,5,5,5]", expectedOutput: "0" },
+      { input: "[2,1,2,1,0,1,2]", expectedOutput: "2" },
+    ],
+    mySubmissions: [],
+    solutionReview: null,
+  },
   "139": {
     id: "139",
     code: "#139",
@@ -424,7 +474,30 @@ export function fetchProblemDetail(
   problemId: string,
 ): ProblemDetail | undefined {
   const found = PROBLEM_DETAILS[problemId];
-  return found ? structuredClone(found) : undefined;
+  if (found) return structuredClone(found);
+  // ponytail: only two problems have a hand-written statement. Every other catalogue row gets the
+  // Two Sum scaffold (starter code, samples) under its own title, so the list never dead-ends on
+  // "not found". Real statements come from the problem-bank API.
+  const item = PROBLEMS.find((problem) => problem.id === problemId);
+  if (!item) return undefined;
+  return {
+    ...structuredClone(PROBLEM_DETAILS["1"]!),
+    id: item.id,
+    code: item.code,
+    title: item.title,
+    difficulty: item.difficulty,
+    topics: item.topics,
+    submissionModel: item.submissionModel,
+    acRate: item.acRate,
+    saved: false,
+    statementMd: `Đề bài của **${item.title}** chưa được nhập vào dữ liệu giả lập; khung bên dưới dùng bộ mẫu của Two Sum để chạy thử giao diện.
+
+## Ràng buộc
+
+- Dữ liệu giả lập, không phản ánh đề thật`,
+    mySubmissions: [],
+    solutionReview: null,
+  };
 }
 
 /**

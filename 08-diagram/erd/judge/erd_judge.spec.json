@@ -1,0 +1,150 @@
+{
+  "_": "Nguon: 02-bd/database/judge-orchestration.md (doc 2026-10-22). Ghi chu: problem.problem_specs khong ve lien ket vi submissions.spec_version la gia tri so (truy vet), khong phai tham chieu. Cac cot user_id, problem_id, testcase_id, updated_by la tham chieu logic khong FK vat ly nen de key rong. Rang buoc unique (submission_id, testcase_id) cua submission_testcase_results va unique mot phan (submission_id, testcase_id) WHERE consumed_at IS NOT NULL cua judge_run_tokens la rang buoc phuc hop, khong the hien o cot. Bang singleton luon co id = 1.",
+  "kind": "erd",
+  "title": "ERD schema judge",
+  "covers": [],
+  "erd": {
+    "scope": "schema",
+    "entities": [
+      {"id": "language_configs", "name": "language_configs", "stereotype": "seed",
+       "columns": [
+         {"name": "language", "type": "ENUM(JAVA,CPP,PYTHON)", "key": "PK"},
+         {"name": "time_limit_multiplier", "type": "DECIMAL(3,2)"},
+         {"name": "memory_limit_multiplier", "type": "DECIMAL(3,2)"},
+         {"name": "enabled", "type": "BOOLEAN"},
+         {"name": "updated_at", "type": "TIMESTAMPTZ"},
+         {"name": "updated_by", "type": ""}
+       ]},
+      {"id": "grading_defaults", "name": "grading_defaults", "stereotype": "singleton",
+       "columns": [
+         {"name": "id", "type": "SMALLINT", "key": "PK"},
+         {"name": "time_limit_ms", "type": "INT"},
+         {"name": "memory_limit_mb", "type": "INT"},
+         {"name": "output_limit_kb", "type": "INT"},
+         {"name": "compile_timeout_sec", "type": "INT"},
+         {"name": "updated_by", "type": ""},
+         {"name": "updated_at", "type": "TIMESTAMPTZ"}
+       ]},
+      {"id": "sandbox_settings", "name": "sandbox_settings", "stereotype": "singleton",
+       "columns": [
+         {"name": "id", "type": "SMALLINT", "key": "PK"},
+         {"name": "network_access_enabled", "type": "BOOLEAN"},
+         {"name": "child_process_limit_enabled", "type": "BOOLEAN"},
+         {"name": "return_stderr_to_student", "type": "BOOLEAN"},
+         {"name": "updated_by", "type": ""},
+         {"name": "updated_at", "type": "TIMESTAMPTZ"}
+       ]},
+      {"id": "generator_sandbox_settings", "name": "generator_sandbox_settings", "stereotype": "singleton",
+       "columns": [
+         {"name": "id", "type": "SMALLINT", "key": "PK"},
+         {"name": "max_runtime_seconds", "type": "INT"},
+         {"name": "max_output_mb", "type": "INT"},
+         {"name": "updated_by", "type": ""},
+         {"name": "updated_at", "type": "TIMESTAMPTZ"}
+       ]},
+      {"id": "cluster_settings", "name": "cluster_settings", "stereotype": "singleton",
+       "columns": [
+         {"name": "id", "type": "SMALLINT", "key": "PK"},
+         {"name": "queue_paused", "type": "BOOLEAN"},
+         {"name": "autoscale_enabled", "type": "BOOLEAN"},
+         {"name": "autoscale_job_threshold", "type": "INT"},
+         {"name": "jobs_per_page", "type": "INT"},
+         {"name": "error_retention_hours", "type": "INT"},
+         {"name": "latency_cap_seconds", "type": "INT"},
+         {"name": "updated_by", "type": ""},
+         {"name": "updated_at", "type": "TIMESTAMPTZ"}
+       ]},
+      {"id": "submissions", "name": "submissions",
+       "columns": [
+         {"name": "id", "type": "UUID", "key": "PK"},
+         {"name": "user_id", "type": ""},
+         {"name": "problem_id", "type": ""},
+         {"name": "spec_version", "type": "INT", "null": true},
+         {"name": "language", "type": "ENUM(JAVA,CPP,PYTHON)"},
+         {"name": "submission_model", "type": "ENUM(FUNCTION_WRAPPER,STANDARD_IO)"},
+         {"name": "source_code", "type": "TEXT"},
+         {"name": "source_input_method", "type": "ENUM(EDITOR,FILE_UPLOAD)"},
+         {"name": "status", "type": "ENUM(9 trang thai)"},
+         {"name": "failure_reason", "type": "ENUM(WORKER_TIMEOUT,SANDBOX_FAULT)", "null": true},
+         {"name": "compile_error_message", "type": "TEXT", "null": true},
+         {"name": "passed_testcase_count", "type": "INT"},
+         {"name": "total_testcase_count", "type": "INT", "null": true},
+         {"name": "score_ratio", "type": "DECIMAL(4,3)", "null": true},
+         {"name": "runtime_ms", "type": "INT", "null": true},
+         {"name": "memory_kb", "type": "INT", "null": true},
+         {"name": "testcase_set_version_at_grading", "type": "INT", "null": true},
+         {"name": "submitted_at", "type": "TIMESTAMPTZ"},
+         {"name": "started_grading_at", "type": "TIMESTAMPTZ", "null": true},
+         {"name": "finished_at", "type": "TIMESTAMPTZ", "null": true},
+         {"name": "updated_at", "type": "TIMESTAMPTZ"}
+       ]},
+      {"id": "judge_run_tokens", "name": "judge_run_tokens",
+       "columns": [
+         {"name": "id", "type": "UUID", "key": "PK"},
+         {"name": "submission_id", "type": "UUID", "key": "FK"},
+         {"name": "testcase_id", "type": ""},
+         {"name": "token", "type": "UUID", "key": "UQ"},
+         {"name": "issued_at", "type": "TIMESTAMPTZ"},
+         {"name": "consumed_at", "type": "TIMESTAMPTZ", "null": true}
+       ]},
+      {"id": "submission_testcase_results", "name": "submission_testcase_results",
+       "columns": [
+         {"name": "id", "type": "UUID", "key": "PK"},
+         {"name": "submission_id", "type": "UUID", "key": "FK"},
+         {"name": "testcase_id", "type": ""},
+         {"name": "testcase_order", "type": "INT"},
+         {"name": "verdict", "type": "ENUM(AC,WA,TLE,MLE,RE)"},
+         {"name": "runtime_ms", "type": "INT"},
+         {"name": "memory_kb", "type": "INT"},
+         {"name": "stderr_snippet", "type": "TEXT", "null": true},
+         {"name": "actual_output_snippet", "type": "TEXT", "null": true},
+         {"name": "judge_run_token_id", "type": "UUID", "key": "FK"},
+         {"name": "created_at", "type": "TIMESTAMPTZ"}
+       ]},
+      {"id": "callback_logs", "name": "callback_logs",
+       "columns": [
+         {"name": "id", "type": "UUID", "key": "PK"},
+         {"name": "judge_run_token_id", "type": "UUID", "key": "FK", "null": true},
+         {"name": "raw_payload", "type": "JSONB"},
+         {"name": "received_at", "type": "TIMESTAMPTZ"},
+         {"name": "outcome", "type": "ENUM(ACCEPTED,DUPLICATE_IGNORED,INVALID_TOKEN,STATE_ALREADY_FINAL)"}
+       ]},
+      {"id": "outbox_events", "name": "outbox_events",
+       "columns": [
+         {"name": "id", "type": "UUID", "key": "PK"},
+         {"name": "aggregate_type", "type": "VARCHAR"},
+         {"name": "aggregate_id", "type": "UUID"},
+         {"name": "event_type", "type": "VARCHAR"},
+         {"name": "payload", "type": "JSONB"},
+         {"name": "created_at", "type": "TIMESTAMPTZ"},
+         {"name": "published_at", "type": "TIMESTAMPTZ", "null": true},
+         {"name": "publish_attempts", "type": "INT"}
+       ]}
+    ],
+    "externals": [
+      {"id": "identity.users", "name": "identity.users"},
+      {"id": "problem.problems", "name": "problem.problems"},
+      {"id": "problem.testcases", "name": "problem.testcases"},
+      {"id": "ai.solution_reviews", "name": "ai.solution_reviews"},
+      {"id": "ai.interview_sessions", "name": "ai.interview_sessions"}
+    ],
+    "relations": [
+      {"from": "judge_run_tokens", "to": "submissions", "kind": "fk", "label": "submission_id"},
+      {"from": "submission_testcase_results", "to": "submissions", "kind": "fk", "label": "submission_id"},
+      {"from": "submission_testcase_results", "to": "judge_run_tokens", "kind": "fk", "label": "judge_run_token_id"},
+      {"from": "callback_logs", "to": "judge_run_tokens", "kind": "fk", "label": "judge_run_token_id", "optional": true},
+      {"from": "outbox_events", "to": "submissions", "kind": "ref", "label": "aggregate_id"},
+      {"from": "submissions", "to": "identity.users", "kind": "ref", "label": "user_id"},
+      {"from": "submissions", "to": "problem.problems", "kind": "ref", "label": "problem_id"},
+      {"from": "submission_testcase_results", "to": "problem.testcases", "kind": "ref", "label": "testcase_id"},
+      {"from": "judge_run_tokens", "to": "problem.testcases", "kind": "ref", "label": "testcase_id"},
+      {"from": "language_configs", "to": "identity.users", "kind": "ref", "label": "updated_by"},
+      {"from": "grading_defaults", "to": "identity.users", "kind": "ref", "label": "updated_by"},
+      {"from": "sandbox_settings", "to": "identity.users", "kind": "ref", "label": "updated_by"},
+      {"from": "generator_sandbox_settings", "to": "identity.users", "kind": "ref", "label": "updated_by"},
+      {"from": "cluster_settings", "to": "identity.users", "kind": "ref", "label": "updated_by"},
+      {"from": "ai.solution_reviews", "to": "submissions", "kind": "ref", "label": "submission_id"},
+      {"from": "ai.interview_sessions", "to": "submissions", "kind": "ref", "label": "submission_id"}
+    ]
+  }
+}

@@ -19,7 +19,7 @@
 > (đổi ma trận quyền, đổi vai trò, khoá/mở khoá, reset mật khẩu, thao tác nội dung kho bài và kho câu hỏi).
 > **Không** gộp sự kiện hạ tầng (lỗi judge engine, worker mất kết nối, timeout sweep) — các sự kiện đó
 > thuộc `judge-orchestration` (F4-10) và có màn riêng `admin_queue_monitor`
-> [Nguồn: 01-rd/req/identity.md:68-75; 02-bd/database/identity.md:103-106;
+> [Nguồn: 01-rd/req/identity.md:68-75; 02-bd/database/identity.md:141-158;
 > 09-layoutBase/Admin - Nhật ký hệ thống.dc.html:152]. Nếu DD sau này định gộp hai nguồn vào chung một
 > bảng, đó là thay đổi kiến trúc cần một quyết định mới, không phải lựa chọn của DD.
 
@@ -44,11 +44,11 @@
 | Tên vật lý (slug) | `admin_system_log` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A3 (`ADMIN`) |
-| Phiên bản | V0.12 |
+| Phiên bản | V0.13 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/15 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/10/14 |
+| Ngày cập nhật | 2026/10/22 |
 
 ---
 
@@ -68,6 +68,7 @@
 | V0.10 | Sheet 5 (Khu vực danh sách NO 3) | Ghi chú nhóm "Cấu hình" gồm cả thao tác vận hành của Admin ở `ADM0401` và `ADM0501` (G2, `DEC-2026-1010-admin-operations-regroup`). Không thêm phân loại mới, không đổi hành vi màn | 2026/10/10 | AI |
 | V0.11 | Câu hỏi mở (Q5, Q7) | Đóng hai mục theo `DEC-2026-1011-admin-system-open-questions-closed`: bảng ánh xạ `action_type` là enum `AuditAction`; cấu hình lưu log nằm ở `identity.system_settings`; bản nén hoãn, job giữ dòng | 2026/10/11 | Nhóm phát triển AlgoPrep |
 | V0.12 | Sheet 5 (Khu vực F NO 5, Khu vực G NO 1) | Sửa lỗi Minor review UX khu Admin B12 (`06-plan/reports/261014-1054-admin-ux-review/`), **chưa duyệt hình**. F NO 5: chú thích sự kiện hạ tầng nay là **liên kết thật** tới `/admin/queue` (prop `viewAllHref` của `RankedProgressList`), trước đó chỉ là chữ tĩnh. G NO 1: dòng "Nhật ký giữ {n} ngày" nay được dựng, chỉ đọc, đặt dưới lưới chính của màn, đọc `settings.retentionDays` (khoá i18n `adminSystemLog.retention.footer`). Đồng bộ dòng phiên bản ở Sheet 1 (trước ghi V0.10 dù đã có V0.11) | 2026/10/14 | Claude |
+| V0.13 | Sheet 4 (ghi chú), 5, 7, Câu hỏi mở | Sửa 2026-10-22 đồng bộ DB, `DEC-2026-1022-identity-schema-sync` (ID-08). `identity.users` **không có** cột `username` và `full_name`: cột "Người thực hiện" và ô tìm kiếm đổi sang `users.email`, khối quản trị viên hoạt động đổi sang `users.display_name`; DTO `actorUsername` đổi `actorEmail`, `ActiveAdminDto.fullName` đổi `displayName` (tên là `[SoT: Suy luận]`, DD chốt). Sửa câu sai ở Sheet 4.3: tham số lưu log đã có bảng `system_settings` và mỗi lần sửa **có** ghi một dòng `system_audit_logs` (phân loại "Cấu hình"). Sửa số dòng trích `02-bd/database/identity.md` sang bản 2026-10-22 | 2026/10/22 | Nhóm phát triển AlgoPrep |
 
 ---
 
@@ -236,15 +237,14 @@ dòng. Biểu đồ phân loại: đúng 4 cột.
 
 | NO | Bảng | Ghi chú |
 | --: | :--- | :--- |
-| 1 | `identity.system_audit_logs` | [Nguồn: 02-bd/database/identity.md:103-106] |
-| 2 | `identity.users` | Tra tên hiển thị và vai trò của người thực hiện qua `actor_user_id` [Nguồn: 02-bd/database/identity.md:104] |
+| 1 | `identity.system_audit_logs` | [Nguồn: 02-bd/database/identity.md:141-155] |
+| 2 | `identity.users` | Tra tên hiển thị và vai trò của người thực hiện qua `actor_user_id`; `users` chỉ có `email` và `display_name`, không có `username`/`full_name` [Nguồn: 02-bd/database/identity.md:14, 16, 148] |
 
 Màn này **không thêm cột nào** vào `system_audit_logs`. Ba trường prototype hiển thị mà bảng không có —
 phân loại, câu nội dung, tên dịch vụ — đều **suy ra từ `action_type`** ở tầng ứng dụng, xem Sheet 5 khu
 vực D và Câu hỏi mở Q5. Thời hạn lưu log là cấu hình do ADMIN đặt, job dọn định kỳ đọc cấu hình đó; nhật ký không bao giờ bị xoá tay từng dòng.
-Hai tham số cấu hình (thời hạn lưu, chính sách log quá hạn) **chưa có bảng lưu** trong
-`02-bd/database/identity.md`; bảng cấu hình hệ thống của `identity` là việc của DD, xem Q7. Từ V0.6 màn này
-ghi vào hai tham số đó qua popup "Lưu trữ", nhưng vẫn không ghi vào `system_audit_logs`.
+Hai tham số cấu hình (thời hạn lưu `audit_log.retention_days`, chính sách log quá hạn `audit_log.expired_policy`) nằm ở bảng `identity.system_settings` [Nguồn: 02-bd/database/identity.md:229-241]. Từ V0.6 màn này
+ghi vào hai tham số đó qua popup "Lưu trữ" (`PUT /admin/settings/log-retention`); mỗi lần sửa ghi **một dòng** `system_audit_logs` phân loại "Cấu hình" với giá trị cũ và mới trong `after_json` [Nguồn: 02-bd/database/identity.md:240-241]. **Sửa 2026-10-22:** câu cũ "chưa có bảng lưu ... không ghi vào `system_audit_logs`" đã lỗi thời.
 
 ### 4.4 Vùng bố cục
 
@@ -313,7 +313,7 @@ các tham chiếu hiện có không phải đánh số lại.
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Bộ lọc danh sách | | | | | | | | | | | | | |
-| | 1 | Ô tìm kiếm | `adminSystemLog.filter.query` | - | - | TextBox | String | 100 | - | I | rỗng | - | Tìm theo **dịch vụ, tài khoản hoặc mã sự kiện**. **Không** tìm trong câu nội dung log, để tránh quét toàn bảng trên tập log lớn<br>[Nguồn giá trị] Người dùng nhập; đối sánh với tên dịch vụ suy ra từ `action_type`, với `users.username` của người thực hiện, và với mã sự kiện<br>[EVT liên quan] EVT-2 |
+| | 1 | Ô tìm kiếm | `adminSystemLog.filter.query` | - | - | TextBox | String | 100 | - | I | rỗng | - | Tìm theo **dịch vụ, tài khoản hoặc mã sự kiện**. **Không** tìm trong câu nội dung log, để tránh quét toàn bảng trên tập log lớn<br>[Nguồn giá trị] Người dùng nhập; đối sánh với tên dịch vụ suy ra từ `action_type`, với `users.email` của người thực hiện, và với mã sự kiện<br>[EVT liên quan] EVT-2 |
 | | 2 | Tab phân loại | `adminSystemLog.filter.tabCategory` | `identity.system_audit_logs` | `action_type` | Button | Enum | - | - | I | Tất cả | Nhãn tiếng Việt | Dải 5 tab: Tất cả, Xác thực, Ma trận quyền, Cấu hình, Nội dung. Tab "Chấm lại" của prototype đã bị bỏ<br>[Công thức] Mỗi tab lọc theo nhóm phân loại suy ra từ `action_type`; tab "Tất cả" không lọc<br>[EVT liên quan] EVT-3 |
 | | 3 | Từ ngày | `adminSystemLog.filter.dateFrom` | `identity.system_audit_logs` | `created_at` | TextBox | Date | 10 | - | I | rỗng | `DD/MM/YYYY` | **Đã chốt 2026-10-08 (Q6): nằm trong phạm vi**, prototype Next.js đã dựng. Lý do: chân danh sách ghi "12.408 sự kiện" nhưng chỉ có nút tải thêm theo thời gian giảm dần, nên không cách nào tới được log của một ngày cũ mà không bấm hàng trăm lần. Dùng control ngày gốc của trình duyệt (`type="date"`), không thêm thư viện; định dạng hiển thị theo trình duyệt. Khoảng **đóng ở cả hai đầu** (lấy cả ngày đầu và ngày cuối). Prototype tự đặt `max` của ô này bằng ngày "Đến ngày" nếu đã nhập, và lọc trên các dòng đã tải [Nguồn: 05-coding/frontend/src/views/admin/system-log/ui/admin-system-log-view.tsx:77-100,175-186]<br>[Nguồn giá trị] Người dùng nhập; đối chiếu `created_at`<br>[EVT liên quan] EVT-4 |
 | | 4 | Đến ngày | `adminSystemLog.filter.dateTo` | `identity.system_audit_logs` | `created_at` | TextBox | Date | 10 | - | I | rỗng | `DD/MM/YYYY` | **Đã chốt 2026-10-08 (Q6)** — cùng lý do với NO 3. Khoảng ngược (Từ ngày muộn hơn Đến ngày) thì ô này đổi viền đỏ (`aria-invalid`), hiện toast cảnh báo và danh sách không có dòng nào [Nguồn: 05-coding/frontend/src/views/admin/system-log/ui/admin-system-log-view.tsx:88,102-110,188-199]<br>[Nguồn giá trị] Người dùng nhập; đối chiếu `created_at`<br>[EVT liên quan] EVT-4 |
@@ -330,7 +330,7 @@ các tham chiếu hiện có không phải đánh số lại.
 | | 3 | Phân loại | `adminSystemLog.list.col.category` | `identity.system_audit_logs` | `action_type` | Badge | Enum | - | - | O | - | Nhãn tiếng Việt | Nhóm phân loại của hành động. Danh sách đóng 4 giá trị: Xác thực, Ma trận quyền, Cấu hình, Nội dung. Thêm phân loại mới phải sửa cả BD lẫn mã sinh log. Nhóm **Cấu hình** gồm cả mọi thao tác ghi vận hành của Admin (tạm dừng/tiếp tục hàng đợi, bật/tắt tự động mở rộng, tham số hàng đợi ở `ADM0401`; hệ số, bật/tắt ngôn ngữ, giới hạn mặc định, sandbox, giới hạn script sinh testcase ở `ADM0501`), kèm giá trị cũ và mới trong `after_json` (`DEC-2026-1010-admin-operations-regroup`). Nhóm **Xác thực** có `action_type` `PASSWORD_RESET_REQUESTED` (yêu cầu đặt lại mật khẩu, thêm 2026-10-01, `DEC-2026-1001-admin-configurable-settings`)<br>[Công thức] Ánh xạ `action_type` sang một trong 4 nhóm tại tầng ứng dụng `identity`; **không thêm cột `category`**<br>[EVT liên quan] - |
 | | 4 | Nội dung | `adminSystemLog.list.col.message` | `identity.system_audit_logs` | `action_type`, `target_type`, `target_id`, `before_json`, `after_json` | ListColumn | String | - | - | O | - | - | Câu mô tả hành động, ví dụ "Cấp quyền UPDATE trên TESTCASE_MANAGEMENT cho vai trò Trợ giảng"<br>[Công thức] Dựng từ mẫu câu i18n chọn theo `action_type`, tham số lấy từ `target_type`, `target_id` và phần chênh lệch giữa `before_json` và `after_json`. Nơi dựng câu (máy chủ hay giao diện) chưa chốt, xem Q5<br>[EVT liên quan] - |
 | | 5 | Dịch vụ | `adminSystemLog.list.col.service` | `identity.system_audit_logs` | `action_type` | ListColumn | String | 20 | - | O | - | chữ thường, ví dụ `auth`, `config`, `ai-config`, `content`, `permission` | Tên module sinh ra hành động, mịn hơn phân loại (prototype có cả `config` lẫn `ai-config` trong cùng phân loại "Cấu hình")<br>[Công thức] Ánh xạ `action_type` sang tên module; **không thêm cột `service`**. Bảng ánh xạ đầy đủ thuộc DD, xem Q5<br>[EVT liên quan] - |
-| | 6 | Người thực hiện | `adminSystemLog.list.col.actor` | `identity.users` | `username` | ListColumn | String | 50 | - | O | - | - | Tài khoản đã thực hiện hành động. Có thể là A3 hoặc A2 — F1-14 ghi "mọi thao tác quản trị", không giới hạn actor<br>[Nguồn giá trị] `users.username` tra theo `system_audit_logs.actor_user_id`<br>[EVT liên quan] - |
+| | 6 | Người thực hiện | `adminSystemLog.list.col.actor` | `identity.users` | `email` | ListColumn | String | 254 | - | O | - | - | Tài khoản đã thực hiện hành động. Có thể là A3 hoặc A2 — F1-14 ghi "mọi thao tác quản trị", không giới hạn actor<br>[Nguồn giá trị] `users.email` (định danh duy nhất, `UNIQUE (lower(email))`) tra theo `system_audit_logs.actor_user_id`; bảng `users` không có cột tên đăng nhập. Tài khoản đã ẩn danh hoá (F1-16) có email `deleted-user-<id>@anon.local` [Nguồn: 02-bd/database/identity.md:14, 34-35]<br>[EVT liên quan] - |
 | | 7 | Mã sự kiện | `adminSystemLog.list.col.eventId` | `identity.system_audit_logs` | `id` | ListColumn | String | 20 | - | O | - | `evt_{6 ký tự}` | Mã tra cứu một dòng log, dùng để dán vào ô tìm kiếm<br>[Công thức] Tiền tố `evt_` ghép 6 ký tự đầu của `id`. Độ dài rút gọn có rủi ro trùng, cách rút gọn chính thức thuộc DD, xem Q5<br>[EVT liên quan] - |
 | | 8 | Nhãn phạm vi hiển thị | `adminSystemLog.list.pageLabel` | - | - | Label | String | - | - | O | - | `Hiển thị {số} dòng gần nhất trong {số} sự kiện` | Cho biết đang xem bao nhiêu dòng trên tổng số<br>[Công thức] Số dòng đã tải và tổng số dòng khớp bộ lọc, do máy chủ trả về<br>[EVT liên quan] EVT-8 |
 | | 9 | Tải thêm 50 dòng | `adminSystemLog.list.btnLoadMore` | - | - | Button | - | - | - | I | - | - | Nối thêm 50 dòng kế tiếp vào cuối danh sách. Phân trang nối tiếp theo mốc thời gian, không phải phân trang số trang. Prototype 2026-10-08 nạp đúng 50 dòng mỗi lần và **tắt nút** khi đã tải hết [Nguồn: 05-coding/frontend/src/views/admin/system-log/ui/admin-system-log-view.tsx:112-114,238-247; 05-coding/frontend/src/views/admin/system-log/api/__mock__/audit-log-mocks.ts:143-146]<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-8 |
@@ -347,8 +347,8 @@ giá trị mật khẩu ở bất kỳ dạng nào. Với hành động đổi c
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Quản trị viên hoạt động | | | | | | | | | | | | | |
 | | 1 | Danh sách người thực hiện | `adminSystemLog.activeAdmin.list` | `identity.system_audit_logs` | `actor_user_id` | List | List | - | - | O | rỗng | - | Người thực hiện có hành động gần nhất, sắp xếp theo thời điểm hành động giảm dần. **Không** chịu ảnh hưởng của bộ lọc danh sách<br>[Nguồn giá trị] Kết quả gọi `ListActiveAdmins`<br>[EVT liên quan] EVT-1 |
-| | 2 | Chữ viết tắt | `adminSystemLog.activeAdmin.col.initials` | `identity.users` | `full_name` | ListColumn | String | 4 | - | O | - | Chữ cái đầu | Ký hiệu thay ảnh đại diện<br>[Công thức] Lấy chữ cái đầu của hai từ cuối trong `users.full_name`<br>[EVT liên quan] - |
-| | 3 | Họ tên | `adminSystemLog.activeAdmin.col.name` | `identity.users` | `full_name` | ListColumn | String | 100 | - | O | - | - | Tên hiển thị của người thực hiện<br>[Nguồn giá trị] Cột `users.full_name`<br>[EVT liên quan] - |
+| | 2 | Chữ viết tắt | `adminSystemLog.activeAdmin.col.initials` | `identity.users` | `display_name` | ListColumn | String | 4 | - | O | - | Chữ cái đầu | Ký hiệu thay ảnh đại diện<br>[Công thức] Lấy chữ cái đầu của hai từ cuối trong `users.display_name`<br>[EVT liên quan] - |
+| | 3 | Họ tên | `adminSystemLog.activeAdmin.col.name` | `identity.users` | `display_name` | ListColumn | String | 100 | - | O | - | - | Tên hiển thị của người thực hiện<br>[Nguồn giá trị] Cột `users.display_name` [Nguồn: 02-bd/database/identity.md:16]<br>[EVT liên quan] - |
 | | 4 | Vai trò và số hành động | `adminSystemLog.activeAdmin.col.meta` | `identity.users` | `role_id` | ListColumn | String | - | - | O | - | `{vai trò} · {số} hành động` | Vai trò kèm số hành động trong cửa sổ đếm<br>[Công thức] Nhãn vai trò tra từ `users.role_id`, ghép với số dòng log của người đó trong cửa sổ 24 giờ (đã chốt 2026-10-08, Q3)<br>[EVT liên quan] - |
 | | 5 | Thời điểm gần nhất | `adminSystemLog.activeAdmin.col.lastActionAt` | `identity.system_audit_logs` | `created_at` | ListColumn | String | 20 | - | O | - | `{số} phút trước` / `{số} giờ trước` | Khoảng cách từ hành động gần nhất tới hiện tại<br>[Công thức] Thời điểm hiện tại trừ `MAX(created_at)` của người đó, hiển thị dạng tương đối<br>[EVT liên quan] - |
 
@@ -527,8 +527,8 @@ Không còn item nào — xem Sheet 5, Khu vực B.
 | 3 | `AuditLogEntryDto` | `actionType` | Enum | `identity.system_audit_logs` | `action_type` | Danh sách "Phân loại", "Dịch vụ", "Nội dung" | Có | [Chuyển đổi] Một giá trị nuôi ba cột hiển thị: nhóm phân loại, tên dịch vụ, và mẫu câu nội dung. Bảng ánh xạ thuộc DD, xem Q5. |
 | 4 | `AuditLogEntryDto` | `message` | String | - | - | Danh sách "Nội dung" | Có | [Nguồn] Dựng từ `actionType` + `targetType` + `targetId` + chênh lệch `before_json`/`after_json`<br>[Chuyển đổi] **Không** chứa mật khẩu, OTP, token hay khoá API ở bất kỳ dạng nào — xem Sheet 9 NO 2. |
 | 5 | `AuditLogEntryDto` | `targetType`, `targetId` | String | `identity.system_audit_logs` | `target_type`, `target_id` | - | Không | [Đích] Tham số dựng câu nội dung. Không hiển thị thành cột riêng vì prototype không có cột nào cho chúng. |
-| 6 | `AuditLogEntryDto` | `actorUsername` | String | `identity.users` | `username` | Danh sách "Người thực hiện" | Có | [Nguồn] Tra theo `system_audit_logs.actor_user_id`. |
-| 7 | `ActiveAdminDto` | `fullName`, `roleCode` | String | `identity.users` | `full_name`, `role_id` | Quản trị viên hoạt động NO 2, 3, 4 | Có | [Chuyển đổi] `roleCode` đổi sang nhãn tiếng Việt khi hiển thị; `fullName` còn dùng để sinh chữ viết tắt. |
+| 6 | `AuditLogEntryDto` | `actorEmail` | String | `identity.users` | `email` | Danh sách "Người thực hiện" | Có | [Nguồn] Tra theo `system_audit_logs.actor_user_id`. |
+| 7 | `ActiveAdminDto` | `displayName`, `roleCode` | String | `identity.users` | `display_name`, `role_id` | Quản trị viên hoạt động NO 2, 3, 4 | Có | [Chuyển đổi] `roleCode` đổi sang nhãn tiếng Việt khi hiển thị; `displayName` còn dùng để sinh chữ viết tắt. |
 | 8 | `ActiveAdminDto` | `actionCount`, `lastActionAt` | Number, Date | `identity.system_audit_logs` | `actor_user_id`, `created_at` | Quản trị viên hoạt động NO 4, 5 | Có | [Chuyển đổi] `lastActionAt` hiển thị dạng tương đối, tính ở phía giao diện. |
 | 9 | `AuditCategoryBreakdownDto` | `categoryCode`, `count` | String, Number | `identity.system_audit_logs` | `action_type`, `created_at` | Phân loại 7 ngày NO 2, 3, 4 | Có | [Chuyển đổi] `categoryCode` là khoá tra nhãn tĩnh i18n, dùng chung với tab lọc. |
 | 12 | — | `query`, `categoryCode`, `dateFrom`, `dateTo`, `cursor` | String, String, Date, Date, String | `identity.system_audit_logs` | `created_at`, `action_type` | Bộ lọc NO 1, 2, 3, 4 và nút "Tải thêm 50 dòng" | Không | [Nguồn] Giá trị người dùng đặt trên màn<br>[Đích] Tham số của `SearchSystemAuditLogs` và `ExportSystemAuditLogs`<br>[Chuyển đổi] `cursor` là mốc phân trang nối tiếp theo `created_at`, không phải số trang. |
@@ -541,7 +541,7 @@ Không còn item nào — xem Sheet 5, Khu vực B.
 | NO | Tên logic | Bảng | Repository | CRUD | Mục đích | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :--- | :--- |
 | 1 | Nhật ký hành động quản trị | `identity.system_audit_logs` | `SystemAuditLogRepository` | R | Đọc danh sách có lọc và phân trang, đếm theo người thực hiện, đếm theo phân loại 7 ngày | `SearchSystemAuditLogs`: R<br>`ListActiveAdmins`: R<br>`GetAuditCategoryBreakdown`: R<br>`ExportSystemAuditLogs`: R |
-| 2 | Tài khoản người thực hiện | `identity.users` | `UserRepository` | R | Tra tên hiển thị, `username` và vai trò của `actor_user_id` | `SearchSystemAuditLogs`: R<br>`ListActiveAdmins`: R |
+| 2 | Tài khoản người thực hiện | `identity.users` | `UserRepository` | R | Tra `display_name`, `email` và vai trò của `actor_user_id` | `SearchSystemAuditLogs`: R<br>`ListActiveAdmins`: R |
 
 Màn này **chỉ đọc** với hai bảng trên: không có thao tác `C`, `U`, `D` trên `system_audit_logs` hay `users`.
 Ngoại lệ thêm V0.6: hai tham số cấu hình lưu log (`retention_days`, `expiry_policy`) ghi qua
@@ -573,7 +573,7 @@ Không có endpoint nào thuộc `judge-orchestration` hay `ai-review` trên mà
 file. Endpoint số 4 (`StreamSystemAuditLog`) dùng WebSocket (STOMP) theo stack đã khoá, **không** dùng SSE: SSE dành riêng cho
 luồng hội thoại AI [Nguồn: CLAUDE.md — mục Locked stack, dòng "Queue and realtime"].
 
-[Nguồn: 02-bd/database/identity.md:103-106]
+[Nguồn: 02-bd/database/identity.md:141-155]
 
 ---
 

@@ -37,11 +37,11 @@
 | Tên vật lý (slug) | `admin_language_config` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A3 (`ADMIN`) |
-| Phiên bản | V1.1 |
+| Phiên bản | V1.3 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/15 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/10/10 |
+| Ngày cập nhật | 2026/10/22 |
 
 ---
 
@@ -57,6 +57,8 @@
 | V0.6 | Sheet 4 (4.5) | Ghi hiện trạng prototype: dữ liệu màn đi qua `queries.ts` + `withMockData`, có trạng thái đang tải, lỗi tải và toast lỗi khi lưu thất bại. Không đổi hành vi BD | 2026/10/03 | AI |
 | V1.0 | Toàn bộ | Thiết kế lại cho đỡ dày theo `DEC-2026-1010-admin-operations-regroup`: chia hai tab (Ngôn ngữ và giới hạn / Sandbox và sinh testcase); bảng ngôn ngữ còn 4 cột, bỏ cột "Mã môi trường chấm" (đóng Q3); bốn giới hạn mặc định thành hàng nhập gọn trên bảng, **sửa được**, lưu ở bảng mới `judge.grading_defaults` (đóng Q2); hệ số bộ nhớ sửa được, Java seed 2,00 (đóng Q7); sandbox **toàn cục** ở bảng mới `judge.sandbox_settings`, giới hạn tiến trình con là công tắc kèm ô số (đóng Q4); thêm cột `language_configs.enabled` (đóng Q1); bỏ thẻ "Lưu ý", thêm thanh lưu dính đáy với "Hoàn tác" (Khu vực G) và một hộp xác nhận lúc Lưu khi tắt ngôn ngữ (Khu vực H, đóng Q5); rời màn lúc còn thay đổi chưa lưu dùng cơ chế dùng chung (đóng Q6); dùng mốc 1024 px của khung chung (đóng Q8). Thêm quy tắc: áp từ lúc bắt đầu chấm (G3), tắt ngôn ngữ không huỷ job đang chờ (G4), mọi lần Lưu ghi Nhật ký hệ thống phân loại "Cấu hình" (G2). Thêm kiểm hệ số RAM và kiểm ngôn ngữ cuối cùng trên máy chủ | 2026/10/10 | AI |
 | V1.1 | Sheet 5, 6, 7 | Theo `DEC-2026-1014-sandbox-child-process-cap-constant` (chủ dự án 2026-10-14, báo cáo `06-plan/reports/261014-1054-admin-ux-review/` B7): bỏ ô số "Số tiến trình con tối đa" (NO5) và trường DTO `maxChildProcesses`; giới hạn giữ hằng số 60 ở `application.yml`, màn chỉ còn công tắc. Tiêu chí ponytail bậc 5. Prototype không đổi | 2026-10-14 | Claude |
+| V1.2 | Sheet 4.3, 5, 7 (trích) | Sửa 2026-10-22 đồng bộ DB, `DEC-2026-1022-ai-judge-schema-sync` (JD-04, JD-08). Đối chiếu `02-bd/database/judge-orchestration.md` mục 1.10: không còn cột `max_child_processes`, chỉ còn `child_process_limit_enabled`, trần 60 là hằng số `application.yml`; khớp V1.1 nên **không đổi nội dung**, chỉ ghi rõ cột đã bỏ ở DB (NO 5, DTO NO 12 vốn đã gạch). Ghi thêm: `judge.submissions` không lưu giới hạn hiệu dụng hay snapshot cấu hình, nên đổi giá trị ở màn này chỉ ảnh hưởng job **bắt đầu chấm sau đó** và không truy vết ngược được (mục 1.1, 1.10). Sửa số dòng trích `02-bd/database/judge-orchestration.md` sang bản 2026-10-22. Không đổi prototype | 2026/10/22 | Nhóm phát triển AlgoPrep |
+| V1.3 | Sheet 4.1 (Quyền sử dụng), Sheet 9 NO 1 | Owner 2026/10/23: `LANGUAGE_CONFIG` là Function thứ 11 của ma trận (F4-11). Ghi rõ `READ` mở màn, `UPDATE` cho phép Lưu, `CREATE` và `DELETE` không có tác dụng; ghi chú prototype chưa tách quyền theo vai trò. Không đổi mã. | 2026/10/23 | Claude |
 
 ---
 
@@ -135,23 +137,25 @@ flowchart LR
 [Tệp liên quan] Không có. Màn này không xuất hay nhập tệp.
 
 [Phạm vi]
-- **Đúng ba ngôn ngữ nộp bài: Java, C++, Python** — khoá ở `CLAUDE.md` mục "Locked stack". Màn này **không thêm và không xoá ngôn ngữ**, chỉ sửa giá trị của ba dòng đã seed sẵn [Nguồn: 02-bd/database/judge-orchestration.md:90-93]. Chức năng "Thêm ngôn ngữ" đã bị loại khỏi giao diện Admin từ 2026-08-24 [Nguồn: 02-bd/architecture/harness.md:13-16].
+- **Đúng ba ngôn ngữ nộp bài: Java, C++, Python** — khoá ở `CLAUDE.md` mục "Locked stack". Màn này **không thêm và không xoá ngôn ngữ**, chỉ sửa giá trị của ba dòng đã seed sẵn [Nguồn: 02-bd/database/judge-orchestration.md:102-103]. Chức năng "Thêm ngôn ngữ" đã bị loại khỏi giao diện Admin từ 2026-08-24 [Nguồn: 02-bd/architecture/harness.md:13-16].
 - **Phân biệt hai nơi đặt giới hạn thời gian và bộ nhớ**, tránh trùng với màn quản lý bài tập:
   - **Theo từng bài** (`problem-bank`, F2): `problems.time_limit_ms`, `problems.memory_limit_mb`, `problems.max_output_size_kb` — do A2 khai khi biên soạn bài, thuộc màn `SHR0202_problem_authoring`, **không sửa ở màn này** [Nguồn: 02-bd/database/problem-bank.md:21-23].
   - **Mặc định toàn hệ thống** (F4-11): dùng khi một bài toán không khai riêng, thuộc màn này [Nguồn: DEC-2026-0831-problem-authoring-round2 — `DEC-2026-0831-problem-authoring-round2`, Q7(e)]. **Từ V1.0 bốn giá trị này sửa được** (theo `DEC-2026-1001-admin-configurable-settings`), lưu ở bảng một dòng `judge.grading_defaults`.
-  - **Theo từng ngôn ngữ** (F4-11): hệ số nhân `time_limit_multiplier` và `memory_limit_multiplier` áp lên giá trị của bài, thuộc màn này [Nguồn: 02-bd/database/judge-orchestration.md:90-104]; cả hai **sửa được** từ V1.0.
+  - **Theo từng ngôn ngữ** (F4-11): hệ số nhân `time_limit_multiplier` và `memory_limit_multiplier` áp lên giá trị của bài, thuộc màn này [Nguồn: 02-bd/database/judge-orchestration.md:101-114]; cả hai **sửa được** từ V1.0.
 - Không thiết kế lại sidebar, toolbar và chân trang — dùng lại khung chung [Nguồn: 02-bd/screens/admin/_shell.md:19-21].
 
 [Quyền sử dụng]
-- Xem: được, khi có Function `LANGUAGE_CONFIG`.
-- Thêm: không. Ba dòng ngôn ngữ seed sẵn, không tạo dòng mới.
-- Sửa: được.
-- Xoá: không.
+- Function `LANGUAGE_CONFIG` là Function thứ 11 của ma trận phân quyền (F4-11, owner 2026-10-23), canh cổng màn này và bốn bảng `language_configs`, `grading_defaults`, `sandbox_settings`, `generator_sandbox_settings`. Seed: `ADMIN` đủ bốn Action; `INSTRUCTOR`, `STUDENT` và vai trò tuỳ biến đều `false`.
+- Xem (`READ`): được mở màn khi có `READ` trên `LANGUAGE_CONFIG`.
+- Sửa (`UPDATE`): cần `UPDATE` để nút "Lưu" kích hoạt và để lưu được; chỉ có `READ` thì màn mở ở chế độ chỉ đọc (máy chủ vẫn chặn ghi).
+- Thêm (`CREATE`): không có tác dụng ở màn này. Ba dòng ngôn ngữ seed sẵn, các bảng cài đặt là dòng đơn (singleton), không tạo dòng mới.
+- Xoá (`DELETE`): không có tác dụng ở màn này, không có thao tác xoá.
+- Prototype chưa tách quyền theo vai trò: màn dựng không đọc quyền `LANGUAGE_CONFIG` nào, ai vào được `/admin/*` cũng sửa và lưu được. Việc tách `READ` và `UPDATE` làm ở bước nối API (ponytail bậc 3: demo chỉ có một vai trò `ADMIN` đủ quyền), không đổi mã ở đợt này.
 
 [Số bản ghi tối đa] Bảng ngôn ngữ: đúng 3 dòng. Giới hạn mặc định: 4 ô. Sandbox: 3 công tắc và 1 ô số. Script sinh testcase: 2 ô. Không phân trang.
 
 [Nguồn: 01-rd/screens/admin/ADM0501_language_config.md:13-14,28-45,50-58;
-02-bd/database/judge-orchestration.md:90-104,152-182; 02-bd/security/judge-orchestration.md:68-80]
+02-bd/database/judge-orchestration.md:101-114,163-190; 02-bd/security/judge-orchestration.md:68-80]
 
 ### 4.2 DTO liên quan
 
@@ -166,10 +170,10 @@ flowchart LR
 
 | NO | Bảng | Ghi chú |
 | --: | :--- | :--- |
-| 1 | `judge.language_configs` | [Nguồn: 02-bd/database/judge-orchestration.md:90-104]. Thêm cột `enabled` (đóng Q1); ba cột sandbox rời bảng này |
-| 2 | `judge.grading_defaults` | Bảng một dòng mới, mục 1.9 [Nguồn: 02-bd/database/judge-orchestration.md:152-166] (đóng Q2) |
-| 3 | `judge.sandbox_settings` | Bảng một dòng mới, mục 1.10 [Nguồn: 02-bd/database/judge-orchestration.md:168-182] (đóng Q4) |
-| 4 | `judge.generator_sandbox_settings` | Bảng một dòng, mục 1.8 [Nguồn: 02-bd/database/judge-orchestration.md:140-150] (Khu vực F) |
+| 1 | `judge.language_configs` | [Nguồn: 02-bd/database/judge-orchestration.md:101-114]. Thêm cột `enabled` (đóng Q1); ba cột sandbox rời bảng này |
+| 2 | `judge.grading_defaults` | Bảng một dòng mới, mục 1.9 [Nguồn: 02-bd/database/judge-orchestration.md:163-177] (đóng Q2) |
+| 3 | `judge.sandbox_settings` | Bảng một dòng mới, mục 1.10 [Nguồn: 02-bd/database/judge-orchestration.md:179-190] (đóng Q4) |
+| 4 | `judge.generator_sandbox_settings` | Bảng một dòng, mục 1.8 [Nguồn: 02-bd/database/judge-orchestration.md:151-161] (Khu vực F) |
 
 Bốn giá trị "Giới hạn mặc định" **không còn đọc từ `application.yml`** (V0.2 đến V0.6 ghi chỉ đọc): từ V1.0 là dữ liệu do ADMIN đặt (`DEC-2026-1001-admin-configurable-settings`, `DEC-2026-1010-admin-operations-regroup`). Hệ số bộ nhớ seed Java 2,00, C++ và Python 1,00.
 
@@ -262,7 +266,7 @@ Bố cục dùng mốc **1024 px** của khung chung (`02-bd/screens/admin/_shel
 | | 2 | Tên tham số | `adminLanguageConfig.sandbox.col.title` | - | - | ListColumn | String | - | - | O | - | - | Tên tham số hiển thị cho người dùng<br>[Nguồn giá trị] Nhãn tĩnh i18n map từ mã tham số<br>[EVT liên quan] - |
 | | 3 | Mô tả tham số | `adminLanguageConfig.sandbox.col.meta` | - | - | ListColumn | String | - | - | O | - | - | Câu giải thích tác dụng. Prototype ghi "Luôn tắt trong sandbox chấm bài", "Tối đa 60 tiến trình", "Cắt còn 2 KB đầu"; ghi chú "Tắt trong mọi kỳ thi" của bản mẫu cũ đã bỏ vì không có khái niệm kỳ thi [Nguồn: 01-rd/req/judge-orchestration.md:67-70]. "Tối đa N tiến trình" lấy từ ô số NO 5, không còn là chữ cứng<br>[Nguồn giá trị] Nhãn tĩnh i18n map từ mã tham số<br>[EVT liên quan] - |
 | | 4 | Công tắc tham số | `adminLanguageConfig.sandbox.col.toggle` | `judge.sandbox_settings` (mục 1.10) | `network_access_enabled`, `child_process_limit_enabled`, `return_stderr_to_student` | Toggle | Boolean | - | - | I/O | Tắt / Bật / Bật | Trạng thái áp dụng của tham số | Ba công tắc, mỗi dòng một công tắc<br>[Nguồn giá trị] Ba cột BOOLEAN nêu trên (đóng Q4)<br>[EVT liên quan] EVT-4 |
-| | 5 | ~~Số tiến trình con tối đa~~ (đã bỏ V1.1, `DEC-2026-1014-sandbox-child-process-cap-constant`) | `adminLanguageConfig.sandbox.maxChildProcesses` | `judge.sandbox_settings` (mục 1.10) | `max_child_processes` | NumberBox | Number | 4 | Có | I/O | 60 | Số nguyên, đơn vị tiến trình | Ô số chỉ hiện khi công tắc "Giới hạn tiến trình con" bật; tối thiểu 1. Mặc định 60 là số prototype `[SoT: Suy luận]`<br>[Nguồn giá trị] Cột `max_child_processes`<br>[EVT liên quan] EVT-4 |
+| | 5 | ~~Số tiến trình con tối đa~~ (đã bỏ V1.1, `DEC-2026-1014-sandbox-child-process-cap-constant`) | `adminLanguageConfig.sandbox.maxChildProcesses` | ~~`judge.sandbox_settings`~~ (cột đã bỏ ở DB) | ~~`max_child_processes`~~ | NumberBox | Number | 4 | Có | I/O | 60 | Số nguyên, đơn vị tiến trình | Ô số chỉ hiện khi công tắc "Giới hạn tiến trình con" bật; tối thiểu 1. Mặc định 60 là số prototype `[SoT: Suy luận]`<br>[Nguồn giá trị] ~~Cột `max_child_processes`~~ — **không còn cột**: trần là hằng số 60 ở `application.yml`, DB chỉ có `child_process_limit_enabled` [Nguồn: 02-bd/database/judge-orchestration.md:187]<br>[EVT liên quan] EVT-4 |
 
 ### Khu vực E — Lưu ý khi đổi giới hạn (đã bỏ V1.0)
 
@@ -303,7 +307,7 @@ Bố cục dùng mốc **1024 px** của khung chung (`02-bd/screens/admin/_shel
 | | 3 | Nút huỷ | `adminLanguageConfig.confirm.btnCancel` | - | - | Button | - | - | - | I | - | - | Đóng hộp, không gửi gì, giữ nguyên mọi thay đổi chưa lưu<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-5 |
 
 [Nguồn: 09-layoutBase/Admin - Ngôn ngữ và giới hạn.dc.html:150-151,158,166-167,190-198,392-395,402-405,
-416-421,424-428; 02-bd/database/judge-orchestration.md:90-104,152-182;
+416-421,424-428; 02-bd/database/judge-orchestration.md:101-114,163-190;
 01-rd/screens/admin/ADM0501_language_config.md:28-45,50-58]
 
 ---
@@ -417,7 +421,7 @@ Bố cục dùng mốc **1024 px** của khung chung (`02-bd/screens/admin/_shel
 | 9 | `GradingDefaultsDto` | `compileTimeoutSeconds` | Number | `judge.grading_defaults` | `compile_timeout_sec` | Giới hạn mặc định "Giá trị giới hạn" ô 4 | Có | [Nguồn] Như NO 6<br>[Đích] Tham số của `UpdateLanguageConfigs`. Không tính vào giới hạn chạy. |
 | 10 | `SandboxConfigDto` | `networkAccessEnabled` | Boolean | `judge.sandbox_settings` | `network_access_enabled` | Sandbox "Công tắc tham số" dòng 1 | Có | [Nguồn] Trạng thái công tắc người dùng đặt<br>[Đích] Tham số của `UpdateLanguageConfigs`. Mặc định `false` ở tầng DB. |
 | 11 | `SandboxConfigDto` | `childProcessLimitEnabled` | Boolean | `judge.sandbox_settings` | `child_process_limit_enabled` | Sandbox "Công tắc tham số" dòng 2 | Có | [Nguồn] Trạng thái công tắc người dùng đặt<br>[Đích] Tham số của `UpdateLanguageConfigs`. Tắt thì không giới hạn tiến trình con (đóng Q4). |
-| 12 | `SandboxConfigDto` | ~~`maxChildProcesses`~~ (đã bỏ V1.1) | Number | `judge.sandbox_settings` | `max_child_processes` | Sandbox "Số tiến trình con tối đa" | Có | [Nguồn] Giá trị người dùng nhập khi công tắc bật<br>[Đích] Tham số của `UpdateLanguageConfigs`; số nguyên tối thiểu 1. |
+| 12 | `SandboxConfigDto` | ~~`maxChildProcesses`~~ (đã bỏ V1.1) | Number | ~~`judge.sandbox_settings`~~ | ~~`max_child_processes`~~ (cột đã bỏ ở DB) | Sandbox "Số tiến trình con tối đa" | Có | [Nguồn] Giá trị người dùng nhập khi công tắc bật<br>[Đích] Tham số của `UpdateLanguageConfigs`; số nguyên tối thiểu 1. |
 | 13 | `SandboxConfigDto` | `returnStderrToStudent` | Boolean | `judge.sandbox_settings` | `return_stderr_to_student` | Sandbox "Công tắc tham số" dòng 3 | Có | [Nguồn] Trạng thái công tắc người dùng đặt<br>[Đích] Tham số của `UpdateLanguageConfigs`. Quyết định có ghi `submission_testcase_results.stderr_snippet` hay không [Nguồn: 02-bd/database/judge-orchestration.md:55]. |
 | 14 | `GeneratorSandboxDto` | `maxRuntimeSeconds` | Number | `judge.generator_sandbox_settings` (`02-bd/database/judge-orchestration.md` mục 1.8) | `max_runtime_seconds` | Script sinh dữ liệu "Thời gian chạy tối đa" | Có | [Nguồn] Phản hồi của `GetLanguageConfigs`; giá trị người dùng nhập<br>[Đích] Tham số của `UpdateLanguageConfigs` |
 | 15 | `GeneratorSandboxDto` | `maxOutputMb` | Number | `judge.generator_sandbox_settings` (`02-bd/database/judge-orchestration.md` mục 1.8) | `max_output_mb` | Script sinh dữ liệu "Kích thước output tối đa" | Có | [Nguồn] Phản hồi của `GetLanguageConfigs`; giá trị người dùng nhập<br>[Đích] Tham số của `UpdateLanguageConfigs`. `problem-bank` đọc hai giá trị này khi chạy `GenerateTestcasesWithAi` (qua cổng đọc của `judge-orchestration`) |
@@ -431,7 +435,7 @@ Bố cục dùng mốc **1024 px** của khung chung (`02-bd/screens/admin/_shel
 | 3 | Sandbox chấm bài | `judge.sandbox_settings` | `SandboxSettingsRepository` | R, U | Đọc và cập nhật ba tham số sandbox (bảng một dòng, mục 1.10) | `GetLanguageConfigs`: R<br>`UpdateLanguageConfigs`: U |
 | 4 | Sandbox script sinh testcase | `judge.generator_sandbox_settings` | `GeneratorSandboxRepository` | R, U | Đọc và cập nhật hai giới hạn của script (bảng một dòng, mục 1.8) | `GetLanguageConfigs`: R<br>`UpdateLanguageConfigs`: U |
 
-Không có thao tác thêm (`C`) và xoá (`D`) trên màn này: ba dòng ngôn ngữ seed sẵn, A3 chỉ sửa giá trị [Nguồn: 02-bd/database/judge-orchestration.md:90-93]. Bốn giá trị "Giới hạn mặc định" từ V1.0 nằm ở bảng `grading_defaults`, không còn đọc từ `application.yml`.
+Không có thao tác thêm (`C`) và xoá (`D`) trên màn này: ba dòng ngôn ngữ seed sẵn, A3 chỉ sửa giá trị [Nguồn: 02-bd/database/judge-orchestration.md:102-103]. Bốn giá trị "Giới hạn mặc định" từ V1.0 nằm ở bảng `grading_defaults`, không còn đọc từ `application.yml`.
 
 `[Suy luận]` — tên repository do BD này đề xuất, DD module `judge-orchestration` chốt lại.
 
@@ -447,7 +451,7 @@ Không có thao tác thêm (`C`) và xoá (`D`) trên màn này: ba dòng ngôn 
 Từ V1.0 `UpdateLanguageConfigs` mang cả bốn giá trị "Giới hạn mặc định" (đóng Q2) và ghi một dòng Nhật ký hệ thống phân loại "Cấu hình" kèm giá trị cũ và mới (G2, EVT-11). Màn
 này không gọi endpoint nào của `problem-bank`: giới hạn theo từng bài thuộc màn `SHR0202_problem_authoring`.
 
-[Nguồn: 02-bd/database/judge-orchestration.md:90-104,152-182; 02-bd/security/judge-orchestration.md:68-80]
+[Nguồn: 02-bd/database/judge-orchestration.md:101-114,163-190; 02-bd/security/judge-orchestration.md:68-80]
 
 ---
 
@@ -484,9 +488,9 @@ này không gọi endpoint nào của `problem-bank`: giới hạn theo từng b
 
 | NO | Loại | Tóm tắt kiểm | Chi tiết | Mức | Mã thông báo | Ghi chú | EVT gọi | Thứ tự |
 | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: |
-| 1 | Kiểm quyền | Quyền truy cập màn | [Nội dung kiểm] Người dùng không có Function `LANGUAGE_CONFIG` thì không được vào màn và không được lưu.<br>[Nơi thực thi] Chặn ở cả tầng định tuyến phía giao diện (`ROLE_BY_AREA` cho prefix `/admin/*`) và tầng phân quyền phía máy chủ, không chỉ ẩn giao diện. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn không có quyền truy cập chức năng này." Chỉ vai trò `ADMIN` [Nguồn: 02-bd/security/judge-orchestration.md:75-79]. | EVT-1, EVT-5 | 1 |
+| 1 | Kiểm quyền | Quyền truy cập màn | [Nội dung kiểm] Người dùng không có `READ` trên Function `LANGUAGE_CONFIG` thì không được vào màn; không có `UPDATE` thì nút "Lưu" không kích hoạt và máy chủ từ chối lưu. `CREATE` và `DELETE` không có tác dụng ở màn này (3 dòng ngôn ngữ seed, các bảng cài đặt là dòng đơn).<br>[Nơi thực thi] Chặn ở cả tầng định tuyến phía giao diện (`ROLE_BY_AREA` cho prefix `/admin/*`) và tầng phân quyền phía máy chủ, không chỉ ẩn giao diện. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn không có quyền truy cập chức năng này." Chỉ vai trò `ADMIN` [Nguồn: 02-bd/security/judge-orchestration.md:75-79]. | EVT-1, EVT-5 | 1 |
 | 2 | Kiểm nhập liệu | Hệ số thời gian là số dương | [Nội dung kiểm] Hệ số thời gian phải là số lớn hơn 0, tối đa 2 chữ số thập phân. Bỏ trống, chữ, số âm hoặc 0 đều không hợp lệ.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Viền ô hệ số của dòng vi phạm + toast. | Lỗi | Chưa có mã thông báo | Nội dung "Hệ số thời gian phải là số lớn hơn 0, tối đa 2 chữ số thập phân." | EVT-2, EVT-5 | 1 |
-| 3 | Kiểm nhập liệu | Khoảng giá trị hệ số thời gian | [Nội dung kiểm] Hệ số thời gian nằm ngoài khoảng 0,10 đến 9,99 thì không cho lưu.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Viền ô hệ số của dòng vi phạm + toast. | Lỗi | Chưa có mã thông báo | Nội dung "Hệ số thời gian phải nằm trong khoảng 0,10 đến 9,99." Cận trên đến từ kiểu cột `DECIMAL(3,2)` [Nguồn: 02-bd/database/judge-orchestration.md:90-104]; cận dưới `[Suy luận]` — dưới 0,10 thì giới hạn hiệu dụng của mọi bài đều rơi xuống dưới 100 ms, không bài nào chấm nổi. **Prototype cũ chỉ kiểm lớn hơn 0 và để lọt hệ số 50** (phát hiện F6 của báo cáo 2026-10-10). | EVT-2, EVT-5 | 2 |
+| 3 | Kiểm nhập liệu | Khoảng giá trị hệ số thời gian | [Nội dung kiểm] Hệ số thời gian nằm ngoài khoảng 0,10 đến 9,99 thì không cho lưu.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Viền ô hệ số của dòng vi phạm + toast. | Lỗi | Chưa có mã thông báo | Nội dung "Hệ số thời gian phải nằm trong khoảng 0,10 đến 9,99." Cận trên đến từ kiểu cột `DECIMAL(3,2)` [Nguồn: 02-bd/database/judge-orchestration.md:101-114]; cận dưới `[Suy luận]` — dưới 0,10 thì giới hạn hiệu dụng của mọi bài đều rơi xuống dưới 100 ms, không bài nào chấm nổi. **Prototype cũ chỉ kiểm lớn hơn 0 và để lọt hệ số 50** (phát hiện F6 của báo cáo 2026-10-10). | EVT-2, EVT-5 | 2 |
 | 4 | Kiểm nhập liệu | Khoảng giới hạn thời gian hiệu dụng | [Nội dung kiểm] Giới hạn thời gian hiệu dụng (giới hạn thời gian mặc định nhân hệ số) phải là số nguyên dương trong khoảng 100 đến 30.000 ms.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Viền ô hệ số hoặc ô giới hạn thời gian mặc định làm vượt khoảng + toast. | Lỗi | Chưa có mã thông báo | Nội dung "Giới hạn thời gian sau khi nhân hệ số phải nằm trong khoảng 100 đến 30.000 ms." Kiểm cả ở máy chủ vì giới hạn mặc định đổi độc lập với hệ số. Khoảng cụ thể `[Suy luận]` — chưa có nguồn nào chốt trần thời gian chạy một testcase; DD `judge-orchestration` chốt lại. | EVT-5, EVT-10 | 3 |
 | 5 | Kiểm nhập liệu | Khoảng giới hạn bộ nhớ hiệu dụng | [Nội dung kiểm] Giới hạn bộ nhớ hiệu dụng (giới hạn bộ nhớ mặc định nhân hệ số bộ nhớ) phải là số nguyên dương trong khoảng 64 đến 1.024 MB.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Viền ô hệ số bộ nhớ hoặc ô giới hạn bộ nhớ mặc định làm vượt khoảng + toast. | Lỗi | Chưa có mã thông báo | Nội dung "Giới hạn bộ nhớ sau khi nhân hệ số phải nằm trong khoảng 64 đến 1.024 MB." Từ V1.0 cả hai thừa số đều sửa được nên kiểm này kích hoạt được từ giao diện. Khoảng cụ thể `[Suy luận]`, đối chiếu giá trị 256 MB và 512 MB của mock. | EVT-5, EVT-10 | 4 |
 | 6 | Kiểm nghiệp vụ | Còn ít nhất một ngôn ngữ đang bật | [Nội dung kiểm] Không cho tắt ngôn ngữ cuối cùng — tắt hết ba ngôn ngữ thì không ai nộp được bài nào.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Công tắc của dòng vi phạm + toast. | Lỗi | Chưa có mã thông báo | Nội dung "Phải giữ ít nhất một ngôn ngữ đang bật." `[Suy luận]` — RD không nêu ràng buộc này, nhưng hệ quả đã ghi ở RD (ngôn ngữ tắt không còn chọn được ở `problem_detail`) áp cho cả ba thì màn giải bài không còn lựa chọn nào [Nguồn: 01-rd/screens/admin/ADM0501_language_config.md:50-58]. | EVT-3, EVT-5 | 1 |
@@ -501,7 +505,7 @@ này không gọi endpoint nào của `problem-bank`: giới hạn theo từng b
 
 Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 
-[Nguồn: 02-bd/security/judge-orchestration.md:75-79; 02-bd/database/judge-orchestration.md:98,103;
+[Nguồn: 02-bd/security/judge-orchestration.md:75-79; 02-bd/database/judge-orchestration.md:108-109;
 01-rd/screens/admin/ADM0501_language_config.md:50-58]
 
 ---
@@ -516,7 +520,7 @@ Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 | Q4 | ~~Ba tham số sandbox là **per-language** (đã chốt ở `02-bd/database/judge-orchestration.md:100-102`, ba cột nằm trên từng dòng `language_configs`) hay **toàn cục dùng chung** (bằng chứng UI: một bộ ba công tắc phẳng, không có bộ chọn ngôn ngữ, `state.sb` không khoá theo `language` [Nguồn: 09-layoutBase/Admin - Ngôn ngữ và giới hạn.dc.html:271])? Kèm theo: "Giới hạn tiến trình con" ánh xạ cột `max_child_processes` kiểu INT nhưng UI chỉ có công tắc bật hoặc tắt, không có ô nhập số. BD này giữ nguyên đề xuất của V0.1: nghiêng về **toàn cục**, vì cgroup và namespace mà go-sandbox dựng cho một lần gọi `JudgeExecutionPort.run()` không đọc `language` để quyết định chặn mạng hay giới hạn tiến trình con — ba tham số này là thuộc tính của **lệnh chạy**, không phải của **ngôn ngữ** `[Suy luận]`.~~ **ĐÃ CHỐT 2026-10-10 (owner "ok, triển khai", `DEC-2026-1010-admin-operations-regroup`):** ba tham số sandbox là **toàn cục** (thuộc tính của lệnh chạy, không của ngôn ngữ). Ba cột rời `language_configs` sang bảng một dòng `judge.sandbox_settings` (mục 1.10); "Giới hạn tiến trình con" là công tắc kèm ô số khi bật (`child_process_limit_enabled`, `max_child_processes`, mặc định 60). Cập nhật `02-bd/security/judge-orchestration.md` mục 5. | Đã đóng | Đã đóng |
 | Q5 | ~~Tắt một ngôn ngữ có cần hộp xác nhận không, hay chỉ đổi công tắc rồi chờ bấm "Lưu thay đổi"?~~ **ĐÃ CHỐT 2026-10-10 (owner "ok, triển khai", `DEC-2026-1010-admin-operations-regroup`):** không hỏi ở từng công tắc; **một hộp xác nhận lúc Lưu**, chỉ khi có ngôn ngữ chuyển từ bật sang tắt, nêu hậu quả (Khu vực H, Sheet 9 NO 11). | Đã đóng | Đã đóng |
 | Q6 | ~~Rời màn khi còn thay đổi chưa lưu (chọn mục nav khác, bấm liên kết chân trang) thì có hỏi xác nhận không?~~ **ĐÃ CHỐT 2026-10-10 (owner "ok, triển khai", `DEC-2026-1010-admin-operations-regroup`):** có cảnh báo khi rời màn lúc còn thay đổi chưa lưu, dùng **một cơ chế dùng chung** cho mọi form Admin (`shared/ui/feedback/unsaved-changes-dialog`), chốt chung cho khu Admin. Nối vào từng màn theo hiện trạng prototype, xem `06-plan/PROTOTYPE_DEBT.md` mục 32. | Đã đóng | Đã đóng |
-| Q7 | ~~Hệ số bộ nhớ `memory_limit_multiplier` lấy số nào, và có cần ô sửa trên giao diện không? Prototype hiển thị Java 512 MB trên nền mặc định 256 MB, tức hệ số 2,0 [Nguồn: 09-layoutBase/Admin - Ngôn ngữ và giới hạn.dc.html:405,418], trong khi BD database đề xuất mặc định `1.00` cho cả ba ngôn ngữ [Nguồn: 02-bd/database/judge-orchestration.md:99]. Bảng trong prototype không có cột nào cho hệ số bộ nhớ.~~ **ĐÃ CHỐT 2026-10-10 (owner "ok, triển khai", `DEC-2026-1010-admin-operations-regroup`):** giữ hệ số bộ nhớ và **cho sửa** (nằm cùng ô "Hệ số" với hệ số thời gian, không thêm cột riêng); seed Java `2.00`, C++ và Python `1.00`; sửa BD database (trước đó `1.00` cho cả ba). Cùng khoảng hợp lệ 0,10 đến 9,99. | Đã đóng | Đã đóng |
+| Q7 | ~~Hệ số bộ nhớ `memory_limit_multiplier` lấy số nào, và có cần ô sửa trên giao diện không? Prototype hiển thị Java 512 MB trên nền mặc định 256 MB, tức hệ số 2,0 [Nguồn: 09-layoutBase/Admin - Ngôn ngữ và giới hạn.dc.html:405,418], trong khi BD database đề xuất mặc định `1.00` cho cả ba ngôn ngữ [Nguồn: 02-bd/database/judge-orchestration.md:109]. Bảng trong prototype không có cột nào cho hệ số bộ nhớ.~~ **ĐÃ CHỐT 2026-10-10 (owner "ok, triển khai", `DEC-2026-1010-admin-operations-regroup`):** giữ hệ số bộ nhớ và **cho sửa** (nằm cùng ô "Hệ số" với hệ số thời gian, không thêm cột riêng); seed Java `2.00`, C++ và Python `1.00`; sửa BD database (trước đó `1.00` cho cả ba). Cùng khoảng hợp lệ 0,10 đến 9,99. | Đã đóng | Đã đóng |
 | Q8 | ~~Ngưỡng breakpoint cho bố cục hai cột — số cụ thể.~~ **ĐÃ CHỐT 2026-10-10 (owner "ok, triển khai", `DEC-2026-1010-admin-operations-regroup`):** dùng mốc **1024 px** của khung chung Admin (`02-bd/screens/admin/_shell.md` mục 2.3), không đặt mốc riêng. | Đã đóng | Đã đóng |
 | Q9 | ~~Giới hạn sandbox cho script sinh dữ liệu testcase (F2-14) có đặt ở màn này không?~~ **ĐÃ CHỐT 2026-10-03 (chủ dự án):** có, thêm **một thẻ riêng** (Khu vực F) vì giới hạn này phục vụ chức năng "Sinh tự động" mà cả A2 và A3 đều dùng, và là hai ô số chứ không phải công tắc như Khu vực D. Script do AI viết chạy bằng Python. Số lần sinh mỗi bài thuộc `ADM0301` Khu vực H | Giá trị mặc định và nơi lưu còn mở ở Q10 | Đã đóng (Q10 mở) |
 | Q10 | ~~Hai giới hạn của script sinh dữ liệu lưu ở đâu và mặc định là bao nhiêu?~~ **ĐÃ CHỐT 2026-10-03 (chủ dự án đồng ý đề xuất):** bảng singleton riêng `judge.generator_sandbox_settings` (`02-bd/database/judge-orchestration.md` mục 1.8), cùng khuôn `cluster_settings`, không thêm cột vào `language_configs` vì đó là bảng theo từng ngôn ngữ; mặc định **30 giây** và **100 MB**, khoảng 1 đến 300 giây và 1 đến 1024 MB (số do BD đề xuất, chủ dự án đồng ý, vẫn có thể đổi bằng giao diện) | - | Đã đóng |

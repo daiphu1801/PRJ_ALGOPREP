@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import { Shuffle } from "lucide-react";
 import {
   fetchProblemListPage,
+  InProgressList,
   problemLevelLabel,
   problemLevelRank,
   problemLevelTone,
@@ -34,7 +35,6 @@ import {
   Button,
   Card,
   DataTable,
-  PageHeader,
   Pagination,
   FilterBar,
   FilterMenu,
@@ -134,8 +134,6 @@ export function ProblemListView() {
     (currentPage - 1) * pageSize,
     currentPage * pageSize,
   );
-
-  const inProgressItems = page.inProgress.slice(0, MAX_IN_PROGRESS);
 
   const assignmentGroups = page.classAssignments.slice(
     0,
@@ -264,25 +262,23 @@ export function ProblemListView() {
 
   return (
     <div className="p-6">
-      <PageHeader
-        title={t("title")}
-        actions={
-          <div className="flex gap-2">
-            <Button
-              asChild
-              variant="ghost"
-              size="sm"
-              className="border border-[var(--color-border)]"
-            >
-              <Link href="/saved">{t("summary.linkSaved")}</Link>
-            </Button>
-            <Button variant="cta" size="sm" onClick={pickRandom}>
-              <Shuffle className="mr-1.5 h-3.5 w-3.5" />
-              {t("summary.btnRandom")}
-            </Button>
-          </div>
-        }
-      />
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+        <h1 className="text-lg font-bold tracking-tight">{t("title")}</h1>
+        <div className="flex gap-2">
+          <Button
+            asChild
+            variant="ghost"
+            size="sm"
+            className="border border-[var(--color-border)]"
+          >
+            <Link href="/saved">{t("summary.linkSaved")}</Link>
+          </Button>
+          <Button variant="cta" size="sm" onClick={pickRandom}>
+            <Shuffle className="mr-1.5 h-3.5 w-3.5" />
+            {t("summary.btnRandom")}
+          </Button>
+        </div>
+      </div>
 
       <div
         className="mb-4 flex gap-2 overflow-x-auto pb-1"
@@ -431,34 +427,13 @@ export function ProblemListView() {
             <h2 className="mb-2 text-[13px] font-semibold">
               {t("inProgress.title")}
             </h2>
-            {inProgressItems.length === 0 ? (
-              <p className="text-[12.5px] text-[var(--color-text-muted)]">
-                {t("inProgress.empty")}
-              </p>
-            ) : (
-              <ul className="flex flex-col gap-2">
-                {inProgressItems.map((item) => (
-                  <li key={item.problemId}>
-                    <Link
-                      href={`/problems/${item.problemId}`}
-                      className="block rounded-lg border border-[var(--color-border)] px-2.5 py-2 hover:bg-[var(--color-row-hover)]"
-                    >
-                      <p className="truncate text-[12.5px] font-semibold">
-                        {item.title}
-                      </p>
-                      <p className="text-[11.5px] text-[var(--color-text-muted)]">
-                        {t(`language.${item.language}`)} ·{" "}
-                        {t("inProgress.lastVerdict", {
-                          verdict: t(`verdict.${item.lastVerdict}`),
-                          passed: item.passedCount,
-                          total: item.totalCount,
-                        })}
-                      </p>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
+            <InProgressList
+              items={page.inProgress}
+              limit={MAX_IN_PROGRESS}
+              layout="compact"
+              emptyText={t("inProgress.empty")}
+              footerLink={{ href: "/workspace", label: t("inProgress.viewAll") }}
+            />
           </Card>
 
           <Card className="px-4 py-3.5">

@@ -1,0 +1,102 @@
+{
+  "_": "Luong sua thong tin lop va xoa lop cua actor A2, tren man INS0205 (cung goi tu INS0201). Nguon: 01-rd/screens/teacher/INS0205_class_detail.md REQ-02 (dong 114), 01-rd/req/identity.md:117-120 (F1-24 xoa that, sua lop dung chung luong F1-23), 03-dd/api/identity.md muc 0.4 endpoint #21 (PATCH) va #22 (DELETE), 02-bd/database/identity.md:89-92 (classes hard delete, khong co deleted_at). Ve theo quy tac mo ta nghiep vu 2026-10-19: khong ten ham, khong SQL. [SoT: Suy luan] (1) viec xoa lop keo theo ghi danh, ma moi, bai giao cua lop hay khong DD chua noi ro, so do chi ghi 'Xoa lop' khong hua cascade; (2) lop khong thuoc giang vien tra 404 hay 403 chua kiem, nhanh loi khong ve. Bo bot: nhanh loi, xac nhan o phia giao dien chi ve 2 mui ten. | Cap nhat 2026-10-20: siet theo quy tac moi, nhan mui ten la cau tieng Viet thuong, khong duong dan endpoint, ma HTTP, ma quyen, ten su kien, thuat ngu ky thuat; duong dan, ma HTTP va ma quyen nam o DD. | Tach 2 phan 2026-10-20 vi ban mot phan qua cao (lint: cao 1.81 lan be ngang). Phan 2/2: xoa lop (F1-24).",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Xoá lớp học (Giảng viên) (2/2)",
+  "covers": [
+    "F1-24"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Giảng viên",
+        "role": "actor"
+      },
+      {
+        "name": "ClassController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "ClassService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema identity"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 2 - Xoá lớp, xoá thật (F1-24)"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Bấm Xoá lớp, đọc cảnh báo trong hộp xác nhận"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Xác nhận xoá"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "ClassController",
+        "text": "Gửi yêu cầu xoá lớp"
+      },
+      {
+        "from": "ClassController",
+        "to": "ClassController",
+        "text": "Kiểm tra quyền xoá lớp"
+      },
+      {
+        "from": "ClassController",
+        "to": "ClassService",
+        "text": "Yêu cầu xoá lớp"
+      },
+      {
+        "from": "ClassService",
+        "to": "PostgreSQL",
+        "text": "Kiểm tra lớp thuộc giảng viên này"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "ClassService",
+        "text": "Lớp thuộc quyền phụ trách hoặc không",
+        "kind": "return"
+      },
+      {
+        "from": "ClassService",
+        "to": "PostgreSQL",
+        "text": "Xoá lớp và ghi nhật ký hệ thống"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "ClassService",
+        "text": "Đã xoá",
+        "kind": "return"
+      },
+      {
+        "from": "ClassService",
+        "to": "ClassController",
+        "text": "Xoá xong",
+        "kind": "return"
+      },
+      {
+        "from": "ClassController",
+        "to": "Giảng viên",
+        "text": "Báo thành công",
+        "kind": "return"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "Giảng viên",
+        "text": "Về danh sách lớp, lớp đã biến mất"
+      }
+    ]
+  }
+}

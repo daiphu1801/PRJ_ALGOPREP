@@ -1,5 +1,5 @@
 {
-  "_": "Luong tao lop hoc va phat ma moi cua actor A2, ke ca buoc hoc vien dung ma de tham gia. Nguon: US-A2-07 (01-rd/req/user_stories/a2_instructor.md:102-123), 01-rd/req/identity.md (F1-23, F1-25, F1-26), 03-dd/api/identity.md muc 0.4 (endpoint #20, #23, #25), 02-bd/architecture/identity.md muc 5 (ma moi TTL 7 ngay), 02-bd/database/identity.md:93-94 (nhieu ma hieu luc song song). Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen.",
+  "_": "Luong tao lop hoc va phat ma moi cua actor A2, ke ca buoc hoc vien dung ma de tham gia. Nguon: US-A2-07 (01-rd/req/user_stories/a2_instructor.md:102-123), 01-rd/req/identity.md (F1-23, F1-25, F1-26), 03-dd/api/identity.md muc 0.4 (endpoint #20, #23, #25), 02-bd/architecture/identity.md muc 5 (ma moi TTL 7 ngay), 02-bd/database/identity.md:93-94 (nhieu ma hieu luc song song). Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen. | Cap nhat 2026-10-20: siet theo quy tac moi, nhan mui ten la cau tieng Viet thuong, khong duong dan endpoint, ma HTTP, ma quyen, ten su kien, thuat ngu ky thuat; duong dan, ma HTTP va ma quyen nam o DD.",
   "kind": "sequence",
   "title": "Sơ đồ tuần tự chi tiết - Tạo lớp học và phát mã mời (Giảng viên) (2/3)",
   "covers": [
@@ -41,7 +41,7 @@
       {
         "from": "Giảng viên",
         "to": "ClassController",
-        "text": "POST /identity/classes/{classId}/invite-codes"
+        "text": "Gửi yêu cầu tạo mã mời"
       },
       {
         "from": "ClassController",
@@ -84,7 +84,7 @@
       {
         "from": "ClassController",
         "to": "Giảng viên",
-        "text": "201 Created",
+        "text": "Báo tạo thành công",
         "kind": "return"
       },
       {

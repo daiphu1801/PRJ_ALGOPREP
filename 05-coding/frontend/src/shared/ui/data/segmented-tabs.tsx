@@ -49,7 +49,7 @@ export function SegmentedTabs<T extends string>({
             aria-pressed={active}
             onClick={() => onValueChange(option.value)}
             className={cn(
-              "h-7 rounded-[9px] px-3 text-[12.5px] font-semibold transition-colors",
+              "h-7 shrink-0 whitespace-nowrap rounded-[9px] px-3 text-[12.5px] font-semibold transition-colors",
               "focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--color-primary)]",
               active
                 ? "bg-[var(--color-primary)] text-[var(--color-on-primary)] shadow-sm"

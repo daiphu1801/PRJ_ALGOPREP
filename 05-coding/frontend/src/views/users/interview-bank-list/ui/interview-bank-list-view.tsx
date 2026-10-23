@@ -12,7 +12,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { Layers, Mic } from "lucide-react";
 import {
   topicLabel,
   levelLabel,
@@ -36,9 +36,9 @@ import {
   Button,
   Card,
   EmptyState,
+  FilterBar,
   FilterMenu,
   ProgressBar,
-  TextField,
   Toggle,
 } from "@/shared/ui";
 
@@ -299,100 +299,98 @@ export function InterviewBankListView() {
 
   return (
     <div className="p-6">
-      <div className="mb-4 flex flex-wrap items-center justify-end gap-4">
+      <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-lg font-bold tracking-tight">{t("title")}</h1>
+          <p className="text-[12.5px] text-[var(--color-text-muted)]">
+            {t("subtitle")}
+          </p>
+        </div>
         <div className="flex gap-2">
           <Button
             variant="ghost"
-            size="sm"
+            size="md"
             className="border border-[var(--color-border)]"
             disabled={filtered.length === 0}
             onClick={startDrill}
           >
+            <Layers className="mr-2 h-4 w-4" aria-hidden="true" />
             {t("startDrill", { count: Math.min(DRILL_SIZE, filtered.length) })}
           </Button>
-          {/* Chưa có route độc lập cho mock_interview (USR0302) — mount hiện tại chỉ có
-              /submissions/[submissionId]/interview, đòi hỏi một submissionId mà màn này không có
-              [SoT: Suy luận — không tìm thấy route nào khác dưới src/app/(student)]. Ghi nợ ở
-              Summary thay vì dẫn tới một URL bịa. */}
-          <Button
-            variant="primary"
-            size="sm"
-            disabled
-            title={t("startMockInterviewUnavailable")}
-          >
-            {t("startMockInterview")}
+          <Button asChild variant="primary" size="md">
+            <Link href="/mock-interview">
+              <Mic className="mr-2 h-4 w-4" aria-hidden="true" />
+              {t("startMockInterview")}
+            </Link>
           </Button>
         </div>
       </div>
 
-      <div className="grid gap-3.5 lg:grid-cols-2">
+      <FilterBar
+        search={{
+          label: t("searchLabel"),
+          placeholder: t("searchPlaceholder"),
+          value: query,
+          onChange: setQuery,
+          onSubmit: announceSearch,
+          maxLength: SEARCH_MAX_LENGTH,
+        }}
+      >
+        <FilterMenu
+          label={t("statusFilterLabel")}
+          value={status}
+          onValueChange={setStatus}
+          options={[
+            { value: "all" as const, label: t("statusTabs.all") },
+            { value: "new" as const, label: t("statusTabs.new") },
+            {
+              value: "reviewing" as const,
+              label: t("statusTabs.reviewing"),
+            },
+            { value: "known" as const, label: t("statusTabs.known") },
+          ]}
+        />
+        <FilterMenu
+          label={t("topicFilterLabel")}
+          value={topic}
+          onValueChange={setTopic}
+          options={[
+            { value: "all" as const, label: t("filterAll") },
+            ...topicList.map((item) => ({
+              value: item.key,
+              label: item.label,
+            })),
+          ]}
+        />
+        <FilterMenu
+          label={t("levelFilterLabel")}
+          value={level}
+          onValueChange={setLevel}
+          options={[
+            { value: "all" as const, label: t("filterAll") },
+            ...levelList.map((item) => ({
+              value: item.key,
+              label: item.label,
+            })),
+          ]}
+        />
+        <Toggle
+          showLabel
+          checked={bookmarkedOnly}
+          onCheckedChange={setBookmarkedOnly}
+          label={t("bookmarkedOnly")}
+        />
+      </FilterBar>
+
+      <div className="grid items-start gap-4 lg:[grid-template-columns:minmax(0,5fr)_minmax(0,6fr)]">
         <Card className="!p-0 overflow-hidden">
-          <div className="flex flex-col gap-2.5 border-b border-[var(--color-border)] px-4 py-3">
-            <div className="flex flex-wrap items-center gap-2.5">
-              <TextField
-                label={t("searchLabel")}
-                hideLabel
-                leadingIcon={<Search className="h-3.5 w-3.5" />}
-                placeholder={t("searchPlaceholder")}
-                value={query}
-                maxLength={SEARCH_MAX_LENGTH}
-                onChange={(event) => setQuery(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") announceSearch();
-                }}
-                wrapperClassName="min-w-[180px] flex-1"
-              />
-              <FilterMenu
-                label={t("statusFilterLabel")}
-                value={status}
-                onValueChange={setStatus}
-                options={[
-                  { value: "all" as const, label: t("statusTabs.all") },
-                  { value: "new" as const, label: t("statusTabs.new") },
-                  {
-                    value: "reviewing" as const,
-                    label: t("statusTabs.reviewing"),
-                  },
-                  { value: "known" as const, label: t("statusTabs.known") },
-                ]}
-              />
-              <Toggle
-                showLabel
-                checked={bookmarkedOnly}
-                onCheckedChange={setBookmarkedOnly}
-                label={t("bookmarkedOnly")}
-              />
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              <FilterMenu
-                label={t("topicFilterLabel")}
-                value={topic}
-                onValueChange={setTopic}
-                options={[
-                  { value: "all" as const, label: t("filterAll") },
-                  ...topicList.map((item) => ({
-                    value: item.key,
-                    label: item.label,
-                  })),
-                ]}
-              />
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              <FilterMenu
-                label={t("levelFilterLabel")}
-                value={level}
-                onValueChange={setLevel}
-                options={[
-                  { value: "all" as const, label: t("filterAll") },
-                  ...levelList.map((item) => ({
-                    value: item.key,
-                    label: item.label,
-                  })),
-                ]}
-              />
-            </div>
-          </div>
-          <div className="max-h-[620px] overflow-y-auto">
+          <p className="border-b border-[var(--color-border)] px-4 py-2.5 text-[12px] font-semibold text-[var(--color-text-muted)]">
+            {t("shownCount", {
+              shown: filtered.length,
+              total: page.questions.length,
+            })}
+          </p>
+          <div className="max-h-[68dvh] overflow-y-auto">
             {filtered.length === 0 ? (
               <EmptyState>{t("emptyFiltered")}</EmptyState>
             ) : (
@@ -429,7 +427,7 @@ export function InterviewBankListView() {
                   {levelLabel(levelList, selected.level)}
                 </span>
               </div>
-              <h2 className="mb-4 text-lg font-semibold text-pretty">
+              <h2 className="mb-5 text-xl font-bold tracking-tight text-pretty">
                 {selected.question}
               </h2>
 
@@ -442,7 +440,7 @@ export function InterviewBankListView() {
                     {selected.suggestedApproach.map((point, index) => (
                       <li
                         key={`${index}-${point}`}
-                        className="flex gap-2.5 text-[13px] text-[var(--color-text-muted)]"
+                        className="flex gap-2.5 rounded-lg bg-[var(--color-surface-hover)] px-3 py-2 text-[13px] text-[var(--color-text-muted)]"
                       >
                         <span className="font-mono text-[11px] font-semibold text-[var(--color-primary)]">
                           {String(index + 1).padStart(2, "0")}
@@ -455,13 +453,18 @@ export function InterviewBankListView() {
               ) : null}
 
               {selected.coreKeywords.length > 0 ? (
-                <div className="mb-4 flex flex-wrap gap-1.5">
-                  {selected.coreKeywords.map((keyword) => (
-                    <Badge key={keyword} variant="neutral">
-                      {keyword}
-                    </Badge>
-                  ))}
-                </div>
+                <>
+                  <p className="mb-2 text-[10.5px] font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
+                    {t("quickView.keywordsLabel")}
+                  </p>
+                  <div className="mb-4 flex flex-wrap gap-1.5">
+                    {selected.coreKeywords.map((keyword) => (
+                      <Badge key={keyword} variant="neutral">
+                        {keyword}
+                      </Badge>
+                    ))}
+                  </div>
+                </>
               ) : null}
 
               <div className="border-t border-[var(--color-border)] pt-3">

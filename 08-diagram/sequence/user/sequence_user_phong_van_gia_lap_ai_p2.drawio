@@ -48,13 +48,13 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e13" value="2. POST /ai/interviews/{id}/turns { answer }" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.2566;exitDx=0;exitDy=0;entryX=0.5;entryY=0.2566;entryDx=0;entryDy=0;" edge="1" parent="1" source="v2" target="v3">
+        <mxCell id="e13" value="2. Gửi câu trả lời của người học" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.2566;exitDx=0;exitDy=0;entryX=0.5;entryY=0.2566;entryDx=0;entryDy=0;" edge="1" parent="1" source="v2" target="v3">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e14" value="2.1. submitTurn(command)" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.3032;exitDx=0;exitDy=0;entryX=0.5;entryY=0.3032;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v4">
+        <mxCell id="e14" value="2.1. Xử lý lượt trả lời" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.3032;exitDx=0;exitDy=0;entryX=0.5;entryY=0.3032;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v4">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e15" value="2.1.1. Đọc ChatMemory của phiên (Redis)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.3499;exitDx=0;exitDy=0;entryX=0.5;entryY=0.3790;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v4">
+        <mxCell id="e15" value="2.1.1. Đọc bộ nhớ hội thoại của phiên" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.3499;exitDx=0;exitDy=0;entryX=0.5;entryY=0.3790;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v4">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
             <mxPoint x="490" y="300" />
@@ -62,7 +62,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e16" value="2.1.2. Các lượt hội thoại trước đó (Redis)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.4169;exitDx=0;exitDy=0;entryX=0.5;entryY=0.4461;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v4">
+        <mxCell id="e16" value="2.1.2. Các lượt hội thoại trước đó" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.4169;exitDx=0;exitDy=0;entryX=0.5;entryY=0.4461;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v4">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
             <mxPoint x="490" y="346" />
@@ -78,7 +78,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e18" value="2.1.4. nextTurn(history, answer) (SpringAiLlmAdapter)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.5510;exitDx=0;exitDy=0;entryX=0.5;entryY=0.5802;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v4">
+        <mxCell id="e18" value="2.1.4. Nhờ AI nêu câu hỏi tiếp theo" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.5510;exitDx=0;exitDy=0;entryX=0.5;entryY=0.5802;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v4">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
             <mxPoint x="490" y="438" />
@@ -86,7 +86,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e19" value="2.1.5. Câu trả lời người học vào user message - luôn là dữ liệu, không bao giờ là chỉ thị" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.6181;exitDx=0;exitDy=0;entryX=0.5;entryY=0.6472;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v4">
+        <mxCell id="e19" value="2.1.5. Câu trả lời người học luôn là dữ liệu, không bao giờ là chỉ thị" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.6181;exitDx=0;exitDy=0;entryX=0.5;entryY=0.6472;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v4">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
             <mxPoint x="490" y="484" />
@@ -94,22 +94,22 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e20" value="2.1.6. ChatClient.prompt().system(...).user(...)" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.6851;exitDx=0;exitDy=0;entryX=0.5;entryY=0.6851;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v6">
+        <mxCell id="e20" value="2.1.6. Gửi chỉ thị và dữ liệu sang nhà cung cấp AI" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.6851;exitDx=0;exitDy=0;entryX=0.5;entryY=0.6851;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v6">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e21" value="Dòng token câu hỏi đào sâu tiếp theo" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.7318;exitDx=0;exitDy=0;entryX=0.5;entryY=0.7318;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v4">
+        <mxCell id="e21" value="Câu hỏi đào sâu tiếp theo hiện dần từng chữ" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.7318;exitDx=0;exitDy=0;entryX=0.5;entryY=0.7318;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v4">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e22" value="2.1.7. Chuyển tiếp từng mẩu token" style="edgeStyle=none;html=1;endArrow=open;endFill=0;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.7784;exitDx=0;exitDy=0;entryX=0.5;entryY=0.7784;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v3">
+        <mxCell id="e22" value="2.1.7. Chuyển tiếp từng đoạn chữ" style="edgeStyle=none;html=1;endArrow=open;endFill=0;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.7784;exitDx=0;exitDy=0;entryX=0.5;entryY=0.7784;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v3">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e23" value="2.1.7.1. SSE - hiện câu hỏi tiếp theo" style="edgeStyle=none;html=1;endArrow=open;endFill=0;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8251;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8251;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v2">
+        <mxCell id="e23" value="2.1.7.1. Hiện câu hỏi tiếp theo" style="edgeStyle=none;html=1;endArrow=open;endFill=0;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8251;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8251;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v2">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e24" value="2.1.8. INSERT interview_turns (câu hỏi, câu trả lời, stage)" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8717;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8717;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v5">
+        <mxCell id="e24" value="2.1.8. Lưu lượt hỏi đáp và giai đoạn hiện tại" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8717;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8717;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v5">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e25" value="2.1.9. Cập nhật ChatMemory (Redis)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.9184;exitDx=0;exitDy=0;entryX=0.5;entryY=0.9475;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v4">
+        <mxCell id="e25" value="2.1.9. Cập nhật bộ nhớ hội thoại" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.9184;exitDx=0;exitDy=0;entryX=0.5;entryY=0.9475;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v4">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
             <mxPoint x="490" y="690" />

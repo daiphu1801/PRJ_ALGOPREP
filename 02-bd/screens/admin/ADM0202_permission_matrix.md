@@ -18,7 +18,7 @@
 > này không mô tả lại thanh điều hướng, toolbar hay chân trang.
 >
 > **Không thiết kế** Function `REJUDGE_MANAGEMENT` — đã loại khỏi phạm vi theo
-> `DEC-2026-0828-remove-rejudge-scope`, nên bảng ma trận còn **10 hàng** chứ không phải 11 như prototype
+> `DEC-2026-0828-remove-rejudge-scope`, nên danh mục ban đầu là 10 hàng; từ 2026-10-23 thêm `LANGUAGE_CONFIG` nên bảng ma trận có **11 hàng**
 > [Nguồn: 01-rd/screens/admin/ADM0202_permission_matrix.md:39-41; 02-bd/database/identity.md:47-49].
 >
 > **Lưu ý về trục ma trận**: hàng là Function, cột là **Action** (`CREATE`/`READ`/`UPDATE`/`DELETE`); Role
@@ -40,7 +40,7 @@
 | Tên vật lý (slug) | `admin_permission_matrix` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A3 (`ADMIN`) |
-| Phiên bản | V0.7 |
+| Phiên bản | V0.8 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/15 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
@@ -59,6 +59,7 @@
 | V0.5 | Sheet 5, 6, 8, 9, Câu hỏi mở | Form tạo vai trò có ô chọn nhóm cơ bản, mặc định `STUDENT` (Sheet 5 và 6 Khu vực C NO 8); Q6 phần 1 chốt (owner, 2026-10-08), phần 2 (khoá ô theo nhóm hay theo vai trò hệ thống) còn mở. | 2026/10/08 | AI |
 | V0.6 | Phương châm, Sheet 3, 4, 5, 6, 7, 8, 9, Câu hỏi mở | Đồng bộ prototype vòng 2 ngày 2026-10-08 và chốt của owner (`DEC-2026-1008-admin-system-open-questions-closed`). (1) **Q2 đã chốt: chặn xoá** vai trò tuỳ biến còn tài khoản gán, không tự chuyển — `RoleDto` thêm `userCount` (Sheet 7.1 NO 12), nút xoá hiện toast cảnh báo kèm tên vai trò và số tài khoản, không mở hộp xác nhận; hộp xác nhận chỉ dành cho `userCount = 0` (Sheet 8 EVT-7, Sheet 9 NO 7). (2) **Q3 đã chốt: không đổi tên vai trò**; "sửa" của F1-11 là sửa ô ma trận. (3) **Q6 phần 2 đã chốt: khoá ô chỉ theo vai trò hệ thống `STUDENT` (theo `code`), không theo nhóm cơ bản**; vai trò tuỳ biến luôn chỉnh được kể cả khi nhóm là `STUDENT` — viết lại Sheet 3, 4, 5, 6, 7, 8 (EVT-2, EVT-8), 9 (NO 5). Q6 đóng hẳn. | 2026/10/08 | AI |
 | V0.7 | Sheet 5 | Sửa lỗi Minor review UX khu Admin F9 (`06-plan/reports/261014-1054-admin-ux-review/`), **chưa duyệt hình**: tab vai trò hiển thị `roles.name` ("Người học", "Giảng viên", "Quản trị", "Trợ giảng") thay cho mã `STUDENT`/`INSTRUCTOR`/`ADMIN`; `code` chỉ dùng làm khoá (Khu vực A tab vai trò NO 1) | 2026/10/14 | Claude |
+| V0.8 | Phương châm, Sheet 4, 5, 7, Hiện trạng | Owner 2026-10-23: thêm Function thứ 11 `LANGUAGE_CONFIG` (F4-11) nên bảng ma trận 11 hàng. Prototype đã dựng: `FunctionKey` và `FUNCTION_KEYS` thêm khoá sau `JUDGE_QUEUE_MONITOR` (`05-coding/frontend/src/views/admin/permission-matrix/model/types.ts:27,41`), mock seed ADMIN đủ quyền, INSTRUCTOR và vai trò tuỳ biến `false` (`05-coding/frontend/src/views/admin/permission-matrix/api/__mock__/permission-matrix-mocks.ts:66,80`), nhãn i18n vi/en (`05-coding/frontend/messages/vi.json:972`). Sheet 5 không đổi cấu trúc item vì số hàng động theo bảng seed. | 2026/10/23 | Claude |
 
 ---
 
@@ -81,7 +82,7 @@ chọn — vai trò hệ thống `STUDENT` thì toàn bộ ô khoá tương tác
 [Giá trị trả về] Không có.
 
 [Khi thành công] Tải danh sách vai trò, danh mục Function/Action seed và ma trận quyền của vai trò đang
-chọn, hiển thị bảng 10 hàng Function và 4 cột Action.
+chọn, hiển thị bảng 11 hàng Function và 4 cột Action.
 
 [Khi huỷ] Không có.
 
@@ -152,7 +153,7 @@ kiểm soát ai được làm gì trong khu vực quản trị mà không phải
 [Tệp liên quan] Không có. Màn này không xuất hay nhập tệp.
 
 [Phạm vi]
-- Không có Function `REJUDGE_MANAGEMENT` (`DEC-2026-0828-remove-rejudge-scope`) — bảng còn 10 hàng.
+- Không có Function `REJUDGE_MANAGEMENT` (`DEC-2026-0828-remove-rejudge-scope`) — bảng có 11 hàng (10 hàng cũ cộng `LANGUAGE_CONFIG`, owner 2026-10-23: Function thứ 11, F4-11, khoá màn `ADM0501` và bốn bảng `language_configs`, `grading_defaults`, `sandbox_settings`, `generator_sandbox_settings`; seed ADMIN đủ bốn Action, INSTRUCTOR, STUDENT và vai trò tuỳ biến đều `false`).
 - Không quản lý quyền học tập cơ bản của `STUDENT` (Lớp 1) — luồng này kiểm bằng `base_category`, không
   đi qua bảng `permissions` [Nguồn: 02-bd/security/identity.md:31-34].
 - Không đổi tên vai trò (Q3 đã chốt 2026-10-08): "sửa" ở F1-11 nghĩa là sửa ô ma trận của vai trò; prototype chỉ có Tạo và Xoá.
@@ -167,7 +168,7 @@ kiểm soát ai được làm gì trong khu vực quản trị mà không phải
 - Xoá: được với vai trò tuỳ biến, qua kiểm `PERMISSION_MATRIX:DELETE`. Vai trò hệ thống
   (`is_system = true`) không xoá được [Nguồn: 02-bd/database/identity.md:40]; vai trò tuỳ biến còn tài khoản gán cũng không xoá được (Q2).
 
-[Số bản ghi tối đa] Bảng ma trận: số hàng **động theo bảng seed `identity.functions`**, hiện là 10 dòng;
+[Số bản ghi tối đa] Bảng ma trận: số hàng **động theo bảng seed `identity.functions`**, hiện là 11 dòng;
 số cột cố định 4 theo `identity.actions`. Tab vai trò: 3 vai trò hệ thống cộng N vai trò tuỳ biến, không
 phân trang.
 
@@ -277,13 +278,13 @@ cho DD quyết định thêm dòng phụ hay bỏ, không phải phần của kh
 ### Khu vực D — Bảng ma trận
 
 Cấu trúc bảng: mỗi dòng là một Function, mỗi cột Action là một `ListColumn` riêng — không liệt kê từng ô.
-Số hàng **động** theo bảng seed `identity.functions` (hiện 10 dòng); số cột **cố định 4** theo
+Số hàng **động** theo bảng seed `identity.functions` (hiện 11 dòng); số cột **cố định 4** theo
 `identity.actions` [Nguồn: 02-bd/database/identity.md:45-51].
 
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Bảng ma trận | | | | | | | | | | | | | |
-| | 1 | Bảng ma trận quyền | `adminPermissionMatrix.matrix.list` | `identity.permissions` | - | List | List | - | - | I/O | 10 dòng | - | Mỗi dòng một Function, mỗi cột một Action. Prototype vẽ 11 dòng vì dựng trước khi bỏ `REJUDGE_MANAGEMENT`<br>[Nguồn giá trị] `GetPermissionCatalog` cho hàng và cột, `GetRolePermissions` cho giá trị ô<br>[EVT liên quan] EVT-1, EVT-2 |
+| | 1 | Bảng ma trận quyền | `adminPermissionMatrix.matrix.list` | `identity.permissions` | - | List | List | - | - | I/O | 11 dòng | - | Mỗi dòng một Function, mỗi cột một Action. Hàng `LANGUAGE_CONFIG` (nhãn "Cấu hình ngôn ngữ & sandbox") nằm ngay sau `JUDGE_QUEUE_MONITOR`; không có `REJUDGE_MANAGEMENT`<br>[Nguồn giá trị] `GetPermissionCatalog` cho hàng và cột, `GetRolePermissions` cho giá trị ô<br>[EVT liên quan] EVT-1, EVT-2 |
 | | 2 | Tên chức năng | `adminPermissionMatrix.matrix.col.functionName` | `identity.functions` | `name` | ListColumn | String | - | - | O | - | - | Tên chức năng hiển thị ở cột đầu<br>[Nguồn giá trị] Cột `name`<br>[EVT liên quan] - |
 | | 3 | Mã chức năng | `adminPermissionMatrix.matrix.col.functionKey` | `identity.functions` | `code` | ListColumn | String | - | - | O | - | Chữ đều (mono), in hoa | Mã seed hiển thị dưới tên chức năng để đối chiếu với mã nguồn<br>[Nguồn giá trị] Cột `code`<br>[EVT liên quan] - |
 | | 4 | Ô quyền Tạo | `adminPermissionMatrix.matrix.col.actionCreate` | `identity.permissions` | `granted` | Toggle | Boolean | - | - | I/O | Tắt | Bật hiện dấu tick, tắt hiện ô viền rỗng | Ô của bộ ba (vai trò đang chọn, Function của dòng, Action `CREATE`)<br>[Nguồn giá trị] `granted` của dòng khớp `(role_id, function_id, action_id)`; không có dòng nào thì coi là Tắt<br>[EVT liên quan] EVT-8 |
@@ -372,7 +373,7 @@ Số hàng **động** theo bảng seed `identity.functions` (hiện 10 dòng); 
 | NO | Tên logic | Bảng | Repository | CRUD | Mục đích | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :--- | :--- |
 | 1 | Vai trò | `identity.roles` | `RoleRepository` | C, R, D | Đọc danh sách vai trò, tạo vai trò tuỳ biến, xoá vai trò tuỳ biến | `ListRoles`: R<br>`CreateRole`: C<br>`DeleteRole`: R, D |
-| 2 | Danh mục chức năng | `identity.functions` | `FunctionRepository` | R | Đọc 10 dòng seed để dựng hàng của bảng | `GetPermissionCatalog`: R |
+| 2 | Danh mục chức năng | `identity.functions` | `FunctionRepository` | R | Đọc 11 dòng seed để dựng hàng của bảng | `GetPermissionCatalog`: R |
 | 3 | Danh mục hành động | `identity.actions` | `ActionRepository` | R | Đọc 4 dòng seed để dựng cột của bảng | `GetPermissionCatalog`: R |
 | 4 | Ô ma trận quyền | `identity.permissions` | `PermissionRepository` | C, R, U, D | Đọc ma trận theo vai trò, thêm hoặc sửa ô, xoá toàn bộ ô khi xoá vai trò | `GetRolePermissions`: R<br>`UpdateRolePermission`: C, U<br>`DeleteRole`: D |
 | 5 | Nhật ký quản trị | `identity.system_audit_logs` | `SystemAuditLogRepository` | C | Ghi lại mọi thay đổi quyền và vai trò, không ngoại lệ | `CreateRole`, `DeleteRole`, `UpdateRolePermission`: C |

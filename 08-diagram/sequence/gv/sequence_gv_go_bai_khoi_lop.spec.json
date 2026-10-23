@@ -1,5 +1,5 @@
 {
-  "_": "Nguon: 02-bd/screens/teacher/INS0202_class_assignments.md (popup Xac nhan go bai khoi lop, endpoint RemoveClassAssignment muc 7.3), 02-bd/database/problem-bank.md muc 1.7 (removed_at, DEC-2026-0831-class-assignments-round2). Duong dan REST la [SoT: Suy luan]. Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen.",
+  "_": "Nguon: 02-bd/screens/teacher/INS0202_class_assignments.md (popup Xac nhan go bai khoi lop, endpoint RemoveClassAssignment muc 7.3), 02-bd/database/problem-bank.md muc 1.7 (removed_at, DEC-2026-0831-class-assignments-round2). Duong dan REST la [SoT: Suy luan]. Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen. | Cap nhat 2026-10-20: siet theo quy tac moi, nhan mui ten la cau tieng Viet thuong, khong duong dan endpoint, ma HTTP, ma quyen, ten su kien, thuat ngu ky thuat; duong dan, ma HTTP va ma quyen nam o DD.",
   "kind": "sequence",
   "title": "Sơ đồ tuần tự chi tiết - Gỡ bài đã giao khỏi lớp (Giảng viên)",
   "covers": [
@@ -32,7 +32,7 @@
     ],
     "messages": [
       {
-        "phase": "Gỡ một bài khỏi một lớp: ẩn mềm, giữ nguyên lượt nộp cũ (F2-12)"
+        "phase": "Gỡ một bài khỏi một lớp: chỉ đánh dấu đã gỡ, giữ nguyên lượt nộp cũ (F2-12)"
       },
       {
         "from": "Giảng viên",
@@ -42,12 +42,12 @@
       {
         "from": "Giảng viên",
         "to": "AssignmentController",
-        "text": "DELETE .../classes/{classId}/assignments/{problemId}"
+        "text": "Gửi yêu cầu gỡ bài khỏi lớp"
       },
       {
         "from": "AssignmentController",
         "to": "AssignmentController",
-        "text": "Kiểm tra quyền quản lý lớp (CLASS_MANAGEMENT:UPDATE)"
+        "text": "Kiểm tra quyền quản lý lớp"
       },
       {
         "from": "AssignmentController",
@@ -99,11 +99,16 @@
             {
               "from": "AssignmentController",
               "to": "Giảng viên",
-              "text": "204 No Content",
+              "text": "Báo thành công",
               "kind": "return"
             }
           ],
           "else": [
+            {
+              "from": "AssignmentService",
+              "to": "AssignmentService",
+              "text": "Trường hợp không"
+            },
             {
               "from": "AssignmentService",
               "to": "AssignmentController",
@@ -113,7 +118,7 @@
             {
               "from": "AssignmentController",
               "to": "Giảng viên",
-              "text": "404 Not Found",
+              "text": "Báo lỗi: không có bài giao để gỡ",
               "kind": "return"
             }
           ]

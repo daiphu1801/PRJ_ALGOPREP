@@ -1,9 +1,8 @@
 export {
-  type CodeDiffLine,
   type CodeDiffProposal,
   type ComplexityAnalysis,
-  type DiffLineKind,
   type ReviewDifficulty,
+  type ReviewVerdict,
   type SolutionReviewDetail,
   type SolutionReviewStatus,
 } from "./model/types";
@@ -15,4 +14,5 @@ export {
   REVIEW_NOT_FOUND_CODE,
   type SolutionReviewDemoOutcome,
 } from "./api/__mock__/solution-review-mocks";
+export { lineDiff, type DiffLine, type DiffLineKind } from "./lib/line-diff";
 export { useSolutionReview } from "./api/queries";

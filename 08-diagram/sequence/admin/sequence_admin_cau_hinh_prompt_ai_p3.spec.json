@@ -1,5 +1,5 @@
 {
-  "_": "Cap nhat 2026-10-18 theo ADM0301 V2.x (02-bd/screens/admin/ADM0301_ai_config.md): bo rubric (DEC-2026-1014-drop-solution-review-rubric), ADMIN chon model theo prompt (DEC-2026-1010-admin-selects-model-per-prompt), luong nhap roi \"Luu va phat hanh\" mot giao dich nguyen tu (DEC-2026-1014-batch7-remaining-open-questions Q3). Ten endpoint la ten nghiep vu cua BD muc 7.3; duong dan REST la [SoT: Suy luan] vi chua co 03-dd/api/ai-review.md. KHONG ve nut Chay doi chieu (khong co backend). Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen.",
+  "_": "Cap nhat 2026-10-18 theo ADM0301 V2.x (02-bd/screens/admin/ADM0301_ai_config.md): bo rubric (DEC-2026-1014-drop-solution-review-rubric), ADMIN chon model theo prompt (DEC-2026-1010-admin-selects-model-per-prompt), luong nhap roi \"Luu va phat hanh\" mot giao dich nguyen tu (DEC-2026-1014-batch7-remaining-open-questions Q3). Ten endpoint la ten nghiep vu cua BD muc 7.3; duong dan REST la [SoT: Suy luan] vi chua co 03-dd/api/ai-review.md. KHONG ve nut Chay doi chieu (khong co backend). Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen. | 2026-10-20 (owner): nhan mui ten bo han duong dan, ma HTTP, ma quyen, thuat ngu ky thuat (cache, job, worker, model...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
   "_pham_vi": "RD dong 86-93 giu nut \"Chay doi chieu\" o tang giao dien; so do nay khong ve mot endpoint backend cho no.",
   "kind": "sequence",
   "title": "Sơ đồ tuần tự chi tiết - Cấu hình prompt và model của AI (Quản trị viên) (3/4)",
@@ -37,7 +37,7 @@
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 3 - Lưu và phát hành: mọi bản nháp thành bản đang chạy trong một giao dịch (F5-23)"
+        "phase": "Giai đoạn 3 - Lưu và phát hành: mọi bản nháp thành bản đang chạy cùng một lượt, hoặc không đổi gì (F5-23)"
       },
       {
         "from": "Quản trị viên",
@@ -47,12 +47,12 @@
       {
         "from": "Quản trị viên",
         "to": "AiConfigController",
-        "text": "POST .../prompt-templates/publish"
+        "text": "Gửi yêu cầu phát hành"
       },
       {
         "from": "AiConfigController",
         "to": "AiConfigController",
-        "text": "Kiểm tra quyền cập nhật cấu hình AI (AI_CONFIG:UPDATE)"
+        "text": "Kiểm tra quyền sửa cấu hình AI"
       },
       {
         "from": "AiConfigController",
@@ -62,7 +62,7 @@
       {
         "from": "AiConfigService",
         "to": "PostgreSQL",
-        "text": "Một giao dịch: nháp thành đang chạy, bản cũ lưu trữ"
+        "text": "Cùng một lượt: nháp thành đang chạy, bản cũ lưu trữ"
       },
       {
         "from": "PostgreSQL",
@@ -93,7 +93,7 @@
             {
               "from": "AiConfigService",
               "to": "Redis",
-              "text": "Xoá cache prompt",
+              "text": "Làm mới chỉ thị AI đã lưu tạm",
               "kind": "async"
             },
             {
@@ -105,7 +105,7 @@
             {
               "from": "AiConfigController",
               "to": "Quản trị viên",
-              "text": "200 OK",
+              "text": "Báo thành công",
               "kind": "return"
             }
           ],
@@ -124,7 +124,7 @@
             {
               "from": "AiConfigController",
               "to": "Quản trị viên",
-              "text": "409 - không có bản nháp nào được phát hành",
+              "text": "Báo lỗi: không có bản nháp để phát hành",
               "kind": "return"
             }
           ]

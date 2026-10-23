@@ -174,7 +174,8 @@
     "inProgress": {
       "title": "In progress",
       "empty": "No problem in progress",
-      "lastVerdict": "{verdict} {passed}/{total}"
+      "lastVerdict": "{verdict} {passed}/{total}",
+      "viewAll": "View all"
     },
     "assignment": {
       "title": "Class assignments",
@@ -193,14 +194,14 @@
     },
     "verdict": {
       "accepted": "Accepted",
-
       "wrongAnswer": "Wrong Answer",
-
       "runtimeError": "Runtime Error",
-
       "timeLimitExceeded": "Time Limit Exceeded",
-
-      "running": "Judging"
+      "running": "Judging",
+      "pending": "Pending",
+      "compiling": "Compiling",
+      "compileError": "Compile error",
+      "systemError": "System error"
     }
   },
   "savedProblems": {
@@ -229,23 +230,13 @@
       "btnUnsave": "Unsave",
       "emptyFiltered": "No problem matches this filter",
       "noteEditLabel": "Private note",
-
       "noteEditHint": "Click to edit the note",
-
       "noteCounter": "{count}/{max}",
-
       "noteSave": "Save",
-
       "noteCancel": "Cancel",
       "withdrawn": "Withdrawn",
-      "solveLabel": {
-        "solved": "Review",
-
-        "attempted": "Continue",
-
-        "todo": "Solve"
-      },
-      "withdrawnHint": "This problem was withdrawn from the problem bank and cannot be opened."
+      "withdrawnHint": "This problem was withdrawn from the problem bank and cannot be opened.",
+      "btnOpen": "Open"
     },
     "emptyAll": "You haven't saved any problem yet. Open a problem and press Save on its detail page to add it here.",
     "footerPrivacyNote": "Saved problems and notes are visible to you only.",
@@ -256,16 +247,12 @@
     },
     "undo": {
       "message": "Removed {title} from saved.",
-
       "button": "Undo"
     },
     "footer": {
       "summary": "Showing {from} - {to} of {total} saved problems",
-
       "previous": "‹",
-
       "next": "›",
-
       "pageLabel": "Page {page}"
     }
   },
@@ -301,13 +288,9 @@
       "btnSave": "Save",
       "btnUnsave": "Unsave",
       "input": "Input:",
-
       "output": "Output:",
-
       "acRate": "AC rate:",
-
       "metrics": "{ms} ms · {mb} MB",
-
       "linkFullReport": "Open full report"
     },
     "toolbar": {
@@ -318,7 +301,6 @@
       "draftSaved": "Saved in this browser",
       "uploadHint": "Drag and drop or pick a source file ({ext}, max 64 KB)",
       "btnViewFile": "View content",
-
       "limits": "Time {time}s · Memory {memory}MB"
     },
     "mode": {
@@ -347,31 +329,34 @@
       "linkReview": "Solution review",
       "linkInterview": "Mock interview",
       "running": "Running...",
-
       "sampleSummary": "{passed}/{total} sample testcases passed",
-
-      "caseTabsLabel": "Select a sample testcase",
-
-      "caseTab": "Case {n}",
-
-      "caseTabWithVerdict": "Case {n} · {verdict}",
-
       "fieldInput": "Input",
-
       "fieldActual": "Actual output",
-
       "fieldExpected": "Expected output",
-
       "metrics": "Time {ms} ms · Memory {mb} MB",
-
-      "caseDot": "Testcase {n}: {verdict}"
+      "dialog": {
+        "titleRun": "Run results",
+        "titleSubmit": "Submission results",
+        "close": "Close",
+        "listLabel": "Testcase list",
+        "caseRow": "Case {n}",
+        "testcaseRow": "Testcase {n}",
+        "hiddenNote": "Hidden testcases only show Passed or Failed, never their data."
+      },
+      "summaryPassed": "{n} passed",
+      "summaryFailed": "{n} failed",
+      "btnDetail": "View details"
     },
     "verdict": {
       "accepted": "Accepted",
       "wrongAnswer": "Wrong Answer",
       "runtimeError": "Runtime Error",
       "timeLimitExceeded": "Time Limit Exceeded",
-      "running": "Judging"
+      "running": "Judging",
+      "pending": "Pending",
+      "compiling": "Compiling",
+      "compileError": "Compile error",
+      "systemError": "System error"
     },
     "toast": {
       "runDone": "Ran {count} sample testcases.",
@@ -381,15 +366,10 @@
       "unsaved": "Problem removed from saved.",
       "codeTooLarge": "Source code is larger than 64 KB. Shorten it before running or submitting.",
       "runFailed": "Run not passing: {passed}/{total} sample testcases correct.",
-
       "fileExtension": "The file must have the {ext} extension that matches the selected language.",
-
       "fileTooLarge": "The file is larger than 64 KB.",
-
       "noFile": "Choose a source file before running or submitting.",
-
       "codeEmpty": "Write some code before running or submitting.",
-
       "openSaved": "View saved problems"
     }
   },
@@ -989,6 +969,7 @@
       "CLASS_MANAGEMENT": "Classes & assignments",
       "USER_MANAGEMENT": "User accounts",
       "JUDGE_QUEUE_MONITOR": "Judge queue & cluster",
+      "LANGUAGE_CONFIG": "Language & sandbox config",
       "AI_CONFIG": "AI prompts",
       "AI_TOKEN_BUDGET": "AI token budget",
       "SYSTEM_AUDIT_LOG": "System log",
@@ -1972,7 +1953,6 @@
     "approachSuboptimal": "not optimal",
     "eduNoticeTitle": "Learning feedback, not an official grade",
     "eduNoticeBody": "A single AI pass over the submitted code. Learning feedback, not an official grade.",
-    "summaryTitle": "Overall",
     "complexityTitle": "Complexity",
     "complexityYours": "Yours",
     "complexityBest": "Best known",
@@ -1982,6 +1962,8 @@
     "strengthsTitle": "Done well",
     "improvementsTitle": "To improve",
     "edgeCasesTitle": "Edge cases to watch",
+    "followUpTitle": "Topics to study next",
+    "followUpCta": "Open the question bank",
     "diffTitle": "Suggested version",
     "sourceCodeTitle": "Submitted code",
     "applyCta": "Apply in Workspace",
@@ -2000,22 +1982,15 @@
       "transientError": "Could not generate the solution review. Please try again.",
       "applied": "Draft overwritten with the suggestion. Opening the workspace.",
       "unavailable": "Cannot open the solution review for this submission.",
-
       "applyFailed": "Could not save the code in this browser. Check the browser storage permission."
     },
     "statCreatedAt": "Analyzed at",
-
     "errorUnavailableTitle": "Cannot open the solution review",
-
     "errorUnavailableBody": "This submission does not exist, is not yours, or is not accepted yet, so it has no solution review.",
-
     "backToSubmissions": "Back to My submissions",
-
     "language": {
       "java": "Java 21",
-
       "cpp": "C++ 17",
-
       "python": "Python 3"
     }
   },
@@ -2068,8 +2043,33 @@
       "finished": "Interview session finished. Your evaluation is ready."
     },
     "customTopicsLabel": "Interview topics",
-
-    "chatLogLabel": "Interview conversation"
+    "chatLogLabel": "Interview conversation",
+    "title": "Mock interview",
+    "subtitle": "Practise answering an AI interviewer across three stages, ending in a scorecard by criteria.",
+    "howTitle": "How a session works",
+    "how": {
+      "explain": "Explain your approach and why you chose the data structure.",
+      "challenge": "The interviewer raises edge cases and you defend the solution.",
+      "scaleUp": "Scale the problem up: big data, high load, bottlenecks."
+    },
+    "levelDesc": {
+      "intern": "Foundational questions, plenty of hints, little pushback.",
+      "junior": "Moderate depth with a few edge cases.",
+      "middle": "Tight pushback, complexity analysis expected.",
+      "senior": "Deep dive into design, trade-offs and scalability."
+    },
+    "aiName": "AI interviewer",
+    "youName": "You",
+    "sessionTitle": "Current session",
+    "sourceLabel": "Source",
+    "turnsLeftLabel": "Turns left",
+    "hintOn": "On",
+    "hintOff": "Off",
+    "tipsTitle": "Answering tips",
+    "tip1": "State the approach first, implementation details after.",
+    "tip2": "Be explicit about time and space complexity.",
+    "tip3": "Raise edge cases yourself before being asked.",
+    "sendShortcut": "Ctrl + Enter to send"
   },
   "interviewBankList": {
     "startDrill": "Quick drill · {count}",
@@ -2100,7 +2100,8 @@
       "outlineLabel": "Answer outline",
       "recallLabel": "Recall level",
       "viewDetail": "View details",
-      "nextReview": "Next review in {n} days"
+      "nextReview": "Next review in {n} days",
+      "keywordsLabel": "Core keywords"
     },
     "drill": {
       "counter": "Card {current} / {total}",
@@ -2117,7 +2118,10 @@
       "searchResult": "Found {count} questions.",
       "searchEmpty": "No questions found."
     },
-    "bookmarkedOnly": "Bookmarked only"
+    "bookmarkedOnly": "Bookmarked only",
+    "title": "Question bank",
+    "subtitle": "Review interview theory by topic, rate your recall and drill with flashcards.",
+    "shownCount": "Showing {shown} of {total} questions"
   },
   "interviewQuestionDetail": {
     "notFound": "This question was not found, or is no longer active.",
@@ -2165,7 +2169,6 @@
         "nextSteps": "Review Study mode's outline and framework before trying again."
       },
       "criteriaLabel": "Achievement per criterion",
-
       "criterionRow": "{achievement}% · weight {weight}%"
     },
     "attempts": {
@@ -2439,7 +2442,6 @@
       "name": "Full name",
       "class": "Class",
       "status": "Status",
-
       "statusValue": {
         "insufficient_data": "Not enough data",
         "absent": "Absent",
@@ -2616,14 +2618,11 @@
       "savedToast": "Profile saved",
       "invalid": "The profile details are not valid",
       "saveFailed": "Could not save the profile. Try again later.",
-
       "emailRequestFailed": "Could not send the email change request. Try again later."
     },
     "security": {
       "title": "Security",
       "passwordLabel": "Password",
-      "changePassword": "Change",
-      "setPassword": "Set password",
       "passwordChangedAt": "Last changed {date}",
       "passwordNoDate": "Password never changed",
       "noPassword": "No password set — signing in via {provider}",
@@ -2664,7 +2663,23 @@
       "confirmPassword": "Confirm new password",
       "ruleHint": "At least 8 characters, with both letters and digits.",
       "done": "Password changed. Other devices need to sign in again.",
-      "invalid": "The password details are not valid"
+      "invalid": "The password details are not valid",
+      "show": "Show password",
+      "hide": "Hide password",
+      "strengthLabel": "Strength",
+      "strength": {
+        "weak": "Weak",
+        "fair": "Fair",
+        "good": "Good",
+        "strong": "Strong"
+      },
+      "rule": {
+        "length": "At least 8 characters",
+        "letter": "At least one letter",
+        "digit": "At least one digit",
+        "match": "Both passwords match"
+      },
+      "doneSet": "Password set."
     },
     "errors": {
       "displayNameRequired": "Please enter your full name",
@@ -2683,9 +2698,7 @@
       "otpDigitsOnly": "The code must contain digits only",
       "otpInvalid": "The code is invalid or has expired",
       "emailRequired": "Please enter an email",
-
       "emailTooLong": "Email is at most 254 characters",
-
       "emailInvalid": "Invalid email"
     }
   },
@@ -2762,14 +2775,16 @@
     },
     "unsaved": {
       "title": "You have unsaved changes",
-
       "body": "Save and leave, leave without saving (changes are lost), or stay to keep editing.",
-
       "saveAndLeave": "Save and leave",
-
       "leave": "Leave without saving",
-
       "stay": "Stay"
+    },
+    "security": {
+      "title": "Security",
+      "passwordLabel": "Password",
+      "changeBtn": "Change password",
+      "setBtn": "Set password"
     }
   },
   "myProgress": {
@@ -2905,18 +2920,16 @@
       "session": "Session on {date}",
       "empty": "No interview sessions yet",
       "summary": "{count} sessions · average {score} / 10",
-
       "summaryNoScore": "{count} sessions · no session scored yet",
-
       "weakest": "weakest: {criterion}"
     },
     "reviews": {
       "title": "Solution Review",
       "empty": "No analysis report yet",
       "verdict": {
-        "optimal": "Optimal",
-        "improvable": "Improvable",
-        "suboptimal": "Suboptimal"
+        "OPTIMAL": "Optimal",
+        "IMPROVABLE": "Improvable",
+        "NOT_OPTIMAL": "Suboptimal"
       }
     },
     "rangeLabel": "Choose a time range",
@@ -2930,6 +2943,36 @@
       "copyright": "© 2026 AlgoPrep — capstone project",
       "clusterStatus": "go-judge cluster healthy",
       "version": "v0.4.2"
+    }
+  },
+  "problemOverview": {
+    "btnSolve": "Solve problem",
+    "infoTitle": "Details",
+    "hiddenTestcases": "Hidden testcases",
+    "limitsCaption": "Limits per language",
+    "colLanguage": "Language",
+    "colTime": "Time",
+    "colMemory": "Memory",
+    "recentTitle": "Recent submissions",
+    "linkAllSubmissions": "View all submissions",
+    "btnBack": "Back to list",
+    "btnCopy": "Copy",
+    "copied": "Copied.",
+    "copyFailed": "Could not copy, select and copy manually.",
+    "exampleInput": "Input {no}",
+    "exampleOutput": "Output {no}",
+    "topicsTitle": "Topics",
+    "languagesTitle": "Allowed languages",
+    "btnUndo": "Undo"
+  },
+  "workspaceHome": {
+    "title": "Workspace",
+    "subtitle": "Continue an unfinished problem or pick a new one to start coding.",
+    "linkProblems": "Pick from the list",
+    "resumeTitle": "In progress",
+    "empty": "Nothing in progress yet. Pick a problem from the list.",
+    "toast": {
+      "randomEmpty": "You have solved every available problem."
     }
   }
 }

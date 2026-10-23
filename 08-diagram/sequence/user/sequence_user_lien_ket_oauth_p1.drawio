@@ -7,7 +7,7 @@
         <mxCell id="title" value="Sơ đồ tuần tự chi tiết - Đăng nhập và tự liên kết tài khoản OAuth (Sinh viên) (1/3)" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
           <mxGeometry x="60" y="10" width="750" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="v1" value="Giai đoạn 1 - Khởi tạo luồng, sinh state chống giả mạo (BR-03)" style="algoprep=phase;rounded=0;whiteSpace=wrap;html=1;fillColor=#EFEFEF;strokeColor=#999999;dashed=1;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#1A1A1A;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+        <mxCell id="v1" value="Giai đoạn 1 - Khởi tạo luồng, sinh mã chống giả mạo (BR-03)" style="algoprep=phase;rounded=0;whiteSpace=wrap;html=1;fillColor=#EFEFEF;strokeColor=#999999;dashed=1;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#1A1A1A;fontSize=13;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="40" y="142" width="770" height="26" as="geometry" />
         </mxCell>
         <mxCell id="v2" value="Sinh viên" style="shape=umlLifeline;participant=umlActor;perimeter=lifelinePerimeter;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;verticalAlign=top;spacingTop=40;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
@@ -45,13 +45,13 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e12" value="2. GET /auth/oauth/{provider}/redirect" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.3506;exitDx=0;exitDy=0;entryX=0.5;entryY=0.3506;entryDx=0;entryDy=0;" edge="1" parent="1" source="v2" target="v3">
+        <mxCell id="e12" value="2. Gửi yêu cầu liên kết tài khoản ngoài" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.3506;exitDx=0;exitDy=0;entryX=0.5;entryY=0.3506;entryDx=0;entryDy=0;" edge="1" parent="1" source="v2" target="v3">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e13" value="2.1. buildAuthorizeUrl(provider)" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.4143;exitDx=0;exitDy=0;entryX=0.5;entryY=0.4143;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v4">
+        <mxCell id="e13" value="2.1. Tạo địa chỉ xin phép của nhà cung cấp" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.4143;exitDx=0;exitDy=0;entryX=0.5;entryY=0.4143;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v4">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e14" value="2.1.1. Sinh chuỗi state ngẫu nhiên" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.4781;exitDx=0;exitDy=0;entryX=0.5;entryY=0.5179;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v4">
+        <mxCell id="e14" value="2.1.1. Sinh mã chống giả mạo ngẫu nhiên" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.4781;exitDx=0;exitDy=0;entryX=0.5;entryY=0.5179;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v4">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
             <mxPoint x="490" y="300" />
@@ -59,16 +59,16 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e15" value="2.1.2. SET identity:oauthstate:&amp;lt;state&amp;gt; TTL 10 phút" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.5697;exitDx=0;exitDy=0;entryX=0.5;entryY=0.5697;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v5">
+        <mxCell id="e15" value="2.1.2. Lưu mã chống giả mạo, hạn 10 phút" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.5697;exitDx=0;exitDy=0;entryX=0.5;entryY=0.5697;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v5">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e16" value="URL uỷ quyền kèm state" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.6335;exitDx=0;exitDy=0;entryX=0.5;entryY=0.6335;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v3">
+        <mxCell id="e16" value="Địa chỉ xin phép kèm mã chống giả mạo" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.6335;exitDx=0;exitDy=0;entryX=0.5;entryY=0.6335;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v3">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e17" value="200 OK kèm URL" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.6972;exitDx=0;exitDy=0;entryX=0.5;entryY=0.6972;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v2">
+        <mxCell id="e17" value="Báo thành công kèm địa chỉ xin phép" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.6972;exitDx=0;exitDy=0;entryX=0.5;entryY=0.6972;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v2">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e18" value="3. Chuyển hướng sang trang đăng nhập của provider" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.7610;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8008;entryDx=0;entryDy=0;" edge="1" parent="1" source="v2" target="v2">
+        <mxCell id="e18" value="3. Chuyển sang trang đăng nhập của nhà cung cấp" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.7610;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8008;entryDx=0;entryDy=0;" edge="1" parent="1" source="v2" target="v2">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
             <mxPoint x="180" y="442" />
@@ -79,7 +79,7 @@
         <mxCell id="e19" value="4. Đăng nhập và chấp thuận quyền truy cập" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8526;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8526;entryDx=0;entryDy=0;" edge="1" parent="1" source="v2" target="v6">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e20" value="Chuyển hướng về kèm code và state" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.9163;exitDx=0;exitDy=0;entryX=0.5;entryY=0.9163;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v2">
+        <mxCell id="e20" value="Nhà cung cấp chuyển về kèm mã cho phép và mã chống giả mạo" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.9163;exitDx=0;exitDy=0;entryX=0.5;entryY=0.9163;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v2">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
       </root>

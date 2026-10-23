@@ -10,9 +10,9 @@
 // query param debug"). Retry (EVT-7) re-runs the same deterministic outcome rather than "fixing"
 // itself — there is no real AI call behind it yet.
 //
-// No diff/Monaco library is added for the read-only Diff Viewer (Sheet 4.4 area G) — the mock data
-// already carries same/add/del per line (ported from the mockup's own DIFF array), so a plain
-// coloured list renders the same information without a new dependency.
+// No Monaco library is installed yet, so the read-only Diff Viewer (Sheet 4.4 area G) computes the
+// diff from the original vs suggested code with entities/solution-review `lineDiff` (the DB stores
+// no diff text, 02-bd/database/ai-review.md 1.3a) and renders a plain coloured list.
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
@@ -23,6 +23,7 @@ import {
   REVIEW_FORBIDDEN_CODE,
   REVIEW_NOT_ACCEPTED_CODE,
   REVIEW_NOT_FOUND_CODE,
+  lineDiff,
   useSolutionReview,
   type SolutionReviewDemoOutcome,
   type SolutionReviewDetail,
@@ -192,18 +193,20 @@ function SolutionReviewContent() {
           if (!data) return;
           // EVT-6: the suggestion becomes the browser draft of that problem, then the workspace opens
           // on it. The previous-draft history entry from BD is not built yet (PROTOTYPE_DEBT).
+          const suggested = data.codeDiff.suggestedCode;
+          if (suggested === null) return;
           const ok = saveWorkspaceDraft(
             data.problemId,
             data.languageKey,
             data.submissionModel,
-            data.suggestedCode,
+            suggested,
           );
           if (!ok) {
             toast.error(t("toast.applyFailed"));
             return;
           }
           toast.success(t("toast.applied"));
-          router.push(`/problems/${data.problemId}`);
+          router.push(`/workspace/${data.problemId}`);
         }}
         title={t("applyConfirmTitle")}
         confirmLabel={t("applyConfirmConfirm")}
@@ -276,12 +279,6 @@ function ReadyReport({
             {t("eduNoticeBody")}
           </NoticeTile>
 
-          <Card title={t("summaryTitle")}>
-            <p className="text-[15px] leading-relaxed text-pretty">
-              {data.summaryText}
-            </p>
-          </Card>
-
           <Card title={t("complexityTitle")}>
             <div className="overflow-x-auto">
               <table className="w-full text-left text-[13px]">
@@ -302,7 +299,7 @@ function ReadyReport({
                       {data.complexity.actualTime}
                     </td>
                     <td className="py-2 font-mono text-[var(--color-text-muted)]">
-                      {data.complexity.optimalTime}
+                      {data.complexity.optimalTime ?? "—"}
                     </td>
                     <td className="py-2 text-[var(--color-text-muted)]">
                       {data.complexity.timeExplanation}
@@ -316,7 +313,7 @@ function ReadyReport({
                       {data.complexity.actualSpace}
                     </td>
                     <td className="py-2 font-mono text-[var(--color-text-muted)]">
-                      {data.complexity.optimalSpace}
+                      {data.complexity.optimalSpace ?? "—"}
                     </td>
                     <td className="py-2 text-[var(--color-text-muted)]">
                       {data.complexity.spaceExplanation}
@@ -364,21 +361,51 @@ function ReadyReport({
             </ul>
           </Card>
 
-          <Card title={t("diffTitle")} description={data.codeDiff.diffNote}>
-            <pre className="overflow-x-auto rounded-xl bg-[var(--color-track)] p-3.5 font-mono text-[12.5px] leading-[1.8]">
-              {data.codeDiff.diffLines.map((line, index) => (
-                <div key={index} className={DIFF_LINE_CLASS[line.kind]}>
-                  <span className="mr-3 inline-block w-2.5 text-center select-none">
-                    {DIFF_SIGN[line.kind]}
-                  </span>
-                  {line.text}
-                </div>
-              ))}
-            </pre>
-            <p className="mt-2.5 text-[12.5px] text-[var(--color-text-muted)]">
-              {data.codeDiff.explanation}
-            </p>
-          </Card>
+          {data.followUpTopics.length > 0 ? (
+            // F5-06: topics only, no question ids (ai-review never reads interview-bank). The question
+            // bank list takes no search parameter yet, so the cta opens it unfiltered.
+            <Card title={t("followUpTitle")}>
+              <ul className="flex flex-wrap gap-2">
+                {data.followUpTopics.map((topic, index) => (
+                  <li
+                    key={`${index}-${topic}`}
+                    className="rounded-full bg-[var(--color-track)] px-3 py-1 text-[12.5px]"
+                  >
+                    {topic}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href="/interview-bank"
+                className="mt-3 inline-block text-[13px] font-semibold text-[var(--color-primary)] hover:underline"
+              >
+                {t("followUpCta")}
+              </Link>
+            </Card>
+          ) : null}
+
+          {data.codeDiff.suggestedCode !== null ? (
+            <Card title={t("diffTitle")}>
+              <pre className="overflow-x-auto rounded-xl bg-[var(--color-track)] p-3.5 font-mono text-[12.5px] leading-[1.8]">
+                {lineDiff(
+                  data.sourceCode,
+                  data.codeDiff.suggestedCode.replace(/\n$/, "").split("\n"),
+                ).map((line, index) => (
+                  <div key={index} className={DIFF_LINE_CLASS[line.kind]}>
+                    <span className="mr-3 inline-block w-2.5 text-center select-none">
+                      {DIFF_SIGN[line.kind]}
+                    </span>
+                    {line.text}
+                  </div>
+                ))}
+              </pre>
+              {data.codeDiff.explanation ? (
+                <p className="mt-2.5 text-[12.5px] text-[var(--color-text-muted)]">
+                  {data.codeDiff.explanation}
+                </p>
+              ) : null}
+            </Card>
+          ) : null}
         </div>
 
         <div className="flex flex-col gap-3.5">
@@ -395,14 +422,16 @@ function ReadyReport({
             </pre>
           </Card>
 
-          <Button
-            variant="ghost"
-            size="md"
-            className="w-full border border-[var(--color-border)]"
-            onClick={onApplyClick}
-          >
-            {t("applyCta")}
-          </Button>
+          {data.codeDiff.suggestedCode !== null ? (
+            <Button
+              variant="ghost"
+              size="md"
+              className="w-full border border-[var(--color-border)]"
+              onClick={onApplyClick}
+            >
+              {t("applyCta")}
+            </Button>
+          ) : null}
         </div>
       </div>
     </>

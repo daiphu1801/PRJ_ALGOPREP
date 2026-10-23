@@ -1,5 +1,5 @@
 {
-  "_": "Luong dang nhap bang OAuth (GitHub, Google) va tu lien ket theo email cua actor A1. Nguon: 01-rd/req/identity.md (F1-15), 03-dd/api/identity.md muc 0.1 (endpoint #5, #6), 03-dd/logic/identity.md BR-03, 02-bd/architecture/identity.md muc 2 (OAuth tu lien ket theo email).",
+  "_": "Luong dang nhap bang OAuth (GitHub, Google) va tu lien ket theo email cua actor A1. Nguon: 01-rd/req/identity.md (F1-15), 03-dd/api/identity.md muc 0.1 (endpoint #5, #6), 03-dd/logic/identity.md BR-03, 02-bd/architecture/identity.md muc 2 (OAuth tu lien ket theo email). | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
   "_bao_mat": "Hai chot chan chiem tai khoan: (1) doi chieu `state` luu Redis TTL 10 phut -- chong CSRF o buoc callback; (2) provider tra `email_verified = false` thi TU CHOI, khong tao oauth_identities va khong tao users -- neu bo buoc nay, ai dang ky mot tai khoan provider bang email nguoi khac deu chiem duoc tai khoan AlgoPrep tuong ung.",
   "kind": "sequence",
   "title": "Sơ đồ tuần tự chi tiết - Đăng nhập và tự liên kết tài khoản OAuth (Sinh viên) (2/3)",
@@ -37,22 +37,22 @@
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 2 - Callback: đối chiếu state rồi mới đổi code lấy hồ sơ"
+        "phase": "Giai đoạn 2 - Nhà cung cấp gọi lại: đối chiếu mã chống giả mạo rồi mới lấy hồ sơ"
       },
       {
         "from": "Sinh viên",
         "to": "AuthController",
-        "text": "GET /auth/oauth/{provider}/callback?code=...&state=..."
+        "text": "Nhà cung cấp gọi lại kèm mã cho phép"
       },
       {
         "from": "AuthController",
         "to": "OAuthService",
-        "text": "handleCallback(provider, code, state)"
+        "text": "Xử lý kết quả cho phép"
       },
       {
         "from": "OAuthService",
         "to": "Redis",
-        "text": "GET identity:oauthstate:<state>"
+        "text": "Đọc mã chống giả mạo đã lưu trước đó"
       },
       {
         "from": "Redis",
@@ -66,32 +66,42 @@
           "then": [
             {
               "from": "OAuthService",
+              "to": "OAuthService",
+              "text": "Trường hợp có"
+            },
+            {
+              "from": "OAuthService",
               "to": "AuthController",
-              "text": "IDT-109 - dừng trước khi gọi provider",
+              "text": "Mã không khớp, dừng trước khi hỏi nhà cung cấp",
               "kind": "return"
             },
             {
               "from": "AuthController",
               "to": "Sinh viên",
-              "text": "401 \"Phiên liên kết không hợp lệ\"",
+              "text": "Báo lỗi: \"Phiên liên kết không hợp lệ\"",
               "kind": "return"
             }
           ],
           "else": [
             {
               "from": "OAuthService",
+              "to": "OAuthService",
+              "text": "Trường hợp không"
+            },
+            {
+              "from": "OAuthService",
               "to": "Redis",
-              "text": "DEL state - dùng đúng một lần"
+              "text": "Xoá mã chống giả mạo, chỉ dùng đúng một lần"
             },
             {
               "from": "OAuthService",
               "to": "Nhà cung cấp OAuth",
-              "text": "Đổi code lấy access token của provider"
+              "text": "Đổi mã cho phép lấy quyền truy cập của nhà cung cấp"
             },
             {
               "from": "Nhà cung cấp OAuth",
               "to": "OAuthService",
-              "text": "Token của provider",
+              "text": "Quyền truy cập của nhà cung cấp",
               "kind": "return"
             },
             {
@@ -102,7 +112,7 @@
             {
               "from": "Nhà cung cấp OAuth",
               "to": "OAuthService",
-              "text": "providerUserId, providerEmail, email_verified",
+              "text": "Mã người dùng, email và trạng thái xác minh email",
               "kind": "return"
             }
           ]
@@ -110,18 +120,23 @@
       },
       {
         "alt": {
-          "label": "Provider báo email_verified = false?",
+          "label": "Email chưa được xác minh?",
           "then": [
             {
               "from": "OAuthService",
+              "to": "OAuthService",
+              "text": "Trường hợp có"
+            },
+            {
+              "from": "OAuthService",
               "to": "AuthController",
-              "text": "IDT-110 - KHÔNG tạo oauth_identities, KHÔNG tạo users",
+              "text": "Email chưa xác minh: KHÔNG tạo liên kết, KHÔNG tạo tài khoản",
               "kind": "return"
             },
             {
               "from": "AuthController",
               "to": "Sinh viên",
-              "text": "422 \"Email của tài khoản provider chưa được xác minh\"",
+              "text": "Báo lỗi: \"Email của tài khoản nhà cung cấp chưa được xác minh\"",
               "kind": "return"
             }
           ]

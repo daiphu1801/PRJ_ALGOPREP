@@ -1,5 +1,5 @@
 {
-  "_": "Luong xem dashboard tien do lop cua actor A2. Nguon: US-A2-09 (01-rd/req/user_stories/a2_instructor.md:140-155), 01-rd/req/identity.md (F1-27, F1-28), 03-dd/api/identity.md muc 0.4 (endpoint #26, #29), 02-bd/architecture/identity.md muc 3.1 (read model dung tu domain event SubmissionGraded, KHONG doc thang schema judge). Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen.",
+  "_": "Luong xem dashboard tien do lop cua actor A2. Nguon: US-A2-09 (01-rd/req/user_stories/a2_instructor.md:140-155), 01-rd/req/identity.md (F1-27, F1-28), 03-dd/api/identity.md muc 0.4 (endpoint #26, #29), 02-bd/architecture/identity.md muc 3.1 (read model dung tu domain event SubmissionGraded, KHONG doc thang schema judge). Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen. | Cap nhat 2026-10-20: siet theo quy tac moi, nhan mui ten la cau tieng Viet thuong, khong duong dan endpoint, ma HTTP, ma quyen, ten su kien, thuat ngu ky thuat; duong dan, ma HTTP va ma quyen nam o DD.",
   "_suy_giam": "US-A2-11 (a2_instructor.md:185): mot nguon so lieu khong phan hoi thi man van len, phan do bao loi tai cho -- ve thanh nhanh alt vi day la nghiep vu that, khong phai xu ly loi trang tri.",
   "kind": "sequence",
   "title": "Sơ đồ tuần tự chi tiết - Xem tiến độ lớp học (Giảng viên) (2/2)",
@@ -33,7 +33,7 @@
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 3 - Phân loại học viên và suy giảm êm khi thiếu nguồn số liệu"
+        "phase": "Giai đoạn 3 - Phân loại học viên; thiếu một nguồn số liệu vẫn hiện phần còn lại"
       },
       {
         "from": "ClassProgressService",
@@ -51,6 +51,11 @@
           "then": [
             {
               "from": "ClassProgressService",
+              "to": "ClassProgressService",
+              "text": "Trường hợp có"
+            },
+            {
+              "from": "ClassProgressService",
               "to": "ClassProgressController",
               "text": "Trả phần dữ liệu đã có, đánh dấu ô thiếu",
               "kind": "return"
@@ -58,11 +63,16 @@
             {
               "from": "ClassProgressController",
               "to": "Giảng viên",
-              "text": "200 OK kèm cờ nguồn lỗi - không chặn cả màn",
+              "text": "Báo thành công kèm ghi chú nguồn số liệu bị lỗi, màn vẫn mở",
               "kind": "return"
             }
           ],
           "else": [
+            {
+              "from": "ClassProgressService",
+              "to": "ClassProgressService",
+              "text": "Trường hợp không"
+            },
             {
               "from": "ClassProgressService",
               "to": "ClassProgressController",
@@ -72,7 +82,7 @@
             {
               "from": "ClassProgressController",
               "to": "Giảng viên",
-              "text": "200 OK",
+              "text": "Báo thành công",
               "kind": "return"
             }
           ]
@@ -91,7 +101,7 @@
       {
         "from": "Giảng viên",
         "to": "ClassProgressController",
-        "text": "GET /identity/classes/{classId}/students/{studentId}/detail"
+        "text": "Gửi yêu cầu xem hồ sơ học viên"
       },
       {
         "from": "ClassProgressController",
@@ -118,7 +128,7 @@
       {
         "from": "ClassProgressController",
         "to": "Giảng viên",
-        "text": "200 OK",
+        "text": "Báo thành công",
         "kind": "return"
       },
       {

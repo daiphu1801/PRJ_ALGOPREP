@@ -38,7 +38,7 @@ export function GreetingBlock() {
   // when there is none, so the primary button is never a dead end for a new account.
   const [{ inProgress }] = useState(fetchProblemListPage);
   const resumeHref = inProgress[0]
-    ? `/problems/${inProgress[0].problemId}`
+    ? `/workspace/${inProgress[0].problemId}`
     : "/problems";
 
   return (

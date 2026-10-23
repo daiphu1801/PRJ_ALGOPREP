@@ -1,9 +1,11 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md section 10.2 (USR0301_solution_review).
 //
-// Field shapes follow 02-bd/screens/users/USR0301_solution_review.md Sheet 4.2/5: almost everything
-// in areas D-G actually lives inside `ai.solution_reviews.result_json` (one JSONB column), not
-// separate DB columns — the exact JSON schema is deferred to 03-dd/api/ai-review.md. These types are
-// the FRONTEND shape after that JSON is parsed, which is the only thing this prototype needs.
+// Field shapes follow the result_json schema of ai.solution_reviews, 02-bd/database/ai-review.md
+// section 1.3a (schemaVersion, approachTitle, verdict, isApproachOptimal, complexity, strengths,
+// improvements, edgeCases, followUpTopics, codeDiff). There is no summaryText / criteriaScores /
+// diffLines / diffNote: the diff is computed from the original vs suggested code at render time.
+// readabilityScore is a separate DB column; problem/level/createdAt/sourceCode are joined from
+// other tables. This is the FRONTEND shape after the DTO is parsed.
 
 /** Key of an admin-managed problem level (entities/problem/model/level-store); the review only displays it. */
 export type ReviewDifficulty = string;
@@ -12,26 +14,22 @@ export type ReviewDifficulty = string;
 export type SolutionReviewStatus =
   "loading" | "ready" | "errorTransient" | "errorBudgetLocked";
 
+export type ReviewVerdict = "OPTIMAL" | "IMPROVABLE" | "NOT_OPTIMAL";
+
 export type ComplexityAnalysis = {
   actualTime: string;
-  optimalTime: string;
+  /** null when the problem has no known optimal complexity (1.3a). */
+  optimalTime: string | null;
   timeExplanation: string;
   actualSpace: string;
-  optimalSpace: string;
+  optimalSpace: string | null;
   spaceExplanation: string;
 };
 
-export type DiffLineKind = "same" | "add" | "del";
-
-export type CodeDiffLine = {
-  kind: DiffLineKind;
-  text: string;
-};
-
+/** Both null when the approach is already optimal (nothing to suggest). */
 export type CodeDiffProposal = {
-  diffLines: CodeDiffLine[];
-  diffNote: string;
-  explanation: string;
+  suggestedCode: string | null;
+  explanation: string | null;
 };
 
 export type SolutionReviewDetail = {
@@ -42,17 +40,19 @@ export type SolutionReviewDetail = {
   submissionModel: "function" | "stdio";
   problemTitle: string;
   difficulty: ReviewDifficulty;
-  approachTitle: string;
-  isApproachOptimal: boolean;
   readabilityScore: number;
   createdAt: string;
-  summaryText: string;
   sourceCode: string[];
+  // --- result_json (1.3a) ---
+  schemaVersion: string;
+  approachTitle: string;
+  verdict: ReviewVerdict;
+  isApproachOptimal: boolean;
   complexity: ComplexityAnalysis;
   strengths: string[];
   improvements: string[];
   edgeCases: string[];
+  /** Topic keywords only; USR0301 Sheet 5 has no item showing them yet, so the view skips them. */
+  followUpTopics: string[];
   codeDiff: CodeDiffProposal;
-  /** Full proposed source, what the workspace draft receives. */
-  suggestedCode: string;
 };

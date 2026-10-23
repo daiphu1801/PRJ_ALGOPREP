@@ -43,11 +43,11 @@
 | Tên vật lý (slug) | `interview_question_info` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A2 (`INSTRUCTOR`) / A3 (`ADMIN`) — dùng chung; dựng cho cả hai khu |
-| Phiên bản | V0.5 |
+| Phiên bản | V0.6 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/10/02 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/10/03 |
+| Ngày cập nhật | 2026/10/22 |
 
 ---
 
@@ -60,6 +60,7 @@
 | V0.3 | Sheet 4, 5, 6, 7 | Đồng bộ chốt 2026-10-03 (`DEC-2026-1001-admin-configurable-settings` mục 6, Round 5): **độ khó là danh mục do ADMIN quản lý** (bảng `question_levels`, `02-bd/database/interview-bank.md:30-50`), không còn enum `EASY`/`MEDIUM`/`HARD`. Badge "Độ khó" (Sheet 5 Khu vực C NO 2) đọc nhãn từ `question_levels` qua `QuestionLevelDto.displayName`; DTO `difficulty` đổi thành `levelId`, cột `difficulty` thay bằng `level_id`. Màu badge: ba mức khởi tạo giữ màu cũ (Dễ = thành công, Trung bình = cảnh báo, Khó = âm), mức ADMIN thêm sau có màu trung tính vì không có cột màu (chốt cùng quyết định) — theo bản dựng `level-store.ts:17-42`, `interview-question-info-view.tsx:138-139`. Thêm bảng `question_levels` vào Sheet 4.3, 7.2. Làm mới dẫn chiếu dòng tới `SHR0302` (chèn thêm dòng nên lệch) và `02-bd/database/interview-bank.md`. Không đổi bố cục | 2026/10/03 | AI |
 | V0.4 | Sheet 3, 4, 5, 7, Câu hỏi mở | Làm mới và kiểm chứng toàn bộ dẫn chiếu `file:line` (2026-10-03): (1) bản dựng `interview-question-info-view.tsx` và `interview-question-management-view.tsx` lệch dòng, nay cập nhật (liên kết sang chi tiết ở `management-view` :138, không còn :120-125); `messages/vi.json` khối `interviewQuestionInfo` ở :1492-1503; (2) `02-bd/database/interview-bank.md` lệch sau khi chèn mục 1.1a: `interview_questions` :52-76, `id` :56, rubric :73-76; dải `8-96`/`8-132` thay cho `30-74`/`8-110`; (3) dẫn chiếu `SHR0301` dòng 386/505-506/622 (đang được sửa song song) đổi sang dẫn theo mục; `SHR0302` :629 thành :637 (Q2); (4) sửa "`SHR0301` Q1" (câu về thẻ chỉ số, đã đóng) thành Q5 (mã hiển thị `IQ-nnn`); (5) màu badge độ khó theo `level-store.ts:41-42` (`levelTone`); khoá mức độ khó là slug chữ hoa (`EASY`/`MEDIUM`/`HARD`, mức mới dạng `VERY_HARD`). Không đổi bố cục, DTO, NO/EVT/Q | 2026/10/03 | AI |
 | V0.5 | Sheet 4 (4.4, 4.5) | Phần thân trang chỉ đọc được phóng nhẹ theo yêu cầu của owner (2026-10-05, **chưa duyệt hình**, không đổi hành vi): nội dung câu hỏi dùng `MarkdownPreview size="lg"` (15 px, giãn dòng 1.75); danh sách câu hỏi đào sâu 13 lên 15 px, giãn dòng 1.75; dòng thông báo "chưa có câu hỏi đào sâu" 13 lên 14 px; các dòng tiêu chí đánh giá 13 lên 14 px. Cột hẹp (phân loại, sử dụng) không đổi | 2026/10/05 | Nhóm phát triển AlgoPrep |
+| V0.6 | Sheet 4 (4.4), 5, 7 (7.1), Câu hỏi mở | Sửa 2026-10-22 đồng bộ DB, `DEC-2026-1022-interview-bank-schema-sync`: (1) Q5 đóng: mã `IQ-%03d` đọc từ cột `display_no` (mục 1), tham số route là `id`; (2) `title` là câu hỏi chính, `content_markdown` tuỳ chọn (mục 4), sửa Sheet 5 Khu vực B NO 1 và DTO 7.1 NO 3; (3) `criterion_code` là tên tiêu chí tự gõ, xếp theo `sort_order`; (4) dời số dòng trích dẫn vào DB doc interview-bank (`:8-145`, `:110-139`, `:57`). **Không đổi:** Q2, Q3 (điểm trung bình, lượt dùng, IB-09 còn mở), Q1, Q4. Giao diện không đổi | 2026/10/22 | Claude |
 
 ---
 
@@ -74,7 +75,7 @@
 
 [Điều kiện mở] Bấm vào nội dung câu hỏi ở cột "Câu hỏi" của một dòng trong `interview_question_management` (khu Admin hoặc khu Giảng viên).
 
-[Chế độ mở] Chỉ đọc. Tham số route `questionId` là mã câu hỏi (ví dụ `IQ-014`).
+[Chế độ mở] Chỉ đọc. Tham số route `questionId` là `id` UUID của câu hỏi; mã hiển thị `IQ-014` chỉ là nhãn từ `display_no`, không dùng làm tham số route (DB doc `02-bd/database/interview-bank.md:57`). Bản dựng prototype hiện dùng mã làm tham số, ghi nợ prototype.
 
 [Thông tin truyền] Mã câu hỏi của dòng được chọn.
 
@@ -196,7 +197,7 @@ bộ câu hỏi [Nguồn: 01-rd/screens/shared/SHR0303_interview_question_info.m
 [Số bản ghi tối đa] Một câu hỏi tại một thời điểm. Câu hỏi đào sâu và tiêu chí không giới hạn số dòng, hiển thị hết,
 không phân trang (cùng quy tắc `SHR0302` Q1, Q4 đã chốt 2026-10-01).
 
-[Nguồn: 01-rd/screens/shared/SHR0303_interview_question_info.md:11-36; 02-bd/database/interview-bank.md:8-96]
+[Nguồn: 01-rd/screens/shared/SHR0303_interview_question_info.md:11-36; 02-bd/database/interview-bank.md:8-145]
 
 ### 4.2 DTO liên quan
 
@@ -214,7 +215,7 @@ không phân trang (cùng quy tắc `SHR0302` Q1, Q4 đã chốt 2026-10-01).
 | 1 | `interview_bank.interview_questions` | [Nguồn: 02-bd/database/interview-bank.md:52-76] |
 | 2 | `interview_bank.answer_rubrics` | [Nguồn: 02-bd/database/interview-bank.md:78-96] |
 | 3 | `interview_bank.question_topics` | Chỉ đọc, để tra nhãn chủ đề [Nguồn: 02-bd/database/interview-bank.md:8-28] |
-| 4 | `interview_bank.user_answers` | Chỉ đọc, để đếm lượt dùng [Nguồn: 02-bd/database/interview-bank.md:110-132] |
+| 4 | `interview_bank.user_answers` | Chỉ đọc, để đếm lượt dùng [Nguồn: 02-bd/database/interview-bank.md:110-139] |
 | 5 | `interview_bank.question_levels` | Chỉ đọc, để tra nhãn độ khó [Nguồn: 02-bd/database/interview-bank.md:30-50] |
 
 ### 4.4 Vùng bố cục
@@ -260,7 +261,7 @@ cùng khuôn với `SHR0302`. Không quy định màu sắc, khoảng cách hay 
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Thanh đầu trang | | | | | | | | | | | | | |
 | | 1 | Nút quay lại | `interviewQuestionInfo.header.btnBack` | - | - | Button | - | - | - | I | - | Chỉ biểu tượng mũi tên | Tooltip "Quay lại danh sách", điều hướng về `interview_question_management` [Nguồn: 05-coding/frontend/src/views/shared/interview-question-info/ui/interview-question-info-view.tsx:65]. Đích là `basePath` của khu đang mount<br>[Nguồn giá trị] Nhãn tĩnh i18n `interviewQuestionInfo.back`<br>[EVT liên quan] EVT-2 |
-| | 2 | Tiêu đề màn | `interviewQuestionInfo.header.title` | `interview_questions` | `id` | Label | String | - | - | O | - | `Câu hỏi {mã}` | Mã lấy từ bản ghi đã nạp (mock: `question.code`, `:66`)<br>[Nguồn giá trị] Nhãn tĩnh `interviewQuestionInfo.title`; mã hiển thị `IQ-nnn` **chưa có cột DB** — `02-bd/database/interview-bank.md:56` chỉ có `id` UUID, xem `SHR0301` Q5 đã nêu khoảng trống cùng loại<br>[EVT liên quan] EVT-1 |
+| | 2 | Tiêu đề màn | `interviewQuestionInfo.header.title` | `interview_questions` | `display_no` | Label | String | - | - | O | - | `Câu hỏi IQ-%03d` | Mã lấy từ bản ghi đã nạp (mock: `question.code`, `:66`); chỉ hiện ở khu ADMIN và INSTRUCTOR, đúng với màn này<br>[Nguồn giá trị] Nhãn tĩnh `interviewQuestionInfo.title`; mã hiển thị `IQ-%03d` là số `display_no` (cột có thật, UNIQUE NOT NULL, sequence ở máy chủ) [Nguồn: 02-bd/database/interview-bank.md:57]; Q5 đã đóng 2026-10-22<br>[EVT liên quan] EVT-1 |
 | | 3 | Phụ đề (tên chủ đề) | `interviewQuestionInfo.header.topic` | `question_topics` | `display_name` | Label | String | - | - | O | - | - | `topicLabel(topicList, question.topic)` (`:67`)<br>[Nguồn giá trị] `InterviewQuestionDto.topicId` tra `QuestionTopicDto.displayName`<br>[EVT liên quan] EVT-1 |
 | | 4 | Xem như học viên | `interviewQuestionInfo.header.btnPreview` | - | - | Button | - | - | - | I | - | - | Nút chữ, nhãn `interviewQuestionAuthoring.previewAsLearner` (`:70-72`). **Chưa gắn hành vi** trong bản dựng<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] EVT-4 |
 | | 5 | Sửa câu hỏi | `interviewQuestionInfo.header.btnEdit` | - | - | Button | - | - | - | I | - | - | Nút hành động chính (`variant="cta"`), liên kết tới `{basePath}/{mã}/edit` (`:73-75`)<br>[Nguồn giá trị] Nhãn tĩnh `interviewQuestionInfo.edit`<br>[EVT liên quan] EVT-3 |
@@ -270,12 +271,12 @@ cùng khuôn với `SHR0302`. Không quy định màu sắc, khoảng cách hay 
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Cột rộng — nội dung | | | | | | | | | | | | | |
-| | 1 | Nội dung câu hỏi | `interviewQuestionInfo.content.contentMarkdown` | `interview_questions` | `content_markdown` | Label | String | - | - | O | - | Markdown và LaTeX đã dựng (GFM, `$...$`, `$$...$$`) | Hiển thị qua `MarkdownPreview` (`:83`), **không phải văn bản thô**; HTML thô trong nội dung hiện như văn bản, không dựng thành phần tử; văn bản gốc chỉ có ở form soạn `SHR0302` (cập nhật 2026-10-03) [Nguồn: 05-coding/frontend/src/views/shared/interview-question-info/ui/interview-question-info-view.tsx:82-84; 05-coding/frontend/src/shared/ui/data/markdown-preview.tsx:5-6, 36-38]<br>[Nguồn giá trị] `InterviewQuestionDto.contentMarkdown` (mock: `question.question`)<br>[EVT liên quan] EVT-1 |
+| | 1 | Nội dung câu hỏi | `interviewQuestionInfo.content.contentMarkdown` | `interview_questions` | `title`, `content_markdown` | Label | String | - | - | O | - | Markdown và LaTeX đã dựng (GFM, `$...$`, `$$...$$`) | Từ 2026-10-22: câu hỏi chính là `title` (VARCHAR(255) NOT NULL), `content_markdown` là mô tả thêm tuỳ chọn (nullable) nên chỉ dựng khi có giá trị [Nguồn: 02-bd/database/interview-bank.md:60-61]; cách bố trí hai phần trên màn là `[SoT: Suy luận]`, chờ prototype. Phần `content_markdown` hiển thị qua `MarkdownPreview` (`:83`), **không phải văn bản thô**; HTML thô trong nội dung hiện như văn bản, không dựng thành phần tử; văn bản gốc chỉ có ở form soạn `SHR0302` (cập nhật 2026-10-03) [Nguồn: 05-coding/frontend/src/views/shared/interview-question-info/ui/interview-question-info-view.tsx:82-84; 05-coding/frontend/src/shared/ui/data/markdown-preview.tsx:5-6, 36-38]<br>[Nguồn giá trị] `InterviewQuestionDto.contentMarkdown` (mock: `question.question`)<br>[EVT liên quan] EVT-1 |
 | | 2 | Danh sách câu hỏi đào sâu | `interviewQuestionInfo.followUp.list` | `interview_questions` | `follow_up_questions` | List | List | - | - | O | - | Danh sách đánh số | Mỗi phần tử một dòng (`:90-94`)<br>[Nguồn giá trị] `InterviewQuestionDto.followUpQuestions`<br>[EVT liên quan] EVT-1 |
 | | 3 | Thông báo chưa có câu hỏi đào sâu | `interviewQuestionInfo.followUp.empty` | - | - | Label | String | - | - | O | "Chưa có câu hỏi đào sâu." | - | Thay cho danh sách khi mảng rỗng (`:88`)<br>[Nguồn giá trị] Nhãn tĩnh `interviewQuestionInfo.followUpsEmpty`<br>[EVT liên quan] - |
 | | 4 | Tổng trọng số | `interviewQuestionInfo.rubric.totalLabel` | - | - | Label | Number | 3 | - | O | - | `Tổng {số}%` | Góc phải thẻ Bộ tiêu chí (`:100-106`)<br>[Công thức] Cộng `weightPercent` của mọi tiêu chí (`:60`)<br>[EVT liên quan] EVT-1 |
 | | 5 | Danh sách tiêu chí | `interviewQuestionInfo.rubric.list` | `answer_rubrics` | - | List | List | - | - | O | - | - | Mỗi dòng một tiêu chí (`:113-123`)<br>[Nguồn giá trị] Các dòng `AnswerRubricDto` theo `question_id`<br>[EVT liên quan] EVT-1 |
-| | 6 | Tên tiêu chí | `interviewQuestionInfo.rubric.col.criterionCode` | `answer_rubrics` | `criterion_code` | ListColumn | String | - | - | O | - | - | Mock: `criterion.label` (`:119`)<br>[Nguồn giá trị] `AnswerRubricDto.criterionCode`<br>[EVT liên quan] EVT-1 |
+| | 6 | Tên tiêu chí | `interviewQuestionInfo.rubric.col.criterionCode` | `answer_rubrics` | `criterion_code` | ListColumn | String | - | - | O | - | - | Mock: `criterion.label` (`:119`). `criterion_code` là tên tiêu chí do A2/A3 tự gõ, không phải slug, hiện nguyên văn; danh sách xếp theo `sort_order` [Nguồn: 02-bd/database/interview-bank.md:88,91]<br>[Nguồn giá trị] `AnswerRubricDto.criterionCode`<br>[EVT liên quan] EVT-1 |
 | | 7 | Trọng số tiêu chí | `interviewQuestionInfo.rubric.col.weightPercent` | `answer_rubrics` | `weight_percent` | ListColumn | Number | 5 | - | O | - | `{số}%` | Mock: `criterion.weight` (`:120`)<br>[Nguồn giá trị] `AnswerRubricDto.weightPercent`<br>[EVT liên quan] EVT-1 |
 | | 8 | Thông báo chưa có tiêu chí | `interviewQuestionInfo.rubric.empty` | - | - | Label | String | - | - | O | "Chưa có tiêu chí đánh giá" | - | Ghi chú nói câu hỏi vẫn dùng được ở Chế độ học, không xuất hiện ở Chế độ luyện cho tới khi có rubric (`:108-111`)<br>[Nguồn giá trị] Nhãn tĩnh `interviewQuestionAuthoring.rubricEmptyTitle`, `rubricEmptyBody`<br>[EVT liên quan] - |
 
@@ -299,7 +300,7 @@ cùng khuôn với `SHR0302`. Không quy định màu sắc, khoảng cách hay 
 | | 2 | Tiêu đề không tìm thấy | `interviewQuestionInfo.notFound.title` | - | - | Label | String | - | - | O | "Không tìm thấy câu hỏi" | - | Dùng chung chuỗi của `SHR0302` (`:51`)<br>[Nguồn giá trị] Nhãn tĩnh `interviewQuestionAuthoring.notFoundTitle`<br>[EVT liên quan] EVT-1 |
 | | 3 | Nội dung không tìm thấy | `interviewQuestionInfo.notFound.body` | - | - | Label | String | - | - | O | - | "Không có câu hỏi nào mang mã {mã}..." | `:54`<br>[Nguồn giá trị] Nhãn tĩnh `interviewQuestionAuthoring.notFoundBody`<br>[EVT liên quan] EVT-1 |
 
-[Nguồn: 01-rd/screens/shared/SHR0303_interview_question_info.md:29-36, 55; 02-bd/database/interview-bank.md:8-132;
+[Nguồn: 01-rd/screens/shared/SHR0303_interview_question_info.md:29-36, 55; 02-bd/database/interview-bank.md:8-145;
 05-coding/frontend/src/views/shared/interview-question-info/ui/interview-question-info-view.tsx:46-165;
 05-coding/frontend/messages/vi.json:1492-1503]
 
@@ -367,7 +368,7 @@ Dùng lại nguyên `GetInterviewQuestionDetail` và các DTO của `SHR0302` Sh
 | --: | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :--- |
 | 1 | `InterviewQuestionDto` | `topicId` | UUID | `interview_questions` | `topic_id` | Phụ đề, Chủ đề | Có | [Chuyển đổi] Tra `QuestionTopicDto.displayName` |
 | 2 | `InterviewQuestionDto` | `levelId` | UUID | `interview_questions` | `level_id` | Độ khó | Có | [Chuyển đổi] Tra `QuestionLevelDto.displayName`; màu badge theo mức (mức khởi tạo giữ màu cũ, mức mới trung tính). Thay cho `difficulty` enum |
-| 3 | `InterviewQuestionDto` | `contentMarkdown` | String | `interview_questions` | `content_markdown` | Nội dung câu hỏi | Có | - |
+| 3 | `InterviewQuestionDto` | `title`, `contentMarkdown` | String, String | `interview_questions` | `title`, `content_markdown` | Nội dung câu hỏi | Có | `title` bắt buộc, `contentMarkdown` có thể null (DB doc `:60-61`) |
 | 4 | `InterviewQuestionDto` | `followUpQuestions` | `String[]` | `interview_questions` | `follow_up_questions` | Danh sách câu hỏi đào sâu | Có | - |
 | 5 | `AnswerRubricDto` | `criterionCode`, `weightPercent` | String, Number | `answer_rubrics` | `criterion_code`, `weight_percent` | Tên tiêu chí, Trọng số tiêu chí | Có | [Chuyển đổi] Tổng trọng số và trạng thái Chế độ luyện tính phía giao diện từ danh sách tiêu chí |
 | 6 | `QuestionTopicDto` | `id`, `displayName` | UUID, String | `question_topics` | `id`, `display_name` | Chủ đề (tra nhãn) | Có | [Nguồn] Phản hồi của `ListQuestionTopics` |
@@ -413,7 +414,7 @@ Không có endpoint riêng cho màn này. Hai chỉ số sử dụng đi kèm `G
 
 | NO | Loại | Sự kiện | Chi tiết | Chuyển màn | Gọi API | Tên xử lý | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :-: | :--- | :--- |
-| 1 | Màn hình | Khởi tạo màn | Vào màn từ liên kết nội dung câu hỏi ở danh sách, tham số route là mã câu hỏi. | Không | Có | `ListQuestionTopics`, `ListQuestionLevels`, `GetInterviewQuestionDetail` | [Các bước]<br>1. Kiểm tra quyền `INTERVIEW_BANK_MANAGEMENT`.<br>2. Tải song song danh mục chủ đề, danh mục độ khó và chi tiết câu hỏi.<br>3. Hiển thị các khối chỉ đọc.<br>[Khi thành công] Hiển thị đầy đủ dữ liệu.<br>[Khi lỗi] Không tìm thấy câu hỏi hoặc lỗi tải: hiển thị trạng thái không tìm thấy kèm nút quay lại; xử lý mã đã xoá mềm chờ Q1. |
+| 1 | Màn hình | Khởi tạo màn | Vào màn từ liên kết nội dung câu hỏi ở danh sách, tham số route là `id` UUID của câu hỏi (không phải mã `IQ-%03d`). | Không | Có | `ListQuestionTopics`, `ListQuestionLevels`, `GetInterviewQuestionDetail` | [Các bước]<br>1. Kiểm tra quyền `INTERVIEW_BANK_MANAGEMENT`.<br>2. Tải song song danh mục chủ đề, danh mục độ khó và chi tiết câu hỏi.<br>3. Hiển thị các khối chỉ đọc.<br>[Khi thành công] Hiển thị đầy đủ dữ liệu.<br>[Khi lỗi] Không tìm thấy câu hỏi hoặc lỗi tải: hiển thị trạng thái không tìm thấy kèm nút quay lại; xử lý mã đã xoá mềm chờ Q1. |
 | 2 | Nút | Quay lại danh sách | Bấm nút mũi tên "Quay lại danh sách" ở bên trái tiêu đề (kể cả ở trạng thái không tìm thấy). | Có | Không | - | [Các bước]<br>1. Điều hướng về `interview_question_management` (`/admin/interview-questions`).<br>[Khi thành công] Rời màn. |
 | 3 | Nút | Sửa câu hỏi | Bấm "Sửa câu hỏi" ở bên phải thanh đầu trang. | Có | Không | - | [Các bước]<br>1. Điều hướng sang `interview_question_authoring` ở chế độ sửa, route `/edit`, mang theo mã câu hỏi.<br>[Khi thành công] Mở form soạn nạp sẵn dữ liệu. |
 | 4 | Nút | Mở xem như học viên | Bấm "Xem như học viên" ở bên phải thanh đầu trang. | Không | Không | - | [Các bước]<br>1. Mở popup xem trước theo bản ghi đã lưu (đề xuất, chưa chốt).<br>[Khi thành công] Bản dựng chưa làm gì khi bấm (stub); popup do `SHR0302` đặc tả. |
@@ -447,7 +448,7 @@ Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 | Q2 | "Điểm trung bình" lấy từ đâu? Kế thừa `SHR0301` Q2: `user_answers.feedback_result_json` không có điểm số rời rạc 1-5. | [Nguồn: 02-bd/screens/shared/SHR0301_interview_question_management.md, mục Câu hỏi mở Q2]. Màn này hiển thị số mock `3.8 / 5` mà chưa có công thức. Chốt một lần cho cả hai màn, không chốt riêng ở đây. | DD `interview-bank` |
 | Q3 | Hai chỉ số sử dụng (`usageCount`, `avgScore`) đi kèm phản hồi `GetInterviewQuestionDetail` (mở rộng DTO của `SHR0302`) hay lấy qua lời gọi riêng? | BD này không thêm endpoint. Mở rộng `GetInterviewQuestionDetail` sẽ đổi DTO mà `SHR0302` đang dùng để sửa (form soạn không cần hai chỉ số); tách riêng thêm một lời gọi. Hai phương án đều hợp lệ về kiến trúc `[SoT: Suy luận]`, DD chốt. | DD `interview-bank` |
 | Q4 | Nút "Xem như học viên" ở màn chỉ đọc mở popup nào, dữ liệu từ bản ghi đã lưu? Hiện bản dựng là stub. | Kế thừa `SHR0302` Q2 (nguồn dữ liệu popup xem trước chưa chốt) [Nguồn: 02-bd/screens/shared/SHR0302_interview_question_authoring.md:637; 05-coding/frontend/src/views/shared/interview-question-info/ui/interview-question-info-view.tsx:70-72]. | DD màn hình |
-| Q5 | Mã hiển thị `IQ-nnn` ở tiêu đề lấy từ cột nào? | Schema chỉ có `id` UUID, không có cột mã dạng `IQ-014` [Nguồn: 02-bd/database/interview-bank.md:56]; cùng khoảng trống với `SHR0301`/`SHR0302`. | DD `interview-bank` |
+| Q5 | ~~Mã hiển thị `IQ-nnn` ở tiêu đề lấy từ cột nào?~~ **ĐÃ CHỐT 2026-10-22 (chủ dự án, `DEC-2026-1022-interview-bank-schema-sync` mục 1, IB-01):** cột `interview_questions.display_no` (INT UNIQUE NOT NULL, sequence ở máy chủ), hiển thị `IQ-%03d` ở khu admin và instructor; `id` vẫn là khoá và tham số route. Đã sửa Sheet 5 Khu vực A NO 2 [Nguồn: 02-bd/database/interview-bank.md:57]. Cùng quyết định đóng `SHR0301` Q5 | Đã đóng | Đã đóng |
 
 **Nợ prototype**: bản dựng tự trỏ tới `06-plan/PROTOTYPE_DEBT.md` mục 9
 [Nguồn: 05-coding/frontend/src/views/shared/interview-question-info/ui/interview-question-info-view.tsx:1]; chưa kiểm tra mục đó đã có dòng riêng cho slug `interview_question_info` hay chưa (file nằm ngoài phạm vi đợt sửa này).

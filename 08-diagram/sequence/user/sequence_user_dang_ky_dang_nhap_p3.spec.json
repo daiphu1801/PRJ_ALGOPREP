@@ -1,5 +1,5 @@
 {
-  "_": "Luong dang ky + dang nhap cua actor A1. Nguon: 01-rd/req/identity.md (F1-01, F1-02), 03-dd/api/identity.md muc 0.1 (endpoint #1, #2), 03-dd/logic/identity.md (BR-01 rate-limit, BR-02 rotation).",
+  "_": "Luong dang ky + dang nhap cua actor A1. Nguon: 01-rd/req/identity.md (F1-01, F1-02), 03-dd/api/identity.md muc 0.1 (endpoint #1, #2), 03-dd/logic/identity.md (BR-01 rate-limit, BR-02 rotation). | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
   "_tang": "Tach dung 4 tang cua DEC-2026-0820-architecture-baseline: presentation (AuthController) / application (AuthService) / infrastructure (UserRepository, Redis) / du lieu (PostgreSQL schema identity).",
   "_phase": "Ba giai doan: dang ky -> dang nhap -> cap token va dieu huong theo vai tro.",
   "kind": "sequence",
@@ -38,54 +38,54 @@
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 3 - Cấp token, xoay vòng và điều hướng theo vai trò (F1-03, BR-02)"
+        "phase": "Giai đoạn 3 - Cấp mã đăng nhập, đổi mã định kỳ và điều hướng theo vai trò (F1-03, BR-02)"
       },
       {
         "from": "AuthService",
         "to": "AuthService",
-        "text": "Sinh Access Token JWT, hạn 15 phút"
+        "text": "Cấp mã truy cập, hạn 15 phút"
       },
       {
         "from": "AuthService",
         "to": "AuthService",
-        "text": "Sinh Refresh Token, băm SHA-256, hạn 30 ngày"
+        "text": "Cấp mã duy trì đăng nhập (lưu dạng mã hoá), hạn 30 ngày"
       },
       {
         "from": "AuthService",
         "to": "PostgreSQL",
-        "text": "saveRefreshToken(token_hash, family_id)"
+        "text": "Lưu mã duy trì đăng nhập đã mã hoá"
       },
       {
         "from": "PostgreSQL",
         "to": "PostgreSQL",
-        "text": "INSERT INTO refresh_tokens (UserRepository)"
+        "text": "Ghi mã duy trì đăng nhập"
       },
       {
         "from": "AuthService",
         "to": "Redis",
-        "text": "DEL bộ đếm đăng nhập sai của cặp (email, IP)"
+        "text": "Xoá số lần đăng nhập sai của email và máy này"
       },
       {
         "from": "AuthService",
         "to": "AuthController",
-        "text": "AuthSessionDto { accessToken, user, role }",
+        "text": "Phiên đăng nhập: mã truy cập, tài khoản, vai trò",
         "kind": "return"
       },
       {
         "from": "AuthController",
         "to": "Sinh viên",
-        "text": "200 OK + Set-Cookie refresh_token (HttpOnly)",
+        "text": "Báo thành công, gửi kèm mã duy trì đăng nhập",
         "kind": "return"
       },
       {
         "from": "Sinh viên",
         "to": "Sinh viên",
-        "text": "Lưu Access Token trong bộ nhớ, không lưu localStorage"
+        "text": "Giữ mã truy cập trong bộ nhớ trình duyệt, không lưu lâu dài"
       },
       {
         "from": "Sinh viên",
         "to": "Sinh viên",
-        "text": "Điều hướng tới khu vực Người học theo vai trò STUDENT"
+        "text": "Điều hướng tới khu vực Người học theo vai trò"
       }
     ]
   },

@@ -1,0 +1,219 @@
+{
+  "_": "ERD schema problem (module problem-bank, F2). Nguon: 02-bd/database/problem-bank.md, doc ngay 2026-10-22. Moi bang/cot chep tu doc do; kieu ghi dung nhu doc, doc khong ghi kieu thi de trong. `fk` = khoa ngoai vat ly trong schema; `ref` = tham chieu logic lien schema (doc: khong FK vat ly xuyen schema). Ghost box incoming: chi lay tu nhac den trong doc/yeu cau, ten bang phia judge/ai chua doi chieu voi doc cua schema do.",
+  "kind": "erd",
+  "title": "ERD schema problem",
+  "covers": [],
+  "erd": {
+    "scope": "schema",
+    "entities": [
+      {
+        "id": "problem_levels", "name": "problem_levels",
+        "columns": [
+          {"name": "id", "type": "UUID", "key": "PK"},
+          {"name": "code", "type": "VARCHAR", "key": "UQ"},
+          {"name": "display_name", "type": "VARCHAR"},
+          {"name": "sort_order", "type": "SMALLINT"}
+        ]
+      },
+      {
+        "id": "topics", "name": "topics",
+        "columns": [
+          {"name": "id", "type": "UUID", "key": "PK"},
+          {"name": "code", "type": "VARCHAR", "key": "UQ"},
+          {"name": "name", "type": "VARCHAR"},
+          {"name": "sort_order", "type": "SMALLINT"},
+          {"name": "created_at", "type": "TIMESTAMPTZ"}
+        ]
+      },
+      {
+        "id": "tags", "name": "tags",
+        "columns": [
+          {"name": "id", "type": "UUID", "key": "PK"},
+          {"name": "name", "type": "VARCHAR", "key": "UQ"},
+          {"name": "created_at", "type": "TIMESTAMPTZ"}
+        ]
+      },
+      {
+        "id": "problems", "name": "problems",
+        "columns": [
+          {"name": "id", "type": "UUID", "key": "PK"},
+          {"name": "code", "type": "VARCHAR(64)", "key": "UQ"},
+          {"name": "title", "type": "VARCHAR(255)"},
+          {"name": "statement_md", "type": "TEXT"},
+          {"name": "constraints_md", "type": "TEXT"},
+          {"name": "level_id", "type": "UUID", "key": "FK"},
+          {"name": "status", "type": "ENUM(UNPUBLISHED,PUBLISHED)"},
+          {"name": "deleted", "type": "BOOLEAN"},
+          {"name": "function_wrapper_supported", "type": "BOOLEAN"},
+          {"name": "time_limit_ms", "type": "INT"},
+          {"name": "memory_limit_mb", "type": "INT"},
+          {"name": "max_output_size_kb", "type": "INT"},
+          {"name": "max_submissions_per_hour", "type": "INT", "null": true},
+          {"name": "duplicated_from_problem_id", "type": "", "key": "FK", "null": true},
+          {"name": "known_optimal_complexity", "type": "VARCHAR", "null": true},
+          {"name": "author_id", "type": "UUID"},
+          {"name": "updated_by", "type": "UUID"},
+          {"name": "current_testcase_set_version", "type": "INT"},
+          {"name": "created_at", "type": "TIMESTAMPTZ"},
+          {"name": "updated_at", "type": "TIMESTAMPTZ"},
+          {"name": "published_at", "type": "TIMESTAMPTZ", "null": true},
+          {"name": "ai_testcase_generations_used", "type": "INT"},
+          {"name": "ai_brief", "type": "TEXT", "null": true},
+          {"name": "no_full_code", "type": "BOOLEAN"},
+          {"name": "socratic_only", "type": "BOOLEAN"}
+        ]
+      },
+      {
+        "id": "problem_topics", "name": "problem_topics",
+        "columns": [
+          {"name": "problem_id", "type": "", "key": "PK FK"},
+          {"name": "topic_id", "type": "", "key": "PK FK"}
+        ]
+      },
+      {
+        "id": "problem_tags", "name": "problem_tags",
+        "columns": [
+          {"name": "problem_id", "type": "", "key": "PK FK"},
+          {"name": "tag_id", "type": "", "key": "PK FK"}
+        ]
+      },
+      {
+        "id": "problem_specs", "name": "problem_specs",
+        "columns": [
+          {"name": "id", "type": "UUID", "key": "PK"},
+          {"name": "problem_id", "type": "", "key": "FK UQ"},
+          {"name": "matching_strategy", "type": "ENUM(EXACT,TRIMMED,EPSILON,UNORDERED_SET)"},
+          {"name": "epsilon_value", "type": "NUMERIC(18,12)", "null": true},
+          {"name": "stdin_format_md", "type": "TEXT"},
+          {"name": "stdout_format_md", "type": "TEXT"},
+          {"name": "function_name", "type": "VARCHAR"},
+          {"name": "return_type", "type": "JSONB"},
+          {"name": "parameters", "type": "JSONB"},
+          {"name": "name_overrides", "type": "JSONB", "null": true},
+          {"name": "spec_version", "type": "INT"},
+          {"name": "updated_at", "type": "TIMESTAMPTZ"}
+        ]
+      },
+      {
+        "id": "testcases", "name": "testcases",
+        "columns": [
+          {"name": "id", "type": "UUID", "key": "PK"},
+          {"name": "problem_id", "type": "", "key": "FK"},
+          {"name": "visibility", "type": "ENUM(SAMPLE,HIDDEN)"},
+          {"name": "input_storage", "type": "ENUM(INLINE,MINIO)"},
+          {"name": "input_inline", "type": "TEXT", "null": true},
+          {"name": "input_object_key", "type": "VARCHAR", "null": true},
+          {"name": "expected_output_storage", "type": "ENUM(INLINE,MINIO)"},
+          {"name": "expected_output_inline", "type": "TEXT", "null": true},
+          {"name": "expected_output_object_key", "type": "VARCHAR", "null": true},
+          {"name": "origin", "type": "ENUM(MANUAL,AI)"},
+          {"name": "approved", "type": "BOOLEAN"},
+          {"name": "category", "type": "ENUM(TYPICAL,BOUNDARY_LOW,BOUNDARY_HIGH,DEGENERATE,DUPLICATE,SORTED,EXTREME)", "null": true},
+          {"name": "position", "type": "INT"},
+          {"name": "created_at", "type": "TIMESTAMPTZ"},
+          {"name": "updated_at", "type": "TIMESTAMPTZ"}
+        ]
+      },
+      {
+        "id": "problem_reference_solutions", "name": "problem_reference_solutions",
+        "columns": [
+          {"name": "id", "type": "UUID", "key": "PK"},
+          {"name": "problem_id", "type": "UUID", "key": "FK UQ"},
+          {"name": "language", "type": "ENUM(JAVA,CPP,PYTHON)"},
+          {"name": "source_code", "type": "TEXT"},
+          {"name": "updated_at", "type": "TIMESTAMPTZ"}
+        ]
+      },
+      {
+        "id": "worked_examples", "name": "worked_examples",
+        "columns": [
+          {"name": "id", "type": "UUID", "key": "PK"},
+          {"name": "problem_id", "type": "UUID", "key": "FK"},
+          {"name": "position", "type": "INT"},
+          {"name": "input", "type": "TEXT"},
+          {"name": "output", "type": "TEXT"},
+          {"name": "explanation_md", "type": "TEXT", "null": true}
+        ]
+      },
+      {
+        "id": "class_assignments", "name": "class_assignments",
+        "columns": [
+          {"name": "id", "type": "UUID", "key": "PK"},
+          {"name": "problem_id", "type": "", "key": "FK"},
+          {"name": "class_id", "type": "UUID"},
+          {"name": "assigned_by", "type": "UUID"},
+          {"name": "assigned_at", "type": "TIMESTAMPTZ"},
+          {"name": "removed_at", "type": "TIMESTAMPTZ", "null": true}
+        ]
+      },
+      {
+        "id": "bookmarks", "name": "bookmarks",
+        "columns": [
+          {"name": "user_id", "type": "", "key": "PK"},
+          {"name": "problem_id", "type": "", "key": "PK FK"},
+          {"name": "note", "type": "TEXT", "null": true},
+          {"name": "created_at", "type": ""},
+          {"name": "updated_at", "type": ""}
+        ]
+      },
+      {
+        "id": "problem_stats", "name": "problem_stats", "stereotype": "read_model",
+        "columns": [
+          {"name": "problem_id", "type": "UUID", "key": "PK FK"},
+          {"name": "submission_count", "type": "INT"},
+          {"name": "accepted_count", "type": "INT"},
+          {"name": "ac_rate", "type": "NUMERIC(5,2)", "null": true},
+          {"name": "updated_at", "type": "TIMESTAMPTZ"}
+        ]
+      },
+      {
+        "id": "problem_bank_settings", "name": "problem_bank_settings", "stereotype": "singleton",
+        "columns": [
+          {"name": "id", "type": "SMALLINT", "key": "PK"},
+          {"name": "max_ai_generations_per_problem", "type": "INT"},
+          {"name": "updated_by", "type": "UUID"},
+          {"name": "updated_at", "type": "TIMESTAMPTZ"}
+        ]
+      }
+    ],
+    "externals": [
+      {"id": "identity.users", "name": "identity.users"},
+      {"id": "identity.classes", "name": "identity.classes"},
+      {"id": "judge.submissions", "name": "judge.submissions"},
+      {"id": "judge.submission_testcase_results", "name": "judge.submission_testcase_results"},
+      {"id": "judge.judge_run_tokens", "name": "judge.judge_run_tokens"},
+      {"id": "ai.solution_reviews", "name": "ai.solution_reviews"},
+      {"id": "ai.ai_cache_entries", "name": "ai.ai_cache_entries"},
+      {"id": "ai.token_usage", "name": "ai.token_usage"}
+    ],
+    "relations": [
+      {"from": "problems", "to": "problem_levels", "kind": "fk", "label": "level_id"},
+      {"from": "problems", "to": "problems", "kind": "fk", "label": "duplicated_from_problem_id", "optional": true},
+      {"from": "problem_topics", "to": "problems", "kind": "fk", "label": "problem_id"},
+      {"from": "problem_topics", "to": "topics", "kind": "fk", "label": "topic_id"},
+      {"from": "problem_tags", "to": "problems", "kind": "fk", "label": "problem_id"},
+      {"from": "problem_tags", "to": "tags", "kind": "fk", "label": "tag_id"},
+      {"from": "problem_specs", "to": "problems", "kind": "fk", "label": "problem_id", "card": "1:1"},
+      {"from": "testcases", "to": "problems", "kind": "fk", "label": "problem_id"},
+      {"from": "problem_reference_solutions", "to": "problems", "kind": "fk", "label": "problem_id", "card": "1:1"},
+      {"from": "worked_examples", "to": "problems", "kind": "fk", "label": "problem_id"},
+      {"from": "class_assignments", "to": "problems", "kind": "fk", "label": "problem_id"},
+      {"from": "bookmarks", "to": "problems", "kind": "fk", "label": "problem_id"},
+      {"from": "problem_stats", "to": "problems", "kind": "fk", "label": "problem_id", "card": "1:1"},
+
+      {"from": "problems", "to": "identity.users", "kind": "ref", "label": "author_id"},
+      {"from": "problems", "to": "identity.users", "kind": "ref", "label": "updated_by"},
+      {"from": "class_assignments", "to": "identity.users", "kind": "ref", "label": "assigned_by"},
+      {"from": "class_assignments", "to": "identity.classes", "kind": "ref", "label": "class_id"},
+      {"from": "bookmarks", "to": "identity.users", "kind": "ref", "label": "user_id"},
+      {"from": "problem_bank_settings", "to": "identity.users", "kind": "ref", "label": "updated_by"},
+
+      {"from": "judge.submissions", "to": "problems", "kind": "ref", "label": "problem_id"},
+      {"from": "judge.submission_testcase_results", "to": "testcases", "kind": "ref", "label": "testcase_id"},
+      {"from": "judge.judge_run_tokens", "to": "testcases", "kind": "ref", "label": "testcase_id"},
+      {"from": "ai.solution_reviews", "to": "problems", "kind": "ref", "label": "problem_id"},
+      {"from": "ai.ai_cache_entries", "to": "problems", "kind": "ref", "label": "problem_id"},
+      {"from": "ai.token_usage", "to": "problems", "kind": "ref", "label": "problem_id"}
+    ]
+  }
+}

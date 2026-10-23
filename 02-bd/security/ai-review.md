@@ -14,9 +14,9 @@ kiểm soát tầng ứng dụng không thuộc phạm vi "kiến trúc":
   thoại mỗi lượt giới hạn ký tự (đề xuất 4000 ký tự/lượt, `[SoT: Suy luận]`) — chặn kiểu tấn công "prompt
   flooding" (nhồi văn bản cực dài để đẩy trôi system instruction ra khỏi context window của model, một
   biến thể của LLM01 không liên quan tới nội dung chỉ thị giả).
-- **Không log nguyên văn `perProblemAiContext` cùng mức với system instruction cố định** trong audit log
+- **Không log nguyên văn ngữ cảnh theo bài (`problems.ai_brief`, `no_full_code`, `socratic_only`; tên cũ `perProblemAiContext`, đổi 2026-10-23) cùng mức với system instruction cố định** trong audit log
   — ghi tách riêng để một phiên rà soát log không nhầm hai nguồn khác cấp bậc thành cùng một khối chỉ thị.
-- **`perProblemAiContext` chỉ sửa được qua đúng một đường**: use case cập nhật bài toán của `problem-bank`
+- **Ngữ cảnh theo bài (`ai_brief`, `no_full_code`, `socratic_only`) chỉ sửa được qua đúng một đường**: use case cập nhật bài toán của `problem-bank`
   (gác bởi `PROBLEM_AUTHORING:UPDATE`, F1-10 matrix) — `ai-review` **chỉ đọc** trường này qua
   `ProblemContextPort` (kiến trúc mục 3.3, 3.4), không có endpoint nào trong `ai-review` cho phép ghi hay
   sửa nội dung này trực tiếp. Loại trừ khả năng một actor không có quyền soạn đề chỉnh nội dung này qua

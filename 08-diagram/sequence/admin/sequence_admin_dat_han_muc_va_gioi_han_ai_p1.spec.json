@@ -1,0 +1,123 @@
+{
+  "_": "Nguon: 01-rd/screens/admin/ADM0303_ai_limits.md (REQ-02..05), 02-bd/screens/admin/ADM0303_ai_limits.md muc 7.3 (endpoint NO 3-13, ten nghiep vu). Duong dan REST la [SoT: Suy luan] vi 03-dd/api/ai-review.md chua viet. Nhan mui ten la hanh dong nghiep vu; ten ham va truy van thuoc DD. Phan REQ-01 (dat han muc, tu khoa) da co o sequence_admin_dat_ngan_sach_token_p1. Phan 1/4: mo khoa ngan sach (REQ-02). Tach 3 phan 2026-10-20 vi ban 2 phan qua cao (lint: cao 2.39 lan be ngang). | 2026-10-20 (owner): nhan mui ten bo han duong dan, ma HTTP, ma quyen, thuat ngu ky thuat (cache, job, worker, model...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Mở khoá ngân sách khi bị khoá (Quản trị viên) (1/4)",
+  "covers": [
+    "F5-25"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Quản trị viên",
+        "role": "actor"
+      },
+      {
+        "name": "AiLimitsController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "AiLimitsService",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema ai"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 1 - Mở khoá ngân sách khi bị khoá: chỉ mở được khi đã dùng ít hơn hạn mức (F5-25)"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "Quản trị viên",
+        "text": "Bấm Mở khoá ngân sách và xác nhận"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "AiLimitsController",
+        "text": "Gửi yêu cầu mở khoá"
+      },
+      {
+        "from": "AiLimitsController",
+        "to": "AiLimitsController",
+        "text": "Kiểm tra quyền đổi ngân sách AI"
+      },
+      {
+        "from": "AiLimitsController",
+        "to": "AiLimitsService",
+        "text": "Yêu cầu mở khoá"
+      },
+      {
+        "from": "AiLimitsService",
+        "to": "PostgreSQL",
+        "text": "Đọc số token đã dùng và hạn mức"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "AiLimitsService",
+        "text": "Đã dùng, hạn mức, trạng thái khoá",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Đã dùng < hạn mức?",
+          "then": [
+            {
+              "from": "AiLimitsService",
+              "to": "AiLimitsService",
+              "text": "Còn hạn mức, được mở khoá"
+            },
+            {
+              "from": "AiLimitsService",
+              "to": "PostgreSQL",
+              "text": "Bỏ trạng thái khoá và ghi nhật ký"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "AiLimitsService",
+              "text": "Đã ghi",
+              "kind": "return"
+            },
+            {
+              "from": "AiLimitsService",
+              "to": "AiLimitsController",
+              "text": "Ngân sách đã mở khoá",
+              "kind": "return"
+            },
+            {
+              "from": "AiLimitsController",
+              "to": "Quản trị viên",
+              "text": "Báo thành công",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "AiLimitsService",
+              "to": "AiLimitsService",
+              "text": "Chưa dưới hạn mức, từ chối"
+            },
+            {
+              "from": "AiLimitsService",
+              "to": "AiLimitsController",
+              "text": "Từ chối, vẫn giữ khoá",
+              "kind": "return"
+            },
+            {
+              "from": "AiLimitsController",
+              "to": "Quản trị viên",
+              "text": "Báo lỗi: cần nâng hạn mức trước",
+              "kind": "return"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -42,7 +42,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e11" value="2. POST /identity/classes/join" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.3607;exitDx=0;exitDy=0;entryX=0.5;entryY=0.3607;entryDx=0;entryDy=0;" edge="1" parent="1" source="v2" target="v3">
+        <mxCell id="e11" value="2. Gửi mã mời để vào lớp" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.3607;exitDx=0;exitDy=0;entryX=0.5;entryY=0.3607;entryDx=0;entryDy=0;" edge="1" parent="1" source="v2" target="v3">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e12" value="2.1. Yêu cầu vào lớp bằng mã mời" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.4262;exitDx=0;exitDy=0;entryX=0.5;entryY=0.4262;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v4">
@@ -63,7 +63,7 @@
         <mxCell id="e17" value="Đã trong lớp" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.7541;exitDx=0;exitDy=0;entryX=0.5;entryY=0.7541;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v3">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e18" value="200 OK" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8197;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8197;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v2">
+        <mxCell id="e18" value="Báo thành công" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8197;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8197;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v2">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e19" value="3. Vào lại lớp; lịch sử làm bài cũ hiện lại trong tiến độ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8852;exitDx=0;exitDy=0;entryX=0.5;entryY=0.9262;entryDx=0;entryDy=0;" edge="1" parent="1" source="v2" target="v2">

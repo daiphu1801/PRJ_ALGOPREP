@@ -41,6 +41,7 @@ import struct
 import sys
 
 from docx import Document
+from docx.enum.section import WD_ORIENT, WD_SECTION
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK
 from docx.oxml.ns import qn
 from docx.shared import Inches, Pt
@@ -132,7 +133,23 @@ def add_toc(doc) -> None:
     doc.add_paragraph().add_run().add_break(WD_BREAK.PAGE)
 
 
-def build(md_path: str, out_path: str) -> int:
+def _new_section(doc, landscape: bool) -> None:
+    """Mo mot section moi (sang trang) kho doc hoac kho ngang, le cho vua khung hinh."""
+    sec = doc.add_section(WD_SECTION.NEW_PAGE)
+    w, h = Inches(8.5), Inches(11)
+    margin = Inches(0.6) if landscape else Inches(0.984)
+    sec.orientation = WD_ORIENT.LANDSCAPE if landscape else WD_ORIENT.PORTRAIT
+    sec.page_width, sec.page_height = (h, w) if landscape else (w, h)
+    sec.left_margin = sec.right_margin = margin
+    sec.top_margin = sec.bottom_margin = Inches(0.6) if landscape else Inches(1)
+
+
+def build(md_path: str, out_path: str, img_map: dict[str, str] | None = None,
+          landscape_figs: bool = False, table_pt: float | None = None) -> int:
+    """img_map: duong dan anh trong .md -> file anh thay the (vd ban render do phan giai cao).
+    landscape_figs: moi hinh nam tren mot trang ngang rieng (be rong ~9.8 inch thay vi 6.53).
+    table_pt: co chu trong bang (mac dinh theo BODY_PT)."""
+    img_map = img_map or {}
     try:
         lines = io.open(md_path, encoding="utf-8").read().split("\n")
     except OSError as e:
@@ -188,23 +205,35 @@ def build(md_path: str, out_path: str) -> int:
         m = RE_IMG.match(line)
         if m:
             caption, rel = m.group(1), m.group(2)
-            par = doc.add_paragraph()
-            par.alignment = WD_ALIGN_PARAGRAPH.CENTER
-            # Dat het be ngang dung duoc, TRU KHI lam anh cao qua mot trang -- luc do lay
-            # be ngang lon nhat ma van vua chieu cao. Chu trong hinh to nhat co the ma
-            # khong bi cat mat phan duoi.
-            src = os.path.join(root, rel)
-            w = IMG_W
-            ratio = png_ratio(src)
-            if ratio and IMG_W.inches * ratio > MAX_IMG_H:
-                w = Inches(MAX_IMG_H / ratio)
-                print(f"   thu nho theo chieu cao: {rel} -> {w.inches:.2f} inch")
-            par.add_run().add_picture(src, width=w)
-            cap = doc.add_paragraph()
-            cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
-            run = cap.add_run(caption)
-            run.italic = True
-            run.font.size = CAPTION_PT
+            # img_map co the tra ve MOT file hoac DANH SACH file (hinh lon da tach nhieu phan).
+            srcs = img_map.get(rel) or os.path.join(root, rel)
+            parts = srcs if isinstance(srcs, list) else [srcs]
+            for k, src in enumerate(parts, 1):
+                par = doc.add_paragraph()
+                par.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                par.paragraph_format.keep_with_next = True
+                # Dat het be ngang dung duoc, TRU KHI lam anh cao qua mot trang -- luc do lay
+                # be ngang lon nhat ma van vua chieu cao. Chu trong hinh to nhat co the ma
+                # khong bi cat mat phan duoi.
+                max_w, max_h = (9.8, 6.6) if landscape_figs else (IMG_W.inches, MAX_IMG_H)
+                if landscape_figs:
+                    _new_section(doc, True)
+                    par = doc.add_paragraph()
+                    par.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                ratio = png_ratio(src)
+                w = Inches(max_w)
+                if ratio and max_w * ratio > max_h:
+                    w = Inches(max_h / ratio)
+                    print(f"   thu nho theo chieu cao: {rel} -> {w.inches:.2f} inch")
+                par.add_run().add_picture(src, width=w)
+                cap = doc.add_paragraph()
+                cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                text = caption if len(parts) == 1 else f"{caption} (phần {k}/{len(parts)})"
+                run = cap.add_run(text)
+                run.italic = True
+                run.font.size = CAPTION_PT
+                if landscape_figs:
+                    _new_section(doc, False)
             n_img += 1
             i += 1
             continue
@@ -223,9 +252,11 @@ def build(md_path: str, out_path: str) -> int:
                     for c, text in enumerate(cells[: len(block[0])]):
                         par = row[c].paragraphs[0]
                         add_runs(par, text)
-                        if r == 0:
-                            for run in par.runs:
+                        for run in par.runs:
+                            if r == 0:
                                 run.bold = True
+                            if table_pt:
+                                run.font.size = Pt(table_pt)
                 n_tbl += 1
             continue
 

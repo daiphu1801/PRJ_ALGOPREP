@@ -140,13 +140,15 @@ thứ phải giống nhau xuyên `01-rd` → `02-bd` → `03-dd` theo luật ch�
 | Quản trị | `ADM` | A3 |
 | Dùng chung nhiều vai trò | `SHR` | A1 / A2 / A3 |
 
-### Bảng mã (33 màn)
+### Bảng mã (35 màn)
 
 | Mã | Tên file | Slug chính tắc | Tên màn | Nhóm |
 | :--- | :--- | :--- | :--- | :--- |
 | `USR0101` | `USR0101_problem_list.md` | `problem_list` | Danh sách bài tập | Bài tập |
 | `USR0102` | `USR0102_problem_detail.md` | `problem_detail` | Chi tiết bài tập | Bài tập |
 | `USR0103` | `USR0103_saved_problems.md` | `saved_problems` | Bài đã lưu | Bài tập |
+| `USR0104` | `USR0104_problem_overview.md` | `problem_overview` | Chi tiết bài toán (đọc đề) | Bài tập |
+| `USR0105` | `USR0105_workspace_home.md` | `workspace_home` | Trang đầu Workspace | Bài tập |
 | `USR0201` | `USR0201_submission_result.md` | `submission_result` | Kết quả nộp bài | Nộp bài |
 | `USR0202` | `USR0202_my_submissions.md` | `my_submissions` | Lịch sử nộp bài | Nộp bài |
 | `USR0301` | `USR0301_solution_review.md` | `solution_review` | Phân tích bài giải | AI |

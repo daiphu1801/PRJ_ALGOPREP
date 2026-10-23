@@ -14,8 +14,8 @@
 --   ai-review           -> ai
 -- Bang anh xa day du: .nexa/domain-registry.json
 --
--- File nay KHONG tao bang. Bang, cot, khoa, index thuoc 02-bd/database/<module>.md, tai lieu chua
--- ton tai. Migration (Flyway/Liquibase) cung chua chot — xem 05-coding/backend/README.md.
+-- File nay KHONG tao bang. Bang, cot, khoa, index thuoc 02-bd/database/<module>.md (tai lieu BD da co
+-- cho ca sau module). Migration (Flyway/Liquibase) cung chua chot — xem 05-coding/backend/README.md.
 
 CREATE SCHEMA IF NOT EXISTS identity;
 COMMENT ON SCHEMA identity IS
@@ -23,11 +23,11 @@ COMMENT ON SCHEMA identity IS
 
 CREATE SCHEMA IF NOT EXISTS problem;
 COMMENT ON SCHEMA problem IS
-  'F2 problem-bank — de bai, dac ta ham theo ngon ngu, testcase Sample/Hidden, phien ban bo testcase';
+  'F2 problem-bank — de bai, dac ta ham (MOT chu ky chung, gop trong problem_specs), testcase Sample/Hidden, phien ban bo testcase';
 
 CREATE SCHEMA IF NOT EXISTS harness;
 COMMENT ON SCHEMA harness IS
-  'F3 harness — luoc do kieu doc lap ngon ngu, template sinh ma, anh xa loi bien dich';
+  'F3 harness — KHONG co bang (DEC-2026-1022-harness-empty-schema-kept): module tinh toan thuan, template la tai nguyen trong jar, chien luoc so khop doc tu problem.problem_specs';
 
 CREATE SCHEMA IF NOT EXISTS judge;
 COMMENT ON SCHEMA judge IS

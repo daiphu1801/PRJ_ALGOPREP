@@ -1,0 +1,183 @@
+{
+  "_": "Nguon: 02-bd/database/identity.md (muc 1.1-1.15), ve ngay 2026-10-22. Kieu giu nguyen nhu tai lieu DB; khong co kieu thi de trong. Redis key (password_reset_requests, email_change_requests...) khong phai bang nen khong ve. Quan he ref giua bang read model va users la suy luan (tai lieu DB khong khai bao FK).",
+  "kind": "erd",
+  "title": "ERD schema identity",
+  "covers": [],
+  "erd": {
+    "scope": "schema",
+    "entities": [
+      {"id": "roles", "name": "roles", "columns": [
+        {"name": "id", "type": "UUID", "key": "PK"},
+        {"name": "code", "type": "VARCHAR", "key": "UQ"},
+        {"name": "name", "type": "VARCHAR"},
+        {"name": "base_category", "type": "ENUM"},
+        {"name": "is_system", "type": "BOOLEAN"},
+        {"name": "created_at", "type": "TIMESTAMPTZ"},
+        {"name": "updated_at", "type": "TIMESTAMPTZ"}
+      ]},
+      {"id": "functions", "name": "functions", "stereotype": "seed", "columns": [
+        {"name": "id", "type": "", "key": "PK"},
+        {"name": "code", "type": ""},
+        {"name": "name", "type": ""}
+      ]},
+      {"id": "actions", "name": "actions", "stereotype": "seed", "columns": [
+        {"name": "id", "type": "", "key": "PK"},
+        {"name": "code", "type": ""}
+      ]},
+      {"id": "users", "name": "users", "columns": [
+        {"name": "id", "type": "UUID", "key": "PK"},
+        {"name": "email", "type": "VARCHAR(254)", "key": "UQ"},
+        {"name": "password_hash", "type": "VARCHAR", "null": true},
+        {"name": "display_name", "type": "VARCHAR"},
+        {"name": "role_id", "type": "", "key": "FK"},
+        {"name": "current_position", "type": "VARCHAR", "null": true},
+        {"name": "target_position", "type": "VARCHAR", "null": true},
+        {"name": "password_changed_at", "type": "TIMESTAMPTZ", "null": true},
+        {"name": "school_or_company", "type": "VARCHAR", "null": true},
+        {"name": "phone", "type": "VARCHAR(20)", "null": true},
+        {"name": "default_language", "type": "VARCHAR(16)"},
+        {"name": "status", "type": "ENUM"},
+        {"name": "last_active_at", "type": "TIMESTAMPTZ", "null": true},
+        {"name": "must_change_password", "type": "BOOLEAN"},
+        {"name": "deactivation_source", "type": "ENUM", "null": true},
+        {"name": "deactivated_at", "type": "TIMESTAMPTZ", "null": true},
+        {"name": "anonymized_at", "type": "TIMESTAMPTZ", "null": true},
+        {"name": "created_at", "type": "TIMESTAMPTZ"},
+        {"name": "updated_at", "type": "TIMESTAMPTZ"}
+      ]},
+      {"id": "permissions", "name": "permissions", "columns": [
+        {"name": "id", "type": "UUID", "key": "PK"},
+        {"name": "role_id", "type": "", "key": "FK UQ"},
+        {"name": "function_id", "type": "", "key": "FK UQ"},
+        {"name": "action_id", "type": "", "key": "FK UQ"},
+        {"name": "granted", "type": "BOOLEAN"},
+        {"name": "updated_at", "type": "TIMESTAMPTZ"},
+        {"name": "updated_by", "type": "", "key": "FK"}
+      ]},
+      {"id": "oauth_identities", "name": "oauth_identities", "columns": [
+        {"name": "id", "type": "", "key": "PK"},
+        {"name": "user_id", "type": "", "key": "FK"},
+        {"name": "provider", "type": "ENUM", "key": "UQ"},
+        {"name": "provider_user_id", "type": "", "key": "UQ"},
+        {"name": "provider_email", "type": ""},
+        {"name": "linked_at", "type": ""}
+      ]},
+      {"id": "refresh_tokens", "name": "refresh_tokens", "columns": [
+        {"name": "id", "type": "", "key": "PK"},
+        {"name": "user_id", "type": "", "key": "FK"},
+        {"name": "token_hash", "type": "", "key": "UQ"},
+        {"name": "family_id", "type": ""},
+        {"name": "issued_at", "type": ""},
+        {"name": "expires_at", "type": ""},
+        {"name": "revoked_at", "type": ""}
+      ]},
+      {"id": "classes", "name": "classes", "columns": [
+        {"name": "id", "type": "", "key": "PK"},
+        {"name": "instructor_id", "type": "", "key": "FK"},
+        {"name": "name", "type": "VARCHAR(120)"},
+        {"name": "description", "type": "VARCHAR(500)", "null": true},
+        {"name": "schedule", "type": "jsonb", "null": true},
+        {"name": "created_at", "type": ""},
+        {"name": "updated_at", "type": ""}
+      ]},
+      {"id": "class_invite_codes", "name": "class_invite_codes", "columns": [
+        {"name": "id", "type": "", "key": "PK"},
+        {"name": "class_id", "type": "", "key": "FK"},
+        {"name": "code", "type": "VARCHAR(8)", "key": "UQ"},
+        {"name": "expires_at", "type": ""},
+        {"name": "created_by", "type": "", "key": "FK"},
+        {"name": "created_at", "type": ""}
+      ]},
+      {"id": "class_enrollments", "name": "class_enrollments", "columns": [
+        {"name": "id", "type": "", "key": "PK"},
+        {"name": "class_id", "type": "", "key": "FK UQ"},
+        {"name": "student_id", "type": "", "key": "FK UQ"},
+        {"name": "joined_at", "type": ""},
+        {"name": "left_at", "type": "TIMESTAMPTZ", "null": true}
+      ]},
+      {"id": "system_audit_logs", "name": "system_audit_logs", "columns": [
+        {"name": "id", "type": "UUID", "key": "PK"},
+        {"name": "actor_user_id", "type": "UUID", "key": "FK"},
+        {"name": "action_type", "type": "VARCHAR(64)"},
+        {"name": "target_type", "type": "VARCHAR(32)"},
+        {"name": "target_id", "type": "VARCHAR(64)", "null": true},
+        {"name": "before_json", "type": "JSONB", "null": true},
+        {"name": "after_json", "type": "JSONB", "null": true},
+        {"name": "created_at", "type": "TIMESTAMPTZ"}
+      ]},
+      {"id": "system_settings", "name": "system_settings", "columns": [
+        {"name": "key", "type": "", "key": "PK"},
+        {"name": "value_json", "type": "JSONB"},
+        {"name": "updated_at", "type": "TIMESTAMPTZ"},
+        {"name": "updated_by", "type": "", "key": "FK"}
+      ]},
+      {"id": "user_preferences", "name": "user_preferences", "columns": [
+        {"name": "user_id", "type": "", "key": "PK FK"},
+        {"name": "streak_reminder_enabled", "type": "BOOLEAN"},
+        {"name": "weekly_report_enabled", "type": "BOOLEAN"},
+        {"name": "preferred_interview_level", "type": "ENUM"},
+        {"name": "preferred_max_turns", "type": "SMALLINT"},
+        {"name": "preferred_hint_allowed", "type": "BOOLEAN"},
+        {"name": "updated_at", "type": "TIMESTAMPTZ"}
+      ]},
+      {"id": "user_problem_best_score", "name": "user_problem_best_score", "stereotype": "read_model", "columns": [
+        {"name": "user_id", "type": "", "key": "PK"},
+        {"name": "problem_id", "type": "", "key": "PK"},
+        {"name": "best_ratio", "type": "NUMERIC(5,4)"},
+        {"name": "best_verdict", "type": "VARCHAR(32)"},
+        {"name": "updated_at", "type": ""}
+      ]},
+      {"id": "user_submission_stats", "name": "user_submission_stats", "stereotype": "read_model", "columns": [
+        {"name": "user_id", "type": "", "key": "PK"},
+        {"name": "total_submissions", "type": ""},
+        {"name": "accepted_count", "type": ""},
+        {"name": "first_try_accepted_count", "type": ""},
+        {"name": "top_language", "type": "VARCHAR(16)", "null": true},
+        {"name": "language_counts", "type": "JSONB"},
+        {"name": "updated_at", "type": ""}
+      ]},
+      {"id": "user_daily_submission_stats", "name": "user_daily_submission_stats", "stereotype": "read_model", "columns": [
+        {"name": "user_id", "type": "", "key": "PK"},
+        {"name": "day", "type": "DATE", "key": "PK"},
+        {"name": "submission_count", "type": "INT"}
+      ]},
+      {"id": "identity_recent_activity", "name": "identity_recent_activity", "stereotype": "read_model", "columns": [
+        {"name": "id", "type": "", "key": "PK"},
+        {"name": "actor_user_id", "type": ""},
+        {"name": "scope_class_id", "type": "", "key": "FK", "null": true},
+        {"name": "activity_type", "type": "VARCHAR(40)"},
+        {"name": "ref_type", "type": ""},
+        {"name": "ref_id", "type": ""},
+        {"name": "occurred_at", "type": ""}
+      ]}
+    ],
+    "externals": [
+      {"id": "problem.class_assignments", "name": "problem.class_assignments"},
+      {"id": "problem.problems", "name": "problem.problems"}
+    ],
+    "relations": [
+      {"from": "users", "to": "roles", "kind": "fk", "label": "role_id"},
+      {"from": "permissions", "to": "roles", "kind": "fk", "label": "role_id"},
+      {"from": "permissions", "to": "functions", "kind": "fk", "label": "function_id"},
+      {"from": "permissions", "to": "actions", "kind": "fk", "label": "action_id"},
+      {"from": "permissions", "to": "users", "kind": "fk", "label": "updated_by"},
+      {"from": "oauth_identities", "to": "users", "kind": "fk", "label": "user_id"},
+      {"from": "refresh_tokens", "to": "users", "kind": "fk", "label": "user_id"},
+      {"from": "classes", "to": "users", "kind": "fk", "label": "instructor_id"},
+      {"from": "class_invite_codes", "to": "classes", "kind": "fk", "label": "class_id"},
+      {"from": "class_invite_codes", "to": "users", "kind": "fk", "label": "created_by"},
+      {"from": "class_enrollments", "to": "classes", "kind": "fk", "label": "class_id"},
+      {"from": "class_enrollments", "to": "users", "kind": "fk", "label": "student_id"},
+      {"from": "system_audit_logs", "to": "users", "kind": "fk", "label": "actor_user_id"},
+      {"from": "system_settings", "to": "users", "kind": "fk", "label": "updated_by"},
+      {"from": "user_preferences", "to": "users", "kind": "fk", "label": "user_id", "card": "1:1"},
+      {"from": "identity_recent_activity", "to": "classes", "kind": "fk", "label": "scope_class_id", "optional": true},
+      {"from": "user_problem_best_score", "to": "users", "kind": "ref", "label": "user_id"},
+      {"from": "user_submission_stats", "to": "users", "kind": "ref", "label": "user_id"},
+      {"from": "user_daily_submission_stats", "to": "users", "kind": "ref", "label": "user_id"},
+      {"from": "identity_recent_activity", "to": "users", "kind": "ref", "label": "actor_user_id"},
+      {"from": "user_problem_best_score", "to": "problem.problems", "kind": "ref", "label": "problem_id"},
+      {"from": "problem.class_assignments", "to": "classes", "kind": "ref", "label": "class_id"}
+    ]
+  }
+}

@@ -141,22 +141,22 @@ export function fakeGetRecentSolutionReviews(): Promise<
       submissionId: "sub-4821",
       problemTitle: "Two Sum",
       reviewedAt: "2026-09-24",
-      timeComplexity: "O(n)",
-      verdict: "optimal",
+      complexity: { actualTime: "O(n)" },
+      verdict: "OPTIMAL",
     },
     {
       submissionId: "sub-4790",
       problemTitle: "Coin Change",
       reviewedAt: "2026-09-21",
-      timeComplexity: "O(n · amount)",
-      verdict: "improvable",
+      complexity: { actualTime: "O(n · amount)" },
+      verdict: "IMPROVABLE",
     },
     {
       submissionId: "sub-4755",
       problemTitle: "Number of Islands",
       reviewedAt: "2026-09-17",
-      timeComplexity: "O(m · n)",
-      verdict: "optimal",
+      complexity: { actualTime: "O(m · n)" },
+      verdict: "OPTIMAL",
     },
   ]);
 }

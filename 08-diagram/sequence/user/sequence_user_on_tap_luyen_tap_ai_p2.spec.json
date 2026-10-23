@@ -1,5 +1,5 @@
 {
-  "_": "Luong F6 Chế độ học + Chế độ luyện cua actor A1 tren ngan hang cau hoi phong van. Nguon: 01-rd/req/interview-bank.md (F6-04 den F6-08, F6-09, F6-12), 02-bd/architecture/interview-bank.md muc 1 (AnswerFeedbackPort, SpringAiFeedbackAdapter, job spaced repetition), muc 2 (Chế độ luyện la NOI DUY NHAT module nay goi AI).",
+  "_": "Luong F6 Chế độ học + Chế độ luyện cua actor A1 tren ngan hang cau hoi phong van. Nguon: 01-rd/req/interview-bank.md (F6-04 den F6-08, F6-09, F6-12), 02-bd/architecture/interview-bank.md muc 1 (AnswerFeedbackPort, SpringAiFeedbackAdapter, job spaced repetition), muc 2 (Chế độ luyện la NOI DUY NHAT module nay goi AI). | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
   "_bat_bien": "F6-07 amendment (DEC-2026-0831-outside-screens-closures): moi lan nop la mot attempt doc lap, khong UPDATE cau tra loi cu.",
   "kind": "sequence",
   "title": "Sơ đồ tuần tự chi tiết - Ôn tập và luyện tập câu hỏi phỏng vấn (Sinh viên) (2/3)",
@@ -48,7 +48,7 @@
       {
         "from": "Sinh viên",
         "to": "PracticeController",
-        "text": "POST /interview-bank/questions/{id}/answers { answerText }"
+        "text": "Gửi câu trả lời của người học"
       },
       {
         "from": "PracticeController",
@@ -58,7 +58,7 @@
       {
         "from": "PracticeController",
         "to": "PracticeService",
-        "text": "submitPracticeAnswer(command, userId)"
+        "text": "Xử lý câu trả lời ở chế độ luyện"
       },
       {
         "from": "PracticeService",
@@ -77,14 +77,19 @@
           "then": [
             {
               "from": "PracticeService",
+              "to": "PracticeService",
+              "text": "Trường hợp có"
+            },
+            {
+              "from": "PracticeService",
               "to": "PracticeController",
-              "text": "RUBRIC_MISSING - không gọi AI khi không có gì để đối chiếu",
+              "text": "Chưa có tiêu chí chuẩn, không gọi AI vì không có gì để đối chiếu",
               "kind": "return"
             },
             {
               "from": "PracticeController",
               "to": "Sinh viên",
-              "text": "422 kèm gợi ý báo cho giảng viên bổ sung",
+              "text": "Báo lỗi kèm gợi ý báo giảng viên bổ sung",
               "kind": "return"
             }
           ],
@@ -92,12 +97,12 @@
             {
               "from": "PracticeService",
               "to": "PracticeService",
-              "text": "compare(tiêu chí chuẩn, câu trả lời người học) (SpringAiFeedbackAdapter)"
+              "text": "Nhờ AI đối chiếu câu trả lời với tiêu chí chuẩn"
             },
             {
               "from": "PracticeService",
               "to": "PracticeService",
-              "text": "Tiêu chí vào system message, câu trả lời vào user message"
+              "text": "Tiêu chí thành chỉ thị của hệ thống, câu trả lời chỉ là dữ liệu"
             },
             {
               "from": "PracticeService",
@@ -113,7 +118,7 @@
             {
               "from": "PracticeService",
               "to": "PracticeService",
-              "text": "AnswerFeedback (SpringAiFeedbackAdapter)"
+              "text": "Nhận xét của AI cho câu trả lời"
             }
           ]
         }
@@ -121,23 +126,23 @@
       {
         "from": "PracticeService",
         "to": "PostgreSQL",
-        "text": "INSERT user_answers - thêm attempt mới, không sửa attempt cũ"
+        "text": "Lưu thêm một lần luyện mới, không sửa lần cũ"
       },
       {
         "from": "PostgreSQL",
         "to": "PostgreSQL",
-        "text": "INSERT user_answers (question_id, user_id, attempt_no) (QuestionRepository)"
+        "text": "Lưu câu trả lời và lần luyện thứ mấy"
       },
       {
         "from": "PracticeService",
         "to": "PracticeController",
-        "text": "AnswerFeedbackDto",
+        "text": "Nhận xét của AI",
         "kind": "return"
       },
       {
         "from": "PracticeController",
         "to": "Sinh viên",
-        "text": "200 OK",
+        "text": "Báo thành công",
         "kind": "return"
       },
       {

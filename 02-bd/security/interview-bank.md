@@ -64,7 +64,8 @@ Bảng 2.1: Ma trận quyền thao tác trên danh mục chủ đề (đứng sa
 | `DeleteQuestionTopic` | Không | Không | Có | `INTERVIEW_BANK_MANAGEMENT:DELETE` + vai trò `ADMIN`; từ chối khi còn câu hỏi tham chiếu |
 
   Kiểm ở máy chủ kể cả khi giao diện đã ẩn nút; A2 gọi trực tiếp API nhận `403 FORBIDDEN` (cùng chính sách lỗi
-  ở mục 2). Mỗi thao tác thành công ghi một dòng `system_audit_logs` (F1-14) trong cùng giao dịch.
+  ở mục 2). Mỗi thao tác thành công được ghi nhật ký (F1-14) qua `AuditLogPort` của `identity` trong cùng giao dịch (không ghi thẳng bảng `system_audit_logs` từ `interview-bank`).
+  Lưu ý (2026-10-23, `DEC-2026-1023-db-actor-review-fixes`): ma trận phân quyền **không** điều khiển danh mục chủ đề và độ khó. Các thao tác này đòi kiểm vai trò `ADMIN` ở use case, cộng `INTERVIEW_BANK_MANAGEMENT`; vì vậy một ô INSTRUCTOR trên ma trận không phải thứ giới hạn A2 ở đây.
 - **Quản lý độ khó (`question_levels`) — chỉ ADMIN** (chốt 2026-10-03, `DEC-2026-1001-admin-configurable-settings` mục 6).
   Cùng cách với chủ đề: dùng lại `INTERVIEW_BANK_MANAGEMENT` kết hợp kiểm vai trò `ADMIN` ở tầng use case, không Function
   mới. Bảng 2.2 tóm tắt.
@@ -79,7 +80,7 @@ Bảng 2.2: Ma trận quyền thao tác trên danh mục độ khó (cùng quy t
 | `ReorderQuestionLevels` | Không | Không | Có | `INTERVIEW_BANK_MANAGEMENT:UPDATE` + vai trò `ADMIN` |
 | `DeleteQuestionLevel` | Không | Không | Có | `INTERVIEW_BANK_MANAGEMENT:DELETE` + vai trò `ADMIN`; từ chối khi còn câu hỏi tham chiếu hoặc khi đây là mức cuối cùng |
 
-  Kiểm ở máy chủ kể cả khi giao diện đã ẩn nút; A2 gọi trực tiếp nhận `403 FORBIDDEN`. Mỗi thao tác thành công ghi một dòng `system_audit_logs` (F1-14).
+  Kiểm ở máy chủ kể cả khi giao diện đã ẩn nút; A2 gọi trực tiếp nhận `403 FORBIDDEN`. Mỗi thao tác thành công được ghi nhật ký (F1-14) qua `AuditLogPort` của `identity` trong cùng giao dịch (không ghi thẳng bảng `system_audit_logs`). Cùng lưu ý ở Bảng 2.1: vai trò `ADMIN` được kiểm ở use case, ma trận phân quyền không giới hạn A2 ở danh mục độ khó.
 
 ## 3. `question_sets` — đã đóng 2026-09-13: không áp dụng
 

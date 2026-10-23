@@ -33,7 +33,6 @@ export type UserProfile = {
   schoolOrCompany: string | null;
   /** Self-declared job title, NOT the RBAC `role` [SoT: USR0502_profile.md Sheet 7.1 row 4]. */
   currentPosition: string | null;
-  defaultLanguage: SubmissionLanguage;
   targetPosition: string | null;
   /** `password_hash IS NULL` when false — account has never set a password (OAuth-only). */
   hasPassword: boolean;

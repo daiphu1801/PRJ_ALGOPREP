@@ -1,5 +1,5 @@
 {
-  "_": "Nguon: 03-dd/api/identity.md (dong 25, 27), 03-dd/logic/identity.md BR-11, 02-bd/database/identity.md (class_enrollments, left_at), DEC-2026-1014-keep-learning-history-on-leave, DEC-2026-1014-class-leave-details. Thay hai phan cu: BR-11 khong con xoa cascade, judge-orchestration khong xoa luot nop khi nhan su kien nen bo nhanh RabbitMQ xoa cascade. Duong dan POST .../join la dong 25 cua DD. Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen.",
+  "_": "Nguon: 03-dd/api/identity.md (dong 25, 27), 03-dd/logic/identity.md BR-11, 02-bd/database/identity.md (class_enrollments, left_at), DEC-2026-1014-keep-learning-history-on-leave, DEC-2026-1014-class-leave-details. Thay hai phan cu: BR-11 khong con xoa cascade, judge-orchestration khong xoa luot nop khi nhan su kien nen bo nhanh RabbitMQ xoa cascade. Duong dan POST .../join la dong 25 cua DD. Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen. | Cap nhat 2026-10-20: siet theo quy tac moi, nhan mui ten la cau tieng Viet thuong, khong duong dan endpoint, ma HTTP, ma quyen, ten su kien, thuat ngu ky thuat; duong dan, ma HTTP va ma quyen nam o DD.",
   "kind": "sequence",
   "title": "Sơ đồ tuần tự chi tiết - Gỡ học viên khỏi lớp và vào lại bằng mã mời (Giảng viên) (1/2)",
   "covers": [
@@ -47,12 +47,12 @@
       {
         "from": "Giảng viên",
         "to": "ClassController",
-        "text": "POST .../classes/{classId}/students/{studentId}/leave"
+        "text": "Gửi yêu cầu gỡ học viên khỏi lớp"
       },
       {
         "from": "ClassController",
         "to": "ClassController",
-        "text": "Kiểm tra quyền quản lý lớp (CLASS_MANAGEMENT:DELETE)"
+        "text": "Kiểm tra quyền quản lý lớp"
       },
       {
         "from": "ClassController",
@@ -82,13 +82,13 @@
             {
               "from": "ClassService",
               "to": "ClassController",
-              "text": "Từ chối ở tầng ứng dụng, không chỉ ẩn nút trên giao diện",
+              "text": "Từ chối ngay ở máy chủ, không chỉ ẩn nút trên giao diện",
               "kind": "return"
             },
             {
               "from": "ClassController",
               "to": "Giảng viên",
-              "text": "403 Forbidden",
+              "text": "Báo lỗi: không có quyền với lớp này",
               "kind": "return"
             }
           ],
@@ -112,19 +112,19 @@
             {
               "from": "ClassService",
               "to": "RabbitMQ",
-              "text": "Phát sự kiện học viên đã bị gỡ khỏi lớp",
+              "text": "Thông báo nội bộ: học viên đã bị gỡ khỏi lớp",
               "kind": "async"
             },
             {
               "from": "ClassService",
               "to": "ClassController",
-              "text": "Đã gỡ; gọi lặp vẫn thành công và không ghi đè mốc cũ",
+              "text": "Đã gỡ; bấm lặp lại vẫn thành công và không đổi mốc cũ",
               "kind": "return"
             },
             {
               "from": "ClassController",
               "to": "Giảng viên",
-              "text": "200 OK",
+              "text": "Báo thành công",
               "kind": "return"
             }
           ]

@@ -60,10 +60,10 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e17" value="2. POST /identity/admin/users/{userId}/password-reset" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.2195;exitDx=0;exitDy=0;entryX=0.5;entryY=0.2195;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v5">
+        <mxCell id="e17" value="2. Gửi yêu cầu đặt lại mật khẩu" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.2195;exitDx=0;exitDy=0;entryX=0.5;entryY=0.2195;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v5">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e18" value="2.1. Kiểm tra quyền quản lý tài khoản (USER_MANAGEMENT:UPDATE)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.2594;exitDx=0;exitDy=0;entryX=0.5;entryY=0.2843;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v5">
+        <mxCell id="e18" value="2.1. Kiểm tra quyền quản lý tài khoản" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.2594;exitDx=0;exitDy=0;entryX=0.5;entryY=0.2843;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v5">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
             <mxPoint x="335" y="268" />
@@ -80,7 +80,7 @@
         <mxCell id="e21" value="Tài khoản, có mật khẩu hay không" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.3965;exitDx=0;exitDy=0;entryX=0.5;entryY=0.3965;entryDx=0;entryDy=0;" edge="1" parent="1" source="v7" target="v6">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e22" value="2.2.2. Sinh mật khẩu tạm, băm trước khi lưu" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.4688;exitDx=0;exitDy=0;entryX=0.5;entryY=0.4938;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v6">
+        <mxCell id="e22" value="2.2.2. Sinh mật khẩu tạm, mã hoá trước khi lưu" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.4688;exitDx=0;exitDy=0;entryX=0.5;entryY=0.4938;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v6">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
             <mxPoint x="490" y="436" />
@@ -88,7 +88,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e23" value="2.2.3. Lưu mật khẩu tạm đã băm" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.5262;exitDx=0;exitDy=0;entryX=0.5;entryY=0.5262;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v7">
+        <mxCell id="e23" value="2.2.3. Lưu mật khẩu tạm đã mã hoá" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.5262;exitDx=0;exitDy=0;entryX=0.5;entryY=0.5262;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v7">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e24" value="Đã lưu" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.5661;exitDx=0;exitDy=0;entryX=0.5;entryY=0.5661;entryDx=0;entryDy=0;" edge="1" parent="1" source="v7" target="v6">
@@ -97,7 +97,7 @@
         <mxCell id="e25" value="2.2.4. Gửi mật khẩu tạm tới email tài khoản" style="edgeStyle=none;html=1;endArrow=open;endFill=0;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.6060;exitDx=0;exitDy=0;entryX=0.5;entryY=0.6060;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v8">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e26" value="2.2.5. Tài khoản đăng nhập bên thứ ba, không đổi mật khẩu" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.6733;exitDx=0;exitDy=0;entryX=0.5;entryY=0.6983;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v6">
+        <mxCell id="e26" value="2.2.5. Tài khoản đăng nhập qua bên thứ ba, không đổi mật khẩu" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.6733;exitDx=0;exitDy=0;entryX=0.5;entryY=0.6983;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v6">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
             <mxPoint x="490" y="600" />
@@ -105,7 +105,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e27" value="2.2.6. Gửi hướng dẫn quay lại nhà cung cấp OAuth" style="edgeStyle=none;html=1;endArrow=open;endFill=0;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.7307;exitDx=0;exitDy=0;entryX=0.5;entryY=0.7307;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v8">
+        <mxCell id="e27" value="2.2.6. Hướng dẫn đổi mật khẩu ở nơi đăng nhập gốc" style="edgeStyle=none;html=1;endArrow=open;endFill=0;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.7307;exitDx=0;exitDy=0;entryX=0.5;entryY=0.7307;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v8">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e28" value="2.2.7. Ghi nhật ký hệ thống: ai đặt lại mật khẩu của ai" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.7706;exitDx=0;exitDy=0;entryX=0.5;entryY=0.7706;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v7">
@@ -117,10 +117,10 @@
         <mxCell id="e30" value="Đã gửi" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8504;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8504;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v5">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e31" value="200 OK" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8903;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8903;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v4">
+        <mxCell id="e31" value="Báo thành công" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8903;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8903;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v4">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e32" value="3. Toast Đã gửi mật khẩu tạm tới email; mật khẩu không hiện cho quản trị viên" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.9302;exitDx=0;exitDy=0;entryX=0.5;entryY=0.9551;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v4">
+        <mxCell id="e32" value="3. Hiện thông báo Đã gửi mật khẩu tạm tới email; mật khẩu không hiện cho quản trị viên" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.9302;exitDx=0;exitDy=0;entryX=0.5;entryY=0.9551;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v4">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
             <mxPoint x="180" y="806" />

@@ -1,5 +1,5 @@
 {
-  "_": "Luong soan de bai, khai dac ta ham cho CA HAI mo hinh nop bai, va checklist chan xuat ban. Nguon: US-A2-01 va US-A2-01b (01-rd/req/user_stories/a2_instructor.md:8-35), 01-rd/req/problem-bank.md (F2-01 den F2-04, F2-15), 01-rd/req/harness.md (F3-01 luoc do kieu, F3-13 hai mo hinh song song), 02-bd/architecture/harness.md muc 4 (luoc do kieu).",
+  "_": "Luong soan de bai, khai dac ta ham cho CA HAI mo hinh nop bai, va checklist chan xuat ban. Nguon: US-A2-01 va US-A2-01b (01-rd/req/user_stories/a2_instructor.md:8-35), 01-rd/req/problem-bank.md (F2-01 den F2-04, F2-15), 01-rd/req/harness.md (F3-01 luoc do kieu, F3-13 hai mo hinh song song), 02-bd/architecture/harness.md muc 4 (luoc do kieu). | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen. Siet 2026-10-20: nhan mui ten viet ngon ngu nghiep vu, endpoint, ma HTTP, ma quyen, ten ham va cau SQL thuoc 03-dd/api va 03-dd/logic, khong ve trong hinh.",
   "_shared": "Man soan de duoc gan cho CA giang vien va quan tri vien, chia pham vi bang quyen PROBLEM_AUTHORING (DEC-2026-0825-shared-content-authoring-screens) -- vi vay dat o sequence/shared/ chu khong phai gv/.",
   "_chan_xuat_ban": "F2-15: thieu testcase Hidden hoac thieu dac ta thi CHAN, khong cho xuat ban mot bai khong cham duoc.",
   "kind": "sequence",
@@ -41,7 +41,7 @@
       {
         "from": "Người soạn đề",
         "to": "Người soạn đề",
-        "text": "Viết đề bài bằng Markdown kèm công thức LaTeX"
+        "text": "Viết đề bài kèm công thức toán"
       },
       {
         "from": "Người soạn đề",
@@ -56,49 +56,49 @@
       {
         "from": "Người soạn đề",
         "to": "ProblemController",
-        "text": "POST /problems { statementMd, difficulty, topics, tags }"
+        "text": "Gửi đề mới: nội dung, độ khó, chủ đề, thẻ"
       },
       {
         "from": "ProblemController",
         "to": "ProblemController",
-        "text": "Kiểm quyền PROBLEM_AUTHORING:CREATE theo ma trận F1-10"
+        "text": "Kiểm tra quyền soạn đề theo ma trận phân quyền F1-10"
       },
       {
         "from": "ProblemController",
         "to": "ProblemService",
-        "text": "createDraft(command, authorId)"
+        "text": "Xử lý tạo đề bản nháp"
       },
       {
         "from": "ProblemService",
         "to": "PostgreSQL",
-        "text": "save(problem, status = CHƯA XUẤT BẢN)"
+        "text": "Lưu đề với trạng thái chưa xuất bản"
       },
       {
         "from": "PostgreSQL",
         "to": "PostgreSQL",
-        "text": "INSERT INTO problems (ProblemRepository)"
+        "text": "Ghi đề mới"
       },
       {
         "from": "PostgreSQL",
         "to": "PostgreSQL",
-        "text": "problemId (ProblemRepository)"
+        "text": "Mã đề vừa tạo"
       },
       {
         "from": "PostgreSQL",
         "to": "ProblemService",
-        "text": "Problem nháp",
+        "text": "Bài toán nháp",
         "kind": "return"
       },
       {
         "from": "ProblemService",
         "to": "ProblemController",
-        "text": "ProblemDto",
+        "text": "Thông tin bài toán",
         "kind": "return"
       },
       {
         "from": "ProblemController",
         "to": "Người soạn đề",
-        "text": "201 Created",
+        "text": "Báo tạo thành công",
         "kind": "return"
       }
     ]

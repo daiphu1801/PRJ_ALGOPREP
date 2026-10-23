@@ -1,0 +1,29 @@
+{
+  "_": "Tach tu usecase_admin_cau_hinh_ngon_ngu_ai (2026-10-20). Nguon: RD/BD ADM0501 (REQ-01, 02, 06; tab Ngon ngu va gioi han + tab Sandbox va sinh testcase).",
+  "kind": "usecase",
+  "title": "Sơ đồ Use Case chi tiết - Cấu hình ngôn ngữ, giới hạn và sandbox (Quản trị viên)",
+  "covers": [
+    "F2-10",
+    "F2-14",
+    "F4-11"
+  ],
+  "mode": "color",
+  "usecase": {
+    "system": "Cấu hình ngôn ngữ và giới hạn chấm",
+    "groups": [
+      {
+        "name": "Ngôn ngữ, tài nguyên và sandbox (F2-10, F2-14, F4-11)",
+        "actors": [
+          "Quản trị viên"
+        ],
+        "usecases": [
+          "Bật tắt ngôn ngữ hỗ trợ",
+          "Cấu hình hệ số thời gian theo ngôn ngữ",
+          "Cấu hình giới hạn thời gian và bộ nhớ mặc định",
+          "Bật tắt tham số sandbox go-judge",
+          "Đặt giới hạn script sinh testcase"
+        ]
+      }
+    ]
+  }
+}

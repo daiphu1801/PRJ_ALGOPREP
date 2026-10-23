@@ -100,11 +100,13 @@ nhau đáng kể giữa ba ngôn ngữ (ví dụ Java: mảng nguyên thuỷ `in
 `ARRAY`/`LIST` với `dimensions`/`of` lồng đủ sâu để biểu diễn "mảng nhiều chiều" và "danh sách lồng nhau"
 (F3-01) mà không cần thêm `kind` riêng cho từng độ sâu.
 
+Sửa 2026-10-22 (đồng bộ DB, phase 3, DEC-2026-1022-problem-bank-schema-sync) (HN-04; `02-bd/database/harness.md:90`): giới hạn của lược đồ — `ARRAY.dimensions` **tối đa 3** và độ sâu lồng của cây kiểu (`ARRAY`/`LIST`/`LINKED_LIST`/`BINARY_TREE` đặt trong `of`) **tối đa 3**; vượt giới hạn thì coi là kiểu ngoài lược đồ (mục 4.5). Kiểu `OTHER` **không bao giờ được lưu** vào `problem_specs.return_type`/`parameters`; nó chỉ là giá trị báo "không hỗ trợ" lúc tính `function_wrapper_supported`. Cách đặt hằng giới hạn trong shared kernel và thông báo lỗi chốt ở DD `harness`.
+
 ### 4.3. Từng kiểu: khai báo, sinh mã đọc/in, rủi ro
 
 #### a) Kiểu nguyên thuỷ (`INT`, `LONG`, `DOUBLE`, `BOOLEAN`, `CHAR`, `STRING`)
-- **Khai báo trong `problem_spec`**: một node `{"kind":"..."}`không tham số, gắn trực tiếp làm `return_type`
-  hoặc phần tử `parameters[].type` (`02-bd/database/problem-bank.md` mục 1.5).
+- **Khai báo trong `problem_specs`** (sửa 2026-10-22, đồng bộ DB phase 3, DEC-2026-1022-problem-bank-schema-sync: tên bảng số nhiều): một node `{"kind":"..."}`không tham số, gắn trực tiếp làm `return_type`
+  hoặc phần tử `parameters[].type` (`02-bd/database/problem-bank.md` mục 1.4; mục 1.5 `function_signatures` đã gộp vào đây).
 - **Sinh mã đọc input** (khái niệm, không phải code thật): mỗi ngôn ngữ đọc một token/dòng theo đúng kiểu
   built-in tương ứng (Java `Scanner.nextInt()`/`nextLong()`/`nextDouble()`/`nextBoolean()` hoặc đọc dòng rồi
   parse; C++ `std::cin >>`; Python `input()` rồi ép kiểu qua `int()`/`float()`). `STRING` đọc nguyên một
@@ -189,7 +191,7 @@ mới theo đúng quy tắc ở `.claude/skills/bd-generation/SKILL.md` mục "D
 ### 4.5. Khi kiểu dữ liệu vượt lược đồ — ai phát hiện, khi nào
 
 **Chốt: phát hiện tại thời điểm A2/A3 khai chữ ký hàm ở `problem_authoring`, không phải lúc học viên mở bài
-hay lúc harness cố sinh mã lúc chấm.** Cơ chế: khi lưu `function_signatures`, tầng application của
+hay lúc harness cố sinh mã lúc chấm.** Cơ chế: khi lưu `problem_specs` (phần chữ ký hàm; sửa 2026-10-22, đồng bộ DB phase 3: `function_signatures` đã gộp vào `problem_specs`), tầng application của
 `problem-bank` validate cấu trúc JSONB của `return_type`/từng `parameters[].type` đệ quy theo đúng tập
 `kind` hợp lệ ở mục 4.2 (đọc từ shared kernel `algoprep-common`, mục 4.1); nếu bất kỳ node nào có `kind`
 không thuộc tập trên, hoặc `ARRAY`/`LIST`/`LINKED_LIST`/`BINARY_TREE` thiếu trường `of` bắt buộc, request
@@ -217,7 +219,7 @@ tên thật) triển khai tối thiểu các trách nhiệm sau, tương ứng m
 
 | Trách nhiệm | Input (khái niệm) | Output (khái niệm) | Mã RD |
 | :--- | :--- | :--- | :--- |
-| Sinh khung Bọc hàm | `function_signature` (chữ ký hàm đã validate theo lược đồ mục 4), mã nguồn người học (đoạn thân hàm) | Mã nguồn hoàn chỉnh của một file (đọc input theo lược đồ → gọi hàm người học → in output theo lược đồ) | F3-02, F3-03, F3-04, F3-05 |
+| Sinh khung Bọc hàm | Chữ ký hàm từ `problem_specs` (các cột `function_name`, `return_type`, `parameters`, `name_overrides`; đã validate theo lược đồ mục 4; sửa 2026-10-22, đồng bộ DB phase 3), mã nguồn người học (đoạn thân hàm) | Mã nguồn hoàn chỉnh của một file (đọc input theo lược đồ → gọi hàm người học → in output theo lược đồ) | F3-02, F3-03, F3-04, F3-05 |
 | Sinh khung Standard I/O | `stdin_format_md`/`stdout_format_md` (mô tả tự do), mã nguồn người học (đã có `main()` riêng) | Mã nguồn hoàn chỉnh — chủ yếu là ghép mã người học vào khung biên dịch tối thiểu, **không sinh logic đọc/ghi** (người học tự viết) | F3-13 |
 | Đóng gói theo định dạng adapter | Mã nguồn hoàn chỉnh (một trong hai trên) | Payload đúng hình dạng `JudgeExecutionPort` yêu cầu (mặc định go-judge: `cmd[]`/`copyIn`-style, không phải Base64 — `DEC-2026-0823-go-judge-default-engine` điểm (4)) | F3-06 |
 | Ánh xạ lỗi biên dịch | Output thô của compiler/interpreter (`stderr`), bảng offset dòng (số dòng mã khung chèn *trước* thân hàm người học) | Danh sách lỗi đã ánh xạ lại đúng số dòng trong mã người học, lỗi thuộc mã khung bị lọc bỏ hoàn toàn | F3-11, F3-12 |
