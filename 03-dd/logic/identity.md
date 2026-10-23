@@ -1,5 +1,31 @@
 # DD — Logic module `identity` (F1)
 
+## BR-21 — Đăng ký, Admin tạo tài khoản và đăng nhập đầu tiên (xác thực email, buộc đổi mật khẩu mềm)
+
+**Thêm 2026-10-22 (đồng bộ DB vòng 2, `DEC-2026-1022-db-sync-round2` mục 1 và 4).** Số BR-21 là số tiếp theo còn trống; không đổi
+số các BR cũ. `[SoT: Suy luận]` cho tên trường phản hồi và cách phân biệt hai nguồn tài khoản (phần dưới); các hành vi chính
+theo DEC.
+
+- **Tự đăng ký** (`POST /auth/register`, #1): tạo `users.status = PENDING_VERIFICATION`, `must_change_password = false`, phát OTP email
+  (khoá Redis `identity:emailverify:<userId>`, #53/#54). Nhập đúng OTP (#53) → `ACTIVE`. Đây là luồng **duy nhất** dùng OTP email.
+- **Admin tạo** (`POST /admin/users`, #50): tạo `status = PENDING_VERIFICATION`, `must_change_password = true`, sinh mật khẩu tạm gửi
+  email. **Không** phát OTP, **không** tạo khoá `identity:emailverify:<userId>`.
+- **Đăng nhập** (`POST /auth/login`, #2; `/auth/instructor/login`, #49), sau khi mật khẩu khớp và đã qua BR-01:
+  1. `status = DEACTIVATED` → `403 IDT-104` (không đổi gì).
+  2. `status = PENDING_VERIFICATION` **và** `must_change_password = true` (tài khoản Admin tạo, vì tự đăng ký không bao giờ có cờ này) →
+     `UPDATE users SET status = 'ACTIVE'` trong cùng giao dịch phát token. Đăng nhập thành công bằng mật khẩu tạm là bằng chứng
+     người nhận truy cập được email.
+  3. `status = PENDING_VERIFICATION` **và** `must_change_password = false` (tự đăng ký chưa nhập OTP): **chặn** — `403 IDT-113`
+     (không phát token, không đổi `status`). Người dùng phải nhập OTP email (#53) trước, rồi đăng nhập lại.
+     **Sửa 2026-10-22 (đồng bộ DB vòng 3, `DEC-2026-1022-self-register-pending-login-blocked`).** Mã `IDT-113`
+     `[SoT: Suy luận — mã đề xuất]` (DEC ghi "proposed IDT-113"). Luồng Admin tạo (bước 2) không đổi. Lưu ý: bước 3 chạy sau khi
+     mật khẩu khớp, nên không lộ trạng thái tài khoản cho người không biết mật khẩu.
+  4. Phản hồi đăng nhập mang `user.mustChangePassword` (đọc `users.must_change_password` sau bước 2).
+- **Buộc đổi mật khẩu là mềm**: máy chủ **không** chặn endpoint nào khác khi `must_change_password = true`; giao diện đọc cờ ở phản hồi
+  đăng nhập (và `GET /me/profile`, #9) rồi chuyển người dùng tới màn đổi mật khẩu. Cờ về `false` ở lần đổi mật khẩu đầu tiên (BR-06,
+  cùng giao dịch đặt `password_changed_at = now()`).
+- **Ràng buộc kết quả**: `ACTIVE` luôn nghĩa "đã chứng minh truy cập email" (OTP, hoặc đăng nhập đầu bằng mật khẩu tạm gửi qua email).
+
 ## BR-19 — Ánh xạ `action_type` ra phần hiển thị của nhật ký
 
 - **Cấu trúc**: một enum `AuditAction` trong `identity`, mỗi giá trị mang `category` (nhóm phân loại hiển thị:
@@ -74,13 +100,18 @@
 
 ## BR-04 — OTP quên mật khẩu
 
-- Ngưỡng cụ thể (10 phút, 5 lần sai, cooldown 60 giây) đã chốt ở BD [SoT: `02-bd/architecture/identity.md:96-98`].
+- Ngưỡng cụ thể (10 phút, 5 lần sai, cooldown 60 giây) đã chốt ở BD [SoT: `02-bd/architecture/identity.md:124-126`].
 - **Các bước `POST /auth/password/reset`**:
   1. Đọc Redis `identity:pwreset:<userId>` (tra `userId` qua `email`, nếu email không tồn tại vẫn tiếp tục
      luồng đến bước trả lỗi chung ở cuối — không rẽ nhánh sớm, tránh timing attack).
   2. Không có key hoặc đã hết hạn → tăng "coi như sai", trả `422 IDT-107`.
   3. So khớp OTP; sai → `INCR` bộ đếm sai trong cùng key, ≥ 5 lần → xoá key, buộc gửi lại; đúng → đặt
      `password_hash` mới, xoá key, thu hồi toàn bộ `refresh_tokens` của user (BR-06 dùng lại logic này).
+  4. **Sửa 2026-10-22 (đồng bộ DB vòng 3, `DEC-2026-1022-self-register-pending-login-blocked`)**: cùng giao dịch với bước 3, đặt
+     `must_change_password = false`; nếu `status = PENDING_VERIFICATION` (tài khoản Admin tạo chưa đăng nhập lần nào) thì
+     `UPDATE users SET status = 'ACTIVE'`. Lý do: đặt lại mật khẩu bằng OTP gửi tới email đã chứng minh quyền truy cập email.
+     Tài khoản tự đăng ký còn `PENDING_VERIFICATION` chưa vào được nhánh này vì OTP quên mật khẩu chỉ dành cho tài khoản
+     đã có mật khẩu; nếu có vẫn phải qua OTP email (#53), `[SoT: Suy luận]` — kiểm ở TDD.
 - **Tài khoản chỉ OAuth** (`password_hash IS NULL` từ trước và **chưa từng đặt mật khẩu**): bước 1 vẫn gửi
   OTP bình thường ở `forgot` (không tiết lộ), nhưng `reset` trả `422 IDT-108` kèm email hướng dẫn quay lại
   provider, không đặt mật khẩu [SoT: `02-bd/security/identity.md:50-52`].
@@ -96,9 +127,11 @@
   AND id <> :currentSessionTokenId AND revoked_at IS NULL` — giữ lại đúng phiên đang thao tác, thu hồi mọi
   phiên khác [SoT: `07-review/...:137`]. Trả về một thông báo duy nhất, không liệt kê số phiên bị thu hồi.
 
-## BR-07 — Lưu cài đặt vắt qua hai module
+## BR-07 — Lưu cài đặt (ĐÃ ĐỔI 2026-10-22, DEC-2026-1022-db-sync-round4 ID-23: ~~vắt qua hai module~~, nay `identity` lưu cả tham số phỏng vấn)
 
-- **Input**: một lần bấm "Lưu" ở `USR0503_settings` sinh hai lời gọi độc lập: `PATCH /me/settings`
+**Sửa 2026-10-22 (đồng bộ DB vòng 4, DEC-2026-1022-db-sync-round4):** `user_preferences` là bảng của `identity` và nay có `preferred_max_turns`, `preferred_hint_allowed`; hai giá trị này ghi cùng `PATCH /me/settings` (endpoint 15), **một giao dịch, một bảng**. `ai-review` không giữ bảng tuỳ chọn nào (không có trong `02-bd/database/ai-review.md`) nên không còn `UpdateMyInterviewPreferences` ở `ai-review`; `interview_sessions.max_turns`/`hint_allowed` nhận giá trị lúc tạo phiên từ frontend (frontend đọc `GetMySettings` rồi truyền vào lời gọi tạo phiên). Đoạn dưới (hai lời gọi độc lập, `ai-review` lỗi không ảnh hưởng) là hành vi **trước vòng 4**, giữ làm lịch sử. Bản dựng giao diện hiện vẫn gọi hai mutation riêng (`05-coding/frontend/src/entities/user/model/types.ts:65-75`), cần dọn theo `USR0503`.
+
+- **Input (cũ, trước vòng 4)**: một lần bấm "Lưu" ở `USR0503_settings` sinh hai lời gọi độc lập: `PATCH /me/settings`
   (`identity`) và `UpdateMyInterviewPreferences` (`ai-review`).
 - **Điều kiện**: không gộp giao dịch — hai module khác schema, khác transaction boundary.
 - **Các bước**: giao diện gọi song song hai endpoint, mỗi endpoint trả kết quả độc lập; phía
@@ -114,21 +147,37 @@
   [SoT: `07-review/...:150`].
 - **Điều kiện**: không khớp → `422 IDT-201`, không đổi trạng thái.
 - **Các bước (thời điểm xoá)**:
-  1. `UPDATE users SET status = 'DEACTIVATED', deactivated_at = now() WHERE id = :id`.
+  1. `UPDATE users SET status = 'DEACTIVATED', deactivation_source = 'SELF', deactivated_at = now() WHERE id = :id`.
+     **Sửa 2026-10-22 (đồng bộ DB, phase 5, `DEC-2026-1022-identity-schema-sync` mục 1):** thêm `deactivation_source = 'SELF'`
+     [SoT: `02-bd/database/identity.md:27`]. Đường Admin khoá (`ChangeUserStatus`, endpoint 37) đặt `deactivation_source = 'ADMIN'`;
+     mở khoá đặt lại `NULL` cùng `deactivated_at`.
   2. Thu hồi toàn bộ `refresh_tokens` của user (`revoked_at = now()`).
   3. Ghi `system_audit_logs` (`actor_user_id = :id`, `action_type = SELF_ACCOUNT_DELETE_REQUESTED`).
   4. Mọi request tiếp theo dùng access token cũ (còn hạn ≤ 15 phút) bị chặn ở filter vì filter kiểm
      `status` mỗi request, không chỉ `exp` [SoT: `02-bd/security/identity.md:64-66`].
-- **Các bước (job định kỳ, sau 30 ngày ân hạn — xem `03-dd/jobs/` nếu tạo, hiện tại đặc tả tại đây vì chưa
-  đủ lớn để tách file jobs riêng)**:
-  1. Quét `users WHERE status = 'DEACTIVATED' AND deactivated_at <= now() - interval '30 days' AND
-     anonymized_at IS NULL`.
-  2. `UPDATE users SET email = 'deleted-user-' || id || '@anon.local', display_name = 'Người dùng đã xoá',
-     anonymized_at = now()`.
-  3. **Không cascade** sang bảng ở module khác [SoT: `02-bd/database/identity.md:27-30`].
+- **Các bước (job định kỳ, sau 30 ngày ân hạn; lịch chạy, lô và xử lý lỗi ở `03-dd/jobs/identity.md` mục 2)**:
+  1. Quét `users WHERE status = 'DEACTIVATED' AND deactivation_source = 'SELF' AND deactivated_at <= now() -
+     interval '30 days' AND anonymized_at IS NULL`. Dòng `deactivation_source = 'ADMIN'` **không bao giờ** bị job đụng
+     tới (khôi phục bằng mở khoá của Admin). **Sửa 2026-10-22 (phase 5):** thêm điều kiện `deactivation_source = 'SELF'`;
+     trước đó job ẩn danh cả tài khoản bị Admin khoá (mất dữ liệu định danh vĩnh viễn).
+  2. Trong một giao dịch: `UPDATE users SET email = 'deleted-user-' || id || '@anon.local', display_name = 'Người dùng đã xoá',
+     phone = NULL, school_or_company = NULL, current_position = NULL, target_position = NULL, anonymized_at = now()`;
+     rồi `DELETE FROM oauth_identities WHERE user_id = :id` (cột `provider_email` là email thật của provider). Việc đặt
+     NULL ba trường tự khai (`school_or_company`, `current_position`, `target_position`) đã được chủ dự án chốt (nêu trong
+     brief phase 5; BD ghi `[SoT: Suy luận]` chờ chốt, `02-bd/database/identity.md:36-37`).
+  3. **Không cascade** sang bảng ở module khác [SoT: `02-bd/database/identity.md:32-39`].
 - **Trong 30 ngày ân hạn**: không có đường tự huỷ; muốn khôi phục phải nhờ ADMIN mở khoá qua `ChangeUserStatus`
   (endpoint 37) [SoT: `07-review/bd_open_questions_with_solutions_260924.md:151`]. UI phải ghi rõ "liên hệ
   quản trị viên", không hứa tự khôi phục được.
+- **Sau khi đã ẩn danh hoá** (`anonymized_at IS NOT NULL`): `ChangeUserStatus` mở khoá bị từ chối cho tài khoản đó, vì email, tên và
+  `oauth_identities` đã mất. **Sửa 2026-10-22 (đồng bộ DB vòng 3, `DEC-2026-1022-self-register-pending-login-blocked`).** Nút mở khoá ở
+  `ADM0201` vô hiệu theo cờ `anonymized` của `ListUsers` (#35).
+
+- **Hiển thị và khôi phục ở màn Admin** (Sửa 2026-10-22, đồng bộ DB vòng 2, `DEC-2026-1022-db-sync-round2` mục 13): tài khoản `SELF`
+  còn trong ân hạn **có mặt** trong danh sách Admin (#35) với nhãn "Bị khóa" như tài khoản `ADMIN` khoá (cùng `status = DEACTIVATED`).
+  Admin mở khoá (#37) thì tự xoá bị huỷ: `status = ACTIVE`, `deactivation_source = NULL`, `deactivated_at = NULL`, đồng hồ 30 ngày
+  mất hiệu lực. Mở khoá sau khi job đã ẩn danh hoá (`anonymized_at` khác NULL) không khôi phục được dữ liệu định danh; việc có chặn
+  nút mở khoá cho dòng đã ẩn danh hay không chưa chốt `[SoT: Suy luận]`, xem câu hỏi trong báo cáo vòng 2.
 
 ## BR-09 — Tham gia lớp bằng mã mời
 
@@ -144,7 +193,7 @@
 
 Ngưỡng đã chốt lại theo `DEC-2026-0921-teacher-screens-conflict-resolutions`
 [SoT: `07-review/bd_open_questions_with_solutions_260924.md:187`], **thay thế** đề xuất ban đầu ở
-`02-bd/architecture/identity.md:120-123` (3 mức) bằng bộ 5 nhãn, xét theo đúng thứ tự liệt kê (nhãn đầu
+`02-bd/architecture/identity.md:148` (3 mức) bằng bộ 5 nhãn, xét theo đúng thứ tự liệt kê (nhãn đầu
 tiên khớp điều kiện thắng):
 
 1. `INSUFFICIENT_DATA` ("Chưa đủ dữ liệu") — chưa có lượt nộp nào trong phạm vi bài đã giao của lớp.
@@ -175,19 +224,39 @@ tiên khớp điều kiện thắng):
   message mất — không xây outbox riêng cho `identity` chỉ vì một sự kiện này (ponytail: chấp nhận rủi ro
   mất một message hiếm gặp, nâng cấp lên outbox khi có sự kiện phát ra thứ hai cần đảm bảo tương tự).
 
-## BR-12 — `class_completion_stats` (read model)
+## BR-22 — Xoá lớp (hard delete) và sự kiện `ClassDeleted`
 
-- **Input**: sự kiện `SubmissionGraded`/`SubmissionAccepted` (đã có ở BR nhận event, mục `03-dd/api`),
-  cộng danh sách bài đã giao từ `problem-bank.ListClassAssignments` (đọc theo lịch, không qua event vì
-  danh sách bài giao đổi không thường xuyên).
-- **Bảng mới cần thêm vào `02-bd/database/identity.md`** (đề xuất, chưa migrate):
-  `class_completion_stats(class_id PK, completion_percent NUMERIC(5,2), updated_at TIMESTAMPTZ)`
-  [SoT: `07-review/bd_open_questions_with_solutions_260924.md:170`].
-- **Công thức**: `completion_percent = COUNT(DISTINCT problem_id đã ACCEPTED bởi bất kỳ học viên nào của
-  lớp) / COUNT(bài đã giao cho lớp) * 100`, cập nhật lại toàn bộ giá trị của một `class_id` mỗi khi nhận
-  event `SubmissionGraded` có `classId` khớp (không tính incremental để tránh lệch khi bài giao thay đổi).
-- **Dùng chung** cho `INS0101_overview` (thẻ "Hoàn thành TB") và `INS0203_class_progress`
-  [SoT: `07-review/...:170`].
+**Sửa 2026-10-22 (đồng bộ DB vòng 4, DEC-2026-1022-db-sync-round4):** BR mới (số tiếp theo sau BR-21), không đổi số BR cũ. Nguồn: F1-24, `DEC-2026-1022-db-sync-round4` mục 3, `02-bd/database/identity.md` mục 1.8.
+
+- **Input**: `DELETE /classes/{classId}` (endpoint 22) bởi giảng viên sở hữu lớp.
+- **Điều kiện**: `classes.instructor_id = :callerId`, sai chủ lớp thì từ chối như các thao tác lớp khác (BR-11).
+- **Các bước**:
+  1. Trong một giao dịch: `DELETE FROM classes WHERE id = :classId`. Cơ sở dữ liệu tự xử lý: `class_invite_codes` và `class_enrollments` xoá theo (`ON DELETE CASCADE`); `identity_recent_activity.scope_class_id` về `NULL` (`ON DELETE SET NULL`). Lịch sử làm bài của học viên không bị đụng (nằm ở `judge`).
+  2. Sau khi commit, publish `ClassDeleted { classId, occurredAt }` lên RabbitMQ, cùng kiểu với `StudentRemovedFromClass` ở BR-11.
+  3. `problem-bank` nhận sự kiện và đặt `class_assignments.removed_at = now()` cho các dòng của lớp (xoá mềm, idempotent). `identity` không ghi vào schema `problem-bank`.
+- **Xử lý lỗi**: publish thất bại thì giữ cách của BR-11 (log lỗi, chấp nhận mất hiếm gặp, chưa có outbox riêng cho `identity`). Hệ quả nếu mất: dòng `class_assignments` của lớp đã xoá còn `removed_at = NULL` (tham chiếu treo mềm, không vỡ khoá vì không có FK chéo schema). Đây là sự kiện phát ra thứ hai, tức đã đạt điều kiện "nâng lên outbox" mà BR-11 ghi; đề xuất cân nhắc outbox cho `identity` `[SoT: Suy luận]`.
+- **Kết quả**: không để lại dòng nào của `identity` trỏ vào lớp đã xoá.
+
+## BR-12 — Tỉ lệ hoàn thành của lớp (`completionPct`, tính khi đọc)
+
+**Sửa 2026-10-22 (đồng bộ DB, phase 5, `DEC-2026-1022-identity-schema-sync` mục 4):** ~~bảng read model
+`class_completion_stats(class_id PK, completion_percent, updated_at)` cập nhật mỗi lần nhận `SubmissionGraded`~~ **đã bỏ**;
+`completionPct` tính trực tiếp lúc đọc, không bảng, không job, không event riêng
+[SoT: `02-bd/database/identity.md:122`; `02-bd/screens/teacher/INS0101_overview.md:77` (V0.13)].
+
+- **Input**: `classId` (endpoint 19, 26, 29); nguồn gồm `class_enrollments` (`left_at IS NULL`), danh sách bài giao đọc từ
+  `problem-bank.ListClassAssignments`, và `user_problem_best_score` (`best_verdict = 'ACCEPTED'` nghĩa là học viên đã
+  Accepted ít nhất một lần bài đó).
+- **Công thức**: `completionPct` của lớp = trung bình cộng, trên các học viên còn trong lớp, của "Hoàn thành" từng học
+  viên; "Hoàn thành" của một học viên = số bài đã giao cho lớp mà học viên đó đã `ACCEPTED` / tổng số bài đã giao cho lớp
+  × 100 (F1-28, `01-rd/req/identity.md:148-150`; BD `INS0201` Khu vực C NO 6, `02-bd/screens/teacher/INS0201_class_management.md:380`).
+  Lớp chưa giao bài hoặc chưa có học viên thì trả `null` (giao diện hiện `-`, `INS0205_class_detail.md:370`)
+  `[SoT: Suy luận — tránh chia cho 0]`. Học viên đã rời (`left_at` khác NULL) không tính (`02-bd/database/identity.md:128-130`).
+- **Lưu ý khác biệt với bản cũ**: công thức cũ của BR-12 ("số bài khác nhau được **bất kỳ** học viên nào Accepted / số bài giao")
+  khác công thức trung bình theo học viên của RD/BD màn. Phase 5 theo RD/BD (P2 cao hơn P3); xem câu hỏi Q1 trong báo cáo.
+- **Dùng chung** cho `INS0101_overview` (thẻ/danh sách "Lớp của tôi") và `INS0203_class_progress`.
+- **Nâng cấp khi chậm** `[SoT: Suy luận]`: nếu truy vấn chậm ở quy mô lớn thì cache 15 phút phía `identity` (cùng cách đã chốt cho
+  sparkline, `01-rd/req/identity.md:155-157`) trước khi nghĩ tới bảng mới.
 
 ## BR-13 — Đổi ma trận phân quyền có hiệu lực ngay
 
@@ -201,6 +270,7 @@ tiên khớp điều kiện thắng):
      `{ roleId }` [SoT: `07-review/...:383`].
   4. Mọi instance backend subscribe channel này, xoá cache Caffeine cục bộ theo `roleId` nhận được.
 - **Kết quả**: request tiếp theo dùng `roleId` đó sẽ cache-miss, tra lại Postgres, nạp giá trị mới.
+- **Phạm vi seed** (sửa 2026-10-23, `DEC-2026-1023-db-actor-review-fixes`): ma trận gồm **11 function** (thêm `LANGUAGE_CONFIG`, F4-11), seed 3 role × 11 function × 4 action = **132** dòng `permissions` [SoT: `02-bd/database/identity.md:66`]; mặc định `LANGUAGE_CONFIG` chỉ `ADMIN` có quyền.
 - **Ràng buộc bất biến (BR-14)**: không cho xoá role khi `is_system = true`, hoặc còn ≥ 1 user gán
   (`role_id` FK) [SoT: `02-bd/architecture/identity.md:78-79`]. Role tuỳ biến: áp dụng cùng điều kiện "còn
   người gán thì chặn xoá" — không tự chuyển user sang role mặc định, vì không có "role mặc định" nào được
@@ -221,8 +291,10 @@ tiên khớp điều kiện thắng):
      lại bằng 0 → `422 IDT-432`.
 - **Khoá tranh chấp**: hai quản trị viên cùng đổi trạng thái/vai trò của hai ADMIN khác nhau trong cùng một
   giây có thể cùng vượt qua kiểm tra "còn ≥ 1 ADMIN hoạt động" tại thời điểm đọc rồi cùng ghi — dùng
-  `SELECT COUNT(*) FROM users WHERE base_category = 'ADMIN' AND status = 'ACTIVE' FOR UPDATE` (khoá dòng
-  admin đang đếm) trong cùng transaction với câu `UPDATE`, đảm bảo đếm và ghi nguyên tử.
+  `SELECT u.id FROM users u JOIN roles r ON r.id = u.role_id WHERE r.base_category = 'ADMIN' AND u.status = 'ACTIVE'
+  FOR UPDATE OF u` rồi đếm số dòng trả về (khoá dòng admin đang đếm; `FOR UPDATE` không dùng được với `COUNT(*)` gộp) trong
+  cùng transaction với câu `UPDATE`, đảm bảo đếm và ghi nguyên tử. **Sửa 2026-10-22 (phase 5):** `base_category` nằm ở
+  `roles`, không có trên `users`, nên bắt buộc `JOIN roles` [SoT: `02-bd/database/identity.md:17, 52`].
 - **Audit**: ghi `system_audit_logs` cho mọi lần gọi thành công, kể cả khi ADMIN thao tác trên ADMIN khác
   [SoT: `02-bd/security/identity.md:55-57`].
 
@@ -248,20 +320,42 @@ tiên khớp điều kiện thắng):
 - **Suy giảm êm**: `problem-bank`/`judge-orchestration` lỗi → phần số liệu tương ứng trả `null` kèm cờ
   `unavailable: true`, không làm hỏng toàn bộ response.
 
-## BR-18 — Job quét học viên chưa nộp bài tuần (nguồn của `activity_type` dạng quét định kỳ)
+## BR-18 — ~~Job quét học viên chưa nộp bài tuần~~ **ĐÃ BỎ** (feed hoạt động chỉ giữ sự kiện tức thời)
 
-- **Input**: chạy định kỳ mỗi ngày (đề xuất 06:00 giờ Việt Nam — múi giờ hệ thống, xem
-  `07-review/bd_open_questions_with_solutions_260924.md:118` về việc chốt múi giờ VN cho mọi phép cắt
-  ngày).
-- **Các bước**:
-  1. Với mỗi `class_id`, đếm học viên có `ABSENT` theo đúng công thức BR-10 (7 ngày trượt).
-  2. Nếu số học viên `ABSENT` của lớp > 0 và khác kết quả lần quét trước (tránh lặp lại đúng một cảnh báo
-     mỗi ngày cho cùng một trạng thái không đổi), `INSERT identity_recent_activity
-     (actor_user_id = instructor_id, scope_class_id = class_id, activity_type =
-     'CLASS_HAS_ABSENT_STUDENTS', ref_type = 'CLASS', ref_id = class_id, occurred_at = now())`.
-- **Vị trí đặt job**: `03-dd/jobs/identity.md` không được tạo riêng ở đợt DD này (chưa đủ job khác để tách
-  file có ý nghĩa) — nếu số job của `identity` tăng lên (ví dụ thêm job dọn `identity_recent_activity` quá
-  90 ngày, job ẩn danh hoá của BR-08), tách `03-dd/jobs/identity.md` lúc đó.
+**Sửa 2026-10-22 (đồng bộ DB, phase 5):** BR-18 cũ mô tả job hằng ngày `INSERT identity_recent_activity` với
+`activity_type = 'CLASS_HAS_ABSENT_STUDENTS'`. RD đã bỏ loại sự kiện suy ra từ quét định kỳ ("vắng 9 ngày", "cần hỗ trợ")
+từ 2026-10-14 (`01-rd/req/identity.md:224-226`, `DEC-2026-1014-instructor-batch1-counting-rules`), và BD không có giá trị này
+trong tập `activity_type` (`02-bd/database/identity.md:195`). Giữ nguyên số hiệu BR-18 để các trích dẫn cũ không lệch; **không có job nào
+ghi `identity_recent_activity` theo lịch**. Nhãn `ABSENT` vẫn tồn tại nhưng chỉ là nhãn phân loại tính khi đọc ở BR-10
+(`GET /classes/{classId}/students`), không sinh dòng feed.
+
+- **Nguồn hợp lệ của `identity_recent_activity`** (năm giá trị `activity_type`): `SUBMISSION_ACCEPTED`,
+  `SOLUTION_REVIEW_COMPLETED`, `MOCK_INTERVIEW_FINISHED`, `CLASS_PROBLEM_PUBLISHED`, `STUDENT_STREAK_ACHIEVED`; tất cả ghi bởi
+  event, danh sách ở `03-dd/api/identity.md` mục 2. Không có giá trị cho sự kiện "tham gia lớp" (xem câu hỏi Q2 trong báo cáo).
+- **Vị trí đặt job** (sửa 2026-10-23): ~~`03-dd/jobs/identity.md` chưa tạo~~ đã tạo, gom job ẩn danh hoá (BR-08), dọn `identity_recent_activity` quá 90 ngày, dọn `refresh_tokens` và runner khởi tạo ADMIN (BR-23): xem `03-dd/jobs/identity.md`.
+
+## BR-23 — Khởi tạo tài khoản ADMIN đầu tiên lúc khởi động ứng dụng
+
+**Thêm 2026-10-23** (`DEC-2026-1023-db-actor-review-fixes`; nguồn BD: `02-bd/database/identity.md` mục 4, đoạn "Tài khoản `ADMIN` đầu tiên").
+
+- **Input**: hai biến môi trường `ALGOPREP_BOOTSTRAP_ADMIN_EMAIL`, `ALGOPREP_BOOTSTRAP_ADMIN_PASSWORD` (tên `[SoT: Suy luận]` ở BD, DD chốt tên này).
+- **Điều kiện kích hoạt**: không có dòng `users` nào có `role.base_category = 'ADMIN'`.
+- **Các bước** (một giao dịch, chạy bởi runner khởi động của `algoprep-identity`):
+  1. Có ít nhất một ADMIN: không làm gì, thoát (idempotent; đổi biến môi trường sau đó không đổi mật khẩu).
+  2. Chưa có ADMIN và đủ hai biến: kiểm email theo quy tắc chung, băm mật khẩu BCrypt, `INSERT users` với role hệ thống `ADMIN`, `status = 'PENDING_VERIFICATION'`, `must_change_password = true`.
+  3. Chưa có ADMIN và thiếu một trong hai biến: ném lỗi cấu hình, **ứng dụng dừng khởi động** kèm thông báo nêu rõ tên biến thiếu.
+- **Không ghi `system_audit_logs`** (`actor_user_id` NOT NULL, không có người thao tác).
+- **Kết quả**: lần đăng nhập đầu bằng mật khẩu này chuyển `ACTIVE`, giao diện buộc đổi mật khẩu (cùng luồng Admin tạo, BR-21).
+- **Bảo mật**: không ghi mật khẩu ra log; không đặt mật khẩu trong migration SQL.
+
+## BR-24 — Hợp đồng `AuditLogPort` cho module khác
+
+**Thêm 2026-10-23** (`DEC-2026-1023-db-actor-review-decisions`; nguồn BD: `02-bd/architecture/identity.md` mục 3.3).
+
+- **Chữ ký**: `record(actorUserId, actionType, targetType, targetId, beforeJson, afterJson)`, do `identity` (`algoprep-identity`) cung cấp, ghi một dòng `identity.system_audit_logs`.
+- **Giao dịch**: gọi trong cùng JVM và **cùng giao dịch DB** với thay đổi nghiệp vụ của module gọi (`Propagation.REQUIRED`, không `REQUIRES_NEW`): rollback nghiệp vụ thì dòng nhật ký cũng mất; lỗi ghi nhật ký làm hỏng cả giao dịch (không nuốt lỗi).
+- **Người gọi**: `problem-bank` (quản lý `topics`, `problem_levels`), `interview-bank` (quản lý `topics`, `levels`), `judge-orchestration` (ghi `language_configs`, `grading_defaults`, `sandbox_settings`, `generator_sandbox_settings`, `cluster_settings`).
+- **Ràng buộc**: `actorUserId` bắt buộc (không null); module khác không viết trực tiếp vào schema `identity`; `beforeJson`/`afterJson` là snapshot tự do, che khoá nhạy cảm ở tầng đọc (BR-16). Phân loại hiển thị theo BR-19; `actionType` mới của các module gọi phải bổ sung vào bảng ánh xạ BR-19.
 
 ## Tham chiếu
 
