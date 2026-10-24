@@ -1,37 +1,28 @@
 import { expect, test } from "@playwright/test";
 
 /**
- * PROTOTYPE screen check for admin_ai_config (BD ADM0301 V1.0, one tab per AI feature). The scope
- * guard here is the "Chạy đối chiếu" button: PROTOTYPE_DEBT 2.8 keeps the UI but defers the backend,
- * so it must be visibly inactive rather than wired to something that does not exist.
+ * PROTOTYPE screen check for admin_ai_config (BD ADM0301, one tab per AI feature). The scope
+ * guard here is that the "Chạy đối chiếu" card stays gone (DEC-2026-1023-drop-ai-regression-run).
  */
-test("the comparison run is present but inert, per the deferred-backend decision", async ({
-  page,
-}) => {
+test("the pre-release comparison card is gone", async ({ page }) => {
   await page.goto("/admin/ai-config");
 
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     "Prompt và chất lượng AI",
   );
 
-  const run = page.getByRole("button", { name: "Chạy đối chiếu" });
-  await expect(run).toBeVisible();
-  await expect(run).toBeDisabled();
+  await expect(
+    page.getByRole("button", { name: "Chạy đối chiếu" }),
+  ).toHaveCount(0);
+  await expect(page.getByText("Trước khi phát hành")).toHaveCount(0);
 });
 
-test("each tab shows only its own feature: the comparison run belongs to the review tab", async ({
+test("each tab shows only its own feature: answer guards are on review and interview, not testcase", async ({
   page,
 }) => {
   await page.goto("/admin/ai-config");
 
-  await expect(
-    page.getByRole("button", { name: "Chạy đối chiếu" }),
-  ).toBeVisible();
-
   await page.getByRole("button", { name: "Phỏng vấn giả lập" }).click();
-  await expect(
-    page.getByRole("button", { name: "Chạy đối chiếu" }),
-  ).toHaveCount(0);
   await expect(
     page.getByRole("heading", { name: "Nguyên tắc trả lời" }),
   ).toBeVisible();

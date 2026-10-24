@@ -142,7 +142,7 @@ export type GenerateTestcasesResult = {
 // type picker (BD SHR0202 Q10).
 // ---------------------------------------------------------------------------------------------
 
-/** Element-level kinds of the harness type schema (02-bd/architecture/harness.md section 4.2). */
+/** Element-level kinds of the harness type schema (02-bd/architecture/F3_harness.md section 4.2). */
 export type ScalarKind =
   "INT" | "LONG" | "DOUBLE" | "BOOLEAN" | "CHAR" | "STRING";
 

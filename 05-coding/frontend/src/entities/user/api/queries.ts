@@ -11,7 +11,7 @@ const QUERY_OPTIONS = { staleTime: 30_000, retry: false } as const;
 
 function notImplemented(): never {
   throw new Error(
-    "03-dd/api/identity.md endpoints 9/14 have no real HTTP client wired up yet",
+    "03-dd/api/F1_identity.md endpoints 9/14 have no real HTTP client wired up yet",
   );
 }
 

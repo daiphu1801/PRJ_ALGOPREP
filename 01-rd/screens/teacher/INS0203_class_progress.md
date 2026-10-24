@@ -4,7 +4,7 @@
 > Slug chính tắc: `class_progress` [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_progress`].
 > Phạm vi/Bounded Context: `identity` + `judge-orchestration`
 > [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_progress`]. Actor: A2 (Giảng viên).
-> Nguồn sự thật (SoT): `01-rd/req/identity.md` (F1-28), `01-rd/req/user_stories/a2_instructor.md` (`US-A2-09`),
+> Nguồn sự thật (SoT): `01-rd/req/F1_identity.md` (F1-28), `01-rd/req/user_stories/a2_instructor.md` (`US-A2-09`),
 > `09-layoutBase/Giáo viên - Tiến độ học viên.dc.html` (prototype).
 > Tài liệu này có thể đọc độc lập.
 
@@ -14,13 +14,13 @@
 
 Prototype đối chiếu: `09-layoutBase/Giáo viên - Tiến độ học viên.dc.html` (đã dựng thật, chưa sửa nợ quy
 chuẩn — xem mục 3 và Câu hỏi mở). File này mô tả **hành vi và UX ở mức yêu cầu** của một màn cụ thể — không
-lặp lại đặc tả chức năng đã có ở `01-rd/req/identity.md` hay `01-rd/req/user_stories/a2_instructor.md`, chỉ
+lặp lại đặc tả chức năng đã có ở `01-rd/req/F1_identity.md` hay `01-rd/req/user_stories/a2_instructor.md`, chỉ
 trỏ tới và bổ sung phần đặc thù của **một màn**.
 
 **Cập nhật 2026-08-30 (owner instruction — "tạo dashboard ở mức tốt là được"):** ràng buộc "không sửa
-`identity.md`/`user_stories/a2_instructor.md`" của phiên làm việc trước đã hết hiệu lực — chủ dự án giao
+`F1_identity.md`/`user_stories/a2_instructor.md`" của phiên làm việc trước đã hết hiệu lực — chủ dự án giao
 quyền chốt Câu hỏi mở Q1-Q6 ở mức hợp lý, không cần đàm phán từng ngưỡng số. Đã cấp mã `F1-28`
-(`01-rd/req/identity.md`) và `US-A2-09` (`01-rd/req/user_stories/a2_instructor.md`), xem mục 5.
+(`01-rd/req/F1_identity.md`) và `US-A2-09` (`01-rd/req/user_stories/a2_instructor.md`), xem mục 5.
 
 Cho giảng viên (A2) xem tiến độ học tập **tổng hợp của nhiều học viên** trong (các) lớp mình phụ trách —
 điểm trung bình theo lớp, danh sách học viên kèm điểm/tỉ lệ hoàn thành/chuỗi ngày hoạt động, và một khối
@@ -38,18 +38,18 @@ mở Q1 (đã đóng).
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Bài đã giải theo chủ đề (định nghĩa gốc, viết cho A1 xem tiến độ cá nhân) | F1-06 | `01-rd/req/identity.md` — F1-06 |
-| Tỉ lệ chấp thuận — Accepted / tổng bài nộp (định nghĩa gốc, viết cho A1 xem tiến độ cá nhân) | F1-07 | `01-rd/req/identity.md` — F1-07 |
-| Tổng hợp tiến độ nhiều học viên trong lớp phụ trách (điểm TB, hoàn thành, chuỗi ngày, xu hướng, khối "Cần chú ý") | F1-28 | `01-rd/req/identity.md` — F1-28 (bổ sung 2026-08-30) |
+| Bài đã giải theo chủ đề (định nghĩa gốc, viết cho A1 xem tiến độ cá nhân) | F1-06 | `01-rd/req/F1_identity.md` — F1-06 |
+| Tỉ lệ chấp thuận — Accepted / tổng bài nộp (định nghĩa gốc, viết cho A1 xem tiến độ cá nhân) | F1-07 | `01-rd/req/F1_identity.md` — F1-07 |
+| Tổng hợp tiến độ nhiều học viên trong lớp phụ trách (điểm TB, hoàn thành, chuỗi ngày, xu hướng, khối "Cần chú ý") | F1-28 | `01-rd/req/F1_identity.md` — F1-28 (bổ sung 2026-08-30) |
 | ~~Bảng slug mục 7.2 ghi `class_progress` là "dẫn xuất từ F1-06, F1-07"~~ — đã thay bằng mã trực tiếp F1-28; `system_survey.md` cần cập nhật dòng này khi đợt rà soát tiếp theo chạm tới mục 7.2 | (lịch sử) | `01-rd/overview/system_survey.md` — mục 7.2 dòng `class_progress` |
 | Cơ chế xác định "lớp giảng viên phụ trách" — giao bài theo lớp, chỉ sinh viên lớp đó thấy bài | F2-12 | `01-rd/req/user_stories/a2_instructor.md` (`US-A2-03`) |
-| ~~Cùng cơ chế lớp giảng viên phụ trách áp dụng cho phạm vi hiển thị màn chấm bài (`instructor_grading`)~~ **Đã bỏ 2026-10-13** (`DEC-2026-1013-remove-instructor-manual-grading`): màn chấm bài không còn; `class_progress` vẫn dùng phạm vi lớp phụ trách của F2-12/F1-12 | ~~F5-27~~ | `01-rd/req/ai-review.md` — F5-27 (mục đã bỏ) |
-| Gác quyền mở màn bằng Function `CLASS_MANAGEMENT` trong ma trận phân quyền | F1-10, F1-12 | `01-rd/req/identity.md` — F1-10, F1-12 |
+| ~~Cùng cơ chế lớp giảng viên phụ trách áp dụng cho phạm vi hiển thị màn chấm bài (`instructor_grading`)~~ **Đã bỏ 2026-10-13** (`DEC-2026-1013-remove-instructor-manual-grading`): màn chấm bài không còn; `class_progress` vẫn dùng phạm vi lớp phụ trách của F2-12/F1-12 | ~~F5-27~~ | `01-rd/req/F5_ai-review.md` — F5-27 (mục đã bỏ) |
+| Gác quyền mở màn bằng Function `CLASS_MANAGEMENT` trong ma trận phân quyền | F1-10, F1-12 | `01-rd/req/F1_identity.md` — F1-10, F1-12 |
 | Given-When-Then của A2 xem lớp/bài tập, không có mục nào cho "xem tiến độ tổng hợp" | — | `01-rd/req/user_stories/a2_instructor.md` (`US-A2-03` tới `US-A2-05`, `US-A2-06` đã bỏ 2026-10-13 — không có US riêng cho `class_progress`, xem Câu hỏi mở Q1) |
 
-**Đã giải quyết (2026-08-30):** `01-rd/req/identity.md` mục F1 từng chỉ định nghĩa F1-06/F1-07 cho **A1 xem
-chính mình** [SoT: 01-rd/req/identity.md — F1-06, F1-07, đoạn mở đầu ghi rõ "Trang tiến độ cá nhân"], không có mã nào cho
-A2 xem tổng hợp nhiều học viên. Khoảng trống này nay lấp bằng **F1-28** (`01-rd/req/identity.md`, bổ sung
+**Đã giải quyết (2026-08-30):** `01-rd/req/F1_identity.md` mục F1 từng chỉ định nghĩa F1-06/F1-07 cho **A1 xem
+chính mình** [SoT: 01-rd/req/F1_identity.md — F1-06, F1-07, đoạn mở đầu ghi rõ "Trang tiến độ cá nhân"], không có mã nào cho
+A2 xem tổng hợp nhiều học viên. Khoảng trống này nay lấp bằng **F1-28** (`01-rd/req/F1_identity.md`, bổ sung
 2026-08-30) và **US-A2-09** (`01-rd/req/user_stories/a2_instructor.md`) — xem Câu hỏi mở Q1.
 
 ### 2.1 Cấu trúc hệ thống liên quan
@@ -57,7 +57,7 @@ A2 xem tổng hợp nhiều học viên. Khoảng trống này nay lấp bằng 
 | Màn/tài liệu | Vai trò | Bounded Context |
 |---|---|---|
 | Màn hiện tại | `INS0203` / `class_progress` | `identity` + `judge-orchestration` |
-| Tài liệu yêu cầu | `01-rd/req/identity.md` (F1-28) | Nguồn SoT của màn |
+| Tài liệu yêu cầu | `01-rd/req/F1_identity.md` (F1-28) | Nguồn SoT của màn |
 | Prototype | `09-layoutBase/Giáo viên - Tiến độ học viên.dc.html` | Bằng chứng bố cục và trạng thái |
 
 **Chi tiết trạng thái và cấu trúc màn**
@@ -91,7 +91,7 @@ diễn:
    "Cần hỗ trợ" (điểm trung bình giảm liên tiếp từ hai mốc tuần trở lên) — ba ngưỡng này là giá trị mặc định
    đề xuất `[SoT: Suy luận]`, BD/DD chỉnh được. Đã đóng Câu hỏi mở Q2. **Chốt 2026-10-14
    (DEC-2026-1014-instructor-batch2-weekly-rules):** "mốc tuần" là tuần ISO bắt đầu thứ Hai, không tính tuần
-   hiện tại chưa kết thúc; số liệu tuần tính lúc truy vấn, cache 15 phút (xem `F1-28`, `01-rd/req/identity.md`).
+   hiện tại chưa kết thúc; số liệu tuần tính lúc truy vấn, cache 15 phút (xem `F1-28`, `01-rd/req/F1_identity.md`).
    **Xác nhận 2026-10-14 (`DEC-2026-1014-instructor-batch5-6-nav-pagination-rubric`):** quy tắc tuần ISO này áp dụng
    cả cho sparkline "Xu hướng" của bảng học viên.
 6. **Cột "Điểm TB"** hiển thị số thang 10 (ví dụ `8.9`) — theo `F1-28`: quy đổi từ tỉ lệ Accepted/tổng nộp
@@ -120,7 +120,7 @@ diễn:
 - Layout, vùng bố cục, bảng màu, component cụ thể — thuộc BD (`02-bd/screens/teacher/INS0203_class_progress.md`,
   chưa viết).
 - Hợp đồng API (request/response lấy danh sách học viên, dữ liệu biểu đồ) — thuộc DD
-  (`03-dd/api/identity.md` hoặc `03-dd/api/judge-orchestration.md`, chưa viết).
+  (`03-dd/api/F1_identity.md` hoặc `03-dd/api/F4_judge-orchestration.md`, chưa viết).
 - Cơ chế RBAC/Function `CLASS_MANAGEMENT` chi tiết (định nghĩa Action, seed dữ liệu ma trận) — thuộc BD/DD
   của module `identity`, không thuộc file theo trục màn này.
 
@@ -130,8 +130,8 @@ diễn:
 
 | # | Câu hỏi | Vì sao chưa trả lời được | Đề xuất | Chủ sở hữu |
 | :-: | :--- | :--- | :--- | :--- |
-| Q1 | ~~`class_progress` (A2 xem tổng hợp nhiều học viên) hiện chỉ được ghi là "dẫn xuất từ F1-06, F1-07" — không có mã `Fx-nn`/`US-A2-nn` trực tiếp.~~ **ĐÃ CHỐT 2026-08-30 (owner instruction — "tạo dashboard ở mức tốt là được"):** cấp mã `F1-28` trong nhóm `CLASS_MANAGEMENT` (cạnh F1-23→27) và `US-A2-09` — xem `01-rd/req/identity.md`, `01-rd/req/user_stories/a2_instructor.md`. | — | Đã chốt — xem `F1-28`. | Đã đóng |
-| Q2 | ~~Nhãn "Cần chú ý" áp dụng ngưỡng nào?~~ **ĐÃ CHỐT 2026-08-30:** "Vắng bài" — không có lượt nộp nào trong 7 ngày gần nhất; "Theo dõi" — hoàn thành dưới 50%; "Cần hỗ trợ" — điểm trung bình giảm liên tiếp từ hai mốc tuần trở lên. Ba ngưỡng là giá trị mặc định đề xuất (`[SoT: Suy luận]` trong `identity.md`), BD/DD chỉnh được, không phải hằng số cứng. | — | Đã chốt — xem `F1-28`. | Đã đóng |
+| Q1 | ~~`class_progress` (A2 xem tổng hợp nhiều học viên) hiện chỉ được ghi là "dẫn xuất từ F1-06, F1-07" — không có mã `Fx-nn`/`US-A2-nn` trực tiếp.~~ **ĐÃ CHỐT 2026-08-30 (owner instruction — "tạo dashboard ở mức tốt là được"):** cấp mã `F1-28` trong nhóm `CLASS_MANAGEMENT` (cạnh F1-23→27) và `US-A2-09` — xem `01-rd/req/F1_identity.md`, `01-rd/req/user_stories/a2_instructor.md`. | — | Đã chốt — xem `F1-28`. | Đã đóng |
+| Q2 | ~~Nhãn "Cần chú ý" áp dụng ngưỡng nào?~~ **ĐÃ CHỐT 2026-08-30:** "Vắng bài" — không có lượt nộp nào trong 7 ngày gần nhất; "Theo dõi" — hoàn thành dưới 50%; "Cần hỗ trợ" — điểm trung bình giảm liên tiếp từ hai mốc tuần trở lên. Ba ngưỡng là giá trị mặc định đề xuất (`[SoT: Suy luận]` trong `F1_identity.md`), BD/DD chỉnh được, không phải hằng số cứng. | — | Đã chốt — xem `F1-28`. | Đã đóng |
 | Q3 | ~~Cột "Điểm TB" và cột "Hoàn thành" tính từ công thức nào?~~ **ĐÃ CHỐT 2026-08-30:** Điểm TB = tỉ lệ Accepted/tổng nộp của học viên (F1-07) ×10 — không dùng điểm AI F5-27. Hoàn thành = số bài được giao (F2-12) đã Accepted ít nhất một lần, chia tổng số bài được giao. Hai cột dùng hai nguồn khác nhau, không trùng nhau. | — | Đã chốt — xem `F1-28`. | Đã đóng |
 | Q4 | ~~"Chuỗi ngày" và "Xu hướng" không khớp mã nào — chỉ số mới hay trang trí prototype?~~ **ĐÃ CHỐT 2026-08-30:** giữ lại cả hai. "Chuỗi ngày" dùng chung khái niệm đã có ở F1-21 (không phải chỉ số mới). "Xu hướng" = điểm TB cá nhân theo 6 mốc tuần gần nhất (cùng công thức Q3, tính theo cá nhân). | — | Đã chốt — xem `F1-28`. | Đã đóng |
 | Q5 | ~~Danh sách học viên khi lớp đông hiển thị thế nào — phân trang, cuộn, hay tải hết? Trạng thái rỗng/lỗi?~~ **ĐÃ CHỐT 2026-08-30:** phân trang cùng kiểu `problem_list` (F2-11); có trạng thái rỗng riêng (lớp chưa có học viên) và trạng thái lỗi kèm nút thử lại. Chi tiết UI để BD/DD. | — | Đã chốt — xem `F1-28`. | Đã đóng |
@@ -144,13 +144,13 @@ diễn:
 
 | ID | Yêu cầu | Loại | Nguồn/SoT |
 |---|---|---|---|
-| REQ-01 | Bài đã giải theo chủ đề (định nghĩa gốc, viết cho A1 xem tiến độ cá nhân) (F1-06) | Chức năng | `01-rd/req/identity.md` — F1-06 |
-| REQ-02 | Tỉ lệ chấp thuận — Accepted / tổng bài nộp (định nghĩa gốc, viết cho A1 xem tiến độ cá nhân) (F1-07) | Chức năng | `01-rd/req/identity.md` — F1-07 |
-| REQ-03 | Tổng hợp tiến độ nhiều học viên trong lớp phụ trách (điểm TB, hoàn thành, chuỗi ngày, xu hướng, khối "Cần chú ý") (F1-28) | Chức năng | `01-rd/req/identity.md` — F1-28 (bổ sung 2026-08-30) |
+| REQ-01 | Bài đã giải theo chủ đề (định nghĩa gốc, viết cho A1 xem tiến độ cá nhân) (F1-06) | Chức năng | `01-rd/req/F1_identity.md` — F1-06 |
+| REQ-02 | Tỉ lệ chấp thuận — Accepted / tổng bài nộp (định nghĩa gốc, viết cho A1 xem tiến độ cá nhân) (F1-07) | Chức năng | `01-rd/req/F1_identity.md` — F1-07 |
+| REQ-03 | Tổng hợp tiến độ nhiều học viên trong lớp phụ trách (điểm TB, hoàn thành, chuỗi ngày, xu hướng, khối "Cần chú ý") (F1-28) | Chức năng | `01-rd/req/F1_identity.md` — F1-28 (bổ sung 2026-08-30) |
 | REQ-04 | ~~Bảng slug mục 7.2 ghi `class_progress` là "dẫn xuất từ F1-06, F1-07"~~ — đã thay bằng mã trực tiếp F1-28; `system_survey.md` cần cập nhật dòng này khi đợt rà soát tiếp theo chạm tới mục 7.2 ((lịch sử)) | Chức năng | `01-rd/overview/system_survey.md` — mục 7.2 dòng `class_progress` |
 | REQ-05 | Cơ chế xác định "lớp giảng viên phụ trách" — giao bài theo lớp, chỉ sinh viên lớp đó thấy bài (F2-12) | Chức năng | `01-rd/req/user_stories/a2_instructor.md` (`US-A2-03`) |
-| REQ-06 | Cùng cơ chế lớp giảng viên phụ trách áp dụng cho phạm vi hiển thị màn chấm bài (`instructor_grading`) — dẫn chiếu để dùng chung cơ chế, không phát minh riêng cho `class_progress` (F5-27) **Đã bỏ 2026-10-13** | Chức năng | `01-rd/req/ai-review.md` — F5-27 (mục đã bỏ) |
-| REQ-07 | Gác quyền mở màn bằng Function `CLASS_MANAGEMENT` trong ma trận phân quyền (F1-10, F1-12) | Chức năng | `01-rd/req/identity.md` — F1-10, F1-12 |
+| REQ-06 | Cùng cơ chế lớp giảng viên phụ trách áp dụng cho phạm vi hiển thị màn chấm bài (`instructor_grading`) — dẫn chiếu để dùng chung cơ chế, không phát minh riêng cho `class_progress` (F5-27) **Đã bỏ 2026-10-13** | Chức năng | `01-rd/req/F5_ai-review.md` — F5-27 (mục đã bỏ) |
+| REQ-07 | Gác quyền mở màn bằng Function `CLASS_MANAGEMENT` trong ma trận phân quyền (F1-10, F1-12) | Chức năng | `01-rd/req/F1_identity.md` — F1-10, F1-12 |
 | REQ-08 | Given-When-Then của A2 xem lớp/bài tập, không có mục nào cho "xem tiến độ tổng hợp" (—) | Chức năng | `01-rd/req/user_stories/a2_instructor.md` (`US-A2-03` tới `US-A2-05`, `US-A2-06` đã bỏ 2026-10-13 — không có US riêng cho `class_progress`, xem Câu hỏi mở Q1) |
 
 ---
@@ -192,8 +192,8 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 |---|---|
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` — mục 7.2 dòng `class_progress`. |
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` — mục 7.2, khối "Chốt 2026-08-24 ... Phương án B". |
-| Yêu cầu module | `01-rd/req/identity.md` — F1-06, F1-07 (định nghĩa gốc, viết cho A1), F1-28 (chốt 2026-08-30, mã trực tiếp cho màn này), F1-12 (Function `CLASS_MANAGEMENT`). |
-| Yêu cầu module | `01-rd/req/ai-review.md` — F5-27 (đã bỏ 2026-10-13; cơ chế phạm vi lớp nay chỉ dựa F2-12/F1-12). |
+| Yêu cầu module | `01-rd/req/F1_identity.md` — F1-06, F1-07 (định nghĩa gốc, viết cho A1), F1-28 (chốt 2026-08-30, mã trực tiếp cho màn này), F1-12 (Function `CLASS_MANAGEMENT`). |
+| Yêu cầu module | `01-rd/req/F5_ai-review.md` — F5-27 (đã bỏ 2026-10-13; cơ chế phạm vi lớp nay chỉ dựa F2-12/F1-12). |
 | User story | `01-rd/req/user_stories/a2_instructor.md` — `US-A2-03` tới `US-A2-05`, `US-A2-09` (chốt 2026-08-30); `US-A2-06` đã bỏ 2026-10-13. |
 | Quyết định | `DEC-2026-0830-class-progress-dashboard`. |
 | Prototype | `09-layoutBase/Giáo viên - Tiến độ học viên.dc.html` — prototype đối chiếu. |

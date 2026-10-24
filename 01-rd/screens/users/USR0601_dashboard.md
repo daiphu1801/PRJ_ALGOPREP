@@ -3,7 +3,7 @@
 > Mã màn hình: `USR0601` [Nguồn: `02-bd/_rules/bd-template-9sheet.md` — mục 8].
 > Slug chính tắc: `dashboard`.
 > Phạm vi/Bounded Context: `identity` (F1), có đọc thêm từ `problem-bank` (F2), `judge-orchestration` (F4) và `ai-review` (F5) cho các khối gợi ý bài, hoạt động và báo cáo gần đây. Actor: A1.
-> Nguồn sự thật (SoT): `01-rd/req/identity.md` (F1-31), `.nexa/control/decision-registry.md` (`DEC-2026-0927-student-dashboard-home`), `09-layoutBase/Dashboard AlgoPrep.dc.html` (prototype).
+> Nguồn sự thật (SoT): `01-rd/req/F1_identity.md` (F1-31), `.nexa/control/decision-registry.md` (`DEC-2026-0927-student-dashboard-home`), `09-layoutBase/Dashboard AlgoPrep.dc.html` (prototype).
 > Tài liệu này mô tả hành vi và UX mức yêu cầu của màn hình, không lặp lại đặc tả chức năng nguồn.
 > Tài liệu này có thể đọc độc lập.
 
@@ -11,7 +11,7 @@
 
 ## 1. Mục đích và bối cảnh
 
-Trang đích sau khi người học đăng nhập. Trả lời đúng một câu hỏi: **làm gì tiếp theo** — tiếp tục bài đang làm dở, hay bắt một bài mới ở chủ đề đang yếu nhất [SoT: `01-rd/req/identity.md` — F1-31].
+Trang đích sau khi người học đăng nhập. Trả lời đúng một câu hỏi: **làm gì tiếp theo** — tiếp tục bài đang làm dở, hay bắt một bài mới ở chủ đề đang yếu nhất [SoT: `01-rd/req/F1_identity.md` — F1-31].
 
 Màn này được bổ sung ngày 2026-09-27 theo `DEC-2026-0927-student-dashboard-home`. Trước đó `STUDENT` là vai trò duy nhất không có màn tổng quan riêng, trong khi `ADMIN` đã có `ADM0101_overview` và `INSTRUCTOR` đã có `INS0101_instructor_overview`.
 
@@ -27,11 +27,11 @@ Quyết định đó cũng **sửa một phần Q3 của `01-rd/screens/shared/S
 
 | Hành vi | Mã | Nguồn |
 |---|---|---|
-| Dashboard tổng quan luyện tập của người học | F1-31 | `01-rd/req/identity.md` — F1-31 |
-| Bài đã giải theo chủ đề (dữ liệu nền cho thẻ thống kê và tiến độ chủ đề) | F1-06 | `01-rd/req/identity.md` — F1-06 |
-| Tỉ lệ chấp thuận (dữ liệu nền cho thẻ Acceptance rate và biểu đồ) | F1-07 | `01-rd/req/identity.md` — F1-07 |
-| Lịch sử phỏng vấn (dữ liệu nền cho khối Mock Interview gần đây) | F1-08 | `01-rd/req/identity.md` — F1-08 |
-| Tỉ lệ hoàn thành ôn câu hỏi phỏng vấn theo từng chủ đề (bảng phụ trong khối "Theo chủ đề") | F6-10 | `01-rd/req/interview-bank.md:26-27` — F6-10; chủ dự án giao cho màn này 2026-10-18 (`DEC-2026-1018-usr-open-questions-phase2-5`) |
+| Dashboard tổng quan luyện tập của người học | F1-31 | `01-rd/req/F1_identity.md` — F1-31 |
+| Bài đã giải theo chủ đề (dữ liệu nền cho thẻ thống kê và tiến độ chủ đề) | F1-06 | `01-rd/req/F1_identity.md` — F1-06 |
+| Tỉ lệ chấp thuận (dữ liệu nền cho thẻ Acceptance rate và biểu đồ) | F1-07 | `01-rd/req/F1_identity.md` — F1-07 |
+| Lịch sử phỏng vấn (dữ liệu nền cho khối Mock Interview gần đây) | F1-08 | `01-rd/req/F1_identity.md` — F1-08 |
+| Tỉ lệ hoàn thành ôn câu hỏi phỏng vấn theo từng chủ đề (bảng phụ trong khối "Theo chủ đề") | F6-10 | `01-rd/req/F6_interview-bank.md:26-27` — F6-10; chủ dự án giao cho màn này 2026-10-18 (`DEC-2026-1018-usr-open-questions-phase2-5`) |
 
 Đối chiếu `09-layoutBase/Dashboard AlgoPrep.dc.html`:
 
@@ -46,7 +46,7 @@ Quyết định đó cũng **sửa một phần Q3 của `01-rd/screens/shared/S
 9. **"Mock Interview" gần đây** — 3 phiên, mỗi phiên có tên bài, điểm tổng, 4 thanh rubric, giai đoạn và ngày, kèm liên kết "Tất cả" (dòng 289-313). Khớp F1-08.
 10. **"Solution Review" gần đây** — 3 báo cáo, mỗi dòng có tên bài, ngày, độ phức tạp, kèm liên kết "Tất cả" (dòng 317-339). Đọc từ `ai-review` (F5.1).
 11. **Chân trang** (dòng 342 trở đi) — đã dựng, nhưng theo đặc tả chung của khu ở `02-bd/screens/users/_shell.md` mục 3 (ba khu: thương hiệu + bản quyền · trạng thái cụm · số phiên bản), không theo bố cục 3 cột của riêng prototype này. Câu hỏi mở Q3 đã chốt: chân trang giữ câu trạng thái tĩnh, không có số hàng đợi.
-12. **Tỉ lệ hoàn thành ôn câu hỏi theo chủ đề** (F6-10) — bảng phụ dưới bảng "Theo chủ đề": mỗi chủ đề câu hỏi phỏng vấn có số câu đã thử trên tổng câu và ngày luyện gần nhất. Không có trong prototype tĩnh; thêm theo quyết định của chủ dự án 2026-10-18 (`01-rd/req/interview-bank.md:26-27`).
+12. **Tỉ lệ hoàn thành ôn câu hỏi theo chủ đề** (F6-10) — bảng phụ dưới bảng "Theo chủ đề": mỗi chủ đề câu hỏi phỏng vấn có số câu đã thử trên tổng câu và ngày luyện gần nhất. Không có trong prototype tĩnh; thêm theo quyết định của chủ dự án 2026-10-18 (`01-rd/req/F6_interview-bank.md:26-27`).
 
 Ngoài ra, ba khối lấy từ `09-layoutBase/Tiến độ của tôi.dc.html` khi gộp `USR0501`: bảng **"Theo chủ đề"** (dòng 115-149), khối **"Theo độ khó"** (dòng 166-181), khối **"Nên ưu tiên"** (dòng 184-196).
 
@@ -55,7 +55,7 @@ Ngoài ra, ba khối lấy từ `09-layoutBase/Tiến độ của tôi.dc.html` 
 | Màn/tài liệu | Vai trò | Bounded Context |
 |---|---|---|
 | Màn hiện tại | `USR0601` / `dashboard` | `identity` |
-| Tài liệu yêu cầu | `01-rd/req/identity.md` (F1-31) | Nguồn SoT của màn |
+| Tài liệu yêu cầu | `01-rd/req/F1_identity.md` (F1-31) | Nguồn SoT của màn |
 | Màn đã gộp vào đây | `01-rd/screens/users/USR0501_my_progress.md` | Hồ sơ gốc của REQ-01 tới REQ-06 đã chuyển sang màn này |
 | Quyết định mở màn | `.nexa/control/decision-registry.md` — `DEC-2026-0927-student-dashboard-home` | Lý do màn này tồn tại |
 | Prototype | `09-layoutBase/Dashboard AlgoPrep.dc.html` | Bằng chứng bố cục và trạng thái |
@@ -65,7 +65,7 @@ Ngoài ra, ba khối lấy từ `09-layoutBase/Tiến độ của tôi.dc.html` 
 | Thành phần | Vai trò | Nguồn |
 |---|---|---|
 | `09-layoutBase/Dashboard AlgoPrep.dc.html` | Prototype đối chiếu bố cục và trạng thái màn | [SoT: 09-layoutBase/Dashboard AlgoPrep.dc.html] |
-| Bounded Context `identity` (F1) | BC sở hữu dữ liệu và logic đứng sau màn | [SoT: 01-rd/req/identity.md — F1-31] |
+| Bounded Context `identity` (F1) | BC sở hữu dữ liệu và logic đứng sau màn | [SoT: 01-rd/req/F1_identity.md — F1-31] |
 | `problem-bank` (F2), `judge-orchestration` (F4), `ai-review` (F5) | BC đọc thêm cho khối gợi ý bài, hoạt động, báo cáo gần đây | [SoT: 09-layoutBase/Dashboard AlgoPrep.dc.html:220-339] |
 
 ---
@@ -73,7 +73,7 @@ Ngoài ra, ba khối lấy từ `09-layoutBase/Tiến độ của tôi.dc.html` 
 ## 3. Ngoài phạm vi (Out of Scope)
 
 - Bảng màu, spacing, component cụ thể, breakpoint responsive — thuộc BD (`02-bd/screens/users/USR0601_dashboard.md`, chưa viết).
-- Hợp đồng API (công thức thang năng lực, dữ liệu lưới 12 tháng, quy tắc xếp hạng bài gợi ý) — thuộc DD (`03-dd/api/identity.md`, chưa viết).
+- Hợp đồng API (công thức thang năng lực, dữ liệu lưới 12 tháng, quy tắc xếp hạng bài gợi ý) — thuộc DD (`03-dd/api/F1_identity.md`, chưa viết).
 - Định nghĩa "streak" — đã chốt ở `01-rd/screens/users/USR0501_my_progress.md` Q1, màn này dùng lại, không định nghĩa lại.
 - ~~Bảng chủ đề đầy đủ, khối "Theo độ khó", khối "Nên ưu tiên" — thuộc `USR0501_my_progress`~~ — **không còn ngoài phạm vi** kể từ 2026-09-27: `USR0501` đã gộp vào màn này, ba khối đó nay thuộc màn này.
 
@@ -87,7 +87,7 @@ Ngoài ra, ba khối lấy từ `09-layoutBase/Tiến độ của tôi.dc.html` 
 |---|---|---|---|
 | Q1 | Nút **"Xem lộ trình"** (dòng 105) không có đích nào trong prototype và không có mã `Fx-nn` nào mô tả tính năng lộ trình học. | **ĐÃ CHỐT 2026-10-18 (owner), theo đề xuất: bỏ.** "Lộ trình học" là một tính năng riêng chưa từng được đặc tả ở bất kỳ tài liệu `01-rd/req/` nào, không phải chi tiết UI của màn này. Bản dựng đã không có nút này thay vì tạo một liên kết chết. Tiêu chí ponytail bậc 1, 2. | `DEC-2026-1018-usr-open-questions-phase1-scope` mục (4). Nếu sau này muốn có lộ trình học, đó là phạm vi F1/F2 mới, cần quyết định riêng. |
 | Q2 | **Thang "Năng lực theo chủ đề" (0-100)** và **quy tắc xếp hạng "Bài toán gợi ý"** không có mã `Fx-nn` riêng. | **ĐÃ CHỐT 2026-10-18 (owner), theo đề xuất.** Không cần mã mới — cả hai là suy luận hiển thị trên dữ liệu đã có (F1-06 tỉ lệ đã giải, F1-07 tỉ lệ AC), **không gọi AI**, cùng nguyên tắc đã chốt cho khối "Nên ưu tiên" ở `USR0501` Q2. **Năng lực theo chủ đề = 70% tỉ lệ AC + 30% tỉ lệ bài đã giải của chủ đề, không có trọng số độ khó** (độ khó là danh mục ADMIN quản lý, không gắn logic); bài gợi ý = ưu tiên chủ đề có điểm năng lực thấp nhất, trong đó ưu tiên bài chưa giải. Tiêu chí ponytail bậc 5. | `DEC-2026-1018-usr-open-questions-phase2-5` mục PHASE 5. Thay cho câu cũ "điều chỉnh theo độ khó bài đã giải"; BD ghi chi tiết ở `02-bd/screens/users/USR0601_dashboard.md` Câu hỏi mở Q1. |
-| Q3 | Khu Người học có chân trang chung không? Chỉ 2/12 prototype có. | **ĐÃ CÓ SẴN CÂU TRẢ LỜI, không phải câu hỏi mở** — `02-bd/screens/users/_shell.md` mục 3 đã chốt từ 2026-09-21: chân trang áp cho **mọi màn** của khu, và chính BD đó ghi rõ đây là quyết định về tính nhất quán chứ không phải kết luận rút từ prototype. Một đợt dựng trước ghi nhầm thành câu hỏi mở vì chỉ đọc prototype mà không đọc BD. Đã dựng 2026-09-27. **Phần số "hàng đợi {n} bài" động: ĐÃ CHỐT 2026-10-18 (owner), theo đề xuất — không hiển thị, chân trang giữ câu trạng thái cụm tĩnh.** Tiêu chí ponytail bậc 5. | `DEC-2026-1018-usr-open-questions-phase2-5` mục PHASE 3. Trước đó `_shell.md` mục 6 Q3 để mở chờ `03-dd/api/judge-orchestration.md`. |
+| Q3 | Khu Người học có chân trang chung không? Chỉ 2/12 prototype có. | **ĐÃ CÓ SẴN CÂU TRẢ LỜI, không phải câu hỏi mở** — `02-bd/screens/users/_shell.md` mục 3 đã chốt từ 2026-09-21: chân trang áp cho **mọi màn** của khu, và chính BD đó ghi rõ đây là quyết định về tính nhất quán chứ không phải kết luận rút từ prototype. Một đợt dựng trước ghi nhầm thành câu hỏi mở vì chỉ đọc prototype mà không đọc BD. Đã dựng 2026-09-27. **Phần số "hàng đợi {n} bài" động: ĐÃ CHỐT 2026-10-18 (owner), theo đề xuất — không hiển thị, chân trang giữ câu trạng thái cụm tĩnh.** Tiêu chí ponytail bậc 5. | `DEC-2026-1018-usr-open-questions-phase2-5` mục PHASE 3. Trước đó `_shell.md` mục 6 Q3 để mở chờ `03-dd/api/F4_judge-orchestration.md`. |
 | Q4 | Màn này và `USR0501_my_progress` trùng nhau bao nhiêu, và ranh giới ở đâu? | **ĐÃ ĐÓNG BẰNG CÁCH GỘP, cùng ngày** (`DEC-2026-0927-student-area-merge-and-shared-shell`): không còn ranh giới nào để vạch vì không còn hai màn. Ranh giới "làm gì tiếp theo" / "tôi đang ở đâu" chốt vài giờ trước đó trong `DEC-2026-0927-student-dashboard-home` là lịch sử. | Đối chiếu trực tiếp hai file prototype cho thấy khoảng 60% khối trùng nhau. Chủ dự án ban đầu chọn tách hai màn, sau khi thấy cả hai đã dựng thì chọn gộp — về đúng phương án đã được khuyến nghị từ đầu. |
 | Q5 | **[ĐÃ CHỐT 2026-10-18 (owner)]** Dải chọn khoảng thời gian: dashboard có tab riêng cho biểu đồ (7/30/90 ngày), `my_progress` có tab áp cho cả màn (7 ngày/30 ngày/Tất cả). Sau khi gộp thì theo cái nào? | **Chốt: một dải duy nhất áp cho cả màn**, đặt ở hàng lời chào, dùng bộ giá trị của `my_progress` (7 ngày / 30 ngày / Tất cả). Nó điều khiển biểu đồ "Bài nộp theo ngày", bảng "Theo chủ đề" và khối "Nên ưu tiên". Điều này **sửa REQ-05** bên dưới, vốn viết khi biểu đồ còn có tab riêng. | Hai dải với hai bộ giá trị khác nhau trên cùng một trang sẽ khiến "khoảng đang chọn" có hai nghĩa. `[SoT: Suy luận]` |
 
@@ -97,7 +97,7 @@ Ngoài ra, ba khối lấy từ `09-layoutBase/Tiến độ của tôi.dc.html` 
 
 | ID | Yêu cầu | Loại | Nguồn/SoT |
 |---|---|---|---|
-| REQ-01 | Dashboard tổng quan luyện tập của người học, gồm các khối ở chương 2 (F1-31) | Chức năng | `01-rd/req/identity.md` — F1-31 |
+| REQ-01 | Dashboard tổng quan luyện tập của người học, gồm các khối ở chương 2 (F1-31) | Chức năng | `01-rd/req/F1_identity.md` — F1-31 |
 | REQ-02 | **Cho** tôi là `STUDENT` và đăng nhập thành công không đến từ một liên kết cụ thể, **Khi** hệ thống điều hướng sau đăng nhập, **Thì** tôi vào thẳng màn `dashboard`, không phải `my_progress` | Chức năng (GWT) | `DEC-2026-0927-student-dashboard-home`; sửa một phần `01-rd/screens/shared/SHR0101_auth.md` Q3 |
 | REQ-03 | **Cho** tôi có ít nhất một bản nháp chưa nộp trong Workspace, **Khi** tôi mở `dashboard`, **Thì** nút "Tiếp tục bài đang làm" dẫn thẳng về bản nháp gần nhất; **nếu không có bản nháp nào**, nút đó dẫn về danh sách bài toán | Chức năng (GWT) | [SoT: `09-layoutBase/Dashboard AlgoPrep.dc.html`:106] |
 | REQ-04 | **Cho** tôi đã nộp bài ở nhiều chủ đề, **Khi** tôi mở `dashboard`, **Thì** dòng dưới lời chào nêu đúng chủ đề có điểm năng lực thấp nhất kèm tỉ lệ AC của chủ đề đó | Chức năng (GWT) | [SoT: `09-layoutBase/Dashboard AlgoPrep.dc.html`:102-103] |
@@ -106,8 +106,8 @@ Ngoài ra, ba khối lấy từ `09-layoutBase/Tiến độ của tôi.dc.html` 
 | REQ-10 | **Cho** tôi ở bất kỳ màn nào của khu Người học, **Khi** tôi cuộn xuống cuối trang, **Thì** tôi thấy chân trang chung: thương hiệu + bản quyền, trạng thái cụm go-judge, số phiên bản | Chức năng (GWT) | `02-bd/screens/users/_shell.md` mục 3 |
 | REQ-06 | **Cho** tôi đang xem "Bài toán gợi ý", **Khi** tôi chọn một độ khó hoặc một chip chủ đề, **Thì** bảng lọc lại theo lựa chọn đó và số lượng bài hiển thị ở góc phải tiêu đề cập nhật theo | Chức năng (GWT) | [SoT: `09-layoutBase/Dashboard AlgoPrep.dc.html`:221-233] |
 | REQ-07 | **Cho** phân hệ AI (F5) hỏng hoặc hết hạn mức, **Khi** tôi mở `dashboard`, **Thì** hai khối "Mock Interview" và "Solution Review" hiện trạng thái lỗi riêng của chúng, và **mọi khối còn lại vẫn hiển thị bình thường** | Chức năng (GWT) | `README.md` — nguyên tắc phân hệ AI suy giảm êm; cùng nguyên tắc 3 trạng thái theo khối của F1-29/F1-30 |
-| REQ-08 | **Cho** tôi là người dùng mới chưa nộp bài nào, **Khi** tôi mở `dashboard`, **Thì** từng khối hiện trạng thái rỗng riêng của nó thay vì số 0 hoặc biểu đồ trống không giải thích | Chức năng (GWT) | `01-rd/req/identity.md` — F1-31, gạch đầu dòng cuối |
-| REQ-11 | **Cho** tôi đã luyện (hoặc chưa luyện) câu hỏi phỏng vấn ở nhiều chủ đề, **Khi** tôi mở `dashboard`, **Thì** dưới bảng "Theo chủ đề" tôi thấy, với từng chủ đề câu hỏi, số câu đã thử trên tổng câu và ngày luyện gần nhất; chủ đề chưa luyện câu nào vẫn hiện với `0 / tổng`. Bảng này luỹ kế, không đổi theo dải khoảng thời gian | Chức năng (GWT) | `01-rd/req/interview-bank.md:26-27` — F6-10; `DEC-2026-1018-usr-open-questions-phase2-5` (mục FOLLOW-UPS) |
+| REQ-08 | **Cho** tôi là người dùng mới chưa nộp bài nào, **Khi** tôi mở `dashboard`, **Thì** từng khối hiện trạng thái rỗng riêng của nó thay vì số 0 hoặc biểu đồ trống không giải thích | Chức năng (GWT) | `01-rd/req/F1_identity.md` — F1-31, gạch đầu dòng cuối |
+| REQ-11 | **Cho** tôi đã luyện (hoặc chưa luyện) câu hỏi phỏng vấn ở nhiều chủ đề, **Khi** tôi mở `dashboard`, **Thì** dưới bảng "Theo chủ đề" tôi thấy, với từng chủ đề câu hỏi, số câu đã thử trên tổng câu và ngày luyện gần nhất; chủ đề chưa luyện câu nào vẫn hiện với `0 / tổng`. Bảng này luỹ kế, không đổi theo dải khoảng thời gian | Chức năng (GWT) | `01-rd/req/F6_interview-bank.md:26-27` — F6-10; `DEC-2026-1018-usr-open-questions-phase2-5` (mục FOLLOW-UPS) |
 
 ---
 
@@ -146,7 +146,7 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 
 | Loại | Tham chiếu |
 |---|---|
-| Yêu cầu module | `01-rd/req/identity.md` — F1-31 (nền: F1-06, F1-07, F1-08); `01-rd/req/interview-bank.md` — F6-10 |
+| Yêu cầu module | `01-rd/req/F1_identity.md` — F1-31 (nền: F1-06, F1-07, F1-08); `01-rd/req/F6_interview-bank.md` — F6-10 |
 | Quyết định | `.nexa/control/decision-registry.md` — `DEC-2026-0927-student-dashboard-home`; `DEC-2026-1018-usr-open-questions-phase1-scope`, `DEC-2026-1018-usr-open-questions-phase2-5` |
 | Màn anh em | `01-rd/screens/users/USR0501_my_progress.md` (ranh giới nội dung), `01-rd/screens/shared/SHR0101_auth.md` (Q3, đích sau đăng nhập) |
 | Prototype | `09-layoutBase/Dashboard AlgoPrep.dc.html` |

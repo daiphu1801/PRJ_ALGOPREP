@@ -9,4 +9,4 @@ export {
   type UsageAlert,
   type UsageRange,
 } from "../model/types";
-export { fetchAiUsagePage } from "./__mock__/ai-usage-mocks";
+export { useAiUsagePage } from "./queries";

@@ -3,7 +3,7 @@
 > Mã màn hình: `USR0502`, theo `02-bd/_rules/bd-template-9sheet.md` mục 8.
 > Slug chính tắc: `profile`, khớp `01-rd/overview/system_survey.md` mục 7.1 dòng `profile`.
 > Phạm vi/Bounded Context: `identity` (F1). Actor chính: A1. Màn chỉ dựng cho A1 (chốt 2026-10-18, owner, `DEC-2026-1018-usr-open-questions-phase2-5`); A2/A3 có khung và màn hồ sơ riêng ở lát cắt sau.
-> Nguồn sự thật (SoT): `01-rd/req/identity.md` (F1-09, F1-19), `01-rd/req/user_stories/a1_student.md` (`US-A1-05`) và `09-layoutBase/Trang cá nhân.dc.html`.
+> Nguồn sự thật (SoT): `01-rd/req/F1_identity.md` (F1-09, F1-19), `01-rd/req/user_stories/a1_student.md` (`US-A1-05`) và `09-layoutBase/Trang cá nhân.dc.html`.
 > Tài liệu này mô tả hành vi và UX mức yêu cầu của màn hình, không lặp lại đặc tả chức năng nguồn.
 > Tài liệu này có thể đọc độc lập.
 
@@ -11,7 +11,7 @@
 
 ## 1. Mục đích và bối cảnh
 
-Màn `profile` cho phép xem và sửa thông tin cá nhân, xem phương thức đăng nhập (chỉ đọc; đổi mật khẩu nằm ở Cài đặt), xem tóm tắt luyện tập và đi nhanh tới Cài đặt [SoT: `01-rd/req/identity.md` — F1-09].
+Màn `profile` cho phép xem và sửa thông tin cá nhân, xem phương thức đăng nhập (chỉ đọc; đổi mật khẩu nằm ở Cài đặt), xem tóm tắt luyện tập và đi nhanh tới Cài đặt [SoT: `01-rd/req/F1_identity.md` — F1-09].
 
 ---
 
@@ -30,7 +30,7 @@ Màn `profile` cho phép xem và sửa thông tin cá nhân, xem phương thức
 | Màn/tài liệu | Vai trò | Bounded Context |
 |---|---|---|
 | Màn hiện tại | `USR0502` / `profile` | `identity` |
-| Tài liệu yêu cầu | `01-rd/req/identity.md` (F1-09; F1-19 nay thuộc `USR0503`) | Nguồn SoT của màn |
+| Tài liệu yêu cầu | `01-rd/req/F1_identity.md` (F1-09; F1-19 nay thuộc `USR0503`) | Nguồn SoT của màn |
 | Prototype | `09-layoutBase/Trang cá nhân.dc.html` | Bằng chứng bố cục và trạng thái |
 
 **Chi tiết trạng thái và cấu trúc màn**
@@ -38,7 +38,7 @@ Màn `profile` cho phép xem và sửa thông tin cá nhân, xem phương thức
 | Lớp | Thành phần | Vai trò |
 |---|---|---|
 | Màn hình | `screens/users/USR0502_profile.md` | Đặc tả yêu cầu riêng của Trang cá nhân. |
-| Chức năng | `req/identity.md` — F1-09, F1-19 | Nguồn yêu cầu cập nhật hồ sơ (F1-19 đổi mật khẩu nay do `USR0503` đảm nhận). |
+| Chức năng | `req/F1_identity.md` — F1-09, F1-19 | Nguồn yêu cầu cập nhật hồ sơ (F1-19 đổi mật khẩu nay do `USR0503` đảm nhận). |
 | User story | `req/user_stories/a1_student.md` — `US-A1-05` | Given-When-Then nền cho người học. |
 | Prototype | `09-layoutBase/Trang cá nhân.dc.html` | Bằng chứng cho bố cục và trạng thái UI tham khảo. |
 | Màn liên quan | `my_progress`, `settings`, `auth` | Tiến độ, đổi mật khẩu và xoá tài khoản (`settings`), cơ chế xác thực/khôi phục mật khẩu. |
@@ -50,7 +50,7 @@ Màn `profile` cho phép xem và sửa thông tin cá nhân, xem phương thức
 | # | Hạng mục ngoài phạm vi | Lý do/đích đến |
 |---|---|---|
 | O-1 | Bảng màu, spacing, component, breakpoint responsive | Thuộc BD: `02-bd/screens/users/USR0502_profile.md` (chưa viết). |
-| O-2 | Hợp đồng API sửa hồ sơ (đổi mật khẩu thuộc `USR0503`; không có upload avatar — đã bỏ 2026-10-18, owner) | Thuộc DD: `03-dd/api/identity.md` (chưa viết). |
+| O-2 | Hợp đồng API sửa hồ sơ (đổi mật khẩu thuộc `USR0503`; không có upload avatar — đã bỏ 2026-10-18, owner) | Thuộc DD: `03-dd/api/F1_identity.md` (chưa viết). |
 | O-3 | Validate chi tiết từng trường | Thuộc DD, không thuộc RD màn hình. |
 | O-4 | Xác thực hai lớp (2FA) | Ngoài phạm vi đồ án; bỏ khỏi giao diện thật. |
 | O-5 | Mô hình gói tài khoản Free/Pro | AlgoPrep không có mô hình phân hạng tài khoản; bỏ dữ liệu mẫu `Pro` khỏi giao diện thật. |
@@ -61,8 +61,8 @@ Màn `profile` cho phép xem và sửa thông tin cá nhân, xem phương thức
 
 | # | Tiền đề/ràng buộc | Nguồn/SoT |
 |---|---|---|
-| P-1 | Sáu trường thông tin cá nhân được cụ thể hoá trong F1-09. | `identity.md` — F1-09 |
-| P-2 | Màn này **không** có đổi mật khẩu (F1-19 chuyển sang `USR0503` từ 2026-10-20); không nhầm với F1-17 là luồng quên mật khẩu khi chưa đăng nhập. | `identity.md` — F1-19, F1-17; `DEC-2026-1020-student-workspace-split-and-password-in-settings` mục 2 |
+| P-1 | Sáu trường thông tin cá nhân được cụ thể hoá trong F1-09. | `F1_identity.md` — F1-09 |
+| P-2 | Màn này **không** có đổi mật khẩu (F1-19 chuyển sang `USR0503` từ 2026-10-20); không nhầm với F1-17 là luồng quên mật khẩu khi chưa đăng nhập. | `F1_identity.md` — F1-19, F1-17; `DEC-2026-1020-student-workspace-split-and-password-in-settings` mục 2 |
 | P-3 | Khi Hoàn tác thay đổi chưa lưu, mọi trường trở về giá trị đã lưu gần nhất, không cần xác nhận thêm. | Prototype:125, 230 |
 | P-4 | Đổi email phải xác thực lại bằng mã sáu số gửi tới email mới; email cũ còn hiệu lực đến khi xác thực xong. | Quyết định đã chốt 2026-08-25, đã ghi vào F1-09 |
 | P-5 | Những phần UI thuần hiển thị cần dựng lại bằng Next.js được đánh dấu `[Đợi nextjs]`; prototype chỉ là bản dựng tham khảo. | Quyết định đã chốt 2026-08-25 |
@@ -126,7 +126,7 @@ Hợp đồng API và quy tắc validate chi tiết chưa được xác định 
 
 | Loại | Tham chiếu |
 |---|---|
-| Yêu cầu module | `01-rd/req/identity.md` — F1-09, F1-19, F1-16, F1-06/07/08, F1-17 |
+| Yêu cầu module | `01-rd/req/F1_identity.md` — F1-09, F1-19, F1-16, F1-06/07/08, F1-17 |
 | User story | `01-rd/req/user_stories/a1_student.md` — `US-A1-05` |
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` — mục 7.1 dòng `profile` |
 | Prototype | `09-layoutBase/Trang cá nhân.dc.html` |

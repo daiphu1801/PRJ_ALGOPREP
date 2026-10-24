@@ -1,5 +1,5 @@
 {
-  "_": "ERD schema problem (module problem-bank, F2). Nguon: 02-bd/database/problem-bank.md, doc ngay 2026-10-22. Moi bang/cot chep tu doc do; kieu ghi dung nhu doc, doc khong ghi kieu thi de trong. `fk` = khoa ngoai vat ly trong schema; `ref` = tham chieu logic lien schema (doc: khong FK vat ly xuyen schema). Ghost box incoming: chi lay tu nhac den trong doc/yeu cau, ten bang phia judge/ai chua doi chieu voi doc cua schema do.",
+  "_": "ERD schema problem (module problem-bank, F2). Nguon: 02-bd/database/F2_problem-bank.md, doc ngay 2026-10-22. Moi bang/cot chep tu doc do; kieu ghi dung nhu doc, doc khong ghi kieu thi de trong. `fk` = khoa ngoai vat ly trong schema; `ref` = tham chieu logic lien schema (doc: khong FK vat ly xuyen schema). Ghost box incoming: chi lay tu nhac den trong doc/yeu cau, ten bang phia judge/ai chua doi chieu voi doc cua schema do.",
   "kind": "erd",
   "title": "ERD schema problem",
   "covers": [],

@@ -173,11 +173,32 @@ def split_halves(path: str, drawio: str, scale: float) -> tuple[list[str], str |
     return out, legend[1] if legend else None
 
 
+def content_height_units(drawio: str) -> float:
+    """Chieu cao noi dung theo toa do .drawio: tu mep tren thap nhat toi mep duoi cao nhat cua
+    moi khung va diem uon duong noi."""
+    root = ET.parse(drawio).getroot()
+    tops, bottoms = [], []
+    for c in root.iter("mxCell"):
+        g = c.find("mxGeometry")
+        if g is None:
+            continue
+        for pt in g.iter("mxPoint"):
+            if pt.get("y"):
+                tops.append(float(pt.get("y")))
+                bottoms.append(float(pt.get("y")))
+        if c.get("vertex") == "1" and g.get("height"):
+            y = float(g.get("y", 0))
+            tops.append(y)
+            bottoms.append(y + float(g.get("height")))
+    return max(bottoms) - min(tops)
+
+
 def render_complete(cli: str, drawio: str, out_png: str, scale: float) -> float | None:
     """Xuat PNG, ha scale cho toi khi hinh KHONG bi cat. Bai hoc 2026-10-23: o scale 3, draw.io desktop
     ve thieu phan duoi cua hinh lon (judge 5088 px cao nhung chi co noi dung toi 3840; ai, problem
-    tuong tu) ma van tra ma thoat 0. Phat hien bang cach xem noi dung co cham sat mep duoi/phai
-    (le -b 10 nen chi con ~10*scale px trang) hay khong. Tra scale da dung, hoac None neu that bai."""
+    tuong tu) ma van tra ma thoat 0. Phat hien bang cach so chieu cao noi dung ve duoc voi chieu cao
+    tinh tu toa do .drawio. Tra scale da dung, hoac None neu that bai."""
+    want = content_height_units(drawio)
     for sc in (scale, 2.5, 2, 1.5):
         if sc > scale:
             continue
@@ -187,9 +208,9 @@ def render_complete(cli: str, drawio: str, out_png: str, scale: float) -> float 
             return None
         im = Image.open(out_png).convert("RGB")
         box = ImageChops.difference(im, Image.new("RGB", im.size, (255, 255, 255))).getbbox()
-        if box and im.height - box[3] <= 14 * sc + 10 and im.width - box[2] <= 14 * sc + 10:
+        if box and (box[3] - box[1]) >= 0.88 * want * sc:
             return sc
-        print(f"   scale {sc} bi cat mat phan duoi/phai, thu scale thap hon")
+        print(f"   scale {sc} bi cat mat phan duoi, thu scale thap hon")
     return None
 
 

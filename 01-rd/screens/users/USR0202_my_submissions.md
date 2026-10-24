@@ -4,7 +4,7 @@
 > Slug chính tắc: `my_submissions` [SoT: 01-rd/overview/system_survey.md — mục 7.1 dòng `my_submissions`].
 > Phạm vi/Bounded Context: `judge-orchestration` (F4) [SoT: 01-rd/overview/system_survey.md — mục 7.1 dòng
 > `my_submissions`]. Actor: A1.
-> Nguồn sự thật (SoT): `01-rd/req/identity.md` (F1-18; F1-07 chuyển sang `USR0501`), `01-rd/req/judge-orchestration.md`
+> Nguồn sự thật (SoT): `01-rd/req/F1_identity.md` (F1-18; F1-07 chuyển sang `USR0501`), `01-rd/req/F4_judge-orchestration.md`
 > (F4-01→F4-08), `01-rd/req/user_stories/a1_student.md` (`US-A1-04`, `US-A1-05`), `09-layoutBase/Bài đã
 > nộp.dc.html` (prototype).
 > Tài liệu này có thể đọc độc lập.
@@ -17,7 +17,7 @@ Xem lại toàn bộ lịch sử bài đã nộp của người học, lọc the
 bài, mở kết quả chi tiết hoặc phân tích bài giải (nếu `Accepted`) cho từng lượt nộp.
 
 Đối chiếu prototype: `09-layoutBase/Bài đã nộp.dc.html`. File này mô tả **hành vi và UX ở mức yêu cầu** —
-không lặp lại đặc tả chức năng đã có ở `01-rd/req/identity.md` và `01-rd/req/judge-orchestration.md`, chỉ
+không lặp lại đặc tả chức năng đã có ở `01-rd/req/F1_identity.md` và `01-rd/req/F4_judge-orchestration.md`, chỉ
 trỏ tới và bổ sung phần đặc thù của màn.
 
 **Phát hiện của Phase 2, đã tự chốt 2026-08-25 — xem mục 5**: màn này (danh sách đầy đủ lịch sử nộp bài,
@@ -30,8 +30,8 @@ lọc/tìm kiếm) ban đầu không có mã `Fx-nn` nào phủ đúng nội dun
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
 | Tỉ lệ chấp thuận (F1-07) và các số liệu tổng lượt nộp **không** hiển thị ở màn này; chuyển sang `USR0501` (owner 2026-10-18) | F1-07 | `01-rd/screens/users/USR0501_my_progress.md:37,85,90` |
-| Chấm bài theo testcase, verdict AC/WA/TLE/CE... | F4-01 → F4-08 | `01-rd/req/judge-orchestration.md` — F4-01 → F4-08 |
-| Xem lịch sử nộp bài, lọc verdict/ngôn ngữ, tìm kiếm | F1-18 | `01-rd/req/identity.md` — F1-18 (khối bổ sung 2026-08-25, sau F1-17) |
+| Chấm bài theo testcase, verdict AC/WA/TLE/CE... | F4-01 → F4-08 | `01-rd/req/F4_judge-orchestration.md` — F4-01 → F4-08 |
+| Xem lịch sử nộp bài, lọc verdict/ngôn ngữ, tìm kiếm | F1-18 | `01-rd/req/F1_identity.md` — F1-18 (khối bổ sung 2026-08-25, sau F1-17) |
 | Given-When-Then liên quan | — | `01-rd/req/user_stories/a1_student.md` (`US-A1-04`), thêm GWT F1-18 ở `US-A1-05` |
 
 Đối chiếu `09-layoutBase/Bài đã nộp.dc.html`:
@@ -62,7 +62,7 @@ lọc/tìm kiếm) ban đầu không có mã `Fx-nn` nào phủ đúng nội dun
 | Màn/tài liệu | Vai trò | Bounded Context |
 |---|---|---|
 | Màn hiện tại | `USR0202` / `my_submissions` | `judge-orchestration` |
-| Tài liệu yêu cầu | `01-rd/req/identity.md` (F1-18), `01-rd/req/judge-orchestration.md` (F4) | Nguồn SoT của màn |
+| Tài liệu yêu cầu | `01-rd/req/F1_identity.md` (F1-18), `01-rd/req/F4_judge-orchestration.md` (F4) | Nguồn SoT của màn |
 | Prototype | `09-layoutBase/Bài đã nộp.dc.html` | Bằng chứng bố cục và trạng thái |
 
 **Chi tiết trạng thái và cấu trúc màn**
@@ -81,9 +81,9 @@ lọc/tìm kiếm) ban đầu không có mã `Fx-nn` nào phủ đúng nội dun
 
 - Bảng màu, spacing, component cụ thể, breakpoint responsive — thuộc BD (`02-bd/screens/users/USR0202_my_submissions.md`,
   chưa viết).
-- Hợp đồng API (lọc, tìm kiếm, phân trang danh sách nộp bài) — thuộc DD (`03-dd/api/judge-orchestration.md`,
+- Hợp đồng API (lọc, tìm kiếm, phân trang danh sách nộp bài) — thuộc DD (`03-dd/api/F4_judge-orchestration.md`,
   chưa viết).
-- Việc bổ sung mã `Fx-nn` mới (Q1) — chỉ đề xuất ở đây, chưa tự sửa `identity.md`/`user_stories/a1_student.md` vì chưa có xác
+- Việc bổ sung mã `Fx-nn` mới (Q1) — chỉ đề xuất ở đây, chưa tự sửa `F1_identity.md`/`user_stories/a1_student.md` vì chưa có xác
   nhận trực tiếp của chủ dự án (khác với các trường hợp Phase 0-1 đã hỏi và chốt ngay).
 
 ---
@@ -95,7 +95,7 @@ lọc/tìm kiếm) ban đầu không có mã `Fx-nn` nào phủ đúng nội dun
 
 | # | Câu hỏi | Quyết định | Ghi chú |
 | :-: | :--- | :--- | :--- |
-| Q1 | Không có mã `Fx-nn` nào đặc tả "xem lại lịch sử nộp bài, lọc theo verdict/ngôn ngữ, tìm kiếm" — nội dung chính của màn này. | **Bổ sung F1-18 — Xem lịch sử nộp bài của chính mình**, lọc theo verdict/ngôn ngữ, tìm theo tên/mã bài. Đã ghi vào `01-rd/req/identity.md` (mục F1, sau khối F1-17) và thêm GWT vào `01-rd/req/user_stories/a1_student.md` (`US-A1-05`); đã đồng bộ `01-rd/overview/system_survey.md` — mục 7.1 dòng `my_submissions`. | Đã chốt, không còn mở. |
+| Q1 | Không có mã `Fx-nn` nào đặc tả "xem lại lịch sử nộp bài, lọc theo verdict/ngôn ngữ, tìm kiếm" — nội dung chính của màn này. | **Bổ sung F1-18 — Xem lịch sử nộp bài của chính mình**, lọc theo verdict/ngôn ngữ, tìm theo tên/mã bài. Đã ghi vào `01-rd/req/F1_identity.md` (mục F1, sau khối F1-17) và thêm GWT vào `01-rd/req/user_stories/a1_student.md` (`US-A1-05`); đã đồng bộ `01-rd/overview/system_survey.md` — mục 7.1 dòng `my_submissions`. | Đã chốt, không còn mở. |
 | Q2 | Prototype không có phân trang cho bảng lịch sử — hành vi thật khi có hàng trăm lượt nộp là gì? | **Chốt: áp cùng kiểu phân trang cuối bảng như `problem_list`** (`01-rd/screens/users/USR0101_problem_list.md` mục 3.5) để nhất quán UX giữa hai bảng danh sách. | Số dòng mỗi trang, style phân trang cụ thể **[Đợi nextjs]**. |
 | Q3 | Dải chỉ số tổng (F1-07 và 3 số phụ) có giữ trên màn lịch sử nộp bài không, hay chuyển sang màn tiến độ? | **Đã chốt 2026-10-18 (owner), phương án (a):** bỏ dải khỏi yêu cầu của màn này, F1-07 hiển thị ở `USR0501` [SoT: `01-rd/screens/users/USR0501_my_progress.md:37,85,90`]. Căn cứ: quy tắc owner 2026-10-13 và 2026-10-18 không dải KPI ở màn danh sách. | `DEC-2026-1018-usr-open-questions-phase1-scope`. Chỉ số "đúng ngay lần đầu" và "ngôn ngữ dùng nhiều nhất" không còn yêu cầu ở màn này. |
 
@@ -106,8 +106,8 @@ lọc/tìm kiếm) ban đầu không có mã `Fx-nn` nào phủ đúng nội dun
 | ID | Yêu cầu | Loại | Nguồn/SoT |
 |---|---|---|---|
 | REQ-01 | **Đã bỏ khỏi màn này 2026-10-18 (owner)**: dải chỉ số tổng / tỉ lệ chấp thuận (F1-07). F1-07 hiển thị ở màn `USR0501` (REQ-02, REQ-07) | Chức năng (đã chuyển) | `01-rd/screens/users/USR0501_my_progress.md:85,90`; `DEC-2026-1018-usr-open-questions-phase1-scope` |
-| REQ-02 | Chấm bài theo testcase, verdict AC/WA/TLE/CE... (F4-01 → F4-08) | Chức năng | `01-rd/req/judge-orchestration.md` — F4-01 → F4-08 |
-| REQ-03 | Xem lịch sử nộp bài, lọc verdict/ngôn ngữ, tìm kiếm (F1-18) | Chức năng | `01-rd/req/identity.md` — F1-18 (khối bổ sung 2026-08-25, sau F1-17) |
+| REQ-02 | Chấm bài theo testcase, verdict AC/WA/TLE/CE... (F4-01 → F4-08) | Chức năng | `01-rd/req/F4_judge-orchestration.md` — F4-01 → F4-08 |
+| REQ-03 | Xem lịch sử nộp bài, lọc verdict/ngôn ngữ, tìm kiếm (F1-18) | Chức năng | `01-rd/req/F1_identity.md` — F1-18 (khối bổ sung 2026-08-25, sau F1-17) |
 | REQ-04 | Given-When-Then liên quan (—) | Chức năng | `01-rd/req/user_stories/a1_student.md` (`US-A1-04`), thêm GWT F1-18 ở `US-A1-05` |
 | REQ-05 | **Cho** tôi có ít nhất một lượt nộp `Accepted` trong danh sách, **khi** tôi rê chuột qua dòng đó, **thì** tôi thấy cả nút "Kết quả" và nút "Phân tích"; với các verdict khác chỉ có nút "Kết quả" | Chức năng (GWT) | [SoT: 09-layoutBase/Bài đã nộp.dc.html:156-163] |
 | REQ-06 | **Cho** tôi lọc theo một verdict cụ thể (ví dụ `WA`), **khi** bộ lọc áp dụng, **thì** chỉ số "đang hiện / tổng" ở chân bảng cập nhật theo đúng tập đã lọc, không phải tổng toàn bộ lịch sử | Chức năng (GWT) | [SoT: 09-layoutBase/Bài đã nộp.dc.html:171, 266-268] |
@@ -149,7 +149,7 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 
 | Loại | Tham chiếu |
 | :--- | :--- |
-| Yêu cầu module | `01-rd/req/identity.md` — F1-18 (F1-07 chuyển sang `USR0501`); `01-rd/req/judge-orchestration.md` — F4-01→F4-08. |
+| Yêu cầu module | `01-rd/req/F1_identity.md` — F1-18 (F1-07 chuyển sang `USR0501`); `01-rd/req/F4_judge-orchestration.md` — F4-01→F4-08. |
 | User story | `01-rd/req/user_stories/a1_student.md` — `US-A1-04`, `US-A1-05`. |
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` — mục 7.1 dòng `my_submissions`. |
 | Prototype | `09-layoutBase/Bài đã nộp.dc.html`. |

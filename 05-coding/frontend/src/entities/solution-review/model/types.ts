@@ -1,6 +1,6 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md section 10.2 (USR0301_solution_review).
 //
-// Field shapes follow the result_json schema of ai.solution_reviews, 02-bd/database/ai-review.md
+// Field shapes follow the result_json schema of ai.solution_reviews, 02-bd/database/F5_ai-review.md
 // section 1.3a (schemaVersion, approachTitle, verdict, isApproachOptimal, complexity, strengths,
 // improvements, edgeCases, followUpTopics, codeDiff). There is no summaryText / criteriaScores /
 // diffLines / diffNote: the diff is computed from the original vs suggested code at render time.

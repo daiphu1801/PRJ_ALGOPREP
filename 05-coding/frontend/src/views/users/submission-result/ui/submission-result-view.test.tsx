@@ -1,7 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
-import { NextIntlClientProvider } from "@/shared/i18n";
-import messages from "../../../../../messages/vi.json";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { withTestProviders } from "@/shared/test/render-with-providers";
 import { SubmissionResultView } from "./submission-result-view";
 
 let currentSubmissionId = "SB-90412";
@@ -9,26 +8,30 @@ vi.mock("next/navigation", () => ({
   useParams: () => ({ submissionId: currentSubmissionId }),
 }));
 
-function renderView(area?: "instructor") {
-  return render(
-    <NextIntlClientProvider locale="vi" messages={messages}>
-      <SubmissionResultView area={area} />
-    </NextIntlClientProvider>,
+async function renderView(area?: "instructor") {
+  const result = render(
+    withTestProviders(<SubmissionResultView area={area} />),
   );
+  await waitFor(() =>
+    expect(
+      screen.queryByRole("status", { name: "Đang tải..." }),
+    ).not.toBeInTheDocument(),
+  );
+  return result;
 }
 
 describe("SubmissionResultView", () => {
-  it("renders the verdict and testcase table for an ACCEPTED submission", () => {
+  it("renders the verdict and testcase table for an ACCEPTED submission", async () => {
     currentSubmissionId = "SB-90412";
-    renderView();
+    await renderView();
 
     expect(screen.getByText("Đã chấp nhận")).toBeInTheDocument();
     expect(screen.getByText("Kết quả từng testcase")).toBeInTheDocument();
   });
 
-  it("hides the testcase table entirely on COMPILE_ERROR and shows the compile log instead", () => {
+  it("hides the testcase table entirely on COMPILE_ERROR and shows the compile log instead", async () => {
     currentSubmissionId = "SB-90403";
-    renderView();
+    await renderView();
 
     expect(screen.getByText("Lỗi biên dịch")).toBeInTheDocument();
     // The testcase table (identified by its accessible caption) must not be in the document at all —
@@ -39,16 +42,16 @@ describe("SubmissionResultView", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows a not-found state for an unknown submission id", () => {
+  it("shows a not-found state for an unknown submission id", async () => {
     currentSubmissionId = "does-not-exist";
-    renderView();
+    await renderView();
 
     expect(screen.getByText("Không tìm thấy bài nộp.")).toBeInTheDocument();
   });
 
-  it("reads read-only for an instructor: source visible, no learner actions (DEC-2026-1013)", () => {
+  it("reads read-only for an instructor: source visible, no learner actions (DEC-2026-1013)", async () => {
     currentSubmissionId = "SB-90412";
-    renderView("instructor");
+    await renderView("instructor");
 
     expect(
       screen.getByText(/Chỉ đọc: bạn đang xem bài nộp/),
@@ -62,23 +65,25 @@ describe("SubmissionResultView", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("returns not-found to an instructor for a submission outside their classes", () => {
+  it("returns not-found to an instructor for a submission outside their classes", async () => {
     currentSubmissionId = "SB-99999";
-    renderView("instructor");
+    await renderView("instructor");
 
     expect(screen.getByText("Không tìm thấy bài nộp.")).toBeInTheDocument();
   });
 
-  it("prints run stats as one text line in the banner, no stat-card strip (owner 2026-10-13)", () => {
+  it("prints run stats as one text line in the banner, no stat-card strip (owner 2026-10-13)", async () => {
     currentSubmissionId = "SB-90412";
-    renderView();
+    await renderView();
 
-    expect(screen.getByText(/Runtime 42 ms · Memory 15\.0 MB · Beats/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Runtime 42 ms · Memory 15\.0 MB · Beats/),
+    ).toBeInTheDocument();
   });
 
-  it("marks the expand toggle with aria-expanded for a sample testcase", () => {
+  it("marks the expand toggle with aria-expanded for a sample testcase", async () => {
     currentSubmissionId = "SB-90412";
-    renderView();
+    await renderView();
 
     const [first] = screen.getAllByRole("button", { name: "Chi tiết" });
     expect(first).toHaveAttribute("aria-expanded", "false");

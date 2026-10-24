@@ -13,13 +13,12 @@
 // - Không có kênh WebSocket/STOMP thật (F4-08) — kết quả chấm hiện sau một khoảng trễ giả lập
 //   cố định, không phải cập nhật từng testcase một qua kênh thời gian thực. Thay bằng
 //   `shared/api/stomp` thật lúc lên production (BD Sheet 4.5).
-// - Vùng soạn mã dùng <textarea> thay Monaco — Monaco Editor (README.md mục 5) cần gói riêng và
-//   cấu hình build, để lại TODO dưới đây thay vì thêm một thư viện editor tạm bợ.
+// - Vùng soạn mã dùng Monaco qua `shared/ui` `CodeEditor` (2026-10-23): giao diện kiểu LeetCode, theo
+//   theme sáng/tối. Monaco tải từ CDN lúc chạy, xem ghi chú ponytail trong `code-editor.tsx`.
 "use client";
 
 import {
   useEffect,
-  useMemo,
   useRef,
   useState,
   type ChangeEvent,
@@ -29,13 +28,13 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { Bookmark, Play, Send, Upload } from "lucide-react";
 import {
-  fetchProblemDetail,
   problemLevelLabel,
   problemLevelTone,
   saveWorkspaceDraft,
-  simulateSampleRun,
-  simulateSubmission,
+  useCreateSubmission,
+  useProblemDetail,
   useProblemLevels,
+  useRunSampleTestcases,
   workspaceDraftKey,
   type InputMethod,
   type ProblemDetail,
@@ -52,10 +51,13 @@ import {
   Badge,
   Button,
   Card,
+  CodeEditor,
   EmptyState,
   MarkdownPreview,
+  QueryBoundary,
   SegmentedTabs,
   SplitPane,
+  SeeAllLink,
 } from "@/shared/ui";
 import { RunResultsDialog } from "./run-results-dialog";
 
@@ -80,29 +82,38 @@ function byteLength(text: string) {
 export function ProblemDetailView() {
   const params = useParams<{ problemId?: string }>();
   const problemId = params?.problemId;
-  const t = useT("problemDetail");
-  const problem = useMemo(
-    () => (problemId ? fetchProblemDetail(problemId) : undefined),
-    [problemId],
-  );
+  const query = useProblemDetail(problemId);
 
   // BD Sheet 9 NO 2: an unknown or unpublished id reads as "not found", never as "no permission".
-  if (!problemId || !problem) {
-    return (
-      <div className="p-6">
-        <EmptyState>{t("empty.title")}</EmptyState>
-        <p className="mt-3 text-[12.5px] text-[var(--color-text-muted)]">
-          <Link href="/problems" className="underline">
-            {t("empty.linkList")}
-          </Link>
-        </p>
-      </div>
-    );
-  }
+  if (!problemId) return <NotFound />;
 
   // `key` remounts the workspace per problem so code, results and the save flag never leak between
   // two problems when Next reuses the page component for a new `[problemId]`.
-  return <Workspace key={problemId} problemId={problemId} detail={problem} />;
+  return (
+    <QueryBoundary query={query}>
+      {(problem) =>
+        problem ? (
+          <Workspace key={problemId} problemId={problemId} detail={problem} />
+        ) : (
+          <NotFound />
+        )
+      }
+    </QueryBoundary>
+  );
+}
+
+function NotFound() {
+  const t = useT("problemDetail");
+  return (
+    <div className="p-6">
+      <EmptyState>{t("empty.title")}</EmptyState>
+      <p className="mt-3 text-[12.5px] text-[var(--color-text-muted)]">
+        <Link href="/problems" className="underline">
+          {t("empty.linkList")}
+        </Link>
+      </p>
+    </div>
+  );
 }
 
 function Workspace({
@@ -116,6 +127,9 @@ function Workspace({
   const locale = useLocale() === "en" ? "en" : "vi";
   const router = useRouter();
   const levels = useProblemLevels();
+  const tc = useT("common");
+  const runSampleMutation = useRunSampleTestcases();
+  const createSubmission = useCreateSubmission();
 
   const [tab, setTab] = useState<Tab>("statement");
   const [language, setLanguage] = useState<SubmissionLanguage>("java");
@@ -296,19 +310,31 @@ function Workspace({
     timerRef.current = window.setTimeout(() => {
       const attempt = runCount + 1;
       setRunCount(attempt);
-      const run = simulateSampleRun(
-        detail.sampleTestcases,
-        detail.mockAlwaysPass ? 2 : attempt,
+      // Per-call callbacks do not fire once this view unmounted, so a late result never toasts elsewhere.
+      runSampleMutation.mutate(
+        {
+          samples: detail.sampleTestcases,
+          attempt: detail.mockAlwaysPass ? 2 : attempt,
+        },
+        {
+          onSuccess: (run) => {
+            setSampleRun(run);
+            setRunning(false);
+            const passed = run.cases.filter((item) => item.passed).length;
+            if (passed === run.cases.length)
+              toast.success(t("toast.runDone", { count: run.cases.length }));
+            else
+              toast.warning(
+                t("toast.runFailed", { passed, total: run.cases.length }),
+              );
+          },
+          onError: () => {
+            setRunning(false);
+            setDialog(null);
+            toast.error(tc("error"));
+          },
+        },
       );
-      setSampleRun(run);
-      setRunning(false);
-      const passed = run.cases.filter((item) => item.passed).length;
-      if (passed === run.cases.length)
-        toast.success(t("toast.runDone", { count: run.cases.length }));
-      else
-        toast.warning(
-          t("toast.runFailed", { passed, total: run.cases.length }),
-        );
     }, 400);
   }
 
@@ -322,21 +348,32 @@ function Workspace({
     timerRef.current = window.setTimeout(() => {
       const attempt = submitAttempt + 1;
       setSubmitAttempt(attempt);
-      const run = simulateSubmission(
-        totalTestcases,
-        detail.mockAlwaysPass ? 2 : attempt,
+      createSubmission.mutate(
+        {
+          totalCount: totalTestcases,
+          attempt: detail.mockAlwaysPass ? 2 : attempt,
+        },
+        {
+          onSuccess: (run) => {
+            setResult(run);
+            setRunning(false);
+            if (run.overallVerdict === "accepted")
+              toast.success(t("toast.submitAccepted"));
+            else
+              toast.error(
+                t("toast.submitRejected", {
+                  passed: run.passedCount,
+                  total: run.totalCount,
+                }),
+              );
+          },
+          onError: () => {
+            setRunning(false);
+            setDialog(null);
+            toast.error(tc("error"));
+          },
+        },
       );
-      setResult(run);
-      setRunning(false);
-      if (run.overallVerdict === "accepted")
-        toast.success(t("toast.submitAccepted"));
-      else
-        toast.error(
-          t("toast.submitRejected", {
-            passed: run.passedCount,
-            total: run.totalCount,
-          }),
-        );
     }, 700);
   }
 
@@ -475,18 +512,18 @@ function Workspace({
               {/* Both links need a submission to point at; without one the route would be broken. */}
               {latestSubmission ? (
                 <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1">
-                  <Link
+                  <SeeAllLink
                     href={`/submissions/${latestSubmission.id}/review`}
-                    className="text-[12.5px] font-semibold underline"
+                    className="mt-0"
                   >
                     {t("panel.linkFullReport")}
-                  </Link>
-                  <Link
+                  </SeeAllLink>
+                  <SeeAllLink
                     href={`/submissions/${latestSubmission.id}/interview`}
-                    className="text-[12.5px] font-semibold underline"
+                    className="mt-0"
                   >
                     {t("panel.linkMockInterview")}
-                  </Link>
+                  </SeeAllLink>
                 </div>
               ) : null}
             </div>
@@ -558,13 +595,12 @@ function Workspace({
       </div>
 
       {inputMethod === "type" ? (
-        // TODO: wire Monaco khi có 03-dd/screens/users/USR0102_problem_detail.md
-        <textarea
-          aria-label={t("toolbar.codeAreaLabel")}
+        <CodeEditor
+          label={t("toolbar.codeAreaLabel")}
           value={code}
-          onChange={(event) => setCode(event.target.value)}
-          spellCheck={false}
-          className="min-h-0 flex-1 resize-none rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3 font-mono text-[12.5px] leading-relaxed text-[var(--color-text)] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--color-primary)]"
+          onChange={setCode}
+          language={language}
+          className="flex-1"
         />
       ) : (
         <div className="flex min-h-0 flex-1 flex-col gap-2">

@@ -6,7 +6,7 @@
 //
 // Divergences:
 //
-// 1. ELEVEN functions (owner 2026-10-23 added LANGUAGE_CONFIG, 01-rd/req/identity.md F1-12).
+// 1. ELEVEN functions (owner 2026-10-23 added LANGUAGE_CONFIG, 01-rd/req/F1_identity.md F1-12).
 //    `REJUDGE_MANAGEMENT` stays gone with the rest of the rejudge feature
 //    (DEC-2026-0828-remove-rejudge-scope), so the mockup is the stale copy here.
 // 2. Toggling a cell applies immediately and there is NO save button. F1-10 says the change "có hiệu
@@ -24,11 +24,12 @@ import { useState } from "react";
 import {
   ACTION_KEYS,
   FUNCTION_KEYS,
-  fetchPermissionMatrix,
   grantsFor,
+  usePermissionMatrixPage,
   type ActionKey,
   type BaseCategory,
   type FunctionKey,
+  type PermissionMatrixPage,
   type Role,
 } from "../api";
 import { useT } from "@/shared/i18n";
@@ -46,6 +47,7 @@ import {
   DataTable,
   NoticeTile,
   PageHeader,
+  QueryBoundary,
   SegmentedTabs,
   SelectField,
   TextField,
@@ -53,8 +55,16 @@ import {
 } from "@/shared/ui";
 
 export function AdminPermissionMatrixView() {
+  return (
+    <QueryBoundary query={usePermissionMatrixPage()}>
+      {(initial) => <PermissionMatrixInner initial={initial} />}
+    </QueryBoundary>
+  );
+}
+
+function PermissionMatrixInner({ initial }: { initial: PermissionMatrixPage }) {
   const t = useT("adminPermissionMatrix");
-  const [page, setPage] = useState(fetchPermissionMatrix);
+  const [page, setPage] = useState(initial);
   const [activeRoleKey, setActiveRoleKey] = useState("INSTRUCTOR");
   const [addingRole, setAddingRole] = useState(false);
   const [newRoleName, setNewRoleName] = useState("");

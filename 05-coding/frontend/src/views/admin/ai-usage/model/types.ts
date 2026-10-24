@@ -7,7 +7,7 @@
  * still charts it as a fourth series and labels the top-problems column "lượt gợi ý".
  *
  * `testcase` maps to `feature_code = GENERATE_TESTCASE` and its tokens are keyed by the problem id
- * (DEC-2026-1010-ai-generate-testcase-feature-code, 02-bd/database/ai-review.md sections 1.1 and 1.6).
+ * (DEC-2026-1010-ai-generate-testcase-feature-code, 02-bd/database/F5_ai-review.md sections 1.1 and 1.6).
  * `practice` maps to `feature_code = PRACTICE_FEEDBACK`: the AI feedback of the interview-bank practice mode
  * (F6-08), counted in the shared budget by DEC-2026-1011-ai-practice-feedback-in-shared-budget.
  */

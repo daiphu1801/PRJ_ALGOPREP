@@ -80,7 +80,7 @@ Căn cứ lối vào: `problem-list-view.tsx:150,193,258,479`; `saved-problems-v
 - Bảng màu, spacing, component cụ thể, bề rộng cột phải, breakpoint — thuộc BD
   (`02-bd/screens/users/USR0104_problem_overview.md`).
 - Hợp đồng API (đọc bài, lưu/bỏ lưu, bài nộp gần đây, tóm tắt Solution Review) — thuộc DD
-  (`03-dd/api/problem-bank.md` và các module liên quan, chưa viết).
+  (`03-dd/api/F2_problem-bank.md` và các module liên quan, chưa viết).
 - Trình soạn mã, chạy thử, nộp bài, kết quả từng testcase — thuộc `USR0102` `problem_detail`.
 - Báo cáo Solution Review đầy đủ — thuộc `USR0301` `solution_review`. Màn này chỉ hiện hai độ phức tạp.
 - **Bình luận, Điểm, Nguồn bài** — có trong ảnh mẫu của owner nhưng **chưa dựng** và chưa có quyết định đưa vào
@@ -132,7 +132,7 @@ Chưa có yêu cầu cho Bình luận, Điểm, Nguồn bài (xem mục 3 và m�
 Bản dựng đọc một đối tượng `ProblemDetail` từ dữ liệu mẫu qua `fetchProblemDetail`
 [Nguồn: 05-coding/frontend/src/entities/problem/api/__mock__/problem-mocks.ts:423-427; 05-coding/frontend/src/entities/problem/model/types.ts:140-164];
 nguồn dữ liệu thật của từng trường (bảng, cột) thuộc BD `USR0104` Sheet 5 và 7. Chi tiết bảng, cột, kiểu dữ liệu
-thuộc `02-bd/database/problem-bank.md`; tài liệu này không tự suy luận dữ liệu chưa được chốt.
+thuộc `02-bd/database/F2_problem-bank.md`; tài liệu này không tự suy luận dữ liệu chưa được chốt.
 
 ### 6.2 Luồng dữ liệu
 

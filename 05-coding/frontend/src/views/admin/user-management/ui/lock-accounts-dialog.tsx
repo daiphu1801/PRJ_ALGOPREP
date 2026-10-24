@@ -5,7 +5,7 @@
 //
 // F1-13 only says "khoá tài khoản" — nothing about telling the user. The reason field, the email and
 // the rule that a reason is mandatory whenever the mail goes out are a NEW requirement and open a
-// new `Fx-nn` code in 01-rd/req/identity.md. Built prototype-first on purpose: the project order is
+// new `Fx-nn` code in 01-rd/req/F1_identity.md. Built prototype-first on purpose: the project order is
 // RD → BD → Prototype → DD, and this is the one screen area with no static mockup to compare against
 // (09-layoutBase/Admin - Người dùng.dc.html never drew a dialog — that absence is why BD section 3
 // flags the state as [SoT: Suy luận]). Documents follow once the owner signs the copy off.

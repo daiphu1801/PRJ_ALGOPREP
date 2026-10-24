@@ -18,13 +18,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Shuffle } from "lucide-react";
 import {
-  fetchProblemListPage,
   InProgressList,
   problemLevelLabel,
   problemLevelRank,
   problemLevelTone,
   useProblemLevels,
+  useProblemListPage,
   type ProblemListItem,
+  type ProblemListPage,
   type SolveState,
 } from "@/entities/problem";
 import { useLocale, useT } from "@/shared/i18n";
@@ -38,6 +39,7 @@ import {
   Pagination,
   FilterBar,
   FilterMenu,
+  QueryBoundary,
   type BadgeVariant,
   type DataTableColumn,
 } from "@/shared/ui";
@@ -65,11 +67,19 @@ type DifficultyFilter = string;
 type SortKey = "difficulty" | "acRate";
 
 export function ProblemListView() {
+  const query = useProblemListPage();
+  return (
+    <QueryBoundary query={query}>
+      {(page) => <ProblemList page={page} />}
+    </QueryBoundary>
+  );
+}
+
+function ProblemList({ page }: { page: ProblemListPage }) {
   const t = useT("problemList");
   const locale = useLocale() === "en" ? "en" : "vi";
   const router = useRouter();
   const levels = useProblemLevels();
-  const [page] = useState(fetchProblemListPage);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<StatusFilter>("all");
   const [difficulty, setDifficulty] = useState<DifficultyFilter>("all");

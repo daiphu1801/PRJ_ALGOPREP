@@ -21,7 +21,7 @@ vệ (tiêu chí ponytail bậc 3), và điểm chấm tay không nuôi màn hay
 
 | Mục | Xử lý |
 | :--- | :--- |
-| `F5-27` | Đánh dấu đã bỏ ở `01-rd/req/ai-review.md`; mã không cấp lại |
+| `F5-27` | Đánh dấu đã bỏ ở `01-rd/req/F5_ai-review.md`; mã không cấp lại |
 | `US-A2-06` | Đánh dấu đã bỏ ở `01-rd/req/user_stories/a2_instructor.md`; mã không cấp lại |
 | Nav "Chấm bài" khu Giảng viên | Bỏ |
 | Khối/thẻ/cột/liên kết "Cần chấm" ở `INS0101`, `INS0201`, `INS0202`, `INS0204` | Bỏ, xem từng file |
@@ -32,7 +32,7 @@ vệ (tiêu chí ponytail bậc 3), và điểm chấm tay không nuôi màn hay
 
 * Lối vào trang đọc-chỉ `/instructor/submissions/{id}` đã mất cùng popup chấm bài: xem Q5 ở
   `01-rd/screens/teacher/INS0204_class_student_detail.md`.
-* ~~Số phận trường `ai_score_10`: xem OQ-F5-A ở `01-rd/req/ai-review.md`.~~ **ĐÃ BỎ 2026-10-14
-  (`DEC-2026-1014-drop-ai-score-10`):** cột `ai_score_10` bị bỏ, OQ-F5-A đã đóng ở `01-rd/req/ai-review.md`.
+* ~~Số phận trường `ai_score_10`: xem OQ-F5-A ở `01-rd/req/F5_ai-review.md`.~~ **ĐÃ BỎ 2026-10-14
+  (`DEC-2026-1014-drop-ai-score-10`):** cột `ai_score_10` bị bỏ, OQ-F5-A đã đóng ở `01-rd/req/F5_ai-review.md`.
 
 Lịch sử nội dung cũ của file (bản trước 2026-10-13) xem qua `git log -- 01-rd/screens/teacher/INS0301_grading.md`.

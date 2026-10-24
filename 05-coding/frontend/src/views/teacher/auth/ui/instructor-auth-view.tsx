@@ -21,7 +21,7 @@ import {
 
 /**
  * Dedicated Instructor login screen (`DEC-2026-0925-instructor-separate-login-route`) — a separate
- * route AND a separate backend endpoint (`instructorLogin`, `03-dd/api/identity.md` endpoint #49),
+ * route AND a separate backend endpoint (`instructorLogin`, `03-dd/api/F1_identity.md` endpoint #49),
  * unlike `views/admin-auth` which only splits the route/skin and keeps the shared `login()` call.
  * Locked to `login` mode (no signup — instructor accounts are promoted by an admin, not
  * self-service, `01-rd/screens/admin/ADM0201_user_management.md:94`) and `showOAuth={false}` (same

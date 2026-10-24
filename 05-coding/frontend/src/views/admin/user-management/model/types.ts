@@ -15,7 +15,7 @@ export type AdminUser = {
   solvedCount: number;
   submissionCount: number;
   /**
-   * Human-readable "last seen". NO DATA SOURCE EXISTS for this yet: `database/identity.md` has no
+   * Human-readable "last seen". NO DATA SOURCE EXISTS for this yet: `database/F1_identity.md` has no
    * "last active" column, only `refresh_tokens.issued_at` as an indirect proxy. Flagged as level B1
    * in 07-review/bd_screens_admin_open_questions_260913.md, which proposes adding
    * `users.last_active_at`. Kept as a plain string here so the mock cannot be mistaken for a

@@ -1,0 +1,113 @@
+{
+  "_": "Nguon: 03-dd/logic/F3_harness.md muc 1.2 (dong 28-51): LanguageHarnessPlugin (dong 34-41), RenderedProgram gom sourceFileName + text + LineMap (dong 44), registry EnumMap (dong 45-48), TypeCodeEmitter (dong 49). Ten ba plugin: dong 31. [SoT: Suy luan]: ten lop PluginRegistry. Phan dong goi payload nam o so do class_f3_dong_goi_payload.",
+  "kind": "class",
+  "title": "Class diagram plugin ngôn ngữ của F3 harness",
+  "covers": [],
+  "class": {
+    "classes": [
+      {
+        "id": "plugin",
+        "name": "LanguageHarnessPlugin",
+        "kind": "interface",
+        "methods": [
+          "+ language() : Language",
+          "+ renderFunctionWrapper(spec : FunctionSpec, source : String) : RenderedProgram",
+          "+ renderStandardIo(source : String) : RenderedProgram",
+          "+ starterCode(spec : FunctionSpec, model : SubmissionModel) : String",
+          "+ toolchain(model : SubmissionModel) : ToolchainProfile",
+          "+ parseCompilerOutput(raw : String) : List<RawDiagnostic>"
+        ]
+      },
+      {
+        "id": "java",
+        "name": "JavaHarnessPlugin"
+      },
+      {
+        "id": "cpp",
+        "name": "CppHarnessPlugin"
+      },
+      {
+        "id": "py",
+        "name": "PythonHarnessPlugin"
+      },
+      {
+        "id": "registry",
+        "name": "PluginRegistry",
+        "attributes": [
+          "- plugins : EnumMap<Language, LanguageHarnessPlugin>"
+        ],
+        "methods": [
+          "+ get(language : Language) : LanguageHarnessPlugin"
+        ]
+      },
+      {
+        "id": "emitter",
+        "name": "TypeCodeEmitter",
+        "methods": [
+          "+ emit(node : TypeNode) : String"
+        ]
+      },
+      {
+        "id": "prog",
+        "name": "RenderedProgram",
+        "attributes": [
+          "- sourceFileName : String",
+          "- text : String",
+          "- lineMap : LineMap"
+        ]
+      },
+      {
+        "id": "linemap",
+        "name": "LineMap"
+      }
+    ],
+    "externals": [],
+    "relations": [
+      {
+        "from": "java",
+        "to": "plugin",
+        "kind": "realization"
+      },
+      {
+        "from": "cpp",
+        "to": "plugin",
+        "kind": "realization"
+      },
+      {
+        "from": "py",
+        "to": "plugin",
+        "kind": "realization"
+      },
+      {
+        "from": "registry",
+        "to": "plugin",
+        "kind": "aggregation",
+        "from_mult": "1",
+        "to_mult": "3"
+      },
+      {
+        "from": "plugin",
+        "to": "prog",
+        "kind": "dependency",
+        "label": "trả về"
+      },
+      {
+        "from": "prog",
+        "to": "linemap",
+        "kind": "composition",
+        "from_mult": "1",
+        "to_mult": "1"
+      },
+      {
+        "from": "plugin",
+        "to": "emitter",
+        "kind": "dependency",
+        "label": "dùng"
+      }
+    ],
+    "notes": [
+      "Ba plugin chỉ hiện thực lại sáu phương thức của interface nên không liệt kê lại; TypeCodeEmitter là một lớp riêng cho mỗi ngôn ngữ, vẽ gộp một hộp (03-dd/logic/F3_harness.md:49).",
+      "[SoT: Suy luận] Tên PluginRegistry; DD chỉ nói registry là Map<Language, LanguageHarnessPlugin> kiểu EnumMap, thiếu một plugin là lỗi khởi động (03-dd/logic/F3_harness.md:45-48)."
+    ]
+  }
+}

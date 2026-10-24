@@ -3,7 +3,7 @@
 > Mã màn hình: `SHR0101` [SoT: 02-bd/_rules/bd-template-9sheet.md — mục 8].
 > Slug chính tắc: `auth` [SoT: 01-rd/overview/system_survey.md — mục 7.0 dòng `auth`].
 > Phạm vi/Bounded Context: `identity` (F1) [SoT: README.md mục 4 — sáu phân hệ F1-F6]. Actor: A1, A2, A3 (mọi vai trò đều đi qua màn này trước khi vào hệ thống).
-> Nguồn sự thật (SoT): `01-rd/req/identity.md` (F1-01, F1-02, F1-15, F1-17), `09-layoutBase/Đăng nhập & Đăng ký.dc.html` (prototype), `01-rd/req/user_stories/a1_student.md` (`US-A1-01`).
+> Nguồn sự thật (SoT): `01-rd/req/F1_identity.md` (F1-01, F1-02, F1-15, F1-17), `09-layoutBase/Đăng nhập & Đăng ký.dc.html` (prototype), `01-rd/req/user_stories/a1_student.md` (`US-A1-01`).
 > Tài liệu này có thể đọc độc lập.
 
 ---
@@ -12,13 +12,13 @@
 
 Là điểm vào duy nhất của hệ thống cho cả ba vai trò (`STUDENT`, `INSTRUCTOR`, `ADMIN`) — đăng ký tài khoản
 mới hoặc đăng nhập vào tài khoản đã có, bằng email/mật khẩu hoặc qua OAuth (GitHub, Google)
-[SoT: 01-rd/req/identity.md — F1-01, F1-02, F1-15].
+[SoT: 01-rd/req/F1_identity.md — F1-01, F1-02, F1-15].
 
 Đối chiếu prototype đã sửa sạch quy chuẩn (nhãn go-judge, khoá 3 ngôn ngữ, theme Light mặc định —
 `06-plan/PROTOTYPE_DEBT.md` mục 6.1): `09-layoutBase/Đăng nhập & Đăng ký.dc.html`.
 
 File này mô tả **hành vi và UX ở mức yêu cầu** của một màn cụ thể — không lặp lại đặc tả chức năng đã có
-ở `01-rd/req/identity.md` (mục F1) hay `01-rd/req/user_stories/a1_student.md` (`US-A1-01`), chỉ trỏ tới và bổ sung phần
+ở `01-rd/req/F1_identity.md` (mục F1) hay `01-rd/req/user_stories/a1_student.md` (`US-A1-01`), chỉ trỏ tới và bổ sung phần
 đặc thù của **một màn**: trạng thái màn, luồng chuyển màn, và các câu hỏi mở phát sinh khi đối chiếu với
 prototype thật mà bản mô tả chức năng chung chưa có.
 
@@ -28,11 +28,11 @@ prototype thật mà bản mô tả chức năng chung chưa có.
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Đăng ký email + mật khẩu, vai trò mặc định `STUDENT` | F1-01, F1-05 | `01-rd/req/identity.md` — F1-01, F1-05 |
-| Đăng nhập cấp Access Token + Refresh Token (cookie HTTP-Only) | F1-02 | `01-rd/req/identity.md` — F1-02 |
-| Client tự làm mới Access Token khi gặp `401` | F1-03 | `01-rd/req/identity.md` — F1-03 |
-| Đăng nhập/đăng ký qua OAuth (GitHub, Google), tự động liên kết theo email trùng | F1-15 | `01-rd/req/identity.md` — F1-15 |
-| Tự đặt lại mật khẩu bằng mã 6 chữ số gửi qua email (Gmail), một lần dùng, có hạn hiệu lực | F1-17 | `01-rd/req/identity.md` — F1-17 |
+| Đăng ký email + mật khẩu, vai trò mặc định `STUDENT` | F1-01, F1-05 | `01-rd/req/F1_identity.md` — F1-01, F1-05 |
+| Đăng nhập cấp Access Token + Refresh Token (cookie HTTP-Only) | F1-02 | `01-rd/req/F1_identity.md` — F1-02 |
+| Client tự làm mới Access Token khi gặp `401` | F1-03 | `01-rd/req/F1_identity.md` — F1-03 |
+| Đăng nhập/đăng ký qua OAuth (GitHub, Google), tự động liên kết theo email trùng | F1-15 | `01-rd/req/F1_identity.md` — F1-15 |
+| Tự đặt lại mật khẩu bằng mã 6 chữ số gửi qua email (Gmail), một lần dùng, có hạn hiệu lực | F1-17 | `01-rd/req/F1_identity.md` — F1-17 |
 | Given-When-Then đầy đủ cho các hành vi trên | — | `01-rd/req/user_stories/a1_student.md` (`US-A1-01`) |
 
 Đối chiếu `09-layoutBase/Đăng nhập & Đăng ký.dc.html` — đây là hành vi UX thật đã dựng, không phải suy
@@ -70,7 +70,7 @@ là mặc định — khớp `state.theme: "light"` dòng 186).
 | Màn/tài liệu | Vai trò | Bounded Context |
 |---|---|---|
 | Màn hiện tại | `SHR0101` / `auth` | `identity` |
-| Tài liệu yêu cầu | `01-rd/req/identity.md` (F1) | Nguồn SoT của màn |
+| Tài liệu yêu cầu | `01-rd/req/F1_identity.md` (F1) | Nguồn SoT của màn |
 | Prototype | `09-layoutBase/Đăng nhập & Đăng ký.dc.html` | Bằng chứng bố cục và trạng thái |
 
 ---
@@ -78,7 +78,7 @@ là mặc định — khớp `state.theme: "light"` dòng 186).
 ## 3. Ngoài phạm vi (Out of Scope)
 
 - Layout, vùng bố cục, bảng màu, component cụ thể — thuộc BD (`02-bd/screens/shared/SHR0101_auth.md`).
-- Hợp đồng API (request/response của đăng nhập/đăng ký/OAuth) — thuộc DD (`03-dd/api/identity.md`,
+- Hợp đồng API (request/response của đăng nhập/đăng ký/OAuth) — thuộc DD (`03-dd/api/F1_identity.md`,
   chưa viết).
 - Cơ chế JWT, luồng OAuth chi tiết (redirect URI, PKCE...), bảo mật cookie — thuộc BD/DD của module
   `identity`, không thuộc file theo trục màn này.
@@ -92,19 +92,19 @@ là mặc định — khớp `state.theme: "light"` dòng 186).
 | Q1 | ~~Màn `auth` xử lý lỗi đăng nhập/đăng ký thế nào...~~ **ĐÃ CHỐT (phiên 2026-08-25, chốt theo RD — prototype chỉ tham khảo, sẽ dựng lại khi làm FE Next.js thật):** ~~thêm trạng thái lỗi inline dưới từng field bị sai (không dùng modal/toast che form), dùng token `--bad` nhất quán với theme~~ **SỬA 2026-10-03 (chỉ thị chủ dự án, `DEC-2026-1003-toast-feedback-channel`): lỗi hiện bằng toast dùng chung ở góc phải-trên, tự tắt, có nút X; ô sai chỉ đổi viền đỏ (token `--bad`), không có chữ lỗi cạnh ô; mỗi lần gửi một toast mang lỗi đầu tiên.** Áp dụng cho cả bốn tình huống: sai mật khẩu, email đã tồn tại, mật khẩu yếu, OAuth thất bại (thông báo riêng cho từng loại, không gộp chung một câu). **Chưa dựng vào `09-layoutBase/Đăng nhập & Đăng ký.dc.html`** — `fakeAuth()` vẫn luôn giả lập thành công, việc dựng UI lỗi thật để lúc build FE. | — | Đã chốt quyết định, chưa dựng prototype. | Đã đóng |
 | Q2 | ~~Thông báo khi tài khoản `DEACTIVATED`...~~ **ĐÃ CHỐT (phiên 2026-08-25, chốt theo RD):** cho phép khôi phục ngay tại màn `auth` nếu còn trong khoảng ân hạn — một hành động "Huỷ yêu cầu xoá tài khoản" xuất hiện khi hệ thống phát hiện đăng nhập đúng mật khẩu/OAuth vào tài khoản đang `DEACTIVATED`, tận dụng đúng lúc người dùng đã quay lại thay vì bắt liên hệ hỗ trợ. **Chưa dựng vào prototype** — để lúc build FE. | — | Đã chốt quyết định, chưa dựng prototype. | Đã đóng |
 | Q3 | ~~Sau khi `INSTRUCTOR`/`ADMIN` đăng nhập, có vào thẳng khu vực riêng...~~ **ĐÃ CHỐT (phiên 2026-08-25, chốt theo RD) — SỬA MỘT PHẦN 2026-09-27:** điều hướng theo vai trò — `STUDENT` → ~~`my_progress`~~ **`dashboard`** (đổi theo `DEC-2026-0927-student-dashboard-home`, màn `01-rd/screens/users/USR0601_dashboard.md` mới bổ sung; hai đích còn lại và quy tắc returnUrl không đổi), `INSTRUCTOR` → `instructor_overview`, `ADMIN` → `admin_overview`; nếu người dùng đến `auth` từ một liên kết cụ thể cần đăng nhập trước (ví dụ bài toán được chia sẻ), ưu tiên quay lại đúng URL gốc đó thay vì đích mặc định theo vai trò. **Chưa dựng vào prototype** (hiện luôn điều hướng 1 đích `my_progress`) — để lúc build FE. **CẢNH BÁO 2026-08-25 (đã xử lý): `admin_overview` nay đã tồn tại** — `01-rd/screens/admin/ADM0101_overview.md` được bổ sung 2026-08-25, đích `ADMIN` không còn treo. Cần đối chiếu lại code (`05-coding/frontend/src/entities/user/model/area.ts` → `HOME_PATH_BY_ROLE`) trỏ đúng `/admin/overview` khi build FE thật thay vì `/admin/queue` tạm thời. | — | Đã chốt quyết định, đã dựng đủ prototype. | Đã đóng |
-| Q4 | ~~"Quên mật khẩu?" xuất hiện ở chế độ `login` trong prototype nhưng không có mã `Fx-nn` nào mô tả luồng đặt lại mật khẩu qua email.~~ **Đã trả lời 2026-08-24 — qua hỏi trực tiếp chủ dự án:** có tính năng quên mật khẩu, gửi mã 6 chữ số ngẫu nhiên qua Gmail. Đã ghi `F1-17` vào `01-rd/req/identity.md`, đồng bộ `system_survey.md` mục 5.1/5.7, thêm 3 Given-When-Then vào `US-A1-01` (`user_stories/a1_student.md`), và thêm 3 trạng thái màn mới ở mục 3 (`forgot_email`, `forgot_otp`, `forgot_reset`) — chưa có trong prototype, cần dựng thêm khi làm UI thật/BD. | — | — | (đã đóng) |
-| Q4b | ~~Tài khoản chỉ từng đăng ký qua OAuth (chưa bao giờ đặt mật khẩu, F1-15) bấm "Quên mật khẩu" thì xử lý thế nào?~~ **Đã trả lời 2026-08-24 — qua hỏi trực tiếp chủ dự án:** đúng như chủ dự án chỉ ra — tài khoản chưa từng có mật khẩu thì không có gì để "quên", nên **từ chối tạo mật khẩu mới qua luồng này**; hệ thống gửi email báo tài khoản đang đăng nhập bằng GitHub/Google, hướng dẫn quay lại đúng provider đó. Đã ghi vào `identity.md` (mục F1-17), thêm Given-When-Then vào `US-A1-01`. | — | — | (đã đóng) |
+| Q4 | ~~"Quên mật khẩu?" xuất hiện ở chế độ `login` trong prototype nhưng không có mã `Fx-nn` nào mô tả luồng đặt lại mật khẩu qua email.~~ **Đã trả lời 2026-08-24 — qua hỏi trực tiếp chủ dự án:** có tính năng quên mật khẩu, gửi mã 6 chữ số ngẫu nhiên qua Gmail. Đã ghi `F1-17` vào `01-rd/req/F1_identity.md`, đồng bộ `system_survey.md` mục 5.1/5.7, thêm 3 Given-When-Then vào `US-A1-01` (`user_stories/a1_student.md`), và thêm 3 trạng thái màn mới ở mục 3 (`forgot_email`, `forgot_otp`, `forgot_reset`) — chưa có trong prototype, cần dựng thêm khi làm UI thật/BD. | — | — | (đã đóng) |
+| Q4b | ~~Tài khoản chỉ từng đăng ký qua OAuth (chưa bao giờ đặt mật khẩu, F1-15) bấm "Quên mật khẩu" thì xử lý thế nào?~~ **Đã trả lời 2026-08-24 — qua hỏi trực tiếp chủ dự án:** đúng như chủ dự án chỉ ra — tài khoản chưa từng có mật khẩu thì không có gì để "quên", nên **từ chối tạo mật khẩu mới qua luồng này**; hệ thống gửi email báo tài khoản đang đăng nhập bằng GitHub/Google, hướng dẫn quay lại đúng provider đó. Đã ghi vào `F1_identity.md` (mục F1-17), thêm Given-When-Then vào `US-A1-01`. | — | — | (đã đóng) |
 
 ---
 
 ## 5. Danh sách yêu cầu (REQ)
 | ID | Yêu cầu | Loại | Nguồn/SoT |
 |---|---|---|---|
-| REQ-01 | Đăng ký email + mật khẩu, vai trò mặc định `STUDENT` (F1-01, F1-05) | Chức năng | `01-rd/req/identity.md` — F1-01, F1-05 |
-| REQ-02 | Đăng nhập cấp Access Token + Refresh Token (cookie HTTP-Only) (F1-02) | Chức năng | `01-rd/req/identity.md` — F1-02 |
-| REQ-03 | Client tự làm mới Access Token khi gặp `401` (F1-03) | Chức năng | `01-rd/req/identity.md` — F1-03 |
-| REQ-04 | Đăng nhập/đăng ký qua OAuth (GitHub, Google), tự động liên kết theo email trùng (F1-15) | Chức năng | `01-rd/req/identity.md` — F1-15 |
-| REQ-05 | Tự đặt lại mật khẩu bằng mã 6 chữ số gửi qua email (Gmail), một lần dùng, có hạn hiệu lực (F1-17) | Chức năng | `01-rd/req/identity.md` — F1-17 |
+| REQ-01 | Đăng ký email + mật khẩu, vai trò mặc định `STUDENT` (F1-01, F1-05) | Chức năng | `01-rd/req/F1_identity.md` — F1-01, F1-05 |
+| REQ-02 | Đăng nhập cấp Access Token + Refresh Token (cookie HTTP-Only) (F1-02) | Chức năng | `01-rd/req/F1_identity.md` — F1-02 |
+| REQ-03 | Client tự làm mới Access Token khi gặp `401` (F1-03) | Chức năng | `01-rd/req/F1_identity.md` — F1-03 |
+| REQ-04 | Đăng nhập/đăng ký qua OAuth (GitHub, Google), tự động liên kết theo email trùng (F1-15) | Chức năng | `01-rd/req/F1_identity.md` — F1-15 |
+| REQ-05 | Tự đặt lại mật khẩu bằng mã 6 chữ số gửi qua email (Gmail), một lần dùng, có hạn hiệu lực (F1-17) | Chức năng | `01-rd/req/F1_identity.md` — F1-17 |
 | REQ-06 | Given-When-Then đầy đủ cho các hành vi trên (—) | Chức năng | `01-rd/req/user_stories/a1_student.md` (`US-A1-01`) |
 
 ---
@@ -144,7 +144,7 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 
 | Loại | Tham chiếu |
 |---|---|
-| Yêu cầu module | `01-rd/req/identity.md` — F1-01 tới F1-17. |
+| Yêu cầu module | `01-rd/req/F1_identity.md` — F1-01 tới F1-17. |
 | User story | `01-rd/req/user_stories/a1_student.md` — `US-A1-01`. |
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` — mục 7.0 dòng `auth`. |
 | Prototype | `09-layoutBase/Đăng nhập & Đăng ký.dc.html` — prototype đã sửa sạch (`06-plan/PROTOTYPE_DEBT.md` mục 6.1). |

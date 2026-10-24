@@ -24,8 +24,8 @@ domain/application.
 | Endpoint `/version` dùng làm healthcheck | Ánh xạ kết quả engine sang value object của AlgoPrep (ACL) |
 
 Thư mục này được mount vào container tại `/opt/algoprep/judge-engine` (chỉ đọc). Nó **rỗng có chủ
-đích**: cấu hình biên dịch từng ngôn ngữ phụ thuộc `02-bd/architecture/harness.md` và
-`03-dd/api/judge-orchestration.md`, cả hai chưa tồn tại. Đặt sẵn một cấu hình đoán trước ở đây sẽ
+đích**: cấu hình biên dịch từng ngôn ngữ phụ thuộc `02-bd/architecture/F3_harness.md` và
+`03-dd/api/F4_judge-orchestration.md`, cả hai chưa tồn tại. Đặt sẵn một cấu hình đoán trước ở đây sẽ
 thành nợ mà không ai biết là nợ.
 
 ## Kết quả kiểm thực nghiệm 2026-09-01

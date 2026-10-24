@@ -18,7 +18,7 @@ import { JudgeEngineTag } from "./judge-engine-tag";
  *
  * The status line is STATIC, dropping the prototype's live "hàng đợi {n} bài" counter — the
  * recommendation in _shell.md mục 6 Q3, so that a footer present on every screen does not make
- * every screen poll judge-orchestration. Revisit in 03-dd/api/judge-orchestration.md.
+ * every screen poll judge-orchestration. Revisit in 03-dd/api/F4_judge-orchestration.md.
  */
 export async function StudentFooter() {
   const t = await getT("studentShell");

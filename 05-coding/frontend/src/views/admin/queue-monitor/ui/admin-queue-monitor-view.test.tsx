@@ -8,6 +8,15 @@ vi.mock("@/shared/i18n", () => ({
 }));
 
 import { AdminQueueMonitorView } from "./admin-queue-monitor-view";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import type { ReactElement } from "react";
+
+function withQuery(ui: ReactElement) {
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+  });
+  return <QueryClientProvider client={client}>{ui}</QueryClientProvider>;
+}
 
 const bodyRows = () =>
   within(screen.getByRole("table", { name: "jobsTitle" }))
@@ -15,23 +24,26 @@ const bodyRows = () =>
     .slice(1);
 
 describe("AdminQueueMonitorView", () => {
-  it("opens on the waiting tab, one page at a time", () => {
-    render(<AdminQueueMonitorView />);
+  it("opens on the waiting tab, one page at a time", async () => {
+    render(withQuery(<AdminQueueMonitorView />));
+    await screen.findByRole("table", { name: "jobsTitle" });
     // 21 waiting jobs in the mock, 20 rows per page by default.
     expect(bodyRows()).toHaveLength(20);
     fireEvent.click(screen.getByRole("button", { name: "pageNext" }));
     expect(bodyRows()).toHaveLength(1);
   });
 
-  it("the failed tab shows only failed jobs", () => {
-    render(<AdminQueueMonitorView />);
+  it("the failed tab shows only failed jobs", async () => {
+    render(withQuery(<AdminQueueMonitorView />));
+    await screen.findByRole("table", { name: "jobsTitle" });
     fireEvent.click(screen.getByRole("button", { name: "tabFailed" }));
     expect(bodyRows()).toHaveLength(1);
     expect(bodyRows()[0]).toHaveTextContent("jobStatus.sandboxError");
   });
 
-  it("asks before pausing, and only pauses once confirmed", () => {
-    render(<AdminQueueMonitorView />);
+  it("asks before pausing, and only pauses once confirmed", async () => {
+    render(withQuery(<AdminQueueMonitorView />));
+    await screen.findByRole("table", { name: "jobsTitle" });
     const pause = screen.getByRole("switch", { name: "control.paused.label" });
 
     fireEvent.click(pause);
@@ -49,8 +61,9 @@ describe("AdminQueueMonitorView", () => {
     expect(pause).toHaveAttribute("aria-checked", "false");
   });
 
-  it("asks before turning autoscale off, not before turning it on", () => {
-    render(<AdminQueueMonitorView />);
+  it("asks before turning autoscale off, not before turning it on", async () => {
+    render(withQuery(<AdminQueueMonitorView />));
+    await screen.findByRole("table", { name: "jobsTitle" });
     const autoscale = screen.getByRole("switch", {
       name: "control.autoscale.label",
     });
@@ -63,12 +76,12 @@ describe("AdminQueueMonitorView", () => {
     expect(autoscale).toHaveAttribute("aria-checked", "true");
   });
 
-  it("links to the infrastructure events screen instead of listing them", () => {
-    render(<AdminQueueMonitorView />);
-    expect(screen.getByRole("link", { name: "infraLink" })).toHaveAttribute(
-      "href",
-      "/admin/infra-events?level=error",
-    );
+  it("links to the infrastructure events screen instead of listing them", async () => {
+    render(withQuery(<AdminQueueMonitorView />));
+    await screen.findByRole("table", { name: "jobsTitle" });
+    expect(
+      await screen.findByRole("link", { name: "infraLink" }),
+    ).toHaveAttribute("href", "/admin/infra-events?level=error");
     expect(screen.queryByRole("list", { name: "infraTitle" })).toBeNull();
   });
 });

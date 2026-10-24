@@ -28,13 +28,13 @@
 
 > Đọc cùng `01-rd/screens/shared/SHR0302_interview_question_authoring.md` (hành vi ở mức yêu cầu, không lặp lại ở
 > đây), `01-rd/screens/shared/SHR0301_interview_question_management.md` (màn cha), và ba file BD module:
-> `02-bd/architecture/interview-bank.md`, `02-bd/database/interview-bank.md`, `02-bd/security/interview-bank.md`.
+> `02-bd/architecture/F6_interview-bank.md`, `02-bd/database/F6_interview-bank.md`, `02-bd/security/F6_interview-bank.md`.
 >
 > **Không thiết kế** vòng đời nháp/xuất bản riêng như `problem_authoring` — câu hỏi hiện ngay cho học viên
 > khi lưu, trừ khi bị ẩn khỏi Chế độ luyện do thiếu tiêu chí
 > [Nguồn: 01-rd/screens/shared/SHR0302_interview_question_authoring.md:56-58, 119].
 > **Không thiết kế** khái niệm "bộ câu hỏi" (`question_sets`) — đã đóng, bỏ hẳn 2026-09-13
-> [Nguồn: 02-bd/database/interview-bank.md:206-212].
+> [Nguồn: 02-bd/database/F6_interview-bank.md:206-212].
 
 ---
 
@@ -69,15 +69,15 @@
 | V0.3 | Câu hỏi mở | Thêm đề xuất cho Q1, Q4 theo nguyên tắc admin (chờ owner xác nhận). Không đổi thiết kế màn | 2026/10/01 | AI |
 | V0.4 | Sheet 4, 5, 7, 8, Câu hỏi mở | Đã chốt 2026-10-01 (owner uỷ quyền cân nhắc), xem `DEC-2026-1001-admin-configurable-settings`: (1) **chủ đề đọc từ dữ liệu do ADMIN quản lý**, không còn "chọn 1 trong 5 chủ đề cố định"; màn này chỉ chọn chủ đề có sẵn, A2 không tạo được chủ đề, ADMIN thấy liên kết "Quản lý chủ đề" dẫn về `SHR0301`; giá trị mặc định của ô chọn là chủ đề đầu theo `sort_order`; (2) Q1 và Q4 đổi từ "Đề xuất (chờ owner xác nhận)" sang **đã chốt**: không giới hạn ký tự nghiệp vụ mỗi dòng đào sâu, không giới hạn số dòng tiêu chí; (3) sửa dẫn chiếu sai "xem Q4" ở ô nhập câu hỏi đào sâu thành "xem Q1" | 2026/10/01 | AI |
 | V0.5 | Sheet 3, 4, 8 | Theo `DEC-2026-1002-split-detail-and-edit-pages` (chỉ khu Admin): route đổi từ `/admin/interview-questions/[id]` sang `/admin/interview-questions/[id]/edit` (sửa) và `/admin/interview-questions/new` (tạo mới); `/admin/interview-questions/[id]` nay là trang chỉ đọc `interview_question_info` (`SHR0303`). Thêm chuyển màn `interview_question_info` → `interview_question_authoring` (nút "Sửa câu hỏi"); bấm nội dung câu hỏi ở danh sách không còn vào màn này, chỉ biểu tượng "Sửa" mới vào. Phần khoá route của Q6 RD (cùng URL cho tạo và sửa) chỉ còn đúng khu Giảng viên, chưa tách. Không đổi nội dung 4 nhóm trường | 2026/10/02 | AI |
-| V0.6 | Sheet 3, 4, 8 | Đồng bộ với bản dựng ngày 2026-10-03: khu Giảng viên đã tách cùng cấu trúc khu Admin (`/instructor/interview-questions/[id]` chỉ đọc, `/edit` và `/new` là màn soạn) — bỏ ý "khu Giảng viên chưa tách, vẫn một route cho cả hai chế độ" của V0.5; Q6 của RD hết hiệu lực khoá route ở cả hai khu. Làm mới dẫn chiếu dòng tới bản dựng, RD và `02-bd/database/interview-bank.md` (bảng `question_topics` thêm lên đầu nên các dòng cũ lệch). Không đổi nội dung 4 nhóm trường | 2026/10/03 | AI |
+| V0.6 | Sheet 3, 4, 8 | Đồng bộ với bản dựng ngày 2026-10-03: khu Giảng viên đã tách cùng cấu trúc khu Admin (`/instructor/interview-questions/[id]` chỉ đọc, `/edit` và `/new` là màn soạn) — bỏ ý "khu Giảng viên chưa tách, vẫn một route cho cả hai chế độ" của V0.5; Q6 của RD hết hiệu lực khoá route ở cả hai khu. Làm mới dẫn chiếu dòng tới bản dựng, RD và `02-bd/database/F6_interview-bank.md` (bảng `question_topics` thêm lên đầu nên các dòng cũ lệch). Không đổi nội dung 4 nhóm trường | 2026/10/03 | AI |
 | V0.7 | Sheet 5, 6, 8, 9 | Đồng bộ `DEC-2026-1003-toast-feedback-channel` (2026-10-03): kết quả lưu, nhân bản (đã bỏ 2026-10-08), xoá mềm và lỗi nhập là toast; ô sai đổi viền đỏ; bỏ nhãn trạng thái lưu ở thanh đầu trang; `[Tiêu điểm]` Sheet 9 ghi "viền ô + toast". Giữ nguyên khối chặn lưu do tổng trọng số khác 100, khối bộ tiêu chí trống và trạng thái không tìm thấy (nội dung trạng thái trang) | 2026/10/03 | Nhóm phát triển AlgoPrep |
 | V0.8 | Sheet 5, 6, 8, 9 | Đồng bộ `DEC-2026-1003-toast-feedback-channel` và chỉ đạo của chủ dự án 2026-10-03 "bỏ khối inline, người dùng bấm vào nút đang khoá thì hiện toast": bỏ khối chặn lưu "tổng trọng số khác 100" (`rubricBlockTitle`) khỏi trang, đảo lại điều đã giữ ở V0.7. Bộ đếm "Tổng {số}%" vẫn đỏ khi khác 100. Nút "Lưu" trông mờ (`aria-disabled`) nhưng vẫn bấm được; bấm thì toast cảnh báo nêu tổng trọng số hoặc nêu nội dung câu hỏi rỗng. Giữ nguyên ghi chú "bộ tiêu chí trống" (`rubricEmptyTitle`, là trạng thái rỗng) và trạng thái không tìm thấy. Không có item nào bị xoá nên NO và EVT giữ nguyên [Nguồn: 05-coding/frontend/src/views/shared/interview-question-authoring/ui/interview-question-authoring-view.tsx:97-100, 116-126, 162] | 2026/10/03 | AI |
-| V0.9 | Sheet 4, 5, 7, 8 | Đồng bộ chốt 2026-10-03 (`DEC-2026-1001-admin-configurable-settings` mục 6, Round 5): **độ khó là danh mục do ADMIN quản lý** (bảng `question_levels`, `02-bd/database/interview-bank.md:30-50`), không còn enum cố định `EASY`/`MEDIUM`/`HARD`; ba mức Dễ/Trung bình/Khó chỉ là dữ liệu khởi tạo. Ô "Độ khó" (Sheet 5 Nhóm 1 NO 3) là ô chọn đọc từ `question_levels` qua `ListQuestionLevels`; màn này không tạo, đổi tên hay xoá mức. DTO đổi `difficulty` thành `levelId` (kèm `QuestionLevelDto.displayName` để hiện nhãn); cột DB `difficulty` thay bằng `level_id` FK. Thêm `ListQuestionLevels` vào tải màn (Sheet 8) và bảng `question_levels` vào Sheet 4.3, 7.2. Giá trị mặc định: mức đầu theo `sort_order` `[SoT: Suy luận]` (thay cho `MEDIUM` cố định, vì mức có thể bị xoá). Làm mới dẫn chiếu dòng `02-bd/database/interview-bank.md` (bảng `question_levels` chèn thêm nên `interview_questions` lệch dòng). Các hành vi khác giữ nguyên | 2026/10/03 | AI |
-| V0.10 | Sheet 4, 5, 7, 8, Câu hỏi mở | Làm mới và kiểm chứng toàn bộ dẫn chiếu `file:line` (2026-10-03): (1) `02-bd/database/interview-bank.md` — mục 1.1a `question_levels` chèn thêm làm các dòng sau lệch, nay cập nhật về `interview_questions` :52-76 (`status` :65, `follow_up_questions` :64, `suggested_approach`/`sample_answer_framework`/`core_keywords` :61-63, `title` :59), `answer_rubrics` :78-96 (`criterion_code` :89, `description` :90, `weight_percent` :91, unique :94), mục 1.8 `question_sets` :179-185; (2) bản dựng `interview-question-authoring-view.tsx` lệch sau khi bỏ nhãn trạng thái lưu, nay cập nhật toàn bộ số dòng; `entities/interview-question/index.ts` không còn `QUESTION_LEVELS` mà có `useInterviewLevels`; Sheet 4.4 bỏ "trạng thái lưu" khỏi thanh đầu trang; (3) sửa dẫn chiếu Câu hỏi mở sai số: "xem Q8" (không có Q8) thành Q6 (gợi ý tên tiêu chí) và Q7 (mô tả tiêu chí); "Q3" của popup xem trước thành Q2; "Q5" của ba trường F6-04/05/06 thành Q3; dẫn chiếu "`database/interview-bank.md` mục 7" của Q6 không còn đúng nên đánh dấu `[SoT: Suy luận]`; (4) **đóng Q9** theo bản dựng: quản lý độ khó mở từ popup ở `SHR0301` (chỉ ADMIN), màn soạn không có liên kết; (5) ghi khoá mức độ khó ở ô chọn là slug chữ hoa (`EASY`/`MEDIUM`/`HARD`, mức mới dạng `VERY_HARD`). Không đổi NO/EVT/Q | 2026/10/03 | AI |
+| V0.9 | Sheet 4, 5, 7, 8 | Đồng bộ chốt 2026-10-03 (`DEC-2026-1001-admin-configurable-settings` mục 6, Round 5): **độ khó là danh mục do ADMIN quản lý** (bảng `question_levels`, `02-bd/database/F6_interview-bank.md:30-50`), không còn enum cố định `EASY`/`MEDIUM`/`HARD`; ba mức Dễ/Trung bình/Khó chỉ là dữ liệu khởi tạo. Ô "Độ khó" (Sheet 5 Nhóm 1 NO 3) là ô chọn đọc từ `question_levels` qua `ListQuestionLevels`; màn này không tạo, đổi tên hay xoá mức. DTO đổi `difficulty` thành `levelId` (kèm `QuestionLevelDto.displayName` để hiện nhãn); cột DB `difficulty` thay bằng `level_id` FK. Thêm `ListQuestionLevels` vào tải màn (Sheet 8) và bảng `question_levels` vào Sheet 4.3, 7.2. Giá trị mặc định: mức đầu theo `sort_order` `[SoT: Suy luận]` (thay cho `MEDIUM` cố định, vì mức có thể bị xoá). Làm mới dẫn chiếu dòng `02-bd/database/F6_interview-bank.md` (bảng `question_levels` chèn thêm nên `interview_questions` lệch dòng). Các hành vi khác giữ nguyên | 2026/10/03 | AI |
+| V0.10 | Sheet 4, 5, 7, 8, Câu hỏi mở | Làm mới và kiểm chứng toàn bộ dẫn chiếu `file:line` (2026-10-03): (1) `02-bd/database/F6_interview-bank.md` — mục 1.1a `question_levels` chèn thêm làm các dòng sau lệch, nay cập nhật về `interview_questions` :52-76 (`status` :65, `follow_up_questions` :64, `suggested_approach`/`sample_answer_framework`/`core_keywords` :61-63, `title` :59), `answer_rubrics` :78-96 (`criterion_code` :89, `description` :90, `weight_percent` :91, unique :94), mục 1.8 `question_sets` :179-185; (2) bản dựng `interview-question-authoring-view.tsx` lệch sau khi bỏ nhãn trạng thái lưu, nay cập nhật toàn bộ số dòng; `entities/interview-question/index.ts` không còn `QUESTION_LEVELS` mà có `useInterviewLevels`; Sheet 4.4 bỏ "trạng thái lưu" khỏi thanh đầu trang; (3) sửa dẫn chiếu Câu hỏi mở sai số: "xem Q8" (không có Q8) thành Q6 (gợi ý tên tiêu chí) và Q7 (mô tả tiêu chí); "Q3" của popup xem trước thành Q2; "Q5" của ba trường F6-04/05/06 thành Q3; dẫn chiếu "`database/F6_interview-bank.md` mục 7" của Q6 không còn đúng nên đánh dấu `[SoT: Suy luận]`; (4) **đóng Q9** theo bản dựng: quản lý độ khó mở từ popup ở `SHR0301` (chỉ ADMIN), màn soạn không có liên kết; (5) ghi khoá mức độ khó ở ô chọn là slug chữ hoa (`EASY`/`MEDIUM`/`HARD`, mức mới dạng `VERY_HARD`). Không đổi NO/EVT/Q | 2026/10/03 | AI |
 | V0.11 | Sheet 3, 4, 5, 6, 7, 8, 9 | Owner chốt 2026-10-08: **bỏ "Nhân bản" câu hỏi** khỏi màn soạn (khối "Hành động quản trị" chỉ còn "Xoá mềm"). Gạch bỏ giữ số: Sheet 3 chuyển màn, sơ đồ mermaid, Sheet 5 NO 1 của khối quản trị, Sheet 6, Sheet 7 endpoint `DuplicateInterviewQuestion`, Sheet 9 EVT-12; dịch cite `file:dòng` vào view (`:312-325`, `:329-342`) sau khi bỏ nút (`interview-question-authoring-view.tsx`); xoá khoá i18n `duplicate`, `toast.duplicated`; `group4Subtitle` còn "Ngừng dùng câu hỏi này". |
 | V0.12 | Sheet 3, 4 (4.1, 4.4), 5 (Nhóm 1, Nhóm 3), 6, 7 (7.1), 8, 9, Câu hỏi mở | Sửa 2026-10-22 đồng bộ DB, `DEC-2026-1022-interview-bank-schema-sync`: (1) Q5 đóng: `title` là trường câu hỏi ngắn bắt buộc (VARCHAR(255)), `content_markdown` là mô tả thêm tuỳ chọn (mục 4); Sheet 5 Nhóm 1 NO 1 đổi thành "Câu hỏi" ánh xạ `title`, thêm NO 4 "Mô tả thêm" ánh xạ `content_markdown`; Sheet 6, 7.1, 9 đổi theo; (2) `display_no` (IB-01, mục 1): tiêu đề "Sửa câu hỏi {mã}" là `IQ-%03d` của `display_no`, thêm DTO `displayNo` (7.1 NO 13), tham số route là `id`; (3) `answer_rubrics.sort_order` thành cột của danh sách tiêu chí, `criterion_code` ghi rõ là tên tự gõ, VARCHAR(100), duy nhất không phân biệt hoa thường; `description` ghi nullable; (4) Q3 ghi nhận ba trường chỉ qua CSV, `core_keywords` JSONB; (5) dời số dòng trích dẫn vào DB doc interview-bank (`:206-212`, `:66`, `:62-64`, `:65`, `:8-145`, `:90`, `:88`, `:89`). **Không đổi:** Q6 (seed tiêu chí gợi ý, còn mở), Q7 (giữ mở, đề xuất giữ NULL). Giao diện không đổi | 2026/10/22 | Claude |
 | V0.13 | Sheet 9 (NO 2), Câu hỏi mở (Q3, Q7) | Sửa 2026-10-22 (đồng bộ DB vòng 2, DEC-2026-1022-db-sync-round2) mục 13: (1) Sheet 9 NO 2 đổi câu lỗi thành "Câu hỏi không được để trống." cho khớp ô "Câu hỏi" (`title`); (2) đóng Q3: `suggested_approach`, `sample_answer_framework`, `core_keywords` chỉ nhập qua CSV ở `SHR0301`, không thêm Nhóm 5; (3) đóng Q7: `answer_rubrics.description` giữ NULL, không có ô nhập. **Không đổi:** giao diện | 2026/10/22 | Claude |
-| V0.14 | Câu hỏi mở (Q5) | Sửa 2026-10-23 (rà DB theo 3 actor, `DEC-2026-1023-db-actor-review-fixes`): đối chiếu lại Q5 với `02-bd/database/interview-bank.md:60-61`: `title` là trường "câu hỏi" ngắn bắt buộc (VARCHAR(255) NOT NULL), `content_markdown` là mô tả thêm tuỳ chọn; Q5 giữ trạng thái đã đóng, không còn nội dung lệch. **Không đổi:** giao diện, NO, EVT | 2026/10/23 | Claude |
+| V0.14 | Câu hỏi mở (Q5) | Sửa 2026-10-23 (rà DB theo 3 actor, `DEC-2026-1023-db-actor-review-fixes`): đối chiếu lại Q5 với `02-bd/database/F6_interview-bank.md:60-61`: `title` là trường "câu hỏi" ngắn bắt buộc (VARCHAR(255) NOT NULL), `content_markdown` là mô tả thêm tuỳ chọn; Q5 giữ trạng thái đã đóng, không còn nội dung lệch. **Không đổi:** giao diện, NO, EVT | 2026/10/23 | Claude |
 | V0.15 | Câu hỏi mở Q2 | Sửa 2026/10/23 (`DEC-2026-1023-open-questions-closed`): đóng Q2, popup "Xem như học viên" dựng từ form chưa lưu, không gọi API. Không đổi giao diện | 2026/10/23 | Claude |
 
 ---
@@ -188,7 +188,7 @@
 
 [Khi huỷ] Đóng popup, giữ nguyên màn biên soạn.
 
-[Nguồn: 01-rd/screens/shared/SHR0302_interview_question_authoring.md:44, 72-73; 02-bd/database/interview-bank.md:66]
+[Nguồn: 01-rd/screens/shared/SHR0302_interview_question_authoring.md:44, 72-73; 02-bd/database/F6_interview-bank.md:66]
 
 #### Biên soạn câu hỏi phỏng vấn → Popup Xem như học viên
 
@@ -260,7 +260,7 @@ F6-13].
    khi thiếu tiêu chí (bị ẩn khỏi Chế độ luyện, vẫn hiện ở Chế độ học).
 
 [Người dùng] A2 (Giảng viên) hoặc A3 (Quản trị viên) đã đăng nhập, có Function `INTERVIEW_BANK_MANAGEMENT`
-[Nguồn: 01-rd/req/identity.md:60, F1-12].
+[Nguồn: 01-rd/req/F1_identity.md:60, F1-12].
 
 [Tệp liên quan] Không có. Màn này không xuất hay nhập tệp.
 
@@ -277,26 +277,26 @@ F6-13].
 - Khối "Hành động quản trị" (Nhóm 4, chỉ còn Xoá mềm; Nhân bản đã bỏ 2026-10-08) là một khối riêng ở cột hẹp bên phải, **chỉ hiển thị ở
   chế độ sửa**, không phải menu ngữ cảnh ở thanh đầu trang [Nguồn: 05-coding/frontend/src/views/shared/interview-question-authoring/ui/interview-question-authoring-view.tsx:312-325].
 - Không thiết kế bảng "bộ câu hỏi" (`question_sets`) — đã loại khỏi phạm vi 2026-09-13
-  [Nguồn: 02-bd/database/interview-bank.md:206-212].
+  [Nguồn: 02-bd/database/F6_interview-bank.md:206-212].
 - Ba trường `suggested_approach`/`sample_answer_framework`/`core_keywords` (F6-04/05/06) tồn tại trong
   bảng `interview_questions` nhưng **không có nhóm trường nào ở màn này biên soạn chúng** — RD chỉ chốt
   4 nhóm và bản dựng UI hiện tại cũng không có control cho ba trường này. Đây là một phát hiện, không phải
   suy đoán "chắc có cột" — ghi thành Câu hỏi mở Q3
-  [Nguồn: 01-rd/screens/shared/SHR0302_interview_question_authoring.md:49-71; 02-bd/database/interview-bank.md:62-64].
+  [Nguồn: 01-rd/screens/shared/SHR0302_interview_question_authoring.md:49-71; 02-bd/database/F6_interview-bank.md:62-64].
 
 [Quyền sử dụng]
 - Xem: được, khi có Function `INTERVIEW_BANK_MANAGEMENT`.
 - Thêm: được (tạo câu hỏi mới; không còn đường Nhân bản từ 2026-10-08).
 - Sửa: được, toàn bộ ngân hàng, không giới hạn theo `created_by`.
 - Xoá: không xoá vật lý. Chuyển trạng thái `RETIRED`, không cascade xoá `user_answers`/`recall_ratings` đã
-  có [Nguồn: 02-bd/database/interview-bank.md:66, 94-96].
+  có [Nguồn: 02-bd/database/F6_interview-bank.md:66, 94-96].
 
 [Số bản ghi tối đa] Nhóm 2 (câu hỏi đào sâu): không giới hạn số dòng, RD chỉ chốt "không giới hạn số
 lượng" [Nguồn: 01-rd/screens/shared/SHR0302_interview_question_authoring.md:65-68]. Nhóm 3 (tiêu chí đánh giá):
 không giới hạn số dòng, RD không nêu trần (đã chốt 2026-10-01, xem Q4). Không phân trang — màn chỉ sửa một bản ghi tại một thời điểm.
 
-[Nguồn: 01-rd/screens/shared/SHR0302_interview_question_authoring.md:13-23, 49-76; 02-bd/database/interview-bank.md:8-145;
-01-rd/req/identity.md:55-60]
+[Nguồn: 01-rd/screens/shared/SHR0302_interview_question_authoring.md:13-23, 49-76; 02-bd/database/F6_interview-bank.md:8-145;
+01-rd/req/F1_identity.md:55-60]
 
 ### 4.2 DTO liên quan
 
@@ -305,19 +305,19 @@ không giới hạn số dòng, RD không nêu trần (đã chốt 2026-10-01, x
 - `QuestionTopicDto`
 - `QuestionLevelDto`
 
-`[Suy luận]` — tên DTO do BD này đề xuất, `03-dd/api/interview-bank.md` chốt lại.
+`[Suy luận]` — tên DTO do BD này đề xuất, `03-dd/api/F6_interview-bank.md` chốt lại.
 
 ### 4.3 Bảng dữ liệu liên quan (4)
 
 | NO | Bảng | Ghi chú |
 | --: | :--- | :--- |
-| 1 | `interview_bank.interview_questions` | [Nguồn: 02-bd/database/interview-bank.md:52-76] |
-| 2 | `interview_bank.answer_rubrics` | [Nguồn: 02-bd/database/interview-bank.md:78-96] |
-| 3 | `interview_bank.question_topics` | Danh mục chỉ đọc ở màn này; ADMIN quản lý (thêm, đổi tên, sắp xếp, xoá) ở popup "Quản lý chủ đề" của `SHR0301`, không có thao tác ghi từ màn soạn [Nguồn: 02-bd/database/interview-bank.md:8-28] |
-| 4 | `interview_bank.question_levels` | Danh mục độ khó chỉ đọc ở màn này; ADMIN quản lý (thêm, đổi tên, sắp xếp, xoá), không có thao tác ghi từ màn soạn [Nguồn: 02-bd/database/interview-bank.md:30-50] |
+| 1 | `interview_bank.interview_questions` | [Nguồn: 02-bd/database/F6_interview-bank.md:52-76] |
+| 2 | `interview_bank.answer_rubrics` | [Nguồn: 02-bd/database/F6_interview-bank.md:78-96] |
+| 3 | `interview_bank.question_topics` | Danh mục chỉ đọc ở màn này; ADMIN quản lý (thêm, đổi tên, sắp xếp, xoá) ở popup "Quản lý chủ đề" của `SHR0301`, không có thao tác ghi từ màn soạn [Nguồn: 02-bd/database/F6_interview-bank.md:8-28] |
+| 4 | `interview_bank.question_levels` | Danh mục độ khó chỉ đọc ở màn này; ADMIN quản lý (thêm, đổi tên, sắp xếp, xoá), không có thao tác ghi từ màn soạn [Nguồn: 02-bd/database/F6_interview-bank.md:30-50] |
 
 "Câu hỏi đào sâu" (Nhóm 2) là cột `follow_up_questions` (JSONB mảng chuỗi) bên trong `interview_questions`,
-**không phải một bảng riêng** [Nguồn: 02-bd/database/interview-bank.md:65].
+**không phải một bảng riêng** [Nguồn: 02-bd/database/F6_interview-bank.md:65].
 
 ### 4.4 Vùng bố cục
 
@@ -328,7 +328,7 @@ cố định, có thể đổi khi có DD/prototype chính thức.
 
 | Vùng | Vị trí trong bản dựng UI | Nội dung |
 | :--- | :--- | :--- |
-| Thanh đầu trang | `interview-question-authoring-view.tsx:155-167` | Nút quay lại (biểu tượng mũi tên, bên trái tiêu đề, tooltip "Quay lại"); tiêu đề "Soạn câu hỏi phỏng vấn" (tạo mới) hoặc "Sửa câu hỏi {mã}" (sửa, `{mã}` là `IQ-%03d` của `interview_questions.display_no`, [Nguồn: 02-bd/database/interview-bank.md:57]); bên phải: nút "Xem như học viên" (biểu tượng mắt, tooltip), nút "Lưu" duy nhất |
+| Thanh đầu trang | `interview-question-authoring-view.tsx:155-167` | Nút quay lại (biểu tượng mũi tên, bên trái tiêu đề, tooltip "Quay lại"); tiêu đề "Soạn câu hỏi phỏng vấn" (tạo mới) hoặc "Sửa câu hỏi {mã}" (sửa, `{mã}` là `IQ-%03d` của `interview_questions.display_no`, [Nguồn: 02-bd/database/F6_interview-bank.md:57]); bên phải: nút "Xem như học viên" (biểu tượng mắt, tooltip), nút "Lưu" duy nhất |
 | Cột rộng — Khối Nội dung câu hỏi (phần nội dung của Nhóm 1) | `:171-179` | Bản dựng hiện chỉ có một textarea; theo DB đã chốt 2026-10-22 khối này gồm hai ô: Câu hỏi ngắn (`title`) và Mô tả thêm (`content_markdown`, tuỳ chọn), xem Sheet 5 Nhóm 1 NO 1 và NO 4 (ghi nợ prototype) |
 | Cột rộng — Khối 2, Câu hỏi đào sâu | `:181-216` | Danh sách dòng văn bản tự do, nút thêm dòng, nút xoá từng dòng |
 | Cột rộng — Khối 3, Bộ tiêu chí đánh giá | `:218-285` | Tổng trọng số, danh sách tiêu chí (tên, trọng số dạng stepper), nút thêm/xoá tiêu chí |
@@ -380,10 +380,10 @@ Next.js theo DD; không quy định màu sắc, khoảng cách hay typography �
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Nhóm 1 — Nội dung và phân loại | | | | | | | | | | | | | |
-| | 1 | Câu hỏi | `interviewQuestionAuthoring.content.title` | `interview_questions` | `title` | TextBox | String | 255 | Có | I/O | rỗng | Văn bản ngắn một dòng | Câu hỏi phỏng vấn ngắn, là trường "câu hỏi" chính (cùng với cột `question` của tệp CSV nhập). Từ 2026-10-22 thay cho ô nội dung Markdown vốn ánh xạ `content_markdown`<br>[Nguồn giá trị] Cột `title` `VARCHAR(255) NOT NULL` [Nguồn: 02-bd/database/interview-bank.md:60]; `DEC-2026-1022-interview-bank-schema-sync` mục 4<br>[EVT liên quan] EVT-4 |
+| | 1 | Câu hỏi | `interviewQuestionAuthoring.content.title` | `interview_questions` | `title` | TextBox | String | 255 | Có | I/O | rỗng | Văn bản ngắn một dòng | Câu hỏi phỏng vấn ngắn, là trường "câu hỏi" chính (cùng với cột `question` của tệp CSV nhập). Từ 2026-10-22 thay cho ô nội dung Markdown vốn ánh xạ `content_markdown`<br>[Nguồn giá trị] Cột `title` `VARCHAR(255) NOT NULL` [Nguồn: 02-bd/database/F6_interview-bank.md:60]; `DEC-2026-1022-interview-bank-schema-sync` mục 4<br>[EVT liên quan] EVT-4 |
 | | 2 | Chủ đề | `interviewQuestionAuthoring.content.topic` | `interview_questions` | `topic_id` | List | String | - | Có | I/O | Chủ đề đầu theo `sort_order` | Nhãn tiếng Việt | Chọn 1 chủ đề trong danh mục; số lựa chọn không cố định vì ADMIN thêm/xoá chủ đề được. A2 không có đường tạo chủ đề tại màn này; ADMIN thấy liên kết "Quản lý chủ đề" dẫn về `SHR0301`<br>[Nguồn giá trị] Danh mục `question_topics` đọc qua `ListQuestionTopics`, sắp theo `sort_order` (5 chủ đề khởi tạo: `CS_THEORY`, `SYSTEM_DESIGN`, `DATABASE`, `LANGUAGE`, `BEHAVIORAL`)<br>[EVT liên quan] EVT-4 |
 | | 3 | Độ khó | `interviewQuestionAuthoring.content.level` | `interview_questions` | `level_id` | List | String | - | Có | I/O | Mức đầu theo `sort_order` `[SoT: Suy luận]` | Nhãn tiếng Việt | Chọn 1 mức trong danh mục; số lựa chọn không cố định vì ADMIN thêm/xoá mức được (không giới hạn trên). Màn này không có đường tạo mức; ADMIN quản lý danh mục ở popup "Quản lý độ khó" của `SHR0301` (chỉ ADMIN), màn soạn không có liên kết tới đó (xem Q9, đã đóng). Giá trị ô chọn là `key` của mức: slug chữ hoa, ba mức khởi tạo `EASY`/`MEDIUM`/`HARD`, mức ADMIN thêm sinh slug dạng `VERY_HARD`; nhãn hiện là `label` [Nguồn: 05-coding/frontend/src/views/shared/interview-question-authoring/ui/interview-question-authoring-view.tsx:299-304; 05-coding/frontend/src/entities/interview-question/model/level-store.ts:24-33; 05-coding/frontend/src/shared/lib/managed-list-store.ts:24]<br>[Nguồn giá trị] Danh mục `question_levels` đọc qua `ListQuestionLevels`, sắp theo `sort_order` (3 mức khởi tạo: `EASY`, `MEDIUM`, `HARD`)<br>[EVT liên quan] EVT-4 |
-| | 4 | Mô tả thêm | `interviewQuestionAuthoring.content.contentMarkdown` | `interview_questions` | `content_markdown` | TextArea | String | - | Không | I/O | rỗng | Markdown | Phần mô tả thêm của câu hỏi, tuỳ chọn; rỗng thì lưu NULL. Ô cũ "Nội dung câu hỏi" (bắt buộc) nay là "Câu hỏi" ở NO 1<br>[Nguồn giá trị] Cột `content_markdown` `TEXT` nullable [Nguồn: 02-bd/database/interview-bank.md:61]<br>[EVT liên quan] EVT-4 |
+| | 4 | Mô tả thêm | `interviewQuestionAuthoring.content.contentMarkdown` | `interview_questions` | `content_markdown` | TextArea | String | - | Không | I/O | rỗng | Markdown | Phần mô tả thêm của câu hỏi, tuỳ chọn; rỗng thì lưu NULL. Ô cũ "Nội dung câu hỏi" (bắt buộc) nay là "Câu hỏi" ở NO 1<br>[Nguồn giá trị] Cột `content_markdown` `TEXT` nullable [Nguồn: 02-bd/database/F6_interview-bank.md:61]<br>[EVT liên quan] EVT-4 |
 
 ### Khu vực C — Nhóm 2: Câu hỏi đào sâu
 
@@ -401,8 +401,8 @@ Next.js theo DD; không quy định màu sắc, khoảng cách hay typography �
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Nhóm 3 — Bộ tiêu chí đánh giá | | | | | | | | | | | | | |
 | | 1 | Tổng trọng số | `interviewQuestionAuthoring.rubric.totalBadge` | - | - | Badge | Number | 3 | - | O | - | `Tổng {số}%` | Chỉ hiển thị khi có ít nhất một tiêu chí; đổi sang màu đỏ khi tổng khác 100 (dấu hiệu duy nhất trên trang, lý do chi tiết nằm ở toast khi bấm Lưu) [Nguồn: 05-coding/frontend/src/views/shared/interview-question-authoring/ui/interview-question-authoring-view.tsx:223-231]<br>[Công thức] Cộng `weight_percent` của mọi dòng đang hiển thị<br>[EVT liên quan] EVT-9 |
-| | 2 | Danh sách tiêu chí | `interviewQuestionAuthoring.rubric.list` | `answer_rubrics` | `sort_order` | List | List | - | - | I/O | 0 dòng | - | Câu hỏi thiếu tiêu chí vẫn lưu được hợp lệ, chỉ bị ẩn khỏi Chế độ luyện. Thứ tự dòng trên form được ghi thành `sort_order` (SMALLINT NOT NULL, unique `(question_id, sort_order)`), nhờ đó thứ tự hiện trên màn học viên ổn định [Nguồn: 02-bd/database/interview-bank.md:91,94]<br>[Nguồn giá trị] Các dòng `answer_rubrics` theo `question_id`, sắp theo `sort_order`<br>[EVT liên quan] EVT-7, EVT-8, EVT-9 |
-| | 3 | Tên/mã tiêu chí | `interviewQuestionAuthoring.rubric.col.criterionCode` | `answer_rubrics` | `criterion_code` | TextBox | String | 100 | Có | I/O | rỗng | - | A2/A3 tự gõ tên tiêu chí, **không phải slug**, hiện nguyên văn cho học viên; không có danh mục gợi ý sẵn — xem Q6. Duy nhất không phân biệt hoa thường trong cùng câu hỏi (unique `(question_id, lower(criterion_code))`)<br>[Nguồn giá trị] Cột `criterion_code` `VARCHAR(100) NOT NULL`, người dùng nhập [Nguồn: 02-bd/database/interview-bank.md:88,94]<br>[EVT liên quan] EVT-4 |
+| | 2 | Danh sách tiêu chí | `interviewQuestionAuthoring.rubric.list` | `answer_rubrics` | `sort_order` | List | List | - | - | I/O | 0 dòng | - | Câu hỏi thiếu tiêu chí vẫn lưu được hợp lệ, chỉ bị ẩn khỏi Chế độ luyện. Thứ tự dòng trên form được ghi thành `sort_order` (SMALLINT NOT NULL, unique `(question_id, sort_order)`), nhờ đó thứ tự hiện trên màn học viên ổn định [Nguồn: 02-bd/database/F6_interview-bank.md:91,94]<br>[Nguồn giá trị] Các dòng `answer_rubrics` theo `question_id`, sắp theo `sort_order`<br>[EVT liên quan] EVT-7, EVT-8, EVT-9 |
+| | 3 | Tên/mã tiêu chí | `interviewQuestionAuthoring.rubric.col.criterionCode` | `answer_rubrics` | `criterion_code` | TextBox | String | 100 | Có | I/O | rỗng | - | A2/A3 tự gõ tên tiêu chí, **không phải slug**, hiện nguyên văn cho học viên; không có danh mục gợi ý sẵn — xem Q6. Duy nhất không phân biệt hoa thường trong cùng câu hỏi (unique `(question_id, lower(criterion_code))`)<br>[Nguồn giá trị] Cột `criterion_code` `VARCHAR(100) NOT NULL`, người dùng nhập [Nguồn: 02-bd/database/F6_interview-bank.md:88,94]<br>[EVT liên quan] EVT-4 |
 | | 4 | Trọng số | `interviewQuestionAuthoring.rubric.col.weightPercent` | `answer_rubrics` | `weight_percent` | NumberBox | Number | 5 | Có | I/O | 0 | `{số}%`, bước nhảy 5 | Stepper dùng chung `shared/ui/NumberStepper`, khoảng 0-100, bước nhảy mặc định 5<br>[Nguồn giá trị] Cột `weight_percent`<br>[EVT liên quan] EVT-9 |
 | | 5 | Thêm tiêu chí | `interviewQuestionAuthoring.rubric.btnAdd` | - | - | Button | - | - | - | I | - | - | Thêm một dòng tiêu chí trống (trọng số mặc định 0)<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-7 |
 | | 6 | Xoá tiêu chí | `interviewQuestionAuthoring.rubric.btnRemove` | - | - | Button | - | - | - | I | - | - | Xoá dòng tiêu chí tương ứng<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-8 |
@@ -433,7 +433,7 @@ Next.js theo DD; không quy định màu sắc, khoảng cách hay typography �
 | | 2 | Xác nhận | `interviewQuestionAuthoring.popup.softDeleteConfirm` | - | - | Button | - | - | - | I | - | - | Xác nhận xoá mềm<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-14 |
 | | 3 | Huỷ | `interviewQuestionAuthoring.popup.softDeleteCancel` | - | - | Button | - | - | - | I | - | - | Đóng popup, giữ nguyên câu hỏi<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-15 |
 
-[Nguồn: 01-rd/screens/shared/SHR0302_interview_question_authoring.md:53-73; 02-bd/database/interview-bank.md:8-145;
+[Nguồn: 01-rd/screens/shared/SHR0302_interview_question_authoring.md:53-73; 02-bd/database/F6_interview-bank.md:8-145;
 05-coding/frontend/src/views/shared/interview-question-authoring/ui/interview-question-authoring-view.tsx:139-151, 155-346]
 
 ---
@@ -523,8 +523,8 @@ Next.js theo DD; không quy định màu sắc, khoảng cách hay typography �
 | 1 | `InterviewQuestionDto` | `id` | UUID | `interview_questions` | `id` | - | Không | [Nguồn] Phản hồi của `GetInterviewQuestionDetail`<br>[Đích] Tham số của `UpdateInterviewQuestion`, `RetireInterviewQuestion`. Không hiển thị trên màn. |
 | 2 | `InterviewQuestionDto` | `topicId` | UUID | `interview_questions` | `topic_id` | Nhóm 1 "Chủ đề" | Có | [Nguồn] Phản hồi của `GetInterviewQuestionDetail` hoặc `ListQuestionTopics`<br>[Chuyển đổi] Khoá tra `QuestionTopicDto.displayName` khi hiển thị. |
 | 3 | `InterviewQuestionDto` | `levelId` | UUID | `interview_questions` | `level_id` | Nhóm 1 "Độ khó" | Có | [Nguồn] Phản hồi của `GetInterviewQuestionDetail` hoặc `ListQuestionLevels`<br>[Chuyển đổi] Khoá tra `QuestionLevelDto.displayName` khi hiển thị. Thay cho `difficulty` enum (trước 2026-10-03). |
-| 4 | `InterviewQuestionDto` | `title` | String | `interview_questions` | `title` | Nhóm 1 "Câu hỏi" | Có | [Nguồn] Người dùng nhập, bắt buộc, tối đa 255 ký tự [Nguồn: 02-bd/database/interview-bank.md:60]<br>[Đích] Tham số của `CreateInterviewQuestion`/`UpdateInterviewQuestion`<br>[Chuyển đổi] Là dữ liệu, không ghép chuỗi thành chỉ thị AI. Q5 đã đóng 2026-10-22. |
-| 5 | `InterviewQuestionDto` | `contentMarkdown` | String | `interview_questions` | `content_markdown` | Nhóm 1 "Mô tả thêm" | Không | [Nguồn] Giá trị người dùng nhập, tuỳ chọn (cột nullable, rỗng lưu NULL) [Nguồn: 02-bd/database/interview-bank.md:61]<br>[Đích] Tham số của `CreateInterviewQuestion`/`UpdateInterviewQuestion`<br>[Chuyển đổi] Nội dung người dùng nhập là **dữ liệu**, không ghép chuỗi thành chỉ thị AI — cùng nguyên tắc chống prompt-injection của `02-bd/architecture/interview-bank.md` mục 5. |
+| 4 | `InterviewQuestionDto` | `title` | String | `interview_questions` | `title` | Nhóm 1 "Câu hỏi" | Có | [Nguồn] Người dùng nhập, bắt buộc, tối đa 255 ký tự [Nguồn: 02-bd/database/F6_interview-bank.md:60]<br>[Đích] Tham số của `CreateInterviewQuestion`/`UpdateInterviewQuestion`<br>[Chuyển đổi] Là dữ liệu, không ghép chuỗi thành chỉ thị AI. Q5 đã đóng 2026-10-22. |
+| 5 | `InterviewQuestionDto` | `contentMarkdown` | String | `interview_questions` | `content_markdown` | Nhóm 1 "Mô tả thêm" | Không | [Nguồn] Giá trị người dùng nhập, tuỳ chọn (cột nullable, rỗng lưu NULL) [Nguồn: 02-bd/database/F6_interview-bank.md:61]<br>[Đích] Tham số của `CreateInterviewQuestion`/`UpdateInterviewQuestion`<br>[Chuyển đổi] Nội dung người dùng nhập là **dữ liệu**, không ghép chuỗi thành chỉ thị AI — cùng nguyên tắc chống prompt-injection của `02-bd/architecture/F6_interview-bank.md` mục 5. |
 | 6 | `InterviewQuestionDto` | `followUpQuestions` | `String[]` | `interview_questions` | `follow_up_questions` | Nhóm 2 "Danh sách câu hỏi đào sâu" | Có | [Nguồn] Giá trị người dùng nhập, mỗi phần tử một dòng<br>[Đích] Tham số của `CreateInterviewQuestion`/`UpdateInterviewQuestion`. |
 | 7 | `InterviewQuestionDto` | `status` | Enum | `interview_questions` | `status` | Nhóm 4 "Xoá mềm" | Không | [Nguồn] Phản hồi của `GetInterviewQuestionDetail`<br>[Đích] Tham số của `RetireInterviewQuestion` đổi sang `RETIRED`. Không hiển thị trực tiếp, chỉ quyết định hiển thị Nhóm 4. |
 | 8 | `AnswerRubricDto` | `questionId` | UUID | `answer_rubrics` | `question_id` | - | Không | [Nguồn] `id` của câu hỏi đang biên soạn<br>[Đích] Tham số của `CreateInterviewQuestion`/`UpdateInterviewQuestion` (gửi kèm danh sách tiêu chí). |
@@ -533,7 +533,7 @@ Next.js theo DD; không quy định màu sắc, khoảng cách hay typography �
 | 11 | `AnswerRubricDto` | `weightPercent` | Number | `answer_rubrics` | `weight_percent` | Nhóm 3 "Trọng số" | Có | [Nguồn] Giá trị người dùng chỉnh bằng stepper hoặc nhập trực tiếp<br>[Đích] Tham số của `CreateInterviewQuestion`/`UpdateInterviewQuestion`<br>[Chuyển đổi] Gửi lên dạng số, không kèm ký hiệu phần trăm. |
 | 12a | `QuestionLevelDto` | `id`, `code`, `displayName` | UUID, String, String | `question_levels` | `id`, `code`, `display_name` | Nhóm 1 "Độ khó" (danh sách chọn) | Có | [Nguồn] Phản hồi của `ListQuestionLevels`, danh mục chỉ đọc ở màn này; `code` là slug (3 mức khởi tạo mang mã `EASY`/`MEDIUM`/`HARD`). Tên DTO do BD đề xuất `[SoT: Suy luận]`. |
 | 12 | `QuestionTopicDto` | `id`, `code`, `displayName` | UUID, String, String | `question_topics` | `id`, `code`, `display_name` | Nhóm 1 "Chủ đề" (danh sách chọn) | Có | [Nguồn] Phản hồi của `ListQuestionTopics`, danh mục chỉ đọc ở màn này, đọc từ dữ liệu do ADMIN quản lý (không còn 5 dòng cố định); `code` là slug, không còn enum. |
-| 13 | `InterviewQuestionDto` | `displayNo` | Number | `interview_questions` | `display_no` | Thanh đầu trang "Sửa câu hỏi {mã}" | Có | [Nguồn] Phản hồi của `GetInterviewQuestionDetail`, chỉ đọc; giao diện ghép thành `IQ-%03d`. Không gửi lên khi lưu, do sequence ở máy chủ gán lúc tạo [Nguồn: 02-bd/database/interview-bank.md:57] |
+| 13 | `InterviewQuestionDto` | `displayNo` | Number | `interview_questions` | `display_no` | Thanh đầu trang "Sửa câu hỏi {mã}" | Có | [Nguồn] Phản hồi của `GetInterviewQuestionDetail`, chỉ đọc; giao diện ghép thành `IQ-%03d`. Không gửi lên khi lưu, do sequence ở máy chủ gán lúc tạo [Nguồn: 02-bd/database/F6_interview-bank.md:57] |
 
 ### 7.2 Truy cập bảng dữ liệu (4)
 
@@ -545,13 +545,13 @@ Next.js theo DD; không quy định màu sắc, khoảng cách hay typography �
 | 3a | Danh mục độ khó | `interview_bank.question_levels` | `QuestionLevelRepository` | R | Đọc danh mục độ khó, không có thao tác ghi từ màn này | `ListQuestionLevels`: R |
 
 Không có thao tác xoá vật lý (`D`) trên `interview_questions`: chuyển `status` sang `RETIRED`, không cascade
-xoá `answer_rubrics`, `user_answers`, `recall_ratings` đã có [Nguồn: 02-bd/database/interview-bank.md:66, 94-96].
+xoá `answer_rubrics`, `user_answers`, `recall_ratings` đã có [Nguồn: 02-bd/database/F6_interview-bank.md:66, 94-96].
 
 `[Suy luận]` — tên repository do BD này đề xuất, DD module `interview-bank` chốt lại.
 
 ### 7.3 Danh sách endpoint [Nội bộ]
 
-> Chỉ tên nghiệp vụ và BC sở hữu. Hợp đồng chi tiết thuộc `03-dd/api/interview-bank.md`.
+> Chỉ tên nghiệp vụ và BC sở hữu. Hợp đồng chi tiết thuộc `03-dd/api/F6_interview-bank.md`.
 
 | NO | Endpoint (tên nghiệp vụ) | Mục đích | BC sở hữu |
 | --: | :--- | :--- | :--- |
@@ -566,7 +566,7 @@ xoá `answer_rubrics`, `user_answers`, `recall_ratings` đã có [Nguồn: 02-bd
 Không có endpoint riêng cho popup "Xem như học viên" ở đợt này — xem trước dùng dữ liệu form hiện tại,
 không gọi máy chủ (đề xuất, chưa chốt — xem Q2).
 
-[Nguồn: 02-bd/database/interview-bank.md:8-145]
+[Nguồn: 02-bd/database/F6_interview-bank.md:8-145]
 
 ---
 
@@ -597,7 +597,7 @@ không gọi máy chủ (đề xuất, chưa chốt — xem Q2).
 | 17 | Popup | Đóng xem như học viên | Bấm "Đóng" trong popup xem trước. | Không | Không | - | [Các bước]<br>1. Đóng popup.<br>[Khi thành công] Quay lại màn soạn, dữ liệu form giữ nguyên. |
 
 [Nguồn: 01-rd/screens/shared/SHR0302_interview_question_authoring.md:53-85, 115-119;
-02-bd/database/interview-bank.md:8-145;
+02-bd/database/F6_interview-bank.md:8-145;
 05-coding/frontend/src/views/shared/interview-question-authoring/ui/interview-question-authoring-view.tsx:59-65, 74-137]
 
 ---
@@ -612,15 +612,15 @@ không gọi máy chủ (đề xuất, chưa chốt — xem Q2).
 | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: |
 | 1 | Kiểm quyền | Quyền truy cập màn | [Nội dung kiểm] Người dùng không có Function `INTERVIEW_BANK_MANAGEMENT` thì không được vào màn.<br>[Nơi thực thi] Chặn ở cả tầng định tuyến phía giao diện và tầng phân quyền phía máy chủ. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn không có quyền truy cập chức năng này." | EVT-1, EVT-2 | 1 |
 | 2 | Kiểm nhập liệu | Câu hỏi bắt buộc | [Nội dung kiểm] Ô "Câu hỏi" (`title`) rỗng hoặc dài quá 255 ký tự thì không cho lưu; "Mô tả thêm" (`content_markdown`) được để trống.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Viền ô + toast; ô câu hỏi. | Lỗi | Chưa có mã thông báo | Nội dung "Câu hỏi không được để trống." | EVT-10, EVT-11 | 1 |
-| 3 | Kiểm nhập liệu | Tổng trọng số bộ tiêu chí | [Nội dung kiểm] Có ít nhất một dòng tiêu chí mà tổng trọng số khác 100 thì không cho lưu; Nhóm 3 trống thì không kiểm mục này.<br>[Nơi thực thi] Kiểm ở màn hình khi đổi trọng số, kiểm lại ở máy chủ khi lưu.<br>[Tiêu điểm] Toast khi bấm Lưu lúc nút đang trông mờ; nhãn Tổng trọng số đổi sang màu đỏ (không còn khối chặn lưu trên trang, bỏ 2026-10-03). | Lỗi | Chưa có mã thông báo | Nội dung "Tổng trọng số phải bằng 100%." Máy chủ kiểm lại vì bất biến "tổng bằng 100" thuộc tầng ứng dụng [Nguồn: 02-bd/database/interview-bank.md:91]. | EVT-9, EVT-10, EVT-11 | 2 |
+| 3 | Kiểm nhập liệu | Tổng trọng số bộ tiêu chí | [Nội dung kiểm] Có ít nhất một dòng tiêu chí mà tổng trọng số khác 100 thì không cho lưu; Nhóm 3 trống thì không kiểm mục này.<br>[Nơi thực thi] Kiểm ở màn hình khi đổi trọng số, kiểm lại ở máy chủ khi lưu.<br>[Tiêu điểm] Toast khi bấm Lưu lúc nút đang trông mờ; nhãn Tổng trọng số đổi sang màu đỏ (không còn khối chặn lưu trên trang, bỏ 2026-10-03). | Lỗi | Chưa có mã thông báo | Nội dung "Tổng trọng số phải bằng 100%." Máy chủ kiểm lại vì bất biến "tổng bằng 100" thuộc tầng ứng dụng [Nguồn: 02-bd/database/F6_interview-bank.md:91]. | EVT-9, EVT-10, EVT-11 | 2 |
 | 4 | Kiểm nhập liệu | Khoảng giá trị trọng số | [Nội dung kiểm] Trọng số của một tiêu chí nằm ngoài khoảng 0 đến 100 thì không cho đặt.<br>[Nơi thực thi] Màn hình.<br>[Tiêu điểm] Viền ô + toast; ô trọng số của dòng vi phạm. | Lỗi | Chưa có mã thông báo | Nội dung "Trọng số phải nằm trong khoảng 0 đến 100." Stepper đã chặn sẵn theo `min`/`max` của component; kiểm này phòng trường hợp nhập trực tiếp [Nguồn: 05-coding/frontend/src/shared/ui/primitives/number-stepper.tsx:17-19]. | EVT-9 | 1 |
-| 5 | Kiểm nhập liệu | Tên/mã tiêu chí trùng | [Nội dung kiểm] Hai dòng tiêu chí cùng `criterion_code` trong cùng câu hỏi thì không cho lưu.<br>[Nơi thực thi] Máy chủ.<br>[Tiêu điểm] Viền ô + toast; dòng tiêu chí vi phạm. | Lỗi | Chưa có mã thông báo | Nội dung "Tên tiêu chí bị trùng." Ràng buộc unique `(question_id, criterion_code)` [Nguồn: 02-bd/database/interview-bank.md:94]. | EVT-10, EVT-11 | 3 |
-| 6 | Kiểm nghiệp vụ | Xoá mềm không cascade | [Nội dung kiểm] Xoá mềm chỉ chuyển `status` sang `RETIRED`, không xoá `answer_rubrics`/`user_answers`/`recall_ratings` đã có.<br>[Nơi thực thi] Máy chủ. | Thông tin | Chưa có mã thông báo | Không phải lỗi — là bất biến nghiệp vụ, ghi lại để không nhầm sang xoá vật lý [Nguồn: 02-bd/database/interview-bank.md:66, 94-96]. | EVT-14 | 1 |
+| 5 | Kiểm nhập liệu | Tên/mã tiêu chí trùng | [Nội dung kiểm] Hai dòng tiêu chí cùng `criterion_code` trong cùng câu hỏi thì không cho lưu.<br>[Nơi thực thi] Máy chủ.<br>[Tiêu điểm] Viền ô + toast; dòng tiêu chí vi phạm. | Lỗi | Chưa có mã thông báo | Nội dung "Tên tiêu chí bị trùng." Ràng buộc unique `(question_id, criterion_code)` [Nguồn: 02-bd/database/F6_interview-bank.md:94]. | EVT-10, EVT-11 | 3 |
+| 6 | Kiểm nghiệp vụ | Xoá mềm không cascade | [Nội dung kiểm] Xoá mềm chỉ chuyển `status` sang `RETIRED`, không xoá `answer_rubrics`/`user_answers`/`recall_ratings` đã có.<br>[Nơi thực thi] Máy chủ. | Thông tin | Chưa có mã thông báo | Không phải lỗi — là bất biến nghiệp vụ, ghi lại để không nhầm sang xoá vật lý [Nguồn: 02-bd/database/F6_interview-bank.md:66, 94-96]. | EVT-14 | 1 |
 | 7 | Kiểm nghiệp vụ | Lỗi hệ thống hoặc lỗi gọi máy chủ | [Nội dung kiểm] Gọi máy chủ thất bại hoặc trả lỗi nghiệp vụ thì dừng thao tác, giữ nguyên dữ liệu đang hiển thị.<br>[Nơi thực thi] Màn hình. | Lỗi | Mã lỗi trong phản hồi | Phản hồi có mã lỗi đã đăng ký thì hiển thị nội dung tương ứng; chưa đăng ký thì hiển thị "Không kết nối được máy chủ." | EVT-1, EVT-2, EVT-10, EVT-11, EVT-12, EVT-14 | 1 |
 
 Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 
-[Nguồn: 02-bd/database/interview-bank.md:90, 94-96; 01-rd/req/identity.md:55-60]
+[Nguồn: 02-bd/database/F6_interview-bank.md:90, 94-96; 01-rd/req/F1_identity.md:55-60]
 
 ---
 
@@ -630,11 +630,11 @@ Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 | :-: | :--- | :--- | :--- |
 | Q1 | ~~Ngưỡng độ dài tối đa cho mỗi dòng "câu hỏi đào sâu" (Nhóm 2) — RD chỉ chốt "không giới hạn số lượng", không chốt giới hạn ký tự mỗi dòng.~~ | RD không nêu con số, bản dựng UI hiện tại cũng không đặt `maxLength` [Nguồn: 05-coding/frontend/src/views/shared/interview-question-authoring/ui/interview-question-authoring-view.tsx:185-192]. **ĐÃ CHỐT 2026-10-01 (owner uỷ quyền cân nhắc), xem `DEC-2026-1001-admin-configurable-settings`:** không đặt giới hạn ký tự nghiệp vụ cho mỗi dòng đào sâu; chỉ giữ trần kỹ thuật (kích thước body request) và báo lỗi rõ khi vượt. Màn dùng chung cho A2 và A3 nên áp cùng một quy tắc cho cả hai. Câu hỏi đóng. | Đã đóng (DD `interview-bank` chốt trần kỹ thuật) |
 | Q2 | ~~Popup "Xem như học viên" hiển thị dữ liệu form hiện tại (chưa lưu) hay bắt buộc lưu trước? Có gọi `GetInterviewQuestionDetail` hay hoàn toàn dựng phía client từ state đang có?~~ **ĐÃ CHỐT 2026-10-23 (chủ dự án, `DEC-2026-1023-open-questions-closed`, ponytail bậc 5):** popup dựng phía client từ **form hiện tại, chưa lưu**; không bắt lưu trước, không gọi `GetInterviewQuestionDetail`. | RD chỉ nói có nút preview, không nói rõ nguồn dữ liệu; bản dựng UI hiện tại có nút nhưng chưa gắn hành vi [Nguồn: 01-rd/screens/shared/SHR0302_interview_question_authoring.md:55-56, 116; 05-coding/frontend/src/views/shared/interview-question-authoring/ui/interview-question-authoring-view.tsx:161]. | DD `interview-bank` + DD màn hình |
-| Q3 | **Cập nhật 2026-10-22:** DB doc xác nhận cả ba trường (`suggested_approach`, `sample_answer_framework`, `core_keywords`) chỉ được điền qua nhập CSV ở `SHR0301` (cột `suggested_approach`, `sample_answer`, `core_keywords`), màn soạn không có ô nhập; `core_keywords` chốt JSONB mảng chuỗi (hết phương án `TEXT[]`) [Nguồn: 02-bd/database/interview-bank.md:62-64]. **ĐÃ CHỐT 2026-10-22 (chủ dự án, DEC-2026-1022-db-sync-round2 mục 13, tiêu chí ponytail bậc 3):** ba trường giữ **chỉ qua nhập CSV**, không thêm Nhóm 5 ở màn soạn; muốn sửa một câu đã nhập thì nhập lại CSV. Câu hỏi gốc: Ba trường `suggested_approach` (F6-04), `sample_answer_framework` (F6-05), `core_keywords` (F6-06) tồn tại trong `interview_questions` nhưng không có nhóm trường nào ở màn này (RD chỉ chốt 4 nhóm) hay ở bản dựng UI hiện tại biên soạn chúng. Ai/màn nào tạo dữ liệu cho ba trường này — seed thủ công, một nhóm thứ 5 còn thiếu trong RD, hay một cơ chế khác (ví dụ AI sinh tự động)? | Đây là khoảng trống thật giữa schema DB (F6-04/05/06 đã có cột) và phạm vi màn soạn nội dung duy nhất của Bounded Context này (F6-13) — không suy đoán "chắc có nhóm ẩn nào đó" [Nguồn: 01-rd/screens/shared/SHR0302_interview_question_authoring.md:49-71; 02-bd/database/interview-bank.md:62-64]. | Đã đóng |
+| Q3 | **Cập nhật 2026-10-22:** DB doc xác nhận cả ba trường (`suggested_approach`, `sample_answer_framework`, `core_keywords`) chỉ được điền qua nhập CSV ở `SHR0301` (cột `suggested_approach`, `sample_answer`, `core_keywords`), màn soạn không có ô nhập; `core_keywords` chốt JSONB mảng chuỗi (hết phương án `TEXT[]`) [Nguồn: 02-bd/database/F6_interview-bank.md:62-64]. **ĐÃ CHỐT 2026-10-22 (chủ dự án, DEC-2026-1022-db-sync-round2 mục 13, tiêu chí ponytail bậc 3):** ba trường giữ **chỉ qua nhập CSV**, không thêm Nhóm 5 ở màn soạn; muốn sửa một câu đã nhập thì nhập lại CSV. Câu hỏi gốc: Ba trường `suggested_approach` (F6-04), `sample_answer_framework` (F6-05), `core_keywords` (F6-06) tồn tại trong `interview_questions` nhưng không có nhóm trường nào ở màn này (RD chỉ chốt 4 nhóm) hay ở bản dựng UI hiện tại biên soạn chúng. Ai/màn nào tạo dữ liệu cho ba trường này — seed thủ công, một nhóm thứ 5 còn thiếu trong RD, hay một cơ chế khác (ví dụ AI sinh tự động)? | Đây là khoảng trống thật giữa schema DB (F6-04/05/06 đã có cột) và phạm vi màn soạn nội dung duy nhất của Bounded Context này (F6-13) — không suy đoán "chắc có nhóm ẩn nào đó" [Nguồn: 01-rd/screens/shared/SHR0302_interview_question_authoring.md:49-71; 02-bd/database/F6_interview-bank.md:62-64]. | Đã đóng |
 | Q4 | ~~Có ngưỡng số dòng tối đa cho bộ tiêu chí đánh giá (Nhóm 3) không, hay hoàn toàn không giới hạn như Nhóm 2?~~ | RD không nêu trần cho Nhóm 3, chỉ nêu rõ cho Nhóm 2. **ĐÃ CHỐT 2026-10-01 (owner uỷ quyền cân nhắc), xem `DEC-2026-1001-admin-configurable-settings`:** không giới hạn số dòng tiêu chí; ràng buộc duy nhất là tổng trọng số bằng 100% (RD đã chốt ở `01-rd/screens/shared/SHR0302_interview_question_authoring.md:69-71, 115`, Q1 của RD) và mã tiêu chí không trùng trong cùng một câu hỏi. Cùng quy tắc cho A2 và A3 vì màn dùng chung. Câu hỏi đóng. | Đã đóng |
-| Q5 | ~~`title` của câu hỏi lấy từ đâu — người dùng nhập riêng, hay hệ thống tự sinh từ vài từ đầu của `content_markdown`?~~ **ĐÃ CHỐT 2026-10-22 (chủ dự án, `DEC-2026-1022-interview-bank-schema-sync` mục 4, IB-06):** `title` là **trường "câu hỏi" ngắn**, người dùng nhập, bắt buộc, `VARCHAR(255) NOT NULL`; `content_markdown` chỉ là mô tả thêm, tuỳ chọn (nullable). Không tự sinh `title`. Đã sửa Sheet 5 Nhóm 1 NO 1 và NO 4, Sheet 6, Sheet 7.1 NO 4, 5, Sheet 9 NO 2 [Nguồn: 02-bd/database/interview-bank.md:60-61]. Bản dựng prototype hiện chỉ có một ô, ghi nợ | Đã đóng | Đã đóng |
-| Q6 | ~~Danh sách `criterion_code` gợi ý mặc định cho A2/A3 khi soạn tiêu chí mới — có seed sẵn vài tiêu chí phổ biến (ví dụ "Tính đúng đắn", "Độ đầy đủ", "Rõ ràng") hay để trống hoàn toàn tự đặt như bản dựng UI hiện tại?~~ **ĐÃ CHỐT 2026-10-23 (chủ dự án, `DEC-2026-1023-open-questions-closed`, ponytail bậc 3):** giữ rubric của từng câu hỏi (F6-13); **không seed tên tiêu chí gợi ý**, để trống và người soạn tự đặt tên như bản dựng. | Schema chỉ ghi `criterion_code` do A2/A3 tự đặt [Nguồn: 02-bd/database/interview-bank.md:88] (từ 2026-10-22 DB doc ghi rõ `criterion_code` là tên do A2/A3 gõ, không phải slug, hiện nguyên văn cho học viên, duy nhất không phân biệt hoa thường trong cùng câu hỏi, VARCHAR(100)); việc có seed gợi ý hay không vẫn là mục mở ở DB doc mục 7 (dòng 288-289); chưa có câu trả lời | Đã đóng |
-| Q7 | Trường `description` của `answer_rubrics` (mô tả tiêu chí) không có ô nhập ở màn này theo cả RD lẫn bản dựng UI hiện tại — có bổ sung ô nhập không, hay để trống vĩnh viễn (NULL) và trường này chỉ phục vụ mục đích khác? | RD (dòng 69-71) chỉ nói "mỗi tiêu chí có trọng số phần trăm", không nhắc tới mô tả; DB có cột `description` **nullable** từ 2026-10-22 vì màn không có ô nhập [Nguồn: 02-bd/database/interview-bank.md:89]. **ĐÃ CHỐT 2026-10-22 (chủ dự án, DEC-2026-1022-db-sync-round2 mục 13, ponytail bậc 3):** giữ NULL, không thêm ô nhập. | Đã đóng |
+| Q5 | ~~`title` của câu hỏi lấy từ đâu — người dùng nhập riêng, hay hệ thống tự sinh từ vài từ đầu của `content_markdown`?~~ **ĐÃ CHỐT 2026-10-22 (chủ dự án, `DEC-2026-1022-interview-bank-schema-sync` mục 4, IB-06):** `title` là **trường "câu hỏi" ngắn**, người dùng nhập, bắt buộc, `VARCHAR(255) NOT NULL`; `content_markdown` chỉ là mô tả thêm, tuỳ chọn (nullable). Không tự sinh `title`. Đã sửa Sheet 5 Nhóm 1 NO 1 và NO 4, Sheet 6, Sheet 7.1 NO 4, 5, Sheet 9 NO 2 [Nguồn: 02-bd/database/F6_interview-bank.md:60-61]. Bản dựng prototype hiện chỉ có một ô, ghi nợ | Đã đóng | Đã đóng |
+| Q6 | ~~Danh sách `criterion_code` gợi ý mặc định cho A2/A3 khi soạn tiêu chí mới — có seed sẵn vài tiêu chí phổ biến (ví dụ "Tính đúng đắn", "Độ đầy đủ", "Rõ ràng") hay để trống hoàn toàn tự đặt như bản dựng UI hiện tại?~~ **ĐÃ CHỐT 2026-10-23 (chủ dự án, `DEC-2026-1023-open-questions-closed`, ponytail bậc 3):** giữ rubric của từng câu hỏi (F6-13); **không seed tên tiêu chí gợi ý**, để trống và người soạn tự đặt tên như bản dựng. | Schema chỉ ghi `criterion_code` do A2/A3 tự đặt [Nguồn: 02-bd/database/F6_interview-bank.md:88] (từ 2026-10-22 DB doc ghi rõ `criterion_code` là tên do A2/A3 gõ, không phải slug, hiện nguyên văn cho học viên, duy nhất không phân biệt hoa thường trong cùng câu hỏi, VARCHAR(100)); việc có seed gợi ý hay không vẫn là mục mở ở DB doc mục 7 (dòng 288-289); chưa có câu trả lời | Đã đóng |
+| Q7 | Trường `description` của `answer_rubrics` (mô tả tiêu chí) không có ô nhập ở màn này theo cả RD lẫn bản dựng UI hiện tại — có bổ sung ô nhập không, hay để trống vĩnh viễn (NULL) và trường này chỉ phục vụ mục đích khác? | RD (dòng 69-71) chỉ nói "mỗi tiêu chí có trọng số phần trăm", không nhắc tới mô tả; DB có cột `description` **nullable** từ 2026-10-22 vì màn không có ô nhập [Nguồn: 02-bd/database/F6_interview-bank.md:89]. **ĐÃ CHỐT 2026-10-22 (chủ dự án, DEC-2026-1022-db-sync-round2 mục 13, ponytail bậc 3):** giữ NULL, không thêm ô nhập. | Đã đóng |
 | Q9 | ~~Quản lý danh mục độ khó (thêm, đổi tên, sắp xếp, xoá) của ADMIN nằm ở đâu — popup trên `SHR0301` như "Quản lý chủ đề", hay màn riêng? Màn soạn này có hiện liên kết tới đó cho ADMIN như với chủ đề không?~~ | **ĐÃ CHỐT theo bản dựng, 2026-10-03, theo uỷ quyền của chủ dự án ("xử lý các nợ còn lại"):** quản lý độ khó mở từ popup ở `SHR0301` (chỉ ADMIN), màn soạn không có liên kết; chờ chủ dự án xác nhận nếu muốn khác. Căn cứ: `SHR0301` có mục chuyển màn "Popup Quản lý độ khó"; màn soạn chỉ đọc danh mục qua `levelList` và không có liên kết quản lý [Nguồn: 05-coding/frontend/src/views/shared/interview-question-authoring/ui/interview-question-authoring-view.tsx:91, 299-304; 02-bd/screens/shared/SHR0301_interview_question_management.md, mục 3.1 "Quản lý ngân hàng câu hỏi → Popup Quản lý độ khó"]. | Đã đóng (chờ chủ dự án xác nhận nếu muốn khác) |
 
 **Nợ prototype**: đã có mục ghi nhận cho slug `interview_question_authoring` ở `06-plan/PROTOTYPE_DEBT.md`

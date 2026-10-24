@@ -18,13 +18,14 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import {
-  fetchQueuePage,
+  useQueuePage,
   type ClusterControls,
   type JobStatus,
   type QueueJob,
+  type QueuePage,
   type WorkerStatus,
 } from "../api";
-import { countRecentInfraAlerts } from "@/entities/infra-event";
+import { useRecentInfraAlerts } from "@/entities/infra-event";
 import { useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
 import { queueSettings } from "../model/settings";
@@ -35,6 +36,7 @@ import {
   ConfirmDialog,
   DataTable,
   PageHeader,
+  QueryBoundary,
   Pagination,
   ParamsDialog,
   ProgressBar,
@@ -73,8 +75,28 @@ function clock(epochMs: number): string {
 }
 
 export function AdminQueueMonitorView() {
+  const query = useQueuePage();
+  return (
+    <QueryBoundary query={query}>
+      {(initial) => (
+        <QueueMonitorInner
+          initial={initial}
+          reload={async () => (await query.refetch()).data}
+        />
+      )}
+    </QueryBoundary>
+  );
+}
+
+function QueueMonitorInner({
+  initial,
+  reload,
+}: {
+  initial: QueuePage;
+  reload: () => Promise<QueuePage | undefined>;
+}) {
   const t = useT("adminQueueMonitor");
-  const [page, setPage] = useState(fetchQueuePage);
+  const [page, setPage] = useState(initial);
   const [controls, setControls] = useState<ClusterControls>(page.controls);
   const settings = queueSettings.use();
   const [editingParams, setEditingParams] = useState(false);
@@ -99,7 +121,7 @@ export function AdminQueueMonitorView() {
     }),
     [page.jobs],
   );
-  const alerts = countRecentInfraAlerts();
+  const alerts = useRecentInfraAlerts().data ?? { warn: 0, error: 0 };
 
   // State priority: paused > an overloaded worker > backlog at or above the autoscale threshold.
   const stale = now - page.generatedAt > STALE_AFTER_MS;
@@ -143,8 +165,9 @@ export function AdminQueueMonitorView() {
     currentPage * settings.jobsPerPage,
   );
 
-  function refresh() {
-    setPage(fetchQueuePage());
+  async function refresh() {
+    const fresh = await reload();
+    if (fresh) setPage(fresh);
     setNow(Date.now());
     toast.success(t("refreshDone"));
   }

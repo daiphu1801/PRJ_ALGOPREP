@@ -21,7 +21,7 @@ export type ChatMessage = {
   stage: InterviewStage;
 };
 
-/** 4 fixed criteria, fixed weights — 02-bd/database/ai-review.md:96-97. */
+/** 4 fixed criteria, fixed weights — 02-bd/database/F5_ai-review.md:96-97. */
 export type RubricCriterionCode =
   "clarity" | "technicalAccuracy" | "pushbackHandling" | "complexityAwareness";
 

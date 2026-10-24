@@ -2,7 +2,7 @@
 //
 // Data boundary of the language-and-limits screen. Same shape as the other screens:
 // `withMockData(mock, fetchReal)` switched by NEXT_PUBLIC_MOCK_DATA, `fetchReal` still a
-// NOT_IMPLEMENTED stub until 03-dd/api/judge-orchestration.md defines `GetLanguageConfigs` and
+// NOT_IMPLEMENTED stub until 03-dd/api/F4_judge-orchestration.md defines `GetLanguageConfigs` and
 // `UpdateLanguageConfigs`. The view imports only these hooks.
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiError, withMockData } from "@/shared/api";
@@ -16,7 +16,7 @@ function notImplemented(): never {
   throw new ApiError(
     "NOT_IMPLEMENTED",
     501,
-    "03-dd/api/judge-orchestration.md chưa định nghĩa endpoint này",
+    "03-dd/api/F4_judge-orchestration.md chưa định nghĩa endpoint này",
   );
 }
 

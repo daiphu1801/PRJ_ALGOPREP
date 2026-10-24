@@ -10,7 +10,8 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import {
-  findInterviewQuestionByCode,
+  useInterviewQuestion,
+  type InterviewQuestion,
   topicLabel,
   levelLabel,
   levelTone,
@@ -27,6 +28,7 @@ import {
   MarkdownPreview,
   NoticeTile,
   PageHeader,
+  QueryBoundary,
 } from "@/shared/ui";
 
 type Props = {
@@ -37,11 +39,28 @@ type Props = {
 };
 
 export function InterviewQuestionInfoView({ questionId, basePath }: Props) {
+  return (
+    <QueryBoundary query={useInterviewQuestion(questionId)}>
+      {(question) => (
+        <InterviewQuestionInfo
+          questionId={questionId}
+          basePath={basePath}
+          question={question}
+        />
+      )}
+    </QueryBoundary>
+  );
+}
+
+function InterviewQuestionInfo({
+  questionId,
+  basePath,
+  question,
+}: Props & { question: InterviewQuestion | null }) {
   const t = useT("interviewQuestionInfo");
   const ta = useT("interviewQuestionAuthoring");
   const topicList = useInterviewTopics();
   const levelList = useInterviewLevels();
-  const question = findInterviewQuestionByCode(questionId);
 
   if (!question) {
     return (

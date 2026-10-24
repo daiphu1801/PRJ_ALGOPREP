@@ -1,5 +1,7 @@
 # BD — Khung điều hướng dùng chung khu Người học (`_shell`)
 
+> **Cập nhật 2026-10-23 (Claude), phiên bản ghi chú V0.4:** ghi quyết định owner `DEC-2026-1023-student-class-screens` (owner yêu cầu 2026-10-23: giao diện học viên chưa có màn nào cho lớp). Thanh nav chính có **bảy mục**: thêm mục thứ 7 "Lớp của tôi" dẫn tới `my_classes` (`USR0701`, `/classes`), đặt ở **header, không đặt trong menu avatar**; mục sáng với mọi đường dẫn bắt đầu bằng `/classes/` (khớp tiền tố, `widgets/app-shell/ui/student-header.tsx:51-52`), gồm cả chi tiết lớp `my_class_detail` (`USR0702`, `/classes/{classId}`). Sửa mục 1, 2.1, 2.2 (tiêu đề, bảng, ghi chú), 2.3 và 2.5. Ngăn kéo hamburger dưới `lg` dùng chung danh sách `STUDENT_NAV_ITEMS` nên tự có mục thứ 7 (`student-header.tsx:83,177`), không có đoạn riêng liệt kê mục trong file này. Nguồn bản dựng: `widgets/app-shell/model/student-nav.ts:42-43`, nhãn `messages/vi.json:44`. Chưa duyệt hình.
+
 > **Cập nhật 2026-10-20 (Claude), phiên bản ghi chú V0.3:** ghi quyết định owner `DEC-2026-1020-student-workspace-split-and-password-in-settings` [Nguồn: .nexa/control/decision-registry.md:4233-4261]. (1) Mục nav "Workspace" nay dẫn tới trang đầu `/workspace` (màn mới `USR0105`, slug `workspace_home`), **không còn chuyển hướng** vào bài đang làm dở; màn soạn mã `USR0102` chuyển sang `/workspace/{problemId}` và thanh nav vẫn sáng mục Workspace cho mọi đường dẫn bắt đầu bằng `/workspace/` (khớp tiền tố, `widgets/app-shell/ui/student-header.tsx:51-52`). Trang chỉ-đọc `/problems/{problemId}` là màn mới `USR0104` (slug `problem_overview`). Sửa mục 2.2, 2.3, 2.5, mục 6 Q2. (2) Thêm mục 5.1 ghi bộ token nền sáng của khu Người học (`app/globals.css:654-673`). (3) Sửa các dòng trích dẫn mã đã lệch: `globals.css:705-733` (trước ghi `684-712`), `student-header.tsx` và `student-footer.tsx` ở Q3, Q5 và mục 3. Chưa duyệt hình cho bảng token mục 5.1. File này không có bảng lịch sử sửa đổi (xem ghi chú ngay dưới), nên mốc phiên bản ghi ở đây.
 
 > **Cập nhật 2026-10-18 (Claude):** ghi các quyết định owner `DEC-2026-1018-usr-open-questions-phase1-scope` và `DEC-2026-1018-usr-open-questions-phase2-5`: đóng Q3 (chân trang câu trạng thái tĩnh), Q4 (bắt buộc đăng nhập), Q5 (hamburger dưới ngưỡng hẹp); sửa mục 3 theo. File này không có bảng lịch sử sửa đổi, nên ghi chú cập nhật nằm ở đây.
@@ -27,7 +29,7 @@ Khung này là **kiểu thứ ba** trong dự án, khác cả hai khung đã có
 | :--- | :--- | :--- |
 | Admin | Sidebar dọc + toolbar trong `<main>` | 4 nhóm gập, 11 đích |
 | Giảng viên | Sidebar dọc, không toolbar | Danh sách phẳng 5 mục |
-| **Người học** | **Header ngang dính trên, KHÔNG có sidebar** | 6 mục trên thanh ngang + menu người dùng 5 mục |
+| **Người học** | **Header ngang dính trên, KHÔNG có sidebar** | 7 mục trên thanh ngang + menu người dùng 5 mục |
 
 Không một file `.dc.html` nào của khu Người học có thẻ `<aside>`; cả 11 file đều có đúng một `<header>`.
 
@@ -35,7 +37,7 @@ Khung gồm ba phần, áp cho mọi màn của khu này:
 
 | Phần | File hiện thực dự kiến | Vai trò |
 | :--- | :--- | :--- |
-| Header | `widgets/app-shell/ui/student-header.tsx` | Thương hiệu + 6 mục nav + menu người dùng |
+| Header | `widgets/app-shell/ui/student-header.tsx` | Thương hiệu + 7 mục nav + menu người dùng |
 | Chân trang | `widgets/app-shell/ui/app-footer.tsx` | Bản quyền, trạng thái cụm go-judge, phiên bản |
 | Nền và scope màu | `widgets/app-shell/ui/app-shell.tsx` + `app/globals.css` | Scope màu riêng của khu Người học |
 
@@ -49,15 +51,17 @@ Một hàng ngang, `position: sticky` bám đỉnh trang
 | Khối | Nội dung |
 | :--- | :--- |
 | Thương hiệu | "AlgoPrep" kèm thẻ phụ "GO-JUDGE" |
-| Nav chính | 5 mục chính, xem mục 2.2 |
+| Nav chính | 7 mục chính, xem mục 2.2 |
 | Chuyển theme & ngôn ngữ | Hai nút chuyển nhanh Sáng/Tối và VI/EN đặt trước avatar (chốt 2026-09-22 bởi `DEC-2026-0922-users-and-admin-conflict-resolutions`) |
 | Menu người dùng | Avatar chữ cái + tên + email, mở ra 5 mục, xem mục 2.3 |
 
-### 2.2. Sáu mục nav chính
+### 2.2. Bảy mục nav chính
 
 > **Đã chốt 2026-09-22** (`DEC-2026-0922-users-and-admin-conflict-resolutions`): Bỏ mục "Tổng quan" khỏi thanh nav (trong prototype chỉ trỏ file bản mẫu tĩnh, không có slug). `problem_list` là cửa vào chính của khu Người học; `my_progress` đóng vai trò dashboard cá nhân trong menu người dùng.
 
 > **Cập nhật 2026-10-21:** mục "Tổng quan" đã trở lại làm mục đầu (`DEC-2026-0927-student-dashboard-home`), nên nav có sáu mục. Đoạn "Đã chốt 2026-09-22" ở trên chỉ còn là lịch sử.
+
+> **Cập nhật 2026-10-23:** thêm mục thứ 7 "Lớp của tôi" (`DEC-2026-1023-student-class-screens`), nav có **bảy mục**.
 
 | Thứ tự | Nhãn | Slug đích | Ghi chú |
 | :-: | :--- | :--- | :--- |
@@ -67,6 +71,7 @@ Một hàng ngang, `position: sticky` bám đỉnh trang
 | 4 | Bài đã nộp | `my_submissions` | Lịch sử nộp bài |
 | 5 | Phỏng vấn giả lập | `mock_interview` | Luyện phỏng vấn 1:1 với AI |
 | 6 | Câu hỏi phỏng vấn | `interview_bank_list` | Ngân hàng câu hỏi F6 |
+| 7 | Lớp của tôi | `my_classes` (`USR0701`, `/classes`) | Các lớp học viên đang tham gia và khung nhập mã mời (F1-23). Owner chốt 2026-10-23: nằm ở header, **không** trong menu avatar. Mục sáng với mọi đường dẫn `/classes/*`, gồm chi tiết lớp `my_class_detail` (`USR0702`, `/classes/{classId}`). Nhãn khoá `nav.myClasses` (`messages/vi.json:44`); `student-nav.ts:42-43` |
 
 ### 2.3. Menu người dùng
 
@@ -75,7 +80,7 @@ Cài đặt (`settings`) · Đăng xuất.
 
 Đây là lý do 4 màn cá nhân **không** nằm trên thanh nav chính: chúng thuộc menu người dùng. Ba màn còn
 lại của khu (`submission_result`, `solution_review`, `interview_question_detail`) không có mục nav nào —
-đúng thiết kế, cả ba đều là màn khoan sâu từ màn khác. Từ 2026-10-20 thêm hai màn mới quanh Workspace:
+đúng thiết kế, cả ba đều là màn khoan sâu từ màn khác. Từ 2026-10-23 thêm nhóm "Lớp học": `my_classes` có mục nav riêng (mục 7, mục 2.2); `my_class_detail` là màn khoan sâu từ `my_classes`, không có mục nav riêng nhưng làm sáng mục "Lớp của tôi" (khớp tiền tố `/classes`). Từ 2026-10-20 thêm hai màn mới quanh Workspace:
 `problem_overview` (`USR0104`, `/problems/{problemId}`, chỉ-đọc, là đích của mọi liên kết "xem bài" và có nút
 "Giải bài toán" sang `/workspace/{problemId}`) là màn khoan sâu, không có mục nav riêng và không làm sáng mục
 nào ngoài "Bài toán" (khớp tiền tố `/problems`); `workspace_home` (`USR0105`) là đích của mục nav "Workspace".
@@ -89,7 +94,7 @@ lựa chọn của người dùng, đúng cơ chế `next-intl` đã chốt ở 
 
 ### 2.5. Ngoại lệ màn Workspace
 
-`problem_detail` (nay ở `/workspace/{problemId}`) dùng **cùng** header đó nhưng thu gọn: giữ nguyên thương hiệu và 6 mục nav, lược phần
+`problem_detail` (nay ở `/workspace/{problemId}`) dùng **cùng** header đó nhưng thu gọn: giữ nguyên thương hiệu và 7 mục nav, lược phần
 tên và email trong khối người dùng, chỉ còn avatar
 [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:49-72]. Lý do suy ra được: màn này cần tối đa chiều cao
 cho vùng soạn thảo `[SoT: Suy luận]`.
@@ -173,8 +178,8 @@ bằng khối `.admin-shell` và `.instructor-shell` riêng `[SoT: Suy luận]` 
 - `09-layoutBase/Ngân hàng bài toán.dc.html:51,428` — bằng chứng header và chân trang.
 - `09-layoutBase/Workspace giải bài.dc.html:49-72` — bằng chứng biến thể header thu gọn.
 - `02-bd/screens/admin/_shell.md` mục 9 · `02-bd/screens/teacher/_shell.md` mục 9 — hai khung còn lại.
-- `02-bd/_rules/bd-template-9sheet.md` — quy ước mẫu 9 sheet cho 12 file BD màn của khu này.
+- `02-bd/_rules/bd-template-9sheet.md` — quy ước mẫu 9 sheet cho các file BD màn của khu này.
 - `05-coding/frontend/src/app/globals.css:654-697` — token nền sáng và nền tối của `.student-shell` (mục 5.1).
-- Quyết định: `DEC-2026-1020-student-workspace-split-and-password-in-settings`, `DEC-2026-0825-frontend-base-architecture`, `DEC-2026-0921-admin-shell-footer`,
+- Quyết định: `DEC-2026-1023-student-class-screens`, `DEC-2026-1020-student-workspace-split-and-password-in-settings`, `DEC-2026-0825-frontend-base-architecture`, `DEC-2026-0921-admin-shell-footer`,
   `DEC-2026-0921-teacher-screens-conflict-resolutions`, `DEC-2026-0922-users-and-admin-conflict-resolutions`.
 

@@ -4,7 +4,7 @@
 > Slug chính tắc: `class_management` [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_management`].
 > Phạm vi/Bounded Context: `identity` (danh sách học viên theo lớp, phân quyền A2)
 > [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_management`]. Actor: A2 (Giáo viên).
-> Nguồn sự thật (SoT): `01-rd/req/identity.md` (F1-10, F1-12, F1-23 tới F1-27),
+> Nguồn sự thật (SoT): `01-rd/req/F1_identity.md` (F1-10, F1-12, F1-23 tới F1-27),
 > `09-layoutBase/Giáo viên - Lớp của tôi.dc.html` (prototype), `DEC-2026-0828-split-class-management-assignments`.
 > Tài liệu này có thể đọc độc lập.
 
@@ -13,9 +13,9 @@
 ## 1. Mục đích và bối cảnh
 
 Cho giáo viên (A2) xem tổng quan các lớp mình phụ trách, danh sách học viên và tiến độ của từng lớp
-[SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_management`; 01-rd/req/problem-bank.md — F2-12]. Mọi phạm vi hiển thị và thao tác đều
+[SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_management`; 01-rd/req/F2_problem-bank.md — F2-12]. Mọi phạm vi hiển thị và thao tác đều
 giới hạn trong lớp giáo viên đó phụ trách, gác bởi Function `CLASS_MANAGEMENT` trong ma trận phân quyền
-[SoT: 01-rd/req/identity.md — F1-12]. (Tham chiếu F5-27 cũ đã bỏ 2026-10-13, `DEC-2026-1013-remove-instructor-manual-grading`.) Mô tả gốc: "Quản lý lớp — tổng quan và
+[SoT: 01-rd/req/F1_identity.md — F1-12]. (Tham chiếu F5-27 cũ đã bỏ 2026-10-13, `DEC-2026-1013-remove-instructor-manual-grading`.) Mô tả gốc: "Quản lý lớp — tổng quan và
 danh sách học viên" [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_management`]. (F6-11 và
 Bounded Context `interview-bank` từng gắn với slug này đã loại khỏi phạm vi 2026-08-28 —
 `DEC-2026-0828-remove-per-class-interview-set`.)
@@ -28,7 +28,7 @@ bản trước của file này. Chủ dự án đã chốt tách theo đề xu�
 vi ảnh hưởng đầy đủ ở Quyết định: `DEC-2026-0828-split-class-management-assignments`.
 
 File này mô tả **hành vi và UX ở mức yêu cầu** của màn "Lớp của tôi" — không lặp lại đặc tả chức năng chung
-đã có ở `01-rd/req/identity.md` (F1), chỉ trỏ tới và bổ sung phần đặc thù của màn: trạng thái màn, cấu trúc
+đã có ở `01-rd/req/F1_identity.md` (F1), chỉ trỏ tới và bổ sung phần đặc thù của màn: trạng thái màn, cấu trúc
 UI, và các câu hỏi mở phát sinh khi đối chiếu với prototype thật.
 
 ---
@@ -37,13 +37,13 @@ UI, và các câu hỏi mở phát sinh khi đối chiếu với prototype thậ
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Tạo lớp học mới với thông tin cơ bản; sinh mã mời; học viên tự tham gia lớp bằng mã mời | F1-23 | `01-rd/req/identity.md` — F1-23 (bổ sung 2026-08-28) |
-| Xoá lớp học (xoá thật, hard delete) | F1-24 | `01-rd/req/identity.md` — F1-24 (bổ sung 2026-08-28) |
-| Mã mời có thời hạn dùng | F1-25 | `01-rd/req/identity.md` — F1-25 (bổ sung 2026-08-28) |
-| ~~Gỡ học viên khỏi lớp — xoá luôn lịch sử làm bài của học viên đó trong lớp~~ **ĐÃ ĐỔI 2026-10-14 (DEC-2026-1014-keep-learning-history-on-leave):** gỡ học viên khỏi lớp — giữ lịch sử làm bài, chỉ đánh dấu đã rời lớp | F1-26 | `01-rd/req/identity.md` — F1-26 (bổ sung 2026-08-28) |
-| Xem hồ sơ chi tiết một học viên trong lớp phụ trách (màn/route riêng, slug mới `class_student_detail`) | F1-27 | `01-rd/req/identity.md` — F1-27 (bổ sung 2026-08-28) |
+| Tạo lớp học mới với thông tin cơ bản; sinh mã mời; học viên tự tham gia lớp bằng mã mời | F1-23 | `01-rd/req/F1_identity.md` — F1-23 (bổ sung 2026-08-28) |
+| Xoá lớp học (xoá thật, hard delete) | F1-24 | `01-rd/req/F1_identity.md` — F1-24 (bổ sung 2026-08-28) |
+| Mã mời có thời hạn dùng | F1-25 | `01-rd/req/F1_identity.md` — F1-25 (bổ sung 2026-08-28) |
+| ~~Gỡ học viên khỏi lớp — xoá luôn lịch sử làm bài của học viên đó trong lớp~~ **ĐÃ ĐỔI 2026-10-14 (DEC-2026-1014-keep-learning-history-on-leave):** gỡ học viên khỏi lớp — giữ lịch sử làm bài, chỉ đánh dấu đã rời lớp | F1-26 | `01-rd/req/F1_identity.md` — F1-26 (bổ sung 2026-08-28) |
+| Xem hồ sơ chi tiết một học viên trong lớp phụ trách (màn/route riêng, slug mới `class_student_detail`) | F1-27 | `01-rd/req/F1_identity.md` — F1-27 (bổ sung 2026-08-28) |
 | Given-When-Then xem hồ sơ chi tiết học viên | — | `01-rd/req/user_stories/a2_instructor.md` (`US-A2-08`) |
-| Ma trận phân quyền — Function `CLASS_MANAGEMENT` gác quyền A2 theo phạm vi lớp phụ trách | F1-10, F1-12 | `01-rd/req/identity.md` — F1-10, F1-12 |
+| Ma trận phân quyền — Function `CLASS_MANAGEMENT` gác quyền A2 theo phạm vi lớp phụ trách | F1-10, F1-12 | `01-rd/req/F1_identity.md` — F1-10, F1-12 |
 | Given-When-Then tạo lớp và tham gia bằng mã mời | — | `01-rd/req/user_stories/a2_instructor.md` (`US-A2-07`) |
 
 **Đã loại khỏi phạm vi 2026-08-28:** F6-11 (bộ câu hỏi phỏng vấn riêng theo lớp) và `US-A2-04` — xem
@@ -55,7 +55,7 @@ UI, và các câu hỏi mở phát sinh khi đối chiếu với prototype thậ
 |---|---|---|
 | Màn hiện tại | `INS0201` / `class_management` | `identity` |
 | Màn con (thêm 2026-10-11) | `INS0205` / `class_detail` — `01-rd/screens/teacher/INS0205_class_detail.md` | `identity` |
-| Tài liệu yêu cầu | `01-rd/req/identity.md` (F1-10, F1-12, F1-23 tới F1-27) | Nguồn SoT của màn |
+| Tài liệu yêu cầu | `01-rd/req/F1_identity.md` (F1-10, F1-12, F1-23 tới F1-27) | Nguồn SoT của màn |
 | Prototype | `09-layoutBase/Giáo viên - Lớp của tôi.dc.html` | Bằng chứng bố cục và trạng thái |
 
 **Chi tiết trạng thái và cấu trúc màn**
@@ -112,7 +112,7 @@ UI, và các câu hỏi mở phát sinh khi đối chiếu với prototype thậ
 
 - Layout, spacing, bảng màu, component cụ thể (glass-morphism, breakpoint responsive) — thuộc BD
   (`02-bd/screens/teacher/INS0201_class_management.md`, chưa viết).
-- Hợp đồng API (danh sách lớp, danh sách học viên theo lớp) — thuộc DD (`03-dd/api/identity.md`, chưa
+- Hợp đồng API (danh sách lớp, danh sách học viên theo lớp) — thuộc DD (`03-dd/api/F1_identity.md`, chưa
   viết).
 - Màn "Bài tập của tôi" (giao/gán bài từ ngân hàng cho lớp) — tách thành slug riêng
   `01-rd/screens/teacher/INS0202_class_assignments.md` (`DEC-2026-0828-split-class-management-assignments`).
@@ -133,7 +133,7 @@ UI, và các câu hỏi mở phát sinh khi đối chiếu với prototype thậ
 | # | Câu hỏi | Vì sao chưa trả lời được | Đề xuất | Chủ sở hữu |
 | :-: | :--- | :--- | :--- | :--- |
 | Q1 | ~~`system_survey.md` gộp một slug `class_management` cho hai file prototype có route/nav riêng biệt...~~ **ĐÃ CHỐT (2026-08-28):** tách thành hai slug — `class_management` (file này, "Lớp của tôi") và `class_assignments` (`01-rd/screens/teacher/INS0202_class_assignments.md`, "Bài tập của tôi") — theo đúng đề xuất ban đầu, vì hai route Next.js khác nhau. Ghi thành `DEC-2026-0828-split-class-management-assignments`. | — | Đã chốt, đã tách file. | (đã đóng) |
-| Q2 | ~~Nút "+ Tạo lớp mới" ở "Lớp của tôi" không có hành vi nào được lập trình trong prototype... Luồng tạo lớp chưa có mã `Fx-nn` nào.~~ **ĐÃ CHỐT MỘT PHẦN (2026-08-28, qua hỏi trực tiếp chủ dự án):** giáo viên (A2) tạo lớp mới với thông tin cơ bản; hệ thống sinh một **mã mời (invite code)** riêng cho lớp; học viên (A1) **tự tham gia lớp bằng cách nhập mã mời** — không phải A2/A3 thêm thủ công. Ghi thành `F1-23` (`01-rd/req/identity.md`), Given-When-Then ở `US-A2-07` (`01-rd/req/user_stories/a2_instructor.md`) _(sửa 2026-09-09: hai neo trước trỏ vào `req/req.md` và `req/user_stories.md`, nay là file chỉ mục rỗng nội dung sau `DEC-2026-0831-rd-req-split-by-module`)_. **Chưa dựng vào prototype** — để lúc build FE. Phần **CRUD lớp còn lại chưa chốt** — xem Q2b. | — | Đã chốt cơ chế tạo lớp + tham gia bằng mã mời. Phần còn lại xem Q2b. | Q2 đóng một phần, phát sinh Q2b |
+| Q2 | ~~Nút "+ Tạo lớp mới" ở "Lớp của tôi" không có hành vi nào được lập trình trong prototype... Luồng tạo lớp chưa có mã `Fx-nn` nào.~~ **ĐÃ CHỐT MỘT PHẦN (2026-08-28, qua hỏi trực tiếp chủ dự án):** giáo viên (A2) tạo lớp mới với thông tin cơ bản; hệ thống sinh một **mã mời (invite code)** riêng cho lớp; học viên (A1) **tự tham gia lớp bằng cách nhập mã mời** — không phải A2/A3 thêm thủ công. Ghi thành `F1-23` (`01-rd/req/F1_identity.md`), Given-When-Then ở `US-A2-07` (`01-rd/req/user_stories/a2_instructor.md`) _(sửa 2026-09-09: hai neo trước trỏ vào `req/req.md` và `req/user_stories.md`, nay là file chỉ mục rỗng nội dung sau `DEC-2026-0831-rd-req-split-by-module`)_. **Chưa dựng vào prototype** — để lúc build FE. Phần **CRUD lớp còn lại chưa chốt** — xem Q2b. | — | Đã chốt cơ chế tạo lớp + tham gia bằng mã mời. Phần còn lại xem Q2b. | Q2 đóng một phần, phát sinh Q2b |
 | Q2b | ~~Sau khi chốt Q2 (tạo lớp + mã mời), vẫn còn: giáo viên có sửa/xoá lớp sau khi tạo không? Mã mời có thu hồi/tạo lại được không? Giáo viên có gỡ một học viên cụ thể khỏi lớp không, và gỡ rồi thì lịch sử bài nộp của học viên đó có giữ nguyên không?~~ **ĐÃ CHỐT (2026-08-28, qua hỏi trực tiếp chủ dự án):** (a) xoá lớp là **xoá thật** (hard delete), khác cách F1-16 xử lý xoá tài khoản (khoá mềm) — chủ đích, không phải thiếu nhất quán; (b) mã mời **có thời hạn dùng**; (c) giáo viên **gỡ được học viên** khỏi lớp, và gỡ thì ~~**xoá luôn lịch sử làm bài** của học viên đó trong lớp — không giữ lại ("đã gỡ rồi thì giữ cũng không làm gì", theo lời chủ dự án)~~ **ĐÃ ĐỔI 2026-10-14 (DEC-2026-1014-keep-learning-history-on-leave):** giữ lịch sử làm bài, chỉ đánh dấu đã rời lớp. Ghi thành `F1-24`, `F1-25`, `F1-26`; GWT bổ sung vào `US-A2-07`. **Chưa dựng vào prototype** — để lúc build FE. Phát sinh Q2c (nhỏ, không chặn BD). | — | Đã chốt cả ba điểm. | (đã đóng), phát sinh Q2c |
 | Q2c | ~~F1-25 chỉ chốt việc mã mời có thời hạn dùng, chưa chốt: sau khi mã hết hạn, giáo viên có tạo lại/gia hạn mã mời cho cùng lớp đó không?~~ **ĐÃ CHỐT (2026-08-28, qua hỏi trực tiếp chủ dự án):** giáo viên có quyền **tạo nhiều mã mời mới** cho cùng lớp, mỗi mã mới có **thời hạn dùng riêng**, độc lập với các mã cũ. Ghi bổ sung vào `F1-25`, GWT thêm vào `US-A2-07`. | — | Đã chốt. | (đã đóng) |
 | Q3 | ~~Thẻ lớp trong "Lớp của tôi" không có hành vi bấm để xem chi tiết lớp. Bảng học viên bên dưới đã lọc được theo lớp nhưng chưa rõ đây có phải là toàn bộ "chi tiết lớp" cần có hay còn thiếu.~~ ~~**ĐÃ CHỐT (2026-08-28, qua hỏi trực tiếp chủ dự án):** không cần trang con `/class/:id` riêng — tổng quan + bảng học viên lọc theo tab **đã đủ**. Đây chỉ là hành vi bấm-để-lọc chưa được nối trong prototype (`onClick` thiếu), **không phải khoảng trống nghiệp vụ**, không cần mã `Fx-nn` mới.~~ **ĐẢO NGƯỢC 2026-10-11 (chủ dự án chỉ đạo, `DEC-2026-1011-class-detail-page`):** **có** trang chi tiết lớp riêng — mã màn `INS0205`, slug `class_detail`, route prototype `/instructor/classes/[classId]`. Lý do chủ dự án nêu: "3 nút với popup không cung cấp đủ thông tin". Mô tả hành vi ở `01-rd/screens/teacher/INS0205_class_detail.md`. Không cần mã `Fx-nn` mới (gộp vào F1-23 tới F1-27). Ở danh sách "Lớp của tôi" chỉ còn icon Xem chi tiết, Sửa, Xoá; popup Mã mời và icon "Xem học viên" bỏ; tạo lớp xong thì chuyển thẳng sang trang chi tiết. | — | Đã chốt lại: thêm màn con `INS0205`; popup Tạo/Sửa lớp giữ nguyên, dùng chung. Trang học viên toàn bộ `/instructor/students` vẫn còn (lọc theo lớp). | (đã đóng) |
@@ -150,13 +150,13 @@ UI, và các câu hỏi mở phát sinh khi đối chiếu với prototype thậ
 
 | ID | Yêu cầu | Loại | Nguồn/SoT |
 |---|---|---|---|
-| REQ-01 | Tạo lớp học mới với thông tin cơ bản; sinh mã mời; học viên tự tham gia lớp bằng mã mời (F1-23) | Chức năng | `01-rd/req/identity.md` — F1-23 (bổ sung 2026-08-28) |
-| REQ-02 | Xoá lớp học (xoá thật, hard delete) (F1-24) | Chức năng | `01-rd/req/identity.md` — F1-24 (bổ sung 2026-08-28) |
-| REQ-03 | Mã mời có thời hạn dùng (F1-25) | Chức năng | `01-rd/req/identity.md` — F1-25 (bổ sung 2026-08-28) |
-| REQ-04 | ~~Gỡ học viên khỏi lớp — xoá luôn lịch sử làm bài của học viên đó trong lớp~~ **ĐÃ ĐỔI 2026-10-14 (DEC-2026-1014-keep-learning-history-on-leave):** gỡ học viên khỏi lớp — giữ lịch sử làm bài, chỉ đánh dấu đã rời lớp; học viên đã rời không tính vào tổng số học viên và tiến độ lớp (F1-26) | Chức năng | `01-rd/req/identity.md` — F1-26 (bổ sung 2026-08-28) |
-| REQ-05 | Xem hồ sơ chi tiết một học viên trong lớp phụ trách (màn/route riêng, slug mới `class_student_detail`) (F1-27) | Chức năng | `01-rd/req/identity.md` — F1-27 (bổ sung 2026-08-28) |
+| REQ-01 | Tạo lớp học mới với thông tin cơ bản; sinh mã mời; học viên tự tham gia lớp bằng mã mời (F1-23) | Chức năng | `01-rd/req/F1_identity.md` — F1-23 (bổ sung 2026-08-28) |
+| REQ-02 | Xoá lớp học (xoá thật, hard delete) (F1-24) | Chức năng | `01-rd/req/F1_identity.md` — F1-24 (bổ sung 2026-08-28) |
+| REQ-03 | Mã mời có thời hạn dùng (F1-25) | Chức năng | `01-rd/req/F1_identity.md` — F1-25 (bổ sung 2026-08-28) |
+| REQ-04 | ~~Gỡ học viên khỏi lớp — xoá luôn lịch sử làm bài của học viên đó trong lớp~~ **ĐÃ ĐỔI 2026-10-14 (DEC-2026-1014-keep-learning-history-on-leave):** gỡ học viên khỏi lớp — giữ lịch sử làm bài, chỉ đánh dấu đã rời lớp; học viên đã rời không tính vào tổng số học viên và tiến độ lớp (F1-26) | Chức năng | `01-rd/req/F1_identity.md` — F1-26 (bổ sung 2026-08-28) |
+| REQ-05 | Xem hồ sơ chi tiết một học viên trong lớp phụ trách (màn/route riêng, slug mới `class_student_detail`) (F1-27) | Chức năng | `01-rd/req/F1_identity.md` — F1-27 (bổ sung 2026-08-28) |
 | REQ-06 | Given-When-Then xem hồ sơ chi tiết học viên (—) | Chức năng | `01-rd/req/user_stories/a2_instructor.md` (`US-A2-08`) |
-| REQ-07 | Ma trận phân quyền — Function `CLASS_MANAGEMENT` gác quyền A2 theo phạm vi lớp phụ trách (F1-10, F1-12) | Chức năng | `01-rd/req/identity.md` — F1-10, F1-12 |
+| REQ-07 | Ma trận phân quyền — Function `CLASS_MANAGEMENT` gác quyền A2 theo phạm vi lớp phụ trách (F1-10, F1-12) | Chức năng | `01-rd/req/F1_identity.md` — F1-10, F1-12 |
 | REQ-08 | Given-When-Then tạo lớp và tham gia bằng mã mời (—) | Chức năng | `01-rd/req/user_stories/a2_instructor.md` (`US-A2-07`) |
 
 ---
@@ -197,7 +197,7 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 | Loại | Tham chiếu |
 |---|---|
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` — mục 7.2 dòng `class_management`. |
-| Yêu cầu module | `01-rd/req/identity.md` — F1-10 tới F1-12; F1-23 tới F1-27 (CRUD lớp học + mã mời + hồ sơ học viên, bổ sung 2026-08-28). |
+| Yêu cầu module | `01-rd/req/F1_identity.md` — F1-10 tới F1-12; F1-23 tới F1-27 (CRUD lớp học + mã mời + hồ sơ học viên, bổ sung 2026-08-28). |
 | User story | `01-rd/req/user_stories/a2_instructor.md` — `US-A2-07` (tạo lớp + mã mời); `US-A2-08` (hồ sơ chi tiết học viên). |
 | Quyết định | `DEC-2026-0828-remove-per-class-interview-set` — F6-11, `US-A2-04` loại khỏi phạm vi. |
 | Quyết định | `DEC-2026-0828-remove-rejudge-scope` — F4-09a→e, `admin_rejudge` loại khỏi phạm vi. |

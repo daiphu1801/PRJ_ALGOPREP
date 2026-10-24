@@ -17,7 +17,7 @@
   này và được mô tả ở Khu vực A [Nguồn: 02-bd/screens/teacher/_shell.md:30,113-114].
 
 > Đọc cùng `01-rd/screens/teacher/INS0201_class_management.md` (hành vi ở mức yêu cầu, không lặp lại ở
-> đây) và `02-bd/database/identity.md` mục 1.8 tới 1.10 (bảng `classes`, `class_invite_codes`,
+> đây) và `02-bd/database/F1_identity.md` mục 1.8 tới 1.10 (bảng `classes`, `class_invite_codes`,
 > `class_enrollments`).
 >
 > **Không thiết kế** phần giao/gán bài toán cho lớp — đã tách sang màn `class_assignments` (`INS0202`)
@@ -105,7 +105,7 @@ danh sách học viên ở bộ lọc mặc định "Tất cả".
 thao tác của một thẻ lớp (chế độ sửa).
 
 [Chế độ mở] Hai chế độ dùng chung một form: **tạo mới** (mọi trường rỗng) và **sửa** (nạp sẵn giá trị
-hiện tại của lớp). Sửa lớp dùng chung luồng với tạo lớp [Nguồn: 01-rd/req/identity.md:88-89].
+hiện tại của lớp). Sửa lớp dùng chung luồng với tạo lớp [Nguồn: 01-rd/req/F1_identity.md:88-89].
 
 [Thông tin truyền] Chế độ tạo: không có. Chế độ sửa: `id` của lớp được chọn.
 
@@ -113,7 +113,7 @@ hiện tại của lớp). Sửa lớp dùng chung luồng với tạo lớp [Ng
 
 [Khi thành công] Chế độ sửa: đóng popup, tải lại danh sách lớp và 3 thẻ số liệu. Chế độ tạo (từ V0.6):
 đóng popup rồi **chuyển thẳng sang `INS0205`** của lớp vừa tạo, nơi mã mời đầu tiên đã hiện sẵn trong thẻ
-Mã mời — thay cho việc hiện mã trong popup [Nguồn: 01-rd/req/identity.md:79-81; `DEC-2026-1011-class-detail-page`].
+Mã mời — thay cho việc hiện mã trong popup [Nguồn: 01-rd/req/F1_identity.md:79-81; `DEC-2026-1011-class-detail-page`].
 
 [Khi huỷ] Đóng popup, không tạo và không sửa gì; lưới thẻ lớp giữ nguyên.
 
@@ -149,7 +149,7 @@ của một lớp là bảng "Học viên của lớp" ở `INS0205`, còn xem t
 
 [Giá trị trả về] Kết quả chọn "Xoá lớp" hoặc "Huỷ".
 
-[Khi thành công] Hiển thị cảnh báo đây là **xoá thật, không khôi phục được** [Nguồn: 01-rd/req/identity.md:86-88].
+[Khi thành công] Hiển thị cảnh báo đây là **xoá thật, không khôi phục được** [Nguồn: 01-rd/req/F1_identity.md:86-88].
 
 [Khi huỷ] Đóng popup, lớp giữ nguyên.
 
@@ -166,7 +166,7 @@ của một lớp là bảng "Học viên của lớp" ở `INS0205`, còn xem t
 [Khi thành công] Hiển thị thông báo gỡ học viên chỉ **đánh dấu học viên đã rời lớp**; lịch sử làm bài của học
 viên trong lớp này **được giữ**, giảng viên vẫn xem được [Nguồn: DEC-2026-1014-keep-learning-history-on-leave].
 ~~Cảnh báo cũ: xoá luôn lịch sử làm bài của học viên đó trong phạm vi lớp này~~ (ĐÃ ĐỔI 2026-10-14,
-`DEC-2026-1014-keep-learning-history-on-leave`; RD `01-rd/req/identity.md:98-103` còn câu cũ, chưa cập nhật).
+`DEC-2026-1014-keep-learning-history-on-leave`; RD `01-rd/req/F1_identity.md:98-103` còn câu cũ, chưa cập nhật).
 
 [Khi huỷ] Đóng popup, học viên vẫn thuộc lớp.
 
@@ -177,7 +177,7 @@ viên trong lớp này **được giữ**, giảng viên vẫn xem được [Ngu
 [Chế độ mở] Không có.
 
 [Thông tin truyền] `id` học viên và `id` lớp đang xét — phạm vi hiển thị của màn đích giới hạn trong lớp
-này [Nguồn: 01-rd/req/identity.md:104-108].
+này [Nguồn: 01-rd/req/F1_identity.md:104-108].
 
 [Giá trị trả về] Không có.
 
@@ -220,7 +220,7 @@ flowchart LR
 
 [Mục đích màn] Cho giảng viên xem tổng quan các lớp mình phụ trách, quản lý vòng đời lớp (tạo, sửa, xoá,
 mã mời) và quản lý danh sách học viên trong lớp (xem, lọc, gỡ, mở hồ sơ chi tiết)
-[Nguồn: 01-rd/screens/teacher/INS0201_class_management.md:15-18; 01-rd/req/identity.md:79-111].
+[Nguồn: 01-rd/screens/teacher/INS0201_class_management.md:15-18; 01-rd/req/F1_identity.md:79-111].
 
 [Luồng nghiệp vụ chính]
 
@@ -230,10 +230,10 @@ mã mời) và quản lý danh sách học viên trong lớp (xem, lọc, gỡ, 
 2. **Tạo lớp**: bấm "+ Tạo lớp mới", nhập tên lớp (bắt buộc), mô tả và lịch học có cấu trúc (tuỳ chọn:
    ngày trong tuần, giờ, phòng, từ ngày đến ngày, ghi chú), lưu. Hệ thống sinh ngay một mã mời đầu tiên kèm
    hạn dùng, rồi **chuyển thẳng sang `INS0205`** của lớp vừa tạo, nơi giảng viên thấy mã để chia sẻ cho học
-   viên [Nguồn: 01-rd/req/identity.md:79-85; `DEC-2026-1011-class-detail-page`].
+   viên [Nguồn: 01-rd/req/F1_identity.md:79-85; `DEC-2026-1011-class-detail-page`].
 3. **Quản lý mã mời** (V0.6): không còn ở màn này. Xem các mã còn hiệu lực và tạo thêm mã mới là việc của
    thẻ Mã mời ở `INS0205`. Nhiều mã cùng hiệu lực song song là hợp lệ, không thu hồi mã cũ
-   [Nguồn: 01-rd/req/identity.md:93-97].
+   [Nguồn: 01-rd/req/F1_identity.md:93-97].
 4. **Sửa hoặc xoá lớp**: sửa dùng chung form với tạo; xoá là **xoá thật**, có popup xác nhận.
 5. **Lọc danh sách học viên**: chọn tab lớp hoặc bấm vào một thẻ lớp — cả hai cùng đặt một trạng thái lọc
    duy nhất [Nguồn: 01-rd/screens/teacher/INS0201_class_management.md:123]. Bấm lại đúng thẻ lớp đang chọn thì bỏ chọn và trở về "Tất cả" (V0.10, `DEC-2026-1014-instructor-batch3-4-contracts-and-removal`).
@@ -241,7 +241,7 @@ mã mời) và quản lý danh sách học viên trong lớp (xem, lọc, gỡ, 
    làm bài của học viên trong phạm vi lớp.
 7. **Xem hồ sơ học viên**: bấm tên học viên để sang màn `class_student_detail`.
 
-[Người dùng] Giảng viên đã đăng nhập, có Function `CLASS_MANAGEMENT` [Nguồn: 01-rd/req/identity.md:57].
+[Người dùng] Giảng viên đã đăng nhập, có Function `CLASS_MANAGEMENT` [Nguồn: 01-rd/req/F1_identity.md:57].
 
 [Tệp liên quan] Không có. Màn này không xuất hay nhập tệp.
 
@@ -250,7 +250,7 @@ mã mời) và quản lý danh sách học viên trong lớp (xem, lọc, gỡ, 
 - **Không** giao/gỡ bài toán cho lớp — thuộc `class_assignments` [Nguồn: DEC-2026-0828-split-class-management-assignments].
 - **Không** có giao diện chấm lại [Nguồn: DEC-2026-0828-remove-rejudge-scope].
 - **Không** có bộ câu hỏi phỏng vấn riêng theo lớp [Nguồn: DEC-2026-0828-remove-per-class-interview-set].
-- **Không** thêm học viên thủ công — học viên tự tham gia bằng mã mời [Nguồn: 01-rd/req/identity.md:81-83].
+- **Không** thêm học viên thủ công — học viên tự tham gia bằng mã mời [Nguồn: 01-rd/req/F1_identity.md:81-83].
 - ~~Không có trang con `/class/:id`; tổng quan cộng bảng học viên lọc theo tab đã đủ~~ **ĐẢO NGƯỢC 2026-10-11**
   (`DEC-2026-1011-class-detail-page`): có trang con `INS0205` `class_detail`, route
   `/instructor/classes/[classId]`, vì "3 nút với popup không cung cấp đủ thông tin"
@@ -266,7 +266,7 @@ mã mời) và quản lý danh sách học viên trong lớp (xem, lọc, gỡ, 
 trang (prototype 3 lớp). Tab lọc: 1 + số lớp. Bảng học viên: **20 dòng mỗi trang** (V0.10, `DEC-2026-1014-instructor-batch5-6-nav-pagination-rubric`), vì bảng gộp học viên của nhiều lớp; quy ước chung cho bảng gộp nhiều dòng, xem Sheet 5 Khu vực D NO 11. Danh sách mã
 mời: không còn ở màn này, xem `INS0205`.
 
-[Nguồn: 01-rd/screens/teacher/INS0201_class_management.md:62-90; 02-bd/database/identity.md:85-101]
+[Nguồn: 01-rd/screens/teacher/INS0201_class_management.md:62-90; 02-bd/database/F1_identity.md:85-101]
 
 ### 4.2 DTO liên quan
 
@@ -277,18 +277,18 @@ mời: không còn ở màn này, xem `INS0205`.
 - `ClassScheduleDto` — lịch học có cấu trúc, xem Sheet 7.1 (`DEC-2026-1011-class-schedule-structured`).
 - `ClassStudentRowDto` — một dòng của bảng danh sách học viên.
 
-`[Suy luận]` — tên DTO do BD này đề xuất, `03-dd/api/identity.md` chốt lại.
+`[Suy luận]` — tên DTO do BD này đề xuất, `03-dd/api/F1_identity.md` chốt lại.
 
 ### 4.3 Bảng dữ liệu liên quan (6)
 
 | NO | Bảng | Ghi chú |
 | --: | :--- | :--- |
-| 1 | `identity.classes` | [Nguồn: 02-bd/database/identity.md:85-88] |
-| 2 | `identity.class_invite_codes` | [Nguồn: 02-bd/database/identity.md:90-93] |
-| 3 | `identity.class_enrollments` | [Nguồn: 02-bd/database/identity.md:95-101] |
-| 4 | `identity.users` | Tên hiển thị học viên — cột `display_name` [Nguồn: 02-bd/database/identity.md:16] |
+| 1 | `identity.classes` | [Nguồn: 02-bd/database/F1_identity.md:85-88] |
+| 2 | `identity.class_invite_codes` | [Nguồn: 02-bd/database/F1_identity.md:90-93] |
+| 3 | `identity.class_enrollments` | [Nguồn: 02-bd/database/F1_identity.md:95-101] |
+| 4 | `identity.users` | Tên hiển thị học viên — cột `display_name` [Nguồn: 02-bd/database/F1_identity.md:16] |
 | 5 | `judge.submissions` | Nguồn tính Điểm TB **theo phạm vi lớp**, đọc qua `GetClassStudentSubmissionMetrics` của `judge-orchestration`, không truy vấn chéo schema. Thay cho `identity.user_submission_stats` (read model toàn cục, không có chiều `class_id`) từ 2026-09-21 theo `DEC-2026-0921-teacher-screens-conflict-resolutions` |
-| 6 | `identity.identity_recent_activity` | Cột "Hoạt động" của bảng học viên [Nguồn: 02-bd/database/identity.md:115-116] |
+| 6 | `identity.identity_recent_activity` | Cột "Hoạt động" của bảng học viên [Nguồn: 02-bd/database/F1_identity.md:115-116] |
 
 Số liệu còn lại **không đọc từ bảng của `identity`**: tỉ lệ "Hoàn thành" cần dữ liệu bài đã giao cho
 lớp (F2-12, thuộc `problem-bank`), lấy qua endpoint của module sở hữu, không truy vấn chéo schema — xem Câu hỏi mở Q2. (Số "Cần chấm tay" từng là số liệu thứ hai, đã bỏ 2026/10/13.)
@@ -363,7 +363,7 @@ học viên, và liên kết tên học viên sang `class_student_detail`. Vị 
 | Thẻ số liệu | | | | | | | | | | | | | |
 | | 1 | Tổng số lớp | `classManagement.stats.classCount` | `identity.classes` | `id` | Label | Number | 4 | - | O | - | Số nguyên | Số lớp đang phụ trách; dòng phụ hiển thị tổng số học viên<br>[Công thức] Đếm `classes` có `instructor_id` bằng người đăng nhập<br>[EVT liên quan] EVT-1 |
 | | 2 | Hoàn thành trung bình | `classManagement.stats.avgCompletion` | - | - | Label | Number | 3 | - | O | - | `{số}%` | Tỉ lệ hoàn thành trung bình của toàn bộ học viên trong các lớp phụ trách<br>[Công thức] Trung bình cộng tỉ lệ "Hoàn thành" của từng học viên; tỉ lệ một học viên = số bài đã giao mà học viên Accepted ít nhất một lần chia tổng số bài đã giao [Nguồn: DEC-2026-0830-class-progress-dashboard]. Dữ liệu bài đã giao thuộc `problem-bank`, xem Q2<br>[EVT liên quan] EVT-1 |
-| | 3 | ~~Chênh lệch so với tuần trước~~ (đã bỏ 2026/10/14, `DEC-2026-1014-instructor-batch1-counting-rules`, Q1 đóng) | `classManagement.stats.avgCompletionDelta` | - | - | - | - | - | - | - | - | - | Đã bỏ vì không có nguồn: `02-bd/database/identity.md` mục 1.12 không có bảng ảnh chụp theo tuần; dòng giữ để không đánh số lại<br>[EVT liên quan] - |
+| | 3 | ~~Chênh lệch so với tuần trước~~ (đã bỏ 2026/10/14, `DEC-2026-1014-instructor-batch1-counting-rules`, Q1 đóng) | `classManagement.stats.avgCompletionDelta` | - | - | - | - | - | - | - | - | - | Đã bỏ vì không có nguồn: `02-bd/database/F1_identity.md` mục 1.12 không có bảng ảnh chụp theo tuần; dòng giữ để không đánh số lại<br>[EVT liên quan] - |
 | | 4 | ~~Cần chấm tay~~ (đã bỏ 2026/10/13, `DEC-2026-1013-remove-instructor-manual-grading`) | `classManagement.stats.pendingGrading` | - | - | - | - | - | - | - | - | - | Đã bỏ cùng chấm tay của giảng viên; dòng giữ để không đánh số lại<br>[EVT liên quan] - |
 | | 5 | Học viên vắng bài | `classManagement.stats.absentStudents` | - | - | Label | Number | 4 | - | O | - | Số nguyên | Số học viên không nộp bài trong 7 ngày gần nhất; dòng phụ của thẻ ghi "Chưa nộp 7 ngày qua" (nhãn tĩnh i18n, không còn "Chưa nộp tuần này", `DEC-2026-1014-instructor-batch2-weekly-rules`)<br>[Công thức] Đếm học viên thuộc các lớp phụ trách có trạng thái "Vắng bài" theo ngưỡng ở Khu vực D NO 7: cửa sổ trượt 7 ngày tính tới thời điểm truy vấn, không theo tuần lịch<br>[EVT liên quan] EVT-1 |
 
@@ -408,13 +408,13 @@ học viên, và liên kết tên học viên sang `class_student_detail`. Vị 
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Popup | | | | | | | | | | | | | |
-| | 1 | Tạo/Sửa lớp | `classManagement.popup.classForm` | `identity.classes` | `name`, `description`, `schedule` | Popup | - | - | - | I/O | - | - | Form: Tên lớp (bắt buộc), Mô tả (tuỳ chọn) và nhóm **Lịch học có cấu trúc** (tuỳ chọn, V0.6): ô chọn ngày trong tuần (T2 tới CN, nhiều ngày), giờ bắt đầu, giờ kết thúc, phòng, từ ngày, đến ngày, ghi chú. Mọi phần của lịch đều tuỳ chọn. Danh sách trường lấy đúng cột có thật của bảng `classes` [Nguồn: 02-bd/database/identity.md mục 1.8 và 1.14]<br>[Nguồn giá trị] Chế độ tạo: rỗng. Chế độ sửa: dòng `classes` được chọn<br>[EVT liên quan] EVT-2, EVT-3, EVT-4, EVT-6 |
+| | 1 | Tạo/Sửa lớp | `classManagement.popup.classForm` | `identity.classes` | `name`, `description`, `schedule` | Popup | - | - | - | I/O | - | - | Form: Tên lớp (bắt buộc), Mô tả (tuỳ chọn) và nhóm **Lịch học có cấu trúc** (tuỳ chọn, V0.6): ô chọn ngày trong tuần (T2 tới CN, nhiều ngày), giờ bắt đầu, giờ kết thúc, phòng, từ ngày, đến ngày, ghi chú. Mọi phần của lịch đều tuỳ chọn. Danh sách trường lấy đúng cột có thật của bảng `classes` [Nguồn: 02-bd/database/F1_identity.md mục 1.8 và 1.14]<br>[Nguồn giá trị] Chế độ tạo: rỗng. Chế độ sửa: dòng `classes` được chọn<br>[EVT liên quan] EVT-2, EVT-3, EVT-4, EVT-6 |
 | | 2 | ~~Mã mời đầu tiên~~ | `classManagement.popup.firstInviteCode` | - | - | - | - | - | - | - | - | - | **Bỏ ở V0.6.** Trước: mã mời đầu tiên hiện trong popup tạo lớp. Nay: tạo lớp xong chuyển thẳng sang `INS0205`, mã hiện ở thẻ Mã mời (F1-23 không đổi: lớp vừa tạo vẫn có sẵn một mã)<br>[EVT liên quan] EVT-3 |
-| | 3 | ~~Mã mời~~ | `classManagement.popup.inviteCodes` | - | - | - | - | - | - | - | - | - | **Bỏ ở V0.6.** Popup Mã mời chuyển nguyên chức năng sang thẻ Mã mời của `INS0205` (xem, tạo mã mới, sao chép; vẫn không có nút thu hồi vì `class_invite_codes` không có cột trạng thái [Nguồn: 02-bd/database/identity.md:112-113])<br>[EVT liên quan] EVT-7, EVT-8, EVT-9, EVT-10 (đã chuyển) |
+| | 3 | ~~Mã mời~~ | `classManagement.popup.inviteCodes` | - | - | - | - | - | - | - | - | - | **Bỏ ở V0.6.** Popup Mã mời chuyển nguyên chức năng sang thẻ Mã mời của `INS0205` (xem, tạo mã mới, sao chép; vẫn không có nút thu hồi vì `class_invite_codes` không có cột trạng thái [Nguồn: 02-bd/database/F1_identity.md:112-113])<br>[EVT liên quan] EVT-7, EVT-8, EVT-9, EVT-10 (đã chuyển) |
 | | 4 | Xác nhận xoá lớp | `classManagement.popup.deleteClassConfirm` | `identity.classes` | `id`, `name` | Popup | - | - | - | I | - | Xoá lớp / Huỷ | Xác nhận trước khi xoá thật một lớp; nêu rõ số học viên sẽ mất quyền truy cập và thao tác không khôi phục được (F1-24)<br>[Nguồn giá trị] Tên lớp và số học viên của thẻ được chọn<br>[EVT liên quan] EVT-11, EVT-12, EVT-13 |
 | | 5 | Xác nhận gỡ học viên | `classManagement.popup.removeStudentConfirm` | `identity.class_enrollments` | `id` | Popup | - | - | - | I | - | Gỡ học viên / Huỷ | Xác nhận trước khi gỡ học viên; nêu rõ học viên chỉ rời lớp, **lịch sử làm bài được giữ** (F1-26; ~~lịch sử làm bài sẽ bị xoá theo~~, ĐÃ ĐỔI 2026-10-14, `DEC-2026-1014-keep-learning-history-on-leave`)<br>[Nguồn giá trị] Tên học viên và tên lớp của dòng được chọn<br>[EVT liên quan] EVT-17, EVT-18, EVT-19 |
 
-[Nguồn: 09-layoutBase/Giáo viên - Lớp của tôi.dc.html:115-121,123-134,136-157,159-188,253-258,260-265,267-272,274-284; 02-bd/database/identity.md:16,85-101,113-116; 01-rd/req/identity.md:79-111]
+[Nguồn: 09-layoutBase/Giáo viên - Lớp của tôi.dc.html:115-121,123-134,136-157,159-188,253-258,260-265,267-272,274-284; 02-bd/database/F1_identity.md:16,85-101,113-116; 01-rd/req/F1_identity.md:79-111]
 
 ---
 
@@ -490,7 +490,7 @@ học viên, và liên kết tên học viên sang `class_student_detail`. Vị 
 | | 4 | Xác nhận xoá lớp | Điều kiện | [Điều kiện hiển thị] Chỉ hiển thị sau khi chọn "Xoá lớp". |
 | | 5 | Xác nhận gỡ học viên | Điều kiện | [Điều kiện hiển thị] Chỉ hiển thị sau khi bấm "Gỡ khỏi lớp" trên một dòng học viên. |
 
-[Nguồn: 09-layoutBase/Giáo viên - Lớp của tôi.dc.html:142,179,198,284; 02-bd/database/identity.md:92-93; 01-rd/req/identity.md:79-103]
+[Nguồn: 09-layoutBase/Giáo viên - Lớp của tôi.dc.html:142,179,198,284; 02-bd/database/F1_identity.md:92-93; 01-rd/req/F1_identity.md:79-103]
 
 ---
 
@@ -546,13 +546,13 @@ học viên, và liên kết tên học viên sang `class_student_detail`. Vị 
 Màn này có **một thao tác xoá thật**: xoá lớp (F1-24). Gỡ học viên (F1-26) **không xoá**: `identity` chỉ đặt
 `class_enrollments.left_at` và phát sự kiện miền `StudentRemovedFromClass`; dữ liệu làm bài ở module khác không bị
 xoá hay ẩn (ĐÃ ĐỔI 2026-10-14, `DEC-2026-1014-keep-learning-history-on-leave`; trước đây ghi hai thao tác xoá thật
-kèm cascade) [Nguồn: 02-bd/database/identity.md mục 1.10].
+kèm cascade) [Nguồn: 02-bd/database/F1_identity.md mục 1.10].
 
 `[Suy luận]` — tên repository do BD này đề xuất, DD module `identity` chốt lại.
 
 ### 7.3 Danh sách endpoint [Nội bộ]
 
-> Chỉ tên nghiệp vụ và BC sở hữu. Hợp đồng chi tiết thuộc `03-dd/api/identity.md`.
+> Chỉ tên nghiệp vụ và BC sở hữu. Hợp đồng chi tiết thuộc `03-dd/api/F1_identity.md`.
 
 | NO | Endpoint (tên nghiệp vụ) | Mục đích | BC sở hữu |
 | --: | :--- | :--- | :--- |
@@ -569,7 +569,7 @@ kèm cascade) [Nguồn: 02-bd/database/identity.md mục 1.10].
 
 Endpoint 10 thuộc module khác; nó chưa được thiết kế ở BD của module sở hữu — xem Câu hỏi mở Q2.
 
-[Nguồn: 02-bd/database/identity.md:85-101,113-116]
+[Nguồn: 02-bd/database/F1_identity.md:85-101,113-116]
 
 ---
 
@@ -602,7 +602,7 @@ Endpoint 10 thuộc module khác; nó chưa được thiết kế ở BD của m
 | 19 | Nút | Huỷ gỡ học viên | Bấm "Huỷ" trong popup xác nhận gỡ học viên. | Không | Không | - | [Các bước]<br>1. Đóng popup.<br>[Khi thành công] Học viên vẫn thuộc lớp, bảng không đổi. |
 | 20 | Nút | Chuyển trang bảng học viên | Bấm số trang hoặc nút trước/sau ở điều khiển phân trang (V0.10). | Không | Có | `ListClassStudents` | [Các bước]<br>1. Đặt `page` theo lựa chọn, `size` = 20, giữ nguyên bộ lọc tab.<br>2. Tải lại bảng học viên.<br>[Khi thành công] Bảng hiển thị đúng trang; đổi tab lọc thì quay về trang 1. |
 
-[Nguồn: 09-layoutBase/Giáo viên - Lớp của tôi.dc.html:120,164,269,284; 01-rd/req/identity.md:79-111; 01-rd/screens/teacher/INS0201_class_management.md:70-85,123]
+[Nguồn: 09-layoutBase/Giáo viên - Lớp của tôi.dc.html:120,164,269,284; 01-rd/req/F1_identity.md:79-111; 01-rd/screens/teacher/INS0201_class_management.md:70-85,123]
 
 ---
 
@@ -613,21 +613,21 @@ Endpoint 10 thuộc module khác; nó chưa được thiết kế ở BD của m
 
 | NO | Loại | Tóm tắt kiểm | Chi tiết | Mức | Mã thông báo | Ghi chú | EVT gọi | Thứ tự |
 | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: |
-| 1 | Kiểm quyền | Quyền truy cập màn | [Nội dung kiểm] Người dùng không có Function `CLASS_MANAGEMENT` thì không được vào màn.<br>[Nơi thực thi] Chặn ở cả tầng định tuyến phía giao diện và tầng phân quyền phía máy chủ, không chỉ ẩn giao diện. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn không có quyền truy cập chức năng này." [Nguồn: 01-rd/req/identity.md:57] | EVT-1 | 1 |
+| 1 | Kiểm quyền | Quyền truy cập màn | [Nội dung kiểm] Người dùng không có Function `CLASS_MANAGEMENT` thì không được vào màn.<br>[Nơi thực thi] Chặn ở cả tầng định tuyến phía giao diện và tầng phân quyền phía máy chủ, không chỉ ẩn giao diện. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn không có quyền truy cập chức năng này." [Nguồn: 01-rd/req/F1_identity.md:57] | EVT-1 | 1 |
 | 2 | Kiểm quyền | Phạm vi lớp phụ trách | [Nội dung kiểm] Mọi thao tác đọc và ghi chỉ áp dụng cho lớp có `instructor_id` bằng người đang đăng nhập.<br>[Nơi thực thi] Máy chủ, trên từng yêu cầu — không dựa vào việc giao diện chỉ hiển thị lớp của mình. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn không phụ trách lớp này." Áp cho cả `UpdateClass`, `DeleteClass`, `ListClassStudents`, `RemoveStudentFromClass`, `CreateClassInviteCode`. | EVT-3, EVT-7, EVT-8, EVT-12, EVT-15, EVT-18 | 1 |
 | 3 | Kiểm nhập liệu | Tên lớp bắt buộc | [Nội dung kiểm] Tên lớp rỗng hoặc chỉ gồm khoảng trắng thì không cho lưu.<br>[Nơi thực thi] Popup và máy chủ.<br>[Tiêu điểm] Viền ô Tên lớp + toast. | Lỗi | Chưa có mã thông báo | Nội dung toast "Tên lớp không được để trống." Ô chỉ đổi viền đỏ, không có chữ lỗi cạnh ô [Nguồn: DEC-2026-1003-toast-feedback-channel]. | EVT-3 | 1 |
-| 4 | Kiểm nhập liệu | Độ dài các trường lớp | [Nội dung kiểm] Tên lớp quá 120 ký tự, mô tả quá 500 ký tự, phòng học quá 100 ký tự hoặc ghi chú lịch quá 200 ký tự thì báo lỗi. (V0.6: giới hạn "lịch học 200 ký tự" của chuỗi `schedule_note` cũ nay tách thành `room` 100 và `note` 200.)<br>[Nơi thực thi] Popup và máy chủ.<br>[Tiêu điểm] Viền ô vi phạm + toast. | Lỗi | Chưa có mã thông báo | Nội dung toast "Nội dung vượt quá độ dài cho phép." Bốn giới hạn là đề xuất của BD `[SoT: Suy luận]`, **chưa chốt** — `02-bd/database/identity.md` mục 1.8 chỉ ghi tên cột, không ghi độ dài; DD chốt lại. | EVT-3 | 2 |
-| 5 | Kiểm nghiệp vụ | Xác nhận xoá lớp | [Nội dung kiểm] Không được gọi xoá lớp khi chưa qua popup xác nhận; popup phải nêu rõ đây là xoá thật.<br>[Nơi thực thi] Màn hình. | Cảnh báo | Chưa có mã thông báo | Nội dung "Xoá lớp sẽ gỡ toàn bộ {số} học viên khỏi lớp và không khôi phục được." [Nguồn: 01-rd/req/identity.md:86-88] | EVT-11, EVT-12 | 1 |
+| 4 | Kiểm nhập liệu | Độ dài các trường lớp | [Nội dung kiểm] Tên lớp quá 120 ký tự, mô tả quá 500 ký tự, phòng học quá 100 ký tự hoặc ghi chú lịch quá 200 ký tự thì báo lỗi. (V0.6: giới hạn "lịch học 200 ký tự" của chuỗi `schedule_note` cũ nay tách thành `room` 100 và `note` 200.)<br>[Nơi thực thi] Popup và máy chủ.<br>[Tiêu điểm] Viền ô vi phạm + toast. | Lỗi | Chưa có mã thông báo | Nội dung toast "Nội dung vượt quá độ dài cho phép." Bốn giới hạn là đề xuất của BD `[SoT: Suy luận]`, **chưa chốt** — `02-bd/database/F1_identity.md` mục 1.8 chỉ ghi tên cột, không ghi độ dài; DD chốt lại. | EVT-3 | 2 |
+| 5 | Kiểm nghiệp vụ | Xác nhận xoá lớp | [Nội dung kiểm] Không được gọi xoá lớp khi chưa qua popup xác nhận; popup phải nêu rõ đây là xoá thật.<br>[Nơi thực thi] Màn hình. | Cảnh báo | Chưa có mã thông báo | Nội dung "Xoá lớp sẽ gỡ toàn bộ {số} học viên khỏi lớp và không khôi phục được." [Nguồn: 01-rd/req/F1_identity.md:86-88] | EVT-11, EVT-12 | 1 |
 | 6 | Kiểm nghiệp vụ | Xác nhận gỡ học viên | [Nội dung kiểm] Không được gọi gỡ học viên khi chưa qua popup xác nhận; popup phải nêu rõ học viên chỉ rời lớp và lịch sử làm bài được giữ (ĐÃ ĐỔI 2026-10-14, `DEC-2026-1014-keep-learning-history-on-leave`; ~~hệ quả xoá lịch sử làm bài~~).<br>[Nơi thực thi] Màn hình. | Cảnh báo | Chưa có mã thông báo | Nội dung "Học viên sẽ rời khỏi lớp. Lịch sử làm bài của học viên trong lớp này vẫn được giữ." ĐÃ CHỐT 2026-10-14 (`DEC-2026-1014-class-leave-details`; ~~`[SoT: Suy luận]` — câu chữ chưa có chủ dự án duyệt~~); câu cũ "Gỡ học viên sẽ xoá toàn bộ lịch sử làm bài..." đã bỏ [Nguồn: DEC-2026-1014-keep-learning-history-on-leave] | EVT-17, EVT-18 | 1 |
-| 7 | Kiểm nghiệp vụ | Mã mời hết hạn | [Nội dung kiểm] Mã đã quá `expires_at` thì không cho sao chép và phải hiển thị nhãn "Hết hạn".<br>[Nơi thực thi] Màn hình; máy chủ kiểm lại khi học viên nhập mã (thuộc luồng của màn khác).<br>[Tiêu điểm] Dòng mã vi phạm. | Cảnh báo | Chưa có mã thông báo | Nội dung "Mã này đã hết hạn. Hãy tạo mã mới." [Nguồn: 02-bd/database/identity.md:92] | EVT-7, EVT-9 | 1 |
-| 8 | Kiểm nghiệp vụ | Lớp đã bị xoá bởi phiên khác | [Nội dung kiểm] Thao tác trên một lớp không còn tồn tại thì dừng và yêu cầu tải lại.<br>[Nơi thực thi] Máy chủ. | Lỗi | Mã lỗi trong phản hồi | Nội dung "Lớp này không còn tồn tại. Vui lòng tải lại màn hình." Cần vì xoá lớp là hard delete, không có bản ghi mềm để phát hiện [Nguồn: 02-bd/database/identity.md:87-88]. | EVT-3, EVT-7, EVT-8, EVT-12, EVT-18 | 2 |
+| 7 | Kiểm nghiệp vụ | Mã mời hết hạn | [Nội dung kiểm] Mã đã quá `expires_at` thì không cho sao chép và phải hiển thị nhãn "Hết hạn".<br>[Nơi thực thi] Màn hình; máy chủ kiểm lại khi học viên nhập mã (thuộc luồng của màn khác).<br>[Tiêu điểm] Dòng mã vi phạm. | Cảnh báo | Chưa có mã thông báo | Nội dung "Mã này đã hết hạn. Hãy tạo mã mới." [Nguồn: 02-bd/database/F1_identity.md:92] | EVT-7, EVT-9 | 1 |
+| 8 | Kiểm nghiệp vụ | Lớp đã bị xoá bởi phiên khác | [Nội dung kiểm] Thao tác trên một lớp không còn tồn tại thì dừng và yêu cầu tải lại.<br>[Nơi thực thi] Máy chủ. | Lỗi | Mã lỗi trong phản hồi | Nội dung "Lớp này không còn tồn tại. Vui lòng tải lại màn hình." Cần vì xoá lớp là hard delete, không có bản ghi mềm để phát hiện [Nguồn: 02-bd/database/F1_identity.md:87-88]. | EVT-3, EVT-7, EVT-8, EVT-12, EVT-18 | 2 |
 | 9 | Kiểm nghiệp vụ | ~~Phân hệ AI không khả dụng~~ (bỏ 2026/10/13) | [Nội dung kiểm] Đã bỏ: màn không còn gọi `ai-review` (số "Cần chấm tay" đã bỏ, `DEC-2026-1013-remove-instructor-manual-grading`). Dòng giữ để không đánh số lại. | - | - | - | - | - |
 | 10 | Kiểm nghiệp vụ | Lỗi hệ thống hoặc lỗi gọi máy chủ | [Nội dung kiểm] Gọi máy chủ thất bại hoặc trả lỗi nghiệp vụ thì dừng thao tác, giữ nguyên dữ liệu đang hiển thị.<br>[Nơi thực thi] Màn hình. | Lỗi | Mã lỗi trong phản hồi | Phản hồi có mã lỗi đã đăng ký thì hiển thị nội dung tương ứng; chưa đăng ký thì hiển thị "Không kết nối được máy chủ." Cả hai đều hiện bằng toast. | EVT-1, EVT-3, EVT-7, EVT-8, EVT-12, EVT-14, EVT-15, EVT-18 | 1 |
 | 11 | Kiểm nhập liệu | Quy tắc lịch học có cấu trúc (V0.6) | [Nội dung kiểm] Mọi phần của lịch đều tuỳ chọn. Khi có phần nào thì: (a) có giờ thì phải có ít nhất một ngày trong tuần; (b) giờ bắt đầu và giờ kết thúc đi cùng nhau, giờ kết thúc phải sau giờ bắt đầu (định dạng HH:mm); (c) ngày kết thúc không được trước ngày bắt đầu (định dạng yyyy-MM-dd); (d) `days` chỉ nhận số nguyên 1 tới 7, không trùng.<br>[Nơi thực thi] Popup và máy chủ (`schedule` là jsonb, DB không tự kiểm).<br>[Tiêu điểm] Viền ô vi phạm + toast. | Lỗi | Chưa có mã thông báo | Toast đề xuất: "Lịch học có giờ thì phải chọn ít nhất một ngày trong tuần." / "Giờ bắt đầu và giờ kết thúc phải đi cùng nhau." / "Giờ kết thúc phải sau giờ bắt đầu." / "Ngày kết thúc không được trước ngày bắt đầu." Toàn bộ quy tắc theo `DEC-2026-1011-class-schedule-structured`; câu chữ toast là `[SoT: Suy luận]` | EVT-3 | 3 |
 
 Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 
-[Nguồn: 01-rd/req/identity.md:57,79-111; 02-bd/database/identity.md:87-101]
+[Nguồn: 01-rd/req/F1_identity.md:57,79-111; 02-bd/database/F1_identity.md:87-101]
 
 ---
 
@@ -639,7 +639,7 @@ Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 | Q2 | ~~"Hoàn thành %" lấy dữ liệu bài đã giao của `problem-bank` bằng đường nào?~~ **ĐÃ CHỐT 2026-09-21** bởi `DEC-2026-0921-class-completion-owned-by-identity`: **bỏ hẳn** `GetClassAssignmentCompletion`. `problem-bank` chỉ cung cấp danh sách bài đã giao qua `ListClassAssignments` (endpoint đã tồn tại sẵn, không phải viết mới), `identity` tự tính tỉ lệ từ danh sách đó kết hợp read model `user_problem_best_score` mà chính nó đã sở hữu. Ba lý do: (1) không đẻ endpoint liên module mới; (2) `identity` đằng nào cũng phải lấy danh sách bài đã giao để tính Điểm TB theo lớp (`DEC-2026-0921-teacher-screens-conflict-resolutions` mục 3), nên tính thêm Hoàn thành từ cùng danh sách là miễn phí; (3) đúng chủ sở hữu nghiệp vụ — tiến độ học viên là việc của `identity` (F1-06, F1-28), `problem-bank` chỉ sở hữu "lớp này được giao bài nào"; phương án cũ bắt `problem-bank` đọc ngược hai bảng của `identity`. | Đã đóng | Đã đóng |
 | Q3 | ~~"Cần chấm tay" đếm theo lớp bằng endpoint nào?~~ **Đã đóng: màn bị bỏ (2026/10/13, `DEC-2026-1013-remove-instructor-manual-grading`).** Không còn thẻ, cột hay endpoint `CountPendingManualGrading`. | - | Đã đóng |
 | Q4 | ~~Điểm TB là điểm toàn hệ thống hay điểm trong phạm vi lớp?~~ **ĐÃ CHỐT 2026-09-21** bởi `DEC-2026-0921-teacher-screens-conflict-resolutions`: Điểm TB tính **đúng theo phạm vi lớp**, theo đúng câu chữ của F1-28 — RD đứng bậc P2 trên thang SoT, cao hơn BD (P3), nên khi hai bên lệch thì BD phải theo RD chứ không phải ngược lại. Cách tính: giới hạn tập lượt nộp theo danh sách bài đã giao cho lớp rồi đếm qua `GetClassStudentSubmissionMetrics` của `judge-orchestration`. **Không** thêm chiều `class_id` vào `user_submission_stats`: danh sách bài đã giao thay đổi theo thời gian nên read model sẽ sai ngay khi giảng viên gỡ một bài. `user_submission_stats` vẫn giữ nguyên cho mục đích toàn cục của nó (F1-07), chỉ là không còn là nguồn của màn này. Mục 4.3, Sheet 5, Sheet 7.1 và 7.2 đã cập nhật. | Đã đóng | Đã đóng |
-| Q5 | ~~Thời hạn mặc định của mã mời là bao lâu? RD để BD quyết [Nguồn: 01-rd/req/identity.md:90-92]. Đề xuất: **7 ngày** kể từ lúc tạo, và cho phép giảng viên tạo mã mới bất cứ lúc nào (đã chốt ở F1-25) nên hạn ngắn không gây phiền.~~ **ĐÃ CHỐT 2026-10-14 (`DEC-2026-1014-instructor-batch3-4-contracts-and-removal`, tiêu chí ponytail bậc 5):** hạn dùng **cố định 7 ngày**, khớp `03-dd/api/identity.md`, không có ô nhập hạn; giảng viên tạo mã mới bất cứ lúc nào. | Quyết định của chủ dự án | Đã đóng |
+| Q5 | ~~Thời hạn mặc định của mã mời là bao lâu? RD để BD quyết [Nguồn: 01-rd/req/F1_identity.md:90-92]. Đề xuất: **7 ngày** kể từ lúc tạo, và cho phép giảng viên tạo mã mới bất cứ lúc nào (đã chốt ở F1-25) nên hạn ngắn không gây phiền.~~ **ĐÃ CHỐT 2026-10-14 (`DEC-2026-1014-instructor-batch3-4-contracts-and-removal`, tiêu chí ponytail bậc 5):** hạn dùng **cố định 7 ngày**, khớp `03-dd/api/F1_identity.md`, không có ô nhập hạn; giảng viên tạo mã mới bất cứ lúc nào. | Quyết định của chủ dự án | Đã đóng |
 | Q6 | Prototype **không có** menu thao tác trên thẻ lớp, **không có** nút gỡ học viên, **không có** giao diện mã mời — nhưng F1-24 tới F1-27 đã chốt là phải có. BD này đề xuất: menu ba chấm ở góc trên phải mỗi thẻ lớp (Sửa / Mã mời / Xoá), và nút gỡ ở cuối mỗi dòng học viên (hiện khi rê chuột). Cần chủ dự án xác nhận vị trí trước khi dựng. **Cập nhật V0.6:** menu đã thành nhóm ba icon (Xem chi tiết, Sửa, Xoá) và mã mời chuyển sang `INS0205`; **ĐÃ CHỐT 2026-10-14 (`DEC-2026-1014-instructor-batch3-4-contracts-and-removal`, tiêu chí ponytail bậc 6):** nút "Gỡ khỏi lớp" nằm **cuối mỗi dòng học viên, luôn hiện** (không chờ rê chuột, dùng được trên cảm ứng), có popup xác nhận. | Prototype vẽ trước 2026-08-28 [Nguồn: 01-rd/screens/teacher/INS0201_class_management.md:70-74] | Đã đóng |
 | Q7 | ~~Ngưỡng phân loại ở màn này có dùng lại đúng ngưỡng của `class_progress` không?~~ **ĐÃ CHỐT 2026-09-21** bởi `DEC-2026-0921-teacher-screens-conflict-resolutions`: một bộ **năm** nhãn dùng chung cho cả 4 màn cụm lớp — `INSUFFICIENT_DATA` "Chưa đủ dữ liệu" · `ABSENT` "Vắng bài" · `NEEDS_SUPPORT` "Cần hỗ trợ" · `WATCH` "Theo dõi" · `ON_TRACK` "Đang tốt", xét theo đúng thứ tự đó. Điểm sửa quan trọng: điều kiện "Hoàn thành dưới 50%" trước đây bị màn này gán nhãn "Cần hỗ trợ", nay đúng là **"Theo dõi"**; "Cần hỗ trợ" chỉ dành cho trường hợp điểm giảm từ 2 mốc tuần. Sheet 5 NO 8 và Sheet 7.1 dòng 26 đã cập nhật. | Đã đóng | Đã đóng |
 | Q8 | ~~Thẻ "Học viên vắng bài" ghi dòng phụ "Chưa nộp tuần này" nhưng ngưỡng đã chốt là "không nộp trong 7 ngày gần nhất".~~ **ĐÃ CHỐT 2026-10-14** bởi `DEC-2026-1014-instructor-batch2-weekly-rules`: giữ **cửa sổ trượt 7 ngày**, dòng phụ là "Chưa nộp 7 ngày qua" (prototype `09-layoutBase/Giáo viên - Lớp của tôi.dc.html:257` còn chữ cũ, chỉ để tham khảo, không sửa). Sheet 5 B NO 5, Sheet 6 và Sheet 7.1 đã cập nhật. | Đã đóng | Đã đóng |

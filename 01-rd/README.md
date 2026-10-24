@@ -43,12 +43,12 @@ dòng từ `screens/` đã trôi hết (xem mục 7.1). Neo theo dòng chỉ cò
 | File | Nội dung | Trạng thái |
 | :--- | :--- | :--- |
 | `req.md` | **Chỉ mục** — bảng trỏ tới 7 file dưới đây | Chỉ mục, không chứa nội dung |
-| `identity.md` | F1 — danh tính, phân quyền, tiến độ cá nhân | Xong — `F1-01` tới `F1-30` |
-| `problem-bank.md` | F2 — đề bài, đặc tả hàm, testcase, phiên bản bộ testcase | Xong — `F2-01` tới `F2-17` |
-| `harness.md` | F3 — lược đồ kiểu, sinh mã ba ngôn ngữ, so khớp, ánh xạ lỗi biên dịch | Xong — `F3-01` tới `F3-13`; chi tiết codegen thuộc DD |
-| `judge-orchestration.md` | F4 — hàng đợi, gọi engine từng testcase, realtime, timeout sweep | Xong — 11 mã sống; `F4-04` và `F4-09a`-`e` hết hiệu lực |
-| `ai-review.md` | F5 — Solution Review một lượt, Mock Interview nhiều lượt, rubric | Xong — `F5-01` tới `F5-28` |
-| `interview-bank.md` | F6 — ngân hàng câu hỏi lý thuyết, chế độ học, chế độ luyện | Xong — 12 mã sống; `F6-11` hết hiệu lực |
+| `F1_identity.md` | F1 — danh tính, phân quyền, tiến độ cá nhân | Xong — `F1-01` tới `F1-30` |
+| `F2_problem-bank.md` | F2 — đề bài, đặc tả hàm, testcase, phiên bản bộ testcase | Xong — `F2-01` tới `F2-17` |
+| `F3_harness.md` | F3 — lược đồ kiểu, sinh mã ba ngôn ngữ, so khớp, ánh xạ lỗi biên dịch | Xong — `F3-01` tới `F3-13`; chi tiết codegen thuộc DD |
+| `F4_judge-orchestration.md` | F4 — hàng đợi, gọi engine từng testcase, realtime, timeout sweep | Xong — 11 mã sống; `F4-04` và `F4-09a`-`e` hết hiệu lực |
+| `F5_ai-review.md` | F5 — Solution Review một lượt, Mock Interview nhiều lượt, rubric | Xong — `F5-01` tới `F5-28` |
+| `F6_interview-bank.md` | F6 — ngân hàng câu hỏi lý thuyết, chế độ học, chế độ luyện | Xong — 12 mã sống; `F6-11` hết hiệu lực |
 | `nfr.md` | Yêu cầu **phi chức năng**: hiệu năng, mở rộng, tin cậy, bảo mật, bảo trì, 8 tiêu chí thành công S1-S8 | Xong — `S1` tới `S8` |
 | `user_stories.md` | **Chỉ mục** — bảng trỏ tới 5 file dưới đây | Chỉ mục, không chứa nội dung |
 | `user_stories/a1_student.md` | A1 học viên | Xong — `US-A1-01` tới `US-A1-09` |
@@ -65,7 +65,7 @@ dòng từ `screens/` đã trôi hết (xem mục 7.1). Neo theo dòng chỉ cò
 | Khu vực | Actor | Số màn | Slug |
 | :--- | :--- | :-: | :--- |
 | `shared/` | dùng chung nhiều actor | 7 | `auth`, `interview_question_authoring`, `interview_question_info`, `interview_question_management`, `problem_authoring`, `problem_info`, `problem_management` |
-| `users/` | A1 học viên | 12 | `interview_bank_list`, `interview_question_detail`, `mock_interview`, `my_progress`, `my_submissions`, `problem_detail`, `problem_list`, `profile`, `saved_problems`, `settings`, `solution_review`, `submission_result` |
+| `users/` | A1 học viên | 14 | `interview_bank_list`, `interview_question_detail`, `mock_interview`, `my_class_detail`, `my_classes`, `my_progress`, `my_submissions`, `problem_detail`, `problem_list`, `profile`, `saved_problems`, `settings`, `solution_review`, `submission_result` |
 | `teacher/` | A2 giảng viên | 6 sống + 1 đã bỏ | `class_assignments`, `class_detail`, `class_management`, `class_progress`, `class_student_detail`, `instructor_overview` (+ `instructor_grading` đã bỏ 2026-10-13, file giữ làm thông báo gỡ bỏ) |
 | `admin/` | A3 quản trị | 10 | `admin_ai_config`, `admin_ai_limits`, `admin_ai_usage`, `admin_language_config`, `admin_overview`, `admin_permission_matrix`, `admin_queue_monitor`, `admin_rejudge`, `admin_system_log`, `admin_user_management` |
 
@@ -78,6 +78,7 @@ Hai lưu ý:
   **34 màn sống**; slice `class-detail` chưa dựng (prototype đang làm), các số "33" ngay dưới là của thời điểm
   trước đó.
 * **Cập nhật 2026-10-13:** màn `instructor_grading` (`INS0301`) bị bỏ (`DEC-2026-1013-remove-instructor-manual-grading`); file `INS0301_grading.md` vẫn còn để link không gãy nhưng chỉ chứa thông báo gỡ bỏ. Nay vẫn 35 file RD, **33 màn sống**. Slice frontend `views/teacher/grading` chưa gỡ (nợ prototype).
+* **Cập nhật 2026-10-23:** thêm `my_classes` (`USR0701`) và `my_class_detail` (`USR0702`) (`DEC-2026-1023-student-class-screens`): khu `users/` 12 → 14 trong bảng trên, tổng +2 so với các số ở trên (37 file RD). Các số "12" và "33" ở trên chưa đếm lại các màn thêm từ 2026-09-27 (`dashboard`, `problem_overview`, `workspace_home`...), nên đừng cộng thẳng; bảng 7.1 của `01-rd/overview/system_survey.md` là bản đếm theo hàng. Prototype đã dựng, chưa có BD/DD.
 * Frontend đã **soi 1-1 với trục màn**: 34 file RD, **33 màn sống**; **33 slice** trong
   `05-coding/frontend/src/views/`. Màn duy nhất không có slice là `admin_rejudge` — đúng, vì nó ngoài
   phạm vi. Ba slice `class_assignments`, `class_student_detail`, `interview_question_authoring` được bổ
@@ -157,10 +158,10 @@ Rà soát 2026-09-01 bằng máy, kết quả: **0 câu hỏi mở còn treo** t
 file RD mà không được nhắc trong `system_survey.md`**. Bảy mã không màn nào trích (`F1-04`, `F3-03`, `F3-05`,
 `F3-08`, `F3-09`, `F4-05`, `F4-06`) đều thuần backend, không có bề mặt giao diện — đúng, không phải sót.
 
-**Một vấn đề tầng, đã xử lý cùng ngày.** `req/harness.md` và `req/user_stories.md` từng trích tới hai file
+**Một vấn đề tầng, đã xử lý cùng ngày.** `req/F3_harness.md` và `req/user_stories.md` từng trích tới hai file
 trong `.claude/` (một skill reference và một rule). Hai file đó tồn tại thật nên citation không hỏng, nhưng
 chúng là **agent config, không phải tài liệu bàn giao** — người đọc báo cáo đồ án không mở được. Đã bỏ cả
-hai: `req/harness.md` giờ trỏ vào `03-dd/logic/harness.md` (đúng tầng sẽ giữ chi tiết codegen), và
+hai: `req/F3_harness.md` giờ trỏ vào `03-dd/logic/F3_harness.md` (đúng tầng sẽ giữ chi tiết codegen), và
 `req/user_stories.md` phát biểu quy trình trực tiếp thay vì trích. Kiến thức không mất: skill
 `dd-generation` đã tự chỉ thị đọc reference của nó khi trục là `harness`
 (`.claude/skills/dd-generation/SKILL.md:126`), nên chỉ thị đó thuộc về agent config và ở lại đó.
@@ -205,7 +206,7 @@ Bảy việc đã sửa, ngoài bốn trục trên:
    lại mục 5.7. Đây là điểm nặng nhất: `01-rd/README.md` mục 2 chỉ người viết BD dùng bảng đó để tra chéo,
    nên thiếu 20 mã là thiếu 20 yêu cầu.
 2. **Gỡ "chấm lại" khỏi từ vựng sống** — `glossary.md` (thuật ngữ `rejudge`, mô tả vai trò `ADMIN`, lý do
-   tồn tại của `testcase_set_version`), `req/problem-bank.md` (mục đích `F2-09`),
+   tồn tại của `testcase_set_version`), `req/F2_problem-bank.md` (mục đích `F2-09`),
    `screens/admin/ADM0403_system_log.md` mục 1. Toàn bộ do `DEC-2026-0828-remove-rejudge-scope`; bản trong
    `user_stories/a2_instructor.md` đã sửa từ 2026-08-28, mấy bản kia sót lại.
 3. **`glossary.md`** — mô tả vai trò `INSTRUCTOR` ghi "tạo bộ câu hỏi", dễ đọc thành bộ câu hỏi riêng theo
@@ -264,7 +265,7 @@ báo cáo. Sáu phát biểu bị quyết định sau đó đảo ngược mà c
 
 ### 6.2. `F4-04` hết hiệu lực nhưng chưa lan tới nơi trích nó
 
-`DEC-2026-0831-partial-score-testcase-ratio` khai tử fail-fast, nhưng chỉ `req/judge-orchestration.md`,
+`DEC-2026-0831-partial-score-testcase-ratio` khai tử fail-fast, nhưng chỉ `req/F4_judge-orchestration.md`,
 `system_survey.md` mục 5.4 và `user_stories/a4_system.md` được sửa. Bảy chỗ còn lại vẫn mô tả fail-fast như
 hành vi sống — đã sửa hết trong đợt này:
 
@@ -341,10 +342,10 @@ anchor theo dòng thêm hơn một tuần. Với các file **ổn định** (`09
 | `screens/admin/ADM0101_overview.md` mục 3 | Còn khung "4 màn Admin cần scaffold i18n → còn 3 màn" | Q7 của chính file đó đã bỏ danh sách tên màn, mở rộng thành mọi màn Admin + Giảng viên (`DEC-2026-0831-i18n-scope-expansion`) |
 
 Nặng nhất là dòng đầu: `overview.md` là file nền lý thuyết, nguồn chương 2 của báo cáo, và nó nói **ngược**
-với `req/judge-orchestration.md` (F4-03) cùng `system/SYS0101_backend_architecture.md`. Mục 6.2 của tài liệu này
+với `req/F4_judge-orchestration.md` (F4-03) cùng `system/SYS0101_backend_architecture.md`. Mục 6.2 của tài liệu này
 khai đã quét hết fail-fast ở 7 chỗ — bốn chỗ trong bảng trên không nằm trong 7 chỗ đó.
 
-Ba chỗ nhỏ hơn cùng dạng đã sửa kèm: `req/ai-review.md` + `screens/users/USR0302_mock_interview.md` (Q1) làm rõ
+Ba chỗ nhỏ hơn cùng dạng đã sửa kèm: `req/F5_ai-review.md` + `screens/users/USR0302_mock_interview.md` (Q1) làm rõ
 **hệ thống có ba rubric độc lập** — `F5-23` (Solution Review, admin cấu hình trọng số) · `F5-15` (bốn tiêu
 chí kết phiên Mock Interview) · `F6-13` (tiêu chí đối chiếu Chế độ luyện); trước đó `mock_interview.md` neo
 rubric của F5.2 vào `F5-23`, sai mã. Và `screens/teacher/INS0201_class_management.md` Q6 bỏ mệnh đề "go-judge đã
@@ -354,8 +355,8 @@ fail-fast" khỏi căn cứ bỏ chấm lại (kết luận không đổi, chỉ
 
 Mục 1 của tài liệu này đã ghi "hai file gốc `req.md` / `user_stories.md` giờ là chỉ mục mỏng — đừng trích
 dẫn `Fx-nn` từ chúng nữa", nhưng 6 chỗ vẫn trích: `screens/teacher/INS0201_class_management.md` (Q2: `F1-23`,
-`US-A2-07`), `overview/system_survey.md` (khối `F1-21`), `req/ai-review.md`, `req/identity.md`,
-`req/interview-bank.md`, `req/judge-orchestration.md` (Câu hỏi mở của `user_stories.md`, nay ở
+`US-A2-07`), `overview/system_survey.md` (khối `F1-21`), `req/F5_ai-review.md`, `req/F1_identity.md`,
+`req/F6_interview-bank.md`, `req/F4_judge-orchestration.md` (Câu hỏi mở của `user_stories.md`, nay ở
 `req/user_stories/open_questions.md`). Đã trỏ lại đúng file nội dung. Các con trỏ điều hướng thuần
 (bảng "đọc gì ở đâu") vẫn được trỏ vào file chỉ mục — đó là đúng vai của nó.
 

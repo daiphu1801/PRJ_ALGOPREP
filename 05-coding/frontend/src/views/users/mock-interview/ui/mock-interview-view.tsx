@@ -26,12 +26,12 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import {
-  ACCEPTED_SUBMISSIONS,
-  BANK_QUESTIONS,
   INTERVIEWER_LEVELS,
   MAX_TURNS_OPTIONS,
   RUBRIC_CRITERION_CODES,
   RUBRIC_WEIGHTS,
+  useAcceptedSubmissionOptions,
+  useBankQuestionOptions,
   type InterviewStage,
 } from "@/entities/mock-interview";
 import { useInterviewTopics } from "@/entities/interview-question";
@@ -41,6 +41,7 @@ import {
   Badge,
   Button,
   ConfirmDialog,
+  QueryBoundary,
   SegmentedTabs,
   TextArea,
   Toggle,
@@ -123,6 +124,8 @@ export function MockInterviewView() {
   const t = useT("mockInterview");
   const session = useMockInterviewSession();
   const topicList = useInterviewTopics();
+  const submissionsQuery = useAcceptedSubmissionOptions();
+  const bankQuery = useBankQuestionOptions();
   const [draft, setDraft] = useState("");
   const [earlyExitOpen, setEarlyExitOpen] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -171,36 +174,46 @@ export function MockInterviewView() {
               </div>
 
               {session.entryType === "submission" ? (
-                <ul className="flex flex-col gap-2">
-                  {ACCEPTED_SUBMISSIONS.map((submission) => (
-                    <li key={submission.id}>
-                      <PickRow
-                        icon={SourceIcon}
-                        selected={session.submissionId === submission.id}
-                        onPick={() => session.setSubmissionId(submission.id)}
-                        title={submission.problemTitle}
-                        meta={
-                          <Badge variant="neutral">{submission.language}</Badge>
-                        }
-                      />
-                    </li>
-                  ))}
-                </ul>
+                <QueryBoundary query={submissionsQuery}>
+                  {(submissions) => (
+                    <ul className="flex flex-col gap-2">
+                      {submissions.map((submission) => (
+                        <li key={submission.id}>
+                          <PickRow
+                            icon={SourceIcon}
+                            selected={session.submissionId === submission.id}
+                            onPick={() => session.setSubmissionId(submission.id)}
+                            title={submission.problemTitle}
+                            meta={
+                              <Badge variant="neutral">
+                                {submission.language}
+                              </Badge>
+                            }
+                          />
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </QueryBoundary>
               ) : null}
 
               {session.entryType === "bank" ? (
-                <ul className="flex flex-col gap-2">
-                  {BANK_QUESTIONS.map((question) => (
-                    <li key={question.id}>
-                      <PickRow
-                        icon={SourceIcon}
-                        selected={session.questionId === question.id}
-                        onPick={() => session.setQuestionId(question.id)}
-                        title={question.title}
-                      />
-                    </li>
-                  ))}
-                </ul>
+                <QueryBoundary query={bankQuery}>
+                  {(questions) => (
+                    <ul className="flex flex-col gap-2">
+                      {questions.map((question) => (
+                        <li key={question.id}>
+                          <PickRow
+                            icon={SourceIcon}
+                            selected={session.questionId === question.id}
+                            onPick={() => session.setQuestionId(question.id)}
+                            title={question.title}
+                          />
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </QueryBoundary>
               ) : null}
 
               {session.entryType === "custom" ? (
@@ -339,10 +352,10 @@ export function MockInterviewView() {
   if (session.screenState === "running") {
     const sourceName =
       session.entryType === "submission"
-        ? ACCEPTED_SUBMISSIONS.find((s) => s.id === session.submissionId)
+        ? submissionsQuery.data?.find((s) => s.id === session.submissionId)
             ?.problemTitle
         : session.entryType === "bank"
-          ? BANK_QUESTIONS.find((q) => q.id === session.questionId)?.title
+          ? bankQuery.data?.find((q) => q.id === session.questionId)?.title
           : topicList
               .filter((topic) => session.customTopics.includes(topic.key))
               .map((topic) => topic.label)

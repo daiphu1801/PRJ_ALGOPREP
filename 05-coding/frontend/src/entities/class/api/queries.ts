@@ -2,8 +2,7 @@
 //
 // TanStack Query hooks for the class cluster, same withMockData boundary as
 // entities/admin-dashboard/api/queries.ts — graduation only means deleting the __mock__ import.
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ApiError, withMockData } from "@/shared/api";
+import { useMockMutation, useMockQuery } from "@/shared/api";
 import type { ClassForm } from "../model/types";
 import {
   classScoreTrend,
@@ -11,41 +10,34 @@ import {
   createInviteCode,
   deleteClass,
   getClassStudent,
+  joinClassByCode,
   listClassActivity,
   listClassAttention,
   listClassStudents,
   listInstructorClasses,
   listInviteCodes,
+  listMyClasses,
   removeStudent,
   updateClass,
 } from "./__mock__/class-mocks";
 
-function notImplemented(): never {
-  throw new ApiError(
-    "NOT_IMPLEMENTED",
-    501,
-    "03-dd/api/identity.md chưa định nghĩa endpoint này",
-  );
-}
-
-const QUERY_OPTIONS = { staleTime: 15_000, retry: false } as const;
+const SPEC = "03-dd/api/F1_identity.md";
+const STALE = 15_000;
 
 export const useInstructorClasses = () =>
-  useQuery({
+  useMockQuery({
     queryKey: ["classes", "list"],
-    queryFn: () => withMockData(listInstructorClasses, notImplemented),
-    ...QUERY_OPTIONS,
+    mock: listInstructorClasses,
+    spec: SPEC,
+    staleTime: STALE,
   });
 
 export const useClassStudents = (classId?: string, includeLeft = false) =>
-  useQuery({
+  useMockQuery({
     queryKey: ["classes", "students", classId ?? "all", includeLeft],
-    queryFn: () =>
-      withMockData(
-        () => listClassStudents(classId, includeLeft),
-        notImplemented,
-      ),
-    ...QUERY_OPTIONS,
+    mock: () => listClassStudents(classId, includeLeft),
+    spec: SPEC,
+    staleTime: STALE,
   });
 
 export const useClassStudentDetail = (
@@ -53,92 +45,101 @@ export const useClassStudentDetail = (
   classId: string,
   includeLeft = false,
 ) =>
-  useQuery({
+  useMockQuery({
     queryKey: ["classes", "student-detail", classId, studentId, includeLeft],
-    queryFn: () =>
-      withMockData(
-        () => getClassStudent(studentId, classId, includeLeft),
-        notImplemented,
-      ),
-    ...QUERY_OPTIONS,
+    mock: () => getClassStudent(studentId, classId, includeLeft),
+    spec: SPEC,
+    staleTime: STALE,
   });
 
 export const useInviteCodes = (classId: string, enabled: boolean) =>
-  useQuery({
+  useMockQuery({
     queryKey: ["classes", "invite-codes", classId],
-    queryFn: () => withMockData(() => listInviteCodes(classId), notImplemented),
+    mock: () => listInviteCodes(classId),
+    spec: SPEC,
+    staleTime: STALE,
     enabled,
-    ...QUERY_OPTIONS,
   });
 
 export const useClassActivity = () =>
-  useQuery({
+  useMockQuery({
     queryKey: ["classes", "activity"],
-    queryFn: () => withMockData(listClassActivity, notImplemented),
-    ...QUERY_OPTIONS,
+    mock: listClassActivity,
+    spec: SPEC,
+    staleTime: STALE,
   });
 
 export const useClassAttention = (classId?: string) =>
-  useQuery({
+  useMockQuery({
     queryKey: ["classes", "attention", classId ?? "all"],
-    queryFn: () =>
-      withMockData(() => listClassAttention(classId), notImplemented),
-    ...QUERY_OPTIONS,
+    mock: () => listClassAttention(classId),
+    spec: SPEC,
+    staleTime: STALE,
   });
 
 export const useClassScoreTrend = (classId?: string) =>
-  useQuery({
+  useMockQuery({
     queryKey: ["classes", "score-trend", classId ?? "all"],
-    queryFn: () => withMockData(() => classScoreTrend(classId), notImplemented),
-    ...QUERY_OPTIONS,
+    mock: () => classScoreTrend(classId),
+    spec: SPEC,
+    staleTime: STALE,
   });
 
-function useInvalidateClasses() {
-  const queryClient = useQueryClient();
-  return () => queryClient.invalidateQueries({ queryKey: ["classes"] });
-}
+const INVALIDATE = [["classes"]] as const;
 
-export function useCreateClass() {
-  const invalidate = useInvalidateClasses();
-  return useMutation({
-    mutationFn: (form: ClassForm) =>
-      withMockData(() => createClass(form), notImplemented),
-    onSuccess: invalidate,
+export const useCreateClass = () =>
+  useMockMutation({
+    mock: (form: ClassForm) => createClass(form),
+    spec: SPEC,
+    invalidate: INVALIDATE,
   });
-}
 
-export function useUpdateClass() {
-  const invalidate = useInvalidateClasses();
-  return useMutation({
-    mutationFn: ({ id, form }: { id: string; form: ClassForm }) =>
-      withMockData(() => updateClass(id, form), notImplemented),
-    onSuccess: invalidate,
+export const useUpdateClass = () =>
+  useMockMutation({
+    mock: ({ id, form }: { id: string; form: ClassForm }) =>
+      updateClass(id, form),
+    spec: SPEC,
+    invalidate: INVALIDATE,
   });
-}
 
-export function useDeleteClass() {
-  const invalidate = useInvalidateClasses();
-  return useMutation({
-    mutationFn: (id: string) =>
-      withMockData(() => deleteClass(id), notImplemented),
-    onSuccess: invalidate,
+export const useDeleteClass = () =>
+  useMockMutation({
+    mock: (id: string) => deleteClass(id),
+    spec: SPEC,
+    invalidate: INVALIDATE,
   });
-}
 
-export function useCreateInviteCode() {
-  const invalidate = useInvalidateClasses();
-  return useMutation({
-    mutationFn: (classId: string) =>
-      withMockData(() => createInviteCode(classId), notImplemented),
-    onSuccess: invalidate,
+export const useCreateInviteCode = () =>
+  useMockMutation({
+    mock: (classId: string) => createInviteCode(classId),
+    spec: SPEC,
+    invalidate: INVALIDATE,
   });
-}
 
-export function useRemoveStudent() {
-  const invalidate = useInvalidateClasses();
-  return useMutation({
-    mutationFn: (studentId: string) =>
-      withMockData(() => removeStudent(studentId), notImplemented),
-    onSuccess: invalidate,
+export const useRemoveStudent = () =>
+  useMockMutation({
+    mock: (studentId: string) => removeStudent(studentId),
+    spec: SPEC,
+    invalidate: INVALIDATE,
   });
-}
+
+export const useMyClasses = () =>
+  useMockQuery({
+    queryKey: ["classes", "mine"],
+    mock: listMyClasses,
+    spec: SPEC,
+    staleTime: STALE,
+  });
+
+/** One class of the learner, picked from the list (ponytail: no per-class endpoint in the mock). */
+export const useMyClass = (classId: string) => {
+  const query = useMyClasses();
+  return { ...query, data: query.data?.find((k) => k.id === classId) };
+};
+
+export const useJoinClass = () =>
+  useMockMutation({
+    mock: (code: string) => joinClassByCode(code),
+    spec: SPEC,
+    invalidate: [["classes", "mine"]],
+  });

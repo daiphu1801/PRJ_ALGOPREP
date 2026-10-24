@@ -25,8 +25,8 @@
 - Màn này có **đúng một popup**: Xác nhận gỡ học viên khỏi lớp.
 
 > Đọc cùng `01-rd/screens/teacher/INS0204_class_student_detail.md` (hành vi ở mức yêu cầu, không lặp lại ở
-> đây), `01-rd/req/identity.md:104-111` (F1-27 — mã yêu cầu trực tiếp của màn), `01-rd/req/identity.md:112-138`
-> (F1-28 — nguồn của mọi công thức số liệu màn này dùng lại) và `02-bd/database/identity.md` mục 1.8 tới 1.12.
+> đây), `01-rd/req/F1_identity.md:104-111` (F1-27 — mã yêu cầu trực tiếp của màn), `01-rd/req/F1_identity.md:112-138`
+> (F1-28 — nguồn của mọi công thức số liệu màn này dùng lại) và `02-bd/database/F1_identity.md` mục 1.8 tới 1.12.
 >
 > **Không thiết kế lại** vòng đời lớp (tạo/sửa/xoá lớp, mã mời) — thuộc `class_management` (`INS0201`)
 > [Nguồn: 02-bd/screens/teacher/INS0201_class_management.md:195-197].
@@ -47,7 +47,7 @@
 > (mọi popup); màn này **không** dùng `stats` từ V0.9 và thêm khối `info` (thẻ Liên hệ, Học tập). Màn này bổ sung **ba khối riêng** đặt theo nội dung thật:
 > `topicProgress` (số bài đã giải theo chủ đề), `assignmentProgress` (bài đã giao kèm điểm tốt nhất), và
 > `submissionHistory` (lịch sử nộp bài trong phạm vi lớp). Ba khối này ánh xạ một-một với ba nhóm dữ liệu
-> mà F1-27 cho phép [Nguồn: 01-rd/req/identity.md:104-105].
+> mà F1-27 cho phép [Nguồn: 01-rd/req/F1_identity.md:104-105].
 
 ---
 
@@ -241,8 +241,8 @@ Ghi chú: `submission_result` là màn của A1 và chưa có BD. Q5 đã chốt
 [Giá trị trả về] Kết quả chọn "Gỡ học viên" hoặc "Huỷ".
 
 [Khi thành công] Hiển thị thông báo gỡ chỉ **đánh dấu học viên đã rời lớp**, lịch sử làm bài trong phạm vi lớp
-**được giữ** [Nguồn: DEC-2026-1014-keep-learning-history-on-leave; 02-bd/database/identity.md mục 1.10].
-~~Cảnh báo cũ: xoá thật kèm cascade dữ liệu lịch sử làm bài~~ (ĐÃ ĐỔI 2026-10-14; RD `01-rd/req/identity.md:98-103` còn câu cũ, chưa cập nhật).
+**được giữ** [Nguồn: DEC-2026-1014-keep-learning-history-on-leave; 02-bd/database/F1_identity.md mục 1.10].
+~~Cảnh báo cũ: xoá thật kèm cascade dữ liệu lịch sử làm bài~~ (ĐÃ ĐỔI 2026-10-14; RD `01-rd/req/F1_identity.md:98-103` còn câu cũ, chưa cập nhật).
 
 [Khi huỷ] Đóng popup, giữ nguyên màn.
 
@@ -299,7 +299,7 @@ flowchart LR
 
 [Mục đích màn] Cho giảng viên xem hồ sơ chi tiết của **một học viên cụ thể trong một lớp cụ thể** — thông
 tin cơ bản, tiến độ, lịch sử nộp bài — thay vì chỉ nhìn một dòng tóm tắt ở bảng danh sách học viên
-[Nguồn: 01-rd/screens/teacher/INS0204_class_student_detail.md:23-30; 01-rd/req/identity.md:104-105].
+[Nguồn: 01-rd/screens/teacher/INS0204_class_student_detail.md:23-30; 01-rd/req/F1_identity.md:104-105].
 
 [Luồng nghiệp vụ chính]
 
@@ -316,7 +316,7 @@ tin cơ bản, tiến độ, lịch sử nộp bài — thay vì chỉ nhìn m�
 4. **Gỡ học viên khỏi lớp**: bấm "Gỡ khỏi lớp", xác nhận trong popup, rồi màn tự rời về màn gọi tới.
 
 [Người dùng] Giảng viên đã đăng nhập, có Function `CLASS_MANAGEMENT`, và **phải là người phụ trách đúng lớp
-được truyền vào** [Nguồn: 01-rd/req/identity.md:104-105; 01-rd/screens/teacher/INS0204_class_student_detail.md:106].
+được truyền vào** [Nguồn: 01-rd/req/F1_identity.md:104-105; 01-rd/screens/teacher/INS0204_class_student_detail.md:106].
 
 [Tệp liên quan] Không có. Màn này không xuất hay nhập tệp.
 
@@ -349,7 +349,7 @@ chục bài, thấp hơn nhiều so với 82 học viên mà `class_progress` ph
 thêm trạng thái mà không giải quyết vấn đề nào. Bảng lịch sử nộp bài: 20 dòng mỗi trang, cùng con số đã
 dùng cho bảng học viên của `class_progress` [Nguồn: 02-bd/screens/teacher/INS0203_class_progress.md:190].
 
-[Nguồn: 01-rd/screens/teacher/INS0204_class_student_detail.md:23-30,54-74,93-96,104-108; 01-rd/req/identity.md:98-111]
+[Nguồn: 01-rd/screens/teacher/INS0204_class_student_detail.md:23-30,54-74,93-96,104-108; 01-rd/req/F1_identity.md:98-111]
 
 ### 4.2 DTO liên quan
 
@@ -361,18 +361,18 @@ dùng cho bảng học viên của `class_progress` [Nguồn: 02-bd/screens/teac
 - `ClassCardDto` — **dùng lại** của `class_management`, chỉ lấy `id` và `name` để hiển thị tên lớp
   [Nguồn: 02-bd/screens/teacher/INS0201_class_management.md:468].
 
-`[SoT: Suy luận]` — tên DTO do BD này đề xuất, `03-dd/api/identity.md` chốt lại. Khối chủ đề **không có DTO
+`[SoT: Suy luận]` — tên DTO do BD này đề xuất, `03-dd/api/F1_identity.md` chốt lại. Khối chủ đề **không có DTO
 riêng**: nó được gom từ chính `ClassAssignmentProgressRowDto` ở phía giao diện, xem mục 4.3.
 
 ### 4.3 Bảng dữ liệu liên quan (6)
 
 | NO | Bảng | Ghi chú |
 | --: | :--- | :--- |
-| 1 | `identity.classes` | Tên lớp ở khối hồ sơ và kiểm tra `instructor_id` khi gác quyền [Nguồn: 02-bd/database/identity.md:85-88] |
-| 2 | `identity.class_enrollments` | Xác nhận học viên thuộc đúng lớp, lấy `joined_at` cho "Ngày tham gia lớp", và là bảng bị đặt `left_at` khi gỡ học viên (không xoá dòng; ~~bị xoá khi gỡ~~, ĐÃ ĐỔI 2026-10-14, `DEC-2026-1014-keep-learning-history-on-leave`); học viên có `left_at` khác rỗng coi như không còn thuộc lớp [Nguồn: 02-bd/database/identity.md mục 1.10] |
-| 3 | `identity.users` | Tên hiển thị, email và số điện thoại học viên — cột `display_name`, `email`, `phone` [Nguồn: 02-bd/database/identity.md:14,16,20] |
+| 1 | `identity.classes` | Tên lớp ở khối hồ sơ và kiểm tra `instructor_id` khi gác quyền [Nguồn: 02-bd/database/F1_identity.md:85-88] |
+| 2 | `identity.class_enrollments` | Xác nhận học viên thuộc đúng lớp, lấy `joined_at` cho "Ngày tham gia lớp", và là bảng bị đặt `left_at` khi gỡ học viên (không xoá dòng; ~~bị xoá khi gỡ~~, ĐÃ ĐỔI 2026-10-14, `DEC-2026-1014-keep-learning-history-on-leave`); học viên có `left_at` khác rỗng coi như không còn thuộc lớp [Nguồn: 02-bd/database/F1_identity.md mục 1.10] |
+| 3 | `identity.users` | Tên hiển thị, email và số điện thoại học viên — cột `display_name`, `email`, `phone` [Nguồn: 02-bd/database/F1_identity.md:14,16,20] |
 | 4 | `judge.submissions` | Từ V0.9 chỉ dùng nội bộ để tính nhãn trạng thái, không còn hiện Điểm TB. Ghi chép cũ: nguồn tính Điểm TB **theo phạm vi lớp**, đọc qua `GetClassStudentSubmissionMetrics` của `judge-orchestration`, không truy vấn chéo schema. Thay cho `identity.user_submission_stats` (read model toàn cục, không có chiều `class_id`) từ 2026-09-21 theo `DEC-2026-0921-teacher-screens-conflict-resolutions` |
-| 5 | `identity.user_problem_best_score` | Điểm tốt nhất mỗi bài (F4-13 best-attempt) và cờ đã giải, cho bảng bài đã giao, mục chủ đề, và tính nội bộ Hoàn thành cho nhãn trạng thái [Nguồn: 02-bd/database/identity.md:111-112] |
+| 5 | `identity.user_problem_best_score` | Điểm tốt nhất mỗi bài (F4-13 best-attempt) và cờ đã giải, cho bảng bài đã giao, mục chủ đề, và tính nội bộ Hoàn thành cho nhãn trạng thái [Nguồn: 02-bd/database/F1_identity.md:111-112] |
 | 6 | `identity.identity_recent_activity` | Không còn đọc từ V0.9: thẻ "Hoạt động" đã bỏ |
 
 Hai nhóm dữ liệu còn lại **không đọc từ bảng của `identity`**, nên không tính vào bảng trên và không truy
@@ -380,8 +380,8 @@ vấn chéo schema:
 
 | Số liệu | Nguồn thật | Cách lấy |
 | :--- | :--- | :--- |
-| Danh sách bài đã giao cho lớp, tên bài, chủ đề của bài | `problem.class_assignments`, `problem.problems`, `problem.topics`/`problem_topics` [Nguồn: 02-bd/database/problem-bank.md:116-128,8-15,35-39] | Endpoint `ListClassAssignments` của `problem-bank` — tên nghiệp vụ đã có ở `class_assignments`, dùng lại [Nguồn: 02-bd/screens/teacher/INS0202_class_assignments.md:464] |
-| Lịch sử nộp bài | `judge.submissions` [Nguồn: 02-bd/database/judge-orchestration.md:8-34] | Endpoint `ListStudentClassSubmissions` (mới) và `GetClassStudentSubmissionMetrics` (đã được `class_progress` đề xuất, dùng lại) của `judge-orchestration`, xem Câu hỏi mở Q2 |
+| Danh sách bài đã giao cho lớp, tên bài, chủ đề của bài | `problem.class_assignments`, `problem.problems`, `problem.topics`/`problem_topics` [Nguồn: 02-bd/database/F2_problem-bank.md:116-128,8-15,35-39] | Endpoint `ListClassAssignments` của `problem-bank` — tên nghiệp vụ đã có ở `class_assignments`, dùng lại [Nguồn: 02-bd/screens/teacher/INS0202_class_assignments.md:464] |
+| Lịch sử nộp bài | `judge.submissions` [Nguồn: 02-bd/database/F4_judge-orchestration.md:8-34] | Endpoint `ListStudentClassSubmissions` (mới) và `GetClassStudentSubmissionMetrics` (đã được `class_progress` đề xuất, dùng lại) của `judge-orchestration`, xem Câu hỏi mở Q2 |
 
 **Cách tính Hoàn thành, nay áp cho cả cụm lớp.** Mẫu số là danh sách bài đã giao, lấy qua
 `ListClassAssignments` (endpoint đã tồn tại sẵn); tử số là số bài trong danh sách đó mà
@@ -455,8 +455,8 @@ Căn cứ suy diễn, theo đúng thứ tự ưu tiên đã dùng:
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Hàng tiêu đề | | | | | | | | | | | | | |
 | | 1 | Quay lại | `classStudentDetail.backLink` | - | - | Icon button | - | - | - | I | - | Mũi tên trái, tooltip "Quay lại" | Trở về màn đã gọi tới, giữ bộ lọc (`router.back()`, Q6)<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] EVT-2 |
-| | 2 | Tên học viên | `classStudentDetail.header.studentName` | `identity.users` | `display_name` | Label | String | 100 | - | O | - | - | Tiêu đề trang<br>[Nguồn giá trị] Cột `display_name` [Nguồn: 02-bd/database/identity.md:16]<br>[EVT liên quan] EVT-1 |
-| | 3 | Tên lớp | `classStudentDetail.header.className` | `identity.classes` | `name` | Link | String | 120 | - | O | - | - | Dòng phụ dưới tiêu đề; bấm mở `class_detail` của lớp<br>[Nguồn giá trị] Cột `name` [Nguồn: 02-bd/database/identity.md:85-88]<br>[EVT liên quan] EVT-3 |
+| | 2 | Tên học viên | `classStudentDetail.header.studentName` | `identity.users` | `display_name` | Label | String | 100 | - | O | - | - | Tiêu đề trang<br>[Nguồn giá trị] Cột `display_name` [Nguồn: 02-bd/database/F1_identity.md:16]<br>[EVT liên quan] EVT-1 |
+| | 3 | Tên lớp | `classStudentDetail.header.className` | `identity.classes` | `name` | Link | String | 120 | - | O | - | - | Dòng phụ dưới tiêu đề; bấm mở `class_detail` của lớp<br>[Nguồn giá trị] Cột `name` [Nguồn: 02-bd/database/F1_identity.md:85-88]<br>[EVT liên quan] EVT-3 |
 | | 4 | Gỡ khỏi lớp | `classStudentDetail.btnRemoveFromClass` | `identity.class_enrollments` | - | Button | - | - | - | I | - | Chữ màu đỏ | Mở popup xác nhận; hành vi F1-26, cùng hành vi với nút ở `class_management` [Nguồn: 01-rd/screens/teacher/INS0204_class_student_detail.md:93]<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] EVT-4 |
 
 ### Khu vực B — Thẻ "Liên hệ"
@@ -465,9 +465,9 @@ Căn cứ suy diễn, theo đúng thứ tự ưu tiên đã dùng:
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Liên hệ | | | | | | | | | | | | | |
 | | 1 | Tiêu đề thẻ | `classStudentDetail.info.contactTitle` | - | - | Label | String | - | - | O | Liên hệ | - | [Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] - |
-| | 2 | Họ tên | `classStudentDetail.info.name` | `identity.users` | `display_name` | Label | String | 100 | - | O | - | - | [Nguồn giá trị] Cột `display_name` [Nguồn: 02-bd/database/identity.md:16]<br>[EVT liên quan] EVT-1 |
-| | 3 | Email | `classStudentDetail.info.email` | `identity.users` | `email` | Link | String | 255 | - | O | - | `mailto:` | Bấm mở trình gửi thư; tài khoản đã ẩn danh hoá hiện địa chỉ vô danh [Nguồn: 02-bd/database/identity.md:28-31]<br>[Nguồn giá trị] Cột `email` [Nguồn: 02-bd/database/identity.md:14]<br>[EVT liên quan] EVT-1 |
-| | 4 | Số điện thoại | `classStudentDetail.info.phone` | `identity.users` | `phone` | Link | String | 20 | - | O | `-` | `tel:` | Bấm để gọi; học viên chưa khai thì hiện `-`<br>[Nguồn giá trị] Cột `phone`, nullable, học viên tự khai ở `USR0502` [Nguồn: 02-bd/database/identity.md:20] (`DEC-2026-1013-a2-reads-student-contact`)<br>[EVT liên quan] EVT-1 |
+| | 2 | Họ tên | `classStudentDetail.info.name` | `identity.users` | `display_name` | Label | String | 100 | - | O | - | - | [Nguồn giá trị] Cột `display_name` [Nguồn: 02-bd/database/F1_identity.md:16]<br>[EVT liên quan] EVT-1 |
+| | 3 | Email | `classStudentDetail.info.email` | `identity.users` | `email` | Link | String | 255 | - | O | - | `mailto:` | Bấm mở trình gửi thư; tài khoản đã ẩn danh hoá hiện địa chỉ vô danh [Nguồn: 02-bd/database/F1_identity.md:28-31]<br>[Nguồn giá trị] Cột `email` [Nguồn: 02-bd/database/F1_identity.md:14]<br>[EVT liên quan] EVT-1 |
+| | 4 | Số điện thoại | `classStudentDetail.info.phone` | `identity.users` | `phone` | Link | String | 20 | - | O | `-` | `tel:` | Bấm để gọi; học viên chưa khai thì hiện `-`<br>[Nguồn giá trị] Cột `phone`, nullable, học viên tự khai ở `USR0502` [Nguồn: 02-bd/database/F1_identity.md:20] (`DEC-2026-1013-a2-reads-student-contact`)<br>[EVT liên quan] EVT-1 |
 
 ### Khu vực C — Thẻ "Học tập"
 
@@ -476,8 +476,8 @@ Căn cứ suy diễn, theo đúng thứ tự ưu tiên đã dùng:
 | Học tập | | | | | | | | | | | | | |
 | | 1 | Tiêu đề thẻ | `classStudentDetail.info.studyTitle` | - | - | Label | String | - | - | O | Học tập | - | [Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] - |
 | | 2 | Lớp | `classStudentDetail.info.class` | `identity.classes` | `name` | Link | String | 120 | - | O | - | - | Bấm mở `class_detail`<br>[Nguồn giá trị] Cột `name`<br>[EVT liên quan] EVT-3 |
-| | 3 | Trạng thái | `classStudentDetail.info.status` | - | - | Badge | Enum | - | - | O | - | Nhãn tiếng Việt, màu theo trạng thái | Năm nhãn: "Chưa đủ dữ liệu", "Vắng bài", "Cần hỗ trợ", "Theo dõi", "Đúng tiến độ"; màu dùng chung `STUDENT_STATUS_VARIANT` với `class_progress`, `class_detail`<br>[Công thức] Bộ ngưỡng của `DEC-2026-0830-class-progress-dashboard` như `class_progress` [Nguồn: 01-rd/req/identity.md:129-133]; khớp nhiều ngưỡng thì lấy nhãn nghiêm trọng nhất `[SoT: Suy luận]`. Xem Câu hỏi mở Q8<br>[EVT liên quan] EVT-1 |
-| | 4 | Chủ đề đã giao | `classStudentDetail.topicProgress.item` | - | - | Badge list | List | - | - | O | `-` | `{chủ đề}: {n} bài` | Mỗi badge là một chủ đề trong tập bài đã giao cho lớp, kèm số bài<br>[Công thức] Gom nhóm các dòng của bảng "Bài đã giao" (Khu vực D) theo tên chủ đề; **không gọi endpoint riêng** [Nguồn: 02-bd/database/problem-bank.md:35-39]. Tỉ lệ đã giải theo chủ đề (RD `INS0204` dòng 60-61) chưa dựng, ghi nợ<br>[EVT liên quan] EVT-1 |
+| | 3 | Trạng thái | `classStudentDetail.info.status` | - | - | Badge | Enum | - | - | O | - | Nhãn tiếng Việt, màu theo trạng thái | Năm nhãn: "Chưa đủ dữ liệu", "Vắng bài", "Cần hỗ trợ", "Theo dõi", "Đúng tiến độ"; màu dùng chung `STUDENT_STATUS_VARIANT` với `class_progress`, `class_detail`<br>[Công thức] Bộ ngưỡng của `DEC-2026-0830-class-progress-dashboard` như `class_progress` [Nguồn: 01-rd/req/F1_identity.md:129-133]; khớp nhiều ngưỡng thì lấy nhãn nghiêm trọng nhất `[SoT: Suy luận]`. Xem Câu hỏi mở Q8<br>[EVT liên quan] EVT-1 |
+| | 4 | Chủ đề đã giao | `classStudentDetail.topicProgress.item` | - | - | Badge list | List | - | - | O | `-` | `{chủ đề}: {n} bài` | Mỗi badge là một chủ đề trong tập bài đã giao cho lớp, kèm số bài<br>[Công thức] Gom nhóm các dòng của bảng "Bài đã giao" (Khu vực D) theo tên chủ đề; **không gọi endpoint riêng** [Nguồn: 02-bd/database/F2_problem-bank.md:35-39]. Tỉ lệ đã giải theo chủ đề (RD `INS0204` dòng 60-61) chưa dựng, ghi nợ<br>[EVT liên quan] EVT-1 |
 
 ### Khu vực D — Bài đã giao
 
@@ -485,11 +485,11 @@ Căn cứ suy diễn, theo đúng thứ tự ưu tiên đã dùng:
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Bài đã giao | | | | | | | | | | | | | |
 | | 1 | Tiêu đề khối | `classStudentDetail.assignmentProgress.title` | - | - | Label | String | - | - | O | Bài đã giao cho lớp | - | Tiêu đề khối<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] - |
-| | 2 | Bảng bài đã giao | `classStudentDetail.assignmentProgress.table` | `identity.user_problem_best_score` | - | List | List | - | - | O | rỗng | Không phân trang | Mỗi dòng là một bài còn hiệu lực trong danh sách giao cho lớp; bài đã gỡ mềm (`removed_at` khác NULL) không hiển thị [Nguồn: 02-bd/database/problem-bank.md:125]<br>[Nguồn giá trị] Ghép `ListClassAssignments` (danh sách bài) với `user_problem_best_score` (điểm của học viên)<br>[EVT liên quan] EVT-1 |
-| | 3 | Bài tập | `classStudentDetail.assignmentProgress.col.problemTitle` | `problem.problems` | `title` | ListColumn | String | 200 | - | O | - | - | Tên bài tập được giao<br>[Nguồn giá trị] `problem.problems.title` qua `ListClassAssignments` [Nguồn: 02-bd/database/problem-bank.md:15]<br>[EVT liên quan] - |
-| | 4 | Chủ đề | `classStudentDetail.assignmentProgress.col.topics` | - | - | ListColumn | List | 120 | - | O | - | Danh sách tên, ngăn bằng dấu phẩy | Các chủ đề gắn với bài; một bài có thể có nhiều chủ đề<br>[Nguồn giá trị] `problem.topics.name` qua `problem_topics` [Nguồn: 02-bd/database/problem-bank.md:35-39]<br>[EVT liên quan] - |
-| | 5 | Điểm tốt nhất | `classStudentDetail.assignmentProgress.col.bestRatio` | `identity.user_problem_best_score` | `best_ratio` | ListColumn | Number | 4 | - | O | - | `{số}%` | Tỉ lệ testcase tốt nhất mà học viên đạt được trên bài đó (F4-13, best-attempt)<br>[Nguồn giá trị] Cột `best_ratio` [Nguồn: 02-bd/database/identity.md:111-112]. Chưa nộp lần nào thì hiển thị `-`, không hiển thị `0%` — hai chuyện khác nhau<br>[EVT liên quan] - |
-| | 6 | Trạng thái | `classStudentDetail.assignmentProgress.col.bestVerdict` | `identity.user_problem_best_score` | `best_verdict` | Badge | Enum | - | - | O | - | Nhãn tiếng Việt | Ba giá trị hiển thị: "Đã giải" (`best_verdict = ACCEPTED`), "Chưa đạt" (có nộp nhưng chưa Accepted), "Chưa nộp" (không có dòng read model nào)<br>[Nguồn giá trị] Cột `best_verdict` [Nguồn: 02-bd/database/identity.md:111-112]<br>[EVT liên quan] - |
+| | 2 | Bảng bài đã giao | `classStudentDetail.assignmentProgress.table` | `identity.user_problem_best_score` | - | List | List | - | - | O | rỗng | Không phân trang | Mỗi dòng là một bài còn hiệu lực trong danh sách giao cho lớp; bài đã gỡ mềm (`removed_at` khác NULL) không hiển thị [Nguồn: 02-bd/database/F2_problem-bank.md:125]<br>[Nguồn giá trị] Ghép `ListClassAssignments` (danh sách bài) với `user_problem_best_score` (điểm của học viên)<br>[EVT liên quan] EVT-1 |
+| | 3 | Bài tập | `classStudentDetail.assignmentProgress.col.problemTitle` | `problem.problems` | `title` | ListColumn | String | 200 | - | O | - | - | Tên bài tập được giao<br>[Nguồn giá trị] `problem.problems.title` qua `ListClassAssignments` [Nguồn: 02-bd/database/F2_problem-bank.md:15]<br>[EVT liên quan] - |
+| | 4 | Chủ đề | `classStudentDetail.assignmentProgress.col.topics` | - | - | ListColumn | List | 120 | - | O | - | Danh sách tên, ngăn bằng dấu phẩy | Các chủ đề gắn với bài; một bài có thể có nhiều chủ đề<br>[Nguồn giá trị] `problem.topics.name` qua `problem_topics` [Nguồn: 02-bd/database/F2_problem-bank.md:35-39]<br>[EVT liên quan] - |
+| | 5 | Điểm tốt nhất | `classStudentDetail.assignmentProgress.col.bestRatio` | `identity.user_problem_best_score` | `best_ratio` | ListColumn | Number | 4 | - | O | - | `{số}%` | Tỉ lệ testcase tốt nhất mà học viên đạt được trên bài đó (F4-13, best-attempt)<br>[Nguồn giá trị] Cột `best_ratio` [Nguồn: 02-bd/database/F1_identity.md:111-112]. Chưa nộp lần nào thì hiển thị `-`, không hiển thị `0%` — hai chuyện khác nhau<br>[EVT liên quan] - |
+| | 6 | Trạng thái | `classStudentDetail.assignmentProgress.col.bestVerdict` | `identity.user_problem_best_score` | `best_verdict` | Badge | Enum | - | - | O | - | Nhãn tiếng Việt | Ba giá trị hiển thị: "Đã giải" (`best_verdict = ACCEPTED`), "Chưa đạt" (có nộp nhưng chưa Accepted), "Chưa nộp" (không có dòng read model nào)<br>[Nguồn giá trị] Cột `best_verdict` [Nguồn: 02-bd/database/F1_identity.md:111-112]<br>[EVT liên quan] - |
 | | 7 | Thử lại | `classStudentDetail.assignmentProgress.btnRetry` | - | - | Button | - | - | - | I | - | Thử lại | Tải lại khối "Bài đã giao" và khối "Theo chủ đề" khi lỗi — hai khối cùng một nguồn nên cùng một nút<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] EVT-8 |
 
 ### Khu vực E — Lịch sử nộp bài
@@ -498,12 +498,12 @@ Căn cứ suy diễn, theo đúng thứ tự ưu tiên đã dùng:
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Lịch sử nộp bài | | | | | | | | | | | | | |
 | | 1 | Tiêu đề khối | `classStudentDetail.submissionHistory.title` | - | - | Label | String | - | - | O | Lịch sử nộp bài trong lớp | - | Tiêu đề khối; chữ "trong lớp" là bắt buộc vì đây không phải toàn bộ lịch sử của học viên [Nguồn: 01-rd/screens/teacher/INS0204_class_student_detail.md:68-70]<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] - |
-| | 2 | Bảng lịch sử | `classStudentDetail.submissionHistory.table` | - | - | List | List | - | - | O | rỗng | 20 dòng mỗi trang | Các lượt nộp của học viên này cho **các bài đã giao cho đúng lớp đang xem**, kể cả bài đã bị gỡ mềm khỏi lớp, sắp xếp theo `submitted_at` giảm dần (`DEC-2026-1014-instructor-batch2-weekly-rules`, Q9)<br>[Nguồn giá trị] Kết quả gọi `ListStudentClassSubmissions` (`judge-orchestration`) [Nguồn: 02-bd/database/judge-orchestration.md:8-34]<br>[EVT liên quan] EVT-1, EVT-7 |
-| | 3 | Bài tập | `classStudentDetail.submissionHistory.col.problemTitle` | `problem.problems` | `title` | ListColumn | String | 200 | - | O | - | - | Tên bài tập của lượt nộp; bài đã bị gỡ mềm khỏi lớp thì kèm ghi chú nhỏ "Bài đã gỡ khỏi lớp" ngay dưới tên (nhãn tĩnh i18n, `DEC-2026-1014-instructor-batch2-weekly-rules`)<br>[Nguồn giá trị] `problem.problems.title`, tra theo `judge.submissions.problem_id` [Nguồn: 02-bd/database/problem-bank.md:15; 02-bd/database/judge-orchestration.md:16]. Ghi chú suy từ `problem.class_assignments.removed_at` khác rỗng của đúng cặp lớp và bài [Nguồn: 02-bd/database/problem-bank.md:124]<br>[EVT liên quan] - |
-| | 4 | Ngôn ngữ | `classStudentDetail.submissionHistory.col.language` | `judge.submissions` | `language` | ListColumn | Enum | - | - | O | - | `Java` / `C++` / `Python` | Ngôn ngữ của lượt nộp — đúng ba giá trị<br>[Nguồn giá trị] Cột `language` [Nguồn: 02-bd/database/judge-orchestration.md:18]<br>[EVT liên quan] - |
-| | 5 | Kết quả | `classStudentDetail.submissionHistory.col.status` | `judge.submissions` | `status` | Badge | Enum | - | - | O | - | Nhãn tiếng Việt | Sáu trạng thái cuối của state machine (Sửa 2026-10-22 (đồng bộ DB vòng 3, DEC-2026-1022-problem-bank-schema-sync): trước ghi "bảy"; chín giá trị `status` trừ ba trạng thái chưa cuối `PENDING`, `COMPILING`, `JUDGING`, khớp `02-bd/database/judge-orchestration.md:22,33`) (`DEC-2026-0912-judge-callback-contract`); lượt nộp chưa xong thì hiển thị trạng thái đang chạy<br>[Nguồn giá trị] Cột `status` [Nguồn: 02-bd/database/judge-orchestration.md:22]<br>[EVT liên quan] - |
-| | 6 | Điểm tỉ lệ | `classStudentDetail.submissionHistory.col.scoreRatio` | `judge.submissions` | `score_ratio` | ListColumn | Number | 4 | - | O | - | `{số}%` | Tỉ lệ testcase đạt của lượt nộp đó (F4-13)<br>[Nguồn giá trị] Cột `score_ratio`; `NULL` với `COMPILE_ERROR`/`SYSTEM_ERROR` thì hiển thị `-`, **không** hiển thị `0%` [Nguồn: 02-bd/database/judge-orchestration.md:27]<br>[EVT liên quan] - |
-| | 7 | Nộp lúc | `classStudentDetail.submissionHistory.col.submittedAt` | `judge.submissions` | `submitted_at` | ListColumn | Date | - | - | O | - | Thời gian tương đối | Thời điểm nộp bài, hiển thị dạng tương đối<br>[Nguồn giá trị] Cột `submitted_at` [Nguồn: 02-bd/database/judge-orchestration.md:31]<br>[EVT liên quan] - |
+| | 2 | Bảng lịch sử | `classStudentDetail.submissionHistory.table` | - | - | List | List | - | - | O | rỗng | 20 dòng mỗi trang | Các lượt nộp của học viên này cho **các bài đã giao cho đúng lớp đang xem**, kể cả bài đã bị gỡ mềm khỏi lớp, sắp xếp theo `submitted_at` giảm dần (`DEC-2026-1014-instructor-batch2-weekly-rules`, Q9)<br>[Nguồn giá trị] Kết quả gọi `ListStudentClassSubmissions` (`judge-orchestration`) [Nguồn: 02-bd/database/F4_judge-orchestration.md:8-34]<br>[EVT liên quan] EVT-1, EVT-7 |
+| | 3 | Bài tập | `classStudentDetail.submissionHistory.col.problemTitle` | `problem.problems` | `title` | ListColumn | String | 200 | - | O | - | - | Tên bài tập của lượt nộp; bài đã bị gỡ mềm khỏi lớp thì kèm ghi chú nhỏ "Bài đã gỡ khỏi lớp" ngay dưới tên (nhãn tĩnh i18n, `DEC-2026-1014-instructor-batch2-weekly-rules`)<br>[Nguồn giá trị] `problem.problems.title`, tra theo `judge.submissions.problem_id` [Nguồn: 02-bd/database/F2_problem-bank.md:15; 02-bd/database/F4_judge-orchestration.md:16]. Ghi chú suy từ `problem.class_assignments.removed_at` khác rỗng của đúng cặp lớp và bài [Nguồn: 02-bd/database/F2_problem-bank.md:124]<br>[EVT liên quan] - |
+| | 4 | Ngôn ngữ | `classStudentDetail.submissionHistory.col.language` | `judge.submissions` | `language` | ListColumn | Enum | - | - | O | - | `Java` / `C++` / `Python` | Ngôn ngữ của lượt nộp — đúng ba giá trị<br>[Nguồn giá trị] Cột `language` [Nguồn: 02-bd/database/F4_judge-orchestration.md:18]<br>[EVT liên quan] - |
+| | 5 | Kết quả | `classStudentDetail.submissionHistory.col.status` | `judge.submissions` | `status` | Badge | Enum | - | - | O | - | Nhãn tiếng Việt | Sáu trạng thái cuối của state machine (Sửa 2026-10-22 (đồng bộ DB vòng 3, DEC-2026-1022-problem-bank-schema-sync): trước ghi "bảy"; chín giá trị `status` trừ ba trạng thái chưa cuối `PENDING`, `COMPILING`, `JUDGING`, khớp `02-bd/database/F4_judge-orchestration.md:22,33`) (`DEC-2026-0912-judge-callback-contract`); lượt nộp chưa xong thì hiển thị trạng thái đang chạy<br>[Nguồn giá trị] Cột `status` [Nguồn: 02-bd/database/F4_judge-orchestration.md:22]<br>[EVT liên quan] - |
+| | 6 | Điểm tỉ lệ | `classStudentDetail.submissionHistory.col.scoreRatio` | `judge.submissions` | `score_ratio` | ListColumn | Number | 4 | - | O | - | `{số}%` | Tỉ lệ testcase đạt của lượt nộp đó (F4-13)<br>[Nguồn giá trị] Cột `score_ratio`; `NULL` với `COMPILE_ERROR`/`SYSTEM_ERROR` thì hiển thị `-`, **không** hiển thị `0%` [Nguồn: 02-bd/database/F4_judge-orchestration.md:27]<br>[EVT liên quan] - |
+| | 7 | Nộp lúc | `classStudentDetail.submissionHistory.col.submittedAt` | `judge.submissions` | `submitted_at` | ListColumn | Date | - | - | O | - | Thời gian tương đối | Thời điểm nộp bài, hiển thị dạng tương đối<br>[Nguồn giá trị] Cột `submitted_at` [Nguồn: 02-bd/database/F4_judge-orchestration.md:31]<br>[EVT liên quan] - |
 | | 8 | Xem kết quả | `classStudentDetail.submissionHistory.col.btnViewResult` | - | - | Link | - | - | - | I | - | Xem kết quả | Mở `submission_result` của đúng lượt nộp đó [Nguồn: 01-rd/screens/teacher/INS0204_class_student_detail.md:68-70]<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] EVT-9 |
 | | 9 | Phân trang | `classStudentDetail.submissionHistory.pagination` | - | - | Button | Number | 4 | - | I/O | 1 | `Trang {n} / {tổng}` | Điều khiển chuyển trang bảng lịch sử, cùng kiểu `problem_list` (F2-11) như `class_progress` đã chốt [Nguồn: 02-bd/screens/teacher/INS0203_class_progress.md:323]<br>[Nguồn giá trị] Tổng số trang do máy chủ trả về cùng kết quả `ListStudentClassSubmissions`<br>[EVT liên quan] EVT-7 |
 | | 10 | Thử lại | `classStudentDetail.submissionHistory.btnRetry` | - | - | Button | - | - | - | I | - | Thử lại | Tải lại khối lịch sử khi lỗi<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] EVT-8 |
@@ -517,9 +517,9 @@ Căn cứ suy diễn, theo đúng thứ tự ưu tiên đã dùng:
 | | 2 | Gỡ học viên | `classStudentDetail.popup.removeConfirm` | `identity.class_enrollments` | - | Button | - | - | - | I | - | Gỡ học viên | Xác nhận gỡ; gọi `RemoveStudentFromClass`<br>[Nguồn giá trị] Nhãn tĩnh i18n, dùng lại nhãn của `class_management` [Nguồn: 02-bd/screens/teacher/INS0201_class_management.md:557]<br>[EVT liên quan] EVT-5 |
 | | 3 | Huỷ | `classStudentDetail.popup.removeCancel` | - | - | Button | - | - | - | I | - | Huỷ | Đóng popup, không ghi gì<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] EVT-6 |
 
-[Nguồn: 01-rd/screens/teacher/INS0204_class_student_detail.md:54-74,93-95; 01-rd/req/identity.md:98-133;
-02-bd/database/identity.md:14,16,20,85-101,111-112; 02-bd/database/problem-bank.md:15,35-39,116-128;
-02-bd/database/judge-orchestration.md:8-34]
+[Nguồn: 01-rd/screens/teacher/INS0204_class_student_detail.md:54-74,93-95; 01-rd/req/F1_identity.md:98-133;
+02-bd/database/F1_identity.md:14,16,20,85-101,111-112; 02-bd/database/F2_problem-bank.md:15,35-39,116-128;
+02-bd/database/F4_judge-orchestration.md:8-34]
 
 ---
 
@@ -596,7 +596,7 @@ Căn cứ suy diễn, theo đúng thứ tự ưu tiên đã dùng:
 | | 2 | Gỡ học viên | Điều kiện | [Điều kiện hiển thị] Chỉ hiển thị trong popup.<br>[Điều kiện kích hoạt] Không kích hoạt trong lúc yêu cầu gỡ đang chạy, tránh gửi hai lần. |
 | | 3 | Huỷ | Điều kiện | [Điều kiện hiển thị] Chỉ hiển thị trong popup.<br>[Điều kiện kích hoạt] Không kích hoạt trong lúc yêu cầu gỡ đang chạy. |
 
-[Nguồn: 01-rd/screens/teacher/INS0204_class_student_detail.md:71-72; 01-rd/req/identity.md:98-103,129-133;
+[Nguồn: 01-rd/screens/teacher/INS0204_class_student_detail.md:71-72; 01-rd/req/F1_identity.md:98-103,129-133;
 02-bd/screens/teacher/INS0203_class_progress.md:375-377]
 
 ---
@@ -616,7 +616,7 @@ Căn cứ suy diễn, theo đúng thứ tự ưu tiên đã dùng:
 | 7 | `ClassStudentProfileDto` | `joinedAt` | Date | `identity.class_enrollments` | `joined_at` | - | Không | Bản dựng không hiện "Ngày tham gia lớp"; giữ trường để DD `identity` quyết trả hay bỏ. |
 | 8 | `ClassStudentProfileDto` | `status` | Enum | - | - | Thẻ "Học tập" "Trạng thái" | Có | [Chuyển đổi] Máy chủ trả mã `INSUFFICIENT_DATA` / `ABSENT` / `NEEDS_SUPPORT` / `WATCH` / `ON_TRACK`; giao diện đổi sang "Chưa đủ dữ liệu" / "Vắng bài" / "Cần hỗ trợ" / "Theo dõi" / "Đúng tiến độ". Mã tường minh theo `DEC-2026-0921-teacher-screens-conflict-resolutions`. Xem Câu hỏi mở Q8. |
 | - | (bỏ từ V0.9) | `avgScore`, `completionPercent`, `streakDays`, `lastActiveAt` | - | - | - | - | Không | Bỏ cùng dải thẻ số liệu (`DEC-2026-1013-a2-reads-student-contact`); các số này vẫn có ở `class_progress`. Máy chủ vẫn dùng Hoàn thành và lượt nộp nội bộ để tính `status`, không trả ra DTO. |
-| 12 | `ClassAssignmentProgressRowDto` | `problemId` | UUID | - | - | - | Không | [Nguồn] `problem.class_assignments.problem_id` qua `ListClassAssignments` [Nguồn: 02-bd/database/problem-bank.md:121].<br>[Đích] Khoá ghép với `user_problem_best_score`. |
+| 12 | `ClassAssignmentProgressRowDto` | `problemId` | UUID | - | - | - | Không | [Nguồn] `problem.class_assignments.problem_id` qua `ListClassAssignments` [Nguồn: 02-bd/database/F2_problem-bank.md:121].<br>[Đích] Khoá ghép với `user_problem_best_score`. |
 | 13 | `ClassAssignmentProgressRowDto` | `problemTitle` | String | `problem.problems` | `title` | Bảng "Bài tập" | Có | [Nguồn] Phản hồi của `ListClassAssignments`. |
 | 14 | `ClassAssignmentProgressRowDto` | `topicNames` | List | - | - | Bảng "Chủ đề"; thẻ "Học tập" "Chủ đề đã giao" | Có | [Nguồn] `problem.topics.name` qua `problem_topics`.<br>[Chuyển đổi] Giao diện gom nhóm chính danh sách này để dựng mục "Chủ đề đã giao"; một bài nhiều chủ đề thì được đếm ở từng chủ đề. |
 | 15 | `ClassAssignmentProgressRowDto` | `bestRatio` | Number | `identity.user_problem_best_score` | `best_ratio` | Bảng "Điểm tốt nhất" | Có | [Chuyển đổi] Hiển thị dạng phần trăm; chưa nộp thì trả rỗng, giao diện hiển thị `-`. |
@@ -631,7 +631,7 @@ Căn cứ suy diễn, theo đúng thứ tự ưu tiên đã dùng:
 
 **Ràng buộc bắt buộc cho mọi DTO ở bảng trên**: không DTO nào được chứa `source_code`, `compile_error_message`,
 nội dung testcase, hay bất kỳ dòng nào của `submission_testcase_results`
-[Nguồn: 02-bd/database/judge-orchestration.md:20,24,40-62].
+[Nguồn: 02-bd/database/F4_judge-orchestration.md:20,24,40-62].
 
 ### 7.2 Truy cập bảng dữ liệu (6)
 
@@ -647,7 +647,7 @@ nội dung testcase, hay bất kỳ dòng nào của `submission_testcase_result
 Màn này có **đúng một thao tác ghi** — `U` (đặt `left_at`) trên `class_enrollments` ở dòng NO 2. Mọi dòng còn lại
 chỉ đọc. Không có dữ liệu nào ở module khác bị xoá hay ẩn khi gỡ; sự kiện miền `StudentRemovedFromClass` vẫn được
 phát nhưng không kéo theo xoá (ĐÃ ĐỔI 2026-10-14, `DEC-2026-1014-keep-learning-history-on-leave`; trước đây ghi
-việc xoá kéo theo dữ liệu ở module khác) [Nguồn: 02-bd/database/identity.md mục 1.10].
+việc xoá kéo theo dữ liệu ở module khác) [Nguồn: 02-bd/database/F1_identity.md mục 1.10].
 
 `[SoT: Suy luận]` — tên repository do BD này đề xuất, trùng tên với đề xuất của `class_management` và
 `class_progress` cho năm bảng dùng chung [Nguồn: 02-bd/screens/teacher/INS0203_class_progress.md:415-419];
@@ -656,7 +656,7 @@ module `identity` chốt lại.
 
 ### 7.3 Danh sách endpoint [Nội bộ]
 
-> Chỉ tên nghiệp vụ và BC sở hữu. Hợp đồng chi tiết thuộc `03-dd/api/identity.md`.
+> Chỉ tên nghiệp vụ và BC sở hữu. Hợp đồng chi tiết thuộc `03-dd/api/F1_identity.md`.
 
 | NO | Endpoint (tên nghiệp vụ) | Mục đích | BC sở hữu |
 | --: | :--- | :--- | :--- |
@@ -683,8 +683,8 @@ Ghi chú ranh giới:
   buộc của dự án, không phải lựa chọn.
 - Endpoint 3, 4 và 5 thuộc module khác, gọi qua cổng ra, **không truy vấn chéo schema**.
 
-[Nguồn: 02-bd/database/identity.md:85-116; 02-bd/database/problem-bank.md:15,35-39,116-128;
-02-bd/database/judge-orchestration.md:8-34]
+[Nguồn: 02-bd/database/F1_identity.md:85-116; 02-bd/database/F2_problem-bank.md:15,35-39,116-128;
+02-bd/database/F4_judge-orchestration.md:8-34]
 
 ---
 
@@ -706,7 +706,7 @@ Ghi chú ranh giới:
 | 8 | Nút | Thử lại một khối | Bấm "Thử lại" trong khối đang lỗi. | Không | Có | Đúng endpoint của khối đó | [Các bước]<br>1. Chuyển khối đó về trạng thái khung chờ.<br>2. Gọi lại đúng endpoint của khối, giữ nguyên số trang hiện tại nếu là khối lịch sử.<br>[Khi thành công] Khối hiển thị dữ liệu, các khối khác không bị tải lại. Khối hồ sơ tải lại thành công sau khi từng lỗi thì kéo theo tải luôn ba khối còn lại, vì chúng đã bị chặn ở bước 3 của EVT-1.<br>[Khi lỗi] Giữ trạng thái lỗi, nút "Thử lại" kích hoạt trở lại. |
 | 9 | Liên kết | Mở kết quả một lượt nộp | Bấm "Xem kết quả" trên một dòng lịch sử. | Có | Không | - | [Các bước]<br>1. Điều hướng sang `submission_result` kèm `id` lượt nộp của dòng đó và `studentId`, `classId`, `from=student`.<br>[Khi thành công] Mở kết quả của đúng lượt nộp. Không hỏi xác nhận trước khi rời. Quyền của A2 trên màn đích chưa được thiết kế — xem Câu hỏi mở Q5. |
 
-[Nguồn: 01-rd/screens/teacher/INS0204_class_student_detail.md:58-70,93; 01-rd/req/identity.md:98-103;
+[Nguồn: 01-rd/screens/teacher/INS0204_class_student_detail.md:58-70,93; 01-rd/req/F1_identity.md:98-103;
 02-bd/screens/teacher/INS0201_class_management.md:521,557]
 
 ---
@@ -719,24 +719,24 @@ Ghi chú ranh giới:
 
 | NO | Loại | Tóm tắt kiểm | Chi tiết | Mức | Mã thông báo | Ghi chú | EVT gọi | Thứ tự |
 | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: |
-| 1 | Kiểm quyền | Quyền truy cập màn | [Nội dung kiểm] Người dùng không có Function `CLASS_MANAGEMENT` thì không được vào màn.<br>[Nơi thực thi] Chặn ở cả tầng định tuyến phía giao diện và tầng phân quyền phía máy chủ, không chỉ ẩn giao diện. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn không có quyền truy cập chức năng này." [Nguồn: 01-rd/req/identity.md:137-138] | EVT-1 | 1 |
+| 1 | Kiểm quyền | Quyền truy cập màn | [Nội dung kiểm] Người dùng không có Function `CLASS_MANAGEMENT` thì không được vào màn.<br>[Nơi thực thi] Chặn ở cả tầng định tuyến phía giao diện và tầng phân quyền phía máy chủ, không chỉ ẩn giao diện. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn không có quyền truy cập chức năng này." [Nguồn: 01-rd/req/F1_identity.md:137-138] | EVT-1 | 1 |
 | 2 | Kiểm quyền | Phạm vi lớp phụ trách | [Nội dung kiểm] `classId` truyền vào phải là lớp có `instructor_id` bằng người đang đăng nhập; không phải thì từ chối **trước khi** đọc bất cứ dữ liệu nào của học viên.<br>[Nơi thực thi] Máy chủ, trên từng yêu cầu — không dựa vào việc giao diện chỉ dựng liên kết cho lớp của mình. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn không phụ trách lớp này." Ở màn này đây là kiểm **nặng nhất cụm**: tham số đến thẳng từ URL và mở ra hồ sơ một cá nhân, nên không được dựa vào bất kỳ giả định nào từ màn gọi tới. Áp cho cả 5 endpoint ở mục 7.3. | EVT-1, EVT-5, EVT-7, EVT-8 | 1 |
-| 3 | Kiểm quyền | Học viên phải thuộc đúng lớp | [Nội dung kiểm] Cặp (`studentId`, `classId`) phải có một dòng trong `class_enrollments`; không có thì từ chối, không trả hồ sơ rỗng.<br>[Nơi thực thi] Máy chủ. | Lỗi | Chưa có mã thông báo | Nội dung "Học viên này không thuộc lớp đã chọn." Cấm trả về hồ sơ của một học viên hợp lệ nhưng ghép với lớp khác — đó là lỗ rò dữ liệu cá nhân, không phải lỗi hiển thị [Nguồn: 02-bd/database/identity.md:95-97]. | EVT-1, EVT-7 | 2 |
-| 4 | Kiểm quyền | Không lộ mã nguồn và dữ liệu chấm chi tiết | [Nội dung kiểm] Phản hồi của màn này **chỉ** chứa số liệu tổng hợp và siêu dữ liệu lượt nộp; không chứa `source_code`, `compile_error_message`, nội dung testcase ẩn, hay dòng nào của `submission_testcase_results`.<br>[Nơi thực thi] Máy chủ, ở tầng dựng DTO. | Lỗi | Mã lỗi trong phản hồi | Ràng buộc **Bắt buộc** của dự án. `ListStudentClassSubmissions` chỉ được trả tên bài, ngôn ngữ, trạng thái, tỉ lệ và mốc thời gian [Nguồn: 02-bd/database/judge-orchestration.md:20,24,40-62]. | EVT-1, EVT-7 | 3 |
+| 3 | Kiểm quyền | Học viên phải thuộc đúng lớp | [Nội dung kiểm] Cặp (`studentId`, `classId`) phải có một dòng trong `class_enrollments`; không có thì từ chối, không trả hồ sơ rỗng.<br>[Nơi thực thi] Máy chủ. | Lỗi | Chưa có mã thông báo | Nội dung "Học viên này không thuộc lớp đã chọn." Cấm trả về hồ sơ của một học viên hợp lệ nhưng ghép với lớp khác — đó là lỗ rò dữ liệu cá nhân, không phải lỗi hiển thị [Nguồn: 02-bd/database/F1_identity.md:95-97]. | EVT-1, EVT-7 | 2 |
+| 4 | Kiểm quyền | Không lộ mã nguồn và dữ liệu chấm chi tiết | [Nội dung kiểm] Phản hồi của màn này **chỉ** chứa số liệu tổng hợp và siêu dữ liệu lượt nộp; không chứa `source_code`, `compile_error_message`, nội dung testcase ẩn, hay dòng nào của `submission_testcase_results`.<br>[Nơi thực thi] Máy chủ, ở tầng dựng DTO. | Lỗi | Mã lỗi trong phản hồi | Ràng buộc **Bắt buộc** của dự án. `ListStudentClassSubmissions` chỉ được trả tên bài, ngôn ngữ, trạng thái, tỉ lệ và mốc thời gian [Nguồn: 02-bd/database/F4_judge-orchestration.md:20,24,40-62]. | EVT-1, EVT-7 | 3 |
 | 5 | Kiểm quyền | Không lộ điểm AI | [Nội dung kiểm] Không phản hồi nào của màn này chứa điểm hay nhận xét do AI sinh ra từ `ai.solution_reviews` hoặc `ai.rubric_scores` (cột điểm chấm tay `manual_*` đã bỏ cùng F5-27).<br>[Nơi thực thi] Máy chủ, ở tầng dựng DTO. | Cảnh báo | Chưa có mã thông báo | RD chốt 2026-09-01 là không hiện ở đây [Nguồn: 01-rd/screens/teacher/INS0204_class_student_detail.md:65-67,94]. Các bảng đó không thuộc bất kỳ bảng nào màn này đọc. Kiểm ở máy chủ chứ không chỉ bỏ cột ở giao diện, để một lần đổi UI không vô tình làm lộ. | EVT-1 | 4 |
 | 6 | Kiểm nhập liệu | Tham số đường vào hợp lệ | [Nội dung kiểm] `studentId` và `classId` phải là UUID hợp lệ và phải **cùng có mặt**; thiếu một trong hai hoặc sai định dạng thì không gọi máy chủ.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Tham số đường vào của màn. | Lỗi | Chưa có mã thông báo | Nội dung "Đường dẫn không hợp lệ." Màn này chỉ vào được bằng khoan sâu nhưng URL vẫn gõ tay được, nên phải kiểm chứ không giả định màn gọi tới luôn truyền đúng. | EVT-1 | 1 |
 | 7 | Kiểm nhập liệu | Số trang hợp lệ | [Nội dung kiểm] Số trang nhỏ hơn 1 hoặc lớn hơn tổng số trang thì đưa về trang hợp lệ gần nhất, không gọi máy chủ với giá trị sai.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Điều khiển phân trang của bảng lịch sử. | Cảnh báo | Chưa có mã thông báo | Xảy ra thật khi bộ lọc hoặc dữ liệu đổi (ví dụ bài bị gỡ khỏi lớp ở phiên khác) làm số trang giảm trong lúc giảng viên đang ở trang cuối (ĐÃ ĐỔI 2026-10-14: ~~lượt nộp bị xoá theo cascade khi gỡ học viên~~ không còn xảy ra, `DEC-2026-1014-keep-learning-history-on-leave`). | EVT-7 | 1 |
 | 8 | Kiểm nghiệp vụ | Mẫu số bằng 0 | [Nội dung kiểm] Không được chia cho 0 ở ba chỗ: "Điểm TB" khi `total_submissions` bằng 0, "Hoàn thành" khi lớp chưa được giao bài nào, và tỉ lệ từng chủ đề khi chủ đề đó không có bài nào. Cả ba hiển thị `-`.<br>[Nơi thực thi] Máy chủ trả rỗng, màn hình hiển thị `-`. | Cảnh báo | Chưa có mã thông báo | Hiển thị `0.0` hay `0%` trong ba trường hợp này là sai nghiệp vụ — nó khiến giảng viên tưởng học viên làm bài mà không đạt, trong khi thực tế chưa có gì để tính. Cùng nguyên tắc `class_progress` [Nguồn: 02-bd/screens/teacher/INS0203_class_progress.md:488]. | EVT-1, EVT-8 | 1 |
 | 9 | Kiểm nghiệp vụ | Phạm vi lịch sử nộp bài | [Nội dung kiểm] Bảng lịch sử **chỉ** chứa lượt nộp cho các bài đã được giao cho đúng lớp đang xem, **kể cả bài đã bị gỡ mềm khỏi lớp** (dòng đó mang ghi chú "Bài đã gỡ khỏi lớp"); không được lẫn bài tự luyện.<br>[Nơi thực thi] Máy chủ, ở tầng dựng truy vấn. | Lỗi | Mã lỗi trong phản hồi | Chốt 2026-09-01 [Nguồn: 01-rd/screens/teacher/INS0204_class_student_detail.md:68-70,95]. Lẫn bài ngoài lớp là lộ hoạt động cá nhân ngoài phạm vi giảng viên được phép xem, không chỉ là hiển thị thừa. Bài đã bị **gỡ mềm** khỏi lớp vẫn được giữ trong lịch sử (đã chốt, Q9, `DEC-2026-1014-instructor-batch2-weekly-rules`). | EVT-1, EVT-7 | 2 |
-| 10 | Kiểm nghiệp vụ | Học viên bị gỡ khỏi lớp ở phiên khác | [Nội dung kiểm] Học viên đã bị gỡ khỏi lớp (F1-26, ghi danh có `left_at` khác rỗng) thì màn này báo không tìm thấy thay vì hiển thị hồ sơ rỗng; bài nộp cũ của học viên vẫn đọc được ở `INS0206` với ghi chú "Đã rời lớp".<br>[Nơi thực thi] Máy chủ. | Lỗi | Mã lỗi trong phản hồi | Nội dung "Học viên này không còn thuộc lớp." Phát hiện bằng `left_at` (ĐÃ ĐỔI 2026-10-14, `DEC-2026-1014-keep-learning-history-on-leave`; ~~gỡ là xoá thật, không có bản ghi mềm~~) [Nguồn: 02-bd/database/identity.md mục 1.10]. Cùng tình huống mà `class_progress` đã mô tả ở phía màn gọi tới [Nguồn: 02-bd/screens/teacher/INS0203_class_progress.md:490]. | EVT-1, EVT-7, EVT-8 | 2 |
+| 10 | Kiểm nghiệp vụ | Học viên bị gỡ khỏi lớp ở phiên khác | [Nội dung kiểm] Học viên đã bị gỡ khỏi lớp (F1-26, ghi danh có `left_at` khác rỗng) thì màn này báo không tìm thấy thay vì hiển thị hồ sơ rỗng; bài nộp cũ của học viên vẫn đọc được ở `INS0206` với ghi chú "Đã rời lớp".<br>[Nơi thực thi] Máy chủ. | Lỗi | Mã lỗi trong phản hồi | Nội dung "Học viên này không còn thuộc lớp." Phát hiện bằng `left_at` (ĐÃ ĐỔI 2026-10-14, `DEC-2026-1014-keep-learning-history-on-leave`; ~~gỡ là xoá thật, không có bản ghi mềm~~) [Nguồn: 02-bd/database/F1_identity.md mục 1.10]. Cùng tình huống mà `class_progress` đã mô tả ở phía màn gọi tới [Nguồn: 02-bd/screens/teacher/INS0203_class_progress.md:490]. | EVT-1, EVT-7, EVT-8 | 2 |
 | 11 | Kiểm nghiệp vụ | Gỡ học viên phải qua xác nhận (ĐÃ ĐỔI 2026-10-14; ~~Gỡ học viên là không hoàn tác~~) | [Nội dung kiểm] Thao tác gỡ chỉ được thực hiện sau khi popup xác nhận đã hiển thị nội dung nêu rõ học viên chỉ rời lớp và lịch sử được giữ; không có đường tắt bỏ qua popup (`DEC-2026-1014-keep-learning-history-on-leave`).<br>[Nơi thực thi] Màn hình và máy chủ. | Cảnh báo | Chưa có mã thông báo | Nội dung "Học viên sẽ rời khỏi lớp. Lịch sử làm bài của học viên trong lớp này vẫn được giữ." ĐÃ CHỐT 2026-10-14 (`DEC-2026-1014-class-leave-details`) (~~`[SoT: Suy luận]`, chưa chủ dự án duyệt câu chữ~~); câu cũ "Gỡ học viên sẽ xoá toàn bộ lịch sử..." đã bỏ | EVT-4, EVT-5 | 1 |
 | 12 | Kiểm nghiệp vụ | Một khối lỗi không kéo đổ cả màn | [Nội dung kiểm] Gọi `problem-bank` hoặc `judge-orchestration` thất bại thì chỉ khối hoặc thẻ phụ thuộc nguồn đó hiển thị `-` hoặc trạng thái lỗi riêng; khối hồ sơ và các khối lấy được vẫn hiển thị.<br>[Nơi thực thi] Màn hình. | Cảnh báo | Chưa có mã thông báo | Không hiện hộp lỗi toàn màn. Ngoại lệ duy nhất là khối hồ sơ lỗi — khi đó không có `studentId` hợp lệ để tải phần còn lại, nên dừng cả màn là đúng. | EVT-1, EVT-8 | 3 |
 | 13 | Kiểm nghiệp vụ | Lỗi hệ thống hoặc lỗi gọi máy chủ | [Nội dung kiểm] Gọi máy chủ thất bại hoặc trả lỗi nghiệp vụ thì dừng thao tác, giữ nguyên dữ liệu đang hiển thị và hiện nút "Thử lại" ở đúng khối.<br>[Nơi thực thi] Màn hình. | Lỗi | Mã lỗi trong phản hồi | Phản hồi có mã lỗi đã đăng ký thì hiển thị nội dung tương ứng; chưa đăng ký thì hiển thị "Không kết nối được máy chủ." Lỗi của thao tác ghi (gỡ học viên) hiện bằng toast; lỗi tải một khối vẫn nằm ở vùng thay chỗ của khối đó kèm nút "Thử lại" [Nguồn: DEC-2026-1003-toast-feedback-channel]. | EVT-1, EVT-5, EVT-7, EVT-8 | 1 |
 
 Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 
-[Nguồn: 01-rd/req/identity.md:98-103,137-138; 01-rd/screens/teacher/INS0204_class_student_detail.md:65-70,94-95;
-02-bd/database/identity.md:95-101; 02-bd/database/judge-orchestration.md:20,24,40-62]
+[Nguồn: 01-rd/req/F1_identity.md:98-103,137-138; 01-rd/screens/teacher/INS0204_class_student_detail.md:65-70,94-95;
+02-bd/database/F1_identity.md:95-101; 02-bd/database/F4_judge-orchestration.md:20,24,40-62]
 
 ---
 
@@ -745,7 +745,7 @@ Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 | # | Câu hỏi | Vì sao chưa trả lời được | Chủ sở hữu |
 | :-: | :--- | :--- | :--- |
 | Q1 | ~~Điểm TB là điểm toàn hệ thống hay điểm trong phạm vi lớp?~~ **ĐÃ CHỐT 2026-09-21** bởi `DEC-2026-0921-teacher-screens-conflict-resolutions`: Điểm TB tính **đúng theo phạm vi lớp**, theo đúng câu chữ của F1-28 — RD đứng bậc P2 trên thang SoT, cao hơn BD (P3), nên khi hai bên lệch thì BD phải theo RD chứ không phải ngược lại. Cách tính: giới hạn tập lượt nộp theo danh sách bài đã giao cho lớp rồi đếm qua `GetClassStudentSubmissionMetrics` của `judge-orchestration`. **Không** thêm chiều `class_id` vào `user_submission_stats`: danh sách bài đã giao thay đổi theo thời gian nên read model sẽ sai ngay khi giảng viên gỡ một bài. `user_submission_stats` vẫn giữ nguyên cho mục đích toàn cục của nó (F1-07), chỉ là không còn là nguồn của màn này. Mục 4.3, Sheet 5, Sheet 7.1 và 7.2 đã cập nhật. | Đã đóng | Đã đóng |
-| Q2 | ~~**`GetClassStudentSubmissionMetrics` vẫn chưa tồn tại — lần yêu cầu thứ hai.** `class_progress` đã đề xuất endpoint này [Nguồn: 02-bd/screens/teacher/INS0203_class_progress.md:438,505] nhưng BD `judge-orchestration` chưa có. Màn này cần nó cho thẻ "Chuỗi ngày" và cho việc tính nhãn "Cần hỗ trợ" (điểm giảm qua các mốc tuần). Đề xuất: giữ nguyên tên nghiệp vụ, và bổ sung yêu cầu là endpoint phải nhận **một** `user_id` kèm tập `problem_id` giới hạn theo lớp, chứ không chỉ nhận danh sách người như `class_progress` cần — một endpoint, hai kiểu gọi.~~ | **ĐÃ ĐÓNG 2026-09-27** (`DEC-2026-0927-submission-metrics-two-ports`): cổng nay đã được viết vào `02-bd/architecture/judge-orchestration.md` mục 3.3, và **tách làm hai luồng**. Màn này dùng luồng Giảng viên `GetClassStudentSubmissionMetrics(classId, studentIds[], problemIds[], weekCount)` — đọc dữ liệu người khác theo phạm vi lớp, gom theo tuần. Chữ ký thật và phân trang khi tập học viên lớn còn để mở ở mục 9 của file đó.~~~~ | Đã đóng |
+| Q2 | ~~**`GetClassStudentSubmissionMetrics` vẫn chưa tồn tại — lần yêu cầu thứ hai.** `class_progress` đã đề xuất endpoint này [Nguồn: 02-bd/screens/teacher/INS0203_class_progress.md:438,505] nhưng BD `judge-orchestration` chưa có. Màn này cần nó cho thẻ "Chuỗi ngày" và cho việc tính nhãn "Cần hỗ trợ" (điểm giảm qua các mốc tuần). Đề xuất: giữ nguyên tên nghiệp vụ, và bổ sung yêu cầu là endpoint phải nhận **một** `user_id` kèm tập `problem_id` giới hạn theo lớp, chứ không chỉ nhận danh sách người như `class_progress` cần — một endpoint, hai kiểu gọi.~~ | **ĐÃ ĐÓNG 2026-09-27** (`DEC-2026-0927-submission-metrics-two-ports`): cổng nay đã được viết vào `02-bd/architecture/F4_judge-orchestration.md` mục 3.3, và **tách làm hai luồng**. Màn này dùng luồng Giảng viên `GetClassStudentSubmissionMetrics(classId, studentIds[], problemIds[], weekCount)` — đọc dữ liệu người khác theo phạm vi lớp, gom theo tuần. Chữ ký thật và phân trang khi tập học viên lớn còn để mở ở mục 9 của file đó.~~~~ | Đã đóng |
 | Q3 | ~~Có nên bỏ hẳn `GetClassAssignmentCompletion` không?~~ **ĐÃ CHỐT 2026-09-21** bởi `DEC-2026-0921-class-completion-owned-by-identity`: **bỏ hẳn** `GetClassAssignmentCompletion`. `problem-bank` chỉ cung cấp danh sách bài đã giao qua `ListClassAssignments` (endpoint đã tồn tại sẵn, không phải viết mới), `identity` tự tính tỉ lệ từ danh sách đó kết hợp read model `user_problem_best_score` mà chính nó đã sở hữu. Ba lý do: (1) không đẻ endpoint liên module mới; (2) `identity` đằng nào cũng phải lấy danh sách bài đã giao để tính Điểm TB theo lớp (`DEC-2026-0921-teacher-screens-conflict-resolutions` mục 3), nên tính thêm Hoàn thành từ cùng danh sách là miễn phí; (3) đúng chủ sở hữu nghiệp vụ — tiến độ học viên là việc của `identity` (F1-06, F1-28), `problem-bank` chỉ sở hữu "lớp này được giao bài nào"; phương án cũ bắt `problem-bank` đọc ngược hai bảng của `identity`. | Đã đóng | Đã đóng |
 | Q4 | **Đã đóng: màn bị bỏ (2026/10/13, `DEC-2026-1013-remove-instructor-manual-grading`)** — `INS0301` không còn nên không còn bộ lọc `?studentId=&classId=`. Câu trả lời cũ giữ làm lịch sử: ~~**`instructor_grading` không có bộ lọc theo học viên, nhưng RD bắt màn này liên kết sang đó "lọc theo học viên".**~~ **ĐÃ CHỐT 2026-10-11 (chủ dự án duyệt) theo bản dựng:** `instructor_grading` nhận bộ lọc học viên ẩn qua tham số đường dẫn `?studentId=&classId=`, hiện thành chip "Học viên: {tên}" bỏ được; mã đọc hai tham số này ở `05-coding/frontend/src/views/teacher/grading/ui/instructor-grading-view.tsx:46-47`. BD `INS0301` đã có đường vào này từ V0.2. Nội dung câu hỏi gốc, giữ làm lịch sử: RD chốt 2026-09-01 là thay việc hiển thị điểm AI bằng liên kết "Xem chấm bài của học viên này" [Nguồn: 01-rd/screens/teacher/INS0204_class_student_detail.md:65-67,94], trong khi BD `instructor_grading` chỉ thiết kế hai bộ lọc: tab trạng thái chấm và tab lớp [Nguồn: 02-bd/screens/teacher/INS0301_grading.md:281-285]. Đề xuất: thêm một bộ lọc học viên **ẩn** cho `instructor_grading` — nhận qua tham số đường dẫn, hiển thị thành một chip "Học viên: {tên}" có nút bỏ lọc, chứ không thêm một cụm tab thứ ba (số học viên quá nhiều để làm tab). Việc này phải sửa `02-bd/screens/teacher/INS0301_grading.md`, file đã viết xong, nên ghi ở đây thay vì tự sửa. | Hai tài liệu đã chốt nói ngược nhau: RD của màn này yêu cầu lọc theo học viên, BD của màn đích không có chỗ nhận | Đã đóng |
 | Q5 | ~~**A2 mở `submission_result` của học viên khác thì thấy gì, và có được phép không?**~~ **ĐÃ CHỐT 2026-10-11 (chủ dự án duyệt) theo `DEC-2026-1011-teacher-screens-open-questions-closed`:** A2 xem **chỉ đọc** `submission_result` của học viên thuộc lớp mình phụ trách; ngoài lớp trả **404**, cùng mẫu "không lộ sự tồn tại" của `SHR0203` Q8. Máy chủ kiểm phạm vi lớp ở tầng application, không chỉ ẩn nút. Việc A2 đọc mã nguồn: **ĐÃ CHỐT 2026-10-13 (chủ dự án): được đọc**, chỉ đọc, trong phạm vi lớp mình phụ trách (`DEC-2026-1013-instructor-avatar-menu-and-read-source`). Nội dung câu hỏi gốc, giữ làm lịch sử: RD bắt mỗi dòng lịch sử dẫn sang `submission_result` của đúng lượt nộp đó [Nguồn: 01-rd/screens/teacher/INS0204_class_student_detail.md:68-70], nhưng `submission_result` là màn của A1, **chưa có BD** (`02-bd/screens/` chưa có thư mục cho khu người học), và không nguồn nào chốt A2 có quyền mở lượt nộp của người khác hay màn đó hiển thị gì cho A2. Màn hiện tại giữ được ràng buộc "không lộ mã nguồn", nhưng liên kết này đẩy vấn đề sang màn khác chứ không giải quyết nó. Đề xuất: A2 được mở, ở **chế độ chỉ đọc giới hạn** — thấy trạng thái, tỉ lệ testcase, thời gian và bộ nhớ, **không** thấy mã nguồn; vì mục đích của F1-27 là theo dõi tiến độ, không phải đọc bài làm. Nếu chủ dự án muốn A2 đọc được mã nguồn (để hỗ trợ học viên) thì đó là một quyết định riêng về quyền riêng tư, phải ghi thành `DEC-`. | Màn đích chưa có BD; quyền của A2 trên dữ liệu bài nộp của A1 chưa có nguồn nào chốt | Đã đóng |

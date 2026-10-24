@@ -1,7 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
-import { NextIntlClientProvider } from "@/shared/i18n";
-import messages from "../../../../../messages/vi.json";
+import { render, screen, waitFor } from "@testing-library/react";
+import { withTestProviders } from "@/shared/test/render-with-providers";
 import { ProblemOverviewView } from "./problem-overview-view";
 
 let currentProblemId: string | undefined = "121";
@@ -10,17 +9,20 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: vi.fn() }),
 }));
 
-function wrap(node: React.ReactNode) {
-  return render(
-    <NextIntlClientProvider locale="vi" messages={messages}>
-      {node}
-    </NextIntlClientProvider>,
+// The problem arrives through a query: wait for the loading skeleton to go before asserting.
+async function wrap(node: React.ReactNode) {
+  const view = render(withTestProviders(node));
+  await waitFor(() =>
+    expect(
+      screen.queryByRole("status", { name: "Đang tải..." }),
+    ).not.toBeInTheDocument(),
   );
+  return view;
 }
 
 describe("ProblemOverviewView", () => {
-  it("opens a catalogue problem and links the solve button to the workspace", () => {
-    wrap(<ProblemOverviewView />);
+  it("opens a catalogue problem and links the solve button to the workspace", async () => {
+    await wrap(<ProblemOverviewView />);
     expect(
       screen.getByRole("heading", { level: 1, name: "Best Time to Buy and Sell Stock" }),
     ).toBeInTheDocument();
@@ -31,9 +33,9 @@ describe("ProblemOverviewView", () => {
     expect(screen.queryByText("Run Code")).not.toBeInTheDocument();
   });
 
-  it("lists recent submissions newest first as links, and links the full review of the latest Accepted one", () => {
+  it("lists recent submissions newest first as links, and links the full review of the latest Accepted one", async () => {
     currentProblemId = "1";
-    wrap(<ProblemOverviewView />);
+    await wrap(<ProblemOverviewView />);
     const row = screen.getByRole("link", { name: /Đã chấp nhận|Accepted/ });
     expect(row).toHaveAttribute("href", "/submissions/s1");
     const links = screen
@@ -47,9 +49,9 @@ describe("ProblemOverviewView", () => {
     currentProblemId = "121";
   });
 
-  it("shows not-found for an unknown id", () => {
+  it("shows not-found for an unknown id", async () => {
     currentProblemId = "does-not-exist";
-    wrap(<ProblemOverviewView />);
+    await wrap(<ProblemOverviewView />);
     expect(screen.getByText("Không tìm thấy bài toán.")).toBeInTheDocument();
     currentProblemId = "121";
   });

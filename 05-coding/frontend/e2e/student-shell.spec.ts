@@ -21,7 +21,8 @@ test("the header renders on every student route and marks the active one", async
   // Interview items of the prototype stay out (they need an id — see model/student-nav.ts).
   // 6 per 02-bd/screens/users/_shell.md mục 2.2 (5 items) plus "Tổng quan", which
   // DEC-2026-0927-student-dashboard-home added back once the slug existed.
-  await expect(nav.getByRole("link")).toHaveCount(6);
+  // 7 since the owner moved "Lớp của tôi" into the header (2026-10-23, prototype pass).
+  await expect(nav.getByRole("link")).toHaveCount(7);
 
   // A problem detail route keeps its parent nav item marked (prefix match, not equality).
   await nav.getByRole("link", { name: "Bài nộp" }).click();
@@ -58,7 +59,7 @@ test("collapses the nav behind one button on a narrow viewport", async ({
   await expect(nav).toBeHidden();
 
   await page.getByRole("button", { name: "Mở menu điều hướng" }).click();
-  await expect(nav.getByRole("link")).toHaveCount(6);
+  await expect(nav.getByRole("link")).toHaveCount(7);
 
   // Picking a destination closes the drawer rather than leaving it over the new page.
   await nav.getByRole("link", { name: "Bài toán" }).click();

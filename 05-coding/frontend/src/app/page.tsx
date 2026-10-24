@@ -10,7 +10,7 @@ import { redirect } from "next/navigation";
  *
  * At this base-scaffold stage only the NOT-LOGGED-IN branch is implemented, since there is no
  * real session yet (`app/providers/auth-provider.tsx` is still a TODO, needs
- * `03-dd/api/identity.md`). The role-based branch and returnUrl belong to `middleware.ts` — to
+ * `03-dd/api/F1_identity.md`). The role-based branch and returnUrl belong to `middleware.ts` — to
  * be built alongside real auth, not guessed at ahead of time.
  */
 export default function RootPage() {

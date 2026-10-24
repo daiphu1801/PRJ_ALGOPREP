@@ -2,11 +2,11 @@
 //
 // Zod schemas for the `auth` screen, one per mode of the state machine
 // (02-bd/screens/shared/SHR0101_auth.md Sheet 3). Keeping the schema here (not inline in the feature)
-// is what makes the future swap to a real 03-dd/api/identity.md contract mechanical: the DD's
+// is what makes the future swap to a real 03-dd/api/F1_identity.md contract mechanical: the DD's
 // client validation table becomes a diff on this file, not a rewrite.
 import { z } from "zod";
 
-// Username/password rules are NOT locked in yet (03-dd/validation/identity.md doesn't exist) —
+// Username/password rules are NOT locked in yet (03-dd/validation/F1_identity.md doesn't exist) —
 // these are prototype-only placeholders, loose enough to let the mock respond, not a security
 // policy. [SoT: Suy luận]
 // Message values are i18n keys RELATIVE to the "auth" namespace (not full paths) — the feature

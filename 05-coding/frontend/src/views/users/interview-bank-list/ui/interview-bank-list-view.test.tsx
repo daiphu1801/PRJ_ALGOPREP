@@ -1,5 +1,7 @@
 // Smoke test (PROTOTYPE lane) — route renders, filter + drill entry are reachable. Full behavioural
 // coverage per 04-tdd/interview_bank_list.md's AC-nn comes later, once that file exists.
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import type { ReactElement } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { resetRecallAndBookmarkState } from "@/entities/interview-question";
@@ -18,11 +20,22 @@ function openFilter(label: string) {
   return screen.getByRole("listbox", { name: label });
 }
 
+// The bank loads through TanStack Query, so each test renders inside a fresh client.
+function renderWithQuery(ui: ReactElement) {
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+  return render(
+    <QueryClientProvider client={client}>{ui}</QueryClientProvider>,
+  );
+}
+
 afterEach(() => resetRecallAndBookmarkState());
 
 describe("InterviewBankListView", () => {
-  it("renders the browse list with the seeded questions", () => {
-    render(<InterviewBankListView />);
+  it("renders the browse list with the seeded questions", async () => {
+    renderWithQuery(<InterviewBankListView />);
+    await screen.findByPlaceholderText("searchPlaceholder");
 
     expect(
       screen.getByPlaceholderText("searchPlaceholder"),
@@ -34,8 +47,9 @@ describe("InterviewBankListView", () => {
     ).toBeGreaterThan(0);
   });
 
-  it("filters the list by search text", () => {
-    render(<InterviewBankListView />);
+  it("filters the list by search text", async () => {
+    renderWithQuery(<InterviewBankListView />);
+    await screen.findByPlaceholderText("searchPlaceholder");
 
     fireEvent.change(screen.getByPlaceholderText("searchPlaceholder"), {
       target: { value: "process và thread" },
@@ -49,8 +63,9 @@ describe("InterviewBankListView", () => {
     ).toBeGreaterThan(0);
   });
 
-  it("filters the list by difficulty level read from the admin-managed list", () => {
-    render(<InterviewBankListView />);
+  it("filters the list by difficulty level read from the admin-managed list", async () => {
+    renderWithQuery(<InterviewBankListView />);
+    await screen.findByPlaceholderText("searchPlaceholder");
 
     fireEvent.click(
       within(openFilter("levelFilterLabel")).getByRole("option", {
@@ -64,8 +79,9 @@ describe("InterviewBankListView", () => {
     expect(screen.getAllByText(/rút gọn URL/).length).toBeGreaterThan(0);
   });
 
-  it("enters drill mode and shows a flashcard with an exit control", () => {
-    render(<InterviewBankListView />);
+  it("enters drill mode and shows a flashcard with an exit control", async () => {
+    renderWithQuery(<InterviewBankListView />);
+    await screen.findByPlaceholderText("searchPlaceholder");
 
     fireEvent.click(screen.getByText(/^startDrill/));
 
@@ -73,8 +89,9 @@ describe("InterviewBankListView", () => {
     expect(screen.getByText("drill.reveal")).toBeInTheDocument();
   });
 
-  it("searches the question content and core keywords, not only the title", () => {
-    render(<InterviewBankListView />);
+  it("searches the question content and core keywords, not only the title", async () => {
+    renderWithQuery(<InterviewBankListView />);
+    await screen.findByPlaceholderText("searchPlaceholder");
 
     fireEvent.change(screen.getByPlaceholderText("searchPlaceholder"), {
       target: { value: "collision" },
@@ -85,8 +102,9 @@ describe("InterviewBankListView", () => {
     ).toBeGreaterThan(0);
   });
 
-  it("keeps a just-rated question in the list while a status filter would drop it", () => {
-    render(<InterviewBankListView />);
+  it("keeps a just-rated question in the list while a status filter would drop it", async () => {
+    renderWithQuery(<InterviewBankListView />);
+    await screen.findByPlaceholderText("searchPlaceholder");
 
     fireEvent.click(
       within(openFilter("statusFilterLabel")).getByRole("option", {

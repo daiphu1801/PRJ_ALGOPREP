@@ -11,4 +11,4 @@ export {
   type GuardedFeature,
   type GuardSet,
 } from "../model/types";
-export { fetchAiConfigPage } from "./__mock__/ai-config-mocks";
+export { useAiConfigPage } from "./queries";

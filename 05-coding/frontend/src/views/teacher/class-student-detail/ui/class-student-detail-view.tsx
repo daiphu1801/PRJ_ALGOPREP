@@ -25,11 +25,11 @@ import {
 } from "lucide-react";
 import { useClassAssignments } from "@/entities/class-assignment";
 import {
-  fetchSubmissionDetail,
   matchesResultFilter,
-  READABLE_SUBMISSION_IDS,
   SUBMISSION_LANGUAGE_LABEL,
   SUBMISSION_STATUS_VARIANT,
+  useInstructorReadableSubmissions,
+  type SubmissionDetail,
   type SubmissionResultFilter,
 } from "@/entities/submission";
 import {
@@ -49,6 +49,7 @@ import {
   FilterMenu,
   IconAction,
   PageHeader,
+  QueryError,
   type DataTableColumn,
 } from "@/shared/ui";
 
@@ -82,30 +83,27 @@ function InfoItem({
 }
 
 // Mock submission history — no dedicated entity yet (this screen has no
-// 03-dd/api/judge-orchestration.md contract to type a mock against). Rows ARE the mock submissions the
+// 03-dd/api/F4_judge-orchestration.md contract to type a mock against). Rows ARE the mock submissions the
 // instructor may read (entities/submission details, the same ids the instructor submission list uses), so
 // language, verdict, testcase ratio and time here match what "Xem kết quả" opens.
-function buildSubmissionHistory() {
-  return READABLE_SUBMISSION_IDS.flatMap((id) => {
-    const detail = fetchSubmissionDetail(id);
-    if (!detail) return [];
-    return [
-      {
-        id,
-        submissionId: id,
-        problemTitle: detail.problemTitle,
-        language: SUBMISSION_LANGUAGE_LABEL[detail.language],
-        status: detail.status,
-        ratio:
-          detail.totalCount == null
-            ? "-"
-            : `${detail.passedCount ?? 0}/${detail.totalCount}`,
-        submittedAtLabel: new Date(detail.submittedAt).toLocaleString("vi-VN", {
-          dateStyle: "short",
-          timeStyle: "short",
-        }),
-      },
-    ];
+function buildSubmissionHistory(readable: SubmissionDetail[]) {
+  return readable.map((detail) => {
+    const id = detail.id;
+    return {
+      id,
+      submissionId: id,
+      problemTitle: detail.problemTitle,
+      language: SUBMISSION_LANGUAGE_LABEL[detail.language],
+      status: detail.status,
+      ratio:
+        detail.totalCount == null
+          ? "-"
+          : `${detail.passedCount ?? 0}/${detail.totalCount}`,
+      submittedAtLabel: new Date(detail.submittedAt).toLocaleString("vi-VN", {
+        dateStyle: "short",
+        timeStyle: "short",
+      }),
+    };
   });
 }
 
@@ -145,7 +143,11 @@ export function ClassStudentDetailView({
     return [...byTopic.entries()];
   }, [classAssignments]);
 
-  const submissionHistory = useMemo(() => buildSubmissionHistory(), []);
+  const readableQuery = useInstructorReadableSubmissions();
+  const submissionHistory = useMemo(
+    () => buildSubmissionHistory(readableQuery.data ?? []),
+    [readableQuery.data],
+  );
 
   const visibleHistory = useMemo(
     () =>
@@ -232,6 +234,14 @@ export function ClassStudentDetailView({
       <p className="p-6 text-sm text-[var(--color-text-muted)]">
         {t("loading")}
       </p>
+    );
+  }
+
+  if (studentQuery.isError) {
+    return (
+      <div className="p-6">
+        <QueryError query={studentQuery} />
+      </div>
     );
   }
 

@@ -18,11 +18,12 @@ import { useMemo, useState } from "react";
 import {
   AUDIT_CATEGORIES,
   LOAD_MORE_COUNT,
-  fetchAuditLogPage,
-  fetchMoreAuditEvents,
   initialsOf,
+  useAuditLogPage,
+  useLoadMoreAuditEvents,
   type AuditCategory,
   type AuditEvent,
+  type AuditLogPage,
 } from "../api";
 import { useT } from "@/shared/i18n";
 import { textTone } from "@/shared/lib";
@@ -36,6 +37,7 @@ import {
   EmptyState,
   PageHeader,
   ParamsDialog,
+  QueryBoundary,
   RankedProgressList,
   FilterBar,
   FilterMenu,
@@ -70,8 +72,16 @@ function formatDay(date: string): string {
 }
 
 export function AdminSystemLogView() {
+  return (
+    <QueryBoundary query={useAuditLogPage()}>
+      {(page) => <AdminSystemLogInner page={page} />}
+    </QueryBoundary>
+  );
+}
+
+function AdminSystemLogInner({ page }: { page: AuditLogPage }) {
   const t = useT("adminSystemLog");
-  const [page] = useState(fetchAuditLogPage);
+  const loadMoreEvents = useLoadMoreAuditEvents();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<CategoryFilter>("all");
   // ADM0403 Q6: day range, inclusive on both ends. Empty string = open end.
@@ -115,10 +125,9 @@ export function AdminSystemLogView() {
   }
 
   function loadMore() {
-    setLoaded((previous) => [
-      ...previous,
-      ...fetchMoreAuditEvents(previous.length),
-    ]);
+    loadMoreEvents.mutate(loaded.length, {
+      onSuccess: (more) => setLoaded((previous) => [...previous, ...more]),
+    });
   }
 
   const categoryOptions = [

@@ -13,7 +13,7 @@ function notImplemented(): never {
   throw new ApiError(
     "NOT_IMPLEMENTED",
     501,
-    "03-dd/api/problem-bank.md chưa định nghĩa endpoint này",
+    "03-dd/api/F2_problem-bank.md chưa định nghĩa endpoint này",
   );
 }
 

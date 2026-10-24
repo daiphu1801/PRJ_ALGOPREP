@@ -13,13 +13,13 @@
   (Q1 đã chốt).
 
 > Đọc cùng `01-rd/screens/admin/ADM0202_permission_matrix.md` (hành vi ở mức yêu cầu, không lặp lại ở đây) và
-> ba file BD module: `02-bd/architecture/identity.md` mục 4, `02-bd/database/identity.md` mục 1.2-1.4,
-> `02-bd/security/identity.md` mục 2. Khung điều hướng dùng chung: `02-bd/screens/admin/_shell.md` — file
+> ba file BD module: `02-bd/architecture/F1_identity.md` mục 4, `02-bd/database/F1_identity.md` mục 1.2-1.4,
+> `02-bd/security/F1_identity.md` mục 2. Khung điều hướng dùng chung: `02-bd/screens/admin/_shell.md` — file
 > này không mô tả lại thanh điều hướng, toolbar hay chân trang.
 >
 > **Không thiết kế** Function `REJUDGE_MANAGEMENT` — đã loại khỏi phạm vi theo
 > `DEC-2026-0828-remove-rejudge-scope`, nên danh mục ban đầu là 10 hàng; từ 2026-10-23 thêm `LANGUAGE_CONFIG` nên bảng ma trận có **11 hàng**
-> [Nguồn: 01-rd/screens/admin/ADM0202_permission_matrix.md:39-41; 02-bd/database/identity.md:47-49].
+> [Nguồn: 01-rd/screens/admin/ADM0202_permission_matrix.md:39-41; 02-bd/database/F1_identity.md:47-49].
 >
 > **Lưu ý về trục ma trận**: hàng là Function, cột là **Action** (`CREATE`/`READ`/`UPDATE`/`DELETE`); Role
 > chọn bằng tab phía trên bảng, không phải bằng cột
@@ -155,24 +155,24 @@ kiểm soát ai được làm gì trong khu vực quản trị mà không phải
 [Phạm vi]
 - Không có Function `REJUDGE_MANAGEMENT` (`DEC-2026-0828-remove-rejudge-scope`) — bảng có 11 hàng (10 hàng cũ cộng `LANGUAGE_CONFIG`, owner 2026-10-23: Function thứ 11, F4-11, khoá màn `ADM0501` và bốn bảng `language_configs`, `grading_defaults`, `sandbox_settings`, `generator_sandbox_settings`; seed ADMIN đủ bốn Action, INSTRUCTOR, STUDENT và vai trò tuỳ biến đều `false`).
 - Không quản lý quyền học tập cơ bản của `STUDENT` (Lớp 1) — luồng này kiểm bằng `base_category`, không
-  đi qua bảng `permissions` [Nguồn: 02-bd/security/identity.md:31-34].
+  đi qua bảng `permissions` [Nguồn: 02-bd/security/F1_identity.md:31-34].
 - Không đổi tên vai trò (Q3 đã chốt 2026-10-08): "sửa" ở F1-11 nghĩa là sửa ô ma trận của vai trò; prototype chỉ có Tạo và Xoá.
 - Không hiển thị danh sách người dùng đang gán vai trò — đó là màn `admin_user_management`.
 - Không thêm hay sửa Function và Action: hai bảng này là dữ liệu seed chỉ đọc
-  [Nguồn: 02-bd/database/identity.md:45-53].
+  [Nguồn: 02-bd/database/F1_identity.md:45-53].
 
 [Quyền sử dụng]
 - Xem: được, khi `base_category = ADMIN`.
 - Thêm: được (tạo vai trò tuỳ biến), qua kiểm `PERMISSION_MATRIX:CREATE`.
 - Sửa: được (bật hoặc tắt ô quyền), qua kiểm `PERMISSION_MATRIX:UPDATE`.
 - Xoá: được với vai trò tuỳ biến, qua kiểm `PERMISSION_MATRIX:DELETE`. Vai trò hệ thống
-  (`is_system = true`) không xoá được [Nguồn: 02-bd/database/identity.md:40]; vai trò tuỳ biến còn tài khoản gán cũng không xoá được (Q2).
+  (`is_system = true`) không xoá được [Nguồn: 02-bd/database/F1_identity.md:40]; vai trò tuỳ biến còn tài khoản gán cũng không xoá được (Q2).
 
 [Số bản ghi tối đa] Bảng ma trận: số hàng **động theo bảng seed `identity.functions`**, hiện là 11 dòng;
 số cột cố định 4 theo `identity.actions`. Tab vai trò: 3 vai trò hệ thống cộng N vai trò tuỳ biến, không
 phân trang.
 
-[Nguồn: 01-rd/screens/admin/ADM0202_permission_matrix.md:13-15,39-44; 02-bd/database/identity.md:31-66; 02-bd/security/identity.md:31-37]
+[Nguồn: 01-rd/screens/admin/ADM0202_permission_matrix.md:13-15,39-44; 02-bd/database/F1_identity.md:31-66; 02-bd/security/F1_identity.md:31-37]
 
 ### 4.2 DTO liên quan
 
@@ -181,22 +181,22 @@ phân trang.
 - `PermissionActionDto`
 - `RolePermissionMatrixDto`
 
-`[Suy luận]` — tên DTO do BD này đề xuất, `03-dd/api/identity.md` chốt lại.
+`[Suy luận]` — tên DTO do BD này đề xuất, `03-dd/api/F1_identity.md` chốt lại.
 
 ### 4.3 Bảng dữ liệu liên quan (6)
 
 | NO | Bảng | Ghi chú |
 | --: | :--- | :--- |
-| 1 | `identity.roles` | [Nguồn: 02-bd/database/identity.md:31-43] |
-| 2 | `identity.functions` | [Nguồn: 02-bd/database/identity.md:45-49] |
-| 3 | `identity.actions` | [Nguồn: 02-bd/database/identity.md:51] |
-| 4 | `identity.permissions` | [Nguồn: 02-bd/database/identity.md:55-66] |
-| 5 | `identity.system_audit_logs` | [Nguồn: 02-bd/database/identity.md:103-107] |
-| 6 | `identity.users` | Chỉ đọc, đếm số người dùng đang gán từng vai trò (`RoleDto.userCount`) và chặn xoá khi còn người gán [Nguồn: 02-bd/database/identity.md:17] |
+| 1 | `identity.roles` | [Nguồn: 02-bd/database/F1_identity.md:31-43] |
+| 2 | `identity.functions` | [Nguồn: 02-bd/database/F1_identity.md:45-49] |
+| 3 | `identity.actions` | [Nguồn: 02-bd/database/F1_identity.md:51] |
+| 4 | `identity.permissions` | [Nguồn: 02-bd/database/F1_identity.md:55-66] |
+| 5 | `identity.system_audit_logs` | [Nguồn: 02-bd/database/F1_identity.md:103-107] |
+| 6 | `identity.users` | Chỉ đọc, đếm số người dùng đang gán từng vai trò (`RoleDto.userCount`) và chặn xoá khi còn người gán [Nguồn: 02-bd/database/F1_identity.md:17] |
 
 Màn này không đọc hay ghi Redis trực tiếp. Sau mỗi thay đổi `permissions`, tầng ứng dụng tự invalidate
 cache `identity:permcache:<roleId>` ở mọi instance — việc của BD module, không phải của màn
-[Nguồn: 02-bd/security/identity.md:35-37].
+[Nguồn: 02-bd/security/F1_identity.md:35-37].
 
 ### 4.4 Vùng bố cục
 
@@ -279,7 +279,7 @@ cho DD quyết định thêm dòng phụ hay bỏ, không phải phần của kh
 
 Cấu trúc bảng: mỗi dòng là một Function, mỗi cột Action là một `ListColumn` riêng — không liệt kê từng ô.
 Số hàng **động** theo bảng seed `identity.functions` (hiện 11 dòng); số cột **cố định 4** theo
-`identity.actions` [Nguồn: 02-bd/database/identity.md:45-51].
+`identity.actions` [Nguồn: 02-bd/database/F1_identity.md:45-51].
 
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
@@ -292,7 +292,7 @@ Số hàng **động** theo bảng seed `identity.functions` (hiện 11 dòng); 
 | | 6 | Ô quyền Sửa | `adminPermissionMatrix.matrix.col.actionUpdate` | `identity.permissions` | `granted` | Toggle | Boolean | - | - | I/O | Tắt | Bật hiện dấu tick, tắt hiện ô viền rỗng | Ô của bộ ba với Action `UPDATE`<br>[Nguồn giá trị] Như ô quyền Tạo, đổi Action thành `UPDATE`<br>[EVT liên quan] EVT-8 |
 | | 7 | Ô quyền Xoá | `adminPermissionMatrix.matrix.col.actionDelete` | `identity.permissions` | `granted` | Toggle | Boolean | - | - | I/O | Tắt | Bật hiện dấu tick, tắt hiện ô viền rỗng | Ô của bộ ba với Action `DELETE`<br>[Nguồn giá trị] Như ô quyền Tạo, đổi Action thành `DELETE`<br>[EVT liên quan] EVT-8 |
 
-[Nguồn: 09-layoutBase/Admin - Ma trận phân quyền.dc.html:150-224,417-436; 02-bd/database/identity.md:31-66; 01-rd/screens/admin/ADM0202_permission_matrix.md:32-44]
+[Nguồn: 09-layoutBase/Admin - Ma trận phân quyền.dc.html:150-224,417-436; 02-bd/database/F1_identity.md:31-66; 01-rd/screens/admin/ADM0202_permission_matrix.md:32-44]
 
 ---
 
@@ -380,13 +380,13 @@ Số hàng **động** theo bảng seed `identity.functions` (hiện 11 dòng); 
 | 6 | Người dùng | `identity.users` | `UserRepository` | R | Đếm số người dùng đang gán vai trò trước khi cho xoá | `ListRoles`: R (đếm `userCount` theo `role_id`)<br>`DeleteRole`: R (đếm lại phía máy chủ, từ chối khi còn người gán; Q2 đã chốt) |
 
 Không có thao tác ghi nào trên `identity.functions` và `identity.actions`: hai bảng là seed chỉ đọc, chỉ
-migration mới ghi [Nguồn: 02-bd/database/identity.md:53].
+migration mới ghi [Nguồn: 02-bd/database/F1_identity.md:53].
 
 `[Suy luận]` — tên repository do BD này đề xuất, DD module `identity` chốt lại.
 
 ### 7.3 Danh sách endpoint [Nội bộ]
 
-> Chỉ tên nghiệp vụ và BC sở hữu. Hợp đồng chi tiết thuộc `03-dd/api/identity.md`.
+> Chỉ tên nghiệp vụ và BC sở hữu. Hợp đồng chi tiết thuộc `03-dd/api/F1_identity.md`.
 
 | NO | Endpoint (tên nghiệp vụ) | Mục đích | BC sở hữu |
 | --: | :--- | :--- | :--- |
@@ -400,7 +400,7 @@ migration mới ghi [Nguồn: 02-bd/database/identity.md:53].
 Không có endpoint nào ngoài `identity` — màn này không đọc dữ liệu module khác. Q1 đã chốt lưu tức thời từng
 ô (2026-10-08) nên **không** cần endpoint ghi theo lô; `UpdateRolePermission` gọi một lần cho mỗi lần bấm ô.
 
-[Nguồn: 02-bd/database/identity.md:31-66,103-107]
+[Nguồn: 02-bd/database/F1_identity.md:31-66,103-107]
 
 ---
 
@@ -419,11 +419,11 @@ Không có endpoint nào ngoài `identity` — màn này không đọc dữ li�
 | 5 | Nút | Tạo vai trò | Bấm "Tạo" trong form nội tuyến. | Không | Có | `CreateRole` | [Các bước]<br>1. Kiểm tên không rỗng, không quá 50 ký tự, không trùng (so mã sinh ra **và** nhãn, không phân biệt hoa thường; Sheet 9 NO 3, 4, 11) [Nguồn: 05-coding/frontend/src/views/admin/permission-matrix/model/guards.ts:16-28].<br>2. Gửi yêu cầu tạo vai trò; vai trò mới mang `base_category` đã chọn ở form, mặc định `STUDENT` (owner chốt 2026-10-08, Q6).<br>3. Đóng form, thêm chip mới vào tab và chọn chính vai trò đó.<br>[Khi thành công] Bảng ma trận của vai trò mới hiển thị toàn bộ ô ở trạng thái Tắt, không phải khoá tương tác.<br>[Khi lỗi] Giữ form mở, giữ nguyên tên đã nhập, ô nhập đổi viền đỏ và hiện một toast lỗi.<br>[Thông báo hoàn tất] Toast "Đã tạo vai trò mới." |
 | 6 | Nút | Huỷ thêm vai trò | Bấm "Huỷ" trong form nội tuyến. | Không | Không | - | [Các bước]<br>1. Đóng form và xoá tên đang nhập.<br>[Khi thành công] Nút "+ Vai trò mới" hiện lại; tab vai trò và bảng ma trận không đổi. |
 | 7 | Nút | Xoá vai trò đang chọn | Bấm "Xoá vai trò này". | Không | Có | `DeleteRole` | [Các bước]<br>1. Kiểm `userCount` của vai trò đang chọn. Còn tài khoản gán (`userCount > 0`) thì **chặn**: hiện toast cảnh báo "Vai trò {role} đang được gán cho {count} người dùng, không thể xoá. Chuyển họ sang vai trò khác trước.", không mở hộp xác nhận, không gọi API (Q2 đã chốt) [Nguồn: 05-coding/frontend/src/views/admin/permission-matrix/ui/admin-permission-matrix-view.tsx:251-258; 05-coding/frontend/messages/vi.json:845].<br>2. `userCount = 0` thì hỏi xác nhận "Vai trò này và toàn bộ ô quyền của nó sẽ bị xoá, không hoàn tác được." [Nguồn: 05-coding/frontend/src/views/admin/permission-matrix/ui/admin-permission-matrix-view.tsx:297-307; 05-coding/frontend/messages/vi.json:815].<br>3. Gửi yêu cầu xoá; máy chủ đếm lại và từ chối nếu lúc đó đã có người gán (Sheet 9 NO 7).<br>4. Bỏ chip khỏi tab và chuyển sang vai trò `INSTRUCTOR`.<br>[Khi xác nhận] Bắt buộc hỏi xác nhận vì thao tác không hoàn tác được.<br>[Khi thành công] Tab không còn vai trò đó; bảng hiển thị ma trận của vai trò được chọn thay thế.<br>[Khi lỗi] Máy chủ từ chối (vd. vừa có người được gán vai trò), giữ nguyên tab và bảng, hiện toast lỗi.<br>[Thông báo hoàn tất] Toast "Đã xoá vai trò." |
-| 8 | Ô ma trận | Bật hoặc tắt một ô quyền | Bấm một ô trong bảng ma trận. | Không | Có | `UpdateRolePermission` | [Các bước]<br>1. Vai trò đang chọn là vai trò hệ thống `STUDENT` (theo `code`) thì bỏ qua, ô không nhận thao tác; vai trò tuỳ biến luôn nhận, kể cả khi nhóm cơ bản là `STUDENT`. Hệ quả: vai trò nhóm `STUDENT` được cấp Function của khu giảng viên vẫn không vào được khu đó vì Lớp 1 kiểm theo `base_category`.<br>2. Đảo trạng thái ô trên giao diện.<br>3. Gửi yêu cầu cập nhật ô; máy chủ ghi `permissions`, ghi `system_audit_logs` và invalidate cache quyền của vai trò đó.<br>[Khi xác nhận] Tắt một ô thuộc chính vai trò mà người đang thao tác đang giữ thì **hỏi xác nhận** (Sheet 9 dòng 8, thay đổi có hiệu lực ngay); tắt ô `PERMISSION_MATRIX:UPDATE` cuối cùng của mọi vai trò `ADMIN` thì **chặn cứng**, toast, không đổi gì (Sheet 9 dòng 9, Q4 đã chốt) [Nguồn: 05-coding/frontend/src/views/admin/permission-matrix/ui/admin-permission-matrix-view.tsx:64-71,257-270; 05-coding/frontend/src/views/admin/permission-matrix/model/guards.ts:38-60].<br>[Khi thành công] Ô giữ trạng thái mới; quyền có hiệu lực ngay, không cần khởi động lại dịch vụ [Nguồn: 02-bd/security/identity.md:35-37].<br>[Khi lỗi] Trả ô về trạng thái trước khi bấm và hiện toast lỗi, không để giao diện lệch với dữ liệu thật. |
+| 8 | Ô ma trận | Bật hoặc tắt một ô quyền | Bấm một ô trong bảng ma trận. | Không | Có | `UpdateRolePermission` | [Các bước]<br>1. Vai trò đang chọn là vai trò hệ thống `STUDENT` (theo `code`) thì bỏ qua, ô không nhận thao tác; vai trò tuỳ biến luôn nhận, kể cả khi nhóm cơ bản là `STUDENT`. Hệ quả: vai trò nhóm `STUDENT` được cấp Function của khu giảng viên vẫn không vào được khu đó vì Lớp 1 kiểm theo `base_category`.<br>2. Đảo trạng thái ô trên giao diện.<br>3. Gửi yêu cầu cập nhật ô; máy chủ ghi `permissions`, ghi `system_audit_logs` và invalidate cache quyền của vai trò đó.<br>[Khi xác nhận] Tắt một ô thuộc chính vai trò mà người đang thao tác đang giữ thì **hỏi xác nhận** (Sheet 9 dòng 8, thay đổi có hiệu lực ngay); tắt ô `PERMISSION_MATRIX:UPDATE` cuối cùng của mọi vai trò `ADMIN` thì **chặn cứng**, toast, không đổi gì (Sheet 9 dòng 9, Q4 đã chốt) [Nguồn: 05-coding/frontend/src/views/admin/permission-matrix/ui/admin-permission-matrix-view.tsx:64-71,257-270; 05-coding/frontend/src/views/admin/permission-matrix/model/guards.ts:38-60].<br>[Khi thành công] Ô giữ trạng thái mới; quyền có hiệu lực ngay, không cần khởi động lại dịch vụ [Nguồn: 02-bd/security/F1_identity.md:35-37].<br>[Khi lỗi] Trả ô về trạng thái trước khi bấm và hiện toast lỗi, không để giao diện lệch với dữ liệu thật. |
 | 9 | Nút | ~~Lưu thay đổi~~ | **Đã bỏ 2026-10-08** (Q1 đã chốt: lưu tức thời từng ô, thanh tiêu đề không còn nút lưu). | Không | Không | - | Giữ số thứ tự để các tham chiếu EVT ở Sheet 5, 9 không phải đánh số lại; không có hành vi nào gắn với EVT này. |
 | 10 | Liên kết | Rời màn qua thanh điều hướng | Bấm một mục khác trên thanh điều hướng bên trái. | Có | Không | - | [Các bước]<br>1. Điều hướng sang màn Admin tương ứng.<br>[Ghi chú] Không hỏi xác nhận khi rời màn: mỗi ô đã lưu tức thời, không có thay đổi chưa lưu (Q1 đã chốt, Q5 đã đóng).<br>[Khi thành công] Mở màn được chọn. |
 
-[Nguồn: 09-layoutBase/Admin - Ma trận phân quyền.dc.html:160,171,177-178,182,185,217,318-327,464-484; EVT-9 đã bỏ theo owner 2026-10-08; 01-rd/screens/admin/ADM0202_permission_matrix.md:48-53; 02-bd/security/identity.md:35-37,51-53]
+[Nguồn: 09-layoutBase/Admin - Ma trận phân quyền.dc.html:160,171,177-178,182,185,217,318-327,464-484; EVT-9 đã bỏ theo owner 2026-10-08; 01-rd/screens/admin/ADM0202_permission_matrix.md:48-53; 02-bd/security/F1_identity.md:35-37,51-53]
 
 ---
 
@@ -435,14 +435,14 @@ Không có endpoint nào ngoài `identity` — màn này không đọc dữ li�
 
 | NO | Loại | Tóm tắt kiểm | Chi tiết | Mức | Mã thông báo | Ghi chú | EVT gọi | Thứ tự |
 | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: |
-| 1 | Kiểm quyền | Quyền truy cập màn | [Nội dung kiểm] Người dùng có `base_category` khác `ADMIN` thì không được vào màn.<br>[Nơi thực thi] Chặn ở cả tầng định tuyến phía giao diện và tầng phân quyền phía máy chủ, không chỉ ẩn giao diện. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn không có quyền truy cập chức năng này." Đây là kiểm Lớp 1 bằng `base_category`, **không** tra bảng `permissions` [Nguồn: 02-bd/security/identity.md:31-34]. | EVT-1 | 1 |
-| 2 | Kiểm quyền | Quyền cho thao tác ghi | [Nội dung kiểm] Thao tác ghi phải qua kiểm `PERMISSION_MATRIX:CREATE`, `PERMISSION_MATRIX:UPDATE` hoặc `PERMISSION_MATRIX:DELETE` tương ứng.<br>[Nơi thực thi] Tầng ứng dụng phía máy chủ. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn không có quyền thực hiện thao tác này." Không giả định "vào được màn nghĩa là toàn quyền trên màn": một vai trò tuỳ biến vẫn có thể có `base_category = ADMIN` mà bị giới hạn quyền `PERMISSION_MATRIX` [Nguồn: 02-bd/security/identity.md:25-26]. | EVT-5, EVT-7, EVT-8 | 2 |
+| 1 | Kiểm quyền | Quyền truy cập màn | [Nội dung kiểm] Người dùng có `base_category` khác `ADMIN` thì không được vào màn.<br>[Nơi thực thi] Chặn ở cả tầng định tuyến phía giao diện và tầng phân quyền phía máy chủ, không chỉ ẩn giao diện. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn không có quyền truy cập chức năng này." Đây là kiểm Lớp 1 bằng `base_category`, **không** tra bảng `permissions` [Nguồn: 02-bd/security/F1_identity.md:31-34]. | EVT-1 | 1 |
+| 2 | Kiểm quyền | Quyền cho thao tác ghi | [Nội dung kiểm] Thao tác ghi phải qua kiểm `PERMISSION_MATRIX:CREATE`, `PERMISSION_MATRIX:UPDATE` hoặc `PERMISSION_MATRIX:DELETE` tương ứng.<br>[Nơi thực thi] Tầng ứng dụng phía máy chủ. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn không có quyền thực hiện thao tác này." Không giả định "vào được màn nghĩa là toàn quyền trên màn": một vai trò tuỳ biến vẫn có thể có `base_category = ADMIN` mà bị giới hạn quyền `PERMISSION_MATRIX` [Nguồn: 02-bd/security/F1_identity.md:25-26]. | EVT-5, EVT-7, EVT-8 | 2 |
 | 3 | Kiểm nhập liệu | Tên vai trò bắt buộc | [Nội dung kiểm] Tên vai trò rỗng hoặc chỉ gồm khoảng trắng thì không cho tạo.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Viền ô "Tên vai trò mới" + toast. | Lỗi | Chưa có mã thông báo | Nội dung "Tên vai trò không được để trống." Prototype đã chặn sẵn ở giao diện [Nguồn: 09-layoutBase/Admin - Ma trận phân quyền.dc.html:465-466]. | EVT-5 | 1 |
-| 4 | Kiểm nhập liệu | Tên vai trò không trùng | [Nội dung kiểm] Tên vai trò sinh ra `code` trùng một vai trò đã có thì không cho tạo.<br>[Nơi thực thi] Máy chủ.<br>[Tiêu điểm] Viền ô "Tên vai trò mới" + toast. | Lỗi | Chưa có mã thông báo | Nội dung "Tên vai trò đã tồn tại." Cột `roles.code` là unique [Nguồn: 02-bd/database/identity.md:37]. **Prototype 2026-10-08:** so cả mã sinh ra (`role_` + tên chữ thường, khoảng trắng thành `_`) **và nhãn** của vai trò có sẵn, không phân biệt hoa thường, để tên "admin" không che vai trò hệ thống `ADMIN` [Nguồn: 05-coding/frontend/src/views/admin/permission-matrix/model/guards.ts:7-28]. | EVT-5 | 2 |
+| 4 | Kiểm nhập liệu | Tên vai trò không trùng | [Nội dung kiểm] Tên vai trò sinh ra `code` trùng một vai trò đã có thì không cho tạo.<br>[Nơi thực thi] Máy chủ.<br>[Tiêu điểm] Viền ô "Tên vai trò mới" + toast. | Lỗi | Chưa có mã thông báo | Nội dung "Tên vai trò đã tồn tại." Cột `roles.code` là unique [Nguồn: 02-bd/database/F1_identity.md:37]. **Prototype 2026-10-08:** so cả mã sinh ra (`role_` + tên chữ thường, khoảng trắng thành `_`) **và nhãn** của vai trò có sẵn, không phân biệt hoa thường, để tên "admin" không che vai trò hệ thống `ADMIN` [Nguồn: 05-coding/frontend/src/views/admin/permission-matrix/model/guards.ts:7-28]. | EVT-5 | 2 |
 | 5 | Kiểm nghiệp vụ | Không sửa ô của vai trò Lớp 1 | [Nội dung kiểm] Vai trò đang chọn là vai trò hệ thống `STUDENT` (theo `code`, không theo `base_category`) thì mọi thao tác ghi ô đều bị từ chối; vai trò tuỳ biến luôn sửa được, kể cả nhóm `STUDENT` (Q6 đã chốt 2026-10-08).<br>[Nơi thực thi] Màn hình khoá ô, máy chủ kiểm lại. | Lỗi | Chưa có mã thông báo | Nội dung "Quyền học tập cơ bản của STUDENT không cấu hình qua ma trận này." Giao diện khoá ô thay vì ẩn bảng, để tránh hiểu nhầm STUDENT không có quyền gì [Nguồn: 01-rd/screens/admin/ADM0202_permission_matrix.md:35-38; 05-coding/frontend/src/views/admin/permission-matrix/ui/admin-permission-matrix-view.tsx:65-68]. Hệ quả cần ghi rõ: vai trò nhóm `STUDENT` được cấp Function của khu giảng viên vẫn không vào được khu đó, vì Lớp 1 kiểm theo `base_category`. | EVT-8 | 1 |
-| 6 | Kiểm nghiệp vụ | Không xoá vai trò hệ thống | [Nội dung kiểm] Vai trò có `is_system = true` thì không cho xoá.<br>[Nơi thực thi] Màn hình ẩn nút xoá, máy chủ kiểm lại. | Lỗi | Chưa có mã thông báo | Nội dung "Vai trò hệ thống không thể xoá." Máy chủ vẫn phải kiểm dù giao diện đã ẩn nút [Nguồn: 02-bd/database/identity.md:40]. | EVT-7 | 1 |
+| 6 | Kiểm nghiệp vụ | Không xoá vai trò hệ thống | [Nội dung kiểm] Vai trò có `is_system = true` thì không cho xoá.<br>[Nơi thực thi] Màn hình ẩn nút xoá, máy chủ kiểm lại. | Lỗi | Chưa có mã thông báo | Nội dung "Vai trò hệ thống không thể xoá." Máy chủ vẫn phải kiểm dù giao diện đã ẩn nút [Nguồn: 02-bd/database/F1_identity.md:40]. | EVT-7 | 1 |
 | 7 | Kiểm nghiệp vụ | Xoá vai trò đang có người dùng gán | [Nội dung kiểm] Còn ít nhất một người dùng có `users.role_id` trỏ tới vai trò này thì dừng xoá (chặn, không tự chuyển người dùng sang vai trò khác; Q2 đã chốt 2026-10-08).<br>[Nơi thực thi] Màn hình (theo `userCount`, toast, không mở hộp xác nhận) và máy chủ (đếm lại khi nhận `DeleteRole`). | Lỗi | Chưa có mã thông báo | Nội dung "Vai trò {role} đang được gán cho {count} người dùng, không thể xoá. Chuyển họ sang vai trò khác trước." (đúng chữ prototype [Nguồn: 05-coding/frontend/messages/vi.json:845]); máy chủ trả lỗi cùng ý nghĩa nhưng không phụ thuộc số đếm của giao diện. Vai trò mẫu "Trợ giảng" có 3 tài khoản nên nhánh chặn dựng được [Nguồn: 05-coding/frontend/src/views/admin/permission-matrix/api/__mock__/permission-matrix-mocks.ts:16]. | EVT-7 | 2 |
-| 8 | Kiểm nghiệp vụ | Tự gỡ quyền của chính vai trò mình | [Nội dung kiểm] Người đang thao tác tắt một ô thuộc chính vai trò mà tài khoản mình đang giữ thì phải xác nhận lại trước khi ghi.<br>[Nơi thực thi] Màn hình hỏi xác nhận; máy chủ vẫn ghi bình thường sau khi xác nhận. | Cảnh báo | Chưa có mã thông báo | Nội dung "Bạn đang gỡ quyền của chính vai trò mình đang giữ. Thay đổi có hiệu lực ngay và bạn có thể mất quyền truy cập chức năng này. Tiếp tục?" (đổi từ "Sau khi lưu" 2026-10-08 vì không còn bước lưu; đúng chữ prototype [Nguồn: 05-coding/frontend/src/views/admin/permission-matrix/ui/admin-permission-matrix-view.tsx:257-270]). Vẫn là cảnh báo xác nhận, không chặn. `[Suy luận]` — RD không có yêu cầu nào cho tình huống này; BD đề xuất vì đây là thao tác tự khoá mình và không hoàn tác được từ giao diện. Dù xác nhận hay không, thay đổi vẫn ghi `system_audit_logs` không ngoại lệ [Nguồn: 02-bd/security/identity.md:51-53]. | EVT-8 | 3 |
+| 8 | Kiểm nghiệp vụ | Tự gỡ quyền của chính vai trò mình | [Nội dung kiểm] Người đang thao tác tắt một ô thuộc chính vai trò mà tài khoản mình đang giữ thì phải xác nhận lại trước khi ghi.<br>[Nơi thực thi] Màn hình hỏi xác nhận; máy chủ vẫn ghi bình thường sau khi xác nhận. | Cảnh báo | Chưa có mã thông báo | Nội dung "Bạn đang gỡ quyền của chính vai trò mình đang giữ. Thay đổi có hiệu lực ngay và bạn có thể mất quyền truy cập chức năng này. Tiếp tục?" (đổi từ "Sau khi lưu" 2026-10-08 vì không còn bước lưu; đúng chữ prototype [Nguồn: 05-coding/frontend/src/views/admin/permission-matrix/ui/admin-permission-matrix-view.tsx:257-270]). Vẫn là cảnh báo xác nhận, không chặn. `[Suy luận]` — RD không có yêu cầu nào cho tình huống này; BD đề xuất vì đây là thao tác tự khoá mình và không hoàn tác được từ giao diện. Dù xác nhận hay không, thay đổi vẫn ghi `system_audit_logs` không ngoại lệ [Nguồn: 02-bd/security/F1_identity.md:51-53]. | EVT-8 | 3 |
 | 9 | Kiểm nghiệp vụ | Gỡ hết quyền `PERMISSION_MATRIX` khỏi vai trò `ADMIN` | [Nội dung kiểm] Thao tác khiến không còn vai trò nào có `base_category = ADMIN` giữ `PERMISSION_MATRIX:UPDATE` thì **chặn**, không chỉ cảnh báo.<br>[Nơi thực thi] Máy chủ, vì phải đếm trên toàn bộ vai trò chứ không chỉ vai trò đang hiển thị. | Lỗi | Chưa có mã thông báo | Nội dung "Phải còn ít nhất một vai trò quản trị giữ quyền sửa ma trận phân quyền." `[Suy luận]` — RD không nêu; BD đề xuất vì nếu gỡ hết thì không còn đường nào cấp lại quyền qua giao diện, chỉ sửa được bằng truy vấn cơ sở dữ liệu trực tiếp. **Đã chốt 2026-10-08 (Q4): chặn cứng**, không còn là đề xuất. Prototype hiện toast cảnh báo và không đổi ô [Nguồn: 05-coding/frontend/src/views/admin/permission-matrix/ui/admin-permission-matrix-view.tsx:64-68; 05-coding/frontend/src/views/admin/permission-matrix/model/guards.ts:30-60]. | EVT-8 | 4 |
 | 10 | Kiểm nghiệp vụ | Lỗi hệ thống hoặc lỗi gọi máy chủ | [Nội dung kiểm] Gọi máy chủ thất bại hoặc trả lỗi nghiệp vụ thì dừng thao tác, trả giao diện về trạng thái trước khi thao tác.<br>[Nơi thực thi] Màn hình. | Lỗi | Mã lỗi trong phản hồi | Phản hồi có mã lỗi đã đăng ký thì hiển thị nội dung tương ứng; chưa đăng ký thì hiển thị "Không kết nối được máy chủ." | EVT-1, EVT-2, EVT-5, EVT-7, EVT-8 | 1 |
 | 11 | Kiểm nhập liệu | Tên vai trò tối đa 50 ký tự | [Nội dung kiểm] Tên vai trò (sau khi cắt khoảng trắng hai đầu) dài hơn 50 ký tự thì không cho tạo.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Viền ô "Tên vai trò mới" + toast. | Lỗi | Chưa có mã thông báo | Nội dung "Tên vai trò tối đa 50 ký tự." (chữ prototype, số 50 lấy từ `ROLE_NAME_MAX`) [Nguồn: 05-coding/frontend/src/views/admin/permission-matrix/model/guards.ts:3,16-28; 05-coding/frontend/messages/vi.json — `adminPermissionMatrix.roleNameError.tooLong`]. Con số 50 vẫn là `[Suy luận]`, DD chốt cùng độ dài cột `roles.name`. | EVT-5 | 3 |
@@ -450,7 +450,7 @@ Không có endpoint nào ngoài `identity` — màn này không đọc dữ li�
 
 Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 
-[Nguồn: 02-bd/security/identity.md:25-26,31-34,35-37,51-53; 02-bd/database/identity.md:37,40,55-66]
+[Nguồn: 02-bd/security/F1_identity.md:25-26,31-34,35-37,51-53; 02-bd/database/F1_identity.md:37,40,55-66]
 
 ---
 
@@ -458,7 +458,7 @@ Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 
 | # | Câu hỏi | Vì sao chưa trả lời được | Chủ sở hữu |
 | :-: | :--- | :--- | :--- |
-| Q1 | ~~Lưu tức thời theo từng ô hay gộp vào nút "Lưu thay đổi"?~~ **ĐÃ CHỐT 2026-10-08 (owner, theo đề xuất của BD, `DEC-2026-1008-admin-system-screens-review`): lưu tức thời từng ô; bỏ nút "Lưu thay đổi" ở thanh tiêu đề.** Mỗi lần bấm ô gọi `UpdateRolePermission` ngay, đúng nghĩa "có hiệu lực ngay" của F1-10 [Nguồn: 05-coding/frontend/src/views/admin/permission-matrix/ui/admin-permission-matrix-view.tsx:64-86; 02-bd/security/identity.md:35-37]. Hệ quả: Sheet 5/6 Khu vực A NO 3 và EVT-9 đã bỏ, EVT-2/EVT-10 bỏ bước hỏi thay đổi chưa lưu, Sheet 7.3 không cần endpoint lô, Q5 tự đóng. | Đã đóng | Đã đóng |
+| Q1 | ~~Lưu tức thời theo từng ô hay gộp vào nút "Lưu thay đổi"?~~ **ĐÃ CHỐT 2026-10-08 (owner, theo đề xuất của BD, `DEC-2026-1008-admin-system-screens-review`): lưu tức thời từng ô; bỏ nút "Lưu thay đổi" ở thanh tiêu đề.** Mỗi lần bấm ô gọi `UpdateRolePermission` ngay, đúng nghĩa "có hiệu lực ngay" của F1-10 [Nguồn: 05-coding/frontend/src/views/admin/permission-matrix/ui/admin-permission-matrix-view.tsx:64-86; 02-bd/security/F1_identity.md:35-37]. Hệ quả: Sheet 5/6 Khu vực A NO 3 và EVT-9 đã bỏ, EVT-2/EVT-10 bỏ bước hỏi thay đổi chưa lưu, Sheet 7.3 không cần endpoint lô, Q5 tự đóng. | Đã đóng | Đã đóng |
 | Q2 | ~~Vai trò tuỳ biến đang có người dùng gán thì chặn xoá hay tự chuyển người dùng về một vai trò mặc định?~~ **ĐÃ CHỐT 2026-10-08 (owner, theo đề xuất, `DEC-2026-1008-admin-system-open-questions-closed`): chặn xoá**, không tự chuyển. Prototype: `Role.userCount`, nút xoá hiện toast cảnh báo và không mở hộp xác nhận [Nguồn: 05-coding/frontend/src/views/admin/permission-matrix/ui/admin-permission-matrix-view.tsx:251-258; 05-coding/frontend/src/views/admin/permission-matrix/model/types.ts:55]. Máy chủ cũng phải chặn (Sheet 9 NO 7). | Đã đóng | Đã đóng |
 | Q3 | ~~Có cần chức năng sửa tên vai trò tuỳ biến không?~~ **ĐÃ CHỐT 2026-10-08 (owner, theo đề xuất): không đổi tên vai trò**; "sửa" ở F1-11 nghĩa là sửa ô ma trận của vai trò. Muốn đổi tên thì xoá rồi tạo lại (khi không còn người gán). | Đã đóng | Đã đóng |
 | Q4 | ~~Luật chặn ở Sheet 9 dòng 9 — không cho gỡ ô `PERMISSION_MATRIX:UPDATE` cuối cùng của mọi vai trò `ADMIN` — có được chấp nhận là ràng buộc cứng không?~~ **ĐÃ CHỐT 2026-10-08 (owner, theo đề xuất): chặn cứng** mọi lần gỡ ô `PERMISSION_MATRIX:UPDATE` cuối cùng của các vai trò có `base_category = ADMIN`; Sheet 9 NO 9 giữ mức Lỗi và không còn là đề xuất. Prototype đã dựng [Nguồn: 05-coding/frontend/src/views/admin/permission-matrix/model/guards.ts:30-60]. | Đã đóng | Đã đóng |

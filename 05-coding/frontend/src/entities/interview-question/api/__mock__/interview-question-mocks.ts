@@ -396,3 +396,27 @@ export function findInterviewQuestionByCode(
   const question = QUESTIONS.find((candidate) => candidate.code === code);
   return question ? { ...question } : undefined;
 }
+
+// Short delay so the loading skeleton and error path are exercised in the prototype before the API exists.
+const MOCK_LATENCY_MS = 150;
+const wait = () => new Promise((resolve) => setTimeout(resolve, MOCK_LATENCY_MS));
+
+export async function loadInterviewQuestionPage(): Promise<InterviewQuestionPage> {
+  await wait();
+  return fetchInterviewQuestionPage();
+}
+
+/** `null` (not `undefined`) for an unknown code: the query layer reads `undefined` as "still loading". */
+export async function loadInterviewQuestion(
+  code: string,
+): Promise<InterviewQuestion | null> {
+  await wait();
+  return findInterviewQuestionByCode(code) ?? null;
+}
+
+export async function importQuestions(
+  drafts: readonly QuestionDraft[],
+): Promise<InterviewQuestion[]> {
+  await wait();
+  return appendImportedQuestions(drafts);
+}

@@ -52,9 +52,9 @@ Nguyên lý và lý do chọn nằm ở `01-rd/overview/overview.md` mục 1.A �
 | Bảng, cột, khoá, index của sáu schema | `02-bd/database/<module>.md` |
 | Đường dẫn endpoint, payload, mã lỗi | `03-dd/api/<module>.md` và `03-dd/api/api.md` |
 | Tên chính thức của các sự kiện miền và payload của chúng | `02-bd/architecture/<module>.md` |
-| Cấu trúc lược đồ kiểu của F3 | `02-bd/architecture/harness.md` |
-| Kích thước đợt testcase, ngưỡng treo của job đối soát | `03-dd/jobs/judge-orchestration.md` |
-| Tên STOMP destination và định dạng message realtime | `03-dd/api/judge-orchestration.md` |
+| Cấu trúc lược đồ kiểu của F3 | `02-bd/architecture/F3_harness.md` |
+| Kích thước đợt testcase, ngưỡng treo của job đối soát | `03-dd/jobs/F4_judge-orchestration.md` |
+| Tên STOMP destination và định dạng message realtime | `03-dd/api/F4_judge-orchestration.md` |
 
 ---
 

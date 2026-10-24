@@ -19,6 +19,7 @@ import {
 import {
   matchesResultFilter,
   SUBMISSION_STATUS_VARIANT,
+  useInstructorReadableSubmissions,
   type SubmissionResultFilter,
 } from "@/entities/submission";
 import { useT } from "@/shared/i18n";
@@ -63,9 +64,11 @@ export function SubmissionManagementView() {
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   };
 
+  const readableQuery = useInstructorReadableSubmissions();
   const allRows = useMemo(
-    () => buildSubmissionRows(studentsQuery.data ?? []),
-    [studentsQuery.data],
+    () =>
+      buildSubmissionRows(studentsQuery.data ?? [], readableQuery.data ?? []),
+    [studentsQuery.data, readableQuery.data],
   );
   const rows = useMemo(() => {
     const needle = (searchParams.get("q") ?? "").trim().toLowerCase();

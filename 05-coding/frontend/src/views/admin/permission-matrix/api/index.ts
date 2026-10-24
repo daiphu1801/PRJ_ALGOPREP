@@ -11,4 +11,4 @@ export {
   type Role,
   type RolePermissions,
 } from "../model/types";
-export { fetchPermissionMatrix } from "./__mock__/permission-matrix-mocks";
+export { usePermissionMatrixPage } from "./queries";

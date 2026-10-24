@@ -14,9 +14,9 @@
 - Màn này có **một popup**: xác nhận áp dụng bản mã đề xuất của AI vào Workspace (F5-26).
 
 > Đọc cùng `01-rd/screens/users/USR0301_solution_review.md` (hành vi ở mức yêu cầu, không lặp lại ở đây),
-> `01-rd/req/ai-review.md` (F5-01→F5-08, F5-17, F5-18, F5-20, F5-22, F5-23, F5-25, F5-26),
-> `01-rd/req/user_stories/a1_student.md` (`US-A1-06`), `02-bd/architecture/ai-review.md`,
-> `02-bd/database/ai-review.md`, `02-bd/security/ai-review.md`.
+> `01-rd/req/F5_ai-review.md` (F5-01→F5-08, F5-17, F5-18, F5-20, F5-22, F5-23, F5-25, F5-26),
+> `01-rd/req/user_stories/a1_student.md` (`US-A1-06`), `02-bd/architecture/F5_ai-review.md`,
+> `02-bd/database/F5_ai-review.md`, `02-bd/security/F5_ai-review.md`.
 >
 > - **Phân tích một lượt không hội thoại**: màn này chỉ hiển thị báo cáo phân tích tĩnh được AI sinh ra một
 >   lượt dưới dạng cấu trúc JSON (F5-07); không duy trì hội thoại kéo dài (hội thoại thuộc `mock_interview`).
@@ -29,7 +29,7 @@
 > - **Áp dụng bản mã cải tiến (F5-26)**: cung cấp giao diện xem khác biệt (Diff Viewer); khi bấm áp dụng phải có
 >   hộp thoại xác nhận ghi đè trước khi chuyển người học về Workspace `problem_detail`.
 
-- **Bài đã rút khỏi ngân hàng** (`deleted = true`, G4 2026-10-08): báo cáo đã có vẫn xem được; liên kết về bài ở breadcrumb bị vô hiệu kèm nhãn "Đã rút khỏi ngân hàng"; không tạo báo cáo mới cho bài đã rút. Quy tắc đầy đủ ở `02-bd/database/problem-bank.md` mục 1.1a, không chép lại ở đây.
+- **Bài đã rút khỏi ngân hàng** (`deleted = true`, G4 2026-10-08): báo cáo đã có vẫn xem được; liên kết về bài ở breadcrumb bị vô hiệu kèm nhãn "Đã rút khỏi ngân hàng"; không tạo báo cáo mới cho bài đã rút. Quy tắc đầy đủ ở `02-bd/database/F2_problem-bank.md` mục 1.1a, không chép lại ở đây.
 
 > **Quy ước đặt tên khối** [Nội bộ]. Bảy khối (khối `rubricCards` đã bỏ ở V1.0): `breadcrumb` (đường dẫn phân cấp), `topStats` (thanh chỉ số
 > tổng hợp đầu trang), `eduNotice` (banner cảnh báo định hướng giáo dục F5-18), `complexityBlock` (khối phân
@@ -53,12 +53,12 @@
 | Tên vật lý (slug) | `solution_review` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`) |
-| Phiên bản | V1.7 |
+| Phiên bản | V1.9 |
 | V1.8 | Sheet 5 (Khu vực F NO 4), Câu hỏi mở Q6, Hiện trạng bản dựng | Owner chốt 2026/10/23 (`DEC-2026-1023-db-actor-review-decisions`): thêm item hiển thị `followUpTopics` (chip chủ đề và một liên kết sang ngân hàng câu hỏi); **không** thêm thẻ `summaryText` (không item nào của RD F5-02 đến F5-07 đòi nó, `strengths` và `improvements` đã đủ ý); giữ trình xem Diff rút gọn cho prototype, dùng Monaco Diff Editor khi nối API. Chưa duyệt hình | 2026/10/23 | Claude |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/22 |
 | Người cập nhật | Claude |
-| Ngày cập nhật | 2026/10/21 |
+| Ngày cập nhật | 2026/10/24 |
 
 ---
 
@@ -70,17 +70,18 @@
 | V0.2 | Sheet 3, 5, 6, 7.3, 8, 9, Câu hỏi mở | Viết lại Sheet 3 theo khuôn "Danh sách chuyển màn" 6 thẻ + sơ đồ Mermaid; viết lại Sheet 5 theo khuôn 14 cột (thêm Bảng DB/Cột DB); sửa nguồn phần lớn nội dung báo cáo về đúng cột thật `ai.solution_reviews.result_json` (JSONB) thay vì các cột riêng không tồn tại (`approach_title`, `strengths`...); bỏ cột "Phương thức & URL dự kiến" ở Sheet 7.3. Bổ sung Khu vực I (Trạng thái đang xử lý/lỗi AI) tách rõ ba trạng thái theo Câu hỏi mở Q3 của RD: đang tải, lỗi tạm thời (cho thử lại), bị khoá ngân sách F5-25 (không cho thử lại) — cập nhật đồng bộ Sheet 6, Sheet 8 (EVT-1, EVT-7 mới) và Sheet 9 (tách dòng kiểm 4 thành 4 và 5) | 2026/09/24 | Nhóm phát triển AlgoPrep |
 | V0.2 | Sheet 8, 9 | Bổ sung toast cho lỗi tạm thời, hết ngân sách và xác nhận áp dụng mã; giữ nguyên banner giáo dục F5-18 và khối trạng thái Khu vực I thay chỗ báo cáo. Theo `DEC-2026-1003-toast-feedback-channel`. | 2026/10/03 | AI |
 | V0.3 | Sheet 4, 5, 7 | Đồng bộ `DEC-2026-1001-admin-configurable-settings` mục (7): độ khó bài tập là danh mục do ADMIN quản lý (bảng riêng `problem_levels`), không còn enum cố định. Nhãn độ khó của bài (`SolutionReviewDetailDto.difficulty` thành `levelCode`/`levelDisplayName`) lấy từ `problem_levels.display_name` qua `problems.level_id`; thêm `problem.problem_levels` vào danh sách bảng và Truy cập bảng. Nhãn này là độ khó **của bài toán** (F2-02), không phải trường nào do F5 sinh ra; F5 không đổi. Màn chỉ hiển thị nhãn, không lọc và không gọi `ListProblemLevels` (nhãn nằm sẵn trong phản hồi); độ khó không gắn logic nào | 2026/10/03 | AI |
-| V0.4 | Sheet 3, 5, 6, Câu hỏi mở | Theo `02-bd/database/problem-bank.md` mục 1.1a: báo cáo của bài đã rút vẫn xem được; liên kết về bài bị vô hiệu kèm nhãn "Đã rút khỏi ngân hàng"; không cho tạo báo cáo mới cho bài đã rút. Chỉ tài liệu, chưa đổi code | 2026/10/08 | AI |
+| V0.4 | Sheet 3, 5, 6, Câu hỏi mở | Theo `02-bd/database/F2_problem-bank.md` mục 1.1a: báo cáo của bài đã rút vẫn xem được; liên kết về bài bị vô hiệu kèm nhãn "Đã rút khỏi ngân hàng"; không cho tạo báo cáo mới cho bài đã rút. Chỉ tài liệu, chưa đổi code | 2026/10/08 | AI |
 | V0.5 | Câu hỏi mở | Thêm Q4 theo chủ dự án (2026-10-10): cách rubric của `ADM0301` hiện cho học viên chưa chốt, xem khi làm khu Người học. Không đổi thiết kế | 2026/10/10 | AI |
 | V0.6 | Sheet 5 (Khu vực E), Câu hỏi mở | (Bị V1.0 thay thế) Theo `DEC-2026-1014-drop-admin-rubric-config` (2026-10-14): 5 tiêu chí của báo cáo là **cố định theo `response_schema_version`** của bản prompt, không còn do ADM0301 cấu hình (không trọng số, không danh sách chỉnh được); bảng `rubric_configs` bỏ. Sửa ghi chú Khu vực E và nguồn dữ liệu 5 thẻ. Q4: đóng phần "ADM0301 cấu hình rubric" (moot), giữ phần còn mở về điểm tổng. Không đổi bố cục màn | 2026/10/14 | Claude |
 | V1.0 | Sheet 4, 5, 6, 7, Câu hỏi mở, Hiện trạng bản dựng | Theo `DEC-2026-1014-drop-solution-review-rubric` (thay `DEC-2026-1014-drop-admin-rubric-config`): **bỏ hẳn rubric của báo cáo bài giải**. Bỏ Khu vực E (5 thẻ tiêu chí) ở Sheet 4.4, 5, 6; bỏ DTO `ReviewCriterionScoreDto` và trường `criteriaScores` của `SolutionReviewDetailDto`; bỏ item `solutionReview.rubric.*` ở Sheet 7.1; bỏ file FSD `ui/rubric-criteria-grid.tsx`; bỏ nội dung V0.6 về "5 mã `criterionCode` cố định". Báo cáo giữ: độ phức tạp, ca biên và rủi ro, nhận xét chất lượng mã kèm `readabilityScore` 1-5, điểm mạnh, cải thiện, mã đề xuất. Mã khu vực F-I giữ nguyên, không đánh số lại. Q4 đóng hẳn (không còn tiêu chí nên không còn câu hỏi điểm tổng). Thêm mục Hiện trạng bản dựng | 2026/10/14 | Claude |
 | V1.1 | Sheet 5 (Khu vực I NO 1, 2), 6 (Khu vực I NO 1), 8 (EVT-1, EVT-6), 9 (NO 7, 8, 9), Câu hỏi mở Q1, Q2, Q3 | Áp `DEC-2026-1014-batch7-remaining-open-questions`: đóng Q1 (giữ mã cũ vào lịch sử nháp, hoàn tác một nút bấm), Q2 (không sinh lại, cache cứng theo `source_code_hash`), Q3 (timeout LLM 30 giây, skeleton). Thêm Sheet 9 NO 7-9 | 2026/10/14 | AI |
-| V1.2 | Sheet 5 (Khu vực G NO 1) | Đổi path nguồn của trình xem Diff từ `suggestedCode` sang `codeDiff.suggestedCode` cho khớp lược đồ `result_json` ở `02-bd/database/ai-review.md` (mục 1.3a, `DEC-2026-1018-usr-open-questions-phase2-5`) | 2026/10/18 | Claude |
+| V1.2 | Sheet 5 (Khu vực G NO 1) | Đổi path nguồn của trình xem Diff từ `suggestedCode` sang `codeDiff.suggestedCode` cho khớp lược đồ `result_json` ở `02-bd/database/F5_ai-review.md` (mục 1.3a, `DEC-2026-1018-usr-open-questions-phase2-5`) | 2026/10/18 | Claude |
 | V1.3 | Sheet 8 (EVT-1, EVT-2, EVT-6, EVT-7), Hiện trạng bản dựng (thêm 6 dòng) | Sửa theo đợt rà soát prototype 2026/10/19 (area B). Màn **đọc `submissionId` từ route** (bỏ hằng "SUB-2841", `queryKey` có id), hai mục breadcrumb dẫn về `/submissions/{id}`, id lạ hoặc không phải của mình hoặc chưa Accepted thì hiện khối thông báo không có nút Thử lại (BD Sheet 9 NO 2, NO 3). "Ghi đè & Mở Workspace" **thật sự áp dụng**: ghi mã đề xuất vào nháp trình duyệt khoá `algoprep-draft:{problemId}:{language}:{model}` (hàm `saveWorkspaceDraft` của `entities/problem`, dùng chung với Workspace) rồi chuyển sang `/problems/{problemId}`; **chưa dựng** bước lưu bản trước vào lịch sử nháp với nhãn "Bản trước khi áp dụng AI Diff" (nợ prototype). Thử lại dùng `isFetching` nên hiện lại khung chờ. **Owner chấp nhận trình xem Diff rút gọn** (danh sách dòng thường dựng từ `diffLines`, không phải Monaco Diff Editor) ở prototype, ghi vào Hiện trạng; xét Monaco khi nối API. Thêm "Thời điểm phân tích" (giờ UTC+7) ở chỉ số đầu trang. Chưa duyệt hình | 2026/10/19 | Claude |
 | V1.4 | Sheet 8 (EVT-6), Câu hỏi mở Q5, Hiện trạng bản dựng | Owner chốt 2026/10/19 (`DEC-2026-1019-usr-fe-audit-fixes`, chốt nốt câu hỏi mở còn lại sau rà prototype). Chỉ tài liệu, không đổi code, chưa duyệt hình. Thêm Q5 và đóng ngay: sau "Ghi đè & Mở Workspace" chỉ ghi đè nháp và điều hướng, không mở khung gợi ý AI trong Workspace (ponytail bậc 3). | 2026/10/19 | Claude |
 | V1.5 | Sheet 3, 8 (EVT-6), Câu hỏi mở (Q5), Hiện trạng bản dựng | Đồng bộ bản dựng 2026/10/20 (`DEC-2026-1020-student-workspace-split-and-password-in-settings`): màn soạn mã `problem_detail` (`USR0102`) nay ở `/workspace/{problemId}`, còn `/problems/{id}` là trang tổng quan chỉ-đọc. Sau khi lưu nháp, "Ghi đè & Mở Workspace" điều hướng sang `/workspace/{problemId}` [Nguồn: 05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:190-207], không còn `/problems/{id}`. Sửa Sheet 3 (đích, chế độ mở, sơ đồ), EVT-6, ghi chú đích ở Q5 và dòng Hiện trạng "Áp dụng vào Workspace". Sửa câu "bản dựng hiện tại chỉ hiện toast, chưa điều hướng" ở EVT-6 vì đã cũ (bản dựng có `router.push`). Làm mới số dòng `solution-review-view.tsx`: `:121-125` thành `:190-207`, `:68-77` thành `:103-112`, `:72-76` thành `:105-112`, `:208-209` thành `:256-260`, `:231-268` thành `:285-328`, `:180-` thành `:179-185`. Cơ chế `?restore=ai_diff` ở Sheet 3 là thiết kế cũ, bản dựng nạp nháp qua `saveWorkspaceDraft` (`:196-201`) và không dùng tham số đó. Chưa duyệt hình | 2026/10/20 | Claude |
 | V1.6 | Sheet 3 (Phỏng vấn giả lập), Sheet 8 (sự kiện "Bấm Phỏng vấn bài này") | Owner chốt 2026/10/21: lối vào phỏng vấn từ bài nộp là `/submissions/{submission_id}/interview` (theo bản dựng `solution-review-view.tsx:267`), thay cho `/mock-interview?submission_id=`. Màn phỏng vấn chưa đọc mã bài nộp (nợ prototype, `USR0302` Q8). Chưa duyệt hình | 2026/10/21 | Claude |
-| V1.7 | Sheet 4.2, Hiện trạng bản dựng | Owner chọn 2026/10/23: sửa prototype theo lược đồ `result_json` ở `02-bd/database/ai-review.md` mục 1.3a (không thêm khoá vào lược đồ). Prototype nay có `schemaVersion`, `verdict`, `followUpTopics`, `codeDiff.{suggestedCode, explanation}` (hai khoá nullable); bỏ `summaryText` (thẻ "Nhận xét tổng quan" bị gỡ), `diffLines`, `diffNote`, `suggestedCode` ở gốc. Diff tính ở máy khách từ `source_code` và `codeDiff.suggestedCode`. Mục 4.2 ghi ánh xạ `complexity.actualTime`, `complexity.actualSpace`, `codeDiff` sang DTO. | 2026/10/23 | Claude |
+| V1.7 | Sheet 4.2, Hiện trạng bản dựng | Owner chọn 2026/10/23: sửa prototype theo lược đồ `result_json` ở `02-bd/database/F5_ai-review.md` mục 1.3a (không thêm khoá vào lược đồ). Prototype nay có `schemaVersion`, `verdict`, `followUpTopics`, `codeDiff.{suggestedCode, explanation}` (hai khoá nullable); bỏ `summaryText` (thẻ "Nhận xét tổng quan" bị gỡ), `diffLines`, `diffNote`, `suggestedCode` ở gốc. Diff tính ở máy khách từ `source_code` và `codeDiff.suggestedCode`. Mục 4.2 ghi ánh xạ `complexity.actualTime`, `complexity.actualSpace`, `codeDiff` sang DTO. | 2026/10/23 | Claude |
+| V1.9 | Sheet 5 (Khu vực I NO 5) | Theo `DEC-2026-1024-dd-screens-ai-topic-length-and-rd-trim`: thêm item trạng thái chờ giới hạn tần suất (`AIR-402`, `AIR-404`) có đếm ngược, chỉ chữ và đồng hồ. Chỉ tài liệu, chưa đổi code | 2026/10/24 | Claude |
 
 ---
 
@@ -93,7 +94,7 @@
 #### Kết quả nộp bài → Phân tích bài giải
 
 [Điều kiện mở] Bài nộp có verdict `ACCEPTED`, người học bấm "Phân tích bài giải" (F5-01)
-[Nguồn: 01-rd/req/ai-review.md — F5-01].
+[Nguồn: 01-rd/req/F5_ai-review.md — F5-01].
 
 [Chế độ mở] Điều hướng URL `/submissions/{submission_id}/review`.
 
@@ -137,7 +138,7 @@ báo cáo chưa từng được sinh cho bài nộp này (REQ-13, Câu hỏi m�
 #### Phân tích bài giải → Soạn mã (áp dụng mã đề xuất)
 
 [Điều kiện mở] Bấm "Áp dụng vào Workspace" và xác nhận tại popup (F5-26)
-[Nguồn: 01-rd/req/ai-review.md — F5-26; 05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:187-207].
+[Nguồn: 01-rd/req/F5_ai-review.md — F5-26; 05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:187-207].
 
 [Chế độ mở] Điều hướng URL `/workspace/{problemId}` (màn soạn mã `problem_detail`, `USR0102`). Từ 2026/10/20 đích không còn là `/problems/{id}`, vì đó là trang tổng quan chỉ-đọc [Nguồn: 05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:206].
 
@@ -180,7 +181,7 @@ flowchart LR
     class SOL screen
 ```
 
-[Nguồn: 01-rd/req/ai-review.md — F5-01, F5-20, F5-26; 01-rd/screens/users/USR0301_solution_review.md:158]
+[Nguồn: 01-rd/req/F5_ai-review.md — F5-01, F5-20, F5-26; 01-rd/screens/users/USR0301_solution_review.md:158]
 
 ---
 
@@ -200,7 +201,7 @@ flowchart LR
 
 | STT | Tên DTO | Mô tả | Chi tiết trường |
 | :-: | :--- | :--- | :--- |
-| 1 | `SolutionReviewDetailDto` | Cấu trúc JSON báo cáo phân tích tĩnh | `id`, `submissionId`, `problemId`, `problemTitle`, `levelCode`, `levelDisplayName`, `approachTitle`, `isApproachOptimal`, `readabilityScore`, `createdAt`, `timeComplexity`, `spaceComplexity`, `strengths`, `improvements`, `edgeCases`, `suggestedCodeDiff` (V1.7: bỏ `summaryText` vì lược đồ `result_json` không có). **Ánh xạ từ `result_json` ở `02-bd/database/ai-review.md` mục 1.3a:** `timeComplexity` đọc từ `complexity.actualTime`, `spaceComplexity` từ `complexity.actualSpace`, `suggestedCodeDiff` từ `codeDiff` (`suggestedCode`, `explanation`); `readabilityScore` là cột riêng `solution_reviews.readability_score`, không nằm trong JSON |
+| 1 | `SolutionReviewDetailDto` | Cấu trúc JSON báo cáo phân tích tĩnh | `id`, `submissionId`, `problemId`, `problemTitle`, `levelCode`, `levelDisplayName`, `approachTitle`, `isApproachOptimal`, `readabilityScore`, `createdAt`, `timeComplexity`, `spaceComplexity`, `strengths`, `improvements`, `edgeCases`, `suggestedCodeDiff` (V1.7: bỏ `summaryText` vì lược đồ `result_json` không có). **Ánh xạ từ `result_json` ở `02-bd/database/F5_ai-review.md` mục 1.3a:** `timeComplexity` đọc từ `complexity.actualTime`, `spaceComplexity` từ `complexity.actualSpace`, `suggestedCodeDiff` từ `codeDiff` (`suggestedCode`, `explanation`); `readabilityScore` là cột riêng `solution_reviews.readability_score`, không nằm trong JSON |
 | 2 | `ComplexityAnalysisDto` | Phân tích độ phức tạp chi tiết | `actualTime`, `optimalTime`, `timeExplanation`, `actualSpace`, `optimalSpace`, `spaceExplanation` |
 | 3 | ~~`ReviewCriterionScoreDto`~~ | Đã bỏ (`DEC-2026-1014-drop-solution-review-rubric`), không còn rubric của báo cáo bài giải | - |
 | 4 | `CodeDiffProposalDto` | Bản mã đề xuất cải tiến | `originalCode`, `suggestedCode`, `diffText`, `explanation` (`suggestedCode` và `explanation` có thể `null` khi hướng giải đã tối ưu; `originalCode` lấy từ `judge.submissions.source_code`, `diffText` do máy khách tính, không lưu DB) |
@@ -212,7 +213,7 @@ flowchart LR
 | 1 | `ai.solution_reviews` | Lưu trữ báo cáo phân tích dạng JSON | C, R | `ai-review` |
 | 2 | `judge.submissions` | Bản ghi bài nộp gốc và mã nguồn | R | `judge-orchestration` |
 | 3 | `problem.problems` | Thông tin bài toán và độ phức tạp chuẩn | R | `problem-bank` |
-| 4 | `problem.problem_levels` | Nhãn độ khó của bài (`display_name`), đọc qua join `problems.level_id` [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`] | R | `problem-bank` |
+| 4 | `problem.problem_levels` | Nhãn độ khó của bài (`display_name`), đọc qua join `problems.level_id` [Nguồn: 02-bd/database/F2_problem-bank.md mục `problem_levels`] | R | `problem-bank` |
 
 ### 4.4. Vùng bố cục bám prototype
 
@@ -248,8 +249,8 @@ Bố cục dạng tài liệu báo cáo dọc chuyên nghiệp:
 
 > Quy ước ID, bộ thẻ và giá trị chuẩn: `02-bd/_rules/bd-template-9sheet.md` mục 2, 3, 4. Phần lớn nội dung
 > báo cáo (Khu vực D-G) nằm trong `ai.solution_reviews.result_json` (JSONB) chứ không phải cột riêng —
-> lược đồ JSON chi tiết chốt ở `03-dd/api/ai-review.md`, ở đây chỉ ghi đường dẫn trường dự kiến
-> [Nguồn: 02-bd/database/ai-review.md:50].
+> lược đồ JSON chi tiết chốt ở `03-dd/api/F5_ai-review.md`, ở đây chỉ ghi đường dẫn trường dự kiến
+> [Nguồn: 02-bd/database/F5_ai-review.md:50].
 
 ### Khu vực A — Thanh đường dẫn (Breadcrumb)
 
@@ -257,7 +258,7 @@ Bố cục dạng tài liệu báo cáo dọc chuyên nghiệp:
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Breadcrumb | | | | | | | | | | | | | |
 | | 1 | Link Kết quả nộp | `solutionReview.breadcrumb.linkSubmission` | - | - | Link | String | 50 | Có | O | - | "Kết quả nộp bài" | Dẫn về màn `submission_result`<br>[Nguồn giá trị] Nhãn tĩnh<br>[EVT liên quan] EVT-2 |
-| | 2 | Link Mã lượt nộp | `solutionReview.breadcrumb.linkSubmissionId` | `judge.submissions` | `id` | Link | String | 30 | Có | O | - | `SUB-{id}` | Mã bài nộp hiện tại [Nguồn: 02-bd/database/judge-orchestration.md:14]<br>[EVT liên quan] EVT-2 |
+| | 2 | Link Mã lượt nộp | `solutionReview.breadcrumb.linkSubmissionId` | `judge.submissions` | `id` | Link | String | 30 | Có | O | - | `SUB-{id}` | Mã bài nộp hiện tại [Nguồn: 02-bd/database/F4_judge-orchestration.md:14]<br>[EVT liên quan] EVT-2 |
 | | 3 | Nhãn Trang hiện tại | `solutionReview.breadcrumb.lblCurrent` | - | - | Label | String | 50 | Có | O | - | "Phân tích bài giải" | Nhãn trang hiện tại<br>[Nguồn giá trị] Nhãn tĩnh<br>[EVT liên quan] - |
 
 ### Khu vực B — Thanh chỉ số đầu trang (Top Stats)
@@ -265,10 +266,10 @@ Bố cục dạng tài liệu báo cáo dọc chuyên nghiệp:
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Top Stats | | | | | | | | | | | | | |
-| | 1 | Tên và độ khó bài | `solutionReview.stats.lblProblem` | `problem.problems`, `problem.problem_levels` | `title`, `display_name` | Label | String | 150 | Có | O | - | `{title} ({độ khó})` | Tiêu đề bài toán và badge độ khó [Nguồn: 02-bd/database/problem-bank.md:15]<br>[Nguồn giá trị] Nhãn độ khó là `problem_levels.display_name` qua `problems.level_id`, **đọc từ dữ liệu** do ADMIN quản lý, không còn ánh xạ cứng enum; ba mức khởi tạo giữ màu badge cũ, mức mới màu trung tính `DEC-2026-1001-admin-configurable-settings` mục (7) [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`]<br>[EVT liên quan] - |
-| | 2 | Thẻ Hướng giải thuật | `solutionReview.stats.lblApproach` | `ai.solution_reviews` | `result_json` (path `approachTitle`, `isApproachOptimal`) | Badge | String | 60 | Có | O | - | - | Đánh giá hướng giải AI nhận diện — nằm trong báo cáo JSON F5-07, không phải cột riêng [Nguồn: 02-bd/database/ai-review.md:50]<br>[EVT liên quan] - |
-| | 3 | Thẻ Điểm dễ đọc | `solutionReview.stats.lblReadability` | `ai.solution_reviews` | `readability_score` | Badge | String | 20 | Có | O | - | `Dễ đọc: {score} / 5` | Điểm đánh giá độ sạch mã nguồn, AI tự chấm trong cùng lượt (F5-05) [Nguồn: 02-bd/database/ai-review.md:51]<br>[EVT liên quan] - |
-| | 4 | Thời điểm phân tích | `solutionReview.stats.lblGeneratedAt` | `ai.solution_reviews` | `created_at` | Label | String | 40 | Có | O | - | `Sinh lúc HH:mm - dd/MM/yyyy` | Mốc thời gian tạo báo cáo [Nguồn: 02-bd/database/ai-review.md:58]<br>[EVT liên quan] - |
+| | 1 | Tên và độ khó bài | `solutionReview.stats.lblProblem` | `problem.problems`, `problem.problem_levels` | `title`, `display_name` | Label | String | 150 | Có | O | - | `{title} ({độ khó})` | Tiêu đề bài toán và badge độ khó [Nguồn: 02-bd/database/F2_problem-bank.md:15]<br>[Nguồn giá trị] Nhãn độ khó là `problem_levels.display_name` qua `problems.level_id`, **đọc từ dữ liệu** do ADMIN quản lý, không còn ánh xạ cứng enum; ba mức khởi tạo giữ màu badge cũ, mức mới màu trung tính `DEC-2026-1001-admin-configurable-settings` mục (7) [Nguồn: 02-bd/database/F2_problem-bank.md mục `problem_levels`]<br>[EVT liên quan] - |
+| | 2 | Thẻ Hướng giải thuật | `solutionReview.stats.lblApproach` | `ai.solution_reviews` | `result_json` (path `approachTitle`, `isApproachOptimal`) | Badge | String | 60 | Có | O | - | - | Đánh giá hướng giải AI nhận diện — nằm trong báo cáo JSON F5-07, không phải cột riêng [Nguồn: 02-bd/database/F5_ai-review.md:50]<br>[EVT liên quan] - |
+| | 3 | Thẻ Điểm dễ đọc | `solutionReview.stats.lblReadability` | `ai.solution_reviews` | `readability_score` | Badge | String | 20 | Có | O | - | `Dễ đọc: {score} / 5` | Điểm đánh giá độ sạch mã nguồn, AI tự chấm trong cùng lượt (F5-05) [Nguồn: 02-bd/database/F5_ai-review.md:51]<br>[EVT liên quan] - |
+| | 4 | Thời điểm phân tích | `solutionReview.stats.lblGeneratedAt` | `ai.solution_reviews` | `created_at` | Label | String | 40 | Có | O | - | `Sinh lúc HH:mm - dd/MM/yyyy` | Mốc thời gian tạo báo cáo [Nguồn: 02-bd/database/F5_ai-review.md:58]<br>[EVT liên quan] - |
 | | 5 | Nút Phỏng vấn bài này | `solutionReview.stats.btnInterview` | - | - | Button | String | 50 | Có | I | - | "Phỏng vấn về bài này" | Dẫn sang `mock_interview`<br>[Nguồn giá trị] Nhãn tĩnh<br>[EVT liên quan] EVT-3 |
 
 ### Khu vực C — Banner định hướng giáo dục (Edu Notice)
@@ -283,12 +284,12 @@ Bố cục dạng tài liệu báo cáo dọc chuyên nghiệp:
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Complexity | | | | | | | | | | | | | |
-| | 1 | Nhãn Thời gian thực tế | `solutionReview.complexity.actualTime` | `ai.solution_reviews` | `result_json` (path `complexity.actualTime`) | Label | String | 30 | Có | O | - | - | Độ phức tạp thời gian thực tế F5-02, trong JSON báo cáo [Nguồn: 02-bd/database/ai-review.md:50]<br>[EVT liên quan] - |
-| | 2 | Nhãn Thời gian tối ưu | `solutionReview.complexity.optimalTime` | `ai.solution_reviews` | `result_json` (path `complexity.optimalTime`) | Label | String | 30 | Có | O | - | - | Độ phức tạp thời gian tối ưu đã biết, AI đối chiếu [Nguồn: 02-bd/database/ai-review.md:50]<br>[EVT liên quan] - |
-| | 3 | Đoạn lập luận thời gian | `solutionReview.complexity.timeExplain` | `ai.solution_reviews` | `result_json` (path `complexity.timeExplanation`) | TextArea | String | 500 | Có | O | - | - | Lập luận chứng minh độ phức tạp thời gian [Nguồn: 02-bd/database/ai-review.md:50]<br>[EVT liên quan] - |
-| | 4 | Nhãn Bộ nhớ thực tế | `solutionReview.complexity.actualSpace` | `ai.solution_reviews` | `result_json` (path `complexity.actualSpace`) | Label | String | 30 | Có | O | - | - | Độ phức tạp không gian thực tế F5-03 [Nguồn: 02-bd/database/ai-review.md:50]<br>[EVT liên quan] - |
-| | 5 | Nhãn Bộ nhớ tối ưu | `solutionReview.complexity.optimalSpace` | `ai.solution_reviews` | `result_json` (path `complexity.optimalSpace`) | Label | String | 30 | Có | O | - | - | Độ phức tạp không gian tối ưu đã biết [Nguồn: 02-bd/database/ai-review.md:50]<br>[EVT liên quan] - |
-| | 6 | Đoạn lập luận bộ nhớ | `solutionReview.complexity.spaceExplain` | `ai.solution_reviews` | `result_json` (path `complexity.spaceExplanation`) | TextArea | String | 500 | Có | O | - | - | Lập luận chứng minh độ phức tạp bộ nhớ [Nguồn: 02-bd/database/ai-review.md:50]<br>[EVT liên quan] - |
+| | 1 | Nhãn Thời gian thực tế | `solutionReview.complexity.actualTime` | `ai.solution_reviews` | `result_json` (path `complexity.actualTime`) | Label | String | 30 | Có | O | - | - | Độ phức tạp thời gian thực tế F5-02, trong JSON báo cáo [Nguồn: 02-bd/database/F5_ai-review.md:50]<br>[EVT liên quan] - |
+| | 2 | Nhãn Thời gian tối ưu | `solutionReview.complexity.optimalTime` | `ai.solution_reviews` | `result_json` (path `complexity.optimalTime`) | Label | String | 30 | Có | O | - | - | Độ phức tạp thời gian tối ưu đã biết, AI đối chiếu [Nguồn: 02-bd/database/F5_ai-review.md:50]<br>[EVT liên quan] - |
+| | 3 | Đoạn lập luận thời gian | `solutionReview.complexity.timeExplain` | `ai.solution_reviews` | `result_json` (path `complexity.timeExplanation`) | TextArea | String | 500 | Có | O | - | - | Lập luận chứng minh độ phức tạp thời gian [Nguồn: 02-bd/database/F5_ai-review.md:50]<br>[EVT liên quan] - |
+| | 4 | Nhãn Bộ nhớ thực tế | `solutionReview.complexity.actualSpace` | `ai.solution_reviews` | `result_json` (path `complexity.actualSpace`) | Label | String | 30 | Có | O | - | - | Độ phức tạp không gian thực tế F5-03 [Nguồn: 02-bd/database/F5_ai-review.md:50]<br>[EVT liên quan] - |
+| | 5 | Nhãn Bộ nhớ tối ưu | `solutionReview.complexity.optimalSpace` | `ai.solution_reviews` | `result_json` (path `complexity.optimalSpace`) | Label | String | 30 | Có | O | - | - | Độ phức tạp không gian tối ưu đã biết [Nguồn: 02-bd/database/F5_ai-review.md:50]<br>[EVT liên quan] - |
+| | 6 | Đoạn lập luận bộ nhớ | `solutionReview.complexity.spaceExplain` | `ai.solution_reviews` | `result_json` (path `complexity.spaceExplanation`) | TextArea | String | 500 | Có | O | - | - | Lập luận chứng minh độ phức tạp bộ nhớ [Nguồn: 02-bd/database/F5_ai-review.md:50]<br>[EVT liên quan] - |
 
 ### Khu vực E — Đã bỏ
 
@@ -299,18 +300,18 @@ Khu vực E (5 thẻ tiêu chí Rubric: `solutionReview.rubric.cardCorrectness`,
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Insights | | | | | | | | | | | | | |
-| | 1 | Danh sách Điểm mạnh | `solutionReview.insights.listStrengths` | `ai.solution_reviews` | `result_json` (path `strengths[]`) | List | String | 2000 | Có | O | - | - | Các điểm làm tốt của giải pháp (F5-05) [Nguồn: 02-bd/database/ai-review.md:50]<br>[EVT liên quan] - |
-| | 2 | Danh sách Cần cải thiện | `solutionReview.insights.listImprovements` | `ai.solution_reviews` | `result_json` (path `improvements[]`) | List | String | 2000 | Có | O | - | - | Các gợi ý cải tiến mã nguồn (F5-05) [Nguồn: 02-bd/database/ai-review.md:50]<br>[EVT liên quan] - |
-| | 3 | Danh sách Ca biên tiềm ẩn | `solutionReview.insights.listEdgeCases` | `ai.solution_reviews` | `result_json` (path `edgeCases[]`) | List | String | 2000 | Có | O | - | - | Ca biên, giả định ngầm, rủi ro tràn số F5-04 [Nguồn: 02-bd/database/ai-review.md:50]<br>[EVT liên quan] - |
-| | 4 | Danh sách Chủ đề nên học tiếp | `solutionReview.insights.listFollowUpTopics` | `ai.solution_reviews` | `result_json` (path `followUpTopics[]`) | List | String | 100 | Không | O | - | Chip chủ đề, kèm một liên kết "Mở ngân hàng câu hỏi" sang `interview_bank_list` | Chủ đề hoặc từ khoá gợi ý học tiếp (F5-06); **chỉ là chuỗi, không chứa id câu hỏi F6** vì `ai-review` không đọc `interview-bank`. Mảng rỗng thì ẩn cả thẻ. Danh sách `interview_bank_list` chưa nhận tham số tìm kiếm, nên liên kết mở danh sách chưa lọc (mở ở Câu hỏi mở Q6) [Nguồn: 02-bd/database/ai-review.md:79]<br>[EVT liên quan] - |
+| | 1 | Danh sách Điểm mạnh | `solutionReview.insights.listStrengths` | `ai.solution_reviews` | `result_json` (path `strengths[]`) | List | String | 2000 | Có | O | - | - | Các điểm làm tốt của giải pháp (F5-05) [Nguồn: 02-bd/database/F5_ai-review.md:50]<br>[EVT liên quan] - |
+| | 2 | Danh sách Cần cải thiện | `solutionReview.insights.listImprovements` | `ai.solution_reviews` | `result_json` (path `improvements[]`) | List | String | 2000 | Có | O | - | - | Các gợi ý cải tiến mã nguồn (F5-05) [Nguồn: 02-bd/database/F5_ai-review.md:50]<br>[EVT liên quan] - |
+| | 3 | Danh sách Ca biên tiềm ẩn | `solutionReview.insights.listEdgeCases` | `ai.solution_reviews` | `result_json` (path `edgeCases[]`) | List | String | 2000 | Có | O | - | - | Ca biên, giả định ngầm, rủi ro tràn số F5-04 [Nguồn: 02-bd/database/F5_ai-review.md:50]<br>[EVT liên quan] - |
+| | 4 | Danh sách Chủ đề nên học tiếp | `solutionReview.insights.listFollowUpTopics` | `ai.solution_reviews` | `result_json` (path `followUpTopics[]`) | List | String | 100 | Không | O | - | Chip chủ đề, kèm một liên kết "Mở ngân hàng câu hỏi" sang `interview_bank_list` | Chủ đề hoặc từ khoá gợi ý học tiếp (F5-06); **chỉ là chuỗi, không chứa id câu hỏi F6** vì `ai-review` không đọc `interview-bank`. Mảng rỗng thì ẩn cả thẻ. Danh sách `interview_bank_list` chưa nhận tham số tìm kiếm, nên liên kết mở danh sách chưa lọc (mở ở Câu hỏi mở Q6) [Nguồn: 02-bd/database/F5_ai-review.md:79]<br>[EVT liên quan] - |
 
 ### Khu vực G — Đề xuất mã nguồn & Diff Viewer
 
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Diff Viewer | | | | | | | | | | | | | |
-| | 1 | Trình xem so sánh Diff | `solutionReview.diff.viewerMonaco` | `ai.solution_reviews`, `judge.submissions` | `result_json` (path `codeDiff.suggestedCode`), `source_code` | TextArea | String | 50000 | Có | O | - | - | Monaco Diff Editor chỉ đọc so sánh mã gốc (`submissions.source_code`) và mã đề xuất trong báo cáo [Nguồn: 02-bd/database/judge-orchestration.md:20; 02-bd/database/ai-review.md:50]<br>[EVT liên quan] - |
-| | 2 | Đoạn giải thích mã mới | `solutionReview.diff.txtExplanation` | `ai.solution_reviews` | `result_json` (path `codeDiff.explanation`) | TextArea | String | 1000 | Có | O | - | - | Giải thích lý do sửa đổi (F5-26) [Nguồn: 02-bd/database/ai-review.md:50]<br>[EVT liên quan] - |
+| | 1 | Trình xem so sánh Diff | `solutionReview.diff.viewerMonaco` | `ai.solution_reviews`, `judge.submissions` | `result_json` (path `codeDiff.suggestedCode`), `source_code` | TextArea | String | 50000 | Có | O | - | - | Monaco Diff Editor chỉ đọc so sánh mã gốc (`submissions.source_code`) và mã đề xuất trong báo cáo [Nguồn: 02-bd/database/F4_judge-orchestration.md:20; 02-bd/database/F5_ai-review.md:50]<br>[EVT liên quan] - |
+| | 2 | Đoạn giải thích mã mới | `solutionReview.diff.txtExplanation` | `ai.solution_reviews` | `result_json` (path `codeDiff.explanation`) | TextArea | String | 1000 | Có | O | - | - | Giải thích lý do sửa đổi (F5-26) [Nguồn: 02-bd/database/F5_ai-review.md:50]<br>[EVT liên quan] - |
 | | 3 | Nút Áp dụng vào Workspace | `solutionReview.diff.btnApply` | - | - | Button | String | 50 | Có | I | - | "Áp dụng vào Workspace" | Kích hoạt popup xác nhận áp dụng mã F5-26<br>[Nguồn giá trị] Nhãn tĩnh<br>[EVT liên quan] EVT-4 |
 
 ### Khu vực H — Popup xác nhận áp dụng mã
@@ -336,10 +337,11 @@ Khu vực E (5 thẻ tiêu chí Rubric: `solutionReview.rubric.cardCorrectness`,
 | | 1 | Khung chờ đang phân tích | `solutionReview.status.loadingSkeleton` | - | - | Label | String | - | - | O | - | - | Hiện khi báo cáo chưa có sẵn và hệ thống đang gọi AI sinh mới (F5-01); thay thế toàn bộ Khu vực B-G; dạng skeleton, tối đa 30 giây (timeout LLM, `DEC-2026-1014-batch7-remaining-open-questions`)<br>[Nguồn giá trị] Trạng thái suy ra: gọi `GetOrCreateSolutionReview` chưa trả kết quả [Nguồn: 01-rd/screens/users/USR0301_solution_review.md:158]<br>[EVT liên quan] EVT-1 |
 | | 2 | Thông báo lỗi tạm thời | `solutionReview.status.errorTransient` | - | - | Label | String | 200 | - | O | - | - | AI provider lỗi hoặc timeout 30 giây gọi model (không phải hết ngân sách) — cho phép bấm thử lại (F5-22)<br>[Nguồn giá trị] Mã lỗi trong phản hồi khác nhóm ngân sách<br>[EVT liên quan] EVT-1 |
 | | 3 | Nút Thử lại | `solutionReview.status.btnRetry` | - | - | Button | String | 30 | - | I | - | "Thử lại" | Gọi lại `GetOrCreateSolutionReview`; chỉ xuất hiện cùng lỗi tạm thời (NO 2), không xuất hiện cùng lỗi ngân sách (NO 4)<br>[Nguồn giá trị] Nhãn tĩnh<br>[EVT liên quan] EVT-1 |
-| | 4 | Thông báo bị khoá ngân sách | `solutionReview.status.errorBudgetLocked` | - | - | Label | String | 200 | - | O | - | - | Vượt ngân sách token AI (F5-25) — không cho thử lại, chỉ hiện lý do và lối thoát về Workspace/kết quả<br>[Nguồn giá trị] Mã lỗi ngân sách trong phản hồi [Nguồn: 01-rd/req/ai-review.md — F5-25]<br>[EVT liên quan] EVT-1 |
+| | 4 | Thông báo bị khoá ngân sách | `solutionReview.status.errorBudgetLocked` | - | - | Label | String | 200 | - | O | - | - | Vượt ngân sách token AI (F5-25) — không cho thử lại, chỉ hiện lý do và lối thoát về Workspace/kết quả<br>[Nguồn giá trị] Mã lỗi ngân sách trong phản hồi [Nguồn: 01-rd/req/F5_ai-review.md — F5-25]<br>[EVT liên quan] EVT-1 |
+| | 5 | Thông báo chờ giới hạn tần suất | `solutionReview.status.errorRateLimited` | - | - | Label | String | 200 | - | O | - | - | Gặp giới hạn mỗi giờ hoặc thời gian chờ giữa hai yêu cầu (F5-19): chỉ chữ và đồng hồ đếm ngược, nút Thử lại tắt tới khi hết; loại trừ với NO 2 và NO 4<br>[Nguồn giá trị] Mã lỗi trong phản hồi kèm số giây chờ (`03-dd/api/F5_ai-review.md:274-275`); thêm theo `DEC-2026-1024-dd-screens-ai-topic-length-and-rd-trim`<br>[EVT liên quan] EVT-1 |
 
-[Nguồn: 02-bd/database/ai-review.md:27-38,50-58; 02-bd/database/problem-bank.md:15,17;
-02-bd/database/judge-orchestration.md:14,20; 01-rd/req/ai-review.md — F5-01→F5-06, F5-22, F5-25;
+[Nguồn: 02-bd/database/F5_ai-review.md:27-38,50-58; 02-bd/database/F2_problem-bank.md:15,17;
+02-bd/database/F4_judge-orchestration.md:14,20; 01-rd/req/F5_ai-review.md — F5-01→F5-06, F5-22, F5-25;
 01-rd/screens/users/USR0301_solution_review.md:138,158-159]
 
 ---
@@ -523,5 +525,5 @@ Bảng này ghi điều prototype frontend đang có, để đối chiếu với
 
 - `01-rd/screens/users/USR0301_solution_review.md` — Yêu cầu màn hình.
 - `09-layoutBase/Phân tích bài giải.dc.html` — Bằng chứng bố cục prototype.
-- `01-rd/req/ai-review.md` — F5-01→F5-08, F5-17, F5-18, F5-20, F5-22, F5-23 (đã bỏ phần rubric bài giải), F5-25, F5-26.
+- `01-rd/req/F5_ai-review.md` — F5-01→F5-08, F5-17, F5-18, F5-20, F5-22, F5-23 (đã bỏ phần rubric bài giải), F5-25, F5-26.
 - `02-bd/_rules/bd-template-9sheet.md` — Quy ước mẫu 9 sheet.

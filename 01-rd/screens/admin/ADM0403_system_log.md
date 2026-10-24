@@ -3,7 +3,7 @@
 > Mã màn hình: `ADM0403` [SoT: 02-bd/_rules/bd-template-9sheet.md — mục 8].
 > Slug chính tắc: `admin_system_log` [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_system_log`].
 > Phạm vi/Bounded Context: `identity` (F1) [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_system_log`]. Actor: A3 (Quản trị viên).
-> Nguồn sự thật (SoT): `01-rd/req/identity.md` (F1-14), `09-layoutBase/Admin - Nhật ký hệ thống.dc.html` (prototype), `01-rd/req/user_stories/a3_admin.md`.
+> Nguồn sự thật (SoT): `01-rd/req/F1_identity.md` (F1-14), `09-layoutBase/Admin - Nhật ký hệ thống.dc.html` (prototype), `01-rd/req/user_stories/a3_admin.md`.
 > Tài liệu này có thể đọc độc lập.
 
 ---
@@ -12,13 +12,13 @@
 
 Xem lại mọi hành động quản trị (đổi ma trận quyền, đổi vai trò, khoá/mở khoá, reset mật khẩu, thao tác nội
 dung kho bài và kho câu hỏi...) kèm ai đổi, đổi gì, đổi lúc nào — không có ngoại lệ
-[SoT: 01-rd/req/identity.md — F1-14]. **Sửa 2026-09-03:** bỏ "chấm lại" khỏi danh sách ví dụ — hành động
+[SoT: 01-rd/req/F1_identity.md — F1-14]. **Sửa 2026-09-03:** bỏ "chấm lại" khỏi danh sách ví dụ — hành động
 đó không còn tồn tại (`DEC-2026-0828-remove-rejudge-scope`), như mục 3 chỉ số 4 của file này đã ghi nhận.
 
 Đối chiếu prototype: `09-layoutBase/Admin - Nhật ký hệ thống.dc.html`. File này mô tả **hành vi và UX ở
-mức yêu cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/identity.md` (F1-14), chỉ trỏ tới và bổ sung
+mức yêu cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/F1_identity.md` (F1-14), chỉ trỏ tới và bổ sung
 phần đặc thù của màn. Khớp RD tốt — đúng phân định "chỉ ghi hành động quản trị của người, không gộp sự
-kiện hạ tầng" đã chốt trước ở `identity.md` — F1-14.
+kiện hạ tầng" đã chốt trước ở `F1_identity.md` — F1-14.
 
 ---
 
@@ -26,13 +26,13 @@ kiện hạ tầng" đã chốt trước ở `identity.md` — F1-14.
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Ghi mọi thay đổi ma trận phân quyền và thao tác quản trị vào Nhật ký hệ thống | F1-14 | `01-rd/req/identity.md` — F1-14 |
+| Ghi mọi thay đổi ma trận phân quyền và thao tác quản trị vào Nhật ký hệ thống | F1-14 | `01-rd/req/F1_identity.md` — F1-14 |
 | Given-When-Then liên quan | — | `01-rd/req/user_stories/a3_admin.md` (rải trong `US-A3-01/02/05`) |
 
 Đối chiếu `09-layoutBase/Admin - Nhật ký hệ thống.dc.html`:
 
 1. **Ghi chú tiêu đề** — "Hành động quản trị của con người · sự kiện hạ tầng xem ở Hàng đợi chấm" (dòng
-   152) — khớp **chính xác từng chữ** với quyết định phạm vi đã chốt ở `identity.md` — F1-12, F1-14. Đây là bằng chứng
+   152) — khớp **chính xác từng chữ** với quyết định phạm vi đã chốt ở `F1_identity.md` — F1-12, F1-14. Đây là bằng chứng
    mạnh nhất trong toàn Phase 6 rằng quyết định phân tách hai luồng dữ liệu (hành động quản trị vs. sự kiện
    hạ tầng) đã được phản ánh đúng vào UI thật.
 2. **Theo dõi trực tiếp** — toggle bật/tắt live update (dòng 154-156) — không có mã riêng, chi tiết UX hợp
@@ -62,7 +62,7 @@ kiện hạ tầng" đã chốt trước ở `identity.md` — F1-14.
    `01-rd/screens/admin/ADM0201_user_management.md`; không lặp lại chi tiết ở đây, chỉ xác nhận nó xuất hiện
    nhất quán ở cả hai màn (không phải lỗi dữ liệu mẫu một lần).
    **Cập nhật 2026-10-05:** dòng log này nay có một nguồn thật — **lý do khoá do quản trị viên nhập** (F1-32,
-   `01-rd/req/identity.md`), lưu trong `after_json` cùng dòng nhật ký. Nội dung "trùng mã nguồn" trong dòng
+   `01-rd/req/F1_identity.md`), lưu trong `after_json` cùng dòng nhật ký. Nội dung "trùng mã nguồn" trong dòng
    mẫu vì thể là **lý do quản trị viên gõ**, không phải kết quả phát hiện tự động: cơ chế so khớp trùng mã
    nguồn vẫn ngoài phạm vi (`DEC-2026-0831-remove-plagiarism-report`). Màn này hiển thị lý do đó nguyên văn,
    và hiển thị khác với dòng mở khoá — mở khoá không có lý do. **Prototype Next.js 2026-10-08** dựng đúng như vậy:
@@ -74,7 +74,7 @@ kiện hạ tầng" đã chốt trước ở `identity.md` — F1-14.
 | Màn/tài liệu | Vai trò | Bounded Context |
 |---|---|---|
 | Màn hiện tại | `ADM0403` / `admin_system_log` | `identity` |
-| Tài liệu yêu cầu | `01-rd/req/identity.md` (F1-14) | Nguồn SoT của màn |
+| Tài liệu yêu cầu | `01-rd/req/F1_identity.md` (F1-14) | Nguồn SoT của màn |
 | Prototype | `09-layoutBase/Admin - Nhật ký hệ thống.dc.html` | Bằng chứng bố cục và trạng thái |
 
 ---
@@ -83,7 +83,7 @@ kiện hạ tầng" đã chốt trước ở `identity.md` — F1-14.
 
 - Bảng màu, spacing, component cụ thể — thuộc BD (`02-bd/screens/admin/ADM0403_system_log.md`, chưa viết).
 - Hợp đồng API (ghi log, tìm kiếm/lọc, live update qua WebSocket hoặc polling) — thuộc DD
-  (`03-dd/api/identity.md`, chưa viết).
+  (`03-dd/api/F1_identity.md`, chưa viết).
 - Thời hạn lưu log (footer ghi "Nhật ký giữ 90 ngày", dòng 256): **đã chốt ở BD** — cấu hình do ADMIN đặt, mặc định 90 ngày
   (BD `ADM0403` Q2, `DEC-2026-1001-admin-configurable-settings`; cập nhật 2026-10-11).
 
@@ -103,12 +103,12 @@ lại để tránh trùng câu hỏi trên nhiều file):
 ## 5. Danh sách yêu cầu (REQ)
 | ID | Yêu cầu | Loại | Nguồn/SoT |
 |---|---|---|---|
-| REQ-01 | Ghi mọi thay đổi ma trận phân quyền và thao tác quản trị vào Nhật ký hệ thống (F1-14) | Chức năng | `01-rd/req/identity.md` — F1-14 |
+| REQ-01 | Ghi mọi thay đổi ma trận phân quyền và thao tác quản trị vào Nhật ký hệ thống (F1-14) | Chức năng | `01-rd/req/F1_identity.md` — F1-14 |
 | REQ-02 | Given-When-Then liên quan (—) | Chức năng | `01-rd/req/user_stories/a3_admin.md` (rải trong `US-A3-01/02/05`) |
 | REQ-03 | **Cho** một quản trị viên đổi một ô trong ma trận phân quyền, **Khi** thay đổi được lưu, **Thì** một dòng log mới xuất hiện ngay ở đầu danh sách (nếu đang "Theo dõi trực tiếp"), phân loại "Ma trận quyền", ghi rõ quyền nào đổi cho vai trò nào [SoT: `09-layoutBase/Admin - Nhật ký hệ thống.dc.html:406, 412` — dòng mẫu "Cấp quyền UPDATE trên TESTCASE_MANAGEMENT cho vai trò Trợ giảng"]. | Chức năng | GWT bổ sung trong RD |
 | REQ-04 | **Cho** quản trị viên lọc theo phân loại "Cấu hình", **Khi** bộ lọc áp dụng, **Thì** danh sách chỉ hiện các hành động thuộc nhóm cấu hình (đổi giới hạn ngôn ngữ, tạm dừng hoặc tiếp tục hàng đợi chấm, bật/tắt tự động mở rộng worker, đổi tham số hàng đợi, cập nhật prompt AI...; thêm 2026-10-10 theo `DEC-2026-1010-admin-operations-regroup`), không lẫn hành động xác thực hay ma trận quyền. | Chức năng | GWT bổ sung trong RD |
 | REQ-05 | **Cho** quản trị viên đặt "Từ ngày" và "Đến ngày", **Khi** khoảng hợp lệ, **Thì** danh sách chỉ hiện dòng log trong khoảng đó (gồm cả hai ngày biên); **Khi** từ ngày muộn hơn đến ngày, **Thì** hiện cảnh báo và không có dòng nào. | Chức năng | Chốt 2026-10-08 (`DEC-2026-1008-admin-system-screens-review`) |
-| REQ-06 | **Cho** một dòng log khoá tài khoản, **Khi** hiển thị, **Thì** có thêm dòng "Lý do: ..." nguyên văn lý do quản trị viên đã nhập (F1-32); dòng mở khoá không có lý do. | Chức năng | `01-rd/req/identity.md` — F1-32; mục 2 điểm 7 |
+| REQ-06 | **Cho** một dòng log khoá tài khoản, **Khi** hiển thị, **Thì** có thêm dòng "Lý do: ..." nguyên văn lý do quản trị viên đã nhập (F1-32); dòng mở khoá không có lý do. | Chức năng | `01-rd/req/F1_identity.md` — F1-32; mục 2 điểm 7 |
 
 ---
 
@@ -147,7 +147,7 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 
 | Loại | Tham chiếu |
 |---|---|
-| Yêu cầu module | `01-rd/req/identity.md` — F1-14. |
+| Yêu cầu module | `01-rd/req/F1_identity.md` — F1-14. |
 | User story | `01-rd/req/user_stories/a3_admin.md` — GWT rải trong `US-A3-01/02/05`. |
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` mục 7.3 — dòng `admin_system_log`. |
 | Prototype | `09-layoutBase/Admin - Nhật ký hệ thống.dc.html` — prototype. |

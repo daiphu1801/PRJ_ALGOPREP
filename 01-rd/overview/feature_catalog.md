@@ -11,8 +11,8 @@
 >
 > Số liệu rà lại 2026-10-14 (`DEC-2026-1014-batch7-remaining-open-questions`, mục 8), đếm trực tiếp các dòng bảng:
 > ~~111 mã sống (112 trước 2026-10-13); 9 mã loại khỏi phạm vi~~ nay là **112 sống, 8 loại**. Bảng F1 trước thiếu
-> dòng `F1-31` (định nghĩa ở `01-rd/req/identity.md:239`), nay đã thêm; bảng F2 đã có `F2-18`
-> (`01-rd/req/problem-bank.md:126`). Con số 111 nêu trong quyết định là tổng của hai bảng đang lệch nhau (catalog thiếu F1-31,
+> dòng `F1-31` (định nghĩa ở `01-rd/req/F1_identity.md:239`), nay đã thêm; bảng F2 đã có `F2-18`
+> (`01-rd/req/F2_problem-bank.md:126`). Con số 111 nêu trong quyết định là tổng của hai bảng đang lệch nhau (catalog thiếu F1-31,
 > survey thiếu F2-18), không phải số đếm đúng.
 >
 > Cột **File liên quan** có hai phần. Phần **màn hình** liệt kê file RD theo trục màn hình
@@ -36,7 +36,7 @@
 
 ## F1 — Danh tính và phân quyền (`identity`)
 
-Nguồn: `01-rd/req/identity.md`. 31 mã (F1-01 tới F1-31). Số liệu rà lại 2026-10-14: trước ghi 30, thiếu F1-31.
+Nguồn: `01-rd/req/F1_identity.md`. 31 mã (F1-01 tới F1-31). Số liệu rà lại 2026-10-14: trước ghi 30, thiếu F1-31.
 
 | Mã | Chức năng | Giải thích ngắn gọn | File liên quan |
 | :--- | :--- | :--- | :--- |
@@ -62,7 +62,7 @@ Nguồn: `01-rd/req/identity.md`. 31 mã (F1-01 tới F1-31). Số liệu rà l�
 | F1-20 | Tuỳ chọn cá nhân hoá Workspace | Ngôn ngữ mặc định, cỡ chữ, tự lưu nháp, phím tắt Vim | users/USR0503_settings.md; admin/ADM0101_overview.md — sơ đồ: usecase/user/usecase_user_ho_so_va_cai_dat |
 | F1-21 | Thông báo email định kỳ | Nhắc chuỗi ngày sắp mất, báo cáo tiến độ hằng tuần | users/USR0503_settings.md; teacher/INS0203_class_progress.md — sơ đồ: usecase/user/usecase_user_ho_so_va_cai_dat |
 | F1-22 | Xuất dữ liệu cá nhân | Lượt nộp (CSV), hội thoại phỏng vấn (JSON) của chính mình | users/USR0503_settings.md — sơ đồ: usecase/user/usecase_user_ho_so_va_cai_dat |
-| F1-23 | Tạo lớp học + mã mời | Giáo viên tạo lớp, hệ thống sinh mã mời; học viên tự tham gia bằng mã | teacher/INS0201_class_management.md; teacher/INS0204_class_student_detail.md; teacher/INS0205_class_detail.md — sơ đồ: usecase/gv/usecase_gv_quan_ly_lop_hoc; sequence/gv/sequence_gv_go_hoc_vien_khoi_lop_p2; sequence/gv/sequence_gv_sua_va_xoa_lop_p1; sequence/gv/sequence_gv_tao_lop_va_ma_moi_p1; sequence/gv/sequence_gv_tao_lop_va_ma_moi_p3; activity/gv/activity_gv_tao_lop_va_ma_moi |
+| F1-23 | Tạo lớp học + mã mời | Giáo viên tạo lớp, hệ thống sinh mã mời; học viên tự tham gia bằng mã | teacher/INS0201_class_management.md; teacher/INS0204_class_student_detail.md; teacher/INS0205_class_detail.md; users/USR0701_my_classes.md; users/USR0702_my_class_detail.md — sơ đồ: usecase/gv/usecase_gv_quan_ly_lop_hoc; sequence/gv/sequence_gv_go_hoc_vien_khoi_lop_p2; sequence/gv/sequence_gv_sua_va_xoa_lop_p1; sequence/gv/sequence_gv_tao_lop_va_ma_moi_p1; sequence/gv/sequence_gv_tao_lop_va_ma_moi_p3; activity/gv/activity_gv_tao_lop_va_ma_moi |
 | F1-24 | Xoá lớp học | Giáo viên xoá thật (hard delete), khác cách khoá mềm tài khoản | teacher/INS0201_class_management.md; teacher/INS0205_class_detail.md — sơ đồ: usecase/gv/usecase_gv_quan_ly_lop_hoc; sequence/gv/sequence_gv_sua_va_xoa_lop_p2 |
 | F1-25 | Mã mời có thời hạn | Tạo được nhiều mã mời mới cho cùng một lớp, mỗi mã có hạn riêng | teacher/INS0201_class_management.md; teacher/INS0205_class_detail.md — sơ đồ: usecase/gv/usecase_gv_quan_ly_lop_hoc; sequence/gv/sequence_gv_tao_lop_va_ma_moi_p2; activity/gv/activity_gv_tao_lop_va_ma_moi |
 | F1-26 | Gỡ học viên khỏi lớp | ~~Xoá cascade lịch sử làm bài của học viên đó trong phạm vi lớp~~ **ĐÃ ĐỔI 2026-10-14 (DEC-2026-1014-keep-learning-history-on-leave):** giữ lịch sử làm bài, chỉ đánh dấu đã rời lớp | teacher/INS0201_class_management.md; teacher/INS0202_class_assignments.md; teacher/INS0204_class_student_detail.md; teacher/INS0205_class_detail.md — sơ đồ: usecase/gv/usecase_gv_quan_ly_lop_hoc; sequence/gv/sequence_gv_go_hoc_vien_khoi_lop_p1; activity/gv/activity_gv_go_hoc_vien_khoi_lop |
@@ -74,7 +74,7 @@ Nguồn: `01-rd/req/identity.md`. 31 mã (F1-01 tới F1-31). Số liệu rà l�
 
 ## F2 — Ngân hàng bài toán và testcase (`problem-bank`)
 
-Nguồn: `01-rd/req/problem-bank.md`. 18 mã (F2-01 tới F2-18).
+Nguồn: `01-rd/req/F2_problem-bank.md`. 18 mã (F2-01 tới F2-18).
 
 | Mã | Chức năng | Giải thích ngắn gọn | File liên quan |
 | :--- | :--- | :--- | :--- |
@@ -89,7 +89,7 @@ Nguồn: `01-rd/req/problem-bank.md`. 18 mã (F2-01 tới F2-18).
 | F2-09 | Phiên bản hoá bộ testcase | Truy vết một lượt nộp cũ đã chấm theo phiên bản nào | shared/SHR0201_problem_management.md; shared/SHR0202_problem_authoring.md — sơ đồ: usecase/shared/usecase_shared_quan_ly_testcase; sequence/shared/sequence_shared_quan_ly_testcase_p2 |
 | F2-10 | Giới hạn tài nguyên | Thời gian/bộ nhớ theo bài, hệ số ngôn ngữ, đầu ra tối đa, số lần nộp/giờ | admin/ADM0501_language_config.md; shared/SHR0202_problem_authoring.md — sơ đồ: usecase/admin/usecase_admin_cau_hinh_ngon_ngu_gioi_han; usecase/shared/usecase_shared_quan_ly_testcase; sequence/admin/sequence_admin_cau_hinh_ngon_ngu_gioi_han_p1 |
 | F2-11 | Tìm kiếm và lọc bài toán | Theo chủ đề, độ khó, trạng thái đã giải, thẻ | admin/ADM0101_overview.md; users/USR0101_problem_list.md; shared/SHR0201_problem_management.md; teacher/INS0203_class_progress.md — sơ đồ: usecase/user/usecase_user_tim_va_loc_bai_toan |
-| F2-12 | Giao bài theo lớp | Gán/gỡ bài cho lớp; gỡ không xoá lượt nộp cũ của học viên | teacher/INS0101_instructor_overview.md; users/USR0101_problem_list.md; teacher/INS0201_class_management.md; teacher/INS0204_class_student_detail.md; teacher/INS0202_class_assignments.md; teacher/INS0203_class_progress.md; shared/SHR0201_problem_management.md — sơ đồ: usecase/gv/usecase_gv_quan_ly_lop_hoc; usecase/user/usecase_user_tim_va_loc_bai_toan; sequence/gv/sequence_gv_giao_bai_cho_lop; sequence/gv/sequence_gv_go_bai_khoi_lop; activity/gv/activity_gv_giao_bai_cho_lop |
+| F2-12 | Giao bài theo lớp | Gán/gỡ bài cho lớp; gỡ không xoá lượt nộp cũ của học viên | teacher/INS0101_instructor_overview.md; users/USR0101_problem_list.md; teacher/INS0201_class_management.md; teacher/INS0204_class_student_detail.md; teacher/INS0202_class_assignments.md; teacher/INS0203_class_progress.md; shared/SHR0201_problem_management.md; users/USR0701_my_classes.md; users/USR0702_my_class_detail.md — sơ đồ: usecase/gv/usecase_gv_quan_ly_lop_hoc; usecase/user/usecase_user_tim_va_loc_bai_toan; sequence/gv/sequence_gv_giao_bai_cho_lop; sequence/gv/sequence_gv_go_bai_khoi_lop; activity/gv/activity_gv_giao_bai_cho_lop |
 | F2-13 | Bookmark riêng tư | Đánh dấu bài + ghi chú riêng, tuyệt đối riêng tư kể cả với giảng viên/admin | users/USR0103_saved_problems.md — sơ đồ: usecase/user/usecase_user_luu_bai_toan |
 | F2-14 | AI viết script sinh testcase | AI viết script sinh input, không gõ thẳng dữ liệu; output chạy thật từ Đáp án mẫu | admin/ADM0301_ai_config.md; admin/ADM0303_ai_limits.md; admin/ADM0302_ai_usage.md; admin/ADM0101_overview.md; shared/SHR0201_problem_management.md; shared/SHR0202_problem_authoring.md — sơ đồ: usecase/admin/usecase_admin_cau_hinh_ngon_ngu_gioi_han; usecase/admin/usecase_admin_ngan_sach_token_ai; usecase/shared/usecase_shared_quan_ly_testcase; sequence/admin/sequence_admin_cau_hinh_ngon_ngu_gioi_han_p2; sequence/admin/sequence_admin_dat_han_muc_va_gioi_han_ai_p4; sequence/shared/sequence_shared_quan_ly_testcase_p3 |
 | F2-15 | Vòng đời bài toán | 2 trạng thái `Chưa xuất bản`/`Đã xuất bản`; xoá là ẩn mềm + cờ `deleted` | shared/SHR0201_problem_management.md; shared/SHR0202_problem_authoring.md — sơ đồ: usecase/shared/usecase_shared_quan_ly_danh_sach_bai_toan; sequence/shared/sequence_shared_soan_de_va_dac_ta_ham_p3 |
@@ -99,7 +99,7 @@ Nguồn: `01-rd/req/problem-bank.md`. 18 mã (F2-01 tới F2-18).
 
 ## F3 — Bộ sinh mã bọc hàm (`harness`)
 
-Nguồn: `01-rd/req/harness.md`. 13 mã (F3-01 tới F3-13) — trọng tâm kỹ thuật của đồ án.
+Nguồn: `01-rd/req/F3_harness.md`. 13 mã (F3-01 tới F3-13) — trọng tâm kỹ thuật của đồ án.
 
 | Mã | Chức năng | Giải thích ngắn gọn | File liên quan |
 | :--- | :--- | :--- | :--- |
@@ -119,7 +119,7 @@ Nguồn: `01-rd/req/harness.md`. 13 mã (F3-01 tới F3-13) — trọng tâm k�
 
 ## F4 — Điều phối judge engine (`judge-orchestration`)
 
-Nguồn: `01-rd/req/judge-orchestration.md`. 11 mã sống (F4-01, 02, 03, 05 tới 08, 10 tới 13 — `F4-04` và
+Nguồn: `01-rd/req/F4_judge-orchestration.md`. 11 mã sống (F4-01, 02, 03, 05 tới 08, 10 tới 13 — `F4-04` và
 `F4-09a` tới `F4-09e` đã loại khỏi phạm vi).
 
 | Mã | Chức năng | Giải thích ngắn gọn | File liên quan |
@@ -138,7 +138,7 @@ Nguồn: `01-rd/req/judge-orchestration.md`. 11 mã sống (F4-01, 02, 03, 05 t�
 
 ## F5 — Phân hệ AI (`ai-review`)
 
-Nguồn: `01-rd/req/ai-review.md`. 27 mã sống (F5-01 tới F5-28 trừ `F5-27` đã bỏ 2026-10-13; `F5-29` từng đề xuất nhưng không bao giờ cấp).
+Nguồn: `01-rd/req/F5_ai-review.md`. 27 mã sống (F5-01 tới F5-28 trừ `F5-27` đã bỏ 2026-10-13; `F5-29` từng đề xuất nhưng không bao giờ cấp).
 
 | Mã | Chức năng | Giải thích ngắn gọn | File liên quan |
 | :--- | :--- | :--- | :--- |
@@ -173,7 +173,7 @@ Nguồn: `01-rd/req/ai-review.md`. 27 mã sống (F5-01 tới F5-28 trừ `F5-27
 
 ## F6 — Ngân hàng câu hỏi phỏng vấn (`interview-bank`)
 
-Nguồn: `01-rd/req/interview-bank.md`. 12 mã sống (F6-01 tới F6-10, F6-12, F6-13 — `F6-11` đã loại khỏi
+Nguồn: `01-rd/req/F6_interview-bank.md`. 12 mã sống (F6-01 tới F6-10, F6-12, F6-13 — `F6-11` đã loại khỏi
 phạm vi).
 
 | Mã | Chức năng | Giải thích ngắn gọn | File liên quan |

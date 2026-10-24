@@ -416,7 +416,7 @@
     <div class="scope-note">
       Tổng: <strong>112 mã sống</strong> trên 6 Bounded Context (F1 31, F2 18, F3 13, F4 11, F5 27, F6 12). 8 mã đã cấp nhưng loại khỏi phạm vi (<code>F4-04</code>, <code>F4-09a</code> tới <code>F4-09e</code> là 5 mã, <code>F6-11</code>, <code>F5-27</code>) không tính vào tổng; riêng <code>F5-27</code> giữ một dòng gạch ngang trong bảng F5 để lịch sử còn đọc được; các mã còn lại không liệt kê ở đây — xem <code>01-rd/overview/system_survey.md</code> mục 5.7 nếu cần tra cứu mã đã khai tử.
       <br><br>
-      Số liệu rà lại 2026-10-14 (<code>DEC-2026-1014-batch7-remaining-open-questions</code>, mục 8), đếm trực tiếp các dòng bảng: <del>111 mã sống (112 trước 2026-10-13); 9 mã loại khỏi phạm vi</del> nay là <strong>112 sống, 8 loại</strong>. Bảng F1 trước thiếu dòng <code>F1-31</code> (định nghĩa ở <code>01-rd/req/identity.md:239</code>), nay đã thêm; bảng F2 đã có <code>F2-18</code> (<code>01-rd/req/problem-bank.md:126</code>). Con số 111 nêu trong quyết định là tổng của hai bảng đang lệch nhau (catalog thiếu F1-31, survey thiếu F2-18), không phải số đếm đúng.
+      Số liệu rà lại 2026-10-14 (<code>DEC-2026-1014-batch7-remaining-open-questions</code>, mục 8), đếm trực tiếp các dòng bảng: <del>111 mã sống (112 trước 2026-10-13); 9 mã loại khỏi phạm vi</del> nay là <strong>112 sống, 8 loại</strong>. Bảng F1 trước thiếu dòng <code>F1-31</code> (định nghĩa ở <code>01-rd/req/F1_identity.md:239</code>), nay đã thêm; bảng F2 đã có <code>F2-18</code> (<code>01-rd/req/F2_problem-bank.md:126</code>). Con số 111 nêu trong quyết định là tổng của hai bảng đang lệch nhau (catalog thiếu F1-31, survey thiếu F2-18), không phải số đếm đúng.
       <br><br>
       Cột <strong>File liên quan</strong> có hai phần. Phần <strong>màn hình</strong> liệt kê file RD theo trục màn hình (<code>01-rd/screens/</code>, đường dẫn rút gọn bỏ tiền tố đó) thật sự nhắc tới mã, xác minh bằng Grep — không suy đoán theo tên file. Phần <strong>sơ đồ</strong> (<code>08-diagram/</code>, rút gọn bỏ tiền tố đó và đuôi <code>.spec.json</code>) lấy từ trường <code>covers</code> khai báo trong chính file <code>.spec.json</code> của sơ đồ. Một mã không có file nào ghi <code>(chưa có tham chiếu ở screens/sơ đồ)</code>. Thứ tự trong ô: use case trước (khung phạm vi), rồi sequence, rồi activity.
       <br><br>
@@ -430,7 +430,7 @@
         <span class="module-tag" style="color:var(--f1); background:var(--f1-bg)">F1</span>
         <h2>Danh tính và phân quyền &middot; <span class="mono">identity</span></h2>
       </div>
-      <p class="module-meta">Nguồn: <code>01-rd/req/identity.md</code>. 31 mã (F1-01 tới F1-31). Số liệu rà lại 2026-10-14: trước ghi 30, thiếu F1-31.</p>
+      <p class="module-meta">Nguồn: <code>01-rd/req/F1_identity.md</code>. 31 mã (F1-01 tới F1-31). Số liệu rà lại 2026-10-14: trước ghi 30, thiếu F1-31.</p>
       <div class="table-wrap">
         <table data-module="F1">
           <thead><tr><th>Mã</th><th>Chức năng</th><th>Giải thích ngắn gọn</th><th>File liên quan</th></tr></thead>
@@ -476,7 +476,7 @@
         <span class="module-tag" style="color:var(--f2); background:var(--f2-bg)">F2</span>
         <h2>Ngân hàng bài toán và testcase &middot; <span class="mono">problem-bank</span></h2>
       </div>
-      <p class="module-meta">Nguồn: <code>01-rd/req/problem-bank.md</code>. 18 mã (F2-01 tới F2-18).</p>
+      <p class="module-meta">Nguồn: <code>01-rd/req/F2_problem-bank.md</code>. 18 mã (F2-01 tới F2-18).</p>
       <div class="table-wrap">
         <table data-module="F2">
           <thead><tr><th>Mã</th><th>Chức năng</th><th>Giải thích ngắn gọn</th><th>File liên quan</th></tr></thead>
@@ -509,7 +509,7 @@
         <span class="module-tag" style="color:var(--f3); background:var(--f3-bg)">F3</span>
         <h2>Bộ sinh mã bọc hàm &middot; <span class="mono">harness</span></h2>
       </div>
-      <p class="module-meta">Nguồn: <code>01-rd/req/harness.md</code>. 13 mã (F3-01 tới F3-13) — trọng tâm kỹ thuật của đồ án.</p>
+      <p class="module-meta">Nguồn: <code>01-rd/req/F3_harness.md</code>. 13 mã (F3-01 tới F3-13) — trọng tâm kỹ thuật của đồ án.</p>
       <div class="table-wrap">
         <table data-module="F3">
           <thead><tr><th>Mã</th><th>Chức năng</th><th>Giải thích ngắn gọn</th><th>File liên quan</th></tr></thead>
@@ -537,7 +537,7 @@
         <span class="module-tag" style="color:var(--f4); background:var(--f4-bg)">F4</span>
         <h2>Điều phối judge engine &middot; <span class="mono">judge-orchestration</span></h2>
       </div>
-      <p class="module-meta">Nguồn: <code>01-rd/req/judge-orchestration.md</code>. 11 mã sống (F4-01, 02, 03, 05 tới 08, 10 tới 13 — <code>F4-04</code> và <code>F4-09a</code> tới <code>F4-09e</code> đã loại khỏi phạm vi).</p>
+      <p class="module-meta">Nguồn: <code>01-rd/req/F4_judge-orchestration.md</code>. 11 mã sống (F4-01, 02, 03, 05 tới 08, 10 tới 13 — <code>F4-04</code> và <code>F4-09a</code> tới <code>F4-09e</code> đã loại khỏi phạm vi).</p>
       <div class="table-wrap">
         <table data-module="F4">
           <thead><tr><th>Mã</th><th>Chức năng</th><th>Giải thích ngắn gọn</th><th>File liên quan</th></tr></thead>
@@ -563,7 +563,7 @@
         <span class="module-tag" style="color:var(--f5); background:var(--f5-bg)">F5</span>
         <h2>Phân hệ AI &middot; <span class="mono">ai-review</span></h2>
       </div>
-      <p class="module-meta">Nguồn: <code>01-rd/req/ai-review.md</code>. 27 mã sống (F5-01 tới F5-28 trừ <code>F5-27</code> đã bỏ 2026-10-13; <code>F5-29</code> từng đề xuất nhưng không bao giờ cấp).</p>
+      <p class="module-meta">Nguồn: <code>01-rd/req/F5_ai-review.md</code>. 27 mã sống (F5-01 tới F5-28 trừ <code>F5-27</code> đã bỏ 2026-10-13; <code>F5-29</code> từng đề xuất nhưng không bao giờ cấp).</p>
       <div class="table-wrap">
         <table data-module="F5">
           <thead><tr><th>Mã</th><th>Chức năng</th><th>Giải thích ngắn gọn</th><th>File liên quan</th></tr></thead>
@@ -606,7 +606,7 @@
         <span class="module-tag" style="color:var(--f6); background:var(--f6-bg)">F6</span>
         <h2>Ngân hàng câu hỏi phỏng vấn &middot; <span class="mono">interview-bank</span></h2>
       </div>
-      <p class="module-meta">Nguồn: <code>01-rd/req/interview-bank.md</code>. 12 mã sống (F6-01 tới F6-10, F6-12, F6-13 — <code>F6-11</code> đã loại khỏi phạm vi).</p>
+      <p class="module-meta">Nguồn: <code>01-rd/req/F6_interview-bank.md</code>. 12 mã sống (F6-01 tới F6-10, F6-12, F6-13 — <code>F6-11</code> đã loại khỏi phạm vi).</p>
       <div class="table-wrap">
         <table data-module="F6">
           <thead><tr><th>Mã</th><th>Chức năng</th><th>Giải thích ngắn gọn</th><th>File liên quan</th></tr></thead>

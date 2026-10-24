@@ -4,7 +4,7 @@
 > Slug chính tắc: `settings` [SoT: `01-rd/overview/system_survey.md` — mục 7.1 dòng `settings`].
 > Phạm vi/Bounded Context: `identity` (F1) [SoT: `01-rd/overview/system_survey.md` — mục 7.1 dòng `settings`].
 > Actor: A1.
-> Nguồn sự thật (SoT): `01-rd/req/identity.md` (F1-16, F1-20, F1-21, F1-22), `01-rd/req/ai-review.md` (F5-28), `01-rd/req/user_stories/a1_student.md` (`US-A1-05`, `US-A1-07`), `09-layoutBase/Cài đặt.dc.html` (prototype).
+> Nguồn sự thật (SoT): `01-rd/req/F1_identity.md` (F1-16, F1-20, F1-21, F1-22), `01-rd/req/F5_ai-review.md` (F5-28), `01-rd/req/user_stories/a1_student.md` (`US-A1-05`, `US-A1-07`), `09-layoutBase/Cài đặt.dc.html` (prototype).
 > Tài liệu này mô tả hành vi và UX ở mức yêu cầu, không lặp lại đặc tả chức năng nguồn.
 > Tài liệu này có thể đọc độc lập.
 
@@ -16,7 +16,7 @@ Cấu hình các tuỳ chọn của tài khoản: giao diện (đã chốt ở q
 
 **Cập nhật 2026-10-21 (chủ dự án chốt 2026-10-20, `DEC-2026-1020-student-workspace-split-and-password-in-settings`, phần PASSWORD):** đổi mật khẩu và đặt mật khẩu lần đầu (F1-19) **chỉ còn ở màn này**, trong nhóm "Bảo mật". Trang hồ sơ (`USR0502`) không còn nút hay popup đổi mật khẩu, chỉ giữ dòng phương thức đăng nhập chỉ-đọc. Lý do chủ dự án nêu: một nơi duy nhất để hai điểm vào không lệch nhau.
 
-File này mô tả **hành vi và UX ở mức yêu cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/identity.md` (mục F1), chỉ trỏ tới và bổ sung phần đặc thù của màn, đối chiếu prototype `09-layoutBase/Cài đặt.dc.html`.
+File này mô tả **hành vi và UX ở mức yêu cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/F1_identity.md` (mục F1), chỉ trỏ tới và bổ sung phần đặc thù của màn, đối chiếu prototype `09-layoutBase/Cài đặt.dc.html`.
 
 **Phát hiện quan trọng nhất của Phase 2, đã tự chốt 2026-08-25 — xem chương 4 Q1**: `system_survey.md` đã tự ghi nhận `settings` "chỉ gán được F1-16" — prototype thật có **5 nhóm cài đặt**, 4/5 nhóm (Workspace, Phỏng vấn giả lập, Thông báo, Xuất dữ liệu) không có mã `Fx-nn` nào. Đã lấp bằng **F1-20, F1-21, F1-22, F5-28** theo yêu cầu trực tiếp của chủ dự án — tự quyết vì prototype chỉ là bản dựng tham khảo, chi tiết UI thuần hình thức đánh dấu **[Đợi nextjs]**.
 
@@ -26,14 +26,14 @@ File này mô tả **hành vi và UX ở mức yêu cầu** — không lặp l�
 
 | Hành vi | Mã | Nguồn |
 |---|---|---|
-| Tự xoá tài khoản (danger zone) | F1-16 | `01-rd/req/identity.md` — F1-16 |
-| Đổi mật khẩu khi đã đăng nhập, đặt mật khẩu lần đầu cho tài khoản chỉ OAuth (nhóm Bảo mật; **chuyển từ `USR0502` sang đây 2026-10-20**) | F1-19 | `01-rd/req/identity.md:46` — F1-19; `DEC-2026-1020-student-workspace-split-and-password-in-settings` |
+| Tự xoá tài khoản (danger zone) | F1-16 | `01-rd/req/F1_identity.md` — F1-16 |
+| Đổi mật khẩu khi đã đăng nhập, đặt mật khẩu lần đầu cho tài khoản chỉ OAuth (nhóm Bảo mật; **chuyển từ `USR0502` sang đây 2026-10-20**) | F1-19 | `01-rd/req/F1_identity.md:46` — F1-19; `DEC-2026-1020-student-workspace-split-and-password-in-settings` |
 | Theme Sáng/Tối, mặc định Sáng | `DEC-2026-0824-dark-light-theme` | Decision registry |
 | Ngôn ngữ giao diện VI/EN | `DEC-2026-0824-i18n-vi-en` | Decision registry |
-| Tuỳ chọn cá nhân hoá Workspace (ngôn ngữ mặc định, cỡ chữ, autosave, Vim) | F1-20 | `01-rd/req/identity.md` — F1-20 (khối bổ sung 2026-08-25) |
-| Thông báo email định kỳ (nhắc luyện tập, báo cáo tuần) | F1-21 | `01-rd/req/identity.md` — F1-21 (khối bổ sung 2026-08-25) |
-| Xuất dữ liệu cá nhân (CSV/JSON) | F1-22 | `01-rd/req/identity.md` — F1-22 (khối bổ sung 2026-08-25) |
-| Tự chỉnh tham số phiên tự luyện (mức độ, số lượt, gợi ý) | F5-28 | `01-rd/req/ai-review.md` — F5-28 (khối F5.2, bổ sung 2026-08-25) |
+| Tuỳ chọn cá nhân hoá Workspace (ngôn ngữ mặc định, cỡ chữ, autosave, Vim) | F1-20 | `01-rd/req/F1_identity.md` — F1-20 (khối bổ sung 2026-08-25) |
+| Thông báo email định kỳ (nhắc luyện tập, báo cáo tuần) | F1-21 | `01-rd/req/F1_identity.md` — F1-21 (khối bổ sung 2026-08-25) |
+| Xuất dữ liệu cá nhân (CSV/JSON) | F1-22 | `01-rd/req/F1_identity.md` — F1-22 (khối bổ sung 2026-08-25) |
+| Tự chỉnh tham số phiên tự luyện (mức độ, số lượt, gợi ý) | F5-28 | `01-rd/req/F5_ai-review.md` — F5-28 (khối F5.2, bổ sung 2026-08-25) |
 | Given-When-Then liên quan | — | `01-rd/req/user_stories/a1_student.md` (`US-A1-05`, GWT cuối + 3 GWT mới; `US-A1-07` GWT F5-28) |
 
 Đối chiếu `09-layoutBase/Cài đặt.dc.html`, năm nhóm cài đặt cộng khu nguy hiểm (dòng 214-261); mục 5 "Bảo mật" dưới đây là **bổ sung ngoài prototype** (2026-10-21), nên danh sách có bảy mục:
@@ -51,7 +51,7 @@ File này mô tả **hành vi và UX ở mức yêu cầu** — không lặp l�
 | Màn/tài liệu | Vai trò | Bounded Context |
 |---|---|---|
 | Màn hiện tại | `USR0503` / `settings` | `identity` |
-| Tài liệu yêu cầu | `01-rd/req/identity.md` (F1-16, F1-20, F1-21, F1-22), `01-rd/req/ai-review.md` (F5-28) | Nguồn SoT của màn |
+| Tài liệu yêu cầu | `01-rd/req/F1_identity.md` (F1-16, F1-20, F1-21, F1-22), `01-rd/req/F5_ai-review.md` (F5-28) | Nguồn SoT của màn |
 | Prototype | `09-layoutBase/Cài đặt.dc.html` | Bằng chứng bố cục và trạng thái |
 
 **Chi tiết trạng thái và cấu trúc màn**
@@ -67,7 +67,7 @@ File này mô tả **hành vi và UX ở mức yêu cầu** — không lặp l�
 ## 3. Ngoài phạm vi (Out of Scope)
 
 - Bảng màu, spacing, component cụ thể, breakpoint responsive — thuộc BD (`02-bd/screens/users/USR0503_settings.md`, chưa viết — **không nên mở trước khi Q1/Q2 được chốt**, vì cả hai ảnh hưởng trực tiếp tới nội dung BD phải đặc tả).
-- Hợp đồng API (lưu từng nhóm cài đặt, xuất dữ liệu, huỷ tài khoản) — thuộc DD (`03-dd/api/identity.md`, chưa viết).
+- Hợp đồng API (lưu từng nhóm cài đặt, xuất dữ liệu, huỷ tài khoản) — thuộc DD (`03-dd/api/F1_identity.md`, chưa viết).
 - Job định kỳ gửi email nhắc luyện tập/báo cáo hằng tuần (nếu được xác nhận ở Q1) — thuộc `03-dd/jobs/`, chưa viết, và chưa tồn tại vì phụ thuộc câu trả lời Q1.
 
 ---
@@ -78,8 +78,8 @@ File này mô tả **hành vi và UX ở mức yêu cầu** — không lặp l�
 
 | # | Câu hỏi | Quyết định | Ghi chú |
 |---|---|---|---|
-| Q1 | 4/5 nhóm cài đặt (Workspace, Phỏng vấn giả lập, Thông báo, Xuất dữ liệu) không có mã `Fx-nn`. | **Chốt theo nhóm, tất cả giữ trong phạm vi đồ án:** (a) Workspace → **F1-20**; (b) Phỏng vấn giả lập tự chỉnh tham số → **F5-28**, chỉ áp dụng cho lối vào tự luyện (F5-24), không áp dụng cho phiên từ bài nộp `Accepted` (F5-09); (c) Thông báo email định kỳ → **F1-21**, job thuộc `identity`; (d) Xuất dữ liệu → **F1-22**. Cả bốn đã ghi vào `01-rd/req/identity.md` (F5-28 vào `ai-review.md`), GWT tương ứng vào `user_stories/a1_student.md`, đồng bộ `01-rd/overview/system_survey.md` — mục 7.1 các dòng `my_submissions`, `profile`, `settings`. | Đã chốt, không còn mở. |
-| Q2 | Câu chữ "Vùng nguy hiểm" nói xoá vĩnh viễn, sai so với F1-16 đã chốt (dữ liệu không mất, chỉ ẩn danh hoá). | **Chốt: câu chữ đúng phải theo hành vi F1-16** — ví dụ "Tài khoản chuyển sang trạng thái ngừng hoạt động ngay; thông tin định danh của bạn sẽ được ẩn danh hoá sau [N] ngày, còn lượt nộp/bài đã lưu/phiên phỏng vấn của bạn vẫn được giữ lại". Đã ghi vào `identity.md`. | Sửa câu chữ thật trên UI **[Đợi nextjs]** — không sửa `09-layoutBase/Cài đặt.dc.html` (prototype tĩnh, không phải đích cuối). |
+| Q1 | 4/5 nhóm cài đặt (Workspace, Phỏng vấn giả lập, Thông báo, Xuất dữ liệu) không có mã `Fx-nn`. | **Chốt theo nhóm, tất cả giữ trong phạm vi đồ án:** (a) Workspace → **F1-20**; (b) Phỏng vấn giả lập tự chỉnh tham số → **F5-28**, chỉ áp dụng cho lối vào tự luyện (F5-24), không áp dụng cho phiên từ bài nộp `Accepted` (F5-09); (c) Thông báo email định kỳ → **F1-21**, job thuộc `identity`; (d) Xuất dữ liệu → **F1-22**. Cả bốn đã ghi vào `01-rd/req/F1_identity.md` (F5-28 vào `F5_ai-review.md`), GWT tương ứng vào `user_stories/a1_student.md`, đồng bộ `01-rd/overview/system_survey.md` — mục 7.1 các dòng `my_submissions`, `profile`, `settings`. | Đã chốt, không còn mở. |
+| Q2 | Câu chữ "Vùng nguy hiểm" nói xoá vĩnh viễn, sai so với F1-16 đã chốt (dữ liệu không mất, chỉ ẩn danh hoá). | **Chốt: câu chữ đúng phải theo hành vi F1-16** — ví dụ "Tài khoản chuyển sang trạng thái ngừng hoạt động ngay; thông tin định danh của bạn sẽ được ẩn danh hoá sau [N] ngày, còn lượt nộp/bài đã lưu/phiên phỏng vấn của bạn vẫn được giữ lại". Đã ghi vào `F1_identity.md`. | Sửa câu chữ thật trên UI **[Đợi nextjs]** — không sửa `09-layoutBase/Cài đặt.dc.html` (prototype tĩnh, không phải đích cuối). |
 
 ---
 
@@ -87,18 +87,18 @@ File này mô tả **hành vi và UX ở mức yêu cầu** — không lặp l�
 
 | ID | Yêu cầu | Loại | Nguồn/SoT |
 |---|---|---|---|
-| REQ-01 | Tự xoá tài khoản (danger zone) (F1-16) | Chức năng | `01-rd/req/identity.md` — F1-16 |
+| REQ-01 | Tự xoá tài khoản (danger zone) (F1-16) | Chức năng | `01-rd/req/F1_identity.md` — F1-16 |
 | REQ-02 | Theme Sáng/Tối, mặc định Sáng (`DEC-2026-0824-dark-light-theme`) | Chức năng | Decision registry |
 | REQ-03 | Ngôn ngữ giao diện VI/EN (`DEC-2026-0824-i18n-vi-en`) | Chức năng | Decision registry |
-| REQ-04 | Tuỳ chọn cá nhân hoá Workspace (ngôn ngữ mặc định, cỡ chữ, autosave, Vim) (F1-20); ngôn ngữ mặc định chỉ chọn trong các ngôn ngữ đang được bật cho hệ thống, ngôn ngữ đã lưu bị tắt thì lùi về ngôn ngữ đầu tiên đang bật (chốt 2026-10-18, owner) | Chức năng | `01-rd/req/identity.md` — F1-20 (khối bổ sung 2026-08-25) |
-| REQ-05 | Thông báo email định kỳ (nhắc luyện tập, báo cáo tuần) (F1-21) | Chức năng | `01-rd/req/identity.md` — F1-21 (khối bổ sung 2026-08-25) |
-| REQ-06 | Xuất dữ liệu cá nhân (CSV/JSON) (F1-22); tệp trả đồng bộ, có giới hạn tần suất; xuất hội thoại phỏng vấn lỗi thì báo tại chỗ và nút vẫn dùng được (chốt 2026-10-18, owner) | Chức năng | `01-rd/req/identity.md` — F1-22 (khối bổ sung 2026-08-25) |
-| REQ-07 | Tự chỉnh tham số phiên tự luyện (mức độ, số lượt, gợi ý) (F5-28) | Chức năng | `01-rd/req/ai-review.md` — F5-28 (khối F5.2, bổ sung 2026-08-25) |
+| REQ-04 | Tuỳ chọn cá nhân hoá Workspace (ngôn ngữ mặc định, cỡ chữ, autosave, Vim) (F1-20); ngôn ngữ mặc định chỉ chọn trong các ngôn ngữ đang được bật cho hệ thống, ngôn ngữ đã lưu bị tắt thì lùi về ngôn ngữ đầu tiên đang bật (chốt 2026-10-18, owner) | Chức năng | `01-rd/req/F1_identity.md` — F1-20 (khối bổ sung 2026-08-25) |
+| REQ-05 | Thông báo email định kỳ (nhắc luyện tập, báo cáo tuần) (F1-21) | Chức năng | `01-rd/req/F1_identity.md` — F1-21 (khối bổ sung 2026-08-25) |
+| REQ-06 | Xuất dữ liệu cá nhân (CSV/JSON) (F1-22); tệp trả đồng bộ, có giới hạn tần suất; xuất hội thoại phỏng vấn lỗi thì báo tại chỗ và nút vẫn dùng được (chốt 2026-10-18, owner) | Chức năng | `01-rd/req/F1_identity.md` — F1-22 (khối bổ sung 2026-08-25) |
+| REQ-07 | Tự chỉnh tham số phiên tự luyện (mức độ, số lượt, gợi ý) (F5-28) | Chức năng | `01-rd/req/F5_ai-review.md` — F5-28 (khối F5.2, bổ sung 2026-08-25) |
 | REQ-08 | Given-When-Then liên quan (—) | Chức năng | `01-rd/req/user_stories/a1_student.md` (`US-A1-05`, GWT cuối + 3 GWT mới; `US-A1-07` GWT F5-28) |
 | REQ-09 | **Cho** tôi đổi Chủ đề màu hoặc Ngôn ngữ giao diện, **Khi** tôi chọn giá trị mới, **Thì** thay đổi áp dụng ngay lập tức trên mọi màn hình, không cần bấm nút "Lưu cài đặt" | Chức năng (GWT) | [SoT: `09-layoutBase/Cài đặt.dc.html`:176, 209-212, 264-266] |
 | REQ-10 | **Cho** tôi đổi các mục còn lại (Workspace, Phỏng vấn giả lập, Thông báo), **Khi** tôi chưa bấm "Lưu cài đặt", **Thì** thay đổi chưa có hiệu lực thật — khác nhóm Giao diện vốn áp dụng ngay | Chức năng (GWT) | [SoT: `09-layoutBase/Cài đặt.dc.html`:140, 264-266] |
-| REQ-11 | **Cho** tôi bấm "Xoá tài khoản" ở vùng nguy hiểm, **Khi** tôi xác nhận, **Thì** hành vi phải đúng F1-16 đã chốt (khoá mềm → ẩn danh hoá sau khoảng ân hạn, dữ liệu không mất) — không đúng như câu chữ hiện tại của prototype; xác nhận bằng cách gõ lại email của chính mình, trong 30 ngày ân hạn người dùng đăng nhập lại để huỷ yêu cầu xoá và câu chữ trên giao diện nói rõ điều đó (chốt 2026-10-18, owner, đảo ngược cùng ngày, `DEC-2026-1018-account-deletion-grace-cancel`) | Chức năng (GWT) | [SoT: `01-rd/req/identity.md` — F1-16; xem chương 4 Q2] |
-| REQ-12 | Đổi / đặt mật khẩu (F1-19) **chỉ được cung cấp ở màn này** (nhóm Bảo mật), không còn ở trang hồ sơ (chốt 2026-10-20, owner, `DEC-2026-1020-student-workspace-split-and-password-in-settings`). **Cho** tôi bấm "Đổi mật khẩu" (hoặc "Đặt mật khẩu" nếu tài khoản chỉ đăng ký qua OAuth), **Khi** tôi nhập mật khẩu hiện tại (nếu có), mật khẩu mới thoả quy tắc (8-128 ký tự, có chữ và số) và nhập lại khớp rồi xác nhận, **Thì** mật khẩu được đổi ngay, không cần bấm "Lưu cài đặt", và các thiết bị khác phải đăng nhập lại. Thanh độ mạnh chỉ để tham khảo, không chặn. | Chức năng (GWT) | [SoT: `01-rd/req/identity.md:46` — F1-19; `.nexa/control/decision-registry.md:4245-4247`] |
+| REQ-11 | **Cho** tôi bấm "Xoá tài khoản" ở vùng nguy hiểm, **Khi** tôi xác nhận, **Thì** hành vi phải đúng F1-16 đã chốt (khoá mềm → ẩn danh hoá sau khoảng ân hạn, dữ liệu không mất) — không đúng như câu chữ hiện tại của prototype; xác nhận bằng cách gõ lại email của chính mình, trong 30 ngày ân hạn người dùng đăng nhập lại để huỷ yêu cầu xoá và câu chữ trên giao diện nói rõ điều đó (chốt 2026-10-18, owner, đảo ngược cùng ngày, `DEC-2026-1018-account-deletion-grace-cancel`) | Chức năng (GWT) | [SoT: `01-rd/req/F1_identity.md` — F1-16; xem chương 4 Q2] |
+| REQ-12 | Đổi / đặt mật khẩu (F1-19) **chỉ được cung cấp ở màn này** (nhóm Bảo mật), không còn ở trang hồ sơ (chốt 2026-10-20, owner, `DEC-2026-1020-student-workspace-split-and-password-in-settings`). **Cho** tôi bấm "Đổi mật khẩu" (hoặc "Đặt mật khẩu" nếu tài khoản chỉ đăng ký qua OAuth), **Khi** tôi nhập mật khẩu hiện tại (nếu có), mật khẩu mới thoả quy tắc (8-128 ký tự, có chữ và số) và nhập lại khớp rồi xác nhận, **Thì** mật khẩu được đổi ngay, không cần bấm "Lưu cài đặt", và các thiết bị khác phải đăng nhập lại. Thanh độ mạnh chỉ để tham khảo, không chặn. | Chức năng (GWT) | [SoT: `01-rd/req/F1_identity.md:46` — F1-19; `.nexa/control/decision-registry.md:4245-4247`] |
 
 ---
 
@@ -137,7 +137,7 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 
 | Loại | Tham chiếu |
 |---|---|
-| Yêu cầu module | `01-rd/req/identity.md` — F1-16 (đã chốt), F1-19 (đổi mật khẩu, chuyển về màn này 2026-10-20), F1-20, F1-21, F1-22; `01-rd/req/ai-review.md` — F5-28 |
+| Yêu cầu module | `01-rd/req/F1_identity.md` — F1-16 (đã chốt), F1-19 (đổi mật khẩu, chuyển về màn này 2026-10-20), F1-20, F1-21, F1-22; `01-rd/req/F5_ai-review.md` — F5-28 |
 | User story | `01-rd/req/user_stories/a1_student.md` — `US-A1-05` (GWT cuối), `US-A1-07` |
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` — mục 7.1 dòng `settings`, cùng ghi chú tách `profile`/`settings` ngay dưới bảng |
 | Quyết định | `DEC-2026-0824-dark-light-theme`, `DEC-2026-0824-i18n-vi-en`, `DEC-2026-1020-student-workspace-split-and-password-in-settings` (phần PASSWORD) |

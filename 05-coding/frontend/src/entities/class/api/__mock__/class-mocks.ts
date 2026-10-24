@@ -13,6 +13,7 @@ import type {
   ClassStudent,
   ClassSummary,
   InviteCode,
+  MyClass,
   StudentStatus,
 } from "../../model/types";
 
@@ -459,4 +460,68 @@ const activityFeed: ClassActivity[] = [
 
 export function listClassActivity(): Promise<ClassActivity[]> {
   return delay(activityFeed);
+}
+
+// Learner side. ponytail: the signed-in learner is implicit; membership is a list of class ids,
+// seeded with one class so the screen opens populated. Swap for the real endpoints at graduation.
+const INSTRUCTOR_NAME = "ThS. Nguyễn Minh Tuấn";
+const joinedClassIds: string[] = ["c1"];
+
+// Ids and titles must exist in entities/problem mocks (PROBLEMS), or the problem screen has nothing to show.
+const ASSIGNMENTS: Record<string, { id: string; title: string }[]> = {
+  c1: [
+    { id: "1", title: "Two Sum" },
+    { id: "121", title: "Best Time to Buy and Sell Stock" },
+    { id: "139", title: "Word Break" },
+  ],
+  c2: [
+    { id: "207", title: "Course Schedule" },
+    { id: "236", title: "Lowest Common Ancestor" },
+  ],
+  c3: [
+    { id: "704", title: "Binary Search" },
+    { id: "322", title: "Coin Change" },
+  ],
+};
+
+function toMyClass(klass: ClassSummary): MyClass {
+  return {
+    id: klass.id,
+    name: klass.name,
+    description: klass.description,
+    schedule: klass.schedule,
+    instructorName: INSTRUCTOR_NAME,
+    joinedAtLabel: "17/08/2026",
+    assignments: (ASSIGNMENTS[klass.id] ?? []).map(({ id, title }, index) => ({
+      problemId: id,
+      title,
+      solved: index === 0,
+      assignedAtLabel: "24/08/2026",
+    })),
+  };
+}
+
+export function listMyClasses(): Promise<MyClass[]> {
+  return delay(
+    classes.filter((k) => joinedClassIds.includes(k.id)).map(toMyClass),
+  );
+}
+
+/**
+ * Rejects with message "invalid" (unknown or expired code). A learner already in the class gets the
+ * class back unchanged, like the real endpoint (03-dd/logic/F1_identity.md BR-09 case b: 200, idempotent).
+ */
+export function joinClassByCode(code: string): Promise<MyClass> {
+  const wanted = code.trim().toUpperCase();
+  const classId = Object.keys(inviteCodes).find((id) =>
+    inviteCodes[id]?.some((c) => c.code === wanted),
+  );
+  const klass = classes.find((k) => k.id === classId);
+  return new Promise((resolve, reject) =>
+    setTimeout(() => {
+      if (!klass) return reject(new Error("invalid"));
+      if (!joinedClassIds.includes(klass.id)) joinedClassIds.push(klass.id);
+      resolve(toMyClass(klass));
+    }, 350),
+  );
 }

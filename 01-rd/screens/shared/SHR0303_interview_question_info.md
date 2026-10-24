@@ -3,7 +3,7 @@
 > Mã màn hình: `SHR0303` [SoT: 02-bd/_rules/bd-template-9sheet.md — mục 8].
 > Slug chính tắc: `interview_question_info`. Slug mới, thêm 2026-10-02 theo `DEC-2026-1002-split-detail-and-edit-pages`; chưa có dòng trong `01-rd/overview/system_survey.md` mục 7.0 trước đợt này.
 > Phạm vi/Bounded Context: `interview-bank` (F6). Actor: A2, A3 (màn dùng chung, phạm vi dữ liệu theo quyền). Dựng cho cả khu A3 (Admin) từ 2026-10-02 và khu A2 (Giảng viên) từ 2026-10-03.
-> Nguồn sự thật (SoT): `01-rd/req/interview-bank.md` (F6-01, F6-08, F6-13), `01-rd/screens/shared/SHR0302_interview_question_authoring.md` (màn con cùng bản ghi), `.nexa/control/decision-registry.md` mục `DEC-2026-1002-split-detail-and-edit-pages`.
+> Nguồn sự thật (SoT): `01-rd/req/F6_interview-bank.md` (F6-01, F6-08, F6-13), `01-rd/screens/shared/SHR0302_interview_question_authoring.md` (màn con cùng bản ghi), `.nexa/control/decision-registry.md` mục `DEC-2026-1002-split-detail-and-edit-pages`.
 > Tài liệu này có thể đọc độc lập.
 
 ---
@@ -28,12 +28,12 @@ phân loại và sử dụng bên hẹp) `[SoT: Suy luận]`; chủ dự án ch�
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Hiển thị mã câu hỏi, chủ đề (nhãn đọc từ danh mục do ADMIN quản lý), độ khó (cũng do ADMIN quản lý — danh mục dữ liệu, giống chủ đề; ba mức Dễ/Trung bình/Khó chỉ là dữ liệu khởi tạo; cập nhật 2026-10-03) | F6-01 | `01-rd/req/interview-bank.md` — F6-01 |
-| Hiển thị nội dung câu hỏi dưới dạng Markdown kèm công thức LaTeX đã dựng (cập nhật 2026-10-03) và danh sách câu hỏi đào sâu | F6-13 | `01-rd/req/interview-bank.md` — F6-13 |
-| Hiển thị bộ tiêu chí đánh giá và tổng trọng số; bộ trống thì báo rõ câu hỏi chưa có mặt ở Chế độ luyện | F6-13, F6-08 | `01-rd/req/interview-bank.md` — F6-13, F6-08 |
-| Hiển thị số lần dùng trong phiên, điểm trung bình trên thang 5, trạng thái Chế độ luyện (mở khi có ít nhất một tiêu chí) | F6-13 | `01-rd/req/interview-bank.md` |
+| Hiển thị mã câu hỏi, chủ đề (nhãn đọc từ danh mục do ADMIN quản lý), độ khó (cũng do ADMIN quản lý — danh mục dữ liệu, giống chủ đề; ba mức Dễ/Trung bình/Khó chỉ là dữ liệu khởi tạo; cập nhật 2026-10-03) | F6-01 | `01-rd/req/F6_interview-bank.md` — F6-01 |
+| Hiển thị nội dung câu hỏi dưới dạng Markdown kèm công thức LaTeX đã dựng (cập nhật 2026-10-03) và danh sách câu hỏi đào sâu | F6-13 | `01-rd/req/F6_interview-bank.md` — F6-13 |
+| Hiển thị bộ tiêu chí đánh giá và tổng trọng số; bộ trống thì báo rõ câu hỏi chưa có mặt ở Chế độ luyện | F6-13, F6-08 | `01-rd/req/F6_interview-bank.md` — F6-13, F6-08 |
+| Hiển thị số lần dùng trong phiên, điểm trung bình trên thang 5, trạng thái Chế độ luyện (mở khi có ít nhất một tiêu chí) | F6-13 | `01-rd/req/F6_interview-bank.md` |
 | Điều hướng: quay lại danh sách, sang form sửa, "Xem như học viên" | — | `DEC-2026-1002-split-detail-and-edit-pages` |
-| Gác quyền: cùng Function `INTERVIEW_BANK_MANAGEMENT`; ngân hàng dùng chung nên A2 và A3 đều thấy toàn bộ | F1-12 | `01-rd/req/identity.md`; `01-rd/req/interview-bank.md` — F6-13 |
+| Gác quyền: cùng Function `INTERVIEW_BANK_MANAGEMENT`; ngân hàng dùng chung nên A2 và A3 đều thấy toàn bộ | F1-12 | `01-rd/req/F1_identity.md`; `01-rd/req/F6_interview-bank.md` — F6-13 |
 
 ---
 
@@ -101,7 +101,7 @@ Chưa xác định lịch — không tự suy luận. Quy mô hành vi: năm yê
 
 | Loại | Tham chiếu |
 | :--- | :--- |
-| Yêu cầu module | `01-rd/req/interview-bank.md` — F6-01, F6-08, F6-13; `01-rd/req/identity.md` — F1-12. |
+| Yêu cầu module | `01-rd/req/F6_interview-bank.md` — F6-01, F6-08, F6-13; `01-rd/req/F1_identity.md` — F1-12. |
 | Quyết định | `DEC-2026-1002-split-detail-and-edit-pages`; `DEC-2026-0830-interview-bank-crud`; `DEC-2026-1001-admin-configurable-settings`. |
 | Màn liên quan | `SHR0301_interview_question_management.md` — màn cha (danh sách); `SHR0302_interview_question_authoring.md` — màn anh em (form sửa). |
 | Bản dựng prototype | `05-coding/frontend/src/views/shared/interview-question-info/ui/interview-question-info-view.tsx`; thành phần dựng Markdown dùng chung `05-coding/frontend/src/shared/ui/data/markdown-preview.tsx`. |

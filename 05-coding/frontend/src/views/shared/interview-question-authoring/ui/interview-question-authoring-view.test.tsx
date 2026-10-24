@@ -8,6 +8,8 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
+import type { ReactElement } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { toast, useToasts } from "@/shared/lib/toast-store";
 import { InterviewQuestionAuthoringView } from "./interview-question-authoring-view";
 
@@ -18,16 +20,27 @@ vi.mock("@/shared/i18n", () => ({
 
 beforeEach(() => act(() => toast.clear()));
 
+// The bank loads through TanStack Query, so each test renders inside a fresh client.
+function renderWithQuery(ui: ReactElement) {
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+  return render(
+    <QueryClientProvider client={client}>{ui}</QueryClientProvider>,
+  );
+}
+
+
 describe("InterviewQuestionAuthoringView toasts", () => {
   it("toasts success on save and on soft delete", async () => {
     const toasts = renderHook(() => useToasts());
-    render(
+    renderWithQuery(
       <InterviewQuestionAuthoringView
         questionId="IQ-014"
         listHref="/admin/interview-questions"
       />,
     );
-    fireEvent.click(screen.getByRole("button", { name: "save" }));
+    fireEvent.click(await screen.findByRole("button", { name: "save" }));
     await waitFor(() =>
       expect(toasts.result.current.at(-1)).toMatchObject({
         tone: "success",
@@ -48,7 +61,7 @@ describe("InterviewQuestionAuthoringView toasts", () => {
 
 describe("InterviewQuestionAuthoringView classification", () => {
   it("starts a new question on the first topic and the first level of the admin-managed lists", () => {
-    render(
+    renderWithQuery(
       <InterviewQuestionAuthoringView
         questionId="new"
         listHref="/admin/interview-questions"
@@ -58,14 +71,14 @@ describe("InterviewQuestionAuthoringView classification", () => {
     expect(screen.getByLabelText("topicLabel")).toHaveValue("csTheory");
   });
 
-  it("offers every level and shows the level of the question being edited", () => {
-    render(
+  it("offers every level and shows the level of the question being edited", async () => {
+    renderWithQuery(
       <InterviewQuestionAuthoringView
         questionId="IQ-014"
         listHref="/admin/interview-questions"
       />,
     );
-    const level = screen.getByLabelText("levelLabel");
+    const level = await screen.findByLabelText("levelLabel");
     expect(level).toHaveValue("MEDIUM");
     expect(
       Array.from((level as HTMLSelectElement).options).map(

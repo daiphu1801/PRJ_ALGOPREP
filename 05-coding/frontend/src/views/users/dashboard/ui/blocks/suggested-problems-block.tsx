@@ -4,10 +4,10 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
-  fetchProblemListPage,
   problemLevelLabel,
   problemLevelTone,
   useProblemLevels,
+  useProblemListPage,
   type ProblemListItem,
 } from "@/entities/problem";
 import { useTopicProgress } from "@/entities/progress";
@@ -38,6 +38,11 @@ const SUGGESTION_COUNT = 7;
 
 type DifficultyFilter = string;
 
+const EMPTY_PAGE: {
+  items: ProblemListItem[];
+  topics: { id: string; name: string }[];
+} = { items: [], topics: [] };
+
 export function SuggestedProblemsBlock() {
   const t = useT("dashboard");
   const levels = useProblemLevels();
@@ -45,10 +50,9 @@ export function SuggestedProblemsBlock() {
   const [topicId, setTopicId] = useState<string>("all");
   const topicsQuery = useTopicProgress("all");
 
-  // Frozen on first render like views/problem-list does: the mock returns fresh objects every
-  // call, so calling it inline would give `useMemo` a new `page.items` identity each render and
-  // re-sort the whole catalogue for nothing.
-  const [page] = useState(fetchProblemListPage);
+  // Query data keeps one identity between renders, so `useMemo` below re-sorts only when it changes.
+  // While loading or failed the table shows its empty state (the block owns no boundary of its own).
+  const page = useProblemListPage().data ?? EMPTY_PAGE;
   const weakestFirst = useMemo(() => {
     const scored = topicsQuery.data ? scoreTopics(topicsQuery.data) : [];
     const scoreByTopic = new Map(

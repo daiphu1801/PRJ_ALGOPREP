@@ -7,21 +7,29 @@
 // Nhãn dùng chung namespace `problemDetail`, chỉ nhãn riêng của trang này nằm ở `problemOverview`.
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Bookmark, Code2 } from "lucide-react";
 import {
-  fetchProblemDetail,
   problemLevelLabel,
   problemLevelTone,
+  useProblemDetail,
   useProblemLevels,
+  type ProblemDetail,
   type SubmissionLanguage,
 } from "@/entities/problem";
 import { useLocale, useT } from "@/shared/i18n";
 import { formatDateVN } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
-import { Badge, Button, Card, EmptyState, MarkdownPreview } from "@/shared/ui";
+import {
+  Badge,
+  Button,
+  Card,
+  EmptyState,
+  MarkdownPreview,
+  QueryBoundary,
+} from "@/shared/ui";
 
 const LANGUAGES: SubmissionLanguage[] = ["java", "cpp", "python"];
 const RECENT_SUBMISSION_LIMIT = 3;
@@ -29,30 +37,54 @@ const RECENT_SUBMISSION_LIMIT = 3;
 export function ProblemOverviewView() {
   const params = useParams<{ problemId?: string }>();
   const problemId = params?.problemId;
-  const detail = useMemo(
-    () => (problemId ? fetchProblemDetail(problemId) : undefined),
-    [problemId],
+  const query = useProblemDetail(problemId);
+
+  // Unknown id reads as "not found", never as "no permission" (USR0102 BD Sheet 9 NO 2).
+  if (!problemId) return <NotFound />;
+  return (
+    <QueryBoundary query={query}>
+      {(detail) =>
+        detail ? (
+          <ProblemOverview
+            key={problemId}
+            problemId={problemId}
+            detail={detail}
+          />
+        ) : (
+          <NotFound />
+        )
+      }
+    </QueryBoundary>
   );
+}
+
+function NotFound() {
+  const td = useT("problemDetail");
+  return (
+    <div className="p-6">
+      <EmptyState>{td("empty.title")}</EmptyState>
+      <p className="mt-3 text-[12.5px] text-[var(--color-text-muted)]">
+        <Link href="/problems" className="underline">
+          {td("empty.linkList")}
+        </Link>
+      </p>
+    </div>
+  );
+}
+
+function ProblemOverview({
+  problemId,
+  detail,
+}: {
+  problemId: string;
+  detail: ProblemDetail;
+}) {
   const t = useT("problemOverview");
   const td = useT("problemDetail");
   const locale = useLocale() === "en" ? "en" : "vi";
   const router = useRouter();
   const levels = useProblemLevels();
-  const [saved, setSaved] = useState(detail?.saved ?? false);
-
-  // Unknown id reads as "not found", never as "no permission" (USR0102 BD Sheet 9 NO 2).
-  if (!problemId || !detail) {
-    return (
-      <div className="p-6">
-        <EmptyState>{td("empty.title")}</EmptyState>
-        <p className="mt-3 text-[12.5px] text-[var(--color-text-muted)]">
-          <Link href="/problems" className="underline">
-            {td("empty.linkList")}
-          </Link>
-        </p>
-      </div>
-    );
-  }
+  const [saved, setSaved] = useState(detail.saved);
 
   function toggleSaved() {
     if (saved) {

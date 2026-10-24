@@ -211,7 +211,7 @@ khác khối cùng tên ở `USR0101` cắt tối đa 3
 - `InProgressProblemDto` — **dùng lại nguyên** của `USR0101`
   [Nguồn: 02-bd/screens/users/USR0101_problem_list.md:235,511-512]; không đặt DTO mới.
 
-`[Suy luận]` — tên DTO do `USR0101` đề xuất, `03-dd/api/judge-orchestration.md` chốt lại. Bản dựng dùng kiểu
+`[Suy luận]` — tên DTO do `USR0101` đề xuất, `03-dd/api/F4_judge-orchestration.md` chốt lại. Bản dựng dùng kiểu
 `InProgressProblem` với cùng tập trường (`problemId`, `title`, `language`, `lastVerdict`, `passedCount`,
 `totalCount`) [Nguồn: 05-coding/frontend/src/entities/problem/model/types.ts:50-58]. Kết quả "Bài ngẫu nhiên" chỉ
 cần `problemId` (Sheet 7.1 NO 7), không đặt DTO riêng ở mức BD.
@@ -220,12 +220,12 @@ cần `problemId` (Sheet 7.1 NO 7), không đặt DTO riêng ở mức BD.
 
 | NO | Bảng | Ghi chú |
 | --: | :--- | :--- |
-| 1 | `judge.submissions` | Nguồn của khối "Bài đang làm dở": `problem_id`, `language`, `status`, `passed_testcase_count`, `total_testcase_count`, `submitted_at` [Nguồn: 02-bd/database/judge-orchestration.md:12-34] |
-| 2 | `problem.problems` | Tên bài của từng thẻ; tập bài để bốc ngẫu nhiên; trạng thái vòng đời [Nguồn: 02-bd/database/problem-bank.md:11-29] |
-| 3 | `identity.user_problem_best_score` | Read model để loại bài **đã giải** khỏi tập bốc ngẫu nhiên [Nguồn: 02-bd/database/identity.md:156] |
+| 1 | `judge.submissions` | Nguồn của khối "Bài đang làm dở": `problem_id`, `language`, `status`, `passed_testcase_count`, `total_testcase_count`, `submitted_at` [Nguồn: 02-bd/database/F4_judge-orchestration.md:12-34] |
+| 2 | `problem.problems` | Tên bài của từng thẻ; tập bài để bốc ngẫu nhiên; trạng thái vòng đời [Nguồn: 02-bd/database/F2_problem-bank.md:11-29] |
+| 3 | `identity.user_problem_best_score` | Read model để loại bài **đã giải** khỏi tập bốc ngẫu nhiên [Nguồn: 02-bd/database/F1_identity.md:156] |
 
 Bảng NO 1 và NO 3 nằm ở schema của module khác. Màn không truy vấn thẳng: `problem-bank` gọi qua cổng ra, đúng
-nguyên tắc mỗi schema một chủ [Nguồn: 02-bd/database/problem-bank.md:34]; ranh giới đã chọn ở `USR0101`
+nguyên tắc mỗi schema một chủ [Nguồn: 02-bd/database/F2_problem-bank.md:34]; ranh giới đã chọn ở `USR0101`
 [Nguồn: 02-bd/screens/users/USR0101_problem_list.md:256-258].
 
 Màn này **không** đọc `testcases`, `problem_stats`, `ai.solution_reviews`, `problem.bookmarks`,
@@ -309,13 +309,13 @@ thay vì `widgets` vì thẻ chỉ dùng kiểu `InProgressProblem` của `entit
 | | 1 | Tiêu đề khối | `workspaceHome.resume.title` | - | - | Label | String | - | - | O | Bài đang làm dở | - | Tiêu đề khối<br>[Nguồn giá trị] Nhãn tĩnh i18n `workspaceHome.resumeTitle` [Nguồn: 05-coding/frontend/messages/vi.json:2970; 05-coding/frontend/src/views/users/workspace-home/ui/workspace-home-view.tsx:66]<br>[EVT liên quan] - |
 | | 2 | Danh sách bài đang làm dở | `workspaceHome.resume.list` | `judge.submissions` | - | List | List | - | - | O | rỗng | - | Các bài mà lượt nộp gần nhất của chính người học chưa đạt `ACCEPTED` (định nghĩa chốt ở `USR0101`, không có bảng nháp) [Nguồn: 02-bd/screens/users/USR0101_problem_list.md:384]. Số mục tối đa và thứ tự: chưa chốt (Câu hỏi mở Q2)<br>[Nguồn giá trị] Kết quả gọi `ListMyUnsolvedRecentProblems` (Sheet 7.3 NO 1)<br>[EVT liên quan] EVT-1, EVT-4 |
 | | 3 | Thẻ bài | `workspaceHome.resume.item` | `judge.submissions` | `problem_id` | Link | - | - | - | I | - | - | Cả thẻ là một liên kết tới màn viết mã `/workspace/{problemId}` của bài đó<br>[Nguồn giá trị] `problemId` của `InProgressProblemDto` (Sheet 7.1 NO 1) [Nguồn: 05-coding/frontend/src/entities/problem/ui/in-progress-list.tsx:52-77]<br>[EVT liên quan] EVT-4 |
-| | 4 | Tên bài | `workspaceHome.resume.col.title` | `problem.problems` | `title` | ListColumn | String | 200 | - | O | - | - | Tên bài toán của thẻ, cắt bớt khi quá dài<br>[Nguồn giá trị] Cột `title`, tra theo `submissions.problem_id` [Nguồn: 02-bd/database/problem-bank.md:15; 02-bd/database/judge-orchestration.md:16; 05-coding/frontend/src/entities/problem/ui/in-progress-list.tsx:58-64]<br>[EVT liên quan] - |
-| | 5 | Ngôn ngữ lần nộp gần nhất | `workspaceHome.resume.col.language` | `judge.submissions` | `language` | ListColumn | Enum | - | - | O | - | Nhãn cố định | Ngôn ngữ của lượt nộp gần nhất<br>[Nguồn giá trị] `JAVA` thành "Java", `CPP` thành "C++", `PYTHON` thành "Python" [Nguồn: 02-bd/database/judge-orchestration.md:18]; nhãn từ i18n `problemDetail.language.*` [Nguồn: 05-coding/frontend/messages/vi.json:315-317; 05-coding/frontend/src/entities/problem/ui/in-progress-list.tsx:70]<br>[EVT liên quan] - |
+| | 4 | Tên bài | `workspaceHome.resume.col.title` | `problem.problems` | `title` | ListColumn | String | 200 | - | O | - | - | Tên bài toán của thẻ, cắt bớt khi quá dài<br>[Nguồn giá trị] Cột `title`, tra theo `submissions.problem_id` [Nguồn: 02-bd/database/F2_problem-bank.md:15; 02-bd/database/F4_judge-orchestration.md:16; 05-coding/frontend/src/entities/problem/ui/in-progress-list.tsx:58-64]<br>[EVT liên quan] - |
+| | 5 | Ngôn ngữ lần nộp gần nhất | `workspaceHome.resume.col.language` | `judge.submissions` | `language` | ListColumn | Enum | - | - | O | - | Nhãn cố định | Ngôn ngữ của lượt nộp gần nhất<br>[Nguồn giá trị] `JAVA` thành "Java", `CPP` thành "C++", `PYTHON` thành "Python" [Nguồn: 02-bd/database/F4_judge-orchestration.md:18]; nhãn từ i18n `problemDetail.language.*` [Nguồn: 05-coding/frontend/messages/vi.json:315-317; 05-coding/frontend/src/entities/problem/ui/in-progress-list.tsx:70]<br>[EVT liên quan] - |
 | | 6 | Kết quả lần nộp gần nhất | `workspaceHome.resume.col.lastVerdict` | `judge.submissions` | `status`, `passed_testcase_count`, `total_testcase_count` | ListColumn | String | - | - | O | - | `{kết quả} {đạt}/{tổng}` | Kết quả của lượt nộp gần nhất kèm số testcase đạt trên tổng, ví dụ "Sai kết quả 6/10"<br>[Công thức] Ghép ở tầng giao diện: nhãn `problemDetail.verdict.*` của `status` cộng `passed_testcase_count` và `total_testcase_count`; DTO trả số thô, không trả câu đã ghép [Nguồn: 02-bd/screens/users/USR0101_problem_list.md:512; 05-coding/frontend/src/entities/problem/ui/in-progress-list.tsx:71-75]<br>[Nguồn giá trị] Nhãn kết quả từ i18n `problemDetail.verdict.*` [Nguồn: 05-coding/frontend/messages/vi.json:351-359]; mẫu ghép `problemList.inProgress.lastVerdict` [Nguồn: 05-coding/frontend/messages/vi.json:177]<br>[EVT liên quan] - |
 | | 7 | Câu trạng thái rỗng | `workspaceHome.resume.empty` | - | - | Label | String | - | - | O | Chưa có bài đang làm dở. Hãy chọn một bài trong danh sách. | - | Câu hướng dẫn thay cho lưới khi không có bài đang làm dở. Chỉ là chữ, **không có liên kết hay nút**: đường đi tiếp là nút "Chọn bài trong danh sách" ở đầu trang (Khu vực A NO 3)<br>[Nguồn giá trị] Nhãn tĩnh i18n `workspaceHome.empty` [Nguồn: 05-coding/frontend/messages/vi.json:2971; 05-coding/frontend/src/views/users/workspace-home/ui/workspace-home-view.tsx:71]<br>[EVT liên quan] EVT-1 |
 
 [Nguồn: 05-coding/frontend/src/views/users/workspace-home/ui/workspace-home-view.tsx:40-75;
-05-coding/frontend/messages/vi.json:2966-2972; 02-bd/database/judge-orchestration.md:12-34;
+05-coding/frontend/messages/vi.json:2966-2972; 02-bd/database/F4_judge-orchestration.md:12-34;
 02-bd/screens/users/USR0101_problem_list.md:384-387]
 
 ---
@@ -394,7 +394,7 @@ Ghi chú ranh giới:
   [Nguồn: 05-coding/frontend/src/views/users/workspace-home/ui/workspace-home-view.tsx:26,30-38]. Bản thật không nên
   tải cả trang danh sách chỉ để lấy bài đang làm dở và một `problem_id`.
 
-[Nguồn: 02-bd/screens/users/USR0101_problem_list.md:524,541,544; 02-bd/database/judge-orchestration.md:12-34]
+[Nguồn: 02-bd/screens/users/USR0101_problem_list.md:524,541,544; 02-bd/database/F4_judge-orchestration.md:12-34]
 
 ---
 

@@ -17,9 +17,9 @@ export {
   type SessionConfig,
 } from "./model/types";
 export {
-  ACCEPTED_SUBMISSIONS,
-  BANK_QUESTIONS,
-  HINT_TEXT,
-  computeInterviewResult,
-  getScriptedQuestion,
-} from "./api/__mock__/mock-interview-mocks";
+  useAcceptedSubmissionOptions,
+  useBankQuestionOptions,
+  useFinishInterview,
+  useInterviewHint,
+  useNextInterviewQuestion,
+} from "./api/queries";

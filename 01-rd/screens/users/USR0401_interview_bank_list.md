@@ -3,7 +3,7 @@
 > Mã màn hình: `USR0401` [Nguồn: 02-bd/_rules/bd-template-9sheet.md — mục 8].
 > Slug chính tắc: `interview_bank_list` [SoT: 01-rd/overview/system_survey.md — mục 7.1 dòng `interview_bank_list`].
 > Phạm vi/Bounded Context: `interview-bank` (F6). Actor: A1 (chính).
-> Nguồn sự thật (SoT): `01-rd/req/interview-bank.md` (F6-01 đến F6-12), `01-rd/req/user_stories/a1_student.md`
+> Nguồn sự thật (SoT): `01-rd/req/F6_interview-bank.md` (F6-01 đến F6-12), `01-rd/req/user_stories/a1_student.md`
 > (`US-A1-08`), `09-layoutBase/Câu hỏi phỏng vấn.dc.html` (prototype).
 > Tài liệu này có thể đọc độc lập.
 
@@ -18,7 +18,7 @@ nhanh" dạng flashcard [SoT: 01-rd/req/user_stories/a1_student.md — `US-A1-08
 
 Theo lộ trình Phase 4 của `06-plan/nexa-plan/260824-2043-bd-screens-common-first.md` dòng 44. Đối chiếu
 prototype: `09-layoutBase/Câu hỏi phỏng vấn.dc.html`. File này mô tả **hành vi và UX ở mức yêu cầu** — không
-lặp lại đặc tả chức năng đã có ở `01-rd/req/interview-bank.md` (mục F6) và `01-rd/req/user_stories/a1_student.md`
+lặp lại đặc tả chức năng đã có ở `01-rd/req/F6_interview-bank.md` (mục F6) và `01-rd/req/user_stories/a1_student.md`
 (`US-A1-08`), chỉ trỏ tới và bổ sung phần đặc thù của màn.
 
 **Ghi chú liên phase:** báo cáo `06-plan/reports/260825-2100-ai2-solution-review-conflicts.md` (Phase 3) đã
@@ -31,10 +31,10 @@ xem mục 4 Tiền đề và ràng buộc, Câu hỏi mở Q3 dưới đây.
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Danh sách câu hỏi phân loại theo chủ đề, mức độ khó; tìm kiếm và lọc; đánh dấu để xem lại | F6-01, F6-02, F6-03 | `01-rd/req/interview-bank.md` — F6-01, F6-02, F6-03 |
-| Chế độ học: gợi ý hướng tiếp cận, khung trả lời chuẩn (STAR cho câu hành vi), từ khoá cốt lõi | F6-04, F6-05, F6-06 | `01-rd/req/interview-bank.md` — F6-04, F6-05, F6-06 |
-| Lịch sử luyện tập, câu đến hạn ôn, tỉ lệ hoàn thành theo chủ đề | F6-09, F6-10 | `01-rd/req/interview-bank.md` — F6-09, F6-10. Từ 2026-10-18 màn này không còn thanh chỉ số (xem ghi chú đầu mục "Trạng thái `browse`" bên dưới); "câu cần ôn lại" còn qua tab lọc "Đang ôn" và hàng đợi Luyện nhanh, lịch sử các lượt ở `USR0402`; **tỉ lệ hoàn thành theo chủ đề (F6-10) do dashboard `USR0601` nhận** (owner chốt 2026-10-18, xem mục 10) — ghi chú đóng ở `02-bd/screens/users/USR0401_interview_bank_list.md` Câu hỏi mở Q11 |
-| Tự chấm mức độ thuộc bài, hệ thống tự xếp lịch ôn lại (spaced repetition) | F6-12 | `01-rd/req/interview-bank.md` — F6-12 |
+| Danh sách câu hỏi phân loại theo chủ đề, mức độ khó; tìm kiếm và lọc; đánh dấu để xem lại | F6-01, F6-02, F6-03 | `01-rd/req/F6_interview-bank.md` — F6-01, F6-02, F6-03 |
+| Chế độ học: gợi ý hướng tiếp cận, khung trả lời chuẩn (STAR cho câu hành vi), từ khoá cốt lõi | F6-04, F6-05, F6-06 | `01-rd/req/F6_interview-bank.md` — F6-04, F6-05, F6-06 |
+| Lịch sử luyện tập, câu đến hạn ôn, tỉ lệ hoàn thành theo chủ đề | F6-09, F6-10 | `01-rd/req/F6_interview-bank.md` — F6-09, F6-10. Từ 2026-10-18 màn này không còn thanh chỉ số (xem ghi chú đầu mục "Trạng thái `browse`" bên dưới); "câu cần ôn lại" còn qua tab lọc "Đang ôn" và hàng đợi Luyện nhanh, lịch sử các lượt ở `USR0402`; **tỉ lệ hoàn thành theo chủ đề (F6-10) do dashboard `USR0601` nhận** (owner chốt 2026-10-18, xem mục 10) — ghi chú đóng ở `02-bd/screens/users/USR0401_interview_bank_list.md` Câu hỏi mở Q11 |
+| Tự chấm mức độ thuộc bài, hệ thống tự xếp lịch ôn lại (spaced repetition) | F6-12 | `01-rd/req/F6_interview-bank.md` — F6-12 |
 | Given-When-Then đầy đủ cho luồng ôn tập ngân hàng câu hỏi | — | `01-rd/req/user_stories/a1_student.md` (`US-A1-08`) |
 
 Đối chiếu `09-layoutBase/Câu hỏi phỏng vấn.dc.html`, màn có hai trạng thái (`isBrowse`/`isDrill`):
@@ -81,7 +81,7 @@ Hai chế độ hiển thị không đổi hành vi nghiệp vụ, chỉ đổi 
 | Màn/tài liệu | Vai trò | Bounded Context |
 |---|---|---|
 | Màn hiện tại | `USR0401` / `interview_bank_list` | `interview-bank` |
-| Tài liệu yêu cầu | `01-rd/req/interview-bank.md` (F6) | Nguồn SoT của màn |
+| Tài liệu yêu cầu | `01-rd/req/F6_interview-bank.md` (F6) | Nguồn SoT của màn |
 | Prototype | `09-layoutBase/Câu hỏi phỏng vấn.dc.html` | Bằng chứng bố cục và trạng thái |
 
 **Chi tiết trạng thái và cấu trúc màn**
@@ -101,7 +101,7 @@ Hai chế độ hiển thị không đổi hành vi nghiệp vụ, chỉ đổi 
 - Bảng màu, spacing, component cụ thể, breakpoint responsive — thuộc BD
   (`02-bd/screens/users/USR0401_interview_bank_list.md`, chưa viết).
 - Hợp đồng API (danh sách câu hỏi có lọc/tìm kiếm, ghi nhận tự chấm) — thuộc DD
-  (`03-dd/api/interview-bank.md`, chưa viết).
+  (`03-dd/api/F6_interview-bank.md`, chưa viết).
 - Thuật toán xếp lịch ôn lại (spaced repetition, F6-12) — thuộc logic của `interview-bank`, không thuộc file
   theo trục màn này.
 - Nội dung Chế độ học đầy đủ và Chế độ luyện (F6-04 tới F6-08) — thuộc `01-rd/screens/users/USR0402_interview_question_detail.md`
@@ -115,7 +115,7 @@ Hai chế độ hiển thị không đổi hành vi nghiệp vụ, chỉ đổi 
 | # | Câu hỏi | Vì sao chưa trả lời được | Đề xuất | Chủ sở hữu |
 | :-: | :--- | :--- | :--- | :--- |
 | Q1 | ~~Khối "xem nhanh" ở cột phải của `browse` đã hiện gần như đầy đủ nội dung Chế độ học (gợi ý hướng tiếp cận, tag) — vậy `interview_question_detail` là một trang riêng hay `interview_bank_list` đã đủ, không cần trang chi tiết riêng?~~ **ĐÃ CHỐT (2026-08-25, tự quyết theo yêu cầu chủ dự án — prototype là bản dựng tham khảo)**: `interview_bank_list` chỉ giữ bản **xem nhanh rút gọn** (đúng như prototype hiện có) — đủ để lướt nhanh và tự chấm mà không rời trang danh sách. `interview_question_detail` là **trang riêng, đầy đủ hơn**: Chế độ học đầy đủ (bao gồm khung trả lời chuẩn dạng STAR cho câu hành vi — F6-05 — hiện **hoàn toàn chưa có** ở bản xem nhanh) và Chế độ luyện (F6-07/F6-08, soạn câu trả lời + AI chấm — **hoàn toàn chưa được dựng ở bất kỳ đâu trong prototype**). Xem file RD riêng `01-rd/screens/users/USR0402_interview_question_detail.md`. | — | Đã chốt cấu trúc 2 màn; nội dung `interview_question_detail` **[Đợi nextjs]** vì Chế độ luyện chưa có bản dựng nào để đối chiếu. | Đã đóng |
-| Q2 | Chế độ "Luyện nhanh" có lấy đúng theo bộ lọc đang áp ở `browse` (chủ đề, trạng thái) hay luôn duyệt toàn bộ 148 câu theo thứ tự cố định? Mã nguồn mẫu cho thấy trạng thái thứ hai, có thể chỉ là giản lược của bản dựng tham khảo. | Không có tài liệu `interview-bank.md`/`user_stories/a1_student.md` nào mô tả chi tiết luồng chọn bộ câu hỏi cho "luyện nhanh". | **ĐÃ CHỐT (2026-08-25, tự quyết)**: hợp lý hơn cho người dùng là luyện nhanh lấy theo đúng bộ lọc đang áp ở `browse` (nếu không lọc gì thì mới lấy toàn bộ) — tránh người dùng bấm "luyện nhanh" sau khi đã lọc theo một chủ đề cụ thể mà lại nhận câu hỏi ở chủ đề khác. Cài đặt cụ thể **[Đợi nextjs]**. | Đợi nextjs |
+| Q2 | Chế độ "Luyện nhanh" có lấy đúng theo bộ lọc đang áp ở `browse` (chủ đề, trạng thái) hay luôn duyệt toàn bộ 148 câu theo thứ tự cố định? Mã nguồn mẫu cho thấy trạng thái thứ hai, có thể chỉ là giản lược của bản dựng tham khảo. | Không có tài liệu `F6_interview-bank.md`/`user_stories/a1_student.md` nào mô tả chi tiết luồng chọn bộ câu hỏi cho "luyện nhanh". | **ĐÃ CHỐT (2026-08-25, tự quyết)**: hợp lý hơn cho người dùng là luyện nhanh lấy theo đúng bộ lọc đang áp ở `browse` (nếu không lọc gì thì mới lấy toàn bộ) — tránh người dùng bấm "luyện nhanh" sau khi đã lọc theo một chủ đề cụ thể mà lại nhận câu hỏi ở chủ đề khác. Cài đặt cụ thể **[Đợi nextjs]**. | Đợi nextjs |
 | Q3 | **[Chốt khi viết DD, cập nhật 2026-10-19: tham số lọc trên URL còn là nợ prototype (ponytail bậc 3)]** Tham số lọc theo chủ đề/từ khoá khi điều hướng từ `solution_review` (F5-06, Phase 3) cần đi qua query string dạng gì (một chủ đề hay nhiều, khớp chính xác tên chủ đề hay tìm kiếm mờ)? | Đây là điểm nối giữa hai module (`ai-review` → `interview-bank`) qua tầng giao diện (không qua đọc dữ liệu chéo module ở backend, chỉ là điều hướng URL) — chưa có DD nào của cả hai module để chốt định dạng chính xác. | **[Đợi nextjs]** — chốt khi viết DD cho `interview-bank` (API danh sách câu hỏi cần hỗ trợ lọc theo chủ đề qua tham số truy vấn). Không cần chủ dự án quyết ngay vì không đổi kiến trúc, chỉ là hình dạng một query param. | Đợi nextjs |
 
 ---
@@ -124,16 +124,16 @@ Hai chế độ hiển thị không đổi hành vi nghiệp vụ, chỉ đổi 
 
 | ID | Yêu cầu | Loại | Nguồn/SoT |
 |---|---|---|---|
-| REQ-01 | Danh sách câu hỏi phân loại theo chủ đề, mức độ khó; tìm kiếm và lọc; đánh dấu để xem lại (F6-01, F6-02, F6-03) | Chức năng | `01-rd/req/interview-bank.md` — F6-01, F6-02, F6-03 |
-| REQ-02 | Chế độ học: gợi ý hướng tiếp cận, khung trả lời chuẩn (STAR cho câu hành vi), từ khoá cốt lõi (F6-04, F6-05, F6-06) | Chức năng | `01-rd/req/interview-bank.md` — F6-04, F6-05, F6-06 |
-| REQ-03 | Lịch sử luyện tập, câu đến hạn ôn, tỉ lệ hoàn thành theo chủ đề (F6-09, F6-10) | Chức năng | `01-rd/req/interview-bank.md` — F6-09, F6-10 |
-| REQ-04 | Tự chấm mức độ thuộc bài, hệ thống tự xếp lịch ôn lại (spaced repetition) (F6-12) | Chức năng | `01-rd/req/interview-bank.md` — F6-12 |
+| REQ-01 | Danh sách câu hỏi phân loại theo chủ đề, mức độ khó; tìm kiếm và lọc; đánh dấu để xem lại (F6-01, F6-02, F6-03) | Chức năng | `01-rd/req/F6_interview-bank.md` — F6-01, F6-02, F6-03 |
+| REQ-02 | Chế độ học: gợi ý hướng tiếp cận, khung trả lời chuẩn (STAR cho câu hành vi), từ khoá cốt lõi (F6-04, F6-05, F6-06) | Chức năng | `01-rd/req/F6_interview-bank.md` — F6-04, F6-05, F6-06 |
+| REQ-03 | Lịch sử luyện tập, câu đến hạn ôn, tỉ lệ hoàn thành theo chủ đề (F6-09, F6-10) | Chức năng | `01-rd/req/F6_interview-bank.md` — F6-09, F6-10 |
+| REQ-04 | Tự chấm mức độ thuộc bài, hệ thống tự xếp lịch ôn lại (spaced repetition) (F6-12) | Chức năng | `01-rd/req/F6_interview-bank.md` — F6-12 |
 | REQ-05 | Given-When-Then đầy đủ cho luồng ôn tập ngân hàng câu hỏi (—) | Chức năng | `01-rd/req/user_stories/a1_student.md` (`US-A1-08`) |
 | REQ-06 | **Cho** tôi mở màn này kèm tham số chủ đề/từ khoá trên URL (điều hướng từ `solution_review`, F5-06 đã chốt ở Phase 3), **Khi** trang tải xong, **Thì** bộ lọc chủ đề/tìm kiếm áp sẵn đúng chủ đề/từ khoá đó, không bắt tôi tự gõ lại — cơ chế truyền tham số cụ thể **[Đợi nextjs]** | Chức năng (GWT) | [SoT: 06-plan/reports/260825-2100-ai2-solution-review-conflicts.md] |
 | REQ-07 | **Cho** tôi bấm "Luyện nhanh N câu", **Khi** trạng thái chuyển sang `drill`, **Thì** bộ câu hỏi trong phiên luyện nhanh lấy từ đúng bộ lọc tôi đang áp ở `browse` (chủ đề/trạng thái) hay luôn lấy ngẫu nhiên toàn bộ 148 câu — chưa xác nhận được từ prototype | Chức năng (GWT) | [SoT: Suy luận — `drill()` trong mã nguồn mẫu chỉ lặp tuần tự qua toàn bộ mảng `Q`, không lọc theo state hiện tại của `browse`, 09-layoutBase/Câu hỏi phỏng vấn.dc.html:357, 422]. Xem mục 4, Câu hỏi mở Q2. |
-| REQ-08 | **Cho** tôi đã tự chấm một câu là "Đã thuộc", **Khi** tôi mở lại chế độ luyện nhanh sau đó, **Thì** hệ thống ưu tiên hiện lại các câu **đến hạn** (`next_review_at <= now()`) trước, rồi tới các câu **chưa xem** (chưa tự chấm lần nào), đúng tinh thần spaced-repetition của F6-12 — công thức xếp lịch cụ thể thuộc DD. **Sửa 2026-10-22** (mặc định chủ dự án xác nhận 2026-10-22, `DEC-2026-1022-interview-bank-schema-sync` mục 2; `02-bd/database/interview-bank.md:194-201`): ~~"Cần ôn lại"/"Chưa xem"~~; "đến hạn" khác tab **"đang ôn"** (lần chấm gần nhất `VAGUE`/`FORGOTTEN`), hai tập giao nhau nhưng không chứa nhau. **Sửa 2026-10-23** (`DEC-2026-1023-db-actor-review-fixes`; định nghĩa gốc `02-bd/database/interview-bank.md` mục 1.7, dòng 196-201): "đến hạn" = hàng đợi Luyện nhanh và danh sách F6-09, mọi câu có `next_review_at <= now()` bất kể mức tự chấm; "đang ôn" = chỉ là tab và nhãn trạng thái ở danh sách | Chức năng (GWT) | [SoT: 01-rd/req/interview-bank.md — F6-12] |
-| REQ-09 | **Cho** tôi vừa tự chấm mức độ nhớ một câu, **Khi** hệ thống ghi nhận xong, **Thì** ngay dưới khối tự chấm tôi thấy một dòng ngắn "Sẽ nhắc ôn lại sau {n} ngày" (n lấy từ lịch ôn lại của F6-12) | Chức năng (GWT) | [SoT: owner 2026-10-18, `DEC-2026-1018-usr-open-questions-phase2-5`; 01-rd/req/interview-bank.md — F6-12] |
-| REQ-10 | **Cho** tôi đã đánh dấu một số câu (F6-03), **Khi** tôi bật công tắc "Chỉ câu đã đánh dấu" cạnh menu lọc trạng thái, **Thì** danh sách chỉ còn các câu đã đánh dấu, kết hợp được với tìm kiếm, trạng thái, chủ đề và độ khó (đây là một trục lọc độc lập, không phải một lựa chọn thứ năm của menu trạng thái) | Chức năng (GWT) | [SoT: owner 2026-10-18, `DEC-2026-1018-usr-open-questions-phase2-5`; 01-rd/req/interview-bank.md — F6-03] |
+| REQ-08 | **Cho** tôi đã tự chấm một câu là "Đã thuộc", **Khi** tôi mở lại chế độ luyện nhanh sau đó, **Thì** hệ thống ưu tiên hiện lại các câu **đến hạn** (`next_review_at <= now()`) trước, rồi tới các câu **chưa xem** (chưa tự chấm lần nào), đúng tinh thần spaced-repetition của F6-12 — công thức xếp lịch cụ thể thuộc DD. **Sửa 2026-10-22** (mặc định chủ dự án xác nhận 2026-10-22, `DEC-2026-1022-interview-bank-schema-sync` mục 2; `02-bd/database/F6_interview-bank.md:194-201`): ~~"Cần ôn lại"/"Chưa xem"~~; "đến hạn" khác tab **"đang ôn"** (lần chấm gần nhất `VAGUE`/`FORGOTTEN`), hai tập giao nhau nhưng không chứa nhau. **Sửa 2026-10-23** (`DEC-2026-1023-db-actor-review-fixes`; định nghĩa gốc `02-bd/database/F6_interview-bank.md` mục 1.7, dòng 196-201): "đến hạn" = hàng đợi Luyện nhanh và danh sách F6-09, mọi câu có `next_review_at <= now()` bất kể mức tự chấm; "đang ôn" = chỉ là tab và nhãn trạng thái ở danh sách | Chức năng (GWT) | [SoT: 01-rd/req/F6_interview-bank.md — F6-12] |
+| REQ-09 | **Cho** tôi vừa tự chấm mức độ nhớ một câu, **Khi** hệ thống ghi nhận xong, **Thì** ngay dưới khối tự chấm tôi thấy một dòng ngắn "Sẽ nhắc ôn lại sau {n} ngày" (n lấy từ lịch ôn lại của F6-12) | Chức năng (GWT) | [SoT: owner 2026-10-18, `DEC-2026-1018-usr-open-questions-phase2-5`; 01-rd/req/F6_interview-bank.md — F6-12] |
+| REQ-10 | **Cho** tôi đã đánh dấu một số câu (F6-03), **Khi** tôi bật công tắc "Chỉ câu đã đánh dấu" cạnh menu lọc trạng thái, **Thì** danh sách chỉ còn các câu đã đánh dấu, kết hợp được với tìm kiếm, trạng thái, chủ đề và độ khó (đây là một trục lọc độc lập, không phải một lựa chọn thứ năm của menu trạng thái) | Chức năng (GWT) | [SoT: owner 2026-10-18, `DEC-2026-1018-usr-open-questions-phase2-5`; 01-rd/req/F6_interview-bank.md — F6-03] |
 
 ---
 
@@ -172,7 +172,7 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 
 | Loại | Tham chiếu |
 | :--- | :--- |
-| Yêu cầu module | `01-rd/req/interview-bank.md` — F6-01 tới F6-12. |
+| Yêu cầu module | `01-rd/req/F6_interview-bank.md` — F6-01 tới F6-12. |
 | User story | `01-rd/req/user_stories/a1_student.md` — `US-A1-08`. |
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` — mục 7.1 dòng `interview_bank_list`. |
 | Báo cáo liên quan | `06-plan/reports/260825-2100-ai2-solution-review-conflicts.md` — điểm nối từ `solution_review` (Phase 3). |

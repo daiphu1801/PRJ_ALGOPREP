@@ -2,6 +2,7 @@
   "common": {
     "appName": "AlgoPrep",
     "loading": "Loading...",
+    "retry": "Retry",
     "error": "Something went wrong",
     "empty": "No data yet",
     "pendingDesign": "This screen is waiting on Basic Design / Detail Design.",
@@ -40,7 +41,8 @@
       "student": "Learner area",
       "instructor": "Instructor area",
       "admin": "Admin area"
-    }
+    },
+    "myClasses": "My classes"
   },
   "auth": {
     "loginTitle": "Log in",
@@ -1036,9 +1038,6 @@
         "meta": "Keep English technical terms as they are"
       }
     },
-    "preReleaseTitle": "Before publishing",
-    "preReleaseBody": "Run the 30 sample solutions to compare report results between the draft and the live prompt. The backend for this is deferred to a later phase, so the button is inactive.",
-    "runComparison": "Run comparison",
     "publishDone": "AI configuration saved and published",
     "tabsLabel": "AI feature",
     "pendingCount": "{count} unpublished changes",
@@ -2973,6 +2972,43 @@
     "empty": "Nothing in progress yet. Pick a problem from the list.",
     "toast": {
       "randomEmpty": "You have solved every available problem."
+    }
+  },
+  "myClasses": {
+    "title": "My classes",
+    "subtitle": "Classes you belong to and the problems your instructor assigned.",
+    "loading": "Loading...",
+    "empty": "You are not in any class yet. Enter your instructor's invite code on the right to join.",
+    "join": {
+      "title": "Join a class",
+      "hint": "Enter the invite code your instructor gave you. Codes are valid for 7 days.",
+      "label": "Invite code",
+      "submit": "Join",
+      "empty": "Enter an invite code first.",
+      "success": "Joined {name}.",
+      "invalid": "The invite code is wrong or has expired."
+    },
+    "card": {
+      "instructor": "Instructor",
+      "schedule": "Schedule",
+      "joined": "Joined",
+      "assignments": "Assigned problems",
+      "noAssignments": "No problems assigned yet.",
+      "progress": "{solved}/{total} done",
+      "solved": "Done",
+      "todo": "To do",
+      "viewDetail": "View class details",
+      "viewDetailOf": "View details of {name}"
+    },
+    "detail": {
+      "back": "Back to my classes",
+      "notFound": "This class is not among the classes you belong to.",
+      "info": "Class info",
+      "progress": "Assignment progress",
+      "noSchedule": "No schedule yet",
+      "colProblem": "Problem",
+      "colAssignedAt": "Assigned",
+      "colState": "Status"
     }
   }
 }

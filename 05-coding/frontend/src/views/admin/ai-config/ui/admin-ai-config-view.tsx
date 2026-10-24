@@ -8,8 +8,8 @@
 // header with the publish CTA :147-157), but the page is no longer the mockup's two
 // columns: a tab holds only a few cards so they stack in one.
 //
-// "Chạy đối chiếu" keeps its button and stays disabled: PROTOTYPE_DEBT 2.8 settles that the UI stays
-// while the backend is deferred (risk R3). Three popups sit on top (phase 4 of
+// The "Chạy đối chiếu" (pre-release comparison) card was dropped 2026-10-23 (DEC-2026-1023-drop-ai-regression-run).
+// Three popups sit on top (phase 4 of
 // 06-plan/261010-1902-ai-admin-tach-man-don-gian-hoa.md): edit the system instruction (saved into the
 // draft, closing with unsaved text asks first), restore an older version into the draft, and a
 // publish confirmation that lists what will replace the live prompt.
@@ -22,7 +22,7 @@ import {
   FEATURE_KEYS,
   GUARDED_FEATURES,
   GUARD_KEYS,
-  fetchAiConfigPage,
+  useAiConfigPage,
   type AiConfigPage,
   type AiFeatureKey,
   type GuardKey,
@@ -49,6 +49,7 @@ import {
   FilterMenu,
   Modal,
   PageHeader,
+  QueryBoundary,
   SegmentedTabs,
   SettingRow,
   TextArea,
@@ -71,10 +72,18 @@ function isGuarded(feature: AiFeatureKey): feature is GuardedFeature {
 }
 
 export function AdminAiConfigView() {
+  return (
+    <QueryBoundary query={useAiConfigPage()}>
+      {(page) => <AdminAiConfigViewInner page={page} />}
+    </QueryBoundary>
+  );
+}
+
+function AdminAiConfigViewInner({ page }: { page: AiConfigPage }) {
   const t = useT("adminAiConfig");
   // `saved` is what is live; `draft` is what the admin is editing. The difference is the pending set.
-  const [saved, setSaved] = useState<AiConfigPage>(fetchAiConfigPage);
-  const [draft, setDraft] = useState<AiConfigPage>(fetchAiConfigPage);
+  const [saved, setSaved] = useState<AiConfigPage>(page);
+  const [draft, setDraft] = useState<AiConfigPage>(page);
   const [feature, setFeature] = useState<AiFeatureKey>("review");
   const [historyOpen, setHistoryOpen] = useState(false);
   const [discardOpen, setDiscardOpen] = useState(false);
@@ -311,24 +320,6 @@ export function AdminAiConfigView() {
                 </SettingRow>
               ))}
             </div>
-          </Card>
-        ) : null}
-
-        {feature === "review" ? (
-          <Card title={t("preReleaseTitle")}>
-            <p className="mb-3 text-[13px] leading-relaxed text-pretty text-[var(--color-text-muted)]">
-              {t("preReleaseBody")}
-            </p>
-            {/* Deliberately inert — PROTOTYPE_DEBT 2.8 defers the backend, so the button shows the
-                intent without pretending to run anything. */}
-            <Button
-              variant="ghost"
-              size="sm"
-              disabled
-              className="w-full border border-[var(--color-border)]"
-            >
-              {t("runComparison")}
-            </Button>
           </Card>
         ) : null}
       </div>

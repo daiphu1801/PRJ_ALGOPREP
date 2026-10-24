@@ -54,7 +54,7 @@ DDD giải quyết độ phức tạp nghiệp vụ bằng cách chia hệ thố
   thuộc trực tiếp. Ví dụ: `SubmissionAcceptedEvent` — `judge-orchestration` phát khi bài nộp đạt
   `Accepted`; `identity` nghe để cập nhật tiến độ cá nhân, `ai-review` nghe để mở lối vào F5.1 (Solution
   Review, luôn gắn với một bài nộp) và lối vào mặc định của F5.2 (Mock Interview) — F5.2 còn hai lối vào
-  tự luyện khác không cần sự kiện này (F5-24, `01-rd/req/ai-review.md`).
+  tự luyện khác không cần sự kiện này (F5-24, `01-rd/req/F5_ai-review.md`).
   Trong Modular Monolith, sự kiện đi qua bộ phát nội bộ của Spring (`ApplicationEventPublisher`) —
   tách rời logic mà không trả chi phí mạng. [SoT: Suy luận — tên sự kiện là đề xuất, chốt ở BD]
 * **Anti-Corruption Layer (ACL).** Hai hệ ngoài có mô hình riêng và không được để nó rò vào miền của
@@ -163,7 +163,7 @@ Judge0 (webhook bất đồng bộ). Nếu một adapter bất đồng bộ (ví
   **Sửa 2026-09-09:** mục này trước mang tiêu đề "Fail-fast theo testcase" và mô tả việc bỏ các testcase
   còn lại như một nguyên lý kiến trúc đang sống. `F4-04` (fail-fast) đã hết hiệu lực theo
   `DEC-2026-0831-partial-score-testcase-ratio`; đợt quét 2026-09-05 sửa 7 chỗ khác nhưng bỏ sót chỗ này,
-  nên file nền lý thuyết vẫn nói ngược với `01-rd/req/judge-orchestration.md` (F4-03) và
+  nên file nền lý thuyết vẫn nói ngược với `01-rd/req/F4_judge-orchestration.md` (F4-03) và
   `01-rd/system/SYS0101_backend_architecture.md` (module `algoprep-judge`).
 * **Timeout sweep thay cho đối soát nặng.** Với adapter đồng bộ, một bài nộp treo ở trạng thái trung gian
   hầu như luôn là do worker crash giữa lúc đang gọi engine — RabbitMQ tự redeliver message chưa ack, xử lý
@@ -317,7 +317,7 @@ Ghi ra để không ai đọc xong lại tưởng đã có quyết định:
 | Lược đồ database cụ thể (bảng, cột, khoá) | `02-bd/database/` |
 | Hợp đồng API (đường dẫn, payload, mã lỗi) | `03-dd/api/` |
 | Danh sách màn hình và luồng điều hướng | `01-rd/screens/` rồi `02-bd/screens/` |
-| Cấu trúc chi tiết của lược đồ kiểu F3 | `02-bd/architecture/harness.md` |
+| Cấu trúc chi tiết của lược đồ kiểu F3 | `02-bd/architecture/F3_harness.md` |
 | Nhà cung cấp và tên model LLM cụ thể | Quyết định riêng khi có ràng buộc chi phí thật |
 | Hệ thống thiết kế giao diện (design token, màu sắc, typography, thư viện component) | Chưa chọn — chốt ở `02-bd/screens/` |
 | Chế độ theme (Dark/Light) | **Đã chốt 2026-08-24 — hỗ trợ cả hai, Light là mặc định** (`DEC-2026-0824-dark-light-theme`) |

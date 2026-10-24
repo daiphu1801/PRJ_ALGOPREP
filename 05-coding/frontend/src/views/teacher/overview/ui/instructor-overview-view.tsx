@@ -19,7 +19,10 @@ import {
   useClassActivity,
   useInstructorClasses,
 } from "@/entities/class";
-import { SUBMISSION_STATUS_VARIANT } from "@/entities/submission";
+import {
+  SUBMISSION_STATUS_VARIANT,
+  useInstructorReadableSubmissions,
+} from "@/entities/submission";
 import { buildSubmissionRows } from "@/features/submission-rows";
 import { useT } from "@/shared/i18n";
 import {
@@ -28,6 +31,7 @@ import {
   Card,
   HalfDonutGauge,
   RankedProgressList,
+  QueryError,
   RecentList,
   StackedBarChart,
   StatCard,
@@ -70,7 +74,8 @@ export function InstructorOverviewView() {
   const tVerdict = useT("submissionResult");
   const today = useToday();
 
-  const classes = useInstructorClasses().data ?? [];
+  const classesQuery = useInstructorClasses();
+  const classes = classesQuery.data ?? [];
   const activity = useClassActivity().data;
   const assignmentsQuery = useClassAssignments();
   const students = useClassStudents().data;
@@ -89,7 +94,11 @@ export function InstructorOverviewView() {
     [assignmentsQuery.data],
   );
 
-  const rows = useMemo(() => buildSubmissionRows(students ?? []), [students]);
+  const readableQuery = useInstructorReadableSubmissions();
+  const rows = useMemo(
+    () => buildSubmissionRows(students ?? [], readableQuery.data ?? []),
+    [students, readableQuery.data],
+  );
   const recentRows = rows.slice(0, 5);
 
   // Daily chart: the 7 days that END at the newest submission, so the mock data (fixed dates) still shows.
@@ -144,6 +153,8 @@ export function InstructorOverviewView() {
           ],
       })),
   }));
+
+  if (classesQuery.isError) return <QueryError query={classesQuery} />;
 
   return (
     <div className="flex flex-col gap-3.5">

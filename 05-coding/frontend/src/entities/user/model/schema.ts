@@ -1,6 +1,6 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 //
-// Zod schemas for editing `UserProfile`, limits ported from 03-dd/validation/identity.md (the
+// Zod schemas for editing `UserProfile`, limits ported from 03-dd/validation/F1_identity.md (the
 // module's own validation DD, written today) rather than invented — this is the one screen slice
 // in this run that already had a real DD to read before coding.
 import { z } from "zod";
@@ -11,7 +11,7 @@ const displayNameField = z
   .min(1, "errors.displayNameRequired")
   .max(100, "errors.displayNameTooLong");
 // `school_or_company` / `current_position` / `target_position` are optional free text — empty
-// string means "not set" (server stores NULL) [SoT: 03-dd/validation/identity.md mục 5].
+// string means "not set" (server stores NULL) [SoT: 03-dd/validation/F1_identity.md mục 5].
 const schoolOrCompanyField = z
   .string()
   .trim()
@@ -44,7 +44,7 @@ export const emailChangeSchema = z
 
 export type ProfileFormInput = z.infer<typeof profileFormSchema>;
 
-// Password rule table [SoT: 03-dd/validation/identity.md mục 1]: 8-128 chars, at least one letter
+// Password rule table [SoT: 03-dd/validation/F1_identity.md mục 1]: 8-128 chars, at least one letter
 // and one digit. Duplicated from entities/auth's own password rule rather than imported — same FSD
 // reason entities/auth already documents for duplicating `Role` (entities cannot import entities).
 const newPasswordField = z

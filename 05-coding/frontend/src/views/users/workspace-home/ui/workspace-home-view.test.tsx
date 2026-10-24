@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { NextIntlClientProvider } from "@/shared/i18n";
+import { withTestProviders } from "@/shared/test/render-with-providers";
 import messages from "../../../../../messages/vi.json";
 import { WorkspaceHomeView } from "./workspace-home-view";
 
@@ -17,13 +17,11 @@ describe("workspaceHome toast", () => {
 });
 
 describe("WorkspaceHomeView", () => {
-  it("lists in-progress problems with links into the workspace", () => {
-    render(
-      <NextIntlClientProvider locale="vi" messages={messages}>
-        <WorkspaceHomeView />
-      </NextIntlClientProvider>,
-    );
-    expect(screen.getByRole("link", { name: /Word Break/ })).toHaveAttribute(
+  it("lists in-progress problems with links into the workspace", async () => {
+    render(withTestProviders(<WorkspaceHomeView />));
+    expect(
+      await screen.findByRole("link", { name: /Word Break/ }),
+    ).toHaveAttribute(
       "href",
       "/workspace/139",
     );

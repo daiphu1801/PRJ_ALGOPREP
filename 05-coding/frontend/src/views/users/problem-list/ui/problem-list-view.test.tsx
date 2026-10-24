@@ -5,6 +5,7 @@ import {
   render,
   renderHook,
   screen,
+  waitFor,
   within,
 } from "@testing-library/react";
 import {
@@ -12,8 +13,7 @@ import {
   removeProblemLevel,
   useProblemLevels,
 } from "@/entities/problem";
-import { NextIntlClientProvider } from "@/shared/i18n";
-import messages from "../../../../../messages/vi.json";
+import { withTestProviders } from "@/shared/test/render-with-providers";
 import { ProblemListView } from "./problem-list-view";
 
 const push = vi.fn();
@@ -21,12 +21,15 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ push }),
 }));
 
-function renderView() {
-  return render(
-    <NextIntlClientProvider locale="vi" messages={messages}>
-      <ProblemListView />
-    </NextIntlClientProvider>,
+// The catalogue arrives through a query: wait for the loading skeleton to go before asserting.
+async function renderView() {
+  const view = render(withTestProviders(<ProblemListView />));
+  await waitFor(() =>
+    expect(
+      screen.queryByRole("status", { name: "Đang tải..." }),
+    ).not.toBeInTheDocument(),
   );
+  return view;
 }
 
 // Filters are a button that opens a listbox; open it first, then pick from the options.
@@ -38,15 +41,15 @@ function openFilter(label: string) {
 }
 
 describe("ProblemListView", () => {
-  it("renders the page title and the primary action reachable (Vào giải)", () => {
-    renderView();
+  it("renders the page title and the primary action reachable (Vào giải)", async () => {
+    await renderView();
 
     expect(screen.getByText("Danh sách bài toán")).toBeInTheDocument();
     expect(screen.getAllByText("Vào giải").length).toBeGreaterThan(0);
   });
 
-  it("filters the table by search query", () => {
-    renderView();
+  it("filters the table by search query", async () => {
+    await renderView();
 
     expect(screen.getByText("Two Sum")).toBeInTheDocument();
     const search = screen.getByPlaceholderText("Tìm theo tên bài hoặc mã bài");
@@ -66,8 +69,8 @@ describe("ProblemListView difficulty tabs", () => {
     if (extra) act(() => void removeProblemLevel(extra.key));
   });
 
-  it("shows one tab per level in admin order and filters by it", () => {
-    renderView();
+  it("shows one tab per level in admin order and filters by it", async () => {
+    await renderView();
     const group = openFilter("Lọc theo độ khó");
     expect(
       within(group)
@@ -80,17 +83,17 @@ describe("ProblemListView difficulty tabs", () => {
     expect(screen.getAllByRole("row").length).toBeLessThan(rowsBefore);
   });
 
-  it("adds a tab for a level the admin created", () => {
+  it("adds a tab for a level the admin created", async () => {
     act(() => void addProblemLevel("Rất khó"));
-    renderView();
+    await renderView();
     const group = openFilter("Lọc theo độ khó");
     expect(
       within(group).getByRole("option", { name: "Rất khó" }),
     ).toBeInTheDocument();
   });
 
-  it("has no KPI strip: the only section headings are the two side blocks (removed 2026-10-18)", () => {
-    renderView();
+  it("has no KPI strip: the only section headings are the two side blocks (removed 2026-10-18)", async () => {
+    await renderView();
     expect(
       screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent),
     ).toEqual(["Bài đang làm dở", "Bài tập lớp"]);
@@ -98,8 +101,8 @@ describe("ProblemListView difficulty tabs", () => {
 });
 
 describe("ProblemListView behaviour from the BD", () => {
-  it("labels only Standard I/O problems with a submission model badge", () => {
-    renderView();
+  it("labels only Standard I/O problems with a submission model badge", async () => {
+    await renderView();
     expect(screen.queryByText("Cả hai")).not.toBeInTheDocument();
     expect(screen.queryByText("Chỉ Standard I/O")).not.toBeInTheDocument();
 
@@ -109,8 +112,8 @@ describe("ProblemListView behaviour from the BD", () => {
     expect(screen.getByText("Chỉ Standard I/O")).toBeInTheDocument();
   });
 
-  it("pressing the active topic again clears the topic filter (EVT-5)", () => {
-    renderView();
+  it("pressing the active topic again clears the topic filter (EVT-5)", async () => {
+    await renderView();
     const topic = screen.getByRole("button", { name: /^Array/ });
     fireEvent.click(topic);
     expect(topic).toHaveAttribute("aria-pressed", "true");
@@ -122,8 +125,8 @@ describe("ProblemListView behaviour from the BD", () => {
     );
   });
 
-  it("offers a clear-filters action in the empty state (EVT-6)", () => {
-    renderView();
+  it("offers a clear-filters action in the empty state (EVT-6)", async () => {
+    await renderView();
     fireEvent.change(screen.getByPlaceholderText("Tìm theo tên bài hoặc mã bài"), {
       target: { value: "zzzz-no-match" },
     });
@@ -133,21 +136,21 @@ describe("ProblemListView behaviour from the BD", () => {
     expect(screen.getByText("Two Sum")).toBeInTheDocument();
   });
 
-  it("opens a random problem from the filtered set", () => {
+  it("opens a random problem from the filtered set", async () => {
     push.mockClear();
-    renderView();
+    await renderView();
     fireEvent.click(screen.getByRole("button", { name: /Bài ngẫu nhiên/ }));
     expect(push).toHaveBeenCalledWith(expect.stringMatching(/^\/problems\/\w+/));
   });
 
-  it("maps the last verdict and the assignment meta through i18n", () => {
-    renderView();
+  it("maps the last verdict and the assignment meta through i18n", async () => {
+    await renderView();
     expect(screen.getByText(/Sai kết quả 8\/12/)).toBeInTheDocument();
     expect(screen.getAllByText("0 / 5 bài · giao 24/08/2026").length).toBe(2);
   });
 
-  it("caps the in-progress block at 3 cards and links to the workspace", () => {
-    renderView();
+  it("caps the in-progress block at 3 cards and links to the workspace", async () => {
+    await renderView();
     const panel = screen
       .getByRole("heading", { name: "Bài đang làm dở" })
       .closest("div") as HTMLElement;

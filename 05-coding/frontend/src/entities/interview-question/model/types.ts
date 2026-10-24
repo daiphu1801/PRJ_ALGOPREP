@@ -62,7 +62,7 @@ export const RECALL_LEVELS: RecallLevel[] = ["known", "vague", "forgotten"];
 /**
  * Days until the next review after a self-rating (USR0401 Q7, owner 2026-10-18).
  * MOCK RULE: the real value is `recall_ratings.next_review_at` computed by the server (spaced
- * repetition, 02-bd/architecture/interview-bank.md); the prototype has no server, so it uses this table.
+ * repetition, 02-bd/architecture/F6_interview-bank.md); the prototype has no server, so it uses this table.
  */
 export const RECALL_NEXT_REVIEW_DAYS: Record<RecallLevel, number> = {
   forgotten: 1,

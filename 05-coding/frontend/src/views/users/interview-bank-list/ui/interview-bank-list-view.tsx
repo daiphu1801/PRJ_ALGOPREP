@@ -19,7 +19,8 @@ import {
   levelTone,
   useInterviewLevels,
   useInterviewTopics,
-  fetchInterviewQuestionPage,
+  useInterviewQuestionPage,
+  type InterviewQuestionPage,
   useRecallAndBookmarkState,
   InterviewQuestionListRow,
   RECALL_NEXT_REVIEW_DAYS,
@@ -39,7 +40,9 @@ import {
   FilterBar,
   FilterMenu,
   ProgressBar,
+  QueryBoundary,
   Toggle,
+  SeeAllLink,
 } from "@/shared/ui";
 
 // Quick drill is a fixed 10 cards: a named configuration constant, no card-count control on screen
@@ -79,8 +82,15 @@ function drillPriority(recall: RecallLevel | null): number {
 }
 
 export function InterviewBankListView() {
+  return (
+    <QueryBoundary query={useInterviewQuestionPage()}>
+      {(page) => <InterviewBankList page={page} />}
+    </QueryBoundary>
+  );
+}
+
+function InterviewBankList({ page }: { page: InterviewQuestionPage }) {
   const t = useT("interviewBankList");
-  const [page] = useState(fetchInterviewQuestionPage);
   const topicList = useInterviewTopics();
   const levelList = useInterviewLevels();
   const { recall, bookmarks, rate, toggleBookmark } = useRecallAndBookmarkState(
@@ -485,12 +495,12 @@ export function InterviewBankListView() {
                     })}
                   </p>
                 ) : null}
-                <Link
+                <SeeAllLink
                   href={`/interview-bank/${selected.code}`}
-                  className="text-[12.5px] font-semibold text-[var(--color-primary)] hover:underline"
+                  className="mt-0"
                 >
                   {t("quickView.viewDetail")}
-                </Link>
+                </SeeAllLink>
               </div>
             </>
           ) : (

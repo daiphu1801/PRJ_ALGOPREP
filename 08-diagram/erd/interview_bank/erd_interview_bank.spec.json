@@ -1,5 +1,5 @@
 {
-  "_": "Nguon: 02-bd/database/interview-bank.md (muc 1.1-1.7), ngay 2026-10-22. Ve du 8 bang cua schema interview_bank. Rang buoc ghep (unique nhieu cot), index, CHECK khong ve. user_id/created_by la tham chieu logic den identity.users (khong FK vat ly); ai.interview_sessions (question_ref) va ai.token_usage (owner_id, PRACTICE_FEEDBACK -> user_answers) la tham chieu den tu schema ai.",
+  "_": "Nguon: 02-bd/database/F6_interview-bank.md (muc 1.1-1.7), ngay 2026-10-22. Ve du 8 bang cua schema interview_bank. Rang buoc ghep (unique nhieu cot), index, CHECK khong ve. user_id/created_by la tham chieu logic den identity.users (khong FK vat ly); ai.interview_sessions (question_ref) va ai.token_usage (owner_id, PRACTICE_FEEDBACK -> user_answers) la tham chieu den tu schema ai.",
   "kind": "erd",
   "title": "ERD schema interview_bank",
   "covers": [],

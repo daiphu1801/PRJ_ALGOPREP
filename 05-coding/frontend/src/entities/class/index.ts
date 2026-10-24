@@ -7,6 +7,8 @@ export type {
   ClassStudent,
   ClassSummary,
   InviteCode,
+  MyClass,
+  MyClassAssignment,
   StudentStatus,
 } from "./model/types";
 export { initialsOfClassStudent } from "./model/types";
@@ -23,6 +25,9 @@ export {
   useDeleteClass,
   useInstructorClasses,
   useInviteCodes,
+  useJoinClass,
+  useMyClass,
+  useMyClasses,
   useRemoveStudent,
   useUpdateClass,
 } from "./api/queries";

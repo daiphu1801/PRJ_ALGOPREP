@@ -14,17 +14,17 @@ export type User = {
 // task instruction — same real-world entity (`identity.users`), richer shape than the minimal
 // `User` above (which only the nav/session flows need).
 
-/** Submission language, per `identity.users.default_language` [SoT: 02-bd/database/identity.md:19-20]. */
+/** Submission language, per `identity.users.default_language` [SoT: 02-bd/database/F1_identity.md:19-20]. */
 export type SubmissionLanguage = "JAVA" | "CPP" | "PYTHON";
 
-/** OAuth provider linked to the account [SoT: 02-bd/database/identity.md:70]. */
+/** OAuth provider linked to the account [SoT: 02-bd/database/F1_identity.md:70]. */
 export type LinkedProvider = "GITHUB" | "GOOGLE";
 
 /**
  * `MyProfileDto` [SoT: 02-bd/screens/users/USR0502_profile.md Sheet 7.1 rows 1-12]. `targetPosition`
- * is nullable rather than gated behind BD's Q2 — `03-dd/validation/identity.md` mục 5 (IDT-V08,
+ * is nullable rather than gated behind BD's Q2 — `03-dd/validation/F1_identity.md` mục 5 (IDT-V08,
  * added today) gives it its own 100-char column, so Q2 reads as resolved even though the BD file
- * itself hasn't been re-opened to say so [SoT: 03-dd/validation/identity.md:47].
+ * itself hasn't been re-opened to say so [SoT: 03-dd/validation/F1_identity.md:47].
  */
 export type UserProfile = {
   userId: string;
@@ -55,10 +55,10 @@ export type InterviewerLevel = "INTERN" | "JUNIOR" | "MIDDLE" | "SENIOR";
 
 /**
  * `identity`-owned account preferences, `GetMySettings`/`UpdateMySettings`
- * [SoT: 03-dd/api/identity.md endpoints 14-15]. `preferredInterviewLevel` is the ONLY
+ * [SoT: 03-dd/api/F1_identity.md endpoints 14-15]. `preferredInterviewLevel` is the ONLY
  * interview-related field identity owns — max turns / hints belong to `ai-review` (BR-07,
  * saved via an independent `UpdateMyInterviewPreferences` call, see `InterviewPracticePreferences`
- * below) [SoT: 03-dd/logic/identity.md BR-07].
+ * below) [SoT: 03-dd/logic/F1_identity.md BR-07].
  */
 export type AccountSettings = {
   workspace: {

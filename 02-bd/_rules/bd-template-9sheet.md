@@ -140,7 +140,7 @@ thứ phải giống nhau xuyên `01-rd` → `02-bd` → `03-dd` theo luật ch�
 | Quản trị | `ADM` | A3 |
 | Dùng chung nhiều vai trò | `SHR` | A1 / A2 / A3 |
 
-### Bảng mã (35 màn)
+### Bảng mã (37 màn)
 
 | Mã | Tên file | Slug chính tắc | Tên màn | Nhóm |
 | :--- | :--- | :--- | :--- | :--- |
@@ -159,6 +159,8 @@ thứ phải giống nhau xuyên `01-rd` → `02-bd` → `03-dd` theo luật ch�
 | `USR0502` | `USR0502_profile.md` | `profile` | Hồ sơ | Cá nhân |
 | `USR0503` | `USR0503_settings.md` | `settings` | Thiết lập | Cá nhân |
 | `USR0601` | `USR0601_dashboard.md` | `dashboard` | Tổng quan người học | Tổng quan |
+| `USR0701` | `USR0701_my_classes.md` | `my_classes` | Lớp của tôi (thêm 2026-10-23, `DEC-2026-1023-student-class-screens`) | Lớp học |
+| `USR0702` | `USR0702_my_class_detail.md` | `my_class_detail` | Chi tiết lớp của tôi (thêm 2026-10-23, `DEC-2026-1023-student-class-screens`) | Lớp học |
 | `INS0101` | `INS0101_overview.md` | `instructor_overview` | Tổng quan giảng viên | Tổng quan |
 | `INS0201` | `INS0201_class_management.md` | `class_management` | Quản lý lớp | Lớp học |
 | `INS0202` | `INS0202_class_assignments.md` | `class_assignments` | Giao bài cho lớp | Lớp học |
@@ -185,6 +187,8 @@ thứ phải giống nhau xuyên `01-rd` → `02-bd` → `03-dd` theo luật ch�
 | `SHR0301` | `SHR0301_interview_question_management.md` | `interview_question_management` | Quản lý câu hỏi phỏng vấn | Nội dung câu hỏi |
 | `SHR0302` | `SHR0302_interview_question_authoring.md` | `interview_question_authoring` | Biên soạn câu hỏi phỏng vấn | Nội dung câu hỏi |
 | `SHR0303` | `SHR0303_interview_question_info.md` | `interview_question_info` | Chi tiết câu hỏi phỏng vấn | Nội dung câu hỏi |
+
+Cập nhật 2026-10-23: nhóm 07 "Lớp học" của khu Người học (`USR07xx`) là nhóm mới, cấp theo quy tắc "nhóm mới lấy số nhóm kế tiếp trong khu vực" bên dưới; `INS02xx` cũng có nhóm "Lớp học" nhưng thuộc khu Giảng viên, hai nhóm cùng tên khác khu. Bảng này từ 35 lên 37 màn.
 
 Quy tắc bổ sung:
 - **Mã đã cấp thì không đổi, không tái sử dụng.** Màn bị cắt khỏi phạm vi thì mã đó bỏ trống vĩnh viễn.

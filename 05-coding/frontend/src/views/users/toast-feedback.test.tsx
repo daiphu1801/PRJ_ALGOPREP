@@ -1,5 +1,6 @@
 // One toast assertion per migrated student view (DEC-2026-1003-toast-feedback-channel). Tests mock
 // useT to return the key, so the assertions read `[tone, key]` pairs.
+import type { ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   act,
@@ -33,6 +34,15 @@ vi.mock("next/navigation", () => ({
   useSearchParams: () => new URLSearchParams(),
 }));
 
+// The three problem views read through TanStack Query; each test gets a fresh client.
+function renderWithQuery(node: ReactNode) {
+  return render(
+    <QueryClientProvider client={new QueryClient()}>
+      {node}
+    </QueryClientProvider>,
+  );
+}
+
 function observe() {
   const toasts = renderHook(() => useToasts());
   return () => toasts.result.current.map((item) => [item.tone, item.message]);
@@ -45,10 +55,10 @@ afterEach(() => {
 });
 
 describe("student views raise toasts for operation results", () => {
-  it("saved problems: un-saving offers Undo (no toast) and Enter in search", () => {
+  it("saved problems: un-saving offers Undo (no toast) and Enter in search", async () => {
     const read = observe();
-    render(<SavedProblemsView />);
-    fireEvent.click(screen.getAllByText("table.btnUnsave")[0]!);
+    renderWithQuery(<SavedProblemsView />);
+    fireEvent.click((await screen.findAllByText("table.btnUnsave"))[0]!);
     // Un-save is confirmed by an info toast that carries the Undo action.
     expect(read()).toEqual([["info", "undo.message"]]);
     fireEvent.keyDown(screen.getByPlaceholderText("filter.searchPlaceholder"), {
@@ -57,69 +67,76 @@ describe("student views raise toasts for operation results", () => {
     expect(read().at(-1)?.[0]).toBe("info");
   });
 
-  it("problem list: Enter in search announces the result count", () => {
+  it("problem list: Enter in search announces the result count", async () => {
     const read = observe();
-    render(<ProblemListView />);
-    fireEvent.keyDown(screen.getByPlaceholderText("filter.searchPlaceholder"), {
-      key: "Enter",
-    });
+    renderWithQuery(<ProblemListView />);
+    fireEvent.keyDown(
+      await screen.findByPlaceholderText("filter.searchPlaceholder"),
+      {
+        key: "Enter",
+      },
+    );
     expect(read()[0]?.[0]).toBe("info");
   });
 
-  it("my submissions: typing is silent, Enter announces", () => {
+  it("my submissions: typing is silent, Enter announces", async () => {
     const read = observe();
-    render(<MySubmissionsView />);
-    const search = screen.getByPlaceholderText("filter.searchPlaceholder");
+    renderWithQuery(<MySubmissionsView />);
+    const search = await screen.findByPlaceholderText(
+      "filter.searchPlaceholder",
+    );
     fireEvent.change(search, { target: { value: "two" } });
     expect(read()).toEqual([]);
     fireEvent.keyDown(search, { key: "Enter" });
     expect(read()[0]?.[0]).toBe("info");
   });
 
-  it("interview bank: bookmark raises success", () => {
+  it("interview bank: bookmark raises success", async () => {
     const read = observe();
-    render(<InterviewBankListView />);
-    fireEvent.click(screen.getAllByLabelText("bookmarkLabel")[0]!);
+    renderWithQuery(<InterviewBankListView />);
+    fireEvent.click((await screen.findAllByLabelText("bookmarkLabel"))[0]!);
     expect(read()[0]?.[0]).toBe("success");
   });
 
-  it("interview question detail: bookmark raises success", () => {
+  it("interview question detail: bookmark raises success", async () => {
     const read = observe();
-    render(<InterviewQuestionDetailView questionId="IQ-014" />);
-    fireEvent.click(screen.getByText("header.bookmark"));
+    renderWithQuery(<InterviewQuestionDetailView questionId="IQ-014" />);
+    fireEvent.click(await screen.findByText("header.bookmark"));
     expect(read()).toEqual([["success", "toast.bookmarked"]]);
   });
 
-  it("problem detail: save toggle and sample run", () => {
-    vi.useFakeTimers();
+  it("problem detail: save toggle and sample run", async () => {
     const read = observe();
-    render(<ProblemDetailView />);
+    renderWithQuery(<ProblemDetailView />);
     // Problem 1 starts saved: first click un-saves, second saves again.
-    fireEvent.click(screen.getByText("panel.btnUnsave"));
+    fireEvent.click(await screen.findByText("panel.btnUnsave"));
     expect(read()).toEqual([["success", "toast.unsaved"]]);
     fireEvent.click(screen.getByText("panel.btnSave"));
     expect(read().at(-1)).toEqual(["success", "toast.saved"]);
     fireEvent.click(screen.getByText("taskbar.btnRun"));
-    act(() => void vi.advanceTimersByTime(500));
     // The mock run alternates pass and fail, so either tone is a valid result.
-    expect(["success", "warning"]).toContain(read().at(-1)?.[0]);
+    await waitFor(() =>
+      expect(["success", "warning"]).toContain(read().at(-1)?.[0]),
+    );
   });
 
-  it("submission result: copy without clipboard support raises error", () => {
+  it("submission result: copy without clipboard support raises error", async () => {
     const read = observe();
-    render(<SubmissionResultView />);
-    fireEvent.click(screen.getByText("code.copy"));
+    renderWithQuery(<SubmissionResultView />);
+    fireEvent.click(await screen.findByText("code.copy"));
     expect(read()).toEqual([["error", "code.copyFailed"]]);
   });
 
   it("mock interview: finishing early raises success", async () => {
     const read = observe();
-    render(<MockInterviewView />);
-    fireEvent.click(screen.getByText("1. Two Sum"));
+    renderWithQuery(<MockInterviewView />);
+    fireEvent.click(await screen.findByText("1. Two Sum"));
     fireEvent.click(screen.getByText("startCta"));
     fireEvent.click(await screen.findByText("stopEarlyCta"));
     fireEvent.click(screen.getByText("earlyExitConfirm"));
-    expect(read()).toEqual([["success", "toast.finished"]]);
+    await waitFor(() =>
+      expect(read()).toEqual([["success", "toast.finished"]]),
+    );
   });
 
   it("solution review: applying the suggestion raises success", async () => {

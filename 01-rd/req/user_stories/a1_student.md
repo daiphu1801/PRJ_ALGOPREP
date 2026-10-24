@@ -39,7 +39,8 @@ Là **sinh viên**, tôi muốn tìm bài toán theo chủ đề và độ khó,
 - **Cho** danh sách bài toán đã có, **Khi** tôi lọc theo chủ đề, độ khó, hoặc trạng thái đã giải, **Thì**
   danh sách chỉ hiện những bài khớp bộ lọc (F2-11).
 - **Cho** tôi thuộc một lớp được giảng viên giao bài, **Khi** tôi mở danh sách bài toán, **Thì** các bài đã
-  gán cho lớp tôi hiện thành một nhóm riêng ngay trong danh sách, không cần mở màn khác (F2-12).
+  gán cho lớp tôi hiện thành một nhóm riêng ngay trong danh sách, không cần mở màn khác (F2-12)
+  (chi tiết và danh sách lớp xem tại USR0701, USR0702).
 
 ### US-A1-03: Viết mã và chạy thử
 
@@ -179,3 +180,29 @@ Là **sinh viên**, tôi muốn đánh dấu bài toán để xem lại sau kèm
   (F2-13).
 - **Cho** tôi đăng nhập từ một thiết bị khác, **Khi** tôi mở "Bài đã lưu", **Thì** tôi thấy đúng danh sách và
   ghi chú như trên thiết bị cũ, vì dữ liệu lưu ở server (F2-13).
+
+### US-A1-10: Tham gia lớp bằng mã mời và xem lớp của tôi
+
+Là **sinh viên**, tôi muốn nhập mã mời của giảng viên để vào lớp và xem các lớp mình học cùng bài được giao, để
+biết mình phải làm bài nào và đã làm đến đâu. Story mở rộng F1-23 và F2-12 (chưa cấp mã `Fx-nn` mới, chờ chủ dự án
+chốt ở `01-rd/screens/users/USR0701_my_classes.md` Q1); ghi nhận `DEC-2026-1023-student-class-screens`, 2026-10-23.
+
+INVEST: độc lập với các story khác của A1 (chỉ cần có tài khoản); đàm phán được ở bố cục và câu chữ; có giá trị
+vì trước đó học viên không có giao diện nhập mã mời; ước lượng được (hai màn, một form, một bảng); nhỏ; kiểm thử
+được bằng các tiêu chí dưới đây. Không phụ thuộc AI (F5/F6).
+
+- **Cho** tôi có một mã mời còn hạn (7 ngày) của giảng viên, **Khi** tôi nhập mã ở màn "Lớp của tôi" và bấm
+  Tham gia, **Thì** tôi vào lớp, thấy thông báo thành công kèm tên lớp và lớp xuất hiện trong danh sách (F1-23,
+  F1-25; `USR0701` REQ-01).
+- **Cho** tôi nhập mã sai hoặc đã hết hạn, **Khi** tôi bấm Tham gia, **Thì** tôi nhận thông báo lỗi và không vào lớp
+  nào (F1-25; `USR0701` REQ-02).
+- **Cho** tôi đã ở trong lớp, **Khi** tôi nhập lại mã mời của lớp đó, **Thì** hệ thống không báo lỗi trùng và danh
+  sách không đổi; **Cho** tôi từng bị giảng viên gỡ khỏi lớp, **Khi** tôi nhập mã còn hạn của lớp đó, **Thì** tôi
+  vào lại lớp (F1-23, F1-26; `USR0701` REQ-03, REQ-04).
+- **Cho** tôi thuộc một hoặc nhiều lớp, **Khi** tôi mở "Lớp của tôi", **Thì** mỗi lớp là một thẻ gồm giảng viên,
+  lịch học, ngày tham gia và tiến độ "Đã xong x/y bài" (F2-12; `USR0701` REQ-06, REQ-08).
+- **Cho** tôi mở chi tiết một lớp, **Khi** màn tải xong, **Thì** tôi thấy bảng các bài được giao kèm ngày giao và
+  trạng thái Đã xong / Chưa làm (đã xong = có ít nhất một lượt `Accepted` trên bài đó), và bấm tên bài để vào làm
+  (F2-12, F1-28; `USR0702` REQ-03, REQ-04, REQ-05).
+- **Cho** lớp không tồn tại, tôi không thuộc lớp đó, hoặc tôi đã rời lớp, **Khi** tôi mở địa chỉ chi tiết lớp,
+  **Thì** tôi thấy cùng một thông báo "không tìm thấy", không lộ lớp có tồn tại hay không (`USR0702` REQ-06).

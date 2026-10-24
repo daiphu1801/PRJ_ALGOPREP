@@ -116,3 +116,21 @@ export function initialsOfClassStudent(name: string): string {
   const lastTwo = parts.slice(-2);
   return lastTwo.map((part) => part.charAt(0).toUpperCase()).join("");
 }
+
+// Learner side (screen "Lớp của tôi") - one class the signed-in learner belongs to. Instructor name
+// and assigned problems ride along so the screen needs a single call.
+export type MyClassAssignment = {
+  problemId: string;
+  title: string;
+  solved: boolean;
+  assignedAtLabel: string;
+};
+export type MyClass = {
+  id: string;
+  name: string;
+  description?: string;
+  schedule?: ClassSchedule;
+  instructorName: string;
+  joinedAtLabel: string;
+  assignments: MyClassAssignment[];
+};

@@ -13,7 +13,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import {
   INFRA_LEVELS,
-  fetchInfraEvents,
+  useInfraEvents,
   type InfraEvent,
   type InfraLevel,
 } from "@/entities/infra-event";
@@ -27,6 +27,7 @@ import {
   FilterBar,
   FilterMenu,
   PageHeader,
+  QueryBoundary,
   TextField,
   type BadgeVariant,
 } from "@/shared/ui";
@@ -57,8 +58,30 @@ export function AdminInfraEventsView({
 }: {
   initialLevel?: InfraLevel | "all";
 }) {
+  const query = useInfraEvents();
+  return (
+    <QueryBoundary query={query}>
+      {(all) => (
+        <AdminInfraEventsViewInner
+          all={all}
+          initialLevel={initialLevel}
+          onRefresh={() => void query.refetch()}
+        />
+      )}
+    </QueryBoundary>
+  );
+}
+
+function AdminInfraEventsViewInner({
+  all,
+  initialLevel,
+  onRefresh,
+}: {
+  all: InfraEvent[];
+  initialLevel: InfraLevel | "all";
+  onRefresh: () => void;
+}) {
   const t = useT("adminInfraEvents");
-  const [all, setAll] = useState(fetchInfraEvents);
   const [query, setQuery] = useState("");
   const [level, setLevel] = useState<InfraLevel | "all">(initialLevel);
   const [service, setService] = useState("all");
@@ -136,7 +159,7 @@ export function AdminInfraEventsView({
               variant="cta"
               size="sm"
               onClick={() => {
-                setAll(fetchInfraEvents());
+                onRefresh();
                 setShown(PAGE_SIZE);
                 toast.success(t("refreshDone"));
               }}

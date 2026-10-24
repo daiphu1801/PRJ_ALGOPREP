@@ -49,8 +49,8 @@ export { InterviewQuestionListRow } from "./ui/interview-question-list-row";
 export { RecallLevelPicker } from "./ui/recall-level-picker";
 export { BookmarkToggle } from "./ui/bookmark-toggle";
 export {
-  appendImportedQuestions,
-  fetchInterviewQuestionPage,
-  findInterviewQuestionByCode,
-  mockCriterionResults,
-} from "./api/__mock__/interview-question-mocks";
+  useGradePracticeAnswer,
+  useImportInterviewQuestions,
+  useInterviewQuestion,
+  useInterviewQuestionPage,
+} from "./api/queries";

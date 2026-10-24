@@ -1,5 +1,5 @@
 {
-  "_": "Nguon: 02-bd/database/identity.md (muc 1.1-1.15), ve ngay 2026-10-22. Kieu giu nguyen nhu tai lieu DB; khong co kieu thi de trong. Redis key (password_reset_requests, email_change_requests...) khong phai bang nen khong ve. Quan he ref giua bang read model va users la suy luan (tai lieu DB khong khai bao FK).",
+  "_": "Nguon: 02-bd/database/F1_identity.md (muc 1.1-1.15), ve ngay 2026-10-22. Kieu giu nguyen nhu tai lieu DB; khong co kieu thi de trong. Redis key (password_reset_requests, email_change_requests...) khong phai bang nen khong ve. Quan he ref giua bang read model va users la suy luan (tai lieu DB khong khai bao FK).",
   "kind": "erd",
   "title": "ERD schema identity",
   "covers": [],

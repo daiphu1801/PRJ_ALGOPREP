@@ -6,8 +6,8 @@
 > `Accepted`) [SoT: 01-rd/overview/system_survey.md mục 7.1 — cột "Bounded Context liên quan", dòng
 > `problem_detail`]. Actor: A1. Màn nặng nhất trong 31 màn — chạm bốn Bounded Context
 > [SoT: 01-rd/overview/system_survey.md — mục 7.1, ghi chú "Màn nặng nhất là `problem_detail`"].
-> Nguồn sự thật (SoT): `01-rd/req/problem-bank.md` (F2), `01-rd/req/harness.md` (F3),
-> `01-rd/req/judge-orchestration.md` (F4), `01-rd/req/user_stories/a1_student.md` (`US-A1-03`),
+> Nguồn sự thật (SoT): `01-rd/req/F2_problem-bank.md` (F2), `01-rd/req/F3_harness.md` (F3),
+> `01-rd/req/F4_judge-orchestration.md` (F4), `01-rd/req/user_stories/a1_student.md` (`US-A1-03`),
 > `09-layoutBase/Workspace giải bài.dc.html` (prototype).
 > Tài liệu này có thể đọc độc lập.
 >
@@ -22,20 +22,20 @@
 
 Nơi học viên đọc đề, viết mã (hoặc tải file mã nguồn lên), chạy thử với testcase mẫu, và nộp bài để chấm
 với testcase ẩn — cho cả hai mô hình nộp bài song song
-[SoT: 01-rd/req/harness.md — F3-01 tới F3-13; 01-rd/req/judge-orchestration.md — F4-01, F4-02].
+[SoT: 01-rd/req/F3_harness.md — F3-01 tới F3-13; 01-rd/req/F4_judge-orchestration.md — F4-01, F4-02].
 
 **Luồng vào màn (đổi 2026-10-20):** người học không còn vào thẳng màn soạn mã khi chọn một bài. Họ vào **trang tổng quan** của bài (đọc đề, xem giới hạn, bài nộp gần đây, tóm tắt Solution Review) rồi chủ động bấm "Giải bài toán" để sang màn này; hoặc tiếp tục một bài đang làm dở từ trang đầu Workspace. Đây là thay đổi về **luồng**, nên ghi ở RD [SoT: .nexa/control/decision-registry.md:4239-4250 — `DEC-2026-1020-student-workspace-split-and-password-in-settings`].
 
 File này mô tả **hành vi và UX ở mức yêu cầu** — không lặp lại đặc tả chức năng đã có ở
-`01-rd/req/problem-bank.md` (mục F2), `01-rd/req/harness.md` (mục F3), `01-rd/req/judge-orchestration.md`
+`01-rd/req/F2_problem-bank.md` (mục F2), `01-rd/req/F3_harness.md` (mục F3), `01-rd/req/F4_judge-orchestration.md`
 (mục F4) và `01-rd/req/user_stories/a1_student.md` (`US-A1-03`), chỉ trỏ tới và bổ sung phần đặc thù của màn.
 
 **Quan trọng — đã sửa một quyết định phạm vi trong lúc viết file này:** bản trước của F3-13 coi mô hình
 Standard I/O là "đường lùi" do giảng viên chọn cố định theo từng bài. Đối chiếu prototype thật (mục 2.1 bên
 dưới) cho thấy học viên **tự do chọn mô hình mỗi lượt làm bài**, khớp đúng `README.md` mục 5 dòng 179
 ("Hỗ trợ cả 2 mô hình") hơn cách hiểu cũ. Đã chốt qua hỏi trực tiếp chủ dự án, ghi
-`DEC-2026-0824-dual-submission-model-per-problem`, sửa `problem-bank.md` (F2-03), `harness.md` (F3-13),
-`system_survey.md`, `user_stories/a1_student.md` (`US-A1-03`), và `02-bd/architecture/harness.md`.
+`DEC-2026-0824-dual-submission-model-per-problem`, sửa `F2_problem-bank.md` (F2-03), `F3_harness.md` (F3-13),
+`system_survey.md`, `user_stories/a1_student.md` (`US-A1-03`), và `02-bd/architecture/F3_harness.md`.
 
 ---
 
@@ -43,12 +43,12 @@ dưới) cho thấy học viên **tự do chọn mô hình mỗi lượt làm b�
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Đặc tả bài toán cho cả hai mô hình (chữ ký hàm + định dạng stdio) | F2-03 | `01-rd/req/problem-bank.md` — F2-03 |
-| Chọn mô hình nộp bài tự do mỗi lượt làm; ẩn Bọc hàm nếu kiểu dữ liệu vượt lược đồ | F3-13 | `01-rd/req/harness.md` — F3-13 |
-| Sinh mã harness theo ngôn ngữ và mô hình (đọc input, gọi hàm, in kết quả) | F3-02→F3-04 | `01-rd/req/harness.md` — F3-02→F3-04 |
-| Ánh xạ lỗi biên dịch về đúng dòng người dùng; che giấu lỗi harness | F3-11, F3-12 | `01-rd/req/harness.md` — F3-11, F3-12 |
-| Nộp bài trả `submissionId` ngay, không chờ; hoặc tải file mã nguồn lên | F4-01 | `01-rd/req/judge-orchestration.md` — F4-01 |
-| Chạy thử với testcase Sample, không ghi nhận tiến độ | F4-02 | `01-rd/req/judge-orchestration.md` — F4-02 |
+| Đặc tả bài toán cho cả hai mô hình (chữ ký hàm + định dạng stdio) | F2-03 | `01-rd/req/F2_problem-bank.md` — F2-03 |
+| Chọn mô hình nộp bài tự do mỗi lượt làm; ẩn Bọc hàm nếu kiểu dữ liệu vượt lược đồ | F3-13 | `01-rd/req/F3_harness.md` — F3-13 |
+| Sinh mã harness theo ngôn ngữ và mô hình (đọc input, gọi hàm, in kết quả) | F3-02→F3-04 | `01-rd/req/F3_harness.md` — F3-02→F3-04 |
+| Ánh xạ lỗi biên dịch về đúng dòng người dùng; che giấu lỗi harness | F3-11, F3-12 | `01-rd/req/F3_harness.md` — F3-11, F3-12 |
+| Nộp bài trả `submissionId` ngay, không chờ; hoặc tải file mã nguồn lên | F4-01 | `01-rd/req/F4_judge-orchestration.md` — F4-01 |
+| Chạy thử với testcase Sample, không ghi nhận tiến độ | F4-02 | `01-rd/req/F4_judge-orchestration.md` — F4-02 |
 | Given-When-Then đầy đủ | — | `01-rd/req/user_stories/a1_student.md` (`US-A1-03`) |
 
 Đối chiếu `09-layoutBase/Workspace giải bài.dc.html` [SoT: 09-layoutBase/Workspace giải bài.dc.html], phạm
@@ -73,7 +73,7 @@ vi trên thể hiện qua các khối màn sau:
    tải file). **Đã sửa xong Câu hỏi mở Q2** (đã chốt qua hỏi trực tiếp chủ dự án, đúng theo đề xuất trong
    bảng câu hỏi mở): trước đây "Tải file" là giá trị thứ ba của cùng biến mô hình (`mode`), nay tách thành
    biến `inputMethod` riêng, áp dụng cho mô hình đang chọn.
-6. **`isEditorMode`** — editor dòng-số + textarea gõ trực tiếp (dòng 281-294). **`isUploadMode`** (khi chọn
+6. **`isEditorMode`** — editor dòng-số + textarea gõ trực tiếp (dòng 281-294; đây là prototype tĩnh `09-layoutBase`, còn bản dựng Next.js từ 2026-10-23 dùng Monaco Editor qua `shared/ui` `CodeEditor`, `05-coding/frontend/src/shared/ui/data/code-editor.tsx`). **`isUploadMode`** (khi chọn
    "Tải file") — vùng kéo-thả hoặc chọn file, giới hạn đúng phần mở rộng ngôn ngữ và tối đa 64 KB, xem lại
    nội dung đã tải (dòng 297-312) — khớp F4-01 mục bổ sung "tải file, cùng luồng với gõ trực tiếp". Mã đang soạn được giữ ở trình duyệt
    này theo từng cặp (bài, ngôn ngữ, mô hình) và gắn nhãn "Đã lưu trên trình duyệt này"; không có bản nháp ở máy chủ.
@@ -92,7 +92,7 @@ vi trên thể hiện qua các khối màn sau:
 | Màn hiện tại | `USR0102` / `problem_detail`, đường dẫn `/workspace/{problemId}` | `problem-bank` + `harness` + `judge-orchestration` |
 | `01-rd/screens/users/USR0104_problem_overview.md` | Màn đứng trước — tổng quan bài toán chỉ-đọc, có nút "Giải bài toán" dẫn sang màn này | [SoT: .nexa/control/decision-registry.md:4239-4243] |
 | `01-rd/screens/users/USR0105_workspace_home.md` | Màn đứng trước — trang đầu Workspace, liệt kê bài đang làm dở để tiếp tục | [SoT: .nexa/control/decision-registry.md:4241-4243] |
-| Tài liệu yêu cầu | `01-rd/req/problem-bank.md` (F2), `01-rd/req/harness.md` (F3), `01-rd/req/judge-orchestration.md` (F4) | Nguồn SoT của màn |
+| Tài liệu yêu cầu | `01-rd/req/F2_problem-bank.md` (F2), `01-rd/req/F3_harness.md` (F3), `01-rd/req/F4_judge-orchestration.md` (F4) | Nguồn SoT của màn |
 | Prototype | `09-layoutBase/Workspace giải bài.dc.html` | Bằng chứng bố cục và trạng thái |
 
 **Chi tiết trạng thái và cấu trúc màn**
@@ -109,12 +109,12 @@ vi trên thể hiện qua các khối màn sau:
 
 ## 3. Ngoài phạm vi (Out of Scope)
 
-- Bảng màu, spacing, chi tiết component Monaco Editor thật (prototype dùng textarea giả lập) — thuộc BD
+- Bảng màu, spacing, chi tiết component Monaco Editor (prototype tĩnh `09-layoutBase` dùng textarea giả lập; bản dựng Next.js từ 2026-10-23 đã dùng Monaco thật) — thuộc BD
   (`02-bd/screens/users/USR0102_problem_detail.md`).
-- Hợp đồng API (nộp bài, chạy thử, WebSocket per-testcase) — thuộc DD (`03-dd/api/judge-orchestration.md`,
-  `03-dd/api/harness.md`, chưa viết).
+- Hợp đồng API (nộp bài, chạy thử, WebSocket per-testcase) — thuộc DD (`03-dd/api/F4_judge-orchestration.md`,
+  `03-dd/api/F3_harness.md`, chưa viết).
 - Thuật toán sinh mã harness theo từng ngôn ngữ và từng mô hình — thuộc logic của `harness`
-  (`02-bd/architecture/harness.md` mục 2b), không thuộc file theo trục màn này.
+  (`02-bd/architecture/F3_harness.md` mục 2b), không thuộc file theo trục màn này.
 - Luồng cập nhật kết quả testcase theo thời gian thực sau khi Submit — thuộc màn `submission_result`
   (`01-rd/screens/users/USR0201_submission_result.md`), không lặp lại ở đây theo đúng ghi chú "đừng gộp hai màn"
   [SoT: 01-rd/overview/system_survey.md — mục 7.1, ghi chú "`problem_detail` và `submission_result` là hai màn riêng, đừng gộp"].
@@ -139,12 +139,12 @@ vi trên thể hiện qua các khối màn sau:
 
 | ID | Yêu cầu | Loại | Nguồn/SoT |
 |---|---|---|---|
-| REQ-01 | Đặc tả bài toán cho cả hai mô hình (chữ ký hàm + định dạng stdio) (F2-03) | Chức năng | `01-rd/req/problem-bank.md` — F2-03 |
-| REQ-02 | Chọn mô hình nộp bài tự do mỗi lượt làm; ẩn Bọc hàm nếu kiểu dữ liệu vượt lược đồ (F3-13) | Chức năng | `01-rd/req/harness.md` — F3-13 |
-| REQ-03 | Sinh mã harness theo ngôn ngữ và mô hình (đọc input, gọi hàm, in kết quả) (F3-02→F3-04) | Chức năng | `01-rd/req/harness.md` — F3-02→F3-04 |
-| REQ-04 | Ánh xạ lỗi biên dịch về đúng dòng người dùng; che giấu lỗi harness (F3-11, F3-12) | Chức năng | `01-rd/req/harness.md` — F3-11, F3-12 |
-| REQ-05 | Nộp bài trả `submissionId` ngay, không chờ; hoặc tải file mã nguồn lên (F4-01) | Chức năng | `01-rd/req/judge-orchestration.md` — F4-01 |
-| REQ-06 | Chạy thử với testcase Sample, không ghi nhận tiến độ (F4-02) | Chức năng | `01-rd/req/judge-orchestration.md` — F4-02 |
+| REQ-01 | Đặc tả bài toán cho cả hai mô hình (chữ ký hàm + định dạng stdio) (F2-03) | Chức năng | `01-rd/req/F2_problem-bank.md` — F2-03 |
+| REQ-02 | Chọn mô hình nộp bài tự do mỗi lượt làm; ẩn Bọc hàm nếu kiểu dữ liệu vượt lược đồ (F3-13) | Chức năng | `01-rd/req/F3_harness.md` — F3-13 |
+| REQ-03 | Sinh mã harness theo ngôn ngữ và mô hình (đọc input, gọi hàm, in kết quả) (F3-02→F3-04) | Chức năng | `01-rd/req/F3_harness.md` — F3-02→F3-04 |
+| REQ-04 | Ánh xạ lỗi biên dịch về đúng dòng người dùng; che giấu lỗi harness (F3-11, F3-12) | Chức năng | `01-rd/req/F3_harness.md` — F3-11, F3-12 |
+| REQ-05 | Nộp bài trả `submissionId` ngay, không chờ; hoặc tải file mã nguồn lên (F4-01) | Chức năng | `01-rd/req/F4_judge-orchestration.md` — F4-01 |
+| REQ-06 | Chạy thử với testcase Sample, không ghi nhận tiến độ (F4-02) | Chức năng | `01-rd/req/F4_judge-orchestration.md` — F4-02 |
 | REQ-07 | Given-When-Then đầy đủ (—) | Chức năng | `01-rd/req/user_stories/a1_student.md` (`US-A1-03`) |
 | REQ-08 | **Cho** tôi đang xem một bài toán bất kỳ, **Khi** tôi bấm nút chuyển mô hình từ "Bọc hàm" sang "Có hàm main" (hoặc ngược lại), **Thì** mã khung đổi ngay theo mô hình và ngôn ngữ đang chọn, đề bài (tab "Đề bài") cập nhật câu giải thích mô hình đang áp dụng — tôi không cần rời khỏi bài để đổi mô hình | Chức năng (GWT) | [SoT: 09-layoutBase/Workspace giải bài.dc.html:461-470, 596-601 — hàm `starter(lang, mode)` sinh lại mã khung theo cặp (ngôn ngữ, mô hình) bất kỳ lúc nào; nay `mode` chỉ còn hai giá trị (Có hàm main/Bọc hàm) sau khi tách "Tải file" thành `inputMethod` riêng, xem Câu hỏi mở Q2 đã đóng] |
 | REQ-09 | **Cho** bài nộp của tôi đạt `Accepted`, **Khi** tôi xem console kết quả, **Thì** tôi thấy đồng thời ba lối đi tiếp theo (xem kết quả đầy đủ, phân tích bài giải, phỏng vấn giả lập) ngay tại đây, không cần quay lại danh sách bài toán | Chức năng (GWT) | [SoT: 09-layoutBase/Workspace giải bài.dc.html:371-377] |
@@ -190,10 +190,10 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 
 | Loại | Tham chiếu |
 |---|---|
-| Yêu cầu module | `01-rd/req/problem-bank.md` — F2-03; `01-rd/req/harness.md` — F3-01 tới F3-13; `01-rd/req/judge-orchestration.md` — F4-01, F4-02. |
+| Yêu cầu module | `01-rd/req/F2_problem-bank.md` — F2-03; `01-rd/req/F3_harness.md` — F3-01 tới F3-13; `01-rd/req/F4_judge-orchestration.md` — F4-01, F4-02. |
 | User story | `01-rd/req/user_stories/a1_student.md` — `US-A1-03`. |
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` — mục 7.1 dòng `problem_detail`, cùng hai ghi chú ngay dưới bảng: "Màn nặng nhất là `problem_detail`" và "hai màn riêng, đừng gộp" với `submission_result`. |
 | Prototype | `09-layoutBase/Workspace giải bài.dc.html`. |
 | Quyết định | `DEC-2026-0824-dual-submission-model-per-problem` (phát sinh từ chính việc viết file này); `DEC-2026-1020-student-workspace-split-and-password-in-settings` (tách trang tổng quan, trang đầu Workspace và màn soạn mã, đổi đường dẫn). |
-| Kiến trúc BD | `02-bd/architecture/harness.md` mục 2b — hệ quả kiến trúc của quyết định trên. |
+| Kiến trúc BD | `02-bd/architecture/F3_harness.md` mục 2b — hệ quả kiến trúc của quyết định trên. |
 | Kế hoạch | `06-plan/nexa-plan/260824-2043-bd-screens-common-first.md` — kế hoạch Phase 1 sinh ra file này. |

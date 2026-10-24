@@ -20,8 +20,8 @@
 - **Không có dải thẻ số liệu** ở đầu màn (quy tắc chủ dự án 2026-10-13, `01-rd/screens/teacher/INS0206_submission_management.md`
   REQ-09): màn là danh sách, không lặp số đã hiện ở màn khác.
 - **DD của màn này CHƯA viết.** DD màn hình viết sau prototype (`CLAUDE.md`, mục Process). Sheet 7 chỉ ghi tên
-  nghiệp vụ, trường DTO và BC sở hữu; đường dẫn, request, response, mã lỗi thuộc `03-dd/api/judge-orchestration.md`
-  và `03-dd/api/identity.md`.
+  nghiệp vụ, trường DTO và BC sở hữu; đường dẫn, request, response, mã lỗi thuộc `03-dd/api/F4_judge-orchestration.md`
+  và `03-dd/api/F1_identity.md`.
 - **Không thiết kế lại** trang kết quả chỉ đọc `/instructor/submissions/{id}`: thuộc vùng giảng viên của
   `USR0201` (`02-bd/screens/users/USR0201_submission_result.md`, mục "Vùng giảng viên (A2)"; RD chương 10). Màn này
   chỉ liên kết tới. Cũng **không thiết kế** hồ sơ học viên (`INS0204`), giao bài (`INS0202`), chấm tay (đã bỏ,
@@ -29,9 +29,9 @@
 - Màn **không gọi `ai-review`**: F5/F6 hỏng thì danh sách vẫn chạy đủ (ràng buộc bắt buộc của dự án, `CLAUDE.md`).
 
 > Đọc cùng `01-rd/screens/teacher/INS0206_submission_management.md` (V0.2, hành vi ở mức yêu cầu, không lặp lại ở
-> đây), `01-rd/screens/users/USR0201_submission_result.md` chương 10, `01-rd/req/judge-orchestration.md` (F4-13),
-> `02-bd/database/judge-orchestration.md` mục 1.1, `02-bd/database/identity.md` mục 1.10 và
-> `02-bd/database/problem-bank.md` mục 1.7. Quyết định áp dụng (đều ACTIVE):
+> đây), `01-rd/screens/users/USR0201_submission_result.md` chương 10, `01-rd/req/F4_judge-orchestration.md` (F4-13),
+> `02-bd/database/F4_judge-orchestration.md` mục 1.1, `02-bd/database/F1_identity.md` mục 1.10 và
+> `02-bd/database/F2_problem-bank.md` mục 1.7. Quyết định áp dụng (đều ACTIVE):
 > `DEC-2026-1013-instructor-submissions-list` [Nguồn: .nexa/control/decision-registry.md:3457-3482],
 > `DEC-2026-1014-instructor-submissions-list-rules` [Nguồn: .nexa/control/decision-registry.md:3891-3926],
 > `DEC-2026-1014-keep-learning-history-on-leave` [Nguồn: .nexa/control/decision-registry.md:3927-3950],
@@ -76,7 +76,7 @@
 | Ver | Sheet bị sửa | Nội dung sửa | Ngày | Người sửa |
 | :--- | :--- | :--- | :--- | :--- |
 | V0.1 | Toàn bộ | Tạo mới theo mẫu 9 sheet từ RD `INS0206` V0.2 và các quyết định `DEC-2026-1013-instructor-submissions-list`, `DEC-2026-1014-instructor-submissions-list-rules`, `DEC-2026-1014-keep-learning-history-on-leave`. Bố cục bám bản dựng prototype; ghi "Hiện trạng bản dựng" với ba lệch đã biết (kích thước trang, ghi chú "Đã rời lớp", kiểm phạm vi chỉ 404 ngoài lớp). Một endpoint danh sách do `judge-orchestration` sở hữu, lớp lấy từ `ListInstructorClasses`. Phát sinh 4 câu hỏi mở. Thêm dòng "Bài nộp" vào `_shell.md` bảng 3.2 và mục "Vùng giảng viên (A2)" vào BD `USR0201` cùng đợt | 2026/10/14 | AI |
-| V0.2 | Sheet 3, 4.1, 4.3, 4.4 (hiện trạng NO 9), 5 (B NO 3), 6 (C NO 10), 9 (NO 3, 9, 10), Câu hỏi mở | Áp `DEC-2026-1014-instructor-submissions-list-details` (ponytail bậc 5, 4, 6): đóng Q1 đến Q4. Q1: lượt nộp gắn lớp có `assigned_at` mới nhất không sau `submitted_at`, không thêm cột `class_id`. Q2: về danh sách bằng `router.back()` khi mở từ danh sách, khôi phục `?classId=&result=&q=&page=`. Q3: bộ trạng thái theo BD/DB, `SYSTEM_ERROR` chỉ ở "Tất cả"; bản dựng lệch ghi là nợ prototype. Q4: khoảng thời gian đã rời tính là trong lớp, quy tắc cửa sổ viết lại. Liên kết sang trang kết quả mang `from=submissions`. Sửa chỉ mục lệch tên cột ở mục 4.3 vì `02-bd/database/judge-orchestration.md` đã đổi sang `submitted_at`. Làm rõ ghi chú Sheet 6 C NO 10 sau khi `INS0204` thống nhất. Không thêm hay đổi NO, EVT | 2026/10/14 | AI |
+| V0.2 | Sheet 3, 4.1, 4.3, 4.4 (hiện trạng NO 9), 5 (B NO 3), 6 (C NO 10), 9 (NO 3, 9, 10), Câu hỏi mở | Áp `DEC-2026-1014-instructor-submissions-list-details` (ponytail bậc 5, 4, 6): đóng Q1 đến Q4. Q1: lượt nộp gắn lớp có `assigned_at` mới nhất không sau `submitted_at`, không thêm cột `class_id`. Q2: về danh sách bằng `router.back()` khi mở từ danh sách, khôi phục `?classId=&result=&q=&page=`. Q3: bộ trạng thái theo BD/DB, `SYSTEM_ERROR` chỉ ở "Tất cả"; bản dựng lệch ghi là nợ prototype. Q4: khoảng thời gian đã rời tính là trong lớp, quy tắc cửa sổ viết lại. Liên kết sang trang kết quả mang `from=submissions`. Sửa chỉ mục lệch tên cột ở mục 4.3 vì `02-bd/database/F4_judge-orchestration.md` đã đổi sang `submitted_at`. Làm rõ ghi chú Sheet 6 C NO 10 sau khi `INS0204` thống nhất. Không thêm hay đổi NO, EVT | 2026/10/14 | AI |
 | V0.3 | Sheet 4.4 (Hiện trạng bản dựng) | Dựng prototype INS0206 theo DEC-2026-1014-instructor-submissions-list-rules. Thêm cột "Tình trạng" vào bảng Hiện trạng bản dựng. Dòng 1 (kích thước trang 20 cố định), 2 (ghi chú "Đã rời lớp"), 7 (ba thông điệp rỗng, trừ nút Thử lại) và 9 (bộ trạng thái, bộ lọc "Chưa đạt", tỉ lệ `-`, sắp mới nhất trước) đã dựng, **chưa duyệt hình**. Dòng 3, 4, 5, 6, 8, 10 giữ là nợ; dòng 11 ghi rõ tham số `from` và trang kết quả giảng viên thuộc giai đoạn sau; thêm dòng 12 (quy tắc chọn lớp chưa mô hình hoá). Không đổi yêu cầu hay quyết định thiết kế | 2026/10/14 | AI |
 | V0.4 | Sheet 4.4 (Hiện trạng bản dựng NO 11) | Dựng prototype trang kết quả của giảng viên (`from=`, breadcrumb, sidebar). Dòng 11: nút Xem bài nộp nay mang `from=submissions`; trang kết quả giảng viên đã có breadcrumb theo `from` và lùi lịch sử bằng `router.back()` khi mở từ danh sách. Các dòng còn nợ giữ nguyên. Không đổi yêu cầu hay quyết định thiết kế. **Chưa duyệt hình** | 2026/10/14 | AI |
 | V0.5 | Sheet 4.4 (Hiện trạng bản dựng NO 11) | Dựng prototype Phase 4-5 (bài giao theo lớp, phân trang 20, from=). Dòng 11: liên kết tên học viên còn trong lớp nay mang `?from=submissions`, nên trang chi tiết học viên (`INS0204`) sáng mục "Bài nộp" ở sidebar (khớp Sheet 9 NO 6). Không đổi yêu cầu hay quyết định thiết kế. **Chưa duyệt hình** | 2026/10/18 | AI |
@@ -230,7 +230,7 @@ Không giới hạn tổng số trang. Từ khoá tìm tối đa 100 ký tự `[
 
 ### 4.2 DTO liên quan
 
-Tên DTO do BD đề xuất, `03-dd/api/judge-orchestration.md` chốt lại `[SoT: Suy luận]`.
+Tên DTO do BD đề xuất, `03-dd/api/F4_judge-orchestration.md` chốt lại `[SoT: Suy luận]`.
 
 - `SubmissionListQuery` — tham số của lần gọi: `classId` (tuỳ chọn), `result` (`all` / `accepted` / `failed`), `q`, `page`. Kích thước trang là hằng số phía máy chủ, không phải tham số.
 - `SubmissionListItemDto` — một dòng của bảng: `submissionId`, `studentId`, `studentName`, `classId`, `className`, `problemId`, `problemTitle`, `language`, `status`, `passedCount`, `totalCount`, `submittedAt`, `leftClass`.
@@ -239,7 +239,7 @@ Tên DTO do BD đề xuất, `03-dd/api/judge-orchestration.md` chốt lại `[S
   [Nguồn: 02-bd/screens/teacher/INS0201_class_management.md — Sheet 7.1 NO 6, 7].
 
 **Ràng buộc bắt buộc:** không DTO nào ở màn này được chứa `source_code`, `compile_error_message`, nội dung testcase, hay dòng nào của
-`submission_testcase_results` [Nguồn: 02-bd/database/judge-orchestration.md:20,24,40-62].
+`submission_testcase_results` [Nguồn: 02-bd/database/F4_judge-orchestration.md:20,24,40-62].
 
 ### 4.3 Bảng dữ liệu liên quan (6)
 
@@ -248,20 +248,20 @@ Sáu bảng dưới đây đúng bằng sáu dòng ở mục 7.2. Màn chỉ **�
 
 | NO | Bảng | Ghi chú |
 | --: | :--- | :--- |
-| 1 | `judge.submissions` | Nguồn của mọi dòng: `id`, `user_id`, `problem_id`, `language`, `status`, `passed_testcase_count`, `total_testcase_count`, `score_ratio`, `submitted_at` [Nguồn: 02-bd/database/judge-orchestration.md:14-31]. Không có cột `class_id`: lớp của dòng suy ra từ ghi danh và bài giao theo quy tắc "lần giao mới nhất không sau `submitted_at`" (mục 4.1, Phạm vi) |
-| 2 | `identity.classes` | Tập lớp có `instructor_id` là người xem; `name` cho cột Lớp và bộ lọc [Nguồn: 02-bd/database/identity.md mục 1.8] |
-| 3 | `identity.class_enrollments` | Học viên thuộc lớp và **cửa sổ thuộc lớp** (`joined_at`, `left_at`) để quyết bài nộp có thuộc phạm vi và có cờ `leftClass`. **Dòng ghi danh được giữ khi học viên rời lớp** (chỉ đặt `left_at`), đúng nhu cầu của màn này [Nguồn: 02-bd/database/identity.md:98-115] |
+| 1 | `judge.submissions` | Nguồn của mọi dòng: `id`, `user_id`, `problem_id`, `language`, `status`, `passed_testcase_count`, `total_testcase_count`, `score_ratio`, `submitted_at` [Nguồn: 02-bd/database/F4_judge-orchestration.md:14-31]. Không có cột `class_id`: lớp của dòng suy ra từ ghi danh và bài giao theo quy tắc "lần giao mới nhất không sau `submitted_at`" (mục 4.1, Phạm vi) |
+| 2 | `identity.classes` | Tập lớp có `instructor_id` là người xem; `name` cho cột Lớp và bộ lọc [Nguồn: 02-bd/database/F1_identity.md mục 1.8] |
+| 3 | `identity.class_enrollments` | Học viên thuộc lớp và **cửa sổ thuộc lớp** (`joined_at`, `left_at`) để quyết bài nộp có thuộc phạm vi và có cờ `leftClass`. **Dòng ghi danh được giữ khi học viên rời lớp** (chỉ đặt `left_at`), đúng nhu cầu của màn này [Nguồn: 02-bd/database/F1_identity.md:98-115] |
 | 4 | `identity.users` | `display_name` của học viên (cột tên, tìm theo học viên) |
-| 5 | `problem.class_assignments` | Bài đã giao cho từng lớp, **kể cả bài đã gỡ mềm** (`removed_at`) [Nguồn: 02-bd/database/problem-bank.md:169-181] |
+| 5 | `problem.class_assignments` | Bài đã giao cho từng lớp, **kể cả bài đã gỡ mềm** (`removed_at`) [Nguồn: 02-bd/database/F2_problem-bank.md:169-181] |
 | 6 | `problem.problems` | `title` của bài (cột Bài tập, tìm theo bài toán) |
 
 Chỉ mục: truy vấn lọc theo tập học viên và tập bài, sắp theo `submitted_at` giảm dần. Chỉ mục có sẵn `submissions(user_id, problem_id, submitted_at DESC)`
-[Nguồn: 02-bd/database/judge-orchestration.md:187] khớp cột `submitted_at` của bảng [Nguồn: 02-bd/database/judge-orchestration.md:31]
+[Nguồn: 02-bd/database/F4_judge-orchestration.md:187] khớp cột `submitted_at` của bảng [Nguồn: 02-bd/database/F4_judge-orchestration.md:31]
 (tên cột từng ghi lệch `created_at`, đã sửa 2026/10/14).
 Quy mô đồ án không cần chỉ mục mới `[SoT: Suy luận]`.
 
 **Việc cần ở `identity` (một câu cho DD):** cổng đọc của `identity` phải trả **cả dòng ghi danh đã rời** (có `left_at`), vì các câu "học viên của lớp" thông thường
-lọc `left_at IS NULL` [Nguồn: 02-bd/database/identity.md:106-108] và nếu dùng chung sẽ làm mất dòng "Đã rời lớp".
+lọc `left_at IS NULL` [Nguồn: 02-bd/database/F1_identity.md:106-108] và nếu dùng chung sẽ làm mất dòng "Đã rời lớp".
 
 ### 4.4 Vùng bố cục bám prototype
 
@@ -335,7 +335,7 @@ Bảng này ghi chỗ bản dựng lệch thiết kế ở trên; **không phả
 | Thanh lọc | | | | | | | | | | | | | |
 | | 1 | Ô tìm kiếm | `submissionManagement.filter.search` | `identity.users`, `problem.problems` | `display_name`, `title` | TextBox | String | 100 | - | I/O | rỗng (đọc từ `?q=`) | - | Khớp theo **tên học viên hoặc tên bài toán**, không phân biệt hoa thường, bỏ khoảng trắng hai đầu; ghi vào URL `q`; giá trị rỗng thì bỏ tham số. Gợi ý ô: "Tìm theo học viên hoặc bài tập"<br>[Nguồn giá trị] URL `q`; nhãn tĩnh i18n `instructorSubmissions.search` [Nguồn: messages/vi.json:2410]. Hành vi khớp không phân biệt hoa thường theo prototype [Nguồn: submission-management-view.tsx:75-82]<br>[EVT liên quan] EVT-2 |
 | | 2 | Lọc Lớp | `submissionManagement.filter.classId` | `identity.classes` | `id`, `name` | List | String | - | - | I/O | `all` (Tất cả) | Tên lớp | Menu chọn một: "Tất cả" và từng lớp giảng viên phụ trách; ghi vào URL `classId` (bỏ tham số khi là "Tất cả")<br>[Nguồn giá trị] Kết quả `ListInstructorClasses` (`identity`); nhãn "Tất cả" là nhãn tĩnh i18n `instructorSubmissions.filterAll` [Nguồn: messages/vi.json:2413]<br>[EVT liên quan] EVT-3 |
-| | 3 | Lọc Kết quả | `submissionManagement.filter.result` | `judge.submissions` | `status` | List | Enum | - | - | I/O | `all` (Tất cả) | Nhãn tiếng Việt | Ba lựa chọn: **Tất cả**, **Đã chấp nhận** (`ACCEPTED`), **Chưa đạt** (đã chấm xong và không đạt); bài `PENDING`, `COMPILING`, `JUDGING` chỉ hiện ở "Tất cả"; không có lựa chọn thứ tư (REQ-04); ghi vào URL `result`<br>[Công thức] `accepted` là `status = ACCEPTED`; `failed` là một trong `WRONG_ANSWER`, `TIME_LIMIT_EXCEEDED`, `RUNTIME_ERROR`, `COMPILE_ERROR`. **ĐÃ CHỐT 2026-10-14 (DEC-2026-1014-instructor-submissions-list-details):** `SYSTEM_ERROR` (lỗi hạ tầng, không do học viên) **chỉ hiện ở "Tất cả"**, không bao giờ thuộc "Chưa đạt"; `MEMORY_LIMIT_EXCEEDED` không phải trạng thái của lượt nộp (chỉ là verdict từng testcase) [Nguồn: .nexa/control/decision-registry.md:3985-3987; 02-bd/database/judge-orchestration.md:22] [Nguồn: entities/submission/model/result-filter.ts:12-28]<br>[EVT liên quan] EVT-4 |
+| | 3 | Lọc Kết quả | `submissionManagement.filter.result` | `judge.submissions` | `status` | List | Enum | - | - | I/O | `all` (Tất cả) | Nhãn tiếng Việt | Ba lựa chọn: **Tất cả**, **Đã chấp nhận** (`ACCEPTED`), **Chưa đạt** (đã chấm xong và không đạt); bài `PENDING`, `COMPILING`, `JUDGING` chỉ hiện ở "Tất cả"; không có lựa chọn thứ tư (REQ-04); ghi vào URL `result`<br>[Công thức] `accepted` là `status = ACCEPTED`; `failed` là một trong `WRONG_ANSWER`, `TIME_LIMIT_EXCEEDED`, `RUNTIME_ERROR`, `COMPILE_ERROR`. **ĐÃ CHỐT 2026-10-14 (DEC-2026-1014-instructor-submissions-list-details):** `SYSTEM_ERROR` (lỗi hạ tầng, không do học viên) **chỉ hiện ở "Tất cả"**, không bao giờ thuộc "Chưa đạt"; `MEMORY_LIMIT_EXCEEDED` không phải trạng thái của lượt nộp (chỉ là verdict từng testcase) [Nguồn: .nexa/control/decision-registry.md:3985-3987; 02-bd/database/F4_judge-orchestration.md:22] [Nguồn: entities/submission/model/result-filter.ts:12-28]<br>[EVT liên quan] EVT-4 |
 | | 4 | Số dòng khớp | `submissionManagement.filter.resultCount` | `judge.submissions` | - | Label | Number | 6 | - | O | `0` | `{n} lượt nộp` | Số lượt nộp khớp bộ lọc và từ khoá (toàn bộ các trang), ở mép phải thanh lọc. Ẩn khi đang tải lần đầu hoặc lỗi<br>[Nguồn giá trị] `SubmissionListPageDto.totalCount` (Sheet 7.1)<br>[EVT liên quan] EVT-1, EVT-2, EVT-3, EVT-4, EVT-5 |
 
 ### Khu vực C — Bảng bài nộp
@@ -348,10 +348,10 @@ Bảng này ghi chỗ bản dựng lệch thiết kế ở trên; **không phả
 | | 3 | Ghi chú Đã rời lớp | `submissionManagement.table.col.leftNote` | `identity.class_enrollments` | `left_at` | Label | String | 20 | - | O | - | `Đã rời lớp` | Ghi chú nhỏ ngay cạnh hoặc dưới tên học viên, chỉ khi `leftClass = true`<br>[Công thức] `leftClass = (left_at IS NOT NULL)` của dòng ghi danh khớp lớp của lượt nộp. Nhãn tĩnh i18n, **khoá chưa có trong bản dựng** (xem mục Hiện trạng NO 2)<br>[EVT liên quan] - |
 | | 4 | Lớp | `submissionManagement.table.col.class` | `identity.classes` | `name` | ListColumn | String | 120 | - | O | - | - | Lớp đang giữ bài giao của lượt nộp<br>[Nguồn giá trị] `SubmissionListItemDto.className` [Nguồn: submission-management-view.tsx:106]<br>[EVT liên quan] - |
 | | 5 | Bài tập | `submissionManagement.table.col.problem` | `problem.problems` | `title` | ListColumn | String | 200 | - | O | - | - | Tên bài toán của lượt nộp<br>[Nguồn giá trị] `SubmissionListItemDto.problemTitle`; tên bài do `judge-orchestration` ghép sẵn trong phản hồi, màn không gọi thêm `problem-bank` cho từng dòng (cùng cách `INS0204`)<br>[EVT liên quan] - |
-| | 6 | Ngôn ngữ | `submissionManagement.table.col.language` | `judge.submissions` | `language` | Badge | Enum | - | - | O | - | `Java` / `C++` / `Python` | Đúng ba giá trị [Nguồn: 02-bd/database/judge-orchestration.md:18]<br>[Nguồn giá trị] Cột `language`<br>[EVT liên quan] - |
-| | 7 | Trạng thái | `submissionManagement.table.col.status` | `judge.submissions` | `status` | Badge | Enum | - | - | O | - | Nhãn tiếng Việt, màu theo trạng thái | Nhãn và màu dùng chung với trang kết quả (`SUBMISSION_STATUS_VARIANT`, nhãn `submissionResult.verdict.*`); lượt nộp chưa xong hiện trạng thái đang chạy [Nguồn: entities/submission/model/status-variant.ts:5-16; submission-management-view.tsx:118-125]<br>[Nguồn giá trị] Cột `status` [Nguồn: 02-bd/database/judge-orchestration.md:22]<br>[EVT liên quan] - |
-| | 8 | Tỉ lệ testcase | `submissionManagement.table.col.ratio` | `judge.submissions` | `passed_testcase_count`, `total_testcase_count`, `score_ratio` | ListColumn | String | 9 | - | O | `-` | `{đạt}/{tổng}` | **Một cột nhỏ** (REQ-16, F4-13), căn phải, chữ đơn cách. `-` khi chưa chấm xong hoặc không có điểm tỉ lệ<br>[Công thức] Hiện `{passed_testcase_count}/{total_testcase_count}` khi `score_ratio IS NOT NULL`; `score_ratio` là `NULL` khi lượt nộp chưa vào trạng thái cuối và với `COMPILE_ERROR`, `SYSTEM_ERROR` [Nguồn: 02-bd/database/judge-orchestration.md:25-27]. Không hiện `0/0` hay `0%`<br>[EVT liên quan] - |
-| | 9 | Nộp lúc | `submissionManagement.table.col.submittedAt` | `judge.submissions` | `submitted_at` | ListColumn | Date | - | - | O | - | Ngày giờ ngắn theo `vi-VN` | Thời điểm nộp (khác `INS0204` dùng thời gian tương đối, vì danh sách nhiều học viên cần mốc tuyệt đối để đọc thứ tự) [Nguồn: submission-management-view.tsx:133-139]<br>[Nguồn giá trị] Cột `submitted_at` [Nguồn: 02-bd/database/judge-orchestration.md:31]<br>[EVT liên quan] - |
+| | 6 | Ngôn ngữ | `submissionManagement.table.col.language` | `judge.submissions` | `language` | Badge | Enum | - | - | O | - | `Java` / `C++` / `Python` | Đúng ba giá trị [Nguồn: 02-bd/database/F4_judge-orchestration.md:18]<br>[Nguồn giá trị] Cột `language`<br>[EVT liên quan] - |
+| | 7 | Trạng thái | `submissionManagement.table.col.status` | `judge.submissions` | `status` | Badge | Enum | - | - | O | - | Nhãn tiếng Việt, màu theo trạng thái | Nhãn và màu dùng chung với trang kết quả (`SUBMISSION_STATUS_VARIANT`, nhãn `submissionResult.verdict.*`); lượt nộp chưa xong hiện trạng thái đang chạy [Nguồn: entities/submission/model/status-variant.ts:5-16; submission-management-view.tsx:118-125]<br>[Nguồn giá trị] Cột `status` [Nguồn: 02-bd/database/F4_judge-orchestration.md:22]<br>[EVT liên quan] - |
+| | 8 | Tỉ lệ testcase | `submissionManagement.table.col.ratio` | `judge.submissions` | `passed_testcase_count`, `total_testcase_count`, `score_ratio` | ListColumn | String | 9 | - | O | `-` | `{đạt}/{tổng}` | **Một cột nhỏ** (REQ-16, F4-13), căn phải, chữ đơn cách. `-` khi chưa chấm xong hoặc không có điểm tỉ lệ<br>[Công thức] Hiện `{passed_testcase_count}/{total_testcase_count}` khi `score_ratio IS NOT NULL`; `score_ratio` là `NULL` khi lượt nộp chưa vào trạng thái cuối và với `COMPILE_ERROR`, `SYSTEM_ERROR` [Nguồn: 02-bd/database/F4_judge-orchestration.md:25-27]. Không hiện `0/0` hay `0%`<br>[EVT liên quan] - |
+| | 9 | Nộp lúc | `submissionManagement.table.col.submittedAt` | `judge.submissions` | `submitted_at` | ListColumn | Date | - | - | O | - | Ngày giờ ngắn theo `vi-VN` | Thời điểm nộp (khác `INS0204` dùng thời gian tương đối, vì danh sách nhiều học viên cần mốc tuyệt đối để đọc thứ tự) [Nguồn: submission-management-view.tsx:133-139]<br>[Nguồn giá trị] Cột `submitted_at` [Nguồn: 02-bd/database/F4_judge-orchestration.md:31]<br>[EVT liên quan] - |
 | | 10 | Xem bài nộp | `submissionManagement.table.col.btnView` | - | - | Link | - | - | - | I | - | Icon con mắt, tooltip "Xem bài nộp" | Mở trang kết quả chỉ đọc của đúng lượt nộp. Tên truy cập nêu học viên và bài: "Xem bài nộp của {học viên}: {bài}"<br>[Nguồn giá trị] Nhãn tĩnh i18n `instructorSubmissions.col.btnView`, `btnViewOf` [Nguồn: messages/vi.json:2427-2428]<br>[EVT liên quan] EVT-7 |
 
 ### Khu vực D — Phân trang
@@ -377,7 +377,7 @@ Bảng này ghi chỗ bản dựng lệch thiết kế ở trên; **không phả
 | | 8 | Bỏ lọc lớp | `submissionManagement.state.btnClearClass` | - | - | Link | - | - | - | I | - | `Xem tất cả bài nộp` | Bỏ `classId` khỏi URL, hiện lại danh sách mọi lớp. Nhãn tĩnh i18n, khoá chưa có<br>[Nguồn giá trị] Nhãn tĩnh<br>[EVT liên quan] EVT-9 |
 
 [Nguồn: 01-rd/screens/teacher/INS0206_submission_management.md:119-139,158-169;
-02-bd/database/judge-orchestration.md:14-31;
+02-bd/database/F4_judge-orchestration.md:14-31;
 05-coding/frontend/src/views/teacher/submission-management/ui/submission-management-view.tsx:159-252]
 
 ---
@@ -470,7 +470,7 @@ Bảng này ghi chỗ bản dựng lệch thiết kế ở trên; **không phả
 | 18 | `ClassCardDto` (dùng lại) | `id`, `name` | UUID, String | `identity.classes` | `id`, `name` | Lọc Lớp | Có | [Nguồn] `ListInstructorClasses` [Nguồn: 02-bd/screens/teacher/INS0201_class_management.md — Sheet 7.1 NO 6, 7] |
 
 **Ràng buộc bắt buộc cho mọi DTO ở bảng trên:** không DTO nào chứa `source_code`, `compile_error_message`, nội dung testcase, hay dòng nào của
-`submission_testcase_results` [Nguồn: 02-bd/database/judge-orchestration.md:20,24,40-62].
+`submission_testcase_results` [Nguồn: 02-bd/database/F4_judge-orchestration.md:20,24,40-62].
 
 ### 7.2 Truy cập bảng dữ liệu (6)
 
@@ -484,11 +484,11 @@ Bảng này ghi chỗ bản dựng lệch thiết kế ở trên; **không phả
 | 6 | Bài toán | `problem.problems` | qua cổng ra của `problem-bank` | R | `title` của bài | `ListInstructorSubmissions`: R (gián tiếp) |
 
 Màn này **không có thao tác ghi nào**: cột CRUD chỉ có `R`. Tên repository và cổng ra do BD đề xuất `[SoT: Suy luận]`, DD chốt lại; `judge-orchestration`
-**không truy vấn chéo schema** [Nguồn: 02-bd/database/judge-orchestration.md:36-38].
+**không truy vấn chéo schema** [Nguồn: 02-bd/database/F4_judge-orchestration.md:36-38].
 
 ### 7.3 Danh sách endpoint [Nội bộ]
 
-> Chỉ tên nghiệp vụ và BC sở hữu. Hợp đồng chi tiết thuộc `03-dd/api/judge-orchestration.md` và `03-dd/api/identity.md`, chưa viết.
+> Chỉ tên nghiệp vụ và BC sở hữu. Hợp đồng chi tiết thuộc `03-dd/api/F4_judge-orchestration.md` và `03-dd/api/F1_identity.md`, chưa viết.
 
 | NO | Endpoint (tên nghiệp vụ) | Mục đích | BC sở hữu |
 | --: | :--- | :--- | :--- |
@@ -501,7 +501,7 @@ Ghi chú ranh giới:
 - Endpoint 1 là **mới**, chỉ màn này dùng; nó sở hữu bởi `judge-orchestration` vì `judge.submissions` nằm ở đó
   [Nguồn: .nexa/control/decision-registry.md:3476-3478, 3917-3921].
 - Endpoint 1 cần từ `identity` **dữ liệu ghi danh kèm ngày rời** (một câu cho DD `identity`: `identity` giữ lịch sử ghi danh, đã có `left_at`
-  [Nguồn: 02-bd/database/identity.md:98-115]) và từ `problem-bank` danh sách bài đã giao; hai việc này đi qua cổng ra, **không** truy vấn chéo schema.
+  [Nguồn: 02-bd/database/F1_identity.md:98-115]) và từ `problem-bank` danh sách bài đã giao; hai việc này đi qua cổng ra, **không** truy vấn chéo schema.
 - Kiểm phạm vi lớp ở trang kết quả (404 ngoài lớp) thuộc `GetSubmissionDetail` ở BD `USR0201` mục "Vùng giảng viên (A2)", không phải endpoint của màn này.
 - Màn **không gọi `ai-review`**.
 
@@ -549,7 +549,7 @@ Ghi chú ranh giới:
 | 8 | Kiểm nghiệp vụ | Chỉ bài đã giao cho lớp | [Nội dung kiểm] Danh sách chỉ chứa lượt nộp của bài đã giao cho lớp của dòng (kể cả bài đã gỡ mềm), không lẫn bài tự luyện.<br>[Nơi thực thi] Máy chủ, ở tầng dựng truy vấn.<br>[Tiêu điểm] Bảng bài nộp. | Lỗi | Mã lỗi trong phản hồi | REQ-15, cùng quy tắc `INS0204` Sheet 9 NO 9. Lẫn bài ngoài lớp là lộ hoạt động cá nhân ngoài phạm vi giảng viên được xem | EVT-1, EVT-5 | 4 |
 | 9 | Kiểm nghiệp vụ | Một dòng mỗi lượt nộp | [Nội dung kiểm] Mỗi lượt nộp xuất hiện đúng một dòng, gắn đúng một lớp, kể cả khi học viên thuộc nhiều lớp của cùng giảng viên.<br>[Nơi thực thi] Máy chủ.<br>[Tiêu điểm] Số dòng khớp, bảng. | Lỗi | Mã lỗi trong phản hồi | REQ-15, 206-Q7. Quy tắc chọn lớp khi nhiều lớp cùng giao một bài: **ĐÃ CHỐT 2026-10-14 (DEC-2026-1014-instructor-submissions-list-details):** lớp có `assigned_at` mới nhất không sau `submitted_at` (mục 4.1) | EVT-1, EVT-3 | 5 |
 | 10 | Kiểm nghiệp vụ | Phân loại kết quả | [Nội dung kiểm] "Đã chấp nhận" chỉ gồm `ACCEPTED`; "Chưa đạt" chỉ gồm lượt nộp đã chấm xong và không đạt; `PENDING`, `COMPILING`, `JUDGING` chỉ có ở "Tất cả", kèm nhãn trạng thái.<br>[Nơi thực thi] Máy chủ.<br>[Tiêu điểm] Bộ lọc Kết quả. | Lỗi | Mã lỗi trong phản hồi | REQ-04. `SYSTEM_ERROR` chỉ hiện ở "Tất cả", không thuộc "Chưa đạt" (**ĐÃ CHỐT 2026-10-14 (DEC-2026-1014-instructor-submissions-list-details):**) | EVT-1, EVT-4 | 6 |
-| 11 | Kiểm nghiệp vụ | Tỉ lệ testcase khi chưa chấm xong | [Nội dung kiểm] Không chia cho 0 và không hiện `0/0` hay `0%` khi `total_testcase_count` bằng 0 hoặc `score_ratio` rỗng; hiển thị `-`.<br>[Nơi thực thi] Máy chủ trả rỗng, màn hình hiển thị `-`.<br>[Tiêu điểm] Cột Tỉ lệ testcase. | Cảnh báo | Chưa có mã thông báo | Hiển thị `0/0` hay `0%` khiến giảng viên tưởng học viên làm hết bài mà không đạt testcase nào, trong khi bài chưa chấm hoặc lỗi biên dịch [Nguồn: 02-bd/database/judge-orchestration.md:27] | EVT-1 | 7 |
+| 11 | Kiểm nghiệp vụ | Tỉ lệ testcase khi chưa chấm xong | [Nội dung kiểm] Không chia cho 0 và không hiện `0/0` hay `0%` khi `total_testcase_count` bằng 0 hoặc `score_ratio` rỗng; hiển thị `-`.<br>[Nơi thực thi] Máy chủ trả rỗng, màn hình hiển thị `-`.<br>[Tiêu điểm] Cột Tỉ lệ testcase. | Cảnh báo | Chưa có mã thông báo | Hiển thị `0/0` hay `0%` khiến giảng viên tưởng học viên làm hết bài mà không đạt testcase nào, trong khi bài chưa chấm hoặc lỗi biên dịch [Nguồn: 02-bd/database/F4_judge-orchestration.md:27] | EVT-1 | 7 |
 | 12 | Kiểm nghiệp vụ | Phân biệt ba trạng thái rỗng | [Nội dung kiểm] Rỗng do chưa có lớp, chưa có bài nộp, hoặc bộ lọc không khớp phải hiện ba thông điệp khác nhau (REQ-12).<br>[Nơi thực thi] Màn hình.<br>[Tiêu điểm] Vùng bảng. | Cảnh báo | Chưa có mã thông báo | Nội dung theo Sheet 5 Khu vực E NO 2 đến NO 4 | EVT-1, EVT-2, EVT-3, EVT-4 | 1 |
 | 13 | Kiểm nghiệp vụ | Lỗi hệ thống hoặc lỗi gọi máy chủ | [Nội dung kiểm] Gọi máy chủ thất bại thì giữ bộ lọc và từ khoá, hiện trạng thái lỗi kèm "Thử lại" ở vùng bảng. Bấm "Thử lại" mà vẫn lỗi thì có toast lỗi; lỗi tải lần đầu thì không toast.<br>[Nơi thực thi] Màn hình.<br>[Tiêu điểm] Vùng bảng + toast (chỉ khi Thử lại lỗi). | Lỗi | Mã lỗi trong phản hồi | Mã lỗi đã đăng ký thì hiển thị nội dung tương ứng; chưa đăng ký thì "Không kết nối được máy chủ." [Nguồn: DEC-2026-1003-toast-feedback-channel] | EVT-1, EVT-2, EVT-3, EVT-4, EVT-5, EVT-8 | 1 |
 | 14 | Kiểm nghiệp vụ | Phân hệ AI không ảnh hưởng | [Nội dung kiểm] Danh sách không gọi `ai-review`; F5/F6 hỏng hoặc hết hạn mức thì màn vẫn chạy đủ.<br>[Nơi thực thi] Máy chủ, ở thiết kế cổng gọi.<br>[Tiêu điểm] Toàn màn. | Lỗi | Không có thông báo | Ràng buộc bắt buộc của dự án (`CLAUDE.md`, "The AI subsystem degrades gracefully") | EVT-1 | 8 |
@@ -558,7 +558,7 @@ Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 
 [Nguồn: 01-rd/screens/teacher/INS0206_submission_management.md:119-139;
 02-bd/screens/teacher/INS0204_class_student_detail.md — Sheet 9;
-02-bd/database/judge-orchestration.md:20,24,25-27,40-62; 02-bd/database/identity.md:98-115]
+02-bd/database/F4_judge-orchestration.md:20,24,25-27,40-62; 02-bd/database/F1_identity.md:98-115]
 
 ---
 
@@ -571,6 +571,6 @@ Cả bốn câu hỏi dưới đây đã được chủ dự án chốt ngày 20
 | Q1 | ~~Học viên thuộc hai lớp của cùng giảng viên, và cả hai lớp cùng giao một bài: lượt nộp bài đó gắn với lớp nào?~~ | **ĐÃ CHỐT 2026-10-14 (DEC-2026-1014-instructor-submissions-list-details):** Gắn với lớp có `assigned_at` mới nhất không sau `submitted_at`; một dòng mỗi lượt nộp; không thêm cột `class_id` vào `judge.submissions` (ponytail bậc 5). Viết ở mục 4.1 (Phạm vi), Sheet 9 NO 9. | Chủ dự án | Đã đóng |
 | Q2 | ~~Mục breadcrumb dẫn về danh sách ở trang kết quả có khôi phục bộ lọc `?classId=&result=&q=&page=` không?~~ | **ĐÃ CHỐT 2026-10-14 (DEC-2026-1014-instructor-submissions-list-details):** Có: khi mở từ danh sách thì lùi lịch sử bằng `router.back()` (ponytail bậc 4); mở thẳng thì về `/instructor/submissions`. Viết ở Sheet 3. | Chủ dự án | Đã đóng |
 | Q3 | ~~`SYSTEM_ERROR` nằm ở lựa chọn kết quả nào, và `MEMORY_LIMIT_EXCEEDED` có phải trạng thái thật?~~ | **ĐÃ CHỐT 2026-10-14 (DEC-2026-1014-instructor-submissions-list-details):** Bộ trạng thái theo BD/DB (có `SYSTEM_ERROR`, không có `MEMORY_LIMIT_EXCEEDED`); `SYSTEM_ERROR` chỉ ở "Tất cả", không bao giờ ở "Chưa đạt". Bản dựng sẽ theo BD (nợ prototype). Viết ở Sheet 5 Khu vực B NO 3. | Chủ dự án | Đã đóng |
-| Q4 | ~~Học viên rời lớp rồi vào lại cùng lớp thì cửa sổ thuộc lớp tính thế nào?~~ | **ĐÃ CHỐT 2026-10-14 (DEC-2026-1014-instructor-submissions-list-details):** Chấp nhận khoảng thời gian đã rời tính là "trong lớp" (`joined_at` cũ giữ nguyên, `left_at` về NULL); không có bảng lịch sử từng đoạn. Đã đóng cả ghi chú mở ở `02-bd/database/identity.md` mục 1.10. Viết ở mục 4.1 (Phạm vi), Sheet 9 NO 3. | Chủ dự án | Đã đóng |
+| Q4 | ~~Học viên rời lớp rồi vào lại cùng lớp thì cửa sổ thuộc lớp tính thế nào?~~ | **ĐÃ CHỐT 2026-10-14 (DEC-2026-1014-instructor-submissions-list-details):** Chấp nhận khoảng thời gian đã rời tính là "trong lớp" (`joined_at` cũ giữ nguyên, `left_at` về NULL); không có bảng lịch sử từng đoạn. Đã đóng cả ghi chú mở ở `02-bd/database/F1_identity.md` mục 1.10. Viết ở mục 4.1 (Phạm vi), Sheet 9 NO 3. | Chủ dự án | Đã đóng |
 
-[Nguồn: .nexa/control/decision-registry.md:3891-4004; 02-bd/database/identity.md:98-117; 02-bd/database/judge-orchestration.md:14-31]
+[Nguồn: .nexa/control/decision-registry.md:3891-4004; 02-bd/database/F1_identity.md:98-117; 02-bd/database/F4_judge-orchestration.md:14-31]

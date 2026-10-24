@@ -1,4 +1,4 @@
-// PROTOTYPE mock — no backend endpoint exists yet (03-dd/api/judge-orchestration.md not written).
+// PROTOTYPE mock — no backend endpoint exists yet (03-dd/api/F4_judge-orchestration.md not written).
 // Deterministic, no timers, no randomness — same input always returns the same output.
 //
 // Values follow 02-bd/screens/users/USR0201_submission_result.md and USR0202_my_submissions.md.

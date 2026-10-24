@@ -12,7 +12,7 @@
 
 > Đọc cùng `01-rd/screens/admin/ADM0404_infra_events.md` (hành vi ở mức yêu cầu, không lặp lại ở đây), khung chung
 > Admin ở `02-bd/screens/admin/_shell.md` (sidebar, toolbar, nền, chân trang — không mô tả lại) và hai file BD module
-> `02-bd/database/judge-orchestration.md`, `02-bd/architecture/judge-orchestration.md`.
+> `02-bd/database/F4_judge-orchestration.md`, `02-bd/architecture/F4_judge-orchestration.md`.
 >
 > **Không thiết kế** hành động xử lý sự cố từ màn này (khởi động lại worker, thử lại job): màn chỉ đọc.
 > **Không thiết kế** hành động quản trị của người: thuộc `ADM0403` Nhật ký hệ thống (`identity`, F1-14); sự kiện hạ tầng
@@ -51,8 +51,8 @@
 | V0.1 | Toàn bộ | Tạo mới theo mẫu 9 sheet theo `DEC-2026-1010-admin-operations-regroup`: tách khối "Sự kiện hạ tầng gần đây" khỏi `ADM0401`, thêm thanh lọc (từ khoá, mức độ, dịch vụ, khoảng ngày) và nút "Tải thêm 20 dòng", chỉ đọc | 2026/10/10 | AI |
 | V0.2 | Phương châm, Sheet 3, 4, 5, 7, Câu hỏi mở | Chốt theo tiêu chí ponytail (`.claude/rules/ponytail-criteria.md`), `DEC-2026-1010-admin-operations-regroup`: nguồn sự kiện chỉ còn hai nguồn thật: bản ghi Outbox kẹt (`outbox_events.publish_attempts`, ngưỡng hằng số trong `application.yml`: từ 3 lần thử là `WARN`, từ 5 lần là `ERROR`) và lượt nộp `SYSTEM_ERROR` hoặc lỗi sandbox (từ `judge.submissions` và timeout sweep), bỏ AI Gateway, sao lưu, db, MinIO, Redis; dịch vụ nguồn chỉ có `go-judge` và `outbox`; không tự làm tươi, thêm nút "Làm mới" tải lại thủ công (Khu vực A NO 4); thời hạn lưu dùng chung 90 ngày với Nhật ký hệ thống, không có ô cấu hình; mở từ thẻ liên kết đang ở tông lỗi thì đặt sẵn bộ lọc mức độ bằng tham số URL `?level=error`. Đóng Q1 đến Q4 | 2026/10/10 | AI |
 | V0.3 | Sheet 5 | Theo báo cáo `06-plan/reports/261014-1054-admin-ux-review/` (B6): mô tả phụ bỏ "AI Gateway, sao lưu" (hai nguồn đã bỏ), nay là "Outbox kẹt, lượt nộp lỗi sandbox"; prototype dựng liên kết "Về hàng đợi chấm" (A NO 3, EVT-5) ở thanh tiêu đề. Dòng chú thích dẫn sang Nhật ký hệ thống vẫn giữ (ngoài item list, ghi nhận). Không đổi spec | 2026-10-14 | Claude |
-| V0.4 | Sheet 4.3, 7 (trích), Câu hỏi mở | Sửa 2026-10-22 đồng bộ DB, `DEC-2026-1022-ai-judge-schema-sync` (JD-09). Chỉ sửa số dòng trích `02-bd/database/judge-orchestration.md` (`:106-120` thành `:117-130`, mục 1.6). DB chưa nêu thời hạn dọn `outbox_events` và chưa nêu nguồn của `message`, nên **không** đổi nội dung mô tả; mở Q5 | 2026/10/22 | Nhóm phát triển AlgoPrep |
-| V0.5 | Câu hỏi mở (Q5) | Sửa 2026-10-22 (đồng bộ DB vòng 2, DEC-2026-1022-db-sync-round2, mục 7). Đóng Q5: DB nay ghi job dọn `outbox_events` đã publish quá 90 ngày (`02-bd/database/judge-orchestration.md` mục 1.6); `message` dựng ở tầng ứng dụng từ `publish_attempts` và `status`, không có cột `message`. Giữ "90 ngày". Nhãn `SANDBOX_FAULT` khớp `failure_reason` do worker ghi (JD-14). Không đổi spec màn | 2026/10/22 | Nhóm phát triển AlgoPrep |
+| V0.4 | Sheet 4.3, 7 (trích), Câu hỏi mở | Sửa 2026-10-22 đồng bộ DB, `DEC-2026-1022-ai-judge-schema-sync` (JD-09). Chỉ sửa số dòng trích `02-bd/database/F4_judge-orchestration.md` (`:106-120` thành `:117-130`, mục 1.6). DB chưa nêu thời hạn dọn `outbox_events` và chưa nêu nguồn của `message`, nên **không** đổi nội dung mô tả; mở Q5 | 2026/10/22 | Nhóm phát triển AlgoPrep |
+| V0.5 | Câu hỏi mở (Q5) | Sửa 2026-10-22 (đồng bộ DB vòng 2, DEC-2026-1022-db-sync-round2, mục 7). Đóng Q5: DB nay ghi job dọn `outbox_events` đã publish quá 90 ngày (`02-bd/database/F4_judge-orchestration.md` mục 1.6); `message` dựng ở tầng ứng dụng từ `publish_attempts` và `status`, không có cột `message`. Giữ "90 ngày". Nhãn `SANDBOX_FAULT` khớp `failure_reason` do worker ghi (JD-14). Không đổi spec màn | 2026/10/22 | Nhóm phát triển AlgoPrep |
 
 ---
 
@@ -137,7 +137,7 @@ flowchart LR
 3. **Xem thêm**: bấm "Tải thêm 20 dòng" để nạp tiếp 20 dòng cũ hơn; nút không kích hoạt khi đã hết dữ liệu.
 4. **Về màn giám sát**: có liên kết về `ADM0401` ở thanh tiêu đề `[SoT: Suy luận]`, vì người đọc thường đến từ đó.
 
-[Người dùng] Quản trị viên đã đăng nhập, có Function `JUDGE_QUEUE_MONITOR` [Nguồn: 02-bd/database/identity.md:48; 02-bd/security/judge-orchestration.md mục 5].
+[Người dùng] Quản trị viên đã đăng nhập, có Function `JUDGE_QUEUE_MONITOR` [Nguồn: 02-bd/database/F1_identity.md:48; 02-bd/security/F4_judge-orchestration.md mục 5].
 
 [Tệp liên quan] Không có. Màn này không xuất hay nhập tệp.
 
@@ -152,20 +152,20 @@ flowchart LR
 
 [Số bản ghi tối đa] Mỗi lần tải 20 dòng; không giới hạn tổng số (xem thời hạn lưu ở Q1 của RD).
 
-[Nguồn: 01-rd/screens/admin/ADM0404_infra_events.md:13-16,28-44; 02-bd/database/identity.md:48]
+[Nguồn: 01-rd/screens/admin/ADM0404_infra_events.md:13-16,28-44; 02-bd/database/F1_identity.md:48]
 
 ### 4.2 DTO liên quan
 
 - `InfraEventDto`
 - `InfraEventPageDto` (trang dữ liệu kèm con trỏ trang kế)
 
-`[Suy luận]` — tên DTO do BD này đề xuất, `03-dd/api/judge-orchestration.md` chốt lại.
+`[Suy luận]` — tên DTO do BD này đề xuất, `03-dd/api/F4_judge-orchestration.md` chốt lại.
 
 ### 4.3 Bảng dữ liệu liên quan (1)
 
 | NO | Bảng | Ghi chú |
 | --: | :--- | :--- |
-| 1 | `judge.outbox_events` | Chỉ cột `publish_attempts` để dựng cảnh báo "bản ghi Outbox kẹt" [Nguồn: 02-bd/database/judge-orchestration.md:117-130] |
+| 1 | `judge.outbox_events` | Chỉ cột `publish_attempts` để dựng cảnh báo "bản ghi Outbox kẹt" [Nguồn: 02-bd/database/F4_judge-orchestration.md:117-130] |
 
 Nguồn sự kiện là **hai nguồn thật đã có**, không thêm bảng (đóng Q2, tiêu chí ponytail bậc 2 và 4, `DEC-2026-1010-admin-operations-regroup`): (1) bản ghi Outbox kẹt từ `outbox_events.publish_attempts`, từ 3 lần thử là `WARN`, từ 5 lần là `ERROR` (hằng số trong `application.yml`, dịch vụ nguồn `outbox`); (2) lượt nộp `SYSTEM_ERROR` hoặc lỗi sandbox từ `judge.submissions` và timeout sweep (dịch vụ nguồn `go-judge`). Không dùng AI Gateway, sao lưu, db, MinIO, Redis làm nguồn. Thời hạn lưu: 90 ngày dùng chung với Nhật ký hệ thống, không có ô cấu hình (đóng Q3).
 
@@ -311,7 +311,7 @@ Màn này **không ghi** bảng nào. `[Suy luận]` — tên repository do BD n
 
 ### 7.3 Danh sách endpoint [Nội bộ]
 
-> Chỉ tên nghiệp vụ và BC sở hữu. Hợp đồng chi tiết thuộc `03-dd/api/judge-orchestration.md`.
+> Chỉ tên nghiệp vụ và BC sở hữu. Hợp đồng chi tiết thuộc `03-dd/api/F4_judge-orchestration.md`.
 
 | NO | Endpoint (tên nghiệp vụ) | Mục đích | BC sở hữu |
 | --: | :--- | :--- | :--- |
@@ -319,7 +319,7 @@ Màn này **không ghi** bảng nào. `[Suy luận]` — tên repository do BD n
 
 Màn này không gọi endpoint của `problem-bank`, `ai-review` hay `identity`. Số cảnh báo và số lỗi cho thẻ liên kết ở `ADM0401` do endpoint `GetInfraSummary` của màn đó cung cấp, cùng nguồn dữ liệu.
 
-[Nguồn: 02-bd/database/judge-orchestration.md:117-130; 02-bd/architecture/judge-orchestration.md:10-19]
+[Nguồn: 02-bd/database/F4_judge-orchestration.md:117-130; 02-bd/architecture/F4_judge-orchestration.md:10-19]
 
 ---
 
@@ -349,12 +349,12 @@ Màn này không gọi endpoint của `problem-bank`, `ai-review` hay `identity`
 
 | NO | Loại | Tóm tắt kiểm | Chi tiết | Mức | Mã thông báo | Ghi chú | EVT gọi | Thứ tự |
 | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: |
-| 1 | Kiểm quyền | Quyền truy cập màn | [Nội dung kiểm] Người dùng không có Function `JUDGE_QUEUE_MONITOR` thì không được vào màn.<br>[Nơi thực thi] Chặn ở cả tầng định tuyến phía giao diện và tầng phân quyền phía máy chủ, không chỉ ẩn giao diện. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn không có quyền truy cập chức năng này." [Nguồn: 02-bd/database/identity.md:48]. | EVT-1 | 1 |
+| 1 | Kiểm quyền | Quyền truy cập màn | [Nội dung kiểm] Người dùng không có Function `JUDGE_QUEUE_MONITOR` thì không được vào màn.<br>[Nơi thực thi] Chặn ở cả tầng định tuyến phía giao diện và tầng phân quyền phía máy chủ, không chỉ ẩn giao diện. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn không có quyền truy cập chức năng này." [Nguồn: 02-bd/database/F1_identity.md:48]. | EVT-1 | 1 |
 | 2 | Kiểm nhập liệu | Khoảng ngày hợp lệ | [Nội dung kiểm] "Từ ngày" không được muộn hơn "Đến ngày".<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Viền ô "Đến ngày" + cảnh báo. | Lỗi | Chưa có mã thông báo | Nội dung "Đến ngày phải sau hoặc cùng ngày với Từ ngày." `[SoT: Suy luận]` về chữ; quy tắc khớp REQ-03 của RD. | EVT-2, EVT-3 | 1 |
 | 3 | Kiểm nhập liệu | Độ dài từ khoá | [Nội dung kiểm] Từ khoá tối đa 100 ký tự; dài hơn thì cắt hoặc từ chối `[SoT: Suy luận]`.<br>[Nơi thực thi] Màn hình và máy chủ. | Cảnh báo | Chưa có mã thông báo | Không có thông báo riêng nếu cắt; DD chốt. | EVT-2 | 2 |
 | 4 | Kiểm nghiệp vụ | Lỗi hệ thống hoặc lỗi gọi máy chủ | [Nội dung kiểm] Gọi máy chủ thất bại hoặc trả lỗi nghiệp vụ thì dừng thao tác, giữ nguyên dữ liệu đang hiển thị.<br>[Nơi thực thi] Màn hình. | Lỗi | Mã lỗi trong phản hồi | Phản hồi có mã lỗi đã đăng ký thì hiển thị nội dung tương ứng; chưa đăng ký thì hiển thị "Không kết nối được máy chủ." | EVT-1, EVT-2, EVT-4 | 1 |
 
-[Nguồn: 02-bd/database/identity.md:48; 01-rd/screens/admin/ADM0404_infra_events.md:29-42]
+[Nguồn: 02-bd/database/F1_identity.md:48; 01-rd/screens/admin/ADM0404_infra_events.md:29-42]
 
 ---
 
@@ -366,4 +366,4 @@ Màn này không gọi endpoint của `problem-bank`, `ai-review` hay `identity`
 | Q2 | ~~Sự kiện hạ tầng đọc từ cảnh báo Prometheus nào, go-judge, AI Gateway, sao lưu có xuất sự kiện không, ngưỡng Outbox kẹt là bao nhiêu?~~ **ĐÃ CHỐT 2026-10-10 (chủ dự án đã xác nhận 2026-10-10, tiêu chí ponytail bậc 2, 4 và 5):** chỉ hai nguồn thật: bản ghi Outbox kẹt (`outbox_events.publish_attempts`, ngưỡng hằng số trong `application.yml`: từ 3 lần thử là `WARN`, từ 5 lần là `ERROR`) và lượt nộp `SYSTEM_ERROR` hoặc lỗi sandbox (từ `judge.submissions` và timeout sweep). Bỏ AI Gateway, sao lưu, db, MinIO, Redis. | Đã đóng | Đã đóng |
 | Q3 | ~~Thời hạn lưu sự kiện hạ tầng?~~ **ĐÃ CHỐT 2026-10-10 (chủ dự án đã xác nhận 2026-10-10, tiêu chí ponytail bậc 4 và 5):** **90 ngày**, dùng chung với Nhật ký hệ thống, không có ô cấu hình. | Đã đóng | Đã đóng |
 | Q4 | ~~Khi mở từ thẻ liên kết đang ở tông lỗi, có truyền sẵn bộ lọc `ERROR` không?~~ **ĐÃ CHỐT 2026-10-10 (chủ dự án đã xác nhận 2026-10-10, tiêu chí ponytail bậc 3):** **có**, bằng tham số URL `?level=error` (hợp lệ: `error`, `warn`, `info`; giá trị khác bị bỏ qua). | Đã đóng | Đã đóng |
-| Q5 | ~~**Câu "thời hạn lưu 90 ngày" (Q3) và cột "Nội dung sự kiện" lấy từ đâu?**~~ **ĐÃ CHỐT 2026-10-22 (chủ dự án, `DEC-2026-1022-db-sync-round2` mục 7; tiêu chí ponytail bậc 6):** giữ **90 ngày**; job dọn xoá dòng outbox đã publish quá 90 ngày (hằng số `application.yml`); câu "Nội dung sự kiện" **dựng ở tầng ứng dụng** từ `publish_attempts` và `status`, không có cột `message` lưu sẵn. `03-dd/jobs/` chưa có file. Nội dung hỏi cũ: `outbox_events` không có cột `message` và không có job dọn nào ghi trong DB; `judge.submissions` cũng không có `message` hạ tầng. | `02-bd/database/judge-orchestration.md:117-130` chỉ có `publish_attempts`, không nêu retention hay nguồn câu mô tả (báo cáo `06-plan/reports/261022-0904-db-schema-doc-drift/report.md`, JD-09); `message` có thể dựng ở tầng ứng dụng từ `publish_attempts`/`status` `[SoT: Suy luận]`, chờ chủ dự án chốt | Đã đóng |
+| Q5 | ~~**Câu "thời hạn lưu 90 ngày" (Q3) và cột "Nội dung sự kiện" lấy từ đâu?**~~ **ĐÃ CHỐT 2026-10-22 (chủ dự án, `DEC-2026-1022-db-sync-round2` mục 7; tiêu chí ponytail bậc 6):** giữ **90 ngày**; job dọn xoá dòng outbox đã publish quá 90 ngày (hằng số `application.yml`); câu "Nội dung sự kiện" **dựng ở tầng ứng dụng** từ `publish_attempts` và `status`, không có cột `message` lưu sẵn. `03-dd/jobs/` chưa có file. Nội dung hỏi cũ: `outbox_events` không có cột `message` và không có job dọn nào ghi trong DB; `judge.submissions` cũng không có `message` hạ tầng. | `02-bd/database/F4_judge-orchestration.md:117-130` chỉ có `publish_attempts`, không nêu retention hay nguồn câu mô tả (báo cáo `06-plan/reports/261022-0904-db-schema-doc-drift/report.md`, JD-09); `message` có thể dựng ở tầng ứng dụng từ `publish_attempts`/`status` `[SoT: Suy luận]`, chờ chủ dự án chốt | Đã đóng |

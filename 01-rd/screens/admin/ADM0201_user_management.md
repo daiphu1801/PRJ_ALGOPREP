@@ -3,7 +3,7 @@
 > Mã màn hình: `ADM0201` [Nguồn: 02-bd/_rules/bd-template-9sheet.md — mục 8].
 > Slug chính tắc: `admin_user_management` [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_user_management`].
 > Phạm vi/Bounded Context: `identity` (F1) [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_user_management`]. Actor: A3 (Quản trị viên).
-> Nguồn sự thật (SoT): `01-rd/req/identity.md` (F1-13, F1-14), `09-layoutBase/Admin - Người dùng.dc.html` (prototype),
+> Nguồn sự thật (SoT): `01-rd/req/F1_identity.md` (F1-13, F1-14), `09-layoutBase/Admin - Người dùng.dc.html` (prototype),
 > `01-rd/req/user_stories/a3_admin.md` (`US-A3-02`).
 > Tài liệu này có thể đọc độc lập.
 
@@ -12,10 +12,10 @@
 ## 1. Mục đích và bối cảnh
 
 Quản lý tài khoản người dùng — đổi vai trò, khoá/mở khoá, reset mật khẩu — để xử lý sự cố tài khoản
-[SoT: 01-rd/req/identity.md — F1-13].
+[SoT: 01-rd/req/F1_identity.md — F1-13].
 
 Đối chiếu prototype: `09-layoutBase/Admin - Người dùng.dc.html`. File này mô tả **hành vi và UX ở mức yêu
-cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/identity.md` (F1-13), chỉ trỏ tới và bổ sung phần đặc
+cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/F1_identity.md` (F1-13), chỉ trỏ tới và bổ sung phần đặc
 thù của màn.
 
 **Phát hiện của Phase 6 — Câu hỏi mở Q1, ĐÃ CHỐT 2026-08-31**: khối "Cần xử lý" có mục "Báo cáo nghi gian
@@ -36,9 +36,9 @@ duy nhất.
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Đổi vai trò, khoá/mở khoá, reset mật khẩu tài khoản khác | F1-13 | `01-rd/req/identity.md` — F1-13 |
-| Mọi thay đổi ghi vào Nhật ký hệ thống | F1-14 | `01-rd/req/identity.md` — F1-14 |
-| Khoá tài khoản kèm lý do, tuỳ chọn gửi email thông báo cho người dùng | F1-32 | `01-rd/req/identity.md` — F1-32 (bổ sung 2026-10-05) |
+| Đổi vai trò, khoá/mở khoá, reset mật khẩu tài khoản khác | F1-13 | `01-rd/req/F1_identity.md` — F1-13 |
+| Mọi thay đổi ghi vào Nhật ký hệ thống | F1-14 | `01-rd/req/F1_identity.md` — F1-14 |
+| Khoá tài khoản kèm lý do, tuỳ chọn gửi email thông báo cho người dùng | F1-32 | `01-rd/req/F1_identity.md` — F1-32 (bổ sung 2026-10-05) |
 | Given-When-Then đầy đủ | — | `01-rd/req/user_stories/a3_admin.md` (`US-A3-02`) |
 
 Đối chiếu `09-layoutBase/Admin - Người dùng.dc.html`:
@@ -82,7 +82,7 @@ duy nhất.
 | Màn/tài liệu | Vai trò | Bounded Context |
 |---|---|---|
 | Màn hiện tại | `ADM0201` / `admin_user_management` | `identity` |
-| Tài liệu yêu cầu | `01-rd/req/identity.md` (F1-13, F1-14) | Nguồn SoT của màn |
+| Tài liệu yêu cầu | `01-rd/req/F1_identity.md` (F1-13, F1-14) | Nguồn SoT của màn |
 | Prototype | `09-layoutBase/Admin - Người dùng.dc.html` | Bằng chứng bố cục và trạng thái |
 
 **Chi tiết trạng thái và cấu trúc màn:**
@@ -100,7 +100,7 @@ duy nhất.
 
 - Bảng màu, spacing, component cụ thể — thuộc BD (`02-bd/screens/admin/ADM0201_user_management.md`, chưa
   viết). **Cập nhật 2026-08-31: Q1, Q2, Q3 đều đã đóng, không còn gì chặn BD.**
-- Hợp đồng API (tìm kiếm/lọc người dùng, hành động gộp, reset mật khẩu) — thuộc DD (`03-dd/api/identity.md`,
+- Hợp đồng API (tìm kiếm/lọc người dùng, hành động gộp, reset mật khẩu) — thuộc DD (`03-dd/api/F1_identity.md`,
   chưa viết).
 - ~~Cơ chế so khớp mã nguồn chống gian lận (Q1) — chờ chủ dự án quyết định phạm vi.~~ **Đã chốt
   2026-08-31** (ghi nhận 2026-09-05): **ngoài phạm vi đồ án**, không phát triển
@@ -112,7 +112,7 @@ duy nhất.
 
 | # | Câu hỏi | Vì sao chưa trả lời được | Đề xuất | Chủ sở hữu |
 | :-: | :--- | :--- | :--- | :--- |
-| Q2 (đã chốt) | "Đề nghị cấp quyền giảng viên" — luồng tự yêu cầu nâng vai trò từ STUDENT lên INSTRUCTOR. | Chủ dự án đã trả lời trực tiếp: **không có luồng self-service**. | **Chốt: chỉ ADMIN được đổi vai trò**, đúng nguyên văn F1-13 (`01-rd/req/identity.md`), không sửa mã này. Không mở RD/BD cho một luồng yêu cầu-duyệt. Xoá mục "Đề nghị cấp quyền giảng viên" khỏi khối "Cần xử lý" khi dựng UI thật **[Đợi nextjs]**. | Đã chốt — không còn mở. |
+| Q2 (đã chốt) | "Đề nghị cấp quyền giảng viên" — luồng tự yêu cầu nâng vai trò từ STUDENT lên INSTRUCTOR. | Chủ dự án đã trả lời trực tiếp: **không có luồng self-service**. | **Chốt: chỉ ADMIN được đổi vai trò**, đúng nguyên văn F1-13 (`01-rd/req/F1_identity.md`), không sửa mã này. Không mở RD/BD cho một luồng yêu cầu-duyệt. Xoá mục "Đề nghị cấp quyền giảng viên" khỏi khối "Cần xử lý" khi dựng UI thật **[Đợi nextjs]**. | Đã chốt — không còn mở. |
 | Q1 | ~~**"Báo cáo nghi gian lận"...**~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** **ngoài phạm vi đồ án** — không cấp mã mới, không mở RD cho thuật toán so khớp mã nguồn. | — | Xoá mục "Báo cáo nghi gian lận" khỏi khối "Cần xử lý" và dòng log liên quan ở `admin_system_log` khi dựng UI thật. Xem `DEC-2026-0831-remove-plagiarism-report`. | Đã đóng |
 | Q3 | ~~"Yêu cầu đặt lại mật khẩu" trong khối "Cần xử lý"...~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** tách ra khỏi khối "Cần xử lý". | — | Chuyển vào một khối thống kê riêng khi dựng UI thật (F1-17 không cần ADMIN hành động), tránh nhầm với các mục thật sự cần xử lý (xác thực email, cấp quyền). | Đã đóng |
 | Q7 | **Đặt lại mật khẩu và đổi vai trò có còn được phép áp dụng lên nhiều tài khoản cùng lúc không?** **ĐÃ CHỐT 2026-10-05 (owner chỉ đạo khi review prototype):** **không** — thanh chọn hàng loạt chỉ còn khoá và mở khoá. | Prototype dựng ba nút trên thanh hàng loạt nhưng cả hai nút kia chỉ bắn toast giả, chưa có điểm chạm thật. Xét nghiệp vụ: reset mật khẩu là việc riêng cho từng người và không áp dụng được với tài khoản OAuth; đổi vai trò ép cả nhóm về một vai trò đích là thao tác sai nghĩa. | — | Hai hành động chuyển khỏi chế độ gộp, **không mất phạm vi** — vẫn thuộc F1-13 ở dạng thao tác trên một tài khoản. **Điểm chạm: nút trên dòng, đã dựng prototype 2026-10-08** (cột "Thao tác", mục 2 điểm 2) [Nguồn: 05-coding/frontend/src/views/admin/user-management/ui/admin-user-management-view.tsx:286-325]; DD chốt hợp đồng API. Ghi mã mới ở F1-32. | Đã đóng |
@@ -123,11 +123,11 @@ duy nhất.
 ## 5. Danh sách yêu cầu (REQ)
 | ID | Yêu cầu | Loại | Nguồn/SoT |
 |---|---|---|---|
-| REQ-01 | Đổi vai trò, khoá/mở khoá, reset mật khẩu tài khoản khác (F1-13). **Chỉ hai hành động trạng thái được phép áp dụng hàng loạt** (xem F1-32 và Q7) | Chức năng | `01-rd/req/identity.md` — F1-13 |
-| REQ-02 | Mọi thay đổi ghi vào Nhật ký hệ thống (F1-14) | Chức năng | `01-rd/req/identity.md` — F1-14 |
+| REQ-01 | Đổi vai trò, khoá/mở khoá, reset mật khẩu tài khoản khác (F1-13). **Chỉ hai hành động trạng thái được phép áp dụng hàng loạt** (xem F1-32 và Q7) | Chức năng | `01-rd/req/F1_identity.md` — F1-13 |
+| REQ-02 | Mọi thay đổi ghi vào Nhật ký hệ thống (F1-14) | Chức năng | `01-rd/req/F1_identity.md` — F1-14 |
 | REQ-03 | Given-When-Then đầy đủ (—) | Chức năng | `01-rd/req/user_stories/a3_admin.md` (`US-A3-02`) |
-| REQ-04 | Khoá tài khoản phải kèm lý do; tuỳ chọn gửi email thông báo cho người bị khoá; mở khoá thì không cần (F1-32) | Chức năng | `01-rd/req/identity.md` — F1-32 (bổ sung 2026-10-05) |
-| REQ-05 | Mỗi dòng tài khoản có nút thao tác riêng: Đổi vai trò, Đặt lại mật khẩu, Khoá/Mở khoá; đổi vai trò không cho hạ quản trị viên hoạt động cuối cùng, mọi thao tác ghi Nhật ký hệ thống (F1-13, F1-14) | Chức năng | `01-rd/req/identity.md` — F1-13, F1-14; prototype 2026-10-08 |
+| REQ-04 | Khoá tài khoản phải kèm lý do; tuỳ chọn gửi email thông báo cho người bị khoá; mở khoá thì không cần (F1-32) | Chức năng | `01-rd/req/F1_identity.md` — F1-32 (bổ sung 2026-10-05) |
+| REQ-05 | Mỗi dòng tài khoản có nút thao tác riêng: Đổi vai trò, Đặt lại mật khẩu, Khoá/Mở khoá; đổi vai trò không cho hạ quản trị viên hoạt động cuối cùng, mọi thao tác ghi Nhật ký hệ thống (F1-13, F1-14) | Chức năng | `01-rd/req/F1_identity.md` — F1-13, F1-14; prototype 2026-10-08 |
 
 ---
 
@@ -166,7 +166,7 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 
 | Loại | Tham chiếu |
 | :--- | :--- |
-| Yêu cầu module | `01-rd/req/identity.md` — F1-13, F1-14 |
+| Yêu cầu module | `01-rd/req/F1_identity.md` — F1-13, F1-14 |
 | User story | `01-rd/req/user_stories/a3_admin.md` — `US-A3-02` |
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` mục 7.3 — dòng `admin_user_management` |
 | Màn liên quan | `01-rd/screens/admin/ADM0403_system_log.md` mục 3 — dòng log "trùng mã nguồn" củng cố Câu hỏi mở Q1 |

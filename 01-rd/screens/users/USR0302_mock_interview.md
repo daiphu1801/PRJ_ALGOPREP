@@ -4,12 +4,14 @@
 > Slug chính tắc: `mock_interview` [SoT: 01-rd/overview/system_survey.md — mục 7.1 dòng `mock_interview`].
 > Phạm vi/Bounded Context: `ai-review` (F5.2), có đọc thêm từ `interview-bank` (F6) khi mở phiên từ lối vào
 > "kho câu hỏi" [SoT: 01-rd/overview/system_survey.md mục 7.1 — cột "Bounded Context liên quan", dòng
-> `solution_review` · `mock_interview`; 01-rd/req/ai-review.md — F5-24]. Actor: A1 (chính).
-> Nguồn sự thật (SoT): `01-rd/req/ai-review.md` (mục F5.2), `01-rd/req/user_stories/a1_student.md`
+> `solution_review` · `mock_interview`; 01-rd/req/F5_ai-review.md — F5-24]. Actor: A1 (chính).
+> Nguồn sự thật (SoT): `01-rd/req/F5_ai-review.md` (mục F5.2), `01-rd/req/user_stories/a1_student.md`
 > (`US-A1-07`), `09-layoutBase/Phỏng vấn giả lập.dc.html` (prototype).
 > Tài liệu này có thể đọc độc lập.
 >
 > **Cập nhật 2026-10-18 (Claude):** owner bỏ lối vào "Phỏng vấn câu này" từ `interview_bank_list` sang màn này (`DEC-2026-1018-usr-open-questions-phase2-5`, mục theo dõi): sửa REQ-09, phần mô tả lối "Kho câu hỏi" ở khoản 1 của trạng thái `entry`, bảng 2.1 và đóng nốt Q3 ở mục 4. Các lối vào còn lại giữ nguyên: mục "Phỏng vấn giả lập" trên thanh nav và nút "Vào phiên giả lập" ở đầu `interview_bank_list`. File này không có bảng lịch sử sửa đổi nên ghi chú nằm ở đây.
+>
+> **Sửa 2026-10-24 (Claude), `DEC-2026-1024-dd-screens-ai-topic-length-and-rd-trim` mục (2):** bỏ các khối không có nguồn dữ liệu và không được dựng: bảng "Phiên gần đây" ở `entry` (khoản 4), cột phải "Mạch chủ đề" và "Ngữ cảnh" (khoản 7), "Chủ đề đã đi qua" và "Việc nên làm tiếp" (khoản 11). F5-16 (lưu phiên, mở lại) vẫn được đáp ứng ở `my_progress` và `dashboard`. Mọi nội dung khác giữ nguyên; số khoản không đánh lại.
 
 ---
 
@@ -21,7 +23,7 @@ chọn chủ đề), và xem lại rubric bốn tiêu chí khi kết phiên [SoT
 `US-A1-07`; 01-rd/overview/system_survey.md — mục 7.1 dòng `mock_interview`].
 
 File này mô tả **hành vi và UX ở mức yêu cầu** — không lặp lại đặc tả chức năng đã có ở
-`01-rd/req/ai-review.md` (mục F5.2) và `01-rd/req/user_stories/a1_student.md` (`US-A1-07`), chỉ trỏ tới và
+`01-rd/req/F5_ai-review.md` (mục F5.2) và `01-rd/req/user_stories/a1_student.md` (`US-A1-07`), chỉ trỏ tới và
 bổ sung phần đặc thù của màn, đối chiếu prototype `09-layoutBase/Phỏng vấn giả lập.dc.html`. Theo lộ trình
 Phase 4 của `06-plan/nexa-plan/260824-2043-bd-screens-common-first.md` dòng 44-45.
 
@@ -31,13 +33,13 @@ Phase 4 của `06-plan/nexa-plan/260824-2043-bd-screens-common-first.md` dòng 4
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Mở phiên cho bài nộp `Accepted`; ba giai đoạn Giải trình/Phản biện/Mở rộng | F5-09 tới F5-12 | `01-rd/req/ai-review.md` — F5-09 tới F5-12 |
-| Duy trì ngữ cảnh qua `ChatMemory`/Redis; stream phản hồi qua SSE | F5-13, F5-14 | `01-rd/req/ai-review.md` — F5-13, F5-14 |
-| Kết phiên xuất rubric 4 tiêu chí kèm nhận xét; lưu phiên, mở lại từ trang tiến độ | F5-15, F5-16 | `01-rd/req/ai-review.md` — F5-15, F5-16 |
-| Chống prompt injection; định hướng giáo dục (không phải điểm chính thức) | F5-17, F5-18 | `01-rd/req/ai-review.md` — F5-17, F5-18 |
-| Rate limit, suy giảm có kiểm soát khi AI hỏng/hết quota | F5-19, F5-22, F5-25 | `01-rd/req/ai-review.md` — F5-19, F5-22, F5-25 |
-| Ba lối vào phiên: bài nộp `Accepted`, kho câu hỏi F6, tự chọn chủ đề | F5-24 | `01-rd/req/ai-review.md` — F5-24 |
-| Tự chỉnh tham số phiên tự luyện (mức độ, số lượt, gợi ý) — chỉ áp dụng 2 lối vào tự luyện | F5-28 | `01-rd/req/ai-review.md` — F5-28 |
+| Mở phiên cho bài nộp `Accepted`; ba giai đoạn Giải trình/Phản biện/Mở rộng | F5-09 tới F5-12 | `01-rd/req/F5_ai-review.md` — F5-09 tới F5-12 |
+| Duy trì ngữ cảnh qua `ChatMemory`/Redis; stream phản hồi qua SSE | F5-13, F5-14 | `01-rd/req/F5_ai-review.md` — F5-13, F5-14 |
+| Kết phiên xuất rubric 4 tiêu chí kèm nhận xét; lưu phiên, mở lại từ trang tiến độ | F5-15, F5-16 | `01-rd/req/F5_ai-review.md` — F5-15, F5-16 |
+| Chống prompt injection; định hướng giáo dục (không phải điểm chính thức) | F5-17, F5-18 | `01-rd/req/F5_ai-review.md` — F5-17, F5-18 |
+| Rate limit, suy giảm có kiểm soát khi AI hỏng/hết quota | F5-19, F5-22, F5-25 | `01-rd/req/F5_ai-review.md` — F5-19, F5-22, F5-25 |
+| Ba lối vào phiên: bài nộp `Accepted`, kho câu hỏi F6, tự chọn chủ đề | F5-24 | `01-rd/req/F5_ai-review.md` — F5-24 |
+| Tự chỉnh tham số phiên tự luyện (mức độ, số lượt, gợi ý) — chỉ áp dụng 2 lối vào tự luyện | F5-28 | `01-rd/req/F5_ai-review.md` — F5-28 |
 | Given-When-Then đầy đủ cho luồng phỏng vấn giả lập | — | `01-rd/req/user_stories/a1_student.md` (`US-A1-07`) |
 
 Đối chiếu `09-layoutBase/Phỏng vấn giả lập.dc.html`, màn có ba trạng thái chính (`isEntry`/`isRunning`/
@@ -48,7 +50,7 @@ Phase 4 của `06-plan/nexa-plan/260824-2043-bd-screens-common-first.md` dòng 4
 > **Đã chốt 2026-10-18 (owner), `DEC-2026-1018-usr-open-questions-phase1-scope` mục (1):** prototype có "Thanh chỉ số" 3 ô
 > (số phiên đã làm, nhận xét trung bình, tiêu chí yếu nhất gần đây, `09-layoutBase/Phỏng vấn giả lập.dc.html:104-113, 601-605`)
 > — **bỏ khỏi yêu cầu**, theo quy tắc owner 2026-10-13 và 2026-10-18 (không dải thẻ chỉ số ở màn). F5-16 (lưu phiên
-> và rubric, mở lại được) vẫn được đáp ứng bởi bảng "Phiên gần đây" ở khoản 4 dưới đây và bởi lịch sử phỏng vấn
+> và rubric, mở lại được) vẫn được đáp ứng bởi bảng "Phiên gần đây" ở khoản 4 dưới đây (đã bỏ 2026-10-24, xem ghi chú đầu file) và bởi lịch sử phỏng vấn
 > ở `my_progress`/`dashboard` (`01-rd/screens/users/USR0501_my_progress.md:20`, `01-rd/screens/users/USR0601_dashboard.md:43`).
 > Ponytail bậc 1 (không nguồn yêu cầu nào đòi dải số riêng).
 
@@ -66,7 +68,7 @@ Phase 4 của `06-plan/nexa-plan/260824-2043-bd-screens-common-first.md` dòng 4
      (Intern/Junior/Middle/Senior)** [SoT: 09-layoutBase/Phỏng vấn giả lập.dc.html:616-617], trong khi màn
      `settings` (F5-28, đã chốt 2026-08-25) chỉ định nghĩa 3 mức (Junior/Middle/Senior)
      [SoT: 01-rd/screens/users/USR0503_settings.md:43]. **Đã tự chốt (2026-08-25)**: đây là dữ liệu mẫu còn sót lại
-     từ trước khi màn `settings` khoá danh sách 3 mức — không sửa `ai-review.md`/`settings.md` (đã chốt bởi phiên
+     từ trước khi màn `settings` khoá danh sách 3 mức — không sửa `F5_ai-review.md`/`settings.md` (đã chốt bởi phiên
      khác), giữ nguyên 3 mức làm chuẩn; tab "Intern" trong prototype của màn này là dữ liệu thừa, bỏ khi
      dựng UI thật **[Đợi nextjs]**.
 2. **Khối "Một phiên diễn ra thế nào"** — liệt kê 3 giai đoạn kèm mô tả ngắn và ghi chú số lượt tối đa
@@ -74,10 +76,10 @@ Phase 4 của `06-plan/nexa-plan/260824-2043-bd-screens-common-first.md` dòng 4
 3. **Khối "Bốn tiêu chí nhận xét"** — liệt kê tên 4 tiêu chí kèm **trọng số phần trăm** (25/30/25/20%)
    [SoT: 09-layoutBase/Phỏng vấn giả lập.dc.html:215-225, 517-526]. Xem Câu hỏi mở đã chốt ở mục 5 — trọng số
    này có mâu thuẫn nội bộ với cách tính điểm tổng ở trạng thái `result`.
-4. **Bảng "Phiên gần đây"** — Ngày, Nguồn phiên, Mạch chủ đề, Lượt, Nhận xét (điểm tổng), nút "Xem lại" mở
+4. ~~**Bảng "Phiên gần đây"** — Ngày, Nguồn phiên, Mạch chủ đề, Lượt, Nhận xét (điểm tổng), nút "Xem lại" mở
    lại `result` của phiên đó [SoT: 09-layoutBase/Phỏng vấn giả lập.dc.html:229-260]. Khớp F5-16 ("mở lại
    được từ trang tiến độ") — ở đây được lặp lại ngay tại chính màn `mock_interview`, không chỉ ở
-   `my_progress`; không phải xung đột, chỉ là thêm một điểm truy cập.
+   `my_progress`; không phải xung đột, chỉ là thêm một điểm truy cập.~~ **Đã bỏ 2026-10-24** (`DEC-2026-1024-dd-screens-ai-topic-length-and-rd-trim`): không có nguồn dữ liệu trong BD; F5-16 còn ở `my_progress`, `dashboard`.
 
 **Trạng thái `running` (phiên đang diễn ra)**
 
@@ -89,8 +91,7 @@ Phase 4 của `06-plan/nexa-plan/260824-2043-bd-screens-common-first.md` dòng 4
    09-layoutBase/Phỏng vấn giả lập.dc.html:295-304]. Đây là trạng thái lỗi được dựng đầy đủ nhất trong toàn
    bộ các màn AI đã viết RD tới nay (khác với `solution_review` — chưa có trạng thái lỗi nào) — dùng làm
    tham chiếu khi bổ sung trạng thái lỗi cho `solution_review` lúc dựng UI thật.
-7. **Cột phải khi đang chạy** — theo dõi Giai đoạn (done/current/todo), Mạch chủ đề (topic thread dạng
-   timeline), và Ngữ cảnh (bài nộp/câu hỏi/cấu hình tự chọn, có thể ẩn/hiện code nếu là lối vào từ bài nộp)
+7. **Cột phải khi đang chạy** — theo dõi Giai đoạn (done/current/todo). ~~Mạch chủ đề (topic thread dạng timeline), và Ngữ cảnh (bài nộp/câu hỏi/cấu hình tự chọn, có thể ẩn/hiện code nếu là lối vào từ bài nộp)~~ **Đã bỏ 2026-10-24** (`DEC-2026-1024-dd-screens-ai-topic-length-and-rd-trim`).
    [SoT: 09-layoutBase/Phỏng vấn giả lập.dc.html:319-376].
 8. **Nút "Huỷ phiên"** (`abort`, quay về `entry`, không lưu) và **"Kết phiên và nhận xét"** (`finish`, chuyển
    sang `result`) [SoT: 09-layoutBase/Phỏng vấn giả lập.dc.html:307-316]. `abort` không có mã `Fx-nn` riêng —
@@ -106,8 +107,8 @@ Phase 4 của `06-plan/nexa-plan/260824-2043-bd-screens-common-first.md` dòng 4
     ngay trong chính prototype. Xem Câu hỏi mở đã chốt ở mục 5.
 10. **4 thanh điểm rubric** kèm nhận xét từng tiêu chí, và khối cảnh báo "phản hồi để học, không phải điểm
     chính thức" [SoT: 09-layoutBase/Phỏng vấn giả lập.dc.html:394-411] — khớp F5-15, F5-18.
-11. **"Chủ đề đã đi qua"** và **"Việc nên làm tiếp"** — tổng hợp và gợi ý sau phiên, trong đó có gợi ý dẫn
-    sang một câu hỏi cụ thể trong kho F6 [SoT: 09-layoutBase/Phỏng vấn giả lập.dc.html:415-432, 729-733].
+11. ~~**"Chủ đề đã đi qua"** và **"Việc nên làm tiếp"** — tổng hợp và gợi ý sau phiên, trong đó có gợi ý dẫn
+    sang một câu hỏi cụ thể trong kho F6 [SoT: 09-layoutBase/Phỏng vấn giả lập.dc.html:415-432, 729-733].~~ **Đã bỏ 2026-10-24** (`DEC-2026-1024-dd-screens-ai-topic-length-and-rd-trim`): không có nguồn dữ liệu, không hiển thị giá trị bịa.
 12. **Nút "Phiên mới"** (quay lại `entry`) và **"Ôn chủ đề còn yếu"** (dẫn sang `interview_bank_list`) [SoT:
     09-layoutBase/Phỏng vấn giả lập.dc.html:433-436].
 
@@ -119,7 +120,7 @@ Hai chế độ hiển thị không đổi hành vi nghiệp vụ, chỉ đổi 
 | Màn/tài liệu | Vai trò | Bounded Context |
 |---|---|---|
 | Màn hiện tại | `USR0302` / `mock_interview` | `ai-review` |
-| Tài liệu yêu cầu | `01-rd/req/ai-review.md` (F5.2) | Nguồn SoT của màn |
+| Tài liệu yêu cầu | `01-rd/req/F5_ai-review.md` (F5.2) | Nguồn SoT của màn |
 | Prototype | `09-layoutBase/Phỏng vấn giả lập.dc.html` | Bằng chứng bố cục và trạng thái |
 
 **Chi tiết trạng thái và cấu trúc màn**
@@ -127,7 +128,7 @@ Hai chế độ hiển thị không đổi hành vi nghiệp vụ, chỉ đổi 
 | Thành phần | Vai trò | Nguồn |
 | :--- | :--- | :--- |
 | `01-rd/screens/users/USR0401_interview_bank_list.md` | Đích của liên kết "Xem toàn bộ N câu hỏi" / "Ôn chủ đề còn yếu"; không phải lối vào có kèm câu hỏi (đã bỏ 2026-10-18) | [SoT: 09-layoutBase/Phỏng vấn giả lập.dc.html:144-163, 433-436] |
-| `01-rd/screens/users/USR0503_settings.md` | Nguồn tham số phiên tự luyện (F5-28) và danh sách mức trình độ (động theo cấu hình admin, chốt 2026-10-19) | [SoT: 01-rd/req/ai-review.md — F5-28; 01-rd/screens/users/USR0503_settings.md:43] |
+| `01-rd/screens/users/USR0503_settings.md` | Nguồn tham số phiên tự luyện (F5-28) và danh sách mức trình độ (động theo cấu hình admin, chốt 2026-10-19) | [SoT: 01-rd/req/F5_ai-review.md — F5-28; 01-rd/screens/users/USR0503_settings.md:43] |
 | `09-layoutBase/Phỏng vấn giả lập.dc.html` | Prototype đối chiếu bố cục và trạng thái màn | [SoT: 09-layoutBase/Phỏng vấn giả lập.dc.html] |
 | Bounded Context `ai-review` (F5.2), `interview-bank` (F6) | BC sở hữu dữ liệu và logic đứng sau màn | [SoT: 01-rd/overview/system_survey.md — mục 7.1] |
 
@@ -138,7 +139,7 @@ Hai chế độ hiển thị không đổi hành vi nghiệp vụ, chỉ đổi 
 - Bảng màu, spacing, component cụ thể, breakpoint responsive — thuộc BD (`02-bd/screens/users/USR0302_mock_interview.md`,
   chưa viết).
 - Hợp đồng API (mở phiên, gửi lượt trả lời qua SSE, kết phiên lấy rubric) — thuộc DD
-  (`03-dd/api/ai-review.md`, chưa viết).
+  (`03-dd/api/F5_ai-review.md`, chưa viết).
 - Cách `ai-review` đọc dữ liệu câu hỏi từ `interview-bank` khi mở phiên từ lối vào "Kho câu hỏi" (outbound
   port hay domain event cụ thể) — thuộc BD/DD của `ai-review`, chỉ ghi nhận là điểm cần thiết kế, không tự
   quyết cơ chế ở mức RD theo màn.
@@ -151,8 +152,8 @@ Hai chế độ hiển thị không đổi hành vi nghiệp vụ, chỉ đổi 
 
 | # | Câu hỏi | Vì sao chưa trả lời được | Đề xuất | Chủ sở hữu |
 | :-: | :--- | :--- | :--- | :--- |
-| Q1 | ~~Trọng số 25/30/25/20% hiện ở khối "Bốn tiêu chí nhận xét" nhưng điểm tổng (`overall`) ở trạng thái `result` lại tính bằng trung bình cộng không trọng số — mâu thuẫn nội bộ ngay trong prototype.~~ **ĐÃ CHỐT (2026-08-25, tự quyết theo yêu cầu chủ dự án — prototype là bản dựng tham khảo)**: điểm tổng phải tính theo **trung bình có trọng số** đúng bằng các phần trăm đã hiện (25/30/25/20%), không phải trung bình cộng đơn giản. Công thức tính cụ thể và việc trọng số này có cấu hình được hay cố định **[Đợi nextjs]**, chốt khi viết DD cho `ai-review`. **Sửa 2026-09-09:** hai chỗ trong ô này trước dẫn `F5-23` ("khớp đúng tinh thần F5-23", "có cấu hình được qua F5-23 hay cố định") — sai neo. Rubric bốn tiêu chí của phiên phỏng vấn thuộc **`F5-15`**; `F5-23` chỉ phủ rubric của F5.1 Solution Review ("rubric chấm bài giải", `01-rd/req/ai-review.md` — F5-23). Kết luận "tính trung bình có trọng số 25/30/25/20%" **không đổi**, chỉ đổi mã neo và bỏ giả định rằng admin cấu hình được trọng số này qua màn `admin_ai_config`. | — | Đã chốt hướng tính, chi tiết cấu hình chờ DD. | Đã đóng |
-| Q2 | Tab Trình độ ở lối vào "Tự chọn chủ đề" có 4 mức (Intern/Junior/Middle/Senior), trong khi `settings` (F5-28) đã chốt 3 mức (Junior/Middle/Senior). | Hai file prototype khác nhau (`Phỏng vấn giả lập.dc.html` và `Cài đặt.dc.html`) không khớp nhau về danh sách này. | **ĐÃ CHỐT (2026-08-25, tự quyết), chốt lại 2026-10-19 (owner)**: số mức ở tab Trình độ **không cố định** 3 hay 4; lấy từ danh sách mức độ khó admin cấu hình động (`DEC-2026-1001-admin-configurable-settings`), cùng nguồn với F5-28 ở `settings`; ponytail bậc 4 (dùng lại danh mục có sẵn). Bản chốt 2026-08-25 còn lại như sau: giữ 3 mức theo `settings` (đã chốt trước, thuộc phạm vi phiên khác) — coi "Intern" trong màn này là dữ liệu mẫu thừa, bỏ khi dựng UI thật. Không sửa `ai-review.md`/`settings.md`. | Đã đóng |
+| Q1 | ~~Trọng số 25/30/25/20% hiện ở khối "Bốn tiêu chí nhận xét" nhưng điểm tổng (`overall`) ở trạng thái `result` lại tính bằng trung bình cộng không trọng số — mâu thuẫn nội bộ ngay trong prototype.~~ **ĐÃ CHỐT (2026-08-25, tự quyết theo yêu cầu chủ dự án — prototype là bản dựng tham khảo)**: điểm tổng phải tính theo **trung bình có trọng số** đúng bằng các phần trăm đã hiện (25/30/25/20%), không phải trung bình cộng đơn giản. Công thức tính cụ thể và việc trọng số này có cấu hình được hay cố định **[Đợi nextjs]**, chốt khi viết DD cho `ai-review`. **Sửa 2026-09-09:** hai chỗ trong ô này trước dẫn `F5-23` ("khớp đúng tinh thần F5-23", "có cấu hình được qua F5-23 hay cố định") — sai neo. Rubric bốn tiêu chí của phiên phỏng vấn thuộc **`F5-15`**; `F5-23` chỉ phủ rubric của F5.1 Solution Review ("rubric chấm bài giải", `01-rd/req/F5_ai-review.md` — F5-23). Kết luận "tính trung bình có trọng số 25/30/25/20%" **không đổi**, chỉ đổi mã neo và bỏ giả định rằng admin cấu hình được trọng số này qua màn `admin_ai_config`. | — | Đã chốt hướng tính, chi tiết cấu hình chờ DD. | Đã đóng |
+| Q2 | Tab Trình độ ở lối vào "Tự chọn chủ đề" có 4 mức (Intern/Junior/Middle/Senior), trong khi `settings` (F5-28) đã chốt 3 mức (Junior/Middle/Senior). | Hai file prototype khác nhau (`Phỏng vấn giả lập.dc.html` và `Cài đặt.dc.html`) không khớp nhau về danh sách này. | **ĐÃ CHỐT (2026-08-25, tự quyết), chốt lại 2026-10-19 (owner)**: số mức ở tab Trình độ **không cố định** 3 hay 4; lấy từ danh sách mức độ khó admin cấu hình động (`DEC-2026-1001-admin-configurable-settings`), cùng nguồn với F5-28 ở `settings`; ponytail bậc 4 (dùng lại danh mục có sẵn). Bản chốt 2026-08-25 còn lại như sau: giữ 3 mức theo `settings` (đã chốt trước, thuộc phạm vi phiên khác) — coi "Intern" trong màn này là dữ liệu mẫu thừa, bỏ khi dựng UI thật. Không sửa `F5_ai-review.md`/`settings.md`. | Đã đóng |
 | Q3 | ~~Nút "Thêm vào phiên giả lập tới" ở `interview_bank_list` (xem file RD riêng) chỉ đổi trạng thái tự chấm cục bộ, không có cơ chế "hàng đợi câu hỏi cho phiên tới" nào thực sự nối sang màn `mock_interview` — người dùng bấm nút này không thấy hệ quả rõ ràng.~~ | Hai file prototype không chia sẻ state nào; đây là giới hạn của bản dựng tham khảo tĩnh, không phải một khoảng trống nghiệp vụ đã biết trước. | **ĐÃ CHỐT 2026-10-18 (owner), theo đề xuất: nút không tồn tại, bỏ.** Không có mã `Fx-nn`, không có bảng "hàng đợi câu hỏi tự luyện" (ponytail bậc 1, 2), `DEC-2026-1018-usr-open-questions-phase1-scope` mục (4). Nút "Vào phiên giả lập" ở đầu trang `interview_bank_list` giữ nguyên. **Chốt thêm 2026-10-18 (owner):** lối vào "Phỏng vấn câu này" từ `interview_bank_list` sang `mock_interview` cũng **bỏ** (BD `USR0401` không có nút đó), đã sửa REQ-09 và BD `USR0302` Sheet 3; không còn tham số URL `question_id`. | Đã đóng |
 
 ---
@@ -161,17 +162,17 @@ Hai chế độ hiển thị không đổi hành vi nghiệp vụ, chỉ đổi 
 
 | ID | Yêu cầu | Loại | Nguồn/SoT |
 |---|---|---|---|
-| REQ-01 | Mở phiên cho bài nộp `Accepted`; ba giai đoạn Giải trình/Phản biện/Mở rộng (F5-09 tới F5-12) | Chức năng | `01-rd/req/ai-review.md` — F5-09 tới F5-12 |
-| REQ-02 | Duy trì ngữ cảnh qua `ChatMemory`/Redis; stream phản hồi qua SSE (F5-13, F5-14) | Chức năng | `01-rd/req/ai-review.md` — F5-13, F5-14 |
-| REQ-03 | Kết phiên xuất rubric 4 tiêu chí kèm nhận xét; lưu phiên, mở lại từ trang tiến độ (F5-15, F5-16) | Chức năng | `01-rd/req/ai-review.md` — F5-15, F5-16 |
-| REQ-04 | Chống prompt injection; định hướng giáo dục (không phải điểm chính thức) (F5-17, F5-18) | Chức năng | `01-rd/req/ai-review.md` — F5-17, F5-18 |
-| REQ-05 | Rate limit, suy giảm có kiểm soát khi AI hỏng/hết quota (F5-19, F5-22, F5-25) | Chức năng | `01-rd/req/ai-review.md` — F5-19, F5-22, F5-25 |
-| REQ-06 | Ba lối vào phiên: bài nộp `Accepted`, kho câu hỏi F6, tự chọn chủ đề (F5-24) | Chức năng | `01-rd/req/ai-review.md` — F5-24 |
-| REQ-07 | Tự chỉnh tham số phiên tự luyện (mức độ, số lượt, gợi ý) — chỉ áp dụng 2 lối vào tự luyện (F5-28) | Chức năng | `01-rd/req/ai-review.md` — F5-28 |
+| REQ-01 | Mở phiên cho bài nộp `Accepted`; ba giai đoạn Giải trình/Phản biện/Mở rộng (F5-09 tới F5-12) | Chức năng | `01-rd/req/F5_ai-review.md` — F5-09 tới F5-12 |
+| REQ-02 | Duy trì ngữ cảnh qua `ChatMemory`/Redis; stream phản hồi qua SSE (F5-13, F5-14) | Chức năng | `01-rd/req/F5_ai-review.md` — F5-13, F5-14 |
+| REQ-03 | Kết phiên xuất rubric 4 tiêu chí kèm nhận xét; lưu phiên, mở lại từ trang tiến độ (F5-15, F5-16) | Chức năng | `01-rd/req/F5_ai-review.md` — F5-15, F5-16 |
+| REQ-04 | Chống prompt injection; định hướng giáo dục (không phải điểm chính thức) (F5-17, F5-18) | Chức năng | `01-rd/req/F5_ai-review.md` — F5-17, F5-18 |
+| REQ-05 | Rate limit, suy giảm có kiểm soát khi AI hỏng/hết quota (F5-19, F5-22, F5-25) | Chức năng | `01-rd/req/F5_ai-review.md` — F5-19, F5-22, F5-25 |
+| REQ-06 | Ba lối vào phiên: bài nộp `Accepted`, kho câu hỏi F6, tự chọn chủ đề (F5-24) | Chức năng | `01-rd/req/F5_ai-review.md` — F5-24 |
+| REQ-07 | Tự chỉnh tham số phiên tự luyện (mức độ, số lượt, gợi ý) — chỉ áp dụng 2 lối vào tự luyện (F5-28) | Chức năng | `01-rd/req/F5_ai-review.md` — F5-28 |
 | REQ-08 | Given-When-Then đầy đủ cho luồng phỏng vấn giả lập (—) | Chức năng | `01-rd/req/user_stories/a1_student.md` (`US-A1-07`) |
 | REQ-09 | **Cho** tôi đang ở trạng thái `entry` và chọn lối vào "Kho câu hỏi", **khi** tôi chọn một câu hỏi trong danh sách rút gọn rồi bấm "Bắt đầu phiên", **thì** phiên mở với ngữ cảnh là đúng câu hỏi đó (không có code, AI chất vấn dựa trên câu trả lời tôi nói ra). **Không có** lối vào "Phỏng vấn câu này" từ `interview_bank_list` mang theo câu hỏi (owner bỏ 2026-10-18) | Chức năng (GWT) | [SoT: 09-layoutBase/Phỏng vấn giả lập.dc.html:146, 635-641, 711-713]; `DEC-2026-1018-usr-open-questions-phase2-5` |
 | REQ-10 | **Cho** tôi đang ở trạng thái `running` và AI không phản hồi được (hết quota hoặc lỗi mô hình), **khi** sự cố xảy ra, **thì** tôi thấy khối lỗi rõ ràng, được chọn xem nhận xét dựa trên phần đã trao đổi hoặc thử lại đúng lượt vừa gửi, và bài nộp/kết quả chấm của tôi (nếu phiên mở từ một bài nộp) không bị ảnh hưởng (F5-22) | Chức năng (GWT) | [SoT: 09-layoutBase/Phỏng vấn giả lập.dc.html:295-304] |
-| REQ-11 | **Cho** tôi mở phiên tự luyện (kho câu hỏi hoặc tự chọn chủ đề) sau khi đã đặt tham số ở `settings` (F5-28), **khi** phiên bắt đầu, **thì** số lượt tối đa và việc có gợi ý khi bí áp đúng theo tham số đã đặt — chi tiết truyền tham số từ `settings` sang `mock_interview` **[Đợi nextjs]** | Chức năng (GWT) | [SoT: 01-rd/req/ai-review.md — F5-28] |
+| REQ-11 | **Cho** tôi mở phiên tự luyện (kho câu hỏi hoặc tự chọn chủ đề) sau khi đã đặt tham số ở `settings` (F5-28), **khi** phiên bắt đầu, **thì** số lượt tối đa và việc có gợi ý khi bí áp đúng theo tham số đã đặt — chi tiết truyền tham số từ `settings` sang `mock_interview` **[Đợi nextjs]** | Chức năng (GWT) | [SoT: 01-rd/req/F5_ai-review.md — F5-28] |
 
 ---
 
@@ -210,7 +211,7 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 
 | Loại | Tham chiếu |
 | :--- | :--- |
-| Yêu cầu module | `01-rd/req/ai-review.md` — F5-09 tới F5-28. |
+| Yêu cầu module | `01-rd/req/F5_ai-review.md` — F5-09 tới F5-28. |
 | User story | `01-rd/req/user_stories/a1_student.md` — `US-A1-07`. |
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` — mục 7.1 dòng `mock_interview`; mục 7.1 — Bounded Context chạm bởi `mock_interview`. |
 | Màn hình liên quan | `01-rd/screens/users/USR0503_settings.md` — danh sách mức trình độ động theo cấu hình admin (F5-28, chốt 2026-10-19). |

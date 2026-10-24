@@ -2,7 +2,7 @@
 //
 // Boundary functions the feature layer calls. Each routes through withMockData so flipping
 // NEXT_PUBLIC_MOCK_DATA off is the only thing graduation has to do here — `fetchReal` throws until
-// 03-dd/api/identity.md exists and a real client.ts call replaces it (vibecode-pipeline SKILL.md
+// 03-dd/api/F1_identity.md exists and a real client.ts call replaces it (vibecode-pipeline SKILL.md
 // Layer 3 "Graduation").
 import { ApiError, withMockData } from "@/shared/api";
 import type {
@@ -34,7 +34,7 @@ function notImplemented(): never {
   throw new ApiError(
     "NOT_IMPLEMENTED",
     501,
-    "03-dd/api/identity.md does not exist yet",
+    "03-dd/api/F1_identity.md does not exist yet",
   );
 }
 
@@ -44,7 +44,7 @@ export const signup = (input: SignupInput): Promise<AuthOutcome> =>
 export const login = (input: LoginInput): Promise<AuthOutcome> =>
   withMockData(() => fakeLogin(input), notImplemented);
 
-// `POST /auth/instructor/login` (03-dd/api/identity.md endpoint #49,
+// `POST /auth/instructor/login` (03-dd/api/F1_identity.md endpoint #49,
 // `DEC-2026-0925-instructor-separate-login-route`) — dedicated endpoint for `views/instructor-auth`.
 export const instructorLogin = (input: LoginInput): Promise<AuthOutcome> =>
   withMockData(() => fakeInstructorLogin(input), notImplemented);

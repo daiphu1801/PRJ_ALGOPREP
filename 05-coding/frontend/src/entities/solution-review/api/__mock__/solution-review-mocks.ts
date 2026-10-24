@@ -10,18 +10,13 @@
 // reads a `?demo=` query param and this mock throws ApiError codes for the two failure branches —
 // matching entities/admin-dashboard's withMockData + ApiError convention.
 import { ApiError } from "@/shared/api";
+import {
+  AI_BUDGET_LOCKED_CODE,
+  AI_PROVIDER_TIMEOUT_CODE,
+  REVIEW_NOT_FOUND_CODE,
+  type SolutionReviewDemoOutcome,
+} from "../../model/review-errors";
 import type { SolutionReviewDetail } from "../../model/types";
-
-export type SolutionReviewDemoOutcome =
-  "ready" | "errorTransient" | "errorBudgetLocked";
-
-export const AI_BUDGET_LOCKED_CODE = "AI_BUDGET_LOCKED";
-export const AI_PROVIDER_TIMEOUT_CODE = "AI_PROVIDER_TIMEOUT";
-/** Unknown id, or one the caller does not own (BD Sheet 9 NO 2); the view shows one notice for both. */
-export const REVIEW_NOT_FOUND_CODE = "NOT_FOUND";
-export const REVIEW_FORBIDDEN_CODE = "FORBIDDEN";
-/** Submission is not ACCEPTED, so no review exists (BD Sheet 9 NO 3). */
-export const REVIEW_NOT_ACCEPTED_CODE = "NOT_ACCEPTED";
 
 // Mock id check: any "SB-n" / "SUB-n" id has a review (the list mock hands out SB-*, the interview
 // mock SUB-*); anything else is a 404. A real backend resolves ownership and status instead.

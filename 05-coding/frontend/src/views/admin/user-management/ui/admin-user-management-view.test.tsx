@@ -1,5 +1,7 @@
 // The two surviving bulk actions, tested through the screen because what matters is which subset of
 // the selection each button acts on and what it says before it destroys access.
+import type { ReactElement } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { describe, expect, it, vi } from "vitest";
 import {
   act,
@@ -11,8 +13,18 @@ import {
   within,
 } from "@testing-library/react";
 import { toast, useToasts } from "@/shared/lib/toast-store";
+import type * as AdminUserMocks from "../api/__mock__/admin-user-mocks";
 import type { AdminUserPage } from "../model/types";
 import { AdminUserManagementView } from "./admin-user-management-view";
+
+// The view now loads through a query, so each render waits for the first page.
+async function renderView(ui: ReactElement) {
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+  render(<QueryClientProvider client={client}>{ui}</QueryClientProvider>);
+  await screen.findAllByText("title");
+}
 
 vi.mock("@/shared/i18n", () => ({
   useT: () => (key: string, values?: Record<string, string | number>) =>
@@ -22,14 +34,16 @@ vi.mock("@/shared/i18n", () => ({
 // The shipped mock carries a single admin, which is the acting account — so locking it trips the
 // "last active ADMIN" hard block and the dialog never opens. A second admin is added so the
 // self-warning path is reachable on its own.
-vi.mock("../api", async () => {
-  const api = (await vi.importActual<object>("../api")) as {
-    fetchAdminUserPage: () => AdminUserPage;
-  };
+type MocksModule = typeof AdminUserMocks;
+
+vi.mock("../api/__mock__/admin-user-mocks", async () => {
+  const mocks = await vi.importActual<MocksModule>(
+    "../api/__mock__/admin-user-mocks",
+  );
   return {
-    ...api,
-    fetchAdminUserPage: () => {
-      const page = api.fetchAdminUserPage();
+    ...mocks,
+    fetchAdminUserPage: (): AdminUserPage => {
+      const page = mocks.fetchAdminUserPage();
       return {
         ...page,
         users: [
@@ -70,8 +84,8 @@ function typeReason(text: string) {
 }
 
 describe("AdminUserManagementView bulk status actions", () => {
-  it("offers only the status actions on the selection bar", () => {
-    render(<AdminUserManagementView />);
+  it("offers only the status actions on the selection bar", async () => {
+    await renderView(<AdminUserManagementView />);
     tickRow(ACTIVE_ROW);
     expect(
       screen.getByRole("button", { name: "bulkLock" }),
@@ -85,10 +99,10 @@ describe("AdminUserManagementView bulk status actions", () => {
     expect(screen.queryByRole("button", { name: "bulkChangeRole" })).toBeNull();
   });
 
-  it("keeps unlock enabled and warns when the selection holds nothing locked", () => {
+  it("keeps unlock enabled and warns when the selection holds nothing locked", async () => {
     const toasts = renderHook(() => useToasts());
     act(() => toast.clear());
-    render(<AdminUserManagementView />);
+    await renderView(<AdminUserManagementView />);
     tickRow(ACTIVE_ROW);
     expect(screen.getByRole("button", { name: "bulkLock" })).toBeEnabled();
     expect(screen.getByRole("button", { name: "bulkUnlock" })).toBeEnabled();
@@ -96,20 +110,20 @@ describe("AdminUserManagementView bulk status actions", () => {
     expect(toasts.result.current.at(-1)?.message).toBe("unlockNothing");
   });
 
-  it("keeps lock enabled and warns when the selection holds only locked rows", () => {
+  it("keeps lock enabled and warns when the selection holds only locked rows", async () => {
     const toasts = renderHook(() => useToasts());
     act(() => toast.clear());
-    render(<AdminUserManagementView />);
+    await renderView(<AdminUserManagementView />);
     tickRow(LOCKED_ROW);
     expect(screen.getByRole("button", { name: "bulkLock" })).toBeEnabled();
     clickButton("bulkLock");
     expect(toasts.result.current.at(-1)?.message).toBe("lockNothing");
   });
 
-  it("names the affected accounts and refuses to lock without a reason", () => {
+  it("names the affected accounts and refuses to lock without a reason", async () => {
     const toasts = renderHook(() => useToasts());
     act(() => toast.clear());
-    render(<AdminUserManagementView />);
+    await renderView(<AdminUserManagementView />);
     tickRow(ACTIVE_ROW);
     clickButton("bulkLock");
 
@@ -129,7 +143,7 @@ describe("AdminUserManagementView bulk status actions", () => {
   it("locks the rows and reports the count once a reason is given", async () => {
     const toasts = renderHook(() => useToasts());
     act(() => toast.clear());
-    render(<AdminUserManagementView />);
+    await renderView(<AdminUserManagementView />);
     tickRow(ACTIVE_ROW);
     clickButton("bulkLock");
     typeReason("spam");
@@ -146,7 +160,7 @@ describe("AdminUserManagementView bulk status actions", () => {
   it("unlocks a locked row through a confirmation that names it", async () => {
     const toasts = renderHook(() => useToasts());
     act(() => toast.clear());
-    render(<AdminUserManagementView />);
+    await renderView(<AdminUserManagementView />);
     tickRow(LOCKED_ROW);
     clickButton("bulkUnlock");
 
@@ -159,15 +173,15 @@ describe("AdminUserManagementView bulk status actions", () => {
     );
   });
 
-  it("warns about self-lock instead of silently signing the admin out", () => {
-    render(<AdminUserManagementView />);
+  it("warns about self-lock instead of silently signing the admin out", async () => {
+    await renderView(<AdminUserManagementView />);
     tickRow(ACTING_ADMIN);
     clickButton("bulkLock");
     expect(screen.getByText("lockDialog.selfWarning")).toBeInTheDocument();
   });
 
-  it("drops the selection when the filter changes, so the count cannot go stale", () => {
-    render(<AdminUserManagementView />);
+  it("drops the selection when the filter changes, so the count cannot go stale", async () => {
+    await renderView(<AdminUserManagementView />);
     tickRow(ACTIVE_ROW);
     expect(
       screen.getByRole("button", { name: "bulkLock" }),
@@ -183,23 +197,23 @@ describe("AdminUserManagementView bulk status actions", () => {
 });
 
 describe("AdminUserManagementView per-account actions", () => {
-  it("offers the pending status as a filter", () => {
-    render(<AdminUserManagementView />);
+  it("offers the pending status as a filter", async () => {
+    await renderView(<AdminUserManagementView />);
     fireEvent.click(screen.getByRole("button", { name: /statusFilterLabel/ }));
     fireEvent.click(screen.getByRole("option", { name: "status.pending" }));
     expect(screen.getByText("Đỗ Quốc Bảo")).toBeInTheDocument();
     expect(screen.queryByText("Nguyễn Văn An")).toBeNull();
   });
 
-  it("no longer lists the instructor-request task", () => {
-    render(<AdminUserManagementView />);
+  it("no longer lists the instructor-request task", async () => {
+    await renderView(<AdminUserManagementView />);
     expect(screen.queryByText("pending.instructorRequest.label")).toBeNull();
   });
 
   it("changes one account's role from its row", async () => {
     const toasts = renderHook(() => useToasts());
     act(() => toast.clear());
-    render(<AdminUserManagementView />);
+    await renderView(<AdminUserManagementView />);
     fireEvent.click(
       screen.getByRole("button", { name: `actionChangeRoleFor:${ACTIVE_ROW}` }),
     );
@@ -214,8 +228,8 @@ describe("AdminUserManagementView per-account actions", () => {
     );
   });
 
-  it("blocks demoting the last active admin and keeps the dialog action disabled until a change", () => {
-    render(<AdminUserManagementView />);
+  it("blocks demoting the last active admin and keeps the dialog action disabled until a change", async () => {
+    await renderView(<AdminUserManagementView />);
     fireEvent.click(
       screen.getByRole("button", {
         name: `actionChangeRoleFor:${ACTING_ADMIN}`,
@@ -229,7 +243,7 @@ describe("AdminUserManagementView per-account actions", () => {
   it("locks and unlocks a single account without a selection", async () => {
     const toasts = renderHook(() => useToasts());
     act(() => toast.clear());
-    render(<AdminUserManagementView />);
+    await renderView(<AdminUserManagementView />);
 
     fireEvent.click(
       screen.getByRole("button", { name: `actionUnlockFor:${LOCKED_ROW}` }),
@@ -257,7 +271,7 @@ describe("AdminUserManagementView per-account actions", () => {
   it("resets a password only after confirming, naming the address", async () => {
     const toasts = renderHook(() => useToasts());
     act(() => toast.clear());
-    render(<AdminUserManagementView />);
+    await renderView(<AdminUserManagementView />);
     fireEvent.click(
       screen.getByRole("button", {
         name: `actionResetPasswordFor:${ACTIVE_ROW}`,
@@ -274,7 +288,7 @@ describe("AdminUserManagementView per-account actions", () => {
   it("sends provider guidance, not a temporary password, for an OAuth-only account", async () => {
     const toasts = renderHook(() => useToasts());
     act(() => toast.clear());
-    render(<AdminUserManagementView />);
+    await renderView(<AdminUserManagementView />);
     fireEvent.click(
       screen.getByRole("button", {
         name: "actionResetPasswordFor:Lê Hoàng Nam",

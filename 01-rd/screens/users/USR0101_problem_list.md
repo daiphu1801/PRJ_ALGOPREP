@@ -6,7 +6,7 @@
 > dùng) và `harness` (nhãn mô hình nộp bài của từng bài) [SoT: 01-rd/overview/system_survey.md mục 7.1 —
 > cột "Bounded Context liên quan", dòng `problem_list`]. Actor: A1 (chính), A2 (khi xem để giao bài — màn
 > thật cho A2 giao bài là `01-rd/screens/teacher/INS0201_class_management.md`, không phải file này).
-> Nguồn sự thật (SoT): `01-rd/req/problem-bank.md` (F2-11, F2-12), `01-rd/req/harness.md` (F3-13),
+> Nguồn sự thật (SoT): `01-rd/req/F2_problem-bank.md` (F2-11, F2-12), `01-rd/req/F3_harness.md` (F3-13),
 > `01-rd/req/user_stories/a1_student.md` (`US-A1-02`), `09-layoutBase/Ngân hàng bài toán.dc.html` (prototype).
 > Tài liệu này có thể đọc độc lập.
 
@@ -16,10 +16,10 @@
 
 Danh sách toàn bộ bài toán để người học tìm và chọn bài luyện tập, lọc theo chủ đề/độ khó/trạng thái đã
 giải, kèm khu vực riêng hiển thị bài đã được giảng viên giao theo lớp
-[SoT: 01-rd/req/problem-bank.md — F2-11, F2-12].
+[SoT: 01-rd/req/F2_problem-bank.md — F2-11, F2-12].
 
 File này mô tả **hành vi và UX ở mức yêu cầu** — không lặp lại đặc tả chức năng đã có ở
-`01-rd/req/problem-bank.md` (mục F2) và `01-rd/req/user_stories/a1_student.md` (`US-A1-02`), chỉ trỏ tới
+`01-rd/req/F2_problem-bank.md` (mục F2) và `01-rd/req/user_stories/a1_student.md` (`US-A1-02`), chỉ trỏ tới
 và bổ sung phần đặc thù của màn, đối chiếu prototype `09-layoutBase/Ngân hàng bài toán.dc.html`.
 
 ---
@@ -28,9 +28,9 @@ và bổ sung phần đặc thù của màn, đối chiếu prototype `09-layout
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Tìm kiếm, lọc theo chủ đề/độ khó/trạng thái đã giải | F2-11 | `01-rd/req/problem-bank.md` — F2-11 |
-| Bài giao theo lớp hiển thị thành nhóm riêng trong cùng màn | F2-12 | `01-rd/req/problem-bank.md` — F2-12 |
-| Cả hai mô hình nộp bài luôn song song cho mỗi bài toán; học viên tự chọn mỗi lượt làm ở `problem_detail`, trừ khi lược đồ kiểu chưa phủ được thì chỉ còn Standard I/O | F3-13 | `01-rd/req/harness.md` — F3-13 |
+| Tìm kiếm, lọc theo chủ đề/độ khó/trạng thái đã giải | F2-11 | `01-rd/req/F2_problem-bank.md` — F2-11 |
+| Bài giao theo lớp hiển thị thành nhóm riêng trong cùng màn | F2-12 | `01-rd/req/F2_problem-bank.md` — F2-12 |
+| Cả hai mô hình nộp bài luôn song song cho mỗi bài toán; học viên tự chọn mỗi lượt làm ở `problem_detail`, trừ khi lược đồ kiểu chưa phủ được thì chỉ còn Standard I/O | F3-13 | `01-rd/req/F3_harness.md` — F3-13 |
 | Given-When-Then đầy đủ | — | `01-rd/req/user_stories/a1_student.md` (`US-A1-02`) |
 
 Đối chiếu `09-layoutBase/Ngân hàng bài toán.dc.html` [SoT: 09-layoutBase/Ngân hàng bài toán.dc.html], phạm
@@ -62,15 +62,15 @@ lại ở đây.
 | Màn/tài liệu | Vai trò | Bounded Context |
 |---|---|---|
 | Màn hiện tại | `USR0101` / `problem_list` | `problem-bank` |
-| Tài liệu yêu cầu | `01-rd/req/problem-bank.md` (F2-11, F2-12), `01-rd/req/harness.md` (F3-13) | Nguồn SoT của màn |
+| Tài liệu yêu cầu | `01-rd/req/F2_problem-bank.md` (F2-11, F2-12), `01-rd/req/F3_harness.md` (F3-13) | Nguồn SoT của màn |
 | Prototype | `09-layoutBase/Ngân hàng bài toán.dc.html` | Bằng chứng bố cục và trạng thái |
 
 **Chi tiết trạng thái và cấu trúc màn**
 
 | Thành phần | Vai trò | Nguồn |
 | :--- | :--- | :--- |
-| `01-rd/screens/users/USR0102_problem_detail.md` | Màn con — nơi học viên thực sự chọn mô hình nộp bài cho mỗi lượt làm (`function`/`stdio`) | [SoT: 01-rd/req/harness.md — F3-13] |
-| `01-rd/screens/teacher/INS0201_class_management.md` | Màn A2 giao bài theo lớp — nguồn dữ liệu cho khu "Bài tập lớp" ở màn này | [SoT: 01-rd/req/problem-bank.md — F2-12] |
+| `01-rd/screens/users/USR0102_problem_detail.md` | Màn con — nơi học viên thực sự chọn mô hình nộp bài cho mỗi lượt làm (`function`/`stdio`) | [SoT: 01-rd/req/F3_harness.md — F3-13] |
+| `01-rd/screens/teacher/INS0201_class_management.md` | Màn A2 giao bài theo lớp — nguồn dữ liệu cho khu "Bài tập lớp" ở màn này | [SoT: 01-rd/req/F2_problem-bank.md — F2-12] |
 | `09-layoutBase/Ngân hàng bài toán.dc.html` | Prototype đối chiếu bố cục và trạng thái màn | [SoT: 09-layoutBase/Ngân hàng bài toán.dc.html] |
 | Bounded Context `problem-bank` (F2), `identity`, `harness` | BC sở hữu dữ liệu và logic đứng sau màn | [SoT: 01-rd/overview/system_survey.md — mục 7.1] |
 
@@ -80,7 +80,7 @@ lại ở đây.
 
 - Bảng màu, spacing, component cụ thể, breakpoint responsive — thuộc BD (`02-bd/screens/users/USR0101_problem_list.md`,
   chưa viết).
-- Hợp đồng API (lọc, phân trang, sắp xếp) — thuộc DD (`03-dd/api/problem-bank.md`, chưa viết).
+- Hợp đồng API (lọc, phân trang, sắp xếp) — thuộc DD (`03-dd/api/F2_problem-bank.md`, chưa viết).
 - Thuật toán tính tỉ lệ Accepted, cách đánh chỉ mục tìm kiếm — thuộc logic của `problem-bank`, không thuộc
   file theo trục màn này.
 
@@ -90,9 +90,9 @@ lại ở đây.
 
 | # | Câu hỏi | Vì sao chưa trả lời được | Đề xuất | Chủ sở hữu |
 | :-: | :--- | :--- | :--- | :--- |
-| Q1 | ~~`problem-bank.md` — F2-12 mô tả bài giao theo lớp "lồng thành một nhóm riêng"...~~ **ĐÃ CHỐT (phiên 2026-08-25, chốt theo RD):** giữ nguyên dạng khối tổng hợp như prototype (đơn giản hơn khi có nhiều lớp/nhiều bài được giao cùng lúc); đã sửa câu chữ `01-rd/req/problem-bank.md` mục F2-12 cho khớp thực tế (đổi "lồng thành một nhóm riêng" thành "hiển thị thành một khối riêng ngay trong cùng trang danh sách bài toán"). | — | Đã sửa `problem-bank.md`, không cần hành động thêm ở màn này. | Đã đóng |
+| Q1 | ~~`F2_problem-bank.md` — F2-12 mô tả bài giao theo lớp "lồng thành một nhóm riêng"...~~ **ĐÃ CHỐT (phiên 2026-08-25, chốt theo RD):** giữ nguyên dạng khối tổng hợp như prototype (đơn giản hơn khi có nhiều lớp/nhiều bài được giao cùng lúc); đã sửa câu chữ `01-rd/req/F2_problem-bank.md` mục F2-12 cho khớp thực tế (đổi "lồng thành một nhóm riêng" thành "hiển thị thành một khối riêng ngay trong cùng trang danh sách bài toán"). | — | Đã sửa `F2_problem-bank.md`, không cần hành động thêm ở màn này. | Đã đóng |
 | Q2 | ~~Nhánh `isSolve`...~~ **ĐÃ CHỐT (phiên 2026-08-25, chốt theo RD):** coi là code thừa của một hướng thiết kế cũ (danh sách + giải bài trong cùng trang), không đưa vào BD. **Không dọn ở `09-layoutBase/Ngân hàng bài toán.dc.html`** — prototype chỉ tham khảo, khi dựng FE Next.js thật sẽ không mang theo nhánh này. | — | Không đưa vào BD; không cần dọn prototype (sẽ viết lại từ đầu ở FE thật). | Đã đóng |
-| Q3 | ~~(Mới, phát hiện khi rà Phase 1...) Nhãn "mô hình nộp bài" trong bảng danh sách...~~ **ĐÃ CHỐT (phiên 2026-08-25, chốt theo RD; điều chỉnh 2026-10-19: không vẽ nhãn "Cả hai", theo BD):** bài có cả hai mô hình song song không vẽ nhãn; chỉ hiện "Chỉ Standard I/O" cho các bài rơi vào ngoại lệ lược đồ kiểu (R2, `harness.md` — F3-13) — giữ được thông tin hữu ích (biết trước bài nào bị giới hạn) mà không gây hiểu nhầm là chọn cố định. **Đã dựng vào prototype 2026-10-19** (`problem-list-view.tsx`, nhãn chỉ khi `submissionModel = stdioOnly`). | — | Đã chốt và đã dựng. | Đã đóng |
+| Q3 | ~~(Mới, phát hiện khi rà Phase 1...) Nhãn "mô hình nộp bài" trong bảng danh sách...~~ **ĐÃ CHỐT (phiên 2026-08-25, chốt theo RD; điều chỉnh 2026-10-19: không vẽ nhãn "Cả hai", theo BD):** bài có cả hai mô hình song song không vẽ nhãn; chỉ hiện "Chỉ Standard I/O" cho các bài rơi vào ngoại lệ lược đồ kiểu (R2, `F3_harness.md` — F3-13) — giữ được thông tin hữu ích (biết trước bài nào bị giới hạn) mà không gây hiểu nhầm là chọn cố định. **Đã dựng vào prototype 2026-10-19** (`problem-list-view.tsx`, nhãn chỉ khi `submissionModel = stdioOnly`). | — | Đã chốt và đã dựng. | Đã đóng |
 
 ---
 
@@ -100,11 +100,11 @@ lại ở đây.
 
 | ID | Yêu cầu | Loại | Nguồn/SoT |
 |---|---|---|---|
-| REQ-01 | Tìm kiếm, lọc theo chủ đề/độ khó/trạng thái đã giải (F2-11) | Chức năng | `01-rd/req/problem-bank.md` — F2-11 |
-| REQ-02 | Bài giao theo lớp hiển thị thành nhóm riêng trong cùng màn (F2-12) | Chức năng | `01-rd/req/problem-bank.md` — F2-12 |
-| REQ-03 | Cả hai mô hình nộp bài luôn song song cho mỗi bài toán; học viên tự chọn mỗi lượt làm ở `problem_detail`, trừ khi lược đồ kiểu chưa phủ được thì chỉ còn Standard I/O (F3-13) | Chức năng | `01-rd/req/harness.md` — F3-13 |
-| REQ-04 | **Cho** một bài toán rơi vào ngoại lệ lược đồ kiểu (kiểu dữ liệu vượt lược đồ độc lập ngôn ngữ của F3-01), **khi** tôi xem bài đó trong danh sách, **thì** nhãn mô hình cho biết bài này chỉ còn Standard I/O (Bọc hàm bị ẩn) — ngoại lệ duy nhất còn mang tính cố định theo bài toán, không phải lựa chọn của người học | Chức năng (GWT) | [SoT: 01-rd/req/harness.md — F3-13 ngoại lệ R2] |
-| REQ-05 | **Cho** một bài toán không rơi vào ngoại lệ trên (đa số), **khi** tôi xem bài đó trong danh sách, **thì** dòng bài **không vẽ nhãn mô hình nào** (bài hỗ trợ cả hai mô hình là đa số, vẽ nhãn "Cả hai" trên mọi dòng chỉ gây nhiễu; owner chốt 2026-10-19 theo BD) — mô hình thực sự chỉ được chọn khi vào màn `problem_detail`, mỗi lượt làm một lần | Chức năng (GWT) | [SoT: 01-rd/req/harness.md — F3-13 sau `DEC-2026-0824-dual-submission-model-per-problem`, đã chốt ở Câu hỏi mở Q3] |
+| REQ-01 | Tìm kiếm, lọc theo chủ đề/độ khó/trạng thái đã giải (F2-11) | Chức năng | `01-rd/req/F2_problem-bank.md` — F2-11 |
+| REQ-02 | Bài giao theo lớp hiển thị thành nhóm riêng trong cùng màn (F2-12) | Chức năng | `01-rd/req/F2_problem-bank.md` — F2-12 |
+| REQ-03 | Cả hai mô hình nộp bài luôn song song cho mỗi bài toán; học viên tự chọn mỗi lượt làm ở `problem_detail`, trừ khi lược đồ kiểu chưa phủ được thì chỉ còn Standard I/O (F3-13) | Chức năng | `01-rd/req/F3_harness.md` — F3-13 |
+| REQ-04 | **Cho** một bài toán rơi vào ngoại lệ lược đồ kiểu (kiểu dữ liệu vượt lược đồ độc lập ngôn ngữ của F3-01), **khi** tôi xem bài đó trong danh sách, **thì** nhãn mô hình cho biết bài này chỉ còn Standard I/O (Bọc hàm bị ẩn) — ngoại lệ duy nhất còn mang tính cố định theo bài toán, không phải lựa chọn của người học | Chức năng (GWT) | [SoT: 01-rd/req/F3_harness.md — F3-13 ngoại lệ R2] |
+| REQ-05 | **Cho** một bài toán không rơi vào ngoại lệ trên (đa số), **khi** tôi xem bài đó trong danh sách, **thì** dòng bài **không vẽ nhãn mô hình nào** (bài hỗ trợ cả hai mô hình là đa số, vẽ nhãn "Cả hai" trên mọi dòng chỉ gây nhiễu; owner chốt 2026-10-19 theo BD) — mô hình thực sự chỉ được chọn khi vào màn `problem_detail`, mỗi lượt làm một lần | Chức năng (GWT) | [SoT: 01-rd/req/F3_harness.md — F3-13 sau `DEC-2026-0824-dual-submission-model-per-problem`, đã chốt ở Câu hỏi mở Q3] |
 | REQ-06 | **Cho** tôi đã từng yêu cầu Solution Review cho một bài đã `Accepted` (F5-01), **khi** tôi xem lại danh sách, **thì** bài đó hiện thêm nhãn "đã có Solution Review" để mở lại báo cáo cũ mà không cần phân tích lại | Chức năng (GWT) | [SoT: 09-layoutBase/Ngân hàng bài toán.dc.html:175-177] |
 
 ---
@@ -144,7 +144,7 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 
 | Loại | Tham chiếu |
 |---|---|
-| Yêu cầu module | `01-rd/req/problem-bank.md` — F2-11, F2-12; `01-rd/req/harness.md` — F3-13. |
+| Yêu cầu module | `01-rd/req/F2_problem-bank.md` — F2-11, F2-12; `01-rd/req/F3_harness.md` — F3-13. |
 | Quyết định | `DEC-2026-0824-dual-submission-model-per-problem` (ảnh hưởng gián tiếp tới cách hiển thị nhãn mô hình ở màn này, xem Câu hỏi mở Q3). |
 | User story | `01-rd/req/user_stories/a1_student.md` — `US-A1-02`. |
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` — mục 7.1 dòng `problem_list`. |

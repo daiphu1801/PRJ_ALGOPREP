@@ -11,10 +11,10 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
-  fetchSavedProblems,
   problemLevelLabel,
   problemLevelTone,
   useProblemLevels,
+  useSavedProblems,
   type SavedProblem,
   type SolveState,
 } from "@/entities/problem";
@@ -30,6 +30,7 @@ import {
   TextArea,
   FilterBar,
   FilterMenu,
+  QueryBoundary,
   type BadgeVariant,
   type DataTableColumn,
 } from "@/shared/ui";
@@ -51,9 +52,19 @@ type StatusFilter = SolveState | "all";
 type DifficultyFilter = string;
 
 export function SavedProblemsView() {
+  const query = useSavedProblems();
+  return (
+    <QueryBoundary query={query}>
+      {(saved) => <SavedProblems initial={saved} />}
+    </QueryBoundary>
+  );
+}
+
+// Local edits (unsave, notes) live in this state, seeded once from the query result.
+function SavedProblems({ initial }: { initial: SavedProblem[] }) {
   const t = useT("savedProblems");
   const levels = useProblemLevels();
-  const [all, setAll] = useState(fetchSavedProblems);
+  const [all, setAll] = useState(initial);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<StatusFilter>("all");
   const [difficulty, setDifficulty] = useState<DifficultyFilter>("all");

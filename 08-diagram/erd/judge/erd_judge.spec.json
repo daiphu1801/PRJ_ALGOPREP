@@ -1,5 +1,5 @@
 {
-  "_": "Nguon: 02-bd/database/judge-orchestration.md (doc 2026-10-22). Ghi chu: problem.problem_specs khong ve lien ket vi submissions.spec_version la gia tri so (truy vet), khong phai tham chieu. Cac cot user_id, problem_id, testcase_id, updated_by la tham chieu logic khong FK vat ly nen de key rong. Rang buoc unique (submission_id, testcase_id) cua submission_testcase_results va unique mot phan (submission_id, testcase_id) WHERE consumed_at IS NOT NULL cua judge_run_tokens la rang buoc phuc hop, khong the hien o cot. Bang singleton luon co id = 1.",
+  "_": "Nguon: 02-bd/database/F4_judge-orchestration.md (doc 2026-10-22). Ghi chu: problem.problem_specs khong ve lien ket vi submissions.spec_version la gia tri so (truy vet), khong phai tham chieu. Cac cot user_id, problem_id, testcase_id, updated_by la tham chieu logic khong FK vat ly nen de key rong. Rang buoc unique (submission_id, testcase_id) cua submission_testcase_results va unique mot phan (submission_id, testcase_id) WHERE consumed_at IS NOT NULL cua judge_run_tokens la rang buoc phuc hop, khong the hien o cot. Bang singleton luon co id = 1.",
   "kind": "erd",
   "title": "ERD schema judge",
   "covers": [],

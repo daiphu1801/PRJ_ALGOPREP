@@ -5,9 +5,8 @@
 // the same shape from judge-orchestration, filtered by the instructor's classes.
 import type { ClassStudent } from "@/entities/class";
 import {
-  fetchSubmissionDetail,
-  READABLE_SUBMISSION_IDS,
   SUBMISSION_LANGUAGE_LABEL,
+  type SubmissionDetail,
   type SubmissionStatus,
 } from "@/entities/submission";
 
@@ -37,13 +36,17 @@ const NOT_JUDGED: SubmissionStatus[] = [
 ];
 const isJudged = (status: SubmissionStatus) => !NOT_JUDGED.includes(status);
 
-export function buildSubmissionRows(students: ClassStudent[]): SubmissionRow[] {
-  const count = READABLE_SUBMISSION_IDS.length;
+/** `readable` = the submissions the instructor may read (`useInstructorReadableSubmissions`); the caller fetches, this only shapes. */
+export function buildSubmissionRows(
+  students: ClassStudent[],
+  readable: SubmissionDetail[],
+): SubmissionRow[] {
+  const count = readable.length;
+  if (count === 0) return [];
   const rows = students.flatMap((student, k) =>
     [k % count, (k + 1) % count].flatMap((slot, n) => {
-      const id = READABLE_SUBMISSION_IDS[slot]!;
-      const detail = fetchSubmissionDetail(id);
-      if (!detail) return [];
+      const detail = readable[slot]!;
+      const id = detail.id;
       return [
         {
           key: `${student.id}-${id}-${n}`,

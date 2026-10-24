@@ -71,7 +71,7 @@ này. Mặc định đã xác nhận: trang đầu Workspace **chỉ** chứa b�
 ## 3. Ngoài phạm vi (Out of Scope)
 
 - Bảng màu, spacing, component cụ thể, lưới thẻ, breakpoint — thuộc BD (`02-bd/screens/users/USR0105_workspace_home.md`).
-- Hợp đồng API (danh sách bài làm dở, bốc bài ngẫu nhiên) — thuộc DD; `03-dd/api/judge-orchestration.md` chưa viết
+- Hợp đồng API (danh sách bài làm dở, bốc bài ngẫu nhiên) — thuộc DD; `03-dd/api/F4_judge-orchestration.md` chưa viết
   [Nguồn: 05-coding/frontend/src/views/users/workspace-home/ui/workspace-home-view.tsx:7].
 - Soạn mã, chạy thử, nộp bài — thuộc `USR0102`. Màn này chỉ dẫn người học tới đó.
 - Đọc đề bài, ví dụ, giới hạn từng ngôn ngữ — thuộc `USR0104`. Màn này chỉ mở trang đó qua "Bài ngẫu nhiên".
@@ -135,7 +135,7 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng ở mức 
 |---|---|
 | RD màn hình | Có tài liệu này |
 | BD màn hình | `02-bd/screens/users/USR0105_workspace_home.md` (V0.1, chưa duyệt hình) |
-| DD/API liên quan | Chưa có — không tự suy luận; chờ `03-dd/api/judge-orchestration.md` |
+| DD/API liên quan | Chưa có — không tự suy luận; chờ `03-dd/api/F4_judge-orchestration.md` |
 
 ---
 

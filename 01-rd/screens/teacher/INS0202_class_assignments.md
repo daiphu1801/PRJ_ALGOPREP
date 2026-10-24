@@ -4,7 +4,7 @@
 > Slug chính tắc: `class_assignments` — slug mới, tách khỏi `class_management` ngày 2026-08-28
 > [SoT: DEC-2026-0828-split-class-management-assignments].
 > Phạm vi/Bounded Context: `problem-bank` (gán bài toán cho lớp). Actor: A2 (Giáo viên).
-> Nguồn sự thật (SoT): `01-rd/req/problem-bank.md` (F2-12), `01-rd/req/identity.md` (F1-12),
+> Nguồn sự thật (SoT): `01-rd/req/F2_problem-bank.md` (F2-12), `01-rd/req/F1_identity.md` (F1-12),
 > `09-layoutBase/Giáo viên - Bài tập của tôi.dc.html` (prototype), `01-rd/req/user_stories/a2_instructor.md` (`US-A2-03`).
 > Tài liệu này có thể đọc độc lập.
 
@@ -13,9 +13,9 @@
 ## 1. Mục đích và bối cảnh
 
 Cho giáo viên (A2) quản lý danh sách bài toán đã gán cho lớp mình phụ trách, gán thêm bài từ ngân hàng bài
-toán chung [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_assignments` (trước tách); 01-rd/req/problem-bank.md — F2-12]. Mọi phạm vi hiển
+toán chung [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_assignments` (trước tách); 01-rd/req/F2_problem-bank.md — F2-12]. Mọi phạm vi hiển
 thị và thao tác đều giới hạn trong lớp giáo viên đó phụ trách, gác bởi Function `CLASS_MANAGEMENT` trong ma
-trận phân quyền [SoT: 01-rd/req/identity.md — F1-12]. (Tham chiếu F5-27 cũ đã bỏ 2026-10-13, `DEC-2026-1013-remove-instructor-manual-grading`.) (Yêu cầu chấm lại theo phạm vi lớp đã loại khỏi phạm
+trận phân quyền [SoT: 01-rd/req/F1_identity.md — F1-12]. (Tham chiếu F5-27 cũ đã bỏ 2026-10-13, `DEC-2026-1013-remove-instructor-manual-grading`.) (Yêu cầu chấm lại theo phạm vi lớp đã loại khỏi phạm
 vi 2026-08-28 — `DEC-2026-0828-remove-rejudge-scope`; F4-09a tới F4-09c và Bounded Context
 `judge-orchestration` từng gắn với slug này cũng đã loại khỏi phạm vi cùng đợt.)
 
@@ -31,7 +31,7 @@ Lớp của tôi.dc.html`, `./Giáo viên - Bài tập của tôi.dc.html`) và 
 `LH`, "Bài tập của tôi" mã `BT`) [SoT: 09-layoutBase/Giáo viên - Lớp của tôi.dc.html:221-222].
 
 File này mô tả **hành vi và UX ở mức yêu cầu** của màn "Bài tập của tôi" — không lặp lại đặc tả chức năng
-chung đã có ở `01-rd/req/problem-bank.md` (F2) và `01-rd/req/user_stories/a2_instructor.md` (`US-A2-03`), chỉ trỏ tới và bổ
+chung đã có ở `01-rd/req/F2_problem-bank.md` (F2) và `01-rd/req/user_stories/a2_instructor.md` (`US-A2-03`), chỉ trỏ tới và bổ
 sung phần đặc thù của màn: trạng thái màn, cấu trúc UI, và các câu hỏi mở phát sinh khi đối chiếu với
 prototype thật.
 
@@ -41,8 +41,8 @@ prototype thật.
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Giao bài toán đã công bố cho một lớp; chỉ sinh viên lớp đó thấy bài được giao | F2-12 | `01-rd/req/problem-bank.md` — F2-12 |
-| Ma trận phân quyền — Function `CLASS_MANAGEMENT` gác quyền A2 theo phạm vi lớp phụ trách | F1-10, F1-12 | `01-rd/req/identity.md` — F1-10, F1-12 |
+| Giao bài toán đã công bố cho một lớp; chỉ sinh viên lớp đó thấy bài được giao | F2-12 | `01-rd/req/F2_problem-bank.md` — F2-12 |
+| Ma trận phân quyền — Function `CLASS_MANAGEMENT` gác quyền A2 theo phạm vi lớp phụ trách | F1-10, F1-12 | `01-rd/req/F1_identity.md` — F1-10, F1-12 |
 | Given-When-Then giao bài theo lớp | — | `01-rd/req/user_stories/a2_instructor.md` (`US-A2-03`) |
 
 **Đã loại khỏi phạm vi 2026-08-28:** yêu cầu chấm lại (F4-09a→c) — xem
@@ -53,7 +53,7 @@ prototype thật.
 | Màn/tài liệu | Vai trò | Bounded Context |
 |---|---|---|
 | Màn hiện tại | `INS0202` / `class_assignments` | `problem-bank` |
-| Tài liệu yêu cầu | `01-rd/req/problem-bank.md` (F2-12) | Nguồn SoT của màn |
+| Tài liệu yêu cầu | `01-rd/req/F2_problem-bank.md` (F2-12) | Nguồn SoT của màn |
 | Prototype | `09-layoutBase/Giáo viên - Bài tập của tôi.dc.html` | Bằng chứng bố cục và trạng thái |
 
 **Chi tiết trạng thái và cấu trúc màn**
@@ -120,7 +120,7 @@ giáo viên xem/gỡ chi tiết theo từng lớp** như phía học viên xem t
 
 - Layout, spacing, bảng màu, component cụ thể (glass-morphism, breakpoint responsive) — thuộc BD
   (`02-bd/screens/teacher/INS0202_class_assignments.md`, chưa viết).
-- Hợp đồng API (danh sách bài đã gán, gán/gỡ bài) — thuộc DD (`03-dd/api/problem-bank.md`, chưa viết).
+- Hợp đồng API (danh sách bài đã gán, gán/gỡ bài) — thuộc DD (`03-dd/api/F2_problem-bank.md`, chưa viết).
 - Màn "Lớp của tôi" (tổng quan lớp, danh sách học viên) — slug chị em
   `01-rd/screens/teacher/INS0201_class_management.md` (`DEC-2026-0828-split-class-management-assignments`).
 - Màn "Tiến độ học viên" (`Giáo viên - Tiến độ học viên.dc.html`) — là slug màn khác theo mục 7.2 của
@@ -137,7 +137,7 @@ giáo viên xem/gỡ chi tiết theo từng lớp** như phía học viên xem t
 | :-: | :--- | :--- | :--- | :--- |
 | Q7 | ~~Nút "+ Gán từ ngân hàng bài toán" chỉ điều hướng sang `Ngân hàng bài toán.dc.html`...~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** ~~nút "Giao cho lớp này" + modal chọn lớp ngay tại `problem_list` (góc nhìn giáo viên), không điều hướng rời trang.~~ **ĐÃ BỊ THAY THẾ 2026-10-14 bởi `DEC-2026-1011-class-assignment-popup-on-assignments-screen`:** popup "Giao bài cho lớp" nằm ngay trên màn `INS0202` (chọn một lớp, tick các bài đã công bố chưa giao cho lớp đó, nút "Giao n bài"), không còn ở `problem_list` [SoT: .nexa/control/decision-registry.md:3159-3165]. | — | ~~Xem `DEC-2026-0831-class-assignments-round2`. Đụng tới cách `problem_list` hiển thị khác nhau theo vai trò — ghi nhận khi viết BD/DD cho cả hai màn.~~ Phần "modal tại `problem_list`" của `DEC-2026-0831-class-assignments-round2` hết hiệu lực; phần gỡ mềm (F2-12) giữ nguyên. | Đã đóng |
 | Q8 | ~~Nút "Chi tiết"...trỏ nhầm sang `Câu hỏi phỏng vấn.dc.html`...~~ **Xác nhận: lỗi kỹ thuật prototype (copy-paste), không phải liên kết nghiệp vụ.** | — | Không sửa prototype. Khi viết BD/DD, nút "Chi tiết" của giáo viên trên mỗi bài toán trỏ tới `problem_detail` (góc nhìn giáo viên) hoặc view xem-trước, không phải `interview-bank`. | Đã đóng |
-| Q9 | ~~Không có nút gỡ/thu hồi bài đã gán khỏi lớp...~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** bổ sung hành động gỡ, **giữ nguyên lịch sử nộp bài cũ** — chỉ ẩn khỏi danh sách được giao từ thời điểm gỡ. | — | Đã ghi vào `01-rd/req/problem-bank.md` (amendment F2-12), khác cách F1-26 xoá cascade khi gỡ học viên. Xem `DEC-2026-0831-class-assignments-round2`. | Đã đóng |
+| Q9 | ~~Không có nút gỡ/thu hồi bài đã gán khỏi lớp...~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** bổ sung hành động gỡ, **giữ nguyên lịch sử nộp bài cũ** — chỉ ẩn khỏi danh sách được giao từ thời điểm gỡ. | — | Đã ghi vào `01-rd/req/F2_problem-bank.md` (amendment F2-12), khác cách F1-26 xoá cascade khi gỡ học viên. Xem `DEC-2026-0831-class-assignments-round2`. | Đã đóng |
 | 202-Q1 | Thẻ "Lượt nộp tuần này" có giữ không. **ĐÃ CHỐT 2026-10-14:** bỏ thẻ (bậc 2: không có số đếm theo tuần). | — | `DEC-2026-1014-instructor-batch1-counting-rules` | Đã đóng |
 | 202-Q2 | Thẻ "AC trung bình" tính bao nhiêu ngày, có delta không. **ĐÃ CHỐT 2026-10-14:** toàn thời gian, bỏ "90 ngày" và delta "-3%". | — | `DEC-2026-1014-instructor-batch1-counting-rules` | Đã đóng |
 | 202-Q3 | Cột "Lượt nộp"/"AC" tính toàn hệ thống hay theo lớp giảng viên. **ĐÃ CHỐT 2026-10-14:** theo các lớp của giảng viên (chủ dự án chọn "tính theo lớp ngay"). Hệ quả cho DD: cần một phép tổng hợp theo lớp ở `judge-orchestration`. | — | `DEC-2026-1014-instructor-batch1-counting-rules`. Ghi chú: RD file này chỉ có Q7-Q9; ba hàng này ghi nhận các câu hỏi cùng tên từ BD `02-bd/screens/teacher/INS0202_class_assignments.md`. | Đã đóng |
@@ -150,8 +150,8 @@ giáo viên xem/gỡ chi tiết theo từng lớp** như phía học viên xem t
 
 | ID | Yêu cầu | Loại | Nguồn/SoT |
 |---|---|---|---|
-| REQ-01 | Giao bài toán đã công bố cho một lớp; chỉ sinh viên lớp đó thấy bài được giao (F2-12) | Chức năng | `01-rd/req/problem-bank.md` — F2-12 |
-| REQ-02 | Ma trận phân quyền — Function `CLASS_MANAGEMENT` gác quyền A2 theo phạm vi lớp phụ trách (F1-10, F1-12) | Chức năng | `01-rd/req/identity.md` — F1-10, F1-12 |
+| REQ-01 | Giao bài toán đã công bố cho một lớp; chỉ sinh viên lớp đó thấy bài được giao (F2-12) | Chức năng | `01-rd/req/F2_problem-bank.md` — F2-12 |
+| REQ-02 | Ma trận phân quyền — Function `CLASS_MANAGEMENT` gác quyền A2 theo phạm vi lớp phụ trách (F1-10, F1-12) | Chức năng | `01-rd/req/F1_identity.md` — F1-10, F1-12 |
 | REQ-03 | Given-When-Then giao bài theo lớp (—) | Chức năng | `01-rd/req/user_stories/a2_instructor.md` (`US-A2-03`) |
 
 ---
@@ -192,9 +192,9 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 | Loại | Tham chiếu |
 |---|---|
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` — mục 7.2 dòng `class_assignments`, cập nhật thành hai dòng theo `DEC-2026-0828-split-class-management-assignments`. |
-| Yêu cầu module | `01-rd/req/identity.md` — F1-10 tới F1-12. |
-| Yêu cầu module | `01-rd/req/problem-bank.md` — F2-12. |
-| Yêu cầu module | `01-rd/req/ai-review.md` — F5-27 (đã bỏ 2026-10-13, `DEC-2026-1013-remove-instructor-manual-grading`). |
+| Yêu cầu module | `01-rd/req/F1_identity.md` — F1-10 tới F1-12. |
+| Yêu cầu module | `01-rd/req/F2_problem-bank.md` — F2-12. |
+| Yêu cầu module | `01-rd/req/F5_ai-review.md` — F5-27 (đã bỏ 2026-10-13, `DEC-2026-1013-remove-instructor-manual-grading`). |
 | User story | `01-rd/req/user_stories/a2_instructor.md` — `US-A2-03`. |
 | Màn hình liên quan | `01-rd/screens/users/USR0101_problem_list.md:44-48` — mô tả khu "Bài tập lớp" phía học viên, đối chiếu hai chiều mục 2 của file này. |
 | Màn hình liên quan | `01-rd/screens/teacher/INS0201_class_management.md` — slug chị em, tách ra 2026-08-28, mô tả "Lớp của tôi". |

@@ -23,8 +23,9 @@
 import Link from "next/link";
 import { useState } from "react";
 import {
-  fetchAiUsagePage,
+  useAiUsagePage,
   type AiFeature,
+  type AiUsagePage,
   type TopProblem,
   type TopUser,
   type UsageAlert,
@@ -49,6 +50,7 @@ import {
   DataTable,
   NoticeTile,
   PageHeader,
+  QueryBoundary,
   ProgressBar,
   RankedProgressList,
   SegmentedTabs,
@@ -71,9 +73,16 @@ function formatMillions(tokens: number): string {
 }
 
 export function AdminAiUsageView() {
+  return (
+    <QueryBoundary query={useAiUsagePage()}>
+      {(page) => <AdminAiUsageViewInner page={page} />}
+    </QueryBoundary>
+  );
+}
+
+function AdminAiUsageViewInner({ page }: { page: AiUsagePage }) {
   const t = useT("adminAiUsage");
   const levelList = useProblemLevels();
-  const [page] = useState(fetchAiUsagePage);
   const [range, setRange] = useState<UsageRange>("14d");
   // EVT-5: a reviewed anomaly alert leaves the list. Mock-only: no MarkAiUsageAlertReviewed call yet.
   const [reviewedKeys, setReviewedKeys] = useState<ReadonlySet<string>>(

@@ -25,7 +25,7 @@ import {
 
 function notImplemented(): never {
   throw new Error(
-    "03-dd/api/identity.md write endpoints have no real HTTP client wired up yet",
+    "03-dd/api/F1_identity.md write endpoints have no real HTTP client wired up yet",
   );
 }
 

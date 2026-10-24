@@ -14,8 +14,8 @@
   này và được mô tả ở Khu vực A [Nguồn: 02-bd/screens/teacher/_shell.md:30,113-114].
 
 > Đọc cùng `01-rd/screens/teacher/INS0203_class_progress.md` (hành vi ở mức yêu cầu, không lặp lại ở
-> đây), `01-rd/req/identity.md:112-138` (F1-28 — mã yêu cầu trực tiếp của màn) và
-> `02-bd/database/identity.md` mục 1.8 tới 1.12.
+> đây), `01-rd/req/F1_identity.md:112-138` (F1-28 — mã yêu cầu trực tiếp của màn) và
+> `02-bd/database/F1_identity.md` mục 1.8 tới 1.12.
 >
 > **Không thiết kế lại** vòng đời lớp (tạo/sửa/xoá lớp, mã mời, gỡ học viên) — thuộc `class_management`
 > (`INS0201`) [Nguồn: 02-bd/screens/teacher/INS0201_class_management.md:195-197].
@@ -102,7 +102,7 @@ gần nhất, khối "Cần chú ý", và trang đầu của bảng danh sách h
 [Chế độ mở] Không có.
 
 [Thông tin truyền] `id` học viên và `id` lớp của chính dòng đó — phạm vi hiển thị của màn đích giới hạn
-trong lớp này [Nguồn: 01-rd/req/identity.md:104-108]. Tham số truyền giống hệt `class_management`
+trong lớp này [Nguồn: 01-rd/req/F1_identity.md:104-108]. Tham số truyền giống hệt `class_management`
 [Nguồn: 02-bd/screens/teacher/INS0201_class_management.md:153-154], để hai đường vào cùng một màn đích
 không sinh hai hợp đồng khác nhau.
 
@@ -154,7 +154,7 @@ flowchart LR
 [Mục đích màn] Cho giảng viên nhìn tiến độ **tổng hợp của nhiều học viên** trong các lớp mình phụ trách
 — xu hướng điểm trung bình theo lớp, danh sách học viên kèm điểm và tỉ lệ hoàn thành, và một khối nêu
 học viên có dấu hiệu tụt lại — để phát hiện sớm người cần hỗ trợ mà không phải mở từng trang tiến độ cá
-nhân [Nguồn: 01-rd/screens/teacher/INS0203_class_progress.md:25-29; 01-rd/req/identity.md:112-115].
+nhân [Nguồn: 01-rd/screens/teacher/INS0203_class_progress.md:25-29; 01-rd/req/F1_identity.md:112-115].
 
 [Luồng nghiệp vụ chính]
 
@@ -170,7 +170,7 @@ nhân [Nguồn: 01-rd/screens/teacher/INS0203_class_progress.md:25-29; 01-rd/req
    [Nguồn: DEC-2026-0830-class-progress-dashboard].
 5. **Khoan sâu**: bấm tên học viên ở bảng hoặc ở khối "Cần chú ý" để sang `class_student_detail`.
 
-[Người dùng] Giảng viên đã đăng nhập, có Function `CLASS_MANAGEMENT` [Nguồn: 01-rd/req/identity.md:137-138].
+[Người dùng] Giảng viên đã đăng nhập, có Function `CLASS_MANAGEMENT` [Nguồn: 01-rd/req/F1_identity.md:137-138].
 
 [Tệp liên quan] Không có. Màn này không xuất hay nhập tệp.
 
@@ -183,7 +183,7 @@ nhân [Nguồn: 01-rd/screens/teacher/INS0203_class_progress.md:25-29; 01-rd/req
 - **Không** giao/gỡ bài toán cho lớp — thuộc `class_assignments`
   [Nguồn: DEC-2026-0828-split-class-management-assignments].
 - **Không** hiển thị điểm AI tham khảo ở cột "Điểm TB" — F1-28 loại trừ rõ ràng
-  [Nguồn: 01-rd/req/identity.md:116-118]. (F5-27, nguồn của điểm AI tham khảo cho giảng viên, đã bỏ 2026/10/13 theo `DEC-2026-1013-remove-instructor-manual-grading`; ý này giữ nguyên vì điểm AI nay chỉ còn nằm trong báo cáo F5.1 của học viên.)
+  [Nguồn: 01-rd/req/F1_identity.md:116-118]. (F5-27, nguồn của điểm AI tham khảo cho giảng viên, đã bỏ 2026/10/13 theo `DEC-2026-1013-remove-instructor-manual-grading`; ý này giữ nguyên vì điểm AI nay chỉ còn nằm trong báo cáo F5.1 của học viên.)
 - **Không** hiển thị nội dung bài nộp, dữ liệu testcase ẩn hay kết quả so khớp chi tiết ở bất kỳ trạng
   thái nào của màn.
 
@@ -196,7 +196,7 @@ nhân [Nguồn: 01-rd/screens/teacher/INS0203_class_progress.md:25-29; 01-rd/req
 [Số bản ghi tối đa] Biểu đồ: đúng 6 mốc tuần **đủ 7 ngày** (thứ Hai tới Chủ nhật, tuần đang chạy không tính), **một đường duy nhất** — tổng mọi lớp phụ trách ở tab "Tất cả", đường của lớp ở tab lớp (`DEC-2026-1014-instructor-batch2-weekly-rules`, Q3, Q5). Khối "Cần chú ý": tối đa 5 mục, ưu tiên mức nghiêm trọng (xem Câu hỏi mở Q4). Cụm tab lọc:
 1 + số lớp phụ trách. Bảng học viên: **20 dòng mỗi trang**, đã chốt là quy ước chung cho bảng gộp nhiều dòng của cụm lớp (`DEC-2026-1014-instructor-batch5-6-nav-pagination-rubric`), cùng con số với bảng học viên gộp của `class_management` [Nguồn: 02-bd/screens/teacher/INS0201_class_management.md Sheet 5 Khu vực D NO 11]; bảng học viên trong một lớp (`INS0205`) không phân trang.
 
-[Nguồn: 01-rd/screens/teacher/INS0203_class_progress.md:68-100; 01-rd/req/identity.md:112-138]
+[Nguồn: 01-rd/screens/teacher/INS0203_class_progress.md:68-100; 01-rd/req/F1_identity.md:112-138]
 
 ### 4.2 DTO liên quan
 
@@ -206,25 +206,25 @@ nhân [Nguồn: 01-rd/screens/teacher/INS0203_class_progress.md:25-29; 01-rd/req
 - `ClassCardDto` — **dùng lại** của `class_management`, chỉ lấy `id` và `name` để dựng cụm tab lọc
   [Nguồn: 02-bd/screens/teacher/INS0201_class_management.md:244-245].
 
-`[Suy luận]` — tên DTO do BD này đề xuất, `03-dd/api/identity.md` chốt lại.
+`[Suy luận]` — tên DTO do BD này đề xuất, `03-dd/api/F1_identity.md` chốt lại.
 
 ### 4.3 Bảng dữ liệu liên quan (5)
 
 | NO | Bảng | Ghi chú |
 | --: | :--- | :--- |
-| 1 | `identity.classes` | Tên lớp cho cụm tab, cột "Lớp" và tên đường trên biểu đồ [Nguồn: 02-bd/database/identity.md:85-88] |
-| 2 | `identity.class_enrollments` | Tập học viên **còn trong lớp** (`left_at IS NULL`) của từng lớp; học viên đã rời không tính (V0.8, `DEC-2026-1014-keep-learning-history-on-leave`) [Nguồn: 02-bd/database/identity.md mục 1.10] |
-| 3 | `identity.users` | Tên hiển thị học viên — cột `display_name` [Nguồn: 02-bd/database/identity.md:16] |
+| 1 | `identity.classes` | Tên lớp cho cụm tab, cột "Lớp" và tên đường trên biểu đồ [Nguồn: 02-bd/database/F1_identity.md:85-88] |
+| 2 | `identity.class_enrollments` | Tập học viên **còn trong lớp** (`left_at IS NULL`) của từng lớp; học viên đã rời không tính (V0.8, `DEC-2026-1014-keep-learning-history-on-leave`) [Nguồn: 02-bd/database/F1_identity.md mục 1.10] |
+| 3 | `identity.users` | Tên hiển thị học viên — cột `display_name` [Nguồn: 02-bd/database/F1_identity.md:16] |
 | 4 | `judge.submissions` | Nguồn tính Điểm TB **theo phạm vi lớp**, đọc qua `GetClassStudentSubmissionMetrics` của `judge-orchestration`, không truy vấn chéo schema. Thay cho `identity.user_submission_stats` (read model toàn cục, không có chiều `class_id`) từ 2026-09-21 theo `DEC-2026-0921-teacher-screens-conflict-resolutions` |
-| 5 | `identity.identity_recent_activity` | Cột "Hoạt động" của bảng học viên [Nguồn: 02-bd/database/identity.md:115-116] |
+| 5 | `identity.identity_recent_activity` | Cột "Hoạt động" của bảng học viên [Nguồn: 02-bd/database/F1_identity.md:115-116] |
 
 Ba nhóm số liệu còn lại **không đọc từ bảng của `identity`**, nên không tính vào bảng trên và không
 truy vấn chéo schema:
 
 | Số liệu | Nguồn thật | Cách lấy |
 | :--- | :--- | :--- |
-| Tỉ lệ "Hoàn thành" | `problem.class_assignments` (F2-12, mẫu số) [Nguồn: 02-bd/database/problem-bank.md:116-128] + `identity.user_problem_best_score` (tử số) [Nguồn: 02-bd/database/identity.md:111] | `identity` lấy danh sách bài đã giao qua `ListClassAssignments` rồi **tự tính** tỉ lệ; không gọi `GetClassAssignmentCompletion` (endpoint đó đã bỏ theo `DEC-2026-0921-class-completion-owned-by-identity`) |
-| "Chuỗi ngày", "Xu hướng", chuỗi điểm theo tuần, mốc nộp gần nhất để xét "Vắng bài" | `judge.submissions` [Nguồn: 02-bd/database/judge-orchestration.md:8-34] | Endpoint `GetClassStudentSubmissionMetrics` của `judge-orchestration`, xem Câu hỏi mở Q2. Số liệu tuần tính lúc truy vấn, cache Redis 15 phút, tuần bắt đầu thứ Hai (ISO), bỏ tuần đang chạy (`DEC-2026-1014-instructor-batch2-weekly-rules`) |
+| Tỉ lệ "Hoàn thành" | `problem.class_assignments` (F2-12, mẫu số) [Nguồn: 02-bd/database/F2_problem-bank.md:116-128] + `identity.user_problem_best_score` (tử số) [Nguồn: 02-bd/database/F1_identity.md:111] | `identity` lấy danh sách bài đã giao qua `ListClassAssignments` rồi **tự tính** tỉ lệ; không gọi `GetClassAssignmentCompletion` (endpoint đó đã bỏ theo `DEC-2026-0921-class-completion-owned-by-identity`) |
+| "Chuỗi ngày", "Xu hướng", chuỗi điểm theo tuần, mốc nộp gần nhất để xét "Vắng bài" | `judge.submissions` [Nguồn: 02-bd/database/F4_judge-orchestration.md:8-34] | Endpoint `GetClassStudentSubmissionMetrics` của `judge-orchestration`, xem Câu hỏi mở Q2. Số liệu tuần tính lúc truy vấn, cache Redis 15 phút, tuần bắt đầu thứ Hai (ISO), bỏ tuần đang chạy (`DEC-2026-1014-instructor-batch2-weekly-rules`) |
 | Điểm TB **theo phạm vi lớp** | `judge.submissions` giới hạn theo tập bài đã giao cho lớp | Cùng endpoint trên, xem Câu hỏi mở Q1 |
 
 ### 4.4 Vùng bố cục
@@ -242,16 +242,16 @@ design system cuối cùng.
 | Cột phải — khối "Cần chú ý" | `:136-150`, dữ liệu `:281-286` | Tiêu đề (`:137`), danh sách mục: tên học viên (`:142`), dòng lý do (`:143`), nhãn trạng thái bên phải (`:145`). Prototype dựng 4 mục |
 | Khối "Danh sách học viên" — hàng lọc | `:154-165`, dữ liệu `:288-293,320` | Ô tìm kiếm "Tìm học viên" (`:155-158`), cụm tab lọc lớp (`:159-163`), dòng đếm kết quả `{N} / 82 học viên` (`:164`) |
 | Khối "Danh sách học viên" — bảng | `:167-187`, dữ liệu `:226-234` | Lưới 7 cột `minmax(160px,1.3fr) 130px 90px 100px 90px 120px 110px`, `min-width: 860px`, cuộn ngang khi hẹp. Cột: Học viên, Lớp, Điểm TB, Hoàn thành, Chuỗi ngày, Xu hướng, Hoạt động (`:169`) |
-| Phân trang | không có | Prototype không dựng; BD thiết kế bổ sung theo F1-28 [Nguồn: 01-rd/req/identity.md:134-136] |
+| Phân trang | không có | Prototype không dựng; BD thiết kế bổ sung theo F1-28 [Nguồn: 01-rd/req/F1_identity.md:134-136] |
 | Chân trang | không có | Cả 5 prototype khu Giảng viên đều không có `<footer>` [Nguồn: 02-bd/screens/teacher/_shell.md:31] |
 
 Bốn điểm dưới đây **không có trong prototype** và do BD này thiết kế bổ sung, vì F1-28 chốt sau khi
-prototype đã vẽ [Nguồn: 01-rd/req/identity.md:112-115]:
+prototype đã vẽ [Nguồn: 01-rd/req/F1_identity.md:112-115]:
 
 1. **Phân trang bảng học viên** — prototype chỉ có 8 bản ghi mẫu nhưng dòng đếm ghi "82 học viên"
    [Nguồn: 09-layoutBase/Giáo viên - Tiến độ học viên.dc.html:226-234,320].
 2. **Trạng thái rỗng và trạng thái lỗi kèm nút "Thử lại"** cho từng khối
-   [Nguồn: 01-rd/req/identity.md:134-136].
+   [Nguồn: 01-rd/req/F1_identity.md:134-136].
 3. **Liên kết khoan sâu** từ tên học viên (ở bảng và ở khối "Cần chú ý") sang `class_student_detail` —
    prototype vẽ tên học viên là chữ thường, không phải liên kết
    [Nguồn: 09-layoutBase/Giáo viên - Tiến độ học viên.dc.html:176,142].
@@ -318,8 +318,8 @@ Bảng 4.6 ghi những gì bản dựng Next.js đang làm cho bảng học viê
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Biểu đồ điểm | | | | | | | | | | | | | |
 | | 1 | Tiêu đề khối | `classProgress.scoreTrend.title` | - | - | Label | String | - | - | O | Điểm trung bình theo lớp | - | Tiêu đề khối biểu đồ<br>[Nguồn giá trị] Nhãn tĩnh i18n [Nguồn: 09-layoutBase/Giáo viên - Tiến độ học viên.dc.html:124]<br>[EVT liên quan] - |
-| | 2 | Phạm vi thời gian | `classProgress.scoreTrend.rangeLabel` | - | - | Label | String | - | - | O | 6 tuần gần nhất | - | Nhãn cho biết biểu đồ vẽ 6 tuần đủ gần nhất (tuần thứ Hai tới Chủ nhật đã kết thúc; tuần đang chạy không tính, `DEC-2026-1014-instructor-batch2-weekly-rules`)<br>[Nguồn giá trị] Nhãn tĩnh i18n; số 6 chốt bởi F1-28 [Nguồn: 01-rd/req/identity.md:126-128]<br>[EVT liên quan] - |
-| | 3 | Đường điểm | `classProgress.scoreTrend.line` | - | - | List | List | - | - | O | rỗng | Đường cong 6 điểm | **Một** đường: tab "Tất cả" vẽ đường tổng mọi lớp phụ trách, tab lớp vẽ đường của lớp đó (`DEC-2026-1014-instructor-batch2-weekly-rules`, Q5)<br>[Công thức] Mỗi mốc tuần = trung bình cộng Điểm TB của mọi học viên trong phạm vi tab tại mốc đó [Nguồn: 01-rd/req/identity.md:118-119]. Nguồn dữ liệu theo mốc tuần **không có bảng lưu**: tính lúc truy vấn từ `judge.submissions` theo tuần ISO bắt đầu thứ Hai, cache Redis 15 phút, không bảng ảnh chụp và không job (đã chốt, Q3)<br>[EVT liên quan] EVT-1, EVT-2 |
+| | 2 | Phạm vi thời gian | `classProgress.scoreTrend.rangeLabel` | - | - | Label | String | - | - | O | 6 tuần gần nhất | - | Nhãn cho biết biểu đồ vẽ 6 tuần đủ gần nhất (tuần thứ Hai tới Chủ nhật đã kết thúc; tuần đang chạy không tính, `DEC-2026-1014-instructor-batch2-weekly-rules`)<br>[Nguồn giá trị] Nhãn tĩnh i18n; số 6 chốt bởi F1-28 [Nguồn: 01-rd/req/F1_identity.md:126-128]<br>[EVT liên quan] - |
+| | 3 | Đường điểm | `classProgress.scoreTrend.line` | - | - | List | List | - | - | O | rỗng | Đường cong 6 điểm | **Một** đường: tab "Tất cả" vẽ đường tổng mọi lớp phụ trách, tab lớp vẽ đường của lớp đó (`DEC-2026-1014-instructor-batch2-weekly-rules`, Q5)<br>[Công thức] Mỗi mốc tuần = trung bình cộng Điểm TB của mọi học viên trong phạm vi tab tại mốc đó [Nguồn: 01-rd/req/F1_identity.md:118-119]. Nguồn dữ liệu theo mốc tuần **không có bảng lưu**: tính lúc truy vấn từ `judge.submissions` theo tuần ISO bắt đầu thứ Hai, cache Redis 15 phút, không bảng ảnh chụp và không job (đã chốt, Q3)<br>[EVT liên quan] EVT-1, EVT-2 |
 | | 4 | Chú giải | `classProgress.scoreTrend.legend` | `identity.classes` | `name` | Label | List | 120 | - | O | - | Chấm màu + tên | Đúng một mục chú giải: "Tất cả lớp" (nhãn tĩnh i18n) ở tab "Tất cả", hoặc tên lớp đang chọn ở tab lớp<br>[Nguồn giá trị] Cột `name` của lớp đang chọn [Nguồn: 09-layoutBase/Giáo viên - Tiến độ học viên.dc.html:130-133]<br>[EVT liên quan] EVT-2 |
 
 ### Khu vực C — Cần chú ý
@@ -331,7 +331,7 @@ Bảng 4.6 ghi những gì bản dựng Next.js đang làm cho bảng học viê
 | | 2 | Danh sách cần chú ý | `classProgress.attention.list` | `identity.class_enrollments` | - | List | List | - | - | O | rỗng | Tối đa 5 mục | Học viên có ít nhất một dấu hiệu tụt lại, trong phạm vi tab lớp đang chọn<br>[Nguồn giá trị] Kết quả gọi `ListClassAttentionStudents`<br>[EVT liên quan] EVT-1, EVT-2 |
 | | 3 | Học viên | `classProgress.attention.col.studentName` | `identity.users` | `display_name` | Link | String | 100 | - | O | - | - | Tên hiển thị học viên; bấm vào mở màn `class_student_detail`<br>[Nguồn giá trị] Cột `display_name`<br>[EVT liên quan] EVT-7 |
 | | 4 | Lý do cần chú ý | `classProgress.attention.col.reason` | - | - | ListColumn | String | 60 | - | O | - | Câu ngắn | Giải thích vì sao học viên vào khối này, ví dụ "Không nộp bài 9 ngày", "Hoàn thành 42%", "Điểm giảm 3 tuần liên tiếp"<br>[Công thức] Sinh từ chính ngưỡng đã kích hoạt ở NO 5, kèm con số thật của học viên đó; không phải chuỗi tự do [Nguồn: 09-layoutBase/Giáo viên - Tiến độ học viên.dc.html:143,282-285]<br>[EVT liên quan] - |
-| | 5 | Trạng thái | `classProgress.attention.col.status` | - | - | Badge | Enum | - | - | O | - | Nhãn tiếng Việt | Ba nhãn: "Vắng bài", "Theo dõi", "Cần hỗ trợ"<br>[Công thức] "Vắng bài" = không có lượt nộp nào trong 7 ngày gần nhất (cửa sổ trượt tính tới thời điểm truy vấn, không theo tuần ISO); "Theo dõi" = Hoàn thành dưới 50% **và** đã được giao ít nhất một bài; "Cần hỗ trợ" = Điểm TB giảm liên tiếp qua từ hai mốc tuần trở lên, các mốc là tuần ISO đủ 7 ngày, không tính tuần đang chạy (`DEC-2026-1014-instructor-batch2-weekly-rules`) [Nguồn: DEC-2026-0830-class-progress-dashboard; 01-rd/req/identity.md:129-133]. Học viên khớp nhiều ngưỡng thì lấy nhãn nghiêm trọng nhất theo thứ tự "Vắng bài" > "Cần hỗ trợ" > "Theo dõi" `[Suy luận]`, xem Câu hỏi mở Q4<br>[EVT liên quan] - |
+| | 5 | Trạng thái | `classProgress.attention.col.status` | - | - | Badge | Enum | - | - | O | - | Nhãn tiếng Việt | Ba nhãn: "Vắng bài", "Theo dõi", "Cần hỗ trợ"<br>[Công thức] "Vắng bài" = không có lượt nộp nào trong 7 ngày gần nhất (cửa sổ trượt tính tới thời điểm truy vấn, không theo tuần ISO); "Theo dõi" = Hoàn thành dưới 50% **và** đã được giao ít nhất một bài; "Cần hỗ trợ" = Điểm TB giảm liên tiếp qua từ hai mốc tuần trở lên, các mốc là tuần ISO đủ 7 ngày, không tính tuần đang chạy (`DEC-2026-1014-instructor-batch2-weekly-rules`) [Nguồn: DEC-2026-0830-class-progress-dashboard; 01-rd/req/F1_identity.md:129-133]. Học viên khớp nhiều ngưỡng thì lấy nhãn nghiêm trọng nhất theo thứ tự "Vắng bài" > "Cần hỗ trợ" > "Theo dõi" `[Suy luận]`, xem Câu hỏi mở Q4<br>[EVT liên quan] - |
 
 ### Khu vực D — Danh sách học viên
 
@@ -346,13 +346,13 @@ Bảng 4.6 ghi những gì bản dựng Next.js đang làm cho bảng học viê
 | | 6 | Lớp | `classProgress.studentList.col.className` | `identity.classes` | `name` | ListColumn | String | 120 | - | O | - | - | Lớp mà dòng này thuộc về<br>[Nguồn giá trị] Cột `name` của lớp gắn với dòng `class_enrollments`<br>[EVT liên quan] - |
 | | 7 | Điểm TB | `classProgress.studentList.col.avgScore` | `judge.submissions` | `status`, `problem_id`, `user_id` | ListColumn | Number | 4 | - | O | - | Một chữ số thập phân, thang 10 | Điểm trung bình của học viên<br>[Công thức] `accepted_count` chia `total_submissions` rồi nhân 10 [Nguồn: DEC-2026-0830-class-progress-dashboard]. Chưa có lượt nộp nào thì hiển thị `-`. F1-28 nói "trong lớp" nhưng read model là toàn cục — xem Câu hỏi mở Q1<br>[EVT liên quan] - |
 | | 8 | Hoàn thành | `classProgress.studentList.col.completion` | - | - | ListColumn | Number | 3 | - | O | - | `{số}%` | Tỉ lệ bài đã giao mà học viên đã Accepted<br>[Công thức] Số bài đã giao cho lớp mà học viên Accepted ít nhất một lần chia tổng số bài đã giao cho lớp [Nguồn: DEC-2026-0830-class-progress-dashboard]. Nguồn: mẫu số là danh sách bài đã giao lấy qua `ListClassAssignments` (`problem-bank`), tử số là `identity.user_problem_best_score.best_verdict = ACCEPTED`; `identity` tự tính, endpoint `GetClassAssignmentCompletion` đã bỏ theo `DEC-2026-0921-class-completion-owned-by-identity`<br>[EVT liên quan] - |
-| | 9 | Chuỗi ngày | `classProgress.studentList.col.streak` | - | - | ListColumn | Number | 4 | - | O | - | `{số} ngày`, bằng 0 thì `-` | Số ngày liên tiếp gần nhất tính tới hôm nay mà học viên có ít nhất một lượt nộp<br>[Công thức] Đếm ngày liên tiếp có lượt nộp trong `judge.submissions`, cùng khái niệm chuỗi ngày của F1-21 [Nguồn: 01-rd/req/identity.md:123-125]. **Không có cột nào lưu sẵn** giá trị này — xem Câu hỏi mở Q2<br>[EVT liên quan] - |
-| | 10 | Xu hướng | `classProgress.studentList.col.trend` | - | - | ListColumn | List | - | - | O | rỗng | Đường cong 6 điểm | Sparkline điểm TB của riêng học viên theo 6 tuần đủ gần nhất (tuần ISO bắt đầu thứ Hai, bỏ tuần đang chạy)<br>[Công thức] Cùng công thức Điểm TB ở NO 7 nhưng tính theo từng mốc tuần [Nguồn: 01-rd/req/identity.md:126-128]. Cùng nguồn và cùng cache 15 phút với Khu vực B NO 3 (đã chốt, Q3)<br>[EVT liên quan] - |
+| | 9 | Chuỗi ngày | `classProgress.studentList.col.streak` | - | - | ListColumn | Number | 4 | - | O | - | `{số} ngày`, bằng 0 thì `-` | Số ngày liên tiếp gần nhất tính tới hôm nay mà học viên có ít nhất một lượt nộp<br>[Công thức] Đếm ngày liên tiếp có lượt nộp trong `judge.submissions`, cùng khái niệm chuỗi ngày của F1-21 [Nguồn: 01-rd/req/F1_identity.md:123-125]. **Không có cột nào lưu sẵn** giá trị này — xem Câu hỏi mở Q2<br>[EVT liên quan] - |
+| | 10 | Xu hướng | `classProgress.studentList.col.trend` | - | - | ListColumn | List | - | - | O | rỗng | Đường cong 6 điểm | Sparkline điểm TB của riêng học viên theo 6 tuần đủ gần nhất (tuần ISO bắt đầu thứ Hai, bỏ tuần đang chạy)<br>[Công thức] Cùng công thức Điểm TB ở NO 7 nhưng tính theo từng mốc tuần [Nguồn: 01-rd/req/F1_identity.md:126-128]. Cùng nguồn và cùng cache 15 phút với Khu vực B NO 3 (đã chốt, Q3)<br>[EVT liên quan] - |
 | | 11 | Hoạt động | `classProgress.studentList.col.lastActive` | `identity.identity_recent_activity` | `occurred_at` | ListColumn | String | 20 | - | O | - | Khoảng thời gian tương đối | Thời điểm hoạt động gần nhất của học viên<br>[Công thức] `occurred_at` lớn nhất của học viên, hiển thị dạng tương đối ("12 phút trước", "Hôm qua"); chưa có hoạt động nào thì hiển thị `-`. Cùng quy tắc `class_management` [Nguồn: 02-bd/screens/teacher/INS0201_class_management.md:363]<br>[EVT liên quan] - |
 | | 12 | Phân trang | `classProgress.studentList.pagination` | - | - | Button | Number | 4 | - | I/O | 1 | `Trang {n} / {tổng}` | Điều khiển chuyển trang bảng học viên, cùng kiểu `problem_list` (F2-11)<br>[Nguồn giá trị] Tổng số trang do máy chủ trả về cùng kết quả `ListClassStudents` [Nguồn: DEC-2026-0830-class-progress-dashboard]<br>[EVT liên quan] EVT-4 |
-| | 13 | Thử lại | `classProgress.studentList.btnRetry` | - | - | Button | - | - | - | I | - | Thử lại | Nút tải lại khối đang ở trạng thái lỗi; mỗi khối có nút riêng của nó<br>[Nguồn giá trị] Nhãn tĩnh i18n; yêu cầu "trạng thái lỗi kèm nút thử lại" của F1-28 [Nguồn: 01-rd/req/identity.md:134-136]<br>[EVT liên quan] EVT-5 |
+| | 13 | Thử lại | `classProgress.studentList.btnRetry` | - | - | Button | - | - | - | I | - | Thử lại | Nút tải lại khối đang ở trạng thái lỗi; mỗi khối có nút riêng của nó<br>[Nguồn giá trị] Nhãn tĩnh i18n; yêu cầu "trạng thái lỗi kèm nút thử lại" của F1-28 [Nguồn: 01-rd/req/F1_identity.md:134-136]<br>[EVT liên quan] EVT-5 |
 
-[Nguồn: 09-layoutBase/Giáo viên - Tiến độ học viên.dc.html:115-120,122-134,136-150,152-188,226-234,281-293,302-311,320; 02-bd/database/identity.md:16,85-101,113-116; 01-rd/req/identity.md:112-138]
+[Nguồn: 09-layoutBase/Giáo viên - Tiến độ học viên.dc.html:115-120,122-134,136-150,152-188,226-234,281-293,302-311,320; 02-bd/database/F1_identity.md:16,85-101,113-116; 01-rd/req/F1_identity.md:112-138]
 
 ---
 
@@ -409,7 +409,7 @@ Bảng 4.6 ghi những gì bản dựng Next.js đang làm cho bảng học viê
 | | 12 | Phân trang | Điều kiện | [Điều kiện hiển thị] Chỉ hiển thị khi tổng số dòng khớp bộ lọc vượt một trang.<br>[Tự động đặt] Đổi tab lớp hoặc đổi từ khoá tìm kiếm thì đưa về trang 1. |
 | | 13 | Thử lại | Điều kiện | [Điều kiện hiển thị] Chỉ hiển thị trong khối đang ở trạng thái lỗi tải dữ liệu.<br>[Điều kiện kích hoạt] Không kích hoạt trong lúc lần tải lại đang chạy. |
 
-[Nguồn: 09-layoutBase/Giáo viên - Tiến độ học viên.dc.html:164,288-300,306; 01-rd/req/identity.md:129-136]
+[Nguồn: 09-layoutBase/Giáo viên - Tiến độ học viên.dc.html:164,288-300,306; 01-rd/req/F1_identity.md:129-136]
 
 ---
 
@@ -455,7 +455,7 @@ Màn này **chỉ đọc** — không có dòng nào mang `C`, `U` hay `D`. Đâ
 
 ### 7.3 Danh sách endpoint [Nội bộ]
 
-> Chỉ tên nghiệp vụ và BC sở hữu. Hợp đồng chi tiết thuộc `03-dd/api/identity.md`.
+> Chỉ tên nghiệp vụ và BC sở hữu. Hợp đồng chi tiết thuộc `03-dd/api/F1_identity.md`.
 
 | NO | Endpoint (tên nghiệp vụ) | Mục đích | BC sở hữu |
 | --: | :--- | :--- | :--- |
@@ -478,7 +478,7 @@ Ghi chú ranh giới:
   thiết kế ở BD của module sở hữu — xem Câu hỏi mở Q2 và Q8.
 - Màn này **không gọi** `ai-review`, nên không chịu ảnh hưởng khi phân hệ AI hỏng.
 
-[Nguồn: 02-bd/database/identity.md:85-101,113-116; 02-bd/database/problem-bank.md:116-128; 02-bd/database/judge-orchestration.md:8-34]
+[Nguồn: 02-bd/database/F1_identity.md:85-101,113-116; 02-bd/database/F2_problem-bank.md:116-128; 02-bd/database/F4_judge-orchestration.md:8-34]
 
 ---
 
@@ -498,7 +498,7 @@ Ghi chú ranh giới:
 | 6 | Liên kết | Mở hồ sơ học viên từ bảng | Bấm tên một học viên trong bảng danh sách. | Có | Không | - | [Các bước]<br>1. Điều hướng sang màn `class_student_detail` kèm `id` học viên và `id` lớp của chính dòng đó.<br>[Khi thành công] Mở màn chi tiết học viên trong phạm vi đúng lớp. Màn này chỉ đọc, không có thay đổi chưa lưu, nên **không** hỏi xác nhận trước khi rời; tab lọc, từ khoá và số trang hiện tại không được khôi phục khi quay lại, xem Câu hỏi mở Q6. |
 | 7 | Liên kết | Mở hồ sơ học viên từ khối "Cần chú ý" | Bấm tên một học viên trong khối "Cần chú ý". | Có | Không | - | [Các bước]<br>1. Điều hướng sang màn `class_student_detail` kèm `id` học viên và `id` lớp của mục đó.<br>[Khi thành công] Mở đúng màn với đúng bộ tham số như EVT-6 — hai đường vào không được cho ra hai màn khác nhau. Không hỏi xác nhận trước khi rời. |
 
-[Nguồn: 09-layoutBase/Giáo viên - Tiến độ học viên.dc.html:157,161,288-300; 01-rd/req/identity.md:129-136; DEC-2026-0830-class-progress-dashboard]
+[Nguồn: 09-layoutBase/Giáo viên - Tiến độ học viên.dc.html:157,161,288-300; 01-rd/req/F1_identity.md:129-136; DEC-2026-0830-class-progress-dashboard]
 
 ---
 
@@ -509,20 +509,20 @@ Ghi chú ranh giới:
 
 | NO | Loại | Tóm tắt kiểm | Chi tiết | Mức | Mã thông báo | Ghi chú | EVT gọi | Thứ tự |
 | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: |
-| 1 | Kiểm quyền | Quyền truy cập màn | [Nội dung kiểm] Người dùng không có Function `CLASS_MANAGEMENT` thì không được vào màn.<br>[Nơi thực thi] Chặn ở cả tầng định tuyến phía giao diện và tầng phân quyền phía máy chủ, không chỉ ẩn giao diện. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn không có quyền truy cập chức năng này." [Nguồn: 01-rd/req/identity.md:137-138] | EVT-1 | 1 |
+| 1 | Kiểm quyền | Quyền truy cập màn | [Nội dung kiểm] Người dùng không có Function `CLASS_MANAGEMENT` thì không được vào màn.<br>[Nơi thực thi] Chặn ở cả tầng định tuyến phía giao diện và tầng phân quyền phía máy chủ, không chỉ ẩn giao diện. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn không có quyền truy cập chức năng này." [Nguồn: 01-rd/req/F1_identity.md:137-138] | EVT-1 | 1 |
 | 2 | Kiểm quyền | Phạm vi lớp phụ trách | [Nội dung kiểm] Mọi truy vấn chỉ trả dữ liệu của lớp có `instructor_id` bằng người đang đăng nhập; truyền `class_id` của lớp không phụ trách thì từ chối.<br>[Nơi thực thi] Máy chủ, trên từng yêu cầu — không dựa vào việc giao diện chỉ dựng tab của lớp mình. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn không phụ trách lớp này." Áp cho `ListClassStudents`, `ListClassAttentionStudents`, `GetClassScoreTrend` và cho cả hai endpoint liên module. | EVT-2, EVT-3, EVT-4, EVT-5 | 1 |
 | 3 | Kiểm quyền | Không lộ dữ liệu chấm chi tiết | [Nội dung kiểm] Phản hồi của màn này **chỉ** chứa số liệu tổng hợp; không chứa mã nguồn bài nộp, dữ liệu testcase ẩn, hay kết quả so khớp từng testcase.<br>[Nơi thực thi] Máy chủ, ở tầng dựng DTO. | Lỗi | Mã lỗi trong phản hồi | Ràng buộc **Bắt buộc** của dự án; endpoint `GetClassStudentSubmissionMetrics` chỉ được trả số đếm và mốc thời gian, không trả nội dung lượt nộp. | EVT-1, EVT-2, EVT-3, EVT-4 | 2 |
 | 4 | Kiểm nhập liệu | Độ dài từ khoá tìm kiếm | [Nội dung kiểm] Từ khoá quá 100 ký tự thì cắt bớt và không gửi phần thừa.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Ô tìm kiếm học viên. | Cảnh báo | Chưa có mã thông báo | Nội dung "Từ khoá tìm kiếm quá dài." Giới hạn 100 lấy theo độ dài tên hiển thị `[Suy luận]`, DD chốt lại. | EVT-3 | 1 |
 | 5 | Kiểm nhập liệu | Số trang hợp lệ | [Nội dung kiểm] Số trang nhỏ hơn 1 hoặc lớn hơn tổng số trang thì đưa về trang hợp lệ gần nhất, không gọi máy chủ với giá trị sai.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Điều khiển phân trang. | Cảnh báo | Chưa có mã thông báo | Xảy ra thật khi bộ lọc thu hẹp làm tổng số trang giảm trong lúc người dùng đang ở trang cuối. | EVT-4 | 1 |
 | 6 | Kiểm nghiệp vụ | Mẫu số bằng 0 | [Nội dung kiểm] Không được chia cho 0 ở cả hai công thức: "Điểm TB" khi `total_submissions` bằng 0, và "Hoàn thành" khi lớp chưa được giao bài nào. Cả hai trường hợp hiển thị `-`.<br>[Nơi thực thi] Máy chủ trả rỗng, màn hình hiển thị `-`. | Cảnh báo | Chưa có mã thông báo | Hiển thị `0.0` hay `0%` trong hai trường hợp này là sai nghiệp vụ — nó khiến giảng viên tưởng học viên làm bài mà không đạt, trong khi thực tế chưa có gì để tính. | EVT-1, EVT-2, EVT-3, EVT-4 | 1 |
 | 7 | Kiểm nghiệp vụ | Dữ liệu chưa đủ để vẽ xu hướng | [Nội dung kiểm] Dưới hai tuần đủ (tuần ISO đã kết thúc) có dữ liệu thì không vẽ đường và không tính nhãn "Cần hỗ trợ" — điểm giảm liên tiếp cần tối thiểu hai mốc.<br>[Nơi thực thi] Máy chủ khi tính nhãn, màn hình khi vẽ. | Cảnh báo | Chưa có mã thông báo | Nội dung "Chưa đủ dữ liệu để vẽ xu hướng." Lớp mới mở luôn rơi vào trường hợp này trong 2 tuần đầu. | EVT-1, EVT-2 | 2 |
-| 8 | Kiểm nghiệp vụ | Học viên bị gỡ khỏi lớp ở phiên khác | [Nội dung kiểm] Học viên đã bị gỡ khỏi lớp (F1-26, ghi danh có `left_at` khác rỗng; ~~xoá thật~~, ĐÃ ĐỔI 2026-10-14, `DEC-2026-1014-keep-learning-history-on-leave`) thì biến mất khỏi mọi khối ở lần tải tiếp theo; bấm vào một mục đã cũ thì màn đích báo không tìm thấy.<br>[Nơi thực thi] Máy chủ. | Lỗi | Mã lỗi trong phản hồi | Nội dung "Học viên này không còn thuộc lớp. Vui lòng tải lại màn hình." Phát hiện bằng `left_at` (~~cần vì gỡ là xoá thật, không có bản ghi mềm~~, đã đổi) [Nguồn: 02-bd/database/identity.md mục 1.10]. | EVT-6, EVT-7 | 1 |
+| 8 | Kiểm nghiệp vụ | Học viên bị gỡ khỏi lớp ở phiên khác | [Nội dung kiểm] Học viên đã bị gỡ khỏi lớp (F1-26, ghi danh có `left_at` khác rỗng; ~~xoá thật~~, ĐÃ ĐỔI 2026-10-14, `DEC-2026-1014-keep-learning-history-on-leave`) thì biến mất khỏi mọi khối ở lần tải tiếp theo; bấm vào một mục đã cũ thì màn đích báo không tìm thấy.<br>[Nơi thực thi] Máy chủ. | Lỗi | Mã lỗi trong phản hồi | Nội dung "Học viên này không còn thuộc lớp. Vui lòng tải lại màn hình." Phát hiện bằng `left_at` (~~cần vì gỡ là xoá thật, không có bản ghi mềm~~, đã đổi) [Nguồn: 02-bd/database/F1_identity.md mục 1.10]. | EVT-6, EVT-7 | 1 |
 | 9 | Kiểm nghiệp vụ | Một khối lỗi không kéo đổ cả màn | [Nội dung kiểm] Gọi `problem-bank` hoặc `judge-orchestration` thất bại thì chỉ các cột phụ thuộc nguồn đó hiển thị `-`; bảng, biểu đồ và khối "Cần chú ý" vẫn hiển thị phần dữ liệu lấy được.<br>[Nơi thực thi] Màn hình. | Cảnh báo | Chưa có mã thông báo | Không hiện hộp lỗi toàn màn. Thiếu dữ liệu chuỗi ngày và xu hướng thì nhãn "Cần hỗ trợ" tạm không tính được — khối "Cần chú ý" phải nói rõ "Thiếu dữ liệu xu hướng" thay vì im lặng bỏ sót học viên. | EVT-1, EVT-2, EVT-5 | 2 |
 | 10 | Kiểm nghiệp vụ | Lỗi hệ thống hoặc lỗi gọi máy chủ | [Nội dung kiểm] Gọi máy chủ thất bại hoặc trả lỗi nghiệp vụ thì dừng thao tác, giữ nguyên dữ liệu đang hiển thị và hiện nút "Thử lại" ở đúng khối.<br>[Nơi thực thi] Màn hình. | Lỗi | Mã lỗi trong phản hồi | Phản hồi có mã lỗi đã đăng ký thì hiển thị nội dung tương ứng; chưa đăng ký thì hiển thị "Không kết nối được máy chủ." | EVT-1, EVT-2, EVT-3, EVT-4, EVT-5 | 1 |
 
 Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 
-[Nguồn: 01-rd/req/identity.md:129-138; 02-bd/database/identity.md:95-101,113-116]
+[Nguồn: 01-rd/req/F1_identity.md:129-138; 02-bd/database/F1_identity.md:95-101,113-116]
 
 ---
 
@@ -531,8 +531,8 @@ Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 | # | Câu hỏi | Vì sao chưa trả lời được | Chủ sở hữu |
 | :-: | :--- | :--- | :--- |
 | Q1 | ~~Điểm TB là điểm toàn hệ thống hay điểm trong phạm vi lớp?~~ **ĐÃ CHỐT 2026-09-21** bởi `DEC-2026-0921-teacher-screens-conflict-resolutions`: Điểm TB tính **đúng theo phạm vi lớp**, theo đúng câu chữ của F1-28 — RD đứng bậc P2 trên thang SoT, cao hơn BD (P3), nên khi hai bên lệch thì BD phải theo RD chứ không phải ngược lại. Cách tính: giới hạn tập lượt nộp theo danh sách bài đã giao cho lớp rồi đếm qua `GetClassStudentSubmissionMetrics` của `judge-orchestration`. **Không** thêm chiều `class_id` vào `user_submission_stats`: danh sách bài đã giao thay đổi theo thời gian nên read model sẽ sai ngay khi giảng viên gỡ một bài. `user_submission_stats` vẫn giữ nguyên cho mục đích toàn cục của nó (F1-07), chỉ là không còn là nguồn của màn này. Mục 4.3, Sheet 5, Sheet 7.1 và 7.2 đã cập nhật. | Đã đóng | Đã đóng |
-| Q2 | ~~**Chuỗi ngày, mốc nộp gần nhất và chuỗi điểm theo tuần lấy từ đâu?**~~ Không bảng nào trong `02-bd/database/identity.md` mục 1.12 lưu ba giá trị này; nguồn duy nhất là `judge.submissions` [Nguồn: 02-bd/database/judge-orchestration.md:8-34], thuộc module khác. Đề xuất: `judge-orchestration` cung cấp **một** endpoint `GetClassStudentSubmissionMetrics` nhận danh sách `user_id` kèm tập `problem_id` giới hạn theo lớp, trả về gộp: tổng nộp, số Accepted, chuỗi ngày, mốc nộp gần nhất và chuỗi điểm 6 mốc tuần. Gộp một lần gọi thay vì bốn, vì cả bốn con số đều quét cùng một tập dòng. Endpoint này chưa tồn tại ở BD của `judge-orchestration`. | **ĐÃ ĐÓNG 2026-09-27** (`DEC-2026-0927-submission-metrics-two-ports`): cổng nay đã được viết vào `02-bd/architecture/judge-orchestration.md` mục 3.3, và **tách làm hai luồng**. Màn này dùng luồng Giảng viên `GetClassStudentSubmissionMetrics(classId, studentIds[], problemIds[], weekCount)` — đọc dữ liệu người khác theo phạm vi lớp, gom theo tuần. Chữ ký thật và phân trang khi tập học viên lớn còn để mở ở mục 9 của file đó. | Đã đóng |
-| Q3 | ~~"Mốc tuần" là ảnh chụp định kỳ hay tính lại lúc chạy?~~ **ĐÃ CHỐT 2026-10-14** bởi `DEC-2026-1014-instructor-batch2-weekly-rules`: tính lại lúc truy vấn từ `judge.submissions` gom theo tuần, cache Redis 15 phút, không bảng ảnh chụp và không job định kỳ. Tuần bắt đầu thứ Hai (ISO); tuần đang chạy chưa đủ 7 ngày không tính, biểu đồ chỉ vẽ tuần đủ. Chỉ xét lại nếu đo được truy vấn chậm. Ghi ở `02-bd/architecture/judge-orchestration.md` (`GetClassStudentSubmissionMetrics`). | Đã đóng | Đã đóng |
+| Q2 | ~~**Chuỗi ngày, mốc nộp gần nhất và chuỗi điểm theo tuần lấy từ đâu?**~~ Không bảng nào trong `02-bd/database/F1_identity.md` mục 1.12 lưu ba giá trị này; nguồn duy nhất là `judge.submissions` [Nguồn: 02-bd/database/F4_judge-orchestration.md:8-34], thuộc module khác. Đề xuất: `judge-orchestration` cung cấp **một** endpoint `GetClassStudentSubmissionMetrics` nhận danh sách `user_id` kèm tập `problem_id` giới hạn theo lớp, trả về gộp: tổng nộp, số Accepted, chuỗi ngày, mốc nộp gần nhất và chuỗi điểm 6 mốc tuần. Gộp một lần gọi thay vì bốn, vì cả bốn con số đều quét cùng một tập dòng. Endpoint này chưa tồn tại ở BD của `judge-orchestration`. | **ĐÃ ĐÓNG 2026-09-27** (`DEC-2026-0927-submission-metrics-two-ports`): cổng nay đã được viết vào `02-bd/architecture/F4_judge-orchestration.md` mục 3.3, và **tách làm hai luồng**. Màn này dùng luồng Giảng viên `GetClassStudentSubmissionMetrics(classId, studentIds[], problemIds[], weekCount)` — đọc dữ liệu người khác theo phạm vi lớp, gom theo tuần. Chữ ký thật và phân trang khi tập học viên lớn còn để mở ở mục 9 của file đó. | Đã đóng |
+| Q3 | ~~"Mốc tuần" là ảnh chụp định kỳ hay tính lại lúc chạy?~~ **ĐÃ CHỐT 2026-10-14** bởi `DEC-2026-1014-instructor-batch2-weekly-rules`: tính lại lúc truy vấn từ `judge.submissions` gom theo tuần, cache Redis 15 phút, không bảng ảnh chụp và không job định kỳ. Tuần bắt đầu thứ Hai (ISO); tuần đang chạy chưa đủ 7 ngày không tính, biểu đồ chỉ vẽ tuần đủ. Chỉ xét lại nếu đo được truy vấn chậm. Ghi ở `02-bd/architecture/F4_judge-orchestration.md` (`GetClassStudentSubmissionMetrics`). | Đã đóng | Đã đóng |
 | Q4 | ~~Bộ nhãn trạng thái học viên đang lệch giữa hai màn cùng cụm.~~ **ĐÃ CHỐT** theo `DEC-2026-0921-teacher-screens-conflict-resolutions`, đồng bộ với `INS0201_class_management.md`: bộ nhãn dùng chung cho cả cụm lớp là **năm** giá trị, xét theo đúng thứ tự nghiêm trọng, dừng ở điều kiện đầu tiên khớp — `INSUFFICIENT_DATA` "Chưa đủ dữ liệu" (chưa có lượt nộp nào trong lớp), `ABSENT` "Vắng bài" (không nộp trong 7 ngày gần nhất), `NEEDS_SUPPORT` "Cần hỗ trợ" (Điểm TB giảm từ 2 mốc tuần liên tiếp), `WATCH` "Theo dõi" (Hoàn thành dưới 50%), còn lại `ON_TRACK` "Đang tốt" [Nguồn: 02-bd/screens/teacher/INS0201_class_management.md:363]. Đề xuất bốn giá trị trước đây của BD này (thiếu `INSUFFICIENT_DATA`) bị thay thế. Khối "Cần chú ý" của màn này chỉ liệt kê bốn giá trị khác `ON_TRACK`; Sheet 7.1 đã cập nhật. | Đã đóng | Đã đóng |
 | Q5 | ~~Biểu đồ vẽ tối đa bao nhiêu đường khi chọn tab "Tất cả"?~~ **ĐÃ CHỐT 2026-10-14** bởi `DEC-2026-1014-instructor-batch2-weekly-rules`: biểu đồ vẽ **một** đường: tổng mọi lớp phụ trách ở tab "Tất cả", đường của lớp ở tab lớp. Chú giải chỉ một mục. Prototype còn vẽ 2 đường mock, lệch BD, chưa sửa. | Đã đóng | Đã đóng |
 | Q6 | **ĐÃ CHỐT 2026-10-13 (chủ dự án) theo `DEC-2026-1013-teacher-open-questions-closed-round2`:** Có: tab lớp, từ khoá, số trang ghi vào query string `?classId=&q=&page=`, một quy ước chung cho mọi danh sách; đã dựng ở `class-progress-view.tsx`. Câu hỏi gốc, giữ làm lịch sử: **Trạng thái lọc có ghi vào URL không?** Màn này có ba trạng thái lọc (tab lớp, từ khoá, số trang) và có liên kết rời màn sang `class_student_detail`. Không ghi vào URL thì quay lại bằng nút Back của trình duyệt sẽ mất hết bộ lọc, giảng viên đang duyệt trang 4 phải lọc lại từ đầu. Đề xuất: đưa cả ba vào query string, giống cách `problem_list` cần làm cho F2-11. | Chưa có quy ước chung về trạng thái lọc trên URL cho toàn dự án | DD màn hình |

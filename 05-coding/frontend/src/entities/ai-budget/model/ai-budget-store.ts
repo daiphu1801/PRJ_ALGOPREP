@@ -35,7 +35,7 @@ export const removeModelPrice = prices.remove;
 
 /**
  * Per-user AI rate limits, per HOUR (owner 2026-10-10, BD ADM0303 Khu vực C). Defaults follow
- * 02-bd/database/ai-review.md section 6; the 20 s wait comes from the old mockup.
+ * 02-bd/database/F5_ai-review.md section 6; the 20 s wait comes from the old mockup.
  */
 export const aiRateLimits = createSettingsStore({
   reviewPerHour: 10,

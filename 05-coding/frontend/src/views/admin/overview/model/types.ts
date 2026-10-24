@@ -1,7 +1,7 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 //
 // Zod DTOs for the 9 admin_overview data blocks (02-bd/screens/admin/ADM0101_overview.md section 1).
-// One schema per block so a future 03-dd/api/identity.md response can `.parse()` straight into
+// One schema per block so a future 03-dd/api/F1_identity.md response can `.parse()` straight into
 // these types (Anti-Corruption Layer, nextjs-fsd-expert Layer 3).
 import { z } from "zod";
 

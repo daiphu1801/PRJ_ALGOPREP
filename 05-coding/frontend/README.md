@@ -38,7 +38,7 @@ khu vực, cùng render một view (`ProblemManagementView`, `ProblemAuthoringVi
 `InterviewQuestionManagementView`) — theo `DEC-2026-0825-shared-content-authoring-screens`. Đây
 KHÔNG phải trùng lặp code: `ROLE_BY_AREA` chỉ gác được "khu vực nào cần role gì", còn "A2 chỉ thấy
 bài của mình" là phạm vi dữ liệu, việc của tầng API/backend theo ma trận phân quyền
-(`PROBLEM_AUTHORING`/`INTERVIEW_BANK_MANAGEMENT`, `01-rd/req/identity.md` — F1-12), chưa hiện thực ở base.
+(`PROBLEM_AUTHORING`/`INTERVIEW_BANK_MANAGEMENT`, `01-rd/req/F1_identity.md` — F1-12), chưa hiện thực ở base.
 
 ### Ánh xạ slug tài liệu ↔ URL
 
@@ -143,7 +143,7 @@ Giữ nguyên, không phải thông báo: nội dung giải thích trạng thái
 
 ## Còn thiếu (không dựng ở bước base, có chủ đích)
 
-- **`middleware.ts`** guard theo role — cần `03-dd/api/identity.md`. Đọc `ROLE_BY_AREA`.
+- **`middleware.ts`** guard theo role — cần `03-dd/api/F1_identity.md`. Đọc `ROLE_BY_AREA`.
 - **Session bootstrap** — `app/providers/auth-provider.tsx` còn TODO; access token in-memory sẽ
   mất sau reload cho tới khi có nó.
 - **`shared/realtime`** (STOMP/SSE) — dựng cùng `features/submit-solution` và
@@ -163,4 +163,4 @@ Giữ nguyên, không phải thông báo: nội dung giải thích trạng thái
 |  2  | 27/28 view là placeholder chỉ có tiêu đề + một dòng chờ BD                                                                                                                                           | Có `02-bd/screens/<màn>.md`                                                              |
 |  3  | `shared/api` chỉ có `get`/`post`                                                                                                                                                                     | Khi DD cần `put`/`patch`/`delete`                                                        |
 |  4  | Chưa có mapper/zod nào (Anti-Corruption Layer)                                                                                                                                                       | Khi có endpoint thật đầu tiên                                                            |
-|  5  | Ba route dùng chung (`problems`, `problems/[id]`, `interview-questions`) chưa có cơ chế lọc phạm vi dữ liệu theo role (A2 chỉ thấy bài của mình) — chỉ mount đúng view ở đúng URL, chưa gọi API thật | Khi có `03-dd/api/problem-bank.md` + `interview-bank.md` và middleware đọc ma trận quyền |
+|  5  | Ba route dùng chung (`problems`, `problems/[id]`, `interview-questions`) chưa có cơ chế lọc phạm vi dữ liệu theo role (A2 chỉ thấy bài của mình) — chỉ mount đúng view ở đúng URL, chưa gọi API thật | Khi có `03-dd/api/F2_problem-bank.md` + `F6_interview-bank.md` và middleware đọc ma trận quyền |

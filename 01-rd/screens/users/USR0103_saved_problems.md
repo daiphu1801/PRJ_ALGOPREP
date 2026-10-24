@@ -5,7 +5,7 @@
 > [SoT: 01-rd/overview/system_survey.md — mục 7.1 dòng `saved_problems`].
 > Phạm vi/Bounded Context: `problem-bank` (F2) [SoT: 01-rd/overview/system_survey.md — mục 7.1 dòng
 > `saved_problems`]. Actor: A1.
-> Nguồn sự thật (SoT): `01-rd/req/problem-bank.md` (F2-13), `01-rd/req/user_stories/a1_student.md`
+> Nguồn sự thật (SoT): `01-rd/req/F2_problem-bank.md` (F2-13), `01-rd/req/user_stories/a1_student.md`
 > (`US-A1-09`), `09-layoutBase/Bài đã lưu.dc.html` (prototype).
 > Tài liệu này có thể đọc độc lập.
 
@@ -14,10 +14,10 @@
 ## 1. Mục đích và bối cảnh
 
 Xem lại danh sách bài toán đã đánh dấu (bookmark) kèm ghi chú riêng tư theo từng bài, lọc theo độ khó và
-trạng thái làm bài, bỏ lưu hoặc vào giải trực tiếp từ danh sách [SoT: 01-rd/req/problem-bank.md — F2-13].
+trạng thái làm bài, bỏ lưu hoặc vào giải trực tiếp từ danh sách [SoT: 01-rd/req/F2_problem-bank.md — F2-13].
 
 File này mô tả **hành vi và UX ở mức yêu cầu** — không lặp lại đặc tả chức năng đã có ở
-`01-rd/req/problem-bank.md` (mục F2) và `01-rd/req/user_stories/a1_student.md` (`US-A1-09`), chỉ trỏ tới và
+`01-rd/req/F2_problem-bank.md` (mục F2) và `01-rd/req/user_stories/a1_student.md` (`US-A1-09`), chỉ trỏ tới và
 bổ sung phần đặc thù của màn. Đây là màn **khớp tốt nhất** với RD trong số 5 màn Phase 2 — không có xung
 đột nghiêm trọng, chỉ một khoảng trống nhỏ (Câu hỏi mở Q1).
 
@@ -27,7 +27,7 @@ bổ sung phần đặc thù của màn. Đây là màn **khớp tốt nhất** 
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Lưu bài toán (bookmark) kèm ghi chú riêng tư tuyệt đối theo `(user_id, problem_id)` | F2-13 | `01-rd/req/problem-bank.md` — F2-13 |
+| Lưu bài toán (bookmark) kèm ghi chú riêng tư tuyệt đối theo `(user_id, problem_id)` | F2-13 | `01-rd/req/F2_problem-bank.md` — F2-13 |
 | Given-When-Then đầy đủ | — | `01-rd/req/user_stories/a1_student.md` (`US-A1-09`) |
 
 Đối chiếu `09-layoutBase/Bài đã lưu.dc.html` [SoT: 09-layoutBase/Bài đã lưu.dc.html], phạm vi trên thể hiện
@@ -50,7 +50,7 @@ qua các khối màn sau:
 | Màn/tài liệu | Vai trò | Bounded Context |
 |---|---|---|
 | Màn hiện tại | `USR0103` / `saved_problems` | `problem-bank` |
-| Tài liệu yêu cầu | `01-rd/req/problem-bank.md` (F2-13) | Nguồn SoT của màn |
+| Tài liệu yêu cầu | `01-rd/req/F2_problem-bank.md` (F2-13) | Nguồn SoT của màn |
 | Prototype | `09-layoutBase/Bài đã lưu.dc.html` | Bằng chứng bố cục và trạng thái |
 
 **Chi tiết trạng thái và cấu trúc màn**
@@ -66,7 +66,7 @@ qua các khối màn sau:
 
 - Bảng màu, spacing, component cụ thể, breakpoint responsive — thuộc BD (`02-bd/screens/users/USR0103_saved_problems.md`,
   chưa viết).
-- Hợp đồng API (lưu/bỏ lưu, sửa ghi chú, lọc/tìm kiếm) — thuộc DD (`03-dd/api/problem-bank.md`, chưa viết).
+- Hợp đồng API (lưu/bỏ lưu, sửa ghi chú, lọc/tìm kiếm) — thuộc DD (`03-dd/api/F2_problem-bank.md`, chưa viết).
 - Giới hạn độ dài ghi chú, định dạng cho phép — thuộc DD, không thuộc file RD theo trục màn này.
 
 ---
@@ -77,7 +77,7 @@ qua các khối màn sau:
 
 | # | Câu hỏi | Quyết định | Ghi chú |
 | :-: | :--- | :--- | :--- |
-| Q1 | Câu chữ chân bảng ngụ ý toàn bộ danh sách bookmark là riêng tư, `problem-bank.md` chỉ chốt rõ ở mức ghi chú. | **Chốt: áp cùng mức riêng tư tuyệt đối cho cả việc bookmark**, không chỉ ghi chú — nhất quán với câu chữ UI và cách xử lý dữ liệu cá nhân ở các màn khác. Mở rộng phạm vi F2-13 (không cần mã mới). | `[SoT: Suy luận]`, đã chốt, không còn mở. |
+| Q1 | Câu chữ chân bảng ngụ ý toàn bộ danh sách bookmark là riêng tư, `F2_problem-bank.md` chỉ chốt rõ ở mức ghi chú. | **Chốt: áp cùng mức riêng tư tuyệt đối cho cả việc bookmark**, không chỉ ghi chú — nhất quán với câu chữ UI và cách xử lý dữ liệu cá nhân ở các màn khác. Mở rộng phạm vi F2-13 (không cần mã mới). | `[SoT: Suy luận]`, đã chốt, không còn mở. |
 
 ---
 
@@ -85,7 +85,7 @@ qua các khối màn sau:
 
 | ID | Yêu cầu | Loại | Nguồn/SoT |
 |---|---|---|---|
-| REQ-01 | Lưu bài toán (bookmark) kèm ghi chú riêng tư tuyệt đối theo `(user_id, problem_id)` (F2-13) | Chức năng | `01-rd/req/problem-bank.md` — F2-13 |
+| REQ-01 | Lưu bài toán (bookmark) kèm ghi chú riêng tư tuyệt đối theo `(user_id, problem_id)` (F2-13) | Chức năng | `01-rd/req/F2_problem-bank.md` — F2-13 |
 | REQ-02 | Given-When-Then đầy đủ (—) | Chức năng | `01-rd/req/user_stories/a1_student.md` (`US-A1-09`) |
 | REQ-03 | **Cho** tôi lọc theo một trạng thái làm bài (ví dụ `todo`), **Khi** bộ lọc áp dụng, **Thì** danh sách chỉ hiện các bookmark có đúng trạng thái đó, ghi chú của từng dòng vẫn hiển thị đầy đủ | Chức năng (GWT) | [SoT: 09-layoutBase/Bài đã lưu.dc.html:213-214, 148-151] |
 | REQ-04 | **Cho** tôi bấm "Bỏ lưu" một bài, **Khi** tôi bấm (không có hộp xác nhận), **Thì** bài đó biến mất khỏi danh sách ngay và màn hiện lựa chọn "Hoàn tác"; nếu tôi bấm Hoàn tác thì bookmark và ghi chú riêng tư của nó trở lại như cũ, nếu không thì ghi chú riêng tư gắn với bookmark đó không còn truy cập được qua màn này | Chức năng (GWT) | [SoT: 09-layoutBase/Bài đã lưu.dc.html:156, 212] |
@@ -129,7 +129,7 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 
 | Loại | Tham chiếu |
 | :--- | :--- |
-| Yêu cầu module | `01-rd/req/problem-bank.md` — F2-13. |
+| Yêu cầu module | `01-rd/req/F2_problem-bank.md` — F2-13. |
 | User story | `01-rd/req/user_stories/a1_student.md` — `US-A1-09`. |
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` — mục 7.1 dòng `saved_problems`. |
 | Prototype | `09-layoutBase/Bài đã lưu.dc.html`. |

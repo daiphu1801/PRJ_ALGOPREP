@@ -31,13 +31,6 @@ export {
   type DraftModel,
 } from "./model/workspace-draft";
 export {
-  fetchProblemDetail,
-  fetchProblemListPage,
-  fetchSavedProblems,
-  simulateSampleRun,
-  simulateSubmission,
-} from "./api/__mock__/problem-mocks";
-export {
   AI_GUARD_KEYS,
   TESTCASE_CATEGORIES,
   type AiGuardKey,
@@ -54,10 +47,15 @@ export {
   type WorkedExample,
 } from "./model/draft-types";
 export {
+  useCreateSubmission,
   useGenerateTestcases,
+  useProblemDetail,
   useProblemDraft,
+  useProblemListPage,
   usePublishProblem,
+  useRunSampleTestcases,
   useSaveProblemDraft,
+  useSavedProblems,
 } from "./api/queries";
 export {
   addProblemTopic,

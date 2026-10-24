@@ -195,7 +195,7 @@ menu. Ma trận này **không** ảnh hưởng quyền học tập cơ bản c�
 
 ### 4.3. Ma trận quyền dự kiến
 
-[SoT: Suy luận — bảng này là đề xuất phân tích; chốt chính thức ở `02-bd/security/identity.md`]
+[SoT: Suy luận — bảng này là đề xuất phân tích; chốt chính thức ở `02-bd/security/F1_identity.md`]
 
 | Nhóm chức năng | `STUDENT` | `INSTRUCTOR` | `ADMIN` |
 | :--- | :---: | :---: | :---: |
@@ -297,7 +297,7 @@ Việc chia nhỏ và đánh mã là [SoT: Suy luận]; **nội dung** từng ch
 | F2-15 | Vòng đời bài toán: hai trạng thái `Chưa xuất bản` / `Đã xuất bản`, kèm rút xuống và xoá mềm | A2 A3 | Bổ sung 2026-08-30 (`problem_management` Q2, `DEC-2026-0830-problem-lifecycle-two-states`). Đúng hai trạng thái, không có `Đã ẩn`; xuất bản cần tối thiểu một testcase Hidden (F2-06) + đặc tả đủ theo F2-03. Xoá = `Chưa xuất bản` cộng cờ `deleted` riêng, dữ liệu liên quan không mất — amendment 2026-08-31 (`DEC-2026-0831-problem-management-lifecycle-details`) |
 | F2-16 | Nhân bản bài toán (kể cả theo lô) | A2 A3 | Bổ sung 2026-08-31 (`problem_management` Q4, cùng DEC trên). Sao chép đề, đặc tả F2-03/F2-04, testcase, ví dụ mẫu, đáp án mẫu thành bài mới ở trạng thái `Chưa xuất bản`; quyền `PROBLEM_AUTHORING:CREATE` |
 | F2-17 | Xuất CSV danh sách bài toán | A2 A3 | Bổ sung 2026-08-31, cùng DEC trên. Chỉ xuất **phần dữ liệu bảng** (mã, tiêu đề, chủ đề, độ khó, trạng thái, lượt nộp, tỉ lệ AC, số testcase), không xuất đề bài/đặc tả/testcase. **Nhập CSV bài toán đã cắt khỏi phạm vi** — CSV phẳng không chở nổi đặc tả F2-03 ba ngôn ngữ |
-| F2-18 | Khai và chạy kiểm Đáp án mẫu (golden solution): gác hai cửa, mở tính năng F2-14 và cho phép xuất bản F2-15; không bao giờ đưa vào prompt AI | A2 | Tách thành mã riêng 2026-09-28, định nghĩa ở `01-rd/req/problem-bank.md:126`. Dòng thêm vào bảng này 2026-10-14 (số liệu rà lại: trước đây bảng survey thiếu mã này) |
+| F2-18 | Khai và chạy kiểm Đáp án mẫu (golden solution): gác hai cửa, mở tính năng F2-14 và cho phép xuất bản F2-15; không bao giờ đưa vào prompt AI | A2 | Tách thành mã riêng 2026-09-28, định nghĩa ở `01-rd/req/F2_problem-bank.md:126`. Dòng thêm vào bảng này 2026-10-14 (số liệu rà lại: trước đây bảng survey thiếu mã này) |
 
 ### 5.3. F3 — Bộ sinh mã bọc hàm
 
@@ -386,7 +386,7 @@ Kích hoạt **sau khi** bài nộp đạt Accepted. Hai chức năng độc l�
 | F5-21 | Theo dõi và ghi nhận lượng token tiêu thụ theo từng phiên | |
 | F5-25 | Ngân sách token AI theo khoảng thời gian, dự báo cạn quota, bảng xếp hạng người dùng/bài toán tốn token nhiều nhất | Bổ sung mục 2.9. Chốt 2026-08-24: vượt ngân sách → tự động tạm khoá gọi AI cho STUDENT/INSTRUCTOR; ADMIN không bị khoá |
 | F5-22 | Suy giảm có kiểm soát: AI hỏng hoặc hết quota thì F1-F4 vẫn hoạt động bình thường | Ràng buộc kiến trúc, không phải lời hứa |
-| F5-23 | Cấu hình prompt (có phiên bản, xem lại/khôi phục), ~~trọng số rubric **của Solution Review**~~ (ĐÃ BỎ 2026-10-14, DEC-2026-1014-drop-solution-review-rubric: không còn rubric chấm bài giải), giới hạn tần suất | Actor A3. Chốt 2026-08-24 (mục 2.8): "Chạy đối chiếu" (regression test 30 bài mẫu) giữ trên UI, backend thật hoãn sang giai đoạn mở rộng. **Làm rõ 2026-09-09:** phần "trọng số rubric" của F5-23 chỉ phủ rubric của **F5.1 Solution Review** — đúng theo câu chữ gốc "rubric chấm bài giải" ở `01-rd/req/ai-review.md` (F5-23). Rubric bốn tiêu chí của **F5.2 Mock Interview** là rubric khác, thuộc `F5-15`; rubric của Chế độ luyện F6 là rubric thứ ba, thuộc `F6-13`. Ba rubric độc lập nhau |
+| F5-23 | Cấu hình prompt (có phiên bản, xem lại/khôi phục), ~~trọng số rubric **của Solution Review**~~ (ĐÃ BỎ 2026-10-14, DEC-2026-1014-drop-solution-review-rubric: không còn rubric chấm bài giải), giới hạn tần suất | Actor A3. Chốt 2026-08-24 (mục 2.8): "Chạy đối chiếu" (regression test 30 bài mẫu) giữ trên UI, backend thật hoãn sang giai đoạn mở rộng; **ĐÃ BỎ HẲN 2026-10-23** (DEC-2026-1023-drop-ai-regression-run). **Làm rõ 2026-09-09:** phần "trọng số rubric" của F5-23 chỉ phủ rubric của **F5.1 Solution Review** — đúng theo câu chữ gốc "rubric chấm bài giải" ở `01-rd/req/F5_ai-review.md` (F5-23). Rubric bốn tiêu chí của **F5.2 Mock Interview** là rubric khác, thuộc `F5-15`; rubric của Chế độ luyện F6 là rubric thứ ba, thuộc `F6-13`. Ba rubric độc lập nhau |
 
 ### 5.6. F6 — Ngân hàng câu hỏi phỏng vấn
 
@@ -584,6 +584,8 @@ Chưa có prototype. Khu dùng chung 3 → 4 slug, tổng 30 → 31 màn.
 | `saved_problems` | Bài đã lưu — bookmark kèm ghi chú riêng tư | F2-13 | `problem-bank` |
 | `problem_overview` | Chi tiết bài toán — đọc đề, ví dụ, giới hạn, bài nộp gần đây trước khi vào Workspace (2026-10-20, `DEC-2026-1020-student-workspace-split-and-password-in-settings`) | F2-01 | `problem-bank` |
 | `workspace_home` | Trang đầu Workspace — bài đang làm dở để tiếp tục, chọn bài, bài ngẫu nhiên (2026-10-20, cùng quyết định) | F2-01, F4-08 | `problem-bank`, `judge-orchestration` |
+| `my_classes` | Lớp của tôi (`USR0701`, route `/classes`) — nhập mã mời để tham gia lớp, danh sách lớp đang học kèm tiến độ bài được giao (2026-10-23, `DEC-2026-1023-student-class-screens`) | F1-23, F2-12 | `identity`, `problem-bank` |
+| `my_class_detail` | Chi tiết lớp của tôi (`USR0702`, route `/classes/{classId}`) — thông tin lớp, tiến độ, bảng bài được giao, chỉ đọc (2026-10-23, cùng quyết định) | F1-23, F2-12 | `identity`, `problem-bank` |
 
 **Sửa 2026-08-24 theo `06-plan/PROTOTYPE_DEBT.md` mục 3.1/3.2:** `profile_settings` (1 slug suy luận ban
 đầu) tách thành 2 màn thật `profile` và `settings` theo đúng prototype (`Trang cá nhân.dc.html`,
@@ -607,6 +609,17 @@ và `INSTRUCTOR` đã có `instructor_overview`. Ranh giới giữa `dashboard` 
 `dashboard`, route `/progress` bỏ. Khu người học quay lại **12 slug**, tổng 31 màn — tức là thêm một màn
 rồi bỏ một màn, không phải thêm ròng. `01-rd/screens/users/USR0501_my_progress.md` giữ lại làm hồ sơ gốc
 của REQ-01 tới REQ-06 đã chuyển sang màn mới, không phải màn còn sống.
+
+**Cập nhật 2026-10-23 (`DEC-2026-1023-student-class-screens`):** thêm hai slug `my_classes` (`USR0701`) và
+`my_class_detail` (`USR0702`) — khu người học thêm 2 slug, tổng thêm 2 màn. Lý do: F1-23 đã chốt học viên tự tham gia
+lớp bằng mã mời (`01-rd/req/F1_identity.md:133-137`) và F2-12 đã cho bài được giao hiện trong `problem_list`
+(`01-rd/req/F2_problem-bank.md:48-54`), nhưng chưa có giao diện nào để học viên nhập mã hay xem lớp của mình. Hai màn
+**mở rộng F1-23 và F2-12**, chưa cấp mã `Fx-nn` mới (chờ chủ dự án, `USR0701` Q1). Mục điều hướng "Lớp của tôi"
+đặt trên thanh đầu trang (chủ dự án chốt 2026-10-23). Về số đếm: bảng 7.1 này nay có **16 hàng**; con số "12 slug" ở
+các đoạn phía trên và ở mục tổng bên dưới chưa đếm lại hai slug thêm 2026-10-20 (`problem_overview`, `workspace_home`),
+nên 12 + 2 (2026-10-20) + 2 (hôm nay) = 16. Số theo khu ở `01-rd/README.md` (12 → 14) cũng chưa tính `dashboard` và hai
+slug 2026-10-20 — đếm theo hàng của bảng này, không cộng dồn các con số cũ. Chưa có mockup `09-layoutBase`; prototype dựng
+2026-10-23, chưa có BD/DD.
 
 **Màn nặng nhất là `problem_detail`** — nó chạm bốn Bounded Context và chứa Monaco Editor, bảng testcase
 realtime, và cửa vào hai luồng AI. Đây là màn nên làm prototype trước tiên.
@@ -686,6 +699,8 @@ phân quyền) [SoT: 09-layoutBase/Admin - Tổng quan.dc.html:360-380].
 
 **Cập nhật 2026-10-10:** thêm `admin_infra_events` (`ADM0404`, `DEC-2026-1010-admin-operations-regroup`); số màn sống ở dòng tổng ngay dưới tăng thêm 1 (nav khu Admin có 12 đích). Số theo khu ghi dưới đây chưa đếm lại sau đợt thêm `admin_ai_limits` và `admin_infra_events`.
 
+**Cập nhật 2026-10-23:** thêm `my_classes` và `my_class_detail`, khu người học +2, tổng +2 so với dòng ngay dưới (xem đoạn cùng ngày ở mục 7.1 về việc số cũ chưa đếm lại).
+
 Tổng: **31 màn sống** — 12 người học, 6 giảng viên, 8 quản trị, 5 dùng chung (mục 7.0). Cộng
 `admin_rejudge` chỉ giữ file RD để lưu vết (ngoài phạm vi, `DEC-2026-0828-remove-rejudge-scope`) thì
 `01-rd/screens/` có **32 file**. Frontend soi 1-1 với 31 màn sống: 31 slice trong
@@ -754,10 +769,12 @@ mục dưới đây không còn là "chưa quyết":
 sửa lại 2026-08-31 (report `rd_review_report_260826.html` mục 6.5 nêu dòng này là câu hỏi mở, nhưng thực ra
 đã có câu trả lời từ trước khi report được viết):** thông báo qua email **CÓ trong phạm vi** — `F1-21` (nhắc
 luyện tập khi chuỗi ngày sắp mất, báo cáo tiến độ hằng tuần), gác được bật/tắt theo từng loại, job định kỳ
-thuộc `identity`. Xem `01-rd/req/identity.md` (F1-21) và `01-rd/screens/users/USR0503_settings.md` Q1 (đã đóng).
+thuộc `identity`. Xem `01-rd/req/F1_identity.md` (F1-21) và `01-rd/screens/users/USR0503_settings.md` Q1 (đã đóng).
+
+**ĐÃ BỎ HẲN 2026-10-23** (`DEC-2026-1023-drop-ai-regression-run`): "Chạy đối chiếu" không còn, cả giao diện lẫn backend; đoạn dưới giữ làm lịch sử.
 
 **Đã chốt 2026-08-24** (`06-plan/PROTOTYPE_DEBT.md` mục 2.8, qua hỏi trực tiếp chủ dự án) — một mục hoãn lại
-chứ không loại hẳn: **backend thật cho "Chạy đối chiếu" (regression test) prompt AI trước khi publish**
+chứ không loại hẳn (sau này bị thay bởi quyết định trên): **backend thật cho "Chạy đối chiếu" (regression test) prompt AI trước khi publish**
 (F5-23) — chạy 30 bài giải mẫu qua AI để so sánh ~~điểm rubric~~ kết quả báo cáo (ĐÃ BỎ chữ "rubric" 2026-10-14, DEC-2026-1014-drop-solution-review-rubric) giữa bản nháp và bản đang chạy. Nút này **giữ
 nguyên trên `09-layoutBase/Admin - Cấu hình AI.dc.html`** để thể hiện tầm nhìn thiết kế, nhưng phần logic
 chạy batch AI thật xếp vào hướng phát triển mở rộng — không nằm trong cam kết DD/test đợt này, theo đúng thứ

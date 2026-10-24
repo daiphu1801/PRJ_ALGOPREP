@@ -1,21 +1,48 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen, within } from "@testing-library/react";
-import { NextIntlClientProvider } from "@/shared/i18n";
-import messages from "../../../../../messages/vi.json";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
+import { withTestProviders } from "@/shared/test/render-with-providers";
 import { ProblemDetailView } from "./problem-detail-view";
 
 let currentProblemId: string | undefined = "1";
+// Monaco needs a real browser (workers, canvas); the view only cares about value in / onChange out.
+vi.mock("@/shared/ui/data/code-editor", () => ({
+  CodeEditor: ({
+    value,
+    onChange,
+    label,
+  }: {
+    value: string;
+    onChange: (value: string) => void;
+    label: string;
+  }) => (
+    <textarea
+      aria-label={label}
+      value={value}
+      onChange={(event) => onChange(event.target.value)}
+    />
+  ),
+}));
+
 vi.mock("next/navigation", () => ({
   useParams: () => ({ problemId: currentProblemId }),
   useRouter: () => ({ push: vi.fn() }),
 }));
 
-function renderView() {
-  return render(
-    <NextIntlClientProvider locale="vi" messages={messages}>
-      <ProblemDetailView />
-    </NextIntlClientProvider>,
+// The problem now arrives through a query: wait for the loading skeleton to go before asserting.
+async function renderView() {
+  const view = render(withTestProviders(<ProblemDetailView />));
+  await waitFor(() =>
+    expect(
+      screen.queryByRole("status", { name: "Đang tải..." }),
+    ).not.toBeInTheDocument(),
   );
+  return view;
 }
 
 beforeEach(() => {
@@ -28,23 +55,23 @@ afterEach(() => {
 });
 
 describe("ProblemDetailView", () => {
-  it("renders the problem statement and the primary actions (Run Code / Submit)", () => {
-    renderView();
+  it("renders the problem statement and the primary actions (Run Code / Submit)", async () => {
+    await renderView();
 
     expect(screen.getByText("Two Sum")).toBeInTheDocument();
     expect(screen.getByText("Run Code")).toBeInTheDocument();
     expect(screen.getByText("Submit")).toBeInTheDocument();
   });
 
-  it("shows a not-found state for an unknown problem id", () => {
+  it("shows a not-found state for an unknown problem id", async () => {
     currentProblemId = "does-not-exist";
-    renderView();
+    await renderView();
 
     expect(screen.getByText("Không tìm thấy bài toán.")).toBeInTheDocument();
   });
 
-  it("renders constraints from the statement Markdown, not from a separate field", () => {
-    renderView();
+  it("renders constraints from the statement Markdown, not from a separate field", async () => {
+    await renderView();
 
     expect(screen.getByText("Ràng buộc")).toBeInTheDocument();
     expect(
@@ -52,14 +79,14 @@ describe("ProblemDetailView", () => {
     ).toBeInTheDocument();
   });
 
-  it("starts the save button from the stored state of the problem", () => {
-    renderView();
+  it("starts the save button from the stored state of the problem", async () => {
+    await renderView();
 
     expect(screen.getByRole("button", { name: "Bỏ lưu" })).toBeInTheDocument();
   });
 
-  it("shows the effective time and memory limits of the selected language", () => {
-    renderView();
+  it("shows the effective time and memory limits of the selected language", async () => {
+    await renderView();
 
     // Java is 2x the base 1000 ms / 256 MB in the mock language config.
     expect(screen.getByText("Time 2s · Memory 512MB")).toBeInTheDocument();
@@ -68,7 +95,7 @@ describe("ProblemDetailView", () => {
   });
 
   it("Run Code shows actual output, expected output and metrics per sample testcase", async () => {
-    renderView();
+    await renderView();
 
     expect(
       screen.getByText(/Còn 9 testcase ẩn, chỉ chạy khi nộp bài/),
@@ -91,8 +118,8 @@ describe("ProblemDetailView", () => {
     expect(screen.getByText("2/3 testcase mẫu đạt")).toBeInTheDocument();
   });
 
-  it("does not run blank code and leaves the buttons usable", () => {
-    renderView();
+  it("does not run blank code and leaves the buttons usable", async () => {
+    await renderView();
 
     fireEvent.change(screen.getByLabelText("Vùng soạn mã"), {
       target: { value: "   " },
@@ -104,8 +131,8 @@ describe("ProblemDetailView", () => {
     expect(screen.queryByText("Kết quả thực tế")).not.toBeInTheDocument();
   });
 
-  it("keeps a draft per problem, language and model and says so only when it was stored", () => {
-    renderView();
+  it("keeps a draft per problem, language and model and says so only when it was stored", async () => {
+    await renderView();
 
     fireEvent.change(screen.getByLabelText("Vùng soạn mã"), {
       target: { value: "class Solution {}" },
@@ -116,11 +143,11 @@ describe("ProblemDetailView", () => {
     expect(screen.getByText("Đã lưu trên trình duyệt này")).toBeInTheDocument();
   });
 
-  it("does not claim the draft was saved when the browser blocks storage", () => {
+  it("does not claim the draft was saved when the browser blocks storage", async () => {
     vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
       throw new Error("blocked");
     });
-    renderView();
+    await renderView();
 
     fireEvent.change(screen.getByLabelText("Vùng soạn mã"), {
       target: { value: "class Solution {}" },

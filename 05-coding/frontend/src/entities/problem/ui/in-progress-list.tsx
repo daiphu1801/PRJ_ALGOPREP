@@ -5,6 +5,7 @@
 "use client";
 
 import Link from "next/link";
+import { SeeAllLink } from "@/shared/ui";
 import { useT } from "@/shared/i18n";
 import type { InProgressProblem } from "../model/types";
 
@@ -79,11 +80,7 @@ export function InProgressList({
         ))}
       </ul>
       {footerLink ? (
-        <p className="mt-2 text-[12.5px]">
-          <Link href={footerLink.href} className="underline">
-            {footerLink.label}
-          </Link>
-        </p>
+        <SeeAllLink href={footerLink.href}>{footerLink.label}</SeeAllLink>
       ) : null}
     </>
   );

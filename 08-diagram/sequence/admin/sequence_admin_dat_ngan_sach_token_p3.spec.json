@@ -1,5 +1,5 @@
 {
-  "_": "Tach tu p2 (2026-10-20) vi them giai doan danh dau da xem lam chu in qua nho (5.5pt). Nguon: 02-bd/screens/admin/ADM0302_ai_usage.md Sheet 8 NO 5 (MarkAiUsageAlertReviewed), V0.12; canh bao mem, khong khoa tai khoan (02-bd/security/ai-review.md:83-86). Duong dan REST la [SoT: Suy luan]. | 2026-10-20 (owner): nhan mui ten bo han duong dan, ma HTTP, ma quyen, thuat ngu ky thuat (cache, job, worker, model...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
+  "_": "Tach tu p2 (2026-10-20) vi them giai doan danh dau da xem lam chu in qua nho (5.5pt). Nguon: 02-bd/screens/admin/ADM0302_ai_usage.md Sheet 8 NO 5 (MarkAiUsageAlertReviewed), V0.12; canh bao mem, khong khoa tai khoan (02-bd/security/F5_ai-review.md:83-86). Duong dan REST la [SoT: Suy luan]. | 2026-10-20 (owner): nhan mui ten bo han duong dan, ma HTTP, ma quyen, thuat ngu ky thuat (cache, job, worker, model...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
   "_hai_co_che": "Muc 6.3 va 6.4 la HAI co che tach biet: mot cai tu khoa theo ngan sach toan he thong, mot cai chi canh bao de ADMIN xem xet thu cong. Ve chung mot so do de thay ro chung khong dinh vao nhau.",
   "kind": "sequence",
   "title": "Sơ đồ tuần tự chi tiết - Xử lý cảnh báo tài khoản dùng bất thường (Quản trị viên) (3/3)",

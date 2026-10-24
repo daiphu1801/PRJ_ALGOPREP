@@ -41,6 +41,7 @@ import {
   EmptyState,
   IconAction,
   PageHeader,
+  QueryError,
   Skeleton,
   type DataTableColumn,
 } from "@/shared/ui";
@@ -85,6 +86,7 @@ export function ClassDetailView({ classId }: { classId: string }) {
       </div>
     );
   }
+  if (classesQuery.isError) return <QueryError query={classesQuery} />;
   if (!klass) {
     return (
       <div>

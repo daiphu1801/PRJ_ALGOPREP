@@ -7,4 +7,4 @@ export {
   type Worker,
   type WorkerStatus,
 } from "../model/types";
-export { fetchQueuePage } from "./__mock__/judge-queue-mocks";
+export { useQueuePage } from "./queries";

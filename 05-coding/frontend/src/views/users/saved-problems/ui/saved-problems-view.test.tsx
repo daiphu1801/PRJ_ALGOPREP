@@ -1,8 +1,12 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
-import { NextIntlClientProvider } from "@/shared/i18n";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
+import { withTestProviders } from "@/shared/test/render-with-providers";
 import { toast, useToasts } from "@/shared/lib/toast-store";
-import messages from "../../../../../messages/vi.json";
 import { SavedProblemsView } from "./saved-problems-view";
 
 // The undo offer is a toast action; this stand-in draws just the action buttons of the live toasts.
@@ -22,25 +26,34 @@ function ToastActions() {
 
 beforeEach(() => toast.clear());
 
-function renderView() {
-  return render(
-    <NextIntlClientProvider locale="vi" messages={messages}>
-      <ToastActions />
-      <SavedProblemsView />
-    </NextIntlClientProvider>,
+// The list arrives through a query: wait for the loading skeleton to go before asserting.
+async function renderView() {
+  const view = render(
+    withTestProviders(
+      <>
+        <ToastActions />
+        <SavedProblemsView />
+      </>,
+    ),
   );
+  await waitFor(() =>
+    expect(
+      screen.queryByRole("status", { name: "Đang tải..." }),
+    ).not.toBeInTheDocument(),
+  );
+  return view;
 }
 
 describe("SavedProblemsView", () => {
-  it("renders the page title and the bookmarked rows", () => {
-    renderView();
+  it("renders the page title and the bookmarked rows", async () => {
+    await renderView();
 
     expect(screen.getByText("Bài đã lưu")).toBeInTheDocument();
     expect(screen.getByText("Two Sum")).toBeInTheDocument();
   });
 
-  it("removes a row on Bỏ lưu and Hoàn tác restores it with its note (REQ-04, Q2)", () => {
-    renderView();
+  it("removes a row on Bỏ lưu and Hoàn tác restores it with its note (REQ-04, Q2)", async () => {
+    await renderView();
 
     expect(screen.getByText("Two Sum")).toBeInTheDocument();
     const [firstUnsaveButton] = screen.getAllByText("Bỏ lưu");
@@ -55,8 +68,8 @@ describe("SavedProblemsView", () => {
     ).toBeInTheDocument();
   });
 
-  it("keeps the first undo when a second row is unsaved (one toast action per row)", () => {
-    renderView();
+  it("keeps the first undo when a second row is unsaved (one toast action per row)", async () => {
+    await renderView();
 
     fireEvent.click(screen.getAllByText("Bỏ lưu")[0]!);
     fireEvent.click(screen.getAllByText("Bỏ lưu")[0]!);
@@ -67,8 +80,8 @@ describe("SavedProblemsView", () => {
     expect(screen.getByText("Two Sum")).toBeInTheDocument();
   });
 
-  it("limits the search box to 100 characters", () => {
-    renderView();
+  it("limits the search box to 100 characters", async () => {
+    await renderView();
 
     expect(screen.getByRole("textbox", { name: /Tìm/ })).toHaveAttribute(
       "maxlength",
@@ -76,8 +89,8 @@ describe("SavedProblemsView", () => {
     );
   });
 
-  it("lets the note of a withdrawn problem be edited (owner decision, BD Sheet 6 C NO 8)", () => {
-    renderView();
+  it("lets the note of a withdrawn problem be edited (owner decision, BD Sheet 6 C NO 8)", async () => {
+    await renderView();
 
     const withdrawnBadge = screen.getByText("Đã rút xuống");
     const row = withdrawnBadge.closest("tr")!;

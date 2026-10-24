@@ -171,7 +171,7 @@ Khung **không có** trạng thái `loading`/`error` — nó không gọi API n�
 
 | # | Câu hỏi | Ghi chú |
 | :-: | :--- | :--- |
-| Q1 | Khối danh tính lấy dữ liệu từ đâu khi có phiên thật? | Chờ `app/providers/auth-provider.tsx` và `03-dd/api/identity.md` |
+| Q1 | Khối danh tính lấy dữ liệu từ đâu khi có phiên thật? | Chờ `app/providers/auth-provider.tsx` và `03-dd/api/F1_identity.md` |
 | Q2 | Ba icon trang trí ở toolbar cuối cùng thành gì, hay bỏ hẳn? | BD `admin_overview` chốt là trang trí; nếu bỏ hẳn thì toolbar chỉ còn khối danh tính |
 | Q3 | Khu Giảng viên (`/instructor/*`) dùng lại khung này hay có khung riêng? | **ĐÃ TRẢ LỜI 2026-09-21 — khung riêng**, nav phẳng 5 mục thay vì 4 nhóm gập, khối danh tính ở đáy sidebar thay vì toolbar, và không có toolbar dùng chung. Chi tiết: `02-bd/screens/teacher/_shell.md` mục 2 |
 | Q4 | Khung có cần chân trang (footer) không? | **ĐÃ CHỐT 2026-09-21 — có, dựng thật**, áp cho mọi route kể cả `admin_overview`. Cấu trúc, divergence với prototype và hiện thực: mục 9 |

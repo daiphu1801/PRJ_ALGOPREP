@@ -18,11 +18,11 @@
 //    because it is what incident response looks like. Both survivors came out of BD section 4 Q2,
 //    which was still open.
 // 3. Locking a selection now also takes a reason and can mail the affected users. F1-13 never asked
-//    for either — this opens a new `Fx-nn` code and is NOT yet in 01-rd/req/identity.md. See
+//    for either — this opens a new `Fx-nn` code and is NOT yet in 01-rd/req/F1_identity.md. See
 //    lock-accounts-dialog.tsx.
 //
 // Known gap, deliberately left visible rather than papered over: the "Hoạt động" column and the
-// "Đang hoạt động 24 giờ" stat HAVE NO DATA SOURCE. `database/identity.md` has no last-seen column.
+// "Đang hoạt động 24 giờ" stat HAVE NO DATA SOURCE. `database/F1_identity.md` has no last-seen column.
 // This is level B1 in 07-review/bd_screens_admin_open_questions_260913.md, which proposes
 // `users.last_active_at`. Rendered from the mock as a plain label so nobody mistakes it for a
 // settled contract.
@@ -32,9 +32,10 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { KeyRound, Lock, LockOpen, UserCog } from "lucide-react";
 import {
-  fetchAdminUserPage,
   initialsOf,
+  useAdminUserPage,
   type AdminUser,
+  type AdminUserPage,
   type AdminUserRole,
   type AdminUserStatus,
 } from "../api";
@@ -54,6 +55,7 @@ import {
   DataTable,
   PageHeader,
   Pagination,
+  QueryBoundary,
   RankedProgressList,
   FilterBar,
   FilterMenu,
@@ -89,8 +91,15 @@ type StatusFilter = AdminUserStatus | "all";
 const PAGE_SIZE = 20;
 
 export function AdminUserManagementView() {
+  return (
+    <QueryBoundary query={useAdminUserPage()}>
+      {(page) => <AdminUserManagementInner page={page} />}
+    </QueryBoundary>
+  );
+}
+
+function AdminUserManagementInner({ page }: { page: AdminUserPage }) {
   const t = useT("adminUserManagement");
-  const [page] = useState(fetchAdminUserPage);
   const [accounts, setAccounts] = useState(page.users);
   const [adding, setAdding] = useState(false);
   const [query, setQuery] = useState("");

@@ -7,7 +7,7 @@
 // query params, deferred: no DD yet to lock the param names against).
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import {
   problemLevelLabel,
@@ -15,9 +15,10 @@ import {
   useProblemLevels,
 } from "@/entities/problem";
 import {
-  fetchMySubmissionsPage,
+  useMySubmissionsPage,
   type LanguageFilter,
   type SubmissionListItem,
+  type SubmissionListPage,
   type VerdictFilter,
 } from "@/entities/submission";
 import { useLocale, useT } from "@/shared/i18n";
@@ -34,6 +35,7 @@ import {
   Pagination,
   FilterBar,
   FilterMenu,
+  QueryError,
   type BadgeVariant,
   type DataTableColumn,
 } from "@/shared/ui";
@@ -52,6 +54,13 @@ const PAGE_SIZES = [10, 20, 50] as const;
 // BD USR0202 Sheet 9 NO 3: the search box takes at most 100 characters.
 const SEARCH_MAX_LENGTH = 100;
 
+const EMPTY_PAGE: SubmissionListPage = {
+  items: [],
+  currentPage: 1,
+  pageSize: 20,
+  totalItems: 0,
+};
+
 export function MySubmissionsView() {
   const t = useT("mySubmissions");
   const locale = useLocale() as DateLocale;
@@ -66,10 +75,20 @@ export function MySubmissionsView() {
     20,
   );
 
-  const listPage = useMemo(
-    () => fetchMySubmissionsPage({ query, verdict, language, page, pageSize }),
-    [query, verdict, language, page, pageSize],
-  );
+  const listQuery = useMySubmissionsPage({
+    query,
+    verdict,
+    language,
+    page,
+    pageSize,
+  });
+  // Keep the previous page on screen while a filter change refetches, so the toolbar and the
+  // search box never flash an empty table.
+  const [lastPage, setLastPage] = useState<SubmissionListPage>(EMPTY_PAGE);
+  if (listQuery.data && listQuery.data !== lastPage) {
+    setLastPage(listQuery.data);
+  }
+  const listPage = listQuery.data ?? lastPage;
 
   function updateFilter<T>(setter: (value: T) => void, value: T) {
     setter(value);
@@ -194,6 +213,14 @@ export function MySubmissionsView() {
       ),
     },
   ];
+
+  if (listQuery.isError) {
+    return (
+      <div className="p-6">
+        <QueryError query={listQuery} />
+      </div>
+    );
+  }
 
   return (
     <div className="p-6">

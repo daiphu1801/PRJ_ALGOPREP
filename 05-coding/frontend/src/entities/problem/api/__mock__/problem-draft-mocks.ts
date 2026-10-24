@@ -24,7 +24,7 @@ function wait(ms = LATENCY_MS): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-// Contract is unwritten (03-dd/api/problem-bank.md does not exist yet): BD events EVT-7..EVT-31 map
+// Contract is unwritten (03-dd/api/F2_problem-bank.md does not exist yet): BD events EVT-7..EVT-31 map
 // to SaveProblemContent, EVT-33 to UpdateProblemPublishStatus, EVT-16 to GenerateTestcasesWithAi and
 // the read to GetProblemForAuthoring.
 //

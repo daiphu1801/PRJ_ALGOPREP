@@ -1,9 +1,9 @@
 {
-  "_": "Tach doi tu mot so do bon nhanh ve ngay 2026-09-28: bon nhanh song song lam so do rong 1370px logic, dat trong bao cao thi chu chi con 4.4pt. Lan ranh tach lay tu chinh 02-bd/architecture/harness.md muc 6: EXACT/TRIMMED so SANH CHUOI, con EPSILON/UNORDERED_SET 'khong so sanh chuoi ma parse lai' (:243, :250). Nguon: 01-rd/req/harness.md:18-19, 02-bd/architecture/harness.md:231-256.",
+  "_": "Tach doi tu mot so do bon nhanh ve ngay 2026-09-28: bon nhanh song song lam so do rong 1370px logic, dat trong bao cao thi chu chi con 4.4pt. Lan ranh tach lay tu chinh 02-bd/architecture/F3_harness.md muc 6: EXACT/TRIMMED so SANH CHUOI, con EPSILON/UNORDERED_SET 'khong so sanh chuoi ma parse lai' (:243, :250). Nguon: 01-rd/req/F3_harness.md:18-19, 02-bd/architecture/F3_harness.md:231-256.",
   "_vi_sao_activity": "Thuat toan re nhanh theo mot truong khai bao (matching_strategy), khong phai hoi thoai giua cac tang -- ve sequence se ra mot cot self-call. Cung ly do da chon activity cho activity_shared_sinh_ma_boc_ham.",
   "_actor": "Khong thuoc actor nguoi nao: viec cua he thong tu dong (A4), chay o moi lan cham testcase.",
-  "_chuan_hoa_truoc": "Buoc chuan hoa dat TRUOC node quyet dinh vi ca bon chien luoc deu so tren chuoi DA chuan hoa theo dinh dang in an cua tung kind, khong so byte-by-byte tren chuoi tho [SoT: 02-bd/architecture/harness.md:233-235].",
-  "_khong_ve": "KHONG ve nhanh to hop khong hop le (UNORDERED_SET cho kieu BINARY_TREE/LINKED_LIST). 02-bd/architecture/harness.md:252-256 chot day la viec problem-bank chan LUC LUU SPEC, khong phai viec cua harness luc cham -- ve vao day se dat rang buoc sai module.",
+  "_chuan_hoa_truoc": "Buoc chuan hoa dat TRUOC node quyet dinh vi ca bon chien luoc deu so tren chuoi DA chuan hoa theo dinh dang in an cua tung kind, khong so byte-by-byte tren chuoi tho [SoT: 02-bd/architecture/F3_harness.md:233-235].",
+  "_khong_ve": "KHONG ve nhanh to hop khong hop le (UNORDERED_SET cho kieu BINARY_TREE/LINKED_LIST). 02-bd/architecture/F3_harness.md:252-256 chot day la viec problem-bank chan LUC LUU SPEC, khong phai viec cua harness luc cham -- ve vao day se dat rang buoc sai module.",
   "kind": "activity",
   "title": "Sơ đồ hoạt động - So khớp kết quả sau khi parse lại: EPSILON và UNORDERED_SET (hệ thống)",
   "covers": [

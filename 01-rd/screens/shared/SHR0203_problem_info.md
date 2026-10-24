@@ -3,7 +3,7 @@
 > Mã màn hình: `SHR0203` [SoT: 02-bd/_rules/bd-template-9sheet.md — mục 8].
 > Slug chính tắc: `problem_info`. Slug mới, thêm 2026-10-02 theo `DEC-2026-1002-split-detail-and-edit-pages`; chưa có dòng trong `01-rd/overview/system_survey.md` mục 7.0 trước đợt này.
 > Phạm vi/Bounded Context: `problem-bank` (F2). Actor: A2, A3 (màn dùng chung, phạm vi dữ liệu theo quyền). Dựng cho cả khu A3 (Admin) và khu A2 (Giảng viên) — **cập nhật 2026-10-03:** khu Giảng viên đã dựng cùng khuôn, mount tại `/instructor/problems/[problemId]`.
-> Nguồn sự thật (SoT): `01-rd/req/problem-bank.md` (F2-01 tới F2-04, F2-10, F2-14, F2-15, F2-18), `01-rd/screens/shared/SHR0202_problem_authoring.md` (màn con cùng bản ghi), `.nexa/control/decision-registry.md` mục `DEC-2026-1002-split-detail-and-edit-pages`.
+> Nguồn sự thật (SoT): `01-rd/req/F2_problem-bank.md` (F2-01 tới F2-04, F2-10, F2-14, F2-15, F2-18), `01-rd/screens/shared/SHR0202_problem_authoring.md` (màn con cùng bản ghi), `.nexa/control/decision-registry.md` mục `DEC-2026-1002-split-detail-and-edit-pages`.
 > Tài liệu này có thể đọc độc lập.
 
 ---
@@ -27,15 +27,15 @@ màn soạn (thanh đầu trang, rồi nội dung rộng và cột thuộc tính
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Hiển thị tiêu đề, mã, chủ đề, độ khó, trạng thái `Chưa xuất bản` / `Đã xuất bản`. Độ khó do ADMIN quản lý (danh mục dữ liệu; ba mức Dễ/Trung bình/Khó chỉ là dữ liệu khởi tạo), không gắn logic. | F2-01, F2-02, F2-15 | `01-rd/req/problem-bank.md` |
-| Hiển thị đề bài dưới dạng **Markdown + LaTeX đã render** (không phải văn bản thô; HTML thô không được phân tích), ràng buộc dữ liệu, các ví dụ mẫu | F2-01 | `01-rd/req/problem-bank.md` — F2-01; hiện thực ở `05-coding/frontend/src/views/shared/problem-info/ui/problem-info-view.tsx:98-104` |
-| Hiển thị đặc tả bài toán ở dạng chỉ đọc: chữ ký hàm chung và dòng chữ ký ở từng ngôn ngữ (Bọc hàm), định dạng stdin/stdout (Standard I/O), chiến lược so khớp (thêm 2026-10-03, `SHR0202` Q20) | F2-03, F2-04 | `01-rd/req/problem-bank.md` — F2-03, F2-04 |
-| Hiển thị giới hạn tài nguyên của bài (thời gian, bộ nhớ, output, stack) | F2-10 | `01-rd/req/problem-bank.md` — F2-10 |
-| Hiển thị số testcase đã duyệt, số testcase công khai, số testcase chờ duyệt, ma trận độ phủ theo loại ca | F2-05, F2-06, F2-14 | `01-rd/req/problem-bank.md` |
-| Hiển thị kết quả lần chạy kiểm đáp án mẫu gần nhất (đạt/tổng) và mã đáp án mẫu ở dạng thu gọn | F2-18 | `01-rd/req/problem-bank.md` — F2-18 |
-| Hiển thị chỉ dẫn AI riêng của bài và hai công tắc bảo vệ ở dạng chỉ đọc (Bật/Tắt) | F2-14, F5-17 | `01-rd/req/problem-bank.md` |
+| Hiển thị tiêu đề, mã, chủ đề, độ khó, trạng thái `Chưa xuất bản` / `Đã xuất bản`. Độ khó do ADMIN quản lý (danh mục dữ liệu; ba mức Dễ/Trung bình/Khó chỉ là dữ liệu khởi tạo), không gắn logic. | F2-01, F2-02, F2-15 | `01-rd/req/F2_problem-bank.md` |
+| Hiển thị đề bài dưới dạng **Markdown + LaTeX đã render** (không phải văn bản thô; HTML thô không được phân tích), ràng buộc dữ liệu, các ví dụ mẫu | F2-01 | `01-rd/req/F2_problem-bank.md` — F2-01; hiện thực ở `05-coding/frontend/src/views/shared/problem-info/ui/problem-info-view.tsx:98-104` |
+| Hiển thị đặc tả bài toán ở dạng chỉ đọc: chữ ký hàm chung và dòng chữ ký ở từng ngôn ngữ (Bọc hàm), định dạng stdin/stdout (Standard I/O), chiến lược so khớp (thêm 2026-10-03, `SHR0202` Q20) | F2-03, F2-04 | `01-rd/req/F2_problem-bank.md` — F2-03, F2-04 |
+| Hiển thị giới hạn tài nguyên của bài (thời gian, bộ nhớ, output, stack) | F2-10 | `01-rd/req/F2_problem-bank.md` — F2-10 |
+| Hiển thị số testcase đã duyệt, số testcase công khai, số testcase chờ duyệt, ma trận độ phủ theo loại ca | F2-05, F2-06, F2-14 | `01-rd/req/F2_problem-bank.md` |
+| Hiển thị kết quả lần chạy kiểm đáp án mẫu gần nhất (đạt/tổng) và mã đáp án mẫu ở dạng thu gọn | F2-18 | `01-rd/req/F2_problem-bank.md` — F2-18 |
+| Hiển thị chỉ dẫn AI riêng của bài và hai công tắc bảo vệ ở dạng chỉ đọc (Bật/Tắt) | F2-14, F5-17 | `01-rd/req/F2_problem-bank.md` |
 | Điều hướng: quay lại danh sách, sang form sửa, "Xem như người học" | — | `DEC-2026-1002-split-detail-and-edit-pages` |
-| Gác quyền: cùng Function `PROBLEM_AUTHORING` với `problem_authoring`; A2 chỉ thấy bài của mình, A3 thấy toàn kho | F1-10 tới F1-12 | `01-rd/req/identity.md` |
+| Gác quyền: cùng Function `PROBLEM_AUTHORING` với `problem_authoring`; A2 chỉ thấy bài của mình, A3 thấy toàn kho | F1-10 tới F1-12 | `01-rd/req/F1_identity.md` |
 
 Mã đáp án mẫu **chỉ A2/A3 thấy**, không bao giờ đưa vào prompt AI hay trả cho học viên (F2-18).
 
@@ -103,7 +103,7 @@ Chưa xác định lịch — không tự suy luận. Quy mô hành vi: sáu yê
 
 | Loại | Tham chiếu |
 | :--- | :--- |
-| Yêu cầu module | `01-rd/req/problem-bank.md` — F2-01, F2-02, F2-05, F2-06, F2-10, F2-14, F2-15, F2-18; `01-rd/req/identity.md` — F1-10 tới F1-12. |
+| Yêu cầu module | `01-rd/req/F2_problem-bank.md` — F2-01, F2-02, F2-05, F2-06, F2-10, F2-14, F2-15, F2-18; `01-rd/req/F1_identity.md` — F1-10 tới F1-12. |
 | Quyết định | `DEC-2026-1002-split-detail-and-edit-pages`; `DEC-2026-0825-shared-content-authoring-screens`. |
 | Màn liên quan | `SHR0201_problem_management.md` — màn cha (danh sách); `SHR0202_problem_authoring.md` — màn anh em (form sửa). |
 | Bản dựng prototype | `05-coding/frontend/src/views/shared/problem-info/ui/problem-info-view.tsx`; `05-coding/frontend/src/shared/ui/data/markdown-preview.tsx` (render đề bài). |

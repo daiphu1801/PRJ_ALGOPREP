@@ -15,10 +15,10 @@
   có mục nav riêng): chốt 2026/10/14 theo quy tắc chung "màn khoan sâu sáng mục của màn gọi tới" (`DEC-2026-1014-instructor-batch5-6-nav-pagination-rubric`, Q3 đóng; quy tắc ở `_shell` mục 3.2).
 - **DD của màn này CHƯA viết.** DD màn hình viết sau prototype (`CLAUDE.md`, mục Process). Màn này **không
   đề xuất endpoint mới**: mọi lệnh gọi là endpoint đã có ở `INS0201` hoặc `INS0204`, xem Sheet 7.3. Hợp
-  đồng chi tiết thuộc `03-dd/api/identity.md`, trong đó các dòng 19 tới 28 đã có endpoint tương ứng.
+  đồng chi tiết thuộc `03-dd/api/F1_identity.md`, trong đó các dòng 19 tới 28 đã có endpoint tương ứng.
 
 > Đọc cùng `01-rd/screens/teacher/INS0205_class_detail.md` (hành vi ở mức yêu cầu), `02-bd/screens/teacher/INS0201_class_management.md`
-> (màn cha, nguồn của công thức số liệu và popup dùng chung) và `02-bd/database/identity.md` mục 1.8 tới 1.10,
+> (màn cha, nguồn của công thức số liệu và popup dùng chung) và `02-bd/database/F1_identity.md` mục 1.8 tới 1.10,
 > 1.14 (bảng `classes`, `class_invite_codes`, `class_enrollments`, cấu trúc `classes.schedule`).
 >
 > **Không thiết kế lại** vòng đời lớp: form Tạo/Sửa lớp và popup Xác nhận xoá lớp dùng chung với `INS0201`
@@ -105,7 +105,7 @@
 [Giá trị trả về] Không có.
 
 [Khi thành công] Mở trang chi tiết của lớp mới; thẻ Mã mời đã có sẵn **một mã đầu tiên** do `CreateClass` sinh
-(F1-23) [Nguồn: 01-rd/req/identity.md:105-111]. Thay cho việc hiện mã trong popup như trước V0.6 của `INS0201`.
+(F1-23) [Nguồn: 01-rd/req/F1_identity.md:105-111]. Thay cho việc hiện mã trong popup như trước V0.6 của `INS0201`.
 
 [Khi huỷ] Không có.
 
@@ -149,7 +149,7 @@ Màn này không có thay đổi chưa lưu ngoài popup nên không hỏi xác 
 [Giá trị trả về] Kết quả chọn "Xoá lớp" hoặc "Huỷ".
 
 [Khi thành công] Hiển thị cảnh báo **xoá thật, không khôi phục được**, nêu số học viên sẽ bị gỡ
-[Nguồn: 01-rd/req/identity.md:114-117]. Xác nhận thì xoá rồi **về danh sách lớp** (trang này không còn đối tượng).
+[Nguồn: 01-rd/req/F1_identity.md:114-117]. Xác nhận thì xoá rồi **về danh sách lớp** (trang này không còn đối tượng).
 
 [Khi huỷ] Đóng popup, giữ nguyên trang.
 
@@ -183,7 +183,7 @@ Ghi chú `from` (ĐÃ CHỐT 2026-10-14 (DEC-2026-1014-instructor-submissions-li
 
 [Khi thành công] Thông báo gỡ học viên chỉ **đánh dấu học viên đã rời lớp**, lịch sử làm bài của học viên trong
 lớp này **được giữ** [Nguồn: DEC-2026-1014-keep-learning-history-on-leave]. ~~Cảnh báo cũ: xoá luôn lịch sử làm bài
-của học viên đó trong lớp này~~ (ĐÃ ĐỔI 2026-10-14; RD `01-rd/req/identity.md:126-131` còn câu cũ, chưa cập nhật).
+của học viên đó trong lớp này~~ (ĐÃ ĐỔI 2026-10-14; RD `01-rd/req/F1_identity.md:126-131` còn câu cũ, chưa cập nhật).
 Xác nhận thì dòng biến mất, trang **ở lại** (khác `INS0204`, nơi gỡ xong
 phải rời màn).
 
@@ -234,12 +234,12 @@ danh sách học viên cùng tiến độ; thay cho ba popup nhỏ ở danh sác
    trạng thái rỗng/đang tải/lỗi của các màn anh em.
 2. **Đọc lịch học**: thẻ Lịch học hiển thị từng phần; phần nào trống thì bỏ dòng đó.
 3. **Chia sẻ mã mời**: sao chép một mã hoặc "Tạo mã mới"; nhiều mã song song hợp lệ, không thu hồi
-   [Nguồn: 01-rd/req/identity.md:118-125].
+   [Nguồn: 01-rd/req/F1_identity.md:118-125].
 4. **Xem và quản lý học viên**: đọc trạng thái, điểm, hoàn thành; bấm tên sang `INS0204`; gỡ khỏi lớp kèm xác nhận.
 5. **Sửa hoặc xoá lớp**: Sửa mở popup dùng chung; Xoá là xoá thật có xác nhận rồi về danh sách.
 
 [Người dùng] Giảng viên đã đăng nhập, có Function `CLASS_MANAGEMENT`, **và phụ trách đúng lớp `classId`**
-[Nguồn: 01-rd/req/identity.md:57 và F1-12].
+[Nguồn: 01-rd/req/F1_identity.md:57 và F1-12].
 
 [Tệp liên quan] Không có. Nút sao chép mã dùng bộ nhớ tạm của trình duyệt, không có tệp.
 
@@ -279,9 +279,9 @@ Dùng lại của `INS0201`, **không đặt DTO mới** ngoài việc thêm `de
 
 | NO | Bảng | Ghi chú |
 | --: | :--- | :--- |
-| 1 | `identity.classes` | Tên, mô tả, `schedule` (jsonb), `instructor_id` để gác quyền [Nguồn: 02-bd/database/identity.md mục 1.8, 1.14] |
-| 2 | `identity.class_invite_codes` | Mã, `expires_at`, `created_at` của lớp [Nguồn: 02-bd/database/identity.md mục 1.9] |
-| 3 | `identity.class_enrollments` | Học viên còn trong lớp (`left_at IS NULL`); khi gỡ học viên chỉ đặt `left_at`, không xoá dòng (ĐÃ ĐỔI 2026-10-14, `DEC-2026-1014-keep-learning-history-on-leave`; trước đây ghi "bị xoá khi gỡ học viên") [Nguồn: 02-bd/database/identity.md mục 1.10] |
+| 1 | `identity.classes` | Tên, mô tả, `schedule` (jsonb), `instructor_id` để gác quyền [Nguồn: 02-bd/database/F1_identity.md mục 1.8, 1.14] |
+| 2 | `identity.class_invite_codes` | Mã, `expires_at`, `created_at` của lớp [Nguồn: 02-bd/database/F1_identity.md mục 1.9] |
+| 3 | `identity.class_enrollments` | Học viên còn trong lớp (`left_at IS NULL`); khi gỡ học viên chỉ đặt `left_at`, không xoá dòng (ĐÃ ĐỔI 2026-10-14, `DEC-2026-1014-keep-learning-history-on-leave`; trước đây ghi "bị xoá khi gỡ học viên") [Nguồn: 02-bd/database/F1_identity.md mục 1.10] |
 | 4 | `identity.users` | `display_name` của học viên |
 | 5 | `judge.submissions` | Điểm TB theo phạm vi lớp, qua `GetClassStudentSubmissionMetrics` của `judge-orchestration`; không truy vấn chéo schema |
 | 6 | `identity.identity_recent_activity` | Mốc hoạt động gần nhất cho phân loại "Vắng bài" |
@@ -377,7 +377,7 @@ Bảng 4.6 ghi những gì bản dựng Next.js đang làm ở trang chi tiết 
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Thẻ Lịch học | | | | | | | | | | | | | |
-| | 1 | Ngày học | `classDetail.schedule.days` | `identity.classes` | `schedule->days` | Label | Number[] | - | - | O | - | `T2 · T4 · T6` | Mảng 1..7 đổi thành T2..T7, CN; sắp tăng dần<br>[Nguồn giá trị] `ClassScheduleDto.days` (`02-bd/database/identity.md` mục 1.14)<br>[EVT liên quan] EVT-1 |
+| | 1 | Ngày học | `classDetail.schedule.days` | `identity.classes` | `schedule->days` | Label | Number[] | - | - | O | - | `T2 · T4 · T6` | Mảng 1..7 đổi thành T2..T7, CN; sắp tăng dần<br>[Nguồn giá trị] `ClassScheduleDto.days` (`02-bd/database/F1_identity.md` mục 1.14)<br>[EVT liên quan] EVT-1 |
 | | 2 | Giờ học | `classDetail.schedule.time` | `identity.classes` | `schedule->startTime`, `schedule->endTime` | Label | String | 11 | - | O | - | `19:00–21:00` | Ghép giờ bắt đầu và kết thúc; chỉ hiển thị khi có cả hai<br>[EVT liên quan] EVT-1 |
 | | 3 | Phòng | `classDetail.schedule.room` | `identity.classes` | `schedule->room` | Label | String | 100 | - | O | - | `Phòng B203` | Thêm tiền tố "Phòng "<br>[EVT liên quan] EVT-1 |
 | | 4 | Thời gian | `classDetail.schedule.range` | `identity.classes` | `schedule->startDate`, `schedule->endDate` | Label | String | 11 | - | O | - | `17/08–20/12` | Dạng dd/MM; chỉ có một đầu thì hiển thị "Từ 17/08" hoặc "Đến 20/12" `[SoT: Suy luận]`<br>[EVT liên quan] EVT-1 |
@@ -392,9 +392,9 @@ Khi thu gọn (danh sách lớp ở `INS0201`) cả năm phần ghép thành m�
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Thẻ Mã mời | | | | | | | | | | | | | |
-| | 1 | Danh sách mã mời | `classDetail.invite.list` | `identity.class_invite_codes` | `code`, `expires_at`, `created_at` | List | List | - | - | O | rỗng | - | Các mã còn hiệu lực của lớp, mới nhất lên đầu; mỗi dòng có mã và "Hết hạn {ngày}". Nhiều mã song song hợp lệ, **không có nút thu hồi** vì bảng không có cột trạng thái [Nguồn: 02-bd/database/identity.md:112-113]<br>[Nguồn giá trị] Kết quả `ListClassInviteCodes`<br>[EVT liên quan] EVT-1 |
+| | 1 | Danh sách mã mời | `classDetail.invite.list` | `identity.class_invite_codes` | `code`, `expires_at`, `created_at` | List | List | - | - | O | rỗng | - | Các mã còn hiệu lực của lớp, mới nhất lên đầu; mỗi dòng có mã và "Hết hạn {ngày}". Nhiều mã song song hợp lệ, **không có nút thu hồi** vì bảng không có cột trạng thái [Nguồn: 02-bd/database/F1_identity.md:112-113]<br>[Nguồn giá trị] Kết quả `ListClassInviteCodes`<br>[EVT liên quan] EVT-1 |
 | | 2 | Sao chép mã | `classDetail.invite.btnCopy` | - | - | Button | - | - | - | I | - | - | Chép mã vào bộ nhớ tạm; mã đã quá hạn không cho sao chép (quy tắc đã có ở `INS0201`)<br>[EVT liên quan] EVT-5 |
-| | 3 | Tạo mã mới | `classDetail.invite.btnCreate` | `identity.class_invite_codes` | - | Button | - | - | - | I | - | `Tạo mã mới` | Chỉ hiển thị khi có `CLASS_MANAGEMENT:CREATE`. Hạn dùng **cố định 7 ngày** do máy chủ đặt [Nguồn: 03-dd/api/identity.md:64], không có ô nhập hạn; tạo mã mới được bất cứ lúc nào (chốt 2026/10/14, Q5 đóng, `DEC-2026-1014-instructor-batch3-4-contracts-and-removal`)<br>[EVT liên quan] EVT-6 |
+| | 3 | Tạo mã mới | `classDetail.invite.btnCreate` | `identity.class_invite_codes` | - | Button | - | - | - | I | - | `Tạo mã mới` | Chỉ hiển thị khi có `CLASS_MANAGEMENT:CREATE`. Hạn dùng **cố định 7 ngày** do máy chủ đặt [Nguồn: 03-dd/api/F1_identity.md:64], không có ô nhập hạn; tạo mã mới được bất cứ lúc nào (chốt 2026/10/14, Q5 đóng, `DEC-2026-1014-instructor-batch3-4-contracts-and-removal`)<br>[EVT liên quan] EVT-6 |
 
 ### Khu vực E — Bảng Học viên của lớp
 
@@ -417,7 +417,7 @@ Khi thu gọn (danh sách lớp ở `INS0201`) cả năm phần ghép thành m�
 | | 2 | Xác nhận xoá lớp | `classDetail.popup.deleteClassConfirm` | `identity.classes` | `id`, `name` | Popup | - | - | - | I | - | Xoá lớp / Huỷ | **Dùng chung** với `INS0201` Sheet 5 Popup NO 4<br>[EVT liên quan] EVT-4 |
 | | 3 | Xác nhận gỡ học viên | `classDetail.popup.removeStudentConfirm` | `identity.class_enrollments` | `id` | Popup | - | - | - | I | - | Gỡ học viên / Huỷ | **Dùng chung** với `INS0201` Sheet 5 Popup NO 5<br>[EVT liên quan] EVT-8, EVT-9 |
 
-[Nguồn: 02-bd/screens/teacher/INS0201_class_management.md — Sheet 5; 02-bd/database/identity.md mục 1.8 tới 1.10, 1.14; chỉ đạo của chủ dự án 2026-10-11]
+[Nguồn: 02-bd/screens/teacher/INS0201_class_management.md — Sheet 5; 02-bd/database/F1_identity.md mục 1.8 tới 1.10, 1.14; chỉ đạo của chủ dự án 2026-10-11]
 
 ---
 
@@ -452,7 +452,7 @@ Như `INS0201` Sheet 7.2; không thêm bảng, không thêm thao tác CRUD mới
 
 ### 7.3 Danh sách endpoint [Nội bộ]
 
-> Chỉ tên nghiệp vụ và BC sở hữu. **Không có endpoint mới.** Hợp đồng chi tiết: `03-dd/api/identity.md`.
+> Chỉ tên nghiệp vụ và BC sở hữu. **Không có endpoint mới.** Hợp đồng chi tiết: `03-dd/api/F1_identity.md`.
 
 | NO | Endpoint (tên nghiệp vụ) | Dùng lại từ | Dùng để | BC sở hữu |
 | --: | :--- | :--- | :--- | :--- |
@@ -465,7 +465,7 @@ Như `INS0201` Sheet 7.2; không thêm bảng, không thêm thao tác CRUD mới
 | 7 | `DeleteClass` | `INS0201` | Xoá lớp | `identity` |
 | 8 | `ListClassAssignments`, `GetClassStudentSubmissionMetrics` | `INS0201` | Phía `identity` gọi sang để tính Hoàn thành, Điểm TB `[SoT: Suy luận]` chỉ còn phục vụ cột của bảng học viên nếu DD cần | `problem-bank`, `judge-orchestration` |
 
-[Nguồn: 02-bd/screens/teacher/INS0201_class_management.md — Sheet 7.3; 03-dd/api/identity.md:60-68]
+[Nguồn: 02-bd/screens/teacher/INS0201_class_management.md — Sheet 7.3; 03-dd/api/F1_identity.md:60-68]
 
 ---
 
@@ -480,7 +480,7 @@ Như `INS0201` Sheet 7.2; không thêm bảng, không thêm thao tác CRUD mới
 | 3 | Nút | Sửa lớp | Bấm "Sửa" rồi "Lưu" trong popup. | Không | Có | `UpdateClass` | [Các bước]<br>1. Mở popup chế độ sửa, nạp giá trị hiện tại.<br>2. Kiểm nhập liệu (Sheet 9 NO 3 tới 5).<br>3. Gửi lên máy chủ, đóng popup, tải lại đầu trang và thẻ Lịch học.<br>[Khi lỗi] Giữ popup mở, giữ nội dung đã nhập, hiện toast lỗi.<br>[Thông báo hoàn tất] Toast "Đã lưu thay đổi." |
 | 4 | Nút | Xoá lớp | Bấm "Xoá" rồi "Xoá lớp" trong popup xác nhận. | Có | Có | `DeleteClass` | [Các bước]<br>1. Popup xác nhận nêu số học viên sẽ bị gỡ, không khôi phục được.<br>2. Gửi yêu cầu xoá.<br>3. Về `INS0201`.<br>[Khi lỗi] Giữ trang, đóng popup, hiện toast lỗi.<br>[Thông báo hoàn tất] Toast "Đã xoá lớp." (hiện ở danh sách sau khi chuyển màn) |
 | 5 | Nút | Sao chép mã mời | Bấm nút sao chép bên cạnh một mã. | Không | Không | - | [Các bước]<br>1. Chép chuỗi mã vào bộ nhớ tạm.<br>[Thông báo hoàn tất] Toast "Đã sao chép mã mời." |
-| 6 | Nút | Tạo mã mời mới | Bấm "Tạo mã mới". | Không | Có | `CreateClassInviteCode` | [Các bước]<br>1. Gửi yêu cầu tạo mã cho lớp.<br>2. Chèn mã mới lên đầu danh sách.<br>[Khi thành công] Mã mới có hạn dùng riêng; **các mã cũ vẫn còn hiệu lực** [Nguồn: 01-rd/req/identity.md:118-125].<br>[Khi lỗi] Danh sách không đổi, hiện toast lỗi.<br>[Thông báo hoàn tất] Toast "Đã tạo mã mời mới." |
+| 6 | Nút | Tạo mã mời mới | Bấm "Tạo mã mới". | Không | Có | `CreateClassInviteCode` | [Các bước]<br>1. Gửi yêu cầu tạo mã cho lớp.<br>2. Chèn mã mới lên đầu danh sách.<br>[Khi thành công] Mã mới có hạn dùng riêng; **các mã cũ vẫn còn hiệu lực** [Nguồn: 01-rd/req/F1_identity.md:118-125].<br>[Khi lỗi] Danh sách không đổi, hiện toast lỗi.<br>[Thông báo hoàn tất] Toast "Đã tạo mã mời mới." |
 | 7 | Liên kết | Mở hồ sơ học viên | Bấm tên một học viên. | Có | Không | - | [Các bước]<br>1. Điều hướng sang `INS0204` kèm `studentId` và `classId`.<br>[Khi thành công] Mở `INS0204`. |
 | 8 | Nút | Mở xác nhận gỡ học viên | Bấm icon "Gỡ khỏi lớp" ở cuối dòng (luôn hiện). | Không | Không | - | [Các bước]<br>1. Mở popup xác nhận kèm tên học viên và tên lớp.<br>[Khi thành công] Popup nêu học viên chỉ rời lớp, lịch sử làm bài trong lớp được giữ (~~cảnh báo xoá luôn lịch sử~~, ĐÃ ĐỔI 2026-10-14, `DEC-2026-1014-keep-learning-history-on-leave`). |
 | 9 | Nút | Xác nhận gỡ học viên | Bấm "Gỡ học viên" trong popup. | Không | Có | `RemoveStudentFromClass` | [Các bước]<br>1. Gửi yêu cầu gỡ.<br>2. Đóng popup, gỡ dòng khỏi bảng.<br>3. ~~Tải lại dải số liệu~~ (đã bỏ 2026-10-11); số dòng của bảng học viên tự cập nhật.<br>[Khi xác nhận] Popup này chính là bước xác nhận; không có hoàn tác.<br>[Khi lỗi] Giữ nguyên dòng, hiện toast lỗi.<br>[Thông báo hoàn tất] Toast "Đã gỡ học viên khỏi lớp." |
@@ -520,5 +520,5 @@ Như `INS0201` Sheet 7.2; không thêm bảng, không thêm thao tác CRUD mới
 | Q2 | **ĐÃ CHỐT 2026-10-14 (`DEC-2026-1014-instructor-batch5-6-nav-pagination-rubric`, tiêu chí ponytail bậc 5): "Quay lại" về danh sách lớp.** Nội dung gốc: Sau khi tạo lớp, chuyển thẳng sang trang này; nếu người dùng bấm Quay lại, về danh sách hay về popup tạo lớp? Đề xuất: về danh sách. | Chỉ đạo nói "chuyển thẳng", chưa nói chiều về | Đã đóng |
 | Q3 | **ĐÃ CHỐT 2026-10-14 (`DEC-2026-1014-instructor-batch5-6-nav-pagination-rubric`, tiêu chí ponytail bậc 5):** sidebar sáng mục của màn gọi tới, ở đây là "Lớp của tôi"; quy tắc chung cho màn khoan sâu ghi ở `_shell` mục 3.2. Nội dung gốc: Trạng thái nav: mục "Lớp của tôi" sáng khi ở màn này. Suy diễn, chưa có nguồn. | Màn không có mục nav riêng | Đã đóng |
 | Q4 | **ĐÃ CHỐT 2026-10-14 (`DEC-2026-1014-instructor-batch5-6-nav-pagination-rubric`, tiêu chí ponytail bậc 5, bậc 4): bảng học viên trong một lớp KHÔNG phân trang; chỉ bảng gộp nhiều dòng (`INS0201`, `INS0202`) phân trang 20 dòng mỗi trang.** Nội dung gốc: Bảng học viên có phân trang không? Đề xuất bản đầu **không** (một lớp vài chục học viên); `INS0201` Q9 đã đề xuất 20 dòng/trang cho bảng gộp nhiều lớp. | RD không nói, không có prototype | Đã đóng |
-| Q5 | **ĐÃ CHỐT 2026-10-14 (`DEC-2026-1014-instructor-batch3-4-contracts-and-removal`, tiêu chí ponytail bậc 5): hạn cố định 7 ngày, không có ô nhập, tạo mã mới bất cứ lúc nào (cùng `INS0201` Q5).** Nội dung gốc: Hạn dùng mặc định của mã mới: `03-dd/api/identity.md` dòng 64 ghi 7 ngày (TTL), nhưng `INS0201` Q5 vẫn mở (chưa chốt). Trang này cho chọn hạn hay dùng hằng số? Đề xuất hằng số 7 ngày, không thêm ô nhập (tiêu chí ponytail bậc 5). | Chưa có chốt của chủ dự án | Đã đóng |
+| Q5 | **ĐÃ CHỐT 2026-10-14 (`DEC-2026-1014-instructor-batch3-4-contracts-and-removal`, tiêu chí ponytail bậc 5): hạn cố định 7 ngày, không có ô nhập, tạo mã mới bất cứ lúc nào (cùng `INS0201` Q5).** Nội dung gốc: Hạn dùng mặc định của mã mới: `03-dd/api/F1_identity.md` dòng 64 ghi 7 ngày (TTL), nhưng `INS0201` Q5 vẫn mở (chưa chốt). Trang này cho chọn hạn hay dùng hằng số? Đề xuất hằng số 7 ngày, không thêm ô nhập (tiêu chí ponytail bậc 5). | Chưa có chốt của chủ dự án | Đã đóng |
 | Q6 | **ĐÃ CHỐT 2026-10-13 (chủ dự án) theo `DEC-2026-1013-teacher-open-questions-closed-round2`:** Xác nhận giới hạn `room` 100, `note` 200 ký tự và các quy tắc kiểm lịch ở Sheet 9 NO 5 (có giờ thì phải có ngày, giờ kết thúc phải sau giờ bắt đầu). Câu hỏi gốc, giữ làm lịch sử: Giới hạn `room` 100 và `note` 200 ký tự (và quy tắc lịch ở Sheet 9 NO 5) là **đề xuất**, chủ dự án nêu "chưa chốt". | Cần chủ dự án xác nhận trước khi DD ghi mã lỗi | Chủ dự án |

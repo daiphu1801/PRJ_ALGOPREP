@@ -96,7 +96,7 @@ loãng.
 ## Còn thiếu (không dựng ở bước base, có chủ đích)
 
 - **JWT và RBAC ba vai trò** — `SecurityConfig` chỉ mở `/actuator/health` và `/actuator/prometheus`,
-  chặn mọi thứ còn lại. Cần `03-dd/api/identity.md`.
+  chặn mọi thứ còn lại. Cần `03-dd/api/F1_identity.md`.
 - **Danh mục mã lỗi** — `GlobalExceptionHandler` ánh xạ theo ba loại ngoại lệ nền, chưa theo danh
   mục. Cần `03-dd/api/api.md`.
 - **Rate limiting Token Bucket trên Redis** cho ba nhóm endpoint (đăng nhập/đăng ký, nộp bài, gọi

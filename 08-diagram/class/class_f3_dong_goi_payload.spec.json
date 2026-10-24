@@ -1,0 +1,69 @@
+{
+  "_": "Nguon: 03-dd/logic/F3_harness.md muc 5.1 (dong 421-425: ExecutionPlan gom files[] (name, content), compile (argv[], env[]) hoac null, run (argv[], env[])), muc 5.3 (dong 447-456: JudgePayloadAssembler dat o application, GoJudgePayloadAssembler mac dinh va Judge0PayloadAssembler thay the dat o infrastructure, chon theo cung cong tac engine voi adapter cua JudgeExecutionPort). Kieu cua cac truong ExecutionPlan la dien giai cua DD dong 423-424. [SoT: Suy luan]: DD khong noi ro lop nao sinh ra ExecutionPlan (dong 423 noi 'plugin tra ExecutionPlan' nhung interface muc 1.2 khong co phuong thuc do) nen khong ve canh sinh ra no.",
+  "kind": "class",
+  "title": "Class diagram đóng gói payload gửi engine của F3 harness",
+  "covers": [],
+  "class": {
+    "classes": [
+      {
+        "id": "plan",
+        "name": "ExecutionPlan",
+        "attributes": [
+          "- files : List<{name, content}>",
+          "- compile : {argv[], env[]} | null",
+          "- run : {argv[], env[]}"
+        ]
+      },
+      {
+        "id": "asm",
+        "name": "JudgePayloadAssembler",
+        "kind": "interface",
+        "methods": [
+          "+ assemble(plan : ExecutionPlan) : JudgePayload"
+        ]
+      },
+      {
+        "id": "go",
+        "name": "GoJudgePayloadAssembler"
+      },
+      {
+        "id": "j0",
+        "name": "Judge0PayloadAssembler"
+      }
+    ],
+    "externals": [
+      {
+        "id": "payload",
+        "name": "JudgePayload"
+      }
+    ],
+    "relations": [
+      {
+        "from": "go",
+        "to": "asm",
+        "kind": "realization"
+      },
+      {
+        "from": "j0",
+        "to": "asm",
+        "kind": "realization"
+      },
+      {
+        "from": "asm",
+        "to": "plan",
+        "kind": "dependency",
+        "label": "đọc"
+      },
+      {
+        "from": "asm",
+        "to": "payload",
+        "kind": "dependency",
+        "label": "tạo"
+      }
+    ],
+    "notes": [
+      "Chọn GoJudgePayloadAssembler (mặc định) hay Judge0PayloadAssembler theo cùng công tắc engine với adapter của JudgeExecutionPort; hai lớp cài đặt nằm ở infrastructure, interface ở application (03-dd/logic/F3_harness.md:450-452).",
+      "[SoT: Suy luận] DD chưa nói lớp nào sinh ra ExecutionPlan nên không vẽ cạnh đó (03-dd/logic/F3_harness.md:423)."
+    ]
+  }
+}

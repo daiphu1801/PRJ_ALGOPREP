@@ -31,16 +31,17 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Bookmark } from "lucide-react";
 import {
-  findInterviewQuestionByCode,
+  useInterviewQuestion,
   topicLabel,
   levelLabel,
-  mockCriterionResults,
+  useGradePracticeAnswer,
   RECALL_NEXT_REVIEW_DAYS,
   useInterviewLevels,
   useInterviewTopics,
   useRecallAndBookmarkState,
   RecallLevelPicker,
   type AnswerAttempt,
+  type InterviewQuestion,
   type RecallLevel,
 } from "@/entities/interview-question";
 import { useLocale, useT } from "@/shared/i18n";
@@ -54,6 +55,7 @@ import {
   EmptyState,
   NoticeTile,
   ProgressBar,
+  QueryBoundary,
   SegmentedTabs,
   TextArea,
 } from "@/shared/ui";
@@ -71,16 +73,20 @@ export function InterviewQuestionDetailView({
 }: {
   questionId: string;
 }) {
-  return <QuestionDetail key={questionId} questionId={questionId} />;
+  return (
+    <QueryBoundary query={useInterviewQuestion(questionId)}>
+      {(question) => <QuestionDetail key={questionId} question={question} />}
+    </QueryBoundary>
+  );
 }
 
-function QuestionDetail({ questionId }: { questionId: string }) {
+function QuestionDetail({ question }: { question: InterviewQuestion | null }) {
   const t = useT("interviewQuestionDetail");
   const locale = useLocale() as DateLocale;
   const router = useRouter();
   const topicList = useInterviewTopics();
   const levelList = useInterviewLevels();
-  const [question] = useState(() => findInterviewQuestionByCode(questionId));
+  const { mutateAsync: gradeAnswer } = useGradePracticeAnswer();
 
   // Hook cần một mảng — câu hỏi đơn lẻ vẫn seed đúng một khoá. Câu hỏi không tồn tại thì mảng rỗng,
   // hook vẫn an toàn (map rỗng).
@@ -161,7 +167,15 @@ function QuestionDetail({ questionId }: { questionId: string }) {
     // survive into a closure — `setTimeout`'s callback runs later, so TS re-widens it to
     // `| undefined` here. The value itself cannot actually change (seeded once via useState).
     const rubric = question!.rubric;
-    feedbackTimer.current = window.setTimeout(() => {
+    feedbackTimer.current = window.setTimeout(async () => {
+      let criteria;
+      try {
+        criteria = await gradeAnswer(rubric);
+      } catch (error) {
+        setPendingFeedback(false);
+        toast.error(error instanceof Error ? error.message : String(error));
+        return;
+      }
       const strengths = rubric
         .slice(0, 1)
         .map((c) =>
@@ -179,7 +193,7 @@ function QuestionDetail({ questionId }: { questionId: string }) {
           strengths,
           gaps,
           nextSteps: t("practice.feedbackSample.nextSteps"),
-          criteria: mockCriterionResults(rubric),
+          criteria,
         },
         ...prev,
       ]);

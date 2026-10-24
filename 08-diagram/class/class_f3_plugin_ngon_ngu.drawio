@@ -1,0 +1,108 @@
+<mxfile host="app.diagrams.net" agent="drawio-uml-architect" type="device">
+  <diagram id="class-diagram-plugin-ngon-ngu-cua-f3-harness" name="class-diagram-plugin-ngon-ngu-cua-f3-harness">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t_plugin" value='&lt;div style="text-align:center"&gt;&lt;b&gt;LanguageHarnessPlugin&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;language()&amp;nbsp;:&amp;nbsp;Language&lt;br&gt;+&amp;nbsp;renderFunctionWrapper(spec&amp;nbsp;:&amp;nbsp;FunctionSpec,&amp;nbsp;source&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;RenderedProgram&lt;br&gt;+&amp;nbsp;renderStandardIo(source&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;RenderedProgram&lt;br&gt;+&amp;nbsp;starterCode(spec&amp;nbsp;:&amp;nbsp;FunctionSpec,&amp;nbsp;model&amp;nbsp;:&amp;nbsp;SubmissionModel)&amp;nbsp;:&amp;nbsp;String&lt;br&gt;+&amp;nbsp;toolchain(model&amp;nbsp;:&amp;nbsp;SubmissionModel)&amp;nbsp;:&amp;nbsp;ToolchainProfile&lt;br&gt;+&amp;nbsp;parseCompilerOutput(raw&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;List&amp;lt;RawDiagnostic&amp;gt;' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="335.59" y="206" width="505.9" height="138" as="geometry" />
+        </mxCell>
+        <mxCell id="t_java" value='&lt;div style="text-align:center"&gt;&lt;b&gt;JavaHarnessPlugin&lt;/b&gt;&lt;/div&gt;' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=center;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="54" y="440" width="155.45499999999998" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="t_cpp" value='&lt;div style="text-align:center"&gt;&lt;b&gt;CppHarnessPlugin&lt;/b&gt;&lt;/div&gt;' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=center;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="259.455" y="440" width="148.44" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="t_py" value='&lt;div style="text-align:center"&gt;&lt;b&gt;PythonHarnessPlugin&lt;/b&gt;&lt;/div&gt;' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=center;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="457.895" y="440" width="169.48499999999999" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="t_registry" value='&lt;div style="text-align:center"&gt;&lt;b&gt;PluginRegistry&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;-&amp;nbsp;plugins&amp;nbsp;:&amp;nbsp;EnumMap&amp;lt;Language,&amp;nbsp;LanguageHarnessPlugin&amp;gt;&lt;hr size="1"/&gt;+&amp;nbsp;get(language&amp;nbsp;:&amp;nbsp;Language)&amp;nbsp;:&amp;nbsp;LanguageHarnessPlugin' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="417.93999999999994" y="60" width="341.2" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="t_emitter" value='&lt;div style="text-align:center"&gt;&lt;b&gt;TypeCodeEmitter&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;emit(node&amp;nbsp;:&amp;nbsp;TypeNode)&amp;nbsp;:&amp;nbsp;String' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="677.38" y="440" width="219.2" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="t_prog" value='&lt;div style="text-align:center"&gt;&lt;b&gt;RenderedProgram&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;-&amp;nbsp;sourceFileName&amp;nbsp;:&amp;nbsp;String&lt;br&gt;-&amp;nbsp;text&amp;nbsp;:&amp;nbsp;String&lt;br&gt;-&amp;nbsp;lineMap&amp;nbsp;:&amp;nbsp;LineMap' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="946.5799999999999" y="440" width="176.5" height="82" as="geometry" />
+        </mxCell>
+        <mxCell id="t_linemap" value='&lt;div style="text-align:center"&gt;&lt;b&gt;LineMap&lt;/b&gt;&lt;/div&gt;' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=center;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="523.54" y="592" width="130" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.116;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=block;endFill=0;" edge="1" parent="1" source="t_java" target="t_plugin">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="131.7275" y="360" />
+            <mxPoint x="394.17999999999995" y="360" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e2" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.308;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=block;endFill=0;" edge="1" parent="1" source="t_cpp" target="t_plugin">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="333.67499999999995" y="376" />
+            <mxPoint x="491.35999999999996" y="376" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e3" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=block;endFill=0;" edge="1" parent="1" source="t_py" target="t_plugin">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="542.6374999999999" y="392" />
+            <mxPoint x="588.54" y="392" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e4" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.508;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=diamond;startSize=14;startFill=0;endArrow=none;" edge="1" parent="1" source="t_registry" target="t_plugin">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="588.54" y="171" />
+            <mxPoint x="592.54" y="171" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v5" value="1" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="599.54" y="150" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="v6" value="3" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="596.5871999999999" y="191" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" value="trả về" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.884;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_plugin" target="t_prog">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="782.8999999999999" y="424" />
+            <mxPoint x="1034.83" y="424" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e8" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=diamond;startSize=14;startFill=1;endArrow=none;" edge="1" parent="1" source="t_prog" target="t_linemap">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="1034.83" y="557" />
+            <mxPoint x="588.54" y="557" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v9" value="1" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="1045.83" y="536" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="v10" value="1" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="592.54" y="577" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" value="dùng" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.692;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_plugin" target="t_emitter">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="685.72" y="408" />
+            <mxPoint x="786.98" y="408" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="title" value="Class diagram plugin ngôn ngữ của F3 harness" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="0" y="10" width="1153.08" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="v12" value="Chú giải: + public; - private; # protected; ~ package. Chữ nghiêng = lớp trừu tượng.&lt;br&gt;Mũi tên rỗng nét liền = kế thừa; nét đứt, mũi tên rỗng = hiện thực hoá interface; nét đứt, mũi tên mở = phụ thuộc; hình thoi rỗng = kết tập; hình thoi đặc = hợp thành.&lt;br&gt;Ghi chú: Ba plugin chỉ hiện thực lại sáu phương thức của interface nên không liệt kê lại; TypeCodeEmitter là một lớp riêng cho mỗi ngôn ngữ, vẽ gộp một hộp (03-dd/logic/F3_harness.md:49).&lt;br&gt;Ghi chú: [SoT: Suy luận] Tên PluginRegistry; DD chỉ nói registry là Map&amp;lt;Language, LanguageHarnessPlugin&amp;gt; kiểu EnumMap, thiếu một plugin là lỗi khởi động (03-dd/logic/F3_harness.md:45-48)." style="text;html=1;align=left;verticalAlign=top;fontSize=11;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="30" y="648" width="1100" height="72" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

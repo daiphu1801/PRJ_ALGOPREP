@@ -7,4 +7,4 @@ export {
   type PendingTask,
   type RoleDistributionItem,
 } from "../model/types";
-export { fetchAdminUserPage } from "./__mock__/admin-user-mocks";
+export { useAdminUserPage } from "./queries";

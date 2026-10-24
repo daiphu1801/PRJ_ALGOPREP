@@ -1,5 +1,5 @@
 {
-  "_": "Luong F5.2 Mock Interview (da luot, ba giai doan, ket thuc bang rubric) cua actor A1. Nguon: 01-rd/req/ai-review.md (F5-09 den F5-16), 02-bd/architecture/ai-review.md muc 1 (aggregate InterviewSession, SSE controller, Redis ChatMemory), muc 5 (ba lop instruction), muc 6.1 (rate-limit theo phien). | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
+  "_": "Luong F5.2 Mock Interview (da luot, ba giai doan, ket thuc bang rubric) cua actor A1. Nguon: 01-rd/req/F5_ai-review.md (F5-09 den F5-16), 02-bd/architecture/F5_ai-review.md muc 1 (aggregate InterviewSession, SSE controller, Redis ChatMemory), muc 5 (ba lop instruction), muc 6.1 (rate-limit theo phien). | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
   "_phase": "Ba giai doan trong so do la ba giai doan NGHIEP VU cua phien phong van (lam ro de bai -> trinh bay huong giai -> dao sau va cham rubric), khong phai ba buoc ky thuat.",
   "kind": "sequence",
   "title": "Sơ đồ tuần tự chi tiết - Phỏng vấn giả lập với AI (2/3)",

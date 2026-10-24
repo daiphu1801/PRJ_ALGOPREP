@@ -9,7 +9,7 @@
 > Mã màn hình: `USR0501` [Nguồn: `02-bd/_rules/bd-template-9sheet.md` — mục 8].
 > Slug chính tắc: `my_progress` [SoT: `01-rd/overview/system_survey.md` — mục 7.1 dòng `my_progress`].
 > Phạm vi/Bounded Context: `identity` (F1), có đọc thêm từ `interview-bank` (F6) cho khối phỏng vấn giả lập/lý thuyết [SoT: `01-rd/overview/system_survey.md` — mục 7.1 dòng `my_progress` — cột Bounded Context ghi `identity`, `interview-bank`]. Actor: A1.
-> Nguồn sự thật (SoT): `01-rd/req/identity.md` (F1-06, F1-07, F1-08), `01-rd/req/user_stories/a1_student.md` (`US-A1-05`), `09-layoutBase/Tiến độ của tôi.dc.html` (prototype).
+> Nguồn sự thật (SoT): `01-rd/req/F1_identity.md` (F1-06, F1-07, F1-08), `01-rd/req/user_stories/a1_student.md` (`US-A1-05`), `09-layoutBase/Tiến độ của tôi.dc.html` (prototype).
 > Tài liệu này mô tả hành vi và UX mức yêu cầu của màn hình, không lặp lại đặc tả chức năng nguồn.
 > Tài liệu này có thể đọc độc lập.
 
@@ -17,9 +17,9 @@
 
 ## 1. Mục đích và bối cảnh
 
-Tổng hợp quá trình luyện tập của người học: bài đã giải theo chủ đề, tỉ lệ Accepted, và lịch sử phỏng vấn giả lập mở lại được rubric của phiên cũ [SoT: `01-rd/req/identity.md` — F1-06, F1-07, F1-08].
+Tổng hợp quá trình luyện tập của người học: bài đã giải theo chủ đề, tỉ lệ Accepted, và lịch sử phỏng vấn giả lập mở lại được rubric của phiên cũ [SoT: `01-rd/req/F1_identity.md` — F1-06, F1-07, F1-08].
 
-File này mô tả **hành vi và UX ở mức yêu cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/identity.md` (mục F1) và `01-rd/req/user_stories/a1_student.md` (`US-A1-05`), chỉ trỏ tới và bổ sung phần đặc thù của màn, đối chiếu prototype `09-layoutBase/Tiến độ của tôi.dc.html`.
+File này mô tả **hành vi và UX ở mức yêu cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/F1_identity.md` (mục F1) và `01-rd/req/user_stories/a1_student.md` (`US-A1-05`), chỉ trỏ tới và bổ sung phần đặc thù của màn, đối chiếu prototype `09-layoutBase/Tiến độ của tôi.dc.html`.
 
 ---
 
@@ -27,9 +27,9 @@ File này mô tả **hành vi và UX ở mức yêu cầu** — không lặp l�
 
 | Hành vi | Mã | Nguồn |
 |---|---|---|
-| Bài đã giải theo chủ đề | F1-06 | `01-rd/req/identity.md` — F1-06 |
-| Tỉ lệ chấp thuận (Accepted / tổng số đã nộp) | F1-07 | `01-rd/req/identity.md` — F1-07 |
-| Lịch sử phỏng vấn mở lại được rubric của phiên cũ | F1-08 | `01-rd/req/identity.md` — F1-08 |
+| Bài đã giải theo chủ đề | F1-06 | `01-rd/req/F1_identity.md` — F1-06 |
+| Tỉ lệ chấp thuận (Accepted / tổng số đã nộp) | F1-07 | `01-rd/req/F1_identity.md` — F1-07 |
+| Lịch sử phỏng vấn mở lại được rubric của phiên cũ | F1-08 | `01-rd/req/F1_identity.md` — F1-08 |
 | Given-When-Then đầy đủ | — | `01-rd/req/user_stories/a1_student.md` (`US-A1-05`, 2 GWT đầu) |
 
 Đối chiếu `09-layoutBase/Tiến độ của tôi.dc.html`:
@@ -38,7 +38,7 @@ File này mô tả **hành vi và UX ở mức yêu cầu** — không lặp l�
 2. **Bảng "Theo chủ đề"** — mỗi chủ đề: đã giải/tổng, thanh tiến độ, tỉ lệ AC riêng theo chủ đề, lần nộp cuối (dòng 121-149) — khớp F1-06, mở rộng thêm tỉ lệ AC theo từng chủ đề (không chỉ tổng, F1-07 áp theo từng dòng).
 3. **Biểu đồ cột "Lượt nộp 14 ngày gần nhất"** (dòng 152-162) — không có mã `Fx-nn` riêng, là cách trình bày trực quan của cùng dữ liệu lượt nộp (F1-07); có 3 khoảng thời gian chọn được (7 ngày/30 ngày/Tất cả, dòng 266) áp cho toàn màn (chủ đề + biểu đồ), không riêng biểu đồ.
 4. **Khối "Theo độ khó"** — tiến độ Dễ/Trung bình/Khó (dòng 166-181; prototype vẽ 3 mức khởi tạo, độ khó do ADMIN quản lý nên bản thật là một dòng mỗi mức trong danh mục, `DEC-2026-1001-admin-configurable-settings` mục 7) — khớp F1-06 (một cách chia khác của "theo chủ đề": theo độ khó).
-5. **Khối "Nên ưu tiên" (Focus next)** — 3 gợi ý bài/chủ đề nên làm tiếp kèm lý do (`"Tỉ lệ AC 31% — thấp nhất"`, `"Còn 26 bài, tỉ lệ AC 44%"`, `"13 ngày chưa nộp bài nào"`, dòng 184-196) — không có mã `Fx-nn`, là một tính năng gợi ý/xếp hạng chưa từng được đặc tả ở `identity.md` — xem Câu hỏi mở Q2.
+5. **Khối "Nên ưu tiên" (Focus next)** — 3 gợi ý bài/chủ đề nên làm tiếp kèm lý do (`"Tỉ lệ AC 31% — thấp nhất"`, `"Còn 26 bài, tỉ lệ AC 44%"`, `"13 ngày chưa nộp bài nào"`, dòng 184-196) — không có mã `Fx-nn`, là một tính năng gợi ý/xếp hạng chưa từng được đặc tả ở `F1_identity.md` — xem Câu hỏi mở Q2.
 6. **Khối "Phỏng vấn giả lập"** — số phiên, điểm trung bình, mục yếu nhất (`"Đánh đổi"` — trade-offs, dòng 199-210) kèm liên kết bắt đầu phiên mới — khớp F1-08 (tóm tắt lịch sử), nhưng "mục yếu nhất" (rubric tổng hợp qua nhiều phiên) là suy luận tổng hợp chưa có mã `Fx-nn` — cùng nhóm với Q2.
 
 ### 2.1 Cấu trúc hệ thống liên quan
@@ -46,7 +46,7 @@ File này mô tả **hành vi và UX ở mức yêu cầu** — không lặp l�
 | Màn/tài liệu | Vai trò | Bounded Context |
 |---|---|---|
 | Màn hiện tại | `USR0501` / `my_progress` | `identity` |
-| Tài liệu yêu cầu | `01-rd/req/identity.md` (F1-06, F1-07, F1-08) | Nguồn SoT của màn |
+| Tài liệu yêu cầu | `01-rd/req/F1_identity.md` (F1-06, F1-07, F1-08) | Nguồn SoT của màn |
 | Prototype | `09-layoutBase/Tiến độ của tôi.dc.html` | Bằng chứng bố cục và trạng thái |
 
 **Chi tiết trạng thái và cấu trúc màn**
@@ -61,7 +61,7 @@ File này mô tả **hành vi và UX ở mức yêu cầu** — không lặp l�
 ## 3. Ngoài phạm vi (Out of Scope)
 
 - Bảng màu, spacing, component cụ thể, breakpoint responsive — thuộc BD (`02-bd/screens/users/USR0501_my_progress.md`, chưa viết).
-- Hợp đồng API (tính tỉ lệ AC, dữ liệu biểu đồ 14 ngày, quy tắc gợi ý) — thuộc DD (`03-dd/api/identity.md` và/hoặc `03-dd/api/interview-bank.md`, chưa viết).
+- Hợp đồng API (tính tỉ lệ AC, dữ liệu biểu đồ 14 ngày, quy tắc gợi ý) — thuộc DD (`03-dd/api/F1_identity.md` và/hoặc `03-dd/api/F6_interview-bank.md`, chưa viết).
 - Định nghĩa chính xác "streak" và thuật toán gợi ý "Nên ưu tiên" — phụ thuộc câu trả lời Q1/Q2, không tự quyết trong file RD này.
 
 ---
@@ -81,13 +81,13 @@ File này mô tả **hành vi và UX ở mức yêu cầu** — không lặp l�
 
 | ID | Yêu cầu | Loại | Nguồn/SoT |
 |---|---|---|---|
-| REQ-01 | Bài đã giải theo chủ đề (F1-06) | Chức năng | `01-rd/req/identity.md` — F1-06 |
-| REQ-02 | Tỉ lệ chấp thuận (Accepted / tổng số đã nộp) (F1-07) | Chức năng | `01-rd/req/identity.md` — F1-07 |
-| REQ-03 | Lịch sử phỏng vấn mở lại được rubric của phiên cũ (F1-08) | Chức năng | `01-rd/req/identity.md` — F1-08 |
+| REQ-01 | Bài đã giải theo chủ đề (F1-06) | Chức năng | `01-rd/req/F1_identity.md` — F1-06 |
+| REQ-02 | Tỉ lệ chấp thuận (Accepted / tổng số đã nộp) (F1-07) | Chức năng | `01-rd/req/F1_identity.md` — F1-07 |
+| REQ-03 | Lịch sử phỏng vấn mở lại được rubric của phiên cũ (F1-08) | Chức năng | `01-rd/req/F1_identity.md` — F1-08 |
 | REQ-04 | Given-When-Then đầy đủ (—) | Chức năng | `01-rd/req/user_stories/a1_student.md` (`US-A1-05`, 2 GWT đầu) |
 | REQ-05 | **Cho** tôi đã có ít nhất một phiên phỏng vấn giả lập trước đó (F1-08), **Khi** tôi xem khối "Phỏng vấn giả lập" ở trang tiến độ, **Thì** tôi thấy số phiên, điểm trung bình, và tiêu chí rubric tôi yếu nhất tính trên toàn bộ lịch sử — không phải của riêng phiên gần nhất | Chức năng (GWT) | [SoT: `09-layoutBase/Tiến độ của tôi.dc.html`:199-210] |
 | REQ-06 | **Cho** tôi chọn khoảng thời gian khác ("7 ngày"/"Tất cả") ở góc trên bên phải, **Khi** tôi đổi lựa chọn, **Thì** bảng "Theo chủ đề" và biểu đồ lượt nộp cùng lọc lại theo khoảng đó | Chức năng (GWT) | [SoT: `09-layoutBase/Tiến độ của tôi.dc.html`:106-108, 266] |
-| REQ-07 | **Cho** tôi đã nộp ít nhất một bài, **Khi** tôi xem dải chỉ số tổng, **Thì** tôi thấy tổng số lượt nộp kèm tỉ lệ chấp thuận (Accepted / tổng số đã nộp) và số bài đã giải trên tổng số bài. Đây là **nơi duy nhất** hiển thị chỉ số tổng F1-07 và số liệu tổng lượt nộp của người học: màn `USR0202` không còn dải chỉ số (owner 2026-10-18, `DEC-2026-1018-usr-open-questions-phase1-scope`). Làm rõ REQ-02, không thêm mã `Fx-nn` | Chức năng (GWT) | `01-rd/req/identity.md` — F1-07; [SoT: `09-layoutBase/Tiến độ của tôi.dc.html`:258-264] |
+| REQ-07 | **Cho** tôi đã nộp ít nhất một bài, **Khi** tôi xem dải chỉ số tổng, **Thì** tôi thấy tổng số lượt nộp kèm tỉ lệ chấp thuận (Accepted / tổng số đã nộp) và số bài đã giải trên tổng số bài. Đây là **nơi duy nhất** hiển thị chỉ số tổng F1-07 và số liệu tổng lượt nộp của người học: màn `USR0202` không còn dải chỉ số (owner 2026-10-18, `DEC-2026-1018-usr-open-questions-phase1-scope`). Làm rõ REQ-02, không thêm mã `Fx-nn` | Chức năng (GWT) | `01-rd/req/F1_identity.md` — F1-07; [SoT: `09-layoutBase/Tiến độ của tôi.dc.html`:258-264] |
 
 
 > **Ghi chú quy ước 2026-10-18** (owner, `DEC-2026-1018-usr-open-questions-phase2-5`, không thêm REQ mới; chi tiết ở `02-bd/screens/users/USR0501_my_progress.md` mục Câu hỏi mở Q2-Q6):
@@ -133,7 +133,7 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 
 | Loại | Tham chiếu |
 |---|---|
-| Yêu cầu module | `01-rd/req/identity.md` — F1-06, F1-07, F1-08 |
+| Yêu cầu module | `01-rd/req/F1_identity.md` — F1-06, F1-07, F1-08 |
 | User story | `01-rd/req/user_stories/a1_student.md` — `US-A1-05` (2 GWT đầu) |
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` — mục 7.1 dòng `my_progress` |
 | Prototype | `09-layoutBase/Tiến độ của tôi.dc.html` |

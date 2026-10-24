@@ -1,4 +1,6 @@
 // Smoke test (PROTOTYPE lane): known code renders with an /edit link, unknown code shows not-found.
+import type { ReactElement } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { InterviewQuestionInfoView } from "./interview-question-info-view";
@@ -8,9 +10,19 @@ vi.mock("@/shared/i18n", () => ({
     params ? `${key} ${JSON.stringify(params)}` : key,
 }));
 
+// The bank loads through TanStack Query, so each test renders inside a fresh client.
+function renderWithQuery(ui: ReactElement) {
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+  return render(
+    <QueryClientProvider client={client}>{ui}</QueryClientProvider>,
+  );
+}
+
 describe("InterviewQuestionInfoView", () => {
-  it("shows the question and links the edit button to the edit route", () => {
-    render(
+  it("shows the question and links the edit button to the edit route", async () => {
+    renderWithQuery(
       <InterviewQuestionInfoView
         questionId="IQ-014"
         basePath="/admin/interview-questions"
@@ -18,7 +30,7 @@ describe("InterviewQuestionInfoView", () => {
     );
 
     expect(
-      screen.getByText(/Hash table xử lý collision bằng cách nào\?/),
+      await screen.findByText(/Hash table xử lý collision bằng cách nào\?/),
     ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "edit" })).toHaveAttribute(
       "href",
@@ -26,14 +38,14 @@ describe("InterviewQuestionInfoView", () => {
     );
   });
 
-  it("shows the not-found state for an unknown code instead of crashing", () => {
-    render(
+  it("shows the not-found state for an unknown code instead of crashing", async () => {
+    renderWithQuery(
       <InterviewQuestionInfoView
         questionId="IQ-nope"
         basePath="/admin/interview-questions"
       />,
     );
 
-    expect(screen.getByText(/notFoundBody/)).toBeInTheDocument();
+    expect(await screen.findByText(/notFoundBody/)).toBeInTheDocument();
   });
 });

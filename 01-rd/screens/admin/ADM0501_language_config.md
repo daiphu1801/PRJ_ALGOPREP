@@ -3,7 +3,7 @@
 > Mã màn hình: `ADM0501` [SoT: 02-bd/_rules/bd-template-9sheet.md — mục 8].
 > Slug chính tắc: `admin_language_config` [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_language_config`].
 > Phạm vi/Bounded Context: `judge-orchestration` + `problem-bank` [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_language_config`]. Actor: A3 (Quản trị viên).
-> Nguồn sự thật (SoT): `01-rd/req/problem-bank.md` (F2-10), `01-rd/req/judge-orchestration.md` (F4-11), `09-layoutBase/Admin - Ngôn ngữ và giới hạn.dc.html` (prototype), `01-rd/req/user_stories/a3_admin.md` (`US-A3-04`).
+> Nguồn sự thật (SoT): `01-rd/req/F2_problem-bank.md` (F2-10), `01-rd/req/F4_judge-orchestration.md` (F4-11), `09-layoutBase/Admin - Ngôn ngữ và giới hạn.dc.html` (prototype), `01-rd/req/user_stories/a3_admin.md` (`US-A3-04`).
 > Phiên bản RD: sửa 2026-10-10 theo `DEC-2026-1010-admin-operations-regroup`. Tài liệu này có thể đọc độc lập.
 
 ---
@@ -11,15 +11,15 @@
 ## 1. Mục đích và bối cảnh
 
 Cấu hình ba ngôn ngữ hỗ trợ (hệ số thời gian, giới hạn tài nguyên mặc định, sandbox), để vận hành đúng năng
-lực hạ tầng thật [SoT: 01-rd/req/problem-bank.md — F2-10; 01-rd/req/judge-orchestration.md — F4-11].
+lực hạ tầng thật [SoT: 01-rd/req/F2_problem-bank.md — F2-10; 01-rd/req/F4_judge-orchestration.md — F4-11].
 
 Màn chia **hai tab** để phần dùng hằng ngày ngắn gọn: tab **"Ngôn ngữ và giới hạn"** (bảng ba ngôn ngữ và hàng
 giới hạn mặc định) và tab **"Sandbox và sinh testcase"** (ba tham số sandbox, giới hạn script sinh testcase;
 gần như không đổi sau khi cài). Một thanh lưu dính đáy cho cả hai tab.
 
 Đối chiếu prototype: `09-layoutBase/Admin - Ngôn ngữ và giới hạn.dc.html` (chỉ tham khảo từ 2026-10-03). File này mô tả **hành vi và UX
-ở mức yêu cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/problem-bank.md` (F2-10) và
-`01-rd/req/judge-orchestration.md` (F4-11), chỉ trỏ tới và bổ sung phần đặc thù của màn.
+ở mức yêu cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/F2_problem-bank.md` (F2-10) và
+`01-rd/req/F4_judge-orchestration.md` (F4-11), chỉ trỏ tới và bổ sung phần đặc thù của màn.
 
 ---
 
@@ -27,8 +27,8 @@ gần như không đổi sau khi cài). Một thanh lưu dính đáy cho cả ha
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Hệ số nhân thời gian theo ngôn ngữ | F2-10 | `01-rd/req/problem-bank.md` — F2-10 |
-| Cấu hình ngôn ngữ và giới hạn tài nguyên mặc định | F4-11 | `01-rd/req/judge-orchestration.md` — F4-11 |
+| Hệ số nhân thời gian theo ngôn ngữ | F2-10 | `01-rd/req/F2_problem-bank.md` — F2-10 |
+| Cấu hình ngôn ngữ và giới hạn tài nguyên mặc định | F4-11 | `01-rd/req/F4_judge-orchestration.md` — F4-11 |
 | Given-When-Then liên quan | — | `01-rd/req/user_stories/a3_admin.md` (`US-A3-04`, GWT đầu) |
 
 Đối chiếu `09-layoutBase/Admin - Ngôn ngữ và giới hạn.dc.html`:
@@ -37,7 +37,7 @@ gần như không đổi sau khi cài). Một thanh lưu dính đáy cho cả ha
    "Submission languages"). **Sửa 2026-10-10: bảng 4 cột** — Ngôn ngữ (tên kèm trình biên dịch ở dòng phụ), Hệ số
    (thời gian và RAM), Giới hạn hiệu dụng ("x ms · y MB" trong một ô), Bật. Cột "Mã môi trường chấm"
    (`go-judge #71`...) **bỏ**: chỉ là chuỗi trang trí của bản mẫu, không có nguồn dữ liệu — khớp F2-10 (hệ số) + F4-11 (giới hạn theo ngôn ngữ). Hệ số mẫu (Python x3,
-   C++ x1, Java x2) khớp đúng ví dụ ở `problem-bank.md` — F2-10 ("Java chậm hơn C++ nên cùng một bài phải khác hệ
+   C++ x1, Java x2) khớp đúng ví dụ ở `F2_problem-bank.md` — F2-10 ("Java chậm hơn C++ nên cùng một bài phải khác hệ
    số").
 2. **Giới hạn mặc định** — thời gian/bộ nhớ/kích thước output/thời gian biên dịch, áp dụng khi bài toán
    không khai báo riêng — khớp F4-11. **Sửa 2026-10-10:** là **bốn ô nhập sửa được**, đặt thành một hàng gọn ngay
@@ -64,7 +64,7 @@ gần như không đổi sau khi cài). Một thanh lưu dính đáy cho cả ha
 | Màn/tài liệu | Vai trò | Bounded Context |
 |---|---|---|
 | Màn hiện tại | `ADM0501` / `admin_language_config` | `judge-orchestration` + `problem-bank` |
-| Tài liệu yêu cầu | `01-rd/req/problem-bank.md` (F2-10), `01-rd/req/judge-orchestration.md` (F4-11) | Nguồn SoT của màn |
+| Tài liệu yêu cầu | `01-rd/req/F2_problem-bank.md` (F2-10), `01-rd/req/F4_judge-orchestration.md` (F4-11) | Nguồn SoT của màn |
 | Prototype | `09-layoutBase/Admin - Ngôn ngữ và giới hạn.dc.html` | Bằng chứng bố cục và trạng thái |
 
 ---
@@ -72,7 +72,7 @@ gần như không đổi sau khi cài). Một thanh lưu dính đáy cho cả ha
 ## 3. Ngoài phạm vi (Out of Scope)
 
 - Bảng màu, spacing, component cụ thể — thuộc BD (`02-bd/screens/admin/ADM0501_language_config.md`, V1.0).
-- Hợp đồng API (đổi hệ số, giới hạn, sandbox) — thuộc DD (`03-dd/api/judge-orchestration.md`, chưa viết).
+- Hợp đồng API (đổi hệ số, giới hạn, sandbox) — thuộc DD (`03-dd/api/F4_judge-orchestration.md`, chưa viết).
 - Khái niệm "kỳ thi" ở ghi chú "Tắt trong mọi kỳ thi" — cùng phát hiện Q2 của
   `01-rd/screens/admin/ADM0401_queue_monitor.md`, **đã chốt 2026-08-31** (nhãn ưu tiên, không phải tính năng
   thật), không lặp lại chi tiết ở đây.
@@ -84,15 +84,15 @@ gần như không đổi sau khi cài). Một thanh lưu dính đáy cho cả ha
 | # | Câu hỏi | Vì sao chưa trả lời được | Đề xuất | Chủ sở hữu |
 | :-: | :--- | :--- | :--- | :--- |
 | — | Các câu hỏi mở cấp BD của màn này (cột `enabled`, nơi lưu giới hạn mặc định, sandbox toàn cục hay theo ngôn ngữ, hệ số RAM, xác nhận khi tắt, cảnh báo rời màn) **đã đóng ở BD `ADM0501` V1.0 ngày 2026-10-10**, xem `DEC-2026-1010-admin-operations-regroup`. | — | RD không lặp lại | Đã đóng |
-| Q1 | ~~3 toggle Sandbox (mạng, giới hạn tiến trình con, kích thước stderr)...~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** mở rộng F4-11, không cần mã mới. | — | Đã liệt kê rõ 3 tham số vào `01-rd/req/judge-orchestration.md` (amendment F4-11). Xem `DEC-2026-0831-judge-orchestration-ops-details`. | Đã đóng |
+| Q1 | ~~3 toggle Sandbox (mạng, giới hạn tiến trình con, kích thước stderr)...~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** mở rộng F4-11, không cần mã mới. | — | Đã liệt kê rõ 3 tham số vào `01-rd/req/F4_judge-orchestration.md` (amendment F4-11). Xem `DEC-2026-0831-judge-orchestration-ops-details`. | Đã đóng |
 
 ---
 
 ## 5. Danh sách yêu cầu (REQ)
 | ID | Yêu cầu | Loại | Nguồn/SoT |
 |---|---|---|---|
-| REQ-01 | Hệ số nhân thời gian theo ngôn ngữ (F2-10) | Chức năng | `01-rd/req/problem-bank.md` — F2-10 |
-| REQ-02 | Cấu hình ngôn ngữ và giới hạn tài nguyên mặc định (F4-11) | Chức năng | `01-rd/req/judge-orchestration.md` — F4-11 |
+| REQ-01 | Hệ số nhân thời gian theo ngôn ngữ (F2-10) | Chức năng | `01-rd/req/F2_problem-bank.md` — F2-10 |
+| REQ-02 | Cấu hình ngôn ngữ và giới hạn tài nguyên mặc định (F4-11) | Chức năng | `01-rd/req/F4_judge-orchestration.md` — F4-11 |
 | REQ-03 | Given-When-Then liên quan (—) | Chức năng | `01-rd/req/user_stories/a3_admin.md` (`US-A3-04`, GWT đầu) |
 | REQ-04 | **Cho** quản trị viên đổi một ô hoặc một công tắc, **Khi** có thay đổi chưa lưu, **Thì** thanh lưu dính đáy hiện số thay đổi cùng nút "Hoàn tác" và "Lưu"; **Khi** bấm "Hoàn tác", **Thì** mọi thay đổi chưa lưu bị bỏ. | Chức năng | Chốt 2026-10-10 (`DEC-2026-1010-admin-operations-regroup`) |
 | REQ-05 | **Cho** quản trị viên tắt một ngôn ngữ, **Khi** bấm "Lưu", **Thì** hiện **một** hộp xác nhận nêu hậu quả (người học không chọn được ngôn ngữ đó cho bài nộp mới, job đang chờ vẫn chạy nốt); **Khi** là ngôn ngữ cuối cùng còn bật, **Thì** không cho tắt. | Chức năng | Chốt 2026-10-10 |
@@ -135,7 +135,7 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 
 | Loại | Tham chiếu |
 |---|---|
-| Yêu cầu module | `01-rd/req/problem-bank.md` — F2-10; `01-rd/req/judge-orchestration.md` — F4-11. |
+| Yêu cầu module | `01-rd/req/F2_problem-bank.md` — F2-10; `01-rd/req/F4_judge-orchestration.md` — F4-11. |
 | User story | `01-rd/req/user_stories/a3_admin.md` — `US-A3-04` (GWT đầu). |
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` mục 7.3 — dòng `admin_language_config`. |
 | Tiêu chuẩn kỹ thuật | `CLAUDE.md` mục "Locked stack" — khoá đúng 3 ngôn ngữ. |

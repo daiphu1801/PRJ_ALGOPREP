@@ -12,7 +12,7 @@
 //
 // No Monaco library is installed yet, so the read-only Diff Viewer (Sheet 4.4 area G) computes the
 // diff from the original vs suggested code with entities/solution-review `lineDiff` (the DB stores
-// no diff text, 02-bd/database/ai-review.md 1.3a) and renders a plain coloured list.
+// no diff text, 02-bd/database/F5_ai-review.md 1.3a) and renders a plain coloured list.
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
@@ -44,6 +44,7 @@ import {
   ConfirmDialog,
   NoticeTile,
   Skeleton,
+  SeeAllLink,
 } from "@/shared/ui";
 
 const DIFF_LINE_CLASS: Record<string, string> = {
@@ -375,12 +376,7 @@ function ReadyReport({
                   </li>
                 ))}
               </ul>
-              <Link
-                href="/interview-bank"
-                className="mt-3 inline-block text-[13px] font-semibold text-[var(--color-primary)] hover:underline"
-              >
-                {t("followUpCta")}
-              </Link>
+              <SeeAllLink href="/interview-bank">{t("followUpCta")}</SeeAllLink>
             </Card>
           ) : null}
 

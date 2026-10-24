@@ -2,6 +2,7 @@
   "common": {
     "appName": "AlgoPrep",
     "loading": "Đang tải...",
+    "retry": "Thử lại",
     "error": "Đã có lỗi xảy ra",
     "empty": "Chưa có dữ liệu",
     "pendingDesign": "Màn hình đang chờ Basic Design / Detail Design.",
@@ -40,7 +41,8 @@
       "student": "Khu vực người học",
       "instructor": "Khu vực giảng viên",
       "admin": "Khu vực quản trị"
-    }
+    },
+    "myClasses": "Lớp của tôi"
   },
   "auth": {
     "loginTitle": "Đăng nhập",
@@ -1036,9 +1038,6 @@
         "meta": "Giữ nguyên thuật ngữ tiếng Anh"
       }
     },
-    "preReleaseTitle": "Trước khi phát hành",
-    "preReleaseBody": "Chạy bộ kiểm thử 30 bài giải mẫu để so sánh kết quả báo cáo giữa bản nháp và bản đang chạy. Backend của bước này hoãn sang giai đoạn mở rộng, nút hiện chưa hoạt động.",
-    "runComparison": "Chạy đối chiếu",
     "publishDone": "Đã lưu và phát hành cấu hình AI",
     "tabsLabel": "Tính năng AI",
     "pendingCount": "{count} thay đổi chưa phát hành",
@@ -2973,6 +2972,43 @@
     "empty": "Chưa có bài đang làm dở. Hãy chọn một bài trong danh sách.",
     "toast": {
       "randomEmpty": "Bạn đã giải hết mọi bài hiện có."
+    }
+  },
+  "myClasses": {
+    "title": "Lớp của tôi",
+    "subtitle": "Các lớp bạn đang tham gia và bài giảng viên giao.",
+    "loading": "Đang tải...",
+    "empty": "Bạn chưa thuộc lớp nào. Nhập mã mời của giảng viên ở khung bên cạnh để tham gia.",
+    "join": {
+      "title": "Tham gia lớp",
+      "hint": "Nhập mã mời giảng viên gửi cho bạn. Mã có hạn dùng 7 ngày.",
+      "label": "Mã mời",
+      "submit": "Tham gia",
+      "empty": "Nhập mã mời trước khi tham gia.",
+      "success": "Đã tham gia lớp {name}.",
+      "invalid": "Mã mời không đúng hoặc đã hết hạn."
+    },
+    "card": {
+      "instructor": "Giảng viên",
+      "schedule": "Lịch học",
+      "joined": "Ngày tham gia",
+      "assignments": "Bài được giao",
+      "noAssignments": "Giảng viên chưa giao bài nào.",
+      "progress": "Đã xong {solved}/{total} bài",
+      "solved": "Đã xong",
+      "todo": "Chưa làm",
+      "viewDetail": "Xem chi tiết lớp",
+      "viewDetailOf": "Xem chi tiết lớp {name}"
+    },
+    "detail": {
+      "back": "Quay lại danh sách lớp",
+      "notFound": "Không tìm thấy lớp này trong các lớp bạn tham gia.",
+      "info": "Thông tin lớp",
+      "progress": "Tiến độ bài được giao",
+      "noSchedule": "Chưa có lịch học",
+      "colProblem": "Bài toán",
+      "colAssignedAt": "Ngày giao",
+      "colState": "Trạng thái"
     }
   }
 }

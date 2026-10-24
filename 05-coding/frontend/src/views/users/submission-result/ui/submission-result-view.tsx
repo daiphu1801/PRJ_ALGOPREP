@@ -13,7 +13,7 @@
 // prototype; the fixture for a JUDGING submission just renders a fixed partial state.
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import {
@@ -22,8 +22,7 @@ import {
   useProblemLevels,
 } from "@/entities/problem";
 import {
-  fetchSubmissionDetail,
-  isSubmissionInInstructorScope,
+  useSubmissionDetail,
   SUBMISSION_STATUS_VARIANT,
   type SubmissionDetail,
   type SubmissionTestcaseResult,
@@ -31,7 +30,14 @@ import {
 import { useLocale, useT } from "@/shared/i18n";
 import { formatDateVN, type DateLocale } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
-import { Badge, Button, EmptyState, type BadgeVariant } from "@/shared/ui";
+import {
+  Badge,
+  Button,
+  EmptyState,
+  QueryBoundary,
+  QueryError,
+  type BadgeVariant,
+} from "@/shared/ui";
 
 const TESTCASE_VERDICT_VARIANT: Record<string, BadgeVariant> = {
   AC: "success",
@@ -85,23 +91,34 @@ export function SubmissionResultView({
   const levels = useProblemLevels();
   const params = useParams<{ submissionId?: string }>();
   const submissionId = params?.submissionId ?? "";
-  const submission = useMemo(
-    () => fetchSubmissionDetail(submissionId),
-    [submissionId],
-  );
+  const isInstructor = area === "instructor";
+  const detailQuery = useSubmissionDetail(submissionId, area);
+  const submission = detailQuery.data;
   const [expanded, setExpanded] = useState<string | null>(null);
 
-  const isInstructor = area === "instructor";
-  // Outside the instructor's classes it is a 404, same as an unknown id (no existence leak).
-  if (
-    !submission ||
-    (isInstructor && !isSubmissionInInstructorScope(submissionId))
-  ) {
+  // Unknown id, or one outside the instructor's classes (404, no existence leak): both come back as null.
+  if (detailQuery.isError) {
+    return (
+      <div className="p-6">
+        <QueryError query={detailQuery} />
+      </div>
+    );
+  }
+  if (submission === null) {
     return (
       <>
         <h1 className="sr-only">{t("pageTitle")}</h1>
         <EmptyState>{t("notFound")}</EmptyState>
       </>
+    );
+  }
+
+  if (!submission) {
+    return (
+      <div className="p-6">
+        <h1 className="sr-only">{t("pageTitle")}</h1>
+        <QueryBoundary query={detailQuery}>{() => null}</QueryBoundary>
+      </div>
     );
   }
 

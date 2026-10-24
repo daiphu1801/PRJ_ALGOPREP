@@ -10,6 +10,15 @@ import {
 } from "@testing-library/react";
 import { toast, useToasts } from "@/shared/lib/toast-store";
 import { AdminPermissionMatrixView } from "./admin-permission-matrix-view";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import type { ReactElement } from "react";
+
+function withQuery(ui: ReactElement) {
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+  });
+  return <QueryClientProvider client={client}>{ui}</QueryClientProvider>;
+}
 
 vi.mock("@/shared/i18n", () => ({
   useT: () => (key: string, values?: Record<string, string | number>) =>
@@ -34,8 +43,9 @@ function openRole(role: string) {
 }
 
 describe("AdminPermissionMatrixView", () => {
-  it("has no save button: cells apply immediately", () => {
-    render(<AdminPermissionMatrixView />);
+  it("has no save button: cells apply immediately", async () => {
+    render(withQuery(<AdminPermissionMatrixView />));
+    await screen.findByRole("button", { name: ROLE_NAME.ADMIN! });
     expect(screen.queryByRole("button", { name: "save" })).toBeNull();
 
     expect(cell("create", "USER_MANAGEMENT", "INSTRUCTOR")).not.toBeChecked();
@@ -43,10 +53,11 @@ describe("AdminPermissionMatrixView", () => {
     expect(cell("create", "USER_MANAGEMENT", "INSTRUCTOR")).toBeChecked();
   });
 
-  it("refuses to remove the last ADMIN PERMISSION_MATRIX:UPDATE", () => {
+  it("refuses to remove the last ADMIN PERMISSION_MATRIX:UPDATE", async () => {
     const toasts = renderHook(() => useToasts());
     act(() => toast.clear());
-    render(<AdminPermissionMatrixView />);
+    render(withQuery(<AdminPermissionMatrixView />));
+    await screen.findByRole("button", { name: ROLE_NAME.ADMIN! });
     openRole("ADMIN");
 
     fireEvent.click(cell("update", "PERMISSION_MATRIX", "ADMIN"));
@@ -55,8 +66,9 @@ describe("AdminPermissionMatrixView", () => {
     expect(cell("update", "PERMISSION_MATRIX", "ADMIN")).toBeChecked();
   });
 
-  it("asks before the acting admin removes a right from their own role", () => {
-    render(<AdminPermissionMatrixView />);
+  it("asks before the acting admin removes a right from their own role", async () => {
+    render(withQuery(<AdminPermissionMatrixView />));
+    await screen.findByRole("button", { name: ROLE_NAME.ADMIN! });
     openRole("ADMIN");
 
     fireEvent.click(cell("read", "AI_CONFIG", "ADMIN"));
@@ -68,10 +80,11 @@ describe("AdminPermissionMatrixView", () => {
     expect(cell("read", "AI_CONFIG", "ADMIN")).not.toBeChecked();
   });
 
-  it("rejects an over-long role name", () => {
+  it("rejects an over-long role name", async () => {
     const toasts = renderHook(() => useToasts());
     act(() => toast.clear());
-    render(<AdminPermissionMatrixView />);
+    render(withQuery(<AdminPermissionMatrixView />));
+    await screen.findByRole("button", { name: ROLE_NAME.ADMIN! });
     fireEvent.click(screen.getByRole("button", { name: "addRole" }));
     fireEvent.change(screen.getByLabelText("newRoleLabel"), {
       target: { value: "x".repeat(51) },
@@ -82,8 +95,9 @@ describe("AdminPermissionMatrixView", () => {
     );
   });
 
-  it("creates a custom role in the category picked on the form, STUDENT by default", () => {
-    render(<AdminPermissionMatrixView />);
+  it("creates a custom role in the category picked on the form, STUDENT by default", async () => {
+    render(withQuery(<AdminPermissionMatrixView />));
+    await screen.findByRole("button", { name: ROLE_NAME.ADMIN! });
     fireEvent.click(screen.getByRole("button", { name: "addRole" }));
     expect(screen.getByLabelText("newRoleCategoryLabel")).toHaveValue(
       "STUDENT",
@@ -104,10 +118,11 @@ describe("AdminPermissionMatrixView", () => {
     expect(cell("update", "PERMISSION_MATRIX", "ADMIN")).toBeChecked();
   });
 
-  it("blocks deleting a custom role that accounts still hold", () => {
+  it("blocks deleting a custom role that accounts still hold", async () => {
     const toasts = renderHook(() => useToasts());
     act(() => toast.clear());
-    render(<AdminPermissionMatrixView />);
+    render(withQuery(<AdminPermissionMatrixView />));
+    await screen.findByRole("button", { name: ROLE_NAME.ADMIN! });
     openRole("Trợ giảng");
     fireEvent.click(screen.getByRole("button", { name: "deleteRole" }));
     expect(toasts.result.current.at(-1)?.message).toBe(

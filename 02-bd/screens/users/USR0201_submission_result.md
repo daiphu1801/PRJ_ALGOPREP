@@ -15,10 +15,10 @@
 - Màn này **không có popup**. Mọi hành động mở rộng đều chuyển màn hoặc mở ngăn phụ (drawer).
 
 > Đọc cùng `01-rd/screens/users/USR0201_submission_result.md` (hành vi ở mức yêu cầu, không lặp lại ở đây),
-> `01-rd/req/judge-orchestration.md` (F4-01, F4-03, F4-08, F4-12, F4-13), `01-rd/req/problem-bank.md` (F2-08),
-> `01-rd/req/harness.md` (F3-11, F3-12, F3-13), `01-rd/req/ai-review.md` (F5-01, F5-09),
-> `02-bd/architecture/judge-orchestration.md`, `02-bd/database/judge-orchestration.md`,
-> `02-bd/security/judge-orchestration.md`.
+> `01-rd/req/F4_judge-orchestration.md` (F4-01, F4-03, F4-08, F4-12, F4-13), `01-rd/req/F2_problem-bank.md` (F2-08),
+> `01-rd/req/F3_harness.md` (F3-11, F3-12, F3-13), `01-rd/req/F5_ai-review.md` (F5-01, F5-09),
+> `02-bd/architecture/F4_judge-orchestration.md`, `02-bd/database/F4_judge-orchestration.md`,
+> `02-bd/security/F4_judge-orchestration.md`.
 >
 > - **Không gộp với `problem_detail`**: hai màn có URL riêng, vòng đời riêng và mục đích khác nhau;
 >   `problem_detail` phục vụ soạn thảo và thử nghiệm, `submission_result` phục vụ kiểm tra kết quả chấm
@@ -31,7 +31,7 @@
 >   và cùng ngôn ngữ; chỉ hiển thị khi verdict là `Accepted` **và** hệ thống có ít nhất 10 bài nộp `Accepted`
 >   cùng bài, cùng ngôn ngữ; ít hơn thì in "Chưa đủ dữ liệu so sánh" thay cho số % (Q2, chốt 2026/10/18).
 
-- **Bài đã rút khỏi ngân hàng** (`deleted = true`, G4 2026-10-08): kết quả nộp vẫn mở được; liên kết về `problem_overview` (`USR0104`) ở breadcrumb và nút "Làm lại" (về `problem_detail`) bị vô hiệu kèm nhãn "Đã rút khỏi ngân hàng". Quy tắc đầy đủ ở `02-bd/database/problem-bank.md` mục 1.1a, không chép lại ở đây.
+- **Bài đã rút khỏi ngân hàng** (`deleted = true`, G4 2026-10-08): kết quả nộp vẫn mở được; liên kết về `problem_overview` (`USR0104`) ở breadcrumb và nút "Làm lại" (về `problem_detail`) bị vô hiệu kèm nhãn "Đã rút khỏi ngân hàng". Quy tắc đầy đủ ở `02-bd/database/F2_problem-bank.md` mục 1.1a, không chép lại ở đây.
 
 > **Quy ước đặt tên khối** [Nội bộ]. Sáu khối: `breadcrumb` (đường dẫn phân cấp), `verdictBanner` (thẻ kết quả
 > tổng quan kèm điểm tỷ lệ), `runStats` (thanh 6 chỉ số vận hành), `testcaseList` (danh sách kết quả từng
@@ -54,11 +54,11 @@
 | Tên vật lý (slug) | `submission_result` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`); A2 (`INSTRUCTOR`) ở chế độ chỉ đọc, xem mục "Vùng giảng viên (A2)" |
-| Phiên bản | V0.11 |
+| Phiên bản | V0.12 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/22 |
 | Người cập nhật | Claude |
-| Ngày cập nhật | 2026/10/22 |
+| Ngày cập nhật | 2026/10/24 |
 
 ---
 
@@ -67,17 +67,18 @@
 | Ver | Sheet bị sửa | Nội dung sửa | Ngày | Người sửa |
 | :--- | :--- | :--- | :--- | :--- |
 | V0.1 | Toàn bộ | Tạo mới theo mẫu 9 sheet. Chốt cơ chế realtime WebSocket per-testcase (`/topic/submissions/{id}`), công thức Beats F4-12, hiển thị điểm tỷ lệ F4-13, che giấu testcase ẩn F2-08, ánh xạ lỗi biên dịch F3-11/F3-12 và phân quyền truy cập kết quả bài nộp | 2026/09/22 | Nhóm phát triển AlgoPrep |
-| V0.2 | Sheet 3, 5, 7.3, 6, Câu hỏi mở | Viết lại Sheet 3 theo khuôn "Danh sách chuyển màn" 6 thẻ + sơ đồ Mermaid; viết lại Sheet 5 theo khuôn 14 cột (thêm Bảng DB/Cột DB, mỗi item một dòng); bỏ cột "Phương thức & URL dự kiến" ở Sheet 7.3 (đường dẫn API thuộc `03-dd/api/`, chưa viết). Sửa nguồn `beats_percent`: không phải cột DB, là giá trị tính tại thời điểm đọc theo công thức ở `02-bd/architecture/judge-orchestration.md:224-229`. Sửa cột testcase Mẫu/Ẩn về đúng tên thật `testcases.visibility` (không phải `is_sample`), input/expected về `input_inline`/`expected_output_inline`. Bổ sung điều kiện ẩn hẳn bảng testcase khi `status = COMPILE_ERROR` (Sheet 6 Khu vực D NO 1, theo Q3 đã chốt ở RD). Phát hiện thêm: chưa có cột lưu output thực tế của testcase mẫu — thêm Câu hỏi mở Q4 | 2026/09/24 | Nhóm phát triển AlgoPrep |
+| V0.2 | Sheet 3, 5, 7.3, 6, Câu hỏi mở | Viết lại Sheet 3 theo khuôn "Danh sách chuyển màn" 6 thẻ + sơ đồ Mermaid; viết lại Sheet 5 theo khuôn 14 cột (thêm Bảng DB/Cột DB, mỗi item một dòng); bỏ cột "Phương thức & URL dự kiến" ở Sheet 7.3 (đường dẫn API thuộc `03-dd/api/`, chưa viết). Sửa nguồn `beats_percent`: không phải cột DB, là giá trị tính tại thời điểm đọc theo công thức ở `02-bd/architecture/F4_judge-orchestration.md:224-229`. Sửa cột testcase Mẫu/Ẩn về đúng tên thật `testcases.visibility` (không phải `is_sample`), input/expected về `input_inline`/`expected_output_inline`. Bổ sung điều kiện ẩn hẳn bảng testcase khi `status = COMPILE_ERROR` (Sheet 6 Khu vực D NO 1, theo Q3 đã chốt ở RD). Phát hiện thêm: chưa có cột lưu output thực tế của testcase mẫu — thêm Câu hỏi mở Q4 | 2026/09/24 | Nhóm phát triển AlgoPrep |
 | V0.2 | Sheet 6, 8 | Kết quả sao chép mã nguồn báo bằng toast thay vì đổi nhãn nút; giữ nguyên vùng không tìm thấy bài nộp và khối lỗi biên dịch. Theo `DEC-2026-1003-toast-feedback-channel`. | 2026/10/03 | AI |
 | V0.3 | Sheet 4, 5, 7 | Đồng bộ `DEC-2026-1001-admin-configurable-settings` mục (7): độ khó bài tập là danh mục do ADMIN quản lý (bảng riêng `problem_levels`), không còn enum cố định. DTO `SubmissionDetailDto.difficulty` thành `levelCode`/`levelDisplayName` đọc qua `problems.level_id`; badge độ khó hiển thị `display_name` từ dữ liệu; thêm `problem.problem_levels` vào danh sách bảng và Truy cập bảng. Màn chỉ hiển thị nhãn, không lọc và không gọi `ListProblemLevels` (nhãn nằm sẵn trong phản hồi); độ khó không gắn logic nào | 2026/10/03 | AI |
-| V0.4 | Sheet 3, 5, 6, Câu hỏi mở | Theo `02-bd/database/problem-bank.md` mục 1.1a: bài đã rút khỏi ngân hàng vẫn xem được kết quả nộp; breadcrumb và nút "Làm lại" về bài đó bị vô hiệu kèm nhãn "Đã rút khỏi ngân hàng". Chỉ tài liệu, chưa đổi code | 2026/10/08 | AI |
+| V0.4 | Sheet 3, 5, 6, Câu hỏi mở | Theo `02-bd/database/F2_problem-bank.md` mục 1.1a: bài đã rút khỏi ngân hàng vẫn xem được kết quả nộp; breadcrumb và nút "Làm lại" về bài đó bị vô hiệu kèm nhãn "Đã rút khỏi ngân hàng". Chỉ tài liệu, chưa đổi code | 2026/10/08 | AI |
 | V0.5 | Sheet 1, 4.1, mục mới "Vùng giảng viên (A2)", Câu hỏi mở (thêm Q5), Tham chiếu | Áp `DEC-2026-1014-instructor-submissions-list-rules` mục (9) và `DEC-2026-1013-instructor-avatar-menu-and-read-source`: thêm mục "Vùng giảng viên (A2) đọc bài nộp của học viên" phản chiếu RD chương 10 (REQ-13 đến REQ-16 của chương đó): chỉ đọc, không có hành động của học viên, breadcrumb về màn gọi tới, học viên và lớp trên query, 404 ngoài lớp (ngoại lệ học viên đã rời lớp, `DEC-2026-1014-keep-learning-history-on-leave`). Khác biệt item, chuyển màn, kiểm tra, endpoint chỉ ghi chỗ **khác** vùng học viên. Sheet 3 đến 9 của vùng học viên (A1) **không đổi**. Thêm Q5 (cách trang biết màn gọi tới). Prototype có sẵn (`submission-result-view.tsx`, `submission-context`), ghi hiện trạng và lệch ngay trong mục mới | 2026/10/14 | AI |
 | V0.6 | Mục "Vùng giảng viên (A2)" (Chuyển màn, Truyền dữ liệu, Kiểm tra A2-1, A2-2, Hiện trạng NO 2 đến 4), Câu hỏi mở (đóng Q5) | Áp `DEC-2026-1014-instructor-submissions-list-details` (ponytail bậc 5, 4, 6): (1) đóng Q5: trang biết màn gọi tới qua query `from=submissions\|student\|class`, mặc định `submissions`, chỉ dùng cho breadcrumb và mục sidebar sáng; (2) trang kết quả vùng giảng viên **không đăng ký kênh realtime STOMP**, tải một lần (đã là đề xuất `[SoT: Suy luận]`, nay là quyết định); (3) máy chủ lấy tên học viên và lớp từ chính lượt nộp, bỏ qua `studentId`, `classId` trên URL (query chỉ gợi ý breadcrumb); (4) công thức cửa sổ thuộc lớp viết đúng thứ tự `submitted_at >= joined_at` và nêu khoảng đã rời tính là trong lớp; (5) breadcrumb về danh sách `INS0206` lùi lịch sử khi mở từ danh sách. Sheet 3 đến 9 của vùng học viên (A1) không đổi | 2026/10/14 | AI |
 | V0.7 | Mục "Vùng giảng viên (A2)" (Hiện trạng bản dựng NO 2, 3, 4, thêm NO 6, 7; cột "Bản dựng" của bảng khác biệt item NO A1, A3, Ngữ cảnh 1 đến 3) | Dựng prototype trang kết quả của giảng viên (`from=`, breadcrumb, sidebar). Breadcrumb theo `from` (`submissions` lùi lịch sử bằng `router.back()`, `student` và `class` có chuỗi lớp), sidebar sáng mục màn gọi tới, gợi ý `studentId`/`classId` được kiểm với lớp, trang không đăng ký realtime. Đóng NO 2 và NO 3; NO 4 còn lệch một phần; thêm NO 6 (chủ lượt nộp không đọc được từ lượt nộp mẫu) và NO 7 (`from=class` chưa có nơi gọi). Không đổi yêu cầu hay quyết định thiết kế. **Chưa duyệt hình** | 2026/10/14 | AI |
 | V0.8 | Phương châm, Sheet 3.1, 4.1 (DTO), 5 (C NO 5, D NO 10), 6 (C NO 5, D NO 10), 7.1, 7.3, 9 (thêm NO 6, 7), Vùng A2 (Truyền dữ liệu, Hiện trạng), Câu hỏi mở (đóng Q1 đến Q4) | Áp `DEC-2026-1018-usr-open-questions-phase1-scope` và `DEC-2026-1018-usr-open-questions-phase2-5` cho màn này, chủ dự án chốt theo đề xuất: (1) Q1 kênh STOMP dùng user-destination `/user/queue/submissions`, interceptor kiểm quyền sở hữu bài nộp (ponytail bậc 6); (2) Q2 Beats chỉ hiện khi hệ thống có từ 10 bài nộp `Accepted` cùng bài, cùng ngôn ngữ, ít hơn in "Chưa đủ dữ liệu so sánh" (bậc 5), hằng `BEATS_MIN_ACCEPTED`; (3) Q3 giữ kết quả từng testcase 90 ngày, sau đó chỉ còn verdict tổng (bậc 5); (4) Q4 cột `submission_testcase_results.actual_output_snippet`, chỉ ghi cho testcase `SAMPLE` (bậc 1), tài liệu cơ sở dữ liệu do bên khác sửa nên ở đây chỉ gọi tên cột. Code: thẻ Beats trong `submission-result-view.tsx` theo ngưỡng; hộp "Kết quả thực tế mẫu" đã có sẵn. Chưa duyệt hình | 2026/10/18 | Claude |
 | V0.9 | Sheet 5 (Khu vực C, Khu vực D NO 11), 6 (Khu vực C, Khu vực D NO 11), 8 (mở rộng testcase), Hiện trạng bản dựng vùng học viên (NO 4, 5) | Sửa theo đợt rà soát prototype 2026/10/19 (area B), owner chốt: (1) **Khu vực C của vùng học viên bỏ dải 5 thẻ**, gộp thành **một dòng chữ trong banner** như vùng giảng viên (quy tắc owner 2026-10-13; Runtime, Memory, Beats, Cách nộp; Testcase đã nằm trong banner, thẻ Điểm trùng điểm tỷ lệ ở Khu vực B NO 3 nên không lặp); (2) **bỏ Khu vực D NO 11** (dòng thông báo testcase ẩn): nút mở rộng của testcase ẩn bị vô hiệu theo Sheet 6 NO 7 nên dòng này không bao giờ hiện, hai dòng BD mâu thuẫn nhau; không phải đổi hành vi, chỉ bỏ mã chết và khoá i18n `sample.hiddenNotice`. Nút mở rộng có `aria-expanded`. Giờ nộp in bằng `formatDateVN` (UTC+7, theo locale hiện hành). Chưa duyệt hình | 2026/10/19 | Claude |
 | V0.10 | Sheet 3 (Làm lại bài, breadcrumb, sơ đồ), 4 (4.4), 6 (NO 3, NO 8), Hiện trạng bản dựng vùng học viên (2026-10-20) | Đồng bộ bản dựng 2026/10/20 theo `DEC-2026-1020-student-workspace-split-and-password-in-settings`: vùng học viên đổi sang hai cột (banner và nút hành động ở cột phải dính khi cuộn); "Làm lại" đi `/workspace/{slug}`; tên bài ở breadcrumb đi trang đọc đề `USR0104`; ghi nhận mock bài nộp dùng mã danh mục; route Phỏng vấn giả lập sửa BD theo code (`/submissions/{id}/interview`). Chưa duyệt hình | 2026/10/21 | Claude |
-| V0.11 | Sheet 5 (Khu vực D NO 3, 8, 9, 10), Sheet 7 (dòng `[Nguồn]`), Câu hỏi mở Q4 | Sửa 2026-10-22 đồng bộ DB (JD-15 và trích dẫn): (1) Khu vực D NO 10 ghi rõ DB lưu tối đa 4096 ký tự còn màn hiển thị 2000 ký tự (hai số cố ý khác nhau, `02-bd/database/judge-orchestration.md:60`), và `actual_output_snippet` chỉ ghi cho testcase `SAMPLE`, `HIDDEN` luôn `NULL`; (2) đọc lại số dòng trích dẫn: `submission_testcase_results` dịch +4 (ví dụ `testcase_order` `:51` thành `:55`), cột `problem.testcases` `visibility`/`input_*`/`expected_output_*` trước đó trỏ nhầm vào vùng `problem_levels` nay sửa thành `:142`, `:143-145`, `:146-148`, `identity.class_enrollments` thành `:118-140`. Không đổi quyết định, không đổi RD | 2026/10/22 | Claude |
+| V0.11 | Sheet 5 (Khu vực D NO 3, 8, 9, 10), Sheet 7 (dòng `[Nguồn]`), Câu hỏi mở Q4 | Sửa 2026-10-22 đồng bộ DB (JD-15 và trích dẫn): (1) Khu vực D NO 10 ghi rõ DB lưu tối đa 4096 ký tự còn màn hiển thị 2000 ký tự (hai số cố ý khác nhau, `02-bd/database/F4_judge-orchestration.md:60`), và `actual_output_snippet` chỉ ghi cho testcase `SAMPLE`, `HIDDEN` luôn `NULL`; (2) đọc lại số dòng trích dẫn: `submission_testcase_results` dịch +4 (ví dụ `testcase_order` `:51` thành `:55`), cột `problem.testcases` `visibility`/`input_*`/`expected_output_*` trước đó trỏ nhầm vào vùng `problem_levels` nay sửa thành `:142`, `:143-145`, `:146-148`, `identity.class_enrollments` thành `:118-140`. Không đổi quyết định, không đổi RD | 2026/10/22 | Claude |
+| V0.12 | Sheet 1, 3 (Làm lại bài, breadcrumb), 8 (EVT-3, EVT-8) | Sửa 2026-10-24 theo `DEC-2026-1024-dd-screens-users-core-contract-changes`: mọi route dùng khoá bài là `problemId` (UUID), không phải slug: "Làm lại" đi `/workspace/{problem_id}`, tên bài ở breadcrumb đi `/problems/{problem_id}` (các API đều nhận UUID; route theo slug cần cột và endpoint mới mà RD không đòi). Dòng "Hiện trạng bản dựng" cũ (V0.10) giữ nguyên làm lịch sử: bản dựng còn dùng `problemSlug`, là nợ prototype. Không đổi RD, không đổi code | 2026/10/24 | Claude |
 
 ---
 
@@ -123,7 +124,7 @@ thì tự động subscribe kênh WebSocket riêng của người dùng `/user/q
 #### Kết quả nộp bài → Phân tích bài giải
 
 [Điều kiện mở] Bài nộp có verdict `ACCEPTED`, bấm nút "Phân tích bài giải"
-[Nguồn: 01-rd/req/ai-review.md — F5-01].
+[Nguồn: 01-rd/req/F5_ai-review.md — F5-01].
 
 [Chế độ mở] Điều hướng URL `/submissions/{submission_id}/review`.
 
@@ -138,7 +139,7 @@ thì tự động subscribe kênh WebSocket riêng của người dùng `/user/q
 #### Kết quả nộp bài → Phỏng vấn giả lập
 
 [Điều kiện mở] Bài nộp có verdict `ACCEPTED`, bấm nút "Phỏng vấn giả lập"
-[Nguồn: 01-rd/req/ai-review.md — F5-09].
+[Nguồn: 01-rd/req/F5_ai-review.md — F5-09].
 
 [Chế độ mở] Điều hướng URL `/submissions/{submission_id}/interview` (owner chốt 2026/10/21: lấy route của bản dựng làm chuẩn; `/mock-interview` là lối vào tự do từ thanh nav).
 
@@ -155,9 +156,9 @@ thì tự động subscribe kênh WebSocket riêng của người dùng `/user/q
 [Điều kiện mở] Bấm nút "Làm lại bài" (từ 2026-10-20 đi thẳng vào màn soạn mã, không qua trang đọc đề)
 [Nguồn: 05-coding/frontend/src/views/users/submission-result/ui/submission-result-view.tsx:515].
 
-[Chế độ mở] Điều hướng URL `/workspace/{problem_slug}`.
+[Chế độ mở] Điều hướng URL `/workspace/{problem_id}` (UUID, `DEC-2026-1024-dd-screens-users-core-contract-changes`).
 
-[Thông tin truyền] `problem_slug` hoặc `problem_id`.
+[Thông tin truyền] `problem_id` (UUID).
 
 [Giá trị trả về] Không có.
 
@@ -170,9 +171,9 @@ thì tự động subscribe kênh WebSocket riêng của người dùng `/user/q
 [Điều kiện mở] Bấm tên bài toán ở breadcrumb
 [Nguồn: 05-coding/frontend/src/views/users/submission-result/ui/submission-result-view.tsx:151].
 
-[Chế độ mở] Điều hướng URL `/problems/{problem_slug}`.
+[Chế độ mở] Điều hướng URL `/problems/{problem_id}` (UUID).
 
-[Thông tin truyền] `problem_slug`.
+[Thông tin truyền] `problem_id` (UUID).
 
 [Giá trị trả về] Không có.
 
@@ -199,7 +200,7 @@ flowchart LR
 ```
 
 [Nguồn: 01-rd/screens/users/USR0201_submission_result.md:36,93-96,141;
-01-rd/req/ai-review.md — F5-01, F5-09]
+01-rd/req/F5_ai-review.md — F5-01, F5-09]
 
 ---
 
@@ -231,7 +232,7 @@ flowchart LR
 | 2 | `judge.submission_testcase_results` | Kết quả chấm từng testcase | R | `judge-orchestration` |
 | 3 | `problem.problems` | Thông tin tiêu đề, mã bài, độ khó | R | `problem-bank` |
 | 4 | `problem.testcases` | Thông tin testcase mẫu để hiện input/output | R | `problem-bank` |
-| 5 | `problem.problem_levels` | Nhãn độ khó của bài (`display_name`), đọc qua join `problems.level_id` [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`] | R | `problem-bank` |
+| 5 | `problem.problem_levels` | Nhãn độ khó của bài (`display_name`), đọc qua join `problems.level_id` [Nguồn: 02-bd/database/F2_problem-bank.md mục `problem_levels`] | R | `problem-bank` |
 
 ### 4.4. Vùng bố cục bám prototype
 
@@ -270,19 +271,19 @@ Từ 2026-10-20, vùng học viên bố cục **hai cột**: cột trái gồm b
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Breadcrumb | | | | | | | | | | | | | |
 | | 1 | Link Bài toán | `submissionResult.breadcrumb.linkProblems` | - | - | Link | String | 50 | Có | O | "Ngân hàng bài toán" | - | Nhãn cố định dẫn về danh sách bài tập<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] EVT-2 |
-| | 2 | Link Chi tiết bài | `submissionResult.breadcrumb.linkProblem` | `problem.problems` | `title` | Link | String | 120 | Có | O | - | - | Tên bài toán đang nộp<br>[Nguồn giá trị] Cột `title` [Nguồn: 02-bd/database/problem-bank.md:15]<br>[EVT liên quan] EVT-3 |
-| | 3 | Nhãn Lượt nộp | `submissionResult.breadcrumb.lblCurrent` | `judge.submissions` | `id` | Label | String | 50 | Có | O | - | `Lượt nộp #{id}` | Mã định danh lượt nộp<br>[Nguồn giá trị] Cột `id` [Nguồn: 02-bd/database/judge-orchestration.md:14]<br>[EVT liên quan] - |
+| | 2 | Link Chi tiết bài | `submissionResult.breadcrumb.linkProblem` | `problem.problems` | `title` | Link | String | 120 | Có | O | - | - | Tên bài toán đang nộp<br>[Nguồn giá trị] Cột `title` [Nguồn: 02-bd/database/F2_problem-bank.md:15]<br>[EVT liên quan] EVT-3 |
+| | 3 | Nhãn Lượt nộp | `submissionResult.breadcrumb.lblCurrent` | `judge.submissions` | `id` | Label | String | 50 | Có | O | - | `Lượt nộp #{id}` | Mã định danh lượt nộp<br>[Nguồn giá trị] Cột `id` [Nguồn: 02-bd/database/F4_judge-orchestration.md:14]<br>[EVT liên quan] - |
 
 ### Khu vực B — Banner kết quả tổng (Verdict Banner)
 
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Verdict Banner | | | | | | | | | | | | | |
-| | 1 | Chấm màu trạng thái | `submissionResult.verdict.statusDot` | `judge.submissions` | `status` | Label | String | 20 | Có | O | - | - | Đèn màu suy ra từ verdict (xanh lá AC, đỏ WA/RE, cam TLE, vàng CE, xanh dương đang chấm)<br>[Công thức] Ánh xạ tĩnh `status` → màu, không lưu cột riêng [Nguồn: 02-bd/database/judge-orchestration.md:22]<br>[EVT liên quan] - |
-| | 2 | Nhãn Verdict chính | `submissionResult.verdict.lblTitle` | `judge.submissions` | `status` | Label | String | 50 | Có | O | - | Chữ hoa | Tên verdict<br>[Nguồn giá trị] Cột `status` [Nguồn: 02-bd/database/judge-orchestration.md:22]<br>[EVT liên quan] - |
-| | 3 | Điểm số tỷ lệ | `submissionResult.verdict.lblScore` | `judge.submissions` | `passed_testcase_count`, `total_testcase_count`, `score_ratio` | Badge | String | 20 | Có | O | - | `{passed}/{total}` | Điểm đạt theo tỷ lệ testcase F4-13<br>[Công thức] `score_ratio = passed_testcase_count / total_testcase_count`, `NULL` khi `COMPILE_ERROR`/`SYSTEM_ERROR` — hiển thị `-` [Nguồn: 02-bd/database/judge-orchestration.md:25-27]<br>[EVT liên quan] - |
-| | 4 | Dòng mô tả phụ | `submissionResult.verdict.lblSubtitle` | `judge.submissions` | `passed_testcase_count`, `total_testcase_count`, `submitted_at` | Label | String | 150 | Có | O | - | - | Thông tin chi tiết kết quả và thời gian nộp<br>[Công thức] Ghép số testcase đạt/tổng và `submitted_at` [Nguồn: 02-bd/database/judge-orchestration.md:25-26,31]<br>[EVT liên quan] - |
-| | 5 | Badge Độ khó bài | `submissionResult.verdict.badgeDifficulty` | `problem.problem_levels` | `display_name` | Badge | String | 20 | Có | O | - | Nhãn `display_name` | Độ khó bài toán<br>[Nguồn giá trị] Cột `problem_levels.display_name` qua `problems.level_id`, **đọc từ dữ liệu** do ADMIN quản lý, không còn ánh xạ cứng enum; ba mức khởi tạo giữ màu badge cũ, mức mới màu trung tính `DEC-2026-1001-admin-configurable-settings` mục (7) [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`]<br>[EVT liên quan] - |
+| | 1 | Chấm màu trạng thái | `submissionResult.verdict.statusDot` | `judge.submissions` | `status` | Label | String | 20 | Có | O | - | - | Đèn màu suy ra từ verdict (xanh lá AC, đỏ WA/RE, cam TLE, vàng CE, xanh dương đang chấm)<br>[Công thức] Ánh xạ tĩnh `status` → màu, không lưu cột riêng [Nguồn: 02-bd/database/F4_judge-orchestration.md:22]<br>[EVT liên quan] - |
+| | 2 | Nhãn Verdict chính | `submissionResult.verdict.lblTitle` | `judge.submissions` | `status` | Label | String | 50 | Có | O | - | Chữ hoa | Tên verdict<br>[Nguồn giá trị] Cột `status` [Nguồn: 02-bd/database/F4_judge-orchestration.md:22]<br>[EVT liên quan] - |
+| | 3 | Điểm số tỷ lệ | `submissionResult.verdict.lblScore` | `judge.submissions` | `passed_testcase_count`, `total_testcase_count`, `score_ratio` | Badge | String | 20 | Có | O | - | `{passed}/{total}` | Điểm đạt theo tỷ lệ testcase F4-13<br>[Công thức] `score_ratio = passed_testcase_count / total_testcase_count`, `NULL` khi `COMPILE_ERROR`/`SYSTEM_ERROR` — hiển thị `-` [Nguồn: 02-bd/database/F4_judge-orchestration.md:25-27]<br>[EVT liên quan] - |
+| | 4 | Dòng mô tả phụ | `submissionResult.verdict.lblSubtitle` | `judge.submissions` | `passed_testcase_count`, `total_testcase_count`, `submitted_at` | Label | String | 150 | Có | O | - | - | Thông tin chi tiết kết quả và thời gian nộp<br>[Công thức] Ghép số testcase đạt/tổng và `submitted_at` [Nguồn: 02-bd/database/F4_judge-orchestration.md:25-26,31]<br>[EVT liên quan] - |
+| | 5 | Badge Độ khó bài | `submissionResult.verdict.badgeDifficulty` | `problem.problem_levels` | `display_name` | Badge | String | 20 | Có | O | - | Nhãn `display_name` | Độ khó bài toán<br>[Nguồn giá trị] Cột `problem_levels.display_name` qua `problems.level_id`, **đọc từ dữ liệu** do ADMIN quản lý, không còn ánh xạ cứng enum; ba mức khởi tạo giữ màu badge cũ, mức mới màu trung tính `DEC-2026-1001-admin-configurable-settings` mục (7) [Nguồn: 02-bd/database/F2_problem-bank.md mục `problem_levels`]<br>[EVT liên quan] - |
 
 ### Khu vực C — Dòng chỉ số vận hành (Run Stats)
 
@@ -291,38 +292,38 @@ Từ 2026-10-20, vùng học viên bố cục **hai cột**: cột trái gồm b
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Run Stats | | | | | | | | | | | | | |
-| | 1 | Thẻ Testcase | `submissionResult.stats.cardTestcase` | `judge.submissions` | `passed_testcase_count`, `total_testcase_count` | Label | String | 30 | Có | O | - | `{passed} / {total}` | Số testcase đạt trên tổng số testcase [Nguồn: 02-bd/database/judge-orchestration.md:25-26]<br>[EVT liên quan] - |
-| | 2 | Thẻ Điểm | `submissionResult.stats.cardScore` | `judge.submissions` | `score_ratio` | Label | String | 30 | Có | O | - | `{score} đ` | Điểm số theo F4-13<br>[Công thức] `ROUND(score_ratio, 2)` [Nguồn: 02-bd/database/judge-orchestration.md:27]<br>[EVT liên quan] - |
-| | 3 | Thẻ Runtime | `submissionResult.stats.cardRuntime` | `judge.submissions` | `runtime_ms` | Label | String | 30 | Có | O | `-` | `{runtime} ms` | Thời gian thực thi lớn nhất trong các testcase [Nguồn: 02-bd/database/judge-orchestration.md:28]<br>[EVT liên quan] - |
-| | 4 | Thẻ Memory | `submissionResult.stats.cardMemory` | `judge.submissions` | `memory_kb` | Label | String | 30 | Có | O | `-` | `{memory/1024} MB` | Bộ nhớ lớn nhất trong các testcase<br>[Chuyển đổi] Cột lưu KB, hiển thị quy đổi MB [Nguồn: 02-bd/database/judge-orchestration.md:29]<br>[EVT liên quan] - |
-| | 5 | Thẻ Beats | `submissionResult.stats.cardBeats` | `judge.submissions` | `runtime_ms` (của bài nộp hiện tại và của các bài `ACCEPTED` khác cùng `problem_id`+`language`) | Label | String | 30 | Có | O | `-` | `Nhanh hơn {beats}%` | Tỷ lệ % bài nộp `ACCEPTED` khác (cùng bài, cùng ngôn ngữ) có runtime chậm hơn hoặc bằng — **không phải cột lưu sẵn**, tính tại thời điểm đọc<br>[Công thức] `beats% = ROUND(SỐ bài Accepted khác có runtime_ms >= runtime_ms hiện tại / TỔNG bài Accepted cùng problem+language kể cả bài hiện tại * 100)` [Nguồn: 02-bd/architecture/judge-orchestration.md:224-229]. Rỗng khi verdict khác `ACCEPTED`. **Ngưỡng dữ liệu (Q2, chốt 2026/10/18):** chỉ in số % khi `beatsSampleSize` (số bài `ACCEPTED` cùng bài, cùng ngôn ngữ, kể cả bài hiện tại) >= 10; ít hơn thì in "Chưa đủ dữ liệu so sánh", máy chủ trả `beatsPercent = null`<br>[EVT liên quan] - |
-| | 6 | Thẻ Cách nộp | `submissionResult.stats.cardMode` | `judge.submissions` | `submission_model` | Label | String | 30 | Có | O | - | "Hàm (Wrapper)" / "Standard I/O" | Chế độ nộp bài F3-13 [Nguồn: 02-bd/database/judge-orchestration.md:19]<br>[EVT liên quan] - |
+| | 1 | Thẻ Testcase | `submissionResult.stats.cardTestcase` | `judge.submissions` | `passed_testcase_count`, `total_testcase_count` | Label | String | 30 | Có | O | - | `{passed} / {total}` | Số testcase đạt trên tổng số testcase [Nguồn: 02-bd/database/F4_judge-orchestration.md:25-26]<br>[EVT liên quan] - |
+| | 2 | Thẻ Điểm | `submissionResult.stats.cardScore` | `judge.submissions` | `score_ratio` | Label | String | 30 | Có | O | - | `{score} đ` | Điểm số theo F4-13<br>[Công thức] `ROUND(score_ratio, 2)` [Nguồn: 02-bd/database/F4_judge-orchestration.md:27]<br>[EVT liên quan] - |
+| | 3 | Thẻ Runtime | `submissionResult.stats.cardRuntime` | `judge.submissions` | `runtime_ms` | Label | String | 30 | Có | O | `-` | `{runtime} ms` | Thời gian thực thi lớn nhất trong các testcase [Nguồn: 02-bd/database/F4_judge-orchestration.md:28]<br>[EVT liên quan] - |
+| | 4 | Thẻ Memory | `submissionResult.stats.cardMemory` | `judge.submissions` | `memory_kb` | Label | String | 30 | Có | O | `-` | `{memory/1024} MB` | Bộ nhớ lớn nhất trong các testcase<br>[Chuyển đổi] Cột lưu KB, hiển thị quy đổi MB [Nguồn: 02-bd/database/F4_judge-orchestration.md:29]<br>[EVT liên quan] - |
+| | 5 | Thẻ Beats | `submissionResult.stats.cardBeats` | `judge.submissions` | `runtime_ms` (của bài nộp hiện tại và của các bài `ACCEPTED` khác cùng `problem_id`+`language`) | Label | String | 30 | Có | O | `-` | `Nhanh hơn {beats}%` | Tỷ lệ % bài nộp `ACCEPTED` khác (cùng bài, cùng ngôn ngữ) có runtime chậm hơn hoặc bằng — **không phải cột lưu sẵn**, tính tại thời điểm đọc<br>[Công thức] `beats% = ROUND(SỐ bài Accepted khác có runtime_ms >= runtime_ms hiện tại / TỔNG bài Accepted cùng problem+language kể cả bài hiện tại * 100)` [Nguồn: 02-bd/architecture/F4_judge-orchestration.md:224-229]. Rỗng khi verdict khác `ACCEPTED`. **Ngưỡng dữ liệu (Q2, chốt 2026/10/18):** chỉ in số % khi `beatsSampleSize` (số bài `ACCEPTED` cùng bài, cùng ngôn ngữ, kể cả bài hiện tại) >= 10; ít hơn thì in "Chưa đủ dữ liệu so sánh", máy chủ trả `beatsPercent = null`<br>[EVT liên quan] - |
+| | 6 | Thẻ Cách nộp | `submissionResult.stats.cardMode` | `judge.submissions` | `submission_model` | Label | String | 30 | Có | O | - | "Hàm (Wrapper)" / "Standard I/O" | Chế độ nộp bài F3-13 [Nguồn: 02-bd/database/F4_judge-orchestration.md:19]<br>[EVT liên quan] - |
 
 ### Khu vực D — Bảng kết quả từng testcase
 
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Bảng kết quả testcase | | | | | | | | | | | | | |
-| | 1 | Danh sách kết quả testcase | `submissionResult.testcase.list` | `judge.submission_testcase_results` | - | List | List | - | - | O | rỗng | - | Toàn bộ dòng kết quả của submission, sắp theo `testcase_order` [Nguồn: 02-bd/database/judge-orchestration.md:55]. **Ẩn hẳn khối này** khi `status = COMPILE_ERROR` — chưa có testcase nào chạy [Nguồn: 01-rd/screens/users/USR0201_submission_result.md:142]<br>[EVT liên quan] EVT-1 |
-| | 2 | Cột Số thứ tự | `submissionResult.testcase.col.index` | `judge.submission_testcase_results` | `testcase_order` | ListColumn | Number | 5 | - | O | - | - | Thứ tự chạy trong submission [Nguồn: 02-bd/database/judge-orchestration.md:55]<br>[EVT liên quan] - |
-| | 3 | Cột Loại testcase | `submissionResult.testcase.col.isSample` | `problem.testcases` | `visibility` | ListColumn | Badge | 20 | - | O | - | "Mẫu" / "Ẩn" | Phân biệt `SAMPLE`/`HIDDEN`, tra theo `submission_testcase_results.testcase_id` [Nguồn: 02-bd/database/problem-bank.md:142]<br>[EVT liên quan] - |
-| | 4 | Cột Trạng thái | `submissionResult.testcase.col.verdict` | `judge.submission_testcase_results` | `verdict` | ListColumn | Badge | 30 | - | O | - | - | Verdict riêng của testcase: `AC`/`WA`/`TLE`/`MLE`/`RE` [Nguồn: 02-bd/database/judge-orchestration.md:56]<br>[EVT liên quan] - |
-| | 5 | Cột Runtime | `submissionResult.testcase.col.runtime` | `judge.submission_testcase_results` | `runtime_ms` | ListColumn | String | 20 | - | O | - | `{runtime} ms` | Thời gian thực thi của riêng testcase [Nguồn: 02-bd/database/judge-orchestration.md:57]<br>[EVT liên quan] - |
-| | 6 | Cột Memory | `submissionResult.testcase.col.memory` | `judge.submission_testcase_results` | `memory_kb` | ListColumn | String | 20 | - | O | - | `{memory/1024} MB` | Bộ nhớ của riêng testcase<br>[Chuyển đổi] Cột lưu KB, hiển thị quy đổi MB [Nguồn: 02-bd/database/judge-orchestration.md:58]<br>[EVT liên quan] - |
+| | 1 | Danh sách kết quả testcase | `submissionResult.testcase.list` | `judge.submission_testcase_results` | - | List | List | - | - | O | rỗng | - | Toàn bộ dòng kết quả của submission, sắp theo `testcase_order` [Nguồn: 02-bd/database/F4_judge-orchestration.md:55]. **Ẩn hẳn khối này** khi `status = COMPILE_ERROR` — chưa có testcase nào chạy [Nguồn: 01-rd/screens/users/USR0201_submission_result.md:142]<br>[EVT liên quan] EVT-1 |
+| | 2 | Cột Số thứ tự | `submissionResult.testcase.col.index` | `judge.submission_testcase_results` | `testcase_order` | ListColumn | Number | 5 | - | O | - | - | Thứ tự chạy trong submission [Nguồn: 02-bd/database/F4_judge-orchestration.md:55]<br>[EVT liên quan] - |
+| | 3 | Cột Loại testcase | `submissionResult.testcase.col.isSample` | `problem.testcases` | `visibility` | ListColumn | Badge | 20 | - | O | - | "Mẫu" / "Ẩn" | Phân biệt `SAMPLE`/`HIDDEN`, tra theo `submission_testcase_results.testcase_id` [Nguồn: 02-bd/database/F2_problem-bank.md:142]<br>[EVT liên quan] - |
+| | 4 | Cột Trạng thái | `submissionResult.testcase.col.verdict` | `judge.submission_testcase_results` | `verdict` | ListColumn | Badge | 30 | - | O | - | - | Verdict riêng của testcase: `AC`/`WA`/`TLE`/`MLE`/`RE` [Nguồn: 02-bd/database/F4_judge-orchestration.md:56]<br>[EVT liên quan] - |
+| | 5 | Cột Runtime | `submissionResult.testcase.col.runtime` | `judge.submission_testcase_results` | `runtime_ms` | ListColumn | String | 20 | - | O | - | `{runtime} ms` | Thời gian thực thi của riêng testcase [Nguồn: 02-bd/database/F4_judge-orchestration.md:57]<br>[EVT liên quan] - |
+| | 6 | Cột Memory | `submissionResult.testcase.col.memory` | `judge.submission_testcase_results` | `memory_kb` | ListColumn | String | 20 | - | O | - | `{memory/1024} MB` | Bộ nhớ của riêng testcase<br>[Chuyển đổi] Cột lưu KB, hiển thị quy đổi MB [Nguồn: 02-bd/database/F4_judge-orchestration.md:58]<br>[EVT liên quan] - |
 | | 7 | Nút Mở rộng chi tiết | `submissionResult.testcase.btnExpand` | - | - | Button | - | 20 | - | I | - | "Chi tiết" | Chỉ kích hoạt với testcase Mẫu (`visibility = SAMPLE`)<br>[Nguồn giá trị] Nhãn tĩnh<br>[EVT liên quan] EVT-4 |
-| | 8 | Hộp Dữ liệu đầu vào mẫu | `submissionResult.testcase.sampleInput` | `problem.testcases` | `input_inline` (hoặc `input_object_key` trên MinIO nếu `input_storage = MINIO`) | TextArea | String | 2000 | - | O | - | - | Input của testcase mẫu [Nguồn: 02-bd/database/problem-bank.md:143-145]<br>[EVT liên quan] - |
-| | 9 | Hộp Kết quả kỳ vọng mẫu | `submissionResult.testcase.sampleExpected` | `problem.testcases` | `expected_output_inline` (hoặc `expected_output_object_key` trên MinIO) | TextArea | String | 2000 | - | O | - | - | Output kỳ vọng của testcase mẫu [Nguồn: 02-bd/database/problem-bank.md:146-148]<br>[EVT liên quan] - |
-| | 10 | Hộp Kết quả thực tế mẫu | `submissionResult.testcase.sampleActual` | `judge.submission_testcase_results` | `actual_output_snippet` | TextArea | String | 2000 | - | O | - | - | Output chương trình học viên trả về cho testcase mẫu. Cột `actual_output_snippet` (**chỉ ghi cho testcase `SAMPLE`**) do chủ dự án chốt ở Q4 ngày 2026/10/18 (`DEC-2026-1018-usr-open-questions-phase2-5`); định nghĩa cột ở `02-bd/database/judge-orchestration.md:60`. **Độ dài: DB lưu tối đa 4096 ký tự (cùng giới hạn `stderr_snippet`), màn này chỉ hiển thị 2000 ký tự, hai con số khác nhau có chủ ý** (cột Độ dài 2000 là độ dài hiển thị; phần quá 2000 không hiện, không có nút xem thêm). Testcase `HIDDEN` luôn `NULL`, không bao giờ lộ<br>[EVT liên quan] - |
+| | 8 | Hộp Dữ liệu đầu vào mẫu | `submissionResult.testcase.sampleInput` | `problem.testcases` | `input_inline` (hoặc `input_object_key` trên MinIO nếu `input_storage = MINIO`) | TextArea | String | 2000 | - | O | - | - | Input của testcase mẫu [Nguồn: 02-bd/database/F2_problem-bank.md:143-145]<br>[EVT liên quan] - |
+| | 9 | Hộp Kết quả kỳ vọng mẫu | `submissionResult.testcase.sampleExpected` | `problem.testcases` | `expected_output_inline` (hoặc `expected_output_object_key` trên MinIO) | TextArea | String | 2000 | - | O | - | - | Output kỳ vọng của testcase mẫu [Nguồn: 02-bd/database/F2_problem-bank.md:146-148]<br>[EVT liên quan] - |
+| | 10 | Hộp Kết quả thực tế mẫu | `submissionResult.testcase.sampleActual` | `judge.submission_testcase_results` | `actual_output_snippet` | TextArea | String | 2000 | - | O | - | - | Output chương trình học viên trả về cho testcase mẫu. Cột `actual_output_snippet` (**chỉ ghi cho testcase `SAMPLE`**) do chủ dự án chốt ở Q4 ngày 2026/10/18 (`DEC-2026-1018-usr-open-questions-phase2-5`); định nghĩa cột ở `02-bd/database/F4_judge-orchestration.md:60`. **Độ dài: DB lưu tối đa 4096 ký tự (cùng giới hạn `stderr_snippet`), màn này chỉ hiển thị 2000 ký tự, hai con số khác nhau có chủ ý** (cột Độ dài 2000 là độ dài hiển thị; phần quá 2000 không hiện, không có nút xem thêm). Testcase `HIDDEN` luôn `NULL`, không bao giờ lộ<br>[EVT liên quan] - |
 
 ### Khu vực E — Trình xem mã nguồn đã nộp
 
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Trình xem mã nguồn | | | | | | | | | | | | | |
-| | 1 | Nhãn Ngôn ngữ đã nộp | `submissionResult.code.lblLanguage` | `judge.submissions` | `language` | Badge | String | 30 | Có | O | - | - | Ngôn ngữ nộp bài — một trong ba ngôn ngữ khoá cứng [Nguồn: 02-bd/database/judge-orchestration.md:18]<br>[EVT liên quan] - |
+| | 1 | Nhãn Ngôn ngữ đã nộp | `submissionResult.code.lblLanguage` | `judge.submissions` | `language` | Badge | String | 30 | Có | O | - | - | Ngôn ngữ nộp bài — một trong ba ngôn ngữ khoá cứng [Nguồn: 02-bd/database/F4_judge-orchestration.md:18]<br>[EVT liên quan] - |
 | | 2 | Nút Sao chép mã | `submissionResult.code.btnCopy` | - | - | Button | - | 20 | Có | I | - | "Sao chép mã" | Copy mã nguồn vào clipboard<br>[Nguồn giá trị] Nhãn tĩnh<br>[EVT liên quan] EVT-5 |
-| | 3 | Trình soạn thảo chỉ đọc | `submissionResult.code.editorViewer` | `judge.submissions` | `source_code` | TextArea | String | 50000 | Có | O | - | - | Monaco Editor chỉ đọc hiển thị mã nguồn đã nộp [Nguồn: 02-bd/database/judge-orchestration.md:20]<br>[EVT liên quan] - |
-| | 4 | Khối thông báo lỗi biên dịch | `submissionResult.code.boxCompileError` | `judge.submissions` | `compile_error_message` | TextArea | String | 10000 | - | O | - | - | Lỗi biên dịch đã ánh xạ dòng, che giấu mã harness (F3-11/F3-12); chỉ có giá trị khi `status = COMPILE_ERROR` [Nguồn: 02-bd/database/judge-orchestration.md:24]<br>[EVT liên quan] - |
+| | 3 | Trình soạn thảo chỉ đọc | `submissionResult.code.editorViewer` | `judge.submissions` | `source_code` | TextArea | String | 50000 | Có | O | - | - | Monaco Editor chỉ đọc hiển thị mã nguồn đã nộp [Nguồn: 02-bd/database/F4_judge-orchestration.md:20]<br>[EVT liên quan] - |
+| | 4 | Khối thông báo lỗi biên dịch | `submissionResult.code.boxCompileError` | `judge.submissions` | `compile_error_message` | TextArea | String | 10000 | - | O | - | - | Lỗi biên dịch đã ánh xạ dòng, che giấu mã harness (F3-11/F3-12); chỉ có giá trị khi `status = COMPILE_ERROR` [Nguồn: 02-bd/database/F4_judge-orchestration.md:24]<br>[EVT liên quan] - |
 
 ### Khu vực F — Thanh hành động tiếp theo
 
@@ -333,9 +334,9 @@ Từ 2026-10-20, vùng học viên bố cục **hai cột**: cột trái gồm b
 | | 2 | Nút Phỏng vấn giả lập | `submissionResult.action.btnMockInterview` | - | - | Button | String | 50 | Có | I | - | "Phỏng vấn giả lập (AI)" | Mở phỏng vấn 1:1 F5-09, chỉ bật khi `status = ACCEPTED`<br>[Nguồn giá trị] Nhãn tĩnh<br>[EVT liên quan] EVT-7 |
 | | 3 | Nút Làm lại bài | `submissionResult.action.btnRetry` | - | - | Button | String | 50 | Có | I | - | "Quay lại Workspace" | Trở lại Workspace của bài toán hiện tại<br>[Nguồn giá trị] Nhãn tĩnh<br>[EVT liên quan] EVT-8 |
 
-[Nguồn: 02-bd/database/judge-orchestration.md:14,18-31,50-61;
-02-bd/database/problem-bank.md:15,18,142-148;
-02-bd/architecture/judge-orchestration.md:216-233;
+[Nguồn: 02-bd/database/F4_judge-orchestration.md:14,18-31,50-61;
+02-bd/database/F2_problem-bank.md:15,18,142-148;
+02-bd/architecture/F4_judge-orchestration.md:216-233;
 01-rd/screens/users/USR0201_submission_result.md:36,93-96,141-142]
 
 ---
@@ -451,12 +452,12 @@ Từ 2026-10-20, vùng học viên bố cục **hai cột**: cột trái gồm b
 | --: | :--- | :--- | :--- | :-: | :-: | :--- | :--- |
 | 1 | Khởi tạo | Mở màn hình | Tải thông tin ban đầu của bài nộp dựa trên `submission_id` từ URL. | Không | Có | `GetSubmissionDetail` | [Các bước]<br>1. Đọc `submission_id` từ URL.<br>2. Gọi `GetSubmissionDetail`.<br>3. Nếu trạng thái là `PENDING` hoặc `JUDGING`, kích hoạt kết nối STOMP.<br>[Khi thành công] Hiển thị các khối dữ liệu.<br>[Khi lỗi] Báo lỗi không tìm thấy bài nộp hoặc không có quyền truy cập. |
 | 2 | Điều hướng | Bấm link Ngân hàng bài | Người dùng bấm link quay về danh sách bài tập. | Có | Không | - | [Các bước]<br>1. Điều hướng sang `problem_list` (`USR0101`). |
-| 3 | Điều hướng | Bấm link Tiêu đề bài | Người dùng bấm vào tiêu đề bài toán. | Có | Không | - | [Các bước]<br>1. Điều hướng sang `problem_overview` (`USR0104`, `/problems/{slug}`) của bài toán tương ứng. |
+| 3 | Điều hướng | Bấm link Tiêu đề bài | Người dùng bấm vào tiêu đề bài toán. | Có | Không | - | [Các bước]<br>1. Điều hướng sang `problem_overview` (`USR0104`, `/problems/{problem_id}`) của bài toán tương ứng. |
 | 4 | Giao diện | Mở rộng chi tiết testcase | Bấm mở rộng hàng kết quả testcase. | Không | Không | - | [Các bước]<br>1. Nếu là testcase mẫu: toggle mở rộng hiển thị Input, Expected, Actual.<br>2. Nếu là testcase ẩn: nút bị vô hiệu, không mở rộng (Khu vực D NO 7); không có dòng thông báo (bỏ NO 11 ở V0.9). |
 | 5 | Giao diện | Sao chép mã nguồn | Bấm nút Sao chép mã. | Không | Không | - | [Các bước]<br>1. Gọi Clipboard API sao chép toàn bộ `sourceCode`.<br>[Khi thành công] Hiện toast thành công "Đã sao chép mã nguồn."<br>[Khi lỗi] Trình duyệt không hỗ trợ Clipboard API hoặc ghi vào clipboard bị từ chối thì hiện toast lỗi "Không sao chép được mã nguồn." [Nguồn: 05-coding/frontend/src/views/users/submission-result/ui/submission-result-view.tsx:109-119]. |
 | 6 | Điều hướng | Bấm Phân tích bài giải | Bấm nút Phân tích bài giải AI. | Có | Không | - | [Các bước]<br>1. Kiểm tra verdict = `ACCEPTED`.<br>2. Điều hướng sang `solution_review` (`USR0301`) kèm `submission_id`. |
 | 7 | Điều hướng | Bấm Phỏng vấn giả lập | Bấm nút Phỏng vấn giả lập AI. | Có | Không | - | [Các bước]<br>1. Kiểm tra verdict = `ACCEPTED`.<br>2. Điều hướng sang `mock_interview` (`USR0302`) kèm `submission_id`. |
-| 8 | Điều hướng | Bấm Làm lại bài | Bấm nút Làm lại bài. | Có | Không | - | [Các bước]<br>1. Điều hướng về `problem_detail` (`USR0102`, `/workspace/{slug}`) của bài toán tương ứng để mở lại Workspace. |
+| 8 | Điều hướng | Bấm Làm lại bài | Bấm nút Làm lại bài. | Có | Không | - | [Các bước]<br>1. Điều hướng về `problem_detail` (`USR0102`, `/workspace/{problem_id}`) của bài toán tương ứng để mở lại Workspace. |
 | 9 | Realtime | Nhận event testcase xong | Nhận bản tin STOMP cập nhật tiến độ từ máy chủ. | Không | Không | - | [Các bước]<br>1. Cập nhật trạng thái dòng testcase tương ứng trong bảng.<br>2. Tăng số đếm testcase hoàn thành.<br>3. Nếu `isCompleted = true`, cập nhật verdict tổng và đóng kết nối WebSocket. |
 
 ---
@@ -545,9 +546,9 @@ Trạng thái trang: đang tải, không tìm thấy dùng nhãn `submissionResu
 
 ### Truyền dữ liệu và endpoint (chỉ chỗ khác)
 
-- **Endpoint:** vẫn `GetSubmissionDetail` (mục 7.3 NO 1), **thêm biến thể cho A2**: điều kiện lọc không còn `user_id = :currentUserId` mà là kiểm phạm vi lớp (quy tắc ở "Kiểm tra" bên dưới); phản hồi thêm `studentId`, `studentName`, `classId`, `className`, `leftClass` và không cần `beatsPercent`. Tên DTO và biến thể chốt ở `03-dd/api/judge-orchestration.md` `[SoT: Suy luận]`.
+- **Endpoint:** vẫn `GetSubmissionDetail` (mục 7.3 NO 1), **thêm biến thể cho A2**: điều kiện lọc không còn `user_id = :currentUserId` mà là kiểm phạm vi lớp (quy tắc ở "Kiểm tra" bên dưới); phản hồi thêm `studentId`, `studentName`, `classId`, `className`, `leftClass` và không cần `beatsPercent`. Tên DTO và biến thể chốt ở `03-dd/api/F4_judge-orchestration.md` `[SoT: Suy luận]`.
 - **Không có** `SubscribeSubmissionRealtime` cho A2. **ĐÃ CHỐT 2026-10-14 (DEC-2026-1014-instructor-submissions-list-details):** trang kết quả vùng giảng viên **không đăng ký kênh STOMP**: tải một lần bằng `GetSubmissionDetail`, lượt nộp đang chạy hiện trạng thái hiện tại, muốn cập nhật thì tải lại trang. Lý do: không mở thêm cửa nghe kênh realtime của học viên (kênh người dùng `/user/queue/submissions`, Câu hỏi mở Q1, đã chốt 2026/10/18 là kênh gắn với chủ bài nộp) [Nguồn: .nexa/control/decision-registry.md:3989-3993].
-- Phạm vi lớp (kiểm ở máy chủ) cần từ `identity` dữ liệu ghi danh kèm `joined_at`, `left_at` và từ `problem-bank` bài đã giao, qua cổng ra; `identity` giữ lịch sử ghi danh (đã có `left_at`) [Nguồn: 02-bd/database/identity.md:118-140].
+- Phạm vi lớp (kiểm ở máy chủ) cần từ `identity` dữ liệu ghi danh kèm `joined_at`, `left_at` và từ `problem-bank` bài đã giao, qua cổng ra; `identity` giữ lịch sử ghi danh (đã có `left_at`) [Nguồn: 02-bd/database/F1_identity.md:118-140].
 - Bảng truy cập thêm so với Sheet 7.2: `identity.classes`, `identity.class_enrollments`, `problem.class_assignments` (đều R, gián tiếp qua cổng).
 
 ### Kiểm tra (chỉ chỗ khác, mã thông báo `Chưa có mã thông báo`)
@@ -624,9 +625,9 @@ Bản dựng prototype sau đợt chỉnh giao diện ngày 2026/10/20, theo `DE
 
 - `01-rd/screens/users/USR0201_submission_result.md` — Yêu cầu màn hình.
 - `09-layoutBase/Kết quả nộp bài.dc.html` — Bằng chứng bố cục prototype.
-- `01-rd/req/judge-orchestration.md` — F4-01, F4-03, F4-08, F4-12, F4-13.
-- `01-rd/req/problem-bank.md` — F2-08.
-- `01-rd/req/harness.md` — F3-11, F3-12, F3-13.
+- `01-rd/req/F4_judge-orchestration.md` — F4-01, F4-03, F4-08, F4-12, F4-13.
+- `01-rd/req/F2_problem-bank.md` — F2-08.
+- `01-rd/req/F3_harness.md` — F3-11, F3-12, F3-13.
 - `02-bd/_rules/bd-template-9sheet.md` — Quy ước mẫu 9 sheet.
 - Quyết định: `DEC-2026-0831-partial-score-testcase-ratio`.
 - Vùng giảng viên (A2), V0.5: `01-rd/screens/users/USR0201_submission_result.md` chương 10; `01-rd/screens/teacher/INS0206_submission_management.md`; `02-bd/screens/teacher/INS0206_submission_management.md` (màn gọi tới); `02-bd/screens/teacher/INS0204_class_student_detail.md`; `02-bd/screens/teacher/_shell.md` mục 3.2. Quyết định: `DEC-2026-1014-instructor-submissions-list-rules`, `DEC-2026-1013-instructor-submissions-list`, `DEC-2026-1013-instructor-avatar-menu-and-read-source`, `DEC-2026-1014-keep-learning-history-on-leave`.

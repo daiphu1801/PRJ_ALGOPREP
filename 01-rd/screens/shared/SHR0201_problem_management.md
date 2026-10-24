@@ -3,7 +3,7 @@
 > Mã màn hình: `SHR0201` [SoT: 02-bd/_rules/bd-template-9sheet.md — mục 8].
 > Slug chính tắc: `problem_management` [SoT: 01-rd/overview/system_survey.md — mục 7.0 dòng `problem_management`].
 > Phạm vi/Bounded Context: `problem-bank` (F2). Actor: A2, A3 (màn dùng chung, phạm vi dữ liệu theo quyền).
-> Nguồn sự thật (SoT): `01-rd/req/problem-bank.md` (F2), `09-layoutBase/Admin - Quản lý bài tập.dc.html` (prototype), `01-rd/req/user_stories/a2_instructor.md` (`US-A2-01`, `US-A2-02`), `01-rd/req/identity.md` (F1-10 → F1-12).
+> Nguồn sự thật (SoT): `01-rd/req/F2_problem-bank.md` (F2), `09-layoutBase/Admin - Quản lý bài tập.dc.html` (prototype), `01-rd/req/user_stories/a2_instructor.md` (`US-A2-01`, `US-A2-02`), `01-rd/req/F1_identity.md` (F1-10 → F1-12).
 > Tài liệu này có thể đọc độc lập.
 
 ---
@@ -17,8 +17,8 @@ xử lý theo lô, và mở luồng tạo/sửa đề bài
 
 Đã chốt ngày 2026-08-25 (owner instruction, kết thúc Câu hỏi mở Q1 cũ): mount ở cả `/instructor/problems`
 và `/admin/problems`, cùng một view/BD/DD, A2 chỉ thấy và sửa bài do mình soạn (theo quyền tác giả, không theo lớp phụ trách — bài toán không phải thực thể sở hữu theo lớp, việc gán bài vào lớp là việc riêng của `class_assignments`), A3 thấy toàn bộ kho — cơ chế
-đã có tiền lệ ở ma trận phân quyền `PROBLEM_AUTHORING`/`TESTCASE_MANAGEMENT` (`01-rd/req/identity.md` — F1-12), cùng hàng với
-`INTERVIEW_BANK_MANAGEMENT` (`01-rd/req/identity.md` — F1-12). Ghi quyết định:
+đã có tiền lệ ở ma trận phân quyền `PROBLEM_AUTHORING`/`TESTCASE_MANAGEMENT` (`01-rd/req/F1_identity.md` — F1-12), cùng hàng với
+`INTERVIEW_BANK_MANAGEMENT` (`01-rd/req/F1_identity.md` — F1-12). Ghi quyết định:
 `DEC-2026-0825-shared-content-authoring-screens`.
 
 Đối chiếu prototype: `09-layoutBase/Admin - Quản lý bài tập.dc.html` (618 dòng, dựng trong shell Admin —
@@ -28,7 +28,7 @@ khu Giảng viên không có mockup riêng trong `09-layoutBase/`, xem `06-plan/
 gắn cứng `/admin`
 [SoT: 05-coding/frontend/src/views/shared/problem-management/ui/problem-management-view.tsx:81-86, 267, 358, 405].
 Từ đây, khi code và mockup lệch nhau thì **code là hiện trạng**; mockup chỉ còn là lịch sử. File này mô tả
-**hành vi và UX ở mức yêu cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/problem-bank.md` (mục F2), chỉ
+**hành vi và UX ở mức yêu cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/F2_problem-bank.md` (mục F2), chỉ
 trỏ tới và bổ sung phần đặc thù của màn.
 
 **Lịch sử slug:** bổ sung 2026-08-25 với tên `admin_problem_management` (màn chưa từng có trong
@@ -54,17 +54,17 @@ Hai màn cùng hiển thị một danh sách bài toán nhưng khác mục đíc
 
 | Tiêu chí | `problem_list` | `problem_management` (màn này) |
 | :--- | :--- | :--- |
-| Actor | A1 — người học [SoT: 01-rd/req/problem-bank.md — F2-11] | A2 và A3 (dùng chung — đã chốt) |
-| Mã chức năng | F2-11 — tìm kiếm và lọc bài toán theo chủ đề, độ khó, **trạng thái đã giải** [SoT: 01-rd/req/problem-bank.md — F2-11] | Vòng đời F2-15; chưa có mã phủ trọn cho xoá/xử lý theo lô/CSV/thống kê — xem mục 2, Q3-Q5 |
+| Actor | A1 — người học [SoT: 01-rd/req/F2_problem-bank.md — F2-11] | A2 và A3 (dùng chung — đã chốt) |
+| Mã chức năng | F2-11 — tìm kiếm và lọc bài toán theo chủ đề, độ khó, **trạng thái đã giải** [SoT: 01-rd/req/F2_problem-bank.md — F2-11] | Vòng đời F2-15; chưa có mã phủ trọn cho xoá/xử lý theo lô/CSV/thống kê — xem mục 2, Q3-Q5 |
 | Mục đích | Ngân hàng bài toán để chọn bài giải [SoT: 01-rd/overview/system_survey.md — mục 7.1 dòng `problem_list`] | Bảng quản trị nội dung: tạo/sửa/xuất bản/ẩn/xoá |
 | Phạm vi dữ liệu | Chỉ bài **đã xuất bản** — prototype ghi rõ "24 bài đang hiển thị ở Ngân hàng bài toán" trên tổng 27 [SoT: 09-layoutBase/Admin - Quản lý bài tập.dc.html:152] và "Đúng bằng số bài trang người học thấy" [SoT: 09-layoutBase/Admin - Quản lý bài tập.dc.html:480] | Toàn bộ kho, cả hai trạng thái `Đã xuất bản` và `Chưa xuất bản` (F2-15) |
-| Khối riêng cho lớp | Có — bài giao theo lớp hiển thị thành khối riêng cạnh bảng chính (F2-12) [SoT: 01-rd/req/problem-bank.md — F2-12] | Không có trong prototype |
+| Khối riêng cho lớp | Có — bài giao theo lớp hiển thị thành khối riêng cạnh bảng chính (F2-12) [SoT: 01-rd/req/F2_problem-bank.md — F2-12] | Không có trong prototype |
 
 **Phần trùng về hình thức:** cả hai đều có ô tìm kiếm, bộ lọc độ khó (Easy/Medium/Hard), phân trang. Trùng
 này là trùng **thành phần UI**, không phải trùng yêu cầu — bộ lọc thứ hai của màn này là *trạng thái xuất
 bản* (Tất cả / Đã xuất bản / Chưa xuất bản, F2-15) [SoT: 09-layoutBase/Admin - Quản lý bài tập.dc.html:585],
 trong khi bộ lọc thứ hai của `problem_list` là *trạng thái đã giải của chính người học* (F2-11)
-[SoT: 01-rd/req/problem-bank.md — F2-11]. Hai trục lọc khác hẳn nhau về nghiệp vụ.
+[SoT: 01-rd/req/F2_problem-bank.md — F2-11]. Hai trục lọc khác hẳn nhau về nghiệp vụ.
 
 ---
 
@@ -72,12 +72,12 @@ trong khi bộ lọc thứ hai của `problem_list` là *trạng thái đã gi�
 
 | Khối trên màn | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Lối vào tạo bài mới / sửa bài (nút "Bài tập mới", tiêu đề bài, nút sửa) | F2-01, F2-02, F2-03, F2-04 | `01-rd/req/problem-bank.md` — F2-01 → F2-04 |
-| Cột "TC" (số testcase) trên mỗi dòng, mục "Chưa có testcase" ở khối Bài cần chú ý | F2-05, F2-06 | `01-rd/req/problem-bank.md` — F2-05, F2-06 |
-| Cột "Độ khó" và bộ lọc độ khó | F2-02 | `01-rd/req/problem-bank.md` — F2-02 |
-| Cột "Chủ đề", khối "Phân bố theo chủ đề", bulk action "Gán chủ đề" | F2-02 | `01-rd/req/problem-bank.md` — F2-02 |
+| Lối vào tạo bài mới / sửa bài (nút "Bài tập mới", tiêu đề bài, nút sửa) | F2-01, F2-02, F2-03, F2-04 | `01-rd/req/F2_problem-bank.md` — F2-01 → F2-04 |
+| Cột "TC" (số testcase) trên mỗi dòng, mục "Chưa có testcase" ở khối Bài cần chú ý | F2-05, F2-06 | `01-rd/req/F2_problem-bank.md` — F2-05, F2-06 |
+| Cột "Độ khó" và bộ lọc độ khó | F2-02 | `01-rd/req/F2_problem-bank.md` — F2-02 |
+| Cột "Chủ đề", khối "Phân bố theo chủ đề", bulk action "Gán chủ đề" | F2-02 | `01-rd/req/F2_problem-bank.md` — F2-02 |
 | Given-When-Then liên quan | — | `01-rd/req/user_stories/a2_instructor.md` (`US-A2-01`, `US-A2-02`) |
-| Cơ chế gác quyền cho màn | F1-10, F1-11, F1-12 (`PROBLEM_AUTHORING`, `TESTCASE_MANAGEMENT`) | `01-rd/req/identity.md` — F1-10 → F1-12 |
+| Cơ chế gác quyền cho màn | F1-10, F1-11, F1-12 (`PROBLEM_AUTHORING`, `TESTCASE_MANAGEMENT`) | `01-rd/req/F1_identity.md` — F1-10 → F1-12 |
 
 **Các khối không gán được mã `Fx-nn` nào** (không tự phát minh mã mới — đưa vào mục 5): xoá bài toán, xử lý
 theo lô, Nhập CSV / Xuất CSV, nhân bản bài toán, 4 chỉ số tổng của kho, khối "Bài cần chú ý". Chi tiết ở
@@ -158,7 +158,7 @@ Q3 → Q5. **Trạng thái vòng đời bài toán đã có mã** — `F2-15` (c
 | Màn/tài liệu | Vai trò | Bounded Context |
 |---|---|---|
 | Màn hiện tại | `SHR0201` / `problem_management` | `problem-bank` |
-| Tài liệu yêu cầu | `01-rd/req/problem-bank.md` (F2) | Nguồn SoT của màn |
+| Tài liệu yêu cầu | `01-rd/req/F2_problem-bank.md` (F2) | Nguồn SoT của màn |
 | Prototype | `09-layoutBase/Admin - Quản lý bài tập.dc.html` | Bằng chứng bố cục và trạng thái |
 
 ---
@@ -168,11 +168,11 @@ Q3 → Q5. **Trạng thái vòng đời bài toán đã có mã** — `F2-15` (c
 - Bảng màu, spacing, component, hành vi bảng (sắp xếp, phân trang, thanh hành động theo lô ở mức component)
   — thuộc BD (`02-bd/screens/shared/SHR0201_problem_management.md`).
 - Hợp đồng API (danh sách bài toán phía quản trị kèm phân trang/lọc/sắp xếp, đổi trạng thái, xoá, thao tác
-  lô, thống kê kho) — thuộc DD (`03-dd/api/problem-bank.md`, chưa viết).
+  lô, thống kê kho) — thuộc DD (`03-dd/api/F2_problem-bank.md`, chưa viết).
 - Đặc tả nội dung bài toán: Markdown + LaTeX, chữ ký hàm, chiến lược so khớp, giới hạn tài
   nguyên, testcase — thuộc màn con `01-rd/screens/shared/SHR0202_problem_authoring.md`, không viết lại ở đây.
 - Xoá bài toán (Q2), vòng đời bài toán (Q2), nhập/xuất/nhân bản (Q4), thống kê kho (Q5) — **tất cả đã chốt
-  2026-08-31**, xem `01-rd/req/problem-bank.md` F2-15, F2-16, F2-17.
+  2026-08-31**, xem `01-rd/req/F2_problem-bank.md` F2-15, F2-16, F2-17.
 
 ---
 
@@ -180,23 +180,23 @@ Q3 → Q5. **Trạng thái vòng đời bài toán đã có mã** — `F2-15` (c
 
 | # | Câu hỏi | Vì sao chưa trả lời được | Đề xuất | Chủ sở hữu |
 | :-: | :--- | :--- | :--- | :--- |
-| Q1 | ~~Actor của màn này và của `problem_authoring` là A2, A3, hay cả hai?~~ **ĐÃ CHỐT 2026-08-25 (owner instruction):** dùng chung một màn, mount ở cả `/instructor/problems` và `/admin/problems`, cùng một slug/BD/DD, phạm vi dữ liệu do ma trận phân quyền quyết định — A2 chỉ thấy và sửa bài do mình soạn (theo quyền tác giả, không theo lớp phụ trách — bài toán không phải thực thể sở hữu theo lớp, việc gán bài vào lớp là việc riêng của `class_assignments`), A3 thấy toàn bộ kho. Tiền lệ: F1-12 đã liệt `PROBLEM_AUTHORING`/`TESTCASE_MANAGEMENT` trong ma trận [SoT: 01-rd/req/identity.md — F1-12], cùng hàng `INTERVIEW_BANK_MANAGEMENT` [SoT: 01-rd/req/identity.md — F1-12]. Ghi quyết định `DEC-2026-0825-shared-content-authoring-screens` — không đè Phương án B (mục 7.2 vẫn giữ khu Giảng viên layout riêng khỏi Admin), chỉ là hai route khác nhau cùng render một view. | — | Đã chốt. | Đã đóng |
-| Q2 | ~~Trạng thái vòng đời của bài toán (`Đã xuất bản` / `Bản nháp` / `Đã ẩn`) chưa có mã `Fx-nn` nào.~~ **ĐÃ CHỐT 2026-08-30 (owner instruction):** rút gọn còn đúng **hai trạng thái** — `Chưa xuất bản` / `Đã xuất bản` — bỏ hẳn trạng thái thứ ba `Đã ẩn` mà prototype từng dùng. Bài từng xuất bản rồi bị rút xuống quay lại đúng `Chưa xuất bản`, không phân biệt với bài chưa từng công khai. Cấp mã `F2-15` (`01-rd/req/problem-bank.md`): mặc định tạo mới là `Chưa xuất bản`; điều kiện xuất bản — có ít nhất một testcase Hidden (F2-06) và đặc tả đủ theo F2-03, thiếu thì chặn cứng kèm lý do; rút xuống không điều kiện, dữ liệu liên quan (lượt nộp, bookmark, phiên phỏng vấn) không bị xoá. Ghi quyết định `DEC-2026-0830-problem-lifecycle-two-states`. Bổ sung `US-A2-01b` (`01-rd/req/user_stories/a2_instructor.md`). | — | Đã chốt — xem `F2-15`, `DEC-2026-0830-problem-lifecycle-two-states`. | Đã đóng |
-| Q3 | ~~**Xoá bài toán: xoá thật hay ẩn mềm?**~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** ẩn mềm — chuyển về `Chưa xuất bản` + cờ `deleted` riêng. | — | Dữ liệu liên quan (lượt nộp, bookmark, phiên phỏng vấn) không bị xoá, cùng nguyên tắc F1-16. Đã ghi vào `01-rd/req/problem-bank.md` (amendment F2-15). Sửa câu chữ hộp thoại xác nhận khi dựng UI thật **[Đợi nextjs]**. Xem `DEC-2026-0831-problem-management-lifecycle-details`. | Đã đóng |
+| Q1 | ~~Actor của màn này và của `problem_authoring` là A2, A3, hay cả hai?~~ **ĐÃ CHỐT 2026-08-25 (owner instruction):** dùng chung một màn, mount ở cả `/instructor/problems` và `/admin/problems`, cùng một slug/BD/DD, phạm vi dữ liệu do ma trận phân quyền quyết định — A2 chỉ thấy và sửa bài do mình soạn (theo quyền tác giả, không theo lớp phụ trách — bài toán không phải thực thể sở hữu theo lớp, việc gán bài vào lớp là việc riêng của `class_assignments`), A3 thấy toàn bộ kho. Tiền lệ: F1-12 đã liệt `PROBLEM_AUTHORING`/`TESTCASE_MANAGEMENT` trong ma trận [SoT: 01-rd/req/F1_identity.md — F1-12], cùng hàng `INTERVIEW_BANK_MANAGEMENT` [SoT: 01-rd/req/F1_identity.md — F1-12]. Ghi quyết định `DEC-2026-0825-shared-content-authoring-screens` — không đè Phương án B (mục 7.2 vẫn giữ khu Giảng viên layout riêng khỏi Admin), chỉ là hai route khác nhau cùng render một view. | — | Đã chốt. | Đã đóng |
+| Q2 | ~~Trạng thái vòng đời của bài toán (`Đã xuất bản` / `Bản nháp` / `Đã ẩn`) chưa có mã `Fx-nn` nào.~~ **ĐÃ CHỐT 2026-08-30 (owner instruction):** rút gọn còn đúng **hai trạng thái** — `Chưa xuất bản` / `Đã xuất bản` — bỏ hẳn trạng thái thứ ba `Đã ẩn` mà prototype từng dùng. Bài từng xuất bản rồi bị rút xuống quay lại đúng `Chưa xuất bản`, không phân biệt với bài chưa từng công khai. Cấp mã `F2-15` (`01-rd/req/F2_problem-bank.md`): mặc định tạo mới là `Chưa xuất bản`; điều kiện xuất bản — có ít nhất một testcase Hidden (F2-06) và đặc tả đủ theo F2-03, thiếu thì chặn cứng kèm lý do; rút xuống không điều kiện, dữ liệu liên quan (lượt nộp, bookmark, phiên phỏng vấn) không bị xoá. Ghi quyết định `DEC-2026-0830-problem-lifecycle-two-states`. Bổ sung `US-A2-01b` (`01-rd/req/user_stories/a2_instructor.md`). | — | Đã chốt — xem `F2-15`, `DEC-2026-0830-problem-lifecycle-two-states`. | Đã đóng |
+| Q3 | ~~**Xoá bài toán: xoá thật hay ẩn mềm?**~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** ẩn mềm — chuyển về `Chưa xuất bản` + cờ `deleted` riêng. | — | Dữ liệu liên quan (lượt nộp, bookmark, phiên phỏng vấn) không bị xoá, cùng nguyên tắc F1-16. Đã ghi vào `01-rd/req/F2_problem-bank.md` (amendment F2-15). Sửa câu chữ hộp thoại xác nhận khi dựng UI thật **[Đợi nextjs]**. Xem `DEC-2026-0831-problem-management-lifecycle-details`. | Đã đóng |
 | Q4 | ~~**Nhập CSV / Xuất CSV / Nhân bản bài toán...**~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** giữ Nhân bản (`F2-16`) + Xuất CSV (`F2-17`), cắt Nhập CSV bài toán khỏi phạm vi. | — | CSV phẳng không chở nổi đặc tả F2-03 (chữ ký hàm 3 ngôn ngữ) hay nội dung Markdown/LaTeX. Xoá nút "Nhập CSV" khi dựng UI thật. Xem `DEC-2026-0831-problem-management-lifecycle-details`. | Đã đóng |
-| Q5 | ~~4 chỉ số tổng của kho và khối "Bài cần chú ý"...~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** dẫn xuất trình bày, ngưỡng chốt theo đúng số prototype — AC dưới 30%, chưa xuất bản quá 7 ngày. | — | Đã ghi vào `01-rd/req/problem-bank.md` (amendment F2-15), đánh dấu `[SoT: Suy luận]`. Xem `DEC-2026-0831-problem-management-lifecycle-details`. | Đã đóng |
+| Q5 | ~~4 chỉ số tổng của kho và khối "Bài cần chú ý"...~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** dẫn xuất trình bày, ngưỡng chốt theo đúng số prototype — AC dưới 30%, chưa xuất bản quá 7 ngày. | — | Đã ghi vào `01-rd/req/F2_problem-bank.md` (amendment F2-15), đánh dấu `[SoT: Suy luận]`. Xem `DEC-2026-0831-problem-management-lifecycle-details`. | Đã đóng |
 
 ---
 
 ## 5. Danh sách yêu cầu (REQ)
 | ID | Yêu cầu | Loại | Nguồn/SoT |
 |---|---|---|---|
-| REQ-01 | Lối vào tạo bài mới / sửa bài (nút "Bài tập mới", tiêu đề bài, nút sửa) (F2-01, F2-02, F2-03, F2-04) | Chức năng | `01-rd/req/problem-bank.md` — F2-01 → F2-04 |
-| REQ-02 | Cột "TC" (số testcase) trên mỗi dòng, mục "Chưa có testcase" ở khối Bài cần chú ý (F2-05, F2-06) | Chức năng | `01-rd/req/problem-bank.md` — F2-05, F2-06 |
-| REQ-03 | Cột "Độ khó" và bộ lọc độ khó (F2-02) | Chức năng | `01-rd/req/problem-bank.md` — F2-02 |
-| REQ-04 | Cột "Chủ đề", khối "Phân bố theo chủ đề", bulk action "Gán chủ đề" (F2-02) | Chức năng | `01-rd/req/problem-bank.md` — F2-02 |
+| REQ-01 | Lối vào tạo bài mới / sửa bài (nút "Bài tập mới", tiêu đề bài, nút sửa) (F2-01, F2-02, F2-03, F2-04) | Chức năng | `01-rd/req/F2_problem-bank.md` — F2-01 → F2-04 |
+| REQ-02 | Cột "TC" (số testcase) trên mỗi dòng, mục "Chưa có testcase" ở khối Bài cần chú ý (F2-05, F2-06) | Chức năng | `01-rd/req/F2_problem-bank.md` — F2-05, F2-06 |
+| REQ-03 | Cột "Độ khó" và bộ lọc độ khó (F2-02) | Chức năng | `01-rd/req/F2_problem-bank.md` — F2-02 |
+| REQ-04 | Cột "Chủ đề", khối "Phân bố theo chủ đề", bulk action "Gán chủ đề" (F2-02) | Chức năng | `01-rd/req/F2_problem-bank.md` — F2-02 |
 | REQ-05 | Given-When-Then liên quan (—) | Chức năng | `01-rd/req/user_stories/a2_instructor.md` (`US-A2-01`, `US-A2-02`) |
-| REQ-06 | Cơ chế gác quyền cho màn (F1-10, F1-11, F1-12 (`PROBLEM_AUTHORING`, `TESTCASE_MANAGEMENT`)) | Chức năng | `01-rd/req/identity.md` — F1-10 → F1-12 |
+| REQ-06 | Cơ chế gác quyền cho màn (F1-10, F1-11, F1-12 (`PROBLEM_AUTHORING`, `TESTCASE_MANAGEMENT`)) | Chức năng | `01-rd/req/F1_identity.md` — F1-10 → F1-12 |
 
 ---
 
@@ -235,7 +235,7 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 
 | Loại | Tham chiếu |
 |---|---|
-| Yêu cầu module | `01-rd/req/identity.md` — F1-10 → F1-12, ma trận phân quyền và danh sách Function; `01-rd/req/problem-bank.md` — toàn bộ F2 (`problem-bank`). |
+| Yêu cầu module | `01-rd/req/F1_identity.md` — F1-10 → F1-12, ma trận phân quyền và danh sách Function; `01-rd/req/F2_problem-bank.md` — toàn bộ F2 (`problem-bank`). |
 | User story | `01-rd/req/user_stories/a2_instructor.md` — `US-A2-01`, `US-A2-01b` (vòng đời bài toán, F2-15), `US-A2-02`. |
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` — mục 7.0 (khu dùng chung) `problem_management`, `problem_authoring`; mục 7.1. |
 | Prototype | `09-layoutBase/Admin - Quản lý bài tập.dc.html` — prototype. |

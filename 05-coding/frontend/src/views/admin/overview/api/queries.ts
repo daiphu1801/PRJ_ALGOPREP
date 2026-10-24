@@ -23,7 +23,7 @@ function notImplemented(): never {
   throw new ApiError(
     "NOT_IMPLEMENTED",
     501,
-    "03-dd/api/identity.md does not define these endpoints yet",
+    "03-dd/api/F1_identity.md does not define these endpoints yet",
   );
 }
 

@@ -3,7 +3,7 @@
 > Mã màn hình: `INS0204` [Nguồn: 02-bd/_rules/bd-template-9sheet.md — mục 8].
 > Slug chính tắc: `class_student_detail` [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_student_detail`].
 > Phạm vi/Bounded Context: `identity` [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `class_student_detail`]. Actor: A2 (Giáo viên).
-> Nguồn sự thật (SoT): `01-rd/req/identity.md` (F1-27), `01-rd/req/user_stories/a2_instructor.md` (`US-A2-08`),
+> Nguồn sự thật (SoT): `01-rd/req/F1_identity.md` (F1-27), `01-rd/req/user_stories/a2_instructor.md` (`US-A2-08`),
 > `01-rd/screens/teacher/INS0201_class_management.md:95` (Câu hỏi mở Q4 nguồn gốc slug này).
 > Tài liệu này có thể đọc độc lập.
 
@@ -13,17 +13,17 @@
 
 **Slug mới, chưa có prototype.** Thêm 2026-08-28, qua hỏi trực tiếp chủ dự án khi trả lời Câu hỏi mở Q4 của
 `01-rd/screens/teacher/INS0201_class_management.md` [SoT: 01-rd/screens/teacher/INS0201_class_management.md:95;
-01-rd/req/identity.md — F1-27]. Không có `09-layoutBase/*.dc.html` minh hoạ cho màn này — mọi chi tiết cấu
+01-rd/req/F1_identity.md — F1-27]. Không có `09-layoutBase/*.dc.html` minh hoạ cho màn này — mọi chi tiết cấu
 trúc UI dưới đây (ngoài các điểm đã chốt qua Q4) đánh dấu `[SoT: Suy luận]` hoặc `[Đợi nextjs]`, để BD/DD tự
 thiết kế khi dựng UI thật, đúng tinh thần "viết vừa đủ, đúng lúc" của project (`CLAUDE.md` — RD → BD →
 Prototype → DD). File này mô tả **hành vi và UX ở mức yêu cầu** — không lặp lại đặc tả chức năng chung đã
-có ở `01-rd/req/identity.md` (F1) và `01-rd/req/user_stories/a2_instructor.md` (`US-A2-08`), chỉ trỏ tới và
+có ở `01-rd/req/F1_identity.md` (F1) và `01-rd/req/user_stories/a2_instructor.md` (`US-A2-08`), chỉ trỏ tới và
 bổ sung phần đặc thù của màn.
 
 Cho giáo viên (A2) xem hồ sơ chi tiết của **một học viên cụ thể** trong lớp mình phụ trách — thông tin cơ
 bản, tiến độ, lịch sử nộp bài — thay vì chỉ nhìn một dòng tóm tắt ở bảng danh sách học viên của
 `class_management`
-[SoT: 01-rd/req/identity.md — F1-27; 01-rd/req/user_stories/a2_instructor.md — US-A2-08]. Đây là một màn/route
+[SoT: 01-rd/req/F1_identity.md — F1-27; 01-rd/req/user_stories/a2_instructor.md — US-A2-08]. Đây là một màn/route
 riêng, không phải hiển thị mở rộng (expand row) ngay tại bảng — quyết định rõ ràng qua Q4 của
 `class_management.md`, vì bốn nhóm dữ liệu (cơ bản, tiến độ, lịch sử nộp bài, thao tác quản lý) đủ nặng để
 cần một trang riêng
@@ -35,18 +35,18 @@ cần một trang riêng
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Giáo viên xem hồ sơ chi tiết một học viên trong lớp mình phụ trách (thông tin cơ bản, tiến độ, lịch sử nộp bài) — chỉ trong phạm vi lớp phụ trách | F1-27 | `01-rd/req/identity.md` — F1-27 (bổ sung 2026-08-28) |
+| Giáo viên xem hồ sơ chi tiết một học viên trong lớp mình phụ trách (thông tin cơ bản, tiến độ, lịch sử nộp bài) — chỉ trong phạm vi lớp phụ trách | F1-27 | `01-rd/req/F1_identity.md` — F1-27 (bổ sung 2026-08-28) |
 | Given-When-Then mở hồ sơ chi tiết từ bảng danh sách học viên; từ chối nếu không phụ trách lớp đó | — | `01-rd/req/user_stories/a2_instructor.md` (`US-A2-08`) |
-| Ma trận phân quyền — Function `CLASS_MANAGEMENT` gác quyền, phạm vi theo lớp phụ trách | F1-12 | `01-rd/req/identity.md` — F1-12 |
-| ~~Gỡ học viên khỏi lớp — xoá luôn lịch sử làm bài trong phạm vi lớp.~~ **ĐÃ ĐỔI 2026-10-14 (DEC-2026-1014-keep-learning-history-on-leave):** gỡ học viên khỏi lớp — giữ lịch sử làm bài, chỉ đánh dấu đã rời lớp. **Chốt 2026-09-01:** nút đặt ở cả bảng danh sách `class_management` và ở đây | F1-26 | `01-rd/req/identity.md` — F1-26 |
-| Điểm tỷ lệ testcase mỗi bài, tính trên best-attempt | F4-13, F1-06 | `01-rd/req/judge-orchestration.md` — F4-13; `01-rd/req/identity.md` — F1-06 |
+| Ma trận phân quyền — Function `CLASS_MANAGEMENT` gác quyền, phạm vi theo lớp phụ trách | F1-12 | `01-rd/req/F1_identity.md` — F1-12 |
+| ~~Gỡ học viên khỏi lớp — xoá luôn lịch sử làm bài trong phạm vi lớp.~~ **ĐÃ ĐỔI 2026-10-14 (DEC-2026-1014-keep-learning-history-on-leave):** gỡ học viên khỏi lớp — giữ lịch sử làm bài, chỉ đánh dấu đã rời lớp. **Chốt 2026-09-01:** nút đặt ở cả bảng danh sách `class_management` và ở đây | F1-26 | `01-rd/req/F1_identity.md` — F1-26 |
+| Điểm tỷ lệ testcase mỗi bài, tính trên best-attempt | F4-13, F1-06 | `01-rd/req/F4_judge-orchestration.md` — F4-13; `01-rd/req/F1_identity.md` — F1-06 |
 
 ### 2.1 Cấu trúc hệ thống liên quan
 
 | Màn/tài liệu | Vai trò | Bounded Context |
 |---|---|---|
 | Màn hiện tại | `INS0204` / `class_student_detail` | `identity` |
-| Tài liệu yêu cầu | `01-rd/req/identity.md` (F1-27) | Nguồn SoT của màn |
+| Tài liệu yêu cầu | `01-rd/req/F1_identity.md` (F1-27) | Nguồn SoT của màn |
 | Prototype | Chưa có prototype (đợi Next.js) | Bằng chứng bố cục và trạng thái |
 
 **Chi tiết trạng thái và cấu trúc màn**
@@ -65,7 +65,7 @@ Chưa có prototype để đối chiếu — cấu trúc dưới đây là đề
 2. **Khối "Tiến độ"** — dẫn xuất từ F1-06/F1-07 nhưng thu hẹp về phạm vi một học viên: số bài đã giải theo
    chủ đề, tỉ lệ chấp thuận, điểm tốt nhất mỗi bài (F4-13, best-attempt) — cùng công thức đã dùng ở
    `class_progress` và `my_progress`, không phát sinh công thức mới
-   [SoT: 01-rd/req/identity.md — F1-06, F1-07]. Trạng thái phân loại "Đang tốt/Cần hỗ trợ/Vắng bài" nêu ở
+   [SoT: 01-rd/req/F1_identity.md — F1-06, F1-07]. Trạng thái phân loại "Đang tốt/Cần hỗ trợ/Vắng bài" nêu ở
    `class_management` — **ngưỡng cụ thể để BD/DD tự đề xuất** (chốt lại 2026-09-01, giữ nguyên quyết định
    gốc) [SoT: 01-rd/screens/teacher/INS0201_class_management.md:95]. **Không hiện điểm AI tham khảo/chấm tay
    (F5-27, đã bỏ 2026-10-13)** ở khối này. ~~Liên kết "Xem chấm bài của học viên này" sang `instructor_grading`
@@ -88,9 +88,9 @@ Chưa có prototype để đối chiếu — cấu trúc dưới đây là đề
 - Bảng màu, spacing, breakpoint, component cụ thể — thuộc BD (`02-bd/screens/teacher/INS0204_class_student_detail.md`,
   chưa viết), viết sau khi có BD hoặc khi dựng UI Next.js trực tiếp (chưa có prototype trung gian).
 - Hợp đồng API (lấy hồ sơ một học viên, lấy lịch sử nộp bài thu hẹp theo lớp) — thuộc DD
-  (`03-dd/api/identity.md`, chưa viết).
+  (`03-dd/api/F1_identity.md`, chưa viết).
 - Công thức chính xác của F1-06/F1-07/F4-13 khi thu hẹp về một học viên — đã có công thức gốc ở
-  `01-rd/req/identity.md`, chỉ áp dụng lại, không định nghĩa lại ở đây.
+  `01-rd/req/F1_identity.md`, chỉ áp dụng lại, không định nghĩa lại ở đây.
 
 ---
 
@@ -112,11 +112,11 @@ Chưa có prototype để đối chiếu — cấu trúc dưới đây là đề
 
 | ID | Yêu cầu | Loại | Nguồn/SoT |
 |---|---|---|---|
-| REQ-01 | Giáo viên xem hồ sơ chi tiết một học viên trong lớp mình phụ trách (thông tin cơ bản, tiến độ, lịch sử nộp bài) — chỉ trong phạm vi lớp phụ trách (F1-27) | Chức năng | `01-rd/req/identity.md` — F1-27 (bổ sung 2026-08-28) |
+| REQ-01 | Giáo viên xem hồ sơ chi tiết một học viên trong lớp mình phụ trách (thông tin cơ bản, tiến độ, lịch sử nộp bài) — chỉ trong phạm vi lớp phụ trách (F1-27) | Chức năng | `01-rd/req/F1_identity.md` — F1-27 (bổ sung 2026-08-28) |
 | REQ-02 | Given-When-Then mở hồ sơ chi tiết từ bảng danh sách học viên; từ chối nếu không phụ trách lớp đó (—) | Chức năng | `01-rd/req/user_stories/a2_instructor.md` (`US-A2-08`) |
-| REQ-03 | Ma trận phân quyền — Function `CLASS_MANAGEMENT` gác quyền, phạm vi theo lớp phụ trách (F1-12) | Chức năng | `01-rd/req/identity.md` — F1-12 |
-| REQ-04 | ~~Gỡ học viên khỏi lớp — xoá luôn lịch sử làm bài trong phạm vi lớp.~~ **ĐÃ ĐỔI 2026-10-14 (DEC-2026-1014-keep-learning-history-on-leave):** gỡ học viên khỏi lớp — giữ lịch sử làm bài, chỉ đánh dấu đã rời lớp. **Chốt 2026-09-01:** nút đặt ở cả bảng danh sách `class_management` và ở đây (F1-26) | Chức năng | `01-rd/req/identity.md` — F1-26 |
-| REQ-05 | Điểm tỷ lệ testcase mỗi bài, tính trên best-attempt (F4-13, F1-06) | Chức năng | `01-rd/req/judge-orchestration.md` — F4-13; `01-rd/req/identity.md` — F1-06 |
+| REQ-03 | Ma trận phân quyền — Function `CLASS_MANAGEMENT` gác quyền, phạm vi theo lớp phụ trách (F1-12) | Chức năng | `01-rd/req/F1_identity.md` — F1-12 |
+| REQ-04 | ~~Gỡ học viên khỏi lớp — xoá luôn lịch sử làm bài trong phạm vi lớp.~~ **ĐÃ ĐỔI 2026-10-14 (DEC-2026-1014-keep-learning-history-on-leave):** gỡ học viên khỏi lớp — giữ lịch sử làm bài, chỉ đánh dấu đã rời lớp. **Chốt 2026-09-01:** nút đặt ở cả bảng danh sách `class_management` và ở đây (F1-26) | Chức năng | `01-rd/req/F1_identity.md` — F1-26 |
+| REQ-05 | Điểm tỷ lệ testcase mỗi bài, tính trên best-attempt (F4-13, F1-06) | Chức năng | `01-rd/req/F4_judge-orchestration.md` — F4-13; `01-rd/req/F1_identity.md` — F1-06 |
 
 ---
 
@@ -155,9 +155,9 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 
 | Loại | Tham chiếu |
 |---|---|
-| Yêu cầu module | `01-rd/req/identity.md` — F1-06, F1-07, F1-10, F1-12, F1-26, F1-27. |
-| Yêu cầu module | `01-rd/req/judge-orchestration.md` — F4-13. |
+| Yêu cầu module | `01-rd/req/F1_identity.md` — F1-06, F1-07, F1-10, F1-12, F1-26, F1-27. |
+| Yêu cầu module | `01-rd/req/F4_judge-orchestration.md` — F4-13. |
 | User story | `01-rd/req/user_stories/a2_instructor.md` — `US-A2-08`. |
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` — mục 7.2 dòng `class_student_detail`. |
 | Màn hình liên quan | `01-rd/screens/teacher/INS0201_class_management.md` — màn nguồn, Câu hỏi mở Q4 (đã đóng, sinh ra slug này). |
-| Quyết định | Quyết định gốc 2026-08-28 lấp Q4 của `class_management.md` (ghi trong `01-rd/req/identity.md` F1-27, không có `DEC-` riêng cho chính slug này). |
+| Quyết định | Quyết định gốc 2026-08-28 lấp Q4 của `class_management.md` (ghi trong `01-rd/req/F1_identity.md` F1-27, không có `DEC-` riêng cho chính slug này). |

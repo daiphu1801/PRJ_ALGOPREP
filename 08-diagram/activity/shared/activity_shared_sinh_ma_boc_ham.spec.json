@@ -1,5 +1,5 @@
 {
-  "_": "Lõi kỹ thuật F3: sinh mã theo mô hình nộp bài, ánh xạ lỗi biên dịch về đúng dòng người học, so khớp kết quả. Nguồn: 01-rd/req/harness.md (F3-01 đến F3-13), 02-bd/architecture/harness.md mục 5 (trách nhiệm plugin), mục 6 (bốn chiến lược so khớp), mục 7 (nguyên lý dịch số dòng, các bước 2-4).",
+  "_": "Lõi kỹ thuật F3: sinh mã theo mô hình nộp bài, ánh xạ lỗi biên dịch về đúng dòng người học, so khớp kết quả. Nguồn: 01-rd/req/F3_harness.md (F3-01 đến F3-13), 02-bd/architecture/F3_harness.md mục 5 (trách nhiệm plugin), mục 6 (bốn chiến lược so khớp), mục 7 (nguyên lý dịch số dòng, các bước 2-4).",
   "_vi_sao_activity": "F3 là thuật toán có rẽ nhánh (theo mô hình nộp bài, theo vị trí dòng lỗi), không phải hội thoại giữa các tầng -- vẽ sequence sẽ ra một cột self-call dài không nói thêm được gì.",
   "_actor": "Không thuộc actor người nào: đây là US-A4-01 (01-rd/req/user_stories/a4_system.md:13), việc của hệ thống tự động. Đặt ở shared/ vì nó phục vụ mọi lượt nộp bài của mọi actor.",
   "kind": "activity",

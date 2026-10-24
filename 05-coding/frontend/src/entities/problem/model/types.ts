@@ -22,8 +22,8 @@ export type SolveState = "solved" | "attempted" | "todo";
 
 /**
  * `function_wrapper_supported` from `problem.problems`
- * (02-bd/database/problem-bank.md:20) — "both" is the default post
- * `DEC-2026-0824-dual-submission-model-per-problem`; "stdioOnly" is the harness.md F3-13 type-schema
+ * (02-bd/database/F2_problem-bank.md:20) — "both" is the default post
+ * `DEC-2026-0824-dual-submission-model-per-problem`; "stdioOnly" is the F3_harness.md F3-13 type-schema
  * exception (R2), where Function Wrapper is hidden and only Standard I/O is offered.
  */
 export type SubmissionModel = "both" | "stdioOnly";

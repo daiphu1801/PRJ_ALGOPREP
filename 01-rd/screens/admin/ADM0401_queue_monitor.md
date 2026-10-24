@@ -3,7 +3,7 @@
 > Mã màn hình: `ADM0401` [SoT: 02-bd/_rules/bd-template-9sheet.md — mục 8].
 > Slug chính tắc: `admin_queue_monitor` [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_queue_monitor`].
 > Phạm vi/Bounded Context: `judge-orchestration` (F4) [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_queue_monitor`]. Actor: A3 (Quản trị viên).
-> Nguồn sự thật (SoT): `01-rd/req/judge-orchestration.md` (F4-07, F4-10), `09-layoutBase/Admin - Hàng đợi chấm.dc.html` (prototype gốc, chỉ để tham khảo), `01-rd/req/user_stories/a3_admin.md` (`US-A3-03`).
+> Nguồn sự thật (SoT): `01-rd/req/F4_judge-orchestration.md` (F4-07, F4-10), `09-layoutBase/Admin - Hàng đợi chấm.dc.html` (prototype gốc, chỉ để tham khảo), `01-rd/req/user_stories/a3_admin.md` (`US-A3-03`).
 > Phiên bản RD: sửa 2026-10-10 theo `DEC-2026-1010-admin-operations-regroup`. Tài liệu này có thể đọc độc lập.
 
 ---
@@ -12,7 +12,7 @@
 
 Giám sát trực tiếp độ dài hàng đợi, tình trạng cụm worker go-judge và job đang chờ/đang chấm, để quản trị
 viên biết hệ thống có đang khoẻ không và xử lý kịp khi có bài nộp treo
-[SoT: 01-rd/req/judge-orchestration.md — F4-10].
+[SoT: 01-rd/req/F4_judge-orchestration.md — F4-10].
 
 Màn này **chỉ hiện cái bất thường trước**: một dải trạng thái một dòng cho biết hệ thống đang ổn hay không,
 phần chi tiết (worker, job) nằm bên dưới và gọn. Log hạ tầng của máy móc (bản ghi Outbox kẹt,
@@ -21,7 +21,7 @@ lượt nộp lỗi sandbox) **không còn nằm ở màn này** mà ở màn ri
 
 Đối chiếu prototype gốc: `09-layoutBase/Admin - Hàng đợi chấm.dc.html` (chỉ tham khảo từ 2026-10-03; prototype
 Next.js 2026-10-10 là sự thật về hình). File này mô tả **hành vi và UX ở mức yêu cầu** — không lặp lại đặc
-tả chức năng đã có ở `01-rd/req/judge-orchestration.md` (mục F4), chỉ trỏ tới và bổ sung phần đặc thù của màn.
+tả chức năng đã có ở `01-rd/req/F4_judge-orchestration.md` (mục F4), chỉ trỏ tới và bổ sung phần đặc thù của màn.
 Khái niệm **"kỳ thi"** **không tồn tại** trong hệ thống
 (`DEC-2026-0831-judge-orchestration-ops-details`), và màn `admin_rejudge` đã loại khỏi phạm vi
 (`DEC-2026-0828-remove-rejudge-scope`).
@@ -32,8 +32,8 @@ Khái niệm **"kỳ thi"** **không tồn tại** trong hệ thống
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Giám sát hàng đợi và tình trạng cụm judge engine | F4-10 | `01-rd/req/judge-orchestration.md` — F4-10 |
-| Timeout sweep bài nộp treo (bỏ qua job `PENDING` khi hàng đợi đang tạm dừng) | F4-07 | `01-rd/req/judge-orchestration.md` — F4-07, amendment 2026-10-10 |
+| Giám sát hàng đợi và tình trạng cụm judge engine | F4-10 | `01-rd/req/F4_judge-orchestration.md` — F4-10 |
+| Timeout sweep bài nộp treo (bỏ qua job `PENDING` khi hàng đợi đang tạm dừng) | F4-07 | `01-rd/req/F4_judge-orchestration.md` — F4-07, amendment 2026-10-10 |
 | Given-When-Then liên quan | — | `01-rd/req/user_stories/a3_admin.md` (`US-A3-03`) |
 
 Các khối của màn (thiết kế lại 2026-10-10, `DEC-2026-1010-admin-operations-regroup`):
@@ -69,7 +69,7 @@ Các khối của màn (thiết kế lại 2026-10-10, `DEC-2026-1010-admin-oper
 |---|---|---|
 | Màn hiện tại | `ADM0401` / `admin_queue_monitor` | `judge-orchestration` |
 | Màn liên quan | `ADM0404` / `admin_infra_events` — log máy | `judge-orchestration` |
-| Tài liệu yêu cầu | `01-rd/req/judge-orchestration.md` (F4-07, F4-10) | Nguồn SoT của màn |
+| Tài liệu yêu cầu | `01-rd/req/F4_judge-orchestration.md` (F4-07, F4-10) | Nguồn SoT của màn |
 | Prototype gốc | `09-layoutBase/Admin - Hàng đợi chấm.dc.html` | Bằng chứng bố cục ban đầu, chỉ tham khảo |
 
 ---
@@ -78,7 +78,7 @@ Các khối của màn (thiết kế lại 2026-10-10, `DEC-2026-1010-admin-oper
 
 - Bảng màu, spacing, component cụ thể — thuộc BD (`02-bd/screens/admin/ADM0401_queue_monitor.md`).
 - Hợp đồng API (số liệu cụm, điều khiển pause/autoscale, kênh cập nhật hàng đợi) — thuộc DD
-  (`03-dd/api/judge-orchestration.md`, chưa viết).
+  (`03-dd/api/F4_judge-orchestration.md`, chưa viết).
 - ~~Khái niệm "kỳ thi" (Q2) — chờ chủ dự án quyết định phạm vi.~~ **Đã chốt 2026-08-31**: không có khái niệm
   kỳ thi (`DEC-2026-0831-judge-orchestration-ops-details`).
 - Chấm lại hàng loạt (`DEC-2026-0828-remove-rejudge-scope`).
@@ -89,9 +89,9 @@ Các khối của màn (thiết kế lại 2026-10-10, `DEC-2026-1010-admin-oper
 
 | # | Câu hỏi | Vì sao chưa trả lời được | Đề xuất | Chủ sở hữu |
 | :-: | :--- | :--- | :--- | :--- |
-| Q1 | ~~Hai toggle "Tạm dừng tiêu thụ hàng đợi" và "Tự động mở rộng worker"...~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** mở rộng F4-10, không cần mã mới. | — | Đã ghi vào `01-rd/req/judge-orchestration.md` (amendment F4-10). Xem `DEC-2026-0831-judge-orchestration-ops-details`. | Đã đóng |
+| Q1 | ~~Hai toggle "Tạm dừng tiêu thụ hàng đợi" và "Tự động mở rộng worker"...~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** mở rộng F4-10, không cần mã mới. | — | Đã ghi vào `01-rd/req/F4_judge-orchestration.md` (amendment F4-10). Xem `DEC-2026-0831-judge-orchestration-ops-details`. | Đã đóng |
 | Q2 | ~~**Khái niệm "kỳ thi"...**~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** chỉ là nhãn phân loại độ ưu tiên, không có luồng "quản lý kỳ thi" nào. **Cập nhật 2026-10-10:** nhãn "ưu tiên" nay đề xuất bỏ hẳn khỏi màn (xem mục 2, chờ chủ dự án xác nhận). | — | Xem `DEC-2026-0831-judge-orchestration-ops-details` và `DEC-2026-1010-admin-operations-regroup`. | Chờ xác nhận phần bỏ ưu tiên |
-| Q3 | **Quy tắc mới 2026-10-10, đã chốt:** khi Admin tạm dừng tiêu thụ hàng đợi, timeout sweep (F4-07) bỏ qua job `PENDING`; mọi thao tác ghi vận hành của màn được ghi vào Nhật ký hệ thống, phân loại "Cấu hình", kèm giá trị cũ và mới (đúng F1-14). | — | `01-rd/req/judge-orchestration.md` (amendment 2026-10-10); `DEC-2026-1010-admin-operations-regroup` | Đã đóng |
+| Q3 | **Quy tắc mới 2026-10-10, đã chốt:** khi Admin tạm dừng tiêu thụ hàng đợi, timeout sweep (F4-07) bỏ qua job `PENDING`; mọi thao tác ghi vận hành của màn được ghi vào Nhật ký hệ thống, phân loại "Cấu hình", kèm giá trị cũ và mới (đúng F1-14). | — | `01-rd/req/F4_judge-orchestration.md` (amendment 2026-10-10); `DEC-2026-1010-admin-operations-regroup` | Đã đóng |
 | Q4 | ~~Admin có cần trần số worker và ngưỡng thu hẹp cho tự động mở rộng không?~~ **ĐÃ CHỐT 2026-10-10 (chủ dự án đã xác nhận 2026-10-10, tiêu chí ponytail bậc 3 và 5):** không thêm; "tối đa 8" là hằng số `application.yml`. Rủi ro autoscale thật trên Docker Compose ghi ở BD `ADM0401` mục "Rủi ro kỹ thuật" (R2) | - | Đã chốt, trùng BD Q8 | Đã đóng |
 
 ---
@@ -99,8 +99,8 @@ Các khối của màn (thiết kế lại 2026-10-10, `DEC-2026-1010-admin-oper
 ## 5. Danh sách yêu cầu (REQ)
 | ID | Yêu cầu | Loại | Nguồn/SoT |
 |---|---|---|---|
-| REQ-01 | Giám sát hàng đợi và tình trạng cụm judge engine (F4-10) | Chức năng | `01-rd/req/judge-orchestration.md` — F4-10 |
-| REQ-02 | Timeout sweep bài nộp treo (F4-07), bỏ qua job `PENDING` khi hàng đợi đang tạm dừng | Chức năng | `01-rd/req/judge-orchestration.md` — F4-07, amendment 2026-10-10 |
+| REQ-01 | Giám sát hàng đợi và tình trạng cụm judge engine (F4-10) | Chức năng | `01-rd/req/F4_judge-orchestration.md` — F4-10 |
+| REQ-02 | Timeout sweep bài nộp treo (F4-07), bỏ qua job `PENDING` khi hàng đợi đang tạm dừng | Chức năng | `01-rd/req/F4_judge-orchestration.md` — F4-07, amendment 2026-10-10 |
 | REQ-03 | Given-When-Then liên quan (—) | Chức năng | `01-rd/req/user_stories/a3_admin.md` (`US-A3-03`) |
 | REQ-04 | **Cho** hàng đợi đang bình thường, **Khi** quản trị viên mở màn, **Thì** dải trạng thái hiện "Bình thường" kèm "Cập nhật lúc"; **Khi** có từ một worker quá tải trở lên hoặc hàng đợi đang dồn hoặc đang tạm dừng, **Thì** dải đổi sang trạng thái tương ứng; **Khi** quá 60 giây không nhận dữ liệu mới, **Thì** hiện "Dữ liệu cũ". | Chức năng | Chốt 2026-10-10 (`DEC-2026-1010-admin-operations-regroup`) |
 | REQ-05 | **Cho** quản trị viên bật "Tạm dừng tiêu thụ hàng đợi" hoặc tắt "Tự động mở rộng worker", **Khi** bấm công tắc, **Thì** hiện hộp xác nhận nêu hậu quả; chỉ gửi lệnh sau khi xác nhận; **Khi** lệnh thành công, **Thì** thao tác được ghi vào Nhật ký hệ thống (phân loại "Cấu hình"). Tắt tạm dừng và bật tự động mở rộng không cần hỏi. | Chức năng | Chốt 2026-10-10 |
@@ -143,7 +143,7 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 
 | Loại | Tham chiếu |
 |---|---|
-| Yêu cầu module | `01-rd/req/judge-orchestration.md` — F4-07, F4-10. |
+| Yêu cầu module | `01-rd/req/F4_judge-orchestration.md` — F4-07, F4-10. |
 | User story | `01-rd/req/user_stories/a3_admin.md` — `US-A3-03`. |
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` mục 7.3 — dòng `admin_queue_monitor`. |
 | Prototype gốc | `09-layoutBase/Admin - Hàng đợi chấm.dc.html` — chỉ tham khảo. |

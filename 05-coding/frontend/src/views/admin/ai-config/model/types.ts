@@ -1,6 +1,6 @@
 /**
- * AI quality configuration (F5-23): one versioned prompt per AI feature, its model, rubric weights
- * and answer guards. Rate limits, the token cap and prices moved to admin_ai_limits on 2026-10-10
+ * AI quality configuration (F5-23): one versioned prompt per AI feature, its model and answer guards
+ * (no rubric: DEC-2026-1014-drop-solution-review-rubric). Rate limits, the token cap and prices moved to admin_ai_limits on 2026-10-10
  * (DEC-2026-1010-split-ai-admin-screens).
  *
  * Three features, matching entities/ai-usage: solution review, mock interview, testcase generation.

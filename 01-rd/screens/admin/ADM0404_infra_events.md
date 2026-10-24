@@ -3,7 +3,7 @@
 > Mã màn hình: `ADM0404` [SoT: 02-bd/_rules/bd-template-9sheet.md — mục 8, dòng thêm 2026-10-10].
 > Slug chính tắc: `admin_infra_events` (màn mới, thêm 2026-10-10; chưa có trong `01-rd/overview/system_survey.md` trước ngày này, đã bổ sung mục 7.3).
 > Phạm vi/Bounded Context: `judge-orchestration` (F4). Actor: A3 (Quản trị viên). Route: `/admin/infra-events`, nằm trong nhóm điều hướng "Vận hành", giữa "Hàng đợi chấm" và "Ngôn ngữ và giới hạn".
-> Nguồn sự thật (SoT): `01-rd/req/judge-orchestration.md` (F4-10), `DEC-2026-1010-admin-operations-regroup`. Không có mockup `.dc.html` riêng: khối này trước đây là phần cuối của `09-layoutBase/Admin - Hàng đợi chấm.dc.html` (danh sách "Sự kiện hạ tầng gần đây").
+> Nguồn sự thật (SoT): `01-rd/req/F4_judge-orchestration.md` (F4-10), `DEC-2026-1010-admin-operations-regroup`. Không có mockup `.dc.html` riêng: khối này trước đây là phần cuối của `09-layoutBase/Admin - Hàng đợi chấm.dc.html` (danh sách "Sự kiện hạ tầng gần đây").
 > Tài liệu này có thể đọc độc lập.
 
 ---
@@ -18,7 +18,7 @@ riêng, còn màn Hàng đợi chấm phải ngắn để đọc nhanh.
 Ranh giới đã chốt, không đổi: **sự kiện hạ tầng không phải hành động quản trị của người**. Hành động của người
 (đổi quyền, khoá tài khoản, đổi cấu hình...) thuộc `ADM0403` Nhật ký hệ thống
 (đúng phân định "chỉ ghi hành động quản trị của người, không gộp sự kiện hạ tầng" đã chốt ở F1-14,
-`01-rd/req/identity.md`, và nhắc lại ở `01-rd/screens/admin/ADM0403_system_log.md` mục 1).
+`01-rd/req/F1_identity.md`, và nhắc lại ở `01-rd/screens/admin/ADM0403_system_log.md` mục 1).
 
 ---
 
@@ -26,7 +26,7 @@ Ranh giới đã chốt, không đổi: **sự kiện hạ tầng không phải 
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Xem danh sách sự kiện hạ tầng, có lọc theo mức độ, dịch vụ, khoảng ngày và tìm kiếm | F4-10 | `01-rd/req/judge-orchestration.md` — F4-10 (giám sát hàng đợi và tình trạng cụm), `DEC-2026-1010-admin-operations-regroup` |
+| Xem danh sách sự kiện hạ tầng, có lọc theo mức độ, dịch vụ, khoảng ngày và tìm kiếm | F4-10 | `01-rd/req/F4_judge-orchestration.md` — F4-10 (giám sát hàng đợi và tình trạng cụm), `DEC-2026-1010-admin-operations-regroup` |
 
 Nội dung màn:
 
@@ -48,14 +48,14 @@ Màn Hàng đợi chấm (`ADM0401`) giữ **một thẻ liên kết** hiển th
 | Màn hiện tại | `ADM0404` / `admin_infra_events` | `judge-orchestration` |
 | Màn liên quan | `ADM0401` / `admin_queue_monitor` — thẻ liên kết tới màn này | `judge-orchestration` |
 | Màn đối chiếu | `ADM0403` / `admin_system_log` — hành động của người, không lẫn | `identity` |
-| Tài liệu yêu cầu | `01-rd/req/judge-orchestration.md` (F4-10) | Nguồn SoT của màn |
+| Tài liệu yêu cầu | `01-rd/req/F4_judge-orchestration.md` (F4-10) | Nguồn SoT của màn |
 
 ---
 
 ## 3. Ngoài phạm vi (Out of Scope)
 
 - Bảng màu, spacing, component cụ thể — thuộc BD (`02-bd/screens/admin/ADM0404_infra_events.md`).
-- Hợp đồng API, nguồn dữ liệu chính xác và thời hạn lưu sự kiện — thuộc DD (`03-dd/api/judge-orchestration.md`, chưa viết).
+- Hợp đồng API, nguồn dữ liệu chính xác và thời hạn lưu sự kiện — thuộc DD (`03-dd/api/F4_judge-orchestration.md`, chưa viết).
 - Xử lý sự cố từ màn này (khởi động lại worker, thử lại job...): không có, màn chỉ đọc.
 - Cảnh báo chủ động (gửi thông báo khi có ERROR): ngoài phạm vi đồ án, theo dõi bằng Grafana.
 
@@ -114,7 +114,7 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 
 | Loại | Tham chiếu |
 |---|---|
-| Yêu cầu module | `01-rd/req/judge-orchestration.md` — F4-10. |
+| Yêu cầu module | `01-rd/req/F4_judge-orchestration.md` — F4-10. |
 | Màn liên quan | `01-rd/screens/admin/ADM0401_queue_monitor.md`; `01-rd/screens/admin/ADM0403_system_log.md` (cùng mẫu thanh lọc). |
 | Quyết định | `DEC-2026-1010-admin-operations-regroup`. |
 | Báo cáo | `06-plan/reports/261010-1030-admin-van-hanh-userflow-va-mau-thuan/report.md`. |

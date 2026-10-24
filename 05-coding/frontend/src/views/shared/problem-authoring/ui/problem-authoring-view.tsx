@@ -421,7 +421,7 @@ function ProblemAuthoringForm({
     }
   }
 
-  // RD amended 2026-09-28 (01-rd/req/problem-bank.md F2-14): only APPROVED rows count. An
+  // RD amended 2026-09-28 (01-rd/req/F2_problem-bank.md F2-14): only APPROVED rows count. An
   // AI-generated draft nobody has reviewed must not help a problem reach the publish bar.
   const approved = draft.testcases.filter((row) => row.approved);
   const drafts = draft.testcases.filter((row) => !row.approved);

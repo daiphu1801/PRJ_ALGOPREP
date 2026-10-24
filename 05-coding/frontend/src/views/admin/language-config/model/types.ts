@@ -38,7 +38,7 @@ export type JudgeDefaults = {
  *
  * Modelled as ONE global set, not per-language, following the static prototype
  * (09-layoutBase/Admin - Ngôn ngữ và giới hạn.dc.html:271 `state.sb` is a flat object with no
- * language key). This contradicts 02-bd/database/judge-orchestration.md section 1.5, which puts the
+ * language key). This contradicts 02-bd/database/F4_judge-orchestration.md section 1.5, which puts the
  * three columns on each `language_configs` row. BD section 3.3 raises it as open question Q1 and
  * needs a DEC before DD — see the debt row in 06-plan/PROTOTYPE_DEBT.md section 9.
  */
@@ -51,7 +51,7 @@ export type SandboxConfig = {
 /**
  * Limits applied when the system RUNS the Python script the AI wrote to generate testcase inputs
  * (F2-14, BD ADM0301/ADM0501 Khu vực F). Separate from the submission limits: the script is meant to
- * print a lot, so it gets its own run-time and output caps (RD problem-bank.md:88-91). Global, one set.
+ * print a lot, so it gets its own run-time and output caps (RD F2_problem-bank.md:88-91). Global, one set.
  */
 export type GeneratorSandbox = {
   maxRuntimeSeconds: number;

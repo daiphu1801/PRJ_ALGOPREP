@@ -3,7 +3,7 @@
 > Mã màn hình: `SHR0301` [SoT: 02-bd/_rules/bd-template-9sheet.md — mục 8].
 > Slug chính tắc: `interview_question_management` [SoT: 01-rd/overview/system_survey.md — mục 7.0 dòng `interview_question_management`].
 > Phạm vi/Bounded Context: `interview-bank` (F6). Actor: A2, A3 (màn dùng chung, phạm vi dữ liệu theo quyền).
-> Nguồn sự thật (SoT): `01-rd/req/interview-bank.md` (F6), `09-layoutBase/Admin - Câu hỏi phỏng vấn.dc.html` (prototype), `01-rd/req/identity.md` (F1-10 tới F1-14).
+> Nguồn sự thật (SoT): `01-rd/req/F6_interview-bank.md` (F6), `09-layoutBase/Admin - Câu hỏi phỏng vấn.dc.html` (prototype), `01-rd/req/F1_identity.md` (F1-10 tới F1-14).
 > Tài liệu này có thể đọc độc lập.
 
 ---
@@ -16,7 +16,7 @@ Bảng quản trị **nội dung** của ngân hàng câu hỏi phỏng vấn l�
 
 Đã chốt ngày 2026-08-25 (owner instruction, kết thúc Câu hỏi mở Q1 cũ): mount ở cả
 `/instructor/interview-questions` và `/admin/interview-questions`, cùng một view/BD/DD, phạm vi do quyền
-`INTERVIEW_BANK_MANAGEMENT` quyết định (`01-rd/req/identity.md` — F1-10 tới F1-12) — cả A2 và A3 đều thấy và
+`INTERVIEW_BANK_MANAGEMENT` quyết định (`01-rd/req/F1_identity.md` — F1-10 tới F1-12) — cả A2 và A3 đều thấy và
 sửa toàn bộ kho câu hỏi hệ thống (không chia theo lớp phụ trách — xem mục 2, cập nhật 2026-08-28,
 `DEC-2026-0828-remove-per-class-interview-set`). Ghi quyết định:
 `DEC-2026-0825-shared-content-authoring-screens`.
@@ -43,11 +43,11 @@ Phân biệt rạch ròi với hai màn phía người học, **không trùng l�
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Tự chấm mức độ thuộc bài (spaced repetition) — mã được `INTERVIEW_BANK_MANAGEMENT` gác | F6-12 | `01-rd/req/interview-bank.md` — F6-12 |
-| Function `INTERVIEW_BANK_MANAGEMENT` gác F6-12 trong ma trận phân quyền | F1-10, F1-12 | `01-rd/req/identity.md` — F1-10, F1-12 |
-| Phân loại theo chủ đề và mức độ khó; tìm kiếm và lọc (đọc phía người học, màn này tái dùng cùng phân loại). **Cập nhật 2026-10-03:** độ khó do ADMIN quản lý (danh mục dữ liệu, giống chủ đề; ba mức Dễ/Trung bình/Khó chỉ là dữ liệu khởi tạo). Bộ lọc theo mức độ khó giữ nguyên, nhưng tập mức không cố định | F6-01, F6-02 | `01-rd/req/interview-bank.md` — F6-01, F6-02 |
-| Tiêu chí chuẩn mà AI đối chiếu khi người học luyện — nội dung do màn này soạn ra | F6-08 | `01-rd/req/interview-bank.md` — F6-08 |
-| Mọi thao tác quản trị ghi vào Nhật ký hệ thống | F1-14 | `01-rd/req/identity.md` — F1-14 |
+| Tự chấm mức độ thuộc bài (spaced repetition) — mã được `INTERVIEW_BANK_MANAGEMENT` gác | F6-12 | `01-rd/req/F6_interview-bank.md` — F6-12 |
+| Function `INTERVIEW_BANK_MANAGEMENT` gác F6-12 trong ma trận phân quyền | F1-10, F1-12 | `01-rd/req/F1_identity.md` — F1-10, F1-12 |
+| Phân loại theo chủ đề và mức độ khó; tìm kiếm và lọc (đọc phía người học, màn này tái dùng cùng phân loại). **Cập nhật 2026-10-03:** độ khó do ADMIN quản lý (danh mục dữ liệu, giống chủ đề; ba mức Dễ/Trung bình/Khó chỉ là dữ liệu khởi tạo). Bộ lọc theo mức độ khó giữ nguyên, nhưng tập mức không cố định | F6-01, F6-02 | `01-rd/req/F6_interview-bank.md` — F6-01, F6-02 |
+| Tiêu chí chuẩn mà AI đối chiếu khi người học luyện — nội dung do màn này soạn ra | F6-08 | `01-rd/req/F6_interview-bank.md` — F6-08 |
+| Mọi thao tác quản trị ghi vào Nhật ký hệ thống | F1-14 | `01-rd/req/F1_identity.md` — F1-14 |
 
 **Cập nhật 2026-08-28:** F6-11 (bộ câu hỏi riêng theo lớp) đã loại khỏi phạm vi —
 `DEC-2026-0828-remove-per-class-interview-set`. Toàn bộ ngân hàng câu hỏi giờ là **một kho duy nhất, dùng
@@ -55,7 +55,7 @@ chung ở cấp hệ thống** — không còn khái niệm "nửa F6-11 thuộc
 trước.
 
 **Cập nhật 2026-08-30 (owner instruction):** khoảng trống mã cho việc quản trị nội dung ngân hàng câu hỏi
-đã lấp — cấp **`F6-13`** (`01-rd/req/interview-bank.md`) và **`US-A2-10`** (`01-rd/req/user_stories/a2_instructor.md`). Đóng luôn một
+đã lấp — cấp **`F6-13`** (`01-rd/req/F6_interview-bank.md`) và **`US-A2-10`** (`01-rd/req/user_stories/a2_instructor.md`). Đóng luôn một
 gói Q2 → Q7 (trừ Q1 đã đóng từ trước) — xem mục 5.
 
 Đối chiếu `09-layoutBase/Admin - Câu hỏi phỏng vấn.dc.html`:
@@ -105,12 +105,12 @@ Các mô tả dưới đây về prototype được giữ làm bằng chứng ng
    - **Khối "Đào sâu"** — danh sách câu hỏi truy vấn tiếp theo cho cùng một câu hỏi gốc (dòng 194-204;
      bản dựng chỉ hiện số lượng ở cột "Đào sâu", nội dung xem ở màn soạn). Đây là
      dữ liệu phục vụ AI chất vấn sâu hơn, gần với giai đoạn Phản biện của phiên phỏng vấn (F5-11,
-     `01-rd/req/ai-review.md`) nhưng **không phải** F6-04 (gợi ý hướng tiếp cận), F6-05 (khung trả lời chuẩn)
-     hay F6-06 (từ khoá cốt lõi) [SoT: 01-rd/req/interview-bank.md — F6-04, F6-05, F6-06]. **Chốt 2026-08-30:** thuộc `F6-13` — đóng
+     `01-rd/req/F5_ai-review.md`) nhưng **không phải** F6-04 (gợi ý hướng tiếp cận), F6-05 (khung trả lời chuẩn)
+     hay F6-06 (từ khoá cốt lõi) [SoT: 01-rd/req/F6_interview-bank.md — F6-04, F6-05, F6-06]. **Chốt 2026-08-30:** thuộc `F6-13` — đóng
      Q3.
    - **Khối "Tiêu chí đánh giá"** (bản dựng chỉ hiện số lượng ở cột "Tiêu chí") — 3 tới 4 tiêu chí, mỗi tiêu chí một trọng số phần trăm, các trọng số trong
      dữ liệu mẫu cộng đúng 100% (dòng 206-221; ví dụ `IQ-033`: 25 + 30 + 30 + 15, dòng 391). **Chốt
-     2026-08-30:** đây chính là "tiêu chí chuẩn" mà F6-08 đối chiếu [SoT: 01-rd/req/interview-bank.md — F6-08], là
+     2026-08-30:** đây chính là "tiêu chí chuẩn" mà F6-08 đối chiếu [SoT: 01-rd/req/F6_interview-bank.md — F6-08], là
      rubric thứ ba trong hệ thống, độc lập với rubric F5-23/F5-15, trọng số giữ lại (`F6-13`) — đóng Q3.
    - **Thống kê sử dụng và hành động** — prototype: chân thẻ "Dùng 184 lần · điểm TB 3.8/5" (dòng 224, 385)
      và ba hành động "Sửa" / "Nhân bản" / nút xoá (dòng 226-228). Bản dựng: hai cột "Lượt dùng" và "Điểm
@@ -143,7 +143,7 @@ hỏi phỏng vấn.dc.html:56, 358-366].
 | Màn/tài liệu | Vai trò | Bounded Context |
 |---|---|---|
 | Màn hiện tại | `SHR0301` / `interview_question_management` | `interview-bank` |
-| Tài liệu yêu cầu | `01-rd/req/interview-bank.md` (F6) | Nguồn SoT của màn |
+| Tài liệu yêu cầu | `01-rd/req/F6_interview-bank.md` (F6) | Nguồn SoT của màn |
 | Prototype | `09-layoutBase/Admin - Câu hỏi phỏng vấn.dc.html` | Bằng chứng bố cục và trạng thái |
 
 ---
@@ -153,9 +153,9 @@ hỏi phỏng vấn.dc.html:56, 358-366].
 - Bảng màu, spacing, component cụ thể, breakpoint responsive, bố cục danh sách và nút thao tác dạng biểu tượng — thuộc BD
   (`02-bd/screens/shared/SHR0301_interview_question_management.md`).
 - Hợp đồng API (danh sách câu hỏi có lọc/tìm/phân trang, tạo/sửa/xoá, nhập CSV; nhân bản đã bỏ 2026-10-08) — dải chỉ số thống kê đã bỏ 2026-10-01 —
-  thuộc DD (`03-dd/api/interview-bank.md`, chưa viết).
+  thuộc DD (`03-dd/api/F6_interview-bank.md`, chưa viết).
 - Lược đồ dữ liệu của một câu hỏi (trường đào sâu, trường tiêu chí có trọng số, cơ chế xoá mềm) — thuộc
-  `02-bd/database/interview-bank.md`, chưa viết).
+  `02-bd/database/F6_interview-bank.md`, chưa viết).
 - Nội dung Chế độ học và Chế độ luyện (F6-04 tới F6-08) — thuộc
   `01-rd/screens/users/USR0402_interview_question_detail.md`.
 - Duyệt/lọc/tự chấm phía người học (F6-01 tới F6-03, F6-12) — thuộc
@@ -172,12 +172,12 @@ hỏi phỏng vấn.dc.html:56, 358-366].
 
 | # | Câu hỏi | Vì sao chưa trả lời được | Đề xuất | Chủ sở hữu | Ưu tiên |
 | :-: | :--- | :--- | :--- | :--- | :--- |
-| Q1 | ~~`interview-bank.md` gán F6-11 cho A2, nhưng prototype dựng trong shell Admin — thuộc actor nào?~~ **ĐÃ CHỐT 2026-08-25 (owner instruction):** dùng chung một màn, mount ở cả `/instructor/interview-questions` và `/admin/interview-questions`, phạm vi dữ liệu do quyền `INTERVIEW_BANK_MANAGEMENT` quyết định [SoT: 01-rd/req/identity.md — F1-10 tới F1-12]. Ghi quyết định `DEC-2026-0825-shared-content-authoring-screens`, chốt cùng lúc với `problem_management`/`problem_authoring`. **Cập nhật 2026-08-28:** phần "class_management giữ phần gán bộ câu hỏi cho lớp" không còn đúng — F6-11 đã loại khỏi phạm vi (`DEC-2026-0828-remove-per-class-interview-set`), màn này giờ phủ toàn bộ, không chia nửa với `class_management` nữa. | — | Đã chốt. | Đã đóng | — |
+| Q1 | ~~`F6_interview-bank.md` gán F6-11 cho A2, nhưng prototype dựng trong shell Admin — thuộc actor nào?~~ **ĐÃ CHỐT 2026-08-25 (owner instruction):** dùng chung một màn, mount ở cả `/instructor/interview-questions` và `/admin/interview-questions`, phạm vi dữ liệu do quyền `INTERVIEW_BANK_MANAGEMENT` quyết định [SoT: 01-rd/req/F1_identity.md — F1-10 tới F1-12]. Ghi quyết định `DEC-2026-0825-shared-content-authoring-screens`, chốt cùng lúc với `problem_management`/`problem_authoring`. **Cập nhật 2026-08-28:** phần "class_management giữ phần gán bộ câu hỏi cho lớp" không còn đúng — F6-11 đã loại khỏi phạm vi (`DEC-2026-0828-remove-per-class-interview-set`), màn này giờ phủ toàn bộ, không chia nửa với `class_management` nữa. | — | Đã chốt. | Đã đóng | — |
 | Q2 | ~~Có tồn tại một kho câu hỏi dùng chung toàn hệ thống do A2/A3 quản hay không? Cần mã mới cho CRUD kho dùng chung.~~ **ĐÃ CHỐT 2026-08-30 (owner instruction):** cấp `F6-13` — "quản trị nội dung ngân hàng câu hỏi dùng chung: tạo/sửa/nhân bản/xoá", gán vào Function `INTERVIEW_BANK_MANAGEMENT` (F1-12) cùng F6-12. Bổ sung `US-A2-10`. | — | Đã chốt — xem `F6-13`. | Đã đóng | — |
 | Q3 | ~~"Đào sâu" và "Tiêu chí đánh giá có trọng số" không gán được mã nào — độc lập với rubric F5 hay chính là tiêu chí chuẩn của F6-08?~~ **ĐÃ CHỐT 2026-08-30:** cả hai thuộc `F6-13`. "Tiêu chí đánh giá" chính là tiêu chí chuẩn F6-08 đối chiếu — rubric thứ ba, độc lập với F5-15/F5-23; giữ trọng số vì Chế độ luyện cần mốc tính điểm theo từng tiêu chí. | — | Đã chốt — xem `F6-13`. | Đã đóng | — |
 | Q4 | ~~Việc thêm/sửa câu hỏi diễn ra ở đâu — modal, drawer, hay màn riêng?~~ **ĐÃ CHỐT 2026-08-30:** một màn soạn riêng, slug `interview_question_authoring` (F6-13) — 4 nhóm trường lồng nhau quá nặng cho modal, song song tiền lệ `problem_authoring`. Chưa có prototype, đánh dấu **[Đợi nextjs]**; cần thêm slug vào `system_survey.md` khi viết BD/DD. | — | Đã chốt — xem `F6-13`. | Đã đóng | — |
 | Q5 | ~~"Nhập CSV" và 4 thẻ chỉ số chất lượng nội dung có thuộc phạm vi đồ án không? Câu hỏi thiếu tiêu chí thì Chế độ luyện xử lý thế nào?~~ **ĐÃ CHỐT 2026-08-30:** Nhập CSV ngoài phạm vi bản đầu, không cấp mã (**đảo lại 2026-10-08, owner: làm thật, thuộc `F6-13`** — xem mục 2 điểm 2). 4 thẻ chỉ số là dẫn xuất trình bày, không cần mã riêng. Câu hỏi thiếu tiêu chí vẫn hiện ở Chế độ học, ẩn khỏi Chế độ luyện (F6-13, F6-08). | — | Đã chốt — xem `F6-13`. | Đã đóng | — |
-| Q6 | ~~Danh mục chủ đề lệch giữa `interview-bank.md` (4 chủ đề) và prototype (5 chủ đề) — danh mục nào chuẩn?~~ **ĐÃ CHỐT 2026-08-30:** lấy danh mục prototype làm chuẩn — 5 chủ đề (Lý thuyết CS, System design, Database, Ngôn ngữ, Hành vi). `F6-01` trong `interview-bank.md` đã sửa lại cho khớp. **Bị thay thế 2026-10-01** (`DEC-2026-1001-admin-configurable-settings`, thay tiểu quyết định 4 của `DEC-2026-0830-interview-bank-crud`): 5 chủ đề chỉ là dữ liệu khởi tạo, ADMIN thêm/đổi tên/sắp xếp/xoá được; chữ "5 chủ đề" ở `F6-01` trong `01-rd/req/interview-bank.md` cần mở rộng (ngoài phạm vi đợt đồng bộ này). | — | Đã chốt. | Đã đóng | — |
+| Q6 | ~~Danh mục chủ đề lệch giữa `F6_interview-bank.md` (4 chủ đề) và prototype (5 chủ đề) — danh mục nào chuẩn?~~ **ĐÃ CHỐT 2026-08-30:** lấy danh mục prototype làm chuẩn — 5 chủ đề (Lý thuyết CS, System design, Database, Ngôn ngữ, Hành vi). `F6-01` trong `F6_interview-bank.md` đã sửa lại cho khớp. **Bị thay thế 2026-10-01** (`DEC-2026-1001-admin-configurable-settings`, thay tiểu quyết định 4 của `DEC-2026-0830-interview-bank-crud`): 5 chủ đề chỉ là dữ liệu khởi tạo, ADMIN thêm/đổi tên/sắp xếp/xoá được; chữ "5 chủ đề" ở `F6-01` trong `01-rd/req/F6_interview-bank.md` cần mở rộng (ngoài phạm vi đợt đồng bộ này). | — | Đã chốt. | Đã đóng | — |
 | Q7 | ~~Xoá một câu hỏi đã dùng — xoá mềm hay cứng? Có ghi Nhật ký hệ thống không?~~ **ĐÃ CHỐT 2026-08-30:** xoá mềm (đánh dấu ngừng dùng, ẩn khỏi màn phía học viên, không cascade xoá phiên cũ) — khớp đúng câu chữ hộp thoại prototype. Có, mọi thao tác thêm/sửa/xoá và nhập CSV ghi vào F1-14 (F6-13; "nhân bản" bỏ 2026-10-08). | — | Đã chốt — xem `F6-13`. | Đã đóng | — |
 
 ---
@@ -185,11 +185,11 @@ hỏi phỏng vấn.dc.html:56, 358-366].
 ## 5. Danh sách yêu cầu (REQ)
 | ID | Yêu cầu | Loại | Nguồn/SoT |
 |---|---|---|---|
-| REQ-01 | Tự chấm mức độ thuộc bài (spaced repetition) — mã được `INTERVIEW_BANK_MANAGEMENT` gác (F6-12) | Chức năng | `01-rd/req/interview-bank.md` — F6-12 |
-| REQ-02 | Function `INTERVIEW_BANK_MANAGEMENT` gác F6-12 trong ma trận phân quyền (F1-10, F1-12) | Chức năng | `01-rd/req/identity.md` — F1-10, F1-12 |
-| REQ-03 | Phân loại theo chủ đề và mức độ khó; tìm kiếm và lọc (đọc phía người học, màn này tái dùng cùng phân loại). **Cập nhật 2026-10-03:** độ khó do ADMIN quản lý (danh mục dữ liệu, giống chủ đề; ba mức Dễ/Trung bình/Khó chỉ là dữ liệu khởi tạo). Bộ lọc theo mức độ khó giữ nguyên, nhưng tập mức không cố định (F6-01, F6-02) | Chức năng | `01-rd/req/interview-bank.md` — F6-01, F6-02 |
-| REQ-04 | Tiêu chí chuẩn mà AI đối chiếu khi người học luyện — nội dung do màn này soạn ra (F6-08) | Chức năng | `01-rd/req/interview-bank.md` — F6-08 |
-| REQ-05 | Mọi thao tác quản trị ghi vào Nhật ký hệ thống (F1-14) | Chức năng | `01-rd/req/identity.md` — F1-14 |
+| REQ-01 | Tự chấm mức độ thuộc bài (spaced repetition) — mã được `INTERVIEW_BANK_MANAGEMENT` gác (F6-12) | Chức năng | `01-rd/req/F6_interview-bank.md` — F6-12 |
+| REQ-02 | Function `INTERVIEW_BANK_MANAGEMENT` gác F6-12 trong ma trận phân quyền (F1-10, F1-12) | Chức năng | `01-rd/req/F1_identity.md` — F1-10, F1-12 |
+| REQ-03 | Phân loại theo chủ đề và mức độ khó; tìm kiếm và lọc (đọc phía người học, màn này tái dùng cùng phân loại). **Cập nhật 2026-10-03:** độ khó do ADMIN quản lý (danh mục dữ liệu, giống chủ đề; ba mức Dễ/Trung bình/Khó chỉ là dữ liệu khởi tạo). Bộ lọc theo mức độ khó giữ nguyên, nhưng tập mức không cố định (F6-01, F6-02) | Chức năng | `01-rd/req/F6_interview-bank.md` — F6-01, F6-02 |
+| REQ-04 | Tiêu chí chuẩn mà AI đối chiếu khi người học luyện — nội dung do màn này soạn ra (F6-08) | Chức năng | `01-rd/req/F6_interview-bank.md` — F6-08 |
+| REQ-05 | Mọi thao tác quản trị ghi vào Nhật ký hệ thống (F1-14) | Chức năng | `01-rd/req/F1_identity.md` — F1-14 |
 
 ---
 
@@ -228,7 +228,7 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 
 | Loại | Tham chiếu |
 |---|---|
-| Yêu cầu module | `01-rd/req/identity.md` — F1-12, Function `INTERVIEW_BANK_MANAGEMENT` gác F6-12, F1-14; `01-rd/req/interview-bank.md` — F6-01 tới F6-13. |
+| Yêu cầu module | `01-rd/req/F1_identity.md` — F1-12, Function `INTERVIEW_BANK_MANAGEMENT` gác F6-12, F1-14; `01-rd/req/F6_interview-bank.md` — F6-01 tới F6-13. |
 | User story | `01-rd/req/user_stories/a2_instructor.md` — `US-A2-10` (chốt 2026-08-30). |
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` mục 7.2 (khu Giảng viên) và mục 7.0 (khu dùng chung). |
 | Prototype | `09-layoutBase/Admin - Câu hỏi phỏng vấn.dc.html` — prototype (504 dòng). |

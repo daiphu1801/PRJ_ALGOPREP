@@ -8,9 +8,9 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  computeInterviewResult,
-  getScriptedQuestion,
-  HINT_TEXT,
+  useFinishInterview,
+  useInterviewHint,
+  useNextInterviewQuestion,
   type ChatMessage,
   type InterviewEntryType,
   type InterviewResult,
@@ -18,6 +18,7 @@ import {
   type InterviewerLevel,
   type MaxTurns,
 } from "@/entities/mock-interview";
+import { toast } from "@/shared/lib/toast-store";
 
 export type ScreenState = "entry" | "running" | "result";
 
@@ -28,6 +29,10 @@ let messageIdSeq = 0;
 function nextId(): string {
   messageIdSeq += 1;
   return `msg-${messageIdSeq}`;
+}
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
 }
 
 export function useMockInterviewSession() {
@@ -50,6 +55,12 @@ export function useMockInterviewSession() {
   );
   const [streamedLength, setStreamedLength] = useState(0);
   const [result, setResult] = useState<InterviewResult | null>(null);
+
+  const { mutateAsync: nextQuestion } = useNextInterviewQuestion();
+  const { mutateAsync: fetchHint } = useInterviewHint();
+  const { mutateAsync: finishInterview } = useFinishInterview();
+  // The scripted AI call is async now; this blocks a second send while one is in flight.
+  const busyRef = useRef(false);
 
   const streamIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const timerIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -88,34 +99,44 @@ export function useMockInterviewSession() {
     [],
   );
 
-  const start = useCallback(() => {
+  const start = useCallback(async () => {
     setScreenState("running");
     setTurnCount(0);
     setElapsedSeconds(0);
     setMessages([]);
     setResult(null);
 
-    const first = getScriptedQuestion(0, maxTurns);
-    setCurrentStage(first.stage);
-    streamAiMessage(first.content, first.stage);
+    try {
+      const first = await nextQuestion({ turnIndex: 0, maxTurns });
+      setCurrentStage(first.stage);
+      streamAiMessage(first.content, first.stage);
+    } catch (error) {
+      toast.error(errorMessage(error));
+      setScreenState("entry");
+      return;
+    }
 
     timerIntervalRef.current = setInterval(
       () => setElapsedSeconds((s) => s + 1),
       1000,
     );
-  }, [maxTurns, streamAiMessage]);
+  }, [maxTurns, nextQuestion, streamAiMessage]);
 
-  const finish = useCallback(() => {
+  const finish = useCallback(async () => {
     if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
     if (streamIntervalRef.current) clearInterval(streamIntervalRef.current);
     setStreamingMessageId(null);
-    setResult(computeInterviewResult());
-    setScreenState("result");
-  }, []);
+    try {
+      setResult(await finishInterview());
+      setScreenState("result");
+    } catch (error) {
+      toast.error(errorMessage(error));
+    }
+  }, [finishInterview]);
 
   const sendMessage = useCallback(
-    (text: string) => {
-      if (!text.trim() || streamingMessageId) return;
+    async (text: string) => {
+      if (!text.trim() || streamingMessageId || busyRef.current) return;
 
       setMessages((prev) => [
         ...prev,
@@ -125,28 +146,43 @@ export function useMockInterviewSession() {
       setTurnCount(nextTurn);
 
       if (nextTurn >= maxTurns) {
-        finish();
+        await finish();
         return;
       }
 
-      const next = getScriptedQuestion(nextTurn, maxTurns);
-      setCurrentStage(next.stage);
-      streamAiMessage(next.content, next.stage);
+      busyRef.current = true;
+      try {
+        const next = await nextQuestion({ turnIndex: nextTurn, maxTurns });
+        setCurrentStage(next.stage);
+        streamAiMessage(next.content, next.stage);
+      } catch (error) {
+        toast.error(errorMessage(error));
+      } finally {
+        busyRef.current = false;
+      }
     },
     [
       currentStage,
       finish,
       maxTurns,
+      nextQuestion,
       streamAiMessage,
       streamingMessageId,
       turnCount,
     ],
   );
 
-  const requestHint = useCallback(() => {
-    if (streamingMessageId) return;
-    streamAiMessage(HINT_TEXT, currentStage);
-  }, [currentStage, streamAiMessage, streamingMessageId]);
+  const requestHint = useCallback(async () => {
+    if (streamingMessageId || busyRef.current) return;
+    busyRef.current = true;
+    try {
+      streamAiMessage(await fetchHint(), currentStage);
+    } catch (error) {
+      toast.error(errorMessage(error));
+    } finally {
+      busyRef.current = false;
+    }
+  }, [currentStage, fetchHint, streamAiMessage, streamingMessageId]);
 
   const stopEarly = useCallback(() => finish(), [finish]);
 

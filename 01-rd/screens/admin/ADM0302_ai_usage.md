@@ -3,7 +3,7 @@
 > Mã màn hình: `ADM0302` [SoT: 02-bd/_rules/bd-template-9sheet.md — mục 8].
 > Slug chính tắc: `admin_ai_usage` [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_ai_usage`].
 > Phạm vi/Bounded Context: `ai-review` (F5) [SoT: 01-rd/overview/system_survey.md — mục 7.3 dòng `admin_ai_usage`]. Actor: A3 (Quản trị viên).
-> Nguồn sự thật (SoT): `01-rd/req/ai-review.md`, `09-layoutBase/Admin - Token AI.dc.html` (prototype),
+> Nguồn sự thật (SoT): `01-rd/req/F5_ai-review.md`, `09-layoutBase/Admin - Token AI.dc.html` (prototype),
 > `01-rd/req/user_stories/a3_admin.md`.
 > Tài liệu này có thể đọc độc lập.
 
@@ -12,10 +12,10 @@
 ## 1. Mục đích và bối cảnh
 
 Theo dõi lượng token AI đã tiêu thụ theo ngày/theo tính năng/theo người học, ngân sách còn lại, dự báo cạn
-quota, và bảng xếp hạng nơi tốn token nhiều nhất [SoT: 01-rd/req/ai-review.md — F5-21, F5-25].
+quota, và bảng xếp hạng nơi tốn token nhiều nhất [SoT: 01-rd/req/F5_ai-review.md — F5-21, F5-25].
 
 Đối chiếu prototype: `09-layoutBase/Admin - Token AI.dc.html`. File này mô tả **hành vi và UX ở mức yêu
-cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/ai-review.md` (F5-21, F5-25), chỉ trỏ tới và bổ sung
+cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/F5_ai-review.md` (F5-21, F5-25), chỉ trỏ tới và bổ sung
 phần đặc thù của màn. **Cập nhật 2026-08-31:** "Gợi ý theo bậc" (từng chiếm 45% ngân sách token trong dữ
 liệu mẫu ở đây) đã **cắt khỏi phạm vi** — xem `DEC-2026-0831-remove-tiered-hints-ai-config` — dải "Gợi ý"
 trong biểu đồ theo ngày và dòng "Gợi ý theo bậc" (45%) trong khối "Theo tính năng" xoá khi dựng UI thật.
@@ -26,8 +26,8 @@ trong biểu đồ theo ngày và dòng "Gợi ý theo bậc" (45%) trong khối
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Theo dõi lượng token tiêu thụ theo phiên | F5-21 | `01-rd/req/ai-review.md` — F5-21 |
-| Ngân sách token, dự báo cạn quota, tự động khoá khi vượt | F5-25 | `01-rd/req/ai-review.md` — F5-25 |
+| Theo dõi lượng token tiêu thụ theo phiên | F5-21 | `01-rd/req/F5_ai-review.md` — F5-21 |
+| Ngân sách token, dự báo cạn quota, tự động khoá khi vượt | F5-25 | `01-rd/req/F5_ai-review.md` — F5-25 |
 | Given-When-Then liên quan | — | `01-rd/req/user_stories/a3_admin.md` (`US-A3-04`, GWT 3-4) |
 
 Đối chiếu `09-layoutBase/Admin - Token AI.dc.html`:
@@ -60,7 +60,7 @@ trong biểu đồ theo ngày và dòng "Gợi ý theo bậc" (45%) trong khối
 | Màn/tài liệu | Vai trò | Bounded Context |
 |---|---|---|
 | Màn hiện tại | `ADM0302` / `admin_ai_usage` | `ai-review` |
-| Tài liệu yêu cầu | `01-rd/req/ai-review.md` (F5-21, F5-25) | Nguồn SoT của màn |
+| Tài liệu yêu cầu | `01-rd/req/F5_ai-review.md` (F5-21, F5-25) | Nguồn SoT của màn |
 | Prototype | `09-layoutBase/Admin - Token AI.dc.html` | Bằng chứng bố cục và trạng thái |
 
 **Chi tiết trạng thái và cấu trúc màn:**
@@ -78,7 +78,7 @@ trong biểu đồ theo ngày và dòng "Gợi ý theo bậc" (45%) trong khối
 
 - Bảng màu, spacing, component cụ thể — thuộc BD (`02-bd/screens/admin/ADM0302_ai_usage.md`).
 - Hợp đồng API (số liệu token theo ngày/tính năng/người dùng, cảnh báo) — thuộc DD
-  (`03-dd/api/ai-review.md`, chưa viết). Không viết DD cho "Gợi ý theo bậc" — đã cắt khỏi phạm vi.
+  (`03-dd/api/F5_ai-review.md`, chưa viết). Không viết DD cho "Gợi ý theo bậc" — đã cắt khỏi phạm vi.
 
 ---
 
@@ -86,7 +86,7 @@ trong biểu đồ theo ngày và dòng "Gợi ý theo bậc" (45%) trong khối
 
 | # | Câu hỏi | Vì sao chưa trả lời được | Đề xuất | Chủ sở hữu |
 | :-: | :--- | :--- | :--- | :--- |
-| Q1 | ~~Cảnh báo "Một tài khoản dùng bất thường"...~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** mở rộng F5-19/F5-25, không cần mã mới. | — | Cảnh báo mềm dựa trên độ lệch so với trung bình, không tự khoá tài khoản (khác khoá do vượt ngân sách). Đã ghi vào `01-rd/req/ai-review.md` (amendment F5-25). Xem `DEC-2026-0831-ai-usage-anomaly-alert`. Ngưỡng cụ thể chốt khi viết BD. | Đã đóng |
+| Q1 | ~~Cảnh báo "Một tài khoản dùng bất thường"...~~ **ĐÃ CHỐT 2026-08-31 (owner instruction, theo đúng đề xuất):** mở rộng F5-19/F5-25, không cần mã mới. | — | Cảnh báo mềm dựa trên độ lệch so với trung bình, không tự khoá tài khoản (khác khoá do vượt ngân sách). Đã ghi vào `01-rd/req/F5_ai-review.md` (amendment F5-25). Xem `DEC-2026-0831-ai-usage-anomaly-alert`. Ngưỡng cụ thể chốt khi viết BD. | Đã đóng |
 
 **Cập nhật 2026-08-31 — cả hai câu hỏi trung tâm của file này đã đóng:** Q1 ("Một tài khoản dùng bất
 thường") chốt trực tiếp ở trên; câu hỏi tham chiếu từ `admin_ai_config.md` Q1 ("Gợi ý theo bậc") cũng đã
@@ -97,8 +97,8 @@ chốt — cắt khỏi phạm vi, xem `DEC-2026-0831-remove-tiered-hints-ai-con
 ## 5. Danh sách yêu cầu (REQ)
 | ID | Yêu cầu | Loại | Nguồn/SoT |
 |---|---|---|---|
-| REQ-01 | Theo dõi lượng token tiêu thụ theo phiên (F5-21) | Chức năng | `01-rd/req/ai-review.md` — F5-21 |
-| REQ-02 | Ngân sách token, dự báo cạn quota, tự động khoá khi vượt (F5-25) | Chức năng | `01-rd/req/ai-review.md` — F5-25 |
+| REQ-01 | Theo dõi lượng token tiêu thụ theo phiên (F5-21) | Chức năng | `01-rd/req/F5_ai-review.md` — F5-21 |
+| REQ-02 | Ngân sách token, dự báo cạn quota, tự động khoá khi vượt (F5-25) | Chức năng | `01-rd/req/F5_ai-review.md` — F5-25 |
 | REQ-03 | Given-When-Then liên quan (—) | Chức năng | `01-rd/req/user_stories/a3_admin.md` (`US-A3-04`, GWT 3-4) |
 
 ---
@@ -138,7 +138,7 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 
 | Loại | Tham chiếu |
 | :--- | :--- |
-| Yêu cầu module | `01-rd/req/ai-review.md` — F5-19, F5-21, F5-25. |
+| Yêu cầu module | `01-rd/req/F5_ai-review.md` — F5-19, F5-21, F5-25. |
 | User story | `01-rd/req/user_stories/a3_admin.md` — `US-A3-04` (GWT 3-4). |
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` mục 7.3 — dòng `admin_ai_usage`. |
 | Prototype | `09-layoutBase/Admin - Token AI.dc.html` — prototype. |

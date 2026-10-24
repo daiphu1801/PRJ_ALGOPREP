@@ -6,7 +6,7 @@
 > `judge-orchestration` và `ai-review` để dựng các thẻ thống kê, nhưng bản thân màn không sở hữu logic
 > nghiệp vụ của các module đó [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `instructor_overview`].
 > Actor: A2 (Giảng viên).
-> Nguồn sự thật (SoT): `01-rd/req/identity.md`, `01-rd/req/user_stories/a2_instructor.md`,
+> Nguồn sự thật (SoT): `01-rd/req/F1_identity.md`, `01-rd/req/user_stories/a2_instructor.md`,
 > `09-layoutBase/Giáo viên - Tổng quan.dc.html` (prototype), `01-rd/overview/system_survey.md` — mục 7.2.
 > Tài liệu này có thể đọc độc lập.
 
@@ -29,7 +29,7 @@ quan.dc.html`. Đây là slug **mới phát sinh khi dựng prototype thật**, 
 [SoT: 01-rd/overview/system_survey.md — mục 7.2 dòng `instructor_overview`].
 
 File này mô tả hành vi và UX ở mức yêu cầu — không lặp lại đặc tả chức năng đã có ở
-`01-rd/req/identity.md`/`01-rd/req/user_stories/a2_instructor.md`, chỉ trỏ tới và bổ sung phần đặc thù của một màn.
+`01-rd/req/F1_identity.md`/`01-rd/req/user_stories/a2_instructor.md`, chỉ trỏ tới và bổ sung phần đặc thù của một màn.
 
 ---
 
@@ -37,9 +37,9 @@ File này mô tả hành vi và UX ở mức yêu cầu — không lặp lại �
 
 | Hành vi | Mã | Nguồn |
 | :--- | :--- | :--- |
-| Giao bài theo lớp phụ trách, phạm vi quản lý giới hạn theo lớp | F2-12 | `01-rd/req/problem-bank.md` — F2-12 |
-| ~~Điểm AI tham khảo + chấm tay theo lớp~~ **ĐÃ BỎ 2026-10-13** (`DEC-2026-1013-remove-instructor-manual-grading`) | ~~F5-27~~ | `01-rd/req/ai-review.md` — F5-27 (mục đã bỏ) |
-| Ma trận phân quyền, Function `CLASS_MANAGEMENT` gác quyền A2 theo lớp phụ trách | F1-10 tới F1-12 | `01-rd/req/identity.md` — F1-10 tới F1-12 |
+| Giao bài theo lớp phụ trách, phạm vi quản lý giới hạn theo lớp | F2-12 | `01-rd/req/F2_problem-bank.md` — F2-12 |
+| ~~Điểm AI tham khảo + chấm tay theo lớp~~ **ĐÃ BỎ 2026-10-13** (`DEC-2026-1013-remove-instructor-manual-grading`) | ~~F5-27~~ | `01-rd/req/F5_ai-review.md` — F5-27 (mục đã bỏ) |
+| Ma trận phân quyền, Function `CLASS_MANAGEMENT` gác quyền A2 theo lớp phụ trách | F1-10 tới F1-12 | `01-rd/req/F1_identity.md` — F1-10 tới F1-12 |
 | Given-When-Then cho các hành vi thuộc màn con (soạn bài, testcase, giao bài...) | US-A2-01 tới US-A2-05 (`US-A2-06` đã bỏ 2026-10-13) | `01-rd/req/user_stories/a2_instructor.md` — US-A2-01 tới US-A2-05 |
 | Điều hướng theo vai trò sau đăng nhập — `INSTRUCTOR` → `instructor_overview` | (quyết định RD, chưa có mã `Fx-nn` riêng) | `01-rd/screens/shared/SHR0101_auth.md:94` (Q3, đã chốt) |
 | Bảng slug khu Giảng viên, đối chiếu prototype `Giáo viên - Tổng quan.dc.html` | — | `01-rd/overview/system_survey.md` — mục 7.2, bảng slug khu giảng viên |
@@ -59,7 +59,7 @@ traceability giống mô hình các màn dashboard khác (ví dụ `my_progress`
 | Màn/tài liệu | Vai trò | Bounded Context |
 |---|---|---|
 | Màn hiện tại | `INS0101` / `instructor_overview` | `identity` |
-| Tài liệu yêu cầu | `01-rd/req/identity.md` (F1-10 tới F1-12, F1-30) | Nguồn SoT của màn |
+| Tài liệu yêu cầu | `01-rd/req/F1_identity.md` (F1-10 tới F1-12, F1-30) | Nguồn SoT của màn |
 | Prototype | `09-layoutBase/Giáo viên - Tổng quan.dc.html` | Bằng chứng bố cục và trạng thái |
 
 **Chi tiết trạng thái và cấu trúc màn**
@@ -124,7 +124,7 @@ diễn trừ khi ghi rõ `[SoT: Suy luận]`:
 ## 3. Ngoài phạm vi (Out of Scope)
 
 - Layout, vùng bố cục, bảng màu, component cụ thể của từng widget — thuộc BD (`02-bd/screens/teacher/INS0101_instructor_overview.md`, chưa viết).
-- Hợp đồng API tổng hợp số liệu (endpoint trả về 4 thẻ thống kê, activity feed, danh sách lớp/bài tập rút gọn) — thuộc DD (`03-dd/api/identity.md` và các module liên quan, chưa viết).
+- Hợp đồng API tổng hợp số liệu (endpoint trả về 4 thẻ thống kê, activity feed, danh sách lớp/bài tập rút gọn) — thuộc DD (`03-dd/api/F1_identity.md` và các module liên quan, chưa viết).
 - Logic nghiệp vụ chi tiết của từng hành vi liên kết tới (soạn bài — F2-01 tới F2-04, giao bài — F2-12, ~~chấm bài — F5-27~~ đã bỏ 2026-10-13) — thuộc RD/BD/DD của các màn con tương ứng (`class_management`, `class_progress`, `problem_authoring`), không lặp lại ở đây.
 - Cơ chế ma trận phân quyền `CLASS_MANAGEMENT` (F1-10 tới F1-12) — thuộc BD/DD của module `identity`.
 
@@ -135,12 +135,12 @@ diễn trừ khi ghi rõ `[SoT: Suy luận]`:
 | # | Câu hỏi | Vì sao chưa trả lời được | Đề xuất | Chủ sở hữu |
 | :-: | :--- | :--- | :--- | :--- |
 | Q1 | ~~`instructor_overview` chưa có `US-A2-nn` riêng...~~ **ĐÃ CHỐT 2026-08-31 (theo đề xuất, xem cột Chủ sở hữu):** thêm `US-A2-11: Xem tổng quan khối lượng công việc`. | — | Đã ghi vào `01-rd/req/user_stories/a2_instructor.md`. Xem `DEC-2026-0831-instructor-overview-dashboard`. | Đã đóng |
-| Q2 | ~~Badge số trên nav... có cần realtime...~~ **ĐÃ CHỐT 2026-08-31 (theo đề xuất):** làm mới khi chuyển màn/tải lại trang, không cần WebSocket riêng. | — | Đã ghi vào `01-rd/req/identity.md` (amendment F1-30). Xem `DEC-2026-0831-instructor-overview-dashboard`. | Đã đóng |
-| Q3 | ~~Công thức tính 4 thẻ thống kê...~~ **ĐÃ CHỐT 2026-08-31 (theo đề xuất):** "Điểm TB lớp" = điểm AI quy đổi `ai_score_10`. **Lưu ý 2026-10-13:** F5-27 đã bỏ, thẻ "Điểm TB lớp" là chỗ duy nhất còn dùng `ai_score_10`; số phận thẻ này chờ OQ-F5-A (`01-rd/req/ai-review.md`). **Đã đóng: khối bị bỏ 2026-10-14** (thẻ "Điểm TB lớp" bỏ, `DEC-2026-1014-instructor-overview-trim-and-nav-label`; ~~OQ-F5-A vẫn mở ở `ai-review`~~ **ĐÃ BỎ 2026-10-14 (`DEC-2026-1014-drop-ai-score-10`):** cột `ai_score_10` bị bỏ, OQ-F5-A đã đóng). | — | Đã ghi vào `01-rd/req/identity.md` (amendment F1-30). Xem `DEC-2026-0831-instructor-overview-dashboard`. | Đã đóng |
-| Q4 | ~~Cơ chế tổng hợp "Hoạt động gần đây"...~~ **ĐÃ CHỐT 2026-08-31 (theo đề xuất):** read model riêng của `identity`, không tái dùng F1-14. | — | Đã ghi vào `01-rd/req/identity.md` (amendment F1-30). Xem `DEC-2026-0831-instructor-overview-dashboard`. | Đã đóng |
-| Q5 | ~~Widget "Tiến độ học viên"... không có liên kết "Xem tất cả"...~~ **ĐÃ CHỐT 2026-08-31 (theo đề xuất):** bổ sung liên kết sang `class_progress`. **Đã đóng: khối bị bỏ 2026-10-14** (widget "Tiến độ học viên" và liên kết bị bỏ, `DEC-2026-1014-instructor-overview-trim-and-nav-label`). | — | Đã ghi vào `01-rd/req/identity.md` (amendment F1-30). Xem `DEC-2026-0831-instructor-overview-dashboard`. | Đã đóng |
+| Q2 | ~~Badge số trên nav... có cần realtime...~~ **ĐÃ CHỐT 2026-08-31 (theo đề xuất):** làm mới khi chuyển màn/tải lại trang, không cần WebSocket riêng. | — | Đã ghi vào `01-rd/req/F1_identity.md` (amendment F1-30). Xem `DEC-2026-0831-instructor-overview-dashboard`. | Đã đóng |
+| Q3 | ~~Công thức tính 4 thẻ thống kê...~~ **ĐÃ CHỐT 2026-08-31 (theo đề xuất):** "Điểm TB lớp" = điểm AI quy đổi `ai_score_10`. **Lưu ý 2026-10-13:** F5-27 đã bỏ, thẻ "Điểm TB lớp" là chỗ duy nhất còn dùng `ai_score_10`; số phận thẻ này chờ OQ-F5-A (`01-rd/req/F5_ai-review.md`). **Đã đóng: khối bị bỏ 2026-10-14** (thẻ "Điểm TB lớp" bỏ, `DEC-2026-1014-instructor-overview-trim-and-nav-label`; ~~OQ-F5-A vẫn mở ở `ai-review`~~ **ĐÃ BỎ 2026-10-14 (`DEC-2026-1014-drop-ai-score-10`):** cột `ai_score_10` bị bỏ, OQ-F5-A đã đóng). | — | Đã ghi vào `01-rd/req/F1_identity.md` (amendment F1-30). Xem `DEC-2026-0831-instructor-overview-dashboard`. | Đã đóng |
+| Q4 | ~~Cơ chế tổng hợp "Hoạt động gần đây"...~~ **ĐÃ CHỐT 2026-08-31 (theo đề xuất):** read model riêng của `identity`, không tái dùng F1-14. | — | Đã ghi vào `01-rd/req/F1_identity.md` (amendment F1-30). Xem `DEC-2026-0831-instructor-overview-dashboard`. | Đã đóng |
+| Q5 | ~~Widget "Tiến độ học viên"... không có liên kết "Xem tất cả"...~~ **ĐÃ CHỐT 2026-08-31 (theo đề xuất):** bổ sung liên kết sang `class_progress`. **Đã đóng: khối bị bỏ 2026-10-14** (widget "Tiến độ học viên" và liên kết bị bỏ, `DEC-2026-1014-instructor-overview-trim-and-nav-label`). | — | Đã ghi vào `01-rd/req/F1_identity.md` (amendment F1-30). Xem `DEC-2026-0831-instructor-overview-dashboard`. | Đã đóng |
 | Q6 | ~~Không thấy scaffold `data-ui-lang`/`data-lang`...~~ **ĐÃ CHỐT 2026-08-31:** cùng câu hỏi với Q7 của `admin_overview.md`, trả lời chung — mở rộng phạm vi debt của `DEC-2026-0824-i18n-vi-en` thành "mọi màn Admin và Giảng viên". | — | Xem `DEC-2026-0831-i18n-scope-expansion`. | Đã đóng |
-| Q7 | ~~Màn chưa có trạng thái rỗng/lỗi/đang tải...~~ **ĐÃ CHỐT 2026-08-31 (theo đề xuất):** 3 trạng thái `empty`/`loading`/`error`, theo từng khối riêng. | — | Đã ghi vào `01-rd/req/identity.md` (amendment F1-30), cùng nguyên tắc đã áp cho `admin_overview`/F1-29. Xem `DEC-2026-0831-instructor-overview-dashboard`. | Đã đóng |
+| Q7 | ~~Màn chưa có trạng thái rỗng/lỗi/đang tải...~~ **ĐÃ CHỐT 2026-08-31 (theo đề xuất):** 3 trạng thái `empty`/`loading`/`error`, theo từng khối riêng. | — | Đã ghi vào `01-rd/req/F1_identity.md` (amendment F1-30), cùng nguyên tắc đã áp cho `admin_overview`/F1-29. Xem `DEC-2026-0831-instructor-overview-dashboard`. | Đã đóng |
 | Q8 | Đợt 1 câu hỏi mở giảng viên (2026-10-14): (a) "Tổng học viên" đếm theo người hay theo lượt ghi danh; (b) lượt nộp của bài giao tính theo lớp hay toàn hệ thống; (c) giữ "học viên mới 30 ngày" và delta không; (d) loại sự kiện của "Hoạt động gần đây". **ĐÃ CHỐT 2026-10-14:** (a) theo người (`DISTINCT student_id`); (b) theo các lớp của giảng viên; (c) bỏ cả số và delta, bỏ endpoint `GetInstructorOverviewStats`, màn đọc danh sách tóm tắt lớp; (d) chỉ sự kiện tức thời (submit, publish, streak, join), bỏ loại suy ra từ quét định kỳ và cụm "kèm điểm AI". | — | `DEC-2026-1014-instructor-batch1-counting-rules`. Ghi chú: RD file này chỉ có Q1-Q7; các số "Q5, Q9, Q7, Q15a, Q15c" trong quyết định là số câu hỏi mở của BD `02-bd/screens/teacher/INS0101_overview.md`, RD không có câu hỏi trùng số, nên gộp vào Q8 này. | Đã đóng |
 | 101-Q12 | Ba lời gọi dữ liệu của màn tổng quan do module nào sở hữu. **ĐÃ CHỐT 2026-10-14 (DEC-2026-1014-instructor-batch3-4-contracts-and-removal):** module sở hữu dữ liệu giữ endpoint của mình: danh sách tóm tắt lớp và hoạt động gần đây thuộc `identity`, bài tập đã giao thuộc `problem-bank`; không gộp hết vào `identity` [SoT: .nexa/control/decision-registry.md:3730-3732]. | — | Số thứ tự là của BD `02-bd/screens/teacher/INS0101_overview.md`; RD file này không có câu hỏi mang số đó. RD không nêu tên endpoint, chi tiết hợp đồng thuộc DD. | Đã đóng |
 
@@ -150,9 +150,9 @@ diễn trừ khi ghi rõ `[SoT: Suy luận]`:
 
 | ID | Yêu cầu | Loại | Nguồn/SoT |
 |---|---|---|---|
-| REQ-01 | Giao bài theo lớp phụ trách, phạm vi quản lý giới hạn theo lớp (F2-12) | Chức năng | `01-rd/req/problem-bank.md` — F2-12 |
-| REQ-02 | ~~Điểm AI tham khảo + chấm tay theo lớp (F5-27)~~ **Đã bỏ 2026-10-13** (`DEC-2026-1013-remove-instructor-manual-grading`) | Chức năng | `01-rd/req/ai-review.md` — F5-27 (mục đã bỏ) |
-| REQ-03 | Ma trận phân quyền, Function `CLASS_MANAGEMENT` gác quyền A2 theo lớp phụ trách (F1-10 tới F1-12) | Chức năng | `01-rd/req/identity.md` — F1-10 tới F1-12 |
+| REQ-01 | Giao bài theo lớp phụ trách, phạm vi quản lý giới hạn theo lớp (F2-12) | Chức năng | `01-rd/req/F2_problem-bank.md` — F2-12 |
+| REQ-02 | ~~Điểm AI tham khảo + chấm tay theo lớp (F5-27)~~ **Đã bỏ 2026-10-13** (`DEC-2026-1013-remove-instructor-manual-grading`) | Chức năng | `01-rd/req/F5_ai-review.md` — F5-27 (mục đã bỏ) |
+| REQ-03 | Ma trận phân quyền, Function `CLASS_MANAGEMENT` gác quyền A2 theo lớp phụ trách (F1-10 tới F1-12) | Chức năng | `01-rd/req/F1_identity.md` — F1-10 tới F1-12 |
 | REQ-04 | Given-When-Then cho các hành vi thuộc màn con (soạn bài, testcase, giao bài...) (US-A2-01 tới US-A2-05) | Chức năng | `01-rd/req/user_stories/a2_instructor.md` — US-A2-01 tới US-A2-05 |
 | REQ-05 | Điều hướng theo vai trò sau đăng nhập — `INSTRUCTOR` → `instructor_overview` ((quyết định RD, chưa có mã `Fx-nn` riêng)) | Chức năng | `01-rd/screens/shared/SHR0101_auth.md:94` (Q3, đã chốt) |
 | REQ-06 | Bảng slug khu Giảng viên, đối chiếu prototype `Giáo viên - Tổng quan.dc.html` (—) | Chức năng | `01-rd/overview/system_survey.md` — mục 7.2, bảng slug khu giảng viên |
@@ -195,9 +195,9 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 | Loại | Tham chiếu |
 |---|---|
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` — mục 7.2 dòng `instructor_overview`. |
-| Yêu cầu module | `01-rd/req/identity.md` — F1-10 tới F1-12 (ma trận phân quyền, Function `CLASS_MANAGEMENT`), F1-30 (amendment cho overview). |
-| Yêu cầu module | `01-rd/req/problem-bank.md` — F2-12 (giao bài theo lớp). |
-| Yêu cầu module | `01-rd/req/ai-review.md` — F5-27 (đã bỏ 2026-10-13; xem mục đó; OQ-F5-A đã đóng 2026-10-14, `DEC-2026-1014-drop-ai-score-10`). |
+| Yêu cầu module | `01-rd/req/F1_identity.md` — F1-10 tới F1-12 (ma trận phân quyền, Function `CLASS_MANAGEMENT`), F1-30 (amendment cho overview). |
+| Yêu cầu module | `01-rd/req/F2_problem-bank.md` — F2-12 (giao bài theo lớp). |
+| Yêu cầu module | `01-rd/req/F5_ai-review.md` — F5-27 (đã bỏ 2026-10-13; xem mục đó; OQ-F5-A đã đóng 2026-10-14, `DEC-2026-1014-drop-ai-score-10`). |
 | Quyết định | `DEC-2026-1013-remove-instructor-manual-grading` — bỏ chấm tay của giảng viên. |
 | Quyết định | `DEC-2026-1014-instructor-overview-trim-and-nav-label` — bỏ thẻ "Điểm TB lớp" và widget "Tiến độ học viên"; nhóm nav "Giao và chấm bài" đổi thành "Quản lý bài tập đã nộp" (bản RD này chỉ nêu tên nhóm nav ở đây, không có mục nào khác dùng nhãn cũ). |
 | Quyết định | `DEC-2026-0828-remove-per-class-interview-set` (F6-11 loại khỏi phạm vi). |

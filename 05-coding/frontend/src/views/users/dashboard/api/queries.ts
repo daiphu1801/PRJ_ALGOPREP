@@ -12,7 +12,7 @@ const QUERY_OPTIONS = { staleTime: 30_000, retry: false } as const;
 
 function notImplemented(): never {
   throw new Error(
-    "03-dd/api/identity.md / api/ai-review.md don't define these endpoints yet",
+    "03-dd/api/F1_identity.md / api/F5_ai-review.md don't define these endpoints yet",
   );
 }
 

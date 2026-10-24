@@ -75,7 +75,7 @@ export type RecentSolutionReview = {
   problemTitle: string;
   /** ISO date. */
   reviewedAt: string;
-  /** Reads result_json `complexity.actualTime` (02-bd/database/ai-review.md 1.3a). */
+  /** Reads result_json `complexity.actualTime` (02-bd/database/F5_ai-review.md 1.3a). */
   complexity: { actualTime: string };
   /** result_json `verdict`; drives the coloured dot. */
   verdict: "OPTIMAL" | "IMPROVABLE" | "NOT_OPTIMAL";

@@ -14,9 +14,9 @@
 - Màn này **không có popup**. Tất cả hành động xem chi tiết đều chuyển màn.
 
 > Đọc cùng `01-rd/screens/users/USR0202_my_submissions.md` (hành vi ở mức yêu cầu, không lặp lại ở đây),
-> `01-rd/req/identity.md` (F1-18; F1-07 ở `USR0501`), `01-rd/req/judge-orchestration.md` (F4-01→F4-08),
-> `01-rd/req/ai-review.md` (F5-01), `02-bd/architecture/judge-orchestration.md`,
-> `02-bd/database/judge-orchestration.md`, `02-bd/database/identity.md`.
+> `01-rd/req/F1_identity.md` (F1-18; F1-07 ở `USR0501`), `01-rd/req/F4_judge-orchestration.md` (F4-01→F4-08),
+> `01-rd/req/F5_ai-review.md` (F5-01), `02-bd/architecture/F4_judge-orchestration.md`,
+> `02-bd/database/F4_judge-orchestration.md`, `02-bd/database/F1_identity.md`.
 >
 > - **Phạm vi dữ liệu cá nhân tuyệt đối**: màn này chỉ hiển thị các bài nộp của chính người dùng đang đăng nhập
 >   thông qua token phiên; không nhận tham số `user_id` từ phía giao diện nhằm triệt tiêu lỗ hổng IDOR.
@@ -27,7 +27,7 @@
 > - **Phân trang phía máy chủ**: khác với prototype tĩnh vẽ 10 dòng cố định, thiết kế BD bắt buộc thực hiện phân
 >   trang tại máy chủ (20 dòng/trang) kèm sắp xếp giảm dần theo thời gian nộp bài (`submitted_at DESC`).
 
-- **Bài đã rút khỏi ngân hàng** (`deleted = true`, G4 2026-10-08): dòng lịch sử vẫn hiện tiêu đề bài kèm nhãn "Đã rút khỏi ngân hàng", **bỏ liên kết mở bài**; nút "Kết quả" và "Phân tích" vẫn dùng được. Ô tìm kiếm theo tên bài vẫn khớp bài đã rút. Quy tắc đầy đủ ở `02-bd/database/problem-bank.md` mục 1.1a, không chép lại ở đây.
+- **Bài đã rút khỏi ngân hàng** (`deleted = true`, G4 2026-10-08): dòng lịch sử vẫn hiện tiêu đề bài kèm nhãn "Đã rút khỏi ngân hàng", **bỏ liên kết mở bài**; nút "Kết quả" và "Phân tích" vẫn dùng được. Ô tìm kiếm theo tên bài vẫn khớp bài đã rút. Quy tắc đầy đủ ở `02-bd/database/F2_problem-bank.md` mục 1.1a, không chép lại ở đây.
 
 > **Quy ước đặt tên khối** [Nội bộ]. Ba khối: `filterToolbar` (thanh công cụ tìm kiếm và lọc
 > verdict/ngôn ngữ), `submissionsTable` (bảng lịch sử bài nộp), `tableFooter` (dòng tổng kết số liệu và
@@ -73,7 +73,7 @@
 | V0.2 | Sheet 3, 5, 7.3, Câu hỏi mở | Viết lại Sheet 3 theo khuôn "Danh sách chuyển màn" 6 thẻ + sơ đồ Mermaid; viết lại Sheet 5 theo khuôn 14 cột (thêm Bảng DB/Cột DB, mỗi item một dòng); bỏ cột "Phương thức & URL dự kiến" ở Sheet 7.3. Sửa nguồn 2 thẻ thống kê: "Được chấp nhận" và "Đúng ngay lần đầu" đổi công thức đúng theo cột thật của `identity.user_submission_stats` (không có `acceptedRate` lưu sẵn); phát hiện "Dùng nhiều nhất" (ngôn ngữ) chưa có cột read model nào — thêm Câu hỏi mở Q4 | 2026/09/24 | Nhóm phát triển AlgoPrep |
 | V0.2 | Sheet 8, 9 | Đổi báo lỗi tải sau thao tác lọc, tìm kiếm và `[Tiêu điểm]` ô tìm kiếm sang toast; giữ nguyên khối lỗi tải màn kèm nút thử lại ở EVT-1. Theo `DEC-2026-1003-toast-feedback-channel`. | 2026/10/03 | AI |
 | V0.3 | Sheet 4, 5, 7 | Đồng bộ `DEC-2026-1001-admin-configurable-settings` mục (7): độ khó bài tập là danh mục do ADMIN quản lý (bảng riêng `problem_levels`), không còn enum cố định. DTO `StudentSubmissionItemDto.difficulty` thành `levelCode`/`levelDisplayName` đọc qua `problems.level_id`; badge độ khó cạnh tên bài hiển thị `display_name` từ dữ liệu; thêm `problem.problem_levels` vào danh sách bảng và Truy cập bảng. Màn chỉ hiển thị nhãn, không lọc và không gọi `ListProblemLevels` (nhãn nằm sẵn trong phản hồi); độ khó không gắn logic nào | 2026/10/03 | AI |
-| V0.4 | Sheet 3, 5, 6, Câu hỏi mở | Theo `02-bd/database/problem-bank.md` mục 1.1a: dòng lịch sử của bài đã rút vẫn hiện tiêu đề kèm nhãn "Đã rút khỏi ngân hàng", bỏ liên kết mở bài; nút "Kết quả" và "Phân tích" vẫn dùng được. Chỉ tài liệu, chưa đổi code | 2026/10/08 | AI |
+| V0.4 | Sheet 3, 5, 6, Câu hỏi mở | Theo `02-bd/database/F2_problem-bank.md` mục 1.1a: dòng lịch sử của bài đã rút vẫn hiện tiêu đề kèm nhãn "Đã rút khỏi ngân hàng", bỏ liên kết mở bài; nút "Kết quả" và "Phân tích" vẫn dùng được. Chỉ tài liệu, chưa đổi code | 2026/10/08 | AI |
 | V0.5 | Phương châm, Sheet 1, 3, 4, 5, 6, 7, 8, Câu hỏi mở | Bỏ dải 4 thẻ thống kê (khu vực A) theo quyết định owner 2026/10/18, mở rộng quy tắc "không dải KPI ở màn danh sách" 2026/10/13: bỏ DTO `StudentSubmissionSummaryStatsDto`, endpoint `GetMySubmissionSummaryStats`, truy cập `identity.user_submission_stats`, item và đặc tả khu vực A; tải màn không còn gọi thống kê. Giữ ký hiệu khu vực B/C/D. Đóng Q1, Q4 (không còn đối tượng). Thêm Q5: lệch RD F1-07 (RD yêu cầu hiển thị, bản dựng đã bỏ). Sửa Sheet 4.5 theo code thật (file tách nhỏ chỉ là dự kiến, chưa từng có). Không sửa RD | 2026/10/18 | AI |
 | V0.6 | Phương châm, Câu hỏi mở (Q5), Tham chiếu | Owner chốt Q5 phương án (a) 2026/10/18 (`DEC-2026-1018-usr-open-questions-phase1-scope`): RD `USR0202` đã bỏ yêu cầu dải chỉ số và REQ-01, F1-07 chuyển sang `USR0501`. Đổi đoạn "Lệch RD cần owner quyết" thành ghi chú đã đóng, bỏ câu nói RD yêu cầu hiển thị chỉ số. Không đổi thiết kế, không đổi code | 2026/10/18 | AI |
 | V0.7 | Câu hỏi mở (đóng Q2, Q3), mục "Hiện trạng bản dựng" | Owner chốt Q2 và Q3 ngày 2026/10/18 theo đề xuất (`DEC-2026-1018-usr-open-questions-phase2-5`, giai đoạn 3): bản đầu không có bộ lọc khoảng ngày (ponytail bậc 3); lượt nộp không bao giờ bị xoá hay ẩn (bậc 6). Không có item hay sự kiện mới, vì cả hai đều là "không làm". Đã đọc lại code: không có điều khiển lọc ngày hay xoá/ẩn. Không đổi code | 2026/10/18 | Claude |
@@ -121,7 +121,7 @@
 #### Bài đã nộp → Phân tích bài giải
 
 [Điều kiện mở] Bấm nút "Phân tích" ở dòng có verdict `ACCEPTED`
-[Nguồn: 01-rd/req/ai-review.md — F5-01].
+[Nguồn: 01-rd/req/F5_ai-review.md — F5-01].
 
 [Chế độ mở] Điều hướng URL `/submissions/{submission_id}/review`.
 
@@ -164,7 +164,7 @@ flowchart LR
     class MS screen
 ```
 
-[Nguồn: 02-bd/screens/users/_shell.md:57; 01-rd/req/ai-review.md — F5-01]
+[Nguồn: 02-bd/screens/users/_shell.md:57; 01-rd/req/F5_ai-review.md — F5-01]
 
 ---
 
@@ -195,7 +195,7 @@ flowchart LR
 | :-: | :--- | :--- | :--- | :--- |
 | 1 | `judge.submissions` | Bản ghi các bài nộp của người học | R | `judge-orchestration` |
 | 2 | `problem.problems` | Thông tin mã bài, tên bài, độ khó | R | `problem-bank` |
-| 3 | `problem.problem_levels` | Nhãn độ khó của bài (`display_name`), đọc qua join `problems.level_id` [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`] | R | `problem-bank` |
+| 3 | `problem.problem_levels` | Nhãn độ khó của bài (`display_name`), đọc qua join `problems.level_id` [Nguồn: 02-bd/database/F2_problem-bank.md mục `problem_levels`] | R | `problem-bank` |
 
 > Đã bỏ 2026/10/18 (owner): `identity.user_submission_stats` (R) — màn không còn đọc read model thống kê; không item nào khác của màn dùng bảng này.
 
@@ -240,20 +240,20 @@ Trang hiện tại = hàng tiêu đề thường: `<h1>` "Bài đã nộp" và d
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Filter Toolbar | | | | | | | | | | | | | |
 | | 1 | Ô tìm kiếm bài toán | `mySubmissions.filter.txtSearch` | `problem.problems` | `code`, `title` | TextBox | String | 100 | Không | I/O | rỗng | - | Nhập mã bài hoặc tên bài cần tìm<br>[Nguồn giá trị] Tham số URL `q`<br>[EVT liên quan] EVT-2 |
-| | 2 | Tab Lọc verdict | `mySubmissions.filter.tabVerdict` | `judge.submissions` | `status` | Toggle | Enum | 30 | Có | I/O | `ALL` | - | Tất cả, Accepted, Sai kết quả, Quá thời gian, Lỗi biên dịch, Lỗi thực thi — map từ ENUM `status` [Nguồn: 02-bd/database/judge-orchestration.md:22]<br>[Nguồn giá trị] Tham số URL `verdict`<br>[EVT liên quan] EVT-3 |
-| | 3 | Tab Lọc ngôn ngữ | `mySubmissions.filter.tabLanguage` | `judge.submissions` | `language` | Toggle | Enum | 20 | Có | I/O | `ALL` | - | Tất cả, Python, Java, C++ — ba ngôn ngữ khoá cứng [Nguồn: 02-bd/database/judge-orchestration.md:18]<br>[Nguồn giá trị] Tham số URL `language`<br>[EVT liên quan] EVT-4 |
+| | 2 | Tab Lọc verdict | `mySubmissions.filter.tabVerdict` | `judge.submissions` | `status` | Toggle | Enum | 30 | Có | I/O | `ALL` | - | Tất cả, Accepted, Sai kết quả, Quá thời gian, Lỗi biên dịch, Lỗi thực thi — map từ ENUM `status` [Nguồn: 02-bd/database/F4_judge-orchestration.md:22]<br>[Nguồn giá trị] Tham số URL `verdict`<br>[EVT liên quan] EVT-3 |
+| | 3 | Tab Lọc ngôn ngữ | `mySubmissions.filter.tabLanguage` | `judge.submissions` | `language` | Toggle | Enum | 20 | Có | I/O | `ALL` | - | Tất cả, Python, Java, C++ — ba ngôn ngữ khoá cứng [Nguồn: 02-bd/database/F4_judge-orchestration.md:18]<br>[Nguồn giá trị] Tham số URL `language`<br>[EVT liên quan] EVT-4 |
 
 ### Khu vực C — Bảng lịch sử nộp bài (Submissions Table)
 
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Submissions Table | | | | | | | | | | | | | |
-| | 1 | Cột Thời điểm | `mySubmissions.table.col.submittedAt` | `judge.submissions` | `submitted_at` | ListColumn | Date | 30 | Có | O | - | `HH:mm - dd/MM/yyyy` | Mốc thời gian nộp bài [Nguồn: 02-bd/database/judge-orchestration.md:31]<br>[EVT liên quan] - |
-| | 2 | Cột Bài toán | `mySubmissions.table.col.problem` | `problem.problems`, `problem.problem_levels` | `code`, `title`, `display_name` | ListColumn | Link | 150 | Có | O | - | `{code} · {title}` | Mã và tiêu đề bài toán kèm badge độ khó [Nguồn: 02-bd/database/problem-bank.md:14-17]<br>[Nguồn giá trị] Nhãn badge là `problem_levels.display_name` qua `problems.level_id`, **đọc từ dữ liệu** do ADMIN quản lý, không còn ánh xạ cứng enum; ba mức khởi tạo giữ màu badge cũ, mức mới màu trung tính `DEC-2026-1001-admin-configurable-settings` mục (7) [Nguồn: 02-bd/database/problem-bank.md mục `problem_levels`]<br>[EVT liên quan] EVT-5 |
-| | 3 | Cột Ngôn ngữ | `mySubmissions.table.col.language` | `judge.submissions` | `language` | ListColumn | Badge | 20 | Có | O | - | - | Ngôn ngữ nộp bài [Nguồn: 02-bd/database/judge-orchestration.md:18]<br>[EVT liên quan] - |
-| | 4 | Cột Kết quả | `mySubmissions.table.col.verdict` | `judge.submissions` | `status` | ListColumn | Badge | 30 | Có | O | - | - | Badge trạng thái có màu đặc trưng [Nguồn: 02-bd/database/judge-orchestration.md:22]<br>[EVT liên quan] - |
-| | 5 | Cột Testcase | `mySubmissions.table.col.testcases` | `judge.submissions` | `passed_testcase_count`, `total_testcase_count` | ListColumn | String | 20 | Có | O | - | `{passed}/{total}` | Số testcase đạt / tổng số testcase [Nguồn: 02-bd/database/judge-orchestration.md:25-26]<br>[EVT liên quan] - |
-| | 6 | Cột Thời gian chạy | `mySubmissions.table.col.runtime` | `judge.submissions` | `runtime_ms` | ListColumn | String | 20 | Có | O | `-` | `{runtime} ms` | Thời gian thực thi lớn nhất [Nguồn: 02-bd/database/judge-orchestration.md:28]<br>[EVT liên quan] - |
+| | 1 | Cột Thời điểm | `mySubmissions.table.col.submittedAt` | `judge.submissions` | `submitted_at` | ListColumn | Date | 30 | Có | O | - | `HH:mm - dd/MM/yyyy` | Mốc thời gian nộp bài [Nguồn: 02-bd/database/F4_judge-orchestration.md:31]<br>[EVT liên quan] - |
+| | 2 | Cột Bài toán | `mySubmissions.table.col.problem` | `problem.problems`, `problem.problem_levels` | `code`, `title`, `display_name` | ListColumn | Link | 150 | Có | O | - | `{code} · {title}` | Mã và tiêu đề bài toán kèm badge độ khó [Nguồn: 02-bd/database/F2_problem-bank.md:14-17]<br>[Nguồn giá trị] Nhãn badge là `problem_levels.display_name` qua `problems.level_id`, **đọc từ dữ liệu** do ADMIN quản lý, không còn ánh xạ cứng enum; ba mức khởi tạo giữ màu badge cũ, mức mới màu trung tính `DEC-2026-1001-admin-configurable-settings` mục (7) [Nguồn: 02-bd/database/F2_problem-bank.md mục `problem_levels`]<br>[EVT liên quan] EVT-5 |
+| | 3 | Cột Ngôn ngữ | `mySubmissions.table.col.language` | `judge.submissions` | `language` | ListColumn | Badge | 20 | Có | O | - | - | Ngôn ngữ nộp bài [Nguồn: 02-bd/database/F4_judge-orchestration.md:18]<br>[EVT liên quan] - |
+| | 4 | Cột Kết quả | `mySubmissions.table.col.verdict` | `judge.submissions` | `status` | ListColumn | Badge | 30 | Có | O | - | - | Badge trạng thái có màu đặc trưng [Nguồn: 02-bd/database/F4_judge-orchestration.md:22]<br>[EVT liên quan] - |
+| | 5 | Cột Testcase | `mySubmissions.table.col.testcases` | `judge.submissions` | `passed_testcase_count`, `total_testcase_count` | ListColumn | String | 20 | Có | O | - | `{passed}/{total}` | Số testcase đạt / tổng số testcase [Nguồn: 02-bd/database/F4_judge-orchestration.md:25-26]<br>[EVT liên quan] - |
+| | 6 | Cột Thời gian chạy | `mySubmissions.table.col.runtime` | `judge.submissions` | `runtime_ms` | ListColumn | String | 20 | Có | O | `-` | `{runtime} ms` | Thời gian thực thi lớn nhất [Nguồn: 02-bd/database/F4_judge-orchestration.md:28]<br>[EVT liên quan] - |
 | | 7 | Nút Xem kết quả | `mySubmissions.table.row.btnResult` | - | - | Button | String | 20 | Có | I | - | "Kết quả" | Mở màn `submission_result` của dòng đang trỏ<br>[Nguồn giá trị] Nhãn tĩnh<br>[EVT liên quan] EVT-6 |
 | | 8 | Nút Phân tích AI | `mySubmissions.table.row.btnReview` | - | - | Button | String | 20 | Có | I | - | "Phân tích" | Mở phân tích AI F5-01, chỉ bật khi `status = ACCEPTED`<br>[Nguồn giá trị] Nhãn tĩnh<br>[EVT liên quan] EVT-7 |
 
@@ -267,8 +267,8 @@ Trang hiện tại = hàng tiêu đề thường: `<h1>` "Bài đã nộp" và d
 | | 3 | Danh sách nút số trang | `mySubmissions.footer.btnPageNumber` | - | - | Button | Number | 5 | Có | I | `1` | Số nguyên | Các nút bấm số trang<br>[Nguồn giá trị] Phân trang máy chủ<br>[EVT liên quan] EVT-9 |
 | | 4 | Nút Chuyển trang sau | `mySubmissions.footer.btnNextPage` | - | - | Button | String | 10 | Có | I | - | "›" | Chuyển sang trang kế tiếp<br>[Nguồn giá trị] Thao tác người dùng<br>[EVT liên quan] EVT-10 |
 
-[Nguồn: 02-bd/database/identity.md:114; 02-bd/database/judge-orchestration.md:18,22,25-26,28,31;
-02-bd/database/problem-bank.md:14-17; 01-rd/req/ai-review.md — F5-01]
+[Nguồn: 02-bd/database/F1_identity.md:114; 02-bd/database/F4_judge-orchestration.md:18,22,25-26,28,31;
+02-bd/database/F2_problem-bank.md:14-17; 01-rd/req/F5_ai-review.md — F5-01]
 
 ---
 
@@ -385,7 +385,7 @@ số — cùng quy ước đã chốt ở `02-bd/screens/users/USR0101_problem_l
 | Q1 | **(Đã đóng 2026/10/18 — không còn đối tượng)** Chỉ số "Đúng ngay lần đầu" tính realtime hay lưu trong read model? | Thẻ thống kê đã bỏ khỏi màn theo quyết định owner, màn không còn hiển thị chỉ số này. Câu hỏi về read model `first_try_accepted_count` vẫn thuộc `identity` / màn tiến độ `USR0501` nếu chỉ số được dùng ở đó | Rút lại ở màn này; không xoá để giữ số thứ tự | BD Database `identity` |
 | Q2 | ~~**Có hỗ trợ lọc theo khoảng thời gian nộp bài không (ví dụ: tuần này, tháng này)?**~~ **Đã chốt 2026-10-18 (owner), theo đề xuất.** | ~~Prototype chỉ có bộ lọc Verdict và Ngôn ngữ, chưa có DatePicker~~ | **Quyết định:** phiên bản đầu không có bộ lọc khoảng ngày; giữ tìm kiếm, Verdict và Ngôn ngữ. Ponytail bậc 3 (không demo nào cần). Bổ sung khi có phản hồi của người học | Chủ dự án |
 | Q3 | ~~**Có cho phép học viên xóa hoặc ẩn một lượt nộp bài không?**~~ **Đã chốt 2026-10-18 (owner), theo đề xuất.** | ~~RD F1-18 và F4 không nhắc tới quyền xóa bài nộp~~ | **Quyết định:** không bao giờ xoá hay ẩn lượt nộp (xoá làm sai chỉ số AC rate và tiến độ, mở đường gian lận). Ponytail bậc 6 (bảo toàn dữ liệu). Màn không có nút xoá/ẩn, API không có thao tác ghi nào trên lượt nộp | Chủ dự án + Security |
-| Q4 | **(Đã đóng 2026/10/18 — không còn đối tượng)** Thẻ "Dùng nhiều nhất" (ngôn ngữ) tính trực tiếp trên `judge.submissions` có chấp nhận được không? | Thẻ đã bỏ khỏi màn nên không còn truy vấn `GROUP BY language` ở đây. Nếu chỉ số này cần ở nơi khác thì xét lại ở màn đó (`03-dd/api/identity.md:140` đã có ngôn ngữ dùng nhiều nhất trong `GET /api/v1/identity/me/progress/summary`) | Rút lại ở màn này; không xoá để giữ số thứ tự | BD Database `identity` |
+| Q4 | **(Đã đóng 2026/10/18 — không còn đối tượng)** Thẻ "Dùng nhiều nhất" (ngôn ngữ) tính trực tiếp trên `judge.submissions` có chấp nhận được không? | Thẻ đã bỏ khỏi màn nên không còn truy vấn `GROUP BY language` ở đây. Nếu chỉ số này cần ở nơi khác thì xét lại ở màn đó (`03-dd/api/F1_identity.md:140` đã có ngôn ngữ dùng nhiều nhất trong `GET /api/v1/identity/me/progress/summary`) | Rút lại ở màn này; không xoá để giữ số thứ tự | BD Database `identity` |
 | Q5 | **(Đã chốt 2026/10/18, owner, phương án (a))** Lệch RD: F1-07 (tỉ lệ chấp thuận) không hiển thị trên màn này — giữ bỏ hay khôi phục? | Trước đây RD yêu cầu hiển thị chỉ số tổng (REQ-01) còn owner đã bỏ dải thống kê. Nay RD đã sửa: REQ-01 đã chuyển, mục 2 khối 1 ghi dải đã bỏ, thêm Q3 đã chốt [Nguồn: 01-rd/screens/users/USR0202_my_submissions.md:32,100,108] | Giữ bỏ: F1-07 hiển thị ở `USR0501`, Khu vực A NO 3 "Tỉ lệ AC" [Nguồn: 02-bd/screens/users/USR0501_my_progress.md:295]; không khôi phục dòng chữ tỉ lệ AC ở `PageHeader` (phương án (b) không chọn) | Owner (đã chốt) |
 
 ---
@@ -394,7 +394,7 @@ số — cùng quy ước đã chốt ở `02-bd/screens/users/USR0101_problem_l
 
 - `01-rd/screens/users/USR0202_my_submissions.md` — Yêu cầu màn hình.
 - `09-layoutBase/Bài đã nộp.dc.html` — Bằng chứng bố cục prototype.
-- `01-rd/req/identity.md` — F1-18 (F1-07 chuyển sang `02-bd/screens/users/USR0501_my_progress.md`).
-- `01-rd/req/judge-orchestration.md` — F4-01→F4-08.
-- `01-rd/req/ai-review.md` — F5-01.
+- `01-rd/req/F1_identity.md` — F1-18 (F1-07 chuyển sang `02-bd/screens/users/USR0501_my_progress.md`).
+- `01-rd/req/F4_judge-orchestration.md` — F4-01→F4-08.
+- `01-rd/req/F5_ai-review.md` — F5-01.
 - `02-bd/_rules/bd-template-9sheet.md` — Quy ước mẫu 9 sheet.

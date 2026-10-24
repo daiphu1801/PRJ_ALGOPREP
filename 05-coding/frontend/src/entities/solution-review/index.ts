@@ -13,6 +13,6 @@ export {
   REVIEW_NOT_ACCEPTED_CODE,
   REVIEW_NOT_FOUND_CODE,
   type SolutionReviewDemoOutcome,
-} from "./api/__mock__/solution-review-mocks";
+} from "./model/review-errors";
 export { lineDiff, type DiffLine, type DiffLineKind } from "./lib/line-diff";
 export { useSolutionReview } from "./api/queries";

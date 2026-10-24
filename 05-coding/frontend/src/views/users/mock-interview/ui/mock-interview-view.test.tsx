@@ -31,8 +31,9 @@ describe("MockInterviewView", () => {
     }
   });
 
-  it("keeps the Start button disabled until a submission is picked", () => {
+  it("keeps the Start button disabled until a submission is picked", async () => {
     renderView();
+    await screen.findByText("1. Two Sum");
 
     expect(
       screen.getByRole("button", { name: "Bắt đầu phiên" }),
@@ -46,7 +47,7 @@ describe("MockInterviewView", () => {
   it("shows exactly the correct 4 rubric labels at result — never the old wrong set", async () => {
     renderView();
 
-    fireEvent.click(screen.getByText("1. Two Sum"));
+    fireEvent.click(await screen.findByText("1. Two Sum"));
     fireEvent.click(screen.getByRole("button", { name: "Bắt đầu phiên" }));
 
     // Ending early (H popup) skips straight to the result screen without playing out 12 turns.

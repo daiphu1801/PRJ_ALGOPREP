@@ -4,26 +4,37 @@
 // redirect thẳng vào bài làm dở gần nhất. Owner 2026-10-20 muốn có trang riêng: liệt kê bài đang làm dở
 // để tiếp tục, hoặc đi chọn bài. Ghi đè nhánh "mở thẳng nháp" của _shell.md mục 6 Q2.
 //
-// PROTOTYPE — danh sách lấy từ mock; nguồn thật là `judge.submissions` khi có 03-dd/api/judge-orchestration.md.
+// PROTOTYPE — danh sách lấy từ mock; nguồn thật là `judge.submissions` khi có 03-dd/api/F4_judge-orchestration.md.
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Shuffle } from "lucide-react";
-import { fetchProblemListPage, InProgressList } from "@/entities/problem";
+import {
+  InProgressList,
+  useProblemListPage,
+  type ProblemListPage,
+} from "@/entities/problem";
 import { useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
-import { Button, Card } from "@/shared/ui";
+import { Button, Card, QueryBoundary } from "@/shared/ui";
 
 // Owner 2026-10-20: at most 12 drafts, most recently submitted first (mock order stands in for that).
 const MAX_DRAFTS = 12;
 
 export function WorkspaceHomeView() {
+  const query = useProblemListPage();
+  return (
+    <QueryBoundary query={query}>
+      {(page) => <WorkspaceHome page={page} />}
+    </QueryBoundary>
+  );
+}
+
+function WorkspaceHome({ page }: { page: ProblemListPage }) {
   const t = useT("workspaceHome");
   const tl = useT("problemList");
   const router = useRouter();
-  const [page] = useState(fetchProblemListPage);
 
   // ponytail: picks client-side from the mock; the real flow is server-side (GetRandomProblem with an
   // unsolved-status filter, USR0105 BD Q4). Unsolved includes "in progress".

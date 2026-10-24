@@ -7,8 +7,5 @@ export {
   type AuditLogPage,
   type CategoryCount,
 } from "../model/types";
-export {
-  LOAD_MORE_COUNT,
-  fetchAuditLogPage,
-  fetchMoreAuditEvents,
-} from "./__mock__/audit-log-mocks";
+export { LOAD_MORE_COUNT } from "./__mock__/audit-log-mocks";
+export { useAuditLogPage, useLoadMoreAuditEvents } from "./queries";

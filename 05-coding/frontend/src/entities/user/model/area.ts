@@ -8,7 +8,7 @@ export type AppArea = "public" | "student" | "instructor" | "admin";
 
 /**
  * The role REQUIRED to enter each area. This is the single source of truth for that rule —
- * middleware.ts (not built yet, needs 03-dd/api/identity.md) must read this map instead of
+ * middleware.ts (not built yet, needs 03-dd/api/F1_identity.md) must read this map instead of
  * duplicating it, otherwise the two will drift and an area will end up unguarded without anyone
  * noticing in a diff.
  *

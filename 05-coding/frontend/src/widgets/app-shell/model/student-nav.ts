@@ -39,6 +39,8 @@ export const STUDENT_NAV_ITEMS: StudentNavItem[] = [
   // session) and never read the submissionId the old route passed it.
   { key: "mockInterview", href: "/mock-interview", labelKey: "mockInterview" },
   { key: "interviewBank", href: "/interview-bank", labelKey: "interviewBank" },
+  // Owner 2026-10-23: the learner class screen lives in the header, not the avatar menu.
+  { key: "classes", href: "/classes", labelKey: "myClasses" },
 ];
 
 export type StudentMenuItem = StudentNavItem & {

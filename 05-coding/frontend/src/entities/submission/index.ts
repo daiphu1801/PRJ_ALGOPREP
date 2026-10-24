@@ -25,8 +25,7 @@ export {
   type SubmissionResultFilter,
 } from "./model/result-filter";
 export {
-  fetchMySubmissionsPage,
-  fetchSubmissionDetail,
-  isSubmissionInInstructorScope,
-  READABLE_SUBMISSION_IDS,
-} from "./api/__mock__/submission-mocks";
+  useInstructorReadableSubmissions,
+  useMySubmissionsPage,
+  useSubmissionDetail,
+} from "./api/queries";

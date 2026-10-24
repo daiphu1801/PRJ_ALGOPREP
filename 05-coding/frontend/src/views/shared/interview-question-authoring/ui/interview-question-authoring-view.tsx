@@ -25,7 +25,8 @@
 import { useState } from "react";
 import { ArrowLeft, Eye } from "lucide-react";
 import {
-  findInterviewQuestionByCode,
+  useInterviewQuestion,
+  type InterviewQuestion,
   useInterviewLevels,
   useInterviewTopics,
   type QuestionLevel,
@@ -43,6 +44,7 @@ import {
   NoticeTile,
   NumberStepper,
   PageHeader,
+  QueryBoundary,
   SelectField,
   TextArea,
   TextField,
@@ -73,9 +75,11 @@ type Props = {
   listHref: string;
 };
 
-function draftFor(questionId: string): Draft | null {
+function draftFor(
+  questionId: string,
+  found: InterviewQuestion | null,
+): Draft | null {
   if (questionId === "new") return EMPTY_DRAFT;
-  const found = findInterviewQuestionByCode(questionId);
   if (!found) return null;
   return {
     question: found.question,
@@ -86,15 +90,28 @@ function draftFor(questionId: string): Draft | null {
   };
 }
 
-export function InterviewQuestionAuthoringView({
+export function InterviewQuestionAuthoringView(props: Props) {
+  const isNew = props.questionId === "new";
+  const query = useInterviewQuestion(props.questionId, !isNew);
+  // The create form has nothing to load, so it skips the boundary.
+  if (isNew) return <InterviewQuestionAuthoring {...props} found={null} />;
+  return (
+    <QueryBoundary query={query}>
+      {(found) => <InterviewQuestionAuthoring {...props} found={found} />}
+    </QueryBoundary>
+  );
+}
+
+function InterviewQuestionAuthoring({
   questionId,
   listHref,
-}: Props) {
+  found,
+}: Props & { found: InterviewQuestion | null }) {
   const t = useT("interviewQuestionAuthoring");
   const isNew = questionId === "new";
   const topicList = useInterviewTopics();
   const levelList = useInterviewLevels();
-  const [loaded] = useState(() => draftFor(questionId));
+  const [loaded] = useState(() => draftFor(questionId, found));
   const [draft, setDraft] = useState<Draft>(
     loaded ?? {
       ...EMPTY_DRAFT,

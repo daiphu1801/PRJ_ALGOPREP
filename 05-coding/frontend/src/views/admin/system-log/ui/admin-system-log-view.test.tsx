@@ -1,5 +1,7 @@
 // The three things ADM0403 added on 2026-10-08: "Tải thêm" loads rows, the day range filters them,
 // and a lock row shows its reason while an unlock row does not.
+import type { ReactElement } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { describe, expect, it, vi } from "vitest";
 import {
   act,
@@ -7,10 +9,20 @@ import {
   render,
   renderHook,
   screen,
+  waitFor,
 } from "@testing-library/react";
 import { toast, useToasts } from "@/shared/lib/toast-store";
 import { ExportLogDialog } from "./export-log-dialog";
 import { AdminSystemLogView } from "./admin-system-log-view";
+
+// The view now loads through a query, so each render waits for the first page.
+async function renderView(ui: ReactElement) {
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+  render(<QueryClientProvider client={client}>{ui}</QueryClientProvider>);
+  await screen.findAllByText("title");
+}
 
 vi.mock("@/shared/i18n", () => ({
   useT: () => (key: string, values?: Record<string, string | number>) =>
@@ -23,21 +35,21 @@ const rows = () =>
     .filter((item) => item.className.includes("border-l-2"));
 
 describe("AdminSystemLogView", () => {
-  it("shows the lock reason on the lock row only", () => {
-    render(<AdminSystemLogView />);
+  it("shows the lock reason on the lock row only", async () => {
+    await renderView(<AdminSystemLogView />);
     expect(screen.getAllByText(/^reasonLabel: /)).toHaveLength(1);
     expect(screen.getByText(/Phát hiện nhiều tài khoản/)).toBeInTheDocument();
   });
 
-  it("loads 50 more rows from the load-more button", () => {
-    render(<AdminSystemLogView />);
+  it("loads 50 more rows from the load-more button", async () => {
+    await renderView(<AdminSystemLogView />);
     const before = rows().length;
     fireEvent.click(screen.getByRole("button", { name: "loadMore:50" }));
-    expect(rows()).toHaveLength(before + 50);
+    await waitFor(() => expect(rows()).toHaveLength(before + 50));
   });
 
-  it("filters by day range, inclusive on both ends", () => {
-    render(<AdminSystemLogView />);
+  it("filters by day range, inclusive on both ends", async () => {
+    await renderView(<AdminSystemLogView />);
     fireEvent.click(screen.getByRole("button", { name: "loadMore:50" }));
 
     fireEvent.change(screen.getByLabelText("dateFrom"), {
@@ -51,8 +63,8 @@ describe("AdminSystemLogView", () => {
     expect(rows()).toHaveLength(10);
   });
 
-  it("returns nothing, and says why, when the range is reversed", () => {
-    render(<AdminSystemLogView />);
+  it("returns nothing, and says why, when the range is reversed", async () => {
+    await renderView(<AdminSystemLogView />);
     fireEvent.change(screen.getByLabelText("dateTo"), {
       target: { value: "2026-10-01" },
     });
@@ -66,7 +78,7 @@ describe("AdminSystemLogView", () => {
     expect(screen.getByText("emptyFiltered")).toBeInTheDocument();
   });
 
-  it("export dialog carries the filters on screen and refuses future and too-old dates", () => {
+  it("export dialog carries the filters on screen and refuses future and too-old dates", async () => {
     const toasts = renderHook(() => useToasts());
     act(() => toast.clear());
     render(

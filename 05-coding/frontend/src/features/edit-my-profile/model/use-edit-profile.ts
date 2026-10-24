@@ -45,7 +45,7 @@ export type SaveProfileResult = { ok: true } | { ok: false; errorKey: string };
 
 /**
  * Owns Khu vực B (personal-info form) of USR0502_profile. `email` is edited here but is NEVER part
- * of `UpdateMyProfileInput` (03-dd/api/identity.md endpoint 10 note) — changing it fires
+ * of `UpdateMyProfileInput` (03-dd/api/F1_identity.md endpoint 10 note) — changing it fires
  * `RequestMyEmailChange` and opens the OTP dialog, independent of whether the other 5 fields saved.
  */
 export function useEditProfile(
