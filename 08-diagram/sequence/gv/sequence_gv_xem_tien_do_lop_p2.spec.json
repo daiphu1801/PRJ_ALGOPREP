@@ -1,142 +1,44 @@
 {
-  "_": "Luong xem dashboard tien do lop cua actor A2. Nguon: US-A2-09 (01-rd/req/user_stories/a2_instructor.md:140-155), 01-rd/req/F1_identity.md (F1-27, F1-28), 03-dd/api/F1_identity.md muc 0.4 (endpoint #26, #29), 02-bd/architecture/F1_identity.md muc 3.1 (read model dung tu domain event SubmissionGraded, KHONG doc thang schema judge). Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen. | Cap nhat 2026-10-20: siet theo quy tac moi, nhan mui ten la cau tieng Viet thuong, khong duong dan endpoint, ma HTTP, ma quyen, ten su kien, thuat ngu ky thuat; duong dan, ma HTTP va ma quyen nam o DD.",
-  "_suy_giam": "US-A2-11 (a2_instructor.md:185): mot nguon so lieu khong phan hoi thi man van len, phan do bao loi tai cho -- ve thanh nhanh alt vi day la nghiep vu that, khong phai xu ly loi trang tri.",
+  "_": "Thiết kế dự kiến F1, tiếp nối trang 1a/1b. Nguồn: 03-dd/api/F1_identity.md mục 0.4.2 và 0.4.3, endpoint #28; 03-dd/logic/F1_identity.md BR-12; 01-rd/system/SYS0101_backend_architecture.md. GetStudentProfileQry = GetClassStudentProfileQueryHandler, EnrollmentReadPort = ClassEnrollmentReadPort, IdentityDbAdapter = ClassEnrollmentPersistenceAdapter, AssignmentPort = ClassAssignmentReadPort F1→F2, MetricsPort = GetClassStudentSubmissionMetrics F1→F4 [SoT: Suy luận về tên lớp/adapter]. Hai bridge xuyên module được lược để trang dễ đọc; tuyệt đối không join schema F2/F4. Lỗi một cổng bắt buộc trả 503, không dựng nhãn giả. Giao diện render bảng sau khi nhận dữ liệu, không phải lời gọi backend. Những bước tính nhãn, liên hệ và sắp thứ tự trong DD được gộp ở QueryHandler.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Xem tiến độ lớp học (Giảng viên) (2/2)",
-  "covers": [
-    "F1-27",
-    "F1-28"
-  ],
+  "title": "Sơ đồ tuần tự chi tiết - Xem hồ sơ học viên trong lớp (2/2)",
+  "covers": ["F1-27", "F1-28"],
   "mode": "color",
   "sequence": {
     "detail": true,
     "participants": [
-      {
-        "name": "Giảng viên",
-        "role": "actor"
-      },
-      {
-        "name": "ClassProgressController",
-        "role": "controller",
-        "stereo": "presentation"
-      },
-      {
-        "name": "ClassProgressService",
-        "role": "service",
-        "stereo": "application"
-      },
-      {
-        "name": "PostgreSQL",
-        "role": "datastore",
-        "stereo": "read model identity"
-      }
+      {"name": "Giảng viên", "role": "actor"},
+      {"name": "ClassProgressCtrl", "role": "controller", "stereo": "presentation"},
+      {"name": "GetStudentProfileQry", "role": "service", "stereo": "application query"},
+      {"name": "EnrollmentReadPort", "role": "repository", "stereo": "application read port"},
+      {"name": "IdentityDbAdapter", "role": "repository", "stereo": "infrastructure"},
+      {"name": "PostgreSQL", "role": "datastore", "stereo": "schema identity"},
+      {"name": "AssignmentPort", "role": "repository", "stereo": "port F1 → F2"},
+      {"name": "MetricsPort", "role": "repository", "stereo": "port F1 → F4"}
     ],
     "messages": [
-      {
-        "phase": "Giai đoạn 3 - Phân loại học viên; thiếu một nguồn số liệu vẫn hiện phần còn lại"
-      },
-      {
-        "from": "ClassProgressService",
-        "to": "ClassProgressService",
-        "text": "Không nộp bài trong 7 ngày gần nhất thì gắn nhãn Vắng bài"
-      },
-      {
-        "from": "ClassProgressService",
-        "to": "ClassProgressService",
-        "text": "Tỉ lệ hoàn thành dưới ngưỡng thì gắn nhãn Cần hỗ trợ"
-      },
-      {
-        "alt": {
-          "label": "Thiếu nguồn số liệu?",
-          "then": [
-            {
-              "from": "ClassProgressService",
-              "to": "ClassProgressService",
-              "text": "Trường hợp có"
-            },
-            {
-              "from": "ClassProgressService",
-              "to": "ClassProgressController",
-              "text": "Trả phần dữ liệu đã có, đánh dấu ô thiếu",
-              "kind": "return"
-            },
-            {
-              "from": "ClassProgressController",
-              "to": "Giảng viên",
-              "text": "Báo thành công kèm ghi chú nguồn số liệu bị lỗi, màn vẫn mở",
-              "kind": "return"
-            }
-          ],
-          "else": [
-            {
-              "from": "ClassProgressService",
-              "to": "ClassProgressService",
-              "text": "Trường hợp không"
-            },
-            {
-              "from": "ClassProgressService",
-              "to": "ClassProgressController",
-              "text": "Số liệu đầy đủ",
-              "kind": "return"
-            },
-            {
-              "from": "ClassProgressController",
-              "to": "Giảng viên",
-              "text": "Báo thành công",
-              "kind": "return"
-            }
-          ]
-        }
-      },
-      {
-        "from": "Giảng viên",
-        "to": "Giảng viên",
-        "text": "Vẽ bảng học viên, biểu đồ, điểm trung bình lớp và danh sách cần hỗ trợ"
-      },
-      {
-        "from": "Giảng viên",
-        "to": "Giảng viên",
-        "text": "Bấm vào một học viên để mở hồ sơ chi tiết"
-      },
-      {
-        "from": "Giảng viên",
-        "to": "ClassProgressController",
-        "text": "Gửi yêu cầu xem hồ sơ học viên"
-      },
-      {
-        "from": "ClassProgressController",
-        "to": "ClassProgressService",
-        "text": "Yêu cầu hồ sơ học viên trong lớp"
-      },
-      {
-        "from": "ClassProgressService",
-        "to": "PostgreSQL",
-        "text": "Đọc chỉ số của học viên, chỉ trong lớp này"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "ClassProgressService",
-        "text": "Chỉ số của học viên",
-        "kind": "return"
-      },
-      {
-        "from": "ClassProgressService",
-        "to": "ClassProgressController",
-        "text": "Hồ sơ chi tiết học viên",
-        "kind": "return"
-      },
-      {
-        "from": "ClassProgressController",
-        "to": "Giảng viên",
-        "text": "Báo thành công",
-        "kind": "return"
-      },
-      {
-        "from": "Giảng viên",
-        "to": "Giảng viên",
-        "text": "Hiện hồ sơ chi tiết trong phạm vi lớp mình phụ trách"
-      }
+      {"phase": "Giai đoạn 3 - Giảng viên mở hồ sơ một học viên trong lớp"},
+      {"from": "Giảng viên", "to": "ClassProgressCtrl", "text": "Chọn học viên trong lớp"},
+      {"from": "ClassProgressCtrl", "to": "GetStudentProfileQry", "text": "Yêu cầu hồ sơ học viên"},
+      {"from": "GetStudentProfileQry", "to": "EnrollmentReadPort", "text": "Kiểm tra chủ lớp và ghi danh còn hiệu lực"},
+      {"from": "EnrollmentReadPort", "to": "IdentityDbAdapter", "text": "Đọc lớp, học viên và liên hệ"},
+      {"from": "IdentityDbAdapter", "to": "PostgreSQL", "text": "Tra dữ liệu thuộc identity"},
+      {"from": "PostgreSQL", "to": "IdentityDbAdapter", "text": "Lớp, ghi danh và liên hệ", "kind": "return"},
+      {"from": "IdentityDbAdapter", "to": "EnrollmentReadPort", "text": "Dữ liệu thuộc phạm vi lớp", "kind": "return"},
+      {"from": "EnrollmentReadPort", "to": "GetStudentProfileQry", "text": "Lớp và học viên hợp lệ", "kind": "return"},
+      {"from": "GetStudentProfileQry", "to": "AssignmentPort", "text": "Lấy bài còn giao và tên đề"},
+      {"from": "AssignmentPort", "to": "GetStudentProfileQry", "text": "Bài giao theo mốc hiện hành", "kind": "return"},
+      {"from": "GetStudentProfileQry", "to": "MetricsPort", "text": "Lấy kết quả sau từng mốc giao"},
+      {"alt": {"label": "Nguồn kết quả có sẵn?", "then": [
+        {"from": "MetricsPort", "to": "GetStudentProfileQry", "text": "Kết quả và số liệu phân loại", "kind": "return"},
+        {"from": "GetStudentProfileQry", "to": "GetStudentProfileQry", "text": "Ghép tiến độ từng bài, tính nhãn học viên"},
+        {"from": "GetStudentProfileQry", "to": "ClassProgressCtrl", "text": "Hồ sơ trong phạm vi lớp", "kind": "return"},
+        {"from": "ClassProgressCtrl", "to": "Giảng viên", "text": "Hiện liên hệ và tiến độ bài giao", "kind": "return"}
+      ], "else": [
+        {"from": "MetricsPort", "to": "GetStudentProfileQry", "text": "Không đọc được nguồn bắt buộc", "kind": "return"},
+        {"from": "GetStudentProfileQry", "to": "ClassProgressCtrl", "text": "Báo dữ liệu chưa sẵn sàng", "kind": "return"},
+        {"from": "ClassProgressCtrl", "to": "Giảng viên", "text": "Báo lỗi tạm thời; không hiện nhãn giả", "kind": "return"}
+      ]}}
     ]
-  },
-  "_cat": "Tach tu sequence_gv_xem_tien_do_lop.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 2/2). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+  }
 }

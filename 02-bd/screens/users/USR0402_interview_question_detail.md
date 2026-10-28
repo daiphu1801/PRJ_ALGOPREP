@@ -614,7 +614,7 @@ Không quy định màu sắc, khoảng cách hay typography ở BD
 ## Sheet 9. Đặc tả kiểm tra
 
 > Bộ thẻ và quy ước mã thông báo: `02-bd/_rules/bd-template-9sheet.md` mục 2, 4. Sheet này ghi **điều kiện
-> kiểm và thông báo**; tiêu chí nghiệm thu `AC-nn` thuộc `04-tdd/interview_question_detail.md`, không lặp
+> kiểm và thông báo**; tiêu chí nghiệm thu `AC-nn` thuộc `04-tdd/screens/users/USR0402_interview_question_detail.md`, không lặp
 > lại ở đây.
 
 | NO | Loại | Tóm tắt kiểm | Chi tiết | Mức | Mã thông báo | Ghi chú | EVT gọi | Thứ tự |
@@ -689,5 +689,5 @@ sinh nhánh lỗi nào cho Chế độ học, tự chấm, đánh dấu hay lị
 
 ---
 
-> [Nội bộ] Tiêu chí nghiệm thu `AC-nn` của màn này viết ở `04-tdd/interview_question_detail.md` cùng lúc
+> [Nội bộ] Tiêu chí nghiệm thu `AC-nn` của màn này viết ở `04-tdd/screens/users/USR0402_interview_question_detail.md` cùng lúc
 > với DD màn hình, không viết trong file BD.

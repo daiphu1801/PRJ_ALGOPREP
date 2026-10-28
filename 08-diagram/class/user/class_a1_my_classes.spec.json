@@ -1,0 +1,75 @@
+{
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a1_student.md:194; 01-rd/req/user_stories/a1_student.md:197; 01-rd/req/user_stories/a1_student.md:199; 01-rd/req/user_stories/a1_student.md:202; 01-rd/req/user_stories/a1_student.md:204; 01-rd/req/user_stories/a1_student.md:207. Nguồn thiết kế: 03-dd/logic/F1_identity.md; 03-dd/api/F1_identity.md; 03-dd/logic/F2_problem-bank.md; 03-dd/api/F2_problem-bank.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "kind": "class",
+  "title": "A1 — Tham gia và xem lớp của tôi",
+  "covers": [
+    "F1-23",
+    "F1-25",
+    "F1-26",
+    "F1-28",
+    "F2-12"
+  ],
+  "class": {
+    "legend": "shared",
+    "classes": [
+      {
+        "id": "service",
+        "name": "StudentClassService",
+        "methods": [
+          "+ joinByInvite(studentId : UUID, code : String) : ClassSummary",
+          "+ validateInvite(code : String) : InviteStatus",
+          "+ joinIdempotently(studentId : UUID, classId : UUID) : Membership",
+          "+ listMine(studentId : UUID) : List<ClassSummary>",
+          "+ assignments(studentId : UUID, classId : UUID) : List<AssignmentProgress>",
+          "+ requireMembership(studentId : UUID, classId : UUID) : Membership"
+        ]
+      },
+      {
+        "id": "port1",
+        "name": "ClassRepository",
+        "kind": "class",
+        "methods": [
+          "+ findByInvite(code : String) : Classroom"
+        ]
+      },
+      {
+        "id": "port2",
+        "name": "MembershipRepository",
+        "kind": "class",
+        "methods": [
+          "+ find(studentId : UUID, classId : UUID) : Membership"
+        ]
+      },
+      {
+        "id": "port3",
+        "name": "AssignmentProgressPort",
+        "kind": "interface",
+        "methods": [
+          "+ forClass(studentId : UUID, classId : UUID) : List<AssignmentProgress>"
+        ]
+      }
+    ],
+    "externals": [],
+    "relations": [
+      {
+        "from": "service",
+        "to": "port1",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port2",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port3",
+        "kind": "dependency"
+      }
+    ],
+    "notes": [
+      "Mã mời hiệu lực 7 ngày; vào lớp lặp là idempotent; lớp ngoài phạm vi trả cùng kiểu 404.",
+      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+    ]
+  }
+}

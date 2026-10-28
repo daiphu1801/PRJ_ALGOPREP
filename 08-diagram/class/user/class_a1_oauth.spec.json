@@ -1,0 +1,27 @@
+{
+  "_": "Nguồn: 01-rd/req/user_stories/a1_student.md:8-34; 03-dd/api/F1_identity.md:24-41; 03-dd/logic/F1_identity.md:89-103 (BR-03); 02-bd/database/F1_identity.md (users, oauth_identities). [SoT: Suy luận] Tên OAuthService, OAuthStateStore, OAuthProviderPort, UserRepository, OAuthIdentityRepository và chữ ký phương thức là thiết kế đề xuất từ luồng DD. UserAccount/OAuthIdentity là kiểu dữ liệu ở repository, để sơ đồ model F1 dùng chung. Không vẽ chi tiết callback HTTP và token provider.",
+  "kind": "class",
+  "title": "A1 — Đăng nhập và liên kết tài khoản OAuth",
+  "covers": ["F1-15"],
+  "class": {
+    "legend": "shared",
+    "classes": [
+      {"id": "service", "name": "OAuthService", "methods": ["+ start(provider : OAuthProvider) : String", "+ complete(provider : OAuthProvider, code : String, state : String)"]},
+      {"id": "states", "name": "OAuthStateStore", "methods": ["+ consume(state : String) : boolean"]},
+      {"id": "provider", "name": "OAuthProviderPort", "kind": "interface", "methods": ["+ verifiedEmail(code : String) : String"]},
+      {"id": "users", "name": "UserRepository", "methods": ["+ findByEmail(email : String) : UserAccount"]},
+      {"id": "links", "name": "OAuthIdentityRepository", "methods": ["+ save(identity : OAuthIdentity)"]}
+    ],
+    "externals": [],
+    "relations": [
+      {"from": "service", "to": "states", "kind": "dependency", "label": "kiểm state"},
+      {"from": "service", "to": "provider", "kind": "dependency", "label": "xác minh"},
+      {"from": "service", "to": "users", "kind": "dependency", "label": "tìm email"},
+      {"from": "service", "to": "links", "kind": "dependency", "label": "liên kết"}
+    ],
+    "notes": [
+      "Chỉ liên kết khi email provider đã xác minh; email trùng dùng lại tài khoản hiện có.",
+      "[SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế backend từ DD."
+    ]
+  }
+}

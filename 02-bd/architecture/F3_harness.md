@@ -123,8 +123,8 @@ Sửa 2026-10-22 (đồng bộ DB, phase 3, DEC-2026-1022-problem-bank-schema-sy
 - **Khai báo**: `{"kind":"ARRAY","of":<kiểu phần tử>,"dimensions":n}`. `dimensions=1` là mảng một chiều
   thông thường (`int[]`); `dimensions=2` là mảng hai chiều, v.v.
 - **Sinh mã đọc input**: định dạng input chuẩn hoá theo quy ước "kích thước trước, dữ liệu sau" cho mỗi
-  chiều (ví dụ dòng đầu `n` rồi `n` dòng tiếp mỗi dòng `m` số cách nhau bằng khoảng trắng cho mảng 2 chiều
-  `n×m`) — quy ước cụ thể ở mức ký tự phân tách chốt ở DD, nhưng nguyên tắc BD khoá: **kích thước luôn khai
+  chiều (**cập nhật owner 2026-10-25:** mảng 2 chiều `n×m` có dòng đầu `n m`, sau đó đúng `n` dòng, mỗi dòng `m` phần tử;
+  thay ví dụ cũ chỉ ghi `n` rồi suy `m` từ hàng) — quy ước cụ thể ở mức ký tự phân tách chốt ở DD, nhưng nguyên tắc BD khoá: **kích thước luôn khai
   tường minh trong input, không suy luận từ ký tự kết thúc dòng**, để cả ba ngôn ngữ đọc theo cùng một thuật
   toán duyệt (đọc kích thước → cấp phát mảng đúng kích thước → đọc phần tử).
 - **Sinh mã in output**: in theo đúng cấu trúc lồng, phân tách phần tử bằng khoảng trắng và các chiều bằng
@@ -250,7 +250,7 @@ kiểu dữ liệu có cấu trúc:
   thực bằng epsilon, so các node cấu trúc bao ngoài bằng khớp hình dạng chính xác) — không parse toàn chuỗi
   thành một số duy nhất. Đây là điểm phức tạp nhất trong so khớp, chốt thuật toán duyệt song song cụ thể ở
   DD.
-- **`UNORDERED_SET`** (tập hợp không xét thứ tự): parse chuỗi output thành tập hợp phần tử rồi so sánh tập
+- **`UNORDERED_SET`** (đa tập không xét thứ tự, owner 2026-10-25): parse chuỗi output thành đa tập phần tử, giữ số lần lặp, rồi so sánh số lần của từng phần tử
   hợp (không quan tâm thứ tự) — chỉ có ý nghĩa với `LIST`/`ARRAY` một chiều chứa kiểu so sánh được bằng
   `equals` (nguyên thuỷ, `STRING`); **không định nghĩa cho `BINARY_TREE`/`LINKED_LIST`** vì khái niệm "không
   xét thứ tự" không có ngữ nghĩa rõ ràng cho cấu trúc cây/danh sách liên kết — nếu `problem-bank` khai

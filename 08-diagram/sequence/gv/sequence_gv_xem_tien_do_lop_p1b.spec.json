@@ -1,0 +1,27 @@
+{
+  "_": "Trang 1b/2 tiếp nối sequence_gv_xem_tien_do_lop_p1.spec.json. Nguồn: 03-dd/logic/F1_identity.md BR-12; 03-dd/api/F1_identity.md mục 0.8.2 và endpoint #29. GetClassProgressQry = GetClassProgressQueryHandler; AssignmentPort = ClassAssignmentReadPort theo DD F1; MetricsPort = cổng F1 thiết kế dự kiến tới F4 P1 GetClassStudentSubmissionMetrics [SoT: Suy luận]. Hai adapter/bridge cross-module được lược ở hình này để giữ công thức dễ đọc; không có lời gọi trực tiếp schema problem/judge. Tỉ lệ hoàn thành được tính ngay khi đọc từ bài còn giao và kết quả Accepted sau mốc giao, không dùng bảng class_completion_stats đã bị bỏ.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Tính tiến độ khi đọc (1b/2)",
+  "covers": ["F1-28"],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {"name": "Giảng viên", "role": "actor"},
+      {"name": "ClassProgressCtrl", "role": "controller", "stereo": "presentation"},
+      {"name": "GetClassProgressQry", "role": "service", "stereo": "application query"},
+      {"name": "AssignmentPort", "role": "repository", "stereo": "port F1 → F2"},
+      {"name": "MetricsPort", "role": "repository", "stereo": "port F1 → F4"}
+    ],
+    "messages": [
+      {"phase": "Giai đoạn 2 - Ghép bài còn giao và kết quả chấm (F1-28)"},
+      {"from": "GetClassProgressQry", "to": "AssignmentPort", "text": "Đọc bài còn giao cho lớp"},
+      {"from": "AssignmentPort", "to": "GetClassProgressQry", "text": "Danh sách bài và mốc giao", "kind": "return"},
+      {"from": "GetClassProgressQry", "to": "MetricsPort", "text": "Đọc kết quả sau mốc giao"},
+      {"from": "MetricsPort", "to": "GetClassProgressQry", "text": "Bài đã đạt và số liệu học viên", "kind": "return"},
+      {"from": "GetClassProgressQry", "to": "GetClassProgressQry", "text": "Tính tỉ lệ từng học viên rồi lấy trung bình"},
+      {"from": "GetClassProgressQry", "to": "ClassProgressCtrl", "text": "Tỉ lệ lớp và danh sách học viên", "kind": "return"},
+      {"from": "ClassProgressCtrl", "to": "Giảng viên", "text": "Hiện tiến độ lớp", "kind": "return"}
+    ]
+  }
+}

@@ -1,11 +1,8 @@
 {
-  "_": "Luong dat ngan sach token, tu dong khoa khi can quota, va canh bao bat thuong cap tai khoan cua actor A3. Nguon: US-A3-04 (01-rd/req/user_stories/a3_admin.md), 01-rd/req/F5_ai-review.md (F5-19, F5-21, F5-25), 02-bd/architecture/F5_ai-review.md muc 6.3 (ngan sach + locked_at, ADMIN khong bi khoa) va muc 6.4 (DEC-2026-0831-ai-usage-anomaly-alert -- canh bao mem, KHONG tu khoa tai khoan). Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen. | 2026-10-20 (owner): nhan mui ten bo han duong dan, ma HTTP, ma quyen, thuat ngu ky thuat (cache, job, worker, model...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
-  "_hai_co_che": "Muc 6.3 va 6.4 la HAI co che tach biet: mot cai tu khoa theo ngan sach toan he thong, mot cai chi canh bao de ADMIN xem xet thu cong. Ve chung mot so do de thay ro chung khong dinh vao nhau.",
+  "_": "Nguồn: 03-dd/api/F5_ai-review.md §18. Dùng token_usage từ period_start; isLocked theo lockedAt hoặc used >= limit; ngày dự kiến có thể rỗng; đọc được khi LLM lỗi. Cổng và adapter là tên minh họa [SoT: Suy luận].",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Đặt ngân sách token và cảnh báo bất thường (Quản trị viên) (1/3)",
+  "title": "Sơ đồ tuần tự chi tiết - Đọc ngân sách token hiện tại (1/5)",
   "covers": [
-    "F5-19",
-    "F5-21",
     "F5-25"
   ],
   "mode": "color",
@@ -17,160 +14,80 @@
         "role": "actor"
       },
       {
-        "name": "TokenBudgetController",
+        "name": "AiUsageController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "TokenBudgetService",
+        "name": "GetAiTokenBudget",
         "role": "service",
         "stereo": "application"
+      },
+      {
+        "name": "BudgetReadPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "AiDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
       },
       {
         "name": "PostgreSQL",
         "role": "datastore",
         "stereo": "schema ai"
-      },
-      {
-        "name": "Sinh viên",
-        "role": "actor"
       }
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 1 - Xem mức tiêu thụ và dự báo thời điểm cạn hạn mức (F5-19, F5-21)"
-      },
-      {
         "from": "Quản trị viên",
-        "to": "Quản trị viên",
-        "text": "Mở trang theo dõi token"
+        "to": "AiUsageController",
+        "text": "Mở trang ngân sách token"
       },
       {
-        "from": "Quản trị viên",
-        "to": "TokenBudgetController",
-        "text": "Gửi yêu cầu xem mức tiêu thụ"
+        "from": "AiUsageController",
+        "to": "GetAiTokenBudget",
+        "text": "Kiểm quyền đọc ngân sách hoặc cấu hình AI"
       },
       {
-        "from": "TokenBudgetController",
-        "to": "TokenBudgetService",
-        "text": "Yêu cầu mức tiêu thụ token"
+        "from": "GetAiTokenBudget",
+        "to": "BudgetReadPort",
+        "text": "Đọc hạn mức và mức tiêu thụ từ đầu kỳ"
       },
       {
-        "from": "TokenBudgetService",
+        "from": "BudgetReadPort",
+        "to": "AiDbAdapter",
+        "text": "Đọc cấu hình và token đã dùng"
+      },
+      {
+        "from": "AiDbAdapter",
         "to": "PostgreSQL",
-        "text": "Tổng hợp token đã dùng theo chu kỳ hiện tại"
+        "text": "Đọc cấu hình, tổng token và bốn tính năng"
       },
       {
         "from": "PostgreSQL",
-        "to": "TokenBudgetService",
-        "text": "Tổng tiêu thụ, hạn mức, xếp hạng người dùng và bài toán",
+        "to": "GetAiTokenBudget",
+        "text": "Trả hạn mức, số đã dùng, trạng thái khóa",
         "kind": "return"
       },
       {
-        "from": "TokenBudgetService",
-        "to": "TokenBudgetService",
-        "text": "Dự báo thời điểm cạn hạn mức từ tốc độ 7 ngày gần nhất"
+        "from": "GetAiTokenBudget",
+        "to": "GetAiTokenBudget",
+        "text": "Tính ngày dự kiến hết và tỷ trọng theo tính năng"
       },
       {
-        "from": "TokenBudgetService",
-        "to": "TokenBudgetController",
-        "text": "Số liệu tiêu thụ và dự báo",
+        "from": "GetAiTokenBudget",
+        "to": "AiUsageController",
+        "text": "Trả ngân sách và ngưỡng cảnh báo",
         "kind": "return"
       },
       {
-        "from": "TokenBudgetController",
+        "from": "AiUsageController",
         "to": "Quản trị viên",
-        "text": "Báo thành công",
+        "text": "Hiển thị ngân sách hiện tại",
         "kind": "return"
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "Quản trị viên",
-        "text": "Token đã dùng, còn lại, dự báo cạn và bảng xếp hạng"
-      },
-      {
-        "phase": "Giai đoạn 2 - Đặt hạn mức; cạn hạn mức thì chỉ quản trị viên mở lại được (F5-25)"
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "Quản trị viên",
-        "text": "Nhập hạn mức token cho chu kỳ rồi bấm Lưu"
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "TokenBudgetController",
-        "text": "Gửi hạn mức mới"
-      },
-      {
-        "from": "TokenBudgetController",
-        "to": "TokenBudgetController",
-        "text": "Kiểm tra quyền đổi ngân sách AI"
-      },
-      {
-        "from": "TokenBudgetController",
-        "to": "TokenBudgetService",
-        "text": "Yêu cầu đổi hạn mức"
-      },
-      {
-        "from": "TokenBudgetService",
-        "to": "PostgreSQL",
-        "text": "Lưu hạn mức mới; ghi nhật ký giá trị cũ và mới"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "TokenBudgetService",
-        "text": "Đã lưu",
-        "kind": "return"
-      },
-      {
-        "from": "TokenBudgetService",
-        "to": "TokenBudgetController",
-        "text": "Cấu hình ngân sách mới",
-        "kind": "return"
-      },
-      {
-        "from": "TokenBudgetController",
-        "to": "Quản trị viên",
-        "text": "Báo thành công",
-        "kind": "return"
-      },
-      {
-        "from": "Sinh viên",
-        "to": "TokenBudgetService",
-        "text": "Gọi một tính năng AI khi ngân sách đã cạn"
-      },
-      {
-        "alt": {
-          "label": "Là quản trị viên?",
-          "then": [
-            {
-              "from": "TokenBudgetService",
-              "to": "TokenBudgetService",
-              "text": "Trường hợp có"
-            },
-            {
-              "from": "TokenBudgetService",
-              "to": "Sinh viên",
-              "text": "Cho đi tiếp, quản trị viên không bị khoá theo ngân sách",
-              "kind": "return"
-            }
-          ],
-          "else": [
-            {
-              "from": "TokenBudgetService",
-              "to": "TokenBudgetService",
-              "text": "Trường hợp không"
-            },
-            {
-              "from": "TokenBudgetService",
-              "to": "Sinh viên",
-              "text": "Báo hết ngân sách AI, chặn trước khi gọi AI",
-              "kind": "return"
-            }
-          ]
-        }
       }
     ]
-  },
-  "_cat": "Tach tu sequence_admin_dat_ngan_sach_token.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 1/2). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+  }
 }

@@ -1,0 +1,40 @@
+{
+  "_": "Trang 2b/3 tiếp nối 2a; các trạng thái Đang biên dịch/Đang chấm chỉ phát sau commit. Nguồn: 03-dd/logic/F4_judge-orchestration.md BR-JD-03 bước 7-9, BR-JD-06; 03-dd/logic/F3_harness.md; 01-rd/system/SYS0101_backend_architecture.md. StartGradingCmd = StartGradingCommandHandler, HarnessPort = cổng F4 tới PrepareSubmissionUseCase và MapCompileErrorUseCase F3, ExecutionPort = JudgeExecutionPort, GoJudgeAdapter = adapter go-judge [SoT: Suy luận về nhãn]. RealtimePort là cổng phát STOMP sau commit; adapter WebSocket lược ở hình để giữ đường biên dịch dễ đọc. Nhánh lỗi biên dịch do người học: F3 lọc lỗi thuộc mã khung, F4 lưu COMPILE_ERROR và outbox cùng giao dịch rồi phát trạng thái cuối; lỗi mã khung hệ thống thành SYSTEM_ERROR/SANDBOX_FAULT. Hình chỉ mô tả đường biên dịch thành công, không thay hợp đồng DD về lỗi và retry. Ở lần giao lại, một PreparedProgram mới có thể được tạo nhưng vẫn dùng bản chụp testcase đã ghim.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Tạo mã và biên dịch bài nộp (2b/3)",
+  "covers": ["F3-02", "F3-03", "F3-04", "F3-05", "F3-06", "F3-11", "F4-08"],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {"name": "StartGradingCmd", "role": "service", "stereo": "application command"},
+      {"name": "HarnessPort", "role": "repository", "stereo": "port F4 → F3"},
+      {"name": "ExecutionPort", "role": "repository", "stereo": "output port"},
+      {"name": "GoJudgeAdapter", "role": "external", "stereo": "infrastructure"},
+      {"name": "go-judge", "role": "external", "stereo": "sandbox"},
+      {"name": "SubmissionRepo", "role": "repository", "stereo": "domain output port"},
+      {"name": "JudgeDbAdapter", "role": "repository", "stereo": "infrastructure"},
+      {"name": "PostgreSQL", "role": "datastore", "stereo": "schema judge"},
+      {"name": "RealtimePort", "role": "repository", "stereo": "STOMP output port"}
+    ],
+    "messages": [
+      {"phase": "Giai đoạn 4 - Một mã đã chuẩn bị cho toàn bộ bài nộp"},
+      {"from": "StartGradingCmd", "to": "RealtimePort", "text": "Báo đang biên dịch sau commit", "kind": "async"},
+      {"from": "StartGradingCmd", "to": "HarnessPort", "text": "Tạo mã bọc hàm theo phiên bản đặc tả"},
+      {"from": "HarnessPort", "to": "StartGradingCmd", "text": "Mã đã ghép và bảng ánh xạ dòng", "kind": "return"},
+      {"from": "StartGradingCmd", "to": "ExecutionPort", "text": "Yêu cầu biên dịch mã đã ghép"},
+      {"from": "ExecutionPort", "to": "GoJudgeAdapter", "text": "Chuyển yêu cầu chạy an toàn"},
+      {"from": "GoJudgeAdapter", "to": "go-judge", "text": "Biên dịch trong sandbox"},
+      {"from": "go-judge", "to": "GoJudgeAdapter", "text": "Biên dịch thành công", "kind": "return"},
+      {"from": "GoJudgeAdapter", "to": "ExecutionPort", "text": "Kết quả biên dịch", "kind": "return"},
+      {"from": "ExecutionPort", "to": "StartGradingCmd", "text": "Mã sẵn sàng chạy ca", "kind": "return"},
+      {"from": "StartGradingCmd", "to": "SubmissionRepo", "text": "Đổi sang Đang chấm; ghi tổng N ca"},
+      {"from": "SubmissionRepo", "to": "JudgeDbAdapter", "text": "Lưu trạng thái chưa cuối"},
+      {"from": "JudgeDbAdapter", "to": "PostgreSQL", "text": "Ghi trạng thái Đang chấm"},
+      {"from": "PostgreSQL", "to": "JudgeDbAdapter", "text": "Đã commit", "kind": "return"},
+      {"from": "JudgeDbAdapter", "to": "SubmissionRepo", "text": "Đã lưu", "kind": "return"},
+      {"from": "SubmissionRepo", "to": "StartGradingCmd", "text": "Bắt đầu chạy N ca", "kind": "return"},
+      {"from": "StartGradingCmd", "to": "RealtimePort", "text": "Báo đang chấm sau commit", "kind": "async"}
+    ]
+  }
+}

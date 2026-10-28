@@ -1,0 +1,111 @@
+{
+  "_": "Nguồn: 03-dd/logic/F4_judge-orchestration.md BR-JD-08; 03-dd/jobs/F4_judge-orchestration.md JOB-JD-05. QueueConsumptionGate, QueueSettingsPort, JudgeDbAdapter, RabbitListenerContainer là tên minh họa [SoT: Suy luận]. Cổng kiểm cờ mỗi tối đa 3 giây, dừng nhận tin mới và đợi job đang chạy xong; mở lại dùng số consumer mục tiêu 1-8. Bài mới vẫn được lưu PENDING khi tạm dừng, sweep bỏ qua PENDING.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Cổng nền áp dụng trạng thái hàng đợi (3b/3)",
+  "covers": [
+    "F4-10"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "QueueConsumptionGate",
+        "role": "service",
+        "stereo": "scheduled gate"
+      },
+      {
+        "name": "QueueSettingsPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "JudgeDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema judge"
+      },
+      {
+        "name": "RabbitListenerContainer",
+        "role": "service",
+        "stereo": "judge worker"
+      },
+      {
+        "name": "RabbitMQ",
+        "role": "external",
+        "stereo": "event broker"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 5 - Áp dụng trạng thái trong tiến trình chấm"
+      },
+      {
+        "from": "QueueConsumptionGate",
+        "to": "QueueSettingsPort",
+        "text": "Đọc cờ tạm dừng và số luồng nhận mục tiêu"
+      },
+      {
+        "from": "QueueSettingsPort",
+        "to": "JudgeDbAdapter",
+        "text": "Lấy cấu hình đã lưu"
+      },
+      {
+        "from": "JudgeDbAdapter",
+        "to": "PostgreSQL",
+        "text": "Đọc cờ hàng đợi và số luồng nhận"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "JudgeDbAdapter",
+        "text": "Cấu hình hiện tại",
+        "kind": "return"
+      },
+      {
+        "from": "JudgeDbAdapter",
+        "to": "QueueSettingsPort",
+        "text": "Cấu hình hiện tại",
+        "kind": "return"
+      },
+      {
+        "from": "QueueSettingsPort",
+        "to": "QueueConsumptionGate",
+        "text": "Cấu hình hiện tại",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Hàng đợi đang tạm dừng?",
+          "then": [
+            {
+              "from": "QueueConsumptionGate",
+              "to": "RabbitListenerContainer",
+              "text": "Ngừng nhận bài mới; đợi bài đang chấm xong"
+            },
+            {
+              "from": "RabbitListenerContainer",
+              "to": "RabbitMQ",
+              "text": "Dừng lấy tin mới"
+            }
+          ],
+          "else": [
+            {
+              "from": "QueueConsumptionGate",
+              "to": "RabbitListenerContainer",
+              "text": "Mở lại nhận bài theo số luồng mục tiêu"
+            },
+            {
+              "from": "RabbitListenerContainer",
+              "to": "RabbitMQ",
+              "text": "Tiếp tục lấy bài đang chờ"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

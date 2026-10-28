@@ -1,0 +1,141 @@
+{
+  "_": "Nguồn: 01-rd/req/F1_identity.md F1-17; 03-dd/api/F1_identity.md mục #7/#8/#60; 03-dd/logic/F1_identity.md BR-04; 02-bd/database/F1_identity.md mục 1.6, 1.9, 3; 02-bd/security/F1_identity.md mục 3. Các tên lớp/port là thiết kế dự kiến [SoT: Suy luận], backend hiện là scaffold. AuditRepo = AuditLogRepository output port; MailPort = EmailDeliveryPort; MailAdapter = email adapter. Chỉ ghi PASSWORD_RESET_REQUESTED khi phát hành OTP; nhật ký không lưu OTP/email/mật khẩu. Tài khoản chỉ OAuth nhận email hướng dẫn, không nhận OTP (owner chốt 2026-10-27). Phản hồi gửi mã luôn giống nhau cho mọi email.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Gửi thư và trả lời chung (1c/3)",
+  "covers": [
+    "F1-17"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Sinh viên",
+        "role": "actor"
+      },
+      {
+        "name": "AuthController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "ForgotPasswordCmd",
+        "role": "service",
+        "stereo": "application command"
+      },
+      {
+        "name": "AuditRepo",
+        "role": "repository",
+        "stereo": "domain output port"
+      },
+      {
+        "name": "IdentityDbAdapter",
+        "role": "repository",
+        "stereo": "infrastructure"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema identity"
+      },
+      {
+        "name": "MailPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "MailAdapter",
+        "role": "external",
+        "stereo": "infrastructure"
+      },
+      {
+        "name": "Dịch vụ email",
+        "role": "external",
+        "stereo": "gửi thư"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 1c - Gửi đúng loại thư, luôn cùng một phản hồi"
+      },
+      {
+        "alt": {
+          "label": "Mã mới đã phát hành?",
+          "then": [
+            {
+              "from": "ForgotPasswordCmd",
+              "to": "AuditRepo",
+              "text": "Ghi lần phát mã, không ghi mã"
+            },
+            {
+              "from": "AuditRepo",
+              "to": "IdentityDbAdapter",
+              "text": "Lưu sự kiện xác thực"
+            },
+            {
+              "from": "IdentityDbAdapter",
+              "to": "PostgreSQL",
+              "text": "Ghi nhật ký theo tài khoản"
+            },
+            {
+              "from": "ForgotPasswordCmd",
+              "to": "MailPort",
+              "text": "Gửi mã tới email tài khoản"
+            },
+            {
+              "from": "MailPort",
+              "to": "MailAdapter",
+              "text": "Chuyển thư xác nhận"
+            },
+            {
+              "from": "MailAdapter",
+              "to": "Dịch vụ email",
+              "text": "Phát thư chứa mã"
+            }
+          ]
+        }
+      },
+      {
+        "alt": {
+          "label": "Chỉ đăng nhập bằng tài khoản ngoài?",
+          "then": [
+            {
+              "from": "ForgotPasswordCmd",
+              "to": "MailPort",
+              "text": "Gửi hướng dẫn đăng nhập qua nhà cung cấp"
+            },
+            {
+              "from": "MailPort",
+              "to": "MailAdapter",
+              "text": "Chuyển thư hướng dẫn"
+            },
+            {
+              "from": "MailAdapter",
+              "to": "Dịch vụ email",
+              "text": "Phát thư hướng dẫn"
+            }
+          ],
+          "else": [
+            {
+              "from": "ForgotPasswordCmd",
+              "to": "ForgotPasswordCmd",
+          "text": "Các trường hợp còn lại: không gửi thêm thư"
+            }
+          ]
+        }
+      },
+      {
+        "from": "ForgotPasswordCmd",
+        "to": "AuthController",
+        "text": "Kết thúc xử lý mà không tiết lộ tài khoản",
+        "kind": "return"
+      },
+      {
+        "from": "AuthController",
+        "to": "Sinh viên",
+        "text": "Nếu email tồn tại, mã xác nhận đã được gửi",
+        "kind": "return"
+      }
+    ]
+  }
+}

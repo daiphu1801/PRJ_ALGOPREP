@@ -143,16 +143,20 @@ thuật giống hệt, không phải một câu hỏi kiến trúc mới.
 
 ```
 Học viên bấm nút (chỉ hiện sau Accepted, không tự chạy — F5-01)
-  -> tính source_hash = SHA-256(sourceCode chuẩn hoá khoảng trắng)
-  -> tra ai_cache_entries theo (problem_id, language, source_hash, prompt_template_id của bản ACTIVE)
+  -> SubmissionSnapshotPort.getAccepted(), kiểm chủ sở hữu
+  -> báo cáo đã có cho submission_id? Có thì trả ngay, không kiểm chi phí và không phát sự kiện lần nữa
+  -> giữ khoá tạo báo cáo cho submission_id, đọc lại báo cáo đã có
+  -> tính source_hash = SHA-256(sourceCode chuẩn hoá), đọc prompt_template_id bản ACTIVE
+  -> tra ai_cache_entries theo (problem_id, language, source_hash, prompt_template_id)
      (sửa 2026-10-22, đồng bộ DB phase 3, AI-12: khoá có thêm prompt_template_id; `database/F5_ai-review.md:189,194`)
-       hit  -> trả kết quả cũ ngay, KHÔNG gọi LLM (F5-20), vẫn phát SolutionReviewCompleted
-       miss -> kiểm rate limit (mục 6.1) + token budget (mục 6.2)
-               -> SubmissionSnapshotPort.getAccepted() + ProblemContextPort.getContext()
-               -> LlmProviderPort.completeStructured(...) theo prompt_templates bản ACTIVE của
-                  feature_code = SOLUTION_REVIEW
-               -> ghi solution_reviews (F5.1, không ghi rubric_scores; sửa 2026-10-14, `DEC-2026-1014-drop-solution-review-rubric`) + ai_cache_entries
-               -> phát SolutionReviewCompleted
+       hit  -> tạo solution_reviews mới cho bài nộp hiện tại từ kết quả gốc, tăng hit_count,
+               ghi SolutionReviewCompleted qua outbox; KHÔNG gọi LLM, không ghi token_usage,
+               không kiểm hạn mức/ngân sách (xem mục 6.2)
+       miss -> kiểm ngân sách, thời gian chờ và hạn mức giờ
+               -> ProblemContextPort.getContext()
+               -> LlmProviderPort.completeStructured(...) theo prompt_templates bản ACTIVE
+               -> kiểm lược đồ, ghi solution_reviews + ai_cache_entries + token_usage
+                  + outbox_events trong một giao dịch; không ghi rubric_scores
 ```
 
 Kết quả JSON có lược đồ cố định (F5-07) — nội dung: độ phức tạp thời gian/bộ nhớ thực tế kèm lập luận

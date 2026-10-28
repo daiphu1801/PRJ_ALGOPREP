@@ -1,0 +1,166 @@
+{
+  "_": "Nguồn: 03-dd/logic/F5_ai-review.md BR-AI-01/06; 03-dd/api/F5_ai-review.md mục 8. StartInterviewCmd, InterviewRepo, AiDbAdapter là thiết kế dự kiến [SoT: Suy luận]. DD chốt mở phiên đồng bộ: gom câu mở đầu trước, chỉ ghi phiên sau khi AI trả hợp lệ; lỗi không tạo phiên và hoàn lượt giữ. Bộ nhớ Redis ghi sau commit, đã gộp khỏi hình vì không là nguồn sự thật. Câu mở đầu là phản hồi REST, luồng SSE chỉ dùng cho các lượt sau.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Phỏng vấn AI: tạo câu mở đầu và lưu phiên (1b/3)",
+  "covers": [
+    "F5-10",
+    "F5-17",
+    "F5-21"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Sinh viên",
+        "role": "actor"
+      },
+      {
+        "name": "InterviewController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "StartInterviewCmd",
+        "role": "service",
+        "stereo": "application command"
+      },
+      {
+        "name": "PromptComposer",
+        "role": "service",
+        "stereo": "domain"
+      },
+      {
+        "name": "LlmProviderPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "SpringAiLlmAdapter",
+        "role": "repository",
+        "stereo": "infrastructure"
+      },
+      {
+        "name": "Nhà cung cấp AI",
+        "role": "external"
+      },
+      {
+        "name": "InterviewRepo",
+        "role": "repository",
+        "stereo": "output port F5"
+      },
+      {
+        "name": "AiDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema ai"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 3 - Tạo câu hỏi mở đầu trước khi lưu phiên"
+      },
+      {
+        "from": "StartInterviewCmd",
+        "to": "PromptComposer",
+        "text": "Dựng lời chào giai đoạn Giải trình"
+      },
+      {
+        "from": "PromptComposer",
+        "to": "PromptComposer",
+        "text": "Giữ dữ liệu người học ngoài chỉ thị"
+      },
+      {
+        "from": "PromptComposer",
+        "to": "StartInterviewCmd",
+        "text": "Yêu cầu mở đầu an toàn",
+        "kind": "return"
+      },
+      {
+        "from": "StartInterviewCmd",
+        "to": "LlmProviderPort",
+        "text": "Xin câu hỏi mở đầu"
+      },
+      {
+        "from": "LlmProviderPort",
+        "to": "SpringAiLlmAdapter",
+        "text": "Gọi mô hình AI"
+      },
+      {
+        "from": "SpringAiLlmAdapter",
+        "to": "Nhà cung cấp AI",
+        "text": "Tạo lời chào và câu hỏi"
+      },
+      {
+        "from": "Nhà cung cấp AI",
+        "to": "SpringAiLlmAdapter",
+        "text": "Câu mở đầu và lượng token",
+        "kind": "return"
+      },
+      {
+        "from": "SpringAiLlmAdapter",
+        "to": "LlmProviderPort",
+        "text": "Kết quả đã gom đủ",
+        "kind": "return"
+      },
+      {
+        "from": "LlmProviderPort",
+        "to": "StartInterviewCmd",
+        "text": "Câu mở đầu hợp lệ",
+        "kind": "return"
+      },
+      {
+        "phase": "Giai đoạn 4 - Lưu phiên sau khi có câu mở đầu hợp lệ"
+      },
+      {
+        "from": "StartInterviewCmd",
+        "to": "InterviewRepo",
+        "text": "Lưu phiên, câu mở đầu và token"
+      },
+      {
+        "from": "InterviewRepo",
+        "to": "AiDbAdapter",
+        "text": "Ghi phiên mới ở giai đoạn Giải trình"
+      },
+      {
+        "from": "AiDbAdapter",
+        "to": "PostgreSQL",
+        "text": "Lưu kết quả và xét khoá ngân sách"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "AiDbAdapter",
+        "text": "Đã lưu phiên",
+        "kind": "return"
+      },
+      {
+        "from": "AiDbAdapter",
+        "to": "InterviewRepo",
+        "text": "Phiên đã lưu",
+        "kind": "return"
+      },
+      {
+        "from": "InterviewRepo",
+        "to": "StartInterviewCmd",
+        "text": "Câu mở đầu và mã phiên",
+        "kind": "return"
+      },
+      {
+        "from": "StartInterviewCmd",
+        "to": "InterviewController",
+        "text": "Trả phiên mới và câu mở đầu",
+        "kind": "return"
+      },
+      {
+        "from": "InterviewController",
+        "to": "Sinh viên",
+        "text": "Hiển thị câu hỏi mở đầu",
+        "kind": "return"
+      }
+    ]
+  }
+}

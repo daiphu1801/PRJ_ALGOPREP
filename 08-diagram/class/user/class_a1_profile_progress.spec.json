@@ -1,0 +1,97 @@
+{
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a1_student.md:101; 01-rd/req/user_stories/a1_student.md:104; 01-rd/req/user_stories/a1_student.md:107; 01-rd/req/user_stories/a1_student.md:109; 01-rd/req/user_stories/a1_student.md:88; 01-rd/req/user_stories/a1_student.md:90; 01-rd/req/user_stories/a1_student.md:92; 01-rd/req/user_stories/a1_student.md:94; 01-rd/req/user_stories/a1_student.md:98. Nguồn thiết kế: 03-dd/logic/F1_identity.md; 03-dd/api/F1_identity.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "kind": "class",
+  "title": "A1 — Tiến độ, hồ sơ và cài đặt",
+  "covers": [
+    "F1-06",
+    "F1-07",
+    "F1-08",
+    "F1-09",
+    "F1-16",
+    "F1-17",
+    "F1-18",
+    "F1-19",
+    "F1-20",
+    "F1-21",
+    "F1-22"
+  ],
+  "class": {
+    "legend": "shared",
+    "classes": [
+      {
+        "id": "service",
+        "name": "StudentAccountService",
+        "methods": [
+          "+ progress(studentId : UUID) : ProgressSummary",
+          "+ interviewHistory(studentId : UUID) : List<InterviewRecord>",
+          "+ updateProfile(studentId : UUID, profile : Profile)",
+          "+ deactivate(studentId : UUID)",
+          "+ changePassword(studentId : UUID, current : String, next : String)",
+          "+ submissions(studentId : UUID, filter : SubmissionFilter) : Page<SubmissionSummary>",
+          "+ saveWorkspaceSettings(studentId : UUID, settings : WorkspaceSettings)",
+          "+ saveEmailPreferences(studentId : UUID, preferences : EmailPreferences)",
+          "+ exportPersonalData(studentId : UUID, format : ExportFormat) : ExportFile"
+        ]
+      },
+      {
+        "id": "port1",
+        "name": "UserRepository",
+        "kind": "class",
+        "methods": [
+          "+ findById(id : UUID) : UserAccount"
+        ]
+      },
+      {
+        "id": "port2",
+        "name": "ProgressReadPort",
+        "kind": "interface",
+        "methods": [
+          "+ summary(studentId : UUID) : ProgressSummary"
+        ]
+      },
+      {
+        "id": "port3",
+        "name": "SubmissionHistoryPort",
+        "kind": "interface",
+        "methods": [
+          "+ search(studentId : UUID, filter : SubmissionFilter) : Page<SubmissionSummary>"
+        ]
+      },
+      {
+        "id": "port4",
+        "name": "InterviewHistoryPort",
+        "kind": "interface",
+        "methods": [
+          "+ list(studentId : UUID) : List<InterviewRecord>"
+        ]
+      }
+    ],
+    "externals": [],
+    "relations": [
+      {
+        "from": "service",
+        "to": "port1",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port2",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port3",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port4",
+        "kind": "dependency"
+      }
+    ],
+    "notes": [
+      "Dữ liệu trả theo chính studentId; xoá tài khoản là vô hiệu hoá rồi ẩn danh sau ân hạn. Email nhắc lịch là tác vụ nền.",
+      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+    ]
+  }
+}

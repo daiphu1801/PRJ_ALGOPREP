@@ -1,0 +1,55 @@
+{
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a1_student.md:176; 01-rd/req/user_stories/a1_student.md:178; 01-rd/req/user_stories/a1_student.md:181. Nguồn thiết kế: 03-dd/logic/F2_problem-bank.md; 03-dd/api/F2_problem-bank.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "kind": "class",
+  "title": "A1 — Bookmark và ghi chú riêng",
+  "covers": [
+    "F2-13"
+  ],
+  "class": {
+    "legend": "shared",
+    "classes": [
+      {
+        "id": "service",
+        "name": "BookmarkService",
+        "methods": [
+          "+ save(studentId : UUID, problemId : UUID, note : String)",
+          "+ getPrivateNote(studentId : UUID, problemId : UUID) : String",
+          "+ listMine(studentId : UUID) : List<Bookmark>"
+        ]
+      },
+      {
+        "id": "port1",
+        "name": "BookmarkRepository",
+        "kind": "class",
+        "methods": [
+          "+ findByOwnerAndProblem(ownerId : UUID, problemId : UUID) : Bookmark"
+        ]
+      },
+      {
+        "id": "port2",
+        "name": "ProblemReadPort",
+        "kind": "interface",
+        "methods": [
+          "+ getSummary(problemId : UUID) : ProblemSummary"
+        ]
+      }
+    ],
+    "externals": [],
+    "relations": [
+      {
+        "from": "service",
+        "to": "port1",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port2",
+        "kind": "dependency"
+      }
+    ],
+    "notes": [
+      "Mọi truy vấn ghi chú luôn nhận ownerId từ danh tính đã xác thực; dữ liệu bookmark ở server.",
+      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+    ]
+  }
+}

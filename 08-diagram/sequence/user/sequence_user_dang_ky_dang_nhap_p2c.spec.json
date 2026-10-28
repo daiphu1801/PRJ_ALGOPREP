@@ -1,0 +1,119 @@
+{
+  "_": "Trang 2c/3 chỉ chạy sau mật khẩu đúng và trạng thái cho phép đăng nhập ở 2b. Nguồn: 03-dd/api/F1_identity.md endpoint #2; 03-dd/logic/F1_identity.md BR-01/BR-21 và BR-02. LoginCmd = LoginCommandHandler; RefreshRepo = RefreshTokenRepository; IdentityDbAdapter = RefreshTokenPersistenceAdapter; LoginRatePort = LoginRateLimitPort [SoT: Suy luận về tên lớp]. Access token hết hạn 900 giây, trả trong JSON; refresh token thô chỉ đặt qua cookie HttpOnly/Secure/SameSite=Strict, DB chỉ lưu SHA-256 hash và family. Xoá bộ đếm đăng nhập sai sau khi thành công (adapter Redis lược ở hình). Nếu tài khoản Admin tạo mới dùng mật khẩu tạm, chuyển ACTIVE và giữ mustChangePassword=true trong cùng lần đăng nhập, UI chuyển màn đổi mật khẩu; hình này theo đường A1 tự đăng ký đã ACTIVE. Trang 3 mô tả lần làm mới token về sau.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Cấp phiên đăng nhập an toàn (2c/3)",
+  "covers": [
+    "F1-02"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Sinh viên",
+        "role": "actor"
+      },
+      {
+        "name": "AuthController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "LoginCmd",
+        "role": "service",
+        "stereo": "application command"
+      },
+      {
+        "name": "RefreshRepo",
+        "role": "repository",
+        "stereo": "domain output port"
+      },
+      {
+        "name": "IdentityDbAdapter",
+        "role": "repository",
+        "stereo": "infrastructure"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema identity"
+      },
+      {
+        "name": "LoginRatePort",
+        "role": "repository",
+        "stereo": "Redis output port"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 2c - Chỉ tài khoản hợp lệ mới nhận phiên"
+      },
+      {
+        "from": "LoginCmd",
+        "to": "LoginCmd",
+        "text": "Tạo mã truy cập ngắn và mã làm mới riêng"
+      },
+      {
+        "from": "LoginCmd",
+        "to": "RefreshRepo",
+        "text": "Lưu dấu băm mã làm mới và nhóm phiên"
+      },
+      {
+        "from": "RefreshRepo",
+        "to": "IdentityDbAdapter",
+        "text": "Ghi phiên mới"
+      },
+      {
+        "from": "IdentityDbAdapter",
+        "to": "PostgreSQL",
+        "text": "Lưu mã băm, không lưu mã thô"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "IdentityDbAdapter",
+        "text": "Đã commit",
+        "kind": "return"
+      },
+      {
+        "from": "IdentityDbAdapter",
+        "to": "RefreshRepo",
+        "text": "Phiên đã lưu",
+        "kind": "return"
+      },
+      {
+        "from": "RefreshRepo",
+        "to": "LoginCmd",
+        "text": "Có thể trả phiên",
+        "kind": "return"
+      },
+      {
+        "from": "LoginCmd",
+        "to": "LoginRatePort",
+        "text": "Xoá số lần đăng nhập sai"
+      },
+      {
+        "from": "LoginRatePort",
+        "to": "LoginCmd",
+        "text": "Đã dọn bộ đếm",
+        "kind": "return"
+      },
+      {
+        "from": "LoginCmd",
+        "to": "AuthController",
+        "text": "Mã truy cập và thông tin người học",
+        "kind": "return"
+      },
+      {
+        "from": "AuthController",
+        "to": "Sinh viên",
+        "text": "Trả phiên; đặt mã làm mới trong cookie an toàn",
+        "kind": "return"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "Sinh viên",
+        "text": "Mở khu vực Người học"
+      }
+    ]
+  }
+}

@@ -1,14 +1,11 @@
 {
-  "_": "Luong soan de bai, khai dac ta ham cho CA HAI mo hinh nop bai, va checklist chan xuat ban. Nguon: US-A2-01 va US-A2-01b (01-rd/req/user_stories/a2_instructor.md:8-35), 01-rd/req/F2_problem-bank.md (F2-01 den F2-04, F2-15), 01-rd/req/F3_harness.md (F3-01 luoc do kieu, F3-13 hai mo hinh song song), 02-bd/architecture/F3_harness.md muc 4 (luoc do kieu). | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen. Siet 2026-10-20: nhan mui ten viet ngon ngu nghiep vu, endpoint, ma HTTP, ma quyen, ten ham va cau SQL thuoc 03-dd/api va 03-dd/logic, khong ve trong hinh.",
-  "_shared": "Man soan de duoc gan cho CA giang vien va quan tri vien, chia pham vi bang quyen PROBLEM_AUTHORING (DEC-2026-0825-shared-content-authoring-screens) -- vi vay dat o sequence/shared/ chu khong phai gv/.",
-  "_chan_xuat_ban": "F2-15: thieu testcase Hidden hoac thieu dac ta thi CHAN, khong cho xuat ban mot bai khong cham duoc.",
+  "_": "Nguồn: 03-dd/api/F2_problem-bank.md §36; 03-dd/logic/F2_problem-bank.md BR-02/03/04. ProblemRepository và ProblemDbAdapter là tên minh họa ranh giới lưu trữ [SoT: Suy luận]. Tạo mới lưu UNPUBLISHED; tác giả bất biến; thông số chấm thiếu lấy từ JudgeConfigReadPort hoặc giá trị dự phòng. Đề soạn Markdown/LaTeX và thẻ tự do; danh mục chủ đề, độ khó do quản trị viên quản lý.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Soạn đề bài và khai đặc tả hàm (Giảng viên và Quản trị viên) (1/3)",
+  "title": "Sơ đồ tuần tự chi tiết - Soạn đề: tạo bản nháp (1/3)",
   "covers": [
     "F1-10",
     "F2-01",
-    "F2-02",
-    "F3-01"
+    "F2-02"
   ],
   "mode": "color",
   "sequence": {
@@ -24,9 +21,24 @@
         "stereo": "presentation"
       },
       {
-        "name": "ProblemService",
+        "name": "CreateProblem",
         "role": "service",
-        "stereo": "application"
+        "stereo": "application command"
+      },
+      {
+        "name": "JudgeConfigReadPort",
+        "role": "repository",
+        "stereo": "judge output port"
+      },
+      {
+        "name": "ProblemRepository",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "ProblemDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
       },
       {
         "name": "PostgreSQL",
@@ -36,72 +48,143 @@
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 1 - Soạn nội dung đề bài và phân loại (F2-01, F2-02)"
+        "phase": "Giai đoạn 1 - Soạn và gửi đề mới"
       },
       {
         "from": "Người soạn đề",
         "to": "Người soạn đề",
-        "text": "Viết đề bài kèm công thức toán"
-      },
-      {
-        "from": "Người soạn đề",
-        "to": "Người soạn đề",
-        "text": "Xem trước bản dựng, không gọi máy chủ khi gõ"
-      },
-      {
-        "from": "Người soạn đề",
-        "to": "Người soạn đề",
-        "text": "Chọn độ khó, chủ đề và gắn thẻ tự do"
+        "text": "Viết đề, chọn mức độ và chủ đề, thêm thẻ và ví dụ"
       },
       {
         "from": "Người soạn đề",
         "to": "ProblemController",
-        "text": "Gửi đề mới: nội dung, độ khó, chủ đề, thẻ"
+        "text": "Gửi đề mới và giới hạn chấm"
       },
       {
         "from": "ProblemController",
         "to": "ProblemController",
-        "text": "Kiểm tra quyền soạn đề theo ma trận phân quyền F1-10"
+        "text": "Kiểm quyền soạn đề và các trường bắt buộc"
       },
       {
         "from": "ProblemController",
-        "to": "ProblemService",
-        "text": "Xử lý tạo đề bản nháp"
+        "to": "CreateProblem",
+        "text": "Tạo bài toán bản nháp"
       },
       {
-        "from": "ProblemService",
-        "to": "PostgreSQL",
-        "text": "Lưu đề với trạng thái chưa xuất bản"
+        "from": "CreateProblem",
+        "to": "JudgeConfigReadPort",
+        "text": "Lấy giới hạn chấm mặc định khi còn thiếu"
       },
       {
-        "from": "PostgreSQL",
-        "to": "PostgreSQL",
-        "text": "Ghi đề mới"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "PostgreSQL",
-        "text": "Mã đề vừa tạo"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "ProblemService",
-        "text": "Bài toán nháp",
+        "from": "JudgeConfigReadPort",
+        "to": "CreateProblem",
+        "text": "Giới hạn mặc định hoặc giá trị dự phòng",
         "kind": "return"
       },
       {
-        "from": "ProblemService",
-        "to": "ProblemController",
-        "text": "Thông tin bài toán",
+        "from": "CreateProblem",
+        "to": "ProblemRepository",
+        "text": "Kiểm tra mức độ và chủ đề còn tồn tại"
+      },
+      {
+        "from": "ProblemRepository",
+        "to": "ProblemDbAdapter",
+        "text": "Đọc danh mục đã chọn"
+      },
+      {
+        "from": "ProblemDbAdapter",
+        "to": "PostgreSQL",
+        "text": "Tìm mức độ và chủ đề"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "ProblemDbAdapter",
+        "text": "Kết quả kiểm tra danh mục",
         "kind": "return"
       },
       {
-        "from": "ProblemController",
-        "to": "Người soạn đề",
-        "text": "Báo tạo thành công",
+        "from": "ProblemDbAdapter",
+        "to": "ProblemRepository",
+        "text": "Kết quả kiểm tra danh mục",
         "kind": "return"
+      },
+      {
+        "from": "ProblemRepository",
+        "to": "CreateProblem",
+        "text": "Kết quả kiểm tra danh mục",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Mức độ và chủ đề còn hợp lệ?",
+          "then": [
+            {
+              "from": "CreateProblem",
+              "to": "CreateProblem",
+              "text": "Sinh mã đề duy nhất từ tiêu đề"
+            },
+            {
+              "from": "CreateProblem",
+              "to": "ProblemRepository",
+              "text": "Lưu bài mới và các liên kết"
+            },
+            {
+              "from": "ProblemRepository",
+              "to": "ProblemDbAdapter",
+              "text": "Ghi bài, chủ đề, thẻ, ví dụ và đáp án mẫu"
+            },
+            {
+              "from": "ProblemDbAdapter",
+              "to": "PostgreSQL",
+              "text": "Tạo bài chưa xuất bản trong một giao dịch"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "ProblemDbAdapter",
+              "text": "Bài nháp và thời điểm cập nhật",
+              "kind": "return"
+            },
+            {
+              "from": "ProblemDbAdapter",
+              "to": "ProblemRepository",
+              "text": "Bài nháp đã lưu",
+              "kind": "return"
+            },
+            {
+              "from": "ProblemRepository",
+              "to": "CreateProblem",
+              "text": "Bài nháp đã lưu",
+              "kind": "return"
+            },
+            {
+              "from": "CreateProblem",
+              "to": "ProblemController",
+              "text": "Trả bài nháp",
+              "kind": "return"
+            },
+            {
+              "from": "ProblemController",
+              "to": "Người soạn đề",
+              "text": "Hiển thị bài đã tạo",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "CreateProblem",
+              "to": "ProblemController",
+              "text": "Báo danh mục đã thay đổi",
+              "kind": "return"
+            },
+            {
+              "from": "ProblemController",
+              "to": "Người soạn đề",
+              "text": "Yêu cầu chọn lại mức độ hoặc chủ đề",
+              "kind": "return"
+            }
+          ]
+        }
       }
     ]
-  },
-  "_cat": "Tach tu sequence_shared_soan_de_va_dac_ta_ham.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 1/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+  }
 }

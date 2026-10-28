@@ -1,7 +1,7 @@
 {
-  "_": "Luong sua thong tin lop va xoa lop cua actor A2, tren man INS0205 (cung goi tu INS0201). Nguon: 01-rd/screens/teacher/INS0205_class_detail.md REQ-02 (dong 114), 01-rd/req/F1_identity.md:117-120 (F1-24 xoa that, sua lop dung chung luong F1-23), 03-dd/api/F1_identity.md muc 0.4 endpoint #21 (PATCH) va #22 (DELETE), 02-bd/database/F1_identity.md:89-92 (classes hard delete, khong co deleted_at). Ve theo quy tac mo ta nghiep vu 2026-10-19: khong ten ham, khong SQL. [SoT: Suy luan] (1) viec xoa lop keo theo ghi danh, ma moi, bai giao cua lop hay khong DD chua noi ro, so do chi ghi 'Xoa lop' khong hua cascade; (2) lop khong thuoc giang vien tra 404 hay 403 chua kiem, nhanh loi khong ve. Bo bot: nhanh loi, xac nhan o phia giao dien chi ve 2 mui ten. | Cap nhat 2026-10-20: siet theo quy tac moi, nhan mui ten la cau tieng Viet thuong, khong duong dan endpoint, ma HTTP, ma quyen, ten su kien, thuat ngu ky thuat; duong dan, ma HTTP va ma quyen nam o DD. | Tach 2 phan 2026-10-20 vi ban mot phan qua cao (lint: cao 1.81 lan be ngang). Phan 1/2: sua thong tin lop (F1-23).",
+  "_": "Nguồn: 03-dd/api/F1_identity.md endpoint 21, 02-bd/database/F1_identity.md lớp và lịch học. ClassRepository và IdentityDbAdapter là tên minh họa [SoT: Suy luận]. Chỉ giảng viên sở hữu lớp được sửa tên, mô tả, lịch học có cấu trúc; không thay chủ lớp.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Sửa thông tin lớp học (Giảng viên) (1/2)",
+  "title": "Sơ đồ tuần tự chi tiết - Sửa thông tin lớp (1/2)",
   "covers": [
     "F1-23"
   ],
@@ -19,9 +19,19 @@
         "stereo": "presentation"
       },
       {
-        "name": "ClassService",
+        "name": "UpdateClass",
         "role": "service",
-        "stereo": "application"
+        "stereo": "application command"
+      },
+      {
+        "name": "ClassRepository",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "IdentityDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
       },
       {
         "name": "PostgreSQL",
@@ -31,71 +41,121 @@
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 1 - Sửa thông tin lớp (F1-23)"
-      },
-      {
-        "from": "Giảng viên",
-        "to": "Giảng viên",
-        "text": "Mở hộp Sửa lớp, đổi tên, mô tả, lịch học"
-      },
-      {
-        "from": "Giảng viên",
-        "to": "Giảng viên",
-        "text": "Kiểm tra tên lớp không rỗng ở giao diện"
+        "phase": "Giai đoạn 1 - Kiểm quyền và nội dung"
       },
       {
         "from": "Giảng viên",
         "to": "ClassController",
-        "text": "Gửi yêu cầu sửa thông tin lớp"
+        "text": "Gửi tên, mô tả và lịch học mới"
       },
       {
         "from": "ClassController",
         "to": "ClassController",
-        "text": "Kiểm tra quyền sửa lớp"
+        "text": "Kiểm dữ liệu và quyền sửa lớp"
       },
       {
         "from": "ClassController",
-        "to": "ClassService",
-        "text": "Yêu cầu sửa thông tin lớp"
+        "to": "UpdateClass",
+        "text": "Cập nhật thông tin lớp"
       },
       {
-        "from": "ClassService",
+        "from": "UpdateClass",
+        "to": "ClassRepository",
+        "text": "Kiểm chủ lớp"
+      },
+      {
+        "from": "ClassRepository",
+        "to": "IdentityDbAdapter",
+        "text": "Tìm lớp và người phụ trách"
+      },
+      {
+        "from": "IdentityDbAdapter",
         "to": "PostgreSQL",
-        "text": "Kiểm tra lớp thuộc giảng viên này"
+        "text": "Đọc lớp hiện tại"
       },
       {
         "from": "PostgreSQL",
-        "to": "ClassService",
-        "text": "Lớp thuộc quyền phụ trách hoặc không",
+        "to": "IdentityDbAdapter",
+        "text": "Thông tin lớp và chủ lớp",
         "kind": "return"
       },
       {
-        "from": "ClassService",
-        "to": "PostgreSQL",
-        "text": "Lưu thông tin lớp mới"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "ClassService",
-        "text": "Đã lưu",
+        "from": "IdentityDbAdapter",
+        "to": "ClassRepository",
+        "text": "Thông tin lớp và chủ lớp",
         "kind": "return"
       },
       {
-        "from": "ClassService",
-        "to": "ClassController",
-        "text": "Thông tin lớp sau khi sửa",
+        "from": "ClassRepository",
+        "to": "UpdateClass",
+        "text": "Thông tin lớp và chủ lớp",
         "kind": "return"
       },
       {
-        "from": "ClassController",
-        "to": "Giảng viên",
-        "text": "Báo thành công",
-        "kind": "return"
-      },
-      {
-        "from": "Giảng viên",
-        "to": "Giảng viên",
-        "text": "Đóng hộp sửa, hiện thông tin lớp mới"
+        "alt": {
+          "label": "Giảng viên sở hữu lớp?",
+          "then": [
+            {
+              "from": "UpdateClass",
+              "to": "ClassRepository",
+              "text": "Lưu tên, mô tả và lịch học"
+            },
+            {
+              "from": "ClassRepository",
+              "to": "IdentityDbAdapter",
+              "text": "Cập nhật đúng lớp đã kiểm"
+            },
+            {
+              "from": "IdentityDbAdapter",
+              "to": "PostgreSQL",
+              "text": "Ghi thông tin lớp mới"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "IdentityDbAdapter",
+              "text": "Thông tin đã lưu",
+              "kind": "return"
+            },
+            {
+              "from": "IdentityDbAdapter",
+              "to": "ClassRepository",
+              "text": "Thông tin đã lưu",
+              "kind": "return"
+            },
+            {
+              "from": "ClassRepository",
+              "to": "UpdateClass",
+              "text": "Thông tin đã lưu",
+              "kind": "return"
+            },
+            {
+              "from": "UpdateClass",
+              "to": "ClassController",
+              "text": "Trả thông tin lớp mới",
+              "kind": "return"
+            },
+            {
+              "from": "ClassController",
+              "to": "Giảng viên",
+              "text": "Hiển thị lớp sau sửa",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "UpdateClass",
+              "to": "ClassController",
+              "text": "Từ chối vì không sở hữu lớp",
+              "kind": "return"
+            },
+            {
+              "from": "ClassController",
+              "to": "Giảng viên",
+              "text": "Hiển thị lỗi quyền lớp",
+              "kind": "return"
+            }
+          ]
+        }
       }
     ]
   }

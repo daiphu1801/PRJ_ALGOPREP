@@ -651,7 +651,7 @@ Ghi chú ranh giới:
 ## Sheet 9. Đặc tả kiểm tra
 
 > Bộ thẻ và quy ước mã thông báo: `02-bd/_rules/bd-template-9sheet.md` mục 2, 4. Sheet này ghi **điều kiện
-> kiểm và thông báo**; tiêu chí nghiệm thu `AC-nn` thuộc `04-tdd/profile.md`, không lặp lại ở đây. Cơ chế
+> kiểm và thông báo**; tiêu chí nghiệm thu `AC-nn` thuộc `04-tdd/screens/users/USR0502_profile.md`, không lặp lại ở đây. Cơ chế
 > bảo mật (băm, token, chống dò) thuộc `02-bd/security/F1_identity.md`, không chép lại.
 
 | NO | Loại | Tóm tắt kiểm | Chi tiết | Mức | Mã thông báo | Ghi chú | EVT gọi | Thứ tự |

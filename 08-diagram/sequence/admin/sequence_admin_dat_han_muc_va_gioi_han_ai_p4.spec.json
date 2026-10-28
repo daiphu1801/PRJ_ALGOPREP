@@ -1,9 +1,8 @@
 {
-  "_": "Nguon: 01-rd/screens/admin/ADM0303_ai_limits.md (REQ-02..05), 02-bd/screens/admin/ADM0303_ai_limits.md muc 7.3 (endpoint NO 3-13, ten nghiep vu). Duong dan REST la [SoT: Suy luan] vi 03-dd/api/F5_ai-review.md chua viet. Nhan mui ten la hanh dong nghiep vu; ten ham va truy van thuoc DD. Phan REQ-01 (dat han muc, tu khoa) da co o sequence_admin_dat_ngan_sach_token_p1. Phan 4/4: don gia token (REQ-04) va tran sinh testcase (REQ-05, BC problem-bank). | 2026-10-20 (owner): nhan mui ten bo han duong dan, ma HTTP, ma quyen, thuat ngu ky thuat (cache, job, worker, model...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
+  "_": "Nguồn: 03-dd/api/F5_ai-review.md §23-26. Tạo giá 0; tên unique không phân biệt hoa thường; giá >=0; xóa idempotent và không kiểm tham chiếu. Cổng và adapter là tên minh họa [SoT: Suy luận].",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Đặt đơn giá token và trần sinh testcase (Quản trị viên) (4/4)",
+  "title": "Sơ đồ tuần tự chi tiết - Quản lý đơn giá token theo mô hình (4/5)",
   "covers": [
-    "F2-14",
     "F5-25"
   ],
   "mode": "color",
@@ -20,138 +19,118 @@
         "stereo": "presentation"
       },
       {
-        "name": "AiLimitsService",
+        "name": "ManageModelPrice",
         "role": "service",
         "stereo": "application"
       },
       {
-        "name": "TestcaseQuotaService",
-        "role": "service",
-        "stereo": "problem-bank"
+        "name": "ModelPricePort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "AiDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
       },
       {
         "name": "PostgreSQL",
         "role": "datastore",
-        "stereo": "schema ai, problem_bank"
+        "stereo": "schema ai"
       }
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 4 - Quản lý đơn giá token theo mô hình: thêm, đổi, xoá"
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "Quản trị viên",
-        "text": "Thêm mô hình, sửa đơn giá hoặc xoá một mô hình"
+        "phase": "Thêm mô hình"
       },
       {
         "from": "Quản trị viên",
         "to": "AiLimitsController",
-        "text": "Gửi thay đổi bảng đơn giá"
+        "text": "Thêm tên mô hình mới"
       },
       {
         "from": "AiLimitsController",
-        "to": "AiLimitsController",
-        "text": "Kiểm tra quyền và đơn giá không âm"
+        "to": "ManageModelPrice",
+        "text": "Kiểm quyền và tên sau khi bỏ khoảng trắng"
       },
       {
-        "from": "AiLimitsController",
-        "to": "AiLimitsService",
-        "text": "Yêu cầu đổi bảng đơn giá"
+        "from": "ManageModelPrice",
+        "to": "ModelPricePort",
+        "text": "Tạo mô hình với đơn giá bằng không"
       },
       {
-        "from": "AiLimitsService",
+        "from": "ModelPricePort",
+        "to": "AiDbAdapter",
+        "text": "Lưu mô hình mới"
+      },
+      {
+        "from": "AiDbAdapter",
         "to": "PostgreSQL",
-        "text": "Lưu thay đổi bảng đơn giá và ghi nhật ký"
+        "text": "Thêm tên duy nhất, không phân biệt hoa thường"
       },
       {
-        "from": "PostgreSQL",
-        "to": "AiLimitsService",
-        "text": "Đã ghi",
-        "kind": "return"
-      },
-      {
-        "from": "AiLimitsService",
-        "to": "AiLimitsController",
-        "text": "Bảng đơn giá mới",
-        "kind": "return"
-      },
-      {
-        "from": "AiLimitsController",
-        "to": "Quản trị viên",
-        "text": "Báo thành công",
-        "kind": "return"
-      },
-      {
-        "phase": "Giai đoạn 5 - Đặt số lần sinh testcase tối đa mỗi bài, từ 1 đến 10 (F2-14)"
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "Quản trị viên",
-        "text": "Nhập trần sinh testcase rồi bấm Lưu"
+        "phase": "Sửa hoặc xóa mô hình"
       },
       {
         "from": "Quản trị viên",
         "to": "AiLimitsController",
-        "text": "Gửi trần sinh testcase mới"
+        "text": "Đổi tên, đơn giá hoặc xóa"
       },
       {
         "from": "AiLimitsController",
-        "to": "AiLimitsController",
-        "text": "Kiểm tra quyền và trần 1 đến 10"
+        "to": "ManageModelPrice",
+        "text": "Kiểm quyền và dữ liệu cần sửa"
       },
       {
         "alt": {
-          "label": "Trần hợp lệ?",
+          "label": "Sửa hay xóa?",
           "then": [
             {
-              "from": "AiLimitsController",
-              "to": "AiLimitsController",
-              "text": "Trường hợp có"
+              "from": "ManageModelPrice",
+              "to": "ModelPricePort",
+              "text": "Cập nhật tên hoặc đơn giá không âm"
             },
             {
-              "from": "AiLimitsController",
-              "to": "TestcaseQuotaService",
-              "text": "Yêu cầu đổi trần sinh testcase"
+              "from": "ModelPricePort",
+              "to": "AiDbAdapter",
+              "text": "Lưu các trường được gửi"
             },
             {
-              "from": "TestcaseQuotaService",
+              "from": "AiDbAdapter",
               "to": "PostgreSQL",
-              "text": "Lưu trần mới và ghi nhật ký"
-            },
-            {
-              "from": "PostgreSQL",
-              "to": "TestcaseQuotaService",
-              "text": "Đã ghi",
-              "kind": "return"
-            },
-            {
-              "from": "TestcaseQuotaService",
-              "to": "AiLimitsController",
-              "text": "Trần mới",
-              "kind": "return"
-            },
-            {
-              "from": "AiLimitsController",
-              "to": "Quản trị viên",
-              "text": "Báo thành công",
-              "kind": "return"
+              "text": "Cập nhật dòng đơn giá"
             }
           ],
           "else": [
             {
-              "from": "AiLimitsController",
-              "to": "AiLimitsController",
-              "text": "Trần ngoài khoảng cho phép"
+              "from": "ManageModelPrice",
+              "to": "ModelPricePort",
+              "text": "Xóa mô hình, kể cả khi đã xóa"
             },
             {
-              "from": "AiLimitsController",
-              "to": "Quản trị viên",
-              "text": "Báo dữ liệu không hợp lệ; giữ giá trị đã nhập",
-              "kind": "return"
+              "from": "ModelPricePort",
+              "to": "AiDbAdapter",
+              "text": "Xóa theo mã"
+            },
+            {
+              "from": "AiDbAdapter",
+              "to": "PostgreSQL",
+              "text": "Xóa dòng nếu còn tồn tại"
             }
           ]
         }
+      },
+      {
+        "from": "ManageModelPrice",
+        "to": "AiLimitsController",
+        "text": "Trả kết quả quản lý đơn giá",
+        "kind": "return"
+      },
+      {
+        "from": "AiLimitsController",
+        "to": "Quản trị viên",
+        "text": "Cập nhật bảng đơn giá",
+        "kind": "return"
       }
     ]
   }

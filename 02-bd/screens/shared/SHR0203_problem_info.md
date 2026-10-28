@@ -431,7 +431,7 @@ Khi mã bài không tồn tại, RD yêu cầu hiện trạng thái không tìm 
 
 ## Sheet 9. Đặc tả kiểm tra
 
-> Không có kiểm nhập liệu (màn chỉ đọc). Chỉ có kiểm quyền. Tiêu chí nghiệm thu `AC-nn` thuộc `04-tdd/problem_info.md`, không lặp lại ở đây.
+> Không có kiểm nhập liệu (màn chỉ đọc). Chỉ có kiểm quyền. Tiêu chí nghiệm thu `AC-nn` thuộc `04-tdd/screens/shared/SHR0203_problem_info.md`, không lặp lại ở đây.
 
 | NO | Loại | Tóm tắt kiểm | Chi tiết | Mức | Mã thông báo | Ghi chú | EVT gọi | Thứ tự |
 | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: |

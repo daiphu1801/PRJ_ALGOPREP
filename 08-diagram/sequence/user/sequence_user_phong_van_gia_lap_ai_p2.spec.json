@@ -1,11 +1,12 @@
 {
-  "_": "Luong F5.2 Mock Interview (da luot, ba giai doan, ket thuc bang rubric) cua actor A1. Nguon: 01-rd/req/F5_ai-review.md (F5-09 den F5-16), 02-bd/architecture/F5_ai-review.md muc 1 (aggregate InterviewSession, SSE controller, Redis ChatMemory), muc 5 (ba lop instruction), muc 6.1 (rate-limit theo phien). | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
-  "_phase": "Ba giai doan trong so do la ba giai doan NGHIEP VU cua phien phong van (lam ro de bai -> trinh bay huong giai -> dao sau va cham rubric), khong phai ba buoc ky thuat.",
+  "_": "Nguồn: 03-dd/logic/F5_ai-review.md BR-AI-07/10; 03-dd/api/F5_ai-review.md mục 2 và 10. InterviewTurnCmd, InterviewRepo, AiDbAdapter, ChatMemoryPort, RedisChatAdapter là thiết kế dự kiến [SoT: Suy luận]. Một phiên chỉ có một lượt đang xử lý; dòng USER được commit trước sự kiện đầu tiên. Redis là bộ nhớ tạm; khi thiếu dựng lại từ DB. Không kiểm khoá ngân sách giữa phiên theo quyết định 2026-10-23. Gộp khoá advisory và nhánh lỗi trùng lượt vào self-message.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Phỏng vấn giả lập với AI (2/3)",
+  "title": "Sơ đồ tuần tự chi tiết - Phỏng vấn AI: nhận câu trả lời và giữ hội thoại (2a/3)",
   "covers": [
+    "F5-10",
     "F5-11",
-    "F5-17"
+    "F5-12",
+    "F5-13"
   ],
   "mode": "color",
   "sequence": {
@@ -18,12 +19,22 @@
       {
         "name": "InterviewController",
         "role": "controller",
-        "stereo": "SSE"
+        "stereo": "presentation SSE"
       },
       {
-        "name": "InterviewService",
+        "name": "InterviewTurnCmd",
         "role": "service",
-        "stereo": "application"
+        "stereo": "application command"
+      },
+      {
+        "name": "InterviewRepo",
+        "role": "repository",
+        "stereo": "output port F5"
+      },
+      {
+        "name": "AiDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
       },
       {
         "name": "PostgreSQL",
@@ -31,90 +42,164 @@
         "stereo": "schema ai"
       },
       {
-        "name": "Nhà cung cấp LLM",
-        "role": "external",
-        "stereo": "Spring AI"
+        "name": "ChatMemoryPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "RedisChatAdapter",
+        "role": "repository",
+        "stereo": "infrastructure"
+      },
+      {
+        "name": "Redis",
+        "role": "datastore",
+        "stereo": "bộ nhớ tạm"
       }
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 2 - Trình bày hướng giải, hội thoại nhiều lượt (F5-11, F5-17)"
-      },
-      {
-        "from": "Sinh viên",
-        "to": "Sinh viên",
-        "text": "Gõ câu trả lời và gửi"
+        "phase": "Giai đoạn 5 - Mỗi phiên xử lý một lượt, lưu lịch sử bền vững"
       },
       {
         "from": "Sinh viên",
         "to": "InterviewController",
-        "text": "Gửi câu trả lời của người học"
+        "text": "Gửi câu trả lời của phiên"
       },
       {
         "from": "InterviewController",
-        "to": "InterviewService",
-        "text": "Xử lý lượt trả lời"
+        "to": "InterviewTurnCmd",
+        "text": "Kiểm lượt và chủ phiên"
       },
       {
-        "from": "InterviewService",
-        "to": "InterviewService",
-        "text": "Đọc bộ nhớ hội thoại của phiên"
+        "from": "InterviewTurnCmd",
+        "to": "InterviewRepo",
+        "text": "Đọc phiên và lượt mới nhất"
       },
       {
-        "from": "InterviewService",
-        "to": "InterviewService",
-        "text": "Các lượt hội thoại trước đó"
+        "from": "InterviewRepo",
+        "to": "AiDbAdapter",
+        "text": "Tra trạng thái và lịch sử"
       },
       {
-        "from": "InterviewService",
-        "to": "InterviewService",
-        "text": "Chấm điểm đủ ý của giai đoạn, quyết định chuyển stage"
+        "from": "AiDbAdapter",
+        "to": "PostgreSQL",
+        "text": "Đọc phiên và số lượt đã hoàn tất"
       },
       {
-        "from": "InterviewService",
-        "to": "InterviewService",
-        "text": "Nhờ AI nêu câu hỏi tiếp theo"
-      },
-      {
-        "from": "InterviewService",
-        "to": "InterviewService",
-        "text": "Câu trả lời người học luôn là dữ liệu, không bao giờ là chỉ thị"
-      },
-      {
-        "from": "InterviewService",
-        "to": "Nhà cung cấp LLM",
-        "text": "Gửi chỉ thị và dữ liệu sang nhà cung cấp AI"
-      },
-      {
-        "from": "Nhà cung cấp LLM",
-        "to": "InterviewService",
-        "text": "Câu hỏi đào sâu tiếp theo hiện dần từng chữ",
+        "from": "PostgreSQL",
+        "to": "AiDbAdapter",
+        "text": "Trạng thái và lịch sử",
         "kind": "return"
       },
       {
-        "from": "InterviewService",
-        "to": "InterviewController",
-        "text": "Chuyển tiếp từng đoạn chữ",
-        "kind": "async"
+        "from": "AiDbAdapter",
+        "to": "InterviewRepo",
+        "text": "Kết quả tra cứu",
+        "kind": "return"
       },
       {
-        "from": "InterviewController",
-        "to": "Sinh viên",
-        "text": "Hiện câu hỏi tiếp theo",
-        "kind": "async"
+        "from": "InterviewRepo",
+        "to": "InterviewTurnCmd",
+        "text": "Phiên đang mở hoặc từ chối",
+        "kind": "return"
       },
       {
-        "from": "InterviewService",
+        "from": "InterviewTurnCmd",
+        "to": "InterviewTurnCmd",
+        "text": "Giữ một lượt, kiểm số lượt mong đợi"
+      },
+      {
+        "from": "InterviewTurnCmd",
+        "to": "ChatMemoryPort",
+        "text": "Lấy ngữ cảnh hội thoại"
+      },
+      {
+        "from": "ChatMemoryPort",
+        "to": "RedisChatAdapter",
+        "text": "Tra bộ nhớ tạm"
+      },
+      {
+        "from": "RedisChatAdapter",
+        "to": "Redis",
+        "text": "Đọc hội thoại của phiên"
+      },
+      {
+        "from": "Redis",
+        "to": "RedisChatAdapter",
+        "text": "Ngữ cảnh hoặc bị thiếu",
+        "kind": "return"
+      },
+      {
+        "from": "RedisChatAdapter",
+        "to": "ChatMemoryPort",
+        "text": "Kết quả tra cứu",
+        "kind": "return"
+      },
+      {
+        "from": "ChatMemoryPort",
+        "to": "InterviewTurnCmd",
+        "text": "Ngữ cảnh hoặc cần dựng lại",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Thiếu bộ nhớ tạm?",
+          "then": [
+            {
+              "from": "InterviewTurnCmd",
+              "to": "InterviewRepo",
+              "text": "Dựng lại từ lịch sử đã lưu"
+            },
+            {
+              "from": "InterviewRepo",
+              "to": "InterviewTurnCmd",
+              "text": "Hội thoại đầy đủ",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "InterviewTurnCmd",
+              "to": "InterviewTurnCmd",
+              "text": "Dùng ngữ cảnh đang có"
+            }
+          ]
+        }
+      },
+      {
+        "from": "InterviewTurnCmd",
+        "to": "InterviewRepo",
+        "text": "Lưu câu trả lời người học"
+      },
+      {
+        "from": "InterviewRepo",
+        "to": "AiDbAdapter",
+        "text": "Ghi hoặc sửa lượt đang chờ"
+      },
+      {
+        "from": "AiDbAdapter",
         "to": "PostgreSQL",
-        "text": "Lưu lượt hỏi đáp và giai đoạn hiện tại"
+        "text": "Ghi câu trả lời trước khi mở luồng"
       },
       {
-        "from": "InterviewService",
-        "to": "InterviewService",
-        "text": "Cập nhật bộ nhớ hội thoại"
+        "from": "PostgreSQL",
+        "to": "AiDbAdapter",
+        "text": "Đã lưu câu trả lời",
+        "kind": "return"
+      },
+      {
+        "from": "AiDbAdapter",
+        "to": "InterviewRepo",
+        "text": "Đã nhận lượt",
+        "kind": "return"
+      },
+      {
+        "from": "InterviewRepo",
+        "to": "InterviewTurnCmd",
+        "text": "Sẵn sàng phát luồng ở trang 2b",
+        "kind": "return"
       }
     ]
-  },
-  "_cat": "Tach tu sequence_user_phong_van_gia_lap_ai.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 1/2). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md.",
-  "_gop": "Gop Redis (ChatMemory) thanh self-message tren InterviewService 2026-09-27 de so do con 5 lifeline, chu in dat tren 6pt. Chu dau tu chot. Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+  }
 }

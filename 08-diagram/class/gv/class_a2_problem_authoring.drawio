@@ -1,0 +1,65 @@
+<mxfile host="app.diagrams.net" agent="drawio-uml-architect" type="device">
+  <diagram id="a2-soan-va-xuat-ban-bai-toan" name="a2-soan-va-xuat-ban-bai-toan">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t_service" value='&lt;div style="text-align:center"&gt;&lt;b&gt;ProblemAuthoringService&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;saveContent(actorId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;draft&amp;nbsp;:&amp;nbsp;ProblemDraft)&amp;nbsp;:&amp;nbsp;Problem&lt;br&gt;+&amp;nbsp;saveFunctionSpec(actorId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;spec&amp;nbsp;:&amp;nbsp;FunctionSpecDraft)&amp;nbsp;:&amp;nbsp;ProblemSpec&lt;br&gt;+&amp;nbsp;setMatchingStrategy(actorId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;strategy&amp;nbsp;:&amp;nbsp;MatchingStrategy)&lt;br&gt;+&amp;nbsp;createUnpublished(actorId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;draft&amp;nbsp;:&amp;nbsp;ProblemDraft)&amp;nbsp;:&amp;nbsp;Problem&lt;br&gt;+&amp;nbsp;publish(actorId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;problemId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;PublishChecklist&lt;br&gt;+&amp;nbsp;validatePublish(problemId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;PublishChecklist&lt;br&gt;+&amp;nbsp;withdraw(actorId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;problemId&amp;nbsp;:&amp;nbsp;UUID)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="283.34999999999997" y="60" width="475.4" height="138" as="geometry" />
+        </mxCell>
+        <mxCell id="t_port1" value='&lt;div style="text-align:center"&gt;&lt;b&gt;ProblemRepository&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;save(problem&amp;nbsp;:&amp;nbsp;Problem)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="66" y="278" width="176.5" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="t_port2" value='&lt;div style="text-align:center"&gt;&lt;b&gt;FunctionSpecEvaluator&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;evaluate(spec&amp;nbsp;:&amp;nbsp;FunctionSpecDraft)&amp;nbsp;:&amp;nbsp;Evaluation' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="292.5" y="278" width="322.9" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="t_port3" value='&lt;div style="text-align:center"&gt;&lt;b&gt;PublishChecklistService&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;evaluate(problemId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;PublishChecklist' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="665.4" y="278" width="310.7" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="t_port4" value='&lt;div style="text-align:center"&gt;&lt;b&gt;AuthorScopePolicy&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;requireWrite(actorId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;problemId&amp;nbsp;:&amp;nbsp;UUID)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="362.65" y="402" width="316.79999999999995" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.141;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="350.275" y="214" />
+            <mxPoint x="154.25" y="214" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e2" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.380;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="464.12499999999994" y="230" />
+            <mxPoint x="453.95" y="230" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e3" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.859;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="691.8249999999999" y="262" />
+            <mxPoint x="820.75" y="262" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e4" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.620;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="577.9749999999999" y="246" />
+            <mxPoint x="30" y="246" />
+            <mxPoint x="30" y="367" />
+            <mxPoint x="521.05" y="367" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="title" value="A2 — Soạn và xuất bản bài toán" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="0" y="10" width="1006.0999999999999" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="v5" value="Ghi chú: Bài mới UNPUBLISHED; xuất bản cần đủ checklist và đáp án mẫu qua toàn bộ testcase duyệt.&lt;br&gt;Ghi chú: [SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="30" y="476" width="1100" height="44" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,100 @@
+{
+  "_": "Nguồn thuộc tính và liên kết: 02-bd/database/F5_ai-review.md:40-210. [SoT: Suy luận] Ánh xạ bảng dữ liệu sang tên class Java là thiết kế đề xuất; bội số theo FK/unique của BD. Bỏ thuộc tính thứ cấp và getter/setter.",
+  "kind": "class",
+  "title": "F5 — Mô hình báo cáo và phiên phỏng vấn AI",
+  "covers": [],
+  "class": {
+    "legend": "shared",
+    "classes": [
+      {
+        "id": "review",
+        "name": "SolutionReview",
+        "attributes": [
+          "+ submissionId : UUID",
+          "+ sourceHash : String",
+          "+ resultJson : ReviewResult"
+        ],
+        "methods": []
+      },
+      {
+        "id": "session",
+        "name": "InterviewSession",
+        "attributes": [
+          "+ id : UUID",
+          "+ userId : UUID",
+          "+ entryType : InterviewEntryType",
+          "+ stage : InterviewStage",
+          "+ turnCount : int"
+        ],
+        "methods": []
+      },
+      {
+        "id": "turn",
+        "name": "InterviewTurn",
+        "attributes": [
+          "+ sessionId : UUID",
+          "+ role : TurnRole",
+          "+ content : String"
+        ],
+        "methods": []
+      },
+      {
+        "id": "score",
+        "name": "RubricScore",
+        "attributes": [
+          "+ ownerId : UUID",
+          "+ criterionCode : String",
+          "+ score : Decimal"
+        ],
+        "methods": []
+      },
+      {
+        "id": "cache",
+        "name": "AiCacheEntry",
+        "attributes": [
+          "+ sourceHash : String",
+          "+ promptTemplateId : UUID",
+          "+ solutionReviewId : UUID"
+        ],
+        "methods": []
+      },
+      {
+        "id": "budget",
+        "name": "AiTokenBudgetConfig",
+        "attributes": [
+          "+ id : short = 1",
+          "+ period : BudgetPeriod",
+          "+ limitTokens : long",
+          "+ lockedAt : Instant [0..1]"
+        ],
+        "methods": []
+      }
+    ],
+    "externals": [],
+    "relations": [
+      {
+        "from": "session",
+        "to": "turn",
+        "kind": "composition",
+        "from_mult": "1",
+        "to_mult": "0..*"
+      },
+      {
+        "from": "session",
+        "to": "score",
+        "kind": "composition",
+        "from_mult": "1",
+        "to_mult": "0..*"
+      },
+      {
+        "from": "review",
+        "to": "cache",
+        "kind": "dependency"
+      }
+    ],
+    "notes": [
+      "SolutionReview chỉ cho bài Accepted; phiên phỏng vấn có ba giai đoạn; cache theo hash, kiểm ngân sách trước lời gọi AI.",
+      "[SoT: Suy luận] Tên class Java đề xuất từ schema BD."
+    ]
+  }
+}

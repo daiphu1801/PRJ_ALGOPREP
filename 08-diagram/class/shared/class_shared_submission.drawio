@@ -1,0 +1,80 @@
+<mxfile host="app.diagrams.net" agent="drawio-uml-architect" type="device">
+  <diagram id="f4-mo-hinh-bai-nop-va-ket-qua-testcase" name="f4-mo-hinh-bai-nop-va-ket-qua-testcase">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t_submission" value='&lt;div style="text-align:center"&gt;&lt;b&gt;Submission&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;id&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;userId&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;problemId&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;status&amp;nbsp;:&amp;nbsp;SubmissionStatus&lt;br&gt;+&amp;nbsp;submissionModel&amp;nbsp;:&amp;nbsp;SubmissionModel&lt;br&gt;+&amp;nbsp;testcaseSetVersionAtGrading&amp;nbsp;:&amp;nbsp;int&amp;nbsp;[0..1]&lt;br&gt;+&amp;nbsp;scoreRatio&amp;nbsp;:&amp;nbsp;Decimal&amp;nbsp;[0..1]' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="125.57" y="60" width="280.2" height="138" as="geometry" />
+        </mxCell>
+        <mxCell id="t_result" value='&lt;div style="text-align:center"&gt;&lt;b&gt;SubmissionCaseResult&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;id&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;testcaseId&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;isSample&amp;nbsp;:&amp;nbsp;boolean&lt;br&gt;+&amp;nbsp;testcaseOrder&amp;nbsp;:&amp;nbsp;int&lt;br&gt;+&amp;nbsp;verdict&amp;nbsp;:&amp;nbsp;Verdict&lt;br&gt;+&amp;nbsp;runtimeMs&amp;nbsp;:&amp;nbsp;int' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="177.42" y="268" width="176.5" height="124" as="geometry" />
+        </mxCell>
+        <mxCell id="t_token" value='&lt;div style="text-align:center"&gt;&lt;b&gt;JudgeRunToken&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;token&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;testcaseId&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;consumedAt&amp;nbsp;:&amp;nbsp;Instant&amp;nbsp;[0..1]' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="264.44" y="462" width="200.89999999999998" height="82" as="geometry" />
+        </mxCell>
+        <mxCell id="t_public" value='&lt;div style="text-align:center"&gt;&lt;b&gt;PublicCaseResult&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;verdict&amp;nbsp;:&amp;nbsp;Verdict&lt;br&gt;+&amp;nbsp;runtimeMs&amp;nbsp;:&amp;nbsp;int&lt;br&gt;+&amp;nbsp;memoryKb&amp;nbsp;:&amp;nbsp;int' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="66" y="462" width="148.44" height="82" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.268;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=diamond;startSize=14;startFill=1;endArrow=none;" edge="1" parent="1" source="t_submission" target="t_result">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="200.62" y="221.33333333333334" />
+            <mxPoint x="265.66999999999996" y="221.33333333333334" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v2" value="1" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="211.66359999999997" y="212" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="v3" value="0..*" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="269.66999999999996" y="253" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.732;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.275;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=none;endArrow=none;" edge="1" parent="1" source="t_submission" target="t_token">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="330.71999999999997" y="244.66666666666666" />
+            <mxPoint x="30" y="244.66666666666666" />
+            <mxPoint x="30" y="427" />
+            <mxPoint x="319.66499999999996" y="427" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v5" value="1" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="334.67639999999994" y="199" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="v6" value="0..*" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="323.6875" y="447" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.722;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.725;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=none;endArrow=none;" edge="1" parent="1" source="t_result" target="t_token">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="304.79499999999996" y="444.5" />
+            <mxPoint x="410.115" y="444.5" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v8" value="0..1" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="308.85299999999995" y="393" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="v9" value="1" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="414.0925" y="447" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.278;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_result" target="t_public">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="226.545" y="409.5" />
+            <mxPoint x="140.22" y="409.5" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="title" value="F4 — Mô hình bài nộp và kết quả testcase" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="0" y="10" width="495.34" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="v11" value="Ghi chú: Run Sample không tạo Submission; mỗi testcase chỉ ghi một kết quả; PublicCaseResult không chứa input/expected/diff của Hidden.&lt;br&gt;Ghi chú: [SoT: Suy luận] Tên class Java đề xuất từ schema BD." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="30" y="564" width="1100" height="44" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

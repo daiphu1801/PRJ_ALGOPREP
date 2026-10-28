@@ -73,9 +73,7 @@ BD chỉ chốt **có kênh event, không có import trực tiếp**.
 
 `identity` là bên bị các module khác cần xác thực/phân quyền — không tự nó cần gọi ra module khác để
 hoàn thành nghiệp vụ lõi của chính nó (đăng ký, đăng nhập không phụ thuộc module nào khác). Sửa 2026-10-22 (đồng bộ DB, phase 3, XS-05): ngoại lệ ở phần **hiển thị** (không phải nghiệp vụ lõi) — dashboard `USR0601` có phụ thuộc đọc qua outbound port của `identity` sang `problem-bank`, `judge-orchestration`, `ai-review` và `interview-bank` (F6-10: `practice_history`, `question_topics`), không truy vấn chéo schema (`02-bd/screens/users/USR0601_dashboard.md:50,786-796 (số dòng sửa 2026-10-22 vòng 2, trước ghi 782-791)`; phía `interview-bank`: `architecture/F6_interview-bank.md` mục 3.3). Việc kiểm
-JWT + RBAC ở các module khác dùng chung một thư viện/filter đọc claim từ Access Token
-(`algoprep-common`), không phải một lời gọi đồng bộ tới `identity` mỗi request — tránh biến `identity`
-thành điểm nghẽn đồng bộ cho toàn hệ thống.
+JWT ở các module khác dùng thư viện/filter đọc claim từ Access Token (`algoprep-common`). Với quyền Lớp 2 `Function:Action`, filter gọi cổng phân quyền trong tiến trình của `identity`: cổng đọc `roles.permission_version` từ PostgreSQL primary trước khi dùng cache ma trận. Đây là truy vấn đồng bộ mỗi request có gác quyền Lớp 2, không phải HTTP liên dịch vụ; quyền học tập Lớp 1 chỉ đọc claim như trước. Quy tắc này ưu tiên bảo đảm thu hồi quyền ngay sau PATCH thành công (`DEC-2026-1028-qa-f1-permission-immediate`).
 
 ### 3.3. Cổng vào `AuditLogPort` (bổ sung 2026-10-23, `DEC-2026-1023-db-actor-review-decisions`)
 

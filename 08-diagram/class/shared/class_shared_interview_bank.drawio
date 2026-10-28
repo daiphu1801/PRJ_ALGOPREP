@@ -1,0 +1,121 @@
+<mxfile host="app.diagrams.net" agent="drawio-uml-architect" type="device">
+  <diagram id="f6-mo-hinh-cau-hoi-va-lan-luyen" name="f6-mo-hinh-cau-hoi-va-lan-luyen">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t_topic" value='&lt;div style="text-align:center"&gt;&lt;b&gt;QuestionTopic&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;id&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;code&amp;nbsp;:&amp;nbsp;String' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="387.71999999999997" y="60" width="130" height="68" as="geometry" />
+        </mxCell>
+        <mxCell id="t_question" value='&lt;div style="text-align:center"&gt;&lt;b&gt;InterviewQuestion&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;id&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;topicId&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;levelId&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;title&amp;nbsp;:&amp;nbsp;String&lt;br&gt;+&amp;nbsp;status&amp;nbsp;:&amp;nbsp;QuestionStatus' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="248.16999999999996" y="198" width="176.5" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="t_rubric" value='&lt;div style="text-align:center"&gt;&lt;b&gt;AnswerRubric&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;questionId&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;criterionCode&amp;nbsp;:&amp;nbsp;String&lt;br&gt;+&amp;nbsp;weightPercent&amp;nbsp;:&amp;nbsp;Decimal' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="54" y="388" width="176.5" height="82" as="geometry" />
+        </mxCell>
+        <mxCell id="t_answer" value='&lt;div style="text-align:center"&gt;&lt;b&gt;UserAnswer&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;questionId&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;userId&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;answerText&amp;nbsp;:&amp;nbsp;String' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="280.5" y="388" width="152.1" height="82" as="geometry" />
+        </mxCell>
+        <mxCell id="t_history" value='&lt;div style="text-align:center"&gt;&lt;b&gt;PracticeHistory&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;userId&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;topicId&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;questionsAttempted&amp;nbsp;:&amp;nbsp;int' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="474.66999999999996" y="198" width="182.6" height="82" as="geometry" />
+        </mxCell>
+        <mxCell id="t_rating" value='&lt;div style="text-align:center"&gt;&lt;b&gt;RecallRating&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;userId&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;questionId&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;rating&amp;nbsp;:&amp;nbsp;RecallLevel&lt;br&gt;+&amp;nbsp;nextReviewAt&amp;nbsp;:&amp;nbsp;Instant' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="482.6" y="388" width="170.39999999999998" height="96" as="geometry" />
+        </mxCell>
+        <mxCell id="t_bookmark" value='&lt;div style="text-align:center"&gt;&lt;b&gt;QuestionBookmark&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;userId&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;questionId&amp;nbsp;:&amp;nbsp;UUID' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="703" y="388" width="148.44" height="68" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.288;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=none;endArrow=none;" edge="1" parent="1" source="t_topic" target="t_question">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="425.21999999999997" y="151.33333333333334" />
+            <mxPoint x="336.41999999999996" y="151.33333333333334" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v2" value="1" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="429.15999999999997" y="129" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="v3" value="0..*" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="340.41999999999996" y="183" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.167;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=none;endArrow=none;" edge="1" parent="1" source="t_question" target="t_rubric">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="277.73249999999996" y="324" />
+            <mxPoint x="142.25" y="324" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v5" value="1" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="281.64549999999997" y="309" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="v6" value="0..*" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="146.25" y="373" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.389;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.523;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=none;endArrow=none;" edge="1" parent="1" source="t_question" target="t_answer">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="316.85749999999996" y="340" />
+            <mxPoint x="359.98249999999996" y="340" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v8" value="1" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="320.82849999999996" y="309" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="v9" value="0..*" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="364.0483" y="373" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.611;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=none;endArrow=none;" edge="1" parent="1" source="t_question" target="t_rating">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="355.98249999999996" y="356" />
+            <mxPoint x="567.8" y="356" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v11" value="1" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="360.01149999999996" y="309" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="v12" value="0..*" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="571.8" y="373" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="e13" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.833;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=none;endArrow=none;" edge="1" parent="1" source="t_question" target="t_bookmark">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="395.10749999999996" y="372" />
+            <mxPoint x="777.22" y="372" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v14" value="1" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="399.19449999999995" y="309" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="v15" value="0..*" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="781.22" y="373" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="e16" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.712;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=none;endArrow=none;" edge="1" parent="1" source="t_topic" target="t_history">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="480.21999999999997" y="174.66666666666666" />
+            <mxPoint x="565.9699999999999" y="174.66666666666666" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v17" value="1" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="484.28" y="129" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="v18" value="0..*" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="569.9699999999999" y="183" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="title" value="F6 — Mô hình câu hỏi và lần luyện" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="0" y="10" width="881.4399999999999" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="v19" value="Ghi chú: Rubric câu hỏi lý thuyết khác rubric phỏng vấn F5; câu trả lời là bản ghi bất biến, tự chấm gần nhất dùng để ưu tiên ôn lại.&lt;br&gt;Ghi chú: [SoT: Suy luận] Tên class Java đề xuất từ schema BD." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="30" y="504" width="1100" height="44" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

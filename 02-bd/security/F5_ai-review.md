@@ -48,7 +48,7 @@ tên hay comment kiểu "official score"/"điểm chính thức"** — `readabil
 ngữ nghĩa "tham khảo" trong tên cột/comment (`02-bd/database/F5_ai-review.md` mục 1.3, 1.5). Cột
 `ai_score_10` đã bỏ (`DEC-2026-1014-drop-ai-score-10`, sửa 2026-10-14). Endpoint trả về các trường này (chốt ở DD) phải luôn kèm một cờ
 hoặc nhãn tường minh (ví dụ `isReferenceOnly: true`) để tầng giao diện không thể vô tình hiển thị như điểm
-số chính thức — đây là điều kiện chấp nhận (acceptance criterion) cần đưa vào `04-tdd/F5_ai-review.md` khi
+số chính thức — đây là điều kiện chấp nhận (acceptance criterion) cần đưa vào `04-tdd/modules/F5_ai-review.md` khi
 viết DD, không phải điều BD tự áp đặt UI.
 
 **Không ảnh hưởng trạng thái submission**: không có ràng buộc khoá ngoại hay trigger nào từ schema `ai`

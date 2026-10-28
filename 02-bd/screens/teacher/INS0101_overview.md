@@ -1,5 +1,8 @@
 # Tài liệu thiết kế cơ bản (BD) — Tổng quan giảng viên (`INS0101`)
 
+> Cập nhật DD 2026-10-25 (`DEC-2026-1025-dd-class-assignment-time-window`): chỉ tính hoàn thành lớp từ lượt `ACCEPTED` trong lần giao bài đang hiệu lực. Các dòng cũ ở Sheet 5 còn ghi `user_problem_best_score` là nguồn tử số đã được thay bằng F4 P1 `assignmentResults[]`; F1 vẫn sở hữu phép tính khi đọc.
+> Điểm TB lấy tỉ lệ AC của các lượt trạng thái cuối trong khoảng giao bài, loại `SYSTEM_ERROR` khỏi mẫu số (`DEC-2026-1025-dd-system-error-ac-denominator`).
+
 ## Phương châm tài liệu [Nội bộ — không cần khách duyệt]
 
 - Viết theo **mẫu 9 sheet**. Bộ thẻ đóng, quy ước ID, ký hiệu chuẩn, ranh giới với tài liệu khác và
@@ -594,7 +597,7 @@ Không có endpoint nào cho ô tìm kiếm ở đợt này (Q3).
 ## Sheet 9. Đặc tả kiểm tra
 
 > Bộ thẻ và quy ước mã thông báo: `02-bd/_rules/bd-template-9sheet.md` mục 2, 4. Sheet này ghi **điều kiện
-> kiểm và thông báo**; tiêu chí nghiệm thu `AC-nn` thuộc `04-tdd/instructor_overview.md`, không lặp lại ở đây.
+> kiểm và thông báo**; tiêu chí nghiệm thu `AC-nn` thuộc `04-tdd/screens/teacher/INS0101_overview.md`, không lặp lại ở đây.
 
 | NO | Loại | Tóm tắt kiểm | Chi tiết | Mức | Mã thông báo | Ghi chú | EVT gọi | Thứ tự |
 | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: |

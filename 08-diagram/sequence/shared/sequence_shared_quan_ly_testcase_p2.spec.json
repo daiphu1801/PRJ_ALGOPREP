@@ -1,125 +1,42 @@
 {
-  "_": "Luong quan ly testcase: tai len theo lo (bo lon di MinIO), phien ban hoa khi sua sau luc da co nguoi nop, va AI sinh testcase voi output lay tu chay that Dap an mau. Nguon: US-A2-02 va US-A2-05 (01-rd/req/user_stories/a2_instructor.md:37-50, 70-83), 01-rd/req/F2_problem-bank.md (F2-05 den F2-10, F2-14), 02-bd/database/F2_problem-bank.md muc 1.6 (su kien TestcaseSetVersionBumped). | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen. Siet 2026-10-20: nhan mui ten viet ngon ngu nghiep vu, endpoint, ma HTTP, ma quyen, ten ham va cau SQL thuoc 03-dd/api va 03-dd/logic, khong ve trong hinh.",
-  "_minio": "Day la luong DUY NHAT trong toan he thong cham toi MinIO (.nexa/control/dependency-map.md) -- truoc dot nay khong co ban ve nao cho no.",
-  "_su_kien": "TestcaseSetVersionBumped ve duoi dang INSERT outbox_events, khong ve lifeline RabbitMQ rieng: them mot cot nua thanh 9 duong doi, be ngang vuot xa kho in ma khong noi them duoc gi -- co che Outbox da duoc ve day du o sequence_user_nop_bai_va_xem_ket_qua_realtime.",
+  "_": "Trang 2a/3: sửa testcase và quyết định có tạo phiên bản bộ chấm mới. Nguồn: 03-dd/api/F2_problem-bank.md §43, 03-dd/logic/F2_problem-bank.md BR-11/BR-12/BR-17, 03-dd/database/F2_problem-bank.md. UpdateTestcaseCmd = UpdateTestcaseCommandHandler; TestcaseRepo = TestcaseRepository; ProblemDbAdapter = TestcasePersistenceAdapter [SoT: Suy luận về tên lớp]. Quyền TESTCASE_MANAGEMENT:UPDATE và phạm vi bài được kiểm trong handler. DD mới chốt điều kiện tăng phiên bản là bài PUBLISHED và thay đổi bộ testcase đã duyệt, KHÔNG phụ thuộc đã có submission; spec cũ sai ở điểm này. Đổi category hoặc sửa nháp chưa duyệt không tăng phiên bản. Nếu đổi Sample sang Hidden khiến bài PUBLISHED còn dưới 2 Sample, từ chối trước khi ghi. Hai vế input/output chuyển INLINE/MINIO độc lập tại ngưỡng 8.192 byte theo BR-12; cổng object và thao tác đó lược ở trang này, nhưng phải hoàn tất trước khi commit. Nhánh phải tạo snapshot được tiếp nối ở trang 2b; nhánh không tăng phiên bản commit tại trang này. Lượt nộp cũ tiếp tục dùng phiên bản đã ghim.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Quản lý testcase, phiên bản hoá và AI sinh testcase (Giảng viên và Quản trị viên) (2/3)",
-  "covers": [
-    "F2-09"
-  ],
+  "title": "Sơ đồ tuần tự chi tiết - Sửa testcase và kiểm phiên bản (2a/3)",
+  "covers": ["F2-09"],
   "mode": "color",
   "sequence": {
     "detail": true,
     "participants": [
-      {
-        "name": "Người soạn đề",
-        "role": "actor"
-      },
-      {
-        "name": "TestcaseController",
-        "role": "controller",
-        "stereo": "presentation"
-      },
-      {
-        "name": "TestcaseService",
-        "role": "service",
-        "stereo": "application"
-      },
-      {
-        "name": "PostgreSQL",
-        "role": "datastore",
-        "stereo": "schema problem"
-      }
+      {"name": "Người soạn đề", "role": "actor"},
+      {"name": "TestcaseCtrl", "role": "controller", "stereo": "presentation"},
+      {"name": "UpdateTestcaseCmd", "role": "service", "stereo": "application command"},
+      {"name": "TestcaseRepo", "role": "repository", "stereo": "domain output port"},
+      {"name": "ProblemDbAdapter", "role": "repository", "stereo": "infrastructure"},
+      {"name": "PostgreSQL", "role": "datastore", "stereo": "schema problem"}
     ],
     "messages": [
-      {
-        "phase": "Giai đoạn 2 - Sửa bộ testcase sau khi đã có lượt nộp: tăng phiên bản (F2-09)"
-      },
-      {
-        "from": "Người soạn đề",
-        "to": "Người soạn đề",
-        "text": "Sửa một testcase rồi bấm Lưu"
-      },
-      {
-        "from": "Người soạn đề",
-        "to": "TestcaseController",
-        "text": "Gửi nội dung testcase đã sửa"
-      },
-      {
-        "from": "TestcaseController",
-        "to": "TestcaseService",
-        "text": "Xử lý sửa testcase"
-      },
-      {
-        "from": "TestcaseService",
-        "to": "PostgreSQL",
-        "text": "Kiểm tra bài toán đã có lượt nộp nào chưa"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "TestcaseService",
-        "text": "Số lượt nộp đã chấm",
-        "kind": "return"
-      },
-      {
-        "alt": {
-          "label": "Bài toán đã có người nộp?",
-          "then": [
-            {
-              "from": "TestcaseService",
-              "to": "TestcaseService",
-              "text": "Trường hợp có"
-            },
-            {
-              "from": "TestcaseService",
-              "to": "PostgreSQL",
-              "text": "Lưu testcase và tăng phiên bản bộ testcase"
-            },
-            {
-              "from": "TestcaseService",
-              "to": "TestcaseService",
-              "text": "Báo máy chấm ghi đúng phiên bản lúc bắt đầu chấm"
-            },
-            {
-              "from": "TestcaseService",
-              "to": "TestcaseController",
-              "text": "Phiên bản mới của bộ testcase",
-              "kind": "return"
-            },
-            {
-              "from": "TestcaseController",
-              "to": "Người soạn đề",
-              "text": "Báo thành công kèm cảnh báo: lượt nộp cũ vẫn tính theo phiên bản cũ",
-              "kind": "return"
-            }
-          ],
-          "else": [
-            {
-              "from": "TestcaseService",
-              "to": "TestcaseService",
-              "text": "Trường hợp không"
-            },
-            {
-              "from": "TestcaseService",
-              "to": "PostgreSQL",
-              "text": "Lưu testcase, giữ nguyên phiên bản"
-            },
-            {
-              "from": "TestcaseService",
-              "to": "TestcaseController",
-              "text": "Kết quả cập nhật",
-              "kind": "return"
-            },
-            {
-              "from": "TestcaseController",
-              "to": "Người soạn đề",
-              "text": "Báo thành công",
-              "kind": "return"
-            }
-          ]
-        }
-      }
+      {"phase": "Giai đoạn 2 - Sửa testcase thuộc bài được phép soạn"},
+      {"from": "Người soạn đề", "to": "TestcaseCtrl", "text": "Lưu nội dung hoặc mức hiển thị mới"},
+      {"from": "TestcaseCtrl", "to": "UpdateTestcaseCmd", "text": "Yêu cầu cập nhật testcase"},
+      {"from": "UpdateTestcaseCmd", "to": "TestcaseRepo", "text": "Khoá bài; đọc trạng thái và bộ ca"},
+      {"from": "TestcaseRepo", "to": "ProblemDbAdapter", "text": "Đọc dữ liệu trong phạm vi bài"},
+      {"from": "ProblemDbAdapter", "to": "PostgreSQL", "text": "Khoá bài và đọc testcase"},
+      {"from": "PostgreSQL", "to": "ProblemDbAdapter", "text": "Bài, số ca duyệt và ca cần sửa", "kind": "return"},
+      {"from": "ProblemDbAdapter", "to": "TestcaseRepo", "text": "Dữ liệu để kiểm quy tắc", "kind": "return"},
+      {"from": "TestcaseRepo", "to": "UpdateTestcaseCmd", "text": "Bài và testcase hiện tại", "kind": "return"},
+      {"from": "UpdateTestcaseCmd", "to": "UpdateTestcaseCmd", "text": "Kiểm ngưỡng 8 ca và 2 Sample nếu đã công bố"},
+      {"from": "UpdateTestcaseCmd", "to": "TestcaseRepo", "text": "Sửa ca; chọn lưu ngắn hoặc lưu tệp"},
+      {"from": "TestcaseRepo", "to": "ProblemDbAdapter", "text": "Ghi ca trong giao dịch của bài"},
+      {"from": "ProblemDbAdapter", "to": "PostgreSQL", "text": "Cập nhật testcase và mốc sửa bài"},
+      {"alt": {"label": "Bài công bố đổi bộ ca?", "then": [
+        {"from": "UpdateTestcaseCmd", "to": "UpdateTestcaseCmd", "text": "Tạo bản chụp mới ở trang 2b trước commit"}
+      ], "else": [
+        {"from": "PostgreSQL", "to": "ProblemDbAdapter", "text": "Đã commit, giữ phiên bản cũ", "kind": "return"},
+        {"from": "ProblemDbAdapter", "to": "TestcaseRepo", "text": "Đã cập nhật", "kind": "return"},
+        {"from": "TestcaseRepo", "to": "UpdateTestcaseCmd", "text": "Testcase đã sửa", "kind": "return"},
+        {"from": "UpdateTestcaseCmd", "to": "TestcaseCtrl", "text": "Phiên bản không đổi", "kind": "return"},
+        {"from": "TestcaseCtrl", "to": "Người soạn đề", "text": "Hiện testcase đã lưu", "kind": "return"}
+      ]}}
     ]
-  },
-  "_cat": "Tach tu sequence_shared_quan_ly_testcase.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 2/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+  }
 }

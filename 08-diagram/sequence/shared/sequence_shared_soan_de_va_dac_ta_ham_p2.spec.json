@@ -1,9 +1,7 @@
 {
-  "_": "Luong soan de bai, khai dac ta ham cho CA HAI mo hinh nop bai, va checklist chan xuat ban. Nguon: US-A2-01 va US-A2-01b (01-rd/req/user_stories/a2_instructor.md:8-35), 01-rd/req/F2_problem-bank.md (F2-01 den F2-04, F2-15), 01-rd/req/F3_harness.md (F3-01 luoc do kieu, F3-13 hai mo hinh song song), 02-bd/architecture/F3_harness.md muc 4 (luoc do kieu). | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen. Siet 2026-10-20: nhan mui ten viet ngon ngu nghiep vu, endpoint, ma HTTP, ma quyen, ten ham va cau SQL thuoc 03-dd/api va 03-dd/logic, khong ve trong hinh.",
-  "_shared": "Man soan de duoc gan cho CA giang vien va quan tri vien, chia pham vi bang quyen PROBLEM_AUTHORING (DEC-2026-0825-shared-content-authoring-screens) -- vi vay dat o sequence/shared/ chu khong phai gv/.",
-  "_chan_xuat_ban": "F2-15: thieu testcase Hidden hoac thieu dac ta thi CHAN, khong cho xuat ban mot bai khong cham duoc.",
+  "_": "Nguồn: 03-dd/api/F2_problem-bank.md §38; 03-dd/logic/F2_problem-bank.md BR-05; 03-dd/api/F3_harness.md §6.3. FunctionSpecEvaluator là bộ kiểm thuần trong algoprep-common. ProblemRepository/ProblemDbAdapter là tên minh họa [SoT: Suy luận]. Vi phạm cứng không lưu; kiểu ngoài lược đồ là cảnh báo mềm, vẫn lưu đặc tả và tắt mô hình Bọc hàm. Chữ ký là một bộ chung, tên hàm có thể ghi đè theo ngôn ngữ.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Soạn đề bài và khai đặc tả hàm (Giảng viên và Quản trị viên) (2/3)",
+  "title": "Sơ đồ tuần tự chi tiết - Đặc tả: kiểm và lưu hai mô hình nộp (2a/3)",
   "covers": [
     "F2-03",
     "F3-01",
@@ -23,9 +21,24 @@
         "stereo": "presentation"
       },
       {
-        "name": "ProblemService",
+        "name": "SaveProblemSpec",
         "role": "service",
-        "stereo": "application"
+        "stereo": "application command"
+      },
+      {
+        "name": "FunctionSpecEvaluator",
+        "role": "service",
+        "stereo": "algoprep-common"
+      },
+      {
+        "name": "ProblemRepository",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "ProblemDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
       },
       {
         "name": "PostgreSQL",
@@ -35,107 +48,159 @@
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 2 - Khai đặc tả cho CẢ HAI mô hình nộp bài (F2-03, F3-13)"
+        "phase": "Giai đoạn 1 - Kiểm đặc tả"
       },
       {
         "from": "Người soạn đề",
         "to": "Người soạn đề",
-        "text": "Khai chữ ký hàm riêng cho Java, C++, Python"
-      },
-      {
-        "from": "Người soạn đề",
-        "to": "Người soạn đề",
-        "text": "Khai định dạng vào ra cho mô hình Standard I/O"
+        "text": "Khai một chữ ký hàm dùng chung và định dạng vào ra chuẩn"
       },
       {
         "from": "Người soạn đề",
         "to": "ProblemController",
-        "text": "Gửi đặc tả: khai báo hàm, định dạng vào ra, cách so khớp"
+        "text": "Gửi đặc tả và thời điểm cập nhật đã thấy"
       },
       {
         "from": "ProblemController",
-        "to": "ProblemService",
-        "text": "Xử lý cập nhật đặc tả"
+        "to": "SaveProblemSpec",
+        "text": "Lưu đặc tả của bài"
       },
       {
-        "from": "ProblemService",
-        "to": "ProblemService",
-        "text": "Kiểm tra kiểu tham số và kiểu trả về"
+        "from": "SaveProblemSpec",
+        "to": "FunctionSpecEvaluator",
+        "text": "Kiểm kiểu, chữ ký và cách so khớp"
       },
       {
-        "from": "ProblemService",
-        "to": "ProblemService",
-        "text": "Đối chiếu với các kiểu dữ liệu chung: mảng, danh sách liên kết, cây nhị phân..."
-      },
-      {
-        "from": "ProblemService",
-        "to": "ProblemService",
-        "text": "Chặn tổ hợp vô nghĩa, ví dụ so khớp không thứ tự trên cây nhị phân"
-      },
-      {
-        "from": "ProblemService",
-        "to": "ProblemService",
-        "text": "Kết quả kiểm tra kiểu"
+        "from": "FunctionSpecEvaluator",
+        "to": "SaveProblemSpec",
+        "text": "Vi phạm cứng hoặc khả năng Bọc hàm",
+        "kind": "return"
       },
       {
         "alt": {
-          "label": "Kiểu dữ liệu ngoài phạm vi hỗ trợ?",
+          "label": "Có vi phạm cứng?",
           "then": [
             {
-              "from": "ProblemService",
-              "to": "ProblemService",
-              "text": "Trường hợp có"
-            },
-            {
-              "from": "ProblemService",
-              "to": "PostgreSQL",
-              "text": "Đánh dấu bài chỉ dùng được mô hình Standard I/O"
-            },
-            {
-              "from": "ProblemService",
+              "from": "SaveProblemSpec",
               "to": "ProblemController",
-              "text": "Cảnh báo: ẩn hẳn tuỳ chọn Bọc hàm cho bài này",
+              "text": "Trả danh sách lỗi, không ghi dữ liệu",
               "kind": "return"
             },
             {
               "from": "ProblemController",
               "to": "Người soạn đề",
-              "text": "Báo thành công kèm cảnh báo, không phải lỗi",
+              "text": "Hiển thị trường cần sửa",
               "kind": "return"
             }
           ],
           "else": [
             {
-              "from": "ProblemService",
-              "to": "ProblemService",
-              "text": "Trường hợp không"
+              "from": "SaveProblemSpec",
+              "to": "ProblemRepository",
+              "text": "Đọc đặc tả hiện tại và khóa cập nhật"
             },
             {
-              "from": "ProblemService",
+              "from": "ProblemRepository",
+              "to": "ProblemDbAdapter",
+              "text": "Tìm bài và đặc tả"
+            },
+            {
+              "from": "ProblemDbAdapter",
               "to": "PostgreSQL",
-              "text": "Lưu đặc tả cho cả ba ngôn ngữ và cả hai mô hình nộp bài"
+              "text": "Đọc bài và phiên bản đặc tả"
             },
             {
               "from": "PostgreSQL",
-              "to": "PostgreSQL",
-              "text": "Ghi đặc tả, có thì sửa chưa có thì thêm"
+              "to": "ProblemDbAdapter",
+              "text": "Dữ liệu hiện tại",
+              "kind": "return"
             },
             {
-              "from": "ProblemService",
+              "from": "ProblemDbAdapter",
+              "to": "ProblemRepository",
+              "text": "Dữ liệu hiện tại",
+              "kind": "return"
+            },
+            {
+              "from": "ProblemRepository",
+              "to": "SaveProblemSpec",
+              "text": "Dữ liệu hiện tại",
+              "kind": "return"
+            }
+          ]
+        }
+      },
+      {
+        "alt": {
+          "label": "Bản đã thay đổi bởi người khác?",
+          "then": [
+            {
+              "from": "SaveProblemSpec",
               "to": "ProblemController",
-              "text": "Đặc tả đã lưu",
+              "text": "Báo xung đột cập nhật",
               "kind": "return"
             },
             {
               "from": "ProblemController",
               "to": "Người soạn đề",
-              "text": "Báo thành công",
+              "text": "Yêu cầu tải lại bản mới",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "SaveProblemSpec",
+              "to": "SaveProblemSpec",
+              "text": "So tám trường, tăng phiên bản khi có đổi"
+            },
+            {
+              "from": "SaveProblemSpec",
+              "to": "ProblemRepository",
+              "text": "Lưu đặc tả và khả năng Bọc hàm"
+            },
+            {
+              "from": "ProblemRepository",
+              "to": "ProblemDbAdapter",
+              "text": "Cập nhật bài và đặc tả trong một giao dịch"
+            },
+            {
+              "from": "ProblemDbAdapter",
+              "to": "PostgreSQL",
+              "text": "Lưu phiên bản, thời điểm cập nhật và cờ hỗ trợ"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "ProblemDbAdapter",
+              "text": "Đặc tả đã lưu",
+              "kind": "return"
+            },
+            {
+              "from": "ProblemDbAdapter",
+              "to": "ProblemRepository",
+              "text": "Đặc tả đã lưu",
+              "kind": "return"
+            },
+            {
+              "from": "ProblemRepository",
+              "to": "SaveProblemSpec",
+              "text": "Đặc tả đã lưu",
+              "kind": "return"
+            },
+            {
+              "from": "SaveProblemSpec",
+              "to": "ProblemController",
+              "text": "Trả phiên bản và cảnh báo nếu có",
+              "kind": "return"
+            },
+            {
+              "from": "ProblemController",
+              "to": "Người soạn đề",
+              "text": "Hiển thị đặc tả đã lưu và mô hình dùng được",
               "kind": "return"
             }
           ]
         }
       }
     ]
-  },
-  "_cat": "Tach tu sequence_shared_soan_de_va_dac_ta_ham.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 2/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+  }
 }

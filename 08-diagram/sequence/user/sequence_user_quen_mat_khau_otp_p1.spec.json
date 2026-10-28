@@ -1,8 +1,7 @@
 {
-  "_": "Luong quen mat khau bang OTP 6 so cua actor A1. Nguon: 01-rd/req/F1_identity.md (F1-17, dong 209-217), 03-dd/api/F1_identity.md muc 0.1 (endpoint #7, #8), 03-dd/logic/F1_identity.md BR-04, 02-bd/architecture/F1_identity.md muc 5 (OTP 10 phut, 5 lan sai, cooldown 60 giay), 02-bd/security/F1_identity.md:45-46 va :50-52. | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
-  "_bao_mat": "Hai diem bao mat la ly do luong nay dang mot so do rieng: (1) endpoint forgot LUON tra 200 du email co ton tai hay khong -- chong do email theo OWASP user enumeration; (2) buoc reset khong re nhanh som khi email khong ton tai, di het toi buoc tra loi chung o cuoi de khong lo thong tin qua thoi gian phan hoi.",
+  "_": "Nguồn: 01-rd/req/F1_identity.md F1-17; 03-dd/api/F1_identity.md mục #7/#8/#60; 03-dd/logic/F1_identity.md BR-04; 02-bd/database/F1_identity.md mục 1.6, 1.9, 3; 02-bd/security/F1_identity.md mục 3. Các tên lớp/port là thiết kế dự kiến [SoT: Suy luận], backend hiện là scaffold. ForgotPasswordCmd = ForgotPasswordCommandHandler; UserRepo = UserRepository output port; IdentityDbAdapter = persistence adapter. Không trả thông tin tồn tại email ở trang này; phản hồi chung kết thúc tại 1c. Tài khoản tự đăng ký còn PENDING_VERIFICATION cần chính sách riêng trong DD.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Quên mật khẩu bằng OTP (Sinh viên) (1/3)",
+  "title": "Sơ đồ tuần tự chi tiết - Tìm tài khoản khi quên mật khẩu (1a/3)",
   "covers": [
     "F1-17"
   ],
@@ -20,14 +19,19 @@
         "stereo": "presentation"
       },
       {
-        "name": "PasswordResetService",
+        "name": "ForgotPasswordCmd",
         "role": "service",
-        "stereo": "application"
+        "stereo": "application command"
       },
       {
-        "name": "Redis",
-        "role": "datastore",
-        "stereo": "OTP, cooldown"
+        "name": "UserRepo",
+        "role": "repository",
+        "stereo": "domain output port"
+      },
+      {
+        "name": "IdentityDbAdapter",
+        "role": "repository",
+        "stereo": "infrastructure"
       },
       {
         "name": "PostgreSQL",
@@ -37,92 +41,70 @@
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 1 - Gửi mã xác nhận, luôn báo thành công để không lộ email có tồn tại hay không"
-      },
-      {
-        "from": "Sinh viên",
-        "to": "Sinh viên",
-        "text": "Nhập email rồi bấm \"Gửi mã\""
+        "phase": "Giai đoạn 1a - Nhận email và tìm tài khoản qua cổng dữ liệu"
       },
       {
         "from": "Sinh viên",
         "to": "AuthController",
-        "text": "Gửi yêu cầu quên mật khẩu kèm email"
+        "text": "Yêu cầu lấy lại mật khẩu"
       },
       {
         "from": "AuthController",
-        "to": "PasswordResetService",
-        "text": "Xử lý yêu cầu gửi mã xác nhận"
+        "to": "ForgotPasswordCmd",
+        "text": "Kiểm tra email và tìm tài khoản"
       },
       {
-        "from": "PasswordResetService",
-        "to": "Redis",
-        "text": "Kiểm cooldown gửi lại 60 giây"
+        "from": "ForgotPasswordCmd",
+        "to": "UserRepo",
+        "text": "Tìm tài khoản theo email"
       },
       {
-        "from": "Redis",
-        "to": "PasswordResetService",
-        "text": "Còn cooldown hay không",
-        "kind": "return"
+        "from": "UserRepo",
+        "to": "IdentityDbAdapter",
+        "text": "Chuyển yêu cầu đọc"
       },
       {
-        "from": "PasswordResetService",
+        "from": "IdentityDbAdapter",
         "to": "PostgreSQL",
-        "text": "Đọc tài khoản có email này"
+        "text": "Đọc tài khoản và trạng thái"
       },
       {
         "from": "PostgreSQL",
-        "to": "PasswordResetService",
-        "text": "Tài khoản hoặc rỗng",
+        "to": "IdentityDbAdapter",
+        "text": "Có tài khoản hoặc không",
+        "kind": "return"
+      },
+      {
+        "from": "IdentityDbAdapter",
+        "to": "UserRepo",
+        "text": "Kết quả tra cứu",
+        "kind": "return"
+      },
+      {
+        "from": "UserRepo",
+        "to": "ForgotPasswordCmd",
+        "text": "Loại tài khoản và mã người dùng",
         "kind": "return"
       },
       {
         "alt": {
-          "label": "Email có tồn tại trong hệ thống?",
+          "label": "Tìm thấy tài khoản?",
           "then": [
             {
-              "from": "PasswordResetService",
-              "to": "PasswordResetService",
-              "text": "Sinh mã xác nhận 6 số ngẫu nhiên"
-            },
-            {
-              "from": "PasswordResetService",
-              "to": "Redis",
-              "text": "Lưu mã xác nhận, hạn 10 phút, số lần nhập sai = 0"
-            },
-            {
-              "from": "PasswordResetService",
-              "to": "PasswordResetService",
-              "text": "Gửi mã xác nhận tới hộp thư"
+              "from": "ForgotPasswordCmd",
+              "to": "ForgotPasswordCmd",
+            "text": "Xác định cách tài khoản đăng nhập"
             }
           ],
           "else": [
             {
-              "from": "PasswordResetService",
-              "to": "PasswordResetService",
-              "text": "Không sinh mã, không gửi thư, không báo lỗi ra ngoài"
+              "from": "ForgotPasswordCmd",
+              "to": "ForgotPasswordCmd",
+              "text": "Giữ phản hồi chung, không phát mã"
             }
           ]
         }
-      },
-      {
-        "from": "PasswordResetService",
-        "to": "AuthController",
-        "text": "Kết quả giống hệt nhau ở cả hai nhánh",
-        "kind": "return"
-      },
-      {
-        "from": "AuthController",
-        "to": "Sinh viên",
-        "text": "Báo thành công: \"Nếu email tồn tại, mã đã được gửi\"",
-        "kind": "return"
-      },
-      {
-        "from": "Sinh viên",
-        "to": "Sinh viên",
-        "text": "Chuyển sang bước nhập mã, bật đếm ngược gửi lại"
       }
     ]
-  },
-  "_cat": "Tach tu sequence_user_quen_mat_khau_otp.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 1/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+  }
 }

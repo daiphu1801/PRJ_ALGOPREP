@@ -1,0 +1,118 @@
+{
+  "_": "Trang 3b/3 là nhánh refresh token đã bị revoke của trang 3a. Nguồn: 03-dd/logic/F1_identity.md BR-02; 03-dd/api/F1_identity.md endpoint #3; 03-dd/database/F1_identity.md. RotateTokenCmd = RotateRefreshTokenCommandHandler; RefreshRepo = RefreshTokenRepository; AuditRepo = SystemAuditLogRepository; IdentityDbAdapter = IdentityPersistenceAdapter [SoT: Suy luận về tên lớp]. Nếu tìm thấy token đã bị thu hồi, coi là reuse: thu hồi toàn bộ token chưa thu hồi trong cùng family và ghi SECURITY_TOKEN_REUSE_DETECTED; trả lỗi để người học đăng nhập lại. Hình gộp hai cổng ghi vào cùng adapter/giao dịch. Mã không tồn tại hoặc chỉ hết hạn tự nhiên trả IDT-105, không tạo cảnh báo reuse; không vẽ nhánh này ở đây. Tuyệt đối không trả access/refresh token mới trong nhánh reuse.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Phát hiện dùng lại mã phiên (3b/3)",
+  "covers": [
+    "F1-03"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Sinh viên",
+        "role": "actor"
+      },
+      {
+        "name": "AuthController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "RotateTokenCmd",
+        "role": "service",
+        "stereo": "application command"
+      },
+      {
+        "name": "RefreshRepo",
+        "role": "repository",
+        "stereo": "domain output port"
+      },
+      {
+        "name": "AuditRepo",
+        "role": "repository",
+        "stereo": "domain output port"
+      },
+      {
+        "name": "IdentityDbAdapter",
+        "role": "repository",
+        "stereo": "infrastructure"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema identity"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 3b - Mã đã dùng lại: khoá cả nhóm phiên"
+      },
+      {
+        "from": "RotateTokenCmd",
+        "to": "RotateTokenCmd",
+        "text": "Mã tìm thấy nhưng đã bị thu hồi"
+      },
+      {
+        "from": "RotateTokenCmd",
+        "to": "RefreshRepo",
+        "text": "Thu hồi mọi mã còn dùng trong nhóm"
+      },
+      {
+        "from": "RefreshRepo",
+        "to": "IdentityDbAdapter",
+        "text": "Khoá nhóm phiên"
+      },
+      {
+        "from": "IdentityDbAdapter",
+        "to": "PostgreSQL",
+        "text": "Thu hồi các phiên cùng nhóm"
+      },
+      {
+        "from": "RotateTokenCmd",
+        "to": "AuditRepo",
+        "text": "Ghi dấu hiệu dùng lại mã phiên"
+      },
+      {
+        "from": "AuditRepo",
+        "to": "IdentityDbAdapter",
+        "text": "Ghi nhật ký bảo mật"
+      },
+      {
+        "from": "IdentityDbAdapter",
+        "to": "PostgreSQL",
+        "text": "Lưu sự kiện bảo mật"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "IdentityDbAdapter",
+        "text": "Đã commit",
+        "kind": "return"
+      },
+      {
+        "from": "IdentityDbAdapter",
+        "to": "AuditRepo",
+        "text": "Đã ghi",
+        "kind": "return"
+      },
+      {
+        "from": "AuditRepo",
+        "to": "RotateTokenCmd",
+        "text": "Nhóm phiên đã khoá",
+        "kind": "return"
+      },
+      {
+        "from": "RotateTokenCmd",
+        "to": "AuthController",
+        "text": "Từ chối làm mới phiên",
+        "kind": "return"
+      },
+      {
+        "from": "AuthController",
+        "to": "Sinh viên",
+        "text": "Yêu cầu đăng nhập lại trên mọi thiết bị",
+        "kind": "return"
+      }
+    ]
+  }
+}

@@ -1,7 +1,7 @@
 {
-  "_": "Nguon: 01-rd/screens/admin/ADM0201_user_management.md, 02-bd/screens/admin/ADM0201_user_management.md (muc 7.3 endpoint, DTO, popup), DEC-2026-1011-admin-system-open-questions-closed, DEC-2026-1008-admin-system-screens-review. Duong dan REST la [SoT: Suy luan] vi chua co DD; ten endpoint la ten nghiep vu cua BD. Tach khoi sequence doi vai tro (2026-10-18): luong khoa co nhieu quy tac nhat. Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen. | 2026-10-20 (owner): nhan mui ten bo han duong dan, ma HTTP, ma quyen, thuat ngu ky thuat (cache, job, worker, model...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
+  "_": "Nguồn: 03-dd/api/F1_identity.md endpoint 37, §0.6; 03-dd/logic/F1_identity.md BR-08/15. UserAdminStorePort và IdentityDbAdapter là tên minh họa [SoT: Suy luận]. Mỗi tài khoản là một lệnh; màn ghép kết quả. Khóa cần lý do, bảo vệ ADMIN hoạt động cuối bằng khóa dòng và đếm; tự khóa cần xác nhận ảnh hưởng. Đặt DEACTIVATED, deactivation_source=ADMIN, mốc khóa, thu hồi refresh token và ghi audit trong giao dịch. Request tiếp theo kiểm trạng thái user để chặn ngay.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Khoá và mở khoá tài khoản (Quản trị viên) (1/2)",
+  "title": "Sơ đồ tuần tự chi tiết - Khóa tài khoản và thu hồi phiên (1/2)",
   "covers": [
     "F1-13",
     "F1-32"
@@ -20,109 +20,146 @@
         "stereo": "presentation"
       },
       {
-        "name": "UserAdminService",
+        "name": "ChangeUserStatus",
         "role": "service",
-        "stereo": "application"
+        "stereo": "application command"
+      },
+      {
+        "name": "UserAdminStorePort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "IdentityDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
       },
       {
         "name": "PostgreSQL",
         "role": "datastore",
         "stereo": "schema identity"
+      },
+      {
+        "name": "AuditLogPort",
+        "role": "repository",
+        "stereo": "identity output port"
       }
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 1 - Khoá một hoặc nhiều tài khoản: bắt buộc lý do, chặn khi hết quản trị viên (F1-13, F1-32)"
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "Quản trị viên",
-        "text": "Chọn tài khoản, bấm Khoá, nhập lý do, chọn gửi email, xác nhận"
+        "phase": "Giai đoạn 1 - Kiểm tài khoản và quyền còn lại"
       },
       {
         "from": "Quản trị viên",
         "to": "UserAdminController",
-        "text": "Gửi yêu cầu khoá tài khoản"
+        "text": "Chọn tài khoản, nhập lý do và xác nhận khóa"
       },
       {
         "from": "UserAdminController",
         "to": "UserAdminController",
-        "text": "Kiểm tra quyền; khoá thì bắt buộc có lý do"
+        "text": "Kiểm lý do và quyền quản trị tài khoản"
       },
       {
         "from": "UserAdminController",
-        "to": "UserAdminService",
-        "text": "Yêu cầu khoá các tài khoản đã chọn"
+        "to": "ChangeUserStatus",
+        "text": "Khóa một tài khoản"
       },
       {
-        "from": "UserAdminService",
+        "from": "ChangeUserStatus",
+        "to": "UserAdminStorePort",
+        "text": "Khóa dòng quản trị viên đang hoạt động và đọc tài khoản đích"
+      },
+      {
+        "from": "UserAdminStorePort",
+        "to": "IdentityDbAdapter",
+        "text": "Đọc tài khoản và tập quản trị viên"
+      },
+      {
+        "from": "IdentityDbAdapter",
         "to": "PostgreSQL",
-        "text": "Đọc tài khoản đích và số quản trị viên hoạt động"
+        "text": "Khóa dòng quản trị viên, đọc trạng thái người dùng"
       },
       {
         "from": "PostgreSQL",
-        "to": "UserAdminService",
-        "text": "Tài khoản đích, số quản trị viên hoạt động",
+        "to": "IdentityDbAdapter",
+        "text": "Trạng thái và số quản trị viên",
+        "kind": "return"
+      },
+      {
+        "from": "IdentityDbAdapter",
+        "to": "UserAdminStorePort",
+        "text": "Trạng thái và số quản trị viên",
+        "kind": "return"
+      },
+      {
+        "from": "UserAdminStorePort",
+        "to": "ChangeUserStatus",
+        "text": "Trạng thái và số quản trị viên",
         "kind": "return"
       },
       {
         "alt": {
-          "label": "Còn quản trị viên?",
+          "label": "Khóa sẽ làm mất quản trị viên hoạt động cuối?",
           "then": [
             {
-              "from": "UserAdminService",
-              "to": "UserAdminService",
-              "text": "Đủ điều kiện, khoá từng tài khoản"
-            },
-            {
-              "from": "UserAdminService",
-              "to": "PostgreSQL",
-              "text": "Đặt trạng thái Bị khoá cho từng tài khoản"
-            },
-            {
-              "from": "PostgreSQL",
-              "to": "UserAdminService",
-              "text": "Đã ghi",
-              "kind": "return"
-            },
-            {
-              "from": "UserAdminService",
+              "from": "ChangeUserStatus",
               "to": "UserAdminController",
-              "text": "Kết quả từng tài khoản: thành công, thất bại",
+              "text": "Từ chối khóa quản trị viên cuối",
               "kind": "return"
             },
             {
               "from": "UserAdminController",
               "to": "Quản trị viên",
-              "text": "Báo thành công",
+              "text": "Hiển thị lỗi bảo vệ hệ thống",
               "kind": "return"
             }
           ],
           "else": [
             {
-              "from": "UserAdminService",
-              "to": "UserAdminService",
-              "text": "Khoá xong sẽ hết quản trị viên hoạt động"
+              "from": "ChangeUserStatus",
+              "to": "ChangeUserStatus",
+              "text": "Tự khóa thì kiểm xác nhận ảnh hưởng"
             },
             {
-              "from": "UserAdminService",
+              "from": "ChangeUserStatus",
+              "to": "UserAdminStorePort",
+              "text": "Đặt trạng thái bị khóa và thu hồi phiên"
+            },
+            {
+              "from": "UserAdminStorePort",
+              "to": "IdentityDbAdapter",
+              "text": "Ghi trạng thái, nguồn khóa và thu hồi phiên"
+            },
+            {
+              "from": "IdentityDbAdapter",
+              "to": "PostgreSQL",
+              "text": "Cập nhật người dùng và phiên làm mới"
+            },
+            {
+              "from": "ChangeUserStatus",
+              "to": "AuditLogPort",
+              "text": "Ghi người thao tác, đích và lý do cùng giao dịch"
+            },
+            {
+              "from": "AuditLogPort",
+              "to": "ChangeUserStatus",
+              "text": "Nhật ký đã ghi",
+              "kind": "return"
+            },
+            {
+              "from": "ChangeUserStatus",
               "to": "UserAdminController",
-              "text": "Từ chối, không tài khoản nào đổi",
+              "text": "Trả kết quả khóa",
               "kind": "return"
             },
             {
               "from": "UserAdminController",
               "to": "Quản trị viên",
-              "text": "Báo lỗi: không còn quản trị viên hoạt động",
+              "text": "Hiển thị tài khoản bị khóa",
               "kind": "return"
             }
           ]
         }
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "Quản trị viên",
-        "text": "Danh sách hiện nhãn Bị khoá; hậu quả ở phần 2/2"
       }
     ]
   }

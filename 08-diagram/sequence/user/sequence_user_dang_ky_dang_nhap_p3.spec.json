@@ -1,93 +1,38 @@
 {
-  "_": "Luong dang ky + dang nhap cua actor A1. Nguon: 01-rd/req/F1_identity.md (F1-01, F1-02), 03-dd/api/F1_identity.md muc 0.1 (endpoint #1, #2), 03-dd/logic/F1_identity.md (BR-01 rate-limit, BR-02 rotation). | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
-  "_tang": "Tach dung 4 tang cua DEC-2026-0820-architecture-baseline: presentation (AuthController) / application (AuthService) / infrastructure (UserRepository, Redis) / du lieu (PostgreSQL schema identity).",
-  "_phase": "Ba giai doan: dang ky -> dang nhap -> cap token va dieu huong theo vai tro.",
+  "_": "Trang 3a/3 mô tả làm mới phiên bình thường, thay cho spec cũ chỉ mô tả cấp token sau đăng nhập. Nguồn: 03-dd/api/F1_identity.md endpoint #3; 03-dd/logic/F1_identity.md BR-02; 03-dd/database/F1_identity.md refresh_tokens. RotateTokenCmd = RotateRefreshTokenCommandHandler; RefreshRepo = RefreshTokenRepository; IdentityDbAdapter = RefreshTokenPersistenceAdapter [SoT: Suy luận về tên lớp]. Frontend gửi cookie refresh token cùng header X-Requested-With; server băm SHA-256 rồi tra DB. Token hợp lệ chưa dùng và chưa hết hạn chỉ dùng một lần: thu hồi token cũ, tạo mã băm mới cùng family trong một giao dịch; sau commit trả access token mới và cookie mới. Token hết hạn/không tìm thấy trả lỗi chung, không coi là reuse. Token đã bị revoke chuyển trang 3b để thu hồi cả family và ghi audit.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Đăng ký và đăng nhập (Sinh viên) (3/3)",
-  "covers": [
-    "F1-03"
-  ],
+  "title": "Sơ đồ tuần tự chi tiết - Xoay vòng mã làm mới phiên (3a/3)",
+  "covers": ["F1-03"],
   "mode": "color",
   "sequence": {
     "detail": true,
     "participants": [
-      {
-        "name": "Sinh viên",
-        "role": "actor"
-      },
-      {
-        "name": "AuthController",
-        "role": "controller",
-        "stereo": "presentation"
-      },
-      {
-        "name": "AuthService",
-        "role": "service",
-        "stereo": "application"
-      },
-      {
-        "name": "Redis",
-        "role": "datastore",
-        "stereo": "rate-limit, token"
-      },
-      {
-        "name": "PostgreSQL",
-        "role": "datastore",
-        "stereo": "schema identity"
-      }
+      {"name": "Sinh viên", "role": "actor"},
+      {"name": "AuthController", "role": "controller", "stereo": "presentation"},
+      {"name": "RotateTokenCmd", "role": "service", "stereo": "application command"},
+      {"name": "RefreshRepo", "role": "repository", "stereo": "domain output port"},
+      {"name": "IdentityDbAdapter", "role": "repository", "stereo": "infrastructure"},
+      {"name": "PostgreSQL", "role": "datastore", "stereo": "schema identity"}
     ],
     "messages": [
-      {
-        "phase": "Giai đoạn 3 - Cấp mã đăng nhập, đổi mã định kỳ và điều hướng theo vai trò (F1-03, BR-02)"
-      },
-      {
-        "from": "AuthService",
-        "to": "AuthService",
-        "text": "Cấp mã truy cập, hạn 15 phút"
-      },
-      {
-        "from": "AuthService",
-        "to": "AuthService",
-        "text": "Cấp mã duy trì đăng nhập (lưu dạng mã hoá), hạn 30 ngày"
-      },
-      {
-        "from": "AuthService",
-        "to": "PostgreSQL",
-        "text": "Lưu mã duy trì đăng nhập đã mã hoá"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "PostgreSQL",
-        "text": "Ghi mã duy trì đăng nhập"
-      },
-      {
-        "from": "AuthService",
-        "to": "Redis",
-        "text": "Xoá số lần đăng nhập sai của email và máy này"
-      },
-      {
-        "from": "AuthService",
-        "to": "AuthController",
-        "text": "Phiên đăng nhập: mã truy cập, tài khoản, vai trò",
-        "kind": "return"
-      },
-      {
-        "from": "AuthController",
-        "to": "Sinh viên",
-        "text": "Báo thành công, gửi kèm mã duy trì đăng nhập",
-        "kind": "return"
-      },
-      {
-        "from": "Sinh viên",
-        "to": "Sinh viên",
-        "text": "Giữ mã truy cập trong bộ nhớ trình duyệt, không lưu lâu dài"
-      },
-      {
-        "from": "Sinh viên",
-        "to": "Sinh viên",
-        "text": "Điều hướng tới khu vực Người học theo vai trò"
-      }
+      {"phase": "Giai đoạn 3a - Mã làm mới hợp lệ chỉ dùng một lần"},
+      {"from": "Sinh viên", "to": "AuthController", "text": "Yêu cầu làm mới phiên bằng cookie"},
+      {"from": "AuthController", "to": "RotateTokenCmd", "text": "Kiểm yêu cầu và mã trong cookie"},
+      {"from": "RotateTokenCmd", "to": "RotateTokenCmd", "text": "Băm mã thô trước khi tìm"},
+      {"from": "RotateTokenCmd", "to": "RefreshRepo", "text": "Tìm phiên theo dấu băm"},
+      {"from": "RefreshRepo", "to": "IdentityDbAdapter", "text": "Đọc phiên hiện tại"},
+      {"from": "IdentityDbAdapter", "to": "PostgreSQL", "text": "Tra mã băm và trạng thái"},
+      {"from": "PostgreSQL", "to": "IdentityDbAdapter", "text": "Phiên còn hiệu lực", "kind": "return"},
+      {"from": "IdentityDbAdapter", "to": "RefreshRepo", "text": "Phiên và nhóm phiên", "kind": "return"},
+      {"from": "RefreshRepo", "to": "RotateTokenCmd", "text": "Có thể xoay vòng", "kind": "return"},
+      {"from": "RotateTokenCmd", "to": "RefreshRepo", "text": "Thu hồi mã cũ; lưu mã mới cùng nhóm"},
+      {"from": "RefreshRepo", "to": "IdentityDbAdapter", "text": "Đổi phiên nguyên tử"},
+      {"from": "IdentityDbAdapter", "to": "PostgreSQL", "text": "Ghi mã cũ đã dùng và mã băm mới"},
+      {"from": "PostgreSQL", "to": "IdentityDbAdapter", "text": "Đã commit", "kind": "return"},
+      {"from": "IdentityDbAdapter", "to": "RefreshRepo", "text": "Phiên mới", "kind": "return"},
+      {"from": "RefreshRepo", "to": "RotateTokenCmd", "text": "Có thể cấp mã truy cập", "kind": "return"},
+      {"from": "RotateTokenCmd", "to": "AuthController", "text": "Mã truy cập ngắn và cookie mới", "kind": "return"},
+      {"from": "AuthController", "to": "Sinh viên", "text": "Làm mới phiên thành công", "kind": "return"}
     ]
-  },
-  "_cat": "Tach tu sequence_user_dang_ky_dang_nhap.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 3/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+  }
 }

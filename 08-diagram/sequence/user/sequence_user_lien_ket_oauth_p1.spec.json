@@ -1,98 +1,35 @@
 {
-  "_": "Luong dang nhap bang OAuth (GitHub, Google) va tu lien ket theo email cua actor A1. Nguon: 01-rd/req/F1_identity.md (F1-15), 03-dd/api/F1_identity.md muc 0.1 (endpoint #5, #6), 03-dd/logic/F1_identity.md BR-03, 02-bd/architecture/F1_identity.md muc 2 (OAuth tu lien ket theo email). | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
-  "_bao_mat": "Hai chot chan chiem tai khoan: (1) doi chieu `state` luu Redis TTL 10 phut -- chong CSRF o buoc callback; (2) provider tra `email_verified = false` thi TU CHOI, khong tao oauth_identities va khong tao users -- neu bo buoc nay, ai dang ky mot tai khoan provider bang email nguoi khac deu chiem duoc tai khoan AlgoPrep tuong ung.",
+  "_": "Trang 1/3 bắt đầu OAuth GitHub hoặc Google. Nguồn: 03-dd/api/F1_identity.md endpoints #5/#6, mục OAuth callback; 03-dd/logic/F1_identity.md BR-03; 01-rd/system/SYS0101_backend_architecture.md. OAuthRedirectCmd = StartOAuthRedirectCommandHandler; OAuthStatePort = OAuthStateStorePort; RedisStateAdapter = OAuthStateRedisAdapter [SoT: Suy luận về tên lớp]. Sinh state ngẫu nhiên, lưu Redis TTL 10 phút, trả authorizationUrl cho frontend; trình duyệt mới chuyển tới provider. Callback của provider đi về trang frontend rồi frontend gọi backend ở trang 2a, không để access token/refresh token trong URL. Phần đường đi qua trình duyệt được vẽ như tương tác actor để người đọc thấy ranh giới chuyển hướng. State phải được dùng một lần theo BR-03.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Đăng nhập và tự liên kết tài khoản OAuth (Sinh viên) (1/3)",
-  "covers": [
-    "F1-15"
-  ],
+  "title": "Sơ đồ tuần tự chi tiết - Bắt đầu đăng nhập OAuth (1/3)",
+  "covers": ["F1-15"],
   "mode": "color",
   "sequence": {
     "detail": true,
     "participants": [
-      {
-        "name": "Sinh viên",
-        "role": "actor"
-      },
-      {
-        "name": "AuthController",
-        "role": "controller",
-        "stereo": "presentation"
-      },
-      {
-        "name": "OAuthService",
-        "role": "service",
-        "stereo": "application"
-      },
-      {
-        "name": "Redis",
-        "role": "datastore",
-        "stereo": "state TTL 10 phút"
-      },
-      {
-        "name": "Nhà cung cấp OAuth",
-        "role": "external",
-        "stereo": "GitHub, Google"
-      }
+      {"name": "Sinh viên", "role": "actor"},
+      {"name": "AuthController", "role": "controller", "stereo": "presentation"},
+      {"name": "OAuthRedirectCmd", "role": "service", "stereo": "application command"},
+      {"name": "OAuthStatePort", "role": "repository", "stereo": "output port"},
+      {"name": "RedisStateAdapter", "role": "repository", "stereo": "infrastructure"},
+      {"name": "Redis", "role": "datastore", "stereo": "state 10 phút"},
+      {"name": "Nhà cung cấp OAuth", "role": "external", "stereo": "GitHub hoặc Google"}
     ],
     "messages": [
-      {
-        "phase": "Giai đoạn 1 - Khởi tạo luồng, sinh mã chống giả mạo (BR-03)"
-      },
-      {
-        "from": "Sinh viên",
-        "to": "Sinh viên",
-        "text": "Bấm \"Đăng nhập với GitHub\""
-      },
-      {
-        "from": "Sinh viên",
-        "to": "AuthController",
-        "text": "Gửi yêu cầu liên kết tài khoản ngoài"
-      },
-      {
-        "from": "AuthController",
-        "to": "OAuthService",
-        "text": "Tạo địa chỉ xin phép của nhà cung cấp"
-      },
-      {
-        "from": "OAuthService",
-        "to": "OAuthService",
-        "text": "Sinh mã chống giả mạo ngẫu nhiên"
-      },
-      {
-        "from": "OAuthService",
-        "to": "Redis",
-        "text": "Lưu mã chống giả mạo, hạn 10 phút"
-      },
-      {
-        "from": "OAuthService",
-        "to": "AuthController",
-        "text": "Địa chỉ xin phép kèm mã chống giả mạo",
-        "kind": "return"
-      },
-      {
-        "from": "AuthController",
-        "to": "Sinh viên",
-        "text": "Báo thành công kèm địa chỉ xin phép",
-        "kind": "return"
-      },
-      {
-        "from": "Sinh viên",
-        "to": "Sinh viên",
-        "text": "Chuyển sang trang đăng nhập của nhà cung cấp"
-      },
-      {
-        "from": "Sinh viên",
-        "to": "Nhà cung cấp OAuth",
-        "text": "Đăng nhập và chấp thuận quyền truy cập"
-      },
-      {
-        "from": "Nhà cung cấp OAuth",
-        "to": "Sinh viên",
-        "text": "Nhà cung cấp chuyển về kèm mã cho phép và mã chống giả mạo",
-        "kind": "return"
-      }
+      {"phase": "Giai đoạn 1 - Xin quyền ở nhà cung cấp"},
+      {"from": "Sinh viên", "to": "AuthController", "text": "Chọn đăng nhập với nhà cung cấp"},
+      {"from": "AuthController", "to": "OAuthRedirectCmd", "text": "Yêu cầu địa chỉ xin quyền"},
+      {"from": "OAuthRedirectCmd", "to": "OAuthRedirectCmd", "text": "Tạo mã chống giả mạo ngẫu nhiên"},
+      {"from": "OAuthRedirectCmd", "to": "OAuthStatePort", "text": "Giữ mã trong 10 phút"},
+      {"from": "OAuthStatePort", "to": "RedisStateAdapter", "text": "Lưu mã dùng một lần"},
+      {"from": "RedisStateAdapter", "to": "Redis", "text": "Lưu mã chống giả mạo"},
+      {"from": "Redis", "to": "RedisStateAdapter", "text": "Đã lưu", "kind": "return"},
+      {"from": "RedisStateAdapter", "to": "OAuthStatePort", "text": "Mã còn hạn", "kind": "return"},
+      {"from": "OAuthStatePort", "to": "OAuthRedirectCmd", "text": "Có thể chuyển hướng", "kind": "return"},
+      {"from": "OAuthRedirectCmd", "to": "AuthController", "text": "Địa chỉ xin quyền kèm mã", "kind": "return"},
+      {"from": "AuthController", "to": "Sinh viên", "text": "Chuyển tới trang nhà cung cấp", "kind": "return"},
+      {"from": "Sinh viên", "to": "Nhà cung cấp OAuth", "text": "Đăng nhập và chấp thuận"},
+      {"from": "Nhà cung cấp OAuth", "to": "Sinh viên", "text": "Chuyển về kèm code và mã chống giả mạo", "kind": "return"}
     ]
-  },
-  "_cat": "Tach tu sequence_user_lien_ket_oauth.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 1/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+  }
 }

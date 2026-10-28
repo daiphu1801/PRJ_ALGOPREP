@@ -1,0 +1,68 @@
+{
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a2_instructor.md:74; 01-rd/req/user_stories/a2_instructor.md:78; 01-rd/req/user_stories/a2_instructor.md:80. Nguồn thiết kế: 03-dd/logic/F2_problem-bank.md; 03-dd/api/F2_problem-bank.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "kind": "class",
+  "title": "A2 — Sinh và duyệt testcase AI",
+  "covers": [
+    "F2-14"
+  ],
+  "class": {
+    "legend": "shared",
+    "classes": [
+      {
+        "id": "service",
+        "name": "AiTestcaseService",
+        "methods": [
+          "+ generateDrafts(actorId : UUID, problemId : UUID) : List<TestcaseDraft>",
+          "+ requireReferencePass(problemId : UUID)",
+          "+ approve(actorId : UUID, draftId : UUID) : Testcase"
+        ]
+      },
+      {
+        "id": "port1",
+        "name": "ReferenceSolutionPort",
+        "kind": "interface",
+        "methods": [
+          "+ verifyAll(problemId : UUID) : boolean"
+        ]
+      },
+      {
+        "id": "port2",
+        "name": "TestcaseGenerationPort",
+        "kind": "interface",
+        "methods": [
+          "+ generate(input : GenerationInput) : List<TestcaseDraft>"
+        ]
+      },
+      {
+        "id": "port3",
+        "name": "TestcaseRepository",
+        "kind": "class",
+        "methods": [
+          "+ approve(id : UUID) : Testcase"
+        ]
+      }
+    ],
+    "externals": [],
+    "relations": [
+      {
+        "from": "service",
+        "to": "port1",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port2",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port3",
+        "kind": "dependency"
+      }
+    ],
+    "notes": [
+      "Testcase AI ở trạng thái nháp đến khi người có quyền duyệt; không dùng đáp án mẫu làm đầu vào AI.",
+      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+    ]
+  }
+}

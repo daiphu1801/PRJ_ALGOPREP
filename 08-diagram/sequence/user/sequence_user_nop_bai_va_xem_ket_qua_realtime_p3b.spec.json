@@ -1,0 +1,38 @@
+{
+  "_": "Trang 3b/3 sau khi đã có N kết quả testcase. Nguồn: 03-dd/logic/F4_judge-orchestration.md BR-JD-05, BR-JD-06, BR-JD-14; 03-dd/api/F4_judge-orchestration.md mục 2.3-2.4; 03-dd/database/F4_judge-orchestration.md. FinalizeGradingCmd = FinalizeSubmissionCommandHandler; SubmissionRepo = SubmissionRepository; JudgeDbAdapter = SubmissionPersistenceAdapter; RealtimePort = cổng phát STOMP; JudgeConsumer = RabbitMQ consumer [SoT: Suy luận về tên lớp]. Hàm finalizeSubmission dùng chung cho worker, lỗi compile, lỗi hạ tầng và sweep. Trạng thái cuối lấy từ testcase thất bại đầu tiên theo thứ tự, nhưng vẫn đã chạy đủ N để tính score_ratio. Một giao dịch duy nhất cập nhật bài và ghi SubmissionGraded; thêm SubmissionAccepted khi ACCEPTED. Chỉ sau commit mới phát realtime và ack RabbitMQ. Outbox relay phát sự kiện miền riêng ở job nền, không phải bản tin STOMP; không vẽ job relay ở trang này. Khi cập nhật 0 dòng vì bài đã ở trạng thái cuối thì không ghi outbox và không phát STOMP; nhánh này nằm ở DD. Không hiển thị chi tiết testcase ẩn.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Chốt kết quả và phát sự kiện (3b/3)",
+  "covers": ["F4-03", "F4-08", "F4-13"],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {"name": "FinalizeGradingCmd", "role": "service", "stereo": "application command"},
+      {"name": "SubmissionRepo", "role": "repository", "stereo": "domain output port"},
+      {"name": "JudgeDbAdapter", "role": "repository", "stereo": "infrastructure"},
+      {"name": "PostgreSQL", "role": "datastore", "stereo": "schema judge"},
+      {"name": "RealtimePort", "role": "repository", "stereo": "STOMP output port"},
+      {"name": "JudgeConsumer", "role": "controller", "stereo": "infrastructure consumer"},
+      {"name": "RabbitMQ", "role": "external", "stereo": "hàng đợi"}
+    ],
+    "messages": [
+      {"phase": "Giai đoạn 6 - Chốt bài sau khi chạy đủ N ca"},
+      {"from": "FinalizeGradingCmd", "to": "SubmissionRepo", "text": "Lấy N kết quả theo thứ tự ca"},
+      {"from": "SubmissionRepo", "to": "JudgeDbAdapter", "text": "Đọc kết quả ca đã lưu"},
+      {"from": "JudgeDbAdapter", "to": "PostgreSQL", "text": "Đọc kết quả theo thứ tự"},
+      {"from": "PostgreSQL", "to": "JudgeDbAdapter", "text": "N verdict", "kind": "return"},
+      {"from": "JudgeDbAdapter", "to": "SubmissionRepo", "text": "N verdict", "kind": "return"},
+      {"from": "SubmissionRepo", "to": "FinalizeGradingCmd", "text": "N verdict", "kind": "return"},
+      {"from": "FinalizeGradingCmd", "to": "FinalizeGradingCmd", "text": "Lấy lỗi đầu tiên; tính tỉ lệ ca đạt"},
+      {"from": "FinalizeGradingCmd", "to": "SubmissionRepo", "text": "Lưu trạng thái cuối và sự kiện miền"},
+      {"from": "SubmissionRepo", "to": "JudgeDbAdapter", "text": "Cập nhật bài và sự kiện trong một lần lưu"},
+      {"from": "JudgeDbAdapter", "to": "PostgreSQL", "text": "Lưu kết quả cuối và sự kiện chờ phát"},
+      {"from": "PostgreSQL", "to": "JudgeDbAdapter", "text": "Đã commit", "kind": "return"},
+      {"from": "JudgeDbAdapter", "to": "SubmissionRepo", "text": "Đã lưu một lần", "kind": "return"},
+      {"from": "SubmissionRepo", "to": "FinalizeGradingCmd", "text": "Bài đã chốt", "kind": "return"},
+      {"from": "FinalizeGradingCmd", "to": "RealtimePort", "text": "Báo hoàn tất sau commit", "kind": "async"},
+      {"from": "FinalizeGradingCmd", "to": "JudgeConsumer", "text": "Cho phép xác nhận việc chấm", "kind": "return"},
+      {"from": "JudgeConsumer", "to": "RabbitMQ", "text": "Xác nhận đã xử lý", "kind": "return"}
+    ]
+  }
+}

@@ -1,7 +1,7 @@
 {
-  "_": "Nguon: 01-rd/screens/admin/ADM0501_language_config.md (REQ-04..06), 02-bd/screens/admin/ADM0501_language_config.md (muc 7.3 GetLanguageConfigs/UpdateLanguageConfigs, Sheet 9 NO 6-7), 02-bd/security/F4_judge-orchestration.md:77 (Function LANGUAGE_CONFIG, ten de xuat). Duong dan REST va ma 409/422 la [SoT: Suy luan] vi 03-dd/api/F4_judge-orchestration.md chua viet. Nhan mui ten la hanh dong nghiep vu tieng Viet; ten ham va truy van thuoc DD. Hop xac nhan tat ngon ngu va kiem tra o man hinh (tab, hoan tac) khong ve vi khong goi may chu. Tach 2 phan 2026-10-20 vi ban 1 phan qua cao (lint: cao 1.47 lan be ngang). | 2026-10-20 (owner): nhan mui ten bo han duong dan, ma HTTP, ma quyen, thuat ngu ky thuat (cache, job, worker, model...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
+  "_": "Nguồn: 03-dd/api/F4_judge-orchestration.md §23; 03-dd/logic/F4_judge-orchestration.md BR-JD-09. JudgeConfigReadPort và JudgeDbAdapter là tên minh họa [SoT: Suy luận]. Một yêu cầu trả ba ngôn ngữ, giới hạn mặc định, sandbox chấm và sandbox sinh dữ liệu, số bài chờ từng ngôn ngữ. Tên/phiên bản trình biên dịch lấy từ cấu hình backend và chỉ đọc. Giới hạn hiệu dụng tính trên giao diện.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Tải cấu hình ngôn ngữ, giới hạn và sandbox (Quản trị viên) (1/2)",
+  "title": "Sơ đồ tuần tự chi tiết - Xem cấu hình ngôn ngữ và giới hạn (1/2)",
   "covers": [
     "F2-10",
     "F4-11"
@@ -20,9 +20,19 @@
         "stereo": "presentation"
       },
       {
-        "name": "LanguageConfigService",
+        "name": "GetLanguageConfigs",
         "role": "service",
-        "stereo": "application"
+        "stereo": "application query"
+      },
+      {
+        "name": "JudgeConfigReadPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "JudgeDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
       },
       {
         "name": "PostgreSQL",
@@ -32,49 +42,61 @@
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 1 - Mở màn: tải cấu hình ba ngôn ngữ, giới hạn mặc định, sandbox (F2-10, F4-11)"
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "Quản trị viên",
-        "text": "Mở màn Ngôn ngữ và giới hạn"
+        "phase": "Giai đoạn 1 - Tải toàn bộ cấu hình"
       },
       {
         "from": "Quản trị viên",
         "to": "LanguageConfigController",
-        "text": "Gửi yêu cầu xem cấu hình"
+        "text": "Mở trang cấu hình ngôn ngữ và giới hạn"
       },
       {
         "from": "LanguageConfigController",
-        "to": "LanguageConfigController",
-        "text": "Kiểm tra quyền cấu hình ngôn ngữ"
+        "to": "GetLanguageConfigs",
+        "text": "Lấy cấu hình hiện hành"
       },
       {
-        "from": "LanguageConfigController",
-        "to": "LanguageConfigService",
-        "text": "Yêu cầu tải cấu hình"
+        "from": "GetLanguageConfigs",
+        "to": "JudgeConfigReadPort",
+        "text": "Đọc ba ngôn ngữ, mặc định và môi trường chạy"
       },
       {
-        "from": "LanguageConfigService",
+        "from": "JudgeConfigReadPort",
+        "to": "JudgeDbAdapter",
+        "text": "Truy vấn cấu hình và số bài đang chờ"
+      },
+      {
+        "from": "JudgeDbAdapter",
         "to": "PostgreSQL",
-        "text": "Đọc cấu hình ngôn ngữ, giới hạn, sandbox"
+        "text": "Đọc cấu hình và đếm bài chờ theo ngôn ngữ"
       },
       {
         "from": "PostgreSQL",
-        "to": "LanguageConfigService",
-        "text": "Cấu hình hiện hành kèm thời điểm cập nhật",
+        "to": "JudgeDbAdapter",
+        "text": "Bốn khối cấu hình và số bài chờ",
         "kind": "return"
       },
       {
-        "from": "LanguageConfigService",
+        "from": "JudgeDbAdapter",
+        "to": "JudgeConfigReadPort",
+        "text": "Bốn khối cấu hình và số bài chờ",
+        "kind": "return"
+      },
+      {
+        "from": "JudgeConfigReadPort",
+        "to": "GetLanguageConfigs",
+        "text": "Cấu hình hiện hành",
+        "kind": "return"
+      },
+      {
+        "from": "GetLanguageConfigs",
         "to": "LanguageConfigController",
-        "text": "Cấu hình và số bài đang chờ chấm theo ngôn ngữ",
+        "text": "Trả cấu hình và tên trình biên dịch chỉ đọc",
         "kind": "return"
       },
       {
         "from": "LanguageConfigController",
         "to": "Quản trị viên",
-        "text": "Báo thành công",
+        "text": "Hiển thị giới hạn hiệu dụng theo từng ngôn ngữ",
         "kind": "return"
       }
     ]

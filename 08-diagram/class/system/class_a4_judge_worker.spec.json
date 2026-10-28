@@ -1,0 +1,90 @@
+{
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a4_system.md:26; 01-rd/req/user_stories/a4_system.md:28; 01-rd/req/user_stories/a4_system.md:31; 01-rd/req/user_stories/a4_system.md:34; 01-rd/req/user_stories/a4_system.md:37; 01-rd/req/user_stories/a4_system.md:41. Nguồn thiết kế: 03-dd/logic/F4_judge-orchestration.md; 03-dd/api/F4_judge-orchestration.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "kind": "class",
+  "title": "A4 — Worker chấm bài và phát tiến độ",
+  "covers": [
+    "F4-01",
+    "F4-03",
+    "F4-05",
+    "F4-06",
+    "F4-07",
+    "F4-08",
+    "F4-13"
+  ],
+  "class": {
+    "legend": "shared",
+    "classes": [
+      {
+        "id": "service",
+        "name": "JudgeWorkerService",
+        "methods": [
+          "+ acceptAndQueue(command : SubmitCommand) : UUID",
+          "+ executeCase(submissionId : UUID, caseId : UUID) : CaseResult",
+          "+ completeAllCases(submissionId : UUID) : SubmissionResult",
+          "+ publishCaseProgress(result : CaseResult)",
+          "+ recordIdempotently(result : CaseResult)",
+          "+ sweepTimeouts(now : Instant) : int"
+        ]
+      },
+      {
+        "id": "port1",
+        "name": "SubmissionRepository",
+        "kind": "class",
+        "methods": [
+          "+ save(submission : Submission)"
+        ]
+      },
+      {
+        "id": "port2",
+        "name": "JudgeEnginePort",
+        "kind": "interface",
+        "methods": [
+          "+ execute(payload : JudgePayload) : JudgeResult"
+        ]
+      },
+      {
+        "id": "port3",
+        "name": "JudgeQueuePort",
+        "kind": "interface",
+        "methods": [
+          "+ enqueue(submissionId : UUID)"
+        ]
+      },
+      {
+        "id": "port4",
+        "name": "ProgressEventPort",
+        "kind": "interface",
+        "methods": [
+          "+ publish(result : CaseResult)"
+        ]
+      }
+    ],
+    "externals": [],
+    "relations": [
+      {
+        "from": "service",
+        "to": "port1",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port2",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port3",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port4",
+        "kind": "dependency"
+      }
+    ],
+    "notes": [
+      "Chấm hết testcase, tính điểm theo tỷ lệ đạt; ghi idempotent khi message phát lại; timeout sweep kết thúc bài treo.",
+      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+    ]
+  }
+}

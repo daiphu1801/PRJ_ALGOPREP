@@ -1,0 +1,129 @@
+{
+  "_": "Nguồn: 03-dd/logic/F2_problem-bank.md BR-05; 03-dd/api/F2_problem-bank.md §38, 59. Trang này tiếp sau 2a khi lưu đặc tả thành công. ProblemSpecCachePort, RedisProblemSpecAdapter, ProblemEventPort, ProblemOutboxAdapter là tên minh họa [SoT: Suy luận]; adapter đại diện cả ghi outbox cùng giao dịch và phát sau commit. Bất kỳ một trong tám trường đổi làm tăng specVersion; chỉ khi phiên bản tăng mới phát ProblemSpecChanged để harness vô hiệu bộ nhớ mã bọc hàm.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Đặc tả: làm mới bộ nhớ và báo thay đổi (2b/3)",
+  "covers": [
+    "F2-03",
+    "F3-13"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Người soạn đề",
+        "role": "actor"
+      },
+      {
+        "name": "SaveProblemSpec",
+        "role": "service",
+        "stereo": "application command"
+      },
+      {
+        "name": "ProblemSpecCachePort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "RedisProblemSpecAdapter",
+        "role": "repository",
+        "stereo": "infrastructure"
+      },
+      {
+        "name": "Redis",
+        "role": "datastore"
+      },
+      {
+        "name": "ProblemEventPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "ProblemOutboxAdapter",
+        "role": "repository",
+        "stereo": "outbox adapter"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema problem"
+      },
+      {
+        "name": "RabbitMQ",
+        "role": "external",
+        "stereo": "event broker"
+      },
+      {
+        "name": "Harness",
+        "role": "external",
+        "stereo": "event consumer"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 2 - Làm mới dữ liệu và báo thay đổi đặc tả"
+      },
+      {
+        "from": "SaveProblemSpec",
+        "to": "ProblemSpecCachePort",
+        "text": "Xóa bản đặc tả tạm của bài"
+      },
+      {
+        "from": "ProblemSpecCachePort",
+        "to": "RedisProblemSpecAdapter",
+        "text": "Xóa bản tạm"
+      },
+      {
+        "from": "RedisProblemSpecAdapter",
+        "to": "Redis",
+        "text": "Xóa khóa đặc tả"
+      },
+      {
+        "alt": {
+          "label": "Phiên bản đặc tả đã tăng?",
+          "then": [
+            {
+              "from": "SaveProblemSpec",
+              "to": "ProblemEventPort",
+              "text": "Ghi sự kiện cùng lần lưu đặc tả"
+            },
+            {
+              "from": "ProblemEventPort",
+              "to": "ProblemOutboxAdapter",
+              "text": "Lưu yêu cầu phát phiên bản mới"
+            },
+            {
+              "from": "ProblemOutboxAdapter",
+              "to": "PostgreSQL",
+              "text": "Ghi sự kiện vào hộp thư cùng giao dịch"
+            },
+            {
+              "from": "ProblemOutboxAdapter",
+              "to": "RabbitMQ",
+              "text": "Chuyển sự kiện sau commit",
+              "kind": "async"
+            },
+            {
+              "from": "RabbitMQ",
+              "to": "Harness",
+              "text": "Thông báo đặc tả đã đổi",
+              "kind": "async"
+            },
+            {
+              "from": "Harness",
+              "to": "Harness",
+              "text": "Bỏ bản mã bọc hàm cũ"
+            }
+          ],
+          "else": [
+            {
+              "from": "SaveProblemSpec",
+              "to": "SaveProblemSpec",
+              "text": "Giữ nguyên phiên bản, không phát sự kiện"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "_": "Nguồn hành vi: 01-rd/req/user_stories/a1_student.md:8-34; 03-dd/api/F1_identity.md:24-41; 03-dd/logic/F1_identity.md:58-88; dữ liệu identity.users và identity.refresh_tokens theo 02-bd/database/F1_identity.md. [SoT: Suy luận] Tên AuthService, UserRepository, RefreshTokenRepository, LoginRateLimiter, TokenIssuerPort và chữ ký phương thức là thiết kế đề xuất vì backend nghiệp vụ chưa có. AuthService gom F1-01..04; F1-05 là ràng buộc vai trò. Chỉ vẽ một số phương thức mang trách nhiệm chính; UserAccount/RefreshToken là kiểu dữ liệu ở repository, sẽ được mô tả trong sơ đồ model F1 dùng chung. Bỏ DTO HTTP, getter/setter và chi tiết mã hoá token khỏi hình.",
+  "kind": "class",
+  "title": "A1 — Đăng ký, đăng nhập và quản lý phiên",
+  "covers": ["F1-01", "F1-02", "F1-03", "F1-04", "F1-05"],
+  "class": {
+    "legend": "shared",
+    "classes": [
+      {
+        "id": "service",
+        "name": "AuthService",
+        "methods": [
+          "+ register(email : String, password : String)",
+          "+ login(email : String, password : String, ip : String)",
+          "+ refresh(refreshToken : String)",
+          "+ logout(refreshToken : String)"
+        ]
+      },
+      {
+        "id": "users",
+        "name": "UserRepository",
+        "methods": ["+ findByEmail(email : String) : UserAccount"]
+      },
+      {
+        "id": "tokens",
+        "name": "RefreshTokenRepository",
+        "methods": ["+ revokeFamily(familyId : UUID)"]
+      },
+      {"id": "rate", "name": "LoginRateLimiter", "methods": ["+ check(email : String, ip : String)"]},
+      {"id": "issuer", "name": "TokenIssuerPort", "kind": "interface", "methods": ["+ issueAccessToken(userId : UUID) : String"]}
+    ],
+    "externals": [],
+    "relations": [
+      {"from": "service", "to": "users", "kind": "dependency", "label": "đọc/lưu"},
+      {"from": "service", "to": "tokens", "kind": "dependency", "label": "xoay vòng"},
+      {"from": "service", "to": "rate", "kind": "dependency", "label": "giới hạn"},
+      {"from": "service", "to": "issuer", "kind": "dependency", "label": "cấp token"}
+    ],
+    "notes": [
+      "Đăng ký nhận vai trò STUDENT; refresh token dùng một lần, dùng lại sẽ thu hồi cả family.",
+      "[SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế backend từ DD, chưa có trong code."
+    ]
+  }
+}

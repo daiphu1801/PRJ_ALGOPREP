@@ -1,0 +1,55 @@
+{
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a1_student.md:39; 01-rd/req/user_stories/a1_student.md:41. Nguồn thiết kế: 03-dd/logic/F2_problem-bank.md; 03-dd/api/F2_problem-bank.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "kind": "class",
+  "title": "A1 — Tìm bài và xem bài được giao",
+  "covers": [
+    "F2-11",
+    "F2-12"
+  ],
+  "class": {
+    "legend": "shared",
+    "classes": [
+      {
+        "id": "service",
+        "name": "ProblemDiscoveryService",
+        "methods": [
+          "+ search(filters : ProblemFilter, studentId : UUID) : Page<ProblemSummary>",
+          "+ assignedToStudent(studentId : UUID) : List<AssignedProblem>"
+        ]
+      },
+      {
+        "id": "port1",
+        "name": "ProblemReadRepository",
+        "kind": "class",
+        "methods": [
+          "+ findPublished(filters : ProblemFilter) : Page<Problem>"
+        ]
+      },
+      {
+        "id": "port2",
+        "name": "AssignmentReadPort",
+        "kind": "interface",
+        "methods": [
+          "+ forStudent(studentId : UUID) : List<AssignedProblem>"
+        ]
+      }
+    ],
+    "externals": [],
+    "relations": [
+      {
+        "from": "service",
+        "to": "port1",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port2",
+        "kind": "dependency"
+      }
+    ],
+    "notes": [
+      "Chỉ bài PUBLISHED, chưa xoá mới nằm trong kết quả tìm; bài giao nhóm riêng theo lớp.",
+      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+    ]
+  }
+}

@@ -1,0 +1,131 @@
+{
+  "_": "Nguồn thuộc tính và liên kết: 02-bd/database/F6_interview-bank.md:10-195. [SoT: Suy luận] Ánh xạ bảng dữ liệu sang tên class Java là thiết kế đề xuất; bội số theo FK/unique của BD. Bỏ thuộc tính thứ cấp và getter/setter.",
+  "kind": "class",
+  "title": "F6 — Mô hình câu hỏi và lần luyện",
+  "covers": [],
+  "class": {
+    "legend": "shared",
+    "classes": [
+      {
+        "id": "topic",
+        "name": "QuestionTopic",
+        "attributes": [
+          "+ id : UUID",
+          "+ code : String"
+        ],
+        "methods": []
+      },
+      {
+        "id": "question",
+        "name": "InterviewQuestion",
+        "attributes": [
+          "+ id : UUID",
+          "+ topicId : UUID",
+          "+ levelId : UUID",
+          "+ title : String",
+          "+ status : QuestionStatus"
+        ],
+        "methods": []
+      },
+      {
+        "id": "rubric",
+        "name": "AnswerRubric",
+        "attributes": [
+          "+ questionId : UUID",
+          "+ criterionCode : String",
+          "+ weightPercent : Decimal"
+        ],
+        "methods": []
+      },
+      {
+        "id": "answer",
+        "name": "UserAnswer",
+        "attributes": [
+          "+ questionId : UUID",
+          "+ userId : UUID",
+          "+ answerText : String"
+        ],
+        "methods": []
+      },
+      {
+        "id": "history",
+        "name": "PracticeHistory",
+        "attributes": [
+          "+ userId : UUID",
+          "+ topicId : UUID",
+          "+ questionsAttempted : int"
+        ],
+        "methods": []
+      },
+      {
+        "id": "rating",
+        "name": "RecallRating",
+        "attributes": [
+          "+ userId : UUID",
+          "+ questionId : UUID",
+          "+ rating : RecallLevel",
+          "+ nextReviewAt : Instant"
+        ],
+        "methods": []
+      },
+      {
+        "id": "bookmark",
+        "name": "QuestionBookmark",
+        "attributes": [
+          "+ userId : UUID",
+          "+ questionId : UUID"
+        ],
+        "methods": []
+      }
+    ],
+    "externals": [],
+    "relations": [
+      {
+        "from": "topic",
+        "to": "question",
+        "kind": "association",
+        "from_mult": "1",
+        "to_mult": "0..*"
+      },
+      {
+        "from": "question",
+        "to": "rubric",
+        "kind": "association",
+        "from_mult": "1",
+        "to_mult": "0..*"
+      },
+      {
+        "from": "question",
+        "to": "answer",
+        "kind": "association",
+        "from_mult": "1",
+        "to_mult": "0..*"
+      },
+      {
+        "from": "question",
+        "to": "rating",
+        "kind": "association",
+        "from_mult": "1",
+        "to_mult": "0..*"
+      },
+      {
+        "from": "question",
+        "to": "bookmark",
+        "kind": "association",
+        "from_mult": "1",
+        "to_mult": "0..*"
+      },
+      {
+        "from": "topic",
+        "to": "history",
+        "kind": "association",
+        "from_mult": "1",
+        "to_mult": "0..*"
+      }
+    ],
+    "notes": [
+      "Rubric câu hỏi lý thuyết khác rubric phỏng vấn F5; câu trả lời là bản ghi bất biến, tự chấm gần nhất dùng để ưu tiên ôn lại.",
+      "[SoT: Suy luận] Tên class Java đề xuất từ schema BD."
+    ]
+  }
+}

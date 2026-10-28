@@ -1,9 +1,9 @@
 {
-  "_": "Luong doi mot o trong ma tran phan quyen Role x Function x Action cua actor A3. Nguon: US-A3-01 (01-rd/req/user_stories/a3_admin.md), 01-rd/req/F1_identity.md (F1-10, F1-11, F1-14), 03-dd/api/F1_identity.md muc 0.5 (endpoint #31, BR-13), 02-bd/architecture/F1_identity.md muc 6 (quyen KHONG nhung vao claim JWT tinh, phai tra tai thoi diem request). Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen. | 2026-10-20 (owner): nhan mui ten bo han duong dan, ma HTTP, ma quyen, thuat ngu ky thuat (cache, job, worker, model...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
-  "_diem_mau_chot": "Doi o co hieu luc NGAY, khong can khoi dong lai dich vu -- vi vay phai vo hieu cache quyen chu khong doi token het han.",
+  "_": "Nguồn: 03-dd/logic/F1_identity.md BR-13, BR-15; 03-dd/api/F1_identity.md RBAC. RbacStorePort, IdentityDbAdapter, PermissionCachePort, RedisPermissionAdapter là tên minh họa [SoT: Suy luận]. Mỗi ô gửi một yêu cầu; khóa role, cập nhật quyền, tăng permission_version và audit trong cùng giao dịch. Không cho gỡ ô quyền sửa ma trận cuối của nhóm ADMIN. Sau commit phát Redis pub/sub; mọi request sau đó đọc version từ PostgreSQL primary trước khi tin cache nên quyền có hiệu lực dù thông báo mất.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Đổi ma trận phân quyền (Quản trị viên) (2/2)",
+  "title": "Sơ đồ tuần tự chi tiết - Đổi một ô quyền và áp dụng ngay (2/2)",
   "covers": [
+    "F1-10",
     "F1-14"
   ],
   "mode": "color",
@@ -20,9 +20,19 @@
         "stereo": "presentation"
       },
       {
-        "name": "RbacService",
+        "name": "UpdatePermissionMatrixCell",
         "role": "service",
-        "stereo": "application"
+        "stereo": "application command"
+      },
+      {
+        "name": "RbacStorePort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "IdentityDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
       },
       {
         "name": "PostgreSQL",
@@ -30,132 +40,149 @@
         "stereo": "schema identity"
       },
       {
+        "name": "AuditLogPort",
+        "role": "repository",
+        "stereo": "identity output port"
+      },
+      {
+        "name": "PermissionCachePort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "RedisPermissionAdapter",
+        "role": "repository",
+        "stereo": "infrastructure"
+      },
+      {
         "name": "Redis",
-        "role": "datastore",
-        "stereo": "cache quyền"
+        "role": "datastore"
       }
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 2 - Mỗi lần tích một ô là một yêu cầu riêng (BR-13)"
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "Quản trị viên",
-        "text": "Tích ô quyền Cập nhật của cặp (vai trò, chức năng)"
+        "phase": "Giai đoạn 2 - Ghi một ô quyền"
       },
       {
         "from": "Quản trị viên",
         "to": "RbacController",
-        "text": "Gửi yêu cầu đổi một ô quyền"
+        "text": "Bật hoặc tắt một ô quyền"
       },
       {
         "from": "RbacController",
-        "to": "RbacController",
-        "text": "Kiểm tra quyền sửa ma trận phân quyền"
+        "to": "UpdatePermissionMatrixCell",
+        "text": "Đổi quyền của vai trò"
       },
       {
-        "from": "RbacController",
-        "to": "RbacService",
-        "text": "Yêu cầu đổi một ô quyền"
+        "from": "UpdatePermissionMatrixCell",
+        "to": "RbacStorePort",
+        "text": "Khóa vai trò và đọc quyền hiện hành"
       },
       {
-        "from": "RbacService",
+        "from": "RbacStorePort",
+        "to": "IdentityDbAdapter",
+        "text": "Đọc vai trò, ô quyền và phiên bản"
+      },
+      {
+        "from": "IdentityDbAdapter",
         "to": "PostgreSQL",
-        "text": "Đọc vai trò đích, kể cả dấu vai trò hệ thống"
+        "text": "Khóa dòng vai trò, đọc ô quyền"
       },
       {
         "from": "PostgreSQL",
-        "to": "RbacService",
-        "text": "Vai trò đích",
+        "to": "IdentityDbAdapter",
+        "text": "Giá trị hiện tại và phiên bản",
         "kind": "return"
       },
       {
-        "from": "RbacService",
-        "to": "RbacService",
-        "text": "Chặn nếu gỡ quyền sửa ma trận cuối cùng của mọi quản trị viên"
+        "from": "IdentityDbAdapter",
+        "to": "RbacStorePort",
+        "text": "Giá trị hiện tại và phiên bản",
+        "kind": "return"
+      },
+      {
+        "from": "RbacStorePort",
+        "to": "UpdatePermissionMatrixCell",
+        "text": "Giá trị hiện tại và phiên bản",
+        "kind": "return"
       },
       {
         "alt": {
-          "label": "Đụng vai trò hệ thống?",
+          "label": "Mất quyền quản trị cuối?",
           "then": [
             {
-              "from": "RbacService",
-              "to": "RbacService",
-              "text": "Trường hợp có"
-            },
-            {
-              "from": "RbacService",
+              "from": "UpdatePermissionMatrixCell",
               "to": "RbacController",
-              "text": "Từ chối, không xoá được vai trò hệ thống",
+              "text": "Từ chối vì sẽ mất quyền quản trị",
               "kind": "return"
             },
             {
               "from": "RbacController",
               "to": "Quản trị viên",
-              "text": "Báo dữ liệu không hợp lệ kèm lý do",
+              "text": "Hiển thị điều kiện bất biến",
               "kind": "return"
             }
           ],
           "else": [
             {
-              "from": "RbacService",
-              "to": "RbacService",
-              "text": "Thao tác hợp lệ, tiến hành đổi"
+              "from": "UpdatePermissionMatrixCell",
+              "to": "RbacStorePort",
+              "text": "Lưu ô quyền và tăng phiên bản"
             },
             {
-              "from": "RbacService",
+              "from": "RbacStorePort",
+              "to": "IdentityDbAdapter",
+              "text": "Ghi quyền và phiên bản cùng giao dịch"
+            },
+            {
+              "from": "IdentityDbAdapter",
               "to": "PostgreSQL",
-              "text": "Bật hoặc tắt quyền của ô"
+              "text": "Cập nhật quyền và phiên bản quyền"
             },
             {
-              "from": "PostgreSQL",
-              "to": "RbacService",
-              "text": "Đã ghi",
+              "from": "UpdatePermissionMatrixCell",
+              "to": "AuditLogPort",
+              "text": "Ghi nhật ký cùng giao dịch"
+            },
+            {
+              "from": "AuditLogPort",
+              "to": "UpdatePermissionMatrixCell",
+              "text": "Nhật ký đã ghi",
+              "kind": "return"
+            },
+            {
+              "from": "UpdatePermissionMatrixCell",
+              "to": "PermissionCachePort",
+              "text": "Phát thông báo phiên bản mới sau commit",
+              "kind": "async"
+            },
+            {
+              "from": "PermissionCachePort",
+              "to": "RedisPermissionAdapter",
+              "text": "Phát tín hiệu làm mới quyền",
+              "kind": "async"
+            },
+            {
+              "from": "RedisPermissionAdapter",
+              "to": "Redis",
+              "text": "Phát thông báo làm mới quyền",
+              "kind": "async"
+            },
+            {
+              "from": "UpdatePermissionMatrixCell",
+              "to": "RbacController",
+              "text": "Trả ô quyền mới",
+              "kind": "return"
+            },
+            {
+              "from": "RbacController",
+              "to": "Quản trị viên",
+              "text": "Hiển thị quyền đã đổi",
               "kind": "return"
             }
           ]
         }
-      },
-      {
-        "phase": "Giai đoạn 3 - Ghi nhật ký bắt buộc và làm mới quyền đã lưu tạm để có hiệu lực ngay (F1-14)"
-      },
-      {
-        "from": "RbacService",
-        "to": "PostgreSQL",
-        "text": "Ghi nhật ký cùng lúc: ai đổi, ô nào, lúc nào"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "RbacService",
-        "text": "Đã ghi",
-        "kind": "return"
-      },
-      {
-        "from": "RbacService",
-        "to": "Redis",
-        "text": "Làm mới quyền đã lưu tạm để có hiệu lực ngay",
-        "kind": "async"
-      },
-      {
-        "from": "RbacService",
-        "to": "RbacController",
-        "text": "Trạng thái mới của ô",
-        "kind": "return"
-      },
-      {
-        "from": "RbacController",
-        "to": "Quản trị viên",
-        "text": "Báo thành công",
-        "kind": "return"
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "Quản trị viên",
-        "text": "Cập nhật đúng một ô; quyền có hiệu lực ngay"
       }
     ]
-  },
-  "_cat": "Tach tu sequence_admin_doi_ma_tran_phan_quyen.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 2/2). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md.",
-  "_cap_nhat": "2026-10-18: ma ham dung PERMISSION_MATRIX theo ADM0202 BD; them quy tac chan quyen cuoi (DEC-2026-1008-admin-system-screens-review). Canh bao khi tu go quyen cua vai tro minh giu la xac nhan o giao dien, khong ve."
+  }
 }

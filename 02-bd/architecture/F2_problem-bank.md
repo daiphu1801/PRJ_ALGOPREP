@@ -65,12 +65,11 @@ Theo `DEC-2026-0820-architecture-baseline`: không import schema khác. `problem
 | Sự kiện phát ra | Ai lắng nghe | Payload tối thiểu | Dùng để |
 | :--- | :--- | :--- | :--- |
 | `ProblemSpecChanged` | `harness` | `problem_id`, `spec_version` (không phải `testcase_set_version` — hai khái niệm khác nhau, xem mục 2 database), diff chữ ký hàm. Sửa 2026-10-22 (đồng bộ DB, phase 3, DEC-2026-1022-problem-bank-schema-sync): `spec_version` tăng khi **bất kỳ cột nào** của `problem_specs` đổi (chiến lược so khớp, định dạng stdin/stdout, tên hàm, kiểu trả về, tham số, ghi đè tên; `database/F2_problem-bank.md` mục 1.4), không chỉ chữ ký hàm | Vô hiệu hoá/tái sinh mã bọc hàm đã cache cho bài đó nếu `harness` có cache theo `problem_id` |
-| `ProblemPublished` / `ProblemUnpublished` | `identity` (read model `identity_recent_activity`), `judge-orchestration` (nếu có cache `language_config` theo bài) | `problem_id`, `actor_user_id`, `occurred_at` | F1-30, và để `judge-orchestration` biết bài nào đang nhận submission |
-| `TestcaseSetVersionBumped` | `judge-orchestration` | `problem_id`, `testcase_set_version`, `bumped_at` | Ghi lại submission mới được chấm theo version nào (F2-09 mục truy vết) — `judge-orchestration` tự lưu `testcase_set_version` trên bảng `submission` của nó khi nhận sự kiện, không đọc trực tiếp bảng `testcase` của `problem-bank` |
-| `ProblemAssignedToClass` / `ProblemUnassignedFromClass` | `identity` (nếu `class_management` cần hiển thị) | `problem_id`, `class_id`, `actor_user_id` | F2-12, hiển thị khối bài giao trong `problem_list` |
+| `ProblemPublished` / `ProblemUnpublished` | Chưa có consumer trong bản này | `problem_id`, `actor_user_id`, `occurred_at` | Phát cho tích hợp về sau; F1 chưa có `activity_type` tương ứng, F4 kiểm xuất bản đồng bộ khi nhận bài |
+| `TestcaseSetVersionBumped` | Chưa có consumer trong bản này | `problem_id`, `testcase_set_version`, `bumped_at` | Phát sau commit khi bộ chấm đổi để tích hợp/cache về sau. F4 đọc đồng bộ `currentTestcaseSetVersion` lúc nhận bài nộp rồi ghim vào dòng `PENDING`; worker đọc bundle snapshot bất biến của phiên bản đó, không dùng sự kiện để gán phiên bản (`DEC-2026-1025-dd-submission-testcase-snapshot`) |
+| `ProblemAssignedToClass` / `ProblemUnassignedFromClass` | `identity` chỉ nghe `ProblemAssignedToClass` | `problem_id`, `class_id`, `actor_user_id` | Tạo hoạt động giao bài cho lớp; gỡ bài được đọc đồng bộ, chưa có consumer |
 
-`[SoT: Suy luận]` — tên sự kiện, payload chi tiết, cơ chế versioning (outbox hay không) chốt ở
-`03-dd/api/F2_problem-bank.md`; BD chỉ chốt **có kênh event, không import trực tiếp**.
+`[SoT: Suy luận]` — tên sự kiện và payload chi tiết chốt ở `03-dd/api/F2_problem-bank.md` §59. DD dùng `problem.outbox_events` ghi cùng giao dịch và relay JOB-PB-01 sau commit (`02-bd/database/F2_problem-bank.md` §1.16); F2 không import schema khác.
 
 ### 3.2. Outbound port `problem-bank` tự khai báo (gọi ra ngoài)
 

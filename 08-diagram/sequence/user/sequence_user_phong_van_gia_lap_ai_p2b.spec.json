@@ -1,0 +1,209 @@
+{
+  "_": "Nguồn: 03-dd/api/F5_ai-review.md mục 2.2, 10; 03-dd/logic/F5_ai-review.md BR-AI-01/07. InterviewTurnCmd, InterviewRepo, AiDbAdapter là thiết kế dự kiến [SoT: Suy luận]. Sự kiện đầu là turn.accepted sau commit USER; các đoạn token là nội dung đã giải mã; turn.completed chỉ phát sau commit AI. LLM lỗi sau mở luồng thì gửi error, giữ USER để thử lại. AI báo stageComplete hoặc backend ép chuyển sau trần 6 lượt/giai đoạn. Ba giai đoạn Giải trình, Phản biện, Mở rộng quy mô. Không chặn lượt đang mở vì ngân sách khoá.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Phỏng vấn AI: phát luồng và chuyển giai đoạn (2b/3)",
+  "covers": [
+    "F5-10",
+    "F5-11",
+    "F5-12",
+    "F5-14",
+    "F5-17",
+    "F5-21"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Sinh viên",
+        "role": "actor"
+      },
+      {
+        "name": "InterviewController",
+        "role": "controller",
+        "stereo": "presentation SSE"
+      },
+      {
+        "name": "InterviewTurnCmd",
+        "role": "service",
+        "stereo": "application command"
+      },
+      {
+        "name": "PromptComposer",
+        "role": "service",
+        "stereo": "domain"
+      },
+      {
+        "name": "LlmProviderPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "SpringAiLlmAdapter",
+        "role": "repository",
+        "stereo": "infrastructure"
+      },
+      {
+        "name": "Nhà cung cấp AI",
+        "role": "external"
+      },
+      {
+        "name": "InterviewRepo",
+        "role": "repository",
+        "stereo": "output port F5"
+      },
+      {
+        "name": "AiDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema ai"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 6 - Phát câu trả lời dần qua cùng yêu cầu"
+      },
+      {
+        "from": "InterviewTurnCmd",
+        "to": "InterviewController",
+        "text": "Báo đã nhận câu trả lời",
+        "kind": "async"
+      },
+      {
+        "from": "InterviewController",
+        "to": "Sinh viên",
+        "text": "Bắt đầu luồng phản hồi",
+        "kind": "async"
+      },
+      {
+        "from": "InterviewTurnCmd",
+        "to": "PromptComposer",
+        "text": "Dựng chỉ thị theo giai đoạn hiện tại"
+      },
+      {
+        "from": "PromptComposer",
+        "to": "PromptComposer",
+        "text": "Câu người học chỉ là dữ liệu"
+      },
+      {
+        "from": "PromptComposer",
+        "to": "InterviewTurnCmd",
+        "text": "Yêu cầu hội thoại an toàn",
+        "kind": "return"
+      },
+      {
+        "from": "InterviewTurnCmd",
+        "to": "LlmProviderPort",
+        "text": "Xin phản hồi cho lượt này"
+      },
+      {
+        "from": "LlmProviderPort",
+        "to": "SpringAiLlmAdapter",
+        "text": "Gọi mô hình AI"
+      },
+      {
+        "from": "SpringAiLlmAdapter",
+        "to": "Nhà cung cấp AI",
+        "text": "Tạo câu hỏi tiếp theo"
+      },
+      {
+        "from": "Nhà cung cấp AI",
+        "to": "SpringAiLlmAdapter",
+        "text": "Trả từng đoạn chữ",
+        "kind": "async"
+      },
+      {
+        "from": "SpringAiLlmAdapter",
+        "to": "LlmProviderPort",
+        "text": "Chuyển đoạn chữ đã giải mã",
+        "kind": "async"
+      },
+      {
+        "from": "LlmProviderPort",
+        "to": "InterviewTurnCmd",
+        "text": "Chuyển đoạn chữ đã giải mã",
+        "kind": "async"
+      },
+      {
+        "from": "InterviewTurnCmd",
+        "to": "InterviewController",
+        "text": "Chuyển tiếp nội dung hiển thị",
+        "kind": "async"
+      },
+      {
+        "from": "InterviewController",
+        "to": "Sinh viên",
+        "text": "Hiển thị từng đoạn chữ",
+        "kind": "async"
+      },
+      {
+        "phase": "Giai đoạn 7 - Xác định giai đoạn kế và ghi kết quả"
+      },
+      {
+        "from": "LlmProviderPort",
+        "to": "InterviewTurnCmd",
+        "text": "Bản hoàn chỉnh và lượng token",
+        "kind": "return"
+      },
+      {
+        "from": "InterviewTurnCmd",
+        "to": "InterviewTurnCmd",
+        "text": "Chuyển giai đoạn khi đủ tín hiệu"
+      },
+      {
+        "from": "InterviewTurnCmd",
+        "to": "InterviewTurnCmd",
+        "text": "Ép chuyển khi chạm trần mỗi giai đoạn"
+      },
+      {
+        "from": "InterviewTurnCmd",
+        "to": "InterviewRepo",
+        "text": "Lưu phản hồi AI và token"
+      },
+      {
+        "from": "InterviewRepo",
+        "to": "AiDbAdapter",
+        "text": "Ghi lượt AI và trạng thái mới"
+      },
+      {
+        "from": "AiDbAdapter",
+        "to": "PostgreSQL",
+        "text": "Lưu lượt và xét khoá ngân sách"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "AiDbAdapter",
+        "text": "Lượt đã hoàn tất",
+        "kind": "return"
+      },
+      {
+        "from": "AiDbAdapter",
+        "to": "InterviewRepo",
+        "text": "Trạng thái mới",
+        "kind": "return"
+      },
+      {
+        "from": "InterviewRepo",
+        "to": "InterviewTurnCmd",
+        "text": "Đã ghi lượt AI",
+        "kind": "return"
+      },
+      {
+        "from": "InterviewTurnCmd",
+        "to": "InterviewController",
+        "text": "Báo lượt hoàn tất",
+        "kind": "async"
+      },
+      {
+        "from": "InterviewController",
+        "to": "Sinh viên",
+        "text": "Hiển thị giai đoạn và lượt còn lại",
+        "kind": "async"
+      }
+    ]
+  }
+}

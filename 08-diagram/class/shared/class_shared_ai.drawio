@@ -1,0 +1,70 @@
+<mxfile host="app.diagrams.net" agent="drawio-uml-architect" type="device">
+  <diagram id="f5-mo-hinh-bao-cao-va-phien-phong-van-ai" name="f5-mo-hinh-bao-cao-va-phien-phong-van-ai">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t_review" value='&lt;div style="text-align:center"&gt;&lt;b&gt;SolutionReview&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;submissionId&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;sourceHash&amp;nbsp;:&amp;nbsp;String&lt;br&gt;+&amp;nbsp;resultJson&amp;nbsp;:&amp;nbsp;ReviewResult' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="54" y="60" width="188.7" height="82" as="geometry" />
+        </mxCell>
+        <mxCell id="t_session" value='&lt;div style="text-align:center"&gt;&lt;b&gt;InterviewSession&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;id&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;userId&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;entryType&amp;nbsp;:&amp;nbsp;InterviewEntryType&lt;br&gt;+&amp;nbsp;stage&amp;nbsp;:&amp;nbsp;InterviewStage&lt;br&gt;+&amp;nbsp;turnCount&amp;nbsp;:&amp;nbsp;int' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="292.7" y="60" width="219.2" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="t_turn" value='&lt;div style="text-align:center"&gt;&lt;b&gt;InterviewTurn&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;sessionId&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;role&amp;nbsp;:&amp;nbsp;TurnRole&lt;br&gt;+&amp;nbsp;content&amp;nbsp;:&amp;nbsp;String' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="338.44999999999993" y="240" width="133.8" height="82" as="geometry" />
+        </mxCell>
+        <mxCell id="t_score" value='&lt;div style="text-align:center"&gt;&lt;b&gt;RubricScore&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;ownerId&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;criterionCode&amp;nbsp;:&amp;nbsp;String&lt;br&gt;+&amp;nbsp;score&amp;nbsp;:&amp;nbsp;Decimal' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="522.25" y="240" width="170.39999999999998" height="82" as="geometry" />
+        </mxCell>
+        <mxCell id="t_cache" value='&lt;div style="text-align:center"&gt;&lt;b&gt;AiCacheEntry&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;sourceHash&amp;nbsp;:&amp;nbsp;String&lt;br&gt;+&amp;nbsp;promptTemplateId&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;solutionReviewId&amp;nbsp;:&amp;nbsp;UUID' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="111.94999999999993" y="240" width="176.5" height="82" as="geometry" />
+        </mxCell>
+        <mxCell id="t_budget" value='&lt;div style="text-align:center"&gt;&lt;b&gt;AiTokenBudgetConfig&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;id&amp;nbsp;:&amp;nbsp;short&amp;nbsp;=&amp;nbsp;1&lt;br&gt;+&amp;nbsp;period&amp;nbsp;:&amp;nbsp;BudgetPeriod&lt;br&gt;+&amp;nbsp;limitTokens&amp;nbsp;:&amp;nbsp;long&lt;br&gt;+&amp;nbsp;lockedAt&amp;nbsp;:&amp;nbsp;Instant&amp;nbsp;[0..1]' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="561.9" y="60" width="188.7" height="96" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.273;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=diamond;startSize=14;startFill=1;endArrow=none;" edge="1" parent="1" source="t_session" target="t_turn">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="352.5" y="205" />
+            <mxPoint x="405.3499999999999" y="205" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v2" value="1" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="363.5416" y="184" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="v3" value="0..*" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="409.3499999999999" y="225" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.727;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=diamond;startSize=14;startFill=1;endArrow=none;" edge="1" parent="1" source="t_session" target="t_score">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="452.09999999999997" y="222.5" />
+            <mxPoint x="607.45" y="222.5" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v5" value="1" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="463.0584" y="184" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="v6" value="0..*" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="611.45" y="225" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_review" target="t_cache">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="148.35" y="187.5" />
+            <mxPoint x="200.19999999999993" y="187.5" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="title" value="F5 — Mô hình báo cáo và phiên phỏng vấn AI" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="0" y="10" width="780.5999999999999" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="v8" value="Ghi chú: SolutionReview chỉ cho bài Accepted; phiên phỏng vấn có ba giai đoạn; cache theo hash, kiểm ngân sách trước lời gọi AI.&lt;br&gt;Ghi chú: [SoT: Suy luận] Tên class Java đề xuất từ schema BD." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="30" y="342" width="1100" height="44" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -5,6 +5,8 @@
 
 ## 1. Nguyên tắc trung tâm — mã nguồn người học luôn là DATA, không bao giờ là INSTRUCTION
 
+**Cập nhật DD 2026-10-25 (đóng Q9):** mô tả bên dưới giả định ô soạn chỉ chứa thân hàm. Hợp đồng `GetStarterCode` và `PrepareSubmission` hiện cho người học sửa **toàn bộ mã nguồn** trong một vùng liền mạch, gồm `class Solution`/chữ ký hàm; Python không re-indent. Các khẳng định bên dưới rằng người học không thể đặt mã ngoài thân hàm hoặc hậu quả tối đa chỉ là lỗi biên dịch **không còn là bảo đảm bảo mật**. Mã người học có thể thực thi logic bất kỳ trong phạm vi sandbox; ranh giới bảo vệ là go-judge với giới hạn tài nguyên, tiến trình và mạng. F3 chỉ bảo đảm không nội suy mã người học thành `argv`, tên tệp, biến môi trường, script của image hoặc cấu hình sandbox; `LineMap` vẫn tính đúng một vùng nguồn cố định. Xem `03-dd/logic/F3_harness.md` §3.6, §4.1–4.4.
+
 Rủi ro chính của `harness` không phải prompt injection (đó là F5/F6) mà là **injection vào cấu trúc mã sinh
 ra** — mã người học ảnh hưởng tới phần khung (template) ngoài đúng vùng thân hàm/`main()` của chính họ.
 Nguyên tắc khoá:

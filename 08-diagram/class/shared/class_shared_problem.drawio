@@ -1,0 +1,104 @@
+<mxfile host="app.diagrams.net" agent="drawio-uml-architect" type="device">
+  <diagram id="f2-mo-hinh-bai-toan-va-bo-testcase" name="f2-mo-hinh-bai-toan-va-bo-testcase">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t_problem" value='&lt;div style="text-align:center"&gt;&lt;b&gt;Problem&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;id&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;code&amp;nbsp;:&amp;nbsp;String&lt;br&gt;+&amp;nbsp;status&amp;nbsp;:&amp;nbsp;PublicationStatus&lt;br&gt;+&amp;nbsp;currentTestcaseSetVersion&amp;nbsp;:&amp;nbsp;int&lt;br&gt;+&amp;nbsp;functionWrapperSupported&amp;nbsp;:&amp;nbsp;boolean' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="424.955" y="60" width="243.6" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="t_spec" value='&lt;div style="text-align:center"&gt;&lt;b&gt;ProblemSpec&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;problemId&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;specVersion&amp;nbsp;:&amp;nbsp;int' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="54" y="266" width="139.89999999999998" height="68" as="geometry" />
+        </mxCell>
+        <mxCell id="t_case" value='&lt;div style="text-align:center"&gt;&lt;b&gt;Testcase&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;id&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;problemId&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;visibility&amp;nbsp;:&amp;nbsp;Visibility&lt;br&gt;+&amp;nbsp;approved&amp;nbsp;:&amp;nbsp;boolean' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="243.89999999999998" y="266" width="176.5" height="96" as="geometry" />
+        </mxCell>
+        <mxCell id="t_snapshot" value='&lt;div style="text-align:center"&gt;&lt;b&gt;TestcaseSetSnapshot&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;problemId&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;version&amp;nbsp;:&amp;nbsp;int&lt;br&gt;+&amp;nbsp;objectKey&amp;nbsp;:&amp;nbsp;String' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="470.4" y="266" width="169.48499999999999" height="82" as="geometry" />
+        </mxCell>
+        <mxCell id="t_assignment" value='&lt;div style="text-align:center"&gt;&lt;b&gt;ClassAssignment&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;classId&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;problemId&amp;nbsp;:&amp;nbsp;UUID' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="689.885" y="266" width="141.425" height="68" as="geometry" />
+        </mxCell>
+        <mxCell id="t_bookmark" value='&lt;div style="text-align:center"&gt;&lt;b&gt;ProblemBookmark&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;userId&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;problemId&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;privateNote&amp;nbsp;:&amp;nbsp;String' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="881.31" y="266" width="158.2" height="82" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.133;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=none;endArrow=none;" edge="1" parent="1" source="t_problem" target="t_spec">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="457.315" y="186" />
+            <mxPoint x="123.94999999999999" y="186" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v2" value="1" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="461.3538" y="171" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="v3" value="0..1" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="127.94999999999999" y="251" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.316;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=none;endArrow=none;" edge="1" parent="1" source="t_problem" target="t_case">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="502.03499999999997" y="202" />
+            <mxPoint x="332.15" y="202" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v5" value="1" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="505.9326" y="171" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="v6" value="0..*" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="336.15" y="251" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=none;endArrow=none;" edge="1" parent="1" source="t_problem" target="t_snapshot">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="546.755" y="218" />
+            <mxPoint x="555.1424999999999" y="218" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v8" value="1" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="550.755" y="171" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="v9" value="0..*" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="559.1424999999999" y="251" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.684;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=none;endArrow=none;" edge="1" parent="1" source="t_problem" target="t_assignment">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="591.475" y="234" />
+            <mxPoint x="760.5975" y="234" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v11" value="1" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="595.5774" y="171" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="v12" value="0..*" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="764.5975" y="251" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="e13" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.867;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=none;endArrow=none;" edge="1" parent="1" source="t_problem" target="t_bookmark">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="636.1949999999999" y="250" />
+            <mxPoint x="960.41" y="250" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v14" value="1" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="640.1562" y="171" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="v15" value="0..*" style="text;html=1;fontSize=10;fontColor=#1A1A1A;align=left;verticalAlign=middle;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="964.41" y="251" width="24" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="title" value="F2 — Mô hình bài toán và bộ testcase" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="0" y="10" width="1069.51" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="v16" value="Ghi chú: Testcase đã duyệt được ghim thành snapshot theo version khi nộp bài; ghi chú bookmark chỉ đọc theo chủ tài khoản.&lt;br&gt;Ghi chú: [SoT: Suy luận] Tên class Java đề xuất từ schema BD." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="30" y="382" width="1100" height="44" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

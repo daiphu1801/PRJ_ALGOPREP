@@ -452,7 +452,7 @@ Vết yêu cầu: EVT-1 ứng REQ-01 đến REQ-04, REQ-06, REQ-07; EVT-2 ứng 
 ## Sheet 9. Đặc tả kiểm tra
 
 > Bộ thẻ và quy ước mã thông báo: `02-bd/_rules/bd-template-9sheet.md` mục 2, 4. Sheet này ghi **điều kiện
-> kiểm và thông báo**; tiêu chí nghiệm thu `AC-nn` thuộc `04-tdd/USR0702_my_class_detail.md`, không lặp lại ở đây.
+> kiểm và thông báo**; tiêu chí nghiệm thu `AC-nn` thuộc `04-tdd/screens/users/USR0702_my_class_detail.md`, không lặp lại ở đây.
 
 | NO | Loại | Tóm tắt kiểm | Chi tiết | Mức | Mã thông báo | Ghi chú | EVT gọi | Thứ tự |
 | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: |

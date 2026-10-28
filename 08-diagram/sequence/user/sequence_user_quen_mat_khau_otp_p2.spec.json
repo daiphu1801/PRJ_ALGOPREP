@@ -1,8 +1,7 @@
 {
-  "_": "Luong quen mat khau bang OTP 6 so cua actor A1. Nguon: 01-rd/req/F1_identity.md (F1-17, dong 209-217), 03-dd/api/F1_identity.md muc 0.1 (endpoint #7, #8), 03-dd/logic/F1_identity.md BR-04, 02-bd/architecture/F1_identity.md muc 5 (OTP 10 phut, 5 lan sai, cooldown 60 giay), 02-bd/security/F1_identity.md:45-46 va :50-52. | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
-  "_bao_mat": "Hai diem bao mat la ly do luong nay dang mot so do rieng: (1) endpoint forgot LUON tra 200 du email co ton tai hay khong -- chong do email theo OWASP user enumeration; (2) buoc reset khong re nhanh som khi email khong ton tai, di het toi buoc tra loi chung o cuoi de khong lo thong tin qua thoi gian phan hoi.",
+  "_": "Nguồn: 01-rd/req/F1_identity.md F1-17; 03-dd/api/F1_identity.md #7/#8/#60; 03-dd/logic/F1_identity.md BR-04; 02-bd/database/F1_identity.md users, refresh_tokens, OTP Redis; 02-bd/security/F1_identity.md mục 3. Tên lớp/port là thiết kế dự kiến [SoT: Suy luận], backend hiện là scaffold. VerifyResetOtpCmd = VerifyPasswordResetOtpCommandHandler; UserRepo = UserRepository; ResetOtpPort = cổng Redis. Đây là hợp đồng #60 mới: xác minh đúng chỉ mở bước nhập mật khẩu; mã và TTL gốc còn nguyên, không trả số lượt còn lại. Sai, hết hạn, hết lượt và email không tồn tại có cùng lỗi. Việc kiểm và tăng lượt sai phải nguyên tử ở Redis. Không lặp nội dung email ở phản hồi.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Quên mật khẩu bằng OTP (Sinh viên) (2/3)",
+  "title": "Sơ đồ tuần tự chi tiết - Xác minh mã trước khi đổi mật khẩu (2/3)",
   "covers": [
     "F1-17"
   ],
@@ -20,86 +19,154 @@
         "stereo": "presentation"
       },
       {
-        "name": "PasswordResetService",
+        "name": "VerifyResetOtpCmd",
         "role": "service",
-        "stereo": "application"
+        "stereo": "application command"
+      },
+      {
+        "name": "UserRepo",
+        "role": "repository",
+        "stereo": "domain output port"
+      },
+      {
+        "name": "IdentityDbAdapter",
+        "role": "repository",
+        "stereo": "infrastructure"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema identity"
+      },
+      {
+        "name": "ResetOtpPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "RedisOtpAdapter",
+        "role": "repository",
+        "stereo": "infrastructure"
       },
       {
         "name": "Redis",
         "role": "datastore",
-        "stereo": "OTP, cooldown"
+        "stereo": "OTP quên mật khẩu"
       }
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 2 - Xác nhận mã, đếm số lần sai (F1-17, BR-04)"
-      },
-      {
-        "from": "Sinh viên",
-        "to": "Sinh viên",
-        "text": "Nhập mã 6 số và mật khẩu mới"
+        "phase": "Giai đoạn 2 - Chỉ xác minh mã, chưa đổi mật khẩu"
       },
       {
         "from": "Sinh viên",
         "to": "AuthController",
-        "text": "Gửi mã xác nhận và mật khẩu mới"
+        "text": "Nhập mã xác nhận sáu số"
       },
       {
         "from": "AuthController",
-        "to": "AuthController",
-        "text": "Kiểm độ mạnh mật khẩu mới"
+        "to": "VerifyResetOtpCmd",
+        "text": "Xác minh mã cho email"
       },
       {
-        "from": "AuthController",
-        "to": "PasswordResetService",
-        "text": "Xử lý đặt lại mật khẩu"
+        "from": "VerifyResetOtpCmd",
+        "to": "UserRepo",
+        "text": "Tìm mã người dùng theo email"
       },
       {
-        "from": "PasswordResetService",
+        "from": "UserRepo",
+        "to": "IdentityDbAdapter",
+        "text": "Đọc tài khoản"
+      },
+      {
+        "from": "IdentityDbAdapter",
+        "to": "PostgreSQL",
+        "text": "Tìm email và loại tài khoản"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "IdentityDbAdapter",
+        "text": "Tài khoản hoặc không có",
+        "kind": "return"
+      },
+      {
+        "from": "IdentityDbAdapter",
+        "to": "UserRepo",
+        "text": "Kết quả tra cứu",
+        "kind": "return"
+      },
+      {
+        "from": "UserRepo",
+        "to": "VerifyResetOtpCmd",
+        "text": "Mã người dùng nếu có",
+        "kind": "return"
+      },
+      {
+        "from": "VerifyResetOtpCmd",
+        "to": "ResetOtpPort",
+        "text": "So mã và ghi lượt sai nguyên tử"
+      },
+      {
+        "from": "ResetOtpPort",
+        "to": "RedisOtpAdapter",
+        "text": "Đối chiếu mã hiện có"
+      },
+      {
+        "from": "RedisOtpAdapter",
         "to": "Redis",
-        "text": "Đọc mã xác nhận đã lưu"
+        "text": "So mã, tăng lỗi, xoá sau năm lần sai"
       },
       {
         "from": "Redis",
-        "to": "PasswordResetService",
-        "text": "Mã đang hiệu lực và số lần nhập sai",
+        "to": "RedisOtpAdapter",
+        "text": "Mã hợp lệ hoặc lỗi chung",
+        "kind": "return"
+      },
+      {
+        "from": "RedisOtpAdapter",
+        "to": "ResetOtpPort",
+        "text": "Kết quả xác minh",
+        "kind": "return"
+      },
+      {
+        "from": "ResetOtpPort",
+        "to": "VerifyResetOtpCmd",
+        "text": "Đúng hoặc không hợp lệ",
         "kind": "return"
       },
       {
         "alt": {
-          "label": "Mã sai, hết hạn, hoặc email không tồn tại?",
+          "label": "Được phép đổi?",
           "then": [
             {
-              "from": "PasswordResetService",
-              "to": "PasswordResetService",
-              "text": "Trường hợp có"
-            },
-            {
-              "from": "PasswordResetService",
-              "to": "Redis",
-              "text": "Tăng số lần nhập sai; đủ 5 lần thì xoá mã, buộc gửi lại"
-            },
-            {
-              "from": "PasswordResetService",
-              "to": "PasswordResetService",
-              "text": "Không rẽ nhánh sớm - đi hết tới bước trả lỗi chung, tránh lộ qua thời gian phản hồi"
-            },
-            {
-              "from": "PasswordResetService",
+              "from": "VerifyResetOtpCmd",
               "to": "AuthController",
-              "text": "Mã sai hoặc hết hạn, dừng",
+              "text": "Đã xác minh, giữ mã và hạn gốc",
               "kind": "return"
             },
             {
               "from": "AuthController",
               "to": "Sinh viên",
-              "text": "Báo lỗi: \"Mã không đúng hoặc đã hết hạn\"",
+              "text": "Mở bước nhập mật khẩu mới",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "VerifyResetOtpCmd",
+              "to": "AuthController",
+              "text": "Lỗi chung, không nêu nguyên nhân",
+              "kind": "return"
+            },
+            {
+              "from": "AuthController",
+              "to": "Sinh viên",
+              "text": "Yêu cầu mã khác hoặc thử lại",
               "kind": "return"
             }
           ]
         }
       }
     ]
-  },
-  "_cat": "Tach tu sequence_user_quen_mat_khau_otp.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 2/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+  }
 }

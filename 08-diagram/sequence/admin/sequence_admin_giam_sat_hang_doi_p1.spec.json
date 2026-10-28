@@ -1,8 +1,7 @@
 {
-  "_": "Luong giam sat hang doi va cum judge engine cua actor A3, ke ca job quet bai nop treo. Nguon: US-A3-03 (01-rd/req/user_stories/a3_admin.md), 01-rd/req/F4_judge-orchestration.md (F4-07, F4-10), 02-bd/architecture/F4_judge-orchestration.md muc 5.3 (sweep 5 phut, chu ky quet 60 giay, menh de WHERE chong ghi de). Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen. | 2026-10-20 (owner): nhan mui ten bo han duong dan, ma HTTP, ma quyen, thuat ngu ky thuat (cache, job, worker, model...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
-  "_diem_mau_chot": "Menh de WHERE status NOT IN (7 trang thai cuoi) cua job sweep KHONG phai toi uu truy van -- no la co che chong ghi de khi mot worker cham hoan tat dung luc job chay.",
+  "_": "Nguồn: 03-dd/api/F4_judge-orchestration.md §16-18, §22; 03-dd/logic/F4_judge-orchestration.md BR-JD-15. QueueReadPort và JudgeDbAdapter là tên minh họa [SoT: Suy luận]. Snapshot lấy trạng thái và độ trễ từ DB, không cần Prometheus. Bảng job lấy PENDING, COMPILING, JUDGING và SYSTEM_ERROR trong thời gian giữ lỗi; không có chi tiết từng worker hoặc mã job ưu tiên. Số WARN/ERROR dùng chung nguồn với trang sự kiện hạ tầng.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Giám sát hàng đợi và quét bài nộp treo (Quản trị viên) (1/3)",
+  "title": "Sơ đồ tuần tự chi tiết - Xem trạng thái hàng đợi và bài chờ (1/3)",
   "covers": [
     "F1-10",
     "F4-10"
@@ -21,14 +20,24 @@
         "stereo": "presentation"
       },
       {
-        "name": "JudgeOpsService",
+        "name": "GetQueueSnapshot",
         "role": "service",
-        "stereo": "application"
+        "stereo": "application query"
       },
       {
-        "name": "RabbitMQ",
-        "role": "external",
-        "stereo": "hàng đợi chấm"
+        "name": "ListQueueJobs",
+        "role": "service",
+        "stereo": "application query"
+      },
+      {
+        "name": "QueueReadPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "JudgeDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
       },
       {
         "name": "PostgreSQL",
@@ -38,68 +47,121 @@
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 1 - Bảng giám sát: độ dài hàng đợi và tình trạng cụm (F4-10)"
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "Quản trị viên",
-        "text": "Mở bảng giám sát chấm bài"
+        "phase": "Giai đoạn 1 - Tải trạng thái hàng đợi"
       },
       {
         "from": "Quản trị viên",
         "to": "JudgeOpsController",
-        "text": "Gửi yêu cầu xem tổng quan"
+        "text": "Mở trang giám sát hàng đợi"
       },
       {
         "from": "JudgeOpsController",
-        "to": "JudgeOpsController",
-        "text": "Kiểm tra quyền giám sát chấm bài"
+        "to": "GetQueueSnapshot",
+        "text": "Lấy trạng thái, số bài chờ và độ trễ"
       },
       {
-        "from": "JudgeOpsController",
-        "to": "JudgeOpsService",
-        "text": "Yêu cầu tổng quan hệ thống chấm"
+        "from": "GetQueueSnapshot",
+        "to": "QueueReadPort",
+        "text": "Đọc cấu hình cụm và số liệu bài nộp"
       },
       {
-        "from": "JudgeOpsService",
-        "to": "RabbitMQ",
-        "text": "Đọc số bài chờ và số máy đang nhận bài"
+        "from": "QueueReadPort",
+        "to": "JudgeDbAdapter",
+        "text": "Tổng hợp trạng thái trong một giờ gần nhất"
       },
       {
-        "from": "RabbitMQ",
-        "to": "JudgeOpsService",
-        "text": "Số bài chờ, số máy đang nhận bài",
-        "kind": "return"
-      },
-      {
-        "from": "JudgeOpsService",
+        "from": "JudgeDbAdapter",
         "to": "PostgreSQL",
-        "text": "Đếm bài nộp theo trạng thái chưa kết thúc"
+        "text": "Đọc cấu hình và các mốc bài nộp"
       },
       {
         "from": "PostgreSQL",
-        "to": "JudgeOpsService",
-        "text": "Số bài chờ, đang biên dịch, đang chấm",
+        "to": "JudgeDbAdapter",
+        "text": "Trạng thái và số liệu",
         "kind": "return"
       },
       {
-        "from": "JudgeOpsService",
+        "from": "JudgeDbAdapter",
+        "to": "QueueReadPort",
+        "text": "Trạng thái và số liệu",
+        "kind": "return"
+      },
+      {
+        "from": "QueueReadPort",
+        "to": "GetQueueSnapshot",
+        "text": "Trạng thái và số liệu",
+        "kind": "return"
+      },
+      {
+        "from": "GetQueueSnapshot",
         "to": "JudgeOpsController",
-        "text": "Tổng quan hàng đợi và cụm",
+        "text": "Trả trạng thái hàng đợi",
         "kind": "return"
       },
       {
         "from": "JudgeOpsController",
         "to": "Quản trị viên",
-        "text": "Báo thành công",
+        "text": "Hiển thị tạm dừng, tồn đọng hoặc bình thường",
         "kind": "return"
       },
       {
+        "phase": "Giai đoạn 2 - Tải bảng bài chờ và lỗi"
+      },
+      {
         "from": "Quản trị viên",
+        "to": "JudgeOpsController",
+        "text": "Chọn tab và trang bài nộp"
+      },
+      {
+        "from": "JudgeOpsController",
+        "to": "ListQueueJobs",
+        "text": "Lấy một trang bài nộp"
+      },
+      {
+        "from": "ListQueueJobs",
+        "to": "QueueReadPort",
+        "text": "Đọc bài chờ, đang chấm hoặc lỗi hệ thống"
+      },
+      {
+        "from": "QueueReadPort",
+        "to": "JudgeDbAdapter",
+        "text": "Lọc và sắp theo thời gian chờ"
+      },
+      {
+        "from": "JudgeDbAdapter",
+        "to": "PostgreSQL",
+        "text": "Đọc các bài nộp trong tab"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "JudgeDbAdapter",
+        "text": "Một trang và số lượng từng tab",
+        "kind": "return"
+      },
+      {
+        "from": "JudgeDbAdapter",
+        "to": "QueueReadPort",
+        "text": "Một trang và số lượng từng tab",
+        "kind": "return"
+      },
+      {
+        "from": "QueueReadPort",
+        "to": "ListQueueJobs",
+        "text": "Một trang và số lượng từng tab",
+        "kind": "return"
+      },
+      {
+        "from": "ListQueueJobs",
+        "to": "JudgeOpsController",
+        "text": "Trả bảng kết quả",
+        "kind": "return"
+      },
+      {
+        "from": "JudgeOpsController",
         "to": "Quản trị viên",
-        "text": "Số bài chờ, số bài đang chạy, tình trạng cụm máy chấm"
+        "text": "Hiển thị bài chờ và bài lỗi",
+        "kind": "return"
       }
     ]
-  },
-  "_cat": "Tach tu sequence_admin_giam_sat_hang_doi.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 1/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+  }
 }

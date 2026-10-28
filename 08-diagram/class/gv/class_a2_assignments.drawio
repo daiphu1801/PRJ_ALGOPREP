@@ -1,0 +1,52 @@
+<mxfile host="app.diagrams.net" agent="drawio-uml-architect" type="device">
+  <diagram id="a2-giao-bai-cho-lop" name="a2-giao-bai-cho-lop">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t_service" value='&lt;div style="text-align:center"&gt;&lt;b&gt;ClassAssignmentService&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;assign(instructorId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;classId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;problemId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;Assignment' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="286.6" y="60" width="487.59999999999997" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="t_port1" value='&lt;div style="text-align:center"&gt;&lt;b&gt;InstructorClassPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;requireOwner(instructorId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;classId&amp;nbsp;:&amp;nbsp;UUID)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="54" y="184" width="335.09999999999997" height="68" as="geometry" />
+        </mxCell>
+        <mxCell id="t_port2" value='&lt;div style="text-align:center"&gt;&lt;b&gt;ProblemReadRepository&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;requirePublished(problemId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;Problem' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="439.09999999999997" y="184" width="304.59999999999997" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="t_port3" value='&lt;div style="text-align:center"&gt;&lt;b&gt;AssignmentRepository&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;save(assignment&amp;nbsp;:&amp;nbsp;Assignment)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="793.6999999999999" y="184" width="213.1" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.180;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="374.53333333333336" y="131.5" />
+            <mxPoint x="221.54999999999998" y="131.5" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e2" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="530.4" y="149" />
+            <mxPoint x="591.4" y="149" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e3" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.820;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="686.2666666666667" y="166.5" />
+            <mxPoint x="900.2499999999999" y="166.5" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="title" value="A2 — Giao bài cho lớp" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="0" y="10" width="1036.8" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="v4" value="Ghi chú: Chỉ giảng viên phụ trách lớp được giao bài đã công bố; học viên lớp khác không thấy bài giao.&lt;br&gt;Ghi chú: [SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="30" y="272" width="1100" height="44" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,11 +1,9 @@
 {
-  "_": "Tach tu p2 (2026-10-20) vi them giai doan danh dau da xem lam chu in qua nho (5.5pt). Nguon: 02-bd/screens/admin/ADM0302_ai_usage.md Sheet 8 NO 5 (MarkAiUsageAlertReviewed), V0.12; canh bao mem, khong khoa tai khoan (02-bd/security/F5_ai-review.md:83-86). Duong dan REST la [SoT: Suy luan]. | 2026-10-20 (owner): nhan mui ten bo han duong dan, ma HTTP, ma quyen, thuat ngu ky thuat (cache, job, worker, model...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
-  "_hai_co_che": "Muc 6.3 va 6.4 la HAI co che tach biet: mot cai tu khoa theo ngan sach toan he thong, mot cai chi canh bao de ADMIN xem xet thu cong. Ve chung mot so do de thay ro chung khong dinh vao nhau.",
+  "_": "Nguồn: 03-dd/api/F5_ai-review.md §29. Chỉ cảnh báo ANOMALY có ID để review; không khóa tài khoản, không tác động ngân sách; idempotent. Cổng và adapter là tên minh họa [SoT: Suy luận].",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Xử lý cảnh báo tài khoản dùng bất thường (Quản trị viên) (3/3)",
+  "title": "Sơ đồ tuần tự chi tiết - Đánh dấu đã xem cảnh báo bất thường (5/5)",
   "covers": [
-    "F5-19",
-    "F5-21"
+    "F5-25"
   ],
   "mode": "color",
   "sequence": {
@@ -16,14 +14,24 @@
         "role": "actor"
       },
       {
-        "name": "TokenBudgetController",
+        "name": "AiUsageController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "TokenBudgetService",
+        "name": "ReviewUsageAlert",
         "role": "service",
         "stereo": "application"
+      },
+      {
+        "name": "AlertStorePort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "AiDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
       },
       {
         "name": "PostgreSQL",
@@ -33,90 +41,69 @@
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 1 - Xem rồi đánh dấu cảnh báo đã xem; tài khoản không bị khoá"
-      },
-      {
         "from": "Quản trị viên",
-        "to": "Quản trị viên",
-        "text": "Mở mục Cảnh báo bất thường"
+        "to": "AiUsageController",
+        "text": "Đánh dấu đã xem cảnh báo bất thường"
       },
       {
-        "from": "Quản trị viên",
-        "to": "TokenBudgetController",
-        "text": "Gửi yêu cầu xem cảnh báo đang mở"
+        "from": "AiUsageController",
+        "to": "ReviewUsageAlert",
+        "text": "Kiểm quyền cập nhật ngân sách"
       },
       {
-        "from": "TokenBudgetController",
-        "to": "TokenBudgetService",
-        "text": "Yêu cầu cảnh báo đang mở"
+        "from": "ReviewUsageAlert",
+        "to": "AlertStorePort",
+        "text": "Đổi cảnh báo đang mở thành đã xem"
       },
       {
-        "from": "TokenBudgetService",
+        "from": "AlertStorePort",
+        "to": "AiDbAdapter",
+        "text": "Cập nhật theo mã cảnh báo"
+      },
+      {
+        "from": "AiDbAdapter",
         "to": "PostgreSQL",
-        "text": "Đọc các cảnh báo đang mở"
+        "text": "Đổi OPEN thành REVIEWED nếu còn mở"
       },
       {
         "from": "PostgreSQL",
-        "to": "TokenBudgetService",
-        "text": "Danh sách cảnh báo đang mở",
+        "to": "ReviewUsageAlert",
+        "text": "Trả số dòng đã đổi",
         "kind": "return"
       },
       {
-        "from": "TokenBudgetService",
-        "to": "TokenBudgetController",
-        "text": "Danh sách cảnh báo",
-        "kind": "return"
-      },
-      {
-        "from": "TokenBudgetController",
-        "to": "Quản trị viên",
-        "text": "Báo thành công",
-        "kind": "return"
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "Quản trị viên",
-        "text": "Bấm Đánh dấu đã xem"
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "TokenBudgetController",
-        "text": "Gửi yêu cầu đánh dấu đã xem"
-      },
-      {
-        "from": "TokenBudgetController",
-        "to": "TokenBudgetController",
-        "text": "Kiểm tra quyền đổi ngân sách AI"
-      },
-      {
-        "from": "TokenBudgetController",
-        "to": "TokenBudgetService",
-        "text": "Yêu cầu đánh dấu đã xem"
-      },
-      {
-        "from": "TokenBudgetService",
-        "to": "PostgreSQL",
-        "text": "Chuyển cảnh báo sang đã xem"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "TokenBudgetService",
-        "text": "Đã ghi",
-        "kind": "return"
-      },
-      {
-        "from": "TokenBudgetService",
-        "to": "TokenBudgetController",
-        "text": "Cảnh báo đã xem",
-        "kind": "return"
-      },
-      {
-        "from": "TokenBudgetController",
-        "to": "Quản trị viên",
-        "text": "Báo thành công",
-        "kind": "return"
+        "alt": {
+          "label": "Cảnh báo tồn tại?",
+          "then": [
+            {
+              "from": "ReviewUsageAlert",
+              "to": "AiUsageController",
+              "text": "Trả trạng thái đã xem; lặp lại không ghi đè",
+              "kind": "return"
+            },
+            {
+              "from": "AiUsageController",
+              "to": "Quản trị viên",
+              "text": "Bỏ thẻ khỏi danh sách",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "ReviewUsageAlert",
+              "to": "AiUsageController",
+              "text": "Báo không tìm thấy cảnh báo",
+              "kind": "return"
+            },
+            {
+              "from": "AiUsageController",
+              "to": "Quản trị viên",
+              "text": "Hiển thị lỗi",
+              "kind": "return"
+            }
+          ]
+        }
       }
     ]
-  },
-  "_cat": "Tach tu sequence_admin_dat_ngan_sach_token.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 2/2). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+  }
 }

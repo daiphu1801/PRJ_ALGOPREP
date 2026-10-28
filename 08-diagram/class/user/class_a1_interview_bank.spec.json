@@ -1,0 +1,80 @@
+{
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a1_student.md:158; 01-rd/req/user_stories/a1_student.md:160; 01-rd/req/user_stories/a1_student.md:163; 01-rd/req/user_stories/a1_student.md:165; 01-rd/req/user_stories/a1_student.md:167. Nguồn thiết kế: 03-dd/logic/F6_interview-bank.md; 03-dd/api/F6_interview-bank.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "kind": "class",
+  "title": "A1 — Học và luyện câu hỏi phỏng vấn",
+  "covers": [
+    "F6-01",
+    "F6-02",
+    "F6-03",
+    "F6-04",
+    "F6-05",
+    "F6-06",
+    "F6-07",
+    "F6-08",
+    "F6-09",
+    "F6-10",
+    "F6-12"
+  ],
+  "class": {
+    "legend": "shared",
+    "classes": [
+      {
+        "id": "service",
+        "name": "InterviewPracticeService",
+        "methods": [
+          "+ search(filter : QuestionFilter, studentId : UUID) : Page<Question>",
+          "+ study(questionId : UUID) : StudyContent",
+          "+ evaluate(questionId : UUID, studentId : UUID, answer : String) : PracticeFeedback",
+          "+ progress(studentId : UUID) : PracticeProgress",
+          "+ selfRate(questionId : UUID, studentId : UUID, rating : RecallRating)"
+        ]
+      },
+      {
+        "id": "port1",
+        "name": "InterviewQuestionRepository",
+        "kind": "class",
+        "methods": [
+          "+ findPublished(filter : QuestionFilter) : Page<Question>"
+        ]
+      },
+      {
+        "id": "port2",
+        "name": "PracticeAttemptRepository",
+        "kind": "class",
+        "methods": [
+          "+ save(attempt : PracticeAttempt)"
+        ]
+      },
+      {
+        "id": "port3",
+        "name": "AnswerEvaluationPort",
+        "kind": "interface",
+        "methods": [
+          "+ evaluate(question : Question, answer : String) : PracticeFeedback"
+        ]
+      }
+    ],
+    "externals": [],
+    "relations": [
+      {
+        "from": "service",
+        "to": "port1",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port2",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port3",
+        "kind": "dependency"
+      }
+    ],
+    "notes": [
+      "Chế độ học trả gợi ý/khung chuẩn/từ khoá; tự chấm gần nhất quyết định thứ tự ôn lại.",
+      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+    ]
+  }
+}

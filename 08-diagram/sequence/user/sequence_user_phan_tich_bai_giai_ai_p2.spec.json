@@ -1,19 +1,30 @@
 {
-  "_": "Luong F5.1 Solution Review (mot lan, ket qua JSON co cau truc) cua actor A1. Nguon: 01-rd/req/F5_ai-review.md (F5-01 den F5-08), 02-bd/architecture/F5_ai-review.md muc 3.2/3.3 (SubmissionSnapshotPort, ProblemContextPort), muc 5 (ba lop instruction chong prompt injection), muc 6.2 (cache theo source hash), muc 6.3 (ngan sach token). | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
-  "_suy_giam": "Nhanh LLM loi khong lam hong F1-F4: bao loi tai cho, khong khoa man Nop bai (CLAUDE.md -- AI degrades gracefully).",
+  "_": "Nguồn: 03-dd/logic/F5_ai-review.md BR-AI-02/03/04/05; 03-dd/api/F5_ai-review.md mục 4.5. Tên ReviewCmd, ReviewRepo, AiDbAdapter, AiLimitPort, RedisLimitAdapter, ProblemBridge là thiết kế dự kiến [SoT: Suy luận]. Trúng bản dùng lại tạo báo cáo mới cho bài nộp mới, phát sự kiện qua outbox nhưng không ghi token, không kiểm ngân sách. Khi trượt, kiểm ngân sách trước giới hạn Redis rồi lấy ngữ cảnh qua cổng F2. Phần hoàn lượt khi lỗi được ghi ở DD, không vẽ trên nhánh thành công. ProblemPort = ProblemContextPort trong DD.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Phân tích bài giải bằng AI (Sinh viên) (2/3)",
+  "title": "Sơ đồ tuần tự chi tiết - Phân tích bài giải: dùng lại hoặc kiểm chi phí (2/3)",
   "covers": [
-    "F5-17"
+    "F5-19",
+    "F5-20",
+    "F5-21"
   ],
   "mode": "color",
   "sequence": {
     "detail": true,
     "participants": [
       {
-        "name": "SolutionReviewService",
+        "name": "ReviewCmd",
         "role": "service",
-        "stereo": "application"
+        "stereo": "application command"
+      },
+      {
+        "name": "ReviewRepo",
+        "role": "repository",
+        "stereo": "output port F5"
+      },
+      {
+        "name": "AiDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
       },
       {
         "name": "PostgreSQL",
@@ -21,63 +32,170 @@
         "stereo": "schema ai"
       },
       {
-        "name": "Nhà cung cấp LLM",
-        "role": "external",
-        "stereo": "Spring AI"
+        "name": "AiLimitPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "RedisLimitAdapter",
+        "role": "repository",
+        "stereo": "infrastructure"
+      },
+      {
+        "name": "Redis",
+        "role": "datastore",
+        "stereo": "giới hạn theo giờ"
+      },
+      {
+        "name": "ProblemPort",
+        "role": "repository",
+        "stereo": "cổng F2"
+      },
+      {
+        "name": "ProblemBridge",
+        "role": "repository",
+        "stereo": "adapter liên module"
       }
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 3 - Dựng chỉ thị AI ba lớp, mã nguồn LUÔN là dữ liệu (F5-17)"
+        "phase": "Giai đoạn 2 - Kết quả dùng lại không tốn lượt AI (F5-20)"
       },
       {
-        "from": "SolutionReviewService",
-        "to": "PostgreSQL",
-        "text": "Đọc chỉ thị AI đang dùng và ngữ cảnh bài toán"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "SolutionReviewService",
-        "text": "Chỉ thị cố định, tiêu chí đánh giá, ngữ cảnh riêng của đề",
-        "kind": "return"
-      },
-      {
-        "from": "SolutionReviewService",
-        "to": "SolutionReviewService",
-        "text": "Nhờ AI phân tích mã nguồn theo chỉ thị và ngữ cảnh đề"
-      },
-      {
-        "from": "SolutionReviewService",
-        "to": "SolutionReviewService",
-        "text": "Lớp 1 - chỉ thị cố định của hệ thống"
-      },
-      {
-        "from": "SolutionReviewService",
-        "to": "SolutionReviewService",
-        "text": "Lớp 2 - ngữ cảnh giảng viên viết, chỉ là dữ liệu, không phải chỉ thị"
-      },
-      {
-        "from": "SolutionReviewService",
-        "to": "SolutionReviewService",
-        "text": "Lớp 3 - mã nguồn người học, luôn chỉ là dữ liệu"
-      },
-      {
-        "from": "SolutionReviewService",
-        "to": "Nhà cung cấp LLM",
-        "text": "Gửi chỉ thị và dữ liệu sang nhà cung cấp AI"
-      },
-      {
-        "from": "Nhà cung cấp LLM",
-        "to": "SolutionReviewService",
-        "text": "Kết quả có cấu trúc và số token đã dùng",
-        "kind": "return"
-      },
-      {
-        "from": "SolutionReviewService",
-        "to": "SolutionReviewService",
-        "text": "Kết quả phân tích bài giải"
+        "alt": {
+          "label": "Có bản dùng lại?",
+          "then": [
+            {
+              "from": "ReviewCmd",
+              "to": "ReviewCmd",
+              "text": "Sao chép kết quả cho bài nộp mới"
+            },
+            {
+              "from": "ReviewCmd",
+              "to": "ReviewRepo",
+              "text": "Lưu báo cáo và sự kiện hoàn tất"
+            },
+            {
+              "from": "ReviewRepo",
+              "to": "AiDbAdapter",
+              "text": "Ghi báo cáo, tăng lượt dùng lại"
+            },
+            {
+              "from": "AiDbAdapter",
+              "to": "PostgreSQL",
+              "text": "Lưu báo cáo, không ghi mức tiêu thụ"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "AiDbAdapter",
+              "text": "Đã lưu bản mới",
+              "kind": "return"
+            },
+            {
+              "from": "AiDbAdapter",
+              "to": "ReviewRepo",
+              "text": "Báo cáo đã lưu",
+              "kind": "return"
+            },
+            {
+              "from": "ReviewRepo",
+              "to": "ReviewCmd",
+              "text": "Trả kết quả, không gọi AI",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "ReviewCmd",
+              "to": "ReviewRepo",
+              "text": "Kiểm ngân sách còn dùng được"
+            },
+            {
+              "from": "ReviewRepo",
+              "to": "AiDbAdapter",
+              "text": "Tính token đã dùng trong chu kỳ"
+            },
+            {
+              "from": "AiDbAdapter",
+              "to": "PostgreSQL",
+              "text": "Đọc mức dùng và trạng thái khoá"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "AiDbAdapter",
+              "text": "Còn ngân sách hoặc đã khoá",
+              "kind": "return"
+            },
+            {
+              "from": "AiDbAdapter",
+              "to": "ReviewRepo",
+              "text": "Kết quả kiểm ngân sách",
+              "kind": "return"
+            },
+            {
+              "from": "ReviewRepo",
+              "to": "ReviewCmd",
+              "text": "Cho phép hoặc từ chối",
+              "kind": "return"
+            },
+            {
+              "from": "ReviewCmd",
+              "to": "AiLimitPort",
+              "text": "Giữ lượt trong giờ và thời gian chờ"
+            },
+            {
+              "from": "AiLimitPort",
+              "to": "RedisLimitAdapter",
+              "text": "Kiểm giới hạn theo người học"
+            },
+            {
+              "from": "RedisLimitAdapter",
+              "to": "Redis",
+              "text": "Đặt thời gian chờ, tăng lượt"
+            },
+            {
+              "from": "Redis",
+              "to": "RedisLimitAdapter",
+              "text": "Cho phép hoặc quá giới hạn",
+              "kind": "return"
+            },
+            {
+              "from": "RedisLimitAdapter",
+              "to": "AiLimitPort",
+              "text": "Kết quả giới hạn",
+              "kind": "return"
+            },
+            {
+              "from": "AiLimitPort",
+              "to": "ReviewCmd",
+              "text": "Được gọi AI hoặc từ chối",
+              "kind": "return"
+            },
+            {
+              "from": "ReviewCmd",
+              "to": "ProblemPort",
+              "text": "Lấy ngữ cảnh bài toán"
+            },
+            {
+              "from": "ProblemPort",
+              "to": "ProblemBridge",
+              "text": "Hỏi phần ngân hàng bài toán"
+            },
+            {
+              "from": "ProblemBridge",
+              "to": "ProblemPort",
+              "text": "Đề bài và chỉ dẫn theo bài",
+              "kind": "return"
+            },
+            {
+              "from": "ProblemPort",
+              "to": "ReviewCmd",
+              "text": "Tiếp tục ở trang 3",
+              "kind": "return"
+            }
+          ]
+        }
       }
     ]
-  },
-  "_cat": "Tach tu sequence_user_phan_tich_bai_giai_ai.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 2/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+  }
 }

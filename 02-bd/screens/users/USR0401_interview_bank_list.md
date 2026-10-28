@@ -550,7 +550,7 @@ Dải bốn chỉ số ôn tập của màn này (cùng endpoint `GetMyRecallSum
 ## Sheet 9. Đặc tả kiểm tra
 
 > Bộ thẻ và quy ước mã thông báo: `02-bd/_rules/bd-template-9sheet.md` mục 2, 4. Sheet này ghi **điều kiện
-> kiểm và thông báo**; tiêu chí nghiệm thu `AC-nn` thuộc `04-tdd/interview_bank_list.md`, không lặp lại ở
+> kiểm và thông báo**; tiêu chí nghiệm thu `AC-nn` thuộc `04-tdd/screens/users/USR0401_interview_bank_list.md`, không lặp lại ở
 > đây.
 
 | NO | Loại | Tóm tắt kiểm | Chi tiết | Mức | Mã thông báo | Ghi chú | EVT gọi | Thứ tự |
@@ -594,7 +594,7 @@ AI chết hoặc hết quota không sinh thêm một nhánh lỗi nào ở đây
 | Dòng đếm kết quả | `t("shownCount", { shown: filtered.length, total: page.questions.length })` ở đầu thẻ danh sách [view:387-392]; vùng cuộn `max-h-[68dvh]` [view:393]. `total` là độ dài mảng mock, chưa phải tổng từ máy chủ | Khớp (nợ: xem Q13) |
 | Tỉ lệ hai cột 5:6 và bản xem nhanh | `lg:[grid-template-columns:minmax(0,5fr)_minmax(0,6fr)]` [view:385]; tiêu đề `text-xl font-bold` [view:430-432]; nhãn khối từ khoá `quickView.keywordsLabel` [view:455-459]; ý cần nói trong ô nền nhạt [view:441-444]. Dòng danh sách (`InterviewQuestionListRow`) **không** có "nền nhạt + viền" từng dòng: dòng chọn có nền `surface-hover`, các dòng ngăn bằng viền dưới [`interview-question-list-row.tsx:46-53`] | Khớp phần bản xem nhanh; yêu cầu "list rows are tinted outline rows" của owner **chưa kiểm chứng được** từ mã (Q12) |
 | Khoá i18n `startMockInterviewUnavailable` | Vẫn còn trong `vi.json:1929` nhưng không còn được view dùng (grep `startMockInterviewUnavailable` trong `interview-bank-list-view.tsx` không có kết quả) | Nợ: xoá được ở `vi.json` và `en.json` |
-| Kiểm thử | `interview-bank-list-view.test.tsx:23-107` là smoke test: danh sách, tìm kiếm, lọc độ khó, vào luyện nhanh, ghim câu vừa chấm. **Chưa có** ca nào cho tiêu đề, liên kết `/mock-interview`, dòng đếm, nhãn từ khoá | Nợ: bổ sung khi viết `04-tdd/interview_bank_list.md` |
+| Kiểm thử | `interview-bank-list-view.test.tsx:23-107` là smoke test: danh sách, tìm kiếm, lọc độ khó, vào luyện nhanh, ghim câu vừa chấm. **Chưa có** ca nào cho tiêu đề, liên kết `/mock-interview`, dòng đếm, nhãn từ khoá | Nợ: bổ sung khi viết `04-tdd/screens/users/USR0401_interview_bank_list.md` |
 
 **Nợ prototype cho `06-plan/PROTOTYPE_DEBT.md`** (bên điều phối ghi): (1) `USR0401` chưa đọc `topic`/`q`/`status`/`level` từ URL và chưa truyền sang `USR0402`; làm một lượt cho cả bốn tham số khi dựng route thật; (2) dòng ngày ôn lại dùng bảng hằng số giả lập thay `next_review_at`; (3) công tắc "Chỉ câu đã đánh dấu" lọc trên bản đồ đánh dấu trong bộ nhớ, không gọi `ListInterviewQuestions`; (4) xoá khoá i18n `startMockInterviewUnavailable` ở `vi.json` và `en.json` (không còn dùng từ 2026/10/20); (5) `06-plan/PROTOTYPE_DEBT.md:886` còn ghi nút "Vào phiên giả lập" "đang khoá" và chưa có route `mock_interview`, đã lỗi thời (file đó ngoài phạm vi lần sửa này); (6) `total` ở dòng đếm là độ dài mảng mock, thay bằng tổng từ `ListInterviewQuestions` khi có API.
 
@@ -618,5 +618,5 @@ AI chết hoặc hết quota không sinh thêm một nhánh lỗi nào ở đây
 
 ---
 
-> [Nội bộ] Tiêu chí nghiệm thu `AC-nn` của màn này viết ở `04-tdd/interview_bank_list.md` cùng lúc với
+> [Nội bộ] Tiêu chí nghiệm thu `AC-nn` của màn này viết ở `04-tdd/screens/users/USR0401_interview_bank_list.md` cùng lúc với
 > DD màn hình, không viết trong file BD.

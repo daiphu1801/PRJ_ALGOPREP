@@ -1,0 +1,91 @@
+{
+  "_": "Nguồn thuộc tính và liên kết: 02-bd/database/F4_judge-orchestration.md:12-154. [SoT: Suy luận] Ánh xạ bảng dữ liệu sang tên class Java là thiết kế đề xuất; bội số theo FK/unique của BD. Bỏ thuộc tính thứ cấp và getter/setter.",
+  "kind": "class",
+  "title": "F4 — Mô hình bài nộp và kết quả testcase",
+  "covers": [],
+  "class": {
+    "legend": "shared",
+    "classes": [
+      {
+        "id": "submission",
+        "name": "Submission",
+        "attributes": [
+          "+ id : UUID",
+          "+ userId : UUID",
+          "+ problemId : UUID",
+          "+ status : SubmissionStatus",
+          "+ submissionModel : SubmissionModel",
+          "+ testcaseSetVersionAtGrading : int [0..1]",
+          "+ scoreRatio : Decimal [0..1]"
+        ],
+        "methods": []
+      },
+      {
+        "id": "result",
+        "name": "SubmissionCaseResult",
+        "attributes": [
+          "+ id : UUID",
+          "+ testcaseId : UUID",
+          "+ isSample : boolean",
+          "+ testcaseOrder : int",
+          "+ verdict : Verdict",
+          "+ runtimeMs : int"
+        ],
+        "methods": []
+      },
+      {
+        "id": "token",
+        "name": "JudgeRunToken",
+        "attributes": [
+          "+ token : UUID",
+          "+ testcaseId : UUID",
+          "+ consumedAt : Instant [0..1]"
+        ],
+        "methods": []
+      },
+      {
+        "id": "public",
+        "name": "PublicCaseResult",
+        "attributes": [
+          "+ verdict : Verdict",
+          "+ runtimeMs : int",
+          "+ memoryKb : int"
+        ],
+        "methods": []
+      }
+    ],
+    "externals": [],
+    "relations": [
+      {
+        "from": "submission",
+        "to": "result",
+        "kind": "composition",
+        "from_mult": "1",
+        "to_mult": "0..*"
+      },
+      {
+        "from": "submission",
+        "to": "token",
+        "kind": "association",
+        "from_mult": "1",
+        "to_mult": "0..*"
+      },
+      {
+        "from": "result",
+        "to": "token",
+        "kind": "association",
+        "from_mult": "0..1",
+        "to_mult": "1"
+      },
+      {
+        "from": "result",
+        "to": "public",
+        "kind": "dependency"
+      }
+    ],
+    "notes": [
+      "Run Sample không tạo Submission; mỗi testcase chỉ ghi một kết quả; PublicCaseResult không chứa input/expected/diff của Hidden.",
+      "[SoT: Suy luận] Tên class Java đề xuất từ schema BD."
+    ]
+  }
+}

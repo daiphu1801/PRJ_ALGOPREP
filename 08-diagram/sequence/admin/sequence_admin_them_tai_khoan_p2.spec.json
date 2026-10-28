@@ -1,0 +1,31 @@
+{
+  "_": "Trang 2/2 tiếp nối sequence_admin_them_tai_khoan.spec.json sau khi tài khoản và nhật ký đã lưu. Nguồn: 03-dd/api/F1_identity.md mục 0.6.1; 01-rd/system/SYS0101_backend_architecture.md mục 5.3. UserAdminCtrl = UserAdminController; CreateUserCmd = CreateUserAccountCommandHandler. MailDeliveryPort và MailDeliveryAdapter là tên thiết kế dự kiến [SoT: Suy luận]; DD chốt việc gửi mật khẩu tạm qua email nhưng chưa chốt cách đóng gói adapter và chính sách khi gửi thất bại. Trang này không khẳng định gửi thư là bất đồng bộ hoặc ghi thêm DB.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Gửi mật khẩu tạm (2/2)",
+  "covers": ["F1-13"],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {"name": "Quản trị viên", "role": "actor"},
+      {"name": "UserAdminCtrl", "role": "controller", "stereo": "presentation"},
+      {"name": "CreateUserCmd", "role": "service", "stereo": "application command"},
+      {"name": "MailDeliveryPort", "role": "repository", "stereo": "domain output port"},
+      {"name": "MailDeliveryAdapter", "role": "external", "stereo": "infrastructure"},
+      {"name": "Dịch vụ email", "role": "external", "stereo": "gửi thư"}
+    ],
+    "messages": [
+      {"phase": "Giai đoạn 2 - Gửi mật khẩu tạm sau khi lưu (F1-13)"},
+      {"from": "CreateUserCmd", "to": "CreateUserCmd", "text": "Tài khoản đã lưu, mật khẩu tạm chỉ giữ để gửi"},
+      {"from": "CreateUserCmd", "to": "MailDeliveryPort", "text": "Yêu cầu gửi mật khẩu tạm"},
+      {"from": "MailDeliveryPort", "to": "MailDeliveryAdapter", "text": "Chuyển yêu cầu gửi thư"},
+      {"from": "MailDeliveryAdapter", "to": "Dịch vụ email", "text": "Gửi thư tới địa chỉ đã nhập"},
+      {"from": "Dịch vụ email", "to": "MailDeliveryAdapter", "text": "Đã tiếp nhận thư", "kind": "return"},
+      {"from": "MailDeliveryAdapter", "to": "MailDeliveryPort", "text": "Đã chuyển thư", "kind": "return"},
+      {"from": "MailDeliveryPort", "to": "CreateUserCmd", "text": "Đã gửi thư", "kind": "return"},
+      {"from": "CreateUserCmd", "to": "UserAdminCtrl", "text": "Tài khoản vừa tạo", "kind": "return"},
+      {"from": "UserAdminCtrl", "to": "Quản trị viên", "text": "Báo tạo thành công", "kind": "return"},
+      {"from": "Quản trị viên", "to": "Quản trị viên", "text": "Thấy tài khoản Chờ xác thực; không thấy mật khẩu tạm"}
+    ]
+  }
+}

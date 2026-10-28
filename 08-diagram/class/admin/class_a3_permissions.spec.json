@@ -1,0 +1,70 @@
+{
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a3_admin.md:13; 01-rd/req/user_stories/a3_admin.md:16; 01-rd/req/user_stories/a3_admin.md:19. Nguồn thiết kế: 03-dd/logic/F1_identity.md; 03-dd/api/F1_identity.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "kind": "class",
+  "title": "A3 — Ma trận phân quyền",
+  "covers": [
+    "F1-10",
+    "F1-11",
+    "F1-14"
+  ],
+  "class": {
+    "legend": "shared",
+    "classes": [
+      {
+        "id": "service",
+        "name": "PermissionMatrixService",
+        "methods": [
+          "+ setGrant(adminId : UUID, role : Role, function : Function, action : Action, allowed : boolean)",
+          "+ listSeededActions() : PermissionMatrix",
+          "+ auditGrantChange(adminId : UUID, change : GrantChange)"
+        ]
+      },
+      {
+        "id": "port1",
+        "name": "PermissionRepository",
+        "kind": "class",
+        "methods": [
+          "+ upsert(grant : PermissionGrant)"
+        ]
+      },
+      {
+        "id": "port2",
+        "name": "PermissionCachePort",
+        "kind": "interface",
+        "methods": [
+          "+ invalidate(role : Role)"
+        ]
+      },
+      {
+        "id": "port3",
+        "name": "AuditLogPort",
+        "kind": "interface",
+        "methods": [
+          "+ record(change : AuditEntry)"
+        ]
+      }
+    ],
+    "externals": [],
+    "relations": [
+      {
+        "from": "service",
+        "to": "port1",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port2",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port3",
+        "kind": "dependency"
+      }
+    ],
+    "notes": [
+      "Function/Action là danh mục seed; đổi quyền làm mới cache và ghi audit.",
+      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+    ]
+  }
+}

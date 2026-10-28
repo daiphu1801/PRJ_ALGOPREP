@@ -15,6 +15,8 @@
 > trang **tổng quan chỉ-đọc** đứng trước (`USR0104`, `01-rd/screens/users/USR0104_problem_overview.md`), và mục "Workspace" trên
 > thanh điều hướng mở trang đầu `/workspace` (`USR0105`, `01-rd/screens/users/USR0105_workspace_home.md`) thay cho việc tự nhảy vào
 > một bài. Nội dung và hành vi của màn soạn mã giữ nguyên [SoT: .nexa/control/decision-registry.md:4239-4250 — `DEC-2026-1020-student-workspace-split-and-password-in-settings`].
+>
+> **Cập nhật 2026-10-25:** tab Solution Review trong Workspace chỉ có hai chỉ số độ phức tạp và liên kết tới báo cáo đầy đủ; bỏ 1–2 nhận xét ngắn (`DEC-2026-1025-dd-workspace-quick-insight-trim`).
 
 ---
 
@@ -64,7 +66,7 @@ vi trên thể hiện qua các khối màn sau:
    mục Markdown nằm trong nội dung đề, không phải trường riêng. Mã bài hiển thị nguyên dạng `problems.code`
    (chuỗi), không dựng số thứ tự. Màn **không** có đồng hồ phiên làm bài.
 4. **Tab "Bài nộp"** (lịch sử nộp bài cho riêng bài này: verdict, ngôn ngữ, thời gian chạy,
-   thời điểm — dòng 216-227), **Tab "Solution Review"** (số liệu tóm tắt + nhận xét — dòng 229-247) — xem
+   thời điểm — dòng 216-227), **Tab "Solution Review"** (hai chỉ số độ phức tạp và liên kết tới báo cáo đầy đủ; bỏ khối 1–2 nhận xét ngắn theo `DEC-2026-1025-dd-workspace-quick-insight-trim`) — xem
    Câu hỏi mở Q1 về tab này. Tab "Gợi ý" của prototype đã bị cắt (`DEC-2026-0831-remove-tiered-hints-ai-config`).
 5. **Chọn ngôn ngữ** (3 tab Java/C++/Python, dòng 268-270), **chọn mô hình** (2 nút "Có hàm main"/"Bọc hàm",
    dòng 272-276, 596-601) **và chọn phương thức nhập mã** (2 nút "Gõ trực tiếp"/"Tải file", tách riêng bằng
@@ -129,7 +131,7 @@ vi trên thể hiện qua các khối màn sau:
 
 | # | Câu hỏi | Vì sao chưa trả lời được | Đề xuất | Chủ sở hữu |
 | :-: | :--- | :--- | :--- | :--- |
-| Q1 | ~~Tab "Solution Review" bên trong Workspace hiện cùng loại nội dung với màn `solution_review` riêng...~~ **ĐÃ CHỐT (phiên 2026-08-25)**: giữ nguyên hai nơi hiển thị — tab trong Workspace là bản tóm tắt nhanh (Quick Insight: độ phức tạp, 1-2 nhận xét chính) đọc lại từ báo cáo đã có sẵn (khi bài đã `Accepted` và đã có báo cáo F5-07/08); trang `solution_review` riêng là bản đầy đủ, mở từ nút trong tab hoặc từ console kết quả. Không tạo dữ liệu mới, cùng nguồn F5-07/08 — không cần sửa prototype. | — | Giữ nguyên như hiện tại, không cần hành động thêm. | Đã đóng |
+| Q1 | ~~Tab "Solution Review" bên trong Workspace hiện cùng loại nội dung với màn `solution_review` riêng...~~ Đã chốt giữ hai nơi hiển thị. **Cập nhật 2026-10-25** (`DEC-2026-1025-dd-workspace-quick-insight-trim`): tab Workspace chỉ hiện hai chỉ số độ phức tạp từ báo cáo đã có và liên kết mở báo cáo đầy đủ; bỏ 1–2 nhận xét ngắn vì Quick Insight không có trường nguồn. Trang `solution_review` riêng vẫn là bản đầy đủ. | — | DD F5 §6 và DD USR0102 dùng hợp đồng rút gọn; đồng bộ BD ở lượt BD. | Đã đóng |
 | Q2 | ~~Ba nút "Có hàm main" / "Bọc hàm" / "Tải file" hiện nằm chung một hàng nút...~~ **ĐÃ CHỐT (phiên 2026-08-25)**: đúng là hai trục khác nhau, cần tách. Đã sửa trực tiếp `09-layoutBase/Workspace giải bài.dc.html`: tách biến `mode` (2 giá trị: Có hàm main/Bọc hàm) khỏi biến `inputMethod` mới (2 giá trị: Gõ trực tiếp/Tải file), hai nhóm nút đặt cạnh nhau trong cùng thanh công cụ editor, ngăn cách bằng một đường kẻ dọc [SoT: 09-layoutBase/Workspace giải bài.dc.html:272-282, 596-612]. | — | Đã sửa, không cần hành động thêm. | Đã đóng |
 | Q3 | ~~Từ chối file tải lên sai định dạng/quá kích thước — thông báo lỗi cụ thể thế nào...~~ **ĐÃ CHỐT (phiên 2026-08-25, chốt theo RD):** thêm state lỗi inline ngay trong vùng tải (không dùng dialog), cùng phong cách với các state lỗi khác của hệ thống — nhất quán với quyết định ở Câu hỏi mở Q1 của màn `auth`. **Chưa dựng vào `09-layoutBase/Workspace giải bài.dc.html`** (chỉ có state "đã tải thành công") — để lúc build FE Next.js thật. | — | Đã chốt quyết định, chưa dựng prototype. | Đã đóng |
 

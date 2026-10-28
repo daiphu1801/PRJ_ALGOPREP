@@ -1,7 +1,7 @@
 {
-  "_": "Nguon: 01-rd/screens/admin/ADM0201_user_management.md, 02-bd/screens/admin/ADM0201_user_management.md (muc 7.3 endpoint, DTO, popup), DEC-2026-1011-admin-system-open-questions-closed, DEC-2026-1008-admin-system-screens-review. Duong dan REST la [SoT: Suy luan] vi chua co DD; ten endpoint la ten nghiep vu cua BD. hasPassword suy tu password_hash IS NOT NULL (DEC-2026-1011, Q8); may chu kiem lai lan nua. Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen. | 2026-10-20 (owner): nhan mui ten bo han duong dan, ma HTTP, ma quyen, thuat ngu ky thuat (cache, job, worker, model...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
+  "_": "Nguồn: 03-dd/api/F1_identity.md endpoint 38; 03-dd/logic/F1_identity.md BR-16. IdentityStorePort, IdentityDbAdapter, AdminEmailPort, MailAdapter là tên minh họa [SoT: Suy luận]. Tài khoản có mật khẩu nhận mật khẩu tạm, chỉ lưu bản băm, thu hồi mọi refresh token. Tài khoản chỉ OAuth nhận email hướng dẫn về nhà cung cấp, không tạo mật khẩu. Nhật ký không chứa mật khẩu rõ; quản trị viên không thấy mật khẩu.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Đặt lại mật khẩu cho tài khoản (Quản trị viên)",
+  "title": "Sơ đồ tuần tự chi tiết - Quản trị viên đặt lại mật khẩu",
   "covers": [
     "F1-13",
     "F1-14"
@@ -20,9 +20,19 @@
         "stereo": "presentation"
       },
       {
-        "name": "UserAdminService",
+        "name": "ResetUserPassword",
         "role": "service",
-        "stereo": "application"
+        "stereo": "application command"
+      },
+      {
+        "name": "IdentityStorePort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "IdentityDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
       },
       {
         "name": "PostgreSQL",
@@ -30,44 +40,70 @@
         "stereo": "schema identity"
       },
       {
+        "name": "AdminEmailPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "MailAdapter",
+        "role": "repository",
+        "stereo": "infrastructure"
+      },
+      {
         "name": "Dịch vụ email",
-        "role": "external",
-        "stereo": "gửi thư"
+        "role": "external"
+      },
+      {
+        "name": "AuditLogPort",
+        "role": "repository",
+        "stereo": "identity output port"
       }
     ],
     "messages": [
       {
-        "phase": "Đặt lại mật khẩu hộ một tài khoản (F1-13)"
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "Quản trị viên",
-        "text": "Bấm Đặt lại mật khẩu trên dòng, xem email nhận, xác nhận"
+        "phase": "Giai đoạn 1 - Kiểm tài khoản và phương thức đăng nhập"
       },
       {
         "from": "Quản trị viên",
         "to": "UserAdminController",
-        "text": "Gửi yêu cầu đặt lại mật khẩu"
+        "text": "Chọn tài khoản và xác nhận đặt lại mật khẩu"
       },
       {
         "from": "UserAdminController",
-        "to": "UserAdminController",
-        "text": "Kiểm tra quyền quản lý tài khoản"
+        "to": "ResetUserPassword",
+        "text": "Đặt lại mật khẩu cho tài khoản"
       },
       {
-        "from": "UserAdminController",
-        "to": "UserAdminService",
-        "text": "Yêu cầu đặt lại mật khẩu"
+        "from": "ResetUserPassword",
+        "to": "IdentityStorePort",
+        "text": "Đọc tài khoản và tình trạng mật khẩu"
       },
       {
-        "from": "UserAdminService",
+        "from": "IdentityStorePort",
+        "to": "IdentityDbAdapter",
+        "text": "Tìm tài khoản"
+      },
+      {
+        "from": "IdentityDbAdapter",
         "to": "PostgreSQL",
-        "text": "Đọc tài khoản, biết có mật khẩu hay không"
+        "text": "Đọc tài khoản và loại đăng nhập"
       },
       {
         "from": "PostgreSQL",
-        "to": "UserAdminService",
-        "text": "Tài khoản, có mật khẩu hay không",
+        "to": "IdentityDbAdapter",
+        "text": "Tình trạng tài khoản",
+        "kind": "return"
+      },
+      {
+        "from": "IdentityDbAdapter",
+        "to": "IdentityStorePort",
+        "text": "Tình trạng tài khoản",
+        "kind": "return"
+      },
+      {
+        "from": "IdentityStorePort",
+        "to": "ResetUserPassword",
+        "text": "Tình trạng tài khoản",
         "kind": "return"
       },
       {
@@ -75,70 +111,76 @@
           "label": "Tài khoản có mật khẩu?",
           "then": [
             {
-              "from": "UserAdminService",
-              "to": "UserAdminService",
-              "text": "Sinh mật khẩu tạm, mã hoá trước khi lưu"
+              "from": "ResetUserPassword",
+              "to": "ResetUserPassword",
+              "text": "Sinh mật khẩu tạm và chỉ giữ bản băm"
             },
             {
-              "from": "UserAdminService",
+              "from": "ResetUserPassword",
+              "to": "IdentityStorePort",
+              "text": "Lưu bản băm và thu hồi mọi phiên làm mới"
+            },
+            {
+              "from": "IdentityStorePort",
+              "to": "IdentityDbAdapter",
+              "text": "Cập nhật mật khẩu và phiên"
+            },
+            {
+              "from": "IdentityDbAdapter",
               "to": "PostgreSQL",
-              "text": "Lưu mật khẩu tạm đã mã hoá"
+              "text": "Ghi bản băm và thu hồi phiên"
             },
             {
-              "from": "PostgreSQL",
-              "to": "UserAdminService",
-              "text": "Đã lưu",
-              "kind": "return"
+              "from": "ResetUserPassword",
+              "to": "AdminEmailPort",
+              "text": "Gửi mật khẩu tạm tới email tài khoản"
             },
             {
-              "from": "UserAdminService",
+              "from": "AdminEmailPort",
+              "to": "MailAdapter",
+              "text": "Chuẩn bị thư riêng"
+            },
+            {
+              "from": "MailAdapter",
               "to": "Dịch vụ email",
-              "text": "Gửi mật khẩu tạm tới email tài khoản",
-              "kind": "async"
+              "text": "Gửi mật khẩu tạm"
             }
           ],
           "else": [
             {
-              "from": "UserAdminService",
-              "to": "UserAdminService",
-              "text": "Tài khoản đăng nhập qua bên thứ ba, không đổi mật khẩu"
+              "from": "ResetUserPassword",
+              "to": "AdminEmailPort",
+              "text": "Gửi hướng dẫn đăng nhập qua nhà cung cấp"
             },
             {
-              "from": "UserAdminService",
+              "from": "AdminEmailPort",
+              "to": "MailAdapter",
+              "text": "Chuẩn bị thư hướng dẫn"
+            },
+            {
+              "from": "MailAdapter",
               "to": "Dịch vụ email",
-              "text": "Hướng dẫn đổi mật khẩu ở nơi đăng nhập gốc",
-              "kind": "async"
+              "text": "Gửi hướng dẫn đăng nhập"
             }
           ]
         }
       },
       {
-        "from": "UserAdminService",
-        "to": "PostgreSQL",
-        "text": "Ghi nhật ký hệ thống: ai đặt lại mật khẩu của ai"
+        "from": "ResetUserPassword",
+        "to": "AuditLogPort",
+        "text": "Ghi nhật ký không chứa mật khẩu rõ"
       },
       {
-        "from": "PostgreSQL",
-        "to": "UserAdminService",
-        "text": "Đã ghi",
-        "kind": "return"
-      },
-      {
-        "from": "UserAdminService",
+        "from": "ResetUserPassword",
         "to": "UserAdminController",
-        "text": "Đã gửi",
+        "text": "Trả kết quả xử lý",
         "kind": "return"
       },
       {
         "from": "UserAdminController",
         "to": "Quản trị viên",
-        "text": "Báo thành công",
+        "text": "Hiển thị đã gửi email, không hiện mật khẩu",
         "kind": "return"
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "Quản trị viên",
-        "text": "Hiện thông báo Đã gửi mật khẩu tạm tới email; mật khẩu không hiện cho quản trị viên"
       }
     ]
   }

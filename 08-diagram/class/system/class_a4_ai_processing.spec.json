@@ -1,0 +1,94 @@
+{
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a4_system.md:53; 01-rd/req/user_stories/a4_system.md:56; 01-rd/req/user_stories/a4_system.md:59; 01-rd/req/user_stories/a4_system.md:62. Nguồn thiết kế: 03-dd/logic/F5_ai-review.md; 03-dd/api/F5_ai-review.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "kind": "class",
+  "title": "A4 — Điều phối AI và suy giảm có kiểm soát",
+  "covers": [
+    "F5-01",
+    "F5-02",
+    "F5-03",
+    "F5-04",
+    "F5-05",
+    "F5-06",
+    "F5-07",
+    "F5-08",
+    "F5-13",
+    "F5-14",
+    "F5-17",
+    "F5-20",
+    "F5-22"
+  ],
+  "class": {
+    "legend": "shared",
+    "classes": [
+      {
+        "id": "service",
+        "name": "AiProcessingService",
+        "methods": [
+          "+ analyzeAccepted(submissionId : UUID) : ReviewReport",
+          "+ runThreeStages(sessionId : UUID) : InterviewRubric",
+          "+ buildSafeContext(request : AiRequest) : SafeAiContext",
+          "+ degradeOnFailure(request : AiRequest, cause : AiFailure) : AiFallback"
+        ]
+      },
+      {
+        "id": "port1",
+        "name": "AcceptedSubmissionPort",
+        "kind": "interface",
+        "methods": [
+          "+ requireAccepted(id : UUID) : Submission"
+        ]
+      },
+      {
+        "id": "port2",
+        "name": "AiProviderPort",
+        "kind": "interface",
+        "methods": [
+          "+ complete(context : SafeAiContext) : AiResponse"
+        ]
+      },
+      {
+        "id": "port3",
+        "name": "AiBudgetPort",
+        "kind": "interface",
+        "methods": [
+          "+ check(request : AiRequest) : BudgetDecision"
+        ]
+      },
+      {
+        "id": "port4",
+        "name": "AiHistoryRepository",
+        "kind": "class",
+        "methods": [
+          "+ save(result : AiResult)"
+        ]
+      }
+    ],
+    "externals": [],
+    "relations": [
+      {
+        "from": "service",
+        "to": "port1",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port2",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port3",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port4",
+        "kind": "dependency"
+      }
+    ],
+    "notes": [
+      "Mọi lời gọi AI có ngữ cảnh tách dữ liệu/chỉ thị và kiểm hạn mức; lỗi AI không làm hỏng F1-F4.",
+      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+    ]
+  }
+}

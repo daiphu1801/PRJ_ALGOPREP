@@ -1,0 +1,53 @@
+{
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a4_system.md:47. Nguồn thiết kế: 03-dd/logic/F2_problem-bank.md; 03-dd/api/F2_problem-bank.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "kind": "class",
+  "title": "A4 — Che dữ liệu testcase ẩn",
+  "covers": [
+    "F2-08"
+  ],
+  "class": {
+    "legend": "shared",
+    "classes": [
+      {
+        "id": "service",
+        "name": "HiddenResultProjectionService",
+        "methods": [
+          "+ publicResult(result : CaseResult, visibility : Visibility) : PublicCaseResult"
+        ]
+      },
+      {
+        "id": "port1",
+        "name": "CaseResultRepository",
+        "kind": "class",
+        "methods": [
+          "+ listBySubmission(id : UUID) : List<CaseResult>"
+        ]
+      },
+      {
+        "id": "port2",
+        "name": "HiddenDataPolicy",
+        "kind": "class",
+        "methods": [
+          "+ project(result : CaseResult) : PublicCaseResult"
+        ]
+      }
+    ],
+    "externals": [],
+    "relations": [
+      {
+        "from": "service",
+        "to": "port1",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port2",
+        "kind": "dependency"
+      }
+    ],
+    "notes": [
+      "Hidden chỉ công khai trạng thái/chỉ số; không trả input, expected output, diff hay object key qua API/event/log.",
+      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+# Ma trận chọn hồi quy theo thay đổi — bản thiết kế
+
+> Chưa thực thi. Khi có thay đổi code, chạy impact/detect_changes theo AGENTS.md để lấy symbol và execution flow bị ảnh hưởng, rồi nối API/AC dưới đây tới các ca nguồn. Chỉ chọn ca theo phạm vi thay đổi; lưu run record riêng với build và evidence.
+
+| Thay đổi ở hợp đồng/luồng | Ca module tối thiểu | Ca màn hoặc hành trình | Rủi ro cần quan sát |
+| :--- | :--- | :--- | :--- |
+| F1 phiên/refresh/RBAC | [F1 AC03-01](modules/F1_identity/F1_auth_session.md), [AC06-02](modules/F1_identity/F1_auth_failure_boundaries.md), [AC29-03](modules/F1_identity/F1_rbac_audit.md) | [SHR0101](screens/shared/SHR0101_auth.md), [E2E-A](PHASE5_SMOKE_E2E_SELECTION.md) | Cấp phiên sai, reuse token, tự khoá thiếu xác nhận |
+| F1 lớp/event/giảng viên | [F1 AC21-02](modules/F1_identity/F1_class_membership_status.md), [AC53-03](modules/F1_identity/F1_extension_a_metrics.md) | [Teacher](screens/teacher/README.md), [E2E-I](PHASE5_SMOKE_E2E_SELECTION.md) | Event mất/lặp, thứ tự học viên cần chú ý |
+| F2 phiên bản testcase/giao bài | [F2 AC74-01](modules/F2_problem-bank/F2_class_assignments.md), [AC75-03](modules/F2_problem-bank/F2_class_assignments.md) | [INS0202](screens/teacher/teacher_screens_phase4.md), [E2E-I](PHASE5_SMOKE_E2E_SELECTION.md) | Assignment/Outbox lệch, snapshot không ổn định |
+| F3 tạo mã/compile diagnostics | [F3 AC06-01](modules/F3_harness/F3_prepare_source_and_version.md), [AC06-02](modules/F3_harness/F3_prepare_source_and_version.md), [AC22-01](modules/F3_harness/F3_compile_error_mapping.md) | [USR0201](screens/users/USR0201_submission_result.md), [E2E-L](PHASE5_SMOKE_E2E_SELECTION.md) | Wrapper lệch vị trí nguồn; golden AC06-02 chờ codegen |
+| F4 queue/verdict/ẩn Hidden | [F4 AC08-01](modules/F4_judge-orchestration/F4_submission_resilience.md), [AC76-01](modules/F4_judge-orchestration/F4_verdict_privacy_queue.md), [AC39-03](modules/F4_judge-orchestration/F4_student_history_metrics.md) | [USR0201](screens/users/USR0201_submission_result.md), [E2E-L](PHASE5_SMOKE_E2E_SELECTION.md) | Treo PENDING, lộ Hidden, lệch ngày UTC+7 |
+| F5 budget/session/job | [F5 AC08-01](modules/F5_ai-review/F5_solution_review.md), [AC42-01](modules/F5_ai-review/F5_admin_prompt_budget_usage.md), [AC57-02](modules/F5_ai-review/F5_admin_jobs_budget_lifecycle.md) | [USR0301/0302](screens/users/README.md), [ADM AI](screens/admin/README.md) | Khoá nhầm luồng cũ, token lệch, job lặp |
+| F6 luyện/tiến độ/Redis | [F6 AC21-01](modules/F6_interview-bank/F6_learner_practice.md), [AC39-01](modules/F6_interview-bank/F6_admin_budget_resilience_progress.md), [AC40-04](modules/F6_interview-bank/F6_admin_budget_resilience_progress.md) | [USR0401/0402](screens/users/README.md) | Cursor/tổng lượt sai, ghi token trước commit, Redis outage |
+| Quyền hoặc DTO chia sẻ nhiều module | [Smoke P0](PHASE5_SMOKE_E2E_SELECTION.md) | [3 E2E theo vai trò](PHASE5_SMOKE_E2E_SELECTION.md) | Lộ dữ liệu chéo người dùng/lớp, sai đường đi API |
+
+Quy tắc chọn khi chạy: thêm ca P0/P1 cho nhánh sửa trực tiếp và dependency được impact xác định; thêm ca màn khi thay đổi DTO/điều hướng; thêm E2E khi thay đổi giao dịch, event, job, quyền hoặc hợp đồng liên module. Không dùng ma trận này để suy “pass” trước khi có run record.

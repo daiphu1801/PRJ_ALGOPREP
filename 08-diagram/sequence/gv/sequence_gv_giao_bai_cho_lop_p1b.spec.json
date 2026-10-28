@@ -1,0 +1,114 @@
+{
+  "_": "Nguồn: 03-dd/api/F2_problem-bank.md §53; 03-dd/logic/F2_problem-bank.md BR-18; outbox F2. Trang này nối tiếp 1a sau khi dòng giao và sự kiện được commit. ProblemEventRelay, ProblemOutboxPort, ProblemOutboxAdapter là tên minh họa [SoT: Suy luận]. Relay phát lại được; cùng eventId để consumer khử lặp. Nếu ghi outbox lỗi ở 1a thì giao dịch riêng bài rollback và không có sự kiện để phát.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Giao bài: phát sự kiện sau commit (1b)",
+  "covers": [
+    "F2-12"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "ProblemEventRelay",
+        "role": "service",
+        "stereo": "background worker"
+      },
+      {
+        "name": "ProblemOutboxPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "ProblemOutboxAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema problem"
+      },
+      {
+        "name": "RabbitMQ",
+        "role": "external",
+        "stereo": "event broker"
+      },
+      {
+        "name": "IdentityConsumer",
+        "role": "service",
+        "stereo": "identity event consumer"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 3 - Phát sự kiện giao bài sau commit"
+      },
+      {
+        "from": "ProblemEventRelay",
+        "to": "ProblemOutboxPort",
+        "text": "Lấy sự kiện giao bài chưa phát"
+      },
+      {
+        "from": "ProblemOutboxPort",
+        "to": "ProblemOutboxAdapter",
+        "text": "Đọc hộp thư sự kiện"
+      },
+      {
+        "from": "ProblemOutboxAdapter",
+        "to": "PostgreSQL",
+        "text": "Lấy sự kiện đã commit"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "ProblemOutboxAdapter",
+        "text": "Sự kiện và mã định danh",
+        "kind": "return"
+      },
+      {
+        "from": "ProblemOutboxAdapter",
+        "to": "ProblemOutboxPort",
+        "text": "Sự kiện cần phát",
+        "kind": "return"
+      },
+      {
+        "from": "ProblemOutboxPort",
+        "to": "ProblemEventRelay",
+        "text": "Sự kiện cần phát",
+        "kind": "return"
+      },
+      {
+        "from": "ProblemEventRelay",
+        "to": "RabbitMQ",
+        "text": "Báo bài được giao cho lớp",
+        "kind": "async"
+      },
+      {
+        "from": "RabbitMQ",
+        "to": "IdentityConsumer",
+        "text": "Chuyển thông tin bài được giao",
+        "kind": "async"
+      },
+      {
+        "from": "IdentityConsumer",
+        "to": "IdentityConsumer",
+        "text": "Cập nhật hoạt động lớp theo mã sự kiện"
+      },
+      {
+        "from": "ProblemEventRelay",
+        "to": "ProblemOutboxPort",
+        "text": "Đánh dấu sự kiện đã phát"
+      },
+      {
+        "from": "ProblemOutboxPort",
+        "to": "ProblemOutboxAdapter",
+        "text": "Lưu trạng thái phát"
+      },
+      {
+        "from": "ProblemOutboxAdapter",
+        "to": "PostgreSQL",
+        "text": "Ghi thời điểm phát"
+      }
+    ]
+  }
+}

@@ -1,17 +1,18 @@
 {
-  "_": "Nguon: 03-dd/logic/F3_harness.md muc 5.1 (dong 421-425: ExecutionPlan gom files[] (name, content), compile (argv[], env[]) hoac null, run (argv[], env[])), muc 5.3 (dong 447-456: JudgePayloadAssembler dat o application, GoJudgePayloadAssembler mac dinh va Judge0PayloadAssembler thay the dat o infrastructure, chon theo cung cong tac engine voi adapter cua JudgeExecutionPort). Kieu cua cac truong ExecutionPlan la dien giai cua DD dong 423-424. [SoT: Suy luan]: DD khong noi ro lop nao sinh ra ExecutionPlan (dong 423 noi 'plugin tra ExecutionPlan' nhung interface muc 1.2 khong co phuong thuc do) nen khong ve canh sinh ra no.",
+  "_": "Nguon: 03-dd/logic/F3_harness.md:429-432 ExecutionPlan gom files(name,content), compile(argv,env) hoac null, run(argv,env); 03-dd/logic/F3_harness.md:457-465 JudgePayloadAssembler va hai implementation; 03-dd/api/F3_harness.md:143-154 JudgePayload gom engineId va body. [SoT: Suy luan] SourceFile va CommandSpec la ten kieu de xuat cho hai cau truc du lieu chua duoc DD dat ten, khong khang dinh da co lop Java tuong ung. [SoT: Suy luan] DD:431 noi plugin tra ExecutionPlan nhung interface DD:34-41 khong co phuong thuc do, nen khong ve canh nguon sinh ExecutionPlan. Bo getter/setter va chi tiet HTTP go-judge vi thuoc F4.",
   "kind": "class",
-  "title": "Class diagram đóng gói payload gửi engine của F3 harness",
+  "title": "F3 — Chuẩn bị chương trình cho máy chấm",
   "covers": [],
   "class": {
+    "legend": "shared",
     "classes": [
       {
         "id": "plan",
         "name": "ExecutionPlan",
         "attributes": [
-          "- files : List<{name, content}>",
-          "- compile : {argv[], env[]} | null",
-          "- run : {argv[], env[]}"
+          "- files : List<SourceFile>",
+          "- compile : CommandSpec [0..1]",
+          "- run : CommandSpec"
         ]
       },
       {
@@ -29,14 +30,17 @@
       {
         "id": "j0",
         "name": "Judge0PayloadAssembler"
-      }
-    ],
-    "externals": [
+      },
       {
         "id": "payload",
-        "name": "JudgePayload"
+        "name": "JudgePayload",
+        "attributes": [
+          "- engineId : String",
+          "- body : JSON"
+        ]
       }
     ],
+    "externals": [],
     "relations": [
       {
         "from": "go",
@@ -62,8 +66,8 @@
       }
     ],
     "notes": [
-      "Chọn GoJudgePayloadAssembler (mặc định) hay Judge0PayloadAssembler theo cùng công tắc engine với adapter của JudgeExecutionPort; hai lớp cài đặt nằm ở infrastructure, interface ở application (03-dd/logic/F3_harness.md:450-452).",
-      "[SoT: Suy luận] DD chưa nói lớp nào sinh ra ExecutionPlan nên không vẽ cạnh đó (03-dd/logic/F3_harness.md:423)."
+      "[SoT: Suy luận] SourceFile = tên/nội dung; CommandSpec = đối số/biến môi trường.",
+      "Assembler chuyển ExecutionPlan thành JudgePayload; GoJudge mặc định, Judge0 thay thế."
     ]
   }
 }

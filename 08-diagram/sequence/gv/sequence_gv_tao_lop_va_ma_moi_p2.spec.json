@@ -1,98 +1,38 @@
 {
-  "_": "Luong tao lop hoc va phat ma moi cua actor A2, ke ca buoc hoc vien dung ma de tham gia. Nguon: US-A2-07 (01-rd/req/user_stories/a2_instructor.md:102-123), 01-rd/req/F1_identity.md (F1-23, F1-25, F1-26), 03-dd/api/F1_identity.md muc 0.4 (endpoint #20, #23, #25), 02-bd/architecture/F1_identity.md muc 5 (ma moi TTL 7 ngay), 02-bd/database/F1_identity.md:93-94 (nhieu ma hieu luc song song). Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen. | Cap nhat 2026-10-20: siet theo quy tac moi, nhan mui ten la cau tieng Viet thuong, khong duong dan endpoint, ma HTTP, ma quyen, ten su kien, thuat ngu ky thuat; duong dan, ma HTTP va ma quyen nam o DD.",
+  "_": "Thiết kế dự kiến cho F1. Nguồn: 03-dd/api/F1_identity.md endpoint #23 và mục 0.4.3; 02-bd/database/F1_identity.md mục 1.14; 01-rd/system/SYS0101_backend_architecture.md mục 5.3. CreateInviteCmd = CreateClassInviteCodeCommandHandler, ClassRepo = ClassRepository, ClassDbAdapter = ClassPersistenceAdapter [SoT: Suy luận]. Đọc lớp và ghi mã mời qua cổng của identity, không ghi DB trực tiếp từ handler. Nhiều mã còn hạn dùng được cùng lúc; mã mới hết hạn sau 7 ngày. Tạo lớp ở trang 1/3, học viên dùng mã ở trang 3/3.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Tạo lớp học và phát mã mời (Giảng viên) (2/3)",
-  "covers": [
-    "F1-25"
-  ],
+  "title": "Sơ đồ tuần tự chi tiết - Tạo mã mời lớp (2/3)",
+  "covers": ["F1-25"],
   "mode": "color",
   "sequence": {
     "detail": true,
     "participants": [
-      {
-        "name": "Giảng viên",
-        "role": "actor"
-      },
-      {
-        "name": "ClassController",
-        "role": "controller",
-        "stereo": "presentation"
-      },
-      {
-        "name": "ClassService",
-        "role": "service",
-        "stereo": "application"
-      },
-      {
-        "name": "PostgreSQL",
-        "role": "datastore",
-        "stereo": "schema identity"
-      }
+      {"name": "Giảng viên", "role": "actor"},
+      {"name": "ClassController", "role": "controller", "stereo": "presentation"},
+      {"name": "CreateInviteCmd", "role": "service", "stereo": "application command"},
+      {"name": "ClassRepo", "role": "repository", "stereo": "domain output port"},
+      {"name": "ClassDbAdapter", "role": "repository", "stereo": "infrastructure"},
+      {"name": "PostgreSQL", "role": "datastore", "stereo": "schema identity"}
     ],
     "messages": [
-      {
-        "phase": "Giai đoạn 2 - Sinh mã mời, hạn dùng 7 ngày (F1-25)"
-      },
-      {
-        "from": "Giảng viên",
-        "to": "Giảng viên",
-        "text": "Bấm Tạo mã mời cho lớp vừa tạo"
-      },
-      {
-        "from": "Giảng viên",
-        "to": "ClassController",
-        "text": "Gửi yêu cầu tạo mã mời"
-      },
-      {
-        "from": "ClassController",
-        "to": "ClassService",
-        "text": "Yêu cầu tạo mã mời"
-      },
-      {
-        "from": "ClassService",
-        "to": "PostgreSQL",
-        "text": "Kiểm tra lớp thuộc giảng viên này"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "ClassService",
-        "text": "Lớp thuộc quyền phụ trách hoặc không",
-        "kind": "return"
-      },
-      {
-        "from": "ClassService",
-        "to": "ClassService",
-        "text": "Sinh mã ngẫu nhiên, hạn dùng 7 ngày"
-      },
-      {
-        "from": "ClassService",
-        "to": "PostgreSQL",
-        "text": "Lưu mã mới; mã cũ vẫn dùng được"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "ClassService",
-        "text": "Đã lưu",
-        "kind": "return"
-      },
-      {
-        "from": "ClassService",
-        "to": "ClassController",
-        "text": "Mã mời và hạn dùng",
-        "kind": "return"
-      },
-      {
-        "from": "ClassController",
-        "to": "Giảng viên",
-        "text": "Báo tạo thành công",
-        "kind": "return"
-      },
-      {
-        "from": "Giảng viên",
-        "to": "Giảng viên",
-        "text": "Hiện mã kèm hạn dùng và nút sao chép"
-      }
+      {"phase": "Giai đoạn 2 - Giảng viên tạo mã mời mới (F1-25)"},
+      {"from": "Giảng viên", "to": "ClassController", "text": "Yêu cầu tạo mã mời cho lớp"},
+      {"from": "ClassController", "to": "CreateInviteCmd", "text": "Chuyển yêu cầu tạo mã"},
+      {"from": "CreateInviteCmd", "to": "ClassRepo", "text": "Kiểm tra lớp thuộc giảng viên"},
+      {"from": "ClassRepo", "to": "ClassDbAdapter", "text": "Chuyển yêu cầu kiểm lớp"},
+      {"from": "ClassDbAdapter", "to": "PostgreSQL", "text": "Đọc chủ lớp"},
+      {"from": "PostgreSQL", "to": "ClassDbAdapter", "text": "Chủ lớp", "kind": "return"},
+      {"from": "ClassDbAdapter", "to": "ClassRepo", "text": "Chủ lớp", "kind": "return"},
+      {"from": "ClassRepo", "to": "CreateInviteCmd", "text": "Lớp thuộc quyền phụ trách", "kind": "return"},
+      {"from": "CreateInviteCmd", "to": "CreateInviteCmd", "text": "Sinh mã mới có hạn 7 ngày"},
+      {"from": "CreateInviteCmd", "to": "ClassRepo", "text": "Lưu mã mới; giữ mã cũ còn hạn"},
+      {"from": "ClassRepo", "to": "ClassDbAdapter", "text": "Chuyển yêu cầu lưu mã"},
+      {"from": "ClassDbAdapter", "to": "PostgreSQL", "text": "Ghi mã và thời điểm hết hạn"},
+      {"from": "PostgreSQL", "to": "ClassDbAdapter", "text": "Đã lưu", "kind": "return"},
+      {"from": "ClassDbAdapter", "to": "ClassRepo", "text": "Mã và hạn dùng", "kind": "return"},
+      {"from": "ClassRepo", "to": "CreateInviteCmd", "text": "Mã và hạn dùng", "kind": "return"},
+      {"from": "CreateInviteCmd", "to": "ClassController", "text": "Mã mời vừa tạo", "kind": "return"},
+      {"from": "ClassController", "to": "Giảng viên", "text": "Hiện mã và hạn dùng", "kind": "return"}
     ]
-  },
-  "_cat": "Tach tu sequence_gv_tao_lop_va_ma_moi.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 2/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+  }
 }

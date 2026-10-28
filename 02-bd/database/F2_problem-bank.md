@@ -3,7 +3,9 @@
 > Schema PostgreSQL: `problem`. Đọc cùng `02-bd/architecture/F2_problem-bank.md` trước — đặc biệt mục 2
 > (bảng ánh xạ mã F2-nn) và mục 5 (cờ `function_wrapper_supported`).
 >
-> Sửa 2026-10-22 (đồng bộ DB vòng 4, DEC-2026-1022-db-sync-round4): quy ước xoá của file này: thực thể gốc (`problems`, `testcases`, `tags`...) **không bao giờ bị xoá cứng**, bài toán chỉ ẩn mềm bằng `deleted = true` (mục 1.1), nên mọi FK nội schema `problem` là `NO ACTION` (mặc định, không `ON DELETE CASCADE`). Ngoại lệ đã ghi riêng: `topics` và `problem_levels` có xoá cứng nhưng bị chặn khi còn tham chiếu (mục 1.2, 1.2a); `class_assignments` gỡ mềm bằng `removed_at` (mục 1.7). `[SoT: Suy luận]` cho câu tổng quát này, từng điểm đã có nguồn ở mục tương ứng.
+> Bổ sung DD 2026-10-25: mục 1.13–1.14 chốt nơi lưu xuất xứ sinh testcase và khoá khử trùng sự kiện `SubmissionGraded`; các bảng này thuộc schema `problem`.
+>
+> Sửa 2026-10-22 (đồng bộ DB vòng 4, DEC-2026-1022-db-sync-round4): bài toán ẩn mềm bằng `deleted = true` (mục 1.1), nên các FK nội schema `problem` mặc định là `NO ACTION` (không `ON DELETE CASCADE`). Ngoại lệ: `topics` và `problem_levels` xoá cứng nhưng bị chặn khi còn tham chiếu (mục 1.2, 1.2a); `class_assignments` gỡ mềm bằng `removed_at` (mục 1.7); testcase xoá cứng theo thao tác tác giả ở DD F2 §44, sau khi kiểm ngưỡng xuất bản. `[SoT: Suy luận]` cho quy tắc chung, từng điểm có nguồn ở mục tương ứng.
 
 ## 1. Bảng chính
 
@@ -31,7 +33,7 @@ Cốt lõi F2-01, F2-02, F2-15, F2-16.
 | `known_optimal_complexity` | VARCHAR nullable | Bổ sung 2026-09-12 theo yêu cầu BD `ai-review` (F5-03 — Solution Review đối chiếu độ phức tạp bài giải với optimum đã biết). Dạng chuỗi ký hiệu Big-O (`O(n)`, `O(n log n)`...). Sửa 2026-10-22 (đồng bộ DB vòng 2, DEC-2026-1022-db-sync-round2), mục (10) của quyết định đó: **trong phạm vi hiện tại không có ô nhập ở màn nào** (kể cả `problem_authoring`, `SHR0202` mục 4.3), cột luôn NULL và được giữ lại để mở rộng sau; NULL = chưa khai báo, F5.1 bỏ qua bước so sánh optimum cho bài đó thay vì suy đoán `[SoT: Suy luận]` |
 | `author_id` | UUID NOT NULL, tham chiếu `identity.users.id`, không FK vật lý xuyên schema | Bổ sung 2026-10-01 (`SHR0201` Q1, `DEC-2026-1001-admin-configurable-settings`): người tạo bài, **bất biến** — gán một lần khi tạo, không bao giờ đổi (khác `updated_by` đổi theo lần sửa gần nhất). Nhân bản (F2-16) gán `author_id` = người nhân bản. Dùng cho bộ lọc "Bài của tôi" của A2; ADMIN thấy và sửa mọi bài. Lưu ý: yêu cầu "FK users" của quyết định được thực hiện như tham chiếu id kiểm ở tầng ứng dụng, đúng nguyên tắc không FK xuyên schema bên dưới `[SoT: Suy luận]`. Index `problems(author_id)` |
 | `updated_by` | UUID, tham chiếu `identity.users.id`, không FK vật lý xuyên schema | F2-10 amendment Q7(g) — trường phẳng, không phải audit trail đầy đủ. Sửa 2026-10-22 (đồng bộ DB, phase 1): bỏ cách viết tự mâu thuẫn "FK → user ... không FK cứng"; quy ước chung cho `updated_by`, `assigned_by`, `author_id`, `created_by` ở mọi bảng module này: kiểu UUID, kiểm tồn tại ở tầng ứng dụng |
-| `current_testcase_set_version` | INT NOT NULL default 1 | Sửa 2026-10-22 (đồng bộ DB, phase 1): thêm thành hàng của bảng (trước chỉ có trong văn xuôi mục 1.6). Số hiệu bộ testcase hiện hành, tăng khi sửa/thêm/xoá testcase Hidden của bài đã xuất bản; cơ chế ở mục 1.6. `SHR0202` BD dòng 385 và 601 đọc cột này |
+| `current_testcase_set_version` | INT NOT NULL default 1 | Số hiệu bộ testcase chấm hiện hành; tăng khi thay đổi testcase đã duyệt (Sample hoặc Hidden) của bài đã xuất bản theo mục 1.6. `SHR0202` BD dòng 385 và 601 đọc cột này |
 | `created_at` / `updated_at` | TIMESTAMPTZ | `updated_at` dùng cho ngưỡng "chưa xuất bản quá 7 ngày" |
 | `published_at` | TIMESTAMPTZ nullable | Mốc xuất bản lần gần nhất |
 | `ai_testcase_generations_used` | INT NOT NULL default 0 | Bổ sung 2026-10-03 (`DEC-2026-1003-ai-testcase-generation-quota`, `SHR0202` Q17 và Q18): số lần "Sinh tự động" (F2-14) đã chạy **thành công** cho bài này. Chỉ lần thêm được ít nhất 1 testcase nháp mới cộng; lần lỗi không cộng, duyệt hoặc loại nháp không hoàn lại. Bộ đếm do máy chủ giữ, client không đếm. Mốc trần là tham số ADMIN toàn hệ thống (`ADM0301` Khu vực H, nơi lưu: `ADM0301` Q12), không lưu ở bảng này |
@@ -158,9 +160,9 @@ Sửa 2026-10-22 (đồng bộ DB, phase 2, DEC-2026-1022-problem-bank-schema-sy
 | ~~`is_worked_example`~~ | (bỏ) | Sửa 2026-10-22 (đồng bộ DB, phase 2, DEC-2026-1022-problem-bank-schema-sync) (PB-08, mục 4 của DEC): **bỏ cột**. Ví dụ mẫu có dữ liệu riêng (input, output, giải thích), không cần là testcase chấm; chuyển sang bảng `worked_examples` (mục 1.12). Ngưỡng "≥2 ví dụ mẫu" đếm dòng `worked_examples`, không còn đếm cờ ở đây |
 | ~~`explanation_md`~~ | (bỏ) | Sửa 2026-10-22 (đồng bộ DB, phase 2, DEC-2026-1022-problem-bank-schema-sync) (PB-08): **bỏ cột**, chuyển thành `worked_examples.explanation_md` (mục 1.12). Ghi chú lịch sử: cột này được thêm 2026-10-18 theo `DEC-2026-1018-usr-open-questions-phase2-5`; phần đó **bị thay thế** bởi `DEC-2026-1022-problem-bank-schema-sync` |
 | `origin` | ENUM(`MANUAL`,`AI`) NOT NULL default `MANUAL` | Sửa 2026-10-22 (đồng bộ DB, phase 2, DEC-2026-1022-problem-bank-schema-sync) (PB-05, thay `is_ai_generated_draft`): xuất xứ testcase; `AI` = do F2-14 sinh |
-| `approved` | BOOLEAN NOT NULL | Sửa 2026-10-22 (đồng bộ DB, phase 2, DEC-2026-1022-problem-bank-schema-sync) (PB-05): người soạn đề đã duyệt chưa. Testcase `AI` sinh ra với `approved = false` và chuyển `true` khi người soạn đề duyệt (RD `01-rd/req/F2_problem-bank.md:111-116`). Testcase `MANUAL` do A2/A3 tự nhập tạo với `approved = true` `[SoT: Suy luận]`: RD chỉ nói rõ nháp AI chưa duyệt, không nói thẳng testcase tay mặc định đã duyệt; khớp prototype (`draft-types.ts:11-15`). **Chỉ testcase `approved = true` được tính vào các mốc checklist xuất bản (≥8 testcase, ≥2 Sample) và được gộp vào bộ Hidden/chạy chấm** (RD `:113-116`); nháp chưa duyệt không bao giờ vào bộ chấm. Duyệt một testcase Hidden của bài đã xuất bản là thêm vào bộ Hidden nên tăng `current_testcase_set_version` |
+| `approved` | BOOLEAN NOT NULL | Người soạn đề đã duyệt chưa. Testcase `AI` sinh ra với `approved = false` và chuyển `true` khi người soạn đề duyệt (RD `01-rd/req/F2_problem-bank.md:111-116`). Testcase `MANUAL` do A2/A3 tự nhập tạo với `approved = true` `[SoT: Suy luận]`. **Chỉ testcase `approved = true` được tính vào checklist (≥8 testcase, ≥2 Sample) và bundle chấm Sample + Hidden**; nháp chưa duyệt không vào bộ chấm. Duyệt testcase của bài đã xuất bản làm tăng `current_testcase_set_version` |
 | `category` | ENUM(`TYPICAL`,`BOUNDARY_LOW`,`BOUNDARY_HIGH`,`DEGENERATE`,`DUPLICATE`,`SORTED`,`EXTREME`) nullable | Sửa 2026-10-22 (đồng bộ DB, phase 2, DEC-2026-1022-problem-bank-schema-sync) (PB-05): nhãn phân loại ca để dựng ma trận độ phủ ở bước duyệt (F2-14 bước 3). Bảy giá trị lấy từ union đóng `TestcaseCategory` của prototype (`05-coding/frontend/src/entities/problem/model/draft-types.ts:19-36`, mảng hằng `TESTCASE_CATEGORIES`) `[SoT: Suy luận]`: RD (`01-rd/req/F2_problem-bank.md:86-88`) chỉ liệt kê sáu nhãn bằng lời, `typical` chỉ có ở prototype. NULL = testcase nhập tay chưa gán nhãn. Chỉ để trình bày, không ảnh hưởng chấm |
-| `position` | INT NOT NULL | Sửa 2026-10-22 (đồng bộ DB, phase 1): thứ tự trình bày testcase trong bảng, ghi bởi `ReorderTestcases` (`02-bd/screens/shared/SHR0202_problem_authoring.md:643`, kéo-thả `:696`). Chỉ ảnh hưởng hiển thị, không ảnh hưởng chấm (F4 chạy mọi testcase). Dòng mới nhận `max(position)+1` trong cùng `problem_id`. Không đặt unique `(problem_id, position)` để việc đổi chỗ không vướng ràng buộc tạm thời; ứng dụng đánh số lại cả bộ trong một giao dịch |
+| `position` | INT NOT NULL | Thứ tự dùng chung cho bảng biên soạn và thứ tự chấm trong snapshot; F4 đánh số `testcase_order` theo cột này và chọn lỗi đầu tiên theo thứ tự đó. `ReorderTestcases` ghi cột này; bài `PUBLISHED` đổi thứ tự thực sự tạo snapshot mới và tăng phiên bản một lần, bài `UNPUBLISHED` thì không. Dòng mới nhận `max(position)+1` trong cùng `problem_id`. Không đặt unique `(problem_id, position)` để việc đổi chỗ không vướng ràng buộc tạm thời; ứng dụng đánh số lại cả bộ trong một giao dịch |
 | `created_at` / `updated_at` | TIMESTAMPTZ | |
 
 **Ràng buộc CHECK lưu trữ (sửa 2026-10-22, đồng bộ DB phase 1):** `input_storage = 'INLINE'` bắt buộc `input_inline IS NOT NULL`; `input_storage = 'MINIO'` bắt buộc `input_object_key IS NOT NULL`. Tương tự `expected_output_storage` với `expected_output_inline` / `expected_output_object_key`. Thêm 2 CHECK ở mức bảng.
@@ -168,18 +170,7 @@ Sửa 2026-10-22 (đồng bộ DB, phase 2, DEC-2026-1022-problem-bank-schema-sy
 Sửa 2026-10-22 (đồng bộ DB, phase 1): **bỏ cột `testcases.testcase_set_version`**. Cột mâu thuẫn với nguyên tắc "bảng chỉ giữ trạng thái hiện hành" (mục versioning dưới) và không có nguồn nào đọc: grep `02-bd`, `01-rd`, `03-dd` chỉ thấy `problems.current_testcase_set_version` (`SHR0202` BD dòng 385, 601), sự kiện `TestcaseSetVersionBumped` (`02-bd/architecture/F2_problem-bank.md:69`) và cột phía `judge-orchestration`.
 
 **Versioning (F2-09, chỉ để truy vết — `DEC-2026-0828-remove-rejudge-scope` đã cắt re-judge):**
-`problems.current_testcase_set_version` (đã là một hàng của bảng 1.1; INT NOT NULL default 1) tăng mỗi khi Admin sửa/thêm/xoá testcase Hidden của một bài **đã xuất bản**.
-Sửa testcase không tạo dòng `testcases` mới cho version cũ — bảng `testcases` chỉ giữ **trạng thái hiện
-hành**; lịch sử "submission X được chấm ở version nào" nằm ở phía `judge-orchestration`
-(`submission.testcase_set_version_at_grading`, ghi lại tại thời điểm chấm qua sự kiện
-`TestcaseSetVersionBumped`), **không phải** ở `problem-bank` giữ nhiều bản sao testcase theo version. Điều
-này đủ để trả lời "submission cũ chấm theo version nào" (F2-09) mà không cần cơ chế phục dựng lại đúng nội
-dung testcase của version cũ (không cần vì không còn re-judge để chạy lại).
-
-`[SoT: Suy luận]` — nếu về sau khôi phục nhu cầu xem lại **nội dung** testcase ở một version cũ (không chỉ
-số hiệu), cần thêm bảng lịch sử tách riêng (ví dụ `testcase_history` lưu snapshot mỗi lần bump version).
-BD không tạo bảng đó ngay vì hiện tại không có yêu cầu đọc lại nội dung version cũ, tránh phình schema
-cho một tính năng chưa được RD xác nhận.
+**Quy tắc phiên bản (chốt `position` 2026-10-26):** `problems.current_testcase_set_version` tăng đúng một lần khi một thao tác trên bài `PUBLISHED` làm thay đổi **bất kỳ testcase đã duyệt nào trong bộ chấm**, gồm Sample và Hidden: thêm, xoá, duyệt, đổi visibility, input, output. Mọi lần đổi thứ tự `position` thực sự qua `ReorderTestcases` trên bài `PUBLISHED` cũng tạo snapshot mới và tăng một phiên bản, kể cả khi kéo nháp chưa duyệt; gửi lại thứ tự y hệt không tăng. Testcase nháp chưa duyệt nếu chỉ sửa nội dung, và ví dụ `worked_examples`, không làm tăng. Trước khi công bố phiên bản mới, F2 tạo snapshot bất biến của toàn bộ testcase đã duyệt, gồm id, visibility, position, input và expected output, trong MinIO rồi ghi `testcase_set_snapshots` cùng giao dịch đổi testcase và số phiên bản. Lần xuất bản đầu tạo snapshot cho phiên bản hiện hành. Bản ghi snapshot cũ giữ được để lượt nộp đã xếp hàng đọc đúng bộ tại lúc nộp. `testcases` vẫn chỉ giữ trạng thái hiện hành. Sự kiện `TestcaseSetVersionBumped` phát sau commit; không dùng sự kiện để xác định phiên bản của một lượt nộp.
 
 ### 1.7. `class_assignments` (F2-12)
 
@@ -256,6 +247,64 @@ Sửa 2026-10-22 (đồng bộ DB, phase 2, DEC-2026-1022-problem-bank-schema-sy
 | `explanation_md` | TEXT nullable | Lời giải thích, Markdown. Đổi bảng này **không** tăng `current_testcase_set_version` |
 
 Quan hệ với `testcases`: hai tập độc lập, **không có khoá ngoại hay cờ nối**. Ví dụ mẫu **không** dùng để chấm; testcase `SAMPLE` (chấm được, người học thấy) vẫn ở `testcases` với `visibility = SAMPLE`. Checklist xuất bản: "≥2 Sample" đếm `testcases` có `visibility = 'SAMPLE' AND approved = true`; "≥2 ví dụ mẫu" đếm `worked_examples` của bài. Nhân bản (F2-16) sao chép cả các dòng này.
+
+### 1.13. `testcase_generation_runs` (F2-14)
+
+Lưu xuất xứ mỗi lần AI sinh được ít nhất một testcase nháp, theo RD F2-14 bước 8. Ghi cùng giao dịch với testcase mới và lần tăng `ai_testcase_generations_used`; lần sinh lỗi hoặc thêm 0 nháp không tạo dòng.
+
+| Cột | Kiểu | Ghi chú |
+| :--- | :--- | :--- |
+| `id` | UUID PK | Định danh lượt sinh |
+| `problem_id` | UUID NOT NULL, FK → `problems.id` | Không cascade |
+| `generator_script` | TEXT NOT NULL | Script AI đã tạo và thực thi; chỉ A2 tác giả/A3 được đọc |
+| `validator_script` | TEXT NOT NULL | Script kiểm ràng buộc đã thực thi |
+| `seed` | BIGINT NOT NULL | Hạt giống cố định của lượt |
+| `model_id` | VARCHAR(128) NOT NULL | Mô hình đã sinh script |
+| `prompt_version` | VARCHAR(64) NOT NULL | Phiên bản prompt tại lúc sinh |
+| `requested_by` | UUID NOT NULL | Tham chiếu `identity.users.id`, không FK vật lý xuyên schema |
+| `created_at` | TIMESTAMPTZ NOT NULL | Thời điểm hoàn thành lượt thành công |
+| `added_count` | INT NOT NULL CHECK (`added_count > 0`) | Số nháp đã thêm |
+| `dropped_json` | JSONB NOT NULL default `'[]'` | Danh sách `{reason, count}` của input bị loại; không chứa nội dung testcase ẩn |
+
+### 1.14. `consumed_events`
+
+Khoá khử trùng khi cập nhật `problem_stats` từ `SubmissionGraded` giao ít nhất một lần. Consumer chèn `event_id` và cập nhật các bộ đếm **trong cùng giao dịch**; xung đột khoá thì bỏ qua sự kiện. Giữ khoá lâu dài để replay sự kiện cũ không đếm trùng; chỉ dọn khi có chính sách lưu sự kiện nguồn bảo đảm không replay sau mốc dọn.
+
+| Cột | Kiểu | Ghi chú |
+| :--- | :--- | :--- |
+| `event_id` | UUID PK | ID envelope của sự kiện, không phải `submission_id` |
+| `consumed_at` | TIMESTAMPTZ NOT NULL | Thời điểm xử lý thành công |
+
+### 1.15. `testcase_set_snapshots`
+
+| Cột | Kiểu | Ghi chú |
+| :--- | :--- | :--- |
+| `problem_id` | UUID NOT NULL, FK → `problems.id` | PK ghép `(problem_id, version)` |
+| `version` | INT NOT NULL CHECK (`version > 0`) | Cùng số với `problems.current_testcase_set_version` khi tạo |
+| `object_key` | VARCHAR NOT NULL UNIQUE | Bundle bất biến trong MinIO; chỉ cổng nội bộ F2/F4 được đọc, không cấp presigned URL cho client |
+| `testcase_count` | INT NOT NULL CHECK (`testcase_count > 0`) | Số ca đã duyệt trong bundle |
+| `content_sha256` | CHAR(64) NOT NULL | Kiểm toàn vẹn khi worker tải bundle |
+| `created_at` | TIMESTAMPTZ NOT NULL | |
+
+Bundle ghi vào MinIO trước giao dịch công bố phiên bản; giao dịch thất bại thì object chưa tham chiếu được job dọn object mồ côi xử lý. Không sửa hoặc ghi đè bundle đã công bố. Giữ snapshot ít nhất khi còn lượt nộp trỏ đến phiên bản đó; chính sách dọn chi tiết thuộc vận hành F2/F4.
+
+### 1.16. `outbox_events`
+
+F2 ghi sự kiện miền trong **cùng giao dịch** với thay đổi bài, testcase hoặc bài giao; relay JOB-PB-01 phát sau commit (`03-dd/jobs/F2_problem-bank.md`). Bảng thuộc schema `problem`, không dùng chung hàng đợi Outbox của F4.
+
+| Cột | Kiểu | Ghi chú |
+| :--- | :--- | :--- |
+| `id` | UUID PK | `eventId` trong phong bì, giữ nguyên qua mọi lần publish lại |
+| `aggregate_type` | VARCHAR(40) NOT NULL | `Problem` hoặc `ClassAssignment` |
+| `aggregate_id` | UUID NOT NULL | ID bài hoặc ID dòng giao bài |
+| `event_type` | VARCHAR(64) NOT NULL | Một trong sáu sự kiện F2 §59.1 |
+| `routing_key` | VARCHAR(100) NOT NULL | Khoá RabbitMQ của từng loại sự kiện ở DD F2 §59 |
+| `payload` | JSONB NOT NULL | Phong bì có `schemaVersion = 1`, không chứa testcase, mã đáp án hay mã người học |
+| `created_at` | TIMESTAMPTZ NOT NULL | Thứ tự relay |
+| `published_at` | TIMESTAMPTZ nullable | Chỉ điền sau publisher confirm |
+| `publish_attempts` | INT NOT NULL DEFAULT 0 | Tăng sau mỗi lần thử |
+
+Index một phần `outbox_events(created_at, id) WHERE published_at IS NULL` cho relay. Dòng đã publish giữ 90 ngày rồi job dọn; dòng chưa publish không xoá theo tuổi. Consumer khử trùng theo `eventId` hoặc phiên bản tự nhiên của loại sự kiện. [DD F2 Q-17]
 
 ## 2. Chỉ mục (index) đáng chú ý
 

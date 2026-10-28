@@ -1,0 +1,200 @@
+{
+  "_": "Nguồn: 01-rd/req/F1_identity.md F1-17; 03-dd/api/F1_identity.md #7/#8/#60; 03-dd/logic/F1_identity.md BR-04; 02-bd/database/F1_identity.md users, refresh_tokens, OTP Redis; 02-bd/security/F1_identity.md mục 3. Tên lớp/port là thiết kế dự kiến [SoT: Suy luận], backend hiện là scaffold. ResetWritePort là cổng ghi gộp thao tác users, refresh_tokens và system_audit_logs trong một giao dịch PostgreSQL; IdentityDbAdapter triển khai nó. Đây là ranh giới transaction, không phải một bảng mới. Trong transaction khoá dòng users, so password_changed_at với issued_at OTP lấy từ đồng hồ DB; lần dùng sau cùng mã bị từ chối. Ghi mật khẩu băm, password_changed_at, must_change_password=false, tài khoản Admin tạo đang PENDING_VERIFICATION chuyển ACTIVE, thu hồi mọi refresh token và audit. DB rollback giữ OTP và TTL gốc; sau commit mới xoá Redis. Nếu xoá Redis lỗi, kiểm tra DB vẫn chặn dùng lại. Owner chốt 2026-10-27, không cần giao dịch phân tán.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Lưu mật khẩu và thu hồi phiên (3b/3)",
+  "covers": [
+    "F1-17"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Sinh viên",
+        "role": "actor"
+      },
+      {
+        "name": "AuthController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "ResetPasswordCmd",
+        "role": "service",
+        "stereo": "application command"
+      },
+      {
+        "name": "ResetWritePort",
+        "role": "repository",
+        "stereo": "domain output port"
+      },
+      {
+        "name": "IdentityDbAdapter",
+        "role": "repository",
+        "stereo": "infrastructure"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema identity"
+      },
+      {
+        "name": "ResetOtpPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "RedisOtpAdapter",
+        "role": "repository",
+        "stereo": "infrastructure"
+      },
+      {
+        "name": "Redis",
+        "role": "datastore",
+        "stereo": "OTP quên mật khẩu"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 3b - DB chặn dùng lại mã và ghi cùng giao dịch"
+      },
+      {
+        "from": "ResetPasswordCmd",
+        "to": "ResetPasswordCmd",
+        "text": "Băm mật khẩu mới"
+      },
+      {
+        "from": "ResetPasswordCmd",
+        "to": "ResetWritePort",
+        "text": "Đổi mật khẩu nếu mã chưa dùng"
+      },
+      {
+        "from": "ResetWritePort",
+        "to": "IdentityDbAdapter",
+        "text": "Mở giao dịch và khoá tài khoản"
+      },
+      {
+        "from": "IdentityDbAdapter",
+        "to": "PostgreSQL",
+        "text": "So mốc đổi mật khẩu với mốc phát mã"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "IdentityDbAdapter",
+        "text": "Mã chưa dùng hoặc đã dùng",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Mã chưa dùng?",
+          "then": [
+            {
+              "from": "IdentityDbAdapter",
+              "to": "PostgreSQL",
+              "text": "Ghi mật khẩu, thời điểm đổi và trạng thái"
+            },
+            {
+              "from": "IdentityDbAdapter",
+              "to": "PostgreSQL",
+              "text": "Thu hồi mọi phiên làm mới cũ"
+            },
+            {
+              "from": "IdentityDbAdapter",
+              "to": "PostgreSQL",
+              "text": "Ghi nhật ký đổi mật khẩu"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "IdentityDbAdapter",
+              "text": "Đã commit cùng một giao dịch",
+              "kind": "return"
+            },
+            {
+              "from": "IdentityDbAdapter",
+              "to": "ResetWritePort",
+              "text": "Giao dịch hoàn tất",
+              "kind": "return"
+            },
+            {
+              "from": "ResetWritePort",
+              "to": "ResetPasswordCmd",
+              "text": "Mật khẩu mới đã lưu",
+              "kind": "return"
+            },
+            {
+              "from": "ResetPasswordCmd",
+              "to": "ResetOtpPort",
+              "text": "Tiêu thụ mã sau khi lưu"
+            },
+            {
+              "from": "ResetOtpPort",
+              "to": "RedisOtpAdapter",
+              "text": "Xoá mã xác nhận"
+            },
+            {
+              "from": "RedisOtpAdapter",
+              "to": "Redis",
+              "text": "Vô hiệu mã đã dùng"
+            },
+            {
+              "from": "Redis",
+              "to": "RedisOtpAdapter",
+              "text": "Mã không còn dùng được",
+              "kind": "return"
+            },
+            {
+              "from": "RedisOtpAdapter",
+              "to": "ResetOtpPort",
+              "text": "Đã tiêu thụ",
+              "kind": "return"
+            },
+            {
+              "from": "ResetOtpPort",
+              "to": "ResetPasswordCmd",
+              "text": "Hoàn tất đặt lại",
+              "kind": "return"
+            },
+            {
+              "from": "ResetPasswordCmd",
+              "to": "AuthController",
+              "text": "Đặt lại thành công",
+              "kind": "return"
+            },
+            {
+              "from": "AuthController",
+              "to": "Sinh viên",
+              "text": "Quay lại đăng nhập bằng mật khẩu mới",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "IdentityDbAdapter",
+              "to": "ResetWritePort",
+              "text": "Từ chối đổi lần thứ hai",
+              "kind": "return"
+            },
+            {
+              "from": "ResetWritePort",
+              "to": "ResetPasswordCmd",
+              "text": "Mã đã dùng",
+              "kind": "return"
+            },
+            {
+              "from": "ResetPasswordCmd",
+              "to": "AuthController",
+              "text": "Yêu cầu mã khác",
+              "kind": "return"
+            },
+            {
+              "from": "AuthController",
+              "to": "Sinh viên",
+              "text": "Mã không còn hợp lệ",
+              "kind": "return"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

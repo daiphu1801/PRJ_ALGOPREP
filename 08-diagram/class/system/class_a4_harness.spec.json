@@ -1,0 +1,74 @@
+{
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a4_system.md:15; 01-rd/req/user_stories/a4_system.md:20. Nguồn thiết kế: 03-dd/logic/F3_harness.md; 03-dd/api/F3_harness.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "kind": "class",
+  "title": "A4 — Ghép mã và bảo vệ lỗi biên dịch",
+  "covers": [
+    "F3-01",
+    "F3-02",
+    "F3-03",
+    "F3-04",
+    "F3-05",
+    "F3-06",
+    "F3-11",
+    "F3-12"
+  ],
+  "class": {
+    "legend": "shared",
+    "classes": [
+      {
+        "id": "service",
+        "name": "HarnessOrchestrationService",
+        "methods": [
+          "+ generateForLanguage(spec : ProblemSpec, source : String, language : Language) : RunnableCode",
+          "+ sanitizeCompilerError(error : CompileError) : PublicCompileError"
+        ]
+      },
+      {
+        "id": "port1",
+        "name": "CodeGenerator",
+        "kind": "class",
+        "methods": [
+          "+ generate(spec : ProblemSpec, source : String) : RunnableCode"
+        ]
+      },
+      {
+        "id": "port2",
+        "name": "LanguagePluginRegistry",
+        "kind": "class",
+        "methods": [
+          "+ forLanguage(language : Language) : LanguagePlugin"
+        ]
+      },
+      {
+        "id": "port3",
+        "name": "CompilerErrorSanitizer",
+        "kind": "class",
+        "methods": [
+          "+ sanitize(error : CompileError) : PublicCompileError"
+        ]
+      }
+    ],
+    "externals": [],
+    "relations": [
+      {
+        "from": "service",
+        "to": "port1",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port2",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port3",
+        "kind": "dependency"
+      }
+    ],
+    "notes": [
+      "Chi tiết plugin F3 có ở hai hình mẫu; lỗi biên dịch không để lộ nội dung wrapper nội bộ.",
+      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+    ]
+  }
+}

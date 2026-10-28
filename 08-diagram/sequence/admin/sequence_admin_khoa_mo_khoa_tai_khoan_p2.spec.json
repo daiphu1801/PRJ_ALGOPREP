@@ -1,9 +1,8 @@
 {
-  "_": "Nguon: 01-rd/screens/admin/ADM0201_user_management.md, 02-bd/screens/admin/ADM0201_user_management.md (muc 7.3 endpoint, DTO, popup), DEC-2026-1011-admin-system-open-questions-closed, DEC-2026-1008-admin-system-screens-review. Duong dan REST la [SoT: Suy luan] vi chua co DD; ten endpoint la ten nghiep vu cua BD. Filter kiem status moi request nen Access Token cu bi chan ngay [SoT: 02-bd/security/F1_identity.md:64-66]. Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen. | 2026-10-20 (owner): nhan mui ten bo han duong dan, ma HTTP, ma quyen, thuat ngu ky thuat (cache, job, worker, model...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
+  "_": "Nguồn: 03-dd/api/F1_identity.md endpoint 37; 03-dd/logic/F1_identity.md BR-15. Trang này nối sau 1 khi trạng thái và audit đã commit. PermissionCachePort, RedisPermissionAdapter, AdminEmailPort, MailAdapter là tên minh họa [SoT: Suy luận]. Phiên cũ bị chặn ở request kế tiếp qua kiểm trạng thái; gửi email theo lựa chọn không làm thay đổi kết quả khóa. Thao tác tự khóa cần xác nhận trước khi đi tới trang này.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Khoá và mở khoá tài khoản (Quản trị viên) (2/2)",
+  "title": "Sơ đồ tuần tự chi tiết - Khóa tài khoản: làm mới quyền và thông báo (2a/2)",
   "covers": [
-    "F1-13",
     "F1-14",
     "F1-32"
   ],
@@ -16,142 +15,86 @@
         "role": "actor"
       },
       {
-        "name": "UserAdminController",
-        "role": "controller",
-        "stereo": "presentation"
-      },
-      {
-        "name": "UserAdminService",
+        "name": "ChangeUserStatus",
         "role": "service",
-        "stereo": "application"
+        "stereo": "application command"
       },
       {
-        "name": "PostgreSQL",
-        "role": "datastore",
-        "stereo": "schema identity"
+        "name": "PermissionCachePort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "RedisPermissionAdapter",
+        "role": "repository",
+        "stereo": "infrastructure"
       },
       {
         "name": "Redis",
-        "role": "datastore",
-        "stereo": "cache quyền"
+        "role": "datastore"
+      },
+      {
+        "name": "AdminEmailPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "MailAdapter",
+        "role": "repository",
+        "stereo": "infrastructure"
       },
       {
         "name": "Dịch vụ email",
-        "role": "external",
-        "stereo": "gửi thư"
+        "role": "external"
       }
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 2 - Hậu quả của việc khoá: thu hồi phiên, ghi nhật ký, thông báo (F1-14, F1-32)"
+        "phase": "Giai đoạn 2 - Làm mới quyền sau khi khóa"
       },
       {
-        "from": "UserAdminService",
-        "to": "PostgreSQL",
-        "text": "Thu hồi mọi phiên đăng nhập của tài khoản bị khoá"
+        "from": "ChangeUserStatus",
+        "to": "PermissionCachePort",
+        "text": "Thông báo trạng thái tài khoản đã đổi"
       },
       {
-        "from": "PostgreSQL",
-        "to": "UserAdminService",
-        "text": "Đã thu hồi",
-        "kind": "return"
+        "from": "PermissionCachePort",
+        "to": "RedisPermissionAdapter",
+        "text": "Làm mới dữ liệu quyền tạm"
       },
       {
-        "from": "UserAdminService",
-        "to": "PostgreSQL",
-        "text": "Ghi nhật ký hệ thống: ai khoá, khoá ai, lý do"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "UserAdminService",
-        "text": "Đã ghi",
-        "kind": "return"
-      },
-      {
-        "from": "UserAdminService",
+        "from": "RedisPermissionAdapter",
         "to": "Redis",
-        "text": "Làm mới quyền đã lưu tạm để lần truy cập kế tiếp đọc lại trạng thái",
-        "kind": "async"
-      },
-      {
-        "from": "UserAdminService",
-        "to": "UserAdminService",
-        "text": "Phiên đăng nhập còn hạn vẫn bị chặn ngay vì mỗi lần truy cập đều kiểm tra trạng thái"
-      },
-      {
-        "from": "UserAdminService",
-        "to": "UserAdminService",
-        "text": "Email gửi nền, không chặn kết quả khoá"
+        "text": "Phát tín hiệu xóa bản quyền cũ"
       },
       {
         "alt": {
-          "label": "Chọn gửi email?",
+          "label": "Quản trị viên chọn gửi email?",
           "then": [
             {
-              "from": "UserAdminService",
-              "to": "UserAdminService",
-              "text": "Trường hợp có"
+              "from": "ChangeUserStatus",
+              "to": "AdminEmailPort",
+              "text": "Gửi thông báo khóa tài khoản"
             },
             {
-              "from": "UserAdminService",
+              "from": "AdminEmailPort",
+              "to": "MailAdapter",
+              "text": "Chuẩn bị nội dung thông báo"
+            },
+            {
+              "from": "MailAdapter",
               "to": "Dịch vụ email",
-              "text": "Gửi thông báo khoá kèm lý do",
-              "kind": "async"
+              "text": "Gửi thư tới chủ tài khoản"
+            }
+          ],
+          "else": [
+            {
+              "from": "ChangeUserStatus",
+              "to": "ChangeUserStatus",
+              "text": "Không gửi thư; trạng thái khóa vẫn có hiệu lực"
             }
           ]
         }
-      },
-      {
-        "from": "UserAdminService",
-        "to": "UserAdminService",
-        "text": "Xong phần hậu quả của việc khoá"
-      },
-      {
-        "phase": "Giai đoạn 3 - Mở khoá: không cần lý do, không gửi email (F1-13)"
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "Quản trị viên",
-        "text": "Bấm Mở khoá, xem danh sách tài khoản rồi xác nhận"
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "UserAdminController",
-        "text": "Gửi yêu cầu mở khoá"
-      },
-      {
-        "from": "UserAdminController",
-        "to": "UserAdminService",
-        "text": "Yêu cầu mở khoá"
-      },
-      {
-        "from": "UserAdminService",
-        "to": "PostgreSQL",
-        "text": "Đặt trạng thái Hoạt động, ghi nhật ký hệ thống"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "UserAdminService",
-        "text": "Đã ghi",
-        "kind": "return"
-      },
-      {
-        "from": "UserAdminService",
-        "to": "Redis",
-        "text": "Làm mới quyền đã lưu tạm",
-        "kind": "async"
-      },
-      {
-        "from": "UserAdminService",
-        "to": "UserAdminController",
-        "text": "Kết quả từng tài khoản",
-        "kind": "return"
-      },
-      {
-        "from": "UserAdminController",
-        "to": "Quản trị viên",
-        "text": "Báo thành công",
-        "kind": "return"
       }
     ]
   }

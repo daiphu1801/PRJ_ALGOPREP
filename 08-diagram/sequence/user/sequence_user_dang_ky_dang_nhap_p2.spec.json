@@ -1,129 +1,35 @@
 {
-  "_": "Luong dang ky + dang nhap cua actor A1. Nguon: 01-rd/req/F1_identity.md (F1-01, F1-02), 03-dd/api/F1_identity.md muc 0.1 (endpoint #1, #2), 03-dd/logic/F1_identity.md (BR-01 rate-limit, BR-02 rotation). | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
-  "_tang": "Tach dung 4 tang cua DEC-2026-0820-architecture-baseline: presentation (AuthController) / application (AuthService) / infrastructure (UserRepository, Redis) / du lieu (PostgreSQL schema identity).",
-  "_phase": "Ba giai doan: dang ky -> dang nhap -> cap token va dieu huong theo vai tro.",
+  "_": "Trang 2a/3 đăng nhập. Nguồn: 03-dd/logic/F1_identity.md BR-01 và BR-21; 03-dd/api/F1_identity.md endpoint #2. LoginCmd = LoginCommandHandler; LoginRatePort = LoginRateLimitPort; RedisRateAdapter = LoginRateLimitRedisAdapter [SoT: Suy luận về tên lớp]. Trước khi đọc mật khẩu, kiểm số lần sai theo cặp email/IP trong cửa sổ 15 phút. Từ 5 lần sai thì từ chối mà không tra tài khoản. Redis lỗi thì fail-open, tiếp tục đăng nhập theo DD; nhánh đó được ghi trong note để trang dễ đọc. Nếu còn lượt thì chuyển trang 2b để so khớp mật khẩu và kiểm trạng thái. Mọi lỗi đăng nhập sai trả thông báo chung, không chỉ ra email hay mật khẩu sai.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Đăng ký và đăng nhập (Sinh viên) (2/3)",
-  "covers": [
-    "F1-02"
-  ],
+  "title": "Sơ đồ tuần tự chi tiết - Chặn dò mật khẩu trước đăng nhập (2a/3)",
+  "covers": ["F1-02"],
   "mode": "color",
   "sequence": {
     "detail": true,
     "participants": [
-      {
-        "name": "Sinh viên",
-        "role": "actor"
-      },
-      {
-        "name": "AuthController",
-        "role": "controller",
-        "stereo": "presentation"
-      },
-      {
-        "name": "AuthService",
-        "role": "service",
-        "stereo": "application"
-      },
-      {
-        "name": "Redis",
-        "role": "datastore",
-        "stereo": "rate-limit, token"
-      },
-      {
-        "name": "PostgreSQL",
-        "role": "datastore",
-        "stereo": "schema identity"
-      }
+      {"name": "Sinh viên", "role": "actor"},
+      {"name": "AuthController", "role": "controller", "stereo": "presentation"},
+      {"name": "LoginCmd", "role": "service", "stereo": "application command"},
+      {"name": "LoginRatePort", "role": "repository", "stereo": "output port"},
+      {"name": "RedisRateAdapter", "role": "repository", "stereo": "infrastructure"},
+      {"name": "Redis", "role": "datastore", "stereo": "đếm lần sai"}
     ],
     "messages": [
-      {
-        "phase": "Giai đoạn 2 - Đăng nhập và chống dò mật khẩu (F1-02, BR-01)"
-      },
-      {
-        "from": "Sinh viên",
-        "to": "Sinh viên",
-        "text": "Nhập email, mật khẩu rồi bấm \"Đăng nhập\""
-      },
-      {
-        "from": "Sinh viên",
-        "to": "AuthController",
-        "text": "Gửi yêu cầu đăng nhập: email, mật khẩu"
-      },
-      {
-        "from": "AuthController",
-        "to": "AuthService",
-        "text": "Xử lý đăng nhập, kèm địa chỉ máy người dùng"
-      },
-      {
-        "from": "AuthService",
-        "to": "Redis",
-        "text": "Đọc số lần đăng nhập sai của email và máy này"
-      },
-      {
-        "from": "Redis",
-        "to": "AuthService",
-        "text": "Số lần sai trong cửa sổ 15 phút",
-        "kind": "return"
-      },
-      {
-        "alt": {
-          "label": "Đã sai từ 5 lần trở lên trong 15 phút?",
-          "then": [
-            {
-              "from": "AuthService",
-              "to": "AuthService",
-              "text": "Trường hợp có"
-            },
-            {
-              "from": "AuthService",
-              "to": "AuthController",
-              "text": "Sai quá nhiều lần, dừng, không đọc dữ liệu tài khoản",
-              "kind": "return"
-            },
-            {
-              "from": "AuthController",
-              "to": "Sinh viên",
-              "text": "Báo lỗi: \"Thử lại sau ít phút\"",
-              "kind": "return"
-            }
-          ],
-          "else": [
-            {
-              "from": "AuthService",
-              "to": "AuthService",
-              "text": "Trường hợp không"
-            },
-            {
-              "from": "AuthService",
-              "to": "PostgreSQL",
-              "text": "Tìm tài khoản theo email"
-            },
-            {
-              "from": "PostgreSQL",
-              "to": "PostgreSQL",
-              "text": "Đọc tài khoản kèm vai trò"
-            },
-            {
-              "from": "PostgreSQL",
-              "to": "PostgreSQL",
-              "text": "Tài khoản kèm vai trò"
-            },
-            {
-              "from": "PostgreSQL",
-              "to": "AuthService",
-              "text": "User",
-              "kind": "return"
-            },
-            {
-              "from": "AuthService",
-              "to": "AuthService",
-              "text": "Đối chiếu mật khẩu nhập với mật khẩu đã mã hoá"
-            }
-          ]
-        }
-      }
+      {"phase": "Giai đoạn 2a - Chặn đăng nhập sai liên tiếp"},
+      {"from": "Sinh viên", "to": "AuthController", "text": "Nhập email và mật khẩu"},
+      {"from": "AuthController", "to": "LoginCmd", "text": "Yêu cầu đăng nhập từ địa chỉ máy này"},
+      {"from": "LoginCmd", "to": "LoginRatePort", "text": "Kiểm số lần sai của email và máy"},
+      {"from": "LoginRatePort", "to": "RedisRateAdapter", "text": "Đọc cửa sổ 15 phút"},
+      {"from": "RedisRateAdapter", "to": "Redis", "text": "Đếm lượt sai gần đây"},
+      {"from": "Redis", "to": "RedisRateAdapter", "text": "Số lần sai", "kind": "return"},
+      {"from": "RedisRateAdapter", "to": "LoginRatePort", "text": "Số lần sai", "kind": "return"},
+      {"from": "LoginRatePort", "to": "LoginCmd", "text": "Còn lượt hoặc đã chặn", "kind": "return"},
+      {"alt": {"label": "Đã sai từ 5 lần?", "then": [
+        {"from": "LoginCmd", "to": "AuthController", "text": "Tạm dừng đăng nhập", "kind": "return"},
+        {"from": "AuthController", "to": "Sinh viên", "text": "Báo thử lại sau", "kind": "return"}
+      ], "else": [
+        {"from": "LoginCmd", "to": "LoginCmd", "text": "Tiếp tục kiểm mật khẩu ở trang 2b"}
+      ]}}
     ]
-  },
-  "_cat": "Tach tu sequence_user_dang_ky_dang_nhap.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 2/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+  }
 }

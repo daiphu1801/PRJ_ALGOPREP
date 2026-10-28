@@ -1,0 +1,114 @@
+{
+  "_": "Nguồn thuộc tính và liên kết: 02-bd/database/F2_problem-bank.md:14-205. [SoT: Suy luận] Ánh xạ bảng dữ liệu sang tên class Java là thiết kế đề xuất; bội số theo FK/unique của BD. Bỏ thuộc tính thứ cấp và getter/setter.",
+  "kind": "class",
+  "title": "F2 — Mô hình bài toán và bộ testcase",
+  "covers": [],
+  "class": {
+    "legend": "shared",
+    "classes": [
+      {
+        "id": "problem",
+        "name": "Problem",
+        "attributes": [
+          "+ id : UUID",
+          "+ code : String",
+          "+ status : PublicationStatus",
+          "+ currentTestcaseSetVersion : int",
+          "+ functionWrapperSupported : boolean"
+        ],
+        "methods": []
+      },
+      {
+        "id": "spec",
+        "name": "ProblemSpec",
+        "attributes": [
+          "+ problemId : UUID",
+          "+ specVersion : int"
+        ],
+        "methods": []
+      },
+      {
+        "id": "case",
+        "name": "Testcase",
+        "attributes": [
+          "+ id : UUID",
+          "+ problemId : UUID",
+          "+ visibility : Visibility",
+          "+ approved : boolean"
+        ],
+        "methods": []
+      },
+      {
+        "id": "snapshot",
+        "name": "TestcaseSetSnapshot",
+        "attributes": [
+          "+ problemId : UUID",
+          "+ version : int",
+          "+ objectKey : String"
+        ],
+        "methods": []
+      },
+      {
+        "id": "assignment",
+        "name": "ClassAssignment",
+        "attributes": [
+          "+ classId : UUID",
+          "+ problemId : UUID"
+        ],
+        "methods": []
+      },
+      {
+        "id": "bookmark",
+        "name": "ProblemBookmark",
+        "attributes": [
+          "+ userId : UUID",
+          "+ problemId : UUID",
+          "+ privateNote : String"
+        ],
+        "methods": []
+      }
+    ],
+    "externals": [],
+    "relations": [
+      {
+        "from": "problem",
+        "to": "spec",
+        "kind": "association",
+        "from_mult": "1",
+        "to_mult": "0..1"
+      },
+      {
+        "from": "problem",
+        "to": "case",
+        "kind": "association",
+        "from_mult": "1",
+        "to_mult": "0..*"
+      },
+      {
+        "from": "problem",
+        "to": "snapshot",
+        "kind": "association",
+        "from_mult": "1",
+        "to_mult": "0..*"
+      },
+      {
+        "from": "problem",
+        "to": "assignment",
+        "kind": "association",
+        "from_mult": "1",
+        "to_mult": "0..*"
+      },
+      {
+        "from": "problem",
+        "to": "bookmark",
+        "kind": "association",
+        "from_mult": "1",
+        "to_mult": "0..*"
+      }
+    ],
+    "notes": [
+      "Testcase đã duyệt được ghim thành snapshot theo version khi nộp bài; ghi chú bookmark chỉ đọc theo chủ tài khoản.",
+      "[SoT: Suy luận] Tên class Java đề xuất từ schema BD."
+    ]
+  }
+}

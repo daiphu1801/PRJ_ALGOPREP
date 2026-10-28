@@ -1,8 +1,7 @@
 {
-  "_": "Luong F6 Chế độ học + Chế độ luyện cua actor A1 tren ngan hang cau hoi phong van. Nguon: 01-rd/req/F6_interview-bank.md (F6-04 den F6-08, F6-09, F6-12), 02-bd/architecture/F6_interview-bank.md muc 1 (AnswerFeedbackPort, SpringAiFeedbackAdapter, job spaced repetition), muc 2 (Chế độ luyện la NOI DUY NHAT module nay goi AI). | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
-  "_bat_bien": "F6-07 amendment (DEC-2026-0831-outside-screens-closures): moi lan nop la mot attempt doc lap, khong UPDATE cau tra loi cu.",
+  "_": "Nguồn: 03-dd/api/F6_interview-bank.md mục 2-3; 03-dd/logic/F6_interview-bank.md BR-IB-04/05. QuestionQueryPort, InterviewBankDbAdapter là tên minh họa ranh giới ứng dụng/hạ tầng [SoT: Suy luận]. Chế độ học đọc dữ liệu tĩnh, vẫn dùng được khi AI hoặc Redis lỗi.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Ôn tập và luyện tập câu hỏi phỏng vấn (Sinh viên) (1/3)",
+  "title": "Sơ đồ tuần tự chi tiết - Ôn tập câu hỏi: xem nội dung đã soạn (1/3)",
   "covers": [
     "F6-04",
     "F6-05"
@@ -21,9 +20,19 @@
         "stereo": "presentation"
       },
       {
-        "name": "PracticeService",
+        "name": "GetInterviewQuestion",
         "role": "service",
-        "stereo": "application"
+        "stereo": "application query"
+      },
+      {
+        "name": "QuestionQueryPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "InterviewBankDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
       },
       {
         "name": "PostgreSQL",
@@ -33,62 +42,142 @@
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 1 - Chế độ học: dữ liệu soạn sẵn, KHÔNG qua AI (F6-04, F6-05)"
-      },
-      {
-        "from": "Sinh viên",
-        "to": "Sinh viên",
-        "text": "Lọc theo chủ đề rồi mở một câu hỏi"
+        "phase": "Giai đoạn 1 - Tìm câu hỏi đang công bố"
       },
       {
         "from": "Sinh viên",
         "to": "PracticeController",
-        "text": "Gửi yêu cầu xem câu hỏi ở chế độ học"
+        "text": "Chọn chủ đề, mức độ và trạng thái ôn tập"
       },
       {
         "from": "PracticeController",
-        "to": "PracticeService",
-        "text": "Lấy nội dung câu hỏi để học"
+        "to": "GetInterviewQuestion",
+        "text": "Lấy danh sách câu hỏi phù hợp"
       },
       {
-        "from": "PracticeService",
+        "from": "GetInterviewQuestion",
+        "to": "QuestionQueryPort",
+        "text": "Tìm câu đang hiển thị cho người học"
+      },
+      {
+        "from": "QuestionQueryPort",
+        "to": "InterviewBankDbAdapter",
+        "text": "Áp bộ lọc và phân trang"
+      },
+      {
+        "from": "InterviewBankDbAdapter",
         "to": "PostgreSQL",
-        "text": "Tìm câu hỏi theo mã"
+        "text": "Đọc câu hỏi, mức tự chấm, dấu đã lưu"
       },
       {
         "from": "PostgreSQL",
-        "to": "PostgreSQL",
-        "text": "Đọc câu hỏi kèm tiêu chí trả lời chuẩn"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "PostgreSQL",
-        "text": "Câu hỏi, hướng tiếp cận, khung STAR, từ khoá cốt lõi"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "PracticeService",
-        "text": "Nội dung câu hỏi",
+        "to": "InterviewBankDbAdapter",
+        "text": "Danh sách và tổng số câu",
         "kind": "return"
       },
       {
-        "from": "PracticeService",
+        "from": "InterviewBankDbAdapter",
+        "to": "QuestionQueryPort",
+        "text": "Danh sách câu hỏi",
+        "kind": "return"
+      },
+      {
+        "from": "QuestionQueryPort",
+        "to": "GetInterviewQuestion",
+        "text": "Danh sách câu hỏi",
+        "kind": "return"
+      },
+      {
+        "from": "GetInterviewQuestion",
         "to": "PracticeController",
-        "text": "Nội dung học soạn sẵn, không gọi AI ở chế độ này",
+        "text": "Danh sách và số trang",
         "kind": "return"
       },
       {
         "from": "PracticeController",
         "to": "Sinh viên",
-        "text": "Báo thành công",
+        "text": "Hiển thị danh sách câu hỏi",
         "kind": "return"
+      },
+      {
+        "phase": "Giai đoạn 2 - Mở nội dung học đã soạn"
       },
       {
         "from": "Sinh viên",
-        "to": "Sinh viên",
-        "text": "Hiển thị nội dung ôn tập soạn sẵn"
+        "to": "PracticeController",
+        "text": "Mở một câu hỏi"
+      },
+      {
+        "from": "PracticeController",
+        "to": "GetInterviewQuestion",
+        "text": "Lấy nội dung câu hỏi"
+      },
+      {
+        "from": "GetInterviewQuestion",
+        "to": "QuestionQueryPort",
+        "text": "Tìm câu đang hiển thị và dữ liệu của người gọi"
+      },
+      {
+        "from": "QuestionQueryPort",
+        "to": "InterviewBankDbAdapter",
+        "text": "Đọc nội dung học và khả năng luyện"
+      },
+      {
+        "from": "InterviewBankDbAdapter",
+        "to": "PostgreSQL",
+        "text": "Đọc câu đang hoạt động, chủ đề, mức độ, tiêu chí, tự chấm và dấu đã lưu"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "InterviewBankDbAdapter",
+        "text": "Nội dung, tình trạng luyện và thông tin cá nhân",
+        "kind": "return"
+      },
+      {
+        "from": "InterviewBankDbAdapter",
+        "to": "QuestionQueryPort",
+        "text": "Chi tiết câu hỏi",
+        "kind": "return"
+      },
+      {
+        "from": "QuestionQueryPort",
+        "to": "GetInterviewQuestion",
+        "text": "Chi tiết câu hỏi",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Câu hỏi đang hoạt động?",
+          "then": [
+            {
+              "from": "GetInterviewQuestion",
+              "to": "PracticeController",
+              "text": "Nội dung học đã soạn sẵn; có thể luyện khi có tiêu chí",
+              "kind": "return"
+            },
+            {
+              "from": "PracticeController",
+              "to": "Sinh viên",
+              "text": "Hiển thị nội dung học và nút luyện phù hợp",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "GetInterviewQuestion",
+              "to": "PracticeController",
+              "text": "Không tìm thấy câu hỏi",
+              "kind": "return"
+            },
+            {
+              "from": "PracticeController",
+              "to": "Sinh viên",
+              "text": "Báo câu hỏi không còn hiển thị",
+              "kind": "return"
+            }
+          ]
+        }
       }
     ]
-  },
-  "_cat": "Tach tu sequence_user_on_tap_luyen_tap_ai.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 1/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+  }
 }

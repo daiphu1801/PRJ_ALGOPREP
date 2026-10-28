@@ -1,7 +1,7 @@
 {
-  "_": "Nguon: 01-rd/screens/admin/ADM0201_user_management.md, 02-bd/screens/admin/ADM0201_user_management.md (muc 7.3 endpoint, DTO, popup), DEC-2026-1011-admin-system-open-questions-closed, DEC-2026-1008-admin-system-screens-review. Duong dan REST la [SoT: Suy luan] vi chua co DD; ten endpoint la ten nghiep vu cua BD. Quy tac: khong cho ha quan tri vien hoat dong cuoi cung (RD ADM0201 REQ-05). Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen. | 2026-10-20 (owner): nhan mui ten bo han duong dan, ma HTTP, ma quyen, thuat ngu ky thuat (cache, job, worker, model...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
+  "_": "Nguồn: 03-dd/api/F1_identity.md endpoint 36, §0.6; 03-dd/logic/F1_identity.md BR-15. UserAdminStorePort, IdentityDbAdapter là tên minh họa [SoT: Suy luận]. Khóa các ADMIN đang hoạt động rồi đếm cùng giao dịch để không hạ người cuối. Tự hạ vai trò cần acknowledgeSelfImpact=true khi còn ADMIN khác. Đổi vai trò và audit cùng giao dịch; không tự từ chối chỉ vì actor đổi vai trò của chính mình.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Tìm và đổi vai trò tài khoản (Quản trị viên) (2/2)",
+  "title": "Sơ đồ tuần tự chi tiết - Đổi vai trò và bảo vệ quản trị viên cuối (2/2)",
   "covers": [
     "F1-13",
     "F1-14"
@@ -20,9 +20,19 @@
         "stereo": "presentation"
       },
       {
-        "name": "UserAdminService",
+        "name": "ChangeUserRole",
         "role": "service",
-        "stereo": "application"
+        "stereo": "application command"
+      },
+      {
+        "name": "UserAdminStorePort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "IdentityDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
       },
       {
         "name": "PostgreSQL",
@@ -30,139 +40,117 @@
         "stereo": "schema identity"
       },
       {
-        "name": "Redis",
-        "role": "datastore",
-        "stereo": "cache quyền"
+        "name": "AuditLogPort",
+        "role": "repository",
+        "stereo": "identity output port"
       }
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 2 - Đổi vai trò một tài khoản, chặn hạ quản trị viên hoạt động cuối cùng (F1-13)"
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "Quản trị viên",
-        "text": "Bấm Đổi vai trò trên dòng, hộp thoại mở"
+        "phase": "Giai đoạn 2 - Kiểm bất biến và đổi vai trò"
       },
       {
         "from": "Quản trị viên",
         "to": "UserAdminController",
-        "text": "Gửi yêu cầu xem danh sách vai trò"
+        "text": "Chọn vai trò mới và xác nhận"
       },
       {
         "from": "UserAdminController",
-        "to": "UserAdminService",
-        "text": "Yêu cầu danh sách vai trò"
+        "to": "ChangeUserRole",
+        "text": "Đổi vai trò tài khoản"
       },
       {
-        "from": "UserAdminService",
+        "from": "ChangeUserRole",
+        "to": "UserAdminStorePort",
+        "text": "Khóa các quản trị viên hoạt động và đọc vai trò đích"
+      },
+      {
+        "from": "UserAdminStorePort",
+        "to": "IdentityDbAdapter",
+        "text": "Đọc tài khoản, vai trò và tập quản trị viên đang hoạt động"
+      },
+      {
+        "from": "IdentityDbAdapter",
         "to": "PostgreSQL",
-        "text": "Đọc các vai trò có thể chọn"
+        "text": "Khóa dòng quản trị viên đang hoạt động, đọc vai trò"
       },
       {
         "from": "PostgreSQL",
-        "to": "UserAdminService",
-        "text": "Danh sách vai trò đích",
+        "to": "IdentityDbAdapter",
+        "text": "Tài khoản, vai trò và số quản trị viên",
         "kind": "return"
       },
       {
-        "from": "UserAdminService",
-        "to": "UserAdminController",
-        "text": "Các vai trò để chọn",
+        "from": "IdentityDbAdapter",
+        "to": "UserAdminStorePort",
+        "text": "Tài khoản, vai trò và số quản trị viên",
         "kind": "return"
       },
       {
-        "from": "UserAdminController",
-        "to": "Quản trị viên",
-        "text": "Báo thành công",
-        "kind": "return"
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "Quản trị viên",
-        "text": "Chọn vai trò mới rồi xác nhận"
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "UserAdminController",
-        "text": "Gửi yêu cầu đổi vai trò"
-      },
-      {
-        "from": "UserAdminController",
-        "to": "UserAdminController",
-        "text": "Kiểm tra quyền sửa tài khoản"
-      },
-      {
-        "from": "UserAdminController",
-        "to": "UserAdminService",
-        "text": "Yêu cầu đổi vai trò"
-      },
-      {
-        "from": "UserAdminService",
-        "to": "PostgreSQL",
-        "text": "Đọc tài khoản, vai trò đích, số quản trị viên hoạt động"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "UserAdminService",
-        "text": "Tài khoản, vai trò, số quản trị viên hoạt động",
+        "from": "UserAdminStorePort",
+        "to": "ChangeUserRole",
+        "text": "Tài khoản, vai trò và số quản trị viên",
         "kind": "return"
       },
       {
         "alt": {
-          "label": "Hạ quản trị viên cuối?",
+          "label": "Sẽ không còn quản trị viên hoạt động?",
           "then": [
             {
-              "from": "UserAdminService",
-              "to": "UserAdminService",
-              "text": "Sẽ không còn quản trị viên hoạt động nào"
-            },
-            {
-              "from": "UserAdminService",
+              "from": "ChangeUserRole",
               "to": "UserAdminController",
-              "text": "Từ chối, không đổi gì",
+              "text": "Từ chối hạ quản trị viên cuối",
               "kind": "return"
             },
             {
               "from": "UserAdminController",
               "to": "Quản trị viên",
-              "text": "Báo lỗi: phải còn một quản trị viên hoạt động",
+              "text": "Hiển thị lỗi bảo vệ hệ thống",
               "kind": "return"
             }
           ],
           "else": [
             {
-              "from": "UserAdminService",
-              "to": "UserAdminService",
-              "text": "Hợp lệ, tiến hành đổi"
+              "from": "ChangeUserRole",
+              "to": "ChangeUserRole",
+              "text": "Nếu tự hạ vai trò, kiểm xác nhận ảnh hưởng"
             },
             {
-              "from": "UserAdminService",
+              "from": "ChangeUserRole",
+              "to": "UserAdminStorePort",
+              "text": "Lưu vai trò mới"
+            },
+            {
+              "from": "UserAdminStorePort",
+              "to": "IdentityDbAdapter",
+              "text": "Cập nhật vai trò trong giao dịch"
+            },
+            {
+              "from": "IdentityDbAdapter",
               "to": "PostgreSQL",
-              "text": "Đổi vai trò và ghi nhật ký hệ thống"
+              "text": "Ghi vai trò mới"
             },
             {
-              "from": "PostgreSQL",
-              "to": "UserAdminService",
-              "text": "Đã ghi",
+              "from": "ChangeUserRole",
+              "to": "AuditLogPort",
+              "text": "Ghi nhật ký đổi vai trò cùng giao dịch"
+            },
+            {
+              "from": "AuditLogPort",
+              "to": "ChangeUserRole",
+              "text": "Nhật ký đã ghi",
               "kind": "return"
             },
             {
-              "from": "UserAdminService",
-              "to": "Redis",
-              "text": "Làm mới quyền đã lưu tạm của tài khoản vừa đổi",
-              "kind": "async"
-            },
-            {
-              "from": "UserAdminService",
+              "from": "ChangeUserRole",
               "to": "UserAdminController",
-              "text": "Tài khoản kèm vai trò mới",
+              "text": "Trả vai trò mới",
               "kind": "return"
             },
             {
               "from": "UserAdminController",
               "to": "Quản trị viên",
-              "text": "Báo thành công",
+              "text": "Hiển thị tài khoản sau đổi",
               "kind": "return"
             }
           ]

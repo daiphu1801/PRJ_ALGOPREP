@@ -1,0 +1,173 @@
+{
+  "_": "Nguồn: 03-dd/api/F2_problem-bank.md §54; 03-dd/logic/F2_problem-bank.md BR-18. ClassAssignmentRepository và ProblemDbAdapter là tên minh họa [SoT: Suy luận]. Gỡ đặt removed_at trên dòng đang hiệu lực; lần gỡ lặp trả xung đột. Bài đã rút xuất bản vẫn gỡ được. Lượt nộp, điểm, tiến độ giữ nguyên; sau ghi phát ProblemUnassignedFromClass.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Gỡ bài khỏi lớp",
+  "covers": [
+    "F1-10",
+    "F2-12"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Giảng viên",
+        "role": "actor"
+      },
+      {
+        "name": "AssignmentController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "RemoveClassAssignment",
+        "role": "service",
+        "stereo": "application command"
+      },
+      {
+        "name": "InstructorClassPort",
+        "role": "repository",
+        "stereo": "identity output port"
+      },
+      {
+        "name": "ClassAssignmentRepository",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "ProblemDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema problem"
+      },
+      {
+        "name": "ProblemEventPort",
+        "role": "repository",
+        "stereo": "output port"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 1 - Kiểm phạm vi và dòng giao đang hoạt động"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "AssignmentController",
+        "text": "Chọn bài và xác nhận gỡ khỏi lớp"
+      },
+      {
+        "from": "AssignmentController",
+        "to": "RemoveClassAssignment",
+        "text": "Yêu cầu gỡ bài khỏi lớp"
+      },
+      {
+        "from": "RemoveClassAssignment",
+        "to": "InstructorClassPort",
+        "text": "Kiểm lớp do giảng viên phụ trách"
+      },
+      {
+        "from": "InstructorClassPort",
+        "to": "RemoveClassAssignment",
+        "text": "Kết quả kiểm phạm vi",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Lớp thuộc phạm vi phụ trách?",
+          "then": [
+            {
+              "from": "RemoveClassAssignment",
+              "to": "ClassAssignmentRepository",
+              "text": "Gỡ dòng giao còn hiệu lực"
+            },
+            {
+              "from": "ClassAssignmentRepository",
+              "to": "ProblemDbAdapter",
+              "text": "Đặt mốc gỡ nếu chưa gỡ"
+            },
+            {
+              "from": "ProblemDbAdapter",
+              "to": "PostgreSQL",
+              "text": "Cập nhật dòng giao đang hoạt động"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "ProblemDbAdapter",
+              "text": "Có hoặc không có dòng được cập nhật",
+              "kind": "return"
+            },
+            {
+              "from": "ProblemDbAdapter",
+              "to": "ClassAssignmentRepository",
+              "text": "Kết quả cập nhật",
+              "kind": "return"
+            },
+            {
+              "from": "ClassAssignmentRepository",
+              "to": "RemoveClassAssignment",
+              "text": "Kết quả cập nhật",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "RemoveClassAssignment",
+              "to": "AssignmentController",
+              "text": "Từ chối vì không phụ trách lớp",
+              "kind": "return"
+            },
+            {
+              "from": "AssignmentController",
+              "to": "Giảng viên",
+              "text": "Hiển thị lỗi quyền lớp",
+              "kind": "return"
+            }
+          ]
+        }
+      },
+      {
+        "alt": {
+          "label": "Đã gỡ được dòng đang hoạt động?",
+          "then": [
+            {
+              "from": "RemoveClassAssignment",
+              "to": "ProblemEventPort",
+              "text": "Báo bài đã rời danh sách giao",
+              "kind": "async"
+            },
+            {
+              "from": "RemoveClassAssignment",
+              "to": "AssignmentController",
+              "text": "Xác nhận đã gỡ",
+              "kind": "return"
+            },
+            {
+              "from": "AssignmentController",
+              "to": "Giảng viên",
+              "text": "Bài biến khỏi danh sách giao của lớp",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "RemoveClassAssignment",
+              "to": "AssignmentController",
+              "text": "Báo bài đã gỡ trước đó",
+              "kind": "return"
+            },
+            {
+              "from": "AssignmentController",
+              "to": "Giảng viên",
+              "text": "Tải lại danh sách bài giao",
+              "kind": "return"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "_": "Nguồn: 03-dd/api/F2_problem-bank.md §57. maxPerProblem 1..10; audit cùng giao dịch; giảm trần không xóa số lượt đã dùng theo từng bài. Cổng và adapter là tên minh họa [SoT: Suy luận].",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Đặt trần sinh testcase cho từng bài (5/5)",
+  "covers": [
+    "F2-14"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Quản trị viên",
+        "role": "actor"
+      },
+      {
+        "name": "ProblemSettingsCtl",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "UpdateTestcaseQuota",
+        "role": "service",
+        "stereo": "problem-bank"
+      },
+      {
+        "name": "ProblemSettingsPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "ProblemBankDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema problem_bank"
+      },
+      {
+        "name": "AuditLogPort",
+        "role": "repository",
+        "stereo": "identity port"
+      }
+    ],
+    "messages": [
+      {
+        "from": "Quản trị viên",
+        "to": "ProblemSettingsCtl",
+        "text": "Đổi trần sinh testcase mỗi bài"
+      },
+      {
+        "from": "ProblemSettingsCtl",
+        "to": "UpdateTestcaseQuota",
+        "text": "Kiểm quyền và giá trị từ 1 đến 10"
+      },
+      {
+        "alt": {
+          "label": "Giá trị hợp lệ?",
+          "then": [
+            {
+              "from": "UpdateTestcaseQuota",
+              "to": "ProblemSettingsPort",
+              "text": "Khóa và đọc cấu hình hiện tại"
+            },
+            {
+              "from": "ProblemSettingsPort",
+              "to": "ProblemBankDbAdapter",
+              "text": "Truy cập cấu hình kho bài"
+            },
+            {
+              "from": "ProblemBankDbAdapter",
+              "to": "PostgreSQL",
+              "text": "Khóa dòng cấu hình duy nhất"
+            },
+            {
+              "from": "UpdateTestcaseQuota",
+              "to": "ProblemSettingsPort",
+              "text": "Lưu trần mới"
+            },
+            {
+              "from": "ProblemSettingsPort",
+              "to": "ProblemBankDbAdapter",
+              "text": "Cập nhật cấu hình"
+            },
+            {
+              "from": "ProblemBankDbAdapter",
+              "to": "PostgreSQL",
+              "text": "Ghi trần và người cập nhật"
+            },
+            {
+              "from": "UpdateTestcaseQuota",
+              "to": "AuditLogPort",
+              "text": "Ghi nhật ký thay đổi cùng giao dịch"
+            },
+            {
+              "from": "UpdateTestcaseQuota",
+              "to": "ProblemSettingsCtl",
+              "text": "Trả trần mới",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "UpdateTestcaseQuota",
+              "to": "ProblemSettingsCtl",
+              "text": "Báo giá trị không hợp lệ",
+              "kind": "return"
+            }
+          ]
+        }
+      },
+      {
+        "from": "ProblemSettingsCtl",
+        "to": "Quản trị viên",
+        "text": "Hiển thị trần sinh testcase",
+        "kind": "return"
+      }
+    ]
+  }
+}

@@ -1,0 +1,161 @@
+{
+  "_": "Nguồn: 03-dd/api/F4_judge-orchestration.md §13; 03-dd/logic/F4_judge-orchestration.md BR-JD-10. SubmissionReadPort và JudgeDbAdapter là tên minh họa [SoT: Suy luận]. Hai cổng ClassScopeReadPort (identity), ClassAssignmentReadPort (problem-bank) cấp phạm vi; judge chỉ truy vấn schema của mình. Một lượt được gắn đúng một lớp có lần giao mới nhất hợp lệ; 20 dòng/trang. Danh sách không chứa mã nguồn, lỗi biên dịch hoặc dữ liệu testcase ẩn.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Xem danh sách bài nộp của lớp (1/2)",
+  "covers": [
+    "F4-13"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Giảng viên",
+        "role": "actor"
+      },
+      {
+        "name": "SubmissionController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "ListInstructorSubmissions",
+        "role": "service",
+        "stereo": "application query"
+      },
+      {
+        "name": "ClassScopeReadPort",
+        "role": "repository",
+        "stereo": "identity output port"
+      },
+      {
+        "name": "ClassAssignmentReadPort",
+        "role": "repository",
+        "stereo": "problem output port"
+      },
+      {
+        "name": "SubmissionReadPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "JudgeDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema judge"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 1 - Lấy phạm vi lớp và bài được giao"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "SubmissionController",
+        "text": "Lọc lớp, kết quả, từ khóa và trang"
+      },
+      {
+        "from": "SubmissionController",
+        "to": "ListInstructorSubmissions",
+        "text": "Lấy danh sách bài nộp trong phạm vi"
+      },
+      {
+        "from": "ListInstructorSubmissions",
+        "to": "ClassScopeReadPort",
+        "text": "Lấy lớp và học viên do giảng viên phụ trách"
+      },
+      {
+        "from": "ClassScopeReadPort",
+        "to": "ListInstructorSubmissions",
+        "text": "Lớp, học viên và mốc ghi danh",
+        "kind": "return"
+      },
+      {
+        "from": "ListInstructorSubmissions",
+        "to": "ClassAssignmentReadPort",
+        "text": "Lấy các khoảng thời gian bài được giao"
+      },
+      {
+        "from": "ClassAssignmentReadPort",
+        "to": "ListInstructorSubmissions",
+        "text": "Bài, lớp, thời điểm giao và gỡ",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Lớp yêu cầu thuộc phạm vi?",
+          "then": [
+            {
+              "from": "ListInstructorSubmissions",
+              "to": "SubmissionReadPort",
+              "text": "Tìm bài nộp trong khoảng ghi danh và giao bài"
+            },
+            {
+              "from": "SubmissionReadPort",
+              "to": "JudgeDbAdapter",
+              "text": "Áp bộ lọc và phân trang"
+            },
+            {
+              "from": "JudgeDbAdapter",
+              "to": "PostgreSQL",
+              "text": "Đọc bài nộp theo học viên, bài và thời điểm"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "JudgeDbAdapter",
+              "text": "Một trang bài nộp",
+              "kind": "return"
+            },
+            {
+              "from": "JudgeDbAdapter",
+              "to": "SubmissionReadPort",
+              "text": "Một trang bài nộp",
+              "kind": "return"
+            },
+            {
+              "from": "SubmissionReadPort",
+              "to": "ListInstructorSubmissions",
+              "text": "Một trang bài nộp",
+              "kind": "return"
+            },
+            {
+              "from": "ListInstructorSubmissions",
+              "to": "ListInstructorSubmissions",
+              "text": "Gắn đúng một lớp theo lần giao mới nhất"
+            },
+            {
+              "from": "ListInstructorSubmissions",
+              "to": "SubmissionController",
+              "text": "Trả bảng kết quả đã lọc",
+              "kind": "return"
+            },
+            {
+              "from": "SubmissionController",
+              "to": "Giảng viên",
+              "text": "Hiển thị 20 dòng, tỉ lệ ca đạt và học viên đã rời lớp",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "ListInstructorSubmissions",
+              "to": "SubmissionController",
+              "text": "Báo lớp ngoài phạm vi như không tìm thấy",
+              "kind": "return"
+            },
+            {
+              "from": "SubmissionController",
+              "to": "Giảng viên",
+              "text": "Hiển thị lỗi lớp",
+              "kind": "return"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

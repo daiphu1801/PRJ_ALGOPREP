@@ -1,0 +1,41 @@
+<mxfile host="app.diagrams.net" agent="drawio-uml-architect" type="device">
+  <diagram id="a4-che-du-lieu-testcase-an" name="a4-che-du-lieu-testcase-an">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t_service" value='&lt;div style="text-align:center"&gt;&lt;b&gt;HiddenResultProjectionService&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;publicResult(result&amp;nbsp;:&amp;nbsp;CaseResult,&amp;nbsp;visibility&amp;nbsp;:&amp;nbsp;Visibility)&amp;nbsp;:&amp;nbsp;PublicCaseResult' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="145.89999999999998" y="60" width="505.9" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="t_port1" value='&lt;div style="text-align:center"&gt;&lt;b&gt;CaseResultRepository&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;listBySubmission(id&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;List&amp;lt;CaseResult&amp;gt;' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="54" y="184" width="316.79999999999995" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="t_port2" value='&lt;div style="text-align:center"&gt;&lt;b&gt;HiddenDataPolicy&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;project(result&amp;nbsp;:&amp;nbsp;CaseResult)&amp;nbsp;:&amp;nbsp;PublicCaseResult' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="420.79999999999995" y="184" width="322.9" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.260;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="277.375" y="137.33333333333334" />
+            <mxPoint x="212.39999999999998" y="137.33333333333334" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e2" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.740;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="520.3249999999999" y="160.66666666666666" />
+            <mxPoint x="582.25" y="160.66666666666666" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="title" value="A4 — Che dữ liệu testcase ẩn" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="0" y="10" width="773.6999999999999" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="v3" value="Ghi chú: Hidden chỉ công khai trạng thái/chỉ số; không trả input, expected output, diff hay object key qua API/event/log.&lt;br&gt;Ghi chú: [SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="30" y="258" width="1100" height="44" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

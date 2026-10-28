@@ -1,12 +1,12 @@
 {
-  "_": "Luong F5.2 Mock Interview (da luot, ba giai doan, ket thuc bang rubric) cua actor A1. Nguon: 01-rd/req/F5_ai-review.md (F5-09 den F5-16), 02-bd/architecture/F5_ai-review.md muc 1 (aggregate InterviewSession, SSE controller, Redis ChatMemory), muc 5 (ba lop instruction), muc 6.1 (rate-limit theo phien). | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
-  "_phase": "Ba giai doan trong so do la ba giai doan NGHIEP VU cua phien phong van (lam ro de bai -> trinh bay huong giai -> dao sau va cham rubric), khong phai ba buoc ky thuat.",
+  "_": "Nguồn: 03-dd/api/F5_ai-review.md mục 12; 03-dd/logic/F5_ai-review.md BR-AI-09; 02-bd/architecture/F5_ai-review.md mục 4.2. CompleteInterviewCmd, InterviewRepo, AiDbAdapter là thiết kế dự kiến [SoT: Suy luận]. Kết thúc sớm cũng chấm và sang COMPLETED. Phiên ABANDONED không có điểm; lỗi AI giữ phiên đang mở để thử lại. Khi đã COMPLETED, trả điểm cũ không gọi AI. Bốn điểm, token, trạng thái và outbox ghi cùng giao dịch. Redis ChatMemory tự hết hạn theo TTL, không xoá lúc kết thúc. Điểm là tham khảo, không ghi sang phần chấm bài.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Phỏng vấn giả lập với AI (3/3)",
+  "title": "Sơ đồ tuần tự chi tiết - Phỏng vấn AI: chấm và kết thúc phiên (3/3)",
   "covers": [
-    "F5-13",
+    "F5-15",
     "F5-16",
-    "F5-18"
+    "F5-18",
+    "F5-21"
   ],
   "mode": "color",
   "sequence": {
@@ -19,12 +19,22 @@
       {
         "name": "InterviewController",
         "role": "controller",
-        "stereo": "SSE"
+        "stereo": "presentation"
       },
       {
-        "name": "InterviewService",
+        "name": "CompleteInterviewCmd",
         "role": "service",
-        "stereo": "application"
+        "stereo": "application command"
+      },
+      {
+        "name": "InterviewRepo",
+        "role": "repository",
+        "stereo": "output port F5"
+      },
+      {
+        "name": "AiDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
       },
       {
         "name": "PostgreSQL",
@@ -32,86 +42,170 @@
         "stereo": "schema ai"
       },
       {
-        "name": "Nhà cung cấp LLM",
-        "role": "external",
-        "stereo": "Spring AI"
+        "name": "LlmProviderPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "SpringAiLlmAdapter",
+        "role": "repository",
+        "stereo": "infrastructure"
+      },
+      {
+        "name": "Nhà cung cấp AI",
+        "role": "external"
       }
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 3 - Đào sâu độ phức tạp rồi kết phiên bằng rubric (F5-13, F5-16, F5-18)"
-      },
-      {
-        "from": "Sinh viên",
-        "to": "Sinh viên",
-        "text": "Bấm \"Kết thúc phỏng vấn\""
+        "phase": "Giai đoạn 8 - Kết thúc đủ lượt hoặc người học kết thúc sớm"
       },
       {
         "from": "Sinh viên",
         "to": "InterviewController",
-        "text": "Gửi yêu cầu kết thúc phiên"
+        "text": "Yêu cầu kết thúc và chấm"
       },
       {
         "from": "InterviewController",
-        "to": "InterviewService",
-        "text": "Xử lý kết thúc phiên"
+        "to": "CompleteInterviewCmd",
+        "text": "Kiểm chủ phiên và trạng thái"
       },
       {
-        "from": "InterviewService",
-        "to": "InterviewService",
-        "text": "Nhờ AI chấm theo tiêu chí trên toàn bộ hội thoại"
+        "from": "CompleteInterviewCmd",
+        "to": "InterviewRepo",
+        "text": "Đọc phiên cùng toàn bộ hội thoại"
       },
       {
-        "from": "InterviewService",
-        "to": "Nhà cung cấp LLM",
-        "text": "Yêu cầu trả bảng điểm tiêu chí có cấu trúc"
+        "from": "InterviewRepo",
+        "to": "AiDbAdapter",
+        "text": "Tra lượt và bảng điểm đã có"
       },
       {
-        "from": "Nhà cung cấp LLM",
-        "to": "InterviewService",
-        "text": "Điểm từng tiêu chí + nhận xét + số token",
+        "from": "AiDbAdapter",
+        "to": "PostgreSQL",
+        "text": "Đọc phiên và lịch sử hỏi đáp"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "AiDbAdapter",
+        "text": "Hội thoại và điểm nếu đã chấm",
         "kind": "return"
       },
       {
-        "from": "InterviewService",
-        "to": "InterviewService",
-        "text": "Bảng điểm theo tiêu chí"
-      },
-      {
-        "from": "InterviewService",
-        "to": "PostgreSQL",
-        "text": "Lưu bảng điểm, đóng phiên và ghi mức token đã dùng"
-      },
-      {
-        "from": "InterviewService",
-        "to": "InterviewService",
-        "text": "Xoá bộ nhớ hội thoại của phiên đã kết thúc"
-      },
-      {
-        "from": "InterviewService",
-        "to": "PostgreSQL",
-        "text": "Báo phỏng vấn xong để ghi vào lịch sử phỏng vấn",
-        "kind": "async"
-      },
-      {
-        "from": "InterviewService",
-        "to": "InterviewController",
-        "text": "Bảng điểm phỏng vấn",
+        "from": "AiDbAdapter",
+        "to": "InterviewRepo",
+        "text": "Kết quả tra cứu",
         "kind": "return"
+      },
+      {
+        "from": "InterviewRepo",
+        "to": "CompleteInterviewCmd",
+        "text": "Phiên cần chấm hoặc đã hoàn tất",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Đã có bảng điểm?",
+          "then": [
+            {
+              "from": "CompleteInterviewCmd",
+              "to": "InterviewController",
+              "text": "Trả bảng điểm đã lưu",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "CompleteInterviewCmd",
+              "to": "CompleteInterviewCmd",
+              "text": "Kiểm đã có ít nhất một lượt trả lời"
+            },
+            {
+              "from": "CompleteInterviewCmd",
+              "to": "LlmProviderPort",
+              "text": "Xin đánh giá bốn tiêu chí"
+            },
+            {
+              "from": "LlmProviderPort",
+              "to": "SpringAiLlmAdapter",
+              "text": "Gọi mô hình AI"
+            },
+            {
+              "from": "SpringAiLlmAdapter",
+              "to": "Nhà cung cấp AI",
+              "text": "Chấm toàn bộ hội thoại"
+            },
+            {
+              "from": "Nhà cung cấp AI",
+              "to": "SpringAiLlmAdapter",
+              "text": "Bốn nhận xét và lượng token",
+              "kind": "return"
+            },
+            {
+              "from": "SpringAiLlmAdapter",
+              "to": "LlmProviderPort",
+              "text": "Bảng điểm có cấu trúc",
+              "kind": "return"
+            },
+            {
+              "from": "LlmProviderPort",
+              "to": "CompleteInterviewCmd",
+              "text": "Bảng điểm và lượng token",
+              "kind": "return"
+            },
+            {
+              "from": "CompleteInterviewCmd",
+              "to": "CompleteInterviewCmd",
+              "text": "Kiểm đủ bốn tiêu chí và mức điểm"
+            },
+            {
+              "from": "CompleteInterviewCmd",
+              "to": "InterviewRepo",
+              "text": "Lưu điểm, đóng phiên và sự kiện"
+            },
+            {
+              "from": "InterviewRepo",
+              "to": "AiDbAdapter",
+              "text": "Ghi bốn điểm và token"
+            },
+            {
+              "from": "AiDbAdapter",
+              "to": "PostgreSQL",
+              "text": "Lưu phiên hoàn tất và sự kiện"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "AiDbAdapter",
+              "text": "Bảng điểm đã lưu",
+              "kind": "return"
+            },
+            {
+              "from": "AiDbAdapter",
+              "to": "InterviewRepo",
+              "text": "Kết quả hoàn tất",
+              "kind": "return"
+            },
+            {
+              "from": "InterviewRepo",
+              "to": "CompleteInterviewCmd",
+              "text": "Bảng điểm tham khảo",
+              "kind": "return"
+            },
+            {
+              "from": "CompleteInterviewCmd",
+              "to": "InterviewController",
+              "text": "Trả bảng điểm tham khảo",
+              "kind": "return"
+            }
+          ]
+        }
       },
       {
         "from": "InterviewController",
         "to": "Sinh viên",
-        "text": "Báo thành công",
+        "text": "Hiển thị đánh giá hỗ trợ học tập",
         "kind": "return"
-      },
-      {
-        "from": "Sinh viên",
-        "to": "Sinh viên",
-        "text": "Bảng rubric kèm nhãn chỉ mang tính định hướng học tập, không phải điểm chính thức"
       }
     ]
-  },
-  "_cat": "Tach tu sequence_user_phong_van_gia_lap_ai.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 1/2). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md.",
-  "_gop": "Gop Redis (ChatMemory) thanh self-message tren InterviewService 2026-09-27 de so do con 5 lifeline, chu in dat tren 6pt. Chu dau tu chot. Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+  }
 }

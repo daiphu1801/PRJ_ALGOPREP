@@ -1,0 +1,96 @@
+{
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a1_student.md:50; 01-rd/req/user_stories/a1_student.md:52; 01-rd/req/user_stories/a1_student.md:54; 01-rd/req/user_stories/a1_student.md:57; 01-rd/req/user_stories/a1_student.md:59; 01-rd/req/user_stories/a1_student.md:67; 01-rd/req/user_stories/a1_student.md:69; 01-rd/req/user_stories/a1_student.md:71; 01-rd/req/user_stories/a1_student.md:78; 01-rd/req/user_stories/a1_student.md:80. Nguồn thiết kế: 03-dd/logic/F2_problem-bank.md; 03-dd/api/F2_problem-bank.md; 03-dd/logic/F3_harness.md; 03-dd/api/F3_harness.md; 03-dd/logic/F4_judge-orchestration.md; 03-dd/api/F4_judge-orchestration.md; 03-dd/logic/F5_ai-review.md; 03-dd/api/F5_ai-review.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "kind": "class",
+  "title": "A1 — Chạy thử, nộp bài và xem kết quả",
+  "covers": [
+    "F2-03",
+    "F2-08",
+    "F3-13",
+    "F4-01",
+    "F4-02",
+    "F4-08",
+    "F4-13",
+    "F5-01",
+    "F5-09"
+  ],
+  "class": {
+    "legend": "shared",
+    "classes": [
+      {
+        "id": "service",
+        "name": "StudentSubmissionService",
+        "methods": [
+          "+ getStarterCode(problemId : UUID, language : Language) : String",
+          "+ runSample(command : RunSampleCommand) : SampleResult",
+          "+ getSubmissionModels(problemId : UUID) : Set<SubmissionModel>",
+          "+ getSupportedModels(problemId : UUID) : Set<SubmissionModel>",
+          "+ acceptSource(command : SourceCommand) : String",
+          "+ submit(command : SubmitCommand) : UUID",
+          "+ subscribeResults(submissionId : UUID) : ResultStream",
+          "+ getCaseSummaries(submissionId : UUID) : List<CaseSummary>",
+          "+ getPublicResult(submissionId : UUID) : SubmissionResult",
+          "+ getAcceptedActions(submissionId : UUID) : Set<NextAction>"
+        ]
+      },
+      {
+        "id": "port1",
+        "name": "ProblemSpecReadPort",
+        "kind": "interface",
+        "methods": [
+          "+ getPublicSpec(problemId : UUID) : ProblemSpec"
+        ]
+      },
+      {
+        "id": "port2",
+        "name": "SampleRunPort",
+        "kind": "interface",
+        "methods": [
+          "+ executeSample(command : RunSampleCommand) : SampleResult"
+        ]
+      },
+      {
+        "id": "port3",
+        "name": "SubmissionPort",
+        "kind": "interface",
+        "methods": [
+          "+ enqueue(command : SubmitCommand) : UUID"
+        ]
+      },
+      {
+        "id": "port4",
+        "name": "ResultReadPort",
+        "kind": "interface",
+        "methods": [
+          "+ getPublicResult(id : UUID) : SubmissionResult"
+        ]
+      }
+    ],
+    "externals": [],
+    "relations": [
+      {
+        "from": "service",
+        "to": "port1",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port2",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port3",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port4",
+        "kind": "dependency"
+      }
+    ],
+    "notes": [
+      "Chạy thử không ghi tiến độ; kết quả Hidden chỉ có trạng thái/chỉ số. Tự giữ mã khi đổi mô hình và chọn nút sau Accepted thuộc client.",
+      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+    ]
+  }
+}

@@ -1,7 +1,7 @@
 {
-  "_": "Nguon: 03-dd/api/F1_identity.md (dong 25, 27), 03-dd/logic/F1_identity.md BR-11, 02-bd/database/F1_identity.md (class_enrollments, left_at), DEC-2026-1014-keep-learning-history-on-leave, DEC-2026-1014-class-leave-details. Thay hai phan cu: BR-11 khong con xoa cascade, judge-orchestration khong xoa luot nop khi nhan su kien nen bo nhanh RabbitMQ xoa cascade. Duong dan POST .../join la dong 25 cua DD. Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen. | Cap nhat 2026-10-20: siet theo quy tac moi, nhan mui ten la cau tieng Viet thuong, khong duong dan endpoint, ma HTTP, ma quyen, ten su kien, thuat ngu ky thuat; duong dan, ma HTTP va ma quyen nam o DD.",
+  "_": "Nguồn: 03-dd/logic/F1_identity.md BR-09; 03-dd/api/F1_identity.md endpoint tham gia lớp. ClassRepository và IdentityDbAdapter là tên minh họa [SoT: Suy luận]. Mã mời còn hạn: chưa có dòng thì tạo mới; đang trong lớp thì trả thành công không đổi; đã rời thì dùng lại dòng cũ, đặt left_at=NULL và giữ joined_at gốc. Lịch sử làm bài cũ hiện lại theo phạm vi lớp.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Gỡ học viên khỏi lớp và vào lại bằng mã mời (Giảng viên) (2/2)",
+  "title": "Sơ đồ tuần tự chi tiết - Học viên vào lại lớp bằng mã mời (2/2)",
   "covers": [
     "F1-23"
   ],
@@ -19,9 +19,19 @@
         "stereo": "presentation"
       },
       {
-        "name": "ClassService",
+        "name": "JoinClassByInvite",
         "role": "service",
-        "stereo": "application"
+        "stereo": "application command"
+      },
+      {
+        "name": "ClassRepository",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "IdentityDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
       },
       {
         "name": "PostgreSQL",
@@ -31,61 +41,116 @@
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 2 - Học viên vào lại bằng mã mời: dùng lại dòng ghi danh cũ (F1-23)"
-      },
-      {
-        "from": "Học viên",
-        "to": "Học viên",
-        "text": "Nhập mã mời còn hạn của lớp"
+        "phase": "Giai đoạn 2 - Kiểm mã mời và ghi danh"
       },
       {
         "from": "Học viên",
         "to": "ClassController",
-        "text": "Gửi mã mời để vào lớp"
+        "text": "Nhập mã mời để vào lớp"
       },
       {
         "from": "ClassController",
-        "to": "ClassService",
-        "text": "Yêu cầu vào lớp bằng mã mời"
+        "to": "JoinClassByInvite",
+        "text": "Tham gia lớp bằng mã mời"
       },
       {
-        "from": "ClassService",
+        "from": "JoinClassByInvite",
+        "to": "ClassRepository",
+        "text": "Tìm mã mời còn hạn"
+      },
+      {
+        "from": "ClassRepository",
+        "to": "IdentityDbAdapter",
+        "text": "Đọc mã mời và lớp"
+      },
+      {
+        "from": "IdentityDbAdapter",
         "to": "PostgreSQL",
-        "text": "Tìm lớp ứng với mã còn hạn"
+        "text": "Tìm mã còn hiệu lực"
       },
       {
         "from": "PostgreSQL",
-        "to": "ClassService",
-        "text": "Lớp ứng với mã",
+        "to": "IdentityDbAdapter",
+        "text": "Lớp hoặc mã không hợp lệ",
         "kind": "return"
       },
       {
-        "from": "ClassService",
-        "to": "PostgreSQL",
-        "text": "Ghi danh lại bằng dòng cũ, xoá mốc rời lớp"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "ClassService",
-        "text": "Đã ghi",
+        "from": "IdentityDbAdapter",
+        "to": "ClassRepository",
+        "text": "Lớp hoặc mã không hợp lệ",
         "kind": "return"
       },
       {
-        "from": "ClassService",
-        "to": "ClassController",
-        "text": "Đã trong lớp",
+        "from": "ClassRepository",
+        "to": "JoinClassByInvite",
+        "text": "Lớp hoặc mã không hợp lệ",
         "kind": "return"
       },
       {
-        "from": "ClassController",
-        "to": "Học viên",
-        "text": "Báo thành công",
-        "kind": "return"
-      },
-      {
-        "from": "Học viên",
-        "to": "Học viên",
-        "text": "Vào lại lớp; lịch sử làm bài cũ hiện lại trong tiến độ"
+        "alt": {
+          "label": "Mã mời còn hạn?",
+          "then": [
+            {
+              "from": "JoinClassByInvite",
+              "to": "ClassRepository",
+              "text": "Ghi danh hoặc kích hoạt lại dòng cũ"
+            },
+            {
+              "from": "ClassRepository",
+              "to": "IdentityDbAdapter",
+              "text": "Giữ ngày vào đầu tiên khi vào lại"
+            },
+            {
+              "from": "IdentityDbAdapter",
+              "to": "PostgreSQL",
+              "text": "Thêm dòng mới hoặc xóa mốc rời cũ"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "IdentityDbAdapter",
+              "text": "Đã trong lớp",
+              "kind": "return"
+            },
+            {
+              "from": "IdentityDbAdapter",
+              "to": "ClassRepository",
+              "text": "Đã trong lớp",
+              "kind": "return"
+            },
+            {
+              "from": "ClassRepository",
+              "to": "JoinClassByInvite",
+              "text": "Đã trong lớp",
+              "kind": "return"
+            },
+            {
+              "from": "JoinClassByInvite",
+              "to": "ClassController",
+              "text": "Trả kết quả tham gia",
+              "kind": "return"
+            },
+            {
+              "from": "ClassController",
+              "to": "Học viên",
+              "text": "Hiển thị lớp và lịch sử học cũ",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "JoinClassByInvite",
+              "to": "ClassController",
+              "text": "Báo mã hết hạn hoặc không tồn tại",
+              "kind": "return"
+            },
+            {
+              "from": "ClassController",
+              "to": "Học viên",
+              "text": "Hiển thị lỗi mã mời",
+              "kind": "return"
+            }
+          ]
+        }
       }
     ]
   }

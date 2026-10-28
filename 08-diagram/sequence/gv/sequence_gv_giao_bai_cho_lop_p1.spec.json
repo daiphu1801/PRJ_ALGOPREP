@@ -1,0 +1,179 @@
+{
+  "_": "Nguồn: 03-dd/api/F2_problem-bank.md §53; 03-dd/logic/F2_problem-bank.md BR-18. ClassAssignmentRepository, ProblemDbAdapter, ProblemEventRelay là tên minh họa [SoT: Suy luận]. Mỗi bài xử lý một giao dịch riêng. Chỉ bài PUBLISHED chưa deleted được giao; đang giao thì bỏ qua; giao lại sau khi gỡ tạo dòng mới. Dòng giao và outbox ProblemAssignedToClass cùng giao dịch; lỗi outbox rollback riêng bài, trả failedItems, bài khác vẫn xử lý.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Giao bài cho lớp",
+  "covers": [
+    "F1-10",
+    "F2-12"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Giảng viên",
+        "role": "actor"
+      },
+      {
+        "name": "AssignmentController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "AssignProblemsToClass",
+        "role": "service",
+        "stereo": "application command"
+      },
+      {
+        "name": "InstructorClassPort",
+        "role": "repository",
+        "stereo": "identity output port"
+      },
+      {
+        "name": "ClassAssignmentRepository",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "ProblemDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema problem"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 1 - Kiểm lớp và danh sách bài"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "AssignmentController",
+        "text": "Chọn lớp và tối đa 50 bài để giao"
+      },
+      {
+        "from": "AssignmentController",
+        "to": "AssignProblemsToClass",
+        "text": "Gửi danh sách bài và lớp"
+      },
+      {
+        "from": "AssignProblemsToClass",
+        "to": "InstructorClassPort",
+        "text": "Kiểm lớp do giảng viên phụ trách"
+      },
+      {
+        "from": "InstructorClassPort",
+        "to": "AssignProblemsToClass",
+        "text": "Lớp thuộc hoặc ngoài phạm vi",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Lớp thuộc phạm vi phụ trách?",
+          "then": [
+            {
+              "from": "AssignProblemsToClass",
+              "to": "ClassAssignmentRepository",
+              "text": "Đọc trạng thái bài và dòng giao còn hiệu lực"
+            },
+            {
+              "from": "ClassAssignmentRepository",
+              "to": "ProblemDbAdapter",
+              "text": "Tìm bài và lần giao hiện tại"
+            },
+            {
+              "from": "ProblemDbAdapter",
+              "to": "PostgreSQL",
+              "text": "Đọc bài và lần giao trong lớp"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "ProblemDbAdapter",
+              "text": "Trạng thái bài và lần giao",
+              "kind": "return"
+            },
+            {
+              "from": "ProblemDbAdapter",
+              "to": "ClassAssignmentRepository",
+              "text": "Trạng thái bài và lần giao",
+              "kind": "return"
+            },
+            {
+              "from": "ClassAssignmentRepository",
+              "to": "AssignProblemsToClass",
+              "text": "Trạng thái bài và lần giao",
+              "kind": "return"
+            },
+            {
+              "from": "AssignProblemsToClass",
+              "to": "AssignProblemsToClass",
+              "text": "Bài chưa xuất bản vào danh sách lỗi; bài đã giao vào danh sách bỏ qua"
+            },
+            {
+              "from": "AssignProblemsToClass",
+              "to": "ClassAssignmentRepository",
+              "text": "Giao các bài hợp lệ còn lại"
+            },
+            {
+              "from": "ClassAssignmentRepository",
+              "to": "ProblemDbAdapter",
+              "text": "Tạo dòng giao và sự kiện cùng giao dịch từng bài"
+            },
+            {
+              "from": "ProblemDbAdapter",
+              "to": "PostgreSQL",
+              "text": "Ghi lần giao mới và hộp thư sự kiện"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "ProblemDbAdapter",
+              "text": "Kết quả từng bài",
+              "kind": "return"
+            },
+            {
+              "from": "ProblemDbAdapter",
+              "to": "ClassAssignmentRepository",
+              "text": "Thành công hoặc lỗi từng bài",
+              "kind": "return"
+            },
+            {
+              "from": "ClassAssignmentRepository",
+              "to": "AssignProblemsToClass",
+              "text": "Kết quả giao và lỗi riêng",
+              "kind": "return"
+            },
+            {
+              "from": "AssignProblemsToClass",
+              "to": "AssignmentController",
+              "text": "Trả danh sách đã giao, bỏ qua và lỗi",
+              "kind": "return"
+            },
+            {
+              "from": "AssignmentController",
+              "to": "Giảng viên",
+              "text": "Hiển thị kết quả từng bài",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "AssignProblemsToClass",
+              "to": "AssignmentController",
+              "text": "Từ chối vì không phụ trách lớp",
+              "kind": "return"
+            },
+            {
+              "from": "AssignmentController",
+              "to": "Giảng viên",
+              "text": "Hiển thị lỗi quyền lớp",
+              "kind": "return"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

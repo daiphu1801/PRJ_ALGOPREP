@@ -1,0 +1,94 @@
+{
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a1_student.md:134; 01-rd/req/user_stories/a1_student.md:136; 01-rd/req/user_stories/a1_student.md:139; 01-rd/req/user_stories/a1_student.md:141; 01-rd/req/user_stories/a1_student.md:144; 01-rd/req/user_stories/a1_student.md:146; 01-rd/req/user_stories/a1_student.md:149. Nguồn thiết kế: 03-dd/logic/F5_ai-review.md; 03-dd/api/F5_ai-review.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "kind": "class",
+  "title": "A1 — Phỏng vấn giả lập ba giai đoạn",
+  "covers": [
+    "F5-09",
+    "F5-10",
+    "F5-11",
+    "F5-12",
+    "F5-14",
+    "F5-15",
+    "F5-18",
+    "F5-22",
+    "F5-24",
+    "F5-28"
+  ],
+  "class": {
+    "legend": "shared",
+    "classes": [
+      {
+        "id": "service",
+        "name": "MockInterviewService",
+        "methods": [
+          "+ startFromAccepted(submissionId : UUID, studentId : UUID) : InterviewSession",
+          "+ advanceStage(sessionId : UUID) : InterviewStage",
+          "+ streamReply(sessionId : UUID, answer : String) : TokenStream",
+          "+ rubric(sessionId : UUID) : InterviewRubric",
+          "+ endOnAiFailure(sessionId : UUID, reason : String)",
+          "+ startSelfPractice(source : QuestionSource, studentId : UUID) : InterviewSession",
+          "+ applySelfPracticeSettings(sessionId : UUID, settings : PracticeSettings)"
+        ]
+      },
+      {
+        "id": "port1",
+        "name": "InterviewSessionRepository",
+        "kind": "class",
+        "methods": [
+          "+ save(session : InterviewSession)"
+        ]
+      },
+      {
+        "id": "port2",
+        "name": "InterviewQuestionPort",
+        "kind": "interface",
+        "methods": [
+          "+ resolve(source : QuestionSource) : QuestionContext"
+        ]
+      },
+      {
+        "id": "port3",
+        "name": "InterviewModelPort",
+        "kind": "interface",
+        "methods": [
+          "+ respond(context : StageContext) : TokenStream"
+        ]
+      },
+      {
+        "id": "port4",
+        "name": "AcceptedSubmissionPort",
+        "kind": "interface",
+        "methods": [
+          "+ requireAccepted(id : UUID, studentId : UUID) : Submission"
+        ]
+      }
+    ],
+    "externals": [],
+    "relations": [
+      {
+        "from": "service",
+        "to": "port1",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port2",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port3",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port4",
+        "kind": "dependency"
+      }
+    ],
+    "notes": [
+      "Ba giai đoạn và rubric lưu cùng phiên; lỗi AI kết thúc phiên có kiểm soát, không đổi kết quả chấm.",
+      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+    ]
+  }
+}

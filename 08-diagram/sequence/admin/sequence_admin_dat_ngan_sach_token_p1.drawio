@@ -1,159 +1,75 @@
 <mxfile host="app.diagrams.net" agent="drawio-uml-architect" type="device">
-  <diagram id="so-do-tuan-tu-chi-tiet-dat-ngan-sach-token-va-canh-bao-bat-t" name="so-do-tuan-tu-chi-tiet-dat-ngan-sach-token-va-canh-bao-bat-t">
-    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1130" math="0" shadow="0">
+  <diagram id="so-do-tuan-tu-chi-tiet-doc-ngan-sach-token-hien-tai-1-5" name="so-do-tuan-tu-chi-tiet-doc-ngan-sach-token-hien-tai-1-5">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="826" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="title" value="Sơ đồ tuần tự chi tiết - Đặt ngân sách token và cảnh báo bất thường (Quản trị viên) (1/3)" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="60" y="10" width="750" height="30" as="geometry" />
+        <mxCell id="title" value="Sơ đồ tuần tự chi tiết - Đọc ngân sách token hiện tại (1/5)" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="60" y="10" width="880" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="v1" value="alt [Là quản trị viên?]" style="algoprep=alt;rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#999999;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;fontColor=#1A1A1A;fontSize=13;fontStyle=1;dashed=0;" vertex="1" parent="1">
-          <mxGeometry x="40" y="868" width="770" height="210" as="geometry" />
+        <mxCell id="v1" value="Quản trị viên" style="shape=umlLifeline;participant=umlActor;perimeter=lifelinePerimeter;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;verticalAlign=top;spacingTop=40;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="110" y="60" width="30" height="402" as="geometry" />
         </mxCell>
-        <mxCell id="v2" value="else" style="text;html=1;dashed=1;strokeColor=#999999;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontColor=#1A1A1A;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="40" y="982" width="770" height="18" as="geometry" />
+        <mxCell id="v2" value='AiUsageController&lt;br&gt;&lt;font style="font-size:9px"&gt;(presentation)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#C6EFCE;strokeColor=#5E8E5E;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="210" y="60" width="130" height="402" as="geometry" />
         </mxCell>
-        <mxCell id="v3" value="Giai đoạn 1 - Xem mức tiêu thụ và dự báo thời điểm cạn hạn mức (F5-19, F5-21)" style="algoprep=phase;rounded=0;whiteSpace=wrap;html=1;fillColor=#EFEFEF;strokeColor=#999999;dashed=1;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#1A1A1A;fontSize=13;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="40" y="142" width="770" height="26" as="geometry" />
+        <mxCell id="v3" value='GetAiTokenBudget&lt;br&gt;&lt;font style="font-size:9px"&gt;(application)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#FFF2CC;strokeColor=#B8952A;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="360" y="60" width="130" height="402" as="geometry" />
         </mxCell>
-        <mxCell id="v4" value="Giai đoạn 2 - Đặt hạn mức; cạn hạn mức thì chỉ quản trị viên mở lại được (F5-25)" style="algoprep=phase;rounded=0;whiteSpace=wrap;html=1;fillColor=#EFEFEF;strokeColor=#999999;dashed=1;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#1A1A1A;fontSize=13;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="40" y="512" width="770" height="26" as="geometry" />
+        <mxCell id="v4" value='BudgetReadPort&lt;br&gt;&lt;font style="font-size:9px"&gt;(output port)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#FFC7CE;strokeColor=#B0525E;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="510" y="60" width="130" height="402" as="geometry" />
         </mxCell>
-        <mxCell id="v5" value="Quản trị viên" style="shape=umlLifeline;participant=umlActor;perimeter=lifelinePerimeter;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;verticalAlign=top;spacingTop=40;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="110" y="60" width="30" height="1030" as="geometry" />
+        <mxCell id="v5" value='AiDbAdapter&lt;br&gt;&lt;font style="font-size:9px"&gt;(persistence adapter)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#FFC7CE;strokeColor=#B0525E;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="660" y="60" width="130" height="402" as="geometry" />
         </mxCell>
-        <mxCell id="v6" value='TokenBudgetController&lt;br&gt;&lt;font style="font-size:9px"&gt;(presentation)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#C6EFCE;strokeColor=#5E8E5E;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="215" y="60" width="130" height="1030" as="geometry" />
+        <mxCell id="v6" value='PostgreSQL&lt;br&gt;&lt;font style="font-size:9px"&gt;(schema ai)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#D9D9D9;strokeColor=#7A7A7A;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="810" y="60" width="130" height="402" as="geometry" />
         </mxCell>
-        <mxCell id="v7" value='TokenBudgetService&lt;br&gt;&lt;font style="font-size:9px"&gt;(application)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#FFF2CC;strokeColor=#B8952A;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="370" y="60" width="130" height="1030" as="geometry" />
+        <mxCell id="v7" style="html=1;points=[[0,0,0,0,0],[0,1,0,0,0],[1,0,0,0,0],[1,1,0,0,0]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="v6">
+          <mxGeometry x="60" y="218" width="10" height="32" as="geometry" />
         </mxCell>
-        <mxCell id="v8" value='PostgreSQL&lt;br&gt;&lt;font style="font-size:9px"&gt;(schema ai)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#D9D9D9;strokeColor=#7A7A7A;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="525" y="60" width="130" height="1030" as="geometry" />
+        <mxCell id="v8" style="html=1;points=[[0,0,0,0,0],[0,1,0,0,0],[1,0,0,0,0],[1,1,0,0,0]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="v5">
+          <mxGeometry x="60" y="186" width="10" height="96" as="geometry" />
         </mxCell>
-        <mxCell id="v9" value="Sinh viên" style="shape=umlLifeline;participant=umlActor;perimeter=lifelinePerimeter;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;verticalAlign=top;spacingTop=40;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="730" y="60" width="30" height="1030" as="geometry" />
+        <mxCell id="v9" style="html=1;points=[[0,0,0,0,0],[0,1,0,0,0],[1,0,0,0,0],[1,1,0,0,0]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="v4">
+          <mxGeometry x="60" y="154" width="10" height="128" as="geometry" />
         </mxCell>
-        <mxCell id="v10" style="html=1;points=[[0,0,0,0,0],[0,1,0,0,0],[1,0,0,0,0],[1,1,0,0,0]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="v8">
-          <mxGeometry x="60" y="240" width="10" height="32" as="geometry" />
+        <mxCell id="v10" style="html=1;points=[[0,0,0,0,0],[0,1,0,0,0],[1,0,0,0,0],[1,1,0,0,0]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="v3">
+          <mxGeometry x="60" y="122" width="10" height="206" as="geometry" />
         </mxCell>
-        <mxCell id="v11" style="html=1;points=[[0,0,0,0,0],[0,1,0,0,0],[1,0,0,0,0],[1,1,0,0,0]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="v7">
-          <mxGeometry x="60" y="208" width="10" height="142" as="geometry" />
+        <mxCell id="v11" style="html=1;points=[[0,0,0,0,0],[0,1,0,0,0],[1,0,0,0,0],[1,1,0,0,0]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="v2">
+          <mxGeometry x="60" y="90" width="10" height="270" as="geometry" />
         </mxCell>
-        <mxCell id="v12" style="html=1;points=[[0,0,0,0,0],[0,1,0,0,0],[1,0,0,0,0],[1,1,0,0,0]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="v6">
-          <mxGeometry x="60" y="176" width="10" height="206" as="geometry" />
+        <mxCell id="e12" value="1. Mở trang ngân sách token" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.2239;exitDx=0;exitDy=0;entryX=0.5;entryY=0.2239;entryDx=0;entryDy=0;" edge="1" parent="1" source="v1" target="v2">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="v13" style="html=1;points=[[0,0,0,0,0],[0,1,0,0,0],[1,0,0,0,0],[1,1,0,0,0]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="v8">
-          <mxGeometry x="60" y="656" width="10" height="32" as="geometry" />
+        <mxCell id="e13" value="1.1. Kiểm quyền đọc ngân sách hoặc cấu hình AI" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.3035;exitDx=0;exitDy=0;entryX=0.5;entryY=0.3035;entryDx=0;entryDy=0;" edge="1" parent="1" source="v2" target="v3">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="v14" style="html=1;points=[[0,0,0,0,0],[0,1,0,0,0],[1,0,0,0,0],[1,1,0,0,0]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="v7">
-          <mxGeometry x="60" y="624" width="10" height="96" as="geometry" />
+        <mxCell id="e14" value="1.1.1. Đọc hạn mức và mức tiêu thụ từ đầu kỳ" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.3831;exitDx=0;exitDy=0;entryX=0.5;entryY=0.3831;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v4">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="v15" style="html=1;points=[[0,0,0,0,0],[0,1,0,0,0],[1,0,0,0,0],[1,1,0,0,0]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="v6">
-          <mxGeometry x="60" y="546" width="10" height="206" as="geometry" />
+        <mxCell id="e15" value="1.1.1.1. Đọc cấu hình và token đã dùng" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.4627;exitDx=0;exitDy=0;entryX=0.5;entryY=0.4627;entryDx=0;entryDy=0;" edge="1" parent="1" source="v4" target="v5">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="v16" style="html=1;points=[[0,0,0,0,0],[0,1,0,0,0],[1,0,0,0,0],[1,1,0,0,0]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="v7">
-          <mxGeometry x="60" y="784" width="10" height="104" as="geometry" />
+        <mxCell id="e16" value="1.1.1.1.1. Đọc cấu hình, tổng token và bốn tính năng" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.5423;exitDx=0;exitDy=0;entryX=0.5;entryY=0.5423;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v6">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e17" value="1. Mở trang theo dõi token" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.1262;exitDx=0;exitDy=0;entryX=0.5;entryY=0.1456;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v5">
+        <mxCell id="e17" value="Trả hạn mức, số đã dùng, trạng thái khóa" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.6219;exitDx=0;exitDy=0;entryX=0.5;entryY=0.6219;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e18" value="1.1.2. Tính ngày dự kiến hết và tỷ trọng theo tính năng" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.7015;exitDx=0;exitDy=0;entryX=0.5;entryY=0.7512;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v3">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="180" y="190" />
-            <mxPoint x="180" y="210" />
+            <mxPoint x="480" y="342" />
+            <mxPoint x="480" y="362" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e18" value="2. Gửi yêu cầu xem mức tiêu thụ" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.1709;exitDx=0;exitDy=0;entryX=0.5;entryY=0.1709;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v6">
+        <mxCell id="e19" value="Trả ngân sách và ngưỡng cảnh báo" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8159;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8159;entryDx=0;entryDy=0;" edge="1" parent="1" source="v3" target="v2">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e19" value="2.1. Yêu cầu mức tiêu thụ token" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.2019;exitDx=0;exitDy=0;entryX=0.5;entryY=0.2019;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v7">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e20" value="2.1.1. Tổng hợp token đã dùng theo chu kỳ hiện tại" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.2330;exitDx=0;exitDy=0;entryX=0.5;entryY=0.2330;entryDx=0;entryDy=0;" edge="1" parent="1" source="v7" target="v8">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e21" value="Tổng tiêu thụ, hạn mức, xếp hạng người dùng và bài toán" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.2641;exitDx=0;exitDy=0;entryX=0.5;entryY=0.2641;entryDx=0;entryDy=0;" edge="1" parent="1" source="v8" target="v7">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e22" value="2.1.2. Dự báo thời điểm cạn hạn mức từ tốc độ 7 ngày gần nhất" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.2951;exitDx=0;exitDy=0;entryX=0.5;entryY=0.3146;entryDx=0;entryDy=0;" edge="1" parent="1" source="v7" target="v7">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-            <mxPoint x="490" y="364" />
-            <mxPoint x="490" y="384" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="e23" value="Số liệu tiêu thụ và dự báo" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.3398;exitDx=0;exitDy=0;entryX=0.5;entryY=0.3398;entryDx=0;entryDy=0;" edge="1" parent="1" source="v7" target="v6">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e24" value="Báo thành công" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.3709;exitDx=0;exitDy=0;entryX=0.5;entryY=0.3709;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v5">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e25" value="3. Token đã dùng, còn lại, dự báo cạn và bảng xếp hạng" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.4019;exitDx=0;exitDy=0;entryX=0.5;entryY=0.4214;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v5">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-            <mxPoint x="180" y="474" />
-            <mxPoint x="180" y="494" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="e26" value="4. Nhập hạn mức token cho chu kỳ rồi bấm Lưu" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.4854;exitDx=0;exitDy=0;entryX=0.5;entryY=0.5049;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v5">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-            <mxPoint x="180" y="560" />
-            <mxPoint x="180" y="580" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="e27" value="5. Gửi hạn mức mới" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.5301;exitDx=0;exitDy=0;entryX=0.5;entryY=0.5301;entryDx=0;entryDy=0;" edge="1" parent="1" source="v5" target="v6">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e28" value="5.1. Kiểm tra quyền đổi ngân sách AI" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.5612;exitDx=0;exitDy=0;entryX=0.5;entryY=0.5806;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v6">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-            <mxPoint x="335" y="638" />
-            <mxPoint x="335" y="658" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="e29" value="5.2. Yêu cầu đổi hạn mức" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.6058;exitDx=0;exitDy=0;entryX=0.5;entryY=0.6058;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v7">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e30" value="5.2.1. Lưu hạn mức mới; ghi nhật ký giá trị cũ và mới" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.6369;exitDx=0;exitDy=0;entryX=0.5;entryY=0.6369;entryDx=0;entryDy=0;" edge="1" parent="1" source="v7" target="v8">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e31" value="Đã lưu" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.6680;exitDx=0;exitDy=0;entryX=0.5;entryY=0.6680;entryDx=0;entryDy=0;" edge="1" parent="1" source="v8" target="v7">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e32" value="Cấu hình ngân sách mới" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.6990;exitDx=0;exitDy=0;entryX=0.5;entryY=0.6990;entryDx=0;entryDy=0;" edge="1" parent="1" source="v7" target="v6">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e33" value="Báo thành công" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.7301;exitDx=0;exitDy=0;entryX=0.5;entryY=0.7301;entryDx=0;entryDy=0;" edge="1" parent="1" source="v6" target="v5">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e34" value="6. Gọi một tính năng AI khi ngân sách đã cạn" style="edgeStyle=none;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.7612;exitDx=0;exitDy=0;entryX=0.5;entryY=0.7612;entryDx=0;entryDy=0;" edge="1" parent="1" source="v9" target="v7">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e35" value="6.1. Trường hợp có" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8175;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8369;entryDx=0;entryDy=0;" edge="1" parent="1" source="v7" target="v7">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-            <mxPoint x="490" y="902" />
-            <mxPoint x="490" y="922" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="e36" value="Cho đi tiếp, quản trị viên không bị khoá theo ngân sách" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8621;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8621;entryDx=0;entryDy=0;" edge="1" parent="1" source="v7" target="v9">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e37" value="7. Trường hợp không" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.9146;exitDx=0;exitDy=0;entryX=0.5;entryY=0.9340;entryDx=0;entryDy=0;" edge="1" parent="1" source="v7" target="v7">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-            <mxPoint x="490" y="1002" />
-            <mxPoint x="490" y="1022" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="e38" value="Báo hết ngân sách AI, chặn trước khi gọi AI" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.9592;exitDx=0;exitDy=0;entryX=0.5;entryY=0.9592;entryDx=0;entryDy=0;" edge="1" parent="1" source="v7" target="v9">
+        <mxCell id="e20" value="Hiển thị ngân sách hiện tại" style="edgeStyle=none;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.8955;exitDx=0;exitDy=0;entryX=0.5;entryY=0.8955;entryDx=0;entryDy=0;" edge="1" parent="1" source="v2" target="v1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
       </root>

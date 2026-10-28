@@ -1,0 +1,67 @@
+{
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a2_instructor.md:55. Nguồn thiết kế: 03-dd/logic/F2_problem-bank.md; 03-dd/api/F2_problem-bank.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "kind": "class",
+  "title": "A2 — Giao bài cho lớp",
+  "covers": [
+    "F2-09",
+    "F2-12"
+  ],
+  "class": {
+    "legend": "shared",
+    "classes": [
+      {
+        "id": "service",
+        "name": "ClassAssignmentService",
+        "methods": [
+          "+ assign(instructorId : UUID, classId : UUID, problemId : UUID) : Assignment"
+        ]
+      },
+      {
+        "id": "port1",
+        "name": "InstructorClassPort",
+        "kind": "interface",
+        "methods": [
+          "+ requireOwner(instructorId : UUID, classId : UUID)"
+        ]
+      },
+      {
+        "id": "port2",
+        "name": "ProblemReadRepository",
+        "kind": "class",
+        "methods": [
+          "+ requirePublished(problemId : UUID) : Problem"
+        ]
+      },
+      {
+        "id": "port3",
+        "name": "AssignmentRepository",
+        "kind": "class",
+        "methods": [
+          "+ save(assignment : Assignment)"
+        ]
+      }
+    ],
+    "externals": [],
+    "relations": [
+      {
+        "from": "service",
+        "to": "port1",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port2",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port3",
+        "kind": "dependency"
+      }
+    ],
+    "notes": [
+      "Chỉ giảng viên phụ trách lớp được giao bài đã công bố; học viên lớp khác không thấy bài giao.",
+      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+    ]
+  }
+}

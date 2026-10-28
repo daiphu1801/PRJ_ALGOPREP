@@ -1,11 +1,8 @@
 {
-  "_": "Luong dat ngan sach token, tu dong khoa khi can quota, va canh bao bat thuong cap tai khoan cua actor A3. Nguon: US-A3-04 (01-rd/req/user_stories/a3_admin.md), 01-rd/req/F5_ai-review.md (F5-19, F5-21, F5-25), 02-bd/architecture/F5_ai-review.md muc 6.3 (ngan sach + locked_at, ADMIN khong bi khoa) va muc 6.4 (DEC-2026-0831-ai-usage-anomaly-alert -- canh bao mem, KHONG tu khoa tai khoan). Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen. | 2026-10-20 (owner): nhan mui ten bo han duong dan, ma HTTP, ma quyen, thuat ngu ky thuat (cache, job, worker, model...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
-  "_hai_co_che": "Muc 6.3 va 6.4 la HAI co che tach biet: mot cai tu khoa theo ngan sach toan he thong, mot cai chi canh bao de ADMIN xem xet thu cong. Ve chung mot so do de thay ro chung khong dinh vao nhau.",
+  "_": "Nguồn: 03-dd/jobs/F5_ai-review.md §5 JOB-AI-05. Trung bình gồm ADMIN có usage, ứng viên cảnh báo loại ADMIN; ít hơn hai người hoặc baseline=0 thì bỏ. Lỗi tra vai trò bỏ lượt, không khóa tài khoản. Cổng và adapter là tên minh họa [SoT: Suy luận].",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Đặt ngân sách token và cảnh báo bất thường (Quản trị viên) (2/3)",
+  "title": "Sơ đồ tuần tự chi tiết - Phát hiện lượt gọi AI bất thường (3/5)",
   "covers": [
-    "F5-19",
-    "F5-21",
     "F5-25"
   ],
   "mode": "color",
@@ -13,129 +10,109 @@
     "detail": true,
     "participants": [
       {
-        "name": "Quản trị viên",
+        "name": "Bộ lập lịch",
         "role": "actor"
       },
       {
-        "name": "TokenBudgetController",
-        "role": "controller",
-        "stereo": "presentation"
+        "name": "AiAnomalySweepJob",
+        "role": "service",
+        "stereo": "scheduled job"
       },
       {
-        "name": "TokenBudgetService",
-        "role": "service",
-        "stereo": "application"
+        "name": "UsageQueryPort",
+        "role": "repository",
+        "stereo": "output port"
       },
       {
-        "name": "AnomalyAlertJob",
-        "role": "service",
-        "stereo": "@Scheduled mỗi giờ"
+        "name": "AiDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
       },
       {
         "name": "PostgreSQL",
         "role": "datastore",
         "stereo": "schema ai"
+      },
+      {
+        "name": "UserDirectoryPort",
+        "role": "repository",
+        "stereo": "identity port"
       }
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 3 - Cảnh báo bất thường: cảnh báo mềm, KHÔNG tự khoá tài khoản"
+        "from": "Bộ lập lịch",
+        "to": "AiAnomalySweepJob",
+        "text": "Quét dữ liệu mỗi giờ"
       },
       {
-        "from": "AnomalyAlertJob",
+        "from": "AiAnomalySweepJob",
+        "to": "UsageQueryPort",
+        "text": "Đếm lượt dùng 24 giờ theo tài khoản"
+      },
+      {
+        "from": "UsageQueryPort",
+        "to": "AiDbAdapter",
+        "text": "Đọc mức dùng và cảnh báo đang mở"
+      },
+      {
+        "from": "AiDbAdapter",
         "to": "PostgreSQL",
-        "text": "Đọc tần suất gọi AI 24 giờ gần nhất"
+        "text": "Tính số dòng token mỗi người và trung bình toàn hệ thống"
       },
       {
         "from": "PostgreSQL",
-        "to": "AnomalyAlertJob",
-        "text": "Tần suất từng tài khoản và trung bình hệ thống",
+        "to": "AiAnomalySweepJob",
+        "text": "Trả ứng viên đạt ít nhất 5 lần trung bình",
         "kind": "return"
       },
       {
-        "from": "AnomalyAlertJob",
-        "to": "AnomalyAlertJob",
-        "text": "So với trung bình cùng khung giờ, ngưỡng gấp 5 lần"
-      },
-      {
         "alt": {
-          "label": "Có tài khoản vượt ngưỡng?",
+          "label": "Đủ người dùng và ứng viên hợp lệ?",
           "then": [
             {
-              "from": "AnomalyAlertJob",
-              "to": "AnomalyAlertJob",
-              "text": "Có tài khoản vượt ngưỡng"
+              "from": "AiAnomalySweepJob",
+              "to": "UserDirectoryPort",
+              "text": "Tra vai trò ứng viên, loại quản trị viên"
             },
             {
-              "from": "AnomalyAlertJob",
-              "to": "PostgreSQL",
-              "text": "Ghi cảnh báo ở trạng thái mở"
-            },
-            {
-              "from": "PostgreSQL",
-              "to": "AnomalyAlertJob",
-              "text": "Đã ghi",
+              "from": "UserDirectoryPort",
+              "to": "AiAnomalySweepJob",
+              "text": "Trả vai trò",
               "kind": "return"
             },
             {
-              "from": "AnomalyAlertJob",
-              "to": "AnomalyAlertJob",
-              "text": "Tài khoản đó vẫn gọi AI bình thường"
+              "from": "AiAnomalySweepJob",
+              "to": "UsageQueryPort",
+              "text": "Ghi cảnh báo mới nếu chưa có cảnh báo mở"
+            },
+            {
+              "from": "UsageQueryPort",
+              "to": "AiDbAdapter",
+              "text": "Lưu cảnh báo"
+            },
+            {
+              "from": "AiDbAdapter",
+              "to": "PostgreSQL",
+              "text": "Thêm cảnh báo OPEN, mỗi người tối đa một"
+            },
+            {
+              "from": "AiAnomalySweepJob",
+              "to": "Bộ lập lịch",
+              "text": "Hoàn tất quét",
+              "kind": "return"
             }
           ],
           "else": [
             {
-              "from": "AnomalyAlertJob",
-              "to": "AnomalyAlertJob",
-              "text": "Không ghi cảnh báo, chờ lượt chạy sau"
+              "from": "AiAnomalySweepJob",
+              "to": "Bộ lập lịch",
+              "text": "Bỏ lượt quét; chờ chu kỳ sau",
+              "kind": "return"
             }
           ]
         }
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "Quản trị viên",
-        "text": "Mở mục Cảnh báo bất thường"
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "TokenBudgetController",
-        "text": "Gửi yêu cầu xem cảnh báo đang mở"
-      },
-      {
-        "from": "TokenBudgetController",
-        "to": "TokenBudgetService",
-        "text": "Yêu cầu cảnh báo đang mở"
-      },
-      {
-        "from": "TokenBudgetService",
-        "to": "PostgreSQL",
-        "text": "Đọc các cảnh báo đang mở"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "TokenBudgetService",
-        "text": "Danh sách cảnh báo đang mở",
-        "kind": "return"
-      },
-      {
-        "from": "TokenBudgetService",
-        "to": "TokenBudgetController",
-        "text": "Danh sách cảnh báo",
-        "kind": "return"
-      },
-      {
-        "from": "TokenBudgetController",
-        "to": "Quản trị viên",
-        "text": "Báo thành công",
-        "kind": "return"
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "Quản trị viên",
-        "text": "Danh sách tài khoản nghi bất thường để xem xét thủ công"
       }
     ]
-  },
-  "_cat": "Tach tu sequence_admin_dat_ngan_sach_token.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 2/2). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+  }
 }

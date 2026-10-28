@@ -1,61 +1,61 @@
 <mxfile host="app.diagrams.net" agent="drawio-uml-architect" type="device">
-  <diagram id="class-diagram-dong-goi-payload-gui-engine-cua-f3-harness" name="class-diagram-dong-goi-payload-gui-engine-cua-f3-harness">
+  <diagram id="f3-chuan-bi-chuong-trinh-cho-may-cham" name="f3-chuan-bi-chuong-trinh-cho-may-cham">
     <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="t_plan" value='&lt;div style="text-align:center"&gt;&lt;b&gt;ExecutionPlan&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;-&amp;nbsp;files&amp;nbsp;:&amp;nbsp;List&amp;lt;{name,&amp;nbsp;content}&amp;gt;&lt;br&gt;-&amp;nbsp;compile&amp;nbsp;:&amp;nbsp;{argv[],&amp;nbsp;env[]}&amp;nbsp;|&amp;nbsp;null&lt;br&gt;-&amp;nbsp;run&amp;nbsp;:&amp;nbsp;{argv[],&amp;nbsp;env[]}' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="54" y="208" width="231.39999999999998" height="82" as="geometry" />
+        <mxCell id="t_plan" value='&lt;div style="text-align:center"&gt;&lt;b&gt;ExecutionPlan&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;-&amp;nbsp;files&amp;nbsp;:&amp;nbsp;List&amp;lt;SourceFile&amp;gt;&lt;br&gt;-&amp;nbsp;compile&amp;nbsp;:&amp;nbsp;CommandSpec&amp;nbsp;[0..1]&lt;br&gt;-&amp;nbsp;run&amp;nbsp;:&amp;nbsp;CommandSpec' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="54" y="208" width="207" height="82" as="geometry" />
         </mxCell>
         <mxCell id="t_asm" value='&lt;div style="text-align:center"&gt;&lt;b&gt;JudgePayloadAssembler&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;assemble(plan&amp;nbsp;:&amp;nbsp;ExecutionPlan)&amp;nbsp;:&amp;nbsp;JudgePayload' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="343.5775" y="60" width="310.7" height="68" as="geometry" />
+          <mxGeometry x="341.13749999999993" y="60" width="310.7" height="68" as="geometry" />
         </mxCell>
         <mxCell id="t_go" value='&lt;div style="text-align:center"&gt;&lt;b&gt;GoJudgePayloadAssembler&lt;/b&gt;&lt;/div&gt;' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=center;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="335.4" y="208" width="197.545" height="36" as="geometry" />
+          <mxGeometry x="311" y="208" width="197.545" height="36" as="geometry" />
         </mxCell>
         <mxCell id="t_j0" value='&lt;div style="text-align:center"&gt;&lt;b&gt;Judge0PayloadAssembler&lt;/b&gt;&lt;/div&gt;' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=center;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="582.9449999999999" y="208" width="190.52999999999997" height="36" as="geometry" />
+          <mxGeometry x="558.545" y="208" width="190.52999999999997" height="36" as="geometry" />
         </mxCell>
-        <mxCell id="t_payload" value='&lt;div style="text-align:center"&gt;&lt;b&gt;JudgePayload&lt;/b&gt;&lt;/div&gt;' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=center;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#F7F7F7;strokeColor=#999999;fontColor=#1A1A1A;dashed=1;" vertex="1" parent="1">
-          <mxGeometry x="823.4749999999999" y="208" width="120.37999999999998" height="36" as="geometry" />
+        <mxCell id="t_payload" value='&lt;div style="text-align:center"&gt;&lt;b&gt;JudgePayload&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;-&amp;nbsp;engineId&amp;nbsp;:&amp;nbsp;String&lt;br&gt;-&amp;nbsp;body&amp;nbsp;:&amp;nbsp;JSON' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="799.0749999999999" y="208" width="139.89999999999998" height="68" as="geometry" />
         </mxCell>
         <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.383;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=block;endFill=0;" edge="1" parent="1" source="t_go" target="t_asm">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="434.17249999999996" y="160" />
-            <mxPoint x="462.59" y="160" />
+            <mxPoint x="409.7725" y="160" />
+            <mxPoint x="460.1499999999999" y="160" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="e2" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.617;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=block;endFill=0;" edge="1" parent="1" source="t_j0" target="t_asm">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="678.2099999999999" y="176" />
-            <mxPoint x="535.265" y="176" />
+            <mxPoint x="653.81" y="176" />
+            <mxPoint x="532.8249999999999" y="176" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="e3" value="đọc" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.149;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_asm" target="t_plan">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="389.91499999999996" y="144" />
-            <mxPoint x="169.7" y="144" />
+            <mxPoint x="387.4749999999999" y="144" />
+            <mxPoint x="157.5" y="144" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="e4" value="tạo" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.851;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_asm" target="t_payload">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="607.9399999999999" y="192" />
-            <mxPoint x="883.6649999999998" y="192" />
+            <mxPoint x="605.4999999999999" y="192" />
+            <mxPoint x="869.0249999999999" y="192" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="title" value="Class diagram đóng gói payload gửi engine của F3 harness" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="0" y="10" width="973.8549999999999" height="30" as="geometry" />
+        <mxCell id="title" value="F3 — Chuẩn bị chương trình cho máy chấm" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="0" y="10" width="968.9749999999999" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="v5" value="Chú giải: + public; - private; # protected; ~ package. Chữ nghiêng = lớp trừu tượng.&lt;br&gt;Mũi tên rỗng nét liền = kế thừa; nét đứt, mũi tên rỗng = hiện thực hoá interface; nét đứt, mũi tên mở = phụ thuộc; hình thoi rỗng = kết tập; hình thoi đặc = hợp thành.&lt;br&gt;Ghi chú: Chọn GoJudgePayloadAssembler (mặc định) hay Judge0PayloadAssembler theo cùng công tắc engine với adapter của JudgeExecutionPort; hai lớp cài đặt nằm ở infrastructure, interface ở application (03-dd/logic/F3_harness.md:450-452).&lt;br&gt;Ghi chú: [SoT: Suy luận] DD chưa nói lớp nào sinh ra ExecutionPlan nên không vẽ cạnh đó (03-dd/logic/F3_harness.md:423)." style="text;html=1;align=left;verticalAlign=top;fontSize=11;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="30" y="310" width="1100" height="72" as="geometry" />
+        <mxCell id="v5" value="Ghi chú: [SoT: Suy luận] SourceFile = tên/nội dung; CommandSpec = đối số/biến môi trường.&lt;br&gt;Ghi chú: Assembler chuyển ExecutionPlan thành JudgePayload; GoJudge mặc định, Judge0 thay thế." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="30" y="310" width="1100" height="44" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

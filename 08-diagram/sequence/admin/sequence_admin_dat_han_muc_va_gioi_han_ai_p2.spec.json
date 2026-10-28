@@ -1,9 +1,9 @@
 {
-  "_": "Nguon: 01-rd/screens/admin/ADM0303_ai_limits.md (REQ-02..05), 02-bd/screens/admin/ADM0303_ai_limits.md muc 7.3 (endpoint NO 3-13, ten nghiep vu). Duong dan REST la [SoT: Suy luan] vi 03-dd/api/F5_ai-review.md chua viet. Nhan mui ten la hanh dong nghiep vu; ten ham va truy van thuoc DD. Phan REQ-01 (dat han muc, tu khoa) da co o sequence_admin_dat_ngan_sach_token_p1. Phan 2/4: gioi han tan suat (REQ-03). Tach 4 phan 2026-10-20 vi phan 2 cu qua cao (lint: cao 1.44 lan be ngang). | 2026-10-20 (owner): nhan mui ten bo han duong dan, ma HTTP, ma quyen, thuat ngu ky thuat (cache, job, worker, model...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
+  "_": "Nguồn: 03-dd/api/F5_ai-review.md §21-22. reviewPerHour, interviewPerHour, cooldownSeconds 1..999; cập nhật từng phần, không audit, không đặt lại bộ đếm Redis. F6 practice 20/h là hằng số riêng. Cổng và adapter là tên minh họa [SoT: Suy luận].",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Đặt giới hạn tần suất gọi AI (Quản trị viên) (2/4)",
+  "title": "Sơ đồ tuần tự chi tiết - Đổi hạn mức gọi AI và thời gian chờ (2/5)",
   "covers": [
-    "F5-19"
+    "F5-25"
   ],
   "mode": "color",
   "sequence": {
@@ -19,9 +19,19 @@
         "stereo": "presentation"
       },
       {
-        "name": "AiLimitsService",
+        "name": "UpdateRateLimitConfig",
         "role": "service",
         "stereo": "application"
+      },
+      {
+        "name": "BudgetStorePort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "AiDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
       },
       {
         "name": "PostgreSQL",
@@ -31,49 +41,64 @@
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 2 - Đặt giới hạn tần suất gọi AI theo giờ (F5-19)"
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "Quản trị viên",
-        "text": "Nhập số lượt mỗi giờ rồi bấm Lưu"
+        "phase": "Đổi một hoặc nhiều giới hạn"
       },
       {
         "from": "Quản trị viên",
         "to": "AiLimitsController",
-        "text": "Gửi giới hạn tần suất mới"
+        "text": "Lưu giới hạn theo giờ hoặc thời gian chờ"
       },
       {
         "from": "AiLimitsController",
-        "to": "AiLimitsController",
-        "text": "Kiểm tra quyền và số lượt hợp lệ"
+        "to": "UpdateRateLimitConfig",
+        "text": "Kiểm quyền cấu hình AI và giá trị nguyên 1 đến 999"
       },
       {
-        "from": "AiLimitsController",
-        "to": "AiLimitsService",
-        "text": "Yêu cầu đổi giới hạn tần suất"
-      },
-      {
-        "from": "AiLimitsService",
-        "to": "PostgreSQL",
-        "text": "Lưu giới hạn mới và ghi nhật ký"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "AiLimitsService",
-        "text": "Đã ghi",
-        "kind": "return"
-      },
-      {
-        "from": "AiLimitsService",
-        "to": "AiLimitsController",
-        "text": "Giới hạn tần suất mới",
-        "kind": "return"
+        "alt": {
+          "label": "Dữ liệu hợp lệ?",
+          "then": [
+            {
+              "from": "UpdateRateLimitConfig",
+              "to": "BudgetStorePort",
+              "text": "Lưu các ô được gửi"
+            },
+            {
+              "from": "BudgetStorePort",
+              "to": "AiDbAdapter",
+              "text": "Cập nhật từng phần"
+            },
+            {
+              "from": "AiDbAdapter",
+              "to": "PostgreSQL",
+              "text": "Cập nhật dòng cấu hình"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "UpdateRateLimitConfig",
+              "text": "Trả cấu hình mới",
+              "kind": "return"
+            },
+            {
+              "from": "UpdateRateLimitConfig",
+              "to": "AiLimitsController",
+              "text": "Giới hạn mới áp dụng ở lượt AI kế tiếp",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "UpdateRateLimitConfig",
+              "to": "AiLimitsController",
+              "text": "Báo giá trị không hợp lệ",
+              "kind": "return"
+            }
+          ]
+        }
       },
       {
         "from": "AiLimitsController",
         "to": "Quản trị viên",
-        "text": "Báo thành công",
+        "text": "Hiển thị giới hạn hiện hành",
         "kind": "return"
       }
     ]

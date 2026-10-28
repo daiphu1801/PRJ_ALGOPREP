@@ -1,0 +1,71 @@
+{
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a2_instructor.md:156; 01-rd/req/user_stories/a2_instructor.md:159; 01-rd/req/user_stories/a2_instructor.md:161; 01-rd/req/user_stories/a2_instructor.md:164. Nguồn thiết kế: 03-dd/logic/F1_identity.md; 03-dd/api/F1_identity.md; 03-dd/logic/F6_interview-bank.md; 03-dd/api/F6_interview-bank.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "kind": "class",
+  "title": "A2 — Soạn câu hỏi phỏng vấn",
+  "covers": [
+    "F1-14",
+    "F6-08",
+    "F6-13"
+  ],
+  "class": {
+    "legend": "shared",
+    "classes": [
+      {
+        "id": "service",
+        "name": "InterviewQuestionAuthoringService",
+        "methods": [
+          "+ create(actorId : UUID, draft : QuestionDraft) : Question",
+          "+ updateDeleteOrImport(actorId : UUID, change : QuestionChange)",
+          "+ requireCriteria(questionId : UUID)",
+          "+ deletePreservingHistory(actorId : UUID, questionId : UUID)"
+        ]
+      },
+      {
+        "id": "port1",
+        "name": "InterviewQuestionRepository",
+        "kind": "class",
+        "methods": [
+          "+ save(question : Question)"
+        ]
+      },
+      {
+        "id": "port2",
+        "name": "PermissionPort",
+        "kind": "interface",
+        "methods": [
+          "+ requireManageQuestions(actorId : UUID)"
+        ]
+      },
+      {
+        "id": "port3",
+        "name": "AuditLogPort",
+        "kind": "interface",
+        "methods": [
+          "+ record(change : AuditEntry)"
+        ]
+      }
+    ],
+    "externals": [],
+    "relations": [
+      {
+        "from": "service",
+        "to": "port1",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port2",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port3",
+        "kind": "dependency"
+      }
+    ],
+    "notes": [
+      "Quyền shared A2/A3; thiếu tiêu chí đánh giá thì không mở luyện; xoá mềm giữ lịch sử phiên.",
+      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+    ]
+  }
+}

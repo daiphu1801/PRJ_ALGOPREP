@@ -1,0 +1,146 @@
+{
+  "_": "Trang 1b/3 tiếp nối tài khoản PENDING_VERIFICATION ở 1a. Nguồn: 03-dd/logic/F1_identity.md BR-21; 03-dd/api/F1_identity.md mục email verify #53/#54; 02-bd/database/F1_identity.md mục OTP. RegisterCmd = RegisterUserCommandHandler; EmailOtpPort = cổng F1 lưu OTP xác minh email; RedisOtpAdapter = Redis adapter; EmailDeliveryPort = cổng gửi email; MailAdapter = email adapter [SoT: Suy luận về tên lớp]. OTP sáu số lưu Redis TTL 10 phút, gửi tới email vừa đăng ký; không dùng cùng khoá với OTP quên mật khẩu. Hình chỉ thể hiện phát OTP sau khi tài khoản đã commit. Tài khoản Admin tạo không đi qua luồng OTP này. Luồng nhập OTP và chuyển ACTIVE nằm ở trang 1c. Chính sách lỗi email/Redis cần theo DD khi triển khai, không tự giả định gửi thành công nếu adapter báo lỗi.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Phát mã xác minh email (1b/3)",
+  "covers": [
+    "F1-01"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Sinh viên",
+        "role": "actor"
+      },
+      {
+        "name": "AuthController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "RegisterCmd",
+        "role": "service",
+        "stereo": "application command"
+      },
+      {
+        "name": "EmailOtpPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "RedisOtpAdapter",
+        "role": "repository",
+        "stereo": "infrastructure"
+      },
+      {
+        "name": "Redis",
+        "role": "datastore",
+        "stereo": "OTP email"
+      },
+      {
+        "name": "EmailDeliveryPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "MailAdapter",
+        "role": "external",
+        "stereo": "infrastructure"
+      },
+      {
+        "name": "Dịch vụ email",
+        "role": "external",
+        "stereo": "gửi mã"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 1b - Mã xác minh riêng cho email mới"
+      },
+      {
+        "from": "RegisterCmd",
+        "to": "RegisterCmd",
+        "text": "Sinh mã sáu số sau khi lưu tài khoản"
+      },
+      {
+        "from": "RegisterCmd",
+        "to": "EmailOtpPort",
+        "text": "Giữ mã xác minh trong 10 phút"
+      },
+      {
+        "from": "EmailOtpPort",
+        "to": "RedisOtpAdapter",
+        "text": "Lưu mã theo tài khoản"
+      },
+      {
+        "from": "RedisOtpAdapter",
+        "to": "Redis",
+        "text": "Lưu mã và số lần nhập sai"
+      },
+      {
+        "from": "Redis",
+        "to": "RedisOtpAdapter",
+        "text": "Đã lưu",
+        "kind": "return"
+      },
+      {
+        "from": "RedisOtpAdapter",
+        "to": "EmailOtpPort",
+        "text": "Mã còn hiệu lực",
+        "kind": "return"
+      },
+      {
+        "from": "EmailOtpPort",
+        "to": "RegisterCmd",
+        "text": "Có thể gửi email",
+        "kind": "return"
+      },
+      {
+        "from": "RegisterCmd",
+        "to": "EmailDeliveryPort",
+        "text": "Gửi mã tới email mới đăng ký"
+      },
+      {
+        "from": "EmailDeliveryPort",
+        "to": "MailAdapter",
+        "text": "Chuyển yêu cầu gửi mã"
+      },
+      {
+        "from": "MailAdapter",
+        "to": "Dịch vụ email",
+        "text": "Gửi thư xác minh"
+      },
+      {
+        "from": "Dịch vụ email",
+        "to": "MailAdapter",
+        "text": "Đã nhận yêu cầu",
+        "kind": "return"
+      },
+      {
+        "from": "MailAdapter",
+        "to": "EmailDeliveryPort",
+        "text": "Đã gửi",
+        "kind": "return"
+      },
+      {
+        "from": "EmailDeliveryPort",
+        "to": "RegisterCmd",
+        "text": "Mã đã gửi",
+        "kind": "return"
+      },
+      {
+        "from": "RegisterCmd",
+        "to": "AuthController",
+        "text": "Tài khoản chờ xác minh",
+        "kind": "return"
+      },
+      {
+        "from": "AuthController",
+        "to": "Sinh viên",
+        "text": "Báo đăng ký; yêu cầu nhập mã email",
+        "kind": "return"
+      }
+    ]
+  }
+}

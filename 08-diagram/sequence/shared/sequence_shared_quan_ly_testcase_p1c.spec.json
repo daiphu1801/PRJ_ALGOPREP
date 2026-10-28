@@ -1,0 +1,30 @@
+{
+  "_": "Trang 1c/3 tiếp nối nhánh tệp hợp lệ ở sequence_shared_quan_ly_testcase_p1b.spec.json. Nguồn: 03-dd/api/F2_problem-bank.md mục 47; 02-bd/database/F2_problem-bank.md mục 1.6; 01-rd/system/SYS0101_backend_architecture.md mục 5.3. ConfirmCmd = ConfirmTestcaseBulkUploadCommandHandler; TestcaseRepo = TestcaseRepository; ProblemDbAdapter = ProblemPersistenceAdapter [SoT: Suy luận]. Hình gộp ghi testcase, phiên bản của bài và outbox vào một giao dịch qua cổng lưu; DD yêu cầu tăng phiên bản đúng một lần nếu bài đã xuất bản và tạo sự kiện TestcaseSetVersionBumped. Vế tệp <=8 KB chuyển vào cột inline và xoá object sau commit; thao tác dọn tệp được lược khỏi hình. Trạng thái CONFIRMED của phiên Redis được lược khỏi hình nhưng bắt buộc để lời gọi lại không tạo bản sao.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Lưu cả lô testcase (1c/3)",
+  "covers": ["F2-05", "F2-06", "F2-07"],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {"name": "Người soạn đề", "role": "actor"},
+      {"name": "TestcaseCtrl", "role": "controller", "stereo": "presentation"},
+      {"name": "ConfirmCmd", "role": "service", "stereo": "application command"},
+      {"name": "TestcaseRepo", "role": "repository", "stereo": "domain output port"},
+      {"name": "ProblemDbAdapter", "role": "repository", "stereo": "infrastructure"},
+      {"name": "PostgreSQL", "role": "datastore", "stereo": "schema problem"}
+    ],
+    "messages": [
+      {"phase": "Giai đoạn 4 - Lưu trọn lô đã kiểm (F2-05, F2-06, F2-07)"},
+      {"from": "ConfirmCmd", "to": "ConfirmCmd", "text": "Tệp đầy đủ; giữ Sample và Hidden riêng"},
+      {"from": "ConfirmCmd", "to": "TestcaseRepo", "text": "Lưu cả lô trong một lần"},
+      {"from": "TestcaseRepo", "to": "ProblemDbAdapter", "text": "Chuyển yêu cầu ghi cả lô"},
+      {"from": "ProblemDbAdapter", "to": "PostgreSQL", "text": "Ghi testcase; tăng phiên bản nếu cần"},
+      {"from": "PostgreSQL", "to": "ProblemDbAdapter", "text": "Số ca đã lưu và phiên bản mới", "kind": "return"},
+      {"from": "ProblemDbAdapter", "to": "TestcaseRepo", "text": "Cả lô đã lưu", "kind": "return"},
+      {"from": "TestcaseRepo", "to": "ConfirmCmd", "text": "Cả lô đã lưu", "kind": "return"},
+      {"from": "ConfirmCmd", "to": "TestcaseCtrl", "text": "Danh sách ca mới và phiên bản", "kind": "return"},
+      {"from": "TestcaseCtrl", "to": "Người soạn đề", "text": "Báo đã thêm toàn bộ testcase", "kind": "return"}
+    ]
+  }
+}

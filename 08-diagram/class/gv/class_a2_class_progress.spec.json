@@ -1,0 +1,73 @@
+{
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a2_instructor.md:123; 01-rd/req/user_stories/a2_instructor.md:126; 01-rd/req/user_stories/a2_instructor.md:139; 01-rd/req/user_stories/a2_instructor.md:142; 01-rd/req/user_stories/a2_instructor.md:144; 01-rd/req/user_stories/a2_instructor.md:147. Nguồn thiết kế: 03-dd/logic/F1_identity.md; 03-dd/api/F1_identity.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "kind": "class",
+  "title": "A2 — Tiến độ lớp và học viên",
+  "covers": [
+    "F1-12",
+    "F1-27",
+    "F1-28"
+  ],
+  "class": {
+    "legend": "shared",
+    "classes": [
+      {
+        "id": "service",
+        "name": "ClassProgressService",
+        "methods": [
+          "+ studentDetail(instructorId : UUID, classId : UUID, studentId : UUID) : StudentProgress",
+          "+ requireInstructorScope(instructorId : UUID, classId : UUID)",
+          "+ overview(instructorId : UUID) : ClassProgressOverview",
+          "+ filterClass(instructorId : UUID, classId : UUID) : ClassProgress",
+          "+ atRiskStudents(instructorId : UUID, classId : UUID) : List<StudentProgress>",
+          "+ emptyOverview(instructorId : UUID) : ClassProgressOverview"
+        ]
+      },
+      {
+        "id": "port1",
+        "name": "InstructorClassPort",
+        "kind": "interface",
+        "methods": [
+          "+ requireOwner(instructorId : UUID, classId : UUID)"
+        ]
+      },
+      {
+        "id": "port2",
+        "name": "ProgressReadPort",
+        "kind": "interface",
+        "methods": [
+          "+ forClass(classId : UUID) : ClassProgress"
+        ]
+      },
+      {
+        "id": "port3",
+        "name": "SubmissionReadPort",
+        "kind": "interface",
+        "methods": [
+          "+ recentForClass(classId : UUID) : List<SubmissionSummary>"
+        ]
+      }
+    ],
+    "externals": [],
+    "relations": [
+      {
+        "from": "service",
+        "to": "port1",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port2",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port3",
+        "kind": "dependency"
+      }
+    ],
+    "notes": [
+      "Phạm vi lớp kiểm ở service trước khi đọc tiến độ; không phụ trách lớp nào trả trạng thái rỗng.",
+      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+    ]
+  }
+}

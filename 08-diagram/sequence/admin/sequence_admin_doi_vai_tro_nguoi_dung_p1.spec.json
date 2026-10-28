@@ -1,8 +1,7 @@
 {
-  "_": "Nguon: 01-rd/screens/admin/ADM0201_user_management.md, 02-bd/screens/admin/ADM0201_user_management.md (muc 7.3 endpoint, DTO, popup), DEC-2026-1011-admin-system-open-questions-closed, DEC-2026-1008-admin-system-screens-review. Duong dan REST la [SoT: Suy luan] vi chua co DD; ten endpoint la ten nghiep vu cua BD. Cap nhat 2026-10-18: tach khoa/mo khoa ra sequence rieng. Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen. | 2026-10-20 (owner): nhan mui ten bo han duong dan, ma HTTP, ma quyen, thuat ngu ky thuat (cache, job, worker, model...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
-  "_diem_mau_chot": "Khoa tai khoan phai thu hoi refresh token, va Access Token cu (con han toi 15 phut) bi chan o filter vi filter kiem status moi request -- neu khong, nguoi bi khoa van dung he thong duoc them 15 phut.",
+  "_": "Nguồn: 03-dd/api/F1_identity.md endpoint 35-36; 03-dd/logic/F1_identity.md BR-15. UserAdminReadPort và IdentityDbAdapter là tên minh họa [SoT: Suy luận]. Danh sách tài khoản phân trang, lọc theo từ khóa và vai trò; trả trạng thái cùng khả năng đăng nhập bằng mật khẩu. Danh sách vai trò dùng cho hộp đổi vai trò.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Tìm và đổi vai trò tài khoản (Quản trị viên) (1/2)",
+  "title": "Sơ đồ tuần tự chi tiết - Tìm tài khoản và vai trò có thể gán (1/2)",
   "covers": [
     "F1-10",
     "F1-13"
@@ -21,9 +20,19 @@
         "stereo": "presentation"
       },
       {
-        "name": "UserAdminService",
+        "name": "ListAdminUsers",
         "role": "service",
-        "stereo": "application"
+        "stereo": "application query"
+      },
+      {
+        "name": "UserAdminReadPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "IdentityDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
       },
       {
         "name": "PostgreSQL",
@@ -33,52 +42,63 @@
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 1 - Tìm tài khoản cần xử lý (F1-13)"
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "Quản trị viên",
-        "text": "Chọn tab vai trò, tìm theo email hoặc họ tên"
+        "phase": "Giai đoạn 1 - Tìm tài khoản"
       },
       {
         "from": "Quản trị viên",
         "to": "UserAdminController",
-        "text": "Gửi yêu cầu tìm tài khoản"
+        "text": "Tìm theo email, tên hoặc vai trò"
       },
       {
         "from": "UserAdminController",
-        "to": "UserAdminController",
-        "text": "Kiểm tra quyền xem tài khoản"
+        "to": "ListAdminUsers",
+        "text": "Lấy danh sách tài khoản"
       },
       {
-        "from": "UserAdminController",
-        "to": "UserAdminService",
-        "text": "Yêu cầu danh sách tài khoản"
+        "from": "ListAdminUsers",
+        "to": "UserAdminReadPort",
+        "text": "Tìm tài khoản và vai trò hiện tại"
       },
       {
-        "from": "UserAdminService",
+        "from": "UserAdminReadPort",
+        "to": "IdentityDbAdapter",
+        "text": "Truy vấn có phân trang"
+      },
+      {
+        "from": "IdentityDbAdapter",
         "to": "PostgreSQL",
-        "text": "Tìm theo vai trò và từ khoá, có phân trang"
+        "text": "Đọc tài khoản, vai trò và trạng thái"
       },
       {
         "from": "PostgreSQL",
-        "to": "UserAdminService",
-        "text": "Tài khoản kèm vai trò, trạng thái, có mật khẩu hay không",
+        "to": "IdentityDbAdapter",
+        "text": "Một trang tài khoản",
         "kind": "return"
       },
       {
-        "from": "UserAdminService",
+        "from": "IdentityDbAdapter",
+        "to": "UserAdminReadPort",
+        "text": "Một trang tài khoản",
+        "kind": "return"
+      },
+      {
+        "from": "UserAdminReadPort",
+        "to": "ListAdminUsers",
+        "text": "Một trang tài khoản",
+        "kind": "return"
+      },
+      {
+        "from": "ListAdminUsers",
         "to": "UserAdminController",
-        "text": "Trang kết quả",
+        "text": "Trả tài khoản và vai trò",
         "kind": "return"
       },
       {
         "from": "UserAdminController",
         "to": "Quản trị viên",
-        "text": "Báo thành công",
+        "text": "Hiển thị danh sách và vai trò có thể chọn",
         "kind": "return"
       }
     ]
-  },
-  "_cat": "Tach tu sequence_admin_doi_vai_tro_nguoi_dung.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 1/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+  }
 }

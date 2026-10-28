@@ -32,7 +32,7 @@ duy nhất** phụ thuộc một dịch vụ ngoài monolith [SoT: `dependency-m
 | Sweep timeout | F4-07 | Ngưỡng 5 phút (`DEC-2026-0831-outside-screens-closures`) |
 | Đẩy trạng thái thời gian thực | F4-08 | WebSocket/STOMP, kênh riêng theo `submissionId` |
 | ~~Chấm lại~~ | ~~F4-09a→e~~ | **Đã loại bỏ khỏi phạm vi** (`DEC-2026-0828-remove-rejudge-scope`) — không thiết kế lại ở đây |
-| Giám sát + điều khiển cụm | F4-10 | Bao gồm pause/resume tiêu thụ hàng đợi, bật/tắt autoscale worker (`DEC-2026-0831-judge-orchestration-ops-details`); sweep bỏ qua `PENDING` lúc đang tạm dừng (mục 5.3); số liệu cụm đọc từ Prometheus, không có bảng (`DEC-2026-1010-admin-operations-regroup`) |
+| Giám sát + điều khiển cụm | F4-10 | Bao gồm pause/resume tiêu thụ hàng đợi, bật/tắt autoscale worker (`DEC-2026-0831-judge-orchestration-ops-details`); sweep bỏ qua `PENDING` lúc đang tạm dừng (mục 5.3). **Cập nhật owner 2026-10-25:** bỏ bảng worker chi tiết vì go-judge không xuất các metric từng worker; snapshot chỉ lấy số liệu job/độ trễ từ DB và cấu hình F4 (`DEC-2026-1025-dd-drop-worker-detail`) |
 | Cấu hình ngôn ngữ và giới hạn tài nguyên | F4-11 | 3 tham số sandbox go-judge: mạng (mặc định chặn), giới hạn tiến trình con, có trả `stderr` hay không |
 | Chỉ số "Beats" | F4-12 | Chỉ hiện với `ACCEPTED`, so cùng bài + cùng ngôn ngữ |
 
@@ -57,8 +57,7 @@ JudgeExecutionPort.run(RunRequest) -> RunResult   // đồng bộ, một lần g
 chỉ chuyển tiếp payload harness đã tạo cho từng testcase kèm giới hạn thời gian/bộ nhớ đã nhân hệ số
 ngôn ngữ (`language_configs`, mục 6 file `database/F4_judge-orchestration.md`).
 
-`RunResult` trả về khái niệm: `exitCode`, `stdout`, `stderr` (chỉ giữ nếu `sandbox_settings.return_stderr_
-to_student = true` — sửa 2026-10-22, đồng bộ DB phase 3: cột nằm ở `sandbox_settings` toàn cục, không còn ở `language_configs`; `database/F4_judge-orchestration.md:181,188`), `runtimeMs`, `memoryKb`, `verdict` sơ bộ theo testcase (`AC`/`WA`/`TLE`/`MLE`/`RE`) —
+`RunResult` trả về khái niệm: `exitCode`, `stdout`, `stderr` (chỉ lưu/trả cho `STANDARD_IO` và testcase Sample khi `sandbox_settings.return_stderr_to_student = true`, owner 2026-10-25; cột cờ ở `sandbox_settings` toàn cục), `runtimeMs`, `memoryKb`, `verdict` sơ bộ theo testcase (`AC`/`WA`/`TLE`/`MLE`/`RE`) —
 verdict này do `harness` tính qua bước so khớp kết quả (F3-07→10), `judge-orchestration` chỉ **tổng hợp**,
 không tự so khớp output.
 
@@ -103,14 +102,16 @@ Năm màn đã viết BD dựa trên giả định cổng đó tồn tại — `
 Ký hiệu khái niệm (chữ ký thật chốt ở DD):
 
 ```
-GetClassStudentSubmissionMetrics(classId, studentIds[], problemIds[], weekCount)
-  -> [ { studentId, streakDays, lastSubmittedAt, acceptedRatio, weeklyTrend[] } ]
+GetClassStudentSubmissionMetrics(classId, students[{studentId, joinedAt, leftAt?}], assignments[{problemId, assignedAt, removedAt?}], weekCount)
+  -> [ { studentId, streakDays, lastSubmittedAt, acceptedRatio, weeklyTrend[], assignmentResults[] } ]
 
 GetMySubmissionMetrics(range | dayCount, topicIds[]?)        // userId LẤY TỪ TOKEN
   -> { streakDays, lastSubmittedAt, acRateByTopic[], dailyCounts[] }
 ```
 
 **Quy tắc tuần và cache của `GetClassStudentSubmissionMetrics`** (`DEC-2026-1014-instructor-batch2-weekly-rules`): số liệu theo tuần (`weeklyTrend[]` và nhãn trạng thái "Cần hỗ trợ" dựa trên nó) **tính lúc truy vấn** từ `judge.submissions`, kết quả cache Redis **15 phút**; không có bảng ảnh chụp theo tuần và không có job định kỳ. Tuần bắt đầu **thứ Hai** (ISO), tuần đang chạy chưa đủ 7 ngày **không được tính**, nên `weekCount` là số tuần đủ gần nhất. Mốc "Vắng bài" (không nộp trong 7 ngày gần nhất) là cửa sổ trượt tính từ thời điểm truy vấn, không theo tuần ISO. Chỉ xét lại bằng bảng ảnh chụp nếu đo được truy vấn chậm. Nguồn: `02-bd/screens/teacher/INS0203_class_progress.md` Câu hỏi mở Q3.
+
+Số liệu lớp chỉ lấy lượt nộp trong khoảng giao bài `[assignedAt, removedAt)`; khi `removedAt` rỗng thì chưa có mốc kết thúc. `assignmentResults[]` chỉ trả lần giao còn hiệu lực để F1 tính hoàn thành; lượt Accepted trước khi giao và sau khi gỡ không hoàn thành bài trong lớp (`DEC-2026-1025-dd-class-assignment-time-window`).
 
 **Vì sao tách chứ không tham số hoá.** Ba lý do, lý do đầu là lý do quyết định:
 
@@ -145,12 +146,10 @@ BD này cho câu hỏi mở ở `dependency-map.md` mục 1.
 
 ### 3.5. Domain event — lắng nghe (F2 → F4)
 
-`judge-orchestration` lắng nghe `TestcaseSetVersionBumped` phát từ `problem-bank`
-(`02-bd/database/F2_problem-bank.md` mục 1.6) — không để cập nhật testcase (không còn re-judge), chỉ để ghi
-lại `testcase_set_version_at_grading` đúng số hiệu hiện hành tại thời điểm một submission mới bắt đầu
-chấm (không phải tại thời điểm nộp, vì hai mốc có thể lệch nếu Admin bump version giữa lúc nộp và lúc
-worker nhận job — ghi tại thời điểm bắt đầu compile là mốc chính xác nhất để trả lời đúng F2-09 "chấm
-theo version nào").
+`judge-orchestration` không tiêu thụ `TestcaseSetVersionBumped`. Khi nhận bài nộp, F4 đọc
+`currentTestcaseSetVersion` từ F2 và ghi `testcase_set_version_at_grading` cùng lúc tạo dòng `PENDING`.
+Worker đọc bundle bất biến của đúng phiên bản đã ghim; việc sửa testcase trong lúc chờ không đổi bộ chấm
+của lượt đó. F2 phát sự kiện sau commit để bên cần làm mới cache, không dùng nó để gán phiên bản cho bài nộp.
 
 ## 4. Luồng chấm bài (đồng bộ, go-judge mặc định) — state machine
 
@@ -173,6 +172,8 @@ JUDGING --(đã chạy hết N testcase, tổng hợp verdict)--> một trong:
 ```
 
 Sửa 2026-10-22 (đồng bộ DB, phase 3, JD-14): sơ đồ trên chỉ có đường ghi `failure_reason = WORKER_TIMEOUT` (job sweep). Giá trị `SANDBOX_FAULT` của cột (`database/F4_judge-orchestration.md:23`, "lỗi sandbox tức thời") được **worker ghi** khi go-judge báo lỗi hạ tầng không phải verdict của testcase (ví dụ không khởi tạo được sandbox, mất kết nối go-judge): submission sang `SYSTEM_ERROR`, `failure_reason = SANDBOX_FAULT`, cùng giao dịch với dòng outbox như mọi trạng thái cuối. Còn `WORKER_TIMEOUT` do job sweep ghi. Hai nguồn này phân biệt được trên `ADM0401`/`ADM0404`. Sửa 2026-10-22 (đồng bộ DB vòng 2, DEC-2026-1022-db-sync-round2, mục 5): chủ dự án chốt; thay câu "chưa có luồng ghi" của phase 3. Ngưỡng và cách nhận diện lỗi hạ tầng cụ thể (mã lỗi nào của go-judge) để DD.
+
+DD 2026-10-25 bổ sung `SPEC_UNAVAILABLE` khi worker thấy đặc tả/bundle testcase thiếu, hỏng hoặc không parse được; đây cũng là `SYSTEM_ERROR` với outbox và không tính vào tỉ lệ AC. `SANDBOX_FAULT` vẫn chỉ lỗi hạ tầng/harness nội bộ (`03-dd/logic/F4_judge-orchestration.md` BR-JD-03/04).
 
 `[SoT: Suy luận]` — nguyên tắc "verdict tổng hợp = verdict của testcase thất bại đầu tiên theo thứ tự"
 không có trong RD (RD chỉ nói Accepted là pass hết, chưa nói pattern hỗn hợp WA+TLE+RE trong cùng một lần
@@ -282,10 +283,9 @@ lớn đã thuộc về `problem-bank` (`02-bd/storage/F2_problem-bank.md`). `ju
 
 - `source_code` của bài nộp — TEXT trong Postgres (mã nguồn một bài giải hiếm khi vượt vài chục KB, không
   cần object storage).
-- `stderr` thực tế của một lần chạy (nếu `sandbox_settings.return_stderr_to_student = true`) — cắt ngắn
-  theo giới hạn ký tự cố định (đề xuất 4KB `[SoT: Suy luận]`) lưu trực tiếp trong
-  `submission_testcase_results.stderr_snippet`, không cần MinIO vì đây là output lỗi ngắn để hiển thị,
-  không phải dữ liệu testcase lớn.
+- `stderr` thực tế của một lần chạy **chỉ cho `STANDARD_IO`, testcase Sample, verdict khác AC và cờ admin bật** — cắt ngắn
+  theo giới hạn ký tự cố định 4KB rồi lưu trực tiếp trong `submission_testcase_results.stderr_snippet`;
+  `FUNCTION_WRAPPER` và Hidden không lưu do có thể lộ stack trace khung hoặc input ẩn (owner 2026-10-25).
 
 **Kết luận: không tạo `02-bd/storage/F4_judge-orchestration.md`** — đúng quy tắc `bd-generation` "không phải
 module nào cũng cần cả 4 file, không viết file rỗng".

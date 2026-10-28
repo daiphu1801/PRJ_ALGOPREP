@@ -1,0 +1,52 @@
+<mxfile host="app.diagrams.net" agent="drawio-uml-architect" type="device">
+  <diagram id="a2-tien-do-lop-va-hoc-vien" name="a2-tien-do-lop-va-hoc-vien">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t_service" value='&lt;div style="text-align:center"&gt;&lt;b&gt;ClassProgressService&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;studentDetail(instructorId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;classId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;studentId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;StudentProgress&lt;br&gt;+&amp;nbsp;requireInstructorScope(instructorId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;classId&amp;nbsp;:&amp;nbsp;UUID)&lt;br&gt;+&amp;nbsp;overview(instructorId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;ClassProgressOverview&lt;br&gt;+&amp;nbsp;filterClass(instructorId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;classId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;ClassProgress&lt;br&gt;+&amp;nbsp;atRiskStudents(instructorId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;classId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;List&amp;lt;StudentProgress&amp;gt;&lt;br&gt;+&amp;nbsp;emptyOverview(instructorId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;ClassProgressOverview' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="320.15" y="60" width="560.8" height="124" as="geometry" />
+        </mxCell>
+        <mxCell id="t_port1" value='&lt;div style="text-align:center"&gt;&lt;b&gt;InstructorClassPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;requireOwner(instructorId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;classId&amp;nbsp;:&amp;nbsp;UUID)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="54" y="254" width="335.09999999999997" height="68" as="geometry" />
+        </mxCell>
+        <mxCell id="t_port2" value='&lt;div style="text-align:center"&gt;&lt;b&gt;ProgressReadPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;forClass(classId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;ClassProgress' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="439.09999999999997" y="254" width="280.2" height="68" as="geometry" />
+        </mxCell>
+        <mxCell id="t_port3" value='&lt;div style="text-align:center"&gt;&lt;b&gt;SubmissionReadPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;recentForClass(classId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;List&amp;lt;SubmissionSummary&amp;gt;' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="769.3" y="254" width="377.79999999999995" height="68" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.179;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="420.2833333333333" y="201.5" />
+            <mxPoint x="221.54999999999998" y="201.5" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e2" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="600.55" y="219" />
+            <mxPoint x="579.1999999999999" y="219" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e3" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.821;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="780.8166666666666" y="236.5" />
+            <mxPoint x="958.1999999999999" y="236.5" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="title" value="A2 — Tiến độ lớp và học viên" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="0" y="10" width="1177.1" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="v4" value="Ghi chú: Phạm vi lớp kiểm ở service trước khi đọc tiến độ; không phụ trách lớp nào trả trạng thái rỗng.&lt;br&gt;Ghi chú: [SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="30" y="342" width="1100" height="44" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

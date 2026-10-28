@@ -1,7 +1,7 @@
 {
-  "_": "Nguon: 01-rd/screens/admin/ADM0201_user_management.md, 02-bd/screens/admin/ADM0201_user_management.md (muc 7.3 endpoint, DTO, popup), DEC-2026-1011-admin-system-open-questions-closed, DEC-2026-1008-admin-system-screens-review. Duong dan REST la [SoT: Suy luan] vi chua co DD; ten endpoint la ten nghiep vu cua BD. Nhanh 409 trung email la [SoT: Suy luan]: BD chi noi prototype bao trung o giao dien. Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen. | 2026-10-20 (owner): nhan mui ten bo han duong dan, ma HTTP, ma quyen, thuat ngu ky thuat (cache, job, worker, model...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
+  "_": "Thiết kế dự kiến: backend nghiệp vụ F1 chưa triển khai. Nguồn: 03-dd/api/F1_identity.md mục 0.6.1 (CreateUserAccount, trạng thái PENDING_VERIFICATION, must_change_password, audit USER_CREATED); 01-rd/system/SYS0101_backend_architecture.md mục 5.3-5.4; 02-bd/database/F1_identity.md. UserAdminCtrl = UserAdminController; CreateUserCmd = CreateUserAccountCommandHandler; IdentityDbAdapter = IdentityPersistenceAdapter. Các tên CommandHandler, Repository/Port và Adapter là [SoT: Suy luận]. Hai cổng ghi dùng chung adapter trong hình để diễn đạt cùng giao dịch; cách đóng gói Java cuối cùng chưa chốt. Phần gửi email ở sequence_admin_them_tai_khoan_p2.spec.json. Đã tách hai trang để chữ đọc được khi xem PNG riêng.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Thêm tài khoản bằng mật khẩu tạm (Quản trị viên)",
+  "title": "Sơ đồ tuần tự chi tiết - Tạo tài khoản và nhật ký (1/2)",
   "covers": [
     "F1-13",
     "F1-14"
@@ -15,29 +15,39 @@
         "role": "actor"
       },
       {
-        "name": "UserAdminController",
+        "name": "UserAdminCtrl",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "UserAdminService",
+        "name": "CreateUserCmd",
         "role": "service",
-        "stereo": "application"
+        "stereo": "application command"
+      },
+      {
+        "name": "UserRepository",
+        "role": "repository",
+        "stereo": "domain output port"
+      },
+      {
+        "name": "AuditLogPort",
+        "role": "repository",
+        "stereo": "domain output port"
+      },
+      {
+        "name": "IdentityDbAdapter",
+        "role": "repository",
+        "stereo": "infrastructure"
       },
       {
         "name": "PostgreSQL",
         "role": "datastore",
         "stereo": "schema identity"
-      },
-      {
-        "name": "Dịch vụ email",
-        "role": "external",
-        "stereo": "gửi thư"
       }
     ],
     "messages": [
       {
-        "phase": "Thêm tài khoản bằng mật khẩu tạm gửi qua email (F1-13)"
+        "phase": "Giai đoạn 1 - Tạo tài khoản và ghi nhật ký (F1-13)"
       },
       {
         "from": "Quản trị viên",
@@ -46,28 +56,50 @@
       },
       {
         "from": "Quản trị viên",
-        "to": "UserAdminController",
+        "to": "UserAdminCtrl",
         "text": "Gửi yêu cầu tạo tài khoản"
       },
       {
-        "from": "UserAdminController",
-        "to": "UserAdminController",
+        "from": "UserAdminCtrl",
+        "to": "UserAdminCtrl",
         "text": "Kiểm tra quyền; vai trò chỉ Người học hoặc Giảng viên"
       },
       {
-        "from": "UserAdminController",
-        "to": "UserAdminService",
+        "from": "UserAdminCtrl",
+        "to": "CreateUserCmd",
         "text": "Yêu cầu tạo tài khoản"
       },
       {
-        "from": "UserAdminService",
+        "from": "CreateUserCmd",
+        "to": "UserRepository",
+        "text": "Kiểm tra email và vai trò được chọn"
+      },
+      {
+        "from": "UserRepository",
+        "to": "IdentityDbAdapter",
+        "text": "Yêu cầu tra tài khoản và vai trò"
+      },
+      {
+        "from": "IdentityDbAdapter",
         "to": "PostgreSQL",
-        "text": "Kiểm tra email đã có tài khoản chưa"
+        "text": "Đọc tài khoản và vai trò"
       },
       {
         "from": "PostgreSQL",
-        "to": "UserAdminService",
-        "text": "Đã có hoặc chưa",
+        "to": "IdentityDbAdapter",
+        "text": "Kết quả kiểm tra",
+        "kind": "return"
+      },
+      {
+        "from": "IdentityDbAdapter",
+        "to": "UserRepository",
+        "text": "Kết quả kiểm tra",
+        "kind": "return"
+      },
+      {
+        "from": "UserRepository",
+        "to": "CreateUserCmd",
+        "text": "Email và vai trò hợp lệ?",
         "kind": "return"
       },
       {
@@ -75,65 +107,72 @@
           "label": "Email chưa có tài khoản?",
           "then": [
             {
-              "from": "UserAdminService",
-              "to": "UserAdminService",
+              "from": "CreateUserCmd",
+              "to": "CreateUserCmd",
               "text": "Sinh mật khẩu tạm, bắt đổi ở lần đăng nhập đầu"
             },
             {
-              "from": "UserAdminService",
+              "from": "CreateUserCmd",
+              "to": "UserRepository",
+              "text": "Lưu tài khoản Chờ xác thực"
+            },
+            {
+              "from": "UserRepository",
+              "to": "IdentityDbAdapter",
+              "text": "Chuyển yêu cầu lưu tài khoản"
+            },
+            {
+              "from": "IdentityDbAdapter",
               "to": "PostgreSQL",
-              "text": "Tạo tài khoản Chờ xác thực, ghi nhật ký hệ thống"
+              "text": "Ghi tài khoản và cờ đổi mật khẩu"
             },
             {
               "from": "PostgreSQL",
-              "to": "UserAdminService",
-              "text": "Đã lưu",
+              "to": "IdentityDbAdapter",
+              "text": "Đã lưu tài khoản",
               "kind": "return"
             },
             {
-              "from": "UserAdminService",
-              "to": "Dịch vụ email",
-              "text": "Gửi mật khẩu tạm tới email vừa nhập",
-              "kind": "async"
+              "from": "CreateUserCmd",
+              "to": "AuditLogPort",
+              "text": "Ghi nhật ký tạo tài khoản"
             },
             {
-              "from": "UserAdminService",
-              "to": "UserAdminController",
-              "text": "Tài khoản vừa tạo",
-              "kind": "return"
+              "from": "AuditLogPort",
+              "to": "IdentityDbAdapter",
+              "text": "Chuyển yêu cầu ghi nhật ký"
             },
             {
-              "from": "UserAdminController",
-              "to": "Quản trị viên",
-              "text": "Báo tạo thành công",
-              "kind": "return"
+              "from": "IdentityDbAdapter",
+              "to": "PostgreSQL",
+              "text": "Lưu nhật ký cùng giao dịch"
+            },
+            {
+              "from": "CreateUserCmd",
+              "to": "CreateUserCmd",
+              "text": "Hoàn tất lưu; tiếp tục gửi thư ở trang 2"
             }
           ],
           "else": [
             {
-              "from": "UserAdminService",
-              "to": "UserAdminService",
+              "from": "CreateUserCmd",
+              "to": "CreateUserCmd",
               "text": "Email đã có tài khoản"
             },
             {
-              "from": "UserAdminService",
-              "to": "UserAdminController",
+              "from": "CreateUserCmd",
+              "to": "UserAdminCtrl",
               "text": "Từ chối, không tạo gì",
               "kind": "return"
             },
             {
-              "from": "UserAdminController",
+              "from": "UserAdminCtrl",
               "to": "Quản trị viên",
               "text": "Báo lỗi: email đã có tài khoản",
               "kind": "return"
             }
           ]
         }
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "Quản trị viên",
-        "text": "Tài khoản mới hiện đầu danh sách, nhãn Chờ xác thực; mật khẩu tạm không hiện cho quản trị viên"
       }
     ]
   }

@@ -1,7 +1,7 @@
 {
-  "_": "Nguon: 03-dd/api/F1_identity.md (dong 25, 27), 03-dd/logic/F1_identity.md BR-11, 02-bd/database/F1_identity.md (class_enrollments, left_at), DEC-2026-1014-keep-learning-history-on-leave, DEC-2026-1014-class-leave-details. Thay hai phan cu: BR-11 khong con xoa cascade, judge-orchestration khong xoa luot nop khi nhan su kien nen bo nhanh RabbitMQ xoa cascade. Duong dan POST .../join la dong 25 cua DD. Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen. | Cap nhat 2026-10-20: siet theo quy tac moi, nhan mui ten la cau tieng Viet thuong, khong duong dan endpoint, ma HTTP, ma quyen, ten su kien, thuat ngu ky thuat; duong dan, ma HTTP va ma quyen nam o DD.",
+  "_": "Nguồn: 03-dd/api/F1_identity.md endpoint 27; 03-dd/logic/F1_identity.md BR-11. ClassRepository, IdentityDbAdapter, ClassEventPort là tên minh họa [SoT: Suy luận]. Lần đầu đặt left_at, không xóa dòng ghi danh hay lịch sử chấm; gọi lặp giữ mốc left_at gốc và phát lại sự kiện cùng occurredAt. identity phát StudentRemovedFromClass sau commit; judge giữ nguyên lượt nộp.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Gỡ học viên khỏi lớp và vào lại bằng mã mời (Giảng viên) (1/2)",
+  "title": "Sơ đồ tuần tự chi tiết - Gỡ học viên và giữ lịch sử (1/2)",
   "covers": [
     "F1-10",
     "F1-26"
@@ -20,9 +20,19 @@
         "stereo": "presentation"
       },
       {
-        "name": "ClassService",
+        "name": "LeaveClassStudent",
         "role": "service",
-        "stereo": "application"
+        "stereo": "application command"
+      },
+      {
+        "name": "ClassRepository",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "IdentityDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
       },
       {
         "name": "PostgreSQL",
@@ -30,110 +40,140 @@
         "stereo": "schema identity"
       },
       {
+        "name": "ClassEventPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
         "name": "RabbitMQ",
         "role": "external",
-        "stereo": "sự kiện domain"
+        "stereo": "event broker"
       }
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 1 - Gỡ học viên: chỉ đặt mốc rời lớp, giữ lịch sử làm bài (F1-26)"
-      },
-      {
-        "from": "Giảng viên",
-        "to": "Giảng viên",
-        "text": "Bấm Gỡ khỏi lớp; hộp xác nhận nói rõ lịch sử làm bài được giữ"
+        "phase": "Giai đoạn 1 - Kiểm chủ lớp và ghi mốc rời"
       },
       {
         "from": "Giảng viên",
         "to": "ClassController",
-        "text": "Gửi yêu cầu gỡ học viên khỏi lớp"
+        "text": "Chọn học viên và xác nhận gỡ khỏi lớp"
       },
       {
         "from": "ClassController",
-        "to": "ClassController",
-        "text": "Kiểm tra quyền quản lý lớp"
+        "to": "LeaveClassStudent",
+        "text": "Gỡ học viên khỏi lớp"
       },
       {
-        "from": "ClassController",
-        "to": "ClassService",
-        "text": "Yêu cầu gỡ học viên khỏi lớp"
+        "from": "LeaveClassStudent",
+        "to": "ClassRepository",
+        "text": "Kiểm lớp thuộc giảng viên và ghi danh của học viên"
       },
       {
-        "from": "ClassService",
+        "from": "ClassRepository",
+        "to": "IdentityDbAdapter",
+        "text": "Tìm lớp và ghi danh hiện hành"
+      },
+      {
+        "from": "IdentityDbAdapter",
         "to": "PostgreSQL",
-        "text": "Kiểm tra lớp thuộc giảng viên này"
+        "text": "Đọc chủ lớp và mốc rời hiện tại"
       },
       {
         "from": "PostgreSQL",
-        "to": "ClassService",
-        "text": "Lớp thuộc quyền phụ trách hoặc không",
+        "to": "IdentityDbAdapter",
+        "text": "Lớp, ghi danh và mốc rời",
+        "kind": "return"
+      },
+      {
+        "from": "IdentityDbAdapter",
+        "to": "ClassRepository",
+        "text": "Lớp, ghi danh và mốc rời",
+        "kind": "return"
+      },
+      {
+        "from": "ClassRepository",
+        "to": "LeaveClassStudent",
+        "text": "Lớp, ghi danh và mốc rời",
         "kind": "return"
       },
       {
         "alt": {
-          "label": "Lớp không thuộc mình?",
+          "label": "Lớp thuộc giảng viên và có ghi danh?",
           "then": [
             {
-              "from": "ClassService",
-              "to": "ClassService",
-              "text": "Người gọi không phụ trách lớp này"
+              "from": "LeaveClassStudent",
+              "to": "ClassRepository",
+              "text": "Đặt mốc rời nếu còn trong lớp"
             },
             {
-              "from": "ClassService",
+              "from": "ClassRepository",
+              "to": "IdentityDbAdapter",
+              "text": "Cập nhật một dòng ghi danh"
+            },
+            {
+              "from": "IdentityDbAdapter",
+              "to": "PostgreSQL",
+              "text": "Lưu mốc rời; giữ nguyên dòng và lịch sử"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "IdentityDbAdapter",
+              "text": "Mốc rời mới hoặc mốc gốc",
+              "kind": "return"
+            },
+            {
+              "from": "IdentityDbAdapter",
+              "to": "ClassRepository",
+              "text": "Mốc rời đã commit",
+              "kind": "return"
+            },
+            {
+              "from": "ClassRepository",
+              "to": "LeaveClassStudent",
+              "text": "Mốc rời đã commit",
+              "kind": "return"
+            },
+            {
+              "from": "LeaveClassStudent",
+              "to": "ClassEventPort",
+              "text": "Phát mốc rời sau commit",
+              "kind": "async"
+            },
+            {
+              "from": "ClassEventPort",
+              "to": "RabbitMQ",
+              "text": "Thông báo học viên đã rời lớp",
+              "kind": "async"
+            },
+            {
+              "from": "LeaveClassStudent",
               "to": "ClassController",
-              "text": "Từ chối ngay ở máy chủ, không chỉ ẩn nút trên giao diện",
+              "text": "Trả kết quả gỡ",
               "kind": "return"
             },
             {
               "from": "ClassController",
               "to": "Giảng viên",
-              "text": "Báo lỗi: không có quyền với lớp này",
+              "text": "Cập nhật danh sách học viên",
               "kind": "return"
             }
           ],
           "else": [
             {
-              "from": "ClassService",
-              "to": "ClassService",
-              "text": "Lớp hợp lệ, tiến hành gỡ"
-            },
-            {
-              "from": "ClassService",
-              "to": "PostgreSQL",
-              "text": "Đánh dấu đã rời lớp; ghi nhật ký hệ thống"
-            },
-            {
-              "from": "PostgreSQL",
-              "to": "ClassService",
-              "text": "Đã ghi",
-              "kind": "return"
-            },
-            {
-              "from": "ClassService",
-              "to": "RabbitMQ",
-              "text": "Thông báo nội bộ: học viên đã bị gỡ khỏi lớp",
-              "kind": "async"
-            },
-            {
-              "from": "ClassService",
+              "from": "LeaveClassStudent",
               "to": "ClassController",
-              "text": "Đã gỡ; bấm lặp lại vẫn thành công và không đổi mốc cũ",
+              "text": "Từ chối thao tác ngoài phạm vi",
               "kind": "return"
             },
             {
               "from": "ClassController",
               "to": "Giảng viên",
-              "text": "Báo thành công",
+              "text": "Hiển thị lỗi quyền lớp hoặc ghi danh",
               "kind": "return"
             }
           ]
         }
-      },
-      {
-        "from": "Giảng viên",
-        "to": "Giảng viên",
-        "text": "Học viên rời bảng, sĩ số giảm; bài nộp cũ hiện ghi chú Đã rời lớp"
       }
     ]
   }

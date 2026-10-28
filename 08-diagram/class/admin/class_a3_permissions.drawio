@@ -1,0 +1,52 @@
+<mxfile host="app.diagrams.net" agent="drawio-uml-architect" type="device">
+  <diagram id="a3-ma-tran-phan-quyen" name="a3-ma-tran-phan-quyen">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t_service" value='&lt;div style="text-align:center"&gt;&lt;b&gt;PermissionMatrixService&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;setGrant(adminId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;role&amp;nbsp;:&amp;nbsp;Role,&amp;nbsp;function&amp;nbsp;:&amp;nbsp;Function,&amp;nbsp;action&amp;nbsp;:&amp;nbsp;Action,&amp;nbsp;allowed&amp;nbsp;:&amp;nbsp;boolean)&lt;br&gt;+&amp;nbsp;listSeededActions()&amp;nbsp;:&amp;nbsp;PermissionMatrix&lt;br&gt;+&amp;nbsp;auditGrantChange(adminId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;change&amp;nbsp;:&amp;nbsp;GrantChange)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="100.55000000000001" y="60" width="609.5999999999999" height="82" as="geometry" />
+        </mxCell>
+        <mxCell id="t_port1" value='&lt;div style="text-align:center"&gt;&lt;b&gt;PermissionRepository&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;upsert(grant&amp;nbsp;:&amp;nbsp;PermissionGrant)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="54" y="212" width="225.29999999999998" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="t_port2" value='&lt;div style="text-align:center"&gt;&lt;b&gt;PermissionCachePort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;invalidate(role&amp;nbsp;:&amp;nbsp;Role)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="329.29999999999995" y="212" width="176.5" height="68" as="geometry" />
+        </mxCell>
+        <mxCell id="t_port3" value='&lt;div style="text-align:center"&gt;&lt;b&gt;AuditLogPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;record(change&amp;nbsp;:&amp;nbsp;AuditEntry)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="555.8" y="212" width="200.89999999999998" height="68" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.178;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="208.81666666666666" y="159.5" />
+            <mxPoint x="166.64999999999998" y="159.5" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e2" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="405.34999999999997" y="177" />
+            <mxPoint x="417.54999999999995" y="177" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e3" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.822;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="601.8833333333332" y="194.5" />
+            <mxPoint x="656.25" y="194.5" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="title" value="A3 — Ma trận phân quyền" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="0" y="10" width="786.6999999999999" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="v4" value="Ghi chú: Function/Action là danh mục seed; đổi quyền làm mới cache và ghi audit.&lt;br&gt;Ghi chú: [SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="30" y="300" width="1100" height="44" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

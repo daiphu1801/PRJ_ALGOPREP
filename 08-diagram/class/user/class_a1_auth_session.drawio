@@ -1,0 +1,65 @@
+<mxfile host="app.diagrams.net" agent="drawio-uml-architect" type="device">
+  <diagram id="a1-dang-ky-dang-nhap-va-quan-ly-phien" name="a1-dang-ky-dang-nhap-va-quan-ly-phien">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t_service" value='&lt;div style="text-align:center"&gt;&lt;b&gt;AuthService&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;register(email&amp;nbsp;:&amp;nbsp;String,&amp;nbsp;password&amp;nbsp;:&amp;nbsp;String)&lt;br&gt;+&amp;nbsp;login(email&amp;nbsp;:&amp;nbsp;String,&amp;nbsp;password&amp;nbsp;:&amp;nbsp;String,&amp;nbsp;ip&amp;nbsp;:&amp;nbsp;String)&lt;br&gt;+&amp;nbsp;refresh(refreshToken&amp;nbsp;:&amp;nbsp;String)&lt;br&gt;+&amp;nbsp;logout(refreshToken&amp;nbsp;:&amp;nbsp;String)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="307.75" y="60" width="359.5" height="96" as="geometry" />
+        </mxCell>
+        <mxCell id="t_users" value='&lt;div style="text-align:center"&gt;&lt;b&gt;UserRepository&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;findByEmail(email&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;UserAccount' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="66" y="236" width="286.3" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="t_tokens" value='&lt;div style="text-align:center"&gt;&lt;b&gt;RefreshTokenRepository&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;revokeFamily(familyId&amp;nbsp;:&amp;nbsp;UUID)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="402.3" y="236" width="213.1" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="t_rate" value='&lt;div style="text-align:center"&gt;&lt;b&gt;LoginRateLimiter&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;check(email&amp;nbsp;:&amp;nbsp;String,&amp;nbsp;ip&amp;nbsp;:&amp;nbsp;String)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="665.4000000000001" y="236" width="243.6" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="t_issuer" value='&lt;div style="text-align:center"&gt;&lt;b&gt;TokenIssuerPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;issueAccessToken(userId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;String' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="347.4" y="360" width="280.2" height="68" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" value="đọc/lưu" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.146;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_users">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="360.1875" y="172" />
+            <mxPoint x="209.15" y="172" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e2" value="xoay vòng" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.618;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_tokens">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="529.9375" y="204" />
+            <mxPoint x="508.85" y="204" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e3" value="giới hạn" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.854;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_rate">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="614.8125" y="220" />
+            <mxPoint x="787.2" y="220" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e4" value="cấp token" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.382;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_issuer">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="445.0625" y="188" />
+            <mxPoint x="30" y="188" />
+            <mxPoint x="30" y="325" />
+            <mxPoint x="487.5" y="325" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="title" value="A1 — Đăng ký, đăng nhập và quản lý phiên" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="0" y="10" width="939" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="v5" value="Ghi chú: Đăng ký nhận vai trò STUDENT; refresh token dùng một lần, dùng lại sẽ thu hồi cả family.&lt;br&gt;Ghi chú: [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế backend từ DD, chưa có trong code." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="30" y="448" width="1100" height="44" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

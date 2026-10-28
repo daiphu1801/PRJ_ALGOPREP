@@ -1,0 +1,52 @@
+<mxfile host="app.diagrams.net" agent="drawio-uml-architect" type="device">
+  <diagram id="a1-hoc-va-luyen-cau-hoi-phong-van" name="a1-hoc-va-luyen-cau-hoi-phong-van">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t_service" value='&lt;div style="text-align:center"&gt;&lt;b&gt;InterviewPracticeService&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;search(filter&amp;nbsp;:&amp;nbsp;QuestionFilter,&amp;nbsp;studentId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;Page&amp;lt;Question&amp;gt;&lt;br&gt;+&amp;nbsp;study(questionId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;StudyContent&lt;br&gt;+&amp;nbsp;evaluate(questionId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;studentId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;answer&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;PracticeFeedback&lt;br&gt;+&amp;nbsp;progress(studentId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;PracticeProgress&lt;br&gt;+&amp;nbsp;selfRate(questionId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;studentId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;rating&amp;nbsp;:&amp;nbsp;RecallRating)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="353.70000000000005" y="60" width="530.3" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="t_port1" value='&lt;div style="text-align:center"&gt;&lt;b&gt;InterviewQuestionRepository&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;findPublished(filter&amp;nbsp;:&amp;nbsp;QuestionFilter)&amp;nbsp;:&amp;nbsp;Page&amp;lt;Question&amp;gt;' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="54" y="240" width="371.7" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="t_port2" value='&lt;div style="text-align:center"&gt;&lt;b&gt;PracticeAttemptRepository&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;save(attempt&amp;nbsp;:&amp;nbsp;PracticeAttempt)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="475.7" y="240" width="225.29999999999998" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="t_port3" value='&lt;div style="text-align:center"&gt;&lt;b&gt;AnswerEvaluationPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;evaluate(question&amp;nbsp;:&amp;nbsp;Question,&amp;nbsp;answer&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;PracticeFeedback' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="751" y="240" width="432.7" height="68" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.179;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="448.75000000000006" y="187.5" />
+            <mxPoint x="239.85" y="187.5" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e2" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="618.85" y="205" />
+            <mxPoint x="588.35" y="205" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e3" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.821;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="788.95" y="222.5" />
+            <mxPoint x="967.35" y="222.5" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="title" value="A1 — Học và luyện câu hỏi phỏng vấn" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="0" y="10" width="1213.7" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="v4" value="Ghi chú: Chế độ học trả gợi ý/khung chuẩn/từ khoá; tự chấm gần nhất quyết định thứ tự ôn lại.&lt;br&gt;Ghi chú: [SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="30" y="328" width="1100" height="44" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

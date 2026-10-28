@@ -1,0 +1,156 @@
+{
+  "_": "Nguồn: 03-dd/api/F1_identity.md endpoint 37; 03-dd/logic/F1_identity.md BR-08/15. UserAdminStorePort, IdentityDbAdapter là tên minh họa [SoT: Suy luận]. Mở khóa không cần lý do và không gửi email; tài khoản đã ẩn danh hóa không thể khôi phục. Khi mở khóa tài khoản tự hủy trong ân hạn, bỏ mốc hủy. Audit và đổi trạng thái cùng giao dịch.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Mở khóa tài khoản (2b/2)",
+  "covers": [
+    "F1-13",
+    "F1-14"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Quản trị viên",
+        "role": "actor"
+      },
+      {
+        "name": "UserAdminController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "ChangeUserStatus",
+        "role": "service",
+        "stereo": "application command"
+      },
+      {
+        "name": "UserAdminStorePort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "IdentityDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema identity"
+      },
+      {
+        "name": "AuditLogPort",
+        "role": "repository",
+        "stereo": "identity output port"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 3 - Kiểm khả năng mở khóa"
+      },
+      {
+        "from": "Quản trị viên",
+        "to": "UserAdminController",
+        "text": "Chọn tài khoản và xác nhận mở khóa"
+      },
+      {
+        "from": "UserAdminController",
+        "to": "ChangeUserStatus",
+        "text": "Mở khóa tài khoản"
+      },
+      {
+        "from": "ChangeUserStatus",
+        "to": "UserAdminStorePort",
+        "text": "Đọc trạng thái và mốc ẩn danh hóa"
+      },
+      {
+        "from": "UserAdminStorePort",
+        "to": "IdentityDbAdapter",
+        "text": "Tìm tài khoản"
+      },
+      {
+        "from": "IdentityDbAdapter",
+        "to": "PostgreSQL",
+        "text": "Đọc trạng thái, nguồn khóa và mốc ẩn danh"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "IdentityDbAdapter",
+        "text": "Tình trạng tài khoản",
+        "kind": "return"
+      },
+      {
+        "from": "IdentityDbAdapter",
+        "to": "UserAdminStorePort",
+        "text": "Tình trạng tài khoản",
+        "kind": "return"
+      },
+      {
+        "from": "UserAdminStorePort",
+        "to": "ChangeUserStatus",
+        "text": "Tình trạng tài khoản",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Tài khoản đã ẩn danh hóa?",
+          "then": [
+            {
+              "from": "ChangeUserStatus",
+              "to": "UserAdminController",
+              "text": "Từ chối khôi phục dữ liệu đã ẩn danh",
+              "kind": "return"
+            },
+            {
+              "from": "UserAdminController",
+              "to": "Quản trị viên",
+              "text": "Hiển thị lý do không mở khóa được",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "ChangeUserStatus",
+              "to": "UserAdminStorePort",
+              "text": "Đặt hoạt động và bỏ mốc khóa, hủy"
+            },
+            {
+              "from": "UserAdminStorePort",
+              "to": "IdentityDbAdapter",
+              "text": "Ghi trạng thái mới"
+            },
+            {
+              "from": "IdentityDbAdapter",
+              "to": "PostgreSQL",
+              "text": "Cập nhật tài khoản thành hoạt động"
+            },
+            {
+              "from": "ChangeUserStatus",
+              "to": "AuditLogPort",
+              "text": "Ghi nhật ký mở khóa cùng giao dịch"
+            },
+            {
+              "from": "AuditLogPort",
+              "to": "ChangeUserStatus",
+              "text": "Nhật ký đã ghi",
+              "kind": "return"
+            },
+            {
+              "from": "ChangeUserStatus",
+              "to": "UserAdminController",
+              "text": "Trả tài khoản đã mở",
+              "kind": "return"
+            },
+            {
+              "from": "UserAdminController",
+              "to": "Quản trị viên",
+              "text": "Hiển thị tài khoản hoạt động",
+              "kind": "return"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

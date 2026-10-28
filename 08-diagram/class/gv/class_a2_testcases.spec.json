@@ -1,0 +1,86 @@
+{
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a2_instructor.md:41; 01-rd/req/user_stories/a2_instructor.md:43; 01-rd/req/user_stories/a2_instructor.md:45; 01-rd/req/user_stories/a2_instructor.md:47. Nguồn thiết kế: 03-dd/logic/F2_problem-bank.md; 03-dd/api/F2_problem-bank.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "kind": "class",
+  "title": "A2 — Testcase và giới hạn chấm",
+  "covers": [
+    "F2-05",
+    "F2-06",
+    "F2-07",
+    "F2-09",
+    "F2-10"
+  ],
+  "class": {
+    "legend": "shared",
+    "classes": [
+      {
+        "id": "service",
+        "name": "TestcaseAuthoringService",
+        "methods": [
+          "+ saveCase(actorId : UUID, draft : TestcaseDraft) : Testcase",
+          "+ importBatch(actorId : UUID, batch : TestcaseBatch) : ImportSummary",
+          "+ setLimits(actorId : UUID, problemId : UUID, limits : JudgeLimits)",
+          "+ replaceCaseSet(actorId : UUID, problemId : UUID, cases : List<TestcaseDraft>) : int"
+        ]
+      },
+      {
+        "id": "port1",
+        "name": "TestcaseRepository",
+        "kind": "class",
+        "methods": [
+          "+ save(testcase : Testcase)"
+        ]
+      },
+      {
+        "id": "port2",
+        "name": "TestcaseObjectStore",
+        "kind": "class",
+        "methods": [
+          "+ putBatch(batch : TestcaseBatch) : ObjectRef"
+        ]
+      },
+      {
+        "id": "port3",
+        "name": "ProblemRepository",
+        "kind": "class",
+        "methods": [
+          "+ increaseTestcaseVersion(problemId : UUID) : int"
+        ]
+      },
+      {
+        "id": "port4",
+        "name": "AuthorScopePolicy",
+        "kind": "class",
+        "methods": [
+          "+ requireWrite(actorId : UUID, problemId : UUID)"
+        ]
+      }
+    ],
+    "externals": [],
+    "relations": [
+      {
+        "from": "service",
+        "to": "port1",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port2",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port3",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port4",
+        "kind": "dependency"
+      }
+    ],
+    "notes": [
+      "Sample công khai, Hidden bảo mật; sửa bộ ca tăng version, giữ nguyên lịch sử bài nộp cũ.",
+      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+    ]
+  }
+}

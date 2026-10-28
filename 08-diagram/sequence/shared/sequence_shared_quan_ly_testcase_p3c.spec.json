@@ -1,0 +1,35 @@
+{
+  "_": "Trang 3c/3 lưu kết quả từ 3b. Nguồn: 03-dd/logic/F2_problem-bank.md BR-16 bước 9-10; 03-dd/api/F2_problem-bank.md §49; 03-dd/database/F2_problem-bank.md. GenerateCasesCmd = GenerateTestcasesWithAiCommandHandler; TestcaseRepo = TestcaseRepository; ProblemDbAdapter = TestcasePersistenceAdapter [SoT: Suy luận về tên lớp]. Nếu thêm ít nhất một ca, cùng một giao dịch lưu nháp HIDDEN, origin AI, approved false, dòng testcase_generation_runs (script, seed, model, prompt version, số liệu) và tăng ai_testcase_generations_used bằng câu lệnh có điều kiện còn lượt; nếu câu lệnh cập nhật 0 dòng thì rollback. Thêm 0 ca thì không tăng lượt. Nháp không vào checklist xuất bản, bộ chấm, không tăng current_testcase_set_version. Input/output lớn lưu MinIO trước commit qua TestcaseObjectStorePort theo BR-12; cổng đó lược để giữ trang này tập trung transaction. Khoá Redis chống chạy song song nhả trong finally sau cả hai nhánh. Script chỉ lưu làm xuất xứ, không chạy lại để thay testcase đã tạo.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Lưu testcase AI ở trạng thái nháp (3c/3)",
+  "covers": ["F2-14"],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {"name": "Người soạn đề", "role": "actor"},
+      {"name": "TestcaseCtrl", "role": "controller", "stereo": "presentation"},
+      {"name": "GenerateCasesCmd", "role": "service", "stereo": "application command"},
+      {"name": "TestcaseRepo", "role": "repository", "stereo": "domain output port"},
+      {"name": "ProblemDbAdapter", "role": "repository", "stereo": "infrastructure"},
+      {"name": "PostgreSQL", "role": "datastore", "stereo": "schema problem"}
+    ],
+    "messages": [
+      {"phase": "Giai đoạn 3c - Chỉ tính lượt khi có nháp hợp lệ"},
+      {"alt": {"label": "Có input hợp lệ để thêm?", "then": [
+        {"from": "GenerateCasesCmd", "to": "TestcaseRepo", "text": "Lưu nháp, nguồn gốc script và tăng lượt"},
+        {"from": "TestcaseRepo", "to": "ProblemDbAdapter", "text": "Ghi cả ba phần trong một giao dịch"},
+        {"from": "ProblemDbAdapter", "to": "PostgreSQL", "text": "Thêm nháp ẩn; chỉ tăng nếu còn lượt"},
+        {"from": "PostgreSQL", "to": "ProblemDbAdapter", "text": "Đã commit", "kind": "return"},
+        {"from": "ProblemDbAdapter", "to": "TestcaseRepo", "text": "Nháp đã lưu", "kind": "return"},
+        {"from": "TestcaseRepo", "to": "GenerateCasesCmd", "text": "Số ca thêm và lượt đã dùng", "kind": "return"},
+        {"from": "GenerateCasesCmd", "to": "TestcaseCtrl", "text": "Nháp, ca bị loại và cảnh báo", "kind": "return"},
+        {"from": "TestcaseCtrl", "to": "Người soạn đề", "text": "Hiện nháp chờ duyệt", "kind": "return"}
+      ], "else": [
+        {"from": "GenerateCasesCmd", "to": "GenerateCasesCmd", "text": "Không lưu dữ liệu, không tính lượt"},
+        {"from": "GenerateCasesCmd", "to": "TestcaseCtrl", "text": "Danh sách ca bị loại", "kind": "return"},
+        {"from": "TestcaseCtrl", "to": "Người soạn đề", "text": "Báo không có testcase mới", "kind": "return"}
+      ]}}
+    ]
+  }
+}

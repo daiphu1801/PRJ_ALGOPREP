@@ -1,0 +1,82 @@
+{
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a2_instructor.md:173; 01-rd/req/user_stories/a2_instructor.md:178; 01-rd/req/user_stories/a2_instructor.md:184. Nguồn thiết kế: 03-dd/logic/F1_identity.md; 03-dd/api/F1_identity.md; 03-dd/logic/F2_problem-bank.md; 03-dd/api/F2_problem-bank.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "kind": "class",
+  "title": "A2 — Tổng quan giảng viên",
+  "covers": [
+    "F1-30",
+    "F2-12"
+  ],
+  "class": {
+    "legend": "shared",
+    "classes": [
+      {
+        "id": "service",
+        "name": "InstructorDashboardService",
+        "methods": [
+          "+ routeForRole(instructorId : UUID) : DashboardRoute",
+          "+ aggregateClasses(instructorId : UUID) : DashboardMetrics",
+          "+ partialMetrics(instructorId : UUID) : DashboardMetrics"
+        ]
+      },
+      {
+        "id": "port1",
+        "name": "InstructorClassPort",
+        "kind": "interface",
+        "methods": [
+          "+ listMine(instructorId : UUID) : List<Classroom>"
+        ]
+      },
+      {
+        "id": "port2",
+        "name": "ProblemMetricsPort",
+        "kind": "interface",
+        "methods": [
+          "+ forClasses(ids : List<UUID>) : ProblemMetrics"
+        ]
+      },
+      {
+        "id": "port3",
+        "name": "JudgeMetricsPort",
+        "kind": "interface",
+        "methods": [
+          "+ forClasses(ids : List<UUID>) : JudgeMetrics"
+        ]
+      },
+      {
+        "id": "port4",
+        "name": "AiMetricsPort",
+        "kind": "interface",
+        "methods": [
+          "+ forClasses(ids : List<UUID>) : AiMetrics"
+        ]
+      }
+    ],
+    "externals": [],
+    "relations": [
+      {
+        "from": "service",
+        "to": "port1",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port2",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port3",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port4",
+        "kind": "dependency"
+      }
+    ],
+    "notes": [
+      "Mỗi thẻ dùng tổng trên lớp đang phụ trách; khi một nguồn lỗi, trả thẻ còn lại và trạng thái nguồn lỗi.",
+      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+    ]
+  }
+}

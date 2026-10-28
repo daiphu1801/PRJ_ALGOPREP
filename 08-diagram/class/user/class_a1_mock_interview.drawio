@@ -1,0 +1,65 @@
+<mxfile host="app.diagrams.net" agent="drawio-uml-architect" type="device">
+  <diagram id="a1-phong-van-gia-lap-ba-giai-doan" name="a1-phong-van-gia-lap-ba-giai-doan">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t_service" value='&lt;div style="text-align:center"&gt;&lt;b&gt;MockInterviewService&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;startFromAccepted(submissionId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;studentId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;InterviewSession&lt;br&gt;+&amp;nbsp;advanceStage(sessionId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;InterviewStage&lt;br&gt;+&amp;nbsp;streamReply(sessionId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;answer&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;TokenStream&lt;br&gt;+&amp;nbsp;rubric(sessionId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;InterviewRubric&lt;br&gt;+&amp;nbsp;endOnAiFailure(sessionId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;reason&amp;nbsp;:&amp;nbsp;String)&lt;br&gt;+&amp;nbsp;startSelfPractice(source&amp;nbsp;:&amp;nbsp;QuestionSource,&amp;nbsp;studentId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;InterviewSession&lt;br&gt;+&amp;nbsp;applySelfPracticeSettings(sessionId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;settings&amp;nbsp;:&amp;nbsp;PracticeSettings)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="298.6" y="60" width="518.0999999999999" height="138" as="geometry" />
+        </mxCell>
+        <mxCell id="t_port1" value='&lt;div style="text-align:center"&gt;&lt;b&gt;InterviewSessionRepository&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;save(session&amp;nbsp;:&amp;nbsp;InterviewSession)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="66" y="278" width="231.39999999999998" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="t_port2" value='&lt;div style="text-align:center"&gt;&lt;b&gt;InterviewQuestionPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;resolve(source&amp;nbsp;:&amp;nbsp;QuestionSource)&amp;nbsp;:&amp;nbsp;QuestionContext' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="347.4" y="278" width="341.2" height="68" as="geometry" />
+        </mxCell>
+        <mxCell id="t_port3" value='&lt;div style="text-align:center"&gt;&lt;b&gt;InterviewModelPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;respond(context&amp;nbsp;:&amp;nbsp;StageContext)&amp;nbsp;:&amp;nbsp;TokenStream' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="738.5999999999999" y="278" width="310.7" height="68" as="geometry" />
+        </mxCell>
+        <mxCell id="t_port4" value='&lt;div style="text-align:center"&gt;&lt;b&gt;AcceptedSubmissionPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;requireAccepted(id&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;studentId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;Submission' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="365.7" y="416" width="383.9" height="68" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.139;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="370.8625" y="214" />
+            <mxPoint x="181.7" y="214" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e2" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.380;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="495.3875" y="230" />
+            <mxPoint x="518" y="230" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e3" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.861;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="744.4375" y="262" />
+            <mxPoint x="893.9499999999999" y="262" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e4" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.620;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="619.9124999999999" y="246" />
+            <mxPoint x="30" y="246" />
+            <mxPoint x="30" y="381" />
+            <mxPoint x="557.65" y="381" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="title" value="A1 — Phỏng vấn giả lập ba giai đoạn" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="0" y="10" width="1079.3" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="v5" value="Ghi chú: Ba giai đoạn và rubric lưu cùng phiên; lỗi AI kết thúc phiên có kiểm soát, không đổi kết quả chấm.&lt;br&gt;Ghi chú: [SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="30" y="504" width="1100" height="44" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

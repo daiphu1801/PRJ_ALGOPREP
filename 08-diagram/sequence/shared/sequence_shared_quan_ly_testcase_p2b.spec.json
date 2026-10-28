@@ -1,0 +1,42 @@
+{
+  "_": "Trang 2b/3 chỉ cho nhánh bài PUBLISHED có thay đổi bộ testcase đã duyệt ở trang 2a. Nguồn: 03-dd/logic/F2_problem-bank.md BR-11/BR-12, 03-dd/api/F2_problem-bank.md §43. UpdateTestcaseCmd = UpdateTestcaseCommandHandler; ObjectStorePort = TestcaseObjectStorePort; MinioAdapter = TestcaseMinioAdapter; TestcaseRepo = TestcaseRepository; ProblemDbAdapter = TestcasePersistenceAdapter; VersionEventPort = cổng sự kiện F2 [SoT: Suy luận về tên lớp trừ TestcaseObjectStorePort]. Đọc byte nội dung của toàn bộ ca đã duyệt sau cập nhật, ghi bundle bất biến vào MinIO và lấy SHA-256 trước khi công bố. Trong cùng giao dịch với sửa testcase ở 2a, tăng current_testcase_set_version đúng một lần và ghi testcase_set_snapshots; rollback để lại object mồ côi được dọn sau theo DD. Chỉ sau commit mới phát TestcaseSetVersionBumped. Bản nộp cũ dùng snapshot cũ đã ghim, không bị chấm theo bộ mới. Nhánh lỗi MinIO rollback và trả lỗi; lược để trang tập trung đường thành công.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Chụp bộ testcase mới (2b/3)",
+  "covers": ["F2-09"],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {"name": "UpdateTestcaseCmd", "role": "service", "stereo": "application command"},
+      {"name": "ObjectStorePort", "role": "repository", "stereo": "output port"},
+      {"name": "MinioAdapter", "role": "external", "stereo": "infrastructure"},
+      {"name": "MinIO", "role": "external", "stereo": "object store"},
+      {"name": "TestcaseRepo", "role": "repository", "stereo": "domain output port"},
+      {"name": "ProblemDbAdapter", "role": "repository", "stereo": "infrastructure"},
+      {"name": "PostgreSQL", "role": "datastore", "stereo": "schema problem"},
+      {"name": "VersionEventPort", "role": "repository", "stereo": "event output port"}
+    ],
+    "messages": [
+      {"phase": "Giai đoạn 2b - Bài đã công bố có bộ chấm mới"},
+      {"from": "UpdateTestcaseCmd", "to": "TestcaseRepo", "text": "Lấy toàn bộ ca đã duyệt sau sửa"},
+      {"from": "TestcaseRepo", "to": "ProblemDbAdapter", "text": "Đọc bộ ca thuộc bài"},
+      {"from": "ProblemDbAdapter", "to": "PostgreSQL", "text": "Đọc ca theo thứ tự chạy"},
+      {"from": "PostgreSQL", "to": "ProblemDbAdapter", "text": "Bộ ca hiện hành", "kind": "return"},
+      {"from": "ProblemDbAdapter", "to": "TestcaseRepo", "text": "Bộ ca hiện hành", "kind": "return"},
+      {"from": "TestcaseRepo", "to": "UpdateTestcaseCmd", "text": "Bộ ca hiện hành", "kind": "return"},
+      {"from": "UpdateTestcaseCmd", "to": "ObjectStorePort", "text": "Lưu bản chụp bất biến và dấu kiểm"},
+      {"from": "ObjectStorePort", "to": "MinioAdapter", "text": "Ghi gói dữ liệu ca"},
+      {"from": "MinioAdapter", "to": "MinIO", "text": "Lưu bản chụp phiên bản mới"},
+      {"from": "MinIO", "to": "MinioAdapter", "text": "Đã lưu", "kind": "return"},
+      {"from": "MinioAdapter", "to": "ObjectStorePort", "text": "Khoá tệp và dấu kiểm", "kind": "return"},
+      {"from": "ObjectStorePort", "to": "UpdateTestcaseCmd", "text": "Bản chụp sẵn sàng", "kind": "return"},
+      {"from": "UpdateTestcaseCmd", "to": "TestcaseRepo", "text": "Tăng đúng một phiên bản và ghi bản chụp"},
+      {"from": "TestcaseRepo", "to": "ProblemDbAdapter", "text": "Ghi phiên bản và bản chụp trong giao dịch"},
+      {"from": "ProblemDbAdapter", "to": "PostgreSQL", "text": "Cập nhật phiên bản; commit cùng testcase"},
+      {"from": "PostgreSQL", "to": "ProblemDbAdapter", "text": "Đã commit", "kind": "return"},
+      {"from": "ProblemDbAdapter", "to": "TestcaseRepo", "text": "Phiên bản mới", "kind": "return"},
+      {"from": "TestcaseRepo", "to": "UpdateTestcaseCmd", "text": "Phiên bản mới", "kind": "return"},
+      {"from": "UpdateTestcaseCmd", "to": "VersionEventPort", "text": "Báo bộ testcase đổi sau commit", "kind": "async"}
+    ]
+  }
+}

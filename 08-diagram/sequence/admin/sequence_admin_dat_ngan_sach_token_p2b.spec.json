@@ -1,0 +1,109 @@
+{
+  "_": "Nguồn: 03-dd/api/F5_ai-review.md §28. BUDGET là thẻ suy ra, không lưu và không đánh dấu đã xem; ANOMALY chỉ lấy OPEN, tên có thể null. Cổng và adapter là tên minh họa [SoT: Suy luận].",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Xem cảnh báo ngân sách và bất thường (4/5)",
+  "covers": [
+    "F5-25"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Quản trị viên",
+        "role": "actor"
+      },
+      {
+        "name": "AiUsageController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "ListAiUsageAlerts",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "AlertReadPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "AiDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema ai"
+      },
+      {
+        "name": "UserDirectoryPort",
+        "role": "repository",
+        "stereo": "identity port"
+      }
+    ],
+    "messages": [
+      {
+        "from": "Quản trị viên",
+        "to": "AiUsageController",
+        "text": "Mở danh sách cảnh báo"
+      },
+      {
+        "from": "AiUsageController",
+        "to": "ListAiUsageAlerts",
+        "text": "Kiểm quyền đọc ngân sách"
+      },
+      {
+        "from": "ListAiUsageAlerts",
+        "to": "AlertReadPort",
+        "text": "Đọc cảnh báo OPEN và mức dùng ngân sách"
+      },
+      {
+        "from": "AlertReadPort",
+        "to": "AiDbAdapter",
+        "text": "Truy vấn dữ liệu AI"
+      },
+      {
+        "from": "AiDbAdapter",
+        "to": "PostgreSQL",
+        "text": "Đọc cảnh báo, cấu hình và token đã dùng"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "ListAiUsageAlerts",
+        "text": "Trả cảnh báo và mức dùng",
+        "kind": "return"
+      },
+      {
+        "from": "ListAiUsageAlerts",
+        "to": "UserDirectoryPort",
+        "text": "Tra tên tài khoản có cảnh báo"
+      },
+      {
+        "from": "UserDirectoryPort",
+        "to": "ListAiUsageAlerts",
+        "text": "Trả tên hoặc để rỗng khi lỗi",
+        "kind": "return"
+      },
+      {
+        "from": "ListAiUsageAlerts",
+        "to": "ListAiUsageAlerts",
+        "text": "Suy ra thẻ ngân sách nếu chạm ngưỡng hoặc đã khóa"
+      },
+      {
+        "from": "ListAiUsageAlerts",
+        "to": "AiUsageController",
+        "text": "Trả thẻ ngân sách trước các cảnh báo OPEN",
+        "kind": "return"
+      },
+      {
+        "from": "AiUsageController",
+        "to": "Quản trị viên",
+        "text": "Hiển thị danh sách cảnh báo",
+        "kind": "return"
+      }
+    ]
+  }
+}

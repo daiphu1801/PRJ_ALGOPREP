@@ -1,8 +1,7 @@
 {
-  "_": "Luong dang nhap bang OAuth (GitHub, Google) va tu lien ket theo email cua actor A1. Nguon: 01-rd/req/F1_identity.md (F1-15), 03-dd/api/F1_identity.md muc 0.1 (endpoint #5, #6), 03-dd/logic/F1_identity.md BR-03, 02-bd/architecture/F1_identity.md muc 2 (OAuth tu lien ket theo email). | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
-  "_bao_mat": "Hai chot chan chiem tai khoan: (1) doi chieu `state` luu Redis TTL 10 phut -- chong CSRF o buoc callback; (2) provider tra `email_verified = false` thi TU CHOI, khong tao oauth_identities va khong tao users -- neu bo buoc nay, ai dang ky mot tai khoan provider bang email nguoi khac deu chiem duoc tai khoan AlgoPrep tuong ung.",
+  "_": "Trang 3/3 chỉ nhận email_verified=true từ 2b. Nguồn: 03-dd/logic/F1_identity.md BR-03; 03-dd/api/F1_identity.md endpoint #6 và mục OAuth callback; 02-bd/architecture/F1_identity.md. OAuthCallbackCmd = HandleOAuthCallbackCommandHandler; UserRepo = UserRepository; OAuthIdentityRepo = OAuthIdentityRepository; RefreshRepo = RefreshTokenRepository; IdentityDbAdapter = IdentityPersistenceAdapter [SoT: Suy luận về tên lớp]. Có user trùng provider_email thì tạo liên kết oauth_identities với user đó; chưa có thì tạo users không có password_hash rồi liên kết. Chỉ làm với email phía provider đã xác minh. Access token nằm trong HTTPS JSON, refresh token thô chỉ ở cookie HttpOnly/Secure/SameSite=Strict; DB chỉ lưu hash. Hình mô tả đường tài khoản có thể đăng nhập; tài khoản tự xoá còn hạn nhận restoreTicket thay vì token, Admin khoá không nhận vé theo DD. Quy tắc tài khoản hiện có còn PENDING_VERIFICATION khi OAuth email đã xác minh chưa được BR-03 ghi rõ: lớp triển khai phải tuân quyết định owner/DD trước khi phát token, không tự coi mọi trạng thái là ACTIVE.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Đăng nhập và tự liên kết tài khoản OAuth (Sinh viên) (3/3)",
+  "title": "Sơ đồ tuần tự chi tiết - Liên kết email và cấp phiên OAuth (3/3)",
   "covers": [
     "F1-15"
   ],
@@ -20,9 +19,29 @@
         "stereo": "presentation"
       },
       {
-        "name": "OAuthService",
+        "name": "OAuthCallbackCmd",
         "role": "service",
-        "stereo": "application"
+        "stereo": "application command"
+      },
+      {
+        "name": "UserRepo",
+        "role": "repository",
+        "stereo": "domain output port"
+      },
+      {
+        "name": "OAuthIdentityRepo",
+        "role": "repository",
+        "stereo": "domain output port"
+      },
+      {
+        "name": "RefreshRepo",
+        "role": "repository",
+        "stereo": "domain output port"
+      },
+      {
+        "name": "IdentityDbAdapter",
+        "role": "repository",
+        "stereo": "infrastructure"
       },
       {
         "name": "PostgreSQL",
@@ -32,81 +51,153 @@
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 3 - Tự liên kết theo email, hoặc tạo tài khoản mới"
+        "phase": "Giai đoạn 3 - Liên kết email đã xác minh"
       },
       {
-        "from": "OAuthService",
+        "from": "OAuthCallbackCmd",
+        "to": "UserRepo",
+        "text": "Tìm tài khoản theo email nhà cung cấp"
+      },
+      {
+        "from": "UserRepo",
+        "to": "IdentityDbAdapter",
+        "text": "Tra email hiện có"
+      },
+      {
+        "from": "IdentityDbAdapter",
         "to": "PostgreSQL",
-        "text": "Tìm tài khoản có email của nhà cung cấp"
+        "text": "Đọc tài khoản theo email"
       },
       {
         "from": "PostgreSQL",
-        "to": "OAuthService",
-        "text": "Tài khoản sẵn có hoặc rỗng",
+        "to": "IdentityDbAdapter",
+        "text": "Tài khoản hoặc chưa có",
+        "kind": "return"
+      },
+      {
+        "from": "IdentityDbAdapter",
+        "to": "UserRepo",
+        "text": "Tài khoản hoặc chưa có",
+        "kind": "return"
+      },
+      {
+        "from": "UserRepo",
+        "to": "OAuthCallbackCmd",
+        "text": "Kết quả tìm email",
         "kind": "return"
       },
       {
         "alt": {
-          "label": "Đã có tài khoản dùng đúng email này?",
+          "label": "Đã có tài khoản cùng email?",
           "then": [
             {
-              "from": "OAuthService",
-              "to": "OAuthService",
-              "text": "Trường hợp có"
-            },
-            {
-              "from": "OAuthService",
-              "to": "PostgreSQL",
-              "text": "Lưu liên kết vào tài khoản sẵn có"
+              "from": "OAuthCallbackCmd",
+              "to": "OAuthCallbackCmd",
+              "text": "Dùng tài khoản hiện có đúng phạm vi"
             }
           ],
           "else": [
             {
-              "from": "OAuthService",
-              "to": "OAuthService",
-              "text": "Trường hợp không"
+              "from": "OAuthCallbackCmd",
+              "to": "UserRepo",
+              "text": "Tạo tài khoản không có mật khẩu"
             },
             {
-              "from": "OAuthService",
-              "to": "PostgreSQL",
-              "text": "Tạo tài khoản mới chưa có mật khẩu, vai trò Người học"
+              "from": "UserRepo",
+              "to": "IdentityDbAdapter",
+              "text": "Lưu người học mới"
             },
             {
-              "from": "OAuthService",
+              "from": "IdentityDbAdapter",
               "to": "PostgreSQL",
-              "text": "Lưu liên kết vào tài khoản vừa tạo"
+              "text": "Ghi tài khoản mới"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "IdentityDbAdapter",
+              "text": "Mã tài khoản",
+              "kind": "return"
+            },
+            {
+              "from": "IdentityDbAdapter",
+              "to": "UserRepo",
+              "text": "Mã tài khoản",
+              "kind": "return"
+            },
+            {
+              "from": "UserRepo",
+              "to": "OAuthCallbackCmd",
+              "text": "Mã tài khoản mới",
+              "kind": "return"
             }
           ]
         }
       },
       {
-        "from": "OAuthService",
-        "to": "OAuthService",
-        "text": "Cấp mã truy cập và mã duy trì đăng nhập như đăng nhập thường"
+        "from": "OAuthCallbackCmd",
+        "to": "OAuthIdentityRepo",
+        "text": "Liên kết nhà cung cấp với tài khoản"
       },
       {
-        "from": "OAuthService",
+        "from": "OAuthIdentityRepo",
+        "to": "IdentityDbAdapter",
+        "text": "Lưu danh tính bên ngoài"
+      },
+      {
+        "from": "IdentityDbAdapter",
         "to": "PostgreSQL",
-        "text": "Ghi mã duy trì đăng nhập đã mã hoá"
+        "text": "Ghi liên kết với nhà cung cấp"
       },
       {
-        "from": "OAuthService",
+        "from": "OAuthCallbackCmd",
+        "to": "OAuthCallbackCmd",
+        "text": "Kiểm trạng thái cho phép cấp phiên"
+      },
+      {
+        "from": "OAuthCallbackCmd",
+        "to": "RefreshRepo",
+        "text": "Lưu dấu băm mã làm mới phiên"
+      },
+      {
+        "from": "RefreshRepo",
+        "to": "IdentityDbAdapter",
+        "text": "Ghi phiên mới"
+      },
+      {
+        "from": "IdentityDbAdapter",
+        "to": "PostgreSQL",
+        "text": "Lưu phiên và commit"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "IdentityDbAdapter",
+        "text": "Đã lưu",
+        "kind": "return"
+      },
+      {
+        "from": "IdentityDbAdapter",
+        "to": "RefreshRepo",
+        "text": "Phiên đã tạo",
+        "kind": "return"
+      },
+      {
+        "from": "RefreshRepo",
+        "to": "OAuthCallbackCmd",
+        "text": "Có thể trả phiên",
+        "kind": "return"
+      },
+      {
+        "from": "OAuthCallbackCmd",
         "to": "AuthController",
-        "text": "Phiên đăng nhập",
+        "text": "Mã truy cập và mã làm mới riêng",
         "kind": "return"
       },
       {
         "from": "AuthController",
         "to": "Sinh viên",
-        "text": "Báo thành công, gửi kèm mã duy trì đăng nhập",
+        "text": "Trả mã truy cập; đặt cookie an toàn",
         "kind": "return"
-      },
-      {
-        "from": "Sinh viên",
-        "to": "Sinh viên",
-        "text": "Vào thẳng khu Người học; tài khoản chưa có mật khẩu vẫn đặt được sau ở màn Hồ sơ"
       }
     ]
-  },
-  "_cat": "Tach tu sequence_user_lien_ket_oauth.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 3/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+  }
 }

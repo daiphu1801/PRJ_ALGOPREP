@@ -1,9 +1,10 @@
 {
-  "_": "Nguon: 03-dd/logic/F3_harness.md muc 1.2 (dong 28-51): LanguageHarnessPlugin (dong 34-41), RenderedProgram gom sourceFileName + text + LineMap (dong 44), registry EnumMap (dong 45-48), TypeCodeEmitter (dong 49). Ten ba plugin: dong 31. [SoT: Suy luan]: ten lop PluginRegistry. Phan dong goi payload nam o so do class_f3_dong_goi_payload.",
+  "_": "Nguon: 03-dd/logic/F3_harness.md:28-51. Interface va sau chu ky phuong thuc la DD:34-41; RenderedProgram la DD:44; EnumMap/registry la DD:45-48; TypeCodeEmitter la DD:49. Ba plugin: DD:31 va 02-bd/architecture/F3_harness.md:216-218. [SoT: Suy luan] PluginRegistry la ten lop de xuat, DD chi chot Map<Language, LanguageHarnessPlugin>; khong ve get() vi DD chua chot chu ky. TypeCodeEmitter la mot vai tro duoc hien thi gop o muc tong quan, khong khang dinh co mot instance dung chung. Bo getter/setter va plumbing. LineMap chi hien bang thuoc tinh co kieu trong RenderedProgram, khong ve them canh trung lap.",
   "kind": "class",
-  "title": "Class diagram plugin ngôn ngữ của F3 harness",
+  "title": "F3 — Sinh mã theo ngôn ngữ",
   "covers": [],
   "class": {
+    "legend": "shared",
     "classes": [
       {
         "id": "plugin",
@@ -11,9 +12,9 @@
         "kind": "interface",
         "methods": [
           "+ language() : Language",
-          "+ renderFunctionWrapper(spec : FunctionSpec, source : String) : RenderedProgram",
-          "+ renderStandardIo(source : String) : RenderedProgram",
-          "+ starterCode(spec : FunctionSpec, model : SubmissionModel) : String",
+          "+ renderFunctionWrapper(spec : FunctionSpec, normalizedUserSource : String) : RenderedProgram",
+          "+ renderStandardIo(normalizedUserSource : String) : RenderedProgram",
+          "+ starterCode(specOrNull : FunctionSpec, model : SubmissionModel) : String",
           "+ toolchain(model : SubmissionModel) : ToolchainProfile",
           "+ parseCompilerOutput(raw : String) : List<RawDiagnostic>"
         ]
@@ -35,17 +36,11 @@
         "name": "PluginRegistry",
         "attributes": [
           "- plugins : EnumMap<Language, LanguageHarnessPlugin>"
-        ],
-        "methods": [
-          "+ get(language : Language) : LanguageHarnessPlugin"
         ]
       },
       {
         "id": "emitter",
-        "name": "TypeCodeEmitter",
-        "methods": [
-          "+ emit(node : TypeNode) : String"
-        ]
+        "name": "TypeCodeEmitter"
       },
       {
         "id": "prog",
@@ -55,10 +50,6 @@
           "- text : String",
           "- lineMap : LineMap"
         ]
-      },
-      {
-        "id": "linemap",
-        "name": "LineMap"
       }
     ],
     "externals": [],
@@ -81,22 +72,15 @@
       {
         "from": "registry",
         "to": "plugin",
-        "kind": "aggregation",
-        "from_mult": "1",
-        "to_mult": "3"
+        "kind": "association",
+        "directed": true,
+        "label": "tra cứu"
       },
       {
         "from": "plugin",
         "to": "prog",
         "kind": "dependency",
         "label": "trả về"
-      },
-      {
-        "from": "prog",
-        "to": "linemap",
-        "kind": "composition",
-        "from_mult": "1",
-        "to_mult": "1"
       },
       {
         "from": "plugin",
@@ -106,8 +90,8 @@
       }
     ],
     "notes": [
-      "Ba plugin chỉ hiện thực lại sáu phương thức của interface nên không liệt kê lại; TypeCodeEmitter là một lớp riêng cho mỗi ngôn ngữ, vẽ gộp một hộp (03-dd/logic/F3_harness.md:49).",
-      "[SoT: Suy luận] Tên PluginRegistry; DD chỉ nói registry là Map<Language, LanguageHarnessPlugin> kiểu EnumMap, thiếu một plugin là lỗi khởi động (03-dd/logic/F3_harness.md:45-48)."
+      "Registry chọn plugin Java, C++ hoặc Python; plugin sinh mã và trả về RenderedProgram.",
+      "Mỗi ngôn ngữ có bộ phát mã kiểu riêng. [SoT: Suy luận] Tên lớp PluginRegistry."
     ]
   }
 }

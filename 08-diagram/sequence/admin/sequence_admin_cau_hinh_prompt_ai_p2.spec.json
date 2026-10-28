@@ -1,8 +1,7 @@
 {
-  "_": "Cap nhat 2026-10-18 theo ADM0301 V2.x (02-bd/screens/admin/ADM0301_ai_config.md): bo rubric (DEC-2026-1014-drop-solution-review-rubric), ADMIN chon model theo prompt (DEC-2026-1010-admin-selects-model-per-prompt), luong nhap roi \"Luu va phat hanh\" mot giao dich nguyen tu (DEC-2026-1014-batch7-remaining-open-questions Q3). Ten endpoint la ten nghiep vu cua BD muc 7.3; duong dan REST la [SoT: Suy luan] vi chua co 03-dd/api/F5_ai-review.md. KHONG ve nut Chay doi chieu (khong co backend). Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen. | 2026-10-20 (owner): nhan mui ten bo han duong dan, ma HTTP, ma quyen, thuat ngu ky thuat (cache, job, worker, model...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
-  "_pham_vi": "RD dong 86-93 giu nut \"Chay doi chieu\" o tang giao dien; so do nay khong ve mot endpoint backend cho no.",
+  "_": "Nguồn: 03-dd/api/F5_ai-review.md §16; 03-dd/logic/F5_ai-review.md BR-AI-13. PromptStorePort và AiDbAdapter là tên minh họa [SoT: Suy luận]. Chỉ thị không rỗng, mô hình trong danh sách, responseGuards đúng theo tính năng; noFullSolution được phép false. Một bản DRAFT cho mỗi tính năng, lần lưu sau cập nhật tại chỗ. Bản ACTIVE chưa đổi và chưa ghi audit quản trị.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Cấu hình prompt và model của AI (Quản trị viên) (2/4)",
+  "title": "Sơ đồ tuần tự chi tiết - Lưu bản nháp chỉ thị AI (2/4)",
   "covers": [
     "F5-23"
   ],
@@ -20,100 +19,126 @@
         "stereo": "presentation"
       },
       {
-        "name": "AiConfigService",
+        "name": "UpdatePromptDraft",
         "role": "service",
-        "stereo": "application"
+        "stereo": "application command"
+      },
+      {
+        "name": "PromptStorePort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "AiDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
       },
       {
         "name": "PostgreSQL",
         "role": "datastore",
-        "stereo": "ai.prompt_templates"
+        "stereo": "schema ai"
       }
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 2 - Sửa chỉ thị hoặc chọn mô hình: chỉ ghi vào bản nháp (F5-23)"
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "Quản trị viên",
-        "text": "Sửa chỉ thị hoặc chọn mô hình được duyệt"
+        "phase": "Giai đoạn 2 - Kiểm và lưu bản nháp"
       },
       {
         "from": "Quản trị viên",
         "to": "AiConfigController",
-        "text": "Gửi chỉ thị hoặc mô hình cần lưu nháp"
+        "text": "Sửa chỉ thị, mô hình và quy tắc trả lời"
       },
       {
         "from": "AiConfigController",
-        "to": "AiConfigService",
-        "text": "Yêu cầu lưu bản nháp"
+        "to": "UpdatePromptDraft",
+        "text": "Lưu bản nháp cho một tính năng"
       },
       {
-        "from": "AiConfigService",
-        "to": "AiConfigService",
-        "text": "Kiểm tra chỉ thị không rỗng và mô hình thuộc danh sách duyệt"
+        "from": "UpdatePromptDraft",
+        "to": "UpdatePromptDraft",
+        "text": "Kiểm nội dung, mô hình được duyệt và quy tắc theo tính năng"
       },
       {
         "alt": {
           "label": "Dữ liệu hợp lệ?",
           "then": [
             {
-              "from": "AiConfigService",
-              "to": "AiConfigService",
-              "text": "Giữ nguyên chỉ dẫn ràng buộc Lớp 1, không cho sửa"
+              "from": "UpdatePromptDraft",
+              "to": "PromptStorePort",
+              "text": "Tìm bản nháp của tính năng"
             },
             {
-              "from": "AiConfigService",
+              "from": "PromptStorePort",
+              "to": "AiDbAdapter",
+              "text": "Đọc bản nháp hiện tại"
+            },
+            {
+              "from": "AiDbAdapter",
               "to": "PostgreSQL",
-              "text": "Lưu bản nháp; chưa có thì tạo từ bản đang chạy"
+              "text": "Tìm bản nháp theo tính năng"
             },
             {
               "from": "PostgreSQL",
-              "to": "AiConfigService",
-              "text": "Đã lưu",
+              "to": "AiDbAdapter",
+              "text": "Bản nháp hoặc chưa có",
               "kind": "return"
             },
             {
-              "from": "AiConfigService",
+              "from": "AiDbAdapter",
+              "to": "PromptStorePort",
+              "text": "Bản nháp hoặc chưa có",
+              "kind": "return"
+            },
+            {
+              "from": "PromptStorePort",
+              "to": "UpdatePromptDraft",
+              "text": "Bản nháp hoặc chưa có",
+              "kind": "return"
+            },
+            {
+              "from": "UpdatePromptDraft",
+              "to": "PromptStorePort",
+              "text": "Tạo hoặc cập nhật cùng bản nháp"
+            },
+            {
+              "from": "PromptStorePort",
+              "to": "AiDbAdapter",
+              "text": "Lưu chỉ thị và lựa chọn mô hình"
+            },
+            {
+              "from": "AiDbAdapter",
+              "to": "PostgreSQL",
+              "text": "Ghi bản nháp, giữ bản đang chạy"
+            },
+            {
+              "from": "UpdatePromptDraft",
               "to": "AiConfigController",
-              "text": "Bản nháp đã lưu",
+              "text": "Trả bản nháp đã lưu",
               "kind": "return"
             },
             {
               "from": "AiConfigController",
               "to": "Quản trị viên",
-              "text": "Báo thành công",
+              "text": "Hiển thị nhãn bản nháp",
               "kind": "return"
             }
           ],
           "else": [
             {
-              "from": "AiConfigService",
-              "to": "AiConfigService",
-              "text": "Trường hợp không"
-            },
-            {
-              "from": "AiConfigService",
+              "from": "UpdatePromptDraft",
               "to": "AiConfigController",
-              "text": "Từ chối, không ghi gì",
+              "text": "Báo trường sai, không ghi bản nháp",
               "kind": "return"
             },
             {
               "from": "AiConfigController",
               "to": "Quản trị viên",
-              "text": "Báo lỗi: chỉ thị rỗng hoặc mô hình ngoài danh sách",
+              "text": "Hiển thị trường cần sửa",
               "kind": "return"
             }
           ]
         }
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "Quản trị viên",
-        "text": "Thẻ hiện Bản nháp; bản đang chạy chưa đổi"
       }
     ]
-  },
-  "_cat": "Tach tu sequence_admin_cau_hinh_prompt_ai.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 1/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+  }
 }

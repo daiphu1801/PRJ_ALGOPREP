@@ -1,0 +1,43 @@
+{
+  "_": "Trang 1c/3 người tự đăng ký nhập OTP email. Nguồn: 03-dd/api/F1_identity.md endpoint #53 và mục email verify; 03-dd/logic/F1_identity.md BR-21; 03-dd/database/F1_identity.md. VerifyEmailCmd = VerifyEmailCommandHandler; EmailOtpPort = cổng Redis xác minh OTP; RedisOtpAdapter = Redis adapter; UserRepo = UserRepository; IdentityDbAdapter = UserPersistenceAdapter [SoT: Suy luận về tên lớp]. Mã sai, hết hạn hoặc quá năm lần sai trả lỗi chung, không đổi users.status. Mã đúng chuyển PENDING_VERIFICATION sang ACTIVE rồi xoá khoá OTP; tài khoản đã ACTIVE gọi lại trả thành công idempotent theo DD. Hình chỉ vẽ nhánh mã đúng. Xác minh email không tự phát access/refresh token; người học đăng nhập ở trang 2a/2b.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Xác minh email và kích hoạt (1c/3)",
+  "covers": ["F1-01"],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {"name": "Sinh viên", "role": "actor"},
+      {"name": "AuthController", "role": "controller", "stereo": "presentation"},
+      {"name": "VerifyEmailCmd", "role": "service", "stereo": "application command"},
+      {"name": "EmailOtpPort", "role": "repository", "stereo": "output port"},
+      {"name": "RedisOtpAdapter", "role": "repository", "stereo": "infrastructure"},
+      {"name": "Redis", "role": "datastore", "stereo": "OTP email"},
+      {"name": "UserRepo", "role": "repository", "stereo": "domain output port"},
+      {"name": "IdentityDbAdapter", "role": "repository", "stereo": "infrastructure"},
+      {"name": "PostgreSQL", "role": "datastore", "stereo": "schema identity"}
+    ],
+    "messages": [
+      {"phase": "Giai đoạn 1c - Xác minh email trước khi đăng nhập"},
+      {"from": "Sinh viên", "to": "AuthController", "text": "Nhập mã vừa nhận qua email"},
+      {"from": "AuthController", "to": "VerifyEmailCmd", "text": "Yêu cầu kiểm mã xác minh"},
+      {"from": "VerifyEmailCmd", "to": "EmailOtpPort", "text": "Kiểm mã và số lần sai"},
+      {"from": "EmailOtpPort", "to": "RedisOtpAdapter", "text": "Tra mã theo tài khoản"},
+      {"from": "RedisOtpAdapter", "to": "Redis", "text": "So khớp mã còn hạn"},
+      {"from": "Redis", "to": "RedisOtpAdapter", "text": "Mã đúng", "kind": "return"},
+      {"from": "RedisOtpAdapter", "to": "EmailOtpPort", "text": "Đã xác minh mã", "kind": "return"},
+      {"from": "EmailOtpPort", "to": "VerifyEmailCmd", "text": "Có thể kích hoạt", "kind": "return"},
+      {"from": "VerifyEmailCmd", "to": "UserRepo", "text": "Kích hoạt tài khoản vừa xác minh"},
+      {"from": "UserRepo", "to": "IdentityDbAdapter", "text": "Đổi trạng thái nếu còn chờ"},
+      {"from": "IdentityDbAdapter", "to": "PostgreSQL", "text": "Lưu trạng thái Hoạt động"},
+      {"from": "PostgreSQL", "to": "IdentityDbAdapter", "text": "Đã commit", "kind": "return"},
+      {"from": "IdentityDbAdapter", "to": "UserRepo", "text": "Tài khoản đã kích hoạt", "kind": "return"},
+      {"from": "UserRepo", "to": "VerifyEmailCmd", "text": "Tài khoản đã kích hoạt", "kind": "return"},
+      {"from": "VerifyEmailCmd", "to": "EmailOtpPort", "text": "Xoá mã đã sử dụng"},
+      {"from": "EmailOtpPort", "to": "RedisOtpAdapter", "text": "Xoá khoá xác minh"},
+      {"from": "RedisOtpAdapter", "to": "Redis", "text": "Xoá mã"},
+      {"from": "VerifyEmailCmd", "to": "AuthController", "text": "Email đã xác minh", "kind": "return"},
+      {"from": "AuthController", "to": "Sinh viên", "text": "Mời đăng nhập tài khoản", "kind": "return"}
+    ]
+  }
+}

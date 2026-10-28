@@ -1,0 +1,12 @@
+{
+  "case_count": 1107,
+  "selected_acs": [],
+  "trace_links_for_cases": 1107,
+  "structural_errors": [],
+  "semantic_review_flags": [
+    "TC-F5-AC01-04",
+    "TC-F6-AC10-02"
+  ],
+  "review_date": "2026-10-28",
+  "execution_records_created": 0
+}

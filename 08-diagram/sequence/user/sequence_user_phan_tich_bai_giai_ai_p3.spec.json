@@ -1,10 +1,17 @@
 {
-  "_": "Luong F5.1 Solution Review (mot lan, ket qua JSON co cau truc) cua actor A1. Nguon: 01-rd/req/F5_ai-review.md (F5-01 den F5-08), 02-bd/architecture/F5_ai-review.md muc 3.2/3.3 (SubmissionSnapshotPort, ProblemContextPort), muc 5 (ba lop instruction chong prompt injection), muc 6.2 (cache theo source hash), muc 6.3 (ngan sach token). | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
-  "_suy_giam": "Nhanh LLM loi khong lam hong F1-F4: bao loi tai cho, khong khoa man Nop bai (CLAUDE.md -- AI degrades gracefully).",
+  "_": "Nguồn: 03-dd/logic/F5_ai-review.md BR-AI-01/02/05/15; 03-dd/api/F5_ai-review.md mục 3.1, 4; 02-bd/architecture/F5_ai-review.md mục 5. ReviewCmd, ReviewRepo, AiDbAdapter là thiết kế dự kiến [SoT: Suy luận]. PromptComposer, LlmProviderPort, SpringAiLlmAdapter được nêu trong DD. Ba lớp: chỉ thị hệ thống, ngữ cảnh giảng viên bọc giới hạn, mã người học là dữ liệu. Không đưa testcase ẩn vào AI. Gộp các ghi báo cáo, bản dùng lại, token và outbox trong một giao dịch. Nhánh lỗi chi tiết theo DD BR-AI-02.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Phân tích bài giải bằng AI (Sinh viên) (3/3)",
+  "title": "Sơ đồ tuần tự chi tiết - Phân tích bài giải: gọi AI và lưu kết quả (3/3)",
   "covers": [
+    "F5-02",
+    "F5-03",
+    "F5-04",
+    "F5-05",
+    "F5-06",
+    "F5-07",
     "F5-08",
+    "F5-17",
+    "F5-18",
     "F5-21"
   ],
   "mode": "color",
@@ -21,9 +28,38 @@
         "stereo": "presentation"
       },
       {
-        "name": "SolutionReviewService",
+        "name": "ReviewCmd",
         "role": "service",
-        "stereo": "application"
+        "stereo": "application command"
+      },
+      {
+        "name": "PromptComposer",
+        "role": "service",
+        "stereo": "domain"
+      },
+      {
+        "name": "LlmProviderPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "SpringAiLlmAdapter",
+        "role": "repository",
+        "stereo": "infrastructure"
+      },
+      {
+        "name": "Nhà cung cấp AI",
+        "role": "external"
+      },
+      {
+        "name": "ReviewRepo",
+        "role": "repository",
+        "stereo": "output port F5"
+      },
+      {
+        "name": "AiDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
       },
       {
         "name": "PostgreSQL",
@@ -33,42 +69,125 @@
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 4 - Lưu kết quả, ghi mức tiêu thụ, phát sự kiện (F5-08, F5-21)"
+        "phase": "Giai đoạn 3 - Mã nguồn là dữ liệu, không là chỉ thị (F5-17)"
       },
       {
-        "from": "SolutionReviewService",
-        "to": "SolutionReviewService",
-        "text": "Kiểm tra kết quả đúng mẫu, bỏ phần thừa"
+        "from": "ReviewCmd",
+        "to": "PromptComposer",
+        "text": "Dựng yêu cầu phân tích an toàn"
       },
       {
-        "from": "SolutionReviewService",
+        "from": "PromptComposer",
+        "to": "PromptComposer",
+        "text": "Giữ chỉ thị hệ thống cố định"
+      },
+      {
+        "from": "PromptComposer",
+        "to": "PromptComposer",
+        "text": "Bọc ngữ cảnh giảng viên theo bài"
+      },
+      {
+        "from": "PromptComposer",
+        "to": "PromptComposer",
+        "text": "Đặt mã người học trong phần dữ liệu"
+      },
+      {
+        "from": "PromptComposer",
+        "to": "ReviewCmd",
+        "text": "Chỉ thị và dữ liệu đã tách riêng",
+        "kind": "return"
+      },
+      {
+        "from": "ReviewCmd",
+        "to": "LlmProviderPort",
+        "text": "Yêu cầu phân tích có cấu trúc"
+      },
+      {
+        "from": "LlmProviderPort",
+        "to": "SpringAiLlmAdapter",
+        "text": "Gửi yêu cầu tới mô hình AI"
+      },
+      {
+        "from": "SpringAiLlmAdapter",
+        "to": "Nhà cung cấp AI",
+        "text": "Phân tích mã và ngữ cảnh bài"
+      },
+      {
+        "from": "Nhà cung cấp AI",
+        "to": "SpringAiLlmAdapter",
+        "text": "Báo cáo và lượng token",
+        "kind": "return"
+      },
+      {
+        "from": "SpringAiLlmAdapter",
+        "to": "LlmProviderPort",
+        "text": "Kết quả có cấu trúc",
+        "kind": "return"
+      },
+      {
+        "from": "LlmProviderPort",
+        "to": "ReviewCmd",
+        "text": "Báo cáo và lượng token",
+        "kind": "return"
+      },
+      {
+        "phase": "Giai đoạn 4 - Kiểm báo cáo và ghi kết quả (F5-02 đến F5-08, F5-21)"
+      },
+      {
+        "from": "ReviewCmd",
+        "to": "ReviewCmd",
+        "text": "Kiểm độ phức tạp, rủi ro, độ dễ đọc"
+      },
+      {
+        "from": "ReviewCmd",
+        "to": "ReviewCmd",
+        "text": "Bỏ so sánh tối ưu khi chưa có dữ liệu"
+      },
+      {
+        "from": "ReviewCmd",
+        "to": "ReviewRepo",
+        "text": "Lưu báo cáo, token và sự kiện"
+      },
+      {
+        "from": "ReviewRepo",
+        "to": "AiDbAdapter",
+        "text": "Ghi bản phân tích và bản dùng lại"
+      },
+      {
+        "from": "AiDbAdapter",
         "to": "PostgreSQL",
-        "text": "Lưu kết quả phân tích, bản lưu sẵn và mức token đã dùng"
+        "text": "Lưu kết quả và xét khoá ngân sách"
       },
       {
-        "from": "SolutionReviewService",
-        "to": "PostgreSQL",
-        "text": "Báo phân tích xong để ghi vào hoạt động gần đây",
-        "kind": "async"
+        "from": "PostgreSQL",
+        "to": "AiDbAdapter",
+        "text": "Đã lưu kết quả",
+        "kind": "return"
       },
       {
-        "from": "SolutionReviewService",
+        "from": "AiDbAdapter",
+        "to": "ReviewRepo",
+        "text": "Báo cáo hoàn tất",
+        "kind": "return"
+      },
+      {
+        "from": "ReviewRepo",
+        "to": "ReviewCmd",
+        "text": "Báo cáo hoàn tất",
+        "kind": "return"
+      },
+      {
+        "from": "ReviewCmd",
         "to": "ReviewController",
-        "text": "Kết quả phân tích bài giải",
+        "text": "Trả báo cáo hỗ trợ học tập",
         "kind": "return"
       },
       {
         "from": "ReviewController",
         "to": "Sinh viên",
-        "text": "Báo thành công",
+        "text": "Hiển thị báo cáo và chủ đề nên ôn",
         "kind": "return"
-      },
-      {
-        "from": "Sinh viên",
-        "to": "Sinh viên",
-        "text": "Độ phức tạp, điểm mạnh yếu, gợi ý cải thiện - kèm nhãn chỉ mang tính hỗ trợ học tập"
       }
     ]
-  },
-  "_cat": "Tach tu sequence_user_phan_tich_bai_giai_ai.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 3/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+  }
 }

@@ -1,136 +1,46 @@
 {
-  "_": "Luong nop bai va xem ket qua tung testcase theo thoi gian thuc cua actor A1. Nguon: US-A1-04 (01-rd/req/user_stories/a1_student.md), 01-rd/req/F4_judge-orchestration.md (F4-01, F4-03, F4-08, F4-13), 02-bd/architecture/F4_judge-orchestration.md muc 4 (state machine) va muc 6 (Outbox), 02-bd/architecture/F3_harness.md muc 5 (plugin sinh ma, anh xa loi bien dich). | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
-  "_khong_fail_fast": "F4-04 (dung som khi gap testcase sai) da het hieu luc theo DEC-2026-0831-partial-score-testcase-ratio -- vong lap chay het N testcase de co du lieu tinh ty le F4-13.",
-  "_tran": "8 participant -> be ngang 1310px, vuot canh dai A4. Chap nhan co y: day la luong xuyen 4 tang cong 2 ranh gioi tien trinh that (RabbitMQ, go-judge), gom bot bat ky cot nao cung xoa mat mot ranh gioi kien truc. In A3 hoac xuat SVG.",
+  "_": "Trang 3a/3 tiếp nối 2b. Nguồn: 03-dd/logic/F4_judge-orchestration.md BR-JD-04, BR-JD-06, BR-JD-07; 03-dd/api/F4_judge-orchestration.md mục 2.3-2.4; 03-dd/logic/F3_harness.md. GradeCasesCmd = GradeSubmissionTestcasesCommandHandler; SubmissionRepo = SubmissionRepository; JudgeDbAdapter = SubmissionPersistenceAdapter; ExecutionPort = JudgeExecutionPort; GoJudgeAdapter = adapter go-judge; MatchPort là cổng F4 tới MatchOutputUseCase F3; RealtimePort là cổng phát STOMP [SoT: Suy luận về tên lớp]. Hình biểu diễn một lượt i trong vòng lặp 1..N; dù một ca sai vẫn tiếp tục các ca sau. Khi giao lại, ca đã có token consumed_at được bỏ qua, không gọi engine hay phát bản tin lần hai. Cấp token là giao dịch ngắn riêng trước khi chạy; lưu kết quả, đánh dấu token đã dùng và chạm updated_at cùng một giao dịch sau khi chạy. Chỉ phát TESTCASE_FINISHED sau commit, chỉ mang thứ tự và verdict; chi tiết của testcase ẩn không phát. Lỗi hạ tầng kết thúc SYSTEM_ERROR theo BR-JD-07, không giả làm bài sai.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Nộp bài và chấm từng testcase (3/3)",
-  "covers": [
-    "F3-03",
-    "F3-04",
-    "F3-05",
-    "F4-03",
-    "F4-08",
-    "F4-13",
-    "F5-01"
-  ],
+  "title": "Sơ đồ tuần tự chi tiết - Chấm đủ N testcase (3a/3)",
+  "covers": ["F3-03", "F3-04", "F3-05", "F4-03", "F4-08", "F4-13"],
   "mode": "color",
   "sequence": {
     "detail": true,
     "participants": [
-      {
-        "name": "Sinh viên",
-        "role": "actor"
-      },
-      {
-        "name": "SubmissionController",
-        "role": "controller",
-        "stereo": "REST + STOMP"
-      },
-      {
-        "name": "PostgreSQL",
-        "role": "datastore",
-        "stereo": "schema judge"
-      },
-      {
-        "name": "JudgeWorker",
-        "role": "service",
-        "stereo": "consumer + harness"
-      },
-      {
-        "name": "go-judge",
-        "role": "external",
-        "stereo": "sandbox"
-      }
+      {"name": "GradeCasesCmd", "role": "service", "stereo": "application command"},
+      {"name": "SubmissionRepo", "role": "repository", "stereo": "domain output port"},
+      {"name": "JudgeDbAdapter", "role": "repository", "stereo": "infrastructure"},
+      {"name": "PostgreSQL", "role": "datastore", "stereo": "schema judge"},
+      {"name": "ExecutionPort", "role": "repository", "stereo": "output port"},
+      {"name": "GoJudgeAdapter", "role": "external", "stereo": "infrastructure"},
+      {"name": "go-judge", "role": "external", "stereo": "sandbox"},
+      {"name": "MatchPort", "role": "repository", "stereo": "port F4 → F3"},
+      {"name": "RealtimePort", "role": "repository", "stereo": "STOMP output port"}
     ],
     "messages": [
-      {
-        "phase": "Giai đoạn 3 - Chấm lần lượt N testcase, KHÔNG dừng sớm (F4-03, F4-13)"
-      },
-      {
-        "from": "JudgeWorker",
-        "to": "JudgeWorker",
-        "text": "Lặp cho từng testcase i = 1..N"
-      },
-      {
-        "from": "JudgeWorker",
-        "to": "PostgreSQL",
-        "text": "Cấp mã chạy một lần cho bài nộp và testcase i"
-      },
-      {
-        "from": "JudgeWorker",
-        "to": "go-judge",
-        "text": "Chạy testcase i với giới hạn đã nhân hệ số ngôn ngữ"
-      },
-      {
-        "from": "go-judge",
-        "to": "JudgeWorker",
-        "text": "Kết quả chạy: đầu ra, thời gian, bộ nhớ",
-        "kind": "return"
-      },
-      {
-        "from": "JudgeWorker",
-        "to": "JudgeWorker",
-        "text": "So khớp đầu ra theo cách so khớp của đề, ra kết quả testcase i"
-      },
-      {
-        "from": "JudgeWorker",
-        "to": "PostgreSQL",
-        "text": "Ghi kết quả testcase i và đánh dấu mã đã dùng, cùng một lần lưu"
-      },
-      {
-        "from": "JudgeWorker",
-        "to": "SubmissionController",
-        "text": "Đẩy kết quả testcase i",
-        "kind": "async"
-      },
-      {
-        "from": "SubmissionController",
-        "to": "Sinh viên",
-        "text": "Cập nhật đúng một dòng trong bảng testcase",
-        "kind": "async"
-      },
-      {
-        "from": "Sinh viên",
-        "to": "Sinh viên",
-        "text": "Thấy từng testcase sáng dần, không tải lại trang"
-      },
-      {
-        "phase": "Giai đoạn 4 - Tổng hợp kết quả chấm, phát sự kiện (F4-13, F5-01)"
-      },
-      {
-        "from": "JudgeWorker",
-        "to": "JudgeWorker",
-        "text": "Kết quả chung = kết quả testcase hỏng đầu tiên; tính tỉ lệ testcase đạt"
-      },
-      {
-        "from": "JudgeWorker",
-        "to": "PostgreSQL",
-        "text": "Lưu kết quả chấm và sự kiện cần phát, cùng một lần lưu"
-      },
-      {
-        "from": "JudgeWorker",
-        "to": "SubmissionController",
-        "text": "Gửi kết quả chấm cuối kèm điểm theo tỉ lệ testcase",
-        "kind": "async"
-      },
-      {
-        "from": "SubmissionController",
-        "to": "Sinh viên",
-        "text": "Hiện kết quả chấm, mở nút Phân tích bài giải nếu Accepted",
-        "kind": "async"
-      },
-      {
-        "from": "Sinh viên",
-        "to": "Sinh viên",
-        "text": "Kết quả cuối cùng của lượt nộp"
-      },
-      {
-        "from": "JudgeWorker",
-        "to": "JudgeWorker",
-        "text": "Phát sự kiện bài đã chấm xong cho các phần khác"
-      }
+      {"phase": "Giai đoạn 5 - Lặp i = 1..N, kể cả sau ca sai"},
+      {"from": "GradeCasesCmd", "to": "SubmissionRepo", "text": "Kiểm ca i đã hoàn tất chưa; cấp token"},
+      {"from": "SubmissionRepo", "to": "JudgeDbAdapter", "text": "Đọc kết quả cũ và cấp token mới"},
+      {"from": "JudgeDbAdapter", "to": "PostgreSQL", "text": "Lưu token chưa dùng, giao dịch ngắn"},
+      {"from": "PostgreSQL", "to": "JudgeDbAdapter", "text": "Đã commit token", "kind": "return"},
+      {"from": "JudgeDbAdapter", "to": "SubmissionRepo", "text": "Token cho ca chưa chấm", "kind": "return"},
+      {"from": "SubmissionRepo", "to": "GradeCasesCmd", "text": "Được chạy ca i", "kind": "return"},
+      {"from": "GradeCasesCmd", "to": "ExecutionPort", "text": "Chạy ca i với giới hạn theo ngôn ngữ"},
+      {"from": "ExecutionPort", "to": "GoJudgeAdapter", "text": "Chuyển yêu cầu chạy an toàn"},
+      {"from": "GoJudgeAdapter", "to": "go-judge", "text": "Chạy mã trong sandbox"},
+      {"from": "go-judge", "to": "GoJudgeAdapter", "text": "Đầu ra và mức tài nguyên", "kind": "return"},
+      {"from": "GoJudgeAdapter", "to": "ExecutionPort", "text": "Kết quả chạy", "kind": "return"},
+      {"from": "ExecutionPort", "to": "GradeCasesCmd", "text": "Kết quả ca i", "kind": "return"},
+      {"from": "GradeCasesCmd", "to": "MatchPort", "text": "So khớp đầu ra với bản chụp ca i"},
+      {"from": "MatchPort", "to": "GradeCasesCmd", "text": "Verdict và phần được phép lưu", "kind": "return"},
+      {"from": "GradeCasesCmd", "to": "SubmissionRepo", "text": "Lưu verdict, dùng token và chạm mốc sống"},
+      {"from": "SubmissionRepo", "to": "JudgeDbAdapter", "text": "Ghi ba thay đổi trong một giao dịch"},
+      {"from": "JudgeDbAdapter", "to": "PostgreSQL", "text": "Lưu kết quả ca i và mốc bài"},
+      {"from": "PostgreSQL", "to": "JudgeDbAdapter", "text": "Đã commit", "kind": "return"},
+      {"from": "JudgeDbAdapter", "to": "SubmissionRepo", "text": "Đã lưu", "kind": "return"},
+      {"from": "SubmissionRepo", "to": "GradeCasesCmd", "text": "Ca i hoàn tất", "kind": "return"},
+      {"from": "GradeCasesCmd", "to": "RealtimePort", "text": "Phát thứ tự và verdict sau commit", "kind": "async"},
+      {"from": "GradeCasesCmd", "to": "GradeCasesCmd", "text": "Tiếp tục ca sau, không dừng khi sai"}
     ]
-  },
-  "_cat": "Tach tu sequence_user_nop_bai_va_xem_ket_qua_realtime.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 1/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md.",
-  "_gop": "Gop RabbitMQ thanh self-message tren JudgeWorker 2026-09-27: vai tro hang doi da ve day du o phan 1, o day chi la buoc nhan ban nop tu hang doi. Giu go-judge rieng theo DEC-2026-0823. Chu dau tu chot."
+  }
 }

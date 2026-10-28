@@ -1,0 +1,149 @@
+{
+  "_": "Trang 2b/3 tiếp nối trang 2a. Nguồn: 03-dd/logic/F1_identity.md BR-01/BR-21; 03-dd/api/F1_identity.md endpoint #2. LoginCmd = LoginCommandHandler; UserRepo = UserRepository; IdentityDbAdapter = UserPersistenceAdapter; LoginRatePort = LoginRateLimitPort [SoT: Suy luận về tên lớp]. Sau khi qua rate-limit mới tra email, so khớp hash mật khẩu. Sai email hoặc mật khẩu đều trả lỗi chung, tăng bộ đếm sai trong Redis 15 phút qua LoginRatePort. Sau khi mật khẩu đúng, tài khoản tự đăng ký còn PENDING_VERIFICATION bị chặn, không phát token; tài khoản Admin tạo với must_change_password=true được chuyển ACTIVE trong lần đăng nhập đầu; tài khoản DEACTIVATED không phát token và có thể nhận restoreTicket theo BR-21. Hình thể hiện riêng nhánh tự đăng ký chưa xác minh để người đọc không nhầm trạng thái; các biến thể Admin tạo/DEACTIVATED ghi ở DD và note này. Token chỉ phát ở trang 2c. Redis adapter đã hiện ở 2a, lược tại trang này.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Kiểm mật khẩu và trạng thái (2b/3)",
+  "covers": [
+    "F1-02"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Sinh viên",
+        "role": "actor"
+      },
+      {
+        "name": "AuthController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "LoginCmd",
+        "role": "service",
+        "stereo": "application command"
+      },
+      {
+        "name": "UserRepo",
+        "role": "repository",
+        "stereo": "domain output port"
+      },
+      {
+        "name": "IdentityDbAdapter",
+        "role": "repository",
+        "stereo": "infrastructure"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema identity"
+      },
+      {
+        "name": "LoginRatePort",
+        "role": "repository",
+        "stereo": "Redis output port"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 2b - Kiểm bí mật và trạng thái tài khoản"
+      },
+      {
+        "from": "LoginCmd",
+        "to": "UserRepo",
+        "text": "Tìm tài khoản theo email"
+      },
+      {
+        "from": "UserRepo",
+        "to": "IdentityDbAdapter",
+        "text": "Đọc tài khoản và mật khẩu đã băm"
+      },
+      {
+        "from": "IdentityDbAdapter",
+        "to": "PostgreSQL",
+        "text": "Tra email và trạng thái"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "IdentityDbAdapter",
+        "text": "Tài khoản hoặc không có",
+        "kind": "return"
+      },
+      {
+        "from": "IdentityDbAdapter",
+        "to": "UserRepo",
+        "text": "Tài khoản hoặc không có",
+        "kind": "return"
+      },
+      {
+        "from": "UserRepo",
+        "to": "LoginCmd",
+        "text": "Dữ liệu đối chiếu",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Mật khẩu đúng?",
+          "then": [
+            {
+              "from": "LoginCmd",
+              "to": "LoginCmd",
+              "text": "Kiểm trạng thái sau khi mật khẩu khớp"
+            }
+          ],
+          "else": [
+            {
+              "from": "LoginCmd",
+              "to": "LoginRatePort",
+              "text": "Ghi thêm một lần nhập sai"
+            },
+            {
+              "from": "LoginRatePort",
+              "to": "LoginCmd",
+              "text": "Đã cập nhật cửa sổ 15 phút",
+              "kind": "return"
+            },
+            {
+              "from": "LoginCmd",
+              "to": "AuthController",
+              "text": "Trả lỗi chung, không lộ email",
+              "kind": "return"
+            },
+            {
+              "from": "AuthController",
+              "to": "Sinh viên",
+              "text": "Báo thông tin đăng nhập sai",
+              "kind": "return"
+            }
+          ]
+        }
+      },
+      {
+        "alt": {
+          "label": "Chưa xác minh email?",
+          "then": [
+            {
+              "from": "LoginCmd",
+              "to": "AuthController",
+              "text": "Chặn đăng nhập, không cấp phiên",
+              "kind": "return"
+            },
+            {
+              "from": "AuthController",
+              "to": "Sinh viên",
+              "text": "Yêu cầu xác minh email trước",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "LoginCmd",
+              "to": "LoginCmd",
+              "text": "Tài khoản Hoạt động: sang trang 2c"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

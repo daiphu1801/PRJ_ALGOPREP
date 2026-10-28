@@ -1,0 +1,107 @@
+{
+  "_": "Nguồn: 03-dd/api/F5_ai-review.md §19. Tăng hạn mức không tự mở locked_at; giảm xuống dưới số đã dùng không khóa ngay. Cổng và adapter là tên minh họa [SoT: Suy luận].",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Đặt hạn mức token tháng (2/5)",
+  "covers": [
+    "F5-25"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Quản trị viên",
+        "role": "actor"
+      },
+      {
+        "name": "AiUsageController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "SetTokenBudgetLimit",
+        "role": "service",
+        "stereo": "application"
+      },
+      {
+        "name": "BudgetStorePort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "AiDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema ai"
+      },
+      {
+        "name": "AuditLogPort",
+        "role": "repository",
+        "stereo": "identity port"
+      }
+    ],
+    "messages": [
+      {
+        "from": "Quản trị viên",
+        "to": "AiUsageController",
+        "text": "Lưu hạn mức token mới"
+      },
+      {
+        "from": "AiUsageController",
+        "to": "SetTokenBudgetLimit",
+        "text": "Kiểm quyền cập nhật ngân sách và số nguyên dương"
+      },
+      {
+        "alt": {
+          "label": "Hạn mức hợp lệ?",
+          "then": [
+            {
+              "from": "SetTokenBudgetLimit",
+              "to": "BudgetStorePort",
+              "text": "Đổi hạn mức của kỳ hiện tại"
+            },
+            {
+              "from": "BudgetStorePort",
+              "to": "AiDbAdapter",
+              "text": "Lưu cấu hình"
+            },
+            {
+              "from": "AiDbAdapter",
+              "to": "PostgreSQL",
+              "text": "Ghi limit_tokens và người sửa"
+            },
+            {
+              "from": "SetTokenBudgetLimit",
+              "to": "AuditLogPort",
+              "text": "Ghi nhật ký đổi hạn mức cùng giao dịch"
+            },
+            {
+              "from": "SetTokenBudgetLimit",
+              "to": "AiUsageController",
+              "text": "Trả ngân sách mới",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "SetTokenBudgetLimit",
+              "to": "AiUsageController",
+              "text": "Báo hạn mức không hợp lệ",
+              "kind": "return"
+            }
+          ]
+        }
+      },
+      {
+        "from": "AiUsageController",
+        "to": "Quản trị viên",
+        "text": "Hiển thị hạn mức đã lưu",
+        "kind": "return"
+      }
+    ]
+  }
+}

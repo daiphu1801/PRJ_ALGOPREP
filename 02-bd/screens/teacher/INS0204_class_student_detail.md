@@ -1,5 +1,7 @@
 # Tài liệu thiết kế cơ bản (BD) — Chi tiết học viên (`INS0204`)
 
+> Cập nhật DD 2026-10-25 (`DEC-2026-1025-dd-class-assignment-time-window`): bảng bài giao và tử số hoàn thành của lớp đọc F4 P1 `assignmentResults[]` trong lần giao đang hiệu lực; `user_problem_best_score` toàn cục ở các dòng cũ của Sheet 5–9 và Q3 không còn là nguồn cho lớp.
+
 ## Phương châm tài liệu [Nội bộ — không cần khách duyệt]
 
 - Viết theo **mẫu 9 sheet**. Bộ thẻ đóng, quy ước ID, ký hiệu chuẩn, ranh giới với tài liệu khác và
@@ -714,7 +716,7 @@ Ghi chú ranh giới:
 ## Sheet 9. Đặc tả kiểm tra
 
 > Bộ thẻ và quy ước mã thông báo: `02-bd/_rules/bd-template-9sheet.md` mục 2, 4. Sheet này ghi **điều kiện
-> kiểm và thông báo**; tiêu chí nghiệm thu `AC-nn` thuộc `04-tdd/class_student_detail.md`, không lặp lại ở
+> kiểm và thông báo**; tiêu chí nghiệm thu `AC-nn` thuộc `04-tdd/screens/teacher/INS0204_class_student_detail.md`, không lặp lại ở
 > đây.
 
 | NO | Loại | Tóm tắt kiểm | Chi tiết | Mức | Mã thông báo | Ghi chú | EVT gọi | Thứ tự |

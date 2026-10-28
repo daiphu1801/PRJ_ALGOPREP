@@ -1,8 +1,7 @@
 {
-  "_": "Luong F6 Chế độ học + Chế độ luyện cua actor A1 tren ngan hang cau hoi phong van. Nguon: 01-rd/req/F6_interview-bank.md (F6-04 den F6-08, F6-09, F6-12), 02-bd/architecture/F6_interview-bank.md muc 1 (AnswerFeedbackPort, SpringAiFeedbackAdapter, job spaced repetition), muc 2 (Chế độ luyện la NOI DUY NHAT module nay goi AI). | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
-  "_bat_bien": "F6-07 amendment (DEC-2026-0831-outside-screens-closures): moi lan nop la mot attempt doc lap, khong UPDATE cau tra loi cu.",
+  "_": "Nguồn: 03-dd/api/F6_interview-bank.md mục 6, 25-26; 03-dd/logic/F6_interview-bank.md BR-IB-07. PracticeAnswerQueryPort, InterviewBankDbAdapter là tên minh họa [SoT: Suy luận]. Redis giới hạn 20 lần/giờ, lỗi Redis cho qua; ngân sách F5 khóa thì từ chối, hoàn lại lượt hạn mức và không lưu câu trả lời.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Ôn tập và luyện tập câu hỏi phỏng vấn (Sinh viên) (2/3)",
+  "title": "Sơ đồ tuần tự chi tiết - Luyện trả lời: điều kiện và hạn mức (2a/3)",
   "covers": [
     "F6-07",
     "F6-08"
@@ -21,9 +20,19 @@
         "stereo": "presentation"
       },
       {
-        "name": "PracticeService",
+        "name": "SubmitPracticeAnswer",
         "role": "service",
-        "stereo": "application"
+        "stereo": "application command"
+      },
+      {
+        "name": "PracticeAnswerQueryPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "InterviewBankDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
       },
       {
         "name": "PostgreSQL",
@@ -31,126 +40,205 @@
         "stereo": "schema interview_bank"
       },
       {
-        "name": "Nhà cung cấp LLM",
-        "role": "external",
-        "stereo": "Spring AI"
+        "name": "PracticeRateLimitPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "RedisRateLimitAdapter",
+        "role": "repository",
+        "stereo": "infrastructure"
+      },
+      {
+        "name": "Redis",
+        "role": "datastore",
+        "stereo": "rate limit"
+      },
+      {
+        "name": "CheckAiBudgetUseCase",
+        "role": "service",
+        "stereo": "ai-review"
       }
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 2 - Chế độ luyện: tự soạn câu trả lời rồi nhờ AI đối chiếu (F6-07, F6-08)"
-      },
-      {
-        "from": "Sinh viên",
-        "to": "Sinh viên",
-        "text": "Chuyển sang Chế độ luyện, gõ câu trả lời rồi nộp"
+        "phase": "Giai đoạn 1 - Kiểm tra câu trả lời và tiêu chí"
       },
       {
         "from": "Sinh viên",
         "to": "PracticeController",
-        "text": "Gửi câu trả lời của người học"
+        "text": "Nộp câu trả lời để luyện"
       },
       {
         "from": "PracticeController",
         "to": "PracticeController",
-        "text": "Kiểm tra độ dài câu trả lời, chặn nội dung rỗng"
+        "text": "Kiểm tra câu trả lời có nội dung và tối đa 5.000 ký tự"
       },
       {
         "from": "PracticeController",
-        "to": "PracticeService",
-        "text": "Xử lý câu trả lời ở chế độ luyện"
+        "to": "SubmitPracticeAnswer",
+        "text": "Yêu cầu nhận xét cho câu trả lời"
       },
       {
-        "from": "PracticeService",
+        "from": "SubmitPracticeAnswer",
+        "to": "PracticeAnswerQueryPort",
+        "text": "Kiểm tra câu hỏi đang hiển thị và có tiêu chí"
+      },
+      {
+        "from": "PracticeAnswerQueryPort",
+        "to": "InterviewBankDbAdapter",
+        "text": "Đọc câu hỏi và bộ tiêu chí"
+      },
+      {
+        "from": "InterviewBankDbAdapter",
         "to": "PostgreSQL",
-        "text": "Đọc bộ tiêu chí đánh giá chuẩn của câu hỏi"
+        "text": "Tìm câu đang hoạt động và tiêu chí đánh giá"
       },
       {
         "from": "PostgreSQL",
-        "to": "PracticeService",
-        "text": "Danh sách tiêu chí",
+        "to": "InterviewBankDbAdapter",
+        "text": "Câu hỏi và bộ tiêu chí",
+        "kind": "return"
+      },
+      {
+        "from": "InterviewBankDbAdapter",
+        "to": "PracticeAnswerQueryPort",
+        "text": "Câu hỏi và bộ tiêu chí",
+        "kind": "return"
+      },
+      {
+        "from": "PracticeAnswerQueryPort",
+        "to": "SubmitPracticeAnswer",
+        "text": "Câu hỏi và bộ tiêu chí",
         "kind": "return"
       },
       {
         "alt": {
-          "label": "Câu hỏi đã có bộ tiêu chí đánh giá?",
+          "label": "Câu hỏi hợp lệ và có tiêu chí?",
           "then": [
             {
-              "from": "PracticeService",
-              "to": "PracticeService",
-              "text": "Trường hợp có"
+              "from": "SubmitPracticeAnswer",
+              "to": "PracticeRateLimitPort",
+              "text": "Ghi nhận một lượt luyện trong giờ"
             },
             {
-              "from": "PracticeService",
+              "from": "PracticeRateLimitPort",
+              "to": "RedisRateLimitAdapter",
+              "text": "Ghi nhận một lượt luyện trong giờ"
+            },
+            {
+              "from": "RedisRateLimitAdapter",
+              "to": "Redis",
+              "text": "Ghi nhận một lượt luyện trong giờ"
+            }
+          ],
+          "else": [
+            {
+              "from": "SubmitPracticeAnswer",
               "to": "PracticeController",
-              "text": "Chưa có tiêu chí chuẩn, không gọi AI vì không có gì để đối chiếu",
+              "text": "Báo câu hỏi không hợp lệ hoặc chưa có tiêu chí",
               "kind": "return"
             },
             {
               "from": "PracticeController",
               "to": "Sinh viên",
-              "text": "Báo lỗi kèm gợi ý báo giảng viên bổ sung",
+              "text": "Hiển thị lý do không thể luyện",
               "kind": "return"
-            }
-          ],
-          "else": [
-            {
-              "from": "PracticeService",
-              "to": "PracticeService",
-              "text": "Nhờ AI đối chiếu câu trả lời với tiêu chí chuẩn"
-            },
-            {
-              "from": "PracticeService",
-              "to": "PracticeService",
-              "text": "Tiêu chí thành chỉ thị của hệ thống, câu trả lời chỉ là dữ liệu"
-            },
-            {
-              "from": "PracticeService",
-              "to": "Nhà cung cấp LLM",
-              "text": "Yêu cầu đối chiếu và chỉ ra ý còn thiếu"
-            },
-            {
-              "from": "Nhà cung cấp LLM",
-              "to": "PracticeService",
-              "text": "Nhận xét theo từng tiêu chí",
-              "kind": "return"
-            },
-            {
-              "from": "PracticeService",
-              "to": "PracticeService",
-              "text": "Nhận xét của AI cho câu trả lời"
             }
           ]
         }
       },
       {
-        "from": "PracticeService",
-        "to": "PostgreSQL",
-        "text": "Lưu thêm một lần luyện mới, không sửa lần cũ"
+        "phase": "Giai đoạn 2 - Kiểm tra hạn mức theo giờ và ngân sách"
       },
       {
-        "from": "PostgreSQL",
-        "to": "PostgreSQL",
-        "text": "Lưu câu trả lời và lần luyện thứ mấy"
+        "alt": {
+          "label": "Đã vượt 20 lượt trong giờ?",
+          "then": [
+            {
+              "from": "SubmitPracticeAnswer",
+              "to": "PracticeRateLimitPort",
+              "text": "Hoàn lại lượt vừa ghi"
+            },
+            {
+              "from": "PracticeRateLimitPort",
+              "to": "RedisRateLimitAdapter",
+              "text": "Hoàn lại lượt vừa ghi"
+            },
+            {
+              "from": "RedisRateLimitAdapter",
+              "to": "Redis",
+              "text": "Hoàn lại lượt vừa ghi"
+            },
+            {
+              "from": "SubmitPracticeAnswer",
+              "to": "PracticeController",
+              "text": "Báo đã đạt hạn mức theo giờ",
+              "kind": "return"
+            },
+            {
+              "from": "PracticeController",
+              "to": "Sinh viên",
+              "text": "Hiển thị hạn mức theo giờ",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "SubmitPracticeAnswer",
+              "to": "CheckAiBudgetUseCase",
+              "text": "Kiểm tra ngân sách AI dùng chung"
+            }
+          ]
+        }
       },
       {
-        "from": "PracticeService",
-        "to": "PracticeController",
-        "text": "Nhận xét của AI",
-        "kind": "return"
-      },
-      {
-        "from": "PracticeController",
-        "to": "Sinh viên",
-        "text": "Báo thành công",
-        "kind": "return"
-      },
-      {
-        "from": "Sinh viên",
-        "to": "Sinh viên",
-        "text": "Đối chiếu từng tiêu chí, chỉ rõ ý còn thiếu"
+        "alt": {
+          "label": "Ngân sách đang khóa?",
+          "then": [
+            {
+              "from": "SubmitPracticeAnswer",
+              "to": "PracticeRateLimitPort",
+              "text": "Hoàn lại lượt vừa ghi"
+            },
+            {
+              "from": "PracticeRateLimitPort",
+              "to": "RedisRateLimitAdapter",
+              "text": "Hoàn lại lượt vừa ghi"
+            },
+            {
+              "from": "RedisRateLimitAdapter",
+              "to": "Redis",
+              "text": "Hoàn lại lượt vừa ghi"
+            },
+            {
+              "from": "SubmitPracticeAnswer",
+              "to": "PracticeController",
+              "text": "Báo chưa thể luyện vì ngân sách",
+              "kind": "return"
+            },
+            {
+              "from": "PracticeController",
+              "to": "Sinh viên",
+              "text": "Hiển thị tình trạng ngân sách",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "CheckAiBudgetUseCase",
+              "to": "SubmitPracticeAnswer",
+              "text": "Cho phép tiếp tục luyện",
+              "kind": "return"
+            },
+            {
+              "from": "SubmitPracticeAnswer",
+              "to": "SubmitPracticeAnswer",
+              "text": "Chuyển sang bước nhận xét AI"
+            }
+          ]
+        }
       }
     ]
-  },
-  "_cat": "Tach tu sequence_user_on_tap_luyen_tap_ai.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 2/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+  }
 }

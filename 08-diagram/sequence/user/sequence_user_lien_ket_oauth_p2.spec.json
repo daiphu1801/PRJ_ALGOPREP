@@ -1,148 +1,35 @@
 {
-  "_": "Luong dang nhap bang OAuth (GitHub, Google) va tu lien ket theo email cua actor A1. Nguon: 01-rd/req/F1_identity.md (F1-15), 03-dd/api/F1_identity.md muc 0.1 (endpoint #5, #6), 03-dd/logic/F1_identity.md BR-03, 02-bd/architecture/F1_identity.md muc 2 (OAuth tu lien ket theo email). | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
-  "_bao_mat": "Hai chot chan chiem tai khoan: (1) doi chieu `state` luu Redis TTL 10 phut -- chong CSRF o buoc callback; (2) provider tra `email_verified = false` thi TU CHOI, khong tao oauth_identities va khong tao users -- neu bo buoc nay, ai dang ky mot tai khoan provider bang email nguoi khac deu chiem duoc tai khoan AlgoPrep tuong ung.",
+  "_": "Trang 2a/3 callback từ frontend, bắt buộc kiểm state trước khi hỏi nhà cung cấp. Nguồn: 03-dd/api/F1_identity.md endpoint #6; 03-dd/logic/F1_identity.md BR-03. OAuthCallbackCmd = HandleOAuthCallbackCommandHandler; OAuthStatePort = OAuthStateStorePort; RedisStateAdapter = OAuthStateRedisAdapter [SoT: Suy luận về tên lớp]. Provider chuyển code/state về route frontend, frontend gọi backend với hai giá trị; sau khi gọi, frontend xóa code/state khỏi thanh địa chỉ và log theo DD. State sai/hết hạn từ chối trước khi đổi code; state đúng được tiêu thụ một lần rồi sang trang 2b. Redis lỗi không được bỏ qua chốt state. Không đưa provider token, access token của AlgoPrep hoặc restore ticket vào URL.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Đăng nhập và tự liên kết tài khoản OAuth (Sinh viên) (2/3)",
-  "covers": [
-    "F1-15"
-  ],
+  "title": "Sơ đồ tuần tự chi tiết - Đối chiếu mã chống giả mạo (2a/3)",
+  "covers": ["F1-15"],
   "mode": "color",
   "sequence": {
     "detail": true,
     "participants": [
-      {
-        "name": "Sinh viên",
-        "role": "actor"
-      },
-      {
-        "name": "AuthController",
-        "role": "controller",
-        "stereo": "presentation"
-      },
-      {
-        "name": "OAuthService",
-        "role": "service",
-        "stereo": "application"
-      },
-      {
-        "name": "Redis",
-        "role": "datastore",
-        "stereo": "state TTL 10 phút"
-      },
-      {
-        "name": "Nhà cung cấp OAuth",
-        "role": "external",
-        "stereo": "GitHub, Google"
-      }
+      {"name": "Sinh viên", "role": "actor"},
+      {"name": "AuthController", "role": "controller", "stereo": "presentation"},
+      {"name": "OAuthCallbackCmd", "role": "service", "stereo": "application command"},
+      {"name": "OAuthStatePort", "role": "repository", "stereo": "output port"},
+      {"name": "RedisStateAdapter", "role": "repository", "stereo": "infrastructure"},
+      {"name": "Redis", "role": "datastore", "stereo": "state 10 phút"}
     ],
     "messages": [
-      {
-        "phase": "Giai đoạn 2 - Nhà cung cấp gọi lại: đối chiếu mã chống giả mạo rồi mới lấy hồ sơ"
-      },
-      {
-        "from": "Sinh viên",
-        "to": "AuthController",
-        "text": "Nhà cung cấp gọi lại kèm mã cho phép"
-      },
-      {
-        "from": "AuthController",
-        "to": "OAuthService",
-        "text": "Xử lý kết quả cho phép"
-      },
-      {
-        "from": "OAuthService",
-        "to": "Redis",
-        "text": "Đọc mã chống giả mạo đã lưu trước đó"
-      },
-      {
-        "from": "Redis",
-        "to": "OAuthService",
-        "text": "State còn hiệu lực hoặc rỗng",
-        "kind": "return"
-      },
-      {
-        "alt": {
-          "label": "State không khớp hoặc đã hết hạn?",
-          "then": [
-            {
-              "from": "OAuthService",
-              "to": "OAuthService",
-              "text": "Trường hợp có"
-            },
-            {
-              "from": "OAuthService",
-              "to": "AuthController",
-              "text": "Mã không khớp, dừng trước khi hỏi nhà cung cấp",
-              "kind": "return"
-            },
-            {
-              "from": "AuthController",
-              "to": "Sinh viên",
-              "text": "Báo lỗi: \"Phiên liên kết không hợp lệ\"",
-              "kind": "return"
-            }
-          ],
-          "else": [
-            {
-              "from": "OAuthService",
-              "to": "OAuthService",
-              "text": "Trường hợp không"
-            },
-            {
-              "from": "OAuthService",
-              "to": "Redis",
-              "text": "Xoá mã chống giả mạo, chỉ dùng đúng một lần"
-            },
-            {
-              "from": "OAuthService",
-              "to": "Nhà cung cấp OAuth",
-              "text": "Đổi mã cho phép lấy quyền truy cập của nhà cung cấp"
-            },
-            {
-              "from": "Nhà cung cấp OAuth",
-              "to": "OAuthService",
-              "text": "Quyền truy cập của nhà cung cấp",
-              "kind": "return"
-            },
-            {
-              "from": "OAuthService",
-              "to": "Nhà cung cấp OAuth",
-              "text": "Lấy hồ sơ người dùng"
-            },
-            {
-              "from": "Nhà cung cấp OAuth",
-              "to": "OAuthService",
-              "text": "Mã người dùng, email và trạng thái xác minh email",
-              "kind": "return"
-            }
-          ]
-        }
-      },
-      {
-        "alt": {
-          "label": "Email chưa được xác minh?",
-          "then": [
-            {
-              "from": "OAuthService",
-              "to": "OAuthService",
-              "text": "Trường hợp có"
-            },
-            {
-              "from": "OAuthService",
-              "to": "AuthController",
-              "text": "Email chưa xác minh: KHÔNG tạo liên kết, KHÔNG tạo tài khoản",
-              "kind": "return"
-            },
-            {
-              "from": "AuthController",
-              "to": "Sinh viên",
-              "text": "Báo lỗi: \"Email của tài khoản nhà cung cấp chưa được xác minh\"",
-              "kind": "return"
-            }
-          ]
-        }
-      }
+      {"phase": "Giai đoạn 2a - Kiểm nguồn callback trước khi lấy hồ sơ"},
+      {"from": "Sinh viên", "to": "AuthController", "text": "Gửi code và mã chống giả mạo nhận được"},
+      {"from": "AuthController", "to": "OAuthCallbackCmd", "text": "Yêu cầu hoàn tất đăng nhập ngoài"},
+      {"from": "OAuthCallbackCmd", "to": "OAuthStatePort", "text": "Kiểm mã có đúng và còn hạn"},
+      {"from": "OAuthStatePort", "to": "RedisStateAdapter", "text": "Đối chiếu và chỉ dùng một lần"},
+      {"from": "RedisStateAdapter", "to": "Redis", "text": "Lấy mã đã lưu"},
+      {"from": "Redis", "to": "RedisStateAdapter", "text": "Đúng hoặc không hợp lệ", "kind": "return"},
+      {"from": "RedisStateAdapter", "to": "OAuthStatePort", "text": "Kết quả kiểm", "kind": "return"},
+      {"from": "OAuthStatePort", "to": "OAuthCallbackCmd", "text": "Kết quả kiểm", "kind": "return"},
+      {"alt": {"label": "Mã chống giả mạo hợp lệ?", "then": [
+        {"from": "OAuthCallbackCmd", "to": "OAuthCallbackCmd", "text": "Tiếp tục đổi code ở trang 2b"}
+      ], "else": [
+        {"from": "OAuthCallbackCmd", "to": "AuthController", "text": "Dừng trước khi hỏi nhà cung cấp", "kind": "return"},
+        {"from": "AuthController", "to": "Sinh viên", "text": "Báo phiên liên kết không hợp lệ", "kind": "return"}
+      ]}}
     ]
-  },
-  "_cat": "Tach tu sequence_user_lien_ket_oauth.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 2/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+  }
 }

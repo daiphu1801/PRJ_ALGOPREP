@@ -1,13 +1,10 @@
 {
-  "_": "Luong F5.1 Solution Review (mot lan, ket qua JSON co cau truc) cua actor A1. Nguon: 01-rd/req/F5_ai-review.md (F5-01 den F5-08), 02-bd/architecture/F5_ai-review.md muc 3.2/3.3 (SubmissionSnapshotPort, ProblemContextPort), muc 5 (ba lop instruction chong prompt injection), muc 6.2 (cache theo source hash), muc 6.3 (ngan sach token). | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
-  "_suy_giam": "Nhanh LLM loi khong lam hong F1-F4: bao loi tai cho, khong khoa man Nop bai (CLAUDE.md -- AI degrades gracefully).",
+  "_": "Nguồn: 03-dd/api/F5_ai-review.md mục 4.5; 03-dd/logic/F5_ai-review.md BR-AI-02/03; 02-bd/architecture/F5_ai-review.md mục 3.2. ReviewCmd, ReviewRepo, AiDbAdapter, JudgeBridge là thiết kế dự kiến [SoT: Suy luận]. ReviewCmd là command handler. F5 đọc bài nộp qua cổng F4; không đọc schema judge. Trang này kiểm bài đã đạt, sở hữu, báo cáo đã có và bản dùng lại. Chi tiết khoá tạo một báo cáo mỗi bài ở DD. SubmissionPort = SubmissionSnapshotPort trong DD.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Phân tích bài giải bằng AI (Sinh viên) (1/3)",
+  "title": "Sơ đồ tuần tự chi tiết - Phân tích bài giải: kiểm bài và bản lưu (1/3)",
   "covers": [
     "F5-01",
-    "F5-19",
-    "F5-20",
-    "F5-21"
+    "F5-20"
   ],
   "mode": "color",
   "sequence": {
@@ -23,14 +20,29 @@
         "stereo": "presentation"
       },
       {
-        "name": "SolutionReviewService",
+        "name": "ReviewCmd",
         "role": "service",
-        "stereo": "application"
+        "stereo": "application command"
       },
       {
-        "name": "Redis",
-        "role": "datastore",
-        "stereo": "rate-limit, cache"
+        "name": "SubmissionPort",
+        "role": "repository",
+        "stereo": "cổng F4"
+      },
+      {
+        "name": "JudgeBridge",
+        "role": "repository",
+        "stereo": "adapter liên module"
+      },
+      {
+        "name": "ReviewRepo",
+        "role": "repository",
+        "stereo": "output port F5"
+      },
+      {
+        "name": "AiDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
       },
       {
         "name": "PostgreSQL",
@@ -40,131 +52,142 @@
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 1 - Chỉ mở sau khi bài đã Accepted (F5-01)"
-      },
-      {
-        "from": "Sinh viên",
-        "to": "Sinh viên",
-        "text": "Bấm \"Phân tích bài giải\""
+        "phase": "Giai đoạn 1 - Người học chủ động xin phân tích (F5-01)"
       },
       {
         "from": "Sinh viên",
         "to": "ReviewController",
-        "text": "Gửi yêu cầu phân tích bài giải của bài nộp"
+        "text": "Yêu cầu phân tích bài giải"
       },
       {
         "from": "ReviewController",
-        "to": "SolutionReviewService",
-        "text": "Xử lý yêu cầu phân tích bài giải"
+        "to": "ReviewCmd",
+        "text": "Kiểm bài và tạo báo cáo"
       },
       {
-        "from": "SolutionReviewService",
+        "from": "ReviewCmd",
+        "to": "SubmissionPort",
+        "text": "Lấy bản chụp bài đã đạt"
+      },
+      {
+        "from": "SubmissionPort",
+        "to": "JudgeBridge",
+        "text": "Hỏi phần chấm bài"
+      },
+      {
+        "from": "JudgeBridge",
+        "to": "SubmissionPort",
+        "text": "Bài đã đạt hoặc từ chối",
+        "kind": "return"
+      },
+      {
+        "from": "SubmissionPort",
+        "to": "ReviewCmd",
+        "text": "Mã nguồn và chủ bài nộp",
+        "kind": "return"
+      },
+      {
+        "from": "ReviewCmd",
+        "to": "ReviewCmd",
+        "text": "Kiểm người yêu cầu là chủ bài"
+      },
+      {
+        "from": "ReviewCmd",
+        "to": "ReviewRepo",
+        "text": "Tìm báo cáo của bài nộp"
+      },
+      {
+        "from": "ReviewRepo",
+        "to": "AiDbAdapter",
+        "text": "Tra báo cáo đã tạo"
+      },
+      {
+        "from": "AiDbAdapter",
         "to": "PostgreSQL",
-        "text": "Đọc bản chụp bài nộp từ phần chấm bài"
+        "text": "Đọc báo cáo theo bài nộp"
       },
       {
         "from": "PostgreSQL",
-        "to": "SolutionReviewService",
-        "text": "Mã nguồn, ngôn ngữ, thời gian chạy, bộ nhớ",
+        "to": "AiDbAdapter",
+        "text": "Báo cáo hoặc chưa có",
+        "kind": "return"
+      },
+      {
+        "from": "AiDbAdapter",
+        "to": "ReviewRepo",
+        "text": "Kết quả tra cứu",
+        "kind": "return"
+      },
+      {
+        "from": "ReviewRepo",
+        "to": "ReviewCmd",
+        "text": "Báo cáo hoặc chưa có",
         "kind": "return"
       },
       {
         "alt": {
-          "label": "Bài nộp đã Accepted?",
+          "label": "Đã có báo cáo?",
           "then": [
             {
-              "from": "SolutionReviewService",
-              "to": "SolutionReviewService",
-              "text": "Trường hợp có"
-            },
-            {
-              "from": "SolutionReviewService",
+              "from": "ReviewCmd",
               "to": "ReviewController",
-              "text": "Bài nộp chưa Accepted, từ chối",
+              "text": "Trả báo cáo cũ, không gọi AI",
               "kind": "return"
             },
             {
               "from": "ReviewController",
               "to": "Sinh viên",
-              "text": "Báo lỗi: chặn trước khi tốn một lượt gọi AI",
-              "kind": "return"
-            }
-          ]
-        }
-      },
-      {
-        "phase": "Giai đoạn 2 - Chặn chi phí: giới hạn lượt, kết quả lưu sẵn theo mã nguồn, ngân sách token (F5-19, F5-20, F5-21)"
-      },
-      {
-        "from": "SolutionReviewService",
-        "to": "Redis",
-        "text": "Tăng số lượt phân tích đã dùng của người học"
-      },
-      {
-        "from": "Redis",
-        "to": "SolutionReviewService",
-        "text": "Số lượt gọi trong cửa sổ trượt",
-        "kind": "return"
-      },
-      {
-        "from": "SolutionReviewService",
-        "to": "SolutionReviewService",
-        "text": "Chuẩn hoá mã nguồn rồi tạo dấu vân tay mã nguồn"
-      },
-      {
-        "from": "SolutionReviewService",
-        "to": "PostgreSQL",
-        "text": "Tìm kết quả đã lưu cho cùng đề, ngôn ngữ, mã nguồn"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "SolutionReviewService",
-        "text": "Báo cáo cũ hoặc rỗng",
-        "kind": "return"
-      },
-      {
-        "alt": {
-          "label": "Đã có bản phân tích cho đúng mã nguồn này?",
-          "then": [
-            {
-              "from": "SolutionReviewService",
-              "to": "SolutionReviewService",
-              "text": "Trường hợp có"
-            },
-            {
-              "from": "SolutionReviewService",
-              "to": "ReviewController",
-              "text": "Trả bản lưu sẵn, không gọi AI, không tính vào giới hạn",
-              "kind": "return"
-            },
-            {
-              "from": "ReviewController",
-              "to": "Sinh viên",
-              "text": "Báo thành công bằng bản lưu sẵn",
+              "text": "Hiển thị báo cáo đã lưu",
               "kind": "return"
             }
           ],
           "else": [
             {
-              "from": "SolutionReviewService",
-              "to": "SolutionReviewService",
-              "text": "Trường hợp không"
+              "from": "ReviewCmd",
+              "to": "ReviewCmd",
+              "text": "Giữ quyền tạo một báo cáo cho bài"
             },
             {
-              "from": "SolutionReviewService",
+              "from": "ReviewCmd",
+              "to": "ReviewCmd",
+              "text": "Chuẩn hoá mã và tạo dấu vân tay"
+            },
+            {
+              "from": "ReviewCmd",
+              "to": "ReviewRepo",
+              "text": "Tìm bản phân tích dùng lại"
+            },
+            {
+              "from": "ReviewRepo",
+              "to": "AiDbAdapter",
+              "text": "Tra theo bài, ngôn ngữ và chỉ thị"
+            },
+            {
+              "from": "AiDbAdapter",
               "to": "PostgreSQL",
-              "text": "Đọc ngân sách token AI, kiểm tra có đang bị khoá không"
+              "text": "Đọc bản cùng mã nguồn"
             },
             {
               "from": "PostgreSQL",
-              "to": "SolutionReviewService",
-              "text": "Hạn mức và mức tiêu thụ chu kỳ hiện tại",
+              "to": "AiDbAdapter",
+              "text": "Có bản dùng lại hoặc chưa",
+              "kind": "return"
+            },
+            {
+              "from": "AiDbAdapter",
+              "to": "ReviewRepo",
+              "text": "Kết quả tra cứu",
+              "kind": "return"
+            },
+            {
+              "from": "ReviewRepo",
+              "to": "ReviewCmd",
+              "text": "Tiếp tục ở trang 2",
               "kind": "return"
             }
           ]
         }
       }
     ]
-  },
-  "_cat": "Tach tu sequence_user_phan_tich_bai_giai_ai.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 1/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+  }
 }

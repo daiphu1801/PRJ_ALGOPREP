@@ -1,8 +1,7 @@
 {
-  "_": "Cap nhat 2026-10-18 theo ADM0301 V2.x (02-bd/screens/admin/ADM0301_ai_config.md): bo rubric (DEC-2026-1014-drop-solution-review-rubric), ADMIN chon model theo prompt (DEC-2026-1010-admin-selects-model-per-prompt), luong nhap roi \"Luu va phat hanh\" mot giao dich nguyen tu (DEC-2026-1014-batch7-remaining-open-questions Q3). Ten endpoint la ten nghiep vu cua BD muc 7.3; duong dan REST la [SoT: Suy luan] vi chua co 03-dd/api/F5_ai-review.md. KHONG ve nut Chay doi chieu (khong co backend). Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen. | 2026-10-20 (owner): nhan mui ten bo han duong dan, ma HTTP, ma quyen, thuat ngu ky thuat (cache, job, worker, model...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
-  "_pham_vi": "RD dong 86-93 giu nut \"Chay doi chieu\" o tang giao dien; so do nay khong ve mot endpoint backend cho no.",
+  "_": "Nguồn: 03-dd/api/F5_ai-review.md §17; 03-dd/logic/F5_ai-review.md BR-AI-13. PromptStorePort, AiDbAdapter là tên minh họa [SoT: Suy luận]. Request changes chọn 1-3 tính năng, không tự phát hành mọi bản nháp. So expectedActivePromptId, kiểm có thay đổi thật; một giao dịch đưa bản cũ ARCHIVED, bản mới ACTIVE, ghi audit, lỗi nào cũng rollback toàn bộ. Bản cache review cũ không trúng vì khóa chứa prompt_template_id; không cần xóa Redis thủ công.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Cấu hình prompt và model của AI (Quản trị viên) (3/4)",
+  "title": "Sơ đồ tuần tự chi tiết - Phát hành chỉ thị AI có chọn lọc (3/4)",
   "covers": [
     "F5-23"
   ],
@@ -20,122 +19,137 @@
         "stereo": "presentation"
       },
       {
-        "name": "AiConfigService",
+        "name": "PublishPromptTemplate",
         "role": "service",
-        "stereo": "application"
+        "stereo": "application command"
+      },
+      {
+        "name": "PromptStorePort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "AiDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
       },
       {
         "name": "PostgreSQL",
         "role": "datastore",
-        "stereo": "ai.prompt_templates"
+        "stereo": "schema ai"
       },
       {
-        "name": "Redis",
-        "role": "datastore",
-        "stereo": "cache prompt"
+        "name": "AuditLogPort",
+        "role": "repository",
+        "stereo": "identity output port"
       }
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 3 - Lưu và phát hành: mọi bản nháp thành bản đang chạy cùng một lượt, hoặc không đổi gì (F5-23)"
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "Quản trị viên",
-        "text": "Bấm Lưu và phát hành, xem tóm tắt rồi xác nhận"
+        "phase": "Giai đoạn 3 - Kiểm các tính năng được chọn"
       },
       {
         "from": "Quản trị viên",
         "to": "AiConfigController",
-        "text": "Gửi yêu cầu phát hành"
+        "text": "Chọn chỉ thị cần phát hành và xác nhận"
       },
       {
         "from": "AiConfigController",
-        "to": "AiConfigController",
-        "text": "Kiểm tra quyền sửa cấu hình AI"
+        "to": "PublishPromptTemplate",
+        "text": "Phát hành một đến ba tính năng"
       },
       {
-        "from": "AiConfigController",
-        "to": "AiConfigService",
-        "text": "Yêu cầu phát hành mọi bản nháp"
+        "from": "PublishPromptTemplate",
+        "to": "PromptStorePort",
+        "text": "Khóa bản đang chạy và đọc bản nháp"
       },
       {
-        "from": "AiConfigService",
+        "from": "PromptStorePort",
+        "to": "AiDbAdapter",
+        "text": "Đọc phiên bản của các tính năng đã chọn"
+      },
+      {
+        "from": "AiDbAdapter",
         "to": "PostgreSQL",
-        "text": "Cùng một lượt: nháp thành đang chạy, bản cũ lưu trữ"
+        "text": "Khóa các dòng chỉ thị cần đổi"
       },
       {
         "from": "PostgreSQL",
-        "to": "AiConfigService",
-        "text": "Kết quả phát hành",
+        "to": "AiDbAdapter",
+        "text": "Bản đang chạy và bản nháp",
+        "kind": "return"
+      },
+      {
+        "from": "AiDbAdapter",
+        "to": "PromptStorePort",
+        "text": "Bản đang chạy và bản nháp",
+        "kind": "return"
+      },
+      {
+        "from": "PromptStorePort",
+        "to": "PublishPromptTemplate",
+        "text": "Bản đang chạy và bản nháp",
         "kind": "return"
       },
       {
         "alt": {
-          "label": "Phát hành thành công?",
+          "label": "Bản đang chạy còn đúng và có thay đổi thật?",
           "then": [
             {
-              "from": "AiConfigService",
-              "to": "AiConfigService",
-              "text": "Mọi tính năng đã cập nhật"
+              "from": "PublishPromptTemplate",
+              "to": "PromptStorePort",
+              "text": "Lưu bản mới đang chạy và lưu trữ bản cũ"
             },
             {
-              "from": "AiConfigService",
+              "from": "PromptStorePort",
+              "to": "AiDbAdapter",
+              "text": "Đổi phiên bản trong một giao dịch"
+            },
+            {
+              "from": "AiDbAdapter",
               "to": "PostgreSQL",
-              "text": "Ghi nhật ký hệ thống: ai phát hành, phiên bản nào"
+              "text": "Lưu bản chạy mới và bản cũ"
             },
             {
-              "from": "PostgreSQL",
-              "to": "AiConfigService",
-              "text": "Đã ghi",
+              "from": "PublishPromptTemplate",
+              "to": "AuditLogPort",
+              "text": "Ghi nhật ký phát hành cùng giao dịch"
+            },
+            {
+              "from": "AuditLogPort",
+              "to": "PublishPromptTemplate",
+              "text": "Nhật ký đã ghi",
               "kind": "return"
             },
             {
-              "from": "AiConfigService",
-              "to": "Redis",
-              "text": "Làm mới chỉ thị AI đã lưu tạm",
-              "kind": "async"
-            },
-            {
-              "from": "AiConfigService",
+              "from": "PublishPromptTemplate",
               "to": "AiConfigController",
-              "text": "Phiên bản đang hiệu lực",
+              "text": "Trả cả ba bản đang chạy mới nhất",
               "kind": "return"
             },
             {
               "from": "AiConfigController",
               "to": "Quản trị viên",
-              "text": "Báo thành công",
+              "text": "Hiển thị phiên bản đã phát hành",
               "kind": "return"
             }
           ],
           "else": [
             {
-              "from": "AiConfigService",
-              "to": "AiConfigService",
-              "text": "Hoàn tác toàn bộ, không tính năng nào đổi"
-            },
-            {
-              "from": "AiConfigService",
+              "from": "PublishPromptTemplate",
               "to": "AiConfigController",
-              "text": "Lỗi phát hành",
+              "text": "Báo xung đột hoặc không có thay đổi",
               "kind": "return"
             },
             {
               "from": "AiConfigController",
               "to": "Quản trị viên",
-              "text": "Báo lỗi: không có bản nháp để phát hành",
+              "text": "Yêu cầu tải lại hoặc chỉnh nội dung",
               "kind": "return"
             }
           ]
         }
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "Quản trị viên",
-        "text": "Các tab thành Đang chạy; lượt gọi AI kế tiếp dùng bản mới"
       }
     ]
-  },
-  "_cat": "Tach tu sequence_admin_cau_hinh_prompt_ai.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 2/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+  }
 }

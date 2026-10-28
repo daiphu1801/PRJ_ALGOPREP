@@ -1,0 +1,45 @@
+{
+  "_": "Trang 3b/3: sinh input bằng script và lấy output từ đáp án mẫu. Nguồn: 03-dd/logic/F2_problem-bank.md BR-16 bước 2-8; 03-dd/api/F2_problem-bank.md §49. GenerateCasesCmd = GenerateTestcasesWithAiCommandHandler; ScriptGenerationPort = TestcaseScriptGenerationPort; LlmAdapter = adapter F2 tới LLM; SandboxPort = cổng chạy script F2; GoJudgeAdapter = adapter sandbox; ReferenceRunnerPort = SampleSolutionRunnerPort [SoT: Suy luận về tên handler/adapter và SandboxPort]. Prompt chỉ có đề, ràng buộc và đúng 2 Sample thủ công đầu tiên; không có mã đáp án mẫu, ai_brief hay ca ẩn. AI chỉ trả script sinh input; script không tin cậy chạy sandbox chặn mạng và giới hạn tài nguyên. Validator script loại input sai, bỏ input trùng; đáp án mẫu chạy thật để lấy output. Input lớn nhất timeout/lỗi tạo cảnh báo LARGEST_CASE_TIMEOUT. Lỗi script làm cả lượt thất bại, không tính quota; các input lẻ lỗi bị loại theo DD. Redis lock, cổng đọc giới hạn F4 và chi tiết retry lược khỏi hình. Kết quả hợp lệ sang trang 3c để lưu nháp.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - AI viết script, máy chạy lấy output (3b/3)",
+  "covers": ["F2-14"],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {"name": "GenerateCasesCmd", "role": "service", "stereo": "application command"},
+      {"name": "ScriptGenerationPort", "role": "repository", "stereo": "AI output port"},
+      {"name": "LlmAdapter", "role": "external", "stereo": "infrastructure"},
+      {"name": "Nhà cung cấp LLM", "role": "external", "stereo": "dịch vụ AI"},
+      {"name": "SandboxPort", "role": "repository", "stereo": "output port"},
+      {"name": "GoJudgeAdapter", "role": "external", "stereo": "infrastructure"},
+      {"name": "go-judge", "role": "external", "stereo": "sandbox"},
+      {"name": "ReferenceRunnerPort", "role": "repository", "stereo": "chạy đáp án mẫu"}
+    ],
+    "messages": [
+      {"phase": "Giai đoạn 3b - AI tạo script, không tạo đáp án"},
+      {"from": "GenerateCasesCmd", "to": "ScriptGenerationPort", "text": "Đưa đề, ràng buộc và đúng hai Sample"},
+      {"from": "ScriptGenerationPort", "to": "LlmAdapter", "text": "Yêu cầu script sinh đầu vào"},
+      {"from": "LlmAdapter", "to": "Nhà cung cấp LLM", "text": "Sinh script, không gửi mã đáp án"},
+      {"from": "Nhà cung cấp LLM", "to": "LlmAdapter", "text": "Script sinh và kiểm dữ liệu", "kind": "return"},
+      {"from": "LlmAdapter", "to": "ScriptGenerationPort", "text": "Script đề xuất", "kind": "return"},
+      {"from": "ScriptGenerationPort", "to": "GenerateCasesCmd", "text": "Script đề xuất", "kind": "return"},
+      {"from": "GenerateCasesCmd", "to": "SandboxPort", "text": "Chạy script trong giới hạn an toàn"},
+      {"from": "SandboxPort", "to": "GoJudgeAdapter", "text": "Chuyển script đã cô lập"},
+      {"from": "GoJudgeAdapter", "to": "go-judge", "text": "Sinh danh sách input, không có mạng"},
+      {"from": "go-judge", "to": "GoJudgeAdapter", "text": "Input ứng viên", "kind": "return"},
+      {"from": "GoJudgeAdapter", "to": "SandboxPort", "text": "Input ứng viên", "kind": "return"},
+      {"from": "SandboxPort", "to": "GenerateCasesCmd", "text": "Input ứng viên", "kind": "return"},
+      {"from": "GenerateCasesCmd", "to": "GenerateCasesCmd", "text": "Bỏ input trùng với ca đã có"},
+      {"from": "GenerateCasesCmd", "to": "SandboxPort", "text": "Kiểm từng input bằng script ràng buộc"},
+      {"from": "SandboxPort", "to": "GoJudgeAdapter", "text": "Chạy script kiểm trong sandbox"},
+      {"from": "GoJudgeAdapter", "to": "go-judge", "text": "Kiểm input, chặn mạng"},
+      {"from": "go-judge", "to": "GoJudgeAdapter", "text": "Input hợp lệ hoặc bị loại", "kind": "return"},
+      {"from": "GoJudgeAdapter", "to": "SandboxPort", "text": "Kết quả kiểm", "kind": "return"},
+      {"from": "SandboxPort", "to": "GenerateCasesCmd", "text": "Input đạt ràng buộc", "kind": "return"},
+      {"from": "GenerateCasesCmd", "to": "ReferenceRunnerPort", "text": "Chạy đáp án mẫu với input hợp lệ"},
+      {"from": "ReferenceRunnerPort", "to": "GenerateCasesCmd", "text": "Output thật và ca bị loại", "kind": "return"},
+      {"from": "GenerateCasesCmd", "to": "GenerateCasesCmd", "text": "Ghép input và output; cảnh báo ca lớn lỗi"}
+    ]
+  }
+}

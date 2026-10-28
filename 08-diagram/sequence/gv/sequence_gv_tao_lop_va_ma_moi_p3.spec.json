@@ -1,133 +1,48 @@
 {
-  "_": "Luong tao lop hoc va phat ma moi cua actor A2, ke ca buoc hoc vien dung ma de tham gia. Nguon: US-A2-07 (01-rd/req/user_stories/a2_instructor.md:102-123), 01-rd/req/F1_identity.md (F1-23, F1-25, F1-26), 03-dd/api/F1_identity.md muc 0.4 (endpoint #20, #23, #25), 02-bd/architecture/F1_identity.md muc 5 (ma moi TTL 7 ngay), 02-bd/database/F1_identity.md:93-94 (nhieu ma hieu luc song song). Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen. | Cap nhat 2026-10-20: siet theo quy tac moi, nhan mui ten la cau tieng Viet thuong, khong duong dan endpoint, ma HTTP, ma quyen, ten su kien, thuat ngu ky thuat; duong dan, ma HTTP va ma quyen nam o DD.",
+  "_": "Thiết kế dự kiến cho F1; trang 3/3 mô tả học viên dùng mã do giảng viên chia sẻ ngoài hệ thống. Nguồn: 03-dd/logic/F1_identity.md BR-09; 03-dd/api/F1_identity.md endpoint #25 và mục 0.4.1; 02-bd/database/F1_identity.md. JoinClassCmd = JoinClassByCodeCommandHandler; InviteRepo = ClassInviteCodeRepository; EnrollmentRepo = ClassEnrollmentRepository; ClassDbAdapter = ClassPersistenceAdapter [SoT: Suy luận]. Cổng Redis giới hạn năm lần nhập sai/15 phút được lược để hình tập trung vào ghi danh, vẫn bắt buộc theo DD. Mã hết hạn/không tồn tại trả lỗi chung. Học viên từng rời vào lại dùng chính dòng ghi danh cũ và giữ joinedAt; đã ở trong lớp thì trả thành công mà không ghi dòng mới.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Tạo lớp học và phát mã mời (Giảng viên) (3/3)",
-  "covers": [
-    "F1-23"
-  ],
+  "title": "Sơ đồ tuần tự chi tiết - Học viên vào lớp bằng mã (3/3)",
+  "covers": ["F1-23"],
   "mode": "color",
   "sequence": {
     "detail": true,
     "participants": [
-      {
-        "name": "Giảng viên",
-        "role": "actor"
-      },
-      {
-        "name": "Học viên",
-        "role": "actor"
-      },
-      {
-        "name": "ClassController",
-        "role": "controller",
-        "stereo": "presentation"
-      },
-      {
-        "name": "ClassService",
-        "role": "service",
-        "stereo": "application"
-      },
-      {
-        "name": "PostgreSQL",
-        "role": "datastore",
-        "stereo": "schema identity"
-      }
+      {"name": "Học viên", "role": "actor"},
+      {"name": "ClassController", "role": "controller", "stereo": "presentation"},
+      {"name": "JoinClassCmd", "role": "service", "stereo": "application command"},
+      {"name": "InviteRepo", "role": "repository", "stereo": "domain output port"},
+      {"name": "EnrollmentRepo", "role": "repository", "stereo": "domain output port"},
+      {"name": "ClassDbAdapter", "role": "repository", "stereo": "infrastructure"},
+      {"name": "PostgreSQL", "role": "datastore", "stereo": "schema identity"}
     ],
     "messages": [
-      {
-        "phase": "Giai đoạn 3 - Học viên dùng mã để tham gia lớp (F1-23, BR-09)"
-      },
-      {
-        "from": "Giảng viên",
-        "to": "Học viên",
-        "text": "Chia sẻ mã mời ngoài hệ thống"
-      },
-      {
-        "from": "Học viên",
-        "to": "Học viên",
-        "text": "Nhập mã mời, bấm Tham gia lớp"
-      },
-      {
-        "from": "Học viên",
-        "to": "ClassController",
-        "text": "Gửi mã mời để vào lớp"
-      },
-      {
-        "from": "ClassController",
-        "to": "ClassService",
-        "text": "Yêu cầu vào lớp bằng mã mời"
-      },
-      {
-        "from": "ClassService",
-        "to": "PostgreSQL",
-        "text": "Tìm mã mời còn hiệu lực"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "ClassService",
-        "text": "Mã còn hiệu lực hoặc không",
-        "kind": "return"
-      },
-      {
-        "alt": {
-          "label": "Mã không tồn tại hoặc đã hết hạn?",
-          "then": [
-            {
-              "from": "ClassService",
-              "to": "ClassService",
-              "text": "Không có mã hợp lệ"
-            },
-            {
-              "from": "ClassService",
-              "to": "ClassController",
-              "text": "Mã không hợp lệ hoặc đã hết hạn",
-              "kind": "return"
-            },
-            {
-              "from": "ClassController",
-              "to": "Học viên",
-              "text": "Báo lỗi: mã mời không hợp lệ",
-              "kind": "return"
-            }
-          ],
-          "else": [
-            {
-              "from": "ClassService",
-              "to": "ClassService",
-              "text": "Mã hợp lệ, tiến hành ghi danh"
-            },
-            {
-              "from": "ClassService",
-              "to": "PostgreSQL",
-              "text": "Ghi danh, dùng lại dòng cũ nếu từng rời"
-            },
-            {
-              "from": "PostgreSQL",
-              "to": "ClassService",
-              "text": "Đã ghi",
-              "kind": "return"
-            },
-            {
-              "from": "ClassService",
-              "to": "ClassController",
-              "text": "Thông tin lớp vừa vào",
-              "kind": "return"
-            },
-            {
-              "from": "ClassController",
-              "to": "Học viên",
-              "text": "Báo thành công",
-              "kind": "return"
-            }
-          ]
-        }
-      },
-      {
-        "from": "Học viên",
-        "to": "Học viên",
-        "text": "Khối Bài tập lớp xuất hiện ở màn Danh sách bài toán"
-      }
+      {"phase": "Giai đoạn 3 - Dùng mã mời để tham gia lớp (F1-23)"},
+      {"from": "Học viên", "to": "ClassController", "text": "Gửi mã mời đã nhận"},
+      {"from": "ClassController", "to": "JoinClassCmd", "text": "Yêu cầu tham gia lớp"},
+      {"from": "JoinClassCmd", "to": "InviteRepo", "text": "Tìm mã còn hiệu lực"},
+      {"from": "InviteRepo", "to": "ClassDbAdapter", "text": "Chuyển yêu cầu tìm mã"},
+      {"from": "ClassDbAdapter", "to": "PostgreSQL", "text": "Đọc mã và hạn dùng"},
+      {"from": "PostgreSQL", "to": "ClassDbAdapter", "text": "Mã hợp lệ hoặc không", "kind": "return"},
+      {"from": "ClassDbAdapter", "to": "InviteRepo", "text": "Kết quả tìm mã", "kind": "return"},
+      {"from": "InviteRepo", "to": "JoinClassCmd", "text": "Lớp tương ứng hoặc không", "kind": "return"},
+      {"alt": {
+        "label": "Mã còn hiệu lực?",
+        "then": [
+          {"from": "JoinClassCmd", "to": "JoinClassCmd", "text": "Mã hợp lệ, tiến hành ghi danh"},
+          {"from": "JoinClassCmd", "to": "EnrollmentRepo", "text": "Ghi danh hoặc khôi phục dòng cũ"},
+          {"from": "EnrollmentRepo", "to": "ClassDbAdapter", "text": "Chuyển yêu cầu ghi danh"},
+          {"from": "ClassDbAdapter", "to": "PostgreSQL", "text": "Thêm mới hoặc kích hoạt lại ghi danh"},
+          {"from": "PostgreSQL", "to": "ClassDbAdapter", "text": "Lớp đã tham gia", "kind": "return"},
+          {"from": "ClassDbAdapter", "to": "EnrollmentRepo", "text": "Lớp đã tham gia", "kind": "return"},
+          {"from": "EnrollmentRepo", "to": "JoinClassCmd", "text": "Lớp đã tham gia", "kind": "return"},
+          {"from": "JoinClassCmd", "to": "ClassController", "text": "Tên và mã lớp", "kind": "return"},
+          {"from": "ClassController", "to": "Học viên", "text": "Báo vào lớp thành công", "kind": "return"}
+        ],
+        "else": [
+          {"from": "JoinClassCmd", "to": "ClassController", "text": "Từ chối, không thay đổi ghi danh", "kind": "return"},
+          {"from": "ClassController", "to": "Học viên", "text": "Báo mã không hợp lệ hoặc hết hạn", "kind": "return"}
+        ]
+      }}
     ]
-  },
-  "_cat": "Tach tu sequence_gv_tao_lop_va_ma_moi.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 3/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+  }
 }

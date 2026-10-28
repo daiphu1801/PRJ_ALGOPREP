@@ -1,8 +1,7 @@
 {
-  "_": "Luong F6 Chế độ học + Chế độ luyện cua actor A1 tren ngan hang cau hoi phong van. Nguon: 01-rd/req/F6_interview-bank.md (F6-04 den F6-08, F6-09, F6-12), 02-bd/architecture/F6_interview-bank.md muc 1 (AnswerFeedbackPort, SpringAiFeedbackAdapter, job spaced repetition), muc 2 (Chế độ luyện la NOI DUY NHAT module nay goi AI). | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
-  "_bat_bien": "F6-07 amendment (DEC-2026-0831-outside-screens-closures): moi lan nop la mot attempt doc lap, khong UPDATE cau tra loi cu.",
+  "_": "Nguồn: 03-dd/api/F6_interview-bank.md mục 4, 8; 03-dd/logic/F6_interview-bank.md BR-IB-06/09; 02-bd/architecture/F6_interview-bank.md mục 6. RecallPort, TopicProgressPort, InterviewBankDbAdapter minh họa ranh giới [SoT: Suy luận]. Tự chấm đặt lại lịch từ thời điểm hiện tại: quên 1 ngày, mơ hồ 3 ngày, biết rõ 7 ngày. Đến hạn theo next_review_at; đang ôn theo mức tự chấm.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Ôn tập và luyện tập câu hỏi phỏng vấn (Sinh viên) (3/3)",
+  "title": "Sơ đồ tuần tự chi tiết - Tự chấm và xem tiến độ ôn tập (3/3)",
   "covers": [
     "F6-09",
     "F6-12"
@@ -21,9 +20,29 @@
         "stereo": "presentation"
       },
       {
-        "name": "PracticeService",
+        "name": "RateQuestionRecall",
         "role": "service",
-        "stereo": "application"
+        "stereo": "application command"
+      },
+      {
+        "name": "GetMyInterviewTopicProgress",
+        "role": "service",
+        "stereo": "application query"
+      },
+      {
+        "name": "RecallPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "TopicProgressPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "InterviewBankDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
       },
       {
         "name": "PostgreSQL",
@@ -33,56 +52,168 @@
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 3 - Tự chấm mức thuộc bài và xếp lịch ôn lại (F6-12, F6-09)"
-      },
-      {
-        "from": "Sinh viên",
-        "to": "Sinh viên",
-        "text": "Chọn mức Biết rõ / Mơ hồ / Quên"
+        "phase": "Giai đoạn 1 - Tự chấm và đặt lịch ôn"
       },
       {
         "from": "Sinh viên",
         "to": "PracticeController",
-        "text": "Gửi mức thuộc bài người học tự chấm"
+        "text": "Chọn biết rõ, mơ hồ hoặc quên"
       },
       {
         "from": "PracticeController",
-        "to": "PracticeService",
-        "text": "Xử lý mức thuộc bài"
+        "to": "RateQuestionRecall",
+        "text": "Cập nhật mức tự chấm cho câu hỏi"
       },
       {
-        "from": "PracticeService",
-        "to": "PracticeService",
-        "text": "Tính ngày ôn lại kế tiếp theo giãn cách lặp lại"
+        "from": "RateQuestionRecall",
+        "to": "RecallPort",
+        "text": "Kiểm tra câu đang hiển thị và ghi mức hiện tại"
       },
       {
-        "from": "PracticeService",
+        "from": "RecallPort",
+        "to": "InterviewBankDbAdapter",
+        "text": "Đọc câu hỏi và mức tự chấm hiện hành"
+      },
+      {
+        "from": "InterviewBankDbAdapter",
         "to": "PostgreSQL",
-        "text": "Lưu mức thuộc bài và ngày ôn lại tiếp theo"
+        "text": "Kiểm tra câu hỏi đang hoạt động"
       },
       {
         "from": "PostgreSQL",
-        "to": "PostgreSQL",
-        "text": "Ghi tiến độ ôn câu hỏi"
+        "to": "InterviewBankDbAdapter",
+        "text": "Tình trạng câu hỏi",
+        "kind": "return"
       },
       {
-        "from": "PracticeService",
+        "alt": {
+          "label": "Câu hỏi đang hoạt động?",
+          "then": [
+            {
+              "from": "RateQuestionRecall",
+              "to": "RateQuestionRecall",
+              "text": "Đặt lịch từ lúc chấm: quên 1, mơ hồ 3, biết rõ 7 ngày"
+            },
+            {
+              "from": "RateQuestionRecall",
+              "to": "RecallPort",
+              "text": "Ghi đè mức hiện tại và ngày ôn tiếp theo"
+            },
+            {
+              "from": "RecallPort",
+              "to": "InterviewBankDbAdapter",
+              "text": "Lưu một dòng cho người học và câu hỏi"
+            },
+            {
+              "from": "InterviewBankDbAdapter",
+              "to": "PostgreSQL",
+              "text": "Thêm hoặc cập nhật mức tự chấm"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "InterviewBankDbAdapter",
+              "text": "Mức và lịch ôn mới",
+              "kind": "return"
+            },
+            {
+              "from": "InterviewBankDbAdapter",
+              "to": "RecallPort",
+              "text": "Mức và lịch ôn mới",
+              "kind": "return"
+            },
+            {
+              "from": "RecallPort",
+              "to": "RateQuestionRecall",
+              "text": "Mức và lịch ôn mới",
+              "kind": "return"
+            },
+            {
+              "from": "RateQuestionRecall",
+              "to": "PracticeController",
+              "text": "Ngày ôn tiếp theo",
+              "kind": "return"
+            },
+            {
+              "from": "PracticeController",
+              "to": "Sinh viên",
+              "text": "Hiển thị lịch ôn mới",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "RateQuestionRecall",
+              "to": "PracticeController",
+              "text": "Báo câu hỏi không còn hiển thị",
+              "kind": "return"
+            },
+            {
+              "from": "PracticeController",
+              "to": "Sinh viên",
+              "text": "Hiển thị lỗi",
+              "kind": "return"
+            }
+          ]
+        }
+      },
+      {
+        "phase": "Giai đoạn 2 - Xem tiến độ theo chủ đề"
+      },
+      {
+        "from": "Sinh viên",
         "to": "PracticeController",
-        "text": "Ngày ôn lại kế tiếp",
+        "text": "Mở tiến độ ôn tập"
+      },
+      {
+        "from": "PracticeController",
+        "to": "GetMyInterviewTopicProgress",
+        "text": "Tính tiến độ của người gọi"
+      },
+      {
+        "from": "GetMyInterviewTopicProgress",
+        "to": "TopicProgressPort",
+        "text": "Đếm câu đang hoạt động và câu từng luyện"
+      },
+      {
+        "from": "TopicProgressPort",
+        "to": "InterviewBankDbAdapter",
+        "text": "Tổng hợp theo chủ đề, kể cả chủ đề chưa có câu"
+      },
+      {
+        "from": "InterviewBankDbAdapter",
+        "to": "PostgreSQL",
+        "text": "Đọc chủ đề, câu đang hoạt động và lịch sử luyện"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "InterviewBankDbAdapter",
+        "text": "Số câu và số câu đã từng luyện",
+        "kind": "return"
+      },
+      {
+        "from": "InterviewBankDbAdapter",
+        "to": "TopicProgressPort",
+        "text": "Tiến độ theo chủ đề",
+        "kind": "return"
+      },
+      {
+        "from": "TopicProgressPort",
+        "to": "GetMyInterviewTopicProgress",
+        "text": "Tiến độ theo chủ đề",
+        "kind": "return"
+      },
+      {
+        "from": "GetMyInterviewTopicProgress",
+        "to": "PracticeController",
+        "text": "Số câu đã luyện và tổng số câu",
         "kind": "return"
       },
       {
         "from": "PracticeController",
         "to": "Sinh viên",
-        "text": "Báo thành công",
+        "text": "Hiển thị tiến độ từng chủ đề",
         "kind": "return"
-      },
-      {
-        "from": "Sinh viên",
-        "to": "Sinh viên",
-        "text": "Câu hỏi vào danh sách Cần ôn lại kèm mốc thời gian"
       }
     ]
-  },
-  "_cat": "Tach tu sequence_user_on_tap_luyen_tap_ai.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 3/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+  }
 }

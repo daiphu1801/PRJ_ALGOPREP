@@ -32,9 +32,7 @@
   bằng `base_category`, không bao giờ tra bảng `permissions` — tắt một ô trong ma trận không được phép
   ảnh hưởng luồng này (`F1_identity.md` dòng 22-23). Nếu một đoạn code kiểm quyền học tập cơ bản lại đi qua
   bảng `permissions`, đó là lỗi thiết kế cần sửa ngay khi review.
-- Cache quyền theo role (`identity:permcache:<roleId>`) tại tầng ứng dụng (Caffeine cục bộ hoặc đọc
-  Redis); khi `permissions` đổi, publish một sự kiện nội bộ invalidate cache **ở mọi instance** (Redis
-  pub/sub hoặc tương đương) để đáp ứng yêu cầu "có hiệu lực ngay, không khởi động lại dịch vụ".
+- Mỗi kiểm quyền Lớp 2 đọc `roles.permission_version` từ PostgreSQL primary; chỉ dùng cache Caffeine/Redis `{permissionVersion,matrix}` khi version khớp. Version khác thì nạp lại ma trận từ primary. Nếu không đọc được version, từ chối trước use case (fail closed), không dùng cache cũ. PATCH quyền tăng version cùng giao dịch ghi permission/audit; Redis pub/sub `{roleId,permissionVersion}` chỉ làm mới cache sớm. Vì vậy request bắt đầu sau PATCH thành công thấy quyền đã commit ngay cả khi message chậm/mất (`DEC-2026-1028-qa-f1-permission-immediate`).
 - **Ngoại lệ xem Audit Log cho Quản trị viên (`DEC-2026-0922-users-and-admin-conflict-resolutions`)**:
   Mọi tài khoản có `base_category = ADMIN` đều có quyền xem (READ) nhật ký hệ thống `system_audit_logs`.
   Chức năng `SYSTEM_AUDIT_LOG` trong ma trận phân quyền chỉ gác việc chỉnh sửa cấu hình log / xuất log,
@@ -79,5 +77,5 @@
 ## 5. Việc còn mở — chuyển sang DD
 
 - Thuật toán/thư viện cụ thể cho JWT (ví dụ Nimbus JOSE, hay Spring Security OAuth2 Resource Server).
-- Cơ chế invalidate cache quyền phân tán cụ thể (Redis pub/sub vs Spring `@CacheEvict` cluster-aware).
+- Cơ chế invalidate cache quyền phân tán đã chốt: Redis pub/sub là tối ưu refresh; kiểm version ở PostgreSQL primary là cổng đúng/sai bắt buộc (`DEC-2026-1028-qa-f1-permission-immediate`).
 - Độ mạnh mật khẩu tối thiểu chính xác, cửa sổ rate-limit đăng nhập chính xác.

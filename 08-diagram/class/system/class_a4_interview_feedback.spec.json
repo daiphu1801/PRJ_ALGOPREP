@@ -1,0 +1,66 @@
+{
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a4_system.md:67. Nguồn thiết kế: 03-dd/logic/F6_interview-bank.md; 03-dd/api/F6_interview-bank.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "kind": "class",
+  "title": "A4 — Đối chiếu câu trả lời lý thuyết",
+  "covers": [
+    "F6-08"
+  ],
+  "class": {
+    "legend": "shared",
+    "classes": [
+      {
+        "id": "service",
+        "name": "InterviewAnswerEvaluationService",
+        "methods": [
+          "+ evaluate(questionId : UUID, studentId : UUID, answer : String) : PracticeFeedback"
+        ]
+      },
+      {
+        "id": "port1",
+        "name": "InterviewQuestionRepository",
+        "kind": "class",
+        "methods": [
+          "+ getCriteria(questionId : UUID) : EvaluationCriteria"
+        ]
+      },
+      {
+        "id": "port2",
+        "name": "AiProviderPort",
+        "kind": "interface",
+        "methods": [
+          "+ compare(answer : String, criteria : EvaluationCriteria) : PracticeFeedback"
+        ]
+      },
+      {
+        "id": "port3",
+        "name": "PracticeAttemptRepository",
+        "kind": "class",
+        "methods": [
+          "+ save(attempt : PracticeAttempt)"
+        ]
+      }
+    ],
+    "externals": [],
+    "relations": [
+      {
+        "from": "service",
+        "to": "port1",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port2",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port3",
+        "kind": "dependency"
+      }
+    ],
+    "notes": [
+      "AI so câu trả lời với tiêu chí chuẩn, ghi điểm đã đạt/còn thiếu/hướng bổ sung; không lộ đáp án chuẩn trong prompt người dùng.",
+      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+    ]
+  }
+}

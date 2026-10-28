@@ -1,0 +1,76 @@
+{
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a1_student.md:117; 01-rd/req/user_stories/a1_student.md:121; 01-rd/req/user_stories/a1_student.md:123; 01-rd/req/user_stories/a1_student.md:125. Nguồn thiết kế: 03-dd/logic/F5_ai-review.md; 03-dd/api/F5_ai-review.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "kind": "class",
+  "title": "A1 — Phân tích bài giải đã Accepted",
+  "covers": [
+    "F5-02",
+    "F5-03",
+    "F5-04",
+    "F5-05",
+    "F5-06",
+    "F5-08",
+    "F5-20",
+    "F5-26"
+  ],
+  "class": {
+    "legend": "shared",
+    "classes": [
+      {
+        "id": "service",
+        "name": "SolutionReviewService",
+        "methods": [
+          "+ requestReview(submissionId : UUID, studentId : UUID) : ReviewReport",
+          "+ findCached(sourceHash : String) : ReviewReport",
+          "+ getReport(submissionId : UUID, studentId : UUID) : ReviewReport",
+          "+ proposedPatch(reportId : UUID, studentId : UUID) : SuggestedCode"
+        ]
+      },
+      {
+        "id": "port1",
+        "name": "AcceptedSubmissionPort",
+        "kind": "interface",
+        "methods": [
+          "+ requireAccepted(id : UUID, studentId : UUID) : Submission"
+        ]
+      },
+      {
+        "id": "port2",
+        "name": "ReviewReportRepository",
+        "kind": "class",
+        "methods": [
+          "+ findByHash(hash : String) : ReviewReport"
+        ]
+      },
+      {
+        "id": "port3",
+        "name": "ReviewModelPort",
+        "kind": "interface",
+        "methods": [
+          "+ analyze(context : ReviewContext) : ReviewReport"
+        ]
+      }
+    ],
+    "externals": [],
+    "relations": [
+      {
+        "from": "service",
+        "to": "port1",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port2",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port3",
+        "kind": "dependency"
+      }
+    ],
+    "notes": [
+      "Báo cáo có độ phức tạp, so tối ưu, trường hợp biên, chất lượng mã và câu hỏi mở rộng. Xác nhận ghi đè/khôi phục mã thuộc Workspace.",
+      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+    ]
+  }
+}

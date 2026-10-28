@@ -1,8 +1,7 @@
 {
-  "_": "Luong quen mat khau bang OTP 6 so cua actor A1. Nguon: 01-rd/req/F1_identity.md (F1-17, dong 209-217), 03-dd/api/F1_identity.md muc 0.1 (endpoint #7, #8), 03-dd/logic/F1_identity.md BR-04, 02-bd/architecture/F1_identity.md muc 5 (OTP 10 phut, 5 lan sai, cooldown 60 giay), 02-bd/security/F1_identity.md:45-46 va :50-52. | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
-  "_bao_mat": "Hai diem bao mat la ly do luong nay dang mot so do rieng: (1) endpoint forgot LUON tra 200 du email co ton tai hay khong -- chong do email theo OWASP user enumeration; (2) buoc reset khong re nhanh som khi email khong ton tai, di het toi buoc tra loi chung o cuoi de khong lo thong tin qua thoi gian phan hoi.",
+  "_": "Nguồn: 01-rd/req/F1_identity.md F1-17; 03-dd/api/F1_identity.md #7/#8/#60; 03-dd/logic/F1_identity.md BR-04; 02-bd/database/F1_identity.md users, refresh_tokens, OTP Redis; 02-bd/security/F1_identity.md mục 3. Tên lớp/port là thiết kế dự kiến [SoT: Suy luận], backend hiện là scaffold. ResetPasswordCmd = ResetPasswordCommandHandler; UserRepo = UserRepository; ResetOtpPort = cổng Redis. #8 kiểm lại cùng mã sau #60, không tin kết quả xác minh cũ; kiểm mật khẩu mới theo 03-dd/validation/F1_identity.md. Tài khoản chỉ OAuth không có OTP, nên cùng lỗi mã chung; email hướng dẫn đã gửi ở 1c. Tài khoản không tồn tại đi qua cùng nhánh lỗi chung để tránh lộ thời gian. Khi mã đúng, chuyển issued_at của OTP sang trang 3b để chống dùng lại.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Quên mật khẩu bằng OTP (Sinh viên) (3/3)",
+  "title": "Sơ đồ tuần tự chi tiết - Kiểm lại mã khi đặt mật khẩu (3a/3)",
   "covers": [
     "F1-17"
   ],
@@ -20,105 +19,152 @@
         "stereo": "presentation"
       },
       {
-        "name": "PasswordResetService",
+        "name": "ResetPasswordCmd",
         "role": "service",
-        "stereo": "application"
+        "stereo": "application command"
       },
       {
-        "name": "Redis",
-        "role": "datastore",
-        "stereo": "OTP, cooldown"
+        "name": "UserRepo",
+        "role": "repository",
+        "stereo": "domain output port"
+      },
+      {
+        "name": "IdentityDbAdapter",
+        "role": "repository",
+        "stereo": "infrastructure"
       },
       {
         "name": "PostgreSQL",
         "role": "datastore",
         "stereo": "schema identity"
+      },
+      {
+        "name": "ResetOtpPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "RedisOtpAdapter",
+        "role": "repository",
+        "stereo": "infrastructure"
+      },
+      {
+        "name": "Redis",
+        "role": "datastore",
+        "stereo": "OTP quên mật khẩu"
       }
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 3 - Đặt mật khẩu mới và thu hồi mọi phiên cũ"
+        "phase": "Giai đoạn 3a - Không dựa vào lần xác minh trước"
       },
       {
-        "from": "PasswordResetService",
+        "from": "Sinh viên",
+        "to": "AuthController",
+        "text": "Gửi mã và mật khẩu mới"
+      },
+      {
+        "from": "AuthController",
+        "to": "AuthController",
+        "text": "Kiểm độ mạnh mật khẩu mới"
+      },
+      {
+        "from": "AuthController",
+        "to": "ResetPasswordCmd",
+        "text": "Yêu cầu đặt lại mật khẩu"
+      },
+      {
+        "from": "ResetPasswordCmd",
+        "to": "UserRepo",
+        "text": "Tìm tài khoản theo email"
+      },
+      {
+        "from": "UserRepo",
+        "to": "IdentityDbAdapter",
+        "text": "Đọc trạng thái và mật khẩu hiện tại"
+      },
+      {
+        "from": "IdentityDbAdapter",
         "to": "PostgreSQL",
-        "text": "Kiểm tra tài khoản có chỉ đăng ký qua tài khoản ngoài không"
+        "text": "Đọc tài khoản cần đổi"
       },
       {
         "from": "PostgreSQL",
-        "to": "PasswordResetService",
-        "text": "Mật khẩu đã mã hoá hiện tại",
+        "to": "IdentityDbAdapter",
+        "text": "Có tài khoản hoặc không",
+        "kind": "return"
+      },
+      {
+        "from": "IdentityDbAdapter",
+        "to": "UserRepo",
+        "text": "Kết quả tra cứu",
+        "kind": "return"
+      },
+      {
+        "from": "UserRepo",
+        "to": "ResetPasswordCmd",
+        "text": "Loại tài khoản và mã người dùng",
+        "kind": "return"
+      },
+      {
+        "from": "ResetPasswordCmd",
+        "to": "ResetOtpPort",
+        "text": "Kiểm lại mã và giới hạn sai"
+      },
+      {
+        "from": "ResetOtpPort",
+        "to": "RedisOtpAdapter",
+        "text": "So khớp mã nguyên tử"
+      },
+      {
+        "from": "RedisOtpAdapter",
+        "to": "Redis",
+        "text": "So mã và tăng lượt sai nếu cần"
+      },
+      {
+        "from": "Redis",
+        "to": "RedisOtpAdapter",
+        "text": "Mã hợp lệ hoặc lỗi chung",
+        "kind": "return"
+      },
+      {
+        "from": "RedisOtpAdapter",
+        "to": "ResetOtpPort",
+        "text": "Kết quả đối chiếu",
+        "kind": "return"
+      },
+      {
+        "from": "ResetOtpPort",
+        "to": "ResetPasswordCmd",
+        "text": "Được đổi hoặc từ chối",
         "kind": "return"
       },
       {
         "alt": {
-          "label": "Chỉ có tài khoản ngoài, chưa đặt mật khẩu?",
+          "label": "Mã không hợp lệ?",
           "then": [
             {
-              "from": "PasswordResetService",
-              "to": "PasswordResetService",
-              "text": "Trường hợp có"
-            },
-            {
-              "from": "PasswordResetService",
+              "from": "ResetPasswordCmd",
               "to": "AuthController",
-              "text": "Không đặt mật khẩu, hướng dẫn quay lại nhà cung cấp",
+              "text": "Báo cùng một lỗi cho mọi nguyên nhân",
               "kind": "return"
             },
             {
               "from": "AuthController",
               "to": "Sinh viên",
-              "text": "Báo lỗi kèm hướng dẫn",
+              "text": "Mã sai hoặc hết hạn",
               "kind": "return"
             }
           ],
           "else": [
             {
-              "from": "PasswordResetService",
-              "to": "PasswordResetService",
-              "text": "Băm mật khẩu mới bằng BCrypt"
-            },
-            {
-              "from": "PasswordResetService",
-              "to": "PostgreSQL",
-              "text": "Lưu mật khẩu mới đã mã hoá"
-            },
-            {
-              "from": "PasswordResetService",
-              "to": "PostgreSQL",
-              "text": "Thu hồi TOÀN BỘ mã duy trì đăng nhập của tài khoản"
-            },
-            {
-              "from": "PasswordResetService",
-              "to": "Redis",
-              "text": "Xoá mã xác nhận đã dùng"
-            },
-            {
-              "from": "PasswordResetService",
-              "to": "PasswordResetService",
-              "text": "Báo mật khẩu vừa được đổi"
-            },
-            {
-              "from": "PasswordResetService",
-              "to": "AuthController",
-              "text": "Đổi mật khẩu thành công",
-              "kind": "return"
-            },
-            {
-              "from": "AuthController",
-              "to": "Sinh viên",
-              "text": "Báo thành công",
-              "kind": "return"
+              "from": "ResetPasswordCmd",
+              "to": "ResetPasswordCmd",
+              "text": "Mã đúng: tiếp tục ở trang 3b"
             }
           ]
         }
-      },
-      {
-        "from": "Sinh viên",
-        "to": "Sinh viên",
-        "text": "Quay về màn đăng nhập, mọi thiết bị khác đã bị đăng xuất"
       }
     ]
-  },
-  "_cat": "Tach tu sequence_user_quen_mat_khau_otp.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 3/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+  }
 }

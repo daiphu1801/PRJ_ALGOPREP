@@ -1,0 +1,89 @@
+{
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a2_instructor.md:13; 01-rd/req/user_stories/a2_instructor.md:15; 01-rd/req/user_stories/a2_instructor.md:17; 01-rd/req/user_stories/a2_instructor.md:26; 01-rd/req/user_stories/a2_instructor.md:28; 01-rd/req/user_stories/a2_instructor.md:30; 01-rd/req/user_stories/a2_instructor.md:32. Nguồn thiết kế: 03-dd/logic/F2_problem-bank.md; 03-dd/api/F2_problem-bank.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "kind": "class",
+  "title": "A2 — Soạn và xuất bản bài toán",
+  "covers": [
+    "F2-01",
+    "F2-02",
+    "F2-03",
+    "F2-04",
+    "F2-15"
+  ],
+  "class": {
+    "legend": "shared",
+    "classes": [
+      {
+        "id": "service",
+        "name": "ProblemAuthoringService",
+        "methods": [
+          "+ saveContent(actorId : UUID, draft : ProblemDraft) : Problem",
+          "+ saveFunctionSpec(actorId : UUID, spec : FunctionSpecDraft) : ProblemSpec",
+          "+ setMatchingStrategy(actorId : UUID, strategy : MatchingStrategy)",
+          "+ createUnpublished(actorId : UUID, draft : ProblemDraft) : Problem",
+          "+ publish(actorId : UUID, problemId : UUID) : PublishChecklist",
+          "+ validatePublish(problemId : UUID) : PublishChecklist",
+          "+ withdraw(actorId : UUID, problemId : UUID)"
+        ]
+      },
+      {
+        "id": "port1",
+        "name": "ProblemRepository",
+        "kind": "class",
+        "methods": [
+          "+ save(problem : Problem)"
+        ]
+      },
+      {
+        "id": "port2",
+        "name": "FunctionSpecEvaluator",
+        "kind": "class",
+        "methods": [
+          "+ evaluate(spec : FunctionSpecDraft) : Evaluation"
+        ]
+      },
+      {
+        "id": "port3",
+        "name": "PublishChecklistService",
+        "kind": "class",
+        "methods": [
+          "+ evaluate(problemId : UUID) : PublishChecklist"
+        ]
+      },
+      {
+        "id": "port4",
+        "name": "AuthorScopePolicy",
+        "kind": "class",
+        "methods": [
+          "+ requireWrite(actorId : UUID, problemId : UUID)"
+        ]
+      }
+    ],
+    "externals": [],
+    "relations": [
+      {
+        "from": "service",
+        "to": "port1",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port2",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port3",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port4",
+        "kind": "dependency"
+      }
+    ],
+    "notes": [
+      "Bài mới UNPUBLISHED; xuất bản cần đủ checklist và đáp án mẫu qua toàn bộ testcase duyệt.",
+      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+    ]
+  }
+}

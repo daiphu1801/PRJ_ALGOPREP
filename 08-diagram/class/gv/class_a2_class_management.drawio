@@ -1,0 +1,52 @@
+<mxfile host="app.diagrams.net" agent="drawio-uml-architect" type="device">
+  <diagram id="a2-quan-ly-lop-va-ma-moi" name="a2-quan-ly-lop-va-ma-moi">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t_service" value='&lt;div style="text-align:center"&gt;&lt;b&gt;InstructorClassService&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;create(instructorId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;draft&amp;nbsp;:&amp;nbsp;ClassDraft)&amp;nbsp;:&amp;nbsp;Classroom&lt;br&gt;+&amp;nbsp;currentInvite(instructorId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;classId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;InviteCode&lt;br&gt;+&amp;nbsp;validateInvite(code&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;InviteStatus&lt;br&gt;+&amp;nbsp;delete(instructorId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;classId&amp;nbsp;:&amp;nbsp;UUID)&lt;br&gt;+&amp;nbsp;expireInvite(classId&amp;nbsp;:&amp;nbsp;UUID)&lt;br&gt;+&amp;nbsp;regenerateInvite(instructorId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;classId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;InviteCode&lt;br&gt;+&amp;nbsp;removeStudent(instructorId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;classId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;studentId&amp;nbsp;:&amp;nbsp;UUID)&lt;br&gt;+&amp;nbsp;details(instructorId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;classId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;ClassDetail' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="274.4" y="60" width="451" height="152" as="geometry" />
+        </mxCell>
+        <mxCell id="t_port1" value='&lt;div style="text-align:center"&gt;&lt;b&gt;ClassRepository&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;findById(classId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;Classroom' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="54" y="282" width="255.79999999999998" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="t_port2" value='&lt;div style="text-align:center"&gt;&lt;b&gt;MembershipRepository&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;remove(classId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;studentId&amp;nbsp;:&amp;nbsp;UUID)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="359.79999999999995" y="282" width="280.2" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="t_port3" value='&lt;div style="text-align:center"&gt;&lt;b&gt;InviteCodeRepository&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;replace(classId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;InviteCode' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="690" y="282" width="255.79999999999998" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.181;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="356.2333333333333" y="229.5" />
+            <mxPoint x="181.89999999999998" y="229.5" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e2" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.514;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="499.9" y="247" />
+            <mxPoint x="503.9" y="247" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e3" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.819;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="643.5666666666666" y="264.5" />
+            <mxPoint x="817.9" y="264.5" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="title" value="A2 — Quản lý lớp và mã mời" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="0" y="10" width="975.8" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="v4" value="Ghi chú: Chỉ giảng viên phụ trách được sửa; xoá lớp phát sự kiện cho bài giao, mã mời cũ hết hiệu lực.&lt;br&gt;Ghi chú: [SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="30" y="356" width="1100" height="44" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,140 @@
+{
+  "_": "Nguồn: 03-dd/logic/F2_problem-bank.md BR-08; 03-dd/api/F2_problem-bank.md §29, 40. Trang này tiếp sau 3a khi mọi điều kiện đạt. ProblemRepository, ProblemDbAdapter, ProblemEventPort là tên minh họa [SoT: Suy luận]. Nhật ký qua AuditLogPort cùng giao dịch; thất bại rollback bài. Sự kiện ProblemPublished phát sau commit, cập nhật phiên bản danh sách. Bài đã PUBLISHED là thao tác lặp không đổi.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Xuất bản: lưu trạng thái, nhật ký và sự kiện (3b/3)",
+  "covers": [
+    "F2-15"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Người soạn đề",
+        "role": "actor"
+      },
+      {
+        "name": "ProblemController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "UpdateProblemPublishStatus",
+        "role": "service",
+        "stereo": "application command"
+      },
+      {
+        "name": "ProblemRepository",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "ProblemDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema problem"
+      },
+      {
+        "name": "AuditLogPort",
+        "role": "repository",
+        "stereo": "identity output port"
+      },
+      {
+        "name": "ProblemEventPort",
+        "role": "repository",
+        "stereo": "output port"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 3 - Chốt trạng thái trong giao dịch"
+      },
+      {
+        "alt": {
+          "label": "Bài đã được xuất bản?",
+          "then": [
+            {
+              "from": "UpdateProblemPublishStatus",
+              "to": "ProblemController",
+              "text": "Trả trạng thái hiện có",
+              "kind": "return"
+            },
+            {
+              "from": "ProblemController",
+              "to": "Người soạn đề",
+              "text": "Bài đã được xuất bản",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "UpdateProblemPublishStatus",
+              "to": "ProblemRepository",
+              "text": "Đổi trạng thái và ghi nhận thời điểm"
+            },
+            {
+              "from": "ProblemRepository",
+              "to": "ProblemDbAdapter",
+              "text": "Cập nhật bài trong giao dịch"
+            },
+            {
+              "from": "ProblemDbAdapter",
+              "to": "PostgreSQL",
+              "text": "Ghi trạng thái đã xuất bản"
+            },
+            {
+              "from": "UpdateProblemPublishStatus",
+              "to": "AuditLogPort",
+              "text": "Ghi nhật ký xuất bản cùng giao dịch"
+            },
+            {
+              "from": "AuditLogPort",
+              "to": "UpdateProblemPublishStatus",
+              "text": "Đã ghi nhật ký",
+              "kind": "return"
+            },
+            {
+              "from": "ProblemDbAdapter",
+              "to": "ProblemRepository",
+              "text": "Đã commit trạng thái và nhật ký",
+              "kind": "return"
+            },
+            {
+              "from": "ProblemRepository",
+              "to": "UpdateProblemPublishStatus",
+              "text": "Bài đã xuất bản",
+              "kind": "return"
+            },
+            {
+              "from": "UpdateProblemPublishStatus",
+              "to": "ProblemEventPort",
+              "text": "Phát sự kiện bài đã xuất bản",
+              "kind": "async"
+            },
+            {
+              "from": "UpdateProblemPublishStatus",
+              "to": "ProblemRepository",
+              "text": "Tăng phiên bản danh sách bài"
+            },
+            {
+              "from": "UpdateProblemPublishStatus",
+              "to": "ProblemController",
+              "text": "Trả trạng thái mới",
+              "kind": "return"
+            },
+            {
+              "from": "ProblemController",
+              "to": "Người soạn đề",
+              "text": "Hiển thị bài đã xuất bản",
+              "kind": "return"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

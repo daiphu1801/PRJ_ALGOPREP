@@ -1,112 +1,31 @@
 {
-  "_": "Luong xem dashboard tien do lop cua actor A2. Nguon: US-A2-09 (01-rd/req/user_stories/a2_instructor.md:140-155), 01-rd/req/F1_identity.md (F1-27, F1-28), 03-dd/api/F1_identity.md muc 0.4 (endpoint #26, #29), 02-bd/architecture/F1_identity.md muc 3.1 (read model dung tu domain event SubmissionGraded, KHONG doc thang schema judge). Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen. | Cap nhat 2026-10-20: siet theo quy tac moi, nhan mui ten la cau tieng Viet thuong, khong duong dan endpoint, ma HTTP, ma quyen, ten su kien, thuat ngu ky thuat; duong dan, ma HTTP va ma quyen nam o DD.",
-  "_suy_giam": "US-A2-11 (a2_instructor.md:185): mot nguon so lieu khong phan hoi thi man van len, phan do bao loi tai cho -- ve thanh nhanh alt vi day la nghiep vu that, khong phai xu ly loi trang tri.",
+  "_": "Thiết kế dự kiến, backend nghiệp vụ F1 chưa triển khai. Nguồn: 03-dd/logic/F1_identity.md BR-12; 03-dd/api/F1_identity.md endpoint #26/#29; 01-rd/system/SYS0101_backend_architecture.md mục 5.4.B. ClassProgressCtrl = ClassProgressController; GetClassProgressQry = GetClassProgressQueryHandler; IdentityReadAdapter = IdentityProgressReadAdapter [SoT: Suy luận]. ClassRosterReadPort đọc học viên còn ghi danh từ schema identity. Bảng class_completion_stats và bước tính sẵn mỗi SubmissionGraded đã bị bỏ; tỉ lệ hoàn thành phải tính khi đọc ở trang 1b. Không đọc trực tiếp schema judge/problem.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Xem tiến độ lớp học (Giảng viên) (1/2)",
-  "covers": [
-    "F1-27",
-    "F1-28"
-  ],
+  "title": "Sơ đồ tuần tự chi tiết - Đọc học viên trong lớp (1a/2)",
+  "covers": ["F1-27"],
   "mode": "color",
   "sequence": {
     "detail": true,
     "participants": [
-      {
-        "name": "Giảng viên",
-        "role": "actor"
-      },
-      {
-        "name": "ClassProgressController",
-        "role": "controller",
-        "stereo": "presentation"
-      },
-      {
-        "name": "ClassProgressService",
-        "role": "service",
-        "stereo": "application"
-      },
-      {
-        "name": "PostgreSQL",
-        "role": "datastore",
-        "stereo": "read model identity"
-      },
-      {
-        "name": "RabbitMQ",
-        "role": "external",
-        "stereo": "sự kiện domain"
-      }
+      {"name": "Giảng viên", "role": "actor"},
+      {"name": "ClassProgressCtrl", "role": "controller", "stereo": "presentation"},
+      {"name": "GetClassProgressQry", "role": "service", "stereo": "application query"},
+      {"name": "ClassRosterReadPort", "role": "repository", "stereo": "application read port"},
+      {"name": "IdentityReadAdapter", "role": "repository", "stereo": "infrastructure"},
+      {"name": "PostgreSQL", "role": "datastore", "stereo": "schema identity"}
     ],
     "messages": [
-      {
-        "phase": "Giai đoạn 1 - Số liệu tiến độ được tính sẵn mỗi khi có bài chấm xong"
-      },
-      {
-        "from": "RabbitMQ",
-        "to": "ClassProgressService",
-        "text": "Có bài nộp vừa chấm xong"
-      },
-      {
-        "from": "ClassProgressService",
-        "to": "ClassProgressService",
-        "text": "Bỏ qua nếu bài này đã được tính rồi"
-      },
-      {
-        "from": "ClassProgressService",
-        "to": "PostgreSQL",
-        "text": "Cập nhật điểm tốt nhất, thống kê bài nộp"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "ClassProgressService",
-        "text": "Đã cập nhật",
-        "kind": "return"
-      },
-      {
-        "phase": "Giai đoạn 2 - Mở màn, đọc danh sách học viên và số liệu tổng hợp (F1-27, F1-28)"
-      },
-      {
-        "from": "Giảng viên",
-        "to": "Giảng viên",
-        "text": "Chọn một lớp trong bộ lọc"
-      },
-      {
-        "from": "Giảng viên",
-        "to": "ClassProgressController",
-        "text": "Gửi yêu cầu xem tiến độ lớp"
-      },
-      {
-        "from": "ClassProgressController",
-        "to": "ClassProgressController",
-        "text": "Kiểm tra quyền và lớp thuộc quyền phụ trách"
-      },
-      {
-        "from": "ClassProgressController",
-        "to": "ClassProgressService",
-        "text": "Yêu cầu tiến độ lớp"
-      },
-      {
-        "from": "ClassProgressService",
-        "to": "PostgreSQL",
-        "text": "Đọc tỉ lệ hoàn thành, điểm trung bình lớp"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "ClassProgressService",
-        "text": "Số liệu tổng hợp của lớp",
-        "kind": "return"
-      },
-      {
-        "from": "ClassProgressService",
-        "to": "PostgreSQL",
-        "text": "Đọc lần nộp gần nhất của từng học viên"
-      },
-      {
-        "from": "PostgreSQL",
-        "to": "ClassProgressService",
-        "text": "Mốc hoạt động từng học viên",
-        "kind": "return"
-      }
+      {"phase": "Giai đoạn 1 - Đọc lớp và học viên còn ghi danh (F1-27)"},
+      {"from": "Giảng viên", "to": "ClassProgressCtrl", "text": "Gửi yêu cầu xem tiến độ lớp"},
+      {"from": "ClassProgressCtrl", "to": "ClassProgressCtrl", "text": "Kiểm tra quyền xem lớp"},
+      {"from": "ClassProgressCtrl", "to": "GetClassProgressQry", "text": "Yêu cầu dữ liệu tiến độ"},
+      {"from": "GetClassProgressQry", "to": "ClassRosterReadPort", "text": "Đọc học viên còn trong lớp"},
+      {"from": "ClassRosterReadPort", "to": "IdentityReadAdapter", "text": "Chuyển yêu cầu đọc danh sách"},
+      {"from": "IdentityReadAdapter", "to": "PostgreSQL", "text": "Đọc lớp và ghi danh hiện hành"},
+      {"from": "PostgreSQL", "to": "IdentityReadAdapter", "text": "Danh sách học viên", "kind": "return"},
+      {"from": "IdentityReadAdapter", "to": "ClassRosterReadPort", "text": "Danh sách học viên", "kind": "return"},
+      {"from": "ClassRosterReadPort", "to": "GetClassProgressQry", "text": "Danh sách học viên", "kind": "return"},
+      {"from": "GetClassProgressQry", "to": "GetClassProgressQry", "text": "Tiếp tục ghép bài giao ở trang 1b"}
     ]
-  },
-  "_cat": "Tach tu sequence_gv_xem_tien_do_lop.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 1/2). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+  }
 }

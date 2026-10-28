@@ -1,8 +1,7 @@
 {
-  "_": "Luong giam sat hang doi va cum judge engine cua actor A3, ke ca job quet bai nop treo. Nguon: US-A3-03 (01-rd/req/user_stories/a3_admin.md), 01-rd/req/F4_judge-orchestration.md (F4-07, F4-10), 02-bd/architecture/F4_judge-orchestration.md muc 5.3 (sweep 5 phut, chu ky quet 60 giay, menh de WHERE chong ghi de). Viet lai 2026-10-19 theo quy tac \"mo ta nghiep vu\": moi mui ten la mot hanh dong bang tieng Viet ngan, khong ten ham, khong cau SQL, khong ten repository; ten ham va truy van nam o DD. Chi giu endpoint, ma HTTP, ma quyen. | 2026-10-20 (owner): nhan mui ten bo han duong dan, ma HTTP, ma quyen, thuat ngu ky thuat (cache, job, worker, model...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
-  "_diem_mau_chot": "Menh de WHERE status NOT IN (7 trang thai cuoi) cua job sweep KHONG phai toi uu truy van -- no la co che chong ghi de khi mot worker cham hoan tat dung luc job chay.",
+  "_": "Nguồn: 03-dd/api/F4_judge-orchestration.md §19; 03-dd/logic/F4_judge-orchestration.md BR-JD-08/09. QueueSettingsPort và JudgeDbAdapter là tên minh họa [SoT: Suy luận]. Khóa dòng, so expectedPaused; lệch trả xung đột. Khi mở lại, đặt lại updated_at cho PENDING trong cùng giao dịch để sweep không bắt nhầm. Audit cùng giao dịch, lỗi rollback. Lệnh chỉ lưu trạng thái; cổng nền áp dụng tối đa 3 giây sau.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Giám sát hàng đợi và quét bài nộp treo (Quản trị viên) (3/3)",
+  "title": "Sơ đồ tuần tự chi tiết - Tạm dừng hoặc tiếp tục nhận bài chấm (3a/3)",
   "covers": [
     "F4-10"
   ],
@@ -20,91 +19,137 @@
         "stereo": "presentation"
       },
       {
-        "name": "JudgeOpsService",
+        "name": "SetQueueConsumptionPaused",
         "role": "service",
-        "stereo": "application"
+        "stereo": "application command"
       },
       {
-        "name": "RabbitMQ",
-        "role": "external",
-        "stereo": "hàng đợi chấm"
+        "name": "QueueSettingsPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "JudgeDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
       },
       {
         "name": "PostgreSQL",
         "role": "datastore",
         "stereo": "schema judge"
+      },
+      {
+        "name": "AuditLogPort",
+        "role": "repository",
+        "stereo": "identity output port"
       }
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 3 - Điều khiển cụm: tạm dừng và mở lại tiêu thụ hàng đợi (F4-10)"
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "Quản trị viên",
-        "text": "Bấm Tạm dừng tiêu thụ hàng đợi"
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "Quản trị viên",
-        "text": "Xác nhận ở hộp nêu rõ bài nộp mới sẽ xếp hàng chờ"
+        "phase": "Giai đoạn 4 - Ghi lựa chọn tạm dừng"
       },
       {
         "from": "Quản trị viên",
         "to": "JudgeOpsController",
-        "text": "Gửi yêu cầu tạm dừng"
+        "text": "Chọn tạm dừng hoặc tiếp tục hàng đợi"
       },
       {
         "from": "JudgeOpsController",
-        "to": "JudgeOpsService",
-        "text": "Yêu cầu tạm dừng tiêu thụ hàng đợi"
+        "to": "SetQueueConsumptionPaused",
+        "text": "Lưu trạng thái mong muốn"
       },
       {
-        "from": "JudgeOpsService",
-        "to": "RabbitMQ",
-        "text": "Dừng nhận bài mới, không huỷ bài đang chờ"
+        "from": "SetQueueConsumptionPaused",
+        "to": "QueueSettingsPort",
+        "text": "Khóa và đọc trạng thái hiện tại"
       },
       {
-        "from": "RabbitMQ",
-        "to": "JudgeOpsService",
-        "text": "Đã dừng",
-        "kind": "return"
+        "from": "QueueSettingsPort",
+        "to": "JudgeDbAdapter",
+        "text": "Đọc cấu hình cụm"
       },
       {
-        "from": "JudgeOpsService",
+        "from": "JudgeDbAdapter",
         "to": "PostgreSQL",
-        "text": "Ghi nhật ký hệ thống: ai tạm dừng, lúc nào"
+        "text": "Khóa dòng cấu hình hàng đợi"
       },
       {
         "from": "PostgreSQL",
-        "to": "JudgeOpsService",
-        "text": "Đã ghi",
+        "to": "JudgeDbAdapter",
+        "text": "Trạng thái hiện tại",
         "kind": "return"
       },
       {
-        "from": "JudgeOpsService",
-        "to": "JudgeOpsController",
-        "text": "Cụm đã tạm dừng",
+        "from": "JudgeDbAdapter",
+        "to": "QueueSettingsPort",
+        "text": "Trạng thái hiện tại",
         "kind": "return"
       },
       {
-        "from": "JudgeOpsController",
-        "to": "Quản trị viên",
-        "text": "Báo thành công",
+        "from": "QueueSettingsPort",
+        "to": "SetQueueConsumptionPaused",
+        "text": "Trạng thái hiện tại",
         "kind": "return"
       },
       {
-        "from": "Quản trị viên",
-        "to": "Quản trị viên",
-        "text": "Bảng giám sát chuyển sang Đang tạm dừng"
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "JudgeOpsController",
-        "text": "Tự làm mới số liệu theo chu kỳ",
-        "kind": "async"
+        "alt": {
+          "label": "Trạng thái đã đổi từ lúc tải trang?",
+          "then": [
+            {
+              "from": "SetQueueConsumptionPaused",
+              "to": "JudgeOpsController",
+              "text": "Báo xung đột, yêu cầu tải lại",
+              "kind": "return"
+            },
+            {
+              "from": "JudgeOpsController",
+              "to": "Quản trị viên",
+              "text": "Hiển thị trạng thái mới để chọn lại",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "SetQueueConsumptionPaused",
+              "to": "QueueSettingsPort",
+              "text": "Ghi trạng thái mới; mở lại thì đặt lại đồng hồ bài chờ"
+            },
+            {
+              "from": "QueueSettingsPort",
+              "to": "JudgeDbAdapter",
+              "text": "Cập nhật cấu hình và bài chờ trong giao dịch"
+            },
+            {
+              "from": "JudgeDbAdapter",
+              "to": "PostgreSQL",
+              "text": "Lưu cờ và mốc bài chờ"
+            },
+            {
+              "from": "SetQueueConsumptionPaused",
+              "to": "AuditLogPort",
+              "text": "Ghi nhật ký đổi trạng thái cùng giao dịch"
+            },
+            {
+              "from": "AuditLogPort",
+              "to": "SetQueueConsumptionPaused",
+              "text": "Nhật ký đã ghi",
+              "kind": "return"
+            },
+            {
+              "from": "SetQueueConsumptionPaused",
+              "to": "JudgeOpsController",
+              "text": "Trả trạng thái đã lưu",
+              "kind": "return"
+            },
+            {
+              "from": "JudgeOpsController",
+              "to": "Quản trị viên",
+              "text": "Hiển thị trạng thái đã chọn",
+              "kind": "return"
+            }
+          ]
+        }
       }
     ]
-  },
-  "_cat": "Tach tu sequence_admin_giam_sat_hang_doi.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 3/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md."
+  }
 }

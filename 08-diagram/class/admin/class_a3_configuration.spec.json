@@ -1,0 +1,86 @@
+{
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a3_admin.md:56; 01-rd/req/user_stories/a3_admin.md:58; 01-rd/req/user_stories/a3_admin.md:61; 01-rd/req/user_stories/a3_admin.md:64. Nguồn thiết kế: 03-dd/logic/F4_judge-orchestration.md; 03-dd/api/F4_judge-orchestration.md; 03-dd/logic/F5_ai-review.md; 03-dd/api/F5_ai-review.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "kind": "class",
+  "title": "A3 — Cấu hình hệ thống và AI",
+  "covers": [
+    "F4-11",
+    "F5-19",
+    "F5-21",
+    "F5-23",
+    "F5-25"
+  ],
+  "class": {
+    "legend": "shared",
+    "classes": [
+      {
+        "id": "service",
+        "name": "AdminConfigurationService",
+        "methods": [
+          "+ updateLanguageOrLimits(adminId : UUID, change : SystemConfigChange)",
+          "+ publishAiConfig(adminId : UUID, draft : AiConfigDraft) : AiConfigVersion",
+          "+ tokenUsage(filter : UsageFilter) : TokenUsageReport",
+          "+ enforceBudget(actorId : UUID, feature : AiFeature) : BudgetDecision"
+        ]
+      },
+      {
+        "id": "port1",
+        "name": "LanguageConfigRepository",
+        "kind": "class",
+        "methods": [
+          "+ save(config : LanguageConfig)"
+        ]
+      },
+      {
+        "id": "port2",
+        "name": "AiConfigRepository",
+        "kind": "class",
+        "methods": [
+          "+ save(version : AiConfigVersion)"
+        ]
+      },
+      {
+        "id": "port3",
+        "name": "AiUsageReadPort",
+        "kind": "interface",
+        "methods": [
+          "+ report(filter : UsageFilter) : TokenUsageReport"
+        ]
+      },
+      {
+        "id": "port4",
+        "name": "AiBudgetPort",
+        "kind": "interface",
+        "methods": [
+          "+ check(actorId : UUID, feature : AiFeature) : BudgetDecision"
+        ]
+      }
+    ],
+    "externals": [],
+    "relations": [
+      {
+        "from": "service",
+        "to": "port1",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port2",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port3",
+        "kind": "dependency"
+      },
+      {
+        "from": "service",
+        "to": "port4",
+        "kind": "dependency"
+      }
+    ],
+    "notes": [
+      "Đổi prompt/model tạo phiên bản mới; ngân sách kiểm trước khi gọi AI; F1-F4 vẫn hoạt động khi hết hạn mức.",
+      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+    ]
+  }
+}

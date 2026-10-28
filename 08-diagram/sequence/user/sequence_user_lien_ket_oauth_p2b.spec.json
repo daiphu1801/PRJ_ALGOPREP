@@ -1,0 +1,107 @@
+{
+  "_": "Trang 2b/3 chỉ chạy sau state hợp lệ ở 2a. Nguồn: 03-dd/logic/F1_identity.md BR-03 bước 3-4; 03-dd/api/F1_identity.md endpoint #6. OAuthCallbackCmd = HandleOAuthCallbackCommandHandler; OAuthProviderPort = OAuthProviderGateway; OAuthProviderAdapter = adapter GitHub/Google [SoT: Suy luận về tên lớp]. Đổi code lấy provider token ở backend, lấy hồ sơ và claim email_verified. Nếu email_verified=false, từ chối và không ghi users/oauth_identities. Token nhà cung cấp không trả về frontend, không dùng làm access token AlgoPrep. Hình chỉ hiển thị nhánh email đã xác minh; nhánh từ chối nằm trong alt. Sau đó sang trang 3 để tìm/tạo tài khoản và cấp phiên. Với tài khoản SELF deactivated, sau xác minh provider có thể cấp restoreTicket theo DD, không phát phiên; biến thể này không được vẽ ở trang này.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Lấy hồ sơ OAuth đã xác minh (2b/3)",
+  "covers": [
+    "F1-15"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Sinh viên",
+        "role": "actor"
+      },
+      {
+        "name": "AuthController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "OAuthCallbackCmd",
+        "role": "service",
+        "stereo": "application command"
+      },
+      {
+        "name": "OAuthProviderPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "OAuthProviderAdapter",
+        "role": "external",
+        "stereo": "infrastructure"
+      },
+      {
+        "name": "Nhà cung cấp OAuth",
+        "role": "external",
+        "stereo": "GitHub hoặc Google"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 2b - Chỉ nhận email đã xác minh"
+      },
+      {
+        "from": "OAuthCallbackCmd",
+        "to": "OAuthProviderPort",
+        "text": "Đổi code và lấy hồ sơ"
+      },
+      {
+        "from": "OAuthProviderPort",
+        "to": "OAuthProviderAdapter",
+        "text": "Chuyển yêu cầu tới nhà cung cấp"
+      },
+      {
+        "from": "OAuthProviderAdapter",
+        "to": "Nhà cung cấp OAuth",
+        "text": "Đổi code, đọc email đã xác minh"
+      },
+      {
+        "from": "Nhà cung cấp OAuth",
+        "to": "OAuthProviderAdapter",
+        "text": "Mã người dùng, email và cờ xác minh",
+        "kind": "return"
+      },
+      {
+        "from": "OAuthProviderAdapter",
+        "to": "OAuthProviderPort",
+        "text": "Hồ sơ nhà cung cấp",
+        "kind": "return"
+      },
+      {
+        "from": "OAuthProviderPort",
+        "to": "OAuthCallbackCmd",
+        "text": "Hồ sơ nhà cung cấp",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Email ở nhà cung cấp đã xác minh?",
+          "then": [
+            {
+              "from": "OAuthCallbackCmd",
+              "to": "OAuthCallbackCmd",
+              "text": "Tiếp tục liên kết ở trang 3"
+            }
+          ],
+          "else": [
+            {
+              "from": "OAuthCallbackCmd",
+              "to": "AuthController",
+              "text": "Từ chối tạo hoặc liên kết tài khoản",
+              "kind": "return"
+            },
+            {
+              "from": "AuthController",
+              "to": "Sinh viên",
+              "text": "Yêu cầu xác minh email tại nhà cung cấp",
+              "kind": "return"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -426,7 +426,7 @@ Không có endpoint riêng cho màn này. Hai chỉ số sử dụng đi kèm `G
 
 ## Sheet 9. Đặc tả kiểm tra
 
-> Bộ thẻ và quy ước mã thông báo: `02-bd/_rules/bd-template-9sheet.md` mục 2, 4. Màn chỉ đọc nên **không có kiểm nhập liệu**. Tiêu chí nghiệm thu `AC-nn` thuộc `04-tdd/interview_question_info.md`.
+> Bộ thẻ và quy ước mã thông báo: `02-bd/_rules/bd-template-9sheet.md` mục 2, 4. Màn chỉ đọc nên **không có kiểm nhập liệu**. Tiêu chí nghiệm thu `AC-nn` thuộc `04-tdd/screens/shared/SHR0303_interview_question_info.md`.
 
 | NO | Loại | Tóm tắt kiểm | Chi tiết | Mức | Mã thông báo | Ghi chú | EVT gọi | Thứ tự |
 | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: |

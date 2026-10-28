@@ -1,0 +1,215 @@
+{
+  "_": "Nguồn: 03-dd/api/F6_interview-bank.md mục 6, 25-26; 03-dd/logic/F6_interview-bank.md BR-IB-07/08/09. Trang này nối tiếp 2a sau khi qua các hạn mức. PracticeAnswerPort và InterviewBankDbAdapter minh họa ranh giới [SoT: Suy luận]. Mỗi lượt nộp tạo bản ghi mới; cập nhật tiến độ cùng giao dịch; ghi token sau commit, lỗi ghi token chỉ cảnh báo.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Luyện trả lời: nhận xét và lưu lượt (2b/3)",
+  "covers": [
+    "F6-07",
+    "F6-08"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Sinh viên",
+        "role": "actor"
+      },
+      {
+        "name": "PracticeController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "SubmitPracticeAnswer",
+        "role": "service",
+        "stereo": "application command"
+      },
+      {
+        "name": "AnswerFeedbackPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "SpringAiFeedbackAdapter",
+        "role": "repository",
+        "stereo": "infrastructure"
+      },
+      {
+        "name": "Nhà cung cấp AI",
+        "role": "external"
+      },
+      {
+        "name": "PracticeAnswerPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "InterviewBankDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema interview_bank"
+      },
+      {
+        "name": "RecordAiTokenUsageUseCase",
+        "role": "service",
+        "stereo": "ai-review"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 3 - Xin nhận xét theo bộ tiêu chí"
+      },
+      {
+        "from": "SubmitPracticeAnswer",
+        "to": "SubmitPracticeAnswer",
+        "text": "Ghép chỉ thị cố định, tiêu chí tham chiếu và dữ liệu câu trả lời"
+      },
+      {
+        "from": "SubmitPracticeAnswer",
+        "to": "AnswerFeedbackPort",
+        "text": "Xin so sánh câu trả lời với từng tiêu chí"
+      },
+      {
+        "from": "AnswerFeedbackPort",
+        "to": "SpringAiFeedbackAdapter",
+        "text": "Gọi mô hình với thời hạn 30 giây"
+      },
+      {
+        "from": "SpringAiFeedbackAdapter",
+        "to": "Nhà cung cấp AI",
+        "text": "Gửi câu hỏi và câu trả lời như dữ liệu"
+      },
+      {
+        "from": "Nhà cung cấp AI",
+        "to": "SpringAiFeedbackAdapter",
+        "text": "Nhận xét và số token đã dùng",
+        "kind": "return"
+      },
+      {
+        "from": "SpringAiFeedbackAdapter",
+        "to": "AnswerFeedbackPort",
+        "text": "Kiểm tra cấu trúc nhận xét",
+        "kind": "return"
+      },
+      {
+        "from": "AnswerFeedbackPort",
+        "to": "SubmitPracticeAnswer",
+        "text": "Nhận xét hoặc thông tin lỗi",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "AI trả nhận xét hợp lệ?",
+          "then": [
+            {
+              "from": "SubmitPracticeAnswer",
+              "to": "PracticeAnswerPort",
+              "text": "Tạo lượt luyện hoàn tất và cập nhật tiến độ"
+            },
+            {
+              "from": "PracticeAnswerPort",
+              "to": "InterviewBankDbAdapter",
+              "text": "Lưu một lượt mới trong cùng giao dịch"
+            },
+            {
+              "from": "InterviewBankDbAdapter",
+              "to": "PostgreSQL",
+              "text": "Ghi câu trả lời, nhận xét và tiến độ theo chủ đề"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "InterviewBankDbAdapter",
+              "text": "Đã ghi nhận lượt luyện",
+              "kind": "return"
+            },
+            {
+              "from": "InterviewBankDbAdapter",
+              "to": "PracticeAnswerPort",
+              "text": "Đã commit",
+              "kind": "return"
+            },
+            {
+              "from": "PracticeAnswerPort",
+              "to": "SubmitPracticeAnswer",
+              "text": "Đã lưu lượt luyện",
+              "kind": "return"
+            },
+            {
+              "from": "SubmitPracticeAnswer",
+              "to": "RecordAiTokenUsageUseCase",
+              "text": "Ghi token đã dùng sau commit"
+            },
+            {
+              "from": "SubmitPracticeAnswer",
+              "to": "PracticeController",
+              "text": "Trả nhận xét và trạng thái hoàn tất",
+              "kind": "return"
+            },
+            {
+              "from": "PracticeController",
+              "to": "Sinh viên",
+              "text": "Hiển thị nhận xét theo tiêu chí",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "SubmitPracticeAnswer",
+              "to": "PracticeAnswerPort",
+              "text": "Tạo lượt luyện thất bại và cập nhật tiến độ"
+            },
+            {
+              "from": "PracticeAnswerPort",
+              "to": "InterviewBankDbAdapter",
+              "text": "Lưu câu trả lời cùng mã lỗi"
+            },
+            {
+              "from": "InterviewBankDbAdapter",
+              "to": "PostgreSQL",
+              "text": "Ghi lượt mới có trạng thái thất bại và tiến độ"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "InterviewBankDbAdapter",
+              "text": "Đã ghi nhận lượt luyện",
+              "kind": "return"
+            },
+            {
+              "from": "InterviewBankDbAdapter",
+              "to": "PracticeAnswerPort",
+              "text": "Đã commit",
+              "kind": "return"
+            },
+            {
+              "from": "PracticeAnswerPort",
+              "to": "SubmitPracticeAnswer",
+              "text": "Đã lưu câu trả lời",
+              "kind": "return"
+            },
+            {
+              "from": "SubmitPracticeAnswer",
+              "to": "RecordAiTokenUsageUseCase",
+              "text": "Ghi token nếu nhà cung cấp đã báo"
+            },
+            {
+              "from": "SubmitPracticeAnswer",
+              "to": "PracticeController",
+              "text": "Trả lượt đã lưu kèm lý do chưa có nhận xét",
+              "kind": "return"
+            },
+            {
+              "from": "PracticeController",
+              "to": "Sinh viên",
+              "text": "Hiển thị câu trả lời đã lưu và lỗi nhận xét",
+              "kind": "return"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

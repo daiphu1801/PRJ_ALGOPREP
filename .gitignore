@@ -3,6 +3,7 @@
 # ==========================================
 CLAUDE.md
 .claude/
+.agents/
 .nexa/
 opencode.json
 opencode.jsonc

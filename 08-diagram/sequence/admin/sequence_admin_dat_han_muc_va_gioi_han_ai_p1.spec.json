@@ -1,7 +1,7 @@
 {
-  "_": "Nguon: 01-rd/screens/admin/ADM0303_ai_limits.md (REQ-02..05), 02-bd/screens/admin/ADM0303_ai_limits.md muc 7.3 (endpoint NO 3-13, ten nghiep vu). Duong dan REST la [SoT: Suy luan] vi 03-dd/api/F5_ai-review.md chua viet. Nhan mui ten la hanh dong nghiep vu; ten ham va truy van thuoc DD. Phan REQ-01 (dat han muc, tu khoa) da co o sequence_admin_dat_ngan_sach_token_p1. Phan 1/4: mo khoa ngan sach (REQ-02). Tach 3 phan 2026-10-20 vi ban 2 phan qua cao (lint: cao 2.39 lan be ngang). | 2026-10-20 (owner): nhan mui ten bo han duong dan, ma HTTP, ma quyen, thuat ngu ky thuat (cache, job, worker, model...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
+  "_": "Nguồn: 03-dd/api/F5_ai-review.md §20. Chỉ mở khi usedTokens < limitTokens; đã mở thì không ghi audit; audit của thay đổi thật cùng giao dịch. Cổng và adapter là tên minh họa [SoT: Suy luận].",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Mở khoá ngân sách khi bị khoá (Quản trị viên) (1/4)",
+  "title": "Sơ đồ tuần tự chi tiết - Mở khóa ngân sách token (1/5)",
   "covers": [
     "F5-25"
   ],
@@ -19,9 +19,24 @@
         "stereo": "presentation"
       },
       {
-        "name": "AiLimitsService",
+        "name": "UnlockAiTokenBudget",
         "role": "service",
         "stereo": "application"
+      },
+      {
+        "name": "BudgetStorePort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "AiDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
+      },
+      {
+        "name": "AuditLogPort",
+        "role": "repository",
+        "stereo": "identity port"
       },
       {
         "name": "PostgreSQL",
@@ -31,92 +46,85 @@
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 1 - Mở khoá ngân sách khi bị khoá: chỉ mở được khi đã dùng ít hơn hạn mức (F5-25)"
-      },
-      {
-        "from": "Quản trị viên",
-        "to": "Quản trị viên",
-        "text": "Bấm Mở khoá ngân sách và xác nhận"
+        "phase": "Kiểm tra ngân sách đang khóa"
       },
       {
         "from": "Quản trị viên",
         "to": "AiLimitsController",
-        "text": "Gửi yêu cầu mở khoá"
+        "text": "Yêu cầu mở khóa ngân sách"
       },
       {
         "from": "AiLimitsController",
-        "to": "AiLimitsController",
-        "text": "Kiểm tra quyền đổi ngân sách AI"
+        "to": "UnlockAiTokenBudget",
+        "text": "Kiểm quyền cập nhật ngân sách"
       },
       {
-        "from": "AiLimitsController",
-        "to": "AiLimitsService",
-        "text": "Yêu cầu mở khoá"
+        "from": "UnlockAiTokenBudget",
+        "to": "BudgetStorePort",
+        "text": "Khóa cấu hình và tính token đã dùng"
       },
       {
-        "from": "AiLimitsService",
+        "from": "BudgetStorePort",
+        "to": "AiDbAdapter",
+        "text": "Đọc ngân sách trong giao dịch"
+      },
+      {
+        "from": "AiDbAdapter",
         "to": "PostgreSQL",
-        "text": "Đọc số token đã dùng và hạn mức"
+        "text": "Khóa dòng cấu hình, cộng token từ đầu kỳ"
       },
       {
         "from": "PostgreSQL",
-        "to": "AiLimitsService",
-        "text": "Đã dùng, hạn mức, trạng thái khoá",
+        "to": "UnlockAiTokenBudget",
+        "text": "Trả trạng thái và số đã dùng",
         "kind": "return"
       },
       {
         "alt": {
-          "label": "Đã dùng < hạn mức?",
+          "label": "Có thể mở khóa?",
           "then": [
             {
-              "from": "AiLimitsService",
-              "to": "AiLimitsService",
-              "text": "Còn hạn mức, được mở khoá"
+              "from": "UnlockAiTokenBudget",
+              "to": "BudgetStorePort",
+              "text": "Xóa thời điểm khóa"
             },
             {
-              "from": "AiLimitsService",
+              "from": "BudgetStorePort",
+              "to": "AiDbAdapter",
+              "text": "Lưu trạng thái mở"
+            },
+            {
+              "from": "AiDbAdapter",
               "to": "PostgreSQL",
-              "text": "Bỏ trạng thái khoá và ghi nhật ký"
+              "text": "Cập nhật khóa thành rỗng"
             },
             {
-              "from": "PostgreSQL",
-              "to": "AiLimitsService",
-              "text": "Đã ghi",
-              "kind": "return"
+              "from": "UnlockAiTokenBudget",
+              "to": "AuditLogPort",
+              "text": "Ghi nhật ký mở khóa cùng giao dịch"
             },
             {
-              "from": "AiLimitsService",
+              "from": "UnlockAiTokenBudget",
               "to": "AiLimitsController",
-              "text": "Ngân sách đã mở khoá",
-              "kind": "return"
-            },
-            {
-              "from": "AiLimitsController",
-              "to": "Quản trị viên",
-              "text": "Báo thành công",
+              "text": "Trả ngân sách đã mở",
               "kind": "return"
             }
           ],
           "else": [
             {
-              "from": "AiLimitsService",
-              "to": "AiLimitsService",
-              "text": "Chưa dưới hạn mức, từ chối"
-            },
-            {
-              "from": "AiLimitsService",
+              "from": "UnlockAiTokenBudget",
               "to": "AiLimitsController",
-              "text": "Từ chối, vẫn giữ khoá",
-              "kind": "return"
-            },
-            {
-              "from": "AiLimitsController",
-              "to": "Quản trị viên",
-              "text": "Báo lỗi: cần nâng hạn mức trước",
+              "text": "Nếu đã mở: trả nguyên trạng; nếu đã dùng đủ: yêu cầu tăng hạn mức",
               "kind": "return"
             }
           ]
         }
+      },
+      {
+        "from": "AiLimitsController",
+        "to": "Quản trị viên",
+        "text": "Hiển thị kết quả",
+        "kind": "return"
       }
     ]
   }

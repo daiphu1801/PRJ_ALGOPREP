@@ -1,15 +1,11 @@
 {
-  "_": "Luong nop bai va xem ket qua tung testcase theo thoi gian thuc cua actor A1. Nguon: US-A1-04 (01-rd/req/user_stories/a1_student.md), 01-rd/req/F4_judge-orchestration.md (F4-01, F4-03, F4-08, F4-13), 02-bd/architecture/F4_judge-orchestration.md muc 4 (state machine) va muc 6 (Outbox), 02-bd/architecture/F3_harness.md muc 5 (plugin sinh ma, anh xa loi bien dich). | 2026-10-20 (owner): nhan mui ten viet ngon ngu thuong, bo duong dan, ma HTTP, ma quyen, ten ham, SQL, thuat ngu ky thuat (cache, job, worker, prompt...); nguoi doc khong chuyen cung hieu. Ten lifeline giu nguyen.",
+  "_": "Thiết kế dự kiến, backend nghiệp vụ F4 chưa triển khai. Nguồn: 03-dd/logic/F4_judge-orchestration.md BR-JD-01; 03-dd/api/F4_judge-orchestration.md mục 1.3; 01-rd/system/SYS0101_backend_architecture.md mục 5.3-5.5. SubmitCtrl = SubmissionController; CreateSubCmd = CreateSubmissionCommandHandler; GradingPort = ProblemGradingSpecPort; SubmitRepo = SubmissionRepository; SubmitDbAdapter = SubmissionPersistenceAdapter. Các tên lớp triển khai là [SoT: Suy luận]. Adapter/bridge sang F2 được lược ở trang này để giữ phần ghi DB đọc được. Trang này dừng sau commit; phát hàng đợi và trả lời ở sequence_user_nop_bai_va_xem_ket_qua_realtime_p1b.spec.json. Nhãn mũi tên dùng tiếng Việt thông dụng.",
   "_khong_fail_fast": "F4-04 (dung som khi gap testcase sai) da het hieu luc theo DEC-2026-0831-partial-score-testcase-ratio -- vong lap chay het N testcase de co du lieu tinh ty le F4-13.",
-  "_tran": "8 participant -> be ngang 1310px, vuot canh dai A4. Chap nhan co y: day la luong xuyen 4 tang cong 2 ranh gioi tien trinh that (RabbitMQ, go-judge), gom bot bat ky cot nao cung xoa mat mot ranh gioi kien truc. In A3 hoac xuat SVG.",
+  "_tran": "Trang nhận bài được tách tại thời điểm commit để không ép DB và RabbitMQ lên cùng một hình quá rộng.",
   "kind": "sequence",
-  "title": "Sơ đồ tuần tự chi tiết - Nộp bài và chấm từng testcase (1/3)",
+  "title": "Sơ đồ tuần tự chi tiết - Kiểm tra và lưu bài nộp (1a/3)",
   "covers": [
-    "F3-03",
-    "F3-04",
-    "F3-05",
-    "F4-01",
-    "F4-08"
+    "F4-01"
   ],
   "mode": "color",
   "sequence": {
@@ -20,19 +16,29 @@
         "role": "actor"
       },
       {
-        "name": "SubmissionController",
+        "name": "SubmitCtrl",
         "role": "controller",
         "stereo": "REST + STOMP"
       },
       {
-        "name": "SubmissionService",
+        "name": "CreateSubCmd",
         "role": "service",
-        "stereo": "application"
+        "stereo": "application command"
       },
       {
-        "name": "RabbitMQ",
-        "role": "external",
-        "stereo": "hàng đợi chấm"
+        "name": "GradingPort",
+        "role": "repository",
+        "stereo": "domain port → F2"
+      },
+      {
+        "name": "SubmitRepo",
+        "role": "repository",
+        "stereo": "domain output port"
+      },
+      {
+        "name": "SubmitDbAdapter",
+        "role": "repository",
+        "stereo": "infrastructure"
       },
       {
         "name": "PostgreSQL",
@@ -42,7 +48,7 @@
     ],
     "messages": [
       {
-        "phase": "Giai đoạn 1 - Tiếp nhận bản nộp, trả lời ngay không chờ chấm (F4-01)"
+        "phase": "Giai đoạn 1 - Kiểm tra và lưu bài nộp (F4-01)"
       },
       {
         "from": "Sinh viên",
@@ -61,55 +67,75 @@
       },
       {
         "from": "Sinh viên",
-        "to": "SubmissionController",
+        "to": "SubmitCtrl",
         "text": "Gửi bài nộp: đề, ngôn ngữ, mã nguồn"
       },
       {
-        "from": "SubmissionController",
-        "to": "SubmissionController",
+        "from": "SubmitCtrl",
+        "to": "SubmitCtrl",
         "text": "Kiểm tra ngôn ngữ thuộc Java / C++ / Python"
       },
       {
-        "from": "SubmissionController",
-        "to": "SubmissionService",
+        "from": "SubmitCtrl",
+        "to": "CreateSubCmd",
         "text": "Xử lý nộp bài của người học"
       },
       {
-        "from": "SubmissionService",
+        "from": "CreateSubCmd",
+        "to": "GradingPort",
+        "text": "Kiểm tra đề và bộ ca kiểm thử sẵn sàng"
+      },
+      {
+        "from": "GradingPort",
+        "to": "CreateSubCmd",
+        "text": "Phiên bản bộ ca và giới hạn bài",
+        "kind": "return"
+      },
+      {
+        "from": "CreateSubCmd",
+        "to": "CreateSubCmd",
+        "text": "Kiểm tra ngôn ngữ và hạn nộp"
+      },
+      {
+        "from": "CreateSubCmd",
+        "to": "SubmitRepo",
+        "text": "Lưu bài ở trạng thái Đang chờ"
+      },
+      {
+        "from": "SubmitRepo",
+        "to": "SubmitDbAdapter",
+        "text": "Chuyển yêu cầu lưu bài"
+      },
+      {
+        "from": "SubmitDbAdapter",
         "to": "PostgreSQL",
-        "text": "Lưu bài nộp, trạng thái Đang chờ"
+        "text": "Ghi bài và phiên bản bộ ca"
       },
       {
         "from": "PostgreSQL",
-        "to": "SubmissionService",
+        "to": "SubmitDbAdapter",
         "text": "Mã bài nộp",
         "kind": "return"
       },
       {
-        "from": "SubmissionService",
-        "to": "RabbitMQ",
-        "text": "Đưa bài vào hàng đợi chấm",
-        "kind": "async"
-      },
-      {
-        "from": "SubmissionService",
-        "to": "SubmissionController",
+        "from": "SubmitDbAdapter",
+        "to": "SubmitRepo",
         "text": "Mã bài nộp",
         "kind": "return"
       },
       {
-        "from": "SubmissionController",
-        "to": "Sinh viên",
-        "text": "Báo đã nhận bài, không chờ chấm xong",
+        "from": "SubmitRepo",
+        "to": "CreateSubCmd",
+        "text": "Mã bài nộp",
         "kind": "return"
       },
       {
-        "from": "Sinh viên",
-        "to": "Sinh viên",
-        "text": "Mở kênh nhận kết quả chấm trực tiếp"
+        "from": "CreateSubCmd",
+        "to": "CreateSubCmd",
+        "text": "Lưu xong; chuyển sang xếp hàng chấm"
       }
     ]
   },
-  "_cat": "Tach tu sequence_user_nop_bai_va_xem_ket_qua_realtime.spec.json ngay 2026-09-27 cho vua mot trang bao cao (phan 1/3). Xem 06-plan/260927-1719-sequence-vua-mot-trang.md.",
+  "_cat": "Ánh xạ trang gốc 1/3 thành 1a và 1b; phần sinh harness, chấm và realtime nằm ở trang 2-3.",
   "_khong_ve_f4_05_06": "KHONG ve xac thuc webhook (F4-05) va chong trung callback (F4-06). Ly do: CLAUDE.md muc Bounded Contexts chot day la 'adapter-internal concerns, only relevant if an async adapter (e.g. Judge0) is plugged in'. Voi go-judge la engine mac dinh (DEC-2026-0823-go-judge-default-engine), JudgeWorker goi cong ra dong bo cho tung testcase, khong co callback nao quay ve nen hai co che nay khong nam trong luong chinh. Ghi lai o day de lan ra soat sau khong tinh nham la bo sot -- ra soat 2026-09-28 phat hien hai ma nay khong spec nao nhac toi, ke ca de loai tru. [SoT: 01-rd/req/F4_judge-orchestration.md:37]"
 }

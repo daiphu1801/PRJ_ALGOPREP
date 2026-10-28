@@ -1,0 +1,142 @@
+{
+  "_": "Nguồn thuộc tính và liên kết: 02-bd/database/F1_identity.md:12-158. [SoT: Suy luận] Ánh xạ bảng dữ liệu sang tên class Java là thiết kế đề xuất; bội số theo FK/unique của BD. Bỏ thuộc tính thứ cấp và getter/setter.",
+  "kind": "class",
+  "title": "F1 — Mô hình tài khoản, quyền và lớp học",
+  "covers": [],
+  "class": {
+    "legend": "shared",
+    "classes": [
+      {
+        "id": "user",
+        "name": "UserAccount",
+        "attributes": [
+          "+ id : UUID",
+          "+ email : String",
+          "+ passwordHash : String [0..1]",
+          "+ status : AccountStatus",
+          "+ deactivationSource : DeactivationSource [0..1]"
+        ],
+        "methods": [
+          "+ canLogin() : boolean"
+        ]
+      },
+      {
+        "id": "role",
+        "name": "Role",
+        "attributes": [
+          "+ id : UUID",
+          "+ code : String",
+          "+ baseCategory : BaseCategory"
+        ],
+        "methods": []
+      },
+      {
+        "id": "grant",
+        "name": "PermissionGrant",
+        "attributes": [
+          "+ roleId : UUID",
+          "+ functionId : UUID",
+          "+ actionId : UUID",
+          "+ granted : boolean"
+        ],
+        "methods": []
+      },
+      {
+        "id": "oauth",
+        "name": "OAuthIdentity",
+        "attributes": [
+          "+ userId : UUID",
+          "+ provider : OAuthProvider",
+          "+ providerUserId : String"
+        ],
+        "methods": []
+      },
+      {
+        "id": "token",
+        "name": "RefreshToken",
+        "attributes": [
+          "+ userId : UUID",
+          "+ familyId : UUID",
+          "+ revokedAt : Instant [0..1]"
+        ],
+        "methods": []
+      },
+      {
+        "id": "class",
+        "name": "Classroom",
+        "attributes": [
+          "+ id : UUID",
+          "+ instructorId : UUID",
+          "+ name : String"
+        ],
+        "methods": []
+      },
+      {
+        "id": "member",
+        "name": "ClassMembership",
+        "attributes": [
+          "+ classId : UUID",
+          "+ studentId : UUID",
+          "+ leftAt : Instant [0..1]"
+        ],
+        "methods": []
+      }
+    ],
+    "externals": [],
+    "relations": [
+      {
+        "from": "user",
+        "to": "role",
+        "kind": "association",
+        "from_mult": "0..*",
+        "to_mult": "1"
+      },
+      {
+        "from": "role",
+        "to": "grant",
+        "kind": "composition",
+        "from_mult": "1",
+        "to_mult": "0..*"
+      },
+      {
+        "from": "user",
+        "to": "oauth",
+        "kind": "association",
+        "from_mult": "1",
+        "to_mult": "0..*"
+      },
+      {
+        "from": "user",
+        "to": "token",
+        "kind": "association",
+        "from_mult": "1",
+        "to_mult": "0..*"
+      },
+      {
+        "from": "user",
+        "to": "class",
+        "kind": "association",
+        "from_mult": "1",
+        "to_mult": "0..*"
+      },
+      {
+        "from": "class",
+        "to": "member",
+        "kind": "composition",
+        "from_mult": "1",
+        "to_mult": "0..*"
+      },
+      {
+        "from": "user",
+        "to": "member",
+        "kind": "association",
+        "from_mult": "1",
+        "to_mult": "0..*"
+      }
+    ],
+    "notes": [
+      "Role là RBAC; current_position/target_position của hồ sơ không phải role. Chỉ tài khoản tự xoá mới được ẩn danh.",
+      "[SoT: Suy luận] Tên class Java đề xuất từ schema BD."
+    ]
+  }
+}

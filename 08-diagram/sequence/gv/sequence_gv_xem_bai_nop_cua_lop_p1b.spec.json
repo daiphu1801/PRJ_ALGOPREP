@@ -1,0 +1,161 @@
+{
+  "_": "Nguồn: 03-dd/api/F4_judge-orchestration.md §14; 03-dd/logic/F4_judge-orchestration.md BR-JD-10. SubmissionReadPort và JudgeDbAdapter là tên minh họa [SoT: Suy luận]. Máy chủ suy ra học viên/lớp từ chính bài nộp, bỏ qua tham số gợi ý trên URL. Ngoài phạm vi trả cùng lỗi không tìm thấy. Giảng viên đọc được mã nguồn; testcase HIDDEN không lộ input/output/expected; không có chỉ số beatsPercent hoặc kênh realtime.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Mở chi tiết bài nộp của lớp (2/2)",
+  "covers": [
+    "F4-13"
+  ],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {
+        "name": "Giảng viên",
+        "role": "actor"
+      },
+      {
+        "name": "SubmissionController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "GetInstructorSubmissionDetail",
+        "role": "service",
+        "stereo": "application query"
+      },
+      {
+        "name": "ClassScopeReadPort",
+        "role": "repository",
+        "stereo": "identity output port"
+      },
+      {
+        "name": "ClassAssignmentReadPort",
+        "role": "repository",
+        "stereo": "problem output port"
+      },
+      {
+        "name": "SubmissionReadPort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "JudgeDbAdapter",
+        "role": "repository",
+        "stereo": "persistence adapter"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema judge"
+      }
+    ],
+    "messages": [
+      {
+        "phase": "Giai đoạn 3 - Kiểm phạm vi của một bài nộp"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "SubmissionController",
+        "text": "Mở một bài nộp trong danh sách lớp"
+      },
+      {
+        "from": "SubmissionController",
+        "to": "GetInstructorSubmissionDetail",
+        "text": "Lấy chi tiết bài nộp"
+      },
+      {
+        "from": "GetInstructorSubmissionDetail",
+        "to": "SubmissionReadPort",
+        "text": "Đọc bài nộp theo mã"
+      },
+      {
+        "from": "SubmissionReadPort",
+        "to": "JudgeDbAdapter",
+        "text": "Tìm bài và chủ bài thật"
+      },
+      {
+        "from": "JudgeDbAdapter",
+        "to": "PostgreSQL",
+        "text": "Đọc bài, thời điểm nộp và kết quả chấm"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "JudgeDbAdapter",
+        "text": "Bài nộp và kết quả",
+        "kind": "return"
+      },
+      {
+        "from": "JudgeDbAdapter",
+        "to": "SubmissionReadPort",
+        "text": "Bài nộp và kết quả",
+        "kind": "return"
+      },
+      {
+        "from": "SubmissionReadPort",
+        "to": "GetInstructorSubmissionDetail",
+        "text": "Bài nộp và kết quả",
+        "kind": "return"
+      },
+      {
+        "from": "GetInstructorSubmissionDetail",
+        "to": "ClassScopeReadPort",
+        "text": "Kiểm khoảng ghi danh của chủ bài trong lớp phụ trách"
+      },
+      {
+        "from": "ClassScopeReadPort",
+        "to": "GetInstructorSubmissionDetail",
+        "text": "Lớp và khoảng ghi danh hợp lệ",
+        "kind": "return"
+      },
+      {
+        "from": "GetInstructorSubmissionDetail",
+        "to": "ClassAssignmentReadPort",
+        "text": "Kiểm bài đã giao tại thời điểm nộp"
+      },
+      {
+        "from": "ClassAssignmentReadPort",
+        "to": "GetInstructorSubmissionDetail",
+        "text": "Các khoảng giao bài hợp lệ",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Bài nộp thuộc lớp phụ trách tại thời điểm nộp?",
+          "then": [
+            {
+              "from": "GetInstructorSubmissionDetail",
+              "to": "GetInstructorSubmissionDetail",
+              "text": "Chọn lớp có lần giao mới nhất và che dữ liệu ca ẩn"
+            },
+            {
+              "from": "GetInstructorSubmissionDetail",
+              "to": "SubmissionController",
+              "text": "Trả chi tiết, mã nguồn và kết quả được phép xem",
+              "kind": "return"
+            },
+            {
+              "from": "SubmissionController",
+              "to": "Giảng viên",
+              "text": "Hiển thị chi tiết chỉ đọc",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "GetInstructorSubmissionDetail",
+              "to": "SubmissionController",
+              "text": "Báo không tìm thấy bài nộp",
+              "kind": "return"
+            },
+            {
+              "from": "SubmissionController",
+              "to": "Giảng viên",
+              "text": "Hiển thị lỗi không tìm thấy",
+              "kind": "return"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

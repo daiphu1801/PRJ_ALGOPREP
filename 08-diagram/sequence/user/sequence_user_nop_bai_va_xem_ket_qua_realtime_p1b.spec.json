@@ -1,0 +1,31 @@
+{
+  "_": "Trang 1b/3 tiếp nối sequence_user_nop_bai_va_xem_ket_qua_realtime_p1.spec.json sau khi transaction lưu PENDING đã commit. Nguồn: 03-dd/logic/F4_judge-orchestration.md BR-JD-01 bước 7-8; 03-dd/api/F4_judge-orchestration.md; 01-rd/system/SYS0101_backend_architecture.md mục 5.4.A. SubmitCtrl = SubmissionController; CreateSubCmd = CreateSubmissionCommandHandler; JudgeDispatchPort là cổng ra F4, JudgeQueueAdapter là nhãn thiết kế dự kiến [SoT: Suy luận]. Chỉ vẽ nhánh publish thành công để giải thích thời điểm trả lời; nhánh publisher confirm thất bại (đổi PENDING sang SYSTEM_ERROR/QUEUE_UNAVAILABLE bằng giao dịch mới) nằm trong DD, không được hiểu là bỏ qua khi code. Message chỉ mang submissionId, không mang mã nguồn.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Xếp hàng chấm và trả lời (1b/3)",
+  "covers": ["F4-01"],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {"name": "Sinh viên", "role": "actor"},
+      {"name": "SubmitCtrl", "role": "controller", "stereo": "presentation"},
+      {"name": "CreateSubCmd", "role": "service", "stereo": "application command"},
+      {"name": "JudgeDispatchPort", "role": "repository", "stereo": "domain output port"},
+      {"name": "JudgeQueueAdapter", "role": "external", "stereo": "infrastructure"},
+      {"name": "RabbitMQ", "role": "external", "stereo": "hàng đợi chấm"}
+    ],
+    "messages": [
+      {"phase": "Giai đoạn 2 - Đưa bài đã lưu vào hàng đợi (F4-01)"},
+      {"from": "CreateSubCmd", "to": "CreateSubCmd", "text": "Bài đã lưu, chỉ chuyển mã bài nộp"},
+      {"from": "CreateSubCmd", "to": "JudgeDispatchPort", "text": "Yêu cầu xếp bài để chấm"},
+      {"from": "JudgeDispatchPort", "to": "JudgeQueueAdapter", "text": "Chuyển yêu cầu phát việc"},
+      {"from": "JudgeQueueAdapter", "to": "RabbitMQ", "text": "Đưa mã bài vào hàng đợi", "kind": "async"},
+      {"from": "RabbitMQ", "to": "JudgeQueueAdapter", "text": "Xác nhận đã nhận việc", "kind": "return"},
+      {"from": "JudgeQueueAdapter", "to": "JudgeDispatchPort", "text": "Đã xếp hàng", "kind": "return"},
+      {"from": "JudgeDispatchPort", "to": "CreateSubCmd", "text": "Đã xếp hàng", "kind": "return"},
+      {"from": "CreateSubCmd", "to": "SubmitCtrl", "text": "Mã bài nộp", "kind": "return"},
+      {"from": "SubmitCtrl", "to": "Sinh viên", "text": "Báo đã nhận bài, chưa chờ chấm", "kind": "return"},
+      {"from": "Sinh viên", "to": "Sinh viên", "text": "Mở kênh xem kết quả từng ca"}
+    ]
+  }
+}

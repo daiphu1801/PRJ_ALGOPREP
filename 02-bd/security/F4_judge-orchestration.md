@@ -57,10 +57,10 @@ Thiết kế **trung lập ở tầng port** — `JudgeExecutionPort` không man
 - **Không trả input/expected-output của Hidden testcase** cho học viên qua bất kỳ API nào của
   `judge-orchestration` — chỉ trả `status`, `verdict`, `testcase_order` (chỉ số, không phải nội dung) của
   testcase thất bại đầu tiên, khớp nguyên tắc đã chốt ở `02-bd/security/F2_problem-bank.md` mục 2.
-- **`stderr_snippet`** (nếu `sandbox_settings.return_stderr_to_student = true`) chỉ chứa output lỗi từ
-  chính chương trình người học (compiler/runtime báo lỗi) — không bao giờ chứa nội dung testcase hay mã
-  khung harness (đã lọc ở tầng `harness`, F3-12), `judge-orchestration` chỉ lưu/chuyển tiếp nguyên văn,
-  không tự parse thêm.
+- **`stderr_snippet`** có thể chứa input testcase hoặc stack trace mã khung; không được coi là dữ liệu đã lọc.
+  **Cập nhật owner 2026-10-25:** chỉ lưu/trả stderr runtime cho `STANDARD_IO` trên testcase Sample khi cờ admin bật
+  và verdict khác AC; `FUNCTION_WRAPPER` và Hidden luôn NULL. Lúc đọc kết quả cũ vẫn kiểm `is_sample` lúc chấm,
+  visibility hiện hành và mô hình bài nộp. `compile_error_message` đi theo đường ánh xạ riêng dưới đây.
 - **`compile_error_message`** đã qua bước ánh xạ dòng của `harness` (F3-11) trước khi tới đây — nếu lỗi
   thuộc mã khung harness, `harness` đã thay bằng thông báo chung chung (`02-bd/architecture/F3_harness.md`
   mục 7 bước 3); `judge-orchestration` không tự sửa lại nội dung này, chỉ lưu và trả nguyên văn.

@@ -433,7 +433,7 @@ Vết yêu cầu: EVT-1 ứng REQ-06, REQ-07, REQ-08, REQ-09; EVT-3 ứng REQ-01
 ## Sheet 9. Đặc tả kiểm tra
 
 > Bộ thẻ và quy ước mã thông báo: `02-bd/_rules/bd-template-9sheet.md` mục 2, 4. Sheet này ghi **điều kiện
-> kiểm và thông báo**; tiêu chí nghiệm thu `AC-nn` thuộc `04-tdd/USR0701_my_classes.md`, không lặp lại ở đây.
+> kiểm và thông báo**; tiêu chí nghiệm thu `AC-nn` thuộc `04-tdd/screens/users/USR0701_my_classes.md`, không lặp lại ở đây.
 > Nhãn kênh thông báo: kết quả thao tác và lỗi nhập liệu đều là toast; ô nhập sai chỉ đổi viền đỏ.
 
 | NO | Loại | Tóm tắt kiểm | Chi tiết | Mức | Mã thông báo | Ghi chú | EVT gọi | Thứ tự |

@@ -6,8 +6,7 @@
   `PROBLEM_AUTHORING` trong ma trận Role × Function × Action của `identity`
   (`02-bd/database/F1_identity.md` mục 1.3-1.4) — `problem-bank` chỉ **tham chiếu** mã `PROBLEM_AUTHORING` +
   `Action` (`CREATE`/`UPDATE`/`DELETE`) khi kiểm quyền ở tầng application của chính nó, không thiết kế lại
-  ma trận (đúng ranh giới: ma trận là sở hữu của `identity`, `problem-bank` chỉ tra cứu qua claim JWT +
-  cache quyền, giống cách mọi module khác tra quyền — `02-bd/security/F1_identity.md` mục 2).
+  ma trận (đúng ranh giới: ma trận là sở hữu của `identity`; claim JWT chỉ xác thực/định vai trò, còn quyền Lớp 2 được kiểm qua cổng `identity` trong tiến trình, đọc `permission_version` từ PostgreSQL primary trước khi dùng cache theo `02-bd/security/F1_identity.md` mục 2).
 - **Quản lý testcase** (upload theo lô, sửa Hidden testcase, xác nhận testcase nháp AI sinh — F2-06,
   F2-07, F2-14): gác bởi Function `TESTCASE_MANAGEMENT`, tách riêng khỏi `PROBLEM_AUTHORING` vì đây là
   hai loại thao tác rủi ro khác nhau (sửa đề vs sửa dữ liệu chấm điểm) — khớp danh sách 11 Function seed

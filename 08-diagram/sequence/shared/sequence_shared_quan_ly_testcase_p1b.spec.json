@@ -1,0 +1,42 @@
+{
+  "_": "Trang 1b/3 tiếp nối sau khi trình duyệt tải tệp trực tiếp. Nguồn: 03-dd/api/F2_problem-bank.md mục 47. ConfirmCmd = ConfirmTestcaseBulkUploadCommandHandler; SessionPort = UploadSessionPort; StorePort = ObjectStorePort [SoT: Suy luận]. SessionPort đọc phiên chờ từ Redis; adapter Redis được lược ở trang này. MinioAdapter là thiết kế dự kiến. Máy chủ chủ động kiểm từng object bằng HEAD; một tệp thiếu/sai kích thước thì không thêm testcase nào. Bước ghi DB ở trang 1c. Lời gọi lại cùng uploadId phải cho cùng kết quả theo DD.",
+  "kind": "sequence",
+  "title": "Sơ đồ tuần tự chi tiết - Xác nhận tệp đã tải (1b/3)",
+  "covers": ["F2-07"],
+  "mode": "color",
+  "sequence": {
+    "detail": true,
+    "participants": [
+      {"name": "Người soạn đề", "role": "actor"},
+      {"name": "TestcaseCtrl", "role": "controller", "stereo": "presentation"},
+      {"name": "ConfirmCmd", "role": "service", "stereo": "application command"},
+      {"name": "SessionPort", "role": "repository", "stereo": "Redis output port"},
+      {"name": "StorePort", "role": "repository", "stereo": "domain output port"},
+      {"name": "MinioAdapter", "role": "external", "stereo": "infrastructure"},
+      {"name": "MinIO", "role": "external", "stereo": "kho tệp"}
+    ],
+    "messages": [
+      {"phase": "Giai đoạn 3 - Xác nhận mọi tệp đã tải (F2-07)"},
+      {"from": "Người soạn đề", "to": "TestcaseCtrl", "text": "Xác nhận lô tệp vừa tải"},
+      {"from": "TestcaseCtrl", "to": "ConfirmCmd", "text": "Yêu cầu kiểm tra phiên tải"},
+      {"from": "ConfirmCmd", "to": "SessionPort", "text": "Đọc phiên tải còn hiệu lực"},
+      {"from": "SessionPort", "to": "ConfirmCmd", "text": "Danh sách tệp cần kiểm", "kind": "return"},
+      {"from": "ConfirmCmd", "to": "StorePort", "text": "Kiểm từng tệp đã tới kho"},
+      {"from": "StorePort", "to": "MinioAdapter", "text": "Chuyển yêu cầu kiểm tệp"},
+      {"from": "MinioAdapter", "to": "MinIO", "text": "Kiểm sự tồn tại và kích thước"},
+      {"from": "MinIO", "to": "MinioAdapter", "text": "Kết quả từng tệp", "kind": "return"},
+      {"from": "MinioAdapter", "to": "StorePort", "text": "Kết quả kiểm tệp", "kind": "return"},
+      {"from": "StorePort", "to": "ConfirmCmd", "text": "Đủ tệp hoặc có tệp lỗi", "kind": "return"},
+      {"alt": {
+        "label": "Đủ và đúng kích thước?",
+        "then": [
+          {"from": "ConfirmCmd", "to": "ConfirmCmd", "text": "Chuyển sang lưu cả lô ở trang 1c"}
+        ],
+        "else": [
+          {"from": "ConfirmCmd", "to": "TestcaseCtrl", "text": "Từ chối cả lô; cho tải lại", "kind": "return"},
+          {"from": "TestcaseCtrl", "to": "Người soạn đề", "text": "Báo tệp thiếu hoặc sai kích thước", "kind": "return"}
+        ]
+      }}
+    ]
+  }
+}
