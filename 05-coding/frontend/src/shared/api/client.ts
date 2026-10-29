@@ -19,12 +19,20 @@ httpClient.interceptors.request.use((config) => {
 // Prevent infinite token-refresh loops: one failed refresh logs the user out, no retry.
 let refreshInFlight: Promise<string | null> | null = null;
 
-async function refreshAccessToken(): Promise<string | null> {
+export async function refreshAccessToken(): Promise<string | null> {
   refreshInFlight ??= axios
-    .post<{ accessToken: string }>(`${env.apiBaseUrl}/auth/refresh`, null, {
-      withCredentials: true,
+    .post<{ accessToken: string }>(
+      `${env.apiBaseUrl.replace(/\/$/, "")}/identity/auth/refresh`,
+      null,
+      {
+        withCredentials: true,
+        headers: { "X-Requested-With": "XMLHttpRequest" },
+      },
+    )
+    .then((res) => {
+      const token = res.data.accessToken;
+      return typeof token === "string" && token.length > 0 ? token : null;
     })
-    .then((res) => res.data.accessToken)
     .catch(() => null)
     .finally(() => {
       refreshInFlight = null;
@@ -34,7 +42,7 @@ async function refreshAccessToken(): Promise<string | null> {
 
 httpClient.interceptors.response.use(
   (response) => response,
-  async (error: AxiosError<{ code?: string }>) => {
+  async (error: AxiosError<{ error?: { code?: string } }>) => {
     const original = error.config;
     if (
       error.response?.status === 401 &&
@@ -50,7 +58,7 @@ httpClient.interceptors.response.use(
       tokenStore.set(null);
     }
 
-    const code = error.response?.data?.code ?? "UNKNOWN_ERROR";
+    const code = error.response?.data?.error?.code ?? "UNKNOWN_ERROR";
     const status = error.response?.status ?? 0;
     return Promise.reject(new ApiError(code, status, error.message));
   },

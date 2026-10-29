@@ -1,13 +1,29 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { isMockMode, tokenStore } from "@/shared/api";
+import { refreshAccessToken } from "@/shared/api/client";
 
-/**
- * TODO(session-bootstrap): restore the session (call /auth/refresh using the HttpOnly cookie)
- * on app startup, so the access token in tokenStore doesn't get lost after a page reload. Not
- * built yet because 03-dd/api/F1_identity.md does not exist — if a feature needs a restored
- * session, this must be done first (see nextjs-fsd-expert Layer 6).
- */
+/** Restore the in-memory token before mounting API consumers. */
 export function AuthProvider({ children }: { children: ReactNode }) {
-  return <>{children}</>;
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    const session =
+      isMockMode() || tokenStore.get()
+        ? Promise.resolve(tokenStore.get())
+        : refreshAccessToken();
+    void session.then((token) => {
+      if (active) {
+        tokenStore.set(token);
+        setReady(true);
+      }
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  return ready ? children : null;
 }
