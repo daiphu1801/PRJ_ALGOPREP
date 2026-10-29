@@ -11,11 +11,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /**
- * Ba luật ranh giới MODULE của {@code 01-rd/system/SYS0101_backend_architecture.md} mục 2.A, cộng luật
- * package ở mục 2 phần cuối.
+ * Ba luật ranh giới MODULE của {@code 01-rd/system/SYS0101_backend_architecture.md} mục 2.A, cộng
+ * luật package ở mục 2 phần cuối.
  *
- * <p>Vi phạm phải làm FAIL BUILD, không phải cảnh báo ({@code 01-rd/system/SYS0301_environment.md} mục
- * 3.A).
+ * <p>Vi phạm phải làm FAIL BUILD, không phải cảnh báo ({@code 01-rd/system/SYS0301_environment.md}
+ * mục 3.A).
  */
 class ModuleBoundaryTest {
 

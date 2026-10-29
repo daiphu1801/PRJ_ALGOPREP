@@ -11,7 +11,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /**
- * Bốn luật TẦNG của {@code 01-rd/system/SYS0101_backend_architecture.md} mục 3.A, áp cho mọi module.
+ * Bốn luật TẦNG của {@code 01-rd/system/SYS0101_backend_architecture.md} mục 3.A, áp cho mọi
+ * module.
  *
  * <p>Đây là phần Spring Modulith không diễn đạt được — nó chỉ hiểu ranh giới GIỮA các module theo
  * quy ước package riêng của nó, còn bốn luật dưới đây là luật BÊN TRONG một module. Đó là lý do

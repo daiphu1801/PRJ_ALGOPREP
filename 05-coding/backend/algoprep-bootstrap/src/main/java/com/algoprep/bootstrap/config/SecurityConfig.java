@@ -15,8 +15,8 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
  *
  * <p><strong>Đây chưa phải cấu hình thật.</strong> JWT (access token ngắn hạn + refresh token trong
  * cookie HTTP-Only) và RBAC ba vai trò {@code STUDENT}/{@code INSTRUCTOR}/{@code ADMIN} ({@code
- * F1-02}, {@code F1-05}) cần {@code 03-dd/api/F1_identity.md}, tài liệu chưa tồn tại. Ở base, quy tắc
- * là: mở đúng nhóm endpoint quan sát, chặn mọi thứ còn lại.
+ * F1-02}, {@code F1-05}) cần {@code 03-dd/api/F1_identity.md}, tài liệu chưa tồn tại. Ở base, quy
+ * tắc là: mở đúng nhóm endpoint quan sát, chặn mọi thứ còn lại.
  *
  * <p>Phần <strong>đã là thật</strong> và không phải chờ DD: bộ security header, trong đó có {@code
  * Content-Security-Policy} mà {@code 01-rd/req/nfr.md} mục D yêu cầu.
