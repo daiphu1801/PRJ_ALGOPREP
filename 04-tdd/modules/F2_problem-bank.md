@@ -342,8 +342,8 @@ Tiêu chí nghiệm thu ngân hàng bài toán, testcase, danh mục, giao bài 
 
 ### AC-47 — Vi phạm cứng của đặc tả (§38)
 - **Tiền điều kiện**: bài.
-- **Hành động**: `UNORDERED_SET` với kiểu trả về `BINARY_TREE`; `EPSILON` thiếu epsilon; hai tham số trùng tên; có `functionName` mà thiếu `parameters`.
-- **Kết quả mong đợi**: cả bốn `422 PRB-036` với `details.violations[].code` lần lượt `HRN-V22`, `HRN-V20`, `HRN-V14`, `HRN-V17`; không ghi gì.
+- **Hành động**: `UNORDERED_SET` với kiểu trả về `BINARY_TREE`; `EPSILON` thiếu epsilon; epsilon 0, âm, 1e-13, 1000000 hoặc có hơn 12 chữ số thập phân có nghĩa ở bất kỳ chiến lược nào; hai tham số trùng tên; có `functionName` mà thiếu `parameters`.
+- **Kết quả mong đợi**: mọi trường hợp trả `422 PRB-036`, không ghi gì; `details.violations[].code` là `HRN-V22` cho tổ hợp chiến lược/kiểu bị cấm, `HRN-V20` cho epsilon thiếu hoặc ngoài miền, `HRN-V14` cho tham số trùng, `HRN-V17` cho chữ ký nửa vời.
 
 - **Nguồn**: [SoT: 03-dd/api/F2_problem-bank.md] §38; [SoT: 03-dd/logic/F2_problem-bank.md].
 
@@ -408,7 +408,7 @@ Tiêu chí nghiệm thu ngân hàng bài toán, testcase, danh mục, giao bài 
 ### AC-56 — Tăng phiên bản bộ testcase đúng lúc (§42, §43, §44, BR-11)
 - **Tiền điều kiện**: bài `PUBLISHED`, `current_testcase_set_version = 1`.
 - **Hành động**: thêm Sample; thêm Hidden; sửa Hidden đã duyệt; đổi `category`; xoá Hidden đã duyệt; sắp xếp lại.
-- **Kết quả mong đợi**: với bài đang xuất bản, thêm, duyệt, sửa, xoá testcase đã duyệt (gồm mẫu và ẩn), hoặc đổi `position` qua §45, mỗi thao tác thay đổi thực sự tăng đúng một phiên bản và có bộ chấm mới bất biến trước khi công bố. `position` là một thứ tự dùng chung cho trình bày và chấm. Chỉ đổi nhãn phân loại, sửa nội dung nháp chưa duyệt, gửi lại thứ tự y hệt hoặc thao tác trên bài chưa xuất bản không tăng.
+- **Kết quả mong đợi**: với bài đang xuất bản, thêm, duyệt, sửa, xoá testcase đã duyệt (gồm mẫu và ẩn), hoặc đổi `position` qua §45, mỗi thao tác thay đổi thực sự tăng đúng một phiên bản và có bộ chấm mới bất biến trước khi công bố. `position` là một thứ tự dùng chung cho trình bày và chấm. Chỉ đổi nhãn phân loại, sửa nội dung nháp chưa duyệt, gửi lại thứ tự y hệt hoặc thao tác khi bài chưa xuất bản không tăng ngay. Tái xuất bản sau sửa phải so bộ chấm với snapshot: khác thì tăng một version, giống thì không tăng (BR-08).
 
 - **Nguồn**: [SoT: 03-dd/api/F2_problem-bank.md] §42-§44, BR-11; [SoT: 03-dd/logic/F2_problem-bank.md].
 
@@ -679,8 +679,8 @@ Tiêu chí nghiệm thu ngân hàng bài toán, testcase, danh mục, giao bài 
 ### AC-93 — Bộ testcase đã công bố giữ nguyên cho lượt nộp cũ
 
 - **Tiền điều kiện**: một bài đang xuất bản có bộ testcase phiên bản A; một lượt nộp đã được tiếp nhận và ghi nhận phiên bản A nhưng chưa được chấm.
-- **Hành động**: tác giả sửa một testcase mẫu đã duyệt và công bố phiên bản B; máy chấm xử lý lượt nộp cũ, rồi có lượt nộp mới. Lặp lại khi bộ phiên bản A bị thiếu hoặc sai dấu kiểm toàn vẹn.
-- **Kết quả mong đợi**: lượt cũ chỉ được chấm bằng nội dung nguyên vẹn của A; lượt mới dùng B. Nội dung A không bị ghi đè hoặc đổi khi sửa bài, kể cả sau khi testcase hiện hành bị xoá hoặc bài bị rút xuống. Thiếu hoặc hỏng A thì lượt cũ kết thúc bằng lỗi hệ thống; không chấm bằng B hay nội dung hiện hành.
+- **Hành động**: tác giả sửa một testcase mẫu đã duyệt và công bố phiên bản B; máy chấm xử lý lượt nộp cũ, rồi có lượt nộp mới. Lặp lại khi bộ phiên bản A bị thiếu hoặc sai dấu kiểm toàn vẹn; khi rút bài, sửa bộ chấm rồi xuất bản lại; và khi tái xuất bản mà bộ chấm không đổi.
+- **Kết quả mong đợi**: lượt cũ chỉ được chấm bằng nội dung nguyên vẹn của A; lượt mới dùng B. Nội dung A không bị ghi đè hoặc đổi khi sửa bài, kể cả sau khi testcase hiện hành bị xoá hoặc bài bị rút xuống. Thiếu hoặc hỏng A thì lượt cũ kết thúc bằng lỗi hệ thống; không chấm bằng B hay nội dung hiện hành. Rút xuống sửa rồi tái xuất bản tạo B nếu bộ chấm khác A; giữ nguyên A cho lượt cũ, phát đúng một TestcaseSetVersionBumped. Tái xuất bản với bộ chấm giống A dùng lại A, không tăng phiên bản. Lỗi tạo snapshot rollback trạng thái/version/Outbox theo BR-08.
 - **Nguồn**: `[SoT: 03-dd/logic/F2_problem-bank.md]` BR-11; `[SoT: 03-dd/api/F2_problem-bank.md]` mục 40, 43, 58; `[SoT: 02-bd/database/F2_problem-bank.md]` mục 1.15.
 
 ### AC-94 — Dọn sự kiện đã phát mà không làm mất sự kiện chờ
@@ -792,3 +792,7 @@ Bảng 1: Truy vết tiêu chí nghiệm thu sang endpoint, khối quy tắc và
 | AC-94 | JOB-PB-02 | [TC-F2-AC94-01 đến -03](../testcases/modules/F2_problem-bank/F2_outbox_delivery_cleanup.md) | Chưa làm |
 
 Mọi endpoint §2 tới §57 có ít nhất một `AC`; §59, relay và dọn Outbox có AC-89–AC-90, AC-94. Snapshot được kiểm ở AC-93. DD Q-31 đã đóng và được phủ bằng AC-91; sinh testcase AI giữ trần theo bài.
+
+## Baseline migration 2026-10-29
+
+`DEC-2026-1029-f2-migration-readiness` đóng quyết định DDL/seed/epsilon/tag/snapshot; xem BD database F2 §7. AC-47, AC-56 và AC-93 được bổ sung nhánh epsilon và tái xuất bản; các testcase liên kết cần mở rộng tương ứng trong phase kiểm của plan migration. Giữ nguyên số AC và trạng thái Chưa làm; truy vết hiện có không đồng nghĩa nhánh mới đã có testcase hoặc đã chạy.

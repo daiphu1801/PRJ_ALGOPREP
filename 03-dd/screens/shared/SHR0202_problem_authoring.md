@@ -78,7 +78,7 @@ Khi bản nháp `functionName`, kiểu trả về và tham số thay đổi, đ�
 | Tiêu đề, Markdown, ví dụ | Theo validation F2; dữ liệu rỗng/giới hạn server kiểm lại | F2 §36–37 |
 | Giới hạn thời gian/bộ nhớ/output/lượt nộp | Số nguyên dương và cận theo F2; **không có Stack** | F2 §36–37, quyết định owner 2026-10-25 |
 | Chủ đề, độ khó | ID từ F2 §20/§15, không dùng mã mock | F2 §36–37 |
-| Spec/chữ ký/epsilon | Theo validation F2 và lược đồ harness; epsilon chỉ khi chiến lược `EPSILON` | F2 §38 |
+| Spec/chữ ký/epsilon | Theo validation F2 và lược đồ harness; epsilon bắt buộc khi EPSILON; giá trị giữ ở chiến lược khác cũng phải dương, biểu diễn chính xác theo NUMERIC(18,12) (validation F2) | F2 §38 |
 | Testcase | Input/output bắt buộc theo F2; vị trí và cờ server kiểm | F2 §42–45 |
 | Tệp testcase | Loại/kích thước/header theo F2 §46–47 | validation F2 |
 | Ghép cặp upload | `.in`/`.out` cùng tên gốc, đúng hai vế, không trùng; tối đa 100 cặp và 256 MB toàn lô | F2 §46–47; BR-SC-04 |
@@ -106,3 +106,7 @@ Dùng `problemAuthoring.*`, `apiError.PRB-*`, `apiError.JDG-*`. Năm tab có `ar
 ## 8. Nợ prototype và câu hỏi mở
 
 Prototype còn mock store, kết quả chạy mẫu giả, toggle công khai trong dialog và chọn PUBLISHED chưa áp checklist. Cần nối F2 §34–49, sửa các chỗ này và bỏ ô Stack theo owner. Các Q đã chốt ở BD được phản ánh ở mục 4; không còn câu hỏi nghiệp vụ mức màn. `PROTOTYPE_DEBT.md` chỉ gỡ khi nối API thật. TDD màn đã có tại `04-tdd/screens/shared/SHR0202_problem_authoring.md`.
+
+### Đồng bộ baseline 2026-10-29
+
+Theo `DEC-2026-1029-f2-migration-readiness`, xuất bản lại sau khi sửa testcase trong lúc rút bài phải dùng phiên bản bộ chấm mới nếu nội dung đã duyệt khác snapshot; giống thì không tăng. Giao diện dùng version backend trả, không tự tính. Tag khác case là cùng một tag. Epsilon ngoài miền trả PRB-036/HRN-V20, không âm thầm làm tròn. Các câu hỏi backend của màn đã đóng theo DD F2 §61; nợ prototype/nối API không phải câu hỏi thiết kế.

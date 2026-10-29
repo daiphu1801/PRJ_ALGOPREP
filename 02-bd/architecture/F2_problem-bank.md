@@ -91,7 +91,7 @@ Theo `DEC-2026-0820-architecture-baseline`: không import schema khác. `problem
   lớn**. Hai ràng buộc mới đi kèm, không dùng chung với lượt chấm bài: **giới hạn kích thước output**
   (bài nộp học viên bị chặn tự nhiên vì chỉ in đáp án, script sinh dữ liệu thì mục đích là in thật
   nhiều) và **hạt giống ngẫu nhiên cố định** (không cố định thì F2-09 phiên bản hoá mất ý nghĩa).
-  Nới hợp đồng port hay thêm một hàm riêng — chốt ở DD.
+  Đã chốt ở DD §58.2: giữ port hẹp, thêm `runGeneratorScript`; không gọi qua hàng đợi F4.
 
 ### 3.2a. Outbound port — ghi nhật ký hệ thống (từ `identity`, thêm 2026-10-23)
 
@@ -101,7 +101,7 @@ Theo `DEC-2026-0820-architecture-baseline`: không import schema khác. `problem
 
 | Sự kiện lắng nghe | Từ module | Dùng để cập nhật | Phục vụ |
 | :--- | :--- | :--- | :--- |
-| `SubmissionGraded` / `SubmissionAccepted` (verdict + tỉ lệ F4-13) | `judge-orchestration` | `problem_stats(problem_id, submission_count, accepted_count, ac_rate)` | F2-11 (trạng thái đã giải, dù việc "đã giải chưa" của **một học viên** cụ thể có thể đọc trực tiếp từ event theo `user_id` thay vì tổng hợp), ngưỡng "Bài cần chú ý" AC < 30% (`DEC-2026-0831-problem-management-lifecycle-details`) |
+| `SubmissionGraded` duy nhất (verdict + tỉ lệ F4-13; không nghe `SubmissionAccepted`) | `judge-orchestration` | `problem_stats(problem_id, submission_count, accepted_count, ac_rate)` | F2-11 (trạng thái cá nhân đọc qua SolveStatePort của F1; số liệu bài loại SYSTEM_ERROR và cập nhật nguyên tử cùng consumed_events), ngưỡng "Bài cần chú ý" AC < 30% (`DEC-2026-0831-problem-management-lifecycle-details`) |
 | `ClassDeleted` | `identity` | Gỡ mềm mọi dòng `class_assignments` của lớp đã xoá: `removed_at = now()` với dòng có `class_id` khớp và `removed_at IS NULL` (không xoá dòng, không FK tới `identity.classes`; idempotent) | F2-12, ID-13. Sửa 2026-10-22 (đồng bộ DB vòng 4, DEC-2026-1022-db-sync-round4) (`DEC-2026-1022-db-sync-round4` mục 3, `02-bd/database/F2_problem-bank.md` mục 1.7) |
 
 `identity` sở hữu "đã giải hay chưa" theo góc nhìn cá nhân học viên (F1-06) qua chính event này; `problem-bank`
@@ -143,21 +143,15 @@ mở bài mới phát hiện. Cờ này là dữ liệu, việc *ẩn UI* dựa 
 - Ai được soạn/sửa đề, quản lý testcase: gác bởi Function `PROBLEM_AUTHORING`/`TESTCASE_MANAGEMENT` trong
   ma trận của `identity` — `problem-bank` chỉ *tham chiếu* mã function, không tự thiết kế lại ma trận.
 
-## 7. Việc còn mở — chuyển sang DD
+## 7. Quyết định đã đóng
 
-- Tên sự kiện domain cụ thể, payload, có cần Transactional Outbox hay không (mục 3.1) — liên quan câu hỏi
-  mở chung ở `.nexa/control/dependency-map.md` mục "Open items".
-- **Chốt 2026-09-13 — outbound port F2-14: giữ nguyên `SampleSolutionRunnerPort` (port hẹp riêng)**, không
-  dùng chung `JudgeExecutionPort` của `judge-orchestration` (mục 3.2). Không có RD screen nào quyết định
-  chi tiết kiến trúc nội bộ này nên không chặn BD màn hình; giữ quyết định BD ban đầu vì tách port hẹp
-  giảm rủi ro `problem-bank` vô tình phụ thuộc ngược vào `judge-orchestration` — xác nhận lại ở đầu DD nếu
-  phát sinh lý do kỹ thuật khác.
-- **Chốt 2026-09-13 — chia sẻ type schema: shared kernel `algoprep-common`**, không dùng port. Đã khớp
-  quyết định phía `harness` (`02-bd/architecture/F3_harness.md` mục 4) — cả hai module cùng đọc một enum/AST
-  kiểu dữ liệu từ `algoprep-common`, không module nào sở hữu bản sao riêng.
-- Cách sinh slug `code` cho mức độ khó mới (mục 2.1, chốt ở DD, cùng câu hỏi với chủ đề); màu badge không cấu hình (đã chốt).
-- Ngưỡng cụ thể "kích thước đầu ra tối đa"/"số lần nộp/giờ" mặc định khi A2 không tự khai (RD để ngỏ,
-  `[SoT: Suy luận]` — BD đề xuất giá trị cụ thể ở mục 5 file `database`).
+Baseline 2026-10-29: `DEC-2026-1029-f2-migration-readiness`; không còn câu hỏi kiến trúc F2 chặn migration.
+
+- Sự kiện/payload/routing key ở DD §59; ghi Outbox cùng giao dịch, relay và cleanup theo JOB-PB-01/02.
+- Giữ SampleSolutionRunnerPort hẹp và shared kernel algoprep-common; chữ ký port tại DD §58, không import module nghiệp vụ khác.
+- Slug bài/chủ đề/mức theo DD BR-03; badge không cấu hình màu.
+- Tài nguyên mặc định lấy JudgeConfigReadPort.getGradingDefaults, dự phòng application.yml; hạn mức nộp NULL đọc 60 lúc kiểm. Không ghi default tài nguyên vào SQL.
+- Schema đủ 18 bảng, seed/constraint/index tại BD database F2 §4–§7. Tái xuất bản tạo version mới khi bộ chấm khác snapshot đã công bố; snapshot cũ không ghi đè.
 
 ## 8. Tham chiếu
 

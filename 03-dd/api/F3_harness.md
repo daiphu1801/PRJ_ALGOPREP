@@ -176,7 +176,7 @@ Vùng mã người học là các dòng tuyệt đối `prefixLineCount + 1` đ�
 | :--- | :--- | :--- |
 | `matchingStrategy` | `MatchingStrategy` | Chụp từ cùng lần đọc đặc tả với mã khung, để không lệch phiên bản |
 | `epsilonValue` | decimal, nullable | |
-| `returnType` | `TypeNode`, nullable | Có khi `FUNCTION_WRAPPER`; null khi `STANDARD_IO` (so khớp theo token, không biết kiểu) |
+| `returnType` | `TypeNode`, nullable | Có khi `FUNCTION_WRAPPER`; null khi `STANDARD_IO` của bài nộp (so khớp theo token, không biết kiểu). Ngoại lệ: `problem-bank` chạy Đáp án mẫu của bài có đặc tả thì truyền `model = STANDARD_IO` kèm `returnType` của bài, để `EPSILON` và `UNORDERED_SET` so theo hình dạng (F3-02, owner 2026-10-29) |
 
 ### 2.4 Lỗi
 

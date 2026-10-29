@@ -143,6 +143,7 @@ Bảng 0.1: Danh mục khối quy tắc.
 
 - **Kích hoạt**: `PUT .../status`, `bulk/publish`, `bulk/unpublish`.
 - **Tiền điều kiện**: BR-02 `WRITE`; bài chưa `deleted`.
+- **Chuẩn bị snapshot khi xuất bản**: Tái xuất bản: nếu bộ chấm hiện hành khác snapshot đã công bố của current_testcase_set_version (so id, visibility, position, byte input/output của ca đã duyệt theo thứ tự chuẩn hóa), tăng đúng một phiên bản, tạo bundle bất biến mới và ghi Outbox TestcaseSetVersionBumped cùng giao dịch công bố. Nếu giống thì dùng lại snapshot và không tăng; lần xuất bản đầu tạo snapshot phiên bản hiện hành. Chỉ đổi nháp chưa duyệt không ảnh hưởng bộ chấm thì không tăng lúc tái xuất bản. Giữ nguyên snapshot lịch sử, lỗi MinIO/DB/Outbox rollback toàn bộ, trả 503 PRB-052 cho lỗi snapshot. Không so checksum của archive chứa metadata biến động; so nội dung logic chuẩn hóa, tải snapshot qua cổng nội bộ khi cần.
 - **Các bước (`UNPUBLISHED -> PUBLISHED`)**: BR-07 đạt; `status = PUBLISHED`, `published_at = now()` (đặt lại mỗi lần xuất bản), `updated_*`; `AuditLogPort.record(..., "PROBLEM_PUBLISHED", ...)` cùng giao dịch; tăng phiên bản cache.
 - **Các bước (`PUBLISHED -> UNPUBLISHED`)**: không điều kiện; `status = UNPUBLISHED`, **giữ** `published_at` (để quy tắc "Đang ẩn khỏi người học" nhận ra bài từng xuất bản, `SHR0201:528`); nhật ký `PROBLEM_UNPUBLISHED`; tăng phiên bản cache. **Không xoá** lượt nộp, bookmark, phiên phỏng vấn, dòng giao bài.
 - **Lặp lại**: đã ở trạng thái đích thì thành công, không đổi, không nhật ký, không sự kiện.
@@ -171,9 +172,9 @@ Bảng 0.1: Danh mục khối quy tắc.
 
 ## BR-11 — Phiên bản bộ testcase (F2-09)
 
-- **Kích hoạt**: mọi thao tác làm đổi bộ testcase **đã duyệt** của bài `PUBLISHED`, gồm Sample và Hidden: thêm, duyệt, sửa input/output/visibility, xoá hoặc thêm lô qua §47; cùng với mọi lần đổi thứ tự `position` thực sự qua API §45 (thứ tự dùng chung cho hiển thị và chấm), kể cả khi kéo nháp chưa duyệt. Mỗi thao tác chỉ tăng một phiên bản; gửi lại cùng thứ tự không tăng. Lần xuất bản đầu tạo snapshot cho phiên bản hiện hành.
+- **Kích hoạt**: mọi thao tác làm đổi bộ testcase **đã duyệt** của bài `PUBLISHED`, gồm Sample và Hidden: thêm, duyệt, sửa input/output/visibility, xoá hoặc thêm lô qua §47; cùng với mọi lần đổi thứ tự `position` thực sự qua API §45 (thứ tự dùng chung cho hiển thị và chấm), kể cả khi kéo nháp chưa duyệt. Mỗi thao tác chỉ tăng một phiên bản; gửi lại cùng thứ tự không tăng. Lần xuất bản đầu tạo snapshot cho phiên bản hiện hành; tái xuất bản theo BR-08, bộ chấm khác snapshot thì tăng một phiên bản, giống thì dùng lại.
 - **Các bước**: khoá dòng `problems` của bài; dựng bundle từ toàn bộ testcase đã duyệt sau thay đổi, gồm byte input/output thật, id, visibility, position; ghi object mới bất biến vào MinIO và lấy SHA-256; trong cùng giao dịch với thay đổi, tăng `current_testcase_set_version` đúng một lần và `INSERT testcase_set_snapshots` của số mới. Chỉ trả thành công sau commit; object mồ côi do rollback được dọn sau. Sau commit phát `TestcaseSetVersionBumped { problemId, testcaseSetVersion, bumpedAt }`.
-- **Không tăng**: bài `UNPUBLISHED`; nháp chưa duyệt; đổi `category`; đổi đáp án mẫu hay ví dụ mẫu.
+- **Không tăng ngay khi sửa**: bài `UNPUBLISHED` (khi tái xuất bản phải so bộ chấm với snapshot theo BR-08); nháp chưa duyệt; đổi `category`; đổi đáp án mẫu hay ví dụ mẫu.
 - **Điều kiện "đã có submission"** của `SHR0202` Sheet 6 **không áp** vì module không biết (`Q-04`): tăng thừa không nguy hại.
 - **Truy vết và snapshot**: bảng `testcases` giữ trạng thái hiện hành; mỗi phiên bản đã công bố có bundle bất biến ở `testcase_set_snapshots` (BD database F2 mục 1.15). F4 ghi `currentTestcaseSetVersion` khi tạo lượt `PENDING`, rồi worker đọc đúng bundle bằng `loadTestcaseSnapshot`; lỗi checksum hoặc thiếu object kết thúc `SYSTEM_ERROR`, không chấm bằng bộ mới.
 - **Lượt nộp đang dở**: đọc snapshot của phiên bản đã ghim lúc nộp, không đọc bộ hiện hành (`Q-25`).
@@ -184,7 +185,7 @@ Bảng 0.1: Danh mục khối quy tắc.
 - **Ghi**: object ghi **trước** khi commit DB; lỗi MinIO -> rollback (`503 PRB-052`) và xoá object đã ghi (best-effort). Đổi kiểu lưu khi sửa (vượt/hạ qua ngưỡng 8 KB): ghi mới, cập nhật hai cột, xoá object cũ **sau** commit.
 - **Đọc**: `INLINE` đọc cột; `MINIO` đọc qua `TestcaseObjectStorePort` (nội bộ, không presigned) cho `judge`; presigned GET 5 phút chỉ cho tác giả/ADMIN (mọi testcase) hoặc cho học viên với testcase `SAMPLE`.
 - **Xoá**: xoá object best-effort sau commit khi xoá testcase; bài `deleted` **không** xoá object.
-- **Ràng buộc DB**: hai CHECK khớp `*_storage` với cột inline/key (`02-bd/database/F2_problem-bank.md:166`).
+- **Ràng buộc DB**: hai CHECK khớp `*_storage` với cột inline/key (`02-bd/database/F2_problem-bank.md` §1.6): đúng một nhánh mỗi vế, trường nhánh kia NULL; inline rỗng hợp lệ.
 
 ## BR-13 — Chống rò rỉ testcase ẩn (F2-08)
 
@@ -200,7 +201,7 @@ Bảng 0.1: Danh mục khối quy tắc.
 
 - **Bước 1 (`bulk-upload-url`)**: kiểm giới hạn (`validation` bảng 5.2); sinh `testcaseId` cho từng cặp; ký presigned PUT 15 phút cho khoá do máy chủ dựng từ `testcaseId` (client không chọn khoá, chặn path traversal); lưu phiên Redis `problem:upload:<uploadId>` TTL 20 phút `{problemId, userId, items[{clientKey, testcaseId, sizes, visibility, category}], state: PENDING}`.
 - **Bước 2 (`confirm`)**: đọc phiên (sai bài/người/hết hạn -> `422 PRB-044`); `HEAD` mọi object: thiếu hoặc kích thước khác khai -> `422 PRB-045`, **không thêm gì**; vế khai `<= 8 KB` thì `get` nội dung, kiểm UTF-8 (sai -> `PRB-045` `INVALID_TEXT`), ghi vào cột inline, xoá object sau commit.
-- **Ghi**: một giao dịch `INSERT` mọi testcase (`origin = MANUAL`, `approved = true`, `position = max+1...`); BR-11 tăng phiên bản một lần nếu bài `PUBLISHED` và có `HIDDEN`; phiên chuyển `CONFIRMED` kèm id, giữ tới hết TTL để gọi lại trả cùng kết quả.
+- **Ghi**: một giao dịch `INSERT` mọi testcase (`origin = MANUAL`, `approved = true`, `position = max+1...`); BR-11 tăng phiên bản một lần nếu bài `PUBLISHED` và thêm ít nhất một ca đã duyệt, gồm SAMPLE hoặc HIDDEN; phiên chuyển `CONFIRMED` kèm id, giữ tới hết TTL để gọi lại trả cùng kết quả.
 - **Dọn rác**: object của phiên hết hạn không được xác nhận để lại trong bucket (không có job dọn, `02-bd/storage/F2_problem-bank.md:58-60`); chấp nhận, ghi nhận ở `Q-08`.
 - **Cơ chế xác nhận**: `HEAD` lúc gọi `confirm`, không dùng callback MinIO (đóng `02-bd/storage/F2_problem-bank.md:66`).
 
@@ -213,7 +214,7 @@ Bảng 0.1: Danh mục khối quy tắc.
   2. Chọn tập testcase: một `testcaseId`, hoặc **mọi testcase `approved = true`** của bài.
   3. Giới hạn hiệu dụng: `timeLimitMs` và `memoryLimitMb` của bài nhân hệ số của ngôn ngữ (`JudgeConfigReadPort.getLanguageMultipliers`, `Q-32`); `maxOutputSizeKb` của bài.
   4. `SampleSolutionRunnerPort.runProgramBatch`: biên dịch một lần, chạy từng testcase với `stdin` là input (đọc qua `TestcaseObjectStorePort`); lỗi biên dịch -> mọi dòng `COMPILE_ERROR`, trả `compileError`.
-  5. So khớp bằng `ReferenceOutputMatcherPort.matches(matchingStrategy, epsilon, expected, actual)`; không có dòng `problem_specs` thì dùng `EXACT`.
+  5. So khớp bằng P4 `MatchOutputUseCase.match` của F3 (`matchSpec` gồm `matchingStrategy`, `epsilonValue`, `returnType` từ `problem_specs`); không có dòng `problem_specs` thì dùng `EXACT`.
   6. Dựng kết quả `PASS/FAIL` kèm `failure`, `runtimeMs`, `memoryKb`; **không trả `actualOutput` hay diff**.
 - **Hậu điều kiện**: kết quả tạm thời, không lưu (`02-bd/database/F2_problem-bank.md:243`); điều kiện xuất bản không đọc cờ cũ.
 - **Hạ tầng lỗi**: go-judge không đáp ứng -> `503 PRB-050`, không đổi dữ liệu; thử lại một lần chỉ khi lỗi kết nối.
@@ -347,3 +348,7 @@ Bảng 0.1: Danh mục khối quy tắc.
 - **Đổi trần sinh testcase AI**: endpoint §57 ghi `AI_TESTCASE_GENERATION_LIMIT_CHANGED` (`PROBLEM_BANK_SETTINGS`) cùng giao dịch cấu hình, nhóm `CONFIG` ở F1; lỗi audit thì rollback. [Owner 2026-10-25, Q-13]
 - **Không ghi nhật ký**: đọc, xuất CSV, lưu nội dung/đặc tả/testcase, giao/gỡ bài theo lớp, bookmark.
 - **Dữ liệu nhạy cảm**: `beforeJson`/`afterJson` chỉ chứa id và giá trị cần so (tên, mức, trạng thái); **không** chứa nội dung đề, mã đáp án mẫu, testcase. Che khoá nhạy cảm là việc của tầng đọc nhật ký (`identity` BR-16).
+
+## BR-28 — Baseline migration đã đóng (2026-10-29)
+
+Theo `DEC-2026-1029-f2-migration-readiness`: tag find-or-create phải dùng lower(name) cùng unique expression index, an toàn đồng thời. Epsilon khi được gửi/lưu phải >0, <=999999.999999999999, biểu diễn chính xác với scale tối đa 12 sau bỏ số 0 dư; EPSILON bắt buộc có. Kiểm trước ghi, không để DB làm tròn epsilon âm thầm. Khi SaveProblemSpec vi phạm miền epsilon, trả 422 PRB-036 với HRN-V20. Trạng thái chữ ký cùng NULL hoặc đủ ba trường; parameters [] hợp lệ. DDL/seed/NOT NULL/CHECK theo BD database §7; application đặt updated_at trên mọi ghi, không dựa vào DEFAULT để cập nhật.

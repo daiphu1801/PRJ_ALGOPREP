@@ -53,9 +53,12 @@ UPDATE judge.submissions
 SET status = 'SYSTEM_ERROR', failure_reason = 'WORKER_TIMEOUT',
     finished_at = now(), updated_at = now()
 WHERE id = :id
-  AND status NOT IN (<6 trạng thái cuối>);
+  AND status NOT IN (<6 trạng thái cuối>)
+  AND updated_at < now() - interval '5 minutes'
+  AND (status <> 'PENDING' OR NOT (SELECT queue_paused FROM judge.cluster_settings WHERE id = 1));
 ```
 
+  - **Sửa 2026-10-29 (F4-02):** `UPDATE` phải **tự kiểm lại** `updated_at` quá 5 phút và quy tắc `PENDING`/`queue_paused`, không tin danh sách id đã chọn ở bước trước. Nếu worker vừa chạm `updated_at` hoặc `queue_paused` vừa đổi, PostgreSQL (READ COMMITTED) đánh giá lại `WHERE` sau khi chờ khoá dòng và trả 0 dòng, nên bài vừa hoạt động lại không bị kết thúc nhầm. Chỉ ghi outbox và đẩy WebSocket khi `UPDATE` đổi đúng một dòng.
   - Mệnh đề `status NOT IN (<6 trạng thái cuối>)` là **bắt buộc**: chống ghi đè khi worker chậm hoàn tất đúng lúc sweep chạy
     (`02-bd/architecture/F4_judge-orchestration.md:222-225`). Số dòng bị ảnh hưởng bằng 0 nghĩa là worker đã thắng cuộc đua, bỏ qua, không lỗi.
   - `score_ratio` để `NULL` cho `SYSTEM_ERROR` (`02-bd/database/F4_judge-orchestration.md:31`).
@@ -66,7 +69,7 @@ WHERE id = :id
   tính lại từ lúc mở (`02-bd/architecture/F4_judge-orchestration.md:220-221`, BD giao DD chốt cách chạm). Việc này thuộc luồng "tiếp tục tiêu thụ", không phải thân job sweep.
 - **Cỡ lô.** 200 dòng mỗi lần chạy `[SoT: Suy luận]`; còn dư thì lần chạy sau (60 s) xử lý tiếp. Mỗi dòng một giao dịch ngắn (UPDATE + INSERT outbox).
 - **Idempotency và đồng thời.** `UPDATE` có điều kiện trạng thái nên chạy lại hay chạy hai instance cùng lúc đều an toàn (instance thứ hai thấy 0 dòng bị đổi).
-  Bọc khoá tư vấn Postgres (mục 0) để tránh đẩy WebSocket trùng.
+  Khoá tư vấn Postgres (mục 0) chỉ để tránh hai instance cùng quét và đẩy WebSocket trùng; **tính đúng không dựa vào khoá** vì mọi `UPDATE` tự idempotent. Sửa 2026-10-29 (F4-06): `pg_try_advisory_xact_lock` được gọi ở đầu **mỗi giao dịch của một dòng (sweep) hoặc một lô (cleanup)** và nhả khi giao dịch đó commit; không giữ khoá xuyên nhiều giao dịch. Nhiều instance luân phiên xử lý các lô kế tiếp là hợp lệ.
 - **Lỗi.** DB lỗi: log `ERROR`, bỏ lượt này. Lỗi đẩy WebSocket sau commit: chỉ log `WARN`, trạng thái đã nằm trong DB nên client đọc lại được khi tải trang.
 - **Bảng chạm.** `submissions` (ghi), `outbox_events` (ghi), `cluster_settings` (đọc `queue_paused`).
 

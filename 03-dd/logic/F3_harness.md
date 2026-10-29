@@ -162,7 +162,7 @@ Bảng 2: Định dạng khối stdin theo kiểu.
 | `INT` `LONG` | 1 dòng, 1 số nguyên thập phân, có thể có khoảng trắng hai đầu | không parse được hoặc ngoài miền |
 | `DOUBLE` | 1 dòng, 1 số thực thập phân | không parse được |
 | `BOOLEAN` | 1 dòng `true` hoặc `false` (chữ thường, đúng hai giá trị) | khác hai giá trị |
-| `CHAR` | 1 dòng, độ dài đúng 1 ký tự | độ dài khác 1 |
+| `CHAR` | 1 dòng, đúng 1 ký tự in được, **không phải khoảng trắng** (miền `CHAR` chốt 2026-10-29, F3-04; cùng miền với phần tử `ARRAY(CHAR)` đọc theo token) | độ dài khác 1 hoặc ký tự trắng |
 | `STRING` | 1 dòng, **nguyên dòng** (giữ khoảng trắng, không tách token); dòng trống là chuỗi rỗng | hết dòng |
 | `ARRAY(of, k)` | Dòng tiêu đề `d1 d2 ... dk` (kích thước từng chiều). Rồi dữ liệu theo thứ tự hàng: `k = 1` một dòng gồm `d1` token (dòng trống nếu `d1 = 0`); `k = 2` đúng `d1` dòng, mỗi dòng `d2` token; `k = 3` đúng `d1 x d2` dòng, mỗi dòng `d3` token. Nếu `of = STRING` thì **mỗi phần tử một dòng**, tổng số dòng bằng `d1 x ... x dk` (không cần dòng gộp) | tiêu đề sai, thiếu hoặc thừa token |
 | `LIST(of)` | Dòng `n`. Nếu `of` là nguyên thuỷ không phải `STRING`: một dòng `n` token. Nếu `of = STRING`: `n` dòng. Nếu `of = LIST`: `n` khối con, **mỗi khối tự khai kích thước riêng** (đệ quy theo cùng quy tắc) | |
@@ -195,15 +195,22 @@ Bảng 3: Định dạng in theo kiểu.
 | `INT` `LONG` | số thập phân | |
 | `DOUBLE` | số thực **cố định 12 chữ số thập phân** (`%.12f`); số không âm in `0.000000000000` (không in `-0`); giá trị không hữu hạn in `NaN`, `Infinity`, `-Infinity` đồng nhất cả ba ngôn ngữ | 12 chữ số khớp độ chính xác cột `epsilon_value` NUMERIC(18,12) (`02-bd/database/F2_problem-bank.md:129`); chốt số chữ số là việc BD để cho DD (`02-bd/architecture/F3_harness.md:114-116`) `[SoT: Suy luận]` |
 | `BOOLEAN` | `true` hoặc `false` | Python in `true` chỉ khi giá trị là `True` đúng kiểu `bool` |
-| `CHAR` | đúng ký tự đó | |
+| `CHAR` | đúng ký tự đó (không bao giờ là ký tự trắng, xem mục 3.3) | |
 | `STRING` | nguyên chuỗi, **không** thêm dấu nháy | |
-| `ARRAY(of, k)` | Dữ liệu **không có dòng tiêu đề**: `k = 1` một dòng, phần tử cách nhau một khoảng trắng; `k = 2` mỗi hàng một dòng; `k = 3` mỗi hàng một dòng và giữa hai khối `d1` liên tiếp thêm đúng **một dòng trống**; `of = STRING`: mỗi phần tử một dòng | Theo BD "phân tách phần tử bằng khoảng trắng, các chiều bằng xuống dòng" (`:130-131`). Dòng trống giữa hai khối ở `k = 3` do DD thêm để hai hình dạng khác nhau không in ra cùng một chuỗi |
+| `ARRAY(of, k)` | Dữ liệu **không có dòng tiêu đề**: `k = 1` một dòng, phần tử cách nhau một khoảng trắng; `k = 2` mỗi hàng một dòng; `k = 3` mỗi hàng một dòng và giữa hai khối `d1` liên tiếp thêm đúng **một dòng trống**; `of = STRING`: **không** dùng cách trên mà in ký pháp ngoặc vuông lồng như `LIST(STRING)` (`[["a","b"],["c"]]`, nháy kép, escape `\"` `\\` `\n`) | Theo BD "phân tách phần tử bằng khoảng trắng, các chiều bằng xuống dòng" (`:130-131`). Dòng trống giữa hai khối ở `k = 3` do DD thêm để hai hình dạng khác nhau không in ra cùng một chuỗi. `ARRAY(STRING)` đổi sang ngoặc lồng vì "mỗi phần tử một dòng" làm `[["a","b"]]` và `[["a"],["b"]]` cùng ra `a` `b`, và chuỗi chứa xuống dòng vỡ ranh giới (owner chốt 2026-10-29, F3-01). Stdin không đổi |
 | `LIST(of)` | Ký pháp ngoặc vuông lồng, **không khoảng trắng**: `[1,2,3]`, `[[1,2],[3],[4,5,6]]`, `[]`. Phần tử `STRING` và `CHAR` đặt trong nháy kép, escape `\"` và `\\` và `\n`; `BOOLEAN` `true`/`false`; `DOUBLE` như trên | Theo BD (`:143-146`). Rỗng in `[]`, không in chuỗi rỗng (`:147-148`) |
-| `LINKED_LIST(of)` | Giống input: dòng `n` rồi dòng `n` token. Danh sách rỗng: `0` rồi một dòng trống | Đối xứng đọc/ghi theo BD (`:157-158`). Duyệt tối đa 1 000 000 node để chương trình không lặp vô hạn nếu người học trả danh sách có chu trình (kết quả bị cắt, chấm sai) `[SoT: Suy luận]` |
+| `LINKED_LIST(of)` | Giống input: dòng `n` rồi dòng `n` token. Danh sách rỗng: `0` rồi một dòng trống | Đối xứng đọc/ghi theo BD (`:157-158`). Duyệt tối đa 1 000 000 node để chương trình không lặp vô hạn nếu người học trả danh sách có chu trình (vượt trần thì thoát mã 91 và không in kết quả, mục 3.4) `[SoT: Suy luận]` |
 | `BINARY_TREE(of)` | Một dòng token theo thứ tự mức, `#` cho vị trí không có node (chỉ liệt kê vị trí con của node thật), **cắt các `#` ở đuôi**; cây rỗng in `#` | Quy tắc cắt đuôi chốt ở đây, đúng điều BD để lại (`:172-174`). Hai cây cùng giá trị khác hình dạng cho hai chuỗi khác nhau (`:175-178`). Cùng giới hạn duyệt 1 000 000 node |
 
 Khi kết thúc, mỗi dòng in ra kết thúc bằng một ký tự xuống dòng. Chương trình in toàn bộ phần kết quả trong **một
 lần ghi** từ bộ đệm.
+
+**Trần kích thước kết quả (F3-05, owner 2026-10-29)**: chương trình tuần tự hoá toàn bộ kết quả vào bộ đệm trước.
+Nếu bộ đệm vượt trần (`limits.max-result-bytes`, mặc định bằng hạn mức output của bài) hoặc duyệt `LINKED_LIST`
+`BINARY_TREE` vượt 1 000 000 node, chương trình **không ghi dòng đánh dấu và không ghi kết quả**, ghi dòng stderr cố
+định `@@APH-HARNESS-OUTPUT-LIMIT@@` rồi thoát với **mã 91**. Không còn kết quả bị cắt rồi chấm sai. Mã 91 khác mã 90
+(lỗi đọc input): F4 phải ánh xạ 91 thành lỗi output vượt giới hạn, không phải `RE` hay `WA` `[SoT: Suy luận]`; cách
+ánh xạ cuối cùng do `03-dd/logic/F4_judge-orchestration.md` xác nhận.
 
 **Giới hạn đã biết**: hai mảng chữ nhật có một chiều bằng 0 mà khác ở các chiều còn lại có thể in ra cùng
 một chuỗi (vì dòng trống cuối bị cắt khi chuẩn hoá, mục 7.1). Không có bài toán thuật toán thông thường cần
@@ -702,7 +709,7 @@ Bảng 6: Bộ ca golden. Mỗi dòng phải có thư mục cho cả ba ngôn ng
 | :--- | :--- | :--- |
 | `scalars` | một tham số mỗi `kind` nguyên thuỷ và `STRING`; trả về từng kiểu | Mọi hàng của bảng 2 và 3 cho kiểu nguyên thuỷ |
 | `array1`, `array2`, `array3` | `ARRAY` một, hai, ba chiều | Dòng tiêu đề, chiều chữ nhật, dòng trống giữa khối ở `k = 3` |
-| `array-string` | `ARRAY(STRING, 1)` | Mỗi phần tử một dòng |
+| `array-string` | `ARRAY(STRING, 1)` và `ARRAY(STRING, 2)` | Stdout ngoặc lồng, hai hình dạng không trùng chuỗi, chuỗi có xuống dòng |
 | `list-nested` | `LIST<LIST<INT>>`, `LIST<STRING>` | Khối tự khai kích thước, nháy kép, escape |
 | `linked-list` | tham số và kết quả `LINKED_LIST(INT)` | Dựng nối `next`, in đối xứng, danh sách rỗng |
 | `binary-tree` | tham số và kết quả `BINARY_TREE(INT)` | BFS, `#`, cắt đuôi, cây rỗng, cây lệch |

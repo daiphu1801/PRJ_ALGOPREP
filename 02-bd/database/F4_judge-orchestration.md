@@ -31,7 +31,7 @@ Cốt lõi F4-01 → F4-04, F4-13.
 | `score_ratio` | DECIMAL(4,3) nullable | F4-13 = `passed_testcase_count / total_testcase_count`, tính khi vào trạng thái cuối (trừ `COMPILE_ERROR`/`SYSTEM_ERROR` — để `NULL`, không phải `0`, để phân biệt "chưa chấm được testcase nào" với "chấm hết, rớt hết") |
 | `runtime_ms` | INT nullable | `MAX(submission_testcase_results.runtime_ms)` trong số testcase đã chạy — dùng cho F4-12 "Beats" |
 | `memory_kb` | INT nullable | `MAX(submission_testcase_results.memory_kb)` |
-| `testcase_set_version_at_grading` | INT nullable | Sửa DD 2026-10-25: lấy `problems.current_testcase_set_version` **lúc nhận bài nộp**, cùng lúc kiểm bài xuất bản, rồi ghim vào dòng `PENDING`. Worker chỉ đọc bundle bất biến `problem.testcase_set_snapshots(problem_id, version)` của số này; không thay phiên bản khi vào `COMPILING`. Nullable chỉ cho dòng lịch sử cũ trước khi áp hợp đồng này |
+| `testcase_set_version_at_grading` | INT NOT NULL | Sửa DD 2026-10-25: lấy `problems.current_testcase_set_version` **lúc nhận bài nộp**, cùng lúc kiểm bài xuất bản, rồi ghim vào dòng `PENDING`. Worker chỉ đọc bundle bất biến `problem.testcase_set_snapshots(problem_id, version)` của số này; không thay phiên bản khi vào `COMPILING`. Sửa 2026-10-29 (F4-01): bỏ nullable vì dự án greenfield, không có dòng lịch sử; xem mục 8 |
 | `submitted_at` | TIMESTAMPTZ | Mốc F4-01 ghi `PENDING` |
 | `started_grading_at` | TIMESTAMPTZ nullable | Mốc worker nhận job, chuyển `COMPILING` |
 | `finished_at` | TIMESTAMPTZ nullable | Mốc vào một trong sáu trạng thái cuối (chín giá trị `status` trừ ba trạng thái chưa cuối `PENDING`, `COMPILING`, `JUDGING`; Sửa 2026-10-22 (đồng bộ DB, phase 1), trước đó ghi "bảy") |
@@ -132,16 +132,16 @@ không tạo/xoá dòng (khớp phạm vi đã khoá ở `02-bd/architecture/F3_
 | `published_at` | TIMESTAMPTZ nullable | `NULL` = relay chưa publish thành công; job relay chỉ set sau khi broker ack |
 | `publish_attempts` | INT default 0 | Đếm số lần relay thử publish dòng này — phục vụ cảnh báo nếu một dòng kẹt quá nhiều lần |
 
-Index `outbox_events(published_at) WHERE published_at IS NULL` — relay quét theo `created_at ASC` trong
-tập con này.
+Index `outbox_events(created_at, id) WHERE published_at IS NULL` — relay quét theo `created_at ASC, id ASC` trong
+tập con này (sửa 2026-10-29, F4-07: thay chỉ mục `published_at` cũ, vì cột đó luôn `NULL` trong tập con nên không giúp sắp xếp). Dọn dẹp dùng thêm `outbox_events(published_at) WHERE published_at IS NOT NULL`.
 
-Sửa 2026-10-22 (đồng bộ DB vòng 2, DEC-2026-1022-db-sync-round2, mục 7): **dọn outbox** — dòng có `published_at` cũ hơn **90 ngày** bị một job xoá; số 90 là hằng số `application.yml`, không thêm cột. Dòng `published_at IS NULL` không bao giờ bị xoá. `03-dd/jobs/` chưa có file, DD job sẽ mô tả lịch chạy và cỡ lô (chưa tạo). Payload `SubmissionGraded` có thêm `submittedAt` và `firstAttemptForProblem` (`architecture/F4_judge-orchestration.md` mục 6); bảng này không liệt kê trường payload nên không đổi cột.
+Sửa 2026-10-22 (đồng bộ DB vòng 2, DEC-2026-1022-db-sync-round2, mục 7): **dọn outbox** — dòng có `published_at` cũ hơn **90 ngày** bị một job xoá; số 90 là hằng số `application.yml`, không thêm cột. Dòng `published_at IS NULL` không bao giờ bị xoá. Sửa 2026-10-29 (F4-08): lịch chạy và cỡ lô đã nằm ở `03-dd/jobs/F4_judge-orchestration.md` (JOB-JD-03). Payload `SubmissionGraded` có thêm `submittedAt` và `firstAttemptForProblem` (`architecture/F4_judge-orchestration.md` mục 6); bảng này không liệt kê trường payload nên không đổi cột.
 
 ### 1.7. `cluster_settings` (F4-10, `DEC-2026-1001-admin-configurable-settings`)
 
 Một dòng duy nhất (ràng buộc `CHECK (id = 1)`), chỉ ADMIN (A3) sửa qua khối "Điều khiển" và popup "Tham số hàng đợi" của
 `ADM0401`. Lưu ở PostgreSQL để còn nguyên sau khi khởi động lại; module này cố ý không dùng Redis
-(mục 3) nên không đặt ở đó `[SoT: Suy luận]`.
+(mục 3, chỉ dùng cho rate limiter Run Code và cache) nên không đặt ở đó `[SoT: Suy luận]`.
 
 | Cột | Kiểu | Ghi chú |
 | :--- | :--- | :--- |
@@ -210,9 +210,7 @@ Một dòng duy nhất (`CHECK (id = 1)`), chỉ ADMIN sửa qua thẻ "Sandbox"
 
 ## 3. Redis
 
-`judge-orchestration` **không dùng Redis** — `dependency-map.md` mục 2 không liệt kê Redis cho module này
-(khác `identity`/`problem-bank`). Trạng thái nộp bài đẩy trực tiếp qua WebSocket/STOMP, không cần cache
-trung gian; hàng đợi công việc đã có RabbitMQ đảm nhiệm.
+Sửa 2026-10-29 (F4-08): bản cũ ghi "không dùng Redis", đã lỗi thời. `judge-orchestration` dùng Redis cho đúng **hai** việc, cả hai do DD chốt: (1) bộ giới hạn tần suất Run Code 60 lượt trong 60 phút trượt cho mỗi người (`03-dd/logic/F4_judge-orchestration.md` BR-JD-02), chỉ phần này được fail-open khi Redis lỗi; trần đồng thời 8 lượt Run Code vẫn giữ; (2) cache số liệu lớp 15 phút. Trạng thái nộp bài vẫn đẩy trực tiếp qua WebSocket/STOMP; hàng đợi công việc là RabbitMQ. Không có bảng Redis nào cần migrate.
 
 ## 4. Migration — thứ tự tạo bảng
 
@@ -252,3 +250,23 @@ Sửa 2026-10-22 (đồng bộ DB, phase 1): `judge_run_tokens` phải đứng t
   `submission_testcase_result`, `judge_run_token`, `callback_log`, `language_config`.
 - `.nexa/control/decision-registry.md` — `DEC-2026-0912-judge-callback-contract`,
   `DEC-2026-0912-judge-outbox-pattern`.
+
+## 8. Hợp đồng DDL (đóng F4-01, 2026-10-29)
+
+Bảng 8.1 là hợp đồng để viết `V4.001`. Quy ước chung giống F2 (`02-bd/database/F2_problem-bank.md` mục 7.1): ENUM của BD là `VARCHAR` cộng `CHECK` cùng tập giá trị; khoá chính UUID không có `DEFAULT` (id do `IdGeneratorPort` cấp); mọi FK nội schema là `NO ACTION`; cột trỏ sang schema khác là UUID thuần; `created_at`, `updated_at`, `issued_at`, `received_at`, `submitted_at` mặc định `now()` còn ứng dụng tự ghi `updated_at` khi sửa. Các CHECK dưới đây là **đề xuất của audit, chủ dự án duyệt 2026-10-29**, không phải điều đã có trong BD trước đó.
+
+Bảng 8.1: Nullability và CHECK theo bảng.
+
+| Bảng | Cột nullable (còn lại đều NOT NULL) | CHECK |
+| :--- | :--- | :--- |
+| `submissions` | `spec_version`, `failure_reason`, `compile_error_message`, `total_testcase_count`, `score_ratio`, `runtime_ms`, `memory_kb`, `started_grading_at`, `finished_at` | `octet_length(source_code) <= 65536`; tập giá trị của `language`, `submission_model`, `source_input_method`, `status`, `failure_reason`; `testcase_set_version_at_grading > 0`; `spec_version > 0` khi có; `passed_testcase_count >= 0`; `total_testcase_count >= 0` khi có; `passed_testcase_count <= total_testcase_count` khi có tổng; `score_ratio` trong `[0, 1]` khi có; `runtime_ms >= 0`, `memory_kb >= 0` khi có; `(status = 'SYSTEM_ERROR') = (failure_reason IS NOT NULL)`; `compile_error_message IS NULL OR status = 'COMPILE_ERROR'`; `(status IN <sáu trạng thái cuối>) = (finished_at IS NOT NULL)` |
+| `submission_testcase_results` | `stderr_snippet`, `actual_output_snippet` | `verdict` thuộc năm giá trị; `testcase_order > 0`; `runtime_ms >= 0`, `memory_kb >= 0`; hai snippet tối đa 4096 ký tự; hai snippet chỉ có khi `is_sample`; `stderr_snippet` chỉ có khi `verdict <> 'AC'`. Unique `(submission_id, testcase_id)` |
+| `judge_run_tokens` | `consumed_at` | Unique `token`; unique một phần `(submission_id, testcase_id) WHERE consumed_at IS NOT NULL` |
+| `callback_logs` | `judge_run_token_id` | `outcome` thuộc bốn giá trị |
+| `outbox_events` | `published_at` | `aggregate_type = 'Submission'`; `event_type` thuộc `SubmissionAccepted`, `SubmissionGraded`; `publish_attempts >= 0` |
+| `language_configs` | `updated_by` | `language` thuộc ba giá trị; hai hệ số trong `[0.10, 9.99]` |
+| `grading_defaults`, `sandbox_settings`, `generator_sandbox_settings`, `cluster_settings` | `updated_by` | `id = 1`; các cận `> 0` hoặc khoảng đã nêu ở mục 1.7 đến 1.10; không thu hẹp các cột INT đã khai |
+
+Lý do giữ nullable ở `submissions`: `spec_version` chưa biết trước khi worker prepare; `total_testcase_count` chỉ có khi vào `JUDGING`; `score_ratio` để `NULL` cho `COMPILE_ERROR` và `SYSTEM_ERROR`; `finished_at` chỉ có ở trạng thái cuối. Mối quan hệ `status` với `failure_reason` và `finished_at` được ép bằng CHECK vì mọi đường kết thúc đều đi qua cùng một hàm `finalizeSubmission` (`03-dd/logic/F4_judge-orchestration.md` BR-JD-05). `SYSTEM_ERROR` vẫn được giữ `passed_testcase_count` và `total_testcase_count` từng phần, nên không có CHECK nào cấm điều đó.
+
+**Seed (migration `V4.002`):** `language_configs` ba dòng: `JAVA` thời gian `2.00` bộ nhớ `2.00`; `CPP` `1.00` và `1.00`; `PYTHON` `3.00` và `1.00`; cả ba `enabled = true`. Bốn bảng singleton một dòng `id = 1` với mọi giá trị mặc định ở mục 1.7 đến 1.10. Mọi dòng seed có `updated_by = NULL`. Không seed `submissions` và các bảng còn lại.

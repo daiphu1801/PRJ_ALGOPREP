@@ -35,7 +35,7 @@ Bảng 2.1: Quy tắc kiểm trường nội dung. Cột "Khoá rule" dùng tron
 | `limits.timeLimitMs`, `limits.memoryLimitMb`, `limits.maxOutputSizeKb` | số nguyên dương; khi **tạo** thiếu thì điền từ `grading_defaults` (`JudgeConfigReadPort.getGradingDefaults`); khi **cập nhật** bắt buộc | `positiveInt`, `required` | PRB-001 | C, S, DB (`CHECK > 0`) | Sheet 9 NO 3, 4 (`SHR0202:765-766`); `database/F2_problem-bank.md:26-28,42` |
 | `limits.maxSubmissionsPerHour` | `null` hoặc số nguyên dương; `null` = đọc mặc định hệ thống 60 lúc kiểm, **không** ghi 60 vào cột | `positiveInt` | PRB-001 | C, S | `database/F2_problem-bank.md:29`; Sheet 9 NO 4 |
 | `topicIds[]` | mỗi id tồn tại trong `topics`; không trùng nhau (trùng thì gộp) | `exists` | PRB-039 | S, DB (FK) | `SHR0202` Sheet 5 Khu H NO 1 |
-| `tags[]` | mỗi thẻ 1 đến 50 ký tự sau cắt, không phân biệt hoa thường khi so trùng; tối đa 20 thẻ mỗi bài `[SoT: Suy luận]`; thẻ chưa có thì tạo | `maxLength`, `maxItems` | PRB-001 | C, S, DB (`tags.name UNIQUE`) | `database/F2_problem-bank.md:112` |
+| `tags[]` | mỗi thẻ 1 đến 50 ký tự sau cắt, không phân biệt hoa thường khi so trùng; tối đa 20 thẻ mỗi bài `[SoT: Suy luận]`; thẻ chưa có thì tạo | `maxLength`, `maxItems` | PRB-001 | C, S, DB (`UNIQUE lower(tags.name)`) | `database/F2_problem-bank.md:112` |
 | `referenceSolution.language` | một trong `JAVA`, `CPP`, `PYTHON` | `enum` | PRB-001 | C, S, DB (ENUM) | `database/F2_problem-bank.md:239` |
 | `referenceSolution.sourceCode` | không rỗng khi có `referenceSolution`; tối đa 64 KB UTF-8 `[SoT: Suy luận]`; rỗng/`null` toàn bộ nghĩa là xoá dòng | `required`, `maxBytes` | PRB-001 | C, S, DB (`NOT NULL`) | Sheet 5 Khu C NO 9-10 |
 | `workedExamples[].input`, `.output` | bắt buộc, không rỗng; văn bản ngắn tối đa 8 KB mỗi trường `[SoT: Suy luận]` (không có nhánh MinIO) | `required`, `maxBytes` | PRB-001 | C, S, DB (`NOT NULL`) | Sheet 5 Khu D NO 2-3; `database/F2_problem-bank.md:254-255` |
@@ -54,7 +54,7 @@ Bảng 3.1: Phân vai kiểm giữa `problem-bank` và `harness`.
 | `stdinFormatMd`, `stdoutFormatMd` tối đa 20.000 ký tự | `problem-bank` (C, S) | PRB-001 | từ chối | `[SoT: Suy luận]` |
 | Hình dạng nút kiểu, `kind` hợp lệ, `of`, số chiều, độ sâu lồng, kiểu node thống nhất, chữ ký vắng | `FunctionSpecEvaluator` | `HRN-V01` tới `HRN-V07` | **mềm**: lưu được, `wrapperSupported = false`, trả `PRB-W01` | `03-dd/validation/F3_harness.md` mục 2 và 3 |
 | Nút kiểu hỏng cấu trúc, tên hàm, tên tham số, trùng tên, từ dành riêng, số tham số, chữ ký nửa vời, khoá và giá trị `nameOverrides` | `FunctionSpecEvaluator` | `HRN-V10` tới `HRN-V19` | **cứng**: `422 PRB-036` | định danh `^[A-Za-z][A-Za-z0-9_]{0,63}$`, tối đa 10 tham số (do `harness` chốt) |
-| `EPSILON` thiếu `epsilonValue` dương | `FunctionSpecEvaluator` (và CHECK DB) | `HRN-V20` | cứng: `422 PRB-036` | `epsilonValue` ở chiến lược khác được lưu nguyên và bị bỏ qua |
+| `EPSILON` thiếu `epsilonValue`; hoặc epsilon được lưu không dương, >999999.999999999999 hay không biểu diễn chính xác với scale <=12 | `FunctionSpecEvaluator` (và CHECK DB) | `HRN-V20` | cứng: `422 PRB-036` | `epsilonValue` ở chiến lược khác được NULL hoặc giữ giá trị hợp lệ theo cùng miền; chỉ bỏ qua khi so khớp, không bỏ qua validation. Scale tính sau bỏ số 0 thập phân dư; không làm tròn trước kiểm |
 | `UNORDERED_SET` với `BINARY_TREE`/`LINKED_LIST` | `FunctionSpecEvaluator` | `HRN-V22` | cứng: `422 PRB-036` | câu chữ `SHR0202:768` |
 | `epsilonValue` | `NUMERIC(18,12)`, `> 0` | `HRN-V20` | | `database/F2_problem-bank.md:129` |
 
@@ -78,7 +78,7 @@ Bảng 5.1.
 | :--- | :--- | :--- | :--- | :-: | :--- |
 | `visibility` | `SAMPLE` hoặc `HIDDEN`; mặc định `HIDDEN` | `enum` | PRB-001 | C, S, DB (ENUM) | Sheet 5 Khu E NO 11 |
 | `input`, `expectedOutput` (nhập trực tiếp) | bắt buộc, không rỗng; tối đa 1 MB UTF-8 mỗi vế `[SoT: Suy luận]` | `required`, `maxBytes` | PRB-001 (rỗng), PRB-048 (quá 1 MB) | C, S | Sheet 5 Khu E NO 9-10 |
-| ngưỡng lưu trữ mỗi vế | `<= 8.192` byte -> `INLINE`; lớn hơn -> `MINIO`; hai vế quyết định độc lập | | | S, DB (hai CHECK) | `storage/F2_problem-bank.md:14`; `database/F2_problem-bank.md:166` |
+| ngưỡng lưu trữ mỗi vế | `<= 8.192` byte -> `INLINE`; lớn hơn -> `MINIO`; hai vế quyết định độc lập | | | S, DB (hai mode NOT NULL; hai CHECK bắt buộc đúng một nhánh, nhánh kia NULL) | `storage/F2_problem-bank.md:14`; `database/F2_problem-bank.md:166` |
 | `category` | `null` hoặc một trong bảy giá trị `TestcaseCategory` | `enum` | PRB-001 | C, S, DB (ENUM) | `database/F2_problem-bank.md:162` |
 | `approved` | chỉ nhận `true`; không hạ `true -> false` | `onlyTrue` | PRB-001 | S | BR-17 |
 | số testcase mỗi bài | tối đa 500 `[SoT: Suy luận]` | `maxItems` | PRB-046 | S | `security/F2_problem-bank.md:115-117` |
@@ -267,3 +267,7 @@ Bảng 15.1: Điểm cần đồng bộ với `03-dd/screens/` (viết sau proto
 | `problem_list` (`USR0101`), `saved_problems` (`USR0103`) | bảng 8.1, 9.1; ô tìm kiếm `maxLength = 100`; ghi chú `maxLength = 1000` |
 | `class_assignments` (`INS0202`) | bảng 12.1 |
 | `admin_ai_limits` (`ADM0303`) | bảng 13 |
+
+## 16. Đóng hợp đồng trước migration
+
+Chốt 2026-10-29 (`DEC-2026-1029-f2-migration-readiness`): DB NOT NULL/default/CHECK/seed theo BD database F2 §7; tag lower(name) không phân biệt hoa thường; signature đủ cả ba trường hoặc cùng NULL, [] là parameters hợp lệ. Epsilon hợp lệ có cùng miền khi EPSILON hay được giữ ở chiến lược khác. So snapshot lúc tái xuất bản theo BR-08; không có câu hỏi validation F2 chặn migration. Không dùng CHECK để thay validation nhiều dòng, quyền hay giao dịch.

@@ -35,7 +35,7 @@
 | Tên vật lý (slug) | `auth` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`), A2 (`INSTRUCTOR`) — A3 (`ADMIN`) dùng route riêng `/admin/login`, ngoài phạm vi |
-| Phiên bản | V0.3 |
+| Phiên bản | V0.4 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/08/25 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
@@ -50,6 +50,7 @@
 | V0.1 | Toàn bộ | Tạo mới theo cấu trúc 7 mục văn xuôi (layout regions, component inventory, screen states, APIs consumed, navigation, access rights, câu hỏi mở) tại `02-bd/screens/shared/SHR0101_auth.md` | 2026/08/25 | Nhóm phát triển AlgoPrep |
 | V0.2 | Toàn bộ | Chuyển sang mẫu 9 sheet, đổi tên file thành `SHR0101_auth.md` theo mã màn. Giữ nguyên nội dung đã chốt (state machine, DTO, navigation theo vai trò, access rights); đối chiếu code frontend đã dựng (`features/auth-by-credentials`, `entities/auth`) để chốt tên field/DTO thay vì suy luận; bổ sung Sheet 5 danh sách item theo đúng bộ thẻ, Sheet 6 đặc tả điều khiển, Sheet 8 danh sách sự kiện `EVT-1` đến `EVT-10`, Sheet 9 đặc tả kiểm tra; đóng câu hỏi mở cũ Q1(BD) vì code đã dựng đúng đề xuất, phát sinh 2 câu hỏi mở mới (Q4, Q5) | 2026/09/20 | Nhóm phát triển AlgoPrep |
 | V0.3 | Sheet 4, 5, 8, 9, Q1 | Đổi kênh phản hồi theo `DEC-2026-1003-toast-feedback-channel`: lỗi nhập và kết quả thao tác (gửi mã, gửi lại mã, đặt lại mật khẩu, huỷ xoá tài khoản) đi qua một toast; ô sai chỉ đổi viền đỏ + `aria-invalid`, bỏ chữ lỗi cạnh ô; đảo chốt cũ "lỗi hiện dưới field, không toast"; banner khôi phục tài khoản giữ lại vì là trạng thái trang có nút hành động | 2026/10/03 | Nhóm phát triển AlgoPrep |
+| V0.4 | Sheet 3 (ghi chú), Câu hỏi mở | Đóng Q2, Q3, Q5 theo xác nhận của chủ dự án 2026-10-29; DD đã triển khai đúng các đáp án này. Bỏ câu "không chốt route callback" ở ghi chú. Không đổi bố cục hay hành vi | 2026/10/29 | Claude |
 
 ---
 
@@ -200,7 +201,7 @@ lại mật khẩu bằng mã 6 chữ số qua email [Nguồn: 01-rd/screens/sha
 [Phạm vi]
 - Không thiết kế màn đăng nhập riêng của `ADMIN` (`/admin/login`) — `DEC-2026-0915-admin-separate-login-route`.
 - Không cấu hình ma trận quyền — thuộc `admin_permission_matrix` (`ADM0202`).
-- Không chốt route callback OAuth cụ thể (`/auth` hay `/auth/callback/{provider}`) — xem Câu hỏi mở Q2.
+- Route callback OAuth là `/auth/callback/{provider}` (đã đóng Q2, 2026-10-29).
 - Không kiểm tra "đã có Access Token hợp lệ mà quay lại `/auth`" ở đợt này — xem Câu hỏi mở Q3.
 - Không chốt độ mạnh mật khẩu chính xác (số ký tự, có bắt buộc chữ và số hay không) — xem Câu hỏi mở Q5.
 
@@ -574,7 +575,7 @@ Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 | # | Câu hỏi | Vì sao chưa trả lời được | Đề xuất | Chủ sở hữu |
 | :-: | :--- | :--- | :--- | :--- |
 | Q1 | ~~`TermsCheckbox` chưa tick có chặn submit `signup` không, và thông báo lỗi hiển thị thế nào?~~ **Đã đóng.** Code đã dựng đúng đề xuất trước đó: chặn submit bằng `signupSchema.refine`, ~~lỗi hiện dưới checkbox cùng cơ chế `InlineFieldError`~~ [Nguồn: 05-coding/frontend/src/entities/auth/model/schema.ts:29-32]. **SỬA 2026-10-03** (`DEC-2026-1003-toast-feedback-channel`): checkbox sai chỉ đổi viền đỏ + `aria-invalid`, lỗi do một toast mang; `InlineFieldError` đã bỏ. | — | — | Đã đóng |
-| Q2 | Hai nút Google/GitHub khi build backend thật phải khởi tạo redirect OAuth riêng theo provider. Route callback OAuth có ở lại đúng URL `auth` hay là một URL riêng (`/auth/callback/{provider}`)? | Prototype và mock hiện tại không phân biệt hai nút (`entities/auth/api/__mock__/fake-auth.ts:59`), RD F1-15 chỉ mô tả hành vi nghiệp vụ, không mô tả URL màn. | Route callback riêng `/auth/callback/{provider}`, không tái dùng URL `/auth` chính, để tách lỗi callback khỏi lỗi form. | DD (`03-dd/api/F1_identity.md`, `03-dd/screens/shared/SHR0101_auth.md`, cả hai chưa viết) |
-| Q3 | Người dùng đã có Access Token hợp lệ mà quay lại `/auth` (ví dụ gõ URL trực tiếp) — có redirect thẳng về đích theo vai trò hay vẫn hiển thị lại form? | RD không đề cập; code hiện tại (`useAuthFlow`) không kiểm tra token hiện có trước khi hiển thị form. | Redirect thẳng về đích theo vai trò (Sheet 3), tránh đăng nhập lại không cần thiết. | Chủ dự án / DD |
+| Q2 | **ĐÃ ĐÓNG 2026-10-29 (chủ dự án chốt theo đề xuất: route riêng `/auth/callback/{provider}`; đã nằm ở `03-dd/api/F1_identity.md:358` và `03-dd/screens/shared/SHR0101_auth.md:35`).** Hai nút Google/GitHub khi build backend thật phải khởi tạo redirect OAuth riêng theo provider. Route callback OAuth có ở lại đúng URL `auth` hay là một URL riêng (`/auth/callback/{provider}`)? | Prototype và mock hiện tại không phân biệt hai nút (`entities/auth/api/__mock__/fake-auth.ts:59`), RD F1-15 chỉ mô tả hành vi nghiệp vụ, không mô tả URL màn. | Route callback riêng `/auth/callback/{provider}`, không tái dùng URL `/auth` chính, để tách lỗi callback khỏi lỗi form. | DD (`03-dd/api/F1_identity.md`, `03-dd/screens/shared/SHR0101_auth.md`, cả hai chưa viết) |
+| Q3 | **ĐÃ ĐÓNG 2026-10-29 (chủ dự án chốt theo đề xuất: có phiên hợp lệ thì redirect về đích theo vai trò, không hiện lại form; đã nằm ở `03-dd/screens/shared/SHR0101_auth.md:55`).** Người dùng đã có Access Token hợp lệ mà quay lại `/auth` (ví dụ gõ URL trực tiếp) — có redirect thẳng về đích theo vai trò hay vẫn hiển thị lại form? | RD không đề cập; code hiện tại (`useAuthFlow`) không kiểm tra token hiện có trước khi hiển thị form. | Redirect thẳng về đích theo vai trò (Sheet 3), tránh đăng nhập lại không cần thiết. | Chủ dự án / DD |
 | Q4 | Sau khi bấm "Huỷ yêu cầu xoá tài khoản" thành công, hệ thống có tự tiếp tục đăng nhập (chạy overlay loading, điều hướng luôn) hay bắt người dùng bấm "Đăng nhập" lại? | Code hiện tại (`submitCancelDeactivation`) chỉ đóng banner, không gọi `runLoadingOverlayThenNavigate` — chưa rõ đây là hành vi cố ý hay thiếu sót [Nguồn: 05-coding/frontend/src/features/auth-by-credentials/model/use-auth-flow.ts:163-171]. | Tự động tiếp tục luồng đăng nhập ngay sau khi khôi phục, vì người dùng đã nhập đúng mật khẩu/OAuth một lần rồi — bắt nhập lại là dư thừa. | Chủ dự án / DD |
-| Q5 | Độ mạnh mật khẩu chính xác — chỉ cần tối thiểu 8 ký tự, hay bắt buộc có cả chữ và số như đề xuất ở `02-bd/security/F1_identity.md` mục 3? | `schema.ts` hiện chỉ kiểm `min(8)`, đề xuất "có chữ và số" ở BD module đánh dấu `[Suy luận]`, hai nơi chưa đối chiếu. | Chốt theo đề xuất BD module (8 ký tự, có chữ và số) khi viết `03-dd/validation/F1_identity.md`. | DD `identity` |
+| Q5 | **ĐÃ ĐÓNG 2026-10-29 (chủ dự án chốt theo đề xuất: tối thiểu 8 ký tự, có cả chữ cái và chữ số; đã nằm ở `03-dd/validation/F1_identity.md:16`, mã `IDT-V03`).** Độ mạnh mật khẩu chính xác — chỉ cần tối thiểu 8 ký tự, hay bắt buộc có cả chữ và số như đề xuất ở `02-bd/security/F1_identity.md` mục 3? | `schema.ts` hiện chỉ kiểm `min(8)`, đề xuất "có chữ và số" ở BD module đánh dấu `[Suy luận]`, hai nơi chưa đối chiếu. | Chốt theo đề xuất BD module (8 ký tự, có chữ và số) khi viết `03-dd/validation/F1_identity.md`. | DD `identity` |

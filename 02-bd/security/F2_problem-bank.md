@@ -62,8 +62,7 @@ suốt dự án, không phải đặc thù riêng module.
   `testcase_id` và độ dài chuỗi, không log nội dung. Đây là ràng buộc vận hành cần đưa vào coding
   convention khi vào giai đoạn code, không phải thứ kiểm bằng test tự động dễ dàng — ghi lại ở đây để DD
   và review code sau này không bỏ sót.
-- **Endpoint nội bộ cho `judge-orchestration` lấy input để chấm** (outbound port `judge-orchestration` tự
-  khai báo gọi sang, hoặc `problem-bank` phát dữ liệu qua cơ chế khác — chốt ở DD của cả hai module) là
+- **Endpoint nội bộ cho `judge-orchestration` lấy input để chấm** (lời gọi Java trực tiếp trong cùng JVM qua `ProblemGradingSpecPort.loadTestcaseSnapshot`, DD F2 §58) là
   giao tiếp backend-to-backend, không đi qua đường học viên có thể trực tiếp gọi — không được lộ ra một
   route công khai (`/api/**`) mà chỉ đi qua kênh nội bộ (service-to-service, cùng process trong modular
   monolith — có thể là một lời gọi Java trực tiếp qua outbound port, không cần cả một HTTP round-trip vì
@@ -112,15 +111,10 @@ suốt dự án, không phải đặc thù riêng module.
   sạch ở tầng lưu trữ (lưu nguyên văn để không mất định dạng đề bài A2 soạn), trách nhiệm sanitize khi
   hiển thị thuộc tầng render — ghi lại ở đây để không bị hiểu nhầm là `problem-bank` đã xử lý xong.
 - **Giới hạn kích thước upload theo lô** (F2-07): giới hạn số lượng testcase/lô và kích thước tổng một
-  lần tải lên để tránh một lượt upload làm nghẽn MinIO hoặc Postgres — số cụ thể `[SoT: Suy luận]`, chốt
-  ở DD.
+  lần tải lên để tránh một lượt upload làm nghẽn MinIO hoặc Postgres: tối đa 100 cặp, 64 MB mỗi vế, 256 MB toàn lô theo validation F2.
 - **Xác thực chữ ký hàm khớp type schema** (F3-13, kiến trúc mục 5): validate ở tầng application trước
   khi lưu, không tin dữ liệu client gửi lên là đã đúng cấu trúc JSONB mong đợi.
 
-## 6. Việc còn mở — chuyển sang DD
+## 6. Quyết định đã đóng
 
-- Cơ chế cụ thể (HTTP nội bộ có xác thực service-token, hay lời gọi Java trực tiếp qua outbound port)
-  cho `judge-orchestration` lấy input Hidden testcase để chấm (mục 2).
-- Giới hạn cụ thể kích thước/số lượng một lô upload testcase (mục 5).
-- Danh sách chính xác các endpoint áp `TESTCASE_MANAGEMENT` vs `PROBLEM_AUTHORING` khi có bảng API đầy đủ
-  ở `03-dd/api/F2_problem-bank.md`.
+Baseline 2026-10-29: `DEC-2026-1029-f2-migration-readiness`. Kênh nội bộ đọc Hidden là port Java cùng JVM, không route HTTP công khai. Ma trận endpoint TESTCASE_MANAGEMENT/PROBLEM_AUTHORING đã chốt ở DD API §0 và từng endpoint; không có quyền đọc bookmark của người khác. Giới hạn upload đã chốt ở validation F2; không còn câu hỏi security F2 chặn migration. Các kiểm quyền, quota, tính bất biến và giao dịch vẫn phải được hiện thực và kiểm khi coding, không coi tài liệu đã đóng là test đã đạt.

@@ -117,9 +117,11 @@ LlmProviderPort.streamTurn(ChatMemoryRef, SystemInstruction, PerProblemContext?,
 
 Ba tham số **tách rời tường minh ở chữ ký port, không nối chuỗi** — đây chính là điểm chặn prompt
 injection ở tầng thiết kế (chi tiết mục 5). Adapter `SpringAiLlmAdapter` implement port này bằng
-`ChatClient` của Spring AI, ánh xạ `SystemInstruction` → system message, `PerProblemContext` → một block
-có nhãn trong cùng system message (không phải system message riêng thứ hai — LLM API thường chỉ nhận một
-system message; nhãn là ranh giới ngữ nghĩa, không phải ranh giới transport), `UserData` → user message.
+`ChatClient` của Spring AI, ánh xạ `SystemInstruction` → system message, `UserData` → user message.
+Sửa 2026-10-29 (F5-08, owner chốt): `PerProblemContext` mang `aiBrief` do tác giả bài nhập nên đi vào **user
+message** như một khối có nhãn và nonce, không còn nằm trong system message; chỉ hai cờ boolean
+`no_full_code` và `socratic_only` do máy chủ in cố định đi cùng system message. Bản cũ đặt cả khối trong
+system message (nhãn chỉ là ranh giới ngữ nghĩa, không chống được prompt injection).
 
 ### 3.6. Domain event — phát ra (F5 → F1)
 
@@ -258,9 +260,10 @@ chủ dự án xác nhận ở DD, cấu hình được qua `AI_TOKEN_BUDGET`/`A
 phải Redis, vì cache này cần tồn tại vô thời hạn (nộp lại đúng mã sau nhiều tháng vẫn phải hit) trong khi
 Redis là bộ nhớ có thể bị evict/khởi động lại. Redis chỉ đóng vai trò lớp tăng tốc tuỳ chọn phía trước
 Postgres (không bắt buộc cho đúng đắn nghiệp vụ, chỉ giảm độ trễ tra cứu) — nếu thiếu Redis, hệ thống vẫn
-đúng, chỉ chậm hơn một chút. `source_hash` = SHA-256 của mã nguồn đã chuẩn hoá (xoá khoảng trắng thừa cuối
-dòng, thống nhất line ending) — chuẩn hoá để tránh cache-miss giả do khác biệt định dạng không ảnh hưởng
-ngữ nghĩa mã nguồn.
+đúng, chỉ chậm hơn một chút. `source_hash` = SHA-256 của **đúng các byte UTF-8 của mã nguồn đã lưu, không chuẩn hoá**
+(sửa 2026-10-29, F5-02, owner chốt). Bản cũ xoá khoảng trắng cuối dòng và thống nhất line ending, nhưng khoảng
+trắng đó có thể nằm trong literal nhiều dòng nên hai mã khác nội dung có thể trùng hash. Chấp nhận một số
+cache-miss khi hai bài nộp chỉ khác định dạng.
 
 Sửa 2026-10-22 (đồng bộ DB vòng 4, DEC-2026-1022-db-sync-round4) (AI-11, `DEC-2026-1022-db-sync-round4` mục 2): **khi cache hit không dùng lại review cũ cho submission mới mà tạo một dòng `solution_reviews` mới** (`database/F5_ai-review.md` mục 1.3a, đoạn "Cache hit"): sao chép `result_json` và `readability_score`, đặt `served_from_cache = true`, giữ nguyên `prompt_template_id` của cache entry, `submission_id` của dòng mới vẫn unique. `ai_cache_entries.solution_review_id` **vẫn trỏ review gốc** và `hit_count` tăng 1. Sự kiện `SolutionReviewCompleted` **vẫn được phát** qua outbox cho dòng mới (mục 3.6), nên consumer (`identity` read model, dashboard) không phải phân biệt hit hay miss. **Không ghi `token_usage`** vì không gọi LLM. Lý do (tiêu chí ponytail bậc 4): giữ unique `submission_id` và một nơi đọc duy nhất cho trang tiến độ, không thêm bảng ánh xạ submission-review.
 

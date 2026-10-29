@@ -65,7 +65,7 @@ harness`, không cần chia sẻ giữa nhiều instance — chốt cụ thể �
 Theo đúng nguyên tắc `DEC-2026-0820-architecture-baseline` (không import schema khác):
 
 - `harness` nhận chữ ký hàm (bốn cột của `problem_specs`, đã ở dạng JSONB theo lược đồ kiểu mục 4 file architecture) qua lời
-  gọi outbound port mà `harness` tự khai báo trong `domain/ports/out` (ví dụ `ProblemSpecReaderPort` — tên đề
+  gọi outbound port mà `harness` tự khai báo trong package port đầu ra của module (cấu trúc package chốt ở DD; ví dụ `ProblemSpecReaderPort` — tên đề
   xuất, chốt ở DD), adapter thật gọi sang `problem-bank` (cùng JVM, modular monolith — có thể là lời gọi Java
   trực tiếp qua interface dùng chung, không cần HTTP).
 - `harness` lắng nghe sự kiện `ProblemSpecChanged` (`02-bd/architecture/F2_problem-bank.md` mục 3.1) chỉ để biết
@@ -74,8 +74,8 @@ Theo đúng nguyên tắc `DEC-2026-0820-architecture-baseline` (không import s
 
 ## 4. Migration
 
-**Không có migration bảng nào cho schema `harness`** — schema được tạo rỗng (`CREATE SCHEMA harness`), không có bảng để migrate. Nếu Flyway/Liquibase được tổ
-chức theo một thư mục mỗi module Maven (khớp baseline tám module), thư mục của `algoprep-harness` không chứa
+**Không có migration bảng nào cho schema `harness`** — schema được tạo rỗng (`CREATE SCHEMA harness`), không có bảng để migrate. Công cụ migration là Flyway (`DEC-2026-1029-flyway-migration-tool`), mỗi module một thư mục
+`db/migration/<schema>`; `algoprep-harness` không có thư mục này và không chứa
 file migration SQL nào, chỉ chứa tài nguyên template tĩnh dưới `src/main/resources/`.
 
 ## 5. Việc còn mở — chuyển sang DD

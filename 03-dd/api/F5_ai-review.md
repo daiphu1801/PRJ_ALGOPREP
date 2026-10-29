@@ -712,6 +712,8 @@ Gợi ý **không ghi** `interview_turns`, **không** tăng `turn_count`, không
 | 409 | `AIR-111` | phiên không còn chạy | |
 | 422 | `AIR-115` | `hint_allowed` không phải `true` (kể cả NULL của lối vào `SUBMISSION`) | F5-28 chỉ áp cho hai lối vào tự luyện |
 | 409 | `AIR-113` | phiên đang xử lý một lượt | |
+| 409 | `AIR-114` | `turn_count` đã bằng `max_turns` hoặc đã đạt trần giai đoạn 3 | Thêm 2026-10-29 (F5-05): hết lượt trả lời thì không xin thêm gợi ý |
+| 422 | `AIR-116` | `hint_count` đã bằng `ai.interview.max-hints-per-session` (mặc định 3) | Thêm 2026-10-29 (F5-05, owner chốt): chặn gợi ý nối tiếp vô hạn vì gợi ý gọi LLM nhưng không tăng `turn_count` |
 | 503 | `AIR-501` | LLM không dùng được | |
 
 ### 11.5 Luồng xử lý

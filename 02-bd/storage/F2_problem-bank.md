@@ -44,7 +44,7 @@ trữ, để nhân bản/xuất bản không phải di chuyển object giữa ha
 
 | Thao tác | Ai được phép | Thời hạn URL | Ghi chú |
 | :--- | :--- | :--- | :--- |
-| Tải lên testcase theo lô (F2-07) | Vai trò có `TESTCASE_MANAGEMENT:CREATE`/`UPDATE` qua ma trận F1-10 (tham chiếu, không thiết kế lại ở đây) | 15 phút, `[SoT: Suy luận]` | Presigned PUT, client (trình duyệt admin) tải thẳng lên MinIO, backend chỉ ký URL và ghi lại `object_key` sau khi tải xong (xác nhận qua callback hoặc polling `HEAD` — chốt ở DD) |
+| Tải lên testcase theo lô (F2-07) | Vai trò có `TESTCASE_MANAGEMENT:CREATE`/`UPDATE` qua ma trận F1-10 (tham chiếu, không thiết kế lại ở đây) | 15 phút, `[SoT: Suy luận]` | Presigned PUT, client (trình duyệt admin) tải thẳng lên MinIO, backend chỉ ký URL và ghi lại `object_key` sau khi tải xong (xác nhận bằng `HEAD` theo DD BR-14, không dùng callback) |
 | Tải xuống input/expected-output để hiển thị lại cho Admin xem/sửa | Cùng quyền `TESTCASE_MANAGEMENT` | 5 phút, `[SoT: Suy luận]` | Chỉ Admin/Instructor xem được nội dung testcase Hidden — học viên **không bao giờ** nhận presigned URL trỏ tới input/expected-output của Hidden testcase, dù trực tiếp hay gián tiếp qua log lỗi (F2-08) |
 | `judge-orchestration` đọc input để chấm | Backend-to-backend (service credential nội bộ, không phải presigned URL cấp cho client) | Không áp dụng thời hạn kiểu presigned — dùng credential MinIO nội bộ của service | Tránh lộ URL tạm thời ra ngoài qua log/network trace của trình duyệt học viên |
 
@@ -61,10 +61,12 @@ cho học viên, thời hạn ngắn tương tự.
 - Testcase nháp AI sinh (F2-14) không dùng để chấm (`origin = 'AI'` và `approved = false`; Sửa 2026-10-22 (đồng bộ DB vòng 3, DEC-2026-1022-problem-bank-schema-sync)) không có retention
   riêng — theo vòng đời chung của bài toán, vì Admin có thể quay lại xác nhận muộn.
 
-## 5. Việc còn mở — chuyển sang DD
+## 5. Quyết định đã đóng
 
-- Cơ chế xác nhận tải lên MinIO hoàn tất (callback MinIO event hay polling từ backend) — mục 3.
-- Có cần cache tầng ứng dụng (Redis) cho nội dung testcase MinIO khi `judge-orchestration` chấm lặp lại
-  cùng bài nhiều lần liên tiếp hay không — mục 1.
-- Ngưỡng 8 KB, thời hạn presigned URL (15 phút/5 phút) là đề xuất BD, chưa có xác nhận chủ dự án — có thể
-  điều chỉnh ở DD mà không đổi kiến trúc.
+Baseline 2026-10-29: `DEC-2026-1029-f2-migration-readiness`; không còn câu hỏi storage F2 chặn migration.
+
+- Mỗi vế <= 8.192 byte lưu INLINE, lớn hơn lưu MINIO; đúng một nhánh được giữ, trường nhánh kia NULL; inline rỗng hợp lệ.
+- URL upload 15 phút, download 5 phút; phiên upload Redis 20 phút; confirm kiểm HEAD và ghi lô tất cả hoặc không theo DD BR-14.
+- Không bắt buộc cache nội dung MinIO ở baseline; thêm sau khi đo tải, không phát sinh bảng DB.
+- Snapshot chứa byte input/output thật và bất biến theo version; không phụ thuộc object testcase hiện hành có thể bị sửa/xóa. Giữ snapshot cũ và so nội dung bộ chấm khi tái xuất bản theo DD BR-08/BR-11.
+- Dọn object mồ côi không chạy bằng migration; quy tắc retention snapshot theo §1.15 BD database. Object upload hết hạn chưa confirm được giữ theo giới hạn vận hành DD hiện hành, không tự thêm job/bảng mới.

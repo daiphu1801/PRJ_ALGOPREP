@@ -67,7 +67,7 @@ Các giới hạn "tối đa 10 phần tử" là `[SoT: Suy luận]`: Sheet 5 c�
 | `hintAllowed` | boolean; bắt buộc với hai lối tự luyện; với `SUBMISSION` bỏ qua, lưu NULL | `AIR-V03` | 400 | Presentation | F5-28 |
 | `topics` | mảng 1 đến 10 phần tử; mỗi phần tử sau khi cắt khoảng trắng 1 đến 60 ký tự; không trùng nhau (không phân biệt hoa thường; trùng thì gộp, không lỗi) | `AIR-V06` | 400 | Presentation | Trần 60 khớp tên chủ đề F6 (`03-dd/validation/F6_interview-bank.md:95`), `DEC-2026-1024-dd-screens-ai-topic-length-and-rd-trim` (nâng từ 50 `[SoT: Suy luận]`) |
 | `questionRef` | chuỗi UUID 36 ký tự (là `interview_questions.id`, không phải `IQ-nnn`) | `AIR-V07` | 400 | Presentation | `DB5:109` |
-| `questionText` | 1 đến 2.000 ký tự sau khi cắt khoảng trắng; lưu nguyên văn trong bộ nhớ hội thoại, **không** vào `interview_sessions` | `AIR-V07` | 400 | Presentation | `[SoT: Suy luận]` |
+| `questionText` | 1 đến 2.000 ký tự sau khi cắt khoảng trắng; lưu nguyên văn vào `interview_sessions.question_text` (chỉ `QUESTION_BANK`, thêm 2026-10-29, F5-07) và trong bộ nhớ hội thoại; không bao giờ là chỉ thị | `AIR-V07` | 400 | Presentation | `[SoT: Suy luận]` |
 | Ràng buộc chéo cột | `SUBMISSION` thì `submission_id` có và ba cột F5-28 NULL; hai lối kia thì `submission_id` NULL | | | Application (không CHECK đơn giản) | `DB5:122-124` |
 
 ## 5. Lượt hội thoại, gợi ý, kết thúc (endpoint 10, 11, 12)

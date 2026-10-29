@@ -42,7 +42,7 @@ Nguồn phiên bản: `README.md` mục 5 và `DEC-2026-0820-stack-versions`.
 | :--- | :--- |
 | ~~Công cụ kiểm ranh giới module~~ | **Đã chốt**: ArchUnit, `DEC-2026-0901-backend-base-architecture` điểm 1 |
 | ~~Phiên bản image trong `docker-compose.yml`~~ | **Đã chốt** khi tạo file (2026-09-01), pin cứng: `postgres:16.15-alpine` · `redis:7.4-alpine` · `rabbitmq:4.2.9-management-alpine` · `criyle/go-judge:v1.12.3` · `minio/minio:RELEASE.2025-09-07T16-13-09Z` · `prom/prometheus:v3.14.0` · `grafana/grafana:13.0.7` |
-| Công cụ migration schema (Flyway / Liquibase) | Cùng `02-bd/database/<module>.md` đầu tiên |
+| Công cụ migration schema | Đã chốt Flyway, `DEC-2026-1029-flyway-migration-tool` |
 | Cấu hình pipeline GitHub Actions | Đã có mã thật để chạy CI — làm ở slice sau |
 | Nhà cung cấp LLM và cách quản khoá API giữa các môi trường | Quyết định riêng |
 

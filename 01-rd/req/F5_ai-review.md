@@ -118,7 +118,7 @@ hoạt **sau khi** bài nộp đạt `Accepted`. F5.2 (Mock Interview) có lối
 - **Ba lối vào phiên phỏng vấn** (F5-24, `[SoT: Suy luận — đối chiếu 09-layoutBase/Phỏng vấn giả lập.dc.html
   với F5-09, chốt cùng phiên với quyết định mục 1.3 của `06-plan/PROTOTYPE_DEBT.md`, 2026-08-24]`): ngoài
   lối vào từ bài nộp `Accepted` (F5-09), người học còn tự mở phiên từ (a) **kho câu hỏi** có sẵn của F6, hoặc
-  (b) **tự chọn chủ đề** (tick nhiều chủ đề thuật toán, chọn mức độ và ngôn ngữ) khi chưa có bài nộp phù hợp
+  (b) **tự chọn chủ đề** (tick nhiều chủ đề thuật toán, chọn mức độ; **không chọn ngôn ngữ**, sửa 2026-10-29, F5-09, owner chốt: luyện theo chủ đề độc lập ngôn ngữ, khớp DD và `interview_sessions` không có cột ngôn ngữ) khi chưa có bài nộp phù hợp
   để luyện. Cả ba lối vào cùng chạy chung một luồng ba giai đoạn (F5-10 tới F5-16) và chung mọi ràng buộc AI
   (F5-17 tới F5-22) — khác biệt duy nhất là nguồn đề bài/chủ đề nạp vào phiên, không phải luồng hội thoại.
   Việc phỏng vấn không còn bị khoá cứng sau `Accepted` cần phản ánh lại ở câu mô tả tổng quan "sau khi

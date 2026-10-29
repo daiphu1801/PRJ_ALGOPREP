@@ -109,7 +109,7 @@ gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang c�
       3. Giới hạn số lần nhập sai (đề xuất 5 lần) và tần suất gửi lại (đề xuất 60 giây), cùng giá trị F1-17
          `[SoT: Suy luận]`.
       4. Câu thông báo sau khi bấm gửi lại luôn là câu chung, không tiết lộ email có tồn tại hay không (cùng nguyên tắc F1-17).
-      Tài khoản tự đăng ký còn chờ xác thực có được đăng nhập hay không: vẫn chưa chốt (xem câu hỏi mở ở báo cáo phase 5).
+      Tài khoản tự đăng ký còn chờ xác thực **không** được đăng nhập: chặn, `403 IDT-113` (chốt 2026-10-22, `DEC-2026-1022-self-register-pending-login-blocked`; `03-dd/api/F1_identity.md:375`).
     - **F1-34 — Tài khoản do `ADMIN` tạo bị buộc đổi mật khẩu ở lần đăng nhập đầu.** `[SoT: Suy luận — mã đề xuất]`: F1-13 chỉ nêu
       "sinh mật khẩu tạm và gửi qua email", không nêu việc bắt đổi; việc bắt đổi đã có trong BD (`users.must_change_password`,
       `02-bd/database/F1_identity.md:26`, `02-bd/screens/admin/ADM0201_user_management.md:634`) và trong

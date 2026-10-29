@@ -155,12 +155,12 @@ Dẫn xuất từ `user_answers`, nhưng giữ một bảng tổng hợp riêng 
 | :--- | :--- | :--- |
 | `id` | UUID PK | |
 | `user_id` | tham chiếu `identity.users.id`, không FK vật lý | |
-| `topic_id` | FK → `question_topics.id` | |
+| `topic_id` | FK → `question_topics.id` NOT NULL, **`ON DELETE CASCADE`** | Sửa 2026-10-29 (F6-04, owner chốt): ngoại lệ của quy ước NO ACTION, chỉ cho bảng dẫn xuất này. Chủ đề chỉ xoá được khi không còn `interview_questions` nào tham chiếu (kiểm ở use case và FK NO ACTION của `interview_questions.topic_id`), nên dòng tiến độ còn lại chỉ là số 0 không còn ý nghĩa và được xoá theo; không mất lịch sử vì `user_answers` giữ nguyên |
 | `questions_attempted` | INT NOT NULL default 0 | Số câu hỏi riêng biệt (không phải số lượt) đã có ít nhất một `user_answers` thuộc topic này **và câu đó đang `ACTIVE`** (sửa 2026-10-23, `DEC-2026-1023-dd-f6-practice-budget-and-prompt`: câu `RETIRED` không tính vào tử số, khớp mẫu số chỉ đếm `ACTIVE`) |
-| `last_practiced_at` | TIMESTAMPTZ | |
-| `updated_at` | TIMESTAMPTZ | |
+| `last_practiced_at` | TIMESTAMPTZ nullable | Sửa 2026-10-29 (F6-01): NULL khi người đó không còn câu `ACTIVE` đã luyện nào trong chủ đề (phép `MAX` trên tập rỗng), không gán NOT NULL rồi làm phép tính lại thất bại. `questions_attempted > 0` thì phải có giá trị |
+| `updated_at` | TIMESTAMPTZ NOT NULL | |
 
-Unique `(user_id, topic_id)`. `topic_id` `ON DELETE NO ACTION`.
+Unique `(user_id, topic_id)`. `topic_id` `ON DELETE CASCADE` (ngoại lệ, xem dòng `topic_id`).
 
 **Mẫu số tính lúc đọc** (Sửa 2026-10-22 (đồng bộ DB, phase 2, DEC-2026-1022-interview-bank-schema-sync), IB-04): tổng số câu của chủ đề = `COUNT(*)` các `interview_questions` có `status = 'ACTIVE'` theo `topic_id`. Truy vấn xuất phát từ `question_topics`, `LEFT JOIN` sang `interview_questions` (đã lọc `ACTIVE`) và `LEFT JOIN practice_history` theo `(user_id, topic_id)`, nhờ vậy chủ đề ADMIN mới tạo, chưa có câu nào hoặc học viên chưa làm câu nào, vẫn hiện với `0`. Lý do: bản chụp `questions_total` trôi mỗi khi ADMIN thêm, `RETIRED` hoặc chuyển chủ đề câu hỏi (ponytail bậc 4, tính thay vì giữ bản chụp).
 
@@ -191,7 +191,7 @@ RD không định nghĩa chính xác công thức "tỉ lệ hoàn thành theo t
 Unique `(user_id, question_id)` — đúng một dòng trạng thái ôn tập cho mỗi cặp người dùng/câu hỏi, **cập
 nhật tại chỗ** khi tự chấm lại (khác nguyên tắc bất biến của `user_answers` — hai bảng có ngữ nghĩa khác
 nhau: một là lịch sử luyện tập không sửa được, một là trạng thái lịch ôn tập luôn cập nhật theo lần tự
-chấm mới nhất). Index thường `(user_id, next_review_at)` — truy vấn "cần ôn lại" nhanh. Sửa 2026-10-22 (đồng bộ DB, phase 1): bỏ partial index `WHERE next_review_at <= now()` vì `now()` không IMMUTABLE, PostgreSQL từ chối tạo (kiến thức PostgreSQL, không có trong repo).
+chấm mới nhất). Cặp `(rating, interval_days)` là hằng số của DD nên DB ép được bằng một CHECK (sửa 2026-10-29): `FORGOTTEN` đi với 1, `VAGUE` với 3, `KNOWN` với 7. Index thường `(user_id, next_review_at)` — truy vấn "cần ôn lại" nhanh. Sửa 2026-10-22 (đồng bộ DB, phase 1): bỏ partial index `WHERE next_review_at <= now()` vì `now()` không IMMUTABLE, PostgreSQL từ chối tạo (kiến thức PostgreSQL, không có trong repo).
 
 **Hai khái niệm tách biệt** (Sửa 2026-10-22 (đồng bộ DB, phase 2, DEC-2026-1022-interview-bank-schema-sync), IB-03). Hai cụm "cần ôn lại" và "đang ôn" từng bị dùng lẫn; từ nay chỉ dùng hai tên sau:
 
@@ -244,7 +244,7 @@ Trước khi tạo `interview_questions`: tạo sequence `interview_bank.intervi
 `user_answers` → `practice_history` → `recall_ratings`. Không có `question_sets`/`question_set_items` —
 đã bỏ khỏi phạm vi (mục 1.8).
 
-**Ghi chú migration Sửa 2026-10-22 (đồng bộ DB, phase 2, DEC-2026-1022-interview-bank-schema-sync):** (1) `display_no`: thêm cột nullable, gán `nextval` cho các dòng `interview_questions` hiện có theo thứ tự `created_at, id` (backfill; bảng trống thì không có gì để gán), rồi đặt `NOT NULL` và `UNIQUE`, và đặt `DEFAULT nextval(...)` để mọi `INSERT` sau tự nhận số. Backfill chạy một lần. (2) `content_markdown`: bỏ `NOT NULL` nếu đã có; dòng cũ giữ nguyên giá trị. Dòng cũ chưa có `title` ngắn không có nguồn tự sinh `[SoT: Suy luận]`; dự án greenfield nên chưa có dữ liệu thật cần xử lý. (3) `practice_history`: bỏ cột `questions_total` nếu đã tạo.
+**Ghi chú migration (sửa 2026-10-29, F6-09):** dự án greenfield nên `V6.001` tạo thẳng trạng thái đích, **không** backfill `display_no`, không thêm cột rồi chuyển. `display_no` có `DEFAULT nextval(...)` ngay từ đầu; `content_markdown` nullable; `practice_history` không có `questions_total`. Các bước backfill và chuyển cột ghi ở bản 2026-10-22 chỉ áp dụng nếu có DB cũ, hiện không có. Đối tượng SQL thêm ngoài tám bảng: sequence, extension `unaccent`, hàm `f_unaccent`, GIN index (mục 9).
 
 ## 5. Giá trị mặc định BD chốt (RD để ngỏ, `[SoT: Suy luận]`)
 
@@ -302,3 +302,29 @@ chưa từng đụng tới.
 - `.nexa/control/decision-registry.md` — `DEC-2026-1022-interview-bank-schema-sync`, `DEC-2026-0828-remove-per-class-interview-set`,
   `DEC-2026-0830-interview-bank-crud`, `DEC-2026-0831-outside-screens-closures`.
 - `07-review/rd_drift_repair_260909.md` mục 3.1 — ba rubric độc lập, F6-13 là rubric thứ ba.
+
+## 9. Hợp đồng DDL (đóng F6-01, F6-04, F6-05, F6-09, 2026-10-29)
+
+Bảng 9.1 là hợp đồng để viết `V6.001`. Quy ước chung giống F2, F4, F5: ENUM của BD là `VARCHAR` cộng `CHECK` cùng tập giá trị; khoá chính UUID không có `DEFAULT` (id do `IdGeneratorPort` cấp), riêng seed dùng UUID cố định; FK nội schema là `NO ACTION` trừ ngoại lệ `practice_history.topic_id`; cột trỏ sang schema khác là UUID thuần, không FK; `created_at`, `updated_at`, `rated_at` mặc định `now()`. Các CHECK là đề xuất của audit, chủ dự án duyệt 2026-10-29.
+
+Bảng 9.1: Nullability và CHECK theo bảng.
+
+| Bảng | Cột nullable (còn lại đều NOT NULL) | CHECK và unique |
+| :--- | :--- | :--- |
+| `question_topics` | không | `code` VARCHAR(64) unique; unique index `lower(display_name)`; `uses_star_framework` NOT NULL default `false` |
+| `question_levels` | không | như `question_topics` |
+| `interview_questions` | `content_markdown`, `suggested_approach`, `sample_answer_framework`, `core_keywords` | `display_no` NOT NULL unique, `DEFAULT nextval('interview_bank.interview_question_display_no_seq')`; `title` không rỗng sau khi cắt; `status` thuộc `ACTIVE`, `RETIRED` (default `ACTIVE`); `core_keywords` và `follow_up_questions` là mảng JSON; `follow_up_questions` default `[]`; index `(topic_id, level_id, status)` và GIN FTS |
+| `answer_rubrics` | `description` | `weight_percent` trong `[0, 100]`; `sort_order > 0`; unique index `(question_id, lower(criterion_code))` (unique **index**, không phải `UNIQUE` constraint vì có biểu thức) và unique `(question_id, sort_order)` |
+| `bookmarks` | không | unique `(user_id, question_id)` |
+| `user_answers` | `feedback_result_json` | `attempt_no > 0`; `feedback_status` thuộc `COMPLETED`, `FAILED`, **không** DEFAULT; `(feedback_status = 'COMPLETED') = (feedback_result_json IS NOT NULL)`; `rubric_snapshot_json` là mảng JSON, **không** DEFAULT (không giấu lỗi mất snapshot, `INB-040` chặn rubric rỗng); unique `(user_id, question_id, attempt_no)`; index `(user_id, created_at DESC)` và `(question_id)`. Không `updated_at` |
+| `practice_history` | `last_practiced_at` | `questions_attempted >= 0`; `questions_attempted = 0 OR last_practiced_at IS NOT NULL`; unique `(user_id, topic_id)`; `topic_id` `ON DELETE CASCADE` |
+| `recall_ratings` | không | `rating` thuộc ba giá trị; cặp `(rating, interval_days)` là `(FORGOTTEN, 1)`, `(VAGUE, 3)`, `(KNOWN, 7)`; unique `(user_id, question_id)`; index `(user_id, next_review_at)` |
+
+**Đối tượng SQL ngoài tám bảng:**
+
+- Sequence `interview_bank.interview_question_display_no_seq` (bắt đầu 1, không tái sử dụng khi câu `RETIRED`).
+- Extension `unaccent`, cài **vào schema `interview_bank`** (`CREATE EXTENSION unaccent SCHEMA interview_bank`, không dùng `IF NOT EXISTS` để lỗi rõ nếu đã có ở schema khác). `unaccent` là extension "trusted", người sở hữu database tạo được mà không cần superuser; đã kiểm trên PostgreSQL 16.
+- Hàm `interview_bank.f_unaccent(text)` `IMMUTABLE`, `PARALLEL SAFE`, `STRICT`, gọi `interview_bank.unaccent('interview_bank.unaccent', $1)` với **dictionary kèm tên schema**, không phụ thuộc `search_path` của người chạy. Thay từ điển unaccent thì phải `REINDEX` index FTS vì lời hứa `IMMUTABLE` không còn đúng.
+- GIN index trên `to_tsvector('simple', interview_bank.f_unaccent(title || ' ' || coalesce(content_markdown, '')))`. Đã kiểm trên PostgreSQL 16: `unaccent` xử lý đúng `đ`, và index được dùng.
+
+**Seed (migration `V6.002`):** `question_topics` năm dòng `CS_THEORY` (Lý thuyết CS), `SYSTEM_DESIGN` (System design), `DATABASE` (Database), `LANGUAGE` (Ngôn ngữ), `BEHAVIORAL` (Hành vi), `sort_order` 1 đến 5, chỉ `BEHAVIORAL` có `uses_star_framework = true`; `question_levels` ba dòng `EASY` (Dễ), `MEDIUM` (Trung bình), `HARD` (Khó), `sort_order` 1 đến 3. UUID cố định. Không seed câu hỏi, rubric, bookmark, câu trả lời, tiến độ hay tự chấm từ prototype.

@@ -32,7 +32,7 @@ Nguyên tắc khoá:
     lại dấu mở/đóng của hàm bao ngoài. Nếu người học cố tình đóng sớm bằng `}` thừa, phần khung phía sau
     (lời gọi hàm, in output) trở thành mã nằm ngoài hàm — đây là lỗi biên dịch (thường là "unexpected token"
     hoặc tương tự), không phải lỗ hổng thực thi ngoài ý muốn.
-  - Với Python (không có khối `{}`, dựa vào thụt lề): vùng chèn thân hàm phải giữ đúng **mức thụt lề cố định
+  - **Đã thay thế (DD 2026-10-25, xem dòng 8): Python không re-indent.** Với Python (không có khối `{}`, dựa vào thụt lề): vùng chèn thân hàm phải giữ đúng **mức thụt lề cố định
     của khung**, template chèn mã người học **sau khi re-indent** toàn bộ khối theo đúng một mức thụt lề
     thống nhất (không tin thụt lề gốc do Monaco Editor gửi lên) — nếu người học cố ý làm lệch thụt lề để
     thoát khỏi thân hàm, kết quả là `IndentationError` (lỗi biên dịch/parse), không phải chạy mã ở phạm vi

@@ -2,6 +2,8 @@
 
 Ngày rà: 2026-10-27. Phạm vi: F2 problem-bank, F3 harness, F4 judge-orchestration. Đây là **đóng thiết kế có điều kiện** để chuyển cho coding và chuẩn bị chạy; không phải nghiệm thu phần mềm hoặc báo cáo test pass.
 
+> Cập nhật phạm vi 2026-10-29: quyết định `DEC-2026-1029-f2-migration-readiness` sửa hợp đồng epsilon và tái xuất bản snapshot F2, mở rộng AC-47/56/93. Biên bản này giữ kết luận trên baseline 2026-10-27; chưa xác nhận thiết kế testcase hoặc thực thi cho các nhánh mới. Bổ sung ca theo plan `06-plan/261029-1100-f2-db-migration.md` trước khi đóng kiểm nghiệp vụ.
+
 ## Kết quả đối chiếu
 
 | Kiểm | Kết quả |

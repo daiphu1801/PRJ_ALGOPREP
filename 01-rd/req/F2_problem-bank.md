@@ -178,3 +178,7 @@
     (nút "Nhập CSV" ở thanh tiêu đề `problem_management`) đã cắt khỏi phạm vi** — một CSV phẳng không chở
     nổi đặc tả F2-03 (chữ ký hàm) hay nội dung Markdown/LaTeX của đề bài; xoá nút này khi dựng
     UI thật.
+
+## Baseline triển khai đã chốt 2026-10-29
+
+Chủ dự án duyệt khuyến nghị audit F2 tại `DEC-2026-1029-f2-migration-readiness`. Phạm vi nghiệp vụ F2-01..F2-18 giữ nguyên; chi tiết DDL/seed ở BD database F2 §4–§7 và plan `06-plan/261029-1100-f2-db-migration.md`. Tái xuất bản sau sửa bộ chấm phải công bố snapshot phiên bản mới nếu bộ chấm khác bản đã công bố; không ghi đè lịch sử. Tỉ lệ AC bài loại lỗi hệ thống, tag không phân biệt hoa thường. Các câu hỏi thiết kế module đã được giải quyết ở DD §61; hiện thực migration và chạy kiểm thử là bước kế tiếp.

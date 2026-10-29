@@ -14,7 +14,7 @@ Bảng 0.1: Bìa tài liệu.
 | Route | `/profile` (`app/(student)/profile`) |
 | Bounded Context đứng sau | F1 `identity` (hồ sơ, đổi email); đọc F5 `ai-review` cho một con số |
 | RD nguồn | `01-rd/screens/users/USR0502_profile.md` |
-| BD nguồn | `02-bd/screens/users/USR0502_profile.md` (V0.9) |
+| BD nguồn | `02-bd/screens/users/USR0502_profile.md` (V1.0) |
 | Prototype | `05-coding/frontend/src/views/users/profile/`, `features/edit-my-profile/`, `entities/user/` (toàn bộ mock) |
 | Phiên bản, ngày | V0.1, 2026-10-24 |
 | Tiêu chí nghiệm thu | Không có file `04-tdd/screens/users/USR0502_profile.md`: mọi hành vi đã có ở `04-tdd/modules/F1_identity.md` (AC-12, AC-13) hoặc là hành vi trình duyệt ghi ở mục 7 (README mục 2) |

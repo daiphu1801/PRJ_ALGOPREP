@@ -2,6 +2,8 @@
 
 > Cập nhật: 2026-10-27 · Nguồn: RD → BD → DD đã chốt · Trạng thái: [đợt 1 F2/F3/F4 đã đóng mốc thiết kế có điều kiện](testcases/AUDIT_DOT1.md), **476 ca trong 40 file cụm**, 221/221 AC đợt 1 có nguồn testcase; golden P2 chờ codegen, chưa có bằng chứng chạy. Quy tắc `position` và 6 oracle đã chốt.
 
+> Bổ sung 2026-10-29: `DEC-2026-1029-f2-migration-readiness` chốt schema F2 và mở rộng nhánh epsilon/tái xuất bản trong AC-47/56/93. Các số ca và kết luận đợt 1 phía trên là baseline 2026-10-27; chưa bao gồm testcase bổ sung cho các nhánh mới. Việc thiết kế/thi hành các ca mới nằm trong [plan migration F2](../06-plan/261029-1100-f2-db-migration.md), chưa có bằng chứng chạy.
+
 ## 1. Mục đích và ranh giới
 
 TDD là hợp đồng nghiệm thu để QA chuyển thành testcase. Mỗi AC nêu **tiền đề, hành động, kết quả quan sát được và nguồn**. Chi tiết giao thức, mã lỗi, bảng dữ liệu, lịch job và thuật toán nằm ở DD; test case QA ghi dữ liệu kiểm và kết quả mong đợi cụ thể trước khi tự động hoá hoặc thực thi. Không lấy prototype làm nguồn quyết định nghiệp vụ.

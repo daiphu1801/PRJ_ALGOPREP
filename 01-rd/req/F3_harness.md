@@ -5,7 +5,7 @@
 
 Phân hệ cho phép mô hình bọc hàm hoạt động trên judge engine (go-judge mặc định) — vốn chỉ nhận stdin/stdout
 (`overview.md` mục 1.G). Chi tiết codegen theo từng ngôn ngữ, cách ánh xạ lỗi biên dịch, và đường lùi
-Standard I/O **thuộc tầng DD**, sẽ chốt ở `03-dd/logic/F3_harness.md` (chưa tồn tại) sau khi
+Standard I/O **thuộc tầng DD**, sẽ chốt ở `03-dd/logic/F3_harness.md` (đã có) sau khi
 `02-bd/architecture/F3_harness.md` chốt lược đồ kiểu. RD chỉ khoá phạm vi — mã `F3-01` tới `F3-13` dưới đây.
 
 - **Lược đồ kiểu dữ liệu độc lập ngôn ngữ** (F3-01): nguyên thuỷ, chuỗi, mảng nhiều chiều, danh sách lồng

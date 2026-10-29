@@ -46,7 +46,7 @@ trọng số, không còn danh sách tiêu chí, và báo cáo bài giải F5.1 
 | `user_id` | tham chiếu `identity.users.id`, không FK vật lý | Chốt quyền sở hữu (`02-bd/security/F5_ai-review.md` mục 2) |
 | `problem_id` | tham chiếu `problem.problems.id`, không FK vật lý | |
 | `language` | ENUM(`JAVA`,`CPP`,`PYTHON`) | Ngôn ngữ của bài nộp được phân tích. Thêm 2026-10-22 (đồng bộ DB, phase 1): `USR0301` hiển thị nhãn ngôn ngữ của báo cáo (`solutionReview.language.*`, `02-bd/screens/users/USR0301_solution_review.md:513`; kiểu `languageKey` ở `05-coding/frontend/src/entities/solution-review/model/types.ts:41`). Chọn thêm cột thay vì để màn đọc xuyên schema `judge.submissions`. Không dùng để tra cache: cache tra ở `ai_cache_entries` (mục 1.7) |
-| `source_hash` | CHAR(64) | SHA-256 mã nguồn đã chuẩn hoá (kiến trúc mục 6.2) |
+| `source_hash` | CHAR(64) | SHA-256 của đúng các byte UTF-8 mã nguồn đã lưu, **không chuẩn hoá** (sửa 2026-10-29, F5-02; kiến trúc mục 6.2) |
 | `prompt_template_id` | FK → `prompt_templates.id` | Phiên bản prompt đã dùng để sinh báo cáo này — cho phép audit "báo cáo này chấm theo bản prompt nào" |
 | `result_json` | JSONB | Toàn bộ báo cáo F5-07 (độ phức tạp, so sánh optimum, edge case và rủi ro, nhận xét chất lượng mã, chủ đề gợi mở) — **không có `criteriaScores`** (bỏ theo `DEC-2026-1014-drop-solution-review-rubric`); lược đồ **đã đặc tả ở mục 1.3a** (2026-10-18), gắn version qua `prompt_templates.response_schema_version` |
 | `readability_score` | SMALLINT (1-5) | F5-05 — điểm dễ đọc AI tự chấm trong cùng lượt, không gọi thêm lần nào |
@@ -111,6 +111,8 @@ Index bắt buộc: unique `(submission_id)`. Sửa 2026-10-22 (đồng bộ DB,
 | `interviewer_level` | ENUM(`INTERN`,`JUNIOR`,`MIDDLE`,`SENIOR`) nullable | F5-28 — chỉ áp dụng `entry_type IN (QUESTION_BANK, TOPIC_SELECTION)`. 4 mức, thống nhất toàn hệ thống theo `DEC-2026-0922-users-and-admin-conflict-resolutions` mục (2). Sửa 2026-10-22 (đồng bộ DB, phase 2, DEC-2026-1022-ai-judge-schema-sync) (AI-03): **chốt cuối**, giữ nguyên enum 4 giá trị, cùng cột `identity.user_preferences.preferred_interview_level`. Hệ quả cho file khác: RD F5-28 và `USR0302` đã đổi sang enum cố định 4 mức (`01-rd/req/F5_ai-review.md:125`; `02-bd/screens/users/USR0302_mock_interview.md` V0.12); dòng V0.10 ở bảng lịch sử còn nói "admin cấu hình" chỉ là lịch sử. Sửa 2026-10-23: đóng việc đồng bộ này |
 | `max_turns` | SMALLINT nullable | F5-28 — giới hạn số lượt tối đa; `NULL` khi `entry_type = SUBMISSION` (không giới hạn cứng theo lối vào này) |
 | `hint_allowed` | BOOLEAN nullable | F5-28 |
+| `hint_count` | SMALLINT NOT NULL default 0 | Thêm 2026-10-29 (F5-05, owner chốt): số gợi ý đã dùng trong phiên. Gợi ý gọi LLM nhưng không ghi `interview_turns` và không tăng `turn_count`, nên cần bộ đếm riêng để chặn gợi ý nối tiếp; trần là `ai.interview.max-hints-per-session` (mặc định 3, `application.yml`) |
+| `question_text` | VARCHAR(2000) nullable | Thêm 2026-10-29 (F5-07, owner chốt): nguyên văn câu hỏi do client gửi khi `entry_type = QUESTION_BANK`, để dựng lại `ChatMemory` khi mất Redis mà không phải đoán từ câu mở đầu của AI. Là dữ liệu người dùng, không bao giờ là chỉ thị, không lưu system instruction hay khoá API. `NULL` ở hai lối vào còn lại |
 | `stage` | ENUM(`EXPLAIN`,`CHALLENGE`,`SCALE_UP`,`COMPLETED`,`ABANDONED`) | State machine — kiến trúc mục 4.2. Sửa 2026-10-22 (đồng bộ DB, phase 2, DEC-2026-1022-ai-judge-schema-sync) (AI-04): `COMPLETED` đạt được bằng **hai đường**: hoàn tất bình thường, và **Kết thúc sớm** (popup "Kết thúc & Chấm điểm", rubric chấm từ các lượt đã có, ghi `rubric_scores`, phát `MockInterviewFinished`). `ABANDONED` **chỉ** khi phiên bỏ trống 15 phút mà chưa đủ lượt để chấm: không bao giờ chấm điểm, không có `rubric_scores`, không phát sự kiện. Sửa 2026-10-22 (đồng bộ DB vòng 2, DEC-2026-1022-db-sync-round2, mục 8): **không có màn kết quả cho `ABANDONED`**; học viên quay lại phiên này thì mở màn vào (`USR0302`) kèm toast giải thích phiên trước đã đóng. Ngưỡng "đủ lượt" là hằng số `application.yml` (chủ dự án chốt 2026-10-22; mặc định đề xuất 4 lượt `[SoT: Suy luận]`, đổi không cần sửa tài liệu) |
 | `turn_count` | INT default 0 | Tăng mỗi lượt hội thoại — dùng so với `max_turns` |
 | `started_at` | TIMESTAMPTZ | |
@@ -119,9 +121,7 @@ Index bắt buộc: unique `(submission_id)`. Sửa 2026-10-22 (đồng bộ DB,
 
 Index `(stage, updated_at)` (Sửa 2026-10-22 (đồng bộ DB, phase 1), AI-18): job quét bỏ trống lấy các phiên chưa kết thúc (`stage` thuộc `EXPLAIN`/`CHALLENGE`/`SCALE_UP`) có `updated_at` cũ hơn 15 phút. Sửa 2026-10-22 (đồng bộ DB, phase 2, DEC-2026-1022-ai-judge-schema-sync) (AI-04): 15 phút là hằng số đã chốt (`DEC-2026-1018-usr-open-questions-phase2-5`, Q3 của `USR0302`); phiên bỏ trống **chưa đủ lượt** thì sang `ABANDONED`, không chấm. Phiên bỏ trống nhưng **đủ lượt** tự chấm điểm và sang `COMPLETED` (chủ dự án chốt 2026-10-22). Ngưỡng "đủ lượt" và chi tiết job nằm ở `03-dd/jobs`. TTL `ChatMemory` Redis đề xuất 2 giờ (mục 3) là số khác, phục vụ giữ ngữ cảnh LLM, vẫn là đề xuất chưa ai xác nhận.
 
-Ràng buộc ứng dụng (không phải CHECK constraint đơn giản vì phụ thuộc điều kiện chéo cột): `entry_type =
-SUBMISSION` → `submission_id` bắt buộc, `interviewer_level`/`max_turns`/`hint_allowed` phải `NULL` (F5-28
-"không áp dụng cho lối vào từ bài nộp Accepted").
+Ràng buộc liên trường trên **cùng một dòng** (sửa 2026-10-29, F5-01: là `CHECK` được, không chỉ là ràng buộc ứng dụng; bảng ở mục 9): `entry_type = SUBMISSION` → `submission_id` bắt buộc, `interviewer_level`/`max_turns`/`hint_allowed`/`question_ref`/`question_text`/`topics` phải `NULL` (F5-28 "không áp dụng cho lối vào từ bài nộp Accepted"); hai lối tự luyện thì `submission_id` NULL và ba cột F5-28 bắt buộc. Quy tắc nhiều dòng (đủ bốn dòng `rubric_scores` cho một phiên) **không** thành CHECK.
 
 ### 1.4a. `interview_turns` (F5-13, F5-16)
 
@@ -173,6 +173,7 @@ Sửa 2026-10-22 (đồng bộ DB, phase 2, DEC-2026-1022-ai-judge-schema-sync) 
 | Cột | Kiểu | Ghi chú |
 | :--- | :--- | :--- |
 | `id` | UUID PK | |
+| `call_id` | UUID NOT NULL, unique | Thêm 2026-10-29 (F5-04, owner chốt): định danh **một lời gọi nhà cung cấp LLM**, sinh trước khi gọi. Ghi lại usage nhiều lần cho cùng lời gọi (retry) không đếm đôi nhờ unique. `owner_id` không thay được vì một phiên có nhiều lượt, gợi ý, chấm điểm |
 | `user_id` | tham chiếu `identity.users.id`, không FK vật lý | |
 | `feature_code` | ENUM(`SOLUTION_REVIEW`,`MOCK_INTERVIEW`,`GENERATE_TESTCASE`,`PRACTICE_FEEDBACK`) | Thêm `GENERATE_TESTCASE` 2026-10-10; thêm `PRACTICE_FEEDBACK` 2026-10-11 (`DEC-2026-1011-ai-practice-feedback-in-shared-budget`): một dòng mỗi lượt phản hồi AI của Chế độ luyện F6-08. Chỉ có ở bảng này, **không** thêm vào `prompt_templates` (F6-08 không có prompt admin sửa được) |
 | `problem_id` | tham chiếu `problem.problems.id`, không FK vật lý, **nullable** | Sửa 2026-10-22 (đồng bộ DB, phase 1): cần để `ADM0302` xếp hạng "bài tốn token nhất" (`02-bd/screens/admin/ADM0302_ai_usage.md:347`; Q6 `:564` nêu `token_usage` thiếu cột này). Có giá trị với `SOLUTION_REVIEW` và `GENERATE_TESTCASE`; `NULL` với `MOCK_INTERVIEW` và `PRACTICE_FEEDBACK` (không gắn bài của F2) |
@@ -266,9 +267,9 @@ Cùng mẫu thiết kế với `judge.outbox_events` (`02-bd/database/F4_judge-o
 | `published_at` | TIMESTAMPTZ nullable | Relay set sau khi broker ack |
 | `publish_attempts` | INT default 0 | |
 
-Index `outbox_events(published_at) WHERE published_at IS NULL`, giống hệt lý do ở `judge-orchestration`.
+Index `outbox_events(created_at, id) WHERE published_at IS NULL` cho relay và `outbox_events(published_at) WHERE published_at IS NOT NULL` cho dọn dẹp, cùng lý do và cách sửa ở `judge-orchestration` (sửa 2026-10-29).
 
-Sửa 2026-10-22 (đồng bộ DB vòng 2, DEC-2026-1022-db-sync-round2, mục 7): **dọn outbox** cùng mẫu với `judge.outbox_events` (`02-bd/database/F4_judge-orchestration.md` mục 1.6) — dòng có `published_at` cũ hơn 90 ngày bị job xoá, số 90 là hằng số `application.yml`, không thêm cột. `03-dd/jobs/` chưa có file (chưa tạo).
+Sửa 2026-10-22 (đồng bộ DB vòng 2, DEC-2026-1022-db-sync-round2, mục 7): **dọn outbox** cùng mẫu với `judge.outbox_events` (`02-bd/database/F4_judge-orchestration.md` mục 1.6) — dòng có `published_at` cũ hơn 90 ngày bị job xoá, số 90 là hằng số `application.yml`, không thêm cột. Sửa 2026-10-29 (F5-10): job nằm ở `03-dd/jobs/F5_ai-review.md`.
 
 ## 2. Chỉ mục (index) đáng chú ý — tổng hợp
 
@@ -357,3 +358,25 @@ budget_configs` (seed đúng 1 dòng `id = 1`: `warn_percent` 70, `review_per_ho
 - `.nexa/domain-registry.json` — domain `ai-review`, scope liệt kê 7 bảng dự kiến.
 - `.nexa/control/decision-registry.md` — `DEC-2026-1014-batch7-remaining-open-questions`, `DEC-2026-0831-ai-usage-anomaly-alert`,
   `DEC-2026-1013-remove-instructor-manual-grading`.
+
+## 9. Hợp đồng DDL (đóng F5-01 và các quyết định F5-04, F5-05, F5-07, 2026-10-29)
+
+Bảng 9.1 là hợp đồng để viết `V5.001`. Quy ước chung giống F2 và F4: ENUM của BD là `VARCHAR` cộng `CHECK` cùng tập giá trị; khoá chính UUID không có `DEFAULT` (id do `IdGeneratorPort` cấp), riêng seed dùng UUID cố định; mọi FK nội schema là `NO ACTION`; cột trỏ sang schema khác và các liên kết polymorphic (`owner_id`, `rubric_scores.owner_id`) là UUID thuần, không FK; `created_at`, `started_at`, `updated_at` mặc định `now()` và ứng dụng tự ghi `updated_at` khi sửa. Các CHECK là đề xuất của audit, chủ dự án duyệt 2026-10-29.
+
+Bảng 9.1: Nullability và CHECK theo bảng.
+
+| Bảng | Cột nullable (còn lại đều NOT NULL) | CHECK và unique |
+| :--- | :--- | :--- |
+| `prompt_templates` | `response_guards`, `created_by`, `published_at` | Tập `feature_code`, `status`; `version` VARCHAR(20), `model_id` VARCHAR(50), `response_schema_version` VARCHAR(20); `(feature_code = 'GENERATE_TESTCASE') = (response_guards IS NULL)`; `(status = 'DRAFT') = (published_at IS NULL)`; unique `(feature_code, version)`; partial unique `(feature_code) WHERE status = 'ACTIVE'` và `WHERE status = 'DRAFT'` (tối đa một bản mỗi trạng thái, chặn hai ADMIN tạo hai nháp đồng thời). Partial unique chỉ bảo đảm **tối đa** một ACTIVE; ba ACTIVE ban đầu do seed giữ, use case không được lưu trữ bản ACTIVE mà không phát hành bản thay thế |
+| `solution_reviews` | không | `language` thuộc ba giá trị; `source_hash` khớp `^[0-9a-f]{64}$`; `readability_score` trong `[1, 5]`; unique `submission_id` |
+| `rubric_scores` | không | `owner_type = 'MOCK_INTERVIEW'`; `criterion_code` thuộc bốn mã; `score` trong `[0, 10]`; unique `(owner_type, owner_id, criterion_code)`. Quy tắc "đủ bốn dòng" ở tầng ứng dụng |
+| `interview_sessions` | `submission_id`, `question_ref`, `question_text`, `topics`, `interviewer_level`, `max_turns`, `hint_allowed`, `ended_at` | Tập `entry_type`, `interviewer_level`, `stage`; ba nhánh `entry_type` của mục 1.4 viết thành một CHECK `CASE`; `topics` là mảng JSON; `max_turns > 0`; `turn_count >= 0` và `<= max_turns` khi có; `hint_count >= 0`; `hint_count = 0 OR hint_allowed IS TRUE`; `(stage IN ('COMPLETED','ABANDONED')) = (ended_at IS NOT NULL)` |
+| `interview_turns` | không | `turn_index > 0`; `role` thuộc `USER`, `AI`; `stage_at_turn` thuộc ba giai đoạn chạy; unique `(interview_session_id, turn_index)` |
+| `token_usage` | `problem_id` | Tập `feature_code`; `tokens_prompt >= 0`, `tokens_completion >= 0`; unique `call_id`; `problem_id` có giá trị với `SOLUTION_REVIEW` và `GENERATE_TESTCASE`, NULL với `MOCK_INTERVIEW` và `PRACTICE_FEEDBACK`; với `GENERATE_TESTCASE` thì `problem_id = owner_id`. Không FK tới review vì usage của lần lỗi không có dòng đích |
+| `ai_cache_entries` | không | `language` thuộc ba giá trị; `source_hash` khớp mẫu trên; `hit_count >= 0`; unique `(problem_id, language, source_hash, prompt_template_id)` |
+| `ai_token_budget_configs` | `locked_at`, `updated_by` | `id = 1`; `period = 'MONTHLY'`; `limit_tokens >= 0` (0 là chưa cấu hình); các CHECK khoảng của mục 1.8 |
+| `ai_model_prices` | không | `usd_per_million_tokens >= 0`; unique `lower(model_name)` |
+| `ai_usage_anomaly_alerts` | `reviewed_at` | `status` thuộc `OPEN`, `REVIEWED`; `window_end > window_start`; `call_count >= 0`; `baseline_avg >= 0`; `ratio >= 0`; `(status = 'REVIEWED') = (reviewed_at IS NOT NULL)`. Không unique cứng (mục 1.9) |
+| `outbox_events` | `published_at` | `aggregate_type` thuộc `SolutionReview`, `InterviewSession`; `event_type` thuộc `SolutionReviewCompleted`, `MockInterviewFinished`; hai cột đi cặp (`SolutionReview` với `SolutionReviewCompleted`, `InterviewSession` với `MockInterviewFinished`); `publish_attempts >= 0` |
+
+**Seed (migration `V5.002`):** `prompt_templates` ba dòng `ACTIVE`, phiên bản `v1.0`, `response_schema_version = 'v1'`, UUID cố định, `created_by = NULL`, `published_at = now()`; `response_guards` của `SOLUTION_REVIEW` và `MOCK_INTERVIEW` là `citeLines`, `answerInVietnamese`, `noFullSolution` đều `true`, của `GENERATE_TESTCASE` là NULL. Nội dung `system_instruction` là bản tối thiểu một đoạn cho mỗi tính năng (câu chống chèn và câu ràng buộc ngữ cảnh do máy chủ nối thêm, BR-AI-01 bước 2); `model_id = 'default'` là bí danh phải nằm trong danh sách model của backend, và ADMIN đổi bằng cách phát hành bản mới. Prompt mock và `qa-model-1` của fixture không được dùng làm seed. `ai_token_budget_configs` một dòng `id = 1`: `limit_tokens = 0` (chưa cấu hình, không tự khoá), `period_start` là ngày 1 của tháng hiện tại theo giờ UTC+7, `warn_percent` 70, `review_per_hour` 10, `interview_per_hour` 3, `cooldown_seconds` 20, `updated_by = NULL`. `ai_model_prices` rỗng: chi phí của model chưa có giá hiện `-`, không bịa đơn giá. Không seed các bảng còn lại.
