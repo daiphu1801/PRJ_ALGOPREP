@@ -15,7 +15,7 @@
 -- Bang anh xa day du: .nexa/domain-registry.json
 --
 -- File nay KHONG tao bang. Bang, cot, khoa, index thuoc 02-bd/database/<module>.md (tai lieu BD da co
--- cho ca sau module). Migration (Flyway/Liquibase) cung chua chot — xem 05-coding/backend/README.md.
+-- cho ca sau module). Migration do Flyway chay luc backend khoi dong (DEC-2026-1029-flyway-migration-tool).
 
 CREATE SCHEMA IF NOT EXISTS identity;
 COMMENT ON SCHEMA identity IS

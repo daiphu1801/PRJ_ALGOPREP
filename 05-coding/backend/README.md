@@ -105,7 +105,7 @@ loãng.
 - **CORS** — frontend Next.js khác origin nên sẽ cần, nhưng danh sách origin theo môi trường là một
   quyết định, không phải giá trị đoán được.
 - **Entity JPA, migration** — bảng/cột/khoá/index thuộc `02-bd/database/<module>.md`. Công cụ
-  migration (Flyway / Liquibase) **chưa chốt**.
+  migration đã chốt là **Flyway** (`DEC-2026-1029-flyway-migration-tool`), đã nối ở `algoprep-bootstrap`; chưa có file migration nào.
 - **`GoJudgeAdapter`** — thuộc slice `judge-orchestration`. Hạ tầng go-judge đã chạy và đã kiểm chạy
   được mã thật; xem `05-coding/judge-engine/README.md`.
 - **Pipeline GitHub Actions** — `01-rd/system/SYS0301_environment.md` mục 6 hẹn "khi có mã thật để chạy CI".

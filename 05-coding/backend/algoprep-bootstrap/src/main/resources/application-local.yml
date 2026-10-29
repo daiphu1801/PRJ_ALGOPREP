@@ -23,7 +23,7 @@ spring:
 
   jpa:
     # KHONG dung ddl-auto o bat ky moi truong nao, ke ca local: schema do migration quan.
-    # Cong cu migration (Flyway/Liquibase) CHUA CHOT - xem 05-coding/backend/README.md.
+    # Cong cu migration: Flyway (DEC-2026-1029-flyway-migration-tool), cau hinh o application.yml.
     hibernate:
       ddl-auto: none
     open-in-view: false

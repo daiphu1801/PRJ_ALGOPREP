@@ -18,6 +18,20 @@ spring:
       # VirtualThreadsEnabledTest.
       enabled: true
 
+  flyway:
+    # DEC-2026-1029-flyway-migration-tool. Mot history table o schema public; moi module mot thu muc,
+    # moi module mot dai version (identity V1.NNN, problem V2.NNN, judge V4.NNN, ai V5.NNN, interview_bank V6.NNN).
+    # Them module moi co migration: them mot dong vao locations.
+    schemas: public
+    default-schema: public
+    locations:
+      - classpath:db/migration/identity
+      - classpath:db/migration/problem
+      - classpath:db/migration/judge
+      - classpath:db/migration/ai
+      - classpath:db/migration/interview_bank
+    fail-on-missing-locations: false
+
 server:
   port: 8080
   # Tra loi 404 co cau truc thay vi trang loi HTML mac dinh cua Tomcat.
