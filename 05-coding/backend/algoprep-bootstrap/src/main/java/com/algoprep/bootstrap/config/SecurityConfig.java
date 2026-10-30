@@ -3,45 +3,53 @@ package com.algoprep.bootstrap.config;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 
 /**
- * Cấu hình bảo mật TỐI THIỂU của khung base.
+ * Security configuration: JWT resource server plus method security.
  *
- * <p><strong>Đây chưa phải cấu hình thật.</strong> JWT (access token ngắn hạn + refresh token trong
- * cookie HTTP-Only) và RBAC ba vai trò {@code STUDENT}/{@code INSTRUCTOR}/{@code ADMIN} ({@code
- * F1-02}, {@code F1-05}) cần {@code 03-dd/api/F1_identity.md}, tài liệu chưa tồn tại. Ở base, quy
- * tắc là: mở đúng nhóm endpoint quan sát, chặn mọi thứ còn lại.
+ * <p>Access tokens are RS256 JWTs verified by the {@code JwtDecoder} that module identity exposes.
+ * The {@link Converter} bean from identity re-reads account status and the permission matrix on
+ * every request, and exposes {@code ROLE_<BASE_CATEGORY>} and {@code FUNCTION:ACTION} authorities.
+ * Controllers in any module gate with {@code @PreAuthorize("hasAuthority('FUNCTION:ACTION')")}.
  *
- * <p>Phần <strong>đã là thật</strong> và không phải chờ DD: bộ security header, trong đó có {@code
- * Content-Security-Policy} mà {@code 01-rd/req/nfr.md} mục D yêu cầu.
- *
- * <p>Hai điều cố tình để nguyên mặc định của Spring Security, vì kiểu hỏng của chúng là kiểu hỏng
- * ỒN ÀO chứ không âm thầm:
+ * <p>Decisions worth knowing:
  *
  * <ul>
- *   <li><strong>CSRF vẫn BẬT.</strong> Cùng với {@code STATELESS} bên dưới, endpoint {@code POST}
- *       đầu tiên ai đó thêm vào sẽ trả {@code 403} ngay — buộc người đó phải quyết định CSRF một
- *       cách có ý thức, đúng như {@code nfr.md} mục D đòi cho luồng refresh token bằng cookie. Tắt
- *       sẵn ở đây sẽ tạo ra một lỗ bảo mật không ai nhìn thấy trong diff.
- *   <li><strong>Không cấu hình CORS.</strong> Frontend Next.js chạy khác origin nên sẽ cần CORS,
- *       nhưng danh sách origin hợp lệ theo từng môi trường là một quyết định, không phải một giá
- *       trị đoán được.
+ *   <li><strong>CSRF is ignored for {@code /api/**} only.</strong> Bearer-token APIs are not
+ *       exposed to CSRF; every other path keeps Spring's default protection. The one cookie
+ *       endpoint, {@code POST /auth/refresh}, must itself require the {@code X-Requested-With}
+ *       header (BD security section 1); that check belongs to its controller.
+ *   <li><strong>No CORS configuration.</strong> The Next.js frontend is a different origin, but the
+ *       allowed origins per environment are a decision, not a guessable value.
+ *   <li><strong>{@code /actuator/prometheus} is public</strong> on purpose, see the comment below.
  * </ul>
+ *
+ * <p>The security headers, including the {@code Content-Security-Policy} that {@code
+ * 01-rd/req/nfr.md} section D requires, are applied here too.
  */
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
   private final String actuatorBasePath;
+  private final Converter<Jwt, AbstractAuthenticationToken> jwtConverter;
 
-  public SecurityConfig(WebEndpointProperties webEndpointProperties) {
+  public SecurityConfig(
+      WebEndpointProperties webEndpointProperties,
+      Converter<Jwt, AbstractAuthenticationToken> jwtConverter) {
     this.actuatorBasePath = webEndpointProperties.getBasePath();
+    this.jwtConverter = jwtConverter;
   }
 
   @Bean
@@ -62,6 +70,10 @@ public class SecurityConfig {
                     // 05-coding/backend/README.md muc no ky thuat.
                     .requestMatchers(actuatorBasePath + "/prometheus")
                     .permitAll()
+                    // Public auth endpoints of module identity (DD api F1 section 0.1). Each one
+                    // enforces its own rules (rate limit, OTP, cookie plus header).
+                    .requestMatchers("/api/v1/identity/auth/**")
+                    .permitAll()
                     .anyRequest()
                     .authenticated())
         // Stateless: không có session phía máy chủ. JWT là cơ chế đã chốt (F1-02), và một session
@@ -70,7 +82,12 @@ public class SecurityConfig {
         // Chưa xác thực thì trả 401, không chuyển hướng sang trang đăng nhập: đây là API, client là
         // Next.js, một redirect HTML ở đây chỉ làm client khó đọc lỗi.
         .exceptionHandling(
-            e -> e.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+            e ->
+                e.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                    .accessDeniedHandler(new ApiAccessDeniedHandler()))
+        .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
+        .oauth2ResourceServer(
+            oauth -> oauth.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtConverter)))
         .headers(this::hardenHeaders);
     return http.build();
   }
