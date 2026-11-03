@@ -34,6 +34,8 @@ export type UserProfile = {
   /** Self-declared job title, NOT the RBAC `role` [SoT: USR0502_profile.md Sheet 7.1 row 4]. */
   currentPosition: string | null;
   targetPosition: string | null;
+  /** Optional contact number (`users.phone`, DD F1 #9/#10), `null` when never set. */
+  phone: string | null;
   /** `password_hash IS NULL` when false — account has never set a password (OAuth-only). */
   hasPassword: boolean;
   passwordChangedAt: string | null;
@@ -41,6 +43,8 @@ export type UserProfile = {
   joinedAt: string;
   /** Display name of the RBAC role, read-only on this screen. */
   roleName: string;
+  /** From the real API only (DD F1 #9): an admin-set temporary password is still in use. The mock leaves it out. */
+  mustChangePassword?: boolean;
 };
 
 export type UpdateProfileInput = {
@@ -48,6 +52,8 @@ export type UpdateProfileInput = {
   schoolOrCompany: string;
   currentPosition: string;
   targetPosition: string;
+  /** Digits, spaces and `+ - ( )`, at most 20 characters; an empty string clears it (IDT-V13). */
+  phone: string;
 };
 
 /** Interviewer depth for a SELF-PRACTICE mock-interview session — 4 levels per `DEC-2026-0922-users-and-admin-conflict-resolutions`. */

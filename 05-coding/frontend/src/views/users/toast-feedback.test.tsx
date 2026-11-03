@@ -27,6 +27,7 @@ import { SubmissionResultView } from "./submission-result/ui/submission-result-v
 vi.mock("@/shared/i18n", () => ({
   useT: () => (key: string) => key,
   useLocale: () => "vi",
+  useApiErrorMessage: () => () => "apiError",
 }));
 vi.mock("next/navigation", () => ({
   useParams: () => ({ problemId: "1", submissionId: "SB-90412" }),

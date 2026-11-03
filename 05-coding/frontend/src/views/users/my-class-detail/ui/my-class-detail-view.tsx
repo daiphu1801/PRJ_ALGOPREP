@@ -1,4 +1,6 @@
-// PROTOTYPE - no RD/BD/DD yet (owner 2026-10-23). See 06-plan/PROTOTYPE_DEBT.md mục 40.
+// PROTOTYPE with a real API behind it (task 12, 03-dd/api/F1_identity.md #25B); see
+// 06-plan/PROTOTYPE_DEBT.md mục 40. The assigned problems and the progress bar come from F2 (not
+// built): in real mode the class has none and the screen leaves both blocks out.
 //
 // Learner-side class detail: everything about one class the learner belongs to. Read-only; the
 // learner cannot edit the class or leave it from here (no RD requirement for leaving).
@@ -56,8 +58,9 @@ export function MyClassDetailView({ classId }: { classId: string }) {
     );
   }
 
-  const solved = klass.assignments.filter((a) => a.solved).length;
-  const total = klass.assignments.length;
+  const assignments = klass.assignments;
+  const solved = (assignments ?? []).filter((a) => a.solved).length;
+  const total = assignments?.length ?? 0;
   const progress = t("card.progress", { solved, total });
   const schedule = formatClassSchedule(klass.schedule, (day) =>
     tm(`schedule.dayShort.${day}`),
@@ -131,37 +134,43 @@ export function MyClassDetailView({ classId }: { classId: string }) {
               ))}
             </dl>
           </Card>
-          <Card className="px-[18px] py-4">
-            <h2 className="mb-2 text-sm font-semibold">
-              {t("detail.progress")}
-            </h2>
-            <ProgressBar
-              value={solved}
-              max={Math.max(total, 1)}
-              label={progress}
-              height={8}
-              className="mb-1.5"
-            />
-            <p className="text-[12.5px] text-[var(--color-text-muted)]">
-              {progress}
-            </p>
-          </Card>
+          {assignments ? (
+            <Card className="px-[18px] py-4">
+              <h2 className="mb-2 text-sm font-semibold">
+                {t("detail.progress")}
+              </h2>
+              <ProgressBar
+                value={solved}
+                max={Math.max(total, 1)}
+                label={progress}
+                height={8}
+                className="mb-1.5"
+              />
+              <p className="text-[12.5px] text-[var(--color-text-muted)]">
+                {progress}
+              </p>
+            </Card>
+          ) : null}
         </div>
 
-        <Card className="min-w-0 px-[18px] py-4">
-          <h2 className="mb-3 text-sm font-semibold">{t("card.assignments")}</h2>
-          {total === 0 ? (
-            <EmptyState>{t("card.noAssignments")}</EmptyState>
-          ) : (
-            <DataTable
-              columns={columns}
-              rows={klass.assignments}
-              rowKey={(a) => a.problemId}
-              caption={t("card.assignments")}
-              emptyMessage={t("card.noAssignments")}
-            />
-          )}
-        </Card>
+        {assignments ? (
+          <Card className="min-w-0 px-[18px] py-4">
+            <h2 className="mb-3 text-sm font-semibold">
+              {t("card.assignments")}
+            </h2>
+            {total === 0 ? (
+              <EmptyState>{t("card.noAssignments")}</EmptyState>
+            ) : (
+              <DataTable
+                columns={columns}
+                rows={assignments}
+                rowKey={(a) => a.problemId}
+                caption={t("card.assignments")}
+                emptyMessage={t("card.noAssignments")}
+              />
+            )}
+          </Card>
+        ) : null}
       </div>
     </div>
   );

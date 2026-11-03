@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.algoprep.common.domain.ports.out.ClockPort;
 import com.algoprep.identity.application.dto.IssuedAccessToken;
 import com.algoprep.identity.domain.model.BaseCategory;
+import com.algoprep.identity.infrastructure.config.JwtKeyConfig;
 import com.nimbusds.jose.jwk.RSAKey;
 import java.time.Duration;
 import java.time.Instant;
@@ -15,6 +16,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.mock.env.MockEnvironment;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtException;
@@ -32,23 +34,26 @@ class NimbusAccessTokenAdapterTest {
   @BeforeEach
   void setUp() throws Exception {
     JwtKeyConfig config = new JwtKeyConfig();
-    RSAKey key = config.jwtSigningKey("", "");
+    RSAKey key = config.jwtSigningKey("", "", new MockEnvironment());
     decoder = config.jwtDecoder(key);
     adapter = new NimbusAccessTokenAdapter(config.jwtEncoder(key), clock, TTL_SECONDS);
   }
 
   @Test
   @DisplayName(
-      "token carries exactly sub, base_category, role_code, iat, exp and expires in 15 minutes")
+      "token carries exactly sub, base_category, role_code, sid, iat, exp and expires in 15 minutes")
   void claimsAreIdentityOnly() {
     UUID userId = UUID.randomUUID();
+    UUID sessionId = UUID.randomUUID();
 
-    IssuedAccessToken issued = adapter.issue(userId, BaseCategory.INSTRUCTOR, "INSTRUCTOR");
+    IssuedAccessToken issued =
+        adapter.issue(userId, BaseCategory.INSTRUCTOR, "INSTRUCTOR", sessionId);
     Jwt jwt = decoder.decode(issued.value());
 
     assertThat(jwt.getClaims().keySet())
-        .isEqualTo(Set.of("sub", "base_category", "role_code", "iat", "exp"));
+        .isEqualTo(Set.of("sub", "base_category", "role_code", "sid", "iat", "exp"));
     assertThat(jwt.getSubject()).isEqualTo(userId.toString());
+    assertThat(jwt.<String>getClaim("sid")).isEqualTo(sessionId.toString());
     assertThat(jwt.<String>getClaim("base_category")).isEqualTo("INSTRUCTOR");
     assertThat(jwt.<String>getClaim("role_code")).isEqualTo("INSTRUCTOR");
     assertThat(Duration.between(jwt.getIssuedAt(), jwt.getExpiresAt()))
@@ -60,11 +65,12 @@ class NimbusAccessTokenAdapterTest {
   @DisplayName("a token signed by another key is rejected")
   void foreignKeyIsRejected() throws Exception {
     JwtKeyConfig other = new JwtKeyConfig();
-    RSAKey otherKey = other.jwtSigningKey("", "");
+    RSAKey otherKey = other.jwtSigningKey("", "", new MockEnvironment());
     NimbusAccessTokenAdapter foreign =
         new NimbusAccessTokenAdapter(other.jwtEncoder(otherKey), clock, TTL_SECONDS);
 
-    String forged = foreign.issue(UUID.randomUUID(), BaseCategory.ADMIN, "ADMIN").value();
+    String forged =
+        foreign.issue(UUID.randomUUID(), BaseCategory.ADMIN, "ADMIN", UUID.randomUUID()).value();
 
     assertThatThrownBy(() -> decoder.decode(forged)).isInstanceOf(JwtException.class);
   }
@@ -73,11 +79,12 @@ class NimbusAccessTokenAdapterTest {
   @DisplayName("an expired token is rejected")
   void expiredTokenIsRejected() throws Exception {
     JwtKeyConfig config = new JwtKeyConfig();
-    RSAKey key = config.jwtSigningKey("", "");
+    RSAKey key = config.jwtSigningKey("", "", new MockEnvironment());
     ClockPort past = () -> now.minus(Duration.ofHours(1));
     NimbusAccessTokenAdapter old =
         new NimbusAccessTokenAdapter(config.jwtEncoder(key), past, TTL_SECONDS);
-    String token = old.issue(UUID.randomUUID(), BaseCategory.STUDENT, "STUDENT").value();
+    String token =
+        old.issue(UUID.randomUUID(), BaseCategory.STUDENT, "STUDENT", UUID.randomUUID()).value();
 
     assertThatThrownBy(() -> config.jwtDecoder(key).decode(token)).isInstanceOf(JwtException.class);
   }
@@ -85,7 +92,16 @@ class NimbusAccessTokenAdapterTest {
   @Test
   @DisplayName("setting only one of the two PEM properties fails fast")
   void halfConfiguredKeyFails() {
-    assertThatThrownBy(() -> new JwtKeyConfig().jwtSigningKey("pem", ""))
+    assertThatThrownBy(() -> new JwtKeyConfig().jwtSigningKey("pem", "", new MockEnvironment()))
+        .isInstanceOf(IllegalStateException.class);
+  }
+
+  @Test
+  @DisplayName("the prod profile refuses an ephemeral key")
+  void prodProfileNeedsAConfiguredKey() {
+    MockEnvironment prod = new MockEnvironment();
+    prod.setActiveProfiles("prod");
+    assertThatThrownBy(() -> new JwtKeyConfig().jwtSigningKey("", "", prod))
         .isInstanceOf(IllegalStateException.class);
   }
 }

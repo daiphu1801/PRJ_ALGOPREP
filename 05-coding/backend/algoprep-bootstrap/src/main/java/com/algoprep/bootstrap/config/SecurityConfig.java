@@ -87,7 +87,10 @@ public class SecurityConfig {
                     .accessDeniedHandler(new ApiAccessDeniedHandler()))
         .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
         .oauth2ResourceServer(
-            oauth -> oauth.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtConverter)))
+            oauth ->
+                oauth
+                    .authenticationEntryPoint(new ApiAuthenticationEntryPoint())
+                    .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtConverter)))
         .headers(this::hardenHeaders);
     return http.build();
   }

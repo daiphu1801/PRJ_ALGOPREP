@@ -7,6 +7,16 @@
 # that va no nam trong .gitignore. Mac dinh o day khop voi .env.example de chay thu duoc ngay,
 # nhung mot mat khau that thi phai den tu moi truong.
 spring:
+  mail:
+    host: ${ALGOPREP_SMTP_HOST:localhost}
+    port: ${ALGOPREP_SMTP_PORT:1025}
+    properties:
+      mail.smtp:
+        auth: false
+        starttls.enable: false
+        connectiontimeout: 2000
+        timeout: 2000
+        writetimeout: 2000
   datasource:
     # MOT PostgreSQL instance, SAU schema (DEC-2026-0820-architecture-baseline).
     # Khong dat `currentSchema` o day: moi module chi duoc cham schema cua chinh no, va dieu do do
@@ -37,6 +47,8 @@ spring:
       host: ${ALGOPREP_REDIS_HOST:localhost}
       port: ${ALGOPREP_REDIS_PORT:6379}
       password: ${ALGOPREP_REDIS_PASSWORD:algoprep-local-dev-pw}
+      connect-timeout: 1s
+      timeout: 1s
 
   rabbitmq:
     host: ${ALGOPREP_RABBITMQ_HOST:localhost}
@@ -47,6 +59,8 @@ spring:
 # Engine cham bai. KHONG co adapter nao doc gia tri nay o khung base - GoJudgeAdapter thuoc slice
 # judge-orchestration. Dat san dia chi de slice do khong phai di tim.
 algoprep:
+  mail:
+    from: ${ALGOPREP_MAIL_FROM:noreply@algoprep.local}
   judge-engine:
     base-url: ${ALGOPREP_GO_JUDGE_URL:http://localhost:5050}
 

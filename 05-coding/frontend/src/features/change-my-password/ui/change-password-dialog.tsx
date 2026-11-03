@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { Check, Eye, EyeOff, Circle } from "lucide-react";
 import { useT } from "@/shared/i18n";
+import { useApiErrorMessage } from "@/shared/i18n/use-api-error-message";
 import { toast } from "@/shared/lib/toast-store";
 import { Button, Modal, TextField } from "@/shared/ui";
 import { useChangePassword } from "../model/use-change-password";
@@ -41,7 +42,6 @@ function PasswordField({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       invalid={invalid}
-      maxLength={128}
       trailing={
         <button
           type="button"
@@ -60,14 +60,22 @@ function PasswordField({
   );
 }
 
+/**
+ * `forced`: the account must pick a new password before using the app (an admin set a temporary
+ * one). The dialog cannot be dismissed, `onClose` then means "changed", and the only other way
+ * out is `onSignOut`.
+ */
 export function ChangePasswordDialog({
   hasPassword,
   onClose,
+  forced,
 }: {
   hasPassword: boolean;
   onClose: () => void;
+  forced?: { onSignOut: () => void };
 }) {
   const t = useT("profile");
+  const apiMessage = useApiErrorMessage();
   const {
     currentPassword,
     setCurrentPassword,
@@ -105,27 +113,33 @@ export function ChangePasswordDialog({
       toast.success(
         t(hasPassword ? "passwordDialog.done" : "passwordDialog.doneSet"),
       );
-    else toast.error(t(result.errorKey));
+    else
+      toast.error(
+        "error" in result ? apiMessage(result.error) : t(result.errorKey),
+      );
   }
 
   return (
     <Modal
       open
       onClose={onClose}
+      dismissible={!forced}
       title={
-        hasPassword
-          ? t("passwordDialog.titleChange")
-          : t("passwordDialog.titleSet")
+        forced
+          ? t("passwordDialog.titleForced")
+          : hasPassword
+            ? t("passwordDialog.titleChange")
+            : t("passwordDialog.titleSet")
       }
       footer={
         <>
           <Button
             variant="ghost"
             size="sm"
-            onClick={onClose}
+            onClick={forced ? forced.onSignOut : onClose}
             disabled={isSubmitting}
           >
-            {t("passwordDialog.cancel")}
+            {forced ? t("passwordDialog.signOut") : t("passwordDialog.cancel")}
           </Button>
           <Button
             size="sm"
@@ -139,6 +153,7 @@ export function ChangePasswordDialog({
       }
     >
       <div className="flex flex-col gap-3.5">
+        {forced ? <p>{t("passwordDialog.forcedHint")}</p> : null}
         {hasPassword ? (
           <PasswordField
             label={t("passwordDialog.currentPassword")}

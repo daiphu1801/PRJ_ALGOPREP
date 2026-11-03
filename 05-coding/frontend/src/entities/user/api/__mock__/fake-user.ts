@@ -23,6 +23,7 @@ let profile: UserProfile = {
   schoolOrCompany: "Đại học Cần Thơ",
   currentPosition: "Sinh viên năm 4",
   targetPosition: "Middle Backend",
+  phone: null,
   hasPassword: true,
   passwordChangedAt: "2026-06-12",
   linkedProviders: ["GOOGLE"],
@@ -86,6 +87,7 @@ export function fakeUpdateMyProfile(
     schoolOrCompany: input.schoolOrCompany || null,
     currentPosition: input.currentPosition || null,
     targetPosition: input.targetPosition || null,
+    phone: input.phone || null,
   };
   return delay(profile, 600);
 }

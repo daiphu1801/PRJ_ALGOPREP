@@ -16,6 +16,7 @@ import { aiTokenBudget } from "@/entities/ai-budget";
 import { toast, useToasts } from "@/shared/lib/toast-store";
 
 vi.mock("@/shared/i18n", () => ({
+  useApiErrorMessage: () => () => "apiError",
   useT: () => (key: string) => key,
   useLocale: () => "vi",
 }));
@@ -62,12 +63,19 @@ describe("admin toasts", () => {
       target: { value: "an@x.vn" },
     });
     fireEvent.click(screen.getByRole("button", { name: "addDialog.submit" }));
-    expect(read().at(-1)).toEqual(["success", "addDialog.createdBody"]);
+    // Creating an account is a call now, so the success toast arrives after it settles.
+    await waitFor(() =>
+      expect(read().at(-1)).toEqual(["success", "addDialog.createdBody"]),
+    );
   });
 
-  it("export dialog: bad range errors, good range succeeds", () => {
+  it("export dialog: bad range errors, good range succeeds", async () => {
     const read = watch();
-    render(<ExportLogDialog open onClose={() => {}} />);
+    render(
+      withQuery(
+        <ExportLogDialog open onClose={() => {}} retentionDays={90} />,
+      ),
+    );
     const day = (offset: number) =>
       new Date(Date.now() + offset * 86_400_000).toISOString().slice(0, 10);
     fireEvent.change(screen.getByLabelText("exportDialog.from"), {
@@ -87,7 +95,10 @@ describe("admin toasts", () => {
     fireEvent.click(
       screen.getByRole("button", { name: "exportDialog.submit" }),
     );
-    expect(read().at(-1)).toEqual(["success", "exportDialog.doneBody"]);
+    // The export is a call now, so the success toast arrives after it settles.
+    await waitFor(() =>
+      expect(read().at(-1)).toEqual(["success", "exportDialog.doneBody"]),
+    );
   });
 
   it("permission matrix: a duplicate role name raises an error toast", async () => {

@@ -106,6 +106,8 @@ out/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+# Hexagonal architecture outbound ports are source code, not IDE build output.
+!**/src/main/java/**/ports/out/
 
 # ==========================================
 # Python

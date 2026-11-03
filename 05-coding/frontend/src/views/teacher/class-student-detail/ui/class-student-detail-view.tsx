@@ -417,15 +417,18 @@ export function ClassStudentDetailView({
         open={confirmingRemove}
         onClose={() => setConfirmingRemove(false)}
         onConfirm={() => {
-          removeStudent.mutate(studentId, {
-            onSuccess: () => {
-              toast.success(t("toast.removed", { name: student.name }));
-              // The learner left the class, so this page has nothing left to show: back to the caller
-              // (BD INS0204 Q10, DEC-2026-1014-instructor-batch3-4-contracts-and-removal).
-              router.back();
+          removeStudent.mutate(
+            { classId, studentId },
+            {
+              onSuccess: () => {
+                toast.success(t("toast.removed", { name: student.name }));
+                // The learner left the class, so this page has nothing left to show: back to the caller
+                // (BD INS0204 Q10, DEC-2026-1014-instructor-batch3-4-contracts-and-removal).
+                router.back();
+              },
+              onError: () => toast.error(t("toast.failed")),
             },
-            onError: () => toast.error(t("toast.failed")),
-          });
+          );
           setConfirmingRemove(false);
         }}
         title={t("popup.removeTitle", { name: student.name })}

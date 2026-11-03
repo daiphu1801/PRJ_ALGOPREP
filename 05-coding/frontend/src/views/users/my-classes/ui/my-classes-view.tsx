@@ -1,4 +1,6 @@
-// PROTOTYPE - no RD/BD/DD yet (owner 2026-10-23: build first, docs later). See 06-plan/PROTOTYPE_DEBT.md.
+// PROTOTYPE with a real API behind it (task 12, 03-dd/api/F1_identity.md #25, #25A); see
+// 06-plan/PROTOTYPE_DEBT.md. Assigned problems come from F2 (not built), so in real mode the card
+// shows no progress bar.
 //
 // Learner-side class screen: join by invite code (F1-23, 01-rd/req/F1_identity.md:133-137) and, once in a
 // class, its schedule, instructor and assigned problems (F2-12 also lists them on problem_list).
@@ -11,7 +13,7 @@ import {
   useMyClasses,
   type MyClass,
 } from "@/entities/class";
-import { useT } from "@/shared/i18n";
+import { useApiErrorMessage, useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
 import {
   Button,
@@ -29,6 +31,7 @@ const CODE_MAX_LENGTH = 16;
 export function MyClassesView() {
   const t = useT("myClasses");
   const tm = useT("classManagement");
+  const toMessage = useApiErrorMessage();
   const classes = useMyClasses();
   const join = useJoinClass();
   const [code, setCode] = useState("");
@@ -41,7 +44,8 @@ export function MyClassesView() {
         setCode("");
         toast.success(t("join.success", { name: klass.name }));
       },
-      onError: () => toast.error(t("join.invalid")),
+      // IDT-410 (wrong or expired code) and IDT-412 (too many wrong codes) read by their own code.
+      onError: (error) => toast.error(toMessage(error)),
     });
   }
 
@@ -104,8 +108,8 @@ export function MyClassesView() {
 
 function ClassCard({ klass, schedule }: { klass: MyClass; schedule: string }) {
   const t = useT("myClasses");
-  const solved = klass.assignments.filter((a) => a.solved).length;
-  const total = klass.assignments.length;
+  const solved = (klass.assignments ?? []).filter((a) => a.solved).length;
+  const total = klass.assignments?.length ?? 0;
   const progress = t("card.progress", { solved, total });
 
   return (
@@ -117,7 +121,9 @@ function ClassCard({ klass, schedule }: { klass: MyClass; schedule: string }) {
         </p>
       ) : null}
       <dl className="mt-3 grid gap-1 text-[12.5px] sm:grid-cols-[110px_1fr]">
-        <dt className="text-[var(--color-text-muted)]">{t("card.instructor")}</dt>
+        <dt className="text-[var(--color-text-muted)]">
+          {t("card.instructor")}
+        </dt>
         <dd>{klass.instructorName}</dd>
         {schedule ? (
           <>

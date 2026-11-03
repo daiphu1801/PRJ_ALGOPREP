@@ -7,6 +7,7 @@ const page: PermissionMatrixPage = {
   currentRoleKey: "ADMIN",
   roles: [
     {
+      id: "INSTRUCTOR",
       key: "INSTRUCTOR",
       label: "INSTRUCTOR",
       system: true,
@@ -14,6 +15,7 @@ const page: PermissionMatrixPage = {
       userCount: 0,
     },
     {
+      id: "ADMIN",
       key: "ADMIN",
       label: "ADMIN",
       system: true,
@@ -36,6 +38,7 @@ describe("validateRoleName", () => {
     const roles = [
       ...page.roles,
       {
+        id: "role_trợ_giảng",
         key: "role_trợ_giảng",
         label: "Trợ giảng",
         system: false,
@@ -65,6 +68,7 @@ describe("checkCellToggle", () => {
       roles: [
         ...page.roles,
         {
+          id: "role_ops",
           key: "role_ops",
           label: "Ops",
           system: false,

@@ -45,10 +45,49 @@ cd ../ && docker compose up -d && set -a && . ./.env && set +a && cd backend
 curl http://localhost:8080/actuator/health
 ```
 
-**`./mvnw verify` KHÔNG cần Docker** — có chủ đích. Profile `test` loại trừ autoconfigure của
-PostgreSQL/Redis/RabbitMQ, nên cổng chất lượng cho ra cùng một kết quả dù máy có bật hạ tầng hay
-không. Test tích hợp có hạ tầng thật dùng Testcontainers và thuộc slice của từng module
-(`01-rd/system/SYS0301_environment.md` mục 5 — **không** mock database bằng H2).
+**`./mvnw verify` cần Docker đang chạy.** Test tích hợp khởi tạo PostgreSQL, Redis và Mailpit riêng
+bằng Testcontainers; không dùng dữ liệu trong Compose local. Profile `test` vẫn tắt kết nối hạ tầng
+mặc định cho test chỉ nạp context; test tích hợp bật lại đúng thành phần cần dùng.
+
+Lát F1 6b dùng Redis trong Compose và SMTP local qua Mailpit. Chạy `docker compose up -d redis mailpit`
+từ `05-coding/`; hộp thư ở `http://localhost:8025`, SMTP ở `localhost:1025`.
+Profile `local` nhận `ALGOPREP_SMTP_HOST`, `ALGOPREP_SMTP_PORT`, `ALGOPREP_MAIL_FROM`;
+đổi cổng Compose thì đổi biến backend tương ứng trong `.env` (xem `.env.example`).
+
+Lần chạy đầu trên DB chưa có ADMIN cần thêm `ALGOPREP_BOOTSTRAP_ADMIN_EMAIL` và
+`ALGOPREP_BOOTSTRAP_ADMIN_PASSWORD` (DD `03-dd/jobs/F1_identity.md` mục 1); thiếu một biến thì
+ứng dụng dừng khởi động. Đã có ADMIN thì hai biến bị bỏ qua.
+Mailpit giữ thư trong bộ nhớ và không gửi thư ra ngoài. Lát 6c thêm ba endpoint
+`POST /api/v1/identity/auth/register`, `/email/verify`, `/email/verify/resend`.
+Đăng ký tạo STUDENT chờ xác thực; OTP 6 số được gửi vào Mailpit, có hạn 10 phút,
+sai tối đa 5 lần và gửi lại sau 60 giây. Xác thực không tự đăng nhập.
+Redis giữ digest của mã và bộ đếm sai. OTP bị xoá sau khi DB commit; lỗi Redis khi kiểm mã
+không cho kích hoạt tài khoản. Lỗi SMTP khi đăng ký rollback tài khoản để người dùng thử lại.
+Mật khẩu tối thiểu 8 ký tự, có chữ và số; tối đa **72 byte UTF-8**, vượt trả `IDT-V02`,
+theo lựa chọn giữ BCrypt của chủ dự án (`DEC-2026-1030-bcrypt-password-byte-limit`). Không cắt mật khẩu.
+Login với đầu vào vượt giới hạn trả `IDT-102`. Frontend mock còn dùng quy tắc cũ; đồng bộ ở task #7.
+
+Lát 6d thêm `POST /api/v1/identity/auth/password/forgot`, `/verify-otp` và `/reset`.
+Forgot trả câu chung cho email có/không có tài khoản và khi đang cooldown. OTP 10 phút,
+tối đa 5 lần sai, gửi lại sau 60 giây; verify đúng giữ mã cho bước reset.
+Reset đổi mật khẩu và thu hồi mọi refresh token trong cùng giao dịch ghi audit, không tự đăng nhập.
+Thời điểm phát mã và đổi mật khẩu dùng đồng hồ PostgreSQL để chặn replay ngay cả khi dọn Redis lỗi.
+OAuth-only nhận mail hướng dẫn đăng nhập lại bằng provider, không được phát OTP reset.
+Pending tự đăng ký vẫn phải hoàn thành OTP xác thực email; reset không khôi phục tài khoản deactivated.
+
+Lát 6e thêm `POST /api/v1/identity/auth/deactivation/restore` nhận `{ restoreTicket }`.
+Đăng nhập đúng mật khẩu vào tài khoản tự xoá còn trong hạn 30 ngày, chưa ẩn danh sẽ nhận
+`403 IDT-104` với `details.restoreTicket` và `expiresInSeconds=300`; không có token/cookie đăng nhập.
+Vé chỉ dùng cho đúng lần tự xoá. Khôi phục trả `{ restored: true }`, rồi người dùng đăng nhập lại.
+Admin khoá, quá hạn hoặc đã ẩn danh không được cấp vé; vé sai/hết hạn/đã dùng trả `401 IDT-114`.
+Redis giữ hash vé, DB khoá dòng user và kiểm lại thời hạn. Lỗi DB giữ vé để thử lại;
+lỗi dọn Redis sau commit không cho phép dùng vé lần hai. OAuth callback sẽ nối cơ chế này ở task #15.
+
+BR-01 giới hạn theo email đã trim/chuyển chữ thường và IP kết nối (`getRemoteAddr`), dùng chung
+cho login thường và login giảng viên. Header `X-Forwarded-For` từ client không được tin cậy.
+Khi triển khai sau reverse proxy cần cấu hình proxy tin cậy trước khi dùng IP chuyển tiếp.
+Counter hết hạn 15 phút từ lần sai đầu, đúng thuật toán `INCR`/`EXPIRE` trong DD BR-01 và BD database;
+DD vẫn gọi đây là “cửa sổ trượt”, cần thống nhất thuật ngữ khi rà tài liệu.
 
 **Spring Boot không đọc `05-coding/.env`.** Phải `set -a && . ./.env && set +a` trước khi
 `spring-boot:run`, nếu không app dùng giá trị mặc định trong `application-local.yml`.

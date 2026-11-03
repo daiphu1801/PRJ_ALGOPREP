@@ -16,7 +16,9 @@ function download(blob: Blob, filename: string) {
   URL.revokeObjectURL(url);
 }
 
-// Both exporters resolve to true on success, false on failure; the view raises the toast.
+/** Both exporters resolve (never reject); the view raises the toast from the outcome. */
+export type ExportResult = { ok: true } | { ok: false; error: unknown };
+
 export function useExportData() {
   const [pending, setPending] = useState<"submissions" | "interviews" | null>(
     null,
@@ -26,9 +28,9 @@ export function useExportData() {
     setPending("submissions");
     try {
       download(await exportMyData("submissions"), "submissions.csv");
-      return true;
-    } catch {
-      return false;
+      return { ok: true } as ExportResult;
+    } catch (error) {
+      return { ok: false, error } as ExportResult;
     } finally {
       setPending(null);
     }
@@ -41,9 +43,9 @@ export function useExportData() {
         await exportMyInterviewTranscripts(),
         "interview-transcripts.json",
       );
-      return true;
-    } catch {
-      return false;
+      return { ok: true } as ExportResult;
+    } catch (error) {
+      return { ok: false, error } as ExportResult;
     } finally {
       setPending(null);
     }

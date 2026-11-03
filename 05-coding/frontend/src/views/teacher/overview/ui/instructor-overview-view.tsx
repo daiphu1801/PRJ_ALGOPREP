@@ -80,8 +80,14 @@ export function InstructorOverviewView() {
   const assignmentsQuery = useClassAssignments();
   const students = useClassStudents().data;
 
+  // The F4 numbers (absent, completion) come with the mock only; without them nothing is drawn
+  // instead of a row of invented zeros (ponytail rung 2, PROTOTYPE_DEBT lớp học).
+  const hasMetrics = classes.some((c) => c.absentCount !== undefined);
   const totalStudents = classes.reduce((sum, c) => sum + c.studentCount, 0);
-  const absentStudents = classes.reduce((sum, c) => sum + c.absentCount, 0);
+  const absentStudents = classes.reduce(
+    (sum, c) => sum + (c.absentCount ?? 0),
+    0,
+  );
   const activeStudents = totalStudents - absentStudents;
   const activePercent =
     totalStudents > 0 ? Math.round((activeStudents / totalStudents) * 100) : 0;
@@ -176,57 +182,63 @@ export function InstructorOverviewView() {
             iconColorVar="--color-admin-cyan"
             label={t("kpi.students")}
             value={totalStudents}
-            meta={t("kpi.studentsMeta", { count: absentStudents })}
+            meta={
+              hasMetrics
+                ? t("kpi.studentsMeta", { count: absentStudents })
+                : undefined
+            }
           />
         </div>
-        <Card
-          className="h-full lg:col-span-2"
-          title={t("students.title")}
-          description={t("students.subtitle")}
-        >
-          <div className="grid items-center gap-5 md:grid-cols-2">
-            <div className="relative mx-auto w-full max-w-[300px]">
-              <HalfDonutGauge
-                slices={[
-                  {
-                    label: t("students.active"),
-                    value: activeStudents,
-                    colorVar: "--color-admin-teal",
-                  },
-                  {
-                    label: t("students.absent"),
-                    value: absentStudents,
-                    colorVar: "--color-admin-warn",
-                  },
-                ]}
-              />
-              <p className="pointer-events-none absolute inset-x-0 top-[34px] text-center">
-                <span className="block text-[26px] leading-none font-bold">
-                  {activePercent}%
-                </span>
-                <span className="text-[11.5px] text-[var(--color-text-muted)]">
-                  {t("students.activeRate")}
-                </span>
-              </p>
+        {hasMetrics ? (
+          <Card
+            className="h-full lg:col-span-2"
+            title={t("students.title")}
+            description={t("students.subtitle")}
+          >
+            <div className="grid items-center gap-5 md:grid-cols-2">
+              <div className="relative mx-auto w-full max-w-[300px]">
+                <HalfDonutGauge
+                  slices={[
+                    {
+                      label: t("students.active"),
+                      value: activeStudents,
+                      colorVar: "--color-admin-teal",
+                    },
+                    {
+                      label: t("students.absent"),
+                      value: absentStudents,
+                      colorVar: "--color-admin-warn",
+                    },
+                  ]}
+                />
+                <p className="pointer-events-none absolute inset-x-0 top-[34px] text-center">
+                  <span className="block text-[26px] leading-none font-bold">
+                    {activePercent}%
+                  </span>
+                  <span className="text-[11.5px] text-[var(--color-text-muted)]">
+                    {t("students.activeRate")}
+                  </span>
+                </p>
+              </div>
+              <div>
+                <p className="mb-2 text-[12px] font-semibold text-[var(--color-text-muted)]">
+                  {t("students.byClass")}
+                </p>
+                <RankedProgressList
+                  numbered={false}
+                  accentColorVar="--color-admin-warn"
+                  items={classes.map((klass) => ({
+                    label: klass.name,
+                    value: klass.absentCount ?? 0,
+                    valueLabel: t("students.absentCount", {
+                      count: klass.absentCount ?? 0,
+                    }),
+                  }))}
+                />
+              </div>
             </div>
-            <div>
-              <p className="mb-2 text-[12px] font-semibold text-[var(--color-text-muted)]">
-                {t("students.byClass")}
-              </p>
-              <RankedProgressList
-                numbered={false}
-                accentColorVar="--color-admin-warn"
-                items={classes.map((klass) => ({
-                  label: klass.name,
-                  value: klass.absentCount,
-                  valueLabel: t("students.absentCount", {
-                    count: klass.absentCount,
-                  }),
-                }))}
-              />
-            </div>
-          </div>
-        </Card>
+          </Card>
+        ) : null}
       </div>
 
       <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-3">
@@ -245,8 +257,11 @@ export function InstructorOverviewView() {
             accentColorVar="--color-admin-teal"
             items={classes.map((klass) => ({
               label: `${klass.name} · ${t("classes.students", { count: klass.studentCount })}`,
-              value: klass.completionPct,
-              valueLabel: `${klass.completionPct}%`,
+              value: klass.completionPct ?? 0,
+              valueLabel:
+                klass.completionPct === undefined
+                  ? ""
+                  : `${klass.completionPct}%`,
             }))}
           />
         </Card>

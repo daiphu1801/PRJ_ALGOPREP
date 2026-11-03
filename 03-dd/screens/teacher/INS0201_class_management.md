@@ -11,7 +11,7 @@ Bảng 0.1 là bìa.
 | Prototype | `05-coding/frontend/src/views/teacher/class-management/` |
 | Module | F1 identity #19–24, #27, #56, #59 |
 | TDD | `04-tdd/modules/F1_identity.md` AC-21–22, AC-43, AC-51; `04-tdd/screens/teacher/INS0201_class_management.md` |
-| Phiên bản, ngày | V0.1, 2026-10-24 |
+| Phiên bản, ngày | V0.2, 2026-11-02 (nối API thật, task #12); V0.1, 2026-10-24 |
 
 Bảng 0.2 ghi lịch sử.
 
@@ -126,6 +126,15 @@ Bảng 7.1 bao phủ EVT-1–20.
 | SC-08 | Normal | EVT-16 mở đúng học viên của lớp | Playwright | `class_management` AC-SC-01 |
 | SC-09 | Abnormal | EVT-17/18/19 gỡ giữ lịch sử, huỷ không gọi API, lỗi rollback | Vitest | F1 AC-21; `class_management` AC-SC-02 |
 | SC-10 | Boundary | EVT-20 trang 2 có đúng 20 dòng, đổi tab reset trang 1 | Vitest | `class_management` AC-SC-01 |
+
+**Triển khai 2026-11-02 (task #12, lát 4).** Màn nối API thật ở chế độ `NEXT_PUBLIC_MOCK_DATA=false` cho F1 #19, #20, #21, #22.
+- **Vị trí mã.** Giữ trong `entities/class/api/` (`real-class.ts`, `queries.ts`): cụm lớp có nhiều màn dùng chung nên đặt ở `entities` đúng bảng mục 1; các hook của màn này dùng `useQuery`/`useMutation` kèm `withMockData`. Chế độ mock giữ nguyên.
+- **Chỉ #19, không #56/#59.** #56 và #59 cần số liệu F4 (chưa làm). Danh sách lớp lấy từ #19 nên **ẩn** ba cột "Tỉ lệ hoàn thành", "Điểm TB", "Vắng bài" khi dữ liệu không có (tiêu chí ponytail bậc 2: không hiện số bịa); `ClassSummary` đổi ba trường này thành tuỳ chọn.
+- **Hộp thoại tạo/sửa.** `ClassFormDialog` nhận `onSubmit` trả promise: tự đóng khi thành công, giữ nguyên hộp thoại và nội dung đã nhập khi bị từ chối, toast nêu lý do theo mã lỗi (`IDT-V14`, `IDT-V15`, `IDT-V10`, `IDT-V16`, `IDT-445`). Tạo xong chuyển sang `/instructor/classes/{classId}` theo `classId` máy chủ trả về, không tự gọi #23. Sửa gửi PATCH kèm giá trị xoá cho ô để trống (`description: ""`, `schedule: {}`) vì PATCH giữ nguyên trường vắng.
+- **Xoá.** Chỉ cập nhật sau khi #22 trả 204; lỗi (`IDT-414`, `IDT-445`) toast, lớp vẫn ở danh sách.
+- **Chưa làm.** Thẻ tổng của BD (ba thẻ), phân trang bảng học viên: bảng học viên đã chuyển sang `INS0203` từ 2026-09-27, thẻ tổng cần #56. Ghi nợ.
+- Kiểm chứng: test cấp view `class-management-real.test.tsx`; `e2e/classes-real.spec.ts` trên backend và frontend thật.
+
 
 ## 8. Nợ prototype và câu hỏi mở
 

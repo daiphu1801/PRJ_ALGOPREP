@@ -48,4 +48,24 @@ class AlgoPrepExceptionTest {
     assertThatThrownBy(() -> new PermissionDeniedException(null, "không có quyền"))
         .isInstanceOf(IllegalArgumentException.class);
   }
+
+  @Test
+  @DisplayName("every HTTP-mapped exception keeps its error code and message")
+  void everyMappedExceptionKeepsCodeAndMessage() {
+    java.util.List<AlgoPrepException> all =
+        java.util.List.of(
+            new InvalidRequestException("C1", "m"),
+            new UnauthenticatedException("C1", "m"),
+            new PermissionDeniedException("C1", "m"),
+            new ResourceConflictException("C1", "m"),
+            new ResourceNotFoundException("C1", "m"),
+            new RateLimitExceededException("C1", "m"),
+            new DomainRuleViolationException("C1", "m"));
+    assertThat(all)
+        .allSatisfy(
+            e -> {
+              assertThat(e.errorCode()).isEqualTo("C1");
+              assertThat(e.getMessage()).isEqualTo("m");
+            });
+  }
 }

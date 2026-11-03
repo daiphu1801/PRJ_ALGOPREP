@@ -132,14 +132,14 @@ Kế thừa quy ước của `03-dd/api/F1_identity.md` (đầu file): JSON UTF-
 `422` vi phạm quy tắc nghiệp vụ, thêm `5xx` cho lỗi hạ tầng ngoài (`503`). **Không endpoint nào của module là công khai**: màn người học bắt buộc đăng nhập
 [SoT: `02-bd/screens/users/USR0101_problem_list.md:623`].
 
-**Định dạng lỗi** `[SoT: Suy luận — identity DD chỉ nêu trường error.code, chưa định hình bao; DD này đề xuất, controller thống nhất ở api.md]`:
+**Định dạng lỗi** (sửa 2026-10-31, `DEC-2026-1031-error-body-rfc9457`; khung lỗi gốc ở `03-dd/api/api.md` mục 1.1, file này không định nghĩa lại):
 
 ```json
-{ "error": { "code": "PRB-030", "message": "Bài chưa đủ điều kiện xuất bản.", "details": { "...": "tuỳ mã lỗi" }, "traceId": "uuid" } }
+{ "type": "about:blank", "title": "Unprocessable Content", "status": 422, "detail": "<chuỗi cho log>", "instance": "<đường dẫn>", "errorCode": "PRB-030", "details": { "...": "tuỳ mã lỗi" } }
 ```
 
-Máy chủ trả `code`; giao diện dịch qua `messages/{locale}.json` (hợp đồng i18n ở `03-dd/api/api.md`). `message` chỉ là bản tiếng Việt dự phòng,
-không phải thứ giao diện dựa vào.
+Máy chủ trả `errorCode`; giao diện dịch qua `messages/{locale}.json` (hợp đồng i18n ở `03-dd/api/api.md`). `detail` chỉ để ghi log,
+không phải thứ giao diện dựa vào. Các cột `error.code` ở bảng lỗi bên dưới nghĩa là trường `errorCode`. Ví dụ `message`/`traceId` ở bản cũ của mục này đã bỏ.
 
 **Phân trang**: `page` (từ 1) và `pageSize`; phản hồi `{ "items": [...], "page": { "number", "size", "totalItems", "totalPages" } }`.
 `page` lớn hơn `totalPages` thì trả trang cuối, không báo lỗi [SoT: `02-bd/screens/users/USR0101_problem_list.md:629`]. Tên tham số `pageSize` thống nhất với

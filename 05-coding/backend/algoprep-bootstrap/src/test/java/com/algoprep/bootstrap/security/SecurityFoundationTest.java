@@ -147,7 +147,7 @@ class SecurityFoundationTest {
         "User " + roleCode,
         status,
         roleCode);
-    return tokens.issue(userId, category, roleCode).value();
+    return tokens.issue(userId, category, roleCode, UUID.randomUUID()).value();
   }
 
   private static UUID subjectOf(String jwt) throws Exception {

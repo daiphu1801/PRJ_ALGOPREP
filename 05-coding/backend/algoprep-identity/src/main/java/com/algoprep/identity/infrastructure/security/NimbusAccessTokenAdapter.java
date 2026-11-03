@@ -16,14 +16,16 @@ import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Component;
 
 /**
- * Signs access tokens with RS256. Claims are exactly {@code sub}, {@code base_category}, {@code
- * role_code}, {@code iat}, {@code exp} (BD security section 1): no permission matrix in the token.
+ * Signs access tokens with RS256. Claims are {@code sub}, {@code base_category}, {@code role_code},
+ * {@code sid} (refresh token family, DEC-2026-1031-access-token-session-id), {@code iat}, {@code
+ * exp}: no permission matrix in the token.
  */
 @Component
 class NimbusAccessTokenAdapter implements AccessTokenPort {
 
   static final String CLAIM_BASE_CATEGORY = "base_category";
   static final String CLAIM_ROLE_CODE = "role_code";
+  static final String CLAIM_SESSION = "sid";
 
   private final JwtEncoder encoder;
   private final ClockPort clock;
@@ -39,7 +41,8 @@ class NimbusAccessTokenAdapter implements AccessTokenPort {
   }
 
   @Override
-  public IssuedAccessToken issue(UUID userId, BaseCategory baseCategory, String roleCode) {
+  public IssuedAccessToken issue(
+      UUID userId, BaseCategory baseCategory, String roleCode, UUID sessionId) {
     Instant issuedAt = clock.now();
     Instant expiresAt = issuedAt.plus(ttl);
     JwtClaimsSet claims =
@@ -47,6 +50,7 @@ class NimbusAccessTokenAdapter implements AccessTokenPort {
             .subject(userId.toString())
             .claim(CLAIM_BASE_CATEGORY, baseCategory.name())
             .claim(CLAIM_ROLE_CODE, roleCode)
+            .claim(CLAIM_SESSION, sessionId.toString())
             .issuedAt(issuedAt)
             .expiresAt(expiresAt)
             .build();

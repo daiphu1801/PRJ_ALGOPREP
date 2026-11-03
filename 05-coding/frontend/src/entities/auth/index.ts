@@ -1,5 +1,14 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
-export type { AuthMode, AuthOutcome, AuthFieldErrors } from "./model/types";
+export type {
+  AuthMode,
+  AuthOutcome,
+  AuthFieldErrors,
+  SignupOutcome,
+} from "./model/types";
+export {
+  setMustChangePassword,
+  useMustChangePassword,
+} from "./model/must-change-password";
 export {
   signupSchema,
   loginSchema,
@@ -20,6 +29,9 @@ export {
   instructorLogin,
   oauthLogin,
   cancelDeactivation,
+  logout,
+  verifyEmail,
+  resendVerification,
   forgotEmail,
   verifyOtp,
   resendOtp,

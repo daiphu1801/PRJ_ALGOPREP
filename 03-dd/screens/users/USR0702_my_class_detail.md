@@ -12,7 +12,7 @@ Bảng 0.1 là bìa tài liệu.
 | Prototype | `05-coding/frontend/src/views/users/my-class-detail/` |
 | Module | F1 identity #25B; F2 problem-bank #13A/§5A |
 | TDD | `04-tdd/modules/F1_identity.md` AC-49; `04-tdd/modules/F2_problem-bank.md` AC-88; `04-tdd/screens/users/USR0702_my_class_detail.md` |
-| Phiên bản, ngày | V0.1, 2026-10-24 |
+| Phiên bản, ngày | V0.2, 2026-11-02 (nối API thật, task #12); V0.1, 2026-10-24 |
 
 Bảng 0.2 ghi lịch sử sửa.
 
@@ -110,6 +110,13 @@ Bảng 7.1 bao phủ EVT-1 đến EVT-4.
 | SC-06 | Boundary | EVT-3 bài rút không có link/focus, có nhãn và vẫn giữ trạng thái giải | Vitest | F2 AC-88; `my_class_detail` AC-SC-03 |
 | SC-07 | Abnormal | EVT-4 retry đúng nguồn lỗi; retry lỗi lần nữa mới toast | Vitest | `my_class_detail` AC-SC-02 |
 | SC-08 | Boundary | Accepted trước khi giao vẫn chưa tăng x/y; Accepted sau khi giao tăng đúng một bài | Vitest | F2 §5A; `my_class_detail` AC-SC-01 |
+
+**Triển khai 2026-11-02 (task #12, lát 4).** Màn nối API thật cho F1 #25B; bài giao (F2) chưa có.
+- **Vị trí mã.** Giữ trong `entities/class/api/` (`real-class.ts`, `queries.ts`): cụm lớp có nhiều màn dùng chung nên đặt ở `entities` đúng bảng mục 1; các hook của màn này dùng `useQuery`/`useMutation` kèm `withMockData`. Chế độ mock giữ nguyên.
+- **Một lớp.** Gọi #25B theo `classId` trên đường dẫn thay vì chọn từ danh sách. `IDT-411` (không có, đã rời hoặc không thuộc người gọi) hiện "không tìm thấy lớp"; lỗi khác hiện khối lỗi kèm Thử lại.
+- **Bài giao và tiến độ.** Hai khối "Bài được giao" và "Tiến độ bài được giao" ẩn khi lớp không có `assignments` (ponytail bậc 2).
+- Kiểm chứng: `my-class-detail-real.test.tsx`; `e2e/classes-real.spec.ts`.
+
 
 ## 8. Nợ prototype và câu hỏi mở
 

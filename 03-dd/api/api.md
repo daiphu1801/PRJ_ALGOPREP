@@ -19,7 +19,9 @@ Bảng 1: Quy ước áp dụng cho mọi endpoint.
 
 ### 1.1. Phong bì lỗi
 
-Mọi lỗi trả về dạng `{ "error": { "code": "<tiền tố>-<số>", "message": "<chuỗi dự phòng>", "details": { ... }, "traceId": "<uuid>" } }`. `code` bắt buộc và là giá trị enum thật, `message` là chuỗi dự phòng, `details` tuỳ mã lỗi, `traceId` do máy chủ sinh để tra log. Backend trả `code`; giao diện dịch qua `messages/{locale}.json`, không dựa vào `message`. Phong bì này hợp nhất hai cách viết của `problem-bank` và `judge-orchestration` `[SoT: Suy luận]` (identity chỉ nêu `error.code`); ba module đang dùng chung.
+Mọi lỗi trả về theo RFC 9457 (`application/problem+json`), phẳng, do `GlobalExceptionHandler` của `algoprep-bootstrap` sinh ra: `{ "type": "about:blank", "title": "<tên trạng thái HTTP>", "status": <số>, "detail": "<chuỗi cho log>", "instance": "<đường dẫn>", "errorCode": "<tiền tố>-<số>", "details": { ... } }`. `errorCode` bắt buộc và là giá trị enum thật; `details` chỉ có ở mã lỗi cần kèm dữ liệu (ví dụ `IDT-104` kèm `restoreTicket`). Backend trả `errorCode`; giao diện dịch qua `messages/{locale}.json` (namespace `apiErrors`), không hiển thị `detail`. Các cột `error.code` ở bảng lỗi của file hợp đồng từng module nghĩa là trường `errorCode` này.
+
+**Sửa 2026-10-31 (`DEC-2026-1031-error-body-rfc9457`):** trước đây mục này ghi phong bì lồng `{ "error": { "code", "message", "details", "traceId" } }` `[SoT: Suy luận]`; backend đã chạy theo RFC 9457 từ nền bảo mật F1 và được kiểm bằng test, nên DD sửa theo code. `traceId` chưa có, bổ sung khi có quan sát hệ thống (không bắt buộc cho đợt này). Frontend vẫn đọc được cả dạng lồng cũ trong lúc các module khác chưa viết code.
 
 ### 1.2. Tiền tố mã lỗi
 

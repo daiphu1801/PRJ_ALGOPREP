@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ChevronDown, type LucideIcon } from "lucide-react";
 import { cn } from "@/shared/lib";
+import { LOGOUT_ITEM_KEY, useSignOut } from "../model/use-sign-out";
 
 /**
  * The user block of the area toolbar (Admin and Instructor share it, 2026-10-11) as a pop-up menu. The "KHÁC" links (settings, auth, profile)
@@ -29,6 +30,7 @@ export function AreaUserMenu({
   items: AreaMenuItem[];
 }) {
   const [open, setOpen] = useState(false);
+  const signOut = useSignOut();
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -89,7 +91,13 @@ export function AreaUserMenu({
               key={key}
               role="menuitem"
               href={href}
-              onClick={() => setOpen(false)}
+              onClick={(event) => {
+                setOpen(false);
+                if (key === LOGOUT_ITEM_KEY) {
+                  event.preventDefault();
+                  void signOut(href);
+                }
+              }}
               className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-[var(--color-text)] hover:bg-[var(--color-surface-hover)]"
             >
               <Icon aria-hidden="true" className="h-4 w-4" />

@@ -36,9 +36,11 @@ export const classSummarySchema = z.object({
   description: z.string().optional(),
   schedule: classScheduleSchema.optional(),
   studentCount: z.number(),
-  completionPct: z.number(),
-  avgScore: z.number().nullable(),
-  absentCount: z.number(),
+  // The three figures below need F4 metrics (F1 #56, not built): the real list (#19) leaves them out,
+  // and a screen shows a column only when the data has it. Never a 0 standing in for "unknown".
+  completionPct: z.number().optional(),
+  avgScore: z.number().nullable().optional(),
+  absentCount: z.number().optional(),
   createdAt: z.string(),
 });
 export type ClassSummary = z.infer<typeof classSummarySchema>;
@@ -64,6 +66,23 @@ export const classStudentSchema = z.object({
   leftAt: z.string().optional(),
 });
 export type ClassStudent = z.infer<typeof classStudentSchema>;
+
+// One row of the roster of a class (F1 #26). The prototype rows also carry the F4 figures; the real
+// roster has none (its `status` is always null until F4), so `metrics` is absent there.
+export type ClassRosterRow = {
+  id: string;
+  classId: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  joinedAt?: string;
+  metrics?: {
+    status: StudentStatus;
+    avgScore: number | null;
+    completionPct: number;
+    lastActiveLabel: string;
+  };
+};
 
 export const inviteCodeSchema = z.object({
   id: z.string(),
@@ -132,5 +151,10 @@ export type MyClass = {
   schedule?: ClassSchedule;
   instructorName: string;
   joinedAtLabel: string;
-  assignments: MyClassAssignment[];
+  // Assigned problems come from F2 (not built): the real class has none, and a screen hides the
+  // block and the progress bar rather than show "0 / 0".
+  assignments?: MyClassAssignment[];
 };
+
+/** What joining by invite code tells the learner (F1 #25). */
+export type JoinedClass = { id: string; name: string };

@@ -118,7 +118,7 @@ Frontend ánh xạ `error.code`, không dựa vào `message` (`03-dd/api/api.md`
 
 | Trường | Zod/kiểm tra | Quy tắc DD | Khớp |
 | :--- | :--- | :--- | :--- |
-| Mật khẩu hiện tại/mới | `entities/user/model/schema.ts` | F1 validation mục 1; mật khẩu mới 8–128 ký tự, chữ và số; trường hiện tại vắng khi OAuth chưa có password | Có, cần giữ đồng bộ |
+| Mật khẩu hiện tại/mới | `entities/user/model/schema.ts` | F1 validation mục 1; mật khẩu mới tối thiểu 8 ký tự, tối đa 72 byte UTF-8, chữ và số; trường hiện tại vắng khi OAuth chưa có password | Có, cần giữ đồng bộ |
 | Xác nhận mật khẩu | schema client `passwordConfirmation` | So khớp mật khẩu mới; không gửi lên API | Client-only, đúng |
 | Email xác nhận xoá | `z.string().refine(v => v === profile.email)` | V1 mục 5: khớp tuyệt đối, phân biệt hoa thường với email đang lưu; server xác minh lại | Có; **không trim/lower-case** |
 | `preferredMaxTurns` | `z.union([z.literal(8),z.literal(12),z.literal(16)])` | V1 mục 8 | Cần đổi prototype đang dùng chuỗi `"12"` |

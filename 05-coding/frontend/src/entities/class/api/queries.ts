@@ -1,10 +1,13 @@
-// PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
-//
-// TanStack Query hooks for the class cluster, same withMockData boundary as
-// entities/admin-dashboard/api/queries.ts — graduation only means deleting the __mock__ import.
-import { useMockMutation, useMockQuery } from "@/shared/api";
+// PROTOTYPE with a real API behind part of it (task 12, 03-dd/api/F1_identity.md #19 to #27, #25A,
+// #25B). The hooks of INS0201, INS0205, USR0701 and USR0702 take a real call through `withMockData`;
+// the rest of the cluster (progress, student detail, assignments, activity: F1 #28, #29, #56 to #59,
+// all F4-dependent) still goes through `useMockMutation` / `useMockQuery` and fails with
+// NOT_IMPLEMENTED in real mode.
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { ApiError, useMockQuery, withMockData } from "@/shared/api";
 import type { ClassForm } from "../model/types";
 import {
+  listClassRoster,
   classScoreTrend,
   createClass,
   createInviteCode,
@@ -20,16 +23,43 @@ import {
   removeStudent,
   updateClass,
 } from "./__mock__/class-mocks";
+import {
+  realCreateClass,
+  realCreateInviteCode,
+  realDeleteClass,
+  realGetMyClass,
+  realJoinClass,
+  realLeaveClass,
+  realListInstructorClasses,
+  realListInviteCodes,
+  realListMyClasses,
+  realListRoster,
+  realUpdateClass,
+} from "./real-class";
 
 const SPEC = "03-dd/api/F1_identity.md";
 const STALE = 15_000;
 
 export const useInstructorClasses = () =>
-  useMockQuery({
+  useQuery({
     queryKey: ["classes", "list"],
-    mock: listInstructorClasses,
-    spec: SPEC,
+    queryFn: () =>
+      withMockData(listInstructorClasses, realListInstructorClasses),
     staleTime: STALE,
+    retry: false,
+  });
+
+/** The students of one class (F1 #26); the F4 figures ride along only in mock mode. */
+export const useClassRoster = (classId: string) =>
+  useQuery({
+    queryKey: ["classes", "roster", classId],
+    queryFn: () =>
+      withMockData(
+        () => listClassRoster(classId),
+        () => realListRoster(classId),
+      ),
+    staleTime: STALE,
+    retry: false,
   });
 
 export const useClassStudents = (classId?: string, includeLeft = false) =>
@@ -53,11 +83,15 @@ export const useClassStudentDetail = (
   });
 
 export const useInviteCodes = (classId: string, enabled: boolean) =>
-  useMockQuery({
+  useQuery({
     queryKey: ["classes", "invite-codes", classId],
-    mock: () => listInviteCodes(classId),
-    spec: SPEC,
+    queryFn: () =>
+      withMockData(
+        () => listInviteCodes(classId),
+        () => realListInviteCodes(classId),
+      ),
     staleTime: STALE,
+    retry: false,
     enabled,
   });
 
@@ -87,59 +121,88 @@ export const useClassScoreTrend = (classId?: string) =>
 
 const INVALIDATE = [["classes"]] as const;
 
-export const useCreateClass = () =>
-  useMockMutation({
-    mock: (form: ClassForm) => createClass(form),
-    spec: SPEC,
-    invalidate: INVALIDATE,
+/** Every write refreshes the whole cluster by prefix: the server owns the counts and the lists. */
+function useClassWrite<V, T>(
+  mock: (variables: V) => Promise<T> | T,
+  real: (variables: V) => Promise<T>,
+) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (variables: V) =>
+      withMockData(
+        () => mock(variables),
+        () => real(variables),
+      ),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: INVALIDATE[0] }),
   });
+}
+
+export const useCreateClass = () =>
+  useClassWrite((form: ClassForm) => createClass(form), realCreateClass);
 
 export const useUpdateClass = () =>
-  useMockMutation({
-    mock: ({ id, form }: { id: string; form: ClassForm }) =>
-      updateClass(id, form),
-    spec: SPEC,
-    invalidate: INVALIDATE,
-  });
+  useClassWrite(
+    ({ id, form }: { id: string; form: ClassForm }) => updateClass(id, form),
+    ({ id, form }) => realUpdateClass(id, form),
+  );
 
 export const useDeleteClass = () =>
-  useMockMutation({
-    mock: (id: string) => deleteClass(id),
-    spec: SPEC,
-    invalidate: INVALIDATE,
-  });
+  useClassWrite((id: string) => deleteClass(id), realDeleteClass);
 
 export const useCreateInviteCode = () =>
-  useMockMutation({
-    mock: (classId: string) => createInviteCode(classId),
-    spec: SPEC,
-    invalidate: INVALIDATE,
-  });
+  useClassWrite(
+    (classId: string) => createInviteCode(classId),
+    realCreateInviteCode,
+  );
 
+/** F1 #27: the learner leaves the class (the history stays); the mock only needs the learner. */
 export const useRemoveStudent = () =>
-  useMockMutation({
-    mock: (studentId: string) => removeStudent(studentId),
-    spec: SPEC,
-    invalidate: INVALIDATE,
-  });
+  useClassWrite(
+    ({ studentId }: { classId: string; studentId: string }) =>
+      removeStudent(studentId),
+    realLeaveClass,
+  );
 
 export const useMyClasses = () =>
-  useMockQuery({
+  useQuery({
     queryKey: ["classes", "mine"],
-    mock: listMyClasses,
-    spec: SPEC,
+    queryFn: () => withMockData(listMyClasses, realListMyClasses),
     staleTime: STALE,
+    retry: false,
   });
 
-/** One class of the learner, picked from the list (ponytail: no per-class endpoint in the mock). */
-export const useMyClass = (classId: string) => {
-  const query = useMyClasses();
-  return { ...query, data: query.data?.find((k) => k.id === classId) };
+/**
+ * One class of the learner (F1 #25B). The mock picks it from the list; a class that is not theirs, is
+ * gone or was left answers IDT-411, which the screen shows as "not found", so it resolves to null.
+ */
+export const useMyClass = (classId: string) =>
+  useQuery({
+    queryKey: ["classes", "mine", classId],
+    queryFn: () =>
+      withMockData(
+        async () =>
+          (await listMyClasses()).find((k) => k.id === classId) ?? null,
+        () =>
+          realGetMyClass(classId).catch((error: unknown) => {
+            if (error instanceof ApiError && error.code === "IDT-411") {
+              return null;
+            }
+            throw error;
+          }),
+      ),
+    staleTime: STALE,
+    retry: false,
+  });
+
+export const useJoinClass = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (code: string) =>
+      withMockData(
+        () => joinClassByCode(code),
+        () => realJoinClass(code),
+      ),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["classes", "mine"] }),
+  });
 };
-
-export const useJoinClass = () =>
-  useMockMutation({
-    mock: (code: string) => joinClassByCode(code),
-    spec: SPEC,
-    invalidate: [["classes", "mine"]],
-  });

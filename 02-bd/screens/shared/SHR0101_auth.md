@@ -7,7 +7,7 @@
 - Phần gắn nhãn `[Nội bộ]` phục vụ sinh mã và tự kiểm toán, không phải yêu cầu của khách hàng: mục 4.5 và
   mục 7.3.
 - Mã màn `SHR0101` theo bảng mã ở `02-bd/_rules/bd-template-9sheet.md` mục 8; tên file mang tiền tố mã.
-- Màn này **không có popup** — mọi trạng thái phụ (`forgot_email`, `forgot_otp`, `forgot_reset`, banner
+- Màn này **không có popup** — mọi trạng thái phụ (`verify_email`, `forgot_email`, `forgot_otp`, `forgot_reset`, banner
   khôi phục tài khoản) là biến thể hiển thị trong cùng một màn, không mở chồng lên màn hiện tại
   [SoT: 01-rd/screens/shared/SHR0101_auth.md:33-63].
 
@@ -51,6 +51,7 @@
 | V0.2 | Toàn bộ | Chuyển sang mẫu 9 sheet, đổi tên file thành `SHR0101_auth.md` theo mã màn. Giữ nguyên nội dung đã chốt (state machine, DTO, navigation theo vai trò, access rights); đối chiếu code frontend đã dựng (`features/auth-by-credentials`, `entities/auth`) để chốt tên field/DTO thay vì suy luận; bổ sung Sheet 5 danh sách item theo đúng bộ thẻ, Sheet 6 đặc tả điều khiển, Sheet 8 danh sách sự kiện `EVT-1` đến `EVT-10`, Sheet 9 đặc tả kiểm tra; đóng câu hỏi mở cũ Q1(BD) vì code đã dựng đúng đề xuất, phát sinh 2 câu hỏi mở mới (Q4, Q5) | 2026/09/20 | Nhóm phát triển AlgoPrep |
 | V0.3 | Sheet 4, 5, 8, 9, Q1 | Đổi kênh phản hồi theo `DEC-2026-1003-toast-feedback-channel`: lỗi nhập và kết quả thao tác (gửi mã, gửi lại mã, đặt lại mật khẩu, huỷ xoá tài khoản) đi qua một toast; ô sai chỉ đổi viền đỏ + `aria-invalid`, bỏ chữ lỗi cạnh ô; đảo chốt cũ "lỗi hiện dưới field, không toast"; banner khôi phục tài khoản giữ lại vì là trạng thái trang có nút hành động | 2026/10/03 | Nhóm phát triển AlgoPrep |
 | V0.4 | Sheet 3 (ghi chú), Câu hỏi mở | Đóng Q2, Q3, Q5 theo xác nhận của chủ dự án 2026-10-29; DD đã triển khai đúng các đáp án này. Bỏ câu "không chốt route callback" ở ghi chú. Không đổi bố cục hay hành vi | 2026/10/29 | Claude |
+| V0.5 | Sheet 3, 5, 6, 7, 9 | Nối API thật (task #7): thêm chế độ `verify_email` (khu vực G2); đăng nhập chỉ theo e-mail (`identifier` thành `email`); ô tên đăng ký thành "Họ và tên" (`username` thành `displayName`, 2 đến 100 ký tự); bỏ ô "Ghi nhớ đăng nhập" (backend không có tham số); banner khôi phục dùng vé một lần của `IDT-104`; guard vai trò phía client thay cho `middleware.ts` (cookie refresh không tới route trang). Chủ dự án chọn từng mục ngày 2026-10-31, mã hiệu `DEC-2026-1031-auth-screen-api-alignment`. Đã cập nhật các trích dẫn `file:line` tới `use-auth-flow.ts`, `auth-form.tsx`, `schema.ts` theo code mới; sửa lỗi chuyển hướng `//` ở bước redirect; thêm mục "Đăng xuất" cho khu admin (**chủ dự án duyệt giữ lại 2026-10-31**) | 2026/10/31 | Claude |
 
 ---
 
@@ -59,7 +60,7 @@
 > [Nội bộ] Quy ước vẽ: bố trí từ trái sang phải. Màn gọi tới tô tím, màn hiện tại tô xanh nhạt, đích bên
 > ngoài hệ thống tô xám. Màu và `[Nguồn:]` dùng để truy vết, không phải yêu cầu của khách hàng.
 >
-> Các bước con `signup ↔ login ↔ forgot_email ↔ forgot_otp ↔ forgot_reset` **không** có slug riêng trong
+> Các bước con `signup → verify_email → login ↔ forgot_email ↔ forgot_otp ↔ forgot_reset` **không** có slug riêng trong
 > `01-rd/screens/` — đó là biến đổi trạng thái trong cùng một màn, không phải chuyển màn. Ghi ở Sheet 6/8,
 > không lặp lại ở đây theo đúng định nghĩa "màn hình" và "popup" ở
 > `02-bd/_rules/bd-template-9sheet.md` mục 3.
@@ -73,7 +74,7 @@
 [Chế độ mở] Chế độ `signup` (mặc định).
 
 [Thông tin truyền] Tham số `redirect`/`returnTo` nếu bị chuyển hướng từ một URL cụ thể cần đăng nhập
-trước [Nguồn: 05-coding/frontend/src/features/auth-by-credentials/model/use-auth-flow.ts:86].
+trước [Nguồn: 05-coding/frontend/src/features/auth-by-credentials/model/use-auth-flow.ts:164-169].
 
 [Giá trị trả về] Không có.
 
@@ -93,8 +94,8 @@ không ở trạng thái `DEACTIVATED`, overlay loading đã hoàn tất 4 bư�
 [Giá trị trả về] Không có.
 
 [Khi thành công] Điều hướng tới `my_progress` (`USR0501`), hoặc tới URL đã lưu ở tham số `redirect`/
-`returnTo` nếu tham số đó bắt đầu bằng `/` [Nguồn: 01-rd/screens/shared/SHR0101_auth.md:78-81;
-05-coding/frontend/src/features/auth-by-credentials/model/use-auth-flow.ts:86-87].
+`returnTo` nếu đó là đường dẫn trong ứng dụng (bắt đầu bằng `/`, không phải `//` hay `/\`; hàm `isSafeRedirect`, sửa 2026-10-31 vì `//ten-mien-khac` từng lọt qua) [Nguồn: 01-rd/screens/shared/SHR0101_auth.md:78-81;
+05-coding/frontend/src/features/auth-by-credentials/model/use-auth-flow.ts:164-169; 05-coding/frontend/src/shared/lib/safe-redirect.ts:1-12].
 
 [Khi huỷ] Không có.
 
@@ -185,8 +186,9 @@ lại mật khẩu bằng mã 6 chữ số qua email [Nguồn: 01-rd/screens/sha
 2. **Chuyển đổi chế độ**: bấm nút chuyển ở panel bên phải để đổi `signup` ↔ `login` tại chỗ, không tải lại
    trang.
 3. **Submit hợp lệ**: hệ thống cấp Access Token + Refresh Token, chạy overlay loading 4 bước tuần tự rồi
-   điều hướng theo vai trò (hoặc URL `redirect`/`returnTo` nếu có).
-4. **Submit lỗi**: field sai đổi viền đỏ và gắn `aria-invalid`, **không** có chữ lỗi cạnh ô; **một** toast ở góc phải-trên mang lỗi đầu tiên [SoT: 05-coding/frontend/src/features/auth-by-credentials/model/use-auth-flow.ts:77-82; 05-coding/frontend/src/features/auth-by-credentials/ui/auth-form.tsx:54-66] (`DEC-2026-1003-toast-feedback-channel`).
+   điều hướng theo vai trò (hoặc URL `redirect`/`returnTo` nếu có). Riêng `signup`: tạo tài khoản chờ xác thực rồi
+   sang `verify_email`, **chưa** cấp token (sửa 2026-10-31, `DEC-2026-1031-auth-screen-api-alignment`). Đăng nhập mà tài khoản chưa xác thực e-mail (`IDT-113`) cũng sang `verify_email`.
+4. **Submit lỗi**: field sai đổi viền đỏ và gắn `aria-invalid`, **không** có chữ lỗi cạnh ô; **một** toast ở góc phải-trên mang lỗi đầu tiên [SoT: 05-coding/frontend/src/features/auth-by-credentials/model/use-auth-flow.ts:102-107, 118-124; 05-coding/frontend/src/features/auth-by-credentials/ui/auth-form.tsx:57-63] (`DEC-2026-1003-toast-feedback-channel`).
 5. **Đăng nhập đúng nhưng tài khoản `DEACTIVATED` còn ân hạn 30 ngày**: ở lại `login`, hiện banner khôi
    phục tài khoản kèm nút "Huỷ yêu cầu xoá tài khoản".
 6. **Quên mật khẩu**: `login` → `forgot_email` (nhập email) → `forgot_otp` (nhập mã 6 số, có đếm ngược và
@@ -218,14 +220,14 @@ lại mật khẩu bằng mã 6 chữ số qua email [Nguồn: 01-rd/screens/sha
 
 ### 4.2 DTO liên quan
 
-- `SignupInput` — `{ username, password, email, termsAccepted }`
-- `LoginInput` — `{ identifier, password, rememberMe }`
+- `SignupInput` — `{ displayName, password, email, termsAccepted }` (sửa 2026-10-31: `username` thành `displayName`)
+- `LoginInput` — `{ email, password }` (sửa 2026-10-31: bỏ `identifier` và `rememberMe`)
 - `ForgotEmailInput` — `{ email }`
 - `ForgotOtpInput` — `{ otp }`
 - `ForgotResetInput` — `{ newPassword, confirmPassword }`
 - `AuthOutcome` — `{ ok: true, role, deactivated? } | { ok: false, fieldErrors }`
 
-[Nguồn: 05-coding/frontend/src/entities/auth/model/schema.ts:18-62;
+[Nguồn: 05-coding/frontend/src/entities/auth/model/schema.ts:20-70;
 05-coding/frontend/src/entities/auth/model/types.ts:3-34] — đây là kiểu dữ liệu của lớp mock hiện có trong
 code (`entities/auth/api/__mock__/fake-auth.ts`), **chưa phải hợp đồng API thật**. `03-dd/api/F1_identity.md`
 (chưa viết) chốt lại tên trường và kiểu chính xác khi có backend; đến lúc đó những field này giữ nguyên ý
@@ -290,13 +292,13 @@ có backend, phần `model`/`ui` giữ nguyên phần lớn.
 | Form panel | | | | | | | | | | | | | |
 | | 1 | Logo + nhãn engine | `auth.form.brandLabel` | - | - | Label | String | - | - | O | AlgoPrep | - | Nhãn cố định, không đổi theo chế độ<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] - |
 | | 2 | Tiêu đề chế độ | `auth.form.modeTitle` | - | - | Label | String | - | - | O | Tuỳ mode | - | Eyebrow + heading + subheading đổi theo `mode`<br>[Nguồn giá trị] Nhãn tĩnh i18n theo `mode`<br>[EVT liên quan] EVT-2 |
-| | 3 | Tên đăng nhập | `auth.form.username` | `identity.users` | `display_name` (gián tiếp — xem Q5) | TextBox | String | 32 | Có | I | rỗng | tối thiểu 3 ký tự | Chỉ hiện ở chế độ `signup`<br>[Nguồn giá trị] Người dùng nhập, field `username`<br>[EVT liên quan] EVT-1 |
+| | 3 | Họ và tên | `auth.form.displayName` | `identity.users` | `display_name` | TextBox | String | 100 | Có | I | rỗng | 2 đến 100 ký tự | Chỉ hiện ở chế độ `signup`<br>[Nguồn giá trị] Người dùng nhập, field `displayName`<br>[EVT liên quan] EVT-1 |
 | | 4 | Mật khẩu (đăng ký) | `auth.form.signupPassword` | `identity.users` | `password_hash` (băm phía server) | TextBox | String | - | Có | I | rỗng | tối thiểu 8 ký tự, có nút hiện/ẩn | Chỉ hiện ở chế độ `signup`<br>[Nguồn giá trị] Người dùng nhập, field `password`. Độ mạnh chính xác chưa chốt, xem Q5<br>[EVT liên quan] EVT-1 |
 | | 5 | E-mail (đăng ký) | `auth.form.signupEmail` | `identity.users` | `email` | TextBox | String | - | Có | I | rỗng | định dạng email RFC | Chỉ hiện ở chế độ `signup`<br>[Nguồn giá trị] Người dùng nhập, field `email`<br>[EVT liên quan] EVT-1 |
 | | 6 | Đồng ý điều khoản | `auth.form.termsAccepted` | - | - | Toggle | Boolean | - | Có | I | Tắt | - | Chỉ hiện ở chế độ `signup`. Chưa tick thì chặn submit<br>[Nguồn giá trị] Người dùng đặt, field `termsAccepted`<br>[EVT liên quan] EVT-1 |
-| | 7 | E-mail/Tên đăng nhập (đăng nhập) | `auth.form.loginIdentifier` | `identity.users` | `email` | TextBox | String | - | Có | I | rỗng | - | Chỉ hiện ở chế độ `login`, field `identifier`<br>[Nguồn giá trị] Người dùng nhập<br>[EVT liên quan] EVT-1 |
+| | 7 | E-mail (đăng nhập) | `auth.form.loginEmail` | `identity.users` | `email` | TextBox | String | - | Có | I | rỗng | - | Chỉ hiện ở chế độ `login`, field `email`<br>[Nguồn giá trị] Người dùng nhập<br>[EVT liên quan] EVT-1 |
 | | 8 | Mật khẩu (đăng nhập) | `auth.form.loginPassword` | - | - | TextBox | String | - | Có | I | rỗng | có nút hiện/ẩn | Chỉ hiện ở chế độ `login`, field `password`<br>[Nguồn giá trị] Người dùng nhập<br>[EVT liên quan] EVT-1 |
-| | 9 | Ghi nhớ đăng nhập | `auth.form.rememberMe` | - | - | Toggle | Boolean | - | - | I | Tắt | - | Chỉ hiện ở chế độ `login`, field `rememberMe`<br>[Nguồn giá trị] Người dùng đặt<br>[EVT liên quan] EVT-1 |
+| | 9 | ~~Ghi nhớ đăng nhập~~ **(đã bỏ 2026-10-31, `DEC-2026-1031-auth-screen-api-alignment`)** | `auth.form.rememberMe` | - | - | Toggle | Boolean | - | - | I | Tắt | - | Chỉ hiện ở chế độ `login`, field `rememberMe`<br>[Nguồn giá trị] Người dùng đặt<br>[EVT liên quan] EVT-1 |
 | | 10 | Quên mật khẩu? | `auth.form.linkForgotPassword` | - | - | Link | - | - | - | I | - | - | Chỉ hiện ở chế độ `login`<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-3 |
 | | 11 | Nút submit chính | `auth.form.btnSubmit` | - | - | Button | - | - | - | I | - | "Đăng ký" hoặc "Đăng nhập" theo mode | Nhãn đổi theo `mode`<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-1 |
 | | 12 | Nút Google | `auth.form.btnOauthGoogle` | - | - | Button | - | - | - | I | - | - | -<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-4 |
@@ -328,7 +330,7 @@ có backend, phần `model`/`ui` giữ nguyên phần lớn.
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Overlay loading | | | | | | | | | | | | | |
-| | 1 | Danh sách bước | `auth.loading.stepList` | - | - | List | List | - | - | O | 4 dòng | - | Đúng 4 bước tuần tự, không đổi số lượng<br>[Nguồn giá trị] Hằng số `LOADING_STEP_COUNT = 4` [Nguồn: 05-coding/frontend/src/features/auth-by-credentials/model/use-auth-flow.ts:27]<br>[EVT liên quan] EVT-1, EVT-4 |
+| | 1 | Danh sách bước | `auth.loading.stepList` | - | - | List | List | - | - | O | 4 dòng | - | Đúng 4 bước tuần tự, không đổi số lượng<br>[Nguồn giá trị] Hằng số `LOADING_STEP_COUNT = 4` [Nguồn: 05-coding/frontend/src/features/auth-by-credentials/model/use-auth-flow.ts:33]<br>[EVT liên quan] EVT-1, EVT-4 |
 | | 2 | Tên bước | `auth.loading.col.stepName` | - | - | ListColumn | String | - | - | O | - | Nhãn tiếng Việt | 4 tên cố định: "Xác thực thông tin", "Tải tiến độ luyện tập", "Kết nối go-judge", "Dựng bảng tổng quan"<br>[Nguồn giá trị] Nhãn tĩnh i18n [Nguồn: 01-rd/screens/shared/SHR0101_auth.md:44-46]<br>[EVT liên quan] - |
 | | 3 | Trạng thái bước | `auth.loading.col.stepStatus` | - | - | ListColumn | Enum | - | - | O | chưa tới | `·` chưa tới / `→` đang chạy / dấu tick hoàn tất | [Công thức] So sánh thứ tự bước với `loadingStep` hiện tại<br>[EVT liên quan] - |
 
@@ -358,6 +360,19 @@ có backend, phần `model`/`ui` giữ nguyên phần lớn.
 | | 3 | Số lần thử còn lại | `auth.forgotOtp.attemptsLeft` | - | - | Label | Number | - | - | O | 5 | - | Số lần nhập sai còn được phép<br>[Nguồn giá trị] Redis `identity:pwreset:<userId>`, đếm kèm mã OTP [Nguồn: 02-bd/security/F1_identity.md mục 3]<br>[EVT liên quan] EVT-6 |
 | | 4 | Nút "Gửi lại mã" | `auth.forgotOtp.btnResend` | - | - | Button | - | - | - | I | - | - | -<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-7 |
 
+### Khu vực G2 — Xác thực e-mail sau đăng ký (`verify_email`)
+
+Thêm 2026-10-31 (`DEC-2026-1031-auth-screen-api-alignment`; yêu cầu F1-33, `DEC-2026-1022-self-register-pending-login-blocked`). Dùng lại cùng `OtpInputGroup` với khu vực G, khác ở nguồn mã và đích sau khi đúng mã. Trạng thái này của prototype đã dựng ở `05-coding/frontend/src/features/auth-by-credentials/ui/auth-form.tsx` (nhánh `mode === "verify_email"`).
+
+| Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
+| :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
+| Xác thực e-mail | | | | | | | | | | | | | |
+| | 1 | Ô nhập mã 6 số | `auth.verifyEmail.otp` | - | - | TextBox | String | 6 | Có | I | rỗng | đúng 6 chữ số | `OtpInputGroup`, field `otp`. Mã lưu ở Redis, TTL 10 phút, sai tối đa 5 lần (DD F1 endpoint #53)<br>[Nguồn giá trị] Người dùng nhập |
+| | 2 | Đếm ngược gửi lại | `auth.verifyEmail.resendCountdown` | - | - | Label | Number | - | - | O | 60 giây | `mm:ss` | Cooldown gửi lại mã (endpoint #54). Đăng nhập vào tài khoản chưa xác thực vào bước này với cooldown 0 |
+| | 3 | Số lần thử còn lại | `auth.verifyEmail.attemptsLeft` | - | - | Label | Number | - | - | O | 5 | - | Backend không trả số lần còn lại; giao diện tự đếm lùi từ 5 |
+| | 4 | Nút "Gửi lại mã" | `auth.verifyEmail.btnResend` | - | - | Button | - | - | - | I | - | - | Gọi endpoint #54 |
+| | 5 | Nút "Quay lại đăng nhập" | `auth.verifyEmail.btnBack` | - | - | Button | - | - | - | I | - | - | Về `login`, không mất tài khoản đã tạo |
+
 ### Khu vực H — Quên mật khẩu bước 3 (`forgot_reset`)
 
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
@@ -385,13 +400,13 @@ có backend, phần `model`/`ui` giữ nguyên phần lớn.
 | Form panel | | | | |
 | | 1 | Logo + nhãn engine | Có | - |
 | | 2 | Tiêu đề chế độ | Có | - |
-| | 3 | Tên đăng nhập | Điều kiện | [Điều kiện hiển thị] Chỉ hiện khi `mode = signup`. |
+| | 3 | Họ và tên | Điều kiện | [Điều kiện hiển thị] Chỉ hiện khi `mode = signup`. |
 | | 4 | Mật khẩu (đăng ký) | Điều kiện | [Điều kiện hiển thị] Chỉ hiện khi `mode = signup`. |
 | | 5 | E-mail (đăng ký) | Điều kiện | [Điều kiện hiển thị] Chỉ hiện khi `mode = signup`. |
 | | 6 | Đồng ý điều khoản | Điều kiện | [Điều kiện hiển thị] Chỉ hiện khi `mode = signup`. |
-| | 7 | E-mail/Tên đăng nhập (đăng nhập) | Điều kiện | [Điều kiện hiển thị] Chỉ hiện khi `mode = login`. |
+| | 7 | E-mail (đăng nhập) | Điều kiện | [Điều kiện hiển thị] Chỉ hiện khi `mode = login`. |
 | | 8 | Mật khẩu (đăng nhập) | Điều kiện | [Điều kiện hiển thị] Chỉ hiện khi `mode = login`. |
-| | 9 | Ghi nhớ đăng nhập | Điều kiện | [Điều kiện hiển thị] Chỉ hiện khi `mode = login`. |
+| | 9 | ~~Ghi nhớ đăng nhập~~ **(đã bỏ 2026-10-31, `DEC-2026-1031-auth-screen-api-alignment`)** | Điều kiện | [Điều kiện hiển thị] Chỉ hiện khi `mode = login`. |
 | | 10 | Quên mật khẩu? | Điều kiện | [Điều kiện hiển thị] Chỉ hiện khi `mode = login`.<br>[Điều kiện kích hoạt] Luôn kích hoạt khi hiển thị. |
 | | 11 | Nút submit chính | Có | [Điều kiện kích hoạt] Không kích hoạt khi đang xử lý submit (`isSubmitting = true`) hoặc `mode = signup` mà chưa tick "Đồng ý điều khoản". |
 | | 12 | Nút Google | Điều kiện | [Điều kiện hiển thị] Hiện ở cả `signup` và `login`, ẩn ở `forgot_*`.<br>[Điều kiện kích hoạt] Không kích hoạt khi đang xử lý submit. |
@@ -425,7 +440,7 @@ có backend, phần `model`/`ui` giữ nguyên phần lớn.
 | Overlay loading | | | | |
 | | 1 | Danh sách bước | Điều kiện | [Điều kiện hiển thị] Chỉ hiện khi đang chạy overlay (sau submit thành công, trước khi điều hướng). |
 | | 2 | Tên bước | Có | - |
-| | 3 | Trạng thái bước | Có | [Tự động đặt] Cập nhật mỗi 500ms cho tới khi cả 4 bước hoàn tất [Nguồn: 05-coding/frontend/src/features/auth-by-credentials/model/use-auth-flow.ts:28]. |
+| | 3 | Trạng thái bước | Có | [Tự động đặt] Cập nhật mỗi 500ms cho tới khi cả 4 bước hoàn tất [Nguồn: 05-coding/frontend/src/features/auth-by-credentials/model/use-auth-flow.ts:34]. |
 
 ### Khu vực E — Banner khôi phục tài khoản
 
@@ -470,13 +485,13 @@ có backend, phần `model`/`ui` giữ nguyên phần lớn.
 
 | NO | DTO | Trường DTO | Kiểu | Bảng DB | Cột DB | Item màn | Hiển thị | Ghi chú |
 | --: | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :--- |
-| 1 | `SignupInput` | `username` | String | `identity.users` | `display_name` (gián tiếp) | Form "Tên đăng nhập" | Có | [Nguồn] Người dùng nhập<br>[Đích] Tham số của `SignUp`. |
+| 1 | `SignupInput` | `displayName` | String | `identity.users` | `display_name` | Form "Họ và tên" | Có | [Nguồn] Người dùng nhập<br>[Đích] Tham số của `SignUp`. |
 | 2 | `SignupInput` | `password` | String | `identity.users` | `password_hash` | Form "Mật khẩu (đăng ký)" | Có | [Nguồn] Người dùng nhập<br>[Đích] Tham số của `SignUp`<br>[Chuyển đổi] Băm BCrypt phía backend, không gửi lại dạng rõ trong phản hồi [Nguồn: 02-bd/security/F1_identity.md mục 1]. |
 | 3 | `SignupInput` | `email` | String | `identity.users` | `email` | Form "E-mail (đăng ký)" | Có | [Nguồn] Người dùng nhập<br>[Đích] Tham số của `SignUp`. |
 | 4 | `SignupInput` | `termsAccepted` | Boolean | - | - | Form "Đồng ý điều khoản" | Có | [Nguồn] Người dùng đặt<br>[Đích] Kiểm ở client trước khi gọi `SignUp`, không gửi lên backend (không có cột lưu). |
-| 5 | `LoginInput` | `identifier` | String | `identity.users` | `email` | Form "E-mail/Tên đăng nhập" | Có | [Nguồn] Người dùng nhập<br>[Đích] Tham số của `Login`. |
+| 5 | `LoginInput` | `email` | String | `identity.users` | `email` | Form "E-mail" | Có | [Nguồn] Người dùng nhập<br>[Đích] Tham số của `Login`. |
 | 6 | `LoginInput` | `password` | String | - | - | Form "Mật khẩu (đăng nhập)" | Có | [Nguồn] Người dùng nhập<br>[Đích] Tham số của `Login`, không lưu lại phía client sau khi gửi. |
-| 7 | `LoginInput` | `rememberMe` | Boolean | - | - | Form "Ghi nhớ đăng nhập" | Có | [Nguồn] Người dùng đặt<br>[Đích] Tham số của `Login` — ảnh hưởng TTL của Refresh Token, chi tiết chốt ở `03-dd/logic/F1_identity.md` (chưa viết). |
+| 7 | `LoginInput` | ~~`rememberMe`~~ **(đã bỏ 2026-10-31)** | Boolean | - | - | Form "Ghi nhớ đăng nhập" | Có | [Nguồn] Người dùng đặt<br>[Đích] Tham số của `Login` — ảnh hưởng TTL của Refresh Token, chi tiết chốt ở `03-dd/logic/F1_identity.md` (chưa viết). |
 | 8 | `AuthOutcome` | `role` | Enum | `identity.roles` | `base_category` | - | Không | [Nguồn] Phản hồi của `SignUp`/`Login`/`OAuthCallback`<br>[Đích] Chọn đích điều hướng ở Sheet 3. |
 | 9 | `AuthOutcome` | `deactivated` | Boolean | `identity.users` | `status` | Banner "Nội dung banner" | Có (gián tiếp) | [Nguồn] Phản hồi của `Login`<br>[Chuyển đổi] `status = DEACTIVATED` và còn trong ân hạn → `true`, hiện banner khu E. |
 | 10 | `AuthOutcome` | `fieldErrors` | `Record<string,string>` | - | - | Mọi field của form đang active | Có | [Nguồn] Phản hồi lỗi của `SignUp`/`Login`<br>[Đích] Field tương ứng đổi viền đỏ và `aria-invalid`; toast mang lỗi đầu tiên (một toast mỗi lần gửi). |
@@ -529,10 +544,10 @@ Mã OTP quên mật khẩu đọc/ghi trên Redis, không qua repository JPA.
 | 2 | Nút | Chuyển chế độ đăng ký/đăng nhập | Bấm nút chuyển chế độ ở aside panel. | Không | Không | - | [Các bước]<br>1. Đổi `mode`.<br>2. Xoá toàn bộ field và lỗi đang có.<br>3. Đóng banner khôi phục tài khoản nếu đang mở.<br>[Khi thành công] Hiển thị form và aside panel theo chế độ mới, giữ nguyên theme/ngôn ngữ đã chọn. |
 | 3 | Liên kết | Mở quên mật khẩu | Bấm "Quên mật khẩu?" ở chế độ `login`. | Không | Không | - | [Các bước]<br>1. Đổi `mode` sang `forgot_email`.<br>[Khi thành công] Hiển thị form một trường email. |
 | 4 | Nút | Đăng nhập/đăng ký qua OAuth | Bấm nút Google hoặc GitHub. | Có | Có | `StartOAuth`, `OAuthCallback` | [Các bước]<br>1. Redirect sang provider kèm `state` chống CSRF.<br>2. Provider xác thực xong, callback về hệ thống, gọi `OAuthCallback`.<br>3. Thành công → chạy overlay loading như sự kiện 1.<br>[Khi thành công] Điều hướng theo vai trò như sự kiện 1.<br>[Khi lỗi] Quay lại `auth` ở đúng chế độ trước khi bấm OAuth, hiện toast lỗi chung cho OAuth (không lộ chi tiết provider trả về). |
-| 5 | Nhập liệu | Gửi email quên mật khẩu | Bấm "Gửi" ở khu F. | Không | Có | `RequestPasswordReset` | [Các bước]<br>1. Validate định dạng email.<br>2. Gọi `RequestPasswordReset`.<br>3. Luôn coi là thành công dù email tồn tại hay không.<br>[Khi thành công] Chuyển sang `forgot_otp`, đặt số lần thử còn lại về 5 và cooldown gửi lại 60 giây.<br>[Thông báo hoàn tất] Toast thành công "Nếu email tồn tại, hướng dẫn đã được gửi." [Nguồn: 05-coding/frontend/src/features/auth-by-credentials/model/use-auth-flow.ts:245] |
+| 5 | Nhập liệu | Gửi email quên mật khẩu | Bấm "Gửi" ở khu F. | Không | Có | `RequestPasswordReset` | [Các bước]<br>1. Validate định dạng email.<br>2. Gọi `RequestPasswordReset`.<br>3. Luôn coi là thành công dù email tồn tại hay không.<br>[Khi thành công] Chuyển sang `forgot_otp`, đặt số lần thử còn lại về 5 và cooldown gửi lại 60 giây.<br>[Thông báo hoàn tất] Toast thành công "Nếu email tồn tại, hướng dẫn đã được gửi." [Nguồn: 05-coding/frontend/src/features/auth-by-credentials/model/use-auth-flow.ts:356-373] |
 | 6 | Nhập liệu | Xác thực mã OTP | Nhập đủ 6 số ở khu G rồi submit. | Không | Có | `VerifyPasswordResetOtp` | [Các bước]<br>1. Validate đúng 6 chữ số.<br>2. Gọi `VerifyPasswordResetOtp`.<br>[Khi thành công] Chuyển sang `forgot_reset`.<br>[Khi lỗi] Mã sai → giảm số lần thử còn lại, ô OTP đổi viền đỏ và hiện toast lỗi; hết hạn hoặc hết lượt → buộc bấm "Gửi lại mã", không cho nhập tiếp. |
-| 7 | Nút | Gửi lại mã OTP | Bấm "Gửi lại mã" ở khu G. | Không | Có | `RequestPasswordReset` | [Các bước]<br>1. Kiểm cooldown còn hiệu lực thì không gửi.<br>2. Gọi lại `RequestPasswordReset`, đặt lại số lần thử còn 5 và cooldown 60 giây mới.<br>[Khi thành công] Đếm ngược và số lần thử được đặt lại.<br>[Thông báo hoàn tất] Toast thành công "đã gửi lại mã" [Nguồn: 05-coding/frontend/src/features/auth-by-credentials/model/use-auth-flow.ts:279]. |
-| 8 | Nút | Huỷ yêu cầu xoá tài khoản | Bấm nút trong banner khôi phục ở khu E. | Không | Có | `RestoreDeactivatedAccount` | [Các bước]<br>1. Gọi `RestoreDeactivatedAccount`.<br>2. Đóng banner.<br>[Khi thành công] `status` quay về `ACTIVE`; banner đóng; hiện toast thành công "đã huỷ yêu cầu xoá tài khoản" [Nguồn: 05-coding/frontend/src/features/auth-by-credentials/model/use-auth-flow.ts:225]; người dùng bấm lại nút submit đăng nhập để tiếp tục (hệ thống **không** tự động điều hướng tiếp — xem Câu hỏi mở Q4).<br>[Khi lỗi] Giữ banner, báo lỗi bằng toast lỗi (code hiện chưa bắt lỗi nhánh này, chỉ có `finally` [Nguồn: 05-coding/frontend/src/features/auth-by-credentials/model/use-auth-flow.ts:221-229]). |
+| 7 | Nút | Gửi lại mã OTP | Bấm "Gửi lại mã" ở khu G. | Không | Có | `RequestPasswordReset` | [Các bước]<br>1. Kiểm cooldown còn hiệu lực thì không gửi.<br>2. Gọi lại `RequestPasswordReset`, đặt lại số lần thử còn 5 và cooldown 60 giây mới.<br>[Khi thành công] Đếm ngược và số lần thử được đặt lại.<br>[Thông báo hoàn tất] Toast thành công "đã gửi lại mã" [Nguồn: 05-coding/frontend/src/features/auth-by-credentials/model/use-auth-flow.ts:404-429]. |
+| 8 | Nút | Huỷ yêu cầu xoá tài khoản | Bấm nút trong banner khôi phục ở khu E. | Không | Có | `RestoreDeactivatedAccount` | [Các bước]<br>1. Gọi `RestoreDeactivatedAccount`.<br>2. Đóng banner.<br>[Khi thành công] `status` quay về `ACTIVE`; banner đóng; hiện toast thành công "đã huỷ yêu cầu xoá tài khoản" [Nguồn: 05-coding/frontend/src/features/auth-by-credentials/model/use-auth-flow.ts:338-354]; người dùng bấm lại nút submit đăng nhập để tiếp tục (hệ thống **không** tự động điều hướng tiếp — xem Câu hỏi mở Q4).<br>[Khi lỗi] Giữ banner, báo lỗi bằng toast lỗi (code hiện chưa bắt lỗi nhánh này, chỉ có `finally` [Nguồn: 05-coding/frontend/src/features/auth-by-credentials/model/use-auth-flow.ts:338-354]). |
 | 9 | Nhập liệu | Đặt lại mật khẩu | Nhập mật khẩu mới + xác nhận ở khu H rồi submit. | Không | Có | `ResetPassword` | [Các bước]<br>1. Validate độ dài mật khẩu và hai ô khớp nhau.<br>2. Gọi `ResetPassword`.<br>3. Không tự động đăng nhập.<br>[Khi thành công] Chuyển về `login`.<br>[Khi lỗi] Field vi phạm đổi viền đỏ và hiện một toast lỗi.<br>[Thông báo hoàn tất] Toast thành công: "Đặt lại mật khẩu thành công. Vui lòng đăng nhập." |
 | 10 | Hệ thống | Làm mới token ngầm | Một request bất kỳ (ở màn khác, đã đăng nhập) trả về `401`. | Có (chỉ khi refresh thất bại hẳn) | Có | `RefreshToken` | [Các bước]<br>1. Tự động gọi `RefreshToken`.<br>2. Thành công → gắn Access Token mới, thử lại request gốc, không rời màn hiện tại.<br>3. Thất bại (token đã revoke/reuse) → revoke cả `family_id`, buộc về `auth`.<br>[Khi thành công] Không gián đoạn trải nghiệm, không phải là điều hướng tới `auth`.<br>[Khi lỗi] Điều hướng cưỡng bức về `auth` chế độ `login`. |
 
@@ -548,7 +563,7 @@ Mã OTP quên mật khẩu đọc/ghi trên Redis, không qua repository JPA.
 
 | NO | Loại | Tóm tắt kiểm | Chi tiết | Mức | Mã thông báo | Ghi chú | EVT gọi | Thứ tự |
 | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: |
-| 1 | Kiểm nhập liệu | Tên đăng nhập bắt buộc | [Nội dung kiểm] `username` rỗng hoặc ngắn hơn 3 ký tự thì không cho submit.<br>[Nơi thực thi] Màn hình.<br>[Tiêu điểm] Viền ô + toast; ô "Tên đăng nhập". | Lỗi | Chưa có mã thông báo | Nội dung "Tên đăng nhập phải có ít nhất 3 ký tự." [Nguồn: 05-coding/frontend/src/entities/auth/model/schema.ts:14] | EVT-1 | 1 |
+| 1 | Kiểm nhập liệu | Họ và tên bắt buộc | [Nội dung kiểm] `displayName` ngắn hơn 2 hoặc dài hơn 100 ký tự (sau khi cắt khoảng trắng hai đầu) thì không cho submit.<br>[Nơi thực thi] Màn hình.<br>[Tiêu điểm] Viền ô + toast; ô "Tên đăng nhập". | Lỗi | Chưa có mã thông báo | Nội dung "Tên đăng nhập phải có ít nhất 3 ký tự." [Nguồn: 05-coding/frontend/src/entities/auth/model/schema.ts:14] | EVT-1 | 1 |
 | 2 | Kiểm nhập liệu | Độ mạnh mật khẩu | [Nội dung kiểm] Mật khẩu ngắn hơn 8 ký tự thì không cho submit.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Viền ô + toast; ô mật khẩu đang active. | Lỗi | Chưa có mã thông báo | Nội dung "Mật khẩu phải có ít nhất 8 ký tự." Yêu cầu bắt buộc có chữ và số chưa chốt, xem Câu hỏi mở Q5 [Nguồn: 02-bd/security/F1_identity.md mục 3]. | EVT-1, EVT-9 | 2 |
 | 3 | Kiểm nhập liệu | Định dạng email | [Nội dung kiểm] Email không đúng định dạng RFC thì không cho submit.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Viền ô + toast; ô email đang active. | Lỗi | Chưa có mã thông báo | Nội dung "Địa chỉ email không hợp lệ." | EVT-1, EVT-5 | 1 |
 | 4 | Kiểm nhập liệu | Đồng ý điều khoản bắt buộc | [Nội dung kiểm] Chưa tick "Đồng ý điều khoản" thì không cho submit `signup`.<br>[Nơi thực thi] Màn hình.<br>[Tiêu điểm] Viền ô + toast; ô "Đồng ý điều khoản". | Lỗi | Chưa có mã thông báo | Nội dung "Bạn cần đồng ý điều khoản sử dụng để tiếp tục." [Nguồn: 05-coding/frontend/src/entities/auth/model/schema.ts:29-32] | EVT-1 | 3 |

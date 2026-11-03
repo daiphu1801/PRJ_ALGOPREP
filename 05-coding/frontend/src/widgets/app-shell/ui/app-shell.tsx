@@ -13,6 +13,7 @@ import { AdminSidebar } from "./admin-sidebar";
 import { AdminToolbar } from "./admin-toolbar";
 import { InstructorSidebar } from "./instructor-sidebar";
 import { InstructorToolbar } from "./instructor-toolbar";
+import { ForcedPasswordChange } from "./forced-password-change";
 import { StudentFooter } from "./student-footer";
 import { StudentHeader } from "./student-header";
 
@@ -54,6 +55,7 @@ export async function AppShell({ area, children }: AppShellProps) {
     return (
       <div className="admin-shell relative flex min-h-screen bg-[var(--color-background)] text-[var(--color-text)]">
         <SkipLink label={t("skipToContent")} />
+        <ForcedPasswordChange area="admin" />
         <LiquidGlassBackdrop />
         <AdminSidebar />
         <main
@@ -94,6 +96,7 @@ export async function AppShell({ area, children }: AppShellProps) {
       // canvas, so borrowing the admin blobs would paint in colors the Student screens never had.
       <div className="student-shell flex min-h-screen flex-col bg-[var(--color-background)] text-[var(--color-text)]">
         <SkipLink label={t("skipToContent")} />
+        <ForcedPasswordChange area="student" />
         <StudentHeader />
         {/* Full-height views (Workspace, running Mock Interview) opt in with `data-fullscreen-view`
             (globals.css) and take the leftover height from flex — no header-height constant. */}
@@ -138,6 +141,7 @@ export async function AppShell({ area, children }: AppShellProps) {
   return (
     <div className="instructor-shell relative flex min-h-screen bg-[var(--color-background)] text-[var(--color-text)]">
       <SkipLink label={t("skipToContent")} />
+      <ForcedPasswordChange area="instructor" />
       <LiquidGlassBackdrop />
       <InstructorSidebar />
       <main

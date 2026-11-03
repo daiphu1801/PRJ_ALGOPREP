@@ -22,7 +22,7 @@ const NONE: ActionGrant = {
   delete: false,
 };
 
-const ROLES: Role[] = [
+const ROLES: Omit<Role, "id">[] = [
   {
     key: "STUDENT",
     // roles.name, not the code (BD ADM0202 role.tabs; admin UX review F9).
@@ -92,7 +92,7 @@ const TEACHING_ASSISTANT: RolePermissions = {
 export function fetchPermissionMatrix(): PermissionMatrixPage {
   return {
     currentRoleKey: "ADMIN",
-    roles: ROLES.map((role) => ({ ...role })),
+    roles: ROLES.map((role) => ({ ...role, id: role.key })),
     permissions: {
       INSTRUCTOR: structuredClone(INSTRUCTOR),
       ADMIN: structuredClone(ADMIN),

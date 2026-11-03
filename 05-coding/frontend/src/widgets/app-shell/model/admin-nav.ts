@@ -22,6 +22,7 @@ import {
   Shield,
   Sparkles,
   UserCircle,
+  LogOut,
 } from "lucide-react";
 
 export type AdminNavItem = {
@@ -127,4 +128,7 @@ export const ADMIN_NAV_MISC: AdminNavMiscItem[] = [
     labelKey: "profile",
     icon: UserCircle,
   },
+  // Added with the real-API merge (2026-10-31, owner approved keeping it): the Admin area had no way
+  // to end a session. Signs out through `useSignOut` (key "logout") and lands on the Admin login.
+  { key: "logout", href: "/admin/login", labelKey: "logout", icon: LogOut },
 ];

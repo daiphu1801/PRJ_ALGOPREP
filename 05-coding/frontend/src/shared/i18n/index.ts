@@ -5,6 +5,7 @@ export {
   useLocale,
   NextIntlClientProvider,
 } from "next-intl";
+export { useApiErrorMessage } from "./use-api-error-message";
 export {
   locales,
   defaultLocale,

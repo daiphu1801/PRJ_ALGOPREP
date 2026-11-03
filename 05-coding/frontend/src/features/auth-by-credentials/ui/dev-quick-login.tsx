@@ -7,13 +7,13 @@ import type { Role } from "@/entities/user";
 import type { useAuthFlow } from "../model/use-auth-flow";
 
 /**
- * The identifier the mock maps to each role (`entities/auth/api/__mock__/fake-auth.ts`: `admin` and
- * `instructor` are reserved, everything else logs in as a student).
+ * The e-mail the mock maps to each role (`entities/auth/api/__mock__/fake-auth.ts` reads the part
+ * before "@": `admin` and `instructor` are reserved, everything else logs in as a student).
  */
-const QUICK_LOGIN_IDENTIFIER: Record<Role, string> = {
-  STUDENT: "student",
-  INSTRUCTOR: "instructor",
-  ADMIN: "admin",
+const QUICK_LOGIN_EMAIL: Record<Role, string> = {
+  STUDENT: "student@algoprep.local",
+  INSTRUCTOR: "instructor@algoprep.local",
+  ADMIN: "admin@algoprep.local",
 };
 
 const LABEL_KEY: Record<Role, string> = {
@@ -53,7 +53,7 @@ export function DevQuickLogin({ flow, roles }: DevQuickLoginProps) {
             key={role}
             type="button"
             disabled={flow.isSubmitting}
-            onClick={() => void flow.quickLogin(QUICK_LOGIN_IDENTIFIER[role])}
+            onClick={() => void flow.quickLogin(QUICK_LOGIN_EMAIL[role])}
             className="rounded-md border border-[var(--color-border)] px-2.5 py-1 text-xs font-medium text-[var(--color-text)] hover:bg-[var(--color-surface-hover)] disabled:opacity-50"
           >
             {t(LABEL_KEY[role])}

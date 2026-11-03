@@ -8,7 +8,7 @@ import type {
 } from "../../model/types";
 
 // dc.html:437-447. Counts are plain numbers here; the mockup pre-formatted them as strings.
-const USERS: AdminUser[] = [
+const USERS: Omit<AdminUser, "id">[] = [
   {
     name: "Nguyễn Văn An",
     email: "nguyenvana@sv.edu.vn",
@@ -111,7 +111,7 @@ export function fetchAdminUserPage(): AdminUserPage {
   return {
     // The one admin in the sample rows is the acting account.
     currentUserEmail: "pdai@algoprep.vn",
-    users: USERS.map((user) => ({ ...user })),
+    users: USERS.map((user) => ({ ...user, id: user.email })),
     roleDistribution: ROLE_DISTRIBUTION.map((item) => ({ ...item })),
     pendingTasks: PENDING_TASKS.map((task) => ({ ...task })),
     totalUsers: 1284,

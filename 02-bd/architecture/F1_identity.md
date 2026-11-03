@@ -79,7 +79,7 @@ JWT ở các module khác dùng thư viện/filter đọc claim từ Access Toke
 
 Các module khác (`problem-bank`, `interview-bank`, `judge-orchestration`) có thao tác quản trị cần ghi nhật ký F1-14 nhưng **không được ghi trực tiếp vào schema `identity`**. `identity` cung cấp một cổng vào (inbound port) tên `AuditLogPort` trong `algoprep-identity`:
 
-`record(actorUserId, actionType, targetType, targetId, beforeJson, afterJson)` → một dòng `identity.system_audit_logs`.
+`record(AuditEntry)` → một dòng `identity.system_audit_logs`; `AuditEntry` gom sáu trường `actorUserId, actionType, targetType, targetId, beforeJson, afterJson` (sửa 2026-10-31, `DEC-2026-1031-audit-log-port-entry-record`: trước đây ghi sáu tham số rời, Checkstyle giới hạn năm).
 
 | Nơi gọi | Thao tác quản trị cần ghi |
 | :--- | :--- |

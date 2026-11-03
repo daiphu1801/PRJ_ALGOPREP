@@ -104,6 +104,7 @@ export function ClassProgressView() {
     setUrlParams({ page: value > 1 ? String(value) : null });
   const [removeTarget, setRemoveTarget] = useState<{
     id: string;
+    classId: string;
     name: string;
   } | null>(null);
   const removeStudent = useRemoveStudent();
@@ -200,7 +201,13 @@ export function ClassProgressView() {
           label={t("btnRemoveStudent")}
           ariaLabel={`${t("btnRemoveStudent")} ${row.name}`}
           tone="danger"
-          onClick={() => setRemoveTarget({ id: row.id, name: row.name })}
+          onClick={() =>
+            setRemoveTarget({
+              id: row.id,
+              classId: row.classId,
+              name: row.name,
+            })
+          }
         />
       ),
     },
@@ -284,10 +291,13 @@ export function ClassProgressView() {
         onConfirm={() => {
           if (removeTarget) {
             const name = removeTarget.name;
-            removeStudent.mutate(removeTarget.id, {
-              onSuccess: () => toast.success(t("toast.removed", { name })),
-              onError: () => toast.error(t("toast.failed")),
-            });
+            removeStudent.mutate(
+              { classId: removeTarget.classId, studentId: removeTarget.id },
+              {
+                onSuccess: () => toast.success(t("toast.removed", { name })),
+                onError: () => toast.error(t("toast.failed")),
+              },
+            );
           }
           setRemoveTarget(null);
         }}

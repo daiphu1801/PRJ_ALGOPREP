@@ -48,7 +48,7 @@
 | Route (prototype Next.js) | `/instructor/classes/[classId]` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A2 (`INSTRUCTOR`) |
-| Phiên bản | V0.10 |
+| Phiên bản | V0.11 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/10/11 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
@@ -70,6 +70,7 @@
 | V0.8 | Sheet 3 (ghi chú `from=class`) | Áp `DEC-2026-1014-instructor-submissions-list-details` mục (5): trang kết quả vùng giảng viên biết màn gọi tới qua query `from=submissions|student|class`. Trang này hiện chưa có liên kết trực tiếp tới một lượt nộp nên chỉ thêm ghi chú: nếu sau này có, phải mở kèm `from=class`. Không thêm hay đổi NO, EVT | 2026/10/14 | AI |
 | V0.9 | Sheet 4 (thêm mục "Hiện trạng bản dựng") | Dựng prototype gỡ học viên (giữ lịch sử, đánh dấu đã rời): ghi hiện trạng bản dựng của nút gỡ ở bảng học viên trong lớp và của mock `removeStudent`. Không đổi yêu cầu, item, EVT hay quyết định thiết kế. **Chưa duyệt hình** | 2026/10/14 | AI |
 | V0.10 | Sheet 4 (4.6) | Dựng prototype Phase 4-5 (bài giao theo lớp, phân trang 20, from=). Ghi hiện trạng: màn này chỉ vào từ "Lớp của tôi" (sau khi tạo lớp hoặc từ danh sách lớp) nên giữ mục nav đó sáng bằng khớp tiền tố, không cần mã riêng; liên kết tên học viên ở đây không mang `from=`, nên trang chi tiết học viên cũng sáng "Lớp của tôi". Nút Quay lại về danh sách lớp (Q2) đã dựng. Không đổi yêu cầu hay quyết định thiết kế. **Chưa duyệt hình** | 2026/10/18 | AI |
+| V0.11 | Sheet 4 (4.6), 5 | Sửa 2026-11-02 (task #12, nối FE với API thật). (1) Màn gọi F1 #19, #21 đến #24, #26, #27, ba vùng tải độc lập. (2) Bảng học viên hiện email, số điện thoại, ngày vào lớp; cột trạng thái, điểm TB, hoàn thành, hoạt động chỉ có ở mock vì cần F4. Không có câu hỏi mở mới. |
 
 ---
 

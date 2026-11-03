@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -58,8 +59,17 @@ class IdentityJwtAuthenticationConverter implements Converter<Jwt, AbstractAuthe
 
   @Override
   public AbstractAuthenticationToken convert(Jwt jwt) {
-    JdbcClient jdbc = jdbcProvider.getObject();
     UUID userId = parseSubject(jwt);
+    try {
+      return authenticate(jwt, jdbcProvider.getObject(), userId);
+    } catch (DataAccessException e) {
+      // Fail closed (BD security section 1), but say "unavailable" instead of "unauthenticated":
+      // the entry point turns this cause into 503 so the client retries instead of logging out.
+      throw new InvalidBearerTokenException("Authorization data is unavailable", e);
+    }
+  }
+
+  private AbstractAuthenticationToken authenticate(Jwt jwt, JdbcClient jdbc, UUID userId) {
     Account account =
         jdbc.sql(ACCOUNT_SQL)
             .param("id", userId)

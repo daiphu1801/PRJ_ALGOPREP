@@ -12,7 +12,7 @@ Bảng 0.1 là bìa và nguồn của hợp đồng màn hình.
 | Prototype | `05-coding/frontend/src/views/users/my-classes/` |
 | Module | F1 identity (#25, #25A), F2 problem-bank (§5A) |
 | TDD | `04-tdd/modules/F1_identity.md` AC-19, AC-20, AC-20b, AC-49, AC-50; `04-tdd/modules/F2_problem-bank.md` AC-88; `04-tdd/screens/users/USR0701_my_classes.md` |
-| Phiên bản, ngày | V0.1, 2026-10-24 |
+| Phiên bản, ngày | V0.2, 2026-11-02 (nối API thật, task #12); V0.1, 2026-10-24 |
 
 Bảng 0.2 ghi lịch sử sửa.
 
@@ -111,6 +111,13 @@ Bảng 7.1 bao phủ EVT-1 đến EVT-5 và luồng kết hợp.
 | SC-06 | Boundary | EVT-3 sai năm lần, lần sau nhận `IDT-412`, không mất mã | Vitest | F1 AC-50 |
 | SC-07 | Normal | EVT-4 mở đúng `/classes/{classId}`, tên link đọc được | Playwright | `my_classes` AC-SC-03 |
 | SC-08 | Abnormal | EVT-5 retry F1 lỗi rồi thành công; chỉ retry lỗi mới toast | Vitest | `my_classes` AC-SC-01 |
+
+**Triển khai 2026-11-02 (task #12, lát 4).** Màn nối API thật cho F1 #25 và #25A; F2 §5A (bài giao) chưa có nên giữ nguyên chế độ mock cho phần đó.
+- **Vị trí mã.** Giữ trong `entities/class/api/` (`real-class.ts`, `queries.ts`): cụm lớp có nhiều màn dùng chung nên đặt ở `entities` đúng bảng mục 1; các hook của màn này dùng `useQuery`/`useMutation` kèm `withMockData`. Chế độ mock giữ nguyên.
+- **Danh sách.** #25A trả lớp còn ghi danh kèm giảng viên và ngày vào lớp (hiển thị dd/mm/yyyy, UTC+7). Không có bài giao: thẻ lớp **không** hiện thanh tiến độ khi `assignments` vắng (`MyClass.assignments` tuỳ chọn).
+- **Tham gia bằng mã.** Gọi #25 với mã người dùng nhập (máy chủ cắt hai đầu và đổi chữ hoa); thành công toast tên lớp và tải lại danh sách. Lỗi đọc theo mã: `IDT-410` mã sai hoặc hết hạn, `IDT-412` nhập sai quá năm lần trong 15 phút; không còn câu chung "Mã mời không đúng".
+- Kiểm chứng: `my-classes-real.test.tsx`; `e2e/classes-real.spec.ts` (mã sai, tham gia, giới hạn nhập sai).
+
 
 ## 8. Nợ prototype và câu hỏi mở
 

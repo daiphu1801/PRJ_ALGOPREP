@@ -39,10 +39,15 @@ test("category filter and search combine with AND", async ({ page }) => {
   const list = page
     .getByRole("list", { name: "Danh sách sự kiện" })
     .getByRole("listitem");
-  await expect(list).toHaveCount(10);
+  // The mock serves a first page of 50 (the ten sample rows and their synthetic repeats).
+  await expect(list).toHaveCount(50);
 
   await pickFilter(page, "Lọc theo phân loại", "Xác thực");
-  await expect(list).toHaveCount(4);
+  // The mock filters like the server: a full first page of the matching rows.
+  await expect(list).toHaveCount(50);
+  await expect(
+    list.filter({ hasText: "Khóa tài khoản hmtri" }).first(),
+  ).toBeVisible();
 
   // Search matches service/actor/event id — not the message, per BD section 2.
   await page.getByLabel("Tìm trong nhật ký").fill("pthuong");
@@ -52,7 +57,7 @@ test("category filter and search combine with AND", async ({ page }) => {
   ).toBeVisible();
 
   await page.getByRole("button", { name: "Xoá bộ lọc" }).click();
-  await expect(list).toHaveCount(10);
+  await expect(list).toHaveCount(50);
 });
 
 for (const theme of ["light", "dark"] as const) {
