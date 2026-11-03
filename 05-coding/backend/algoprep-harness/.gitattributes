@@ -1,0 +1,4 @@
+# Trusted framework fragments require LF for validation and deterministic source maps.
+src/main/resources/harness-templates/** text eol=lf
+# Golden fixtures assert exact bytes across all three generated languages.
+src/test/resources/** text eol=lf

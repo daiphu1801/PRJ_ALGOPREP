@@ -1,5 +1,32 @@
 # DD — Logic module `problem-bank` (F2)
 
+**S2b lõi nội bộ, 2026-11-02:** SaveProblemContentUseCase/CommandHandler triển khai BR-04
+cho draft thường có limits đã giải quyết và full-state update. Chưa mở HTTP§36/37 hoặc trả
+ProblemAuthoringDetailDto. Parent lock/expectedUpdatedAt dùng chung với S2a; references khóa
+catalogue level2201001 rồi topic2201002 cùng S1. Tag find/create theo lower(name), code/author
+bất biến; thay links/examples/reference cùng transaction, không đổi spec/testcase version hoặc
+wrapper flag. Published giữ≥2 examples, tăng list cache sau commit. BR-04/27 không audit/Outbox.
+Plan/report `261102-1042-f2-s2b-content-write-core`; defaults F4/MinIO/duplicate/phiếu soạn còn mở.
+
+**Owner chốt 2026-11-02:** BR-05/26 ghi Outbox lỗi khi lưu spec trả503 PRB-056, thông báo
+cố định không mang SQL/cause; RuntimeException tiếp tục làm transaction rollback. Không đổi
+nhánh failedItems PRB-056 của BR-18. DEC-2026-1102-f2-spec-outbox-error.
+
+**S2a, 2026-11-02:** BR-02/05 có SaveProblemSpecCommandHandler và JdbcProblemSpecRepository.
+Khóa parent row trước đọc spec; stale timestamp409 PRB-020. So tám trường theo ngữ nghĩa JSON,
+epsilon so giá trị số để scale DB không tạo version dư. Đổi thật: save/touch/Outbox nguyên tử;
+không đổi: không ghi DB/Outbox/cache. Timestamps tăng ít nhất1 microsecond. Redis DEL sau commit,
+lỗi Redis chỉ WARN cố định. Lưu spec không audit theo BR-27. Relay JOB-PB-01 còn ở S6a.
+
+**Triển khai S1, 2026-11-02:** BR-03/22/25/27 có CatalogMutationService, JdbcCatalogRepository,
+RedisProblemListVersionAdapter và ProblemAuditBridge. Mỗi thao tác ghi có handler transactional;
+lock giao dịch PostgreSQL theo catalogue (level2201001/topic2201002), rồi khóa dòng theo id,
+kể cả khi catalogue topic rỗng. Các lần đọc sau chờ lock dùng câu lệnh mới (READ COMMITTED).
+Slug collision ON CONFLICT(code) DO NOTHING, unique tên là lưới an toàn độc lập. Audit gọi
+inbound F1 REQUIRED; cache chỉ tăng sau commit, Redis lỗi không làm mất thay đổi DB.
+`[SoT: Suy luận triển khai]` audit hỏng S1 dùng503 PRB-050 theo tiền lệ§57; không thêm mã mới.
+Plan/report `261102-0926-f2-s1-taxonomy` ghi phạm vi kiểm, không đóng authoring/testcase/F3 readers.
+
 > Nguồn: `01-rd/req/F2_problem-bank.md` (F2-01 tới F2-18) · `02-bd/architecture/F2_problem-bank.md` · `02-bd/database/F2_problem-bank.md` · `02-bd/security/F2_problem-bank.md` · `02-bd/storage/F2_problem-bank.md`.
 > Bounded Context: F2 `problem-bank` · Cập nhật: 2026-10-23.
 >
@@ -172,6 +199,17 @@ Bảng 0.1: Danh mục khối quy tắc.
 
 ## BR-11 — Phiên bản bộ testcase (F2-09)
 
+**Triển khai kernel 2026-11-03 (D02h):** PublishTestcaseSnapshotUseCase làm phần snapshot
+cho caller công bố bộ chấm. REQUIRED cùng transaction caller; parent FOR UPDATE trước child.
+Đọc current version khi lấy khoá, rồi SELECT metadata bằng statement snapshot READ COMMITTED
+mới sau khi hết chờ khoá. Không gộp EXISTS(metadata) vào câu lệnh có thể chờ khoá vì có thể thấy
+metadata cũ và INSERT trùng. Chỉ approved rows; so id/visibility/position/từng byte input-output,
+không so archive SHA để quyết định bump. First snapshot không phát bump; changed set tăng1 và
+ghi Outbox TestcaseSetVersionBumped cùng metadata; no-op không ghi. PUT/HEAD/GET kiểm object
+trước metadata. Lỗi snapshot PRB-052, missing/deleted PRB-010. Caller vẫn kiểm quyền/checklist/
+sandbox/status/audit; kernel không tự áp publish HTTP hoặc gọi Rabbit trực tiếp. Report
+`261103-0011-f2-snapshot-publication-core`.
+
 - **Kích hoạt**: mọi thao tác làm đổi bộ testcase **đã duyệt** của bài `PUBLISHED`, gồm Sample và Hidden: thêm, duyệt, sửa input/output/visibility, xoá hoặc thêm lô qua §47; cùng với mọi lần đổi thứ tự `position` thực sự qua API §45 (thứ tự dùng chung cho hiển thị và chấm), kể cả khi kéo nháp chưa duyệt. Mỗi thao tác chỉ tăng một phiên bản; gửi lại cùng thứ tự không tăng. Lần xuất bản đầu tạo snapshot cho phiên bản hiện hành; tái xuất bản theo BR-08, bộ chấm khác snapshot thì tăng một phiên bản, giống thì dùng lại.
 - **Các bước**: khoá dòng `problems` của bài; dựng bundle từ toàn bộ testcase đã duyệt sau thay đổi, gồm byte input/output thật, id, visibility, position; ghi object mới bất biến vào MinIO và lấy SHA-256; trong cùng giao dịch với thay đổi, tăng `current_testcase_set_version` đúng một lần và `INSERT testcase_set_snapshots` của số mới. Chỉ trả thành công sau commit; object mồ côi do rollback được dọn sau. Sau commit phát `TestcaseSetVersionBumped { problemId, testcaseSetVersion, bumpedAt }`.
 - **Không tăng ngay khi sửa**: bài `UNPUBLISHED` (khi tái xuất bản phải so bộ chấm với snapshot theo BR-08); nháp chưa duyệt; đổi `category`; đổi đáp án mẫu hay ví dụ mẫu.
@@ -254,7 +292,8 @@ Bảng 0.1: Danh mục khối quy tắc.
 - **Giao** (§53): BR-02 lớp phụ trách; mỗi bài phải `PUBLISHED AND NOT deleted` (`422 PRB-037` từng bài); `INSERT class_assignments (problem_id, class_id, assigned_by, assigned_at = now()) ON CONFLICT (problem_id, class_id) WHERE removed_at IS NULL DO NOTHING` (partial unique); chèn được -> `succeededIds` + Outbox `ProblemAssignedToClass` trong **một giao dịch riêng cho bài đó**; không chèn được -> `skippedIds`. Nếu ghi Outbox lỗi thì rollback riêng bài, trả `PRB-056` trong `failedItems` của lô HTTP 200; các bài khác vẫn xử lý. Giao lại sau gỡ **tạo dòng mới**, dòng cũ giữ `removed_at`. [Chủ dự án chốt 2026-10-27]
 - **Gỡ** (§54): `UPDATE class_assignments SET removed_at = now() WHERE problem_id = ? AND class_id = ? AND removed_at IS NULL`; 0 dòng -> `409 PRB-025`; gỡ chỉ ẩn bài khỏi danh sách được giao **từ thời điểm gỡ**; **không xoá** lượt nộp, điểm, tiến độ (`DEC-2026-0831-class-assignments-round2`, khác hẳn cách gỡ học viên). Phát `ProblemUnassignedFromClass`.
 - **Hiển thị**: học viên thấy bài (đang giao, còn xuất bản) trong khối riêng cạnh bảng chính, tối đa 3 lớp (BR-23). Giảng viên thấy cả bài đã rút kèm cờ `withdrawn`.
-- **Danh sách đang giao** (§50, cổng `listAssignments`): nhóm theo bài, `assignedClasses` là các lớp còn dòng hoạt động trong phạm vi lọc; số liệu nộp bài lấy qua `ClassProblemMetricsPort` chỉ học viên còn ghi danh (`left_at IS NULL`).
+- **Danh sách đang giao HTTP** (§50): nhóm theo bài, `assignedClasses` là các lớp còn dòng hoạt động trong phạm vi lọc; số liệu nộp bài lấy qua `ClassProblemMetricsPort` chỉ học viên còn ghi danh (`left_at IS NULL`).
+- **Cổng lịch sử nội bộ** (§58 `listAssignments`, triển khai B1 2026-11-02): trả từng lần giao gồm cả dòng có `removed_at`, bài đã rút hoặc xoá mềm; không nhóm như HTTP §50 và không loại lần giao cũ khi giao lại. Caller tự kiểm quyền/phạm vi và áp khoảng `[assignedAt, removedAt)` theo F4 BR-JD-10. Không có HTTP hoặc kiểm giảng viên trong cổng này.
 - **Tóm tắt** (§51): `avgAcRatePercent` = trung bình cộng AC% của các bài đang giao **có lượt nộp**, làm tròn số nguyên.
 - **Quyền**: không giữ `instructor_id` ở module này, mọi kiểm sở hữu lớp hỏi `InstructorClassPort` mỗi yêu cầu (`INS0202:515`).
 

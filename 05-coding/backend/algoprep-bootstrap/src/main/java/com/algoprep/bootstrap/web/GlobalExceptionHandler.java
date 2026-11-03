@@ -76,7 +76,7 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler(DomainRuleViolationException.class)
   public ProblemDetail handleDomainRuleViolation(DomainRuleViolationException ex) {
-    return toProblemDetail(ex, HttpStatus.UNPROCESSABLE_ENTITY);
+    return toProblemDetail(ex, HttpStatus.UNPROCESSABLE_CONTENT);
   }
 
   private ProblemDetail toProblemDetail(AlgoPrepException ex, HttpStatusCode status) {

@@ -1,0 +1,1 @@
+{"functionName":"two_sum","returnType":{"kind":"ARRAY","of":{"kind":"INT","of":null,"dimensions":null},"dimensions":1},"parameters":[{"name":"nums","type":{"kind":"ARRAY","of":{"kind":"INT","of":null,"dimensions":null},"dimensions":1}},{"name":"target","type":{"kind":"INT","of":null,"dimensions":null}}],"nameOverrides":{},"matchingStrategy":"EXACT","epsilon":null}

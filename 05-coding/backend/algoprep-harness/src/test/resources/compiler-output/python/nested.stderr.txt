@@ -1,0 +1,4 @@
+  File "main.py", line 6
+    broken =
+            ^
+SyntaxError: invalid syntax

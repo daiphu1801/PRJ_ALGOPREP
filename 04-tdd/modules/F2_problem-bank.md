@@ -1,5 +1,69 @@
 # TDD — Tiêu chí nghiệm thu module `problem-bank` (F2)
 
+**2026-11-03, D02h snapshot kernel:**31 owning tests mới và20 flow tests PG/MinIO thật
+kiểm first/reuse/bump, deep comparison/storage form, old-version bytes,2 concurrent writers,
+caller/metadata/version/outbox rollback, orphan retry và missing/deleted.8 mutation mới:
+5 trường grading +object verification và SQL approved/deleted. Owning308 (common40/F2 268),
+component/regression64 đạt; full publish/checklist/sandbox/audit/HTTP và AC-93/F4 worker E2E
+vẫn mở. Report `261103-0011-f2-snapshot-publication-core`.
+
+**2026-11-02→03, D02g grading readers:**3 inbound đọc spec/Sample/pinned snapshot đã nối
+JDBC/MinIO thật.237 F2 tests (42 mới),69 judge+40 common đạt;59 component/regression đạt,
+gồm16 grading flow+5 bridge, storage8/F3 readers12/B1 assignment10/ArchUnit8.5 mutation mới:
+checksum/version và SQL visibility/approved;4 storage mutations cũ hồi quy. AC-81 mới kiểm
+phạm vi reader/fixture; AC-93/F4 AC-75 persisted E2E và writer publish/version-bump vẫn mở.
+Report `261102-2340-f2-f4-grading-readers`; DEC-2026-1102-testcase-snapshot-json-v1.
+
+**2026-11-02, B1 assignment history:**6 unit handler,5 unit bridge và10 flow test
+PostgreSQL thật (gồm3 SQL mutation) kiểm phạm vi classIds, giữ removed/giao lại/trùng
+timestamp, bài withdrawn/deleted, microsecond và tên live; lỗi DB không trả rỗng giả.
+Hồi quy UserDirectory13+ArchUnit8 đạt. AC-84 mới kiểm phần ClassAssignmentReadPort;
+ProblemSummaryReadPort/ProblemTopicReadPort và consumer thống kê chưa xong, không đóng
+toàn AC-84. Report `261102-1636-class-assignment-read-port`.
+
+**2026-11-02, lát A UserDirectory:**6 unit F1 +6 unit bridge +7 flow DB thật kiểm cổng
+tên hiển thị, Unicode/lô/ID thiếu, ẩn danh, lỗi/timeout và isolation của giao dịch caller.
+Mutation SQL bỏ che tên ẩn danh bị bắt;23 test MyAccountFlowTest và8 ArchUnit hồi quy đạt.
+Đây chỉ là dependency của AC-39/GET §34; chưa tick AC-39 hoặc testcase quyền INLINE vì
+chưa triển khai transport phiếu soạn. Report `261102-1615-user-directory-read-port`.
+
+**2026-11-02, F3 readers:** ProblemSpecQuery/StarterCodeAccessQuery có DB thật; version/flag
+đồng bộ, unknown kind chỉ map OTHER trong bộ nhớ. P1/P2 đi qua bridge thật, live access giữ
+draft/deleted privacy kể cả Redis spec stale. Hồi quy S2a HTTP15 cases đạt sau việc mở visibility
+codec; hai SQL source-copy mutation bị bắt. Report `261102-1532-f2-f3-spec-readers`.
+Không tick authoring full DTO, grading snapshot cho F4 hoặc persisted E2E từ bằng chứng này.
+
+**2026-11-02, nền MinIO:** có TestcaseObjectStorePort đủ7 thao tác và adapter thật; test
+byte/UTF-8,0/8192/8193/65536 byte, private bucket, signed PUT/GET, đổi object/method bị403,
+server-side copy, delete lặp, lỗi thiếu object được che, retry/deadline và khởi tạo lazy.
+Bốn source-copy mutation kiểm key-parent/GET-TTL/write-retry/error-detail. Đây là bằng chứng
+adapter; chưa đóng các AC upload/confirm/INLINE-split/nhân bản/phiếu soạn/publish hoặc privacy
+của HTTP authoring. Report `261102-1450-f2-minio-object-store`.
+
+**S2b lõi nội bộ, 2026-11-02:** có backend evidence cho BR-04 và phần data/transaction của
+AC-40/42–45/86. ProblemContentWriteFlowTest gọi inbound thật với PostgreSQL/Redis: draft limits
+tường minh/level đầu, full replacement/ID/code/author, quotaNULL, shared optimistic lock S2a,
+published≥2 examples, rollback muộn/caller và tag/slug races. Chưa transport§36/37/phiếu soạn,
+defaults F4, MinIO/duplicate hay real-JWT mapping của route content; không đánh dấu các AC đầy
+đủ là DONE chỉ từ component nội bộ. Report `261102-1042-f2-s2b-content-write-core`.
+
+**S2a, 2026-11-02:** component/API backend evidence cho AC-46/47/48 và phần §38 của
+AC-40/43/86/89/90 ở ProblemSpecSaveFlowTest + unit/mutation. Kiểm version/no-op, hard/soft,
+raw JSON/epsilon chính xác, quyền thật và thu hồi cell trên token cũ, ownership/draft privacy,
+race, Outbox rollback/retry/caller rollback, cache sau commit. Chưa chạy QA giao diện hoặc
+relay sự kiện; không tự đổi trạng thái Chưa làm của AC tổng hợp thành hoàn tất toàn bộ.
+
+Owner chốt Outbox §38 lỗi trả503 PRB-056 (DEC-2026-1102-f2-spec-outbox-error). Test HTTP
+first-save/update bị trigger DB từ chối, không lộ SQL và rollback spec/version/timestamp/cache;
+sau phục hồi retry thành công. AC-90 phần spec có oracle503 rõ; phần giao bài lô không đổi.
+
+**S1, 2026-11-02:**10 endpoint#14–23 có code thực; owning53 test F2 gồm15 mutation,
+CatalogTaxonomyFlowTest11 integration trên PostgreSQL/Redis. Có401 mọi route, role/cell403
+từng route ghi, duplicate/slug/order/reference/last-level race, audit rollback hai chiều và
+cache sau commit. Report `261102-0926-f2-s1-taxonomy` ghi phạm vi/gate359+28.
+Đây là component/API backend evidence cho AC-19–28 và AC-29 phần catalogue/helper;
+chưa UI/danh sách bài, nên không tự tick QA/AC có quan sát frontend hoặc authoring.
+
 > Mỗi `AC-nn` map về đúng một endpoint (`03-dd/api/F2_problem-bank.md`, ký hiệu `§n` là số mục ở file đó) hoặc một khối quy tắc `BR-nn` (`03-dd/logic/F2_problem-bank.md`).
 > Viết cùng lúc với DD theo `.claude/rules/tdd-mode.md`. Quy tắc kiểm trường ở `03-dd/validation/F2_problem-bank.md`. Cập nhật: 2026-10-23.
 > Ký hiệu vai trò: A1 học viên, A2 giảng viên, A3 quản trị viên. Mọi AC có nghĩa "phản hồi lỗi mang đúng `error.code`" khi nêu mã `PRB-nnn`.
@@ -776,10 +840,10 @@ Bảng 1: Truy vết tiêu chí nghiệm thu sang endpoint, khối quy tắc và
 | AC-78 | §56, §57 | [TC-F2-AC78-01](../testcases/modules/F2_problem-bank/F2_class_assignments.md) | Chưa làm |
 | AC-79 | BR-20 | [TC-F2-AC79-01–02](../testcases/modules/F2_problem-bank/F2_class_assignments.md) | Chưa làm |
 | AC-80 | BR-19 | [TC-F2-AC80-01](../testcases/modules/F2_problem-bank/F2_class_assignments.md) | Chưa làm |
-| AC-81 | `ProblemGradingSpecPort`, BR-11, BR-13 | [TC-F2-AC81-01–02](../testcases/modules/F2_problem-bank/F2_ports_privacy_cache.md) | Chưa làm |
+| AC-81 | `ProblemGradingSpecPort`, BR-11, BR-13 | [TC-F2-AC81-01–02](../testcases/modules/F2_problem-bank/F2_ports_privacy_cache.md) | Reader nội bộ đã kiểm bằng ProblemGradingReadFlowTest/codec/unit; chưa full fixture/publish/worker E2E, không tick toàn TC. Report `261102-2340-f2-f4-grading-readers` |
 | AC-82 | `ProblemSpecQuery`, BR-05 | [TC-F2-AC82-01](../testcases/modules/F2_problem-bank/F2_ports_privacy_cache.md) | Chưa làm |
 | AC-83 | `ProblemContextPort`, BR-06 | [TC-F2-AC83-01](../testcases/modules/F2_problem-bank/F2_ports_privacy_cache.md) | Chưa làm |
-| AC-84 | `ProblemSummaryReadPort`, `ProblemTopicReadPort`, `ClassAssignmentReadPort` | [TC-F2-AC84-01–02](../testcases/modules/F2_problem-bank/F2_ports_privacy_cache.md) | Chưa làm |
+| AC-84 | `ProblemSummaryReadPort`, `ProblemTopicReadPort`, `ClassAssignmentReadPort` | [TC-F2-AC84-01–02](../testcases/modules/F2_problem-bank/F2_ports_privacy_cache.md) | Một phần: B1 ClassAssignmentReadFlowTest kiểm assignment history/withdrawn/deleted; còn Summary/Topic ports và consumer, chưa đóng AC/TC đầy đủ. Report `261102-1636-class-assignment-read-port` |
 | AC-85 | BR-13 | [TC-F2-AC85-01](../testcases/modules/F2_problem-bank/F2_ports_privacy_cache.md) | Chưa làm |
 | AC-86 | BR-02 | [TC-F2-AC86-01](../testcases/modules/F2_problem-bank/F2_ports_privacy_cache.md) | Chưa làm |
 | AC-87 | BR-25 | [TC-F2-AC87-01](../testcases/modules/F2_problem-bank/F2_ports_privacy_cache.md) | Chưa làm |

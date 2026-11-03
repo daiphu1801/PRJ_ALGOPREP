@@ -1,5 +1,11 @@
 # DD — Logic module `identity` (F1)
 
+**D1, owner chốt 2026-11-02:** cổng vào nội bộ `RecordSystemAuditUseCase.record(AuditEntry)`;
+handler mới dùng REQUIRED và gọi `AuditLogPort` có sẵn. Caller tự khai cổng ra, adapter dịch
+tại bootstrap, không route HTTP hoặc REQUIRES_NEW/event cho audit cần cùng giao dịch.
+`DEC-2026-1102-cross-module-audit-required`, plan F2 `261102-0926-f2-s1-taxonomy`.
+Handler F1 cũ không đổi; chỉ các caller liên module mới dùng inbound này.
+
 ## BR-21 — Đăng ký, Admin tạo tài khoản và đăng nhập đầu tiên (xác thực email, buộc đổi mật khẩu mềm)
 
 **Thêm 2026-10-22 (đồng bộ DB vòng 2, `DEC-2026-1022-db-sync-round2` mục 1 và 4).** Số BR-21 là số tiếp theo còn trống; không đổi

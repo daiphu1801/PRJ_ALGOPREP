@@ -1,5 +1,11 @@
 # DD — Job nền module `judge-orchestration` (F4)
 
+**Làm rõ owner 2026-11-03 (DEC-2026-1103-f4-worker-job-lease):** khóa sở hữu mỗi job
+ở BR-JD-03 là khóa phiên riêng, giữ qua các transaction ghi ngắn; sweep vẫn dùng khóa
+giao dịch. Khóa leader listener JOB-JD-05 là vai trò khác. D02m chỉ cung cấp persistence,
+chưa hiện thực các job/leader/consumer/lease hoặc lịch chạy trong file này.
+
+
 **Tạo 2026-10-23** (`DEC-2026-1023-db-actor-review-fixes`; owner chốt cùng ngày: mọi giá trị mặc định BD đề xuất đều được xác nhận).
 BD đã nhiều lần ghi "chi tiết job nằm ở `03-dd/jobs`" (`02-bd/database/F4_judge-orchestration.md:72`, `:137`); file này là nơi đó.
 
@@ -28,6 +34,8 @@ Bảng 1 liệt kê năm job của module và nguồn của từng job. Mọi jo
 - **Job không phụ thuộc AI path** (`CLAUDE.md`, mục Rules): không job nào ở đây gọi `ai-review`.
 
 ## 1. JOB-JD-01 — Sweep bài nộp treo (F4-07)
+
+**Triển khai 2026-11-04 (D02p):** JOB-JD-01/03/04 đã nối vào scheduler riêng, bật bằng profile `maintenance` hoặc `judge.maintenance.enabled=true`. Sweep lấy khóa giao dịch `JOB-JD-01` và khóa `judge:sub:<id>` cùng namespace worker; khóa cluster_settings trước dòng bài nộp để kiểm lại pause/heartbeat/trạng thái, dùng finalizer chung trong cùng transaction với Outbox. Khác hình SQL minh họa bên dưới: guard thời gian/pause nằm ở SELECT FOR UPDATE trước UPDATE finalizer, giữ khóa dòng và SHARE cluster_settings xuyên hai câu lệnh trong cùng transaction nên không có cửa sổ ghi đè. Cleanup lô 5.000, 90 ngày, giữ pending/source/token/callback, commit mỗi lô; cron UTC+7 03:00/03:30. Kernel resume REQUIRED/READ_COMMITTED khóa cờ và làm mới heartbeat PENDING trong cùng transaction; lấy clock_timestamp sau khóa để không dùng giờ đầu transaction đã chờ lâu. API #19/quyền/audit còn mở. Report `261104-f4-maintenance-recovery`.
 
 - **Mục đích.** Đưa bài nộp mà worker bỏ rơi (crash, bị kill) về trạng thái cuối `SYSTEM_ERROR` để học viên không chờ vô hạn
   (`02-bd/architecture/F4_judge-orchestration.md:226-228`).
@@ -74,6 +82,8 @@ WHERE id = :id
 - **Bảng chạm.** `submissions` (ghi), `outbox_events` (ghi), `cluster_settings` (đọc `queue_paused`).
 
 ## 2. JOB-JD-02 — Relay outbox
+
+**Triển khai 2026-11-04 (D02o):** lô 100, khóa `FOR UPDATE SKIP LOCKED` trong giao dịch riêng, thứ tự `created_at,id` theo chỉ mục BD đã sửa 2026-10-29 (thay ghi chú index cũ bên dưới). Confirm và không mandatory return mới đánh dấu published; mọi thất bại giữ pending, WARN từ 3/ERROR từ 5 và tiếp tục retry. Scheduler riêng tránh chặn worker. Bật profile `outbox` hoặc `judge.outbox.enabled=true`; default delay 2000ms. Đã kiểm Rabbit/PG/F1 thật và 3 mutation; không nghiệm thu outage 10 phút/GET kết quả/F5 ở lát này. Report `261104-f4-outbox-relay`.
 
 - **Mục đích.** Publish các sự kiện domain (`SubmissionAccepted`, `SubmissionGraded`) lên RabbitMQ sau khi giao dịch chấm đã commit, để `ai-review` và `identity`
   nhận được dù broker từng chết (`02-bd/architecture/F4_judge-orchestration.md:239-248`).
@@ -165,3 +175,23 @@ WHERE id IN (
 | :-: | :--- | :--- |
 | ~~Q1~~ | ~~Chọn ShedLock hay advisory lock để chặn chạy trùng giữa các instance?~~ | **Đã chốt 2026-10-23:** advisory lock Postgres (không thêm bảng, không thêm thư viện); ponytail bậc 4 |
 | Q2 | **DD đóng:** `judge_run_tokens` có cần dọn cùng chi tiết testcase không? | Không. Giữ token làm dấu vết idempotency của submission gốc (không xoá cứng) và để `callback_logs` không đứt FK; chỉ thêm retention khi có yêu cầu vận hành mới |
+
+
+## Ghi nhận triển khai D02n — 2026-11-03
+
+D02n đã có leader session lease, manual ack/prefetch1, pause/drain/resume, poll gate3s/scale15s; target1..8, hai chu kỳ cao/bốn rỗng, reset khi pause/đổi ngưỡng và về1 khi tắt autoscale. Dùng concurrency cố định từng lần, không bật bộ tự scale riêng của Spring. Đổi target lỗi giữ counters/target trước để thử lại. Health/readiness role worker đã nối; chưa triển khai job recovery/sweep/relay/cleanup, Prometheus target/active và đầy đủ log vận hành theo JOB-JD-05. Không đánh dấu JOB-JD-05 đã clear toàn bộ. Việc resume chạm updated_at của PENDING thuộc JOB-JD-01 còn mở, không thay đổi nghĩa timeout do im lặng.
+
+
+## D02n1 — Đóng nợ worker local (2026-11-03)
+
+Thay ghi nhận nợ D02n: metric target/active đã xuất qua MeterBinder; log resize đủ trường. Pause/stop cancel nhận mới rồi đợi active counter0, không cưỡng bức đóng channel. Tránh Long.MAX_VALUE vì deadline Spring AMQP tràn số. Kiểm8 consumer/pool10, giảm target/drain và terminate leader PG thật. Instance mất leader bị chặn cả lifecycle start. JOB-JD-01 resume heartbeat/relay/sweep vẫn là task riêng.
+
+
+## D02ac — queue controls, 2026-11-05
+
+**D02ac — 2026-11-05:** API #16–19 pause/resume, autoscale và queue settings có backend thật; resume tái dùng kernel heartbeat D02p, quyền ADMIN riêng với Function READ cho GET, stale409, no-op và audit REQUIRED. 34 test liên quan đạt (22 mới),9/9 mutation,73/73 dòng logic mới; Spotless judge/bootstrap, Checkstyle đúng phạm vi và SpotBugs đạt. F4-3 còn snapshot/jobs/infra/STOMP admin, runtime cuối ở FINAL; chưa full regression/merge, FE riêng. [Report](F:/prj_algoprep/06-plan/reports/261105-1547-f4-queue-controls/report.md).
+
+Kernel resume và worker gate/scaling không sửa. Outer transaction giữ khóa cluster qua heartbeat/actor/audit; audit lỗi rollback cả flag và heartbeat; lỗi sau audit rollback audit. JDG-V16 cho boolean bắt buộc/sai JSON, JDG-V09 cho int thiếu/sai kiểu/nonpositive/vượt INT. Không nhận số dạng chuỗi hoặc số thập phân. Mọi int1..2147483647 được nhận, không chặn100000. Settings last-writer-wins; không so updatedAt gửi lại. [SoT: Suy luận] lỗi hạ tầng503 chung không thêm mã; không fallback dữ liệu giả. Không thay lịch3s/15s, không đợi scale trong PUT; live Rabbit acceptance vẫn FINAL.
+
+
+**D02af — 2026-11-05:** STOMP admin W2 có QUEUE_BATCH thật theo chu kỳ5s, một lô chung cho mọi admin, không query khi không có subscriber hợp lệ. Snapshot/counts/infra-summary cùng transaction RR; outbound chặn phiên hết JWT hoặc đã unsubscribe.64 test liên quan đạt (18 mới),6/6 mutation,28/28 dòng logic mới; Spotless/Checkstyle/SpotBugs phạm vi chọn đạt. Backend F4-3 đủ API và W2; tiếp theo FINAL BE/full regression khi clear. FE/browser/C08 và production nhiều process giữ mốc riêng. Chưa commit/merge. [Report](F:/prj_algoprep/06-plan/reports/261105-f4-admin-queue-stream/report.md).

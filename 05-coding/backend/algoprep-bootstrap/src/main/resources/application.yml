@@ -58,3 +58,29 @@ logging:
   level:
     root: INFO
     com.algoprep: DEBUG
+
+judge:
+  admin-stream:
+    interval: 5s
+  infra:
+    outbox-warn-attempts: 3
+    outbox-error-attempts: 5
+    event-retention-days: 90
+  autoscale:
+    # JOB-JD-05 has a fixed limit of eight consumers in the current worker runtime.
+    max-workers: 8
+
+algoprep:
+  judge:
+    # Display labels only; deployments may add verified toolchain versions here.
+    compiler-display:
+      java: ${ALGOPREP_JUDGE_JAVA_DISPLAY:Java (javac)}
+      cpp: ${ALGOPREP_JUDGE_CPP_DISPLAY:C++ (g++)}
+      python: ${ALGOPREP_JUDGE_PYTHON_DISPLAY:Python 3}
+  problem-bank:
+    storage:
+      endpoint: ${ALGOPREP_MINIO_ENDPOINT:http://localhost:9000}
+      public-endpoint: ${ALGOPREP_MINIO_PUBLIC_ENDPOINT:${ALGOPREP_MINIO_ENDPOINT:http://localhost:9000}}
+      bucket: ${MINIO_BUCKET_TESTCASE:algoprep-testcases}
+      access-key: ${ALGOPREP_MINIO_ACCESS_KEY:}
+      secret-key: ${ALGOPREP_MINIO_SECRET_KEY:}

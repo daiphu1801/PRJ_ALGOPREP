@@ -1,0 +1,12 @@
+/fixture/main.cpp: In member function 'void Solution::first()':
+/fixture/main.cpp:3:18: error: 'missingFirst' was not declared in this scope
+    3 |   void first() { missingFirst(); }
+      |                  ^~~~~~~~~~~~
+/fixture/main.cpp: In member function 'void Solution::nested()':
+/fixture/main.cpp:6:7: error: 'missingNested' was not declared in this scope
+    6 |       missingNested();
+      |       ^~~~~~~~~~~~~
+/fixture/main.cpp: In member function 'void Solution::last()':
+/fixture/main.cpp:9:17: error: 'missingLast' was not declared in this scope
+    9 |   void last() { missingLast(); }
+      |                 ^~~~~~~~~~~

@@ -1,0 +1,5 @@
+# Combine local,worker,outbox for the current single-process deployment.
+judge:
+  outbox:
+    enabled: true
+    fixed-delay-ms: 2000

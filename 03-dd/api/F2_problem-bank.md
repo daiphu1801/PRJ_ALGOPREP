@@ -1,5 +1,30 @@
 # DD API — Module `problem-bank` (F2)
 
+**S2b lõi nội bộ, 2026-11-02:** có cổng tạo draft thường/lưu nội dung bằng DB thật, chưa
+triển khai transport POST/PUT§36/37. Inbound nhận typed content và actor/action context tin cậy;
+creation nhận limits tường minh, level thiếu đọc mức đầu DB, quotaNULL giữNULL. Result nội bộ
+ProblemContentSnapshot chỉ mang phần content, không thay thế ProblemAuthoringDetailDto đầy đủ.
+HTTP/defaults F4/MinIO/nhân bản/GET authoring còn phải nối; không trả DTO rút gọn hoặc dữ liệu giả.
+
+**Owner chốt 2026-11-02, DEC-2026-1102-f2-spec-outbox-error:** lỗi ghi Outbox ở§38 trả
+503 PRB-056, detail cố định `Problem event persistence unavailable`; rollback toàn bộ spec,
+version/flag/timestamp và không DEL cache. §53 vẫn HTTP200 với PRB-056 trong failedItems từng bài.
+
+**S2a, 2026-11-02:** đã thêm PUT `/authoring/problems/{problemId}/spec` (§38), dùng P5
+common và DB thật. Raw JSON kiểm trước typed evaluation; kiểu chưa hỗ trợ giữ nguyên khi lưu,
+override keys chuẩn hóa HOA sau kiểm trùng. Phân quyền/ownership, khóa lạc quan, version/no-op,
+Outbox cùng giao dịch và Redis afterCommit có component tests. Plan/report
+`261102-1010-f2-s2a-save-function-spec`. Chỉ lát đặc tả; các route soạn khác, relay và frontend
+chưa được tuyên bố hoàn tất từ checkpoint này.
+
+**Triển khai S1, 2026-11-02:** endpoint#14–23 (DD§15–24) tại ProblemLevelsController và
+ProblemTopicsController, usecase riêng từng thao tác. Quyền Function qua method security,
+ADMIN kiểm tại F2; module advice trả PRB-002 khi thiếu ô quyền. Inbound audit D1 ở F1 và
+bridge bootstrap dùng REQUIRED cùng giao dịch; Redis list version tăng sau commit.
+Lỗi audit trả503 PRB-050 như tiền lệ§57 của cùng module; đây là ánh xạ triển khai cho S1,
+không phải báo lỗi sandbox. Không thay response DTO hoặc luật quyền đã chốt.
+Kết quả test/log được ghi ở plan/report `261102-0926-f2-s1-taxonomy`.
+
 > Nguồn: `01-rd/req/F2_problem-bank.md` (F2-01 tới F2-18) · `02-bd/architecture/F2_problem-bank.md` · `02-bd/database/F2_problem-bank.md` ·
 > `02-bd/security/F2_problem-bank.md` · `02-bd/storage/F2_problem-bank.md` · Sheet 7.3 của các BD màn hình (`SHR0201`, `SHR0202`, `SHR0203`,
 > `USR0101` tới `USR0104`, `USR0201`, `USR0601`, `INS0101`, `INS0202`, `ADM0303`) · `03-dd/api/api.md` (catalog, do controller dựng sau).
@@ -1684,6 +1709,9 @@ Mỗi bài (BR-09): `UPDATE problems SET status = 'UNPUBLISHED', deleted = true,
 `ProblemAuthoringDetailDto` (mục 1.5). Điều kiện đặc biệt:
 - `readOnly = true` khi A2 mở bài `PUBLISHED` của người khác: `testcases[]` không mang `input`, `expectedOutput`, `*DownloadUrl`; thay bằng `testcaseSummary` `{ total, approved, sample, hidden }`. `referenceSolution = null` và không trả mã/URL tải đáp án mẫu; client ẩn thẻ đáp án mẫu thay vì hiện “Chưa có”. [Quyết định owner 2026-10-25]
 - `*DownloadUrl` chỉ được ký khi người gọi có `TESTCASE_MANAGEMENT:READ` **và** là tác giả hoặc `ADMIN`.
+- **Owner chốt 2026-11-02:** thiếu `TESTCASE_MANAGEMENT:READ` thì `testcases=[]`, chỉ trả
+  `testcaseSummary`; không trả nội dung INLINE hoặc URL MINIO, kể cả tác giả/ADMIN có
+  `PROBLEM_AUTHORING:READ`. Áp dụng khi quay lại GET authoring; hiện ưu tiên readers F3/F4.
 - `checklist.sampleSolutionAllPass = null` (không chạy sandbox khi tải).
 - `aiGeneration.used/limit` luôn có.
 
@@ -1898,6 +1926,7 @@ BR-04 (cập nhật): một giao dịch; `UPDATE problems SET ... WHERE id = ? A
 ### 38.4 Lỗi
 | HTTP | error.code | Khi nào | Ghi chú |
 | :-: | :--- | :--- | :--- |
+| 503 | PRB-056 | ghi Outbox ProblemSpecChanged thất bại | rollback toàn bộ; thông báo cố định, không SQL/stack trace; owner chốt2026-11-02 |
 | 400 | PRB-001 | sai kiểu JSON cấp ngoài; văn bản định dạng quá dài | |
 | 403 | PRB-002, PRB-003 | | |
 | 404 | PRB-010 | bài không tồn tại / `deleted` / bản nháp người khác với A2 | |
@@ -2002,6 +2031,15 @@ nơi `ai-review` đọc qua `ProblemContextPort` và đặt vào khối có nhã
 | 503 | PRB-050 | sandbox không chạy được đáp án mẫu | không đổi trạng thái |
 
 ### 40.5 Luồng xử lý
+
+**Kernel snapshot đã có 2026-11-03, D02h:** inbound PublishTestcaseSnapshotUseCase.publishSnapshot(problemId)
+thực hiện first/reuse/bump của approved set, giữ nguyên lịch sử; INSERT metadata, version và
+Outbox trong cùng transaction REQUIRED với caller. Khoá parent rồi đọc lại metadata ở statement
+RC mới; caller testcase edit cũng phải khoá parent trước child. Object UUID mới được xác minh
+PUT/HEAD/GET/SHA-256 trước metadata. Trả nội bộ {problemId,version,testcaseCount,created,versionBumped},
+không phải response HTTP §40.3; lỗi PRB-010/052. Chưa nối quyền/checklist/chạy đáp án mẫu/status/
+audit/transport §40 hoặc testcase mutation APIs, nên chưa coi endpoint §40 hoàn tất.
+Report `261103-0011-f2-snapshot-publication-core`.
 - `-> PUBLISHED`: BR-07 (đếm, kiểm đặc tả, **chạy một lần** đáp án mẫu trên mọi testcase đã duyệt qua `SampleSolutionRunnerPort`, không đọc cờ lưu sẵn); tạo snapshot bất biến cho `current_testcase_set_version` nếu chưa có, xác minh object đã ghi trước khi BR-08 công bố bài. Tái xuất bản: nếu bộ chấm hiện hành khác snapshot đã công bố của current_testcase_set_version (so id, visibility, position, byte input/output của ca đã duyệt theo thứ tự chuẩn hóa), tăng đúng một phiên bản, tạo bundle bất biến mới và ghi Outbox TestcaseSetVersionBumped cùng giao dịch công bố. Nếu giống thì dùng lại snapshot và không tăng; lần xuất bản đầu tạo snapshot phiên bản hiện hành. Chỉ đổi nháp chưa duyệt không ảnh hưởng bộ chấm thì không tăng lúc tái xuất bản. Giữ nguyên snapshot lịch sử, lỗi MinIO/DB/Outbox rollback toàn bộ, trả 503 PRB-052 cho lỗi snapshot. Không so checksum của archive chứa metadata biến động; so nội dung logic chuẩn hóa, tải snapshot qua cổng nội bộ khi cần.
 - `-> UNPUBLISHED`: không điều kiện (BR-08).
 Ghi nhật ký `PROBLEM_PUBLISHED`/`PROBLEM_UNPUBLISHED` cùng giao dịch, sau commit phát `ProblemPublished`/`ProblemUnpublished`, tăng phiên bản cache. Chỉ xuất bản/rút xuống ở endpoint này **không** phát `TestcaseSetVersionBumped`.
@@ -2796,6 +2834,15 @@ Khoá dòng `problem_bank_settings` id 1, ghi giá trị cũ; `UPDATE ... SET ma
 
 ## 58. Cổng (port) nội bộ
 
+**Triển khai 2026-11-02:** ProblemSpecQuery.findSpec và StarterCodeAccessQuery.canRead đã có
+JDBC thật; bridge bootstrap cung cấp O1/O2 cho harness. Spec/flag/version từ một SELECT;
+read query trả DTO typed qua codec S2a (chỉ mở visibility, không đổi parser). Unknown kind
+thành OTHER trong bộ nhớ, JSON DB giữ nguyên. Lát này đọc DB trực tiếp, không tin Redis spec
+stale; chưa bật cache đọc F2/harness. O1 là cổng trusted, vẫn đọc được spec cho pending work
+khi bài rút/xóa mềm; quyền P1 luôn qua O2 hiện hành, deleted/missing trả false.
+Không có route HTTP mới. F4 grading/sample/snapshot ports chưa triển khai trong lát này.
+Report `261102-1532-f2-f3-spec-readers`.
+
 Module là modular monolith: hai module nói chuyện bằng **cổng có tên**, sự kiện miền hoặc đường đọc riêng, không import chéo (`DEC-2026-0820-architecture-baseline`, `01-rd/system/SYS0101_backend_architecture.md` mục 5). Cổng do **bên gọi** khai trong `domain/ports/out` của mình
 (`.nexa/control/dependency-map.md` mục 1); module sở hữu dữ liệu viết adapter. Mục này liệt kê cả hai chiều. Tên và chữ ký chốt ở đây; module bên kia đối chiếu khi viết DD của họ (xem `Q-16` mục 61).
 
@@ -2814,7 +2861,7 @@ Bảng 58.1: Cổng vào của `problem-bank` (không có route HTTP, lời gọ
 | `ProblemContextPort` (`02-bd/architecture/F5_ai-review.md:86-103`) | `ai-review` | `getContext(problemId, language)` | `ProblemContext` | **dữ liệu, không phải chỉ thị**; xem dưới |
 | `ProblemSummaryReadPort` (`judge` khai, dòng 75) | `judge-orchestration` | `getSummaries(problemIds)` -> `[ {problemId, code, title, slug, levelDisplayName, withdrawn} ]`; `searchProblemIds(keyword, limit)` | | `slug` trùng `code` (mã là slug, `02-bd/database/F2_problem-bank.md:18`); bài đã ẩn mềm vẫn trả để lịch sử hiển thị tên (`:56`) |
 | `ProblemTopicReadPort` (`judge` khai, dòng 76) | `judge-orchestration` | `getProblemIdsByTopics(topicIds)` -> `Map<topicId, [problemId]>` | | trả quan hệ bài–chủ đề còn lưu, kể cả bài đã rút, cho tỉ lệ nộp bài lịch sử F4 §12; tiến độ hiện hành F2 §4/§14A tự lọc `PUBLISHED AND NOT deleted` |
-| `ClassAssignmentReadPort` (`judge` khai, dòng 75) | `judge-orchestration`, `identity` (`INS0201`, `INS0203`, `INS0204`) | `listAssignments(classIds)` | `[ {classId, problemId, problemTitle, assignedAt, removedAt} ]` | **kể cả bài đã gỡ mềm** (`removedAt` khác `null`); bên cần chỉ bài đang giao tự lọc `removedAt == null`. Cùng use case với mục 50, không kiểm giảng viên |
+| `ClassAssignmentReadPort` (`judge` khai, dòng 75) | `judge-orchestration`, `identity` (`INS0201`, `INS0203`, `INS0204`) | `listAssignments(classIds)` | `[ {classId, problemId, problemTitle, assignedAt, removedAt} ]` | **kể cả bài đã gỡ mềm** (`removedAt` khác `null`); bên cần chỉ bài đang giao tự lọc `removedAt == null`. Không kiểm giảng viên. **Triển khai 2026-11-02, B1:** inbound F2 `ListClassAssignmentsUseCase`, handler read-only/JDBC một SELECT; F4 khai outbound/DTO, bootstrap bridge đã nối thật. Giữ từng dòng giao lại, gồm bài đã UNPUBLISHED/deleted, không nhóm/lọc active như HTTP §50; caller tự kiểm phạm vi. Lỗi DB ném lỗi cổng, không giả danh sách rỗng. F1 có thể nối cùng inbound, chưa sửa F1 hoặc triển khai HTTP§50. Report `261102-1636-class-assignment-read-port`. |
 | `ProblemBankStatsPort` (`03-dd/logic/F1_identity.md:312`) | `identity` (dashboard admin, tiến độ cá nhân), `ai-review` (tên bài ở `ADM0302`) | `publishedCatalogSummary()` (như mục 14.3); `problemSummaries(problemIds)`; `levelCatalog()` | | tên do `identity` DD đặt; gần trùng `ProblemSummaryReadPort`, xem `Q-33` |
 
 `GradingSpec` = `{ problemId, published: bool, functionWrapperSupported, timeLimitMs, memoryLimitMb, maxOutputSizeKb, maxSubmissionsPerHour: int|null (thô; `judge` áp mặc định 60 khi `null`), currentTestcaseSetVersion, snapshotReady: bool, specVersion, matchingStrategy, epsilonValue,
@@ -2826,7 +2873,29 @@ testcases: [ { testcaseId, visibility, position } ] }` — đúng danh sách `ju
 aiBrief: string|null, noFullCode: bool, socraticOnly: bool }`; **không có** mã đáp án mẫu, testcase hay `object_key` (quy tắc 1.4).
 `ProblemGradingSpecPort.loadTestcaseSnapshot(problemId, version)` là cổng backend-to-backend đọc bundle bất biến chứa cả Sample và Hidden; không có route công khai để đọc nội dung Hidden (`02-bd/security/F2_problem-bank.md:66-71`).
 
+**Triển khai 2026-11-02, report `261102-2340-f2-f4-grading-readers`:** inbound F2
+ReadProblemGradingSpecUseCase/ReadSampleTestcasesUseCase/ReadTestcaseSnapshotUseCase, repository
+và JDBC thật; bootstrap ProblemGradingReadBridge nối outbound F4. Spec/current version/approved
+metadata/snapshot reference cùng một SELECT; quota null và đơn vị limits giữ thô. DTO nội bộ nhóm
+problem/limits/versions/matching để mỗi constructor tối đa5 tham số; không đổi DTO HTTP.
+Problem không tồn tại trả Optional.empty; thiếu/hỏng spec là lỗi dữ liệu. Sample lọc SAMPLE+approved
+ngay SQL, mỗi vế INLINE/MINIO độc lập. Snapshot đọc đúng metadata(problemId,version), JSON v1/base64
+theo DEC-2026-1102-testcase-snapshot-json-v1; kiểm SHA-256/ID/version/count/shape, không fallback.
+Missing/corrupt → lỗi nội bộ SPEC_UNAVAILABLE, transport/DB → INFRASTRUCTURE; bridge F4 đổi loại sau
+thành SANDBOX_FAULT, không kèm raw cause. snapshotReady false khi thiếu metadata/object hoặc object0B;
+lỗi hạ tầng HEAD ném lỗi. Chưa publish/version-bump writer, HTTP submit/Run Code hoặc worker.
+
 ### 58.2. Cổng ra do `problem-bank` khai (`domain/ports/out`)
+
+**Triển khai storage 2026-11-02:** `TestcaseObjectStorePort` nằm ở `application/ports/out`
+(cổng hạ tầng không phải repository), MinIO adapter/config ở `infrastructure/storage`.
+Chữ ký: presignPut/Get(String, Duration)→String, head(String)→long số byte,
+get(String)→byte[], put(String, byte[])→void, copy(String, String)→void, delete(String)→void.
+Client nội bộ và endpoint ký URL riêng; region us-east-1. GET TTL≤300s, PUT≤900s;
+deadline10s/attempt toàn thao tác, GET/HEAD retry một lần, ghi/sign không retry.
+Lỗi thành503 PRB-052 với thông báo cố định, không giữ SDK cause. Key/TTL sai từ caller nội bộ
+bị IllegalArgumentException; HTTP validation/auth thuộc caller tương ứng, chưa có route storage
+độc lập. Không tự tạo bucket hoặc chính sách anonymous. Report `261102-1450-f2-minio-object-store`.
 
 Bảng 58.2: Cổng ra của `problem-bank`. Cột "Thời gian chờ và thử lại" là hợp đồng lỗi bắt buộc cho mọi lời gọi ra ngoài tiến trình.
 
@@ -2847,7 +2916,7 @@ Bảng 58.2: Cổng ra của `problem-bank`. Cột "Thời gian chờ và thử 
 | `ClassProblemMetricsPort` | `judge-orchestration` (F4 P6) | `getAssignedProblemMetrics(instructorId, classIds, problemIds, assignments[])` -> `Map<problemId, {submissionCount, acRatePercent|null}>`; `assignments[]` gồm `{classId, problemId, assignedAt, removedAt?}` của **mọi lớp thuộc giảng viên** cho các bài yêu cầu, dù tab lọc một lớp, để F4 gắn mỗi lượt đúng một lớp trước khi lọc và không gọi ngược F2; chỉ học viên còn ghi danh và lượt trong khoảng đã giao | chờ 3 giây | hai chỉ số `null` (mục 50, 51, 55) |
 | `MyClassAssignmentStatePort` | `judge-orchestration` (F4 P7) | `getMyAssignmentStates(assignments[])` theo principal STUDENT -> Map theo `(classId, problemId, assignedAt)` trả `SOLVED|ATTEMPTED|UNSOLVED`; chỉ lượt từ khi giao, F2 kiểm thành viên trước | chờ 3 giây | §5: `solveState=null`; §5A: `503` |
 | `MyTopicSubmissionMetricsPort` | `judge-orchestration` (F4 P5) | `getMyTopicMetrics(topicProblemIds: Map<topicId, problemIds[]>)` theo principal hiện hành -> `Map<topicId, {submissionCount, acceptedCount, acRate|null}>` | chờ 3 giây/lô tối đa 50 chủ đề; không nhận `userId` từ client | `rankingAvailable=false`, `topicScores=[]` (mục 13) |
-| `UserDirectoryPort` | `identity` | `getDisplayNames(userIds)` -> `Map<userId, string>` | chờ 2 giây | `displayName = null` (mục 34) |
+| `UserDirectoryPort` | `identity` | `getDisplayNames(userIds)` -> `Map<userId, string>` | chờ 2 giây | `displayName = null` (mục 34). **Triển khai 2026-11-02, lát A:** outbound F2 → bootstrap UserDirectoryBridge → inbound F1 ReadUserDisplayNamesUseCase/JDBC theo lô. Lỗi/timeout trả map rỗng; ID không tồn tại không có entry. Tài khoản đã ẩn danh trả `Người dùng đã xoá` theo F1 BR-08; không cache tên. Lookup chạy giao dịch đọc riêng để lỗi optional không làm rollback caller. Chưa triển khai GET §34; report `261102-1615-user-directory-read-port`. |
 
 Các cổng `UserDirectoryPort`, `ReferenceOutputMatcherPort`, `ClassProblemMetricsPort`, `MyTopicSubmissionMetricsPort` và phương thức `getLanguageMultipliers` là tên do DD này đặt cho adapter/use case module cung cấp (`Q-16`, `Q-32`); F4 P5 định nghĩa rõ đầu vào để không gọi ngược F2. `SolveStatePort`, `InstructorClassPort`, `StudentEnrollmentPort`, `AuditLogPort` bám tên hoặc endpoint BD/DD đã có.
 
@@ -2927,7 +2996,7 @@ Bảng 60.1: Mã lỗi của module (`error.code`, backend trả mã, giao diệ
 | PRB-053 | 422 | `WORKED_EXAMPLES_BELOW_MINIMUM` | bài `PUBLISHED` sẽ còn dưới 2 ví dụ mẫu | 37 |
 | PRB-054 | 422 | `APPROVED_TESTCASES_BELOW_MINIMUM` | bài `PUBLISHED` sẽ còn dưới 8 ca đã duyệt hoặc 2 Sample đã duyệt | 43, 44 |
 | PRB-055 | 429 | `REFERENCE_RUN_RATE_LIMITED` | quá 10 lượt chạy đáp án mẫu trong 60 giây trượt theo tài khoản | 48 |
-| PRB-056 | trong `failedItems` của HTTP 200 | `ASSIGNMENT_OUTBOX_WRITE_FAILED` | ghi Outbox khi giao bài lỗi; rollback riêng bài, các bài khác vẫn xử lý | 53 |
+| PRB-056 | 503 (§38); trong `failedItems` của HTTP200 (§53) | `OUTBOX_WRITE_FAILED` | lỗi ghi Outbox; §38 rollback toàn bộ lưu spec, §53 rollback riêng bài và tiếp tục lô | 38, 53 |
 | PRB-W01 | (cảnh báo, `200`) | `TYPE_OUTSIDE_SCHEMA` | vi phạm mềm `HRN-V01` tới `HRN-V07`, `functionWrapperSupported = false`; mã gốc trong `reasonCode` | 38 |
 
 Mã `PRB-024`, `PRB-026` tới `PRB-029`, `PRB-034`, `PRB-035`, `PRB-038` để trống có chủ đích (dự phòng theo nhóm).

@@ -4,6 +4,7 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointPr
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -73,6 +74,9 @@ public class SecurityConfig {
                     // Public auth endpoints of module identity (DD api F1 section 0.1). Each one
                     // enforces its own rules (rate limit, OTP, cookie plus header).
                     .requestMatchers("/api/v1/identity/auth/**")
+                    .permitAll()
+                    // Browser clients authenticate in the STOMP CONNECT frame (F4 API section 2).
+                    .requestMatchers(HttpMethod.GET, "/ws")
                     .permitAll()
                     .anyRequest()
                     .authenticated())

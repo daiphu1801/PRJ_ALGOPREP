@@ -1,0 +1,12 @@
+# Combine with local for the existing host-run backend and local infrastructure.
+# The URL is explicit so enabling a worker cannot silently use an unverified sandbox.
+judge:
+  worker:
+    enabled: true
+  go-judge:
+    base-url: ${ALGOPREP_WORKER_ENGINE_URL}
+
+spring:
+  datasource:
+    hikari:
+      maximum-pool-size: 16

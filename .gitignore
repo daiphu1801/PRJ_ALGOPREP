@@ -5,6 +5,7 @@ CLAUDE.md
 .claude/
 .agents/
 .nexa/
+scripts/
 opencode.json
 opencode.jsonc
 .opencode/
@@ -13,6 +14,7 @@ opencode.jsonc
 10-session/
 11-layoutDocx/
 12-knowledge/
+/handoff/
 
 # Office documents & generated reports
 *.docx

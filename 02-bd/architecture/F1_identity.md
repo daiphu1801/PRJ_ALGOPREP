@@ -1,5 +1,10 @@
 # BD — Kiến trúc module `identity` (F1)
 
+**D1, 2026-11-02:** thêm inbound `RecordSystemAuditUseCase`, REQUIRED cùng giao dịch caller;
+caller tự khai outbound port/DTO, bridge tại bootstrap. Không import chéo module nghiệp vụ
+hoặc ghi trực tiếp schema identity từ F2. Owner chốt
+`DEC-2026-1102-cross-module-audit-required`; không đổi handler F1 cũ.
+
 > Trạng thái: **BD lần đầu**, 2026-09-12. Module đầu tiên theo thứ tự
 > `06-plan/260912-1055-bd-rollout-order.md`.
 

@@ -1,5 +1,58 @@
 # BD — Kiến trúc module `problem-bank` (F2)
 
+**D02h snapshot writer 2026-11-03:** inbound PublishTestcaseSnapshotUseCase và writer/JDBC
+mới đã có. Giao dịch REQUIRED khoá parent trước, rồi đọc metadata bằng câu lệnh RC mới
+để caller chờ khoá thấy lần commit trước; approved rows đọc sau đó. First tạo current version,
+same logical set dùng lại, khác tạo version+1. PUT/HEAD/GET+checksum trước INSERT metadata;
+bump/Outbox cùng transaction. Không đổi status, actor/audit/checklist/sandbox hoặc mở HTTP.
+Caller phải khoá parent trước mọi testcase edit và gọi kernel cùng transaction. Object mới có
+key UUID riêng, không overwrite old snapshot; orphan sau rollback chờ job dọn. Report
+`261103-0011-f2-snapshot-publication-core`; không sửa reader/codec/F1/F3/F4 đã có.
+
+**Grading readers 2026-11-02:**3 inbound đọc spec/Sample/pinned snapshot, repository/JDBC,
+codec JSON v1/base64 và handler chỉ đọc đã có. Bootstrap bridge sang F4, không import business
+module khác. Spec và testcase version/metadata cùng SELECT; Sample chỉ approved/SAMPLE trong SQL.
+Snapshot lấy exact metadata/object, không current fallback; đọc được khi withdrawn/deleted.
+Thiếu/hỏng và lỗi hạ tầng tách loại, không giữ parser/SDK cause. Chưa writer publish/version-bump,
+HTTP/worker. Format owner chốt DEC-2026-1102-testcase-snapshot-json-v1;
+report `261102-2340-f2-f4-grading-readers`.
+
+**B1 lịch sử bài giao, 2026-11-02:** inbound ListClassAssignmentsUseCase và repository/JDBC
+chỉ đọc đã có; một SELECT scoped classIds, không join identity hoặc kiểm giảng viên tại đây.
+Giữ cả khoảng giao đã gỡ, giao lại và bài UNPUBLISHED/deleted; caller tự lọc active khi cần.
+F4 khai outbound ClassAssignmentReadPort/DTO riêng, bootstrap bridge nối hai module;
+F1 có thể dùng cùng inbound nhưng chưa nối code F1 trong lát này. Chưa HTTP giao bài,
+metrics lớp hoặc worker. Report `261102-1636-class-assignment-read-port`.
+
+**Cổng tên hiển thị, 2026-11-02 (lát A owner giao):** F2 khai UserDirectoryPort,
+bootstrap bridge gọi inbound ReadUserDisplayNamesUseCase của identity; không import F1 từ F2
+hoặc đọc chéo schema. Chỉ thêm file F1 mới; giữ nguyên handler/controller hiện có. Lookup
+theo lô, chỉ ID/tên, không cache, chờ tối đa 2 giây rồi thiếu tên; giao dịch read-only riêng
+không làm hỏng caller khi DB lỗi. BR-08 F1 quyết định nhãn `Người dùng đã xoá` sau ẩn danh.
+GET phiếu soạn chưa triển khai. Report `261102-1615-user-directory-read-port`.
+
+**Storage adapter 2026-11-02:** TestcaseObjectStorePort và MinIO SDK/config đã có thật,
+không phụ thuộc business module khác. Runtime reads dùng credential nội bộ; presign qua
+endpoint trình duyệt riêng, không dùng URL công khai làm đường tải nội bộ. Thiếu config
+không chặn startup phần khác; gọi storage lỗi PRB-052. Chưa testcase use case/phiếu soạn/HTTP.
+Report `261102-1450-f2-minio-object-store`.
+
+**S2b lõi nội bộ, 2026-11-02:** thêm SaveProblemContentUseCase và own repository adapter F2;
+typed result khác full authoring HTTP DTO. Create với resource limits caller đã giải quyết,
+không mock JudgeConfigReadPort/MinIO. Parent row lock thống nhất spec/content; relation writes
+chung transaction, Redis list invalidation sau commit chỉ cho bài PUBLISHED. Không đổi schema,
+POM, F1 hoặc F3/F4/common. Chưa mở transport§36/37, duplicate hoặc reader liên module.
+
+**S2a, 2026-11-02:** lưu đặc tả triển khai bằng inbound SaveProblemSpecUseCase, handler
+transactional, DB/cache outbound và adapters F2. P5 được gọi từ common đúng shared-kernel
+decision; không import business module khác. Outbox ProblemSpecChanged trong cùng transaction,
+chưa relay RabbitMQ; xóa spec cache chỉ sau commit. Không thêm schema/migration.
+
+**S1/D1, 2026-11-02:** catalogue có usecase/controller/JDBC theo bốn tầng; F2 sở hữu
+ProblemAuditPort/CatalogAuditEntry, bridge tại bootstrap gọi RecordSystemAuditUseCase của F1.
+Audit cùng giao dịch REQUIRED, không dependency pom F2→F1 hoặc ghi thẳng schema identity.
+Quyết định `DEC-2026-1102-cross-module-audit-required`; Redis version chỉ tăng sau commit.
+
 > Trạng thái: **BD lần đầu**, 2026-09-12. Module thứ hai theo thứ tự
 > `06-plan/260912-1055-bd-rollout-order.md`. Đọc cùng `02-bd/architecture/F1_identity.md` để bám văn phong;
 > module này khác `identity` ở một điểm quan trọng: **có** hạ tầng MinIO, nên có thêm

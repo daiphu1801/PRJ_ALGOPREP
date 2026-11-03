@@ -1,7 +1,7 @@
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **PRJ_ALGOPREP** (6200 symbols, 10320 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **PRJ_ALGOPREP** (20769 symbols, 41137 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > Index stale? Run `node .gitnexus/run.cjs analyze` from the project root — it auto-selects an available runner. No `.gitnexus/run.cjs` yet? `npx gitnexus analyze` (npm 11 crash → `npm i -g gitnexus`; #1939).
 
@@ -42,3 +42,10 @@ This project is indexed by GitNexus as **PRJ_ALGOPREP** (6200 symbols, 10320 rel
 | Index, status, clean, wiki CLI commands | `.claude/skills/gitnexus/gitnexus-cli/SKILL.md` |
 
 <!-- gitnexus:end -->
+
+## Owner preference: clickable Windows file links
+
+Use Markdown links with the actual drive path, for example
+`[Checklist](F:/prj_algoprep/06-plan/261101-checklist-f1-f3-va-phu-thuoc.md)`.
+Never prepend a slash to the drive (`/F:/...`); the owner's client cannot open that form.
+Do not substitute `file://` or a code span when the owner asks for a clickable file.

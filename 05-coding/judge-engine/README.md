@@ -15,7 +15,18 @@ mang field riêng của go-judge (`cmd[]`, `copyIn`) cũng không mang field ri�
 (`status.id`, token, webhook). Nhờ vậy `Judge0Adapter` vẫn cắm lại được sau này mà không đổi
 domain/application.
 
-## Trạng thái: chỉ có hạ tầng, chưa có adapter
+## Trạng thái hiện tại — D02c, 2026-11-01
+
+- Có Dockerfile toolchain OpenJDK 21/g++/Python và script tin cậy build-java.sh đóng toàn bộ
+  lớp Java vào classes.jar. Thư mục script được mount read-only trong sandbox qua /opt/mount.yaml.
+- Image local `algoprep-judge-toolchain:f3-20261101` đã được kiểm compile/cache/run bằng
+  go-judge thật trong container tạm. Probe: `python handoff/f3-toolchain-guard/probe.py` từ repo
+  root, sau NodeSourceRendererTest. Script tự tạo container loopback, dọn fileId rồi xóa container.
+- Service `algoprep-go-judge` hiện tại vẫn dùng image gốc; compose chưa đổi, không tự rollout.
+- GoJudgeAdapter/F4 orchestration, P2 đầy đủ và round-trip bảng kiểu chưa có. Báo cáo:
+  `06-plan/reports/261101-1735-f3-toolchain-guard-nodes/report.md`.
+
+## Hạ tầng gốc và adapter còn thiếu
 
 | Có | Chưa có |
 | :--- | :--- |
@@ -23,10 +34,10 @@ domain/application.
 | `privileged: true` và `shm_size` để `go-sandbox` tạo được namespace và đặt cgroup limit | Cấu hình biên dịch/chạy cho Java, C++, Python |
 | Endpoint `/version` dùng làm healthcheck | Ánh xạ kết quả engine sang value object của AlgoPrep (ACL) |
 
-Thư mục này được mount vào container tại `/opt/algoprep/judge-engine` (chỉ đọc). Nó **rỗng có chủ
-đích**: cấu hình biên dịch từng ngôn ngữ phụ thuộc `02-bd/architecture/F3_harness.md` và
-`03-dd/api/F4_judge-orchestration.md`, cả hai chưa tồn tại. Đặt sẵn một cấu hình đoán trước ở đây sẽ
-thành nợ mà không ai biết là nợ.
+Thư mục này được compose mount tại `/opt/algoprep/judge-engine` (chỉ đọc). Image riêng dùng
+script tại `/opt/algoprep/build-java.sh`; mount thư mục source qua compose không tự cài toolchain
+hoặc đưa script đúng vị trí. DD F3/F4 hiện đã có; phần “chưa có DD/thư mục rỗng” của mốc base cũ
+đã hết hiệu lực. Những kết quả 2026-09-01 dưới đây là lịch sử của image gốc.
 
 ## Kết quả kiểm thực nghiệm 2026-09-01
 

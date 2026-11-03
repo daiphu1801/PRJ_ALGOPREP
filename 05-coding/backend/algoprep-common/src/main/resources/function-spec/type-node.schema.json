@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:algoprep:function-spec:type-node",
+  "title": "Function specification TypeNode structure",
+  "$comment": "Only structural failures are hard. Unknown string kinds, missing of and supported limits are evaluated by P5 as soft reasons. OTHER must never be persisted; adapters retain the original raw kind.",
+  "type": "object",
+  "required": ["kind"],
+  "properties": {
+    "kind": {"type": "string"},
+    "of": {"$ref": "#"},
+    "dimensions": {"type": "integer", "minimum": 1}
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {"properties": {"kind": {"const": "ARRAY"}}},
+      "then": {"required": ["dimensions"]},
+      "else": {"not": {"required": ["dimensions"]}}
+    },
+    {
+      "if": {"properties": {"kind": {"enum": ["ARRAY", "LIST", "LINKED_LIST", "BINARY_TREE"]}}},
+      "else": {"not": {"required": ["of"]}}
+    }
+  ]
+}
