@@ -19,8 +19,7 @@ export const useMyProfile = (
 ) =>
   useQuery({
     queryKey: ["user", "my-profile", area],
-    queryFn: () =>
-      withMockData(() => fakeGetMyProfile(area), realGetMyProfile),
+    queryFn: () => withMockData(() => fakeGetMyProfile(area), realGetMyProfile),
     ...QUERY_OPTIONS,
   });
 

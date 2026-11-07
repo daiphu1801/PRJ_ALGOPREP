@@ -15,11 +15,14 @@ import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
@@ -382,11 +385,11 @@ class AuditLogReadFlowTest {
     String[] lines = response.body().split("\r\n");
     // Header + 1203 seeded rows + the export's own audit row, which is written before the body.
     assertThat(lines).hasSize(1205);
-    List<java.time.OffsetDateTime> times = new ArrayList<>();
+    List<OffsetDateTime> times = new ArrayList<>();
     for (int i = 1; i < lines.length; i++) {
-      times.add(java.time.OffsetDateTime.parse(lines[i].substring(lines[i].indexOf(',') + 1)));
+      times.add(OffsetDateTime.parse(lines[i].substring(lines[i].indexOf(',') + 1)));
     }
-    assertThat(times).isSortedAccordingTo(java.util.Comparator.reverseOrder());
+    assertThat(times).isSortedAccordingTo(Comparator.reverseOrder());
     assertThat(times).doesNotHaveDuplicates();
     assertThat(lines[1])
         .contains(
@@ -720,7 +723,7 @@ class AuditLogReadFlowTest {
   private static final class Sse {
     private final HttpClient client = HttpClient.newHttpClient();
     private final BlockingQueue<String> lines = new LinkedBlockingQueue<>();
-    private final java.util.concurrent.CompletableFuture<HttpResponse<Stream<String>>> response;
+    private final CompletableFuture<HttpResponse<Stream<String>>> response;
 
     Sse(String url, String token, String lastEventId) {
       HttpRequest.Builder request =

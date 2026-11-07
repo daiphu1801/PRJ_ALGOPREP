@@ -1,5 +1,6 @@
 package com.algoprep.identity.domain.ports.out;
 
+import java.time.Duration;
 import java.util.UUID;
 
 /** Self-deletion and its delayed anonymisation (BR-08), each call one atomic statement set. */
@@ -33,5 +34,5 @@ public interface AccountLifecycleRepository {
    * are older than {@code ttl}, with their preferences, links and tokens; an account that already
    * has audit or activity rows is kept.
    */
-  int deleteStalePendingBatch(java.time.Duration ttl, int limit);
+  int deleteStalePendingBatch(Duration ttl, int limit);
 }

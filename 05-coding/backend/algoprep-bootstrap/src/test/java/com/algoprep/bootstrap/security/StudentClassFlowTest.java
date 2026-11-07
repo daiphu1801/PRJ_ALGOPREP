@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 import com.jayway.jsonpath.JsonPath;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -338,7 +339,7 @@ class StudentClassFlowTest {
         classId,
         student,
         joinedAt,
-        left ? java.sql.Timestamp.valueOf("2026-05-01 00:00:00") : null);
+        left ? Timestamp.valueOf("2026-05-01 00:00:00") : null);
   }
 
   private int enrolmentRows(UUID classId, UUID student) {

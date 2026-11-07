@@ -6,6 +6,7 @@ import { useT } from "@/shared/i18n";
 import { DashboardBlockState, GroupedBarChart } from "@/shared/ui";
 import { useDifficultyBreakdown } from "../../api";
 import { buildDifficultyGroups } from "../../model/difficulty-groups";
+import { translateLabel } from "../../model/labels";
 
 export function DifficultyBreakdownBlock() {
   const t = useT("adminOverview");
@@ -29,7 +30,10 @@ export function DifficultyBreakdownBlock() {
       retryLabel={t("retry")}
     >
       {query.data && (
-        <GroupedBarChart groups={groups} legend={query.data.legend} />
+        <GroupedBarChart
+          groups={groups}
+          legend={query.data.legend.map((item) => translateLabel(t, item))}
+        />
       )}
     </DashboardBlockState>
   );

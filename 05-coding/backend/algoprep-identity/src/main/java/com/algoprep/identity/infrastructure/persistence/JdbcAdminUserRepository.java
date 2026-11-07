@@ -23,7 +23,11 @@ class JdbcAdminUserRepository implements AdminUserRepository {
       """
       SELECT u.id, u.display_name, u.email, r.id AS role_id, r.name AS role_name, r.base_category,
         u.status, u.last_active_at, u.password_hash IS NOT NULL AS has_password,
-        u.anonymized_at IS NOT NULL AS anonymized
+        u.anonymized_at IS NOT NULL AS anonymized,
+        (SELECT count(*) FROM identity.user_problem_best_score b
+          WHERE b.user_id = u.id AND b.best_verdict = 'ACCEPTED') AS solved_count,
+        COALESCE((SELECT s.total_submissions FROM identity.user_submission_stats s
+          WHERE s.user_id = u.id), 0) AS total_submissions
       FROM identity.users u JOIN identity.roles r ON r.id = u.role_id
       """;
 
@@ -39,7 +43,9 @@ class JdbcAdminUserRepository implements AdminUserRepository {
               rs.getString("status"),
               lastActive(rs.getObject("last_active_at", OffsetDateTime.class)),
               rs.getBoolean("has_password"),
-              rs.getBoolean("anonymized"));
+              rs.getBoolean("anonymized"),
+              rs.getLong("solved_count"),
+              rs.getLong("total_submissions"));
 
   private final ObjectProvider<JdbcClient> jdbc;
 

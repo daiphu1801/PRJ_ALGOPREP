@@ -59,7 +59,8 @@ class IdentityMigrationTest {
           "user_problem_best_score",
           "user_submission_stats",
           "user_daily_submission_stats",
-          "identity_recent_activity");
+          "identity_recent_activity",
+          "processed_domain_events");
 
   @Container @ServiceConnection
   static final PostgreSQLContainer POSTGRES =
@@ -74,7 +75,7 @@ class IdentityMigrationTest {
   @Autowired private Flyway flyway;
 
   @Test
-  @DisplayName("creates exactly the 17 identity tables from BD section 1")
+  @DisplayName("creates exactly the 18 identity tables from BD section 1")
   void createsAllTables() {
     List<String> tables =
         jdbc.queryForList(

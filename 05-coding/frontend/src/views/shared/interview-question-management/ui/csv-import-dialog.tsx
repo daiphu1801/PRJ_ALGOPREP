@@ -5,7 +5,7 @@
 // Nothing is created from a file that fails as a whole (missing column, empty, too many rows).
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
   CSV_TEMPLATE,
   parseQuestionsCsv,
@@ -15,7 +15,7 @@ import {
 } from "@/entities/interview-question";
 import { useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
-import { Button, Modal } from "@/shared/ui";
+import { Button, FilePickerButton, Modal } from "@/shared/ui";
 import { useImportQuestions } from "../api";
 
 type Props = {
@@ -44,7 +44,6 @@ export function CsvImportDialog({ open, onClose, existing }: Props) {
   const topics = useInterviewTopics();
   const levels = useInterviewLevels();
   const importQuestions = useImportQuestions();
-  const input = useRef<HTMLInputElement>(null);
   const [outcome, setOutcome] = useState<Outcome | null>(null);
 
   async function handleFile(file: File) {
@@ -102,30 +101,19 @@ export function CsvImportDialog({ open, onClose, existing }: Props) {
           >
             {t("csvImport.close")}
           </Button>
-          <Button
+          <FilePickerButton
             variant="cta"
             size="sm"
             disabled={importQuestions.isPending}
-            onClick={() => input.current?.click()}
+            accept=".csv,text/csv"
+            inputTestId="csv-input"
+            onFiles={([file]) => void handleFile(file!)}
           >
             {outcome ? t("csvImport.chooseAnother") : t("csvImport.choose")}
-          </Button>
+          </FilePickerButton>
         </>
       }
     >
-      <input
-        ref={input}
-        type="file"
-        accept=".csv,text/csv"
-        hidden
-        data-testid="csv-input"
-        onChange={(event) => {
-          const file = event.target.files?.[0];
-          if (file) void handleFile(file);
-          event.target.value = "";
-        }}
-      />
-
       <p>{t("csvImport.hint")}</p>
       <ul className="mt-2 list-disc pl-5">
         <li>{t("csvImport.columns")}</li>

@@ -38,7 +38,7 @@
 | Tên vật lý (slug) | `admin_overview` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A3 (`ADMIN`) |
-| Phiên bản | V1.0 |
+| Phiên bản | V1.3 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/15 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
@@ -60,6 +60,9 @@
 | V0.8 | Sheet 6 | Theo báo cáo `06-plan/reports/261014-1054-admin-ux-review/` (B5, F12): "Xem tất cả" của khối Bài phổ biến nhất luôn hiện kể cả khi khối rỗng hoặc lỗi (prop `footer` của `DashboardBlockState`); tuần trống vẫn vẽ lưới chấm mờ; tỉ lệ verdict dồn phần dư vào lát có phần dư lớn nhất cho tổng 100% (`wholePercents`); mock độ khó sửa cho Accepted không vượt Tổng lượt nộp. Không đổi spec | 2026-10-14 | Claude |
 | V0.9 | Sheet 5, 6 (ghi chú), 7, Câu hỏi mở | Sửa 2026-10-22 đồng bộ DB, `DEC-2026-1022-identity-schema-sync` mục (5). Đóng Q2: số "người dùng hoạt động" (thẻ 30 ngày, sparkline 7 ngày, cột "quay lại" của biểu đồ giữ chân) lấy từ `refresh_tokens.issued_at`; dòng token hết hạn/đã thu hồi giữ tối thiểu 6 tháng, có chỉ mục `refresh_tokens(issued_at)`. Sửa câu "Bảng `users` không có cột mốc đăng nhập" (nay nêu rõ `users.last_active_at` chỉ nuôi phần hiển thị "hoạt động lần cuối", không là nguồn của số này). Sửa số dòng trích `02-bd/database/F1_identity.md` sang bản 2026-10-22. Không đổi bố cục | 2026/10/22 | Nhóm phát triển AlgoPrep |
 | V1.0 | Câu hỏi mở | Đóng Q1 (theo DD BR-17) và Q3 (chủ dự án chốt 2026-10-29: tải một lần khi vào màn). Không đổi bố cục hay hành vi | 2026/10/29 | Claude |
+| V1.1 | Hiện trạng bản dựng | Sửa 2026-11-03 (nối FE với API thật). Ba thẻ/khối của F1 đã gọi API thật: thẻ người dùng hoạt động (#41), thẻ yêu cầu đặt lại mật khẩu (#73) và biểu đồ người dùng mới/quay lại (#42), qua `real-dashboard.ts` và `withMockData`. Bảy khối còn lại chờ F4/F2 nên ở chế độ thật hiện lỗi chung kèm nút Thử lại, không hiển thị số giả. Khi kỳ trước bằng 0, server trả `deltaPercent = null` và hướng `none`, thẻ hiển thị dấu gạch thay cho phần trăm (đúng Sheet 7.1, không chia cho 0). Không đổi bố cục. Không có câu hỏi mở mới. | 2026/11/03 | Claude |
+| V1.2 | Hiện trạng bản dựng | Sửa 2026-11-07 (F1-8, nối bảy khối còn lại). Bảy khối của F4/F2 (tổng lượt nộp #43, theo ngôn ngữ #67, kết quả #68, độ khó #69, theo ngày #70, theo tháng #71, bài phổ biến #72) gọi API thật qua `real-submissions.ts` và `withMockData`, nên cả mười khối đã nối thật. Ở chế độ thật mỗi khối lỗi hiện trạng thái lỗi riêng kèm nút Thử lại (server trả `503 IDT-506` cho đúng khối đó), không còn khối nào ở chế độ "lỗi chung vì chưa có endpoint". Nhãn và màu của ngôn ngữ, verdict, hai chuỗi của biểu đồ độ khó do frontend gán (server chỉ trả mã); số chấm mỗi cột của khối theo ngày tính theo ngày đông nhất tuần (thang 10 chấm). Khối độ khó ghép nhóm theo `levelCode` với danh sách mức admin đang quản lý. Cache 60 giây mỗi khối chưa có (owner hoãn, `DEC-2026-1107-f1-backend-clear-order`). Không đổi bố cục. | 2026/11/07 | Claude |
+| V1.3 | Hiện trạng bản dựng | Nhãn của ba khối F4 nay đi qua i18n (vi và en), khoá theo mã máy chủ gửi: ngôn ngữ `adminOverview.labels.language.{PYTHON,CPP,JAVA}`, kết quả chấm `labels.verdict.{ACCEPTED,WRONG_ANSWER,TIME_LIMIT_EXCEEDED,RUNTIME_ERROR,COMPILE_ERROR}`, chú giải biểu đồ độ khó `labels.legend.{totalSubmissions,acceptedSubmissions}`. `real-submissions.ts` chỉ còn giữ màu (token thiết kế) và gắn `labelKey`; ba khối dịch bằng `translateLabel` (`05-coding/frontend/src/views/admin/overview/model/labels.ts`). Mã verdict lạ máy chủ gửi vẫn hiện nguyên mã, không hiện khoá thiếu. Nhãn "Mới" và "Quay lại" của khối giữ chân người dùng (`real-dashboard.ts`) vẫn cứng, nằm ngoài đợt này (nợ). Chưa duyệt hình. Không đổi bố cục, RD, endpoint | 2026/11/07 | Claude |
 
 ---
 

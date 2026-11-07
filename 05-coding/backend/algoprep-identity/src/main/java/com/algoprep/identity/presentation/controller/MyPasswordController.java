@@ -23,22 +23,23 @@ class MyPasswordController {
 
   record ChangePasswordRequest(String currentPassword, String newPassword) {}
 
-  record MessageResponse(String message) {}
+  record ChangePasswordResponse(String message, boolean noticeEmailFailed) {}
 
   @PostMapping("/password")
-  MessageResponse change(
+  ChangePasswordResponse change(
       @AuthenticationPrincipal Jwt jwt, @RequestBody ChangePasswordRequest body) {
     // A token issued before "sid" existed has no session: 401 makes the client refresh and retry.
     String sid = jwt.getClaimAsString("sid");
     if (sid == null) {
       throw new InvalidBearerTokenException("Token has no session id");
     }
-    change.change(
-        new ChangeMyPasswordCommand(
-            UUID.fromString(jwt.getSubject()),
-            UUID.fromString(sid),
-            body.currentPassword(),
-            body.newPassword()));
-    return new MessageResponse("Đổi mật khẩu thành công.");
+    boolean noticeEmailFailed =
+        change.change(
+            new ChangeMyPasswordCommand(
+                UUID.fromString(jwt.getSubject()),
+                UUID.fromString(sid),
+                body.currentPassword(),
+                body.newPassword()));
+    return new ChangePasswordResponse("Đổi mật khẩu thành công.", noticeEmailFailed);
   }
 }

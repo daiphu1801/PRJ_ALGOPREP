@@ -90,6 +90,33 @@ public final class IdentityErrorCodes {
   /** Body of an admin user action is not valid [SoT: Suy luan] (HTTP 422). */
   public static final String ADMIN_USER_REQUEST_INVALID = "IDT-V26";
 
+  /** OAuth {@code state} unknown, expired, used, or the provider refused the code (HTTP 401). */
+  public static final String OAUTH_STATE_INVALID = "IDT-109";
+
+  /** The provider did not verify the e-mail, so no account is linked or created (HTTP 422). */
+  public static final String OAUTH_EMAIL_UNVERIFIED = "IDT-110";
+
+  /** The provider is not configured or did not answer (HTTP 503). */
+  public static final String OAUTH_UNAVAILABLE = "IDT-505";
+
+  /** The path names a provider other than {@code github} or {@code google} (HTTP 400). */
+  public static final String OAUTH_PROVIDER_UNKNOWN = "IDT-V28";
+
+  /** The verification e-mail could not be sent, so no account or code is kept (HTTP 503). */
+  public static final String VERIFICATION_EMAIL_UNAVAILABLE = "IDT-504";
+
+  /** A block of the admin overview could not read the judge or problem-bank data (HTTP 503). */
+  public static final String DASHBOARD_SOURCE_UNAVAILABLE = "IDT-506";
+
+  /** The judge or problem-bank figures a class read needs could not be read (HTTP 503). */
+  public static final String CLASS_METRICS_UNAVAILABLE = "IDT-507";
+
+  /** The submission history the personal data export needs could not be read (HTTP 503). */
+  public static final String SUBMISSION_EXPORT_UNAVAILABLE = "IDT-508";
+
+  /** {@code problemIds} of #48 is empty, has a malformed UUID or more than 100 ids (HTTP 422). */
+  public static final String PROBLEM_IDS_INVALID = "IDT-V27";
+
   /** {@code X-Requested-With} header missing on the cookie-based refresh call (HTTP 400). */
   public static final String MISSING_REQUESTED_WITH = "IDT-V11";
 

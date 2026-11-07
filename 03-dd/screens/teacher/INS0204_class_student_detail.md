@@ -18,6 +18,7 @@ Bảng 0.2 ghi lịch sử.
 | Ver | Nội dung | Ngày |
 | :--- | :--- | :--- |
 | V0.1 | DD kết hợp hồ sơ lớp, bài giao và lịch sử nộp trong phạm vi lớp | 2026-10-24 |
+| V0.2 | EVT-1 chế độ thật: `useClassAssignments` (danh sách không phân trang) tắt, dùng #49 trang đầu và #28; ghi chú 2026-11-07 | 2026-11-07 |
 
 Bảng 0.3 quy ước nguồn.
 
@@ -49,7 +50,7 @@ Bảng 2.1 ánh xạ đủ EVT Sheet 8.
 
 | EVT | API ID | Hook/mutation đích | Hiện trạng |
 | :--- | :--- | :--- | :--- |
-| EVT-1 tải | F1 #28 `GetClassStudentProfile`; F2 #49/§50 `ListClassAssignments?classId`; F4 #12 `ListStudentClassSubmissions` | `useClassStudentDetail`, `useClassAssignments`, `useStudentClassSubmissions` | Mock |
+| EVT-1 tải | F1 #28 `GetClassStudentProfile`; F2 #49/§50 `ListClassAssignments?classId`; F4 #12 `ListStudentClassSubmissions` | `useClassStudentDetail`, `useClassAssignments` (chỉ mock; chế độ thật dùng `useClassAssignmentsPage` #49), `useStudentClassSubmissions` | #28, #49 và #12 thật; `useClassAssignments` tắt ở chế độ thật (2026-11-07) |
 | EVT-2 quay lại | Không API; `router.back()` với fallback màn lớp | Navigation | Có |
 | EVT-3 quản lý lớp | Không API; `/instructor/classes` | `next/link` | Có |
 | EVT-4 mở gỡ | Không API | dialog state | Có |
@@ -117,3 +118,10 @@ Bảng 7.1 bao phủ EVT-1–9.
 **Nợ prototype:** bốn nguồn của BD hiện được mock/gộp; cần đổi sang F1 #28, F2 §50, F4 #12, không gọi P1 trực tiếp từ browser, phân trang/retry từng vùng và UUID thật. Dòng `INS0204` của `06-plan/PROTOTYPE_DEBT.md` giữ mở tới khi code nối thật. `[SoT: BD Sheet 4.4; V]`
 
 **Đã đóng ở DD:** F1 #28 mục 0.4.2 định nghĩa DTO, quyền đọc và nguồn `assignmentProgress`; F4 P1 là cổng nội bộ của F1, không có REST F4 mới. Điểm tốt nhất ghép với F2 §50 bằng `problemId`; nhãn tiến độ lấy từ metrics theo phạm vi lớp. `[SoT: BD Sheet 7.3; F1 #28; F4 P1]`
+
+## Cập nhật 2026-11-07 (nối API thật)
+
+API tiêu thụ: `GET /api/v1/identity/classes/{classId}/students/{studentId}/detail` (#28, mục 0.4.2) và `GET /api/v1/problem-bank/instructor/class-assignments` trang 1 (F2 #49) để lấy tên bài. Hook `useClassStudentDetail`; `IDT-414` thành null ("không tìm thấy").
+
+
+**Ghi chú FE 2026-11-07:** tên bài, chủ đề, AC lấy từ mọi trang F2 #49 qua `useClassAssignedProblems` (entities/class-assignment); hợp đồng #49 không đổi.

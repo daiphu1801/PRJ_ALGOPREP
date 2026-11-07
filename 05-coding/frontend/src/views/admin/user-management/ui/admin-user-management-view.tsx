@@ -361,8 +361,8 @@ function AdminUserManagementInner({
       : "-";
   }
 
-  // Solved count and submissions have no data source with the real API yet (F4 read
-  // model), so those columns appear only when the loaded rows carry them.
+  // Solved count and submissions come from the F1 read models with the real API (#35); the columns
+  // appear only when the loaded rows carry them.
   const hasCounts = accounts.some((user) => user.solvedCount !== undefined);
   const hasLastActive = accounts.some(
     (user) =>
@@ -625,6 +625,7 @@ function AdminUserManagementInner({
                   ? t("role.deactivated")
                   : t(`role.${item.role}`),
               value: item.percent,
+              valueLabel: item.label,
               colorVar: ROLE_BAR_COLOR_VAR[item.role],
             }))}
           />

@@ -1,5 +1,6 @@
 package com.algoprep.bootstrap.config;
 
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,6 +39,9 @@ class SubmissionWebSocketConfig implements WebSocketMessageBrokerConfigurer {
   private final Converter<Jwt, AbstractAuthenticationToken> converter;
   private final SubmissionSocketSessions sessions;
 
+  @Value("${judge.websocket.allowed-origins:}")
+  private String allowedOrigins = "";
+
   SubmissionWebSocketConfig(
       JwtDecoder decoder,
       Converter<Jwt, AbstractAuthenticationToken> converter,
@@ -69,8 +73,16 @@ class SubmissionWebSocketConfig implements WebSocketMessageBrokerConfigurer {
   @Override
   public void registerStompEndpoints(StompEndpointRegistry registry) {
     registry.setErrorHandler(new GenericErrorHandler());
-    // Default same-origin checking stays enabled; no wildcard origins or SockJS endpoint.
-    registry.addEndpoint("/ws");
+    var endpoint = registry.addEndpoint("/ws");
+    String[] origins =
+        Arrays.stream(allowedOrigins.split(","))
+            .map(String::trim)
+            .filter(origin -> !origin.isEmpty())
+            .toArray(String[]::new);
+    // Empty configuration retains Spring's same-origin policy; local dev uses an explicit list.
+    if (origins.length > 0) {
+      endpoint.setAllowedOrigins(origins);
+    }
   }
 
   @Override

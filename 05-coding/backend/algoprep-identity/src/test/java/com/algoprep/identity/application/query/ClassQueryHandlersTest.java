@@ -2,16 +2,21 @@ package com.algoprep.identity.application.query;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.AlgoPrepException;
+import com.algoprep.identity.application.ports.out.ClassAssignmentLookupPort;
+import com.algoprep.identity.application.ports.out.ClassMetricsPort;
 import com.algoprep.identity.domain.model.ClassInviteCode;
 import com.algoprep.identity.domain.model.ClassRosterEntry;
+import com.algoprep.identity.domain.model.ClassStudentRow;
 import com.algoprep.identity.domain.model.InstructorClass;
 import com.algoprep.identity.domain.ports.out.InstructorClassRepository;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
@@ -49,14 +54,23 @@ class ClassQueryHandlersTest {
   }
 
   @Test
-  void rosterIsListedOnlyForAnOwnedClass() {
+  void rosterIsListedOnlyForAnOwnedClassAndKeepsStudentsWhenFiguresAreDown() {
     List<ClassRosterEntry> rows =
         List.of(new ClassRosterEntry(UUID.randomUUID(), "Student", "s@example.test", null, now));
-    when(classes.isOwner(classId, instructor)).thenReturn(true);
+    InstructorClass owned = new InstructorClass(classId, "A", null, null, 1, now);
+    when(classes.findOwned(classId, instructor)).thenReturn(Optional.of(owned));
     when(classes.listActiveRoster(classId)).thenReturn(rows);
-    ListClassRosterQueryHandler handler = new ListClassRosterQueryHandler(classes);
+    ClassAssignmentLookupPort down = mock(ClassAssignmentLookupPort.class);
+    when(down.assignmentsOf(any())).thenThrow(new IllegalStateException("down"));
+    ClassMetricsAssembler assembler =
+        new ClassMetricsAssembler(classes, down, mock(ClassMetricsPort.class), () -> now);
+    ListClassRosterQueryHandler handler = new ListClassRosterQueryHandler(classes, assembler);
 
-    assertThat(handler.list(instructor, classId)).isEqualTo(rows);
+    List<ClassStudentRow> listed = handler.list(instructor, classId);
+
+    assertThat(listed).hasSize(1);
+    assertThat(listed.get(0).student()).isEqualTo(rows.get(0));
+    assertThat(listed.get(0).status()).isNull();
     assertThatThrownBy(() -> handler.list(UUID.randomUUID(), classId))
         .satisfies(ClassQueryHandlersTest::assertNotFound);
   }

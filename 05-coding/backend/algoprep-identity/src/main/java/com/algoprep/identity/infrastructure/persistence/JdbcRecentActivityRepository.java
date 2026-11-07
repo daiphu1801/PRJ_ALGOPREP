@@ -50,4 +50,25 @@ class JdbcRecentActivityRepository implements RecentActivityRepository {
         .param("at", Timestamp.from(e.occurredAt()))
         .update();
   }
+
+  @Override
+  public boolean addIfClassExists(ActivityEntry e) {
+    return jdbc.getObject()
+            .sql(
+                """
+        INSERT INTO identity.identity_recent_activity(
+            id, actor_user_id, scope_class_id, activity_type, ref_type, ref_id, occurred_at)
+        SELECT :id, :actor, c.id, :type, :refType, :refId, :at
+        FROM identity.classes c WHERE c.id = :class
+        """)
+            .param("id", e.id())
+            .param("actor", e.actorUserId())
+            .param("class", e.classId())
+            .param("type", e.activityType())
+            .param("refType", e.refType())
+            .param("refId", e.refId())
+            .param("at", Timestamp.from(e.occurredAt()))
+            .update()
+        > 0;
+  }
 }

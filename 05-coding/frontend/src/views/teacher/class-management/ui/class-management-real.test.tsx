@@ -28,6 +28,7 @@ vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
 import { apiMock, resetApiMock } from "@/shared/test/real-api";
 import { ClassManagementView } from "./class-management-view";
 
+const SUMMARY = "/identity/instructor/classes/summary";
 const m = viMessages.classManagement;
 const apiErrors = viMessages.apiErrors as Record<string, string>;
 
@@ -61,10 +62,50 @@ describe("ClassManagementView with the real API", () => {
   beforeEach(() => {
     resetApiMock();
     push.mockReset();
-    apiMock.get.mockResolvedValue({ items: [CLASS] });
+    // The judge figures are down (IDT-507): the screen falls back to the plain list.
+    apiMock.get.mockImplementation(async (path: string) => {
+      if (path === SUMMARY) throw new ApiError("IDT-507", 503, "down");
+      return { items: [CLASS] };
+    });
   });
 
-  it("lists the server's classes with the student count and no completion, average or absent column", async () => {
+  it("shows completion, average and absent figures of the class summary (F1 #56)", async () => {
+    apiMock.get.mockImplementation(async (path: string) =>
+      path === SUMMARY
+        ? {
+            items: [
+              {
+                ...CLASS,
+                classId: CLASS.id,
+                completionPercent: 40,
+                avgScore: 5.25,
+                absentCount: 3,
+              },
+              {
+                ...CLASS,
+                classId: "c2",
+                name: "Lớp trống",
+                studentCount: 0,
+                completionPercent: null,
+                avgScore: null,
+                absentCount: 0,
+              },
+            ],
+          }
+        : { items: [] },
+    );
+    await open();
+
+    const table = screen.getByRole("table", { name: m.header.title });
+    expect(within(table).getByText("40%")).toBeInTheDocument();
+    expect(within(table).getByText("5.3")).toBeInTheDocument();
+    expect(within(table).getByText("3")).toBeInTheDocument();
+    // A class with no assigned problem shows a dash, never 0%.
+    expect(within(table).queryByText("0%")).toBeNull();
+    expect(within(table).getAllByText("-").length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("lists the server's classes with the student count and no completion, average or absent column when the judge is down", async () => {
     await open();
 
     expect(apiMock.get).toHaveBeenCalledWith("/identity/classes/my");

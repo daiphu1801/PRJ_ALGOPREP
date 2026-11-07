@@ -108,7 +108,10 @@ export function ChangePasswordDialog({
 
   async function handleSubmit() {
     const result = await submit();
-    if (result.ok)
+    if (result.ok && result.noticeEmailFailed)
+      // The password is set; only the notice e-mail failed (best effort on the server).
+      toast.warning(t("passwordDialog.doneSetNoMail"));
+    else if (result.ok)
       // First-time set on an OAuth account revokes no other session (owner 2026-10-21), so no sign-out hint.
       toast.success(
         t(hasPassword ? "passwordDialog.done" : "passwordDialog.doneSet"),

@@ -9,6 +9,7 @@ import {
   renderHook,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import viMessages from "../../../../../messages/vi.json";
@@ -52,6 +53,8 @@ const dto = (
   status,
   lastActiveAt: id === "an" ? "2026-01-05T03:00:00Z" : null,
   hasPassword: true,
+  solvedCount: id === "an" ? 4 : 0,
+  totalSubmissions: id === "an" ? 1234 : 0,
 });
 
 const ROWS = [
@@ -123,7 +126,23 @@ describe("AdminUserManagementView with the real API", () => {
     serve();
   });
 
-  it("shows the server rows and the last activity, and hides the counts the backend cannot fill", async () => {
+  it("shows the solved and submission columns the server sends (F1 #35)", async () => {
+    await open();
+
+    const table = screen.getByRole("table", { name: m.tableCaption });
+    expect(
+      within(table).getByRole("columnheader", { name: m.columnSolved }),
+    ).toBeInTheDocument();
+    expect(
+      within(table).getByRole("columnheader", { name: m.columnSubmissions }),
+    ).toBeInTheDocument();
+    expect(within(table).getByText("4")).toBeInTheDocument();
+    expect(
+      within(table).getByText((1234).toLocaleString("vi-VN")),
+    ).toBeInTheDocument();
+  });
+
+  it("shows the server rows and the last activity, and the solved and submission columns", async () => {
     await open();
 
     expect(screen.getByText("Binh Day")).toBeInTheDocument();
@@ -132,11 +151,11 @@ describe("AdminUserManagementView with the real API", () => {
       screen.getByRole("columnheader", { name: m.columnStatus }),
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole("columnheader", { name: m.columnSolved }),
-    ).toBeNull();
+      screen.getByRole("columnheader", { name: m.columnSolved }),
+    ).toBeInTheDocument();
     expect(
-      screen.queryByRole("columnheader", { name: m.columnSubmissions }),
-    ).toBeNull();
+      screen.getByRole("columnheader", { name: m.columnSubmissions }),
+    ).toBeInTheDocument();
     expect(
       screen.getByRole("columnheader", { name: m.columnLastActive }),
     ).toBeInTheDocument();
@@ -149,6 +168,14 @@ describe("AdminUserManagementView with the real API", () => {
       page: 1,
       pageSize: 20,
     });
+  });
+
+  it("reads each role share as the count and the percent, not a bare number", async () => {
+    serve();
+    await open();
+
+    expect(await screen.findByText("30 · 66,7%")).toBeInTheDocument();
+    expect(screen.getByText("10 · 22,2%")).toBeInTheDocument();
   });
 
   it("asks the server for the next page", async () => {

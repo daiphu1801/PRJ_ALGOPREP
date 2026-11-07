@@ -17,11 +17,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.function.Function;
 import org.springframework.stereotype.Service;
@@ -93,8 +95,7 @@ class ExportSystemAuditLogsQueryHandler implements ExportSystemAuditLogsUseCase 
     if (requested == null || requested.isEmpty()) {
       throw invalid("At least one column is required");
     }
-    if (new java.util.HashSet<>(requested).size() != requested.size()
-        || !KEYS.containsAll(requested)) {
+    if (new HashSet<>(requested).size() != requested.size() || !KEYS.containsAll(requested)) {
       throw invalid("Columns must be unique and known");
     }
     List<Column> chosen = new ArrayList<>();
@@ -158,7 +159,7 @@ class ExportSystemAuditLogsQueryHandler implements ExportSystemAuditLogsUseCase 
     @Override
     public List<String> next() {
       if (!hasNext()) {
-        throw new java.util.NoSuchElementException();
+        throw new NoSuchElementException();
       }
       return buffer.removeFirst();
     }

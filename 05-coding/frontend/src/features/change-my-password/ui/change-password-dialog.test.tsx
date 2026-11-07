@@ -87,6 +87,16 @@ describe("ChangePasswordDialog", () => {
     expect(read().at(-1)).toEqual(["success", d.doneSet]);
   });
 
+  it("warns, but still closes, when only the notice e-mail failed", async () => {
+    const read = watch();
+    apiMock.post.mockResolvedValue({ noticeEmailFailed: true });
+
+    submit({ hasPassword: false });
+
+    await waitFor(() => expect(onClose).toHaveBeenCalledTimes(1));
+    expect(read().at(-1)).toEqual(["warning", d.doneSetNoMail]);
+  });
+
   it("marks the current-password field for IDT-115 and stays open", async () => {
     const read = watch();
     apiMock.post.mockRejectedValue(new ApiError("IDT-115", 422));

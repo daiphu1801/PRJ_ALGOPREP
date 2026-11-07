@@ -119,3 +119,24 @@ Bảng 7.1 bao phủ EVT-1–10.
 **Nợ prototype:** cần nối ba query tải ban đầu, popup với F2 §52–53, gỡ với §54 và xử lý kết quả một phần; route chi tiết bài phải là `/instructor/problems/{problemId}`. Dòng `INS0202` trong `06-plan/PROTOTYPE_DEBT.md` giữ mở đến khi code khớp DD. `[SoT: BD Sheet 4.4; V]`
 
 **Câu hỏi mở:** không có lựa chọn sản phẩm chặn DD. Mã `problemStatus` của BD và `withdrawn` boolean của F2 đã được DD module chọn; khi đồng bộ BD nên dùng nhãn màn “Đã rút xuống” mà không đưa tên enum backend ra UI. `[SoT: F2 §50.3, mục 61 Q-11]`
+
+## Nối API thật (F2-6 phần 2, 2026-11-06)
+
+Bảng dưới liệt kê endpoint màn tiêu thụ và hiện trạng; hợp đồng chỉ định nghĩa ở `03-dd/api/F2_problem-bank.md`.
+
+| Endpoint | Hiện trạng |
+| :--- | :--- |
+| `#49` | `useClassAssignmentsPage` / `realListAssignments` |
+| `#50` | `useAssignmentSummary`; `avgAcRatePercent` chưa có chỗ hiển thị |
+| `#51` | `useAssignableProblems(classId, q, page)` |
+| `#52` | `useAssignProblems` trả `AssignResult` |
+| `#53` | `useRemoveAssignment`, làm mới ở `onSettled` |
+| `#54` | Chưa nối (thuộc INS0101) |
+
+Test đường thật: `real-assignments.test.ts` (13 ca), `views/teacher/class-assignments/ui/class-assignments-real.test.tsx` (8 ca).
+
+## Ghi chú đồng bộ prototype 2026-11-07: AC trung bình
+
+`#50` (`realAssignmentSummary`) trả `avgAcRatePercent`; `AssignmentSummary.avgAcRate` hiển thị ở dòng mô tả đầu màn, sau số bài đã gán, khoá `classAssignments.header.avgAcRate` ("AC trung bình {value}"). `null` hoặc mock không có giá trị: "-". 0 thật: "0%". Test: `class-assignments-real.test.tsx` (hai ca: 62%, 0%, và dấu gạch khi `null`).
+
+Còn mở: chỗ đặt (dòng tóm tắt thay cho thẻ riêng của BD Sheet 5 B NO 4) `[SoT: Suy luận]`, chờ owner xem hình; `useClassAssignments()` không phân trang còn mock cho `INS0101` và `INS0204`.

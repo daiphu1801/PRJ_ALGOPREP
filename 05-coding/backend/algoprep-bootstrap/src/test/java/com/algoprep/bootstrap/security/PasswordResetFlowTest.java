@@ -32,6 +32,7 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -459,7 +460,7 @@ class PasswordResetFlowTest {
     try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
       var jobs =
           executor.invokeAll(
-              java.util.stream.IntStream.range(0, 12)
+              IntStream.range(0, 12)
                   .<Callable<Boolean>>mapToObj(
                       i -> () -> otpStore.verify(id, "wrong-digest").isPresent())
                   .toList());

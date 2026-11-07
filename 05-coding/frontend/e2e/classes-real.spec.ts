@@ -92,11 +92,11 @@ test("an instructor creates, edits and deletes a class on the server", async ({
   ).toBeVisible();
   expect(stored(id, "name")).toBe(`${name} sua`);
 
-  // The list no longer shows the F4 columns, only what the server has.
+  // F1-4 wired the completion column to the server, so it shows.
   await page.goto(`${APP_URL}/instructor/classes`);
   const table = page.getByRole("table", { name: m.header.title });
   await expect(table.getByText(`${name} sua`)).toBeVisible();
-  await expect(table.getByText(m.classList.col.completionBar)).toHaveCount(0);
+  await expect(table.getByText(m.classList.col.completionBar)).toBeVisible();
 
   // Delete.
   await page.getByRole("button", { name: `Xoá lớp ${name} sua` }).click();
@@ -149,16 +149,16 @@ test("a learner joins with the code, the instructor sees and removes them, and t
       ),
     ).toBe("1");
 
-    // The learner's detail page: from its own call, with no assignment block.
+    // The learner's detail page: the assignment block is wired (F2-7), empty for a new class.
     await learnerPage.goto(`${APP_URL}/classes/${id}`);
     await expect(learnerPage.getByRole("heading", { name })).toBeVisible();
-    await expect(learnerPage.getByText(mine.card.assignments)).toHaveCount(0);
+    await expect(learnerPage.getByText(mine.card.assignments)).toBeVisible();
 
-    // The instructor sees the learner in the roster, with contact details and no F4 columns.
+    // The instructor sees the learner in the roster, with contact details and the F4 columns.
     await page.reload();
     const roster = page.getByRole("table", { name: d.students.title });
     await expect(roster.getByText(learner.email)).toBeVisible();
-    await expect(roster.getByText(d.students.col.avgScore)).toHaveCount(0);
+    await expect(roster.getByText(d.students.col.avgScore)).toBeVisible();
 
     // Removing the learner keeps the history (left_at is set) and ends the learner's membership.
     await page

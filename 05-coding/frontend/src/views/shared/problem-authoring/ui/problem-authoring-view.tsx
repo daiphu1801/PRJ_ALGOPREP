@@ -21,6 +21,11 @@ import {
   AI_GUARD_KEYS,
   TESTCASE_CATEGORIES,
   isSpecComplete,
+  realBulkUpload,
+  realCreateTestcase,
+  realDeleteTestcase,
+  realRunReferenceSolution,
+  realUpdateTestcase,
   useGenerateTestcases,
   useProblemDraft,
   usePublishProblem,
@@ -30,12 +35,16 @@ import {
   useProblemTopics,
   type AiGuardKey,
   type ProblemDraft,
+  type ProblemStats,
+  type SaveResult,
+  type SaveSection,
+  type ServerState,
   type Testcase,
   type TestcaseCategory,
   type WorkedExample,
 } from "@/entities/problem";
-import { ApiError, isNotFound } from "@/shared/api";
-import { useT } from "@/shared/i18n";
+import { ApiError, isMockMode, isNotFound } from "@/shared/api";
+import { useApiErrorMessage, useT } from "@/shared/i18n";
 import { useUnsavedChangesGuard } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
 import {
@@ -59,6 +68,8 @@ import {
   UnsavedChangesDialog,
   type DataTableColumn,
 } from "@/shared/ui";
+import type { BulkPairRow } from "../model/bulk-pairs";
+import { BulkUploadDialog } from "./bulk-upload-dialog";
 import { ExampleDialog, TestcaseDialog } from "./edit-dialogs";
 import { SpecEditor } from "./spec-editor";
 
@@ -81,6 +92,47 @@ const isPositiveInt = (value: number) => Number.isInteger(value) && value > 0;
 const STALE_CHECK = { ran: false, passed: 0, total: 0 };
 
 type SaveState = "idle" | "saving" | "saved" | "error";
+
+// Fields of the draft that each save step stores (real mode: `realSaveDraft`).
+const SECTION_FIELDS: Record<SaveSection, (keyof ProblemDraft)[]> = {
+  content: [
+    "title",
+    "body",
+    "constraints",
+    "topic",
+    "otherTopicIds",
+    "difficulty",
+    "limits",
+    "tags",
+    "solutionLanguage",
+    "solution",
+    "examples",
+  ],
+  spec: ["spec"],
+  ai: ["aiBrief", "aiGuards"],
+  status: ["status"],
+};
+
+/** The saved copy after a save that stopped half way: only the sections the server took. */
+function withApplied(
+  saved: ProblemDraft,
+  draft: ProblemDraft,
+  applied: SaveSection[],
+): ProblemDraft {
+  const next: Record<string, unknown> = { ...saved };
+  for (const section of applied)
+    for (const field of SECTION_FIELDS[section]) next[field] = draft[field];
+  return next as ProblemDraft;
+}
+
+// PRB-030 lists every missing publish condition; each one reads as the checklist line of the same meaning.
+const PUBLISH_ITEM_KEY: Record<string, string> = {
+  MIN_APPROVED_TESTCASES: "minTestcases",
+  MIN_APPROVED_SAMPLES: "minPublic",
+  MIN_WORKED_EXAMPLES: "minExamples",
+  REFERENCE_SOLUTION_PASSES_ALL: "solutionPasses",
+  SPEC_DECLARED: "specDeclared",
+};
 
 type Props = {
   /** Area root the back link returns to, e.g. "/admin/problems". */
@@ -111,6 +163,7 @@ export function ProblemAuthoringView({ basePath, problemId, fromId }: Props) {
       basePath={basePath}
       problemId={problemId}
       isCopy={!problemId && !!fromId}
+      server={query.data.server}
       initial={query.data.draft}
       aiGeneration={query.data.aiGeneration}
       stats={query.data.stats}
@@ -125,8 +178,10 @@ type FormProps = Props & {
   isCopy?: boolean;
   /** F2-14 quota read from the server: attempts used and the cap. */
   aiGeneration: { used: number; limit: number };
-  stats: { submissionCount: number; acRate: number };
+  stats: ProblemStats | null;
   initialSavedAt: string | null;
+  /** Real mode: what the server said at load (lock value, read-only, counts). Absent on mock data. */
+  server?: ServerState;
 };
 
 function ProblemAuthoringForm({
@@ -137,8 +192,10 @@ function ProblemAuthoringForm({
   aiGeneration,
   stats,
   initialSavedAt,
+  server,
 }: FormProps) {
   const t = useT("problemAuthoring");
+  const apiMessage = useApiErrorMessage();
   const [draft, setDraft] = useState<ProblemDraft>(initial);
   const [savedAt, setSavedAt] = useState(initialSavedAt);
   const topicList = useProblemTopics();
@@ -150,12 +207,18 @@ function ProblemAuthoringForm({
   const id = problemId ?? createdId;
   const generate = useGenerateTestcases();
   const [tab, setTab] = useState<TabKey>("content");
-  // Last persisted copy, serialised: "dirty" is just "the draft no longer matches it".
-  const [savedJson, setSavedJson] = useState(() =>
-    isCopy ? "" : JSON.stringify(draft),
+  // Last persisted copy: "dirty" is "the draft no longer matches it". A duplicate has none yet. In real
+  // mode the run result is not persisted, so it does not count as a change.
+  const [saved, setSaved] = useState<ProblemDraft | null>(
+    isCopy ? null : initial,
   );
+  const persistKey = (value: ProblemDraft) =>
+    JSON.stringify(server ? { ...value, solutionCheck: STALE_CHECK } : value);
+  // The `updatedAt` the next write must quote (optimistic lock); testcase writes move it too.
+  const lock = useRef(server?.updatedAt ?? null);
+  const [running, setRunning] = useState(false);
   const [saveState, setSaveState] = useState<SaveState>("idle");
-  const dirty = JSON.stringify(draft) !== savedJson;
+  const dirty = saved === null || persistKey(draft) !== persistKey(saved);
   const saving = saveState === "saving";
   // BD Q7/Q12/Q14: leaving with unsaved changes (back icon, sidebar, browser Back, tab close) asks first.
   const leaveGuard = useUnsavedChangesGuard(dirty);
@@ -164,6 +227,7 @@ function ProblemAuthoringForm({
   const [testcaseDialog, setTestcaseDialog] = useState<Testcase | "new" | null>(
     null,
   );
+  const [bulkOpen, setBulkOpen] = useState(false);
   const [exampleDialog, setExampleDialog] = useState<
     WorkedExample | "new" | null
   >(null);
@@ -179,39 +243,162 @@ function ProblemAuthoringForm({
     setDraft((previous) => ({ ...previous, ...changes }));
   }
 
-  function saveTestcase(
-    values: Pick<Testcase, "input" | "expected" | "visibility">,
-  ) {
-    const editing = testcaseDialog !== "new" ? testcaseDialog : null;
+  // Real mode with a saved problem: a testcase is written the moment the author confirms it (BD EVT-19
+  // to EVT-23), and the row on screen becomes the server's row. Otherwise the row stays on the screen.
+  const liveId = server ? id : undefined;
+  const readOnly = server?.readOnly ?? false;
+  // The caller may not read testcase bodies (no TESTCASE_MANAGEMENT:READ, or a read-only view): the
+  // server then sends counts only, and the table must not pretend the problem has no testcases.
+  const testcasesHidden =
+    server !== undefined &&
+    draft.testcases.length === 0 &&
+    server.testcaseSummary.total > 0;
+  const testcaseCount = testcasesHidden
+    ? server.testcaseSummary.total
+    : draft.testcases.length;
+
+  // The screen row and the saved copy move together: a live write is never an unsaved change.
+  function commitTestcases(next: (rows: Testcase[]) => Testcase[]) {
     setDraft((previous) => ({
       ...previous,
       solutionCheck: STALE_CHECK,
-      testcases: editing
-        ? previous.testcases.map((row) =>
-            row.id === editing.id ? { ...row, ...values } : row,
-          )
-        : [
-            ...previous.testcases,
-            {
-              ...values,
-              id: `tc-new-${++nextId.current}`,
-              origin: "manual",
-              approved: true,
-            },
-          ],
+      testcases: next(previous.testcases),
     }));
+    setSaved((previous) =>
+      previous
+        ? { ...previous, testcases: next(previous.testcases) }
+        : previous,
+    );
+  }
+
+  async function saveTestcase(
+    values: Pick<Testcase, "input" | "expected" | "visibility">,
+  ) {
+    const editing = testcaseDialog !== "new" ? testcaseDialog : null;
+    if (liveId) {
+      try {
+        const written = editing
+          ? await realUpdateTestcase(liveId, editing.id, {
+              // A side stored outside the database is never sent back (the dialog cannot show it).
+              ...(editing.largeSides?.includes("input") ||
+              values.input === editing.input
+                ? {}
+                : { input: values.input }),
+              ...(editing.largeSides?.includes("expected") ||
+              values.expected === editing.expected
+                ? {}
+                : { expected: values.expected }),
+              ...(values.visibility === editing.visibility
+                ? {}
+                : { visibility: values.visibility }),
+            })
+          : await realCreateTestcase(liveId, values);
+        lock.current = written.updatedAt;
+        commitTestcases((rows) =>
+          editing
+            ? rows.map((row) =>
+                row.id === editing.id ? written.testcase : row,
+              )
+            : [...rows, written.testcase],
+        );
+      } catch (error) {
+        toast.error(apiMessage(error));
+        return;
+      }
+    } else {
+      setDraft((previous) => ({
+        ...previous,
+        solutionCheck: STALE_CHECK,
+        testcases: editing
+          ? previous.testcases.map((row) =>
+              row.id === editing.id ? { ...row, ...values } : row,
+            )
+          : [
+              ...previous.testcases,
+              {
+                ...values,
+                id: `tc-new-${++nextId.current}`,
+                origin: "manual",
+                approved: true,
+              },
+            ],
+      }));
+    }
     setTestcaseDialog(null);
     toast.success(t(editing ? "toast.testcaseUpdated" : "toast.testcaseAdded"));
   }
 
-  function deleteTestcase(id: string) {
+  // EVT-15. Real mode needs a saved problem (the upload URLs are per problem id); mock mode reads the
+  // files and appends the rows to the draft like a manual add.
+  const bulkNeedsSave = !isMockMode() && !liveId;
+  async function bulkUpload(
+    pairs: BulkPairRow<File>[],
+    visibility: Testcase["visibility"],
+  ) {
+    if (liveId) {
+      const done = await realBulkUpload(
+        liveId,
+        pairs.map((pair) => ({
+          clientKey: pair.key,
+          input: pair.input,
+          expected: pair.expected,
+          visibility,
+        })),
+      );
+      lock.current = done.updatedAt;
+      commitTestcases((rows) => [...rows, ...done.added]);
+      toast.success(t("bulk.done", { count: done.added.length }));
+      return;
+    }
+    const added: Testcase[] = [];
+    for (const pair of pairs) {
+      added.push({
+        id: `tc-new-${++nextId.current}`,
+        input: (await pair.input.text()).trim(),
+        expected: (await pair.expected.text()).trim(),
+        visibility,
+        origin: "manual",
+        approved: true,
+      });
+    }
     setDraft((previous) => ({
       ...previous,
       solutionCheck: STALE_CHECK,
-      testcases: previous.testcases.filter((row) => row.id !== id),
+      testcases: [...previous.testcases, ...added],
     }));
+    toast.success(t("bulk.done", { count: added.length }));
+  }
+
+  // Delete of a row, and "Loại" of an unapproved draft (the same call, DD #43).
+  async function removeTestcase(
+    rowId: string,
+    messageKey: "toast.testcaseDeleted" | "toast.draftRejected",
+  ) {
+    if (liveId) {
+      try {
+        lock.current = (await realDeleteTestcase(liveId, rowId)).updatedAt;
+      } catch (error) {
+        toast.error(apiMessage(error));
+        return;
+      }
+      commitTestcases((rows) => rows.filter((row) => row.id !== rowId));
+    } else {
+      setDraft((previous) => ({
+        ...previous,
+        // A draft was never part of the checked set, so discarding one leaves the last run valid.
+        solutionCheck:
+          messageKey === "toast.draftRejected"
+            ? previous.solutionCheck
+            : STALE_CHECK,
+        testcases: previous.testcases.filter((row) => row.id !== rowId),
+      }));
+    }
+    toast.success(t(messageKey));
+  }
+
+  async function deleteTestcase(rowId: string) {
+    await removeTestcase(rowId, "toast.testcaseDeleted");
     setTestcaseToDelete(null);
-    toast.success(t("toast.testcaseDeleted"));
   }
 
   function saveExample(
@@ -252,6 +439,59 @@ function ProblemAuthoringForm({
     toast.success(t("toast.exampleDeleted"));
   }
 
+  // What a finished save changes on screen. Mock data: the whole draft counts as saved. Real data: either
+  // the server's own copy (every step went through) or, after a step failed, only the sections it took.
+  // Returns true when the save went through completely.
+  function applyResult(result: SaveResult, snapshot: ProblemDraft): boolean {
+    if (result.createdId) setCreatedId(result.createdId);
+    if (result.updatedAt !== undefined) lock.current = result.updatedAt;
+    const failed = result.error !== undefined;
+    if (!server) {
+      setSaved(snapshot);
+    } else if (!failed && result.record) {
+      const fresh = result.record.draft;
+      setDraft((previous) => ({
+        ...fresh,
+        solutionCheck: previous.solutionCheck,
+      }));
+      setSaved(fresh);
+    } else {
+      const base = saved ?? initial;
+      const next = withApplied(base, snapshot, result.applied);
+      // A created problem now has its own testcase ids; later live writes need them.
+      const rows = result.record?.draft.testcases;
+      setSaved(rows ? { ...next, testcases: rows } : next);
+      if (rows) setDraft((previous) => ({ ...previous, testcases: rows }));
+      // A publish the server refused must not leave the status switch on "published".
+      if (failed && !result.applied.includes("status"))
+        setDraft((previous) => ({ ...previous, status: next.status }));
+    }
+    if (result.record?.savedAt != null) setSavedAt(result.record.savedAt);
+    else if (!failed) setSavedAt(new Date().toISOString());
+    return !failed;
+  }
+
+  // The server's refusal, in words: PRB-030 names every missing publish condition, the rest are one line.
+  function reportFailure(error: unknown, fallbackKey: string) {
+    if (error instanceof ApiError && error.code === "PRB-030") {
+      const items = Array.isArray(error.details?.items)
+        ? (error.details.items as { code?: string; met?: boolean | null }[])
+        : [];
+      const missing = items
+        .filter((item) => item.met !== true && item.code)
+        .map((item) => PUBLISH_ITEM_KEY[item.code!])
+        .filter(Boolean)
+        .map((key) => t(`check.${key}`));
+      toast.warning(
+        missing.length
+          ? `${t("checklistBlockTitle")}: ${missing.join("; ")}`
+          : apiMessage(error),
+      );
+      return;
+    }
+    toast.error(error instanceof ApiError ? apiMessage(error) : t(fallbackKey));
+  }
+
   // Manual save (BD Q7). Resolves true when the save went through, so "save and leave" can wait on it.
   async function save(): Promise<boolean> {
     const snapshot = draft;
@@ -277,21 +517,40 @@ function ProblemAuthoringForm({
       toast.error(problemText);
       return false;
     }
+    return write(snapshot, false);
+  }
+
+  async function write(
+    snapshot: ProblemDraft,
+    publishing: boolean,
+  ): Promise<boolean> {
     setSaveState("saving");
     try {
-      const created = await saveDraft.mutateAsync({
+      const mutate = publishing ? publishDraft : saveDraft;
+      const result = await mutate.mutateAsync({
         draft: snapshot,
         problemId: id,
+        saved: saved ?? initial,
+        server,
+        updatedAt: lock.current,
       });
-      if (created) setCreatedId(created);
-      setSavedJson(JSON.stringify(snapshot));
-      setSavedAt(new Date().toISOString());
+      const done = applyResult(result, snapshot);
+      if (!done) {
+        setSaveState("error");
+        reportFailure(
+          result.error,
+          publishing ? "toast.publishFailed" : "toast.saveFailed",
+        );
+        return false;
+      }
+      if (publishing)
+        setDraft((previous) => ({ ...previous, status: "published" }));
       setSaveState("saved");
-      toast.success(t("toast.saved"));
+      toast.success(t(publishing ? "toast.published" : "toast.saved"));
       return true;
     } catch {
       setSaveState("error");
-      toast.error(t("toast.saveFailed"));
+      toast.error(t(publishing ? "toast.publishFailed" : "toast.saveFailed"));
       return false;
     }
   }
@@ -302,40 +561,76 @@ function ProblemAuthoringForm({
 
   // BD Q8: hard block. The button looks disabled while the checklist has unmet items but stays
   // clickable, so a click names EVERY missing condition and the checklist items jump to their tab.
+  // Real mode: the server runs the reference solution itself at this moment (BD EVT-33), so the screen
+  // does not insist on a client-side run first, and PRB-030 names whatever is still missing.
   async function publish() {
-    if (blocking.length > 0) {
+    const clientBlocking = server
+      ? blocking.filter((item) => item.key !== "solutionPasses")
+      : blocking;
+    if (clientBlocking.length > 0) {
       toast.warning(
-        `${t("checklistBlockTitle")}: ${blocking.map((item) => t(`check.${item.key}`)).join("; ")}`,
+        `${t("checklistBlockTitle")}: ${clientBlocking.map((item) => t(`check.${item.key}`)).join("; ")}`,
       );
       return;
     }
-    const snapshot: ProblemDraft = { ...draft, status: "published" };
-    setSaveState("saving");
-    try {
-      const created = await publishDraft.mutateAsync({
-        draft: snapshot,
-        problemId: id,
-      });
-      if (created) setCreatedId(created);
-      setDraft((previous) => ({ ...previous, status: "published" }));
-      setSavedJson(JSON.stringify(snapshot));
-      setSaveState("saved");
-      toast.success(t("toast.published"));
-    } catch {
-      setSaveState("error");
-      toast.error(t("toast.publishFailed"));
-    }
+    await write({ ...draft, status: "published" }, true);
   }
 
-  // ponytail: mock run — every approved row passes. The real run goes through the judge port
-  // (F2-18, one call per testcase); wire it when the backend endpoint exists.
-  function runSolution() {
+  // Mock data: every approved row passes. Real data (#47): the server runs the editor's code against
+  // every approved testcase and answers with verdicts only (F2-18).
+  async function runSolution() {
     if (!draft.solution.trim()) {
       toast.warning(t("runBlocked.noSolution"));
       return;
     }
-    if (approved.length === 0) {
+    if (server && !id) {
+      toast.warning(t("runBlocked.needsSave"));
+      return;
+    }
+    if (!server && approved.length === 0) {
       toast.warning(t("runBlocked.noTestcase"));
+      return;
+    }
+    if (server && id) {
+      if (running) return;
+      setRunning(true);
+      try {
+        const run = await realRunReferenceSolution(id, {
+          language: draft.solutionLanguage,
+          sourceCode: draft.solution,
+        });
+        if (run.compileError !== null) {
+          toast.error(t("runCompileError"));
+        } else if (run.total === 0) {
+          toast.warning(t("runBlocked.noTestcase"));
+        } else {
+          setDraft((previous) => ({
+            ...previous,
+            solutionCheck: { ran: true, passed: run.passed, total: run.total },
+          }));
+          if (run.allPass) {
+            toast.success(
+              t("runResultBody", { passed: run.passed, total: run.total }),
+            );
+          } else {
+            const reason = run.firstFailure
+              ? t(`runFailure.${run.firstFailure.failure}`)
+              : "";
+            toast.warning(
+              t("runFailedAt", {
+                position: run.firstFailure?.position ?? 0,
+                reason,
+                passed: run.passed,
+                total: run.total,
+              }),
+            );
+          }
+        }
+      } catch (error) {
+        toast.error(apiMessage(error));
+      } finally {
+        setRunning(false);
+      }
       return;
     }
     const total = draft.testcases.filter((row) => row.approved).length;
@@ -460,24 +755,34 @@ function ProblemAuthoringForm({
     approved: approved.filter((row) => row.category === category).length,
   }));
 
-  function approveDraft(id: string) {
-    setDraft((previous) => ({
-      ...previous,
-      solutionCheck: STALE_CHECK,
-      testcases: previous.testcases.map((row) =>
-        row.id === id ? { ...row, approved: true } : row,
-      ),
-    }));
+  async function approveDraft(rowId: string) {
+    if (liveId) {
+      try {
+        const written = await realUpdateTestcase(liveId, rowId, {
+          approved: true,
+        });
+        lock.current = written.updatedAt;
+        commitTestcases((rows) =>
+          rows.map((row) => (row.id === rowId ? written.testcase : row)),
+        );
+      } catch (error) {
+        toast.error(apiMessage(error));
+        return;
+      }
+    } else {
+      setDraft((previous) => ({
+        ...previous,
+        solutionCheck: STALE_CHECK,
+        testcases: previous.testcases.map((row) =>
+          row.id === rowId ? { ...row, approved: true } : row,
+        ),
+      }));
+    }
     toast.success(t("toast.draftApproved"));
   }
 
-  function rejectDraft(id: string) {
-    // A draft was never part of the checked set, so discarding one leaves the last run valid.
-    setDraft((previous) => ({
-      ...previous,
-      testcases: previous.testcases.filter((row) => row.id !== id),
-    }));
-    toast.success(t("toast.draftRejected"));
+  async function rejectDraft(rowId: string) {
+    await removeTestcase(rowId, "toast.draftRejected");
   }
 
   const testcaseColumns: DataTableColumn<Testcase>[] = [
@@ -496,7 +801,7 @@ function ProblemAuthoringForm({
       header: t("columnInput"),
       render: (row) => (
         <span className="block truncate font-mono text-[12.5px]">
-          {row.input}
+          {row.largeSides?.includes("input") ? t("largeSideCell") : row.input}
         </span>
       ),
     },
@@ -506,7 +811,9 @@ function ProblemAuthoringForm({
       width: "220px",
       render: (row) => (
         <span className="block truncate font-mono text-[12.5px] text-[var(--color-text-muted)]">
-          {row.expected}
+          {row.largeSides?.includes("expected")
+            ? t("largeSideCell")
+            : row.expected}
         </span>
       ),
     },
@@ -576,7 +883,7 @@ function ProblemAuthoringForm({
             <Button
               variant="primary"
               size="sm"
-              disabled={!dirty || saving}
+              disabled={!dirty || saving || readOnly}
               onClick={save}
             >
               {t("save")}
@@ -584,7 +891,7 @@ function ProblemAuthoringForm({
             <Button
               variant="cta"
               size="sm"
-              disabled={saving}
+              disabled={saving || readOnly}
               aria-disabled={blocking.length > 0 || undefined}
               onClick={publish}
             >
@@ -593,6 +900,12 @@ function ProblemAuthoringForm({
           </>
         }
       />
+
+      {readOnly ? (
+        <div className="mb-3.5">
+          <NoticeTile tone="info" title={t("readOnlyNotice")} />
+        </div>
+      ) : null}
 
       <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1fr)_300px]">
         <div className="flex min-w-0 flex-col gap-3.5">
@@ -610,7 +923,7 @@ function ProblemAuthoringForm({
                 },
                 {
                   value: "testcases",
-                  label: t("tab.testcases", { count: draft.testcases.length }),
+                  label: t("tab.testcases", { count: testcaseCount }),
                 },
                 { value: "spec", label: t("tab.spec") },
                 { value: "ai", label: t("tab.ai") },
@@ -819,9 +1132,21 @@ function ProblemAuthoringForm({
                       !draft.solution.trim() ||
                       undefined
                     }
+                    aria-busy={running || undefined}
+                    disabled={running}
                     onClick={runSolution}
                   >
-                    {t("runSolution")}
+                    {running ? t("running") : t("runSolution")}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="border border-[var(--color-border)]"
+                    disabled={bulkNeedsSave || readOnly}
+                    title={bulkNeedsSave ? t("bulk.saveFirst") : undefined}
+                    onClick={() => setBulkOpen(true)}
+                  >
+                    {t("testcase.btnBulkUpload")}
                   </Button>
                   <Button
                     variant="primary"
@@ -833,6 +1158,29 @@ function ProblemAuthoringForm({
                 </div>
               }
             >
+              {server?.willCopy && !id ? (
+                <div className="mb-3">
+                  <NoticeTile
+                    tone="info"
+                    title={t(
+                      server.willCopy.hasSpec
+                        ? "copyWillCopyWithSpec"
+                        : "copyWillCopy",
+                      { count: server.willCopy.testcaseCount },
+                    )}
+                  />
+                </div>
+              ) : null}
+              {testcasesHidden ? (
+                <div className="mb-3">
+                  <NoticeTile
+                    tone="info"
+                    title={t("testcasesHiddenNotice", {
+                      total: server.testcaseSummary.total,
+                    })}
+                  />
+                </div>
+              ) : null}
               {/* F2-18: the run result is a toast; only the stale state stays on the page. */}
               <div
                 className={draft.solutionCheck.ran ? undefined : "mb-3"}
@@ -1075,14 +1423,16 @@ function ProblemAuthoringForm({
                   {t("metrics.submissions")}
                 </dt>
                 <dd className="font-mono">
-                  {stats.submissionCount.toLocaleString("vi-VN")}
+                  {stats ? stats.submissionCount.toLocaleString("vi-VN") : "-"}
                 </dd>
               </div>
               <div className="flex justify-between gap-2">
                 <dt className="text-[var(--color-text-muted)]">
                   {t("metrics.acRate")}
                 </dt>
-                <dd className="font-mono">{stats.acRate}%</dd>
+                <dd className="font-mono">
+                  {stats?.acRate == null ? "-" : `${stats.acRate}%`}
+                </dd>
               </div>
               <div className="flex justify-between gap-2">
                 <dt className="text-[var(--color-text-muted)]">
@@ -1148,6 +1498,13 @@ function ProblemAuthoringForm({
           testcase={testcaseDialog === "new" ? undefined : testcaseDialog}
           onClose={() => setTestcaseDialog(null)}
           onSave={saveTestcase}
+        />
+      ) : null}
+      {bulkOpen ? (
+        <BulkUploadDialog
+          existingCount={testcaseCount}
+          onClose={() => setBulkOpen(false)}
+          onUpload={bulkUpload}
         />
       ) : null}
       {exampleDialog ? (

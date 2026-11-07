@@ -64,7 +64,11 @@ export function TestcaseDialog({
     testcase?.visibility ?? "hidden",
   );
   const [touched, setTouched] = useState(false);
-  const invalid = !input.trim() || !expected.trim();
+  // A side kept in object storage arrives without its text: it is shown as a note and never rewritten.
+  const largeInput = testcase?.largeSides?.includes("input") ?? false;
+  const largeExpected = testcase?.largeSides?.includes("expected") ?? false;
+  const invalid =
+    (!largeInput && !input.trim()) || (!largeExpected && !expected.trim());
 
   function submit() {
     setTouched(true);
@@ -72,7 +76,11 @@ export function TestcaseDialog({
       toast.error(t("dialog.required"));
       return;
     }
-    onSave({ input: input.trim(), expected: expected.trim(), visibility });
+    onSave({
+      input: largeInput ? input : input.trim(),
+      expected: largeExpected ? expected : expected.trim(),
+      visibility,
+    });
   }
 
   return (
@@ -84,16 +92,18 @@ export function TestcaseDialog({
       <TextArea
         label={t("columnInput")}
         rows={3}
-        value={input}
-        invalid={touched && !input.trim()}
+        value={largeInput ? t("dialog.largeSide") : input}
+        disabled={largeInput}
+        invalid={touched && !largeInput && !input.trim()}
         onChange={(event) => setInput(event.target.value)}
         className="font-mono text-[12.5px]"
       />
       <TextArea
         label={t("columnExpected")}
         rows={3}
-        value={expected}
-        invalid={touched && !expected.trim()}
+        value={largeExpected ? t("dialog.largeSide") : expected}
+        disabled={largeExpected}
+        invalid={touched && !largeExpected && !expected.trim()}
         onChange={(event) => setExpected(event.target.value)}
         className="font-mono text-[12.5px]"
       />

@@ -11,6 +11,7 @@
 "use client";
 
 import Link from "next/link";
+import { isMockMode } from "@/shared/api";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   initialsOfClassStudent,
@@ -25,6 +26,13 @@ import { useT } from "@/shared/i18n";
 import { Badge } from "@/shared/ui";
 
 type SubmissionRef = {
+  instructorContext?: {
+    studentId: string;
+    studentName: string;
+    classId: string;
+    className: string;
+    leftClass: boolean;
+  };
   id: string;
   problemTitle: string;
   submittedAt: string;
@@ -88,6 +96,7 @@ export function InstructorSubmissionBreadcrumb({
 }) {
   const origin = useOrigin();
   const ref = useStudentRef();
+  if (!isMockMode()) return <ListCrumb submission={submission} />;
   // student and class screens need the hint; without it every origin degrades to the list.
   if (!ref || origin === "submissions")
     return <ListCrumb submission={submission} />;
@@ -147,6 +156,17 @@ export function InstructorSubmissionContext({
   submission: SubmissionRef;
 }) {
   const ref = useStudentRef();
+  if (!isMockMode()) {
+    const context = submission.instructorContext;
+    return (
+      <ContextCard
+        submission={submission}
+        refs={context && !context.leftClass ? context : undefined}
+        studentName={context?.studentName}
+        className={context?.className}
+      />
+    );
+  }
   return ref ? (
     <ResolvedContext refs={ref} submission={submission} />
   ) : (

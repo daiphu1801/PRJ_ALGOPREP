@@ -3,6 +3,7 @@ package com.algoprep.identity.application.command;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -11,6 +12,7 @@ import static org.mockito.Mockito.when;
 import com.algoprep.common.exception.AlgoPrepException;
 import com.algoprep.common.exception.UnauthenticatedException;
 import com.algoprep.identity.application.dto.ChangeMyPasswordCommand;
+import com.algoprep.identity.application.ports.out.EmailPort;
 import com.algoprep.identity.application.ports.out.LoginAttemptPort;
 import com.algoprep.identity.application.ports.out.PasswordHasherPort;
 import com.algoprep.identity.domain.model.AuditEntry;
@@ -32,13 +34,14 @@ class ChangeMyPasswordCommandHandlerTest {
   private final PasswordHasherPort passwords = mock(PasswordHasherPort.class);
   private final AuditLogPort audit = mock(AuditLogPort.class);
   private final LoginAttemptPort attempts = mock(LoginAttemptPort.class);
+  private final EmailPort email = mock(EmailPort.class);
   private final ChangeMyPasswordCommandHandler handler =
       new ChangeMyPasswordCommandHandler(
           accounts,
           passwords,
           new RegistrationValidation(Validation.buildDefaultValidatorFactory().getValidator()),
-          audit,
-          attempts);
+          attempts,
+          new PasswordChangeRecorder(audit, email));
 
   private final UUID userId = UUID.randomUUID();
   private final UUID sessionId = UUID.randomUUID();
@@ -100,12 +103,86 @@ class ChangeMyPasswordCommandHandlerTest {
   }
 
   @Test
-  void accountWithoutPasswordIsTreatedAsWrongCurrentPassword() {
+  void accountWithoutPasswordSetsFirstPasswordWithoutCurrentOne() {
     accountWithHash(null);
-    when(passwords.matches("Whatever123", null)).thenReturn(false);
+    when(passwords.encode("NewPass456")).thenReturn("new-hash");
 
-    assertThatThrownBy(() -> handler.change(command("Whatever123", "NewPass456")))
+    handler.change(command(null, "NewPass456"));
+
+    verify(accounts).updatePasswordAndRevokeOtherSessions(userId, "new-hash", sessionId);
+    verify(passwords, never()).matches(any(), any());
+    verify(attempts, never()).recordFailure(any(), any());
+    ArgumentCaptor<AuditEntry> entry = ArgumentCaptor.forClass(AuditEntry.class);
+    verify(audit).record(entry.capture());
+    assertThat(entry.getValue().actionType()).isEqualTo("PASSWORD_CHANGED");
+    verify(email).send(eq("a@example.test"), any(), any());
+  }
+
+  @Test
+  void firstPasswordStillStoredWhenNoticeEmailFailsAndResultSaysSo() {
+    accountWithHash(null);
+    when(passwords.encode("NewPass456")).thenReturn("new-hash");
+    org.mockito.Mockito.doThrow(new IllegalStateException("smtp down"))
+        .when(email)
+        .send(any(), any(), any());
+
+    boolean noticeEmailFailed = handler.change(command(null, "NewPass456"));
+
+    assertThat(noticeEmailFailed).isTrue();
+    verify(accounts).updatePasswordAndRevokeOtherSessions(userId, "new-hash", sessionId);
+    verify(audit).record(any(AuditEntry.class));
+  }
+
+  @Test
+  void firstPasswordReportsNoFailureWhenNoticeEmailIsSent() {
+    accountWithHash(null);
+    when(passwords.encode("NewPass456")).thenReturn("new-hash");
+
+    assertThat(handler.change(command(null, "NewPass456"))).isFalse();
+  }
+
+  @Test
+  void firstPasswordIgnoresACurrentPasswordThatWasSent() {
+    accountWithHash(null);
+    when(passwords.encode("NewPass456")).thenReturn("new-hash");
+
+    handler.change(command("Whatever123", "NewPass456"));
+
+    verify(accounts).updatePasswordAndRevokeOtherSessions(userId, "new-hash", sessionId);
+  }
+
+  @Test
+  void firstPasswordStillObeysThePasswordPolicy() {
+    accountWithHash(null);
+
+    assertThatThrownBy(() -> handler.change(command(null, "short1")))
+        .satisfies(e -> assertCode(e, "IDT-V01"));
+
+    verify(accounts, never()).updatePasswordAndRevokeOtherSessions(any(), any(), any());
+    verify(email, never()).send(any(), any(), any());
+  }
+
+  @Test
+  void accountWithPasswordAndNoCurrentPasswordIsRejectedAsIncorrect() {
+    accountWithHash("old-hash");
+    when(passwords.matches("", "old-hash")).thenReturn(false);
+
+    assertThatThrownBy(() -> handler.change(command(null, "NewPass456")))
         .satisfies(e -> assertCode(e, "IDT-115"));
+
+    verify(accounts, never()).updatePasswordAndRevokeOtherSessions(any(), any(), any());
+    verify(email, never()).send(any(), any(), any());
+  }
+
+  @Test
+  void correctChangeSendsNoMail() {
+    accountWithHash("old-hash");
+    when(passwords.matches("OldPass123", "old-hash")).thenReturn(true);
+    when(passwords.encode("NewPass456")).thenReturn("new-hash");
+
+    handler.change(command("OldPass123", "NewPass456"));
+
+    verify(email, never()).send(any(), any(), any());
   }
 
   @Test

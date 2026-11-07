@@ -93,3 +93,8 @@ Dùng `adminUserManagement.*`, `apiError.IDT-*`. Checkbox chọn tất cả ch�
 ## 8. Nợ prototype và câu hỏi mở
 
 Prototype còn mock và email/role seed, cần nối F1 #32, #35–38, #50, #62–63. Hai endpoint đọc tổng hợp đã được bổ sung vào F1 để không đếm từ trang hiện tại. Các hành động gộp dùng N lệnh đơn #37; không tự tạo bulk endpoint. TDD màn đã có tại `04-tdd/screens/admin/ADM0201_user_management.md`.
+
+## Cập nhật 2026-11-07 (nối API thật)
+
+API tiêu thụ: `GET /api/v1/identity/admin/users` (#35) trả thêm `solvedCount` và `totalSubmissions`; mapper `toAdminUser` điền `solvedCount`, `submissionCount`, nên hai cột hiện với API thật.
+

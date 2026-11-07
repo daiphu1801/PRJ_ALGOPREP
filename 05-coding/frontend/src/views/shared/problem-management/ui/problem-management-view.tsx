@@ -1,44 +1,58 @@
-// PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md section 9.
+// SHR0201 on the real api (03-dd/api/F2_problem-bank.md #24 to #32); mock mode answers the same contract.
 //
 // Layout follows 09-layoutBase/Admin - Quản lý bài tập.dc.html: sticky header with the "Bài tập
-// mới" CTA (:149-159), stat cards (:161-173), then the problem table card with filters, a bulk
-// action bar, a sortable table and numbered paging (:175-250).
+// mới" CTA (:149-159), then the problem table card with filters, a bulk action bar, a sortable table
+// and numbered paging (:175-250). The stat cards (:161-173) were dropped (owner rule 2026-10-13); the
+// two totals live in the header line.
 //
 // Shared screen: A2 and A3 both use it, mounted at /instructor and /admin
 // (DEC-2026-0825-shared-content-authoring-screens). `basePath` is the area's problems root
 // ("/admin/problems" or "/instructor/problems"), so row links stay inside the area they were opened from.
+//
+// The server filters, sorts and pages; this view only sends `AdminListParams`. Selection is limited to
+// the page on screen (any filter, sort or page change clears it), so a bulk action and the delete warning
+// always name exactly the rows the admin can see. A bulk call handles each problem on its own: a
+// problem that fails is reported with the server's reason, the rest still go through.
 //
 // TWO lifecycle states, not three. DEC-2026-0830-problem-lifecycle-two-states drops "Đã ẩn"; the
 // mockup still has it on row #987 and inside a bulk action labelled "Xuất bản / ẩn". The filter
 // therefore offers draft/published only, and the bulk action is "Xuất bản".
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Gauge, Pencil, Tags, Trash2 } from "lucide-react";
 import {
-  useAdminProblemPage,
-  type AdminProblemPage,
+  useAdminProblemList,
+  useAttentionList,
+  useBulkDelete,
+  useBulkDifficulty,
+  useBulkPublish,
+  useExportProblems,
+  useTopicDistribution,
+  type AdminListParams,
   type AdminProblem,
-  type Difficulty,
+  type BulkResult,
   type ProblemSortKey,
   type ProblemStatus,
 } from "../api";
 import {
-  addProblemTopic,
   problemLevelLabel,
-  problemLevelRank,
   problemLevelTone,
   problemTopicLabel,
-  moveProblemTopic,
-  removeProblemTopic,
-  renameProblemTopic,
   useProblemLevels,
+  useProblemTopicActions,
   useProblemTopics,
 } from "@/entities/problem";
-import { useT } from "@/shared/i18n";
-import { usePersistedPageSize } from "@/shared/lib";
+import { ApiError } from "@/shared/api";
+import { useApiErrorMessage, useLocale, useT } from "@/shared/i18n";
+import {
+  formatRelativeVN,
+  saveBlob,
+  useDebounced,
+  usePersistedPageSize,
+} from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
 import {
   Badge,
@@ -72,12 +86,16 @@ const STATUS_TEXT_VAR: Record<ProblemStatus, string> = {
   draft: "--color-admin-warn-text",
 };
 
-// 8 is the default, 20 and 50 the other choices (SHR0201 Q4).
+// 8 is the default, 20 and 50 the other choices (SHR0201 Q4); the server rejects any other value.
 const PAGE_SIZES = [8, 20, 50] as const;
+
+// The server publishes 1 to 20 problems per call: each one runs the reference solution in the sandbox.
+const PUBLISH_MAX = 20;
+const SEARCH_MAX_LENGTH = 100;
 
 type BulkAction =
   "publish" | "changeDifficulty" | "assignTopic" | "duplicate" | "exportCsv";
-type DifficultyFilter = Difficulty | "all";
+type BulkKind = "publish" | "delete" | "changeDifficulty";
 type StatusFilter = ProblemStatus | "all";
 
 type Props = {
@@ -87,31 +105,17 @@ type Props = {
   canManageTopics?: boolean;
 };
 
-/** Loads the list, then hands it to the form that owns filters, selection and local deletes. */
-export function ProblemManagementView(props: Props) {
-  const t = useT("problemManagement");
-  const query = useAdminProblemPage();
-
-  if (query.isError) return <ErrorState>{t("loadFailed")}</ErrorState>;
-  if (!query.data) {
-    return (
-      <div className="flex flex-col gap-3.5" aria-busy="true">
-        <Skeleton className="h-[62px] w-full" />
-        <Skeleton className="h-[360px] w-full" />
-      </div>
-    );
-  }
-  return <ProblemManagementForm {...props} page={query.data} />;
-}
-
-function ProblemManagementForm({
+export function ProblemManagementView({
   basePath,
   canManageTopics = false,
-  page,
-}: Props & { page: AdminProblemPage }) {
+}: Props) {
   const t = useT("problemManagement");
+  const locale = useLocale() === "en" ? "en" : "vi";
+  const apiMessage = useApiErrorMessage();
+  const router = useRouter();
   const topicList = useProblemTopics();
   const levelList = useProblemLevels();
+  const topicActions = useProblemTopicActions();
   const [pageSize, setPageSize] = usePersistedPageSize(
     "algoprep-problems-page-size",
     PAGE_SIZES,
@@ -120,190 +124,195 @@ function ProblemManagementForm({
   const [managingTopics, setManagingTopics] = useState(false);
   const [managingLevels, setManagingLevels] = useState(false);
   const [pickingLevel, setPickingLevel] = useState(false);
-  // Level changes made through the bulk action; the mock rows themselves are read-only.
-  const [levelOverrides, setLevelOverrides] = useState<
-    Readonly<Record<string, string>>
-  >({});
-  const levelOf = (problem: AdminProblem) =>
-    levelOverrides[problem.code] ?? problem.difficulty;
   const [query, setQuery] = useState("");
-  const [difficulty, setDifficulty] = useState<DifficultyFilter>("all");
+  const [level, setLevel] = useState("all");
   const [status, setStatus] = useState<StatusFilter>("all");
   const [selected, setSelected] = useState<ReadonlySet<string>>(new Set());
   const [sort, setSort] = useState<{
     key: ProblemSortKey;
     direction: "asc" | "desc";
-  }>({
-    key: "edited",
-    direction: "desc",
-  });
+  }>({ key: "edited", direction: "desc" });
   const [currentPage, setCurrentPage] = useState(1);
-  const router = useRouter();
   const [pendingDelete, setPendingDelete] = useState<AdminProblem | null>(null);
   const [confirmingBulkDelete, setConfirmingBulkDelete] = useState(false);
-  const [deletedCodes, setDeletedCodes] = useState<ReadonlySet<string>>(
-    new Set(),
-  );
 
-  const filtered = useMemo(() => {
-    const needle = query.trim().toLowerCase();
-    const rows = page.problems.filter(
-      (problem) =>
-        !deletedCodes.has(problem.code) &&
-        (difficulty === "all" || levelOf(problem) === difficulty) &&
-        (status === "all" || problem.status === status) &&
-        (!needle ||
-          problem.code.toLowerCase().includes(needle) ||
-          problem.title.toLowerCase().includes(needle)),
-    );
-
-    const factor = sort.direction === "asc" ? 1 : -1;
-    // `edited` is a relative label, not a date — the mock is already newest-first, so sorting by it
-    // only reverses. Everything else compares the real value.
-    if (sort.key === "edited") {
-      return sort.direction === "asc" ? [...rows].reverse() : rows;
-    }
-    return [...rows].sort((left, right) => {
-      switch (sort.key) {
-        case "submissions":
-          return (left.submissionCount - right.submissionCount) * factor;
-        case "accepted":
-          return (left.acceptedRate - right.acceptedRate) * factor;
-        case "difficulty": {
-          // Admin-chosen order of the level list, not a fixed easy < medium < hard.
-          return (
-            (problemLevelRank(levelList, levelOf(left)) -
-              problemLevelRank(levelList, levelOf(right))) *
-            factor
-          );
-        }
-        case "status":
-          return left.status.localeCompare(right.status) * factor;
-        case "code":
-          return (
-            (Number(left.code.replace("#", "")) -
-              Number(right.code.replace("#", ""))) *
-            factor
-          );
-        default:
-          return left.title.localeCompare(right.title, "vi") * factor;
-      }
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- levelOf only reads levelOverrides
-  }, [
-    page.problems,
-    deletedCodes,
-    query,
-    difficulty,
+  // Typing filters live, but only a pause in typing becomes a request.
+  const debouncedQuery = useDebounced(query);
+  const params: AdminListParams = {
+    q: debouncedQuery.trim().slice(0, SEARCH_MAX_LENGTH),
+    level,
     status,
-    sort,
-    levelList,
-    levelOverrides,
-  ]);
+    sort: sort.key,
+    dir: sort.direction,
+    page: currentPage,
+    pageSize,
+  };
+  const list = useAdminProblemList(params);
+  const distribution = useTopicDistribution();
+  const attention = useAttentionList();
+  const publish = useBulkPublish();
+  const remove = useBulkDelete();
+  const changeLevel = useBulkDifficulty();
+  const exportCsv = useExportProblems();
 
-  // Rows still on screen (not locally deleted) per topic, so the manager can refuse deleting a topic
-  // that is in use.
-  const topicUsage = useMemo(() => {
-    const counts: Record<string, number> = {};
-    for (const problem of page.problems) {
-      if (!deletedCodes.has(problem.code))
-        counts[problem.topic] = (counts[problem.topic] ?? 0) + 1;
-    }
-    return counts;
-  }, [page.problems, deletedCodes]);
+  const data = list.data;
+  const rows = data?.items ?? [];
+  // The selection only ever holds rows of the page on screen.
+  const chosen = rows.filter((problem) => selected.has(problem.id));
+  const busy =
+    publish.isPending ||
+    remove.isPending ||
+    changeLevel.isPending ||
+    exportCsv.isPending;
 
-  const levelUsage = useMemo(() => {
-    const counts: Record<string, number> = {};
-    for (const problem of page.problems) {
-      if (deletedCodes.has(problem.code)) continue;
-      const key = levelOverrides[problem.code] ?? problem.difficulty;
-      counts[key] = (counts[key] ?? 0) + 1;
-    }
-    return counts;
-  }, [page.problems, deletedCodes, levelOverrides]);
+  // Any change of what the table shows starts from an empty selection.
+  function change(apply: () => void, resetPage = true) {
+    apply();
+    if (resetPage) setCurrentPage(1);
+    setSelected(new Set());
+  }
+
+  const levelUsage = Object.fromEntries(
+    levelList.map((item) => [
+      item.key,
+      item.problemCount ?? data?.usage?.levels[item.key] ?? 0,
+    ]),
+  );
+  const topicUsage = Object.fromEntries(
+    topicList.map((item) => [
+      item.key,
+      item.problemCount ?? data?.usage?.topics[item.key] ?? 0,
+    ]),
+  );
 
   // Live filtering stays silent; only an explicit submit (Enter) reports the result count.
   function announceSearch() {
+    const count = data?.page.totalItems ?? 0;
     toast.info(
-      filtered.length === 0
-        ? t("toast.searchEmpty")
-        : t("toast.searchResult", { count: filtered.length }),
+      count === 0 ? t("toast.searchEmpty") : t("toast.searchResult", { count }),
+    );
+  }
+
+  /** One toast for a bulk answer: all done, or what went through and why the others did not. */
+  function reportBulk(kind: BulkKind, result: BulkResult) {
+    setSelected(new Set());
+    const done = result.succeededIds.length;
+    const failed = result.failedItems;
+    if (failed.length === 0) {
+      toast.success(t(`toast.bulk.${kind}`, { count: done }));
+      return;
+    }
+    toast.warning(
+      t("toast.bulkPartial", {
+        done,
+        failed: failed.length,
+        reason: apiMessage(new ApiError(failed[0]!.code, 0)),
+      }),
     );
   }
 
   function runBulk(action: BulkAction) {
-    const count = selected.size;
     if (action === "changeDifficulty") {
       setPickingLevel(true);
       return;
     }
     if (action === "assignTopic") {
-      // ponytail: prototype has no picker dialog for the topic yet, so the click only explains that.
+      // ponytail: the prototype has no topic picker yet (PROTOTYPE_DEBT SHR0201), so the click only says so.
       toast.info(t("toast.bulkNeedsChoice"));
       return;
     }
     if (action === "duplicate") {
       // F2-16: the copy is an authoring form pre-filled from the source; nothing is created until Save.
       // One source at a time, as opening several forms at once makes no sense.
-      if (count !== 1) {
+      if (chosen.length !== 1) {
         toast.info(t("toast.duplicatePickOne"));
         return;
       }
-      const [source] = [...selected];
-      router.push(`${basePath}/new?from=${encodeURIComponent(source!)}`);
+      router.push(`${basePath}/new?from=${encodeURIComponent(chosen[0]!.id)}`);
       return;
     }
-    // publish / exportCsv have no API behind them yet: say so rather than report success.
-    toast.info(t("toast.notWired", { action: t(`bulk.${action}`), count }));
+    const ids = chosen.map((problem) => problem.id);
+    if (action === "publish") {
+      if (ids.length > PUBLISH_MAX) {
+        toast.warning(t("toast.publishMax", { max: PUBLISH_MAX }));
+        return;
+      }
+      publish.mutate(ids, {
+        onSuccess: (result) => reportBulk("publish", result),
+        onError: (error) => toast.error(apiMessage(error)),
+      });
+      return;
+    }
+    exportCsv.mutate(ids, {
+      onSuccess: ({ blob, filename }) => {
+        saveBlob(blob, filename ?? "problems.csv");
+        toast.success(t("toast.exported", { count: ids.length }));
+      },
+      onError: (error) => toast.error(apiMessage(error)),
+    });
   }
 
   function applyLevel(levelKey: string) {
-    setLevelOverrides((previous) => ({
-      ...previous,
-      ...Object.fromEntries([...selected].map((code) => [code, levelKey])),
-    }));
+    const ids = chosen.map((problem) => problem.id);
     setPickingLevel(false);
-    toast.success(t("toast.bulk.changeDifficulty", { count: selected.size }));
+    changeLevel.mutate(
+      { ids, levelKey },
+      {
+        onSuccess: (result) => reportBulk("changeDifficulty", result),
+        onError: (error) => toast.error(apiMessage(error)),
+      },
+    );
   }
 
-  function deleteSelected() {
-    const count = selected.size;
-    setDeletedCodes((previous) => new Set([...previous, ...selected]));
-    setSelected(new Set());
-    toast.success(t("toast.bulk.delete", { count }));
+  function deleteChosen() {
+    remove.mutate(
+      chosen.map((problem) => problem.id),
+      {
+        onSuccess: (result) => reportBulk("delete", result),
+        onError: (error) => toast.error(apiMessage(error)),
+      },
+    );
+  }
+
+  function deleteOne(problem: AdminProblem) {
+    remove.mutate([problem.id], {
+      onSuccess: (result) => {
+        // A deleted row must not stay counted in the selection.
+        setSelected((previous) => {
+          const next = new Set(previous);
+          next.delete(problem.id);
+          return next;
+        });
+        if (result.failedItems.length === 0) {
+          toast.success(t("toast.deleted", { title: problem.title }));
+        } else {
+          toast.warning(
+            t("toast.bulkPartial", {
+              done: 0,
+              failed: 1,
+              reason: apiMessage(new ApiError(result.failedItems[0]!.code, 0)),
+            }),
+          );
+        }
+      },
+      onError: (error) => toast.error(apiMessage(error)),
+    });
   }
 
   // What the bulk delete hides from learners, shown as a warning (never blocks, BD SHR0201 Q7).
-  const bulkDeleteImpact = useMemo(() => {
-    const rows = page.problems.filter((problem) => selected.has(problem.code));
-    return {
-      submissions: rows.reduce(
-        (sum, problem) => sum + problem.submissionCount,
-        0,
-      ),
-      assigned: rows.filter((problem) => problem.assignedClassCount > 0).length,
-    };
-  }, [page.problems, selected]);
+  const bulkDeleteImpact = {
+    submissions: chosen.reduce(
+      (sum, problem) => sum + problem.submissionCount,
+      0,
+    ),
+    assigned: chosen.filter((problem) => problem.assignedClassCount > 0).length,
+  };
 
-  // Selection survives filter changes, so a bulk delete can reach rows the filter now hides.
-  const hiddenSelectedCount = useMemo(() => {
-    const shown = new Set(filtered.map((problem) => problem.code));
-    return [...selected].filter((code) => !shown.has(code)).length;
-  }, [filtered, selected]);
-
-  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
-  // Deleting rows can leave the stored page past the last one; clamp rather than render an empty page.
-  const safePage = Math.min(currentPage, totalPages);
-  const visible = filtered.slice(
-    (safePage - 1) * pageSize,
-    safePage * pageSize,
-  );
-
-  function toggleRow(code: string) {
+  function toggleRow(id: string) {
     setSelected((previous) => {
       const next = new Set(previous);
-      if (next.has(code)) next.delete(code);
-      else next.add(code);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   }
@@ -327,7 +336,7 @@ function ProblemManagementForm({
       sortable: true,
       render: (problem) => (
         <EllipsisLink
-          href={`${basePath}/${problem.code.replace("#", "")}`}
+          href={`${basePath}/${problem.id}`}
           className="font-semibold"
         >
           {problem.title}
@@ -340,7 +349,9 @@ function ProblemManagementForm({
       width: "132px",
       render: (problem) => (
         <span className="block truncate text-[12.5px] text-[var(--color-text-muted)]">
-          {problemTopicLabel(topicList, problem.topic)}
+          {problem.topics
+            .map((topic) => problemTopicLabel(topicList, topic))
+            .join(", ")}
         </span>
       ),
     },
@@ -350,8 +361,8 @@ function ProblemManagementForm({
       width: "108px",
       sortable: true,
       render: (problem) => (
-        <Badge variant={problemLevelTone(levelList, levelOf(problem))}>
-          {problemLevelLabel(levelList, levelOf(problem))}
+        <Badge variant={problemLevelTone(levelList, problem.difficulty)}>
+          {problemLevelLabel(levelList, problem.difficulty)}
         </Badge>
       ),
     },
@@ -397,7 +408,10 @@ function ProblemManagementForm({
       align: "right",
       sortable: true,
       render: (problem) => (
-        <span className="font-mono font-semibold">{problem.acceptedRate}%</span>
+        <span className="font-mono font-semibold">
+          {/* No statistics row yet is "-", never "0%" (DD F2 1.2). */}
+          {problem.acceptedRate === null ? "-" : `${problem.acceptedRate}%`}
+        </span>
       ),
     },
     {
@@ -412,7 +426,9 @@ function ProblemManagementForm({
           <span className="whitespace-nowrap">
             {t("testcasesCount", { count: problem.testcaseCount })}
           </span>
-          <span className="whitespace-nowrap">{problem.editedLabel}</span>
+          <span className="whitespace-nowrap">
+            {formatRelativeVN(problem.updatedAt, { locale })}
+          </span>
         </span>
       ),
     },
@@ -427,7 +443,7 @@ function ProblemManagementForm({
             icon={Pencil}
             label={t("edit")}
             ariaLabel={t("editProblem", { title: problem.title })}
-            href={`${basePath}/${problem.code.replace("#", "")}/edit`}
+            href={`${basePath}/${problem.id}/edit`}
           />
           <IconAction
             icon={Trash2}
@@ -445,10 +461,14 @@ function ProblemManagementForm({
     <div>
       <PageHeader
         title={t("title")}
-        description={t("subtitle", {
-          total: page.totalProblems,
-          published: page.publishedCount,
-        })}
+        description={
+          data
+            ? t("subtitle", {
+                total: data.totals.total,
+                published: data.totals.published,
+              })
+            : undefined
+        }
         actions={
           <>
             {canManageTopics ? (
@@ -486,39 +506,35 @@ function ProblemManagementForm({
             label: t("searchLabel"),
             placeholder: t("searchPlaceholder"),
             value: query,
-            onChange: (next) => {
-              setQuery(next);
-              setCurrentPage(1);
-            },
+            maxLength: SEARCH_MAX_LENGTH,
+            onChange: (next) => change(() => setQuery(next)),
             onSubmit: announceSearch,
           }}
-          resultCount={t("resultCount", {
-            shown: filtered.length,
-            total: page.problems.length,
-          })}
+          resultCount={
+            data
+              ? t("resultCount", {
+                  shown: data.page.totalItems,
+                  total: data.totals.total,
+                })
+              : undefined
+          }
         >
           <FilterMenu
             label={t("difficultyFilterLabel")}
-            value={difficulty}
-            onValueChange={(value) => {
-              setDifficulty(value);
-              setCurrentPage(1);
-            }}
+            value={level}
+            onValueChange={(value) => change(() => setLevel(value))}
             options={[
               { value: "all", label: t("filterAll") },
-              ...levelList.map((level) => ({
-                value: level.key,
-                label: level.label,
+              ...levelList.map((item) => ({
+                value: item.key,
+                label: item.label,
               })),
             ]}
           />
           <FilterMenu
             label={t("statusFilterLabel")}
             value={status}
-            onValueChange={(value) => {
-              setStatus(value);
-              setCurrentPage(1);
-            }}
+            onValueChange={(value) => change(() => setStatus(value))}
             options={[
               { value: "all", label: t("filterAll") },
               { value: "published", label: t("status.published") },
@@ -528,15 +544,8 @@ function ProblemManagementForm({
         </FilterBar>
 
         <BulkActionBar
-          count={selected.size}
-          label={
-            hiddenSelectedCount > 0
-              ? t("selectionLabelHidden", {
-                  count: selected.size,
-                  hidden: hiddenSelectedCount,
-                })
-              : t("selectionLabel", { count: selected.size })
-          }
+          count={chosen.length}
+          label={t("selectionLabel", { count: chosen.length })}
         >
           {/* "Xuất bản", not the mockup's "Xuất bản / ẩn": hiding is no longer a state. */}
           {(
@@ -553,6 +562,7 @@ function ProblemManagementForm({
               variant="ghost"
               size="sm"
               className="border border-[var(--color-border)]"
+              disabled={busy}
               onClick={() => runBulk(action)}
             >
               {t(`bulk.${action}`)}
@@ -562,89 +572,107 @@ function ProblemManagementForm({
             variant="ghost"
             size="sm"
             className="text-[var(--color-admin-negative-text)]"
+            disabled={busy}
             onClick={() => setConfirmingBulkDelete(true)}
           >
             {t("bulk.delete")}
           </Button>
         </BulkActionBar>
 
-        <DataTable
-          caption={t("tableCaption")}
-          columns={columns}
-          rows={visible}
-          rowKey={(problem) => problem.code}
-          emptyMessage={t("emptyFiltered")}
-          minWidth={1060}
-          selection={{
-            selectedKeys: selected,
-            onToggleRow: toggleRow,
-            onToggleAll: (selectAll) =>
-              setSelected(
-                selectAll ? new Set(visible.map((row) => row.code)) : new Set(),
-              ),
-            selectAllLabel: t("selectAll"),
-            rowLabel: (problem) => t("selectRow", { title: problem.title }),
-          }}
-          sort={{
-            key: sort.key,
-            direction: sort.direction,
-            onSortChange: (key, direction) => {
-              setSort({ key: key as ProblemSortKey, direction });
-              setCurrentPage(1);
-            },
-          }}
-        />
+        {list.isError ? (
+          <ErrorState>{t("loadFailed")}</ErrorState>
+        ) : !data ? (
+          <div className="flex flex-col gap-3.5" aria-busy="true">
+            <Skeleton className="h-[360px] w-full" />
+          </div>
+        ) : (
+          <>
+            <DataTable
+              caption={t("tableCaption")}
+              columns={columns}
+              rows={rows}
+              rowKey={(problem) => problem.id}
+              emptyMessage={t("emptyFiltered")}
+              minWidth={1060}
+              selection={{
+                selectedKeys: selected,
+                onToggleRow: toggleRow,
+                onToggleAll: (selectAll) =>
+                  setSelected(
+                    selectAll ? new Set(rows.map((row) => row.id)) : new Set(),
+                  ),
+                selectAllLabel: t("selectAll"),
+                rowLabel: (problem) => t("selectRow", { title: problem.title }),
+              }}
+              sort={{
+                key: sort.key,
+                direction: sort.direction,
+                onSortChange: (key, direction) =>
+                  change(() =>
+                    setSort({ key: key as ProblemSortKey, direction }),
+                  ),
+              }}
+            />
 
-        <Pagination
-          page={safePage}
-          pageSize={pageSize}
-          pageSizeOptions={PAGE_SIZES}
-          pageSizeLabel={t("pageSizeLabel")}
-          onPageSizeChange={(size) => {
-            setPageSize(size);
-            setCurrentPage(1);
-          }}
-          total={filtered.length}
-          onPageChange={setCurrentPage}
-          summary={t("pageLabel", {
-            page: safePage,
-            totalPages,
-            shown: visible.length,
-          })}
-          previousLabel={t("previous")}
-          nextLabel={t("next")}
-          showPageNumbers
-          pageLabel={(value) => t("goToPage", { page: value })}
-        />
+            <Pagination
+              page={data.page.number}
+              pageSize={pageSize}
+              pageSizeOptions={PAGE_SIZES}
+              pageSizeLabel={t("pageSizeLabel")}
+              onPageSizeChange={(size) => change(() => setPageSize(size))}
+              total={data.page.totalItems}
+              onPageChange={(next) => change(() => setCurrentPage(next), false)}
+              summary={t("pageLabel", {
+                page: data.page.number,
+                totalPages: data.page.totalPages,
+                shown: rows.length,
+              })}
+              previousLabel={t("previous")}
+              nextLabel={t("next")}
+              showPageNumbers
+              pageLabel={(value) => t("goToPage", { page: value })}
+            />
+          </>
+        )}
       </Card>
 
       <div className="mt-4 grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(320px,1fr))]">
         <Card
           title={t("topicDist.title")}
-          description={t("topicDist.subtitle", {
-            total: page.problems.length,
-            topics: page.topicDistribution.length,
-          })}
+          description={
+            distribution.data
+              ? t("topicDist.subtitle", {
+                  total: distribution.data.totalProblemsWithTopic,
+                  topics: distribution.data.totalTopicsUsed,
+                })
+              : undefined
+          }
         >
-          <ul className="flex flex-col gap-3.5">
-            {page.topicDistribution.map((item) => (
-              <li key={item.topicName}>
-                <div className="mb-1.5 flex items-center justify-between gap-2.5">
-                  <span className="text-[13px] font-semibold">
-                    {problemTopicLabel(topicList, item.topicName)}
-                  </span>
-                  <span className="font-mono text-[12.5px] text-[var(--color-text-muted)]">
-                    {item.count} · {item.percent}%
-                  </span>
-                </div>
-                <ProgressBar
-                  value={item.percent}
-                  label={problemTopicLabel(topicList, item.topicName)}
-                  height={7}
-                />
-              </li>
-            ))}
-          </ul>
+          {distribution.isError ? (
+            <ErrorState>{t("blockFailed")}</ErrorState>
+          ) : !distribution.data ? (
+            <Skeleton className="h-24 w-full" />
+          ) : (
+            <ul className="flex flex-col gap-3.5">
+              {distribution.data.items.map((item) => (
+                <li key={item.topicName}>
+                  <div className="mb-1.5 flex items-center justify-between gap-2.5">
+                    <span className="text-[13px] font-semibold">
+                      {problemTopicLabel(topicList, item.topicName)}
+                    </span>
+                    <span className="font-mono text-[12.5px] text-[var(--color-text-muted)]">
+                      {item.count} · {item.percent}%
+                    </span>
+                  </div>
+                  <ProgressBar
+                    value={item.percent}
+                    label={problemTopicLabel(topicList, item.topicName)}
+                    height={7}
+                  />
+                </li>
+              ))}
+            </ul>
+          )}
         </Card>
 
         <Card
@@ -655,38 +683,42 @@ function ProblemManagementForm({
             </span>
           }
         >
-          <ul className="flex flex-col gap-2.5">
-            {page.attention
-              .filter((item) => item.count > 0)
-              .map((item) => (
-                <li
-                  key={item.ruleCode}
-                  className="glass-surface flex items-center gap-3 rounded-2xl border border-[var(--color-border)] px-3.5 py-2.5"
-                >
-                  <div className="min-w-0 flex-1">
-                    <div className="text-[13.5px] font-semibold">
-                      {t(`attention.rule.${item.ruleCode}.title`)}
+          {attention.isError ? (
+            <ErrorState>{t("blockFailed")}</ErrorState>
+          ) : !attention.data ? (
+            <Skeleton className="h-24 w-full" />
+          ) : (
+            <ul className="flex flex-col gap-2.5">
+              {attention.data
+                .filter((item) => item.count > 0)
+                .map((item) => (
+                  <li
+                    key={item.ruleCode}
+                    className="glass-surface flex items-center gap-3 rounded-2xl border border-[var(--color-border)] px-3.5 py-2.5"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <div className="text-[13.5px] font-semibold">
+                        {t(`attention.rule.${item.ruleCode}.title`)}
+                      </div>
+                      <div className="text-xs text-[var(--color-text-subtle)]">
+                        {t(`attention.rule.${item.ruleCode}.meta`)}
+                      </div>
                     </div>
-                    <div className="text-xs text-[var(--color-text-subtle)]">
-                      {t(`attention.rule.${item.ruleCode}.meta`)}
-                    </div>
-                  </div>
-                  <span
-                    className="font-mono text-[13px] font-semibold"
-                    style={{
-                      color:
-                        item.count === 0
-                          ? "var(--color-text-muted)"
-                          : item.ruleCode === "noTestcase"
+                    <span
+                      className="font-mono text-[13px] font-semibold"
+                      style={{
+                        color:
+                          item.ruleCode === "noTestcase"
                             ? "var(--color-admin-negative-text)"
                             : "var(--color-admin-warn-text)",
-                    }}
-                  >
-                    {item.count}
-                  </span>
-                </li>
-              ))}
-          </ul>
+                      }}
+                    >
+                      {item.count}
+                    </span>
+                  </li>
+                ))}
+            </ul>
+          )}
         </Card>
       </div>
 
@@ -695,10 +727,10 @@ function ProblemManagementForm({
         onClose={() => setManagingTopics(false)}
         items={topicList}
         usage={topicUsage}
-        onAdd={addProblemTopic}
-        onRename={renameProblemTopic}
-        onRemove={removeProblemTopic}
-        onMove={moveProblemTopic}
+        onAdd={topicActions.add}
+        onRename={topicActions.rename}
+        onRemove={topicActions.remove}
+        onMove={topicActions.move}
         labels={{
           title: t("topicManager.title"),
           hint: t("topicManager.hint"),
@@ -734,7 +766,7 @@ function ProblemManagementForm({
       <BulkLevelDialog
         open={pickingLevel}
         onClose={() => setPickingLevel(false)}
-        count={selected.size}
+        count={chosen.length}
         onApply={applyLevel}
       />
 
@@ -742,10 +774,10 @@ function ProblemManagementForm({
         open={confirmingBulkDelete}
         onClose={() => setConfirmingBulkDelete(false)}
         onConfirm={() => {
-          deleteSelected();
+          deleteChosen();
           setConfirmingBulkDelete(false);
         }}
-        title={t("confirmBulkDeleteTitle", { count: selected.size })}
+        title={t("confirmBulkDeleteTitle", { count: chosen.length })}
         confirmLabel={t("delete")}
         cancelLabel={t("cancel")}
         destructive
@@ -753,34 +785,18 @@ function ProblemManagementForm({
         {t("confirmDeleteBody")}
         <span className="mt-2 block font-semibold text-[var(--color-admin-warn-text)]">
           {t("confirmBulkDeleteImpact", {
-            count: selected.size,
+            count: chosen.length,
             submissions: bulkDeleteImpact.submissions,
             assigned: bulkDeleteImpact.assigned,
           })}
         </span>
-        {hiddenSelectedCount > 0 ? (
-          <span className="mt-2 block font-semibold text-[var(--color-admin-warn-text)]">
-            {t("confirmBulkDeleteHidden", { count: hiddenSelectedCount })}
-          </span>
-        ) : null}
       </ConfirmDialog>
 
       <ConfirmDialog
         open={pendingDelete !== null}
         onClose={() => setPendingDelete(null)}
         onConfirm={() => {
-          if (pendingDelete) {
-            setDeletedCodes((previous) =>
-              new Set(previous).add(pendingDelete.code),
-            );
-            // A deleted row must not stay counted in the selection.
-            setSelected((previous) => {
-              const next = new Set(previous);
-              next.delete(pendingDelete.code);
-              return next;
-            });
-            toast.success(t("toast.deleted", { title: pendingDelete.title }));
-          }
+          if (pendingDelete) deleteOne(pendingDelete);
           setPendingDelete(null);
         }}
         title={t("confirmDeleteTitle", { title: pendingDelete?.title ?? "" })}

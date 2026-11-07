@@ -82,11 +82,23 @@ export function ProblemInfoView({ problemId, basePath }: Props) {
   }
   const draft = query.data.draft;
 
+  // Real mode: a caller who may not read testcase bodies gets counts only (DD F2 #33), so the numbers
+  // come from the summary and the coverage block, which needs each row's category, is left out.
+  const server = query.data.server;
+  const summaryOnly =
+    server !== undefined &&
+    draft.testcases.length === 0 &&
+    server.testcaseSummary.total > 0;
   const approved = draft.testcases.filter((row) => row.approved);
-  const pending = draft.testcases.length - approved.length;
-  const publicCount = approved.filter(
-    (row) => row.visibility === "public",
-  ).length;
+  const approvedCount = summaryOnly
+    ? server.testcaseSummary.approved
+    : approved.length;
+  const pending = summaryOnly
+    ? server.testcaseSummary.total - server.testcaseSummary.approved
+    : draft.testcases.length - approved.length;
+  const publicCount = summaryOnly
+    ? server.testcaseSummary.sample
+    : approved.filter((row) => row.visibility === "public").length;
   const coverage = TESTCASE_CATEGORIES.map((category: TestcaseCategory) => ({
     category,
     approved: approved.filter((row) => row.category === category).length,
@@ -122,7 +134,7 @@ export function ProblemInfoView({ problemId, basePath }: Props) {
               </a>
             </Button>
             {/* A2 reads other authors' published problems but never edits them. */}
-            {canViewerSeeProblem(problemId) ? (
+            {(server ? !server.readOnly : canViewerSeeProblem(problemId)) ? (
               <Button asChild variant="cta" size="sm">
                 <Link href={`${basePath}/${problemId}/edit`}>{t("edit")}</Link>
               </Button>
@@ -185,7 +197,7 @@ export function ProblemInfoView({ problemId, basePath }: Props) {
               <p className="mb-3 text-[12.5px] text-[var(--color-text-muted)]">
                 {ta("spec.wrapperUnsupportedBody")}
               </p>
-            ) : (
+            ) : !draft.spec.signature.functionName.trim() ? null : (
               <ul className="mb-4 flex flex-col gap-2">
                 {SPEC_LANGUAGES.map((language) => (
                   <li
@@ -233,37 +245,42 @@ export function ProblemInfoView({ problemId, basePath }: Props) {
             </dl>
           </Card>
 
-          <Card
-            title={ta("coverageTitle")}
-            description={ta("coverageSubtitle")}
-          >
-            <div className="flex flex-wrap gap-2">
-              {coverage.map((row) => (
-                <Badge
-                  key={row.category}
-                  variant={row.approved > 0 ? "success" : "neutral"}
-                >
-                  {ta(`category.${row.category}`)}: {row.approved}
-                </Badge>
-              ))}
-            </div>
-          </Card>
+          {summaryOnly ? null : (
+            <Card
+              title={ta("coverageTitle")}
+              description={ta("coverageSubtitle")}
+            >
+              <div className="flex flex-wrap gap-2">
+                {coverage.map((row) => (
+                  <Badge
+                    key={row.category}
+                    variant={row.approved > 0 ? "success" : "neutral"}
+                  >
+                    {ta(`category.${row.category}`)}: {row.approved}
+                  </Badge>
+                ))}
+              </div>
+            </Card>
+          )}
 
-          <Card
-            title={ta("solutionTitle")}
-            description={t("solutionSubtitle", {
-              language: draft.solutionLanguage,
-            })}
-          >
-            <details>
-              <summary className="cursor-pointer text-[13px] font-semibold">
-                {t("solutionToggle")}
-              </summary>
-              <pre className="mt-3 overflow-x-auto font-mono text-[12.5px] leading-relaxed">
-                {draft.solution}
-              </pre>
-            </details>
-          </Card>
+          {/* A read-only viewer is not sent the reference solution, so the card is left out, not "empty". */}
+          {server?.readOnly ? null : (
+            <Card
+              title={ta("solutionTitle")}
+              description={t("solutionSubtitle", {
+                language: draft.solutionLanguage,
+              })}
+            >
+              <details>
+                <summary className="cursor-pointer text-[13px] font-semibold">
+                  {t("solutionToggle")}
+                </summary>
+                <pre className="mt-3 overflow-x-auto font-mono text-[12.5px] leading-relaxed">
+                  {draft.solution}
+                </pre>
+              </details>
+            </Card>
+          )}
         </div>
 
         <div className="flex flex-col gap-3.5 xl:sticky xl:top-[92px]">
@@ -300,7 +317,7 @@ export function ProblemInfoView({ problemId, basePath }: Props) {
                   {t("statTestcases")}
                 </dt>
                 <dd>
-                  {approved.length}{" "}
+                  {approvedCount}{" "}
                   <span className="text-[12px] text-[var(--color-text-muted)]">
                     {t("statTestcasesMeta", { count: pending })}
                   </span>

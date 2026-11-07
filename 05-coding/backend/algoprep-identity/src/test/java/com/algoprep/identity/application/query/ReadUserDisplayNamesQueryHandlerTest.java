@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import com.algoprep.identity.domain.ports.out.UserDisplayNamesRepository;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -43,7 +44,7 @@ class ReadUserDisplayNamesQueryHandlerTest {
 
   @Test
   void returnsAnImmutableSnapshot() {
-    var stored = new java.util.HashMap<>(Map.of(id, "Name"));
+    var stored = new HashMap<>(Map.of(id, "Name"));
     when(repository.findDisplayNames(Set.of(id))).thenReturn(stored);
     var result = handler.getDisplayNames(List.of(id));
     stored.put(id, "Changed");

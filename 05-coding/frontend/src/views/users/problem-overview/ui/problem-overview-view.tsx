@@ -16,10 +16,11 @@ import {
   problemLevelTone,
   useProblemDetail,
   useProblemLevels,
+  useSetBookmark,
   type ProblemDetail,
   type SubmissionLanguage,
 } from "@/entities/problem";
-import { useLocale, useT } from "@/shared/i18n";
+import { useApiErrorMessage, useLocale, useT } from "@/shared/i18n";
 import { formatDateVN } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
 import {
@@ -85,21 +86,36 @@ function ProblemOverview({
   const router = useRouter();
   const levels = useProblemLevels();
   const [saved, setSaved] = useState(detail.saved);
+  const setBookmark = useSetBookmark();
+  const apiMessage = useApiErrorMessage();
+
+  // Pessimistic (#11): the flag flips only after the server confirmed the wanted state. Undo sends
+  // `true` again; the note of the removed bookmark is gone with it (DD 12.5), so undo restores no note.
+  function setBookmarked(next: boolean) {
+    setBookmark.mutate(
+      { problemId, bookmarked: next },
+      {
+        onSuccess: () => {
+          setSaved(next);
+          if (next) {
+            toast.success(td("toast.saved"), {
+              label: td("toast.openSaved"),
+              onClick: () => router.push("/saved"),
+            });
+          } else {
+            toast.info(td("toast.unsaved"), {
+              label: t("btnUndo"),
+              onClick: () => setBookmarked(true),
+            });
+          }
+        },
+        onError: (error) => toast.error(apiMessage(error)),
+      },
+    );
+  }
 
   function toggleSaved() {
-    if (saved) {
-      // Undo restores the bookmark (owner 2026-10-20, same choice as USR0103: no confirm popup).
-      toast.info(td("toast.unsaved"), {
-        label: t("btnUndo"),
-        onClick: () => setSaved(true),
-      });
-    } else {
-      toast.success(td("toast.saved"), {
-        label: td("toast.openSaved"),
-        onClick: () => router.push("/saved"),
-      });
-    }
-    setSaved(!saved);
+    setBookmarked(!saved);
   }
 
   function copy(text: string) {
@@ -201,9 +217,12 @@ function ProblemOverview({
                 ? "border-[var(--color-admin-warn)] bg-[color-mix(in_srgb,var(--color-admin-warn)_18%,transparent)] text-[var(--color-admin-warn-text)]"
                 : "border-[var(--color-border)]"
             }`}
+            disabled={setBookmark.isPending}
             onClick={toggleSaved}
           >
-            <Bookmark className={`mr-2 h-4 w-4 ${saved ? "fill-current" : ""}`} />
+            <Bookmark
+              className={`mr-2 h-4 w-4 ${saved ? "fill-current" : ""}`}
+            />
             {saved ? td("panel.btnUnsave") : td("panel.btnSave")}
           </Button>
 

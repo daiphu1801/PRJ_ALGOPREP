@@ -115,7 +115,9 @@ export function fakeConfirmEmailChange(
 
 export function fakeChangeMyPassword(
   input: ChangePasswordInput,
-): Promise<{ ok: true } | { ok: false; message: string }> {
+): Promise<
+  { ok: true; noticeEmailFailed?: boolean } | { ok: false; message: string }
+> {
   if (profile.hasPassword && input.currentPassword !== "correct-password") {
     // Prototype convention: "correct-password" is the one value that passes the current-password
     // check, matching entities/auth's canned-credential approach (no real hashing to compare against).
@@ -177,7 +179,8 @@ export function fakeDeleteMyAccount(
 ): Promise<{ ok: true } | { ok: false; message: string }> {
   // Same rule as the client: trim + case-insensitive (D38).
   if (
-    emailConfirmation.trim().toLowerCase() !== profile.email.trim().toLowerCase()
+    emailConfirmation.trim().toLowerCase() !==
+    profile.email.trim().toLowerCase()
   ) {
     return delay({ ok: false, message: "errors.confirmPhraseMismatch" }, 400);
   }

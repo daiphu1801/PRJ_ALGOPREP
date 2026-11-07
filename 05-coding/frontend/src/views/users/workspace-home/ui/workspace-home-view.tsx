@@ -4,7 +4,7 @@
 // redirect thẳng vào bài làm dở gần nhất. Owner 2026-10-20 muốn có trang riêng: liệt kê bài đang làm dở
 // để tiếp tục, hoặc đi chọn bài. Ghi đè nhánh "mở thẳng nháp" của _shell.md mục 6 Q2.
 //
-// PROTOTYPE — danh sách lấy từ mock; nguồn thật là `judge.submissions` khi có 03-dd/api/F4_judge-orchestration.md.
+// Danh sách bài đang làm dở lấy từ F4 #8 (`useMyInProgress`); nút ngẫu nhiên do máy chủ chọn (F2 #2).
 "use client";
 
 import Link from "next/link";
@@ -12,40 +12,58 @@ import { useRouter } from "next/navigation";
 import { Shuffle } from "lucide-react";
 import {
   InProgressList,
-  useProblemListPage,
-  type ProblemListPage,
+  useMyInProgress,
+  useRandomProblem,
+  type CatalogParams,
+  type InProgressProblem,
 } from "@/entities/problem";
+import { useApiErrorMessage } from "@/shared/i18n/use-api-error-message";
 import { useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
 import { Button, Card, QueryBoundary } from "@/shared/ui";
 
-// Owner 2026-10-20: at most 12 drafts, most recently submitted first (mock order stands in for that).
+// Owner 2026-10-20: at most 12 drafts, most recently submitted first (the server orders them).
 const MAX_DRAFTS = 12;
 
+// "Unsolved" includes "in progress": ask for a never-tried problem first, then an attempted one.
+const RANDOM_BASE: CatalogParams = {
+  q: "",
+  status: "todo",
+  difficulty: "all",
+  topicId: "all",
+  sort: "difficulty",
+  dir: "asc",
+  page: 1,
+  pageSize: 12,
+};
+
 export function WorkspaceHomeView() {
-  const query = useProblemListPage();
+  const query = useMyInProgress(MAX_DRAFTS);
   return (
     <QueryBoundary query={query}>
-      {(page) => <WorkspaceHome page={page} />}
+      {(inProgress) => <WorkspaceHome inProgress={inProgress} />}
     </QueryBoundary>
   );
 }
 
-function WorkspaceHome({ page }: { page: ProblemListPage }) {
+function WorkspaceHome({ inProgress }: { inProgress: InProgressProblem[] }) {
   const t = useT("workspaceHome");
   const tl = useT("problemList");
   const router = useRouter();
 
-  // ponytail: picks client-side from the mock; the real flow is server-side (GetRandomProblem with an
-  // unsolved-status filter, USR0105 BD Q4). Unsolved includes "in progress".
-  function pickRandom() {
-    const todo = page.items.filter((problem) => problem.solveState !== "solved");
-    const problem = todo[Math.floor(Math.random() * todo.length)];
-    if (!problem) {
-      toast.warning(t("toast.randomEmpty"));
-      return;
+  const random = useRandomProblem();
+  const apiMessage = useApiErrorMessage();
+
+  async function pickRandom() {
+    try {
+      const id =
+        (await random.mutateAsync(RANDOM_BASE)) ??
+        (await random.mutateAsync({ ...RANDOM_BASE, status: "attempted" }));
+      if (id) router.push(`/problems/${id}`);
+      else toast.warning(t("toast.randomEmpty"));
+    } catch (error) {
+      toast.error(apiMessage(error));
     }
-    router.push(`/problems/${problem.id}`);
   }
 
   return (
@@ -66,7 +84,9 @@ function WorkspaceHome({ page }: { page: ProblemListPage }) {
           >
             <Link href="/problems">{t("linkProblems")}</Link>
           </Button>
-          <Button variant="cta" size="sm" onClick={pickRandom}>
+          <Button variant="cta" size="sm" onClick={() => void pickRandom()}
+            disabled={random.isPending}
+          >
             <Shuffle className="mr-1.5 h-3.5 w-3.5" />
             {tl("summary.btnRandom")}
           </Button>
@@ -76,7 +96,7 @@ function WorkspaceHome({ page }: { page: ProblemListPage }) {
       <Card className="px-5 py-4">
         <h2 className="mb-3 text-[13px] font-semibold">{t("resumeTitle")}</h2>
         <InProgressList
-          items={page.inProgress}
+          items={inProgress}
           limit={MAX_DRAFTS}
           layout="grid"
           emptyText={t("empty")}

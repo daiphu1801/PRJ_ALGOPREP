@@ -31,6 +31,14 @@ describe("realChangeMyPassword", () => {
     });
   });
 
+  it("passes on that the notice e-mail failed while the password changed", async () => {
+    post.mockResolvedValue({ noticeEmailFailed: true });
+    expect(await realChangeMyPassword(input)).toEqual({
+      ok: true,
+      noticeEmailFailed: true,
+    });
+  });
+
   it("turns a wrong current password (IDT-115) into a field message", async () => {
     post.mockRejectedValue(new ApiError("IDT-115", 422));
     expect(await realChangeMyPassword(input)).toEqual({

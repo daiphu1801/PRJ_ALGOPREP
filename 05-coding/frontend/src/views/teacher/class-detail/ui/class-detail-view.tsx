@@ -102,7 +102,7 @@ export function ClassDetailView({ classId }: { classId: string }) {
 
   const dayLabel = (day: number) => tm(`schedule.dayShort.${day}`);
   const summary = formatClassSchedule(klass.schedule, dayLabel);
-  // The F4 figures exist in mock mode only; the real roster carries contact details instead.
+  // The judge figures come with the roster when the server could read them (F1 #26).
   const hasMetrics = (studentsQuery.data ?? []).some((row) => row.metrics);
   const metricColumns: DataTableColumn<ClassRosterRow>[] = [
     {
@@ -128,7 +128,12 @@ export function ClassDetailView({ classId }: { classId: string }) {
       key: "completion",
       header: t("students.col.completion"),
       align: "right",
-      render: (row) => (row.metrics ? `${row.metrics.completionPct}%` : ""),
+      render: (row) =>
+        row.metrics
+          ? row.metrics.completionPct === null
+            ? "-"
+            : `${row.metrics.completionPct}%`
+          : "",
     },
     {
       key: "lastActive",
@@ -172,7 +177,9 @@ export function ClassDetailView({ classId }: { classId: string }) {
         </Link>
       ),
     },
-    ...(hasMetrics ? metricColumns : contactColumns),
+    // Contact details always show; the judge figures join them when the server could read them.
+    ...contactColumns,
+    ...(hasMetrics ? metricColumns : []),
     {
       key: "remove",
       header: "",

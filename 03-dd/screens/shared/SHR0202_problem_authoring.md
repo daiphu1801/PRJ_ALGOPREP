@@ -65,7 +65,7 @@ Xoá ví dụ khi bài PUBLISHED còn đúng hai ví dụ bị chặn với toas
 
 ### BR-SC-04 Ghép cặp tệp testcase
 
-EVT-15 chọn nhiều tệp văn bản có cùng tên gốc và hai hậu tố `.in`/`.out` (ví dụ `case01.in`, `case01.out`); một tên gốc tạo đúng một cặp `clientKey`. So khớp tên gốc phân biệt hoa thường, không chấp nhận tệp thiếu vế, trùng vế hoặc tên gốc rỗng; hiện lỗi trước khi xin URL F2 §46. Không nhận ZIP vì F2 không có hợp đồng giải nén. `visibility` mặc định HIDDEN cho cặp mới; người soạn có thể đổi từng cặp trước khi xin URL. Sau #46, PUT hai URL của mỗi cặp và chỉ gọi #47 khi mọi vế đã tải thành công; lỗi tải giữ danh sách để thử lại trong hạn URL. F2 #47 xác nhận nguyên lô, không thêm một phần. [SoT: F2 §46–47, Q-08; quy ước tệp là quyết định DD màn]
+**Owner chốt 2026-11-07 (Q-08, A20):** tệp được ghép theo cùng tên gốc với hậu tố `.in` và `.out` (`01.in` với `01.out`). EVT-15 chọn nhiều tệp văn bản có cùng tên gốc và hai hậu tố `.in`/`.out` (ví dụ `case01.in`, `case01.out`); một tên gốc tạo đúng một cặp `clientKey`. Giao diện hiện bảng các cặp khớp và báo tên lẻ hoặc trùng trước khi tải lên; API F2 vẫn nhận một cặp mỗi item. Nút "Tải lên hàng loạt" sẽ dựng theo quy tắc này (hàm `realBulkUpload` đã có, chưa có nút). So khớp tên gốc phân biệt hoa thường, không chấp nhận tệp thiếu vế, trùng vế hoặc tên gốc rỗng; hiện lỗi trước khi xin URL F2 §46. Không nhận ZIP vì F2 không có hợp đồng giải nén. `visibility` mặc định HIDDEN cho cặp mới; người soạn có thể đổi từng cặp trước khi xin URL. Sau #46, PUT hai URL của mỗi cặp và chỉ gọi #47 khi mọi vế đã tải thành công; lỗi tải giữ danh sách để thử lại trong hạn URL. F2 #47 xác nhận nguyên lô, không thêm một phần. [SoT: F2 §46–47, Q-08; quy ước tệp là quyết định DD màn]
 
 ### BR-SC-05 Xem trước dòng khai báo hàm
 
@@ -110,3 +110,43 @@ Prototype còn mock store, kết quả chạy mẫu giả, toggle công khai tro
 ### Đồng bộ baseline 2026-10-29
 
 Theo `DEC-2026-1029-f2-migration-readiness`, xuất bản lại sau khi sửa testcase trong lúc rút bài phải dùng phiên bản bộ chấm mới nếu nội dung đã duyệt khác snapshot; giống thì không tăng. Giao diện dùng version backend trả, không tự tính. Tag khác case là cùng một tag. Epsilon ngoài miền trả PRB-036/HRN-V20, không âm thầm làm tròn. Các câu hỏi backend của màn đã đóng theo DD F2 §61; nợ prototype/nối API không phải câu hỏi thiết kế.
+
+## Nối API thật (F2-6 phần 2, 2026-11-06)
+
+Bảng dưới liệt kê endpoint màn tiêu thụ và hiện trạng; hợp đồng chỉ định nghĩa ở `03-dd/api/F2_problem-bank.md`.
+
+| Endpoint | Hiện trạng |
+| :--- | :--- |
+| `#33`, `#34` | `realLoadDraft`; bài không thấy `PRB-010` (404) hiện không tìm thấy |
+| `#35` đến `#39` | `realSaveDraft`; `PRB-020` (409), `PRB-036`, `PRB-039`, `PRB-053`, `PRB-030` dịch qua `apiErrors` |
+| `#40` | Khối số liệu; lỗi thì hiện `-`; `acRate=null` hiện `-` |
+| `#41` đến `#43` | Ghi ngay từng dòng; `PRB-046`, `PRB-048`, `PRB-054`, `PRB-011` |
+| `#44` | Hàm `realReorderTestcases` có test, chưa có giao diện |
+| `#45`, `#46` | Hàm `realBulkUpload` có test, chưa có nút; quy tắc ghép cặp đã chốt 2026-11-07 (BR-SC-04) |
+| `#47` | Kết quả là toast; `PRB-040`, `PRB-055`, `PRB-050`, lỗi biên dịch |
+| `#48` | Còn mock (chưa có endpoint) |
+
+Test đường thật: `real-authoring.test.ts` (44 ca: ánh xạ, chuỗi lưu, từng mã lỗi), `views/shared/problem-authoring/ui/problem-authoring-real.test.tsx` (14 ca).
+
+### Quyết định kỹ thuật đã duyệt (Owner chốt 2026-11-07)
+
+Bảng dưới ghi các điểm mà bản nối API thật đã chọn và owner chấp nhận ngày 2026-11-07; không còn là câu hỏi mở.
+
+Bảng 1: Điểm đã duyệt của màn `SHR0202`
+
+| Mã | Quyết định | Nơi trong mã |
+| :-: | :--- | :--- |
+| A22 | Bài mới chưa lưu chưa biết trần sinh testcase bằng AI: `aiGeneration.limit = 0` cho tới lần lưu đầu | `entities/problem/api/real-authoring.ts` |
+| A23 | Giới hạn khởi tạo của form mới 1000 ms, 256 MB, 64 KB là hằng số của giao diện vì không có endpoint đọc mặc định hệ thống; máy chủ vẫn điền giới hạn thiếu | `real-authoring.ts:141-143` |
+| A24 | Bài nhiều chủ đề: màn chọn một chủ đề, các chủ đề còn lại giữ nguyên trong `otherTopicIds`; kiểu chữ ký lạ hiện là `OTHER` kèm cảnh báo | `real-authoring.ts:171`, `:310` |
+| A25 | Khi xuất bản, client không chặn theo kết quả chạy đáp án mẫu; máy chủ quyết qua `PRB-030` (BD EVT-33) | `UpdateProblemPublishStatus` ở DD F2 #39 |
+
+## Ghi chú đồng bộ prototype 2026-11-07: Tải lên hàng loạt (EVT-15)
+
+API tiêu thụ: `#45` `POST /problem-bank/authoring/problems/{id}/testcases/bulk-upload-url`, PUT thẳng lên MinIO (`credentials: omit`), `#46` `.../bulk-upload/confirm` qua `realBulkUpload` (`entities/problem/api/real-authoring.ts`). Hợp đồng không đổi; không sửa `03-dd/api/**`.
+
+Slice: `views/shared/problem-authoring/model/bulk-pairs.ts` (ghép cặp `.in`/`.out`, kiểm giới hạn, thuần hàm, có test), `ui/bulk-upload-dialog.tsx` (popup), nút và `bulkUpload()` trong `ui/problem-authoring-view.tsx`; `shared/ui/form/file-picker-button.tsx` và `shared/lib/format-bytes.ts` thêm mới ở `shared`. `clientKey` gửi lên là `p1`, `p2`, ... theo thứ tự tên tự nhiên; popup đổi lại thành tên gốc khi báo lỗi `PRB-045`.
+
+i18n: `problemAuthoring.testcase.btnBulkUpload`, `problemAuthoring.bulk.*` (vi, en). Mã lỗi dùng sẵn trong `apiErrors`: `PRB-044`, `PRB-045` (kèm `details.items`), `PRB-046`, `PRB-047`, `PRB-052`.
+
+Còn mở: 1) nút khoá ở bài mới chưa lưu (cần id bài), chưa có lựa chọn "lưu rồi tải lên" một bước; 2) tệp lạ chặn cả lô (owner chưa nói có nên bỏ qua tệp thừa như README); 3) chưa duyệt hình, chưa chạy trình duyệt với MinIO thật.

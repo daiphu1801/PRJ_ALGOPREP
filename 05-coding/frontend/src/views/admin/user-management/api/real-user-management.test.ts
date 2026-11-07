@@ -49,6 +49,8 @@ describe("realFetchAdminUserPage (#35, #62, #63, #9)", () => {
               status: "ACTIVE",
               lastActiveAt: "2026-11-02T05:00:00Z",
               hasPassword: true,
+              solvedCount: 3,
+              totalSubmissions: 12,
             },
             {
               id: "u2",
@@ -58,6 +60,8 @@ describe("realFetchAdminUserPage (#35, #62, #63, #9)", () => {
               status: "PENDING_VERIFICATION",
               lastActiveAt: null,
               hasPassword: false,
+              solvedCount: 0,
+              totalSubmissions: 0,
             },
             {
               id: "u3",
@@ -67,6 +71,8 @@ describe("realFetchAdminUserPage (#35, #62, #63, #9)", () => {
               status: "DEACTIVATED",
               lastActiveAt: "2026-10-01T00:00:00Z",
               hasPassword: true,
+              solvedCount: 1,
+              totalSubmissions: 5,
             },
           ],
           page: 2,
@@ -123,7 +129,7 @@ describe("realFetchAdminUserPage (#35, #62, #63, #9)", () => {
     });
   });
 
-  it("maps rows, counters and the acting admin without inventing solved or submission numbers", async () => {
+  it("maps rows, counters, the acting admin and the solved and submission counts of the server", async () => {
     const page = await realFetchAdminUserPage({
       status: "all",
       role: "all",
@@ -141,6 +147,8 @@ describe("realFetchAdminUserPage (#35, #62, #63, #9)", () => {
         status: "active",
         lastActiveAt: "2026-11-02T05:00:00Z",
         hasPassword: true,
+        solvedCount: 3,
+        submissionCount: 12,
       },
       {
         id: "u2",
@@ -150,6 +158,8 @@ describe("realFetchAdminUserPage (#35, #62, #63, #9)", () => {
         status: "pending",
         lastActiveAt: null,
         hasPassword: false,
+        solvedCount: 0,
+        submissionCount: 0,
       },
       {
         id: "u3",
@@ -159,10 +169,15 @@ describe("realFetchAdminUserPage (#35, #62, #63, #9)", () => {
         status: "locked",
         lastActiveAt: "2026-10-01T00:00:00Z",
         hasPassword: true,
+        solvedCount: 1,
+        submissionCount: 5,
       },
     ]);
-    expect(page.users[0]).not.toHaveProperty("solvedCount");
-    expect(page.users[0]).not.toHaveProperty("submissionCount");
+    expect(page.users.map((u) => [u.solvedCount, u.submissionCount])).toEqual([
+      [3, 12],
+      [0, 0],
+      [1, 5],
+    ]);
     expect(page.pendingTasks).toEqual([
       { key: "pendingEmail", count: 7, colorVar: "--color-admin-warn" },
     ]);

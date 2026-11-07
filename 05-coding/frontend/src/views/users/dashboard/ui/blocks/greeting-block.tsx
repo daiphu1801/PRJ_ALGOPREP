@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { useProblemListPage } from "@/entities/problem";
+import { useMyInProgress } from "@/entities/problem";
 import { useTopicProgress } from "@/entities/progress";
 import { pickWeakestTopic, scoreTopics } from "../../model/derive-skill-radar";
 import { useT } from "@/shared/i18n";
@@ -35,7 +35,7 @@ export function GreetingBlock() {
 
   // Resume target per REQ-03: the most recent unfinished draft, falling back to the problem list
   // when there is none, so the primary button is never a dead end for a new account.
-  const inProgress = useProblemListPage().data?.inProgress ?? [];
+  const inProgress = useMyInProgress().data ?? [];
   const resumeHref = inProgress[0]
     ? `/workspace/${inProgress[0].problemId}`
     : "/problems";

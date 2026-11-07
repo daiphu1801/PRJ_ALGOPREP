@@ -13,4 +13,7 @@ public interface RecentActivityRepository {
 
   /** Appends one entry to the feed. */
   void add(ActivityEntry entry);
+
+  /** Appends the entry only when its class still exists; false when the class is gone. */
+  boolean addIfClassExists(ActivityEntry entry);
 }

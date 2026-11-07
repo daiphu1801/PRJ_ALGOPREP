@@ -326,7 +326,7 @@ class ClassManagementFlowTest {
   }
 
   @Test
-  void rosterListsActiveStudentsWithContactAndANullStatus() throws Exception {
+  void rosterListsActiveStudentsWithContactAndTheInsufficientDataLabel() throws Exception {
     String token = login(account("INSTRUCTOR"));
     String classId = createClass(token, "Roster");
     String active = account("STUDENT");
@@ -347,7 +347,8 @@ class ClassManagementFlowTest {
     assertThat(JsonPath.<String>read(body, "$.items[0].displayName")).isEqualTo("QAUser123");
     assertThat(JsonPath.<String>read(body, "$.items[0].phone")).isEqualTo("0901 234");
     assertThat(JsonPath.<String>read(body, "$.items[0].joinedAt")).endsWith("Z");
-    assertThat(JsonPath.<Object>read(body, "$.items[0].status")).isNull();
+    assertThat(JsonPath.<String>read(body, "$.items[0].status")).isEqualTo("INSUFFICIENT_DATA");
+    assertThat(JsonPath.<Object>read(body, "$.items[0].avgScore")).isNull();
   }
 
   @Test

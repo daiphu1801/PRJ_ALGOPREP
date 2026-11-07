@@ -19,11 +19,16 @@ class RedisExportRateLimitAdapter implements ExportRateLimitPort {
 
   @Override
   public boolean tryAcquire(UUID userId, String scope) {
-    Boolean taken =
-        redis
-            .getObject()
-            .opsForValue()
-            .setIfAbsent("identity:export:" + userId + ":" + scope, "1", WINDOW);
+    Boolean taken = redis.getObject().opsForValue().setIfAbsent(key(userId, scope), "1", WINDOW);
     return Boolean.TRUE.equals(taken);
+  }
+
+  @Override
+  public void release(UUID userId, String scope) {
+    redis.getObject().delete(key(userId, scope));
+  }
+
+  private static String key(UUID userId, String scope) {
+    return "identity:export:" + userId + ":" + scope;
   }
 }

@@ -1,5 +1,6 @@
 package com.algoprep.bootstrap.config;
 
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -42,7 +43,7 @@ final class ApiAuthenticationEntryPoint implements AuthenticationEntryPoint {
     }
     try {
       bearer.commence(request, response, failure);
-    } catch (jakarta.servlet.ServletException e) {
+    } catch (ServletException e) {
       throw new IOException(e);
     }
   }

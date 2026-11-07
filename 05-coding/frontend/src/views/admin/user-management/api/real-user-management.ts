@@ -1,7 +1,7 @@
 // Real calls of the user-management screen (03-dd/api/F1_identity.md #35 to #38, #50, #62, #63,
 // #32 for role ids, #9 for the acting admin's e-mail). Backend task 11, section 0.6 "Triển khai
-// 2026-11-02". The backend has no solved count or submission count (F4 read model), so the mapper
-// leaves those two out instead of inventing values; `lastActiveAt` comes with the row (#35).
+// 2026-11-02" and "Triển khai 2026-11-07". Each row carries `lastActiveAt`, `solvedCount` and
+// `totalSubmissions` (read from the F1 read models, 0 when the account has no row).
 import { api } from "@/shared/api";
 import type {
   AdminUser,
@@ -31,6 +31,8 @@ type UserDto = {
   status: "ACTIVE" | "PENDING_VERIFICATION" | "DEACTIVATED";
   lastActiveAt: string | null;
   hasPassword: boolean;
+  solvedCount: number;
+  totalSubmissions: number;
 };
 
 type UserListDto = {
@@ -71,6 +73,8 @@ export function toAdminUser(dto: UserDto): AdminUser {
     status: STATUS_OF[dto.status],
     lastActiveAt: dto.lastActiveAt,
     hasPassword: dto.hasPassword,
+    solvedCount: dto.solvedCount,
+    submissionCount: dto.totalSubmissions,
   };
 }
 

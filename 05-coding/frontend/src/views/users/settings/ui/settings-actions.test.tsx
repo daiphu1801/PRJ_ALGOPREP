@@ -190,13 +190,43 @@ describe("DataExportCard", () => {
 
   it("downloads the file and toasts success", async () => {
     const read = watch();
-    exportMyData.mockResolvedValue(new Blob(["a,b"]));
+    exportMyData.mockResolvedValue({
+      blob: new Blob(["a,b"]),
+      truncated: false,
+    });
+    const names: string[] = [];
+    vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(function (
+      this: HTMLAnchorElement,
+    ) {
+      names.push(this.download);
+    });
     render(withTestProviders(<DataExportCard />));
 
     exportSubmissions();
 
     await waitFor(() =>
       expect(read().at(-1)).toEqual(["success", s.dataExport.exported]),
+    );
+    // Same file name as the one the server proposes.
+    expect(names).toEqual(["algoprep-submissions.csv"]);
+    expect(read().map((item) => item[0])).not.toContain("info");
+  });
+
+  it("adds an info toast when the server cut the file at the newest 2000 submissions", async () => {
+    const read = watch();
+    exportMyData.mockResolvedValue({
+      blob: new Blob(["a,b"]),
+      truncated: true,
+    });
+    render(withTestProviders(<DataExportCard />));
+
+    exportSubmissions();
+
+    await waitFor(() =>
+      expect(read()).toEqual([
+        ["success", s.dataExport.exported],
+        ["info", s.dataExport.truncated.replace("{count}", "2000")],
+      ]),
     );
     expect(exportMyData).toHaveBeenCalledWith("submissions");
   });
@@ -210,6 +240,19 @@ describe("DataExportCard", () => {
 
     await waitFor(() =>
       expect(read().at(-1)).toEqual(["error", apiErrors["IDT-V06"]]),
+    );
+    expect(screen.getByRole("button", { name: /Xuất lượt nộp/ })).toBeEnabled();
+  });
+
+  it("shows apiErrors.IDT-508 when the judge cannot give the submission history", async () => {
+    const read = watch();
+    exportMyData.mockRejectedValue(new ApiError("IDT-508", 503));
+    render(withTestProviders(<DataExportCard />));
+
+    exportSubmissions();
+
+    await waitFor(() =>
+      expect(read().at(-1)).toEqual(["error", apiErrors["IDT-508"]]),
     );
     expect(screen.getByRole("button", { name: /Xuất lượt nộp/ })).toBeEnabled();
   });

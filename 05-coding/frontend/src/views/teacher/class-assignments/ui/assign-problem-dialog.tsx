@@ -6,15 +6,17 @@
 // offered again.
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useInstructorClasses } from "@/entities/class";
 import {
   useAssignableProblems,
   useAssignProblems,
 } from "@/entities/class-assignment";
-import { useT } from "@/shared/i18n";
+import { ApiError } from "@/shared/api";
+import { useApiErrorMessage, useT } from "@/shared/i18n";
+import { useDebounced } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
-import { Button, Modal, SelectField, TextField } from "@/shared/ui";
+import { Button, Modal, Pagination, SelectField, TextField } from "@/shared/ui";
 
 type Props = {
   open: boolean;
@@ -29,7 +31,10 @@ export function AssignProblemDialog({ open, onClose, defaultClassId }: Props) {
   const [pickedClass, setPickedClass] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [page, setPage] = useState(1);
   const assign = useAssignProblems();
+  const apiMessage = useApiErrorMessage();
+  const q = useDebounced(search.trim());
 
   // Falls back to the preselected class, then the first one, so the select never shows a stale choice.
   const classId = classes.some((c) => c.id === pickedClass)
@@ -37,19 +42,16 @@ export function AssignProblemDialog({ open, onClose, defaultClassId }: Props) {
     : classes.some((c) => c.id === defaultClassId)
       ? defaultClassId!
       : (classes[0]?.id ?? "");
-  const candidates = useAssignableProblems(classId);
-
-  const rows = useMemo(() => {
-    const needle = search.trim().toLowerCase();
-    return (candidates.data ?? []).filter(
-      (p) => !needle || p.title.toLowerCase().includes(needle),
-    );
-  }, [candidates.data, search]);
+  // The server filters by title and pages by 20; a ticked problem stays ticked on another page.
+  const candidates = useAssignableProblems(classId, q, page);
+  const rows = candidates.data?.items ?? [];
+  const pageMeta = candidates.data?.page;
 
   function close() {
     setSelected(new Set());
     setSearch("");
     setPickedClass(null);
+    setPage(1);
     onClose();
   }
 
@@ -64,13 +66,31 @@ export function AssignProblemDialog({ open, onClose, defaultClassId }: Props) {
   const className = classes.find((c) => c.id === classId)?.name ?? "";
 
   function confirm() {
-    const count = selected.size;
     assign.mutate(
       { classId, problemIds: [...selected] },
       {
-        onSuccess: () =>
-          toast.success(t("toast.assigned", { count, className })),
-        onError: () => toast.error(t("toast.assignFailed")),
+        onSuccess: (result) => {
+          // One call can mix outcomes: new, already given, refused (PRB-037 not published, PRB-010 gone...).
+          if (result.succeeded.length > 0 || result.failed.length === 0)
+            toast.success(
+              t("toast.assigned", {
+                count: result.succeeded.length,
+                className,
+              }),
+            );
+          if (result.skipped.length > 0)
+            toast.info(
+              t("toast.assignSkipped", { count: result.skipped.length }),
+            );
+          for (const code of new Set(result.failed.map((item) => item.code)))
+            toast.warning(
+              `${t("toast.assignRefused", {
+                count: result.failed.filter((item) => item.code === code)
+                  .length,
+              })} ${apiMessage(new ApiError(code, 422))}`,
+            );
+        },
+        onError: (error) => toast.error(apiMessage(error)),
       },
     );
     close();
@@ -108,6 +128,7 @@ export function AssignProblemDialog({ open, onClose, defaultClassId }: Props) {
           value={classId}
           onChange={(event) => {
             setPickedClass(event.target.value);
+            setPage(1);
             setSelected(new Set());
           }}
           options={classes.map((c) => ({ value: c.id, label: c.name }))}
@@ -117,7 +138,10 @@ export function AssignProblemDialog({ open, onClose, defaultClassId }: Props) {
           hideLabel
           placeholder={t("assignmentList.search")}
           value={search}
-          onChange={(event) => setSearch(event.target.value)}
+          onChange={(event) => {
+            setSearch(event.target.value);
+            setPage(1);
+          }}
         />
         <ul
           aria-label={t("assign.listLabel")}
@@ -148,6 +172,20 @@ export function AssignProblemDialog({ open, onClose, defaultClassId }: Props) {
             ))
           )}
         </ul>
+        {pageMeta && pageMeta.totalPages > 1 ? (
+          <Pagination
+            page={pageMeta.number}
+            pageSize={pageMeta.size}
+            total={pageMeta.totalItems}
+            onPageChange={setPage}
+            summary={t("pageSummary", {
+              page: pageMeta.number,
+              total: pageMeta.totalPages,
+            })}
+            previousLabel={t("previous")}
+            nextLabel={t("next")}
+          />
+        ) : null}
       </div>
     </Modal>
   );

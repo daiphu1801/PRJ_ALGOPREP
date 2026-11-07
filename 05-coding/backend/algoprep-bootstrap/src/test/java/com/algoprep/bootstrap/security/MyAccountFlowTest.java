@@ -16,6 +16,8 @@ import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -139,6 +141,64 @@ class MyAccountFlowTest {
   }
 
   @Test
+  void oauthOnlyAccountSetsFirstPasswordThenNeedsTheCurrentOneToChangeAgain() throws Exception {
+    String email = adminCreatedAccount();
+    String access = loginAccess(email);
+    String otherRefresh = refreshCookie(login(email, PASSWORD));
+    // Turn the account into an OAuth-only one: no password hash at all.
+    jdbc.update("UPDATE identity.users SET password_hash = NULL WHERE email = ?", email);
+
+    // The "currentPassword" field is empty and must not matter.
+    MockHttpServletResponse first = change(access, "", NEW_PASSWORD);
+
+    assertThat(first.getStatus()).isEqualTo(200);
+    assertThat((Boolean) JsonPath.read(first.getContentAsString(), "$.noticeEmailFailed"))
+        .isFalse();
+    assertThat(login(email, NEW_PASSWORD).getStatus()).isEqualTo(200);
+    assertThat(refresh(otherRefresh).getStatus()).isEqualTo(401);
+    assertThat(
+            jdbc.queryForObject(
+                "SELECT count(*) FROM identity.system_audit_logs a JOIN identity.users u"
+                    + " ON u.id = a.actor_user_id WHERE u.email = ? AND a.action_type ="
+                    + " 'PASSWORD_CHANGED'",
+                Integer.class,
+                email))
+        .isEqualTo(1);
+    List<Map<String, Object>> messages = JsonPath.read(mailApi("/api/v1/messages"), "$.messages");
+    assertThat(
+            messages.stream()
+                .anyMatch(
+                    m ->
+                        m.get("To").toString().contains(email)
+                            && m.get("Subject").toString().contains("đặt mật khẩu")))
+        .isTrue();
+
+    // Second call: the account now has a password, so the empty and wrong values are refused.
+    assertThat(change(access, "", "Another789x").getStatus()).isEqualTo(422);
+    assertThat(change(access, "NotThePass1", "Another789x").getStatus()).isEqualTo(422);
+    assertThat(change(access, NEW_PASSWORD, "Another789x").getStatus()).isEqualTo(200);
+  }
+
+  @Test
+  void oauthOnlyAccountCannotSetAWeakFirstPassword() throws Exception {
+    String email = adminCreatedAccount();
+    String access = loginAccess(email);
+    jdbc.update("UPDATE identity.users SET password_hash = NULL WHERE email = ?", email);
+
+    MockHttpServletResponse response = change(access, "", "short1");
+
+    assertThat(response.getStatus()).isEqualTo(422);
+    assertThat(JsonPath.<String>read(response.getContentAsString(), "$.errorCode"))
+        .isEqualTo("IDT-V01");
+    assertThat(
+            jdbc.queryForObject(
+                "SELECT password_hash IS NULL FROM identity.users WHERE email = ?",
+                Boolean.class,
+                email))
+        .isTrue();
+  }
+
+  @Test
   void profileReportsTheForcedChangeFlagAndLinkedProvidersWithoutSecrets() throws Exception {
     String email = adminCreatedAccount();
     jdbc.update(
@@ -160,8 +220,7 @@ class MyAccountFlowTest {
     assertThat(JsonPath.<Boolean>read(body, "$.hasPassword")).isTrue();
     assertThat(JsonPath.<Boolean>read(body, "$.mustChangePassword")).isTrue();
     assertThat(JsonPath.<Object>read(body, "$.passwordChangedAt")).isNull();
-    assertThat(JsonPath.<java.util.List<String>>read(body, "$.linkedProviders"))
-        .containsExactly("GOOGLE");
+    assertThat(JsonPath.<List<String>>read(body, "$.linkedProviders")).containsExactly("GOOGLE");
     assertThat(JsonPath.<String>read(body, "$.joinedAt")).endsWith("Z");
     assertThat(body).doesNotContain("$2a$", "google-subject-1", "p@example.test", "passwordHash");
 
@@ -390,8 +449,7 @@ class MyAccountFlowTest {
   void twoSettingsPatchesAtOnceBothKeepTheirValues() throws Exception {
     String email = adminCreatedAccount();
     String access = loginAccess(email);
-    java.util.concurrent.ExecutorService pool =
-        java.util.concurrent.Executors.newFixedThreadPool(2);
+    ExecutorService pool = Executors.newFixedThreadPool(2);
     try {
       for (int round = 0; round < 20; round++) {
         String language = round % 2 == 0 ? "JAVA" : "CPP";
@@ -517,11 +575,14 @@ class MyAccountFlowTest {
   }
 
   @Test
-  void exportOfSubmissionsIsNotBuiltYetAndAnUnknownScopeIs400() throws Exception {
+  void anUnknownExportScopeIs400AndTheSubmissionFileOfAnEmptyHistoryIsHeaderOnly()
+      throws Exception {
     String access = loginAccess(adminCreatedAccount());
 
-    assertThat(export(access, "submissions").getStatus()).isEqualTo(501);
     assertThat(export(access, "everything").getStatus()).isEqualTo(400);
+    MockHttpServletResponse submissions = export(access, "submissions");
+    assertThat(submissions.getStatus()).isEqualTo(200);
+    assertThat(submissions.getContentAsString().lines().count()).isEqualTo(1);
   }
 
   @Test

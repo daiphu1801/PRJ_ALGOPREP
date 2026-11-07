@@ -9,6 +9,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { isMockMode } from "@/shared/api";
 import {
   problemLevelLabel,
   problemLevelTone,
@@ -121,7 +122,15 @@ export function MySubmissionsView() {
       render: (row) => (
         <div className="min-w-0">
           <Link
-            href={`/problems/${row.problemSlug}`}
+            href={
+              row.problemWithdrawn
+                ? "#"
+                : `/problems/${row.problemId || row.problemSlug}`
+            }
+            aria-disabled={row.problemWithdrawn}
+            onClick={(event) => {
+              if (row.problemWithdrawn) event.preventDefault();
+            }}
             className="font-semibold hover:underline"
           >
             {row.problemCode} · {row.problemTitle}
@@ -285,7 +294,7 @@ export function MySubmissionsView() {
           pageSize={listPage.pageSize}
           total={listPage.totalItems}
           onPageChange={setPage}
-          pageSizeOptions={PAGE_SIZES}
+          pageSizeOptions={isMockMode() ? PAGE_SIZES : undefined}
           pageSizeLabel={t("footer.pageSizeLabel")}
           onPageSizeChange={(size) => {
             setPageSize(size);

@@ -1,45 +1,54 @@
-// PROTOTYPE — chưa có DD. Xem 06-plan/PROTOTYPE_DEBT.md mục 9.
+// USR0101 on the real api (03-dd/api/F2_problem-bank.md #1 to #4, F4 #8); mock mode answers the same contract.
 //
-// Layout theo 09-layoutBase/Ngân hàng bài toán.dc.html: thanh chủ đề
-// (:118-125), bộ lọc (:131-153), bảng danh sách (:155-192), phân trang (:194-201), hai khối phụ
-// "Bài đang làm dở" (:206-220) và "Bài tập lớp" (:222-236) ở cột phải.
-// Bố cục hai cột minmax(0,1fr) 268px theo 02-bd/screens/users/USR0101_problem_list.md (Sheet 4.4).
-// Dải chỉ số (:103-116) đã BỎ 2026-10-18 (owner: màn danh sách không có dải KPI).
+// Layout follows 09-layoutBase/Ngân hàng bài toán.dc.html: topic bar (:118-125), filters (:131-153),
+// table (:155-192), paging (:194-201), and the two side blocks "Bài đang làm dở" (:206-220) and
+// "Bài tập lớp" (:222-236) in the right column. Two columns, minmax(0,1fr) 268px (BD USR0101 Sheet 4.4).
+// The KPI strip (:103-116) was dropped 2026-10-18 (owner: a list screen has no KPI strip). The prototype's
+// `isSolve` branch is not carried over (RD open question Q2, closed).
 //
-// Nhánh `isSolve` của prototype KHÔNG mang theo — chốt ở RD Câu hỏi mở Q2 (đã đóng), là mã thừa
-// của một hướng thiết kế cũ.
+// The server filters, sorts and pages the table; this view only sends `CatalogParams`. Every block loads
+// on its own, so one that fails says so in place and leaves the rest alone. A figure another module
+// supplies can be unknown (solve state, topic progress): it is then left out, never drawn as 0.
 //
-// Ponytail: bộ lọc KHÔNG ghi vào URL ở bản dựng này (BD Sheet 4.1 bước 2 có nói tới) — state cục
-// bộ đủ để thấy hành vi chạy, đồng bộ URL/searchParams để lại cho lúc build thật với API/DD.
+// Filters, sort and page live in the URL (?q=&status=&level=&topic=&sort=&dir=&page=), the convention of the
+// instructor lists, so a reload or a shared link restores them (BD Sheet 4.1 step 2). A default value is
+// left out of the URL: the default sort stays difficulty ascending (owner, 2026-11-07). The page size is
+// a personal preference kept in localStorage, not in the URL.
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Shuffle } from "lucide-react";
 import {
   InProgressList,
+  IN_PROGRESS_LIMIT,
   problemLevelLabel,
-  problemLevelRank,
   problemLevelTone,
+  useMyClassAssignments,
+  useMyInProgress,
+  useProblemCatalog,
   useProblemLevels,
-  useProblemListPage,
-  type ProblemListItem,
-  type ProblemListPage,
+  useRandomProblem,
+  useTopicProgress,
+  type CatalogParams,
+  type CatalogRow,
   type SolveState,
 } from "@/entities/problem";
-import { useLocale, useT } from "@/shared/i18n";
-import { formatDateVN, usePersistedPageSize } from "@/shared/lib";
+import { useApiErrorMessage, useLocale, useT } from "@/shared/i18n";
+import { formatDateVN, useDebounced, usePersistedPageSize } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
 import {
   Badge,
   Button,
   Card,
   DataTable,
+  ErrorState,
   Pagination,
   FilterBar,
   FilterMenu,
-  QueryBoundary,
+  QueryError,
+  Skeleton,
   type BadgeVariant,
   type DataTableColumn,
 } from "@/shared/ui";
@@ -53,51 +62,87 @@ const SOLVE_STATE_VARIANT: Record<SolveState, BadgeVariant> = {
 // 12 is the default (a multiple of the card grid's columns); the learner may pick another.
 const PAGE_SIZES = [12, 24, 48] as const;
 
-// Class assignments block: at most the 3 most recently assigned classes, no "view all" link
-// (owner 2026-10-18). The mock has no assigned_at, so the first 3 groups stand in for "most recent".
-const MAX_ASSIGNMENT_CLASSES = 3;
-
-// "Bài đang làm dở" shows at most 3 items (BD Sheet 4.4); the real endpoint also caps it.
-const MAX_IN_PROGRESS = 3;
-
+// The server already cuts the class block at the 3 most recently assigned classes (owner 2026-10-18).
 const SEARCH_MAX_LENGTH = 100;
 
 type StatusFilter = SolveState | "all";
-type DifficultyFilter = string;
 type SortKey = "difficulty" | "acRate";
 
-export function ProblemListView() {
-  const query = useProblemListPage();
-  return (
-    <QueryBoundary query={query}>
-      {(page) => <ProblemList page={page} />}
-    </QueryBoundary>
-  );
-}
+const STATUS_VALUES: readonly StatusFilter[] = [
+  "all",
+  "solved",
+  "attempted",
+  "todo",
+];
 
-function ProblemList({ page }: { page: ProblemListPage }) {
+export function ProblemListView() {
   const t = useT("problemList");
+  const tc = useT("common");
   const locale = useLocale() === "en" ? "en" : "vi";
+  const apiMessage = useApiErrorMessage();
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const levels = useProblemLevels();
-  const [query, setQuery] = useState("");
-  const [status, setStatus] = useState<StatusFilter>("all");
-  const [difficulty, setDifficulty] = useState<DifficultyFilter>("all");
-  const [topicId, setTopicId] = useState<string>("all");
-  const [sort, setSort] = useState<{ key: SortKey; direction: "asc" | "desc" }>(
-    {
-      key: "difficulty",
-      direction: "asc",
-    },
+  // A value the URL carries that this screen does not know falls back to the default.
+  const statusParam = searchParams.get("status");
+  const status: StatusFilter = STATUS_VALUES.includes(
+    statusParam as StatusFilter,
+  )
+    ? (statusParam as StatusFilter)
+    : "all";
+  const difficulty = searchParams.get("level") || "all";
+  const topicId = searchParams.get("topic") || "all";
+  const sort: { key: SortKey; direction: "asc" | "desc" } = {
+    key: searchParams.get("sort") === "acRate" ? "acRate" : "difficulty",
+    direction: searchParams.get("dir") === "desc" ? "desc" : "asc",
+  };
+  const currentPage = Math.max(
+    1,
+    Math.floor(Number(searchParams.get("page"))) || 1,
   );
-  const [currentPage, setCurrentPage] = useState(1);
+  const [query, setQuery] = useState(searchParams.get("q") ?? "");
+  // One replace per change; a null or empty value drops the key, so defaults never reach the URL.
+  const setUrlParams = (patch: Record<string, string | null>) => {
+    const next = new URLSearchParams(searchParams.toString());
+    for (const [key, value] of Object.entries(patch)) {
+      if (value === null || value === "") next.delete(key);
+      else next.set(key, value);
+    }
+    const qs = next.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  };
+  const setStatus = (value: StatusFilter) =>
+    setUrlParams({ status: value === "all" ? null : value, page: null });
+  const setDifficulty = (value: string) =>
+    setUrlParams({ level: value === "all" ? null : value, page: null });
+  const setTopicId = (value: string) =>
+    setUrlParams({ topic: value === "all" ? null : value, page: null });
+  const setCurrentPage = (value: number) =>
+    setUrlParams({ page: value <= 1 ? null : String(value) });
   const [pageSize, setPageSize] = usePersistedPageSize(
     "algoprep-problem-list-page-size",
     PAGE_SIZES,
     12,
   );
 
-  const resetToFirstPage = () => setCurrentPage(1);
+  // Typing filters live, but only a pause in typing becomes a request.
+  const debouncedQuery = useDebounced((searchParams.get("q") ?? "").trim());
+  const params: CatalogParams = {
+    q: debouncedQuery.trim().slice(0, SEARCH_MAX_LENGTH),
+    status,
+    difficulty,
+    topicId,
+    sort: sort.key,
+    dir: sort.direction,
+    page: currentPage,
+    pageSize,
+  };
+  const catalog = useProblemCatalog(params);
+  const topics = useTopicProgress();
+  const assignments = useMyClassAssignments();
+  const inProgress = useMyInProgress();
+  const random = useRandomProblem();
 
   const hasActiveFilter =
     query.trim() !== "" ||
@@ -108,67 +153,35 @@ function ProblemList({ page }: { page: ProblemListPage }) {
   // BD EVT-6: one link resets all four filters and returns to page 1.
   function clearFilters() {
     setQuery("");
-    setStatus("all");
-    setDifficulty("all");
-    setTopicId("all");
-    resetToFirstPage();
+    setUrlParams({
+      q: null,
+      status: null,
+      level: null,
+      topic: null,
+      page: null,
+    });
   }
 
-  const filtered = useMemo(() => {
-    const needle = query.trim().toLowerCase();
-    const rows = page.items.filter(
-      (problem) =>
-        (status === "all" || problem.solveState === status) &&
-        (difficulty === "all" || problem.difficulty === difficulty) &&
-        (topicId === "all" ||
-          problem.topics.some((topic) => topic.toLowerCase() === topicId)) &&
-        (!needle ||
-          problem.code.toLowerCase().includes(needle) ||
-          problem.title.toLowerCase().includes(needle)),
-    );
-
-    const factor = sort.direction === "asc" ? 1 : -1;
-    return [...rows].sort((left, right) => {
-      if (sort.key === "acRate") {
-        return ((left.acRate ?? -1) - (right.acRate ?? -1)) * factor;
-      }
-      return (
-        (problemLevelRank(levels, left.difficulty) -
-          problemLevelRank(levels, right.difficulty)) *
-        factor
-      );
-    });
-  }, [page.items, query, status, difficulty, topicId, sort, levels]);
-
-  const visible = filtered.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize,
-  );
-
-  const assignmentGroups = page.classAssignments.slice(
-    0,
-    MAX_ASSIGNMENT_CLASSES,
-  );
-
+  // The server picks inside the same filter, so the pick always matches what the table is showing.
   function pickRandom() {
-    const problem = filtered[Math.floor(Math.random() * filtered.length)];
-    if (!problem) {
-      toast.warning(t("toast.randomEmpty"));
-      return;
-    }
-    router.push(`/problems/${problem.id}`);
+    random.mutate(params, {
+      onSuccess: (problemId) => {
+        if (problemId) router.push(`/problems/${problemId}`);
+        else toast.warning(t("toast.randomEmpty"));
+      },
+      onError: (error) => toast.error(apiMessage(error)),
+    });
   }
 
   // The list filters live while typing (no toast per keystroke); Enter is the explicit search.
   function announceSearch() {
+    const count = catalog.data?.page.totalItems ?? 0;
     toast.info(
-      filtered.length > 0
-        ? t("toast.searchResult", { count: filtered.length })
-        : t("toast.searchEmpty"),
+      count > 0 ? t("toast.searchResult", { count }) : t("toast.searchEmpty"),
     );
   }
 
-  const columns: DataTableColumn<ProblemListItem>[] = [
+  const columns: DataTableColumn<CatalogRow>[] = [
     {
       key: "solveState",
       header: t("table.colState"),
@@ -188,7 +201,9 @@ function ProblemList({ page }: { page: ProblemListPage }) {
               })`,
             }}
           />
-          <span className="sr-only">{t(`state.${problem.solveState}`)}</span>
+          <span className="sr-only">
+            {t(`state.${problem.solveState ?? "unknown"}`)}
+          </span>
         </>
       ),
     },
@@ -212,6 +227,7 @@ function ProblemList({ page }: { page: ProblemListPage }) {
             {problem.submissionModel === "stdioOnly" ? (
               <Badge variant="neutral">{t("submissionModel.stdioOnly")}</Badge>
             ) : null}
+            {/* null = F5 did not answer (or is not built): no badge rather than a guess. */}
             {problem.hasSolutionReview ? (
               <Badge variant="teal">{t("table.hasReview")}</Badge>
             ) : null}
@@ -264,11 +280,23 @@ function ProblemList({ page }: { page: ProblemListPage }) {
           size="sm"
           className="border border-[var(--color-border)]"
         >
-          <Link href={`/problems/${problem.id}`}>{t("table.btnSolve")}</Link>
+          <Link
+            href={`/problems/${problem.id}`}
+            aria-label={t("table.btnSolveFor", { title: problem.title })}
+          >
+            {t("table.btnSolve")}
+          </Link>
         </Button>
       ),
     },
   ];
+
+  const data = catalog.data;
+  // A block with nothing to show is left out whole; loading and error stay visible so a failure is never
+  // mistaken for "nothing here".
+  const showInProgress = !inProgress.data || inProgress.data.length > 0;
+  const showAssignments = !assignments.data || assignments.data.length > 0;
+  const showSide = showInProgress || showAssignments;
 
   return (
     <div className="p-6">
@@ -283,7 +311,12 @@ function ProblemList({ page }: { page: ProblemListPage }) {
           >
             <Link href="/saved">{t("summary.linkSaved")}</Link>
           </Button>
-          <Button variant="cta" size="sm" onClick={pickRandom}>
+          <Button
+            variant="cta"
+            size="sm"
+            onClick={pickRandom}
+            disabled={random.isPending}
+          >
             <Shuffle className="mr-1.5 h-3.5 w-3.5" />
             {t("summary.btnRandom")}
           </Button>
@@ -300,7 +333,6 @@ function ProblemList({ page }: { page: ProblemListPage }) {
           aria-pressed={topicId === "all"}
           onClick={() => {
             setTopicId("all");
-            resetToFirstPage();
           }}
           className={`shrink-0 rounded-full border px-3 py-1.5 text-[12.5px] font-semibold ${
             topicId === "all"
@@ -310,7 +342,12 @@ function ProblemList({ page }: { page: ProblemListPage }) {
         >
           {t("filter.all")}
         </button>
-        {page.topics.map((topic) => (
+        {topics.isError ? (
+          <span className="self-center text-[12.5px] text-[var(--color-text-muted)]">
+            {t("topicNav.failed")}
+          </span>
+        ) : null}
+        {topics.data?.items.map((topic) => (
           <button
             key={topic.id}
             type="button"
@@ -318,7 +355,6 @@ function ProblemList({ page }: { page: ProblemListPage }) {
             onClick={() => {
               // BD EVT-5: pressing the active topic clears the filter.
               setTopicId(topicId === topic.id ? "all" : topic.id);
-              resetToFirstPage();
             }}
             className={`shrink-0 rounded-full border px-3 py-1.5 text-[12.5px] font-semibold whitespace-nowrap ${
               topicId === topic.id
@@ -326,12 +362,21 @@ function ProblemList({ page }: { page: ProblemListPage }) {
                 : "border-[var(--color-border)] text-[var(--color-text-muted)]"
             }`}
           >
-            {topic.name} ({topic.solved}/{topic.total})
+            {/* An unknown solved count leaves only the total: "0/12" would be a made-up figure. */}
+            {topic.solved === null
+              ? `${topic.name} (${topic.total})`
+              : `${topic.name} (${topic.solved}/${topic.total})`}
           </button>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 gap-4 lg:[grid-template-columns:minmax(0,1fr)_268px]">
+      <div
+        className={
+          showSide
+            ? "grid grid-cols-1 gap-4 lg:[grid-template-columns:minmax(0,1fr)_268px]"
+            : "grid grid-cols-1 gap-4"
+        }
+      >
         <Card className="min-w-0 px-[18px] py-4">
           <FilterBar
             search={{
@@ -341,7 +386,7 @@ function ProblemList({ page }: { page: ProblemListPage }) {
               maxLength: SEARCH_MAX_LENGTH,
               onChange: (next) => {
                 setQuery(next);
-                resetToFirstPage();
+                setUrlParams({ q: next.trim(), page: null });
               },
               onSubmit: announceSearch,
             }}
@@ -351,7 +396,6 @@ function ProblemList({ page }: { page: ProblemListPage }) {
               value={status}
               onValueChange={(value) => {
                 setStatus(value);
-                resetToFirstPage();
               }}
               options={[
                 { value: "all", label: t("filter.all") },
@@ -365,7 +409,6 @@ function ProblemList({ page }: { page: ProblemListPage }) {
               value={difficulty}
               onValueChange={(value) => {
                 setDifficulty(value);
-                resetToFirstPage();
               }}
               options={[
                 { value: "all", label: t("filter.all") },
@@ -377,122 +420,168 @@ function ProblemList({ page }: { page: ProblemListPage }) {
             />
           </FilterBar>
 
-          <DataTable
-            caption={t("table.caption")}
-            columns={columns}
-            rows={visible}
-            rowKey={(problem) => problem.id}
-            emptyMessage={
-              <span className="flex flex-col items-center gap-2">
-                {t("table.empty")}
-                {hasActiveFilter ? (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="border border-[var(--color-border)]"
-                    onClick={clearFilters}
-                  >
-                    {t("table.clearFilters")}
-                  </Button>
-                ) : null}
-              </span>
-            }
-            minWidth={640}
-            sort={{
-              key: sort.key,
-              direction: sort.direction,
-              onSortChange: (key, direction) => {
-                setSort({ key: key as SortKey, direction });
-                resetToFirstPage();
-              },
-            }}
-          />
+          {data && !data.solveStateAvailable ? (
+            <p
+              role="status"
+              className="mb-3 text-[12.5px] text-[var(--color-text-muted)]"
+            >
+              {t("degraded.solveState")}
+            </p>
+          ) : null}
 
-          <Pagination
-            page={currentPage}
-            pageSize={pageSize}
-            total={filtered.length}
-            onPageChange={setCurrentPage}
-            pageSizeOptions={PAGE_SIZES}
-            pageSizeLabel={t("pager.pageSizeLabel")}
-            onPageSizeChange={(size) => {
-              setPageSize(size);
-              setCurrentPage(1);
-            }}
-            summary={t("pager.summary", {
-              from:
-                filtered.length === 0 ? 0 : (currentPage - 1) * pageSize + 1,
-              to: Math.min(currentPage * pageSize, filtered.length),
-              total: filtered.length,
-            })}
-            previousLabel={t("pager.previous")}
-            nextLabel={t("pager.next")}
-            showPageNumbers
-            pageLabel={(value) => t("pager.goToPage", { page: value })}
-          />
+          {catalog.isError ? (
+            <QueryError query={catalog} />
+          ) : !data ? (
+            <div role="status" aria-label={tc("loading")} className="space-y-3">
+              <Skeleton className="h-64 w-full" />
+            </div>
+          ) : (
+            <>
+              <DataTable
+                caption={t("table.caption")}
+                columns={columns}
+                rows={data.items}
+                rowKey={(problem) => problem.id}
+                emptyMessage={
+                  <span className="flex flex-col items-center gap-2">
+                    {t("table.empty")}
+                    {hasActiveFilter ? (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="border border-[var(--color-border)]"
+                        onClick={clearFilters}
+                      >
+                        {t("table.clearFilters")}
+                      </Button>
+                    ) : null}
+                  </span>
+                }
+                minWidth={640}
+                sort={{
+                  key: sort.key,
+                  direction: sort.direction,
+                  onSortChange: (key, direction) => {
+                    setUrlParams({
+                      sort: key === "difficulty" ? null : key,
+                      dir: direction === "asc" ? null : direction,
+                      page: null,
+                    });
+                  },
+                }}
+              />
+
+              <Pagination
+                page={data.page.number}
+                pageSize={pageSize}
+                total={data.page.totalItems}
+                onPageChange={setCurrentPage}
+                pageSizeOptions={PAGE_SIZES}
+                pageSizeLabel={t("pager.pageSizeLabel")}
+                onPageSizeChange={(size) => {
+                  setPageSize(size);
+                  setCurrentPage(1);
+                }}
+                summary={t("pager.summary", {
+                  from:
+                    data.page.totalItems === 0
+                      ? 0
+                      : (data.page.number - 1) * pageSize + 1,
+                  to: Math.min(
+                    data.page.number * pageSize,
+                    data.page.totalItems,
+                  ),
+                  total: data.page.totalItems,
+                })}
+                previousLabel={t("pager.previous")}
+                nextLabel={t("pager.next")}
+                showPageNumbers
+                pageLabel={(value) => t("pager.goToPage", { page: value })}
+              />
+            </>
+          )}
         </Card>
 
-        <div className="flex flex-col gap-4">
-          <Card className="px-4 py-3.5">
-            <h2 className="mb-2 text-[13px] font-semibold">
-              {t("inProgress.title")}
-            </h2>
-            <InProgressList
-              items={page.inProgress}
-              limit={MAX_IN_PROGRESS}
-              layout="compact"
-              emptyText={t("inProgress.empty")}
-              footerLink={{ href: "/workspace", label: t("inProgress.viewAll") }}
-            />
-          </Card>
+        {showSide ? (
+          <div className="flex flex-col gap-4">
+            {showInProgress ? (
+              <Card className="px-4 py-3.5">
+                <h2 className="mb-2 text-[13px] font-semibold">
+                  {t("inProgress.title")}
+                </h2>
+                {inProgress.isError ? (
+                  <ErrorState>{t("blockFailed")}</ErrorState>
+                ) : !inProgress.data ? (
+                  <Skeleton className="h-16 w-full" />
+                ) : (
+                  <InProgressList
+                    items={inProgress.data}
+                    limit={IN_PROGRESS_LIMIT}
+                    layout="compact"
+                    emptyText={t("inProgress.empty")}
+                    footerLink={{
+                      href: "/workspace",
+                      label: t("inProgress.viewAll"),
+                    }}
+                  />
+                )}
+              </Card>
+            ) : null}
 
-          <Card className="px-4 py-3.5">
-            <h2 className="mb-2 text-[13px] font-semibold">
-              {t("assignment.title")}
-            </h2>
-            {page.classAssignments.length === 0 ? (
-              <p className="text-[12.5px] text-[var(--color-text-muted)]">
-                {t("assignment.empty")}
-              </p>
-            ) : (
-              assignmentGroups.map((group) => (
-                <div key={group.className} className="mb-3 last:mb-0">
-                  <p className="mb-1.5 text-[11.5px] font-semibold text-[var(--color-text-muted)]">
-                    {group.className}
-                  </p>
-                  <ul className="flex flex-col gap-2">
-                    {group.items.map((item) => (
-                      <li key={item.problemId}>
-                        <Link
-                          href={`/problems/${item.problemId}`}
-                          className="block rounded-lg border border-[var(--color-border)] px-2.5 py-2 hover:bg-[var(--color-row-hover)]"
-                        >
-                          <div className="flex items-center justify-between gap-2">
-                            <span className="truncate text-[12.5px] font-semibold">
-                              {item.title}
-                            </span>
-                            <Badge
-                              variant={SOLVE_STATE_VARIANT[item.solveState]}
+            {showAssignments ? (
+              <Card className="px-4 py-3.5">
+                <h2 className="mb-2 text-[13px] font-semibold">
+                  {t("assignment.title")}
+                </h2>
+                {assignments.isError ? (
+                  <ErrorState>{t("blockFailed")}</ErrorState>
+                ) : !assignments.data ? (
+                  <Skeleton className="h-16 w-full" />
+                ) : (
+                  assignments.data.map((group) => (
+                    <div key={group.classId} className="mb-3 last:mb-0">
+                      <p className="mb-1.5 text-[11.5px] font-semibold text-[var(--color-text-muted)]">
+                        {group.className}
+                      </p>
+                      <ul className="flex flex-col gap-2">
+                        {group.items.map((item) => (
+                          <li key={`${item.problemId}-${item.assignedAt}`}>
+                            <Link
+                              href={`/problems/${item.problemId}`}
+                              className="block rounded-lg border border-[var(--color-border)] px-2.5 py-2 hover:bg-[var(--color-row-hover)]"
                             >
-                              {t(`state.${item.solveState}`)}
-                            </Badge>
-                          </div>
-                          <p className="text-[11.5px] text-[var(--color-text-muted)]">
-                            {t("assignment.meta", {
-                              solved: item.solvedCount,
-                              total: item.totalCount,
-                              date: formatDateVN(item.assignedAt, { locale }),
-                            })}
-                          </p>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))
-            )}
-          </Card>
-        </div>
+                              <div className="flex items-center justify-between gap-2">
+                                <span className="truncate text-[12.5px] font-semibold">
+                                  {item.title}
+                                </span>
+                                {item.solveState ? (
+                                  <Badge
+                                    variant={
+                                      SOLVE_STATE_VARIANT[item.solveState]
+                                    }
+                                  >
+                                    {t(`state.${item.solveState}`)}
+                                  </Badge>
+                                ) : null}
+                              </div>
+                              <p className="text-[11.5px] text-[var(--color-text-muted)]">
+                                {t("assignment.meta", {
+                                  date: formatDateVN(item.assignedAt, {
+                                    locale,
+                                  }),
+                                })}
+                              </p>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))
+                )}
+              </Card>
+            ) : null}
+          </div>
+        ) : null}
       </div>
     </div>
   );

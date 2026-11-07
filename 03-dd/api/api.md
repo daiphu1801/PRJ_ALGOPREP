@@ -89,7 +89,7 @@ Bảng 3: Endpoint của `identity`. Cột # là số thứ tự trong `03-dd/ap
 | 41 | GET | `/api/v1/identity/admin/dashboard/summary` | Thẻ người dùng hoạt động 30 ngày |
 | 42 | GET | `/api/v1/identity/admin/dashboard/user-growth` | Người dùng mới/quay lại trong sáu tháng |
 | 43 | GET | `/api/v1/identity/admin/dashboard/cross-module` | Thẻ tổng lượt nộp |
-| 44 | GET | `/api/v1/identity/instructor/dashboard/summary` | Legacy, không còn màn DD tiêu thụ; `INS0101` dùng #56 |
+| ~~44~~ | ~~GET~~ | ~~`/api/v1/identity/instructor/dashboard/summary`~~ | Đã thay bởi #56 (Owner chốt 2026-11-07); không có controller, không xây |
 | 45 | GET | `/api/v1/identity/instructor/dashboard/recent-activity?classId=` | Feed "Hoạt động gần đây", lọc theo lớp qua `scope_class_id` |
 | 46 | GET | `/api/v1/identity/me/recent-activity` | "Hoạt động gần đây" của cá nhân (10 mục, 90 ngày) |
 | 47 | GET | `/api/v1/identity/me/progress/summary` | Best-attempt theo bài, tỉ lệ Accepted, "Đúng ngay lần đầu", ngôn ngữ dùng nhiều nhất |

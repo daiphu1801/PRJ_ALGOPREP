@@ -43,6 +43,49 @@ async function mapKnown<T, R>(
   }
 }
 
+export type OAuthProviderName = "google" | "github";
+
+/** `GET /auth/oauth/{provider}/redirect` (#5): the provider URL that carries the one-time `state`. */
+export async function realOAuthStart(
+  provider: OAuthProviderName,
+): Promise<string> {
+  const response = await api.get<{ authorizationUrl: string }>(
+    `${BASE}/oauth/${provider}/redirect`,
+  );
+  return response.authorizationUrl;
+}
+
+/**
+ * `GET /auth/oauth/{provider}/callback` (#6) answers like a password login. The restore ticket of
+ * a self-deactivated account (IDT-104) becomes the `deactivated` outcome and stays in memory; every
+ * other failure (IDT-109, IDT-110, IDT-505) is rethrown for the caller to show through `apiErrors`.
+ */
+export const realOAuthCallback = (
+  provider: OAuthProviderName,
+  code: string,
+  state: string,
+): Promise<AuthOutcome> =>
+  mapKnown(
+    () =>
+      // `api.get` takes the query object itself, not an axios config.
+      api.get<LoginResponse>(`${BASE}/oauth/${provider}/callback`, {
+        code,
+        state,
+      }),
+    (response): AuthOutcome => {
+      tokenStore.set(response.accessToken);
+      setMustChangePassword(response.user.mustChangePassword === true);
+      return { ok: true, role: response.user.baseCategory };
+    },
+    (error): AuthOutcome | undefined => {
+      const ticket =
+        error.code === "IDT-104" ? error.details?.restoreTicket : undefined;
+      return typeof ticket === "string"
+        ? { ok: true, deactivated: true, restoreTicket: ticket }
+        : undefined;
+    },
+  );
+
 export const realSignup = (input: SignupInput): Promise<SignupOutcome> =>
   mapKnown<unknown, SignupOutcome>(
     () =>

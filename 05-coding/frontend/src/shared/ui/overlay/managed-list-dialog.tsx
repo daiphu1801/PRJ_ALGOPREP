@@ -25,6 +25,12 @@ import { TextField } from "../form/text-field";
 const SCROLL_FROM = 6;
 const SCROLL_MAX_HEIGHT = `${((SCROLL_FROM - 1) * 36 + (SCROLL_FROM - 2) * 10 + 12) / 16}rem`;
 
+/**
+ * What an action answers: a local validation error, `"reported"` when the caller already showed the
+ * reason (a server error toast), or `null` on success. A caller backed by an API may return a promise.
+ */
+export type ManagedListResult = ManagedListError | "reported" | null;
+
 export type ManagedListLabels = {
   title: string;
   hint: string;
@@ -54,9 +60,13 @@ type Props<T extends ManagedItem> = {
   /** Records using each item, by key. */
   usage: Readonly<Record<string, number>>;
   labels: ManagedListLabels;
-  onAdd: (label: string) => ManagedListError | null;
-  onRename: (key: string, label: string) => ManagedListError | null;
-  onRemove: (key: string) => void;
+  onAdd: (label: string) => ManagedListResult | Promise<ManagedListResult>;
+  onRename: (
+    key: string,
+    label: string,
+  ) => ManagedListResult | Promise<ManagedListResult>;
+  /** Answering `"reported"` (or a promise of it) means the delete failed and the caller already said why. */
+  onRemove: (key: string) => unknown;
   /** Adds up/down controls to every row when given. */
   onMove?: (key: string, delta: -1 | 1) => void;
   /** The list may never shrink below this many items; delete is disabled at the floor. Default 0. */
@@ -83,27 +93,34 @@ export function ManagedListDialog<T extends ManagedItem>({
   // Which input last failed: it keeps a red border, the message itself is a toast.
   const [invalidWhere, setInvalidWhere] = useState<string | null>(null);
 
-  function report(
-    where: string,
-    result: ManagedListError | null,
-    done: string,
-  ) {
+  function report(where: string, result: ManagedListResult, done: string) {
     setInvalidWhere(result ? where : null);
+    if (result === "reported") return false;
     if (result) toast.error(labels.error[result]);
     else toast.success(done);
     return result === null;
   }
 
+  // A synchronous answer is handled at once; a promise (API-backed lists) is handled when it settles.
+  function settle<T>(value: T | Promise<T>, then: (answer: T) => void) {
+    if (value instanceof Promise) void value.then(then);
+    else then(value);
+  }
+
   function add() {
-    if (report("new", onAdd(newName), labels.done.add)) setNewName("");
+    settle(onAdd(newName), (result) => {
+      if (report("new", result, labels.done.add)) setNewName("");
+    });
   }
 
   function commitRename(key: string) {
     const draft = draftNames[key];
     if (draft === undefined) return;
-    if (report(key, onRename(key, draft), labels.done.rename)) {
-      setDraftNames(({ [key]: _discarded, ...rest }) => rest);
-    }
+    settle(onRename(key, draft), (result) => {
+      if (report(key, result, labels.done.rename)) {
+        setDraftNames(({ [key]: _discarded, ...rest }) => rest);
+      }
+    });
   }
 
   return (
@@ -202,10 +219,12 @@ export function ManagedListDialog<T extends ManagedItem>({
                   }
                   tone="danger"
                   disabled={used > 0 || atFloor}
-                  onClick={() => {
-                    onRemove(item.key);
-                    toast.success(labels.done.remove);
-                  }}
+                  onClick={() =>
+                    settle(onRemove(item.key), (result) => {
+                      if (result !== "reported")
+                        toast.success(labels.done.remove);
+                    })
+                  }
                 />
               </div>
             </li>

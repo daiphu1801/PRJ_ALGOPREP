@@ -5,7 +5,12 @@
 // `withMockData(mock, notImplemented)` + `useQuery` boilerplate. Graduation of an endpoint = pass
 // the real fetcher as `real`; the call sites do not change and an endpoint without `real` keeps
 // failing loudly with NOT_IMPLEMENTED in real mode.
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import type { QueryKey } from "@tanstack/react-query";
 import { ApiError } from "./api-error";
 import { withMockData } from "./mock-mode";
@@ -31,6 +36,8 @@ type MockQueryArgs<T> = {
   /** Default 30s; pass 0 where a reopened screen must show what was last saved. */
   staleTime?: number;
   enabled?: boolean;
+  /** True where a changed key (filter, page) must keep showing the previous answer while the next one loads. */
+  keepPrevious?: boolean;
 };
 
 export function useMockQuery<T>({
@@ -40,6 +47,7 @@ export function useMockQuery<T>({
   real,
   staleTime = 30_000,
   enabled,
+  keepPrevious,
 }: MockQueryArgs<T>) {
   return useQuery({
     queryKey,
@@ -47,6 +55,7 @@ export function useMockQuery<T>({
     staleTime,
     retry: false,
     enabled,
+    placeholderData: keepPrevious ? keepPreviousData : undefined,
   });
 }
 

@@ -6,6 +6,8 @@ import com.algoprep.identity.domain.model.PermissionCell;
 import com.algoprep.identity.domain.model.RbacRole;
 import com.algoprep.identity.domain.model.RoleListItem;
 import com.algoprep.identity.domain.ports.out.RbacRepository;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -272,7 +274,7 @@ class JdbcRbacRepository implements RbacRepository {
     }
   }
 
-  private static RbacRole role(java.sql.ResultSet rs, int row) throws java.sql.SQLException {
+  private static RbacRole role(ResultSet rs, int row) throws SQLException {
     return new RbacRole(
         rs.getObject("id", UUID.class),
         rs.getString("code"),

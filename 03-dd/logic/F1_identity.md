@@ -136,7 +136,9 @@ theo DEC.
 - **BR-05 (đặt mật khẩu lần đầu, tài khoản chỉ OAuth)**: `POST /me/password` không có trường
   `currentPassword`. Điều kiện kích hoạt biến thể này: `password_hash IS NULL`. Không yêu cầu OTP — phiên
   đăng nhập hợp lệ là đủ [SoT: `07-review/bd_open_questions_with_solutions_260924.md:135`]. Sau khi đặt:
-  gửi email "tài khoản vừa được đặt mật khẩu", ghi `system_audit_logs`.
+  gửi email "tài khoản vừa được đặt mật khẩu", ghi `system_audit_logs`. **Triển khai 2026-11-07 (AC-15):**
+  `currentPassword` thiếu, rỗng hoặc có gửi đều bị bỏ qua `[SoT: Suy luận]`; luật mật khẩu, băm, thu hồi
+  phiên khác và audit `PASSWORD_CHANGED` giống BR-06; không tính vào ngân sách `pwchange:`.
 - **BR-06 (đổi mật khẩu, tài khoản đã có mật khẩu)**: bắt buộc `currentPassword`, đối chiếu BCrypt trước
   khi cho đổi. Sau khi đổi thành công: `UPDATE refresh_tokens SET revoked_at = now() WHERE user_id = :id
   AND id <> :currentSessionTokenId AND revoked_at IS NULL` — giữ lại đúng phiên đang thao tác, thu hồi mọi

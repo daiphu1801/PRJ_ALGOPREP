@@ -12,4 +12,7 @@ public interface ExportRateLimitPort {
    * @return false when the same kind was exported less than five minutes ago
    */
   boolean tryAcquire(UUID userId, String scope);
+
+  /** Gives the slot of {@code scope} back, for an export that failed before producing a file. */
+  void release(UUID userId, String scope);
 }

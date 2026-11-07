@@ -62,6 +62,12 @@ export const GENERATOR_RUNTIME_RANGE = { min: 1, max: 300 } as const;
 export const GENERATOR_OUTPUT_RANGE = { min: 1, max: 1024 } as const;
 
 export type LanguageConfigPage = {
+  versions?: {
+    languages: Record<LanguageKey, string>;
+    defaults: string;
+    sandbox: string;
+    generator: string;
+  };
   languages: LanguageConfig[];
   defaults: JudgeDefaults;
   sandbox: SandboxConfig;

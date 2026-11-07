@@ -27,7 +27,7 @@ import { Eye, Pencil, Trash2 } from "lucide-react";
 import {
   useCreateClass,
   useDeleteClass,
-  useInstructorClasses,
+  useInstructorClassSummary,
   formatClassSchedule,
   useUpdateClass,
   type ClassSummary,
@@ -50,7 +50,7 @@ import {
 export function ClassManagementView() {
   const t = useT("classManagement");
   const toMessage = useApiErrorMessage();
-  const classesQuery = useInstructorClasses();
+  const classesQuery = useInstructorClassSummary();
   const classes = useMemo(() => classesQuery.data ?? [], [classesQuery.data]);
 
   const [formDialog, setFormDialog] = useState<ClassDialogState>(null);
@@ -71,7 +71,7 @@ export function ClassManagementView() {
   }, [classes, search]);
 
   const totalStudents = classes.reduce((sum, c) => sum + c.studentCount, 0);
-  const hasMetrics = classes.some((c) => c.completionPct !== undefined);
+  const hasMetrics = classes.some((c) => c.absentCount !== undefined);
 
   const metricColumns: DataTableColumn<ClassSummary>[] = [
     {
@@ -86,7 +86,7 @@ export function ClassManagementView() {
             className="flex-1"
           />
           <span className="w-9 text-right text-[12.5px] text-[var(--color-text-muted)]">
-            {klass.completionPct ?? 0}%
+            {klass.completionPct == null ? "-" : `${klass.completionPct}%`}
           </span>
         </span>
       ),
@@ -95,7 +95,7 @@ export function ClassManagementView() {
       key: "avgScore",
       header: t("classList.col.avgScore"),
       align: "right",
-      render: (klass) => klass.avgScore ?? "-",
+      render: (klass) => klass.avgScore?.toFixed(1) ?? "-",
     },
     {
       key: "absentCount",

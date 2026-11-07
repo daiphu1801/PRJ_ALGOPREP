@@ -180,4 +180,71 @@ describe("API contract", () => {
       status: 400,
     });
   });
+
+  it("downloadFile returns the blob and lets a response header be read, whatever its case", async () => {
+    vi.resetModules();
+    const client = axios.create();
+    client.defaults.adapter = async (config: InternalAxiosRequestConfig) => ({
+      data: new Blob(["a,b"]),
+      status: 200,
+      statusText: "OK",
+      headers: { "x-export-truncated": "true" },
+      config,
+    });
+    vi.spyOn(axios, "create").mockReturnValue(client);
+    const { api } = await import("./client");
+    const file = await api.downloadFile("/x", { params: { scope: "s" } });
+    expect(file.blob.size).toBe(3);
+    expect(file.header("X-Export-Truncated")).toBe("true");
+    expect(file.header("X-Missing")).toBeNull();
+    // The old call keeps answering with the bare Blob.
+    expect(await api.download("/x")).toBeInstanceOf(Blob);
+  });
+
+  it("downloadPost sends the body and returns the file with the name from Content-Disposition", async () => {
+    vi.resetModules();
+    const client = axios.create();
+    let seen: { url?: string; data?: unknown; responseType?: string } = {};
+    client.defaults.adapter = async (config: InternalAxiosRequestConfig) => {
+      seen = {
+        url: config.url,
+        data: config.data,
+        responseType: config.responseType,
+      };
+      return {
+        data: new Blob(["a,b"]),
+        status: 200,
+        statusText: "OK",
+        headers: { "content-disposition": 'attachment; filename="p-1.csv"' },
+        config,
+      };
+    };
+    vi.spyOn(axios, "create").mockReturnValue(client);
+    const { api } = await import("./client");
+    const file = await api.downloadPost("/x/export", { problemIds: ["a"] });
+    expect(file.filename).toBe("p-1.csv");
+    expect(seen.url).toBe("/x/export");
+    expect(seen.responseType).toBe("blob");
+    expect(JSON.parse(String(seen.data))).toEqual({ problemIds: ["a"] });
+  });
+
+  it("downloadPost reads the error code out of a blob error body", async () => {
+    vi.resetModules();
+    const client = axios.create();
+    client.defaults.adapter = async (config: InternalAxiosRequestConfig) => {
+      throw new AxiosError("bad", "ERR_BAD_REQUEST", config, undefined, {
+        data: new Blob([JSON.stringify({ errorCode: "PRB-001" })]),
+        status: 400,
+        statusText: "Bad Request",
+        headers: {},
+        config,
+      });
+    };
+    vi.spyOn(axios, "create").mockReturnValue(client);
+    const { api } = await import("./client");
+    await expect(api.downloadPost("/x", {})).rejects.toMatchObject({
+      code: "PRB-001",
+      status: 400,
+    });
+  });
 });

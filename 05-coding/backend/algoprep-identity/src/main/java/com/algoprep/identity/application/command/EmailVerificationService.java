@@ -1,8 +1,10 @@
 package com.algoprep.identity.application.command;
 
 import com.algoprep.common.exception.RateLimitExceededException;
+import com.algoprep.common.exception.ServiceUnavailableException;
 import com.algoprep.identity.application.ports.out.EmailPort;
 import com.algoprep.identity.application.ports.out.EmailVerificationOtpPort;
+import com.algoprep.identity.domain.exception.IdentityErrorCodes;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -44,10 +46,19 @@ class EmailVerificationService {
             }
           }
         });
-    email.send(
-        recipient,
-        "AlgoPrep - Xác thực email",
-        "Mã xác thực email của bạn: " + code + ". Mã có hiệu lực trong 10 phút.");
+    try {
+      email.send(
+          recipient,
+          "AlgoPrep - Xác thực email",
+          "Mã xác thực email của bạn: " + code + ". Mã có hiệu lực trong 10 phút.");
+    } catch (RuntimeException failure) {
+      // The cause is dropped on purpose: mail exceptions can carry the recipient address.
+      LOG.warn("Verification e-mail could not be sent");
+      throw new ServiceUnavailableException(
+          IdentityErrorCodes.VERIFICATION_EMAIL_UNAVAILABLE,
+          "Verification e-mail could not be sent",
+          null);
+    }
   }
 
   boolean matches(UUID userId, String code) {

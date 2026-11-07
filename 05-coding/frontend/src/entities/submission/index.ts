@@ -29,3 +29,9 @@ export {
   useMySubmissionsPage,
   useSubmissionDetail,
 } from "./api/queries";
+export {
+  useSubmissionProgress,
+  type JudgeProgress,
+  type JudgeResult,
+} from "./api/progress";
+export { useStudentClassSubmissionHistory } from "./api/class-history";

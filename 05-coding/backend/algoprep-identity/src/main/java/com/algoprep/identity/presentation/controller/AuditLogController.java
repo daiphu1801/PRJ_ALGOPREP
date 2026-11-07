@@ -10,6 +10,7 @@ import com.algoprep.identity.application.ports.in.GetAuditCategoryBreakdownUseCa
 import com.algoprep.identity.application.ports.in.ListActiveAdminsUseCase;
 import com.algoprep.identity.application.ports.in.SearchSystemAuditLogsUseCase;
 import com.algoprep.identity.domain.model.ActiveAdmin;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -97,7 +98,7 @@ class AuditLogController {
         out -> {
           try {
             AuditCsvWriter.write(prepared, out);
-          } catch (java.io.IOException | RuntimeException failure) {
+          } catch (IOException | RuntimeException failure) {
             // The status line is gone by now, so the only honest answer is to abort the transfer
             // and log the cause without any row content (DD 0.7.2).
             LOG.error("Audit log export aborted: {}", failure.getClass().getSimpleName());

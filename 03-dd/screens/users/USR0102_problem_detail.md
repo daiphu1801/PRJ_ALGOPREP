@@ -347,3 +347,14 @@ Bảng 8.2: Câu hỏi mở.
 | OQ-9 | Axios timeout của Run Code | 65 giây (hơn hạn 60 giây của máy chủ) | 5 |
 | OQ-10 | Dữ liệu vào của Sample ở mô hình Bọc hàm: BD muốn tách theo tham số, F2 chỉ trả `parameterNames` và chuỗi input chưa tách (F2:549) | Hiện nguyên chuỗi input trong một khối kèm dòng "Tham số: a, b, c"; không tự tách ở client | 2 |
 | OQ-11 | **Đã chốt 2026-10-24** (`DEC-2026-1024-dd-screens-users-core-contract-changes`): mọi route của học viên dùng `problemId` (UUID); `slug` chỉ để hiển thị | Đã chốt, BD `USR0201` Sheet 3 đã sửa (BD `USR0102` không có route slug) | 4 |
+
+## Nối API thật (F2-6 phần 2, 2026-11-06)
+
+Bảng dưới liệt kê endpoint màn tiêu thụ và hiện trạng; hợp đồng chỉ định nghĩa ở `03-dd/api/F2_problem-bank.md`.
+
+| Endpoint | Hiện trạng |
+| :--- | :--- |
+| `#11` | `useSetBookmark` (`entities/problem/api/saved-queries.ts`, `real-bookmarks.ts` `realSetBookmarked`); toast sau khi máy chủ trả lời; `PRB-010` giữ nguyên trạng thái nút |
+| `#5`, `#6`, `#7` | Đã nối bởi lát F3/F4 (`fetchWorkspaceProblem`) |
+
+Test đường thật: `views/users/problem-detail/ui/problem-detail-real.test.tsx` (lưu, bỏ lưu, `PRB-010`); `real-bookmarks.test.ts` (`#11`).

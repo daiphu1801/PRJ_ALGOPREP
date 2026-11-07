@@ -3,6 +3,7 @@
 // Data boundary of the infrastructure event log (ADM0404). `ListInfraEvents` is defined in
 // 03-dd/api/F4_judge-orchestration.md; until it is wired, mock mode serves the local rows.
 import { useMockQuery } from "@/shared/api/mock-query";
+import { isMockMode } from "@/shared/api";
 import {
   countRecentInfraAlerts,
   fetchInfraEvents,
@@ -14,6 +15,7 @@ const SPEC = "03-dd/api/F4_judge-orchestration.md";
 export const useInfraEvents = () =>
   useMockQuery({
     queryKey: ["infra-events"],
+    enabled: isMockMode(),
     mock: fetchInfraEvents,
     spec: SPEC,
     staleTime: 0,

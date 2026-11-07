@@ -1,11 +1,15 @@
-// PROTOTYPE with a real API behind part of it (task 12, 03-dd/api/F1_identity.md #19 to #27, #25A,
-// #25B). The hooks of INS0201, INS0205, USR0701 and USR0702 take a real call through `withMockData`;
-// the rest of the cluster (progress, student detail, assignments, activity: F1 #28, #29, #56 to #59,
-// all F4-dependent) still goes through `useMockMutation` / `useMockQuery` and fails with
-// NOT_IMPLEMENTED in real mode.
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ApiError, useMockQuery, withMockData } from "@/shared/api";
-import type { ClassForm } from "../model/types";
+// PROTOTYPE with a real API behind most of it (03-dd/api/F1_identity.md #19 to #28, #25A, #25B, #56,
+// #59, #45). The hooks of INS0201, INS0203, INS0204, INS0205, USR0701 and USR0702 take a real call
+// through `withMockData`. What still goes through `useMockQuery` and fails with NOT_IMPLEMENTED in
+// real mode: `useClassAttention` / `useClassScoreTrend` (#58, #57 are built, no screen uses them).
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { ApiError, isMockMode, useMockQuery, withMockData } from "@/shared/api";
+import type { ClassForm, ClassStudentDetail } from "../model/types";
 import {
   listClassRoster,
   classScoreTrend,
@@ -36,6 +40,13 @@ import {
   realListRoster,
   realUpdateClass,
 } from "./real-class";
+import { realListClassActivity } from "./real-class-activity";
+import {
+  realGetClassStudent,
+  realGetClassSummary,
+  realListInstructorStudents,
+  type StudentPageQuery,
+} from "./real-class-metrics";
 
 const SPEC = "03-dd/api/F1_identity.md";
 const STALE = 15_000;
@@ -62,24 +73,92 @@ export const useClassRoster = (classId: string) =>
     retry: false,
   });
 
+/**
+ * Mock roster of every class including learners who left (INS0206 / INS0101 mock rows only). Real mode
+ * never calls it: the left-class flag already rides on F4 #13 (`useInstructorSubmissionPage`), so the
+ * query is off instead of failing with NOT_IMPLEMENTED.
+ */
 export const useClassStudents = (classId?: string, includeLeft = false) =>
   useMockQuery({
+    enabled: isMockMode(),
     queryKey: ["classes", "students", classId ?? "all", includeLeft],
     mock: () => listClassStudents(classId, includeLeft),
     spec: SPEC,
     staleTime: STALE,
   });
 
+/**
+ * One student of a class (F1 #28); null when the class has no such active student. The mock can look
+ * up a student who left (`includeLeft`); the real endpoint only knows the active ones.
+ */
 export const useClassStudentDetail = (
   studentId: string,
   classId: string,
   includeLeft = false,
 ) =>
-  useMockQuery({
+  useQuery({
     queryKey: ["classes", "student-detail", classId, studentId, includeLeft],
-    mock: () => getClassStudent(studentId, classId, includeLeft),
-    spec: SPEC,
+    queryFn: () =>
+      withMockData<ClassStudentDetail | null>(
+        () => getClassStudent(studentId, classId, includeLeft),
+        () => realGetClassStudent(classId, studentId),
+      ),
     staleTime: STALE,
+    retry: false,
+  });
+
+// One query feeds both hooks below, so #56 is fetched once per screen.
+const classSummaryQuery = {
+  queryKey: ["classes", "summary"],
+  queryFn: () =>
+    withMockData(
+      async () => ({ items: await listInstructorClasses(), totals: null }),
+      realGetClassSummary,
+    ),
+  staleTime: STALE,
+  retry: false,
+};
+
+/** The class cards with completion, average and absent figures (F1 #56); INS0201. */
+export const useInstructorClassSummary = () =>
+  useQuery({ ...classSummaryQuery, select: (result) => result.items });
+
+/** The distinct-people totals of #56 (students counted once); `null` in mock mode or on the #19 fallback. */
+export const useInstructorClassTotals = () =>
+  useQuery({ ...classSummaryQuery, select: (result) => result.totals });
+
+/** One page of the instructor student list (F1 #59); INS0203. Search and paging are the server's. */
+export const useInstructorStudentPage = (query: StudentPageQuery) =>
+  useQuery({
+    queryKey: [
+      "classes",
+      "students-page",
+      query.classId ?? "all",
+      query.q,
+      query.page,
+      query.pageSize,
+    ],
+    queryFn: () =>
+      withMockData(
+        async () => {
+          const needle = query.q.trim().toLowerCase();
+          const all = (await listClassStudents(query.classId)).filter(
+            (s) => !needle || s.name.toLowerCase().includes(needle),
+          );
+          return {
+            rows: all.slice(
+              (query.page - 1) * query.pageSize,
+              query.page * query.pageSize,
+            ),
+            total: all.length,
+            totalPages: Math.ceil(all.length / query.pageSize),
+          };
+        },
+        () => realListInstructorStudents(query),
+      ),
+    placeholderData: keepPreviousData,
+    staleTime: STALE,
+    retry: false,
   });
 
 export const useInviteCodes = (classId: string, enabled: boolean) =>
@@ -99,6 +178,7 @@ export const useClassActivity = () =>
   useMockQuery({
     queryKey: ["classes", "activity"],
     mock: listClassActivity,
+    real: realListClassActivity,
     spec: SPEC,
     staleTime: STALE,
   });

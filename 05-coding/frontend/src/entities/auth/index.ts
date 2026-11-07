@@ -27,6 +27,7 @@ export {
   signup,
   login,
   instructorLogin,
+  oauthCallback,
   oauthLogin,
   cancelDeactivation,
   logout,

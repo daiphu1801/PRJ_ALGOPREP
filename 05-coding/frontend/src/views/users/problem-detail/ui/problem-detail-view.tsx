@@ -10,9 +10,7 @@
 //   (globals.css) bỏ footer và giới hạn bề rộng, chiều cao còn lại chia bằng flex. Hai thanh chia đôi kéo
 //   được là `shared/ui` `SplitPane` (cột đề/mã và vùng mã/kết quả), tỉ lệ nhớ trong localStorage. Dưới `lg`
 //   các khối xếp dọc.
-// - Không có kênh WebSocket/STOMP thật (F4-08) — kết quả chấm hiện sau một khoảng trễ giả lập
-//   cố định, không phải cập nhật từng testcase một qua kênh thời gian thực. Thay bằng
-//   `shared/api/stomp` thật lúc lên production (BD Sheet 4.5).
+// - Real mode dùng API F3/F4, STOMP và snapshot/polling; mock mode giữ fixtures để review UI.
 // - Vùng soạn mã dùng Monaco qua `shared/ui` `CodeEditor` (2026-10-23): giao diện kiểu LeetCode, theo
 //   theme sáng/tối. Monaco tải từ CDN lúc chạy, xem ghi chú ponytail trong `code-editor.tsx`.
 "use client";
@@ -31,11 +29,15 @@ import {
   problemLevelLabel,
   problemLevelTone,
   saveWorkspaceDraft,
+  useSetBookmark,
   useCreateSubmission,
-  useProblemDetail,
+  useWorkspaceProblem,
+  useEnabledLanguages,
+  useStarterCode,
   useProblemLevels,
   useRunSampleTestcases,
   workspaceDraftKey,
+  overallVerdict,
   type InputMethod,
   type ProblemDetail,
   type SampleRunResult,
@@ -44,7 +46,9 @@ import {
   type SubmissionRunResult,
   type WrapperMode,
 } from "@/entities/problem";
-import { useLocale, useT } from "@/shared/i18n";
+import { useSubmissionProgress } from "@/entities/submission";
+import { isMockMode } from "@/shared/api";
+import { useApiErrorMessage, useLocale, useT } from "@/shared/i18n";
 import { formatDateVN } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
 import {
@@ -55,6 +59,7 @@ import {
   EmptyState,
   MarkdownPreview,
   QueryBoundary,
+  QueryError,
   SegmentedTabs,
   SplitPane,
   SeeAllLink,
@@ -82,7 +87,7 @@ function byteLength(text: string) {
 export function ProblemDetailView() {
   const params = useParams<{ problemId?: string }>();
   const problemId = params?.problemId;
-  const query = useProblemDetail(problemId);
+  const query = useWorkspaceProblem(problemId);
 
   // BD Sheet 9 NO 2: an unknown or unpublished id reads as "not found", never as "no permission".
   if (!problemId) return <NotFound />;
@@ -128,11 +133,17 @@ function Workspace({
   const router = useRouter();
   const levels = useProblemLevels();
   const tc = useT("common");
+  const apiErrorMessage = useApiErrorMessage();
   const runSampleMutation = useRunSampleTestcases();
   const createSubmission = useCreateSubmission();
 
   const [tab, setTab] = useState<Tab>("statement");
-  const [language, setLanguage] = useState<SubmissionLanguage>("java");
+  const [preferredLanguage, setLanguage] = useState<SubmissionLanguage>("java");
+  const languagesQuery = useEnabledLanguages();
+  const languages = languagesQuery.data ?? [];
+  const language = languages.includes(preferredLanguage)
+    ? preferredLanguage
+    : (languages[0] ?? preferredLanguage);
   const [mode, setMode] = useState<WrapperMode>("function");
   const [inputMethod, setInputMethod] = useState<InputMethod>("type");
   const [uploaded, setUploaded] = useState<UploadedFile | null>(null);
@@ -150,7 +161,50 @@ function Workspace({
   const [running, setRunning] = useState(false);
   const [submitAttempt, setSubmitAttempt] = useState(0);
   const [result, setResult] = useState<SubmissionRunResult | null>(null);
+  const [progressIssue, setProgressIssue] = useState<string | null>(null);
+  const [trackingId, setTrackingId] = useState<string | undefined>();
+  useSubmissionProgress(trackingId, {
+    progress: (progress) => {
+      setProgressIssue(null);
+      setResult(
+        (previous) =>
+          previous && {
+            ...previous,
+            overallVerdict: overallVerdict[progress.status] ?? "pending",
+            passedCount: progress.passedCount,
+            totalCount: progress.totalCount ?? previous.totalCount,
+            testcases: progress.testcases.map((item) => ({
+              order: item.order,
+              verdict: item.verdict === "AC" ? "passed" : "failed",
+            })),
+          },
+      );
+    },
+    finished: (detail) => {
+      setTrackingId(undefined);
+      setRunning(false);
+      setResult({
+        submissionId: detail.submissionId,
+        overallVerdict: overallVerdict[detail.status] ?? "systemError",
+        passedCount: detail.passedCount ?? 0,
+        totalCount: detail.totalCount ?? 0,
+        runtimeMs: detail.runtimeMs ?? 0,
+        memoryKb: detail.memoryKb ?? 0,
+        compileErrorMessage: detail.compileErrorMessage,
+        testcases: detail.testcaseDetail.items.map((item) => ({
+          order: item.order,
+          verdict: item.verdict === "AC" ? "passed" : "failed",
+        })),
+      });
+    },
+    error: (error) => setProgressIssue(apiErrorMessage(error)),
+    slow: () => {
+      setRunning(false);
+      setProgressIssue(t("console.progressSlow"));
+    },
+  });
   const [saved, setSaved] = useState(detail.saved);
+  const setBookmark = useSetBookmark();
   // Sub-screen listing every testcase of the latest Run Code / Submit (owner 2026-10-21).
   const [dialog, setDialog] = useState<"run" | "submit" | null>(null);
   const timerRef = useRef<number | undefined>(undefined);
@@ -161,7 +215,14 @@ function Workspace({
     detail.submissionModel === "stdioOnly" ? "stdio" : mode;
   const key = `${language}:${effectiveMode}` as StarterCodeKey;
   const draftStorageKey = workspaceDraftKey(problemId, language, effectiveMode);
-  const code = codeByKey[key] ?? detail.starterCode[key] ?? "";
+  const starterQuery = useStarterCode(
+    problemId,
+    language,
+    effectiveMode,
+    languages.includes(language),
+  );
+  const code = codeByKey[key] ?? starterQuery.data ?? "";
+  const editorReady = languagesQuery.isSuccess && starterQuery.isSuccess;
   const limits = detail.limitsByLanguage[language];
 
   // A pending simulated run must not report into another screen after leaving.
@@ -191,13 +252,17 @@ function Workspace({
       const lang = LANGUAGES.find((value) => value === prefs.language);
       // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time restore after hydration
       if (lang) setLanguage(lang);
-      if (prefs.mode === "stdio" || prefs.mode === "function") setMode(prefs.mode);
+      if (prefs.mode === "stdio" || prefs.mode === "function")
+        setMode(prefs.mode);
     } catch {
       // storage blocked or corrupt: keep the defaults
     }
   }, []);
 
-  function savePrefs(next: { language: SubmissionLanguage; mode: WrapperMode }) {
+  function savePrefs(next: {
+    language: SubmissionLanguage;
+    mode: WrapperMode;
+  }) {
     try {
       window.localStorage.setItem(PREFS_STORAGE_KEY, JSON.stringify(next));
     } catch {
@@ -288,97 +353,135 @@ function Workspace({
     return source;
   }
 
+  // Pessimistic (#11): the flag flips only after the server confirmed the wanted state.
   function toggleSaved() {
-    if (saved) {
-      toast.success(t("toast.unsaved"));
-    } else {
-      toast.success(t("toast.saved"), {
-        label: t("toast.openSaved"),
-        onClick: () => router.push("/saved"),
-      });
-    }
-    setSaved(!saved);
+    const next = !saved;
+    setBookmark.mutate(
+      { problemId, bookmarked: next },
+      {
+        onSuccess: () => {
+          if (next) {
+            toast.success(t("toast.saved"), {
+              label: t("toast.openSaved"),
+              onClick: () => router.push("/saved"),
+            });
+          } else {
+            toast.success(t("toast.unsaved"));
+          }
+          setSaved(next);
+        },
+        onError: (error) => toast.error(apiErrorMessage(error)),
+      },
+    );
   }
 
   function runSample() {
-    if (sourceToSend() === null) return;
+    const sourceCode = sourceToSend();
+    if (sourceCode === null) return;
     setRunning(true);
     setConsoleTab("testcase");
     setSampleRun(null);
     setDialog("run");
     window.clearTimeout(timerRef.current);
-    timerRef.current = window.setTimeout(() => {
-      const attempt = runCount + 1;
-      setRunCount(attempt);
-      // Per-call callbacks do not fire once this view unmounted, so a late result never toasts elsewhere.
-      runSampleMutation.mutate(
-        {
-          samples: detail.sampleTestcases,
-          attempt: detail.mockAlwaysPass ? 2 : attempt,
-        },
-        {
-          onSuccess: (run) => {
-            setSampleRun(run);
-            setRunning(false);
-            const passed = run.cases.filter((item) => item.passed).length;
-            if (passed === run.cases.length)
-              toast.success(t("toast.runDone", { count: run.cases.length }));
-            else
-              toast.warning(
-                t("toast.runFailed", { passed, total: run.cases.length }),
-              );
+    timerRef.current = window.setTimeout(
+      () => {
+        const attempt = runCount + 1;
+        setRunCount(attempt);
+        // Per-call callbacks do not fire once this view unmounted, so a late result never toasts elsewhere.
+        runSampleMutation.mutate(
+          {
+            problemId,
+            language,
+            mode: effectiveMode,
+            sourceCode,
+            inputMethod,
+            samples: detail.sampleTestcases,
+            attempt: detail.mockAlwaysPass ? 2 : attempt,
           },
-          onError: () => {
-            setRunning(false);
-            setDialog(null);
-            toast.error(tc("error"));
+          {
+            onSuccess: (run) => {
+              setSampleRun(run);
+              setRunning(false);
+              const passed = run.cases.filter((item) => item.passed).length;
+              if (run.compileErrorMessage)
+                toast.error(t("verdict.compileError"));
+              else if (passed === run.cases.length)
+                toast.success(t("toast.runDone", { count: run.cases.length }));
+              else
+                toast.warning(
+                  t("toast.runFailed", { passed, total: run.cases.length }),
+                );
+            },
+            onError: (error) => {
+              setRunning(false);
+              setDialog(null);
+              toast.error(apiErrorMessage(error));
+            },
           },
-        },
-      );
-    }, 400);
+        );
+      },
+      isMockMode() ? 400 : 0,
+    );
   }
 
   function submit() {
-    if (sourceToSend() === null) return;
+    const sourceCode = sourceToSend();
+    if (sourceCode === null) return;
     setRunning(true);
     setConsoleTab("result");
     setResult(null);
+    setProgressIssue(null);
     setDialog("submit");
     window.clearTimeout(timerRef.current);
-    timerRef.current = window.setTimeout(() => {
-      const attempt = submitAttempt + 1;
-      setSubmitAttempt(attempt);
-      createSubmission.mutate(
-        {
-          totalCount: totalTestcases,
-          attempt: detail.mockAlwaysPass ? 2 : attempt,
-        },
-        {
-          onSuccess: (run) => {
-            setResult(run);
-            setRunning(false);
-            if (run.overallVerdict === "accepted")
-              toast.success(t("toast.submitAccepted"));
-            else
-              toast.error(
-                t("toast.submitRejected", {
-                  passed: run.passedCount,
-                  total: run.totalCount,
-                }),
+    timerRef.current = window.setTimeout(
+      () => {
+        const attempt = submitAttempt + 1;
+        setSubmitAttempt(attempt);
+        createSubmission.mutate(
+          {
+            problemId,
+            language,
+            mode: effectiveMode,
+            sourceCode,
+            inputMethod,
+            fileName: uploaded?.name,
+            totalCount: totalTestcases,
+            attempt: detail.mockAlwaysPass ? 2 : attempt,
+          },
+          {
+            onSuccess: (run) => {
+              setResult(run);
+              if (!isMockMode()) setTrackingId(run.submissionId);
+              const pending = ["pending", "compiling", "running"].includes(
+                run.overallVerdict,
               );
+              setRunning(pending);
+              if (pending || !isMockMode()) return;
+              if (run.overallVerdict === "accepted")
+                toast.success(t("toast.submitAccepted"));
+              else
+                toast.error(
+                  t("toast.submitRejected", {
+                    passed: run.passedCount,
+                    total: run.totalCount,
+                  }),
+                );
+            },
+            onError: (error) => {
+              setRunning(false);
+              setDialog(null);
+              toast.error(apiErrorMessage(error));
+            },
           },
-          onError: () => {
-            setRunning(false);
-            setDialog(null);
-            toast.error(tc("error"));
-          },
-        },
-      );
-    }, 700);
+        );
+      },
+      isMockMode() ? 700 : 0,
+    );
   }
 
   const latestSubmission = detail.mySubmissions[0];
-  const samplePassed = sampleRun?.cases.filter((item) => item.passed).length ?? 0;
+  const samplePassed =
+    sampleRun?.cases.filter((item) => item.passed).length ?? 0;
 
   const statementPane = (
     <Card className="flex min-h-0 flex-1 flex-col px-4 py-3">
@@ -404,15 +507,15 @@ function Workspace({
                 </Badge>
               ))}
               <Badge
-                variant={
-                  detail.submissionModel === "both" ? "teal" : "neutral"
-                }
+                variant={detail.submissionModel === "both" ? "teal" : "neutral"}
               >
                 {t(`submissionModel.${detail.submissionModel}`)}
               </Badge>
             </div>
             {/* Constraints and the follow-up question are sections of this Markdown (Q5), not fields. */}
-            <MarkdownPreview className="mb-3">{detail.statementMd}</MarkdownPreview>
+            <MarkdownPreview className="mb-3">
+              {detail.statementMd}
+            </MarkdownPreview>
             <h3 className="mb-1.5 text-[12.5px] font-semibold">
               {t("panel.examplesTitle")}
             </h3>
@@ -535,7 +638,8 @@ function Workspace({
 
       <div className="mt-2 flex shrink-0 items-center justify-between border-t border-[var(--color-border)] pt-2">
         <span className="text-[11.5px] text-[var(--color-text-muted)]">
-          {t("panel.acRate")} {detail.acRate === null ? "-" : `${detail.acRate}%`}
+          {t("panel.acRate")}{" "}
+          {detail.acRate === null ? "-" : `${detail.acRate}%`}
         </span>
         <Button
           variant="ghost"
@@ -546,6 +650,7 @@ function Workspace({
               ? "border-[var(--color-admin-warn)] bg-[color-mix(in_srgb,var(--color-admin-warn)_18%,transparent)] text-[var(--color-admin-warn-text)]"
               : "border-[var(--color-border)]"
           }`}
+          disabled={setBookmark.isPending}
           onClick={toggleSaved}
         >
           <Bookmark
@@ -564,7 +669,7 @@ function Workspace({
           label={t("toolbar.languageLabel")}
           value={language}
           onValueChange={changeLanguage}
-          options={LANGUAGES.map((lang) => ({
+          options={languages.map((lang) => ({
             value: lang,
             label: t(`language.${lang}`),
           }))}
@@ -594,6 +699,11 @@ function Workspace({
         />
       </div>
 
+      {languagesQuery.isError ? <QueryError query={languagesQuery} /> : null}
+      {starterQuery.isError ? <QueryError query={starterQuery} /> : null}
+      {!editorReady && !languagesQuery.isError && !starterQuery.isError ? (
+        <p role="status">{tc("loading")}</p>
+      ) : null}
       {inputMethod === "type" ? (
         <CodeEditor
           label={t("toolbar.codeAreaLabel")}
@@ -662,6 +772,7 @@ function Workspace({
 
   const consolePane = (
     <Card className="flex min-h-0 flex-1 flex-col px-3 py-2.5">
+      {progressIssue ? <p role="status">{progressIssue}</p> : null}
       <div className="mb-2 flex shrink-0 flex-wrap items-center justify-between gap-2">
         <SegmentedTabs
           label={t("console.tabsLabel")}
@@ -831,12 +942,17 @@ function Workspace({
             size="sm"
             className="border border-[var(--color-border)]"
             onClick={runSample}
-            disabled={running}
+            disabled={running || !editorReady}
           >
             <Play className="mr-1.5 h-3.5 w-3.5" />
             {t("taskbar.btnRun")}
           </Button>
-          <Button variant="cta" size="sm" onClick={submit} disabled={running}>
+          <Button
+            variant="cta"
+            size="sm"
+            onClick={submit}
+            disabled={running || !editorReady}
+          >
             <Send className="mr-1.5 h-3.5 w-3.5" />
             {t("taskbar.btnSubmit")}
           </Button>
@@ -871,6 +987,7 @@ function Workspace({
           mode={dialog}
           running={running}
           sampleRun={sampleRun}
+          progressIssue={progressIssue}
           result={result}
           onClose={() => setDialog(null)}
         />

@@ -28,9 +28,12 @@ import {
   fakeVerifyOtp,
 } from "./__mock__/fake-auth";
 import {
+  type OAuthProviderName,
   realForgotEmail,
   realLogin,
   realLogout,
+  realOAuthCallback,
+  realOAuthStart,
   realResendVerification,
   realResetPassword,
   realRestoreAccount,
@@ -77,15 +80,29 @@ export const instructorLogin = (input: LoginInput): Promise<AuthOutcome> =>
     () => realLogin(input, true),
   );
 
-/** OAuth callback is not built on the backend yet (task #15). */
-export const oauthLogin = (
-  provider: "google" | "github",
+/**
+ * Mock mode signs in on the spot. Real mode leaves the app for the provider (#5); the promise never
+ * settles because the page is gone, which keeps the button busy until the browser navigates. The
+ * provider sends the person back to `/auth/callback/{provider}`, which calls `oauthCallback`.
+ */
+export const oauthLogin = (provider: OAuthProviderName): Promise<AuthOutcome> =>
+  withMockData(
+    () => fakeOAuthLogin(provider),
+    async () => {
+      window.location.assign(await realOAuthStart(provider));
+      return new Promise<AuthOutcome>(() => {});
+    },
+  );
+
+/** Finishes a real OAuth sign-in (#6) on the callback route. */
+export const oauthCallback = (
+  provider: OAuthProviderName,
+  code: string,
+  state: string,
 ): Promise<AuthOutcome> =>
   withMockData(
     () => fakeOAuthLogin(provider),
-    () => {
-      throw new ApiError("NOT_IMPLEMENTED", 501, "OAuth arrives with task #15");
-    },
+    () => realOAuthCallback(provider, code, state),
   );
 
 /** Restores a self-deleted account with the one-use ticket from the IDT-104 login failure (#61). */

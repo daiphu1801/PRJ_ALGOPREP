@@ -141,3 +141,8 @@ Bảng 7.1 bao phủ EVT-1–20.
 **Nợ prototype:** cần nối F1 #56/#19, form #20/#21, xoá #22, gỡ #27 và bảng học viên toàn lớp có phân trang; bỏ mọi popup mã mời còn sót. Đối chiếu `ClassCardDto.description`, lịch cấu trúc và tính học viên DISTINCT. Dòng `INS0201` trong `06-plan/PROTOTYPE_DEBT.md` giữ mở tới khi code khớp. `[SoT: BD Sheet 4.5; V]`
 
 **Đã đóng:** bảng học viên tab Tất cả dùng F1 #59, phân trang sau lọc trên toàn bộ lớp phụ trách (`DEC-2026-1024-dd-teacher-student-list`). Các giới hạn tên/mô tả/phòng/ghi chú giữ theo BD Sheet 9; cần đối chiếu validation F1 trước khi code nối thật.
+
+## Cập nhật 2026-11-07 (nối API thật)
+
+API tiêu thụ thêm: `GET /api/v1/identity/instructor/classes/summary` (#56, `03-dd/api/F1_identity.md` mục 0.8.2) cho ba cột hoàn thành, điểm TB, vắng bài. `503 IDT-507` thì hook lùi về #19 và ẩn ba cột. Hook `useInstructorClassSummary`, mapper `real-class-metrics.ts`.
+

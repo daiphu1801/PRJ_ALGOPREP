@@ -126,6 +126,11 @@ class JudgeOutboxRelayFlowTest {
         channel -> {
           channel.queueUnbind(
               "identity.submission-graded", "algoprep.domain-events", "judge.submission.graded");
+          // F2 also consumes this event, so its queue must be unbound for the key to be unroutable.
+          channel.queueUnbind(
+              "problem-bank.submission-graded",
+              "algoprep.domain-events",
+              "judge.submission.graded");
           return null;
         });
     try {
@@ -137,6 +142,10 @@ class JudgeOutboxRelayFlowTest {
           channel -> {
             channel.queueBind(
                 "identity.submission-graded", "algoprep.domain-events", "judge.submission.graded");
+            channel.queueBind(
+                "problem-bank.submission-graded",
+                "algoprep.domain-events",
+                "judge.submission.graded");
             return null;
           });
     }

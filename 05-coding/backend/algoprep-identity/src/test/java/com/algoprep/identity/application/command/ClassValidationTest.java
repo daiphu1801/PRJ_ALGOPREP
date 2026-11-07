@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.algoprep.common.exception.AlgoPrepException;
 import com.algoprep.identity.domain.model.ScheduleSpec;
+import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -89,7 +90,7 @@ class ClassValidationTest {
             schedule(List.of(0), null, null, null, null),
             schedule(List.of(8), null, null, null, null),
             schedule(List.of(1, 1), null, null, null, null),
-            schedule(java.util.Arrays.asList(1, null), null, null, null, null),
+            schedule(Arrays.asList(1, null), null, null, null, null),
             schedule(List.of(1), "09:00", null, null, null),
             schedule(List.of(1), "9am", "10:00", null, null),
             schedule(List.of(1), "25:00", "26:00", null, null),

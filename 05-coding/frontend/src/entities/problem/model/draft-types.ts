@@ -43,6 +43,11 @@ export type Testcase = {
   origin: TestcaseOrigin;
   approved: boolean;
   category?: TestcaseCategory;
+  /**
+   * Real mode only: a side stored in MinIO (more than 8 KB) arrives without its text, so the screen
+   * shows a note instead of an empty box and never writes that side back (DD F2 #33, `*Storage`).
+   */
+  largeSides?: ("input" | "expected")[];
 };
 
 export type WorkedExample = {
@@ -95,6 +100,11 @@ export type ProblemDraft = {
   spec: ProblemSpec;
   aiBrief: string;
   aiGuards: Record<AiGuardKey, boolean>;
+  /**
+   * Real mode: a problem can have several topics but the screen picks one (`topic`); the others are kept
+   * here and sent back untouched, so a save never drops a topic the screen cannot show.
+   */
+  otherTopicIds?: string[];
 };
 
 /** What the editor, the read-only page and the preview all load: the problem plus its last save time. */
@@ -112,7 +122,33 @@ export type ProblemDraftRecord = {
    * BD SHR0202 props NO6-7 (`problem_stats`): zero for a problem that was never saved. Average solve
    * time and hint requests (NO8-9) have no column (BD Q5), so they are not modelled.
    */
-  stats: { submissionCount: number; acRate: number };
+  stats: ProblemStats | null;
+  /** Real mode only; absent in mock mode. */
+  server?: ServerState;
+};
+
+/** #40. `acRate` null = the problem has no statistics row yet; `stats: null` = the call failed (shown as "-"). */
+export type ProblemStats = { submissionCount: number; acRate: number | null };
+
+/** What the server told us at the last load or save of a problem (real mode). */
+export type ServerState = {
+  /** The `updatedAt` to send back as `expectedUpdatedAt` (optimistic lock). */
+  updatedAt: string | null;
+  /** A2 opening a published problem of someone else: nothing can be saved. */
+  readOnly: boolean;
+  /** Level code to id, for the save body; a code missing here was deleted meanwhile. */
+  levelIdByCode: Record<string, string>;
+  /** Counts that stand in for `testcases` when the caller may not read the bodies. */
+  testcaseSummary: {
+    total: number;
+    approved: number;
+    sample: number;
+    hidden: number;
+  };
+  /** What the first save of a duplicate will copy besides the visible content. */
+  willCopy: { testcaseCount: number; hasSpec: boolean } | null;
+  /** Source of a duplicate, sent on the first save. */
+  duplicatedFromProblemId: string | null;
 };
 
 /** Why a generated input was thrown away instead of becoming a draft testcase. */

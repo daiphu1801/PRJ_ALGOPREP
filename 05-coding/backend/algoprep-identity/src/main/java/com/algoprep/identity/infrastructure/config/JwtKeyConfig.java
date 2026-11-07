@@ -79,7 +79,7 @@ public class JwtKeyConfig {
   }
 
   @Bean
-  public JwtDecoder jwtDecoder(RSAKey key) throws java.security.spec.InvalidKeySpecException {
+  public JwtDecoder jwtDecoder(RSAKey key) throws InvalidKeySpecException {
     try {
       NimbusJwtDecoder decoder =
           NimbusJwtDecoder.withPublicKey(key.toRSAPublicKey())

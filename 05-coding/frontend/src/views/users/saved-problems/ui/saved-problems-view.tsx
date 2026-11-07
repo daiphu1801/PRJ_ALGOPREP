@@ -1,24 +1,33 @@
-// PROTOTYPE — chưa có DD. Xem 06-plan/PROTOTYPE_DEBT.md mục 9.
+// USR0103 on the real api (03-dd/api/F2_problem-bank.md #8 to #10); mock mode answers the same contract.
 //
-// Layout theo 09-layoutBase/Bài đã lưu.dc.html: thanh công cụ (:112-123),
-// bảng danh sách (:138-165), trạng thái rỗng (:167-172).
-// Dải chỉ số (:100-107) đã BỎ 2026-10-18 (owner: màn danh sách không có dải KPI).
-// F2-13: ghi chú riêng tư tuyệt đối theo (user_id, problem_id) — 01-rd/screens/users/USR0103_saved_problems.md.
-// Owner 2026-10-18 (BD Q2-Q5): unsave is undoable (no confirm popup), the note is edited in place,
-// a note is at most 1000 characters, the list pages at 20 rows (pager hidden for a single page).
+// Layout follows 09-layoutBase/Bài đã lưu.dc.html: toolbar (:112-123), table (:138-165), empty state
+// (:167-172). The KPI strip (:100-107) was dropped 2026-10-18 (owner: a list screen has no KPI strip).
+// F2-13: the note is private per (user_id, problem_id), see 01-rd/screens/users/USR0103_saved_problems.md.
+// Owner 2026-10-18 (BD Q2-Q5): unsave is undoable (no confirm popup), the note is edited in place, a note
+// is at most 1000 characters, the list pages at 20 rows (pager hidden for a single page).
+//
+// The server filters and pages; this view only sends `SavedParams`. Unsaving deletes the bookmark and its
+// note on the server; "Hoàn tác" puts both back with a new save date, and says so when the problem was
+// withdrawn in the meantime and can no longer be bookmarked.
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import {
   problemLevelLabel,
   problemLevelTone,
   useProblemLevels,
-  useSavedProblems,
-  type SavedProblem,
+  useRestoreBookmark,
+  useSaveBookmarkNote,
+  useSavedProblemsPage,
+  useUnsaveProblem,
+  type SavedParams,
+  type SavedRow,
   type SolveState,
 } from "@/entities/problem";
-import { useT } from "@/shared/i18n";
+import { ApiError } from "@/shared/api";
+import { useApiErrorMessage, useLocale, useT } from "@/shared/i18n";
+import { formatDateVN, useDebounced } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
 import {
   Badge,
@@ -27,10 +36,11 @@ import {
   DataTable,
   EmptyState,
   Pagination,
+  QueryError,
+  Skeleton,
   TextArea,
   FilterBar,
   FilterMenu,
-  QueryBoundary,
   type BadgeVariant,
   type DataTableColumn,
 } from "@/shared/ui";
@@ -49,85 +59,32 @@ const SEARCH_MAX_LENGTH = 100;
 type NoteEdit = { id: string; draft: string };
 
 type StatusFilter = SolveState | "all";
-type DifficultyFilter = string;
 
 export function SavedProblemsView() {
-  const query = useSavedProblems();
-  return (
-    <QueryBoundary query={query}>
-      {(saved) => <SavedProblems initial={saved} />}
-    </QueryBoundary>
-  );
-}
-
-// Local edits (unsave, notes) live in this state, seeded once from the query result.
-function SavedProblems({ initial }: { initial: SavedProblem[] }) {
   const t = useT("savedProblems");
+  const tc = useT("common");
+  const locale = useLocale() === "en" ? "en" : "vi";
+  const apiMessage = useApiErrorMessage();
   const levels = useProblemLevels();
-  const [all, setAll] = useState(initial);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<StatusFilter>("all");
-  const [difficulty, setDifficulty] = useState<DifficultyFilter>("all");
+  const [difficulty, setDifficulty] = useState("all");
   const [page, setPage] = useState(1);
   const [noteEdit, setNoteEdit] = useState<NoteEdit | null>(null);
 
-  const filtered = useMemo(() => {
-    const needle = query.trim().toLowerCase();
-    return all.filter(
-      (problem) =>
-        (status === "all" || problem.solveState === status) &&
-        (difficulty === "all" || problem.difficulty === difficulty) &&
-        (!needle ||
-          problem.code.toLowerCase().includes(needle) ||
-          problem.title.toLowerCase().includes(needle)),
-    );
-  }, [all, query, status, difficulty]);
-
-  // Client-side paging over the mock list; the real list is paged on the server (BD Q5).
-  const lastPage = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const currentPage = Math.min(page, lastPage);
-  const pageRows = filtered.slice(
-    (currentPage - 1) * PAGE_SIZE,
-    currentPage * PAGE_SIZE,
-  );
-
-  const solvedCount = all.filter(
-    (problem) => problem.solveState === "solved",
-  ).length;
-
-  function unsave(id: string) {
-    // Bỏ lưu xoá luôn ghi chú riêng tư gắn với bookmark đó — REQ-04. The removed row is kept in
-    // the Hoàn tác toast closure, so undo restores the bookmark AND its note.
-    const index = all.findIndex((problem) => problem.id === id);
-    const removed = all[index];
-    if (!removed) return;
-    setAll((previous) => previous.filter((problem) => problem.id !== id));
-    setNoteEdit((current) => (current?.id === id ? null : current));
-    // One toast per unsave, each with its own Hoàn tác closure, so a second unsave never loses the first.
-    toast.info(t("undo.message", { title: removed.title }), {
-      label: t("undo.button"),
-      onClick: () =>
-        setAll((previous) => {
-          if (previous.some((problem) => problem.id === removed.id))
-            return previous;
-          const next = [...previous];
-          next.splice(Math.min(index, next.length), 0, removed);
-          return next;
-        }),
-    });
-  }
-
-  function saveNote(edit: NoteEdit) {
-    setAll((previous) =>
-      previous.map((problem) =>
-        problem.id === edit.id
-          ? { ...problem, note: edit.draft.trim() }
-          : problem,
-      ),
-    );
-    setNoteEdit(null);
-    toast.success(t("toast.noteSaved"));
-  }
+  // Typing filters live, but only a pause in typing becomes a request.
+  const debouncedQuery = useDebounced(query);
+  const params: SavedParams = {
+    q: debouncedQuery.trim().slice(0, SEARCH_MAX_LENGTH),
+    status,
+    difficulty,
+    page,
+  };
+  const saved = useSavedProblemsPage(params);
+  const unsave = useUnsaveProblem();
+  const saveNote = useSaveBookmarkNote();
+  const restore = useRestoreBookmark();
+  const data = saved.data;
 
   function resetFilter<T>(setter: (value: T) => void, value: T) {
     setter(value);
@@ -136,16 +93,55 @@ function SavedProblems({ initial }: { initial: SavedProblem[] }) {
     setNoteEdit(null);
   }
 
-  // The list filters live while typing (no toast per keystroke); Enter is the explicit search.
-  function announceSearch() {
-    toast.info(
-      filtered.length > 0
-        ? t("toast.searchResult", { count: filtered.length })
-        : t("toast.searchEmpty"),
+  function doUnsave(problem: SavedRow) {
+    // Unsaving deletes the private note with the bookmark (REQ-04). The removed row's note stays in the
+    // Hoàn tác toast closure, so undo restores the bookmark AND its note. One toast per unsave, each with
+    // its own closure, so a second unsave never loses the first.
+    unsave.mutate(problem.id, {
+      onSuccess: () => {
+        setNoteEdit((current) => (current?.id === problem.id ? null : current));
+        toast.info(t("undo.message", { title: problem.title }), {
+          label: t("undo.button"),
+          onClick: () =>
+            restore.mutate(
+              { problemId: problem.id, note: problem.note },
+              { onError: (error) => toast.error(apiMessage(error)) },
+            ),
+        });
+      },
+      onError: (error) => toast.error(apiMessage(error)),
+    });
+  }
+
+  function doSaveNote(edit: NoteEdit) {
+    saveNote.mutate(
+      { problemId: edit.id, note: edit.draft.trim() },
+      {
+        onSuccess: () => {
+          setNoteEdit(null);
+          toast.success(t("toast.noteSaved"));
+        },
+        onError: (error) => {
+          toast.error(apiMessage(error));
+          // PRB-014: the bookmark is gone (removed on another device). Close the editor and reload.
+          if (error instanceof ApiError && error.code === "PRB-014") {
+            setNoteEdit(null);
+            void saved.refetch();
+          }
+        },
+      },
     );
   }
 
-  const columns: DataTableColumn<SavedProblem>[] = [
+  // The list filters live while typing (no toast per keystroke); Enter is the explicit search.
+  function announceSearch() {
+    const count = data?.meta.filteredTotal ?? 0;
+    toast.info(
+      count > 0 ? t("toast.searchResult", { count }) : t("toast.searchEmpty"),
+    );
+  }
+
+  const columns: DataTableColumn<SavedRow>[] = [
     {
       key: "title",
       header: t("table.colProblem"),
@@ -192,11 +188,17 @@ function SavedProblems({ initial }: { initial: SavedProblem[] }) {
       key: "solveState",
       header: t("table.colState"),
       width: "108px",
-      render: (problem) => (
-        <Badge variant={SOLVE_STATE_VARIANT[problem.solveState]}>
-          {t(`state.${problem.solveState}`)}
-        </Badge>
-      ),
+      render: (problem) =>
+        problem.solveState ? (
+          <Badge variant={SOLVE_STATE_VARIANT[problem.solveState]}>
+            {t(`state.${problem.solveState}`)}
+          </Badge>
+        ) : (
+          // Unknown (the solve-state source did not answer): not "Chưa làm", which would be a guess.
+          <span className="text-[12.5px] text-[var(--color-text-subtle)]">
+            {t("state.unknown")}
+          </span>
+        ),
     },
     {
       key: "note",
@@ -231,7 +233,11 @@ function SavedProblems({ initial }: { initial: SavedProblem[] }) {
                 >
                   {t("table.noteCancel")}
                 </Button>
-                <Button size="sm" onClick={() => saveNote(noteEdit)}>
+                <Button
+                  size="sm"
+                  disabled={saveNote.isPending}
+                  onClick={() => doSaveNote(noteEdit)}
+                >
                   {t("table.noteSave")}
                 </Button>
               </span>
@@ -254,7 +260,7 @@ function SavedProblems({ initial }: { initial: SavedProblem[] }) {
       width: "104px",
       render: (problem) => (
         <span className="text-[12.5px] text-[var(--color-text-muted)]">
-          {problem.savedAtLabel}
+          {formatDateVN(problem.savedAt, { locale })}
         </span>
       ),
     },
@@ -282,16 +288,15 @@ function SavedProblems({ initial }: { initial: SavedProblem[] }) {
               size="sm"
               className="border border-[var(--color-border)]"
             >
-              <Link href={`/problems/${problem.id}`}>
-                {t("table.btnOpen")}
-              </Link>
+              <Link href={`/problems/${problem.id}`}>{t("table.btnOpen")}</Link>
             </Button>
           )}
           <Button
             variant="ghost"
             size="sm"
             className="border border-[var(--color-border)] text-[var(--color-admin-negative)]"
-            onClick={() => unsave(problem.id)}
+            disabled={unsave.isPending}
+            onClick={() => doUnsave(problem)}
           >
             {t("table.btnUnsave")}
           </Button>
@@ -304,9 +309,17 @@ function SavedProblems({ initial }: { initial: SavedProblem[] }) {
     <div className="p-6">
       <div className="mb-4">
         <h1 className="text-lg font-bold tracking-tight">{t("title")}</h1>
-        <p className="text-[12.5px] text-[var(--color-text-muted)]">
-          {t("subtitle", { total: all.length, solved: solvedCount })}
-        </p>
+        {data ? (
+          <p className="text-[12.5px] text-[var(--color-text-muted)]">
+            {/* An unknown solved count is left out, never shown as 0. */}
+            {data.meta.solvedCount === null
+              ? t("subtitleNoSolved", { total: data.meta.savedTotal })
+              : t("subtitle", {
+                  total: data.meta.savedTotal,
+                  solved: data.meta.solvedCount,
+                })}
+          </p>
+        ) : null}
       </div>
 
       <Card className="min-w-0 px-[18px] py-4">
@@ -345,29 +358,47 @@ function SavedProblems({ initial }: { initial: SavedProblem[] }) {
           />
         </FilterBar>
 
-        {all.length === 0 ? (
+        {data && data.meta.solvedCount === null ? (
+          <p
+            role="status"
+            className="mb-3 text-[12.5px] text-[var(--color-text-muted)]"
+          >
+            {t("degraded.solveState")}
+          </p>
+        ) : null}
+
+        {saved.isError ? (
+          <QueryError query={saved} />
+        ) : !data ? (
+          <div role="status" aria-label={tc("loading")} className="space-y-3">
+            <Skeleton className="h-40 w-full" />
+          </div>
+        ) : data.meta.savedTotal === 0 ? (
           <EmptyState>{t("emptyAll")}</EmptyState>
         ) : (
           <DataTable
             caption={t("table.caption")}
             columns={columns}
-            rows={pageRows}
+            rows={data.items}
             rowKey={(problem) => problem.id}
             emptyMessage={t("table.emptyFiltered")}
             minWidth={760}
           />
         )}
 
-        {filtered.length > PAGE_SIZE ? (
+        {data && data.page.totalItems > PAGE_SIZE ? (
           <Pagination
-            page={currentPage}
+            page={data.page.number}
             pageSize={PAGE_SIZE}
-            total={filtered.length}
-            onPageChange={setPage}
+            total={data.page.totalItems}
+            onPageChange={(next) => {
+              setPage(next);
+              setNoteEdit(null);
+            }}
             summary={t("footer.summary", {
-              from: (currentPage - 1) * PAGE_SIZE + 1,
-              to: Math.min(currentPage * PAGE_SIZE, filtered.length),
-              total: filtered.length,
+              from: (data.page.number - 1) * PAGE_SIZE + 1,
+              to: Math.min(data.page.number * PAGE_SIZE, data.page.totalItems),
+              total: data.page.totalItems,
             })}
             previousLabel={t("footer.previous")}
             nextLabel={t("footer.next")}

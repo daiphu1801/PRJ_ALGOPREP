@@ -15,14 +15,14 @@
 // independent from "Lớp của tôi" (LH) [09-layoutBase/Giáo viên - Lớp của tôi.dc.html:221-222].
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   useAssignmentSummary,
-  useClassAssignments,
+  useClassAssignmentsPage,
   useRemoveAssignment,
-  type AssignedProblem,
+  type AssignedRow,
 } from "@/entities/class-assignment";
 import { useInstructorClasses } from "@/entities/class";
 import {
@@ -30,7 +30,8 @@ import {
   problemLevelTone,
   useProblemLevels,
 } from "@/entities/problem";
-import { useT } from "@/shared/i18n";
+import { useApiErrorMessage, useT } from "@/shared/i18n";
+import { useDebounced } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
 import { AssignProblemDialog } from "./assign-problem-dialog";
 import {
@@ -51,7 +52,7 @@ import {
 const PAGE_SIZE = 20;
 
 /** First topic alphabetically plus "+n"; the full list stays in the tooltip (INS0202 Q5). */
-function topicSummary(row: AssignedProblem): { text: string; title: string } {
+function topicSummary(row: AssignedRow): { text: string; title: string } {
   const all = [...(row.topics?.length ? row.topics : [row.topic])].sort(
     (a, b) => a.localeCompare(b, "vi"),
   );
@@ -65,7 +66,7 @@ export function ClassAssignmentsView() {
   const t = useT("classAssignments");
   const levelList = useProblemLevels();
   const summaryQuery = useAssignmentSummary();
-  const assignmentsQuery = useClassAssignments();
+  const apiMessage = useApiErrorMessage();
   const classesQuery = useInstructorClasses();
   const classes = classesQuery.data ?? [];
 
@@ -85,28 +86,26 @@ export function ClassAssignmentsView() {
     const qs = next.toString();
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   };
+  // The server filters by class and title and pages by 20; typing waits for a pause before it asks.
+  const q = useDebounced((searchParams.get("q") ?? "").trim());
+  const assignmentsQuery = useClassAssignmentsPage({
+    classId: classTab,
+    q,
+    page,
+  });
   const [assigning, setAssigning] = useState(false);
-  const [removeTarget, setRemoveTarget] = useState<AssignedProblem | null>(
-    null,
-  );
+  const [removeTarget, setRemoveTarget] = useState<AssignedRow | null>(null);
   const [removeClassChoice, setRemoveClassChoice] = useState<string>("");
   const removeAssignment = useRemoveAssignment();
 
-  const rows = useMemo(() => {
-    const needle = (searchParams.get("q") ?? "").trim().toLowerCase();
-    return (assignmentsQuery.data ?? []).filter(
-      (row) =>
-        (classTab === "all" || row.assignedClassIds.includes(classTab)) &&
-        (!needle || row.title.toLowerCase().includes(needle)),
-    );
-  }, [assignmentsQuery.data, searchParams, classTab]);
-  const pageRows = rows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const pageRows = assignmentsQuery.data?.items ?? [];
+  const totalRows = assignmentsQuery.data?.page.totalItems ?? 0;
 
   // Figures inside the selected class; "Tất cả" shows the problem's totals (INS0202 Q11).
-  const statsFor = (row: AssignedProblem) =>
+  const statsFor = (row: AssignedRow) =>
     (classTab !== "all" ? row.classStats?.[classTab] : undefined) ?? row;
 
-  const columns: DataTableColumn<AssignedProblem>[] = [
+  const columns: DataTableColumn<AssignedRow>[] = [
     {
       key: "title",
       header: t("assignmentList.col.title"),
@@ -149,7 +148,9 @@ export function ClassAssignmentsView() {
       align: "right",
       render: (row) => (
         <span className="font-mono">
-          {statsFor(row).submissionCount.toLocaleString("vi-VN")}
+          {statsFor(row).submissionCount === null
+            ? "-"
+            : statsFor(row).submissionCount!.toLocaleString("vi-VN")}
         </span>
       ),
     },
@@ -157,7 +158,8 @@ export function ClassAssignmentsView() {
       key: "acRate",
       header: t("assignmentList.col.acRate"),
       align: "right",
-      render: (row) => `${statsFor(row).acRate}%`,
+      render: (row) =>
+        statsFor(row).acRate === null ? "-" : `${statsFor(row).acRate}%`,
     },
     {
       key: "actions",
@@ -194,9 +196,20 @@ export function ClassAssignmentsView() {
     <div>
       <PageHeader
         title={t("header.title")}
-        description={t("header.summary", {
-          count: summary?.assignedCount ?? 0,
-        })}
+        // The count comes from #50; while it is unknown no number is shown (never a made-up 0).
+        // The class average sits on the same line (INS0202 V0.14: no stat strip on this screen); "-" when
+        // #50 sends null (no submissions yet, or the statistics are down), never a made-up 0%.
+        description={
+          summary
+            ? `${t("header.summary", { count: summary.assignedCount })} · ${t(
+                "header.avgAcRate",
+                {
+                  value:
+                    summary.avgAcRate == null ? "-" : `${summary.avgAcRate}%`,
+                },
+              )}`
+            : undefined
+        }
         actions={
           <Button variant="cta" size="sm" onClick={() => setAssigning(true)}>
             {t("header.btnAssignFromBank")}
@@ -237,8 +250,8 @@ export function ClassAssignmentsView() {
           />
           <span className="ml-auto text-[12.5px] text-[var(--color-text-muted)]">
             {t("assignmentList.resultCount", {
-              shown: rows.length,
-              total: assignmentsQuery.data?.length ?? 0,
+              shown: totalRows,
+              total: summary?.assignedCount ?? "-",
             })}
           </span>
         </div>
@@ -256,19 +269,20 @@ export function ClassAssignmentsView() {
                 : "ready"
           }
           emptyMessage={t("emptyAssignments")}
+          errorMessage={t("loadFailed")}
           minWidth={900}
         />
 
         <Pagination
           page={page}
           pageSize={PAGE_SIZE}
-          total={rows.length}
+          total={totalRows}
           onPageChange={(value) =>
             setUrlParams({ page: value > 1 ? String(value) : null })
           }
           summary={t("pageSummary", {
             page,
-            total: Math.max(1, Math.ceil(rows.length / PAGE_SIZE)),
+            total: Math.max(1, assignmentsQuery.data?.page.totalPages ?? 1),
           })}
           previousLabel={t("previous")}
           nextLabel={t("next")}
@@ -291,7 +305,7 @@ export function ClassAssignmentsView() {
               { problemId: removeTarget.id, classId: removeClassChoice },
               {
                 onSuccess: () => toast.success(t("toast.removed", { title })),
-                onError: () => toast.error(t("toast.failed")),
+                onError: (error) => toast.error(apiMessage(error)),
               },
             );
           }

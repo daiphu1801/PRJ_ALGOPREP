@@ -1,17 +1,16 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import {
   problemLevelLabel,
   problemLevelTone,
   useProblemLevels,
-  useProblemListPage,
-  type ProblemListItem,
+  useSuggestedProblems,
+  useTopicProgress as useCatalogTopics,
+  type CatalogRow,
 } from "@/entities/problem";
-import { useTopicProgress } from "@/entities/progress";
-import { scoreTopics } from "../../model/derive-skill-radar";
 import { useT } from "@/shared/i18n";
 import {
   Badge,
@@ -25,70 +24,26 @@ import {
  * chips, and a 4-column table showing status dot, id, title, `function` tag, topic, difficulty,
  * AC rate.
  *
- * Reads `entities/problem` rather than owning a list: these are rows from the same catalogue
- * `problem_list` renders, filtered and re-ordered. A dashboard-owned copy would be a second set of
- * problem titles to keep in step with the first.
- *
- * Ranking rule (01-rd/screens/users/USR0601_dashboard.md mục 4 Q2 — plain rule, no AI call):
- * unsolved problems first, then problems whose topic scores lowest by the same score the skill radar plots. That ties
- * the suggestion to the same weakness the greeting and radar call out, instead of being a third
- * independent opinion about what the learner is bad at.
+ * The server ranks and filters (F2 #12, 03-dd/api/F2_problem-bank.md section 13, USR0601 BR-SC-07):
+ * unsolved first, then the topics where the learner scores lowest, at most seven rows. A filter change
+ * asks again, and the previous rows stay on screen while it loads.
  */
-const SUGGESTION_COUNT = 7;
-
-type DifficultyFilter = string;
-
-const EMPTY_PAGE: {
-  items: ProblemListItem[];
-  topics: { id: string; name: string }[];
-} = { items: [], topics: [] };
-
 export function SuggestedProblemsBlock() {
   const t = useT("dashboard");
   const levels = useProblemLevels();
-  const [difficulty, setDifficulty] = useState<DifficultyFilter>("all");
+  const [difficulty, setDifficulty] = useState<string>("all");
   const [topicId, setTopicId] = useState<string>("all");
-  const topicsQuery = useTopicProgress("all");
+  const topics = useCatalogTopics().data?.items ?? [];
+  const suggestions = useSuggestedProblems(difficulty, topicId);
+  const rows = suggestions.data ?? [];
 
-  // Query data keeps one identity between renders, so `useMemo` below re-sorts only when it changes.
-  // While loading or failed the table shows its empty state (the block owns no boundary of its own).
-  const page = useProblemListPage().data ?? EMPTY_PAGE;
-  const weakestFirst = useMemo(() => {
-    const scored = topicsQuery.data ? scoreTopics(topicsQuery.data) : [];
-    const scoreByTopic = new Map(
-      scored.map((point) => [point.topicName.toLowerCase(), point.score]),
-    );
-    // Topics with no score sort as 100 — "nothing known against them", so they rank below a
-    // topic the learner is measurably weak at, rather than above everything on a missing value.
-    const weaknessOf = (problem: ProblemListItem) =>
-      Math.min(
-        ...problem.topics.map(
-          (name) => scoreByTopic.get(name.toLowerCase()) ?? 100,
-        ),
-        100,
-      );
-
-    return [...page.items].sort((left, right) => {
-      const leftUnsolved = left.solveState === "solved" ? 1 : 0;
-      const rightUnsolved = right.solveState === "solved" ? 1 : 0;
-      if (leftUnsolved !== rightUnsolved) return leftUnsolved - rightUnsolved;
-      return weaknessOf(left) - weaknessOf(right);
-    });
-  }, [page.items, topicsQuery.data]);
-
-  const rows = weakestFirst
-    .filter(
-      (problem) =>
-        (difficulty === "all" || problem.difficulty === difficulty) &&
-        (topicId === "all" ||
-          problem.topics.some((name) => name.toLowerCase() === topicId)),
-    )
-    .slice(0, SUGGESTION_COUNT);
-
-  const solveDot = (problem: ProblemListItem) => (
+  const solveDot = (problem: CatalogRow) => (
     <span
-      role="img"
-      aria-label={t(`solveState.${problem.solveState}`)}
+      role={problem.solveState ? "img" : undefined}
+      aria-hidden={problem.solveState ? undefined : true}
+      aria-label={
+        problem.solveState ? t(`solveState.${problem.solveState}`) : undefined
+      }
       className="inline-block h-2 w-2 shrink-0 rounded-full"
       style={{
         background: `var(${
@@ -102,7 +57,7 @@ export function SuggestedProblemsBlock() {
     />
   );
 
-  const columns: DataTableColumn<ProblemListItem>[] = [
+  const columns: DataTableColumn<CatalogRow>[] = [
     {
       key: "title",
       header: t("suggested.colProblem"),
@@ -184,7 +139,7 @@ export function SuggestedProblemsBlock() {
           role="group"
           aria-label={t("suggested.topicLabel")}
         >
-          {[{ id: "all", name: t("filterAll") }, ...page.topics].map(
+          {[{ id: "all", name: t("filterAll") }, ...topics].map(
             (topic) => (
               <button
                 key={topic.id}

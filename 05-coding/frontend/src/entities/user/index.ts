@@ -38,3 +38,4 @@ export {
   updateMyProfile,
   updateMySettings,
 } from "./api/mutations";
+export type { ExportedFile } from "./api/real-export";

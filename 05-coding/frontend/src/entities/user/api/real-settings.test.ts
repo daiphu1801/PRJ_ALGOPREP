@@ -46,7 +46,10 @@ describe("real settings API", () => {
         vimMode: false,
       },
       preferredInterviewLevel: "MIDDLE",
-      notifications: { streakReminderEnabled: true, weeklyReportEnabled: false },
+      notifications: {
+        streakReminderEnabled: true,
+        weeklyReportEnabled: false,
+      },
     });
     expect(get).toHaveBeenCalledWith("/identity/me/settings");
   });
@@ -62,7 +65,10 @@ describe("real settings API", () => {
         vimMode: true,
       },
       preferredInterviewLevel: "SENIOR",
-      notifications: { streakReminderEnabled: false, weeklyReportEnabled: true },
+      notifications: {
+        streakReminderEnabled: false,
+        weeklyReportEnabled: true,
+      },
     });
 
     expect(patch).toHaveBeenCalledWith("/identity/me/settings", {
@@ -79,7 +85,11 @@ describe("real settings API", () => {
   });
 
   it("reads the interview parameters from the same settings and sends them as numbers", async () => {
-    get.mockResolvedValue({ ...dto, preferredMaxTurns: 16, preferredHintAllowed: false });
+    get.mockResolvedValue({
+      ...dto,
+      preferredMaxTurns: 16,
+      preferredHintAllowed: false,
+    });
     expect(await realGetInterviewPreferences()).toEqual({
       maxTurnsPerSession: "16",
       hintAllowed: false,

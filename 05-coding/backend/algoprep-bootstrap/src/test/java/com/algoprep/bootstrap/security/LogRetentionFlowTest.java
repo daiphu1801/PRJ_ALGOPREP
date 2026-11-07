@@ -20,6 +20,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.junit.jupiter.Container;
@@ -225,9 +226,7 @@ class LogRetentionFlowTest {
     return call(put(PATH).contentType(MediaType.APPLICATION_JSON).content(body), token);
   }
 
-  private MockHttpServletResponse call(
-      org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder request,
-      String token)
+  private MockHttpServletResponse call(MockHttpServletRequestBuilder request, String token)
       throws Exception {
     return mvc.perform(request.header("Authorization", "Bearer " + token))
         .andReturn()

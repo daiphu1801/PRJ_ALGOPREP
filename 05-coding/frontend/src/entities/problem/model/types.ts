@@ -53,8 +53,9 @@ export type InProgressProblem = {
   language: SubmissionLanguage;
   /** Raw `submissions.status` plus the pass ratio; the view maps it to text through i18n (F4-13). */
   lastVerdict: OverallVerdict;
-  passedCount: number;
-  totalCount: number;
+  /** null while the submission has no result yet (queued or compiling): the card shows the verdict only. */
+  passedCount: number | null;
+  totalCount: number | null;
 };
 
 export type ClassAssignmentItem = {
@@ -160,7 +161,11 @@ export type ProblemDetail = {
   /** Mock only: every simulated Run Code / Submit passes (to review the all-passed UI). */
   mockAlwaysPass?: boolean;
   starterCode: Record<StarterCodeKey, string>;
-  sampleTestcases: { input: string; expectedOutput: string }[];
+  sampleTestcases: {
+    testcaseId?: string;
+    input: string;
+    expectedOutput: string;
+  }[];
   mySubmissions: SubmissionHistoryItem[];
   solutionReview: SolutionReviewQuickInsight | null;
 };
@@ -180,6 +185,7 @@ export type OverallVerdict =
   | "systemError";
 
 export type SubmissionRunResult = {
+  compileErrorMessage?: string | null;
   submissionId: string;
   overallVerdict: OverallVerdict;
   passedCount: number;
@@ -191,6 +197,7 @@ export type SubmissionRunResult = {
 };
 
 export type SampleRunResult = {
+  compileErrorMessage?: string | null;
   cases: {
     input: string;
     expectedOutput: string;

@@ -143,18 +143,48 @@ export async function apiDownload(
     headers?: Record<string, string>;
   } = {},
 ): Promise<Blob> {
+  return (await apiDownloadFile(url, options)).blob;
+}
+
+/** Same call as `apiDownload`, but also lets the caller read a response header (name is case-insensitive). */
+export async function apiDownloadFile(
+  url: string,
+  options: {
+    params?: Record<string, unknown>;
+    headers?: Record<string, string>;
+  } = {},
+): Promise<{ blob: Blob; header: (name: string) => string | null }> {
   const res = await httpClient.get<Blob>(url, {
     ...options,
     responseType: "blob",
     // The default serializer joins an array as `columns[]=a`; the export endpoint reads `columns=a&columns=b`.
     paramsSerializer: { indexes: null },
   });
-  return res.data;
+  return {
+    blob: res.data,
+    header: (name) => {
+      const value = res.headers?.[name.toLowerCase()];
+      return value == null ? null : String(value);
+    },
+  };
+}
+
+/** POST that answers with a file (CSV export of a filtered set, sent as a body); same auth and error handling. */
+export async function apiDownloadPost(
+  url: string,
+  body?: unknown,
+): Promise<{ blob: Blob; filename: string | null }> {
+  const res = await httpClient.post<Blob>(url, body, { responseType: "blob" });
+  const disposition = String(res.headers?.["content-disposition"] ?? "");
+  const match = /filename="?([^";]+)"?/i.exec(disposition);
+  return { blob: res.data, filename: match?.[1] ?? null };
 }
 
 export const api = {
   get: apiGet,
   download: apiDownload,
+  downloadFile: apiDownloadFile,
+  downloadPost: apiDownloadPost,
   post: apiPost,
   put: apiPut,
   patch: apiPatch,

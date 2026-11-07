@@ -31,7 +31,8 @@ vi.mock("@/shared/i18n", () => ({
 }));
 vi.mock("next/navigation", () => ({
   useParams: () => ({ problemId: "1", submissionId: "SB-90412" }),
-  useRouter: () => ({ push: vi.fn() }),
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn() }),
+  usePathname: () => "/problems",
   useSearchParams: () => new URLSearchParams(),
 }));
 
@@ -60,8 +61,8 @@ describe("student views raise toasts for operation results", () => {
     const read = observe();
     renderWithQuery(<SavedProblemsView />);
     fireEvent.click((await screen.findAllByText("table.btnUnsave"))[0]!);
-    // Un-save is confirmed by an info toast that carries the Undo action.
-    expect(read()).toEqual([["info", "undo.message"]]);
+    // Un-save is confirmed by an info toast that carries the Undo action, once the server has answered.
+    await waitFor(() => expect(read()).toEqual([["info", "undo.message"]]));
     fireEvent.keyDown(screen.getByPlaceholderText("filter.searchPlaceholder"), {
       key: "Enter",
     });
@@ -111,9 +112,14 @@ describe("student views raise toasts for operation results", () => {
     renderWithQuery(<ProblemDetailView />);
     // Problem 1 starts saved: first click un-saves, second saves again.
     fireEvent.click(await screen.findByText("panel.btnUnsave"));
-    expect(read()).toEqual([["success", "toast.unsaved"]]);
-    fireEvent.click(screen.getByText("panel.btnSave"));
-    expect(read().at(-1)).toEqual(["success", "toast.saved"]);
+    // The bookmark goes through a mutation now, so the toast follows the (mock) answer.
+    await waitFor(() =>
+      expect(read()).toEqual([["success", "toast.unsaved"]]),
+    );
+    fireEvent.click(await screen.findByText("panel.btnSave"));
+    await waitFor(() =>
+      expect(read().at(-1)).toEqual(["success", "toast.saved"]),
+    );
     fireEvent.click(screen.getByText("taskbar.btnRun"));
     // The mock run alternates pass and fail, so either tone is a valid result.
     await waitFor(() =>

@@ -15,11 +15,19 @@ export function DataExportCard() {
   // BD Q6 (closed 2026-10-18): a failed export reports an error toast and the button stays enabled
   // (ai-review down must not look like "no data to export"). Errors go through the toast channel
   // (DEC-2026-1003-toast-feedback-channel), not an inline role="alert".
-  // The one failure worth its own words is the 5-minute rate limit (IDT-V06).
+  // The failures worth their own words are the 5-minute rate limit (IDT-V06) and the judge being
+  // unreachable for the submission file (IDT-508).
   async function run(action: () => Promise<ExportResult>) {
     const result = await action();
-    if (result.ok) toast.success(t("dataExport.exported"));
-    else if (result.error instanceof ApiError && result.error.code === "IDT-V06")
+    if (result.ok) {
+      toast.success(t("dataExport.exported"));
+      // The server cut the file at the newest 2000 submissions; say so, or the learner thinks it is whole.
+      if (result.truncated)
+        toast.info(t("dataExport.truncated", { count: 2000 }));
+    } else if (
+      result.error instanceof ApiError &&
+      (result.error.code === "IDT-V06" || result.error.code === "IDT-508")
+    )
       toast.error(apiMessage(result.error));
     else toast.error(t("dataExport.exportFailed"));
   }

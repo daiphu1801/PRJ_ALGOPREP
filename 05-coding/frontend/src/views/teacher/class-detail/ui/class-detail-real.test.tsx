@@ -90,7 +90,7 @@ describe("ClassDetailView with the real API", () => {
     serve();
   });
 
-  it("shows the roster with email and phone and none of the F4 columns", async () => {
+  it("shows the roster with email and phone and none of the judge columns when the server sent no figures", async () => {
     await open();
 
     const table = await screen.findByRole("table", {
@@ -106,6 +106,34 @@ describe("ClassDetailView with the real API", () => {
         ),
       ).toBeNull();
     }
+  });
+
+  it("shows status, average, completion and last activity when the roster carries the judge figures", async () => {
+    serve({
+      students: [
+        {
+          ...STUDENT,
+          status: "ABSENT",
+          avgScore: 7.5,
+          completionPercent: null,
+          lastSubmittedAt: null,
+        },
+      ],
+    });
+    await open();
+
+    const table = await screen.findByRole("table", { name: m.students.title });
+    expect(await within(table).findByText(m.status.absent)).toBeInTheDocument();
+    expect(within(table).getByText("7.5")).toBeInTheDocument();
+    // The contact columns stay next to the figures (owner 2026-11-07).
+    for (const column of ["email", "phone", "joinedAt"] as const) {
+      expect(
+        within(table).getByRole("columnheader", { name: m.students.col[column] }),
+      ).toBeInTheDocument();
+    }
+    // No assigned problem: completion is unknown, shown as a dash, never 0%.
+    expect(within(table).queryByText("0%")).toBeNull();
+    expect(within(table).getAllByText("-").length).toBeGreaterThanOrEqual(2);
   });
 
   it("says the class is not found when the list from the server does not have it", async () => {

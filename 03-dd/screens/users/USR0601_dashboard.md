@@ -311,3 +311,5 @@ Bảng 8.2: Câu hỏi mở, mặc định đề xuất và bậc ponytail.
 | OQ-3 | Lọc "Bài toán gợi ý" ở máy chủ theo F2 mục 13, đổi BD EVT-5, 6 | Theo F2 (BR-SC-07) | 4 |
 | OQ-4 | Khối J nhận thêm dòng tóm tắt (số phiên, điểm trung bình, mục yếu nhất trong khoảng) mà code đã vẽ và RD REQ-05 của `USR0501` đòi, nhưng BD Khu vực J chưa liệt kê | Thêm vào BD Khu vực J đúng ba giá trị F5 mục 13 đã trả (`completedSessionCount`, `averageScore`, `weakestCriterionCode`); không cần endpoint mới | 1 |
 | OQ-5 | **Đã đóng theo F4 Q14:** chuỗi ngày bằng 0 khi hôm nay chưa nộp dù hôm qua còn chuỗi | Giữ `0 ngày` theo định nghĩa RD; thẻ nhắc nộp hằng ngày là lời nhắc cho chuỗi tiếp theo, client không ân hạn hay tự tính lại | 5 |
+
+**Ghi chú FE 2026-11-07:** `useDifficultyBreakdown` nối F2 #13B, `useDashboardDaily` nối F4 `/me/metrics` (`dailyCounts`), `useTopicProgress` ghép F2 #3 với F4 `/me/metrics?topicIds=`, `useProgressOverview` bổ sung `streakDays` (F4) và `totalPublished` (#13B). `useInterviewSummary` và khối Solution Review gần đây còn chờ F5. Hợp đồng API không đổi.

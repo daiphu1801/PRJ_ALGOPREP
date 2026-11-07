@@ -27,6 +27,7 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -233,7 +234,7 @@ class RegistrationFlowTest {
     try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
       var jobs =
           executor.invokeAll(
-              java.util.stream.IntStream.range(0, 12)
+              IntStream.range(0, 12)
                   .<Callable<Integer>>mapToObj(i -> () -> verify(email, wrong).getStatus())
                   .toList());
       for (var job : jobs) {
@@ -290,8 +291,7 @@ class RegistrationFlowTest {
     doThrow(new MailSendException("Injected SMTP failure"))
         .when(mail)
         .send(anyString(), anyString(), anyString());
-    assertThatThrownBy(() -> register(email, PASSWORD, "QA"))
-        .hasRootCauseInstanceOf(MailSendException.class);
+    assertError(register(email, PASSWORD, "QA"), 503, "IDT-504");
     assertThat(
             jdbc.queryForObject(
                 "SELECT count(*) FROM identity.users WHERE email=?", Integer.class, email))
@@ -299,6 +299,24 @@ class RegistrationFlowTest {
     reset(mail);
     assertThat(register(email, PASSWORD, "QA").getStatus()).isEqualTo(201);
     assertThat(messages(email)).hasSize(1);
+  }
+
+  @Test
+  void smtpFailureOnResendIs503AndALaterResendDelivers() throws Exception {
+    String email = registered();
+    redis.expire(guard(email), Duration.ofMillis(1));
+    Thread.sleep(20);
+    doThrow(new MailSendException("Injected SMTP failure"))
+        .when(mail)
+        .send(anyString(), anyString(), anyString());
+
+    assertError(resend(email), 503, "IDT-504");
+
+    reset(mail);
+    assertThat(user(email)).containsEntry("status", "PENDING_VERIFICATION");
+    redis.delete(guard(email));
+    assertThat(resend(email).getStatus()).isEqualTo(200);
+    assertThat(messages(email)).hasSize(2);
   }
 
   @Test

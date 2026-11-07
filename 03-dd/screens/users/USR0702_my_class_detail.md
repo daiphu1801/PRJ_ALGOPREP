@@ -123,3 +123,13 @@ Bảng 7.1 bao phủ EVT-1 đến EVT-4.
 **Nợ prototype:** `useMyClass` đang tìm trong danh sách lớp mock, `MyClass.assignments` gộp dữ liệu F1/F2, bài rút vẫn là link, chưa có lỗi từng vùng. Cần nối hai endpoint, dùng UUID thật và ISO `joinedAt`/`assignedAt`, bổ sung `withdrawn`. Dòng màn lớp trong `06-plan/PROTOTYPE_DEBT.md` chỉ đóng sau khi code được tích hợp. `[SoT: BD Sheet 4.4; V]`
 
 **Câu hỏi mở:** hai lựa chọn trọng yếu về split F1/F2 và bài rút đã chốt tại DEC. Các mặc định BD còn lại: thông tin giảng viên chỉ `display_name`, lớp ngoài phạm vi trả cùng 404, bài giao mới trước; theo các nguyên tắc phạm vi dữ liệu và thứ tự đã có, không còn câu hỏi chặn DD. `[SoT: BD mục Câu hỏi mở Q4–Q7]`
+
+## Nối API thật (F2-6 phần 2, 2026-11-06)
+
+Bảng dưới liệt kê endpoint màn tiêu thụ và hiện trạng; hợp đồng chỉ định nghĩa ở `03-dd/api/F2_problem-bank.md`.
+
+| Endpoint | Hiện trạng |
+| :--- | :--- |
+| `#13A` | `useMyClassProblems` / `realMyClassProblems`; hàng có `solveState` lạ bị bỏ, không coi là Chưa làm |
+
+Test đường thật: `views/users/my-class-detail/ui/my-class-detail-real.test.tsx` (7 ca), `real-student-catalog.test.ts` (`#13A`).

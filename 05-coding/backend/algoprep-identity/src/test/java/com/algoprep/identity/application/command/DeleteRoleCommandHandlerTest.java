@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.AlgoPrepException;
+import com.algoprep.common.exception.ServiceUnavailableException;
 import com.algoprep.identity.domain.model.AuditEntry;
 import com.algoprep.identity.domain.model.RbacRole;
 import com.algoprep.identity.domain.ports.out.AuditLogPort;
@@ -42,7 +43,7 @@ class DeleteRoleCommandHandlerTest {
     org.mockito.Mockito.doThrow(new IllegalStateException("audit down")).when(audit).record(any());
 
     assertThatThrownBy(() -> handler.delete(actor, role.id()))
-        .isInstanceOf(com.algoprep.common.exception.ServiceUnavailableException.class)
+        .isInstanceOf(ServiceUnavailableException.class)
         .satisfies(e -> assertCode(e, "IDT-446"))
         .hasCauseInstanceOf(IllegalStateException.class);
   }

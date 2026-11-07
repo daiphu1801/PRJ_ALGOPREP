@@ -1,18 +1,23 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 import { useQuery } from "@tanstack/react-query";
-import { withMockData } from "@/shared/api";
+import { ApiError, withMockData } from "@/shared/api";
 import type { DashboardRange } from "../model/types";
 import {
   fakeGetActivityCalendar,
   fakeGetDashboardDaily,
   fakeGetRecentSolutionReviews,
 } from "./__mock__/student-dashboard-mocks";
+import { realGetActivityCalendar } from "./real-activity-calendar";
+import { realGetDashboardDaily } from "./real-dashboard-daily";
 
 const QUERY_OPTIONS = { staleTime: 30_000, retry: false } as const;
 
+// The only call left on mock: Solution Review recent block (F5, no controller yet).
 function notImplemented(): never {
-  throw new Error(
-    "03-dd/api/F1_identity.md / api/F5_ai-review.md don't define these endpoints yet",
+  throw new ApiError(
+    "NOT_IMPLEMENTED",
+    501,
+    "03-dd/api/F5_ai-review.md: recent solution reviews are not built yet",
   );
 }
 
@@ -20,7 +25,10 @@ export const useDashboardDaily = (range: DashboardRange) =>
   useQuery({
     queryKey: ["student-dashboard", "daily", range],
     queryFn: () =>
-      withMockData(() => fakeGetDashboardDaily(range), notImplemented),
+      withMockData(
+        () => fakeGetDashboardDaily(range),
+        () => realGetDashboardDaily(range),
+      ),
     ...QUERY_OPTIONS,
   });
 
@@ -28,7 +36,7 @@ export const useActivityCalendar = () =>
   useQuery({
     queryKey: ["student-dashboard", "activity"],
     queryFn: () =>
-      withMockData(() => fakeGetActivityCalendar(), notImplemented),
+      withMockData(() => fakeGetActivityCalendar(), realGetActivityCalendar),
     ...QUERY_OPTIONS,
   });
 

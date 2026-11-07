@@ -90,7 +90,7 @@ async function login(
   });
 }
 
-test("the list shows server rows, the counters and no invented activity numbers", async ({
+test("the list shows server rows, the counters and the activity columns from the server", async ({
   page,
   request,
 }) => {
@@ -104,12 +104,13 @@ test("the list shows server rows, the counters and no invented activity numbers"
   ).toBeVisible();
   // The admin logged in a moment ago, so its own row reads as recent activity.
   await expect(page.getByText(/bây giờ|phút trước/i).first()).toBeVisible();
+  // F1-7 wired these columns to the F4 counters, so they are real data now.
   await expect(
     page.getByRole("columnheader", { name: m.columnSolved }),
-  ).toHaveCount(0);
+  ).toBeVisible();
   await expect(
     page.getByRole("columnheader", { name: m.columnSubmissions }),
-  ).toHaveCount(0);
+  ).toBeVisible();
   await expect(
     page
       .getByRole("table", { name: m.tableCaption })

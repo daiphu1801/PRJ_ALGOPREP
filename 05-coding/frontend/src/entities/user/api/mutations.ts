@@ -29,6 +29,7 @@ import {
 import { realDeleteMyAccount } from "./real-account";
 import {
   realExportInterviewTranscripts,
+  type ExportedFile,
   realExportMyData,
 } from "./real-export";
 import { realChangeMyPassword } from "./real-password";
@@ -82,9 +83,11 @@ export const updateInterviewPracticePreferences = (
     () => realUpdateInterviewPreferences(input),
   );
 
-export const exportMyData = (scope: "profile" | "submissions"): Promise<Blob> =>
+export const exportMyData = (
+  scope: "profile" | "submissions",
+): Promise<ExportedFile> =>
   withMockData(
-    () => fakeExportMyData(scope),
+    async () => ({ blob: await fakeExportMyData(scope), truncated: false }),
     () => realExportMyData(scope),
   );
 

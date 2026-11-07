@@ -13,7 +13,14 @@ import {
 import type { ManagedListError } from "@/shared/lib/managed-list-store";
 import type { BadgeVariant } from "@/shared/ui";
 
-export type ProblemLevel = LevelItem<BadgeVariant>;
+/**
+ * `id` and `problemCount` exist only on the API-backed list (the bulk "change difficulty" call and the
+ * level filter of the management list take the id; the count feeds the manager's "in use" column).
+ */
+export type ProblemLevel = LevelItem<BadgeVariant> & {
+  id?: string;
+  problemCount?: number | null;
+};
 
 export type ProblemLevelError = ManagedListError;
 
@@ -28,6 +35,8 @@ const store = createLevelListStore<BadgeVariant>(
 );
 
 export const useProblemLevels = store.use;
+/** Mock data layer only: the current list without a hook. */
+export const getProblemLevels = store.get;
 export const addProblemLevel = store.add;
 export const renameProblemLevel = store.rename;
 export const moveProblemLevel = store.move;

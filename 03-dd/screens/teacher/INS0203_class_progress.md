@@ -11,13 +11,14 @@ Bảng 0.1 là bìa.
 | Prototype | `05-coding/frontend/src/views/teacher/class-progress/` |
 | Module | F1 identity #19, #57–59; F2/F4 qua cổng nội bộ F1 |
 | TDD | `04-tdd/modules/F1_identity.md` AC-52–53; `04-tdd/modules/F4_judge-orchestration.md` AC-47; `04-tdd/screens/teacher/INS0203_class_progress.md` |
-| Phiên bản, ngày | V0.1, 2026-10-24 |
+| Phiên bản, ngày | V0.2, 2026-11-07 |
 
 Bảng 0.2 ghi lịch sử.
 
 | Ver | Nội dung | Ngày |
 | :--- | :--- | :--- |
 | V0.1 | DD biểu đồ sáu tuần và khối cần chú ý theo ba nguồn độc lập | 2026-10-24 |
+| V0.2 | Owner chốt 2026-11-07: biểu đồ điểm TB (#57) và khối "Cần chú ý" (#58) giữ bỏ, khớp mã; thêm ghi chú "Đã bỏ" ở mục 1, nội dung cũ giữ làm lịch sử | 2026-11-07 |
 
 Bảng 0.3 quy ước nguồn.
 
@@ -29,6 +30,8 @@ Bảng 0.3 quy ước nguồn.
 | V | `05-coding/frontend/src/views/teacher/class-progress/ui/class-progress-view.tsx` |
 
 ## 1. Bản đồ slice FSD
+
+> **Đã bỏ — Owner chốt 2026-11-07.** Mục 1 và các mục 2 tới 8 bên dưới lên kế hoạch biểu đồ một đường trên F1 #57 và khối "Cần chú ý" trên F1 #58 (EVT-1/2 gọi #57/#58, EVT-7, vùng "Biểu đồ" và "Cần chú ý" ở bảng 3.1, BR-SC-03 phần chú ý, SC-01 tới SC-06 phần trend/attention, mục i18n biểu đồ). Hai khối này **không dựng**, đúng như mã [Nguồn: `05-coding/frontend/src/views/teacher/class-progress/ui/class-progress-view.tsx:12-16`]; toàn bộ phần đó giữ làm lịch sử, không còn là việc phải làm. Lý do: khối "Cần chú ý" nhắc lại cột "Trạng thái" của bảng và thêm cuộn; lý do cũ của biểu đồ (màn Tổng quan giảng viên vẽ cùng chuỗi) không còn đúng, nay bỏ theo ponytail bậc 3 (không ai cần trong demo) và bậc 4 (cột "Trạng thái" đã cho thấy tình trạng). Endpoint #57, #58 và #29 vẫn là hợp đồng ở `03-dd/api/F1_identity.md`, hiện không màn nào đọc. Phạm vi DD còn hiệu lực của màn: F1 #19 (tab lớp), #59 (bảng, EVT-3/4/5/6) và mục "Cập nhật 2026-11-07" cuối tài liệu. Dòng "Nợ prototype" ở mục 8 về biểu đồ và khối chú ý không còn là nợ.
 
 Bảng 1.1 là slice từ `05-coding/frontend/src/`.
 
@@ -115,3 +118,8 @@ Bảng 7.1 bao phủ EVT-1–7.
 **Nợ prototype:** biểu đồ hiện vẽ hai đường mock, khối chú ý là hằng và không lọc theo lớp, bảng chưa phân trang theo backend; cần một đường #57, danh sách #58, query bảng có phân trang và retry riêng. Dòng `INS0203` trong `06-plan/PROTOTYPE_DEBT.md` còn mở tới khi code nối thật. `[SoT: BD Sheet 4.4]`
 
 **Đã đóng:** tab Tất cả và từng lớp dùng F1 #59 với `classId` tuỳ chọn, `q`, `page`, `pageSize=20`. #26 chỉ còn dùng ở chi tiết một lớp; quyết định `DEC-2026-1024-dd-teacher-student-list`.
+
+## Cập nhật 2026-11-07 (nối API thật)
+
+API tiêu thụ: `GET /api/v1/identity/instructor/students` (#59, mục 0.8.3) với `classId`, `q`, `page`, `pageSize=20`; phân trang và tìm kiếm do máy chủ. Hook `useInstructorStudentPage`. Lỗi `IDT-V17` và `IDT-507` đi qua `useApiErrorMessage`.
+

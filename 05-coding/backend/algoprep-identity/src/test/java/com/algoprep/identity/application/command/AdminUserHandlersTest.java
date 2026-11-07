@@ -77,7 +77,9 @@ class AdminUserHandlersTest {
         status,
         null,
         hasPassword,
-        anon);
+        anon,
+        0,
+        0);
   }
 
   private static void assertCode(Throwable error, String code) {

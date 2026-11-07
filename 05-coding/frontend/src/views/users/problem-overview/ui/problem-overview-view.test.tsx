@@ -24,7 +24,10 @@ describe("ProblemOverviewView", () => {
   it("opens a catalogue problem and links the solve button to the workspace", async () => {
     await wrap(<ProblemOverviewView />);
     expect(
-      screen.getByRole("heading", { level: 1, name: "Best Time to Buy and Sell Stock" }),
+      screen.getByRole("heading", {
+        level: 1,
+        name: "Best Time to Buy and Sell Stock",
+      }),
     ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Giải bài toán/ })).toHaveAttribute(
       "href",

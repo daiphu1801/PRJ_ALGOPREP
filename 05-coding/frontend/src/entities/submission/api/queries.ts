@@ -1,8 +1,9 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md section 41.
 //
 // Data boundary of the submission screens. Mock = the fixtures in __mock__/submission-mocks.ts;
-// real = the F4 endpoints below, still `notImplemented` until the screens are wired to the backend.
+// real = F4 scoped history/detail endpoints; instructor prototype-only consumers remain separate.
 import { useMockQuery } from "@/shared/api";
+import { getRealMySubmissions, getRealSubmission } from "./real-submissions";
 import {
   fetchMySubmissionsPage,
   fetchSubmissionDetail,
@@ -18,6 +19,7 @@ export const useMySubmissionsPage = (params: ListMySubmissionsParams) =>
   useMockQuery({
     queryKey: ["submission", "mine", params],
     mock: () => fetchMySubmissionsPage(params),
+    real: () => getRealMySubmissions(params),
     spec: JUDGE_SPEC,
   });
 
@@ -38,15 +40,17 @@ export const useSubmissionDetail = (
         : fetchSubmissionDetail(submissionId),
     spec: JUDGE_SPEC,
     enabled: Boolean(submissionId),
+    real: () => getRealSubmission(submissionId, area),
   });
 
 /**
  * Submissions the instructor may read, one detail each: backs the instructor list
  * (`ListInstructorSubmissions`, F4 section 13) and the per-student history (section 15).
  */
-export const useInstructorReadableSubmissions = () =>
+export const useInstructorReadableSubmissions = (enabled = true) =>
   useMockQuery<SubmissionDetail[]>({
     queryKey: ["submission", "instructor-readable"],
+    enabled,
     mock: () =>
       READABLE_SUBMISSION_IDS.flatMap((id) => {
         const detail = fetchSubmissionDetail(id);

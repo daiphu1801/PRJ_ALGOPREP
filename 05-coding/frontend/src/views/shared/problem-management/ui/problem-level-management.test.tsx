@@ -7,21 +7,28 @@ import {
   render,
   renderHook,
   screen,
+  waitFor,
   within,
 } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactElement } from "react";
 import { removeProblemLevel, useProblemLevels } from "@/entities/problem";
 import { toast, useToasts } from "@/shared/lib/toast-store";
+import { resetAdminProblemMock } from "../api/__mock__/admin-problem-mocks";
 import { ProblemManagementView } from "./problem-management-view";
 
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
 vi.mock("@/shared/i18n", () => ({
   useT: () => (key: string, params?: Record<string, unknown>) =>
     params ? `${key} ${JSON.stringify(params)}` : key,
+  useLocale: () => "vi",
+  useApiErrorMessage: () => (error: { code?: string }) => `err:${error.code}`,
 }));
 
-beforeEach(() => act(() => toast.clear()));
+beforeEach(() => {
+  resetAdminProblemMock();
+  act(() => toast.clear());
+});
 
 // Levels added by a test are removed again so the module-level list starts clean for the next one.
 afterEach(() => {
@@ -38,7 +45,7 @@ async function renderLoaded(ui: ReactElement) {
     defaultOptions: { queries: { retry: false } },
   });
   render(<QueryClientProvider client={client}>{ui}</QueryClientProvider>);
-  await screen.findByLabelText("searchLabel");
+  await screen.findAllByRole("checkbox", { name: /^selectRow/ });
 }
 
 // Filters are a button that opens a listbox; open it first, then pick from the options.
@@ -104,13 +111,13 @@ describe("problem level management", () => {
     ).toHaveLength(3);
   });
 
-  it("bulk change moves the selected problems to another level, which frees the old one to delete", async () => {
+  it("bulk change moves the selected problems to another level, which then filters to them", async () => {
     const toasts = renderHook(() => useToasts());
     await renderLoaded(
       <ProblemManagementView basePath="/admin/problems" canManageTopics />,
     );
 
-    // Add a level nothing uses, then move every visible problem onto it through the bulk picker.
+    // Add a level nothing uses, then move the problems on this page onto it through the bulk picker.
     fireEvent.click(screen.getByRole("button", { name: "manageLevels" }));
     let dialog = screen.getByRole("dialog");
     fireEvent.change(within(dialog).getByLabelText("levelManager.newLabel"), {
@@ -135,16 +142,20 @@ describe("problem level management", () => {
       within(dialog).getByRole("button", { name: "bulkLevel.apply" }),
     );
 
-    expect(toasts.result.current.at(-1)?.message).toMatch(
-      /^toast\.bulk\.changeDifficulty/,
+    await waitFor(() =>
+      expect(toasts.result.current.at(-1)?.message).toMatch(
+        /^toast\.bulk\.changeDifficulty/,
+      ),
     );
     fireEvent.click(
       within(openFilter("difficultyFilterLabel")).getByRole("option", {
         name: "Cực khó",
       }),
     );
-    expect(
-      screen.getAllByRole("button", { name: /^deleteProblem/ }).length,
-    ).toBeGreaterThan(0);
+    await waitFor(() =>
+      expect(
+        screen.getAllByRole("button", { name: /^deleteProblem/ }).length,
+      ).toBe(8),
+    );
   });
 });

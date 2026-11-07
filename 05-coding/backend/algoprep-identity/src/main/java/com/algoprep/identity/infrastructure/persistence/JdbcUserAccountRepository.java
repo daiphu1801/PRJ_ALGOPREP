@@ -4,6 +4,8 @@ import com.algoprep.identity.domain.model.BaseCategory;
 import com.algoprep.identity.domain.model.UserAccount;
 import com.algoprep.identity.domain.model.UserStatus;
 import com.algoprep.identity.domain.ports.out.UserAccountRepository;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Optional;
@@ -77,7 +79,7 @@ class JdbcUserAccountRepository implements UserAccountRepository {
         .update();
   }
 
-  private static UserAccount map(java.sql.ResultSet rs, int rowNum) throws java.sql.SQLException {
+  private static UserAccount map(ResultSet rs, int rowNum) throws SQLException {
     return new UserAccount(
         rs.getObject("id", UUID.class),
         rs.getString("password_hash"),

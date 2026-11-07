@@ -64,6 +64,10 @@ algoprep:
   judge-engine:
     base-url: ${ALGOPREP_GO_JUDGE_URL:http://localhost:5050}
 
+judge:
+  websocket:
+    allowed-origins: http://localhost:3000,http://127.0.0.1:3000
+
 management:
   endpoint:
     health:

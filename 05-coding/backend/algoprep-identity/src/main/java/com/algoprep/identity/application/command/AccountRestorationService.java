@@ -35,7 +35,8 @@ class AccountRestorationService {
         new RestorationGrant(
             userId, account.deactivatedAt(), account.databaseTime().plusSeconds(300));
     tickets.save(RestorationTicketSecrets.hash(raw), grant);
-    // Login intentionally returns 403; the Redis ticket must survive that expected DB rollback.
+    // Login intentionally returns 403; the Redis ticket must survive that expected
+    // DB rollback.
     return Optional.of(new RestorationTicket(raw, 300));
   }
 }

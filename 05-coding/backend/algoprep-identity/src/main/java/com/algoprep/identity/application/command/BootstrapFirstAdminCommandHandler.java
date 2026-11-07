@@ -6,6 +6,7 @@ import com.algoprep.common.exception.InvalidRequestException;
 import com.algoprep.identity.application.ports.in.BootstrapFirstAdminUseCase;
 import com.algoprep.identity.application.ports.out.PasswordHasherPort;
 import com.algoprep.identity.domain.ports.out.AdminBootstrapRepository;
+import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -70,7 +71,7 @@ public class BootstrapFirstAdminCommandHandler implements BootstrapFirstAdminUse
     }
   }
 
-  private static String checked(String variable, java.util.function.Supplier<String> rule) {
+  private static String checked(String variable, Supplier<String> rule) {
     try {
       return rule.get();
     } catch (DomainRuleViolationException | InvalidRequestException e) {

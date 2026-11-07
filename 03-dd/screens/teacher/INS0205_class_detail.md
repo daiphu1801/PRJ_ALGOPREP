@@ -124,3 +124,8 @@ Bảng 7.1 bao phủ EVT-1–9; TDD module bảo đảm giao dịch server.
 **Nợ prototype:** ba nhóm vẫn dùng mock và đang chia sẻ `entities/class` cho giảng viên/học viên; cần nối đúng F1 #19/#24/#26, dùng UUID thật, tách retry, sửa invalidate khi sửa/xoá/gỡ. Dòng `INS0205` trong `06-plan/PROTOTYPE_DEBT.md` còn mở đến khi code tích hợp. `[SoT: BD Sheet 4.4; V]`
 
 **Đã đóng ở DD:** lớp không có/ngoài phạm vi dùng `404 IDT-414` thống nhất với các API đọc giảng viên; tên/mô tả/lịch học theo validation F1 §5 (`IDT-V10`, `IDT-V14`–`V16`). Khi nối API, màn ánh xạ `error.code` từ hợp đồng F1, không dựa vào chuỗi `message`. `[SoT: BD Sheet 9; F1 mục 0.4; validation F1 §5]`
+
+## Cập nhật 2026-11-07 (nối API thật)
+
+API tiêu thụ: `GET /api/v1/identity/classes/{classId}/students` (#26) nay có thêm `status`, `avgScore`, `completionPercent`, `lastSubmittedAt` (null khi F4 không đọc được). Hook `useClassRoster` không đổi; mapper `realListRoster` điền `metrics`.
+

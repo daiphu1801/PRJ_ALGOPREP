@@ -6,7 +6,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import com.algoprep.identity.application.ports.out.AccessTokenPort;
 import com.algoprep.identity.domain.model.BaseCategory;
+import java.util.Base64;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,6 +20,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.junit.jupiter.Container;
@@ -151,19 +156,17 @@ class SecurityFoundationTest {
   }
 
   private static UUID subjectOf(String jwt) throws Exception {
-    String payload = new String(java.util.Base64.getUrlDecoder().decode(jwt.split("\\.")[1]));
-    java.util.regex.Matcher m =
-        java.util.regex.Pattern.compile("\"sub\":\"([^\"]+)\"").matcher(payload);
+    String payload = new String(Base64.getUrlDecoder().decode(jwt.split("\\.")[1]));
+    Matcher m = Pattern.compile("\"sub\":\"([^\"]+)\"").matcher(payload);
     assertThat(m.find()).isTrue();
     return UUID.fromString(m.group(1));
   }
 
-  private static org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder authed(
-      String path, String token) {
+  private static MockHttpServletRequestBuilder authed(String path, String token) {
     return get(path).header("Authorization", "Bearer " + token);
   }
 
-  private int status(org.springframework.test.web.servlet.RequestBuilder request) throws Exception {
+  private int status(RequestBuilder request) throws Exception {
     return mvc.perform(request).andReturn().getResponse().getStatus();
   }
 }

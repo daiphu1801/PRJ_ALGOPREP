@@ -68,6 +68,9 @@ export function createManagedListStore<T extends ManagedItem>(
   }
 
   return {
+    /** The list right now, for code that is not a component (the mock data layer sorts by it). */
+    get: (): readonly T[] => items,
+
     /** Live list in display order. */
     use: (): readonly T[] =>
       useSyncExternalStore(

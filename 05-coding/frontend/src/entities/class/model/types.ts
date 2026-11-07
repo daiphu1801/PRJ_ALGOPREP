@@ -36,9 +36,10 @@ export const classSummarySchema = z.object({
   description: z.string().optional(),
   schedule: classScheduleSchema.optional(),
   studentCount: z.number(),
-  // The three figures below need F4 metrics (F1 #56, not built): the real list (#19) leaves them out,
-  // and a screen shows a column only when the data has it. Never a 0 standing in for "unknown".
-  completionPct: z.number().optional(),
+  // The three figures below come from F1 #56 (judge figures through identity). The plain list (#19),
+  // the fallback when the judge is down, leaves them out, and a screen shows a column only when the
+  // data has it. `completionPct` is null for a class with no assigned problem: never a 0 for "unknown".
+  completionPct: z.number().nullable().optional(),
   avgScore: z.number().nullable().optional(),
   absentCount: z.number().optional(),
   createdAt: z.string(),
@@ -67,8 +68,29 @@ export const classStudentSchema = z.object({
 });
 export type ClassStudent = z.infer<typeof classStudentSchema>;
 
-// One row of the roster of a class (F1 #26). The prototype rows also carry the F4 figures; the real
-// roster has none (its `status` is always null until F4), so `metrics` is absent there.
+// One page of the instructor student list (F1 #59): the server searches, sorts and pages.
+export type InstructorStudentPage = {
+  rows: ClassStudent[];
+  total: number;
+  totalPages: number;
+};
+
+// What the student detail screen needs (F1 #28); a mock `ClassStudent` is a valid one. The real one
+// adds the per-problem best result of the student in this class.
+export type ClassStudentDetail = Pick<
+  ClassStudent,
+  "id" | "name" | "classId" | "className" | "status" | "email" | "phone"
+> & {
+  assignmentProgress?: {
+    problemId: string;
+    bestRatio: number | null;
+    bestVerdict: string | null;
+  }[];
+};
+
+// One row of the roster of a class (F1 #26). `metrics` is absent when the server could not read the
+// judge figures (the roster still comes back without them). `completionPct` is null for a class with
+// no assigned problem.
 export type ClassRosterRow = {
   id: string;
   classId: string;
@@ -79,7 +101,7 @@ export type ClassRosterRow = {
   metrics?: {
     status: StudentStatus;
     avgScore: number | null;
-    completionPct: number;
+    completionPct: number | null;
     lastActiveLabel: string;
   };
 };
@@ -106,6 +128,9 @@ export const classActivitySchema = z.object({
   text: z.string(),
   timeLabel: z.string(),
   attention: z.boolean(),
+  /** Real mode: the DB activity type and the actor, so the screen words the line through i18n. */
+  activityType: z.string().optional(),
+  actorName: z.string().optional(),
 });
 export type ClassActivity = z.infer<typeof classActivitySchema>;
 

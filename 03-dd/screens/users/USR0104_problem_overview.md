@@ -139,3 +139,14 @@ Tiền tố khoá: `problemOverview.` và `apiError.`. Nút copy có tên truy c
 | D-1 | BD đặt tên `GetProblemLanguageLimits`, còn F4 #1 tên `GetEffectiveExecutionLimits` và trả cả ba khi vắng `language` | Dùng lại F4 #1, không thêm endpoint; đồng bộ tên ở BD khi rà chéo | 4 |
 | D-2 | BD cần ba bài nộp gần đây; F4 #4 hỗ trợ `limit=3` | Đã ghi `USR0104` là consumer ở F4; không còn chỗ lệch hợp đồng | 3 |
 | D-3 | BD còn hỏi về các trường Bình luận/Điểm/Nguồn; không thấy trong DD/API hiện tại | Để ngoài màn cho đến khi owner chốt | 3 |
+
+## Nối API thật (F2-6 phần 2, 2026-11-06)
+
+Bảng dưới liệt kê endpoint màn tiêu thụ và hiện trạng; hợp đồng chỉ định nghĩa ở `03-dd/api/F2_problem-bank.md`.
+
+| Endpoint | Hiện trạng |
+| :--- | :--- |
+| `#6` | `fetchOverviewProblem`: `#6` cộng `/judge/problems/{id}/execution-limits` và `/judge/problems/{id}/submissions/mine`; `acRate=null` hiện `-` |
+| `#11` | `useSetBookmark`; Hoàn tác gửi `bookmarked=true` |
+
+Test đường thật: `views/users/problem-overview/ui/problem-overview-real.test.tsx` (6 ca), `workspace-queries.test.ts` (overview).

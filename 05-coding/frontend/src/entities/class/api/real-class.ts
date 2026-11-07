@@ -3,7 +3,7 @@
 // join and own classes (USR0701, USR0702). Not built, so not here: #28, #29 and #56 to #59 (they need
 // F4 metrics); the screens that read them keep running on mock data.
 import { api } from "@/shared/api";
-import { formatDateVN } from "@/shared/lib";
+import { formatDateVN, formatRelativeVN } from "@/shared/lib";
 import type {
   ClassForm,
   ClassRosterRow,
@@ -12,6 +12,7 @@ import type {
   InviteCode,
   JoinedClass,
   MyClass,
+  StudentStatus,
 } from "../model/types";
 
 const CLASSES = "/identity/classes";
@@ -150,7 +151,7 @@ export async function realCreateInviteCode(
   );
 }
 
-/** #26: who is in the class now; the F4 figures and the BR-10 label are not there yet. */
+/** #26: who is in the class now, with the judge figures when the server could read them. */
 export async function realListRoster(
   classId: string,
 ): Promise<ClassRosterRow[]> {
@@ -161,6 +162,10 @@ export async function realListRoster(
       email: string | null;
       phone: string | null;
       joinedAt: string;
+      status: string | null;
+      avgScore: number | null;
+      completionPercent: number | null;
+      lastSubmittedAt: string | null;
     }[];
   }>(`${CLASSES}/${classId}/students`);
   return items.map((student) => ({
@@ -170,6 +175,16 @@ export async function realListRoster(
     email: student.email ?? undefined,
     phone: student.phone ?? undefined,
     joinedAt: student.joinedAt,
+    metrics: student.status
+      ? {
+          status: student.status.toLowerCase() as StudentStatus,
+          avgScore: student.avgScore,
+          completionPct: student.completionPercent,
+          lastActiveLabel: student.lastSubmittedAt
+            ? formatRelativeVN(student.lastSubmittedAt)
+            : "-",
+        }
+      : undefined,
   }));
 }
 

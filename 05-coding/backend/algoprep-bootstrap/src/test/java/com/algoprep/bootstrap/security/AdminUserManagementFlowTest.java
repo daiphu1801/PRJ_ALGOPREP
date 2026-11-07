@@ -15,12 +15,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import com.algoprep.identity.application.ports.out.EmailPort;
 import com.jayway.jsonpath.JsonPath;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -191,6 +194,38 @@ class AdminUserManagementFlowTest {
   }
 
   @Test
+  void theListCarriesSolvedAndSubmissionCountsFromTheReadModelsAndZeroWhenThereIsNoRow()
+      throws Exception {
+    String admin = login(account("ADMIN", "ACTIVE", HASH));
+    String bare = account("STUDENT", "ACTIVE", HASH);
+    String busy = account("STUDENT", "ACTIVE", HASH);
+    UUID busyId = UUID.fromString(userId(busy));
+    // Two accepted problems, one failed, and a counter row; a user with only a counter has 0
+    // solved.
+    for (String verdict : List.of("ACCEPTED", "ACCEPTED", "WRONG_ANSWER")) {
+      jdbc.update(
+          "INSERT INTO identity.user_problem_best_score (user_id, problem_id, best_ratio,"
+              + " best_verdict) VALUES (?,?,?,?)",
+          busyId,
+          UUID.randomUUID(),
+          "ACCEPTED".equals(verdict) ? 1 : 0.5,
+          verdict);
+    }
+    jdbc.update(
+        "INSERT INTO identity.user_submission_stats (user_id, total_submissions,"
+            + " ac_eligible_count, accepted_count, first_try_accepted_count) VALUES (?,7,6,2,1)",
+        busyId);
+
+    String bareBody = send(get(BASE).param("q", bare), admin, null).getContentAsString();
+    String busyBody = send(get(BASE).param("q", busy), admin, null).getContentAsString();
+
+    assertThat(JsonPath.<Integer>read(bareBody, "$.items[0].solvedCount")).isZero();
+    assertThat(JsonPath.<Integer>read(bareBody, "$.items[0].totalSubmissions")).isZero();
+    assertThat(JsonPath.<Integer>read(busyBody, "$.items[0].solvedCount")).isEqualTo(2);
+    assertThat(JsonPath.<Integer>read(busyBody, "$.items[0].totalSubmissions")).isEqualTo(7);
+  }
+
+  @Test
   void theListCarriesTheLastActivityOfAnAccountThatLoggedIn() throws Exception {
     String admin = login(account("ADMIN", "ACTIVE", HASH));
     String never = account("STUDENT", "ACTIVE", HASH);
@@ -202,9 +237,8 @@ class AdminUserManagementFlowTest {
 
     assertThat(neverBody).contains("\"lastActiveAt\":null");
     String stamp = JsonPath.read(activeBody, "$.items[0].lastActiveAt");
-    assertThat(java.time.Instant.parse(stamp))
-        .isBetween(
-            java.time.Instant.now().minusSeconds(120), java.time.Instant.now().plusSeconds(5));
+    assertThat(Instant.parse(stamp))
+        .isBetween(Instant.now().minusSeconds(120), Instant.now().plusSeconds(5));
   }
 
   @Test
@@ -850,10 +884,10 @@ class AdminUserManagementFlowTest {
   /** Runs both calls at the same instant and returns their results. */
   private static List<Integer> race(Callable<Integer> first, Callable<Integer> second)
       throws Exception {
-    java.util.concurrent.CountDownLatch go = new java.util.concurrent.CountDownLatch(1);
+    CountDownLatch go = new CountDownLatch(1);
     var pool = Executors.newFixedThreadPool(2);
     try {
-      List<java.util.concurrent.Future<Integer>> futures = new ArrayList<>();
+      List<Future<Integer>> futures = new ArrayList<>();
       for (Callable<Integer> call : List.of(first, second)) {
         futures.add(
             pool.submit(

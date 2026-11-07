@@ -33,6 +33,8 @@
     "IDT-112": "Mã xác thực không đúng hoặc đã hết hạn",
     "IDT-113": "Email chưa được xác thực. Hãy nhập mã đã gửi tới hộp thư của bạn",
     "IDT-114": "Liên kết khôi phục không còn hiệu lực. Hãy đăng nhập lại để lấy liên kết mới",
+    "IDT-109": "Phiên đăng nhập bằng nhà cung cấp đã hết hạn hoặc không hợp lệ. Vui lòng thử lại",
+    "IDT-110": "Nhà cung cấp chưa xác minh email của bạn nên không thể đăng nhập bằng cách này",
     "IDT-115": "Mật khẩu hiện tại không đúng",
     "IDT-201": "Email xác nhận không khớp với tài khoản của bạn",
     "IDT-400": "Email không hợp lệ",
@@ -62,6 +64,11 @@
     "IDT-449": "Có quá nhiều người đang xem nhật ký trực tiếp. Vui lòng thử lại sau",
     "IDT-450": "Không tìm thấy tài khoản",
     "IDT-503": "Hệ thống đang bận. Vui lòng thử lại sau ít phút",
+    "IDT-504": "Chưa gửi được email xác thực. Vui lòng thử lại sau ít phút",
+    "IDT-505": "Chưa đăng nhập được bằng nhà cung cấp này. Vui lòng thử lại sau hoặc dùng email và mật khẩu",
+    "IDT-506": "Chưa tải được số liệu của khối này. Vui lòng thử lại sau ít phút",
+    "IDT-507": "Chưa tải được số liệu lớp học. Vui lòng thử lại sau ít phút",
+    "IDT-508": "Chưa lấy được lịch sử nộp bài để xuất. Vui lòng thử lại sau ít phút",
     "IDT-V01": "Mật khẩu tối thiểu 8 ký tự",
     "IDT-V02": "Mật khẩu tối đa 72 byte (chữ có dấu chiếm nhiều byte hơn)",
     "IDT-V03": "Mật khẩu cần có ít nhất một chữ cái và một chữ số",
@@ -88,6 +95,75 @@
     "IDT-V24": "Loại vai trò gốc không hợp lệ",
     "IDT-V25": "Thiếu trạng thái cấp quyền",
     "IDT-V26": "Dữ liệu thao tác không hợp lệ. Vui lòng kiểm tra lại",
+    "IDT-V28": "Nhà cung cấp đăng nhập không được hỗ trợ",
+    "JDG-101": "Không tìm thấy bài toán hoặc bài không còn được mở.",
+    "JDG-102": "Ngôn ngữ này vừa bị tắt. Hãy chọn ngôn ngữ khác.",
+    "JDG-103": "Bài này chỉ hỗ trợ Standard I/O.",
+    "JDG-104": "Bài chưa có testcase đã duyệt để chấm.",
+    "JDG-105": "Bài chưa có testcase mẫu để chạy thử.",
+    "JDG-106": "Bạn đã đạt giới hạn nộp bài trong một giờ. Hãy thử lại sau.",
+    "JDG-107": "Bạn đã đạt giới hạn chạy thử trong một giờ. Hãy thử lại sau.",
+    "JDG-110": "Không tìm thấy bài nộp.",
+    "JDG-111": "Không tìm thấy lớp trong phạm vi của bạn.",
+    "JDG-112": "Không tìm thấy học viên trong lớp.",
+    "JDG-201": "Trạng thái hàng đợi đã được người khác thay đổi. Hãy tải lại.",
+    "JDG-202": "Cấu hình đã được người khác thay đổi. Hãy tải lại trước khi lưu.",
+    "JDG-203": "Phải giữ ít nhất một ngôn ngữ đang bật.",
+    "JDG-204": "Giới hạn thời gian hiệu dụng phải từ 100 đến 30.000 ms.",
+    "JDG-205": "Giới hạn bộ nhớ hiệu dụng phải từ 64 đến 1.024 MB.",
+    "JDG-301": "Bạn không có quyền thực hiện thao tác này.",
+    "JDG-501": "Hệ thống chạy mã tạm thời không khả dụng. Mã của bạn vẫn được giữ lại.",
+    "JDG-502": "Hệ thống đang bận chạy thử. Hãy thử lại sau.",
+    "JDG-503": "Hàng đợi chưa nhận được bài nộp. Hãy kiểm tra lịch sử trước khi nộp lại.",
+    "JDG-504": "Dữ liệu chấm bài chưa sẵn sàng. Hãy thử lại sau.",
+    "JDG-505": "Chưa xác nhận được kết quả nhận bài. Hãy kiểm tra lịch sử trước khi nộp lại.",
+    "JDG-506": "Tạm thời không đọc được kết quả hoặc lịch sử. Hãy tải lại.",
+    "HRN-001": "Không tìm thấy bài toán hoặc mã khung.",
+    "HRN-003": "Tạm thời không tải được mã khung. Hãy thử lại.",
+    "HRN-004": "Bài này chỉ hỗ trợ Standard I/O.",
+    "HRN-005": "Chữ ký hàm của bài chưa sẵn sàng.",
+    "PRB-001": "Dữ liệu chưa hợp lệ. Vui lòng kiểm tra lại.",
+    "PRB-002": "Bạn không có quyền thực hiện thao tác này.",
+    "PRB-003": "Bạn chỉ được thay đổi bài toán do chính mình soạn.",
+    "PRB-004": "Chỉ quản trị viên mới được thay đổi danh mục này.",
+    "PRB-005": "Bạn không phụ trách lớp này.",
+    "PRB-010": "Không tìm thấy bài toán hoặc bài không còn được mở.",
+    "PRB-011": "Không tìm thấy testcase.",
+    "PRB-012": "Không tìm thấy chủ đề.",
+    "PRB-013": "Không tìm thấy độ khó.",
+    "PRB-014": "Bài này đã được bỏ lưu ở nơi khác. Danh sách sẽ được tải lại.",
+    "PRB-015": "Không tìm thấy lớp trong danh sách lớp của bạn.",
+    "PRB-020": "Bài toán vừa được người khác thay đổi. Hãy tải lại trước khi lưu.",
+    "PRB-021": "Đã có chủ đề trùng tên.",
+    "PRB-022": "Đã có độ khó trùng tên.",
+    "PRB-023": "Đang có một lượt sinh testcase của bài này. Hãy chờ lượt đó xong.",
+    "PRB-025": "Bài này đã được gỡ khỏi lớp.",
+    "PRB-030": "Bài chưa đạt điều kiện xuất bản.",
+    "PRB-031": "Chủ đề còn bài toán sử dụng nên chưa xoá được.",
+    "PRB-032": "Độ khó còn bài toán sử dụng nên chưa xoá được.",
+    "PRB-033": "Phải còn ít nhất một độ khó.",
+    "PRB-036": "Chữ ký hàm của bài không hợp lệ.",
+    "PRB-037": "Bài này không còn xuất bản nên không giao thêm cho lớp được.",
+    "PRB-039": "Chủ đề hoặc độ khó đã chọn không còn tồn tại. Hãy tải lại danh sách.",
+    "PRB-040": "Bài chưa có đáp án mẫu.",
+    "PRB-041": "Chưa đủ điều kiện để sinh testcase bằng AI.",
+    "PRB-042": "Bài này đã dùng hết lượt sinh testcase.",
+    "PRB-043": "Bản sinh testcase bị loại vì không đạt yêu cầu.",
+    "PRB-044": "Phiên tải lên không còn hiệu lực. Hãy tải lại tệp.",
+    "PRB-045": "Tệp đã tải lên không đúng kích thước hoặc mã hoá.",
+    "PRB-046": "Bài đã đạt số testcase tối đa.",
+    "PRB-047": "Lô tải lên vượt giới hạn số cặp hoặc dung lượng.",
+    "PRB-048": "Nội dung testcase quá lớn (tối đa 1 MB mỗi vế).",
+    "PRB-049": "Thứ tự gửi lên không khớp danh sách hiện có. Hãy tải lại danh sách.",
+    "PRB-050": "Hệ thống chạy mã tạm thời không khả dụng. Hãy thử lại sau.",
+    "PRB-051": "Tính năng AI tạm thời không khả dụng. Hãy thử lại sau.",
+    "PRB-052": "Kho lưu trữ tệp tạm thời không khả dụng. Hãy thử lại sau.",
+    "PRB-053": "Bài đã xuất bản phải còn ít nhất 2 ví dụ mẫu.",
+    "PRB-054": "Bài đã xuất bản phải còn đủ testcase đã duyệt và testcase mẫu.",
+    "PRB-055": "Bạn chạy đáp án mẫu quá nhiều lần. Hãy thử lại sau ít phút.",
+    "PRB-056": "Chưa ghi được thay đổi. Hãy thử lại sau.",
+    "PRB-057": "Chưa đọc được trạng thái giải của bạn nên chưa hiển thị được tiến độ. Hãy thử lại sau.",
+    "PRB-058": "Chưa đọc được danh sách lớp. Hãy thử lại sau.",
     "UNKNOWN_ERROR": "Có lỗi xảy ra. Vui lòng thử lại"
   },
   "nav": {
@@ -112,6 +188,16 @@
       "admin": "Khu vực quản trị"
     },
     "myClasses": "Lớp của tôi"
+  },
+  "authCallback": {
+    "title": "Đăng nhập bằng nhà cung cấp",
+    "working": "Đang hoàn tất đăng nhập...",
+    "failed": "Không đăng nhập được. Vui lòng thử lại",
+    "unknownProvider": "Nhà cung cấp đăng nhập không được hỗ trợ",
+    "backToLogin": "Quay lại trang đăng nhập",
+    "deactivatedBody": "Tài khoản này đã được bạn tự xoá và vẫn còn trong thời gian khôi phục. Bạn có muốn khôi phục không?",
+    "restore": "Khôi phục tài khoản",
+    "restored": "Đã khôi phục tài khoản. Hãy đăng nhập lại"
   },
   "auth": {
     "loginTitle": "Đăng nhập",
@@ -207,12 +293,17 @@
   },
   "problemList": {
     "title": "Danh sách bài toán",
+    "blockFailed": "Không tải được khối này. Thử lại sau.",
+    "degraded": {
+      "solveState": "Tạm thời chưa đọc được trạng thái giải của bạn, nên chưa hiện trạng thái và chưa lọc theo trạng thái được."
+    },
     "summary": {
       "linkSaved": "Bài đã lưu",
       "btnRandom": "Bài ngẫu nhiên"
     },
     "topicNav": {
-      "label": "Lọc theo chủ đề"
+      "label": "Lọc theo chủ đề",
+      "failed": "Không tải được danh sách chủ đề."
     },
     "filter": {
       "all": "Tất cả",
@@ -224,7 +315,8 @@
     "state": {
       "solved": "Đã giải",
       "attempted": "Đang làm",
-      "todo": "Chưa làm"
+      "todo": "Chưa làm",
+      "unknown": "Chưa rõ trạng thái"
     },
     "submissionModel": {
       "stdioOnly": "Chỉ Standard I/O"
@@ -237,6 +329,7 @@
       "colDifficulty": "Độ khó",
       "colAcRate": "AC rate",
       "btnSolve": "Vào giải",
+      "btnSolveFor": "Vào giải bài {title}",
       "hasReview": "Đã có Solution Review",
       "empty": "Không có bài nào khớp bộ lọc",
       "clearFilters": "Xóa bộ lọc"
@@ -257,7 +350,7 @@
     "assignment": {
       "title": "Bài tập lớp",
       "empty": "Chưa có bài nào được giao",
-      "meta": "{solved} / {total} bài · giao {date}"
+      "meta": "Giao ngày {date}"
     },
     "language": {
       "java": "Java",
@@ -284,6 +377,10 @@
   "savedProblems": {
     "title": "Bài đã lưu",
     "subtitle": "{total} bài đã lưu, {solved} bài đã giải",
+    "subtitleNoSolved": "{total} bài đã lưu",
+    "degraded": {
+      "solveState": "Tạm thời chưa đọc được trạng thái giải của bạn, nên chưa hiện trạng thái và chưa lọc theo trạng thái được."
+    },
     "filter": {
       "all": "Tất cả",
       "searchLabel": "Tìm bài toán",
@@ -294,7 +391,8 @@
     "state": {
       "solved": "Đã giải",
       "attempted": "Đang làm",
-      "todo": "Chưa làm"
+      "todo": "Chưa làm",
+      "unknown": "Chưa rõ"
     },
     "table": {
       "caption": "Bảng bài đã lưu",
@@ -422,7 +520,8 @@
       },
       "summaryPassed": "{n} đạt",
       "summaryFailed": "{n} không đạt",
-      "btnDetail": "Xem chi tiết"
+      "btnDetail": "Xem chi tiết",
+      "progressSlow": "Cập nhật đang chậm. Bạn có thể mở trang kết quả hoặc tải lại để xem trạng thái mới nhất."
     },
     "verdict": {
       "accepted": "Accepted",
@@ -520,6 +619,17 @@
     "retry": "Thử lại",
     "emptyGeneric": "Chưa có dữ liệu",
     "errorGeneric": "Không tải được dữ liệu",
+    "labels": {
+      "language": { "PYTHON": "Python", "CPP": "C++", "JAVA": "Java" },
+      "verdict": {
+        "ACCEPTED": "Accepted",
+        "WRONG_ANSWER": "Sai kết quả",
+        "TIME_LIMIT_EXCEEDED": "Quá thời gian",
+        "RUNTIME_ERROR": "Lỗi thực thi",
+        "COMPILE_ERROR": "Lỗi biên dịch"
+      },
+      "legend": { "totalSubmissions": "Tổng lượt nộp", "acceptedSubmissions": "Accepted" }
+    },
     "blocks": {
       "submissionsSummary": "Tổng lượt nộp bài",
       "activeUsersSummary": "Người dùng hoạt động",
@@ -1280,6 +1390,7 @@
   },
   "problemManagement": {
     "loadFailed": "Không tải được danh sách bài tập. Thử lại sau.",
+    "blockFailed": "Không tải được khối này. Thử lại sau.",
     "title": "Quản lý bài tập",
     "subtitle": "{total} bài · {published} bài đang hiển thị ở Ngân hàng bài toán",
     "newProblem": "Bài tập mới",
@@ -1388,7 +1499,6 @@
     "selectAll": "Chọn tất cả bài đang hiển thị",
     "selectRow": "Chọn {title}",
     "selectionLabel": "Đã chọn {count} bài",
-    "selectionLabelHidden": "Đã chọn {count} bài ({hidden} đang bị ẩn bởi bộ lọc)",
     "bulk": {
       "publish": "Xuất bản",
       "changeDifficulty": "Đổi độ khó",
@@ -1409,18 +1519,20 @@
     "goToPage": "Trang {page}",
     "confirmDeleteTitle": "Xoá bài {title}?",
     "confirmBulkDeleteTitle": "Xoá {count} bài đã chọn?",
-    "confirmBulkDeleteHidden": "Cảnh báo: {count} bài trong số này đang không hiển thị do bộ lọc hiện tại.",
     "confirmDeleteBody": "Bài sẽ bị ẩn khỏi học viên và khỏi danh sách này. Lượt nộp, điểm, bookmark và lịch sử lớp vẫn được giữ nguyên.",
     "confirmDeleteImpact": "Bài có {submissions} lượt nộp và đang giao cho {classes} lớp.",
     "confirmBulkDeleteImpact": "Gồm {count} bài, {submissions} lượt nộp; {assigned} bài đang giao cho lớp.",
     "toast": {
-      "notWired": "{action}: chưa nối API trong bản mẫu, chưa có thay đổi nào",
       "deleted": "Đã xoá bài {title}",
+      "publishMax": "Mỗi lần chỉ xuất bản được tối đa {max} bài. Hãy bỏ bớt bài đã chọn.",
+      "exported": "Đã xuất {count} bài ra tệp CSV",
+      "bulkPartial": "Xử lý được {done} bài, {failed} bài chưa được. {reason}",
       "duplicatePickOne": "Chọn đúng một bài để nhân bản",
       "searchResult": "Tìm thấy {count} bài tập",
       "searchEmpty": "Không tìm thấy bài tập nào",
       "bulkNeedsChoice": "Chọn giá trị áp dụng trước khi thực hiện (chưa có hộp chọn trong bản mẫu)",
       "bulk": {
+        "publish": "Đã xuất bản {count} bài",
         "delete": "Đã xoá {count} bài",
         "changeDifficulty": "Đã đổi độ khó của {count} bài"
       }
@@ -1690,6 +1802,39 @@
     "edit": "Sửa",
     "delete": "Xoá",
     "addTestcase": "Thêm testcase",
+    "testcase": {
+      "btnBulkUpload": "Tải lên hàng loạt"
+    },
+    "bulk": {
+      "title": "Tải lên hàng loạt testcase",
+      "hint": "Chọn nhiều tệp một lần. Hai tệp cùng tên khác đuôi là một testcase: 01.in là input, 01.out là output mong đợi. Tối đa {max} cặp mỗi lần.",
+      "choose": "Chọn tệp",
+      "chooseAgain": "Chọn lại",
+      "upload": "Tải lên {count} testcase",
+      "uploading": "Đang tải lên...",
+      "saveFirst": "Lưu bài trước khi tải lên hàng loạt",
+      "issuesLabel": "Vấn đề của các tệp đã chọn",
+      "tableCaption": "Các cặp tệp đã ghép",
+      "columnName": "Tên",
+      "noPairs": "Chưa ghép được cặp nào.",
+      "done": "Đã thêm {count} testcase",
+      "itemError": "Tệp {file}: {reason}",
+      "fault": {
+        "MISSING": "chưa tải lên được tệp này",
+        "SIZE_MISMATCH": "kích thước tệp đã tải lên không khớp",
+        "INVALID_TEXT": "nội dung không phải văn bản UTF-8 hợp lệ"
+      },
+      "issue": {
+        "extension": "Tệp {file} không có đuôi .in hoặc .out.",
+        "duplicate": "Tệp {file} trùng tên với một tệp đã chọn.",
+        "unmatched": "Tệp {file} chưa có tệp cặp (cùng tên, đuôi còn lại).",
+        "empty": "Tệp {file} rỗng.",
+        "sideTooLarge": "Tệp {file} quá {limit}.",
+        "tooManyPairs": "Có {count} cặp, tối đa {limit} cặp mỗi lần.",
+        "totalTooLarge": "Tổng dung lượng vượt {limit}.",
+        "tooManyTestcases": "Bài sẽ có {count} testcase, tối đa {limit}."
+      }
+    },
     "addExample": "Thêm ví dụ",
     "runSolution": "Chạy với đáp án mẫu",
     "runResultTitle": "Đáp án mẫu đã chạy",
@@ -1708,7 +1853,8 @@
       "editExample": "Sửa ví dụ mẫu",
       "save": "Lưu",
       "cancel": "Huỷ",
-      "required": "Cần nhập đầu vào và kết quả."
+      "required": "Cần nhập đầu vào và kết quả.",
+      "largeSide": "Nội dung lớn, lưu ngoài hệ thống nên không sửa được ở đây."
     },
     "aiTitle": "Chỉ dẫn cho trợ lý AI",
     "aiSubtitle": "Ngữ cảnh riêng của bài này, nối vào prompt hệ thống ở màn Cấu hình AI",
@@ -1804,8 +1950,25 @@
     },
     "runBlocked": {
       "noSolution": "Hãy nhập đáp án mẫu trước khi chạy.",
-      "noTestcase": "Cần ít nhất một testcase đã duyệt để chạy đáp án mẫu."
+      "noTestcase": "Cần ít nhất một testcase đã duyệt để chạy đáp án mẫu.",
+      "needsSave": "Hãy lưu bài trước khi chạy đáp án mẫu."
     },
+    "running": "Đang chạy...",
+    "runCompileError": "Đáp án mẫu không biên dịch được.",
+    "runFailedAt": "Thất bại ở testcase #{position}: {reason}. Đúng {passed}/{total}.",
+    "runFailure": {
+      "WRONG_ANSWER": "sai kết quả",
+      "TIME_LIMIT_EXCEEDED": "quá thời gian",
+      "MEMORY_LIMIT_EXCEEDED": "quá bộ nhớ",
+      "RUNTIME_ERROR": "lỗi khi chạy",
+      "OUTPUT_LIMIT_EXCEEDED": "in quá nhiều",
+      "COMPILE_ERROR": "lỗi biên dịch"
+    },
+    "readOnlyNotice": "Bài này do người khác soạn và đã xuất bản, bạn chỉ xem được, không lưu được thay đổi.",
+    "testcasesHiddenNotice": "Tài khoản của bạn chưa được xem nội dung testcase. Bài có {total} testcase.",
+    "copyWillCopy": "Lần lưu đầu sẽ sao chép thêm {count} testcase của bài nguồn.",
+    "copyWillCopyWithSpec": "Lần lưu đầu sẽ sao chép thêm {count} testcase và đặc tả hàm của bài nguồn.",
+    "largeSideCell": "(nội dung lớn)",
     "spec": {
       "wrapperUnsupportedTitle": "Chỉ hỗ trợ Standard I/O",
       "wrapperUnsupportedBody": "Có kiểu dữ liệu nằm ngoài lược đồ kiểu của harness nên bài này không có mô hình Bọc hàm; học viên chỉ nộp được theo Standard I/O (F3-13). Chữ ký hàm không còn bắt buộc đầy đủ.",
@@ -1989,7 +2152,9 @@
       "mockInterview": "Phỏng vấn giả lập (AI)",
       "retry": "Quay lại Workspace",
       "needAccepted": "Tính năng chỉ mở khi bài nộp đạt Accepted."
-    }
+    },
+    "progressSlow": "Cập nhật đang chậm. Tải lại để xem trạng thái mới nhất.",
+    "testcaseUnavailable": "Chi tiết testcase không còn khả dụng cho bài nộp này."
   },
   "mySubmissions": {
     "title": "Bài đã nộp",
@@ -2430,6 +2595,7 @@
     "header": {
       "title": "Bài giao cho lớp",
       "summary": "{count} bài đã gán cho lớp · từ ngân hàng bài toán chung",
+      "avgAcRate": "AC trung bình {value}",
       "btnAssignFromBank": "+ Gán từ ngân hàng bài toán"
     },
     "stats": {
@@ -2458,6 +2624,7 @@
     "previous": "Trước",
     "next": "Sau",
     "emptyAssignments": "Chưa có bài nào được gán",
+    "loadFailed": "Không tải được danh sách bài giao. Vui lòng thử lại sau.",
     "popup": {
       "removeAssignmentTitle": "Gỡ {title} khỏi lớp?",
       "removeAssignmentBody": "Bài sẽ không còn hiện trong danh sách được giao từ lúc gỡ, nhưng lịch sử nộp bài, điểm và tiến độ của học viên vẫn giữ nguyên.",
@@ -2468,7 +2635,9 @@
       "removed": "Đã gỡ bài \"{title}\" khỏi lớp",
       "failed": "Không gỡ được bài tập, vui lòng thử lại",
       "assigned": "Đã giao {count} bài cho lớp {className}",
-      "assignFailed": "Không giao được bài, vui lòng thử lại"
+      "assignFailed": "Không giao được bài, vui lòng thử lại",
+      "assignSkipped": "{count} bài đã giao cho lớp từ trước nên được bỏ qua",
+      "assignRefused": "Có {count} bài không giao được."
     },
     "assign": {
       "title": "Giao bài cho lớp",
@@ -2502,7 +2671,7 @@
       "title": "Danh sách học viên",
       "searchBox": "Tìm học viên",
       "classTabs": "Lọc theo lớp",
-      "resultCount": "{shown} / {total} học viên",
+      "resultCount": "{shown} / {total} dòng",
       "col": {
         "studentName": "Học viên",
         "className": "Lớp",
@@ -2562,7 +2731,8 @@
       "col": {
         "title": "Bài tập",
         "topic": "Chủ đề",
-        "acRate": "AC"
+        "acRate": "AC",
+        "best": "Kết quả tốt nhất"
       }
     },
     "submissionHistory": {
@@ -2700,7 +2870,14 @@
     },
     "activity": {
       "title": "Hoạt động gần đây",
-      "subtitle": "10 mục gần nhất"
+      "subtitle": "10 mục gần nhất",
+      "type": {
+        "SUBMISSION_ACCEPTED": "{name} vừa nộp bài đạt Accepted",
+        "SOLUTION_REVIEW_COMPLETED": "{name} vừa nhận báo cáo phân tích lời giải",
+        "MOCK_INTERVIEW_FINISHED": "{name} vừa hoàn thành một buổi phỏng vấn thử",
+        "CLASS_PROBLEM_PUBLISHED": "{name} vừa giao một bài cho lớp",
+        "STUDENT_STREAK_ACHIEVED": "{name} đạt chuỗi ngày nộp bài liên tiếp"
+      }
     },
     "empty": "Chưa có dữ liệu"
   },
@@ -2789,6 +2966,7 @@
         "match": "Hai mật khẩu khớp nhau"
       },
       "doneSet": "Đã đặt mật khẩu.",
+      "doneSetNoMail": "Đã đặt mật khẩu, nhưng không gửi được email thông báo.",
       "titleForced": "Đặt mật khẩu mới",
       "forcedHint": "Mật khẩu hiện tại là mật khẩu tạm do quản trị viên cấp. Hãy đặt mật khẩu mới trước khi tiếp tục.",
       "signOut": "Đăng xuất"
@@ -2870,7 +3048,8 @@
       "exportSubmissions": "Xuất lượt nộp",
       "exportInterviews": "Xuất hội thoại phỏng vấn",
       "exported": "Đã xuất dữ liệu.",
-      "exportFailed": "Không xuất được dữ liệu. Vui lòng thử lại."
+      "exportFailed": "Không xuất được dữ liệu. Vui lòng thử lại.",
+      "truncated": "Tệp chỉ có {count} lượt nộp gần nhất."
     },
     "dangerZone": {
       "title": "Vùng nguy hiểm",
@@ -3112,6 +3291,7 @@
       "progress": "Đã xong {solved}/{total} bài",
       "solved": "Đã xong",
       "todo": "Chưa làm",
+      "attempted": "Đang làm",
       "viewDetail": "Xem chi tiết lớp",
       "viewDetailOf": "Xem chi tiết lớp {name}"
     },
@@ -3123,7 +3303,12 @@
       "noSchedule": "Chưa có lịch học",
       "colProblem": "Bài toán",
       "colAssignedAt": "Ngày giao",
-      "colState": "Trạng thái"
+      "colState": "Trạng thái",
+        "withdrawn": "Đã rút xuống",
+        "progressUnknown": "{total} bài được giao, chưa đọc được số bài bạn đã xong.",
+        "pageSummary": "Trang {page} / {total}",
+        "previous": "Trước",
+        "next": "Sau"
     }
   }
 }

@@ -6,6 +6,7 @@ import com.algoprep.problembank.domain.model.ProblemContentData;
 import com.algoprep.problembank.domain.model.ProblemContentSnapshot;
 import com.algoprep.problembank.domain.ports.out.ProblemContentRepository;
 import java.sql.Types;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -118,6 +119,34 @@ class JdbcProblemContentRepository implements ProblemContentRepository {
       }
     }
     throw new IllegalStateException("Problem code allocation exhausted");
+  }
+
+  @Override
+  public Instant writeAiContext(
+      UUID problemId, UUID actorId, String brief, boolean noFullCode, boolean questionOnly) {
+    return jdbc.getObject()
+        .sql(
+            """
+        UPDATE problem.problems SET ai_brief=:brief,no_full_code=:noFull,socratic_only=:questionOnly,updated_by=:actor,
+          updated_at=GREATEST(clock_timestamp(),updated_at + interval '1 microsecond') WHERE id=:id
+        RETURNING updated_at
+        """)
+        .param("brief", brief, Types.VARCHAR)
+        .param("noFull", noFullCode)
+        .param("questionOnly", questionOnly)
+        .param("actor", actorId)
+        .param("id", problemId)
+        .query((rs, row) -> rs.getTimestamp("updated_at").toInstant())
+        .single();
+  }
+
+  @Override
+  public void markDuplicatedFrom(UUID problemId, UUID sourceId) {
+    jdbc.getObject()
+        .sql("UPDATE problem.problems SET duplicated_from_problem_id=:source WHERE id=:id")
+        .param("source", sourceId)
+        .param("id", problemId)
+        .update();
   }
 
   @Override

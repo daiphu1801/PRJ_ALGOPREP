@@ -6,6 +6,7 @@ import com.algoprep.identity.application.ports.in.ListClassRosterUseCase;
 import com.algoprep.identity.application.ports.in.RemoveStudentFromClassUseCase;
 import com.algoprep.identity.domain.model.ClassInviteCode;
 import com.algoprep.identity.domain.model.ClassRosterEntry;
+import com.algoprep.identity.domain.model.ClassStudentRow;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
@@ -48,18 +49,36 @@ class ClassMembershipController {
 
   record InviteCodeListResponse(List<InviteCodeResponse> items) {}
 
-  /** {@code status} is always null for now: the five labels of BR-10 need F4 metrics (deferred). */
+  /**
+   * The figures are null when the judge or problem-bank could not be read; {@code
+   * completionPercent} is also null for a class with no assigned problem.
+   */
   record StudentResponse(
       UUID studentId,
       String displayName,
       String email,
       String phone,
       String joinedAt,
-      String status) {
+      String status,
+      Double avgScore,
+      Integer completionPercent,
+      String lastSubmittedAt) {
 
-    static StudentResponse of(ClassRosterEntry e) {
+    static StudentResponse of(ClassStudentRow r) {
+      ClassRosterEntry e = r.student();
+      boolean figures = r.metrics() != null;
       return new StudentResponse(
-          e.studentId(), e.displayName(), e.email(), e.phone(), e.joinedAt().toString(), null);
+          e.studentId(),
+          e.displayName(),
+          e.email(),
+          e.phone(),
+          e.joinedAt().toString(),
+          r.status() == null ? null : r.status().name(),
+          r.avgScore(),
+          figures && r.completion() != null ? r.completionPercent() : null,
+          figures && r.metrics().lastSubmittedAt() != null
+              ? r.metrics().lastSubmittedAt().toString()
+              : null);
     }
   }
 

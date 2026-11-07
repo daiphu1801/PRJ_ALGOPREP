@@ -71,6 +71,16 @@ judge:
     max-workers: 8
 
 algoprep:
+  # Sign-in with GitHub and Google (DD F1 BR-03). A provider with a blank client id or secret
+  # is off: its redirect answers 503 IDT-505. Fill the values in 05-coding/.env.
+  oauth:
+    redirect-base-url: ${ALGOPREP_OAUTH_REDIRECT_BASE_URL:http://localhost:3000}
+    github:
+      client-id: ${ALGOPREP_OAUTH_GITHUB_CLIENT_ID:}
+      client-secret: ${ALGOPREP_OAUTH_GITHUB_CLIENT_SECRET:}
+    google:
+      client-id: ${ALGOPREP_OAUTH_GOOGLE_CLIENT_ID:}
+      client-secret: ${ALGOPREP_OAUTH_GOOGLE_CLIENT_SECRET:}
   judge:
     # Display labels only; deployments may add verified toolchain versions here.
     compiler-display:
@@ -78,6 +88,15 @@ algoprep:
       cpp: ${ALGOPREP_JUDGE_CPP_DISPLAY:C++ (g++)}
       python: ${ALGOPREP_JUDGE_PYTHON_DISPLAY:Python 3}
   problem-bank:
+    # Publish checklist thresholds (DD logic F2 BR-07); the same defaults are in the code.
+    publish:
+      min-approved-testcases: 8
+      min-approved-samples: 2
+      min-worked-examples: 2
+    # Attention list rules (DD F2 section 27); the same defaults are in the code.
+    attention:
+      low-ac-percent: 30
+      stale-draft-days: 7
     storage:
       endpoint: ${ALGOPREP_MINIO_ENDPOINT:http://localhost:9000}
       public-endpoint: ${ALGOPREP_MINIO_PUBLIC_ENDPOINT:${ALGOPREP_MINIO_ENDPOINT:http://localhost:9000}}

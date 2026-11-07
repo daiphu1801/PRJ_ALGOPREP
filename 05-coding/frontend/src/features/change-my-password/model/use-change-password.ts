@@ -10,7 +10,7 @@ import { changeMyPassword, changePasswordSchema } from "@/entities/user";
  * itself failed, the error for `useApiErrorMessage`, so the dialog can toast either.
  */
 export type ChangePasswordResult =
-  | { ok: true }
+  | { ok: true; noticeEmailFailed?: boolean }
   | { ok: false; errorKey: string }
   | { ok: false; error: unknown };
 
@@ -56,7 +56,9 @@ export function useChangePassword(hasPassword: boolean, onChanged: () => void) {
       // D22: refresh "changed at" / hasPassword on the Settings Security card.
       void queryClient.invalidateQueries({ queryKey: ["user", "my-profile"] });
       onChanged();
-      return { ok: true };
+      return outcome.noticeEmailFailed
+        ? { ok: true, noticeEmailFailed: true }
+        : { ok: true };
     } catch (error) {
       return { ok: false, error };
     } finally {

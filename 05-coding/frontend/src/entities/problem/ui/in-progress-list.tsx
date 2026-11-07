@@ -69,11 +69,13 @@ export function InProgressList({
                 }`}
               >
                 {td(`language.${item.language}`)} ·{" "}
-                {tl("inProgress.lastVerdict", {
-                  verdict: td(`verdict.${item.lastVerdict}`),
-                  passed: item.passedCount,
-                  total: item.totalCount,
-                })}
+                {item.passedCount === null || item.totalCount === null
+                  ? td(`verdict.${item.lastVerdict}`)
+                  : tl("inProgress.lastVerdict", {
+                      verdict: td(`verdict.${item.lastVerdict}`),
+                      passed: item.passedCount,
+                      total: item.totalCount,
+                    })}
               </p>
             </Link>
           </li>

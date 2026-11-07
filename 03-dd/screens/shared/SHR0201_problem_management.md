@@ -79,3 +79,21 @@ Dùng `problemManagement.*`, `apiError.PRB-*`. Header sort có `aria-sort`, chec
 ## 8. Nợ prototype và câu hỏi mở
 
 Prototype còn mock store, phân trang/lọc cục bộ; nối F2 §25–33 và danh mục thật. Nhân bản theo Q đã chốt là mở form chưa lưu. Thẻ KPI đã bỏ theo quy ước chỉ một trang tổng quan. Q của BD về xoá bài có lịch sử đã chốt ẩn mềm; không còn quyết định màn chờ owner. Chỉ gỡ nợ `PROTOTYPE_DEBT.md` sau nối thật; TDD màn đã có tại `04-tdd/screens/shared/SHR0201_problem_management.md`.
+
+## 9. Nối API thật (2026-11-06, F2-6 phần 1)
+
+Bảng 9.1: Điều đã nối ở bản dựng và điều còn lại, theo mục 2.
+
+| EVT BD | Trạng thái | Ghi chú |
+| :--- | :--- | :--- |
+| 1-8, 32 | Đã nối (`#24`, `#25`, `#26`, `#14`, `#19`) | Máy chủ lọc, sắp xếp, phân trang; hai khối phụ gọi riêng; trang đang xem được giữ khi tải trang kế |
+| 9-10 | Không đổi | Liên kết dùng UUID ở chế độ thật, mã không dấu `#` ở mock |
+| 11 | Một phần (`#28`) | Chỉ Xuất bản, tối đa 20 bài (màn chặn trước); `#29` rút xuống không có nút trên màn |
+| 12 | Đã nối (`#30`) | `levelId` lấy từ danh mục đang hiển thị; `PRB-039` từ chối cả lô |
+| 13 | Chưa nối (`#31`) | Màn chưa có hộp chọn chủ đề; nút chỉ báo cần chọn giá trị |
+| 14 | Không đổi | Mở `/new?from={id}`; chưa gọi `#34` vì form sao chép thuộc `SHR0202` |
+| 15 | Đã nối (`#27`) | POST theo tập đã chọn, lưu tệp theo `Content-Disposition`; chưa xuất theo bộ lọc |
+| 16-19 | Đã nối (`#32`) | Xoá mềm, hiển thị kết quả từng bài |
+| 20-24, 26-30 | Đã nối (`#15` đến `#18`, `#20` đến `#23`) | Chủ đề lấy `id` làm khoá; `PRB-021`, `PRB-022`, `PRB-031`, `PRB-032`, `PRB-033`, `PRB-049` có chữ vi và en |
+
+**Khác với thiết kế, owner DUYỆT 2026-11-06:** chọn dòng chỉ trong trang đang xem, đổi bộ lọc, sắp xếp hoặc trang thì bỏ chọn; vì vậy cảnh báo "bài đang bị bộ lọc ẩn" của xoá theo lô (BD Q6 (a)) không còn tình huống. Phương án thay thế (giữ lựa chọn xuyên trang) không chọn. `#31`, `#29` và `#27` theo bộ lọc hoãn (ponytail bậc 3).
