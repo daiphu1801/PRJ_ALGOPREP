@@ -19,12 +19,12 @@
         "role": "actor"
       },
       {
-        "name": "InterviewController",
+        "name": "MockInterviewController",
         "role": "controller",
         "stereo": "presentation SSE"
       },
       {
-        "name": "InterviewTurnCmd",
+        "name": "MockInterviewStageCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
@@ -34,7 +34,7 @@
         "stereo": "domain"
       },
       {
-        "name": "LlmProviderPort",
+        "name": "InterviewAiPort",
         "role": "repository",
         "stereo": "output port"
       },
@@ -48,12 +48,12 @@
         "role": "external"
       },
       {
-        "name": "InterviewRepo",
+        "name": "InterviewSessionRepository",
         "role": "repository",
         "stereo": "output port F5"
       },
       {
-        "name": "AiDbAdapter",
+        "name": "JdbcInterviewSessionRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -68,19 +68,19 @@
         "phase": "Giai đoạn 6 - Phát câu trả lời dần qua cùng yêu cầu"
       },
       {
-        "from": "InterviewTurnCmd",
-        "to": "InterviewController",
+        "from": "MockInterviewStageCommandHandler",
+        "to": "MockInterviewController",
         "text": "Báo đã nhận câu trả lời",
         "kind": "async"
       },
       {
-        "from": "InterviewController",
+        "from": "MockInterviewController",
         "to": "Sinh viên",
         "text": "Bắt đầu luồng phản hồi",
         "kind": "async"
       },
       {
-        "from": "InterviewTurnCmd",
+        "from": "MockInterviewStageCommandHandler",
         "to": "PromptComposer",
         "text": "Dựng chỉ thị theo giai đoạn hiện tại"
       },
@@ -91,17 +91,17 @@
       },
       {
         "from": "PromptComposer",
-        "to": "InterviewTurnCmd",
+        "to": "MockInterviewStageCommandHandler",
         "text": "Yêu cầu hội thoại an toàn",
         "kind": "return"
       },
       {
-        "from": "InterviewTurnCmd",
-        "to": "LlmProviderPort",
+        "from": "MockInterviewStageCommandHandler",
+        "to": "InterviewAiPort",
         "text": "Xin phản hồi cho lượt này"
       },
       {
-        "from": "LlmProviderPort",
+        "from": "InterviewAiPort",
         "to": "SpringAiLlmAdapter",
         "text": "Gọi mô hình AI"
       },
@@ -118,24 +118,24 @@
       },
       {
         "from": "SpringAiLlmAdapter",
-        "to": "LlmProviderPort",
+        "to": "InterviewAiPort",
         "text": "Chuyển đoạn chữ đã giải mã",
         "kind": "async"
       },
       {
-        "from": "LlmProviderPort",
-        "to": "InterviewTurnCmd",
+        "from": "InterviewAiPort",
+        "to": "MockInterviewStageCommandHandler",
         "text": "Chuyển đoạn chữ đã giải mã",
         "kind": "async"
       },
       {
-        "from": "InterviewTurnCmd",
-        "to": "InterviewController",
+        "from": "MockInterviewStageCommandHandler",
+        "to": "MockInterviewController",
         "text": "Chuyển tiếp nội dung hiển thị",
         "kind": "async"
       },
       {
-        "from": "InterviewController",
+        "from": "MockInterviewController",
         "to": "Sinh viên",
         "text": "Hiển thị từng đoạn chữ",
         "kind": "async"
@@ -144,62 +144,62 @@
         "phase": "Giai đoạn 7 - Xác định giai đoạn kế và ghi kết quả"
       },
       {
-        "from": "LlmProviderPort",
-        "to": "InterviewTurnCmd",
+        "from": "InterviewAiPort",
+        "to": "MockInterviewStageCommandHandler",
         "text": "Bản hoàn chỉnh và lượng token",
         "kind": "return"
       },
       {
-        "from": "InterviewTurnCmd",
-        "to": "InterviewTurnCmd",
+        "from": "MockInterviewStageCommandHandler",
+        "to": "MockInterviewStageCommandHandler",
         "text": "Chuyển giai đoạn khi đủ tín hiệu"
       },
       {
-        "from": "InterviewTurnCmd",
-        "to": "InterviewTurnCmd",
+        "from": "MockInterviewStageCommandHandler",
+        "to": "MockInterviewStageCommandHandler",
         "text": "Ép chuyển khi chạm trần mỗi giai đoạn"
       },
       {
-        "from": "InterviewTurnCmd",
-        "to": "InterviewRepo",
+        "from": "MockInterviewStageCommandHandler",
+        "to": "InterviewSessionRepository",
         "text": "Lưu phản hồi AI và token"
       },
       {
-        "from": "InterviewRepo",
-        "to": "AiDbAdapter",
+        "from": "InterviewSessionRepository",
+        "to": "JdbcInterviewSessionRepository",
         "text": "Ghi lượt AI và trạng thái mới"
       },
       {
-        "from": "AiDbAdapter",
+        "from": "JdbcInterviewSessionRepository",
         "to": "PostgreSQL",
         "text": "Lưu lượt và xét khoá ngân sách"
       },
       {
         "from": "PostgreSQL",
-        "to": "AiDbAdapter",
+        "to": "JdbcInterviewSessionRepository",
         "text": "Lượt đã hoàn tất",
         "kind": "return"
       },
       {
-        "from": "AiDbAdapter",
-        "to": "InterviewRepo",
+        "from": "JdbcInterviewSessionRepository",
+        "to": "InterviewSessionRepository",
         "text": "Trạng thái mới",
         "kind": "return"
       },
       {
-        "from": "InterviewRepo",
-        "to": "InterviewTurnCmd",
+        "from": "InterviewSessionRepository",
+        "to": "MockInterviewStageCommandHandler",
         "text": "Đã ghi lượt AI",
         "kind": "return"
       },
       {
-        "from": "InterviewTurnCmd",
-        "to": "InterviewController",
+        "from": "MockInterviewStageCommandHandler",
+        "to": "MockInterviewController",
         "text": "Báo lượt hoàn tất",
         "kind": "async"
       },
       {
-        "from": "InterviewController",
+        "from": "MockInterviewController",
         "to": "Sinh viên",
         "text": "Hiển thị giai đoạn và lượt còn lại",
         "kind": "async"

@@ -14,22 +14,22 @@
         "role": "actor"
       },
       {
-        "name": "AiUsageController",
+        "name": "AdminLanguageConfigController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "ListAiUsageAlerts",
+        "name": "ListAiUsageAlertsQueryHandler",
         "role": "service",
         "stereo": "application"
       },
       {
-        "name": "AlertReadPort",
+        "name": "AiTokenBudgetRepository",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "AiDbAdapter",
+        "name": "JdbcAiTokenBudgetRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -39,7 +39,7 @@
         "stereo": "schema ai"
       },
       {
-        "name": "UserDirectoryPort",
+        "name": "AccountLifecycleRepository",
         "role": "repository",
         "stereo": "identity port"
       }
@@ -47,59 +47,59 @@
     "messages": [
       {
         "from": "Quản trị viên",
-        "to": "AiUsageController",
+        "to": "AdminLanguageConfigController",
         "text": "Mở danh sách cảnh báo"
       },
       {
-        "from": "AiUsageController",
-        "to": "ListAiUsageAlerts",
+        "from": "AdminLanguageConfigController",
+        "to": "ListAiUsageAlertsQueryHandler",
         "text": "Kiểm quyền đọc ngân sách"
       },
       {
-        "from": "ListAiUsageAlerts",
-        "to": "AlertReadPort",
+        "from": "ListAiUsageAlertsQueryHandler",
+        "to": "AiTokenBudgetRepository",
         "text": "Đọc cảnh báo OPEN và mức dùng ngân sách"
       },
       {
-        "from": "AlertReadPort",
-        "to": "AiDbAdapter",
+        "from": "AiTokenBudgetRepository",
+        "to": "JdbcAiTokenBudgetRepository",
         "text": "Truy vấn dữ liệu AI"
       },
       {
-        "from": "AiDbAdapter",
+        "from": "JdbcAiTokenBudgetRepository",
         "to": "PostgreSQL",
         "text": "Đọc cảnh báo, cấu hình và token đã dùng"
       },
       {
         "from": "PostgreSQL",
-        "to": "ListAiUsageAlerts",
+        "to": "ListAiUsageAlertsQueryHandler",
         "text": "Trả cảnh báo và mức dùng",
         "kind": "return"
       },
       {
-        "from": "ListAiUsageAlerts",
-        "to": "UserDirectoryPort",
+        "from": "ListAiUsageAlertsQueryHandler",
+        "to": "AccountLifecycleRepository",
         "text": "Tra tên tài khoản có cảnh báo"
       },
       {
-        "from": "UserDirectoryPort",
-        "to": "ListAiUsageAlerts",
+        "from": "AccountLifecycleRepository",
+        "to": "ListAiUsageAlertsQueryHandler",
         "text": "Trả tên hoặc để rỗng khi lỗi",
         "kind": "return"
       },
       {
-        "from": "ListAiUsageAlerts",
-        "to": "ListAiUsageAlerts",
+        "from": "ListAiUsageAlertsQueryHandler",
+        "to": "ListAiUsageAlertsQueryHandler",
         "text": "Suy ra thẻ ngân sách nếu chạm ngưỡng hoặc đã khóa"
       },
       {
-        "from": "ListAiUsageAlerts",
-        "to": "AiUsageController",
+        "from": "ListAiUsageAlertsQueryHandler",
+        "to": "AdminLanguageConfigController",
         "text": "Trả thẻ ngân sách trước các cảnh báo OPEN",
         "kind": "return"
       },
       {
-        "from": "AiUsageController",
+        "from": "AdminLanguageConfigController",
         "to": "Quản trị viên",
         "text": "Hiển thị danh sách cảnh báo",
         "kind": "return"

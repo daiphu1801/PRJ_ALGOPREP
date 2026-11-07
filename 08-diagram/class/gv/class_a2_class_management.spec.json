@@ -1,7 +1,7 @@
 {
-  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a2_instructor.md:101; 01-rd/req/user_stories/a2_instructor.md:104; 01-rd/req/user_stories/a2_instructor.md:106; 01-rd/req/user_stories/a2_instructor.md:108; 01-rd/req/user_stories/a2_instructor.md:111; 01-rd/req/user_stories/a2_instructor.md:113; 01-rd/req/user_stories/a2_instructor.md:97; 01-rd/req/user_stories/a2_instructor.md:99. Nguồn thiết kế: 03-dd/logic/F1_identity.md; 03-dd/api/F1_identity.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "_": "Nguon tieu chi: 01-rd/req/user_stories/a2_instructor.md:97-113. Nguon ma nguon: 05-coding/backend/algoprep-identity/src/main/java/com/algoprep/identity/presentation/controller/InstructorClassController.java, ClassMembershipController.java, StudentClassController.java, application/command/CreateClassCommandHandler.java, domain/ports/out/InstructorClassRepository.java.",
   "kind": "class",
-  "title": "A2 — Quản lý lớp và mã mời",
+  "title": "A2 — Quan ly lop hoc va ma moi",
   "covers": [
     "F1-23",
     "F1-24",
@@ -12,65 +12,79 @@
     "legend": "shared",
     "classes": [
       {
-        "id": "service",
-        "name": "InstructorClassService",
+        "id": "classCtrl",
+        "name": "InstructorClassController",
         "methods": [
-          "+ create(instructorId : UUID, draft : ClassDraft) : Classroom",
-          "+ currentInvite(instructorId : UUID, classId : UUID) : InviteCode",
-          "+ validateInvite(code : String) : InviteStatus",
-          "+ delete(instructorId : UUID, classId : UUID)",
-          "+ expireInvite(classId : UUID)",
-          "+ regenerateInvite(instructorId : UUID, classId : UUID) : InviteCode",
-          "+ removeStudent(instructorId : UUID, classId : UUID, studentId : UUID)",
-          "+ details(instructorId : UUID, classId : UUID) : ClassDetail"
+          "+ listMy(caller : JwtAuthenticationToken) : ClassListResponse",
+          "+ create(caller : JwtAuthenticationToken, body : ClassRequest) : CreatedClassResponse",
+          "+ update(caller : JwtAuthenticationToken, classId : String, body : ClassRequest) : ClassResponse",
+          "+ delete(caller : JwtAuthenticationToken, classId : String) : ResponseEntity<Void>"
         ]
       },
       {
-        "id": "port1",
-        "name": "ClassRepository",
-        "kind": "class",
+        "id": "memberCtrl",
+        "name": "ClassMembershipController",
         "methods": [
-          "+ findById(classId : UUID) : Classroom"
+          "+ createInviteCode(caller : JwtAuthenticationToken, classId : String) : InviteCodeResponse",
+          "+ listInviteCodes(caller : JwtAuthenticationToken, classId : String) : InviteCodeListResponse",
+          "+ listStudents(caller : JwtAuthenticationToken, classId : String) : RosterResponse",
+          "+ removeStudent(caller : JwtAuthenticationToken, classId : String, studentId : String) : LeaveResponse"
         ]
       },
       {
-        "id": "port2",
-        "name": "MembershipRepository",
-        "kind": "class",
+        "id": "studentCtrl",
+        "name": "StudentClassController",
         "methods": [
-          "+ remove(classId : UUID, studentId : UUID)"
+          "+ join(caller : JwtAuthenticationToken, body : JoinRequest) : JoinResponse"
         ]
       },
       {
-        "id": "port3",
-        "name": "InviteCodeRepository",
-        "kind": "class",
+        "id": "createHandler",
+        "name": "CreateClassCommandHandler",
         "methods": [
-          "+ replace(classId : UUID) : InviteCode"
+          "+ create(command : CreateClassCommand) : CreatedClass"
+        ]
+      },
+      {
+        "id": "classRepo",
+        "name": "InstructorClassRepository",
+        "kind": "interface",
+        "methods": [
+          "+ create(id : UUID, instructorId : UUID, name : String, description : String, schedule : ScheduleSpec)",
+          "+ deleteOwned(classId : UUID, instructorId : UUID) : boolean",
+          "+ insertInviteCode(id : UUID, classId : UUID, createdBy : UUID, code : String) : Optional<ClassInviteCode>",
+          "+ listActiveInviteCodes(classId : UUID) : List<ClassInviteCode>",
+          "+ listActiveRoster(classId : UUID) : List<ClassRosterEntry>",
+          "+ markLeft(classId : UUID, studentId : UUID) : Optional<Instant>"
         ]
       }
     ],
     "externals": [],
     "relations": [
       {
-        "from": "service",
-        "to": "port1",
+        "from": "classCtrl",
+        "to": "createHandler",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port2",
+        "from": "createHandler",
+        "to": "classRepo",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port3",
+        "from": "memberCtrl",
+        "to": "classRepo",
+        "kind": "dependency"
+      },
+      {
+        "from": "classCtrl",
+        "to": "classRepo",
         "kind": "dependency"
       }
     ],
     "notes": [
-      "Chỉ giảng viên phụ trách được sửa; xoá lớp phát sự kiện cho bài giao, mã mời cũ hết hiệu lực.",
-      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+      "InstructorClassController quan ly lop hoc; ClassMembershipController phu trach ma moi va danh sach sinh vien.",
+      "Sinh vien dung StudentClassController nhap ma moi tham gia lop hoc."
     ]
   }
 }

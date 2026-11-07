@@ -15,7 +15,7 @@
         "role": "actor"
       },
       {
-        "name": "PracticeController",
+        "name": "InterviewPracticeController",
         "role": "controller",
         "stereo": "presentation"
       },
@@ -30,17 +30,17 @@
         "stereo": "application query"
       },
       {
-        "name": "RecallPort",
+        "name": "PracticeHistoryRepository",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "TopicProgressPort",
+        "name": "TopicProgressRepository",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "InterviewBankDbAdapter",
+        "name": "JdbcInterviewQuestionRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -56,32 +56,32 @@
       },
       {
         "from": "Sinh viên",
-        "to": "PracticeController",
+        "to": "InterviewPracticeController",
         "text": "Chọn biết rõ, mơ hồ hoặc quên"
       },
       {
-        "from": "PracticeController",
+        "from": "InterviewPracticeController",
         "to": "RateQuestionRecall",
         "text": "Cập nhật mức tự chấm cho câu hỏi"
       },
       {
         "from": "RateQuestionRecall",
-        "to": "RecallPort",
+        "to": "PracticeHistoryRepository",
         "text": "Kiểm tra câu đang hiển thị và ghi mức hiện tại"
       },
       {
-        "from": "RecallPort",
-        "to": "InterviewBankDbAdapter",
+        "from": "PracticeHistoryRepository",
+        "to": "JdbcInterviewQuestionRepository",
         "text": "Đọc câu hỏi và mức tự chấm hiện hành"
       },
       {
-        "from": "InterviewBankDbAdapter",
+        "from": "JdbcInterviewQuestionRepository",
         "to": "PostgreSQL",
         "text": "Kiểm tra câu hỏi đang hoạt động"
       },
       {
         "from": "PostgreSQL",
-        "to": "InterviewBankDbAdapter",
+        "to": "JdbcInterviewQuestionRepository",
         "text": "Tình trạng câu hỏi",
         "kind": "return"
       },
@@ -96,45 +96,45 @@
             },
             {
               "from": "RateQuestionRecall",
-              "to": "RecallPort",
+              "to": "PracticeHistoryRepository",
               "text": "Ghi đè mức hiện tại và ngày ôn tiếp theo"
             },
             {
-              "from": "RecallPort",
-              "to": "InterviewBankDbAdapter",
+              "from": "PracticeHistoryRepository",
+              "to": "JdbcInterviewQuestionRepository",
               "text": "Lưu một dòng cho người học và câu hỏi"
             },
             {
-              "from": "InterviewBankDbAdapter",
+              "from": "JdbcInterviewQuestionRepository",
               "to": "PostgreSQL",
               "text": "Thêm hoặc cập nhật mức tự chấm"
             },
             {
               "from": "PostgreSQL",
-              "to": "InterviewBankDbAdapter",
+              "to": "JdbcInterviewQuestionRepository",
               "text": "Mức và lịch ôn mới",
               "kind": "return"
             },
             {
-              "from": "InterviewBankDbAdapter",
-              "to": "RecallPort",
+              "from": "JdbcInterviewQuestionRepository",
+              "to": "PracticeHistoryRepository",
               "text": "Mức và lịch ôn mới",
               "kind": "return"
             },
             {
-              "from": "RecallPort",
+              "from": "PracticeHistoryRepository",
               "to": "RateQuestionRecall",
               "text": "Mức và lịch ôn mới",
               "kind": "return"
             },
             {
               "from": "RateQuestionRecall",
-              "to": "PracticeController",
+              "to": "InterviewPracticeController",
               "text": "Ngày ôn tiếp theo",
               "kind": "return"
             },
             {
-              "from": "PracticeController",
+              "from": "InterviewPracticeController",
               "to": "Sinh viên",
               "text": "Hiển thị lịch ôn mới",
               "kind": "return"
@@ -143,12 +143,12 @@
           "else": [
             {
               "from": "RateQuestionRecall",
-              "to": "PracticeController",
+              "to": "InterviewPracticeController",
               "text": "Báo câu hỏi không còn hiển thị",
               "kind": "return"
             },
             {
-              "from": "PracticeController",
+              "from": "InterviewPracticeController",
               "to": "Sinh viên",
               "text": "Hiển thị lỗi",
               "kind": "return"
@@ -161,55 +161,55 @@
       },
       {
         "from": "Sinh viên",
-        "to": "PracticeController",
+        "to": "InterviewPracticeController",
         "text": "Mở tiến độ ôn tập"
       },
       {
-        "from": "PracticeController",
+        "from": "InterviewPracticeController",
         "to": "GetMyInterviewTopicProgress",
         "text": "Tính tiến độ của người gọi"
       },
       {
         "from": "GetMyInterviewTopicProgress",
-        "to": "TopicProgressPort",
+        "to": "TopicProgressRepository",
         "text": "Đếm câu đang hoạt động và câu từng luyện"
       },
       {
-        "from": "TopicProgressPort",
-        "to": "InterviewBankDbAdapter",
+        "from": "PracticeHistoryRepository",
+        "to": "JdbcInterviewQuestionRepository",
         "text": "Tổng hợp theo chủ đề, kể cả chủ đề chưa có câu"
       },
       {
-        "from": "InterviewBankDbAdapter",
+        "from": "JdbcInterviewQuestionRepository",
         "to": "PostgreSQL",
         "text": "Đọc chủ đề, câu đang hoạt động và lịch sử luyện"
       },
       {
         "from": "PostgreSQL",
-        "to": "InterviewBankDbAdapter",
+        "to": "JdbcInterviewQuestionRepository",
         "text": "Số câu và số câu đã từng luyện",
         "kind": "return"
       },
       {
-        "from": "InterviewBankDbAdapter",
-        "to": "TopicProgressPort",
+        "from": "JdbcInterviewQuestionRepository",
+        "to": "PracticeHistoryRepository",
         "text": "Tiến độ theo chủ đề",
         "kind": "return"
       },
       {
-        "from": "TopicProgressPort",
+        "from": "PracticeHistoryRepository",
         "to": "GetMyInterviewTopicProgress",
         "text": "Tiến độ theo chủ đề",
         "kind": "return"
       },
       {
         "from": "GetMyInterviewTopicProgress",
-        "to": "PracticeController",
+        "to": "InterviewPracticeController",
         "text": "Số câu đã luyện và tổng số câu",
         "kind": "return"
       },
       {
-        "from": "PracticeController",
+        "from": "InterviewPracticeController",
         "to": "Sinh viên",
         "text": "Hiển thị tiến độ từng chủ đề",
         "kind": "return"

@@ -1,5 +1,5 @@
 {
-  "_": "Nguồn thuộc tính và liên kết: 02-bd/database/F6_interview-bank.md:10-195. [SoT: Suy luận] Ánh xạ bảng dữ liệu sang tên class Java là thiết kế đề xuất; bội số theo FK/unique của BD. Bỏ thuộc tính thứ cấp và getter/setter.",
+  "_": "Nguồn thuộc tính và liên kết: 05-coding/backend/algoprep-interview-bank/src/main/resources/db/migration/interview_bank/V6.001__create_interview_bank_tables.sql và 02-bd/database/F6_interview-bank.md. [SoT: Suy luận] Module backend đang ở mức package-info và migration; các lớp dưới đây là mô hình Java 21 Record dự kiến ánh xạ 1:1 với schema interview_bank.*.",
   "kind": "class",
   "title": "F6 — Mô hình câu hỏi và lần luyện",
   "covers": [],
@@ -11,7 +11,9 @@
         "name": "QuestionTopic",
         "attributes": [
           "+ id : UUID",
-          "+ code : String"
+          "+ code : String",
+          "+ displayName : String",
+          "+ sortOrder : int"
         ],
         "methods": []
       },
@@ -23,7 +25,7 @@
           "+ topicId : UUID",
           "+ levelId : UUID",
           "+ title : String",
-          "+ status : QuestionStatus"
+          "+ status : String"
         ],
         "methods": []
       },
@@ -31,9 +33,10 @@
         "id": "rubric",
         "name": "AnswerRubric",
         "attributes": [
+          "+ id : UUID",
           "+ questionId : UUID",
           "+ criterionCode : String",
-          "+ weightPercent : Decimal"
+          "+ weightPercent : BigDecimal"
         ],
         "methods": []
       },
@@ -41,9 +44,11 @@
         "id": "answer",
         "name": "UserAnswer",
         "attributes": [
+          "+ id : UUID",
           "+ questionId : UUID",
           "+ userId : UUID",
-          "+ answerText : String"
+          "+ answerText : String",
+          "+ submittedAt : Instant"
         ],
         "methods": []
       },
@@ -53,7 +58,8 @@
         "attributes": [
           "+ userId : UUID",
           "+ topicId : UUID",
-          "+ questionsAttempted : int"
+          "+ questionsAttempted : int",
+          "+ lastPracticedAt : Instant"
         ],
         "methods": []
       },
@@ -63,7 +69,7 @@
         "attributes": [
           "+ userId : UUID",
           "+ questionId : UUID",
-          "+ rating : RecallLevel",
+          "+ rating : String",
           "+ nextReviewAt : Instant"
         ],
         "methods": []
@@ -73,7 +79,8 @@
         "name": "QuestionBookmark",
         "attributes": [
           "+ userId : UUID",
-          "+ questionId : UUID"
+          "+ questionId : UUID",
+          "+ bookmarkedAt : Instant"
         ],
         "methods": []
       }
@@ -90,7 +97,7 @@
       {
         "from": "question",
         "to": "rubric",
-        "kind": "association",
+        "kind": "composition",
         "from_mult": "1",
         "to_mult": "0..*"
       },
@@ -124,8 +131,8 @@
       }
     ],
     "notes": [
-      "Rubric câu hỏi lý thuyết khác rubric phỏng vấn F5; câu trả lời là bản ghi bất biến, tự chấm gần nhất dùng để ưu tiên ôn lại.",
-      "[SoT: Suy luận] Tên class Java đề xuất từ schema BD."
+      "InterviewQuestion quản lý câu hỏi ôn tập lý thuyết; AnswerRubric định nghĩa tiêu chí chấm câu trả lời.",
+      "[SoT: Suy luận] Tên class Java ánh xạ từ schema database interview_bank.* theo quy chuẩn Java Record."
     ]
   }
 }

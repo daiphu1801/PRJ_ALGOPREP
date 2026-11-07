@@ -4,60 +4,58 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="t_service" value='&lt;div style="text-align:center"&gt;&lt;b&gt;OAuthService&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;start(provider&amp;nbsp;:&amp;nbsp;OAuthProvider)&amp;nbsp;:&amp;nbsp;String&lt;br&gt;+&amp;nbsp;complete(provider&amp;nbsp;:&amp;nbsp;OAuthProvider,&amp;nbsp;code&amp;nbsp;:&amp;nbsp;String,&amp;nbsp;state&amp;nbsp;:&amp;nbsp;String)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="292.5" y="60" width="432.7" height="68" as="geometry" />
+        <mxCell id="t_oauthController" value='&lt;div style="text-align:center"&gt;&lt;b&gt;OAuthController&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;redirect(provider&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;OAuthStart&lt;br&gt;+&amp;nbsp;callback(provider&amp;nbsp;:&amp;nbsp;String,&amp;nbsp;code&amp;nbsp;:&amp;nbsp;String,&amp;nbsp;state&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;ResponseEntity&amp;lt;LoginResponse&amp;gt;' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="292.3" y="60" width="585.1999999999999" height="68" as="geometry" />
         </mxCell>
-        <mxCell id="t_states" value='&lt;div style="text-align:center"&gt;&lt;b&gt;OAuthStateStore&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;consume(state&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;boolean' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="66" y="208" width="237.5" height="54" as="geometry" />
+        <mxCell id="t_oauthHandler" value='&lt;div style="text-align:center"&gt;&lt;b&gt;CompleteOAuthLoginCommandHandler&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;complete(provider&amp;nbsp;:&amp;nbsp;String,&amp;nbsp;code&amp;nbsp;:&amp;nbsp;String,&amp;nbsp;state&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;LoginResult' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="347.2" y="198" width="475.4" height="54" as="geometry" />
         </mxCell>
-        <mxCell id="t_provider" value='&lt;div style="text-align:center"&gt;&lt;b&gt;OAuthProviderPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;verifiedEmail(code&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;String' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="353.5" y="208" width="261.9" height="68" as="geometry" />
+        <mxCell id="t_exchangeService" value='&lt;div style="text-align:center"&gt;&lt;b&gt;OAuthExchangeService&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;exchangeCode(provider&amp;nbsp;:&amp;nbsp;OAuthProvider,&amp;nbsp;code&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;OAuthProfile' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="54" y="322" width="451" height="54" as="geometry" />
         </mxCell>
-        <mxCell id="t_users" value='&lt;div style="text-align:center"&gt;&lt;b&gt;UserRepository&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;findByEmail(email&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;UserAccount' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="665.4" y="208" width="286.3" height="54" as="geometry" />
+        <mxCell id="t_providerPort" value='&lt;div style="text-align:center"&gt;&lt;b&gt;OAuthProviderPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;fetchProfile(code&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;OAuthProfile' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="438.7" y="474" width="292.4" height="68" as="geometry" />
         </mxCell>
-        <mxCell id="t_links" value='&lt;div style="text-align:center"&gt;&lt;b&gt;OAuthIdentityRepository&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;save(identity&amp;nbsp;:&amp;nbsp;OAuthIdentity)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="399.25" y="346" width="219.2" height="54" as="geometry" />
+        <mxCell id="t_userRepo" value='&lt;div style="text-align:center"&gt;&lt;b&gt;UserAccountRepository&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;findByOAuth(provider&amp;nbsp;:&amp;nbsp;OAuthProvider,&amp;nbsp;providerUserId&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;Optional&amp;lt;UserAccount&amp;gt;&lt;br&gt;+&amp;nbsp;linkOAuth(userId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;profile&amp;nbsp;:&amp;nbsp;OAuthProfile)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="555" y="322" width="560.8" height="82" as="geometry" />
         </mxCell>
-        <mxCell id="e1" value="kiểm state" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.142;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_states">
+        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.508;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_oauthController" target="t_oauthHandler">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="354.0875" y="144" />
-            <mxPoint x="184.75" y="144" />
+            <mxPoint x="584.9" y="163" />
+            <mxPoint x="588.9" y="163" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e2" value="xác minh" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.381;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_provider">
+        <mxCell id="e2" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.261;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_oauthHandler" target="t_exchangeService">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="457.2625" y="160" />
-            <mxPoint x="484.45" y="160" />
+            <mxPoint x="471.04999999999995" y="275.3333333333333" />
+            <mxPoint x="279.5" y="275.3333333333333" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e3" value="tìm email" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.858;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_users">
+        <mxCell id="e3" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_exchangeService" target="t_providerPort">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="663.6125" y="192" />
-            <mxPoint x="808.55" y="192" />
+            <mxPoint x="279.5" y="439" />
+            <mxPoint x="584.9" y="439" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e4" value="liên kết" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.619;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_links">
+        <mxCell id="e4" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.739;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_oauthHandler" target="t_userRepo">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="560.4375" y="176" />
-            <mxPoint x="30" y="176" />
-            <mxPoint x="30" y="311" />
-            <mxPoint x="508.85" y="311" />
+            <mxPoint x="698.75" y="298.6666666666667" />
+            <mxPoint x="835.4" y="298.6666666666667" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="title" value="A1 — Đăng nhập và liên kết tài khoản OAuth" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="0" y="10" width="981.7" height="30" as="geometry" />
+          <mxGeometry x="0" y="10" width="1145.8" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="v5" value="Ghi chú: Chỉ liên kết khi email provider đã xác minh; email trùng dùng lại tài khoản hiện có.&lt;br&gt;Ghi chú: [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế backend từ DD." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="30" y="420" width="1100" height="44" as="geometry" />
+        <mxCell id="v5" value="Ghi chú: OAuthController xử lý chuyển hướng đăng nhập và tiếp nhận callback từ GitHub hoặc Google.&lt;br&gt;Ghi chú: CompleteOAuthLoginCommandHandler đối chiếu email, tự động liên kết hoặc tạo tài khoản sinh viên mới." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="30" y="562" width="1100" height="44" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

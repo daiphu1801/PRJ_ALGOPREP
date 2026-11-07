@@ -1,5 +1,5 @@
 {
-  "_": "Nguon: 03-dd/logic/F3_harness.md:28-51. Interface va sau chu ky phuong thuc la DD:34-41; RenderedProgram la DD:44; EnumMap/registry la DD:45-48; TypeCodeEmitter la DD:49. Ba plugin: DD:31 va 02-bd/architecture/F3_harness.md:216-218. [SoT: Suy luan] PluginRegistry la ten lop de xuat, DD chi chot Map<Language, LanguageHarnessPlugin>; khong ve get() vi DD chua chot chu ky. TypeCodeEmitter la mot vai tro duoc hien thi gop o muc tong quan, khong khang dinh co mot instance dung chung. Bo getter/setter va plumbing. LineMap chi hien bang thuoc tinh co kieu trong RenderedProgram, khong ve them canh trung lap.",
+  "_": "Nguồn thuộc tính và phương thức: 05-coding/backend/algoprep-harness/src/main/java/com/algoprep/harness/domain/codegen/ và application/prepare/. Biểu diễn bộ sinh mã bọc hàm (FunctionWrapperRenderer), interface phát mã kiểu dữ liệu (TypeCodeEmitter) cho Java, C++, Python và kết quả sinh mã (RenderedProgram).",
   "kind": "class",
   "title": "F3 — Sinh mã theo ngôn ngữ",
   "covers": [],
@@ -7,91 +7,93 @@
     "legend": "shared",
     "classes": [
       {
-        "id": "plugin",
-        "name": "LanguageHarnessPlugin",
-        "kind": "interface",
+        "id": "renderer",
+        "name": "FunctionWrapperRenderer",
         "methods": [
-          "+ language() : Language",
-          "+ renderFunctionWrapper(spec : FunctionSpec, normalizedUserSource : String) : RenderedProgram",
-          "+ renderStandardIo(normalizedUserSource : String) : RenderedProgram",
-          "+ starterCode(specOrNull : FunctionSpec, model : SubmissionModel) : String",
-          "+ toolchain(model : SubmissionModel) : ToolchainProfile",
-          "+ parseCompilerOutput(raw : String) : List<RawDiagnostic>"
-        ]
-      },
-      {
-        "id": "java",
-        "name": "JavaHarnessPlugin"
-      },
-      {
-        "id": "cpp",
-        "name": "CppHarnessPlugin"
-      },
-      {
-        "id": "py",
-        "name": "PythonHarnessPlugin"
-      },
-      {
-        "id": "registry",
-        "name": "PluginRegistry",
-        "attributes": [
-          "- plugins : EnumMap<Language, LanguageHarnessPlugin>"
+          "+ render(language : Language, draft : FunctionSpecDraft, userSource : String) : RenderedProgram"
         ]
       },
       {
         "id": "emitter",
-        "name": "TypeCodeEmitter"
+        "name": "TypeCodeEmitter",
+        "kind": "interface",
+        "methods": [
+          "+ type(node : TypeNode) : String",
+          "+ read(node : TypeNode) : String",
+          "+ write(node : TypeNode, value : String) : String"
+        ]
+      },
+      {
+        "id": "java",
+        "name": "JavaTypeCodeEmitter",
+        "methods": [
+          "+ type(node : TypeNode) : String",
+          "+ read(node : TypeNode) : String",
+          "+ write(node : TypeNode, value : String) : String"
+        ]
+      },
+      {
+        "id": "cpp",
+        "name": "CppTypeCodeEmitter",
+        "methods": [
+          "+ type(node : TypeNode) : String",
+          "+ read(node : TypeNode) : String",
+          "+ write(node : TypeNode, value : String) : String"
+        ]
+      },
+      {
+        "id": "py",
+        "name": "PythonTypeCodeEmitter",
+        "methods": [
+          "+ type(node : TypeNode) : String",
+          "+ read(node : TypeNode) : String",
+          "+ write(node : TypeNode, value : String) : String"
+        ]
       },
       {
         "id": "prog",
         "name": "RenderedProgram",
         "attributes": [
-          "- sourceFileName : String",
-          "- text : String",
-          "- lineMap : LineMap"
-        ]
+          "+ sourceFileName : String",
+          "+ text : String",
+          "+ lineMap : LineMap"
+        ],
+        "methods": []
       }
     ],
     "externals": [],
     "relations": [
       {
         "from": "java",
-        "to": "plugin",
+        "to": "emitter",
         "kind": "realization"
       },
       {
         "from": "cpp",
-        "to": "plugin",
+        "to": "emitter",
         "kind": "realization"
       },
       {
         "from": "py",
-        "to": "plugin",
+        "to": "emitter",
         "kind": "realization"
       },
       {
-        "from": "registry",
-        "to": "plugin",
-        "kind": "association",
-        "directed": true,
-        "label": "tra cứu"
+        "from": "renderer",
+        "to": "emitter",
+        "kind": "dependency",
+        "label": "phát mã kiểu"
       },
       {
-        "from": "plugin",
+        "from": "renderer",
         "to": "prog",
         "kind": "dependency",
         "label": "trả về"
-      },
-      {
-        "from": "plugin",
-        "to": "emitter",
-        "kind": "dependency",
-        "label": "dùng"
       }
     ],
     "notes": [
-      "Registry chọn plugin Java, C++ hoặc Python; plugin sinh mã và trả về RenderedProgram.",
-      "Mỗi ngôn ngữ có bộ phát mã kiểu riêng. [SoT: Suy luận] Tên lớp PluginRegistry."
+      "FunctionWrapperRenderer điều phối sinh mã bọc hàm cho cả 3 ngôn ngữ Java, C++ và Python.",
+      "TypeCodeEmitter chuẩn hóa việc đọc, ghi và biểu diễn kiểu dữ liệu cây (TypeNode) cho từng ngôn ngữ mục tiêu."
     ]
   }
 }

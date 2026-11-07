@@ -1,5 +1,5 @@
 {
-  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a4_system.md:67. Nguồn thiết kế: 03-dd/logic/F6_interview-bank.md; 03-dd/api/F6_interview-bank.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a4_system.md:67. Nguồn thiết kế: 05-coding/backend/algoprep-interview-bank/src/main/java/com/algoprep/interviewbank/. [SoT: Suy luận] Cấu trúc CommandHandler và Port chuẩn theo kiến trúc Hexagonal của dự án.",
   "kind": "class",
   "title": "A4 — Đối chiếu câu trả lời lý thuyết",
   "covers": [
@@ -9,58 +9,58 @@
     "legend": "shared",
     "classes": [
       {
-        "id": "service",
-        "name": "InterviewAnswerEvaluationService",
+        "id": "evalHandler",
+        "name": "EvaluatePracticeAnswerCommandHandler",
         "methods": [
-          "+ evaluate(questionId : UUID, studentId : UUID, answer : String) : PracticeFeedback"
+          "+ evaluate(command : EvaluateAnswerCommand) : PracticeFeedback"
         ]
       },
       {
-        "id": "port1",
+        "id": "questionRepo",
         "name": "InterviewQuestionRepository",
-        "kind": "class",
-        "methods": [
-          "+ getCriteria(questionId : UUID) : EvaluationCriteria"
-        ]
-      },
-      {
-        "id": "port2",
-        "name": "AiProviderPort",
         "kind": "interface",
         "methods": [
-          "+ compare(answer : String, criteria : EvaluationCriteria) : PracticeFeedback"
+          "+ findRubrics(questionId : UUID) : List<AnswerRubric>"
         ]
       },
       {
-        "id": "port3",
-        "name": "PracticeAttemptRepository",
-        "kind": "class",
+        "id": "aiPort",
+        "name": "AiEvaluationPort",
+        "kind": "interface",
         "methods": [
-          "+ save(attempt : PracticeAttempt)"
+          "+ compare(answer : String, rubrics : List<AnswerRubric>) : PracticeFeedback"
+        ]
+      },
+      {
+        "id": "historyRepo",
+        "name": "PracticeHistoryRepository",
+        "kind": "interface",
+        "methods": [
+          "+ recordAttempt(userId : UUID, topicId : UUID)"
         ]
       }
     ],
     "externals": [],
     "relations": [
       {
-        "from": "service",
-        "to": "port1",
+        "from": "evalHandler",
+        "to": "questionRepo",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port2",
+        "from": "evalHandler",
+        "to": "aiPort",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port3",
+        "from": "evalHandler",
+        "to": "historyRepo",
         "kind": "dependency"
       }
     ],
     "notes": [
-      "AI so câu trả lời với tiêu chí chuẩn, ghi điểm đã đạt/còn thiếu/hướng bổ sung; không lộ đáp án chuẩn trong prompt người dùng.",
-      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+      "EvaluatePracticeAnswerCommandHandler đối chiếu câu trả lời của người học với rubric chuẩn qua AiEvaluationPort.",
+      "Kết quả đối chiếu gồm điểm đạt, tiêu chí còn thiếu và gợi ý ôn tập; PracticeHistoryRepository ghi nhận tiến độ."
     ]
   }
 }

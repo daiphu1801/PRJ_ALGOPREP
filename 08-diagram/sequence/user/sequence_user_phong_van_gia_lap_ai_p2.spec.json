@@ -17,22 +17,22 @@
         "role": "actor"
       },
       {
-        "name": "InterviewController",
+        "name": "MockInterviewController",
         "role": "controller",
         "stereo": "presentation SSE"
       },
       {
-        "name": "InterviewTurnCmd",
+        "name": "MockInterviewStageCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "InterviewRepo",
+        "name": "InterviewSessionRepository",
         "role": "repository",
         "stereo": "output port F5"
       },
       {
-        "name": "AiDbAdapter",
+        "name": "JdbcInterviewSessionRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -63,54 +63,54 @@
       },
       {
         "from": "Sinh viên",
-        "to": "InterviewController",
+        "to": "MockInterviewController",
         "text": "Gửi câu trả lời của phiên"
       },
       {
-        "from": "InterviewController",
-        "to": "InterviewTurnCmd",
+        "from": "MockInterviewController",
+        "to": "MockInterviewStageCommandHandler",
         "text": "Kiểm lượt và chủ phiên"
       },
       {
-        "from": "InterviewTurnCmd",
-        "to": "InterviewRepo",
+        "from": "MockInterviewStageCommandHandler",
+        "to": "InterviewSessionRepository",
         "text": "Đọc phiên và lượt mới nhất"
       },
       {
-        "from": "InterviewRepo",
-        "to": "AiDbAdapter",
+        "from": "InterviewSessionRepository",
+        "to": "JdbcInterviewSessionRepository",
         "text": "Tra trạng thái và lịch sử"
       },
       {
-        "from": "AiDbAdapter",
+        "from": "JdbcInterviewSessionRepository",
         "to": "PostgreSQL",
         "text": "Đọc phiên và số lượt đã hoàn tất"
       },
       {
         "from": "PostgreSQL",
-        "to": "AiDbAdapter",
+        "to": "JdbcInterviewSessionRepository",
         "text": "Trạng thái và lịch sử",
         "kind": "return"
       },
       {
-        "from": "AiDbAdapter",
-        "to": "InterviewRepo",
+        "from": "JdbcInterviewSessionRepository",
+        "to": "InterviewSessionRepository",
         "text": "Kết quả tra cứu",
         "kind": "return"
       },
       {
-        "from": "InterviewRepo",
-        "to": "InterviewTurnCmd",
+        "from": "InterviewSessionRepository",
+        "to": "MockInterviewStageCommandHandler",
         "text": "Phiên đang mở hoặc từ chối",
         "kind": "return"
       },
       {
-        "from": "InterviewTurnCmd",
-        "to": "InterviewTurnCmd",
+        "from": "MockInterviewStageCommandHandler",
+        "to": "MockInterviewStageCommandHandler",
         "text": "Giữ một lượt, kiểm số lượt mong đợi"
       },
       {
-        "from": "InterviewTurnCmd",
+        "from": "MockInterviewStageCommandHandler",
         "to": "ChatMemoryPort",
         "text": "Lấy ngữ cảnh hội thoại"
       },
@@ -138,7 +138,7 @@
       },
       {
         "from": "ChatMemoryPort",
-        "to": "InterviewTurnCmd",
+        "to": "MockInterviewStageCommandHandler",
         "text": "Ngữ cảnh hoặc cần dựng lại",
         "kind": "return"
       },
@@ -147,56 +147,56 @@
           "label": "Thiếu bộ nhớ tạm?",
           "then": [
             {
-              "from": "InterviewTurnCmd",
-              "to": "InterviewRepo",
+              "from": "MockInterviewStageCommandHandler",
+              "to": "InterviewSessionRepository",
               "text": "Dựng lại từ lịch sử đã lưu"
             },
             {
-              "from": "InterviewRepo",
-              "to": "InterviewTurnCmd",
+              "from": "InterviewSessionRepository",
+              "to": "MockInterviewStageCommandHandler",
               "text": "Hội thoại đầy đủ",
               "kind": "return"
             }
           ],
           "else": [
             {
-              "from": "InterviewTurnCmd",
-              "to": "InterviewTurnCmd",
+              "from": "MockInterviewStageCommandHandler",
+              "to": "MockInterviewStageCommandHandler",
               "text": "Dùng ngữ cảnh đang có"
             }
           ]
         }
       },
       {
-        "from": "InterviewTurnCmd",
-        "to": "InterviewRepo",
+        "from": "MockInterviewStageCommandHandler",
+        "to": "InterviewSessionRepository",
         "text": "Lưu câu trả lời người học"
       },
       {
-        "from": "InterviewRepo",
-        "to": "AiDbAdapter",
+        "from": "InterviewSessionRepository",
+        "to": "JdbcInterviewSessionRepository",
         "text": "Ghi hoặc sửa lượt đang chờ"
       },
       {
-        "from": "AiDbAdapter",
+        "from": "JdbcInterviewSessionRepository",
         "to": "PostgreSQL",
         "text": "Ghi câu trả lời trước khi mở luồng"
       },
       {
         "from": "PostgreSQL",
-        "to": "AiDbAdapter",
+        "to": "JdbcInterviewSessionRepository",
         "text": "Đã lưu câu trả lời",
         "kind": "return"
       },
       {
-        "from": "AiDbAdapter",
-        "to": "InterviewRepo",
+        "from": "JdbcInterviewSessionRepository",
+        "to": "InterviewSessionRepository",
         "text": "Đã nhận lượt",
         "kind": "return"
       },
       {
-        "from": "InterviewRepo",
-        "to": "InterviewTurnCmd",
+        "from": "InterviewSessionRepository",
+        "to": "MockInterviewStageCommandHandler",
         "text": "Sẵn sàng phát luồng ở trang 2b",
         "kind": "return"
       }

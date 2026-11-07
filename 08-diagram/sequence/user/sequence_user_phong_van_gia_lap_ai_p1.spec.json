@@ -17,12 +17,12 @@
         "role": "actor"
       },
       {
-        "name": "InterviewController",
+        "name": "MockInterviewController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "StartInterviewCmd",
+        "name": "StartInterviewCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
@@ -42,7 +42,7 @@
         "stereo": "output port F5"
       },
       {
-        "name": "AiDbAdapter",
+        "name": "JdbcInterviewSessionRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -68,12 +68,12 @@
       },
       {
         "from": "Sinh viên",
-        "to": "InterviewController",
+        "to": "MockInterviewController",
         "text": "Chọn bài đã đạt, câu hỏi hoặc chủ đề"
       },
       {
-        "from": "InterviewController",
-        "to": "StartInterviewCmd",
+        "from": "MockInterviewController",
+        "to": "StartInterviewCommandHandler",
         "text": "Yêu cầu mở phiên"
       },
       {
@@ -81,37 +81,37 @@
           "label": "Từ bài nộp đã đạt?",
           "then": [
             {
-              "from": "StartInterviewCmd",
+              "from": "StartInterviewCommandHandler",
               "to": "SubmissionPort",
               "text": "Kiểm bài đã đạt và đúng chủ"
             },
             {
               "from": "SubmissionPort",
-              "to": "StartInterviewCmd",
+              "to": "StartInterviewCommandHandler",
               "text": "Bản chụp bài nộp",
               "kind": "return"
             },
             {
-              "from": "StartInterviewCmd",
+              "from": "StartInterviewCommandHandler",
               "to": "ProblemPort",
               "text": "Lấy ngữ cảnh bài toán"
             },
             {
               "from": "ProblemPort",
-              "to": "StartInterviewCmd",
+              "to": "StartInterviewCommandHandler",
               "text": "Đề bài và chỉ dẫn theo bài",
               "kind": "return"
             }
           ],
           "else": [
             {
-              "from": "StartInterviewCmd",
-              "to": "StartInterviewCmd",
+              "from": "StartInterviewCommandHandler",
+              "to": "StartInterviewCommandHandler",
               "text": "Dùng câu hỏi hoặc chủ đề người học chọn"
             },
             {
-              "from": "StartInterviewCmd",
-              "to": "StartInterviewCmd",
+              "from": "StartInterviewCommandHandler",
+              "to": "StartInterviewCommandHandler",
               "text": "Giữ mức phỏng vấn, số lượt, quyền gợi ý"
             }
           ]
@@ -121,40 +121,40 @@
         "phase": "Giai đoạn 2 - Chặn phiên mới khi hết ngân sách hoặc vượt hạn mức"
       },
       {
-        "from": "StartInterviewCmd",
+        "from": "StartInterviewCommandHandler",
         "to": "AiBudgetPort",
         "text": "Kiểm ngân sách cho phiên mới"
       },
       {
         "from": "AiBudgetPort",
-        "to": "AiDbAdapter",
+        "to": "JdbcInterviewSessionRepository",
         "text": "Tính mức token trong chu kỳ"
       },
       {
-        "from": "AiDbAdapter",
+        "from": "JdbcInterviewSessionRepository",
         "to": "PostgreSQL",
         "text": "Đọc mức dùng và trạng thái khoá"
       },
       {
         "from": "PostgreSQL",
-        "to": "AiDbAdapter",
+        "to": "JdbcInterviewSessionRepository",
         "text": "Còn ngân sách hoặc đã khoá",
         "kind": "return"
       },
       {
-        "from": "AiDbAdapter",
+        "from": "JdbcInterviewSessionRepository",
         "to": "AiBudgetPort",
         "text": "Kết quả kiểm",
         "kind": "return"
       },
       {
         "from": "AiBudgetPort",
-        "to": "StartInterviewCmd",
+        "to": "StartInterviewCommandHandler",
         "text": "Cho phép hoặc từ chối",
         "kind": "return"
       },
       {
-        "from": "StartInterviewCmd",
+        "from": "StartInterviewCommandHandler",
         "to": "AiLimitPort",
         "text": "Kiểm thời gian chờ và số phiên trong giờ"
       },
@@ -171,7 +171,7 @@
       },
       {
         "from": "AiLimitPort",
-        "to": "StartInterviewCmd",
+        "to": "StartInterviewCommandHandler",
         "text": "Tiếp tục ở trang 1b hoặc từ chối",
         "kind": "return"
       }

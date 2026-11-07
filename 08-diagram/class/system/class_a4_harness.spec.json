@@ -1,5 +1,5 @@
 {
-  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a4_system.md:15; 01-rd/req/user_stories/a4_system.md:20. Nguồn thiết kế: 03-dd/logic/F3_harness.md; 03-dd/api/F3_harness.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a4_system.md:15-20. Nguồn mã nguồn: 05-coding/backend/algoprep-harness/src/main/java/com/algoprep/harness/application/prepare/PrepareSubmissionCommandHandler.java và compile/MapCompileErrorHandler.java.",
   "kind": "class",
   "title": "A4 — Ghép mã và bảo vệ lỗi biên dịch",
   "covers": [
@@ -16,59 +16,64 @@
     "legend": "shared",
     "classes": [
       {
-        "id": "service",
-        "name": "HarnessOrchestrationService",
+        "id": "prepareHandler",
+        "name": "PrepareSubmissionCommandHandler",
         "methods": [
-          "+ generateForLanguage(spec : ProblemSpec, source : String, language : Language) : RunnableCode",
-          "+ sanitizeCompilerError(error : CompileError) : PublicCompileError"
+          "+ prepare(command : PrepareSubmissionCommand) : PreparedProgram"
         ]
       },
       {
-        "id": "port1",
-        "name": "CodeGenerator",
-        "kind": "class",
+        "id": "packaging",
+        "name": "ProgramPackaging",
         "methods": [
-          "+ generate(spec : ProblemSpec, source : String) : RunnableCode"
+          "+ functionWrapper(language : Language, draft : FunctionSpecDraft, source : String) : PackagedProgram",
+          "+ standardIo(language : Language, source : String) : PackagedProgram"
         ]
       },
       {
-        "id": "port2",
-        "name": "LanguagePluginRegistry",
-        "kind": "class",
+        "id": "compileHandler",
+        "name": "MapCompileErrorHandler",
         "methods": [
-          "+ forLanguage(language : Language) : LanguagePlugin"
+          "+ map(command : MapCompileErrorCommand) : CompileErrorReport"
         ]
       },
       {
-        "id": "port3",
-        "name": "CompilerErrorSanitizer",
-        "kind": "class",
+        "id": "mapping",
+        "name": "CompileMapping",
         "methods": [
-          "+ sanitize(error : CompileError) : PublicCompileError"
+          "+ map(language : Language, standardIo : boolean, raw : String, lineMap : LineMap) : Result"
+        ]
+      },
+      {
+        "id": "diagPort",
+        "name": "CompilerDiagnosticLogPort",
+        "kind": "interface",
+        "methods": [
+          "+ record(entry : CompilerDiagnosticEntry)"
         ]
       }
     ],
     "externals": [],
     "relations": [
       {
-        "from": "service",
-        "to": "port1",
+        "from": "prepareHandler",
+        "to": "packaging",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port2",
+        "from": "compileHandler",
+        "to": "mapping",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port3",
+        "from": "compileHandler",
+        "to": "diagPort",
         "kind": "dependency"
       }
     ],
     "notes": [
-      "Chi tiết plugin F3 có ở hai hình mẫu; lỗi biên dịch không để lộ nội dung wrapper nội bộ.",
-      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+      "PrepareSubmissionCommandHandler đóng gói chương trình cho máy chấm theo mô hình bọc hàm hoặc standard I/O.",
+      "MapCompileErrorHandler ánh xạ dòng lỗi biên dịch về mã nguồn của người học và cô lập mã wrapper hệ thống."
     ]
   }
 }

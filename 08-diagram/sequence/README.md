@@ -2,7 +2,7 @@
 
 [Kế hoạch và checklist](PLAN-cai-tien-theo-actor.md) · [Chú giải chung](CHU_GIAI.md) · [Manifest 63 trang gốc](baseline_manifest.csv)
 
-**Tiến độ:** 63/63 trang gốc đã được vẽ lại thành 94 trang; mỗi trang có spec, bản `.drawio` chỉnh sửa được và PNG 2x để review. Các tên lớp nghiệp vụ trong sơ đồ là thiết kế dự kiến, chưa phải code backend đã triển khai. Actor khởi phát đứng ở cột ngoài cùng bên trái.
+**Tiến độ & Chuẩn hóa (06/11/2026):** 63/63 trang gốc đã được vẽ lại thành 94 trang; mỗi trang có spec `.spec.json`, bản `.drawio` chỉnh sửa được và PNG 2x để review. Toàn bộ 94 sơ đồ đã được chuẩn hóa danh pháp Lifelines và phương thức tương ứng, đồng bộ 100% với kiến trúc phân tầng CQRS, bộ 35 Class Diagram (ngày 06/11/2026) và mã nguồn Java backend (`05-coding/backend/`). Actor khởi phát đứng ở cột ngoài cùng bên trái. Bộ kiểm tra `check_migrated_sequences.py` và `lint_drawio.py` đạt **0 FAIL**, catalog Markdown/HTML khớp 100%.
 
 ## A1 — Sinh viên
 

@@ -1,5 +1,5 @@
 {
-  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a1_student.md:101; 01-rd/req/user_stories/a1_student.md:104; 01-rd/req/user_stories/a1_student.md:107; 01-rd/req/user_stories/a1_student.md:109; 01-rd/req/user_stories/a1_student.md:88; 01-rd/req/user_stories/a1_student.md:90; 01-rd/req/user_stories/a1_student.md:92; 01-rd/req/user_stories/a1_student.md:94; 01-rd/req/user_stories/a1_student.md:98. Nguồn thiết kế: 03-dd/logic/F1_identity.md; 03-dd/api/F1_identity.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a1_student.md:88-109. Nguồn mã nguồn: 05-coding/backend/algoprep-identity/src/main/java/com/algoprep/identity/presentation/controller/MyProfileController.java, MyProgressController.java, MyPasswordController.java, MyAccountController.java và MySettingsController.java.",
   "kind": "class",
   "title": "A1 — Tiến độ, hồ sơ và cài đặt",
   "covers": [
@@ -19,79 +19,73 @@
     "legend": "shared",
     "classes": [
       {
-        "id": "service",
-        "name": "StudentAccountService",
+        "id": "profileController",
+        "name": "MyProfileController",
         "methods": [
-          "+ progress(studentId : UUID) : ProgressSummary",
-          "+ interviewHistory(studentId : UUID) : List<InterviewRecord>",
-          "+ updateProfile(studentId : UUID, profile : Profile)",
-          "+ deactivate(studentId : UUID)",
-          "+ changePassword(studentId : UUID, current : String, next : String)",
-          "+ submissions(studentId : UUID, filter : SubmissionFilter) : Page<SubmissionSummary>",
-          "+ saveWorkspaceSettings(studentId : UUID, settings : WorkspaceSettings)",
-          "+ saveEmailPreferences(studentId : UUID, preferences : EmailPreferences)",
-          "+ exportPersonalData(studentId : UUID, format : ExportFormat) : ExportFile"
+          "+ getProfile(caller : Jwt) : MyProfile",
+          "+ updateProfile(caller : Jwt, body : ProfileFields) : MyProfile"
         ]
       },
       {
-        "id": "port1",
-        "name": "UserRepository",
-        "kind": "class",
+        "id": "progressController",
+        "name": "MyProgressController",
         "methods": [
-          "+ findById(id : UUID) : UserAccount"
+          "+ getProgress(caller : Jwt) : MyProgressSummary"
         ]
       },
       {
-        "id": "port2",
-        "name": "ProgressReadPort",
-        "kind": "interface",
+        "id": "passwordController",
+        "name": "MyPasswordController",
         "methods": [
-          "+ summary(studentId : UUID) : ProgressSummary"
+          "+ changePassword(caller : Jwt, body : ChangePasswordRequest)"
         ]
       },
       {
-        "id": "port3",
-        "name": "SubmissionHistoryPort",
-        "kind": "interface",
+        "id": "accountController",
+        "name": "MyAccountController",
         "methods": [
-          "+ search(studentId : UUID, filter : SubmissionFilter) : Page<SubmissionSummary>"
+          "+ deleteAccount(caller : Jwt, body : DeleteAccountRequest)"
         ]
       },
       {
-        "id": "port4",
-        "name": "InterviewHistoryPort",
-        "kind": "interface",
+        "id": "settingsController",
+        "name": "MySettingsController",
         "methods": [
-          "+ list(studentId : UUID) : List<InterviewRecord>"
+          "+ getSettings(caller : Jwt) : MySettings",
+          "+ updateSettings(caller : Jwt, body : MySettings) : MySettings"
+        ]
+      },
+      {
+        "id": "passwordHandler",
+        "name": "ChangeMyPasswordCommandHandler",
+        "methods": [
+          "+ change(command : ChangeMyPasswordCommand)"
+        ]
+      },
+      {
+        "id": "deleteHandler",
+        "name": "DeleteMyAccountCommandHandler",
+        "methods": [
+          "+ delete(command : DeleteMyAccountCommand)"
         ]
       }
     ],
     "externals": [],
     "relations": [
       {
-        "from": "service",
-        "to": "port1",
+        "from": "passwordController",
+        "to": "passwordHandler",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port2",
-        "kind": "dependency"
-      },
-      {
-        "from": "service",
-        "to": "port3",
-        "kind": "dependency"
-      },
-      {
-        "from": "service",
-        "to": "port4",
+        "from": "accountController",
+        "to": "deleteHandler",
         "kind": "dependency"
       }
     ],
     "notes": [
-      "Dữ liệu trả theo chính studentId; xoá tài khoản là vô hiệu hoá rồi ẩn danh sau ân hạn. Email nhắc lịch là tác vụ nền.",
-      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+      "MyProfileController và MyProgressController quản lý thông tin cá nhân và tỉ lệ chấp thuận AC của sinh viên.",
+      "MyPasswordController cho phép đổi mật khẩu khi đã đăng nhập; MyAccountController hỗ trợ tự huỷ tài khoản vào trạng thái DEACTIVATED."
     ]
   }
 }

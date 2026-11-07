@@ -14,22 +14,22 @@
         "role": "actor"
       },
       {
-        "name": "AiConfigController",
+        "name": "AdminLanguageConfigController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "UpdatePromptDraft",
+        "name": "UpdatePromptDraftCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "PromptStorePort",
+        "name": "AiPromptTemplateRepository",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "AiDbAdapter",
+        "name": "JdbcAiPromptTemplateRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -45,17 +45,17 @@
       },
       {
         "from": "Quản trị viên",
-        "to": "AiConfigController",
+        "to": "AdminLanguageConfigController",
         "text": "Sửa chỉ thị, mô hình và quy tắc trả lời"
       },
       {
-        "from": "AiConfigController",
-        "to": "UpdatePromptDraft",
+        "from": "AdminLanguageConfigController",
+        "to": "UpdatePromptDraftCommandHandler",
         "text": "Lưu bản nháp cho một tính năng"
       },
       {
-        "from": "UpdatePromptDraft",
-        "to": "UpdatePromptDraft",
+        "from": "UpdatePromptDraftCommandHandler",
+        "to": "UpdatePromptDraftCommandHandler",
         "text": "Kiểm nội dung, mô hình được duyệt và quy tắc theo tính năng"
       },
       {
@@ -63,61 +63,61 @@
           "label": "Dữ liệu hợp lệ?",
           "then": [
             {
-              "from": "UpdatePromptDraft",
-              "to": "PromptStorePort",
+              "from": "UpdatePromptDraftCommandHandler",
+              "to": "AiPromptTemplateRepository",
               "text": "Tìm bản nháp của tính năng"
             },
             {
-              "from": "PromptStorePort",
-              "to": "AiDbAdapter",
+              "from": "AiPromptTemplateRepository",
+              "to": "JdbcAiPromptTemplateRepository",
               "text": "Đọc bản nháp hiện tại"
             },
             {
-              "from": "AiDbAdapter",
+              "from": "JdbcAiPromptTemplateRepository",
               "to": "PostgreSQL",
               "text": "Tìm bản nháp theo tính năng"
             },
             {
               "from": "PostgreSQL",
-              "to": "AiDbAdapter",
+              "to": "JdbcAiPromptTemplateRepository",
               "text": "Bản nháp hoặc chưa có",
               "kind": "return"
             },
             {
-              "from": "AiDbAdapter",
-              "to": "PromptStorePort",
+              "from": "JdbcAiPromptTemplateRepository",
+              "to": "AiPromptTemplateRepository",
               "text": "Bản nháp hoặc chưa có",
               "kind": "return"
             },
             {
-              "from": "PromptStorePort",
-              "to": "UpdatePromptDraft",
+              "from": "AiPromptTemplateRepository",
+              "to": "UpdatePromptDraftCommandHandler",
               "text": "Bản nháp hoặc chưa có",
               "kind": "return"
             },
             {
-              "from": "UpdatePromptDraft",
-              "to": "PromptStorePort",
+              "from": "UpdatePromptDraftCommandHandler",
+              "to": "AiPromptTemplateRepository",
               "text": "Tạo hoặc cập nhật cùng bản nháp"
             },
             {
-              "from": "PromptStorePort",
-              "to": "AiDbAdapter",
+              "from": "AiPromptTemplateRepository",
+              "to": "JdbcAiPromptTemplateRepository",
               "text": "Lưu chỉ thị và lựa chọn mô hình"
             },
             {
-              "from": "AiDbAdapter",
+              "from": "JdbcAiPromptTemplateRepository",
               "to": "PostgreSQL",
               "text": "Ghi bản nháp, giữ bản đang chạy"
             },
             {
-              "from": "UpdatePromptDraft",
-              "to": "AiConfigController",
+              "from": "UpdatePromptDraftCommandHandler",
+              "to": "AdminLanguageConfigController",
               "text": "Trả bản nháp đã lưu",
               "kind": "return"
             },
             {
-              "from": "AiConfigController",
+              "from": "AdminLanguageConfigController",
               "to": "Quản trị viên",
               "text": "Hiển thị nhãn bản nháp",
               "kind": "return"
@@ -125,13 +125,13 @@
           ],
           "else": [
             {
-              "from": "UpdatePromptDraft",
-              "to": "AiConfigController",
+              "from": "UpdatePromptDraftCommandHandler",
+              "to": "AdminLanguageConfigController",
               "text": "Báo trường sai, không ghi bản nháp",
               "kind": "return"
             },
             {
-              "from": "AiConfigController",
+              "from": "AdminLanguageConfigController",
               "to": "Quản trị viên",
               "text": "Hiển thị trường cần sửa",
               "kind": "return"

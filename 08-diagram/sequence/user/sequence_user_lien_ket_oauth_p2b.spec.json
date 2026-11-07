@@ -14,12 +14,12 @@
         "role": "actor"
       },
       {
-        "name": "AuthController",
+        "name": "OAuthController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "OAuthCallbackCmd",
+        "name": "CompleteOAuthLoginCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
@@ -44,7 +44,7 @@
         "phase": "Giai đoạn 2b - Chỉ nhận email đã xác minh"
       },
       {
-        "from": "OAuthCallbackCmd",
+        "from": "CompleteOAuthLoginCommandHandler",
         "to": "OAuthProviderPort",
         "text": "Đổi code và lấy hồ sơ"
       },
@@ -72,7 +72,7 @@
       },
       {
         "from": "OAuthProviderPort",
-        "to": "OAuthCallbackCmd",
+        "to": "CompleteOAuthLoginCommandHandler",
         "text": "Hồ sơ nhà cung cấp",
         "kind": "return"
       },
@@ -81,20 +81,20 @@
           "label": "Email ở nhà cung cấp đã xác minh?",
           "then": [
             {
-              "from": "OAuthCallbackCmd",
-              "to": "OAuthCallbackCmd",
+              "from": "CompleteOAuthLoginCommandHandler",
+              "to": "CompleteOAuthLoginCommandHandler",
               "text": "Tiếp tục liên kết ở trang 3"
             }
           ],
           "else": [
             {
-              "from": "OAuthCallbackCmd",
-              "to": "AuthController",
+              "from": "CompleteOAuthLoginCommandHandler",
+              "to": "OAuthController",
               "text": "Từ chối tạo hoặc liên kết tài khoản",
               "kind": "return"
             },
             {
-              "from": "AuthController",
+              "from": "OAuthController",
               "to": "Sinh viên",
               "text": "Yêu cầu xác minh email tại nhà cung cấp",
               "kind": "return"

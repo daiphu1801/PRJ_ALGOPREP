@@ -15,17 +15,17 @@
         "role": "actor"
       },
       {
-        "name": "PracticeController",
+        "name": "InterviewPracticeController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "SubmitPracticeAnswer",
+        "name": "EvaluatePracticeAnswerCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "AnswerFeedbackPort",
+        "name": "AiEvaluationPort",
         "role": "repository",
         "stereo": "output port"
       },
@@ -39,12 +39,12 @@
         "role": "external"
       },
       {
-        "name": "PracticeAnswerPort",
+        "name": "InterviewQuestionRepository",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "InterviewBankDbAdapter",
+        "name": "JdbcInterviewQuestionRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -64,17 +64,17 @@
         "phase": "Giai đoạn 3 - Xin nhận xét theo bộ tiêu chí"
       },
       {
-        "from": "SubmitPracticeAnswer",
-        "to": "SubmitPracticeAnswer",
+        "from": "EvaluatePracticeAnswerCommandHandler",
+        "to": "EvaluatePracticeAnswerCommandHandler",
         "text": "Ghép chỉ thị cố định, tiêu chí tham chiếu và dữ liệu câu trả lời"
       },
       {
-        "from": "SubmitPracticeAnswer",
-        "to": "AnswerFeedbackPort",
+        "from": "EvaluatePracticeAnswerCommandHandler",
+        "to": "AiEvaluationPort",
         "text": "Xin so sánh câu trả lời với từng tiêu chí"
       },
       {
-        "from": "AnswerFeedbackPort",
+        "from": "AiEvaluationPort",
         "to": "SpringAiFeedbackAdapter",
         "text": "Gọi mô hình với thời hạn 30 giây"
       },
@@ -91,13 +91,13 @@
       },
       {
         "from": "SpringAiFeedbackAdapter",
-        "to": "AnswerFeedbackPort",
+        "to": "AiEvaluationPort",
         "text": "Kiểm tra cấu trúc nhận xét",
         "kind": "return"
       },
       {
-        "from": "AnswerFeedbackPort",
-        "to": "SubmitPracticeAnswer",
+        "from": "AiEvaluationPort",
+        "to": "EvaluatePracticeAnswerCommandHandler",
         "text": "Nhận xét hoặc thông tin lỗi",
         "kind": "return"
       },
@@ -106,51 +106,51 @@
           "label": "AI trả nhận xét hợp lệ?",
           "then": [
             {
-              "from": "SubmitPracticeAnswer",
-              "to": "PracticeAnswerPort",
+              "from": "EvaluatePracticeAnswerCommandHandler",
+              "to": "InterviewQuestionRepository",
               "text": "Tạo lượt luyện hoàn tất và cập nhật tiến độ"
             },
             {
-              "from": "PracticeAnswerPort",
-              "to": "InterviewBankDbAdapter",
+              "from": "InterviewQuestionRepository",
+              "to": "JdbcInterviewQuestionRepository",
               "text": "Lưu một lượt mới trong cùng giao dịch"
             },
             {
-              "from": "InterviewBankDbAdapter",
+              "from": "JdbcInterviewQuestionRepository",
               "to": "PostgreSQL",
               "text": "Ghi câu trả lời, nhận xét và tiến độ theo chủ đề"
             },
             {
               "from": "PostgreSQL",
-              "to": "InterviewBankDbAdapter",
+              "to": "JdbcInterviewQuestionRepository",
               "text": "Đã ghi nhận lượt luyện",
               "kind": "return"
             },
             {
-              "from": "InterviewBankDbAdapter",
-              "to": "PracticeAnswerPort",
+              "from": "JdbcInterviewQuestionRepository",
+              "to": "InterviewQuestionRepository",
               "text": "Đã commit",
               "kind": "return"
             },
             {
-              "from": "PracticeAnswerPort",
-              "to": "SubmitPracticeAnswer",
+              "from": "InterviewQuestionRepository",
+              "to": "EvaluatePracticeAnswerCommandHandler",
               "text": "Đã lưu lượt luyện",
               "kind": "return"
             },
             {
-              "from": "SubmitPracticeAnswer",
+              "from": "EvaluatePracticeAnswerCommandHandler",
               "to": "RecordAiTokenUsageUseCase",
               "text": "Ghi token đã dùng sau commit"
             },
             {
-              "from": "SubmitPracticeAnswer",
-              "to": "PracticeController",
+              "from": "EvaluatePracticeAnswerCommandHandler",
+              "to": "InterviewPracticeController",
               "text": "Trả nhận xét và trạng thái hoàn tất",
               "kind": "return"
             },
             {
-              "from": "PracticeController",
+              "from": "InterviewPracticeController",
               "to": "Sinh viên",
               "text": "Hiển thị nhận xét theo tiêu chí",
               "kind": "return"
@@ -158,51 +158,51 @@
           ],
           "else": [
             {
-              "from": "SubmitPracticeAnswer",
-              "to": "PracticeAnswerPort",
+              "from": "EvaluatePracticeAnswerCommandHandler",
+              "to": "InterviewQuestionRepository",
               "text": "Tạo lượt luyện thất bại và cập nhật tiến độ"
             },
             {
-              "from": "PracticeAnswerPort",
-              "to": "InterviewBankDbAdapter",
+              "from": "InterviewQuestionRepository",
+              "to": "JdbcInterviewQuestionRepository",
               "text": "Lưu câu trả lời cùng mã lỗi"
             },
             {
-              "from": "InterviewBankDbAdapter",
+              "from": "JdbcInterviewQuestionRepository",
               "to": "PostgreSQL",
               "text": "Ghi lượt mới có trạng thái thất bại và tiến độ"
             },
             {
               "from": "PostgreSQL",
-              "to": "InterviewBankDbAdapter",
+              "to": "JdbcInterviewQuestionRepository",
               "text": "Đã ghi nhận lượt luyện",
               "kind": "return"
             },
             {
-              "from": "InterviewBankDbAdapter",
-              "to": "PracticeAnswerPort",
+              "from": "JdbcInterviewQuestionRepository",
+              "to": "InterviewQuestionRepository",
               "text": "Đã commit",
               "kind": "return"
             },
             {
-              "from": "PracticeAnswerPort",
-              "to": "SubmitPracticeAnswer",
+              "from": "InterviewQuestionRepository",
+              "to": "EvaluatePracticeAnswerCommandHandler",
               "text": "Đã lưu câu trả lời",
               "kind": "return"
             },
             {
-              "from": "SubmitPracticeAnswer",
+              "from": "EvaluatePracticeAnswerCommandHandler",
               "to": "RecordAiTokenUsageUseCase",
               "text": "Ghi token nếu nhà cung cấp đã báo"
             },
             {
-              "from": "SubmitPracticeAnswer",
-              "to": "PracticeController",
+              "from": "EvaluatePracticeAnswerCommandHandler",
+              "to": "InterviewPracticeController",
               "text": "Trả lượt đã lưu kèm lý do chưa có nhận xét",
               "kind": "return"
             },
             {
-              "from": "PracticeController",
+              "from": "InterviewPracticeController",
               "to": "Sinh viên",
               "text": "Hiển thị câu trả lời đã lưu và lỗi nhận xét",
               "kind": "return"

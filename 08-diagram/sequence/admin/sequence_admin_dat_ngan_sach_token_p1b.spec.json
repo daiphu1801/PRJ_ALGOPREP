@@ -14,22 +14,22 @@
         "role": "actor"
       },
       {
-        "name": "AiUsageController",
+        "name": "AdminLanguageConfigController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "SetTokenBudgetLimit",
+        "name": "SetTokenBudgetLimitCommandHandler",
         "role": "service",
         "stereo": "application"
       },
       {
-        "name": "BudgetStorePort",
+        "name": "AiTokenBudgetRepository",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "AiDbAdapter",
+        "name": "JdbcAiTokenBudgetRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -47,12 +47,12 @@
     "messages": [
       {
         "from": "Quản trị viên",
-        "to": "AiUsageController",
+        "to": "AdminLanguageConfigController",
         "text": "Lưu hạn mức token mới"
       },
       {
-        "from": "AiUsageController",
-        "to": "SetTokenBudgetLimit",
+        "from": "AdminLanguageConfigController",
+        "to": "SetTokenBudgetLimitCommandHandler",
         "text": "Kiểm quyền cập nhật ngân sách và số nguyên dương"
       },
       {
@@ -60,36 +60,36 @@
           "label": "Hạn mức hợp lệ?",
           "then": [
             {
-              "from": "SetTokenBudgetLimit",
-              "to": "BudgetStorePort",
+              "from": "SetTokenBudgetLimitCommandHandler",
+              "to": "AiTokenBudgetRepository",
               "text": "Đổi hạn mức của kỳ hiện tại"
             },
             {
-              "from": "BudgetStorePort",
-              "to": "AiDbAdapter",
+              "from": "AiTokenBudgetRepository",
+              "to": "JdbcAiTokenBudgetRepository",
               "text": "Lưu cấu hình"
             },
             {
-              "from": "AiDbAdapter",
+              "from": "JdbcAiTokenBudgetRepository",
               "to": "PostgreSQL",
               "text": "Ghi limit_tokens và người sửa"
             },
             {
-              "from": "SetTokenBudgetLimit",
+              "from": "SetTokenBudgetLimitCommandHandler",
               "to": "AuditLogPort",
               "text": "Ghi nhật ký đổi hạn mức cùng giao dịch"
             },
             {
-              "from": "SetTokenBudgetLimit",
-              "to": "AiUsageController",
+              "from": "SetTokenBudgetLimitCommandHandler",
+              "to": "AdminLanguageConfigController",
               "text": "Trả ngân sách mới",
               "kind": "return"
             }
           ],
           "else": [
             {
-              "from": "SetTokenBudgetLimit",
-              "to": "AiUsageController",
+              "from": "SetTokenBudgetLimitCommandHandler",
+              "to": "AdminLanguageConfigController",
               "text": "Báo hạn mức không hợp lệ",
               "kind": "return"
             }
@@ -97,7 +97,7 @@
         }
       },
       {
-        "from": "AiUsageController",
+        "from": "AdminLanguageConfigController",
         "to": "Quản trị viên",
         "text": "Hiển thị hạn mức đã lưu",
         "kind": "return"

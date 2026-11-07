@@ -14,12 +14,12 @@
         "role": "actor"
       },
       {
-        "name": "AuthController",
+        "name": "PasswordResetController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "ForgotPasswordCmd",
+        "name": "ForgotPasswordCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
@@ -44,7 +44,7 @@
         "phase": "Giai đoạn 1b - Một mã mới sau mỗi thời gian chờ"
       },
       {
-        "from": "ForgotPasswordCmd",
+        "from": "ForgotPasswordCommandHandler",
         "to": "ResetOtpPort",
         "text": "Kiểm thời gian chờ gửi lại"
       },
@@ -72,7 +72,7 @@
       },
       {
         "from": "ResetOtpPort",
-        "to": "ForgotPasswordCmd",
+        "to": "ForgotPasswordCommandHandler",
         "text": "Có thể phát mã hay không",
         "kind": "return"
       },
@@ -81,12 +81,12 @@
           "label": "Được phép phát mã?",
           "then": [
             {
-              "from": "ForgotPasswordCmd",
-              "to": "ForgotPasswordCmd",
+              "from": "ForgotPasswordCommandHandler",
+              "to": "ForgotPasswordCommandHandler",
               "text": "Sinh mã xác nhận sáu số"
             },
             {
-              "from": "ForgotPasswordCmd",
+              "from": "ForgotPasswordCommandHandler",
               "to": "ResetOtpPort",
               "text": "Lưu mã 10 phút và chặn gửi lại 60 giây"
             },
@@ -114,15 +114,15 @@
             },
             {
               "from": "ResetOtpPort",
-              "to": "ForgotPasswordCmd",
+              "to": "ForgotPasswordCommandHandler",
               "text": "Chuyển sang gửi email",
               "kind": "return"
             }
           ],
           "else": [
             {
-              "from": "ForgotPasswordCmd",
-              "to": "ForgotPasswordCmd",
+              "from": "ForgotPasswordCommandHandler",
+              "to": "ForgotPasswordCommandHandler",
               "text": "Giữ phản hồi chung, không tạo mã mới"
             }
           ]

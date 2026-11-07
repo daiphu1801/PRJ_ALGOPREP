@@ -23,12 +23,12 @@
         "role": "actor"
       },
       {
-        "name": "ReviewController",
+        "name": "SolutionReviewController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "ReviewCmd",
+        "name": "AnalyzeAcceptedSubmissionCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
@@ -38,7 +38,7 @@
         "stereo": "domain"
       },
       {
-        "name": "LlmProviderPort",
+        "name": "AiProviderPort",
         "role": "repository",
         "stereo": "output port"
       },
@@ -52,12 +52,12 @@
         "role": "external"
       },
       {
-        "name": "ReviewRepo",
+        "name": "SolutionReviewRepository",
         "role": "repository",
         "stereo": "output port F5"
       },
       {
-        "name": "AiDbAdapter",
+        "name": "JdbcSolutionReviewRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -72,7 +72,7 @@
         "phase": "Giai đoạn 3 - Mã nguồn là dữ liệu, không là chỉ thị (F5-17)"
       },
       {
-        "from": "ReviewCmd",
+        "from": "AnalyzeAcceptedSubmissionCommandHandler",
         "to": "PromptComposer",
         "text": "Dựng yêu cầu phân tích an toàn"
       },
@@ -93,17 +93,17 @@
       },
       {
         "from": "PromptComposer",
-        "to": "ReviewCmd",
+        "to": "AnalyzeAcceptedSubmissionCommandHandler",
         "text": "Chỉ thị và dữ liệu đã tách riêng",
         "kind": "return"
       },
       {
-        "from": "ReviewCmd",
-        "to": "LlmProviderPort",
+        "from": "AnalyzeAcceptedSubmissionCommandHandler",
+        "to": "AiProviderPort",
         "text": "Yêu cầu phân tích có cấu trúc"
       },
       {
-        "from": "LlmProviderPort",
+        "from": "AiProviderPort",
         "to": "SpringAiLlmAdapter",
         "text": "Gửi yêu cầu tới mô hình AI"
       },
@@ -120,13 +120,13 @@
       },
       {
         "from": "SpringAiLlmAdapter",
-        "to": "LlmProviderPort",
+        "to": "AiProviderPort",
         "text": "Kết quả có cấu trúc",
         "kind": "return"
       },
       {
-        "from": "LlmProviderPort",
-        "to": "ReviewCmd",
+        "from": "AiProviderPort",
+        "to": "AnalyzeAcceptedSubmissionCommandHandler",
         "text": "Báo cáo và lượng token",
         "kind": "return"
       },
@@ -134,56 +134,56 @@
         "phase": "Giai đoạn 4 - Kiểm báo cáo và ghi kết quả (F5-02 đến F5-08, F5-21)"
       },
       {
-        "from": "ReviewCmd",
-        "to": "ReviewCmd",
+        "from": "AnalyzeAcceptedSubmissionCommandHandler",
+        "to": "AnalyzeAcceptedSubmissionCommandHandler",
         "text": "Kiểm độ phức tạp, rủi ro, độ dễ đọc"
       },
       {
-        "from": "ReviewCmd",
-        "to": "ReviewCmd",
+        "from": "AnalyzeAcceptedSubmissionCommandHandler",
+        "to": "AnalyzeAcceptedSubmissionCommandHandler",
         "text": "Bỏ so sánh tối ưu khi chưa có dữ liệu"
       },
       {
-        "from": "ReviewCmd",
-        "to": "ReviewRepo",
+        "from": "AnalyzeAcceptedSubmissionCommandHandler",
+        "to": "SolutionReviewRepository",
         "text": "Lưu báo cáo, token và sự kiện"
       },
       {
-        "from": "ReviewRepo",
-        "to": "AiDbAdapter",
+        "from": "SolutionReviewRepository",
+        "to": "JdbcSolutionReviewRepository",
         "text": "Ghi bản phân tích và bản dùng lại"
       },
       {
-        "from": "AiDbAdapter",
+        "from": "JdbcSolutionReviewRepository",
         "to": "PostgreSQL",
         "text": "Lưu kết quả và xét khoá ngân sách"
       },
       {
         "from": "PostgreSQL",
-        "to": "AiDbAdapter",
+        "to": "JdbcSolutionReviewRepository",
         "text": "Đã lưu kết quả",
         "kind": "return"
       },
       {
-        "from": "AiDbAdapter",
-        "to": "ReviewRepo",
+        "from": "JdbcSolutionReviewRepository",
+        "to": "SolutionReviewRepository",
         "text": "Báo cáo hoàn tất",
         "kind": "return"
       },
       {
-        "from": "ReviewRepo",
-        "to": "ReviewCmd",
+        "from": "SolutionReviewRepository",
+        "to": "AnalyzeAcceptedSubmissionCommandHandler",
         "text": "Báo cáo hoàn tất",
         "kind": "return"
       },
       {
-        "from": "ReviewCmd",
-        "to": "ReviewController",
+        "from": "AnalyzeAcceptedSubmissionCommandHandler",
+        "to": "SolutionReviewController",
         "text": "Trả báo cáo hỗ trợ học tập",
         "kind": "return"
       },
       {
-        "from": "ReviewController",
+        "from": "SolutionReviewController",
         "to": "Sinh viên",
         "text": "Hiển thị báo cáo và chủ đề nên ôn",
         "kind": "return"

@@ -14,22 +14,22 @@
         "role": "actor"
       },
       {
-        "name": "AiLimitsController",
+        "name": "AdminLanguageConfigController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "UpdateRateLimitConfig",
+        "name": "UpdateRateLimitConfigCommandHandler",
         "role": "service",
         "stereo": "application"
       },
       {
-        "name": "BudgetStorePort",
+        "name": "AiTokenBudgetRepository",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "AiDbAdapter",
+        "name": "JdbcAiTokenBudgetRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -42,12 +42,12 @@
     "messages": [
       {
         "from": "Quản trị viên",
-        "to": "AiLimitsController",
+        "to": "AdminLanguageConfigController",
         "text": "Lưu ngưỡng cảnh báo ngân sách"
       },
       {
-        "from": "AiLimitsController",
-        "to": "UpdateRateLimitConfig",
+        "from": "AdminLanguageConfigController",
+        "to": "UpdateRateLimitConfigCommandHandler",
         "text": "Kiểm quyền cấu hình AI và ngưỡng 1 đến 100"
       },
       {
@@ -55,37 +55,37 @@
           "label": "Ngưỡng hợp lệ?",
           "then": [
             {
-              "from": "UpdateRateLimitConfig",
-              "to": "BudgetStorePort",
+              "from": "UpdateRateLimitConfigCommandHandler",
+              "to": "AiTokenBudgetRepository",
               "text": "Lưu ngưỡng mới"
             },
             {
-              "from": "BudgetStorePort",
-              "to": "AiDbAdapter",
+              "from": "AiTokenBudgetRepository",
+              "to": "JdbcAiTokenBudgetRepository",
               "text": "Cập nhật cấu hình"
             },
             {
-              "from": "AiDbAdapter",
+              "from": "JdbcAiTokenBudgetRepository",
               "to": "PostgreSQL",
               "text": "Ghi warn_percent vào dòng cấu hình"
             },
             {
               "from": "PostgreSQL",
-              "to": "UpdateRateLimitConfig",
+              "to": "UpdateRateLimitConfigCommandHandler",
               "text": "Trả cấu hình mới",
               "kind": "return"
             },
             {
-              "from": "UpdateRateLimitConfig",
-              "to": "AiLimitsController",
+              "from": "UpdateRateLimitConfigCommandHandler",
+              "to": "AdminLanguageConfigController",
               "text": "Trả ngưỡng mới",
               "kind": "return"
             }
           ],
           "else": [
             {
-              "from": "UpdateRateLimitConfig",
-              "to": "AiLimitsController",
+              "from": "UpdateRateLimitConfigCommandHandler",
+              "to": "AdminLanguageConfigController",
               "text": "Báo ngưỡng ngoài khoảng",
               "kind": "return"
             }
@@ -93,7 +93,7 @@
         }
       },
       {
-        "from": "AiLimitsController",
+        "from": "AdminLanguageConfigController",
         "to": "Quản trị viên",
         "text": "Hiển thị mức cảnh báo",
         "kind": "return"

@@ -14,22 +14,22 @@
         "role": "actor"
       },
       {
-        "name": "ClassController",
+        "name": "InstructorClassController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "UpdateClass",
+        "name": "UpdateClassCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "ClassRepository",
+        "name": "InstructorClassRepository",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "IdentityDbAdapter",
+        "name": "JdbcInstructorClassRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -45,49 +45,49 @@
       },
       {
         "from": "Giảng viên",
-        "to": "ClassController",
+        "to": "InstructorClassController",
         "text": "Gửi tên, mô tả và lịch học mới"
       },
       {
-        "from": "ClassController",
-        "to": "ClassController",
+        "from": "InstructorClassController",
+        "to": "UpdateClassCommandHandler",
         "text": "Kiểm dữ liệu và quyền sửa lớp"
       },
       {
-        "from": "ClassController",
-        "to": "UpdateClass",
+        "from": "InstructorClassController",
+        "to": "UpdateClassCommandHandler",
         "text": "Cập nhật thông tin lớp"
       },
       {
-        "from": "UpdateClass",
-        "to": "ClassRepository",
+        "from": "UpdateClassCommandHandler",
+        "to": "InstructorClassRepository",
         "text": "Kiểm chủ lớp"
       },
       {
-        "from": "ClassRepository",
-        "to": "IdentityDbAdapter",
+        "from": "InstructorClassRepository",
+        "to": "JdbcInstructorClassRepository",
         "text": "Tìm lớp và người phụ trách"
       },
       {
-        "from": "IdentityDbAdapter",
+        "from": "JdbcInstructorClassRepository",
         "to": "PostgreSQL",
         "text": "Đọc lớp hiện tại"
       },
       {
         "from": "PostgreSQL",
-        "to": "IdentityDbAdapter",
+        "to": "JdbcInstructorClassRepository",
         "text": "Thông tin lớp và chủ lớp",
         "kind": "return"
       },
       {
-        "from": "IdentityDbAdapter",
-        "to": "ClassRepository",
+        "from": "JdbcInstructorClassRepository",
+        "to": "InstructorClassRepository",
         "text": "Thông tin lớp và chủ lớp",
         "kind": "return"
       },
       {
-        "from": "ClassRepository",
-        "to": "UpdateClass",
+        "from": "InstructorClassRepository",
+        "to": "InstructorClassController",
         "text": "Thông tin lớp và chủ lớp",
         "kind": "return"
       },
@@ -96,46 +96,46 @@
           "label": "Giảng viên sở hữu lớp?",
           "then": [
             {
-              "from": "UpdateClass",
-              "to": "ClassRepository",
+              "from": "UpdateClassCommandHandler",
+              "to": "InstructorClassRepository",
               "text": "Lưu tên, mô tả và lịch học"
             },
             {
-              "from": "ClassRepository",
-              "to": "IdentityDbAdapter",
+              "from": "InstructorClassRepository",
+              "to": "JdbcInstructorClassRepository",
               "text": "Cập nhật đúng lớp đã kiểm"
             },
             {
-              "from": "IdentityDbAdapter",
+              "from": "JdbcInstructorClassRepository",
               "to": "PostgreSQL",
               "text": "Ghi thông tin lớp mới"
             },
             {
               "from": "PostgreSQL",
-              "to": "IdentityDbAdapter",
+              "to": "JdbcInstructorClassRepository",
               "text": "Thông tin đã lưu",
               "kind": "return"
             },
             {
-              "from": "IdentityDbAdapter",
-              "to": "ClassRepository",
+              "from": "JdbcInstructorClassRepository",
+              "to": "InstructorClassRepository",
               "text": "Thông tin đã lưu",
               "kind": "return"
             },
             {
-              "from": "ClassRepository",
-              "to": "UpdateClass",
+              "from": "InstructorClassRepository",
+              "to": "UpdateClassCommandHandler",
               "text": "Thông tin đã lưu",
               "kind": "return"
             },
             {
-              "from": "UpdateClass",
-              "to": "ClassController",
+              "from": "InstructorClassController",
+              "to": "InstructorClassController",
               "text": "Trả thông tin lớp mới",
               "kind": "return"
             },
             {
-              "from": "ClassController",
+              "from": "InstructorClassController",
               "to": "Giảng viên",
               "text": "Hiển thị lớp sau sửa",
               "kind": "return"
@@ -143,13 +143,13 @@
           ],
           "else": [
             {
-              "from": "UpdateClass",
-              "to": "ClassController",
+              "from": "InstructorClassController",
+              "to": "InstructorClassController",
               "text": "Từ chối vì không sở hữu lớp",
               "kind": "return"
             },
             {
-              "from": "ClassController",
+              "from": "InstructorClassController",
               "to": "Giảng viên",
               "text": "Hiển thị lỗi quyền lớp",
               "kind": "return"

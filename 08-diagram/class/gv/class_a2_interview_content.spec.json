@@ -1,7 +1,7 @@
 {
-  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a2_instructor.md:156; 01-rd/req/user_stories/a2_instructor.md:159; 01-rd/req/user_stories/a2_instructor.md:161; 01-rd/req/user_stories/a2_instructor.md:164. Nguồn thiết kế: 03-dd/logic/F1_identity.md; 03-dd/api/F1_identity.md; 03-dd/logic/F6_interview-bank.md; 03-dd/api/F6_interview-bank.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "_": "Nguon tieu chi: 01-rd/req/user_stories/a2_instructor.md:156-164. Nguon thiet ke: 03-dd/logic/F1_identity.md; 03-dd/logic/F6_interview-bank.md; V6.001 migration. [SoT: Suy luan] Ten lop va chu ky phuong thuc theo mo hinh CQRS tuong thich he thong.",
   "kind": "class",
-  "title": "A2 — Soạn câu hỏi phỏng vấn",
+  "title": "A2 — Soan cau hoi phong van",
   "covers": [
     "F1-14",
     "F6-08",
@@ -11,61 +11,65 @@
     "legend": "shared",
     "classes": [
       {
-        "id": "service",
-        "name": "InterviewQuestionAuthoringService",
+        "id": "authorCtrl",
+        "name": "InterviewQuestionAuthoringController",
         "methods": [
-          "+ create(actorId : UUID, draft : QuestionDraft) : Question",
-          "+ updateDeleteOrImport(actorId : UUID, change : QuestionChange)",
-          "+ requireCriteria(questionId : UUID)",
-          "+ deletePreservingHistory(actorId : UUID, questionId : UUID)"
+          "+ create(caller : JwtAuthenticationToken, body : CreateQuestionRequest) : CreatedQuestionResponse",
+          "+ update(caller : JwtAuthenticationToken, questionId : UUID, body : UpdateQuestionRequest) : QuestionResponse",
+          "+ delete(caller : JwtAuthenticationToken, questionId : UUID) : ResponseEntity<Void>",
+          "+ importCsv(caller : JwtAuthenticationToken, file : MultipartFile) : ImportResult"
         ]
       },
       {
-        "id": "port1",
+        "id": "manageHandler",
+        "name": "ManageInterviewQuestionCommandHandler",
+        "methods": [
+          "+ create(command : CreateQuestionCommand) : UUID",
+          "+ update(command : UpdateQuestionCommand)",
+          "+ softDelete(questionId : UUID, actorId : UUID)"
+        ]
+      },
+      {
+        "id": "questionRepo",
         "name": "InterviewQuestionRepository",
-        "kind": "class",
-        "methods": [
-          "+ save(question : Question)"
-        ]
-      },
-      {
-        "id": "port2",
-        "name": "PermissionPort",
         "kind": "interface",
         "methods": [
-          "+ requireManageQuestions(actorId : UUID)"
+          "+ save(question : InterviewQuestion)",
+          "+ findById(questionId : UUID) : Optional<InterviewQuestion>",
+          "+ softDelete(questionId : UUID)",
+          "+ existsRubric(questionId : UUID) : boolean"
         ]
       },
       {
-        "id": "port3",
+        "id": "auditPort",
         "name": "AuditLogPort",
         "kind": "interface",
         "methods": [
-          "+ record(change : AuditEntry)"
+          "+ record(entry : AuditEntry)"
         ]
       }
     ],
     "externals": [],
     "relations": [
       {
-        "from": "service",
-        "to": "port1",
+        "from": "authorCtrl",
+        "to": "manageHandler",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port2",
+        "from": "manageHandler",
+        "to": "questionRepo",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port3",
+        "from": "manageHandler",
+        "to": "auditPort",
         "kind": "dependency"
       }
     ],
     "notes": [
-      "Quyền shared A2/A3; thiếu tiêu chí đánh giá thì không mở luyện; xoá mềm giữ lịch sử phiên.",
-      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+      "Soan cau hoi phong van kem danh sach follow-up va rubric tieu chi cham co trong so.",
+      "Xoa cau hoi thuc hien xoa mem (soft-delete) de bao toan lich su phien phong van cua hoc vien."
     ]
   }
 }

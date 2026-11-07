@@ -2,38 +2,148 @@
   "_": "Trang 2a/3, tiếp nối trang 1b sau khi người học đã nhận mã bài nộp. Nguồn: 03-dd/logic/F4_judge-orchestration.md BR-JD-03 bước 1-6; 03-dd/api/F4_judge-orchestration.md mục 2.4; 01-rd/system/SYS0101_backend_architecture.md. JudgeMessageConsumer = adapter nhận RabbitMQ; StartGradingCmd = StartGradingCommandHandler; SubmissionRepo = SubmissionRepository (domain output port); JudgeDbAdapter = SubmissionPersistenceAdapter; GradingSpecPort = cổng F4 đọc đặc tả và bản chụp testcase F2 [SoT: Suy luận về tên lớp]. Cổng F2 có bridge tới input port F2 nhưng lược ở hình để không vượt 10 lifeline. Khoá tư vấn PostgreSQL giữ trên kết nối suốt lượt chấm. Khi bài đã ở trạng thái cuối hoặc worker khác giữ khoá thì ack bỏ qua; nhánh này không vẽ để tập trung đường thành công. Bản chụp testcase phải đúng version đã ghim khi nộp và qua kiểm SHA-256, không đọc bản hiện hành. Trạng thái COMPILING được lưu trước khi phát trạng thái realtime; bước phát realtime nằm ở trang 2b. Các nhánh lỗi hạ tầng được đặc tả ở BR-JD-07.",
   "kind": "sequence",
   "title": "Sơ đồ tuần tự chi tiết - Worker nhận bài và ghim bộ chấm (2a/3)",
-  "covers": ["F3-02", "F3-03", "F4-08"],
+  "covers": [
+    "F3-02",
+    "F3-03",
+    "F4-08"
+  ],
   "mode": "color",
   "sequence": {
     "detail": true,
     "participants": [
-      {"name": "RabbitMQ", "role": "external", "stereo": "hàng đợi"},
-      {"name": "JudgeConsumer", "role": "controller", "stereo": "infrastructure consumer"},
-      {"name": "StartGradingCmd", "role": "service", "stereo": "application command"},
-      {"name": "SubmissionRepo", "role": "repository", "stereo": "domain output port"},
-      {"name": "JudgeDbAdapter", "role": "repository", "stereo": "infrastructure"},
-      {"name": "PostgreSQL", "role": "datastore", "stereo": "schema judge"},
-      {"name": "GradingSpecPort", "role": "repository", "stereo": "port F4 → F2"}
+      {
+        "name": "RabbitMQ",
+        "role": "external",
+        "stereo": "hàng đợi"
+      },
+      {
+        "name": "JudgeConsumer",
+        "role": "controller",
+        "stereo": "infrastructure consumer"
+      },
+      {
+        "name": "WorkerTestcaseCommandHandler",
+        "role": "service",
+        "stereo": "application command"
+      },
+      {
+        "name": "SubmissionWorkerRepository",
+        "role": "repository",
+        "stereo": "domain output port"
+      },
+      {
+        "name": "JdbcSubmissionWorkerRepository",
+        "role": "repository",
+        "stereo": "infrastructure"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema judge"
+      },
+      {
+        "name": "GradingSpecPort",
+        "role": "repository",
+        "stereo": "port F4 → F2"
+      }
     ],
     "messages": [
-      {"phase": "Giai đoạn 3 - Worker nhận bài đã xếp hàng"},
-      {"from": "RabbitMQ", "to": "JudgeConsumer", "text": "Giao mã bài nộp", "kind": "async"},
-      {"from": "JudgeConsumer", "to": "StartGradingCmd", "text": "Mở lượt chấm bài"},
-      {"from": "StartGradingCmd", "to": "SubmissionRepo", "text": "Giữ khoá bài và đọc trạng thái"},
-      {"from": "SubmissionRepo", "to": "JudgeDbAdapter", "text": "Đọc bài trên một kết nối"},
-      {"from": "JudgeDbAdapter", "to": "PostgreSQL", "text": "Khoá lượt chấm; đọc phiên bản đã ghim"},
-      {"from": "PostgreSQL", "to": "JudgeDbAdapter", "text": "Bài còn cần chấm", "kind": "return"},
-      {"from": "JudgeDbAdapter", "to": "SubmissionRepo", "text": "Bài và phiên bản testcase", "kind": "return"},
-      {"from": "SubmissionRepo", "to": "StartGradingCmd", "text": "Bài và phiên bản testcase", "kind": "return"},
-      {"from": "StartGradingCmd", "to": "GradingSpecPort", "text": "Lấy đặc tả và bản chụp đã ghim"},
-      {"from": "GradingSpecPort", "to": "StartGradingCmd", "text": "Đặc tả, N ca và dấu kiểm bản chụp", "kind": "return"},
-      {"from": "StartGradingCmd", "to": "StartGradingCmd", "text": "Kiểm bản chụp; đọc cấu hình lượt chấm"},
-      {"from": "StartGradingCmd", "to": "SubmissionRepo", "text": "Đổi sang Đang biên dịch nếu chưa kết thúc"},
-      {"from": "SubmissionRepo", "to": "JudgeDbAdapter", "text": "Lưu phiên bản đặc tả và mốc bắt đầu"},
-      {"from": "JudgeDbAdapter", "to": "PostgreSQL", "text": "Ghi trạng thái Đang biên dịch"},
-      {"from": "PostgreSQL", "to": "JudgeDbAdapter", "text": "Đã commit", "kind": "return"},
-      {"from": "JudgeDbAdapter", "to": "SubmissionRepo", "text": "Đã lưu", "kind": "return"},
-      {"from": "SubmissionRepo", "to": "StartGradingCmd", "text": "Sẵn sàng tạo mã chạy", "kind": "return"}
+      {
+        "phase": "Giai đoạn 3 - Worker nhận bài đã xếp hàng"
+      },
+      {
+        "from": "RabbitMQ",
+        "to": "JudgeConsumer",
+        "text": "Giao mã bài nộp",
+        "kind": "async"
+      },
+      {
+        "from": "JudgeConsumer",
+        "to": "WorkerTestcaseCommandHandler",
+        "text": "Mở lượt chấm bài"
+      },
+      {
+        "from": "WorkerTestcaseCommandHandler",
+        "to": "SubmissionWorkerRepository",
+        "text": "Giữ khoá bài và đọc trạng thái"
+      },
+      {
+        "from": "SubmissionWorkerRepository",
+        "to": "JdbcSubmissionWorkerRepository",
+        "text": "Đọc bài trên một kết nối"
+      },
+      {
+        "from": "JdbcSubmissionWorkerRepository",
+        "to": "PostgreSQL",
+        "text": "Khoá lượt chấm; đọc phiên bản đã ghim"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "JdbcSubmissionWorkerRepository",
+        "text": "Bài còn cần chấm",
+        "kind": "return"
+      },
+      {
+        "from": "JdbcSubmissionWorkerRepository",
+        "to": "SubmissionWorkerRepository",
+        "text": "Bài và phiên bản testcase",
+        "kind": "return"
+      },
+      {
+        "from": "SubmissionWorkerRepository",
+        "to": "WorkerTestcaseCommandHandler",
+        "text": "Bài và phiên bản testcase",
+        "kind": "return"
+      },
+      {
+        "from": "WorkerTestcaseCommandHandler",
+        "to": "GradingSpecPort",
+        "text": "Lấy đặc tả và bản chụp đã ghim"
+      },
+      {
+        "from": "GradingSpecPort",
+        "to": "WorkerTestcaseCommandHandler",
+        "text": "Đặc tả, N ca và dấu kiểm bản chụp",
+        "kind": "return"
+      },
+      {
+        "from": "WorkerTestcaseCommandHandler",
+        "to": "WorkerTestcaseCommandHandler",
+        "text": "Kiểm bản chụp; đọc cấu hình lượt chấm"
+      },
+      {
+        "from": "WorkerTestcaseCommandHandler",
+        "to": "SubmissionWorkerRepository",
+        "text": "Đổi sang Đang biên dịch nếu chưa kết thúc"
+      },
+      {
+        "from": "SubmissionWorkerRepository",
+        "to": "JdbcSubmissionWorkerRepository",
+        "text": "Lưu phiên bản đặc tả và mốc bắt đầu"
+      },
+      {
+        "from": "JdbcSubmissionWorkerRepository",
+        "to": "PostgreSQL",
+        "text": "Ghi trạng thái Đang biên dịch"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "JdbcSubmissionWorkerRepository",
+        "text": "Đã commit",
+        "kind": "return"
+      },
+      {
+        "from": "JdbcSubmissionWorkerRepository",
+        "to": "SubmissionWorkerRepository",
+        "text": "Đã lưu",
+        "kind": "return"
+      },
+      {
+        "from": "SubmissionWorkerRepository",
+        "to": "WorkerTestcaseCommandHandler",
+        "text": "Sẵn sàng tạo mã chạy",
+        "kind": "return"
+      }
     ]
   }
 }

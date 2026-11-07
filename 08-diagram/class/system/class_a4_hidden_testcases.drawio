@@ -4,36 +4,36 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="t_service" value='&lt;div style="text-align:center"&gt;&lt;b&gt;HiddenResultProjectionService&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;publicResult(result&amp;nbsp;:&amp;nbsp;CaseResult,&amp;nbsp;visibility&amp;nbsp;:&amp;nbsp;Visibility)&amp;nbsp;:&amp;nbsp;PublicCaseResult' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="145.89999999999998" y="60" width="505.9" height="54" as="geometry" />
+        <mxCell id="t_readController" value='&lt;div style="text-align:center"&gt;&lt;b&gt;MySubmissionReadController&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;detail(caller&amp;nbsp;:&amp;nbsp;JwtAuthenticationToken,&amp;nbsp;submissionId&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;Detail' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="118.05000000000001" y="60" width="469.29999999999995" height="54" as="geometry" />
         </mxCell>
-        <mxCell id="t_port1" value='&lt;div style="text-align:center"&gt;&lt;b&gt;CaseResultRepository&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;listBySubmission(id&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;List&amp;lt;CaseResult&amp;gt;' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="54" y="184" width="316.79999999999995" height="54" as="geometry" />
+        <mxCell id="t_readRepo" value='&lt;div style="text-align:center"&gt;&lt;b&gt;SubmissionReadRepository&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;findDetail(owner&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;submissionId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;Detail' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="169.9" y="184" width="365.59999999999997" height="68" as="geometry" />
         </mxCell>
-        <mxCell id="t_port2" value='&lt;div style="text-align:center"&gt;&lt;b&gt;HiddenDataPolicy&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;project(result&amp;nbsp;:&amp;nbsp;CaseResult)&amp;nbsp;:&amp;nbsp;PublicCaseResult' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="420.79999999999995" y="184" width="322.9" height="54" as="geometry" />
+        <mxCell id="t_policy" value='&lt;div style="text-align:center"&gt;&lt;b&gt;SubmissionFinalizationPolicy&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;summarize(before&amp;nbsp;:&amp;nbsp;SubmissionState,&amp;nbsp;command&amp;nbsp;:&amp;nbsp;FinishCommand,&amp;nbsp;cases&amp;nbsp;:&amp;nbsp;List&amp;lt;Result&amp;gt;)&amp;nbsp;:&amp;nbsp;Outcome' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="54" y="322" width="597.4" height="54" as="geometry" />
         </mxCell>
-        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.260;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port1">
+        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.511;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_readController" target="t_readRepo">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="277.375" y="137.33333333333334" />
-            <mxPoint x="212.39999999999998" y="137.33333333333334" />
+            <mxPoint x="352.7" y="149" />
+            <mxPoint x="356.7" y="149" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e2" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.740;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port2">
+        <mxCell id="e2" value="áp dụng chính sách che dữ liệu" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.507;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_readRepo" target="t_policy">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="520.3249999999999" y="160.66666666666666" />
-            <mxPoint x="582.25" y="160.66666666666666" />
+            <mxPoint x="352.7" y="287" />
+            <mxPoint x="356.7" y="287" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="title" value="A4 — Che dữ liệu testcase ẩn" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="0" y="10" width="773.6999999999999" height="30" as="geometry" />
+          <mxGeometry x="0" y="10" width="681.4" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="v3" value="Ghi chú: Hidden chỉ công khai trạng thái/chỉ số; không trả input, expected output, diff hay object key qua API/event/log.&lt;br&gt;Ghi chú: [SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="30" y="258" width="1100" height="44" as="geometry" />
+        <mxCell id="v3" value="Ghi chú: MySubmissionReadController chỉ trả về Detail với trạng thái và chỉ số (thời gian, bộ nhớ) của testcase ẩn.&lt;br&gt;Ghi chú: SubmissionReadRepository và SubmissionFinalizationPolicy bảo đảm dữ liệu đầu vào và diff chi tiết của testcase ẩn không bao giờ bị lộ qua API." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="30" y="396" width="1100" height="44" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

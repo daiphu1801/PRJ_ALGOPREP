@@ -15,22 +15,22 @@
         "role": "actor"
       },
       {
-        "name": "PracticeController",
+        "name": "InterviewPracticeController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "GetInterviewQuestion",
+        "name": "GetInterviewQuestionQueryHandler",
         "role": "service",
         "stereo": "application query"
       },
       {
-        "name": "QuestionQueryPort",
+        "name": "InterviewQuestionRepository",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "InterviewBankDbAdapter",
+        "name": "JdbcInterviewQuestionRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -46,55 +46,55 @@
       },
       {
         "from": "Sinh viên",
-        "to": "PracticeController",
+        "to": "InterviewPracticeController",
         "text": "Chọn chủ đề, mức độ và trạng thái ôn tập"
       },
       {
-        "from": "PracticeController",
-        "to": "GetInterviewQuestion",
+        "from": "InterviewPracticeController",
+        "to": "GetInterviewQuestionQueryHandler",
         "text": "Lấy danh sách câu hỏi phù hợp"
       },
       {
-        "from": "GetInterviewQuestion",
-        "to": "QuestionQueryPort",
+        "from": "GetInterviewQuestionQueryHandler",
+        "to": "InterviewQuestionRepository",
         "text": "Tìm câu đang hiển thị cho người học"
       },
       {
-        "from": "QuestionQueryPort",
-        "to": "InterviewBankDbAdapter",
+        "from": "InterviewQuestionRepository",
+        "to": "JdbcInterviewQuestionRepository",
         "text": "Áp bộ lọc và phân trang"
       },
       {
-        "from": "InterviewBankDbAdapter",
+        "from": "JdbcInterviewQuestionRepository",
         "to": "PostgreSQL",
         "text": "Đọc câu hỏi, mức tự chấm, dấu đã lưu"
       },
       {
         "from": "PostgreSQL",
-        "to": "InterviewBankDbAdapter",
+        "to": "JdbcInterviewQuestionRepository",
         "text": "Danh sách và tổng số câu",
         "kind": "return"
       },
       {
-        "from": "InterviewBankDbAdapter",
-        "to": "QuestionQueryPort",
+        "from": "JdbcInterviewQuestionRepository",
+        "to": "InterviewQuestionRepository",
         "text": "Danh sách câu hỏi",
         "kind": "return"
       },
       {
-        "from": "QuestionQueryPort",
-        "to": "GetInterviewQuestion",
+        "from": "GetInterviewQuestionQueryHandler",
+        "to": "InterviewQuestionRepository",
         "text": "Danh sách câu hỏi",
         "kind": "return"
       },
       {
-        "from": "GetInterviewQuestion",
-        "to": "PracticeController",
+        "from": "InterviewQuestionRepository",
+        "to": "InterviewPracticeController",
         "text": "Danh sách và số trang",
         "kind": "return"
       },
       {
-        "from": "PracticeController",
+        "from": "InterviewPracticeController",
         "to": "Sinh viên",
         "text": "Hiển thị danh sách câu hỏi",
         "kind": "return"
@@ -104,44 +104,44 @@
       },
       {
         "from": "Sinh viên",
-        "to": "PracticeController",
+        "to": "InterviewPracticeController",
         "text": "Mở một câu hỏi"
       },
       {
-        "from": "PracticeController",
-        "to": "GetInterviewQuestion",
+        "from": "InterviewPracticeController",
+        "to": "GetInterviewQuestionQueryHandler",
         "text": "Lấy nội dung câu hỏi"
       },
       {
-        "from": "GetInterviewQuestion",
-        "to": "QuestionQueryPort",
+        "from": "GetInterviewQuestionQueryHandler",
+        "to": "InterviewQuestionRepository",
         "text": "Tìm câu đang hiển thị và dữ liệu của người gọi"
       },
       {
-        "from": "QuestionQueryPort",
-        "to": "InterviewBankDbAdapter",
+        "from": "InterviewQuestionRepository",
+        "to": "JdbcInterviewQuestionRepository",
         "text": "Đọc nội dung học và khả năng luyện"
       },
       {
-        "from": "InterviewBankDbAdapter",
+        "from": "JdbcInterviewQuestionRepository",
         "to": "PostgreSQL",
         "text": "Đọc câu đang hoạt động, chủ đề, mức độ, tiêu chí, tự chấm và dấu đã lưu"
       },
       {
         "from": "PostgreSQL",
-        "to": "InterviewBankDbAdapter",
+        "to": "JdbcInterviewQuestionRepository",
         "text": "Nội dung, tình trạng luyện và thông tin cá nhân",
         "kind": "return"
       },
       {
-        "from": "InterviewBankDbAdapter",
-        "to": "QuestionQueryPort",
+        "from": "JdbcInterviewQuestionRepository",
+        "to": "InterviewQuestionRepository",
         "text": "Chi tiết câu hỏi",
         "kind": "return"
       },
       {
-        "from": "QuestionQueryPort",
-        "to": "GetInterviewQuestion",
+        "from": "GetInterviewQuestionQueryHandler",
+        "to": "InterviewQuestionRepository",
         "text": "Chi tiết câu hỏi",
         "kind": "return"
       },
@@ -150,13 +150,13 @@
           "label": "Câu hỏi đang hoạt động?",
           "then": [
             {
-              "from": "GetInterviewQuestion",
-              "to": "PracticeController",
+              "from": "InterviewQuestionRepository",
+              "to": "InterviewPracticeController",
               "text": "Nội dung học đã soạn sẵn; có thể luyện khi có tiêu chí",
               "kind": "return"
             },
             {
-              "from": "PracticeController",
+              "from": "InterviewPracticeController",
               "to": "Sinh viên",
               "text": "Hiển thị nội dung học và nút luyện phù hợp",
               "kind": "return"
@@ -164,13 +164,13 @@
           ],
           "else": [
             {
-              "from": "GetInterviewQuestion",
-              "to": "PracticeController",
+              "from": "InterviewQuestionRepository",
+              "to": "InterviewPracticeController",
               "text": "Không tìm thấy câu hỏi",
               "kind": "return"
             },
             {
-              "from": "PracticeController",
+              "from": "InterviewPracticeController",
               "to": "Sinh viên",
               "text": "Báo câu hỏi không còn hiển thị",
               "kind": "return"

@@ -1,5 +1,5 @@
 {
-  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a3_admin.md:27; 01-rd/req/user_stories/a3_admin.md:30; 01-rd/req/user_stories/a3_admin.md:34; 01-rd/req/user_stories/a3_admin.md:37. Nguồn thiết kế: 03-dd/logic/F1_identity.md; 03-dd/api/F1_identity.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a3_admin.md:27-37. Nguồn mã nguồn: 05-coding/backend/algoprep-identity/src/main/java/com/algoprep/identity/presentation/controller/AdminUserActionController.java, application/command/ChangeUserStatusCommandHandler.java và ChangeUserRoleCommandHandler.java.",
   "kind": "class",
   "title": "A3 — Quản lý tài khoản",
   "covers": [
@@ -12,61 +12,83 @@
     "legend": "shared",
     "classes": [
       {
-        "id": "service",
-        "name": "AdminUserService",
+        "id": "actionController",
+        "name": "AdminUserActionController",
         "methods": [
-          "+ updateUser(adminId : UUID, command : UserAdminCommand)",
-          "+ lockWithReason(adminId : UUID, userIds : List<UUID>, reason : String)",
-          "+ bulkUpdate(adminId : UUID, command : BulkUserCommand) : BulkResult",
-          "+ unlock(adminId : UUID, userId : UUID)"
+          "+ role(jwt : Jwt, userId : String, body : ChangeRoleRequest) : AdminUserItem",
+          "+ status(jwt : Jwt, userId : String, body : ChangeStatusRequest) : AdminUserItem"
         ]
       },
       {
-        "id": "port1",
-        "name": "UserRepository",
-        "kind": "class",
+        "id": "listController",
+        "name": "AdminUserController",
         "methods": [
-          "+ findById(id : UUID) : UserAccount"
+          "+ list(jwt : Jwt, q : String, role : String, status : String) : AdminUserPage"
         ]
       },
       {
-        "id": "port2",
-        "name": "SessionRevocationPort",
+        "id": "statusHandler",
+        "name": "ChangeUserStatusCommandHandler",
+        "methods": [
+          "+ change(command : ChangeUserStatusCommand) : AdminUserItem"
+        ]
+      },
+      {
+        "id": "roleHandler",
+        "name": "ChangeUserRoleCommandHandler",
+        "methods": [
+          "+ change(command : ChangeUserRoleCommand) : AdminUserItem"
+        ]
+      },
+      {
+        "id": "lifecycleRepo",
+        "name": "AccountLifecycleRepository",
         "kind": "interface",
         "methods": [
-          "+ revokeAll(userId : UUID)"
+          "+ updateStatus(userId : UUID, status : UserStatus)",
+          "+ revokeTokens(userId : UUID)"
         ]
       },
       {
-        "id": "port3",
+        "id": "auditPort",
         "name": "AuditLogPort",
         "kind": "interface",
         "methods": [
-          "+ record(change : AuditEntry)"
+          "+ record(entry : AuditEntry)"
         ]
       }
     ],
     "externals": [],
     "relations": [
       {
-        "from": "service",
-        "to": "port1",
+        "from": "actionController",
+        "to": "statusHandler",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port2",
+        "from": "actionController",
+        "to": "roleHandler",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port3",
+        "from": "statusHandler",
+        "to": "lifecycleRepo",
+        "kind": "dependency"
+      },
+      {
+        "from": "statusHandler",
+        "to": "auditPort",
+        "kind": "dependency"
+      },
+      {
+        "from": "roleHandler",
+        "to": "auditPort",
         "kind": "dependency"
       }
     ],
     "notes": [
-      "Khoá tài khoản đòi lý do; thao tác hàng loạt chọn trạng thái theo từng dòng; mở khoá không đòi lý do.",
-      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+      "Khoá tài khoản yêu cầu lý do và thu hồi refresh token; mở khoá khôi phục quyền truy cập.",
+      "Mọi thao tác quản lý tài khoản đều được ghi nhận vào nhật ký hệ thống qua AuditLogPort."
     ]
   }
 }

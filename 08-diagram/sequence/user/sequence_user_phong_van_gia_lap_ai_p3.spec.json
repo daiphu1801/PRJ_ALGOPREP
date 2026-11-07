@@ -17,22 +17,22 @@
         "role": "actor"
       },
       {
-        "name": "InterviewController",
+        "name": "MockInterviewController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "CompleteInterviewCmd",
+        "name": "MockInterviewStageCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "InterviewRepo",
+        "name": "InterviewSessionRepository",
         "role": "repository",
         "stereo": "output port F5"
       },
       {
-        "name": "AiDbAdapter",
+        "name": "JdbcInterviewSessionRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -42,7 +42,7 @@
         "stereo": "schema ai"
       },
       {
-        "name": "LlmProviderPort",
+        "name": "InterviewAiPort",
         "role": "repository",
         "stereo": "output port"
       },
@@ -62,44 +62,44 @@
       },
       {
         "from": "Sinh viên",
-        "to": "InterviewController",
+        "to": "MockInterviewController",
         "text": "Yêu cầu kết thúc và chấm"
       },
       {
-        "from": "InterviewController",
-        "to": "CompleteInterviewCmd",
+        "from": "MockInterviewController",
+        "to": "MockInterviewStageCommandHandler",
         "text": "Kiểm chủ phiên và trạng thái"
       },
       {
-        "from": "CompleteInterviewCmd",
-        "to": "InterviewRepo",
+        "from": "MockInterviewStageCommandHandler",
+        "to": "InterviewSessionRepository",
         "text": "Đọc phiên cùng toàn bộ hội thoại"
       },
       {
-        "from": "InterviewRepo",
-        "to": "AiDbAdapter",
+        "from": "InterviewSessionRepository",
+        "to": "JdbcInterviewSessionRepository",
         "text": "Tra lượt và bảng điểm đã có"
       },
       {
-        "from": "AiDbAdapter",
+        "from": "JdbcInterviewSessionRepository",
         "to": "PostgreSQL",
         "text": "Đọc phiên và lịch sử hỏi đáp"
       },
       {
         "from": "PostgreSQL",
-        "to": "AiDbAdapter",
+        "to": "JdbcInterviewSessionRepository",
         "text": "Hội thoại và điểm nếu đã chấm",
         "kind": "return"
       },
       {
-        "from": "AiDbAdapter",
-        "to": "InterviewRepo",
+        "from": "JdbcInterviewSessionRepository",
+        "to": "InterviewSessionRepository",
         "text": "Kết quả tra cứu",
         "kind": "return"
       },
       {
-        "from": "InterviewRepo",
-        "to": "CompleteInterviewCmd",
+        "from": "InterviewSessionRepository",
+        "to": "MockInterviewStageCommandHandler",
         "text": "Phiên cần chấm hoặc đã hoàn tất",
         "kind": "return"
       },
@@ -108,25 +108,25 @@
           "label": "Đã có bảng điểm?",
           "then": [
             {
-              "from": "CompleteInterviewCmd",
-              "to": "InterviewController",
+              "from": "MockInterviewStageCommandHandler",
+              "to": "MockInterviewController",
               "text": "Trả bảng điểm đã lưu",
               "kind": "return"
             }
           ],
           "else": [
             {
-              "from": "CompleteInterviewCmd",
-              "to": "CompleteInterviewCmd",
+              "from": "MockInterviewStageCommandHandler",
+              "to": "MockInterviewStageCommandHandler",
               "text": "Kiểm đã có ít nhất một lượt trả lời"
             },
             {
-              "from": "CompleteInterviewCmd",
-              "to": "LlmProviderPort",
+              "from": "MockInterviewStageCommandHandler",
+              "to": "InterviewAiPort",
               "text": "Xin đánh giá bốn tiêu chí"
             },
             {
-              "from": "LlmProviderPort",
+              "from": "InterviewAiPort",
               "to": "SpringAiLlmAdapter",
               "text": "Gọi mô hình AI"
             },
@@ -143,57 +143,57 @@
             },
             {
               "from": "SpringAiLlmAdapter",
-              "to": "LlmProviderPort",
+              "to": "InterviewAiPort",
               "text": "Bảng điểm có cấu trúc",
               "kind": "return"
             },
             {
-              "from": "LlmProviderPort",
-              "to": "CompleteInterviewCmd",
+              "from": "InterviewAiPort",
+              "to": "MockInterviewStageCommandHandler",
               "text": "Bảng điểm và lượng token",
               "kind": "return"
             },
             {
-              "from": "CompleteInterviewCmd",
-              "to": "CompleteInterviewCmd",
+              "from": "MockInterviewStageCommandHandler",
+              "to": "MockInterviewStageCommandHandler",
               "text": "Kiểm đủ bốn tiêu chí và mức điểm"
             },
             {
-              "from": "CompleteInterviewCmd",
-              "to": "InterviewRepo",
+              "from": "MockInterviewStageCommandHandler",
+              "to": "InterviewSessionRepository",
               "text": "Lưu điểm, đóng phiên và sự kiện"
             },
             {
-              "from": "InterviewRepo",
-              "to": "AiDbAdapter",
+              "from": "InterviewSessionRepository",
+              "to": "JdbcInterviewSessionRepository",
               "text": "Ghi bốn điểm và token"
             },
             {
-              "from": "AiDbAdapter",
+              "from": "JdbcInterviewSessionRepository",
               "to": "PostgreSQL",
               "text": "Lưu phiên hoàn tất và sự kiện"
             },
             {
               "from": "PostgreSQL",
-              "to": "AiDbAdapter",
+              "to": "JdbcInterviewSessionRepository",
               "text": "Bảng điểm đã lưu",
               "kind": "return"
             },
             {
-              "from": "AiDbAdapter",
-              "to": "InterviewRepo",
+              "from": "JdbcInterviewSessionRepository",
+              "to": "InterviewSessionRepository",
               "text": "Kết quả hoàn tất",
               "kind": "return"
             },
             {
-              "from": "InterviewRepo",
-              "to": "CompleteInterviewCmd",
+              "from": "InterviewSessionRepository",
+              "to": "MockInterviewStageCommandHandler",
               "text": "Bảng điểm tham khảo",
               "kind": "return"
             },
             {
-              "from": "CompleteInterviewCmd",
-              "to": "InterviewController",
+              "from": "MockInterviewStageCommandHandler",
+              "to": "MockInterviewController",
               "text": "Trả bảng điểm tham khảo",
               "kind": "return"
             }
@@ -201,7 +201,7 @@
         }
       },
       {
-        "from": "InterviewController",
+        "from": "MockInterviewController",
         "to": "Sinh viên",
         "text": "Hiển thị đánh giá hỗ trợ học tập",
         "kind": "return"

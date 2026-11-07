@@ -4,49 +4,54 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="t_service" value='&lt;div style="text-align:center"&gt;&lt;b&gt;HarnessOrchestrationService&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;generateForLanguage(spec&amp;nbsp;:&amp;nbsp;ProblemSpec,&amp;nbsp;source&amp;nbsp;:&amp;nbsp;String,&amp;nbsp;language&amp;nbsp;:&amp;nbsp;Language)&amp;nbsp;:&amp;nbsp;RunnableCode&lt;br&gt;+&amp;nbsp;sanitizeCompilerError(error&amp;nbsp;:&amp;nbsp;CompileError)&amp;nbsp;:&amp;nbsp;PublicCompileError' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="160.95" y="60" width="597.4" height="68" as="geometry" />
+        <mxCell id="t_prepareHandler" value='&lt;div style="text-align:center"&gt;&lt;b&gt;PrepareSubmissionCommandHandler&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;prepare(command&amp;nbsp;:&amp;nbsp;PrepareSubmissionCommand)&amp;nbsp;:&amp;nbsp;PreparedProgram' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="102.40000000000003" y="60" width="408.29999999999995" height="54" as="geometry" />
         </mxCell>
-        <mxCell id="t_port1" value='&lt;div style="text-align:center"&gt;&lt;b&gt;CodeGenerator&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;generate(spec&amp;nbsp;:&amp;nbsp;ProblemSpec,&amp;nbsp;source&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;RunnableCode' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="66" y="198" width="402.2" height="54" as="geometry" />
+        <mxCell id="t_packaging" value='&lt;div style="text-align:center"&gt;&lt;b&gt;ProgramPackaging&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;functionWrapper(language&amp;nbsp;:&amp;nbsp;Language,&amp;nbsp;draft&amp;nbsp;:&amp;nbsp;FunctionSpecDraft,&amp;nbsp;source&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;PackagedProgram&lt;br&gt;+&amp;nbsp;standardIo(language&amp;nbsp;:&amp;nbsp;Language,&amp;nbsp;source&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;PackagedProgram' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="209.55" y="184" width="634" height="68" as="geometry" />
         </mxCell>
-        <mxCell id="t_port2" value='&lt;div style="text-align:center"&gt;&lt;b&gt;LanguagePluginRegistry&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;forLanguage(language&amp;nbsp;:&amp;nbsp;Language)&amp;nbsp;:&amp;nbsp;LanguagePlugin' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="518.2" y="198" width="335.09999999999997" height="54" as="geometry" />
+        <mxCell id="t_compileHandler" value='&lt;div style="text-align:center"&gt;&lt;b&gt;MapCompileErrorHandler&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;map(command&amp;nbsp;:&amp;nbsp;MapCompileErrorCommand)&amp;nbsp;:&amp;nbsp;CompileErrorReport' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="560.7" y="60" width="390" height="54" as="geometry" />
         </mxCell>
-        <mxCell id="t_port3" value='&lt;div style="text-align:center"&gt;&lt;b&gt;CompilerErrorSanitizer&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;sanitize(error&amp;nbsp;:&amp;nbsp;CompileError)&amp;nbsp;:&amp;nbsp;PublicCompileError' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="286" y="322" width="347.29999999999995" height="54" as="geometry" />
+        <mxCell id="t_mapping" value='&lt;div style="text-align:center"&gt;&lt;b&gt;CompileMapping&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;map(language&amp;nbsp;:&amp;nbsp;Language,&amp;nbsp;standardIo&amp;nbsp;:&amp;nbsp;boolean,&amp;nbsp;raw&amp;nbsp;:&amp;nbsp;String,&amp;nbsp;lineMap&amp;nbsp;:&amp;nbsp;LineMap)&amp;nbsp;:&amp;nbsp;Result' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="78" y="322" width="573" height="54" as="geometry" />
         </mxCell>
-        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.184;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port1">
+        <mxCell id="t_diagPort" value='&lt;div style="text-align:center"&gt;&lt;b&gt;CompilerDiagnosticLogPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;record(entry&amp;nbsp;:&amp;nbsp;CompilerDiagnosticEntry)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="701" y="322" width="274.1" height="68" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_prepareHandler" target="t_packaging">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="271.1" y="145.5" />
-            <mxPoint x="267.1" y="145.5" />
+            <mxPoint x="306.55" y="131.5" />
+            <mxPoint x="526.55" y="131.5" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e2" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.822;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port2">
+        <mxCell id="e2" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.263;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_compileHandler" target="t_mapping">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="652.1166666666667" y="180.5" />
-            <mxPoint x="685.75" y="180.5" />
+            <mxPoint x="663.2" y="149" />
+            <mxPoint x="30" y="149" />
+            <mxPoint x="30" y="275.3333333333333" />
+            <mxPoint x="364.5" y="275.3333333333333" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e3" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port3">
+        <mxCell id="e3" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.737;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_compileHandler" target="t_diagPort">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="459.65" y="163" />
-            <mxPoint x="30" y="163" />
-            <mxPoint x="30" y="287" />
-            <mxPoint x="459.65" y="287" />
+            <mxPoint x="848.2" y="166.5" />
+            <mxPoint x="42" y="166.5" />
+            <mxPoint x="42" y="298.6666666666667" />
+            <mxPoint x="838.05" y="298.6666666666667" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="title" value="A4 — Ghép mã và bảo vệ lỗi biên dịch" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="0" y="10" width="883.3" height="30" as="geometry" />
+          <mxGeometry x="0" y="10" width="1005.1" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="v4" value="Ghi chú: Chi tiết plugin F3 có ở hai hình mẫu; lỗi biên dịch không để lộ nội dung wrapper nội bộ.&lt;br&gt;Ghi chú: [SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="30" y="396" width="1100" height="44" as="geometry" />
+        <mxCell id="v4" value="Ghi chú: PrepareSubmissionCommandHandler đóng gói chương trình cho máy chấm theo mô hình bọc hàm hoặc standard I/O.&lt;br&gt;Ghi chú: MapCompileErrorHandler ánh xạ dòng lỗi biên dịch về mã nguồn của người học và cô lập mã wrapper hệ thống." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="30" y="410" width="1100" height="44" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

@@ -15,27 +15,27 @@
         "role": "actor"
       },
       {
-        "name": "JudgeOpsController",
+        "name": "QueueMonitorController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "GetQueueSnapshot",
+        "name": "GetQueueSnapshotQueryHandler",
         "role": "service",
         "stereo": "application query"
       },
       {
-        "name": "ListQueueJobs",
+        "name": "ListQueueJobsQueryHandler",
         "role": "service",
         "stereo": "application query"
       },
       {
-        "name": "QueueReadPort",
+        "name": "QueueMonitorRepository",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "JudgeDbAdapter",
+        "name": "JdbcQueueMonitorRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -51,55 +51,55 @@
       },
       {
         "from": "Quản trị viên",
-        "to": "JudgeOpsController",
+        "to": "QueueMonitorController",
         "text": "Mở trang giám sát hàng đợi"
       },
       {
-        "from": "JudgeOpsController",
-        "to": "GetQueueSnapshot",
+        "from": "QueueMonitorController",
+        "to": "GetQueueSnapshotQueryHandler",
         "text": "Lấy trạng thái, số bài chờ và độ trễ"
       },
       {
-        "from": "GetQueueSnapshot",
-        "to": "QueueReadPort",
+        "from": "GetQueueSnapshotQueryHandler",
+        "to": "QueueMonitorRepository",
         "text": "Đọc cấu hình cụm và số liệu bài nộp"
       },
       {
-        "from": "QueueReadPort",
-        "to": "JudgeDbAdapter",
+        "from": "QueueMonitorRepository",
+        "to": "JdbcQueueMonitorRepository",
         "text": "Tổng hợp trạng thái trong một giờ gần nhất"
       },
       {
-        "from": "JudgeDbAdapter",
+        "from": "JdbcQueueMonitorRepository",
         "to": "PostgreSQL",
         "text": "Đọc cấu hình và các mốc bài nộp"
       },
       {
         "from": "PostgreSQL",
-        "to": "JudgeDbAdapter",
+        "to": "JdbcQueueMonitorRepository",
         "text": "Trạng thái và số liệu",
         "kind": "return"
       },
       {
-        "from": "JudgeDbAdapter",
-        "to": "QueueReadPort",
+        "from": "JdbcQueueMonitorRepository",
+        "to": "QueueMonitorRepository",
         "text": "Trạng thái và số liệu",
         "kind": "return"
       },
       {
-        "from": "QueueReadPort",
-        "to": "GetQueueSnapshot",
+        "from": "QueueMonitorRepository",
+        "to": "GetQueueSnapshotQueryHandler",
         "text": "Trạng thái và số liệu",
         "kind": "return"
       },
       {
-        "from": "GetQueueSnapshot",
-        "to": "JudgeOpsController",
+        "from": "GetQueueSnapshotQueryHandler",
+        "to": "QueueMonitorController",
         "text": "Trả trạng thái hàng đợi",
         "kind": "return"
       },
       {
-        "from": "JudgeOpsController",
+        "from": "QueueMonitorController",
         "to": "Quản trị viên",
         "text": "Hiển thị tạm dừng, tồn đọng hoặc bình thường",
         "kind": "return"
@@ -109,55 +109,55 @@
       },
       {
         "from": "Quản trị viên",
-        "to": "JudgeOpsController",
+        "to": "QueueMonitorController",
         "text": "Chọn tab và trang bài nộp"
       },
       {
-        "from": "JudgeOpsController",
-        "to": "ListQueueJobs",
+        "from": "QueueMonitorController",
+        "to": "ListQueueJobsQueryHandler",
         "text": "Lấy một trang bài nộp"
       },
       {
-        "from": "ListQueueJobs",
-        "to": "QueueReadPort",
+        "from": "ListQueueJobsQueryHandler",
+        "to": "QueueMonitorRepository",
         "text": "Đọc bài chờ, đang chấm hoặc lỗi hệ thống"
       },
       {
-        "from": "QueueReadPort",
-        "to": "JudgeDbAdapter",
+        "from": "QueueMonitorRepository",
+        "to": "JdbcQueueMonitorRepository",
         "text": "Lọc và sắp theo thời gian chờ"
       },
       {
-        "from": "JudgeDbAdapter",
+        "from": "JdbcQueueMonitorRepository",
         "to": "PostgreSQL",
         "text": "Đọc các bài nộp trong tab"
       },
       {
         "from": "PostgreSQL",
-        "to": "JudgeDbAdapter",
+        "to": "JdbcQueueMonitorRepository",
         "text": "Một trang và số lượng từng tab",
         "kind": "return"
       },
       {
-        "from": "JudgeDbAdapter",
-        "to": "QueueReadPort",
+        "from": "JdbcQueueMonitorRepository",
+        "to": "QueueMonitorRepository",
         "text": "Một trang và số lượng từng tab",
         "kind": "return"
       },
       {
-        "from": "QueueReadPort",
-        "to": "ListQueueJobs",
+        "from": "QueueMonitorRepository",
+        "to": "ListQueueJobsQueryHandler",
         "text": "Một trang và số lượng từng tab",
         "kind": "return"
       },
       {
-        "from": "ListQueueJobs",
-        "to": "JudgeOpsController",
+        "from": "ListQueueJobsQueryHandler",
+        "to": "QueueMonitorController",
         "text": "Trả bảng kết quả",
         "kind": "return"
       },
       {
-        "from": "JudgeOpsController",
+        "from": "QueueMonitorController",
         "to": "Quản trị viên",
         "text": "Hiển thị bài chờ và bài lỗi",
         "kind": "return"

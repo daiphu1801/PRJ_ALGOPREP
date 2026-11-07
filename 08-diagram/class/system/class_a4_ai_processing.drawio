@@ -4,60 +4,73 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="t_service" value='&lt;div style="text-align:center"&gt;&lt;b&gt;AiProcessingService&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;analyzeAccepted(submissionId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;ReviewReport&lt;br&gt;+&amp;nbsp;runThreeStages(sessionId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;InterviewRubric&lt;br&gt;+&amp;nbsp;buildSafeContext(request&amp;nbsp;:&amp;nbsp;AiRequest)&amp;nbsp;:&amp;nbsp;SafeAiContext&lt;br&gt;+&amp;nbsp;degradeOnFailure(request&amp;nbsp;:&amp;nbsp;AiRequest,&amp;nbsp;cause&amp;nbsp;:&amp;nbsp;AiFailure)&amp;nbsp;:&amp;nbsp;AiFallback' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="332.15" y="60" width="457.09999999999997" height="96" as="geometry" />
+        <mxCell id="t_reviewHandler" value='&lt;div style="text-align:center"&gt;&lt;b&gt;AnalyzeAcceptedSubmissionCommandHandler&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;handle(command&amp;nbsp;:&amp;nbsp;AnalyzeSubmissionCommand)&amp;nbsp;:&amp;nbsp;SolutionReview&lt;br&gt;+&amp;nbsp;degradeOnFailure(cause&amp;nbsp;:&amp;nbsp;Throwable)&amp;nbsp;:&amp;nbsp;ReviewFallback' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="133.3" y="60" width="396.09999999999997" height="68" as="geometry" />
         </mxCell>
-        <mxCell id="t_port1" value='&lt;div style="text-align:center"&gt;&lt;b&gt;AcceptedSubmissionPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;requireAccepted(id&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;Submission' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="66" y="236" width="274.1" height="68" as="geometry" />
+        <mxCell id="t_interviewHandler" value='&lt;div style="text-align:center"&gt;&lt;b&gt;MockInterviewStageCommandHandler&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;advanceStage(command&amp;nbsp;:&amp;nbsp;AdvanceStageCommand)&amp;nbsp;:&amp;nbsp;InterviewRubric' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="579.4" y="60" width="408.29999999999995" height="54" as="geometry" />
         </mxCell>
-        <mxCell id="t_port2" value='&lt;div style="text-align:center"&gt;&lt;b&gt;AiProviderPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;complete(context&amp;nbsp;:&amp;nbsp;SafeAiContext)&amp;nbsp;:&amp;nbsp;AiResponse' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="390.1" y="236" width="316.79999999999995" height="68" as="geometry" />
+        <mxCell id="t_submissionBridge" value='&lt;div style="text-align:center"&gt;&lt;b&gt;AcceptedSubmissionReadPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;requireAccepted(id&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;SubmissionState' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="78" y="224" width="304.59999999999997" height="68" as="geometry" />
         </mxCell>
-        <mxCell id="t_port3" value='&lt;div style="text-align:center"&gt;&lt;b&gt;AiBudgetPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;check(request&amp;nbsp;:&amp;nbsp;AiRequest)&amp;nbsp;:&amp;nbsp;BudgetDecision' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="756.9" y="236" width="298.5" height="68" as="geometry" />
+        <mxCell id="t_aiPort" value='&lt;div style="text-align:center"&gt;&lt;b&gt;AiProviderPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;complete(context&amp;nbsp;:&amp;nbsp;SafeAiContext)&amp;nbsp;:&amp;nbsp;AiResponse' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="402.09999999999997" y="362" width="316.79999999999995" height="68" as="geometry" />
         </mxCell>
-        <mxCell id="t_port4" value='&lt;div style="text-align:center"&gt;&lt;b&gt;AiHistoryRepository&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;save(result&amp;nbsp;:&amp;nbsp;AiResult)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="472.45" y="374" width="176.5" height="54" as="geometry" />
+        <mxCell id="t_budgetPort" value='&lt;div style="text-align:center"&gt;&lt;b&gt;AiBudgetPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;checkBudget(actorId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;tokens&amp;nbsp;:&amp;nbsp;int)&amp;nbsp;:&amp;nbsp;boolean' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="432.59999999999997" y="224" width="347.29999999999995" height="68" as="geometry" />
         </mxCell>
-        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.141;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port1">
+        <mxCell id="t_reviewRepo" value='&lt;div style="text-align:center"&gt;&lt;b&gt;SolutionReviewRepository&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;save(review&amp;nbsp;:&amp;nbsp;SolutionReview)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="829.8999999999999" y="224" width="213.1" height="68" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.144;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_reviewHandler" target="t_submissionBridge">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="396.78749999999997" y="172" />
-            <mxPoint x="203.05" y="172" />
+            <mxPoint x="190.3125" y="144" />
+            <mxPoint x="230.29999999999998" y="144" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e2" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.380;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port2">
+        <mxCell id="e2" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.381;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.266;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_reviewHandler" target="t_aiPort">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="506.0625" y="188" />
-            <mxPoint x="548.5" y="188" />
+            <mxPoint x="284.3375" y="160" />
+            <mxPoint x="30" y="160" />
+            <mxPoint x="30" y="315.3333333333333" />
+            <mxPoint x="486.29999999999995" y="315.3333333333333" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e3" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.859;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port3">
+        <mxCell id="e3" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.619;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_reviewHandler" target="t_budgetPort">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="724.6125" y="220" />
-            <mxPoint x="906.15" y="220" />
+            <mxPoint x="378.36249999999995" y="176" />
+            <mxPoint x="606.25" y="176" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e4" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.620;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port4">
+        <mxCell id="e4" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.856;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_reviewHandler" target="t_reviewRepo">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="615.3375" y="204" />
-            <mxPoint x="30" y="204" />
-            <mxPoint x="30" y="339" />
-            <mxPoint x="560.7" y="339" />
+            <mxPoint x="472.3875" y="192" />
+            <mxPoint x="936.4499999999998" y="192" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e5" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.734;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_interviewHandler" target="t_aiPort">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="783.55" y="208" />
+            <mxPoint x="42" y="208" />
+            <mxPoint x="42" y="338.6666666666667" />
+            <mxPoint x="634.6999999999999" y="338.6666666666667" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="title" value="A4 — Điều phối AI và suy giảm có kiểm soát" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="0" y="10" width="1085.4" height="30" as="geometry" />
+          <mxGeometry x="0" y="10" width="1073" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="v5" value="Ghi chú: Mọi lời gọi AI có ngữ cảnh tách dữ liệu/chỉ thị và kiểm hạn mức; lỗi AI không làm hỏng F1-F4.&lt;br&gt;Ghi chú: [SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="30" y="448" width="1100" height="44" as="geometry" />
+        <mxCell id="v6" value="Ghi chú: AnalyzeAcceptedSubmissionCommandHandler chỉ phân tích bài nộp đã Accepted và tự suy giảm khi AI lỗi.&lt;br&gt;Ghi chú: AiBudgetPort kiểm tra hạn mức trước khi gọi model; AcceptedSubmissionReadPort lấy dữ liệu qua bridge." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="30" y="450" width="1100" height="44" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

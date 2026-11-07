@@ -4,47 +4,47 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="t_service" value='&lt;div style="text-align:center"&gt;&lt;b&gt;InterviewQuestionAuthoringService&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;create(actorId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;draft&amp;nbsp;:&amp;nbsp;QuestionDraft)&amp;nbsp;:&amp;nbsp;Question&lt;br&gt;+&amp;nbsp;updateDeleteOrImport(actorId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;change&amp;nbsp;:&amp;nbsp;QuestionChange)&lt;br&gt;+&amp;nbsp;requireCriteria(questionId&amp;nbsp;:&amp;nbsp;UUID)&lt;br&gt;+&amp;nbsp;deletePreservingHistory(actorId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;questionId&amp;nbsp;:&amp;nbsp;UUID)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="247.10249999999996" y="60" width="408.29999999999995" height="96" as="geometry" />
+        <mxCell id="t_authorCtrl" value='&lt;div style="text-align:center"&gt;&lt;b&gt;InterviewQuestionAuthoringController&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;create(caller&amp;nbsp;:&amp;nbsp;JwtAuthenticationToken,&amp;nbsp;body&amp;nbsp;:&amp;nbsp;CreateQuestionRequest)&amp;nbsp;:&amp;nbsp;CreatedQuestionResponse&lt;br&gt;+&amp;nbsp;update(caller&amp;nbsp;:&amp;nbsp;JwtAuthenticationToken,&amp;nbsp;questionId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;body&amp;nbsp;:&amp;nbsp;UpdateQuestionRequest)&amp;nbsp;:&amp;nbsp;QuestionResponse&lt;br&gt;+&amp;nbsp;delete(caller&amp;nbsp;:&amp;nbsp;JwtAuthenticationToken,&amp;nbsp;questionId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;ResponseEntity&amp;lt;Void&amp;gt;&lt;br&gt;+&amp;nbsp;importCsv(caller&amp;nbsp;:&amp;nbsp;JwtAuthenticationToken,&amp;nbsp;file&amp;nbsp;:&amp;nbsp;MultipartFile)&amp;nbsp;:&amp;nbsp;ImportResult' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="54" y="60" width="688.9" height="96" as="geometry" />
         </mxCell>
-        <mxCell id="t_port1" value='&lt;div style="text-align:center"&gt;&lt;b&gt;InterviewQuestionRepository&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;save(question&amp;nbsp;:&amp;nbsp;Question)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="54" y="226" width="225.60499999999996" height="54" as="geometry" />
+        <mxCell id="t_manageHandler" value='&lt;div style="text-align:center"&gt;&lt;b&gt;ManageInterviewQuestionCommandHandler&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;create(command&amp;nbsp;:&amp;nbsp;CreateQuestionCommand)&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;update(command&amp;nbsp;:&amp;nbsp;UpdateQuestionCommand)&lt;br&gt;+&amp;nbsp;softDelete(questionId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;actorId&amp;nbsp;:&amp;nbsp;UUID)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="240.05" y="226" width="316.79999999999995" height="82" as="geometry" />
         </mxCell>
-        <mxCell id="t_port2" value='&lt;div style="text-align:center"&gt;&lt;b&gt;PermissionPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;requireManageQuestions(actorId&amp;nbsp;:&amp;nbsp;UUID)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="329.60499999999996" y="226" width="268" height="68" as="geometry" />
+        <mxCell id="t_questionRepo" value='&lt;div style="text-align:center"&gt;&lt;b&gt;InterviewQuestionRepository&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;save(question&amp;nbsp;:&amp;nbsp;InterviewQuestion)&lt;br&gt;+&amp;nbsp;findById(questionId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;Optional&amp;lt;InterviewQuestion&amp;gt;&lt;br&gt;+&amp;nbsp;softDelete(questionId&amp;nbsp;:&amp;nbsp;UUID)&lt;br&gt;+&amp;nbsp;existsRubric(questionId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;boolean' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="84.10000000000002" y="378" width="383.9" height="110" as="geometry" />
         </mxCell>
-        <mxCell id="t_port3" value='&lt;div style="text-align:center"&gt;&lt;b&gt;AuditLogPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;record(change&amp;nbsp;:&amp;nbsp;AuditEntry)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="647.605" y="226" width="200.89999999999998" height="68" as="geometry" />
+        <mxCell id="t_auditPort" value='&lt;div style="text-align:center"&gt;&lt;b&gt;AuditLogPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;record(entry&amp;nbsp;:&amp;nbsp;AuditEntry)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="518" y="378" width="194.79999999999998" height="68" as="geometry" />
         </mxCell>
-        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.183;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port1">
+        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.513;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_authorCtrl" target="t_manageHandler">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="321.8191666666666" y="173.5" />
-            <mxPoint x="166.80249999999998" y="173.5" />
+            <mxPoint x="398.45" y="191" />
+            <mxPoint x="402.45" y="191" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e2" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port2">
+        <mxCell id="e2" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.266;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_manageHandler" target="t_questionRepo">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="451.25249999999994" y="191" />
-            <mxPoint x="463.60499999999996" y="191" />
+            <mxPoint x="324.25" y="331.3333333333333" />
+            <mxPoint x="276.05" y="331.3333333333333" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e3" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.817;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port3">
+        <mxCell id="e3" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.734;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_manageHandler" target="t_auditPort">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="580.6858333333332" y="208.5" />
-            <mxPoint x="748.0550000000001" y="208.5" />
+            <mxPoint x="472.65" y="354.6666666666667" />
+            <mxPoint x="615.4" y="354.6666666666667" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="title" value="A2 — Soạn câu hỏi phỏng vấn" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="0" y="10" width="878.5049999999999" height="30" as="geometry" />
+        <mxCell id="title" value="A2 — Soan cau hoi phong van" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="0" y="10" width="772.9" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="v4" value="Ghi chú: Quyền shared A2/A3; thiếu tiêu chí đánh giá thì không mở luyện; xoá mềm giữ lịch sử phiên.&lt;br&gt;Ghi chú: [SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="30" y="314" width="1100" height="44" as="geometry" />
+        <mxCell id="v4" value="Ghi chú: Soan cau hoi phong van kem danh sach follow-up va rubric tieu chi cham co trong so.&lt;br&gt;Ghi chú: Xoa cau hoi thuc hien xoa mem (soft-delete) de bao toan lich su phien phong van cua hoc vien." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="30" y="508" width="1100" height="44" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

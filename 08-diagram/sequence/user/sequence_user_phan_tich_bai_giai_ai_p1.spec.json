@@ -15,17 +15,17 @@
         "role": "actor"
       },
       {
-        "name": "ReviewController",
+        "name": "SolutionReviewController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "ReviewCmd",
+        "name": "AnalyzeAcceptedSubmissionCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "SubmissionPort",
+        "name": "AcceptedSubmissionReadPort",
         "role": "repository",
         "stereo": "cổng F4"
       },
@@ -35,12 +35,12 @@
         "stereo": "adapter liên module"
       },
       {
-        "name": "ReviewRepo",
+        "name": "SolutionReviewRepository",
         "role": "repository",
         "stereo": "output port F5"
       },
       {
-        "name": "AiDbAdapter",
+        "name": "JdbcSolutionReviewRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -56,71 +56,71 @@
       },
       {
         "from": "Sinh viên",
-        "to": "ReviewController",
+        "to": "SolutionReviewController",
         "text": "Yêu cầu phân tích bài giải"
       },
       {
-        "from": "ReviewController",
-        "to": "ReviewCmd",
+        "from": "SolutionReviewController",
+        "to": "AnalyzeAcceptedSubmissionCommandHandler",
         "text": "Kiểm bài và tạo báo cáo"
       },
       {
-        "from": "ReviewCmd",
-        "to": "SubmissionPort",
+        "from": "AnalyzeAcceptedSubmissionCommandHandler",
+        "to": "AcceptedSubmissionReadPort",
         "text": "Lấy bản chụp bài đã đạt"
       },
       {
-        "from": "SubmissionPort",
+        "from": "AcceptedSubmissionReadPort",
         "to": "JudgeBridge",
         "text": "Hỏi phần chấm bài"
       },
       {
         "from": "JudgeBridge",
-        "to": "SubmissionPort",
+        "to": "AcceptedSubmissionReadPort",
         "text": "Bài đã đạt hoặc từ chối",
         "kind": "return"
       },
       {
-        "from": "SubmissionPort",
-        "to": "ReviewCmd",
+        "from": "AcceptedSubmissionReadPort",
+        "to": "AnalyzeAcceptedSubmissionCommandHandler",
         "text": "Mã nguồn và chủ bài nộp",
         "kind": "return"
       },
       {
-        "from": "ReviewCmd",
-        "to": "ReviewCmd",
+        "from": "AnalyzeAcceptedSubmissionCommandHandler",
+        "to": "AnalyzeAcceptedSubmissionCommandHandler",
         "text": "Kiểm người yêu cầu là chủ bài"
       },
       {
-        "from": "ReviewCmd",
-        "to": "ReviewRepo",
+        "from": "AnalyzeAcceptedSubmissionCommandHandler",
+        "to": "SolutionReviewRepository",
         "text": "Tìm báo cáo của bài nộp"
       },
       {
-        "from": "ReviewRepo",
-        "to": "AiDbAdapter",
+        "from": "SolutionReviewRepository",
+        "to": "JdbcSolutionReviewRepository",
         "text": "Tra báo cáo đã tạo"
       },
       {
-        "from": "AiDbAdapter",
+        "from": "JdbcSolutionReviewRepository",
         "to": "PostgreSQL",
         "text": "Đọc báo cáo theo bài nộp"
       },
       {
         "from": "PostgreSQL",
-        "to": "AiDbAdapter",
+        "to": "JdbcSolutionReviewRepository",
         "text": "Báo cáo hoặc chưa có",
         "kind": "return"
       },
       {
-        "from": "AiDbAdapter",
-        "to": "ReviewRepo",
+        "from": "JdbcSolutionReviewRepository",
+        "to": "SolutionReviewRepository",
         "text": "Kết quả tra cứu",
         "kind": "return"
       },
       {
-        "from": "ReviewRepo",
-        "to": "ReviewCmd",
+        "from": "SolutionReviewRepository",
+        "to": "AnalyzeAcceptedSubmissionCommandHandler",
         "text": "Báo cáo hoặc chưa có",
         "kind": "return"
       },
@@ -129,13 +129,13 @@
           "label": "Đã có báo cáo?",
           "then": [
             {
-              "from": "ReviewCmd",
-              "to": "ReviewController",
+              "from": "AnalyzeAcceptedSubmissionCommandHandler",
+              "to": "SolutionReviewController",
               "text": "Trả báo cáo cũ, không gọi AI",
               "kind": "return"
             },
             {
-              "from": "ReviewController",
+              "from": "SolutionReviewController",
               "to": "Sinh viên",
               "text": "Hiển thị báo cáo đã lưu",
               "kind": "return"
@@ -143,45 +143,45 @@
           ],
           "else": [
             {
-              "from": "ReviewCmd",
-              "to": "ReviewCmd",
+              "from": "AnalyzeAcceptedSubmissionCommandHandler",
+              "to": "AnalyzeAcceptedSubmissionCommandHandler",
               "text": "Giữ quyền tạo một báo cáo cho bài"
             },
             {
-              "from": "ReviewCmd",
-              "to": "ReviewCmd",
+              "from": "AnalyzeAcceptedSubmissionCommandHandler",
+              "to": "AnalyzeAcceptedSubmissionCommandHandler",
               "text": "Chuẩn hoá mã và tạo dấu vân tay"
             },
             {
-              "from": "ReviewCmd",
-              "to": "ReviewRepo",
+              "from": "AnalyzeAcceptedSubmissionCommandHandler",
+              "to": "SolutionReviewRepository",
               "text": "Tìm bản phân tích dùng lại"
             },
             {
-              "from": "ReviewRepo",
-              "to": "AiDbAdapter",
+              "from": "SolutionReviewRepository",
+              "to": "JdbcSolutionReviewRepository",
               "text": "Tra theo bài, ngôn ngữ và chỉ thị"
             },
             {
-              "from": "AiDbAdapter",
+              "from": "JdbcSolutionReviewRepository",
               "to": "PostgreSQL",
               "text": "Đọc bản cùng mã nguồn"
             },
             {
               "from": "PostgreSQL",
-              "to": "AiDbAdapter",
+              "to": "JdbcSolutionReviewRepository",
               "text": "Có bản dùng lại hoặc chưa",
               "kind": "return"
             },
             {
-              "from": "AiDbAdapter",
-              "to": "ReviewRepo",
+              "from": "JdbcSolutionReviewRepository",
+              "to": "SolutionReviewRepository",
               "text": "Kết quả tra cứu",
               "kind": "return"
             },
             {
-              "from": "ReviewRepo",
-              "to": "ReviewCmd",
+              "from": "SolutionReviewRepository",
+              "to": "AnalyzeAcceptedSubmissionCommandHandler",
               "text": "Tiếp tục ở trang 2",
               "kind": "return"
             }

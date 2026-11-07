@@ -15,22 +15,22 @@
         "role": "actor"
       },
       {
-        "name": "ClassController",
+        "name": "ClassMembershipController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "LeaveClassStudent",
+        "name": "RemoveStudentFromClassCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "ClassRepository",
+        "name": "InstructorClassRepository",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "IdentityDbAdapter",
+        "name": "JdbcInstructorClassRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -56,44 +56,44 @@
       },
       {
         "from": "Giảng viên",
-        "to": "ClassController",
+        "to": "ClassMembershipController",
         "text": "Chọn học viên và xác nhận gỡ khỏi lớp"
       },
       {
-        "from": "ClassController",
-        "to": "LeaveClassStudent",
+        "from": "ClassMembershipController",
+        "to": "RemoveStudentFromClassCommandHandler",
         "text": "Gỡ học viên khỏi lớp"
       },
       {
-        "from": "LeaveClassStudent",
-        "to": "ClassRepository",
+        "from": "RemoveStudentFromClassCommandHandler",
+        "to": "InstructorClassRepository",
         "text": "Kiểm lớp thuộc giảng viên và ghi danh của học viên"
       },
       {
-        "from": "ClassRepository",
-        "to": "IdentityDbAdapter",
+        "from": "InstructorClassRepository",
+        "to": "JdbcInstructorClassRepository",
         "text": "Tìm lớp và ghi danh hiện hành"
       },
       {
-        "from": "IdentityDbAdapter",
+        "from": "JdbcInstructorClassRepository",
         "to": "PostgreSQL",
         "text": "Đọc chủ lớp và mốc rời hiện tại"
       },
       {
         "from": "PostgreSQL",
-        "to": "IdentityDbAdapter",
+        "to": "JdbcInstructorClassRepository",
         "text": "Lớp, ghi danh và mốc rời",
         "kind": "return"
       },
       {
-        "from": "IdentityDbAdapter",
-        "to": "ClassRepository",
+        "from": "JdbcInstructorClassRepository",
+        "to": "InstructorClassRepository",
         "text": "Lớp, ghi danh và mốc rời",
         "kind": "return"
       },
       {
-        "from": "ClassRepository",
-        "to": "LeaveClassStudent",
+        "from": "InstructorClassRepository",
+        "to": "RemoveStudentFromClassCommandHandler",
         "text": "Lớp, ghi danh và mốc rời",
         "kind": "return"
       },
@@ -102,40 +102,40 @@
           "label": "Lớp thuộc giảng viên và có ghi danh?",
           "then": [
             {
-              "from": "LeaveClassStudent",
-              "to": "ClassRepository",
+              "from": "RemoveStudentFromClassCommandHandler",
+              "to": "InstructorClassRepository",
               "text": "Đặt mốc rời nếu còn trong lớp"
             },
             {
-              "from": "ClassRepository",
-              "to": "IdentityDbAdapter",
+              "from": "InstructorClassRepository",
+              "to": "JdbcInstructorClassRepository",
               "text": "Cập nhật một dòng ghi danh"
             },
             {
-              "from": "IdentityDbAdapter",
+              "from": "JdbcInstructorClassRepository",
               "to": "PostgreSQL",
               "text": "Lưu mốc rời; giữ nguyên dòng và lịch sử"
             },
             {
               "from": "PostgreSQL",
-              "to": "IdentityDbAdapter",
+              "to": "JdbcInstructorClassRepository",
               "text": "Mốc rời mới hoặc mốc gốc",
               "kind": "return"
             },
             {
-              "from": "IdentityDbAdapter",
-              "to": "ClassRepository",
+              "from": "JdbcInstructorClassRepository",
+              "to": "InstructorClassRepository",
               "text": "Mốc rời đã commit",
               "kind": "return"
             },
             {
-              "from": "ClassRepository",
-              "to": "LeaveClassStudent",
+              "from": "InstructorClassRepository",
+              "to": "RemoveStudentFromClassCommandHandler",
               "text": "Mốc rời đã commit",
               "kind": "return"
             },
             {
-              "from": "LeaveClassStudent",
+              "from": "RemoveStudentFromClassCommandHandler",
               "to": "ClassEventPort",
               "text": "Phát mốc rời sau commit",
               "kind": "async"
@@ -147,13 +147,13 @@
               "kind": "async"
             },
             {
-              "from": "LeaveClassStudent",
-              "to": "ClassController",
+              "from": "RemoveStudentFromClassCommandHandler",
+              "to": "ClassMembershipController",
               "text": "Trả kết quả gỡ",
               "kind": "return"
             },
             {
-              "from": "ClassController",
+              "from": "ClassMembershipController",
               "to": "Giảng viên",
               "text": "Cập nhật danh sách học viên",
               "kind": "return"
@@ -161,13 +161,13 @@
           ],
           "else": [
             {
-              "from": "LeaveClassStudent",
-              "to": "ClassController",
+              "from": "RemoveStudentFromClassCommandHandler",
+              "to": "ClassMembershipController",
               "text": "Từ chối thao tác ngoài phạm vi",
               "kind": "return"
             },
             {
-              "from": "ClassController",
+              "from": "ClassMembershipController",
               "to": "Giảng viên",
               "text": "Hiển thị lỗi quyền lớp hoặc ghi danh",
               "kind": "return"

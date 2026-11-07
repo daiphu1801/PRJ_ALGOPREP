@@ -14,7 +14,7 @@
         "role": "actor"
       },
       {
-        "name": "SubmissionController",
+        "name": "InstructorSubmissionController",
         "role": "controller",
         "stereo": "presentation"
       },
@@ -24,22 +24,22 @@
         "stereo": "application query"
       },
       {
-        "name": "ClassScopeReadPort",
+        "name": "SubmissionClassScopeBridge",
         "role": "repository",
         "stereo": "identity output port"
       },
       {
-        "name": "ClassAssignmentReadPort",
+        "name": "ClassAssignmentReadBridge",
         "role": "repository",
         "stereo": "problem output port"
       },
       {
-        "name": "SubmissionReadPort",
+        "name": "SubmissionReadRepository",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "JudgeDbAdapter",
+        "name": "JdbcSubmissionReadRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -55,32 +55,32 @@
       },
       {
         "from": "Giảng viên",
-        "to": "SubmissionController",
+        "to": "InstructorSubmissionController",
         "text": "Lọc lớp, kết quả, từ khóa và trang"
       },
       {
-        "from": "SubmissionController",
+        "from": "InstructorSubmissionController",
         "to": "ListInstructorSubmissions",
         "text": "Lấy danh sách bài nộp trong phạm vi"
       },
       {
         "from": "ListInstructorSubmissions",
-        "to": "ClassScopeReadPort",
+        "to": "SubmissionClassScopeBridge",
         "text": "Lấy lớp và học viên do giảng viên phụ trách"
       },
       {
-        "from": "ClassScopeReadPort",
+        "from": "SubmissionClassScopeBridge",
         "to": "ListInstructorSubmissions",
         "text": "Lớp, học viên và mốc ghi danh",
         "kind": "return"
       },
       {
         "from": "ListInstructorSubmissions",
-        "to": "ClassAssignmentReadPort",
+        "to": "ClassAssignmentReadBridge",
         "text": "Lấy các khoảng thời gian bài được giao"
       },
       {
-        "from": "ClassAssignmentReadPort",
+        "from": "ClassAssignmentReadBridge",
         "to": "ListInstructorSubmissions",
         "text": "Bài, lớp, thời điểm giao và gỡ",
         "kind": "return"
@@ -91,33 +91,33 @@
           "then": [
             {
               "from": "ListInstructorSubmissions",
-              "to": "SubmissionReadPort",
+              "to": "SubmissionReadRepository",
               "text": "Tìm bài nộp trong khoảng ghi danh và giao bài"
             },
             {
-              "from": "SubmissionReadPort",
-              "to": "JudgeDbAdapter",
+              "from": "SubmissionReadRepository",
+              "to": "JdbcSubmissionReadRepository",
               "text": "Áp bộ lọc và phân trang"
             },
             {
-              "from": "JudgeDbAdapter",
+              "from": "JdbcSubmissionReadRepository",
               "to": "PostgreSQL",
               "text": "Đọc bài nộp theo học viên, bài và thời điểm"
             },
             {
               "from": "PostgreSQL",
-              "to": "JudgeDbAdapter",
+              "to": "JdbcSubmissionReadRepository",
               "text": "Một trang bài nộp",
               "kind": "return"
             },
             {
-              "from": "JudgeDbAdapter",
-              "to": "SubmissionReadPort",
+              "from": "JdbcSubmissionReadRepository",
+              "to": "SubmissionReadRepository",
               "text": "Một trang bài nộp",
               "kind": "return"
             },
             {
-              "from": "SubmissionReadPort",
+              "from": "SubmissionReadRepository",
               "to": "ListInstructorSubmissions",
               "text": "Một trang bài nộp",
               "kind": "return"
@@ -129,12 +129,12 @@
             },
             {
               "from": "ListInstructorSubmissions",
-              "to": "SubmissionController",
+              "to": "InstructorSubmissionController",
               "text": "Trả bảng kết quả đã lọc",
               "kind": "return"
             },
             {
-              "from": "SubmissionController",
+              "from": "InstructorSubmissionController",
               "to": "Giảng viên",
               "text": "Hiển thị 20 dòng, tỉ lệ ca đạt và học viên đã rời lớp",
               "kind": "return"
@@ -143,12 +143,12 @@
           "else": [
             {
               "from": "ListInstructorSubmissions",
-              "to": "SubmissionController",
+              "to": "InstructorSubmissionController",
               "text": "Báo lớp ngoài phạm vi như không tìm thấy",
               "kind": "return"
             },
             {
-              "from": "SubmissionController",
+              "from": "InstructorSubmissionController",
               "to": "Giảng viên",
               "text": "Hiển thị lỗi lớp",
               "kind": "return"

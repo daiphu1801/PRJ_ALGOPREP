@@ -14,32 +14,27 @@
         "role": "actor"
       },
       {
-        "name": "AiConfigController",
+        "name": "AdminLanguageConfigController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "PromptHistoryQuery",
+        "name": "GetPromptHistoryQueryHandler",
         "role": "service",
         "stereo": "application query"
       },
       {
-        "name": "UpdatePromptDraft",
+        "name": "UpdatePromptDraftCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "PromptReadPort",
+        "name": "AiPromptTemplateRepository",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "PromptStorePort",
-        "role": "repository",
-        "stereo": "output port"
-      },
-      {
-        "name": "AiDbAdapter",
+        "name": "JdbcAiPromptTemplateRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -55,55 +50,55 @@
       },
       {
         "from": "Quản trị viên",
-        "to": "AiConfigController",
+        "to": "AdminLanguageConfigController",
         "text": "Mở lịch sử chỉ thị của tính năng"
       },
       {
-        "from": "AiConfigController",
-        "to": "PromptHistoryQuery",
+        "from": "AdminLanguageConfigController",
+        "to": "GetPromptHistoryQueryHandler",
         "text": "Lấy mọi phiên bản"
       },
       {
-        "from": "PromptHistoryQuery",
-        "to": "PromptReadPort",
+        "from": "GetPromptHistoryQueryHandler",
+        "to": "AiPromptTemplateRepository",
         "text": "Đọc bản chạy, lưu trữ và nháp"
       },
       {
-        "from": "PromptReadPort",
-        "to": "AiDbAdapter",
+        "from": "AiPromptTemplateRepository",
+        "to": "JdbcAiPromptTemplateRepository",
         "text": "Tìm lịch sử theo thời gian"
       },
       {
-        "from": "AiDbAdapter",
+        "from": "JdbcAiPromptTemplateRepository",
         "to": "PostgreSQL",
         "text": "Đọc phiên bản của tính năng"
       },
       {
         "from": "PostgreSQL",
-        "to": "AiDbAdapter",
+        "to": "JdbcAiPromptTemplateRepository",
         "text": "Lịch sử phiên bản",
         "kind": "return"
       },
       {
-        "from": "AiDbAdapter",
-        "to": "PromptReadPort",
+        "from": "JdbcAiPromptTemplateRepository",
+        "to": "AiPromptTemplateRepository",
         "text": "Lịch sử phiên bản",
         "kind": "return"
       },
       {
-        "from": "PromptReadPort",
-        "to": "PromptHistoryQuery",
+        "from": "AiPromptTemplateRepository",
+        "to": "GetPromptHistoryQueryHandler",
         "text": "Lịch sử phiên bản",
         "kind": "return"
       },
       {
-        "from": "PromptHistoryQuery",
-        "to": "AiConfigController",
+        "from": "GetPromptHistoryQueryHandler",
+        "to": "AdminLanguageConfigController",
         "text": "Trả lịch sử",
         "kind": "return"
       },
       {
-        "from": "AiConfigController",
+        "from": "AdminLanguageConfigController",
         "to": "Quản trị viên",
         "text": "Hiển thị bản cũ để chọn",
         "kind": "return"
@@ -113,37 +108,37 @@
       },
       {
         "from": "Quản trị viên",
-        "to": "AiConfigController",
+        "to": "AdminLanguageConfigController",
         "text": "Chọn chỉ thị cũ để khôi phục"
       },
       {
-        "from": "AiConfigController",
-        "to": "UpdatePromptDraft",
+        "from": "AdminLanguageConfigController",
+        "to": "UpdatePromptDraftCommandHandler",
         "text": "Lưu chỉ thị cũ vào nháp"
       },
       {
-        "from": "UpdatePromptDraft",
-        "to": "PromptStorePort",
+        "from": "UpdatePromptDraftCommandHandler",
+        "to": "AiPromptTemplateRepository",
         "text": "Ghi riêng chỉ thị, giữ mô hình và quy tắc đã chọn"
       },
       {
-        "from": "PromptStorePort",
-        "to": "AiDbAdapter",
+        "from": "AiPromptTemplateRepository",
+        "to": "JdbcAiPromptTemplateRepository",
         "text": "Tạo hoặc cập nhật bản nháp"
       },
       {
-        "from": "AiDbAdapter",
+        "from": "JdbcAiPromptTemplateRepository",
         "to": "PostgreSQL",
         "text": "Lưu bản nháp, giữ bản đang chạy"
       },
       {
-        "from": "UpdatePromptDraft",
-        "to": "AiConfigController",
+        "from": "UpdatePromptDraftCommandHandler",
+        "to": "AdminLanguageConfigController",
         "text": "Trả bản nháp",
         "kind": "return"
       },
       {
-        "from": "AiConfigController",
+        "from": "AdminLanguageConfigController",
         "to": "Quản trị viên",
         "text": "Hiển thị bản nháp chưa phát hành",
         "kind": "return"

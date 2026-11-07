@@ -1,7 +1,7 @@
 {
-  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a2_instructor.md:55. Nguồn thiết kế: 03-dd/logic/F2_problem-bank.md; 03-dd/api/F2_problem-bank.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "_": "Nguon tieu chi: 01-rd/req/user_stories/a2_instructor.md:55. Nguon ma nguon: 05-coding/backend/algoprep-problem-bank/src/main/java/com/algoprep/problembank/presentation/controller/ClassAssignmentController.java, application/command/ClassAssignmentCommandHandler.java, application/command/ClassAssignmentExecutor.java, domain/ports/out/ClassAssignmentRepository.java, application/ports/out/InstructorClassPort.java.",
   "kind": "class",
-  "title": "A2 — Giao bài cho lớp",
+  "title": "A2 — Giao bai cho lop hoc",
   "covers": [
     "F2-09",
     "F2-12"
@@ -10,58 +10,77 @@
     "legend": "shared",
     "classes": [
       {
-        "id": "service",
-        "name": "ClassAssignmentService",
+        "id": "assignCtrl",
+        "name": "ClassAssignmentController",
         "methods": [
-          "+ assign(instructorId : UUID, classId : UUID, problemId : UUID) : Assignment"
+          "+ list(caller : JwtAuthenticationToken, params : Map<String, String>) : AssignmentList",
+          "+ summary(caller : JwtAuthenticationToken) : Summary",
+          "+ assignable(caller : JwtAuthenticationToken, classId : String, params : Map<String, String>) : AssignableList",
+          "+ assign(caller : JwtAuthenticationToken, classId : String, body : AssignRequest) : AssignResult",
+          "+ remove(caller : JwtAuthenticationToken, classId : String, problemId : String) : ResponseEntity<Void>",
+          "+ top(caller : JwtAuthenticationToken) : TopList"
         ]
       },
       {
-        "id": "port1",
+        "id": "assignHandler",
+        "name": "ClassAssignmentCommandHandler",
+        "methods": [
+          "+ assign(instructorId : UUID, classId : UUID, problemIds : List<UUID>) : AssignResult",
+          "+ remove(instructorId : UUID, classId : UUID, problemId : UUID)"
+        ]
+      },
+      {
+        "id": "assignExec",
+        "name": "ClassAssignmentExecutor",
+        "methods": [
+          "+ assign(instructorId : UUID, classId : UUID, problemId : UUID) : boolean",
+          "+ remove(instructorId : UUID, classId : UUID, problemId : UUID)"
+        ]
+      },
+      {
+        "id": "assignRepo",
+        "name": "ClassAssignmentRepository",
+        "kind": "interface",
+        "methods": [
+          "+ assign(classId : UUID, problemId : UUID, assignedBy : UUID, assignedAt : Instant)",
+          "+ remove(classId : UUID, problemId : UUID)"
+        ]
+      },
+      {
+        "id": "classPort",
         "name": "InstructorClassPort",
         "kind": "interface",
         "methods": [
-          "+ requireOwner(instructorId : UUID, classId : UUID)"
-        ]
-      },
-      {
-        "id": "port2",
-        "name": "ProblemReadRepository",
-        "kind": "class",
-        "methods": [
-          "+ requirePublished(problemId : UUID) : Problem"
-        ]
-      },
-      {
-        "id": "port3",
-        "name": "AssignmentRepository",
-        "kind": "class",
-        "methods": [
-          "+ save(assignment : Assignment)"
+          "+ classesOf(instructorId : UUID) : List<ClassRef>"
         ]
       }
     ],
     "externals": [],
     "relations": [
       {
-        "from": "service",
-        "to": "port1",
+        "from": "assignCtrl",
+        "to": "assignHandler",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port2",
+        "from": "assignHandler",
+        "to": "assignExec",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port3",
+        "from": "assignHandler",
+        "to": "classPort",
+        "kind": "dependency"
+      },
+      {
+        "from": "assignExec",
+        "to": "assignRepo",
         "kind": "dependency"
       }
     ],
     "notes": [
-      "Chỉ giảng viên phụ trách lớp được giao bài đã công bố; học viên lớp khác không thấy bài giao.",
-      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+      "Giao bai tap cho lop hoc chi hien thi voi sinh vien thuoc lop.",
+      "Moi bai tap giao duoc xu ly doc lap qua ClassAssignmentExecutor de loi mot bai khong chan cac bai khac."
     ]
   }
 }

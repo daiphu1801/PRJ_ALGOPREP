@@ -5,43 +5,43 @@
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="title" value="Sơ đồ tuần tự chi tiết - Kiểm mật khẩu và trạng thái (2b/3)" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="60" y="10" width="1030" height="30" as="geometry" />
+          <mxGeometry x="60" y="10" width="1060" height="30" as="geometry" />
         </mxCell>
         <mxCell id="v1" value="alt [Mật khẩu đúng?]" style="algoprep=alt;rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#999999;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;fontColor=#1A1A1A;fontSize=13;fontStyle=1;dashed=0;" vertex="1" parent="1">
-          <mxGeometry x="40" y="374" width="1050" height="228" as="geometry" />
+          <mxGeometry x="40" y="374" width="1080" height="228" as="geometry" />
         </mxCell>
         <mxCell id="v2" value="else" style="text;html=1;dashed=1;strokeColor=#999999;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontColor=#1A1A1A;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="40" y="456" width="1050" height="18" as="geometry" />
+          <mxGeometry x="40" y="456" width="1080" height="18" as="geometry" />
         </mxCell>
         <mxCell id="v3" value="alt [Chưa xác minh email?]" style="algoprep=alt;rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#999999;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;fontColor=#1A1A1A;fontSize=13;fontStyle=1;dashed=0;" vertex="1" parent="1">
-          <mxGeometry x="40" y="596" width="1050" height="150" as="geometry" />
+          <mxGeometry x="40" y="596" width="1080" height="150" as="geometry" />
         </mxCell>
         <mxCell id="v4" value="else" style="text;html=1;dashed=1;strokeColor=#999999;fillColor=none;align=left;verticalAlign=middle;spacingLeft=8;fontColor=#1A1A1A;fontSize=12;" vertex="1" parent="1">
-          <mxGeometry x="40" y="696" width="1050" height="18" as="geometry" />
+          <mxGeometry x="40" y="696" width="1080" height="18" as="geometry" />
         </mxCell>
         <mxCell id="v5" value="Giai đoạn 2b - Kiểm bí mật và trạng thái tài khoản" style="algoprep=phase;rounded=0;whiteSpace=wrap;html=1;fillColor=#EFEFEF;strokeColor=#999999;dashed=1;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#1A1A1A;fontSize=13;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="40" y="142" width="1050" height="26" as="geometry" />
+          <mxGeometry x="40" y="142" width="1080" height="26" as="geometry" />
         </mxCell>
         <mxCell id="v6" value="Sinh viên" style="shape=umlLifeline;participant=umlActor;perimeter=lifelinePerimeter;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;verticalAlign=top;spacingTop=40;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
           <mxGeometry x="110" y="60" width="30" height="712" as="geometry" />
         </mxCell>
-        <mxCell id="v7" value='AuthController&lt;br&gt;&lt;font style="font-size:9px"&gt;(presentation)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#C6EFCE;strokeColor=#5E8E5E;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="210" y="60" width="130" height="712" as="geometry" />
+        <mxCell id="v7" value='AuthController&lt;br&gt;&lt;font style="font-size:9px"&gt;(presentation)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=56;fontSize=11;fillColor=#C6EFCE;strokeColor=#5E8E5E;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="215" y="60" width="130" height="712" as="geometry" />
         </mxCell>
-        <mxCell id="v8" value='LoginCmd&lt;br&gt;&lt;font style="font-size:9px"&gt;(application command)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#FFF2CC;strokeColor=#B8952A;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="360" y="60" width="130" height="712" as="geometry" />
+        <mxCell id="v8" value='LoginCommand&lt;br&gt;Handler&lt;br&gt;&lt;font style="font-size:9px"&gt;(application command)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=56;fontSize=11;fillColor=#FFF2CC;strokeColor=#B8952A;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="370" y="60" width="130" height="712" as="geometry" />
         </mxCell>
-        <mxCell id="v9" value='UserRepo&lt;br&gt;&lt;font style="font-size:9px"&gt;(domain output port)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#FFC7CE;strokeColor=#B0525E;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="510" y="60" width="130" height="712" as="geometry" />
+        <mxCell id="v9" value='UserAccount&lt;br&gt;Repository&lt;br&gt;&lt;font style="font-size:9px"&gt;(domain output port)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=56;fontSize=11;fillColor=#FFC7CE;strokeColor=#B0525E;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="525" y="60" width="130" height="712" as="geometry" />
         </mxCell>
-        <mxCell id="v10" value='IdentityDbAdapter&lt;br&gt;&lt;font style="font-size:9px"&gt;(infrastructure)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#FFC7CE;strokeColor=#B0525E;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="660" y="60" width="130" height="712" as="geometry" />
+        <mxCell id="v10" value='JdbcUserAccount&lt;br&gt;Repository&lt;br&gt;&lt;font style="font-size:9px"&gt;(infrastructure)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=56;fontSize=11;fillColor=#FFC7CE;strokeColor=#B0525E;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="680" y="60" width="130" height="712" as="geometry" />
         </mxCell>
-        <mxCell id="v11" value='PostgreSQL&lt;br&gt;&lt;font style="font-size:9px"&gt;(schema identity)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#D9D9D9;strokeColor=#7A7A7A;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="810" y="60" width="130" height="712" as="geometry" />
+        <mxCell id="v11" value='PostgreSQL&lt;br&gt;&lt;font style="font-size:9px"&gt;(schema identity)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=56;fontSize=11;fillColor=#D9D9D9;strokeColor=#7A7A7A;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="835" y="60" width="130" height="712" as="geometry" />
         </mxCell>
-        <mxCell id="v12" value='LoginRatePort&lt;br&gt;&lt;font style="font-size:9px"&gt;(Redis output port)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;fillColor=#FFC7CE;strokeColor=#B0525E;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="960" y="60" width="130" height="712" as="geometry" />
+        <mxCell id="v12" value='LoginRatePort&lt;br&gt;&lt;font style="font-size:9px"&gt;(Redis output port)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=56;fontSize=11;fillColor=#FFC7CE;strokeColor=#B0525E;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="990" y="60" width="130" height="712" as="geometry" />
         </mxCell>
         <mxCell id="v13" style="html=1;points=[[0,0,0,0,0],[0,1,0,0,0],[1,0,0,0,0],[1,1,0,0,0]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="v11">
           <mxGeometry x="60" y="194" width="10" height="32" as="geometry" />
@@ -76,8 +76,8 @@
         <mxCell id="e23" value="2. Kiểm trạng thái sau khi mật khẩu khớp" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.4888;exitDx=0;exitDy=0;entryX=0.5;entryY=0.5169;entryDx=0;entryDy=0;" edge="1" parent="1" source="v8" target="v8">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="480" y="408" />
-            <mxPoint x="480" y="428" />
+            <mxPoint x="490" y="408" />
+            <mxPoint x="490" y="428" />
             </Array>
           </mxGeometry>
         </mxCell>
@@ -102,8 +102,8 @@
         <mxCell id="e30" value="4. Tài khoản Hoạt động: sang trang 2c" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=13;verticalAlign=bottom;exitX=0.5;exitY=0.9213;exitDx=0;exitDy=0;entryX=0.5;entryY=0.9494;entryDx=0;entryDy=0;" edge="1" parent="1" source="v8" target="v8">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="480" y="716" />
-            <mxPoint x="480" y="736" />
+            <mxPoint x="490" y="716" />
+            <mxPoint x="490" y="736" />
             </Array>
           </mxGeometry>
         </mxCell>

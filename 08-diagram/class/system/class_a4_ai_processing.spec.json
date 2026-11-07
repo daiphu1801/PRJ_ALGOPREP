@@ -1,5 +1,5 @@
 {
-  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a4_system.md:53; 01-rd/req/user_stories/a4_system.md:56; 01-rd/req/user_stories/a4_system.md:59; 01-rd/req/user_stories/a4_system.md:62. Nguồn thiết kế: 03-dd/logic/F5_ai-review.md; 03-dd/api/F5_ai-review.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a4_system.md:53-62. Nguồn thiết kế: 05-coding/backend/algoprep-ai-review/src/main/java/com/algoprep/aireview/. [SoT: Suy luận] Cấu trúc CommandHandler và Port chuẩn theo kiến trúc Hexagonal của dự án.",
   "kind": "class",
   "title": "A4 — Điều phối AI và suy giảm có kiểm soát",
   "covers": [
@@ -21,25 +21,30 @@
     "legend": "shared",
     "classes": [
       {
-        "id": "service",
-        "name": "AiProcessingService",
+        "id": "reviewHandler",
+        "name": "AnalyzeAcceptedSubmissionCommandHandler",
         "methods": [
-          "+ analyzeAccepted(submissionId : UUID) : ReviewReport",
-          "+ runThreeStages(sessionId : UUID) : InterviewRubric",
-          "+ buildSafeContext(request : AiRequest) : SafeAiContext",
-          "+ degradeOnFailure(request : AiRequest, cause : AiFailure) : AiFallback"
+          "+ handle(command : AnalyzeSubmissionCommand) : SolutionReview",
+          "+ degradeOnFailure(cause : Throwable) : ReviewFallback"
         ]
       },
       {
-        "id": "port1",
-        "name": "AcceptedSubmissionPort",
+        "id": "interviewHandler",
+        "name": "MockInterviewStageCommandHandler",
+        "methods": [
+          "+ advanceStage(command : AdvanceStageCommand) : InterviewRubric"
+        ]
+      },
+      {
+        "id": "submissionBridge",
+        "name": "AcceptedSubmissionReadPort",
         "kind": "interface",
         "methods": [
-          "+ requireAccepted(id : UUID) : Submission"
+          "+ requireAccepted(id : UUID) : SubmissionState"
         ]
       },
       {
-        "id": "port2",
+        "id": "aiPort",
         "name": "AiProviderPort",
         "kind": "interface",
         "methods": [
@@ -47,48 +52,53 @@
         ]
       },
       {
-        "id": "port3",
+        "id": "budgetPort",
         "name": "AiBudgetPort",
         "kind": "interface",
         "methods": [
-          "+ check(request : AiRequest) : BudgetDecision"
+          "+ checkBudget(actorId : UUID, tokens : int) : boolean"
         ]
       },
       {
-        "id": "port4",
-        "name": "AiHistoryRepository",
-        "kind": "class",
+        "id": "reviewRepo",
+        "name": "SolutionReviewRepository",
+        "kind": "interface",
         "methods": [
-          "+ save(result : AiResult)"
+          "+ save(review : SolutionReview)"
         ]
       }
     ],
     "externals": [],
     "relations": [
       {
-        "from": "service",
-        "to": "port1",
+        "from": "reviewHandler",
+        "to": "submissionBridge",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port2",
+        "from": "reviewHandler",
+        "to": "aiPort",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port3",
+        "from": "reviewHandler",
+        "to": "budgetPort",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port4",
+        "from": "reviewHandler",
+        "to": "reviewRepo",
+        "kind": "dependency"
+      },
+      {
+        "from": "interviewHandler",
+        "to": "aiPort",
         "kind": "dependency"
       }
     ],
     "notes": [
-      "Mọi lời gọi AI có ngữ cảnh tách dữ liệu/chỉ thị và kiểm hạn mức; lỗi AI không làm hỏng F1-F4.",
-      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+      "AnalyzeAcceptedSubmissionCommandHandler chỉ phân tích bài nộp đã Accepted và tự suy giảm khi AI lỗi.",
+      "AiBudgetPort kiểm tra hạn mức trước khi gọi model; AcceptedSubmissionReadPort lấy dữ liệu qua bridge."
     ]
   }
 }

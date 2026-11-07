@@ -1,5 +1,5 @@
 {
-  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a1_student.md:158; 01-rd/req/user_stories/a1_student.md:160; 01-rd/req/user_stories/a1_student.md:163; 01-rd/req/user_stories/a1_student.md:165; 01-rd/req/user_stories/a1_student.md:167. Nguồn thiết kế: 03-dd/logic/F6_interview-bank.md; 03-dd/api/F6_interview-bank.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a1_student.md:158-167. Nguồn thiết kế: 05-coding/backend/algoprep-interview-bank/src/main/java/com/algoprep/interviewbank/. [SoT: Suy luận] Cấu trúc Controller, CommandHandler và Port chuẩn theo kiến trúc Hexagonal của dự án.",
   "kind": "class",
   "title": "A1 — Học và luyện câu hỏi phỏng vấn",
   "covers": [
@@ -19,62 +19,74 @@
     "legend": "shared",
     "classes": [
       {
-        "id": "service",
-        "name": "InterviewPracticeService",
+        "id": "practiceController",
+        "name": "InterviewPracticeController",
         "methods": [
-          "+ search(filter : QuestionFilter, studentId : UUID) : Page<Question>",
+          "+ search(caller : Jwt, filter : QuestionFilter) : Page<Question>",
           "+ study(questionId : UUID) : StudyContent",
-          "+ evaluate(questionId : UUID, studentId : UUID, answer : String) : PracticeFeedback",
-          "+ progress(studentId : UUID) : PracticeProgress",
-          "+ selfRate(questionId : UUID, studentId : UUID, rating : RecallRating)"
+          "+ selfRate(caller : Jwt, questionId : UUID, rating : String)"
         ]
       },
       {
-        "id": "port1",
+        "id": "evalHandler",
+        "name": "EvaluatePracticeAnswerCommandHandler",
+        "methods": [
+          "+ evaluate(command : EvaluateAnswerCommand) : PracticeFeedback"
+        ]
+      },
+      {
+        "id": "questionRepo",
         "name": "InterviewQuestionRepository",
-        "kind": "class",
-        "methods": [
-          "+ findPublished(filter : QuestionFilter) : Page<Question>"
-        ]
-      },
-      {
-        "id": "port2",
-        "name": "PracticeAttemptRepository",
-        "kind": "class",
-        "methods": [
-          "+ save(attempt : PracticeAttempt)"
-        ]
-      },
-      {
-        "id": "port3",
-        "name": "AnswerEvaluationPort",
         "kind": "interface",
         "methods": [
-          "+ evaluate(question : Question, answer : String) : PracticeFeedback"
+          "+ findPublished(filter : QuestionFilter) : Page<Question>",
+          "+ findStudyContent(questionId : UUID) : Optional<StudyContent>"
+        ]
+      },
+      {
+        "id": "historyRepo",
+        "name": "PracticeHistoryRepository",
+        "kind": "interface",
+        "methods": [
+          "+ recordRating(userId : UUID, questionId : UUID, rating : String)",
+          "+ getProgress(userId : UUID) : PracticeProgress"
+        ]
+      },
+      {
+        "id": "aiPort",
+        "name": "AiEvaluationPort",
+        "kind": "interface",
+        "methods": [
+          "+ compare(answer : String, rubrics : List<AnswerRubric>) : PracticeFeedback"
         ]
       }
     ],
     "externals": [],
     "relations": [
       {
-        "from": "service",
-        "to": "port1",
+        "from": "practiceController",
+        "to": "questionRepo",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port2",
+        "from": "practiceController",
+        "to": "historyRepo",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port3",
+        "from": "practiceController",
+        "to": "evalHandler",
+        "kind": "dependency"
+      },
+      {
+        "from": "evalHandler",
+        "to": "aiPort",
         "kind": "dependency"
       }
     ],
     "notes": [
-      "Chế độ học trả gợi ý/khung chuẩn/từ khoá; tự chấm gần nhất quyết định thứ tự ôn lại.",
-      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+      "InterviewPracticeController phục vụ duyệt câu hỏi, xem khung đáp án mẫu và ghi nhận mức độ ghi nhớ (RecallRating).",
+      "EvaluatePracticeAnswerCommandHandler đối chiếu câu trả lời tự luận với rubric qua AiEvaluationPort."
     ]
   }
 }

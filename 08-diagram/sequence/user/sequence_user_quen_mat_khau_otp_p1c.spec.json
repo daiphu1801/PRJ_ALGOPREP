@@ -14,22 +14,22 @@
         "role": "actor"
       },
       {
-        "name": "AuthController",
+        "name": "PasswordResetController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "ForgotPasswordCmd",
+        "name": "ForgotPasswordCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "AuditRepo",
+        "name": "AuditLogPort",
         "role": "repository",
         "stereo": "domain output port"
       },
       {
-        "name": "IdentityDbAdapter",
+        "name": "JdbcUserAccountRepository",
         "role": "repository",
         "stereo": "infrastructure"
       },
@@ -63,22 +63,22 @@
           "label": "Mã mới đã phát hành?",
           "then": [
             {
-              "from": "ForgotPasswordCmd",
-              "to": "AuditRepo",
+              "from": "ForgotPasswordCommandHandler",
+              "to": "AuditLogPort",
               "text": "Ghi lần phát mã, không ghi mã"
             },
             {
-              "from": "AuditRepo",
-              "to": "IdentityDbAdapter",
+              "from": "AuditLogPort",
+              "to": "JdbcUserAccountRepository",
               "text": "Lưu sự kiện xác thực"
             },
             {
-              "from": "IdentityDbAdapter",
+              "from": "JdbcUserAccountRepository",
               "to": "PostgreSQL",
               "text": "Ghi nhật ký theo tài khoản"
             },
             {
-              "from": "ForgotPasswordCmd",
+              "from": "ForgotPasswordCommandHandler",
               "to": "MailPort",
               "text": "Gửi mã tới email tài khoản"
             },
@@ -100,7 +100,7 @@
           "label": "Chỉ đăng nhập bằng tài khoản ngoài?",
           "then": [
             {
-              "from": "ForgotPasswordCmd",
+              "from": "ForgotPasswordCommandHandler",
               "to": "MailPort",
               "text": "Gửi hướng dẫn đăng nhập qua nhà cung cấp"
             },
@@ -117,21 +117,21 @@
           ],
           "else": [
             {
-              "from": "ForgotPasswordCmd",
-              "to": "ForgotPasswordCmd",
-          "text": "Các trường hợp còn lại: không gửi thêm thư"
+              "from": "ForgotPasswordCommandHandler",
+              "to": "ForgotPasswordCommandHandler",
+              "text": "Các trường hợp còn lại: không gửi thêm thư"
             }
           ]
         }
       },
       {
-        "from": "ForgotPasswordCmd",
-        "to": "AuthController",
+        "from": "ForgotPasswordCommandHandler",
+        "to": "PasswordResetController",
         "text": "Kết thúc xử lý mà không tiết lộ tài khoản",
         "kind": "return"
       },
       {
-        "from": "AuthController",
+        "from": "PasswordResetController",
         "to": "Sinh viên",
         "text": "Nếu email tồn tại, mã xác nhận đã được gửi",
         "kind": "return"

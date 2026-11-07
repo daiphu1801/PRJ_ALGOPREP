@@ -15,17 +15,17 @@
         "role": "actor"
       },
       {
-        "name": "UserAdminCtrl",
+        "name": "AdminUserController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "CreateUserCmd",
+        "name": "CreateUserCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "UserRepository",
+        "name": "UserAccountRepository",
         "role": "repository",
         "stereo": "domain output port"
       },
@@ -35,7 +35,7 @@
         "stereo": "domain output port"
       },
       {
-        "name": "IdentityDbAdapter",
+        "name": "JdbcUserAccountRepository",
         "role": "repository",
         "stereo": "infrastructure"
       },
@@ -56,49 +56,49 @@
       },
       {
         "from": "Quản trị viên",
-        "to": "UserAdminCtrl",
+        "to": "AdminUserController",
         "text": "Gửi yêu cầu tạo tài khoản"
       },
       {
-        "from": "UserAdminCtrl",
-        "to": "UserAdminCtrl",
+        "from": "AdminUserController",
+        "to": "AdminUserController",
         "text": "Kiểm tra quyền; vai trò chỉ Người học hoặc Giảng viên"
       },
       {
-        "from": "UserAdminCtrl",
-        "to": "CreateUserCmd",
+        "from": "AdminUserController",
+        "to": "CreateUserCommandHandler",
         "text": "Yêu cầu tạo tài khoản"
       },
       {
-        "from": "CreateUserCmd",
-        "to": "UserRepository",
+        "from": "CreateUserCommandHandler",
+        "to": "UserAccountRepository",
         "text": "Kiểm tra email và vai trò được chọn"
       },
       {
-        "from": "UserRepository",
-        "to": "IdentityDbAdapter",
+        "from": "UserAccountRepository",
+        "to": "JdbcUserAccountRepository",
         "text": "Yêu cầu tra tài khoản và vai trò"
       },
       {
-        "from": "IdentityDbAdapter",
+        "from": "JdbcUserAccountRepository",
         "to": "PostgreSQL",
         "text": "Đọc tài khoản và vai trò"
       },
       {
         "from": "PostgreSQL",
-        "to": "IdentityDbAdapter",
+        "to": "JdbcUserAccountRepository",
         "text": "Kết quả kiểm tra",
         "kind": "return"
       },
       {
-        "from": "IdentityDbAdapter",
-        "to": "UserRepository",
+        "from": "JdbcUserAccountRepository",
+        "to": "UserAccountRepository",
         "text": "Kết quả kiểm tra",
         "kind": "return"
       },
       {
-        "from": "UserRepository",
-        "to": "CreateUserCmd",
+        "from": "UserAccountRepository",
+        "to": "CreateUserCommandHandler",
         "text": "Email và vai trò hợp lệ?",
         "kind": "return"
       },
@@ -107,66 +107,66 @@
           "label": "Email chưa có tài khoản?",
           "then": [
             {
-              "from": "CreateUserCmd",
-              "to": "CreateUserCmd",
+              "from": "CreateUserCommandHandler",
+              "to": "CreateUserCommandHandler",
               "text": "Sinh mật khẩu tạm, bắt đổi ở lần đăng nhập đầu"
             },
             {
-              "from": "CreateUserCmd",
-              "to": "UserRepository",
+              "from": "CreateUserCommandHandler",
+              "to": "UserAccountRepository",
               "text": "Lưu tài khoản Chờ xác thực"
             },
             {
-              "from": "UserRepository",
-              "to": "IdentityDbAdapter",
+              "from": "UserAccountRepository",
+              "to": "JdbcUserAccountRepository",
               "text": "Chuyển yêu cầu lưu tài khoản"
             },
             {
-              "from": "IdentityDbAdapter",
+              "from": "JdbcUserAccountRepository",
               "to": "PostgreSQL",
               "text": "Ghi tài khoản và cờ đổi mật khẩu"
             },
             {
               "from": "PostgreSQL",
-              "to": "IdentityDbAdapter",
+              "to": "JdbcUserAccountRepository",
               "text": "Đã lưu tài khoản",
               "kind": "return"
             },
             {
-              "from": "CreateUserCmd",
+              "from": "CreateUserCommandHandler",
               "to": "AuditLogPort",
               "text": "Ghi nhật ký tạo tài khoản"
             },
             {
               "from": "AuditLogPort",
-              "to": "IdentityDbAdapter",
+              "to": "JdbcUserAccountRepository",
               "text": "Chuyển yêu cầu ghi nhật ký"
             },
             {
-              "from": "IdentityDbAdapter",
+              "from": "JdbcUserAccountRepository",
               "to": "PostgreSQL",
               "text": "Lưu nhật ký cùng giao dịch"
             },
             {
-              "from": "CreateUserCmd",
-              "to": "CreateUserCmd",
+              "from": "CreateUserCommandHandler",
+              "to": "CreateUserCommandHandler",
               "text": "Hoàn tất lưu; tiếp tục gửi thư ở trang 2"
             }
           ],
           "else": [
             {
-              "from": "CreateUserCmd",
-              "to": "CreateUserCmd",
+              "from": "CreateUserCommandHandler",
+              "to": "CreateUserCommandHandler",
               "text": "Email đã có tài khoản"
             },
             {
-              "from": "CreateUserCmd",
-              "to": "UserAdminCtrl",
+              "from": "CreateUserCommandHandler",
+              "to": "AdminUserController",
               "text": "Từ chối, không tạo gì",
               "kind": "return"
             },
             {
-              "from": "UserAdminCtrl",
+              "from": "AdminUserController",
               "to": "Quản trị viên",
               "text": "Báo lỗi: email đã có tài khoản",
               "kind": "return"

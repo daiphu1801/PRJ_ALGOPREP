@@ -14,22 +14,22 @@
         "role": "actor"
       },
       {
-        "name": "ProblemController",
+        "name": "ProblemAuthoringController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "UpdateProblemPublishStatus",
+        "name": "UpdateProblemPublishStatusCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "ProblemRepository",
+        "name": "ProblemPublishRepository",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "ProblemDbAdapter",
+        "name": "JdbcProblemPublishRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -58,13 +58,13 @@
           "label": "Bài đã được xuất bản?",
           "then": [
             {
-              "from": "UpdateProblemPublishStatus",
-              "to": "ProblemController",
+              "from": "UpdateProblemPublishStatusCommandHandler",
+              "to": "ProblemAuthoringController",
               "text": "Trả trạng thái hiện có",
               "kind": "return"
             },
             {
-              "from": "ProblemController",
+              "from": "ProblemAuthoringController",
               "to": "Người soạn đề",
               "text": "Bài đã được xuất bản",
               "kind": "return"
@@ -72,62 +72,62 @@
           ],
           "else": [
             {
-              "from": "UpdateProblemPublishStatus",
-              "to": "ProblemRepository",
+              "from": "UpdateProblemPublishStatusCommandHandler",
+              "to": "ProblemPublishRepository",
               "text": "Đổi trạng thái và ghi nhận thời điểm"
             },
             {
-              "from": "ProblemRepository",
-              "to": "ProblemDbAdapter",
+              "from": "ProblemPublishRepository",
+              "to": "JdbcProblemPublishRepository",
               "text": "Cập nhật bài trong giao dịch"
             },
             {
-              "from": "ProblemDbAdapter",
+              "from": "JdbcProblemPublishRepository",
               "to": "PostgreSQL",
               "text": "Ghi trạng thái đã xuất bản"
             },
             {
-              "from": "UpdateProblemPublishStatus",
+              "from": "UpdateProblemPublishStatusCommandHandler",
               "to": "AuditLogPort",
               "text": "Ghi nhật ký xuất bản cùng giao dịch"
             },
             {
               "from": "AuditLogPort",
-              "to": "UpdateProblemPublishStatus",
+              "to": "UpdateProblemPublishStatusCommandHandler",
               "text": "Đã ghi nhật ký",
               "kind": "return"
             },
             {
-              "from": "ProblemDbAdapter",
-              "to": "ProblemRepository",
+              "from": "JdbcProblemPublishRepository",
+              "to": "ProblemPublishRepository",
               "text": "Đã commit trạng thái và nhật ký",
               "kind": "return"
             },
             {
-              "from": "ProblemRepository",
-              "to": "UpdateProblemPublishStatus",
+              "from": "ProblemPublishRepository",
+              "to": "UpdateProblemPublishStatusCommandHandler",
               "text": "Bài đã xuất bản",
               "kind": "return"
             },
             {
-              "from": "UpdateProblemPublishStatus",
+              "from": "UpdateProblemPublishStatusCommandHandler",
               "to": "ProblemEventPort",
               "text": "Phát sự kiện bài đã xuất bản",
               "kind": "async"
             },
             {
-              "from": "UpdateProblemPublishStatus",
-              "to": "ProblemRepository",
+              "from": "UpdateProblemPublishStatusCommandHandler",
+              "to": "ProblemPublishRepository",
               "text": "Tăng phiên bản danh sách bài"
             },
             {
-              "from": "UpdateProblemPublishStatus",
-              "to": "ProblemController",
+              "from": "UpdateProblemPublishStatusCommandHandler",
+              "to": "ProblemAuthoringController",
               "text": "Trả trạng thái mới",
               "kind": "return"
             },
             {
-              "from": "ProblemController",
+              "from": "ProblemAuthoringController",
               "to": "Người soạn đề",
               "text": "Hiển thị bài đã xuất bản",
               "kind": "return"

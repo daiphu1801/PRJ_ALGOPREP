@@ -19,17 +19,17 @@
         "stereo": "presentation"
       },
       {
-        "name": "LoginCmd",
+        "name": "LoginCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "RefreshRepo",
+        "name": "RefreshTokenRepository",
         "role": "repository",
         "stereo": "domain output port"
       },
       {
-        "name": "IdentityDbAdapter",
+        "name": "JdbcUserAccountRepository",
         "role": "repository",
         "stereo": "infrastructure"
       },
@@ -49,56 +49,56 @@
         "phase": "Giai đoạn 2c - Chỉ tài khoản hợp lệ mới nhận phiên"
       },
       {
-        "from": "LoginCmd",
-        "to": "LoginCmd",
+        "from": "LoginCommandHandler",
+        "to": "LoginCommandHandler",
         "text": "Tạo mã truy cập ngắn và mã làm mới riêng"
       },
       {
-        "from": "LoginCmd",
-        "to": "RefreshRepo",
+        "from": "LoginCommandHandler",
+        "to": "RefreshTokenRepository",
         "text": "Lưu dấu băm mã làm mới và nhóm phiên"
       },
       {
-        "from": "RefreshRepo",
-        "to": "IdentityDbAdapter",
+        "from": "RefreshTokenRepository",
+        "to": "JdbcUserAccountRepository",
         "text": "Ghi phiên mới"
       },
       {
-        "from": "IdentityDbAdapter",
+        "from": "JdbcUserAccountRepository",
         "to": "PostgreSQL",
         "text": "Lưu mã băm, không lưu mã thô"
       },
       {
         "from": "PostgreSQL",
-        "to": "IdentityDbAdapter",
+        "to": "JdbcUserAccountRepository",
         "text": "Đã commit",
         "kind": "return"
       },
       {
-        "from": "IdentityDbAdapter",
-        "to": "RefreshRepo",
+        "from": "JdbcUserAccountRepository",
+        "to": "RefreshTokenRepository",
         "text": "Phiên đã lưu",
         "kind": "return"
       },
       {
-        "from": "RefreshRepo",
-        "to": "LoginCmd",
+        "from": "RefreshTokenRepository",
+        "to": "LoginCommandHandler",
         "text": "Có thể trả phiên",
         "kind": "return"
       },
       {
-        "from": "LoginCmd",
+        "from": "LoginCommandHandler",
         "to": "LoginRatePort",
         "text": "Xoá số lần đăng nhập sai"
       },
       {
         "from": "LoginRatePort",
-        "to": "LoginCmd",
+        "to": "LoginCommandHandler",
         "text": "Đã dọn bộ đếm",
         "kind": "return"
       },
       {
-        "from": "LoginCmd",
+        "from": "LoginCommandHandler",
         "to": "AuthController",
         "text": "Mã truy cập và thông tin người học",
         "kind": "return"

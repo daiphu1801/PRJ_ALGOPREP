@@ -1,5 +1,5 @@
 {
-  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a1_student.md:39; 01-rd/req/user_stories/a1_student.md:41. Nguồn thiết kế: 03-dd/logic/F2_problem-bank.md; 03-dd/api/F2_problem-bank.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a1_student.md:39-44. Nguồn mã nguồn: 05-coding/backend/algoprep-problem-bank/src/main/java/com/algoprep/problembank/presentation/controller/PublishedProblemController.java và domain/ports/out/PublishedProblemReadRepository.java.",
   "kind": "class",
   "title": "A1 — Tìm bài và xem bài được giao",
   "covers": [
@@ -10,46 +10,62 @@
     "legend": "shared",
     "classes": [
       {
-        "id": "service",
-        "name": "ProblemDiscoveryService",
+        "id": "pubController",
+        "name": "PublishedProblemController",
         "methods": [
-          "+ search(filters : ProblemFilter, studentId : UUID) : Page<ProblemSummary>",
-          "+ assignedToStudent(studentId : UUID) : List<AssignedProblem>"
+          "+ list(caller : JwtAuthenticationToken, params : Map<String, String>) : ProblemList",
+          "+ random(caller : JwtAuthenticationToken, params : Map<String, String>) : RandomProblem",
+          "+ workspace(caller : JwtAuthenticationToken, problemId : String) : Workspace"
         ]
       },
       {
-        "id": "port1",
-        "name": "ProblemReadRepository",
-        "kind": "class",
+        "id": "queryHandler",
+        "name": "ReadPublishedProblemsQueryHandler",
         "methods": [
-          "+ findPublished(filters : ProblemFilter) : Page<Problem>"
+          "+ list(userId : UUID, params : Map<String, String>) : ProblemList",
+          "+ workspace(userId : UUID, problemId : UUID) : Workspace"
         ]
       },
       {
-        "id": "port2",
-        "name": "AssignmentReadPort",
+        "id": "pubRepo",
+        "name": "PublishedProblemReadRepository",
         "kind": "interface",
         "methods": [
-          "+ forStudent(studentId : UUID) : List<AssignedProblem>"
+          "+ list(filter : Filter, paging : Paging, solves : SolveStates) : Page",
+          "+ findWorkspace(problemId : UUID, userId : UUID) : Optional<Workspace>"
+        ]
+      },
+      {
+        "id": "classBridge",
+        "name": "ClassAssignmentLookupBridge",
+        "kind": "interface",
+        "methods": [
+          "+ assignedProblemIds(studentId : UUID) : Set<UUID>"
         ]
       }
     ],
     "externals": [],
     "relations": [
       {
-        "from": "service",
-        "to": "port1",
+        "from": "pubController",
+        "to": "queryHandler",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port2",
+        "from": "queryHandler",
+        "to": "pubRepo",
         "kind": "dependency"
+      },
+      {
+        "from": "queryHandler",
+        "to": "classBridge",
+        "kind": "dependency",
+        "label": "tra cứu bài được giao"
       }
     ],
     "notes": [
-      "Chỉ bài PUBLISHED, chưa xoá mới nằm trong kết quả tìm; bài giao nhóm riêng theo lớp.",
-      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+      "PublishedProblemController phục vụ tìm kiếm, phân trang và mở workspace bài toán cho sinh viên.",
+      "ClassAssignmentLookupBridge truy vấn các bài tập được giảng viên giao cho lớp của sinh viên để hiển thị nhóm riêng."
     ]
   }
 }

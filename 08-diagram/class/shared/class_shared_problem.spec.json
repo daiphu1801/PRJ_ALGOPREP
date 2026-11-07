@@ -1,5 +1,5 @@
 {
-  "_": "Nguồn thuộc tính và liên kết: 02-bd/database/F2_problem-bank.md:14-205. [SoT: Suy luận] Ánh xạ bảng dữ liệu sang tên class Java là thiết kế đề xuất; bội số theo FK/unique của BD. Bỏ thuộc tính thứ cấp và getter/setter.",
+  "_": "Nguồn thuộc tính và liên kết: 05-coding/backend/algoprep-problem-bank/src/main/java/com/algoprep/problembank/domain/model/. Biểu diễn mô hình bài toán tác giả (Authoring), đặc tả hàm (Spec), bản chụp testcase (Snapshot) và góc nhìn sinh viên (Workspace).",
   "kind": "class",
   "title": "F2 — Mô hình bài toán và bộ testcase",
   "covers": [],
@@ -8,62 +8,70 @@
     "classes": [
       {
         "id": "problem",
-        "name": "Problem",
+        "name": "AuthoringProblemRecord",
         "attributes": [
           "+ id : UUID",
           "+ code : String",
-          "+ status : PublicationStatus",
+          "+ title : String",
+          "+ status : String",
+          "+ functionWrapperSupported : boolean",
           "+ currentTestcaseSetVersion : int",
-          "+ functionWrapperSupported : boolean"
+          "+ authorId : UUID"
         ],
         "methods": []
       },
       {
         "id": "spec",
-        "name": "ProblemSpec",
+        "name": "StoredProblemSpec",
         "attributes": [
-          "+ problemId : UUID",
+          "+ data : ProblemSpecData",
           "+ specVersion : int"
         ],
         "methods": []
       },
       {
         "id": "case",
-        "name": "Testcase",
+        "name": "AuthoringTestcase",
         "attributes": [
           "+ id : UUID",
-          "+ problemId : UUID",
-          "+ visibility : Visibility",
+          "+ position : int",
+          "+ visibility : String",
+          "+ origin : String",
           "+ approved : boolean"
         ],
         "methods": []
       },
       {
         "id": "snapshot",
-        "name": "TestcaseSetSnapshot",
+        "name": "TestcaseSnapshot",
         "attributes": [
           "+ problemId : UUID",
           "+ version : int",
-          "+ objectKey : String"
+          "+ testcases : List<TestcaseData>"
         ],
         "methods": []
       },
       {
         "id": "assignment",
-        "name": "ClassAssignment",
+        "name": "ClassAssignmentSnapshot",
         "attributes": [
           "+ classId : UUID",
-          "+ problemId : UUID"
+          "+ problemId : UUID",
+          "+ problemTitle : String",
+          "+ assignedAt : Instant",
+          "+ removedAt : Instant [0..1]"
         ],
         "methods": []
       },
       {
-        "id": "bookmark",
-        "name": "ProblemBookmark",
+        "id": "workspace",
+        "name": "Workspace",
         "attributes": [
-          "+ userId : UUID",
-          "+ problemId : UUID",
-          "+ privateNote : String"
+          "+ id : UUID",
+          "+ code : String",
+          "+ title : String",
+          "+ functionWrapperSupported : boolean",
+          "+ bookmarked : boolean"
         ],
         "methods": []
       }
@@ -80,7 +88,7 @@
       {
         "from": "problem",
         "to": "case",
-        "kind": "association",
+        "kind": "composition",
         "from_mult": "1",
         "to_mult": "0..*"
       },
@@ -99,16 +107,15 @@
         "to_mult": "0..*"
       },
       {
-        "from": "problem",
-        "to": "bookmark",
-        "kind": "association",
-        "from_mult": "1",
-        "to_mult": "0..*"
+        "from": "workspace",
+        "to": "problem",
+        "kind": "dependency",
+        "label": "chiếu đọc"
       }
     ],
     "notes": [
-      "Testcase đã duyệt được ghim thành snapshot theo version khi nộp bài; ghi chú bookmark chỉ đọc theo chủ tài khoản.",
-      "[SoT: Suy luận] Tên class Java đề xuất từ schema BD."
+      "AuthoringProblemRecord gom toàn bộ dữ liệu soạn thảo bài toán; AuthoringTestcase quản lý kiểm duyệt testcase.",
+      "TestcaseSnapshot lưu trữ các phiên bản testcase đã đóng gói phục vụ máy chấm; Workspace phục vụ màn hình làm bài của sinh viên."
     ]
   }
 }

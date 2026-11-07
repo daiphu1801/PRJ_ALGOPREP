@@ -14,22 +14,22 @@
         "role": "actor"
       },
       {
-        "name": "AiLimitsController",
+        "name": "AdminLanguageConfigController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "UnlockAiTokenBudget",
+        "name": "UnlockAiTokenBudgetCommandHandler",
         "role": "service",
         "stereo": "application"
       },
       {
-        "name": "BudgetStorePort",
+        "name": "AiTokenBudgetRepository",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "AiDbAdapter",
+        "name": "JdbcAiTokenBudgetRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -50,32 +50,32 @@
       },
       {
         "from": "Quản trị viên",
-        "to": "AiLimitsController",
+        "to": "AdminLanguageConfigController",
         "text": "Yêu cầu mở khóa ngân sách"
       },
       {
-        "from": "AiLimitsController",
-        "to": "UnlockAiTokenBudget",
+        "from": "AdminLanguageConfigController",
+        "to": "UnlockAiTokenBudgetCommandHandler",
         "text": "Kiểm quyền cập nhật ngân sách"
       },
       {
-        "from": "UnlockAiTokenBudget",
-        "to": "BudgetStorePort",
+        "from": "UnlockAiTokenBudgetCommandHandler",
+        "to": "AiTokenBudgetRepository",
         "text": "Khóa cấu hình và tính token đã dùng"
       },
       {
-        "from": "BudgetStorePort",
-        "to": "AiDbAdapter",
+        "from": "AiTokenBudgetRepository",
+        "to": "JdbcAiTokenBudgetRepository",
         "text": "Đọc ngân sách trong giao dịch"
       },
       {
-        "from": "AiDbAdapter",
+        "from": "JdbcAiTokenBudgetRepository",
         "to": "PostgreSQL",
         "text": "Khóa dòng cấu hình, cộng token từ đầu kỳ"
       },
       {
         "from": "PostgreSQL",
-        "to": "UnlockAiTokenBudget",
+        "to": "UnlockAiTokenBudgetCommandHandler",
         "text": "Trả trạng thái và số đã dùng",
         "kind": "return"
       },
@@ -84,36 +84,36 @@
           "label": "Có thể mở khóa?",
           "then": [
             {
-              "from": "UnlockAiTokenBudget",
-              "to": "BudgetStorePort",
+              "from": "UnlockAiTokenBudgetCommandHandler",
+              "to": "AiTokenBudgetRepository",
               "text": "Xóa thời điểm khóa"
             },
             {
-              "from": "BudgetStorePort",
-              "to": "AiDbAdapter",
+              "from": "AiTokenBudgetRepository",
+              "to": "JdbcAiTokenBudgetRepository",
               "text": "Lưu trạng thái mở"
             },
             {
-              "from": "AiDbAdapter",
+              "from": "JdbcAiTokenBudgetRepository",
               "to": "PostgreSQL",
               "text": "Cập nhật khóa thành rỗng"
             },
             {
-              "from": "UnlockAiTokenBudget",
+              "from": "UnlockAiTokenBudgetCommandHandler",
               "to": "AuditLogPort",
               "text": "Ghi nhật ký mở khóa cùng giao dịch"
             },
             {
-              "from": "UnlockAiTokenBudget",
-              "to": "AiLimitsController",
+              "from": "UnlockAiTokenBudgetCommandHandler",
+              "to": "AdminLanguageConfigController",
               "text": "Trả ngân sách đã mở",
               "kind": "return"
             }
           ],
           "else": [
             {
-              "from": "UnlockAiTokenBudget",
-              "to": "AiLimitsController",
+              "from": "UnlockAiTokenBudgetCommandHandler",
+              "to": "AdminLanguageConfigController",
               "text": "Nếu đã mở: trả nguyên trạng; nếu đã dùng đủ: yêu cầu tăng hạn mức",
               "kind": "return"
             }
@@ -121,7 +121,7 @@
         }
       },
       {
-        "from": "AiLimitsController",
+        "from": "AdminLanguageConfigController",
         "to": "Quản trị viên",
         "text": "Hiển thị kết quả",
         "kind": "return"
