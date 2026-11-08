@@ -221,7 +221,7 @@ Bảng 11.1: Năm điều kiện, kiểm ở máy chủ, giao diện chỉ hiể
 | `MIN_APPROVED_SAMPLES` | `>= 2` | `visibility = SAMPLE AND approved = true` |
 | `MIN_WORKED_EXAMPLES` | `>= 2` | dòng `worked_examples` |
 | `REFERENCE_SOLUTION_PASSES_ALL` | đáp án mẫu `PASS` mọi testcase đã duyệt trong **một lần chạy lúc bấm xuất bản** | không đọc cờ lưu sẵn |
-| `SPEC_DECLARED` | `stdinFormatMd` và `stdoutFormatMd` không rỗng; chiến lược so khớp hợp lệ (có `epsilonValue` nếu `EPSILON`); **chữ ký đã khai** (`functionName`, `returnType`, `parameters` khác `null`), trừ khi chữ ký có kiểu ngoài lược đồ | theo `problem_specs` |
+| `SPEC_DECLARED` | `stdinFormatMd` và `stdoutFormatMd` không rỗng; chiến lược so khớp hợp lệ (có `epsilonValue` nếu `EPSILON`); **chữ ký đã khai** (`functionName`, `returnType`, `parameters` khác `null`), trừ khi bài không hỗ trợ hàm (`problems.function_wrapper_supported = false`: chữ ký có kiểu ngoài lược đồ `HRN-V01` đến `V06`, hoặc chưa khai chữ ký `HRN-V07`); bài kiểu Standard I/O không cần chữ ký (Owner chốt 2026-11-08, `DEC-2026-1108-f2-spec-declared-stdio-exempt`) | theo `problem_specs` |
 
 Điều kiện "tổng trọng số 100" **không còn áp dụng** (`01-rd/req/F2_problem-bank.md:162-163`). Hành vi: thiếu điều kiện thì `422 PRB-030` liệt kê **tất cả** điều kiện thiếu (`SHR0202` Q8, dòng 793).
 

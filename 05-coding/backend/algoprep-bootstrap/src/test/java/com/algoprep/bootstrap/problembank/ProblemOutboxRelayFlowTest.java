@@ -82,6 +82,7 @@ class ProblemOutboxRelayFlowTest {
     jdbc.update("DELETE FROM problem.outbox_events");
     publisher.entered = null;
     publisher.release = null;
+    publisher.seen.clear();
     rabbit.execute(
         channel -> {
           channel.exchangeDeclare("algoprep.domain-events", "topic", true);
@@ -128,6 +129,26 @@ class ProblemOutboxRelayFlowTest {
     assertThat(relay.relay()).isEqualTo(1);
     assertThat(pending()).isEqualTo(1);
     assertThat(attempts(id)).isEqualTo(1);
+  }
+
+  @Test
+  void aRowWithABlankRoutingKeyIsNeverHandedToThePublisher() {
+    seed(" ", "{}");
+    assertThat(relay.relay()).isEqualTo(1);
+    assertThat(publisher.seen).isEmpty();
+  }
+
+  @Test
+  void rowsAreHandedToThePublisherOldestFirst() {
+    UUID middle = seed("problem.problem.published", "{}");
+    UUID oldest = seed("problem.problem.published", "{}");
+    UUID newest = seed("problem.problem.published", "{}");
+    // Insertion order is the opposite of age, so only ORDER BY created_at can produce this order.
+    age(newest, "1 day");
+    age(middle, "2 days");
+    age(oldest, "3 days");
+    assertThat(relay.relay()).isEqualTo(3);
+    assertThat(publisher.seen).containsExactly(oldest, middle, newest);
   }
 
   @Test
@@ -201,6 +222,13 @@ class ProblemOutboxRelayFlowTest {
     return id;
   }
 
+  private void age(UUID id, String interval) {
+    jdbc.update(
+        "UPDATE problem.outbox_events SET created_at = now() - CAST(? AS interval) WHERE id=?",
+        interval,
+        id);
+  }
+
   private int pending() {
     return jdbc.queryForObject(
         "SELECT count(*) FROM problem.outbox_events WHERE published_at IS NULL", Integer.class);
@@ -231,6 +259,7 @@ class ProblemOutboxRelayFlowTest {
     private final ProblemDomainEventPort actual;
     volatile CountDownLatch entered;
     volatile CountDownLatch release;
+    final java.util.List<UUID> seen = new java.util.concurrent.CopyOnWriteArrayList<>();
 
     ControlledPublisher(ProblemDomainEventPort actual) {
       this.actual = actual;
@@ -238,6 +267,7 @@ class ProblemOutboxRelayFlowTest {
 
     @Override
     public boolean publish(OutboxEvent event) {
+      seen.add(event.id());
       if (entered != null) {
         entered.countDown();
         try {

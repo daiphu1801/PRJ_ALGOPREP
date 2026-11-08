@@ -47,3 +47,17 @@ DB accumulates them; find them with `select email from identity.users where emai
 
 The skip probe posts an empty login through the proxy, which counts as a failed attempt for the
 empty e-mail key; it accepts IDT-102 and IDT-103 for that reason.
+
+## SHR0202 authoring spec (`problem-authoring-real.spec.ts`)
+
+Three cases against the real backend and MinIO: bulk testcase upload (F2-8a), running the reference solution
+without leaking hidden data (F2-8b), and publishing a standard-I/O-only problem from the screen (F-C-01). The
+two sandbox cases skip themselves unless `E2E_F3F4_GRADING=true` and the backend is wired to a go-judge image
+with toolchains. Problems are created by SQL in the Postgres container, so run it against a demo database:
+
+```powershell
+$env:E2E_PG_DB = "algoprep_demo"; $env:E2E_F3F4_GRADING = "true"
+pnpm exec playwright test problem-authoring-real --workers=1 --reporter=list
+```
+
+The problems it creates (`E2E-BULK-*`, `E2E-RUN-*`, `E2E-STDIO-*`) stay in the database, like the accounts.

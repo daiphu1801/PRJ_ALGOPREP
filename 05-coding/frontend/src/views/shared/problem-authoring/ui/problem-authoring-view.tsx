@@ -214,6 +214,10 @@ function ProblemAuthoringForm({
   );
   const persistKey = (value: ProblemDraft) =>
     JSON.stringify(server ? { ...value, solutionCheck: STALE_CHECK } : value);
+  // The server's verdict on "spec declared" for the spec it holds; refreshed after every full save.
+  const [serverSpecDeclared, setServerSpecDeclared] = useState(
+    server?.specDeclared ?? null,
+  );
   // The `updatedAt` the next write must quote (optimistic lock); testcase writes move it too.
   const lock = useRef(server?.updatedAt ?? null);
   const [running, setRunning] = useState(false);
@@ -455,6 +459,8 @@ function ProblemAuthoringForm({
         solutionCheck: previous.solutionCheck,
       }));
       setSaved(fresh);
+      if (result.record.server)
+        setServerSpecDeclared(result.record.server.specDeclared);
     } else {
       const base = saved ?? initial;
       const next = withApplied(base, snapshot, result.applied);
@@ -564,8 +570,12 @@ function ProblemAuthoringForm({
   // Real mode: the server runs the reference solution itself at this moment (BD EVT-33), so the screen
   // does not insist on a client-side run first, and PRB-030 names whatever is still missing.
   async function publish() {
+    // Real mode: the server also decides "spec declared" (a standard-I/O problem needs no signature),
+    // and its PRB-030 names the item if it is still missing.
     const clientBlocking = server
-      ? blocking.filter((item) => item.key !== "solutionPasses")
+      ? blocking.filter(
+          (item) => item.key !== "solutionPasses" && item.key !== "specDeclared",
+        )
       : blocking;
     if (clientBlocking.length > 0) {
       toast.warning(
@@ -738,12 +748,21 @@ function ProblemAuthoringForm({
 
   // dc.html:623-628 — the publish checklist, minus the weight-total rule that went with partial
   // scoring.
+  // Real mode, spec as last saved: the server's verdict decides, so a standard-I/O problem is not held
+  // back by the client's signature rule. A spec being edited, or one the server has not judged, keeps
+  // the live client check.
+  const specSaved =
+    JSON.stringify(draft.spec) === JSON.stringify((saved ?? initial).spec);
+  const specDone =
+    server !== undefined && specSaved && serverSpecDeclared !== null
+      ? serverSpecDeclared
+      : isSpecComplete(draft.spec);
   const checklist = [
     { key: "minTestcases", done: approved.length >= 8, tab: "testcases" },
     { key: "minPublic", done: publicTestcases >= 2, tab: "testcases" },
     { key: "solutionPasses", done: solutionPasses, tab: "testcases" },
     { key: "minExamples", done: draft.examples.length >= 2, tab: "examples" },
-    { key: "specDeclared", done: isSpecComplete(draft.spec), tab: "spec" },
+    { key: "specDeclared", done: specDone, tab: "spec" },
   ] satisfies { key: string; done: boolean; tab: TabKey }[];
   const blocking = checklist.filter((item) => !item.done);
 

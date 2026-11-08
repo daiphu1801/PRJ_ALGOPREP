@@ -360,6 +360,43 @@ class InstructorClassMetricsFlowTest {
     }
   }
 
+  @Test
+  void everyScopeWideReadIs503WithoutDetailWhenTheJudgeOrTheAssignmentsFail() throws Exception {
+    // A fresh teacher and class that nobody has read, so no cache can hide the failure.
+    String email = account("INSTRUCTOR", "Fresh teacher");
+    String freshToken = login(email);
+    UUID fresh = clazz(id(email), "Fresh");
+    enrol(fresh, an);
+    give(p1, fresh, "5 days", null);
+    List<String> paths =
+        List.of(
+            ID + "/instructor/classes/summary",
+            ID + "/instructor/classes/score-trend",
+            ID + "/instructor/classes/attention-students",
+            ID + "/instructor/students");
+
+    for (String[] source :
+        new String[][] {
+          {"judge", "submissions"},
+          {"problem", "class_assignments"}
+        }) {
+      String table = source[0] + "." + source[1];
+      jdbc.execute("ALTER TABLE " + table + " RENAME TO " + source[1] + "_away");
+      try {
+        for (String path : paths) {
+          MockHttpServletResponse response = call(path, freshToken);
+          assertThat(response.getStatus()).as(table + " " + path).isEqualTo(503);
+          assertThat(response.getContentAsString())
+              .as(table + " " + path)
+              .contains("IDT-507")
+              .doesNotContain(source[1]);
+        }
+      } finally {
+        jdbc.execute("ALTER TABLE " + table + "_away RENAME TO " + source[1]);
+      }
+    }
+  }
+
   private List<String> allPaths() {
     return List.of(
         ID + "/instructor/classes/summary",

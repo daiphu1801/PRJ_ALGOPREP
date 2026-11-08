@@ -2,7 +2,12 @@ package com.algoprep.bootstrap.problembank;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -14,6 +19,7 @@ import com.algoprep.identity.application.ports.out.AccessTokenPort;
 import com.algoprep.identity.domain.model.BaseCategory;
 import com.algoprep.problembank.application.dto.ReferenceSolutionRun;
 import com.algoprep.problembank.application.ports.out.SampleSolutionRunnerPort;
+import com.algoprep.problembank.application.ports.out.TestcaseObjectStorePort;
 import io.minio.BucketExistsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
@@ -24,9 +30,12 @@ import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -35,6 +44,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -57,6 +67,7 @@ import tools.jackson.databind.json.JsonMapper;
         "spring.autoconfigure.exclude=org.springframework.boot.amqp.autoconfigure.RabbitAutoConfiguration")
 @ActiveProfiles("test")
 @Testcontainers
+@ExtendWith(OutputCaptureExtension.class)
 class ProblemTestcaseAuthoringFlowTest {
   private static final JsonMapper JSON = JsonMapper.builder().build();
   private static final String BASE = "/api/v1/problem-bank/authoring/problems";
@@ -104,6 +115,9 @@ class ProblemTestcaseAuthoringFlowTest {
   MinioClient minio;
 
   @MockitoBean SampleSolutionRunnerPort runner;
+
+  // Passes through to the real MinIO store; only the broken-store test makes `put` fail.
+  @MockitoSpyBean TestcaseObjectStorePort objectStore;
 
   private MockMvc mvc;
   private UUID teacherId;
@@ -436,6 +450,34 @@ class ProblemTestcaseAuthoringFlowTest {
     assertThat(exists(outKey)).isFalse();
   }
 
+  @Test
+  void aFailedObjectCleanupAfterADeleteStillSucceedsAndLeavesOnlyAWarning(CapturedOutput output)
+      throws Exception {
+    var id = draft(0, 0);
+    var big = "m".repeat(9000);
+    var created =
+        json(
+            send(
+                post(cases(id)),
+                teacher,
+                "{\"input\":\"" + big + "\",\"expectedOutput\":\"" + big + "\"}"));
+    var caseId = UUID.fromString(created.path("testcase").path("id").asString());
+    var inKey = column("input_object_key", caseId);
+    var outKey = column("expected_output_object_key", caseId);
+    doThrow(new IllegalStateException("minio is down")).when(objectStore).delete(anyString());
+
+    var response = send(delete(cases(id) + "/" + caseId), teacher, "");
+
+    // The row is already committed, so the caller sees success; the two objects are left behind.
+    assertThat(response.getStatus()).isEqualTo(200);
+    assertThat(count("problem.testcases WHERE id = '" + caseId + "'")).isZero();
+    assertThat(exists(inKey)).isTrue();
+    assertThat(exists(outKey)).isTrue();
+    assertThat(output.getAll())
+        .contains("Testcase object cleanup failed for key " + inKey)
+        .contains("Testcase object cleanup failed for key " + outKey);
+  }
+
   // ---- reorder (#44)
 
   @Test
@@ -495,6 +537,42 @@ class ProblemTestcaseAuthoringFlowTest {
     var empty = draft(0, 0);
     assertThat(send(put(cases(empty) + "/order"), teacher, "{\"orderedIds\":[]}").getStatus())
         .isEqualTo(200);
+  }
+
+  @Test
+  void aBrokenObjectStoreRollsBackTheReorderOfAPublishedProblemAndARetryWorks() throws Exception {
+    var id = published(8, 2);
+    int before = version(id);
+    int snapshotsBefore = snapshots(id);
+    int eventsBefore = count("problem.outbox_events WHERE aggregate_id = '" + id + "'");
+    var original = orderedIds(id);
+    var reversed = new ArrayList<>(original);
+    java.util.Collections.reverse(reversed);
+    clearInvocations(objectStore);
+    doThrow(new IllegalStateException("minio is down"))
+        .when(objectStore)
+        .put(anyString(), any(byte[].class));
+
+    var failed = send(put(cases(id) + "/order"), teacher, order(reversed));
+
+    // The snapshot write was attempted, so the failure came from the store and not from validation.
+    verify(objectStore).put(anyString(), any(byte[].class));
+    assertThat(failed.getStatus()).isEqualTo(503);
+    assertThat(json(failed).path("errorCode").asString()).isEqualTo("PRB-052");
+    assertThat(failed.getContentAsString()).doesNotContain("minio is down");
+    assertThat(orderedIds(id)).isEqualTo(original);
+    assertThat(version(id)).isEqualTo(before);
+    assertThat(snapshots(id)).isEqualTo(snapshotsBefore);
+    assertThat(count("problem.outbox_events WHERE aggregate_id = '" + id + "'"))
+        .isEqualTo(eventsBefore);
+
+    doCallRealMethod().when(objectStore).put(anyString(), any(byte[].class));
+    var retried = send(put(cases(id) + "/order"), teacher, order(reversed));
+
+    assertThat(retried.getStatus()).isEqualTo(200);
+    assertThat(orderedIds(id)).isEqualTo(reversed);
+    assertThat(version(id)).isEqualTo(before + 1);
+    assertThat(snapshots(id)).isEqualTo(snapshotsBefore + 1);
   }
 
   // ---- helpers

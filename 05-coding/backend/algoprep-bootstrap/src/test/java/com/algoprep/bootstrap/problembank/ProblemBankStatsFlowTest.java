@@ -127,6 +127,26 @@ class ProblemBankStatsFlowTest {
   }
 
   @Test
+  void thePublishedListHoldsOnlyPublishedProblems() {
+    var live = problem("LIVE", "PUBLISHED", false);
+    problem("DRAFT", "UNPUBLISHED", false);
+    problem("GONE", "UNPUBLISHED", true);
+
+    assertThat(stats.publishedProblems()).extracting("problemId").containsExactly(live);
+  }
+
+  @Test
+  void summariesAnswerOnlyForTheRequestedIds() {
+    var wanted = problem("WANTED", "PUBLISHED", false);
+    problem("OTHER", "PUBLISHED", false);
+    problem("DRAFT", "UNPUBLISHED", false);
+
+    assertThat(stats.problemSummaries(Set.of(wanted)))
+        .extracting("problemId")
+        .containsExactly(wanted);
+  }
+
+  @Test
   void noIdsMeansNoRows() {
     assertThat(stats.problemSummaries(Set.of())).isEmpty();
   }

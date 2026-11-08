@@ -12,6 +12,8 @@ import com.algoprep.judge.domain.model.AdminSubmissionStats.LevelProblems;
 import com.algoprep.judge.domain.model.AdminSubmissionStats.Totals;
 import com.algoprep.judge.domain.ports.out.AdminSubmissionStatsRepository;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,6 +56,37 @@ class GetAdminSubmissionStatsQueryHandlerTest {
     verify(repository).daily(Instant.parse("2026-10-28T17:00:00Z"), now);
     verify(repository).months(Instant.parse("2026-05-31T17:00:00Z"), now);
     verify(repository, never()).totals(any());
+  }
+
+  @Test
+  void windowsFollowTheUtcPlusSevenMidnightNotTheUtcOne() {
+    // 16:59:59Z is still 04 Nov at 23:59:59 in UTC+7; one second later it is 05 Nov at 00:00:00.
+    Instant lastSecond = Instant.parse("2026-11-04T16:59:59Z");
+    Instant midnight = Instant.parse("2026-11-04T17:00:00Z");
+    when(repository.daily(any(), any())).thenReturn(List.of());
+
+    when(repository.now()).thenReturn(lastSecond);
+    assertThat(handler.byDay().columns().getLast().day()).isEqualTo(LocalDate.parse("2026-11-04"));
+    verify(repository).daily(Instant.parse("2026-10-28T17:00:00Z"), lastSecond);
+
+    when(repository.now()).thenReturn(midnight);
+    assertThat(handler.byDay().columns().getLast().day()).isEqualTo(LocalDate.parse("2026-11-05"));
+    verify(repository).daily(Instant.parse("2026-10-29T17:00:00Z"), midnight);
+  }
+
+  @Test
+  void monthWindowRollsOverAtTheUtcPlusSevenMonthEnd() {
+    Instant lastSecond = Instant.parse("2026-10-31T16:59:59Z");
+    Instant midnight = Instant.parse("2026-10-31T17:00:00Z");
+    when(repository.months(any(), any())).thenReturn(List.of());
+
+    when(repository.now()).thenReturn(lastSecond);
+    assertThat(handler.byMonth().points().getLast().month()).isEqualTo(YearMonth.of(2026, 10));
+    verify(repository).months(Instant.parse("2026-04-30T17:00:00Z"), lastSecond);
+
+    when(repository.now()).thenReturn(midnight);
+    assertThat(handler.byMonth().points().getLast().month()).isEqualTo(YearMonth.of(2026, 11));
+    verify(repository).months(Instant.parse("2026-05-31T17:00:00Z"), midnight);
   }
 
   @Test

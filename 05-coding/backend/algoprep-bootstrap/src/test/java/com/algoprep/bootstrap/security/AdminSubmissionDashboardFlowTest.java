@@ -52,6 +52,8 @@ class AdminSubmissionDashboardFlowTest {
   private static final String HASH = new BCryptPasswordEncoder().encode(PASSWORD);
   private static final String BASE = "/api/v1/identity/admin/dashboard";
   private static final ZoneId LOCAL = ZoneId.of("Asia/Ho_Chi_Minh");
+  private static final String LOCAL_MIDNIGHT_TODAY =
+      "(date_trunc('day', now() AT TIME ZONE 'Asia/Ho_Chi_Minh') AT TIME ZONE 'Asia/Ho_Chi_Minh')";
   private static final List<String> PATHS =
       List.of(
           BASE + "/cross-module",
@@ -180,6 +182,43 @@ class AdminSubmissionDashboardFlowTest {
   }
 
   @Test
+  void aSubmissionOneSecondBeforeLocalMidnightBelongsToYesterdayAndOneAtMidnightToToday()
+      throws Exception {
+    UUID problem = problem("PUBLISHED", false, levelId(0));
+    // Anchored on the database clock's local midnight, so the result does not depend on when this
+    // runs.
+    String midnight = LOCAL_MIDNIGHT_TODAY;
+    submissionAt(problem, midnight + " - interval '1 second'");
+    submissionAt(problem, midnight);
+    submissionAt(problem, midnight + " - interval '1 day'");
+
+    String days = call(BASE + "/submissions/by-day", admin).getContentAsString();
+
+    assertThat(JsonPath.<String>read(days, "$.columns[5].day"))
+        .isEqualTo(LocalDate.now(LOCAL).minusDays(1).toString());
+    assertThat(JsonPath.<Integer>read(days, "$.columns[6].count")).isEqualTo(1);
+    // Yesterday's last second and yesterday's first second both land in yesterday's column.
+    assertThat(JsonPath.<Integer>read(days, "$.columns[5].count")).isEqualTo(2);
+    assertThat(JsonPath.<Integer>read(days, "$.weekTotal")).isEqualTo(3);
+  }
+
+  @Test
+  void aSubmissionOneSecondBeforeTheLocalMonthStartBelongsToThePreviousMonth() throws Exception {
+    UUID problem = problem("PUBLISHED", false, levelId(0));
+    String monthStart =
+        "(date_trunc('month', now() AT TIME ZONE 'Asia/Ho_Chi_Minh') AT TIME ZONE 'Asia/Ho_Chi_Minh')";
+    submissionAt(problem, monthStart + " - interval '1 second'");
+    submissionAt(problem, monthStart);
+
+    String months = call(BASE + "/submissions/by-month", admin).getContentAsString();
+
+    assertThat(JsonPath.<String>read(months, "$.points[4].month"))
+        .isEqualTo(YearMonth.now(LOCAL).minusMonths(1).toString());
+    assertThat(JsonPath.<Integer>read(months, "$.points[4].count")).isEqualTo(1);
+    assertThat(JsonPath.<Integer>read(months, "$.points[5].count")).isEqualTo(1);
+  }
+
+  @Test
   void difficultyHasOneGroupPerLevelInCatalogueOrderAndCountsOnlyPublishedProblems()
       throws Exception {
     UUID easy = problem("PUBLISHED", false, levelId(0));
@@ -275,6 +314,24 @@ class AdminSubmissionDashboardFlowTest {
         status,
         deleted);
     return id;
+  }
+
+  /** An ACCEPTED Java submission at an exact instant given as a SQL timestamptz expression. */
+  private void submissionAt(UUID problem, String instantSql) {
+    jdbc.update(
+        """
+        INSERT INTO judge.submissions(id,user_id,problem_id,language,submission_model,source_code,
+          source_input_method,status,score_ratio,testcase_set_version_at_grading,
+          submitted_at,finished_at)
+        VALUES(?,?,?,'JAVA','STANDARD_IO','x','EDITOR','ACCEPTED',1,1,
+        """
+            + instantSql
+            + ", "
+            + instantSql
+            + ")",
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        problem);
   }
 
   private void submission(UUID problem, String ago, String status, String language) {

@@ -27,6 +27,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -148,6 +149,35 @@ class ClassMetricsHandlersTest {
 
     assertThatThrownBy(() -> new ListClassesSummaryQueryHandler(assembler).summary(instructor))
         .satisfies(e -> assertCode(e, "IDT-507"));
+  }
+
+  /** The four reads that span every class of the instructor, #56 to #59. */
+  private List<ThrowingCallable> scopeWideReads() {
+    return List.of(
+        () -> new ListClassesSummaryQueryHandler(assembler).summary(instructor),
+        () -> new GetClassScoreTrendQueryHandler(assembler).trend(instructor, null),
+        () -> new ListClassAttentionStudentsQueryHandler(assembler).list(instructor, null),
+        () ->
+            new ListInstructorStudentsQueryHandler(classes, assembler)
+                .list(new InstructorStudentsQuery(instructor, null, null, null, null)));
+  }
+
+  @Test
+  void everyScopeWideReadIs503WhenTheJudgeFails() {
+    doThrow(new IllegalStateException("x")).when(metrics).read(any(), any(), any(), anyInt());
+
+    for (ThrowingCallable read : scopeWideReads()) {
+      assertThatThrownBy(read).satisfies(e -> assertCode(e, "IDT-507"));
+    }
+  }
+
+  @Test
+  void everyScopeWideReadIs503WhenTheAssignmentsFail() {
+    when(lookup.assignmentsOf(any())).thenThrow(new IllegalStateException("x"));
+
+    for (ThrowingCallable read : scopeWideReads()) {
+      assertThatThrownBy(read).satisfies(e -> assertCode(e, "IDT-507"));
+    }
   }
 
   @Test

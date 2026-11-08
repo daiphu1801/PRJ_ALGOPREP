@@ -159,7 +159,7 @@ Bảng 0.1: Danh mục khối quy tắc.
   1. `MIN_APPROVED_TESTCASES`: `COUNT(*)` testcase `approved = true` `>= 8`.
   2. `MIN_APPROVED_SAMPLES`: `visibility = SAMPLE AND approved = true` `>= 2`.
   3. `MIN_WORKED_EXAMPLES`: `COUNT(worked_examples) >= 2`.
-  4. `SPEC_DECLARED`: theo `validation` bảng 11.1 (chữ ký đã khai trừ kiểu ngoài lược đồ; định dạng stdin/stdout không rỗng; chiến lược hợp lệ).
+  4. `SPEC_DECLARED`: theo `validation` bảng 11.1 (chữ ký đã khai, trừ khi bài không hỗ trợ hàm `function_wrapper_supported = false`; định dạng stdin/stdout không rỗng; chiến lược hợp lệ). Owner chốt 2026-11-08 (`DEC-2026-1108-f2-spec-declared-stdio-exempt`).
   5. `REFERENCE_SOLUTION_PASSES_ALL`: **chỉ tính khi chuyển trạng thái** (hoặc khi giao diện gọi §48): chạy đáp án mẫu trên mọi testcase đã duyệt (BR-15) và đòi `allPass = true`. Không có đáp án mẫu hoặc không có testcase đã duyệt -> không đạt.
   6. Khi tải trang chỉ trả bốn điều kiện đếm được; điều kiện thứ năm `met = null`.
 - **Quyết định**: đạt đủ năm thì cho xuất bản; thiếu thì `422 PRB-030` với `details.items` liệt kê **mọi** điều kiện thiếu. Testcase nháp AI chưa duyệt **không** được đếm (`01-rd/req/F2_problem-bank.md:113-116`).

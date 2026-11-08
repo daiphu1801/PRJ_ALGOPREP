@@ -262,6 +262,61 @@ describe("ProblemAuthoringView with the real API", () => {
     ).toHaveAttribute("aria-pressed", "true");
   });
 
+  // A standard-I/O problem: formats written, no function signature (DD api F2 checklist SPEC_DECLARED).
+  const stdioOnly = {
+    spec: {
+      matchingStrategy: "EXACT",
+      epsilonValue: null,
+      stdinFormatMd: "stdin",
+      stdoutFormatMd: "stdout",
+      functionName: null,
+      returnType: null,
+      parameters: null,
+      nameOverrides: null,
+    },
+    functionWrapperSupported: false,
+  };
+  const pendingSpec = () =>
+    screen.queryByRole("button", { name: m.check.specDeclared });
+
+  it("a standard-I/O spec the server calls declared reads as met and publishes without a client block", async () => {
+    apiMock.put.mockResolvedValue({ problemUpdatedAt: T1 });
+    routes(detail({ ...stdioOnly, checklist: { specDeclared: true } }));
+    const toasts = watch();
+    await open();
+    expect(pendingSpec()).not.toBeInTheDocument();
+    expect(screen.getByText(m.check.specDeclared)).toBeInTheDocument();
+
+    routes(
+      detail({
+        ...stdioOnly,
+        status: "PUBLISHED",
+        updatedAt: T1,
+        checklist: { specDeclared: true },
+      }),
+    );
+    fireEvent.click(screen.getByRole("button", { name: m.publish }));
+    await waitFor(() =>
+      expect(toasts().at(-1)).toEqual(["success", m.toast.published]),
+    );
+    expect(apiMock.put).toHaveBeenCalledWith(
+      `${A}/${P}/status`,
+      expect.objectContaining({ status: "PUBLISHED" }),
+    );
+  });
+
+  it("without a server verdict the client rule stays, so a spec with no signature reads as pending", async () => {
+    routes(detail(stdioOnly));
+    await open();
+    expect(pendingSpec()).toBeInTheDocument();
+  });
+
+  it("the server's 'not declared' wins over a spec the client would call complete", async () => {
+    routes(detail({ checklist: { specDeclared: false } }));
+    await open();
+    expect(pendingSpec()).toBeInTheDocument();
+  });
+
   it("adds a testcase straight to the server and shows the server's row; Save stays disabled", async () => {
     apiMock.post.mockResolvedValue({
       testcase: tc(9, { input: "x", expectedOutput: "y" }),
