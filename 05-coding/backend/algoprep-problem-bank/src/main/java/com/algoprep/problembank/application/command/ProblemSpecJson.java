@@ -26,7 +26,8 @@ public final class ProblemSpecJson {
 
   private ProblemSpecJson() {}
 
-  static ProblemSpecData data(JsonNode body, ProblemSpecData previous) {
+  /** Public so the F3 signature preview reads a body exactly as a save of the spec does. */
+  public static ProblemSpecData data(JsonNode body, ProblemSpecData previous) {
     if (body == null || !body.isObject()) {
       throw invalid();
     }
@@ -83,7 +84,7 @@ public final class ProblemSpecJson {
         present(overrides) ? normalized.toString() : null);
   }
 
-  static void checkEpsilon(BigDecimal epsilon) {
+  public static void checkEpsilon(BigDecimal epsilon) {
     if (epsilon != null
         && (epsilon.signum() <= 0
             || epsilon.scale() > 12

@@ -24,6 +24,7 @@ import {
   exceedsSchema,
   renderSignature,
   signatureIssues,
+  useSignaturePreview,
   type FunctionSignature,
   type MatchingStrategy,
   type ProblemSpec,
@@ -31,6 +32,7 @@ import {
   type SpecType,
   type TypeKind,
 } from "@/entities/problem";
+import { isMockMode } from "@/shared/api";
 import { useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
 import {
@@ -213,7 +215,14 @@ export function SpecEditor({ spec, onChange }: Props) {
                   </span>
                 </div>
                 <code className="block overflow-x-auto font-mono text-[12.5px] whitespace-pre">
-                  {renderSignature(signature, language)}
+                  {isMockMode() ? (
+                    renderSignature(signature, language)
+                  ) : (
+                    <ServerSignature
+                      signature={signature}
+                      language={language}
+                    />
+                  )}
                 </code>
               </div>
               <TextField
@@ -363,5 +372,25 @@ function TypeField({
         </div>
       ) : null}
     </div>
+  );
+}
+
+/**
+ * The declaration the starter code will have, read from the server (F3 P6) so it cannot drift from
+ * the harness. The local sketch shows only while the answer is loading, for an undeclared signature
+ * and when the call fails. A declaration the server answers with null (a type outside the schema)
+ * stays empty: no signature is invented (DD SHR0202 BR-SC-05).
+ */
+function ServerSignature({
+  signature,
+  language,
+}: {
+  signature: FunctionSignature;
+  language: SpecLanguage;
+}) {
+  const preview = useSignaturePreview(signature);
+  if (!preview.data) return <>{renderSignature(signature, language)}</>;
+  return (
+    <>{preview.data.declarations[language.toUpperCase() as "JAVA"] ?? ""}</>
   );
 }

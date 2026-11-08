@@ -167,7 +167,12 @@ services:
   # trong tien trinh backend — quyen nay khong the cap cho ung dung web.
   # ---------------------------------------------------------------------------
   go-judge:
-    image: criyle/go-judge:v1.12.3
+    # Image toolchain dan xuat tu criyle/go-judge:v1.12.3: them OpenJDK 21, g++, python3 de bien dich
+    # va chay duoc ca ba ngon ngu nop bai. Engine khong doi; `up` tu dung image neu may chua co
+    # (DEC-2026-1107-go-judge-toolchain-image-in-compose).
+    build:
+      context: ./judge-engine
+    image: algoprep-judge-toolchain:f3-20261101
     container_name: algoprep-go-judge
     restart: unless-stopped
     privileged: true

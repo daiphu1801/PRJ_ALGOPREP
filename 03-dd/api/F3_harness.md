@@ -39,7 +39,7 @@ Request / Response / Lỗi / Luồng / Test viewpoints" được dùng, chỉ th
 | Bảng PostgreSQL | **Không có**. Schema `harness` được tạo và để rỗng | `02-bd/database/F3_harness.md:10`, `.nexa/control/decision-registry.md:4373` (`DEC-2026-1022-harness-empty-schema-kept`) |
 | Truy cập dữ liệu | Chỉ đọc đặc tả từ `problem-bank` qua **một cổng ra** (mục 4); template là tài nguyên trong jar | `02-bd/database/F3_harness.md:63-73`, `:17` |
 | Endpoint HTTP | `GET .../starter-code` bọc P1; `POST .../function-signature/preview` bọc P6 cho tác giả xem trước chữ ký chưa lưu. P2–P5 chỉ gọi nội bộ | `02-bd/screens/users/USR0102_problem_detail.md:745,761`; owner 2026-10-25 |
-| Redis | Không tạo khoá riêng. Chỉ có thể đọc `problem:spec:<problemId>` do `problem-bank` sở hữu, và chỉ **phía sau** cổng ra | `02-bd/database/F3_harness.md:49-61` |
+| Redis | Không có cache riêng. Chỉ có thể đọc `problem:spec:<problemId>` do `problem-bank` sở hữu, và chỉ **phía sau** cổng ra. Ngoại lệ: bộ đếm giới hạn tần suất của P6 `harness:preview:rate:<userId>` (không phải cache, `DEC-2026-1108-f3-preview-rate-limit-owner`) | `02-bd/database/F3_harness.md:49-61` |
 | Cổng nào ở đâu | Cổng vào: `application/ports/in`. Cổng ra: `domain/ports/out` (đúng quy ước BD). Kiểu dùng chung và bộ kiểm đặc tả: `algoprep-common` | `02-bd/architecture/F3_harness.md:68-74`, `02-bd/database/F3_harness.md:63-69` |
 
 Ngoài phạm vi file này: sinh mã đọc/in theo từng kiểu (`logic/F3_harness.md` mục 3-4), ánh xạ lỗi biên dịch
@@ -348,10 +348,7 @@ và ba declaration null. Formatter tên/kiểu nằm ở domain/signature để 
 không có thân hàm, template chạy, DB, sandbox hoặc dependency module nghiệp vụ khác.
 `[SoT: Suy luận]` null command nội bộ trả HRN-031 đã che; không định nghĩa HTTP status mới.
 
-Chủ dự án chọn hoãn HTTP/JSON/Redis: **POST bên dưới chưa được triển khai**, chưa có
-bằng chứng 401/403/413/429 hoặc JSON shape validation. Adapter raw JSON vẫn để cùng F2;
-BD database §2/API §0 nói không tạo Redis key riêng, trong khi §3.7 yêu cầu rate limit:
-giữ nợ chốt ownership trước lát HTTP. Không coi auth từ F1 là dữ liệu giả hoặc tự sửa F1.
+**Triển khai 2026-11-08 (C08, `DEC-2026-1108-f3-preview-rate-limit-owner`):** POST bên dưới đã chạy thật. Vỏ HTTP `PreviewFunctionSignatureController` đọc tối đa 16.385 byte để từ chối body quá cỡ mà không giữ cả body trong bộ nhớ; bộ đếm 429 do `harness` sở hữu (`PreviewRateLimitPort`, adapter Redis theo mẫu `RedisSampleQuotaAdapter` của `judge`); JSON thô được đọc bằng `ProblemSpecJson` của F2 qua cầu `HarnessPreviewDraftBridge` trong bootstrap, nên xem trước đọc bản nháp đúng như lúc lưu và khớp mã khung sau khi lưu. Nợ ownership của bộ đếm đã chốt: `harness` sở hữu, key là bộ đếm chứ không phải cache. Bằng chứng: 7 ca HTTP (`PreviewFunctionSignatureFlowTest`: 401, 403, bản nháp đúng, bản nháp rỗng và nửa vời, 422, biên 16.384/16.385 byte kể cả ký tự nhiều byte, 429, khớp starter sau khi lưu), 2 ca adapter (Redis lỗi thì cho qua), 3 ca Vitest, 2 ca trình duyệt thật (`e2e/f3-f4-real-preview.spec.ts`).
 
 Bằng chứng: 48 test P6 mới; focused verify parent/common/harness 202 test đạt lúc
 `2026-11-01T16:47:19+07:00`, 27,610 giây; Checkstyle/SpotBugs 0, harness 634/652 dòng.

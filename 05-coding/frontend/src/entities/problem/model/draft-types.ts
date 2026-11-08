@@ -145,6 +145,11 @@ export type ServerState = {
     sample: number;
     hidden: number;
   };
+  /**
+   * The server's own verdict on the publish condition "spec declared" for the saved spec (DD api F2
+   * checklist item `SPEC_DECLARED`); null when it is unknown, e.g. a problem that was never saved.
+   */
+  specDeclared: boolean | null;
   /** What the first save of a duplicate will copy besides the visible content. */
   willCopy: { testcaseCount: number; hasSpec: boolean } | null;
   /** Source of a duplicate, sent on the first save. */

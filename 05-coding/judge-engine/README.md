@@ -22,7 +22,7 @@ domain/application.
 - Image local `algoprep-judge-toolchain:f3-20261101` đã được kiểm compile/cache/run bằng
   go-judge thật trong container tạm. Probe: `python handoff/f3-toolchain-guard/probe.py` từ repo
   root, sau NodeSourceRendererTest. Script tự tạo container loopback, dọn fileId rồi xóa container.
-- Service `algoprep-go-judge` hiện tại vẫn dùng image gốc; compose chưa đổi, không tự rollout.
+- Từ 2026-11-07 (`DEC-2026-1107-go-judge-toolchain-image-in-compose`), service `algoprep-go-judge` trong `docker-compose.yml` build từ Dockerfile này và chạy image toolchain trên cổng 5050.
 - GoJudgeAdapter/F4 orchestration, P2 đầy đủ và round-trip bảng kiểu chưa có. Báo cáo:
   `06-plan/reports/261101-1735-f3-toolchain-guard-nodes/report.md`.
 
@@ -30,7 +30,7 @@ domain/application.
 
 | Có | Chưa có |
 | :--- | :--- |
-| Service `go-judge` trong `05-coding/docker-compose.yml` (image `criyle/go-judge:v1.12.3`) | `GoJudgeAdapter` — thuộc slice `judge-orchestration` |
+| Service `go-judge` trong `05-coding/docker-compose.yml` (image toolchain dẫn xuất từ `criyle/go-judge:v1.12.3`) | `GoJudgeAdapter` — thuộc slice `judge-orchestration` |
 | `privileged: true` và `shm_size` để `go-sandbox` tạo được namespace và đặt cgroup limit | Cấu hình biên dịch/chạy cho Java, C++, Python |
 | Endpoint `/version` dùng làm healthcheck | Ánh xạ kết quả engine sang value object của AlgoPrep (ACL) |
 

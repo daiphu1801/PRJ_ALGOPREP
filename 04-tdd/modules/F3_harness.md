@@ -387,6 +387,21 @@ bean scan cùng P3/P4. Focused verify 202 test đạt lúc 16:47:19 +07:00. HTTP
 chủ dự án hoãn; chưa có bằng chứng 401/403/413/429 hoặc đối chiếu save/starter. Không tick AC-49
 toàn phần hoặc trạng thái thực thi tám testcase QA từ bằng chứng component.
 
+**Cập nhật 2026-11-08 (mở lại C08, `DEC-2026-1108-f3-preview-rate-limit-owner`):** lớp HTTP đã triển khai và có bằng chứng.
+
+| Điều kiện của AC-49 | Bằng chứng |
+| :--- | :--- |
+| 401 khi chưa đăng nhập, 403 với học viên | `PreviewFunctionSignatureFlowTest.anonymousIs401AndAStudentIs403` |
+| Ba dòng khai báo đổi theo bản nháp | `instructorAndAdminGetThreeDeclarationsThatFollowTheDraft`; trình duyệt thật `f3-f4-real-preview.spec.ts` ca 1 |
+| Thiếu chữ ký không hiện dòng khai báo; nửa vời là lỗi cứng `HRN-V17` | `anEmptyDraftHasNoDeclarationLinesAndAHalfFilledOneIsAHardError` |
+| Bản nháp sai báo lỗi `HRN-060` kèm đường dẫn; không lưu gì | `aWrongDraftIsReportedAsHrn060WithPathsAndNothingIsSaved` (đếm bảng `problems`, `problem_specs` không đổi); ca trình duyệt thật |
+| 16.384 byte được xử lý, 16.385 byte trả `413 HRN-062` trước khi gọi P5, tính theo byte | `theBodyCapIsExactlySixteenKibibytesOfUtf8` (gồm ký tự nhiều byte) |
+| Quá 10 lần/giây/người trả `429 HRN-061` kèm `retryAfterSeconds`; người khác không bị ảnh hưởng | `moreThanTenCallsInOneSecondGetHrn061WithRetryAfter` |
+| Redis lỗi thì cho qua | `RedisPreviewRateLimitAdapterTest` |
+| Khớp với mã khung sau khi lưu | `thePreviewMatchesTheStarterCodeAfterTheSpecIsSaved`; trình duyệt thật `f3-f4-real-preview.spec.ts` ca 2 (so từng ngôn ngữ với `starter-code`) |
+
+Bảng AC-49: bằng chứng HTTP và trình duyệt, 2026-11-08. Tám testcase QA trong `04-tdd/testcases/modules/F3_harness/F3_harness_contracts.md` là tài liệu thiết kế, chưa chạy riêng; các ca trên là bằng chứng chạy thật.
+
 - **Tiền điều kiện**: người soạn đang biên soạn một bài dùng Bọc hàm, đã nhập tên hàm và các kiểu tham số nhưng chưa lưu.
 - **Hành động**: xem trước chữ ký, đổi một kiểu rồi xem trước lại; thử bản nháp thiếu chữ ký và bản nháp sai kiểu.
 - **Kết quả mong đợi**: ba dòng khai báo cho Java, C++ và Python đổi theo bản nháp mới, khớp với mã khung sau khi lưu. Bản nháp thiếu chữ ký không hiện dòng khai báo; bản nháp sai được báo lỗi để sửa. Body JSON UTF-8 vượt 16.384 byte trả `413 HRN-062` trước khi gọi P5. Xem trước không lưu thay đổi bài.
@@ -484,7 +499,7 @@ các tài liệu QA riêng và không đóng toàn bộ module. Báo cáo: `hand
 | AC-46 | schema | `02-bd/database/F3_harness.md` mục 1 | (không có ở DD) | [TC-F3-AC46-01](../testcases/modules/F3_harness/F3_generated_program_safety.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
 | AC-47 | P1, P2, P3, P4 | mục 8 logic | (không có ở DD) | [TC-F3-AC47-01](../testcases/modules/F3_harness/F3_generated_program_safety.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
 | AC-48 | P1, O2, GET mã khung | mục 3.1 API | P1-T08 | [TC-F3-AC48-01 đến -04](../testcases/modules/F3_harness/F3_harness_contracts.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
-| AC-49 | P6, POST xem trước chữ ký | mục 3.7 API | `HRN-062` | [TC-F3-AC49-01 đến -08](../testcases/modules/F3_harness/F3_harness_contracts.md) | D02u: C08 HTTP/UI hoãn theo owner; lõi typed có bằng chứng |
+| AC-49 | P6, POST xem trước chữ ký | mục 3.7 API | `HRN-062` | [TC-F3-AC49-01 đến -08](../testcases/modules/F3_harness/F3_harness_contracts.md) | 2026-11-08: HTTP, 401/403/413/429 và khớp starter có bằng chứng (xem AC-49); lõi typed D02u |
 | AC-50 | P2, P3 | Q8 logic | | [TC-F3-AC50-01 đến -03](../testcases/modules/F3_harness/F3_harness_contracts.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
 
 Mỗi cổng có ít nhất một tiêu chí: P1 (AC-01 đến AC-05), P2 (AC-06 đến AC-13), P3 (AC-14 đến AC-22), P4 (AC-23 đến
@@ -498,7 +513,7 @@ Không còn quyết định chủ dự án đang chờ. Các Q2, Q3, Q4, Q8, Q12
 
 | Giới hạn | Trạng thái | Mốc kiểm tiếp |
 | :--- | :--- | :--- |
-| C08/AC-49 HTTP và UI preview | Hoãn theo owner; không chặn mốc backend F3 với ngoại lệ này | Chỉ mở khi owner yêu cầu |
+| C08/AC-49 HTTP và UI preview | Xong 2026-11-08 (`DEC-2026-1108-f3-preview-rate-limit-owner`) | Không còn mở |
 | Cache-on/listener và duplicate/out-of-order event | Chưa bật theo mặc định BD; nhánh không cache đã kiểm fresh version ở D02s | Chỉ thêm cache sau khi đo có nhu cầu và chốt invalidation |
 | Hiệu năng tải, phiên bản compiler/image mới | Không có benchmark/SLO hoặc bảo đảm cho mọi image tương lai | Chạy lại fixture khi đổi toolchain hoặc cần đo tải |
 | Production nhiều API/worker process, quyền/retention của log nội bộ ở môi trường triển khai | Ngoài mốc local; regex/compiler thật và worker local đã có D02e/n1/t | Mốc triển khai/vận hành tương ứng |
@@ -515,7 +530,7 @@ Không còn quyết định chủ dự án đang chờ. Các Q2, Q3, Q4, Q8, Q12
 | AC-39/45 | HTTP port503/recovery và unsupported language400 | Không gọi là regression mọi P2/P3 |
 | AC-48 | JWT live role, admin demotion, IDOR/deleted404, published/unpublished | FE/browser |
 | AC-40 | Nhánh default no-cache/fresh version/matching/stale expected | Cache-on/E1 delivery, TC-F3-AC40-01–04 chưa PASS |
-| AC-18/D09, AC-49 | Chưa đóng bởi D02s | Persisted E2E; preview HTTP C08 hoãn |
+| AC-18/D09, AC-49 | Chưa đóng bởi D02s | Persisted E2E; AC-49 xong 2026-11-08 (xem mục AC-49) |
 
 Không tick QA toàn module hoặc browser dựa trên Sample E2E. Nguồn/hash/log và phạm vi ở report/evidence.
 

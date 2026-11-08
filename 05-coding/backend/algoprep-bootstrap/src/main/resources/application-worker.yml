@@ -9,4 +9,4 @@ judge:
 spring:
   datasource:
     hikari:
-      maximum-pool-size: 16
+      maximum-pool-size: 32

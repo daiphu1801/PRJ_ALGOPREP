@@ -90,6 +90,7 @@ type DetailDto = {
     questionOnly: boolean;
   };
   aiGeneration: { used: number; limit: number };
+  checklist?: { specDeclared: boolean };
   updatedAt: string;
   duplicatedFromProblemId: string | null;
   readOnly: boolean;
@@ -240,6 +241,37 @@ export function specBody(spec: ProblemSpec, expectedUpdatedAt: string | null) {
   };
 }
 
+export type SignaturePreview = {
+  wrapperSupported: boolean;
+  /** Keyed JAVA / CPP / PYTHON; null when the draft cannot be shown (DD F3 3.7). */
+  declarations: Record<"JAVA" | "CPP" | "PYTHON", string | null>;
+};
+
+/** The body of F3 P6; a signature is previewed whole, so callers only send a declared one. */
+export function previewBody(signature: ProblemSpec["signature"]) {
+  return {
+    functionName: signature.functionName.trim(),
+    returnType: fromType(signature.returnType),
+    parameters: signature.parameters.map((parameter) => ({
+      name: parameter.name.trim(),
+      type: fromType(parameter.type),
+    })),
+    nameOverrides: Object.fromEntries(
+      Object.entries(signature.nameOverrides)
+        .filter(([, name]) => name && name.trim())
+        .map(([language, name]) => [language.toUpperCase(), name]),
+    ),
+  };
+}
+
+/** F3 P6 (03-dd/api/F3_harness.md 3.7): the declaration lines exactly as the starter code will have them. */
+export function realPreviewSignature(signature: ProblemSpec["signature"]) {
+  return api.post<SignaturePreview>(
+    "/harness/function-signature/preview",
+    previewBody(signature),
+  );
+}
+
 // ---------------------------------------------------------------------------------------------
 // Testcase <-> TestcaseAuthorDto
 // ---------------------------------------------------------------------------------------------
@@ -363,6 +395,7 @@ function serverState(
       sample: 0,
       hidden: 0,
     },
+    specDeclared: dto?.checklist?.specDeclared ?? null,
     willCopy: duplicate?.willCopyOnSave ?? null,
     duplicatedFromProblemId:
       duplicate?.duplicatedFromProblemId ??

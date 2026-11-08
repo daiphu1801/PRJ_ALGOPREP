@@ -138,6 +138,7 @@ const server: ServerState = {
   readOnly: false,
   levelIdByCode: { EASY: LEVEL_EASY, HARD: LEVEL_HARD },
   testcaseSummary: { total: 0, approved: 0, sample: 0, hidden: 0 },
+  specDeclared: null,
   willCopy: null,
   duplicatedFromProblemId: null,
 };
@@ -394,6 +395,15 @@ describe("realLoadDraft (#33, #34, #14, #40)", () => {
       willCopy: { testcaseCount: 12, hasSpec: true },
       duplicatedFromProblemId: P,
     });
+  });
+
+  it("carries the server's verdict on the saved spec, and null when the server gave none", async () => {
+    reads(detailDto({ checklist: { specDeclared: true } }));
+    expect((await realLoadDraft(P)).server?.specDeclared).toBe(true);
+    reads(detailDto({ checklist: { specDeclared: false } }));
+    expect((await realLoadDraft(P)).server?.specDeclared).toBe(false);
+    reads(detailDto());
+    expect((await realLoadDraft(P)).server?.specDeclared).toBeNull();
   });
 
   it("a duplicate that is refused (A2, someone else's problem) rethrows PRB-003", async () => {

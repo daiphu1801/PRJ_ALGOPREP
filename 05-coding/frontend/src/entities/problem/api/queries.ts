@@ -17,10 +17,13 @@ import {
   withMockData,
 } from "@/shared/api";
 import {
+  previewBody,
   realLoadDraft,
+  realPreviewSignature,
   realSaveDraft,
   type SaveResult,
 } from "./real-authoring";
+import { useDebounced } from "@/shared/lib/use-debounced";
 import {
   generateTestcasesWithAi,
   loadProblemDraft,
@@ -34,6 +37,7 @@ import {
   simulateSubmission,
 } from "./__mock__/problem-mocks";
 import type {
+  FunctionSignature,
   GenerateTestcasesInput,
   ProblemDraft,
   ServerState,
@@ -176,5 +180,23 @@ export function useGenerateTestcases() {
       withMockData(() => generateTestcasesWithAi(input), notImplemented),
     onSettled: () =>
       queryClient.invalidateQueries({ queryKey: ["problem-draft"] }),
+  });
+}
+
+/**
+ * The server's declaration lines for the signature being edited (F3 P6), so the author sees what
+ * the starter code will contain after saving. Real mode only. The result belongs to one exact
+ * draft (the query key is the body), so a stale answer is never shown for a newer draft; the caller
+ * keeps the local sketch while this loads, when the signature is not declared, or when it fails.
+ */
+export function useSignaturePreview(signature: FunctionSignature) {
+  const declared = signature.functionName.trim() !== "";
+  const body = useDebounced(JSON.stringify(previewBody(signature)), 400);
+  return useQuery({
+    queryKey: ["problem", "signature-preview", body],
+    queryFn: () => realPreviewSignature(JSON.parse(body)),
+    enabled: declared,
+    retry: false,
+    staleTime: Number.POSITIVE_INFINITY,
   });
 }

@@ -22,7 +22,7 @@ Pop-Location
 
 Đây là lệnh kiểm khả năng chạy toolchain/worker; không thay thế kiểm tra hồi quy và coverage của toàn backend.
 
-Compose này mở sandbox ở `127.0.0.1:5055`, giới hạn truy cập trên host, không thay service `algoprep-go-judge` trong compose hạ tầng. Đặt `ALGOPREP_WORKER_ENGINE_IMAGE` khi dùng image đã kiểm khác; cấu hình không tự pull một image thay thế. Backend không cần Docker socket. Không thêm `-net-share`: job yêu cầu bật mạng hiện phải kết thúc SYSTEM_ERROR/SANDBOX_FAULT theo quyết định chủ dự án.
+Compose này mở sandbox ở `127.0.0.1:5055`, giới hạn truy cập trên host. Từ `DEC-2026-1107-go-judge-toolchain-image-in-compose`, service `algoprep-go-judge` trong compose hạ tầng (cổng 5050) cũng chạy image toolchain này, nên `docker compose up -d go-judge` là đủ để chấm ba ngôn ngữ; compose sandbox 5055 chỉ cần khi muốn một engine thứ hai tách riêng. Đặt `ALGOPREP_WORKER_ENGINE_IMAGE` khi dùng image đã kiểm khác; cấu hình không tự pull một image thay thế. Backend không cần Docker socket. Không thêm `-net-share`: job yêu cầu bật mạng hiện phải kết thúc SYSTEM_ERROR/SANDBOX_FAULT theo quyết định chủ dự án.
 
 ## Backend
 
@@ -34,7 +34,7 @@ $env:ALGOPREP_WORKER_ENGINE_URL='http://127.0.0.1:5055'
 # Ví dụ tham số JVM/ứng dụng: --spring.profiles.active=local,worker
 ```
 
-Chỉ một tiến trình được bật worker. Profile cấp 16 kết nối Hikari; không giảm dưới 10: tám lease job, một lease leader và ít nhất một kết nối cho giao dịch ghi. Profile worker yêu cầu URL sandbox; không lặng lẽ nhận URL mặc định của engine chưa có toolchain. Không khởi động thêm một API process riêng rồi kỳ vọng STOMP nội bộ phát qua process đó.
+Chỉ một tiến trình được bật worker. Profile cấp 32 kết nối Hikari (`DEC-2026-1108-hikari-pool-32`); không giảm dưới 10: tám lease job, một lease leader và ít nhất một kết nối cho giao dịch ghi. Chín kết nối đầu bị giữ cố định, phần còn lại phục vụ API và giao dịch ghi; pool 16 cạn ở khoảng 80 người nộp đồng thời (báo cáo `261108-1320-f3-f4-load-test`). Nâng số consumer thì nâng pool theo, và giữ tổng pool dưới `max_connections` của PostgreSQL (mặc định image là 100). Profile worker yêu cầu URL sandbox; không lặng lẽ nhận URL mặc định của engine chưa có toolchain. Không khởi động thêm một API process riêng rồi kỳ vọng STOMP nội bộ phát qua process đó.
 
 ## Kiểm tra
 

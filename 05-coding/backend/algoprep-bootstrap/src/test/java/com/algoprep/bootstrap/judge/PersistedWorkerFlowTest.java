@@ -773,13 +773,18 @@ class PersistedWorkerFlowTest {
   private void eventRoutes(boolean bind) throws Exception {
     try (var connection = factory().newConnection();
         var channel = connection.createChannel()) {
-      for (String kind : List.of("graded", "accepted")) {
+      // Every queue that receives a judge event: with one still bound the relay sees a routable
+      // message and marks it published, so the outage must cut all of them (F2 also consumes
+      // graded).
+      for (String[] route :
+          List.of(
+              new String[] {"identity.submission-graded", "judge.submission.graded"},
+              new String[] {"problem-bank.submission-graded", "judge.submission.graded"},
+              new String[] {"identity.submission-accepted", "judge.submission.accepted"})) {
         if (bind) {
-          channel.queueBind(
-              "identity.submission-" + kind, "algoprep.domain-events", "judge.submission." + kind);
+          channel.queueBind(route[0], "algoprep.domain-events", route[1]);
         } else {
-          channel.queueUnbind(
-              "identity.submission-" + kind, "algoprep.domain-events", "judge.submission." + kind);
+          channel.queueUnbind(route[0], "algoprep.domain-events", route[1]);
         }
       }
     }
