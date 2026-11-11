@@ -80,9 +80,10 @@ Các giới hạn "tối đa 10 phần tử" là `[SoT: Suy luận]`: Sheet 5 c�
 | `expectedTurnCount` | số nguyên không âm, **bắt buộc** | `AIR-V09` | 400 | Presentation | file API mục 2.4 |
 | `expectedTurnCount` khớp | bằng `interview_sessions.turn_count` hiện tại | `AIR-112` | 409 | Application | |
 | Phiên đang chạy | `stage IN ('EXPLAIN','CHALLENGE','SCALE_UP')` | `AIR-111` | 409 | Application, và điều kiện `UPDATE` ở DB | `DB5:114` |
-| Một lượt mỗi phiên | khoá tư vấn theo `sessionId` | `AIR-113` | 409 | Application | |
+| Một lượt mỗi phiên | khoá Redis theo `sessionId` | `AIR-113` | 409 | Application | |
 | Chưa đủ lượt tối đa | `turn_count < max_turns` (khi có) và chưa đạt trần giai đoạn cuối | `AIR-114` | 409 | Application | `U302` EVT-14 bước 7 |
 | `hint_allowed` | phải là `true` (NULL của `SUBMISSION` coi là không) | `AIR-115` | 422 | Application | F5-28 |
+| Số lần gợi ý | `hint_count < ai.interview.max-hints-per-session` (mặc định 3) | `AIR-117` | 422 | Application | F5-05, đổi mã từ `AIR-116` 2026-11-08 |
 | Có thể chấm | `turn_count >= 1` | `AIR-116` | 422 | Application | Q4 |
 | `turn_count <= max_turns` | bất biến | | | Domain | `DB5:115` |
 | `turn_index` | duy nhất theo phiên | | | DB unique `(interview_session_id, turn_index)` | `DB5:140` |

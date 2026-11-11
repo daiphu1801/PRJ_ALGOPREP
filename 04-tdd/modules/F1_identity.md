@@ -698,6 +698,22 @@ Các tiêu chí dưới đây mô tả hành vi mới hoặc đổi sau khi đ�
 | **Kết quả mong đợi** | Lần đầu trả 503 mã `IDT-508`, thân lỗi không có chi tiết nguồn. Hạn mức được trả lại nên lần thử lại ngay vẫn xuất được, không bị 429. |
 | **Nguồn** | [SoT: 03-dd/api/F1_identity.md:161] `IDT-508`; `SubmissionExportFlowTest.java:184`; `ExportMySubmissionsQueryHandlerTest.java:49` |
 
+### AC-90 — Báo cáo Solution Review hoàn tất ghi một dòng feed cá nhân, giao lại không nhân đôi (thêm 2026-11-10, F5-5a)
+| Mục | Nội dung |
+| :--- | :--- |
+| **Tiền đề** | Học viên vừa nhận một báo cáo Solution Review; hệ thống nhận sự kiện "báo cáo hoàn tất" từ phân hệ AI. Có thể gặp sự kiện bị gửi lặp hoặc tin hỏng. |
+| **Hành động** | Hệ thống xử lý sự kiện; gửi lại đúng sự kiện đó (cùng mã sự kiện); gửi một tin hỏng rồi một sự kiện hợp lệ. |
+| **Kết quả mong đợi** | Feed hoạt động có đúng một dòng loại "báo cáo Solution Review hoàn tất", của đúng học viên, không gắn lớp nào, trỏ tới đúng báo cáo (`ref_type = SOLUTION_REVIEW`, `ref_id` là mã báo cáo); gửi lại cùng sự kiện không thêm dòng; tin hỏng bị bỏ và các sự kiện sau vẫn được xử lý. |
+| **Nguồn** | [SoT: 03-dd/api/F1_identity.md:475] (bảng sự kiện tiêu thụ, dòng `SolutionReviewCompleted`); [SoT: 03-dd/api/F5_ai-review.md] mục 33; `05-coding/backend/algoprep-bootstrap/src/test/java/com/algoprep/bootstrap/security/SolutionReviewCompletedConsumerFlowTest.java:146`; `SolutionReviewCompletedConsumerFlowTest.java:170`; `06-plan/reports/261110-2045-f5-5a-outbox-events/report.md`; `DEC-2026-1110-f5-outbox-event-decisions` |
+
+### AC-91 — Phiên Mock Interview kết thúc ghi một dòng feed cá nhân, giao lại không nhân đôi (thêm 2026-11-11, F5-8)
+| Mục | Nội dung |
+| :--- | :--- |
+| **Tiền đề** | Học viên vừa kết thúc một phiên Mock Interview có điểm; hệ thống nhận sự kiện "phiên phỏng vấn kết thúc" từ phân hệ AI. Có thể gặp sự kiện bị gửi lặp hoặc tin hỏng. |
+| **Hành động** | Hệ thống xử lý sự kiện; gửi lại đúng sự kiện đó; gửi một tin hỏng rồi một sự kiện hợp lệ. |
+| **Kết quả mong đợi** | Feed hoạt động có đúng một dòng loại "phỏng vấn thử kết thúc", của đúng học viên, không gắn lớp, trỏ tới đúng phiên (`ref_type = INTERVIEW_SESSION`, `ref_id` là mã phiên); gửi lại không thêm dòng; tin hỏng bị bỏ và các sự kiện sau vẫn được xử lý. |
+| **Nguồn** | [SoT: 03-dd/api/F1_identity.md:476] (dòng `MockInterviewFinished`); [SoT: 03-dd/api/F5_ai-review.md] mục 33; `MockInterviewFinishedConsumerFlowTest`; `AiOutboxFlowTest.aFinishedInterviewReachesTheIdentityFeedOnce...`; `DEC-2026-1110-f5-outbox-event-decisions` |
+
 ## 3. Truy vết
 
 Bảng 1: Truy vết tiêu chí nghiệm thu sang endpoint, test case QA và test mã nguồn của module F1. Cột "Test case QA" giữ ID test case do `testcase-generation` sinh (tài liệu QA, chưa chạy); cột "Test mã nguồn" liệt kê test thật đã kiểm bằng grep, theo dạng `Lớp:dòng` (dòng của phương thức test, tên lớp là duy nhất trong cây nên không ghi đường dẫn); "Trạng thái" ghi bằng chữ theo bảng 2. Cập nhật 2026-11-07, chỉ sửa tài liệu: không chạy Maven hay pnpm khi cập nhật bảng này.
@@ -712,7 +728,7 @@ Bảng 2: Ý nghĩa trạng thái truy vết (cập nhật 2026-11-07)
 | Code xong, chưa test toàn bộ | Từ 2026-11-08 không còn AC nào ở trạng thái này: 21 AC của các lát F1-12, F1-8, F1-7, F1-4, F1-9 và AC-15 đã xanh trong full regression 2026-11-08 và được chuyển sang Đạt. Giữ dòng để trạng thái dùng lại được cho lát mới |
 | Một phần | Có test nhưng chưa khẳng định hết AC; phần thiếu ghi ở cột Ghi chú |
 | Chưa làm | Hành vi chưa có code. Hiện không có AC nào |
-| Hoãn | Chủ ý hoãn: xuất hội thoại phỏng vấn thuộc backlog F5 (AC-57), không tính là việc mở của F1 (`DEC-2026-1108-f1-f2-closing-decisions`) |
+| Hoãn | Chủ ý hoãn. Hiện không còn AC nào: AC-57 (xuất hội thoại phỏng vấn, #17) đã Đạt từ F5-9 ngày 2026-11-11 (`DEC-2026-1108-f1-f2-closing-decisions` là gốc của việc hoãn) |
 
 Mutation test của các lát quyền, riêng tư (F1-7, F1-8, F1-9, F1-12) và kiểm trình duyệt thật chưa làm: để bước FINAL theo `DEC-2026-1106-f1-f2-batch-test-workflow`. Mutation 3 ca của F1-1 (`06-plan/reports/261105-1530-f1-my-progress/report.md:32`) và bộ mutation task #11 (`05-coding/backend/logs/261102-mutation-t11-summary.md`) là của các lát đó, không mở rộng cho toàn bộ AC. Cột "Test case QA" không phản ánh việc chạy test case QA: toàn bộ test case QA của F1 vẫn ở trạng thái chưa chạy (AC-79 đã viết 2026-11-02, AC-80 chưa có test case QA).
 
@@ -776,7 +792,7 @@ Mutation test của các lát quyền, riêng tư (F1-7, F1-8, F1-9, F1-12) và 
 | AC-54 | #60, #8 | [TC-F1-AC54-01](../testcases/modules/F1_identity/F1_extension_a_auth_lifecycle.md), [TC-F1-AC54-02](../testcases/modules/F1_identity/F1_extension_a_auth_lifecycle.md), [TC-F1-AC54-03](../testcases/modules/F1_identity/F1_extension_a_auth_lifecycle.md) | PasswordResetFlowTest:136; PasswordResetFlowTest:184; PasswordResetFlowTest:204 | Đạt |  |
 | AC-55 | #61 | [TC-F1-AC55-01](../testcases/modules/F1_identity/F1_extension_a_auth_lifecycle.md), [TC-F1-AC55-02](../testcases/modules/F1_identity/F1_extension_a_auth_lifecycle.md), [TC-F1-AC55-03](../testcases/modules/F1_identity/F1_extension_a_auth_lifecycle.md) | AccountRestorationFlowTest:107; AccountRestorationFlowTest:169; AccountRestorationFlowTest:206; RestoreDeactivatedAccountCommandHandlerTest | Đạt |  |
 | AC-56 | #16 | [TC-F1-AC56-01](../testcases/modules/F1_identity/F1_extension_b_privacy_metrics.md), [TC-F1-AC56-02](../testcases/modules/F1_identity/F1_extension_b_privacy_metrics.md) | SubmissionExportFlowTest:102; SubmissionExportFlowTest:162; SubmissionExportFlowTest:174; MyAccountFlowTest:500; MyAccountFlowTest:520; ExportMySubmissionsQueryHandlerTest; SubmissionExportBridgeTest:109 | Đạt | F1-9 #16 (2026-11-07): xanh ở `261107-1437-f1-9-bootstrap-flow2.log` (dòng 2354 và 1144), không có trong full regression. Cổng 5 phút theo từng loại: `SubmissionExportFlowTest:162`. Mutation (id lấy từ token, trả lại hạn mức khi F4 lỗi) chưa làm. |
-| AC-57 | #17 | [TC-F1-AC57-01](../testcases/modules/F1_identity/F1_extension_b_privacy_metrics.md), [TC-F1-AC57-02](../testcases/modules/F1_identity/F1_extension_b_privacy_metrics.md) | - | Hoãn (thuộc F5) | Xuất hội thoại phỏng vấn (#17) thuộc backlog F5, loại khỏi số mở của F1 (`DEC-2026-1108-f1-f2-closing-decisions`); backend chưa có route, frontend trả 501 mà không gọi server (`06-plan/reports/261107-0500-f1-9-f2-6-part3/report.md:3`). |
+| AC-57 | #17 | [TC-F1-AC57-01](../testcases/modules/F1_identity/F1_extension_b_privacy_metrics.md), [TC-F1-AC57-02](../testcases/modules/F1_identity/F1_extension_b_privacy_metrics.md) | InterviewTranscriptExportFlowTest:95; InterviewTranscriptExportFlowTest:134; InterviewTranscriptExportFlowTest:144; InterviewTranscriptExportFlowTest:156; InterviewTranscriptExportFlowTest:166; ExportMyInterviewTranscriptsQueryHandlerTest:28; ExportMyInterviewTranscriptsQueryHandlerTest:48; InterviewTranscriptExportBridgeTest | Đạt | Code xong, chưa test cả đợt (F5-9, 2026-11-11): dữ liệu qua cổng P4 của F5; hạn mức 1 lần/5 phút riêng cho loại này, trả hạn mức khi lỗi; `IDT-509` 503. Hai đột biến (bỏ lọc `user_id` ở F5, bỏ trả hạn mức) đều bị flow bắt (`20261111-1110-f5-9-mut1.log`, `20261111-1120-f5-9-mut2.log`). Frontend còn trả 501, nối ở M5. |
 | AC-58 | #59 | [TC-F1-AC58-01](../testcases/modules/F1_identity/F1_extension_b_privacy_metrics.md), [TC-F1-AC58-02](../testcases/modules/F1_identity/F1_extension_b_privacy_metrics.md) | InstructorClassMetricsFlowTest:231; InstructorClassMetricsFlowTest:258; ClassMetricsHandlersTest:271; ClassMetricsHandlersTest:286; ClassMetricsHandlersTest:304 | Đạt | F1-7; như AC-23. |
 | AC-59 | #41–43, #67–73 | [TC-F1-AC59-01](../testcases/modules/F1_identity/F1_extension_b_privacy_metrics.md), [TC-F1-AC59-02](../testcases/modules/F1_identity/F1_extension_b_privacy_metrics.md), [TC-F1-AC59-03](../testcases/modules/F1_identity/F1_extension_b_privacy_metrics.md) | AdminDashboardFlowTest:85; AdminDashboardFlowTest:96; AdminDashboardFlowTest:128; AdminDashboardFlowTest:150; AdminSubmissionDashboardFlowTest:104; AdminSubmissionDashboardFlowTest:141; AdminSubmissionDashboardFlowTest:222; AdminSubmissionDashboardFlowTest:247; AdminSubmissionDashboardFlowTest:275; GetAdminSubmissionBlocksQueryHandlerTest | Đạt | #41, #42, #73: `AdminDashboardFlowTest` có trong full regression (dòng 17819). #43, #67 đến #72 (F1-8): `AdminSubmissionDashboardFlowTest` xanh ở `20261106-235021-f1-12-f1-8-flow.log` (dòng 2373) và batch `20261107-f17-f14-batch-flow.log` (dòng 1699), không có trong full regression. |
 | AC-60 | #43, #68–69 | [TC-F1-AC60-01](../testcases/modules/F1_identity/F1_extension_b_privacy_metrics.md), [TC-F1-AC60-02](../testcases/modules/F1_identity/F1_extension_b_privacy_metrics.md) | AdminSubmissionDashboardFlowTest:115; AdminSubmissionDashboardFlowTest:141; AdminDashboardFlowTest:117; GetAdminSubmissionBlocksQueryHandlerTest | Đạt | F1-8; như AC-59. |
@@ -809,21 +825,23 @@ Mutation test của các lát quyền, riêng tư (F1-7, F1-8, F1-9, F1-12) và 
 | AC-87 | #35 (F1-4) | Chưa có TC QA | AdminUserManagementFlowTest:197; AdminUserManagementFlowTest:229 | Đạt | F1-4; như AC-74. Lớp có trong full regression nhưng hai ca này thêm sau lượt đó. |
 | AC-88 | #16 (F1-9) | Chưa có TC QA | SubmissionExportFlowTest:151; SubmissionExportFlowTest:162 | Đạt | F1-9; như AC-56 (`261107-1437-f1-9-bootstrap-flow2.log`). |
 | AC-89 | #16, IDT-508 (F1-9) | Chưa có TC QA | SubmissionExportFlowTest:184; ExportMySubmissionsQueryHandlerTest:49 | Đạt | F1-9; như AC-56. |
+| AC-90 | Sự kiện SolutionReviewCompleted (F5-5a) | Chưa có TC QA | SolutionReviewCompletedConsumerFlowTest:146; SolutionReviewCompletedConsumerFlowTest:170; ApplySolutionReviewCompletedCommandHandlerTest; SolutionReviewCompletedParserTest | Đạt | Code xong, chưa test cả đợt: `SolutionReviewCompletedConsumerFlowTest` 2 test và `identity` 380 test xanh ở lượt riêng của lát (`20261110-1930-f5-5a-identity-verify.log`, `20261110-2005-f5-5a-bootstrap.log`); chưa qua full regression |
+| AC-91 | Sự kiện MockInterviewFinished (F5-8) | Chưa có TC QA | MockInterviewFinishedConsumerFlowTest; AiOutboxFlowTest; ApplyMockInterviewFinishedCommandHandlerTest; MockInterviewFinishedParserTest | Đạt | Code xong, chưa test cả đợt: identity 384 test xanh (`20261111-0030-f5-8-identity-verify.log`), bootstrap 192 test xanh (`20261111-0040-f5-8-bootstrap.log`). `ref_type = INTERVIEW_SESSION` do code chọn (DD F1 chưa nêu). |
 
-Bảng 3: Tổng hợp trạng thái 91 tiêu chí (AC-01 đến AC-89 cùng AC-18b và AC-20b), trước và sau lần đồng bộ 2026-11-08 (cột Sau tính cả AC-81 đến AC-89 thêm 2026-11-07, việc đóng AC-77, và việc AC-39, AC-84, AC-85 chuyển Đạt ngày 2026-11-08; đếm lại từ bảng truy vết: 91 dòng, 90 Đạt, 1 Hoãn)
+Bảng 3: Tổng hợp trạng thái 93 tiêu chí (AC-01 đến AC-91 cùng AC-18b và AC-20b), trước và sau lần đồng bộ 2026-11-11 (cột Sau tính cả AC-81 đến AC-89 thêm 2026-11-07, AC-90 và AC-91 thêm ở F5-5a và F5-8, việc đóng AC-77, việc AC-39, AC-84, AC-85 chuyển Đạt ngày 2026-11-08 và AC-57 chuyển từ Hoãn sang Đạt ngày 2026-11-11 khi F5-9 xong; đếm lại từ bảng truy vết: 93 dòng, 93 Đạt, 0 Hoãn)
 
 | Trạng thái | Trước (bảng cũ, 2026-11-05) | Sau (2026-11-08) |
 | :--- | :-: | :-: |
-| Đạt | - | 90 |
+| Đạt | - | 93 |
 | Code xong, chưa test toàn bộ | - | 0 |
 | Một phần | 1 | 0 |
 | Chưa làm | - | 0 |
-| Hoãn (thuộc F5) | - | 1 |
+| Hoãn (thuộc F5) | - | 0 |
 | Có JUnit tự động, chưa phân loại | 66 | 0 |
 | "Chưa thực hiện" (gộp test mã nguồn và test case QA) | 15 | 0 |
-| Tổng | 82 | 91 |
+| Tổng | 82 | 93 |
 
-Cột "Trước" dùng cách ghi cũ nên không so trực tiếp được: bảng cũ chỉ có ba giá trị (JUnit tự động đạt, Một phần, Chưa thực hiện) và dòng "Chưa thực hiện" thường chỉ nghĩa là test case QA chưa chạy. Khi tra lại bằng grep, 13 trong 15 dòng đó có test mã nguồn thật (AC-11, 23, 24, 33, 47, 51, 52, 53, 58, 60, 68, 72 và một phần AC-77); AC-15 và AC-57 là hai dòng thật sự chưa có hành vi (Hoãn); AC-77 chỉ phủ một phần.
+Cột "Trước" dùng cách ghi cũ nên không so trực tiếp được: bảng cũ chỉ có ba giá trị (JUnit tự động đạt, Một phần, Chưa thực hiện) và dòng "Chưa thực hiện" thường chỉ nghĩa là test case QA chưa chạy. Khi tra lại bằng grep, 13 trong 15 dòng đó có test mã nguồn thật (AC-11, 23, 24, 33, 47, 51, 52, 53, 58, 60, 68, 72 và một phần AC-77); AC-15 và AC-57 là hai dòng thật sự chưa có hành vi tại thời điểm đó (nay cả hai đã Đạt); AC-77 chỉ phủ một phần.
 
 ### Ghi chú đồng bộ 2026-11-07
 
@@ -835,7 +853,7 @@ Nguồn bằng chứng:
 
 Chưa làm và không được tính là đã có: mutation test cho quyền, riêng tư và đếm (quyền: chỉ ADMIN đọc `ADM0101`, giảng viên chỉ đọc lớp của mình, id người dùng lấy từ token ở #16 và #48; trần và hoàn hạn mức xuất dữ liệu), kiểm trình duyệt thật cho các màn đã nối API, chạy test case QA, và lượt full regression sau khi F3/F4 sửa hai lớp lỗi có sẵn. "Đạt" ở bảng 1 không bao hàm mutation.
 
-Một AC còn thiếu hành vi: AC-57 (#17), thuộc backlog F5 và không tính là việc mở của F1 (`DEC-2026-1108-f1-f2-closing-decisions`). AC-15 (BR-05) đã qua full regression 2026-11-08. Ba AC từng "Một phần" đã đóng ngày 2026-11-08: AC-39 (thêm ca từ vòng đời chấm bài thật của F4 qua relay Outbox và RabbitMQ thật tới consumer F1, `SubmissionGradedFromJudgeFlowTest`), AC-84 (thêm ca ranh giới nửa đêm và đầu tháng UTC+7) và AC-85 (thêm ca 503 `IDT-507` cho #56 đến #59 khi F4 hoặc F2 lỗi). Không còn AC nào ở "Một phần".
+Không còn AC nào thiếu hành vi: AC-57 (#17) từng thuộc backlog F5 (`DEC-2026-1108-f1-f2-closing-decisions`) và đã Đạt từ F5-9 ngày 2026-11-11. AC-15 (BR-05) đã qua full regression 2026-11-08. Ba AC từng "Một phần" đã đóng ngày 2026-11-08: AC-39 (thêm ca từ vòng đời chấm bài thật của F4 qua relay Outbox và RabbitMQ thật tới consumer F1, `SubmissionGradedFromJudgeFlowTest`), AC-84 (thêm ca ranh giới nửa đêm và đầu tháng UTC+7) và AC-85 (thêm ca 503 `IDT-507` cho #56 đến #59 khi F4 hoặc F2 lỗi). Không còn AC nào ở "Một phần".
 
 **Cập nhật 2026-11-07 (đợt đóng [NO-CRITERION]).** Tám hành vi đã có code và test nhưng chưa có tiêu chí nay có AC: consumer `ProblemAssignedToClass` thành AC-81; consumer `SubmissionAccepted` thành AC-82; `IDT-506` và cửa sổ ngày UTC+7 của `ADM0101` thành AC-83 và AC-84; `IDT-507` thành AC-85; quy tắc "Cần hỗ trợ" thành AC-86; hai cột của #35 thành AC-87; trần 2000 dòng, hạn mức 5 phút và `IDT-508` của #16 thành AC-88 và AC-89. Hành vi "trạng thái giải theo bài" của #48 đã có từ AC-80. Hiện không còn hành vi nào trong danh sách [NO-CRITERION]. Các AC mới chưa có test case QA (không thuộc phạm vi đợt này) và không mang bằng chứng mutation.
 

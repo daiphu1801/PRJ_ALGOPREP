@@ -20,6 +20,9 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
       ProblemAuthoringBulkController.class,
       ProblemTestcaseController.class,
       ProblemTestcaseBulkController.class,
+      ProblemTestcaseGenerationController.class,
+      AiGenerationSettingsController.class,
+      AuthoringDefaultsController.class,
       ClassAssignmentController.class
     })
 @Order(Ordered.HIGHEST_PRECEDENCE)

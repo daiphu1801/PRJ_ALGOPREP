@@ -29,6 +29,9 @@ import {
   useBulkDelete,
   useBulkDifficulty,
   useBulkPublish,
+  useBulkUnpublish,
+  useBulkTopic,
+  useExportFilteredProblems,
   useExportProblems,
   useTopicDistribution,
   type AdminListParams,
@@ -71,6 +74,7 @@ import {
   ProgressBar,
   FilterBar,
   FilterMenu,
+  SelectField,
   type DataTableColumn,
 } from "@/shared/ui";
 import { BulkLevelDialog } from "./bulk-level-dialog";
@@ -95,7 +99,7 @@ const SEARCH_MAX_LENGTH = 100;
 
 type BulkAction =
   "publish" | "changeDifficulty" | "assignTopic" | "duplicate" | "exportCsv";
-type BulkKind = "publish" | "delete" | "changeDifficulty";
+type BulkKind = "publish" | "delete" | "changeDifficulty" | "unpublish" | "assignTopic";
 type StatusFilter = ProblemStatus | "all";
 
 type Props = {
@@ -124,10 +128,14 @@ export function ProblemManagementView({
   const [managingTopics, setManagingTopics] = useState(false);
   const [managingLevels, setManagingLevels] = useState(false);
   const [pickingLevel, setPickingLevel] = useState(false);
+  const [pickingTopic, setPickingTopic] = useState(false);
+  const [pickedTopic, setPickedTopic] = useState("");
+  const [confirmingUnpublish, setConfirmingUnpublish] = useState(false);
   const [query, setQuery] = useState("");
   const [level, setLevel] = useState("all");
   const [status, setStatus] = useState<StatusFilter>("all");
   const [selected, setSelected] = useState<ReadonlySet<string>>(new Set());
+  const [bulkFailures, setBulkFailures] = useState<BulkResult["failedItems"]>([]);
   const [sort, setSort] = useState<{
     key: ProblemSortKey;
     direction: "asc" | "desc";
@@ -151,6 +159,9 @@ export function ProblemManagementView({
   const distribution = useTopicDistribution();
   const attention = useAttentionList();
   const publish = useBulkPublish();
+  const unpublish = useBulkUnpublish();
+  const assignTopic = useBulkTopic();
+  const exportFiltered = useExportFilteredProblems();
   const remove = useBulkDelete();
   const changeLevel = useBulkDifficulty();
   const exportCsv = useExportProblems();
@@ -160,7 +171,7 @@ export function ProblemManagementView({
   // The selection only ever holds rows of the page on screen.
   const chosen = rows.filter((problem) => selected.has(problem.id));
   const busy =
-    publish.isPending ||
+    publish.isPending || unpublish.isPending || assignTopic.isPending || exportFiltered.isPending ||
     remove.isPending ||
     changeLevel.isPending ||
     exportCsv.isPending;
@@ -198,6 +209,7 @@ export function ProblemManagementView({
     setSelected(new Set());
     const done = result.succeededIds.length;
     const failed = result.failedItems;
+    setBulkFailures(failed);
     if (failed.length === 0) {
       toast.success(t(`toast.bulk.${kind}`, { count: done }));
       return;
@@ -217,8 +229,8 @@ export function ProblemManagementView({
       return;
     }
     if (action === "assignTopic") {
-      // ponytail: the prototype has no topic picker yet (PROTOTYPE_DEBT SHR0201), so the click only says so.
-      toast.info(t("toast.bulkNeedsChoice"));
+      setPickedTopic(topicList[0]?.key ?? "");
+      setPickingTopic(true);
       return;
     }
     if (action === "duplicate") {
@@ -471,6 +483,11 @@ export function ProblemManagementView({
         }
         actions={
           <>
+            <Button variant="ghost" size="sm" disabled={busy || !data || list.isError}
+              onClick={() => exportFiltered.mutate(params, {
+                onSuccess: ({blob, filename}) => saveBlob(blob, filename ?? "problems.csv"),
+                onError: error => toast.error(apiMessage(error)),
+              })}>{t("exportFiltered")}</Button>
             {canManageTopics ? (
               <Button
                 variant="ghost"
@@ -547,6 +564,15 @@ export function ProblemManagementView({
           count={chosen.length}
           label={t("selectionLabel", { count: chosen.length })}
         >
+          <Button
+            variant="ghost"
+            size="sm"
+            className="border border-[var(--color-border)]"
+            disabled={busy}
+            onClick={() => setConfirmingUnpublish(true)}
+          >
+            {t("bulk.unpublish")}
+          </Button>
           {/* "Xuất bản", not the mockup's "Xuất bản / ẩn": hiding is no longer a state. */}
           {(
             [
@@ -579,6 +605,13 @@ export function ProblemManagementView({
           </Button>
         </BulkActionBar>
 
+        {bulkFailures.length > 0 ? <Card title={t("bulkFailureTitle")}>
+          <ul className="list-disc pl-5 text-sm" role="status">
+            {bulkFailures.map(item => <li key={item.id}>
+              {rows.find(row => row.id === item.id)?.title ?? item.id}: {apiMessage(new ApiError(item.code, 0))}
+            </li>)}
+          </ul>
+        </Card> : null}
         {list.isError ? (
           <ErrorState>{t("loadFailed")}</ErrorState>
         ) : !data ? (
@@ -770,6 +803,23 @@ export function ProblemManagementView({
         onApply={applyLevel}
       />
 
+      <ConfirmDialog open={pickingTopic} onClose={() => setPickingTopic(false)}
+        title={t("bulkTopicTitle", {count: chosen.length})} confirmLabel={t("bulkLevel.apply")} cancelLabel={t("cancel")}
+        pending={assignTopic.isPending} confirmDisabled={!pickedTopic || chosen.length === 0 || !topicList.some(item => item.key === pickedTopic)}
+        onConfirm={() => assignTopic.mutate({ids: chosen.map(item => item.id), topicId: pickedTopic}, {
+          onSuccess: result => { reportBulk("assignTopic", result); setPickingTopic(false); },
+          onError: error => toast.error(apiMessage(error)),
+        })}>
+        <SelectField label={t("bulkTopicLabel")} value={pickedTopic} onChange={event => setPickedTopic(event.target.value)}
+          options={topicList.map(item => ({value: item.key, label: item.label}))} />
+      </ConfirmDialog>
+      <ConfirmDialog open={confirmingUnpublish} onClose={() => setConfirmingUnpublish(false)}
+        title={t("confirmUnpublish", {count: chosen.length})} confirmLabel={t("bulk.unpublish")} cancelLabel={t("cancel")}
+        pending={unpublish.isPending} confirmDisabled={chosen.length === 0}
+        onConfirm={() => unpublish.mutate(chosen.map(item => item.id), {
+          onSuccess: result => { reportBulk("unpublish", result); setConfirmingUnpublish(false); },
+          onError: error => toast.error(apiMessage(error)),
+        })}>{t("unpublishHint")}</ConfirmDialog>
       <ConfirmDialog
         open={confirmingBulkDelete}
         onClose={() => setConfirmingBulkDelete(false)}

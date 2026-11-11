@@ -17,24 +17,29 @@ import { Button, Modal, SelectField, TextArea } from "@/shared/ui";
 type FormShellProps = {
   title: string;
   onClose: () => void;
-  onSave: () => void;
+  onSave: () => void | Promise<void>;
   children: React.ReactNode;
 };
 
 function FormShell({ title, onClose, onSave, children }: FormShellProps) {
+  const [pending, setPending] = useState(false);
   const t = useT("problemAuthoring");
   return (
     <Modal
       open
-      onClose={onClose}
+      onClose={() => { if (!pending) onClose(); }}
       title={title}
       className="max-w-lg"
       footer={
         <>
-          <Button variant="ghost" size="sm" onClick={onClose}>
+          <Button variant="ghost" size="sm" disabled={pending} onClick={onClose}>
             {t("dialog.cancel")}
           </Button>
-          <Button size="sm" onClick={onSave}>
+          <Button size="sm" disabled={pending} aria-busy={pending} onClick={async () => {
+            if (pending) return;
+            setPending(true);
+            try { await onSave(); } finally { setPending(false); }
+          }}>
             {t("dialog.save")}
           </Button>
         </>
@@ -49,7 +54,7 @@ type TestcaseDialogProps = {
   /** Undefined = adding a new row. */
   testcase?: Testcase;
   onClose: () => void;
-  onSave: (values: Pick<Testcase, "input" | "expected" | "visibility">) => void;
+  onSave: (values: Pick<Testcase, "input" | "expected" | "visibility">) => void | Promise<void>;
 };
 
 export function TestcaseDialog({
@@ -68,17 +73,20 @@ export function TestcaseDialog({
   const largeInput = testcase?.largeSides?.includes("input") ?? false;
   const largeExpected = testcase?.largeSides?.includes("expected") ?? false;
   const invalid =
-    (!largeInput && !input.trim()) || (!largeExpected && !expected.trim());
+    (!largeInput && input.length === 0) || (!largeExpected && expected.length === 0);
 
-  function submit() {
+  async function submit() {
     setTouched(true);
     if (invalid) {
       toast.error(t("dialog.required"));
       return;
     }
-    onSave({
-      input: largeInput ? input : input.trim(),
-      expected: largeExpected ? expected : expected.trim(),
+    if (new TextEncoder().encode(input).length > 1048576 || new TextEncoder().encode(expected).length > 1048576) {
+      toast.error(t("testcaseTooLarge")); return;
+    }
+    await onSave({
+      input,
+      expected,
       visibility,
     });
   }
@@ -94,7 +102,7 @@ export function TestcaseDialog({
         rows={3}
         value={largeInput ? t("dialog.largeSide") : input}
         disabled={largeInput}
-        invalid={touched && !largeInput && !input.trim()}
+        invalid={touched && !largeInput && input.length === 0}
         onChange={(event) => setInput(event.target.value)}
         className="font-mono text-[12.5px]"
       />
@@ -103,7 +111,7 @@ export function TestcaseDialog({
         rows={3}
         value={largeExpected ? t("dialog.largeSide") : expected}
         disabled={largeExpected}
-        invalid={touched && !largeExpected && !expected.trim()}
+        invalid={touched && !largeExpected && expected.length === 0}
         onChange={(event) => setExpected(event.target.value)}
         className="font-mono text-[12.5px]"
       />

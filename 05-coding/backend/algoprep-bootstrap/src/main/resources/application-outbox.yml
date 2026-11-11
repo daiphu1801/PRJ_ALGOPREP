@@ -10,3 +10,13 @@ problem:
     batch-size: 100
     cleanup-delay-hours: 24
     retention-days: 90
+ai:
+  outbox:
+    enabled: true
+    relay-delay-ms: 2000
+    batch-size: 100
+    cleanup-batch-size: 5000
+    retention-days: 90
+  interview:
+    sweep:
+      enabled: true

@@ -1,6 +1,6 @@
 // USR0103 in mock mode: the mock answers the same contract as the real endpoints, so these tests prove
 // the screen's own behaviour (what it sends, how it undoes, what it says when something fails).
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   act,
   fireEvent,
@@ -145,3 +145,5 @@ describe("SavedProblemsView", () => {
     );
   });
 });
+
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));

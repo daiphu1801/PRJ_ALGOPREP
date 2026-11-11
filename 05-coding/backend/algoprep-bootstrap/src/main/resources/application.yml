@@ -18,6 +18,13 @@ spring:
       # VirtualThreadsEnabledTest.
       enabled: true
 
+  data:
+    redis:
+      # Short timeouts for every profile: Redis-backed gates fail open (F5 BR-AI-04, F3 preview limit) and the
+      # Lettuce default of 60 s would make the failure path stall requests.
+      connect-timeout: 1s
+      timeout: 1s
+
   flyway:
     # DEC-2026-1029-flyway-migration-tool. Mot history table o schema public; moi module mot thu muc,
     # moi module mot dai version (identity V1.NNN, problem V2.NNN, judge V4.NNN, ai V5.NNN, interview_bank V6.NNN).
@@ -81,6 +88,19 @@ algoprep:
     google:
       client-id: ${ALGOPREP_OAUTH_GOOGLE_CLIENT_ID:}
       client-secret: ${ALGOPREP_OAUTH_GOOGLE_CLIENT_SECRET:}
+  # LLM provider for F5 (OpenRouter through Spring AI, DEC-2026-1108-llm-provider-openrouter-free-models).
+  # A blank api-key keeps the app fully working: F5 generating endpoints answer 503 AIR-501 and every
+  # other endpoint is unaffected. Set the values in 05-coding/.env, never here.
+  ai:
+    api-key: ${ALGOPREP_AI_OPENROUTER_API_KEY:}
+    base-url: ${ALGOPREP_AI_BASE_URL:https://openrouter.ai/api}
+    default-model: ${ALGOPREP_AI_DEFAULT_MODEL:}
+    anomaly:
+      # JOB-AI-05 threshold: an account at or above this many times the 24 hour average is flagged.
+      threshold-ratio: 5
+    models:
+      # ai.models.allowed of DD F5: comma-separated model ids the admin may pick per prompt.
+      allowed: ${ALGOPREP_AI_ALLOWED_MODELS:}
   judge:
     # Display labels only; deployments may add verified toolchain versions here.
     compiler-display:

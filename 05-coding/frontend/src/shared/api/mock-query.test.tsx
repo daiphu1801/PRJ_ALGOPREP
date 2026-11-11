@@ -117,3 +117,36 @@ describe("useMockMutation", () => {
     });
   });
 });
+
+describe("personalized placeholder ownership", () => {
+  it("keeps the previous page for the same owner but hides it after switching owner", async () => {
+    mode.mock = true;
+    const client = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+    const boundary = ({ children }: { children: ReactNode }) => (
+      <QueryClientProvider client={client}>{children}</QueryClientProvider>
+    );
+    const { result, rerender } = renderHook(
+      ({ user, page }) =>
+        useMockQuery({
+          queryKey: ["personal", "rows", user, page],
+          spec: "dd",
+          keepPrevious: true,
+          previousScopeIndex: 2,
+          mock: () =>
+            page === 1
+              ? Promise.resolve(`${user}-private`)
+              : new Promise<string>(() => {}),
+        }),
+      { wrapper: boundary, initialProps: { user: "a", page: 1 } },
+    );
+    await waitFor(() => expect(result.current.data).toBe("a-private"));
+    rerender({ user: "a", page: 2 });
+    expect(result.current.data).toBe("a-private");
+    expect(result.current.isPlaceholderData).toBe(true);
+    rerender({ user: "b", page: 2 });
+    expect(result.current.data).toBeUndefined();
+    expect(result.current.isPlaceholderData).toBe(false);
+  });
+});

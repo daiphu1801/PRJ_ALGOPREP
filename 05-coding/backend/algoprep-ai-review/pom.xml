@@ -5,7 +5,7 @@
   Chi phu thuoc algoprep-common. KHONG phu thuoc module nghiep vu nao khac
   (01-rd/system/SYS0101_backend_architecture.md muc 2.A luat 1) — ArchUnit trong algoprep-bootstrap chan that.
 
-  Trang thai: khung base, chua co class nghiep vu. Noi dung cho BD/DD cua module nay
+  Trang thai: F5-1a (nen: LlmProviderPort, PromptComposer, so cai token, cong ngan sach, Lua). Noi dung cho BD/DD cua module nay
   (02-bd/ + 03-dd/). Xem 05-coding/backend/README.md.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -23,11 +23,44 @@
   <name>algoprep-ai-review</name>
   <description>Phân hệ AI (F5)</description>
 
+  <properties>
+    <jacoco.haltOnFailure>true</jacoco.haltOnFailure>
+  </properties>
+
   <dependencies>
+    <dependency><groupId>org.springframework</groupId><artifactId>spring-context</artifactId></dependency>
+    <dependency><groupId>org.springframework</groupId><artifactId>spring-jdbc</artifactId></dependency>
+    <dependency><groupId>org.springframework</groupId><artifactId>spring-tx</artifactId></dependency>
+    <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-autoconfigure</artifactId></dependency>
+    <dependency><groupId>org.springframework.data</groupId><artifactId>spring-data-redis</artifactId></dependency>
+    <!-- response_guards JSONB is parsed in infrastructure only (the domain stays plain Java). -->
+    <dependency><groupId>tools.jackson.core</groupId><artifactId>jackson-databind</artifactId></dependency>
+    <!-- F5-5a: the outbox relay publishes with publisher confirms on its own connection. -->
+    <dependency><groupId>com.rabbitmq</groupId><artifactId>amqp-client</artifactId></dependency>
+    <!-- LlmProviderPort.streamTurn returns Flux (DD F5 3.1); Spring AI itself arrives in slice F5-2. -->
+    <dependency><groupId>io.projectreactor</groupId><artifactId>reactor-core</artifactId></dependency>
+    <!-- F5-1b: REST controller, method security and JWT principal (same set as interview-bank). -->
+    <dependency><groupId>org.springframework</groupId><artifactId>spring-webmvc</artifactId></dependency>
+    <dependency><groupId>org.springframework.security</groupId><artifactId>spring-security-config</artifactId></dependency>
+    <dependency><groupId>org.springframework.security</groupId><artifactId>spring-security-oauth2-resource-server</artifactId></dependency>
+    <dependency><groupId>org.springframework.security</groupId><artifactId>spring-security-oauth2-jose</artifactId></dependency>
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <!-- F5-2: the client library only, NOT the starter, so no Spring AI auto-configuration runs; the
+         OpenRouter ChatModel is built by hand in an adapter gated on the API key. -->
+    <dependency><groupId>org.springframework.ai</groupId><artifactId>spring-ai-openai</artifactId></dependency>
     <dependency>
       <groupId>com.algoprep</groupId>
       <artifactId>algoprep-common</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.projectreactor</groupId>
+      <artifactId>reactor-test</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

@@ -34,7 +34,9 @@ $env:ALGOPREP_WORKER_ENGINE_URL='http://127.0.0.1:5055'
 # Ví dụ tham số JVM/ứng dụng: --spring.profiles.active=local,worker
 ```
 
-Chỉ một tiến trình được bật worker. Profile cấp 32 kết nối Hikari (`DEC-2026-1108-hikari-pool-32`); không giảm dưới 10: tám lease job, một lease leader và ít nhất một kết nối cho giao dịch ghi. Chín kết nối đầu bị giữ cố định, phần còn lại phục vụ API và giao dịch ghi; pool 16 cạn ở khoảng 80 người nộp đồng thời (báo cáo `261108-1320-f3-f4-load-test`). Nâng số consumer thì nâng pool theo, và giữ tổng pool dưới `max_connections` của PostgreSQL (mặc định image là 100). Profile worker yêu cầu URL sandbox; không lặng lẽ nhận URL mặc định của engine chưa có toolchain. Không khởi động thêm một API process riêng rồi kỳ vọng STOMP nội bộ phát qua process đó.
+Số consumer bắt đầu từ 1 và tự tăng tối đa 8: mỗi 3 giây (`judge.worker.scale-delay-ms`, `DEC-2026-1108-autoscale-faster`) kiểm số bài chờ, vượt `autoscale_job_threshold` hai lần liên tiếp thì tăng 1. Ngưỡng mặc định của DB là 20, quá cao cho một lớp; trên môi trường demo đặt 5 trong màn quản lý hàng đợi của admin (hoặc `UPDATE judge.cluster_settings SET autoscale_job_threshold=5`).
+
+Chỉ một tiến trình được bật worker. Profile cấp 48 kết nối Hikari (`DEC-2026-1110-hikari-pool-48`, nâng từ 32 lên 48 ngày 2026-11-08 vì 8 consumer thật chạy làm pool 32 cạn ở 80 người); không giảm dưới 10: tám lease job, một lease leader và ít nhất một kết nối cho giao dịch ghi. Chín kết nối đầu bị giữ cố định, phần còn lại phục vụ API và giao dịch ghi; pool 16 cạn ở khoảng 80 người nộp đồng thời (báo cáo `261108-1320-f3-f4-load-test`). Nâng số consumer thì nâng pool theo, và giữ tổng pool dưới `max_connections` của PostgreSQL (mặc định image là 100). Profile worker yêu cầu URL sandbox; không lặng lẽ nhận URL mặc định của engine chưa có toolchain. Không khởi động thêm một API process riêng rồi kỳ vọng STOMP nội bộ phát qua process đó.
 
 ## Kiểm tra
 

@@ -11,6 +11,9 @@ import {
   mockBulkDelete,
   mockBulkDifficulty,
   mockBulkPublish,
+  mockBulkUnpublish,
+  mockBulkTopic,
+  mockExportFilteredProblems,
   mockExportProblems,
 } from "./__mock__/admin-problem-mocks";
 import {
@@ -18,6 +21,9 @@ import {
   realBulkDelete,
   realBulkDifficulty,
   realBulkPublish,
+  realBulkUnpublish,
+  realBulkTopic,
+  realExportFilteredProblems,
   realExportProblems,
   realListAdminProblems,
   realTopicDistribution,
@@ -111,3 +117,20 @@ export const useExportProblems = () =>
     real: realExportProblems,
     spec: SPEC,
   });
+
+export const useBulkUnpublish = () => useMockMutation({
+  mock: mockBulkUnpublish, real: realBulkUnpublish, invalidate: refresh, spec: SPEC,
+});
+export const useBulkTopic = () => useMockMutation({
+  mock: ({ids, topicId}: {ids: string[]; topicId: string}) => mockBulkTopic(ids, topicId),
+  real: ({ids, topicId}: {ids: string[]; topicId: string}) => realBulkTopic(ids, topicId),
+  invalidate: refresh, spec: SPEC,
+});
+export function useExportFilteredProblems() {
+  const levels = useProblemLevels();
+  return useMockMutation({
+    mock: mockExportFilteredProblems,
+    real: (params: AdminListParams) => realExportFilteredProblems(params, levels.find(item => item.key === params.level)?.id),
+    spec: SPEC,
+  });
+}

@@ -298,12 +298,14 @@ function ageToIso(label: string): string {
 const deleted = new Set<string>();
 const levelOf = new Map<string, string>();
 const statusOf = new Map<string, ProblemStatus>();
+const topicsOf = new Map<string, string[]>();
 
 /** Test hook: forget every overlay change. */
 export function resetAdminProblemMock(): void {
   deleted.clear();
   levelOf.clear();
   statusOf.clear();
+  topicsOf.clear();
 }
 
 function toRow(problem: RawProblem): AdminProblem {
@@ -312,7 +314,7 @@ function toRow(problem: RawProblem): AdminProblem {
     id,
     code: problem.code,
     title: problem.title,
-    topics: [problem.topic],
+    topics: topicsOf.get(id) ?? [problem.topic],
     difficulty: levelOf.get(id) ?? problem.difficulty,
     status: statusOf.get(id) ?? problem.status,
     submissionCount: problem.submissionCount,
@@ -532,4 +534,14 @@ export async function mockExportProblems(
     }),
     filename: "problems-mock.csv",
   };
+}
+
+export const mockBulkUnpublish = (ids: string[]) => applyBulk(ids, id => statusOf.set(id, "draft"));
+export const mockBulkTopic = (ids: string[], topic: string) => applyBulk(ids, id => {
+  const row = visibleRows().find(item => item.id === id);
+  topicsOf.set(id, [...new Set([...(row?.topics ?? []), topic])]);
+});
+export async function mockExportFilteredProblems(params: AdminListParams) {
+  const result = await loadAdminProblemList({ ...params, page: 1, pageSize: 100000 });
+  return mockExportProblems(result.items.map(item => item.id));
 }

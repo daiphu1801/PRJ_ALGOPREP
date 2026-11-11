@@ -27,12 +27,17 @@ import {
 } from "@/entities/problem";
 import { ApiError } from "@/shared/api";
 import { useApiErrorMessage, useLocale, useT } from "@/shared/i18n";
-import { formatDateVN, useDebounced } from "@/shared/lib";
+import {
+  formatDateVN,
+  useDebounced,
+  useUnsavedChangesGuard,
+} from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
 import {
   Badge,
   Button,
   Card,
+  ConfirmDialog,
   DataTable,
   EmptyState,
   Pagination,
@@ -56,7 +61,7 @@ const NOTE_MAX_LENGTH = 1000;
 const PAGE_SIZE = 20;
 const SEARCH_MAX_LENGTH = 100;
 
-type NoteEdit = { id: string; draft: string };
+type NoteEdit = { id: string; draft: string; original: string };
 
 type StatusFilter = SolveState | "all";
 
@@ -71,6 +76,11 @@ export function SavedProblemsView() {
   const [difficulty, setDifficulty] = useState("all");
   const [page, setPage] = useState(1);
   const [noteEdit, setNoteEdit] = useState<NoteEdit | null>(null);
+  const [pendingNoteAction, setPendingNoteAction] = useState<
+    (() => void) | null
+  >(null);
+  const noteDirty = noteEdit !== null && noteEdit.draft !== noteEdit.original;
+  const leaveGuard = useUnsavedChangesGuard(noteDirty);
 
   // Typing filters live, but only a pause in typing becomes a request.
   const debouncedQuery = useDebounced(query);
@@ -86,31 +96,41 @@ export function SavedProblemsView() {
   const restore = useRestoreBookmark();
   const data = saved.data;
 
+  function protectNote(action: () => void) {
+    if (saveNote.isPending) return;
+    if (noteDirty) setPendingNoteAction(() => action);
+    else action();
+  }
   function resetFilter<T>(setter: (value: T) => void, value: T) {
-    setter(value);
-    setPage(1);
-    // A row hidden by the new filter must not keep an open note editor.
-    setNoteEdit(null);
+    protectNote(() => {
+      setter(value);
+      setPage(1);
+      setNoteEdit(null);
+    });
   }
 
   function doUnsave(problem: SavedRow) {
     // Unsaving deletes the private note with the bookmark (REQ-04). The removed row's note stays in the
     // Hoàn tác toast closure, so undo restores the bookmark AND its note. One toast per unsave, each with
     // its own closure, so a second unsave never loses the first.
-    unsave.mutate(problem.id, {
-      onSuccess: () => {
-        setNoteEdit((current) => (current?.id === problem.id ? null : current));
-        toast.info(t("undo.message", { title: problem.title }), {
-          label: t("undo.button"),
-          onClick: () =>
-            restore.mutate(
-              { problemId: problem.id, note: problem.note },
-              { onError: (error) => toast.error(apiMessage(error)) },
-            ),
-        });
-      },
-      onError: (error) => toast.error(apiMessage(error)),
-    });
+    protectNote(() =>
+      unsave.mutate(problem.id, {
+        onSuccess: () => {
+          setNoteEdit((current) =>
+            current?.id === problem.id ? null : current,
+          );
+          toast.info(t("undo.message", { title: problem.title }), {
+            label: t("undo.button"),
+            onClick: () =>
+              restore.mutate(
+                { problemId: problem.id, note: problem.note },
+                { onError: (error) => toast.error(apiMessage(error)) },
+              ),
+          });
+        },
+        onError: (error) => toast.error(apiMessage(error)),
+      }),
+    );
   }
 
   function doSaveNote(edit: NoteEdit) {
@@ -213,7 +233,7 @@ export function SavedProblemsView() {
               maxLength={NOTE_MAX_LENGTH}
               value={noteEdit.draft}
               onChange={(event) =>
-                setNoteEdit({ id: problem.id, draft: event.target.value })
+                setNoteEdit({ ...noteEdit, draft: event.target.value })
               }
             />
             <div className="mt-1 flex items-center justify-between gap-2">
@@ -247,7 +267,15 @@ export function SavedProblemsView() {
           <button
             type="button"
             title={t("table.noteEditHint")}
-            onClick={() => setNoteEdit({ id: problem.id, draft: problem.note })}
+            onClick={() =>
+              protectNote(() =>
+                setNoteEdit({
+                  id: problem.id,
+                  draft: problem.note,
+                  original: problem.note,
+                }),
+              )
+            }
             className="block max-w-[280px] truncate text-left text-[12.5px] text-[var(--color-text-muted)] hover:underline"
           >
             {problem.note || t("table.noNote")}
@@ -391,10 +419,12 @@ export function SavedProblemsView() {
             page={data.page.number}
             pageSize={PAGE_SIZE}
             total={data.page.totalItems}
-            onPageChange={(next) => {
-              setPage(next);
-              setNoteEdit(null);
-            }}
+            onPageChange={(next) =>
+              protectNote(() => {
+                setPage(next);
+                setNoteEdit(null);
+              })
+            }
             summary={t("footer.summary", {
               from: (data.page.number - 1) * PAGE_SIZE + 1,
               to: Math.min(data.page.number * PAGE_SIZE, data.page.totalItems),
@@ -413,6 +443,26 @@ export function SavedProblemsView() {
           {t("footerPrivacyNote")}
         </p>
       </Card>
+      <ConfirmDialog
+        open={leaveGuard.pending || pendingNoteAction !== null}
+        title={t("unsaved.title")}
+        confirmLabel={t("unsaved.leave")}
+        cancelLabel={t("unsaved.stay")}
+        pending={saveNote.isPending}
+        onClose={() => {
+          setPendingNoteAction(null);
+          leaveGuard.stay();
+        }}
+        onConfirm={() => {
+          setNoteEdit(null);
+          if (pendingNoteAction) {
+            pendingNoteAction();
+            setPendingNoteAction(null);
+          } else leaveGuard.leave();
+        }}
+      >
+        {t("unsaved.body")}
+      </ConfirmDialog>
     </div>
   );
 }

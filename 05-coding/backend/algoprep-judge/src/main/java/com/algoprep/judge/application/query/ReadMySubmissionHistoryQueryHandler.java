@@ -16,6 +16,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -45,6 +46,10 @@ class ReadMySubmissionHistoryQueryHandler
         .toList();
   }
 
+  // Calls F2 over a REQUIRES_NEW read; it must not run inside a transaction that holds a
+  // connection,
+  // otherwise every request pins one connection while waiting for a second and the pool deadlocks.
+  @Transactional(propagation = Propagation.NOT_SUPPORTED)
   @Override
   public Page<History> history(UUID owner, Filters f) {
     String keyword = SubmissionReadQueries.keyword(f.q());

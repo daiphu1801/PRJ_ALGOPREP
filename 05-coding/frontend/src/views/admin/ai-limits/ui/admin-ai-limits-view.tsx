@@ -21,11 +21,7 @@ import {
   setModelPriceValue,
   useModelPrices,
 } from "@/entities/ai-budget";
-import {
-  AI_GENERATION_LIMIT_MAX,
-  AI_GENERATION_LIMIT_MIN,
-  aiGenerationSettings,
-} from "@/entities/problem";
+import { TestcaseGenerationLimitCard } from "./testcase-generation-limit-card";
 import { useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
 import {
@@ -54,7 +50,6 @@ export function AdminAiLimitsView() {
   const budget = aiTokenBudget.use();
   const rateLimits = aiRateLimits.use();
   const budgetSettings = aiBudgetSettings.use();
-  const generationSettings = aiGenerationSettings.use();
   const modelPrices = useModelPrices();
   const [limitDraft, setLimitDraft] = useState(String(budget.limitTokens));
   const [limitInvalid, setLimitInvalid] = useState(false);
@@ -240,30 +235,7 @@ export function AdminAiLimitsView() {
           </div>
         </Card>
 
-        <Card
-          title={t("testcaseGen.title")}
-          description={t("testcaseGen.subtitle")}
-        >
-          <SettingRow
-            label={t("testcaseGen.maxLabel")}
-            description={t("testcaseGen.maxMeta")}
-          >
-            <NumberStepper
-              editable
-              value={generationSettings.maxPerProblem}
-              onValueChange={(maxPerProblem) =>
-                aiGenerationSettings.set({ maxPerProblem })
-              }
-              label={t("testcaseGen.maxLabel")}
-              min={AI_GENERATION_LIMIT_MIN}
-              max={AI_GENERATION_LIMIT_MAX}
-              step={1}
-              format={(value) => t("testcaseGen.value", { count: value })}
-              decrementLabel={t("testcaseGen.decrement")}
-              incrementLabel={t("testcaseGen.increment")}
-            />
-          </SettingRow>
-        </Card>
+        <TestcaseGenerationLimitCard />
       </div>
 
       <ConfirmDialog

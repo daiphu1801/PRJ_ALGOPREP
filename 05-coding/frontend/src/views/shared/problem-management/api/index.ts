@@ -18,6 +18,9 @@ export {
   useBulkDelete,
   useBulkDifficulty,
   useBulkPublish,
+  useBulkUnpublish,
+  useBulkTopic,
+  useExportFilteredProblems,
   useExportProblems,
   useTopicDistribution,
 } from "./queries";

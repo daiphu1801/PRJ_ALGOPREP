@@ -1,12 +1,12 @@
-// PROTOTYPE with a real API behind it (task 12, 03-dd/api/F1_identity.md #25, #25A); see
-// 06-plan/PROTOTYPE_DEBT.md. Assigned problems come from F2 (not built), so in real mode the card
-// shows no progress bar.
+// F1 #25/#25A supplies membership; F2 #13A supplies whole-class progress independently per card.
 //
 // Learner-side class screen: join by invite code (F1-23, 01-rd/req/F1_identity.md:133-137) and, once in a
 // class, its schedule, instructor and assigned problems (F2-12 also lists them on problem_list).
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { useMyClassProblems } from "@/entities/problem";
+import { isMockMode } from "@/shared/api";
 import {
   formatClassSchedule,
   useJoinClass,
@@ -108,9 +108,19 @@ export function MyClassesView() {
 
 function ClassCard({ klass, schedule }: { klass: MyClass; schedule: string }) {
   const t = useT("myClasses");
-  const solved = (klass.assignments ?? []).filter((a) => a.solved).length;
-  const total = klass.assignments?.length ?? 0;
-  const progress = t("card.progress", { solved, total });
+  const real = !isMockMode();
+  // One first-page read per class; meta covers every page, never just the returned 20 rows.
+  const assignments = useMyClassProblems(klass.id, 1, real);
+  const total = real
+    ? (assignments.data?.meta?.totalAssigned ?? null)
+    : (klass.assignments?.length ?? 0);
+  const solved = real
+    ? (assignments.data?.meta?.solvedCount ?? null)
+    : (klass.assignments ?? []).filter((a) => a.solved).length;
+  const progress =
+    solved === null
+      ? t("card.assignedCount", { total: total ?? 0 })
+      : t("card.progress", { solved, total: total ?? 0 });
 
   return (
     <Card className="min-w-0 px-[18px] py-4">
@@ -137,15 +147,22 @@ function ClassCard({ klass, schedule }: { klass: MyClass; schedule: string }) {
         <dd>{klass.joinedAtLabel}</dd>
       </dl>
 
-      {total > 0 ? (
+      {real && assignments.isError ? <QueryError query={assignments} /> : null}
+      {real && assignments.isLoading ? (
+        <p className="mt-4 text-[12px] text-[var(--color-text-muted)]">
+          {t("card.progressLoading")}
+        </p>
+      ) : total !== null && total > 0 ? (
         <div className="mt-4">
-          <ProgressBar
-            value={solved}
-            max={total}
-            label={progress}
-            height={6}
-            className="mb-1.5"
-          />
+          {solved !== null ? (
+            <ProgressBar
+              value={solved}
+              max={total}
+              label={progress}
+              height={6}
+              className="mb-1.5"
+            />
+          ) : null}
           <p className="text-[12px] text-[var(--color-text-muted)]">
             {progress}
           </p>

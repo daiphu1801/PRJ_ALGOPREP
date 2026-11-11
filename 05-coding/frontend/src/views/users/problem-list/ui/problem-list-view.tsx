@@ -17,6 +17,7 @@
 "use client";
 
 import { useState } from "react";
+import { useIsFetching } from "@tanstack/react-query";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Shuffle } from "lucide-react";
@@ -84,6 +85,8 @@ export function ProblemListView() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const levels = useProblemLevels();
+  const topics = useTopicProgress();
+  const levelsFetching = useIsFetching({ queryKey: ["problem", "levels"] }) > 0;
   // A value the URL carries that this screen does not know falls back to the default.
   const statusParam = searchParams.get("status");
   const status: StatusFilter = STATUS_VALUES.includes(
@@ -91,16 +94,25 @@ export function ProblemListView() {
   )
     ? (statusParam as StatusFilter)
     : "all";
-  const difficulty = searchParams.get("level") || "all";
-  const topicId = searchParams.get("topic") || "all";
+  const requestedLevel = searchParams.get("level");
+  const requestedTopic = searchParams.get("topic");
+  const difficulty = levels.some((level) => level.key === requestedLevel)
+    ? requestedLevel!
+    : "all";
+  const topicId = topics.data?.items.some(
+    (topic) => topic.id === requestedTopic,
+  )
+    ? requestedTopic!
+    : "all";
   const sort: { key: SortKey; direction: "asc" | "desc" } = {
     key: searchParams.get("sort") === "acRate" ? "acRate" : "difficulty",
     direction: searchParams.get("dir") === "desc" ? "desc" : "asc",
   };
-  const currentPage = Math.max(
-    1,
-    Math.floor(Number(searchParams.get("page"))) || 1,
-  );
+  const requestedPage = Number(searchParams.get("page"));
+  const currentPage =
+    Number.isSafeInteger(requestedPage) && requestedPage > 0
+      ? requestedPage
+      : 1;
   const [query, setQuery] = useState(searchParams.get("q") ?? "");
   // One replace per change; a null or empty value drops the key, so defaults never reach the URL.
   const setUrlParams = (patch: Record<string, string | null>) => {
@@ -138,8 +150,10 @@ export function ProblemListView() {
     page: currentPage,
     pageSize,
   };
-  const catalog = useProblemCatalog(params);
-  const topics = useTopicProgress();
+  const catalogsReady =
+    (!requestedLevel || levels.length > 0 || !levelsFetching) &&
+    (!requestedTopic || !topics.isLoading);
+  const catalog = useProblemCatalog(params, catalogsReady);
   const assignments = useMyClassAssignments();
   const inProgress = useMyInProgress();
   const random = useRandomProblem();

@@ -85,7 +85,15 @@ function ProblemOverview({
   const locale = useLocale() === "en" ? "en" : "vi";
   const router = useRouter();
   const levels = useProblemLevels();
-  const [saved, setSaved] = useState(detail.saved);
+  const [bookmarkState, setBookmarkState] = useState({
+    source: detail.saved,
+    value: detail.saved,
+  });
+  if (bookmarkState.source !== detail.saved) {
+    setBookmarkState({ source: detail.saved, value: detail.saved });
+  }
+  const saved =
+    bookmarkState.source === detail.saved ? bookmarkState.value : detail.saved;
   const setBookmark = useSetBookmark();
   const apiMessage = useApiErrorMessage();
 
@@ -96,7 +104,7 @@ function ProblemOverview({
       { problemId, bookmarked: next },
       {
         onSuccess: () => {
-          setSaved(next);
+          setBookmarkState({ source: detail.saved, value: next });
           if (next) {
             toast.success(td("toast.saved"), {
               label: td("toast.openSaved"),

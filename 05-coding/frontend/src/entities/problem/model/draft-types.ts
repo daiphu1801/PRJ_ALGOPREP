@@ -157,7 +157,7 @@ export type ServerState = {
 };
 
 /** Why a generated input was thrown away instead of becoming a draft testcase. */
-export type DroppedReason = "invalidConstraint" | "referenceFailed" | "timeout";
+export type DroppedReason = "invalidConstraint" | "referenceFailed" | "timeout" | "duplicateInput";
 
 /** `GenerateTestcasesWithAi` request (BD SHR0202 EVT-16). Never carries the reference solution. */
 export type GenerateTestcasesInput = {
@@ -171,6 +171,8 @@ export type GenerateTestcasesInput = {
 
 /** `GenerateTestcasesWithAi` response: new unapproved draft rows plus what was discarded. */
 export type GenerateTestcasesResult = {
+  aiGeneration?: {used: number; limit: number};
+  problemUpdatedAt?: string;
   testcases: Testcase[];
   dropped: { reason: DroppedReason; count: number }[];
   /** The largest case failed or timed out on the reference solution: F2-10 limit may be wrong. */
@@ -223,6 +225,8 @@ export const CONTAINER_KINDS: TypeKind[] = [
 
 export type SpecType = {
   kind: TypeKind;
+  /** Preserve a server type the picker cannot express until the author explicitly replaces it. */
+  rawType?: { kind: string; [key: string]: unknown };
   /** Element type of a container; only LIST may hold a container (nesting, up to MAX_TYPE_NESTING levels). */
   of?: SpecType;
   /** ARRAY only: 1 to 3. */

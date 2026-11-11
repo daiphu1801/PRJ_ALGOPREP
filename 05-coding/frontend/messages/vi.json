@@ -429,6 +429,12 @@
       "previous": "‹",
       "next": "›",
       "pageLabel": "Trang {page}"
+    },
+    "unsaved": {
+      "title": "Bỏ thay đổi ghi chú chưa lưu?",
+      "body": "Ghi chú đang sửa sẽ không được lưu.",
+      "leave": "Bỏ thay đổi",
+      "stay": "Tiếp tục sửa"
     }
   },
   "problemDetail": {
@@ -620,7 +626,11 @@
     "emptyGeneric": "Chưa có dữ liệu",
     "errorGeneric": "Không tải được dữ liệu",
     "labels": {
-      "language": { "PYTHON": "Python", "CPP": "C++", "JAVA": "Java" },
+      "language": {
+        "PYTHON": "Python",
+        "CPP": "C++",
+        "JAVA": "Java"
+      },
       "verdict": {
         "ACCEPTED": "Accepted",
         "WRONG_ANSWER": "Sai kết quả",
@@ -628,7 +638,10 @@
         "RUNTIME_ERROR": "Lỗi thực thi",
         "COMPILE_ERROR": "Lỗi biên dịch"
       },
-      "legend": { "totalSubmissions": "Tổng lượt nộp", "acceptedSubmissions": "Accepted" }
+      "legend": {
+        "totalSubmissions": "Tổng lượt nộp",
+        "acceptedSubmissions": "Accepted"
+      }
     },
     "blocks": {
       "submissionsSummary": "Tổng lượt nộp bài",
@@ -1505,7 +1518,8 @@
       "assignTopic": "Gán chủ đề",
       "duplicate": "Nhân bản",
       "exportCsv": "Xuất CSV",
-      "delete": "Xoá"
+      "delete": "Xoá",
+      "unpublish": "Rút bài"
     },
     "edit": "Sửa",
     "delete": "Xoá",
@@ -1534,9 +1548,17 @@
       "bulk": {
         "publish": "Đã xuất bản {count} bài",
         "delete": "Đã xoá {count} bài",
-        "changeDifficulty": "Đã đổi độ khó của {count} bài"
+        "changeDifficulty": "Đã đổi độ khó của {count} bài",
+        "unpublish": "Đã rút {count} bài",
+        "assignTopic": "Đã gán chủ đề cho {count} bài"
       }
-    }
+    },
+    "exportFiltered": "Xuất CSV theo bộ lọc",
+    "bulkFailureTitle": "Các bài chưa xử lý được",
+    "bulkTopicTitle": "Gán chủ đề cho {count} bài",
+    "bulkTopicLabel": "Chủ đề thêm vào",
+    "confirmUnpublish": "Rút {count} bài đã chọn?",
+    "unpublishHint": "Học viên sẽ không còn thấy các bài này trong kho. Lịch sử nộp vẫn được giữ."
   },
   "interviewQuestionManagement": {
     "title": "Ngân hàng câu hỏi phỏng vấn",
@@ -1837,6 +1859,11 @@
     },
     "addExample": "Thêm ví dụ",
     "runSolution": "Chạy với đáp án mẫu",
+    "runOne": "Chạy riêng testcase",
+    "moveUp": "Đưa testcase lên",
+    "moveDown": "Đưa testcase xuống",
+    "reorderHint": "Kéo số thứ tự hoặc dùng nút lên/xuống để sắp xếp testcase",
+    "testcaseTooLarge": "Mỗi vế testcase tối đa 1 MB UTF-8.",
     "runResultTitle": "Đáp án mẫu đã chạy",
     "runResultBody": "Đúng {passed}/{total} testcase đã duyệt.",
     "runStaleTitle": "Chưa có kết quả chạy hợp lệ",
@@ -1946,7 +1973,8 @@
       "exampleUpdated": "Đã cập nhật ví dụ mẫu",
       "exampleDeleted": "Đã xoá ví dụ mẫu",
       "draftApproved": "Đã duyệt testcase nháp",
-      "draftRejected": "Đã loại testcase nháp"
+      "draftRejected": "Đã loại testcase nháp",
+      "droppedDuplicateInput": "Đã bỏ {count} đầu vào trùng lặp"
     },
     "runBlocked": {
       "noSolution": "Hãy nhập đáp án mẫu trước khi chạy.",
@@ -2037,7 +2065,8 @@
       "stubTitle": "Mã khung học viên sẽ thấy",
       "stubSubtitle": "Minh hoạ từ chữ ký ở trên, mã khung thật do harness sinh. Tên hàm tự suy ra: Python viết snake_case, Java và C++ viết camelCase.",
       "overrideName": "Tên hàm {language} (để trống = tự suy ra)"
-    }
+    },
+    "generateNeedsSave": "Lưu các thay đổi của bài trước khi sinh testcase bằng AI."
   },
   "problemPreview": {
     "notFound": "Không tìm thấy bài tập.",
@@ -3293,7 +3322,9 @@
       "todo": "Chưa làm",
       "attempted": "Đang làm",
       "viewDetail": "Xem chi tiết lớp",
-      "viewDetailOf": "Xem chi tiết lớp {name}"
+      "viewDetailOf": "Xem chi tiết lớp {name}",
+      "progressLoading": "Đang tải tiến độ…",
+      "assignedCount": "{total} bài được giao"
     },
     "detail": {
       "back": "Quay lại danh sách lớp",
@@ -3304,11 +3335,11 @@
       "colProblem": "Bài toán",
       "colAssignedAt": "Ngày giao",
       "colState": "Trạng thái",
-        "withdrawn": "Đã rút xuống",
-        "progressUnknown": "{total} bài được giao, chưa đọc được số bài bạn đã xong.",
-        "pageSummary": "Trang {page} / {total}",
-        "previous": "Trước",
-        "next": "Sau"
+      "withdrawn": "Đã rút xuống",
+      "progressUnknown": "{total} bài được giao, chưa đọc được số bài bạn đã xong.",
+      "pageSummary": "Trang {page} / {total}",
+      "previous": "Trước",
+      "next": "Sau"
     }
   }
 }

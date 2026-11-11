@@ -16,15 +16,18 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { ArrowLeft, Check, Eye, Pencil, Trash2, X } from "lucide-react";
+import { ArrowLeft, ArrowUp, ArrowDown, Play, Check, Eye, Pencil, Trash2, X } from "lucide-react";
 import {
   AI_GUARD_KEYS,
   TESTCASE_CATEGORIES,
   isSpecComplete,
+  matchingValid,
   realBulkUpload,
   realCreateTestcase,
   realDeleteTestcase,
   realRunReferenceSolution,
+  realReorderTestcases,
+  realReadTestcaseContent,
   realUpdateTestcase,
   useGenerateTestcases,
   useProblemDraft,
@@ -189,7 +192,7 @@ function ProblemAuthoringForm({
   problemId,
   initial,
   isCopy,
-  aiGeneration,
+  aiGeneration: initialAiGeneration,
   stats,
   initialSavedAt,
   server,
@@ -197,6 +200,7 @@ function ProblemAuthoringForm({
   const t = useT("problemAuthoring");
   const apiMessage = useApiErrorMessage();
   const [draft, setDraft] = useState<ProblemDraft>(initial);
+  const [aiGeneration, setAiGeneration] = useState(initialAiGeneration);
   const [savedAt, setSavedAt] = useState(initialSavedAt);
   const topicList = useProblemTopics();
   const levelList = useProblemLevels();
@@ -221,6 +225,9 @@ function ProblemAuthoringForm({
   // The `updatedAt` the next write must quote (optimistic lock); testcase writes move it too.
   const lock = useRef(server?.updatedAt ?? null);
   const [running, setRunning] = useState(false);
+  const [testcaseBusy, setTestcaseBusy] = useState(false);
+  const testcaseAction = useRef(false);
+  const draggedTestcase = useRef<string | null>(null);
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const dirty = saved === null || persistKey(draft) !== persistKey(saved);
   const saving = saveState === "saving";
@@ -283,7 +290,7 @@ function ProblemAuthoringForm({
       try {
         const written = editing
           ? await realUpdateTestcase(liveId, editing.id, {
-              // A side stored outside the database is never sent back (the dialog cannot show it).
+              // Only changed sides are sent; object-storage content is hydrated before editing.
               ...(editing.largeSides?.includes("input") ||
               values.input === editing.input
                 ? {}
@@ -447,6 +454,7 @@ function ProblemAuthoringForm({
   // the server's own copy (every step went through) or, after a step failed, only the sections it took.
   // Returns true when the save went through completely.
   function applyResult(result: SaveResult, snapshot: ProblemDraft): boolean {
+    if (result.record) setAiGeneration(result.record.aiGeneration);
     if (result.createdId) setCreatedId(result.createdId);
     if (result.updatedAt !== undefined) lock.current = result.updatedAt;
     const failed = result.error !== undefined;
@@ -588,7 +596,7 @@ function ProblemAuthoringForm({
 
   // Mock data: every approved row passes. Real data (#47): the server runs the editor's code against
   // every approved testcase and answers with verdicts only (F2-18).
-  async function runSolution() {
+  async function runSolution(testcaseId?: string) {
     if (!draft.solution.trim()) {
       toast.warning(t("runBlocked.noSolution"));
       return;
@@ -597,7 +605,7 @@ function ProblemAuthoringForm({
       toast.warning(t("runBlocked.needsSave"));
       return;
     }
-    if (!server && approved.length === 0) {
+    if (!server && !testcaseId && approved.length === 0) {
       toast.warning(t("runBlocked.noTestcase"));
       return;
     }
@@ -608,13 +616,13 @@ function ProblemAuthoringForm({
         const run = await realRunReferenceSolution(id, {
           language: draft.solutionLanguage,
           sourceCode: draft.solution,
-        });
+        }, testcaseId);
         if (run.compileError !== null) {
           toast.error(t("runCompileError"));
         } else if (run.total === 0) {
           toast.warning(t("runBlocked.noTestcase"));
         } else {
-          setDraft((previous) => ({
+          if (!testcaseId) setDraft((previous) => ({
             ...previous,
             solutionCheck: { ran: true, passed: run.passed, total: run.total },
           }));
@@ -643,9 +651,9 @@ function ProblemAuthoringForm({
       }
       return;
     }
-    const total = draft.testcases.filter((row) => row.approved).length;
+    const total = draft.testcases.filter((row) => testcaseId ? row.id === testcaseId : row.approved).length;
     const passed = total;
-    setDraft((previous) => ({
+    if (!testcaseId) setDraft((previous) => ({
       ...previous,
       solutionCheck: { ran: true, passed, total },
     }));
@@ -655,11 +663,10 @@ function ProblemAuthoringForm({
     );
   }
 
-  // F2-14 (BD EVT-16). The backend does the pipeline; the screen sends the statement, constraints
-  // and the author-written Samples (never the reference solution), then merges the returned rows as
-  // unapproved drafts. Inputs already in the set are skipped: the generator seed is fixed, so asking
-  // again returns the same rows. Drafts are not part of the checked set, so the last run stays valid.
+  // F2-14: the server generates from the saved problem and persists unapproved rows.
+  // Merge by testcase ID because large testcase content is stored outside the response.
   async function generateTestcases() {
+    if (server && (!id || dirty)) { toast.warning(t("generateNeedsSave")); return; }
     if (!canGenerate) {
       toast.warning(t("generateLockedBody", { samples: seedSamples }));
       return;
@@ -681,13 +688,16 @@ function ProblemAuthoringForm({
       .map(({ input, expected }) => ({ input, expected }));
     try {
       const result = await generate.mutateAsync({
-        problemId,
+        problemId: id,
         body: draft.body,
         constraints: draft.constraints,
         samples,
       });
-      const known = new Set(draft.testcases.map((row) => row.input));
-      const fresh = result.testcases.filter((row) => !known.has(row.input));
+      const known = new Set(draft.testcases.map((row) => server ? row.id : row.input));
+      const fresh = result.testcases.filter((row) => !known.has(server ? row.id : row.input));
+      if (result.aiGeneration) setAiGeneration(result.aiGeneration);
+      if (result.problemUpdatedAt) { lock.current = result.problemUpdatedAt; setSavedAt(result.problemUpdatedAt); }
+      if (server && fresh.length > 0) setSaved(previous => previous ? {...previous, testcases: [...previous.testcases, ...fresh]} : previous);
       const skipped = result.testcases.length - fresh.length;
       if (fresh.length > 0) {
         setDraft((previous) => ({
@@ -715,13 +725,13 @@ function ProblemAuthoringForm({
     } catch (error) {
       if (
         error instanceof ApiError &&
-        error.code === "AI_GENERATION_LIMIT_REACHED"
+        (error.code === "AI_GENERATION_LIMIT_REACHED" || error.code === "PRB-042")
       ) {
         toast.warning(
           t("toast.generateLimitReached", { limit: aiGeneration.limit }),
         );
       } else {
-        toast.error(t("toast.generateFailed"));
+        toast.error(error instanceof ApiError ? apiMessage(error) : t("toast.generateFailed"));
       }
     }
   }
@@ -756,7 +766,9 @@ function ProblemAuthoringForm({
   const specDone =
     server !== undefined && specSaved && serverSpecDeclared !== null
       ? serverSpecDeclared
-      : isSpecComplete(draft.spec);
+      : server !== undefined && !draft.spec.signature.functionName.trim() && draft.spec.signature.parameters.length === 0
+        ? Boolean(draft.spec.stdinFormat.trim() && draft.spec.stdoutFormat.trim() && matchingValid(draft.spec))
+        : isSpecComplete(draft.spec);
   const checklist = [
     { key: "minTestcases", done: approved.length >= 8, tab: "testcases" },
     { key: "minPublic", done: publicTestcases >= 2, tab: "testcases" },
@@ -804,13 +816,40 @@ function ProblemAuthoringForm({
     await removeTestcase(rowId, "toast.draftRejected");
   }
 
+  async function editTestcase(row: Testcase) {
+    if (readOnly || testcaseAction.current) return;
+    if (!liveId || !row.largeSides?.length) { setTestcaseDialog(row); return; }
+    testcaseAction.current = true; setTestcaseBusy(true);
+    try { setTestcaseDialog(await realReadTestcaseContent(liveId, row.id)); }
+    catch (error) { toast.error(apiMessage(error)); }
+    finally { testcaseAction.current = false; setTestcaseBusy(false); }
+  }
+  async function reorderTestcase(rowId: string, targetIndex: number) {
+    if (readOnly || testcaseAction.current || running) return;
+    const from = draft.testcases.findIndex(row => row.id === rowId);
+    if (from < 0 || targetIndex < 0 || targetIndex >= draft.testcases.length || from === targetIndex) return;
+    const next = [...draft.testcases];
+    next.splice(targetIndex, 0, next.splice(from, 1)[0]!);
+    testcaseAction.current = true; setTestcaseBusy(true);
+    try {
+      if (liveId) lock.current = (await realReorderTestcases(liveId, next.map(row => row.id))).updatedAt;
+      if (liveId) commitTestcases(() => next);
+      else patch({testcases: next, solutionCheck: STALE_CHECK});
+    } catch (error) { toast.error(apiMessage(error)); }
+    finally { testcaseAction.current = false; setTestcaseBusy(false); }
+  }
   const testcaseColumns: DataTableColumn<Testcase>[] = [
     {
       key: "index",
       header: "#",
       width: "40px",
       render: (row) => (
-        <span className="font-mono text-[11.5px] text-[var(--color-text-subtle)]">
+        <span className="font-mono text-[11.5px] text-[var(--color-text-subtle)]"
+          draggable={!readOnly && !testcaseBusy && !running} title={t("reorderHint")}
+          onDragStart={() => { draggedTestcase.current = row.id; }}
+          onDragEnd={() => { draggedTestcase.current = null; }}
+          onDragOver={event => event.preventDefault()}
+          onDrop={event => { event.preventDefault(); if (draggedTestcase.current) void reorderTestcase(draggedTestcase.current, draft.testcases.indexOf(row)); draggedTestcase.current = null; }}>
           {draft.testcases.indexOf(row) + 1}
         </span>
       ),
@@ -856,19 +895,27 @@ function ProblemAuthoringForm({
     {
       key: "actions",
       header: <span className="sr-only">{t("columnActions")}</span>,
-      width: "130px",
+      width: "220px",
       align: "right",
       render: (row) => (
         <div className="flex justify-end gap-1">
+          <IconAction icon={ArrowUp} label={t("moveUp")} disabled={readOnly || testcaseBusy || running || draft.testcases.indexOf(row) === 0}
+            onClick={() => reorderTestcase(row.id, draft.testcases.indexOf(row) - 1)} />
+          <IconAction icon={ArrowDown} label={t("moveDown")} disabled={readOnly || testcaseBusy || running || draft.testcases.indexOf(row) === draft.testcases.length - 1}
+            onClick={() => reorderTestcase(row.id, draft.testcases.indexOf(row) + 1)} />
+          <IconAction icon={Play} label={t("runOne")} disabled={readOnly || testcaseBusy || running}
+            onClick={() => runSolution(row.id)} />
           <IconAction
             icon={Pencil}
             label={t("edit")}
-            onClick={() => setTestcaseDialog(row)}
+            disabled={readOnly || testcaseBusy || running}
+            onClick={() => editTestcase(row)}
           />
           <IconAction
             icon={Trash2}
             label={t("delete")}
             tone="danger"
+            disabled={readOnly || testcaseBusy || running}
             onClick={() => setTestcaseToDelete(row)}
           />
         </div>
@@ -926,7 +973,7 @@ function ProblemAuthoringForm({
         </div>
       ) : null}
 
-      <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1fr)_300px]">
+      <fieldset disabled={saving || running || generate.isPending || testcaseBusy} className="grid min-w-0 grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1fr)_300px]">
         <div className="flex min-w-0 flex-col gap-3.5">
           <Card className="px-1.5 py-1.5">
             <SegmentedTabs
@@ -1153,7 +1200,7 @@ function ProblemAuthoringForm({
                     }
                     aria-busy={running || undefined}
                     disabled={running}
-                    onClick={runSolution}
+                    onClick={() => runSolution()}
                   >
                     {running ? t("running") : t("runSolution")}
                   </Button>
@@ -1354,15 +1401,18 @@ function ProblemAuthoringForm({
         <div className="flex flex-col gap-3.5 xl:sticky xl:top-[92px]">
           <Card title={t("propertiesTitle")}>
             <div className="flex flex-col gap-3.5">
-              <SelectField
-                label={t("topicLabel")}
-                value={draft.topic}
-                onChange={(event) => patch({ topic: event.target.value })}
-                options={topicList.map((topic) => ({
-                  value: topic.key,
-                  label: topic.label,
-                }))}
-              />
+              <fieldset disabled={readOnly} className="flex flex-col gap-2">
+                <legend className="mb-2 text-sm font-medium">{t("topicLabel")}</legend>
+                {topicList.map(topic => {
+                  const selectedTopics = [draft.topic, ...(draft.otherTopicIds ?? [])].filter(Boolean);
+                  return <label key={topic.key} className="flex items-center gap-2 text-sm">
+                    <input type="checkbox" checked={selectedTopics.includes(topic.key)} onChange={event => {
+                      const next = event.target.checked ? [...new Set([...selectedTopics, topic.key])] : selectedTopics.filter(key => key !== topic.key);
+                      patch({topic: next[0] ?? "", otherTopicIds: next.slice(1)});
+                    }} />{topic.label}
+                  </label>;
+                })}
+              </fieldset>
               <div>
                 <p className="mb-1.5 text-[11px] font-semibold tracking-[0.07em] text-[var(--color-text-subtle)] uppercase">
                   {t("difficultyLabel")}
@@ -1497,7 +1547,7 @@ function ProblemAuthoringForm({
             </ul>
           </Card>
         </div>
-      </div>
+      </fieldset>
 
       <UnsavedChangesDialog
         open={leaveGuard.pending}

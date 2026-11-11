@@ -203,7 +203,15 @@ function Workspace({
       setProgressIssue(t("console.progressSlow"));
     },
   });
-  const [saved, setSaved] = useState(detail.saved);
+  const [bookmarkState, setBookmarkState] = useState({
+    source: detail.saved,
+    value: detail.saved,
+  });
+  if (bookmarkState.source !== detail.saved) {
+    setBookmarkState({ source: detail.saved, value: detail.saved });
+  }
+  const saved =
+    bookmarkState.source === detail.saved ? bookmarkState.value : detail.saved;
   const setBookmark = useSetBookmark();
   // Sub-screen listing every testcase of the latest Run Code / Submit (owner 2026-10-21).
   const [dialog, setDialog] = useState<"run" | "submit" | null>(null);
@@ -368,7 +376,7 @@ function Workspace({
           } else {
             toast.success(t("toast.unsaved"));
           }
-          setSaved(next);
+          setBookmarkState({ source: detail.saved, value: next });
         },
         onError: (error) => toast.error(apiErrorMessage(error)),
       },

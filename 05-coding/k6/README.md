@@ -33,3 +33,7 @@ Mỗi người dùng ảo là một tài khoản riêng, tạo trong `setup()` q
 - k6 chạy cùng máy với backend sẽ tranh CPU; ghi lại cấu hình máy khi báo số.
 - Nếu backend sập giữa chừng, dừng k6 ngay (`Get-Process k6 | Stop-Process`): k6 cũ còn chạy sẽ đè lên lượt sau.
 - `seed-fixture.mjs` tạo thêm một tài khoản giảng viên và một bài; xoá DB tải sau khi đo.
+
+## Ghi CPU trong lúc chạy
+
+`sample-cpu.ps1` ghi CPU cả máy, backend, k6 và go-judge (`docker stats`) mỗi khoảng 2 giây ra CSV, dừng khi file `-StopFile` xuất hiện. Ví dụ: `powershell -File sample-cpu.ps1 -BackendPid <pid> -Out cpu.csv -StopFile stop.flag`. Kết quả mẫu: `06-plan/reports/261108-1646-f3-f4-go-judge-parallelism-8/`.

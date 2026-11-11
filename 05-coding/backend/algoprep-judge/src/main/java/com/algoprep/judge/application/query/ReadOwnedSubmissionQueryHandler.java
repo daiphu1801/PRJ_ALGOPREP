@@ -8,6 +8,7 @@ import com.algoprep.judge.domain.ports.out.SubmissionReadRepository;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -23,6 +24,10 @@ class ReadOwnedSubmissionQueryHandler
     this.projection = projection;
   }
 
+  // Calls F2 over a REQUIRES_NEW read; it must not run inside a transaction that holds a
+  // connection,
+  // otherwise every request pins one connection while waiting for a second and the pool deadlocks.
+  @Transactional(propagation = Propagation.NOT_SUPPORTED)
   @Override
   public Detail get(UUID owner, UUID id) {
     return projection.detail(

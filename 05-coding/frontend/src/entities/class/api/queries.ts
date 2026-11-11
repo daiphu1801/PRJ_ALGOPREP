@@ -1,3 +1,4 @@
+import { currentUserScope } from "@/shared/api/user-scope";
 // PROTOTYPE with a real API behind most of it (03-dd/api/F1_identity.md #19 to #28, #25A, #25B, #56,
 // #59, #45). The hooks of INS0201, INS0203, INS0204, INS0205, USR0701 and USR0702 take a real call
 // through `withMockData`. What still goes through `useMockQuery` and fails with NOT_IMPLEMENTED in
@@ -245,7 +246,7 @@ export const useRemoveStudent = () =>
 
 export const useMyClasses = () =>
   useQuery({
-    queryKey: ["classes", "mine"],
+    queryKey: ["classes", "mine", currentUserScope()],
     queryFn: () => withMockData(listMyClasses, realListMyClasses),
     staleTime: STALE,
     retry: false,
@@ -257,7 +258,7 @@ export const useMyClasses = () =>
  */
 export const useMyClass = (classId: string) =>
   useQuery({
-    queryKey: ["classes", "mine", classId],
+    queryKey: ["classes", "mine", currentUserScope(), classId],
     queryFn: () =>
       withMockData(
         async () =>

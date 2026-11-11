@@ -2,8 +2,10 @@ package com.algoprep.identity.presentation.controller;
 
 import com.algoprep.common.exception.InvalidRequestException;
 import com.algoprep.identity.application.dto.AuditExport;
+import com.algoprep.identity.application.dto.InterviewTranscriptExport;
 import com.algoprep.identity.application.dto.PersonalDataExport;
 import com.algoprep.identity.application.dto.SubmissionExport;
+import com.algoprep.identity.application.ports.in.ExportMyInterviewTranscriptsUseCase;
 import com.algoprep.identity.application.ports.in.ExportMyProfileDataUseCase;
 import com.algoprep.identity.application.ports.in.ExportMySubmissionsUseCase;
 import com.algoprep.identity.domain.model.MySettings;
@@ -26,8 +28,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Personal data export #16: {@code scope=profile} (JSON) and {@code scope=submissions} (CSV). The
- * interview transcripts of #17 need F5 and have no route yet.
+ * Personal data export #16: {@code scope=profile} (JSON) and {@code scope=submissions} (CSV), and
+ * #17: the interview transcripts as a JSON array.
  */
 @RestController
 @RequestMapping("/api/v1/identity/me/export")
@@ -46,11 +48,15 @@ class MyExportController {
 
   private final ExportMyProfileDataUseCase exportProfile;
   private final ExportMySubmissionsUseCase exportSubmissions;
+  private final ExportMyInterviewTranscriptsUseCase exportTranscripts;
 
   MyExportController(
-      ExportMyProfileDataUseCase exportProfile, ExportMySubmissionsUseCase exportSubmissions) {
+      ExportMyProfileDataUseCase exportProfile,
+      ExportMySubmissionsUseCase exportSubmissions,
+      ExportMyInterviewTranscriptsUseCase exportTranscripts) {
     this.exportProfile = exportProfile;
     this.exportSubmissions = exportSubmissions;
+    this.exportTranscripts = exportTranscripts;
   }
 
   record PersonalDataResponse(MyProfileController.ProfileResponse profile, MySettings settings) {}
@@ -71,6 +77,18 @@ class MyExportController {
         .body(
             new PersonalDataResponse(
                 MyProfileController.ProfileResponse.of(data.profile()), data.settings()));
+  }
+
+  @GetMapping("/interview-transcripts")
+  ResponseEntity<List<InterviewTranscriptExport.Session>> interviewTranscripts(
+      @AuthenticationPrincipal Jwt jwt) {
+    UUID caller = UUID.fromString(jwt.getSubject());
+    return ResponseEntity.ok()
+        .header(
+            HttpHeaders.CONTENT_DISPOSITION,
+            "attachment; filename=\"algoprep-interview-transcripts.json\"")
+        .cacheControl(CacheControl.noStore())
+        .body(exportTranscripts.export(caller).sessions());
   }
 
   private static ResponseEntity<byte[]> submissions(SubmissionExport data) {

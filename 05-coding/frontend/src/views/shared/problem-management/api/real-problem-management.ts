@@ -170,3 +170,18 @@ export async function realExportProblems(
 ): Promise<{ blob: Blob; filename: string | null }> {
   return api.downloadPost(`${BASE}/export`, { problemIds });
 }
+
+/** #29: unpublish each selected problem, with per-item errors. */
+export const realBulkUnpublish = (problemIds: string[]) => bulk("unpublish", { problemIds });
+/** #31 adds a topic, preserving the other topics. */
+export const realBulkTopic = (problemIds: string[], topicId: string) => bulk("topic", { problemIds, topicId });
+/** #27: export the entire filter, independently of the current page selection. */
+export function realExportFilteredProblems(params: AdminListParams, levelId?: string) {
+  return api.downloadPost(`${BASE}/export`, {
+    filter: {
+      q: params.q.trim(),
+      ...(params.level !== "all" && levelId ? { level: levelId } : {}),
+      ...(params.status !== "all" ? { status: params.status === "published" ? "PUBLISHED" : "UNPUBLISHED" } : {}),
+    },
+  });
+}

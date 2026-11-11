@@ -137,14 +137,6 @@ const LANGUAGE_TO_WIRE: Record<string, string> = {
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-/** Defaults of a brand-new form: the server fills missing limits too, these only keep the inputs valid. */
-const NEW_LIMITS = {
-  timeLimitMs: 1000,
-  memoryLimitMb: 256,
-  outputLimitKb: 64,
-  maxSubmissionsPerHour: null,
-} as const;
-
 const NO_CHECK = { ran: false, passed: 0, total: 0 };
 
 export function emptySpec(): ProblemSpec {
@@ -172,12 +164,14 @@ function toType(dto: TypeRefDto): SpecType {
     : "OTHER"; // A kind the schema does not know: the screen shows it as "OTHER" and warns.
   return {
     kind,
+    ...(kind === "OTHER" ? {rawType: {...dto}} : {}),
     ...(dto.of ? { of: toType(dto.of) } : {}),
     ...(dto.dimensions ? { dimensions: dto.dimensions } : {}),
   };
 }
 
 function fromType(type: SpecType): TypeRefDto {
+  if (type.kind === "OTHER" && type.rawType) return type.rawType;
   return {
     kind: type.kind,
     ...(type.of ? { of: fromType(type.of) } : {}),
@@ -440,7 +434,12 @@ export async function realLoadDraft(
   problemId?: string,
   fromId?: string,
 ): Promise<ProblemDraftRecord> {
-  const levels = await loadLevels();
+  const [levels, defaults] = await Promise.all([
+    loadLevels(),
+    problemId ? Promise.resolve(null) : api.get<{
+      timeLimitMs: number; memoryLimitMb: number; maxOutputSizeKb: number; maxAiGenerationsPerProblem: number;
+    }>("/problem-bank/authoring/defaults"),
+  ]);
   if (problemId) {
     const [record, stats] = await Promise.all([
       readRecord(problemId, levels),
@@ -448,6 +447,7 @@ export async function realLoadDraft(
     ]);
     return { ...record, stats };
   }
+  if (!defaults) throw new ApiError("PRB-050", 503);
   if (fromId) {
     const source = await api.get<DuplicateDto>(
       `${BASE}/${fromId}/duplicate-source`,
@@ -463,7 +463,7 @@ export async function realLoadDraft(
         examples: toExamples(source.workedExamples, "ex-copy"),
       },
       savedAt: null,
-      aiGeneration: { used: 0, limit: 0 },
+      aiGeneration: { used: 0, limit: defaults.maxAiGenerationsPerProblem },
       stats: null,
       server: serverState(null, levels, source),
     };
@@ -476,9 +476,9 @@ export async function realLoadDraft(
         statementMd: "",
         constraintsMd: "",
         limits: {
-          timeLimitMs: NEW_LIMITS.timeLimitMs,
-          memoryLimitMb: NEW_LIMITS.memoryLimitMb,
-          maxOutputSizeKb: NEW_LIMITS.outputLimitKb,
+          timeLimitMs: defaults.timeLimitMs,
+          memoryLimitMb: defaults.memoryLimitMb,
+          maxOutputSizeKb: defaults.maxOutputSizeKb,
           maxSubmissionsPerHour: null,
         },
         topicIds: [],
@@ -488,7 +488,7 @@ export async function realLoadDraft(
       }),
     },
     savedAt: null,
-    aiGeneration: { used: 0, limit: 0 },
+    aiGeneration: { used: 0, limit: defaults.maxAiGenerationsPerProblem },
     stats: null,
     server: serverState(null, levels),
   };
@@ -849,6 +849,7 @@ export type ReferenceRun = {
 export async function realRunReferenceSolution(
   problemId: string,
   code: { language: string; sourceCode: string },
+  testcaseId?: string,
 ): Promise<ReferenceRun> {
   const dto = await api.post<{
     compileError: string | null;
@@ -861,6 +862,7 @@ export async function realRunReferenceSolution(
   }>(`${BASE}/${problemId}/reference-solution/run`, {
     language: LANGUAGE_TO_WIRE[code.language] ?? "JAVA",
     sourceCode: code.sourceCode,
+    ...(testcaseId ? {testcaseId} : {}),
   });
   const failed = [...dto.results]
     .filter((row) => row.verdict === "FAIL")
@@ -874,5 +876,41 @@ export async function realRunReferenceSolution(
           failure: failed.failure ?? "RUNTIME_ERROR",
         }
       : null,
+  };
+}
+
+/** Author-only hydration; signed URLs are refreshed from the detail endpoint on every open. */
+export async function realReadTestcaseContent(problemId: string, testcaseId: string): Promise<Testcase> {
+  const detail = await api.get<{testcases: (TestcaseDto & {inputDownloadUrl?: string | null; expectedOutputDownloadUrl?: string | null})[]}>(`${BASE}/${problemId}`);
+  const row = detail.testcases.find(item => item.id === testcaseId);
+  if (!row) throw new ApiError("PRB-011", 404);
+  async function read(inline: string | null, url?: string | null) {
+    if (inline !== null) return inline;
+    if (!url) throw new ApiError("PRB-052", 503);
+    const response = await fetch(url, {credentials: "omit", signal: AbortSignal.timeout(10000)});
+    if (!response.ok) throw new ApiError("PRB-052", 503);
+    const bytes = await response.arrayBuffer();
+    if (bytes.byteLength > 1048576) throw new ApiError("PRB-048", 422);
+    return new TextDecoder("utf-8", {fatal: true}).decode(bytes);
+  }
+  const [input, expected] = await Promise.all([read(row.input, row.inputDownloadUrl), read(row.expectedOutput, row.expectedOutputDownloadUrl)]);
+  return {...toTestcase(row), input, expected, largeSides: undefined};
+}
+
+/** #48 uses the saved problem, an empty body, and server-owned quota/state. */
+export async function realGenerateTestcases(input: import("../model/draft-types").GenerateTestcasesInput): Promise<import("../model/draft-types").GenerateTestcasesResult> {
+  if (!input.problemId) throw new ApiError("PRB-041", 422);
+  const result = await api.post<{
+    testcases: TestcaseDto[]; dropped: {reason: string; count: number}[];
+    warnings: {code: string}[]; aiGeneration: {used: number; limit: number}; problemUpdatedAt: string;
+  }>(`${BASE}/${input.problemId}/testcases/generate`, {});
+  const reasons: Record<string, import("../model/draft-types").DroppedReason> = {
+    INVALID_CONSTRAINT: "invalidConstraint", REFERENCE_FAILED: "referenceFailed", TIMEOUT: "timeout", DUPLICATE_INPUT: "duplicateInput",
+  };
+  return {
+    testcases: result.testcases.map(toTestcase),
+    dropped: result.dropped.map(row => ({reason: reasons[row.reason] ?? "invalidConstraint", count: row.count})),
+    largestCaseWarning: result.warnings.some(row => row.code === "LARGEST_CASE_TIMEOUT"),
+    aiGeneration: result.aiGeneration, problemUpdatedAt: result.problemUpdatedAt,
   };
 }

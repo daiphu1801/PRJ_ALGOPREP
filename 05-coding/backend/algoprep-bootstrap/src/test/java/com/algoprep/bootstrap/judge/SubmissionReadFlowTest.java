@@ -42,10 +42,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -75,7 +73,6 @@ class SubmissionReadFlowTest {
   @Autowired JdbcTemplate jdbc;
   @Autowired WebApplicationContext context;
   @Autowired AccessTokenPort access;
-  @Autowired PlatformTransactionManager manager;
   @Autowired GetOwnedSubmissionDetailUseCase details;
   @Autowired GetSubmissionProgressUseCase progress;
   @Autowired BeginSubmissionCompilationUseCase compile;
@@ -378,32 +375,32 @@ class SubmissionReadFlowTest {
   }
 
   @Test
-  void exactNinetyDayBoundaryIsAvailableThenExpiresWithoutWaitingForCleanup() {
+  void ninetyDayBoundaryIsAvailableThenExpiresWithoutWaitingForCleanup() {
     UUID id = submission("WRONG_ANSWER");
     testcase(id, 1, true, "WA");
-    var tx = new TransactionTemplate(manager);
-    tx.setIsolationLevel(
-        org.springframework.transaction.TransactionDefinition.ISOLATION_REPEATABLE_READ);
-    tx.executeWithoutResult(
-        status -> {
-          jdbc.update(
-              "UPDATE judge.submissions SET submitted_at=now()-interval '90 days' WHERE id=?", id);
-          assertThat(details.get(student, id).testcaseDetail().available()).isTrue();
-          jdbc.update(
-              "UPDATE judge.submissions SET submitted_at=now()-interval '90 days 1 microsecond' WHERE id=?",
-              id);
-          var expired = details.get(student, id);
-          assertThat(expired.testcaseDetail().unavailableReason()).isEqualTo("RETENTION_EXPIRED");
-          assertThat(expired.scoreRatio()).isEqualByComparingTo("0.5");
-          assertThat(expired.sourceCode()).isEqualTo("private-source");
-          assertThat(progress.getProgress(student, id).testcases()).isEmpty();
-          assertThat(
-                  jdbc.queryForObject(
-                      "SELECT count(*) FROM judge.submission_testcase_results WHERE submission_id=?",
-                      Integer.class,
-                      id))
-              .isEqualTo(1);
-        });
+    // details.get runs outside any caller transaction (NOT_SUPPORTED, so it never holds a
+    // connection
+    // while F2 opens a second one). now() is then not frozen between the update and the read, so
+    // the
+    // exact microsecond boundary cannot be asserted here; check a 5 second margin on both sides.
+    jdbc.update(
+        "UPDATE judge.submissions SET submitted_at=now()-interval '90 days'+interval '5 seconds' WHERE id=?",
+        id);
+    assertThat(details.get(student, id).testcaseDetail().available()).isTrue();
+    jdbc.update(
+        "UPDATE judge.submissions SET submitted_at=now()-interval '90 days'-interval '5 seconds' WHERE id=?",
+        id);
+    var expired = details.get(student, id);
+    assertThat(expired.testcaseDetail().unavailableReason()).isEqualTo("RETENTION_EXPIRED");
+    assertThat(expired.scoreRatio()).isEqualByComparingTo("0.5");
+    assertThat(expired.sourceCode()).isEqualTo("private-source");
+    assertThat(progress.getProgress(student, id).testcases()).isEmpty();
+    assertThat(
+            jdbc.queryForObject(
+                "SELECT count(*) FROM judge.submission_testcase_results WHERE submission_id=?",
+                Integer.class,
+                id))
+        .isEqualTo(1);
   }
 
   @Test

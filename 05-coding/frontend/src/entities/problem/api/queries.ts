@@ -1,3 +1,4 @@
+import { currentUserScope } from "@/shared/api/user-scope";
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 //
 // Data boundary of the problem-authoring screens (authoring, read-only detail, preview). Same shape
@@ -10,15 +11,11 @@ import {
   submitRealCode,
   type ExecutionInput,
 } from "./real-execution";
-import {
-  ApiError,
-  useMockMutation,
-  useMockQuery,
-  withMockData,
-} from "@/shared/api";
+import { useMockMutation, useMockQuery, withMockData } from "@/shared/api";
 import {
   previewBody,
   realLoadDraft,
+  realGenerateTestcases,
   realPreviewSignature,
   realSaveDraft,
   type SaveResult,
@@ -62,7 +59,7 @@ export const useProblemListPage = () =>
 /** `GetProblemForWorkspace` / `GetProblemOverview`. `null` = unknown or unpublished id (the screen shows "not found"). */
 export const useProblemDetail = (problemId: string | undefined) =>
   useMockQuery<ProblemDetail | null>({
-    queryKey: ["problem", "detail", problemId],
+    queryKey: ["problem", "detail", currentUserScope(), problemId],
     mock: () => (problemId ? (fetchProblemDetail(problemId) ?? null) : null),
     real: () => fetchOverviewProblem(problemId!),
     spec: PROBLEM_BANK_SPEC,
@@ -93,14 +90,6 @@ export const useCreateSubmission = () =>
     invalidate: [["submission"], ["problem", "workspace"]],
     spec: JUDGE_SPEC,
   });
-
-function notImplemented(): never {
-  throw new ApiError(
-    "NOT_IMPLEMENTED",
-    501,
-    "03-dd/api/F2_problem-bank.md: #48 (sinh testcase bằng AI) chưa có endpoint",
-  );
-}
 
 const draftKey = (problemId?: string, fromId?: string) =>
   ["problem-draft", problemId ?? "new", fromId ?? null] as const;
@@ -172,12 +161,15 @@ export function usePublishProblem() {
   });
 }
 
-/** `GenerateTestcasesWithAi` (F2-14, #48: not built). Returns unapproved drafts; the screen merges them in. A run uses one of the per-problem attempts, so the record is refetched. */
+/** F2-14/#48 persists unapproved testcases and consumes a per-problem attempt. */
 export function useGenerateTestcases() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (input: GenerateTestcasesInput) =>
-      withMockData(() => generateTestcasesWithAi(input), notImplemented),
+      withMockData(
+        () => generateTestcasesWithAi(input),
+        () => realGenerateTestcases(input),
+      ),
     onSettled: () =>
       queryClient.invalidateQueries({ queryKey: ["problem-draft"] }),
   });

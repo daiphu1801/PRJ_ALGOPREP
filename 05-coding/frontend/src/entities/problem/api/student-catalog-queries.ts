@@ -1,3 +1,4 @@
+import { currentUserScope } from "@/shared/api/user-scope";
 // Data boundary of the learner's problem list (USR0101): four independent reads and the random pick.
 // Mock and real share one contract; a failing side block never takes the table down with it.
 import { useMockMutation, useMockQuery } from "@/shared/api";
@@ -18,10 +19,7 @@ import {
   realSuggestedProblems,
   realTopicProgress,
 } from "./real-student-catalog";
-import type {
-  CatalogParams,
-  ClassProblemsPage,
-} from "../model/catalog-types";
+import type { CatalogParams, ClassProblemsPage } from "../model/catalog-types";
 
 const PROBLEM_BANK_SPEC = "03-dd/api/F2_problem-bank.md";
 const JUDGE_SPEC = "03-dd/api/F4_judge-orchestration.md";
@@ -30,26 +28,29 @@ const JUDGE_SPEC = "03-dd/api/F4_judge-orchestration.md";
 export const IN_PROGRESS_LIMIT = 3;
 
 /** `ListPublishedProblems`. The previous page stays while the next loads, so a filter change does not blank the table. */
-export function useProblemCatalog(params: CatalogParams) {
+export function useProblemCatalog(params: CatalogParams, enabled = true) {
   return useMockQuery({
-    queryKey: ["problem", "catalog", params],
+    queryKey: ["problem", "catalog", currentUserScope(), params],
+    enabled,
     mock: () => mockCatalog(params),
     real: () => realListCatalog(params),
     spec: PROBLEM_BANK_SPEC,
     staleTime: 0,
     keepPrevious: true,
+    previousScopeIndex: 2,
   });
 }
 
 /** `GetSuggestedProblems` (#12): the dashboard table; the server ranks and filters, the previous rows stay while a filter loads. */
 export const useSuggestedProblems = (difficulty: string, topicId: string) =>
   useMockQuery({
-    queryKey: ["problem", "suggested", difficulty, topicId],
+    queryKey: ["problem", "suggested", currentUserScope(), difficulty, topicId],
     mock: () => mockSuggestedProblems(difficulty, topicId),
     real: () => realSuggestedProblems(difficulty, topicId),
     spec: PROBLEM_BANK_SPEC,
     staleTime: 0,
     keepPrevious: true,
+    previousScopeIndex: 2,
   });
 
 /** `GetRandomProblem`: the server picks inside the same filter; null means nothing matches. */
@@ -63,7 +64,7 @@ export const useRandomProblem = () =>
 /** `ListTopicsWithProgress`. */
 export const useTopicProgress = () =>
   useMockQuery({
-    queryKey: ["problem", "topic-progress"],
+    queryKey: ["problem", "topic-progress", currentUserScope()],
     mock: mockTopicProgress,
     real: realTopicProgress,
     spec: PROBLEM_BANK_SPEC,
@@ -72,7 +73,7 @@ export const useTopicProgress = () =>
 /** `ListMyClassAssignments`. */
 export const useMyClassAssignments = () =>
   useMockQuery({
-    queryKey: ["problem", "my-class-assignments"],
+    queryKey: ["problem", "my-class-assignments", currentUserScope()],
     mock: mockMyClassAssignments,
     real: realMyClassAssignments,
     spec: PROBLEM_BANK_SPEC,
@@ -88,19 +89,26 @@ export const useMyClassProblems = (
   enabled: boolean,
 ) =>
   useMockQuery<ClassProblemsPage | null>({
-    queryKey: ["problem", "my-class-problems", classId, page],
+    queryKey: [
+      "problem",
+      "my-class-problems",
+      currentUserScope(),
+      classId,
+      page,
+    ],
     mock: () => null,
     real: () => realMyClassProblems(classId, page),
     spec: PROBLEM_BANK_SPEC,
     staleTime: 0,
     enabled,
     keepPrevious: true,
+    previousScopeIndex: 2,
   });
 
 /** `ListMyUnsolvedRecentProblems` (F4 #8). */
 export const useMyInProgress = (limit: number = IN_PROGRESS_LIMIT) =>
   useMockQuery({
-    queryKey: ["problem", "my-in-progress", limit],
+    queryKey: ["problem", "my-in-progress", currentUserScope(), limit],
     mock: () => mockMyInProgress(limit),
     real: () => realMyInProgress(limit),
     spec: JUDGE_SPEC,

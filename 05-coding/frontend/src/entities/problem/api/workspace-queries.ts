@@ -1,3 +1,4 @@
+import { currentUserScope } from "@/shared/api/user-scope";
 import { useQuery } from "@tanstack/react-query";
 import {
   api,
@@ -315,7 +316,7 @@ export async function fetchWorkspaceProblem(
 
 export function useWorkspaceProblem(problemId: string | undefined) {
   return useQuery({
-    queryKey: ["problem", "workspace", problemId],
+    queryKey: ["problem", "workspace", currentUserScope(), problemId],
     queryFn: () =>
       withMockData(
         () => fetchProblemDetail(problemId!) ?? null,

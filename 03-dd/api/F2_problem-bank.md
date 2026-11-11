@@ -2577,6 +2577,14 @@ chạy script sinh trong sandbox (chặn mạng, giới hạn thời gian và k�
 | PB49-B1 | Boundary | `used = limit - 1` -> chạy được, sau đó `used = limit`; lần kế `422 PRB-042`; hai lần bấm đồng thời -> lần hai `409 PRB-023` |
 | PB49-B2 | Boundary | lượt chỉ thêm 0 testcase (mọi input bị loại) -> không tính lượt |
 
+**Triển khai 2026-11-10 (F2-9, F5-5b; owner duyệt, ghi nhận ở `DEC-2026-1110-f2-9-testcase-generation-decisions`).**
+
+- Thứ tự kiểm: 404 và 403 (tác giả), `PRB-040`, `PRB-041` (thiếu ràng buộc, dưới 2 Sample tay đã duyệt), `PRB-042` (đã đủ trần), khoá Redis (`PRB-023`, 409), chạy đáp án mẫu (`REFERENCE_NOT_PASSING`), gọi AI. Vì vậy `PRB-041` chỉ liệt kê `REFERENCE_NOT_PASSING` khi hai lý do kia đã đạt.
+- Bước chạy đáp án mẫu dùng chung đường và hạn mức 10 lượt trên 60 giây của #47 (`RunReferenceSolutionUseCase`), nên #48 có thể trả `429 PRB-055`.
+- Lỗi sandbox ở bước validator hoặc đáp án mẫu trả `503 PRB-050`; tổng testcase sau khi thêm quá 500 trả `PRB-046`.
+- Script sinh ra là Python, in nhiều ca ngăn bằng dòng `###CASE <nhãn>`, nhận hạt giống qua biến môi trường `SEED` (xem `03-dd/api/F5_ai-review.md` mục 32.2).
+- #56: PUT với giá trị không đổi thì không ghi và không audit; body phải là số nguyên.
+
 ## 50. GET /instructor/class-assignments (`ListClassAssignments`)
 
 ### 50.1 Hợp đồng
@@ -2951,6 +2959,8 @@ Bảng 58.1: Cổng vào của `problem-bank` (không có route HTTP, lời gọ
 | `ProblemTopicReadPort` (`judge` khai, dòng 76) | `judge-orchestration` | `getProblemIdsByTopics(topicIds)` -> `Map<topicId, [problemId]>` | | trả quan hệ bài–chủ đề còn lưu, kể cả bài đã rút, cho tỉ lệ nộp bài lịch sử F4 §12; tiến độ hiện hành F2 §4/§14A tự lọc `PUBLISHED AND NOT deleted` |
 | `ClassAssignmentReadPort` (`judge` khai, dòng 75) | `judge-orchestration`, `identity` (`INS0201`, `INS0203`, `INS0204`) | `listAssignments(classIds)` | `[ {classId, problemId, problemTitle, assignedAt, removedAt} ]` | **kể cả bài đã gỡ mềm** (`removedAt` khác `null`); bên cần chỉ bài đang giao tự lọc `removedAt == null`. Không kiểm giảng viên. **Triển khai 2026-11-02, B1:** inbound F2 `ListClassAssignmentsUseCase`, handler read-only/JDBC một SELECT; F4 khai outbound/DTO, bootstrap bridge đã nối thật. Giữ từng dòng giao lại, gồm bài đã UNPUBLISHED/deleted, không nhóm/lọc active như HTTP §50; caller tự kiểm phạm vi. Lỗi DB ném lỗi cổng, không giả danh sách rỗng. F1 có thể nối cùng inbound, chưa sửa F1 hoặc triển khai HTTP§50. Report `261102-1636-class-assignment-read-port`. |
 | `ProblemBankStatsPort` (`03-dd/logic/F1_identity.md:312`) | `identity` (dashboard admin, tiến độ cá nhân), `ai-review` (tên bài ở `ADM0302`) | `publishedCatalogSummary()` (như mục 14.3); `problemSummaries(problemIds)`; `levelCatalog()` | | tên do `identity` DD đặt; gần trùng `ProblemSummaryReadPort`, xem `Q-33`. **Triển khai 2026-11-06 (F2-10):** phía F2 đã có cổng vào `ProblemBankStatsUseCase` với `levelCatalog()` (mọi mức theo `sort_order`, kể cả mức chưa có bài) và `problemSummaries(ids)` (`problemId, title, levelId, levelCode, levelDisplayName, published`; bài đã rút trả `published=false`, id lạ không có dòng); `publishedCatalogSummary()` dùng lại `StudentCatalogUseCase.summary()` của mục 14. Giao dịch đọc riêng (`REQUIRES_NEW`). Phía F1 còn phải khai cổng ra và viết cầu bootstrap (việc của F1-8). Test: `ProblemBankStatsQueryHandlerTest` (3), `ProblemBankStatsFlowTest` (3, PostgreSQL thật) |
+
+**Triển khai 2026-11-09 (F2-C0, AC-83).** Cổng vào `ReadProblemContextUseCase.getContext(problemId, language)` đã có; chỉ đọc bài `PUBLISHED` chưa xoá, bài không thấy (chưa xuất bản, đã rút, đã xoá, id lạ) ném `PRB-010` và F5 ánh xạ thành `AIR-501`. Owner chốt 2026-11-09: học viên đã Accepted rồi bài bị rút thì không xin phân tích hoặc phỏng vấn được nữa, báo cáo đã lưu vẫn xem qua endpoint đọc của F5. `language` chỉ chọn tên hàm theo `name_overrides`, không kiểm hợp lệ. Ghi nhận ở `DEC-2026-1109-f2-problem-context-visibility`.
 
 **Triển khai 2026-11-07 (F1-8):** `ProblemBankStatsUseCase` thêm `publishedProblems()` trả mọi bài `PUBLISHED AND NOT deleted` (cùng hình `ProblemStat`, `published = true`, sắp theo mã rồi id) để F1 dựng phạm vi cho F4 ở khối độ khó và bài phổ biến của `ADM0101`. Lý do: bảng 58.1 chỉ có `levelCatalog()` và `problemSummaries(ids)`, F1 không có sẵn danh sách id `[SoT: Suy luận]`. Cầu nối F1 là `ProblemBankStatsBridge` (bootstrap). **Owner chốt 2026-11-07, A9:** `publishedProblems()` nạp cả danh mục đã xuất bản mỗi lần mở Tổng quan, chấp nhận đến vài nghìn bài; phân trang hoặc cache khi danh mục lớn hơn. Test: `ProblemBankStatsQueryHandlerTest` 4, flow `AdminSubmissionDashboardFlowTest` 6 đi qua cổng này.
 

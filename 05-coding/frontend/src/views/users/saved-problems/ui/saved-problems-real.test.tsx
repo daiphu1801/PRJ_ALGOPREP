@@ -324,3 +324,5 @@ describe("SavedProblemsView with the real API", () => {
     expect(within(row).getByRole("textbox")).toBeInTheDocument();
   });
 });
+
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));

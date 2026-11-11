@@ -14,10 +14,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * security context of the request to the worker. A failure or a missed deadline is one {@link
  * IllegalStateException} without cause, which the identity handler turns into a 503 for that block.
  */
-final class BridgeDeadline {
+public final class BridgeDeadline {
   private BridgeDeadline() {}
 
-  static <T> T call(String name, Duration limit, Callable<T> work) {
+  public static <T> T call(String name, Duration limit, Callable<T> work) {
     var task =
         new FutureTask<>(
             DelegatingSecurityContextCallable.create(work, SecurityContextHolder.getContext()));

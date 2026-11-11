@@ -58,6 +58,8 @@ export {
   realCreateTestcase,
   realDeleteTestcase,
   realRunReferenceSolution,
+  realReorderTestcases,
+  realReadTestcaseContent,
   realUpdateTestcase,
   type ReferenceRun,
   type SaveResult,
@@ -181,3 +183,5 @@ export type {
 } from "./model/saved-types";
 export { InProgressList } from "./ui/in-progress-list";
 export { overallVerdict } from "./api/real-execution";
+
+export { useTestcaseGenerationSettings, useUpdateTestcaseGenerationSettings } from "./api/generation-queries";

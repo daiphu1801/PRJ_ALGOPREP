@@ -38,6 +38,8 @@ type MockQueryArgs<T> = {
   enabled?: boolean;
   /** True where a changed key (filter, page) must keep showing the previous answer while the next one loads. */
   keepPrevious?: boolean;
+  /** Retain placeholder data only when this query-key segment still names the same owner. */
+  previousScopeIndex?: number;
 };
 
 export function useMockQuery<T>({
@@ -48,6 +50,7 @@ export function useMockQuery<T>({
   staleTime = 30_000,
   enabled,
   keepPrevious,
+  previousScopeIndex,
 }: MockQueryArgs<T>) {
   return useQuery({
     queryKey,
@@ -55,7 +58,14 @@ export function useMockQuery<T>({
     staleTime,
     retry: false,
     enabled,
-    placeholderData: keepPrevious ? keepPreviousData : undefined,
+    placeholderData: keepPrevious
+      ? (data, previousQuery) =>
+          previousScopeIndex === undefined ||
+          previousQuery?.queryKey[previousScopeIndex] ===
+            queryKey[previousScopeIndex]
+            ? keepPreviousData(data)
+            : undefined
+      : undefined,
   });
 }
 

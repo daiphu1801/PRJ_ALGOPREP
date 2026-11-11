@@ -114,6 +114,9 @@ public final class IdentityErrorCodes {
   /** The submission history the personal data export needs could not be read (HTTP 503). */
   public static final String SUBMISSION_EXPORT_UNAVAILABLE = "IDT-508";
 
+  /** The interview conversations the transcript export needs could not be read (HTTP 503). */
+  public static final String TRANSCRIPT_EXPORT_UNAVAILABLE = "IDT-509";
+
   /** {@code problemIds} of #48 is empty, has a malformed UUID or more than 100 ids (HTTP 422). */
   public static final String PROBLEM_IDS_INVALID = "IDT-V27";
 
