@@ -13,6 +13,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactElement } from "react";
 import { aiTokenBudget } from "@/entities/ai-budget";
+import { resetMockUsageAlerts } from "./ai-usage/api/__mock__/ai-usage-mocks";
 import { toast, useToasts } from "@/shared/lib/toast-store";
 
 vi.mock("@/shared/i18n", () => ({
@@ -149,7 +150,9 @@ describe("admin toasts", () => {
     fireEvent.click(
       screen.getByRole("button", { name: "publishDialog.confirm" }),
     );
-    expect(read().at(-1)).toEqual(["success", "publishDone"]);
+    await waitFor(() =>
+      expect(read().at(-1)).toEqual(["success", "publishDone"]),
+    );
   });
 
   it("ai config: saving an empty instruction is refused, a real one lands in the draft", async () => {
@@ -163,21 +166,25 @@ describe("admin toasts", () => {
 
     fireEvent.change(box, { target: { value: "Chi thi moi" } });
     fireEvent.click(screen.getByRole("button", { name: "editDialog.save" }));
-    expect(read().at(-1)).toEqual(["success", "editDialog.saved"]);
+    await waitFor(() =>
+      expect(read().at(-1)).toEqual(["success", "editDialog.saved"]),
+    );
     expect(screen.getByText("pendingCount")).toBeInTheDocument();
   });
 
-  it("ai limits: saving a bad cap raises an error toast, a good one a success toast", () => {
+  it("ai limits: saving a bad cap raises an error toast, a good one a success toast", async () => {
     const read = watch();
-    render(<AdminAiLimitsView />);
-    const input = screen.getByLabelText("budget.limitLabel");
+    render(withQuery(<AdminAiLimitsView />));
+    const input = await screen.findByLabelText("budget.limitLabel");
     fireEvent.change(input, { target: { value: "0" } });
     fireEvent.click(screen.getByRole("button", { name: "budget.saveLimit" }));
     expect(read().at(-1)).toEqual(["error", "budget.errorLimit"]);
 
     fireEvent.change(input, { target: { value: "60000000" } });
     fireEvent.click(screen.getByRole("button", { name: "budget.saveLimit" }));
-    expect(read().at(-1)).toEqual(["success", "budget.savedLimit"]);
+    await waitFor(() =>
+      expect(read().at(-1)).toEqual(["success", "budget.savedLimit"]),
+    );
     aiTokenBudget.set({ limitTokens: 52_000_000, locked: false });
   });
 
@@ -195,9 +202,12 @@ describe("admin toasts", () => {
     fireEvent.click(
       await screen.findByRole("button", { name: "markReviewed" }),
     );
+    await waitFor(() =>
+      expect(screen.queryByText("alert.anomalousAccount.title")).toBeNull(),
+    );
     expect(screen.queryByText("noAlerts")).toBeNull();
-    expect(screen.queryByText("alert.anomalousAccount.title")).toBeNull();
     expect(screen.getByText("alert.budgetRunningOut.title")).toBeTruthy();
     expect(read()).toEqual([["success", "markReviewedDone"]]);
+    resetMockUsageAlerts();
   });
 });

@@ -24,7 +24,8 @@ class JdbcProblemOutboxRepository implements ProblemOutboxRepository {
             """
             SELECT id, event_type, routing_key, payload::text AS envelope, publish_attempts
             FROM problem.outbox_events WHERE published_at IS NULL
-            ORDER BY created_at ASC, id ASC LIMIT :limit FOR UPDATE SKIP LOCKED
+            ORDER BY COALESCE(last_attempted_at, created_at), created_at, id
+            LIMIT :limit FOR UPDATE SKIP LOCKED
             """)
         .param("limit", limit)
         .query(
@@ -46,7 +47,8 @@ class JdbcProblemOutboxRepository implements ProblemOutboxRepository {
             UPDATE problem.outbox_events
             SET publish_attempts = CASE WHEN publish_attempts < 2147483647
                                         THEN publish_attempts + 1 ELSE publish_attempts END,
-                published_at = CASE WHEN :confirmed THEN clock_timestamp() ELSE NULL END
+                published_at = CASE WHEN :confirmed THEN clock_timestamp() ELSE NULL END,
+                last_attempted_at = clock_timestamp()
             WHERE id = :id AND published_at IS NULL
             """)
         .param("id", id)

@@ -1,6 +1,6 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 import { useQuery } from "@tanstack/react-query";
-import { ApiError, withMockData } from "@/shared/api";
+import { withMockData } from "@/shared/api";
 import type { ProgressRange } from "../model/types";
 import {
   fakeGetDifficultyBreakdown,
@@ -13,18 +13,9 @@ import {
   realGetProgressOverview,
   realGetTopicProgress,
 } from "./real-progress";
+import { realGetInterviewSummary } from "./real-interview-summary";
 
 const QUERY_OPTIONS = { staleTime: 30_000, retry: false } as const;
-
-// Only the interview summary is left: its endpoint (F5 #13) exists in the DD but `algoprep-ai-review` has no
-// controller yet. The blocks show the generic error; no number is invented (owner, 2026-11-07).
-function notImplemented(): never {
-  throw new ApiError(
-    "NOT_IMPLEMENTED",
-    501,
-    "03-dd/api/F5_ai-review.md #13 (interview summary) is not built yet",
-  );
-}
 
 export const useProgressOverview = () =>
   useQuery({
@@ -58,6 +49,9 @@ export const useInterviewSummary = (range: ProgressRange = "all") =>
   useQuery({
     queryKey: ["progress", "interview-summary", range],
     queryFn: () =>
-      withMockData(() => fakeGetInterviewSummary(range), notImplemented),
+      withMockData(
+        () => fakeGetInterviewSummary(range),
+        () => realGetInterviewSummary(range),
+      ),
     ...QUERY_OPTIONS,
   });

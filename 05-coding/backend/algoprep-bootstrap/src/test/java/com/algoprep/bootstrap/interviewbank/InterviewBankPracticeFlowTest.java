@@ -382,6 +382,23 @@ class InterviewBankPracticeFlowTest {
     assertThat(slots(aId)).isEqualTo(1);
   }
 
+  @Test
+  void ac10AQuestionWithoutContentIsComparedWithEmptyContentAndCompletes() throws Exception {
+    UUID bare = question("Explain a mutex", null, "ACTIVE");
+    rubric(bare, 1, "Clarity", "60.00");
+    rubric(bare, 2, "Depth", "40.00");
+    llm.ok(good("70", "20"));
+
+    var response = submit(bare, "A mutex serialises access.", a);
+
+    assertThat(response.getStatus()).as(response.getContentAsString()).isEqualTo(201);
+    String body = response.getContentAsString();
+    assertThat(JsonPath.<String>read(body, "$.feedbackStatus")).isEqualTo("COMPLETED");
+    assertThat(JsonPath.<Object>read(body, "$.feedbackErrorCode")).isNull();
+    assertThat(llm.calls).as("the model was really called").hasSize(1);
+    assertThat(slots(aId)).isEqualTo(1);
+  }
+
   // AC-11 / IB06-N2 ---------------------------------------------------------------------------
 
   @Test

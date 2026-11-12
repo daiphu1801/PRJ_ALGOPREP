@@ -32,17 +32,27 @@ export type CodeDiffProposal = {
   explanation: string | null;
 };
 
+/**
+ * Problem and code the review is about. The real F5 answer carries none of it (it is joined from F4
+ * `GET /judge/submissions/{id}` by the view); only the mock fills it, so mock mode stays one request.
+ */
+export type ReviewSource = {
+  problemTitle: string;
+  difficulty: ReviewDifficulty;
+  withdrawn: boolean;
+  submissionModel: "function" | "stdio";
+  sourceCode: string[];
+};
+
 export type SolutionReviewDetail = {
   submissionId: string;
   /** Where "apply to workspace" writes the suggestion (browser draft key = problem + language + model). */
   problemId: string;
   languageKey: "java" | "cpp" | "python";
-  submissionModel: "function" | "stdio";
-  problemTitle: string;
-  difficulty: ReviewDifficulty;
   readabilityScore: number;
   createdAt: string;
-  sourceCode: string[];
+  /** Mock only, see ReviewSource. */
+  source?: ReviewSource;
   // --- result_json (1.3a) ---
   schemaVersion: string;
   approachTitle: string;

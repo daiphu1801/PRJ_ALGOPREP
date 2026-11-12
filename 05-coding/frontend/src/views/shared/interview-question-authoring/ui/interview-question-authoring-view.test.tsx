@@ -16,6 +16,11 @@ import { InterviewQuestionAuthoringView } from "./interview-question-authoring-v
 vi.mock("@/shared/i18n", () => ({
   useT: () => (key: string, params?: Record<string, unknown>) =>
     params ? `${key} ${JSON.stringify(params)}` : key,
+  useApiErrorMessage: () => (error: unknown) =>
+    `apiError:${(error as { code?: string }).code}`,
+}));
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn() }),
 }));
 
 beforeEach(() => act(() => toast.clear()));
@@ -30,13 +35,13 @@ function renderWithQuery(ui: ReactElement) {
   );
 }
 
-
 describe("InterviewQuestionAuthoringView toasts", () => {
   it("toasts success on save and on soft delete", async () => {
     const toasts = renderHook(() => useToasts());
+    // IQ-021, not IQ-014: the mock bank keeps a retired question retired for the rest of the file.
     renderWithQuery(
       <InterviewQuestionAuthoringView
-        questionId="IQ-014"
+        questionId="IQ-021"
         listHref="/admin/interview-questions"
       />,
     );
@@ -52,15 +57,17 @@ describe("InterviewQuestionAuthoringView toasts", () => {
       .getAllByRole("button", { name: "softDelete" })
       .at(-1)!;
     fireEvent.click(confirm);
-    expect(toasts.result.current.at(-1)).toMatchObject({
-      tone: "success",
-      message: "toast.softDeleted",
-    });
+    await waitFor(() =>
+      expect(toasts.result.current.at(-1)).toMatchObject({
+        tone: "success",
+        message: "toast.softDeleted",
+      }),
+    );
   });
 });
 
 describe("InterviewQuestionAuthoringView classification", () => {
-  it("starts a new question on the first topic and the first level of the admin-managed lists", () => {
+  it("starts a new question on the first topic and the first level of the admin-managed lists", async () => {
     renderWithQuery(
       <InterviewQuestionAuthoringView
         questionId="new"

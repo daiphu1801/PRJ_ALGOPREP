@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
@@ -36,14 +37,22 @@ import org.springframework.stereotype.Component;
  */
 @Component
 class InterviewScorer {
-  // ponytail: constant instead of an ai.llm.timeout.* key, like the other LLM calls.
-  static final Duration TOTAL_TIMEOUT = Duration.ofSeconds(30);
+  /**
+   * Default of {@code algoprep.ai.llm.timeout.rubric-total-sec}; a full transcript on a free model
+   * is slow.
+   */
+  static final long DEFAULT_TIMEOUT_SEC = 90;
 
   private final InterviewSessionRepository sessions;
   private final InterviewScoringRepository scoring;
   private final InterviewScoreStore store;
   private final LlmProviderPort llm;
   private final ScoreCollaborators with;
+
+  /** Field injection keeps the constructor within five parameters; tests set it directly. */
+  @Value("${algoprep.ai.llm.timeout.rubric-total-sec:" + DEFAULT_TIMEOUT_SEC + "}")
+  long totalTimeoutSec = DEFAULT_TIMEOUT_SEC;
+
   private final PromptComposer composer = new PromptComposer();
 
   InterviewScorer(
@@ -103,6 +112,7 @@ class InterviewScorer {
   }
 
   private StructuredResult call(PromptSnapshot snapshot, ComposedPrompt prompt) {
+    Duration total = Duration.ofSeconds(totalTimeoutSec);
     try {
       return llm.completeStructured(
           prompt.system(),
@@ -110,8 +120,7 @@ class InterviewScorer {
           prompt.data(),
           new ResponseSchema(
               RubricSchema.NAME, snapshot.responseSchemaVersion(), RubricSchema.JSON),
-          new CallOptions(
-              snapshot.modelId(), CallOptions.DEFAULT_MAX_TOKENS, TOTAL_TIMEOUT, TOTAL_TIMEOUT));
+          new CallOptions(snapshot.modelId(), CallOptions.DEFAULT_MAX_TOKENS, total, total));
     } catch (AiProviderUnavailableException | AiInvalidResponseException failure) {
       throw failure;
     } catch (RuntimeException failure) {

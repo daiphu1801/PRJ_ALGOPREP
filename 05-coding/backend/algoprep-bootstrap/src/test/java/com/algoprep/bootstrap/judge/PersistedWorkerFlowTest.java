@@ -46,7 +46,7 @@ import tools.jackson.databind.json.JsonMapper;
       "judge.worker.gate-delay-ms=100",
       "judge.worker.scale-delay-ms=100",
       "spring.autoconfigure.exclude=",
-      "spring.datasource.hikari.maximum-pool-size=16"
+      "spring.datasource.hikari.maximum-pool-size=18"
     })
 @ActiveProfiles({"test", "worker"})
 @Testcontainers

@@ -112,6 +112,63 @@ class SubmitPracticeAnswerCommandHandlerTest {
   }
 
   @Test
+  void aQuestionWithoutContentIsSentWithEmptyContentAndStillCompletes() {
+    when(repository.findActiveQuestion(questionId))
+        .thenReturn(Optional.of(new PracticeQuestion(questionId, "T", null, rubric)));
+    when(ids.newId()).thenReturn(answerId, callId);
+    when(ai.reserve(user, LearnerCategory.STUDENT, 20)).thenReturn(ticket);
+    when(ai.compareAnswer(any())).thenReturn(result());
+    stored();
+
+    var outcome = handler.submit(submission("my answer"));
+
+    assertThat(outcome.attempt().status()).isEqualTo(FeedbackStatus.COMPLETED);
+    var request = ArgumentCaptor.forClass(FeedbackRequest.class);
+    verify(ai).compareAnswer(request.capture());
+    assertThat(request.getValue().questionContent()).isEmpty();
+    assertThat(request.getValue().questionTitle()).isEqualTo("T");
+  }
+
+  @Test
+  void aProviderFailureIsLoggedWithClassAndMessageOnlyAndStaysUnavailable() {
+    question(rubric);
+    when(ai.reserve(user, LearnerCategory.STUDENT, 20)).thenReturn(ticket);
+    when(ai.compareAnswer(any())).thenThrow(new IllegalStateException("boom-detail"));
+    stored();
+    var records = new java.util.ArrayList<java.util.logging.LogRecord>();
+    var logger =
+        java.util.logging.Logger.getLogger(SubmitPracticeAnswerCommandHandler.class.getName());
+    var capture =
+        new java.util.logging.Handler() {
+          @Override
+          public void publish(java.util.logging.LogRecord r) {
+            records.add(r);
+          }
+
+          @Override
+          public void flush() {}
+
+          @Override
+          public void close() {}
+        };
+    logger.addHandler(capture);
+    try {
+      var outcome = handler.submit(submission("secret answer text"));
+
+      assertThat(outcome.feedbackErrorCode()).isEqualTo("INB-501");
+    } finally {
+      logger.removeHandler(capture);
+    }
+    assertThat(records).hasSize(1);
+    var rec = records.get(0);
+    assertThat(rec.getLevel()).isEqualTo(java.util.logging.Level.WARNING);
+    var text = java.text.MessageFormat.format(rec.getMessage(), rec.getParameters());
+    assertThat(text).contains("java.lang.IllegalStateException", "boom-detail");
+    assertThat(text).doesNotContain("secret answer text");
+    assertThat(rec.getThrown()).isNull();
+  }
+
+  @Test
   void theAnswerIsStoredAsTypedWithoutTrimming() {
     question(rubric);
     when(ai.reserve(user, LearnerCategory.STUDENT, 20)).thenReturn(ticket);

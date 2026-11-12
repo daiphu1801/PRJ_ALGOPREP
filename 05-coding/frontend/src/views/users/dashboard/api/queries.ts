@@ -1,7 +1,8 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 import { useQuery } from "@tanstack/react-query";
-import { ApiError, withMockData } from "@/shared/api";
-import type { DashboardRange } from "../model/types";
+import { getRealRecentReviews } from "@/entities/solution-review";
+import { withMockData } from "@/shared/api";
+import type { DashboardRange, RecentSolutionReview } from "../model/types";
 import {
   fakeGetActivityCalendar,
   fakeGetDashboardDaily,
@@ -11,15 +12,6 @@ import { realGetActivityCalendar } from "./real-activity-calendar";
 import { realGetDashboardDaily } from "./real-dashboard-daily";
 
 const QUERY_OPTIONS = { staleTime: 30_000, retry: false } as const;
-
-// The only call left on mock: Solution Review recent block (F5, no controller yet).
-function notImplemented(): never {
-  throw new ApiError(
-    "NOT_IMPLEMENTED",
-    501,
-    "03-dd/api/F5_ai-review.md: recent solution reviews are not built yet",
-  );
-}
 
 export const useDashboardDaily = (range: DashboardRange) =>
   useQuery({
@@ -49,6 +41,19 @@ export const useActivityCalendar = () =>
 export const useRecentSolutionReviews = () =>
   useQuery({
     queryKey: ["student-dashboard", "recent-reviews"],
-    queryFn: () => withMockData(fakeGetRecentSolutionReviews, notImplemented),
+    // F5 #7 (`GET /ai/me/solution-reviews/recent`, server default of 3 rows). `reviewedAt` stays an ISO
+    // instant; the block formats it.
+    queryFn: () =>
+      withMockData(fakeGetRecentSolutionReviews, async () =>
+        (await getRealRecentReviews()).map(
+          (item): RecentSolutionReview => ({
+            submissionId: item.submissionId,
+            problemTitle: item.problemTitle,
+            reviewedAt: item.createdAt,
+            complexity: { actualTime: item.timeComplexity },
+            verdict: item.verdict,
+          }),
+        ),
+      ),
     ...QUERY_OPTIONS,
   });

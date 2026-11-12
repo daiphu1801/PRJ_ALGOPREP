@@ -1,5 +1,6 @@
 package com.algoprep.judge.infrastructure.worker;
 
+import com.algoprep.judge.application.dto.WorkerScaling;
 import com.algoprep.judge.application.ports.in.ProcessQueuedSubmissionUseCase;
 import com.algoprep.judge.domain.ports.out.WorkerJobRepository;
 import com.algoprep.judge.domain.ports.out.WorkerLeasePort;
@@ -49,12 +50,25 @@ class WorkerRuntimeConfiguration {
       WorkerLeasePort leases,
       ConnectionFactory connection,
       ProcessQueuedSubmissionUseCase process,
-      @Value("${spring.datasource.hikari.maximum-pool-size:10}") int poolSize) {
-    if (poolSize < 10) {
-      throw new IllegalStateException("Grading worker requires at least ten database connections");
+      ScalingSettings settings) {
+    var scaling = new WorkerScaling(settings.maximum(), settings.highPolls(), settings.idlePolls());
+    if ((long) settings.poolSize() < (long) settings.maximum() + 10) {
+      throw new IllegalStateException(
+          "Grading worker pool requires ten connections above its consumer limit");
     }
-    return new WorkerConsumptionControl(jobs, leases, container(connection, process));
+    return new WorkerConsumptionControl(jobs, leases, container(connection, process), scaling);
   }
+
+  @Bean
+  ScalingSettings gradingScalingSettings(
+      @Value("${spring.datasource.hikari.maximum-pool-size:10}") int poolSize,
+      @Value("${judge.autoscale.max-workers:8}") int maximum,
+      @Value("${judge.autoscale.scale-up-polls:2}") int highPolls,
+      @Value("${judge.autoscale.scale-down-polls:4}") int idlePolls) {
+    return new ScalingSettings(poolSize, maximum, highPolls, idlePolls);
+  }
+
+  record ScalingSettings(int poolSize, int maximum, int highPolls, int idlePolls) {}
 
   @Bean
   HealthIndicator gradingWorkerHealthIndicator(WorkerConsumptionControl control) {

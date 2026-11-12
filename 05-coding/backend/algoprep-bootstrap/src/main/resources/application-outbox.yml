@@ -20,3 +20,11 @@ ai:
   interview:
     sweep:
       enabled: true
+
+identity:
+  outbox:
+    enabled: true
+    relay-delay-ms: 2000
+    batch-size: 100
+    cleanup-delay-hours: 24
+    retention-days: 90

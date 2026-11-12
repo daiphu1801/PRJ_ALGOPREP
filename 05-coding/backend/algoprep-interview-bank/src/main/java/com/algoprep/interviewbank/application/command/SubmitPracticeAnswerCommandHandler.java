@@ -103,6 +103,7 @@ class SubmitPracticeAnswerCommandHandler implements SubmitPracticeAnswerUseCase 
     } catch (PracticeQuotaExceededException | PracticeBudgetLockedException refused) {
       throw refused;
     } catch (RuntimeException gateDown) {
+      warn("gate", gateDown);
       return new Judged(null, UNAVAILABLE);
     }
     try {
@@ -122,9 +123,18 @@ class SubmitPracticeAnswerCommandHandler implements SubmitPracticeAnswerUseCase 
       // Tokens were spent, so the hourly slot stays used (DD api F6 6.5 step 8).
       return new Judged(null, INVALID);
     } catch (RuntimeException unavailable) {
+      warn("compare", unavailable);
       ai.refund(ticket);
       return new Judged(null, UNAVAILABLE);
     }
+  }
+
+  /** Class and message only: no stack, no answer text (the message never carries the request). */
+  private static void warn(String step, RuntimeException failure) {
+    LOG.log(
+        Level.WARNING,
+        "Practice feedback {0} failed: {1}: {2}",
+        new Object[] {step, failure.getClass().getName(), failure.getMessage()});
   }
 
   /** Empty after trimming is INB-V06; the stored and sent text is the original, never edited. */

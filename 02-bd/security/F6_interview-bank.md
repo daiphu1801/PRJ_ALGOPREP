@@ -41,6 +41,7 @@ qua claim JWT, **`interview-bank` tự kiểm sở hữu ở tầng use case c�
   sửa được toàn bộ kho câu hỏi hệ thống — không chia theo lớp (A2 và A3 cùng phạm vi dữ liệu)". A2
   **không** bị giới hạn bởi `created_by` — cột đó chỉ phục vụ hiển thị/audit ("ai tạo"), không phải điều
   kiện lọc quyền sửa. Không thêm điều kiện `created_by = currentUser` ở tầng use case.
+- **Mặc định ma trận (owner chốt 2026-11-11, `DEC-2026-1111-instructor-interview-bank-default-grant`):** role `INSTRUCTOR` được seed bật đủ 4 hành động `INTERVIEW_BANK_MANAGEMENT` (migration `V1.004`), nên A2 mặc định đọc/tạo/sửa/xoá câu hỏi qua `SHR0301`/`SHR0302`; quản lý chủ đề và độ khó vẫn chỉ `ADMIN` (`INB-302`). `STUDENT` không có ô nào. Tắt lại bằng ma trận quyền F1 nếu cần.
 - **Admin (`INTERVIEW_BANK_MANAGEMENT` đầy đủ)**: đọc/ghi toàn bộ ngân hàng câu hỏi, không giới hạn.
   Không tự động thấy `user_answers`/`recall_ratings` của một học viên cụ thể trừ khi có Function riêng
   yêu cầu (cùng nguyên tắc đã áp dụng cho `ai-review`'s `interview_turns` — RD không đặc tả chức năng

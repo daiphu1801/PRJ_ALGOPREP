@@ -1,8 +1,7 @@
-// PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md section 9.
-//
-// Read-only detail page for one interview question, split out of the authoring form:
-// `/admin/interview-questions/[code]` shows this, `.../[code]/edit` shows
-// InterviewQuestionAuthoringView unchanged. No mockup exists in 09-layoutBase for the authoring
+// Read-only detail page for one interview question (F6 #20, 03-dd/api/F6_interview-bank.md), split out of
+// the authoring form: `/admin/interview-questions/[id]` shows this, `.../[id]/edit` shows
+// InterviewQuestionAuthoringView. The route param is the question UUID (the code of the mock bank in mock
+// mode); `IQ-%03d` is a label from `displayNo`. No mockup exists in 09-layoutBase for the authoring
 // screen either, so this follows the same two-column structure: content on the wide side,
 // classification and usage on the narrow side.
 "use client";
@@ -10,13 +9,11 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import {
-  useInterviewQuestion,
-  type InterviewQuestion,
-  topicLabel,
-  levelLabel,
+  useAdminQuestion,
   levelTone,
   useInterviewLevels,
   useInterviewTopics,
+  type AdminQuestionDetail,
 } from "@/entities/interview-question";
 import { useT } from "@/shared/i18n";
 import {
@@ -40,7 +37,7 @@ type Props = {
 
 export function InterviewQuestionInfoView({ questionId, basePath }: Props) {
   return (
-    <QueryBoundary query={useInterviewQuestion(questionId)}>
+    <QueryBoundary query={useAdminQuestion(questionId)}>
       {(question) => (
         <InterviewQuestionInfo
           questionId={questionId}
@@ -56,7 +53,7 @@ function InterviewQuestionInfo({
   questionId,
   basePath,
   question,
-}: Props & { question: InterviewQuestion | null }) {
+}: Props & { question: AdminQuestionDetail | null }) {
   const t = useT("interviewQuestionInfo");
   const ta = useT("interviewQuestionAuthoring");
   const topicList = useInterviewTopics();
@@ -79,8 +76,15 @@ function InterviewQuestionInfo({
   }
 
   const rubricTotal = question.rubric.reduce(
-    (sum, criterion) => sum + criterion.weight,
+    (sum, criterion) => sum + criterion.weightPercent,
     0,
+  );
+  // Topic and level arrive as ids; the lists carry the id (API) or the key (mock) of each row.
+  const topic = topicList.find(
+    (item) => (item.id ?? item.key) === question.topicId,
+  );
+  const level = levelList.find(
+    (item) => (item.id ?? item.key) === question.levelId,
   );
 
   return (
@@ -89,8 +93,10 @@ function InterviewQuestionInfo({
         leading={
           <IconAction icon={ArrowLeft} label={t("back")} href={basePath} />
         }
-        title={t("title", { code: question.code })}
-        description={topicLabel(topicList, question.topic)}
+        title={t("title", {
+          code: `IQ-${String(question.displayNo).padStart(3, "0")}`,
+        })}
+        description={topic?.label}
         actions={
           <>
             <Button
@@ -101,9 +107,7 @@ function InterviewQuestionInfo({
               {ta("previewAsLearner")}
             </Button>
             <Button asChild variant="cta" size="sm">
-              <Link href={`${basePath}/${question.code}/edit`}>
-                {t("edit")}
-              </Link>
+              <Link href={`${basePath}/${question.id}/edit`}>{t("edit")}</Link>
             </Button>
           </>
         }
@@ -112,7 +116,12 @@ function InterviewQuestionInfo({
       <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div className="flex min-w-0 flex-col gap-4">
           <Card title={ta("group1Title")}>
-            <MarkdownPreview size="lg">{question.question}</MarkdownPreview>
+            <MarkdownPreview size="lg">{question.title}</MarkdownPreview>
+            {question.contentMarkdown ? (
+              <div className="mt-3">
+                <MarkdownPreview>{question.contentMarkdown}</MarkdownPreview>
+              </div>
+            ) : null}
           </Card>
 
           <Card title={ta("group2Title")}>
@@ -122,8 +131,8 @@ function InterviewQuestionInfo({
               </p>
             ) : (
               <ol className="flex list-decimal flex-col gap-2.5 pl-5 text-[15px] leading-7">
-                {question.followUps.map((followUp) => (
-                  <li key={followUp}>{followUp}</li>
+                {question.followUps.map((followUp, index) => (
+                  <li key={index}>{followUp}</li>
                 ))}
               </ol>
             )}
@@ -145,14 +154,14 @@ function InterviewQuestionInfo({
               </NoticeTile>
             ) : (
               <ul className="flex flex-col gap-2">
-                {question.rubric.map((criterion) => (
+                {question.rubric.map((criterion, index) => (
                   <li
-                    key={criterion.label}
+                    key={index}
                     className="glass-surface flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-border)] px-3.5 py-2.5 text-[14px]"
                   >
-                    <span>{criterion.label}</span>
+                    <span>{criterion.criterionCode}</span>
                     <span className="font-mono text-[var(--color-text-muted)]">
-                      {criterion.weight}%
+                      {criterion.weightPercent}%
                     </span>
                   </li>
                 ))}
@@ -168,15 +177,19 @@ function InterviewQuestionInfo({
                 <dt className="text-[var(--color-text-subtle)]">
                   {ta("topicLabel")}
                 </dt>
-                <dd>{topicLabel(topicList, question.topic)}</dd>
+                <dd>{topic?.label ?? "-"}</dd>
               </div>
               <div className="flex items-center justify-between gap-2">
                 <dt className="text-[var(--color-text-subtle)]">
                   {ta("levelLabel")}
                 </dt>
                 <dd>
-                  <Badge variant={levelTone(levelList, question.level)}>
-                    {levelLabel(levelList, question.level)}
+                  <Badge
+                    variant={
+                      level ? levelTone(levelList, level.key) : "neutral"
+                    }
+                  >
+                    {level?.label ?? "-"}
                   </Badge>
                 </dd>
               </div>
@@ -196,7 +209,9 @@ function InterviewQuestionInfo({
                   {t("averageScore")}
                 </dt>
                 <dd className="font-mono">
-                  {question.averageScore.toFixed(1)} / 5
+                  {question.averageScorePercent === null
+                    ? "-"
+                    : `${Math.round(question.averageScorePercent)}%`}
                 </dd>
               </div>
               <div className="flex items-center justify-between gap-2">
@@ -204,8 +219,12 @@ function InterviewQuestionInfo({
                   {t("practiceMode")}
                 </dt>
                 <dd>
-                  <Badge variant={question.hasRubric ? "success" : "neutral"}>
-                    {question.hasRubric ? t("practiceOn") : t("practiceOff")}
+                  <Badge
+                    variant={question.practiceAvailable ? "success" : "neutral"}
+                  >
+                    {question.practiceAvailable
+                      ? t("practiceOn")
+                      : t("practiceOff")}
                   </Badge>
                 </dd>
               </div>

@@ -1,5 +1,7 @@
 # TDD — Tiêu chí nghiệm thu module `identity` (F1)
 
+> Cập nhật tích hợp FE 2026-11-12: ghi chú AC-57 ở checkpoint11/11 “Frontend còn trả501” đã được xử lý. Nút xuất hội thoại gọi #17 thật; browser nhận200 và tải JSON đúng. Summary F5 ở dashboard/hồ sơ cũng đã bỏ stub. Cache phiên toàn ứng dụng đã sửa, có hồi quy và browser đổi tài khoản. Xem [báo cáo sửa bổ sung](../../06-plan/reports/261112-f1-f4-followup-fix/report.md). OAuth provider thật vẫn chờ cấu hình theo owner; không suy từ số AC BE đạt thành OAuth live đã được nghiệm thu.
+
 > Mỗi `AC-nn` map về đúng một endpoint (`03-dd/api/F1_identity.md` mục 0) hoặc một khối BR
 > (`03-dd/logic/F1_identity.md`). Viết cùng lúc với DD theo `tdd-mode.md`.
 
@@ -714,6 +716,14 @@ Các tiêu chí dưới đây mô tả hành vi mới hoặc đổi sau khi đ�
 | **Kết quả mong đợi** | Feed hoạt động có đúng một dòng loại "phỏng vấn thử kết thúc", của đúng học viên, không gắn lớp, trỏ tới đúng phiên (`ref_type = INTERVIEW_SESSION`, `ref_id` là mã phiên); gửi lại không thêm dòng; tin hỏng bị bỏ và các sự kiện sau vẫn được xử lý. |
 | **Nguồn** | [SoT: 03-dd/api/F1_identity.md:476] (dòng `MockInterviewFinished`); [SoT: 03-dd/api/F5_ai-review.md] mục 33; `MockInterviewFinishedConsumerFlowTest`; `AiOutboxFlowTest.aFinishedInterviewReachesTheIdentityFeedOnce...`; `DEC-2026-1110-f5-outbox-event-decisions` |
 
+### AC-92 — Giảng viên mặc định có đủ bốn hành động quản lý ngân hàng câu hỏi (thêm 2026-11-11, `DEC-2026-1111-instructor-interview-bank-default-grant`)
+| Mục | Nội dung |
+| :--- | :--- |
+| **Tiền đề** | Cơ sở dữ liệu mới tạo, vừa chạy đủ migration; chưa ai sửa ma trận quyền. Có một tài khoản giảng viên dùng vai trò hệ thống mặc định (không phải vai trò tuỳ chỉnh). |
+| **Hành động** | (1) đếm các ô đang bật của giảng viên theo từng chức năng; (2) giảng viên mở danh sách câu hỏi quản trị; (3) giảng viên thử xoá một chủ đề; (4) đọc ma trận của học viên. |
+| **Kết quả mong đợi** | Ma trận vẫn 132 dòng. Giảng viên có đủ bốn hành động ở bốn chức năng (lớp, soạn bài, testcase, ngân hàng câu hỏi), các chức năng còn lại tắt. Danh sách câu hỏi mở được; xoá chủ đề bị từ chối `INB-302` vì chỉ quản trị viên được quản lý danh mục. Học viên không có ô nào bật. Chạy lại migration không đổi thêm gì. |
+| **Nguồn** | [SoT: 02-bd/database/F1_identity.md mục 1.4]; [SoT: 02-bd/security/F6_interview-bank.md]; `IdentityMigrationTest.seedsPermissionMatrix`; `InterviewBankCatalogFlowTest.defaultInstructorListsQuestionsButCatalogueManagementStaysAdminOnly`; `DEC-2026-1111-instructor-interview-bank-default-grant` |
+
 ## 3. Truy vết
 
 Bảng 1: Truy vết tiêu chí nghiệm thu sang endpoint, test case QA và test mã nguồn của module F1. Cột "Test case QA" giữ ID test case do `testcase-generation` sinh (tài liệu QA, chưa chạy); cột "Test mã nguồn" liệt kê test thật đã kiểm bằng grep, theo dạng `Lớp:dòng` (dòng của phương thức test, tên lớp là duy nhất trong cây nên không ghi đường dẫn); "Trạng thái" ghi bằng chữ theo bảng 2. Cập nhật 2026-11-07, chỉ sửa tài liệu: không chạy Maven hay pnpm khi cập nhật bảng này.
@@ -827,6 +837,7 @@ Mutation test của các lát quyền, riêng tư (F1-7, F1-8, F1-9, F1-12) và 
 | AC-89 | #16, IDT-508 (F1-9) | Chưa có TC QA | SubmissionExportFlowTest:184; ExportMySubmissionsQueryHandlerTest:49 | Đạt | F1-9; như AC-56. |
 | AC-90 | Sự kiện SolutionReviewCompleted (F5-5a) | Chưa có TC QA | SolutionReviewCompletedConsumerFlowTest:146; SolutionReviewCompletedConsumerFlowTest:170; ApplySolutionReviewCompletedCommandHandlerTest; SolutionReviewCompletedParserTest | Đạt | Code xong, chưa test cả đợt: `SolutionReviewCompletedConsumerFlowTest` 2 test và `identity` 380 test xanh ở lượt riêng của lát (`20261110-1930-f5-5a-identity-verify.log`, `20261110-2005-f5-5a-bootstrap.log`); chưa qua full regression |
 | AC-91 | Sự kiện MockInterviewFinished (F5-8) | Chưa có TC QA | MockInterviewFinishedConsumerFlowTest; AiOutboxFlowTest; ApplyMockInterviewFinishedCommandHandlerTest; MockInterviewFinishedParserTest | Đạt | Code xong, chưa test cả đợt: identity 384 test xanh (`20261111-0030-f5-8-identity-verify.log`), bootstrap 192 test xanh (`20261111-0040-f5-8-bootstrap.log`). `ref_type = INTERVIEW_SESSION` do code chọn (DD F1 chưa nêu). |
+| AC-92 | Ma trận mặc định của giảng viên có `INTERVIEW_BANK_MANAGEMENT` | Chưa có TC QA | IdentityMigrationTest.seedsPermissionMatrix; InterviewBankCatalogFlowTest.defaultInstructorListsQuestionsButCatalogueManagementStaysAdminOnly | Đạt | Chạy trong cây tạm `20261111-1429-instructor-seed-green.log` (7 lớp xanh); đột biến vô hiệu `UPDATE` làm cả hai kiểm tra đỏ (`20261111-1429-instructor-seed-mutation.log`). |
 
 Bảng 3: Tổng hợp trạng thái 93 tiêu chí (AC-01 đến AC-91 cùng AC-18b và AC-20b), trước và sau lần đồng bộ 2026-11-11 (cột Sau tính cả AC-81 đến AC-89 thêm 2026-11-07, AC-90 và AC-91 thêm ở F5-5a và F5-8, việc đóng AC-77, việc AC-39, AC-84, AC-85 chuyển Đạt ngày 2026-11-08 và AC-57 chuyển từ Hoãn sang Đạt ngày 2026-11-11 khi F5-9 xong; đếm lại từ bảng truy vết: 93 dòng, 93 Đạt, 0 Hoãn)
 

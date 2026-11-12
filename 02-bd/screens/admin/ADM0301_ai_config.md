@@ -35,11 +35,11 @@
 | Tên vật lý (slug) | `admin_ai_config` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A3 (`ADMIN`) |
-| Phiên bản | V2.6 |
+| Phiên bản | V2.7 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/13 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/10/23 |
+| Ngày cập nhật | 2026/11/12 |
 
 ---
 
@@ -73,6 +73,7 @@
 | V2.4 | Sheet 5 (khu vực regression NO 1) | Đổi câu mô tả "Chạy đối chiếu" từ "so sánh điểm rubric" thành "so sánh kết quả báo cáo" cho khớp prototype (`05-coding/frontend/messages/vi.json:1041`) và việc báo cáo bài giải không còn rubric (`DEC-2026-1014-drop-solution-review-rubric`). Đóng ghi chú treo ở V2.1. Không đổi hành vi | 2026/10/23 | Claude |
 | V2.5 | Sheet 4 (bảng bố cục), 5 (Khu vực F), 6 (bước 6 và Phạm vi), 7 (ghi chú endpoint), 8 (EVT-11), 9 (Khu vực F) | Chủ dự án chốt 2026-10-23 (`DEC-2026-1023-drop-ai-regression-run`, tiêu chí ponytail bậc 2 và 3): **bỏ hẳn "Chạy đối chiếu"** (khối "Trước khi phát hành" cùng nút, mô tả và dòng kết quả gần nhất). Hết rubric nên không còn điểm để so; backend chưa từng được thiết kế (không endpoint, không bảng). Gạch bỏ Khu vực F ở Sheet 5 và Sheet 9, bước 6 ở Sheet 6, EVT-11 ở Sheet 8, dòng trong bảng bố cục; giữ số dòng. Bỏ dòng mồ côi "Xem tiêu thụ token" ở Sheet 9 Khu vực F. Prototype đã gỡ khối này (`05-coding/frontend/src/views/admin/ai-config/ui/admin-ai-config-view.tsx`) và ba chuỗi i18n `preReleaseTitle`, `preReleaseBody`, `runComparison`. Đóng ghi chú V2.4 | 2026/10/23 | Claude |
 | V2.6 | Sheet 7 (NO 7, 8), 8 (EVT-1) | Đồng bộ chéo giai đoạn 3 sau `03-dd/api/F5_ai-review.md` mục 1.1 (phát hiện D11): `GetResponseGuardConfig` gộp vào `ListPromptTemplates`, `UpdateResponseGuardConfig` gộp vào `UpdatePromptTemplateDraft` (`response_guards` là cột của `prompt_templates`, tiêu chí ponytail bậc 1 và 4). Không đổi giao diện | 2026/10/23 | Nhóm phát triển AlgoPrep |
+| V2.7 | Hiện trạng bản dựng | Nối API thật (2026-11-12): màn gọi F5 #14 đến #17 qua `real-prompts.ts` và `useMockQuery` / `useMockMutation`, chế độ dữ liệu giả giữ nguyên. Xem mục "Hiện trạng bản dựng" trước Câu hỏi mở. Không đổi bố cục, RD, endpoint. Không có câu hỏi mở mới | 2026/11/12 | Claude |
 
 ---
 
@@ -506,7 +507,7 @@ Không có endpoint cho "Chạy đối chiếu": tính năng đã bỏ hẳn (`D
 | 10 | Công tắc | Bật hoặc tắt nguyên tắc trả lời | Bấm công tắc trên một dòng nguyên tắc của tính năng đang chọn; dòng "Không đưa lời giải đầy đủ" khi tắt thì hiện thêm toast cảnh báo. | Không | Không | - | [Các bước]<br>1. Đảo trạng thái công tắc trong trạng thái biên soạn.<br>[Khi thành công] Đánh dấu có thay đổi chưa phát hành và kích hoạt nút "Lưu và phát hành". |
 | 11 | ~~Nút~~ | ~~Chạy đối chiếu~~ | **Đã bỏ 2026-10-23** (`DEC-2026-1023-drop-ai-regression-run`): không còn nút. Giữ NO để không đánh số lại. | - | - | - | - |
 | 12 | Nút | Mở xác nhận phát hành | Bấm "Lưu và phát hành". | Không | Không | - | [Các bước]<br>1. Tổng hợp danh sách thay đổi đang chờ.<br>2. Mở popup xác nhận.<br>[Khi thành công] Popup hiển thị tóm tắt thay đổi và cảnh báo bản prompt đang chạy sẽ bị thay thế. |
-| 13 | Popup | Xác nhận phát hành — "Phát hành" | Bấm "Phát hành" trong popup xác nhận. | Không | Có | `PublishPromptTemplate` | [Các bước]<br>1. Gửi **một lần gọi duy nhất** chứa toàn bộ thay đổi đang biên soạn (bản nháp prompt, `modelId`, `response_guards` của mọi tab) lên máy chủ; máy chủ thực hiện trong **một giao dịch nguyên tử, được cả hoặc không** (`DEC-2026-1014-batch7-remaining-open-questions`).<br>2. Đóng popup và tải lại cấu hình.<br>[Khi thành công] Các thẻ prompt hiển thị phiên bản, trạng thái và ngày cập nhật mới; trạng thái biên soạn được xoá; nút "Lưu và phát hành" trở về không kích hoạt.<br>[Khi lỗi] Máy chủ hoàn tác toàn bộ giao dịch (không có phát hành một phần); giao diện giữ nguyên toàn bộ thay đổi đang biên soạn và hiện toast nêu nguyên nhân (xung đột phiên bản, model ngoài danh sách, chỉ thị rỗng). Không còn trường hợp phần đã sửa ở khối này được lưu còn khối kia thì không. Đã chốt ở Q3.<br>[Thông báo hoàn tất] Toast "Đã phát hành cấu hình mới." ~~Tổng trọng số khác 100% thì không phát hành (chốt chặn cứng 2026-10-03)~~ — **đã bỏ 2026-10-14**; mã prototype tại `05-coding/frontend/src/views/admin/ai-config/ui/admin-ai-config-view.tsx:86-92` còn chốt chặn này, là nợ prototype chờ sửa. |
+| 13 | Popup | Xác nhận phát hành — "Phát hành" | Bấm "Phát hành" trong popup xác nhận. | Không | Có | `PublishPromptTemplate` | [Các bước]<br>1. Gửi **một lần gọi duy nhất** chứa toàn bộ thay đổi đang biên soạn (bản nháp prompt, `modelId`, `response_guards` của mọi tab) lên máy chủ; máy chủ thực hiện trong **một giao dịch nguyên tử, được cả hoặc không** (`DEC-2026-1014-batch7-remaining-open-questions`).<br>2. Đóng popup và tải lại cấu hình.<br>[Khi thành công] Các thẻ prompt hiển thị phiên bản, trạng thái và ngày cập nhật mới; trạng thái biên soạn được xoá; nút "Lưu và phát hành" trở về không kích hoạt.<br>[Khi lỗi] Máy chủ hoàn tác toàn bộ giao dịch (không có phát hành một phần); giao diện giữ nguyên toàn bộ thay đổi đang biên soạn và hiện toast nêu nguyên nhân (xung đột phiên bản, model ngoài danh sách, chỉ thị rỗng). Không còn trường hợp phần đã sửa ở khối này được lưu còn khối kia thì không. Đã chốt ở Q3.<br>[Thông báo hoàn tất] Toast "Đã phát hành cấu hình mới." ~~Tổng trọng số khác 100% thì không phát hành (chốt chặn cứng 2026-10-03)~~ — **đã bỏ 2026-10-14**; bản dựng hiện tại không còn chốt chặn này (đã kiểm 2026-11-12, `grep` không còn so khớp tổng trọng số trong `admin-ai-config-view.tsx`). |
 | 14 | Popup | Xác nhận phát hành — "Huỷ" | Bấm "Huỷ" trong popup xác nhận. | Không | Không | - | [Các bước]<br>1. Đóng popup.<br>[Khi thành công] Mọi thay đổi vẫn ở trạng thái chưa phát hành, nút "Lưu và phát hành" vẫn kích hoạt. |
 | 22 | Nhập liệu | Đổi model của prompt | Chọn một model trong ô "Model" của thẻ prompt. | Không | Không | - | [Các bước]<br>1. Ghi model mới vào trạng thái biên soạn của thẻ đó (chưa gửi máy chủ).<br>[Khi thành công] Đánh dấu có thay đổi chưa phát hành; model chỉ có hiệu lực sau "Lưu và phát hành" (EVT-13, gửi kèm `UpdatePromptTemplateDraft`).<br>[Khi lỗi] Máy chủ từ chối model ngoài danh sách thì hiện toast lỗi, giữ model cũ. |
 | 23 | Nút | Chuyển tab tính năng | Chọn một tab ở thanh tab. | Không | Không | - | [Các bước]<br>1. Đổi nội dung hiển thị sang tính năng được chọn; nhật ký phiên bản từ đây theo tính năng này.<br>[Khi thành công] Thay đổi chưa phát hành của các tab khác được giữ nguyên; tab có thay đổi hiện dấu chấm. |
@@ -534,6 +535,22 @@ Không có endpoint cho "Chạy đối chiếu": tính năng đã bỏ hẳn (`D
 Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 
 [Nguồn: 02-bd/security/F5_ai-review.md:79-82; 02-bd/database/F5_ai-review.md:15-16, 20-21]
+
+## Hiện trạng bản dựng
+
+Bảng dưới ghi bản dựng sau khi nối API thật (2026-11-12, chưa kiểm trên trình duyệt với backend thật). Số dòng đã kiểm lại sau lần sửa cuối.
+
+Bảng H.1: Hiện trạng bản dựng của `ADM0301` ở chế độ thật
+
+| Mục | Hiện trạng | Nguồn |
+| :--- | :--- | :--- |
+| EVT-1, 23 (mở màn, đổi tab) | Gọi `GET /ai/admin/prompt-templates` và lịch sử của cả ba tính năng khi mở màn; đổi tab không gọi lại. Tải lỗi hiện thông điệp theo mã lỗi (`AIR-301`...) kèm "Thử lại" | `05-coding/frontend/src/views/admin/ai-config/api/real-prompts.ts:168`; `.../ui/admin-ai-config-view.tsx:85-96` |
+| Bản nháp đã lưu trên máy chủ | Dòng `DRAFT` phủ lên bản biên soạn khi mở màn nên hiện là thay đổi chờ phát hành; "Huỷ thay đổi" chỉ bỏ ở máy, bản nháp máy chủ còn nguyên | `.../model/changes.ts:90`; `.../ui/admin-ai-config-view.tsx:126-128` |
+| EVT-2 đến 4 (Lưu bản nháp) | Gọi `PUT .../{featureCode}/draft` kèm model và nguyên tắc đang chọn; lỗi thì giữ popup, viền đỏ và toast | `.../api/real-prompts.ts:185`; `.../ui/admin-ai-config-view.tsx:211-232` |
+| EVT-12, 13 (Phát hành) | Một lần `POST .../publish` cho mọi tab có thay đổi, gửi đủ chỉ thị, model, nguyên tắc và `expectedActivePromptId`; thành công thì dựng lại trang từ phản hồi. `AIR-201` thì toast rồi tải lại trang; lỗi khác thì toast, thay đổi vẫn chờ | `.../api/real-prompts.ts:205`; `.../ui/admin-ai-config-view.tsx:189-205` |
+| Nhật ký phiên bản | Không có tác giả (backend không trả), dòng chỉ hiện ngày; dòng `DRAFT` không liệt kê. Chế độ dữ liệu giả vẫn hiện tác giả | `.../api/real-prompts.ts:104`; `.../ui/admin-ai-config-view.tsx:420-422` |
+| Giới hạn token | Chỉ đọc, lấy `maxTokens` một giá trị chung của danh sách, định dạng `1.600 token` | `.../api/real-prompts.ts:68` |
+| Danh sách model | `modelOptions` do máy chủ trả (cấu hình `application.yml`), ADMIN chỉ chọn; model ngoài danh sách bị `AIR-202` | `.../api/real-prompts.ts:120` |
 
 ---
 

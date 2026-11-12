@@ -26,9 +26,8 @@ class GetQueueMonitorQueryHandler
 
   @Override
   public void afterPropertiesSet() {
-    if (maximum != 8) {
-      // JOB-JD-05 currently has an approved fixed limit of eight; never advertise a false limit.
-      throw new IllegalStateException("Queue monitor requires the fixed worker limit of eight");
+    if (maximum < 1) {
+      throw new IllegalStateException("Queue monitor requires a positive worker limit");
     }
   }
 

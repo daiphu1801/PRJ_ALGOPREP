@@ -119,6 +119,20 @@ class GenerateTestcaseScriptCommandHandlerTest {
   }
 
   @Test
+  void theProviderIsToldTheExactScriptKeysInTheSystemMessageOnly() {
+    provider(new StructuredResult(GOOD, new LlmUsage(1, 1), null));
+
+    handler.generate(input("statement"));
+
+    var system = ArgumentCaptor.forClass(SystemInstruction.class);
+    var data = ArgumentCaptor.forClass(UserData.class);
+    verify(llm).completeStructured(system.capture(), any(), data.capture(), any(), any());
+    assertThat(system.getValue().text())
+        .contains("generatorScript", "validatorScript", "categoryLabels");
+    assertThat(data.getValue().render()).doesNotContain("validatorScript");
+  }
+
+  @Test
   void aMissingActiveTemplateIsUnavailableAndNothingIsCalled() {
     when(templates.readActive(FeatureCode.GENERATE_TESTCASE)).thenReturn(Optional.empty());
 

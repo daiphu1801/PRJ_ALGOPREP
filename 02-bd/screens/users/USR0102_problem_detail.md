@@ -97,6 +97,7 @@
 | V0.14 | Sheet 4 (4.4 Hiện trạng bản dựng, 4.5), 5 (Khu vực D NO 1), 6 (Khu vực D NO 1), 8 (EVT-7), Câu hỏi mở (thêm Q19, Q20) | Ghi lại thực tế của bản dựng 2026/10/23: ô soạn mã **không còn là `textarea`** mà là Monaco Editor qua thành phần dùng chung `shared/ui/data/code-editor.tsx` (`CodeEditor`), theme `algoprep-dark` và `algoprep-light` theo `next-themes`, không minimap, cỡ chữ 13,5px, cao dòng 22px, thụt 4 dấu cách (chèn dấu cách), tô cặp ngoặc, thanh trạng thái "Ln x, Col y" và "Spaces: 4", nạp Monaco từ CDN jsDelivr lúc chạy, tên truy cập là i18n `problemDetail.toolbar.codeAreaLabel`. Sửa mục 4.5 (không có slice `features/code-editor`, trình soạn nằm ở `shared/ui`), Sheet 5 và 6 (mô tả đúng ô soạn mã). Ghi **chưa dựng**: phím tắt, đổi cỡ chữ, nút đặt lại mã khung, chế độ chỉ đọc khi đang chấm; thêm Q19 (các tính năng soạn mã chưa dựng) và Q20 (phụ thuộc mạng của Monaco). Làm mới một trích dẫn `problem-detail-view.tsx`. Chưa duyệt hình | 2026/10/23 | Claude |
 | V0.15 | Hiện trạng bản dựng | Nối API thật của F2 (2026-11-06, F2-6 phần 2, **chưa duyệt hình**, chưa chạy trình duyệt với backend thật): Nút Lưu bài nối `#11` (PUT `/me/bookmarks/{problemId}/state`, gửi trạng thái đích, đổi cờ sau khi máy chủ xác nhận; lỗi `PRB-001`, `PRB-010` hiện toast). Phần đọc đề (`#5`, `#6`, `#7`) do lát F3/F4 nối trong `entities/problem/api/workspace-queries.ts`. Không đổi RD, DTO hay endpoint | 2026/11/06 | Claude |
 
+| V0.16 | Sheet 4.4, 5 (Khu vực D NO 2), 6 | Owner 2026-11-12 (ponytail bậc 2, nguồn dữ liệu thật): bỏ khối nhận xét rút gọn khỏi thẻ Solution Review của Workspace vì F5 #6 không trả `notes`; mã đã gỡ danh sách và trường `notes` (`problem-detail-view.tsx:493-501`). Chưa duyệt hình | 2026-11-12 | Claude |
 ---
 
 ## Sheet 3. Sơ đồ chuyển màn
@@ -365,7 +366,7 @@ system cuối cùng.
 | Panel thông tin bài toán (cột trái) | `:158-256` | Dải tab, nội dung tab đang chọn, chân panel (AC rate, nút "Lưu bài", trạng thái cụm chấm) |
 | Tab "Đề bài" | `:166-202` | Tên bài, ba nhãn (độ khó, chủ đề, mô hình đang chọn), nội dung đề, câu giải thích mô hình, ví dụ, ràng buộc, câu hỏi mở rộng |
 | Tab "Bài nộp" | `:216-227` | Mỗi dòng một lượt nộp: kết quả, ngôn ngữ, thời gian chạy, thời điểm |
-| Tab "Solution Review" | `:229-247` | Hai ô chỉ số độ phức tạp, các khối nhận xét rút gọn, nút mở phỏng vấn giả lập |
+| Tab "Solution Review" | `:229-247` | Hai ô chỉ số độ phức tạp, nút mở phỏng vấn giả lập (khối nhận xét rút gọn đã bỏ 2026-11-12) |
 | Thanh chia đôi bố cục | `:258-260` | Kéo ngang để đổi tỉ lệ hai cột |
 | Vùng soạn mã (cột phải, hàng trên) | `:264-325` | Thanh công cụ (ngôn ngữ, mô hình, phương thức nhập), vùng soạn mã hoặc vùng tải file, chân vùng (nhãn "Đã lưu trên trình duyệt này", giới hạn) |
 | Bảng kết quả (cột phải, hàng dưới) | `:327-392` | Hai tab "Testcase" và "Kết quả", nhãn verdict tổng hợp bên phải, nội dung tab đang chọn |
@@ -515,7 +516,7 @@ từ ngoài, không tự gọi API.
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Tab Solution Review | | | | | | | | | | | | | |
 | | 1 | Chỉ số độ phức tạp | `problemDetail.reviewSummary.metrics` | `ai.solution_reviews` | `result_json` | Label | String | - | - | O | Ẩn | - | Hai ô "Thời gian" và "Bộ nhớ" dạng ký hiệu Big-O [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:231-238]<br>[Nguồn giá trị] Trường độ phức tạp trong `result_json` của báo cáo đã có (F5-07) [Nguồn: 02-bd/database/F5_ai-review.md:46,64-67]. Đây là **bản tóm tắt nhanh đọc lại từ báo cáo đã có**, không tạo dữ liệu mới [Nguồn: 01-rd/screens/users/USR0102_problem_detail.md:116]<br>[EVT liên quan] EVT-1 |
-| | 2 | Khối nhận xét rút gọn | `problemDetail.reviewSummary.blocks` | `ai.solution_reviews` | `result_json` | List | List | - | - | O | rỗng | - | 1-2 nhận xét chính rút từ báo cáo [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:239-244]<br>[Nguồn giá trị] Cùng nguồn NO 1. Bản đầy đủ nằm ở màn `solution_review` [Nguồn: 01-rd/screens/users/USR0102_problem_detail.md:116]<br>[EVT liên quan] EVT-1 |
+| | 2 | ~~Khối nhận xét rút gọn~~ **Đã bỏ 2026-11-12** (owner, ponytail bậc 2: F5 #6 không có `notes`) | `problemDetail.reviewSummary.blocks` | `ai.solution_reviews` | `result_json` | List | List | - | - | O | rỗng | - | 1-2 nhận xét chính rút từ báo cáo [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:239-244]<br>[Nguồn giá trị] Cùng nguồn NO 1. Bản đầy đủ nằm ở màn `solution_review` [Nguồn: 01-rd/screens/users/USR0102_problem_detail.md:116]<br>[EVT liên quan] EVT-1 |
 | | 3 | Liên kết mở báo cáo đầy đủ | `problemDetail.reviewSummary.linkFullReport` | - | - | Link | - | - | - | I | - | - | Mở màn `solution_review` của lượt nộp tương ứng<br>[Nguồn giá trị] Nhãn tĩnh i18n. Prototype không vẽ liên kết này nhưng RD đã chốt "mở từ nút trong tab hoặc từ console kết quả" [Nguồn: 01-rd/screens/users/USR0102_problem_detail.md:116]<br>[EVT liên quan] EVT-17 |
 | | 4 | Nút bắt đầu phỏng vấn giả lập | `problemDetail.reviewSummary.btnMockInterview` | - | - | Button | - | - | - | I | - | - | Mở màn `mock_interview` với lối vào từ bài nộp [Nguồn: 09-layoutBase/Workspace giải bài.dc.html:245]<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] EVT-18 |
 
@@ -632,7 +633,7 @@ từ ngoài, không tự gọi API.
 | :--- | --: | :--- | :-: | :--- |
 | Tab Solution Review | | | | |
 | | 1 | Chỉ số độ phức tạp | Điều kiện | [Điều kiện hiển thị] Chỉ khi tab đang chọn là "Solution Review" **và** đã có báo cáo cho một lượt nộp `ACCEPTED` của chính người học. Gọi `ai-review` thất bại thì ẩn cả tab (Khu vực C NO 1), không hiển thị thông báo lỗi. |
-| | 2 | Khối nhận xét rút gọn | Điều kiện | [Điều kiện hiển thị] Như NO 1. Giới hạn 2 khối để giữ vai trò "tóm tắt nhanh"; bản đầy đủ ở màn `solution_review`. |
+| | 2 | Khối nhận xét rút gọn (đã bỏ 2026-11-12) | Điều kiện | [Điều kiện hiển thị] Như NO 1. Giới hạn 2 khối để giữ vai trò "tóm tắt nhanh"; bản đầy đủ ở màn `solution_review`. |
 | | 3 | Liên kết mở báo cáo đầy đủ | Điều kiện | [Điều kiện hiển thị] Như NO 1. |
 | | 4 | Nút bắt đầu phỏng vấn giả lập | Điều kiện | [Điều kiện hiển thị] Như NO 1.<br>[Điều kiện kích hoạt] Không kích hoạt khi phân hệ AI đang hết hạn mức; trạng thái này do `ai-review` trả về, màn chỉ hiển thị. |
 

@@ -36,11 +36,11 @@
 | Tên vật lý (slug) | `admin_ai_usage` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A3 (`ADMIN`) |
-| Phiên bản | V0.12 |
+| Phiên bản | V0.13 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/15 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/10/10 |
+| Ngày cập nhật | 2026/11/12 |
 
 ---
 
@@ -60,6 +60,7 @@
 | V0.10 | Câu hỏi mở | Đóng Q3 theo `DEC-2026-1010-ai-generate-testcase-feature-code` (2026-10-10): "Sinh testcase" ghi token vào `ai.token_usage` với `feature_code = GENERATE_TESTCASE`, `owner_id` là `problems.id`; khối "Theo tính năng", chú giải biểu đồ và bảng "Bài toán tốn token nhất" nay có bảng nguồn. Không đổi giao diện | 2026/10/10 | AI |
 | V0.11 | Sheet 5, 6, Câu hỏi mở | Theo `DEC-2026-1011-ai-practice-feedback-in-shared-budget` (2026-10-11): thêm tính năng thứ tư "Chấm câu luyện" (F6-08, `feature_code = PRACTICE_FEEDBACK`) vào chú giải và danh sách theo tính năng, prototype dựng dải và dòng này. Cập nhật dòng bằng chứng bị cũ (dòng chữ "Sửa giới hạn tại Cấu hình AI"). Đóng Q5 (phụ đề bảng bài toán). | 2026-10-11 | Claude |
 | V0.12 | Sheet 5, 6 | Theo báo cáo `06-plan/reports/261014-1054-admin-ux-review/` (B1, mức Blocker): prototype dựng nút "Đánh dấu đã xem" trên thẻ cảnh báo bất thường (Khu vực E NO 4, EVT-5; bấm thì thẻ rời danh sách và có toast "Đã đánh dấu cảnh báo là đã xem."), dòng "Không có cảnh báo nào" khi danh sách rỗng (Sheet 6 E NO 1) và liên kết "Ngân hàng bài" sang `/admin/problems` ở khối G (G NO 3, EVT-8). Chỉ đổi state cục bộ, chưa có API. Không đổi spec | 2026-10-14 | Claude |
+| V0.13 | Hiện trạng bản dựng, Q5 | Nối API thật (Merge M4): thêm mục "Hiện trạng bản dựng" với bảng khối, nguồn F5 §18 và §27 đến §31, `file:dòng`. Phụ đề bảng bài toán đổi theo DD F5 §31.3 (chỉ phân tích bài giải và sinh testcase; **chưa** sửa chữ ở Q5 và Sheet 5, chờ chủ dự án xác nhận). Bỏ dòng mã lớp ở bảng người học (không có nguồn, bậc 2). Không đổi spec | 2026-11-12 | Claude |
 
 ---
 
@@ -552,6 +553,24 @@ Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 
 ---
 
+## Hiện trạng bản dựng
+
+Bản dựng nối API thật ngày 2026-11-12 (Merge M4); chế độ mock vẫn chạy trên cùng các hook. Bảng 1 liệt kê từng khối của màn với nguồn dữ liệu và vị trí trong mã (`05-coding/frontend/src/`); bản đối chiếu hợp đồng nằm ở `03-dd/screens/admin/ADM0302_ai_usage.md` mục 2.
+
+**Bảng 1: Hiện trạng bản dựng `ADM0302`**
+
+| Khối | Nguồn dữ liệu thật | Mã (file:dòng) | Ghi chú |
+| :--- | :--- | :--- | :--- |
+| Bộ chọn khoảng (A) | Chỉ đổi query biểu đồ ngày | `views/admin/ai-usage/ui/admin-ai-usage-view.tsx:93` | Mặc định 14 ngày (bằng mặc định máy chủ); chưa giữ trong URL |
+| Token theo ngày (C) | F5 §27 `GET /ai/admin/usage/daily?rangeDays` | `admin-ai-usage-view.tsx:139`, `views/admin/ai-usage/api/queries.ts:24`, `api/real-usage.ts:65` | Key query chứa kỳ, giữ dữ liệu cũ khi đổi kỳ |
+| Hạn mức tháng và theo tính năng (D) | F5 §18 `GET /ai/admin/token-budget` | `admin-ai-usage-view.tsx:176`, `entities/ai-budget/api/real-budget.ts:53` | Không phụ thuộc kỳ; tỉ trọng tính ở màn từ `featureBreakdown` |
+| Cảnh báo (E) | F5 §28 `GET .../usage/alerts` | `admin-ai-usage-view.tsx:261`, `api/real-usage.ts:87` | Cảnh báo ngân sách chuyển thành "đã khoá" khi §18 báo khoá (`:282`) |
+| Đánh dấu đã xem (E NO 4) | F5 §29 `POST .../alerts/{alertId}/review` | `admin-ai-usage-view.tsx:268`, `api/real-usage.ts:103` | `AIR-120` tải lại danh sách (`:274`); `AIR-301` giữ cảnh báo |
+| Người học dùng nhiều nhất (F) | F5 §30 `GET .../usage/top-users` | `admin-ai-usage-view.tsx:346`, `api/real-usage.ts:108` | Bỏ dòng mã lớp (`K21`), máy chủ không có nguồn; tên và chi phí `null` hiện `-` |
+| Bài toán tốn token nhất (G) | F5 §31 `GET .../usage/top-problems` | `admin-ai-usage-view.tsx:429`, `api/real-usage.ts:120` | Phụ đề đổi thành "Phân tích bài giải và sinh testcase trong 30 ngày" |
+
+Mỗi khối có query riêng; một khối lỗi hiện lý do `AIR-*` bằng chữ và nút thử lại riêng, các khối khác vẫn đọc được. Chưa có ở bản dựng: tham số `days` trên URL (DD BR-SC-01), và bộ chọn "Xem thêm" cho hai bảng xếp hạng (máy chủ mặc định 5 dòng).
+
 ## Câu hỏi mở
 
 | # | Câu hỏi | Vì sao chưa trả lời được | Chủ sở hữu |
@@ -560,7 +579,7 @@ Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 | Q2 | ~~Đơn giá quy đổi token sang USD theo từng `model_name` lấy ở đâu — `application.yml`, một bảng cấu hình mới, hay nhập tay?~~ Từ 2026-10-01 chỉ còn ảnh hưởng cột "Chi phí" của bảng xếp hạng người học (thẻ "Chi phí tạm tính" đã bỏ). **ĐÃ CHỐT 2026-10-01 (owner uỷ quyền cân nhắc), xem `DEC-2026-1001-admin-configurable-settings`:** đơn giá từng `model_name` do ADMIN tự nhập và sửa trên màn cấu hình AI, không hard-code trong `application.yml`, không giới hạn số model; model chưa có đơn giá thì cột "Chi phí" hiển thị `-` thay vì ước tính. Nơi lưu đơn giá (bảng cấu hình mới trong `ai-review`) thuộc DD, `02-bd/database/F5_ai-review.md` chưa thiết kế. | `token_usage` chỉ lưu `model_name` và số token, không có cột đơn giá; `02-bd/database/F5_ai-review.md` không thiết kế nơi lưu đơn giá | DD `ai-review` |
 | Q3 | ~~Tính năng "Sinh testcase" (F2-14) ghi tiêu thụ token vào đâu?~~ **ĐÃ CHỐT 2026-10-10 (chủ dự án chấp nhận đề xuất, bậc 4):** vào `ai.token_usage` với `feature_code = GENERATE_TESTCASE` và `owner_id = problems.id` (`DEC-2026-1010-ai-generate-testcase-feature-code`) | - | Đã đóng |
 | Q4 | ~~Liên kết "Xem tất cả" dẫn tới đâu~~ **ĐÃ CHỐT 2026-10-10:** bỏ liên kết (không có đích, bậc 1 và 3) | - | Đã đóng |
-| Q5 | ~~Phụ đề bảng "Bài toán tốn token nhất" và chữ "lượt gợi ý" cần đổi thành gì~~ **ĐÃ CHỐT 2026-10-11:** phụ đề "Phân tích, phỏng vấn và sinh testcase cộng lại"; cột "lượt gợi ý" đã bỏ. Chấm câu luyện không vào bảng này vì `owner_id` của nó là `user_answers.id`, không gắn bài toán | - | Đã đóng |
+| Q5 | ~~Phụ đề bảng "Bài toán tốn token nhất" và chữ "lượt gợi ý" cần đổi thành gì~~ **ĐÃ CHỐT 2026-10-11:** phụ đề "Phân tích bài giải và sinh testcase trong 30 ngày" (sửa 2026-11-12 theo DD F5 mục 31.3 và bản dựng nối máy chủ thật; chủ dự án duyệt); cột "lượt gợi ý" đã bỏ. Chấm câu luyện không vào bảng này vì `owner_id` của nó là `user_answers.id`, không gắn bài toán | - | Đã đóng |
 | Q6 | Ghép tên người học và tên bài toán vào hai bảng xếp hạng bằng cách nào — gọi port đọc của `identity`/`problem-bank` cho từng dòng, hay `ai-review` giữ một bản sao tên? Riêng bài toán còn phải đi từ `token_usage.owner_id` về `problem_id` vì `token_usage` không có cột đó [Nguồn: 02-bd/database/F5_ai-review.md:104-115]. | BD module `ai-review` chưa thiết kế port đọc phục vụ thống kê | DD `ai-review` + `problem-bank` |
 | Q7 | ~~Ngưỡng phần trăm để thanh tiến độ ngân sách đổi sang màu cảnh báo là bao nhiêu?~~ **ĐÃ CHỐT 2026-10-01 (owner uỷ quyền cân nhắc), xem `DEC-2026-1001-admin-configurable-settings`:** ngưỡng do ADMIN tự đặt cùng chỗ với hạn mức token, mặc định 70% theo ví dụ của RD, không khoá cứng. | RD nêu "ví dụ 70%" [Nguồn: 01-rd/screens/admin/ADM0302_ai_usage.md:50-52] nhưng không chốt; prototype chỉ có một dữ liệu mẫu 74% [Nguồn: 09-layoutBase/Admin - Token AI.dc.html:527] | Đã đóng |
 | Q8 | ~~Cảnh báo "Prompt sinh testcase tốn hơn dự kiến" thuộc cơ chế nào~~ **ĐÃ CHỐT 2026-10-10:** bỏ cảnh báo (không khớp `ai_token_budget_configs` lẫn `ai_usage_anomaly_alerts`, bậc 2); giữ hai cảnh báo có nguồn | - | Đã đóng |

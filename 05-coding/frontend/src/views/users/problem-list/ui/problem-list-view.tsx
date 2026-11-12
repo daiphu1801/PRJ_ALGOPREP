@@ -36,6 +36,7 @@ import {
   type CatalogRow,
   type SolveState,
 } from "@/entities/problem";
+import { useReviewedProblemIds } from "@/entities/solution-review";
 import { useApiErrorMessage, useLocale, useT } from "@/shared/i18n";
 import { formatDateVN, useDebounced, usePersistedPageSize } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
@@ -86,6 +87,8 @@ export function ProblemListView() {
   const searchParams = useSearchParams();
   const levels = useProblemLevels();
   const topics = useTopicProgress();
+  // F5 #5 (real mode): label "analysed" when the catalog row itself does not know. A failed call leaves it empty.
+  const reviewedIds = useReviewedProblemIds().data;
   const levelsFetching = useIsFetching({ queryKey: ["problem", "levels"] }) > 0;
   // A value the URL carries that this screen does not know falls back to the default.
   const statusParam = searchParams.get("status");
@@ -242,7 +245,7 @@ export function ProblemListView() {
               <Badge variant="neutral">{t("submissionModel.stdioOnly")}</Badge>
             ) : null}
             {/* null = F5 did not answer (or is not built): no badge rather than a guess. */}
-            {problem.hasSolutionReview ? (
+            {(problem.hasSolutionReview ?? reviewedIds?.has(problem.id)) ? (
               <Badge variant="teal">{t("table.hasReview")}</Badge>
             ) : null}
           </div>

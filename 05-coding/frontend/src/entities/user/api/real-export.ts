@@ -1,8 +1,7 @@
 // Real calls for `GET /identity/me/export` (03-dd/api/F1_identity.md #16): `scope=profile` answers
-// JSON, `scope=submissions` answers a CSV file. The interview transcripts (#17) need ai-review,
-// which does not exist yet, so that one fails here with the same 501 the server would answer and
-// the card shows its usual error toast instead of handing over an empty file.
-import { api, ApiError } from "@/shared/api";
+// JSON, `scope=submissions` answers a CSV file. Transcript export (#17) downloads the server's
+// caller-scoped JSON file and preserves rate-limit/dependency errors for the settings card.
+import { api } from "@/shared/api";
 
 /** `truncated`: the server cut the submission file at its newest 2000 rows (header X-Export-Truncated). */
 export type ExportedFile = { blob: Blob; truncated: boolean };
@@ -29,10 +28,7 @@ export async function realExportMyData(
   };
 }
 
-export function realExportInterviewTranscripts(): Promise<Blob> {
-  return Promise.reject(notBuilt());
-}
-
-function notBuilt(): ApiError {
-  return new ApiError("NOT_IMPLEMENTED", 501, "Arrives with F5");
+export async function realExportInterviewTranscripts(): Promise<Blob> {
+  return (await api.downloadFile("/identity/me/export/interview-transcripts"))
+    .blob;
 }

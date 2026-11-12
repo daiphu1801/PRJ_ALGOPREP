@@ -20,6 +20,8 @@ class SubmissionReadErrorAdvice {
 
   @ExceptionHandler({
     org.springframework.dao.DataAccessException.class,
+    org.springframework.transaction.CannotCreateTransactionException.class,
+    org.springframework.transaction.TransactionTimedOutException.class,
     IllegalStateException.class
   })
   ProblemDetail unavailable() {

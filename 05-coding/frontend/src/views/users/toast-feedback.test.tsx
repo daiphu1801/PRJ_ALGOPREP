@@ -10,7 +10,8 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { mockUrl } from "@/shared/test/mock-url";
 import { resetRecallAndBookmarkState } from "@/entities/interview-question";
 import { toast, useToasts } from "@/shared/lib/toast-store";
 import { InterviewBankListView } from "./interview-bank-list/ui/interview-bank-list-view";
@@ -29,12 +30,14 @@ vi.mock("@/shared/i18n", () => ({
   useLocale: () => "vi",
   useApiErrorMessage: () => () => "apiError",
 }));
-vi.mock("next/navigation", () => ({
-  useParams: () => ({ problemId: "1", submissionId: "SB-90412" }),
-  useRouter: () => ({ push: vi.fn(), replace: vi.fn() }),
-  usePathname: () => "/problems",
-  useSearchParams: () => new URLSearchParams(),
-}));
+vi.mock("next/navigation", async () => {
+  const { navigationMock, mockUrl } = await import("@/shared/test/mock-url");
+  return {
+    ...navigationMock({ push: (url: string) => mockUrl.reset(url) }),
+    useParams: () => ({ problemId: "1", submissionId: "SB-90412" }),
+  };
+});
+beforeEach(() => mockUrl.reset("/problems"));
 
 // The three problem views read through TanStack Query; each test gets a fresh client.
 function renderWithQuery(node: ReactNode) {
@@ -90,21 +93,24 @@ describe("student views raise toasts for operation results", () => {
     fireEvent.change(search, { target: { value: "two" } });
     expect(read()).toEqual([]);
     fireEvent.keyDown(search, { key: "Enter" });
-    expect(read()[0]?.[0]).toBe("info");
+    await waitFor(() => expect(read()[0]?.[0]).toBe("info"));
   });
 
   it("interview bank: bookmark raises success", async () => {
     const read = observe();
     renderWithQuery(<InterviewBankListView />);
     fireEvent.click((await screen.findAllByLabelText("bookmarkLabel"))[0]!);
-    expect(read()[0]?.[0]).toBe("success");
+    // The bookmark is saved by the (mock) server first, so the toast follows its answer.
+    await waitFor(() => expect(read()[0]?.[0]).toBe("success"));
   });
 
   it("interview question detail: bookmark raises success", async () => {
     const read = observe();
     renderWithQuery(<InterviewQuestionDetailView questionId="IQ-014" />);
     fireEvent.click(await screen.findByText("header.bookmark"));
-    expect(read()).toEqual([["success", "toast.bookmarked"]]);
+    await waitFor(() =>
+      expect(read()).toEqual([["success", "toast.bookmarked"]]),
+    );
   });
 
   it("problem detail: save toggle and sample run", async () => {
@@ -113,9 +119,7 @@ describe("student views raise toasts for operation results", () => {
     // Problem 1 starts saved: first click un-saves, second saves again.
     fireEvent.click(await screen.findByText("panel.btnUnsave"));
     // The bookmark goes through a mutation now, so the toast follows the (mock) answer.
-    await waitFor(() =>
-      expect(read()).toEqual([["success", "toast.unsaved"]]),
-    );
+    await waitFor(() => expect(read()).toEqual([["success", "toast.unsaved"]]));
     fireEvent.click(await screen.findByText("panel.btnSave"));
     await waitFor(() =>
       expect(read().at(-1)).toEqual(["success", "toast.saved"]),

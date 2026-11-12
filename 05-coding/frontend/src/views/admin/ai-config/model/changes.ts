@@ -86,6 +86,24 @@ export function bumpVersion(version: string): string {
   return match ? `v${match[1]}.${Number(match[2]) + 1}` : version;
 }
 
+/** The editable copy at load: the live page with every server-stored DRAFT laid over it. */
+export function withServerDrafts(page: AiConfigPage): AiConfigPage {
+  const guards = { ...page.guards };
+  const prompts = page.prompts.map((prompt) => {
+    const stored = page.drafts[prompt.feature];
+    if (!stored) return prompt;
+    if (stored.guards && isGuarded(prompt.feature)) {
+      guards[prompt.feature] = { ...stored.guards };
+    }
+    return {
+      ...prompt,
+      systemInstruction: stored.systemInstruction,
+      modelId: stored.modelId,
+    };
+  });
+  return { ...page, prompts, guards };
+}
+
 /** Overwrites the draft instruction of one feature (edit popup save, or restoring a version). */
 export function withInstruction(
   page: AiConfigPage,

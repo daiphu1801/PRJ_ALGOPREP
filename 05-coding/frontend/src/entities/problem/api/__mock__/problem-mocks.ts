@@ -366,10 +366,6 @@ const PROBLEM_DETAILS: Record<string, ProblemDetail> = {
     solutionReview: {
       timeComplexity: "O(n)",
       spaceComplexity: "O(n)",
-      notes: [
-        "Dùng HashMap để tra cứu phần bù trong một lượt duyệt.",
-        "Không có lỗi biên đáng chú ý.",
-      ],
     },
   },
   "121": {

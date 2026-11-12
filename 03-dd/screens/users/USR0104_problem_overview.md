@@ -25,6 +25,7 @@ Bảng 0.1 là bìa tài liệu.
 | Ver | Nội dung | Ngày |
 | :--- | :--- | :--- |
 | V0.1 | Tạo DD màn; ánh xạ đủ hợp đồng và tiêu chí liên module | 2026-10-24 |
+| V0.2 | Thẻ Solution Review chỉ hiện hai độ phức tạp (đã đúng); gỡ trường `notes` khỏi kiểu `SolutionReviewQuickInsight` dùng chung (2026-11-12, owner, ponytail bậc 2) | 2026-11-12 |
 
 **Bảng 0.3: Ký hiệu nguồn.**
 

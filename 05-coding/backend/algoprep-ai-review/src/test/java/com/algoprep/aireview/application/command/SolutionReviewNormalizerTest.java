@@ -120,4 +120,15 @@ class SolutionReviewNormalizerTest {
     rejected(valid("IMPROVABLE", "").replace("\"actualTime\":\"O(n)\",", ""));
     rejected(valid("IMPROVABLE", "").replace("\"complexity\":", "\"cx\":"));
   }
+
+  /** Real shape a free model returned 2026-11-12 when it was never told the key names. */
+  @Test
+  void anInventedFlatSnakeCaseAnswerIsStillRejected() {
+    rejected(
+        """
+        {"approach":"Brute force","time_complexity":"O(n^2)","time_reasoning":"x",
+         "space_complexity":"O(1)","space_reasoning":"y","strengths":["a"],"improvements":["b"],
+         "edge_cases":["c"],"readability_score":4,"follow_up_topics":["hash"]}
+        """);
+  }
 }

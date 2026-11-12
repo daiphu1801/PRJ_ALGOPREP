@@ -106,18 +106,7 @@ class InterviewScoringHandlersTest {
             sessions,
             mock(SubmissionSnapshotPort.class),
             mock(ProblemContextPort.class));
-    var scorer =
-        new InterviewScorer(
-            sessions,
-            scoring,
-            new InterviewScoreStore(scoring, outbox, ids, clock),
-            llm,
-            new ScoreCollaborators(
-                memory,
-                new InterviewLlmCall(templates, llm, usage, ids),
-                new InterviewLimits(3, 6),
-                usage,
-                ids));
+    var scorer = scorer(memory, InterviewScorer.DEFAULT_TIMEOUT_SEC);
     complete = new CompleteInterviewSessionCommandHandler(sessions, locks, scorer);
     sweep =
         new SweepIdleInterviewSessionsCommandHandler(
@@ -165,6 +154,54 @@ class InterviewScoringHandlersTest {
         new RubricScore(RubricCriterion.TECHNICAL_ACCURACY, new BigDecimal("6.00"), "b"),
         new RubricScore(RubricCriterion.PUSHBACK_HANDLING, new BigDecimal("7.00"), "c"),
         new RubricScore(RubricCriterion.COMPLEXITY_AWARENESS, new BigDecimal("5.00"), "d"));
+  }
+
+  private InterviewScorer scorer(InterviewMemory memory, long timeoutSec) {
+    var scorer =
+        new InterviewScorer(
+            sessions,
+            scoring,
+            new InterviewScoreStore(scoring, outbox, ids, clock),
+            llm,
+            new ScoreCollaborators(
+                memory,
+                new InterviewLlmCall(templates, llm, usage, ids),
+                new InterviewLimits(3, 6),
+                usage,
+                ids));
+    scorer.totalTimeoutSec = timeoutSec;
+    return scorer;
+  }
+
+  private InterviewMemory memory() {
+    return new InterviewMemory(
+        memoryPort, sessions, mock(SubmissionSnapshotPort.class), mock(ProblemContextPort.class));
+  }
+
+  @Test
+  void theScoringTimeoutDefaultsToNinetySecondsAndTheKeyIsBound() throws Exception {
+    var param =
+        InterviewScorer.class
+            .getDeclaredField("totalTimeoutSec")
+            .getAnnotation(org.springframework.beans.factory.annotation.Value.class);
+    assertThat(param.value()).isEqualTo("${algoprep.ai.llm.timeout.rubric-total-sec:90}");
+    InterviewSession s = running(2);
+    complete.complete(user, s.id());
+    var options = ArgumentCaptor.forClass(com.algoprep.aireview.domain.model.CallOptions.class);
+    verify(llm).completeStructured(any(), any(), any(), any(), options.capture());
+    assertThat(options.getValue().totalTimeout()).isEqualTo(java.time.Duration.ofSeconds(90));
+  }
+
+  @Test
+  void anOverriddenScoringTimeoutReachesTheProviderCall() {
+    var shorter = scorer(memory(), 7);
+    var handler = new CompleteInterviewSessionCommandHandler(sessions, locks, shorter);
+    InterviewSession s = running(2);
+    handler.complete(user, s.id());
+    var options = ArgumentCaptor.forClass(com.algoprep.aireview.domain.model.CallOptions.class);
+    verify(llm).completeStructured(any(), any(), any(), any(), options.capture());
+    assertThat(options.getValue().totalTimeout()).isEqualTo(java.time.Duration.ofSeconds(7));
+    assertThat(options.getValue().firstTokenTimeout()).isEqualTo(java.time.Duration.ofSeconds(7));
   }
 
   @Test

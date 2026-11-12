@@ -46,6 +46,7 @@ import {
   type SubmissionRunResult,
   type WrapperMode,
 } from "@/entities/problem";
+import { useReviewQuickInsight } from "@/entities/solution-review";
 import { useSubmissionProgress } from "@/entities/submission";
 import { isMockMode } from "@/shared/api";
 import { useApiErrorMessage, useLocale, useT } from "@/shared/i18n";
@@ -488,6 +489,18 @@ function Workspace({
   }
 
   const latestSubmission = detail.mySubmissions[0];
+  // F5 #6 (real mode only): the real problem endpoints leave `detail.solutionReview` null, so the
+  // latest stored report fills the tab. F5 #6 carries no notes, so the card shows complexity only.
+  const insight = useReviewQuickInsight(problemId).data;
+  const solutionReview =
+    detail.solutionReview ??
+    (insight
+      ? {
+          timeComplexity: insight.timeComplexity,
+          spaceComplexity: insight.spaceComplexity,
+        }
+      : null);
+  const reviewSubmissionId = insight?.submissionId ?? latestSubmission?.id;
   const samplePassed =
     sampleRun?.cases.filter((item) => item.passed).length ?? 0;
 
@@ -595,7 +608,7 @@ function Workspace({
         ) : null}
 
         {tab === "review" ? (
-          detail.solutionReview ? (
+          solutionReview ? (
             <div>
               <div className="mb-3 grid grid-cols-2 gap-2">
                 <div className="rounded-lg border border-[var(--color-border)] p-2.5 text-center">
@@ -603,7 +616,7 @@ function Workspace({
                     {t("panel.timeComplexity")}
                   </p>
                   <p className="font-mono text-[15px] font-semibold">
-                    {detail.solutionReview.timeComplexity}
+                    {solutionReview.timeComplexity}
                   </p>
                 </div>
                 <div className="rounded-lg border border-[var(--color-border)] p-2.5 text-center">
@@ -611,26 +624,21 @@ function Workspace({
                     {t("panel.spaceComplexity")}
                   </p>
                   <p className="font-mono text-[15px] font-semibold">
-                    {detail.solutionReview.spaceComplexity}
+                    {solutionReview.spaceComplexity}
                   </p>
                 </div>
               </div>
-              <ul className="list-disc pl-4 text-[12.5px] text-[var(--color-text-muted)]">
-                {detail.solutionReview.notes.map((note) => (
-                  <li key={note}>{note}</li>
-                ))}
-              </ul>
               {/* Both links need a submission to point at; without one the route would be broken. */}
-              {latestSubmission ? (
+              {reviewSubmissionId ? (
                 <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1">
                   <SeeAllLink
-                    href={`/submissions/${latestSubmission.id}/review`}
+                    href={`/submissions/${reviewSubmissionId}/review`}
                     className="mt-0"
                   >
                     {t("panel.linkFullReport")}
                   </SeeAllLink>
                   <SeeAllLink
-                    href={`/submissions/${latestSubmission.id}/interview`}
+                    href={`/submissions/${reviewSubmissionId}/interview`}
                     className="mt-0"
                   >
                     {t("panel.linkMockInterview")}

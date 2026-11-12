@@ -10,6 +10,11 @@ const nextConfig: NextConfig = {
   // Off by request — the dev-only floating "N" badge (route/build indicator) was mistaken for an
   // app button during UI review. Dev-mode only; never renders in production either way.
   devIndicators: false,
+  // Next gzips proxied responses, which makes the rewrite hold an SSE stream (F5 mock interview turns)
+  // until it ends; measured 2026-11-12: 1 chunk at the end with gzip, 6 incremental chunks without.
+  compress: false,
+  // F2 generation allows 120s for the provider plus sandbox work; keep the API response reachable.
+  experimental: { proxyTimeout: 240_000 },
   // The browser talks to the backend through this same-origin proxy, so no CORS is needed and the
   // refresh cookie (Path=/api/v1/identity/auth, SameSite=Strict) is sent as-is. Point
   // NEXT_PUBLIC_API_BASE_URL at "/api/v1" to use it; API_PROXY_TARGET is the backend address as

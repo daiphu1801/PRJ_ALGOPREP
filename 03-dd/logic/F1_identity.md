@@ -242,7 +242,7 @@ tiên khớp điều kiện thắng):
 - **Xử lý lỗi**: publish thất bại (RabbitMQ down) → dùng outbox pattern tương tự `judge-orchestration` nếu
   cần đảm bảo at-least-once; ở quy mô đồ án, chấp nhận log lỗi + retry thủ công qua endpoint idempotent nếu
   message mất — không xây outbox riêng cho `identity` chỉ vì một sự kiện này (ponytail: chấp nhận rủi ro
-  mất một message hiếm gặp, nâng cấp lên outbox khi có sự kiện phát ra thứ hai cần đảm bảo tương tự).
+  mất một message hiếm gặp). Cập nhật 2026-11-11: chỉ ClassDeleted được nâng lên Outbox ở BR-22; StudentRemovedFromClass chưa có consumer, giữ best-effort ngoài phạm vi đóng F2.
   **Chốt 2026-10-27:** khi gọi lại endpoint sau commit, không đổi `left_at`, trả `200` và phát lại
   `StudentRemovedFromClass` với `occurredAt = left_at` gốc. Lần gọi lại có thể tạo bản sao event nếu
   lần phát trước đã thành công; consumer xử lý idempotent theo `(classId, studentId, occurredAt)`.
@@ -255,9 +255,9 @@ tiên khớp điều kiện thắng):
 - **Điều kiện**: `classes.instructor_id = :callerId`, sai chủ lớp thì từ chối như các thao tác lớp khác (BR-11).
 - **Các bước**:
   1. Trong một giao dịch: `DELETE FROM classes WHERE id = :classId`. Cơ sở dữ liệu tự xử lý: `class_invite_codes` và `class_enrollments` xoá theo (`ON DELETE CASCADE`); `identity_recent_activity.scope_class_id` về `NULL` (`ON DELETE SET NULL`). Lịch sử làm bài của học viên không bị đụng (nằm ở `judge`).
-  2. Sau khi commit, publish `ClassDeleted { classId, occurredAt }` lên RabbitMQ, cùng kiểu với `StudentRemovedFromClass` ở BR-11.
+  2. Ghi phong bì `ClassDeleted` vào `identity.outbox_events` trong cùng giao dịch xóa lớp: UUID `eventId`, `occurredAt`, `payload.classId`, routing key `class.deleted`. Relay phát sau commit tới exchange `algoprep.identity.events`; chỉ ghi `published_at` sau publisher confirm không có mandatory return.
   3. `problem-bank` nhận sự kiện và đặt `class_assignments.removed_at = now()` cho các dòng của lớp (xoá mềm, idempotent). `identity` không ghi vào schema `problem-bank`.
-- **Xử lý lỗi**: publish thất bại thì giữ cách của BR-11 (log lỗi, chấp nhận mất hiếm gặp, chưa có outbox riêng cho `identity`). Hệ quả nếu mất: dòng `class_assignments` của lớp đã xoá còn `removed_at = NULL` (tham chiếu treo mềm, không vỡ khoá vì không có FK chéo schema). Đây là sự kiện phát ra thứ hai, tức đã đạt điều kiện "nâng lên outbox" mà BR-11 ghi; đề xuất cân nhắc outbox cho `identity` `[SoT: Suy luận]`.
+- **Xử lý lỗi — cập nhật 2026-11-11**: ghi Outbox lỗi thì rollback cả xóa lớp; broker lỗi sau commit giữ pending và retry cùng `eventId`. F2 queue `problem-bank.class-deleted` nhận sự kiện; điều kiện `removed_at IS NULL` bảo đảm idempotent tự nhiên. Không xóa problem/submission, không audit hoặc phát `ProblemUnassignedFromClass` (BR-19 F2). `StudentRemovedFromClass` giữ best-effort BR-11, hiện không có consumer, không mở rộng sang Outbox trong đợt F2. `DEC-2026-1110-class-deleted-durable-outbox` thay phần ClassDeleted của quyết định hoãn cũ.
 - **Kết quả**: không để lại dòng nào của `identity` trỏ vào lớp đã xoá.
 
 ## BR-12 — Tỉ lệ hoàn thành của lớp (`completionPct`, tính khi đọc)

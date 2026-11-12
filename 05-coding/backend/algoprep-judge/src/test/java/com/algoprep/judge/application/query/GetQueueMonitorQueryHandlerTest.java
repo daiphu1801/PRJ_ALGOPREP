@@ -75,11 +75,19 @@ class GetQueueMonitorQueryHandlerTest {
   }
 
   @Test
-  void aConfiguredLimitThatDisagreesWithTheFixedRuntimeFailsFast() {
-    for (int value : new int[] {0, 1, 7, 9, Integer.MAX_VALUE}) {
+  void aConfiguredLimitMustBePositive() {
+    for (int value : new int[] {0, -1}) {
       assertThatThrownBy(
               () -> new GetQueueMonitorQueryHandler(repository, value).afterPropertiesSet())
           .isInstanceOf(IllegalStateException.class);
     }
+  }
+
+  @Test
+  void snapshotAdvertisesTheConfiguredRuntimeCap() {
+    when(repository.snapshot()).thenReturn(new Facts(Instant.EPOCH, false, true, 5, 6, 100L, 10));
+    var configured = new GetQueueMonitorQueryHandler(repository, 3);
+    configured.afterPropertiesSet();
+    assertThat(configured.read().workerAutoscaleMax()).isEqualTo(3);
   }
 }

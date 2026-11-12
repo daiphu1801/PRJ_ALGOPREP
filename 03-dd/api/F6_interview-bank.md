@@ -319,6 +319,8 @@ BR-IB-06: bảng cố định `FORGOTTEN` 1, `VAGUE` 3, `KNOWN` 7 ngày; `next_r
 | :--- | :--- | :--- | :--- |
 | Có phản hồi | `COMPLETED` | `FeedbackDto` | `null` |
 | AI hoặc cổng ngân sách hỏng, quá hạn (30 giây) | `FAILED` | `null` | `INB-501` |
+
+Quy tắc nội dung rỗng (2026-11-12, `DEC-2026-1112-f5-scoring-timeout-configurable-and-f6-null-content`): `content_markdown` là tuỳ chọn (nhập CSV, tạo tay), `null` được gửi sang AI như chuỗi rỗng; tiêu đề và rubric vẫn là khối dữ liệu. Mọi lỗi AI bị nuốt thành `INB-501` đều ghi log `WARN` kèm tên lớp và thông điệp lỗi, không ghi văn bản câu trả lời, khoá hay stack.
 | AI trả sai lược đồ | `FAILED` | `null` | `INB-502` |
 
 Giao diện hiện "AI không khả dụng" khi `FAILED`; câu trả lời không mất (ARCH6:270-276).

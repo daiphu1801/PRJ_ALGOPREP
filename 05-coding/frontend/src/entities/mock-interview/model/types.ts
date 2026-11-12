@@ -19,6 +19,8 @@ export type ChatMessage = {
   role: ChatRole;
   content: string;
   stage: InterviewStage;
+  /** A hint block lives only on the client (the server does not store hints), drawn apart from AI turns. */
+  kind?: "hint";
 };
 
 /** 4 fixed criteria, fixed weights — 02-bd/database/F5_ai-review.md:96-97. */
@@ -43,6 +45,8 @@ export type RubricScore = {
   code: RubricCriterionCode;
   score: number;
   comment: string;
+  /** From the server (`criteria[].weightPercent`); the mock leaves it out and the constant applies. */
+  weightPercent?: number;
 };
 
 export type InterviewResult = {

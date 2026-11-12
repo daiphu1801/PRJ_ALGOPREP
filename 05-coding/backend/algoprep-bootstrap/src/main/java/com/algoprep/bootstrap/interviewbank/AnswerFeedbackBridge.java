@@ -19,6 +19,8 @@ import com.algoprep.interviewbank.domain.model.RubricCriterion;
 import com.algoprep.interviewbank.domain.ports.out.AnswerFeedbackPort;
 import java.util.List;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -29,6 +31,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 final class AnswerFeedbackBridge implements AnswerFeedbackPort {
+  private static final Logger LOG = LoggerFactory.getLogger(AnswerFeedbackBridge.class);
+
   private final ReservePracticeFeedbackUseCase reserve;
   private final RefundPracticeFeedbackUseCase refund;
   private final ComparePracticeAnswerUseCase compare;
@@ -90,6 +94,11 @@ final class AnswerFeedbackBridge implements AnswerFeedbackPort {
     } catch (AiInvalidResponseException invalid) {
       throw new FeedbackInvalidException(invalid);
     } catch (RuntimeException failure) {
+      // Class and message only: never the answer text, the key or a stack with data.
+      LOG.warn(
+          "Practice feedback call failed: {}: {}",
+          failure.getClass().getName(),
+          failure.getMessage());
       throw new FeedbackUnavailableException(failure);
     }
     return new FeedbackResult(

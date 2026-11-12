@@ -72,7 +72,7 @@ BD chỉ chốt **có kênh event, không có import trực tiếp**.
 | `StudentRemovedFromClass { classId, studentId, occurredAt }` | Giảng viên gỡ học viên khỏi lớp (F1-26), BR-11 | Không module nào phải xử lý dữ liệu (`DEC-2026-1014-keep-learning-history-on-leave`) | Chỉ `class_enrollments.left_at` đổi |
 | `ClassDeleted { classId, occurredAt }` | Giảng viên xoá cứng lớp (F1-24), BR-22 | `problem-bank` đặt `removed_at = now()` cho các dòng `class_assignments` của lớp | `class_invite_codes`, `class_enrollments` đi theo bằng CASCADE; `identity_recent_activity.scope_class_id` về NULL bằng SET NULL (`02-bd/database/F1_identity.md` mục 1.8, 1.12) |
 
-`ClassDeleted` thuộc `DEC-2026-1022-db-sync-round4` mục 3 (tiêu chí ponytail bậc 6: không để tham chiếu treo sau xoá cứng). Phát sau khi giao dịch xoá commit; cơ chế phát đi theo BR-22 (cùng kiểu `StudentRemovedFromClass`, chưa có outbox riêng cho `identity`).
+`ClassDeleted` thuộc `DEC-2026-1022-db-sync-round4` mục 3. Cập nhật 2026-11-11: ghi `identity.outbox_events` cùng giao dịch xóa lớp, relay sau commit, publisher confirm không có mandatory return mới đánh dấu đã phát. F2 queue `problem-bank.class-deleted` nhận `class.deleted` từ `algoprep.identity.events`. `StudentRemovedFromClass` vẫn best-effort BR-11, hiện không có consumer (`DEC-2026-1110-class-deleted-durable-outbox`).
 
 ### 3.2. Cung cấp outbound cho module khác gọi vào (bị gọi, không phải identity gọi ra)
 

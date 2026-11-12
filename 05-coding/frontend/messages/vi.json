@@ -69,6 +69,7 @@
     "IDT-506": "Chưa tải được số liệu của khối này. Vui lòng thử lại sau ít phút",
     "IDT-507": "Chưa tải được số liệu lớp học. Vui lòng thử lại sau ít phút",
     "IDT-508": "Chưa lấy được lịch sử nộp bài để xuất. Vui lòng thử lại sau ít phút",
+    "IDT-509": "Chưa lấy được hội thoại phỏng vấn để xuất. Vui lòng thử lại sau ít phút",
     "IDT-V01": "Mật khẩu tối thiểu 8 ký tự",
     "IDT-V02": "Mật khẩu tối đa 72 byte (chữ có dấu chiếm nhiều byte hơn)",
     "IDT-V03": "Mật khẩu cần có ít nhất một chữ cái và một chữ số",
@@ -122,6 +123,9 @@
     "HRN-003": "Tạm thời không tải được mã khung. Hãy thử lại.",
     "HRN-004": "Bài này chỉ hỗ trợ Standard I/O.",
     "HRN-005": "Chữ ký hàm của bài chưa sẵn sàng.",
+    "HRN-060": "Đặc tả hàm chưa hợp lệ. Hãy kiểm tra các trường được đánh dấu.",
+    "HRN-061": "Bạn xem trước quá nhanh. Hệ thống sẽ thử lại sau giây lát.",
+    "HRN-062": "Đặc tả xem trước vượt quá giới hạn 16 KB.",
     "PRB-001": "Dữ liệu chưa hợp lệ. Vui lòng kiểm tra lại.",
     "PRB-002": "Bạn không có quyền thực hiện thao tác này.",
     "PRB-003": "Bạn chỉ được thay đổi bài toán do chính mình soạn.",
@@ -164,6 +168,89 @@
     "PRB-056": "Chưa ghi được thay đổi. Hãy thử lại sau.",
     "PRB-057": "Chưa đọc được trạng thái giải của bạn nên chưa hiển thị được tiến độ. Hãy thử lại sau.",
     "PRB-058": "Chưa đọc được danh sách lớp. Hãy thử lại sau.",
+    "INB-010": "Câu hỏi này không còn tồn tại hoặc đã bị gỡ.",
+    "INB-011": "Chủ đề không tồn tại. Hãy tải lại danh sách.",
+    "INB-012": "Mức độ không tồn tại. Hãy tải lại danh sách.",
+    "INB-020": "Tên này đã có. Hãy chọn tên khác.",
+    "INB-021": "Tên mức độ này đã có. Hãy chọn tên khác.",
+    "INB-030": "Chủ đề còn câu hỏi đang dùng nên chưa xoá được.",
+    "INB-031": "Mức độ còn câu hỏi đang dùng nên chưa xoá được.",
+    "INB-032": "Đây là mức độ cuối cùng nên không xoá được.",
+    "INB-033": "Tổng trọng số các tiêu chí phải bằng 100.",
+    "INB-034": "Thứ tự gửi lên không khớp danh sách hiện có. Hãy tải lại danh sách.",
+    "INB-035": "Chủ đề hoặc mức độ đã chọn không còn tồn tại.",
+    "INB-040": "Câu hỏi này chưa có tiêu chí chấm nên chưa luyện với AI được.",
+    "INB-041": "Bạn đã gửi quá 20 lượt trong một giờ. Hãy thử lại sau.",
+    "INB-042": "Ngân sách AI của bạn đã hết. Hãy thử lại sau.",
+    "INB-050": "Hai lượt gửi bị trùng nhau. Hãy gửi lại.",
+    "INB-301": "Bạn không có quyền thao tác ngân hàng câu hỏi này.",
+    "INB-302": "Chỉ quản trị viên mới được quản lý chủ đề và mức độ.",
+    "INB-501": "AI chưa phản hồi kịp. Câu trả lời của bạn đã được lưu, hãy thử lại sau.",
+    "INB-502": "AI trả về kết quả chưa hợp lệ. Câu trả lời của bạn đã được lưu, hãy thử lại sau.",
+    "INB-503": "Chưa ghi được nhật ký thao tác nên thay đổi chưa được lưu. Hãy thử lại sau.",
+    "INB-V01": "Bộ lọc hoặc cách sắp xếp không hợp lệ.",
+    "INB-V02": "Danh sách câu hỏi chọn không hợp lệ (tối đa 100 câu, không trùng).",
+    "INB-V03": "Tên phải có từ 1 đến 60 ký tự.",
+    "INB-V04": "Hãy chọn một mức tự đánh giá hợp lệ.",
+    "INB-V05": "Trạng thái đánh dấu không hợp lệ.",
+    "INB-V06": "Hãy nhập câu trả lời trước khi gửi.",
+    "INB-V07": "Câu trả lời quá dài (tối đa 5000 ký tự).",
+    "INB-V08": "Tiêu đề không được để trống và tối đa 255 ký tự.",
+    "INB-V09": "Hãy chọn chủ đề và mức độ.",
+    "INB-V10": "Tiêu chí chấm chưa hợp lệ: tên 1 đến 100 ký tự, trọng số từ 0 đến 100.",
+    "INB-V11": "Hai tiêu chí chấm không được trùng tên.",
+    "INB-V12": "Câu hỏi gợi ý thêm chưa hợp lệ.",
+    "INB-V13": "Chưa có thay đổi nào để lưu.",
+    "INB-V14": "Thứ tự gửi lên không hợp lệ.",
+    "INB-V15": "Tệp nhập phải có từ 1 đến 500 dòng.",
+    "INB-V16": "Dữ liệu gửi lên chưa hợp lệ.",
+    "INB-V17": "Dữ liệu gửi lên quá lớn.",
+    "AIR-101": "Không tìm thấy bài nộp này.",
+    "AIR-102": "Chỉ phân tích được bài nộp đã đạt Accepted.",
+    "AIR-103": "Báo cáo của bài nộp này đang được tạo. Hãy chờ một chút rồi tải lại.",
+    "AIR-110": "Không tìm thấy phiên phỏng vấn này.",
+    "AIR-111": "Phiên phỏng vấn đã kết thúc.",
+    "AIR-112": "Phiên vừa có thay đổi ở nơi khác. Hãy tải lại phiên.",
+    "AIR-113": "Phiên đang xử lý một lượt khác. Hãy chờ lượt đó xong.",
+    "AIR-114": "Phiên đã đủ số lượt. Hãy kết thúc phiên để xem kết quả.",
+    "AIR-115": "Phiên này không cho phép xin gợi ý.",
+    "AIR-116": "Bạn chưa trả lời câu nào nên chưa chấm được.",
+    "AIR-117": "Bạn đã dùng hết số lần gợi ý của phiên này.",
+    "AIR-120": "Cảnh báo này không còn tồn tại. Hãy tải lại danh sách.",
+    "AIR-121": "Dòng đơn giá này không còn tồn tại. Hãy tải lại danh sách.",
+    "AIR-201": "Bản prompt đang chạy vừa bị người khác đổi. Hãy tải lại rồi làm lại.",
+    "AIR-202": "Mô hình đã chọn không nằm trong danh sách cho phép.",
+    "AIR-203": "Chưa mở khoá được: lượng đã dùng vẫn chưa thấp hơn hạn mức.",
+    "AIR-204": "Tên mô hình này đã có. Hãy chọn tên khác.",
+    "AIR-205": "Không có thay đổi nào để phát hành.",
+    "AIR-301": "Bạn không có quyền thực hiện thao tác này.",
+    "AIR-302": "Dữ liệu này không thuộc về bạn.",
+    "AIR-401": "Ngân sách AI đã hết nên chức năng này tạm khoá. Hãy thử lại sau.",
+    "AIR-402": "Bạn đã yêu cầu phân tích quá nhiều lần trong một giờ. Hãy thử lại sau.",
+    "AIR-403": "Bạn đã mở quá nhiều phiên phỏng vấn trong một giờ. Hãy thử lại sau.",
+    "AIR-404": "Bạn vừa gửi yêu cầu xong. Hãy chờ một chút rồi thử lại.",
+    "AIR-501": "Dịch vụ AI tạm thời không dùng được. Hãy thử lại sau.",
+    "AIR-502": "AI trả về kết quả chưa hợp lệ. Hãy thử lại.",
+    "AIR-503": "Chưa ghi được nhật ký thao tác nên thay đổi chưa được lưu. Hãy thử lại sau.",
+    "AIR-V01": "Bài chưa hợp lệ.",
+    "AIR-V02": "Số lượng yêu cầu nằm ngoài khoảng cho phép.",
+    "AIR-V03": "Thông tin mở phiên chưa đầy đủ hoặc có phần thừa.",
+    "AIR-V04": "Mức người phỏng vấn không hợp lệ.",
+    "AIR-V05": "Số lượt tối đa phải là 8, 12 hoặc 16.",
+    "AIR-V06": "Danh sách chủ đề chưa hợp lệ (1 đến 10 chủ đề, mỗi chủ đề tối đa 60 ký tự).",
+    "AIR-V07": "Câu hỏi chưa hợp lệ (tối đa 2.000 ký tự).",
+    "AIR-V08": "Câu trả lời không được để trống và tối đa 4.000 ký tự.",
+    "AIR-V09": "Số lượt của phiên chưa hợp lệ. Hãy tải lại phiên.",
+    "AIR-V10": "Khoảng thời gian không hợp lệ.",
+    "AIR-V11": "Chức năng chưa hợp lệ.",
+    "AIR-V12": "Chỉ thị hệ thống không được để trống và tối đa 20.000 ký tự.",
+    "AIR-V13": "Cấu hình chặn phản hồi chưa hợp lệ cho chức năng này.",
+    "AIR-V14": "Danh sách phát hành chưa hợp lệ (1 đến 3 chức năng, không trùng).",
+    "AIR-V15": "Hạn mức token phải là số nguyên dương.",
+    "AIR-V16": "Giá trị giới hạn chưa hợp lệ hoặc chưa có thay đổi nào.",
+    "AIR-V17": "Tên mô hình không được để trống và tối đa 100 ký tự.",
+    "AIR-V18": "Đơn giá không hợp lệ.",
+    "AIR-V19": "Khoảng ngày phải là 7, 14 hoặc 30.",
     "UNKNOWN_ERROR": "Có lỗi xảy ra. Vui lòng thử lại"
   },
   "nav": {
@@ -1018,12 +1105,14 @@
     "alert": {
       "budgetRunningOut": {
         "title": "Sắp cạn hạn mức",
-        "meta": "Với nhịp hiện tại, ngân sách tháng hết vào 28/08."
+        "meta": "Với nhịp hiện tại, ngân sách tháng hết vào {date}.",
+        "metaNoDate": "Mức dùng đã chạm ngưỡng cảnh báo ngân sách."
       },
       "anomalousAccount": {
         "title": "Một tài khoản dùng bất thường",
-        "meta": "nguyenvana gọi 214 lượt trong 24 giờ, gấp 7 lần trung bình. Cần quản trị viên xem lại, hệ thống không tự khoá."
+        "meta": "{name} gọi {count} lượt trong 24 giờ, gấp {ratio} lần trung bình. Cần quản trị viên xem lại, hệ thống không tự khoá."
       },
+      "unknownAccount": "Một tài khoản",
       "budgetLocked": {
         "title": "Ngân sách đã khoá",
         "meta": "AI đang tạm khoá với học viên và giảng viên. Tăng hạn mức rồi mở khoá ở màn Hạn mức AI."
@@ -1032,7 +1121,7 @@
     "topUsersTitle": "Người học dùng nhiều nhất",
     "topUsersSubtitle": "Trong 30 ngày gần nhất",
     "topProblemsTitle": "Bài toán tốn token nhất",
-    "topProblemsSubtitle": "Phân tích, phỏng vấn và sinh testcase cộng lại",
+    "topProblemsSubtitle": "Phân tích bài giải và sinh testcase trong 30 ngày",
     "columnLearner": "Người học",
     "columnTokens": "Token",
     "columnCalls": "Lượt",
@@ -1563,6 +1652,7 @@
   "interviewQuestionManagement": {
     "title": "Ngân hàng câu hỏi phỏng vấn",
     "loadFailed": "Không tải được danh sách câu hỏi. Thử lại sau.",
+    "retry": "Thử lại",
     "subtitle": "{total} câu hỏi · giảng viên và quản trị viên đều sửa được toàn bộ",
     "manageTopics": "Quản lý chủ đề",
     "topicManager": {
@@ -1644,7 +1734,8 @@
         "unknownLevel": "mức độ \"{detail}\" không có trong danh mục",
         "badRubric": "rubric sai định dạng (cần tên:trọng số, trọng số là số nguyên từ 0 đến 100)",
         "rubricSum": "tổng trọng số rubric khác 100",
-        "duplicate": "câu hỏi trùng với câu đã có hoặc với một dòng trước trong tệp"
+        "duplicate": "câu hỏi trùng với câu đã có hoặc với một dòng trước trong tệp",
+        "invalidField": "một ô không hợp lệ (câu hỏi quá 255 ký tự hoặc sai kiểu dữ liệu)"
       }
     },
     "newQuestion": "Câu hỏi mới",
@@ -1673,6 +1764,7 @@
     "editQuestion": "Sửa câu hỏi {code}",
     "deleteQuestion": "Xoá câu hỏi {code}",
     "emptyFiltered": "Không có câu hỏi nào khớp bộ lọc hiện tại",
+    "emptyBank": "Ngân hàng chưa có câu hỏi nào",
     "pageLabel": "Trang {page} trong {totalPages} · hiển thị {shown} dòng",
     "previous": "Trước",
     "next": "Sau",
@@ -1690,6 +1782,7 @@
     "confirmDeleteBody": "Câu hỏi sẽ bị gỡ khỏi ngân hàng. Các phiên phỏng vấn đã dùng câu này giữ nguyên lịch sử.",
     "toast": {
       "bulkDeleted": "Đã xoá {count} câu hỏi",
+      "bulkPartial": "Đã xoá {done} câu, còn {failed} câu chưa xoá được: {reason}",
       "deleted": "Đã xoá câu hỏi {code}",
       "searchResult": "Tìm thấy {count} câu hỏi",
       "searchEmpty": "Không tìm thấy câu hỏi nào"
@@ -1700,7 +1793,7 @@
     "subtitle": "Lưu là câu hỏi hiển thị ngay — không có bước xuất bản riêng",
     "titleEdit": "Sửa câu hỏi {code}",
     "notFoundTitle": "Không tìm thấy câu hỏi",
-    "notFoundBody": "Không có câu hỏi nào mang mã {code}. Có thể nó đã bị gỡ khỏi ngân hàng.",
+    "notFoundBody": "Không tìm thấy câu hỏi này. Có thể nó đã bị gỡ khỏi ngân hàng.",
     "classifyTitle": "Phân loại",
     "classifySubtitle": "Chủ đề và độ khó dùng để lọc ở ngân hàng câu hỏi",
     "back": "Quay lại",
@@ -1748,7 +1841,11 @@
       "softDeleted": "Đã ngừng dùng câu hỏi"
     },
     "saveBlocked": {
-      "empty": "Hãy nhập nội dung câu hỏi trước khi lưu."
+      "empty": "Hãy nhập nội dung câu hỏi trước khi lưu.",
+      "titleTooLong": "Câu hỏi tối đa {max} ký tự.",
+      "criterionBlank": "Mỗi tiêu chí cần có tên.",
+      "criterionDuplicate": "Hai tiêu chí không được trùng tên.",
+      "classify": "Hãy chọn chủ đề và độ khó trước khi lưu."
     }
   },
   "problemAuthoring": {
@@ -1864,6 +1961,7 @@
     "moveDown": "Đưa testcase xuống",
     "reorderHint": "Kéo số thứ tự hoặc dùng nút lên/xuống để sắp xếp testcase",
     "testcaseTooLarge": "Mỗi vế testcase tối đa 1 MB UTF-8.",
+    "unsupportedSignatureType": "Kiểu {kind} chưa có trình sửa tương ứng. Dữ liệu gốc được giữ khi lưu; chọn kiểu khác sẽ thay thế kiểu này.",
     "runResultTitle": "Đáp án mẫu đã chạy",
     "runResultBody": "Đúng {passed}/{total} testcase đã duyệt.",
     "runStaleTitle": "Chưa có kết quả chạy hợp lệ",
@@ -2063,6 +2161,21 @@
       "signatureTitle": "Chữ ký hàm",
       "signatureSubtitle": "Khai một lần cho cả ba ngôn ngữ. Harness tự đổi kiểu sang từng ngôn ngữ và sinh mã khung: học viên chỉ viết thân hàm, harness lo đọc input và in output. Tên tham số hiện trong mã khung và trong cách hiển thị testcase mẫu.",
       "stubTitle": "Mã khung học viên sẽ thấy",
+      "preview": {
+        "languages": "Ngôn ngữ xem trước",
+        "loading": "Đang cập nhật chữ ký…",
+        "rateLimited": "Tạm chờ {seconds} giây trước khi thử lại xem trước.",
+        "unsupported": "Bản nháp hiện tại chưa hỗ trợ bọc hàm.",
+        "reasons": {
+          "HRN-V01": "Có kiểu dữ liệu nằm ngoài lược đồ được hỗ trợ.",
+          "HRN-V02": "Kiểu container chưa có kiểu phần tử.",
+          "HRN-V03": "Kiểu phần tử không phù hợp với container.",
+          "HRN-V04": "Mảng có nhiều hơn ba chiều.",
+          "HRN-V05": "Kiểu dữ liệu lồng quá sâu.",
+          "HRN-V06": "Các node cùng loại phải có cùng kiểu giá trị.",
+          "HRN-V07": "Chữ ký hàm chưa được khai báo."
+        }
+      },
       "stubSubtitle": "Minh hoạ từ chữ ký ở trên, mã khung thật do harness sinh. Tên hàm tự suy ra: Python viết snake_case, Java và C++ viết camelCase.",
       "overrideName": "Tên hàm {language} (để trống = tự suy ra)"
     },
@@ -2259,12 +2372,19 @@
     },
     "bookmarkLabel": "Đánh dấu xem lại",
     "emptyFiltered": "Không có câu hỏi khớp bộ lọc.",
+    "emptyBank": "Ngân hàng chưa có câu hỏi nào.",
+    "loadMore": "Xem thêm",
+    "loadMoreRetry": "Thử lại",
+    "loadMoreFailed": "Chưa tải thêm được câu hỏi.",
     "quickView": {
       "selectPrompt": "Chọn một câu hỏi để xem nhanh.",
       "outlineLabel": "Ý cần nói",
       "recallLabel": "Mức độ nắm",
       "viewDetail": "Xem chi tiết",
       "nextReview": "Sẽ nhắc ôn lại sau {n} ngày",
+      "nextReviewDue": "Đã đến hạn ôn lại",
+      "loadFailed": "Chưa tải được chi tiết câu hỏi.",
+      "retry": "Thử lại",
       "keywordsLabel": "Từ khoá cốt lõi"
     },
     "drill": {
@@ -2280,7 +2400,14 @@
       "bookmarked": "Đã lưu câu hỏi.",
       "unbookmarked": "Đã bỏ lưu câu hỏi.",
       "searchResult": "Tìm thấy {count} câu hỏi.",
-      "searchEmpty": "Không tìm thấy câu hỏi nào."
+      "searchEmpty": "Không tìm thấy câu hỏi nào.",
+      "loadFailed": "Chưa tải được danh sách. Bộ lọc đã trở về như trước.",
+      "unavailable": "Câu hỏi này không còn khả dụng.",
+      "rateFailed": "Chưa ghi được mức độ nhớ. Hãy thử lại.",
+      "bookmarkFailed": "Chưa lưu được dấu đánh dấu. Hãy thử lại.",
+      "drillFailed": "Chưa bắt đầu được luyện nhanh. Hãy thử lại.",
+      "drillEmpty": "Không có câu hỏi nào khớp bộ lọc để luyện.",
+      "drillRateFailed": "Lần tự chấm vừa rồi chưa được ghi."
     },
     "bookmarkedOnly": "Chỉ câu đã đánh dấu",
     "title": "Ngân hàng câu hỏi",
@@ -2312,7 +2439,8 @@
         "vague": "Mơ hồ",
         "forgotten": "Quên"
       },
-      "nextReviewHint": "Sẽ nhắc ôn lại sau {n} ngày"
+      "nextReviewHint": "Sẽ nhắc ôn lại sau {n} ngày",
+      "nextReviewDue": "Đã đến hạn ôn lại"
     },
     "practice": {
       "answerLabel": "Câu trả lời của bạn",
@@ -2338,6 +2466,7 @@
     "attempts": {
       "title": "Lịch sử các lượt",
       "emptyState": "Bạn chưa luyện câu hỏi này lần nào.",
+      "loadMore": "Xem thêm ({shown} / {total})",
       "attemptNo": "Lượt {n}",
       "status": {
         "pending": "Đang chấm",
@@ -2403,6 +2532,17 @@
       "applyFailed": "Không lưu được mã vào trình duyệt. Hãy kiểm tra quyền lưu trữ của trình duyệt."
     },
     "statCreatedAt": "Thời điểm phân tích",
+    "loadingLabel": "Đang phân tích bài giải, có thể mất tới 30 giây",
+    "errorRateLimitedTitle": "Chưa thể phân tích lúc này",
+    "errorRateLimitedBody": "Bạn đã yêu cầu phân tích quá nhiều lần. Hãy thử lại sau {seconds} giây.",
+    "retryIn": "Thử lại sau {seconds} giây",
+    "sourceUnavailable": "Chưa tải được mã đã nộp nên chưa hiện bản so sánh.",
+    "withdrawn": "Đã rút khỏi ngân hàng",
+    "diff": {
+      "added": "thêm",
+      "removed": "bỏ"
+    },
+    "rateLimitedToast": "Bạn yêu cầu hơi nhanh. Thử lại sau {seconds} giây.",
     "errorUnavailableTitle": "Chưa mở được phân tích bài giải",
     "errorUnavailableBody": "Lượt nộp này không tồn tại, không thuộc về bạn hoặc chưa được chấp nhận nên chưa có phân tích bài giải.",
     "backToSubmissions": "Về Bài đã nộp",
@@ -2420,6 +2560,8 @@
       "custom": "Tự chọn chủ đề"
     },
     "customTopicHint": "Chọn ít nhất một chủ đề cho phiên phỏng vấn tự luyện.",
+    "emptySubmissions": "Bạn chưa có bài nộp Accepted nào. Hãy giải xong một bài rồi quay lại.",
+    "emptyBank": "Kho câu hỏi chưa có câu nào để chọn.",
     "configTitle": "Cấu hình phiên",
     "levelLabel": "Cấp độ",
     "level": {
@@ -2458,7 +2600,9 @@
     "retryCta": "Luyện tập lại",
     "backCta": "Về danh sách",
     "toast": {
-      "finished": "Phiên phỏng vấn đã kết thúc. Kết quả đánh giá đã sẵn sàng."
+      "finished": "Phiên phỏng vấn đã kết thúc. Kết quả đánh giá đã sẵn sàng.",
+      "sessionAbandoned": "Phiên phỏng vấn trước đã đóng vì bỏ trống quá lâu.",
+      "sessionGone": "Không mở lại được phiên phỏng vấn này."
     },
     "customTopicsLabel": "Chủ đề phỏng vấn",
     "chatLogLabel": "Cuộc trò chuyện phỏng vấn",
@@ -2487,7 +2631,22 @@
     "tip1": "Nêu hướng giải trước, chi tiết cài đặt sau.",
     "tip2": "Nói rõ độ phức tạp thời gian và bộ nhớ.",
     "tip3": "Chủ động nhắc tới trường hợp biên trước khi bị hỏi.",
-    "sendShortcut": "Ctrl + Enter để gửi"
+    "sendShortcut": "Ctrl + Enter để gửi",
+    "startPending": "Đang mở phiên...",
+    "submissionConfigNote": "Phiên từ bài nộp dùng cấu hình mặc định của hệ thống: số lượt, cấp độ và gợi ý không chỉnh được.",
+    "turnCountOpen": "Lượt {current}",
+    "restoringLabel": "Đang khôi phục phiên...",
+    "waitingReply": "Người phỏng vấn đang trả lời, hãy chờ một chút.",
+    "waitingSlow": "Lần này lâu hơn bình thường. Bạn có thể tải lại trang, phiên vẫn được giữ.",
+    "turnFailedTitle": "Chưa có phản hồi cho câu trả lời này",
+    "turnFailedBody": "Câu trả lời của bạn đã được lưu. Hãy bấm Thử lại để người phỏng vấn trả lời.",
+    "turnRetry": "Thử lại",
+    "completionPendingTitle": "Phiên đã sẵn sàng để chấm điểm",
+    "completionRetry": "Chấm điểm",
+    "completingLabel": "Đang chấm điểm phiên...",
+    "hintBlockTitle": "Gợi ý",
+    "earlyExitNoTurnBody": "Bạn chưa trả lời câu nào nên chưa có gì để chấm. Phiên sẽ được bỏ lại và đóng tự động.",
+    "earlyExitNoTurnConfirm": "Rời phiên"
   },
   "classManagement": {
     "header": {
@@ -3170,6 +3329,12 @@
     "filterAll": "Tất cả",
     "emptyGeneric": "Chưa có dữ liệu",
     "errorGeneric": "Không tải được khối này",
+    "interviewTopics": {
+      "title": "Ôn câu hỏi theo chủ đề",
+      "colTopic": "Chủ đề",
+      "colAttempted": "Đã thử",
+      "colLast": "Lần ôn cuối"
+    },
     "errorAi": "Phân hệ AI đang không phản hồi — các khối còn lại vẫn hoạt động",
     "solveState": {
       "solved": "Đã giải",

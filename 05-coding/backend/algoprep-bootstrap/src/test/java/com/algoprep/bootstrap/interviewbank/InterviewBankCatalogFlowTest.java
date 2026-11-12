@@ -442,6 +442,22 @@ class InterviewBankCatalogFlowTest {
     assertThat(audits()).isEqualTo(1);
   }
 
+  @Test
+  void defaultInstructorListsQuestionsButCatalogueManagementStaysAdminOnly() throws Exception {
+    // Apply the real V1.004 migration to the reset matrix: a default INSTRUCTOR, no custom role.
+    jdbc.execute(
+        new String(
+            getClass()
+                .getResourceAsStream(
+                    "/db/migration/identity/V1.004__instructor_interview_bank_grant.sql")
+                .readAllBytes(),
+            java.nio.charset.StandardCharsets.UTF_8));
+    String instructor = token(UUID.randomUUID(), "INSTRUCTOR", BaseCategory.INSTRUCTOR);
+    assertThat(call(get("/api/v1/interview-bank/admin/questions"), instructor).getStatus())
+        .isEqualTo(200);
+    error(call(delete(BASE + "topics/" + TOPIC[0]), instructor), 403, "INB-302");
+  }
+
   private String teacherOrInstructor() {
     if (teacher == null) {
       teacher = instructorWithAllCells();

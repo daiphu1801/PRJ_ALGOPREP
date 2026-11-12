@@ -18,11 +18,13 @@ import com.algoprep.aireview.domain.prompt.ComposedPrompt;
 import com.algoprep.aireview.domain.prompt.DataBlock;
 import com.algoprep.aireview.domain.prompt.ProblemGuidance;
 import com.algoprep.aireview.domain.prompt.PromptComposer;
+import com.algoprep.aireview.domain.prompt.ServerDirective;
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
@@ -32,27 +34,27 @@ import org.springframework.stereotype.Component;
  */
 @Component
 class ReviewLlmCall {
-  // ponytail: constants instead of application.yml keys (DD Bang 2 lists them as yml values); move
-  // them to @ConfigurationProperties when the OpenRouter adapter (F5-2) needs tuning per model.
   static final int MAX_TOKENS = CallOptions.DEFAULT_MAX_TOKENS;
-  static final Duration TOTAL_TIMEOUT = Duration.ofSeconds(30);
   static final String SCHEMA_NAME = "solution_review";
 
   private final LlmProviderPort llm;
   private final ProblemContextPort problems;
   private final RecordAiTokenUsageUseCase usage;
   private final IdGeneratorPort ids;
+  private final Duration totalTimeout;
   private final PromptComposer composer = new PromptComposer();
 
   ReviewLlmCall(
       LlmProviderPort llm,
       ProblemContextPort problems,
       RecordAiTokenUsageUseCase usage,
-      IdGeneratorPort ids) {
+      IdGeneratorPort ids,
+      @Value("${algoprep.ai.llm.timeout.review-total-sec:90}") long totalTimeoutSec) {
     this.llm = llm;
     this.problems = problems;
     this.usage = usage;
     this.ids = ids;
+    this.totalTimeout = Duration.ofSeconds(totalTimeoutSec);
   }
 
   SolutionReviewNormalizer.Normalized generate(
@@ -65,7 +67,8 @@ class ReviewLlmCall {
             null,
             List.of(
                 new DataBlock(BlockName.PROBLEM, problemText(context)),
-                new DataBlock(BlockName.USER_CODE, source.sourceCode())));
+                new DataBlock(BlockName.USER_CODE, source.sourceCode())),
+            ServerDirective.SOLUTION_REVIEW_JSON);
     UUID callId = ids.newId();
     StructuredResult result;
     try {
@@ -76,7 +79,7 @@ class ReviewLlmCall {
               prompt.data(),
               new ResponseSchema(
                   SCHEMA_NAME, template.responseSchemaVersion(), SolutionReviewSchema.JSON),
-              new CallOptions(template.modelId(), MAX_TOKENS, TOTAL_TIMEOUT, TOTAL_TIMEOUT));
+              new CallOptions(template.modelId(), MAX_TOKENS, totalTimeout, totalTimeout));
     } catch (AiProviderUnavailableException | AiInvalidResponseException failure) {
       throw failure;
     } catch (RuntimeException failure) {

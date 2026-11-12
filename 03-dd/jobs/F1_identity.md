@@ -98,3 +98,8 @@ Giữ nguyên đặc tả ở BR-20 (`03-dd/logic/F1_identity.md:41-46`): hằng
 ## Tham chiếu
 
 `03-dd/logic/F1_identity.md` (BR-08, BR-20, BR-23), `02-bd/database/F1_identity.md` (mục 1.1, 1.6, 1.11, 4), `02-bd/architecture/F1_identity.md` (mục 5), `04-tdd/modules/F1_identity.md` (AC-42, AC-46, AC-47), `DEC-2026-1023-db-actor-review-fixes`. Các file job khác: `03-dd/jobs/F4_judge-orchestration.md`, `03-dd/jobs/F5_ai-review.md`.
+
+
+## Bổ sung 2026-11-11 — Identity ClassDeleted Outbox
+
+`IdentityOutboxJobs` relay mỗi 2 giây (`identity.outbox.relay-delay-ms=2000`, batch 100), đọc pending theo `created_at,id` với `FOR UPDATE SKIP LOCKED`. Phát phong bì nguyên vẹn tới `algoprep.identity.events`, routing `class.deleted`, giữ eventId. Chỉ publisher confirm không có mandatory return mới ghi published_at; mỗi lần thử tăng publish_attempts. Lỗi giữ pending, không bỏ theo số lần thử. Cleanup mỗi 24 giờ, chỉ xóa dòng published quá 90 ngày, mỗi lô tối đa 1000; lỗi rollback lô. Cấu hình tại `application-outbox.yml`, bật/tắt scheduler qua `identity.outbox.enabled`. StudentRemovedFromClass giữ BR-11, không tạo pending khi chưa có consumer.

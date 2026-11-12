@@ -85,7 +85,7 @@ Bổ sung khía cạnh bảo mật của mục kiểm soát chi phí đã thiế
   một giao dịch ngắn (gọi LLM thất bại → không ghi `solution_reviews`, trả lỗi ngay, không có bản ghi dở
   dang); F5.2 giữ nguyên `interview_sessions.stage` hiện tại nếu một lượt lỗi giữa chừng, học viên thử lại
   lượt đó — không cần trạng thái `SYSTEM_ERROR` riêng cho phiên phỏng vấn.
-- **Model chọn qua danh sách cho phép** (thêm 2026-10-10): ADMIN chỉ chọn model trong danh sách do dev khai báo ở cấu hình backend; máy chủ kiểm lại `modelId` ở `UpdatePromptTemplateDraft`, không tin giá trị client. Khoá API vẫn chỉ ở backend, không qua giao diện.
+- **Model chọn qua danh sách cho phép** (thêm 2026-10-10): ADMIN chỉ chọn model trong danh sách do dev khai báo ở cấu hình backend; máy chủ kiểm lại `modelId` ở `UpdatePromptTemplateDraft`, không tin giá trị client. Bí danh seed `default` luôn hợp lệ dù không khai báo (`DEC-2026-1112-ai-model-alias-default-always-allowed`). Khoá API vẫn chỉ ở backend, không qua giao diện.
 - **Không có secret/API key của LLM provider nào lộ ra ngoài `infrastructure` layer** — cấu hình qua biến
   môi trường/secret manager (đề xuất, `[SoT: Suy luận]`, khớp `CLAUDE.md` mục Deploy: Docker Compose), do
   `SpringAiLlmAdapter` giữ, không truyền qua tham số port hay log ra `outbox_events`/`token_usage`.

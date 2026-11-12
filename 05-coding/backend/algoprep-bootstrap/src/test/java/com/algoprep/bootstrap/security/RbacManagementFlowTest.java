@@ -94,7 +94,8 @@ class RbacManagementFlowTest {
         "UPDATE identity.permissions p SET granted = true FROM identity.roles r,"
             + " identity.functions f, identity.actions a WHERE r.code = 'INSTRUCTOR'"
             + " AND p.role_id = r.id AND p.function_id = f.id AND p.action_id = a.id"
-            + " AND f.code IN ('CLASS_MANAGEMENT','PROBLEM_AUTHORING','TESTCASE_MANAGEMENT')");
+            + " AND f.code IN ('CLASS_MANAGEMENT','PROBLEM_AUTHORING','TESTCASE_MANAGEMENT',"
+            + "'INTERVIEW_BANK_MANAGEMENT')");
     jdbc.update("UPDATE identity.roles SET permission_version = permission_version + 1");
   }
 

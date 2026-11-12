@@ -204,11 +204,11 @@ Chi tiết dựng prompt, quy tắc "thông tin bài toán là dữ liệu" và 
 
 | Luồng | Phương thức | Hạn chờ | Thử lại | Khoá idempotency | Người học thấy gì khi chờ |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| Solution Review (mục 4) | `completeStructured` | tổng **30 giây** (`ARCH5:296`, `U301` EVT-1) | **không** thử lại tự động (tốn token, kết quả không tất định); người học bấm Thử lại | `solution_reviews.submission_id` unique, và khoá Redis `ai:review:<submissionId>` (BR-AI-02 bước 4) | Khung chờ dạng skeleton tối đa 30 giây (`U301` Khu vực I NO 1) |
+| Solution Review (mục 4) | `completeStructured` | tổng **90 giây**, cấu hình `algoprep.ai.llm.timeout.review-total-sec` (trước 30, `ARCH5:296`, `U301` EVT-1) | **không** thử lại tự động (tốn token, kết quả không tất định); người học bấm Thử lại | `solution_reviews.submission_id` unique, và khoá Redis `ai:review:<submissionId>` (BR-AI-02 bước 4) | Khung chờ dạng skeleton tối đa 90 giây (cấu hình) (`U301` Khu vực I NO 1) |
 | Câu mở đầu phiên (mục 8) | `streamTurn` gom thành một chuỗi | chunk đầu 10 giây, tổng 20 giây `[SoT: Suy luận]` | không | `interview_sessions.id` sinh trước khi gọi; phiên chỉ ghi vào DB **sau** khi có câu mở đầu | Nút Bắt đầu khoá, đồng hồ chưa chạy |
 | Một lượt (mục 10) | `streamTurn` | chunk đầu **10 giây** (`ARCH5:296`, hiểu là hạn tới token đầu tiên), tổng **60 giây** `[SoT: Suy luận]` | không; học viên thử lại bằng cùng `expectedTurnCount` | khoá Redis `ai:session:<sessionId>`; `expectedTurnCount` chống gửi trùng | Bong bóng AI hiện từng đoạn `token` |
 | Gợi ý (mục 11) | `streamTurn` gom thành một chuỗi | chunk đầu 10 giây, tổng 20 giây `[SoT: Suy luận]` | không | không (không ghi DB ngoài `token_usage`) | Nút Xin gợi ý khoá |
-| Chấm rubric (mục 12, JOB-AI-04) | `completeStructured` | tổng 30 giây `[SoT: Suy luận]` | không (người học bấm lại; job thử lại theo chu kỳ, `JOB5` mục 4) | `rubric_scores` unique `(owner_type, owner_id, criterion_code)`; cập nhật `stage` có điều kiện (BR-AI-09) | Nút Kết thúc khoá, hiện "đang chấm" |
+| Chấm rubric (mục 12, JOB-AI-04) | `completeStructured` | tổng **90 giây**, cấu hình `algoprep.ai.llm.timeout.rubric-total-sec` (trước 30) `[SoT: Suy luận]` | không (người học bấm lại; job thử lại theo chu kỳ, `JOB5` mục 4) | `rubric_scores` unique `(owner_type, owner_id, criterion_code)`; cập nhật `stage` có điều kiện (BR-AI-09) | Nút Kết thúc khoá, hiện "đang chấm" |
 | Sinh script testcase (P3) | `completeStructured` | tổng **120 giây** (`DD-F2` dòng 2793) | không | không | phía `problem-bank` |
 
 **Không có bộ ngắt mạch** (chủ dự án chốt `DEC-2026-1023-dd-f5-budget-lock-and-breaker`: không thêm Resilience4j, stack không đổi). Bảo vệ duy nhất là hạn chờ của từng lời gọi ở Bảng 4 cộng `503 AIR-501`; không thử lại tự động nên một nhà cung cấp chết chỉ làm mỗi lời gọi chờ tối đa hạn chờ của nó rồi báo lỗi (hạn chunk đầu 10 giây cho luồng lượt giúp phát hiện sớm). Không có trạng thái "mở/đóng" nào cần quản lý.
@@ -230,7 +230,7 @@ Chi tiết dựng prompt, quy tắc "thông tin bài toán là dữ liệu" và 
 | Xác thực | JWT |
 | Quyền | JWT, chủ bài nộp (kiểm ở use case) |
 | Idempotent | **có**: gọi lại cho cùng `submissionId` trả đúng báo cáo đã lưu, không sinh lại (`U301` Sheet 9 NO 8 dòng 483) |
-| Đồng bộ | có: chờ LLM tối đa 30 giây khi chưa có báo cáo |
+| Đồng bộ | có: chờ LLM tối đa 90 giây (cấu hình) khi chưa có báo cáo |
 | Tên BD | `GetOrCreateSolutionReview` (`U301` Sheet 7.3 NO 1) |
 | Ghi chú | Là **hành động chủ động của người học** (bấm nút ở `USR0201` hoặc dòng `ACCEPTED` ở `USR0202`, rồi mở `/submissions/{id}/review`); hệ thống không tự gọi (F5-01, `RD5:12-16`) |
 
@@ -274,7 +274,7 @@ Không có: `criteriaScores`, `ai_score_10`, `summaryText`, `originalCode` (clie
 | 429 | `AIR-401` | ngân sách token đã khoá (chỉ `STUDENT`, `INSTRUCTOR`) và **không** có báo cáo hay cache hit để trả | giao diện không hiện nút Thử lại (`U301` Khu vực I NO 4) |
 | 429 | `AIR-402` | quá `review_per_hour` trong giờ hiện tại | `details.limit`, `details.retryAfterSeconds` (giây tới đầu giờ kế) |
 | 429 | `AIR-404` | còn trong thời gian chờ giữa hai yêu cầu | `details.retryAfterSeconds`, header `Retry-After` |
-| 503 | `AIR-501` | LLM không dùng được, hết hạn 30 giây, hoặc `SubmissionSnapshotPort`/`ProblemContextPort` lỗi hạ tầng | lỗi tạm thời, có nút Thử lại |
+| 503 | `AIR-501` | LLM không dùng được, hết hạn chờ (mặc định 90 giây với báo cáo và chấm điểm), hoặc `SubmissionSnapshotPort`/`ProblemContextPort` lỗi hạ tầng | lỗi tạm thời, có nút Thử lại |
 | 502 | `AIR-502` | LLM trả kết quả sai lược đồ | coi như lỗi tạm thời ở giao diện |
 
 ### 4.5 Luồng xử lý
@@ -751,7 +751,7 @@ BR-AI-08.
 | Xác thực | JWT |
 | Quyền | JWT, chủ phiên |
 | Idempotent | **có**: phiên đã `COMPLETED` thì trả lại đúng bảng điểm đã lưu |
-| Đồng bộ | có: chờ chấm rubric tối đa 30 giây |
+| Đồng bộ | có: chờ chấm rubric tối đa 90 giây (cấu hình) |
 | Tên BD | `CompleteInterviewSession` (`U302` Sheet 7.3 NO 4, EVT-14 bước 7 dòng 411, EVT-18 dòng 415) |
 | Ghi chú | Dùng cho cả **Kết thúc sớm** (popup) lẫn kết thúc tự động khi `shouldComplete = true`. Cả hai đều ra `COMPLETED` có điểm (`DB5:114`) |
 
@@ -908,7 +908,7 @@ Không có tham số.
 | `items[].responseSchemaVersion` | string | chỉ đọc |
 | `items[].maxTokens` | int | từ `application.yml`, **chỉ đọc**, không có đường ghi (`A301` dòng 445) |
 | `items[].publishedAt`, `createdAt` | ISO-8601 | màn lấy `createdAt` khi `publishedAt` null (`A301` dòng 443) |
-| `modelOptions[]` | string[] | danh sách model dev khai báo ở `application.yml` (`DEC-2026-1010-admin-selects-model-per-prompt`) |
+| `modelOptions[]` | string[] | bí danh `default` luôn đứng đầu, sau đó là các model dev khai báo ở `application.yml`, không trùng lặp (`DEC-2026-1010-admin-selects-model-per-prompt`, `DEC-2026-1112-ai-model-alias-default-always-allowed`) |
 
 ### 14.4 Lỗi
 
@@ -1015,7 +1015,7 @@ Một đối tượng như phần tử `items[]` của mục 14.3 (dòng `DRAFT`
 | 400 | `AIR-V11` | `featureCode` không hợp lệ | |
 | 400 | `AIR-V12` | `systemInstruction` rỗng hoặc quá dài | "Chỉ thị hệ thống không được để trống." |
 | 400 | `AIR-V13` | `responseGuards` sai hình dạng so với `featureCode` | |
-| 422 | `AIR-202` | `modelId` ngoài danh sách cho phép | "Model này không được phép sử dụng." |
+| 422 | `AIR-202` | `modelId` ngoài `modelOptions` (bí danh `default` luôn hợp lệ, kể cả khi không có trong cấu hình) | "Model này không được phép sử dụng." |
 | 403 | `AIR-301` | thiếu quyền | |
 
 ### 16.5 Luồng xử lý
@@ -1231,7 +1231,7 @@ Cùng hình dạng mục 18.3 (`lockedAt = null`).
 
 | HTTP | error.code | Khi nào | Ghi chú |
 | :--- | :--- | :--- | :--- |
-| 422 | `AIR-203` | `usedTokens >= limitTokens` | "Tăng hạn mức trước khi mở khoá." (`A303` Sheet 9 NO 3 dòng 475); nếu cho mở, lần gọi kế tiếp khoá lại ngay |
+| 422 | `AIR-203` | `usedTokens >= limitTokens` | "Tăng hạn mức trước khi mở khoá." (`A303` Sheet 9 NO 3 dòng 475); nếu cho mở, lần gọi kế tiếp khoá lại ngay. **Làm rõ 2026-11-12 (chủ dự án, ponytail bậc 3):** khi `locked_at` còn null mà `usedTokens >= limitTokens` (khoá suy ra, T-TB-03), endpoint trả 200 và không đổi gì vì không có khoá thật để mở; không trả `AIR-203`. Giao diện chặn nút trong trường hợp này nên không ai gặp khi dùng màn |
 | 403 | `AIR-301` | thiếu quyền | |
 
 ### 20.5 Luồng xử lý
@@ -1905,7 +1905,7 @@ Mã chung: `401` thiếu hoặc hết hạn token (không thuộc `AIR`).
 | `AIR-120` | | 404 | Cảnh báo bất thường không tồn tại | 29 |
 | `AIR-121` | | 404 | Dòng đơn giá mô hình không tồn tại | 25 |
 | `AIR-201` | | 409 | Bản prompt đang chạy đã bị người khác đổi; tải lại | 17 |
-| `AIR-202` | | 422 | `modelId` ngoài danh sách cho phép | 16, 17 |
+| `AIR-202` | | 422 | `modelId` ngoài `modelOptions`; bí danh `default` luôn hợp lệ | 16, 17 |
 | `AIR-203` | | 422 | Mở khoá bị từ chối: đã dùng chưa nhỏ hơn hạn mức | 20 |
 | `AIR-204` | | 409 | Tên mô hình trùng (không phân biệt hoa thường) | 24, 25 |
 | `AIR-205` | | 422 | Không có thay đổi nào để phát hành | 17 |

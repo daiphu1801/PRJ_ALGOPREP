@@ -22,16 +22,24 @@ public record AiProviderProperties(
     models = models == null ? new Models(List.of()) : models;
   }
 
-  /** The requested model when it is on the allowed list, otherwise the default (may be blank). */
+  /**
+   * The seed alias (V5.002) always valid and always listed; it resolves to {@link #defaultModel}
+   * (DEC-2026-1112-ai-model-alias-default-always-allowed).
+   */
+  public static final String DEFAULT_ALIAS = "default";
+
+  /** The requested model when allowed, otherwise the default (may be blank). */
   String resolveModel(String requested) {
-    if (requested != null && !requested.isBlank() && models.allowed().contains(requested)) {
+    if (isAllowed(requested) && !DEFAULT_ALIAS.equals(requested)) {
       return requested;
     }
     return defaultModel;
   }
 
   boolean isAllowed(String requested) {
-    return requested != null && !requested.isBlank() && models.allowed().contains(requested);
+    return requested != null
+        && !requested.isBlank()
+        && (DEFAULT_ALIAS.equals(requested) || models.allowed().contains(requested));
   }
 
   @Override

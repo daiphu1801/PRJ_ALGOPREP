@@ -44,6 +44,8 @@ import com.algoprep.aireview.domain.ports.out.AiPromptSnapshotRepository;
 import com.algoprep.aireview.domain.ports.out.LlmProviderPort;
 import com.algoprep.aireview.domain.ports.out.SolutionReviewLockPort;
 import com.algoprep.aireview.domain.ports.out.SolutionReviewRepository;
+import com.algoprep.aireview.domain.prompt.SystemInstruction;
+import com.algoprep.aireview.domain.prompt.UserData;
 import com.algoprep.common.domain.ports.out.ClockPort;
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
 import java.time.Instant;
@@ -100,7 +102,7 @@ class GetOrCreateSolutionReviewCommandHandlerTest {
     IdGeneratorPort ids = UUID::randomUUID;
     var store = new SolutionReviewStore(reviews, locks, outbox, ids, clock);
     var gateWrapper = new ReviewCostGate(budget, config, gate);
-    var call = new ReviewLlmCall(llm, problems, usage, ids);
+    var call = new ReviewLlmCall(llm, problems, usage, ids, 90);
     handler =
         new GetOrCreateSolutionReviewCommandHandler(
             submissions, templates, store, gateWrapper, call);
@@ -142,6 +144,28 @@ class GetOrCreateSolutionReviewCommandHandlerTest {
     when(llm.completeStructured(any(), any(), any(), any(), any()))
         .thenReturn(new StructuredResult(GOOD, new LlmUsage(100, 50), "model-x"));
     when(reviews.insertReview(any())).thenReturn(true);
+  }
+
+  @Test
+  void theProviderIsToldTheExactSolutionReviewKeysInTheSystemMessageOnly() {
+    handler.getOrCreate(user, CallerCategory.STUDENT, submissionId);
+    var system = ArgumentCaptor.forClass(SystemInstruction.class);
+    var data = ArgumentCaptor.forClass(UserData.class);
+    verify(llm).completeStructured(system.capture(), any(), data.capture(), any(), any());
+    assertThat(system.getValue().text()).contains("approachTitle", "readabilityScore", "codeDiff");
+    assertThat(data.getValue().render()).doesNotContain("readabilityScore");
+  }
+
+  @Test
+  void theReviewTimeoutDefaultsToNinetySecondsAndTheKeyIsBound() {
+    var param =
+        ReviewLlmCall.class.getDeclaredConstructors()[0].getParameters()[4].getAnnotation(
+            org.springframework.beans.factory.annotation.Value.class);
+    assertThat(param.value()).isEqualTo("${algoprep.ai.llm.timeout.review-total-sec:90}");
+    handler.getOrCreate(user, CallerCategory.STUDENT, submissionId);
+    var options = ArgumentCaptor.forClass(com.algoprep.aireview.domain.model.CallOptions.class);
+    verify(llm).completeStructured(any(), any(), any(), any(), options.capture());
+    assertThat(options.getValue().totalTimeout()).isEqualTo(java.time.Duration.ofSeconds(90));
   }
 
   @Test

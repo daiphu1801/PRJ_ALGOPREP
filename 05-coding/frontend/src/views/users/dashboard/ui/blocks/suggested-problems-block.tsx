@@ -139,23 +139,21 @@ export function SuggestedProblemsBlock() {
           role="group"
           aria-label={t("suggested.topicLabel")}
         >
-          {[{ id: "all", name: t("filterAll") }, ...topics].map(
-            (topic) => (
-              <button
-                key={topic.id}
-                type="button"
-                aria-pressed={topicId === topic.id}
-                onClick={() => setTopicId(topic.id)}
-                className={`shrink-0 rounded-full border px-3 py-2 text-[12.5px] md:px-2.5 md:py-1 font-medium whitespace-nowrap ${
-                  topicId === topic.id
-                    ? "border-[var(--color-primary)] text-[var(--color-primary)]"
-                    : "border-[var(--color-border)] text-[var(--color-text-muted)]"
-                }`}
-              >
-                {topic.name}
-              </button>
-            ),
-          )}
+          {[{ id: "all", name: t("filterAll") }, ...topics].map((topic) => (
+            <button
+              key={topic.id}
+              type="button"
+              aria-pressed={topicId === topic.id}
+              onClick={() => setTopicId(topic.id)}
+              className={`shrink-0 rounded-full border px-3 py-2 text-[12.5px] md:px-2.5 md:py-1 font-medium whitespace-nowrap ${
+                topicId === topic.id
+                  ? "border-[var(--color-primary)] text-[var(--color-primary)]"
+                  : "border-[var(--color-border)] text-[var(--color-text-muted)]"
+              }`}
+            >
+              {topic.name}
+            </button>
+          ))}
         </div>
       </div>
 

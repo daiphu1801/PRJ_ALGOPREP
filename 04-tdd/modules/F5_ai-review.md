@@ -495,6 +495,30 @@
 | **Kết quả mong đợi** | Lần đầu A nhận thông báo hết ngân sách ngay lập tức (không mở luồng trả lời), câu trả lời của A **không** được lưu vào hội thoại, không gọi AI, số lượt không đổi. Sau khi mở khoá, lượt chạy bình thường. Tài khoản quản trị viên không bị chặn. Không có thời gian chờ hay hạn mức theo giờ áp cho lượt, nên không có gì phải hoàn lại |
 | **Nguồn** | [SoT: .nexa/control/decision-registry.md: DEC-2026-1110-f5-turn-budget-gate-and-cancel-on-disconnect] (chủ dự án chốt 2026-11-10); [SoT: 03-dd/logic/F5_ai-review.md] BR-AI-07 bước 3 |
 
+### AC-60 — Bí danh model `default` luôn hợp lệ và luôn hiện trong menu Model
+| Mục | Nội dung |
+| :--- | :--- |
+| **Tiền điều kiện** | Cơ sở dữ liệu mới, ba prompt đang chạy mang model `default` (seed); danh sách model cấu hình không chứa `default` |
+| **Hành động** | Quản trị viên mở màn cấu hình prompt, lưu nháp và phát hành với model `default`; sau đó lưu nháp và phát hành với một model không có trong danh sách. Cuối cùng một lời gọi AI chạy cho prompt có model `default` |
+| **Kết quả mong đợi** | Menu Model luôn có `default` ở đầu rồi tới các model đã cấu hình, không trùng. Lưu nháp và phát hành với `default` thành công; với model lạ bị từ chối "Model này không được phép sử dụng" và không thay đổi gì. Lời gọi AI với `default` dùng model mặc định đã cấu hình; nếu model mặc định để trống thì lời gọi thất bại như khi thiếu khoá API (AI tạm không dùng được), không phát sinh lỗi mới |
+| **Nguồn** | [SoT: .nexa/control/decision-registry.md: DEC-2026-1112-ai-model-alias-default-always-allowed] (chủ dự án chốt 2026-11-12); [SoT: 02-bd/database/F5_ai-review.md:382] |
+
+### AC-61 — Báo cáo phân tích thật có đủ khoá theo lược đồ dù model tự do
+| Mục | Nội dung |
+| :--- | :--- |
+| **Tiền điều kiện** | Bài nộp Accepted, model thật là model miễn phí không nhận lược đồ JSON qua tham số mà chỉ đọc lời dặn trong tin nhắn hệ thống |
+| **Hành động** | A yêu cầu phân tích |
+| **Kết quả mong đợi** | A nhận báo cáo có đủ kết luận, độ phức tạp, điểm mạnh, cần cải thiện, ca biên, chủ đề học tiếp và điểm dễ đọc; không bị báo lỗi tạm thời. Tin nhắn hệ thống gửi cho AI nêu đúng tên các khoá của lược đồ, còn mã nguồn của A vẫn chỉ nằm trong khối dữ liệu. Đầu ra tự đặt tên khoá khác (ví dụ dạng gạch dưới, phẳng, thiếu kết luận) vẫn bị từ chối `AIR-502` |
+| **Nguồn** | [SoT: .nexa/control/decision-registry.md: DEC-2026-1112-f5-solution-review-key-directive]; [SoT: 03-dd/logic/F5_ai-review.md] BR-AI-02 bước 8 |
+
+### AC-62 — Script sinh testcase thật có đủ khoá theo lược đồ dù model tự do
+| Mục | Nội dung |
+| :--- | :--- |
+| **Tiền điều kiện** | Bài toán có đề, ràng buộc dữ liệu và hai mẫu; model thật là model miễn phí không nhận lược đồ JSON qua tham số mà chỉ đọc lời dặn trong tin nhắn hệ thống |
+| **Hành động** | Giảng viên bấm sinh script testcase bằng AI |
+| **Kết quả mong đợi** | Giảng viên nhận script sinh dữ liệu và script kiểm ràng buộc không rỗng cùng danh sách nhãn; không bị báo lỗi tạm thời. Tin nhắn hệ thống gửi cho AI nêu đúng tên ba khoá của lược đồ, còn đề bài và mẫu vẫn chỉ nằm trong khối dữ liệu. Đầu ra thiếu khoá vẫn bị từ chối `AIR-502` |
+| **Nguồn** | [SoT: .nexa/control/decision-registry.md: DEC-2026-1112-f5-practice-testcase-key-directive]; [SoT: 03-dd/logic/F5_ai-review.md] BR-AI-14 (P3) |
+
 ## 3. Truy vết
 
 **Bảng 1: Truy vết tiêu chí tới endpoint, cổng hoặc luồng (cột "Test case" điền khi có)**
@@ -560,6 +584,10 @@
 | AC-57 | mục 11, 12, mục 4, mục 8, JOB-AI-04, BR-AI-04 đến 05, BR-AI-09 | `AIR-401` (chỉ ở mục 4, 8; lượt xem AC-59) | [TC-F5-AC57-01](../testcases/modules/F5_ai-review/F5_admin_jobs_budget_lifecycle.md), [TC-F5-AC57-02](../testcases/modules/F5_ai-review/F5_admin_jobs_budget_lifecycle.md), [TC-F5-AC57-03](../testcases/modules/F5_ai-review/F5_admin_jobs_budget_lifecycle.md) | Đạt (FINAL-BE phần 2): khoá ngân sách thì `InterviewSessionFlowTest.ac57AHintOfAnOpenSessionStillWorksWhileTheBudgetIsLocked` (gợi ý), `InterviewScoringFlowTest.noBudgetGateAndNoQuotaStandInTheWayOfScoring` (kết thúc và chấm điểm), `InterviewScoringFlowTest.theSweepScoresEvenWhenTheBudgetIsLocked` (JOB-AI-04), `InterviewSessionFlowTest.lockedBudgetBlocksStudentButNotAdmin` (mở phiên mới bị chặn), `SolutionReviewFlowTest.aLockedBudgetBlocksStudentGenerationButNotCacheExistingReportsReadsOrAdmin` (báo cáo mới bị chặn), `AiTestcaseGenerationFlowTest.ac57AGenerationStillRunsWhileTheAiBudgetIsLocked` (sinh script testcase vẫn chạy) |
 | AC-58 | JOB-AI-02 | | [TC-F5-AC58-01](../testcases/modules/F5_ai-review/F5_admin_jobs_budget_lifecycle.md), [TC-F5-AC58-02](../testcases/modules/F5_ai-review/F5_admin_jobs_budget_lifecycle.md) | 5a: chỉ dọn dòng đã phát quá 90 ngày, giữ dòng chờ phát, chạy lặp không đổi, khoá một instance: `AiOutboxFlowTest.cleanupRemovesOnlyPublishedRowsPastNinetyDays`, `cleanupDoesNothingWhileAnotherInstanceHoldsTheLock` |
 | AC-59 | mục 10, BR-AI-07 bước 3, BR-AI-04 bước 1 | `AIR-401` | chưa có (TC-F5-AC59-01 chờ testcase-generation) | F5-7b: `InterviewTurnStreamFlowTest.aLockedBudgetRefusesTheTurnAsJson...` (429 trước luồng, không dòng `USER`, không gọi LLM, mở khoá thì chạy) và unit `aLockedBudgetRefusesTheTurnBeforeAnythingIsWrittenOrCalled`; đột biến bỏ kiểm ngân sách thì flow đỏ. Chưa test cả đợt |
+| AC-60 | mục 14, 16, 17, BR-AI-13, cổng LLM | `AIR-202`, `AIR-501` | `ConfiguredAiModelOptionsTest`, `OpenRouterLlmProviderAdapterTest` (alias, alias với model mặc định trống), `PromptTemplateFlowTest.theSeedAliasDefaultIsAcceptedOnDraftAndPublishWhileABogusIdStillIs422` | 2026-11-12: xong, 336 test module + 16 test luồng đạt, đột biến làm đỏ |
+| AC-61 | mục 4, BR-AI-02 bước 8, 9 | `AIR-502` | `GetOrCreateSolutionReviewCommandHandlerTest.theProviderIsToldTheExactSolutionReviewKeys...`, `SolutionReviewNormalizerTest.anInventedFlatSnakeCaseAnswerIsStillRejected` | 2026-11-12: xong, đột biến bỏ chỉ dẫn khoá thì test đầu đỏ. Gọi thật qua `ReviewLlmCall` với model mặc định: có báo cáo hợp lệ |
+| AC-62 | cổng P3 (`TestcaseScriptGenerationPort`), BR-AI-14 | `AIR-502` | `GenerateTestcaseScriptCommandHandlerTest.theProviderIsToldTheExactScriptKeysInTheSystemMessageOnly`, `TestcaseScriptSchema` (đã có) | 2026-11-12: xong, đột biến bỏ chỉ dẫn khoá thì test đỏ. Gọi thật qua bộ điều hợp OpenRouter và handler với model miễn phí: có đủ hai script và bảy nhãn |
+| AC-63 | mục 4, 12, BR-AI-02, BR-AI-09 | `AIR-501` | `InterviewScoringHandlersTest.theScoringTimeoutDefaultsToNinetySecondsAndTheKeyIsBound`, `InterviewScoringHandlersTest.anOverriddenScoringTimeoutReachesTheProviderCall`, `GetOrCreateSolutionReviewCommandHandlerTest.theReviewTimeoutDefaultsToNinetySecondsAndTheKeyIsBound` | 2026-11-12: xong, đột biến đổi mặc định 90 thành 30 làm hai test đầu đỏ (sha256 khôi phục bằng nhau). Gọi thật qua bộ điều hợp OpenRouter và `InterviewScorer` với bản ghi 6 dòng: 20,5 giây, đủ bốn tiêu chí hợp lệ; quá hạn thật vẫn là `AIR-501` `TIMEOUT` |
 
 Mỗi endpoint trong `03-dd/api/F5_ai-review.md` (28 REST mục 4 đến 31, kênh SSE S1, bốn cổng P1 đến P4, hai sự kiện) có ít nhất một tiêu chí: mục 4 AC-01 đến AC-14; mục 5 AC-15; mục 6 AC-16; mục 7 AC-17; mục 8 AC-18 đến AC-22; mục 9 AC-23, AC-29; mục 10 AC-24 đến AC-30, AC-59; mục 11 AC-31; mục 12 AC-32 đến AC-35; mục 13 AC-37; mục 14 AC-38; mục 15, 16 AC-39; mục 17 AC-40 (và AC-04); mục 18 AC-41; mục 19, 20 AC-43; mục 21, 22 AC-44; mục 23 đến 26 AC-45; mục 27 AC-46; mục 28, 29 AC-47; mục 30, 31 AC-48; S1 AC-24, AC-29; P1, P2 AC-49; P3 AC-50; P4 AC-51; E1, E2 AC-52. AC-57 và AC-59 phủ phạm vi khoá ngân sách. Năm job nền được phủ ở AC-36, AC-52, AC-55, AC-56, AC-58.
 

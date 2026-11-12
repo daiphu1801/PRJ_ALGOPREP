@@ -16,6 +16,7 @@ import com.algoprep.aireview.domain.ports.out.LlmProviderPort;
 import com.algoprep.aireview.domain.prompt.BlockName;
 import com.algoprep.aireview.domain.prompt.DataBlock;
 import com.algoprep.aireview.domain.prompt.PromptComposer;
+import com.algoprep.aireview.domain.prompt.ServerDirective;
 import java.time.Duration;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -94,7 +95,8 @@ class GenerateTestcaseScriptCommandHandler implements GenerateTestcaseScriptUseC
             null,
             List.of(
                 new DataBlock(BlockName.PROBLEM, problemText(input)),
-                new DataBlock(BlockName.SAMPLES, sampleText(input))));
+                new DataBlock(BlockName.SAMPLES, sampleText(input))),
+            ServerDirective.TESTCASE_SCRIPT_JSON);
     try {
       return llm.completeStructured(
           prompt.system(),

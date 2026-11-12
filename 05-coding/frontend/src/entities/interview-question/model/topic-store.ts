@@ -15,6 +15,10 @@ import {
 } from "@/shared/lib/managed-list-store";
 
 export type InterviewTopic = ManagedItem & {
+  /** Server row id; only the API-backed list has it (mutations address the row by id, `key` is the code). */
+  id?: string;
+  /** Admin-only count of questions on the topic (every status); null for other roles, absent in mock mode. */
+  questionCount?: number | null;
   /**
    * Answers on this topic follow the STAR framework (Situation, Task, Action, Result). Replaces the
    * old hard link to the BEHAVIORAL code, so the admin decides which topics use it.

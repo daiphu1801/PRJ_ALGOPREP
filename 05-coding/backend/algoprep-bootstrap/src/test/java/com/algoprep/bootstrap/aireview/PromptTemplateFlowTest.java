@@ -246,7 +246,7 @@ class PromptTemplateFlowTest {
         .containsExactly("SOLUTION_REVIEW", "MOCK_INTERVIEW", "GENERATE_TESTCASE");
     assertThat((List<String>) JsonPath.read(body, "$.items[*].status")).containsOnly("ACTIVE");
     assertThat((List<String>) JsonPath.read(body, "$.modelOptions"))
-        .containsExactly("model-a", "model-b");
+        .containsExactly("default", "model-a", "model-b");
     assertThat((Integer) JsonPath.read(body, "$.items[0].maxTokens")).isEqualTo(4096);
     assertThat((Object) JsonPath.read(body, "$.items[2].responseGuards")).isNull();
 
@@ -293,6 +293,24 @@ class PromptTemplateFlowTest {
     var testcase = draft("GENERATE_TESTCASE", draftBody("t", "model-a", "null"), admin);
     assertThat(testcase.getStatus()).isEqualTo(200);
     assertThat((Object) JsonPath.read(testcase.getContentAsString(), "$.responseGuards")).isNull();
+  }
+
+  @Test
+  void theSeedAliasDefaultIsAcceptedOnDraftAndPublishWhileABogusIdStillIs422() throws Exception {
+    // The test list is model-a,model-b: 'default' is absent from it and must still be valid.
+    var saved = draft("SOLUTION_REVIEW", draftBody("uses the alias", "default", GUARDS), admin);
+    assertThat(saved.getStatus()).as(saved.getContentAsString()).isEqualTo(200);
+    assertThat((String) JsonPath.read(saved.getContentAsString(), "$.modelId"))
+        .isEqualTo("default");
+    var published = publish(publishBody(change("SOLUTION_REVIEW", SEED[0], "")), admin);
+    assertThat(published.getStatus()).as(published.getContentAsString()).isEqualTo(200);
+    assertThat((String) JsonPath.read(published.getContentAsString(), "$.items[0].modelId"))
+        .isEqualTo("default");
+    expect(draft("SOLUTION_REVIEW", draftBody("x", "bogus", GUARDS), admin), 422, "AIR-202");
+    expect(
+        publish(publishBody(change("MOCK_INTERVIEW", SEED[1], ",\"modelId\":\"bogus\"")), admin),
+        422,
+        "AIR-202");
   }
 
   @Test

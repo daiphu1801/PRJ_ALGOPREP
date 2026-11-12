@@ -28,7 +28,7 @@ class WorkerRuntimeConfigurationUnitTest {
                     mock(WorkerLeasePort.class),
                     mock(ConnectionFactory.class),
                     mock(ProcessQueuedSubmissionUseCase.class),
-                    9))
+                    new WorkerRuntimeConfiguration.ScalingSettings(17, 8, 2, 4)))
         .isInstanceOf(IllegalStateException.class);
     assertThat(
             config.gradingConsumptionControl(
@@ -36,8 +36,53 @@ class WorkerRuntimeConfigurationUnitTest {
                 mock(WorkerLeasePort.class),
                 mock(ConnectionFactory.class),
                 mock(ProcessQueuedSubmissionUseCase.class),
-                10))
+                new WorkerRuntimeConfiguration.ScalingSettings(18, 8, 2, 4)))
         .isNotNull();
+  }
+
+  @Test
+  void poolGuardTracksConfiguredCapAndRejectsInvalidScalingValues() {
+    var config = new WorkerRuntimeConfiguration();
+    var jobs = mock(WorkerJobRepository.class);
+    var leases = mock(WorkerLeasePort.class);
+    var connection = mock(ConnectionFactory.class);
+    var process = mock(ProcessQueuedSubmissionUseCase.class);
+    assertThat(
+            config.gradingConsumptionControl(
+                jobs,
+                leases,
+                connection,
+                process,
+                new WorkerRuntimeConfiguration.ScalingSettings(13, 3, 1, 2)))
+        .isNotNull();
+    assertThatThrownBy(
+            () ->
+                config.gradingConsumptionControl(
+                    jobs,
+                    leases,
+                    connection,
+                    process,
+                    new WorkerRuntimeConfiguration.ScalingSettings(12, 3, 1, 2)))
+        .isInstanceOf(IllegalStateException.class);
+    assertThatThrownBy(
+            () ->
+                config.gradingConsumptionControl(
+                    jobs,
+                    leases,
+                    connection,
+                    process,
+                    new WorkerRuntimeConfiguration.ScalingSettings(
+                        Integer.MAX_VALUE, Integer.MAX_VALUE, 1, 2)))
+        .isInstanceOf(IllegalStateException.class);
+    assertThatThrownBy(
+            () ->
+                config.gradingConsumptionControl(
+                    jobs,
+                    leases,
+                    connection,
+                    process,
+                    new WorkerRuntimeConfiguration.ScalingSettings(48, 0, 1, 2)))
+        .isInstanceOf(IllegalArgumentException.class);
   }
 
   @Test

@@ -38,7 +38,7 @@ import org.testcontainers.utility.MountableFile;
     properties = {
       "judge.worker.enabled=false",
       "spring.autoconfigure.exclude=org.springframework.boot.data.redis.autoconfigure.RedisAutoConfiguration",
-      "spring.datasource.hikari.maximum-pool-size=10"
+      "spring.datasource.hikari.maximum-pool-size=18"
     })
 @ActiveProfiles("test")
 @Testcontainers

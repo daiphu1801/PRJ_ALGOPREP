@@ -76,13 +76,30 @@ describe("real export", () => {
     });
   });
 
-  it("refuses the transcript export, whose data does not exist yet, without calling the server", async () => {
-    await expect(realExportInterviewTranscripts()).rejects.toMatchObject({
-      status: 501,
+  it("downloads the caller's transcript JSON file without substituting mock data", async () => {
+    const file = new Blob(['[{"sessionId":"mine","messages":[]}]'], {
+      type: "application/json",
     });
+    downloadFile.mockResolvedValue({ blob: file, header: () => null });
+    expect(await realExportInterviewTranscripts()).toBe(file);
+    expect(downloadFile).toHaveBeenCalledExactlyOnceWith(
+      "/identity/me/export/interview-transcripts",
+    );
     expect(get).not.toHaveBeenCalled();
-    expect(downloadFile).not.toHaveBeenCalled();
   });
+
+  it.each([
+    ["IDT-V06", 429],
+    ["IDT-509", 503],
+    ["IDT-401", 401],
+  ])(
+    "preserves transcript export error %s instead of returning an empty file",
+    async (code, status) => {
+      const error = new ApiError(String(code), Number(status), "unavailable");
+      downloadFile.mockRejectedValue(error);
+      await expect(realExportInterviewTranscripts()).rejects.toBe(error);
+    },
+  );
 
   it.each([
     ["true", true],

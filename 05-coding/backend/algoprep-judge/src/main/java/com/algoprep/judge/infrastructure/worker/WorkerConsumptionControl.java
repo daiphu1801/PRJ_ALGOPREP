@@ -16,7 +16,7 @@ final class WorkerConsumptionControl implements SmartLifecycle {
   private final WorkerJobRepository jobs;
   private final WorkerLeasePort leases;
   private final SimpleMessageListenerContainer container;
-  private WorkerScaling scaling = new WorkerScaling();
+  private WorkerScaling scaling;
   private Lease leader;
   private volatile boolean running;
   private volatile boolean healthy;
@@ -25,9 +25,18 @@ final class WorkerConsumptionControl implements SmartLifecycle {
 
   WorkerConsumptionControl(
       WorkerJobRepository jobs, WorkerLeasePort leases, SimpleMessageListenerContainer container) {
+    this(jobs, leases, container, new WorkerScaling());
+  }
+
+  WorkerConsumptionControl(
+      WorkerJobRepository jobs,
+      WorkerLeasePort leases,
+      SimpleMessageListenerContainer container,
+      WorkerScaling scaling) {
     this.jobs = jobs;
     this.leases = leases;
     this.container = container;
+    this.scaling = scaling;
   }
 
   @Override

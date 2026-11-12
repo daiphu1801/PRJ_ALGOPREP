@@ -20,6 +20,7 @@ import {
   type ProblemDetail,
   type SubmissionLanguage,
 } from "@/entities/problem";
+import { useReviewQuickInsight } from "@/entities/solution-review";
 import { useApiErrorMessage, useLocale, useT } from "@/shared/i18n";
 import { formatDateVN } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
@@ -144,6 +145,17 @@ function ProblemOverview({
   );
   const recent = sorted.slice(0, RECENT_SUBMISSION_LIMIT);
   const reviewSubmission = sorted.find((item) => item.verdict === "accepted");
+  // F5 #6 (real mode only): fills the card the real problem endpoint leaves null; link to its submission.
+  const insight = useReviewQuickInsight(problemId).data;
+  const solutionReview =
+    detail.solutionReview ??
+    (insight
+      ? {
+          timeComplexity: insight.timeComplexity,
+          spaceComplexity: insight.spaceComplexity,
+        }
+      : null);
+  const reviewSubmissionId = insight?.submissionId ?? reviewSubmission?.id;
   const sectionTitle = "mb-3 text-xl font-bold tracking-tight";
 
   return (
@@ -336,7 +348,7 @@ function ProblemOverview({
             </p>
           </Card>
 
-          {detail.solutionReview ? (
+          {solutionReview ? (
             <Card className="px-4 py-4">
               <h2 className="mb-2 text-sm font-bold">
                 {td("panel.tabReview")}
@@ -346,19 +358,19 @@ function ProblemOverview({
                   {td("panel.timeComplexity")}
                 </dt>
                 <dd className="font-mono font-semibold">
-                  {detail.solutionReview.timeComplexity}
+                  {solutionReview.timeComplexity}
                 </dd>
                 <dt className="text-[var(--color-text-muted)]">
                   {td("panel.spaceComplexity")}
                 </dt>
                 <dd className="font-mono font-semibold">
-                  {detail.solutionReview.spaceComplexity}
+                  {solutionReview.spaceComplexity}
                 </dd>
               </dl>
-              {reviewSubmission ? (
+              {reviewSubmissionId ? (
                 <p className="mt-2 text-[13px]">
                   <Link
-                    href={`/submissions/${reviewSubmission.id}/review`}
+                    href={`/submissions/${reviewSubmissionId}/review`}
                     className="underline"
                   >
                     {td("panel.linkFullReport")}

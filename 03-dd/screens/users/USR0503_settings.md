@@ -23,6 +23,7 @@
 | :--- | :--- | :--- |
 | V0.1 | Tạo DD màn, ghi rõ phần lưu theo thiết bị và theo server, cập nhật V0.7 mật khẩu | 2026-10-24 |
 | V0.2 | EVT-8 nối F1 #16 `scope=submissions` thật (CSV chín cột, trần 2000 dòng); thẻ xuất dữ liệu hiện câu riêng cho `IDT-V06` và `IDT-508`; EVT-9 vẫn chờ F5 | 2026-11-07 |
+| V0.3 | EVT-9 nối F1 #17 thật (tệp JSON do máy chủ trả); thêm chữ `apiErrors.IDT-509` vi/en | 2026-11-12 |
 
 **Bảng 0.3: Ký hiệu nguồn.**
 
@@ -66,7 +67,7 @@ Không có widget mới. Tuỳ chọn thiết bị đi qua bộ lưu cục bộ;
 | EVT-6 thông báo | F1 #15 `UpdateMySettings` khi lưu | `updateMySettings(input)` | Mock |
 | EVT-7 lưu cài đặt | F1 #15 `UpdateMySettings` | `updateMySettings(input)` | Mock |
 | EVT-8 xuất lượt nộp | F1 #16 `ExportMyData?scope=submissions` | `exportMyData("submissions")` (`real-export.ts`, `api.download`) | Thật từ 2026-11-07; tệp đồng bộ, lỗi `IDT-V06` và `IDT-508` hiện toast riêng |
-| EVT-9 xuất transcript | F1 #17 `ExportMyInterviewTranscripts` | `exportMyInterviewTranscripts()` | Mock; lỗi upstream độc lập |
+| EVT-9 xuất transcript | F1 #17 `ExportMyInterviewTranscripts` | `exportMyInterviewTranscripts()` (`real-export.ts:31`, `api.downloadFile`, tên tệp `interview-transcripts.json`) | **Thật từ 2026-11-12**; lỗi `IDT-V06` (429), `IDT-509` (503, F5 không trả lời), 401; toast qua `useApiErrorMessage`, nút không khoá; `IDT-509` đã có chữ vi/en |
 | EVT-10 về hồ sơ | Không gọi API | Link `/profile` | Client |
 | EVT-11 mở dialog xoá | Không gọi API | Local dialog state | Client |
 | EVT-12 xác nhận xoá | F1 #18 `DeleteMyAccount` | `deleteMyAccount(email)` | Mock; logout sau thành công |

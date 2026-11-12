@@ -1,6 +1,10 @@
 # AlgoPrep backend - cau hinh nen (moi profile deu thua huong).
 # Ha tang local: 05-coding/docker-compose.yml. Bien moi truong: 05-coding/.env.example
 spring:
+  datasource:
+    hikari:
+      # Fail bounded reads promptly when all database connections are in use.
+      connection-timeout: 2000
   application:
     name: algoprep
 
@@ -29,6 +33,8 @@ spring:
     # DEC-2026-1029-flyway-migration-tool. Mot history table o schema public; moi module mot thu muc,
     # moi module mot dai version (identity V1.NNN, problem V2.NNN, judge V4.NNN, ai V5.NNN, interview_bank V6.NNN).
     # Them module moi co migration: them mot dong vao locations.
+    # Module version ranges share one history; a new V1 migration can follow an applied V6.
+    out-of-order: true
     schemas: public
     default-schema: public
     locations:
@@ -74,8 +80,10 @@ judge:
     outbox-error-attempts: 5
     event-retention-days: 90
   autoscale:
-    # JOB-JD-05 has a fixed limit of eight consumers in the current worker runtime.
+    # Worker and queue-monitor use the same deployment limit; defaults preserve JOB-JD-05.
     max-workers: 8
+    scale-up-polls: 2
+    scale-down-polls: 4
 
 algoprep:
   # Sign-in with GitHub and Google (DD F1 BR-03). A provider with a blank client id or secret
@@ -95,6 +103,12 @@ algoprep:
     api-key: ${ALGOPREP_AI_OPENROUTER_API_KEY:}
     base-url: ${ALGOPREP_AI_BASE_URL:https://openrouter.ai/api}
     default-model: ${ALGOPREP_AI_DEFAULT_MODEL:}
+    llm:
+      timeout:
+        # Total deadline of one structured call. Free models need 20+ s for a full transcript or
+        # code review; the Next proxy allows 240 s, so keep these well below it.
+        review-total-sec: ${ALGOPREP_AI_REVIEW_TOTAL_SEC:90}
+        rubric-total-sec: ${ALGOPREP_AI_RUBRIC_TOTAL_SEC:90}
     anomaly:
       # JOB-AI-05 threshold: an account at or above this many times the 24 hour average is flagged.
       threshold-ratio: 5

@@ -22,12 +22,12 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.utility.MountableFile;
 
 /**
- * Applies the real Flyway migrations of module {@code problem-bank} (V2.001, V2.002) to a clean
+ * Applies the real Flyway migrations of module {@code problem-bank} (V2.001 to V2.004) to a clean
  * PostgreSQL 16 and checks tables, seed data and constraints against {@code
  * 02-bd/database/F2_problem-bank.md}.
  *
  * <p>Every Spring context in this module runs all module migrations, so the assertions here only
- * look at schema {@code problem} and versions 2.001 and 2.002. One test additionally applies the F2
+ * look at schema {@code problem} and the F2 versions. One test additionally applies the F2
  * migrations alone to an empty database to prove F2 does not depend on any other schema.
  */
 @SpringBootTest(
@@ -62,6 +62,7 @@ class ProblemMigrationTest {
           "testcase_generation_runs",
           "consumed_events",
           "testcase_set_snapshots",
+          "catalog_cache_epoch",
           "outbox_events");
 
   /**
@@ -98,7 +99,7 @@ class ProblemMigrationTest {
   @Autowired private Flyway flyway;
 
   @Test
-  @DisplayName("creates exactly the 18 problem tables from BD section 4")
+  @DisplayName("creates exactly the 19 problem tables including the durable cache epoch")
   void createsAllTables() {
     List<String> tables =
         jdbc.queryForList(
@@ -159,11 +160,21 @@ class ProblemMigrationTest {
             .load()
             .migrate();
     assertThat(result.success).isTrue();
-    assertThat(result.migrationsExecuted).isEqualTo(2);
+    assertThat(result.migrationsExecuted).isEqualTo(4);
 
     assertThat(count(clean, "problem.problem_levels")).isEqualTo(3);
     assertThat(count(clean, "problem.topics")).isEqualTo(6);
     assertThat(count(clean, "problem.problem_bank_settings")).isEqualTo(1);
+    assertThat(count(clean, "problem.catalog_cache_epoch")).isEqualTo(1);
+    assertThat(
+            clean.queryForObject(
+                "SELECT version FROM problem.catalog_cache_epoch WHERE id=1", Long.class))
+        .isZero();
+    assertThat(
+            clean.queryForObject(
+                "SELECT count(*) FROM information_schema.columns WHERE table_schema='problem' AND table_name='outbox_events' AND column_name='last_attempted_at'",
+                Integer.class))
+        .isEqualTo(1);
     assertThat(
             clean.queryForObject(
                 "SELECT max_ai_generations_per_problem FROM problem.problem_bank_settings WHERE id = 1",

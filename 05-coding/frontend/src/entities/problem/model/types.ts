@@ -135,7 +135,6 @@ export type SubmissionHistoryItem = {
 export type SolutionReviewQuickInsight = {
   timeComplexity: string;
   spaceComplexity: string;
-  notes: string[];
 };
 
 export type ProblemDetail = {

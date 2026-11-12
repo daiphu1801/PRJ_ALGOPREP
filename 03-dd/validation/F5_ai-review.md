@@ -119,7 +119,7 @@ Script là mã **không tin cậy**: `ai-review` không thực thi, không phân
 | :--- | :--- | :--- | :-: | :--- | :--- |
 | `featureCode` | `SOLUTION_REVIEW`, `MOCK_INTERVIEW`, `GENERATE_TESTCASE` | `AIR-V11` | 400 | Presentation | `DB5:19` |
 | `systemInstruction` | sau khi bỏ khoảng trắng đầu cuối không rỗng; tối đa 20.000 ký tự | `AIR-V12` | 400 | Presentation | `A301` Sheet 9 NO 5; trần `[SoT: Suy luận]` |
-| `modelId` | thuộc `ai.models.allowed`, so khớp **chính xác**, tối đa 50 ký tự; máy chủ không tin giá trị từ client | `AIR-202` | 422 | Application | `SEC5:88`, `DB5:24` |
+| `modelId` | là bí danh `default` hoặc thuộc `ai.models.allowed`, so khớp **chính xác**, tối đa 50 ký tự; máy chủ không tin giá trị từ client | `AIR-202` | 422 | Application | `SEC5:88`, `DB5:24` |
 | `responseGuards` | `GENERATE_TESTCASE`: bắt buộc `null`; hai feature kia: object đúng ba khoá boolean `citeLines`, `answerInVietnamese`, `noFullSolution`, **không khoá lạ**; `noFullSolution` nhận cả `true` lẫn `false` (không ép) | `AIR-V13` | 400 | Presentation | `DB5:25`, `DEC-2026-1011-ai-no-full-solution-can-be-turned-off` |
 | `changes[]` | 1 đến 3 phần tử, không trùng `featureCode` | `AIR-V14` | 400 | Presentation | `A301` EVT-13 |
 | `expectedActivePromptId` | UUID, khớp id `ACTIVE` hiện tại | `AIR-201` | 409 | Application, dưới `FOR UPDATE` | `A301` Sheet 9 NO 6 |

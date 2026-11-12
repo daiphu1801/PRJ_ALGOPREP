@@ -69,6 +69,7 @@
     "IDT-506": "This block could not be loaded. Please try again in a few minutes",
     "IDT-507": "The class figures could not be loaded. Please try again in a few minutes",
     "IDT-508": "The submission history could not be read for the export. Please try again in a few minutes",
+    "IDT-509": "The interview transcripts could not be read for the export. Please try again in a few minutes",
     "IDT-V01": "Password must be at least 8 characters",
     "IDT-V02": "Password must be at most 72 bytes (accented letters use more bytes)",
     "IDT-V03": "Password needs at least one letter and one digit",
@@ -122,6 +123,9 @@
     "HRN-003": "Starter code is temporarily unavailable. Try again.",
     "HRN-004": "This problem only supports Standard I/O.",
     "HRN-005": "The function signature is not ready.",
+    "HRN-060": "The function specification is invalid. Check the highlighted fields.",
+    "HRN-061": "Too many previews. The preview will retry shortly.",
+    "HRN-062": "The preview specification exceeds the 16 KB limit.",
     "PRB-001": "Some values are not valid. Please check and try again.",
     "PRB-002": "You do not have permission to do this.",
     "PRB-003": "You can only change problems you wrote yourself.",
@@ -164,6 +168,89 @@
     "PRB-056": "The change could not be saved. Try again later.",
     "PRB-057": "Your solve status could not be read, so progress is not shown. Try again later.",
     "PRB-058": "The class list could not be read. Try again later.",
+    "INB-010": "This question no longer exists or has been retired.",
+    "INB-011": "The topic does not exist. Reload the list.",
+    "INB-012": "The level does not exist. Reload the list.",
+    "INB-020": "This name is already taken. Choose another.",
+    "INB-021": "This difficulty name is already taken. Choose another.",
+    "INB-030": "The topic still has questions, so it cannot be deleted.",
+    "INB-031": "The level still has questions, so it cannot be deleted.",
+    "INB-032": "This is the last level and cannot be deleted.",
+    "INB-033": "Criteria weights must add up to 100.",
+    "INB-034": "The submitted order does not match the current list. Reload the list.",
+    "INB-035": "The chosen topic or level no longer exists.",
+    "INB-040": "This question has no scoring criteria, so AI practice is not available.",
+    "INB-041": "You have sent more than 20 answers this hour. Try again later.",
+    "INB-042": "Your AI budget is used up. Try again later.",
+    "INB-050": "Two submissions collided. Send it again.",
+    "INB-301": "You do not have permission to manage the question bank.",
+    "INB-302": "Only administrators can manage topics and levels.",
+    "INB-501": "The AI did not respond in time. Your answer was saved; try again later.",
+    "INB-502": "The AI returned an invalid result. Your answer was saved; try again later.",
+    "INB-503": "The audit log could not be written, so the change was not saved. Try again later.",
+    "INB-V01": "The filter or sort option is not valid.",
+    "INB-V02": "The selection is not valid (at most 100 questions, no duplicates).",
+    "INB-V03": "The name must be 1 to 60 characters.",
+    "INB-V04": "Choose a valid self-rating.",
+    "INB-V05": "The bookmark state is not valid.",
+    "INB-V06": "Enter an answer before sending.",
+    "INB-V07": "The answer is too long (5000 characters at most).",
+    "INB-V08": "The title must not be empty and has at most 255 characters.",
+    "INB-V09": "Choose a topic and a level.",
+    "INB-V10": "The scoring criteria are not valid: name 1 to 100 characters, weight 0 to 100.",
+    "INB-V11": "Two criteria cannot share a name.",
+    "INB-V12": "The follow-up questions are not valid.",
+    "INB-V13": "There is no change to save.",
+    "INB-V14": "The submitted order is not valid.",
+    "INB-V15": "The import file must have 1 to 500 rows.",
+    "INB-V16": "The submitted data is not valid.",
+    "INB-V17": "The submitted data is too large.",
+    "AIR-101": "The submission was not found.",
+    "AIR-102": "Only accepted submissions can be analysed.",
+    "AIR-103": "The report for this submission is being generated. Wait a moment and reload.",
+    "AIR-110": "The interview session was not found.",
+    "AIR-111": "The interview session has ended.",
+    "AIR-112": "The session changed elsewhere. Reload it.",
+    "AIR-113": "The session is handling another turn. Wait for it to finish.",
+    "AIR-114": "The session reached its turn limit. End it to see the result.",
+    "AIR-115": "Hints are not allowed in this session.",
+    "AIR-116": "You have not answered anything yet, so there is nothing to score.",
+    "AIR-117": "You have used all hints of this session.",
+    "AIR-120": "This alert no longer exists. Reload the list.",
+    "AIR-121": "This price row no longer exists. Reload the list.",
+    "AIR-201": "The running prompt was just changed by someone else. Reload and try again.",
+    "AIR-202": "The chosen model is not in the allowed list.",
+    "AIR-203": "Cannot unlock: usage is still not below the limit.",
+    "AIR-204": "This model name already exists. Choose another.",
+    "AIR-205": "There is nothing to publish.",
+    "AIR-301": "You do not have permission to do this.",
+    "AIR-302": "This data does not belong to you.",
+    "AIR-401": "The AI budget is used up, so this feature is locked for now. Try again later.",
+    "AIR-402": "You requested too many analyses this hour. Try again later.",
+    "AIR-403": "You opened too many interview sessions this hour. Try again later.",
+    "AIR-404": "You just sent a request. Wait a moment and try again.",
+    "AIR-501": "The AI service is temporarily unavailable. Try again later.",
+    "AIR-502": "The AI returned an invalid result. Try again.",
+    "AIR-503": "The audit log could not be written, so the change was not saved. Try again later.",
+    "AIR-V01": "The problem is not valid.",
+    "AIR-V02": "The requested count is outside the allowed range.",
+    "AIR-V03": "The session details are incomplete or contain extra parts.",
+    "AIR-V04": "The interviewer level is not valid.",
+    "AIR-V05": "The maximum number of turns must be 8, 12 or 16.",
+    "AIR-V06": "The topic list is not valid (1 to 10 topics, each at most 60 characters).",
+    "AIR-V07": "The question is not valid (at most 2,000 characters).",
+    "AIR-V08": "The answer must not be empty and has at most 4,000 characters.",
+    "AIR-V09": "The session turn count is not valid. Reload the session.",
+    "AIR-V10": "The time range is not valid.",
+    "AIR-V11": "The feature is not valid.",
+    "AIR-V12": "The system instruction must not be empty and has at most 20,000 characters.",
+    "AIR-V13": "The response guard settings are not valid for this feature.",
+    "AIR-V14": "The publish list is not valid (1 to 3 features, no duplicates).",
+    "AIR-V15": "The token limit must be a positive integer.",
+    "AIR-V16": "The limit value is not valid, or nothing was changed.",
+    "AIR-V17": "The model name must not be empty and has at most 100 characters.",
+    "AIR-V18": "The price is not valid.",
+    "AIR-V19": "The day range must be 7, 14 or 30.",
     "UNKNOWN_ERROR": "Something went wrong. Please try again"
   },
   "nav": {
@@ -1018,12 +1105,14 @@
     "alert": {
       "budgetRunningOut": {
         "title": "Budget running low",
-        "meta": "At the current rate the monthly budget runs out on 28/08."
+        "meta": "At the current rate the monthly budget runs out on {date}.",
+        "metaNoDate": "Usage has reached the budget warning threshold."
       },
       "anomalousAccount": {
         "title": "One account is using AI abnormally",
-        "meta": "nguyenvana made 214 calls in 24 hours, 7x the average. An admin should review it; the system does not lock the account."
+        "meta": "{name} made {count} calls in 24 hours, {ratio}x the average. An admin should review it; the system does not lock the account."
       },
+      "unknownAccount": "An account",
       "budgetLocked": {
         "title": "Budget locked",
         "meta": "AI is locked for students and instructors. Raise the cap, then unlock it on the AI limits screen."
@@ -1032,7 +1121,7 @@
     "topUsersTitle": "Heaviest learners",
     "topUsersSubtitle": "Over the last 30 days",
     "topProblemsTitle": "Most token-hungry problems",
-    "topProblemsSubtitle": "Solution review, mock interview and testcase generation combined",
+    "topProblemsSubtitle": "Solution review and testcase generation over 30 days",
     "columnLearner": "Learner",
     "columnTokens": "Tokens",
     "columnCalls": "Calls",
@@ -1563,6 +1652,7 @@
   "interviewQuestionManagement": {
     "title": "Interview question bank",
     "loadFailed": "Could not load the question list. Try again later.",
+    "retry": "Try again",
     "subtitle": "{total} questions · instructors and admins can edit all of them",
     "manageTopics": "Manage topics",
     "topicManager": {
@@ -1644,7 +1734,8 @@
         "unknownLevel": "level \"{detail}\" is not in the list",
         "badRubric": "rubric is malformed (expected name:weight, weight a whole number from 0 to 100)",
         "rubricSum": "rubric weights do not total 100",
-        "duplicate": "the question duplicates an existing one or an earlier row in the file"
+        "duplicate": "the question duplicates an existing one or an earlier row in the file",
+        "invalidField": "a cell is not valid (question over 255 characters or wrong data type)"
       }
     },
     "newQuestion": "New question",
@@ -1673,6 +1764,7 @@
     "editQuestion": "Edit question {code}",
     "deleteQuestion": "Delete question {code}",
     "emptyFiltered": "No question matches the current filter",
+    "emptyBank": "The bank has no questions yet",
     "pageLabel": "Page {page} of {totalPages} · showing {shown} rows",
     "previous": "Previous",
     "next": "Next",
@@ -1690,6 +1782,7 @@
     "confirmDeleteBody": "The question leaves the bank. Interview sessions that already used it keep their history.",
     "toast": {
       "bulkDeleted": "{count} questions deleted",
+      "bulkPartial": "{done} deleted, {failed} could not be deleted: {reason}",
       "deleted": "Question {code} deleted",
       "searchResult": "Found {count} questions",
       "searchEmpty": "No questions found"
@@ -1700,7 +1793,7 @@
     "subtitle": "Saving makes the question live — there is no separate publish step",
     "titleEdit": "Edit question {code}",
     "notFoundTitle": "Question not found",
-    "notFoundBody": "No question has the code {code}. It may have been removed from the bank.",
+    "notFoundBody": "This question was not found. It may have been removed from the bank.",
     "classifyTitle": "Classification",
     "classifySubtitle": "Topic and level drive the filters in the question bank",
     "back": "Back",
@@ -1748,7 +1841,11 @@
       "softDeleted": "Question retired"
     },
     "saveBlocked": {
-      "empty": "Enter the question text before saving."
+      "empty": "Enter the question text before saving.",
+      "titleTooLong": "The question can have at most {max} characters.",
+      "criterionBlank": "Every criterion needs a name.",
+      "criterionDuplicate": "Two criteria cannot share a name.",
+      "classify": "Choose a topic and a level before saving."
     }
   },
   "problemAuthoring": {
@@ -1864,6 +1961,7 @@
     "moveDown": "Move testcase down",
     "reorderHint": "Drag the position or use the up/down buttons to reorder testcases",
     "testcaseTooLarge": "Each testcase side must be at most 1 MB in UTF-8.",
+    "unsupportedSignatureType": "There is no editor for type {kind} yet. Saving preserves its original data; choosing another type replaces it.",
     "runResultTitle": "Reference solution ran",
     "runResultBody": "Passed {passed}/{total} approved testcases.",
     "runStaleTitle": "No valid run result",
@@ -2063,6 +2161,21 @@
       "signatureTitle": "Function signature",
       "signatureSubtitle": "Declared once for all three languages. The harness maps the types to each language and generates the starter code: the learner writes only the function body, the harness reads the input and prints the output. Parameter names show up in the starter code and when a sample testcase is displayed.",
       "stubTitle": "Starter code the learner will see",
+      "preview": {
+        "languages": "Preview language",
+        "loading": "Updating the signature…",
+        "rateLimited": "Waiting {seconds} seconds before retrying the preview.",
+        "unsupported": "The current draft does not support the function wrapper.",
+        "reasons": {
+          "HRN-V01": "A data type is outside the supported schema.",
+          "HRN-V02": "A container is missing its element type.",
+          "HRN-V03": "An element type is not supported by its container.",
+          "HRN-V04": "An array has more than three dimensions.",
+          "HRN-V05": "Data types are nested too deeply.",
+          "HRN-V06": "Nodes of the same kind must share a value type.",
+          "HRN-V07": "The function signature has not been declared."
+        }
+      },
       "stubSubtitle": "Illustrated from the signature above; the real starter code is generated by the harness. The name is derived: Python uses snake_case, Java and C++ camelCase.",
       "overrideName": "{language} function name (empty = derived)"
     },
@@ -2279,6 +2392,17 @@
       "applyFailed": "Could not save the code in this browser. Check the browser storage permission."
     },
     "statCreatedAt": "Analyzed at",
+    "loadingLabel": "Analyzing the solution, this can take up to 30 seconds",
+    "errorRateLimitedTitle": "Cannot analyze right now",
+    "errorRateLimitedBody": "You have requested too many analyses. Try again in {seconds} seconds.",
+    "retryIn": "Retry in {seconds}s",
+    "sourceUnavailable": "The submitted code could not be loaded, so the comparison is hidden.",
+    "withdrawn": "Withdrawn from the bank",
+    "diff": {
+      "added": "added",
+      "removed": "removed"
+    },
+    "rateLimitedToast": "You are going a bit fast. Try again in {seconds} seconds.",
     "errorUnavailableTitle": "Cannot open the solution review",
     "errorUnavailableBody": "This submission does not exist, is not yours, or is not accepted yet, so it has no solution review.",
     "backToSubmissions": "Back to My submissions",
@@ -2296,6 +2420,8 @@
       "custom": "Custom topic"
     },
     "customTopicHint": "Pick at least one topic for a self-practice session.",
+    "emptySubmissions": "You have no Accepted submission yet. Solve a problem first, then come back.",
+    "emptyBank": "The question bank has nothing to pick yet.",
     "configTitle": "Session settings",
     "levelLabel": "Level",
     "level": {
@@ -2334,7 +2460,9 @@
     "retryCta": "Practice again",
     "backCta": "Back to list",
     "toast": {
-      "finished": "Interview session finished. Your evaluation is ready."
+      "finished": "Interview session finished. Your evaluation is ready.",
+      "sessionAbandoned": "The previous interview session closed after being idle too long.",
+      "sessionGone": "This interview session could not be reopened."
     },
     "customTopicsLabel": "Interview topics",
     "chatLogLabel": "Interview conversation",
@@ -2363,7 +2491,22 @@
     "tip1": "State the approach first, implementation details after.",
     "tip2": "Be explicit about time and space complexity.",
     "tip3": "Raise edge cases yourself before being asked.",
-    "sendShortcut": "Ctrl + Enter to send"
+    "sendShortcut": "Ctrl + Enter to send",
+    "startPending": "Opening the session...",
+    "submissionConfigNote": "A session from a submission uses the system defaults: turns, level and hints cannot be changed.",
+    "turnCountOpen": "Turn {current}",
+    "restoringLabel": "Restoring the session...",
+    "waitingReply": "The interviewer is replying, please wait a moment.",
+    "waitingSlow": "This is taking longer than usual. You can reload the page, the session is kept.",
+    "turnFailedTitle": "No reply yet to this answer",
+    "turnFailedBody": "Your answer is saved. Press Retry so the interviewer can reply.",
+    "turnRetry": "Retry",
+    "completionPendingTitle": "The session is ready to be scored",
+    "completionRetry": "Score now",
+    "completingLabel": "Scoring the session...",
+    "hintBlockTitle": "Hint",
+    "earlyExitNoTurnBody": "You have not answered anything yet, so there is nothing to score. The session is left and closes on its own.",
+    "earlyExitNoTurnConfirm": "Leave session"
   },
   "interviewBankList": {
     "startDrill": "Quick drill · {count}",
@@ -2389,12 +2532,19 @@
     },
     "bookmarkLabel": "Bookmark for later",
     "emptyFiltered": "No question matches these filters.",
+    "emptyBank": "The bank has no questions yet.",
+    "loadMore": "Load more",
+    "loadMoreRetry": "Try again",
+    "loadMoreFailed": "Could not load more questions.",
     "quickView": {
       "selectPrompt": "Select a question to preview it.",
       "outlineLabel": "Answer outline",
       "recallLabel": "Recall level",
       "viewDetail": "View details",
       "nextReview": "Next review in {n} days",
+      "nextReviewDue": "Review is due now",
+      "loadFailed": "Could not load the question details.",
+      "retry": "Try again",
       "keywordsLabel": "Core keywords"
     },
     "drill": {
@@ -2410,7 +2560,14 @@
       "bookmarked": "Question saved.",
       "unbookmarked": "Question removed from saved.",
       "searchResult": "Found {count} questions.",
-      "searchEmpty": "No questions found."
+      "searchEmpty": "No questions found.",
+      "loadFailed": "Could not load the list. The filters went back to what they were.",
+      "unavailable": "This question is no longer available.",
+      "rateFailed": "Could not save your recall level. Try again.",
+      "bookmarkFailed": "Could not save the bookmark. Try again.",
+      "drillFailed": "Could not start the quick drill. Try again.",
+      "drillEmpty": "No question matches the filters to drill.",
+      "drillRateFailed": "That last self-rating was not saved."
     },
     "bookmarkedOnly": "Bookmarked only",
     "title": "Question bank",
@@ -2442,7 +2599,8 @@
         "vague": "Vague",
         "forgotten": "Forgotten"
       },
-      "nextReviewHint": "Next review in {n} days"
+      "nextReviewHint": "Next review in {n} days",
+      "nextReviewDue": "Review is due now"
     },
     "practice": {
       "answerLabel": "Your answer",
@@ -2468,6 +2626,7 @@
     "attempts": {
       "title": "Attempt history",
       "emptyState": "You haven't practised this question yet.",
+      "loadMore": "Load more ({shown} / {total})",
       "attemptNo": "Attempt {n}",
       "status": {
         "pending": "Grading",
@@ -3170,6 +3329,12 @@
     "filterAll": "All",
     "emptyGeneric": "No data yet",
     "errorGeneric": "Could not load this block",
+    "interviewTopics": {
+      "title": "Question review by topic",
+      "colTopic": "Topic",
+      "colAttempted": "Attempted",
+      "colLast": "Last practiced"
+    },
     "errorAi": "The AI subsystem is not responding — the other blocks still work",
     "solveState": {
       "solved": "Solved",

@@ -18,8 +18,7 @@
 // unlike admin_overview which is a server shell over client blocks.
 //
 // Still not built: "Xem lộ trình" (dropped for good, RD mục 4 Q1 — no Fx-nn describes a roadmap
-// feature). Waiting on the entity: the per-topic interview-question completion of F6-10
-// (BD Khu vực F, NO 10-14); see BD section 4.6. The range control also drives the interview block.
+// feature). Per-topic interview-question completion (F6-10, BD Khu vực F NO 10-14) is InterviewTopicsTable (F6 #8, no range). The range control also drives the interview block.
 // Ledger section 12.
 "use client";
 
@@ -32,6 +31,7 @@ import { DailySubmissionsBlock } from "./blocks/daily-submissions-block";
 import { DifficultyCard } from "./blocks/difficulty-card";
 import { FocusCard } from "./blocks/focus-card";
 import { GreetingBlock } from "./blocks/greeting-block";
+import { InterviewTopicsTable } from "./blocks/interview-topics-table";
 import { RecentInterviewsBlock } from "./blocks/recent-interviews-block";
 import { RecentReviewsBlock } from "./blocks/recent-reviews-block";
 import { SkillRadarBlock } from "./blocks/skill-radar-block";
@@ -99,6 +99,10 @@ export function DashboardView() {
           <DifficultyCard />
           <FocusCard range={range} />
         </div>
+      </div>
+
+      <div className="mb-3.5">
+        <InterviewTopicsTable />
       </div>
 
       <div className={TWO_COLUMN}>

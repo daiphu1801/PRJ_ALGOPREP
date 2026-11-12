@@ -18,7 +18,7 @@ Bảng 0.1: Bìa.
 | RD nguồn | `01-rd/screens/users/USR0401_interview_bank_list.md` |
 | BD nguồn | `02-bd/screens/users/USR0401_interview_bank_list.md` (V1.15) |
 | Prototype | `05-coding/frontend/src/views/users/interview-bank-list/` (mock, toàn bộ bộ lọc ở `useState`, lọc phía trình duyệt trên cả ngân hàng) |
-| Phiên bản, ngày | V0.1, 2026-10-24 |
+| Phiên bản, ngày | V0.2, 2026-11-11 |
 | Tiêu chí nghiệm thu | `04-tdd/screens/users/USR0401_interview_bank_list.md` phủ trạng thái chọn câu, lọc, luyện nhanh và điều hướng của màn; hợp đồng máy chủ dùng `F6 AC-01` đến `AC-09` và `AC-40`. Mọi điểm mục 7 đã có mã AC truy vết. |
 
 Bảng 0.2 ghi lịch sử sửa.
@@ -28,6 +28,7 @@ Bảng 0.2: Lịch sử sửa.
 | Ver | Mục | Nội dung | Ngày |
 | :--- | :--- | :--- | :--- |
 | V0.1 | Toàn bộ | Tạo mới từ prototype, DD F6 và các quyết định `DEC-2026-1023-*`, `DEC-2026-1024-*`. Chốt: bộ lọc nằm trên URL, ghim câu vừa thao tác trên danh sách phân trang máy chủ, thẻ luyện nhanh lấy từ máy chủ theo thứ tự của F6, cách tính "ôn lại sau n ngày", cách tách "Ý cần nói" | 2026-10-24 |
+| V0.2 | Mục 2 | Nối API thật (merge M1): bảng 2.1 đổi cột "Nối" sang thật và đổi tên hook theo mã; thêm bảng 2.2 điểm lệch giữa DD và bản nối (bộ lọc chưa lên URL, chưa có bộ quan sát cuộn, bỏ ghim) | 2026-11-11 |
 
 Bảng 0.3 giải nghĩa viết tắt nguồn trích dẫn.
 
@@ -61,9 +62,9 @@ Bảng 1.1: Slice của màn.
 | views | `views/users/interview-bank-list/model/use-pinned-ids.ts` | Tập id ghim gắn chữ ký bộ lọc (BR-SC-02); logic hiện nằm rải ở IBV:110-121, 193-198 | Chưa có (tách khỏi view) |
 | entities | `entities/interview-question/api/queries.ts` | Thay `useInterviewQuestionPage` bằng `useInterviewQuestionList(filters)` (`useInfiniteQuery`, F6 mục 2), `useDrillCards`, `useInterviewQuestion(id)` (F6 mục 3), `useRateRecall` (mục 4), `useSetBookmark` (mục 5), `useQuestionTopics` (mục 9), `useQuestionLevels` (mục 10) | Có, mock, kiểu cũ [SoT: IQE api/queries.ts:24-58] |
 | entities | `entities/interview-question/model/types.ts` | **Tách kiểu phía người học** (`QuestionListItem`, `QuestionDetail`, `Recall`) khỏi kiểu quản trị `InterviewQuestion` đang mang `rubric`, `usageCount`, `averageScore`, `attempts`, `defaultRecall`. Kiểu người học **không có** `rubric` (F6:88, 190) | Có, gộp [SoT: IQE model/types.ts:19-54] |
-| entities | `entities/interview-question/model/recall-map.ts` | Một chỗ ánh xạ `known`/`vague`/`forgotten` (giao diện) với `KNOWN`/`VAGUE`/`FORGOTTEN` (API) và `new` với `UNSEEN` | Chưa có |
-| entities | `entities/interview-question/lib/split-outline.ts`, `lib/next-review.ts` | `splitOutline` (BR-SC-07), `nextReviewDays` (BR-SC-04); dùng chung với `USR0402` | Chưa có |
-| entities | `entities/interview-question/model/use-recall-state.ts` | **Bỏ** cho màn người học: kho module giả lập dữ liệu theo người dùng [SoT: IQE model/use-recall-state.ts:1-75]; thật thì bộ nhớ đệm truy vấn là nguồn duy nhất, hai màn chia sẻ qua cùng khoá | Có (xoá khi nối API) |
+| entities | `entities/interview-question/model/recall-map.ts` | Một chỗ ánh xạ `known`/`vague`/`forgotten` (giao diện) với `KNOWN`/`VAGUE`/`FORGOTTEN` (API) và `new` với `UNSEEN` | Có (2026-11-11) |
+| entities | `entities/interview-question/lib/split-outline.ts`, `lib/next-review.ts` | `splitOutline` (BR-SC-07), `nextReviewDays` (BR-SC-04); dùng chung với `USR0402` | Có (2026-11-11) |
+| entities | `entities/interview-question/model/use-recall-state.ts` | **Bỏ** cho màn người học: kho module giả lập dữ liệu theo người dùng [SoT: IQE model/use-recall-state.ts:1-75]; thật thì bộ nhớ đệm truy vấn là nguồn duy nhất, hai màn chia sẻ qua cùng khoá | Đã xoá (2026-11-11); trạng thái giả lập chuyển vào `__mock__/learner-mock.ts` |
 | entities | `entities/interview-question/ui/` (`InterviewQuestionListRow`, `RecallLevelPicker`, `BookmarkToggle`) | Dùng lại; `InterviewQuestionListRow` đổi props nhận `QuestionListItem` | Có |
 | shared | `shared/lib/use-debounced-value.ts` (S1), `shared/lib/use-search-param-state.ts` (S2) | **Nâng lên `shared/lib`**, dùng chung với `USR0202` (DD `USR0202` Bảng 1.1). Hiện chưa có | Chưa có |
 | shared | `shared/ui`: `FilterBar`, `FilterMenu`, `Toggle`, `Card`, `Badge`, `ProgressBar`, `EmptyState`, `QueryError`, `SeeAllLink`, `Button`, `MarkdownPreview` (không dùng ở màn này); `shared/lib/toast-store`; `shared/api` `useErrorMessage` (đang chờ dựng [SoT: `05-coding/frontend/src/shared/api/api-error.ts:1-3`]) | Dùng lại | Có |
@@ -72,19 +73,19 @@ Việc **không làm**: không dựng `widgets/recall-summary-bar` (đã bỏ 20
 
 ## 2. API tiêu thụ
 
-Bảng 2.1 ánh xạ sự kiện BD Sheet 8 sang endpoint F6. Hiện mọi dòng gọi API đều mock [SoT: IQE api/queries.ts:1-58].
+Bảng 2.1 ánh xạ sự kiện BD Sheet 8 sang endpoint F6. Từ 2026-11-11 mọi dòng gọi API đã nối thật (F6 mục 2 đến 5, 9, 10); chế độ mock vẫn chạy cùng hook qua `__mock__/learner-mock.ts`, một máy chủ giả có lọc, phân trang và giữ mức tự chấm, đánh dấu theo từng người [SoT: `05-coding/frontend/src/entities/interview-question/api/learner-queries.ts:1-250`].
 
 Bảng 2.1: Sự kiện BD, endpoint theo ID, hook, trạng thái nối.
 
 | EVT (BD) | Endpoint theo ID | Hook | Nối |
 | :--- | :--- | :--- | :--- |
-| EVT-1 Khởi tạo | F6 mục 9 `GET /topics`, mục 10 `GET /levels`, mục 2 `GET /questions` (trang 1) song song; rồi F6 mục 3 cho dòng được chọn | `useQuestionTopics`, `useQuestionLevels`, `useInterviewQuestionList`, `useInterviewQuestion(selectedId)` | mock |
-| EVT-2 Tìm, EVT-3 Trạng thái, EVT-4 Chủ đề, EVT-15 Độ khó, EVT-16 Chỉ câu đã đánh dấu | F6 mục 2, đổi `q`, `status`, `topic`, `level`, `bookmarkedOnly`, trở về trang 1 | `useInterviewQuestionList(filters)` | mock |
-| EVT-5 Cuộn tải thêm | F6 mục 2, `page + 1` cùng bộ lọc | `fetchNextPage` của `useInfiniteQuery` | mock |
-| EVT-6 Chọn một dòng | F6 mục 3 | `useInterviewQuestion(id)` | mock |
-| EVT-7 Đánh dấu | F6 mục 5 `PUT /questions/{id}/bookmark` | `useSetBookmark` | mock |
-| EVT-8 Tự chấm (xem nhanh), EVT-13 Tự chấm trên thẻ | F6 mục 4 `PUT /questions/{id}/recall` | `useRateRecall` | mock |
-| EVT-11 Bắt đầu luyện nhanh | F6 mục 2 với `drill=true&limit=10` và bộ lọc hiện hành | `useDrillCards` (gọi một lần theo yêu cầu, không lưu lâu) | mock |
+| EVT-1 Khởi tạo | F6 mục 9 `GET /topics`, mục 10 `GET /levels`, mục 2 `GET /questions` (trang 1) song song; rồi F6 mục 3 cho dòng được chọn | `useInterviewTopics`, `useInterviewLevels`, `useLearnerQuestionList`, `useLearnerQuestionDetail(selectedId)` | thật |
+| EVT-2 Tìm, EVT-3 Trạng thái, EVT-4 Chủ đề, EVT-15 Độ khó, EVT-16 Chỉ câu đã đánh dấu | F6 mục 2, đổi `q`, `status`, `topic`, `level`, `bookmarkedOnly`, trở về trang 1 | `useLearnerQuestionList(filters)` | thật |
+| EVT-5 Cuộn tải thêm | F6 mục 2, `page + 1` cùng bộ lọc | `fetchNextPage` của `useInfiniteQuery` (nút "Xem thêm") | thật |
+| EVT-6 Chọn một dòng | F6 mục 3 | `useLearnerQuestionDetail(id)` | thật |
+| EVT-7 Đánh dấu | F6 mục 5 `PUT /questions/{id}/bookmark` | `useSetBookmark` (lạc quan, hoàn lại khi lỗi) | thật |
+| EVT-8 Tự chấm (xem nhanh), EVT-13 Tự chấm trên thẻ | F6 mục 4 `PUT /questions/{id}/recall` | `useRateRecall` (không lạc quan, vá bộ nhớ đệm) | thật |
+| EVT-11 Bắt đầu luyện nhanh | F6 mục 2 với `drill=true&limit=10` và bộ lọc hiện hành | `useStartDrill` (gọi một lần theo yêu cầu, không lưu lâu) | thật |
 | EVT-9 Xem chi tiết, EVT-10 Vào phiên giả lập | Không gọi API | `next/link` tới `/interview-bank/{id}?...` và `/mock-interview` | không áp dụng |
 | EVT-12 Hiện/ẩn ý cần nói, EVT-14 Thoát luyện nhanh | Không gọi API | state cục bộ | không áp dụng |
 
@@ -95,6 +96,20 @@ Màn không có kênh thời gian thực. Điểm khác BD khi nối thật:
 3. Thẻ luyện nhanh do máy chủ sắp và cắt (F6:134, L6:110). Bản dựng sắp ở trình duyệt theo mức tự chấm [SoT: IBV:71-82, 161-170], khác thứ tự thật: máy chủ xếp "đến hạn" theo `next_review_at`, rồi "chưa từng chấm", rồi phần còn lại.
 4. Dòng "Sẽ nhắc ôn lại sau {n} ngày": F6 mục 4 và mục 3 trả `nextReviewAt` (F6:100, 233); `n` do màn tính (BR-SC-04). Bản dựng tra bảng 1/3/7 [SoT: IQE model/types.ts:62-71].
 5. Tìm kiếm của BD ghi khớp "tiêu đề, nội dung, từ khoá cốt lõi" [SoT: BD:338]; F6 ghi "tiêu đề, mô tả, từ khoá" (F6:128) nhưng L6:105 so `title`, `content_markdown`, `core_keywords`: cùng ý, không lệch ở màn.
+
+Bảng 2.2 ghi các điểm bản nối thật khác với thiết kế ở mục 4 (đã đối chiếu mã, [SoT: `05-coding/frontend/src/views/users/interview-bank-list/ui/interview-bank-list-view.tsx:57-215`]).
+
+Bảng 2.2: Điểm lệch giữa DD và bản nối thật (2026-11-11).
+
+| # | DD nói | Bản nối thật | Xử lý |
+| :-: | :--- | :--- | :--- |
+| N1 | Bộ lọc nằm trên URL (BR-SC-01) | **Hoãn theo quyết định owner 2026-11-11, ponytail bậc 3.** Bộ lọc vẫn ở `useState`; ô tìm kiếm gửi lên máy chủ sau 400 ms [SoT: IBV:57, 84-90] | Chưa làm: hook `use-search-param-state` chưa có ở `shared/lib`; ghi nợ, ponytail bậc 3 (buổi bảo vệ không cần liên kết chia sẻ bộ lọc) |
+| N2 | Cuộn vô hạn kèm nút "Xem thêm" | Chỉ có nút "Xem thêm" [SoT: IBV:455-470]; nút đã đáp ứng truy cập bàn phím | Chưa làm bộ quan sát cuối danh sách; ponytail bậc 3 |
+| N3 | Ghim câu vừa thao tác bằng chữ ký bộ lọc (BR-SC-02) | Bỏ `pinned`: tự chấm và đánh dấu **vá bộ nhớ đệm** và không bao giờ tải lại danh sách, nên dòng tự ở lại [SoT: `entities/interview-question/api/learner-queries.ts:59-76, 104-120`]. Danh sách chỉ nạp lại khi đổi bộ lọc hoặc mở lại màn (`refetchOnMount: "always"`) | Đúng bước 1 và 2 của BR-SC-02; không cần state phụ |
+| N4 | Hai lần bấm đánh dấu xếp hàng theo `id` | Xếp hàng chung cho mọi đánh dấu (`scope` `interview-bookmark`) [SoT: learner-queries.ts:168-175] | Đơn giản hơn, vẫn đúng thứ tự |
+| N5 | Lỗi sau đổi bộ lọc: khôi phục bộ lọc trước và toast | Làm đúng: nhớ bộ lọc của lần nạp thành công cuối rồi đặt lại, toast `toast.loadFailed` [SoT: IBV:112-131] | Khớp |
+| N6 | `suggestedApproach` là chuỗi Markdown, tách bằng `splitOutline` | Làm đúng; mã tách ở `entities/interview-question/lib/split-outline.ts` [SoT: split-outline.ts:1-22] | Khớp |
+| N7 | Khoá thực thể là UUID `id` | Dòng danh sách và liên kết `/interview-bank/{id}` dùng `id` máy chủ; chế độ mock dùng mã `IQ-nnn` làm `id` | Khớp (mock khác về giá trị, không khác về hình) |
 
 ## 3. Trạng thái màn
 

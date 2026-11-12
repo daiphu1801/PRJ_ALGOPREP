@@ -143,6 +143,35 @@ class OpenRouterLlmProviderAdapterTest {
   }
 
   @Test
+  void theAliasDefaultResolvesToTheConfiguredDefaultModelWithoutAWarn() throws Exception {
+    fake.body = FakeOpenAiServer.completion("{}", 1, 1);
+    complete("default");
+    var model = JsonMapper.builder().build().readTree(fake.requests.get(0).body()).get("model");
+    assertThat(model.asText()).isEqualTo("default/model:free");
+    assertThat(
+            logs.list.stream().filter(e -> e.getFormattedMessage().contains("not on the allowed")))
+        .isEmpty();
+  }
+
+  @Test
+  void theAliasDefaultWithABlankDefaultModelIsAProviderError() {
+    var props = new AiProviderProperties(KEY, fake.baseUrl(), "", null);
+    var noDefault =
+        new OpenRouterLlmProviderAdapter(
+            new LlmProviderConfiguration().openRouterChatModel(props), props);
+    assertThatThrownBy(
+            () ->
+                noDefault.completeStructured(
+                    prompt.system(),
+                    prompt.perProblem(),
+                    prompt.data(),
+                    SCHEMA,
+                    new CallOptions("default", 10, Duration.ofSeconds(1), Duration.ofSeconds(1))))
+        .isInstanceOf(AiProviderUnavailableException.class);
+    assertThat(fake.requests).isEmpty();
+  }
+
+  @Test
   void fencedJsonWithProseIsExtractedAndRealUsageIsReturned() {
     fake.body =
         FakeOpenAiServer.completion(

@@ -1,6 +1,6 @@
-// Smoke test (PROTOTYPE lane) — route renders for a known question, mode switch and the practice
-// submit path are reachable. Full behavioural coverage per 04-tdd/interview_question_detail.md's
-// AC-nn comes later, once that file exists.
+// Mock-mode behaviour of USR0402: the mock behaves like the server, so rating, bookmark and the
+// practice answer are asynchronous calls. The real-API branches are in
+// interview-question-detail-real.test.tsx.
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactElement } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -19,6 +19,8 @@ vi.mock("@/shared/i18n", () => ({
   useT: () => (key: string, params?: Record<string, unknown>) =>
     params ? `${key} ${JSON.stringify(params)}` : key,
   useLocale: () => "vi",
+  useApiErrorMessage: () => (error: unknown) =>
+    error instanceof Error ? error.message : "unknown",
 }));
 
 vi.mock("next/navigation", () => ({
@@ -67,7 +69,7 @@ describe("InterviewQuestionDetailView", () => {
     });
     fireEvent.click(screen.getByText("practice.btnSubmit"));
 
-    expect(screen.getByText("practice.pendingState")).toBeInTheDocument();
+    expect(await screen.findByText("practice.pendingState")).toBeInTheDocument();
   });
 
   it("locks Practice mode when the question has no rubric", async () => {
@@ -117,10 +119,16 @@ describe("InterviewQuestionDetailView", () => {
     );
     await screen.findByText("header.linkBack");
     fireEvent.click(screen.getByText("study.recall.forgotten"));
+    // "Forgotten" is reviewed again after 1 day; the seeded rating of this question says 3.
+    expect(
+      await screen.findByText(/study.nextReviewHint \{"n":1\}/),
+    ).toBeInTheDocument();
     first.unmount();
     renderWithQuery(<InterviewQuestionDetailView questionId="IQ-014" />);
     await screen.findByText("header.linkBack");
-    expect(await screen.findByText(/study.nextReviewHint/)).toBeInTheDocument();
+    expect(
+      await screen.findByText(/study.nextReviewHint \{"n":1\}/),
+    ).toBeInTheDocument();
     act(() => toast.clear());
   });
 
@@ -132,7 +140,7 @@ describe("InterviewQuestionDetailView", () => {
     expect(bookmark).toHaveAttribute("aria-pressed", "false");
     fireEvent.click(bookmark);
     expect(
-      screen.getByRole("button", { name: "header.bookmarked" }),
+      await screen.findByRole("button", { name: "header.bookmarked" }),
     ).toHaveAttribute("aria-pressed", "true");
 
     expect(screen.getByText("attempts.title")).toBeInTheDocument();
