@@ -258,28 +258,57 @@ class ExecutionBridgeFlowTest {
 
   @Test
   void deletedArtifactIsRecompiledOnceOnTheSameEngine() throws Exception {
+    // The go-judge file store is shared with other sessions, so its total size proves nothing.
+    // The execution tracks the artifact ids it stored; only those are inspected or deleted.
     var program = bridge.program(wrapper(Language.CPP, echo(Language.CPP)));
     try (var execution = engine.compile(new CompileRequest(program, COMPILE))) {
-      var client = java.net.http.HttpClient.newHttpClient();
-      var base = System.getProperty("judge.go-judge.base-url");
-      var files =
-          client.send(
-              java.net.http.HttpRequest.newBuilder(java.net.URI.create(base + "/file"))
-                  .GET()
-                  .build(),
-              java.net.http.HttpResponse.BodyHandlers.ofString());
-      var store = tools.jackson.databind.json.JsonMapper.builder().build().readTree(files.body());
-      assertThat(store.size()).isEqualTo(1);
-      for (String id : store.propertyNames()) {
-        client.send(
+      var owned = ownedIds(execution);
+      assertThat(owned).as("one compile stores exactly one artifact").hasSize(1);
+      var lost = owned.iterator().next();
+      assertThat(fileIds()).contains(lost);
+      deleteFile(lost);
+      assertThat(fileIds()).doesNotContain(lost);
+      assertThat(execution.run(new RunRequest("3\n", RUN)).status()).isEqualTo(Status.OK);
+      assertThat(execution.run(new RunRequest("4\n", RUN)).stdout()).endsWith("4\n");
+      var after = new java.util.ArrayList<>(ownedIds(execution));
+      assertThat(after).as("the lost artifact is recompiled once").hasSize(2).startsWith(lost);
+      assertThat(fileIds()).contains(after.get(1)).doesNotContain(lost);
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  private static java.util.Set<String> ownedIds(Object execution) throws Exception {
+    var field = execution.getClass().getDeclaredField("ownedIds");
+    field.setAccessible(true);
+    return new java.util.LinkedHashSet<>((java.util.Set<String>) field.get(execution));
+  }
+
+  private static java.util.Set<String> fileIds() throws Exception {
+    var base = System.getProperty("judge.go-judge.base-url");
+    var response =
+        java.net.http.HttpClient.newHttpClient()
+            .send(
+                java.net.http.HttpRequest.newBuilder(java.net.URI.create(base + "/file"))
+                    .GET()
+                    .build(),
+                java.net.http.HttpResponse.BodyHandlers.ofString());
+    var ids = new java.util.TreeSet<String>();
+    tools.jackson.databind.json.JsonMapper.builder()
+        .build()
+        .readTree(response.body())
+        .propertyNames()
+        .forEach(ids::add);
+    return ids;
+  }
+
+  private static void deleteFile(String id) throws Exception {
+    var base = System.getProperty("judge.go-judge.base-url");
+    java.net.http.HttpClient.newHttpClient()
+        .send(
             java.net.http.HttpRequest.newBuilder(java.net.URI.create(base + "/file/" + id))
                 .DELETE()
                 .build(),
             java.net.http.HttpResponse.BodyHandlers.discarding());
-      }
-      assertThat(execution.run(new RunRequest("3\n", RUN)).status()).isEqualTo(Status.OK);
-      assertThat(execution.run(new RunRequest("4\n", RUN)).stdout()).endsWith("4\n");
-    }
   }
 
   @ParameterizedTest

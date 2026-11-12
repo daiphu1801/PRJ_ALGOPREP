@@ -11,6 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 class JdbcProblemOutboxRepository implements ProblemOutboxRepository {
+  // DEC-2026-1112-problem-outbox-retry-backoff: a failed row waits base * 2^(attempts-1), capped.
+  static final int RETRY_BASE_SECONDS = 2;
+  static final int RETRY_CAP_SECONDS = 300;
+
   private final ObjectProvider<JdbcClient> jdbc;
 
   JdbcProblemOutboxRepository(ObjectProvider<JdbcClient> jdbc) {
@@ -24,10 +28,15 @@ class JdbcProblemOutboxRepository implements ProblemOutboxRepository {
             """
             SELECT id, event_type, routing_key, payload::text AS envelope, publish_attempts
             FROM problem.outbox_events WHERE published_at IS NULL
+              AND (last_attempted_at IS NULL OR last_attempted_at
+                   + LEAST(:capSeconds, :baseSeconds * power(2, LEAST(GREATEST(publish_attempts - 1, 0), 20)))
+                     * interval '1 second' <= clock_timestamp())
             ORDER BY COALESCE(last_attempted_at, created_at), created_at, id
             LIMIT :limit FOR UPDATE SKIP LOCKED
             """)
         .param("limit", limit)
+        .param("baseSeconds", RETRY_BASE_SECONDS)
+        .param("capSeconds", RETRY_CAP_SECONDS)
         .query(
             (r, n) ->
                 new OutboxEvent(

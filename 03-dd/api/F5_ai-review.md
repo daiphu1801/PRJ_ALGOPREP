@@ -205,13 +205,13 @@ Chi tiết dựng prompt, quy tắc "thông tin bài toán là dữ liệu" và 
 | Luồng | Phương thức | Hạn chờ | Thử lại | Khoá idempotency | Người học thấy gì khi chờ |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | Solution Review (mục 4) | `completeStructured` | tổng **90 giây**, cấu hình `algoprep.ai.llm.timeout.review-total-sec` (trước 30, `ARCH5:296`, `U301` EVT-1) | **không** thử lại tự động (tốn token, kết quả không tất định); người học bấm Thử lại | `solution_reviews.submission_id` unique, và khoá Redis `ai:review:<submissionId>` (BR-AI-02 bước 4) | Khung chờ dạng skeleton tối đa 90 giây (cấu hình) (`U301` Khu vực I NO 1) |
-| Câu mở đầu phiên (mục 8) | `streamTurn` gom thành một chuỗi | chunk đầu 10 giây, tổng 20 giây `[SoT: Suy luận]` | không | `interview_sessions.id` sinh trước khi gọi; phiên chỉ ghi vào DB **sau** khi có câu mở đầu | Nút Bắt đầu khoá, đồng hồ chưa chạy |
-| Một lượt (mục 10) | `streamTurn` | chunk đầu **10 giây** (`ARCH5:296`, hiểu là hạn tới token đầu tiên), tổng **60 giây** `[SoT: Suy luận]` | không; học viên thử lại bằng cùng `expectedTurnCount` | khoá Redis `ai:session:<sessionId>`; `expectedTurnCount` chống gửi trùng | Bong bóng AI hiện từng đoạn `token` |
-| Gợi ý (mục 11) | `streamTurn` gom thành một chuỗi | chunk đầu 10 giây, tổng 20 giây `[SoT: Suy luận]` | không | không (không ghi DB ngoài `token_usage`) | Nút Xin gợi ý khoá |
+| Câu mở đầu phiên (mục 8) | `streamTurn` gom thành một chuỗi | chunk đầu 30 giây, tổng 60 giây, cấu hình `algoprep.ai.llm.timeout.interview-first-token-sec` và `interview-call-total-sec` (trước 10 và 20 giây, `DEC-2026-1112-ai-practice-and-interview-call-timeouts-configurable`) | không | `interview_sessions.id` sinh trước khi gọi; phiên chỉ ghi vào DB **sau** khi có câu mở đầu | Nút Bắt đầu khoá, đồng hồ chưa chạy |
+| Một lượt (mục 10) | `streamTurn` | chunk đầu **30 giây** (cấu hình `interview-first-token-sec`, trước 10 giây theo `ARCH5:296`, hiểu là hạn tới token đầu tiên), tổng **60 giây** (hằng số) `[SoT: Suy luận]` | không; học viên thử lại bằng cùng `expectedTurnCount` | khoá Redis `ai:session:<sessionId>`; `expectedTurnCount` chống gửi trùng | Bong bóng AI hiện từng đoạn `token` |
+| Gợi ý (mục 11) | `streamTurn` gom thành một chuỗi | chunk đầu 30 giây, tổng 60 giây (cùng hai khoá cấu hình với câu mở đầu) | không | không (không ghi DB ngoài `token_usage`) | Nút Xin gợi ý khoá |
 | Chấm rubric (mục 12, JOB-AI-04) | `completeStructured` | tổng **90 giây**, cấu hình `algoprep.ai.llm.timeout.rubric-total-sec` (trước 30) `[SoT: Suy luận]` | không (người học bấm lại; job thử lại theo chu kỳ, `JOB5` mục 4) | `rubric_scores` unique `(owner_type, owner_id, criterion_code)`; cập nhật `stage` có điều kiện (BR-AI-09) | Nút Kết thúc khoá, hiện "đang chấm" |
 | Sinh script testcase (P3) | `completeStructured` | tổng **120 giây** (`DD-F2` dòng 2793) | không | không | phía `problem-bank` |
 
-**Không có bộ ngắt mạch** (chủ dự án chốt `DEC-2026-1023-dd-f5-budget-lock-and-breaker`: không thêm Resilience4j, stack không đổi). Bảo vệ duy nhất là hạn chờ của từng lời gọi ở Bảng 4 cộng `503 AIR-501`; không thử lại tự động nên một nhà cung cấp chết chỉ làm mỗi lời gọi chờ tối đa hạn chờ của nó rồi báo lỗi (hạn chunk đầu 10 giây cho luồng lượt giúp phát hiện sớm). Không có trạng thái "mở/đóng" nào cần quản lý.
+**Không có bộ ngắt mạch** (chủ dự án chốt `DEC-2026-1023-dd-f5-budget-lock-and-breaker`: không thêm Resilience4j, stack không đổi). Bảo vệ duy nhất là hạn chờ của từng lời gọi ở Bảng 4 cộng `503 AIR-501`; không thử lại tự động nên một nhà cung cấp chết chỉ làm mỗi lời gọi chờ tối đa hạn chờ của nó rồi báo lỗi (hạn chunk đầu 30 giây cho luồng lượt giúp phát hiện sớm). Không có trạng thái "mở/đóng" nào cần quản lý.
 
 **Phân loại lỗi** (do `SpringAiLlmAdapter` làm, nên đổi nhà cung cấp không đổi logic):
 
@@ -473,7 +473,7 @@ Truy vấn theo index `(user_id, created_at DESC)`, `LIMIT :limit`; một lời 
 | Xác thực | JWT |
 | Quyền | JWT; lối vào `SUBMISSION` đòi chủ bài nộp |
 | Idempotent | **không** (mỗi lần tạo một phiên mới) |
-| Đồng bộ | có: chờ câu mở đầu của AI, tối đa 20 giây |
+| Đồng bộ | có: chờ câu mở đầu của AI, tối đa 60 giây (cấu hình được) |
 | Tên BD | `StartInterviewSession` (`U302` Sheet 7.3 NO 1, EVT-10 dòng 407) |
 
 ### 8.2 Request
@@ -646,7 +646,7 @@ Mọi lỗi dưới là **JSON lỗi thường trước khi luồng mở** (tr�
 | 409 | `AIR-114` | `turn_count` đã bằng `max_turns` (hoặc đã đạt trần giai đoạn 3) | client gọi mục 12 |
 | 429 | `AIR-401` | ngân sách token đã khoá (`STUDENT`, `INSTRUCTOR`; `ADMIN` miễn) | trước luồng, trước khi ghi dòng `USER` và trước khi gọi LLM; không cooldown, không hạn mức giờ nên không hoàn |
 | 503 | `AIR-501` | cổng ngoài lỗi hạ tầng trước luồng (không có template `MOCK_INTERVIEW` đang dùng, ChatMemory hoặc cổng bài toán lỗi) | trước luồng; dòng `USER` **chưa** ghi |
-| (SSE) `error` | `AIR-501`, `AIR-502`, `AIR-111` | lỗi **sau** `turn.accepted`, gồm LLM không dùng được, quá hạn chunk đầu 10 giây hoặc tổng 60 giây (`details.reason = TIMEOUT`), kết quả sai lược đồ | dòng `USER` đã ghi; thử lại theo mục 2.4 |
+| (SSE) `error` | `AIR-501`, `AIR-502`, `AIR-111` | lỗi **sau** `turn.accepted`, gồm LLM không dùng được, quá hạn chunk đầu 30 giây hoặc tổng 60 giây (`details.reason = TIMEOUT`), kết quả sai lược đồ | dòng `USER` đã ghi; thử lại theo mục 2.4 |
 
 ### 10.5 Luồng xử lý
 
@@ -691,7 +691,7 @@ BR-AI-07 (từng bước, gồm máy trạng thái ba giai đoạn, `stageComple
 | Xác thực | JWT |
 | Quyền | JWT, chủ phiên |
 | Idempotent | không (mỗi lần gọi một lời gọi LLM, tốn token) |
-| Đồng bộ | có (tối đa 20 giây) |
+| Đồng bộ | có (tối đa 60 giây, cấu hình được) |
 | Tên BD | `RequestInterviewHint` (`U302` Sheet 7.3 NO 3, EVT-15 dòng 412) |
 
 ### 11.2 Request

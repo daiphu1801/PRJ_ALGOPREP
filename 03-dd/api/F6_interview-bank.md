@@ -318,7 +318,7 @@ BR-IB-06: bảng cố định `FORGOTTEN` 1, `VAGUE` 3, `KNOWN` 7 ngày; `next_r
 | Kết quả | `feedbackStatus` | `feedback` | `feedbackErrorCode` |
 | :--- | :--- | :--- | :--- |
 | Có phản hồi | `COMPLETED` | `FeedbackDto` | `null` |
-| AI hoặc cổng ngân sách hỏng, quá hạn (30 giây) | `FAILED` | `null` | `INB-501` |
+| AI hoặc cổng ngân sách hỏng, quá hạn (90 giây, cấu hình được) | `FAILED` | `null` | `INB-501` |
 
 Quy tắc nội dung rỗng (2026-11-12, `DEC-2026-1112-f5-scoring-timeout-configurable-and-f6-null-content`): `content_markdown` là tuỳ chọn (nhập CSV, tạo tay), `null` được gửi sang AI như chuỗi rỗng; tiêu đề và rubric vẫn là khối dữ liệu. Mọi lỗi AI bị nuốt thành `INB-501` đều ghi log `WARN` kèm tên lớp và thông điệp lỗi, không ghi văn bản câu trả lời, khoá hay stack.
 | AI trả sai lược đồ | `FAILED` | `null` | `INB-502` |
@@ -346,7 +346,7 @@ Chi tiết BR-IB-07; thứ tự bắt buộc:
 > **Triển khai F6-5 (chủ dự án chốt 2026-11-11, `DEC-2026-1111-f6-5-practice-via-f5-p5-port`):** hạn mức giờ dùng lại script Lua của F5, khoá `ai:ratelimit:<user>:PRACTICE_FEEDBACK:<epochHour>` (cửa sổ theo giờ đồng hồ, không tính từ lần gọi đầu); khoá `interview_bank:ratelimit:<userId>` nêu ở đây **không** được tạo. Hành vi 20 lượt/giờ, hoàn đúng một lần và fail-open giữ nguyên.
 4. **Ngân sách** `CheckAiBudgetUseCase.check(userId, baseCategory)` (mục 26): ném `AiBudgetExceededException` thì **hoàn** hạn mức giờ (`DECR`) và `INB-042`, không gọi AI, không ghi lượt. Cổng ném lỗi hạ tầng thì coi như không có AI: nhảy tới bước 8 với `FAILED`/`INB-501`; `answerId` đã có từ bước 2 nên bước 9 vẫn ghi được.
 5. (Đã gộp vào bước 2: `answerId` và `callId` sinh trước mọi cổng, DB6:120.)
-6. Dựng prompt ba lớp (BR-IB-07 bước 5) và gọi `AnswerFeedbackPort.compareAnswer` (mục 25), **ngoài** giao dịch, tổng hạn 30 giây, không thử lại.
+6. Dựng prompt ba lớp (BR-IB-07 bước 5) và gọi `AnswerFeedbackPort.compareAnswer` (mục 25), **ngoài** giao dịch, tổng hạn 90 giây (cấu hình `algoprep.ai.llm.timeout.practice-total-sec`), không thử lại.
 7. Kiểm kết quả theo lược đồ (validation mục 7). Sai thì `FAILED`/`INB-502`.
 8. Hạn mức giờ: lỗi hạ tầng hoặc quá hạn ở bước 4 hoặc 6 thì **hoàn** để lần thử lại không bị phạt `[SoT: Suy luận]`, cùng tiền lệ BR-AI-04 bước 8 của F5; sai lược đồ thì **không** hoàn (token đã tiêu). Hoàn chỉ chạy **một lần** cho mỗi `reservation`, qua script Lua nguyên tử: `DECR` chỉ khi `quotaIncremented = true`, đúng `key` đã đặt chỗ và khoá còn tồn tại với giá trị lớn hơn 0 (không tạo số âm khi khoá đã hết hạn hoặc Redis đã fail-open). Cùng cơ chế với `03-dd/logic/F5_ai-review.md` BR-AI-04 bước 8 (F6-08, owner chốt 2026-10-29).
 9. **Một giao dịch ngắn** (sửa 2026-10-29, F6-03 và F6-07): `SELECT topic_id, status FROM interview_questions WHERE id = :questionId FOR SHARE` (chờ nếu ADMIN đang đổi chủ đề hoặc xoá mềm, và ngược lại việc đổi chủ đề phải chờ giao dịch này); `attempt_no = coalesce(max(attempt_no),0)+1` cho `(user_id, question_id)`; `INSERT user_answers` (`id = answerId`, `feedback_status` = `COMPLETED` hoặc `FAILED`, `feedback_result_json`, `rubric_snapshot_json` = **snapshot ở bước 2**, không đọc lại rubric); upsert `practice_history` theo `topic_id` và `status` **vừa đọc có khoá** (BR-IB-09). Vi phạm unique `(user_id, question_id, attempt_no)` thì **rollback giao dịch này** rồi thử lại **chỉ khối này** trong giao dịch mới, tối đa 3 lần, với cùng `answerId`, cùng snapshot và cùng kết quả AI (không gọi lại AI, không sinh `answerId` mới); hết lần thì `INB-050` và vẫn ghi usage ở bước 10. **Không có `UPDATE user_answers`**, nên `PENDING` không bao giờ được ghi.
@@ -1016,7 +1016,7 @@ FeedbackResult = { achievedPoints[], missingPoints[], improvementSuggestions[],
 
 | Mục | Giá trị |
 | :--- | :--- |
-| Hạn chờ | tổng **30 giây**, không thử lại tự động (kết quả không tất định, tốn token) `[SoT: Suy luận]`, cùng giá trị Solution Review (`DD-F5` Bảng 4). **Không** Resilience4j (DEC-1023b); không có bộ ngắt mạch |
+| Hạn chờ | tổng **90 giây**, cấu hình `algoprep.ai.llm.timeout.practice-total-sec` (trước 30 giây; model miễn phí mất 22,5 đến 26,9 giây khi đo, `DEC-2026-1112-ai-practice-and-interview-call-timeouts-configurable`), thấp hơn hạn 240 giây của proxy Next; không thử lại tự động (kết quả không tất định, tốn token) `[SoT: Suy luận]`, cùng giá trị Solution Review (`DD-F5` Bảng 4). **Không** Resilience4j (DEC-1023b); không có bộ ngắt mạch |
 | Khi lỗi hạ tầng hoặc quá hạn | ném lỗi miền; use case ghi `FAILED`/`INB-501` |
 | Khi sai lược đồ | use case ghi `FAILED`/`INB-502`; token vẫn ghi |
 | Mô hình | `interview-bank.feedback.model-id` trong `application.yml`; **không** nằm trong danh sách chọn của `ADM0301` (DEC-1011: không có prompt chỉnh được, không có tab) |

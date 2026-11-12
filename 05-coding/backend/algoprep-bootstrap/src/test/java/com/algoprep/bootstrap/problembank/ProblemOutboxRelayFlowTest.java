@@ -117,10 +117,43 @@ class ProblemOutboxRelayFlowTest {
           channel.queueBind(QUEUE, "algoprep.domain-events", "problem.class.assigned");
           return null;
         });
+    // The failed row is in backoff; make it due so the relay picks it up again.
+    lastAttempted(id, 1, "10 seconds");
     assertThat(relay.relay()).isEqualTo(1);
     assertThat(pending()).isZero();
     assertThat(attempts(id)).isEqualTo(2);
     assertThat(rabbit.receive(QUEUE, 5000)).isNotNull();
+  }
+
+  @Test
+  void failedRowIsNotRetriedBeforeItsBackoffElapsesAndThenIs() {
+    UUID id = seed("problem.class.assigned", "{}");
+    assertThat(relay.relay()).isEqualTo(1);
+    assertThat(attempts(id)).isEqualTo(1);
+    // Immediately after the failure the row is not due: no second publish, no attempt counted.
+    assertThat(relay.relay()).isZero();
+    assertThat(attempts(id)).isEqualTo(1);
+    // One attempt waits 2 seconds: 1 second ago is too early, 3 seconds ago is due.
+    lastAttempted(id, 1, "1 second");
+    assertThat(relay.relay()).isZero();
+    lastAttempted(id, 1, "3 seconds");
+    assertThat(relay.relay()).isEqualTo(1);
+    assertThat(attempts(id)).isEqualTo(2);
+  }
+
+  @Test
+  void backoffDoublesPerAttemptAndStopsGrowingAtFiveMinutes() {
+    UUID id = seed("problem.class.assigned", "{}");
+    // Three attempts wait 2 * 2^2 = 8 seconds.
+    lastAttempted(id, 3, "7 seconds");
+    assertThat(relay.relay()).isZero();
+    lastAttempted(id, 3, "9 seconds");
+    assertThat(relay.relay()).isEqualTo(1);
+    // A very high attempt count is capped at 300 seconds, not overflowed or unbounded.
+    lastAttempted(id, 50, "299 seconds");
+    assertThat(relay.relay()).isZero();
+    lastAttempted(id, 50, "301 seconds");
+    assertThat(relay.relay()).isEqualTo(1);
   }
 
   @Test
@@ -226,6 +259,14 @@ class ProblemOutboxRelayFlowTest {
     jdbc.update(
         "UPDATE problem.outbox_events SET created_at = now() - CAST(? AS interval) WHERE id=?",
         interval,
+        id);
+  }
+
+  private void lastAttempted(UUID id, int attempts, String ago) {
+    jdbc.update(
+        "UPDATE problem.outbox_events SET publish_attempts = ?, last_attempted_at = now() - CAST(? AS interval) WHERE id=?",
+        attempts,
+        ago,
         id);
   }
 

@@ -43,7 +43,7 @@ class PracticeFeedbackCommandHandlerTest {
   private final LlmProviderPort llm = mock(LlmProviderPort.class);
   private final RecordAiTokenUsageUseCase usage = mock(RecordAiTokenUsageUseCase.class);
   private final PracticeFeedbackCommandHandler handler =
-      new PracticeFeedbackCommandHandler(budget, gate, llm, usage);
+      new PracticeFeedbackCommandHandler(budget, gate, llm, usage, 90);
   private final UUID user = UUID.randomUUID();
   private final UUID answer = UUID.randomUUID();
   private final UUID call = UUID.randomUUID();
@@ -173,6 +173,30 @@ class PracticeFeedbackCommandHandlerTest {
     assertThat(out.criteria())
         .extracting(PracticeFeedback.Scored::criterionCode)
         .containsExactly("Clarity", "DEPTH");
+  }
+
+  @Test
+  void thePracticeTimeoutDefaultsToNinetySecondsAndTheKeyIsBound() {
+    var param =
+        PracticeFeedbackCommandHandler.class.getDeclaredConstructors()[0].getParameters()[4]
+            .getAnnotation(org.springframework.beans.factory.annotation.Value.class);
+    assertThat(param.value()).isEqualTo("${algoprep.ai.llm.timeout.practice-total-sec:90}");
+    provider(GOOD, new LlmUsage(1, 1));
+    handler.compare(input("x"));
+    assertThat(sentTotalTimeout()).isEqualTo(java.time.Duration.ofSeconds(90));
+  }
+
+  @Test
+  void anOverriddenPracticeTimeoutReachesTheProviderCall() {
+    provider(GOOD, new LlmUsage(1, 1));
+    new PracticeFeedbackCommandHandler(budget, gate, llm, usage, 7).compare(input("x"));
+    assertThat(sentTotalTimeout()).isEqualTo(java.time.Duration.ofSeconds(7));
+  }
+
+  private java.time.Duration sentTotalTimeout() {
+    var options = ArgumentCaptor.forClass(com.algoprep.aireview.domain.model.CallOptions.class);
+    verify(llm).completeStructured(any(), any(), any(), any(), options.capture());
+    return options.getValue().totalTimeout();
   }
 
   @Test

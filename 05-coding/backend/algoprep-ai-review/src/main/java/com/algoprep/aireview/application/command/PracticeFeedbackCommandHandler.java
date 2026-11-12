@@ -25,8 +25,10 @@ import com.algoprep.aireview.domain.prompt.BlockName;
 import com.algoprep.aireview.domain.prompt.ComposedPrompt;
 import com.algoprep.aireview.domain.prompt.DataBlock;
 import com.algoprep.aireview.domain.prompt.PromptComposer;
+import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
@@ -48,13 +50,16 @@ class PracticeFeedbackCommandHandler
   private final AiCostGatePort gate;
   private final LlmProviderPort llm;
   private final RecordAiTokenUsageUseCase usage;
+  private final Duration totalTimeout;
   private final PromptComposer composer = new PromptComposer();
 
   PracticeFeedbackCommandHandler(
       CheckAiBudgetUseCase budget,
       AiCostGatePort gate,
       LlmProviderPort llm,
-      RecordAiTokenUsageUseCase usage) {
+      RecordAiTokenUsageUseCase usage,
+      @Value("${algoprep.ai.llm.timeout.practice-total-sec:90}") long totalTimeoutSec) {
+    this.totalTimeout = Duration.ofSeconds(totalTimeoutSec);
     this.budget = budget;
     this.gate = gate;
     this.llm = llm;
@@ -141,10 +146,7 @@ class PracticeFeedbackCommandHandler
           new ResponseSchema(
               PracticeFeedbackSchema.NAME, SCHEMA_VERSION, PracticeFeedbackSchema.JSON),
           new CallOptions(
-              input.modelId(),
-              CallOptions.DEFAULT_MAX_TOKENS,
-              PracticeFeedback.TOTAL_TIMEOUT,
-              PracticeFeedback.TOTAL_TIMEOUT));
+              input.modelId(), CallOptions.DEFAULT_MAX_TOKENS, totalTimeout, totalTimeout));
     } catch (AiProviderUnavailableException | AiInvalidResponseException failure) {
       throw failure;
     } catch (RuntimeException failure) {

@@ -22,6 +22,16 @@ Pop-Location
 
 Đây là lệnh kiểm khả năng chạy toolchain/worker; không thay thế kiểm tra hồi quy và coverage của toàn backend.
 
+Ba lớp test opt-in cần go-judge thật là `ExecutionBridgeFlowTest`, `PersistedWorkerFlowTest` và `ReferenceSolutionSandboxFlowTest`. Chúng chỉ chạy khi có `-Djudge.go-judge.base-url=http://127.0.0.1:<cổng>`; địa chỉ **phải** là `127.0.0.1` (khớp `@EnabledIfSystemProperty ... matches = "http://127.0.0.1:[0-9]+"`), dùng `localhost` thì cả ba lớp bị bỏ qua mà không báo lỗi. Với go-judge của compose hạ tầng (cổng 5050):
+
+```powershell
+Push-Location backend
+.\mvnw.cmd -B -pl algoprep-bootstrap test '-Dtest=ExecutionBridgeFlowTest,PersistedWorkerFlowTest,ReferenceSolutionSandboxFlowTest' '-Dsurefire.failIfNoSpecifiedTests=false' '-Djudge.go-judge.base-url=http://127.0.0.1:5050'
+Pop-Location
+```
+
+go-judge có thể được nhiều phiên dùng chung: các test không xoá file của người khác (ca `deletedArtifactIsRecompiledOnceOnTheSameEngine` chỉ so sánh tập id file trước và sau khi biên dịch). Dòng `Skipped` khác 0 thường nghĩa là sai địa chỉ.
+
 Compose này mở sandbox ở `127.0.0.1:5055`, giới hạn truy cập trên host. Từ `DEC-2026-1107-go-judge-toolchain-image-in-compose`, service `algoprep-go-judge` trong compose hạ tầng (cổng 5050) cũng chạy image toolchain này, nên `docker compose up -d go-judge` là đủ để chấm ba ngôn ngữ; compose sandbox 5055 chỉ cần khi muốn một engine thứ hai tách riêng. Đặt `ALGOPREP_WORKER_ENGINE_IMAGE` khi dùng image đã kiểm khác; cấu hình không tự pull một image thay thế. Backend không cần Docker socket. Không thêm `-net-share`: job yêu cầu bật mạng hiện phải kết thúc SYSTEM_ERROR/SANDBOX_FAULT theo quyết định chủ dự án.
 
 ## Backend

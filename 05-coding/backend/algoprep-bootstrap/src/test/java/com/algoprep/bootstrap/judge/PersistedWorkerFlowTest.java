@@ -638,7 +638,11 @@ class PersistedWorkerFlowTest {
         queued.add(submit("PYTHON", "STANDARD_IO", source("PYTHON", "STANDARD_IO")));
       }
       httpPause(admin, true, false);
-      waitUntil(() -> metrics.get("judge.grading.consumers.active").gauge().value() >= 2);
+      // The container grows before the target gauge is stored, so wait for both, not just active.
+      waitUntil(
+          () ->
+              metrics.get("judge.grading.consumers.active").gauge().value() >= 2
+                  && metrics.get("judge.grading.consumers.target").gauge().value() >= 2);
       assertThat(metrics.get("judge.grading.consumers.target").gauge().value()).isBetween(2.0, 8.0);
       adminRequest(admin, "queue/autoscale", "{\"expectedEnabled\":true,\"enabled\":false}");
       assertThat(actorAudits(actor, "QUEUE_AUTOSCALE_CHANGED")).isEqualTo(2);

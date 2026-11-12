@@ -1,7 +1,6 @@
 package com.algoprep.aireview.application.dto;
 
 import java.math.BigDecimal;
-import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -12,9 +11,6 @@ import java.util.UUID;
  * question text only ever travel as data blocks.
  */
 public final class PracticeFeedback {
-  /** Hard cap on one LLM call (DD F6 section 25). */
-  public static final Duration TOTAL_TIMEOUT = Duration.ofSeconds(30);
-
   private PracticeFeedback() {}
 
   /** One rubric row of the snapshot; {@code description} may be null. */

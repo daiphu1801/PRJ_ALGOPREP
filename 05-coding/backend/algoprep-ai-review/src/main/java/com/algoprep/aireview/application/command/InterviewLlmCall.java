@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
@@ -28,10 +29,10 @@ import reactor.core.publisher.Mono;
  */
 @Component
 class InterviewLlmCall {
-  // ponytail: constants instead of application.yml keys, like ReviewLlmCall; DD Bang 2 lists them
-  // as ai.llm.timeout.short-total-sec and turn-first-token-sec.
-  static final Duration FIRST_TOKEN_TIMEOUT = Duration.ofSeconds(10);
-  static final Duration TOTAL_TIMEOUT = Duration.ofSeconds(20);
+  /** Defaults of {@code interview-call-total-sec} and {@code interview-first-token-sec}. */
+  static final long DEFAULT_CALL_TOTAL_SEC = 60;
+
+  static final long DEFAULT_FIRST_TOKEN_SEC = 30;
 
   static final Duration TURN_TOTAL_TIMEOUT = Duration.ofSeconds(60);
 
@@ -39,6 +40,13 @@ class InterviewLlmCall {
   private final LlmProviderPort llm;
   private final RecordAiTokenUsageUseCase usage;
   private final IdGeneratorPort ids;
+
+  /** Field injection keeps the constructor within five parameters; tests set them directly. */
+  @Value("${algoprep.ai.llm.timeout.interview-call-total-sec:" + DEFAULT_CALL_TOTAL_SEC + "}")
+  long callTotalSec = DEFAULT_CALL_TOTAL_SEC;
+
+  @Value("${algoprep.ai.llm.timeout.interview-first-token-sec:" + DEFAULT_FIRST_TOKEN_SEC + "}")
+  long firstTokenSec = DEFAULT_FIRST_TOKEN_SEC;
 
   InterviewLlmCall(
       AiPromptSnapshotRepository templates,
@@ -113,7 +121,7 @@ class InterviewLlmCall {
               new CallOptions(
                   template.modelId(),
                   CallOptions.DEFAULT_MAX_TOKENS,
-                  FIRST_TOKEN_TIMEOUT,
+                  Duration.ofSeconds(firstTokenSec),
                   TURN_TOTAL_TIMEOUT))
           .takeUntilOther(Mono.fromFuture(live.gone().thenApply(none -> Boolean.TRUE)))
           .doOnNext(
@@ -171,10 +179,10 @@ class InterviewLlmCall {
                   new CallOptions(
                       template.modelId(),
                       CallOptions.DEFAULT_MAX_TOKENS,
-                      FIRST_TOKEN_TIMEOUT,
-                      TOTAL_TIMEOUT))
+                      Duration.ofSeconds(firstTokenSec),
+                      Duration.ofSeconds(callTotalSec)))
               .collectList()
-              .block(TOTAL_TIMEOUT.plusSeconds(5));
+              .block(Duration.ofSeconds(callTotalSec + 5));
     } catch (AiProviderUnavailableException failure) {
       throw failure;
     } catch (IllegalStateException failure) {

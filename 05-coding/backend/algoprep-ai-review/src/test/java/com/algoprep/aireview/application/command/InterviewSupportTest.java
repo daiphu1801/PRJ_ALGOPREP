@@ -119,6 +119,56 @@ class InterviewSupportTest {
         ArgumentCaptor.forClass(RecordAiTokenUsageCommand.class);
     verify(usage).record(ledger.capture());
     assertThat(ledger.getValue().usageKnown()).isFalse();
-    assertThat(InterviewLlmCall.TOTAL_TIMEOUT).isEqualTo(Duration.ofSeconds(20));
+  }
+
+  @Test
+  void theShortCallTimeoutsDefaultToSixtyAndThirtySecondsAndTheKeysAreBound() throws Exception {
+    var total = InterviewLlmCall.class.getDeclaredField("callTotalSec");
+    var first = InterviewLlmCall.class.getDeclaredField("firstTokenSec");
+    assertThat(
+            total.getAnnotation(org.springframework.beans.factory.annotation.Value.class).value())
+        .isEqualTo("${algoprep.ai.llm.timeout.interview-call-total-sec:60}");
+    assertThat(
+            first.getAnnotation(org.springframework.beans.factory.annotation.Value.class).value())
+        .isEqualTo("${algoprep.ai.llm.timeout.interview-first-token-sec:30}");
+    var options = sentOptions(call -> {});
+    assertThat(options.totalTimeout()).isEqualTo(Duration.ofSeconds(60));
+    assertThat(options.firstTokenTimeout()).isEqualTo(Duration.ofSeconds(30));
+  }
+
+  @Test
+  void overriddenShortCallTimeoutsReachTheProviderCall() {
+    var options =
+        sentOptions(
+            call -> {
+              call.callTotalSec = 11;
+              call.firstTokenSec = 5;
+            });
+    assertThat(options.totalTimeout()).isEqualTo(Duration.ofSeconds(11));
+    assertThat(options.firstTokenTimeout()).isEqualTo(Duration.ofSeconds(5));
+  }
+
+  private com.algoprep.aireview.domain.model.CallOptions sentOptions(
+      java.util.function.Consumer<InterviewLlmCall> tweak) {
+    var llm = mock(LlmProviderPort.class);
+    var ids = mock(IdGeneratorPort.class);
+    when(ids.newId()).thenReturn(UUID.randomUUID());
+    var call =
+        new InterviewLlmCall(
+            mock(AiPromptSnapshotRepository.class),
+            llm,
+            mock(RecordAiTokenUsageUseCase.class),
+            ids);
+    tweak.accept(call);
+    when(llm.streamTurn(any(), any(), any(), any(), any())).thenReturn(Flux.empty());
+    var template =
+        new PromptSnapshot(UUID.randomUUID(), FeatureCode.MOCK_INTERVIEW, "s", null, "m", "v1");
+    ComposedPrompt prompt =
+        new PromptComposer()
+            .compose(template, null, null, List.of(new DataBlock(BlockName.TOPICS, "t")));
+    call.collect(template, prompt, UUID.randomUUID(), UUID.randomUUID());
+    var captured = ArgumentCaptor.forClass(com.algoprep.aireview.domain.model.CallOptions.class);
+    verify(llm).streamTurn(any(), any(), any(), any(), captured.capture());
+    return captured.getValue();
   }
 }

@@ -109,6 +109,11 @@ algoprep:
         # code review; the Next proxy allows 240 s, so keep these well below it.
         review-total-sec: ${ALGOPREP_AI_REVIEW_TOTAL_SEC:90}
         rubric-total-sec: ${ALGOPREP_AI_RUBRIC_TOTAL_SEC:90}
+        # F6 practice feedback (one structured call) and the short non-streaming Mock Interview calls
+        # (opening line, hint) with the wait for the first token. The streamed turn keeps its own 60 s.
+        practice-total-sec: ${ALGOPREP_AI_PRACTICE_TOTAL_SEC:90}
+        interview-call-total-sec: ${ALGOPREP_AI_INTERVIEW_CALL_TOTAL_SEC:60}
+        interview-first-token-sec: ${ALGOPREP_AI_INTERVIEW_FIRST_TOKEN_SEC:30}
     anomaly:
       # JOB-AI-05 threshold: an account at or above this many times the 24 hour average is flagged.
       threshold-ratio: 5
