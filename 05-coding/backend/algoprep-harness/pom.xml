@@ -5,7 +5,7 @@
   Chi phu thuoc algoprep-common. KHONG phu thuoc module nghiep vu nao khac
   (01-rd/system/SYS0101_backend_architecture.md muc 2.A luat 1) — ArchUnit trong algoprep-bootstrap chan that.
 
-  Trang thai: khung base, chua co class nghiep vu. Noi dung cho BD/DD cua module nay
+  Trang thai: da co P4 so khop dau ra thuan; cac lat con lai theo BD/DD cua module nay
   (02-bd/ + 03-dd/). Xem 05-coding/backend/README.md.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -23,7 +23,44 @@
   <name>algoprep-harness</name>
   <description>Bộ sinh mã bọc hàm (F3)</description>
 
+  <properties>
+    <jacoco.haltOnFailure>true</jacoco.haltOnFailure>
+  </properties>
+
   <dependencies>
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webmvc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-config</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-oauth2-resource-server</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-oauth2-jose</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-tx</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-redis</artifactId>
+    </dependency>
     <dependency>
       <groupId>com.algoprep</groupId>
       <artifactId>algoprep-common</artifactId>

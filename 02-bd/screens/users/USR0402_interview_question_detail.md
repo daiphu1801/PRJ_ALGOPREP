@@ -87,7 +87,7 @@ prototype không vẽ. Danh sách đầy đủ các điểm phải suy diễn n�
 | Tên vật lý (slug) | `interview_question_detail` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`) |
-| Phiên bản | V1.14 |
+| Phiên bản | V1.16 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/22 |
 | Người cập nhật | Claude |
@@ -114,6 +114,8 @@ prototype không vẽ. Danh sách đầy đủ các điểm phải suy diễn n�
 | V1.12 | Sheet 3, 4 (4.1, 4.4), 5 (Khu vực A NO 1, 5; B NO 3; C NO 1, 3, 6, 7; D NO 12; E NO 1), 6 (Khu vực A NO 1, 5; C NO 3; E NO 1; F NO 1), 8 (EVT-2, EVT-3, EVT-6, EVT-8), Hiện trạng bản dựng, Câu hỏi mở Q3, Q9 | **Chưa duyệt hình** — theo yêu cầu của owner 2026/10/20, chưa phải thiết kế đã duyệt; ghi lại để BD khớp bản dựng. (1) Hàng đầu trang nay gồm nhãn chủ đề, độ khó, nút "Đánh dấu xem lại" (nền vàng theo token `--color-admin-warn` khi đã lưu) và nút "Quay lại danh sách" có biểu tượng mũi tên trái, gọi `guardedNavigate("/interview-bank")`, giữ chặn bản nháp; "Quay lại danh sách" đổi từ liên kết thành nút. (2) Bố cục hai cột: cột trái là thẻ câu hỏi (chữ lớn), bộ chuyển chế độ và các khối của hai chế độ; cột phải dính (`lg:sticky lg:top-24`) gồm khối "Từ khoá cốt lõi" (chỉ Chế độ học) và khối "Lịch sử các lượt" (trước đây nằm cuối trang). (3) "Ý cần nói" hiện trong các ô nền nhạt. Tự chấm, ô soạn, phản hồi AI không đổi. Sửa mục 4.4: các chữ A đến F nay chỉ là nhóm tài liệu, không còn là thứ tự trên màn. Rà lại mọi số dòng `interview-question-detail-view.tsx` (lệch tới +40) | 2026/10/21 | Claude |
 | V1.13 | Sheet 4 (4.4), 5 và 6 (Khu vực A NO 5; C NO 3; E NO 1), Hiện trạng bản dựng | **Chưa duyệt hình.** Owner 2026/10/21 xác nhận ba điểm của màn: (1) nút đánh dấu đổi nhãn "Đánh dấu xem lại" thành "Đã đánh dấu" khi đã đánh dấu và ngược lại, cùng kiểu vàng đã lưu với nút Lưu ở `problem_overview` (`--color-admin-warn`, biểu tượng `Bookmark` tô đặc, `aria-pressed`); (2) thẻ "Lịch sử các lượt" hiện ở cả hai chế độ; (3) thẻ "Từ khoá cốt lõi" chỉ hiện ở Chế độ học. Bản dựng đã khớp từ V1.12 nên không đổi mã giao diện, chỉ thêm kiểm thử vitest cho ba điểm này; số dòng trích dẫn `interview-question-detail-view.tsx` đã đo lại, không lệch. Không đổi số NO, EVT; không có Câu hỏi mở nào của màn này bị ảnh hưởng | 2026/10/21 | Claude |
 | V1.14 | Sheet 4 (4.3), 5 (Khu vực C NO 6, Khu vực D NO 12), 7 (7.1 NO 13, 20; 7.2), Hiện trạng bản dựng, Câu hỏi mở Q9, các dòng `[Nguồn]` | Sửa 2026-10-22 đồng bộ DB, `DEC-2026-1022-interview-bank-schema-sync` (IB-05, IB-16) và `02-bd/database/F6_interview-bank.md`: (1) khoảng ôn lại là bảng cố định `FORGOTTEN` 1, `VAGUE` 3, `KNOWN` 7 ngày, không cộng dồn, thay "công thức spaced repetition" (Khu vực C NO 6, 7.1 NO 13); (2) `criterionCode` là tên tiêu chí người soạn gõ tự do, hiển thị nguyên văn, và `feedback_result_json.criteria[]` đã có ở DB; (3) đọc lại số dòng toàn bộ trích dẫn `02-bd/database/F6_interview-bank.md` (chủ yếu dịch +1 ở các cột `interview_questions` do thêm `display_no`; `recall_ratings` từ `:159-177` thành `:177-205`; `practice_history` thành `:147-176`; một số trích dẫn cũ lệch từ trước nay sửa theo nội dung: ChatMemory `:231-232`, rate limit `:236,252`). Màn học viên không hiện `display_no`. Không đổi RD, không đổi code | 2026/10/22 | Claude |
+| V1.15 | Hiện trạng bản dựng | Nối API thật (merge M1, 2026-11-11): thêm bảng "Nối API thật" cạnh bảng cũ, ghi các dòng cũ bị thay thế. Không đổi giao diện, không đổi NO, không đổi EVT | 2026/11/11 | Claude |
+| V1.16 | Sheet 8 (EVT-9), Hiện trạng bản dựng | Owner chốt 2026/11/11: mở một lượt cũ trong lịch sử hiện **cả phản hồi của lượt đó** (điểm đạt, điểm thiếu, hướng bổ sung, mức đạt từng tiêu chí; lượt `FAILED` hiện khối "chưa có phản hồi AI"), không chỉ nội dung câu trả lời. Dữ liệu đã có ở F6 mục 7 (`feedback`, `feedbackStatus`), không thêm trường. Đóng chỗ lệch EVT-9 | 2026/11/11 | Claude |
 
 ---
 
@@ -654,7 +656,7 @@ sinh nhánh lỗi nào cho Chế độ học, tự chấm, đánh dấu hay lị
 | :--- | :--- | :-: |
 | Q2: không "tần suất xuất hiện" | Đầu trang chỉ có nhãn chủ đề, độ khó, tiêu đề, nội dung [view:229-273]; không chỗ nào đọc `usageCount` (`usageCount` vẫn nằm trong `InterviewQuestion` [types:28] vì màn quản trị dùng) | Khớp |
 | Q4: nộp đồng bộ, `PENDING` hiện "Đang chấm" | Nộp giả lập bằng `setTimeout` 900 ms và cờ `pendingFeedback` [view:96,152-190]. Lượt `pending` đang xem hiện "Đang chấm" thay vì khối phản hồi [view:434-440]; huy hiệu lịch sử có nhánh `pending` [view:574-584]. "Thử lại một lượt mới" xoá ô soạn và gỡ phản hồi đang xem [view:206-209]; ô soạn chỉ khoá khi còn phản hồi trên màn [view:387], nên nộp được lượt thứ hai (khớp Sheet 6 khu vực D NO 1, NO 10 và Sheet 9 NO 13) | Khớp (đã sửa) |
-| Q5: giữ lịch sử ở màn này | Khu vực E có danh sách gập mở, trạng thái rỗng, nay ở thẻ cột phải [view:542-597]. Chưa có "tải thêm" (Sheet 5 khu vực E NO 7). Mở một dòng chỉ hiện nội dung câu trả lời, chưa hiện phản hồi và mức đạt từng tiêu chí của lượt đó (lệch Sheet 8 EVT-9) | Khớp một phần |
+| Q5: giữ lịch sử ở màn này | Khu vực E có danh sách gập mở, trạng thái rỗng, nay ở thẻ cột phải [view:542-597]. Chưa có "tải thêm" (Sheet 5 khu vực E NO 7). Mở một dòng chỉ hiện nội dung câu trả lời (lệch Sheet 8 EVT-9; **đã đóng 2026/11/11**, xem bảng "Nối API thật") | Khớp một phần |
 | Q6: không lưu nháp | Nội dung soạn chỉ nằm trong `useState` [view:92]; không có `localStorage`; popup rời màn qua `ConfirmDialog` [view:213-227]. `hasDraft` bật khi còn chữ chưa nộp, kể cả khi soạn lượt thứ hai [view:134-136] | Khớp (đã sửa) |
 | Q7: tiêu chí ẩn trước khi nộp | Chế độ luyện chỉ có ô soạn, bộ đếm, nút [view:376-430]; `rubric` chỉ dùng để dựng phản hồi mẫu [view:163] | Khớp |
 | Q8 và Q9: mức đạt từng tiêu chí, không điểm tổng, không ngưỡng | Khối tiêu chí hiện sau phản hồi, mỗi tiêu chí một hàng gồm `criterionCode`, `achievementPercent` (kèm thanh `ProgressBar` trung tính) và `weightPercent`, không nhân với nhau, không tô màu đạt/trượt [view:472-501]; kiểu `AnswerCriterionResult` [types:75-97]. Dữ liệu giả lập: mức đạt 90, 75, 60... theo thứ tự tiêu chí, nhãn rubric đóng vai `criterionCode` vì rubric prototype chưa có mã riêng [mocks:346-360]. Không có điểm tổng, không có ngưỡng; `averageScore` [types:30] không được view đọc | Khớp (đã làm) |
@@ -668,6 +670,23 @@ sinh nhánh lỗi nào cho Chế độ học, tự chấm, đánh dấu hay lị
 | Nhãn nút đánh dấu đổi theo trạng thái (owner 2026/10/21) | `bookmarked ? t("header.bookmarked") : t("header.bookmark")` [view:250]: "Đã đánh dấu" khi bật, "Đánh dấu xem lại" khi tắt; kiểu vàng `--color-admin-warn` [view:239-243], `aria-pressed` [view:238]. Có kiểm thử vitest | Khớp bản dựng; **chưa duyệt hình** |
 | Bố cục hai cột, cột phải dính, từ khoá và lịch sử ở cột phải | Lưới `lg:[grid-template-columns:minmax(0,1fr)_320px]` [view:264]; cột phải `lg:sticky lg:top-24` [view:530]; từ khoá chỉ khi `mode === "study"` [view:531]; lịch sử luôn hiện ở cả hai chế độ [view:542]. Sheet 4.4, Sheet 5 C NO 3, E NO 1 đã cập nhật | Khớp bản dựng; **chưa duyệt hình** |
 | "Ý cần nói" trong các ô nền nhạt | Mỗi ý là `li` nền `--color-surface-hover` [view:301-304]; Sheet 5 C NO 1 đã cập nhật | Khớp bản dựng; **chưa duyệt hình** |
+
+### Nối API thật (2026-11-11)
+
+> Số dòng `[view:...]`, `[types:...]`, `[mocks:...]` ở bảng trên là của bản dựng mock trước 2026-11-11. Các dòng "Q4 và Q5" (nộp bằng `setTimeout`, thiếu "tải thêm"), "Q8 và Q9" (dữ liệu giả lập 90, 75...), "Q7 của `USR0401`" và "Trạng thái tự chấm, đánh dấu" **bị bảng dưới thay thế**. Đối chiếu `05-coding/frontend/src/views/users/interview-question-detail/ui/interview-question-detail-view.tsx` ("view"), `05-coding/frontend/src/entities/interview-question/api/real-practice.ts` ("practice") và `.../api/learner-queries.ts` ("queries"). DD: `03-dd/screens/users/USR0402_interview_question_detail.md` mục 2.
+
+| Điểm | Bản dựng thực tế | Khớp? |
+| :--- | :--- | :-: |
+| Nguồn dữ liệu | F6 mục 3, 4, 5, 6, 7 gọi thật khi `NEXT_PUBLIC_MOCK_DATA=false` (`useLearnerQuestionDetail` [view:82], `useRateRecall` [view:99], `useSetBookmark` [view:100], `useSubmitPracticeAnswer` [view:101], `usePracticeAttempts` [view:102]); mock chạy cùng hook | Khớp |
+| Chế độ học | `suggestedApproach` là chuỗi Markdown tách thành các ý; nhãn STAR theo `topic.usesStarFramework` của máy chủ [view:310]; ngày ôn lại tính từ `nextReviewAt` [view:358-364] | Khớp |
+| Q4: nộp đồng bộ | Nộp là một lời gọi `POST`, nút hiện "Đang đối chiếu" khi `isPending` [view:157-171]; `201 FAILED` (`INB-501`, `INB-502`) hiện khối "chưa có phản hồi AI" kèm toast cảnh báo, câu trả lời vẫn thành một lượt; mã lỗi `INB-V06`, `V07`, `010`, `040`, `041`, `042`, `050` qua toast `apiErrors`, bản nháp giữ nguyên | Khớp |
+| Q5: lịch sử | Đọc từ F6 mục 7, 10 lượt một lần, nút "Xem thêm ({shown} / {total})" theo con trỏ `before` [view:594-608]; đọc lại sau mỗi lần nộp | Khớp (đóng "chưa có tải thêm") |
+| Q8 và Q9: mức đạt từng tiêu chí | Lấy từ `criteria` của máy chủ (`criterionCode`, `achievementPercent`, `weightPercent`), không tính điểm tổng | Khớp |
+| Tự chấm, đánh dấu | Hai thao tác ghi lên máy chủ, hai màn chung bộ nhớ đệm truy vấn (khoá `interview-question/learner`); đánh dấu lạc quan và hoàn lại khi lỗi [queries:168-196]; tự chấm không lạc quan [queries:149-165] | Khớp |
+| `404 INB-010` | Đọc chi tiết trả `null`, màn hiện "không tìm thấy" [view:121-135] | Khớp |
+| EVT-9: mở một lượt cũ | Dòng gập mở hiện nội dung câu trả lời **và** khối phản hồi của đúng lượt đó, dùng chung `AttemptFeedback` với lượt vừa nộp (không có liên kết "Xem gợi ý ở Chế độ học" trong lịch sử) [view:93-190, 600-610]; lượt `FAILED` hiện "chưa có phản hồi AI", không có tiêu chí. Có hai kiểm thử vitest (lượt `COMPLETED`, lượt `FAILED`) | Khớp (đóng lệch EVT-9, 2026/11/11) |
+| Còn lệch | Nút Back trình duyệt vẫn không hỏi khi có nháp; liên kết quay lại chưa mang bộ lọc (cùng nợ URL với `USR0401`) | Lệch (nợ) |
+| Kiểm thử | `interview-question-detail-view.test.tsx` (7 ca, mock) và `interview-question-detail-real.test.tsx` (28 ca, HTTP giả, chữ thật của `vi.json`) | Khớp |
 
 ## Câu hỏi mở
 

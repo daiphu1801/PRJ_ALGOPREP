@@ -10,6 +10,7 @@ import { cn } from "@/shared/lib";
 import { Menu, User, X } from "lucide-react";
 import { JudgeEngineTag } from "./judge-engine-tag";
 import { STUDENT_MENU_ITEMS, STUDENT_NAV_ITEMS } from "../model/student-nav";
+import { LOGOUT_ITEM_KEY, useSignOut } from "../model/use-sign-out";
 
 /**
  * Matches 09-layoutBase/Dashboard AlgoPrep.dc.html:50-92 (the same header every Student screen
@@ -28,6 +29,7 @@ export function StudentHeader() {
   const t = useT("nav");
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const signOut = useSignOut();
   // Separate from `menuOpen` (the avatar dropdown): this is the narrow-viewport nav drawer that
   // 02-bd/screens/users/_shell.md mục 6 Q5 specifies — below the breakpoint the nav items collapse
   // behind one button while the brand and the user block stay put.
@@ -141,7 +143,13 @@ export function StudentHeader() {
                       )}
                       <Link
                         href={item.href}
-                        onClick={() => setMenuOpen(false)}
+                        onClick={(event) => {
+                          setMenuOpen(false);
+                          if (item.key === LOGOUT_ITEM_KEY) {
+                            event.preventDefault();
+                            void signOut(item.href);
+                          }
+                        }}
                         className={cn(
                           "flex h-[34px] items-center gap-2.5 rounded-lg px-2.5 text-[13.5px] font-medium hover:bg-[var(--color-surface-hover)]",
                           item.danger

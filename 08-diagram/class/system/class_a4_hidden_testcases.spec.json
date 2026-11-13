@@ -1,5 +1,5 @@
 {
-  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a4_system.md:47. Nguồn thiết kế: 03-dd/logic/F2_problem-bank.md; 03-dd/api/F2_problem-bank.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a4_system.md:47. Nguồn mã nguồn: 05-coding/backend/algoprep-judge/src/main/java/com/algoprep/judge/presentation/controller/MySubmissionReadController.java và domain/ports/out/SubmissionReadRepository.java.",
   "kind": "class",
   "title": "A4 — Che dữ liệu testcase ẩn",
   "covers": [
@@ -9,45 +9,45 @@
     "legend": "shared",
     "classes": [
       {
-        "id": "service",
-        "name": "HiddenResultProjectionService",
+        "id": "readController",
+        "name": "MySubmissionReadController",
         "methods": [
-          "+ publicResult(result : CaseResult, visibility : Visibility) : PublicCaseResult"
+          "+ detail(caller : JwtAuthenticationToken, submissionId : String) : Detail"
         ]
       },
       {
-        "id": "port1",
-        "name": "CaseResultRepository",
-        "kind": "class",
+        "id": "readRepo",
+        "name": "SubmissionReadRepository",
+        "kind": "interface",
         "methods": [
-          "+ listBySubmission(id : UUID) : List<CaseResult>"
+          "+ findDetail(owner : UUID, submissionId : UUID) : Detail"
         ]
       },
       {
-        "id": "port2",
-        "name": "HiddenDataPolicy",
-        "kind": "class",
+        "id": "policy",
+        "name": "SubmissionFinalizationPolicy",
         "methods": [
-          "+ project(result : CaseResult) : PublicCaseResult"
+          "+ summarize(before : SubmissionState, command : FinishCommand, cases : List<Result>) : Outcome"
         ]
       }
     ],
     "externals": [],
     "relations": [
       {
-        "from": "service",
-        "to": "port1",
+        "from": "readController",
+        "to": "readRepo",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port2",
-        "kind": "dependency"
+        "from": "readRepo",
+        "to": "policy",
+        "kind": "dependency",
+        "label": "áp dụng chính sách che dữ liệu"
       }
     ],
     "notes": [
-      "Hidden chỉ công khai trạng thái/chỉ số; không trả input, expected output, diff hay object key qua API/event/log.",
-      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+      "MySubmissionReadController chỉ trả về Detail với trạng thái và chỉ số (thời gian, bộ nhớ) của testcase ẩn.",
+      "SubmissionReadRepository và SubmissionFinalizationPolicy bảo đảm dữ liệu đầu vào và diff chi tiết của testcase ẩn không bao giờ bị lộ qua API."
     ]
   }
 }

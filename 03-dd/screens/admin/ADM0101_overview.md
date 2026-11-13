@@ -7,7 +7,7 @@
 | Actor, route | A3 `ADMIN`; `/admin` |
 | Nguồn | `01-rd/screens/admin/ADM0101_overview.md`; `02-bd/screens/admin/ADM0101_overview.md` Sheet 1–9; [F1](../../api/F1_identity.md) §0.8 |
 | Prototype | `05-coding/frontend/src/views/admin/overview/ui/admin-overview-view.tsx` |
-| Phiên bản | V0.1, 2026-10-25; DD màn, Mode B |
+| Phiên bản | V0.2, 2026-11-07 (V0.1, 2026-10-25); DD màn, Mode B |
 
 ## 1. Bản đồ slice FSD
 
@@ -27,6 +27,8 @@
 | 2 tải lại | Endpoint của đúng khối lỗi | Giữ các khối thành công |
 | 3 xem tất cả bài | Không gọi API | Mở `/admin/problems` |
 | 4 thanh bên | Không gọi API tại view | Khung A3 xử lý điều hướng |
+
+**Triển khai 2026-11-07 (F1-8):** cả mười khối đã nối API thật. Ba khối F1 (#41, #42, #73) trong `views/admin/overview/api/real-dashboard.ts`, bảy khối F4/F2 (#43, #67 đến #72) trong `views/admin/overview/api/real-submissions.ts`, đều qua `withMockData(fake, real)` ở `queries.ts` (mỗi khối một `useQuery`, `retry: false`). Ánh xạ: #67 xếp lại thành Python, C++, Java và gán nhãn/màu; #68 lấy `percent` của server làm giá trị lát (client không tính lại); #69 đặt `key = levelCode` rồi khối ghép với danh sách mức admin đang quản lý; #70 đổi `day` thành T2..CN và `intensity` = `round(count / số lớn nhất tuần * 10)` (0 khi cả tuần rỗng); #71 đổi `month` thành `T<tháng>`; #72 lấy `title` làm nhãn. Ghi chú trong đoạn tiêu đề DD này về `entities/admin-dashboard` là lệch với mã thực tế: query nằm trong view `overview/api`. Lỗi của một khối chỉ làm hiện lỗi của khối đó.
 
 Mười operation đọc ở BD Sheet 7.3 khớp mười HTTP endpoint F1. View lấy trường từ F1 §0.8.5 và không tự truy vấn F4 cho từng biểu đồ. [SoT: F1 BR-17; quyết định owner 2026-10-25]
 
@@ -65,3 +67,9 @@ Dùng `adminOverview.*`, `apiError.IDT-*`. Mỗi biểu đồ có tiêu đề, �
 ## 8. Nợ prototype và câu hỏi mở
 
 Prototype ở `views/admin/overview/api` còn dữ liệu mẫu. Nối mười endpoint F1 #41–43 và #67–73, bỏ phép suy số từ seed và dùng danh mục độ khó động. Mỗi khối tải/thử lại riêng theo quyết định owner 2026-10-25. Nợ `PROTOTYPE_DEBT.md` chỉ gỡ khi nối thật. TDD màn đã có tại `04-tdd/screens/admin/ADM0101_overview.md`.
+
+## Ghi chú đồng bộ prototype 2026-11-07: nhãn qua i18n
+
+`real-submissions.ts` (`#67`, `#68`, `#69`) không còn chữ hiển thị: mỗi mục có `label` (mã) và `labelKey` (`labels.language.*`, `labels.verdict.*`, `labels.legend.*`), khối gọi `translateLabel(t, item)` (`model/labels.ts`). Mã lạ: `label` = mã, không có `labelKey`. Màu giữ là token `--color-admin-*` trong mã. Test: `real-submissions.test.ts`, `model/labels.test.ts`, `ui/blocks/real-labels.test.tsx` (vi và en).
+
+Còn mở: nhãn "Mới" và "Quay lại" của khối giữ chân người dùng (`real-dashboard.ts`) còn cứng; chưa duyệt hình.

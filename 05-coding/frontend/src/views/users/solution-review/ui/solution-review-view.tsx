@@ -1,14 +1,11 @@
-// PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md section 10.2 (USR0301_solution_review).
+// USR0301 Solution Review (DD 03-dd/screens/users/USR0301_solution_review.md). Real mode: the report
+// comes from F5 `POST /ai/submissions/{id}/solution-review` (one idempotent call, can take up to 30 s,
+// no automatic retry), the problem title and the submitted code from F4 `GET /judge/submissions/{id}`.
+// Mock mode keeps the three `?demo=` outcomes of the prototype and brings its own source block.
 //
 // Layout follows 09-layoutBase/Phân tích bài giải.dc.html: breadcrumb + top stats (:99-116), a
 // minmax(0,1fr) 380px grid (:119) holding the edu banner / complexity table / strengths-improvements
 // / diff (left) and submitted-code / review-topics / apply CTA (right).
-//
-// Three mutually exclusive states from BD Sheet 5 Khu vực I (loading / errorTransient /
-// errorBudgetLocked) have no real backend to drive them yet — read from `?demo=` the same way the
-// admin_overview debt row proposes (PROTOTYPE_DEBT.md section 9: "bật cơ chế demo lỗi/rỗng thật qua
-// query param debug"). Retry (EVT-7) re-runs the same deterministic outcome rather than "fixing"
-// itself — there is no real AI call behind it yet.
 //
 // No Monaco library is installed yet, so the read-only Diff Viewer (Sheet 4.4 area G) computes the
 // diff from the original vs suggested code with entities/solution-review `lineDiff` (the DB stores
@@ -19,22 +16,26 @@ import { Suspense, useEffect, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
-  AI_BUDGET_LOCKED_CODE,
-  REVIEW_FORBIDDEN_CODE,
-  REVIEW_NOT_ACCEPTED_CODE,
-  REVIEW_NOT_FOUND_CODE,
+  AIR_BUDGET_LOCKED,
+  AIR_COOLDOWN,
+  AIR_NOT_ACCEPTED,
+  AIR_NOT_OWNER,
+  AIR_QUOTA_EXCEEDED,
+  AIR_SUBMISSION_NOT_FOUND,
   lineDiff,
   useSolutionReview,
+  type ReviewSource,
   type SolutionReviewDemoOutcome,
   type SolutionReviewDetail,
 } from "@/entities/solution-review";
+import { useSubmissionDetail } from "@/entities/submission";
 import { ApiError } from "@/shared/api";
 import {
   problemLevelLabel,
   saveWorkspaceDraft,
   useProblemLevels,
 } from "@/entities/problem";
-import { useLocale, useT } from "@/shared/i18n";
+import { useApiErrorMessage, useLocale, useT } from "@/shared/i18n";
 import { formatDateVN, type DateLocale } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
 import {
@@ -86,21 +87,26 @@ function SolutionReviewContent() {
     : "ready";
 
   const query = useSolutionReview(submissionId, demo);
+  const submission = useSubmissionDetail(submissionId);
+  const apiMessage = useApiErrorMessage();
   const [applyConfirmOpen, setApplyConfirmOpen] = useState(false);
 
   // isFetching (not isLoading) so Retry from the error state shows the skeleton again and cannot be
   // double-clicked (EVT-7).
   const isLoading = query.isFetching;
-  const isBudgetLocked =
-    query.error instanceof ApiError &&
-    query.error.code === AI_BUDGET_LOCKED_CODE;
+  const code = query.error instanceof ApiError ? query.error.code : undefined;
+  const isBudgetLocked = code === AIR_BUDGET_LOCKED;
+  // One merged notice for 101 / 102 / 302 on purpose: it must not tell whose submission it is.
   const isUnavailable =
-    query.error instanceof ApiError &&
-    (query.error.code === REVIEW_NOT_FOUND_CODE ||
-      query.error.code === REVIEW_FORBIDDEN_CODE ||
-      query.error.code === REVIEW_NOT_ACCEPTED_CODE);
-  const isTransientError = query.isError && !isBudgetLocked && !isUnavailable;
+    code === AIR_SUBMISSION_NOT_FOUND ||
+    code === AIR_NOT_ACCEPTED ||
+    code === AIR_NOT_OWNER;
+  const isRateLimited = code === AIR_QUOTA_EXCEEDED || code === AIR_COOLDOWN;
+  const retryAfter = retryAfterSeconds(query.error);
+  const isTransientError =
+    query.isError && !isBudgetLocked && !isUnavailable && !isRateLimited;
   const data = query.data as SolutionReviewDetail | undefined;
+  const source = data ? sourceOf(data, submission) : null;
 
   // The error blocks below replace the report; the toast announces the failure at the moment it
   // happens (errorUpdatedAt changes on every failed attempt, so a failed retry toasts again).
@@ -109,7 +115,14 @@ function SolutionReviewContent() {
     if (!errorUpdatedAt) return;
     if (isBudgetLocked) toast.error(t("toast.budgetLocked"));
     else if (isUnavailable) toast.error(t("toast.unavailable"));
-    else if (isTransientError) toast.error(t("toast.transientError"));
+    else if (isRateLimited)
+      toast.error(t("rateLimitedToast", { seconds: retryAfter }));
+    else if (isTransientError)
+      toast.error(
+        code === undefined || code.startsWith("AIR-")
+          ? t("toast.transientError")
+          : apiMessage(query.error),
+      );
     // eslint-disable-next-line react-hooks/exhaustive-deps -- t is stable per locale; only a new failure should toast
   }, [errorUpdatedAt]);
 
@@ -154,6 +167,18 @@ function SolutionReviewContent() {
         </NoticeTile>
       ) : null}
 
+      {!isLoading && isRateLimited ? (
+        <NoticeTile tone="warn" title={t("errorRateLimitedTitle")}>
+          {t("errorRateLimitedBody", { seconds: retryAfter })}
+          <RetryCountdown
+            key={errorUpdatedAt}
+            seconds={retryAfter}
+            onRetry={() => query.refetch()}
+            t={t}
+          />
+        </NoticeTile>
+      ) : null}
+
       {!isLoading && isUnavailable ? (
         <NoticeTile tone="warn" title={t("errorUnavailableTitle")}>
           {t("errorUnavailableBody")}
@@ -181,6 +206,8 @@ function SolutionReviewContent() {
       {!isLoading && !query.isError && data ? (
         <ReadyReport
           data={data}
+          source={source}
+          sourceFailed={submission.isError || (submission.isSuccess && !source)}
           t={t}
           onApplyClick={() => setApplyConfirmOpen(true)}
         />
@@ -191,7 +218,7 @@ function SolutionReviewContent() {
         onClose={() => setApplyConfirmOpen(false)}
         onConfirm={() => {
           setApplyConfirmOpen(false);
-          if (!data) return;
+          if (!data || !source) return;
           // EVT-6: the suggestion becomes the browser draft of that problem, then the workspace opens
           // on it. The previous-draft history entry from BD is not built yet (PROTOTYPE_DEBT).
           const suggested = data.codeDiff.suggestedCode;
@@ -199,7 +226,7 @@ function SolutionReviewContent() {
           const ok = saveWorkspaceDraft(
             data.problemId,
             data.languageKey,
-            data.submissionModel,
+            source.submissionModel,
             suggested,
           );
           if (!ok) {
@@ -220,8 +247,10 @@ function SolutionReviewContent() {
 }
 
 function LoadingSkeleton() {
+  const t = useT("solutionReview");
   return (
     <div className="flex flex-col gap-3" role="status" aria-busy="true">
+      <span className="sr-only">{t("loadingLabel")}</span>
       <Skeleton className="h-6 w-64" />
       <Skeleton className="h-40 w-full" />
       <Skeleton className="h-56 w-full" />
@@ -231,10 +260,15 @@ function LoadingSkeleton() {
 
 function ReadyReport({
   data,
+  source,
+  sourceFailed,
   t,
   onApplyClick,
 }: {
   data: SolutionReviewDetail;
+  source: ReviewSource | null;
+  /** F4 failed or returned no problem: the report still shows, code and diff are replaced by a note. */
+  sourceFailed: boolean;
   t: ReturnType<typeof useT>;
   onApplyClick: () => void;
 }) {
@@ -245,9 +279,12 @@ function ReadyReport({
       <div className="mb-4 flex flex-wrap items-center gap-5">
         <Stat
           label={t("statProblem")}
-          value={data.problemTitle}
-          unit={problemLevelLabel(levelList, data.difficulty)}
+          value={source?.problemTitle ?? "—"}
+          unit={source ? problemLevelLabel(levelList, source.difficulty) : "—"}
         />
+        {source?.withdrawn ? (
+          <Badge variant="neutral">{t("withdrawn")}</Badge>
+        ) : null}
         <Stat
           label={t("statApproach")}
           value={
@@ -380,17 +417,32 @@ function ReadyReport({
             </Card>
           ) : null}
 
-          {data.codeDiff.suggestedCode !== null ? (
+          {data.codeDiff.suggestedCode !== null && !source && sourceFailed ? (
+            <NoticeTile tone="info" title={t("diffTitle")}>
+              {t("sourceUnavailable")}
+            </NoticeTile>
+          ) : null}
+
+          {data.codeDiff.suggestedCode !== null && source ? (
             <Card title={t("diffTitle")}>
-              <pre className="overflow-x-auto rounded-xl bg-[var(--color-track)] p-3.5 font-mono text-[12.5px] leading-[1.8]">
+              <pre
+                role="group"
+                aria-label={t("diffTitle")}
+                className="overflow-x-auto rounded-xl bg-[var(--color-track)] p-3.5 font-mono text-[12.5px] leading-[1.8]"
+              >
                 {lineDiff(
-                  data.sourceCode,
-                  data.codeDiff.suggestedCode.replace(/\n$/, "").split("\n"),
+                  source.sourceCode.map(trimEnd),
+                  splitLines(data.codeDiff.suggestedCode).map(trimEnd),
                 ).map((line, index) => (
                   <div key={index} className={DIFF_LINE_CLASS[line.kind]}>
                     <span className="mr-3 inline-block w-2.5 text-center select-none">
                       {DIFF_SIGN[line.kind]}
                     </span>
+                    {line.kind === "same" ? null : (
+                      <span className="sr-only">
+                        {t(line.kind === "add" ? "diff.added" : "diff.removed")}
+                      </span>
+                    )}
                     {line.text}
                   </div>
                 ))}
@@ -405,24 +457,36 @@ function ReadyReport({
         </div>
 
         <div className="flex flex-col gap-3.5">
-          <Card title={t("sourceCodeTitle")} description={t(`language.${data.languageKey}`)}>
-            <pre className="overflow-x-auto rounded-xl bg-[var(--color-track)] p-3.5 font-mono text-xs leading-[1.8]">
-              {data.sourceCode.map((line, index) => (
-                <div key={index}>
-                  <span className="mr-3 inline-block w-4 text-right text-[var(--color-text-subtle)] select-none">
-                    {index + 1}
-                  </span>
-                  {line}
-                </div>
-              ))}
-            </pre>
-          </Card>
+          {source ? (
+            <Card
+              title={t("sourceCodeTitle")}
+              description={t(`language.${data.languageKey}`)}
+            >
+              <pre className="overflow-x-auto rounded-xl bg-[var(--color-track)] p-3.5 font-mono text-xs leading-[1.8]">
+                {source.sourceCode.map((line, index) => (
+                  <div key={index}>
+                    <span className="mr-3 inline-block w-4 text-right text-[var(--color-text-subtle)] select-none">
+                      {index + 1}
+                    </span>
+                    {line}
+                  </div>
+                ))}
+              </pre>
+            </Card>
+          ) : sourceFailed ? (
+            <NoticeTile tone="info" title={t("sourceCodeTitle")}>
+              {t("sourceUnavailable")}
+            </NoticeTile>
+          ) : (
+            <Skeleton className="h-40 w-full" />
+          )}
 
           {data.codeDiff.suggestedCode !== null ? (
             <Button
               variant="ghost"
               size="md"
               className="w-full border border-[var(--color-border)]"
+              disabled={!source}
               onClick={onApplyClick}
             >
               {t("applyCta")}
@@ -451,5 +515,71 @@ function Stat({
       <span className="font-mono text-sm font-semibold">{value}</span>
       <Badge variant="neutral">{unit}</Badge>
     </div>
+  );
+}
+
+const trimEnd = (line: string) => line.trimEnd();
+
+/** Splits on CR LF or LF and drops the empty last line a trailing newline leaves. */
+function splitLines(text: string): string[] {
+  const lines = text.split(/\r?\n/);
+  if (lines.length > 1 && lines[lines.length - 1] === "") lines.pop();
+  return lines;
+}
+
+/** `details.retryAfterSeconds` of AIR-402 / AIR-404; 20 s when the server did not send it. */
+function retryAfterSeconds(error: unknown): number {
+  const value =
+    error instanceof ApiError ? error.details?.retryAfterSeconds : undefined;
+  return typeof value === "number" && value > 0 ? Math.ceil(value) : 20;
+}
+
+type SubmissionQuery = ReturnType<typeof useSubmissionDetail>;
+
+/** Mock carries its own source block; real mode joins F4's answer (null while loading or failed). */
+function sourceOf(
+  data: SolutionReviewDetail,
+  submission: SubmissionQuery,
+): ReviewSource | null {
+  if (data.source) return data.source;
+  const detail = submission.data;
+  // No problem in the F4 answer (F2 failed): the title and the model are unknown, so no source block.
+  if (!detail || !detail.problemId) return null;
+  return {
+    problemTitle: detail.problemTitle,
+    difficulty: detail.difficulty,
+    withdrawn: detail.problemWithdrawn === true,
+    submissionModel:
+      detail.submissionMode === "STANDARD_IO" ? "stdio" : "function",
+    sourceCode: splitLines(detail.sourceCode),
+  };
+}
+
+/** Disabled Retry until the server's wait is over; the countdown is not in an aria-live region. */
+function RetryCountdown({
+  seconds,
+  onRetry,
+  t,
+}: {
+  seconds: number;
+  onRetry: () => void;
+  t: ReturnType<typeof useT>;
+}) {
+  const [left, setLeft] = useState(seconds);
+  useEffect(() => {
+    if (left <= 0) return;
+    const timer = setTimeout(() => setLeft((value) => value - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [left]);
+  return (
+    <Button
+      variant="ghost"
+      size="sm"
+      className="mt-3"
+      disabled={left > 0}
+      onClick={onRetry}
+    >
+      {left > 0 ? t("retryIn", { seconds: left }) : t("retry")}
+    </Button>
   );
 }

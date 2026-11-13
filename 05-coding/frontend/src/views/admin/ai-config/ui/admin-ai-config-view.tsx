@@ -23,6 +23,8 @@ import {
   GUARDED_FEATURES,
   GUARD_KEYS,
   useAiConfigPage,
+  usePublishPrompts,
+  useSavePromptDraft,
   type AiConfigPage,
   type AiFeatureKey,
   type GuardKey,
@@ -31,14 +33,15 @@ import {
   type PromptVersionEntry,
 } from "../api";
 import {
-  applyPublish,
   describeChanges,
   pendingByFeature,
   restoreVersion,
   totalPending,
   withInstruction,
+  withServerDrafts,
 } from "../model/changes";
-import { useT } from "@/shared/i18n";
+import { ApiError } from "@/shared/api";
+import { useApiErrorMessage, useT } from "@/shared/i18n";
 import { useUnsavedChangesGuard } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
 import {
@@ -46,6 +49,7 @@ import {
   Button,
   Card,
   ConfirmDialog,
+  ErrorState,
   FilterMenu,
   Modal,
   PageHeader,
@@ -72,18 +76,56 @@ function isGuarded(feature: AiFeatureKey): feature is GuardedFeature {
 }
 
 export function AdminAiConfigView() {
+  const query = useAiConfigPage();
+  const apiMessage = useApiErrorMessage();
+  const tCommon = useT("common");
+  // Bumped after a conflict reload so the inner view re-seeds its local copy from fresh data.
+  const [epoch, setEpoch] = useState(0);
+
+  if (query.isError) {
+    return (
+      <ErrorState>
+        <div className="flex flex-col items-center gap-3">
+          <p>{apiMessage(query.error)}</p>
+          <Button variant="ghost" onClick={() => void query.refetch()}>
+            {tCommon("retry")}
+          </Button>
+        </div>
+      </ErrorState>
+    );
+  }
   return (
-    <QueryBoundary query={useAiConfigPage()}>
-      {(page) => <AdminAiConfigViewInner page={page} />}
+    <QueryBoundary query={query}>
+      {(page) => (
+        <AdminAiConfigViewInner
+          key={epoch}
+          page={page}
+          onReload={async () => {
+            await query.refetch();
+            setEpoch((value) => value + 1);
+          }}
+        />
+      )}
     </QueryBoundary>
   );
 }
 
-function AdminAiConfigViewInner({ page }: { page: AiConfigPage }) {
+function AdminAiConfigViewInner({
+  page,
+  onReload,
+}: {
+  page: AiConfigPage;
+  onReload: () => Promise<void>;
+}) {
   const t = useT("adminAiConfig");
+  const apiMessage = useApiErrorMessage();
+  const saveDraft = useSavePromptDraft();
+  const publish = usePublishPrompts();
   // `saved` is what is live; `draft` is what the admin is editing. The difference is the pending set.
   const [saved, setSaved] = useState<AiConfigPage>(page);
-  const [draft, setDraft] = useState<AiConfigPage>(page);
+  const [draft, setDraft] = useState<AiConfigPage>(() =>
+    withServerDrafts(page),
+  );
   const [feature, setFeature] = useState<AiFeatureKey>("review");
   const [historyOpen, setHistoryOpen] = useState(false);
   const [discardOpen, setDiscardOpen] = useState(false);
@@ -143,24 +185,48 @@ function AdminAiConfigViewInner({ page }: { page: AiConfigPage }) {
     return true;
   }
 
-  function commitPublish() {
-    const next = applyPublish(saved, draft);
-    setSaved(next);
-    setDraft(next);
-    setPublishOpen(false);
-    toast.success(t("publishDone"));
+  /** Resolves true once the server accepted the publish (callers that leave the page wait on it). */
+  async function commitPublish(): Promise<boolean> {
+    if (publish.isPending) return false;
+    try {
+      const next = await publish.mutateAsync({ saved, draft });
+      setSaved(next);
+      setDraft(next);
+      toast.success(t("publishDone"));
+      return true;
+    } catch (error) {
+      toast.error(apiMessage(error));
+      // Someone else published first: the local copy is stale, reload it (AIR-201).
+      if (error instanceof ApiError && error.code === "AIR-201") void onReload();
+      return false;
+    } finally {
+      setPublishOpen(false);
+    }
   }
 
   function openEdit() {
     setEditing({ text: prompt.systemInstruction, invalid: false });
   }
 
-  function saveEdit() {
-    if (!editing) return;
+  async function saveEdit() {
+    if (!editing || saveDraft.isPending) return;
     // BD Sheet 9 NO 5: an empty instruction is not saved.
     if (editing.text.trim() === "") {
       setEditing({ ...editing, invalid: true });
       toast.error(t("editDialog.errorEmpty"));
+      return;
+    }
+    // F5 #16 stores the draft on the server together with the model and guards as they stand now.
+    try {
+      await saveDraft.mutateAsync({
+        feature,
+        systemInstruction: editing.text,
+        modelId: prompt.modelId,
+        guards: isGuarded(feature) ? draft.guards[feature] : null,
+      });
+    } catch (error) {
+      setEditing({ ...editing, invalid: true });
+      toast.error(apiMessage(error));
       return;
     }
     setDraft((previous) => withInstruction(previous, feature, editing.text));
@@ -351,7 +417,9 @@ function AdminAiConfigViewInner({ page }: { page: AiConfigPage }) {
               >
                 <span className="font-mono text-[11.5px]">{entry.version}</span>
                 <span className="font-mono text-[11.5px] text-[var(--color-text-subtle)]">
-                  {entry.publishedAt} · {entry.author}
+                  {entry.author
+                    ? `${entry.publishedAt} · ${entry.author}`
+                    : entry.publishedAt}
                 </span>
                 {entry.version === savedPrompt.version ? (
                   <Badge variant="success" className="ml-auto">
@@ -394,7 +462,7 @@ function AdminAiConfigViewInner({ page }: { page: AiConfigPage }) {
             <Button variant="ghost" size="sm" onClick={requestCloseEdit}>
               {t("editDialog.cancel")}
             </Button>
-            <Button variant="cta" size="sm" onClick={saveEdit}>
+            <Button variant="cta" size="sm" onClick={() => void saveEdit()}>
               {t("editDialog.save")}
             </Button>
           </>
@@ -447,7 +515,7 @@ function AdminAiConfigViewInner({ page }: { page: AiConfigPage }) {
       <ConfirmDialog
         open={publishOpen}
         onClose={() => setPublishOpen(false)}
-        onConfirm={commitPublish}
+        onConfirm={() => void commitPublish()}
         title={t("publishDialog.title")}
         confirmLabel={t("publishDialog.confirm")}
         cancelLabel={t("publishDialog.cancel")}
@@ -493,8 +561,9 @@ function AdminAiConfigViewInner({ page }: { page: AiConfigPage }) {
         stayLabel={t("unsaved.stay")}
         onSaveAndLeave={() => {
           if (canPublish()) {
-            commitPublish();
-            leaveGuard.leave();
+            void commitPublish().then((ok) =>
+              ok ? leaveGuard.leave() : leaveGuard.stay(),
+            );
           } else leaveGuard.stay();
         }}
         onLeave={leaveGuard.leave}

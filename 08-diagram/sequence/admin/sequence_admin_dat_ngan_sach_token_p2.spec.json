@@ -19,12 +19,12 @@
         "stereo": "scheduled job"
       },
       {
-        "name": "UsageQueryPort",
+        "name": "AiBudgetAdminRepository",
         "role": "repository",
-        "stereo": "output port"
+        "stereo": "persistence adapter"
       },
       {
-        "name": "AiDbAdapter",
+        "name": "JdbcAiTokenBudgetRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -34,7 +34,7 @@
         "stereo": "schema ai"
       },
       {
-        "name": "UserDirectoryPort",
+        "name": "AccountLifecycleRepository",
         "role": "repository",
         "stereo": "identity port"
       }
@@ -47,16 +47,16 @@
       },
       {
         "from": "AiAnomalySweepJob",
-        "to": "UsageQueryPort",
+        "to": "AiBudgetAdminRepository",
         "text": "Đếm lượt dùng 24 giờ theo tài khoản"
       },
       {
-        "from": "UsageQueryPort",
-        "to": "AiDbAdapter",
+        "from": "AiBudgetAdminRepository",
+        "to": "JdbcAiTokenBudgetRepository",
         "text": "Đọc mức dùng và cảnh báo đang mở"
       },
       {
-        "from": "AiDbAdapter",
+        "from": "JdbcAiTokenBudgetRepository",
         "to": "PostgreSQL",
         "text": "Tính số dòng token mỗi người và trung bình toàn hệ thống"
       },
@@ -72,27 +72,27 @@
           "then": [
             {
               "from": "AiAnomalySweepJob",
-              "to": "UserDirectoryPort",
+              "to": "AccountLifecycleRepository",
               "text": "Tra vai trò ứng viên, loại quản trị viên"
             },
             {
-              "from": "UserDirectoryPort",
+              "from": "AccountLifecycleRepository",
               "to": "AiAnomalySweepJob",
               "text": "Trả vai trò",
               "kind": "return"
             },
             {
               "from": "AiAnomalySweepJob",
-              "to": "UsageQueryPort",
+              "to": "AiBudgetAdminRepository",
               "text": "Ghi cảnh báo mới nếu chưa có cảnh báo mở"
             },
             {
-              "from": "UsageQueryPort",
-              "to": "AiDbAdapter",
+              "from": "AiBudgetAdminRepository",
+              "to": "JdbcAiTokenBudgetRepository",
               "text": "Lưu cảnh báo"
             },
             {
-              "from": "AiDbAdapter",
+              "from": "JdbcAiTokenBudgetRepository",
               "to": "PostgreSQL",
               "text": "Thêm cảnh báo OPEN, mỗi người tối đa một"
             },

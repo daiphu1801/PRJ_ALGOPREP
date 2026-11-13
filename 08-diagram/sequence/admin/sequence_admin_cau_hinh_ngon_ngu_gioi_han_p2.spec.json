@@ -16,22 +16,22 @@
         "role": "actor"
       },
       {
-        "name": "LanguageConfigController",
+        "name": "AdminLanguageConfigController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "UpdateLanguageConfigs",
+        "name": "UpdateAdminLanguageConfigCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "JudgeConfigStorePort",
+        "name": "AdminLanguageConfigRepository",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "JudgeDbAdapter",
+        "name": "JdbcAdminLanguageConfigRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -52,49 +52,49 @@
       },
       {
         "from": "Quản trị viên",
-        "to": "LanguageConfigController",
+        "to": "AdminLanguageConfigController",
         "text": "Sửa hệ số, giới hạn và môi trường chạy rồi lưu"
       },
       {
-        "from": "LanguageConfigController",
-        "to": "UpdateLanguageConfigs",
+        "from": "AdminLanguageConfigController",
+        "to": "UpdateAdminLanguageConfigCommandHandler",
         "text": "Lưu toàn bộ cấu hình đã chỉnh"
       },
       {
-        "from": "UpdateLanguageConfigs",
-        "to": "UpdateLanguageConfigs",
+        "from": "UpdateAdminLanguageConfigCommandHandler",
+        "to": "UpdateAdminLanguageConfigCommandHandler",
         "text": "Kiểm ít nhất một ngôn ngữ bật và giới hạn hiệu dụng"
       },
       {
-        "from": "UpdateLanguageConfigs",
-        "to": "JudgeConfigStorePort",
+        "from": "UpdateAdminLanguageConfigCommandHandler",
+        "to": "AdminLanguageConfigRepository",
         "text": "Khóa và đọc cấu hình hiện hành"
       },
       {
-        "from": "JudgeConfigStorePort",
-        "to": "JudgeDbAdapter",
+        "from": "AdminLanguageConfigRepository",
+        "to": "JdbcAdminLanguageConfigRepository",
         "text": "Đọc các dòng với thời điểm cập nhật"
       },
       {
-        "from": "JudgeDbAdapter",
+        "from": "JdbcAdminLanguageConfigRepository",
         "to": "PostgreSQL",
         "text": "Khóa dòng cấu hình và đọc giá trị"
       },
       {
         "from": "PostgreSQL",
-        "to": "JudgeDbAdapter",
+        "to": "JdbcAdminLanguageConfigRepository",
         "text": "Giá trị hiện tại",
         "kind": "return"
       },
       {
-        "from": "JudgeDbAdapter",
-        "to": "JudgeConfigStorePort",
+        "from": "JdbcAdminLanguageConfigRepository",
+        "to": "AdminLanguageConfigRepository",
         "text": "Giá trị hiện tại",
         "kind": "return"
       },
       {
-        "from": "JudgeConfigStorePort",
-        "to": "UpdateLanguageConfigs",
+        "from": "AdminLanguageConfigRepository",
+        "to": "UpdateAdminLanguageConfigCommandHandler",
         "text": "Giá trị hiện tại",
         "kind": "return"
       },
@@ -103,39 +103,39 @@
           "label": "Dữ liệu hợp lệ và chưa bị sửa ở phiên khác?",
           "then": [
             {
-              "from": "UpdateLanguageConfigs",
-              "to": "JudgeConfigStorePort",
+              "from": "UpdateAdminLanguageConfigCommandHandler",
+              "to": "AdminLanguageConfigRepository",
               "text": "Chỉ lưu các trường đã thay đổi"
             },
             {
-              "from": "JudgeConfigStorePort",
-              "to": "JudgeDbAdapter",
+              "from": "AdminLanguageConfigRepository",
+              "to": "JdbcAdminLanguageConfigRepository",
               "text": "Cập nhật cấu hình trong một giao dịch"
             },
             {
-              "from": "JudgeDbAdapter",
+              "from": "JdbcAdminLanguageConfigRepository",
               "to": "PostgreSQL",
               "text": "Ghi các dòng đã thay đổi"
             },
             {
-              "from": "UpdateLanguageConfigs",
+              "from": "UpdateAdminLanguageConfigCommandHandler",
               "to": "AuditLogPort",
               "text": "Ghi một nhật ký với giá trị cũ và mới"
             },
             {
               "from": "AuditLogPort",
-              "to": "UpdateLanguageConfigs",
+              "to": "UpdateAdminLanguageConfigCommandHandler",
               "text": "Nhật ký đã ghi",
               "kind": "return"
             },
             {
-              "from": "UpdateLanguageConfigs",
-              "to": "LanguageConfigController",
+              "from": "UpdateAdminLanguageConfigCommandHandler",
+              "to": "AdminLanguageConfigController",
               "text": "Trả cấu hình mới",
               "kind": "return"
             },
             {
-              "from": "LanguageConfigController",
+              "from": "AdminLanguageConfigController",
               "to": "Quản trị viên",
               "text": "Hiển thị cấu hình đã áp dụng",
               "kind": "return"
@@ -143,13 +143,13 @@
           ],
           "else": [
             {
-              "from": "UpdateLanguageConfigs",
-              "to": "LanguageConfigController",
+              "from": "UpdateAdminLanguageConfigCommandHandler",
+              "to": "AdminLanguageConfigController",
               "text": "Báo trường sai hoặc xung đột cập nhật",
               "kind": "return"
             },
             {
-              "from": "LanguageConfigController",
+              "from": "AdminLanguageConfigController",
               "to": "Quản trị viên",
               "text": "Hiển thị lý do cần sửa hoặc tải lại",
               "kind": "return"

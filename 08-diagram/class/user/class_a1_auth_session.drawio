@@ -4,60 +4,69 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="t_service" value='&lt;div style="text-align:center"&gt;&lt;b&gt;AuthService&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;register(email&amp;nbsp;:&amp;nbsp;String,&amp;nbsp;password&amp;nbsp;:&amp;nbsp;String)&lt;br&gt;+&amp;nbsp;login(email&amp;nbsp;:&amp;nbsp;String,&amp;nbsp;password&amp;nbsp;:&amp;nbsp;String,&amp;nbsp;ip&amp;nbsp;:&amp;nbsp;String)&lt;br&gt;+&amp;nbsp;refresh(refreshToken&amp;nbsp;:&amp;nbsp;String)&lt;br&gt;+&amp;nbsp;logout(refreshToken&amp;nbsp;:&amp;nbsp;String)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="307.75" y="60" width="359.5" height="96" as="geometry" />
+        <mxCell id="t_authController" value='&lt;div style="text-align:center"&gt;&lt;b&gt;AuthController&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;login(body&amp;nbsp;:&amp;nbsp;LoginRequest)&amp;nbsp;:&amp;nbsp;ResponseEntity&amp;lt;LoginResult&amp;gt;&lt;br&gt;+&amp;nbsp;refresh(cookie&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;ResponseEntity&amp;lt;RefreshResult&amp;gt;&lt;br&gt;+&amp;nbsp;logout(cookie&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;ResponseEntity&amp;lt;Void&amp;gt;' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="96.69999999999993" y="60" width="377.79999999999995" height="82" as="geometry" />
         </mxCell>
-        <mxCell id="t_users" value='&lt;div style="text-align:center"&gt;&lt;b&gt;UserRepository&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;findByEmail(email&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;UserAccount' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="66" y="236" width="286.3" height="54" as="geometry" />
+        <mxCell id="t_regController" value='&lt;div style="text-align:center"&gt;&lt;b&gt;RegistrationController&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;register(body&amp;nbsp;:&amp;nbsp;RegisterRequest)&amp;nbsp;:&amp;nbsp;ResponseEntity&amp;lt;Void&amp;gt;' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="524.4999999999999" y="60" width="371.7" height="54" as="geometry" />
         </mxCell>
-        <mxCell id="t_tokens" value='&lt;div style="text-align:center"&gt;&lt;b&gt;RefreshTokenRepository&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;revokeFamily(familyId&amp;nbsp;:&amp;nbsp;UUID)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="402.3" y="236" width="213.1" height="54" as="geometry" />
+        <mxCell id="t_loginHandler" value='&lt;div style="text-align:center"&gt;&lt;b&gt;LoginCommandHandler&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;login(command&amp;nbsp;:&amp;nbsp;LoginCommand)&amp;nbsp;:&amp;nbsp;LoginResult' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="209.54999999999995" y="212" width="298.5" height="54" as="geometry" />
         </mxCell>
-        <mxCell id="t_rate" value='&lt;div style="text-align:center"&gt;&lt;b&gt;LoginRateLimiter&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;check(email&amp;nbsp;:&amp;nbsp;String,&amp;nbsp;ip&amp;nbsp;:&amp;nbsp;String)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="665.4000000000001" y="236" width="243.6" height="54" as="geometry" />
+        <mxCell id="t_logoutHandler" value='&lt;div style="text-align:center"&gt;&lt;b&gt;LogoutCommandHandler&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;logout(command&amp;nbsp;:&amp;nbsp;LogoutCommand)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="558.05" y="212" width="225.29999999999998" height="54" as="geometry" />
         </mxCell>
-        <mxCell id="t_issuer" value='&lt;div style="text-align:center"&gt;&lt;b&gt;TokenIssuerPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;issueAccessToken(userId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;String' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="347.4" y="360" width="280.2" height="68" as="geometry" />
+        <mxCell id="t_tokenRepo" value='&lt;div style="text-align:center"&gt;&lt;b&gt;RefreshTokenRepository&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;insert(token&amp;nbsp;:&amp;nbsp;StoredRefreshToken,&amp;nbsp;tokenHash&amp;nbsp;:&amp;nbsp;String,&amp;nbsp;issuedAt&amp;nbsp;:&amp;nbsp;Instant)&lt;br&gt;+&amp;nbsp;revokeFamily(familyId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;at&amp;nbsp;:&amp;nbsp;Instant)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="451.29999999999995" y="336" width="487.59999999999997" height="82" as="geometry" />
         </mxCell>
-        <mxCell id="e1" value="đọc/lưu" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.146;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_users">
+        <mxCell id="t_userRepo" value='&lt;div style="text-align:center"&gt;&lt;b&gt;UserAccountRepository&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;findByEmail(email&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;Optional&amp;lt;UserAccount&amp;gt;' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="54" y="336" width="347.29999999999995" height="68" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.263;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_authController" target="t_loginHandler">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="360.1875" y="172" />
-            <mxPoint x="209.15" y="172" />
+            <mxPoint x="196.14999999999992" y="165.33333333333334" />
+            <mxPoint x="358.79999999999995" y="165.33333333333334" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e2" value="xoay vòng" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.618;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_tokens">
+        <mxCell id="e2" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.737;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_authController" target="t_logoutHandler">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="529.9375" y="204" />
-            <mxPoint x="508.85" y="204" />
+            <mxPoint x="375.0499999999999" y="188.66666666666666" />
+            <mxPoint x="670.6999999999999" y="188.66666666666666" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e3" value="giới hạn" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.854;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_rate">
+        <mxCell id="e3" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.267;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_loginHandler" target="t_userRepo">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="614.8125" y="220" />
-            <mxPoint x="787.2" y="220" />
+            <mxPoint x="289.17499999999995" y="283.5" />
+            <mxPoint x="227.64999999999998" y="283.5" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e4" value="cấp token" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.382;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_issuer">
+        <mxCell id="e4" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.733;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.260;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_loginHandler" target="t_tokenRepo">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="445.0625" y="188" />
-            <mxPoint x="30" y="188" />
-            <mxPoint x="30" y="325" />
-            <mxPoint x="487.5" y="325" />
+            <mxPoint x="428.42499999999995" y="301" />
+            <mxPoint x="578.1999999999999" y="301" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e5" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.740;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_logoutHandler" target="t_tokenRepo">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="670.6999999999999" y="318.5" />
+            <mxPoint x="812" y="318.5" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="title" value="A1 — Đăng ký, đăng nhập và quản lý phiên" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="0" y="10" width="939" height="30" as="geometry" />
+          <mxGeometry x="0" y="10" width="968.8999999999999" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="v5" value="Ghi chú: Đăng ký nhận vai trò STUDENT; refresh token dùng một lần, dùng lại sẽ thu hồi cả family.&lt;br&gt;Ghi chú: [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế backend từ DD, chưa có trong code." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="30" y="448" width="1100" height="44" as="geometry" />
+        <mxCell id="v6" value="Ghi chú: AuthController và RegistrationController nhận request REST từ phía sinh viên; LoginCommandHandler kiểm tra xác thực và cấp token.&lt;br&gt;Ghi chú: Refresh Token được quản lý theo token family qua RefreshTokenRepository, thu hồi toàn bộ chuỗi nếu phát hiện dùng lại token cũ." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="30" y="438" width="1100" height="44" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

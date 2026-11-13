@@ -15,22 +15,22 @@
         "role": "actor"
       },
       {
-        "name": "ProblemController",
+        "name": "ProblemAuthoringController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "UpdateProblemPublishStatus",
+        "name": "UpdateProblemPublishStatusCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "ProblemRepository",
+        "name": "ProblemPublishRepository",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "ProblemDbAdapter",
+        "name": "JdbcProblemPublishRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -45,7 +45,7 @@
         "stereo": "output port"
       },
       {
-        "name": "SampleSolutionRunnerAdapter",
+        "name": "SampleSolutionRunnerBridge",
         "role": "repository",
         "stereo": "infrastructure"
       },
@@ -60,44 +60,44 @@
       },
       {
         "from": "Người soạn đề",
-        "to": "ProblemController",
+        "to": "ProblemAuthoringController",
         "text": "Yêu cầu xuất bản bài"
       },
       {
-        "from": "ProblemController",
-        "to": "UpdateProblemPublishStatus",
+        "from": "ProblemAuthoringController",
+        "to": "UpdateProblemPublishStatusCommandHandler",
         "text": "Kiểm điều kiện xuất bản"
       },
       {
-        "from": "UpdateProblemPublishStatus",
-        "to": "ProblemRepository",
+        "from": "UpdateProblemPublishStatusCommandHandler",
+        "to": "ProblemPublishRepository",
         "text": "Đọc bài và dữ liệu checklist"
       },
       {
-        "from": "ProblemRepository",
-        "to": "ProblemDbAdapter",
+        "from": "ProblemPublishRepository",
+        "to": "JdbcProblemPublishRepository",
         "text": "Đọc trạng thái, tác giả và các thành phần"
       },
       {
-        "from": "ProblemDbAdapter",
+        "from": "JdbcProblemPublishRepository",
         "to": "PostgreSQL",
         "text": "Đếm ca đã duyệt, Sample, ví dụ và đọc đặc tả"
       },
       {
         "from": "PostgreSQL",
-        "to": "ProblemDbAdapter",
+        "to": "JdbcProblemPublishRepository",
         "text": "Bộ dữ liệu checklist",
         "kind": "return"
       },
       {
-        "from": "ProblemDbAdapter",
-        "to": "ProblemRepository",
+        "from": "JdbcProblemPublishRepository",
+        "to": "ProblemPublishRepository",
         "text": "Bộ dữ liệu checklist",
         "kind": "return"
       },
       {
-        "from": "ProblemRepository",
-        "to": "UpdateProblemPublishStatus",
+        "from": "ProblemPublishRepository",
+        "to": "UpdateProblemPublishStatusCommandHandler",
         "text": "Bộ dữ liệu checklist",
         "kind": "return"
       },
@@ -106,13 +106,13 @@
           "label": "Thiếu điều kiện xuất bản?",
           "then": [
             {
-              "from": "UpdateProblemPublishStatus",
-              "to": "ProblemController",
+              "from": "UpdateProblemPublishStatusCommandHandler",
+              "to": "ProblemAuthoringController",
               "text": "Trả mọi điều kiện còn thiếu",
               "kind": "return"
             },
             {
-              "from": "ProblemController",
+              "from": "ProblemAuthoringController",
               "to": "Người soạn đề",
               "text": "Hiển thị danh sách cần bổ sung",
               "kind": "return"
@@ -120,35 +120,35 @@
           ],
           "else": [
             {
-              "from": "UpdateProblemPublishStatus",
+              "from": "UpdateProblemPublishStatusCommandHandler",
               "to": "SampleSolutionRunnerPort",
               "text": "Chạy đáp án mẫu với mọi testcase đã duyệt"
             },
             {
               "from": "SampleSolutionRunnerPort",
-              "to": "SampleSolutionRunnerAdapter",
+              "to": "SampleSolutionRunnerBridge",
               "text": "Nạp ca và đáp án để kiểm"
             },
             {
-              "from": "SampleSolutionRunnerAdapter",
+              "from": "SampleSolutionRunnerBridge",
               "to": "go-judge",
               "text": "Chạy trong môi trường giới hạn"
             },
             {
               "from": "go-judge",
-              "to": "SampleSolutionRunnerAdapter",
+              "to": "SampleSolutionRunnerBridge",
               "text": "Kết quả từng ca",
               "kind": "return"
             },
             {
-              "from": "SampleSolutionRunnerAdapter",
+              "from": "SampleSolutionRunnerBridge",
               "to": "SampleSolutionRunnerPort",
               "text": "Kết quả tất cả ca",
               "kind": "return"
             },
             {
               "from": "SampleSolutionRunnerPort",
-              "to": "UpdateProblemPublishStatus",
+              "to": "UpdateProblemPublishStatusCommandHandler",
               "text": "Đạt tất cả hoặc danh sách lỗi",
               "kind": "return"
             }
@@ -160,20 +160,20 @@
           "label": "Đáp án mẫu đạt mọi ca?",
           "then": [
             {
-              "from": "UpdateProblemPublishStatus",
-              "to": "UpdateProblemPublishStatus",
+              "from": "UpdateProblemPublishStatusCommandHandler",
+              "to": "UpdateProblemPublishStatusCommandHandler",
               "text": "Chuyển sang ghi trạng thái xuất bản"
             }
           ],
           "else": [
             {
-              "from": "UpdateProblemPublishStatus",
-              "to": "ProblemController",
+              "from": "UpdateProblemPublishStatusCommandHandler",
+              "to": "ProblemAuthoringController",
               "text": "Báo đáp án mẫu chưa đạt",
               "kind": "return"
             },
             {
-              "from": "ProblemController",
+              "from": "ProblemAuthoringController",
               "to": "Người soạn đề",
               "text": "Hiển thị lỗi kiểm đáp án mẫu",
               "kind": "return"

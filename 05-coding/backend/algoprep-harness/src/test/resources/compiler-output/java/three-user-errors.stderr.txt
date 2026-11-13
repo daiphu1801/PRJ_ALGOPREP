@@ -1,0 +1,16 @@
+Solution.java:3: error: cannot find symbol
+  void first() { missingFirst(); }
+                 ^
+  symbol:   method missingFirst()
+  location: class Solution
+Solution.java:6: error: cannot find symbol
+      missingNested();
+      ^
+  symbol:   method missingNested()
+  location: class Solution
+Solution.java:9: error: cannot find symbol
+  void last() { missingLast(); }
+                ^
+  symbol:   method missingLast()
+  location: class Solution
+3 errors

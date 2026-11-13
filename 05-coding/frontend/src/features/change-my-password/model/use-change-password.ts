@@ -5,9 +5,14 @@ import { useCallback, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { changeMyPassword, changePasswordSchema } from "@/entities/user";
 
-/** Outcome of `submit`: the i18n key (profile namespace) of the first error, so the dialog can toast it. */
+/**
+ * Outcome of `submit`: the i18n key (profile namespace) of the first error, or, when the API
+ * itself failed, the error for `useApiErrorMessage`, so the dialog can toast either.
+ */
 export type ChangePasswordResult =
-  { ok: true } | { ok: false; errorKey: string };
+  | { ok: true; noticeEmailFailed?: boolean }
+  | { ok: false; errorKey: string }
+  | { ok: false; error: unknown };
 
 export function useChangePassword(hasPassword: boolean, onChanged: () => void) {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -51,7 +56,11 @@ export function useChangePassword(hasPassword: boolean, onChanged: () => void) {
       // D22: refresh "changed at" / hasPassword on the Settings Security card.
       void queryClient.invalidateQueries({ queryKey: ["user", "my-profile"] });
       onChanged();
-      return { ok: true };
+      return outcome.noticeEmailFailed
+        ? { ok: true, noticeEmailFailed: true }
+        : { ok: true };
+    } catch (error) {
+      return { ok: false, error };
     } finally {
       setIsSubmitting(false);
     }

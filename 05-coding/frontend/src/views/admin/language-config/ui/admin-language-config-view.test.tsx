@@ -14,6 +14,7 @@ import { toast, useToasts } from "@/shared/lib/toast-store";
 vi.mock("@/shared/i18n", () => ({
   useT: () => (key: string) => key,
   useLocale: () => "vi",
+  useApiErrorMessage: () => () => "saveFailed",
 }));
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
 

@@ -15,22 +15,22 @@
         "role": "actor"
       },
       {
-        "name": "ClassController",
+        "name": "InstructorClassController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "CreateClassCmd",
+        "name": "CreateClassCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "ClassRepository",
+        "name": "InstructorClassRepository",
         "role": "repository",
         "stereo": "domain output port"
       },
       {
-        "name": "ClassDbAdapter",
+        "name": "JdbcInstructorClassRepository",
         "role": "repository",
         "stereo": "infrastructure"
       },
@@ -56,65 +56,65 @@
       },
       {
         "from": "Giảng viên",
-        "to": "ClassController",
+        "to": "InstructorClassController",
         "text": "Gửi yêu cầu tạo lớp"
       },
       {
-        "from": "ClassController",
-        "to": "ClassController",
+        "from": "InstructorClassController",
+        "to": "InstructorClassController",
         "text": "Kiểm tra quyền tạo lớp"
       },
       {
-        "from": "ClassController",
-        "to": "CreateClassCmd",
+        "from": "InstructorClassController",
+        "to": "CreateClassCommandHandler",
         "text": "Yêu cầu tạo lớp"
       },
       {
-        "from": "CreateClassCmd",
-        "to": "CreateClassCmd",
+        "from": "CreateClassCommandHandler",
+        "to": "CreateClassCommandHandler",
         "text": "Gắn người gọi làm chủ lớp"
       },
       {
-        "from": "CreateClassCmd",
-        "to": "ClassRepository",
+        "from": "CreateClassCommandHandler",
+        "to": "InstructorClassRepository",
         "text": "Lưu lớp mới"
       },
       {
-        "from": "ClassRepository",
-        "to": "ClassDbAdapter",
+        "from": "InstructorClassRepository",
+        "to": "JdbcInstructorClassRepository",
         "text": "Chuyển yêu cầu lưu lớp"
       },
       {
-        "from": "ClassDbAdapter",
+        "from": "JdbcInstructorClassRepository",
         "to": "PostgreSQL",
         "text": "Ghi lớp và chủ lớp"
       },
       {
         "from": "PostgreSQL",
-        "to": "ClassDbAdapter",
+        "to": "JdbcInstructorClassRepository",
         "text": "Lớp đã lưu",
         "kind": "return"
       },
       {
-        "from": "ClassDbAdapter",
-        "to": "ClassRepository",
+        "from": "JdbcInstructorClassRepository",
+        "to": "InstructorClassRepository",
         "text": "Mã lớp",
         "kind": "return"
       },
       {
-        "from": "ClassRepository",
-        "to": "CreateClassCmd",
+        "from": "InstructorClassRepository",
+        "to": "CreateClassCommandHandler",
         "text": "Mã lớp",
         "kind": "return"
       },
       {
-        "from": "CreateClassCmd",
-        "to": "ClassController",
+        "from": "CreateClassCommandHandler",
+        "to": "InstructorClassController",
         "text": "Thông tin lớp",
         "kind": "return"
       },
       {
-        "from": "ClassController",
+        "from": "InstructorClassController",
         "to": "Giảng viên",
         "text": "Báo tạo thành công",
         "kind": "return"

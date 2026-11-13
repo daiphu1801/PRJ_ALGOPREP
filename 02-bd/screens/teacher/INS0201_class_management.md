@@ -50,7 +50,7 @@
 | Tên vật lý (slug) | `class_management` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A2 (`INSTRUCTOR`) |
-| Phiên bản | V0.13 |
+| Phiên bản | V0.14 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/21 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
@@ -76,6 +76,8 @@
 | V0.11 | Sheet 3 (popup gỡ học viên), 4 (quyền Xoá), 5 (A NO 2, C NO 4, D NO 3, Popup NO 5), 7.1 (NO 17, 18), 7.2 (NO 3 và ghi chú), 9 (NO 6) | Áp `DEC-2026-1014-keep-learning-history-on-leave` (tiêu chí ponytail bậc 6): gỡ học viên **chỉ đánh dấu đã rời lớp** (`class_enrollments.left_at`), **giữ** lịch sử làm bài, giảng viên vẫn đọc được bài nộp làm lúc còn trong lớp (`INS0206`). Câu cảnh báo cũ "xoá luôn lịch sử làm bài" thay bằng câu nêu học viên chỉ rời lớp, lịch sử được giữ. Số học viên ở dòng tóm tắt, thẻ lớp, tab lọc và bảng chỉ đếm ghi danh còn hiệu lực (`left_at IS NULL`). Giữ nguyên các điều đã chốt: icon cuối dòng luôn hiện, toast "Đã gỡ học viên khỏi lớp." Xoá lớp (F1-24) vẫn là xoá thật, không đổi. Chưa đối chiếu prototype (xem `06-plan/PROTOTYPE_DEBT.md`, tài liệu khác phụ trách) | 2026/10/14 | AI |
 | V0.12 | Sheet 7.1 (NO 6), 7.2 (ghi chú gỡ học viên) | Áp `DEC-2026-1014-class-leave-details` (tiêu chí ponytail bậc 5): câu xác nhận của popup gỡ học viên đã được chủ dự án duyệt nguyên văn (bỏ `[SoT: Suy luận]`); endpoint gỡ ở DD `identity` đổi từ DELETE sang `POST .../leave` (ngữ nghĩa vẫn là đặt `left_at`); học viên vào lại bằng mã mời thì dòng ghi danh cũ được dùng lại (`left_at` = NULL) nên được đếm lại ở các số đếm của màn. Không đổi item, EVT | 2026/10/14 | AI |
 | V0.13 | Sheet 4 (4.4, mục Hiện trạng bản dựng mới) | Dựng prototype Phase 4-5 (bài giao theo lớp, phân trang 20, from=). Chỉ ghi hiện trạng: quy tắc "bấm lại thẻ lớp đang chọn thì bỏ chọn" (V0.10) chưa áp dụng được vì bản dựng không có chọn thẻ lớp; sau khi tạo lớp bản dựng chuyển sang trang chi tiết lớp, nút Quay lại về danh sách lớp (đúng Q2 của `INS0205`). Không đổi yêu cầu hay quyết định thiết kế. **Chưa duyệt hình** | 2026/10/18 | AI |
+| V0.14 | Sheet 4 (Hiện trạng bản dựng), 5 Khu vực C | Sửa 2026-11-02 (task #12, nối FE với API thật). (1) Màn gọi F1 #19 đến #22; hộp thoại tạo/sửa giữ nội dung khi máy chủ từ chối. (2) Ba cột hoàn thành, điểm TB, vắng bài chỉ hiện khi có số liệu F4 (#56 chưa làm). Không có câu hỏi mở mới. |
+| V0.15 | Sheet 4 (Hiện trạng bản dựng), 5 Khu vực C | Sửa 2026-11-07 (F1-7, nối FE). Màn đọc F1 #56 (`useInstructorClassSummary`): ba cột hoàn thành, điểm TB, vắng bài hiện với API thật. Lớp chưa giao bài có `completionPercent = null` nên cột hiện "-", không phải 0%. Khi F4 lỗi (`503 IDT-507`) màn lùi về danh sách #19 và ẩn ba cột. Chưa duyệt hình. Câu hỏi mở còn lại: `INS0101` vẫn đọc #19 (chưa đổi sang #56). |
 
 ---
 

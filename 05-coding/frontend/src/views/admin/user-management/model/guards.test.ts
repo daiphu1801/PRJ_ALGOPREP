@@ -9,6 +9,7 @@ const user = (
   status: AdminUser["status"] = "active",
 ): AdminUser => ({
   ...base,
+  id: email,
   name: email,
   email,
   role,

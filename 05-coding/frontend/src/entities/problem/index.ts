@@ -1,4 +1,9 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md section 9.
+export {
+  useWorkspaceProblem,
+  useEnabledLanguages,
+  useStarterCode,
+} from "./api/workspace-queries";
 export type {
   ClassAssignmentGroup,
   ClassAssignmentItem,
@@ -39,6 +44,8 @@ export {
   type GenerateTestcasesResult,
   type ProblemDraft,
   type ProblemDraftRecord,
+  type ProblemStats,
+  type ServerState,
   type ProblemLimits,
   type Testcase,
   type TestcaseCategory,
@@ -47,15 +54,26 @@ export {
   type WorkedExample,
 } from "./model/draft-types";
 export {
+  realBulkUpload,
+  realCreateTestcase,
+  realDeleteTestcase,
+  realRunReferenceSolution,
+  realReorderTestcases,
+  realReadTestcaseContent,
+  realUpdateTestcase,
+  type ReferenceRun,
+  type SaveResult,
+  type SaveSection,
+} from "./api/real-authoring";
+export {
   useCreateSubmission,
   useGenerateTestcases,
   useProblemDetail,
   useProblemDraft,
-  useProblemListPage,
   usePublishProblem,
   useRunSampleTestcases,
   useSaveProblemDraft,
-  useSavedProblems,
+  useSignaturePreview,
 } from "./api/queries";
 export {
   addProblemTopic,
@@ -63,18 +81,17 @@ export {
   moveProblemTopic,
   removeProblemTopic,
   renameProblemTopic,
-  useProblemTopics,
   type ProblemTopic,
 } from "./model/topic-store";
 export {
   addProblemLevel,
+  getProblemLevels,
   moveProblemLevel,
   problemLevelLabel,
   problemLevelRank,
   problemLevelTone,
   removeProblemLevel,
   renameProblemLevel,
-  useProblemLevels,
   type ProblemLevel,
   type ProblemLevelError,
 } from "./model/level-store";
@@ -119,4 +136,51 @@ export {
   type SpecType,
   type TypeKind,
 } from "./model/draft-types";
+export {
+  useProblemLevelActions,
+  useProblemLevels,
+  useProblemTopicActions,
+  useProblemTopics,
+  type ManagedActions,
+} from "./api/catalog-queries";
+export {
+  IN_PROGRESS_LIMIT,
+  useMyClassAssignments,
+  useMyClassProblems,
+  useMyInProgress,
+  useProblemCatalog,
+  useRandomProblem,
+  useSuggestedProblems,
+  useTopicProgress,
+} from "./api/student-catalog-queries";
+export type {
+  AssignmentGroup,
+  AssignmentRow,
+  CatalogPage,
+  ClassProblemRow,
+  ClassProblemsPage,
+  CatalogParams,
+  CatalogRow,
+  TopicChip,
+  TopicProgress as TopicProgressPage,
+} from "./model/catalog-types";
+/** Test hook of the mock list: back to the literal data. */
+export { resetSavedMock } from "./api/__mock__/saved-problems-mocks";
+export {
+  useRestoreBookmark,
+  useSaveBookmarkNote,
+  useSavedProblemsPage,
+  useSetBookmark,
+  useUnsaveProblem,
+} from "./api/saved-queries";
+export type {
+  RestoreInput,
+  SaveNoteInput,
+  SavedPage,
+  SavedParams,
+  SavedRow,
+} from "./model/saved-types";
 export { InProgressList } from "./ui/in-progress-list";
+export { overallVerdict } from "./api/real-execution";
+
+export { useTestcaseGenerationSettings, useUpdateTestcaseGenerationSettings } from "./api/generation-queries";

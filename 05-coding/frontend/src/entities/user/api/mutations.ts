@@ -22,43 +22,83 @@ import {
   fakeUpdateMyProfile,
   fakeUpdateMySettings,
 } from "./__mock__/fake-user";
-
-function notImplemented(): never {
-  throw new Error(
-    "03-dd/api/F1_identity.md write endpoints have no real HTTP client wired up yet",
-  );
-}
+import {
+  realConfirmEmailChange,
+  realRequestEmailChange,
+} from "./real-email-change";
+import { realDeleteMyAccount } from "./real-account";
+import {
+  realExportInterviewTranscripts,
+  type ExportedFile,
+  realExportMyData,
+} from "./real-export";
+import { realChangeMyPassword } from "./real-password";
+import { realUpdateMyProfile } from "./real-profile";
+import {
+  realUpdateInterviewPreferences,
+  realUpdateMySettings,
+} from "./real-settings";
 
 export const updateMyProfile = (
   input: UpdateProfileInput,
 ): Promise<UserProfile> =>
-  withMockData(() => fakeUpdateMyProfile(input), notImplemented);
+  withMockData(
+    () => fakeUpdateMyProfile(input),
+    () => realUpdateMyProfile(input),
+  );
 
 export const requestEmailChange = (newEmail: string): Promise<{ ok: true }> =>
-  withMockData(() => fakeRequestEmailChange(newEmail), notImplemented);
+  withMockData(
+    () => fakeRequestEmailChange(newEmail),
+    () => realRequestEmailChange(newEmail),
+  );
 
 export const confirmEmailChange = (code: string, newEmail: string) =>
-  withMockData(() => fakeConfirmEmailChange(code, newEmail), notImplemented);
+  withMockData(
+    () => fakeConfirmEmailChange(code, newEmail),
+    // The server remembers which address the code was sent to; only the code travels.
+    () => realConfirmEmailChange(code),
+  );
 
 export const changeMyPassword = (input: ChangePasswordInput) =>
-  withMockData(() => fakeChangeMyPassword(input), notImplemented);
+  withMockData(
+    () => fakeChangeMyPassword(input),
+    () => realChangeMyPassword(input),
+  );
 
 export const updateMySettings = (
   input: AccountSettings,
 ): Promise<AccountSettings> =>
-  withMockData(() => fakeUpdateMySettings(input), notImplemented);
+  withMockData(
+    () => fakeUpdateMySettings(input),
+    () => realUpdateMySettings(input),
+  );
 
 /** ai-review-owned — called INDEPENDENTLY of updateMySettings per BR-07, never Promise.all'd into one atomic unit. */
 export const updateInterviewPracticePreferences = (
   input: InterviewPracticePreferences,
 ): Promise<InterviewPracticePreferences> =>
-  withMockData(() => fakeUpdateInterviewPreferences(input), notImplemented);
+  withMockData(
+    () => fakeUpdateInterviewPreferences(input),
+    () => realUpdateInterviewPreferences(input),
+  );
 
-export const exportMyData = (scope: "profile" | "submissions"): Promise<Blob> =>
-  withMockData(() => fakeExportMyData(scope), notImplemented);
+export const exportMyData = (
+  scope: "profile" | "submissions",
+): Promise<ExportedFile> =>
+  withMockData(
+    async () => ({ blob: await fakeExportMyData(scope), truncated: false }),
+    () => realExportMyData(scope),
+  );
 
 export const exportMyInterviewTranscripts = (): Promise<Blob> =>
-  withMockData(() => fakeExportInterviewTranscripts(), notImplemented);
+  withMockData(
+    () => fakeExportInterviewTranscripts(),
+    () => realExportInterviewTranscripts(),
+  );
 
 export const deleteMyAccount = (emailConfirmation: string) =>
-  withMockData(() => fakeDeleteMyAccount(emailConfirmation), notImplemented);
+  withMockData(
+    () => fakeDeleteMyAccount(emailConfirmation),
+    () => realDeleteMyAccount(emailConfirmation),
+  );

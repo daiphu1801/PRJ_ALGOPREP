@@ -10,13 +10,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let active = true;
+    const sessionGeneration = tokenStore.generation();
     const session =
       isMockMode() || tokenStore.get()
         ? Promise.resolve(tokenStore.get())
         : refreshAccessToken();
     void session.then((token) => {
       if (active) {
-        tokenStore.set(token);
+        if (sessionGeneration === tokenStore.generation())
+          tokenStore.set(token);
         setReady(true);
       }
     });

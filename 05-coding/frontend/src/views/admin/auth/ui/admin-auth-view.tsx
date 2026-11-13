@@ -40,6 +40,7 @@ function AdminAuthViewContent() {
 
   const title = {
     signup: t("signupTitle"),
+    verify_email: t("verifyEmailTitle"),
     login: tAdmin("title"),
     forgot_email: t("forgotEmailTitle"),
     forgot_otp: t("forgotOtpTitle"),

@@ -14,22 +14,22 @@
         "role": "actor"
       },
       {
-        "name": "AiUsageController",
+        "name": "AdminLanguageConfigController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "GetAiTokenBudget",
+        "name": "GetAiTokenBudgetQueryHandler",
         "role": "service",
         "stereo": "application"
       },
       {
-        "name": "BudgetReadPort",
+        "name": "AiBudgetAdminRepository",
         "role": "repository",
-        "stereo": "output port"
+        "stereo": "persistence adapter"
       },
       {
-        "name": "AiDbAdapter",
+        "name": "JdbcAiTokenBudgetRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -42,48 +42,48 @@
     "messages": [
       {
         "from": "Quản trị viên",
-        "to": "AiUsageController",
+        "to": "AdminLanguageConfigController",
         "text": "Mở trang ngân sách token"
       },
       {
-        "from": "AiUsageController",
-        "to": "GetAiTokenBudget",
+        "from": "AdminLanguageConfigController",
+        "to": "GetAiTokenBudgetQueryHandler",
         "text": "Kiểm quyền đọc ngân sách hoặc cấu hình AI"
       },
       {
-        "from": "GetAiTokenBudget",
-        "to": "BudgetReadPort",
+        "from": "GetAiTokenBudgetQueryHandler",
+        "to": "AiBudgetAdminRepository",
         "text": "Đọc hạn mức và mức tiêu thụ từ đầu kỳ"
       },
       {
-        "from": "BudgetReadPort",
-        "to": "AiDbAdapter",
+        "from": "AiBudgetAdminRepository",
+        "to": "JdbcAiTokenBudgetRepository",
         "text": "Đọc cấu hình và token đã dùng"
       },
       {
-        "from": "AiDbAdapter",
+        "from": "JdbcAiTokenBudgetRepository",
         "to": "PostgreSQL",
         "text": "Đọc cấu hình, tổng token và bốn tính năng"
       },
       {
         "from": "PostgreSQL",
-        "to": "GetAiTokenBudget",
+        "to": "GetAiTokenBudgetQueryHandler",
         "text": "Trả hạn mức, số đã dùng, trạng thái khóa",
         "kind": "return"
       },
       {
-        "from": "GetAiTokenBudget",
-        "to": "GetAiTokenBudget",
+        "from": "GetAiTokenBudgetQueryHandler",
+        "to": "GetAiTokenBudgetQueryHandler",
         "text": "Tính ngày dự kiến hết và tỷ trọng theo tính năng"
       },
       {
-        "from": "GetAiTokenBudget",
-        "to": "AiUsageController",
+        "from": "GetAiTokenBudgetQueryHandler",
+        "to": "AdminLanguageConfigController",
         "text": "Trả ngân sách và ngưỡng cảnh báo",
         "kind": "return"
       },
       {
-        "from": "AiUsageController",
+        "from": "AdminLanguageConfigController",
         "to": "Quản trị viên",
         "text": "Hiển thị ngân sách hiện tại",
         "kind": "return"

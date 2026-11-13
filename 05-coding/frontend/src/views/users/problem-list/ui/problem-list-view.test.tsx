@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   act,
   fireEvent,
@@ -13,13 +13,15 @@ import {
   removeProblemLevel,
   useProblemLevels,
 } from "@/entities/problem";
+import { mockUrl } from "@/shared/test/mock-url";
 import { withTestProviders } from "@/shared/test/render-with-providers";
 import { ProblemListView } from "./problem-list-view";
 
-const push = vi.fn();
-vi.mock("next/navigation", () => ({
-  useRouter: () => ({ push }),
-}));
+const push = vi.hoisted(() => vi.fn());
+beforeEach(() => mockUrl.reset("/problems"));
+vi.mock("next/navigation", async () =>
+  (await import("@/shared/test/mock-url")).navigationMock({ push }),
+);
 
 // The catalogue arrives through a query: wait for the loading skeleton to go before asserting.
 async function renderView() {
@@ -55,10 +57,12 @@ describe("ProblemListView", () => {
     const search = screen.getByPlaceholderText("Tìm theo tên bài hoặc mã bài");
     fireEvent.change(search, { target: { value: "#139" } });
 
-    // "Word Break" also shows up in the unrelated "Bài đang làm dở" side panel (not filtered by the
-    // search box), so assert on the unique row link instead of the bare title text.
+    // The server filters after a pause in typing. "Word Break" also shows up in the unrelated "Bài đang
+    // làm dở" side panel (not filtered by the search box), so assert on the unique row link.
+    await waitFor(() =>
+      expect(screen.queryByText("Two Sum")).not.toBeInTheDocument(),
+    );
     expect(screen.getByRole("link", { name: /#139/ })).toBeInTheDocument();
-    expect(screen.queryByText("Two Sum")).not.toBeInTheDocument();
   });
 });
 
@@ -80,7 +84,9 @@ describe("ProblemListView difficulty tabs", () => {
 
     const rowsBefore = screen.getAllByRole("row").length;
     fireEvent.click(within(group).getByRole("option", { name: "Khó" }));
-    expect(screen.getAllByRole("row").length).toBeLessThan(rowsBefore);
+    await waitFor(() =>
+      expect(screen.getAllByRole("row").length).toBeLessThan(rowsBefore),
+    );
   });
 
   it("adds a tab for a level the admin created", async () => {
@@ -106,15 +112,18 @@ describe("ProblemListView behaviour from the BD", () => {
     expect(screen.queryByText("Cả hai")).not.toBeInTheDocument();
     expect(screen.queryByText("Chỉ Standard I/O")).not.toBeInTheDocument();
 
-    fireEvent.change(screen.getByPlaceholderText("Tìm theo tên bài hoặc mã bài"), {
-      target: { value: "#297" },
-    });
-    expect(screen.getByText("Chỉ Standard I/O")).toBeInTheDocument();
+    fireEvent.change(
+      screen.getByPlaceholderText("Tìm theo tên bài hoặc mã bài"),
+      {
+        target: { value: "#297" },
+      },
+    );
+    expect(await screen.findByText("Chỉ Standard I/O")).toBeInTheDocument();
   });
 
   it("pressing the active topic again clears the topic filter (EVT-5)", async () => {
     await renderView();
-    const topic = screen.getByRole("button", { name: /^Array/ });
+    const topic = await screen.findByRole("button", { name: /^Array/ });
     fireEvent.click(topic);
     expect(topic).toHaveAttribute("aria-pressed", "true");
     fireEvent.click(topic);
@@ -127,37 +136,49 @@ describe("ProblemListView behaviour from the BD", () => {
 
   it("offers a clear-filters action in the empty state (EVT-6)", async () => {
     await renderView();
-    fireEvent.change(screen.getByPlaceholderText("Tìm theo tên bài hoặc mã bài"), {
-      target: { value: "zzzz-no-match" },
-    });
-    expect(screen.getByText("Không có bài nào khớp bộ lọc")).toBeInTheDocument();
+    fireEvent.change(
+      screen.getByPlaceholderText("Tìm theo tên bài hoặc mã bài"),
+      {
+        target: { value: "zzzz-no-match" },
+      },
+    );
+    expect(
+      await screen.findByText("Không có bài nào khớp bộ lọc"),
+    ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Xóa bộ lọc" }));
-    expect(screen.getByText("Two Sum")).toBeInTheDocument();
+    expect(await screen.findByText("Two Sum")).toBeInTheDocument();
   });
 
   it("opens a random problem from the filtered set", async () => {
     push.mockClear();
     await renderView();
     fireEvent.click(screen.getByRole("button", { name: /Bài ngẫu nhiên/ }));
-    expect(push).toHaveBeenCalledWith(expect.stringMatching(/^\/problems\/\w+/));
+    await waitFor(() =>
+      expect(push).toHaveBeenCalledWith(
+        expect.stringMatching(/^\/problems\/\w+/),
+      ),
+    );
   });
 
   it("maps the last verdict and the assignment meta through i18n", async () => {
     await renderView();
-    expect(screen.getByText(/Sai kết quả 8\/12/)).toBeInTheDocument();
-    expect(screen.getAllByText("0 / 5 bài · giao 24/08/2026").length).toBe(2);
+    expect(await screen.findByText(/Sai kết quả 8\/12/)).toBeInTheDocument();
+    // BD Q9: an assignment has no due date and no per-problem counts, only the day it was given.
+    expect((await screen.findAllByText("Giao ngày 24/08/2026")).length).toBe(2);
   });
 
   it("caps the in-progress block at 3 cards and links to the workspace", async () => {
     await renderView();
+    await screen.findByText(/Sai kết quả 8\/12/);
     const panel = screen
       .getByRole("heading", { name: "Bài đang làm dở" })
       .closest("div") as HTMLElement;
     expect(
       within(panel)
         .getAllByRole("link")
-        .filter((a) => a.getAttribute("href")?.startsWith("/workspace/")).length,
+        .filter((a) => a.getAttribute("href")?.startsWith("/workspace/"))
+        .length,
     ).toBeLessThanOrEqual(3);
     expect(
       within(panel).getByRole("link", { name: "Xem tất cả" }),

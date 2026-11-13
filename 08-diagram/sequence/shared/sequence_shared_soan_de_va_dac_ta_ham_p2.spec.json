@@ -16,12 +16,12 @@
         "role": "actor"
       },
       {
-        "name": "ProblemController",
+        "name": "ProblemSpecController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "SaveProblemSpec",
+        "name": "SaveProblemSpecCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
@@ -31,12 +31,12 @@
         "stereo": "algoprep-common"
       },
       {
-        "name": "ProblemRepository",
+        "name": "ProblemPublishRepository",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "ProblemDbAdapter",
+        "name": "JdbcProblemPublishRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -57,22 +57,22 @@
       },
       {
         "from": "Người soạn đề",
-        "to": "ProblemController",
+        "to": "ProblemSpecController",
         "text": "Gửi đặc tả và thời điểm cập nhật đã thấy"
       },
       {
-        "from": "ProblemController",
-        "to": "SaveProblemSpec",
+        "from": "ProblemSpecController",
+        "to": "SaveProblemSpecCommandHandler",
         "text": "Lưu đặc tả của bài"
       },
       {
-        "from": "SaveProblemSpec",
+        "from": "SaveProblemSpecCommandHandler",
         "to": "FunctionSpecEvaluator",
         "text": "Kiểm kiểu, chữ ký và cách so khớp"
       },
       {
         "from": "FunctionSpecEvaluator",
-        "to": "SaveProblemSpec",
+        "to": "SaveProblemSpecCommandHandler",
         "text": "Vi phạm cứng hoặc khả năng Bọc hàm",
         "kind": "return"
       },
@@ -81,13 +81,13 @@
           "label": "Có vi phạm cứng?",
           "then": [
             {
-              "from": "SaveProblemSpec",
-              "to": "ProblemController",
+              "from": "SaveProblemSpecCommandHandler",
+              "to": "ProblemSpecController",
               "text": "Trả danh sách lỗi, không ghi dữ liệu",
               "kind": "return"
             },
             {
-              "from": "ProblemController",
+              "from": "ProblemSpecController",
               "to": "Người soạn đề",
               "text": "Hiển thị trường cần sửa",
               "kind": "return"
@@ -95,35 +95,35 @@
           ],
           "else": [
             {
-              "from": "SaveProblemSpec",
-              "to": "ProblemRepository",
+              "from": "SaveProblemSpecCommandHandler",
+              "to": "ProblemPublishRepository",
               "text": "Đọc đặc tả hiện tại và khóa cập nhật"
             },
             {
-              "from": "ProblemRepository",
-              "to": "ProblemDbAdapter",
+              "from": "ProblemPublishRepository",
+              "to": "JdbcProblemPublishRepository",
               "text": "Tìm bài và đặc tả"
             },
             {
-              "from": "ProblemDbAdapter",
+              "from": "JdbcProblemPublishRepository",
               "to": "PostgreSQL",
               "text": "Đọc bài và phiên bản đặc tả"
             },
             {
               "from": "PostgreSQL",
-              "to": "ProblemDbAdapter",
+              "to": "JdbcProblemPublishRepository",
               "text": "Dữ liệu hiện tại",
               "kind": "return"
             },
             {
-              "from": "ProblemDbAdapter",
-              "to": "ProblemRepository",
+              "from": "JdbcProblemPublishRepository",
+              "to": "ProblemPublishRepository",
               "text": "Dữ liệu hiện tại",
               "kind": "return"
             },
             {
-              "from": "ProblemRepository",
-              "to": "SaveProblemSpec",
+              "from": "ProblemPublishRepository",
+              "to": "SaveProblemSpecCommandHandler",
               "text": "Dữ liệu hiện tại",
               "kind": "return"
             }
@@ -135,13 +135,13 @@
           "label": "Bản đã thay đổi bởi người khác?",
           "then": [
             {
-              "from": "SaveProblemSpec",
-              "to": "ProblemController",
+              "from": "SaveProblemSpecCommandHandler",
+              "to": "ProblemSpecController",
               "text": "Báo xung đột cập nhật",
               "kind": "return"
             },
             {
-              "from": "ProblemController",
+              "from": "ProblemSpecController",
               "to": "Người soạn đề",
               "text": "Yêu cầu tải lại bản mới",
               "kind": "return"
@@ -149,51 +149,51 @@
           ],
           "else": [
             {
-              "from": "SaveProblemSpec",
-              "to": "SaveProblemSpec",
+              "from": "SaveProblemSpecCommandHandler",
+              "to": "SaveProblemSpecCommandHandler",
               "text": "So tám trường, tăng phiên bản khi có đổi"
             },
             {
-              "from": "SaveProblemSpec",
-              "to": "ProblemRepository",
+              "from": "SaveProblemSpecCommandHandler",
+              "to": "ProblemPublishRepository",
               "text": "Lưu đặc tả và khả năng Bọc hàm"
             },
             {
-              "from": "ProblemRepository",
-              "to": "ProblemDbAdapter",
+              "from": "ProblemPublishRepository",
+              "to": "JdbcProblemPublishRepository",
               "text": "Cập nhật bài và đặc tả trong một giao dịch"
             },
             {
-              "from": "ProblemDbAdapter",
+              "from": "JdbcProblemPublishRepository",
               "to": "PostgreSQL",
               "text": "Lưu phiên bản, thời điểm cập nhật và cờ hỗ trợ"
             },
             {
               "from": "PostgreSQL",
-              "to": "ProblemDbAdapter",
+              "to": "JdbcProblemPublishRepository",
               "text": "Đặc tả đã lưu",
               "kind": "return"
             },
             {
-              "from": "ProblemDbAdapter",
-              "to": "ProblemRepository",
+              "from": "JdbcProblemPublishRepository",
+              "to": "ProblemPublishRepository",
               "text": "Đặc tả đã lưu",
               "kind": "return"
             },
             {
-              "from": "ProblemRepository",
-              "to": "SaveProblemSpec",
+              "from": "ProblemPublishRepository",
+              "to": "SaveProblemSpecCommandHandler",
               "text": "Đặc tả đã lưu",
               "kind": "return"
             },
             {
-              "from": "SaveProblemSpec",
-              "to": "ProblemController",
+              "from": "SaveProblemSpecCommandHandler",
+              "to": "ProblemSpecController",
               "text": "Trả phiên bản và cảnh báo nếu có",
               "kind": "return"
             },
             {
-              "from": "ProblemController",
+              "from": "ProblemSpecController",
               "to": "Người soạn đề",
               "text": "Hiển thị đặc tả đã lưu và mô hình dùng được",
               "kind": "return"

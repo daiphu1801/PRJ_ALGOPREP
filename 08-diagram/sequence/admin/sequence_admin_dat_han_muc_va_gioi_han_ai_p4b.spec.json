@@ -14,22 +14,22 @@
         "role": "actor"
       },
       {
-        "name": "ProblemSettingsCtl",
+        "name": "AdminLanguageConfigController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "UpdateTestcaseQuota",
+        "name": "UpdateTestcaseQuotaCommandHandler",
         "role": "service",
         "stereo": "problem-bank"
       },
       {
-        "name": "ProblemSettingsPort",
+        "name": "AdminLanguageConfigRepository",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "ProblemBankDbAdapter",
+        "name": "JdbcAdminLanguageConfigRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -47,12 +47,12 @@
     "messages": [
       {
         "from": "Quản trị viên",
-        "to": "ProblemSettingsCtl",
+        "to": "AdminLanguageConfigController",
         "text": "Đổi trần sinh testcase mỗi bài"
       },
       {
-        "from": "ProblemSettingsCtl",
-        "to": "UpdateTestcaseQuota",
+        "from": "AdminLanguageConfigController",
+        "to": "UpdateTestcaseQuotaCommandHandler",
         "text": "Kiểm quyền và giá trị từ 1 đến 10"
       },
       {
@@ -60,51 +60,51 @@
           "label": "Giá trị hợp lệ?",
           "then": [
             {
-              "from": "UpdateTestcaseQuota",
-              "to": "ProblemSettingsPort",
+              "from": "UpdateTestcaseQuotaCommandHandler",
+              "to": "AdminLanguageConfigRepository",
               "text": "Khóa và đọc cấu hình hiện tại"
             },
             {
-              "from": "ProblemSettingsPort",
-              "to": "ProblemBankDbAdapter",
+              "from": "AdminLanguageConfigRepository",
+              "to": "JdbcAdminLanguageConfigRepository",
               "text": "Truy cập cấu hình kho bài"
             },
             {
-              "from": "ProblemBankDbAdapter",
+              "from": "JdbcAdminLanguageConfigRepository",
               "to": "PostgreSQL",
               "text": "Khóa dòng cấu hình duy nhất"
             },
             {
-              "from": "UpdateTestcaseQuota",
-              "to": "ProblemSettingsPort",
+              "from": "UpdateTestcaseQuotaCommandHandler",
+              "to": "AdminLanguageConfigRepository",
               "text": "Lưu trần mới"
             },
             {
-              "from": "ProblemSettingsPort",
-              "to": "ProblemBankDbAdapter",
+              "from": "AdminLanguageConfigRepository",
+              "to": "JdbcAdminLanguageConfigRepository",
               "text": "Cập nhật cấu hình"
             },
             {
-              "from": "ProblemBankDbAdapter",
+              "from": "JdbcAdminLanguageConfigRepository",
               "to": "PostgreSQL",
               "text": "Ghi trần và người cập nhật"
             },
             {
-              "from": "UpdateTestcaseQuota",
+              "from": "UpdateTestcaseQuotaCommandHandler",
               "to": "AuditLogPort",
               "text": "Ghi nhật ký thay đổi cùng giao dịch"
             },
             {
-              "from": "UpdateTestcaseQuota",
-              "to": "ProblemSettingsCtl",
+              "from": "UpdateTestcaseQuotaCommandHandler",
+              "to": "AdminLanguageConfigController",
               "text": "Trả trần mới",
               "kind": "return"
             }
           ],
           "else": [
             {
-              "from": "UpdateTestcaseQuota",
-              "to": "ProblemSettingsCtl",
+              "from": "UpdateTestcaseQuotaCommandHandler",
+              "to": "AdminLanguageConfigController",
               "text": "Báo giá trị không hợp lệ",
               "kind": "return"
             }
@@ -112,7 +112,7 @@
         }
       },
       {
-        "from": "ProblemSettingsCtl",
+        "from": "AdminLanguageConfigController",
         "to": "Quản trị viên",
         "text": "Hiển thị trần sinh testcase",
         "kind": "return"

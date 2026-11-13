@@ -4,6 +4,7 @@
 import { useT } from "@/shared/i18n";
 import { DashboardBlockState, HalfDonutGauge } from "@/shared/ui";
 import { useVerdictDistribution } from "../../api";
+import { translateLabel } from "../../model/labels";
 
 export function VerdictDistributionBlock() {
   const t = useT("adminOverview");
@@ -22,7 +23,11 @@ export function VerdictDistributionBlock() {
       errorMessage={t("errorGeneric")}
       retryLabel={t("retry")}
     >
-      {query.data && <HalfDonutGauge slices={query.data.slices} />}
+      {query.data && (
+        <HalfDonutGauge
+          slices={query.data.slices.map((s) => translateLabel(t, s))}
+        />
+      )}
     </DashboardBlockState>
   );
 }

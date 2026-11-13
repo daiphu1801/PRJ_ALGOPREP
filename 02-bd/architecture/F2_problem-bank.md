@@ -1,5 +1,58 @@
 # BD — Kiến trúc module `problem-bank` (F2)
 
+**D02h snapshot writer 2026-11-03:** inbound PublishTestcaseSnapshotUseCase và writer/JDBC
+mới đã có. Giao dịch REQUIRED khoá parent trước, rồi đọc metadata bằng câu lệnh RC mới
+để caller chờ khoá thấy lần commit trước; approved rows đọc sau đó. First tạo current version,
+same logical set dùng lại, khác tạo version+1. PUT/HEAD/GET+checksum trước INSERT metadata;
+bump/Outbox cùng transaction. Không đổi status, actor/audit/checklist/sandbox hoặc mở HTTP.
+Caller phải khoá parent trước mọi testcase edit và gọi kernel cùng transaction. Object mới có
+key UUID riêng, không overwrite old snapshot; orphan sau rollback chờ job dọn. Report
+`261103-0011-f2-snapshot-publication-core`; không sửa reader/codec/F1/F3/F4 đã có.
+
+**Grading readers 2026-11-02:**3 inbound đọc spec/Sample/pinned snapshot, repository/JDBC,
+codec JSON v1/base64 và handler chỉ đọc đã có. Bootstrap bridge sang F4, không import business
+module khác. Spec và testcase version/metadata cùng SELECT; Sample chỉ approved/SAMPLE trong SQL.
+Snapshot lấy exact metadata/object, không current fallback; đọc được khi withdrawn/deleted.
+Thiếu/hỏng và lỗi hạ tầng tách loại, không giữ parser/SDK cause. Chưa writer publish/version-bump,
+HTTP/worker. Format owner chốt DEC-2026-1102-testcase-snapshot-json-v1;
+report `261102-2340-f2-f4-grading-readers`.
+
+**B1 lịch sử bài giao, 2026-11-02:** inbound ListClassAssignmentsUseCase và repository/JDBC
+chỉ đọc đã có; một SELECT scoped classIds, không join identity hoặc kiểm giảng viên tại đây.
+Giữ cả khoảng giao đã gỡ, giao lại và bài UNPUBLISHED/deleted; caller tự lọc active khi cần.
+F4 khai outbound ClassAssignmentReadPort/DTO riêng, bootstrap bridge nối hai module;
+F1 có thể dùng cùng inbound nhưng chưa nối code F1 trong lát này. Chưa HTTP giao bài,
+metrics lớp hoặc worker. Report `261102-1636-class-assignment-read-port`.
+
+**Cổng tên hiển thị, 2026-11-02 (lát A owner giao):** F2 khai UserDirectoryPort,
+bootstrap bridge gọi inbound ReadUserDisplayNamesUseCase của identity; không import F1 từ F2
+hoặc đọc chéo schema. Chỉ thêm file F1 mới; giữ nguyên handler/controller hiện có. Lookup
+theo lô, chỉ ID/tên, không cache, chờ tối đa 2 giây rồi thiếu tên; giao dịch read-only riêng
+không làm hỏng caller khi DB lỗi. BR-08 F1 quyết định nhãn `Người dùng đã xoá` sau ẩn danh.
+GET phiếu soạn chưa triển khai. Report `261102-1615-user-directory-read-port`.
+
+**Storage adapter 2026-11-02:** TestcaseObjectStorePort và MinIO SDK/config đã có thật,
+không phụ thuộc business module khác. Runtime reads dùng credential nội bộ; presign qua
+endpoint trình duyệt riêng, không dùng URL công khai làm đường tải nội bộ. Thiếu config
+không chặn startup phần khác; gọi storage lỗi PRB-052. Chưa testcase use case/phiếu soạn/HTTP.
+Report `261102-1450-f2-minio-object-store`.
+
+**S2b lõi nội bộ, 2026-11-02:** thêm SaveProblemContentUseCase và own repository adapter F2;
+typed result khác full authoring HTTP DTO. Create với resource limits caller đã giải quyết,
+không mock JudgeConfigReadPort/MinIO. Parent row lock thống nhất spec/content; relation writes
+chung transaction, Redis list invalidation sau commit chỉ cho bài PUBLISHED. Không đổi schema,
+POM, F1 hoặc F3/F4/common. Chưa mở transport§36/37, duplicate hoặc reader liên module.
+
+**S2a, 2026-11-02:** lưu đặc tả triển khai bằng inbound SaveProblemSpecUseCase, handler
+transactional, DB/cache outbound và adapters F2. P5 được gọi từ common đúng shared-kernel
+decision; không import business module khác. Outbox ProblemSpecChanged trong cùng transaction,
+chưa relay RabbitMQ; xóa spec cache chỉ sau commit. Không thêm schema/migration.
+
+**S1/D1, 2026-11-02:** catalogue có usecase/controller/JDBC theo bốn tầng; F2 sở hữu
+ProblemAuditPort/CatalogAuditEntry, bridge tại bootstrap gọi RecordSystemAuditUseCase của F1.
+Audit cùng giao dịch REQUIRED, không dependency pom F2→F1 hoặc ghi thẳng schema identity.
+Quyết định `DEC-2026-1102-cross-module-audit-required`; Redis version chỉ tăng sau commit.
+
 > Trạng thái: **BD lần đầu**, 2026-09-12. Module thứ hai theo thứ tự
 > `06-plan/260912-1055-bd-rollout-order.md`. Đọc cùng `02-bd/architecture/F1_identity.md` để bám văn phong;
 > module này khác `identity` ở một điểm quan trọng: **có** hạ tầng MinIO, nên có thêm
@@ -65,7 +118,7 @@ Theo `DEC-2026-0820-architecture-baseline`: không import schema khác. `problem
 | Sự kiện phát ra | Ai lắng nghe | Payload tối thiểu | Dùng để |
 | :--- | :--- | :--- | :--- |
 | `ProblemSpecChanged` | `harness` | `problem_id`, `spec_version` (không phải `testcase_set_version` — hai khái niệm khác nhau, xem mục 2 database), diff chữ ký hàm. Sửa 2026-10-22 (đồng bộ DB, phase 3, DEC-2026-1022-problem-bank-schema-sync): `spec_version` tăng khi **bất kỳ cột nào** của `problem_specs` đổi (chiến lược so khớp, định dạng stdin/stdout, tên hàm, kiểu trả về, tham số, ghi đè tên; `database/F2_problem-bank.md` mục 1.4), không chỉ chữ ký hàm | Vô hiệu hoá/tái sinh mã bọc hàm đã cache cho bài đó nếu `harness` có cache theo `problem_id` |
-| `ProblemPublished` / `ProblemUnpublished` | Chưa có consumer trong bản này | `problem_id`, `actor_user_id`, `occurred_at` | Phát cho tích hợp về sau; F1 chưa có `activity_type` tương ứng, F4 kiểm xuất bản đồng bộ khi nhận bài |
+| `ProblemPublished` / `ProblemUnpublished` | Queue durable `problem-bank.lifecycle-pending` giữ tin; business consumer chưa được định nghĩa | `problem_id`, `actor_user_id`, `occurred_at` | Tích hợp về sau; queue bind hai key published/unpublished, không TTL/drop/auto-ack. F1 chưa có `activity_type`, F4 vẫn kiểm đồng bộ; confirm là lưu broker, chưa phải xử lý nghiệp vụ (`DEC-2026-1113-f2-lifecycle-backlog-and-f4-target-publication`) |
 | `TestcaseSetVersionBumped` | Chưa có consumer trong bản này | `problem_id`, `testcase_set_version`, `bumped_at` | Phát sau commit khi bộ chấm đổi để tích hợp/cache về sau. F4 đọc đồng bộ `currentTestcaseSetVersion` lúc nhận bài nộp rồi ghim vào dòng `PENDING`; worker đọc bundle snapshot bất biến của phiên bản đó, không dùng sự kiện để gán phiên bản (`DEC-2026-1025-dd-submission-testcase-snapshot`) |
 | `ProblemAssignedToClass` / `ProblemUnassignedFromClass` | `identity` chỉ nghe `ProblemAssignedToClass` | `problem_id`, `class_id`, `actor_user_id` | Tạo hoạt động giao bài cho lớp; gỡ bài được đọc đồng bộ, chưa có consumer |
 
@@ -165,3 +218,12 @@ Baseline 2026-10-29: `DEC-2026-1029-f2-migration-readiness`; không còn câu h�
   `DEC-2026-0831-partial-score-testcase-ratio`.
 - `02-bd/architecture/F3_harness.md` — phía tiêu thụ đặc tả hàm do module này cung cấp.
 - `06-plan/260912-1055-bd-rollout-order.md` — thứ tự triển khai BD.
+
+
+## Bổ sung 2026-11-11 — Đóng tích hợp F2
+
+ClassDeleted đã có consumer `ClassDeletedListener` → `ApplyClassDeletedCommandHandler` → `JdbcClassDeletedRepository`; producer F1 dùng identity Outbox bền vững. Consumer chỉ UPDATE removed_at của assignment hoạt động, không xóa bài/lượt nộp, không audit hoặc phát thêm event; duplicate no-op tự nhiên.
+
+Cache decorator @Primary bọc reader JDBC/cổng trạng thái F1: list/summary TTL60 dùng `problem.catalog_cache_epoch` đọc từ DB; epoch tăng cùng transaction mutation, Redis version mirror sau commit. Status-filter đọc origin, solve-state riêng userId; Redis lỗi/payload sai cấu trúc đọc nguồn. Không cache quyền. Các ghi chú “chưa có cache” ở các lát lịch sử không còn mô tả runtime hiện hành.
+
+Relay F2 đã có JOB-PB-01/02; V2.004 xoay vòng retry qua last_attempted_at, không để batch tin unroutable chặn event chưa thử. GET #57 /authoring/defaults đọc bốn scalar an toàn qua cổng F4 và settings F2; không tạo phụ thuộc frontend vào cấu hình quản trị.

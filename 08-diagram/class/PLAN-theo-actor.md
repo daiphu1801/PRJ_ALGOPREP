@@ -1,6 +1,6 @@
 # Kế hoạch class diagram theo actor (A1-A4)
 
-**Trạng thái 2026-10-26:** Hoàn tất 26 nhóm use case thành 28 sơ đồ theo actor (A1 11, A2 8, A3 4, A4 5), thêm 5 mô hình lớp dùng chung và giữ 2 sơ đồ F3 mẫu. Bảng truy vết đạt 118/118 tiêu chí; 33 sơ đồ mới lint 0 FAIL. PNG xuất 2x để xem màn hình/in A3. Cảnh báo cỡ chữ khi ép A4 và chênh lệch BD/DD về ẩn danh tài khoản được ghi trong [hướng dẫn review](README.md) và [ghi chú phạm vi](SCOPE_NOTES.md).
+**Trạng thái 2026-11-06:** Hoàn tất 100% chuẩn hóa toàn bộ 35 sơ đồ theo kiến trúc thực tế của mã nguồn Java (CQRS + Clean Architecture). Bảng truy vết `actor_coverage.csv` đạt 118/118 tiêu chí (0 lỗi, 0 bad ref). 35/35 sơ đồ lint 0 FAIL. Toàn bộ ảnh PNG đã xuất độ nét cao 2x. Các module F1, F2, F3, F4 phản ánh trực tiếp mã nguồn; F5 và F6 đồng bộ CQRS theo schema migration và ghi rõ `[SoT: Suy luận]`.
 
 > Trình tự triển khai: chốt phạm vi và nguồn → A1 → A2 → A3 → A4 → kiểm tra chéo và bàn giao. Các bước tạo spec, sinh hình, render và lint ở cuối tài liệu là cổng chất lượng lặp lại cho **từng** sơ đồ, không chờ tới khi vẽ xong cả bốn actor.
 

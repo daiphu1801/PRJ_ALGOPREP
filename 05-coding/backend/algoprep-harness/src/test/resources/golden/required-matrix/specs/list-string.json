@@ -1,0 +1,1 @@
+{"functionName":"echo","returnType":{"kind":"LIST","of":{"kind":"STRING","of":null,"dimensions":null},"dimensions":null},"parameters":[{"name":"value","type":{"kind":"LIST","of":{"kind":"STRING","of":null,"dimensions":null},"dimensions":null}}],"nameOverrides":{},"matchingStrategy":"EXACT","epsilon":null}

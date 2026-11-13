@@ -16,10 +16,12 @@ import {
   problemLevelTone,
   useProblemDetail,
   useProblemLevels,
+  useSetBookmark,
   type ProblemDetail,
   type SubmissionLanguage,
 } from "@/entities/problem";
-import { useLocale, useT } from "@/shared/i18n";
+import { useReviewQuickInsight } from "@/entities/solution-review";
+import { useApiErrorMessage, useLocale, useT } from "@/shared/i18n";
 import { formatDateVN } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
 import {
@@ -84,22 +86,45 @@ function ProblemOverview({
   const locale = useLocale() === "en" ? "en" : "vi";
   const router = useRouter();
   const levels = useProblemLevels();
-  const [saved, setSaved] = useState(detail.saved);
+  const [bookmarkState, setBookmarkState] = useState({
+    source: detail.saved,
+    value: detail.saved,
+  });
+  if (bookmarkState.source !== detail.saved) {
+    setBookmarkState({ source: detail.saved, value: detail.saved });
+  }
+  const saved =
+    bookmarkState.source === detail.saved ? bookmarkState.value : detail.saved;
+  const setBookmark = useSetBookmark();
+  const apiMessage = useApiErrorMessage();
+
+  // Pessimistic (#11): the flag flips only after the server confirmed the wanted state. Undo sends
+  // `true` again; the note of the removed bookmark is gone with it (DD 12.5), so undo restores no note.
+  function setBookmarked(next: boolean) {
+    setBookmark.mutate(
+      { problemId, bookmarked: next },
+      {
+        onSuccess: () => {
+          setBookmarkState({ source: detail.saved, value: next });
+          if (next) {
+            toast.success(td("toast.saved"), {
+              label: td("toast.openSaved"),
+              onClick: () => router.push("/saved"),
+            });
+          } else {
+            toast.info(td("toast.unsaved"), {
+              label: t("btnUndo"),
+              onClick: () => setBookmarked(true),
+            });
+          }
+        },
+        onError: (error) => toast.error(apiMessage(error)),
+      },
+    );
+  }
 
   function toggleSaved() {
-    if (saved) {
-      // Undo restores the bookmark (owner 2026-10-20, same choice as USR0103: no confirm popup).
-      toast.info(td("toast.unsaved"), {
-        label: t("btnUndo"),
-        onClick: () => setSaved(true),
-      });
-    } else {
-      toast.success(td("toast.saved"), {
-        label: td("toast.openSaved"),
-        onClick: () => router.push("/saved"),
-      });
-    }
-    setSaved(!saved);
+    setBookmarked(!saved);
   }
 
   function copy(text: string) {
@@ -120,6 +145,17 @@ function ProblemOverview({
   );
   const recent = sorted.slice(0, RECENT_SUBMISSION_LIMIT);
   const reviewSubmission = sorted.find((item) => item.verdict === "accepted");
+  // F5 #6 (real mode only): fills the card the real problem endpoint leaves null; link to its submission.
+  const insight = useReviewQuickInsight(problemId).data;
+  const solutionReview =
+    detail.solutionReview ??
+    (insight
+      ? {
+          timeComplexity: insight.timeComplexity,
+          spaceComplexity: insight.spaceComplexity,
+        }
+      : null);
+  const reviewSubmissionId = insight?.submissionId ?? reviewSubmission?.id;
   const sectionTitle = "mb-3 text-xl font-bold tracking-tight";
 
   return (
@@ -201,9 +237,12 @@ function ProblemOverview({
                 ? "border-[var(--color-admin-warn)] bg-[color-mix(in_srgb,var(--color-admin-warn)_18%,transparent)] text-[var(--color-admin-warn-text)]"
                 : "border-[var(--color-border)]"
             }`}
+            disabled={setBookmark.isPending}
             onClick={toggleSaved}
           >
-            <Bookmark className={`mr-2 h-4 w-4 ${saved ? "fill-current" : ""}`} />
+            <Bookmark
+              className={`mr-2 h-4 w-4 ${saved ? "fill-current" : ""}`}
+            />
             {saved ? td("panel.btnUnsave") : td("panel.btnSave")}
           </Button>
 
@@ -309,7 +348,7 @@ function ProblemOverview({
             </p>
           </Card>
 
-          {detail.solutionReview ? (
+          {solutionReview ? (
             <Card className="px-4 py-4">
               <h2 className="mb-2 text-sm font-bold">
                 {td("panel.tabReview")}
@@ -319,19 +358,19 @@ function ProblemOverview({
                   {td("panel.timeComplexity")}
                 </dt>
                 <dd className="font-mono font-semibold">
-                  {detail.solutionReview.timeComplexity}
+                  {solutionReview.timeComplexity}
                 </dd>
                 <dt className="text-[var(--color-text-muted)]">
                   {td("panel.spaceComplexity")}
                 </dt>
                 <dd className="font-mono font-semibold">
-                  {detail.solutionReview.spaceComplexity}
+                  {solutionReview.spaceComplexity}
                 </dd>
               </dl>
-              {reviewSubmission ? (
+              {reviewSubmissionId ? (
                 <p className="mt-2 text-[13px]">
                   <Link
-                    href={`/submissions/${reviewSubmission.id}/review`}
+                    href={`/submissions/${reviewSubmissionId}/review`}
                     className="underline"
                   >
                     {td("panel.linkFullReport")}

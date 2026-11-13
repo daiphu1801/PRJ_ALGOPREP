@@ -19,17 +19,17 @@
         "stereo": "presentation"
       },
       {
-        "name": "LoginCmd",
+        "name": "LoginCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "UserRepo",
+        "name": "UserAccountRepository",
         "role": "repository",
         "stereo": "domain output port"
       },
       {
-        "name": "IdentityDbAdapter",
+        "name": "JdbcUserAccountRepository",
         "role": "repository",
         "stereo": "infrastructure"
       },
@@ -49,35 +49,35 @@
         "phase": "Giai đoạn 2b - Kiểm bí mật và trạng thái tài khoản"
       },
       {
-        "from": "LoginCmd",
-        "to": "UserRepo",
+        "from": "LoginCommandHandler",
+        "to": "UserAccountRepository",
         "text": "Tìm tài khoản theo email"
       },
       {
-        "from": "UserRepo",
-        "to": "IdentityDbAdapter",
+        "from": "UserAccountRepository",
+        "to": "JdbcUserAccountRepository",
         "text": "Đọc tài khoản và mật khẩu đã băm"
       },
       {
-        "from": "IdentityDbAdapter",
+        "from": "JdbcUserAccountRepository",
         "to": "PostgreSQL",
         "text": "Tra email và trạng thái"
       },
       {
         "from": "PostgreSQL",
-        "to": "IdentityDbAdapter",
+        "to": "JdbcUserAccountRepository",
         "text": "Tài khoản hoặc không có",
         "kind": "return"
       },
       {
-        "from": "IdentityDbAdapter",
-        "to": "UserRepo",
+        "from": "JdbcUserAccountRepository",
+        "to": "UserAccountRepository",
         "text": "Tài khoản hoặc không có",
         "kind": "return"
       },
       {
-        "from": "UserRepo",
-        "to": "LoginCmd",
+        "from": "UserAccountRepository",
+        "to": "LoginCommandHandler",
         "text": "Dữ liệu đối chiếu",
         "kind": "return"
       },
@@ -86,25 +86,25 @@
           "label": "Mật khẩu đúng?",
           "then": [
             {
-              "from": "LoginCmd",
-              "to": "LoginCmd",
+              "from": "LoginCommandHandler",
+              "to": "LoginCommandHandler",
               "text": "Kiểm trạng thái sau khi mật khẩu khớp"
             }
           ],
           "else": [
             {
-              "from": "LoginCmd",
+              "from": "LoginCommandHandler",
               "to": "LoginRatePort",
               "text": "Ghi thêm một lần nhập sai"
             },
             {
               "from": "LoginRatePort",
-              "to": "LoginCmd",
+              "to": "LoginCommandHandler",
               "text": "Đã cập nhật cửa sổ 15 phút",
               "kind": "return"
             },
             {
-              "from": "LoginCmd",
+              "from": "LoginCommandHandler",
               "to": "AuthController",
               "text": "Trả lỗi chung, không lộ email",
               "kind": "return"
@@ -123,7 +123,7 @@
           "label": "Chưa xác minh email?",
           "then": [
             {
-              "from": "LoginCmd",
+              "from": "LoginCommandHandler",
               "to": "AuthController",
               "text": "Chặn đăng nhập, không cấp phiên",
               "kind": "return"
@@ -137,8 +137,8 @@
           ],
           "else": [
             {
-              "from": "LoginCmd",
-              "to": "LoginCmd",
+              "from": "LoginCommandHandler",
+              "to": "LoginCommandHandler",
               "text": "Tài khoản Hoạt động: sang trang 2c"
             }
           ]

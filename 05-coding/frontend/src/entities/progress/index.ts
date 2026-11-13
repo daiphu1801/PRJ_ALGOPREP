@@ -9,13 +9,12 @@ export type {
   ProgressRange,
   RecentInterviewSession,
   RubricCriterionCode,
-  SubmissionDailyCount,
   TopicProgress,
 } from "./model/types";
 export { progressRangeSchema, RUBRIC_CRITERIA } from "./model/types";
+export { fetchMyMetrics } from "./api/real-metrics";
 export { deriveFocusSuggestions } from "./model/derive-focus";
 export {
-  useDailySubmissions,
   useDifficultyBreakdown,
   useInterviewSummary,
   useProgressOverview,

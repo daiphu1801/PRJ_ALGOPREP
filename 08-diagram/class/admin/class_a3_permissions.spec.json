@@ -1,5 +1,5 @@
 {
-  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a3_admin.md:13; 01-rd/req/user_stories/a3_admin.md:16; 01-rd/req/user_stories/a3_admin.md:19. Nguồn thiết kế: 03-dd/logic/F1_identity.md; 03-dd/api/F1_identity.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a3_admin.md:13-19. Nguồn mã nguồn: 05-coding/backend/algoprep-identity/src/main/java/com/algoprep/identity/presentation/controller/RbacController.java và application/command/UpdateRolePermissionCommandHandler.java.",
   "kind": "class",
   "title": "A3 — Ma trận phân quyền",
   "covers": [
@@ -11,60 +11,76 @@
     "legend": "shared",
     "classes": [
       {
-        "id": "service",
-        "name": "PermissionMatrixService",
+        "id": "controller",
+        "name": "RbacController",
         "methods": [
-          "+ setGrant(adminId : UUID, role : Role, function : Function, action : Action, allowed : boolean)",
-          "+ listSeededActions() : PermissionMatrix",
-          "+ auditGrantChange(adminId : UUID, change : GrantChange)"
+          "+ matrix() : PermissionMatrix",
+          "+ updateCell(roleId : UUID, functionId : UUID, actionId : UUID, req : UpdateCellRequest) : PermissionChange"
         ]
       },
       {
-        "id": "port1",
-        "name": "PermissionRepository",
-        "kind": "class",
+        "id": "handler",
+        "name": "UpdateRolePermissionCommandHandler",
         "methods": [
-          "+ upsert(grant : PermissionGrant)"
+          "+ update(command : UpdateRolePermissionCommand) : PermissionChange"
         ]
       },
       {
-        "id": "port2",
-        "name": "PermissionCachePort",
+        "id": "query",
+        "name": "GetPermissionMatrixQueryHandler",
+        "methods": [
+          "+ get() : PermissionMatrix"
+        ]
+      },
+      {
+        "id": "repo",
+        "name": "RbacRepository",
         "kind": "interface",
         "methods": [
-          "+ invalidate(role : Role)"
+          "+ findMatrix() : PermissionMatrix",
+          "+ updatePermission(roleId : UUID, functionId : UUID, actionId : UUID, granted : boolean)"
         ]
       },
       {
-        "id": "port3",
+        "id": "audit",
         "name": "AuditLogPort",
         "kind": "interface",
         "methods": [
-          "+ record(change : AuditEntry)"
+          "+ record(entry : AuditEntry)"
         ]
       }
     ],
     "externals": [],
     "relations": [
       {
-        "from": "service",
-        "to": "port1",
+        "from": "controller",
+        "to": "handler",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port2",
+        "from": "controller",
+        "to": "query",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port3",
+        "from": "handler",
+        "to": "repo",
+        "kind": "dependency"
+      },
+      {
+        "from": "handler",
+        "to": "audit",
+        "kind": "dependency"
+      },
+      {
+        "from": "query",
+        "to": "repo",
         "kind": "dependency"
       }
     ],
     "notes": [
-      "Function/Action là danh mục seed; đổi quyền làm mới cache và ghi audit.",
-      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+      "RbacController điều phối ma trận phân quyền hệ thống; UpdateRolePermissionCommandHandler cập nhật ô quyền và ghi nhật ký.",
+      "Mọi thay đổi quyền được lưu qua RbacRepository và đồng bộ vào AuditLogPort."
     ]
   }
 }

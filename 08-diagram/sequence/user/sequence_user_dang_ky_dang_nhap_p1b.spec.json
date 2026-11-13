@@ -14,22 +14,22 @@
         "role": "actor"
       },
       {
-        "name": "AuthController",
+        "name": "RegistrationController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "RegisterCmd",
+        "name": "RegisterCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "EmailOtpPort",
+        "name": "EmailVerificationOtpPort",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "RedisOtpAdapter",
+        "name": "RedisEmailVerificationOtpAdapter",
         "role": "repository",
         "stereo": "infrastructure"
       },
@@ -59,45 +59,45 @@
         "phase": "Giai đoạn 1b - Mã xác minh riêng cho email mới"
       },
       {
-        "from": "RegisterCmd",
-        "to": "RegisterCmd",
+        "from": "RegisterCommandHandler",
+        "to": "RegisterCommandHandler",
         "text": "Sinh mã sáu số sau khi lưu tài khoản"
       },
       {
-        "from": "RegisterCmd",
-        "to": "EmailOtpPort",
+        "from": "RegisterCommandHandler",
+        "to": "EmailVerificationOtpPort",
         "text": "Giữ mã xác minh trong 10 phút"
       },
       {
-        "from": "EmailOtpPort",
-        "to": "RedisOtpAdapter",
+        "from": "EmailVerificationOtpPort",
+        "to": "RedisEmailVerificationOtpAdapter",
         "text": "Lưu mã theo tài khoản"
       },
       {
-        "from": "RedisOtpAdapter",
+        "from": "RedisEmailVerificationOtpAdapter",
         "to": "Redis",
         "text": "Lưu mã và số lần nhập sai"
       },
       {
         "from": "Redis",
-        "to": "RedisOtpAdapter",
+        "to": "RedisEmailVerificationOtpAdapter",
         "text": "Đã lưu",
         "kind": "return"
       },
       {
-        "from": "RedisOtpAdapter",
-        "to": "EmailOtpPort",
+        "from": "RedisEmailVerificationOtpAdapter",
+        "to": "EmailVerificationOtpPort",
         "text": "Mã còn hiệu lực",
         "kind": "return"
       },
       {
-        "from": "EmailOtpPort",
-        "to": "RegisterCmd",
+        "from": "EmailVerificationOtpPort",
+        "to": "RegisterCommandHandler",
         "text": "Có thể gửi email",
         "kind": "return"
       },
       {
-        "from": "RegisterCmd",
+        "from": "RegisterCommandHandler",
         "to": "EmailDeliveryPort",
         "text": "Gửi mã tới email mới đăng ký"
       },
@@ -125,18 +125,18 @@
       },
       {
         "from": "EmailDeliveryPort",
-        "to": "RegisterCmd",
+        "to": "RegisterCommandHandler",
         "text": "Mã đã gửi",
         "kind": "return"
       },
       {
-        "from": "RegisterCmd",
-        "to": "AuthController",
+        "from": "RegisterCommandHandler",
+        "to": "RegistrationController",
         "text": "Tài khoản chờ xác minh",
         "kind": "return"
       },
       {
-        "from": "AuthController",
+        "from": "RegistrationController",
         "to": "Sinh viên",
         "text": "Báo đăng ký; yêu cầu nhập mã email",
         "kind": "return"

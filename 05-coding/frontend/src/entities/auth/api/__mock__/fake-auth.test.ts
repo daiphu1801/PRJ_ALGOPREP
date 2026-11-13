@@ -8,66 +8,77 @@ import {
 } from "./fake-auth";
 
 describe("fakeLogin", () => {
-  it("returns the deactivated-recovery variant for the reserved 'deactivated' identifier (02-bd/screens/shared/SHR0101_auth.md Sheet 3)", async () => {
+  it("returns the deactivated-recovery variant for the reserved 'deactivated' account (02-bd/screens/shared/SHR0101_auth.md Sheet 3)", async () => {
     const outcome = await fakeLogin({
-      identifier: "deactivated",
+      email: "deactivated@algoprep.local",
       password: "anything",
-      rememberMe: false,
     });
-    expect(outcome).toEqual({ ok: true, role: "STUDENT", deactivated: true });
+    expect(outcome).toEqual({ ok: true, deactivated: true });
   });
 
-  it("routes ADMIN/INSTRUCTOR by reserved identifier so role-based navigation can be demoed", async () => {
+  it("routes ADMIN/INSTRUCTOR by the reserved part before the @ so role-based navigation can be demoed", async () => {
     const admin = await fakeLogin({
-      identifier: "admin",
+      email: "admin@algoprep.local",
       password: "x",
-      rememberMe: false,
     });
     expect(admin).toMatchObject({ ok: true, role: "ADMIN" });
   });
 
   it("returns a field error on the wrong password, not a thrown exception", async () => {
     const outcome = await fakeLogin({
-      identifier: "learner01",
+      email: "learner01@example.com",
       password: "wrong",
-      rememberMe: false,
     });
-    expect(outcome.ok).toBe(false);
+    expect(outcome).toEqual({
+      ok: false,
+      fieldErrors: { password: "errors.credentialsInvalid" },
+    });
   });
 });
 
 describe("fakeInstructorLogin", () => {
   it("rejects a STUDENT account with a field error instead of logging it in (DEC-2026-0925-instructor-separate-login-route)", async () => {
     const outcome = await fakeInstructorLogin({
-      identifier: "learner01",
+      email: "learner01@example.com",
       password: "x",
-      rememberMe: false,
     });
     expect(outcome).toEqual({
       ok: false,
-      fieldErrors: { identifier: "errors.notInstructorAccount" },
+      fieldErrors: { email: "errors.notInstructorAccount" },
     });
   });
 
-  it("logs in the reserved 'instructor' identifier", async () => {
+  it("logs in the reserved 'instructor' account", async () => {
     const outcome = await fakeInstructorLogin({
-      identifier: "instructor",
+      email: "instructor@algoprep.local",
       password: "x",
-      rememberMe: false,
     });
     expect(outcome).toMatchObject({ ok: true, role: "INSTRUCTOR" });
   });
 });
 
 describe("fakeSignup", () => {
-  it("rejects the reserved 'duplicate' username", async () => {
+  it("rejects the reserved 'duplicate' e-mail", async () => {
     const outcome = await fakeSignup({
-      username: "duplicate",
+      displayName: "Duplicate User",
       password: "password123",
-      email: "a@b.com",
+      email: "duplicate@example.com",
       termsAccepted: true,
     });
-    expect(outcome.ok).toBe(false);
+    expect(outcome).toEqual({
+      ok: false,
+      fieldErrors: { email: "errors.emailTaken" },
+    });
+  });
+
+  it("creates the account and hands back the e-mail to verify", async () => {
+    const outcome = await fakeSignup({
+      displayName: "Learner One",
+      password: "password123",
+      email: "learner@example.com",
+      termsAccepted: true,
+    });
+    expect(outcome).toEqual({ ok: true, email: "learner@example.com" });
   });
 });
 

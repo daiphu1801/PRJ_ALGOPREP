@@ -11,7 +11,7 @@ Bảng 0.1 là bìa.
 | Prototype | `05-coding/frontend/src/views/teacher/class-management/` |
 | Module | F1 identity #19–24, #27, #56, #59 |
 | TDD | `04-tdd/modules/F1_identity.md` AC-21–22, AC-43, AC-51; `04-tdd/screens/teacher/INS0201_class_management.md` |
-| Phiên bản, ngày | V0.1, 2026-10-24 |
+| Phiên bản, ngày | V0.2, 2026-11-02 (nối API thật, task #12); V0.1, 2026-10-24 |
 
 Bảng 0.2 ghi lịch sử.
 
@@ -127,8 +127,22 @@ Bảng 7.1 bao phủ EVT-1–20.
 | SC-09 | Abnormal | EVT-17/18/19 gỡ giữ lịch sử, huỷ không gọi API, lỗi rollback | Vitest | F1 AC-21; `class_management` AC-SC-02 |
 | SC-10 | Boundary | EVT-20 trang 2 có đúng 20 dòng, đổi tab reset trang 1 | Vitest | `class_management` AC-SC-01 |
 
+**Triển khai 2026-11-02 (task #12, lát 4).** Màn nối API thật ở chế độ `NEXT_PUBLIC_MOCK_DATA=false` cho F1 #19, #20, #21, #22.
+- **Vị trí mã.** Giữ trong `entities/class/api/` (`real-class.ts`, `queries.ts`): cụm lớp có nhiều màn dùng chung nên đặt ở `entities` đúng bảng mục 1; các hook của màn này dùng `useQuery`/`useMutation` kèm `withMockData`. Chế độ mock giữ nguyên.
+- **Chỉ #19, không #56/#59.** #56 và #59 cần số liệu F4 (chưa làm). Danh sách lớp lấy từ #19 nên **ẩn** ba cột "Tỉ lệ hoàn thành", "Điểm TB", "Vắng bài" khi dữ liệu không có (tiêu chí ponytail bậc 2: không hiện số bịa); `ClassSummary` đổi ba trường này thành tuỳ chọn.
+- **Hộp thoại tạo/sửa.** `ClassFormDialog` nhận `onSubmit` trả promise: tự đóng khi thành công, giữ nguyên hộp thoại và nội dung đã nhập khi bị từ chối, toast nêu lý do theo mã lỗi (`IDT-V14`, `IDT-V15`, `IDT-V10`, `IDT-V16`, `IDT-445`). Tạo xong chuyển sang `/instructor/classes/{classId}` theo `classId` máy chủ trả về, không tự gọi #23. Sửa gửi PATCH kèm giá trị xoá cho ô để trống (`description: ""`, `schedule: {}`) vì PATCH giữ nguyên trường vắng.
+- **Xoá.** Chỉ cập nhật sau khi #22 trả 204; lỗi (`IDT-414`, `IDT-445`) toast, lớp vẫn ở danh sách.
+- **Chưa làm.** Thẻ tổng của BD (ba thẻ), phân trang bảng học viên: bảng học viên đã chuyển sang `INS0203` từ 2026-09-27, thẻ tổng cần #56. Ghi nợ.
+- Kiểm chứng: test cấp view `class-management-real.test.tsx`; `e2e/classes-real.spec.ts` trên backend và frontend thật.
+
+
 ## 8. Nợ prototype và câu hỏi mở
 
 **Nợ prototype:** cần nối F1 #56/#19, form #20/#21, xoá #22, gỡ #27 và bảng học viên toàn lớp có phân trang; bỏ mọi popup mã mời còn sót. Đối chiếu `ClassCardDto.description`, lịch cấu trúc và tính học viên DISTINCT. Dòng `INS0201` trong `06-plan/PROTOTYPE_DEBT.md` giữ mở tới khi code khớp. `[SoT: BD Sheet 4.5; V]`
 
 **Đã đóng:** bảng học viên tab Tất cả dùng F1 #59, phân trang sau lọc trên toàn bộ lớp phụ trách (`DEC-2026-1024-dd-teacher-student-list`). Các giới hạn tên/mô tả/phòng/ghi chú giữ theo BD Sheet 9; cần đối chiếu validation F1 trước khi code nối thật.
+
+## Cập nhật 2026-11-07 (nối API thật)
+
+API tiêu thụ thêm: `GET /api/v1/identity/instructor/classes/summary` (#56, `03-dd/api/F1_identity.md` mục 0.8.2) cho ba cột hoàn thành, điểm TB, vắng bài. `503 IDT-507` thì hook lùi về #19 và ẩn ba cột. Hook `useInstructorClassSummary`, mapper `real-class-metrics.ts`.
+

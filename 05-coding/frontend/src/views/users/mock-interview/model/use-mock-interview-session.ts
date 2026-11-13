@@ -12,15 +12,14 @@ import {
   useInterviewHint,
   useNextInterviewQuestion,
   type ChatMessage,
-  type InterviewEntryType,
   type InterviewResult,
   type InterviewStage,
-  type InterviewerLevel,
-  type MaxTurns,
 } from "@/entities/mock-interview";
 import { toast } from "@/shared/lib/toast-store";
+import { useEntryConfig } from "./use-entry-config";
+import type { InterviewSession } from "./session-types";
 
-export type ScreenState = "entry" | "running" | "result";
+export type { ScreenState } from "./session-types";
 
 const STREAM_CHARS_PER_TICK = 3;
 const STREAM_TICK_MS = 20;
@@ -35,16 +34,12 @@ function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
-export function useMockInterviewSession() {
-  const [screenState, setScreenState] = useState<ScreenState>("entry");
+export function useMockInterviewSession(): InterviewSession {
+  const [screenState, setScreenState] =
+    useState<InterviewSession["screenState"]>("entry");
 
-  const [entryType, setEntryType] = useState<InterviewEntryType>("submission");
-  const [submissionId, setSubmissionId] = useState<string | null>(null);
-  const [questionId, setQuestionId] = useState<string | null>(null);
-  const [customTopics, setCustomTopics] = useState<string[]>([]);
-  const [level, setLevel] = useState<InterviewerLevel>("middle");
-  const [maxTurns, setMaxTurns] = useState<MaxTurns>(12);
-  const [hintAllowed, setHintAllowed] = useState(true);
+  const entry = useEntryConfig();
+  const { maxTurns } = entry;
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [currentStage, setCurrentStage] = useState<InterviewStage>("explain");
@@ -64,17 +59,6 @@ export function useMockInterviewSession() {
 
   const streamIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const timerIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  const canStart =
-    (entryType === "submission" && submissionId !== null) ||
-    (entryType === "bank" && questionId !== null) ||
-    (entryType === "custom" && customTopics.length > 0);
-
-  const toggleCustomTopic = useCallback((key: string) => {
-    setCustomTopics((prev) =>
-      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key],
-    );
-  }, []);
 
   const streamAiMessage = useCallback(
     (content: string, stage: InterviewStage) => {
@@ -136,7 +120,7 @@ export function useMockInterviewSession() {
 
   const sendMessage = useCallback(
     async (text: string) => {
-      if (!text.trim() || streamingMessageId || busyRef.current) return;
+      if (!text.trim() || streamingMessageId || busyRef.current) return false;
 
       setMessages((prev) => [
         ...prev,
@@ -147,7 +131,7 @@ export function useMockInterviewSession() {
 
       if (nextTurn >= maxTurns) {
         await finish();
-        return;
+        return true;
       }
 
       busyRef.current = true;
@@ -160,6 +144,7 @@ export function useMockInterviewSession() {
       } finally {
         busyRef.current = false;
       }
+      return true;
     },
     [
       currentStage,
@@ -207,31 +192,25 @@ export function useMockInterviewSession() {
   );
 
   return {
+    ...entry,
     screenState,
-    entryType,
-    setEntryType,
-    submissionId,
-    setSubmissionId,
-    questionId,
-    setQuestionId,
-    level,
-    setLevel,
-    maxTurns,
-    setMaxTurns,
-    hintAllowed,
-    setHintAllowed,
-    customTopics,
-    toggleCustomTopic,
-    canStart,
+    runState: streamingMessageId ? "streaming" : "idle",
+    starting: false,
+    waitingSlow: false,
+    hintOffered: entry.hintAllowed,
+    hintPending: false,
     start,
     messages: displayedMessages,
     isAiTyping: streamingMessageId !== null,
     currentStage,
     turnCount,
+    turnLimit: maxTurns,
     elapsedSeconds,
     sendMessage,
     requestHint,
     stopEarly,
+    retryTurn: () => undefined,
+    retryComplete: () => undefined,
     retryPractice,
     result,
   };

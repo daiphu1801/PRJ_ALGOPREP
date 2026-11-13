@@ -1,6 +1,10 @@
 # AlgoPrep backend - cau hinh nen (moi profile deu thua huong).
 # Ha tang local: 05-coding/docker-compose.yml. Bien moi truong: 05-coding/.env.example
 spring:
+  datasource:
+    hikari:
+      # Fail bounded reads promptly when all database connections are in use.
+      connection-timeout: 2000
   application:
     name: algoprep
 
@@ -18,10 +22,19 @@ spring:
       # VirtualThreadsEnabledTest.
       enabled: true
 
+  data:
+    redis:
+      # Short timeouts for every profile: Redis-backed gates fail open (F5 BR-AI-04, F3 preview limit) and the
+      # Lettuce default of 60 s would make the failure path stall requests.
+      connect-timeout: 1s
+      timeout: 1s
+
   flyway:
     # DEC-2026-1029-flyway-migration-tool. Mot history table o schema public; moi module mot thu muc,
     # moi module mot dai version (identity V1.NNN, problem V2.NNN, judge V4.NNN, ai V5.NNN, interview_bank V6.NNN).
     # Them module moi co migration: them mot dong vao locations.
+    # Module version ranges share one history; a new V1 migration can follow an applied V6.
+    out-of-order: true
     schemas: public
     default-schema: public
     locations:
@@ -58,3 +71,74 @@ logging:
   level:
     root: INFO
     com.algoprep: DEBUG
+
+judge:
+  admin-stream:
+    interval: 5s
+  infra:
+    outbox-warn-attempts: 3
+    outbox-error-attempts: 5
+    event-retention-days: 90
+  autoscale:
+    # Worker and queue-monitor use the same deployment limit; defaults preserve JOB-JD-05.
+    max-workers: 8
+    scale-up-polls: 2
+    scale-down-polls: 4
+
+algoprep:
+  # Sign-in with GitHub and Google (DD F1 BR-03). A provider with a blank client id or secret
+  # is off: its redirect answers 503 IDT-505. Fill the values in 05-coding/.env.
+  oauth:
+    redirect-base-url: ${ALGOPREP_OAUTH_REDIRECT_BASE_URL:http://localhost:3000}
+    github:
+      client-id: ${ALGOPREP_OAUTH_GITHUB_CLIENT_ID:}
+      client-secret: ${ALGOPREP_OAUTH_GITHUB_CLIENT_SECRET:}
+    google:
+      client-id: ${ALGOPREP_OAUTH_GOOGLE_CLIENT_ID:}
+      client-secret: ${ALGOPREP_OAUTH_GOOGLE_CLIENT_SECRET:}
+  # LLM provider for F5 (OpenRouter through Spring AI, DEC-2026-1108-llm-provider-openrouter-free-models).
+  # A blank api-key keeps the app fully working: F5 generating endpoints answer 503 AIR-501 and every
+  # other endpoint is unaffected. Set the values in 05-coding/.env, never here.
+  ai:
+    api-key: ${ALGOPREP_AI_OPENROUTER_API_KEY:}
+    base-url: ${ALGOPREP_AI_BASE_URL:https://openrouter.ai/api}
+    default-model: ${ALGOPREP_AI_DEFAULT_MODEL:}
+    llm:
+      timeout:
+        # Total deadline of one structured call. Free models need 20+ s for a full transcript or
+        # code review; the Next proxy allows 240 s, so keep these well below it.
+        review-total-sec: ${ALGOPREP_AI_REVIEW_TOTAL_SEC:90}
+        rubric-total-sec: ${ALGOPREP_AI_RUBRIC_TOTAL_SEC:90}
+        # F6 practice feedback (one structured call) and the short non-streaming Mock Interview calls
+        # (opening line, hint) with the wait for the first token. The streamed turn keeps its own 60 s.
+        practice-total-sec: ${ALGOPREP_AI_PRACTICE_TOTAL_SEC:90}
+        interview-call-total-sec: ${ALGOPREP_AI_INTERVIEW_CALL_TOTAL_SEC:60}
+        interview-first-token-sec: ${ALGOPREP_AI_INTERVIEW_FIRST_TOKEN_SEC:30}
+    anomaly:
+      # JOB-AI-05 threshold: an account at or above this many times the 24 hour average is flagged.
+      threshold-ratio: 5
+    models:
+      # ai.models.allowed of DD F5: comma-separated model ids the admin may pick per prompt.
+      allowed: ${ALGOPREP_AI_ALLOWED_MODELS:}
+  judge:
+    # Display labels only; deployments may add verified toolchain versions here.
+    compiler-display:
+      java: ${ALGOPREP_JUDGE_JAVA_DISPLAY:Java (javac)}
+      cpp: ${ALGOPREP_JUDGE_CPP_DISPLAY:C++ (g++)}
+      python: ${ALGOPREP_JUDGE_PYTHON_DISPLAY:Python 3}
+  problem-bank:
+    # Publish checklist thresholds (DD logic F2 BR-07); the same defaults are in the code.
+    publish:
+      min-approved-testcases: 8
+      min-approved-samples: 2
+      min-worked-examples: 2
+    # Attention list rules (DD F2 section 27); the same defaults are in the code.
+    attention:
+      low-ac-percent: 30
+      stale-draft-days: 7
+    storage:
+      endpoint: ${ALGOPREP_MINIO_ENDPOINT:http://localhost:9000}
+      public-endpoint: ${ALGOPREP_MINIO_PUBLIC_ENDPOINT:${ALGOPREP_MINIO_ENDPOINT:http://localhost:9000}}
+      bucket: ${MINIO_BUCKET_TESTCASE:algoprep-testcases}
+      access-key: ${ALGOPREP_MINIO_ACCESS_KEY:}
+      secret-key: ${ALGOPREP_MINIO_SECRET_KEY:}

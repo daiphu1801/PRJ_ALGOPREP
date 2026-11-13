@@ -27,6 +27,7 @@ Bảng 0.1 là bìa tài liệu.
 | Ver | Nội dung | Ngày | Người sửa |
 | :--- | :--- | :--- | :--- |
 | V0.1 | Tạo mới từ prototype (chưa duyệt hình dựng lại 2026-10-20, BD302 V0.11) và DD module F5 (2026-10-23). Chưa có owner duyệt | 2026-10-24 | Claude |
+| V0.2 | Hai tab nguồn nối thật: Bài Accepted đọc F4 #23, Kho câu hỏi đọc F6 mục 2 trang 1; lỗi hiện `QueryError` kèm Thử lại; rỗng hiện chữ riêng. Test `mock-interview-entry-tabs.test.tsx`, `real-entry-options.test.ts`. Lệch có chủ ý so với DD: hook nằm lại `entities/mock-interview` (entity không import entity khác nên gọi thẳng `api.get`) | 2026-11-12 | Claude |
 
 Bảng 0.3 giải nghĩa các tên viết tắt nguồn.
 
@@ -88,9 +89,9 @@ Bảng 2.1 ánh xạ sự kiện BD302 Sheet 8 sang endpoint ở file API và ho
 | :--- | :--- | :--- | :--- |
 | EVT-1 Mở màn (khôi phục phiên) | API-F5 §9 `GET /api/v1/ai/interview-sessions/{sessionId}` (`GetSessionDetail`), chỉ khi có `sessionId` trong `sessionStorage` hoặc `?sessionId=` | `useInterviewSession(sessionId)` (**mới**, `entities/mock-interview/api/queries.ts`) | Chưa có (prototype giữ phiên trong `useState`, `use-mock-interview-session.ts:39-57`) |
 | EVT-1 (tham số mặc định tự luyện) | API-F1 #14 `GET /api/v1/identity/me/settings` | `useMySettings` (`entities/user/api/queries.ts:27`) | Mock. BD302 không có sự kiện cho bước này, xem D-302-8 |
-| EVT-2 Tab Bài Accepted | API-F4 #23 `GET /api/v1/judge/me/accepted-submissions` (mục 24A; BD gọi tên `ListMyAcceptedSubmissions`) | `useMyAcceptedSubmissions` (**mới**, `entities/submission`) | Mock (`useAcceptedSubmissionOptions`, `queries.ts:25-30`) |
+| EVT-2 Tab Bài Accepted (**đã nối thật 2026-11-12**, `real-entry-options.ts:27`; hook vẫn là `useAcceptedSubmissionOptions` của `entities/mock-interview`, không tạo `useMyAcceptedSubmissions`; rỗng hiện `emptySubmissions`) | API-F4 #23 `GET /api/v1/judge/me/accepted-submissions` (mục 24A; BD gọi tên `ListMyAcceptedSubmissions`) | `useMyAcceptedSubmissions` (**mới**, `entities/submission`) | Mock (`useAcceptedSubmissionOptions`, `queries.ts:25-30`) |
 | EVT-1 route bài nộp ngoài 10 mục đầu | API-F4 #5 `GetSubmissionDetail`, chỉ khi #23 không chứa `submissionId` của route | `useSubmissionDetail(submissionId)`; chỉ ghim khi thuộc người gọi và `status=ACCEPTED` | Chưa có |
-| EVT-3 Tab Kho câu hỏi | API-F6 §2 `GET /api/v1/interview-bank/questions`, trang 1 không lọc | `useQuestionShortlist` (**mới**, `entities/interview-question`) | Mock (`useBankQuestionOptions`, `queries.ts:32-37`) |
+| EVT-3 Tab Kho câu hỏi (**đã nối thật 2026-11-12**, `real-entry-options.ts:39`, trang 1 không lọc, id là UUID thật cho `questionRef` AIR-V07; rỗng hiện `emptyBank`) | API-F6 §2 `GET /api/v1/interview-bank/questions`, trang 1 không lọc | `useQuestionShortlist` (**mới**, `entities/interview-question`) | Mock (`useBankQuestionOptions`, `queries.ts:32-37`) |
 | EVT-4 Tab Tự chọn | API-F6 §9 `GET /api/v1/interview-bank/topics` (`ListQuestionTopics`) cho chip chủ đề (BD302 EVT-4 ghi "không gọi API" nhưng BD Sheet 5 V0.9 đã nói chip đọc từ danh mục) | `useInterviewTopics` (`entities/interview-question`) | Store trong bộ nhớ |
 | EVT-5, 6, 7, 8, 9 Chọn nguồn, đổi cấu hình | Không có | state của `useMockInterviewSession` | Không áp dụng |
 | EVT-10 Bắt đầu phiên | API-F5 §8 `POST /api/v1/ai/interview-sessions` (`StartInterviewSession`) | `useStartInterviewSession` (**mới**, mutation) | Mock (`useNextInterviewQuestion` kịch bản, `queries.ts:42-46`) |
@@ -102,6 +103,8 @@ Bảng 2.1 ánh xạ sự kiện BD302 Sheet 8 sang endpoint ở file API và ho
 | EVT-18 Xác nhận dừng sớm; kết thúc tự động ở EVT-14 bước 7 | API-F5 §12 `POST /api/v1/ai/interview-sessions/{sessionId}/complete` (`CompleteInterviewSession`) | `useInterviewRun().complete` | Mock (`useFinishInterview`, `queries.ts:53-57`) |
 | EVT-19 Luyện tập lại, EVT-20 Về danh sách | Không có | state, `next/link` tới `/problems` (`mock-interview-view.tsx:688-690`) | Không áp dụng |
 | (bổ sung của DD) Nối lại giữa lượt | API-F5 §9 như EVT-1, theo API-F5 mục 2.4 | `reconcileSession` (feature) | Chưa có |
+
+**Hiện trạng nối API thật (2026-11-12, phase Merge M3).** Năm endpoint của F5 đã nối ở chế độ thật, mock vẫn chạy khi `NEXT_PUBLIC_MOCK_DATA=true`: §8, §9, §10 (luồng SSE), §11, §12. Lời gọi nằm ở `05-coding/frontend/src/entities/mock-interview/api/real-interview.ts` (`realStartSession:163`, `realGetSession:194`, `streamTurn:312`, `TurnStreamInterrupted:251`); máy trạng thái nằm ở `views/users/mock-interview/model/use-real-interview-session.ts` (`runTurn:193`, `pollUntilSettled:153`, `complete:165`, `retryTurn:309`, `stopEarly:401`); hai hook (mock và thật) trả cùng kiểu `session-types.ts`. **Lệch so với mục 1 của DD này:** client SSE dùng `createSseParser` có sẵn ở `shared/api/sse-stream.ts` và đặt trong entity, chưa dựng `shared/realtime/sse-client.ts` hay `features/conduct-mock-interview` (ponytail bậc 4: tái dùng). **Chưa nối:** danh sách bài Accepted (F4 #23) và Kho câu hỏi (F6 §2) vẫn là mock, nên ở chế độ thật hai tab này hiện lỗi NOT_IMPLEMENTED, tab Tự chọn chủ đề chạy thật (chủ đề từ F6 §9); `GET /ai/me/interview-sessions/summary` (#13) không dùng ở USR0302, để M5; chế độ chỉ xem `?sessionId=`, prefill từ cài đặt F1 #14 và banner "phản hồi để học" chưa làm. **Cảnh báo hạ tầng:** proxy rewrite của Next nén gzip và gom cả luồng thành một khối; cần `compress: false` trong `next.config.ts` (xem báo cáo M3).
 
 Hợp đồng thời gian thực (không lặp schema): API-F5 §2.1 (kênh, xác thực, `fetch` + `ReadableStream`), §2.2 Bảng 3 (bốn loại sự kiện), §2.3 (thứ tự), §2.4 (nối lại). Hạn chờ phía máy chủ: chunk đầu 10 giây, tổng 60 giây cho một lượt (API-F5 Bảng 4, `03-dd/api/F5_ai-review.md:204-211`); mở phiên và gợi ý 20 giây; chấm điểm 30 giây.
 

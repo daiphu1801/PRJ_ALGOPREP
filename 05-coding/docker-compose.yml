@@ -16,6 +16,20 @@
 name: algoprep
 
 services:
+  # Local SMTP sink; messages are visible at http://localhost:8025.
+  mailpit:
+    image: axllent/mailpit:v1.31.5
+    container_name: algoprep-mailpit
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${MAILPIT_SMTP_PORT:-1025}:1025"
+      - "127.0.0.1:${MAILPIT_UI_PORT:-8025}:8025"
+    healthcheck:
+      test: ["CMD", "/mailpit", "readyz"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   # ---------------------------------------------------------------------------
   # PostgreSQL — database chinh, SAU schema trong MOT instance.
   # Sau schema, khong phai sau database: modular monolith dung mot PostgreSQL instance
@@ -153,7 +167,12 @@ services:
   # trong tien trinh backend — quyen nay khong the cap cho ung dung web.
   # ---------------------------------------------------------------------------
   go-judge:
-    image: criyle/go-judge:v1.12.3
+    # Image toolchain dan xuat tu criyle/go-judge:v1.12.3: them OpenJDK 21, g++, python3 de bien dich
+    # va chay duoc ca ba ngon ngu nop bai. Engine khong doi; `up` tu dung image neu may chua co
+    # (DEC-2026-1107-go-judge-toolchain-image-in-compose).
+    build:
+      context: ./judge-engine
+    image: algoprep-judge-toolchain:f3-20261101
     container_name: algoprep-go-judge
     restart: unless-stopped
     privileged: true
@@ -246,6 +265,8 @@ services:
       - "${GRAFANA_PORT:-3001}:3000"
     volumes:
       - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/provisioned-dashboards:ro
 
 volumes:
   postgres-data:

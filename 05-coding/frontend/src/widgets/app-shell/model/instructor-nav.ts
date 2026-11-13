@@ -91,5 +91,10 @@ export const INSTRUCTOR_NAV_MISC: AdminNavMiscItem[] = [
     labelKey: "profile",
     icon: UserCircle,
   },
-  { key: "logout", href: "/login", labelKey: "logout", icon: LogOut },
+  {
+    key: "logout",
+    href: "/instructor/login",
+    labelKey: "logout",
+    icon: LogOut,
+  },
 ];

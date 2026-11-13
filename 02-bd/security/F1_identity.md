@@ -4,8 +4,12 @@
 
 - **Mật khẩu**: băm bằng BCrypt (Spring Security mặc định), không lưu plaintext, không lưu mã hoá đối
   xứng có thể giải mã ngược.
+  Chủ dự án chốt 2026-10-30: tối đa **72 byte UTF-8**, không cắt mật khẩu; vượt giới hạn trả `IDT-V02`
+  khi đặt mật khẩu (`DEC-2026-1030-bcrypt-password-byte-limit`). Mức tối thiểu vẫn 8 ký tự, có chữ và số;
+  quy tắc này thay giới hạn 128 ký tự trước đây trong tài liệu màn hình.
 - **Access Token**: JWT ký bằng khoá bất đối xứng (RS256), TTL 15 phút (`02-bd/architecture/F1_identity.md`
-  mục 5). Claim chỉ chứa `sub` (user id), `base_category`, `role_code`, `iat`, `exp` — **không** nhúng
+  mục 5). Claim chỉ chứa `sub` (user id), `base_category`, `role_code`, `sid` (family id của refresh token, để
+  đổi mật khẩu giữ lại đúng phiên đang thao tác, sửa 2026-10-31, `DEC-2026-1031-access-token-session-id`), `iat`, `exp` — **không** nhúng
   toàn bộ ma trận quyền vào token, vì đổi ô ma trận phải có hiệu lực ngay không cần chờ token hết hạn
   (`F1_identity.md` dòng 50) — quyền chi tiết luôn tra tại thời điểm request qua cache (mục 3).
 - **Refresh Token**: chuỗi ngẫu nhiên (không phải JWT), lưu ở cookie `HttpOnly` + `Secure` + `SameSite=Strict`.

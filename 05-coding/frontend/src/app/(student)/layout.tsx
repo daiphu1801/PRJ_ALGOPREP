@@ -1,8 +1,11 @@
 import type { ReactNode } from "react";
-import { AppShell } from "@/widgets/app-shell";
+import { AppShell, RoleGate } from "@/widgets/app-shell";
 
-// Real route protection (session/role check) is middleware.ts's job — not built yet because
-// there's no real auth endpoint (03-dd/api/F1_identity.md doesn't exist). This layout only wires up AppShell.
+// RoleGate only redirects (UX). The backend enforces access on every request.
 export default function StudentLayout({ children }: { children: ReactNode }) {
-  return <AppShell area="student">{children}</AppShell>;
+  return (
+    <RoleGate area="student">
+      <AppShell area="student">{children}</AppShell>
+    </RoleGate>
+  );
 }

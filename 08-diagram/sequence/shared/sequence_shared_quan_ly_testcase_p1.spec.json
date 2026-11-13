@@ -2,38 +2,142 @@
   "_": "Thiết kế dự kiến cho A2/A3. Nguồn: 03-dd/api/F2_problem-bank.md mục 46; 02-bd/storage/F2_problem-bank.md; 01-rd/system/SYS0101_backend_architecture.md mục 5.3. TestcaseCtrl = TestcaseController; RequestUrlCmd = RequestTestcaseBulkUploadUrlCommandHandler; StorePort = ObjectStorePort; SessionPort = UploadSessionPort [SoT: Suy luận]. MinioAdapter là adapter thiết kế dự kiến. Trang này thể hiện cấp URL tạm, lưu phiên chờ qua SessionPort và trình duyệt tải trực tiếp lên MinIO. Adapter Redis và read port kiểm trần 500 testcase được lược khỏi hình, vẫn bắt buộc khi coding. Testcase chưa được ghi vào PostgreSQL ở bước này; xác nhận và ghi DB ở trang 1b/1c. Không đưa object key hay URL của testcase Hidden cho A1.",
   "kind": "sequence",
   "title": "Sơ đồ tuần tự chi tiết - Cấp chỗ tải testcase (1a/3)",
-  "covers": ["F2-07"],
+  "covers": [
+    "F2-07"
+  ],
   "mode": "color",
   "sequence": {
     "detail": true,
     "participants": [
-      {"name": "Người soạn đề", "role": "actor"},
-      {"name": "TestcaseCtrl", "role": "controller", "stereo": "presentation"},
-      {"name": "RequestUrlCmd", "role": "service", "stereo": "application command"},
-      {"name": "SessionPort", "role": "repository", "stereo": "Redis output port"},
-      {"name": "StorePort", "role": "repository", "stereo": "domain output port"},
-      {"name": "MinioAdapter", "role": "external", "stereo": "infrastructure"},
-      {"name": "MinIO", "role": "external", "stereo": "kho tệp"}
+      {
+        "name": "Người soạn đề",
+        "role": "actor"
+      },
+      {
+        "name": "ProblemTestcaseController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "RequestUrlCmd",
+        "role": "service",
+        "stereo": "application command"
+      },
+      {
+        "name": "SessionPort",
+        "role": "repository",
+        "stereo": "Redis output port"
+      },
+      {
+        "name": "TestcaseObjectStorePort",
+        "role": "repository",
+        "stereo": "domain output port"
+      },
+      {
+        "name": "MinioTestcaseObjectStore",
+        "role": "external",
+        "stereo": "infrastructure"
+      },
+      {
+        "name": "MinIO",
+        "role": "external",
+        "stereo": "kho tệp"
+      }
     ],
     "messages": [
-      {"phase": "Giai đoạn 1 - Xin chỗ tải từng cặp tệp (F2-07)"},
-      {"from": "Người soạn đề", "to": "Người soạn đề", "text": "Ghép cặp tệp đầu vào và đáp án"},
-      {"from": "Người soạn đề", "to": "TestcaseCtrl", "text": "Gửi số lượng, kích thước và mức hiển thị"},
-      {"from": "TestcaseCtrl", "to": "TestcaseCtrl", "text": "Kiểm tra quyền soạn đề và dữ liệu"},
-      {"from": "TestcaseCtrl", "to": "RequestUrlCmd", "text": "Yêu cầu chỗ tải cho từng cặp"},
-      {"from": "RequestUrlCmd", "to": "StorePort", "text": "Xin đường tải tạm cho từng tệp"},
-      {"from": "StorePort", "to": "MinioAdapter", "text": "Chuyển yêu cầu cấp đường tải"},
-      {"from": "MinioAdapter", "to": "MinIO", "text": "Ký đường tải có hạn 15 phút"},
-      {"from": "MinIO", "to": "MinioAdapter", "text": "Đường tải đã ký", "kind": "return"},
-      {"from": "MinioAdapter", "to": "StorePort", "text": "Đường tải tạm", "kind": "return"},
-      {"from": "StorePort", "to": "RequestUrlCmd", "text": "Đường tải tạm", "kind": "return"},
-      {"from": "RequestUrlCmd", "to": "SessionPort", "text": "Lưu phiên chờ trong 20 phút"},
-      {"from": "SessionPort", "to": "RequestUrlCmd", "text": "Mã phiên tải", "kind": "return"},
-      {"from": "RequestUrlCmd", "to": "TestcaseCtrl", "text": "Mã phiên và đường tải tạm", "kind": "return"},
-      {"from": "TestcaseCtrl", "to": "Người soạn đề", "text": "Trả đường tải cho từng cặp", "kind": "return"},
-      {"phase": "Giai đoạn 2 - Trình duyệt tải tệp trực tiếp"},
-      {"from": "Người soạn đề", "to": "MinIO", "text": "Tải trực tiếp từng tệp lên kho"},
-      {"from": "MinIO", "to": "Người soạn đề", "text": "Báo đã nhận tệp", "kind": "return"}
+      {
+        "phase": "Giai đoạn 1 - Xin chỗ tải từng cặp tệp (F2-07)"
+      },
+      {
+        "from": "Người soạn đề",
+        "to": "Người soạn đề",
+        "text": "Ghép cặp tệp đầu vào và đáp án"
+      },
+      {
+        "from": "Người soạn đề",
+        "to": "ProblemTestcaseController",
+        "text": "Gửi số lượng, kích thước và mức hiển thị"
+      },
+      {
+        "from": "ProblemTestcaseController",
+        "to": "ProblemTestcaseController",
+        "text": "Kiểm tra quyền soạn đề và dữ liệu"
+      },
+      {
+        "from": "ProblemTestcaseController",
+        "to": "RequestUrlCmd",
+        "text": "Yêu cầu chỗ tải cho từng cặp"
+      },
+      {
+        "from": "RequestUrlCmd",
+        "to": "TestcaseObjectStorePort",
+        "text": "Xin đường tải tạm cho từng tệp"
+      },
+      {
+        "from": "TestcaseObjectStorePort",
+        "to": "MinioTestcaseObjectStore",
+        "text": "Chuyển yêu cầu cấp đường tải"
+      },
+      {
+        "from": "MinioTestcaseObjectStore",
+        "to": "MinIO",
+        "text": "Ký đường tải có hạn 15 phút"
+      },
+      {
+        "from": "MinIO",
+        "to": "MinioTestcaseObjectStore",
+        "text": "Đường tải đã ký",
+        "kind": "return"
+      },
+      {
+        "from": "MinioTestcaseObjectStore",
+        "to": "TestcaseObjectStorePort",
+        "text": "Đường tải tạm",
+        "kind": "return"
+      },
+      {
+        "from": "TestcaseObjectStorePort",
+        "to": "RequestUrlCmd",
+        "text": "Đường tải tạm",
+        "kind": "return"
+      },
+      {
+        "from": "RequestUrlCmd",
+        "to": "SessionPort",
+        "text": "Lưu phiên chờ trong 20 phút"
+      },
+      {
+        "from": "SessionPort",
+        "to": "RequestUrlCmd",
+        "text": "Mã phiên tải",
+        "kind": "return"
+      },
+      {
+        "from": "RequestUrlCmd",
+        "to": "ProblemTestcaseController",
+        "text": "Mã phiên và đường tải tạm",
+        "kind": "return"
+      },
+      {
+        "from": "ProblemTestcaseController",
+        "to": "Người soạn đề",
+        "text": "Trả đường tải cho từng cặp",
+        "kind": "return"
+      },
+      {
+        "phase": "Giai đoạn 2 - Trình duyệt tải tệp trực tiếp"
+      },
+      {
+        "from": "Người soạn đề",
+        "to": "MinIO",
+        "text": "Tải trực tiếp từng tệp lên kho"
+      },
+      {
+        "from": "MinIO",
+        "to": "Người soạn đề",
+        "text": "Báo đã nhận tệp",
+        "kind": "return"
+      }
     ]
   }
 }

@@ -19,6 +19,10 @@ import {
   computeInterviewResult,
   getScriptedQuestion,
 } from "./__mock__/mock-interview-mocks";
+import {
+  realListAcceptedSubmissionOptions,
+  realListBankQuestionOptions,
+} from "./real-entry-options";
 
 const SPEC = "03-dd/api/F5_ai-review.md";
 
@@ -26,6 +30,7 @@ export const useAcceptedSubmissionOptions = () =>
   useMockQuery<AcceptedSubmissionOption[]>({
     queryKey: ["mock-interview", "accepted-submissions"],
     mock: () => ACCEPTED_SUBMISSIONS,
+    real: realListAcceptedSubmissionOptions,
     spec: SPEC,
   });
 
@@ -33,6 +38,7 @@ export const useBankQuestionOptions = () =>
   useMockQuery<BankQuestionOption[]>({
     queryKey: ["mock-interview", "bank-questions"],
     mock: () => BANK_QUESTIONS,
+    real: realListBankQuestionOptions,
     spec: SPEC,
   });
 

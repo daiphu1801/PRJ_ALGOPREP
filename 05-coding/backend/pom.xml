@@ -56,6 +56,7 @@
 
     <!-- Phiên bản công cụ đã xác minh trên repo1.maven.org ngày 2026-09-01. -->
     <archunit.version>1.5.0</archunit.version>
+    <spring-ai.version>2.0.2</spring-ai.version>
     <spotless.version>3.10.1</spotless.version>
     <google-java-format.version>1.36.1</google-java-format.version>
     <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
@@ -81,6 +82,15 @@
 
   <dependencyManagement>
     <dependencies>
+      <!-- F5-2: Spring AI 2.0.x BOM (DEC-2026-1108-llm-provider-openrouter-free-models). Only
+           algoprep-ai-review declares a Spring AI artifact. -->
+      <dependency>
+        <groupId>org.springframework.ai</groupId>
+        <artifactId>spring-ai-bom</artifactId>
+        <version>${spring-ai.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
       <dependency>
         <groupId>com.tngtech.archunit</groupId>
         <artifactId>archunit-junit5</artifactId>

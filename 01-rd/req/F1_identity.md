@@ -187,6 +187,7 @@ gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang c�
       nhất một bài `[SoT: Suy luận]`; "Cần hỗ trợ" — điểm trung bình giảm liên tiếp qua từ hai mốc tuần gần
       nhất trở lên `[SoT: Suy luận]`. Khối "Cần chú ý" **luôn lọc theo đúng tab lớp đang chọn**, giống bảng
       danh sách học viên (sửa thiếu sót của prototype, nơi khối này bỏ qua bộ lọc lớp).
+      **Đã bỏ khối riêng ở INS0203 (Owner chốt 2026-11-07)**: nhãn vẫn dùng cho cột Trạng thái của bảng; endpoint #58 giữ làm hợp đồng, không màn nào đọc (xem `01-rd/screens/teacher/INS0203_class_progress.md`).
     - **Danh sách học viên khi lớp đông**: phân trang cùng kiểu với `problem_list` (F2-11); có trạng thái
       rỗng riêng khi lớp chưa có học viên, và trạng thái lỗi tải dữ liệu kèm nút thử lại — chi tiết UI để
       BD/DD.

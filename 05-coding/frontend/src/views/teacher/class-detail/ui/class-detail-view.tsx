@@ -1,4 +1,6 @@
-// PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
+// PROTOTYPE with a real API behind it (task 12, 03-dd/api/F1_identity.md #19, #21 to #24, #26, #27);
+// see 06-plan/PROTOTYPE_DEBT.md. In real mode the roster shows the contact details the server has and
+// leaves out status, average, completion and last activity: they need F4 metrics (not built).
 //
 // Class detail page, INS0205 `class_detail` (owner 2026-10-11, reversing the 2026-08-28 answer in RD
 // INS0201 Q3 that a child page was not needed: "3 nút với popup không cung cấp đủ thông tin").
@@ -18,19 +20,20 @@ import { ArrowLeft, Pencil, Trash2, UserMinus } from "lucide-react";
 import {
   formatClassSchedule,
   initialsOfClassStudent,
-  useClassStudents,
+  useClassRoster,
   useCreateInviteCode,
   useDeleteClass,
   useInstructorClasses,
   useInviteCodes,
   useRemoveStudent,
   useUpdateClass,
+  type ClassRosterRow,
   type ClassSchedule,
-  type ClassStudent,
   STUDENT_STATUS_VARIANT,
 } from "@/entities/class";
 import { ClassFormDialog, type ClassDialogState } from "@/features/edit-class";
-import { useT } from "@/shared/i18n";
+import { useApiErrorMessage, useT } from "@/shared/i18n";
+import { formatDateVN } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
 import {
   Badge,
@@ -54,11 +57,12 @@ const dayMonthYear = (iso: string) => {
 export function ClassDetailView({ classId }: { classId: string }) {
   const t = useT("classDetail");
   const tm = useT("classManagement");
+  const toMessage = useApiErrorMessage();
   const router = useRouter();
 
   const classesQuery = useInstructorClasses();
   const klass = (classesQuery.data ?? []).find((c) => c.id === classId);
-  const studentsQuery = useClassStudents(classId);
+  const studentsQuery = useClassRoster(classId);
   const invitesQuery = useInviteCodes(classId, true);
 
   const updateClass = useUpdateClass();
@@ -68,7 +72,7 @@ export function ClassDetailView({ classId }: { classId: string }) {
 
   const [formDialog, setFormDialog] = useState<ClassDialogState>(null);
   const [deleting, setDeleting] = useState(false);
-  const [removeTarget, setRemoveTarget] = useState<ClassStudent | null>(null);
+  const [removeTarget, setRemoveTarget] = useState<ClassRosterRow | null>(null);
 
   const back = (
     <IconAction
@@ -98,7 +102,63 @@ export function ClassDetailView({ classId }: { classId: string }) {
 
   const dayLabel = (day: number) => tm(`schedule.dayShort.${day}`);
   const summary = formatClassSchedule(klass.schedule, dayLabel);
-  const studentColumns: DataTableColumn<ClassStudent>[] = [
+  // The judge figures come with the roster when the server could read them (F1 #26).
+  const hasMetrics = (studentsQuery.data ?? []).some((row) => row.metrics);
+  const metricColumns: DataTableColumn<ClassRosterRow>[] = [
+    {
+      key: "status",
+      header: t("students.col.status"),
+      render: (row) =>
+        row.metrics ? (
+          <Badge variant={STUDENT_STATUS_VARIANT[row.metrics.status]}>
+            {t(`status.${row.metrics.status}`)}
+          </Badge>
+        ) : null,
+    },
+    {
+      key: "avgScore",
+      header: t("students.col.avgScore"),
+      align: "right",
+      render: (row) =>
+        !row.metrics || row.metrics.avgScore === null
+          ? "-"
+          : row.metrics.avgScore.toFixed(1),
+    },
+    {
+      key: "completion",
+      header: t("students.col.completion"),
+      align: "right",
+      render: (row) =>
+        row.metrics
+          ? row.metrics.completionPct === null
+            ? "-"
+            : `${row.metrics.completionPct}%`
+          : "",
+    },
+    {
+      key: "lastActive",
+      header: t("students.col.lastActive"),
+      render: (row) => row.metrics?.lastActiveLabel ?? "",
+    },
+  ];
+  const contactColumns: DataTableColumn<ClassRosterRow>[] = [
+    {
+      key: "email",
+      header: t("students.col.email"),
+      render: (row) => row.email ?? "-",
+    },
+    {
+      key: "phone",
+      header: t("students.col.phone"),
+      render: (row) => row.phone ?? "-",
+    },
+    {
+      key: "joinedAt",
+      header: t("students.col.joinedAt"),
+      render: (row) => (row.joinedAt ? formatDateVN(row.joinedAt) : "-"),
+    },
+  ];
+  const studentColumns: DataTableColumn<ClassRosterRow>[] = [
     {
       key: "name",
       header: t("students.col.name"),
@@ -117,32 +177,9 @@ export function ClassDetailView({ classId }: { classId: string }) {
         </Link>
       ),
     },
-    {
-      key: "status",
-      header: t("students.col.status"),
-      render: (row) => (
-        <Badge variant={STUDENT_STATUS_VARIANT[row.status]}>
-          {t(`status.${row.status}`)}
-        </Badge>
-      ),
-    },
-    {
-      key: "avgScore",
-      header: t("students.col.avgScore"),
-      align: "right",
-      render: (row) => (row.avgScore === null ? "-" : row.avgScore.toFixed(1)),
-    },
-    {
-      key: "completion",
-      header: t("students.col.completion"),
-      align: "right",
-      render: (row) => `${row.completionPct}%`,
-    },
-    {
-      key: "lastActive",
-      header: t("students.col.lastActive"),
-      render: (row) => row.lastActiveLabel,
-    },
+    // Contact details always show; the judge figures join them when the server could read them.
+    ...contactColumns,
+    ...(hasMetrics ? metricColumns : []),
     {
       key: "remove",
       header: "",
@@ -208,7 +245,7 @@ export function ClassDetailView({ classId }: { classId: string }) {
               onClick={() =>
                 createInvite.mutate(classId, {
                   onSuccess: () => toast.success(tm("toast.inviteCreated")),
-                  onError: () => toast.error(tm("toast.failed")),
+                  onError: (error) => toast.error(toMessage(error)),
                 })
               }
             >
@@ -218,6 +255,8 @@ export function ClassDetailView({ classId }: { classId: string }) {
         >
           {invitesQuery.isLoading ? (
             <Skeleton className="h-16" />
+          ) : invitesQuery.isError ? (
+            <QueryError query={invitesQuery} />
           ) : (invitesQuery.data ?? []).length === 0 ? (
             <p className="text-sm text-[var(--color-text-muted)]">
               {t("invite.empty")}
@@ -272,16 +311,15 @@ export function ClassDetailView({ classId }: { classId: string }) {
         key={formDialog?.mode === "edit" ? formDialog.target.id : "closed"}
         dialog={formDialog}
         onClose={() => setFormDialog(null)}
-        onSubmit={(form) => {
-          updateClass.mutate(
-            { id: classId, form },
-            {
-              onSuccess: () =>
-                toast.success(tm("toast.updated", { name: form.name })),
-              onError: () => toast.error(tm("toast.failed")),
-            },
-          );
-          setFormDialog(null);
+        onSubmit={async (form) => {
+          try {
+            await updateClass.mutateAsync({ id: classId, form });
+            toast.success(tm("toast.updated", { name: form.name }));
+          } catch (error) {
+            // The dialog stays open with what was typed; the reason comes from the error code.
+            toast.error(toMessage(error));
+            throw error;
+          }
         }}
         t={tm}
       />
@@ -296,7 +334,7 @@ export function ClassDetailView({ classId }: { classId: string }) {
               toast.success(tm("toast.deleted", { name }));
               router.push("/instructor/classes");
             },
-            onError: () => toast.error(tm("toast.failed")),
+            onError: (error) => toast.error(toMessage(error)),
           });
           setDeleting(false);
         }}
@@ -313,13 +351,16 @@ export function ClassDetailView({ classId }: { classId: string }) {
         onClose={() => setRemoveTarget(null)}
         onConfirm={() => {
           if (removeTarget) {
-            removeStudent.mutate(removeTarget.id, {
-              onSuccess: () =>
-                toast.success(
-                  t("toast.studentRemoved", { name: removeTarget.name }),
-                ),
-              onError: () => toast.error(tm("toast.failed")),
-            });
+            removeStudent.mutate(
+              { classId, studentId: removeTarget.id },
+              {
+                onSuccess: () =>
+                  toast.success(
+                    t("toast.studentRemoved", { name: removeTarget.name }),
+                  ),
+                onError: (error) => toast.error(toMessage(error)),
+              },
+            );
           }
           setRemoveTarget(null);
         }}

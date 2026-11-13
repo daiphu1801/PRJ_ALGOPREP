@@ -10,6 +10,7 @@
 "use client";
 
 import { useMemo, useState, type ReactNode } from "react";
+import { isMockMode } from "@/shared/api";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -23,12 +24,13 @@ import {
   User,
   type LucideIcon,
 } from "lucide-react";
-import { useClassAssignments } from "@/entities/class-assignment";
+import { useClassAssignedProblems } from "@/entities/class-assignment";
 import {
   matchesResultFilter,
   SUBMISSION_LANGUAGE_LABEL,
   SUBMISSION_STATUS_VARIANT,
   useInstructorReadableSubmissions,
+  useStudentClassSubmissionHistory,
   type SubmissionDetail,
   type SubmissionResultFilter,
 } from "@/entities/submission";
@@ -117,24 +119,43 @@ export function ClassStudentDetailView({
   const t = useT("classStudentDetail");
   const classesQuery = useInstructorClasses();
   const studentQuery = useClassStudentDetail(studentId, classId);
-  const assignmentsQuery = useClassAssignments();
+  const assignedQuery = useClassAssignedProblems(classId);
   const removeStudent = useRemoveStudent();
   const router = useRouter();
   const [confirmingRemove, setConfirmingRemove] = useState(false);
   const tVerdict = useT("submissionResult");
+  const tCommon = useT("common");
   const [historyFilter, setHistoryFilter] =
     useState<SubmissionResultFilter>("all");
 
   const className =
     classesQuery.data?.find((c) => c.id === classId)?.name ?? classId;
 
-  const classAssignments = useMemo(
-    () =>
-      (assignmentsQuery.data ?? []).filter((row) =>
-        row.assignedClassIds.includes(classId),
-      ),
-    [assignmentsQuery.data, classId],
-  );
+  // Real mode (F1 #28): the rows are the problems still given to the class, titles and topics from
+  // every page of F2 #49 (useClassAssignedProblems); a problem missing from it still shows "-".
+  const progress = studentQuery.data?.assignmentProgress;
+  const classAssignments = useMemo(() => {
+    if (progress) {
+      const known = new Map(
+        (assignedQuery.data ?? []).map((row) => [row.id, row]),
+      );
+      return progress.map((item) => {
+        const row = known.get(item.problemId);
+        return {
+          id: item.problemId,
+          title: row?.title ?? "-",
+          topic: row?.topic ?? "-",
+          acRate: row?.acRate ?? null,
+        };
+      });
+    }
+    return (assignedQuery.data ?? []).map((row) => ({
+      id: row.id,
+      title: row.title,
+      topic: row.topic,
+      acRate: row.acRate as number | null,
+    }));
+  }, [progress, assignedQuery.data]);
 
   const topicBreakdown = useMemo(() => {
     const byTopic = new Map<string, number>();
@@ -143,10 +164,14 @@ export function ClassStudentDetailView({
     return [...byTopic.entries()];
   }, [classAssignments]);
 
-  const readableQuery = useInstructorReadableSubmissions();
+  const readableQuery = useInstructorReadableSubmissions(isMockMode());
+  const realHistory = useStudentClassSubmissionHistory(classId, studentId);
   const submissionHistory = useMemo(
-    () => buildSubmissionHistory(readableQuery.data ?? []),
-    [readableQuery.data],
+    () =>
+      isMockMode()
+        ? buildSubmissionHistory(readableQuery.data ?? [])
+        : (realHistory.data?.pages.flatMap((page) => page.items) ?? []),
+    [readableQuery.data, realHistory.data],
   );
 
   const visibleHistory = useMemo(
@@ -176,8 +201,26 @@ export function ClassStudentDetailView({
       key: "acRate",
       header: t("assignmentProgress.col.acRate"),
       align: "right",
-      render: (row) => `${row.acRate}%`,
+      render: (row) => (row.acRate == null ? "-" : `${row.acRate}%`),
     },
+    // Real mode only (F1 #28): the best result of THIS student on the problem, since it was given.
+    ...(student?.assignmentProgress
+      ? [
+          {
+            key: "best",
+            header: t("assignmentProgress.col.best"),
+            align: "right" as const,
+            render: (row: (typeof classAssignments)[number]) => {
+              const best = student.assignmentProgress?.find(
+                (item) => item.problemId === row.id,
+              );
+              return best?.bestVerdict
+                ? `${Math.round((best.bestRatio ?? 0) * 100)}% · ${tVerdict(`verdict.${best.bestVerdict}`)}`
+                : "-";
+            },
+          },
+        ]
+      : []),
   ];
 
   const historyColumns: DataTableColumn<(typeof submissionHistory)[number]>[] =
@@ -381,6 +424,9 @@ export function ClassStudentDetailView({
       </Card>
 
       <Card title={t("submissionHistory.title")}>
+        {!isMockMode() && realHistory.isError ? (
+          <QueryError query={realHistory} />
+        ) : null}
         <div className="mb-3.5 flex flex-wrap items-center gap-2.5">
           <FilterMenu
             label={t("submissionHistory.filter.label")}
@@ -411,21 +457,32 @@ export function ClassStudentDetailView({
           emptyMessage={t("empty")}
           minWidth={760}
         />
+        {!isMockMode() && realHistory.hasNextPage ? (
+          <Button
+            disabled={realHistory.isFetchingNextPage}
+            onClick={() => void realHistory.fetchNextPage()}
+          >
+            {tCommon("loadMore")}
+          </Button>
+        ) : null}
       </Card>
 
       <ConfirmDialog
         open={confirmingRemove}
         onClose={() => setConfirmingRemove(false)}
         onConfirm={() => {
-          removeStudent.mutate(studentId, {
-            onSuccess: () => {
-              toast.success(t("toast.removed", { name: student.name }));
-              // The learner left the class, so this page has nothing left to show: back to the caller
-              // (BD INS0204 Q10, DEC-2026-1014-instructor-batch3-4-contracts-and-removal).
-              router.back();
+          removeStudent.mutate(
+            { classId, studentId },
+            {
+              onSuccess: () => {
+                toast.success(t("toast.removed", { name: student.name }));
+                // The learner left the class, so this page has nothing left to show: back to the caller
+                // (BD INS0204 Q10, DEC-2026-1014-instructor-batch3-4-contracts-and-removal).
+                router.back();
+              },
+              onError: () => toast.error(t("toast.failed")),
             },
-            onError: () => toast.error(t("toast.failed")),
-          });
+          );
           setConfirmingRemove(false);
         }}
         title={t("popup.removeTitle", { name: student.name })}

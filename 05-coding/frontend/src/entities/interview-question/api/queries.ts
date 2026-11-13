@@ -4,17 +4,14 @@
 // defines the endpoints; `fetchReal` is a NOT_IMPLEMENTED stub (shared/api `useMockQuery`).
 import { useMockMutation, useMockQuery } from "@/shared/api";
 import type {
-  AnswerCriterionResult,
   InterviewQuestion,
   InterviewQuestionPage,
-  RubricCriterion,
 } from "../model/types";
 import type { QuestionDraft } from "../model/csv-import";
 import {
   importQuestions,
   loadInterviewQuestion,
   loadInterviewQuestionPage,
-  mockCriterionResults,
 } from "./__mock__/interview-question-mocks";
 
 const SPEC = "03-dd/api/F6_interview-bank.md";
@@ -45,14 +42,4 @@ export const useImportInterviewQuestions = () =>
     mock: importQuestions,
     spec: SPEC,
     invalidate: [PAGE_KEY],
-  });
-
-/**
- * Per-criterion result of a practice answer (USR0402). Stand-in for the AI grader of F5/F6; the
- * rubric is the only input, the learner's answer text never reaches this call.
- */
-export const useGradePracticeAnswer = () =>
-  useMockMutation<RubricCriterion[], AnswerCriterionResult[]>({
-    mock: mockCriterionResults,
-    spec: SPEC,
   });

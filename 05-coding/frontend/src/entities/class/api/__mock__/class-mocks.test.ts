@@ -44,7 +44,7 @@ describe("class mock: removing a student keeps the history and only marks the le
     const after = (await listInstructorClasses()).find(
       (c) => c.id === absent.classId,
     )!;
-    expect(after.absentCount).toBe(absentBefore - 1);
+    expect(after.absentCount).toBe(absentBefore! - 1);
     expect(after.studentCount).toBe(totalBefore - 1);
   });
 });

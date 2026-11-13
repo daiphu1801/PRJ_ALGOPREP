@@ -10,17 +10,17 @@
     "detail": true,
     "participants": [
       {
-        "name": "TimeoutSweepJob",
+        "name": "SweepStaleSubmissionsCommandHandler",
         "role": "service",
         "stereo": "scheduled job"
       },
       {
-        "name": "SweepStorePort",
+        "name": "SubmissionWorkerRepository",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "JudgeDbAdapter",
+        "name": "JdbcSubmissionWorkerRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -30,7 +30,7 @@
         "stereo": "schema judge"
       },
       {
-        "name": "SubmissionEventPort",
+        "name": "SubmissionProgressPort",
         "role": "repository",
         "stereo": "output port"
       },
@@ -44,35 +44,35 @@
         "phase": "Giai đoạn 3 - Quét bài nộp đứng im"
       },
       {
-        "from": "TimeoutSweepJob",
-        "to": "SweepStorePort",
+        "from": "SweepStaleSubmissionsCommandHandler",
+        "to": "SubmissionWorkerRepository",
         "text": "Xin khóa chạy và đọc cờ tạm dừng"
       },
       {
-        "from": "SweepStorePort",
-        "to": "JudgeDbAdapter",
+        "from": "SubmissionWorkerRepository",
+        "to": "JdbcSubmissionWorkerRepository",
         "text": "Tìm bài quá hạn phù hợp"
       },
       {
-        "from": "JudgeDbAdapter",
+        "from": "JdbcSubmissionWorkerRepository",
         "to": "PostgreSQL",
         "text": "Lấy khóa, đọc cờ và tối đa 200 bài quá 5 phút"
       },
       {
         "from": "PostgreSQL",
-        "to": "JudgeDbAdapter",
+        "to": "JdbcSubmissionWorkerRepository",
         "text": "Danh sách ứng viên",
         "kind": "return"
       },
       {
-        "from": "JudgeDbAdapter",
-        "to": "SweepStorePort",
+        "from": "JdbcSubmissionWorkerRepository",
+        "to": "SubmissionWorkerRepository",
         "text": "Danh sách ứng viên",
         "kind": "return"
       },
       {
-        "from": "SweepStorePort",
-        "to": "TimeoutSweepJob",
+        "from": "SubmissionWorkerRepository",
+        "to": "SweepStaleSubmissionsCommandHandler",
         "text": "Danh sách ứng viên",
         "kind": "return"
       },
@@ -81,46 +81,46 @@
           "label": "Có bài treo?",
           "then": [
             {
-              "from": "TimeoutSweepJob",
-              "to": "SweepStorePort",
+              "from": "SweepStaleSubmissionsCommandHandler",
+              "to": "SubmissionWorkerRepository",
               "text": "Chốt từng bài còn chưa kết thúc"
             },
             {
-              "from": "SweepStorePort",
-              "to": "JudgeDbAdapter",
+              "from": "SubmissionWorkerRepository",
+              "to": "JdbcSubmissionWorkerRepository",
               "text": "Ghi lỗi hệ thống và sự kiện cùng giao dịch"
             },
             {
-              "from": "JudgeDbAdapter",
+              "from": "JdbcSubmissionWorkerRepository",
               "to": "PostgreSQL",
               "text": "Đổi trạng thái có điều kiện và lưu sự kiện cần phát"
             },
             {
               "from": "PostgreSQL",
-              "to": "JudgeDbAdapter",
+              "to": "JdbcSubmissionWorkerRepository",
               "text": "Số bài chốt thành công",
               "kind": "return"
             },
             {
-              "from": "JudgeDbAdapter",
-              "to": "SweepStorePort",
+              "from": "JdbcSubmissionWorkerRepository",
+              "to": "SubmissionWorkerRepository",
               "text": "Số bài chốt thành công",
               "kind": "return"
             },
             {
-              "from": "SweepStorePort",
-              "to": "TimeoutSweepJob",
+              "from": "SubmissionWorkerRepository",
+              "to": "SweepStaleSubmissionsCommandHandler",
               "text": "Số bài chốt thành công",
               "kind": "return"
             },
             {
-              "from": "TimeoutSweepJob",
-              "to": "SubmissionEventPort",
+              "from": "SweepStaleSubmissionsCommandHandler",
+              "to": "SubmissionProgressPort",
               "text": "Báo trạng thái mới sau commit",
               "kind": "async"
             },
             {
-              "from": "SubmissionEventPort",
+              "from": "SubmissionProgressPort",
               "to": "WebSocket",
               "text": "Đẩy trạng thái bài đã chốt",
               "kind": "async"
@@ -128,8 +128,8 @@
           ],
           "else": [
             {
-              "from": "TimeoutSweepJob",
-              "to": "TimeoutSweepJob",
+              "from": "SweepStaleSubmissionsCommandHandler",
+              "to": "SweepStaleSubmissionsCommandHandler",
               "text": "Kết thúc lượt quét, không đổi dữ liệu"
             }
           ]

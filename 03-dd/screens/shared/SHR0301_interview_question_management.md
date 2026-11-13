@@ -32,6 +32,19 @@
 
 EVT-10/32 nhân bản đã bỏ. API quản trị dùng cùng path cho A2/A3 nhưng quyền thao tác danh mục chỉ A3, kiểm lại ở server.
 
+**Triển khai 2026-11-11 (nối API thật, lát M1 phía câu hỏi; danh mục §9–18 do lát khác nối).** Bảng 2.1 ghi cách bản dựng gọi F6; hợp đồng vẫn chỉ nằm ở `03-dd/api/F6_interview-bank.md`. Chế độ dữ liệu giả trả cùng hợp đồng (`entities/interview-question/api/admin-mock.ts`), nên một luồng màn cho cả hai chế độ.
+
+**Bảng 2.1: Việc gọi F6 của `SHR0301` trong bản dựng**
+
+| EVT | Hook (`entities/interview-question/api/admin-queries.ts`) | Gọi | Ghi chú |
+| :--- | :--- | :--- | :--- |
+| 1–6, 28–31 | `useAdminQuestionList(params)` | `GET /interview-bank/admin/questions` | Chỉ gửi tham số có giá trị: `page`, `pageSize` (8/20/50), `q` (cắt 100, debounce 300 ms), `topic`/`level` là **`code`** (bỏ khi "all"), `sort` + `dir` (chỉ khi đã bấm cột). Khoá cột màn -> `sort`: code->`displayNo`, question->`title`, topic, level, followUps->`followUpCount`, rubric->`rubricCount`, usage->`usageCount`, score->`averageScorePercent`. Trang cũ được giữ trong lúc tải trang mới (`keepPreviousData`) |
+| 11, 33–35 | `useRetireAdminQuestions()` | `POST .../bulk/delete` `{ ids }` | Một hoặc nhiều UUID. `200` vẫn có thể có `failedItems`: toast `bulkPartial` kèm lý do `apiErrors[INB-010]`, id thất bại **giữ chọn**. Lỗi `INB-V02`, `INB-301`, `INB-503` và lỗi lạ đều qua `useApiErrorMessage` |
+| 8, 37–39 | `useImportAdminQuestions()` | `POST .../import` `{ rows }` | Client tách CSV và kiểm cấu trúc (giữ `parseQuestionsCsv`), rồi `toImportRows` gắn số dòng vật lý của từng dòng hợp lệ; server kiểm lại và trả `importedCount`, `skippedRows` (cả bảy `reasonCode`, thêm `invalidField`). Báo cáo trong popup = dòng bị client loại + `skippedRows`, theo thứ tự dòng. Toast thành công chỉ khi `importedCount > 0` |
+| xem số dùng | `useQuestionUsage()` | không gọi ở chế độ thật | Chế độ thật: số câu theo chủ đề/mức đến từ `questionCount` của danh mục (`includeCounts=true`); chế độ giả đếm kho trong bộ nhớ |
+
+Khác với prototype: (1) lọc, sắp, phân trang chạy ở **server**, không còn trên toàn kho phía client; (2) **chọn dòng chỉ trong trang đang hiện**, mọi đổi bộ lọc, sắp xếp, trang hay cỡ trang đều xoá lựa chọn (BR-SC-01), nên cảnh báo "n dòng bị bộ lọc ẩn" không còn (khoá `selectionLabelHidden`, `confirmBulkDeleteHidden` thành thừa); (3) cột "Điểm TB" là phần trăm hoặc `-` (`averageScorePercent`), không còn `x.x / 5`; (4) "Mã" là `IQ-%03d` từ `displayNo`, link dòng và route dùng UUID; (5) tách "ngân hàng chưa có câu" (`meta.total = 0`, khoá `emptyBank`) khỏi "bộ lọc không khớp" (`emptyFiltered`). Chưa làm: giữ từ khoá, sắp, trang trong URL (§4 BR-SC-01), ẩn nút Nhập CSV, Sửa, Xoá theo quyền `CREATE`/`UPDATE`/`DELETE` (phía client chưa có nguồn quyền theo ô Function:Action: token chỉ có `base_category` và `role_code`, nên chờ owner quyết thêm endpoint trả quyền của người gọi; máy chủ vẫn chặn bằng `INB-301`). Đã làm 2026-11-11: nút "Thử lại" ở khối lỗi tải danh sách (khoá `retry`).
+
 ## 3. Trạng thái màn
 
 | Trạng thái | Xử lý |

@@ -16,12 +16,12 @@
         "role": "actor"
       },
       {
-        "name": "InterviewController",
+        "name": "InterviewSessionController",
         "role": "controller",
-        "stereo": "presentation"
+        "stereo": "presentation REST"
       },
       {
-        "name": "StartInterviewCmd",
+        "name": "OpenInterviewSessionCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
@@ -45,12 +45,12 @@
         "role": "external"
       },
       {
-        "name": "InterviewRepo",
+        "name": "InterviewSessionRepository",
         "role": "repository",
         "stereo": "output port F5"
       },
       {
-        "name": "AiDbAdapter",
+        "name": "JdbcInterviewSessionRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -65,7 +65,7 @@
         "phase": "Giai đoạn 3 - Tạo câu hỏi mở đầu trước khi lưu phiên"
       },
       {
-        "from": "StartInterviewCmd",
+        "from": "OpenInterviewSessionCommandHandler",
         "to": "PromptComposer",
         "text": "Dựng lời chào giai đoạn Giải trình"
       },
@@ -76,12 +76,12 @@
       },
       {
         "from": "PromptComposer",
-        "to": "StartInterviewCmd",
+        "to": "OpenInterviewSessionCommandHandler",
         "text": "Yêu cầu mở đầu an toàn",
         "kind": "return"
       },
       {
-        "from": "StartInterviewCmd",
+        "from": "OpenInterviewSessionCommandHandler",
         "to": "LlmProviderPort",
         "text": "Xin câu hỏi mở đầu"
       },
@@ -109,7 +109,7 @@
       },
       {
         "from": "LlmProviderPort",
-        "to": "StartInterviewCmd",
+        "to": "OpenInterviewSessionCommandHandler",
         "text": "Câu mở đầu hợp lệ",
         "kind": "return"
       },
@@ -117,46 +117,46 @@
         "phase": "Giai đoạn 4 - Lưu phiên sau khi có câu mở đầu hợp lệ"
       },
       {
-        "from": "StartInterviewCmd",
-        "to": "InterviewRepo",
+        "from": "OpenInterviewSessionCommandHandler",
+        "to": "InterviewSessionRepository",
         "text": "Lưu phiên, câu mở đầu và token"
       },
       {
-        "from": "InterviewRepo",
-        "to": "AiDbAdapter",
+        "from": "InterviewSessionRepository",
+        "to": "JdbcInterviewSessionRepository",
         "text": "Ghi phiên mới ở giai đoạn Giải trình"
       },
       {
-        "from": "AiDbAdapter",
+        "from": "JdbcInterviewSessionRepository",
         "to": "PostgreSQL",
         "text": "Lưu kết quả và xét khoá ngân sách"
       },
       {
         "from": "PostgreSQL",
-        "to": "AiDbAdapter",
+        "to": "JdbcInterviewSessionRepository",
         "text": "Đã lưu phiên",
         "kind": "return"
       },
       {
-        "from": "AiDbAdapter",
-        "to": "InterviewRepo",
+        "from": "JdbcInterviewSessionRepository",
+        "to": "InterviewSessionRepository",
         "text": "Phiên đã lưu",
         "kind": "return"
       },
       {
-        "from": "InterviewRepo",
-        "to": "StartInterviewCmd",
+        "from": "InterviewSessionRepository",
+        "to": "OpenInterviewSessionCommandHandler",
         "text": "Câu mở đầu và mã phiên",
         "kind": "return"
       },
       {
-        "from": "StartInterviewCmd",
-        "to": "InterviewController",
+        "from": "OpenInterviewSessionCommandHandler",
+        "to": "InterviewSessionController",
         "text": "Trả phiên mới và câu mở đầu",
         "kind": "return"
       },
       {
-        "from": "InterviewController",
+        "from": "InterviewSessionController",
         "to": "Sinh viên",
         "text": "Hiển thị câu hỏi mở đầu",
         "kind": "return"

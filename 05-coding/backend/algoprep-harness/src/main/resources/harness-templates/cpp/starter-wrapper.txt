@@ -1,0 +1,11 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+{{NODE_COMMENTS}}
+class Solution {
+public:
+    {{DECLARATION}} {
+        // Write your solution here
+        {{DEFAULT_RETURN}}
+    }
+};

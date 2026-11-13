@@ -5,17 +5,19 @@
 //   - the "Phiên chấm lại đã chạy" stat card is gone (3 cards, not 4),
 //   - the 15:18:02 "#RJ-0139" event is gone (9 events, not 10),
 //   - the "Chấm lại" category is gone (4 categories, not 5).
+import { matchesFilters } from "../../model/filters";
 import type {
   ActiveAdmin,
   AuditEvent,
-  AuditLogPage,
+  AuditLogParams,
+  AuditLogResultPage,
   CategoryCount,
 } from "../../model/types";
 
 // dc.html:402-413, the rejudge row dropped.
 const TODAY = "2026-10-08";
 
-const EVENTS: AuditEvent[] = [
+const SEED: AuditEvent[] = [
   {
     date: TODAY,
     time: "15:39:18",
@@ -24,6 +26,7 @@ const EVENTS: AuditEvent[] = [
     service: "config",
     actor: "pdai",
     id: "evt_9f2a53",
+    shortId: "evt_9f2a53",
   },
   {
     date: TODAY,
@@ -33,6 +36,7 @@ const EVENTS: AuditEvent[] = [
     service: "auth",
     actor: "pdai",
     id: "evt_9f29f7",
+    shortId: "evt_9f29f7",
     reason:
       "Phát hiện nhiều tài khoản đăng ký hàng loạt từ cùng một địa chỉ IP",
   },
@@ -44,6 +48,7 @@ const EVENTS: AuditEvent[] = [
     service: "auth",
     actor: "pdai",
     id: "evt_9f29b3",
+    shortId: "evt_9f29b3",
   },
   {
     date: TODAY,
@@ -53,6 +58,7 @@ const EVENTS: AuditEvent[] = [
     service: "content",
     actor: "pthuong",
     id: "evt_9f2984",
+    shortId: "evt_9f2984",
   },
   {
     date: TODAY,
@@ -62,6 +68,7 @@ const EVENTS: AuditEvent[] = [
     service: "permission",
     actor: "pdai",
     id: "evt_9f2911",
+    shortId: "evt_9f2911",
   },
   {
     date: TODAY,
@@ -71,6 +78,7 @@ const EVENTS: AuditEvent[] = [
     service: "auth",
     actor: "pdai",
     id: "evt_9f27e0",
+    shortId: "evt_9f27e0",
   },
   {
     date: TODAY,
@@ -80,6 +88,7 @@ const EVENTS: AuditEvent[] = [
     service: "ai-config",
     actor: "pdai",
     id: "evt_9f26a5",
+    shortId: "evt_9f26a5",
   },
   {
     date: TODAY,
@@ -89,6 +98,7 @@ const EVENTS: AuditEvent[] = [
     service: "content",
     actor: "pthuong",
     id: "evt_9f2521",
+    shortId: "evt_9f2521",
   },
   {
     date: TODAY,
@@ -98,6 +108,7 @@ const EVENTS: AuditEvent[] = [
     service: "auth",
     actor: "pdai",
     id: "evt_9f23c9",
+    shortId: "evt_9f23c9",
   },
   {
     date: TODAY,
@@ -107,6 +118,7 @@ const EVENTS: AuditEvent[] = [
     service: "permission",
     actor: "pdai",
     id: "evt_9f21a0",
+    shortId: "evt_9f21a0",
   },
 ];
 
@@ -145,33 +157,52 @@ const BREAKDOWN: CategoryCount[] = [
   { category: "content", count: 8 },
 ];
 
-// dc.html:451 — "trong 12.408 sự kiện".
+// dc.html:451 — "trong 12.408 sự kiện": the size of the synthetic history behind the cursor.
 const TOTAL_EVENTS = 12408;
 
-// Page size of "Tải thêm", and the day each older batch lands on. Synthetic history: the real list is
-// 12.408 rows behind a keyset cursor, which no mock can reproduce.
+// Page size of the list ("Tải thêm 50 dòng").
 export const LOAD_MORE_COUNT = 50;
 
-export function fetchMoreAuditEvents(loaded: number): AuditEvent[] {
-  const count = Math.min(LOAD_MORE_COUNT, TOTAL_EVENTS - loaded);
-  return Array.from({ length: Math.max(count, 0) }, (_, i) => {
-    const n = loaded + i;
-    const template = EVENTS[n % EVENTS.length]!;
-    // Five events a day, walking backwards from yesterday.
-    const day = new Date(Date.UTC(2026, 9, 7 - Math.floor(n / 5)));
-    return {
-      ...template,
-      date: day.toISOString().slice(0, 10),
-      id: `evt_${(0x9f2000 - n).toString(16)}`,
-    };
-  });
+// Synthetic history: the real list is 12.408 rows behind a keyset cursor, which no mock can
+// reproduce. Five events a day, walking backwards from yesterday.
+function syntheticEvent(n: number): AuditEvent {
+  const template = SEED[n % SEED.length]!;
+  const day = new Date(Date.UTC(2026, 9, 7 - Math.floor(n / 5)));
+  const id = `evt_${(0x9f2000 - n).toString(16)}`;
+  return { ...template, date: day.toISOString().slice(0, 10), id, shortId: id };
 }
 
-export function fetchAuditLogPage(): AuditLogPage {
+let history: AuditEvent[] | undefined;
+function allEvents(): AuditEvent[] {
+  history ??= [
+    ...SEED,
+    ...Array.from({ length: TOTAL_EVENTS - SEED.length }, (_, i) =>
+      syntheticEvent(SEED.length + i),
+    ),
+  ];
+  return history;
+}
+
+/**
+ * The page the server would return: filtered, newest first, 50 rows, the cursor is the offset. The
+ * filters work as the real endpoint's do (category, inclusive day range, text over service, actor and
+ * code), so the screen has one code path for both modes.
+ */
+export function fetchAuditLogs(
+  params: AuditLogParams,
+  cursor: string | null,
+): AuditLogResultPage {
+  const matching = allEvents().filter((event) => matchesFilters(event, params));
+  const offset = Number(cursor ?? 0);
+  const end = offset + LOAD_MORE_COUNT;
   return {
-    events: EVENTS.map((event) => ({ ...event })),
-    activeAdmins: ACTIVE_ADMINS.map((admin) => ({ ...admin })),
-    breakdown: BREAKDOWN.map((item) => ({ ...item })),
-    totalEvents: TOTAL_EVENTS,
+    events: matching.slice(offset, end).map((event) => ({ ...event })),
+    nextCursor: end < matching.length ? String(end) : null,
   };
 }
+
+export const fetchActiveAdmins = (): ActiveAdmin[] =>
+  ACTIVE_ADMINS.map((admin) => ({ ...admin }));
+
+export const fetchCategoryBreakdown = (): CategoryCount[] =>
+  BREAKDOWN.map((item) => ({ ...item }));

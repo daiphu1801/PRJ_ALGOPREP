@@ -17,30 +17,53 @@ import { Button, Modal, SelectField, TextArea } from "@/shared/ui";
 type FormShellProps = {
   title: string;
   onClose: () => void;
-  onSave: () => void;
+  onSave: () => void | Promise<void>;
   children: React.ReactNode;
 };
 
 function FormShell({ title, onClose, onSave, children }: FormShellProps) {
+  const [pending, setPending] = useState(false);
   const t = useT("problemAuthoring");
   return (
     <Modal
       open
-      onClose={onClose}
+      onClose={() => {
+        if (!pending) onClose();
+      }}
       title={title}
       className="max-w-lg"
       footer={
         <>
-          <Button variant="ghost" size="sm" onClick={onClose}>
+          <Button
+            variant="ghost"
+            size="sm"
+            disabled={pending}
+            onClick={onClose}
+          >
             {t("dialog.cancel")}
           </Button>
-          <Button size="sm" onClick={onSave}>
+          <Button
+            size="sm"
+            disabled={pending}
+            aria-busy={pending}
+            onClick={async () => {
+              if (pending) return;
+              setPending(true);
+              try {
+                await onSave();
+              } finally {
+                setPending(false);
+              }
+            }}
+          >
             {t("dialog.save")}
           </Button>
         </>
       }
     >
-      <div className="flex flex-col gap-3">{children}</div>
+      <fieldset disabled={pending} className="flex min-w-0 flex-col gap-3">
+        {children}
+      </fieldset>
     </Modal>
   );
 }
@@ -49,7 +72,9 @@ type TestcaseDialogProps = {
   /** Undefined = adding a new row. */
   testcase?: Testcase;
   onClose: () => void;
-  onSave: (values: Pick<Testcase, "input" | "expected" | "visibility">) => void;
+  onSave: (
+    values: Pick<Testcase, "input" | "expected" | "visibility">,
+  ) => void | Promise<void>;
 };
 
 export function TestcaseDialog({
@@ -64,15 +89,31 @@ export function TestcaseDialog({
     testcase?.visibility ?? "hidden",
   );
   const [touched, setTouched] = useState(false);
-  const invalid = !input.trim() || !expected.trim();
+  // A side kept in object storage arrives without its text: it is shown as a note and never rewritten.
+  const largeInput = testcase?.largeSides?.includes("input") ?? false;
+  const largeExpected = testcase?.largeSides?.includes("expected") ?? false;
+  const invalid =
+    (!largeInput && input.length === 0) ||
+    (!largeExpected && expected.length === 0);
 
-  function submit() {
+  async function submit() {
     setTouched(true);
     if (invalid) {
       toast.error(t("dialog.required"));
       return;
     }
-    onSave({ input: input.trim(), expected: expected.trim(), visibility });
+    if (
+      new TextEncoder().encode(input).length > 1048576 ||
+      new TextEncoder().encode(expected).length > 1048576
+    ) {
+      toast.error(t("testcaseTooLarge"));
+      return;
+    }
+    await onSave({
+      input,
+      expected,
+      visibility,
+    });
   }
 
   return (
@@ -84,16 +125,18 @@ export function TestcaseDialog({
       <TextArea
         label={t("columnInput")}
         rows={3}
-        value={input}
-        invalid={touched && !input.trim()}
+        value={largeInput ? t("dialog.largeSide") : input}
+        disabled={largeInput}
+        invalid={touched && !largeInput && input.length === 0}
         onChange={(event) => setInput(event.target.value)}
         className="font-mono text-[12.5px]"
       />
       <TextArea
         label={t("columnExpected")}
         rows={3}
-        value={expected}
-        invalid={touched && !expected.trim()}
+        value={largeExpected ? t("dialog.largeSide") : expected}
+        disabled={largeExpected}
+        invalid={touched && !largeExpected && expected.length === 0}
         onChange={(event) => setExpected(event.target.value)}
         className="font-mono text-[12.5px]"
       />

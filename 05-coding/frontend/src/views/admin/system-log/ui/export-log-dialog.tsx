@@ -1,29 +1,24 @@
-// PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
-//
 // "Tải nhật ký" (ADM0403 Q4, DEC-2026-1001-admin-configurable-settings): CSV, the admin picks the
-// columns and the date range, no row cap (the server streams it). Each export is itself logged as one
-// row. No endpoint yet, so the dialog only toasts what would be exported.
+// columns and the date range, no row cap (the server streams it, F1 #40). Each export is itself logged
+// as one row. The file is the server's: the screen never builds a CSV from the rows it holds. In mock
+// mode there is no file, so the dialog only toasts what would be exported.
 "use client";
 
 import { useState } from "react";
-import { useT } from "@/shared/i18n";
+import { EXPORT_COLUMNS, useExportAuditLog, type AuditCategory } from "../api";
+import type { ExportColumn } from "../api";
+import { useApiErrorMessage, useLocale, useT } from "@/shared/i18n";
+import { saveBlob } from "@/shared/lib";
 import { toast, toastFirstError } from "@/shared/lib/toast-store";
 import { Button, Modal, TextField } from "@/shared/ui";
-import { logSettings } from "../model/settings";
 
-const COLUMNS = [
-  "time",
-  "actor",
-  "service",
-  "category",
-  "content",
-  "id",
-] as const;
-type Column = (typeof COLUMNS)[number];
+const COLUMNS = EXPORT_COLUMNS;
+type Column = ExportColumn;
 
 /** Filters on the main screen when the dialog opens: the export follows them (ADM0403 Q8). */
 export type ExportScope = {
   query: string;
+  category: AuditCategory | "all";
   categoryLabel: string | null;
   from: string;
   to: string;
@@ -32,18 +27,29 @@ export type ExportScope = {
 const DAY_MS = 86_400_000;
 const dayString = (offsetDays: number) =>
   new Date(Date.now() + offsetDays * DAY_MS).toISOString().slice(0, 10);
+const fileName = () =>
+  `audit-logs-${new Date(Date.now() + 7 * 3_600_000)
+    .toISOString()
+    .slice(0, 16)
+    .replace(/[-:]/g, "")
+    .replace("T", "-")}.csv`;
 
 export function ExportLogDialog({
   open,
   onClose,
-  scope = { query: "", categoryLabel: null, from: "", to: "" },
+  retentionDays,
+  scope = { query: "", category: "all", categoryLabel: null, from: "", to: "" },
 }: {
   open: boolean;
   onClose: () => void;
+  /** F1 #51: nothing older than this exists, so the range cannot start before it (BD Sheet 9 NO 5-6). */
+  retentionDays: number;
   scope?: ExportScope;
 }) {
   const t = useT("adminSystemLog");
-  const { retentionDays } = logSettings.use();
+  const toMessage = useApiErrorMessage();
+  const locale = useLocale() === "en" ? "en" : "vi";
+  const exportLog = useExportAuditLog();
   const [picked, setPicked] = useState<ReadonlySet<Column>>(new Set(COLUMNS));
   const [from, setFrom] = useState(scope.from);
   const [to, setTo] = useState(scope.to);
@@ -68,7 +74,7 @@ export function ExportLogDialog({
     onClose();
   }
 
-  function submit() {
+  async function submit() {
     setTouched(true);
     if (picked.size === 0 || dateInvalid) {
       toastFirstError([
@@ -79,6 +85,23 @@ export function ExportLogDialog({
           ? t("exportDialog.errorRetention", { days: retentionDays })
           : undefined,
       ]);
+      return;
+    }
+    try {
+      const file = await exportLog.mutateAsync({
+        params: {
+          query: scope.query,
+          category: scope.category,
+          from,
+          to,
+        },
+        columns: COLUMNS.filter((column) => picked.has(column)),
+        locale,
+      });
+      if (file) saveBlob(file, fileName());
+    } catch (error) {
+      // The dialog and the filters stay, and no empty file is passed off as a success.
+      toast.error(toMessage(error));
       return;
     }
     toast.success(t("exportDialog.doneBody", { count: picked.size }));
@@ -109,7 +132,12 @@ export function ExportLogDialog({
           >
             {t("exportDialog.cancel")}
           </Button>
-          <Button variant="cta" size="sm" onClick={submit}>
+          <Button
+            variant="cta"
+            size="sm"
+            disabled={exportLog.isPending}
+            onClick={() => void submit()}
+          >
             {t("exportDialog.submit")}
           </Button>
         </>

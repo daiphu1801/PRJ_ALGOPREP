@@ -7,10 +7,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import type {
-  SampleRunResult,
-  SubmissionRunResult,
-} from "@/entities/problem";
+import type { SampleRunResult, SubmissionRunResult } from "@/entities/problem";
 import { useT } from "@/shared/i18n";
 import { Badge, Button, Modal } from "@/shared/ui";
 
@@ -20,6 +17,7 @@ type Props = {
   sampleRun: SampleRunResult | null;
   result: SubmissionRunResult | null;
   onClose: () => void;
+  progressIssue?: string | null;
 };
 
 export function RunResultsDialog({
@@ -28,6 +26,7 @@ export function RunResultsDialog({
   sampleRun,
   result,
   onClose,
+  progressIssue,
 }: Props) {
   const t = useT("problemDetail");
   const [picked, setPicked] = useState<number | null>(null);
@@ -44,21 +43,37 @@ export function RunResultsDialog({
     <Modal
       open
       onClose={onClose}
-      title={t(mode === "run" ? "console.dialog.titleRun" : "console.dialog.titleSubmit")}
+      title={t(
+        mode === "run"
+          ? "console.dialog.titleRun"
+          : "console.dialog.titleSubmit",
+      )}
       className="max-w-3xl"
       footer={
-        <Button variant="ghost" size="sm" className="border border-[var(--color-border)]" onClick={onClose}>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="border border-[var(--color-border)]"
+          onClick={onClose}
+        >
           {t("console.dialog.close")}
         </Button>
       }
     >
+      {progressIssue ? <p role="status">{progressIssue}</p> : null}
       {mode === "run" ? (
-        !sampleRun ? (
+        sampleRun?.compileErrorMessage ? (
+          <pre className="whitespace-pre-wrap break-words">
+            {sampleRun.compileErrorMessage}
+          </pre>
+        ) : !sampleRun ? (
           <p>{running ? t("console.running") : null}</p>
         ) : (
           <div className="flex flex-col gap-3">
             <Badge
-              variant={cases.every((item) => item.passed) ? "success" : "negative"}
+              variant={
+                cases.every((item) => item.passed) ? "success" : "negative"
+              }
               className="self-start"
             >
               {t("console.sampleSummary", {
@@ -67,7 +82,10 @@ export function RunResultsDialog({
               })}
             </Badge>
             <div className="grid gap-3 md:grid-cols-[200px_minmax(0,1fr)]">
-              <ul aria-label={t("console.dialog.listLabel")} className="flex max-h-72 flex-col gap-1 overflow-y-auto">
+              <ul
+                aria-label={t("console.dialog.listLabel")}
+                className="flex max-h-72 flex-col gap-1 overflow-y-auto"
+              >
                 {cases.map((item, index) => {
                   const active = index + 1 === selectedNo;
                   return (
@@ -95,11 +113,18 @@ export function RunResultsDialog({
               </ul>
               {selected ? (
                 <div className="flex min-w-0 flex-col gap-2 text-[12px]">
-                  <CaseField label={t("console.fieldInput")}>{selected.input}</CaseField>
-                  <CaseField label={t("console.fieldActual")} failed={!selected.passed}>
+                  <CaseField label={t("console.fieldInput")}>
+                    {selected.input}
+                  </CaseField>
+                  <CaseField
+                    label={t("console.fieldActual")}
+                    failed={!selected.passed}
+                  >
                     {selected.actualOutput}
                   </CaseField>
-                  <CaseField label={t("console.fieldExpected")}>{selected.expectedOutput}</CaseField>
+                  <CaseField label={t("console.fieldExpected")}>
+                    {selected.expectedOutput}
+                  </CaseField>
                   <p className="text-[11.5px]">
                     {t("console.metrics", {
                       ms: selected.runtimeMs,
@@ -115,9 +140,25 @@ export function RunResultsDialog({
         <p>{running ? t("console.judging") : null}</p>
       ) : (
         <div className="flex flex-col gap-3">
+          {result.compileErrorMessage ? (
+            <pre className="whitespace-pre-wrap break-words">
+              {result.compileErrorMessage}
+            </pre>
+          ) : null}
+          <Link
+            href={`/submissions/${result.submissionId}`}
+            className="text-[12.5px] font-semibold underline"
+          >
+            {t("console.linkResult")}
+          </Link>
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant={result.overallVerdict === "accepted" ? "success" : "negative"}>
-              {t(`verdict.${result.overallVerdict}`)} · {result.passedCount}/{result.totalCount}
+            <Badge
+              variant={
+                result.overallVerdict === "accepted" ? "success" : "negative"
+              }
+            >
+              {t(`verdict.${result.overallVerdict}`)} · {result.passedCount}/
+              {result.totalCount}
             </Badge>
             <span className="text-[12px]">
               {t("console.metrics", {
@@ -137,7 +178,9 @@ export function RunResultsDialog({
                   <span className="font-semibold text-[var(--color-text)]">
                     {t("console.dialog.testcaseRow", { n: testcase.order })}
                   </span>
-                  <Badge variant={passed ? "success" : "negative"}>{verdictText(passed)}</Badge>
+                  <Badge variant={passed ? "success" : "negative"}>
+                    {verdictText(passed)}
+                  </Badge>
                 </li>
               );
             })}
@@ -145,13 +188,22 @@ export function RunResultsDialog({
           <p className="text-[11.5px]">{t("console.dialog.hiddenNote")}</p>
           {result.overallVerdict === "accepted" ? (
             <div className="flex flex-wrap gap-3">
-              <Link href={`/submissions/${result.submissionId}`} className="text-[12.5px] font-semibold underline">
+              <Link
+                href={`/submissions/${result.submissionId}`}
+                className="text-[12.5px] font-semibold underline"
+              >
                 {t("console.linkResult")}
               </Link>
-              <Link href={`/submissions/${result.submissionId}/review`} className="text-[12.5px] font-semibold underline">
+              <Link
+                href={`/submissions/${result.submissionId}/review`}
+                className="text-[12.5px] font-semibold underline"
+              >
                 {t("console.linkReview")}
               </Link>
-              <Link href={`/submissions/${result.submissionId}/interview`} className="text-[12.5px] font-semibold underline">
+              <Link
+                href={`/submissions/${result.submissionId}/interview`}
+                className="text-[12.5px] font-semibold underline"
+              >
                 {t("console.linkInterview")}
               </Link>
             </div>

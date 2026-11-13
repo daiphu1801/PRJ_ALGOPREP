@@ -1,5 +1,66 @@
 # Tiêu chí nghiệm thu — Module `judge-orchestration`
 
+**Checkpoint D02m 2026-11-03:** WorkerPersistenceHandlersTest11 + SubmissionFinalizationPolicyTest13,
+WorkerPersistenceFlowTest22 (PG thật, ba mutation), focused verify 338 test đạt.
+AC15–22/25 và AC63/65 có bằng chứng persistence/Outbox từng phần, chưa worker/engine/relay E2E.
+AC20 sửa theo quyết định owner2026-10-29, không coi mô tả resume cũ là yêu cầu hiện hành.
+Không tick AC toàn luồng chỉ từ kernel. Report261103-f4-worker-persistence.
+
+
+**Checkpoint D02l 2026-11-03:** endpoint submit #3 được kiểm HTTP thật cùng PG/Redis/MinIO/Rabbit,
+STOMP queue failure và writer race; CreateSubmissionFlowTest21,
+CreateSubmissionCommandHandlerTest7, CreateSubmissionErrorAdviceTest14,
+CreateSubmissionMutationTest2 (role/owner). Focused verify 292 test đạt.
+AC01 phần tiếp nhận/ticket, AC02/03 quota, AC04 byte limit và nhánh file/disabled/wrapper
+có bằng chứng API; lịch sử, worker grading, timeout/recovery và FE còn mở, không tick
+AC toàn luồng. Chưa dùng bằng chứng này để nghiệm thu toàn F4. Report261103-f4-submit-http.
+
+
+**Checkpoint D02k 2026-11-03:** transport W1/W2 có JWT/RBAC/exact destination,
+deny SEND, expiry admin, typed privacy/seq và afterCommit thật. 25 test mạng thật,
+12 mutation mới; regression: 2042 test đạt, 18 opt-in bị skip (2060 test được báo cáo); 12 mutation mới bị bắt. AC26 được chứng minh ở lớp transport;
+AC25/29 mới schema/push, chưa worker/persisted submission E2E. AC27/28 còn REST/FE;
+W2 chưa producer QUEUE_BATCH. Không đổi các AC toàn luồng thành đóng.
+Report `06-plan/reports/261103-f4-stomp-progress/report.md`.
+
+**2026-11-02→03, D02g:** ProblemGradingSpecPort đã nối F2/PG/MinIO thật,3 thao tác;
+metadata/version đồng bộ, Sample approved-only, snapshot SHA-256/format/ID/version/count,
+missing/corrupt khác hạ tầng.4 model unit mới,5 bridge unit+16 flow tests đạt;5 mutation
+mới (2 codec,3 SQL) bị bắt. Chưa đóng AC nhận bài/worker/SPEC_UNAVAILABLE finalization,
+AC-74/75 persisted E2E hoặc API Run Code. Report `261102-2340-f2-f4-grading-readers`.
+
+**2026-11-02, B1 assignment dependency:** ClassAssignmentReadPort/DTO và bootstrap bridge
+đã nối inbound F2/JDBC thật;5 bridge unit+10 flow tests đạt,3 mutation scoped/history bị bắt.
+Đây là dependency BR-JD-10/P1 metrics; chưa đóng AC thống kê/lịch sử/phân quyền của F4
+vì chưa consumer/HTTP/persisted submissions. Report `261102-1636-class-assignment-read-port`.
+
+**2026-11-02, lát grading defaults:** có `ReadGradingDefaultsUseCase`, JDBC singleton và bridge
+sang outbound F2; 2 unit test và 4 component test PostgreSQL thật kiểm bốn giá trị/đơn vị,
+đọc lại sau sửa, thiếu dòng và lỗi DB. 8 ArchUnit tests đạt. Report
+`261102-1430-f4-grading-defaults`. Đây là một phần P3; AC-66 (generator limits) vẫn mở,
+chưa HTTP cấu hình admin hoặc fallback của API tạo bài F2.
+
+**D02f 2026-11-02:** RemainingExecutionMutationTest bổ sung17 mutant độc lập cho model,
+language, exit90/92, exact marker, engine precedence, stderr sample/admin/non-AC, env và
+collector/body cap. Original xanh, mutant oracle đỏ sau compile COPY; source thật giữ nguyên.
+Cộng3 mutant D02e thành20 trong owning gate. Report `261102-0850-f3-f4-debt-closeout`;
+không dùng test thuần này để tick AC persisted/API/E2E.
+
+**D02e review fix 2026-11-01:** WrapperDebugBudgetTest kiểm raw UTF-8/CRLF/last marker;
+EvaluateProgramTest kiểm priority/privacy/StdIO/missing marker. ExecutionBridgeFlowTest thêm
+cặp debug4096 AC/4097 RE với resultLimit65536 và payload nhỏ ở cả ba language, UTF-8 đa byte,
+CRLF raw, Hidden, P4 console và StdIO. EvaluateProgramMutationTest compile source COPY ở
+namespace riêng: original xanh, ba mutant DEBUG/HIDDEN/STDERR bị oracle bắt đỏ; không sửa
+source thật và không làm nhiễu JaCoCo production. Các mutation rule khác không tự coi đã chạy.
+
+**Checkpoint D02e 2026-11-01:** RuntimeClassifierTest/EvaluateProgramTest kiểm exact marker,
+status precedence, compile/internal/spec failures, run-all và privacy; GoJudgeAdapterTest là
+transport fault fixture, **không** gọi là sandbox thật. ExecutionBridgeFlowTest riêng chạy
+go-judge image toolchain tạm, cả ba ngôn ngữ và hai mô hình, AC/WA/CE/90/91/Python92/bodyRE/
+TLE/MLE/cache/recovery/cleanup. Đây là component evidence cho BR-JD-03/04/07/11, chưa là QA
+API/DB persisted: bảng AC và cột thực thi toàn luồng dưới đây giữ nguyên mở. Report D02e có
+lệnh, timestamp, exit code và cleanup evidence; không cộng test ở lần thất bại vào số PASS.
+
 > Bounded Context: F4 `judge-orchestration` · DD: `03-dd/api/F4_judge-orchestration.md`, `03-dd/logic/F4_judge-orchestration.md`, `03-dd/validation/F4_judge-orchestration.md`, `03-dd/jobs/F4_judge-orchestration.md` · Cập nhật: 2026-10-23.
 > Viết cùng lúc với DD theo `.claude/rules/tdd-mode.md`. Nội dung mỗi tiêu chí ở ngôn ngữ nghiệp vụ, người nghiệm thu kiểm được mà không cần đọc mã; tên endpoint, mã lỗi và bảng nằm ở cột truy vết (mục 3) chứ không nằm trong thân tiêu chí.
 
@@ -169,13 +230,14 @@
 | **Kết quả mong đợi** | Trạng thái cuối là Lỗi biên dịch kèm thông báo lỗi đúng dòng của học viên. **Không** có testcase nào được chạy và không có bảng kết quả testcase. Điểm tỷ lệ và số testcase đạt hiển thị dấu gạch (không hiển thị 0 hay 0%) |
 | **Nguồn** | [SoT: 02-bd/database/F4_judge-orchestration.md:28,31]; [SoT: 02-bd/screens/users/USR0201_submission_result.md:306] |
 
-### AC-20 — Worker chết giữa chừng: chấm tiếp, không chạy lại testcase đã xong
+### AC-20 — Giao lại sau khi đã ghi kết quả: kết thúc lỗi hệ thống, giữ dòng cũ
 | Mục | Nội dung |
 | :--- | :--- |
 | **Tiền đề** | Bài nộp đang chấm, đã xong 5 trên 12 testcase thì tiến trình chấm bị tắt đột ngột |
 | **Thao tác** | Hệ thống giao lại bài nộp cho một tiến trình chấm khác |
-| **Kết quả mong đợi** | Bài được chấm tiếp từ testcase thứ 6; năm testcase đầu **giữ nguyên kết quả cũ** và không được chạy lại; cuối cùng có đúng 12 dòng kết quả, không dòng nào trùng. Học viên không thấy lỗi |
-| **Nguồn** | [SoT: 02-bd/architecture/F4_judge-orchestration.md:192-205] |
+| **Kết quả mong đợi** | Bài kết thúc lỗi hệ thống với nguyên nhân worker timeout; năm kết quả đã ghi giữ nguyên, không chạy tiếp và không ghép với cấu hình/spec mới. Không tạo thêm kết quả; học viên có thể nộp lại. Nếu chưa có kết quả nào thì được compile/chạy lại theo BR-JD-03 |
+| **Nguồn** | Owner 2026-10-29, DEC-2026-1029-f4-migration-readiness; 03-dd/logic/F4_judge-orchestration.md BR-JD-03 (đã thay quy tắc resume cũ). D02m mới kiểm kernel từ chối restart/giữ dòng khi finalize, chưa consumer E2E |
+
 
 ### AC-21 — Trạng thái cuối không bao giờ bị ghi đè
 | Mục | Nội dung |
@@ -642,6 +704,8 @@
 | **Nguồn** | [SoT: 03-dd/logic/F4_judge-orchestration.md] BR-JD-04 bước 8; quyết định chủ dự án 2026-10-25 |
 
 ### AC-77 — Bật tự động mở rộng làm thay đổi khả năng nhận bài của worker
+
+**Bổ sung kiểm chứng13/11:** `WorkerScalePublicationTest` đọc target ngay trong callback resize khi tăng/giảm, kiểm rollback cả hai hướng và retry giữ counters.3ca đỏ trên code cũ,3đạt sau sửa. `WorkerOperationsFlowTest` và `PersistedWorkerFlowTest` kiểm Rabbit/PG/HTTP/engine thật; hai gauge độc lập vẫn cần chờ hội tụ. Xem [báo cáo đóng bàn giao](../../06-plan/reports/261113-f2-f4-handoff-closure/report.md).
 | Mục | Nội dung |
 | :--- | :--- |
 | **Tiền đề** | Quản trị viên bật tự động mở rộng, `autoscaleJobThreshold = 20`, một consumer đang nhận bài; quan sát được `pendingCount` và số consumer mục tiêu/thực đang chạy |
@@ -655,87 +719,105 @@
 
 | AC | Endpoint hoặc luồng | Mã lỗi kiểm | Test case | Trạng thái |
 | :--- | :--- | :--- | :--- | :--- |
-| AC-01 | `POST /problems/{problemId}/submissions` (#3) | | [TC-F4-AC01-01](../testcases/modules/F4_judge-orchestration/F4_submission_input_limits.md) | chưa |
-| AC-02 | #3 | `JDG-106` | [TC-F4-AC02-01 đến -03](../testcases/modules/F4_judge-orchestration/F4_submission_input_limits.md) | chưa |
-| AC-03 | #3 | `JDG-106` | [TC-F4-AC03-01](../testcases/modules/F4_judge-orchestration/F4_submission_input_limits.md) | chưa |
-| AC-04 | #2, #3 | `JDG-V01`, `JDG-V02` | [TC-F4-AC04-01 đến -08](../testcases/modules/F4_judge-orchestration/F4_submission_input_limits.md) | chưa |
-| AC-05 | #3, #2, luồng chấm job đang chờ (BR-JD-09) | `JDG-102` | [TC-F4-AC05-01 đến -03](../testcases/modules/F4_judge-orchestration/F4_submission_input_limits.md) | chưa |
-| AC-06 | #2, #3 | `JDG-103` | [TC-F4-AC06-01 đến -04](../testcases/modules/F4_judge-orchestration/F4_submission_input_limits.md) | chưa |
-| AC-07 | #3 | `JDG-V06` | [TC-F4-AC07-01 đến -03](../testcases/modules/F4_judge-orchestration/F4_submission_input_limits.md) | chưa |
-| AC-08 | #6, JOB-JD-01 | `JDG-503` | [TC-F4-AC08-01 đến -02](../testcases/modules/F4_judge-orchestration/F4_submission_resilience.md) | chưa |
-| AC-09 | #3 | `JDG-106` | [TC-F4-AC09-01](../testcases/modules/F4_judge-orchestration/F4_submission_input_limits.md) | chưa |
-| AC-10 | `POST /problems/{problemId}/run-sample` (#2) | | [TC-F4-AC10-01 (ba Sample), TC-F4-AC73-08 (Redis lỗi)](../testcases/modules/F4_judge-orchestration/F4_run_code_limits.md) | chưa |
-| AC-11 | #2 (ánh xạ lỗi biên dịch của `harness`) | | [TC-F4-AC11-01](../testcases/modules/F4_judge-orchestration/F4_run_compile_limits.md) | chưa |
-| AC-12 | #2 | `JDG-501` | [TC-F4-AC12-01 (FE/timeout), TC-F4-AC73-06 (API)](../testcases/modules/F4_judge-orchestration/F4_run_code_limits.md) | chưa |
-| AC-13 | #2 | `JDG-502` | [TC-F4-AC73-05](../testcases/modules/F4_judge-orchestration/F4_run_code_limits.md) | chưa |
-| AC-14 | `GET /problems/{problemId}/execution-limits` (#1) | `JDG-101` | [TC-F4-AC14-01–03](../testcases/modules/F4_judge-orchestration/F4_run_compile_limits.md) | chưa |
-| AC-15 | Luồng chấm (BR-JD-03, BR-JD-04) | | [TC-F4-AC15-01](../testcases/modules/F4_judge-orchestration/F4_verdict_privacy_queue.md) | chưa |
-| AC-16 | Luồng chấm (BR-JD-05) | | [TC-F4-AC16-01](../testcases/modules/F4_judge-orchestration/F4_verdict_privacy_queue.md) | chưa |
-| AC-17 | Luồng chấm (BR-JD-05 bước 2, 3) | | [TC-F4-AC17-01](../testcases/modules/F4_judge-orchestration/F4_verdict_privacy_queue.md) | chưa |
-| AC-18 | Luồng chấm (BR-JD-05 bước 2) | | [TC-F4-AC18-01](../testcases/modules/F4_judge-orchestration/F4_verdict_privacy_queue.md) | chưa |
-| AC-19 | Luồng chấm (BR-JD-03 bước 8, BR-JD-05 biến thể) | | [TC-F4-AC19-01](../testcases/modules/F4_judge-orchestration/F4_verdict_privacy_queue.md) | chưa |
-| AC-20 | Luồng chấm khi giao lại (BR-JD-03, BR-JD-04 bước 2) | | [TC-F4-AC20-01](../testcases/modules/F4_judge-orchestration/F4_verdict_privacy_queue.md) | chưa |
-| AC-21 | Luồng kết thúc (BR-JD-05 bước 6), JOB-JD-01 | | [TC-F4-AC21-01](../testcases/modules/F4_judge-orchestration/F4_verdict_privacy_queue.md) | chưa |
-| AC-22 | BR-JD-07, #17, #22 | | [TC-F4-AC22-01 đến -02](../testcases/modules/F4_judge-orchestration/F4_submission_resilience.md) | chưa |
-| AC-23 | JOB-JD-01 và BR-JD-08 | | [TC-F4-AC23-01 đến -03](../testcases/modules/F4_judge-orchestration/F4_submission_resilience.md) | chưa |
-| AC-24 | BR-JD-04 bước 10, JOB-JD-01 | | [TC-F4-AC24-01](../testcases/modules/F4_judge-orchestration/F4_submission_resilience.md) | chưa |
-| AC-25 | Kênh `/user/queue/submissions` (W1), #9 | | [TC-F4-AC25-01](../testcases/modules/F4_judge-orchestration/F4_submission_realtime.md) | chưa |
-| AC-26 | W1 | | [TC-F4-AC26-01 đến -04](../testcases/modules/F4_judge-orchestration/F4_submission_realtime.md) | chưa |
-| AC-27 | W1 và `GET /submissions/{submissionId}/progress` (#9) | | [TC-F4-AC27-01 đến -02](../testcases/modules/F4_judge-orchestration/F4_submission_realtime.md) | chưa |
-| AC-28 | #9 (đường dự phòng) | | [TC-F4-AC28-01](../testcases/modules/F4_judge-orchestration/F4_submission_realtime.md) | chưa |
-| AC-29 | W1, #9 | | [TC-F4-AC29-01](../testcases/modules/F4_judge-orchestration/F4_submission_realtime.md) | chưa |
-| AC-30 | `GET /submissions/{submissionId}` (#5) | | [TC-F4-AC30-01–03](../testcases/modules/F4_judge-orchestration/F4_submission_detail_beats_stderr.md) | chưa |
-| AC-31 | #8, #9, W1 | | [TC-F4-AC31-01 đến -03](../testcases/modules/F4_judge-orchestration/F4_result_retention_visibility.md) | chưa |
-| AC-32 | #8, #9 | `JDG-110` | [TC-F4-AC32-01](../testcases/modules/F4_judge-orchestration/F4_result_retention_visibility.md) | chưa |
-| AC-33 | #8, #9, JOB-JD-04 | | [TC-F4-AC33-01 đến -04](../testcases/modules/F4_judge-orchestration/F4_result_retention_visibility.md) | chưa |
-| AC-34 | #5 (BR-JD-12) | | [TC-F4-AC34-01–04](../testcases/modules/F4_judge-orchestration/F4_submission_detail_beats_stderr.md) | chưa |
-| AC-35 | #5, #2 | | [TC-F4-AC35-01–06](../testcases/modules/F4_judge-orchestration/F4_submission_detail_beats_stderr.md) | chưa |
-| AC-36 | `GET /problems/{problemId}/submissions/mine` (#4) | `JDG-V14` | [TC-F4-AC36-01–03](../testcases/modules/F4_judge-orchestration/F4_student_history_metrics.md) | chưa |
-| AC-37 | `GET /me/submissions` (#7) | | [TC-F4-AC37-01–03](../testcases/modules/F4_judge-orchestration/F4_student_history_metrics.md) | chưa |
-| AC-38 | `GET /me/in-progress-problems` (#8) | `JDG-V14` | [TC-F4-AC38-01–02](../testcases/modules/F4_judge-orchestration/F4_student_history_metrics.md) | chưa |
-| AC-39 | `GET /me/metrics` (#9), cổng `GetMySubmissionMetrics` | | [TC-F4-AC39-01–03](../testcases/modules/F4_judge-orchestration/F4_student_history_metrics.md) | chưa |
-| AC-40 | #9 | `JDG-V07` | [TC-F4-AC40-01–02](../testcases/modules/F4_judge-orchestration/F4_student_history_metrics.md) | chưa |
-| AC-41 | `GET /instructor/submissions` (#10) | | [TC-F4-AC41-01–03](../testcases/modules/F4_judge-orchestration/F4_instructor_scope_metrics.md) | chưa |
-| AC-42 | #10 (BR-JD-10 điều kiện c) | | [TC-F4-AC42-01–02](../testcases/modules/F4_judge-orchestration/F4_instructor_scope_metrics.md) | chưa |
-| AC-43 | #10 (BR-JD-10 bước 4) | | [TC-F4-AC43-01](../testcases/modules/F4_judge-orchestration/F4_instructor_scope_metrics.md) | chưa |
-| AC-44 | #10 | `JDG-111`, `JDG-301` | [TC-F4-AC44-01–02](../testcases/modules/F4_judge-orchestration/F4_instructor_scope_metrics.md) | chưa |
-| AC-45 | `GET /instructor/submissions/{submissionId}` (#11) | `JDG-110` | [TC-F4-AC45-01–03](../testcases/modules/F4_judge-orchestration/F4_instructor_scope_metrics.md) | chưa |
-| AC-46 | `GET /instructor/classes/{classId}/students/{studentId}/submissions` (#12) | `JDG-111`, `JDG-112` | [TC-F4-AC46-01–02](../testcases/modules/F4_judge-orchestration/F4_instructor_scope_metrics.md) | chưa |
-| AC-47 | Cổng `GetClassStudentSubmissionMetrics` (P1) | | [TC-F4-AC47-01–02](../testcases/modules/F4_judge-orchestration/F4_instructor_scope_metrics.md) | chưa |
-| AC-48 | `GET /admin/queue/snapshot` (#16) | `JDG-301` | [TC-F4-AC48-01 đến -03](../testcases/modules/F4_judge-orchestration/F4_verdict_privacy_queue.md) | chưa |
-| AC-49 | `GET /admin/queue/jobs` (#17) | | [TC-F4-AC49-01 đến -03](../testcases/modules/F4_judge-orchestration/F4_queue_control.md) | chưa |
-| AC-50 | `PUT /admin/queue/consumption` (#19) | | [TC-F4-AC50-01 đến -05](../testcases/modules/F4_judge-orchestration/F4_queue_control.md) | chưa |
-| AC-51 | #16 | `JDG-201` | [TC-F4-AC51-01](../testcases/modules/F4_judge-orchestration/F4_admin_configuration.md) | chưa |
-| AC-52 | `PUT /admin/queue/autoscale` (#17) | `JDG-201` | [TC-F4-AC52-01–02](../testcases/modules/F4_judge-orchestration/F4_admin_configuration.md) | chưa |
-| AC-53 | `GET/PUT /admin/queue/settings` (#18, #19) | `JDG-V09` | [TC-F4-AC53-01–02](../testcases/modules/F4_judge-orchestration/F4_admin_configuration.md) | chưa |
-| AC-54 | #16, #17, #19, #22 | `JDG-301` | [TC-F4-AC54-01](../testcases/modules/F4_judge-orchestration/F4_admin_configuration.md) | chưa |
-| AC-55 | `GET /admin/infra-events` (#20) | `JDG-V13` | [TC-F4-AC55-01–03](../testcases/modules/F4_judge-orchestration/F4_infra_events.md) | chưa |
-| AC-56 | `GET /admin/queue/infra-summary` (#15) và #20 | | [TC-F4-AC56-01](../testcases/modules/F4_judge-orchestration/F4_infra_events.md) | chưa |
-| AC-57 | `GET /admin/language-config` (#21) | `JDG-301` | [TC-F4-AC57-01–02](../testcases/modules/F4_judge-orchestration/F4_admin_configuration.md) | chưa |
-| AC-58 | `PUT /admin/language-config` (#22), BR-JD-09 | | [TC-F4-AC58-01–02](../testcases/modules/F4_judge-orchestration/F4_admin_configuration.md) | chưa |
-| AC-59 | #22 | `JDG-203` | [TC-F4-AC59-01](../testcases/modules/F4_judge-orchestration/F4_admin_configuration.md) | chưa |
-| AC-60 | #22 | `JDG-V10`, `JDG-V12`, `JDG-204`, `JDG-205` | [TC-F4-AC60-01–02](../testcases/modules/F4_judge-orchestration/F4_admin_configuration.md) | chưa |
-| AC-61 | #22 | `JDG-202` | [TC-F4-AC61-01](../testcases/modules/F4_judge-orchestration/F4_admin_configuration.md) | chưa |
-| AC-62 | #16, #17, #19, #22 (cùng giao dịch với `AuditLogPort`) | | [TC-F4-AC62-01](../testcases/modules/F4_judge-orchestration/F4_admin_configuration.md) | chưa |
-| AC-63 | Sự kiện `SubmissionGraded`, `SubmissionAccepted` (mục 25) | | [TC-F4-AC63-01 đến -03](../testcases/modules/F4_judge-orchestration/F4_outbox_events.md) | chưa |
-| AC-64 | JOB-JD-02, BR-JD-14 | | [TC-F4-AC64-01 đến -04](../testcases/modules/F4_judge-orchestration/F4_outbox_events.md) | chưa |
-| AC-65 | Hợp đồng tiêu thụ (mục 25.4) | | [TC-F4-AC65-01](../testcases/modules/F4_judge-orchestration/F4_outbox_events.md) | chưa |
-| AC-66 | Cổng `JudgeConfigReadPort` (P3) | | [TC-F4-AC66-01–02](../testcases/modules/F4_judge-orchestration/F4_cross_module_reads.md) | chưa |
-| AC-67 | Cổng `GetAdminSubmissionStats` (P2) | | [TC-F4-AC67-01](../testcases/modules/F4_judge-orchestration/F4_cross_module_reads.md) | chưa |
-| AC-68 | Toàn module (BR-JD-14, BR-JD-05) | | [TC-F4-AC68-01](../testcases/modules/F4_judge-orchestration/F4_cross_module_reads.md) | chưa |
-| AC-69 | `GET /me/accepted-submissions` (#23) | `JDG-V14` | [TC-F4-AC69-01–02](../testcases/modules/F4_judge-orchestration/F4_cross_module_reads.md) | chưa |
-| AC-70 | Cổng `SubmissionSnapshotPort.getAccepted` (P4) | | [TC-F4-AC70-01–02](../testcases/modules/F4_judge-orchestration/F4_cross_module_reads.md) | chưa |
-| AC-71 | `GET /submissions/{submissionId}` (#5), trường `problem.withdrawn` | | [TC-F4-AC71-01](../testcases/modules/F4_judge-orchestration/F4_cross_module_reads.md) | chưa |
-| AC-72 | `GET /languages/enabled` (#24) | | [TC-F4-AC72-01–02](../testcases/modules/F4_judge-orchestration/F4_cross_module_reads.md) | chưa |
-| AC-73 | `POST /problems/{problemId}/run-sample` (#2) | `JDG-107` | [TC-F4-AC73-01 đến -08](../testcases/modules/F4_judge-orchestration/F4_run_code_limits.md) | chưa |
-| AC-74 | BR-JD-03, BR-JD-05, BR-JD-07 | `SPEC_UNAVAILABLE` | [TC-F2-AC93-04, TC-F2-AC93-05, TC-F4-AC74-01](../testcases/modules/F2_problem-bank/F2_snapshot_grading.md) | chưa |
-| AC-75 | BR-JD-01, BR-JD-03 | | [TC-F2-AC93-01, TC-F2-AC93-02, TC-F2-AC93-03](../testcases/modules/F2_problem-bank/F2_snapshot_grading.md) | chưa |
-| AC-76 | #5, #8, BR-JD-04/11 | | [TC-F4-AC76-01 đến -03](../testcases/modules/F4_judge-orchestration/F4_verdict_privacy_queue.md), [TC-F4-AC31-01 đến -03](../testcases/modules/F4_judge-orchestration/F4_result_retention_visibility.md) | chưa |
-| AC-77 | #20, JOB-JD-05 | | [TC-F4-AC77-01 đến -10](../testcases/modules/F4_judge-orchestration/F4_worker_autoscale.md) | chưa |
+| AC-01 | `POST /problems/{problemId}/submissions` (#3) |  | [TC-F4-AC01-01](../testcases/modules/F4_judge-orchestration/F4_submission_input_limits.md) | FINAL BE local đạt — CreateSubmissionFlowTest; FE/QA execution riêng |
+| AC-02 | #3 | `JDG-106` | [TC-F4-AC02-01 đến -03](../testcases/modules/F4_judge-orchestration/F4_submission_input_limits.md) | FINAL BE local đạt — PendingSubmissionFlowTest; FE/QA execution riêng |
+| AC-03 | #3 | `JDG-106` | [TC-F4-AC03-01](../testcases/modules/F4_judge-orchestration/F4_submission_input_limits.md) | FINAL BE local đạt — PendingSubmissionFlowTest; FE/QA execution riêng |
+| AC-04 | #2, #3 | `JDG-V01`, `JDG-V02` | [TC-F4-AC04-01 đến -08](../testcases/modules/F4_judge-orchestration/F4_submission_input_limits.md) | FINAL BE local đạt — CreateSubmissionFlowTest; FE/QA execution riêng |
+| AC-05 | #3, #2, luồng chấm job đang chờ (BR-JD-09) | `JDG-102` | [TC-F4-AC05-01 đến -03](../testcases/modules/F4_judge-orchestration/F4_submission_input_limits.md) | FINAL BE local đạt — PersistedWorkerFlowTest; FE/QA execution riêng |
+| AC-06 | #2, #3 | `JDG-103` | [TC-F4-AC06-01 đến -04](../testcases/modules/F4_judge-orchestration/F4_submission_input_limits.md) | FINAL BE local đạt — CreateSubmissionFlowTest; FE/QA execution riêng |
+| AC-07 | #3 | `JDG-V06` | [TC-F4-AC07-01 đến -03](../testcases/modules/F4_judge-orchestration/F4_submission_input_limits.md) | FINAL BE local đạt — CreateSubmissionFlowTest; FE/QA execution riêng |
+| AC-08 | #3, JOB-JD-01 | `JDG-503` | [TC-F4-AC08-01 đến -02](../testcases/modules/F4_judge-orchestration/F4_submission_resilience.md) | FINAL BE local đạt — CreateSubmissionFlowTest; FE/QA execution riêng |
+| AC-09 | #3 | `JDG-106` | [TC-F4-AC09-01](../testcases/modules/F4_judge-orchestration/F4_submission_input_limits.md) | FINAL BE local đạt — PendingSubmissionFlowTest; FE/QA execution riêng |
+| AC-10 | `POST /problems/{problemId}/run-sample` (#2) |  | [TC-F4-AC10-01 (ba Sample), TC-F4-AC73-08 (Redis lỗi)](../testcases/modules/F4_judge-orchestration/F4_run_code_limits.md) | FINAL BE local đạt — RunSampleFlowTest; FE/QA execution riêng |
+| AC-11 | #2 (ánh xạ lỗi biên dịch của `harness`) |  | [TC-F4-AC11-01](../testcases/modules/F4_judge-orchestration/F4_run_compile_limits.md) | FINAL BE local đạt — ExecutionBridgeFlowTest; FE/QA execution riêng |
+| AC-12 | #2 | `JDG-501` | [TC-F4-AC12-01 (FE/timeout), TC-F4-AC73-06 (API)](../testcases/modules/F4_judge-orchestration/F4_run_code_limits.md) | FINAL BE local đạt — RunSampleFlowTest; FE/QA execution riêng |
+| AC-13 | #2 | `JDG-502` | [TC-F4-AC73-05](../testcases/modules/F4_judge-orchestration/F4_run_code_limits.md) | FINAL BE local đạt — RunSampleFlowTest; FE/QA execution riêng |
+| AC-14 | `GET /problems/{problemId}/execution-limits` (#1) | `JDG-101` | [TC-F4-AC14-01–03](../testcases/modules/F4_judge-orchestration/F4_run_compile_limits.md) | FINAL BE local đạt — RunSampleFlowTest; FE/QA execution riêng |
+| AC-15 | Luồng chấm (BR-JD-03, BR-JD-04) |  | [TC-F4-AC15-01](../testcases/modules/F4_judge-orchestration/F4_verdict_privacy_queue.md) | FINAL BE local đạt — PersistedWorkerFlowTest; FE/QA execution riêng |
+| AC-16 | Luồng chấm (BR-JD-05) |  | [TC-F4-AC16-01](../testcases/modules/F4_judge-orchestration/F4_verdict_privacy_queue.md) | FINAL BE local đạt — WorkerPersistenceFlowTest; FE/QA execution riêng |
+| AC-17 | Luồng chấm (BR-JD-05 bước 2, 3) |  | [TC-F4-AC17-01](../testcases/modules/F4_judge-orchestration/F4_verdict_privacy_queue.md) | FINAL BE local đạt — WorkerPersistenceFlowTest; FE/QA execution riêng |
+| AC-18 | Luồng chấm (BR-JD-05 bước 2) |  | [TC-F4-AC18-01](../testcases/modules/F4_judge-orchestration/F4_verdict_privacy_queue.md) | FINAL BE local đạt — WorkerPersistenceFlowTest; FE/QA execution riêng |
+| AC-19 | Luồng chấm (BR-JD-03 bước 8, BR-JD-05 biến thể) |  | [TC-F4-AC19-01](../testcases/modules/F4_judge-orchestration/F4_verdict_privacy_queue.md) | FINAL BE local đạt — WorkerPersistenceFlowTest; FE/QA execution riêng |
+| AC-20 | Luồng chấm khi giao lại (BR-JD-03, BR-JD-04 bước 2) |  | [TC-F4-AC20-01](../testcases/modules/F4_judge-orchestration/F4_verdict_privacy_queue.md) | FINAL BE local đạt — PersistedWorkerFlowTest; FE/QA execution riêng |
+| AC-21 | Luồng kết thúc (BR-JD-05 bước 6), JOB-JD-01 |  | [TC-F4-AC21-01](../testcases/modules/F4_judge-orchestration/F4_verdict_privacy_queue.md) | FINAL BE local đạt — WorkerPersistenceFlowTest; FE/QA execution riêng |
+| AC-22 | BR-JD-07, #17, #22 |  | [TC-F4-AC22-01 đến -02](../testcases/modules/F4_judge-orchestration/F4_submission_resilience.md) | FINAL BE local đạt — PersistedWorkerFlowTest; FE/QA execution riêng |
+| AC-23 | JOB-JD-01 và BR-JD-08 |  | [TC-F4-AC23-01 đến -03](../testcases/modules/F4_judge-orchestration/F4_submission_resilience.md) | FINAL BE local đạt — JudgeMaintenanceFlowTest; FE/QA execution riêng |
+| AC-24 | BR-JD-04 bước 10, JOB-JD-01 |  | [TC-F4-AC24-01](../testcases/modules/F4_judge-orchestration/F4_submission_resilience.md) | FINAL BE local đạt — PersistedWorkerFlowTest; FE/QA execution riêng |
+| AC-25 | Kênh `/user/queue/submissions` (W1), #9 |  | [TC-F4-AC25-01](../testcases/modules/F4_judge-orchestration/F4_submission_realtime.md) | FINAL BE local đạt — PersistedWorkerFlowTest; FE/QA execution riêng |
+| AC-26 | W1 |  | [TC-F4-AC26-01 đến -04](../testcases/modules/F4_judge-orchestration/F4_submission_realtime.md) | FINAL BE local đạt — SubmissionStompFlowTest; FE/QA execution riêng |
+| AC-27 | W1 và `GET /submissions/{submissionId}/progress` (#6) |  | [TC-F4-AC27-01 đến -02](../testcases/modules/F4_judge-orchestration/F4_submission_realtime.md) | FINAL BE local đạt — SubmissionReadFlowTest; FE/QA execution riêng |
+| AC-28 | #6 (đường dự phòng) |  | [TC-F4-AC28-01](../testcases/modules/F4_judge-orchestration/F4_submission_realtime.md) | FINAL BE local đạt — SubmissionReadFlowTest; FE/QA execution riêng |
+| AC-29 | W1, #9 |  | [TC-F4-AC29-01](../testcases/modules/F4_judge-orchestration/F4_submission_realtime.md) | FINAL BE local đạt — SubmissionStompFlowTest; FE/QA execution riêng |
+| AC-30 | `GET /submissions/{submissionId}` (#5) |  | [TC-F4-AC30-01–03](../testcases/modules/F4_judge-orchestration/F4_submission_detail_beats_stderr.md) | FINAL BE local đạt — SubmissionReadFlowTest; FE/QA execution riêng |
+| AC-31 | #5, #6, W1 |  | [TC-F4-AC31-01 đến -03](../testcases/modules/F4_judge-orchestration/F4_result_retention_visibility.md) | FINAL BE local đạt — SubmissionReadFlowTest; FE/QA execution riêng |
+| AC-32 | #5, #6 | `JDG-110` | [TC-F4-AC32-01](../testcases/modules/F4_judge-orchestration/F4_result_retention_visibility.md) | FINAL BE local đạt — SubmissionReadFlowTest; FE/QA execution riêng |
+| AC-33 | #5, #6, JOB-JD-04 |  | [TC-F4-AC33-01 đến -04](../testcases/modules/F4_judge-orchestration/F4_result_retention_visibility.md) | FINAL BE local đạt — SubmissionReadFlowTest; FE/QA execution riêng |
+| AC-34 | #5 (BR-JD-12) |  | [TC-F4-AC34-01–04](../testcases/modules/F4_judge-orchestration/F4_submission_detail_beats_stderr.md) | FINAL BE local đạt — SubmissionReadFlowTest; FE/QA execution riêng |
+| AC-35 | #5, #2 |  | [TC-F4-AC35-01–06](../testcases/modules/F4_judge-orchestration/F4_submission_detail_beats_stderr.md) | FINAL BE local đạt — SubmissionReadFlowTest; FE/QA execution riêng |
+| AC-36 | `GET /problems/{problemId}/submissions/mine` (#4) | `JDG-V14` | [TC-F4-AC36-01–03](../testcases/modules/F4_judge-orchestration/F4_student_history_metrics.md) | FINAL BE local đạt — SubmissionReadFlowTest; FE/QA execution riêng |
+| AC-37 | `GET /me/submissions` (#7) |  | [TC-F4-AC37-01–03](../testcases/modules/F4_judge-orchestration/F4_student_history_metrics.md) | FINAL BE local đạt — SubmissionReadFlowTest; FE/QA execution riêng |
+| AC-38 | `GET /me/in-progress-problems` (#8) | `JDG-V14` | [TC-F4-AC38-01–02](../testcases/modules/F4_judge-orchestration/F4_student_history_metrics.md) | FINAL BE local đạt — LearnerSubmissionListsFlowTest; FE/QA execution riêng |
+| AC-39 | `GET /me/metrics` (#9), cổng `GetMySubmissionMetrics` |  | [TC-F4-AC39-01–03](../testcases/modules/F4_judge-orchestration/F4_student_history_metrics.md) | FINAL BE local đạt — MySubmissionMetricsFlowTest; FE/QA execution riêng |
+| AC-40 | #9 | `JDG-V07` | [TC-F4-AC40-01–02](../testcases/modules/F4_judge-orchestration/F4_student_history_metrics.md) | FINAL BE local đạt — MySubmissionMetricsFlowTest; FE/QA execution riêng |
+| AC-41 | `GET /instructor/submissions` (#10) |  | [TC-F4-AC41-01–03](../testcases/modules/F4_judge-orchestration/F4_instructor_scope_metrics.md) | FINAL BE local đạt — SubmissionReadFlowTest; FE/QA execution riêng |
+| AC-42 | #10 (BR-JD-10 điều kiện c) |  | [TC-F4-AC42-01–02](../testcases/modules/F4_judge-orchestration/F4_instructor_scope_metrics.md) | FINAL BE local đạt — SubmissionReadFlowTest; FE/QA execution riêng |
+| AC-43 | #10 (BR-JD-10 bước 4) |  | [TC-F4-AC43-01](../testcases/modules/F4_judge-orchestration/F4_instructor_scope_metrics.md) | FINAL BE local đạt — SubmissionReadFlowTest; FE/QA execution riêng |
+| AC-44 | #10 | `JDG-111`, `JDG-301` | [TC-F4-AC44-01–02](../testcases/modules/F4_judge-orchestration/F4_instructor_scope_metrics.md) | FINAL BE local đạt — SubmissionReadFlowTest; FE/QA execution riêng |
+| AC-45 | `GET /instructor/submissions/{submissionId}` (#11) | `JDG-110` | [TC-F4-AC45-01–03](../testcases/modules/F4_judge-orchestration/F4_instructor_scope_metrics.md) | FINAL BE local đạt — SubmissionReadFlowTest; FE/QA execution riêng |
+| AC-46 | `GET /instructor/classes/{classId}/students/{studentId}/submissions` (#12) | `JDG-111`, `JDG-112` | [TC-F4-AC46-01–02](../testcases/modules/F4_judge-orchestration/F4_instructor_scope_metrics.md) | FINAL BE local đạt — SubmissionReadFlowTest; FE/QA execution riêng |
+| AC-47 | Cổng `GetClassStudentSubmissionMetrics` (P1) |  | [TC-F4-AC47-01–02](../testcases/modules/F4_judge-orchestration/F4_instructor_scope_metrics.md) | FINAL BE local đạt — ClassSubmissionMetricsFlowTest; FE/QA execution riêng |
+| AC-48 | `GET /admin/queue/snapshot` (#13), W2 `/topic/admin/queue` | `JDG-301` | [TC-F4-AC48-01 đến -03](../testcases/modules/F4_judge-orchestration/F4_verdict_privacy_queue.md) | FINAL BE local đạt — QueueMonitorStreamFlowTest; FE/QA execution riêng |
+| AC-49 | `GET /admin/queue/jobs` (#14) |  | [TC-F4-AC49-01 đến -03](../testcases/modules/F4_judge-orchestration/F4_queue_control.md) | FINAL BE local đạt — QueueMonitorFlowTest; FE/QA execution riêng |
+| AC-50 | `PUT /admin/queue/consumption` (#16) |  | [TC-F4-AC50-01 đến -05](../testcases/modules/F4_judge-orchestration/F4_queue_control.md) | FINAL BE local đạt — PersistedWorkerFlowTest; FE/QA execution riêng |
+| AC-51 | #16 | `JDG-201` | [TC-F4-AC51-01](../testcases/modules/F4_judge-orchestration/F4_admin_configuration.md) | FINAL BE local đạt — AdminQueueControlFlowTest; FE/QA execution riêng |
+| AC-52 | `PUT /admin/queue/autoscale` (#17) | `JDG-201` | [TC-F4-AC52-01–02](../testcases/modules/F4_judge-orchestration/F4_admin_configuration.md) | FINAL BE local đạt — AdminQueueControlFlowTest; FE/QA execution riêng |
+| AC-53 | `GET/PUT /admin/queue/settings` (#18, #19) | `JDG-V09` | [TC-F4-AC53-01–02](../testcases/modules/F4_judge-orchestration/F4_admin_configuration.md) | FINAL BE local đạt — AdminQueueControlFlowTest; FE/QA execution riêng |
+| AC-54 | #16, #17, #19, #22 | `JDG-301` | [TC-F4-AC54-01](../testcases/modules/F4_judge-orchestration/F4_admin_configuration.md) | FINAL BE local đạt — AdminQueueControlFlowTest; FE/QA execution riêng |
+| AC-55 | `GET /admin/infra-events` (#20) | `JDG-V13` | [TC-F4-AC55-01–03](../testcases/modules/F4_judge-orchestration/F4_infra_events.md) | FINAL BE local đạt — InfraEventsFlowTest; FE/QA execution riêng |
+| AC-56 | `GET /admin/queue/infra-summary` (#15) và #20 |  | [TC-F4-AC56-01](../testcases/modules/F4_judge-orchestration/F4_infra_events.md) | FINAL BE local đạt — InfraEventsFlowTest; FE/QA execution riêng |
+| AC-57 | `GET /admin/language-config` (#21) | `JDG-301` | [TC-F4-AC57-01–02](../testcases/modules/F4_judge-orchestration/F4_admin_configuration.md) | FINAL BE local đạt — AdminLanguageConfigFlowTest; FE/QA execution riêng |
+| AC-58 | `PUT /admin/language-config` (#22), BR-JD-09 |  | [TC-F4-AC58-01–02](../testcases/modules/F4_judge-orchestration/F4_admin_configuration.md) | FINAL BE local đạt — PersistedWorkerFlowTest; FE/QA execution riêng |
+| AC-59 | #22 | `JDG-203` | [TC-F4-AC59-01](../testcases/modules/F4_judge-orchestration/F4_admin_configuration.md) | FINAL BE local đạt — AdminLanguageConfigFlowTest; FE/QA execution riêng |
+| AC-60 | #22 | `JDG-V10`, `JDG-V12`, `JDG-204`, `JDG-205` | [TC-F4-AC60-01–02](../testcases/modules/F4_judge-orchestration/F4_admin_configuration.md) | FINAL BE local đạt — AdminLanguageConfigFlowTest; FE/QA execution riêng |
+| AC-61 | #22 | `JDG-202` | [TC-F4-AC61-01](../testcases/modules/F4_judge-orchestration/F4_admin_configuration.md) | FINAL BE local đạt — AdminLanguageConfigFlowTest; FE/QA execution riêng |
+| AC-62 | #16, #17, #19, #22 (cùng giao dịch với `AuditLogPort`) |  | [TC-F4-AC62-01](../testcases/modules/F4_judge-orchestration/F4_admin_configuration.md) | FINAL BE local đạt — AdminLanguageConfigFlowTest; FE/QA execution riêng |
+| AC-63 | Sự kiện `SubmissionGraded`, `SubmissionAccepted` (mục 25) |  | [TC-F4-AC63-01 đến -03](../testcases/modules/F4_judge-orchestration/F4_outbox_events.md) | FINAL BE local đạt — WorkerPersistenceFlowTest; FE/QA execution riêng |
+| AC-64 | JOB-JD-02, BR-JD-14 |  | [TC-F4-AC64-01 đến -04](../testcases/modules/F4_judge-orchestration/F4_outbox_events.md) | FINAL F4→Rabbit→F1 outage600s/replay đạt; kích hoạt F5 còn nợ tích hợp |
+| AC-65 | Hợp đồng tiêu thụ (mục 25.4) |  | [TC-F4-AC65-01](../testcases/modules/F4_judge-orchestration/F4_outbox_events.md) | FINAL BE local đạt — JudgeOutboxRelayFlowTest; FE/QA execution riêng |
+| AC-66 | Cổng `JudgeConfigReadPort` (P3) |  | [TC-F4-AC66-01–02](../testcases/modules/F4_judge-orchestration/F4_cross_module_reads.md) | FINAL BE local đạt — JudgeConfigSnapshotFlowTest; FE/QA execution riêng |
+| AC-67 | P2: 7 cổng thống kê admin theo DEC-2026-1104-f4-admin-stats-per-block |  | [TC-F4-AC67-01](../testcases/modules/F4_judge-orchestration/F4_cross_module_reads.md) | FINAL BE local đạt — AdminSubmissionStatsFlowTest; FE/QA execution riêng |
+| AC-68 | Toàn module (BR-JD-14, BR-JD-05) |  | [TC-F4-AC68-01](../testcases/modules/F4_judge-orchestration/F4_cross_module_reads.md) | FINAL BE local đạt — PersistedWorkerFlowTest; FE/QA execution riêng |
+| AC-69 | `GET /me/accepted-submissions` (#23) | `JDG-V14` | [TC-F4-AC69-01–02](../testcases/modules/F4_judge-orchestration/F4_cross_module_reads.md) | FINAL BE local đạt — LearnerSubmissionListsFlowTest; FE/QA execution riêng |
+| AC-70 | Cổng `SubmissionSnapshotPort.getAccepted` (P4) |  | [TC-F4-AC70-01–02](../testcases/modules/F4_judge-orchestration/F4_cross_module_reads.md) | FINAL BE local đạt — JudgeConfigSnapshotFlowTest; FE/QA execution riêng |
+| AC-71 | `GET /submissions/{submissionId}` (#5), trường `problem.withdrawn` |  | [TC-F4-AC71-01](../testcases/modules/F4_judge-orchestration/F4_cross_module_reads.md) | FINAL BE local đạt — SubmissionReadFlowTest; FE/QA execution riêng |
+| AC-72 | `GET /languages/enabled` (#24) |  | [TC-F4-AC72-01–02](../testcases/modules/F4_judge-orchestration/F4_cross_module_reads.md) | FINAL BE local đạt — LearnerSubmissionListsFlowTest; FE/QA execution riêng |
+| AC-73 | `POST /problems/{problemId}/run-sample` (#2) | `JDG-107` | [TC-F4-AC73-01 đến -08](../testcases/modules/F4_judge-orchestration/F4_run_code_limits.md) | FINAL BE local đạt — RunSampleFlowTest; FE/QA execution riêng |
+| AC-74 | BR-JD-03, BR-JD-05, BR-JD-07 | `SPEC_UNAVAILABLE` | [TC-F2-AC93-04, TC-F2-AC93-05, TC-F4-AC74-01](../testcases/modules/F2_problem-bank/F2_snapshot_grading.md) | FINAL BE local đạt — PersistedWorkerFlowTest; FE/QA execution riêng |
+| AC-75 | BR-JD-01, BR-JD-03 |  | [TC-F2-AC93-01, TC-F2-AC93-02, TC-F2-AC93-03](../testcases/modules/F2_problem-bank/F2_snapshot_grading.md) | FINAL BE local đạt — PersistedWorkerFlowTest; FE/QA execution riêng |
+| AC-76 | #5, #8, BR-JD-04/11 |  | [TC-F4-AC76-01 đến -03](../testcases/modules/F4_judge-orchestration/F4_verdict_privacy_queue.md), [TC-F4-AC31-01 đến -03](../testcases/modules/F4_judge-orchestration/F4_result_retention_visibility.md) | FINAL BE local đạt — PersistedWorkerFlowTest; FE/QA execution riêng |
+| AC-77 | #17, JOB-JD-05 |  | [TC-F4-AC77-01 đến -10](../testcases/modules/F4_judge-orchestration/F4_worker_autoscale.md) | FINAL policy+HTTP/Rabbit local đạt; rollout nhiều process/default15s riêng |
 
 Mỗi endpoint trong `03-dd/api/F4_judge-orchestration.md` (24 REST, 2 kênh STOMP, 4 cổng trong tiến trình, 2 sự kiện) có ít nhất một tiêu chí: #1 AC-14; #2 AC-10 đến AC-13; #3 AC-01 đến AC-09; #4 AC-36; #5 AC-30 đến AC-35, AC-71; #6 AC-27, AC-28; #7 AC-37; #8 AC-38; #9 AC-39, AC-40; #10 AC-41 đến AC-44; #11 AC-45; #12 AC-46; #13 AC-48; #14 AC-49; #15 AC-56; #16 AC-50, AC-51; #17 AC-52; #18, #19 AC-53; #20 AC-55; #21 AC-57; #22 AC-58 đến AC-62; W1 AC-25 đến AC-29; W2 (kênh quản trị) AC-48; P1 AC-47; P2 AC-67; P3 AC-66; P4 AC-70; #23 AC-69; #24 AC-72; hai sự kiện AC-63 đến AC-65.
 
 ## 4. Chưa chốt
+
+**D02j 2026-11-03:**203 owning+59 component/regression=262 test đạt,60 test mới,
+12 mutation mới. ResolveQueueFailureCommandHandlerTest/QueueSubmissionCommandHandlerTest/
+QueueFailureMutationTest/RabbitSubmissionQueueAdapterTest và SubmissionQueueFlowTest
+kiểm real broker, committed admission, queue-failure Outbox,protected state,races,rollback,
+firstAttempt/tie và privacy. Mất confirm sau giao được mô phỏng ở test port wrapper;
+normal confirm và broker stop dùng Rabbit thật, không gọi đây là full worker/API/STOMP E2E.
+AC08/63/64/65 giữ mở phần HTTP/realtime/worker/relay/consumers.
+Report `261103-1126-f4-queue-dispatch-core`.
+
+
+**D02i 2026-11-03:** nội bộ đã kiểm guard/UTF-8/quota per-pair/strict hour window,
+concurrent last slot và chờ lock thấy commit mới, insert/commit rollback, immutable pin.
+RecordPendingSubmissionCommandHandlerTest, SubmissionAdmissionValidationTest,
+SubmissionAdmissionMutationTest và PendingSubmissionFlowTest cung cấp bằng chứng kernel.
+AC01–06 vẫn mở ở tầng HTTP/queue/history; không đánh dấu persisted grading E2E hoàn tất.
+Report `261103-1105-f4-pending-admission-core`.
+
 
 Không còn quyết định chủ dự án đang chờ. Các câu Q4–Q7, Q14–Q16, Q19 và Q21–Q22 đã đóng trong DD F4; AC-73–AC-77 bổ sung các hành vi mới. Các giới hạn kiểm thử hạ tầng được liệt kê dưới đây.
 
@@ -746,3 +828,134 @@ Không còn quyết định chủ dự án đang chờ. Các câu Q4–Q7, Q14�
 - **Hiệu năng** (độ trễ truy vấn Beats, cửa sổ 364 ngày, thống kê lớp với lớp lớn): chưa có số đo; thuộc kiểm thử tải sau này.
 - **Nhiều instance backend** cho kênh thời gian thực: bản triển khai mặc định một instance.
 - **Giao diện** (xác nhận trước khi tạm dừng hoặc tắt ngôn ngữ, bố cục, toast): thuộc `04-tdd/<màn>.md`; ở đây chỉ kiểm phần máy chủ (ví dụ nhật ký được ghi, lệnh bị chặn khi gọi thẳng).
+
+
+## Ghi nhận triển khai D02n — 2026-11-03
+
+Bằng chứng D02n ở report `261103-f4-worker-runtime`: unit orchestration/consumer, ba mutation bản sao cho ID-only/ack/requeue và PersistedWorkerFlowTest qua HTTP + RabbitMQ + PostgreSQL + F2/MinIO + F3 + go-judge thật. Kiểm ba ngôn ngữ × hai model, run-all/partial score, STOMP owner-only seq, pin version khi current đổi, queued language bị tắt, compile/signature/input/network/runtime/timeout, duplicate terminal, job/leader lease và partial redelivery WORKER_TIMEOUT. Không nâng toàn bộ AC lên PASS: relay/sweep, results/progress/history, vận hành đa tiến trình và P1/P2 chưa có. Kết quả gate cuối/tổng/coverage lấy từ report, không suy ra full backend regression.
+
+
+## D02n1 — Đóng nợ worker local (2026-11-03)
+
+WorkerOperationsFlowTest kiểm PG/Rabbit thật:8 job/pool10, pause giữ job thứ9, đọc metric khi drain, autoscale-off không ngắt job bận, terminate leader rồi chặn cùng instance restart. PersistedWorkerFlowTest chạy profile worker, scrape Prometheus và mẻ8 bài thật, đo compile wall-time. Report261103-f4-worker-closeout ghi đầy đủ tổng/phạm vi/coverage.
+
+
+## Bằng chứng D02o — Relay Outbox, 2026-11-04
+
+**D02o — Relay Outbox F4 → RabbitMQ → F1, 2026-11-04:** đã có JOB-JD-02, confirm/mandatory-return, retry không bỏ pending, SKIP LOCKED và consumer F1 thật. Verify tích hợp 1.920 test đạt; verify cuối common/judge 340 test đạt; 3/3 mutation bị bắt; Checkstyle/SpotBugs 0, coverage đạt trong phạm vi chọn. B4 F4→F1 đã nối; D04 tổng, D03/B2/B3, F2/F5 consumers và AC-64 toàn cảnh vẫn mở. Tiếp theo recovery/sweep/cleanup. Chưa stage/commit/push. [Report](F:/prj_algoprep/06-plan/reports/261104-f4-outbox-relay/report.md).
+
+AC-63/65: đã có submit/chấm thật → Outbox → Rabbit → F1, retry/duplicate/rollback, hai consumer và read model; phần consumers F2/F5/QA toàn cảnh còn mở. AC-64 vẫn OPEN: sáu chu kỳ lỗi và mandatory return thật không thay cho outage 10 phút với năm bài, GET kết quả và F5. Không tick cả module hay sửa trạng thái QA chưa thực thi thành PASS.
+
+
+## Bằng chứng D02p — Sweep/recovery/cleanup, 2026-11-04
+
+**D02p — Sweep/recovery và cleanup F4, 2026-11-04:** JOB-JD-01/03/04 và kernel resume nguyên tử đã triển khai. 1,943 test focused đạt; 4/4 mutation bị bắt; Checkstyle/SpotBugs 0, coverage đạt. Sweep dùng khóa cùng worker và finalizer chung; retention giữ pending/source/token/callback. API pause với quyền/audit còn ở task quản trị, API kết quả/progress/lịch sử và FE chưa đóng. Tiếp theo task 7. Chưa stage/commit/push. [Report](F:/prj_algoprep/06-plan/reports/261104-f4-maintenance-recovery/report.md).
+
+- AC-23: đạt lớp kernel/job qua PostgreSQL thật, strict ngưỡng, bỏ PENDING pause, heartbeat/terminal recheck, lease worker, rollback và resume nguyên tử. API PUT pause với ADMIN/audit chưa triển khai; không tick toàn AC từ test kernel.
+- AC-24: có bảo vệ lease và race heartbeat; chưa chạy kịch bản 45 testcase kéo dài hơn 5 phút thực tế.
+- AC-33: JOB-JD-04 đã kiểm đúng/sát biên 90 ngày và giữ source/score/token/callback; API/màn kết quả hết chi tiết vẫn mở ở task 7.
+- JOB-JD-03: pending không bị xóa, batch/lock/partial commit/retry đã có test tự động. QA design-review chưa được tự chuyển toàn bộ sang PASS.
+
+
+## Bằng chứng D02q — 2026-11-04
+
+**D02q — Task 7: API kết quả/progress/lịch sử F4, 2026-11-04:** 7 API học viên/giảng viên và cổng F1/F2 thật; 1,976 test focused đạt, 12/12 mutation bị bắt; Checkstyle/SpotBugs 0, coverage đạt. Khóa kép Sample, stderr, retention 90 ngày, Beats, phạm vi lớp và snapshot/seq worker đã kiểm. Owner chốt 503 JDG-506. FE/browser và thống kê B2/B3 còn mở; tiếp theo task 8 Run Code/Sample và execution limits. Chưa stage/commit/push. [Report](F:/prj_algoprep/06-plan/reports/261104-f4-submission-reads/report.md).
+
+| AC | Phần có bằng chứng | Phần chưa nghiệm thu |
+| :--- | :--- | :--- |
+| AC-27/28 | Progress REST snapshot/seq, lỗi giữa chừng; đối chiếu sự kiện worker | Client reconnect/polling và trình duyệt thật |
+| AC-30–35 | Detail, Hidden/IDOR, retention 90 ngày, Beats, stderr | UI kết quả và QA toàn cảnh |
+| AC-36/37 | Recent/history/filter/search/pagination với dữ liệu thật | FE tab/lịch sử |
+| AC-41–46 | Quyền live, cửa sổ ghi danh/giao bài, một lớp, detail/history | FE giảng viên và QA toàn cảnh |
+
+Không đánh dấu mọi testcase QA PASS và không đóng AC-38/39/40/47 (in-progress/thống kê) bằng lát này. Report/evidence có scope, tên test và hash nguồn; không phải full-backend/FE regression.
+
+
+## Bằng chứng D02r — 2026-11-04
+
+**D02r — Task 8: Run Code/Sample và execution limits, 2026-11-04:** hai API backend dùng F2/F3/sandbox thật; 14 unit mới + 18 integration mới đạt, cùng 29 test hợp đồng trực tiếp/kiến trúc (61 test liên quan); 8/8 mutation bị bắt. Spotless/Checkstyle/SpotBugs đạt; LINE của từng file mới được đo ≥80%. Chỉ test lát và phụ thuộc trực tiếp theo owner; full regression chờ mốc clear. FE/browser, network-enabled và production nhiều instance còn hoãn. [Report](F:/prj_algoprep/06-plan/reports/261104-f4-run-sample/report.md).
+
+| AC | Bằng chứng backend | Còn mở |
+| :--- | :--- | :--- |
+| AC-04/05/06, nhánh #2 | Source UTF-8, language enabled, wrapper support, quyền | FE |
+| AC-10/73 | Sample SQL, không ghi, quota/đồng thời/fail-open/refund | FE/modal/browser |
+| AC-11/12/13 | Map compiler line, hạ tầng/deadline/cancellation, slot thật | FE retry/hiển thị |
+| AC-14 | Limits live, HALF_UP, disabled flag | FE limits/fallback |
+
+Không tick toàn bộ QA/màn hình hay AC module tổng; chỉ có các suite nêu trong report. Full regression và gate coverage toàn module để mốc clear theo owner.
+
+
+## D02v — AC-47 backend P1
+
+**D02v — 2026-11-04:** F4 B2 cổng thống kê lớp đã xong: đúng cửa sổ ghi danh/giao/gỡ, tuần đủ UTC+7, best theo lần giao, cache15 phút/fallback. 24 test liên quan đạt (16 mới), 4/4 mutation bị bắt; 124/124 dòng logic mới, static gates đạt. Không sửa F1/F2 hoặc chạy full regression. B3 đã chốt 7 khối, chưa triển khai. [Report](F:/prj_algoprep/06-plan/reports/261104-1540-f4-class-metrics/report.md).
+
+AC-47 cổng F4: đạt backend PG/Redis. ClassSubmissionMetricsFlowTest kiểm 7 ca dữ liệu/cache thật; GetClassStudentSubmissionMetricsQueryHandlerTest và ClassSubmissionMetricsCalculatorTest kiểm 9 ca unit. Không đánh dấu mọi testcase QA hoặc AC màn giảng viên PASS; F1 consumer/HTTP và FE chưa nối.
+
+
+## D02w — AC-67 backend P2
+
+**D02w — 2026-11-04:** B3 backend F4 có đủ7 cổng thống kê admin theo owner; SQL đúng UTC+7/cửa sổ/trạng thái/scope bài. 23 test liên quan đạt (15 mới), 4/4 mutation, 191/191 dòng logic mới và static gates đạt. Chưa nối F1 HTTP/cache/catalogue hoặc FE; không chạy full regression/merge. [Report](F:/prj_algoprep/06-plan/reports/261104-1604-f4-admin-stats/report.md).
+
+AC-67 đạt phần cổng F4/PG theo7 khối. AdminSubmissionStatsFlowTest kiểm6 ca tích hợp, hai lớp handler/calculator kiểm9 ca unit; không đóng F1 HTTP/degraded UI/QA testcase riêng.
+
+
+## D02x — AC-39/40 backend cá nhân/topic
+
+**D02x — 2026-11-04:** F4 GET metrics cá nhân và P5 topic đã xong; SQL/principal thật, range/streak/ratio/đọc topic lịch sử, không callback F2 từ P5. Owner chốt503 JDG-507. 29 test liên quan duy nhất đạt (21 mới),5/5 mutation, static gates đạt; coverage7 file logic không đổi115/115 dòng từ unit đầu. Không full regression/merge. [Report](F:/prj_algoprep/06-plan/reports/261104-1653-f4-my-metrics/report.md).
+
+AC-39→MySubmissionMetricsCalculatorTest và MySubmissionMetricsFlowTest: range/streak/localday đạt backend. AC-40→MySubmissionMetricsFlowTest: khoảng lạ JDG-V07 và query userId thừa không chọn người khác đạt backend. Hợp đồng topic/P5 §26.5 được kiểm thêm qua GetMySubmissionMetricsQueryHandlerTest và MySubmissionMetricsFlowTest (historical/eligible/P5 không callback, scope STUDENT); không gán P5 thành nội dung AC-40. Không đóng UI/QA testcase riêng. Nhánh503 đã kiểm DB và F2 sau quyết định owner.
+
+
+## D02y — Bằng chứng backend P6/P7
+
+**D02y — 2026-11-05:** F4 P6/P7 backend xong: current-members/class attribution trước tab, cửa sổ giao/ghi danh; P7 principal STUDENT và trạng thái từng lần giao, không callback F2. 28 test liên quan đạt (16 mới),7/7 mutation,80/80 dòng logic mới; static gates đạt. Consumer F2/FE chưa nối, chưa full regression/merge. [Report](F:/prj_algoprep/06-plan/reports/261105-1020-f4-assignment-metrics/report.md).
+
+| Contract | Bằng chứng thực thi | Giới hạn nghiệm thu |
+| --- | --- | --- |
+| P6 §26.6 | GetAssignmentMetricsQueryHandlerTest + AssignmentMetricsFlowTest: current members, scope lớp, khoảng giao/ghi danh, gắn lớp trước tab, UUID tie, count/ratio/zeros | Cổng F4 đạt; không coi API/consumer F2/FE đã nối; AC-43 chỉ đối chiếu quy tắc chung, không đóng QA/API lại |
+| P7 §26.7 | Hai test class trên và SecurityContextMetricsStudentAdapterTest: principal, own-data, [start,end), SOLVED/ATTEMPTED/UNSOLVED riêng từng lần giao, lỗi không false-zero | Cổng F4 đạt; HTTP F2 §5/5A và UI chưa nghiệm thu |
+
+AssignmentPeriodTest kiểm3 ca models/immutability/bounds; PG7, unit handler6, principal4, architecture8. Mutation7/7 bắt assertion rồi hoàn nguyên. Không sửa hoặc đánh dấu executed các tài liệu QA testcase riêng.
+
+
+## D02z — AC-66/70 provider backend
+
+**D02z — 2026-11-05:** F4 P3 provider đủ generator limits/enabled languages/multipliers và defaults có sẵn; P4 snapshot7 trường chỉAC, lỗi missing/notAccepted riêng, no testcase/source trong log. 22 test liên quan đạt (14 mới),5/5 mutation,37/37 dòng logic mới; static gates đạt, Spotless judge/bootstrap apply+check đầy đủ. Consumer mới F2/F5/FE chưa nối; chưa full regression/merge. [Report](F:/prj_algoprep/06-plan/reports/261105-1045-f4-config-snapshot-reads/report.md).
+
+AC-66:unit/PG cho config reads, cập nhật generator45→60 bằng SQL fixture; không đóng admin PUT/sinh testcase AI E2E. AC-70:Accepted trả7fields,8 nonAccepted bị từ chối, missing riêng/DB errors sanitized/null0sourceprivacy qua test snapshot và PG. Cụ thể tổng8unit cho cảhai handler,6PG,8Arch; không tự gán số test của cảlát cho từngAC. QA docs riêng chưa thực thi.
+
+
+## D02aa — API#8/#23/#24
+
+**D02aa — 2026-11-05:** API F4#8/#23/#24 xong: latest-own/withdrawn trước limit, Accepted history và enabled languages đúng thứ tự/quyền.30 test liên quan đạt (18 mới),6/6 mutation,83/83 dòng logic mới; static gates/Spotless judge+bootstrap đạt. F4-2 backend đóng; còn admin config/queue và nghiệm thu BE cuối, FE riêng. Chưa full regression/merge. [Report](F:/prj_algoprep/06-plan/reports/261105-1110-f4-learner-list-apis/report.md).
+
+AC38→LearnerSubmissionListsFlowTest (latest semantics, own-only, 33withdrawn trước3public, tieUUID, limits); AC69→cùngsuite (12ownAC trênbài rút/active, duplicateAC, null/0, metadata degrade/privacy); AC72→cùngsuite (STUDENT/INSTRUCTOR,401/403,order/liveconfig/503), cònnegative APIadmin#21/#22 ởlátadmin. Unit6handler+3controller, principal4, architecture8. Không đánh dấu QA docs đa màn đãthựcthi.
+
+
+## D02ab — bằng chứng admin #21/#22, 2026-11-05
+
+**D02ab — 2026-11-05:** API #21/#22 cấu hình ngôn ngữ/limits/sandbox/generator đã có backend thật; quyền riêng READ/UPDATE, khóa/version từng dòng, một audit diff và rollback hai chiều. 29 test liên quan đạt (21 mới), 6/6 mutation, 96/97 dòng logic mới; Spotless judge/bootstrap, Checkstyle phạm vi F4/bootstrap và SpotBugs đạt. F4-3 còn queue/infra/STOMP admin; chưa full regression/merge, FE riêng. [Report](F:/prj_algoprep/06-plan/reports/261105-1204-f4-admin-language-config/report.md).
+
+AC-57/59/60/61 và phần #22 của AC-62 backend có test mới; AC-62 phần #16/#17/#19 còn mở. AC-58 lưu/audit/no-op và cổng SQL worker/admission thật đã kiểm, chưa chạy engine đang chấm đồng thời HTTP admin, để FINAL. AC-72 bổ sung negative READ/UPDATE/role của#21/#22, kết hợp bằng chứng#24 D02aa; FE/browser/QA testcase execution riêng, không đổi bảng testcase thành đã chạy.
+
+
+## D02ac — bằng chứng API queue controls, 2026-11-05
+
+**D02ac — 2026-11-05:** API #16–19 pause/resume, autoscale và queue settings có backend thật; resume tái dùng kernel heartbeat D02p, quyền ADMIN riêng với Function READ cho GET, stale409, no-op và audit REQUIRED. 34 test liên quan đạt (22 mới),9/9 mutation,73/73 dòng logic mới; Spotless judge/bootstrap, Checkstyle đúng phạm vi và SpotBugs đạt. F4-3 còn snapshot/jobs/infra/STOMP admin, runtime cuối ở FINAL; chưa full regression/merge, FE riêng. [Report](F:/prj_algoprep/06-plan/reports/261105-1547-f4-queue-controls/report.md).
+
+AC-51 backend race/409 đạt. AC-52/53 phần command/settings API và control-read thật đạt; snapshot/job-list/FE còn mở. AC-54 và AC-62 backend hoàn tất kết hợp D02ab language config; không tick QA testcase execution/FE. AC-50/77 runtime HTTP→Rabbit mới vẫn để FINAL; hai ca kernel và hai ca worker policy/resize liên quan đã chọn chạy, không thay bằng chứng runtime bằng mock.
+
+
+## D02ad — AC48/49/52/53 backend evidence
+
+**D02ad — 2026-11-05:** Backend snapshot queue #13 và danh sách job #14 xong: trạng thái/độ trễ từ SQL, counts và phân trang theo config thật, retention không xóa submission, quyền READ. 23 test liên quan đạt (14 mới),6/6 mutation,46/47 dòng logic mới; Spotless judge/bootstrap, scoped Checkstyle và SpotBugs đạt. F4-3 còn infra-summary/events và admin STOMP, rồi FINAL BE; chưa full regression/merge, FE riêng. [Report](F:/prj_algoprep/06-plan/reports/261105-1802-f4-queue-snapshot-jobs/report.md).
+
+AC48/49 đúng snapshot và jobs; read-side52/53 đã kiểm qua HTTP config thật→read. Ghi chú AC49 live Rabbit ở D02ac được sửa: live pause/scale là AC50/77/FINAL, không phải49. FE/QA testcase execution và W2 vẫn riêng; không đánh dấu ca QA tài liệu là đã chạy.
+
+**D02ae — 2026-11-05:** Backend infra-summary #15 và infra-events #20 xong: cùng nguồn SQL thật, counts24h/danh sách90 ngày, message an toàn, lọc/ngày UTC+7 và cursor20 dòng. 20 test liên quan đạt (12 mới),6/6 mutation,78/78 dòng logic mới; Spotless judge/bootstrap, scoped Checkstyle và SpotBugs đạt. F4-3 còn admin STOMP W2, rồi FINAL BE; chưa full regression/merge, FE/QA riêng. [Report](F:/prj_algoprep/06-plan/reports/261105-f4-infra-summary-events/report.md).
+
+**D02af — 2026-11-05:** STOMP admin W2 có QUEUE_BATCH thật theo chu kỳ5s, một lô chung cho mọi admin, không query khi không có subscriber hợp lệ. Snapshot/counts/infra-summary cùng transaction RR; outbound chặn phiên hết JWT hoặc đã unsubscribe.64 test liên quan đạt (18 mới),6/6 mutation,28/28 dòng logic mới; Spotless/Checkstyle/SpotBugs phạm vi chọn đạt. Backend F4-3 đủ API và W2; tiếp theo FINAL BE/full regression khi clear. FE/browser/C08 và production nhiều process giữ mốc riêng. Chưa commit/merge. [Report](F:/prj_algoprep/06-plan/reports/261105-f4-admin-queue-stream/report.md).
+
+**D02ag — FINAL BE local,2026-11-05:**1.718 test duy nhất đạt (common40,harness809,judge429,bootstrap440),0 failure/error/skip;4 runtime mới. Đủ77 AC map source/test; HTTP→Rabbit pause/autoscale/config-live và45 case>5phút/outage tuyến event604s/replay→F1 đã kiểm. Coverage common98,74%,harness98,29%,judge97,83%,bootstrap86,86%; static gates F3/F4 scope đạt. Cây chung còn Checkstyle test F2 PublishedProblemReadFlowTest:466, không sửa trong phiên này và không tuyên bố whole-tree merge-ready. Giữ FE/browser/C08, network-enabled/rollout nhiều process và consumers ngoài scope riêng. Không stage/commit/merge. [Report](F:/prj_algoprep/06-plan/reports/261105-f4-final-backend/report.html).
+
+Trạng thái FINAL trong bảng là bằng chứng backend local, không phải trạng thái execution của bộ testcase QA. Các ghi nhận lát cũ bên trên giữ làm lịch sử; kết quả mới và giới hạn chi tiết nằm trong report/ma trận77 AC.

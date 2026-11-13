@@ -80,7 +80,7 @@ Ba điểm DD **lệch** so với danh sách tên của BD, mỗi điểm có l�
 - **Không có phạm vi "theo lớp"**: A2 và A3 cùng phạm vi dữ liệu, không lọc theo `created_by` (SEC6:34-47). Vì vậy DD **không gọi** `ClassScopeQueryPort` (mục 28, D3).
 - **Mã trạng thái**: `400` lỗi định dạng, `401` token (mã chung), `403` quyền, `404` không thấy, `409` xung đột, `413` body quá trần kỹ thuật, `422` vi phạm quy tắc nghiệp vụ, `429` vượt hạn mức hoặc ngân sách, `503` hạ tầng.
 - **Ghi audit thất bại**: mọi endpoint quản trị ghi dữ liệu ở mục 11–18, 21–24 dùng `AuditLogPort` cùng giao dịch. Nếu cổng lỗi thì rollback toàn bộ thao tác và trả `503 INB-503`; không phát response thành công hoặc tạo bản ghi nghiệp vụ mồ côi (owner chốt 2026-10-27).
-- **Phong bì lỗi** theo `api.md` mục 1.1: `{ "error": { "code": "INB-030", "message": "...", "details": {...}, "traceId": "uuid" } }`. Mã lỗi ở mục 27 (Bảng 7).
+- **Phong bì lỗi** theo `api.md` mục 1.1: RFC 9457 `application/problem+json` phẳng (`DEC-2026-1031-error-body-rfc9457`): `{ "type": "about:blank", "title": "...", "status": 422, "detail": "...", "instance": "<đường dẫn>", "errorCode": "INB-030", "details": {...} }`; cột `error.code` ở các bảng lỗi nghĩa là trường `errorCode`. Mã lỗi ở mục 27 (Bảng 7).
 - **Sở hữu dữ liệu trả `403`, không `404`** cho dữ liệu cá nhân của người khác (SEC6:27-29). Trong module này **không route nào nhận id của dữ liệu cá nhân** (câu trả lời, mức tự chấm, bookmark đều khoá theo `questionId` + `userId` từ token), nên trường hợp này không xảy ra ở tầng route; kiểm vẫn có ở repository (mọi truy vấn kèm `user_id = :tokenUserId`).
 - **`questionId` không phải UUID, không tồn tại hoặc `status = RETIRED`** ở endpoint học viên đều trả `404 INB-010` ("Câu hỏi không còn khả dụng", `U401:562`, `U402:624`).
 - **Phân trang**: học viên cuộn tải thêm `page` (từ 1), `pageSize` cố định 20; quản trị `page`, `pageSize` thuộc {8, 20, 50}, mặc định 8 (`S301:505`). `PageMeta` như `DD-F2` mục 1.5: `{ number, size, totalItems, totalPages }`. `page` vượt `totalPages` thì trả trang cuối, không lỗi (như `DD-F2:143`). Lịch sử lượt dùng **con trỏ** `before` (mục 7).
@@ -318,7 +318,9 @@ BR-IB-06: bảng cố định `FORGOTTEN` 1, `VAGUE` 3, `KNOWN` 7 ngày; `next_r
 | Kết quả | `feedbackStatus` | `feedback` | `feedbackErrorCode` |
 | :--- | :--- | :--- | :--- |
 | Có phản hồi | `COMPLETED` | `FeedbackDto` | `null` |
-| AI hoặc cổng ngân sách hỏng, quá hạn (30 giây) | `FAILED` | `null` | `INB-501` |
+| AI hoặc cổng ngân sách hỏng, quá hạn (90 giây, cấu hình được) | `FAILED` | `null` | `INB-501` |
+
+Quy tắc nội dung rỗng (2026-11-12, `DEC-2026-1112-f5-scoring-timeout-configurable-and-f6-null-content`): `content_markdown` là tuỳ chọn (nhập CSV, tạo tay), `null` được gửi sang AI như chuỗi rỗng; tiêu đề và rubric vẫn là khối dữ liệu. Mọi lỗi AI bị nuốt thành `INB-501` đều ghi log `WARN` kèm tên lớp và thông điệp lỗi, không ghi văn bản câu trả lời, khoá hay stack.
 | AI trả sai lược đồ | `FAILED` | `null` | `INB-502` |
 
 Giao diện hiện "AI không khả dụng" khi `FAILED`; câu trả lời không mất (ARCH6:270-276).
@@ -340,9 +342,11 @@ Chi tiết BR-IB-07; thứ tự bắt buộc:
 1. Kiểm `answerText` (`INB-V06`, `INB-V07`).
 2. Đọc câu hỏi `ACTIVE` (`INB-010`) và nạp `answer_rubrics` thành **một snapshot trong bộ nhớ** (tiêu đề, mô tả, `topic_id`, rubric; một lần đọc). Snapshot này dùng cho prompt, kiểm kết quả và `rubric_snapshot_json`, **không đọc lại** sau lời gọi AI (F6-03, owner chốt 2026-10-29). Rubric rỗng thì `INB-040`. Sinh sẵn `answerId` và `callId` (UUID) **ngay tại đây, trước mọi cổng** (F6-02): mọi nhánh sau, kể cả cổng ngân sách lỗi hạ tầng, đều lưu được lượt `FAILED` với `answerId` hợp lệ.
 3. **Hạn mức giờ** (Redis, `interview_bank:ratelimit:<userId>`): một **script Lua nguyên tử** làm `INCR`, đặt `EXPIRE 3600` khi kết quả là 1 (không để hai lệnh rời nhau: tiến trình chết giữa hai lệnh sẽ để lại khoá không hết hạn và chặn người đó vĩnh viễn), và trả `reservation = {key, quotaIncremented}`; vượt 20 thì hoàn như bước 8 và `INB-041`. Redis hỏng: bỏ qua bước (fail-open), ghi `WARN`, `quotaIncremented = false`.
+
+> **Triển khai F6-5 (chủ dự án chốt 2026-11-11, `DEC-2026-1111-f6-5-practice-via-f5-p5-port`):** hạn mức giờ dùng lại script Lua của F5, khoá `ai:ratelimit:<user>:PRACTICE_FEEDBACK:<epochHour>` (cửa sổ theo giờ đồng hồ, không tính từ lần gọi đầu); khoá `interview_bank:ratelimit:<userId>` nêu ở đây **không** được tạo. Hành vi 20 lượt/giờ, hoàn đúng một lần và fail-open giữ nguyên.
 4. **Ngân sách** `CheckAiBudgetUseCase.check(userId, baseCategory)` (mục 26): ném `AiBudgetExceededException` thì **hoàn** hạn mức giờ (`DECR`) và `INB-042`, không gọi AI, không ghi lượt. Cổng ném lỗi hạ tầng thì coi như không có AI: nhảy tới bước 8 với `FAILED`/`INB-501`; `answerId` đã có từ bước 2 nên bước 9 vẫn ghi được.
 5. (Đã gộp vào bước 2: `answerId` và `callId` sinh trước mọi cổng, DB6:120.)
-6. Dựng prompt ba lớp (BR-IB-07 bước 5) và gọi `AnswerFeedbackPort.compareAnswer` (mục 25), **ngoài** giao dịch, tổng hạn 30 giây, không thử lại.
+6. Dựng prompt ba lớp (BR-IB-07 bước 5) và gọi `AnswerFeedbackPort.compareAnswer` (mục 25), **ngoài** giao dịch, tổng hạn 90 giây (cấu hình `algoprep.ai.llm.timeout.practice-total-sec`), không thử lại.
 7. Kiểm kết quả theo lược đồ (validation mục 7). Sai thì `FAILED`/`INB-502`.
 8. Hạn mức giờ: lỗi hạ tầng hoặc quá hạn ở bước 4 hoặc 6 thì **hoàn** để lần thử lại không bị phạt `[SoT: Suy luận]`, cùng tiền lệ BR-AI-04 bước 8 của F5; sai lược đồ thì **không** hoàn (token đã tiêu). Hoàn chỉ chạy **một lần** cho mỗi `reservation`, qua script Lua nguyên tử: `DECR` chỉ khi `quotaIncremented = true`, đúng `key` đã đặt chỗ và khoá còn tồn tại với giá trị lớn hơn 0 (không tạo số âm khi khoá đã hết hạn hoặc Redis đã fail-open). Cùng cơ chế với `03-dd/logic/F5_ai-review.md` BR-AI-04 bước 8 (F6-08, owner chốt 2026-10-29).
 9. **Một giao dịch ngắn** (sửa 2026-10-29, F6-03 và F6-07): `SELECT topic_id, status FROM interview_questions WHERE id = :questionId FOR SHARE` (chờ nếu ADMIN đang đổi chủ đề hoặc xoá mềm, và ngược lại việc đổi chủ đề phải chờ giao dịch này); `attempt_no = coalesce(max(attempt_no),0)+1` cho `(user_id, question_id)`; `INSERT user_answers` (`id = answerId`, `feedback_status` = `COMPLETED` hoặc `FAILED`, `feedback_result_json`, `rubric_snapshot_json` = **snapshot ở bước 2**, không đọc lại rubric); upsert `practice_history` theo `topic_id` và `status` **vừa đọc có khoá** (BR-IB-09). Vi phạm unique `(user_id, question_id, attempt_no)` thì **rollback giao dịch này** rồi thử lại **chỉ khối này** trong giao dịch mới, tối đa 3 lần, với cùng `answerId`, cùng snapshot và cùng kết quả AI (không gọi lại AI, không sinh `answerId` mới); hết lần thì `INB-050` và vẫn ghi usage ở bước 10. **Không có `UPDATE user_answers`**, nên `PENDING` không bao giờ được ghi.
@@ -1012,7 +1016,7 @@ FeedbackResult = { achievedPoints[], missingPoints[], improvementSuggestions[],
 
 | Mục | Giá trị |
 | :--- | :--- |
-| Hạn chờ | tổng **30 giây**, không thử lại tự động (kết quả không tất định, tốn token) `[SoT: Suy luận]`, cùng giá trị Solution Review (`DD-F5` Bảng 4). **Không** Resilience4j (DEC-1023b); không có bộ ngắt mạch |
+| Hạn chờ | tổng **90 giây**, cấu hình `algoprep.ai.llm.timeout.practice-total-sec` (trước 30 giây; model miễn phí mất 22,5 đến 26,9 giây khi đo, `DEC-2026-1112-ai-practice-and-interview-call-timeouts-configurable`), thấp hơn hạn 240 giây của proxy Next; không thử lại tự động (kết quả không tất định, tốn token) `[SoT: Suy luận]`, cùng giá trị Solution Review (`DD-F5` Bảng 4). **Không** Resilience4j (DEC-1023b); không có bộ ngắt mạch |
 | Khi lỗi hạ tầng hoặc quá hạn | ném lỗi miền; use case ghi `FAILED`/`INB-501` |
 | Khi sai lược đồ | use case ghi `FAILED`/`INB-502`; token vẫn ghi |
 | Mô hình | `interview-bank.feedback.model-id` trong `application.yml`; **không** nằm trong danh sách chọn của `ADM0301` (DEC-1011: không có prompt chỉnh được, không có tab) |
@@ -1117,6 +1121,28 @@ Bảng 8 là các điểm cần chủ dự án quyết, mỗi dòng có mặc đ
 | D11 | `DD-F5:1833` | Khi `ai-review` hỏng, P1 ném lỗi hạ tầng; DD-F5 chưa nêu kiểu ngoại lệ cụ thể | DD này coi mọi ngoại lệ **khác** `AiBudgetExceededException` là lỗi hạ tầng |
 
 Đề xuất quyết định (không ghi vào `decision-registry.md` ở đây): (a) bỏ `ClassScopeQueryPort` khỏi F6 (D3); (b) F6-08 bị khoá ngân sách thì từ chối không lưu lượt (Q2, D2); (c) thêm `QuestionData` vào chữ ký `AnswerFeedbackPort` (D1, đây là hợp đồng prompt, thuộc nhóm cần DEC theo `sot-precedence.md` mục 5); (d) index `user_answers(question_id)` (D5); (e) định nghĩa tử số tiến độ chỉ câu `ACTIVE` (Q11).
+
+**Đã chốt 2026-11-08 (owner duyệt; ghi nhận ở `DEC-2026-1108-f6-defaults-and-practice-prompt`, controller tạo):** cả năm đề xuất (a) đến (e) trên nay là quyết định, không còn treo. Bảng 9a: Năm điều đã chốt.
+
+| # | Điều chốt | Khớp với | Hệ quả cho code |
+| :-: | :--- | :--- | :--- |
+| a | Bỏ `ClassScopeQueryPort` khỏi F6 | D3 | Không dựng cổng, không phụ thuộc `identity` ở đường quản trị |
+| b | Ngân sách AI khoá (STUDENT, INSTRUCTOR): từ chối luyện tập, không lưu lượt | Q2, D2, `429 INB-042` | Không ghi `user_answers`, hoàn hạn mức giờ |
+| c | Thêm `QuestionData` (`title`, `contentMarkdown`) vào user message của prompt luyện tập | D1, mục 25 | Chữ ký `compareAnswer` có `QuestionData`; sửa ARCH6 mục 3.1 |
+| d | Index `user_answers(question_id)` | D5 | Đã có ở `V6.001:126`; không cần migration mới |
+| e | Tiến độ chỉ đếm câu `ACTIVE` | Q11, BR-IB-09 | Tính lại `questions_attempted` khi xoá mềm hoặc đổi chủ đề; kẹp `min(100, ...)` lúc đọc |
+
+**Chốt sau khi code F6-1 và F6-2 (2026-11-08, owner duyệt; ghi nhận ở `DEC-2026-1108-f6-error-handling-from-code`):** bốn điểm dưới đây là hành vi đang chạy của code, nay là quyết định. Bảng 9b: Bốn điều chốt về xử lý lỗi.
+
+| # | Điều chốt | Hệ quả cho code |
+| :-: | :--- | :--- |
+| f | `403 INB-301` do `InterviewBankErrorAdvice` của F6 trả về (theo tiền lệ `CatalogErrorAdvice` của F2), không dùng `ApiAccessDeniedHandler` chung (trả `IDT-445`) | Mỗi controller F6 mới phải thêm vào `assignableTypes` của advice |
+| g | Id không phải UUID ở đường dẫn trả `404` (`INB-010`, `INB-011`, `INB-012`), coi là không tồn tại | Không có `400` cho id sai định dạng |
+| h | Body JSON hỏng hoặc `contentMarkdown` sai kiểu ở mục 21, 22 trả `400 INB-V08` (mục 23 dùng `INB-V02`, mục 24 dùng `INB-V15`, mục 12, 16 dùng `INB-V03`, mục 13, 17 dùng `INB-V14`) | Không thêm mã mới |
+| i | Nhập CSV (mục 24): `skippedRows[].detail` luôn `null`, chỉ trả `line` và `reasonCode`; không bắt FK để dịch sang `INB-030`, `INB-031` (đếm trong khoá tư vấn) | Ponytail bậc 3; chi tiết lý do là việc làm sau nếu có người dùng |
+| j | Mục 2: `q` chỉ gồm dấu câu (không còn token nào) thì bỏ cả bộ lọc tìm kiếm, trả toàn bộ câu; `drill=true` thì `meta.shown` bằng số thẻ trả về | Khớp code F6-3; không phải bỏ riêng nhánh FTS |
+| k | Mục 4: body JSON hỏng hoặc `rating` sai chữ (kể cả viết thường) trả `400 INB-V04`; mục 5: body hỏng trả `400 INB-V05` | Không thêm mã mới |
+| m | Mục 8: dashboard USR0601 gọi thẳng HTTP mục 8, F6 chỉ mở cổng trong tiến trình mục 27 và không nối cầu sang F1; khi hai chủ đề trùng `sort_order` thì sắp tiếp theo `code` | Khớp code F6-4; Q7 mục 28 đóng |
 
 ## 29. Tham chiếu
 

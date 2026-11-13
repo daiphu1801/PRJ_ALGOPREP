@@ -14,22 +14,22 @@
         "role": "actor"
       },
       {
-        "name": "AiConfigController",
+        "name": "AdminLanguageConfigController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "ListPromptTemplates",
+        "name": "ListPromptTemplatesQueryHandler",
         "role": "service",
         "stereo": "application query"
       },
       {
-        "name": "PromptReadPort",
+        "name": "PromptTemplateRepository",
         "role": "repository",
-        "stereo": "output port"
+        "stereo": "domain output port"
       },
       {
-        "name": "AiDbAdapter",
+        "name": "JdbcAiPromptTemplateRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -45,60 +45,60 @@
       },
       {
         "from": "Quản trị viên",
-        "to": "AiConfigController",
+        "to": "AdminLanguageConfigController",
         "text": "Mở trang chỉ thị và chất lượng AI"
       },
       {
-        "from": "AiConfigController",
-        "to": "ListPromptTemplates",
+        "from": "AdminLanguageConfigController",
+        "to": "ListPromptTemplatesQueryHandler",
         "text": "Lấy bản đang chạy và bản nháp"
       },
       {
-        "from": "ListPromptTemplates",
-        "to": "PromptReadPort",
+        "from": "ListPromptTemplatesQueryHandler",
+        "to": "PromptTemplateRepository",
         "text": "Đọc chỉ thị của ba tính năng"
       },
       {
-        "from": "PromptReadPort",
-        "to": "AiDbAdapter",
+        "from": "PromptTemplateRepository",
+        "to": "JdbcAiPromptTemplateRepository",
         "text": "Tìm phiên bản đang chạy và bản nháp"
       },
       {
-        "from": "AiDbAdapter",
+        "from": "JdbcAiPromptTemplateRepository",
         "to": "PostgreSQL",
         "text": "Đọc chỉ thị theo tính năng và trạng thái"
       },
       {
         "from": "PostgreSQL",
-        "to": "AiDbAdapter",
+        "to": "JdbcAiPromptTemplateRepository",
         "text": "Các phiên bản hiện có",
         "kind": "return"
       },
       {
-        "from": "AiDbAdapter",
-        "to": "PromptReadPort",
+        "from": "JdbcAiPromptTemplateRepository",
+        "to": "PromptTemplateRepository",
         "text": "Các phiên bản hiện có",
         "kind": "return"
       },
       {
-        "from": "PromptReadPort",
-        "to": "ListPromptTemplates",
+        "from": "PromptTemplateRepository",
+        "to": "ListPromptTemplatesQueryHandler",
         "text": "Các phiên bản hiện có",
         "kind": "return"
       },
       {
-        "from": "ListPromptTemplates",
-        "to": "ListPromptTemplates",
+        "from": "ListPromptTemplatesQueryHandler",
+        "to": "ListPromptTemplatesQueryHandler",
         "text": "Ghép mô hình được duyệt và giới hạn chỉ đọc"
       },
       {
-        "from": "ListPromptTemplates",
-        "to": "AiConfigController",
+        "from": "ListPromptTemplatesQueryHandler",
+        "to": "AdminLanguageConfigController",
         "text": "Trả cấu hình cho ba tab",
         "kind": "return"
       },
       {
-        "from": "AiConfigController",
+        "from": "AdminLanguageConfigController",
         "to": "Quản trị viên",
         "text": "Hiển thị bản chạy, bản nháp và mô hình",
         "kind": "return"

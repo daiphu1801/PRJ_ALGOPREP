@@ -14,22 +14,22 @@
         "role": "actor"
       },
       {
-        "name": "AiLimitsController",
+        "name": "AdminLanguageConfigController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "ManageModelPrice",
+        "name": "ManageModelPriceCommandHandler",
         "role": "service",
         "stereo": "application"
       },
       {
-        "name": "ModelPricePort",
+        "name": "AiBudgetRepository",
         "role": "repository",
-        "stereo": "output port"
+        "stereo": "persistence adapter"
       },
       {
-        "name": "AiDbAdapter",
+        "name": "JdbcAiTokenBudgetRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -45,26 +45,26 @@
       },
       {
         "from": "Quản trị viên",
-        "to": "AiLimitsController",
+        "to": "AdminLanguageConfigController",
         "text": "Thêm tên mô hình mới"
       },
       {
-        "from": "AiLimitsController",
-        "to": "ManageModelPrice",
+        "from": "AdminLanguageConfigController",
+        "to": "ManageModelPriceCommandHandler",
         "text": "Kiểm quyền và tên sau khi bỏ khoảng trắng"
       },
       {
-        "from": "ManageModelPrice",
-        "to": "ModelPricePort",
+        "from": "ManageModelPriceCommandHandler",
+        "to": "AiBudgetRepository",
         "text": "Tạo mô hình với đơn giá bằng không"
       },
       {
-        "from": "ModelPricePort",
-        "to": "AiDbAdapter",
+        "from": "AiBudgetRepository",
+        "to": "JdbcAiTokenBudgetRepository",
         "text": "Lưu mô hình mới"
       },
       {
-        "from": "AiDbAdapter",
+        "from": "JdbcAiTokenBudgetRepository",
         "to": "PostgreSQL",
         "text": "Thêm tên duy nhất, không phân biệt hoa thường"
       },
@@ -73,12 +73,12 @@
       },
       {
         "from": "Quản trị viên",
-        "to": "AiLimitsController",
+        "to": "AdminLanguageConfigController",
         "text": "Đổi tên, đơn giá hoặc xóa"
       },
       {
-        "from": "AiLimitsController",
-        "to": "ManageModelPrice",
+        "from": "AdminLanguageConfigController",
+        "to": "ManageModelPriceCommandHandler",
         "text": "Kiểm quyền và dữ liệu cần sửa"
       },
       {
@@ -86,34 +86,34 @@
           "label": "Sửa hay xóa?",
           "then": [
             {
-              "from": "ManageModelPrice",
-              "to": "ModelPricePort",
+              "from": "ManageModelPriceCommandHandler",
+              "to": "AiBudgetRepository",
               "text": "Cập nhật tên hoặc đơn giá không âm"
             },
             {
-              "from": "ModelPricePort",
-              "to": "AiDbAdapter",
+              "from": "AiBudgetRepository",
+              "to": "JdbcAiTokenBudgetRepository",
               "text": "Lưu các trường được gửi"
             },
             {
-              "from": "AiDbAdapter",
+              "from": "JdbcAiTokenBudgetRepository",
               "to": "PostgreSQL",
               "text": "Cập nhật dòng đơn giá"
             }
           ],
           "else": [
             {
-              "from": "ManageModelPrice",
-              "to": "ModelPricePort",
+              "from": "ManageModelPriceCommandHandler",
+              "to": "AiBudgetRepository",
               "text": "Xóa mô hình, kể cả khi đã xóa"
             },
             {
-              "from": "ModelPricePort",
-              "to": "AiDbAdapter",
+              "from": "AiBudgetRepository",
+              "to": "JdbcAiTokenBudgetRepository",
               "text": "Xóa theo mã"
             },
             {
-              "from": "AiDbAdapter",
+              "from": "JdbcAiTokenBudgetRepository",
               "to": "PostgreSQL",
               "text": "Xóa dòng nếu còn tồn tại"
             }
@@ -121,13 +121,13 @@
         }
       },
       {
-        "from": "ManageModelPrice",
-        "to": "AiLimitsController",
+        "from": "ManageModelPriceCommandHandler",
+        "to": "AdminLanguageConfigController",
         "text": "Trả kết quả quản lý đơn giá",
         "kind": "return"
       },
       {
-        "from": "AiLimitsController",
+        "from": "AdminLanguageConfigController",
         "to": "Quản trị viên",
         "text": "Cập nhật bảng đơn giá",
         "kind": "return"

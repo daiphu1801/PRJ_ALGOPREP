@@ -24,6 +24,7 @@ Bảng 0.2: Lịch sử sửa.
 | Ver | Mục | Nội dung | Ngày |
 | :--- | :--- | :--- | :--- |
 | V0.1 | Toàn bộ | Tạo mới từ prototype đã dựng, BD V0.9 và DD F1, F5. Chốt hai đường lưu độc lập, vòng đời hộp thoại OTP, nguồn khối "Luyện tập", đối chiếu zod với `validation/F1`; nêu các khoảng trống của F1 (mã lỗi, `phone`) | 2026-10-24 |
+| V0.2 | Mục 2 | 2026-11-12 (M5): ô "Phiên phỏng vấn" của khối luyện tập đọc F5 mục 13 thật qua `useInterviewSummary`; lỗi vẫn in `-`, không toast | 2026-11-12 |
 
 Bảng 0.3: Viết tắt nguồn trích dẫn.
 
@@ -69,7 +70,7 @@ Bảng 2.1: Sự kiện BD, endpoint theo ID, hook, trạng thái nối. Hiện 
 | EVT-1 | F1 #9 `GetMyProfile` | `useMyProfile()` | mock |
 | EVT-1 | F1 #47 (tổng lượt nộp) | `useSolveSummary()` | mock |
 | EVT-1 | F2 §14A (số bài đã giải còn xuất bản) | `useMyLevelProgress()` | mock |
-| EVT-1 | F5 mục 13 `GetMyInterviewSummary`, `limit = 1` (chỉ lấy `completedSessionCount`) | `useInterviewSummary("all", 1)` | mock |
+| EVT-1 | F5 mục 13 `GetMyInterviewSummary`, `limit = 1` (chỉ lấy `completedSessionCount`) | `useInterviewSummary("all")` | **thật** (2026-11-12; hook gửi `limit = 3`, ô chỉ đọc `completedSessionCount`) [Nguồn: 05-coding/frontend/src/entities/progress/api/real-interview-summary.ts:23] |
 | EVT-4 | F1 #10 `UpdateMyProfile` | `updateMyProfile(input)` | mock |
 | EVT-5 | F1 #10 rồi F1 #11 `RequestMyEmailChange` (chạy độc lập, BR-SC-01) | `updateMyProfile`, `requestEmailChange` | mock |
 | EVT-6 | F1 #12 `ConfirmMyEmailChange` | `confirmEmailChange(code, newEmail)` | mock |

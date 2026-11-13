@@ -1,5 +1,5 @@
 {
-  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a2_instructor.md:156; 01-rd/req/user_stories/a2_instructor.md:159; 01-rd/req/user_stories/a2_instructor.md:161; 01-rd/req/user_stories/a2_instructor.md:164. Nguồn thiết kế: 03-dd/logic/F1_identity.md; 03-dd/api/F1_identity.md; 03-dd/logic/F6_interview-bank.md; 03-dd/api/F6_interview-bank.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a2_instructor.md:156-164. Nguồn thiết kế: 05-coding/backend/algoprep-interview-bank/src/main/java/com/algoprep/interviewbank/. Cấu trúc Controller, CommandHandler và Port chuẩn theo kiến trúc Hexagonal / Clean Architecture của phân hệ F6.",
   "kind": "class",
   "title": "A2 — Soạn câu hỏi phỏng vấn",
   "covers": [
@@ -11,61 +11,76 @@
     "legend": "shared",
     "classes": [
       {
-        "id": "service",
-        "name": "InterviewQuestionAuthoringService",
+        "id": "adminCtrl",
+        "name": "AdminQuestionsController",
         "methods": [
-          "+ create(actorId : UUID, draft : QuestionDraft) : Question",
-          "+ updateDeleteOrImport(actorId : UUID, change : QuestionChange)",
-          "+ requireCriteria(questionId : UUID)",
-          "+ deletePreservingHistory(actorId : UUID, questionId : UUID)"
+          "+ list(params : Map) : Rows",
+          "+ get(questionId : String) : Detail",
+          "+ create(caller : JwtToken, req : Request) : Detail",
+          "+ update(caller : JwtToken, questionId : String, req : Request) : Detail"
         ]
       },
       {
-        "id": "port1",
-        "name": "InterviewQuestionRepository",
-        "kind": "class",
+        "id": "bulkCtrl",
+        "name": "AdminQuestionBulkController",
         "methods": [
-          "+ save(question : Question)"
+          "+ retire(caller : JwtToken, req : Request) : Retired",
+          "+ importRows(caller : JwtToken, req : Request) : Imported"
         ]
       },
       {
-        "id": "port2",
-        "name": "PermissionPort",
+        "id": "createHandler",
+        "name": "CreateQuestionCommandHandler",
+        "methods": [
+          "+ execute(command : QuestionCommand) : AdminQuestion"
+        ]
+      },
+      {
+        "id": "questionRepo",
+        "name": "AdminQuestionRepository",
         "kind": "interface",
         "methods": [
-          "+ requireManageQuestions(actorId : UUID)"
+          "+ page(criteria : QuestionListCriteria) : AdminQuestionPage",
+          "+ findActive(id : UUID) : Optional<AdminQuestion>",
+          "+ insert(draft : QuestionDraft, actor : UUID) : AdminQuestion",
+          "+ retire(id : UUID) : void"
         ]
       },
       {
-        "id": "port3",
-        "name": "AuditLogPort",
+        "id": "auditPort",
+        "name": "InterviewBankAuditPort",
         "kind": "interface",
         "methods": [
-          "+ record(change : AuditEntry)"
+          "+ record(entry : InterviewAuditEntry) : void"
         ]
       }
     ],
     "externals": [],
     "relations": [
       {
-        "from": "service",
-        "to": "port1",
+        "from": "adminCtrl",
+        "to": "createHandler",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port2",
+        "from": "bulkCtrl",
+        "to": "questionRepo",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port3",
+        "from": "createHandler",
+        "to": "questionRepo",
+        "kind": "dependency"
+      },
+      {
+        "from": "createHandler",
+        "to": "auditPort",
         "kind": "dependency"
       }
     ],
     "notes": [
-      "Quyền shared A2/A3; thiếu tiêu chí đánh giá thì không mở luyện; xoá mềm giữ lịch sử phiên.",
-      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+      "AdminQuestionsController phục vụ soạn câu hỏi phỏng vấn kèm danh sách câu hỏi đào sâu (follow-up) và rubric chấm điểm.",
+      "AdminQuestionBulkController hỗ trợ nhập hàng loạt và thu hồi câu hỏi; InterviewBankAuditPort ghi nhận nhật ký quản trị."
     ]
   }
 }

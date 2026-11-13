@@ -27,6 +27,8 @@ async function renderView(ui: ReactElement) {
 }
 
 vi.mock("@/shared/i18n", () => ({
+  useApiErrorMessage: () => () => "apiError",
+  useLocale: () => "vi",
   useT: () => (key: string, values?: Record<string, string | number>) =>
     values ? `${key}:${Object.values(values).join(",")}` : key,
 }));
@@ -49,6 +51,7 @@ vi.mock("../api/__mock__/admin-user-mocks", async () => {
         users: [
           ...page.users,
           {
+            id: "ltmai@algoprep.vn",
             name: "Lê Thị Mai",
             email: "ltmai@algoprep.vn",
             role: "admin",

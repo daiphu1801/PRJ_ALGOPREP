@@ -5,8 +5,8 @@
 # hieu nang".
 #
 # So lieu toi thieu phai theo doi (01-rd/system/SYS0101_backend_architecture.md muc 7): do dai hang doi,
-# do tre cham bai, ti le callback loi, token AI da dung. Ba trong bon so lieu do la metric NGHIEP VU
-# do backend tu phat qua Micrometer — chung chua ton tai vi F4/F5 chua duoc dung.
+# do tre cham bai, ti le callback loi, token AI da dung. Cac metric nghiep vu do backend phat qua
+# Micrometer; job rieng cong 8081 ben duoi dung cho nghiem thu tai va Hikari pool.
 
 global:
   scrape_interval: 15s
@@ -23,6 +23,16 @@ scrape_configs:
       - targets: ["host.docker.internal:8080"]
         labels:
           application: algoprep
+
+  # Isolated acceptance backend; the normal local backend above is kept unchanged.
+  - job_name: algoprep-load-backend
+    scrape_interval: 5s
+    scrape_timeout: 4s
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ["host.docker.internal:8081"]
+        labels:
+          application: algoprep-load
 
   # go-judge tu phat metric o cong monitor rieng (-monitor-addr), khong phai cong HTTP chinh.
   - job_name: go-judge

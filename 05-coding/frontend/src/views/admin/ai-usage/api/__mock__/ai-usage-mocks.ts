@@ -1,11 +1,9 @@
-// PROTOTYPE mock — no backend endpoint exists yet.
+// MOCK-MODE data of ADM0302 (the real source is F5 #27 to #31, api/real-usage.ts).
 // Values from 09-layoutBase/Admin - Token AI.dc.html:450-525, with the cut "Gợi ý" feature removed
-// (DEC-2026-0831-remove-tiered-hints-ai-config): the chart drops that series and the top-problems
-// column stops counting "lượt gợi ý".
+// (DEC-2026-0831-remove-tiered-hints-ai-config).
+import { mockHasModelPrices } from "@/entities/ai-budget";
 import type {
-  AiUsagePage,
   DailyUsage,
-  FeatureShare,
   TopProblem,
   TopUser,
   UsageAlert,
@@ -24,155 +22,101 @@ function buildDays(count: number): DailyUsage[] {
     const weekday = date.getDay();
     const weekendFactor = weekday === 0 || weekday === 6 ? 0.58 : 1;
     const jitter = 0.72 + ((Math.sin(index * 2.3) + 1) / 2) * 0.5;
+    const iso = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+    const tokens = (millions: number) =>
+      Math.round(millions * weekendFactor * jitter * 1_000_000);
     days.push({
-      label: `${date.getDate()}/${date.getMonth() + 1}`,
+      date: iso,
       values: {
-        review: Number((30 * weekendFactor * jitter * 0.94).toFixed(1)),
-        interview: Number((16 * weekendFactor * jitter * 1.08).toFixed(1)),
-        testcase: Number((9 * weekendFactor * jitter * 0.7).toFixed(1)),
-        practice: Number((5 * weekendFactor * jitter * 0.5).toFixed(1)),
+        review: tokens(30 * 0.94),
+        interview: tokens(16 * 1.08),
+        testcase: tokens(9 * 0.7),
+        practice: tokens(5 * 0.5),
       },
     });
   }
   return days;
 }
 
-// dc.html:482-486.
-const FEATURE_SHARES: FeatureShare[] = [
-  { feature: "review", label: "20,9 tr", percent: 54 },
-  { feature: "interview", label: "11,8 tr", percent: 31 },
-  { feature: "testcase", label: "3,7 tr", percent: 10 },
-  { feature: "practice", label: "2,0 tr", percent: 5 },
+const REVIEWED = new Set<string>();
+
+// The second one is the anomaly warning that DEC-2026-0831-ai-usage-anomaly-alert confirms is a SOFT
+// admin-facing warning, never an auto-lock.
+const ALERTS: UsageAlert[] = [
+  { kind: "budget" },
+  {
+    kind: "anomaly",
+    alertId: "mock-alert-1",
+    displayName: "nguyenvana",
+    callCount: 214,
+    ratio: 7,
+  },
 ];
 
-// dc.html:488-491. The second one is the anomaly warning that
-// DEC-2026-0831-ai-usage-anomaly-alert confirms is a SOFT admin-facing warning, never an auto-lock.
-const ALERTS: UsageAlert[] = [
-  { key: "budgetRunningOut", tone: "warn" },
-  { key: "anomalousAccount", tone: "negative" },
-];
+const user = (
+  rank: number,
+  name: string,
+  tokens: number,
+  calls: number,
+  costUsd: number,
+): TopUser => ({ userId: `mock-user-${rank}`, name, tokens, calls, costUsd });
 
 // dc.html:499-504.
 const TOP_USERS: TopUser[] = [
-  {
-    rank: 1,
-    name: "Nguyễn Văn An",
-    meta: "nguyenvana · K21",
-    tokens: "1,84 tr",
-    calls: 214,
-    cost: "8,7 USD",
-  },
-  {
-    rank: 2,
-    name: "Trần Thị Bích",
-    meta: "tranbich · K22",
-    tokens: "1,21 tr",
-    calls: 156,
-    cost: "5,8 USD",
-  },
-  {
-    rank: 3,
-    name: "Lê Hoàng Nam",
-    meta: "lhnam · K21",
-    tokens: "0,97 tr",
-    calls: 131,
-    cost: "4,6 USD",
-  },
-  {
-    rank: 4,
-    name: "Phạm Minh Đức",
-    meta: "pmduc · K23",
-    tokens: "0,86 tr",
-    calls: 118,
-    cost: "4,1 USD",
-  },
-  {
-    rank: 5,
-    name: "Vũ Thu Hà",
-    meta: "vuthuha · K22",
-    tokens: "0,74 tr",
-    calls: 102,
-    cost: "3,5 USD",
-  },
-  {
-    rank: 6,
-    name: "Đỗ Quốc Bảo",
-    meta: "dqbao · K23",
-    tokens: "0,68 tr",
-    calls: 94,
-    cost: "3,2 USD",
-  },
+  user(1, "Nguyễn Văn An", 1_840_000, 214, 8.7),
+  user(2, "Trần Thị Bích", 1_210_000, 156, 5.8),
+  user(3, "Lê Hoàng Nam", 970_000, 131, 4.6),
+  user(4, "Phạm Minh Đức", 860_000, 118, 4.1),
+  user(5, "Vũ Thu Hà", 740_000, 102, 3.5),
 ];
 
-// dc.html:513-519. The mockup's meta column read "412 lượt gợi ý" etc.; the hint feature is gone,
-// so the same counts are relabelled as AI calls across the three features still in scope.
+const problem = (
+  rank: number,
+  title: string,
+  levelCode: string,
+  calls: number,
+  tokens: number,
+  avgTokensPerCall: number,
+): TopProblem => ({
+  problemId: `mock-problem-${rank}`,
+  title,
+  levelCode,
+  levelName: null,
+  tokens,
+  calls,
+  avgTokensPerCall,
+});
+
+// dc.html:513-519, relabelled as AI calls across the features that carry a problem id.
 const TOP_PROBLEMS: TopProblem[] = [
-  {
-    rank: 1,
-    name: "Đường đi ngắn nhất trên lưới",
-    difficulty: "HARD",
-    calls: 412,
-    tokens: "2,10 tr",
-    averagePerCall: "5.100",
-  },
-  {
-    rank: 2,
-    name: "Cây khung nhỏ nhất",
-    difficulty: "HARD",
-    calls: 298,
-    tokens: "1,52 tr",
-    averagePerCall: "5.100",
-  },
-  {
-    rank: 3,
-    name: "Chuỗi con chung dài nhất",
-    difficulty: "MEDIUM",
-    calls: 506,
-    tokens: "1,44 tr",
-    averagePerCall: "2.850",
-  },
-  {
-    rank: 4,
-    name: "Dãy con tăng dài nhất",
-    difficulty: "MEDIUM",
-    calls: 618,
-    tokens: "1,31 tr",
-    averagePerCall: "2.120",
-  },
-  {
-    rank: 5,
-    name: "Hai con trỏ trên mảng sắp xếp",
-    difficulty: "EASY",
-    calls: 742,
-    tokens: "0,89 tr",
-    averagePerCall: "1.200",
-  },
-  {
-    rank: 6,
-    name: "Đếm số đảo ngược",
-    difficulty: "HARD",
-    calls: 184,
-    tokens: "0,81 tr",
-    averagePerCall: "4.400",
-  },
+  problem(1, "Đường đi ngắn nhất trên lưới", "HARD", 412, 2_100_000, 5100),
+  problem(2, "Cây khung nhỏ nhất", "HARD", 298, 1_520_000, 5100),
+  problem(3, "Chuỗi con chung dài nhất", "MEDIUM", 506, 1_440_000, 2850),
+  problem(4, "Dãy con tăng dài nhất", "MEDIUM", 618, 1_310_000, 2120),
+  problem(5, "Hai con trỏ trên mảng sắp xếp", "EASY", 742, 890_000, 1200),
 ];
 
-export function fetchAiUsagePage(): AiUsagePage {
-  const daily: Record<UsageRange, DailyUsage[]> = {
-    "7d": buildDays(7),
-    "14d": buildDays(14),
-    "30d": buildDays(30),
-  };
+export const mockDailyUsage = (range: UsageRange): DailyUsage[] =>
+  buildDays({ "7d": 7, "14d": 14, "30d": 30 }[range]);
 
-  return {
-    daily,
-    featureShares: FEATURE_SHARES.map((share) => ({ ...share })),
-    alerts: ALERTS.map((alert) => ({ ...alert })),
-    topUsers: TOP_USERS.map((user) => ({ ...user })),
-    topProblems: TOP_PROBLEMS.map((problem) => ({ ...problem })),
-    // dc.html:527-528.
-    // Used, cap and percent come from the `aiTokenBudget` store ADM0303 writes; only the projected
-    // run-out date stays here because the mock has no usage history to project from.
-    budget: { runOutLabel: "28/08" },
-  };
+export const mockUsageAlerts = (): UsageAlert[] =>
+  ALERTS.filter(
+    (alert) => alert.kind === "budget" || !REVIEWED.has(alert.alertId),
+  );
+
+export function mockMarkAlertReviewed(alertId: string): void {
+  REVIEWED.add(alertId);
 }
+
+/** Test hook: the reviewed set lives at module level. */
+export const resetMockUsageAlerts = () => REVIEWED.clear();
+
+// Without any price row the cost column shows "-" (BD ADM0302 Q2).
+export const mockTopUsers = (): TopUser[] =>
+  TOP_USERS.map((row) => ({
+    ...row,
+    costUsd: mockHasModelPrices() ? row.costUsd : null,
+  }));
+
+export const mockTopProblems = (): TopProblem[] =>
+  TOP_PROBLEMS.map((row) => ({ ...row }));

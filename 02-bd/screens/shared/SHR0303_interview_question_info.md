@@ -12,7 +12,18 @@
 - Màn **chỉ đọc**, không có nhập liệu, không có popup riêng. Mọi sự kiện ngoài khởi tạo đều là điều hướng.
   Dữ liệu dùng lại DTO `GetInterviewQuestionDetail` của `SHR0302`, **không định nghĩa lại**
   [Nguồn: 02-bd/screens/shared/SHR0302_interview_question_authoring.md:527-541, 565; 01-rd/screens/shared/SHR0303_interview_question_info.md:74-75].
-- Màn **chưa có mockup** ở `09-layoutBase/` (`[Đợi nextjs]`). Đã có bản dựng UI thật ở
+- **Hiện trạng bản dựng nối API (2026-11-11, hình chưa duyệt; số dòng theo mã hiện tại):**
+
+| Thành phần | Vị trí trong mã | Hiện trạng |
+| :--- | :--- | :--- |
+| Tải chi tiết (EVT-1) | `05-coding/frontend/src/views/shared/interview-question-info/ui/interview-question-info-view.tsx:40`; `05-coding/frontend/src/entities/interview-question/api/admin-queries.ts` (`useAdminQuestion`) | Một lần `GET /interview-bank/admin/questions/{id}`; 404 thành `null` và trạng thái không tìm thấy; lỗi khác hiện khối lỗi có nút thử lại |
+| Nội dung | `05-coding/frontend/src/views/shared/interview-question-info/ui/interview-question-info-view.tsx:118-124` | `title`, rồi `contentMarkdown` nếu có |
+| Điểm TB, Chế độ luyện | `05-coding/frontend/src/views/shared/interview-question-info/ui/interview-question-info-view.tsx:210-228` | `averageScorePercent` hoặc `-`; badge theo `practiceAvailable` |
+| Nút Sửa | `05-coding/frontend/src/views/shared/interview-question-info/ui/interview-question-info-view.tsx:109-111` | Link `{basePath}/{id}/edit` bằng UUID; chưa ẩn theo quyền `UPDATE` |
+
+Chưa nối: popup "Xem như học viên" (nút còn là chỗ giữ). Câu hỏi mở của màn: Q1 (câu đã xoá mềm) đã có đáp án ở F6 §20 (`404 INB-010`); Q2, Q3, Q4 giữ như bản trước, không phát sinh câu mới.
+
+Màn **chưa có mockup** ở `09-layoutBase/` (`[Đợi nextjs]`). Đã có bản dựng UI thật ở
   `05-coding/frontend/src/views/shared/interview-question-info/`, tự nhận "PROTOTYPE — no DD yet"
   [Nguồn: 05-coding/frontend/src/views/shared/interview-question-info/ui/interview-question-info-view.tsx:1]. BD này mô tả đúng cái đã dựng; dữ liệu là mock, không có API thật, nên endpoint chỉ ghi tên nghiệp vụ và trỏ tới `03-dd/api/F6_interview-bank.md` là nơi sẽ giữ hợp đồng.
 - Dựng cho cả hai khu: khu Admin (`/admin/interview-questions/[questionId]`) từ 2026-10-02, khu Giảng viên (`/instructor/interview-questions/[questionId]`) từ 2026-10-03, cùng một view; khác nhau ở prop bắt buộc `basePath` (đường dẫn gốc của khu đang mount) nên liên kết quay lại và liên kết `/edit` không cố định `/admin`
@@ -43,11 +54,11 @@
 | Tên vật lý (slug) | `interview_question_info` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A2 (`INSTRUCTOR`) / A3 (`ADMIN`) — dùng chung; dựng cho cả hai khu |
-| Phiên bản | V0.6 |
+| Phiên bản | V0.8 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/10/02 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/10/22 |
+| Ngày cập nhật | 2026/11/11 |
 
 ---
 
@@ -61,6 +72,8 @@
 | V0.4 | Sheet 3, 4, 5, 7, Câu hỏi mở | Làm mới và kiểm chứng toàn bộ dẫn chiếu `file:line` (2026-10-03): (1) bản dựng `interview-question-info-view.tsx` và `interview-question-management-view.tsx` lệch dòng, nay cập nhật (liên kết sang chi tiết ở `management-view` :138, không còn :120-125); `messages/vi.json` khối `interviewQuestionInfo` ở :1492-1503; (2) `02-bd/database/F6_interview-bank.md` lệch sau khi chèn mục 1.1a: `interview_questions` :52-76, `id` :56, rubric :73-76; dải `8-96`/`8-132` thay cho `30-74`/`8-110`; (3) dẫn chiếu `SHR0301` dòng 386/505-506/622 (đang được sửa song song) đổi sang dẫn theo mục; `SHR0302` :629 thành :637 (Q2); (4) sửa "`SHR0301` Q1" (câu về thẻ chỉ số, đã đóng) thành Q5 (mã hiển thị `IQ-nnn`); (5) màu badge độ khó theo `level-store.ts:41-42` (`levelTone`); khoá mức độ khó là slug chữ hoa (`EASY`/`MEDIUM`/`HARD`, mức mới dạng `VERY_HARD`). Không đổi bố cục, DTO, NO/EVT/Q | 2026/10/03 | AI |
 | V0.5 | Sheet 4 (4.4, 4.5) | Phần thân trang chỉ đọc được phóng nhẹ theo yêu cầu của owner (2026-10-05, **chưa duyệt hình**, không đổi hành vi): nội dung câu hỏi dùng `MarkdownPreview size="lg"` (15 px, giãn dòng 1.75); danh sách câu hỏi đào sâu 13 lên 15 px, giãn dòng 1.75; dòng thông báo "chưa có câu hỏi đào sâu" 13 lên 14 px; các dòng tiêu chí đánh giá 13 lên 14 px. Cột hẹp (phân loại, sử dụng) không đổi | 2026/10/05 | Nhóm phát triển AlgoPrep |
 | V0.6 | Sheet 4 (4.4), 5, 7 (7.1), Câu hỏi mở | Sửa 2026-10-22 đồng bộ DB, `DEC-2026-1022-interview-bank-schema-sync`: (1) Q5 đóng: mã `IQ-%03d` đọc từ cột `display_no` (mục 1), tham số route là `id`; (2) `title` là câu hỏi chính, `content_markdown` tuỳ chọn (mục 4), sửa Sheet 5 Khu vực B NO 1 và DTO 7.1 NO 3; (3) `criterion_code` là tên tiêu chí tự gõ, xếp theo `sort_order`; (4) dời số dòng trích dẫn vào DB doc interview-bank (`:8-145`, `:110-139`, `:57`). **Không đổi:** Q2, Q3 (điểm trung bình, lượt dùng, IB-09 còn mở), Q1, Q4. Giao diện không đổi | 2026/10/22 | Claude |
+| V0.7 | Sheet 4 (4.4), 5, 7 (7.1), Câu hỏi mở | Nối API thật (lát M1, 2026-11-11, F6 #20): màn đọc `GET /admin/questions/{id}` một lần (gồm `usage`); 404 `INB-010` thành trạng thái không tìm thấy; "Điểm trung bình" là phần trăm `averageScorePercent` hoặc `-` (bỏ `x / 5`); "Chế độ luyện" lấy `practiceAvailable`; hiện thêm `contentMarkdown` khi có. Đóng một phần Q3 (điểm trung bình, lượt dùng đã có nguồn ở F6 §20). **Chưa duyệt:** hình không đổi | 2026/11/11 | Claude |
+| V0.8 | Câu hỏi mở Q1, Q2, Q3, Q4 | Owner 2026-11-11: **đóng Q1** (câu đã xoá mềm trả `404 INB-010`, hiện không tìm thấy), **đóng Q2 và Q3** (DD F6 mục 20 và BR-IB-10 đã định nghĩa `usage` trong cùng response chi tiết); Q4 giữ quyết định, popup hoãn dựng (bậc 3). Ẩn nút Sửa theo quyền `UPDATE` chưa làm: thiếu nguồn quyền phía client (xem SHR0301 V1.27). Không đổi NO/EVT | 2026/11/11 | Claude |
 
 ---
 
@@ -444,10 +457,10 @@ Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 
 | # | Câu hỏi | Vì sao chưa trả lời được | Chủ sở hữu |
 | :-: | :--- | :--- | :--- |
-| Q1 | (Kế thừa Q1 của RD) Mở trang bằng mã của câu hỏi đã xoá mềm thì hiện "không tìm thấy", hay hiện chỉ đọc kèm nhãn "đã ngừng dùng"? **BD không quyết, giữ mở.** | RD để mở [Nguồn: 01-rd/screens/shared/SHR0303_interview_question_info.md:96]. Bản dựng chỉ có nhánh "không tìm thấy" cho mã không có trong mock, chưa mô phỏng `RETIRED`. Nếu chọn phương án hiện chỉ đọc kèm nhãn thì Sheet 5, 6, 8, 9 cần thêm một item nhãn trạng thái và `status` thành trường hiển thị. | Chủ dự án |
-| Q2 | "Điểm trung bình" lấy từ đâu? Kế thừa `SHR0301` Q2: `user_answers.feedback_result_json` không có điểm số rời rạc 1-5. | [Nguồn: 02-bd/screens/shared/SHR0301_interview_question_management.md, mục Câu hỏi mở Q2]. Màn này hiển thị số mock `3.8 / 5` mà chưa có công thức. Chốt một lần cho cả hai màn, không chốt riêng ở đây. | DD `interview-bank` |
-| Q3 | Hai chỉ số sử dụng (`usageCount`, `avgScore`) đi kèm phản hồi `GetInterviewQuestionDetail` (mở rộng DTO của `SHR0302`) hay lấy qua lời gọi riêng? | BD này không thêm endpoint. Mở rộng `GetInterviewQuestionDetail` sẽ đổi DTO mà `SHR0302` đang dùng để sửa (form soạn không cần hai chỉ số); tách riêng thêm một lời gọi. Hai phương án đều hợp lệ về kiến trúc `[SoT: Suy luận]`, DD chốt. | DD `interview-bank` |
-| Q4 | Nút "Xem như học viên" ở màn chỉ đọc mở popup nào, dữ liệu từ bản ghi đã lưu? Hiện bản dựng là stub. | Kế thừa `SHR0302` Q2 (nguồn dữ liệu popup xem trước chưa chốt) [Nguồn: 02-bd/screens/shared/SHR0302_interview_question_authoring.md:637; 05-coding/frontend/src/views/shared/interview-question-info/ui/interview-question-info-view.tsx:70-72]. | DD màn hình |
+| Q1 | (Kế thừa Q1 của RD) Mở trang bằng mã của câu hỏi đã xoá mềm thì hiện "không tìm thấy", hay hiện chỉ đọc kèm nhãn "đã ngừng dùng"? **ĐÓNG 2026-11-11:** theo hành vi thật của backend, câu `RETIRED` (hoặc id sai, không có) trả `404 INB-010` nên màn hiện "không tìm thấy", không có chế độ chỉ đọc kèm nhãn [Nguồn: 03-dd/api/F6_interview-bank.md:794, 800; 05-coding/backend/algoprep-interview-bank/src/main/java/com/algoprep/interviewbank/application/query/GetAdminQuestionQueryHandler.java:24; JdbcAdminQuestionRepository.java:57 (`status = 'ACTIVE'`)]. | RD để mở [Nguồn: 01-rd/screens/shared/SHR0303_interview_question_info.md:96]. Bản dựng chỉ có nhánh "không tìm thấy" cho mã không có trong mock, chưa mô phỏng `RETIRED`. Nếu chọn phương án hiện chỉ đọc kèm nhãn thì Sheet 5, 6, 8, 9 cần thêm một item nhãn trạng thái và `status` thành trường hiển thị. | Chủ dự án |
+| Q2 | "Điểm trung bình" lấy từ đâu? Kế thừa `SHR0301` Q2: `user_answers.feedback_result_json` không có điểm số rời rạc 1-5. | [Nguồn: 02-bd/screens/shared/SHR0301_interview_question_management.md, mục Câu hỏi mở Q2]. Màn này hiển thị số mock `3.8 / 5` mà chưa có công thức. Chốt một lần cho cả hai màn, không chốt riêng ở đây. **ĐÓNG 2026-11-11:** DD định nghĩa `averageScorePercent` (phần trăm 0-100, `null` tới khi có lượt `COMPLETED`) ở BR-IB-10 [Nguồn: 03-dd/logic/F6_interview-bank.md:213; 03-dd/api/F6_interview-bank.md:792]; màn hiện phần trăm hoặc `-`. | Đã đóng |
+| Q3 | Hai chỉ số sử dụng (`usageCount`, `avgScore`) đi kèm phản hồi `GetInterviewQuestionDetail` (mở rộng DTO của `SHR0302`) hay lấy qua lời gọi riêng? | BD này không thêm endpoint. Mở rộng `GetInterviewQuestionDetail` sẽ đổi DTO mà `SHR0302` đang dùng để sửa (form soạn không cần hai chỉ số); tách riêng thêm một lời gọi. Hai phương án đều hợp lệ về kiến trúc `[SoT: Suy luận]`, DD chốt. **ĐÓNG 2026-11-11:** DD chọn trả `usage` (`usageCount`, `averageScorePercent`) ngay trong `GetInterviewQuestionDetail`, không có lời gọi riêng [Nguồn: 03-dd/api/F6_interview-bank.md:792; 05-coding/backend/algoprep-interview-bank/src/main/java/com/algoprep/interviewbank/presentation/controller/AdminQuestionsController.java:74, 103]. | Đã đóng |
+| Q4 | Nút "Xem như học viên" ở màn chỉ đọc mở popup nào, dữ liệu từ bản ghi đã lưu? Hiện bản dựng là stub. | Kế thừa `SHR0302` Q2 (nguồn dữ liệu popup xem trước đã chốt ở `SHR0302` Q2; **popup hoãn dựng, owner 2026-11-11, ponytail bậc 3**, nút vẫn là chỗ giữ) [Nguồn: 02-bd/screens/shared/SHR0302_interview_question_authoring.md:637; 05-coding/frontend/src/views/shared/interview-question-info/ui/interview-question-info-view.tsx:70-72]. | DD màn hình |
 | Q5 | ~~Mã hiển thị `IQ-nnn` ở tiêu đề lấy từ cột nào?~~ **ĐÃ CHỐT 2026-10-22 (chủ dự án, `DEC-2026-1022-interview-bank-schema-sync` mục 1, IB-01):** cột `interview_questions.display_no` (INT UNIQUE NOT NULL, sequence ở máy chủ), hiển thị `IQ-%03d` ở khu admin và instructor; `id` vẫn là khoá và tham số route. Đã sửa Sheet 5 Khu vực A NO 2 [Nguồn: 02-bd/database/F6_interview-bank.md:57]. Cùng quyết định đóng `SHR0301` Q5 | Đã đóng | Đã đóng |
 
 **Nợ prototype**: bản dựng tự trỏ tới `06-plan/PROTOTYPE_DEBT.md` mục 9

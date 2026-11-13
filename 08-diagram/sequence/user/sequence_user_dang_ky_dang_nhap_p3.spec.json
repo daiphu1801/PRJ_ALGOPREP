@@ -2,37 +2,140 @@
   "_": "Trang 3a/3 mô tả làm mới phiên bình thường, thay cho spec cũ chỉ mô tả cấp token sau đăng nhập. Nguồn: 03-dd/api/F1_identity.md endpoint #3; 03-dd/logic/F1_identity.md BR-02; 03-dd/database/F1_identity.md refresh_tokens. RotateTokenCmd = RotateRefreshTokenCommandHandler; RefreshRepo = RefreshTokenRepository; IdentityDbAdapter = RefreshTokenPersistenceAdapter [SoT: Suy luận về tên lớp]. Frontend gửi cookie refresh token cùng header X-Requested-With; server băm SHA-256 rồi tra DB. Token hợp lệ chưa dùng và chưa hết hạn chỉ dùng một lần: thu hồi token cũ, tạo mã băm mới cùng family trong một giao dịch; sau commit trả access token mới và cookie mới. Token hết hạn/không tìm thấy trả lỗi chung, không coi là reuse. Token đã bị revoke chuyển trang 3b để thu hồi cả family và ghi audit.",
   "kind": "sequence",
   "title": "Sơ đồ tuần tự chi tiết - Xoay vòng mã làm mới phiên (3a/3)",
-  "covers": ["F1-03"],
+  "covers": [
+    "F1-03"
+  ],
   "mode": "color",
   "sequence": {
     "detail": true,
     "participants": [
-      {"name": "Sinh viên", "role": "actor"},
-      {"name": "AuthController", "role": "controller", "stereo": "presentation"},
-      {"name": "RotateTokenCmd", "role": "service", "stereo": "application command"},
-      {"name": "RefreshRepo", "role": "repository", "stereo": "domain output port"},
-      {"name": "IdentityDbAdapter", "role": "repository", "stereo": "infrastructure"},
-      {"name": "PostgreSQL", "role": "datastore", "stereo": "schema identity"}
+      {
+        "name": "Sinh viên",
+        "role": "actor"
+      },
+      {
+        "name": "AuthController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "RotateRefreshTokenHandler",
+        "role": "service",
+        "stereo": "application command"
+      },
+      {
+        "name": "RefreshTokenRepository",
+        "role": "repository",
+        "stereo": "domain output port"
+      },
+      {
+        "name": "JdbcUserAccountRepository",
+        "role": "repository",
+        "stereo": "infrastructure"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema identity"
+      }
     ],
     "messages": [
-      {"phase": "Giai đoạn 3a - Mã làm mới hợp lệ chỉ dùng một lần"},
-      {"from": "Sinh viên", "to": "AuthController", "text": "Yêu cầu làm mới phiên bằng cookie"},
-      {"from": "AuthController", "to": "RotateTokenCmd", "text": "Kiểm yêu cầu và mã trong cookie"},
-      {"from": "RotateTokenCmd", "to": "RotateTokenCmd", "text": "Băm mã thô trước khi tìm"},
-      {"from": "RotateTokenCmd", "to": "RefreshRepo", "text": "Tìm phiên theo dấu băm"},
-      {"from": "RefreshRepo", "to": "IdentityDbAdapter", "text": "Đọc phiên hiện tại"},
-      {"from": "IdentityDbAdapter", "to": "PostgreSQL", "text": "Tra mã băm và trạng thái"},
-      {"from": "PostgreSQL", "to": "IdentityDbAdapter", "text": "Phiên còn hiệu lực", "kind": "return"},
-      {"from": "IdentityDbAdapter", "to": "RefreshRepo", "text": "Phiên và nhóm phiên", "kind": "return"},
-      {"from": "RefreshRepo", "to": "RotateTokenCmd", "text": "Có thể xoay vòng", "kind": "return"},
-      {"from": "RotateTokenCmd", "to": "RefreshRepo", "text": "Thu hồi mã cũ; lưu mã mới cùng nhóm"},
-      {"from": "RefreshRepo", "to": "IdentityDbAdapter", "text": "Đổi phiên nguyên tử"},
-      {"from": "IdentityDbAdapter", "to": "PostgreSQL", "text": "Ghi mã cũ đã dùng và mã băm mới"},
-      {"from": "PostgreSQL", "to": "IdentityDbAdapter", "text": "Đã commit", "kind": "return"},
-      {"from": "IdentityDbAdapter", "to": "RefreshRepo", "text": "Phiên mới", "kind": "return"},
-      {"from": "RefreshRepo", "to": "RotateTokenCmd", "text": "Có thể cấp mã truy cập", "kind": "return"},
-      {"from": "RotateTokenCmd", "to": "AuthController", "text": "Mã truy cập ngắn và cookie mới", "kind": "return"},
-      {"from": "AuthController", "to": "Sinh viên", "text": "Làm mới phiên thành công", "kind": "return"}
+      {
+        "phase": "Giai đoạn 3a - Mã làm mới hợp lệ chỉ dùng một lần"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "AuthController",
+        "text": "Yêu cầu làm mới phiên bằng cookie"
+      },
+      {
+        "from": "AuthController",
+        "to": "RotateRefreshTokenHandler",
+        "text": "Kiểm yêu cầu và mã trong cookie"
+      },
+      {
+        "from": "RotateRefreshTokenHandler",
+        "to": "RefreshTokenRepository",
+        "text": "Băm mã thô trước khi tìm"
+      },
+      {
+        "from": "RotateRefreshTokenHandler",
+        "to": "RefreshTokenRepository",
+        "text": "Tìm phiên theo dấu băm"
+      },
+      {
+        "from": "RefreshTokenRepository",
+        "to": "JdbcUserAccountRepository",
+        "text": "Đọc phiên hiện tại"
+      },
+      {
+        "from": "JdbcUserAccountRepository",
+        "to": "PostgreSQL",
+        "text": "Tra mã băm và trạng thái"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "JdbcUserAccountRepository",
+        "text": "Phiên còn hiệu lực",
+        "kind": "return"
+      },
+      {
+        "from": "JdbcUserAccountRepository",
+        "to": "RefreshTokenRepository",
+        "text": "Phiên và nhóm phiên",
+        "kind": "return"
+      },
+      {
+        "from": "RotateRefreshTokenHandler",
+        "to": "RefreshTokenRepository",
+        "text": "Có thể xoay vòng",
+        "kind": "return"
+      },
+      {
+        "from": "RotateRefreshTokenHandler",
+        "to": "RefreshTokenRepository",
+        "text": "Thu hồi mã cũ; lưu mã mới cùng nhóm"
+      },
+      {
+        "from": "RefreshTokenRepository",
+        "to": "JdbcUserAccountRepository",
+        "text": "Đổi phiên nguyên tử"
+      },
+      {
+        "from": "JdbcUserAccountRepository",
+        "to": "PostgreSQL",
+        "text": "Ghi mã cũ đã dùng và mã băm mới"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "JdbcUserAccountRepository",
+        "text": "Đã commit",
+        "kind": "return"
+      },
+      {
+        "from": "JdbcUserAccountRepository",
+        "to": "RefreshTokenRepository",
+        "text": "Phiên mới",
+        "kind": "return"
+      },
+      {
+        "from": "RotateRefreshTokenHandler",
+        "to": "RefreshTokenRepository",
+        "text": "Có thể cấp mã truy cập",
+        "kind": "return"
+      },
+      {
+        "from": "RefreshTokenRepository",
+        "to": "AuthController",
+        "text": "Mã truy cập ngắn và cookie mới",
+        "kind": "return"
+      },
+      {
+        "from": "AuthController",
+        "to": "Sinh viên",
+        "text": "Làm mới phiên thành công",
+        "kind": "return"
+      }
     ]
   }
 }

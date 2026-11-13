@@ -101,4 +101,6 @@ Bảng 7.1 bao phủ EVT-1–7, kể cả sự kiện đã bỏ.
 
 **Nợ prototype:** dùng mock và trước đây cộng `studentCount` từng lớp; cần F1 #56 để đếm DISTINCT, F1 #45 và F2 §55 thật, trạng thái lỗi từng widget, làm mới khi quay lại. Dòng `INS0101` trong `06-plan/PROTOTYPE_DEBT.md` còn mở đến khi code nối thật. `[SoT: BD Sheet 4.5; V]`
 
-**Đã đóng ở DD:** `INS0101` dùng F1 #56 `ListMyClassesSummary`; F1 #44 được đánh dấu legacy, không còn consumer màn DD sau khi BD bỏ thẻ điểm TB. Giữ path trong danh mục để tránh thay đổi số endpoint cũ. `[SoT: BD V0.11; F1 #44/#56]`
+**Đã đóng ở DD:** `INS0101` dùng F1 #56 `ListMyClassesSummary`; F1 #44 được đánh dấu legacy, không còn consumer màn DD sau khi BD bỏ thẻ điểm TB. ~~Giữ path trong danh mục để tránh thay đổi số endpoint cũ.~~ **Cập nhật 2026-11-07:** #44 đã thay bởi #56 và bỏ khỏi hợp đồng (Owner chốt, AC-77), xem `03-dd/api/F1_identity.md` dòng #44. `[SoT: BD V0.11; F1 #44/#56]`
+
+**Ghi chú FE 2026-11-07:** màn đã nối F1 #56 (thay #19), F4 #13 trang 1 cho "Bài nộp gần đây" (chế độ thật), khối #54 có trạng thái lỗi riêng; biểu đồ lượt nộp theo ngày ẩn ở chế độ thật (không có endpoint, chủ dự án chốt). Hợp đồng API không đổi.

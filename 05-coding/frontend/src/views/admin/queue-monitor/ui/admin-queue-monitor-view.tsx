@@ -16,6 +16,8 @@
 "use client";
 
 import Link from "next/link";
+import { isMockMode } from "@/shared/api";
+import { RealQueueMonitor } from "./real-queue-monitor";
 import { useEffect, useMemo, useState } from "react";
 import {
   useQueuePage,
@@ -76,6 +78,7 @@ function clock(epochMs: number): string {
 
 export function AdminQueueMonitorView() {
   const query = useQueuePage();
+  if (!isMockMode()) return <RealQueueMonitor />;
   return (
     <QueryBoundary query={query}>
       {(initial) => (

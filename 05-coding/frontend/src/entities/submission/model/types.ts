@@ -44,6 +44,17 @@ export type SubmissionTestcaseResult = {
 };
 
 export type SubmissionDetail = {
+  instructorContext?: {
+    studentId: string;
+    studentName: string;
+    classId: string;
+    className: string;
+    leftClass: boolean;
+  };
+  problemWithdrawn?: boolean;
+  beatsSampleSize?: number;
+  testcaseDetailsAvailable?: boolean;
+  testcaseUnavailableReason?: string | null;
   id: string;
   problemId: string;
   problemSlug: string;
@@ -68,6 +79,7 @@ export type SubmissionDetail = {
 };
 
 export type SubmissionListItem = {
+  problemWithdrawn?: boolean;
   id: string;
   problemId: string;
   problemSlug: string;

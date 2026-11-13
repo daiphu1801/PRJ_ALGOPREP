@@ -23,7 +23,23 @@
   <name>algoprep-problem-bank</name>
   <description>Ngân hàng bài toán và testcase (F2)</description>
 
+  <properties>
+    <jacoco.haltOnFailure>true</jacoco.haltOnFailure>
+  </properties>
+
   <dependencies>
+    <dependency><groupId>io.minio</groupId><artifactId>minio</artifactId><version>8.5.17</version></dependency>
+    <dependency><groupId>org.springframework</groupId><artifactId>spring-jdbc</artifactId></dependency>
+    <dependency><groupId>org.springframework</groupId><artifactId>spring-webmvc</artifactId></dependency>
+    <dependency><groupId>org.springframework.security</groupId><artifactId>spring-security-config</artifactId></dependency>
+    <dependency><groupId>org.springframework.security</groupId><artifactId>spring-security-oauth2-resource-server</artifactId></dependency>
+    <dependency><groupId>org.springframework.security</groupId><artifactId>spring-security-oauth2-jose</artifactId></dependency>
+    <dependency><groupId>org.springframework.data</groupId><artifactId>spring-data-redis</artifactId></dependency>
+    <dependency><groupId>tools.jackson.core</groupId><artifactId>jackson-databind</artifactId></dependency>
+    <dependency><groupId>com.rabbitmq</groupId><artifactId>amqp-client</artifactId></dependency>
+    <!-- SubmissionGraded consumer: @RabbitListener, Queue and Binding declarations. -->
+    <dependency><groupId>org.springframework.amqp</groupId><artifactId>spring-rabbit</artifactId></dependency>
+    <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-autoconfigure</artifactId></dependency>
     <dependency>
       <groupId>com.algoprep</groupId>
       <artifactId>algoprep-common</artifactId>

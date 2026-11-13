@@ -19,22 +19,22 @@
         "stereo": "presentation"
       },
       {
-        "name": "RotateTokenCmd",
+        "name": "RotateRefreshTokenHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "RefreshRepo",
+        "name": "RefreshTokenRepository",
         "role": "repository",
         "stereo": "domain output port"
       },
       {
-        "name": "AuditRepo",
+        "name": "AuditLogPort",
         "role": "repository",
         "stereo": "domain output port"
       },
       {
-        "name": "IdentityDbAdapter",
+        "name": "JdbcUserAccountRepository",
         "role": "repository",
         "stereo": "infrastructure"
       },
@@ -49,60 +49,60 @@
         "phase": "Giai đoạn 3b - Mã đã dùng lại: khoá cả nhóm phiên"
       },
       {
-        "from": "RotateTokenCmd",
-        "to": "RotateTokenCmd",
+        "from": "RotateRefreshTokenHandler",
+        "to": "RefreshTokenRepository",
         "text": "Mã tìm thấy nhưng đã bị thu hồi"
       },
       {
-        "from": "RotateTokenCmd",
-        "to": "RefreshRepo",
+        "from": "RotateRefreshTokenHandler",
+        "to": "RefreshTokenRepository",
         "text": "Thu hồi mọi mã còn dùng trong nhóm"
       },
       {
-        "from": "RefreshRepo",
-        "to": "IdentityDbAdapter",
+        "from": "RefreshTokenRepository",
+        "to": "JdbcUserAccountRepository",
         "text": "Khoá nhóm phiên"
       },
       {
-        "from": "IdentityDbAdapter",
+        "from": "JdbcUserAccountRepository",
         "to": "PostgreSQL",
         "text": "Thu hồi các phiên cùng nhóm"
       },
       {
-        "from": "RotateTokenCmd",
-        "to": "AuditRepo",
+        "from": "RefreshTokenRepository",
+        "to": "AuditLogPort",
         "text": "Ghi dấu hiệu dùng lại mã phiên"
       },
       {
-        "from": "AuditRepo",
-        "to": "IdentityDbAdapter",
+        "from": "AuditLogPort",
+        "to": "JdbcUserAccountRepository",
         "text": "Ghi nhật ký bảo mật"
       },
       {
-        "from": "IdentityDbAdapter",
+        "from": "JdbcUserAccountRepository",
         "to": "PostgreSQL",
         "text": "Lưu sự kiện bảo mật"
       },
       {
         "from": "PostgreSQL",
-        "to": "IdentityDbAdapter",
+        "to": "JdbcUserAccountRepository",
         "text": "Đã commit",
         "kind": "return"
       },
       {
-        "from": "IdentityDbAdapter",
-        "to": "AuditRepo",
+        "from": "JdbcUserAccountRepository",
+        "to": "AuditLogPort",
         "text": "Đã ghi",
         "kind": "return"
       },
       {
-        "from": "AuditRepo",
-        "to": "RotateTokenCmd",
+        "from": "AuditLogPort",
+        "to": "RefreshTokenRepository",
         "text": "Nhóm phiên đã khoá",
         "kind": "return"
       },
       {
-        "from": "RotateTokenCmd",
+        "from": "RefreshTokenRepository",
         "to": "AuthController",
         "text": "Từ chối làm mới phiên",
         "kind": "return"

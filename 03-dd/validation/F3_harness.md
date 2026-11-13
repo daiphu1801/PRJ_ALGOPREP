@@ -1,5 +1,16 @@
 # DD — Validation module `harness` (F3)
 
+**Checkpoint component D02e 2026-11-01:** ProgramPackaging wrapper kiểm P5 trước render;
+Standard I/O đi thẳng source assembler. Đây là pure helper nhận typed input, không phải P2
+validation problemId/quyền/specVersion và không tự phát sinh các mã HRN cho F2 chưa có.
+Source/file/LineMap vẫn theo assembler đã kiểm D02b/D02d; payload không nhận testcase data.
+
+**Owner D02d 2026-11-01:** miền giá trị runtime CHAR là ASCII U+0021–U+007E; Unicode dùng
+STRING. Đây là kiểm giá trị stdin/kết quả trong codegen và typed matching P4, không đổi JSON
+schema TypeNode hoặc bảng mã P5. Parser runtime kiểm INT 32-bit/LONG 64-bit, số thập phân,
+BOOLEAN thường, token/hàng/kích thước chính xác; input lỗi báo 90 + marker cố định, trước call.
+Output env/buffer theo DEC-2026-1101-harness-wire-serialization; thiếu/sai env trả 91.
+
 > Nguồn: `02-bd/architecture/F3_harness.md` (mục 4.2, 4.5, 6) · `02-bd/database/F3_harness.md:90` ·
 > `02-bd/database/F2_problem-bank.md:128-136` · `02-bd/security/F3_harness.md:12-26,44-57` · `01-rd/req/F3_harness.md:30-34`.
 > Bounded Context: F3 `harness` · Cập nhật: 2026-10-25 · Trạng thái: DD.
@@ -81,7 +92,7 @@ Bảng 2: Quy tắc chữ ký hàm.
 | `parameters[].name` | Khớp định danh hợp lệ | `HRN-V13` | Cứng | PB, HR, FE |
 | `parameters[].name` trùng | Sau khi suy ra tên từng ngôn ngữ (`logic` mục 2), hai tham số không được trùng nhau **trong bất kỳ ngôn ngữ nào** (ví dụ `maxVal` và `max_val` trùng) | `HRN-V14` | Cứng | PB, HR, FE |
 | `parameters[].name` dành riêng | Không bắt đầu bằng `apH`/`ApH`; không là từ khoá ở ngôn ngữ nào; không trùng `function_name` đã suy ra; Python còn cấm `self` | `HRN-V15` | Cứng | PB, HR |
-| `name_overrides` khoá | Chỉ nhận `JAVA`, `CPP`, `PYTHON` (đọc không phân biệt hoa thường, ghi chữ hoa) | `HRN-V18` | Cứng | PB, HR |
+| `name_overrides` khoá | Chỉ nhận `JAVA`, `CPP`, `PYTHON` (đọc không phân biệt hoa thường, ghi chữ hoa); khóa trùng sau chuẩn hóa, ví dụ `JAVA` và `java`, bị từ chối, không chọn giá trị theo thứ tự map. **Chủ dự án chốt 2026-11-01; P5 đã triển khai** | `HRN-V18` | Cứng | PB, HR |
 | `name_overrides` giá trị | Khớp định danh hợp lệ, không đụng tiền tố dành riêng, không là từ khoá của **đúng ngôn ngữ ghi đè** | `HRN-V19` | Cứng | PB, HR |
 
 Từ khoá tính theo hợp của ba bảng (kiểm bằng hằng `RESERVED_WORDS[Language]` trong `algoprep-common`):
@@ -152,10 +163,27 @@ Bảng 4: Quy tắc đầu vào cổng.
 | P4 | `matchSpec` | `EPSILON` thì `epsilonValue > 0`; `UNORDERED_SET` không đi với kiểu `BINARY_TREE`/`LINKED_LIST` | `HRN-051` | HR |
 | P4 | `expectedOutput` | Parse được theo `returnType` khi `EPSILON` hoặc `UNORDERED_SET` | `HRN-050` | HR |
 
+**Triển khai P3 2026-11-01:** LineMap kiểm tổng prefix + user không tràn int, call-site đủ cặp,
+không chồng vùng USER; Standard I/O phải prefix = 0 và call-site null. `[SoT: Suy luận]` sourceFileName
+phải là basename không rỗng, diagnostic file khác bị che; null command/language/model/raw trả
+HRN-031 đã che thông báo, LineMap sai trả HRN-040. Log cùng bản cắt 65.536 ký tự và truncated;
+source/caret không đi vào DTO, logger lỗi không phá report (chủ dự án chốt).
+
+**Triển khai P4 2026-11-01:** cấu hình hợp lệ được kiểm trước khi so; expected typed được parse/
+chuẩn hóa trước actual để không gán testcase hỏng thành WA. Chưa có HTTP riêng. `[SoT: Suy luận]`
+null/thiếu trường bắt buộc của cổng nội bộ trả HRN-051; số Standard I/O vượt miền biểu diễn
+BigDecimal trả HRN-031 đã che thông báo. TRIMMED với ARRAY(STRING) so như EXACT theo chủ dự án
+chốt cùng ngày (logic §7.2), không gộp khoảng trắng bên trong chuỗi. Bằng chứng: api §6.2.
+
 Không kiểm: nội dung mã người học (không parse, không duyệt "an toàn", `02-bd/security/F3_harness.md:22-26`); độ dài
 `stdin`, kích thước testcase (thuộc `problem-bank` và `judge-orchestration`).
 
 ## 6. Bảng mã `HRN-Vnn`
+
+**Triển khai lõi D02b 2026-11-01:** ProgramSourceAssembler kiểm blank (kể cả null và
+BOM đầu không kèm nội dung), giới hạn 65.536 byte UTF-8 gốc (BOM/CRLF tính vào byte), NUL;
+sau đó mới bỏ BOM/chuẩn hóa xuống dòng. LF bổ sung cuối không tính vào byte đầu vào.
+HRN-020/021/022 có message cố định, không chứa source. Chưa có P2 reader/version/payload.
 
 Bảng 5: Mã kiểm đặc tả. Mã thông báo cho người dùng (i18n) do `problem-bank` ánh xạ; `harness` chỉ trả mã và `path`.
 
@@ -191,3 +219,24 @@ Tổng: 19 mã kiểm đặc tả (7 mềm, 12 cứng), dải `HRN-V01` đến `
 | Tab "Đặc tả" của `problem_authoring` (FE) | Lược đồ zod khớp mục 2 đến 4 (nguồn một nơi); phần cấu trúc dùng JSON Schema xuất kèm `TypeKind` |
 | P6 xem trước chữ ký | Nhận chính bản nháp từ FE; cùng P5 để kiểm, cùng P1 để định dạng tên và kiểu; ba dòng `null` khi chưa đủ đặc tả hoặc ngoài lược đồ |
 | `judge-orchestration` | Dịch `HRN-nnn` của cổng sang trạng thái nộp bài; tôn trọng `HRN-004`; gọi `prepare` chỉ một lần cho mỗi lượt nộp |
+
+
+## Triển khai D02s — 2026-11-04: F3 starter HTTP và nhánh không cache
+
+**D02s — F3 REST starter P1, 2026-11-04:** HTTP starter/quyền hiện hành/phiên bản thật đã kiểm; nhánh F3 không cache đọc v1→v2 không chờ event và từ chối expected version cũ. 57 test liên quan đạt (13 unit mới, 18 API mới, 26 hợp đồng/wiring trực tiếp), 5/5 mutation bị bắt; Spotless/Checkstyle/SpotBugs đạt. Chỉ tập trung F3/F4, task riêng F1/F2 tạm gác. C08/cache-on giữ giới hạn đã nêu, D09/persisted E2E và FE chưa đóng. [Report](F:/prj_algoprep/06-plan/reports/261104-f3-starter-http/report.md).
+
+GET P1 theo URL language/model, response language/submissionModel/sourceCode (không specVersion).
+Identity từ JWT subject và authorities hiện hành, không tin claim role cũ/query. Published cho
+mọi authenticated, unpublished author/admin; missing/deleted/ngoài quyền cùng404 HRN-001.
+HTTP lỗi đúng §3.4, không trả raw cause/message; thiếu/lạ model là400 binding Spring, DD chưa
+quy định mã miền riêng. Giữ core RR và port đã có, không sửa F1/F2. @Lazy chỉ giữ pure core scan
+không cần lắp bootstrap, runtime ứng dụng dùng port thật.
+
+Default không local cache theo logic §9/BD database §2: đã kiểm v1→v2/matching, Redis poison,
+P2 stale expected bị HRN-002. Chưa có bằng chứng cache-on/E1 Rabbit delivery; không tick QA
+TC-F3-AC40-01–04 cho cấu hình cache bật. Không thêm no-op listener hoặc tạo cache giả.
+Sample pipeline save→starter→điền lời giải→F4 Run Code đã đạt, không thay persisted Submit E2E
+D09/AC-18 hoặc FE/browser. C08 giữ hoãn. Full regression/coverage BUNDLE để mốc clear theo owner.
+
+
+**D02u — 2026-11-04:** Backend F3 local đã đóng, giữ ngoại lệ C08/AC-49 HTTP/UI tiếp tục hoãn theo owner. Review đủ 50 AC với symbol/oracle và mức bằng chứng; 6/6 test Spring startup mới (AC-44) và Spotless/Checkstyle/SpotBugs đạt. 114 file lõi/resource + 2 HTTP khớp nguồn đã kiểm; không chạy lại suite cũ hoặc full regression. Cache-on conditional chưa bật; F4/FE/FINAL còn mở. [Report](F:/prj_algoprep/06-plan/reports/261104-f3-backend-closeout/report.md).

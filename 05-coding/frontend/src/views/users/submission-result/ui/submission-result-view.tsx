@@ -8,12 +8,11 @@
 // when status === "COMPILE_ERROR" — no testcase ever ran, so there is nothing to list. The compile
 // error box (Khu vực E NO 4) takes its place instead.
 //
-// No real STOMP socket here — the mock has no server to push from. The "realtime" model
-// (02-bd/screens/users/USR0201_submission_result.md Sheet 8 EVT-9) is out of scope for this
-// prototype; the fixture for a JUDGING submission just renders a fixed partial state.
+// Real mode follows active learner submissions with STOMP and REST recovery.
 "use client";
 
 import { useState, type ReactNode } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import {
@@ -23,6 +22,7 @@ import {
 } from "@/entities/problem";
 import {
   useSubmissionDetail,
+  useSubmissionProgress,
   SUBMISSION_STATUS_VARIANT,
   type SubmissionDetail,
   type SubmissionTestcaseResult,
@@ -94,6 +94,27 @@ export function SubmissionResultView({
   const isInstructor = area === "instructor";
   const detailQuery = useSubmissionDetail(submissionId, area);
   const submission = detailQuery.data;
+  const queryClient = useQueryClient();
+  const [progressIssue, setProgressIssue] = useState(false);
+  useSubmissionProgress(
+    !isInstructor &&
+      submission &&
+      ["PENDING", "COMPILING", "JUDGING"].includes(submission.status)
+      ? submissionId
+      : undefined,
+    {
+      progress: () => {
+        void queryClient.invalidateQueries({
+          queryKey: ["submission", "detail", area, submissionId],
+        });
+      },
+      finished: () => {
+        void queryClient.invalidateQueries({ queryKey: ["submission"] });
+      },
+      error: () => setProgressIssue(true),
+      slow: () => setProgressIssue(true),
+    },
+  );
   const [expanded, setExpanded] = useState<string | null>(null);
 
   // Unknown id, or one outside the instructor's classes (404, no existence leak): both come back as null.
@@ -139,6 +160,10 @@ export function SubmissionResultView({
 
   return (
     <div className={isInstructor ? "flex flex-col p-6" : "p-6"}>
+      {progressIssue ? <p role="status">{t("progressSlow")}</p> : null}
+      {submission.testcaseDetailsAvailable === false && !isCompileError ? (
+        <p>{t("testcaseUnavailable")}</p>
+      ) : null}
       <h1 className="sr-only">{t("pageTitle")}</h1>
       {/* Khu vực A — Breadcrumb */}
       <nav
@@ -165,7 +190,15 @@ export function SubmissionResultView({
             </Link>
             <span aria-hidden="true">/</span>
             <Link
-              href={`/problems/${submission.problemSlug}`}
+              href={
+                submission.problemWithdrawn
+                  ? "#"
+                  : `/problems/${submission.problemId || submission.problemSlug}`
+              }
+              aria-disabled={submission.problemWithdrawn}
+              onClick={(event) => {
+                if (submission.problemWithdrawn) event.preventDefault();
+              }}
               className="hover:text-[var(--color-text)]"
             >
               {submission.problemTitle}
@@ -353,7 +386,17 @@ export function SubmissionResultView({
                 asChild
                 className="border border-[var(--color-border)]"
               >
-                <Link href={`/workspace/${submission.problemSlug}`}>
+                <Link
+                  href={
+                    submission.problemWithdrawn
+                      ? "#"
+                      : `/workspace/${submission.problemId || submission.problemSlug}`
+                  }
+                  aria-disabled={submission.problemWithdrawn}
+                  onClick={(event) => {
+                    if (submission.problemWithdrawn) event.preventDefault();
+                  }}
+                >
                   {t("actions.retry")}
                 </Link>
               </Button>
@@ -529,7 +572,17 @@ export function SubmissionResultView({
                   asChild
                   className="border border-[var(--color-border)]"
                 >
-                  <Link href={`/workspace/${submission.problemSlug}`}>
+                  <Link
+                    href={
+                      submission.problemWithdrawn
+                        ? "#"
+                        : `/workspace/${submission.problemId || submission.problemSlug}`
+                    }
+                    aria-disabled={submission.problemWithdrawn}
+                    onClick={(event) => {
+                      if (submission.problemWithdrawn) event.preventDefault();
+                    }}
+                  >
                     {t("actions.retry")}
                   </Link>
                 </Button>

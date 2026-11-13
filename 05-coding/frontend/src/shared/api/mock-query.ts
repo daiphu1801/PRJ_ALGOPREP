@@ -2,9 +2,15 @@
 //
 // Shared data boundary for every screen that still runs on mock data. An entity or view keeps its
 // own `api/__mock__/` folder and writes one line per endpoint here, instead of repeating the
-// `withMockData(mock, notImplemented)` + `useQuery` boilerplate. Graduation of an endpoint = replace
-// `notImplemented(spec)` with the real fetcher; the call sites do not change.
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+// `withMockData(mock, notImplemented)` + `useQuery` boilerplate. Graduation of an endpoint = pass
+// the real fetcher as `real`; the call sites do not change and an endpoint without `real` keeps
+// failing loudly with NOT_IMPLEMENTED in real mode.
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import type { QueryKey } from "@tanstack/react-query";
 import { ApiError } from "./api-error";
 import { withMockData } from "./mock-mode";
@@ -25,30 +31,49 @@ type MockQueryArgs<T> = {
   mock: () => Promise<T> | T;
   /** DD file that will define the endpoint, e.g. `03-dd/api/F2_problem-bank.md`. */
   spec: string;
+  /** Real endpoint call; omitted while the endpoint is not built (falls back to NOT_IMPLEMENTED). */
+  real?: () => Promise<T>;
   /** Default 30s; pass 0 where a reopened screen must show what was last saved. */
   staleTime?: number;
   enabled?: boolean;
+  /** True where a changed key (filter, page) must keep showing the previous answer while the next one loads. */
+  keepPrevious?: boolean;
+  /** Retain placeholder data only when this query-key segment still names the same owner. */
+  previousScopeIndex?: number;
 };
 
 export function useMockQuery<T>({
   queryKey,
   mock,
   spec,
+  real,
   staleTime = 30_000,
   enabled,
+  keepPrevious,
+  previousScopeIndex,
 }: MockQueryArgs<T>) {
   return useQuery({
     queryKey,
-    queryFn: () => withMockData(mock, notImplemented(spec)),
+    queryFn: () => withMockData(mock, real ?? notImplemented(spec)),
     staleTime,
     retry: false,
     enabled,
+    placeholderData: keepPrevious
+      ? (data, previousQuery) =>
+          previousScopeIndex === undefined ||
+          previousQuery?.queryKey[previousScopeIndex] ===
+            queryKey[previousScopeIndex]
+            ? keepPreviousData(data)
+            : undefined
+      : undefined,
   });
 }
 
 type MockMutationArgs<V, T> = {
   mock: (variables: V) => Promise<T> | T;
   spec: string;
+  /** Real endpoint call; omitted while the endpoint is not built (falls back to NOT_IMPLEMENTED). */
+  real?: (variables: V) => Promise<T>;
   /** Query keys refreshed after a successful call. */
   invalidate?: readonly QueryKey[];
 };
@@ -56,12 +81,16 @@ type MockMutationArgs<V, T> = {
 export function useMockMutation<V, T = void>({
   mock,
   spec,
+  real,
   invalidate = [],
 }: MockMutationArgs<V, T>) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (variables: V) =>
-      withMockData(() => mock(variables), notImplemented(spec)),
+      withMockData(
+        () => mock(variables),
+        real ? () => real(variables) : notImplemented(spec),
+      ),
     onSuccess: () =>
       Promise.all(
         invalidate.map((queryKey) =>

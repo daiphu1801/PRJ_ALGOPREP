@@ -1,5 +1,5 @@
 {
-  "_": "Nguồn thuộc tính và liên kết: 02-bd/database/F5_ai-review.md:40-210. [SoT: Suy luận] Ánh xạ bảng dữ liệu sang tên class Java là thiết kế đề xuất; bội số theo FK/unique của BD. Bỏ thuộc tính thứ cấp và getter/setter.",
+  "_": "Nguồn thuộc tính và liên kết: 05-coding/backend/algoprep-ai-review/src/main/resources/db/migration/ai/V5.001__create_ai_tables.sql và 02-bd/database/F5_ai-review.md. [SoT: Suy luận] Module backend đang ở mức package-info và migration; các lớp dưới đây là mô hình Java 21 Record dự kiến ánh xạ 1:1 với schema ai.*.",
   "kind": "class",
   "title": "F5 — Mô hình báo cáo và phiên phỏng vấn AI",
   "covers": [],
@@ -10,9 +10,11 @@
         "id": "review",
         "name": "SolutionReview",
         "attributes": [
+          "+ id : UUID",
           "+ submissionId : UUID",
           "+ sourceHash : String",
-          "+ resultJson : ReviewResult"
+          "+ resultJson : String",
+          "+ status : String"
         ],
         "methods": []
       },
@@ -22,8 +24,8 @@
         "attributes": [
           "+ id : UUID",
           "+ userId : UUID",
-          "+ entryType : InterviewEntryType",
-          "+ stage : InterviewStage",
+          "+ entryType : String",
+          "+ stage : String",
           "+ turnCount : int"
         ],
         "methods": []
@@ -32,9 +34,11 @@
         "id": "turn",
         "name": "InterviewTurn",
         "attributes": [
+          "+ id : UUID",
           "+ sessionId : UUID",
-          "+ role : TurnRole",
-          "+ content : String"
+          "+ role : String",
+          "+ content : String",
+          "+ turnOrder : int"
         ],
         "methods": []
       },
@@ -42,19 +46,22 @@
         "id": "score",
         "name": "RubricScore",
         "attributes": [
-          "+ ownerId : UUID",
+          "+ id : UUID",
+          "+ sessionId : UUID",
           "+ criterionCode : String",
-          "+ score : Decimal"
+          "+ score : BigDecimal"
         ],
         "methods": []
       },
       {
-        "id": "cache",
-        "name": "AiCacheEntry",
+        "id": "prompt",
+        "name": "PromptTemplate",
         "attributes": [
-          "+ sourceHash : String",
-          "+ promptTemplateId : UUID",
-          "+ solutionReviewId : UUID"
+          "+ id : UUID",
+          "+ featureCode : String",
+          "+ version : String",
+          "+ status : String",
+          "+ modelId : String"
         ],
         "methods": []
       },
@@ -63,7 +70,7 @@
         "name": "AiTokenBudgetConfig",
         "attributes": [
           "+ id : short = 1",
-          "+ period : BudgetPeriod",
+          "+ period : String",
           "+ limitTokens : long",
           "+ lockedAt : Instant [0..1]"
         ],
@@ -88,13 +95,14 @@
       },
       {
         "from": "review",
-        "to": "cache",
-        "kind": "dependency"
+        "to": "prompt",
+        "kind": "dependency",
+        "label": "áp dụng template"
       }
     ],
     "notes": [
-      "SolutionReview chỉ cho bài Accepted; phiên phỏng vấn có ba giai đoạn; cache theo hash, kiểm ngân sách trước lời gọi AI.",
-      "[SoT: Suy luận] Tên class Java đề xuất từ schema BD."
+      "SolutionReview lưu kết quả phân tích bài Accepted; InterviewSession gồm 3 giai đoạn phỏng vấn giả lập.",
+      "[SoT: Suy luận] Tên class Java ánh xạ từ schema database ai.* theo quy chuẩn Java Record."
     ]
   }
 }

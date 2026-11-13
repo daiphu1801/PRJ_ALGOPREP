@@ -3,6 +3,7 @@ export { IconAction } from "./primitives/icon-action";
 export {
   ManagedListDialog,
   type ManagedListLabels,
+  type ManagedListResult,
 } from "./overlay/managed-list-dialog";
 export {
   ParamsDialog,
@@ -49,6 +50,7 @@ export { Toaster, type ToasterLabels } from "./feedback/toaster";
 export { TextField } from "./form/text-field";
 export { SelectField } from "./form/select-field";
 export { TextArea } from "./form/text-area";
+export { FilePickerButton } from "./form/file-picker-button";
 export { NavLink } from "./layout/nav-link";
 export { NavGroupHeader } from "./layout/nav-group-header";
 export { ThemeLangSwitcher } from "./layout/theme-lang-switcher";

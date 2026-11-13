@@ -42,3 +42,32 @@ export function formatDateVN(
   const day = `${parts.day}/${parts.month}/${parts.year}`;
   return withTime ? `${parts.hour}:${parts.minute} ${day}` : day;
 }
+
+const MINUTE = 60_000;
+const HOUR = 60 * MINUTE;
+const DAY = 24 * HOUR;
+const relativeCache = new Map<string, Intl.RelativeTimeFormat>();
+
+/**
+ * "5 phút trước", "hôm qua", "3 ngày trước" for a moment in the last 30 days; older moments fall back
+ * to the date in UTC+7. A moment in the future reads as "now". Invalid input returns "".
+ */
+export function formatRelativeVN(
+  value: Date | number | string,
+  options: { locale?: DateLocale; now?: number } = {},
+): string {
+  const { locale = "vi", now = Date.now() } = options;
+  const time = (value instanceof Date ? value : new Date(value)).getTime();
+  if (Number.isNaN(time)) return "";
+  let rtf = relativeCache.get(locale);
+  if (!rtf) {
+    rtf = new Intl.RelativeTimeFormat(INTL_LOCALE[locale], { numeric: "auto" });
+    relativeCache.set(locale, rtf);
+  }
+  const age = now - time;
+  if (age < MINUTE) return rtf.format(0, "second");
+  if (age < HOUR) return rtf.format(-Math.floor(age / MINUTE), "minute");
+  if (age < DAY) return rtf.format(-Math.floor(age / HOUR), "hour");
+  if (age < 30 * DAY) return rtf.format(-Math.floor(age / DAY), "day");
+  return formatDateVN(time, { locale });
+}

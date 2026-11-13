@@ -1,0 +1,11 @@
+apiVersion: 1
+providers:
+  - name: algoprep-load-acceptance
+    orgId: 1
+    folder: AlgoPrep Acceptance
+    type: file
+    disableDeletion: false
+    editable: false
+    updateIntervalSeconds: 10
+    options:
+      path: /var/lib/grafana/provisioned-dashboards

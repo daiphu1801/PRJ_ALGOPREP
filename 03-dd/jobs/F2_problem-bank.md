@@ -10,16 +10,18 @@
 
 ## 1. JOB-PB-01 — Relay Outbox
 
+**Cập nhật13/11 — `DEC-2026-1113-f2-lifecycle-backlog-and-f4-target-publication`:** hai key `problem.problem.published`/`unpublished` được bind vào queue `problem-bank.lifecycle-pending` durable, không exclusive/auto-delete, TTL hoặc overflow drop. Message persistent giữ nguyên envelope/eventId; chưa có business consumer. Confirm đánh dấu đã lưu broker, không phải nghiệp vụ đã xử lý. Queue tồn đọng được giám sát và giữ để consumer tích hợp tương lai đọc/replay có dedupe; không tạo consumer ack bỏ hoặc purge. Lỗi broker/binding và key khác vẫn theo backoff/fairness hiện có. Runbook: `05-coding/judge-engine/WORKER-RUNBOOK.md`.
+
 | Mục | Hợp đồng |
 | :--- | :--- |
 | Kích hoạt | `fixedDelay = 2 s` sau khi lần trước kết thúc |
-| Đọc | `problem.outbox_events WHERE published_at IS NULL ORDER BY created_at, id LIMIT 100 FOR UPDATE SKIP LOCKED` |
+| Đọc | `problem.outbox_events WHERE published_at IS NULL ORDER BY COALESCE(last_attempted_at,created_at), created_at, id LIMIT 100 FOR UPDATE SKIP LOCKED`; chỉ lấy dòng chưa từng thử hoặc đã quá hạn giãn cách (xem hàng Thất bại) |
 | Phát | RabbitMQ exchange topic `algoprep.domain-events`, `routing_key` từ dòng, phong bì `payload` nguyên vẹn |
 | Thành công | Publisher confirm xong mới ghi `published_at = now()` và tăng `publish_attempts` |
-| Thất bại | Tăng `publish_attempts`, giữ `published_at = NULL`, ghi WARN và thử ở lượt sau; không bỏ dòng theo số lần thử |
+| Thất bại | Tăng `publish_attempts`, ghi `last_attempted_at`, giữ `published_at = NULL`, ghi WARN; lần thử kế tiếp không sớm hơn `last_attempted_at + min(300 s, 2 s x 2^(publish_attempts-1))` (2, 4, 8 ... tối đa 300 giây); không bỏ dòng theo số lần thử. Cập nhật 2026-11-12: thêm giãn cách tăng dần vì sự kiện chưa có consumer (như `ProblemPublished`) bị broker trả về unroutable và trước đó bị thử mỗi 2 giây vô hạn (`DEC-2026-1112-problem-outbox-retry-backoff`) |
 | Đồng thời | Khoá dòng cho từng bản ghi, publisher confirm timeout tối đa 5 giây; hai instance không claim cùng bản ghi một lúc; broker có thể nhận trùng nếu ack thất lạc |
 
-Relay không sinh sự kiện mới. Nếu payload JSON không hợp lệ hoặc routing key chưa biết, giữ dòng chưa publish, ghi `ERROR` có `eventId` để vận hành sửa; không đánh dấu đã phát. Theo dõi số dòng chưa publish, tuổi dòng cũ nhất và số lần thử cao nhất. `ProblemAssignedToClass` phải tới F1 với cùng `eventId` qua mọi lần thử để feed không nhân đôi.
+Relay không sinh sự kiện mới. Nếu payload JSON không hợp lệ hoặc routing key chưa biết, giữ dòng chưa publish, ghi `ERROR` có `eventId` để vận hành sửa; không đánh dấu đã phát. Mọi lần thử đều cập nhật `last_attempted_at`, kể cả thành công. Cập nhật 2026-11-11: retry xoay vòng để một lô tin unroutable không chặn event chưa thử; FIFO áp dụng cho lần thử đầu, không phải FIFO tuyệt đối qua các lượt retry (`DEC-2026-1111-f2-outbox-retry-fairness`, migration V2.004). Theo dõi số dòng chưa publish, tuổi dòng cũ nhất và số lần thử cao nhất. `ProblemAssignedToClass` phải tới F1 với cùng `eventId` qua mọi lần thử để feed không nhân đôi.
 
 ## 2. JOB-PB-02 — Dọn Outbox đã phát
 

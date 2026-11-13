@@ -44,7 +44,7 @@
 | Tên vật lý (slug) | `admin_system_log` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A3 (`ADMIN`) |
-| Phiên bản | V0.13 |
+| Phiên bản | V0.15 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/15 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
@@ -69,6 +69,8 @@
 | V0.11 | Câu hỏi mở (Q5, Q7) | Đóng hai mục theo `DEC-2026-1011-admin-system-open-questions-closed`: bảng ánh xạ `action_type` là enum `AuditAction`; cấu hình lưu log nằm ở `identity.system_settings`; bản nén hoãn, job giữ dòng | 2026/10/11 | Nhóm phát triển AlgoPrep |
 | V0.12 | Sheet 5 (Khu vực F NO 5, Khu vực G NO 1) | Sửa lỗi Minor review UX khu Admin B12 (`06-plan/reports/261014-1054-admin-ux-review/`), **chưa duyệt hình**. F NO 5: chú thích sự kiện hạ tầng nay là **liên kết thật** tới `/admin/queue` (prop `viewAllHref` của `RankedProgressList`), trước đó chỉ là chữ tĩnh. G NO 1: dòng "Nhật ký giữ {n} ngày" nay được dựng, chỉ đọc, đặt dưới lưới chính của màn, đọc `settings.retentionDays` (khoá i18n `adminSystemLog.retention.footer`). Đồng bộ dòng phiên bản ở Sheet 1 (trước ghi V0.10 dù đã có V0.11) | 2026/10/14 | Claude |
 | V0.13 | Sheet 4 (ghi chú), 5, 7, Câu hỏi mở | Sửa 2026-10-22 đồng bộ DB, `DEC-2026-1022-identity-schema-sync` (ID-08). `identity.users` **không có** cột `username` và `full_name`: cột "Người thực hiện" và ô tìm kiếm đổi sang `users.email`, khối quản trị viên hoạt động đổi sang `users.display_name`; DTO `actorUsername` đổi `actorEmail`, `ActiveAdminDto.fullName` đổi `displayName` (tên là `[SoT: Suy luận]`, DD chốt). Sửa câu sai ở Sheet 4.3: tham số lưu log đã có bảng `system_settings` và mỗi lần sửa **có** ghi một dòng `system_audit_logs` (phân loại "Cấu hình"). Sửa số dòng trích `02-bd/database/F1_identity.md` sang bản 2026-10-22 | 2026/10/22 | Nhóm phát triển AlgoPrep |
+| V0.14 | Sheet 7 (mục 7.3) | Chủ dự án chốt 2026-11-01 (`DEC-2026-1101-audit-stream-sse`): endpoint 4 `StreamSystemAuditLog` dùng **SSE**, không dùng WebSocket/STOMP như câu cũ; sửa câu ở Sheet 7 mục 7.3, gạch phần cũ. Ghi thêm hiện trạng bản dựng: công tắc "Theo dõi trực tiếp" mới chỉ là `useState` cục bộ, chưa có nguồn dữ liệu, màn còn chạy trên mock (nối API thật là task #12). Không đổi hành vi màn | 2026/11/01 | Claude |
+| V0.15 | Sheet 7 (mục 7.3), Hiện trạng bản dựng | Sửa 2026-11-02 (task #12, nối FE với API thật). (1) Màn gọi F1 #39, #40, #64, #65, #51, #52 và mở luồng #66 bằng `fetch`; lọc theo từ khoá, phân loại, ngày và con trỏ làm ở máy chủ. (2) Không có tổng số dòng, nhãn chân danh sách chỉ ghi số dòng đã tải. (3) Câu nội dung dựng từ `actionType` bằng i18n; mã hiển thị là 7 ký tự đầu UUID. (4) Backend #66 trả thêm `no-transform` vì lớp rewrite của Next.js nén gzip làm kẹt sự kiện. Không có câu hỏi mở mới; Q1 đến Q8 vẫn đã đóng. |
 
 ---
 
@@ -570,8 +572,12 @@ không phải từng module tự gọi một API ghi log rời rạc — như v�
 `[Suy luận]` — endpoint 6 và 7 do BD này đề xuất (V0.6); tên và quyền thật do `03-dd/api/F1_identity.md` chốt.
 
 Không có endpoint nào thuộc `judge-orchestration` hay `ai-review` trên màn này — đúng ranh giới ghi ở đầu
-file. Endpoint số 4 (`StreamSystemAuditLog`) dùng WebSocket (STOMP) theo stack đã khoá, **không** dùng SSE: SSE dành riêng cho
-luồng hội thoại AI [Nguồn: CLAUDE.md — mục Locked stack, dòng "Queue and realtime"].
+file. ~~Endpoint số 4 (`StreamSystemAuditLog`) dùng WebSocket (STOMP) theo stack đã khoá, **không** dùng SSE: SSE dành riêng cho
+luồng hội thoại AI [Nguồn: CLAUDE.md — mục Locked stack, dòng "Queue and realtime"].~~
+
+**Chốt 2026-11-01 (V0.14, `DEC-2026-1101-audit-stream-sse`):** endpoint số 4 `StreamSystemAuditLog` dùng **SSE** (máy chủ đẩy một chiều; xác thực bằng header `Authorization: Bearer` nên client gọi bằng `fetch`; client tự gửi `Last-Event-ID` khi nối lại; heartbeat 30 giây). WebSocket/STOMP vẫn dành riêng cho trạng thái từng testcase; SSE vốn dành cho luồng hội thoại AI, nay mở rộng cho luồng nhật ký một chiều này. Hợp đồng chi tiết: `03-dd/api/F1_identity.md` #66.
+
+**Hiện trạng bản dựng (2026-11-02):** công tắc "Theo dõi trực tiếp" ở `05-coding/frontend/src/views/admin/system-log/ui/admin-system-log-view.tsx` mở luồng #66 qua `fetch` khi chạy API thật (`views/admin/system-log/api/live.ts`, `shared/api/sse-stream.ts`); ở chế độ mock công tắc chỉ đổi nhãn, không có luồng.
 
 [Nguồn: 02-bd/database/F1_identity.md:141-155]
 

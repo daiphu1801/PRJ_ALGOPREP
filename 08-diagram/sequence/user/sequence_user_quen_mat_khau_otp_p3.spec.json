@@ -14,22 +14,22 @@
         "role": "actor"
       },
       {
-        "name": "AuthController",
+        "name": "PasswordResetController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "ResetPasswordCmd",
+        "name": "PasswordResetService",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "UserRepo",
+        "name": "UserAccountRepository",
         "role": "repository",
         "stereo": "domain output port"
       },
       {
-        "name": "IdentityDbAdapter",
+        "name": "JdbcUserAccountRepository",
         "role": "repository",
         "stereo": "infrastructure"
       },
@@ -60,54 +60,54 @@
       },
       {
         "from": "Sinh viên",
-        "to": "AuthController",
+        "to": "PasswordResetController",
         "text": "Gửi mã và mật khẩu mới"
       },
       {
-        "from": "AuthController",
-        "to": "AuthController",
+        "from": "PasswordResetController",
+        "to": "PasswordResetController",
         "text": "Kiểm độ mạnh mật khẩu mới"
       },
       {
-        "from": "AuthController",
-        "to": "ResetPasswordCmd",
+        "from": "PasswordResetController",
+        "to": "PasswordResetService",
         "text": "Yêu cầu đặt lại mật khẩu"
       },
       {
-        "from": "ResetPasswordCmd",
-        "to": "UserRepo",
+        "from": "PasswordResetService",
+        "to": "UserAccountRepository",
         "text": "Tìm tài khoản theo email"
       },
       {
-        "from": "UserRepo",
-        "to": "IdentityDbAdapter",
+        "from": "UserAccountRepository",
+        "to": "JdbcUserAccountRepository",
         "text": "Đọc trạng thái và mật khẩu hiện tại"
       },
       {
-        "from": "IdentityDbAdapter",
+        "from": "JdbcUserAccountRepository",
         "to": "PostgreSQL",
         "text": "Đọc tài khoản cần đổi"
       },
       {
         "from": "PostgreSQL",
-        "to": "IdentityDbAdapter",
+        "to": "JdbcUserAccountRepository",
         "text": "Có tài khoản hoặc không",
         "kind": "return"
       },
       {
-        "from": "IdentityDbAdapter",
-        "to": "UserRepo",
+        "from": "JdbcUserAccountRepository",
+        "to": "UserAccountRepository",
         "text": "Kết quả tra cứu",
         "kind": "return"
       },
       {
-        "from": "UserRepo",
-        "to": "ResetPasswordCmd",
+        "from": "UserAccountRepository",
+        "to": "PasswordResetService",
         "text": "Loại tài khoản và mã người dùng",
         "kind": "return"
       },
       {
-        "from": "ResetPasswordCmd",
+        "from": "PasswordResetService",
         "to": "ResetOtpPort",
         "text": "Kiểm lại mã và giới hạn sai"
       },
@@ -135,7 +135,7 @@
       },
       {
         "from": "ResetOtpPort",
-        "to": "ResetPasswordCmd",
+        "to": "PasswordResetService",
         "text": "Được đổi hoặc từ chối",
         "kind": "return"
       },
@@ -144,13 +144,13 @@
           "label": "Mã không hợp lệ?",
           "then": [
             {
-              "from": "ResetPasswordCmd",
-              "to": "AuthController",
+              "from": "PasswordResetService",
+              "to": "PasswordResetController",
               "text": "Báo cùng một lỗi cho mọi nguyên nhân",
               "kind": "return"
             },
             {
-              "from": "AuthController",
+              "from": "PasswordResetController",
               "to": "Sinh viên",
               "text": "Mã sai hoặc hết hạn",
               "kind": "return"
@@ -158,8 +158,8 @@
           ],
           "else": [
             {
-              "from": "ResetPasswordCmd",
-              "to": "ResetPasswordCmd",
+              "from": "PasswordResetService",
+              "to": "PasswordResetService",
               "text": "Mã đúng: tiếp tục ở trang 3b"
             }
           ]

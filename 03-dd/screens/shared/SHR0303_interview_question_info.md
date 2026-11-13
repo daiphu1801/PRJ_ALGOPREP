@@ -33,6 +33,8 @@ Mã `IQ-%03d` lấy từ `displayNo` để hiển thị; không dùng mã làm r
 | EVT-3 Sửa | Không gọi API | Link `{basePath}/{questionId}/edit`, chỉ khi có quyền `UPDATE` |
 | EVT-4 Xem như học viên | Không gọi API | Popup từ DTO đã lưu, không gửi dữ liệu tới F6/F5 |
 
+**Triển khai 2026-11-11 (nối API thật, lát M1 phía câu hỏi).** Màn dùng `useAdminQuestion(questionId)` (`entities/interview-question/api/admin-queries.ts`), gọi `GET /interview-bank/admin/questions/{id}` một lần. `404 INB-010` thành `null` và hiện trạng thái không tìm thấy; `INB-301`, `INB-503` và lỗi lạ hiện khối lỗi có nút thử lại. Chế độ dữ liệu giả trả cùng hợp đồng (`admin-mock.ts`). Màn hiện thêm `contentMarkdown` ("mô tả thêm") dưới nội dung khi có. Chủ đề và mức độ tìm trong danh mục theo `topicId`/`levelId` (khớp `id`, chế độ giả khớp `key`); không thấy thì hiện `-`. Nút Sửa trỏ `{basePath}/{id}/edit` bằng UUID; chưa ẩn theo quyền `UPDATE`.
+
 BD Q3 được F6 §20 đóng: `usage` đi cùng chi tiết, không có endpoint chỉ số thứ hai. Điểm trung bình trong F6 là phần trăm 0–100; nhãn mock `x / 5` cần bỏ, hiển thị phần trăm một chữ số thập phân hoặc `-` khi `null`. [SoT: F6 §19–20, §28 Q3]
 
 ## 3. Trạng thái màn

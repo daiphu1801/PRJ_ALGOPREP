@@ -1,5 +1,5 @@
 {
-  "_": "Nguon: 03-dd/logic/F3_harness.md:429-432 ExecutionPlan gom files(name,content), compile(argv,env) hoac null, run(argv,env); 03-dd/logic/F3_harness.md:457-465 JudgePayloadAssembler va hai implementation; 03-dd/api/F3_harness.md:143-154 JudgePayload gom engineId va body. [SoT: Suy luan] SourceFile va CommandSpec la ten kieu de xuat cho hai cau truc du lieu chua duoc DD dat ten, khong khang dinh da co lop Java tuong ung. [SoT: Suy luan] DD:431 noi plugin tra ExecutionPlan nhung interface DD:34-41 khong co phuong thuc do, nen khong ve canh nguon sinh ExecutionPlan. Bo getter/setter va chi tiet HTTP go-judge vi thuoc F4.",
+  "_": "Nguồn thuộc tính và phương thức: 05-coding/backend/algoprep-harness/src/main/java/com/algoprep/harness/application/dto/ và ports/out/. Biểu diễn gói thực thi trung lập (ExecutionPlan), interface bộ chuyển đổi payload (JudgePayloadAssembler) và implementation máy chấm Go-Judge.",
   "kind": "class",
   "title": "F3 — Chuẩn bị chương trình cho máy chấm",
   "covers": [],
@@ -10,10 +10,12 @@
         "id": "plan",
         "name": "ExecutionPlan",
         "attributes": [
-          "- files : List<SourceFile>",
-          "- compile : CommandSpec [0..1]",
-          "- run : CommandSpec"
-        ]
+          "+ files : List<SourceFile>",
+          "+ compile : Command [0..1]",
+          "+ run : Command",
+          "+ artifact : String"
+        ],
+        "methods": []
       },
       {
         "id": "asm",
@@ -25,30 +27,26 @@
       },
       {
         "id": "go",
-        "name": "GoJudgePayloadAssembler"
-      },
-      {
-        "id": "j0",
-        "name": "Judge0PayloadAssembler"
+        "name": "GoJudgePayloadAssembler",
+        "methods": [
+          "+ assemble(plan : ExecutionPlan) : JudgePayload"
+        ]
       },
       {
         "id": "payload",
         "name": "JudgePayload",
         "attributes": [
-          "- engineId : String",
-          "- body : JSON"
-        ]
+          "+ engine : String",
+          "+ body : Map<String, Object>",
+          "+ artifact : String"
+        ],
+        "methods": []
       }
     ],
     "externals": [],
     "relations": [
       {
         "from": "go",
-        "to": "asm",
-        "kind": "realization"
-      },
-      {
-        "from": "j0",
         "to": "asm",
         "kind": "realization"
       },
@@ -66,8 +64,8 @@
       }
     ],
     "notes": [
-      "[SoT: Suy luận] SourceFile = tên/nội dung; CommandSpec = đối số/biến môi trường.",
-      "Assembler chuyển ExecutionPlan thành JudgePayload; GoJudge mặc định, Judge0 thay thế."
+      "ExecutionPlan và JudgePayload là các Java 21 Record bất biến trong algoprep-harness.",
+      "GoJudgePayloadAssembler hiện thực hóa việc chuyển đổi file và lệnh thực thi sang cấu trúc REST payload của Go-Judge."
     ]
   }
 }

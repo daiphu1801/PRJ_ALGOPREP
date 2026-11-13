@@ -39,7 +39,7 @@
 | Đường dẫn | `/classes/{classId}` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`) |
-| Phiên bản | V0.1 |
+| Phiên bản | V0.2 |
 | Người tạo | Claude |
 | Ngày tạo | 2026/10/23 |
 | Người cập nhật | Claude |
@@ -52,6 +52,8 @@
 | Ver | Sheet bị sửa | Nội dung sửa | Ngày | Người sửa |
 | :--- | :--- | :--- | :--- | :--- |
 | V0.1 | Toàn bộ | Tạo mới theo mẫu 9 sheet sau khi dựng prototype (`DEC-2026-1023-student-class-screens`). Chốt: màn chỉ đọc; bài giao đã rút xuống vẫn hiện, làm mờ, nhãn "Đã rút xuống", không bấm được (đề xuất RD Q1, theo `INS0202`); ba trường hợp lớp không tồn tại, không phải thành viên, đã rời lớp cùng một trạng thái "không tìm thấy"; tiến độ x/y tính khi đọc và y gồm cả bài đã rút. Căn REQ và Q theo RD `USR0702` (REQ-01 đến REQ-10; Q1 đến Q5 trùng RD, Q6 và Q7 là của BD). Chưa duyệt hình | 2026/10/23 | Claude |
+| V0.2 | Hiện trạng bản dựng | Sửa 2026-11-02 (task #12, nối FE với API thật). Màn gọi F1 #25B; `IDT-411` là "không tìm thấy lớp"; hai khối bài giao và tiến độ ẩn vì F2 chưa có. Không có câu hỏi mở mới. |
+| V0.3 | Hiện trạng bản dựng | Nối API thật của F2 (2026-11-06, F2-6 phần 2, **chưa duyệt hình**, chưa chạy trình duyệt với backend thật): Bảng bài được giao và tiến độ nối `#13A` (`GET /me/class-problems?classId&page`, 20 dòng mỗi trang): bài đã rút vẫn có dòng, gắn nhãn Đã rút xuống và không là liên kết; tiến độ lấy từ `meta` trên mọi trang, `solvedCount=null` thì chỉ hiện tổng, không vẽ thanh hay tỉ lệ; ba trạng thái Đã xong, Đang làm, Chưa làm. Lỗi đọc (`PRB-057`, `PRB-058`, `PRB-015`) chỉ ảnh hưởng khối bài, thông tin lớp vẫn hiện. USR0701 (thẻ lớp) chưa có tiến độ vì `meta` là tổng của một lần gọi, cần một lần gọi mỗi lớp. Không đổi RD, DTO hay endpoint | 2026/11/06 | Claude |
 
 ---
 

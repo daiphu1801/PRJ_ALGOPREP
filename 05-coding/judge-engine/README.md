@@ -1,5 +1,16 @@
 # go-judge — engine thực thi mã trong sandbox
 
+## Kiểm hồi quy bộ đọc số C++ (13/11/2026)
+
+Runtime FUNCTION_WRAPPER C++ kiểm grammar số bằng bộ quét ASCII, giữ conversion/range checks và output framing. Cách này giảm chi phí compile của regex template; không thay giới hạn compile10s hoặc `-O2`. Script dưới kiểm grammar độc lập, conversion/range/input lỗi và output budget trên engine thật, chỉ dùng dữ liệu tin cậy, tự dọn artifact của chính nó:
+
+```powershell
+# Từ root repo, engine toolchain đang chạy tại127.0.0.1:5050; dùng tên evidence mới.
+python 05-coding/judge-engine/verify-cpp-numeric.py 05-coding/backend/algoprep-harness/src/main/resources/harness-templates/cpp/runtime.txt 06-plan/reports/cpp-numeric-new-run.json
+```
+
+Không chạy probe đồng thời với benchmark tải. Bằng chứng và giới hạn của đợt tối ưu nằm tại [chẩn đoán F4](../../06-plan/reports/261113-f4-performance/diagnosis.md).
+
 Engine mặc định của AlgoPrep, chốt bởi `DEC-2026-0823-go-judge-default-engine`. Chi tiết kỹ thuật:
 `01-rd/system/SYS0401_judge_engine.md`.
 
@@ -15,18 +26,29 @@ mang field riêng của go-judge (`cmd[]`, `copyIn`) cũng không mang field ri�
 (`status.id`, token, webhook). Nhờ vậy `Judge0Adapter` vẫn cắm lại được sau này mà không đổi
 domain/application.
 
-## Trạng thái: chỉ có hạ tầng, chưa có adapter
+## Trạng thái hiện tại — D02c, 2026-11-01
+
+- Có Dockerfile toolchain OpenJDK 21/g++/Python và script tin cậy build-java.sh đóng toàn bộ
+  lớp Java vào classes.jar. Thư mục script được mount read-only trong sandbox qua /opt/mount.yaml.
+- Image local `algoprep-judge-toolchain:f3-20261101` đã được kiểm compile/cache/run bằng
+  go-judge thật trong container tạm. Probe: `python handoff/f3-toolchain-guard/probe.py` từ repo
+  root, sau NodeSourceRendererTest. Script tự tạo container loopback, dọn fileId rồi xóa container.
+- Từ 2026-11-07 (`DEC-2026-1107-go-judge-toolchain-image-in-compose`), service `algoprep-go-judge` trong `docker-compose.yml` build từ Dockerfile này và chạy image toolchain trên cổng 5050.
+- GoJudgeAdapter/F4 orchestration, P2 đầy đủ và round-trip bảng kiểu chưa có. Báo cáo:
+  `06-plan/reports/261101-1735-f3-toolchain-guard-nodes/report.md`.
+
+## Hạ tầng gốc và adapter còn thiếu
 
 | Có | Chưa có |
 | :--- | :--- |
-| Service `go-judge` trong `05-coding/docker-compose.yml` (image `criyle/go-judge:v1.12.3`) | `GoJudgeAdapter` — thuộc slice `judge-orchestration` |
+| Service `go-judge` trong `05-coding/docker-compose.yml` (image toolchain dẫn xuất từ `criyle/go-judge:v1.12.3`) | `GoJudgeAdapter` — thuộc slice `judge-orchestration` |
 | `privileged: true` và `shm_size` để `go-sandbox` tạo được namespace và đặt cgroup limit | Cấu hình biên dịch/chạy cho Java, C++, Python |
 | Endpoint `/version` dùng làm healthcheck | Ánh xạ kết quả engine sang value object của AlgoPrep (ACL) |
 
-Thư mục này được mount vào container tại `/opt/algoprep/judge-engine` (chỉ đọc). Nó **rỗng có chủ
-đích**: cấu hình biên dịch từng ngôn ngữ phụ thuộc `02-bd/architecture/F3_harness.md` và
-`03-dd/api/F4_judge-orchestration.md`, cả hai chưa tồn tại. Đặt sẵn một cấu hình đoán trước ở đây sẽ
-thành nợ mà không ai biết là nợ.
+Thư mục này được compose mount tại `/opt/algoprep/judge-engine` (chỉ đọc). Image riêng dùng
+script tại `/opt/algoprep/build-java.sh`; mount thư mục source qua compose không tự cài toolchain
+hoặc đưa script đúng vị trí. DD F3/F4 hiện đã có; phần “chưa có DD/thư mục rỗng” của mốc base cũ
+đã hết hiệu lực. Những kết quả 2026-09-01 dưới đây là lịch sử của image gốc.
 
 ## Kết quả kiểm thực nghiệm 2026-09-01
 

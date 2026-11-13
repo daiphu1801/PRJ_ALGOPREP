@@ -1,15 +1,13 @@
-// PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
-//
 // "Thêm tài khoản" (ADM0201 Q1, DEC-2026-1001-admin-configurable-settings): ADMIN creates an
-// INSTRUCTOR or STUDENT account by hand; the temporary password goes out by email. No endpoint yet,
-// so the screen adds the row locally and toasts that the email was "sent".
+// INSTRUCTOR or STUDENT account by hand; the temporary password goes out by email (#50). The screen
+// does the call; the dialog closes only when it succeeds and keeps the input when it fails.
 "use client";
 
 import { useState } from "react";
 import { useT } from "@/shared/i18n";
 import { toast, toastFirstError } from "@/shared/lib/toast-store";
 import { Button, Modal, SelectField, TextField } from "@/shared/ui";
-import type { AdminUser, AdminUserRole } from "../model/types";
+import type { AdminUserRole } from "../model/types";
 
 type CreatableRole = Exclude<AdminUserRole, "admin">;
 
@@ -17,7 +15,11 @@ type Props = {
   open: boolean;
   onClose: () => void;
   existingEmails: ReadonlySet<string>;
-  onCreate: (user: AdminUser) => void;
+  onCreate: (input: {
+    name: string;
+    email: string;
+    role: CreatableRole;
+  }) => Promise<void>;
 };
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -50,21 +52,17 @@ export function AddAccountDialog({
     onClose();
   }
 
-  function submit() {
+  async function submit() {
     setTouched(true);
     if (nameError || emailError) {
       toastFirstError([nameError, emailError]);
       return;
     }
-    onCreate({
-      name: name.trim(),
-      email: normalized,
-      role,
-      solvedCount: 0,
-      submissionCount: 0,
-      lastActiveLabel: "-",
-      status: "pending",
-    });
+    try {
+      await onCreate({ name: name.trim(), email: normalized, role });
+    } catch {
+      return; // the screen already showed why; keep the input so it can be fixed
+    }
     toast.success(t("addDialog.createdBody", { email: normalized }));
     close();
   }
@@ -84,7 +82,7 @@ export function AddAccountDialog({
           >
             {t("cancel")}
           </Button>
-          <Button variant="cta" size="sm" onClick={submit}>
+          <Button variant="cta" size="sm" onClick={() => void submit()}>
             {t("addDialog.submit")}
           </Button>
         </>

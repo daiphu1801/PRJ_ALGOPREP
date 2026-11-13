@@ -9,7 +9,7 @@
 // 1 to 3 dimensions for arrays). No nested type picker yet (BD Q10).
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import {
   CONTAINER_KINDS,
@@ -24,6 +24,7 @@ import {
   exceedsSchema,
   renderSignature,
   signatureIssues,
+  useSignaturePreview,
   type FunctionSignature,
   type MatchingStrategy,
   type ProblemSpec,
@@ -31,13 +32,15 @@ import {
   type SpecType,
   type TypeKind,
 } from "@/entities/problem";
-import { useT } from "@/shared/i18n";
+import { ApiError, isMockMode } from "@/shared/api";
+import { useApiErrorMessage, useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
 import {
   Button,
   Card,
   IconAction,
   NoticeTile,
+  SegmentedTabs,
   SelectField,
   TextArea,
   TextField,
@@ -58,6 +61,35 @@ export function SpecEditor({ spec, onChange }: Props) {
   const t = useT("problemAuthoring");
   const { signature } = spec;
   const issues = signatureIssues(signature);
+  const [language, setLanguage] = useState<SpecLanguage>("java");
+  const preview = useSignaturePreview(signature, spec);
+  const apiMessage = useApiErrorMessage();
+  const notifiedError = useRef<unknown>(null);
+  useEffect(() => {
+    if (preview.error && notifiedError.current !== preview.error) {
+      toast.error(apiMessage(preview.error));
+    }
+    notifiedError.current = preview.error;
+  }, [preview.error, apiMessage]);
+  const previewActive = !isMockMode() && signature.functionName.trim() !== "";
+  const paths =
+    preview.error instanceof ApiError &&
+    preview.error.code === "HRN-060" &&
+    Array.isArray(preview.error.details?.violations)
+      ? preview.error.details.violations.flatMap((item: unknown) =>
+          item &&
+          typeof item === "object" &&
+          "path" in item &&
+          typeof item.path === "string"
+            ? [item.path]
+            : [],
+        )
+      : [];
+  const serverInvalid = (path: string) => paths.includes(path);
+  const unsupported =
+    preview.data?.wrapperSupported === false
+      ? (preview.data.unsupportedReasons ?? [])
+      : [];
 
   const patch = (changes: Partial<ProblemSpec>) =>
     onChange({ ...spec, ...changes });
@@ -92,7 +124,7 @@ export function SpecEditor({ spec, onChange }: Props) {
 
   return (
     <div className="flex flex-col gap-3.5">
-      {exceedsSchema(spec) ? (
+      {exceedsSchema(spec) && preview.data?.wrapperSupported !== false ? (
         <NoticeTile tone="warn" title={t("spec.wrapperUnsupportedTitle")}>
           {t("spec.wrapperUnsupportedBody")}
         </NoticeTile>
@@ -109,7 +141,9 @@ export function SpecEditor({ spec, onChange }: Props) {
             onChange={(event) =>
               patchSignature({ functionName: event.target.value })
             }
-            invalid={issues.includes("functionName")}
+            invalid={
+              issues.includes("functionName") || serverInvalid("/functionName")
+            }
             className="font-mono"
           />
           <TypeField
@@ -117,13 +151,17 @@ export function SpecEditor({ spec, onChange }: Props) {
             value={signature.returnType}
             onChange={setReturnType}
             invalid={issues.includes("returnType")}
+            serverPaths={paths}
+            path="/returnType"
           />
         </div>
 
         <p className="mt-3 mb-1.5 text-[11px] font-semibold tracking-[0.07em] text-[var(--color-text-subtle)] uppercase">
           {t("spec.parameters")}
         </p>
-        <ul className="flex flex-col gap-2">
+        <ul
+          className={`flex flex-col gap-2 ${serverInvalid("/parameters") ? "rounded border border-[var(--color-danger)] p-2" : ""}`}
+        >
           {signature.parameters.map((parameter, index) => (
             <li
               key={parameter.id}
@@ -143,7 +181,8 @@ export function SpecEditor({ spec, onChange }: Props) {
                 }
                 invalid={
                   issues.includes(`parameterName:${parameter.id}`) ||
-                  issues.includes(`parameterDuplicate:${parameter.id}`)
+                  issues.includes(`parameterDuplicate:${parameter.id}`) ||
+                  serverInvalid(`/parameters/${index}/name`)
                 }
                 className="font-mono"
               />
@@ -158,6 +197,8 @@ export function SpecEditor({ spec, onChange }: Props) {
                   })
                 }
                 invalid={issues.includes(`parameterType:${parameter.id}`)}
+                serverPaths={paths}
+                path={`/parameters/${index}/type`}
               />
               <IconAction
                 icon={Trash2}
@@ -193,48 +234,109 @@ export function SpecEditor({ spec, onChange }: Props) {
       </Card>
 
       <Card title={t("spec.stubTitle")} description={t("spec.stubSubtitle")}>
+        <SegmentedTabs
+          label={t("spec.preview.languages")}
+          value={language}
+          onValueChange={setLanguage}
+          options={SPEC_LANGUAGES.map((value) => ({
+            value,
+            label: t(`spec.language.${value}`),
+          }))}
+          className="mb-3"
+        />
+        {previewActive && preview.rateLimited ? (
+          <p
+            role="status"
+            className="mb-3 text-sm text-[var(--color-text-muted)]"
+          >
+            {t("spec.preview.rateLimited", {
+              seconds: preview.retryAfterSeconds,
+            })}
+          </p>
+        ) : null}
+        {previewActive &&
+        !preview.rateLimited &&
+        (preview.debouncing || preview.isFetching) ? (
+          <p
+            role="status"
+            className="mb-3 text-sm text-[var(--color-text-muted)]"
+          >
+            {t("spec.preview.loading")}
+          </p>
+        ) : null}
+        {unsupported.length > 0 ? (
+          <NoticeTile tone="warn" title={t("spec.wrapperUnsupportedTitle")}>
+            <span className="block">
+              {unsupported.map((reason, index) => (
+                <span
+                  className="block"
+                  key={`${reason.code}:${reason.path}:${index}`}
+                >
+                  {t(
+                    /^HRN-V0[1-7]$/.test(reason.code)
+                      ? `spec.preview.reasons.${reason.code}`
+                      : "spec.preview.unsupported",
+                  )}
+                </span>
+              ))}
+            </span>
+          </NoticeTile>
+        ) : null}
         <ul className="flex flex-col gap-2.5">
-          {SPEC_LANGUAGES.map((language) => (
-            <li
-              key={language}
-              aria-label={t(`spec.language.${language}`)}
-              className="glass-surface grid items-center gap-2.5 rounded-2xl border border-[var(--color-border)] px-3.5 py-3 md:grid-cols-[minmax(0,1fr)_14rem]"
-            >
-              <div className="min-w-0">
-                <div className="mb-1.5 flex items-center gap-2">
-                  <span
-                    aria-hidden="true"
-                    className={`flex h-6 min-w-6 items-center justify-center rounded-lg px-1.5 font-mono text-[11px] font-semibold ${LANGUAGE_CHIP[language]}`}
-                  >
-                    {t(`spec.languageShort.${language}`)}
-                  </span>
-                  <span className="text-[13px] font-semibold">
-                    {t(`spec.language.${language}`)}
-                  </span>
+          {SPEC_LANGUAGES.filter((value) => value === language).map(
+            (language) => (
+              <li
+                key={language}
+                aria-label={t(`spec.language.${language}`)}
+                className="glass-surface grid items-center gap-2.5 rounded-2xl border border-[var(--color-border)] px-3.5 py-3 md:grid-cols-[minmax(0,1fr)_14rem]"
+              >
+                <div className="min-w-0">
+                  <div className="mb-1.5 flex items-center gap-2">
+                    <span
+                      aria-hidden="true"
+                      className={`flex h-6 min-w-6 items-center justify-center rounded-lg px-1.5 font-mono text-[11px] font-semibold ${LANGUAGE_CHIP[language]}`}
+                    >
+                      {t(`spec.languageShort.${language}`)}
+                    </span>
+                    <span className="text-[13px] font-semibold">
+                      {t(`spec.language.${language}`)}
+                    </span>
+                  </div>
+                  <code className="block overflow-x-auto font-mono text-[12.5px] whitespace-pre">
+                    {isMockMode() ? (
+                      renderSignature(signature, language)
+                    ) : (
+                      <ServerSignature
+                        signature={signature}
+                        language={language}
+                        preview={preview}
+                      />
+                    )}
+                  </code>
                 </div>
-                <code className="block overflow-x-auto font-mono text-[12.5px] whitespace-pre">
-                  {renderSignature(signature, language)}
-                </code>
-              </div>
-              <TextField
-                label={t("spec.overrideName", {
-                  language: t(`spec.language.${language}`),
-                })}
-                placeholder={derivedName(signature.functionName, language)}
-                value={signature.nameOverrides[language] ?? ""}
-                onChange={(event) =>
-                  patchSignature({
-                    nameOverrides: {
-                      ...signature.nameOverrides,
-                      [language]: event.target.value,
-                    },
-                  })
-                }
-                invalid={issues.includes(`override:${language}`)}
-                className="font-mono"
-              />
-            </li>
-          ))}
+                <TextField
+                  label={t("spec.overrideName", {
+                    language: t(`spec.language.${language}`),
+                  })}
+                  placeholder={derivedName(signature.functionName, language)}
+                  value={signature.nameOverrides[language] ?? ""}
+                  onChange={(event) =>
+                    patchSignature({
+                      nameOverrides: {
+                        ...signature.nameOverrides,
+                        [language]: event.target.value,
+                      },
+                    })
+                  }
+                  invalid={
+                    issues.includes(`override:${language}`) ||
+                    serverInvalid(`/nameOverrides/${language.toUpperCase()}`)
+                  }
+                  className="font-mono"
+                />
+              </li>
+            ),
+          )}
         </ul>
       </Card>
 
@@ -264,6 +366,7 @@ export function SpecEditor({ spec, onChange }: Props) {
         <div className="grid items-start gap-3 md:grid-cols-2">
           <SelectField
             label={t("spec.matchingStrategy")}
+            aria-invalid={serverInvalid("/matchingStrategy") || undefined}
             value={spec.matchingStrategy}
             onChange={(event) =>
               setStrategy(event.target.value as MatchingStrategy)
@@ -281,7 +384,7 @@ export function SpecEditor({ spec, onChange }: Props) {
               inputMode="decimal"
               value={spec.epsilon}
               onChange={(event) => patch({ epsilon: event.target.value })}
-              invalid={!epsilonValid(spec)}
+              invalid={!epsilonValid(spec) || serverInvalid("/epsilonValue")}
               className="font-mono"
             />
           ) : null}
@@ -306,6 +409,8 @@ function TypeField({
   invalid,
   kinds = TYPE_KINDS,
   level = 1,
+  serverPaths = [],
+  path = "",
 }: {
   label: string;
   value: SpecType;
@@ -313,6 +418,8 @@ function TypeField({
   invalid: boolean;
   kinds?: TypeKind[];
   level?: number;
+  serverPaths?: string[];
+  path?: string;
 }) {
   const t = useT("problemAuthoring");
   const container = CONTAINER_KINDS.includes(value.kind);
@@ -330,13 +437,20 @@ function TypeField({
             value: kind,
             label: t(`spec.kind.${kind}`),
           }))}
-          aria-invalid={invalid || undefined}
+          aria-invalid={invalid || serverPaths.includes(path) || undefined}
           wrapperClassName="min-w-[9rem] flex-1"
-          className={invalid ? "border-[var(--color-danger)]" : undefined}
+          className={
+            invalid || serverPaths.includes(path)
+              ? "border-[var(--color-danger)]"
+              : undefined
+          }
         />
         {value.kind === "ARRAY" ? (
           <SelectField
             label={t("spec.dimensions", { type: label })}
+            aria-invalid={
+              serverPaths.includes(`${path}/dimensions`) || undefined
+            }
             hideLabel
             value={String(value.dimensions ?? 1)}
             onChange={(event) =>
@@ -350,6 +464,11 @@ function TypeField({
           />
         ) : null}
       </div>
+      {value.rawType ? (
+        <p className="text-xs text-[var(--color-text-muted)]">
+          {t("unsupportedSignatureType", { kind: value.rawType.kind })}
+        </p>
+      ) : null}
       {container ? (
         <div className="border-l-2 border-[var(--color-border)] pl-3">
           <TypeField
@@ -359,9 +478,34 @@ function TypeField({
             invalid={false}
             kinds={elementKinds(value.kind, level)}
             level={level + 1}
+            serverPaths={serverPaths}
+            path={`${path}/of`}
           />
         </div>
       ) : null}
     </div>
+  );
+}
+
+/**
+ * The declaration the starter code will have, read from the server (F3 P6) so it cannot drift from
+ * the harness. The local sketch shows only while the answer is loading, for an undeclared signature
+ * and when the call fails. A declaration the server answers with null (a type outside the schema)
+ * stays empty: no signature is invented (DD SHR0202 BR-SC-05).
+ */
+function ServerSignature({
+  signature,
+  language,
+  preview,
+}: {
+  signature: FunctionSignature;
+  language: SpecLanguage;
+  preview: ReturnType<typeof useSignaturePreview>;
+}) {
+  if (preview.error instanceof ApiError && preview.error.code === "HRN-060")
+    return null;
+  if (!preview.data) return <>{renderSignature(signature, language)}</>;
+  return (
+    <>{preview.data.declarations[language.toUpperCase() as "JAVA"] ?? ""}</>
   );
 }

@@ -17,22 +17,22 @@
         "role": "actor"
       },
       {
-        "name": "InterviewController",
+        "name": "InterviewSessionController",
         "role": "controller",
-        "stereo": "presentation"
+        "stereo": "presentation REST"
       },
       {
-        "name": "CompleteInterviewCmd",
+        "name": "CompleteInterviewSessionCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "InterviewRepo",
+        "name": "InterviewSessionRepository",
         "role": "repository",
         "stereo": "output port F5"
       },
       {
-        "name": "AiDbAdapter",
+        "name": "JdbcInterviewSessionRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -62,44 +62,44 @@
       },
       {
         "from": "Sinh viên",
-        "to": "InterviewController",
+        "to": "InterviewSessionController",
         "text": "Yêu cầu kết thúc và chấm"
       },
       {
-        "from": "InterviewController",
-        "to": "CompleteInterviewCmd",
+        "from": "InterviewSessionController",
+        "to": "CompleteInterviewSessionCommandHandler",
         "text": "Kiểm chủ phiên và trạng thái"
       },
       {
-        "from": "CompleteInterviewCmd",
-        "to": "InterviewRepo",
+        "from": "CompleteInterviewSessionCommandHandler",
+        "to": "InterviewSessionRepository",
         "text": "Đọc phiên cùng toàn bộ hội thoại"
       },
       {
-        "from": "InterviewRepo",
-        "to": "AiDbAdapter",
+        "from": "InterviewSessionRepository",
+        "to": "JdbcInterviewSessionRepository",
         "text": "Tra lượt và bảng điểm đã có"
       },
       {
-        "from": "AiDbAdapter",
+        "from": "JdbcInterviewSessionRepository",
         "to": "PostgreSQL",
         "text": "Đọc phiên và lịch sử hỏi đáp"
       },
       {
         "from": "PostgreSQL",
-        "to": "AiDbAdapter",
+        "to": "JdbcInterviewSessionRepository",
         "text": "Hội thoại và điểm nếu đã chấm",
         "kind": "return"
       },
       {
-        "from": "AiDbAdapter",
-        "to": "InterviewRepo",
+        "from": "JdbcInterviewSessionRepository",
+        "to": "InterviewSessionRepository",
         "text": "Kết quả tra cứu",
         "kind": "return"
       },
       {
-        "from": "InterviewRepo",
-        "to": "CompleteInterviewCmd",
+        "from": "InterviewSessionRepository",
+        "to": "CompleteInterviewSessionCommandHandler",
         "text": "Phiên cần chấm hoặc đã hoàn tất",
         "kind": "return"
       },
@@ -108,20 +108,20 @@
           "label": "Đã có bảng điểm?",
           "then": [
             {
-              "from": "CompleteInterviewCmd",
-              "to": "InterviewController",
+              "from": "CompleteInterviewSessionCommandHandler",
+              "to": "InterviewSessionController",
               "text": "Trả bảng điểm đã lưu",
               "kind": "return"
             }
           ],
           "else": [
             {
-              "from": "CompleteInterviewCmd",
-              "to": "CompleteInterviewCmd",
+              "from": "CompleteInterviewSessionCommandHandler",
+              "to": "CompleteInterviewSessionCommandHandler",
               "text": "Kiểm đã có ít nhất một lượt trả lời"
             },
             {
-              "from": "CompleteInterviewCmd",
+              "from": "CompleteInterviewSessionCommandHandler",
               "to": "LlmProviderPort",
               "text": "Xin đánh giá bốn tiêu chí"
             },
@@ -149,51 +149,51 @@
             },
             {
               "from": "LlmProviderPort",
-              "to": "CompleteInterviewCmd",
+              "to": "CompleteInterviewSessionCommandHandler",
               "text": "Bảng điểm và lượng token",
               "kind": "return"
             },
             {
-              "from": "CompleteInterviewCmd",
-              "to": "CompleteInterviewCmd",
+              "from": "CompleteInterviewSessionCommandHandler",
+              "to": "CompleteInterviewSessionCommandHandler",
               "text": "Kiểm đủ bốn tiêu chí và mức điểm"
             },
             {
-              "from": "CompleteInterviewCmd",
-              "to": "InterviewRepo",
+              "from": "CompleteInterviewSessionCommandHandler",
+              "to": "InterviewSessionRepository",
               "text": "Lưu điểm, đóng phiên và sự kiện"
             },
             {
-              "from": "InterviewRepo",
-              "to": "AiDbAdapter",
+              "from": "InterviewSessionRepository",
+              "to": "JdbcInterviewSessionRepository",
               "text": "Ghi bốn điểm và token"
             },
             {
-              "from": "AiDbAdapter",
+              "from": "JdbcInterviewSessionRepository",
               "to": "PostgreSQL",
               "text": "Lưu phiên hoàn tất và sự kiện"
             },
             {
               "from": "PostgreSQL",
-              "to": "AiDbAdapter",
+              "to": "JdbcInterviewSessionRepository",
               "text": "Bảng điểm đã lưu",
               "kind": "return"
             },
             {
-              "from": "AiDbAdapter",
-              "to": "InterviewRepo",
+              "from": "JdbcInterviewSessionRepository",
+              "to": "InterviewSessionRepository",
               "text": "Kết quả hoàn tất",
               "kind": "return"
             },
             {
-              "from": "InterviewRepo",
-              "to": "CompleteInterviewCmd",
+              "from": "InterviewSessionRepository",
+              "to": "CompleteInterviewSessionCommandHandler",
               "text": "Bảng điểm tham khảo",
               "kind": "return"
             },
             {
-              "from": "CompleteInterviewCmd",
-              "to": "InterviewController",
+              "from": "CompleteInterviewSessionCommandHandler",
+              "to": "InterviewSessionController",
               "text": "Trả bảng điểm tham khảo",
               "kind": "return"
             }
@@ -201,7 +201,7 @@
         }
       },
       {
-        "from": "InterviewController",
+        "from": "InterviewSessionController",
         "to": "Sinh viên",
         "text": "Hiển thị đánh giá hỗ trợ học tập",
         "kind": "return"

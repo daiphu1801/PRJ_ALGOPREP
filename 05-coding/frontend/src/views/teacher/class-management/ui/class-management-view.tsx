@@ -1,4 +1,6 @@
-// PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
+// PROTOTYPE with a real API behind it (task 12, 03-dd/api/F1_identity.md #19 to #22); see
+// 06-plan/PROTOTYPE_DEBT.md. In real mode the completion, average and absent columns are hidden: they
+// need F4 metrics (#56, not built) and no screen shows an invented number.
 //
 // CLASS management only — restructured 2026-09-27 (owner: "1 pages quản lý lớp học, 1 pages quản
 // lý danh sách học viên"). The "Danh sách học viên" table the mockup puts here (:159-188) moved to
@@ -25,13 +27,13 @@ import { Eye, Pencil, Trash2 } from "lucide-react";
 import {
   useCreateClass,
   useDeleteClass,
-  useInstructorClasses,
+  useInstructorClassSummary,
   formatClassSchedule,
   useUpdateClass,
   type ClassSummary,
 } from "@/entities/class";
 import { ClassFormDialog, type ClassDialogState } from "@/features/edit-class";
-import { useT } from "@/shared/i18n";
+import { useApiErrorMessage, useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
 import {
   Button,
@@ -47,7 +49,8 @@ import {
 
 export function ClassManagementView() {
   const t = useT("classManagement");
-  const classesQuery = useInstructorClasses();
+  const toMessage = useApiErrorMessage();
+  const classesQuery = useInstructorClassSummary();
   const classes = useMemo(() => classesQuery.data ?? [], [classesQuery.data]);
 
   const [formDialog, setFormDialog] = useState<ClassDialogState>(null);
@@ -68,6 +71,39 @@ export function ClassManagementView() {
   }, [classes, search]);
 
   const totalStudents = classes.reduce((sum, c) => sum + c.studentCount, 0);
+  const hasMetrics = classes.some((c) => c.absentCount !== undefined);
+
+  const metricColumns: DataTableColumn<ClassSummary>[] = [
+    {
+      key: "completion",
+      header: t("classList.col.completionBar"),
+      render: (klass) => (
+        <span className="flex min-w-[120px] items-center gap-2">
+          <ProgressBar
+            fill="var(--instructor-progress-fill, var(--color-admin-teal))"
+            value={klass.completionPct ?? 0}
+            label={t("classList.col.completionBar")}
+            className="flex-1"
+          />
+          <span className="w-9 text-right text-[12.5px] text-[var(--color-text-muted)]">
+            {klass.completionPct == null ? "-" : `${klass.completionPct}%`}
+          </span>
+        </span>
+      ),
+    },
+    {
+      key: "avgScore",
+      header: t("classList.col.avgScore"),
+      align: "right",
+      render: (klass) => klass.avgScore?.toFixed(1) ?? "-",
+    },
+    {
+      key: "absentCount",
+      header: t("classList.col.absentCount"),
+      align: "right",
+      render: (klass) => klass.absentCount ?? 0,
+    },
+  ];
 
   const columns: DataTableColumn<ClassSummary>[] = [
     {
@@ -97,35 +133,7 @@ export function ClassManagementView() {
         <span className="font-mono">{klass.studentCount}</span>
       ),
     },
-    {
-      key: "completion",
-      header: t("classList.col.completionBar"),
-      render: (klass) => (
-        <span className="flex min-w-[120px] items-center gap-2">
-          <ProgressBar
-            fill="var(--instructor-progress-fill, var(--color-admin-teal))"
-            value={klass.completionPct}
-            label={t("classList.col.completionBar")}
-            className="flex-1"
-          />
-          <span className="w-9 text-right text-[12.5px] text-[var(--color-text-muted)]">
-            {klass.completionPct}%
-          </span>
-        </span>
-      ),
-    },
-    {
-      key: "avgScore",
-      header: t("classList.col.avgScore"),
-      align: "right",
-      render: (klass) => klass.avgScore ?? "-",
-    },
-    {
-      key: "absentCount",
-      header: t("classList.col.absentCount"),
-      align: "right",
-      render: (klass) => klass.absentCount,
-    },
+    ...(hasMetrics ? metricColumns : []),
     {
       key: "actions",
       header: "",
@@ -219,27 +227,24 @@ export function ClassManagementView() {
         }
         dialog={formDialog}
         onClose={() => setFormDialog(null)}
-        onSubmit={(form) => {
-          const onError = () => toast.error(t("toast.failed"));
-          if (formDialog?.mode === "edit") {
-            updateClass.mutate(
-              { id: formDialog.target.id, form },
-              {
-                onSuccess: () =>
-                  toast.success(t("toast.updated", { name: form.name })),
-                onError,
-              },
-            );
-          } else {
-            createClass.mutate(form, {
-              onSuccess: (created) => {
-                toast.success(t("toast.created", { name: form.name }));
-                router.push(`/instructor/classes/${created.id}`);
-              },
-              onError,
-            });
+        onSubmit={async (form) => {
+          try {
+            if (formDialog?.mode === "edit") {
+              await updateClass.mutateAsync({
+                id: formDialog.target.id,
+                form,
+              });
+              toast.success(t("toast.updated", { name: form.name }));
+            } else {
+              const created = await createClass.mutateAsync(form);
+              toast.success(t("toast.created", { name: form.name }));
+              router.push(`/instructor/classes/${created.id}`);
+            }
+          } catch (error) {
+            // The dialog stays open with what was typed; the reason comes from the error code.
+            toast.error(toMessage(error));
+            throw error;
           }
-          setFormDialog(null);
         }}
         t={t}
       />
@@ -252,7 +257,7 @@ export function ClassManagementView() {
             const name = deleteTarget.name;
             deleteClass.mutate(deleteTarget.id, {
               onSuccess: () => toast.success(t("toast.deleted", { name })),
-              onError: () => toast.error(t("toast.failed")),
+              onError: (error) => toast.error(toMessage(error)),
             });
           }
           setDeleteTarget(null);

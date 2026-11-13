@@ -7,7 +7,7 @@
 | Actor, route | A3 `ADMIN`; `/admin/users` |
 | Nguồn | `01-rd/screens/admin/ADM0201_user_management.md`; `02-bd/screens/admin/ADM0201_user_management.md` Sheet 1–9; [F1](../../api/F1_identity.md) §0.5–0.6 |
 | Prototype | `05-coding/frontend/src/views/admin/user-management/ui/admin-user-management-view.tsx` |
-| Phiên bản | V0.1, 2026-10-25; DD màn, Mode B |
+| Phiên bản | V0.2, 2026-11-02 (nối API thật, task #12); V0.1, 2026-10-25; DD màn, Mode B |
 
 ## 1. Bản đồ slice FSD
 
@@ -16,19 +16,29 @@
 | app | `app/(admin)/admin/users/page.tsx` | Gắn view, actor A3 |
 | views | `views/admin/user-management/ui/` | Bảng và popup đổi vai trò/khoá/mở khoá/thêm tài khoản |
 | features | `features/manage-users/` | Chọn dòng, lệnh N tài khoản, tổng hợp thành công một phần |
-| entities | `entities/user/api/queries.ts`, `mutations.ts`; `entities/role/api/queries.ts` | F1 #32, #35–38, #50 |
+| views (api) | `views/admin/user-management/api/` (không tách sang `entities`, xem mục 2) | F1 #32, #35–38, #50 |
 | shared | `DataTable`, `ConfirmDialog`, `ErrorState`, `toast` | Dùng chung, dialog trả focus |
 
 ## 2. API tiêu thụ
 
 | EVT BD | API | Hành vi màn |
 | :--- | :--- | :--- |
-| 1–7 tìm/lọc/trang | F1 #35 `GET /admin/users`; #32 `GET /rbac/roles` cho popup; #62 `GET /admin/users/management-stats`, #63 `GET /admin/users/role-distribution` | Danh sách phân trang server, hai khối phụ độc lập, bộ lọc trong URL |
+| 1–7 tìm/lọc/trang | F1 #35 `GET /admin/users`; #32 `GET /rbac/roles` cho popup; #62 `GET /admin/users/management-stats`, #63 `GET /admin/users/role-distribution` | Danh sách phân trang server, hai khối phụ độc lập, bộ lọc trong state của view |
 | 8–9 đặt lại mật khẩu | F1 #38 `POST /admin/users/{userId}/reset-password` | Một tài khoản; chỉ sau xác nhận |
 | 10–11 đổi role | F1 #36 `PATCH /admin/users/{userId}/role` | Một tài khoản; sau thành công tải lại role distribution |
 | 12–13 khoá, 19–20 mở khoá | F1 #37 `PATCH /admin/users/{userId}/status` | N lệnh đơn; tổng hợp thành công/thất bại theo từng ID |
 | 15, 17, 18 thêm tài khoản | F1 #50 `POST /admin/users` | Server sinh mật khẩu tạm, UI không nhận mật khẩu |
 | 16 | Không gọi API | Mở `/admin/system-log` |
+
+**Triển khai 2026-11-02 (task #12, `DEC-2026-1102-admin-user-management-contracts`).** Màn đã nối API thật ở chế độ `NEXT_PUBLIC_MOCK_DATA=false`; chế độ mock giữ nguyên.
+- **Vị trí mã.** Giữ trong `views/admin/user-management/api/` như mọi màn Admin khác đang đặt (bản đồ slice mục 1 ghi `entities/user` và `entities/role` là dự kiến của DD V0.1); không tách vì chưa có màn thứ hai dùng chung (ponytail bậc 4). Gồm: `real-user-management.ts` (gọi #35, #62, #63, #9, #32, #36–38, #50 và ánh xạ DTO), `queries.ts` (`useAdminUserPage(params)`), `mutations.ts` (`useAdminUserActions`).
+- **Một truy vấn cho trang.** `realFetchAdminUserPage` gọi song song #35, #62, #63 và `GET /me/profile` (để biết email quản trị viên đang thao tác, phục vụ luật tự khoá); khoá truy vấn gồm bộ lọc và số trang, giữ dữ liệu cũ trong lúc tải trang mới nên gõ tìm kiếm không làm trống bảng. Từ khoá tìm gửi lên sau 300 ms ngừng gõ.
+- **Bộ lọc, từ khoá và số trang nằm trong state của view**, không nằm trong URL như dòng EVT 1–7 của bảng trên từng viết. Đóng bằng tiêu chí ponytail bậc 3 (không có người dùng nào mở lại màn bằng đường dẫn có bộ lọc trong buổi demo hoặc bảo vệ) và bậc 1 (RD không đòi); sửa dòng EVT 1–7 cho khớp.
+- **Hành động.** Đổi vai trò, khoá, mở khoá, đặt lại mật khẩu và tạo tài khoản đều chờ máy chủ trả lời rồi mới đổi dòng trên màn; thành công thì làm mới danh sách và hai khối thống kê. Khoá và mở khoá hàng loạt là N lệnh đơn chạy song song, một lệnh lỗi không dừng các lệnh khác; toast báo số lệnh thành công và số lệnh lỗi kèm lý do của lệnh lỗi đầu tiên (`batchFailed`). Khi quản trị viên tự khoá hoặc tự hạ vai trò, màn gửi `acknowledgeSelfImpact: true` vì hộp thoại đã hỏi xác nhận.
+- **Vai trò đích.** Màn chỉ có ba vai trò gốc; `GET /rbac/roles` được gọi lúc thao tác để đổi `student`, `instructor`, `admin` thành id của role hệ thống cùng mã (BD Sheet 7.1 NO 12 dùng `roleId`).
+- **Không hiển thị số bịa.** Cột "Hoạt động" lấy từ `lastActiveAt` của #35 (bổ sung 2026-11-02): thời gian tương đối theo ngôn ngữ giao diện ("5 phút trước", "Hôm qua"), quá 30 ngày thì hiện ngày theo UTC+7, tài khoản chưa đăng nhập hiện "-". Cột "Đã giải" và "Lượt nộp" chỉ xuất hiện khi dòng dữ liệu có các trường đó (chế độ mock); với API thật hai cột này ẩn đến khi F4 có read model (nợ D04).
+- **Mã lỗi** hiển thị qua `apiErrors` (vi và en): `IDT-432`, `IDT-440`, `IDT-441`, `IDT-445`, `IDT-448`, `IDT-450`, `IDT-V17`, `IDT-V21`, `IDT-V26`.
+- Kiểm chứng: `pnpm check` 123 file, 688 test; `e2e/admin-users-real.spec.ts` 5 kịch bản trên backend và frontend thật (chạy tay bằng Playwright, không phải `pnpm e2e` mặc định).
 
 Hai khối thống kê/phân bố dùng F1 #62–63; không tính từ một trang 20 dòng. EVT-14 đóng popup không gửi API.
 
@@ -83,3 +93,8 @@ Dùng `adminUserManagement.*`, `apiError.IDT-*`. Checkbox chọn tất cả ch�
 ## 8. Nợ prototype và câu hỏi mở
 
 Prototype còn mock và email/role seed, cần nối F1 #32, #35–38, #50, #62–63. Hai endpoint đọc tổng hợp đã được bổ sung vào F1 để không đếm từ trang hiện tại. Các hành động gộp dùng N lệnh đơn #37; không tự tạo bulk endpoint. TDD màn đã có tại `04-tdd/screens/admin/ADM0201_user_management.md`.
+
+## Cập nhật 2026-11-07 (nối API thật)
+
+API tiêu thụ: `GET /api/v1/identity/admin/users` (#35) trả thêm `solvedCount` và `totalSubmissions`; mapper `toAdminUser` điền `solvedCount`, `submissionCount`, nên hai cột hiện với API thật.
+

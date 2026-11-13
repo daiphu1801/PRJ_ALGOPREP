@@ -4,7 +4,8 @@
 // dirty flag and Save button per Sheet 5 Khu vực E NO 3.
 "use client";
 
-import { useT } from "@/shared/i18n";
+import { ApiError } from "@/shared/api/api-error";
+import { useApiErrorMessage, useT } from "@/shared/i18n";
 import { useUnsavedChangesGuard } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
 import {
@@ -105,6 +106,7 @@ function Body({
     !interviewDegraded,
   );
   const leaveGuard = useUnsavedChangesGuard(dirty);
+  const apiMessage = useApiErrorMessage();
 
   // Saved language switched off by an admin: show the first enabled one (BD Q4). Display only (D35):
   // the draft keeps the stored value and nothing is written until the learner picks a language.
@@ -118,10 +120,14 @@ function Body({
   // BD Q11 (closed 2026-10-18): the button writes to two modules, each group reports its own result.
   async function handleSave(): Promise<boolean> {
     try {
-      const { settingsOk, interviewOk } = await save();
+      const { settingsOk, settingsError, interviewOk } = await save();
+      const failedText =
+        settingsError instanceof ApiError
+          ? apiMessage(settingsError)
+          : t("saveBar.saveFailed");
       if (interviewOk === null) {
         if (settingsOk) toast.success(t("saveBar.saved"));
-        else toast.error(t("saveBar.saveFailed"));
+        else toast.error(failedText);
         return settingsOk;
       }
       if (settingsOk && interviewOk) {
@@ -129,7 +135,7 @@ function Body({
         return true;
       }
       if (settingsOk) toast.success(t("saveBar.savedSettings"));
-      else toast.error(t("saveBar.saveFailed"));
+      else toast.error(failedText);
       if (interviewOk) toast.success(t("interview.saved"));
       else toast.warning(t("interview.saveFailedWarning"));
       return settingsOk && interviewOk;

@@ -198,7 +198,7 @@ Bảng 5.1: Ánh xạ zod và V2.
 | `status` | `z.enum(["solved","attempted","todo"]).optional().catch(undefined)` | `SOLVED`, `ATTEMPTED`, `UNSOLVED`, giá trị lạ bỏ qua (V2:155) | Có sau ánh xạ chữ hoa ở entity |
 | `difficulty` | `z.string().min(1).max(64).optional().catch(undefined)`, rồi đối chiếu danh mục (BR-SC-02.7) | `levelCode` có thật, không thì "Tất cả" (V2:156) | Có; 64 ký tự là trần phòng thủ của client `[SoT: Suy luận]`, máy chủ là nguồn đúng |
 | `topic` | `z.string().uuid().optional().catch(undefined)` | uuid chủ đề có thật, không thì bỏ lọc (V2:157) | Có |
-| `sort` | `z.enum(["level","acRate"]).optional().catch(undefined)` | `level`, `acRate`, mặc định `code` (V2:159) | Có |
+| `sort` | `z.enum(["level","acRate"]).optional().catch(undefined)` | `level`, `acRate`; mặc định của màn là độ khó tăng dần (`sort=level`, `dir=asc`), owner chốt 2026-11-06, không dùng `code` | Có |
 | `dir` | `z.enum(["asc","desc"]).catch("asc")` | `asc`, `desc`, mặc định `asc` (V2:159) | Có |
 | `page` | `z.coerce.number().int().min(1).catch(1)` | số nguyên từ 1, quá số trang thì trang cuối (V2:160) | Có; việc kẹp trang cuối là của máy chủ, client đồng bộ URL (BR-SC-02.6) |
 | `pageSize` | `z.union([z.literal(12), z.literal(24), z.literal(48)]).catch(12)` đọc từ `localStorage` | 12/24/48 (V2:161) | Có |
@@ -264,7 +264,7 @@ Bảng 8.1: Lệch giữa prototype và thiết kế, cần làm khi nối thậ
 | P2 | Lọc, sắp xếp, phân trang chạy ở máy khách trên mảng đầy đủ | Chạy ở máy chủ, màn chỉ gửi tham số | PLV:117-146 |
 | P3 | Trạng thái lọc ở `useState`, không lên URL | Ghi URL theo BR-SC-02 | PLV:12-13, 83-98 |
 | P4 | Tìm kiếm lọc ngay mỗi ký tự, Enter toast theo mảng cục bộ | Trễ 400 ms, toast theo `totalItems` (BR-SC-03) | PLV:162-169 |
-| P5 | Sắp xếp mặc định theo độ khó tăng dần | Không `sort` thì máy chủ dùng `code` | PLV:87-92; F2:260 |
+| P5 | Sắp xếp mặc định theo độ khó tăng dần | **Owner chốt 2026-11-06: giữ mặc định của prototype (độ khó tăng dần), DD sửa theo**; màn gửi `sort=level&dir=asc` khi URL không có `sort`. Bộ lọc lên URL (BR-SC-02) hoãn, ghi nợ | PLV:87-92; F2:260 |
 | P6 | `QueryBoundary` bọc cả trang bằng một truy vấn | Chỉ bảng có vùng lỗi; khối khác tự ẩn | PLV:69-76 |
 | P7 | "Bài đang làm dở" và "Bài tập lớp" hiện câu rỗng trong khối | Ẩn cả khối kèm tiêu đề | PLV:444, 453-457; BD:489, 500 |
 | P8 | Dòng phụ bài tập lớp có "x / y bài" | Chỉ ngày giao (OQ-1) | PLV:481-485; F2:407 |
@@ -296,3 +296,36 @@ Bảng 8.3: Câu hỏi mở.
 | OQ-2 | **Đã chốt 2026-10-19** (owner, BD V0.8 [SoT: BD:64]): giữ bộ chọn 12/24/48, mặc định 12, nhớ ở trình duyệt (`usePersistedPageSize`, khoá `algoprep-problem-list-page-size`), không nhớ theo tài khoản | Đã chốt | 5 |
 | OQ-3 | **Đã chốt 2026-10-18** (`DEC-2026-1018-usr-open-questions-phase1-scope`, `DEC-2026-1018-usr-open-questions-phase2-5`): bắt buộc đăng nhập, bài đang làm dở đọc từ `judge.submissions`, `identity` cấp trạng thái giải qua cổng, cache 60 giây | Đã chốt | 1, 3 |
 | OQ-4 | **Đã chốt 2026-10-24** (`DEC24`): mọi route học viên dùng `problemId` UUID; liên kết bảng, bài ngẫu nhiên, bài tập lớp, thẻ bài dở đều là UUID | Đã chốt | 4 |
+
+## 9. Nối API thật (2026-11-06, F2-6 phần 1)
+
+Bảng 9.1: Các dòng của Bảng 8.1 mà bản dựng đã xử lý khi nối API thật.
+
+| # | Trạng thái | Ghi chú |
+| :-: | :--- | :--- |
+| P1 | Một phần | Bốn truy vấn riêng: `#1`, `#3`, `#4`, `F4 #8`; `hasSolutionReview` chưa có (F5) nên chưa có truy vấn thứ năm. `useProblemListPage` (mock gộp) vẫn còn cho `USR0601`, `USR0105` đến khi hai màn đó nối |
+| P2 | Xong | Máy chủ lọc, sắp xếp, phân trang |
+| P3 | Chưa | Bộ lọc chưa lên URL |
+| P4 | Một phần | Ô tìm trễ 300 ms (DD ghi 400 ms); toast Enter theo `page.totalItems` |
+| P5 | Chưa | Mặc định vẫn là độ khó tăng dần như prototype; DD ghi `code` |
+| P6 | Xong | Bảng có vùng lỗi riêng với nút thử lại; mỗi khối phụ tự báo lỗi |
+| P7 | Chưa | Khối rỗng vẫn hiện câu rỗng |
+| P8 | Xong | Dòng phụ chỉ còn ngày giao (OQ-1 theo mặc định đề xuất) |
+| P9 | Xong | Nhóm khoá theo `classId` |
+| P10 | Xong | Thẻ chưa có kết quả chỉ in nhãn kết quả |
+| P11 | Chưa | Nhãn "Đã có Solution Review" không vẽ (F5 chưa có endpoint) |
+| P12 | Xong | Gửi `topic` là UUID của chủ đề |
+| P13 | Xong | Độ khó đọc từ `#14`, tông màu theo `levelCode` seed |
+| P14, P15 | Chưa | Giữ câu toast và nút hiện tại |
+
+Suy giảm đã dựng: `solveStateAvailable=false` hoặc `solveState=null` thì hiện "Chưa rõ trạng thái", một dòng thông báo và bộ lọc trạng thái chưa áp dụng; `solved=null` ở chip thì chip chỉ còn tổng; `acRate=null` hiện `-`.
+
+## Ghi chú đồng bộ prototype 2026-11-07: URL, tên nút, khối rỗng
+
+Trạng thái màn trên URL: `q`, `status` (`solved|attempted|todo`), `level` (khoá mức độ khó), `topic` (id chủ đề), `sort` (`acRate`; vắng là độ khó), `dir` (`desc`; vắng là tăng dần), `page` (vắng là 1). Mỗi thay đổi một lần `router.replace` kèm bỏ `page`; ô tìm kiếm ghi URL theo từng phím và truy vấn chờ 300 ms như cũ. Cỡ trang không vào URL.
+
+Nút "Vào giải": `aria-label` = `problemList.table.btnSolveFor` ("Vào giải bài {title}" / "Solve {title}"). Khối "Bài đang làm dở" và "Bài tập lớp": ẩn khi danh sách rỗng, vẫn hiện khi đang tải hoặc lỗi; cả hai ẩn thì lưới còn một cột. Khoá `assignment.empty` không còn dùng.
+
+Test: `problem-list-real.test.tsx` (nhóm "URL state and block visibility"), dùng `shared/test/mock-url.ts` để `router.replace` đổi URL giả.
+
+Còn mở: nhãn Solution Review chờ F5; mã mức độ hoặc chủ đề lạ trên URL chưa được kiểm trước khi gửi máy chủ; chưa duyệt hình.

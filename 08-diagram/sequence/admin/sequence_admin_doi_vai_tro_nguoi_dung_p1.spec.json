@@ -15,22 +15,22 @@
         "role": "actor"
       },
       {
-        "name": "UserAdminController",
+        "name": "AdminUserController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "ListAdminUsers",
+        "name": "ListAdminUsersQueryHandler",
         "role": "service",
         "stereo": "application query"
       },
       {
-        "name": "UserAdminReadPort",
+        "name": "AccountLifecycleRepository",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "IdentityDbAdapter",
+        "name": "JdbcUserAccountRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -46,55 +46,55 @@
       },
       {
         "from": "Quản trị viên",
-        "to": "UserAdminController",
+        "to": "AdminUserController",
         "text": "Tìm theo email, tên hoặc vai trò"
       },
       {
-        "from": "UserAdminController",
-        "to": "ListAdminUsers",
+        "from": "AdminUserController",
+        "to": "ListAdminUsersQueryHandler",
         "text": "Lấy danh sách tài khoản"
       },
       {
-        "from": "ListAdminUsers",
-        "to": "UserAdminReadPort",
+        "from": "ListAdminUsersQueryHandler",
+        "to": "AccountLifecycleRepository",
         "text": "Tìm tài khoản và vai trò hiện tại"
       },
       {
-        "from": "UserAdminReadPort",
-        "to": "IdentityDbAdapter",
+        "from": "AccountLifecycleRepository",
+        "to": "JdbcUserAccountRepository",
         "text": "Truy vấn có phân trang"
       },
       {
-        "from": "IdentityDbAdapter",
+        "from": "JdbcUserAccountRepository",
         "to": "PostgreSQL",
         "text": "Đọc tài khoản, vai trò và trạng thái"
       },
       {
         "from": "PostgreSQL",
-        "to": "IdentityDbAdapter",
+        "to": "JdbcUserAccountRepository",
         "text": "Một trang tài khoản",
         "kind": "return"
       },
       {
-        "from": "IdentityDbAdapter",
-        "to": "UserAdminReadPort",
+        "from": "JdbcUserAccountRepository",
+        "to": "AccountLifecycleRepository",
         "text": "Một trang tài khoản",
         "kind": "return"
       },
       {
-        "from": "UserAdminReadPort",
-        "to": "ListAdminUsers",
+        "from": "AccountLifecycleRepository",
+        "to": "ListAdminUsersQueryHandler",
         "text": "Một trang tài khoản",
         "kind": "return"
       },
       {
-        "from": "ListAdminUsers",
-        "to": "UserAdminController",
+        "from": "ListAdminUsersQueryHandler",
+        "to": "AdminUserController",
         "text": "Trả tài khoản và vai trò",
         "kind": "return"
       },
       {
-        "from": "UserAdminController",
+        "from": "AdminUserController",
         "to": "Quản trị viên",
         "text": "Hiển thị danh sách và vai trò có thể chọn",
         "kind": "return"

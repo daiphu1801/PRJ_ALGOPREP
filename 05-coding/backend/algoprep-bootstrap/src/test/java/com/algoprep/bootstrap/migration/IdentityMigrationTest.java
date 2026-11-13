@@ -59,7 +59,9 @@ class IdentityMigrationTest {
           "user_problem_best_score",
           "user_submission_stats",
           "user_daily_submission_stats",
-          "identity_recent_activity");
+          "identity_recent_activity",
+          "processed_domain_events",
+          "outbox_events");
 
   @Container @ServiceConnection
   static final PostgreSQLContainer POSTGRES =
@@ -74,13 +76,14 @@ class IdentityMigrationTest {
   @Autowired private Flyway flyway;
 
   @Test
-  @DisplayName("creates exactly the 17 identity tables from BD section 1")
+  @DisplayName("creates exactly the 19 identity tables including the class event outbox")
   void createsAllTables() {
     List<String> tables =
         jdbc.queryForList(
             "SELECT table_name FROM information_schema.tables WHERE table_schema = 'identity'",
             String.class);
     assertThat(tables).containsExactlyInAnyOrderElementsOf(EXPECTED_TABLES);
+    assertThat(count("identity.outbox_events")).isZero();
   }
 
   @Test
@@ -99,11 +102,11 @@ class IdentityMigrationTest {
   }
 
   @Test
-  @DisplayName("seeds the default permission matrix: 132 cells, ADMIN all, INSTRUCTOR 3 functions")
+  @DisplayName("seeds the default permission matrix: 132 cells, ADMIN all, INSTRUCTOR 4 functions")
   void seedsPermissionMatrix() {
     assertThat(count("identity.permissions")).isEqualTo(132);
     assertThat(granted("ADMIN")).isEqualTo(44);
-    assertThat(granted("INSTRUCTOR")).isEqualTo(12);
+    assertThat(granted("INSTRUCTOR")).isEqualTo(16);
     assertThat(granted("STUDENT")).isZero();
     assertThat(
             jdbc.queryForObject(
@@ -114,6 +117,26 @@ class IdentityMigrationTest {
                     + " AND f.code IN ('CLASS_MANAGEMENT','PROBLEM_AUTHORING','TESTCASE_MANAGEMENT')",
                 Integer.class))
         .isEqualTo(12);
+    // V1.004: the four INTERVIEW_BANK_MANAGEMENT cells of INSTRUCTOR are granted, STUDENT has none.
+    assertThat(
+            jdbc.queryForObject(
+                "SELECT count(*) FROM identity.permissions p"
+                    + " JOIN identity.roles r ON r.id = p.role_id"
+                    + " JOIN identity.functions f ON f.id = p.function_id"
+                    + " WHERE r.code = 'INSTRUCTOR' AND p.granted"
+                    + " AND f.code = 'INTERVIEW_BANK_MANAGEMENT'",
+                Integer.class))
+        .isEqualTo(4);
+    assertThat(
+            jdbc.queryForObject(
+                "SELECT count(*) FROM identity.permissions p"
+                    + " JOIN identity.roles r ON r.id = p.role_id"
+                    + " JOIN identity.functions f ON f.id = p.function_id"
+                    + " WHERE r.code = 'INSTRUCTOR' AND p.granted AND f.code NOT IN"
+                    + " ('CLASS_MANAGEMENT','PROBLEM_AUTHORING','TESTCASE_MANAGEMENT',"
+                    + "'INTERVIEW_BANK_MANAGEMENT')",
+                Integer.class))
+        .isZero();
   }
 
   @Test

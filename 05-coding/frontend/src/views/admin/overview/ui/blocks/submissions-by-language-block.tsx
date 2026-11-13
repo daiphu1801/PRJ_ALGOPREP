@@ -4,6 +4,7 @@
 import { useT } from "@/shared/i18n";
 import { DashboardBlockState, HorizontalBarChart } from "@/shared/ui";
 import { useSubmissionsByLanguage } from "../../api";
+import { translateLabel } from "../../model/labels";
 
 export function SubmissionsByLanguageBlock() {
   const t = useT("adminOverview");
@@ -26,7 +27,7 @@ export function SubmissionsByLanguageBlock() {
     >
       {query.data && (
         <HorizontalBarChart
-          series={query.data.series}
+          series={query.data.series.map((s) => translateLabel(t, s))}
           pointLabels={query.data.pointLabels}
         />
       )}

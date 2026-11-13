@@ -22,6 +22,8 @@
 | Ver | Nội dung | Ngày |
 | :--- | :--- | :--- |
 | V0.1 | Tạo DD màn, ghi rõ phần lưu theo thiết bị và theo server, cập nhật V0.7 mật khẩu | 2026-10-24 |
+| V0.2 | EVT-8 nối F1 #16 `scope=submissions` thật (CSV chín cột, trần 2000 dòng); thẻ xuất dữ liệu hiện câu riêng cho `IDT-V06` và `IDT-508`; EVT-9 vẫn chờ F5 | 2026-11-07 |
+| V0.3 | EVT-9 nối F1 #17 thật (tệp JSON do máy chủ trả); thêm chữ `apiErrors.IDT-509` vi/en | 2026-11-12 |
 
 **Bảng 0.3: Ký hiệu nguồn.**
 
@@ -64,8 +66,8 @@ Không có widget mới. Tuỳ chọn thiết bị đi qua bộ lưu cục bộ;
 | EVT-5 preferences phỏng vấn | F1 #15 `UpdateMySettings` khi lưu | `updateMySettings(input)` | Mock; BD cần bỏ endpoint F5 cũ |
 | EVT-6 thông báo | F1 #15 `UpdateMySettings` khi lưu | `updateMySettings(input)` | Mock |
 | EVT-7 lưu cài đặt | F1 #15 `UpdateMySettings` | `updateMySettings(input)` | Mock |
-| EVT-8 xuất lượt nộp | F1 #16 `ExportMyData?scope=submissions` | `exportMyData("submissions")` | Mock; trả tệp đồng bộ |
-| EVT-9 xuất transcript | F1 #17 `ExportMyInterviewTranscripts` | `exportMyInterviewTranscripts()` | Mock; lỗi upstream độc lập |
+| EVT-8 xuất lượt nộp | F1 #16 `ExportMyData?scope=submissions` | `exportMyData("submissions")` (`real-export.ts`, `api.download`) | Thật từ 2026-11-07; tệp đồng bộ, lỗi `IDT-V06` và `IDT-508` hiện toast riêng |
+| EVT-9 xuất transcript | F1 #17 `ExportMyInterviewTranscripts` | `exportMyInterviewTranscripts()` (`real-export.ts:31`, `api.downloadFile`, tên tệp `interview-transcripts.json`) | **Thật từ 2026-11-12**; lỗi `IDT-V06` (429), `IDT-509` (503, F5 không trả lời), 401; toast qua `useApiErrorMessage`, nút không khoá; `IDT-509` đã có chữ vi/en |
 | EVT-10 về hồ sơ | Không gọi API | Link `/profile` | Client |
 | EVT-11 mở dialog xoá | Không gọi API | Local dialog state | Client |
 | EVT-12 xác nhận xoá | F1 #18 `DeleteMyAccount` | `deleteMyAccount(email)` | Mock; logout sau thành công |
@@ -118,7 +120,7 @@ Frontend ánh xạ `error.code`, không dựa vào `message` (`03-dd/api/api.md`
 
 | Trường | Zod/kiểm tra | Quy tắc DD | Khớp |
 | :--- | :--- | :--- | :--- |
-| Mật khẩu hiện tại/mới | `entities/user/model/schema.ts` | F1 validation mục 1; mật khẩu mới 8–128 ký tự, chữ và số; trường hiện tại vắng khi OAuth chưa có password | Có, cần giữ đồng bộ |
+| Mật khẩu hiện tại/mới | `entities/user/model/schema.ts` | F1 validation mục 1; mật khẩu mới tối thiểu 8 ký tự, tối đa 72 byte UTF-8, chữ và số; trường hiện tại vắng khi OAuth chưa có password | Có, cần giữ đồng bộ |
 | Xác nhận mật khẩu | schema client `passwordConfirmation` | So khớp mật khẩu mới; không gửi lên API | Client-only, đúng |
 | Email xác nhận xoá | `z.string().refine(v => v === profile.email)` | V1 mục 5: khớp tuyệt đối, phân biệt hoa thường với email đang lưu; server xác minh lại | Có; **không trim/lower-case** |
 | `preferredMaxTurns` | `z.union([z.literal(8),z.literal(12),z.literal(16)])` | V1 mục 8 | Cần đổi prototype đang dùng chuỗi `"12"` |
@@ -159,3 +161,9 @@ Nợ ở `06-plan/PROTOTYPE_DEBT.md:892` và mục 16.3 còn mở. Prototype v�
 | D-1 | Prototype hardcode ngôn ngữ trong khi DD đã có F4 #24 | Đổi sang F4 #24; nếu mã đã lưu bị tắt, yêu cầu chọn mã đang bật trước khi lưu trường này | 2 |
 | D-2 | BD Q11 và prototype còn mô tả hai lời gọi F1/F5; DB sync 2026-10-22 đã chuyển preferences phỏng vấn về `identity` | Tuân theo F1 #15 một lần lưu tài khoản, giữ dirty state thiết bị riêng; đồng bộ BD và code ở lượt sau | 3 |
 | D-3 | Câu chữ toast đổi mật khẩu lần đầu/đổi mật khẩu khác nhau theo quyết định 2026-10-21 | Giữ phân biệt `Đã đặt mật khẩu` và `Đã đổi mật khẩu...`; đối chiếu khóa i18n hiện có | 3 |
+
+## Ghi chú đồng bộ prototype 2026-11-07: xuất lượt nộp bị cắt
+
+`GET /identity/me/export?scope=submissions` (DD F1 #16): `realExportMyData` nay trả `{ blob, truncated }`; `truncated` là header `X-Export-Truncated: true`, đọc qua `api.downloadFile` (`shared/api/client.ts`, `api.download` giữ nguyên). Tên tệp tải về `algoprep-submissions.csv`. Toast thông tin `settings.dataExport.truncated` ("Tệp chỉ có {count} lượt nộp gần nhất", count 2000) hiện sau toast thành công. Test: `real-export.test.ts`, `client.test.ts`, `settings-actions.test.tsx`.
+
+Còn mở: phản hồi khác nguồn cần `Access-Control-Expose-Headers: X-Export-Truncated` (hiện đi proxy cùng nguồn nên không cần); chưa duyệt hình.

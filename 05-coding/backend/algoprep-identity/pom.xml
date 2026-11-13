@@ -23,11 +23,65 @@
   <name>algoprep-identity</name>
   <description>Danh tính và phân quyền (F1)</description>
 
+  <properties>
+    <!-- Coverage gate is blocking here: 87% measured 2026-10-31 (threshold stays 80%, parent pom). -->
+    <jacoco.haltOnFailure>true</jacoco.haltOnFailure>
+  </properties>
+
   <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-redis</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-mail</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>com.algoprep</groupId>
       <artifactId>algoprep-common</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <!-- Task F1 #5: JWT RS256 (Nimbus via Spring Security), per-request permission lookup via JDBC. -->
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-config</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-oauth2-resource-server</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-oauth2-jose</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jdbc</artifactId>
+    </dependency>
+    <!-- Parses the JSONB class schedule into an object for the student class endpoints. -->
+    <dependency>
+      <groupId>tools.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
+    <!-- Controllers of this module (presentation layer). -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webmvc</artifactId>
+    </dependency>
+    <!-- Class events (ClassDeleted, StudentRemovedFromClass) go out through RabbitTemplate. -->
+    <dependency>
+      <groupId>org.springframework.amqp</groupId>
+      <artifactId>spring-rabbit</artifactId>
     </dependency>
   </dependencies>
 </project>

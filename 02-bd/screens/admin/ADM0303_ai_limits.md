@@ -34,11 +34,11 @@
 | Tên vật lý (slug) | `admin_ai_limits` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A3 (`ADMIN`) |
-| Phiên bản | V0.9 |
+| Phiên bản | V0.10 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/10/10 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/10/23 |
+| Ngày cập nhật | 2026/11/12 |
 
 ---
 
@@ -55,6 +55,7 @@
 | V0.7 | Sheet 4.3, 5, 7, Câu hỏi mở | Sửa 2026-10-22 đồng bộ DB, `DEC-2026-1022-ai-judge-schema-sync`. (1) Đóng Q3: ngưỡng cảnh báo và ba giới hạn tần suất là **cột** của singleton `ai.ai_token_budget_configs` (`warn_percent`, `review_per_hour`, `interview_per_hour`, `cooldown_seconds`), đơn giá nằm ở bảng mới `ai.ai_model_prices`; Redis chỉ giữ **bộ đếm**. Gỡ câu mục 4.3 "không dùng bảng PostgreSQL", gỡ nhãn "Chưa có bảng". (2) Khoá bộ đếm đủ `ai:ratelimit:<userId>:<featureCode>:<epochHour>` (trước thiếu `<epochHour>`). (3) Giới hạn 20 lượt/giờ của F6-08 là hằng số do `interview-bank` sở hữu (`interview_bank:ratelimit:<userId>`), không nằm ở màn này. (4) Ghi job đầu tháng đặt lại `period_start` và xoá `locked_at` (nhãn "Đã khoá tự động" tự về "Đang mở"). (5) Sửa số dòng trích `02-bd/database/F5_ai-review.md`. | 2026/10/22 | Nhóm phát triển AlgoPrep |
 | V0.8 | Sheet 9, Câu hỏi mở | Sửa 2026-10-23 (`DEC-2026-1023-db-actor-review-decisions`). Đóng Q4: giữ hành vi prototype (đơn giá âm tự về 0, không báo lỗi), xoá mô hình không bị chặn, đổi tên làm dòng cũ mất khớp đơn giá. Sửa Sheet 9 NO 7 cho khớp. Không đổi giao diện | 2026/10/23 | Nhóm phát triển AlgoPrep |
 | V0.9 | Sheet 7 (7.3 NO 1, 4 đến 7) | Đồng bộ chéo giai đoạn 3 sau `03-dd/api/F5_ai-review.md` mục 1.1 (D11, D12): (1) `GetAiTokenBudget` đã gộp với `GetAiTokenBudgetStatus` thành `GET /admin/token-budget` (mục 18); (2) `GetRateLimitConfig` và `GetAiBudgetSettings` gộp thành `GET /admin/limits-config` (mục 21), `UpdateRateLimitConfig` và `UpdateAiBudgetSettings` gộp thành `PATCH /admin/limits-config` (mục 22); (3) khoá Redis đã có `<epochHour>` từ V0.7, không cần sửa thêm (D12 đã đóng). Dời dòng V0.8 từ Sheet 1 về đúng Sheet 2. Không đổi giao diện | 2026/10/23 | Nhóm phát triển AlgoPrep |
+| V0.10 | Hiện trạng bản dựng | Nối API thật (Merge M4): thêm mục "Hiện trạng bản dựng" với bảng khối, nguồn F5 §18 đến §26, `file:dòng`. Prototype không còn dùng store mock trực tiếp; ô đơn giá ghi khi rời ô thay vì từng phím. Không đổi spec | 2026-11-12 | Claude |
 
 ---
 
@@ -486,6 +487,24 @@ Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 [Nguồn: 02-bd/screens/admin/ADM0301_ai_config.md V0.9, Sheet 9 NO 4, 8 đến 12; 02-bd/security/F5_ai-review.md:79-85]
 
 ---
+
+## Hiện trạng bản dựng
+
+Bản dựng nối API thật ngày 2026-11-12 (Merge M4); chế độ mock vẫn chạy trên cùng các hook của `entities/ai-budget`, màn không còn đọc store mock trực tiếp. Bảng 1 liệt kê từng khối với nguồn dữ liệu và vị trí trong mã (`05-coding/frontend/src/`); bản đối chiếu hợp đồng ở `03-dd/screens/admin/ADM0303_ai_limits.md` mục 2.
+
+**Bảng 1: Hiện trạng bản dựng `ADM0303`**
+
+| Khối | Nguồn dữ liệu thật | Mã (file:dòng) | Ghi chú |
+| :--- | :--- | :--- | :--- |
+| B: đọc ngân sách | F5 §18 `GET /ai/admin/token-budget` | `views/admin/ai-limits/ui/budget-card.tsx:28`, `entities/ai-budget/api/real-budget.ts:53` | Thanh, nhãn khoá và số đã dùng lấy từ phản hồi |
+| B: lưu hạn mức | F5 §19 `PUT .../token-budget/limit` | `budget-card.tsx:66`, `real-budget.ts:58`, `entities/ai-budget/api/queries.ts:53` | Kiểm `^\d+$`, 1 đến 9.000.000.000.000; lỗi `AIR-V15/301/503` giữ chữ đã nhập |
+| B: mở khoá | F5 §20 `POST .../token-budget/unlock` | `budget-card.tsx:64` (điều kiện), `budget-card.tsx:83`, `real-budget.ts:67` | Không gửi khi đã dùng từ hạn mức trở lên; `AIR-203` giữ hộp xác nhận |
+| C: ba giới hạn tần suất | F5 §21, §22 `GET`, `PATCH .../limits-config` | `views/admin/ai-limits/ui/rate-limits-card.tsx:11`, `real-budget.ts:74`, `real-budget.ts:79`, `queries.ts:76`, `queries.ts:86` | Gồm `cooldownSeconds` (máy chủ vẫn mang); chỉ gửi trường vừa đổi |
+| D: ngưỡng cảnh báo | F5 §21, §22 (`warnPercent`) | `views/admin/ai-limits/ui/cost-card.tsx:38` | Sau ghi thì làm mới §18 vì thanh ngân sách đọc cùng giá trị |
+| D: đơn giá mô hình | F5 §23 đến §26 `.../model-prices` | `views/admin/ai-limits/ui/model-price-dialog.tsx:18`, `entities/ai-budget/api/real-model-prices.ts:24`, `:30`, `:37`, `:45`, `queries.ts:102`, `queries.ts:115` | Ô giá ghi khi rời ô hoặc Enter; âm hoặc không phải số về 0 (Q4a); `AIR-204`, `AIR-121`, `AIR-V17`, `AIR-V18` hiện bằng chữ |
+| E: trần sinh testcase | F2 §56, §57 | `views/admin/ai-limits/ui/testcase-generation-limit-card.tsx` | Đã nối F2 từ trước, không đổi |
+
+Mỗi thẻ có query riêng; thẻ lỗi hiện lý do `AIR-*` và nút thử lại riêng. Chưa có: ẩn hoặc khoá ô theo quyền `AI_CONFIG` hoặc `AI_TOKEN_BUDGET` (Sheet 9 NO 1); máy chủ chặn bằng `AIR-301` và màn hiện thông báo đó.
 
 ## Câu hỏi mở
 

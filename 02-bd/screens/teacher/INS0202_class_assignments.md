@@ -45,7 +45,7 @@
 | Tên vật lý (slug) | `class_assignments` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A2 (`INSTRUCTOR`) |
-| Phiên bản | V0.13 |
+| Phiên bản | V0.15 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/21 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
@@ -70,6 +70,8 @@
 | V0.11 | Sheet 7.2 (ghi chú sau bảng) | Áp `DEC-2026-1014-keep-learning-history-on-leave`: sửa câu "khác hẳn luồng gỡ học viên F1-26" vì gỡ học viên nay cũng giữ lịch sử (chỉ đặt `left_at`). Không đổi item, EVT. ~~**Còn mở:** các số đếm lượt nộp/tỉ lệ AC "của học viên thuộc lớp" (Sheet 4 NO 8, Sheet 5 C) có tính học viên đã rời lớp hay không chưa được quyết định nêu rõ `[SoT: Suy luận]`~~ **ĐÃ CHỐT 2026-10-14 (`DEC-2026-1014-class-leave-details`), xem V0.12** | 2026/10/14 | AI |
 | V0.12 | Sheet 4 (NO 8), 5 (B NO 4, C NO 9, 10), 6 (DTO NO 5, 12, 13), 7.2 (NO 8, ghi chú), 7.3 (NO 4) | Áp `DEC-2026-1014-class-leave-details` (tiêu chí ponytail bậc 5): cột "Lượt nộp", cột "AC" và thẻ "AC trung bình" chỉ đếm lượt nộp của học viên **đang trong lớp** (`class_enrollments.left_at IS NULL`), thống nhất với tổng số học viên và tiến độ lớp; học viên vào lại bằng mã mời thì được tính lại. Đóng điểm còn mở của V0.11. Nhu cầu cho DD `judge-orchestration`: tổng hợp theo lớp phải lọc theo ghi danh còn hiệu lực lấy từ `identity`. Không đổi item, EVT | 2026/10/14 | AI |
 | V0.13 | Sheet 4 (4.4, mục Hiện trạng bản dựng mới) | Dựng prototype Phase 4-5 (bài giao theo lớp, phân trang 20, from=). Chỉ ghi hiện trạng, không đổi yêu cầu hay quyết định thiết kế. Bản dựng đã có: trạng thái danh sách nằm trên URL, 20 dòng mỗi trang cố định, cột "Chủ đề" theo Q5, cột "Lượt nộp"/"AC" theo lớp đang chọn (Q11), popup gỡ chỉ hỏi lớp ở tab "Tất cả" (Q6), nút "Gỡ khỏi lớp" sau "Chi tiết" (Q7). Cập nhật số dòng trích dẫn mã ở 4.4. **Chưa duyệt hình.** Thẻ "AC trung bình" vẫn chưa dựng | 2026/10/18 | AI |
+| V0.14 | Hiện trạng bản dựng | Nối API thật của F2 (2026-11-06, F2-6 phần 2, **chưa duyệt hình**, chưa chạy trình duyệt với backend thật): Nối `#49` đến `#53`: danh sách do máy chủ lọc theo lớp và tên, phân trang 20 (tìm kiếm trễ 300 ms, giữ trang cũ khi nạp trang mới); `submissionCount` và `acRate` là `null` thì hiện `-`; dòng mô tả chỉ có số khi `#50` đã trả lời. Giao bài (`#52`) báo từng kết quả: mới, bỏ qua (đã giao), bị từ chối kèm lý do từ mã `PRB-037`, `PRB-010`, `PRB-056`; hộp chọn bài (`#51`) phân trang và tìm theo máy chủ, giữ lựa chọn khi sang trang. Gỡ (`#53`): `PRB-025` hiện chữ riêng và nạp lại danh sách. `PRB-005`, `PRB-002`, `PRB-058` dịch qua `apiErrors`. Lỗi tải danh sách hiện thông báo lỗi riêng. Còn mock: `useClassAssignments()` không phân trang của INS0101 và INS0204; `#54` (khối Bài tập của tôi của INS0101). Không đổi RD, DTO hay endpoint | 2026/11/06 | Claude |
+| V0.15 | Sheet 4 (4.4, hàng "Thẻ AC trung bình"), Câu hỏi mở | Hiển thị `avgAcRatePercent` của `#50` (**chưa duyệt hình**): bản dựng không vẽ dải thẻ (quy tắc owner 2026-10-13, không dải thẻ nhỏ ở màn danh sách), nên con số nằm ở dòng mô tả đầu màn, sau số bài đã gán: "{n} bài đã gán cho lớp ... · AC trung bình {x}%". `null` hiện "-", không bao giờ 0% bịa ra; 0 thật hiện "0%". Chỗ đặt này là `[SoT: Suy luận]`: Sheet 5 khu vực B NO 4 mô tả một thẻ riêng, bản dựng gộp vào dòng tóm tắt để khỏi tạo dải thẻ; chờ owner xem hình, nếu muốn thẻ riêng thì phải đổi quy tắc 2026-10-13. Mã: `05-coding/frontend/src/views/teacher/class-assignments/ui/class-assignments-view.tsx:196-212`; khoá `classAssignments.header.avgAcRate`. Không đổi RD, DTO | 2026/11/07 | Claude |
 
 ---
 
@@ -274,7 +276,7 @@ Bảng 4.4a: Hiện trạng bản dựng của INS0202 (đối chiếu với `cl
 | Cột "Lượt nộp" và "AC" theo phạm vi lớp (Q11) | `statsFor`: tab lớp thì lấy `classStats[classId]`, tab "Tất cả" lấy tổng của bài; `classStats` là tuỳ chọn trong kiểu. Số theo lớp trong mock chỉ là chia tổng ra các lớp; endpoint thật tổng hợp theo lớp, không tính học viên đã rời lớp | `class-assignments-view.tsx:105-107`; `entities/class-assignment/model/types.ts:16-30`; `entities/class-assignment/api/__mock__/class-assignment-mocks.ts:94,116` | Dựng (số liệu mock), chưa duyệt hình |
 | Popup gỡ bài (Q6) | Ô chọn lớp chỉ hiện ở tab "Tất cả" khi bài gán cho hơn một lớp, gỡ một lớp mỗi lần; ở tab lớp thì lớp là lớp của tab | `class-assignments-view.tsx:177-182,308-320` | Dựng, chưa duyệt hình |
 | Vị trí nút "Gỡ khỏi lớp" (Q7) | Nút chữ sau "Chi tiết", luôn hiện | `class-assignments-view.tsx:167-186` | Dựng, chưa duyệt hình |
-| Thẻ "AC trung bình" | Chưa dựng: view chỉ dùng `assignedCount` của `summary` cho dòng tóm tắt; thẻ "Lượt nộp tuần này" đã bỏ theo quyết định | `class-assignments-view.tsx:191-199` | Chưa dựng |
+| Thẻ "AC trung bình" | Dựng dạng chữ trong dòng tóm tắt đầu màn (V0.15), không phải thẻ riêng; `null` hiện "-"; thẻ "Lượt nộp tuần này" đã bỏ theo quyết định | `class-assignments-view.tsx:196-212` | Dựng, `[SoT: Suy luận]` về chỗ đặt, chưa duyệt hình |
 | Bộ lọc lớp | Dựng bằng `FilterMenu` (danh sách chọn một lớp), không phải cụm tab như mô tả ở thiết kế | `class-assignments-view.tsx:224-237` | Khác thiết kế về hình thức, chờ chủ dự án xem |
 
 Kiểm thử: `class-assignments-view.test.tsx` có 3 test mới cho Q5, Q11, Q6 (dòng 29, 36, 46) [Nguồn: 05-coding/frontend/src/views/teacher/class-assignments/ui/class-assignments-view.test.tsx:29-56].

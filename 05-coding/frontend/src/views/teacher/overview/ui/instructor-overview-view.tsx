@@ -12,18 +12,23 @@
 import { useMemo, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { GraduationCap, Users } from "lucide-react";
-import { useClassAssignments } from "@/entities/class-assignment";
+import { useTopAssignedProblems } from "@/entities/class-assignment";
 import {
   initialsOfClassStudent,
   useClassStudents,
   useClassActivity,
-  useInstructorClasses,
+  useInstructorClassSummary,
+  useInstructorClassTotals,
 } from "@/entities/class";
 import {
   SUBMISSION_STATUS_VARIANT,
   useInstructorReadableSubmissions,
 } from "@/entities/submission";
-import { buildSubmissionRows } from "@/features/submission-rows";
+import {
+  buildSubmissionRows,
+  useInstructorSubmissionPage,
+} from "@/features/submission-rows";
+import { isMockMode } from "@/shared/api";
 import { useT } from "@/shared/i18n";
 import {
   AgendaList,
@@ -72,34 +77,44 @@ const dayMonth = (time: number) =>
 export function InstructorOverviewView() {
   const t = useT("instructorOverview");
   const tVerdict = useT("submissionResult");
+  const tActivity = useT("instructorOverview.activity");
   const today = useToday();
 
-  const classesQuery = useInstructorClasses();
+  // F1 #56 carries completion and absent counts; when F4 is down it falls back to the plain list (#19).
+  const classesQuery = useInstructorClassSummary();
   const classes = classesQuery.data ?? [];
+  const totals = useInstructorClassTotals().data;
   const activity = useClassActivity().data;
-  const assignmentsQuery = useClassAssignments();
+  const topQuery = useTopAssignedProblems();
+  const topAssignments = topQuery.data ?? [];
   const students = useClassStudents().data;
+  const mock = isMockMode();
 
-  const totalStudents = classes.reduce((sum, c) => sum + c.studentCount, 0);
-  const absentStudents = classes.reduce((sum, c) => sum + c.absentCount, 0);
+  // Without the F4 numbers (the #19 fallback) nothing is drawn instead of a row of invented zeros
+  // (ponytail rung 2, PROTOTYPE_DEBT lớp học).
+  const hasMetrics = classes.some((c) => c.absentCount !== undefined);
+  // #56 counts each person once; summing the cards would count a student of two classes twice.
+  const totalStudents =
+    totals?.studentCount ?? classes.reduce((sum, c) => sum + c.studentCount, 0);
+  const absentStudents =
+    totals?.absentStudentCount ??
+    classes.reduce((sum, c) => sum + (c.absentCount ?? 0), 0);
   const activeStudents = totalStudents - absentStudents;
   const activePercent =
     totalStudents > 0 ? Math.round((activeStudents / totalStudents) * 100) : 0;
 
-  const topAssignments = useMemo(
-    () =>
-      [...(assignmentsQuery.data ?? [])]
-        .sort((a, b) => b.submissionCount - a.submissionCount)
-        .slice(0, 5),
-    [assignmentsQuery.data],
-  );
-
-  const readableQuery = useInstructorReadableSubmissions();
+  // Mock: rows are built from the fixtures. Real: the first page of F4 #13 (newest first, leftClass included).
+  const readableQuery = useInstructorReadableSubmissions(mock);
+  const realPage = useInstructorSubmissionPage({
+    result: "all",
+    q: "",
+    page: 1,
+  });
   const rows = useMemo(
     () => buildSubmissionRows(students ?? [], readableQuery.data ?? []),
     [students, readableQuery.data],
   );
-  const recentRows = rows.slice(0, 5);
+  const recentRows = (mock ? rows : (realPage.data?.items ?? [])).slice(0, 5);
 
   // Daily chart: the 7 days that END at the newest submission, so the mock data (fixed dates) still shows.
   // ponytail: the real chart ends today and is computed at query time from the submissions (cache 15 min).
@@ -176,57 +191,63 @@ export function InstructorOverviewView() {
             iconColorVar="--color-admin-cyan"
             label={t("kpi.students")}
             value={totalStudents}
-            meta={t("kpi.studentsMeta", { count: absentStudents })}
+            meta={
+              hasMetrics
+                ? t("kpi.studentsMeta", { count: absentStudents })
+                : undefined
+            }
           />
         </div>
-        <Card
-          className="h-full lg:col-span-2"
-          title={t("students.title")}
-          description={t("students.subtitle")}
-        >
-          <div className="grid items-center gap-5 md:grid-cols-2">
-            <div className="relative mx-auto w-full max-w-[300px]">
-              <HalfDonutGauge
-                slices={[
-                  {
-                    label: t("students.active"),
-                    value: activeStudents,
-                    colorVar: "--color-admin-teal",
-                  },
-                  {
-                    label: t("students.absent"),
-                    value: absentStudents,
-                    colorVar: "--color-admin-warn",
-                  },
-                ]}
-              />
-              <p className="pointer-events-none absolute inset-x-0 top-[34px] text-center">
-                <span className="block text-[26px] leading-none font-bold">
-                  {activePercent}%
-                </span>
-                <span className="text-[11.5px] text-[var(--color-text-muted)]">
-                  {t("students.activeRate")}
-                </span>
-              </p>
+        {hasMetrics ? (
+          <Card
+            className="h-full lg:col-span-2"
+            title={t("students.title")}
+            description={t("students.subtitle")}
+          >
+            <div className="grid items-center gap-5 md:grid-cols-2">
+              <div className="relative mx-auto w-full max-w-[300px]">
+                <HalfDonutGauge
+                  slices={[
+                    {
+                      label: t("students.active"),
+                      value: activeStudents,
+                      colorVar: "--color-admin-teal",
+                    },
+                    {
+                      label: t("students.absent"),
+                      value: absentStudents,
+                      colorVar: "--color-admin-warn",
+                    },
+                  ]}
+                />
+                <p className="pointer-events-none absolute inset-x-0 top-[34px] text-center">
+                  <span className="block text-[26px] leading-none font-bold">
+                    {activePercent}%
+                  </span>
+                  <span className="text-[11.5px] text-[var(--color-text-muted)]">
+                    {t("students.activeRate")}
+                  </span>
+                </p>
+              </div>
+              <div>
+                <p className="mb-2 text-[12px] font-semibold text-[var(--color-text-muted)]">
+                  {t("students.byClass")}
+                </p>
+                <RankedProgressList
+                  numbered={false}
+                  accentColorVar="--color-admin-warn"
+                  items={classes.map((klass) => ({
+                    label: klass.name,
+                    value: klass.absentCount ?? 0,
+                    valueLabel: t("students.absentCount", {
+                      count: klass.absentCount ?? 0,
+                    }),
+                  }))}
+                />
+              </div>
             </div>
-            <div>
-              <p className="mb-2 text-[12px] font-semibold text-[var(--color-text-muted)]">
-                {t("students.byClass")}
-              </p>
-              <RankedProgressList
-                numbered={false}
-                accentColorVar="--color-admin-warn"
-                items={classes.map((klass) => ({
-                  label: klass.name,
-                  value: klass.absentCount,
-                  valueLabel: t("students.absentCount", {
-                    count: klass.absentCount,
-                  }),
-                }))}
-              />
-            </div>
-          </div>
-        </Card>
+          </Card>
+        ) : null}
       </div>
 
       <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-3">
@@ -245,8 +266,9 @@ export function InstructorOverviewView() {
             accentColorVar="--color-admin-teal"
             items={classes.map((klass) => ({
               label: `${klass.name} · ${t("classes.students", { count: klass.studentCount })}`,
-              value: klass.completionPct,
-              valueLabel: `${klass.completionPct}%`,
+              value: klass.completionPct ?? 0,
+              valueLabel:
+                klass.completionPct == null ? "" : `${klass.completionPct}%`,
             }))}
           />
         </Card>
@@ -261,7 +283,9 @@ export function InstructorOverviewView() {
             </Link>
           }
         >
-          {topAssignments.length === 0 ? (
+          {topQuery.isError ? (
+            <QueryError query={topQuery} />
+          ) : topAssignments.length === 0 ? (
             <p className="text-[13px] text-[var(--color-text-muted)]">
               {t("empty")}
             </p>
@@ -287,40 +311,46 @@ export function InstructorOverviewView() {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-3">
-        <Card
-          className="h-full"
-          title={t("chart.title")}
-          description={t("chart.subtitle")}
-        >
-          {dailyBars.length === 0 ? (
-            <p className="text-[13px] text-[var(--color-text-muted)]">
-              {t("chart.empty")}
-            </p>
-          ) : (
-            <StackedBarChart
-              height={150}
-              series={[
-                {
-                  key: "accepted",
-                  label: t("chart.series.accepted"),
-                  colorVar: "--color-admin-teal",
-                },
-                {
-                  key: "failed",
-                  label: t("chart.series.failed"),
-                  colorVar: "--color-admin-warn",
-                },
-                {
-                  key: "other",
-                  label: t("chart.series.other"),
-                  colorVar: "--color-admin-slate",
-                },
-              ]}
-              bars={dailyBars}
-            />
-          )}
-        </Card>
+      <div
+        className={`grid grid-cols-1 gap-3.5 ${mock ? "lg:grid-cols-3" : "lg:grid-cols-2"}`}
+      >
+        {/* ponytail: real mode hides the daily chart (owner, 2026-11-07): no endpoint counts submissions per day
+            for an instructor, and one 20-row page of #13 would draw it wrong. Add a F4 daily-counts read if the demo needs it. */}
+        {mock ? (
+          <Card
+            className="h-full"
+            title={t("chart.title")}
+            description={t("chart.subtitle")}
+          >
+            {dailyBars.length === 0 ? (
+              <p className="text-[13px] text-[var(--color-text-muted)]">
+                {t("chart.empty")}
+              </p>
+            ) : (
+              <StackedBarChart
+                height={150}
+                series={[
+                  {
+                    key: "accepted",
+                    label: t("chart.series.accepted"),
+                    colorVar: "--color-admin-teal",
+                  },
+                  {
+                    key: "failed",
+                    label: t("chart.series.failed"),
+                    colorVar: "--color-admin-warn",
+                  },
+                  {
+                    key: "other",
+                    label: t("chart.series.other"),
+                    colorVar: "--color-admin-slate",
+                  },
+                ]}
+                bars={dailyBars}
+              />
+            )}
+          </Card>
+        ) : null}
 
         <Card
           className="h-full"
@@ -332,33 +362,37 @@ export function InstructorOverviewView() {
             </Link>
           }
         >
-          <RecentList
-            emptyLabel={t("submissions.empty")}
-            items={recentRows.map((row) => ({
-              id: row.key,
-              href: `/instructor/submissions/${row.submissionId}?studentId=${row.studentId}&classId=${row.classId}&from=submissions`,
-              leading: (
-                <span
-                  aria-hidden="true"
-                  className="glass-surface flex h-8 w-8 items-center justify-center rounded-full border border-[var(--color-border)] text-[11px] font-semibold"
-                >
-                  {initialsOfClassStudent(row.studentName)}
-                </span>
-              ),
-              title: row.studentName,
-              subtitle: `${row.problemTitle} · ${new Date(
-                row.submittedAt,
-              ).toLocaleString("vi-VN", {
-                dateStyle: "short",
-                timeStyle: "short",
-              })}`,
-              trailing: (
-                <Badge variant={SUBMISSION_STATUS_VARIANT[row.status]}>
-                  {tVerdict(`verdict.${row.status}`)}
-                </Badge>
-              ),
-            }))}
-          />
+          {!mock && realPage.isError ? (
+            <QueryError query={realPage} />
+          ) : (
+            <RecentList
+              emptyLabel={t("submissions.empty")}
+              items={recentRows.map((row) => ({
+                id: row.key,
+                href: `/instructor/submissions/${row.submissionId}?studentId=${row.studentId}&classId=${row.classId}&from=submissions`,
+                leading: (
+                  <span
+                    aria-hidden="true"
+                    className="glass-surface flex h-8 w-8 items-center justify-center rounded-full border border-[var(--color-border)] text-[11px] font-semibold"
+                  >
+                    {initialsOfClassStudent(row.studentName)}
+                  </span>
+                ),
+                title: row.studentName,
+                subtitle: `${row.problemTitle} · ${new Date(
+                  row.submittedAt,
+                ).toLocaleString("vi-VN", {
+                  dateStyle: "short",
+                  timeStyle: "short",
+                })}`,
+                trailing: (
+                  <Badge variant={SUBMISSION_STATUS_VARIANT[row.status]}>
+                    {tVerdict(`verdict.${row.status}`)}
+                  </Badge>
+                ),
+              }))}
+            />
+          )}
         </Card>
 
         <Card
@@ -381,7 +415,15 @@ export function InstructorOverviewView() {
                   }}
                 />
               ),
-              title: <span className="whitespace-normal">{event.text}</span>,
+              title: (
+                <span className="whitespace-normal">
+                  {event.activityType
+                    ? tActivity(`type.${event.activityType}`, {
+                        name: event.actorName ?? "",
+                      })
+                    : event.text}
+                </span>
+              ),
               subtitle: event.timeLabel,
             }))}
           />

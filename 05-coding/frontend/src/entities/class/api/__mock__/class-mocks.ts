@@ -7,6 +7,7 @@
 // `identity` endpoints wholesale at graduation, not patched incrementally.
 import type {
   AttentionItem,
+  ClassRosterRow,
   ClassActivity,
   ClassForm,
   ClassScoreTrend,
@@ -304,6 +305,25 @@ export function listClassStudents(
   );
 }
 
+/** The roster of INS0205: the same learners, with the F4 figures that only the mock can show. */
+export async function listClassRoster(
+  classId: string,
+): Promise<ClassRosterRow[]> {
+  return (await listClassStudents(classId)).map((s) => ({
+    id: s.id,
+    classId: s.classId,
+    name: s.name,
+    email: s.email,
+    phone: s.phone,
+    metrics: {
+      status: s.status,
+      avgScore: s.avgScore,
+      completionPct: s.completionPct,
+      lastActiveLabel: s.lastActiveLabel,
+    },
+  }));
+}
+
 /** `includeLeft` lets the instructor result page name a learner who left (the submission history stays). */
 export function getClassStudent(
   studentId: string,
@@ -383,7 +403,7 @@ export function removeStudent(studentId: string): Promise<void> {
     if (klass) {
       klass.studentCount = Math.max(0, klass.studentCount - 1);
       if (student.status === "absent") {
-        klass.absentCount = Math.max(0, klass.absentCount - 1);
+        klass.absentCount = Math.max(0, (klass.absentCount ?? 0) - 1);
       }
     }
   }

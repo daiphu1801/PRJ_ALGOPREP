@@ -1,5 +1,69 @@
 # TDD — Tiêu chí nghiệm thu module `problem-bank` (F2)
 
+**2026-11-03, D02h snapshot kernel:**31 owning tests mới và20 flow tests PG/MinIO thật
+kiểm first/reuse/bump, deep comparison/storage form, old-version bytes,2 concurrent writers,
+caller/metadata/version/outbox rollback, orphan retry và missing/deleted.8 mutation mới:
+5 trường grading +object verification và SQL approved/deleted. Owning308 (common40/F2 268),
+component/regression64 đạt; full publish/checklist/sandbox/audit/HTTP và AC-93/F4 worker E2E
+vẫn mở. Report `261103-0011-f2-snapshot-publication-core`.
+
+**2026-11-02→03, D02g grading readers:**3 inbound đọc spec/Sample/pinned snapshot đã nối
+JDBC/MinIO thật.237 F2 tests (42 mới),69 judge+40 common đạt;59 component/regression đạt,
+gồm16 grading flow+5 bridge, storage8/F3 readers12/B1 assignment10/ArchUnit8.5 mutation mới:
+checksum/version và SQL visibility/approved;4 storage mutations cũ hồi quy. AC-81 mới kiểm
+phạm vi reader/fixture; AC-93/F4 AC-75 persisted E2E và writer publish/version-bump vẫn mở.
+Report `261102-2340-f2-f4-grading-readers`; DEC-2026-1102-testcase-snapshot-json-v1.
+
+**2026-11-02, B1 assignment history:**6 unit handler,5 unit bridge và10 flow test
+PostgreSQL thật (gồm3 SQL mutation) kiểm phạm vi classIds, giữ removed/giao lại/trùng
+timestamp, bài withdrawn/deleted, microsecond và tên live; lỗi DB không trả rỗng giả.
+Hồi quy UserDirectory13+ArchUnit8 đạt. AC-84 mới kiểm phần ClassAssignmentReadPort;
+ProblemSummaryReadPort/ProblemTopicReadPort và consumer thống kê chưa xong, không đóng
+toàn AC-84. Report `261102-1636-class-assignment-read-port`.
+
+**2026-11-02, lát A UserDirectory:**6 unit F1 +6 unit bridge +7 flow DB thật kiểm cổng
+tên hiển thị, Unicode/lô/ID thiếu, ẩn danh, lỗi/timeout và isolation của giao dịch caller.
+Mutation SQL bỏ che tên ẩn danh bị bắt;23 test MyAccountFlowTest và8 ArchUnit hồi quy đạt.
+Đây chỉ là dependency của AC-39/GET §34; chưa tick AC-39 hoặc testcase quyền INLINE vì
+chưa triển khai transport phiếu soạn. Report `261102-1615-user-directory-read-port`.
+
+**2026-11-02, F3 readers:** ProblemSpecQuery/StarterCodeAccessQuery có DB thật; version/flag
+đồng bộ, unknown kind chỉ map OTHER trong bộ nhớ. P1/P2 đi qua bridge thật, live access giữ
+draft/deleted privacy kể cả Redis spec stale. Hồi quy S2a HTTP15 cases đạt sau việc mở visibility
+codec; hai SQL source-copy mutation bị bắt. Report `261102-1532-f2-f3-spec-readers`.
+Không tick authoring full DTO, grading snapshot cho F4 hoặc persisted E2E từ bằng chứng này.
+
+**2026-11-02, nền MinIO:** có TestcaseObjectStorePort đủ7 thao tác và adapter thật; test
+byte/UTF-8,0/8192/8193/65536 byte, private bucket, signed PUT/GET, đổi object/method bị403,
+server-side copy, delete lặp, lỗi thiếu object được che, retry/deadline và khởi tạo lazy.
+Bốn source-copy mutation kiểm key-parent/GET-TTL/write-retry/error-detail. Đây là bằng chứng
+adapter; chưa đóng các AC upload/confirm/INLINE-split/nhân bản/phiếu soạn/publish hoặc privacy
+của HTTP authoring. Report `261102-1450-f2-minio-object-store`.
+
+**S2b lõi nội bộ, 2026-11-02:** có backend evidence cho BR-04 và phần data/transaction của
+AC-40/42–45/86. ProblemContentWriteFlowTest gọi inbound thật với PostgreSQL/Redis: draft limits
+tường minh/level đầu, full replacement/ID/code/author, quotaNULL, shared optimistic lock S2a,
+published≥2 examples, rollback muộn/caller và tag/slug races. Chưa transport§36/37/phiếu soạn,
+defaults F4, MinIO/duplicate hay real-JWT mapping của route content; không đánh dấu các AC đầy
+đủ là DONE chỉ từ component nội bộ. Report `261102-1042-f2-s2b-content-write-core`.
+
+**S2a, 2026-11-02:** component/API backend evidence cho AC-46/47/48 và phần §38 của
+AC-40/43/86/89/90 ở ProblemSpecSaveFlowTest + unit/mutation. Kiểm version/no-op, hard/soft,
+raw JSON/epsilon chính xác, quyền thật và thu hồi cell trên token cũ, ownership/draft privacy,
+race, Outbox rollback/retry/caller rollback, cache sau commit. Chưa chạy QA giao diện hoặc
+relay sự kiện; không tự đổi trạng thái Chưa làm của AC tổng hợp thành hoàn tất toàn bộ.
+
+Owner chốt Outbox §38 lỗi trả503 PRB-056 (DEC-2026-1102-f2-spec-outbox-error). Test HTTP
+first-save/update bị trigger DB từ chối, không lộ SQL và rollback spec/version/timestamp/cache;
+sau phục hồi retry thành công. AC-90 phần spec có oracle503 rõ; phần giao bài lô không đổi.
+
+**S1, 2026-11-02:**10 endpoint#14–23 có code thực; owning53 test F2 gồm15 mutation,
+CatalogTaxonomyFlowTest11 integration trên PostgreSQL/Redis. Có401 mọi route, role/cell403
+từng route ghi, duplicate/slug/order/reference/last-level race, audit rollback hai chiều và
+cache sau commit. Report `261102-0926-f2-s1-taxonomy` ghi phạm vi/gate359+28.
+Đây là component/API backend evidence cho AC-19–28 và AC-29 phần catalogue/helper;
+chưa UI/danh sách bài, nên không tự tick QA/AC có quan sát frontend hoặc authoring.
+
 > Mỗi `AC-nn` map về đúng một endpoint (`03-dd/api/F2_problem-bank.md`, ký hiệu `§n` là số mục ở file đó) hoặc một khối quy tắc `BR-nn` (`03-dd/logic/F2_problem-bank.md`).
 > Viết cùng lúc với DD theo `.claude/rules/tdd-mode.md`. Quy tắc kiểm trường ở `03-dd/validation/F2_problem-bank.md`. Cập nhật: 2026-10-23.
 > Ký hiệu vai trò: A1 học viên, A2 giảng viên, A3 quản trị viên. Mọi AC có nghĩa "phản hồi lỗi mang đúng `error.code`" khi nêu mã `PRB-nnn`.
@@ -429,7 +493,7 @@ Tiêu chí nghiệm thu ngân hàng bài toán, testcase, danh mục, giao bài 
 ### AC-59 — Xoá testcase (§44)
 - **Tiền điều kiện**: testcase `MINIO`.
 - **Hành động**: xoá hai lần; xoá khi MinIO lỗi lúc dọn.
-- **Kết quả mong đợi**: Testcase đủ điều kiện bị xoá khỏi bài; lặp lại báo không tìm thấy. Nếu bài đang xuất bản còn đúng tám testcase được duyệt hoặc hai testcase mẫu, thao tác làm giảm dưới ngưỡng bị từ chối và bộ testcase giữ nguyên. Lỗi dọn tệp lưu trữ sau khi xoá không làm thao tác đã hoàn tất bị báo thất bại; hệ thống ghi sự kiện vận hành để xử lý.
+- **Kết quả mong đợi**: Testcase đủ điều kiện bị xoá khỏi bài; lặp lại báo không tìm thấy. Nếu bài đang xuất bản còn đúng tám testcase được duyệt hoặc hai testcase mẫu, thao tác làm giảm dưới ngưỡng bị từ chối và bộ testcase giữ nguyên. Lỗi dọn tệp lưu trữ sau khi xoá không làm thao tác đã hoàn tất bị báo thất bại; hệ thống chỉ ghi log cảnh báo kèm khoá object, object mồ côi được để lại (không có sự kiện hay job dọn, theo BR-14 và `DEC-2026-1108-f2-ac59-cleanup-log-only`).
 
 - **Nguồn**: [SoT: 03-dd/api/F2_problem-bank.md] §44; [SoT: 03-dd/logic/F2_problem-bank.md].
 
@@ -655,6 +719,15 @@ Tiêu chí nghiệm thu ngân hàng bài toán, testcase, danh mục, giao bài 
 - **Kết quả mong đợi**: thay đổi bài được lưu; khi dịch vụ hoạt động lại, sự kiện của chính lần sửa ấy được chuyển đủ. Gửi lại không tạo hai lần thay đổi nghiệp vụ ở bên nhận.
 - **Nguồn**: `[SoT: 03-dd/api/F2_problem-bank.md]` mục 59; `[SoT: 03-dd/jobs/F2_problem-bank.md]` JOB-PB-01.
 
+### AC-89a — Sự kiện chưa gửi được không bị thử lại dồn dập
+
+**Bổ sung kiểm chứng13/11:** `ProblemOutboxRelayFlowTest.lifecycleEventIsConfirmedIntoTheDurableProductionBacklog` kiểm cả Published/Unpublished khi gỡ binding phụ của test: queue production durable nhận persistent envelope/eventId đúng từ DB, outbox chỉ published sau confirm; requeue giữ messageId. Unknown key/backoff/fairness giữ kiểm cũ. Queue `problem-bank.lifecycle-pending` là backlog tích hợp, chưa có business consumer. Xem [báo cáo đóng bàn giao](../../06-plan/reports/261113-f2-f4-handoff-closure/report.md).
+
+- **Tiền điều kiện**: một sự kiện bài học chưa gửi được (chưa có bên nhận hoặc hàng đợi tạm lỗi).
+- **Hành động**: để dịch vụ chuyển sự kiện chạy nhiều lượt liên tiếp.
+- **Kết quả mong đợi**: sau lần thất bại đầu, sự kiện chỉ được thử lại sau 2 giây, rồi 4, 8 giây và tăng dần, tối đa 5 phút giữa hai lần thử; sự kiện không bị bỏ và giữ nguyên mã sự kiện khi gửi lại.
+- **Nguồn**: `[SoT: 03-dd/jobs/F2_problem-bank.md]` JOB-PB-01, `DEC-2026-1112-problem-outbox-retry-backoff`. Kiểm bằng `ProblemOutboxRelayFlowTest` (`failedRowIsNotRetriedBeforeItsBackoffElapsesAndThenIs`, `backoffDoublesPerAttemptAndStopsGrowingAtFiveMinutes`).
+
 ### AC-90 — Không lưu thay đổi bài nếu không ghi nhận được sự kiện kèm theo
 
 - **Tiền điều kiện**: một thao tác giao bài sẽ phát sự kiện cho các phân hệ khác, nhưng nơi lưu sự kiện không ghi được.
@@ -690,109 +763,168 @@ Tiêu chí nghiệm thu ngân hàng bài toán, testcase, danh mục, giao bài 
 - **Kết quả mong đợi**: chỉ sự kiện đã phát qua hạn bị dọn; sự kiện chưa phát vẫn chờ gửi dù cũ bao lâu. Hai tiến trình không xoá nhầm hoặc làm hỏng sự kiện chờ; lô gặp lỗi được hoàn tác và được thử lại ở lượt sau.
 - **Nguồn**: `[SoT: 03-dd/jobs/F2_problem-bank.md]` JOB-PB-02, PB-J04.
 
+### AC-95 — Mặc định soạn bài từ cấu hình hiện hành (#57, §64)
+
+- **Tiền điều kiện**: cấu hình F4/F2 thay đổi; có tài khoản CREATE-only, READ-only và tài khoản thiếu cả hai quyền.
+- **Hành động**: đọc /authoring/defaults, tạo mới/nhân bản và mở bài tồn tại; lặp khi nguồn cấu hình lỗi.
+- **Kết quả mong đợi**: chỉ bốn scalar an toàn, phản ánh cấu hình hiện tại; một trong hai quyền được phép, thiếu cả hai 403 PRB-002, anonymous 401. Nguồn lỗi 503 PRB-050 cố định, không lộ cause hoặc fallback hằng. Bài hiện hành giữ limits riêng.
+- **Nguồn**: DD F2 §64; DEC-2026-1110-f2-authoring-defaults.
+
 ## 3. Truy vết
 
-Bảng 1: Truy vết tiêu chí nghiệm thu sang endpoint, khối quy tắc và test. Cột "Test" điền ID test case khi `testcase-generation` chạy; "Trạng thái" cập nhật sau khi code và test.
+Bảng 1: Truy vết tiêu chí nghiệm thu sang endpoint, khối quy tắc, test case QA và test mã nguồn. Cột "Test case QA" giữ ID test case do `testcase-generation` sinh (tài liệu QA); cột "Test mã nguồn" liệt kê test thật đã kiểm bằng grep, theo dạng `Lớp:dòng` (dòng của phương thức test); "Trạng thái" ghi bằng chữ theo bảng 2.
 
-| AC | Endpoint / khối quy tắc | Test | Trạng thái |
-| :--- | :--- | :--- | :--- |
-| AC-01 | §2, BR-01 | [TC-F2-AC01-01](../testcases/modules/F2_problem-bank/F2_student_catalog_reads.md) | Chưa làm |
-| AC-02 | §2 | [TC-F2-AC02-01–02](../testcases/modules/F2_problem-bank/F2_student_catalog_reads.md) | Chưa làm |
-| AC-03 | §2, BR-23 | [TC-F2-AC03-01](../testcases/modules/F2_problem-bank/F2_student_catalog_reads.md) | Chưa làm |
-| AC-04 | §2, §6 | [TC-F2-AC04-01](../testcases/modules/F2_problem-bank/F2_student_catalog_reads.md) | Chưa làm |
-| AC-05 | §3 | [TC-F2-AC05-01](../testcases/modules/F2_problem-bank/F2_student_catalog_reads.md) | Chưa làm |
-| AC-06 | §4 | [TC-F2-AC06-01–02](../testcases/modules/F2_problem-bank/F2_student_catalog_reads.md) | Chưa làm |
-| AC-07 | §5 | [TC-F2-AC07-01–02](../testcases/modules/F2_problem-bank/F2_student_catalog_reads.md) | Chưa làm |
-| AC-08 | §6 | [TC-F2-AC08-01](../testcases/modules/F2_problem-bank/F2_student_catalog_reads.md) | Chưa làm |
-| AC-09 | §6, §7, §8, BR-01 | [TC-F2-AC09-01](../testcases/modules/F2_problem-bank/F2_student_catalog_reads.md) | Chưa làm |
-| AC-10 | §7 | [TC-F2-AC10-01](../testcases/modules/F2_problem-bank/F2_student_catalog_reads.md) | Chưa làm |
-| AC-11 | §8 (`testcaseId`), BR-13 | [TC-F2-AC11-01–02](../testcases/modules/F2_problem-bank/F2_student_catalog_reads.md) | Chưa làm |
-| AC-12 | §10, BR-21 | [TC-F2-AC12-01](../testcases/modules/F2_problem-bank/F2_bookmarks_recommendations.md) | Chưa làm |
-| AC-13 | §10 | [TC-F2-AC13-01](../testcases/modules/F2_problem-bank/F2_bookmarks_recommendations.md) | Chưa làm |
-| AC-14 | §11 | [TC-F2-AC14-01](../testcases/modules/F2_problem-bank/F2_bookmarks_recommendations.md) | Chưa làm |
-| AC-15 | §12 | [TC-F2-AC15-01–02](../testcases/modules/F2_problem-bank/F2_bookmarks_recommendations.md) | Chưa làm |
-| AC-16 | §9, BR-21 | [TC-F2-AC16-01–02](../testcases/modules/F2_problem-bank/F2_bookmarks_recommendations.md) | Chưa làm |
-| AC-17 | §13, BR-23 | [TC-F2-AC17-01–02](../testcases/modules/F2_problem-bank/F2_bookmarks_recommendations.md) | Chưa làm |
-| AC-18 | §14 | [TC-F2-AC18-01](../testcases/modules/F2_problem-bank/F2_bookmarks_recommendations.md) | Chưa làm |
-| AC-19 | §15, §20 | [TC-F2-AC19-01](../testcases/modules/F2_problem-bank/F2_taxonomy_admin.md) | Chưa làm |
-| AC-20 | §16, BR-22, BR-27 | [TC-F2-AC20-01–02](../testcases/modules/F2_problem-bank/F2_taxonomy_admin.md) | Chưa làm |
-| AC-21 | §16-§19, §21-§24 | [TC-F2-AC21-01](../testcases/modules/F2_problem-bank/F2_taxonomy_admin.md) | Chưa làm |
-| AC-22 | §16, BR-27 | [TC-F2-AC22-01](../testcases/modules/F2_problem-bank/F2_taxonomy_admin.md) | Chưa làm |
-| AC-23 | §17 | [TC-F2-AC23-01](../testcases/modules/F2_problem-bank/F2_taxonomy_admin.md) | Chưa làm |
-| AC-24 | §18, §23 | [TC-F2-AC24-01–02](../testcases/modules/F2_problem-bank/F2_taxonomy_admin.md) | Chưa làm |
-| AC-25 | §19, BR-22 | [TC-F2-AC25-01–02](../testcases/modules/F2_problem-bank/F2_taxonomy_admin.md) | Chưa làm |
-| AC-26 | §19 | [TC-F2-AC26-01](../testcases/modules/F2_problem-bank/F2_taxonomy_admin.md) | Chưa làm |
-| AC-27 | §21, §22, §24 | [TC-F2-AC27-01–02](../testcases/modules/F2_problem-bank/F2_taxonomy_admin.md) | Chưa làm |
-| AC-28 | §23 | [TC-F2-AC28-01](../testcases/modules/F2_problem-bank/F2_taxonomy_admin.md) | Chưa làm |
-| AC-29 | BR-03 | [TC-F2-AC29-01](../testcases/modules/F2_problem-bank/F2_authoring_list_bulk.md) | Chưa làm |
-| AC-30 | §25 | [TC-F2-AC30-01](../testcases/modules/F2_problem-bank/F2_authoring_list_bulk.md) | Chưa làm |
-| AC-31 | §25 | [TC-F2-AC31-01](../testcases/modules/F2_problem-bank/F2_authoring_list_bulk.md) | Chưa làm |
-| AC-32 | §26, §27 | [TC-F2-AC32-01](../testcases/modules/F2_problem-bank/F2_authoring_list_bulk.md) | Chưa làm |
-| AC-33 | §28 | [TC-F2-AC33-01–02](../testcases/modules/F2_problem-bank/F2_authoring_list_bulk.md) | Chưa làm |
-| AC-34 | §29, BR-08 | [TC-F2-AC34-01](../testcases/modules/F2_problem-bank/F2_authoring_list_bulk.md) | Chưa làm |
-| AC-35 | §30, BR-08 | [TC-F2-AC35-01](../testcases/modules/F2_problem-bank/F2_authoring_list_bulk.md) | Chưa làm |
-| AC-36 | §31, §32 | [TC-F2-AC36-01–02](../testcases/modules/F2_problem-bank/F2_authoring_list_bulk.md) | Chưa làm |
-| AC-37 | §33, BR-09 | [TC-F2-AC37-01–02](../testcases/modules/F2_problem-bank/F2_authoring_list_bulk.md) | Chưa làm |
-| AC-38 | §29-§33 | [TC-F2-AC38-01](../testcases/modules/F2_problem-bank/F2_authoring_list_bulk.md) | Chưa làm |
-| AC-39 | §34, BR-02 | [TC-F2-AC39-01](../testcases/modules/F2_problem-bank/F2_authoring_editor_publish.md) | Chưa làm |
-| AC-40 | §37-§40, §42, BR-02 | [TC-F2-AC40-01](../testcases/modules/F2_problem-bank/F2_authoring_editor_publish.md) | Chưa làm |
-| AC-41 | §35, §36, BR-10 | [TC-F2-AC41-01–02](../testcases/modules/F2_problem-bank/F2_authoring_editor_publish.md) | Chưa làm |
-| AC-42 | §36 | [TC-F2-AC42-01](../testcases/modules/F2_problem-bank/F2_authoring_editor_publish.md) | Chưa làm |
-| AC-43 | §37, BR-04 | [TC-F2-AC43-01](../testcases/modules/F2_problem-bank/F2_authoring_editor_publish.md) | Chưa làm |
-| AC-44 | §37 | [TC-F2-AC44-01–02](../testcases/modules/F2_problem-bank/F2_authoring_editor_publish.md) | Chưa làm |
-| AC-45 | §36, §37 | [TC-F2-AC45-01](../testcases/modules/F2_problem-bank/F2_authoring_editor_publish.md) | Chưa làm |
-| AC-46 | §38, BR-05 | [TC-F2-AC46-01](../testcases/modules/F2_problem-bank/F2_authoring_editor_publish.md) | Chưa làm |
-| AC-47 | §38 | [TC-F2-AC47-01](../testcases/modules/F2_problem-bank/F2_authoring_editor_publish.md) | Chưa làm |
-| AC-48 | §38 | [TC-F2-AC48-01](../testcases/modules/F2_problem-bank/F2_authoring_editor_publish.md) | Chưa làm |
-| AC-49 | §39, BR-06 | [TC-F2-AC49-01](../testcases/modules/F2_problem-bank/F2_authoring_editor_publish.md) | Chưa làm |
-| AC-50 | §40, BR-07, BR-08 | [TC-F2-AC50-01](../testcases/modules/F2_problem-bank/F2_authoring_editor_publish.md) | Chưa làm |
-| AC-51 | §40 | [TC-F2-AC51-01](../testcases/modules/F2_problem-bank/F2_authoring_editor_publish.md) | Chưa làm |
-| AC-52 | §40 | [TC-F2-AC52-01](../testcases/modules/F2_problem-bank/F2_authoring_editor_publish.md) | Chưa làm |
-| AC-53 | §41 | [TC-F2-AC53-01](../testcases/modules/F2_problem-bank/F2_authoring_editor_publish.md) | Chưa làm |
-| AC-54 | §42, BR-12 | [TC-F2-AC54-01](../testcases/modules/F2_problem-bank/F2_testcase_authoring_upload.md) | Chưa làm |
-| AC-55 | §42 | [TC-F2-AC55-01](../testcases/modules/F2_problem-bank/F2_testcase_authoring_upload.md) | Chưa làm |
-| AC-56 | §42-§45, BR-11 | [TC-F2-AC56-01 đến -20](../testcases/modules/F2_problem-bank/F2_testcase_set_version.md) | Chưa làm |
-| AC-57 | §43, BR-17 | [TC-F2-AC56-03 (duyệt), TC-F2-AC57-01 (từ chối hạ duyệt)](../testcases/modules/F2_problem-bank/F2_testcase_set_version.md) | Chưa làm |
-| AC-58 | §43 | [TC-F2-AC58-01](../testcases/modules/F2_problem-bank/F2_testcase_authoring_upload.md) | Chưa làm |
-| AC-59 | §44 | [TC-F2-AC56-06/07, TC-F2-AC59-01 đến -04](../testcases/modules/F2_problem-bank/F2_testcase_set_version.md) | Chưa làm |
-| AC-60 | §45 | [TC-F2-AC56-15 đến -23](../testcases/modules/F2_problem-bank/F2_testcase_set_version.md) | Chưa làm |
-| AC-61 | §46, BR-14 | [TC-F2-AC61-01](../testcases/modules/F2_problem-bank/F2_testcase_authoring_upload.md) | Chưa làm |
-| AC-62 | §47, BR-14 | [TC-F2-AC62-01–02](../testcases/modules/F2_problem-bank/F2_testcase_authoring_upload.md) | Chưa làm |
-| AC-63 | §48, BR-15 | [TC-F2-AC63-01–02](../testcases/modules/F2_problem-bank/F2_testcase_authoring_upload.md) | Chưa làm |
-| AC-64 | §48 | [TC-F2-AC64-01–02](../testcases/modules/F2_problem-bank/F2_testcase_authoring_upload.md) | Chưa làm |
-| AC-65 | §49, BR-16 | [TC-F2-AC65-01](../testcases/modules/F2_problem-bank/F2_ai_generation.md) | Chưa làm |
-| AC-66 | §49 | [TC-F2-AC66-01](../testcases/modules/F2_problem-bank/F2_ai_generation.md) | Chưa làm |
-| AC-67 | §49, §57 | [TC-F2-AC67-01](../testcases/modules/F2_problem-bank/F2_ai_generation.md) | Chưa làm |
-| AC-68 | §49 | [TC-F2-AC68-01](../testcases/modules/F2_problem-bank/F2_ai_generation.md) | Chưa làm |
-| AC-69 | §49, BR-16 | [TC-F2-AC69-01–02](../testcases/modules/F2_problem-bank/F2_ai_generation.md) | Chưa làm |
-| AC-70 | §49, BR-06, BR-16 | [TC-F2-AC70-01](../testcases/modules/F2_problem-bank/F2_ai_generation.md) | Chưa làm |
-| AC-71 | §49 | [TC-F2-AC71-01–02](../testcases/modules/F2_problem-bank/F2_ai_generation.md) | Chưa làm |
-| AC-72 | §50 | [TC-F2-AC72-01–02](../testcases/modules/F2_problem-bank/F2_class_assignments.md) | Chưa làm |
-| AC-73 | §51 | [TC-F2-AC73-01](../testcases/modules/F2_problem-bank/F2_class_assignments.md) | Chưa làm |
-| AC-74 | §52 | [TC-F2-AC74-01](../testcases/modules/F2_problem-bank/F2_class_assignments.md) | Chưa làm |
-| AC-75 | §53, BR-18 | [TC-F2-AC75-01–03](../testcases/modules/F2_problem-bank/F2_class_assignments.md) | Chưa làm |
-| AC-76 | §54, BR-18 | [TC-F2-AC76-01](../testcases/modules/F2_problem-bank/F2_class_assignments.md) | Chưa làm |
-| AC-77 | §55 | [TC-F2-AC77-01](../testcases/modules/F2_problem-bank/F2_class_assignments.md) | Chưa làm |
-| AC-78 | §56, §57 | [TC-F2-AC78-01](../testcases/modules/F2_problem-bank/F2_class_assignments.md) | Chưa làm |
-| AC-79 | BR-20 | [TC-F2-AC79-01–02](../testcases/modules/F2_problem-bank/F2_class_assignments.md) | Chưa làm |
-| AC-80 | BR-19 | [TC-F2-AC80-01](../testcases/modules/F2_problem-bank/F2_class_assignments.md) | Chưa làm |
-| AC-81 | `ProblemGradingSpecPort`, BR-11, BR-13 | [TC-F2-AC81-01–02](../testcases/modules/F2_problem-bank/F2_ports_privacy_cache.md) | Chưa làm |
-| AC-82 | `ProblemSpecQuery`, BR-05 | [TC-F2-AC82-01](../testcases/modules/F2_problem-bank/F2_ports_privacy_cache.md) | Chưa làm |
-| AC-83 | `ProblemContextPort`, BR-06 | [TC-F2-AC83-01](../testcases/modules/F2_problem-bank/F2_ports_privacy_cache.md) | Chưa làm |
-| AC-84 | `ProblemSummaryReadPort`, `ProblemTopicReadPort`, `ClassAssignmentReadPort` | [TC-F2-AC84-01–02](../testcases/modules/F2_problem-bank/F2_ports_privacy_cache.md) | Chưa làm |
-| AC-85 | BR-13 | [TC-F2-AC85-01](../testcases/modules/F2_problem-bank/F2_ports_privacy_cache.md) | Chưa làm |
-| AC-86 | BR-02 | [TC-F2-AC86-01](../testcases/modules/F2_problem-bank/F2_ports_privacy_cache.md) | Chưa làm |
-| AC-87 | BR-25 | [TC-F2-AC87-01](../testcases/modules/F2_problem-bank/F2_ports_privacy_cache.md) | Chưa làm |
-| AC-88 | §5A | [TC-F2-AC88-01–02](../testcases/modules/F2_problem-bank/F2_ports_privacy_cache.md) | Chưa làm |
-| AC-89 | §59, JOB-PB-01 | [TC-F2-AC89-01 đến -04](../testcases/modules/F2_problem-bank/F2_outbox_delivery_cleanup.md) | Chưa làm |
-| AC-90 | BR-26, JOB-PB-01 | [TC-F2-AC90-01](../testcases/modules/F2_problem-bank/F2_outbox_delivery_cleanup.md) | Chưa làm |
-| AC-91 | §48, Q-31 | [TC-F2-AC91-01–02](../testcases/modules/F2_problem-bank/F2_reference_rate_level_progress.md) | Chưa làm |
-| AC-92 | §14A | [TC-F2-AC92-01–02](../testcases/modules/F2_problem-bank/F2_reference_rate_level_progress.md) | Chưa làm |
-| AC-93 | BR-11, §40, §43, §58, DB 1.15 | [TC-F2-AC93-01, -02, -03, -04, -05](../testcases/modules/F2_problem-bank/F2_snapshot_grading.md) | Chưa làm |
-| AC-94 | JOB-PB-02 | [TC-F2-AC94-01 đến -03](../testcases/modules/F2_problem-bank/F2_outbox_delivery_cleanup.md) | Chưa làm |
+Quy ước đường dẫn: lớp flow nằm trong `05-coding/backend/algoprep-bootstrap/src/test/java/com/algoprep/bootstrap/problembank/` (riêng `ProblemGradingReadFlowTest`, `PersistedWorkerFlowTest`, `ClassAssignmentReadFlowTest` ở `.../bootstrap/judge/`, `HarnessProblemReadFlowTest` ở `.../bootstrap/problembank/`); lớp unit nằm trong `05-coding/backend/algoprep-problem-bank/src/test/java/com/algoprep/problembank/` (`application/command`, `application/query`, `domain/model`). Tên lớp là duy nhất trong cây, nên chỉ ghi tên lớp. Test frontend (`real-*.test.ts` ở `05-coding/frontend/src/entities/problem/api/` và `class-assignment/api/`) kiểm ánh xạ hợp đồng, không dùng làm bằng chứng nghiệm thu cho AC nào.
+
+Bảng 2: Ý nghĩa trạng thái truy vết (cập nhật 2026-11-06, chỉ sửa tài liệu: không chạy Maven hay pnpm khi cập nhật bảng này)
+
+| Trạng thái | Nghĩa |
+| :--- | :--- |
+| Đạt | Có test khẳng định hành vi của AC; lượt chạy theo lát đạt, và các AC của đợt 1 đã qua full regression 2026-11-06 (không tính mutation, xem ghi chú dưới bảng 1) |
+| Code xong, chưa test toàn bộ | Code và test theo lát đã có nhưng chưa qua lượt full regression hiện hành |
+| Một phần | Có test nhưng chưa khẳng định hết AC; phần thiếu ghi ở cột Ghi chú |
+| Chưa làm | Hành vi chưa có code |
+| Hoãn | Giữ lịch sử hoãn; ClassDeleted đã triển khai, xem AC-80. F2-9 sinh testcase AI (AC-65 đến AC-71, AC-78) đã có code ở lát F5-5b (2026-11-10), trạng thái xem từng hàng |
+
+Mutation test của các lát gần đây (quyền, riêng tư, tiền) chưa làm: để bước FINAL theo `DEC-2026-1106-f1-f2-batch-test-workflow`. Các ca mutation ghi ở đầu tài liệu (S1, S2a, S2b, D02g, D02h) là của các lát đó, không mở rộng cho toàn bộ AC.
+
+| AC | Endpoint / khối quy tắc | Test case QA | Test mã nguồn | Trạng thái | Ghi chú |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| AC-01 | §2, BR-01 | [TC-F2-AC01-01](../testcases/modules/F2_problem-bank/F2_student_catalog_reads.md) | PublishedProblemReadFlowTest:129 | Đạt |  |
+| AC-02 | §2 | [TC-F2-AC02-01–02](../testcases/modules/F2_problem-bank/F2_student_catalog_reads.md) | PublishedProblemReadFlowTest:158; PublishedProblemReadFlowTest:182; ReadPublishedProblemsQueryHandlerTest:58 | Đạt |  |
+| AC-03 | §2, BR-23 | [TC-F2-AC03-01](../testcases/modules/F2_problem-bank/F2_student_catalog_reads.md) | ReadPublishedProblemsQueryHandlerTest:42 | Đạt | Chỉ kiểm ở mức handler (cổng identity giả lập lỗi); chưa có ca HTTP với identity ngừng thật. |
+| AC-04 | §2, §6 | [TC-F2-AC04-01](../testcases/modules/F2_problem-bank/F2_student_catalog_reads.md) | PublishedProblemReadFlowTest:129 (trang 99 trả trang cuối, acRate null); PublishedProblemReadFlowTest:212; F2CloseoutFlowTest.learnerDetailKeepsNullRateAndSampleIdsMatchTheF4Bridge | Đạt | Full reactor 2026-11-11: PublishedProblemReadFlowTest 11/11 và F2CloseoutFlowTest 8/8 đạt; acRate null đã kiểm ở list/workspace/overview. |
+| AC-05 | §3 | [TC-F2-AC05-01](../testcases/modules/F2_problem-bank/F2_student_catalog_reads.md) | PublishedProblemReadFlowTest:230 | Đạt |  |
+| AC-06 | §4 | [TC-F2-AC06-01–02](../testcases/modules/F2_problem-bank/F2_student_catalog_reads.md) | StudentCatalogFlowTest:133 | Đạt |  |
+| AC-07 | §5 | [TC-F2-AC07-01–02](../testcases/modules/F2_problem-bank/F2_student_catalog_reads.md) | MyClassAssignmentsFlowTest:130; MyClassAssignmentsFlowTest:167; MyClassAssignmentsFlowTest:198; MyClassAssignmentsQueryHandlerTest | Đạt | F2-4c; qua full regression 2026-11-06 (flow và unit xanh, chưa mutation). |
+| AC-08 | §6 | [TC-F2-AC08-01](../testcases/modules/F2_problem-bank/F2_student_catalog_reads.md) | PublishedProblemReadFlowTest:248; StudentCatalogFlowTest:264 | Đạt |  |
+| AC-09 | §6, §7, §8, BR-01 | [TC-F2-AC09-01](../testcases/modules/F2_problem-bank/F2_student_catalog_reads.md) | PublishedProblemReadFlowTest:277 | Đạt | Ba endpoint nhân bốn id (nháp, đã xoá, không có, sai dạng) cùng thân. |
+| AC-10 | §7 | [TC-F2-AC10-01](../testcases/modules/F2_problem-bank/F2_student_catalog_reads.md) | PublishedProblemReadFlowTest:307; PublishedProblemReadFlowTest:296 | Đạt |  |
+| AC-11 | §8 (`testcaseId`), BR-13 | [TC-F2-AC11-01–02](../testcases/modules/F2_problem-bank/F2_student_catalog_reads.md) | PublishedProblemReadFlowTest:328; F2CloseoutFlowTest.learnerDetailKeepsNullRateAndSampleIdsMatchTheF4Bridge | Đạt | Full reactor: PublishedProblemReadFlowTest 11/11 và F2CloseoutFlowTest 8/8 đạt; sample testcaseId khớp ProblemGradingSpecPort F4 thật. |
+| AC-12 | §10, BR-21 | [TC-F2-AC12-01](../testcases/modules/F2_problem-bank/F2_bookmarks_recommendations.md) | StudentCatalogFlowTest:264; StudentCatalogFlowTest:287 (PRB-014, không tạo lại); StudentCatalogFlowTest:306 (createIfMissing=true) | Đạt |  |
+| AC-13 | §10 | [TC-F2-AC13-01](../testcases/modules/F2_problem-bank/F2_bookmarks_recommendations.md) | StudentCatalogFlowTest:283 (khoảng trắng thành NULL); StudentCatalogFlowTest:291 (1001); StudentCatalogFlowTest:295 (1000) | Đạt |  |
+| AC-14 | §11 | [TC-F2-AC14-01](../testcases/modules/F2_problem-bank/F2_bookmarks_recommendations.md) | StudentCatalogFlowTest:311; StudentCatalogFlowTest:322 | Đạt | Bỏ lưu hai lần 204, kể cả bài đã rút. |
+| AC-15 | §12 | [TC-F2-AC15-01–02](../testcases/modules/F2_problem-bank/F2_bookmarks_recommendations.md) | StudentCatalogFlowTest:327; StudentCatalogFlowTest:355 | Đạt |  |
+| AC-16 | §9, BR-21 | [TC-F2-AC16-01–02](../testcases/modules/F2_problem-bank/F2_bookmarks_recommendations.md) | StudentCatalogFlowTest:209; StudentCatalogFlowTest:219 (tham số userId bị bỏ qua) | Đạt |  |
+| AC-17 | §13, BR-23 | [TC-F2-AC17-01–02](../testcases/modules/F2_problem-bank/F2_bookmarks_recommendations.md) | SuggestedProblemsFlowTest:173; SuggestedProblemsFlowTest:215; SuggestedProblemsFlowTest:227; SuggestionRankingTest; SuggestedProblemsQueryHandlerTest | Đạt | F2-4d; qua full regression 2026-11-06 (flow và unit xanh, chưa mutation). |
+| AC-18 | §14 | [TC-F2-AC18-01](../testcases/modules/F2_problem-bank/F2_bookmarks_recommendations.md) | StudentCatalogFlowTest:179; StudentCatalogFlowTest:158 | Đạt |  |
+| AC-19 | §15, §20 | [TC-F2-AC19-01](../testcases/modules/F2_problem-bank/F2_taxonomy_admin.md) | CatalogTaxonomyFlowTest:160 | Đạt |  |
+| AC-20 | §16, BR-22, BR-27 | [TC-F2-AC20-01–02](../testcases/modules/F2_problem-bank/F2_taxonomy_admin.md) | CatalogTaxonomyFlowTest:182; CatalogTaxonomyFlowTest:224 (PRB-022) | Đạt |  |
+| AC-21 | §16-§19, §21-§24 | [TC-F2-AC21-01](../testcases/modules/F2_problem-bank/F2_taxonomy_admin.md) | CatalogTaxonomyFlowTest:276 | Đạt |  |
+| AC-22 | §16, BR-27 | [TC-F2-AC22-01](../testcases/modules/F2_problem-bank/F2_taxonomy_admin.md) | CatalogTaxonomyFlowTest:357 | Đạt |  |
+| AC-23 | §17 | [TC-F2-AC23-01](../testcases/modules/F2_problem-bank/F2_taxonomy_admin.md) | CatalogTaxonomyFlowTest:182; CatalogCommandHandlersTest | Đạt |  |
+| AC-24 | §18, §23 | [TC-F2-AC24-01–02](../testcases/modules/F2_problem-bank/F2_taxonomy_admin.md) | CatalogTaxonomyFlowTest:182; CatalogTaxonomyFlowTest:224 (PRB-049); ProblemAuthoringListFlowTest:127 | Đạt |  |
+| AC-25 | §19, BR-22 | [TC-F2-AC25-01–02](../testcases/modules/F2_problem-bank/F2_taxonomy_admin.md) | CatalogTaxonomyFlowTest:315 | Đạt |  |
+| AC-26 | §19 | [TC-F2-AC26-01](../testcases/modules/F2_problem-bank/F2_taxonomy_admin.md) | CatalogTaxonomyFlowTest:333 | Đạt |  |
+| AC-27 | §21, §22, §24 | [TC-F2-AC27-01–02](../testcases/modules/F2_problem-bank/F2_taxonomy_admin.md) | CatalogTaxonomyFlowTest:182; CatalogTaxonomyFlowTest:315 (PRB-031) | Đạt |  |
+| AC-28 | §23 | [TC-F2-AC28-01](../testcases/modules/F2_problem-bank/F2_taxonomy_admin.md) | CatalogTaxonomyFlowTest:182 | Đạt |  |
+| AC-29 | BR-03 | [TC-F2-AC29-01](../testcases/modules/F2_problem-bank/F2_authoring_list_bulk.md) | CatalogTaxonomyFlowTest:410; ProblemContentWriteFlowTest:154; CatalogSlugTest:16; ProblemCodeTest | Đạt |  |
+| AC-30 | §25 | [TC-F2-AC30-01](../testcases/modules/F2_problem-bank/F2_authoring_list_bulk.md) | ProblemAuthoringListFlowTest:98; ProblemAuthoringListFlowTest:116; ProblemAuthoringListFlowTest:127; ProblemAuthoringListFlowTest:142 | Đạt |  |
+| AC-31 | §25 | [TC-F2-AC31-01](../testcases/modules/F2_problem-bank/F2_authoring_list_bulk.md) | ProblemAuthoringListFlowTest:193; ProblemAuthoringListFlowTest:179 | Đạt |  |
+| AC-32 | §26, §27 | [TC-F2-AC32-01](../testcases/modules/F2_problem-bank/F2_authoring_list_bulk.md) | ProblemAuthoringListFlowTest:223; ProblemAuthoringListFlowTest:256 | Đạt |  |
+| AC-33 | §28 | [TC-F2-AC33-01–02](../testcases/modules/F2_problem-bank/F2_authoring_list_bulk.md) | ProblemAuthoringBulkFlowTest:129; ProblemAuthoringBulkFlowTest:156; ProblemCsvExportTest:51; ProblemCsvExportTest:64; ProblemCsvExportTest:82 | Đạt |  |
+| AC-34 | §29, BR-08 | [TC-F2-AC34-01](../testcases/modules/F2_problem-bank/F2_authoring_list_bulk.md) | ProblemAuthoringBulkFlowTest:344; BulkProblemActionsTest | Đạt |  |
+| AC-35 | §30, BR-08 | [TC-F2-AC35-01](../testcases/modules/F2_problem-bank/F2_authoring_list_bulk.md) | ProblemAuthoringBulkFlowTest:329; ProblemAuthoringBulkFlowTest:261 | Đạt |  |
+| AC-36 | §31, §32 | [TC-F2-AC36-01–02](../testcases/modules/F2_problem-bank/F2_authoring_list_bulk.md) | ProblemAuthoringBulkFlowTest:182; ProblemAuthoringBulkFlowTest:209; ProblemAuthoringBulkFlowTest:231 | Đạt |  |
+| AC-37 | §33, BR-09 | [TC-F2-AC37-01–02](../testcases/modules/F2_problem-bank/F2_authoring_list_bulk.md) | ProblemAuthoringBulkFlowTest:261; ProblemAuthoringBulkFlowTest:297 | Đạt |  |
+| AC-38 | §29-§33 | [TC-F2-AC38-01](../testcases/modules/F2_problem-bank/F2_authoring_list_bulk.md) | ProblemAuthoringBulkFlowTest:344 (trần 20); ProblemAuthoringBulkFlowTest:379 | Đạt |  |
+| AC-39 | §34, BR-02 | [TC-F2-AC39-01](../testcases/modules/F2_problem-bank/F2_authoring_editor_publish.md) | ProblemAuthoringHttpFlowTest:142; ProblemAuthoringHttpFlowTest:170 | Đạt | Kiểm quyền đọc thật bằng JWT; tên hiển thị tác giả đi qua UserDirectory (lát A). |
+| AC-40 | §37-§40, §42, BR-02 | [TC-F2-AC40-01](../testcases/modules/F2_problem-bank/F2_authoring_editor_publish.md) | ProblemAuthoringHttpFlowTest:210; ProblemContentWriteFlowTest:227; ProblemSpecSaveFlowTest:205; ProblemPublishStatusHttpFlowTest:239; ProblemTestcaseAuthoringFlowTest:275; ProblemAiContextFlowTest:169 | Đạt | F2-2e; qua full regression 2026-11-06 (flow và unit xanh, chưa mutation). Mảnh F2-2e (§39) cũng đã qua full regression. |
+| AC-41 | §35, §36, BR-10 | [TC-F2-AC41-01–02](../testcases/modules/F2_problem-bank/F2_authoring_editor_publish.md) | ProblemDuplicationFlowTest:120; ProblemDuplicationFlowTest:181; ProblemDuplicationFlowTest:250; ProblemDuplicationFlowTest:275; GetDuplicateSourceQueryHandlerTest; ProblemDuplicatorTest | Đạt | F2-1b/F2-2d; qua full regression 2026-11-06 (flow và unit xanh, chưa mutation). |
+| AC-42 | §36 | [TC-F2-AC42-01](../testcases/modules/F2_problem-bank/F2_authoring_editor_publish.md) | ProblemAuthoringHttpFlowTest:88; ProblemContentWriteFlowTest:129; CreateProblemCommandHandlerTest | Đạt |  |
+| AC-43 | §37, BR-04 | [TC-F2-AC43-01](../testcases/modules/F2_problem-bank/F2_authoring_editor_publish.md) | ProblemAuthoringHttpFlowTest:181; ProblemContentWriteFlowTest:337; ProblemContentWriteFlowTest:361; ProblemSpecSaveFlowTest:187 | Đạt |  |
+| AC-44 | §37 | [TC-F2-AC44-01–02](../testcases/modules/F2_problem-bank/F2_authoring_editor_publish.md) | ProblemAuthoringHttpFlowTest:237; ProblemContentWriteFlowTest:266; ProblemContentWriteFlowTest:169 | Đạt |  |
+| AC-45 | §36, §37 | [TC-F2-AC45-01](../testcases/modules/F2_problem-bank/F2_authoring_editor_publish.md) | ProblemAuthoringHttpFlowTest:122; ProblemContentWriteFlowTest:382; ProblemContentWriteFlowTest:431; ProblemContentValidationTest | Đạt |  |
+| AC-46 | §38, BR-05 | [TC-F2-AC46-01](../testcases/modules/F2_problem-bank/F2_authoring_editor_publish.md) | ProblemSpecSaveFlowTest:154 | Đạt |  |
+| AC-47 | §38 | [TC-F2-AC47-01](../testcases/modules/F2_problem-bank/F2_authoring_editor_publish.md) | ProblemSpecSaveFlowTest:245; ProblemSpecSaveFlowTest:381; SaveProblemSpecCommandHandlerTest:168 (HRN-V17/V20/V22/V14) | Đạt |  |
+| AC-48 | §38 | [TC-F2-AC48-01](../testcases/modules/F2_problem-bank/F2_authoring_editor_publish.md) | ProblemSpecSaveFlowTest:255; SaveProblemSpecCommandHandlerTest:158 (PRB-W01) | Đạt |  |
+| AC-49 | §39, BR-06 | [TC-F2-AC49-01](../testcases/modules/F2_problem-bank/F2_authoring_editor_publish.md) | ProblemAiContextFlowTest:82; ProblemAiContextFlowTest:169; ProblemAiContextFlowTest:182 (PRB-002); SaveAiAuthoringContextCommandHandlerTest | Đạt | Full reactor: ProblemAiContextFlowTest 7/7, ProblemContextReadFlowTest 6/6 và AiReviewBridgesTest 6/6 đạt. Nội dung/cờ được lưu/đọc nguyên trường dữ liệu, thiếu quyền403, DTO không có đáp án mẫu/testcase; vế F5 là chuyển kiểu của bridge, không đòi provider live. |
+| AC-50 | §40, BR-07, BR-08 | [TC-F2-AC50-01](../testcases/modules/F2_problem-bank/F2_authoring_editor_publish.md) | ProblemPublishStatusHttpFlowTest:125; ReferenceSolutionSandboxFlowTest:120 | Đạt | Ca sandbox thật cần go-judge chạy; ReferenceSolutionSandboxFlowTest bị bỏ qua (Skipped 1) trong full regression 2026-11-06 vì thiếu go-judge; lượt gần nhất của ca này xem report 261103-f4-worker-closeout. |
+| AC-51 | §40 | [TC-F2-AC51-01](../testcases/modules/F2_problem-bank/F2_authoring_editor_publish.md) | ProblemPublishStatusHttpFlowTest:158 | Đạt |  |
+| AC-52 | §40 | [TC-F2-AC52-01](../testcases/modules/F2_problem-bank/F2_authoring_editor_publish.md) | ProblemPublishStatusHttpFlowTest:184 | Đạt |  |
+| AC-53 | §41 | [TC-F2-AC53-01](../testcases/modules/F2_problem-bank/F2_authoring_editor_publish.md) | ProblemStatsFlowTest:151; GetProblemStatsQueryHandlerTest | Đạt | F2-2f; qua full regression 2026-11-06 (flow và unit xanh, chưa mutation). |
+| AC-54 | §42, BR-12 | [TC-F2-AC54-01](../testcases/modules/F2_problem-bank/F2_testcase_authoring_upload.md) | ProblemTestcaseAuthoringFlowTest:155; ProblemTestcaseAuthoringFlowTest:176 | Đạt |  |
+| AC-55 | §42 | [TC-F2-AC55-01](../testcases/modules/F2_problem-bank/F2_testcase_authoring_upload.md) | ProblemTestcaseAuthoringFlowTest:227 (PRB-001; PRB-048 tại :237); ProblemTestcaseAuthoringFlowTest:261 (PRB-046 tại :256) | Đạt |  |
+| AC-56 | §42-§45, BR-11 | [TC-F2-AC56-01 đến -20](../testcases/modules/F2_problem-bank/F2_testcase_set_version.md) | ProblemTestcaseAuthoringFlowTest:202; ProblemTestcaseAuthoringFlowTest:301; ProblemTestcaseAuthoringFlowTest:393; ProblemTestcaseAuthoringFlowTest:484; SnapshotPublicationFlowTest:265; SnapshotPublicationFlowTest:302; SnapshotPublicationFlowTest:312; SnapshotPublicationFlowTest:325 | Đạt | Gồm tái xuất bản so snapshot. Nhánh epsilon bổ sung 2026-10-29 chưa có testcase riêng. |
+| AC-57 | §43, BR-17 | [TC-F2-AC56-03 (duyệt), TC-F2-AC57-01 (từ chối hạ duyệt)](../testcases/modules/F2_problem-bank/F2_testcase_set_version.md) | ProblemTestcaseAuthoringFlowTest:321 | Đạt |  |
+| AC-58 | §43 | [TC-F2-AC58-01](../testcases/modules/F2_problem-bank/F2_testcase_authoring_upload.md) | ProblemTestcaseAuthoringFlowTest:368; ProblemTestcaseAuthoringFlowTest:275 (PRB-011 tại :373) | Đạt |  |
+| AC-59 | §44 | [TC-F2-AC56-06/07, TC-F2-AC59-01 đến -04](../testcases/modules/F2_problem-bank/F2_testcase_set_version.md) | ProblemTestcaseAuthoringFlowTest:393; ProblemTestcaseAuthoringFlowTest:417; ProblemTestcaseAuthoringFlowTest:433; ProblemTestcaseAuthoringFlowTest:454 | Đạt | Ca MinIO lỗi lúc dọn object sau xoá thêm 2026-11-08: xoá vẫn 200, dòng DB đã mất, hai object còn lại, có hai dòng log cảnh báo (`TestcaseContentStore.java:111`); mutant bỏ log và mutant bỏ dọn đều bị bắt. Owner chốt 2026-11-08: sửa AC cho khớp code, chỉ ghi log (`DEC-2026-1108-f2-ac59-cleanup-log-only`, ponytail bậc 3). Chạy riêng lớp test (17/17), chưa qua full regression. (Không phải PB45-A2, ca đó thuộc AC-60.) |
+| AC-60 | §45 | [TC-F2-AC56-15 đến -23](../testcases/modules/F2_problem-bank/F2_testcase_set_version.md) | ProblemTestcaseAuthoringFlowTest:484; ProblemTestcaseAuthoringFlowTest:515; ProblemTestcaseAuthoringFlowTest:543; SnapshotPublicationFlowTest:352; SnapshotPublicationFlowTest:457 (PRB-052 tại :611) | Đạt | PB45-A2 thêm 2026-11-08 (đợt B4): cổng lưu trữ MinIO thật bọc spy, `put` ném lỗi khi sắp lại bài `PUBLISHED` -> 503 `PRB-052`, thân lỗi không lộ nguyên nhân, vị trí, phiên bản, số snapshot và số dòng Outbox giữ nguyên; gỡ lỗi rồi gửi lại thì 200 và tăng đúng một phiên bản. Bỏ `@Transactional` của `reorder` làm ca này đỏ ở assertion vị trí. Chạy riêng lớp test (16/16), chưa qua full regression sau thay đổi này. |
+| AC-61 | §46, BR-14 | [TC-F2-AC61-01](../testcases/modules/F2_problem-bank/F2_testcase_authoring_upload.md) | ProblemBulkTestcaseUploadFlowTest:149; ProblemBulkTestcaseUploadFlowTest:292; ProblemBulkTestcaseUploadFlowTest:336 | Đạt | F2-8a; qua full regression 2026-11-06 (flow và unit xanh, chưa mutation). |
+| AC-62 | §47, BR-14 | [TC-F2-AC62-01–02](../testcases/modules/F2_problem-bank/F2_testcase_authoring_upload.md) | ProblemBulkTestcaseUploadFlowTest:149; ProblemBulkTestcaseUploadFlowTest:193; ProblemBulkTestcaseUploadFlowTest:214; ProblemBulkTestcaseUploadFlowTest:264; ProblemBulkTestcaseUploadFlowTest:350 | Đạt | F2-8a; qua full regression 2026-11-06 (flow và unit xanh, chưa mutation). |
+| AC-63 | §48, BR-15 | [TC-F2-AC63-01–02](../testcases/modules/F2_problem-bank/F2_testcase_authoring_upload.md) | ProblemReferenceRunFlowTest:144; ProblemReferenceRunFlowTest:172; RunReferenceSolutionQueryHandlerTest | Đạt | F2-8b; qua full regression 2026-11-06 (flow và unit xanh, chưa mutation). Sandbox giả lập bằng kịch bản, chưa chạy go-judge thật. |
+| AC-64 | §48 | [TC-F2-AC64-01–02](../testcases/modules/F2_problem-bank/F2_testcase_authoring_upload.md) | ProblemReferenceRunFlowTest:210; ProblemReferenceRunFlowTest:248; ProblemReferenceRunFlowTest:301; RunReferenceSolutionQueryHandlerTest:233 (PRB-040) | Đạt | F2-8b; qua full regression 2026-11-06 (flow và unit xanh, chưa mutation). Như AC-63. |
+| AC-65 | §49, BR-16 | [TC-F2-AC65-01](../testcases/modules/F2_problem-bank/F2_ai_generation.md) | AiTestcaseGenerationFlowTest.generatesDraftsWithRealOutputsAndCountsOneTurn; GenerateTestcasesCommandHandlerTest.theHappyPathKeepsOnlyTheRealOutputsAndCountsTheTurn; GeneratedTestcaseWriterTest | Code xong, chưa test toàn bộ | F2-9 (F5-5b), 2026-11-10. Bản nháp `origin=AI`, `approved=false`, `HIDDEN`, đầu ra lấy từ đáp án mẫu, không đổi `current_testcase_set_version`; một dòng `testcase_generation_runs` và một dòng `token_usage` `GENERATE_TESTCASE`. chưa có thử nghiệm với go-judge thật (cổng sandbox được thay bằng đối tượng giả). Full reactor AiTestcaseGenerationFlowTest 16/16 và unit F2 đạt với provider/sandbox có đối tượng giả theo fixture. Pipeline provider thật chưa đạt (JSON lỗi/body rỗng503 PRB-051); owner giao F5 xử lý, xem f5-live-generation-handoff.md. Giữ trạng thái chờ nghiệm thu live pipeline, không coi scripted provider là provider thật. |
+| AC-66 | §49 | [TC-F2-AC66-01](../testcases/modules/F2_problem-bank/F2_ai_generation.md) | AiTestcaseGenerationFlowTest.missingPrerequisitesAreListedAndTheAiIsNeverCalled; GenerateTestcasesCommandHandlerTest (PRB-040, PRB-041 ba lý do) | Code xong, chưa test toàn bộ | F2-9. `REFERENCE_NOT_PASSING` chỉ được kiểm khi hai lý do còn lại đã đạt (cần chạy sandbox); `details.reasons` vì vậy không luôn liệt kê đủ ba lý do một lần. Full reactor AiTestcaseGenerationFlowTest 16/16 và unit F2 đạt với provider/sandbox có đối tượng giả theo fixture. Pipeline provider thật chưa đạt (JSON lỗi/body rỗng503 PRB-051); owner giao F5 xử lý, xem f5-live-generation-handoff.md. Giữ trạng thái chờ nghiệm thu live pipeline, không coi scripted provider là provider thật. |
+| AC-67 | §49, §57 | [TC-F2-AC67-01](../testcases/modules/F2_problem-bank/F2_ai_generation.md) | AiTestcaseGenerationFlowTest.theCapRefusesBeforeTheLlmAndOneBelowTheCapStillRuns; AiTestcaseGenerationFlowTest.onlyAdminHasTheConfigPermissionAndLoweringTheCapKeepsUsedCounters; GenerateTestcasesCommandHandlerTest.theCapRefusesWithTheDetailsBeforeTheLockOrTheAi | Code xong, chưa test toàn bộ | F2-9. Mutation A (đếm lượt cả khi thêm 0 nháp) bị bắt bởi `aRunThatAddsNothingDoesNotUseATurn`. Full reactor AiTestcaseGenerationFlowTest 16/16 và unit F2 đạt với provider/sandbox có đối tượng giả theo fixture. Pipeline provider thật chưa đạt (JSON lỗi/body rỗng503 PRB-051); owner giao F5 xử lý, xem f5-live-generation-handoff.md. Giữ trạng thái chờ nghiệm thu live pipeline, không coi scripted provider là provider thật. |
+| AC-68 | §49 | [TC-F2-AC68-01](../testcases/modules/F2_problem-bank/F2_ai_generation.md) | AiTestcaseGenerationFlowTest.aRejectedScriptAddsNothingAndDoesNotUseATurn; GenerateTestcasesCommandHandlerTest.everyBadScriptStatusIsPrb043WithItsReasonAndWritesNothing; GeneratorSandboxBridgeTest.everySandboxStatusMapsToTheDdReason | Code xong, chưa test toàn bộ | F2-9. `OUTPUT_TOO_LARGE` nhận ra bằng đoán (RE và stdout đầy hạn mức) vì go-judge báo Output Limit là lỗi chạy; ghi nợ `ponytail` ở `GeneratorScriptRunner`. Full reactor AiTestcaseGenerationFlowTest 16/16 và unit F2 đạt với provider/sandbox có đối tượng giả theo fixture. Pipeline provider thật chưa đạt (JSON lỗi/body rỗng503 PRB-051); owner giao F5 xử lý, xem f5-live-generation-handoff.md. Giữ trạng thái chờ nghiệm thu live pipeline, không coi scripted provider là provider thật. |
+| AC-69 | §49, BR-16 | [TC-F2-AC69-01–02](../testcases/modules/F2_problem-bank/F2_ai_generation.md) | AiTestcaseGenerationFlowTest.invalidInputsDuplicatesAndFailedReferenceRunsAreDroppedAndTheRestIsKept; GenerateTestcasesCommandHandlerTest.duplicatesOfExistingOrEarlierInputsAreDropped; GenerateTestcasesCommandHandlerTest.aRunThatKeepsNothingAddsNoTestcaseAndDoesNotUseATurn | Code xong, chưa test toàn bộ | F2-9. Định dạng đầu ra của script (`###CASE <nhãn>`) là `[SoT: Suy luận]`, xem report F5-5b. Full reactor AiTestcaseGenerationFlowTest 16/16 và unit F2 đạt với provider/sandbox có đối tượng giả theo fixture. Pipeline provider thật chưa đạt (JSON lỗi/body rỗng503 PRB-051); owner giao F5 xử lý, xem f5-live-generation-handoff.md. Giữ trạng thái chờ nghiệm thu live pipeline, không coi scripted provider là provider thật. |
+| AC-70 | §49, BR-06, BR-16 | [TC-F2-AC70-01](../testcases/modules/F2_problem-bank/F2_ai_generation.md) | AiTestcaseGenerationFlowTest.thePromptCarriesStatementConstraintsAndTwoSamplesAsDataAndNothingSecret; GenerateTestcasesCommandHandlerTest.theAiSeesTheStatementTheConstraintsAndTwoSamplesAndNothingElse; GenerateTestcaseScriptCommandHandlerTest.injectionInTheStatementStaysInsideTheDataBlock | Code xong, chưa test toàn bộ | F2-9. Kiểm tại cổng: prompt không chứa mã đáp án mẫu, `ai_brief`, nội dung testcase ẩn; đề bài chứa câu lệnh giả chỉ nằm trong khối dữ liệu. Full reactor AiTestcaseGenerationFlowTest 16/16 và unit F2 đạt với provider/sandbox có đối tượng giả theo fixture. Pipeline provider thật chưa đạt (JSON lỗi/body rỗng503 PRB-051); owner giao F5 xử lý, xem f5-live-generation-handoff.md. Giữ trạng thái chờ nghiệm thu live pipeline, không coi scripted provider là provider thật. |
+| AC-71 | §49 | [TC-F2-AC71-01–02](../testcases/modules/F2_problem-bank/F2_ai_generation.md) | AiTestcaseGenerationFlowTest.aProviderFailureIsPrb051WithNoTestcaseNoTurnNoLedgerAndTheRestOfF2KeepsWorking; AiTestcaseGenerationFlowTest.aBadSchemaIsPrb051WithNoTestcaseNoTurnButItsTokensAreStillRecorded; AiTestcaseGenerationFlowTest.aSecondRunWhileOneIsActiveIs409AndNeverReachesTheAi; AiTestcaseGenerationFlowTest.aSandboxFaultIsPrb050AndChangesNothing | Code xong, chưa test toàn bộ | F2-9. Tranh chấp song song kiểm bằng khoá Redis đặt sẵn, chưa có test hai luồng thật. Full reactor AiTestcaseGenerationFlowTest 16/16 và unit F2 đạt với provider/sandbox có đối tượng giả theo fixture. Pipeline provider thật chưa đạt (JSON lỗi/body rỗng503 PRB-051); owner giao F5 xử lý, xem f5-live-generation-handoff.md. Giữ trạng thái chờ nghiệm thu live pipeline, không coi scripted provider là provider thật. |
+| AC-72 | §50 | [TC-F2-AC72-01–02](../testcases/modules/F2_problem-bank/F2_class_assignments.md) | ClassAssignmentFlowTest:164; ClassAssignmentFlowTest:192; ClassAssignmentFlowTest:210 | Đạt |  |
+| AC-73 | §51 | [TC-F2-AC73-01](../testcases/modules/F2_problem-bank/F2_class_assignments.md) | ClassAssignmentFlowTest:246 | Đạt |  |
+| AC-74 | §52 | [TC-F2-AC74-01](../testcases/modules/F2_problem-bank/F2_class_assignments.md) | ClassAssignmentFlowTest:289 | Đạt |  |
+| AC-75 | §53, BR-18 | [TC-F2-AC75-01–03](../testcases/modules/F2_problem-bank/F2_class_assignments.md) | ClassAssignmentFlowTest:308; ClassAssignmentFlowTest:346; ClassAssignmentFlowTest:367 | Đạt |  |
+| AC-76 | §54, BR-18 | [TC-F2-AC76-01](../testcases/modules/F2_problem-bank/F2_class_assignments.md) | ClassAssignmentFlowTest:388 | Đạt |  |
+| AC-77 | §55 | [TC-F2-AC77-01](../testcases/modules/F2_problem-bank/F2_class_assignments.md) | ClassAssignmentFlowTest:271; ClassAssignmentFlowTest:210 | Đạt |  |
+| AC-78 | §56, §57 | [TC-F2-AC78-01](../testcases/modules/F2_problem-bank/F2_class_assignments.md) | AiTestcaseGenerationFlowTest.adminReadsAndChangesTheCapWithOneAuditRowAndTheBoundsHold; AiTestcaseGenerationFlowTest.onlyAdminHasTheConfigPermissionAndLoweringTheCapKeepsUsedCounters; AiTestcaseGenerationFlowTest.aFailedAuditRollsTheCapBack; AiGenerationSettingsCommandHandlerTest | Đạt | Full reactor: AiTestcaseGenerationFlowTest 16/16 và unit settings đạt; kiểm đọc/đổi trần, biên1/10 và từ chối0/11, thiếu AI_CONFIG403, audit/rollback. Endpoint #55/#56 không phụ thuộc provider live; no-op không ghi audit giữ suy luận đã ghi trước. |
+| AC-79 | BR-20 | [TC-F2-AC79-01–02](../testcases/modules/F2_problem-bank/F2_class_assignments.md) | ApplySubmissionGradedCommandHandlerTest:24; ApplySubmissionGradedCommandHandlerTest:33; ApplySubmissionGradedCommandHandlerTest:47; ProblemStatsFlowTest:114 | Đạt | F2-2f; qua full regression 2026-11-06 (flow và unit xanh, chưa mutation). |
+| AC-80 | BR-19 | [TC-F2-AC80-01](../testcases/modules/F2_problem-bank/F2_class_assignments.md) | F2CloseoutFlowTest.deletionRollsBackWithItsOutboxAndCommittedEventSoftRemovesAssignments; ClassDeletedListenerTest | Đạt | Full reactor F2CloseoutFlowTest 8/8 đạt: xóa lớp/outbox rollback, commit qua relay/consumer thật, gỡ mềm, duplicate no-op, bài giữ nguyên. StudentRemovedFromClass giữ baseline ngoài phạm vi. |
+| AC-81 | `ProblemGradingSpecPort`, BR-11, BR-13 | [TC-F2-AC81-01–02](../testcases/modules/F2_problem-bank/F2_ports_privacy_cache.md) | ProblemGradingReadFlowTest:207; ProblemGradingReadFlowTest:224; ProblemGradingReadFlowTest:236; ProblemGradingReadFlowTest:252; ProblemGradingReadFlowTest:384; SnapshotPublicationFlowTest:226 | Đạt | GR là lớp trong thư mục `bootstrap/judge/`. |
+| AC-82 | `ProblemSpecQuery`, BR-05 | [TC-F2-AC82-01](../testcases/modules/F2_problem-bank/F2_ports_privacy_cache.md) | HarnessProblemReadFlowTest:144; HarnessProblemReadFlowTest:168; HarnessProblemReadFlowTest:218; ProblemSpecSaveFlowTest:154 | Đạt |  |
+| AC-83 | `ProblemContextPort`, BR-06 | [TC-F2-AC83-01](../testcases/modules/F2_problem-bank/F2_ports_privacy_cache.md) | ProblemContextReadFlowTest (6, gồm getContext trả aiBrief/noFullCode/socraticOnly, mặc định, 4000 ký tự, bài chưa xuất bản/đã xoá -> PRB-010); ReadProblemContextQueryHandlerTest (5); đột biến bỏ điều kiện PUBLISHED bị bắt | Đạt | Full reactor: ProblemContextReadFlowTest 6/6, unit ReadProblemContextQueryHandlerTest và AiReviewBridgesTest 6/6 đạt. Cổng/bridge giữ aiBrief/noFullCode/socraticOnly như trường có tên, không đưa đáp án mẫu/testcase/object_key vào DTO. Không dùng provider thật để chứng minh chuyển kiểu. |
+| AC-84 | `ProblemSummaryReadPort`, `ProblemTopicReadPort`, `ClassAssignmentReadPort` | [TC-F2-AC84-01–02](../testcases/modules/F2_problem-bank/F2_ports_privacy_cache.md) | ClassAssignmentReadFlowTest:134; ClassAssignmentReadFlowTest:147; ProblemBankStatsFlowTest:108; F2CloseoutFlowTest.topicPortKeepsRetainedWithdrawnLinksAndReturnsEmptyForUnknownTopics | Đạt | Full reactor: F2CloseoutFlowTest 8/8, ClassAssignmentReadFlowTest và ProblemBankStatsFlowTest đạt. Topic port thật giữ link lịch sử kể cả bài rút, topic lạ/tập rỗng trả rỗng; class/stats giữ assertion cũ. |
+| AC-85 | BR-13 | [TC-F2-AC85-01](../testcases/modules/F2_problem-bank/F2_ports_privacy_cache.md) | PublishedProblemReadFlowTest:248; PublishedProblemReadFlowTest:307; PublishedProblemReadFlowTest:328; ProblemGradingReadFlowTest:384; StudentDtoPrivacyTest; F2CloseoutFlowTest.learnerDetailKeepsNullRateAndSampleIdsMatchTheF4Bridge | Đạt | Full reactor: PublishedProblemReadFlowTest 11/11, ProblemGradingReadFlowTest, StudentDtoPrivacyTest và F2CloseoutFlowTest 8/8 đạt. Learner DTO/HTTP workspace/overview/sample và log của flow không có hidden payload; không claim đã kiểm mọi log toàn hệ thống. |
+| AC-86 | BR-02 | [TC-F2-AC86-01](../testcases/modules/F2_problem-bank/F2_ports_privacy_cache.md) | ProblemAuthoringHttpFlowTest:122; ProblemTestcaseAuthoringFlowTest:275; ClassAssignmentFlowTest:346; ProblemReferenceRunFlowTest:334; ProblemBulkTestcaseUploadFlowTest:350; ProblemSpecSaveFlowTest:221; CatalogTaxonomyFlowTest:276 | Đạt | Full reactor các flow quyền ở cột test đều đạt; AiTestcaseGenerationFlowTest 16/16 bổ sung AI_CONFIG của #55/#56. Kiểm quyền server theo Function, học viên và khác chủ bài; mutation chọn lọc được ghi phạm vi trong be-validation.md, không suy thành toàn bộ mutation. |
+| AC-87 | BR-25 | [TC-F2-AC87-01](../testcases/modules/F2_problem-bank/F2_ports_privacy_cache.md) | CatalogTaxonomyFlowTest:357; BulkProblemActionsTest; CatalogReadCacheTest; CachedPublishedProblemReadRepositoryTest; F2CloseoutFlowTest.cacheEpochFollowsCommitAndRollbackAndSummaryUsesRealCache | Đạt | Full reactor F2 unit514/514 và flow cache/closeout8/8 đạt: TTL60, epochDB commit/rollback, hit/fallback JSON/Redis lỗi, status-filter bypass và key user. Browser catalog/logout đạt; không ép dependency F4 chết trên stack dùng chung. |
+| AC-88 | §5A | [TC-F2-AC88-01–02](../testcases/modules/F2_problem-bank/F2_ports_privacy_cache.md) | MyClassAssignmentsFlowTest:226; MyClassAssignmentsFlowTest:277; MyClassAssignmentsFlowTest:313; MyClassAssignmentsFlowTest:346; MyClassAssignmentsFlowTest:362 | Đạt | F2-4c; qua full regression 2026-11-06 (flow và unit xanh, chưa mutation). |
+| AC-89 | §59, JOB-PB-01 | [TC-F2-AC89-01 đến -04](../testcases/modules/F2_problem-bank/F2_outbox_delivery_cleanup.md) | ProblemOutboxRelayFlowTest:96; ProblemOutboxRelayFlowTest:109; ProblemSpecSaveFlowTest:314; F2CloseoutFlowTest.failedFullBatchDoesNotStarveANewerAssignmentEvent; ProblemAssignedConsumerFlowTest | Đạt | Full reactor ProblemOutboxRelayFlowTest 9/9, F2CloseoutFlowTest 8/8 và consumer F1 đạt. Transactional dedupe giao bài giữ đúng; retry fairness kiểm100 poison rows không chặn assignment mới. Phạm vi không thêm dedupe table cho ClassDeleted. |
+| AC-90 | BR-26, JOB-PB-01 | [TC-F2-AC90-01](../testcases/modules/F2_problem-bank/F2_outbox_delivery_cleanup.md) | ClassAssignmentFlowTest:367; ProblemSpecSaveFlowTest:314 | Đạt | Thử lại sau phục hồi giao đúng một lần: :367 dòng cuối. |
+| AC-91 | §48, Q-31 | [TC-F2-AC91-01–02](../testcases/modules/F2_problem-bank/F2_reference_rate_level_progress.md) | ProblemReferenceRunFlowTest:284; ProblemReferenceRunFlowTest:301; RunReferenceSolutionQueryHandlerTest | Đạt | F2-8b; qua full regression 2026-11-06 (flow và unit xanh, chưa mutation). F2-9 nay đã có code; vế quota sinh testcase theo AC-67, không dùng kết quả run này làm bằng chứng cho quota AI. |
+| AC-92 | §14A | [TC-F2-AC92-01–02](../testcases/modules/F2_problem-bank/F2_reference_rate_level_progress.md) | StudentCatalogFlowTest:158; StudentCatalogQueryHandlerTest:41 | Đạt |  |
+| AC-93 | BR-11, §40, §43, §58, DB 1.15 | [TC-F2-AC93-01, -02, -03, -04, -05](../testcases/modules/F2_problem-bank/F2_snapshot_grading.md) | SnapshotPublicationFlowTest:226; SnapshotPublicationFlowTest:252; SnapshotPublicationFlowTest:265; SnapshotPublicationFlowTest:343; SnapshotPublicationFlowTest:439; SnapshotPublicationFlowTest:457; ProblemGradingReadFlowTest:236; ProblemGradingReadFlowTest:263; PersistedWorkerFlowTest:1013; ProblemPublishStatusHttpFlowTest:213 | Đạt | GR và PersistedWorkerFlowTest nằm ở `bootstrap/judge/`; PersistedWorkerFlowTest bị bỏ qua (Skipped 16) trong full regression 2026-11-06, các lớp còn lại xanh. Nhánh epsilon bổ sung 2026-10-29 chưa có testcase riêng. |
+| AC-94 | JOB-PB-02 | [TC-F2-AC94-01 đến -03](../testcases/modules/F2_problem-bank/F2_outbox_delivery_cleanup.md) | ProblemOutboxRelayFlowTest:162; ProblemOutboxRelayFlowTest:182; F2CloseoutFlowTest.cleanupIsSafeAcrossTwoProcessesAndRollsBackAMidBatchFailure | Đạt | Full reactor F2CloseoutFlowTest 8/8 và ProblemOutboxRelayFlowTest 9/9 đạt: hai cleanup đồng thời tổng12 dòng, trigger lỗi giữa lô rollback giữ3 dòng. Chứng cứ không chỉ là source job. |
+| AC-95 | #57, §64 | [TC-F2-AC95-01–13](../testcases/modules/F2_problem-bank/F2_authoring_defaults.md) | ReadAuthoringDefaultsQueryHandlerTest; F2CloseoutFlowTest.authoringDefaultsRequiresAuthorPermissionAndUsesTheLiveSettings; F2CloseoutFlowTest.authoringDefaultsAcceptsCreateAndReadIndependently; real-authoring-closure.test.ts; f2-closure-real.spec.ts: current backend defaults | Đạt | Log final-reactor-r3 xác nhận F2CloseoutFlowTest 8/8, 0 lỗi/skip: HTTP 401/403 và hai role CREATE-only/READ-only dùng JWT thật, exact 4 key. Browser NEW defaults đạt 1/1 (20261111-f2-new-defaults-real.log), khớp API/DB và không tạo bài. Unit lỗi đại diện trả503 cố định; hai nguồn dùng cùng catch. Adapter giữ defaults/copy limits và từ chối fallback khi lỗi. QA13 ca review/kiểm cấu trúc 0 lỗi, chưa có run record đủ13 ca; cap-fault và expired-token tại riêng #57 chưa chạy riêng, không claim các permutation đó đạt. Xem ac95-qa-design-review.md trong báo cáo closure. |
+
+Bảng 3: Tổng hợp trạng thái 94 tiêu chí (2026-11-06, sau full regression; cập nhật 2026-11-08: AC-59 chuyển Đạt, đếm lại từ bảng truy vết)
+
+| Trạng thái | Số AC |
+| :--- | :-: |
+| Đạt | 75 |
+| Code xong, chưa test toàn bộ | 0 |
+| Một phần | 9 |
+| Chưa làm | 1 |
+| Hoãn | 9 |
+| Tổng | 94 |
 
 Mọi endpoint §2 tới §57 có ít nhất một `AC`; §59, relay và dọn Outbox có AC-89–AC-90, AC-94. Snapshot được kiểm ở AC-93. DD Q-31 đã đóng và được phủ bằng AC-91; sinh testcase AI giữ trần theo bài.
+
+Ghi chú full regression 2026-11-06: lượt `./mvnw verify -rf :algoprep-identity` (`05-coding/backend/logs/261106-2253-f2-final-full-regression-r2.log`, tổng 910 test tại dòng 25373) cho các module unit (identity, problem-bank, harness, judge, ai-review, interview-bank) SUCCESS (dòng 25378-25383). Mọi lớp flow F2 trong `bootstrap/problembank/` cùng `ClassAssignmentReadFlowTest` (dòng 1905) và `ProblemGradingReadFlowTest` (dòng 3603) đều Failures 0, Errors 0; ví dụ `MyClassAssignmentsFlowTest` dòng 9336, `ProblemBulkTestcaseUploadFlowTest` dòng 10834, `ProblemOutboxRelayFlowTest` dòng 11789, `ProblemReferenceRunFlowTest` dòng 13069, `ProblemStatsFlowTest` dòng 14684, `SuggestedProblemsFlowTest` dòng 16612. Unit problem-bank của đợt 1 cũng xanh (dòng 341-540). Phần module trước identity (algoprep-common) nằm ở `261106-2247-f2-final-full-regression.log` (dừng tại identity do vi phạm Spotless, đã sửa). Lượt r2 có 16 test lỗi ở 4 lớp, không lớp nào thuộc F2: IdentityMigrationTest (danh sách bảng kỳ vọng cũ, đã sửa, chạy lại 7/7 xanh), JudgeOutboxRelayFlowTest (do hàng đợi mới của F2-2f, đã sửa, chạy lại 6/6 xanh), RunSampleFlowTest (12 failure và 1 error, JDG-501) và StarterCodeFlowTest (1 failure): hai lớp sau lỗi y hệt ở commit sạch 0d1be94, là lỗi sandbox F3/F4 có từ trước. Hai lớp bị bỏ qua vì thiếu go-judge: ReferenceSolutionSandboxFlowTest (AC-50) và PersistedWorkerFlowTest (AC-93); hai AC này đã Đạt từ lượt theo lát trước. Mutation (quyền, riêng tư, tiền) và kiểm trình duyệt thật còn chờ bước FINAL: "Đạt" ở đây không bao hàm mutation.
 
 ## Baseline migration 2026-10-29
 
 `DEC-2026-1029-f2-migration-readiness` đóng quyết định DDL/seed/epsilon/tag/snapshot; xem BD database F2 §7. AC-47, AC-56 và AC-93 được bổ sung nhánh epsilon và tái xuất bản; các testcase liên kết cần mở rộng tương ứng trong phase kiểm của plan migration. Giữ nguyên số AC và trạng thái Chưa làm; truy vết hiện có không đồng nghĩa nhánh mới đã có testcase hoặc đã chạy.
+
+### Ghi chú đồng bộ 2026-11-08
+
+Full regression backend `mvn verify` ngày 2026-11-08 xanh (BUILD SUCCESS, 21 phút 15 giây, problem-bank 461 test, bootstrap 952 test, 0 lỗi, 35 bỏ qua do cần sandbox có toolchain; 66 ca của ba lớp đó chạy riêng với sandbox dùng một lần: 0 lỗi, 1 bỏ qua thuộc F4). Mutation quyền và riêng tư cho F2-1b, F2-2d, F2-2e, F2-2f, F2-4c, F2-4d, F2-8a, F2-8b chạy ngày 2026-11-07: tất cả bị bắt, mutant D6 của F2-8b sống sót lượt đầu và đã có test `ProblemReferenceRunFlowTest.aSandboxAnsweringTooFewCasesIs503AndDoesNotSpendTheQuota` (báo cáo `06-plan/reports/261107-2330-f1-f2-mutation/report.md`). Không có trạng thái F2 nào đổi.
+
+Ghi chú full regression 2026-11-08 (lượt 2, sau đợt B đến D): `mvn verify` toàn bộ backend BUILD SUCCESS, 20 phút 6 giây, log `05-coding/backend/logs/261108-e1-full-verify-r2.log`; bootstrap 969 test, 0 lỗi, 35 bỏ qua do cần sandbox có toolchain. Các lớp F2 mới hoặc sửa xanh trong lượt này: `ProblemTestcaseAuthoringFlowTest` 17 (PB45-A2 và ca dọn object của AC-59), `ProblemOutboxRelayFlowTest` 9, `ProblemBankStatsFlowTest` 5. Mutation đợt 3 cho F2-5 và F2-10 ở `06-plan/reports/261108-1600-f1-f2-mutation/report.md`: 15 trong 17 quy tắc của bốn lát được test giữ, hai mutant tương đương do ràng buộc DB `problems_deleted_unpublished_ck`. Bảng 3 ở trên không đổi so với lần đếm lại 2026-11-08 (75 Đạt, 9 Một phần, 1 Chưa làm, 9 Hoãn).
+
+
+### Đồng bộ code và chứng cứ theo lát 2026-11-11
+
+Log `05-coding/backend/logs/20261111-000212-828-f2-closeout-assertions-r2.log` BUILD SUCCESS: 12 unit F2 + 7 F2CloseoutFlowTest, 0 failure/error/skip. Flow dùng PostgreSQL/Redis/Rabbit thật. Các trạng thái “Code xong, chưa test toàn bộ” không tuyên bố full regression/browser hoặc provider AI thật đã đạt. Bảng 3 và các số 2026-11-06/08 ở trên giữ nguyên như lịch sử.
+
+Bảng hiện hành 2026-11-11 (đếm lại từ 95 hàng truy vết, gồm AC-95 mới; các bảng 2026-11-06/08 phía trên là lịch sử):
+
+| Trạng thái | Số AC |
+| :--- | ---: |
+| Đạt | 88 |
+| Code xong, chưa test toàn bộ | 7 |
+| Một phần | 0 |
+| Total | 95 |
+
+Nguồn cập nhật: full reactor `20261111-093608-624-f2-final-reactor-verify-r3.log` có F2 unit514/514 và 34 lớp bootstrap F2 tổng297 test, 0 failure/error, 1 sandbox test gated được kiểm riêng ở đợt scoped sau đó; xem [bảng lớp](../../06-plan/reports/261110-f2-full-closure/be-f2-suite-summary.md) và [BE validation](../../06-plan/reports/261110-f2-full-closure/be-validation.md). Toàn reactor lượt này exit1 vì ba oracle migration còn kỳ vọng schema cũ; không đổi nghĩa thành toàn bộ verify đã xanh chỉ vì các lớp F2 xanh. Kết quả scoped khắc phục được ghi riêng trong BE validation.
+
+Bảy hàng AC65–71 đã qua unit/flow với provider scripted nhưng chưa đóng nghiệm thu pipeline provider thật; hai lần live lỗi JSON/body rỗng503 PRB-051. Owner giao phiên F5 xử lý; [bàn giao](../../06-plan/reports/261110-f2-full-closure/f5-live-generation-handoff.md). Không giữ trạng thái Một phần cho AC49/83/86 chỉ vì bridge/cấu hình thuộc module khác khi các điều kiện AC đã có kiểm đại diện đạt; cũng không suy từ đó rằng nhánh sinh AI thật đã thành công. QA13 ca defaults vẫn chưa có run record riêng, độc lập với trạng thái AC95 dựa bộ test tự động đại diện.

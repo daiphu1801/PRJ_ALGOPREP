@@ -1,0 +1,3 @@
+class Solution:
+    def echo(self, p0: int, p1: int, p2: float, p3: bool, p4: str, p5: str) -> str:
+        return p5

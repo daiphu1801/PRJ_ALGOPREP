@@ -82,7 +82,7 @@ F1 #3 refresh một lần cho một đợt request `401`, phát lại request g�
 | :--- | :--- | :--- |
 | `displayName` đăng ký | `z.string().trim().min(2).max(100)` | F1 §5 `IDT-V19`, `IDT-V20`; prototype dùng `username` 3–32, cần đổi tên và giới hạn |
 | Email đăng ký/đăng nhập/quên | `z.string().trim().email().max(254)` | F1 §1 nhận `email`, không nhận `identifier` của mock; BD hiển thị “Email/Tên đăng nhập” cần đồng bộ |
-| Mật khẩu mới | 8–128 ký tự, có chữ và số; không trùng email/tên hiển thị | F1 §1 `IDT-V01`–`V04`; kiểm trùng ở máy chủ, client chỉ kiểm điều kiện biết được |
+| Mật khẩu mới | Tối thiểu 8 ký tự, tối đa 72 byte UTF-8, có chữ và số; không trùng email/tên hiển thị | F1 §1 `IDT-V01`–`V04`; kiểm trùng ở máy chủ, client chỉ kiểm điều kiện biết được |
 | Đồng ý điều khoản | `z.literal(true)` | Yêu cầu BD Sheet 9; cờ UI không thuộc request #1, không gửi tới F1 |
 | OTP | đúng sáu chữ số | F1 #8, #53; số lần sai và TTL do máy chủ quyết định |
 | Xác nhận mật khẩu | bằng `newPassword` | Chỉ ở client; #8 nhận một mật khẩu mới |
@@ -108,7 +108,7 @@ Dùng tiền tố `auth.*` ở `shared/i18n/messages/vi.json` và `en.json`; l�
 
 ## 8. Nợ prototype và câu hỏi mở
 
-Dòng `views/auth` ở `06-plan/PROTOTYPE_DEBT.md:855` chưa tốt nghiệp: `fake-auth.ts` còn trả kết quả giả và `DevQuickLogin` còn hiện cả A3 trên màn A1/A2. `use-auth-flow.ts` gọi verify OTP mock riêng, cho đăng ký thành công đi thẳng vào hệ thống, và nhận `identifier` thay email. Những khác biệt này cần sửa khi nối API.
+**Cập nhật 2026-10-31 (task #7, `DEC-2026-1031-auth-screen-api-alignment`):** `use-auth-flow.ts` đã nối `entities/auth/api/real-auth.ts` khi `NEXT_PUBLIC_MOCK_DATA` tắt: đăng ký sang `verify_email` rồi quay về `login` (không đi thẳng vào hệ thống), verify OTP gọi đúng #53/#60, đăng nhập nhận `email` thay `identifier`, banner khôi phục dùng vé của `IDT-104` (#61), đăng xuất gọi `POST /auth/logout`. Đã kiểm trên trình duyệt thật với backend thật (16 bước, kịch bản Playwright dùng một lần, không phải `pnpm e2e`). Còn nợ: `fake-auth.ts` vẫn tồn tại cho chế độ mock; `DevQuickLogin` chỉ hiện khi bật mock và còn liệt kê cả A3 trên màn A1/A2; OAuth chưa có backend (task #15); chưa có màn bắt buộc đổi mật khẩu cho `must_change_password` (cần #13 ở lát hồ sơ); chưa có Playwright thường trực cho luồng này trong `e2e/`.
 
 | # | Vấn đề | Hướng DD / trạng thái |
 | :--- | :--- | :--- |

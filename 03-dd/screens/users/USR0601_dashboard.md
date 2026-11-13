@@ -24,6 +24,7 @@ Bảng 0.2: Lịch sử sửa.
 | Ver | Mục | Nội dung | Ngày |
 | :--- | :--- | :--- | :--- |
 | V0.1 | Toàn bộ | Tạo mới từ prototype đã dựng, BD V0.14 và DD F1, F2, F4, F5, F6. Chốt cách thay hai endpoint `GetMyProgressOverview`, `GetMyTopicProgress` mà F1 không có bằng phép ghép F1 + F2 + F4; chốt phạm vi `range`; chốt một phép tính điểm năng lực; chốt trạng thái suy giảm từng khối; nêu các giá trị chưa có nguồn thật | 2026-10-24 |
+| V0.2 | Mục 2 (Bảng 2.1) | Ghi chú FE 2026-11-12 (M5, chưa duyệt hình): nối F5 mục 13 (`useInterviewSummary`) và F6 mục 8 (`useInterviewTopicProgress`); bảng phụ `InterviewTopicsTable` đặt dưới hai cột chính, không nhận `range`, ba cột Chủ đề, Đã thử (`{số} / {số}` kèm thanh), Lần ôn cuối (`-` nếu chưa luyện); lỗi chỉ làm hỏng riêng bảng. Gỡ nợ P6. Chuỗi `dashboard.interviewTopics.*`. Test `interview-topics-table.test.tsx`, `progress-queries.test.ts` | 2026-11-12 |
 
 Bảng 0.3: Viết tắt nguồn trích dẫn.
 
@@ -79,16 +80,16 @@ Bảng 2.1: Sự kiện BD, endpoint theo ID, hook, trạng thái nối. Hiện 
 | EVT-1 | B "Acceptance rate" | F1 #47 | `useSolveSummary` | mock |
 | EVT-1 | I chip chủ đề | F2 mục 14 `GetPublishedProblemCatalogSummary` | `useCatalogSummary` | mock |
 | EVT-1 | B "Chuỗi ngày" | F4 mục 12 `range = 7d` (chỉ lấy `streakDays`, `lastSubmittedAt`) | `useMyMetrics("7d")` | mock |
-| EVT-1 | B "Mock Interview" | F5 mục 13 `range = all`, `limit = 1` | `useInterviewSummary("all", 1)` | mock |
+| EVT-1 | B "Mock Interview" | F5 mục 13 `range = all` | `useInterviewSummary("all")` | **thật** (2026-11-12; hook luôn gửi `limit = 3`, thẻ chỉ lấy `completedSessionCount`) |
 | EVT-1, EVT-2 | C | F4 mục 12 `range` hiện chọn | `useMyMetrics(range)` | mock |
 | EVT-1 | D, A NO 2, H (xếp hạng), I (thứ tự) | F2 mục 4 + F4 mục 12 `range = all` kèm `topicIds` | `useTopicSolveProgress` + `useMyMetrics("all", topicIds)` | mock |
 | EVT-1, EVT-2 | F NO 3-8 | F2 mục 4 + F4 mục 12 `range` kèm `topicIds` | như trên, `range` hiện chọn | mock |
 | EVT-1 | A điểm yếu, D radar, H/I thứ tự ưu tiên | F2 §13 `GetSuggestedProblems` trả `topicScores` từ cửa sổ `all` | `useSuggestedProblems` | chưa nối |
-| EVT-1 | F NO 10-14 (F6-10) | F6 mục 8 `GetMyInterviewTopicProgress` | `useInterviewTopicProgress` | chưa có |
+| EVT-1 | F NO 10-14 (F6-10) | F6 mục 8 `GetMyInterviewTopicProgress` (`GET /interview-bank/me/topic-progress`, không tham số, chỉ lỗi chung 401) | `useInterviewTopicProgress` | **thật** (2026-11-12) [Nguồn: 05-coding/frontend/src/entities/interview-question/api/progress-queries.ts:55; 05-coding/frontend/src/views/users/dashboard/ui/blocks/interview-topics-table.tsx:18] |
 | EVT-1 | G NO 4 (đã giải theo mức) | F2 §14A `ListMyLevelProgress` | `useDifficultyProgress` | chưa nối |
 | EVT-1 | E | F1 #55 `GetMyActivityCalendar` | `useActivityCalendar` | mock |
 | EVT-1, EVT-5, EVT-6 | I | F2 mục 13 `GetSuggestedProblems`, tham số `difficulty`, `topic`; tab độ khó từ F2 mục 15 | `useSuggestedProblems`, `useProblemLevels` | mock |
-| EVT-1, EVT-2 | J | F5 mục 13 `range` hiện chọn, `limit = 3` | `useInterviewSummary(range, 3)` | mock |
+| EVT-1, EVT-2 | J | F5 mục 13 `range` hiện chọn, `limit = 3` | `useInterviewSummary(range)` | **thật** (2026-11-12, `GET /ai/me/interview-sessions/summary`, `overallScore` map sang `score`) [Nguồn: 05-coding/frontend/src/entities/progress/api/real-interview-summary.ts:23; 05-coding/frontend/src/entities/progress/api/queries.ts:48] |
 | EVT-1 | K | F5 mục 7 `limit = 3` | `useRecentSolutionReviews` | mock |
 | EVT-12 | mọi khối | gọi lại đúng query của khối | `query.refetch()` | không áp dụng |
 | EVT-3, EVT-4, EVT-7, EVT-8 (chủ đề ưu tiên), EVT-9, EVT-10, EVT-11 (báo cáo phân tích) | điều hướng, chú giải | không gọi API | `next/link`, state | không áp dụng |
@@ -286,7 +287,7 @@ Bảng 8.1: Lệch giữa prototype và thiết kế.
 | P3 | Nút "Tiếp tục" đọc `useProblemListPage().inProgress` | `useLatestUnsolved` (F4 mục 11), bỏ bài đã rút | PV ui/blocks/greeting-block.tsx:38-41 |
 | P4 | Bài gợi ý lấy cả trang danh sách bài rồi tự xếp và lọc ở client | F2 mục 13, lọc ở máy chủ (BR-SC-07) | PV ui/blocks/suggested-problems-block.tsx:48-56 |
 | P5 | Lời chào "Chào bạn" cố định | Tên từ F1 #9 (BR-SC-09) | `messages/vi.json:2858` |
-| P6 | Không có bảng phụ F6-10 | `interview-topics-table` + `useInterviewTopicProgress` | BD:417 |
+| P6 | Không có bảng phụ F6-10 (đã gỡ 2026-11-12) | `interview-topics-table` + `useInterviewTopicProgress` | BD:417 |
 | P7 | Dòng phiên phỏng vấn chưa là liên kết (EVT-9 lùi) | Liên kết `/mock-interview?sessionId=` ở chế độ chỉ xem theo `USR0302` Q-302-4 đã chốt | BD:420; DD `USR0302` BR-SC-02 |
 | P8 | Khối `RecentReviews` và hook ở `views/.../api` | Chuyển sang `entities/solution-review` | PV api/queries.ts:35-46 |
 | P9 | Chưa có `useErrorMessage`, chưa có khoá `apiError.*` | Theo DD-PD S3 | DD-PD:70 |
@@ -311,3 +312,5 @@ Bảng 8.2: Câu hỏi mở, mặc định đề xuất và bậc ponytail.
 | OQ-3 | Lọc "Bài toán gợi ý" ở máy chủ theo F2 mục 13, đổi BD EVT-5, 6 | Theo F2 (BR-SC-07) | 4 |
 | OQ-4 | Khối J nhận thêm dòng tóm tắt (số phiên, điểm trung bình, mục yếu nhất trong khoảng) mà code đã vẽ và RD REQ-05 của `USR0501` đòi, nhưng BD Khu vực J chưa liệt kê | Thêm vào BD Khu vực J đúng ba giá trị F5 mục 13 đã trả (`completedSessionCount`, `averageScore`, `weakestCriterionCode`); không cần endpoint mới | 1 |
 | OQ-5 | **Đã đóng theo F4 Q14:** chuỗi ngày bằng 0 khi hôm nay chưa nộp dù hôm qua còn chuỗi | Giữ `0 ngày` theo định nghĩa RD; thẻ nhắc nộp hằng ngày là lời nhắc cho chuỗi tiếp theo, client không ân hạn hay tự tính lại | 5 |
+
+**Ghi chú FE 2026-11-07:** `useDifficultyBreakdown` nối F2 #13B, `useDashboardDaily` nối F4 `/me/metrics` (`dailyCounts`), `useTopicProgress` ghép F2 #3 với F4 `/me/metrics?topicIds=`, `useProgressOverview` bổ sung `streakDays` (F4) và `totalPublished` (#13B). `useInterviewSummary` và khối Solution Review gần đây còn chờ F5. Hợp đồng API không đổi.

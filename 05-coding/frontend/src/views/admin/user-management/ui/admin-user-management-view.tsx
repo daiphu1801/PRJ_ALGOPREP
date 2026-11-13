@@ -1,4 +1,5 @@
-// PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md section 9.
+// PROTOTYPE with a real API behind it (task 12, 03-dd/api/F1_identity.md #35 to #38, #50, #62, #63);
+// see 06-plan/PROTOTYPE_DEBT.md section 9.
 //
 // Layout follows 09-layoutBase/Admin - Người dùng.dc.html: sticky header with the "Thêm tài khoản"
 // CTA (:148-159), stat cards (:161-173), the account table card (:175-236), then two panels side by
@@ -32,15 +33,18 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { KeyRound, Lock, LockOpen, UserCog } from "lucide-react";
 import {
+  ADMIN_USERS_PAGE_SIZE,
   initialsOf,
+  useAdminUserActions,
   useAdminUserPage,
   type AdminUser,
+  type AdminUserListParams,
   type AdminUserPage,
   type AdminUserRole,
   type AdminUserStatus,
 } from "../api";
-import { useT } from "@/shared/i18n";
-import { textTone } from "@/shared/lib";
+import { useApiErrorMessage, useLocale, useT } from "@/shared/i18n";
+import { formatRelativeVN, textTone, useDebounced } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
 import { checkLock, checkRoleChange, partitionByStatus } from "../model/guards";
 import { AddAccountDialog } from "./add-account-dialog";
@@ -88,24 +92,59 @@ const ROLE_BAR_COLOR_VAR: Record<AdminUserRole | "deactivated", string> = {
 type RoleFilter = AdminUserRole | "all";
 type StatusFilter = AdminUserStatus | "all";
 
-const PAGE_SIZE = 20;
-
 export function AdminUserManagementView() {
+  // Real mode filters and pages on the server; the mock page ignores these and the inner view still
+  // filters locally, so both modes share one set of controls.
+  const [filters, setFilters] = useState<AdminUserListParams>({
+    status: "all",
+    role: "all",
+    query: "",
+    page: 1,
+  });
+  const query = useAdminUserPage({
+    ...filters,
+    query: useDebounced(filters.query),
+  });
   return (
-    <QueryBoundary query={useAdminUserPage()}>
-      {(page) => <AdminUserManagementInner page={page} />}
+    <QueryBoundary query={query}>
+      {(page) => (
+        <AdminUserManagementInner
+          page={page}
+          filters={filters}
+          onFiltersChange={(patch) =>
+            setFilters((previous) => ({ ...previous, ...patch }))
+          }
+        />
+      )}
     </QueryBoundary>
   );
 }
 
-function AdminUserManagementInner({ page }: { page: AdminUserPage }) {
+function AdminUserManagementInner({
+  page,
+  filters,
+  onFiltersChange,
+}: {
+  page: AdminUserPage;
+  filters: AdminUserListParams;
+  onFiltersChange: (patch: Partial<AdminUserListParams>) => void;
+}) {
   const t = useT("adminUserManagement");
+  const apiMessage = useApiErrorMessage();
+  const locale = useLocale() === "en" ? "en" : "vi";
+  const actions = useAdminUserActions();
+  const { query, role, status } = filters;
   const [accounts, setAccounts] = useState(page.users);
+  const [seenPage, setSeenPage] = useState(page);
   const [adding, setAdding] = useState(false);
-  const [query, setQuery] = useState("");
-  const [role, setRole] = useState<RoleFilter>("all");
-  const [status, setStatus] = useState<StatusFilter>("all");
   const [selected, setSelected] = useState<ReadonlySet<string>>(new Set());
+  // A new page from the server (filter, page change or refetch after an action) replaces the rows and
+  // the selection. Adjusted during render rather than in an effect, which would paint stale rows first.
+  if (seenPage !== page) {
+    setSeenPage(page);
+    setAccounts(page.users);
+    setSelected(new Set());
+  }
   // The lock and unlock dialogs act on whichever rows opened them: the bulk bar passes the selection,
   // a row action passes that one account. `null` = closed.
   const [lockRequest, setLockRequest] = useState<{
@@ -140,18 +179,53 @@ function AdminUserManagementInner({ page }: { page: AdminUserPage }) {
   // looked at. Cleared in each setter rather than in an effect: an effect here would run one render
   // late, so the bar would briefly show a stale count against the new filter.
   function changeQuery(next: string) {
-    setQuery(next);
+    onFiltersChange({ query: next, page: 1 });
     setSelected(new Set());
   }
 
   function changeRole(next: RoleFilter) {
-    setRole(next);
+    onFiltersChange({ role: next, page: 1 });
     setSelected(new Set());
   }
 
   function changeStatus(next: StatusFilter) {
-    setStatus(next);
+    onFiltersChange({ status: next, page: 1 });
     setSelected(new Set());
+  }
+
+  function changePage(next: number) {
+    onFiltersChange({ page: next });
+    setSelected(new Set());
+  }
+
+  /** One command per account (the DD has no batch endpoint); a failure does not stop the others. */
+  async function runBatch(
+    targets: AdminUser[],
+    act: (user: AdminUser) => Promise<unknown>,
+  ) {
+    const results = await Promise.allSettled(targets.map(act));
+    const done: AdminUser[] = [];
+    let firstError: unknown;
+    results.forEach((result, index) => {
+      const user = targets[index];
+      if (result.status === "fulfilled") {
+        if (user) done.push(user);
+      } else firstError ??= result.reason;
+    });
+    return { done, failed: targets.length - done.length, firstError };
+  }
+
+  function patchStatus(done: AdminUser[], next: AdminUserStatus) {
+    const ids = new Set(done.map((user) => user.email));
+    setAccounts((previous) =>
+      previous.map((account) =>
+        ids.has(account.email) ? { ...account, status: next } : account,
+      ),
+    );
+  }
+
+  function isSelf(user: AdminUser) {
+    return user.email === page.currentUserEmail;
   }
 
   function toggleRow(key: string) {
@@ -174,37 +248,44 @@ function AdminUserManagementInner({ page }: { page: AdminUserPage }) {
     else setLockRequest({ targets, skipped, includesSelf: check.includesSelf });
   }
 
-  function applyLock(reason: string, notify: boolean) {
-    // No endpoint yet — the rows flip locally and the selection clears.
-    const target = new Set(
-      (lockRequest?.targets ?? []).map((user) => user.email),
+  async function applyLock(reason: string, notify: boolean) {
+    const targets = lockRequest?.targets ?? [];
+    const { done, failed, firstError } = await runBatch(targets, (user) =>
+      actions.lock({ id: user.id, reason, notify, self: isSelf(user) }),
     );
-    setAccounts((previous) =>
-      previous.map((account) =>
-        target.has(account.email) ? { ...account, status: "locked" } : account,
-      ),
-    );
-    toast.success(
-      notify
-        ? t("lockDoneNotified", { count: target.size, reason })
-        : t("lockDone", { count: target.size, reason }),
-    );
+    patchStatus(done, "locked");
+    if (done.length > 0) {
+      toast.success(
+        notify
+          ? t("lockDoneNotified", { count: done.length, reason })
+          : t("lockDone", { count: done.length, reason }),
+      );
+    }
+    if (failed > 0) {
+      toast.error(
+        t("batchFailed", { count: failed, reason: apiMessage(firstError) }),
+      );
+    }
     setSelected(new Set());
   }
 
-  function applyUnlock() {
-    const target = new Set((unlockTargets ?? []).map((user) => user.email));
-    setAccounts((previous) =>
-      previous.map((account) =>
-        target.has(account.email) ? { ...account, status: "active" } : account,
-      ),
-    );
-    toast.success(t("unlockDone", { count: target.size }));
-    setSelected(new Set());
+  async function applyUnlock() {
+    const targets = unlockTargets ?? [];
     setUnlockTargets(null);
+    const { done, failed, firstError } = await runBatch(targets, (user) =>
+      actions.unlock({ id: user.id }),
+    );
+    patchStatus(done, "active");
+    if (done.length > 0) toast.success(t("unlockDone", { count: done.length }));
+    if (failed > 0) {
+      toast.error(
+        t("batchFailed", { count: failed, reason: apiMessage(firstError) }),
+      );
+    }
+    setSelected(new Set());
   }
 
-  function applyRoleChange(user: AdminUser, nextRole: AdminUserRole) {
+  async function applyRoleChange(user: AdminUser, nextRole: AdminUserRole) {
     const check = checkRoleChange(
       accounts,
       user.email,
@@ -213,6 +294,16 @@ function AdminUserManagementInner({ page }: { page: AdminUserPage }) {
     );
     if (check.blockedLastAdmin) {
       toast.warning(t("roleBlockedBody"));
+      return;
+    }
+    try {
+      await actions.changeRole({
+        id: user.id,
+        role: nextRole,
+        self: isSelf(user),
+      });
+    } catch (error) {
+      toast.error(apiMessage(error));
       return;
     }
     setAccounts((previous) =>
@@ -225,14 +316,35 @@ function AdminUserManagementInner({ page }: { page: AdminUserPage }) {
     );
   }
 
-  function applyResetPassword() {
-    if (resetTarget)
-      toast.success(
-        t(resetTarget.hasPassword === false ? "resetDoneOAuth" : "resetDone", {
-          email: resetTarget.email,
-        }),
-      );
+  async function applyResetPassword() {
+    const target = resetTarget;
     setResetTarget(null);
+    if (!target) return;
+    try {
+      await actions.resetPassword({ id: target.id });
+    } catch (error) {
+      toast.error(apiMessage(error));
+      return;
+    }
+    toast.success(
+      t(target.hasPassword === false ? "resetDoneOAuth" : "resetDone", {
+        email: target.email,
+      }),
+    );
+  }
+
+  async function createAccount(input: {
+    name: string;
+    email: string;
+    role: "student" | "instructor";
+  }) {
+    try {
+      const created = await actions.create(input);
+      setAccounts((previous) => [created, ...previous]);
+    } catch (error) {
+      toast.error(apiMessage(error));
+      throw error;
+    }
   }
 
   function toggleAll(selectAll: boolean) {
@@ -240,6 +352,57 @@ function AdminUserManagementInner({ page }: { page: AdminUserPage }) {
       selectAll ? new Set(users.map((user) => user.email)) : new Set(),
     );
   }
+
+  /** Real rows carry the time, mock rows a ready-made label; "-" when the account never logged in. */
+  function lastActiveText(user: AdminUser) {
+    if (user.lastActiveAt === undefined) return user.lastActiveLabel ?? "-";
+    return user.lastActiveAt
+      ? formatRelativeVN(user.lastActiveAt, { locale })
+      : "-";
+  }
+
+  // Solved count and submissions come from the F1 read models with the real API (#35); the columns
+  // appear only when the loaded rows carry them.
+  const hasCounts = accounts.some((user) => user.solvedCount !== undefined);
+  const hasLastActive = accounts.some(
+    (user) =>
+      user.lastActiveAt !== undefined || user.lastActiveLabel !== undefined,
+  );
+  const activityColumns: DataTableColumn<AdminUser>[] = [
+    {
+      key: "solved",
+      header: t("columnSolved"),
+      width: "84px",
+      align: "right",
+      render: (user) => (
+        <span className="font-mono font-semibold">
+          {user.solvedCount ?? "-"}
+        </span>
+      ),
+    },
+    {
+      key: "submissions",
+      header: t("columnSubmissions"),
+      width: "92px",
+      align: "right",
+      render: (user) => (
+        <span className="font-mono text-[var(--color-text-muted)]">
+          {(user.submissionCount ?? 0).toLocaleString("vi-VN")}
+        </span>
+      ),
+    },
+  ];
+
+  const lastActiveColumn: DataTableColumn<AdminUser> = {
+    key: "lastActive",
+    header: t("columnLastActive"),
+    width: "116px",
+    render: (user) => (
+      <span className="block truncate text-[12.5px] text-[var(--color-text-muted)]">
+        {lastActiveText(user)}
+      </span>
+    ),
+  };
 
   const columns: DataTableColumn<AdminUser>[] = [
     {
@@ -272,36 +435,8 @@ function AdminUserManagementInner({ page }: { page: AdminUserPage }) {
         </Badge>
       ),
     },
-    {
-      key: "solved",
-      header: t("columnSolved"),
-      width: "84px",
-      align: "right",
-      render: (user) => (
-        <span className="font-mono font-semibold">{user.solvedCount}</span>
-      ),
-    },
-    {
-      key: "submissions",
-      header: t("columnSubmissions"),
-      width: "92px",
-      align: "right",
-      render: (user) => (
-        <span className="font-mono text-[var(--color-text-muted)]">
-          {user.submissionCount.toLocaleString("vi-VN")}
-        </span>
-      ),
-    },
-    {
-      key: "lastActive",
-      header: t("columnLastActive"),
-      width: "116px",
-      render: (user) => (
-        <span className="block truncate text-[12.5px] text-[var(--color-text-muted)]">
-          {user.lastActiveLabel}
-        </span>
-      ),
-    },
+    ...(hasCounts ? activityColumns : []),
+    ...(hasLastActive ? [lastActiveColumn] : []),
     {
       key: "status",
       header: t("columnStatus"),
@@ -461,12 +596,12 @@ function AdminUserManagementInner({ page }: { page: AdminUserPage }) {
         />
 
         <Pagination
-          page={1}
-          pageSize={PAGE_SIZE}
+          page={filters.page}
+          pageSize={ADMIN_USERS_PAGE_SIZE}
           total={page.totalUsers}
-          onPageChange={() => {}}
+          onPageChange={changePage}
           summary={t("pageLabel", {
-            page: 1,
+            page: filters.page,
             totalPages: page.totalPages,
             shown: users.length,
           })}
@@ -490,6 +625,7 @@ function AdminUserManagementInner({ page }: { page: AdminUserPage }) {
                   ? t("role.deactivated")
                   : t(`role.${item.role}`),
               value: item.percent,
+              valueLabel: item.label,
               colorVar: ROLE_BAR_COLOR_VAR[item.role],
             }))}
           />
@@ -530,7 +666,7 @@ function AdminUserManagementInner({ page }: { page: AdminUserPage }) {
         open={adding}
         onClose={() => setAdding(false)}
         existingEmails={new Set(accounts.map((account) => account.email))}
-        onCreate={(user) => setAccounts((previous) => [user, ...previous])}
+        onCreate={createAccount}
       />
 
       <LockAccountsDialog

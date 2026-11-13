@@ -16,12 +16,12 @@
         "role": "actor"
       },
       {
-        "name": "SubmitCtrl",
+        "name": "CreateSubmissionController",
         "role": "controller",
         "stereo": "REST + STOMP"
       },
       {
-        "name": "CreateSubCmd",
+        "name": "CreateSubmissionCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
@@ -31,12 +31,12 @@
         "stereo": "domain port → F2"
       },
       {
-        "name": "SubmitRepo",
+        "name": "SubmissionWorkerRepository",
         "role": "repository",
         "stereo": "domain output port"
       },
       {
-        "name": "SubmitDbAdapter",
+        "name": "JdbcSubmissionWorkerRepository",
         "role": "repository",
         "stereo": "infrastructure"
       },
@@ -67,71 +67,71 @@
       },
       {
         "from": "Sinh viên",
-        "to": "SubmitCtrl",
+        "to": "CreateSubmissionController",
         "text": "Gửi bài nộp: đề, ngôn ngữ, mã nguồn"
       },
       {
-        "from": "SubmitCtrl",
-        "to": "SubmitCtrl",
+        "from": "CreateSubmissionController",
+        "to": "CreateSubmissionController",
         "text": "Kiểm tra ngôn ngữ thuộc Java / C++ / Python"
       },
       {
-        "from": "SubmitCtrl",
-        "to": "CreateSubCmd",
+        "from": "CreateSubmissionController",
+        "to": "CreateSubmissionCommandHandler",
         "text": "Xử lý nộp bài của người học"
       },
       {
-        "from": "CreateSubCmd",
+        "from": "CreateSubmissionCommandHandler",
         "to": "GradingPort",
         "text": "Kiểm tra đề và bộ ca kiểm thử sẵn sàng"
       },
       {
         "from": "GradingPort",
-        "to": "CreateSubCmd",
+        "to": "CreateSubmissionCommandHandler",
         "text": "Phiên bản bộ ca và giới hạn bài",
         "kind": "return"
       },
       {
-        "from": "CreateSubCmd",
-        "to": "CreateSubCmd",
+        "from": "CreateSubmissionCommandHandler",
+        "to": "CreateSubmissionCommandHandler",
         "text": "Kiểm tra ngôn ngữ và hạn nộp"
       },
       {
-        "from": "CreateSubCmd",
-        "to": "SubmitRepo",
+        "from": "CreateSubmissionCommandHandler",
+        "to": "SubmissionWorkerRepository",
         "text": "Lưu bài ở trạng thái Đang chờ"
       },
       {
-        "from": "SubmitRepo",
-        "to": "SubmitDbAdapter",
+        "from": "SubmissionWorkerRepository",
+        "to": "JdbcSubmissionWorkerRepository",
         "text": "Chuyển yêu cầu lưu bài"
       },
       {
-        "from": "SubmitDbAdapter",
+        "from": "JdbcSubmissionWorkerRepository",
         "to": "PostgreSQL",
         "text": "Ghi bài và phiên bản bộ ca"
       },
       {
         "from": "PostgreSQL",
-        "to": "SubmitDbAdapter",
+        "to": "JdbcSubmissionWorkerRepository",
         "text": "Mã bài nộp",
         "kind": "return"
       },
       {
-        "from": "SubmitDbAdapter",
-        "to": "SubmitRepo",
+        "from": "JdbcSubmissionWorkerRepository",
+        "to": "SubmissionWorkerRepository",
         "text": "Mã bài nộp",
         "kind": "return"
       },
       {
-        "from": "SubmitRepo",
-        "to": "CreateSubCmd",
+        "from": "SubmissionWorkerRepository",
+        "to": "CreateSubmissionCommandHandler",
         "text": "Mã bài nộp",
         "kind": "return"
       },
       {
-        "from": "CreateSubCmd",
-        "to": "CreateSubCmd",
+        "from": "CreateSubmissionCommandHandler",
+        "to": "CreateSubmissionCommandHandler",
         "text": "Lưu xong; chuyển sang xếp hàng chấm"
       }
     ]

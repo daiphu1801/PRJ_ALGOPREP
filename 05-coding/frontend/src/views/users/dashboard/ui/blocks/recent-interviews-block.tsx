@@ -90,7 +90,9 @@ export function RecentInterviewsBlock({ range }: { range: ProgressRange }) {
             >
               <div className="flex items-center justify-between gap-2.5">
                 <span className="truncate text-[13.5px] font-semibold">
-                  {t("interviews.session", { date: formatDateVN(session.startedAt) })}
+                  {t("interviews.session", {
+                    date: formatDateVN(session.startedAt),
+                  })}
                 </span>
                 <span
                   className="shrink-0 rounded-full px-2.5 py-0.5 font-mono text-[12.5px] font-bold"

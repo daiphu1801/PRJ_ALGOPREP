@@ -1,34 +1,38 @@
-// PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md.
-//
-// USR0401 `interview_bank_list`. Two states in one screen, not two routes — `browse` (default) and
+// USR0401 `interview_bank_list`. Two states in one screen, not two routes: `browse` (default) and
 // `drill` (flashcard) [SoT: 02-bd/screens/users/USR0401_interview_bank_list.md Sheet 1-4].
 // Layout reference: 09-layoutBase/Câu hỏi phỏng vấn.dc.html.
 //
-// Reuses `entities/interview-question` end to end (type, mock, recall/bookmark state, list row,
-// recall picker) instead of duplicating it — the entity was built for the admin-facing
-// `interview-question-management` screen and is generic enough per
-// `06-plan/PROTOTYPE_DEBT.md` mục 9.
+// Data: F6 #2 to #5, #9, #10 through `entities/interview-question` (03-dd/screens/users/USR0401
+// section 2). The server filters and pages; this screen sends the filters, loads pages on demand and
+// reads the per-user recall and bookmark from the rows. A rating or bookmark patches the cached rows
+// (never refetches), so a row the filter would now drop stays on screen until a filter changes.
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { Layers, Mic } from "lucide-react";
 import {
+  isQuestionGone,
+  nextReviewDays,
   topicLabel,
   levelLabel,
   levelTone,
+  useDropUnavailableQuestion,
   useInterviewLevels,
   useInterviewTopics,
-  useInterviewQuestionPage,
-  type InterviewQuestionPage,
-  useRecallAndBookmarkState,
+  useLearnerQuestionDetail,
+  useLearnerQuestionList,
+  useRateRecall,
+  useSetBookmark,
+  useStartDrill,
   InterviewQuestionListRow,
-  RECALL_NEXT_REVIEW_DAYS,
+  DRILL_SIZE,
   RecallLevelPicker,
-  type InterviewQuestion,
-  type QuestionLevel,
-  type QuestionTopic,
+  type DrillCard,
+  type LearnerQuestionFilters,
+  type LearnerQuestionItem,
   type RecallLevel,
+  type RecallStatusFilter,
 } from "@/entities/interview-question";
 import { useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
@@ -40,147 +44,147 @@ import {
   FilterBar,
   FilterMenu,
   ProgressBar,
-  QueryBoundary,
-  Toggle,
+  QueryError,
   SeeAllLink,
+  Skeleton,
+  Toggle,
 } from "@/shared/ui";
-
-// Quick drill is a fixed 10 cards: a named configuration constant, no card-count control on screen
-// [SoT: 02-bd/screens/users/USR0401_interview_bank_list.md Câu hỏi mở Q9, owner 2026-10-18].
-const DRILL_SIZE = 10;
 
 // Search box cap [SoT: 02-bd/screens/users/USR0401_interview_bank_list.md Sheet 9 NO 3].
 const SEARCH_MAX_LENGTH = 100;
 
-const NO_PINS: string[] = [];
+// The search text reaches the server only after the learner stops typing [SoT: DD USR0401 BR-SC-01].
+const SEARCH_DEBOUNCE_MS = 400;
 
-type StatusFilter = "all" | "new" | "reviewing" | "known";
-type TopicFilter = QuestionTopic | "all";
-type LevelFilter = QuestionLevel | "all";
-
-function matchesStatus(
-  recall: RecallLevel | null,
-  filter: StatusFilter,
-): boolean {
-  if (filter === "all") return true;
-  if (filter === "new") return recall === null;
-  if (filter === "known") return recall === "known";
-  return recall === "vague" || recall === "forgotten";
-}
-
-// EVT-11 [SoT: 02-bd/screens/users/USR0401_interview_bank_list.md Sheet 8 NO 11]: ưu tiên câu cần
-// ôn lại, rồi câu chưa từng tự chấm, rồi câu đã thuộc.
-const DRILL_PRIORITY: Record<"due" | "new" | "known", number> = {
-  due: 0,
-  new: 1,
-  known: 2,
-};
-function drillPriority(recall: RecallLevel | null): number {
-  if (recall === null) return DRILL_PRIORITY.new;
-  if (recall === "known") return DRILL_PRIORITY.known;
-  return DRILL_PRIORITY.due;
-}
+const SKELETON_ROWS = 9;
 
 export function InterviewBankListView() {
-  return (
-    <QueryBoundary query={useInterviewQuestionPage()}>
-      {(page) => <InterviewBankList page={page} />}
-    </QueryBoundary>
-  );
-}
-
-function InterviewBankList({ page }: { page: InterviewQuestionPage }) {
   const t = useT("interviewBankList");
   const topicList = useInterviewTopics();
   const levelList = useInterviewLevels();
-  const { recall, bookmarks, rate, toggleBookmark } = useRecallAndBookmarkState(
-    page.questions,
-  );
+  const dropQuestion = useDropUnavailableQuestion();
+  const rateMutation = useRateRecall();
+  const bookmarkMutation = useSetBookmark();
+  const drillMutation = useStartDrill();
 
   const [query, setQuery] = useState("");
-  const [status, setStatus] = useState<StatusFilter>("all");
-  const [topic, setTopic] = useState<TopicFilter>("all");
-  const [level, setLevel] = useState<LevelFilter>("all");
+  const [sentQuery, setSentQuery] = useState("");
+  const [status, setStatus] = useState<RecallStatusFilter>("all");
+  const [topic, setTopic] = useState("all");
+  const [level, setLevel] = useState("all");
   // Independent axis next to the four status tabs, not a fifth tab [SoT: USR0401 BD Q8].
   const [bookmarkedOnly, setBookmarkedOnly] = useState(false);
-  const [selectedCode, setSelectedCode] = useState<string | null>(
-    page.questions[0]?.code ?? null,
-  );
-
-  // Questions the learner just rated or un-bookmarked stay in the list (and the quick view) while
-  // the active filter would drop them; the pin is tied to a filter signature, so changing any
-  // filter or the search text releases it [SoT: USR0401 BD Sheet 8 EVT-8, owner 2026-10-19].
-  const filterSignature = [query, status, topic, level, bookmarkedOnly].join(
-    "|",
-  );
-  const [pinned, setPinned] = useState<{ signature: string; codes: string[] }>({
-    signature: "",
-    codes: [],
-  });
-  const pinnedCodes =
-    pinned.signature === filterSignature ? pinned.codes : NO_PINS;
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const [view, setView] = useState<"browse" | "drill">("browse");
-  const [drillQueue, setDrillQueue] = useState<InterviewQuestion[]>([]);
+  const [drillQueue, setDrillQueue] = useState<DrillCard[]>([]);
   const [drillIndex, setDrillIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
 
-  const filtered = useMemo(() => {
-    const needle = query.trim().toLowerCase();
-    return page.questions.filter((question) => {
-      if (pinnedCodes.includes(question.code)) return true;
-      if (topic !== "all" && question.topic !== topic) return false;
-      if (level !== "all" && question.level !== level) return false;
-      if (bookmarkedOnly && !bookmarks[question.code]) return false;
-      if (!matchesStatus(recall[question.code] ?? null, status)) return false;
-      if (
-        needle &&
-        ![question.question, question.content, ...question.coreKeywords].some(
-          (text) => text.toLowerCase().includes(needle),
-        )
-      )
-        return false;
-      return true;
-    });
-  }, [
-    page.questions,
-    recall,
-    bookmarks,
-    query,
-    status,
-    topic,
-    level,
-    bookmarkedOnly,
-    pinnedCodes,
-  ]);
+  useEffect(() => {
+    const timer = window.setTimeout(
+      () => setSentQuery(query),
+      SEARCH_DEBOUNCE_MS,
+    );
+    return () => window.clearTimeout(timer);
+  }, [query]);
 
-  const selected =
-    filtered.find((q) => q.code === selectedCode) ?? filtered[0] ?? null;
-  const selectedRecall = selected ? (recall[selected.code] ?? null) : null;
+  const filters = useMemo<LearnerQuestionFilters>(
+    () => ({
+      q: sentQuery.trim().slice(0, SEARCH_MAX_LENGTH),
+      status,
+      topic,
+      level,
+      bookmarkedOnly,
+    }),
+    [sentQuery, status, topic, level, bookmarkedOnly],
+  );
+
+  const list = useLearnerQuestionList(filters);
+  // Toasts raised from effects read the latest `t` without re-running when a new translator appears.
+  const translate = useRef(t);
+  useEffect(() => {
+    translate.current = t;
+  });
+  const notify = (key: string) => toast.error(translate.current(key));
+
+  // The filters of the last answer that arrived: a failed reload puts the screen back on them. Both
+  // adjustments happen while rendering (guarded, so they settle in one extra pass), the toast in an effect.
+  const filterKey = JSON.stringify(filters);
+  const [lastGood, setLastGood] = useState<{
+    key: string;
+    filters: LearnerQuestionFilters;
+  } | null>(null);
+  const [restoredCount, setRestoredCount] = useState(0);
+  if (list.isSuccess && !list.isPlaceholderData && lastGood?.key !== filterKey)
+    setLastGood({ key: filterKey, filters });
+  if (list.isError && lastGood && lastGood.key !== filterKey) {
+    setQuery(lastGood.filters.q);
+    setSentQuery(lastGood.filters.q);
+    setStatus(lastGood.filters.status);
+    setTopic(lastGood.filters.topic);
+    setLevel(lastGood.filters.level);
+    setBookmarkedOnly(lastGood.filters.bookmarkedOnly);
+    setRestoredCount((count) => count + 1);
+  }
+  useEffect(() => {
+    if (restoredCount > 0) notify("toast.loadFailed");
+  }, [restoredCount]);
+
+  // Pages are merged by id so a row that moved between two page loads is not shown twice.
+  const items = useMemo<LearnerQuestionItem[]>(() => {
+    const seen = new Set<string>();
+    const merged: LearnerQuestionItem[] = [];
+    for (const page of list.data?.pages ?? [])
+      for (const item of page.items)
+        if (!seen.has(item.id)) {
+          seen.add(item.id);
+          merged.push(item);
+        }
+    return merged;
+  }, [list.data]);
+  const firstPage = list.data?.pages[0];
+
+  const selected = items.find((q) => q.id === selectedId) ?? items[0] ?? null;
+  const detail = useLearnerQuestionDetail(selected?.id ?? null);
+  const selectedRecall = detail.data?.recall ?? null;
+
+  // The question was retired while the learner looked at it (INB-010 on the detail read).
+  const goneId = detail.data === null ? (selected?.id ?? null) : null;
+  useEffect(() => {
+    if (!goneId) return;
+    dropQuestion(goneId);
+    notify("toast.unavailable");
+  }, [goneId, dropQuestion]);
+
+  function failureToast(error: unknown, fallback: string) {
+    toast.error(isQuestionGone(error) ? t("toast.unavailable") : fallback);
+  }
 
   function startDrill() {
-    if (filtered.length === 0) return;
-    const queue = [...filtered]
-      .sort(
-        (a, b) =>
-          drillPriority(recall[a.code] ?? null) -
-          drillPriority(recall[b.code] ?? null),
-      )
-      .slice(0, DRILL_SIZE);
-    setDrillQueue(queue);
-    setDrillIndex(0);
-    setRevealed(false);
-    setView("drill");
+    drillMutation.mutate(filters, {
+      onSuccess: (cards) => {
+        if (cards.length === 0) {
+          toast.info(t("toast.drillEmpty"));
+          return;
+        }
+        setDrillQueue(cards);
+        setDrillIndex(0);
+        setRevealed(false);
+        setView("drill");
+      },
+      onError: () => toast.error(t("toast.drillFailed")),
+    });
   }
 
-  function exitDrill() {
-    setView("browse");
-  }
-
-  function rateDrillCard(level: RecallLevel) {
+  function rateDrillCard(rating: RecallLevel) {
     const current = drillQueue[drillIndex];
     if (!current) return;
-    rate(current.code, level);
+    // Not awaited: the next card shows at once; a failure only warns (BD:541).
+    rateMutation.mutate(
+      { id: current.id, level: rating },
+      { onError: () => toast.warning(t("toast.drillRateFailed")) },
+    );
     if (drillIndex + 1 >= drillQueue.length) {
       setView("browse");
       toast.success(t("toast.drillDone", { count: drillQueue.length }));
@@ -190,34 +194,36 @@ function InterviewBankList({ page }: { page: InterviewQuestionPage }) {
     setRevealed(false);
   }
 
-  function pin(code: string) {
-    setPinned({
-      signature: filterSignature,
-      codes: pinnedCodes.includes(code) ? pinnedCodes : [...pinnedCodes, code],
-    });
-  }
-
-  function rateSelected(code: string, level: RecallLevel) {
-    pin(code);
-    rate(code, level);
-    toast.success(t("toast.rated"));
-  }
-
-  function toggleBookmarkWithToast(code: string) {
-    const wasBookmarked = bookmarks[code] ?? false;
-    pin(code);
-    toggleBookmark(code);
-    toast.success(
-      wasBookmarked ? t("toast.unbookmarked") : t("toast.bookmarked"),
+  function rateSelected(id: string, rating: RecallLevel) {
+    rateMutation.mutate(
+      { id, level: rating },
+      {
+        onSuccess: () => toast.success(t("toast.rated")),
+        onError: (error) => failureToast(error, t("toast.rateFailed")),
+      },
     );
   }
 
-  // The list filters live while typing (no toast per keystroke); Enter is the explicit search.
+  function toggleBookmark(item: LearnerQuestionItem) {
+    const target = !item.bookmarked;
+    bookmarkMutation.mutate(
+      { id: item.id, bookmarked: target },
+      {
+        onSuccess: () =>
+          toast.success(
+            target ? t("toast.bookmarked") : t("toast.unbookmarked"),
+          ),
+        onError: (error) => failureToast(error, t("toast.bookmarkFailed")),
+      },
+    );
+  }
+
+  // The list filters while typing (after the debounce, no toast per keystroke); Enter is the explicit search.
   function announceSearch() {
+    setSentQuery(query);
+    const count = firstPage?.shown ?? 0;
     toast.info(
-      filtered.length > 0
-        ? t("toast.searchResult", { count: filtered.length })
-        : t("toast.searchEmpty"),
+      count > 0 ? t("toast.searchResult", { count }) : t("toast.searchEmpty"),
     );
   }
 
@@ -226,8 +232,8 @@ function InterviewBankList({ page }: { page: InterviewQuestionPage }) {
     vague: t("recall.vague"),
     forgotten: t("recall.forgotten"),
   };
-  const recallBadgeLabel = (level: RecallLevel | null) =>
-    level ? recallLabels[level] : t("recall.unrated");
+  const recallBadgeLabel = (rating: RecallLevel | null) =>
+    rating ? recallLabels[rating] : t("recall.unrated");
 
   if (view === "drill") {
     const card = drillQueue[drillIndex];
@@ -245,7 +251,7 @@ function InterviewBankList({ page }: { page: InterviewQuestionPage }) {
             variant="ghost"
             size="sm"
             className="border border-[var(--color-border)]"
-            onClick={exitDrill}
+            onClick={() => setView("browse")}
           >
             {t("drill.exit")}
           </Button>
@@ -268,7 +274,7 @@ function InterviewBankList({ page }: { page: InterviewQuestionPage }) {
             </span>
           </div>
           <h2 className="mb-6 min-h-[80px] text-center text-lg font-semibold text-pretty">
-            {card.question}
+            {card.title}
           </h2>
           {revealed && card.suggestedApproach.length > 0 ? (
             <ul className="mb-6 flex flex-col gap-2 border-t border-[var(--color-border)] pt-4">
@@ -286,15 +292,19 @@ function InterviewBankList({ page }: { page: InterviewQuestionPage }) {
             </ul>
           ) : null}
           <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--color-border)] pt-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="border border-[var(--color-border)]"
-              aria-expanded={revealed}
-              onClick={() => setRevealed((r) => !r)}
-            >
-              {revealed ? t("drill.hide") : t("drill.reveal")}
-            </Button>
+            {card.suggestedApproach.length > 0 ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="border border-[var(--color-border)]"
+                aria-expanded={revealed}
+                onClick={() => setRevealed((r) => !r)}
+              >
+                {revealed ? t("drill.hide") : t("drill.reveal")}
+              </Button>
+            ) : (
+              <span />
+            )}
             <RecallLevelPicker
               value={null}
               onRate={rateDrillCard}
@@ -306,6 +316,9 @@ function InterviewBankList({ page }: { page: InterviewQuestionPage }) {
       </div>
     );
   }
+
+  const shown = firstPage?.shown ?? 0;
+  const total = firstPage?.total ?? 0;
 
   return (
     <div className="p-6">
@@ -321,11 +334,11 @@ function InterviewBankList({ page }: { page: InterviewQuestionPage }) {
             variant="ghost"
             size="md"
             className="border border-[var(--color-border)]"
-            disabled={filtered.length === 0}
+            disabled={shown === 0 || list.isFetching || drillMutation.isPending}
             onClick={startDrill}
           >
             <Layers className="mr-2 h-4 w-4" aria-hidden="true" />
-            {t("startDrill", { count: Math.min(DRILL_SIZE, filtered.length) })}
+            {t("startDrill", { count: Math.min(DRILL_SIZE, shown) })}
           </Button>
           <Button asChild variant="primary" size="md">
             <Link href="/mock-interview">
@@ -365,7 +378,7 @@ function InterviewBankList({ page }: { page: InterviewQuestionPage }) {
           value={topic}
           onValueChange={setTopic}
           options={[
-            { value: "all" as const, label: t("filterAll") },
+            { value: "all", label: t("filterAll") },
             ...topicList.map((item) => ({
               value: item.key,
               label: item.label,
@@ -377,7 +390,7 @@ function InterviewBankList({ page }: { page: InterviewQuestionPage }) {
           value={level}
           onValueChange={setLevel}
           options={[
-            { value: "all" as const, label: t("filterAll") },
+            { value: "all", label: t("filterAll") },
             ...levelList.map((item) => ({
               value: item.key,
               label: item.label,
@@ -394,34 +407,67 @@ function InterviewBankList({ page }: { page: InterviewQuestionPage }) {
 
       <div className="grid items-start gap-4 lg:[grid-template-columns:minmax(0,5fr)_minmax(0,6fr)]">
         <Card className="!p-0 overflow-hidden">
-          <p className="border-b border-[var(--color-border)] px-4 py-2.5 text-[12px] font-semibold text-[var(--color-text-muted)]">
-            {t("shownCount", {
-              shown: filtered.length,
-              total: page.questions.length,
-            })}
+          <p
+            role="status"
+            className="border-b border-[var(--color-border)] px-4 py-2.5 text-[12px] font-semibold text-[var(--color-text-muted)]"
+          >
+            {firstPage ? t("shownCount", { shown, total }) : " "}
           </p>
-          <div className="max-h-[68dvh] overflow-y-auto">
-            {filtered.length === 0 ? (
-              <EmptyState>{t("emptyFiltered")}</EmptyState>
+          <div
+            className="max-h-[68dvh] overflow-y-auto"
+            aria-busy={list.isFetching || undefined}
+          >
+            {list.isPending ? (
+              <div className="flex flex-col gap-2 p-4">
+                {Array.from({ length: SKELETON_ROWS }, (_, index) => (
+                  <Skeleton key={index} className="h-12 w-full" />
+                ))}
+              </div>
+            ) : list.isError && !firstPage ? (
+              <QueryError query={list} />
+            ) : items.length === 0 ? (
+              <EmptyState>
+                {total === 0 ? t("emptyBank") : t("emptyFiltered")}
+              </EmptyState>
             ) : (
-              filtered.map((question) => (
-                <InterviewQuestionListRow
-                  key={question.code}
-                  question={question}
-                  topicLabel={topicLabel(topicList, question.topic)}
-                  levelLabel={levelLabel(levelList, question.level)}
-                  levelTone={levelTone(levelList, question.level)}
-                  recallLabel={recallBadgeLabel(recall[question.code] ?? null)}
-                  recall={recall[question.code] ?? null}
-                  selected={question.code === selected?.code}
-                  bookmarked={bookmarks[question.code] ?? false}
-                  bookmarkLabel={t("bookmarkLabel")}
-                  onSelect={() => setSelectedCode(question.code)}
-                  onToggleBookmark={() =>
-                    toggleBookmarkWithToast(question.code)
-                  }
-                />
-              ))
+              <>
+                {items.map((question) => (
+                  <InterviewQuestionListRow
+                    key={question.id}
+                    question={question}
+                    topicLabel={topicLabel(topicList, question.topic)}
+                    levelLabel={levelLabel(levelList, question.level)}
+                    levelTone={levelTone(levelList, question.level)}
+                    recallLabel={recallBadgeLabel(question.recall)}
+                    recall={question.recall}
+                    selected={question.id === selected?.id}
+                    bookmarked={question.bookmarked}
+                    bookmarkLabel={t("bookmarkLabel")}
+                    onSelect={() => setSelectedId(question.id)}
+                    onToggleBookmark={() => toggleBookmark(question)}
+                  />
+                ))}
+                {list.isFetchNextPageError ? (
+                  <p className="px-4 py-3 text-center text-[12.5px] text-[var(--color-text-muted)]">
+                    {t("loadMoreFailed")}
+                  </p>
+                ) : null}
+                {list.hasNextPage ? (
+                  <div className="p-3 text-center">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="border border-[var(--color-border)]"
+                      disabled={list.isFetchingNextPage}
+                      onClick={() => void list.fetchNextPage()}
+                    >
+                      {list.isFetchNextPageError
+                        ? t("loadMoreRetry")
+                        : t("loadMore")}
+                    </Button>
+                  </div>
+                ) : null}
+              </>
             )}
           </div>
         </Card>
@@ -438,65 +484,91 @@ function InterviewBankList({ page }: { page: InterviewQuestionPage }) {
                 </span>
               </div>
               <h2 className="mb-5 text-xl font-bold tracking-tight text-pretty">
-                {selected.question}
+                {selected.title}
               </h2>
 
-              {selected.suggestedApproach.length > 0 ? (
-                <>
-                  <p className="mb-2 text-[10.5px] font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
-                    {t("quickView.outlineLabel")}
+              {detail.isError ? (
+                <div className="mb-4 flex flex-col items-start gap-2">
+                  <p className="text-[13px] text-[var(--color-text-muted)]">
+                    {t("quickView.loadFailed")}
                   </p>
-                  <ul className="mb-4 flex flex-col gap-2">
-                    {selected.suggestedApproach.map((point, index) => (
-                      <li
-                        key={`${index}-${point}`}
-                        className="flex gap-2.5 rounded-lg bg-[var(--color-surface-hover)] px-3 py-2 text-[13px] text-[var(--color-text-muted)]"
-                      >
-                        <span className="font-mono text-[11px] font-semibold text-[var(--color-primary)]">
-                          {String(index + 1).padStart(2, "0")}
-                        </span>
-                        <span>{point}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              ) : null}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="border border-[var(--color-border)]"
+                    onClick={() => void detail.refetch()}
+                  >
+                    {t("quickView.retry")}
+                  </Button>
+                </div>
+              ) : !detail.data ? (
+                <div className="mb-4 flex flex-col gap-2">
+                  <Skeleton className="h-8 w-full" />
+                  <Skeleton className="h-8 w-full" />
+                </div>
+              ) : (
+                <>
+                  {detail.data.suggestedApproach.length > 0 ? (
+                    <>
+                      <p className="mb-2 text-[10.5px] font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
+                        {t("quickView.outlineLabel")}
+                      </p>
+                      <ul className="mb-4 flex flex-col gap-2">
+                        {detail.data.suggestedApproach.map((point, index) => (
+                          <li
+                            key={`${index}-${point}`}
+                            className="flex gap-2.5 rounded-lg bg-[var(--color-surface-hover)] px-3 py-2 text-[13px] text-[var(--color-text-muted)]"
+                          >
+                            <span className="font-mono text-[11px] font-semibold text-[var(--color-primary)]">
+                              {String(index + 1).padStart(2, "0")}
+                            </span>
+                            <span>{point}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  ) : null}
 
-              {selected.coreKeywords.length > 0 ? (
-                <>
-                  <p className="mb-2 text-[10.5px] font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
-                    {t("quickView.keywordsLabel")}
-                  </p>
-                  <div className="mb-4 flex flex-wrap gap-1.5">
-                    {selected.coreKeywords.map((keyword) => (
-                      <Badge key={keyword} variant="neutral">
-                        {keyword}
-                      </Badge>
-                    ))}
-                  </div>
+                  {detail.data.coreKeywords.length > 0 ? (
+                    <>
+                      <p className="mb-2 text-[10.5px] font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
+                        {t("quickView.keywordsLabel")}
+                      </p>
+                      <div className="mb-4 flex flex-wrap gap-1.5">
+                        {detail.data.coreKeywords.map((keyword) => (
+                          <Badge key={keyword} variant="neutral">
+                            {keyword}
+                          </Badge>
+                        ))}
+                      </div>
+                    </>
+                  ) : null}
                 </>
-              ) : null}
+              )}
 
               <div className="border-t border-[var(--color-border)] pt-3">
                 <p className="mb-2 text-[10.5px] font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
                   {t("quickView.recallLabel")}
                 </p>
                 <RecallLevelPicker
-                  value={selectedRecall}
-                  onRate={(level) => rateSelected(selected.code, level)}
+                  value={selected.recall}
+                  onRate={(rating) => rateSelected(selected.id, rating)}
                   labels={recallLabels}
                   groupLabel={t("quickView.recallLabel")}
+                  disabled={rateMutation.isPending}
                   className="mb-2"
                 />
                 {selectedRecall ? (
                   <p className="mb-3 text-[12px] text-[var(--color-text-subtle)]">
-                    {t("quickView.nextReview", {
-                      n: RECALL_NEXT_REVIEW_DAYS[selectedRecall],
-                    })}
+                    {nextReviewDays(selectedRecall.nextReviewAt) >= 1
+                      ? t("quickView.nextReview", {
+                          n: nextReviewDays(selectedRecall.nextReviewAt),
+                        })
+                      : t("quickView.nextReviewDue")}
                   </p>
                 ) : null}
                 <SeeAllLink
-                  href={`/interview-bank/${selected.code}`}
+                  href={`/interview-bank/${selected.id}`}
                   className="mt-0"
                 >
                   {t("quickView.viewDetail")}

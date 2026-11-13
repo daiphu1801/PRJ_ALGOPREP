@@ -40,7 +40,7 @@ mở Q1 (đã đóng).
 | :--- | :--- | :--- |
 | Bài đã giải theo chủ đề (định nghĩa gốc, viết cho A1 xem tiến độ cá nhân) | F1-06 | `01-rd/req/F1_identity.md` — F1-06 |
 | Tỉ lệ chấp thuận — Accepted / tổng bài nộp (định nghĩa gốc, viết cho A1 xem tiến độ cá nhân) | F1-07 | `01-rd/req/F1_identity.md` — F1-07 |
-| Tổng hợp tiến độ nhiều học viên trong lớp phụ trách (điểm TB, hoàn thành, chuỗi ngày, xu hướng, khối "Cần chú ý") | F1-28 | `01-rd/req/F1_identity.md` — F1-28 (bổ sung 2026-08-30) |
+| Tổng hợp tiến độ nhiều học viên trong lớp phụ trách (điểm TB, hoàn thành, chuỗi ngày, xu hướng; ~~khối "Cần chú ý"~~ đã bỏ trên màn, Owner chốt 2026-11-07) | F1-28 | `01-rd/req/F1_identity.md` — F1-28 (bổ sung 2026-08-30) |
 | ~~Bảng slug mục 7.2 ghi `class_progress` là "dẫn xuất từ F1-06, F1-07"~~ — đã thay bằng mã trực tiếp F1-28; `system_survey.md` cần cập nhật dòng này khi đợt rà soát tiếp theo chạm tới mục 7.2 | (lịch sử) | `01-rd/overview/system_survey.md` — mục 7.2 dòng `class_progress` |
 | Cơ chế xác định "lớp giảng viên phụ trách" — giao bài theo lớp, chỉ sinh viên lớp đó thấy bài | F2-12 | `01-rd/req/user_stories/a2_instructor.md` (`US-A2-03`) |
 | ~~Cùng cơ chế lớp giảng viên phụ trách áp dụng cho phạm vi hiển thị màn chấm bài (`instructor_grading`)~~ **Đã bỏ 2026-10-13** (`DEC-2026-1013-remove-instructor-manual-grading`): màn chấm bài không còn; `class_progress` vẫn dùng phạm vi lớp phụ trách của F2-12/F1-12 | ~~F5-27~~ | `01-rd/req/F5_ai-review.md` — F5-27 (mục đã bỏ) |
@@ -59,6 +59,8 @@ A2 xem tổng hợp nhiều học viên. Khoảng trống này nay lấp bằng 
 | Màn hiện tại | `INS0203` / `class_progress` | `identity` + `judge-orchestration` |
 | Tài liệu yêu cầu | `01-rd/req/F1_identity.md` (F1-28) | Nguồn SoT của màn |
 | Prototype | `09-layoutBase/Giáo viên - Tiến độ học viên.dc.html` | Bằng chứng bố cục và trạng thái |
+
+**Đã bỏ — Owner chốt 2026-11-07.** Hai khối sau của mockup **không dựng** trên màn, đúng như mã hiện tại (`05-coding/frontend/src/views/teacher/class-progress/ui/class-progress-view.tsx:12-16`): (a) biểu đồ đường "Điểm trung bình theo lớp" (BD widget `class-score-trend-chart`, F1 #57); (b) khối "Cần chú ý" (BD widget `class-attention-list`, F1 #58). Lý do thật: khối "Cần chú ý" chỉ nhắc lại cột "Trạng thái" của bảng học viên và làm màn phải cuộn thêm; lý do cũ của biểu đồ (màn Tổng quan giảng viên vẽ cùng chuỗi) nay không còn đúng, nên biểu đồ bỏ theo tiêu chí ponytail bậc 3 (không ai cần trong buổi demo) và bậc 4 (cột "Trạng thái" đã cho thấy tình trạng). Phần mô tả bên dưới về biểu đồ và khối "Cần chú ý" (điểm 1, 3, 4, 5, và Q6 ở mục 4) **giữ nguyên làm lịch sử, không còn là yêu cầu dựng UI**. Ba nhãn Vắng bài / Theo dõi / Cần hỗ trợ vẫn là quy tắc của cột "Trạng thái" trong bảng. Endpoint F1 #57, #58 (và #29) vẫn là hợp đồng ở `03-dd/api/F1_identity.md`, hiện chưa có màn nào đọc.
 
 **Chi tiết trạng thái và cấu trúc màn**
 
@@ -146,7 +148,7 @@ diễn:
 |---|---|---|---|
 | REQ-01 | Bài đã giải theo chủ đề (định nghĩa gốc, viết cho A1 xem tiến độ cá nhân) (F1-06) | Chức năng | `01-rd/req/F1_identity.md` — F1-06 |
 | REQ-02 | Tỉ lệ chấp thuận — Accepted / tổng bài nộp (định nghĩa gốc, viết cho A1 xem tiến độ cá nhân) (F1-07) | Chức năng | `01-rd/req/F1_identity.md` — F1-07 |
-| REQ-03 | Tổng hợp tiến độ nhiều học viên trong lớp phụ trách (điểm TB, hoàn thành, chuỗi ngày, xu hướng, khối "Cần chú ý") (F1-28) | Chức năng | `01-rd/req/F1_identity.md` — F1-28 (bổ sung 2026-08-30) |
+| REQ-03 | Tổng hợp tiến độ nhiều học viên trong lớp phụ trách (điểm TB, hoàn thành, chuỗi ngày, xu hướng) (F1-28). ~~khối "Cần chú ý"~~ **Đã bỏ, Owner chốt 2026-11-07:** khối này cùng biểu đồ điểm TB theo lớp không dựng trên màn (xem ghi chú "Đã bỏ" ở mục 2.1); nhãn trạng thái chỉ còn ở cột "Trạng thái" của bảng | Chức năng | `01-rd/req/F1_identity.md` — F1-28 (bổ sung 2026-08-30) |
 | REQ-04 | ~~Bảng slug mục 7.2 ghi `class_progress` là "dẫn xuất từ F1-06, F1-07"~~ — đã thay bằng mã trực tiếp F1-28; `system_survey.md` cần cập nhật dòng này khi đợt rà soát tiếp theo chạm tới mục 7.2 ((lịch sử)) | Chức năng | `01-rd/overview/system_survey.md` — mục 7.2 dòng `class_progress` |
 | REQ-05 | Cơ chế xác định "lớp giảng viên phụ trách" — giao bài theo lớp, chỉ sinh viên lớp đó thấy bài (F2-12) | Chức năng | `01-rd/req/user_stories/a2_instructor.md` (`US-A2-03`) |
 | REQ-06 | Cùng cơ chế lớp giảng viên phụ trách áp dụng cho phạm vi hiển thị màn chấm bài (`instructor_grading`) — dẫn chiếu để dùng chung cơ chế, không phát minh riêng cho `class_progress` (F5-27) **Đã bỏ 2026-10-13** | Chức năng | `01-rd/req/F5_ai-review.md` — F5-27 (mục đã bỏ) |

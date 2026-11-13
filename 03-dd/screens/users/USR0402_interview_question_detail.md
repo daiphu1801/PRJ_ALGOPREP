@@ -14,7 +14,7 @@
 | Nguồn | `01-rd/screens/users/USR0402_interview_question_detail.md`; `02-bd/screens/users/USR0402_interview_question_detail.md` |
 | Prototype | `05-coding/frontend/src/views/users/interview-question-detail/` (mock) |
 | Module | F6 `interview-bank`; F5 `ai-review` qua cổng ngân sách/chấm câu trả lời |
-| Phiên bản, ngày | V0.1, 2026-10-24 |
+| Phiên bản, ngày | V0.3, 2026-11-11 |
 | TDD | `04-tdd/screens/users/USR0402_interview_question_detail.md`; `04-tdd/modules/F6_interview-bank.md`, `04-tdd/modules/F5_ai-review.md` |
 
 **Bảng 0.2: Lịch sử sửa.**
@@ -22,6 +22,8 @@
 | Ver | Nội dung | Ngày |
 | :--- | :--- | :--- |
 | V0.1 | Tạo DD màn, ghi rõ request/practice tách biệt và hành vi khi tải lại | 2026-10-24 |
+| V0.2 | Mục 2: nối API thật (merge M1), đổi tên hook theo mã, thêm bảng 2.2 | 2026-11-11 |
+| V0.3 | Mục 2 | EVT-9: mở một lượt cũ hiện phản hồi của lượt đó (bảng 2.2 dòng N8), theo quyết định owner 2026-11-11 | 2026-11-11 |
 
 **Bảng 0.3: Ký hiệu nguồn.**
 
@@ -53,21 +55,36 @@ Không có widget/feature mới: phần soạn, mode và lượt đang mở ch�
 
 | EVT (BD) | ID hợp đồng | Hook/query đích | Nối |
 | :--- | :--- | :--- | :--- |
-| EVT-1 tải chi tiết và lịch sử | F6 mục 3 `GetInterviewQuestion`; F6 mục 7 `ListMyAnswerAttempts` | `useInterviewQuestion`, `useMyAnswerAttempts` | Mock; query song song |
+| EVT-1 tải chi tiết và lịch sử | F6 mục 3 `GetInterviewQuestion`; F6 mục 7 `ListMyAnswerAttempts` | `useLearnerQuestionDetail`, `usePracticeAttempts` | Thật; hai query song song |
 | EVT-2 quay lại danh sách | Không gọi API | Guarded navigation về `/interview-bank`, giữ `topic`, `q`, `status`, `level`, `bookmarked=1` khi có | Client |
-| EVT-3 bookmark | F6 mục 5 `ToggleQuestionBookmark` | `toggleQuestionBookmark(questionId, bookmarked)` | Mock; optimistic, rollback khi lỗi |
+| EVT-3 bookmark | F6 mục 5 `ToggleQuestionBookmark` | `useSetBookmark` | Thật; lạc quan, hoàn lại khi lỗi |
 | EVT-4 chuyển sang luyện | Không gọi API | Local tab state; khoá khi `practiceAvailable=false` | Client |
 | EVT-5 chuyển sang học | Không gọi API | Local tab state | Client |
-| EVT-6 tự chấm | F6 mục 4 `RateQuestionRecall` | `rateQuestionRecall(questionId, rating)` | Mock; ghi mức đích |
+| EVT-6 tự chấm | F6 mục 4 `RateQuestionRecall` | `useRateRecall` | Thật; không lạc quan, vá bộ nhớ đệm bằng `RecallDto` |
 | EVT-7 soạn câu trả lời | Không gọi API | Local state, max 5000 ký tự | Client |
-| EVT-8 nộp câu trả lời | F6 mục 6 `SubmitPracticeAnswer`; F5 mục 32 cổng ngân sách qua F6 | `submitPracticeAnswer(questionId, answer)` | Mock; AI feedback suy giảm theo contract F6/F5 |
+| EVT-8 nộp câu trả lời | F6 mục 6 `SubmitPracticeAnswer`; F5 mục 32 cổng ngân sách qua F6 | `useSubmitPracticeAnswer` | Thật; `201 FAILED` (`INB-501`, `INB-502`) hiện khối "chưa có phản hồi AI", không phải lỗi |
 | EVT-9 mở/đóng attempt | Không gọi API | Local disclosure state | Client |
-| EVT-10 tải thêm history | F6 mục 7 `ListMyAnswerAttempts` | `useMyAnswerAttempts` trang kế | Mock |
+| EVT-10 tải thêm history | F6 mục 7 `ListMyAnswerAttempts` | `usePracticeAttempts` (`useInfiniteQuery`, con trỏ `before`), nút "Xem thêm ({shown} / {total})" | Thật |
 | EVT-11 xác nhận rời khi draft | Không gọi API | `ConfirmDialog` | Client |
 | EVT-12 ở lại/rời đi | Không gọi API | Modal action | Client |
 | EVT-13 thử lượt mới | Không gọi API | Clear draft và feedback được chọn, giữ history | Client |
 
 Không có SSE ở màn này. Chấm câu trả lời là request/response đồng bộ từ góc giao diện; không dựng luồng token streaming. Không tự retry POST sau timeout nếu chưa có idempotency key theo contract.
+
+Bảng 2.2 ghi cách bản nối thật xử lý các điểm F6 mục 6 và 7 ([SoT: `05-coding/frontend/src/views/users/interview-question-detail/ui/interview-question-detail-view.tsx:96-200`, `05-coding/frontend/src/entities/interview-question/api/real-practice.ts:1-75`]).
+
+Bảng 2.2: Xử lý khi nối thật (2026-11-11).
+
+| # | Điểm | Bản nối thật |
+| :-: | :--- | :--- |
+| N1 | Phản hồi `FAILED` | `feedbackStatus = failed` kèm `feedbackErrorCode` được giữ trên lượt; màn hiện khối "chưa có phản hồi AI" và toast cảnh báo, không toast lỗi |
+| N2 | Mã lỗi nộp (`INB-V06`, `V07`, `010`, `040`, `041`, `042`, `050`) | Toast theo `apiErrors`, bản nháp giữ nguyên và còn sửa được; không tự gửi lại (F6 mục 6 không idempotent) |
+| N3 | Sau mỗi lần nộp | Đọc lại lịch sử bất kể kết quả, vì một lời gọi mất kết nối có thể đã lưu lượt (F6 mục 6.1) |
+| N4 | Phản hồi nhiều "Hướng bổ sung" | Máy chủ trả mảng `improvementSuggestions`; màn nối thành các dòng của một khối [SoT: `real-practice.ts:35-52`] |
+| N5 | Hạn mức 5000 ký tự, "Thử lại một lượt mới", cảnh báo rời màn | Giữ nguyên ở client; `INB-V07` chỉ là lưới an toàn |
+| N6 | `404 INB-010` ở mục 3 | Hook trả `null`, màn hiện trạng thái không tìm thấy; ở mục 4, 5, 6 toast `apiErrors.INB-010` |
+| N7 | `suggestedApproach` | Chuỗi Markdown tách bằng `splitOutline` thành các ý |
+| N8 | EVT-9 mở một lượt cũ | Hiện câu trả lời và phản hồi của lượt đó từ `feedback` và `feedbackStatus` của F6 mục 7 (không gọi thêm API): điểm đạt, điểm thiếu, hướng bổ sung, mức đạt từng tiêu chí; `FAILED` hiện "chưa có phản hồi AI". Cùng khối `AttemptFeedback` với lượt vừa nộp, không có liên kết về Chế độ học |
 
 ## 3. Trạng thái màn
 

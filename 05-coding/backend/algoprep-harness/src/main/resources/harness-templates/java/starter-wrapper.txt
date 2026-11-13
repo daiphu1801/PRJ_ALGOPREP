@@ -1,0 +1,9 @@
+import java.util.*;
+
+{{NODE_COMMENTS}}
+class Solution {
+    {{DECLARATION}} {
+        // Write your solution here
+        {{DEFAULT_RETURN}}
+    }
+}

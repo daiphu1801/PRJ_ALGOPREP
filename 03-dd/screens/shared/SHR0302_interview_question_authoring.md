@@ -30,6 +30,19 @@
 | 11 lưu sửa | F6 §22 `PUT /admin/questions/{questionId}` | Thành công cập nhật baseline |
 | 13–15 xoá mềm | F6 §23 `POST /admin/questions/bulk/delete` | Chỉ một UUID; sau thành công về danh sách |
 
+**Triển khai 2026-11-11 (nối API thật, lát M1 phía câu hỏi).** Hook ở `entities/interview-question/api/admin-queries.ts`, hợp đồng ở `03-dd/api/F6_interview-bank.md`; chế độ dữ liệu giả trả cùng hợp đồng (`admin-mock.ts`, mã câu hỏi đóng vai id).
+
+**Bảng 2.1: Việc gọi F6 của `SHR0302` trong bản dựng**
+
+| EVT | Hook | Gọi | Ghi chú |
+| :--- | :--- | :--- | :--- |
+| 2 sửa | `useAdminQuestion(id)` | `GET /interview-bank/admin/questions/{id}` | `404 INB-010` (không có, sai định dạng, `RETIRED`) thành `null` ở lớp truy vấn, màn hiện trạng thái không tìm thấy; lỗi khác hiện khối lỗi có nút thử lại. Tiêu đề "Sửa câu hỏi `IQ-%03d`" lấy `displayNo` lúc mở màn |
+| 10 lưu mới | `useCreateAdminQuestion()` | `POST .../admin/questions` | Body gồm `topicId`, `levelId`, `title`, `contentMarkdown`, `followUpQuestions`, `rubric[{criterionCode, weightPercent, description}]`. Thành công: toast, `router.replace({listHref}/{id}/edit)` bằng UUID từ response |
+| 11 lưu sửa | `useUpdateAdminQuestion()` | `PUT .../admin/questions/{id}` | `PUT` thay toàn bộ nên màn **gửi lại** `contentMarkdown` và `description` từng tiêu chí đã tải (form không có ô nhập, BD Q7); thiếu thì server xoá về `NULL`. Ba cột chỉ-CSV không nằm trong body |
+| 13–15 xoá mềm | `useRetireAdminQuestions()` | `POST .../bulk/delete` `{ ids: [id] }` | Thành công: toast, `router.push(listHref)`. `failedItems` không rỗng trong `200`: toast lỗi theo mã (`INB-010`), ở lại màn |
+
+Chọn chủ đề và độ khó: giá trị ô chọn là `id` của dòng danh mục (chế độ thật) hoặc `key` (chế độ giả); form mới mặc định dòng đầu của danh mục, gửi UUID đó. Kiểm phía client trước khi gọi (không gửi request nếu sai): tiêu đề rỗng, tiêu đề quá 255 ký tự (đếm theo điểm mã), tên tiêu chí rỗng, tên tiêu chí trùng không phân biệt hoa thường, tổng trọng số khác 100 khi có tiêu chí. Lỗi server (`INB-V08` đến `V12`, `INB-033`, `INB-035`, `INB-301`, `INB-V17`, `INB-503`) giữ bản nháp và hiện toast theo `apiErrors`. Chưa làm: cảnh báo rời màn khi chưa lưu, focus vào trường lỗi đầu tiên, popup "Xem như học viên" (nút còn là chỗ giữ).
+
 Đường `/admin/questions` là path API cho cả A2/A3 có quyền, không đồng nghĩa A2 phải dùng route giao diện `/admin`. EVT-12 nhân bản đã bỏ. Ba trường gợi ý/câu mẫu/từ khoá chỉ có trong nhập CSV ở `SHR0301`, không có ô ở màn soạn.
 
 ## 3. Trạng thái màn

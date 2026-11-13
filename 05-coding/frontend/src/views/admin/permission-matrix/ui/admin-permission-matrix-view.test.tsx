@@ -7,6 +7,7 @@ import {
   render,
   renderHook,
   screen,
+  waitFor,
 } from "@testing-library/react";
 import { toast, useToasts } from "@/shared/lib/toast-store";
 import { AdminPermissionMatrixView } from "./admin-permission-matrix-view";
@@ -21,6 +22,7 @@ function withQuery(ui: ReactElement) {
 }
 
 vi.mock("@/shared/i18n", () => ({
+  useApiErrorMessage: () => () => "apiError",
   useT: () => (key: string, values?: Record<string, string | number>) =>
     values ? `${key}:${Object.values(values).join(",")}` : key,
 }));
@@ -39,7 +41,9 @@ function cell(action: string, fn: string, role: string) {
 }
 
 function openRole(role: string) {
-  fireEvent.click(screen.getByRole("button", { name: ROLE_NAME[role] ?? role }));
+  fireEvent.click(
+    screen.getByRole("button", { name: ROLE_NAME[role] ?? role }),
+  );
 }
 
 describe("AdminPermissionMatrixView", () => {
@@ -50,7 +54,10 @@ describe("AdminPermissionMatrixView", () => {
 
     expect(cell("create", "USER_MANAGEMENT", "INSTRUCTOR")).not.toBeChecked();
     fireEvent.click(cell("create", "USER_MANAGEMENT", "INSTRUCTOR"));
-    expect(cell("create", "USER_MANAGEMENT", "INSTRUCTOR")).toBeChecked();
+    // The toggle is a call now, so the cell flips once it settles.
+    await waitFor(() =>
+      expect(cell("create", "USER_MANAGEMENT", "INSTRUCTOR")).toBeChecked(),
+    );
   });
 
   it("refuses to remove the last ADMIN PERMISSION_MATRIX:UPDATE", async () => {
@@ -77,7 +84,9 @@ describe("AdminPermissionMatrixView", () => {
     expect(screen.getByRole("dialog")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "selfRevokeConfirm" }));
-    expect(cell("read", "AI_CONFIG", "ADMIN")).not.toBeChecked();
+    await waitFor(() =>
+      expect(cell("read", "AI_CONFIG", "ADMIN")).not.toBeChecked(),
+    );
   });
 
   it("rejects an over-long role name", async () => {

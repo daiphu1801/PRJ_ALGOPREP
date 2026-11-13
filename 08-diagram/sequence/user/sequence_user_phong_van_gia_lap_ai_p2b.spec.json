@@ -19,12 +19,12 @@
         "role": "actor"
       },
       {
-        "name": "InterviewController",
+        "name": "InterviewSessionController",
         "role": "controller",
-        "stereo": "presentation SSE"
+        "stereo": "presentation REST"
       },
       {
-        "name": "InterviewTurnCmd",
+        "name": "RequestInterviewHintCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
@@ -48,12 +48,12 @@
         "role": "external"
       },
       {
-        "name": "InterviewRepo",
+        "name": "InterviewSessionRepository",
         "role": "repository",
         "stereo": "output port F5"
       },
       {
-        "name": "AiDbAdapter",
+        "name": "JdbcInterviewSessionRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -68,19 +68,19 @@
         "phase": "Giai đoạn 6 - Phát câu trả lời dần qua cùng yêu cầu"
       },
       {
-        "from": "InterviewTurnCmd",
-        "to": "InterviewController",
+        "from": "RequestInterviewHintCommandHandler",
+        "to": "InterviewSessionController",
         "text": "Báo đã nhận câu trả lời",
         "kind": "async"
       },
       {
-        "from": "InterviewController",
+        "from": "InterviewSessionController",
         "to": "Sinh viên",
         "text": "Bắt đầu luồng phản hồi",
         "kind": "async"
       },
       {
-        "from": "InterviewTurnCmd",
+        "from": "RequestInterviewHintCommandHandler",
         "to": "PromptComposer",
         "text": "Dựng chỉ thị theo giai đoạn hiện tại"
       },
@@ -91,12 +91,12 @@
       },
       {
         "from": "PromptComposer",
-        "to": "InterviewTurnCmd",
+        "to": "RequestInterviewHintCommandHandler",
         "text": "Yêu cầu hội thoại an toàn",
         "kind": "return"
       },
       {
-        "from": "InterviewTurnCmd",
+        "from": "RequestInterviewHintCommandHandler",
         "to": "LlmProviderPort",
         "text": "Xin phản hồi cho lượt này"
       },
@@ -124,18 +124,18 @@
       },
       {
         "from": "LlmProviderPort",
-        "to": "InterviewTurnCmd",
+        "to": "RequestInterviewHintCommandHandler",
         "text": "Chuyển đoạn chữ đã giải mã",
         "kind": "async"
       },
       {
-        "from": "InterviewTurnCmd",
-        "to": "InterviewController",
+        "from": "RequestInterviewHintCommandHandler",
+        "to": "InterviewSessionController",
         "text": "Chuyển tiếp nội dung hiển thị",
         "kind": "async"
       },
       {
-        "from": "InterviewController",
+        "from": "InterviewSessionController",
         "to": "Sinh viên",
         "text": "Hiển thị từng đoạn chữ",
         "kind": "async"
@@ -145,61 +145,61 @@
       },
       {
         "from": "LlmProviderPort",
-        "to": "InterviewTurnCmd",
+        "to": "RequestInterviewHintCommandHandler",
         "text": "Bản hoàn chỉnh và lượng token",
         "kind": "return"
       },
       {
-        "from": "InterviewTurnCmd",
-        "to": "InterviewTurnCmd",
+        "from": "RequestInterviewHintCommandHandler",
+        "to": "RequestInterviewHintCommandHandler",
         "text": "Chuyển giai đoạn khi đủ tín hiệu"
       },
       {
-        "from": "InterviewTurnCmd",
-        "to": "InterviewTurnCmd",
+        "from": "RequestInterviewHintCommandHandler",
+        "to": "RequestInterviewHintCommandHandler",
         "text": "Ép chuyển khi chạm trần mỗi giai đoạn"
       },
       {
-        "from": "InterviewTurnCmd",
-        "to": "InterviewRepo",
+        "from": "RequestInterviewHintCommandHandler",
+        "to": "InterviewSessionRepository",
         "text": "Lưu phản hồi AI và token"
       },
       {
-        "from": "InterviewRepo",
-        "to": "AiDbAdapter",
+        "from": "InterviewSessionRepository",
+        "to": "JdbcInterviewSessionRepository",
         "text": "Ghi lượt AI và trạng thái mới"
       },
       {
-        "from": "AiDbAdapter",
+        "from": "JdbcInterviewSessionRepository",
         "to": "PostgreSQL",
         "text": "Lưu lượt và xét khoá ngân sách"
       },
       {
         "from": "PostgreSQL",
-        "to": "AiDbAdapter",
+        "to": "JdbcInterviewSessionRepository",
         "text": "Lượt đã hoàn tất",
         "kind": "return"
       },
       {
-        "from": "AiDbAdapter",
-        "to": "InterviewRepo",
+        "from": "JdbcInterviewSessionRepository",
+        "to": "InterviewSessionRepository",
         "text": "Trạng thái mới",
         "kind": "return"
       },
       {
-        "from": "InterviewRepo",
-        "to": "InterviewTurnCmd",
+        "from": "InterviewSessionRepository",
+        "to": "RequestInterviewHintCommandHandler",
         "text": "Đã ghi lượt AI",
         "kind": "return"
       },
       {
-        "from": "InterviewTurnCmd",
-        "to": "InterviewController",
+        "from": "RequestInterviewHintCommandHandler",
+        "to": "InterviewSessionController",
         "text": "Báo lượt hoàn tất",
         "kind": "async"
       },
       {
-        "from": "InterviewController",
+        "from": "InterviewSessionController",
         "to": "Sinh viên",
         "text": "Hiển thị giai đoạn và lượt còn lại",
         "kind": "async"

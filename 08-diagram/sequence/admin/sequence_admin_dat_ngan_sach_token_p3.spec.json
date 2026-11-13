@@ -14,22 +14,22 @@
         "role": "actor"
       },
       {
-        "name": "AiUsageController",
+        "name": "AdminLanguageConfigController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "ReviewUsageAlert",
+        "name": "ReviewUsageAlertCommandHandler",
         "role": "service",
         "stereo": "application"
       },
       {
-        "name": "AlertStorePort",
+        "name": "AiBudgetAdminRepository",
         "role": "repository",
-        "stereo": "output port"
+        "stereo": "persistence adapter"
       },
       {
-        "name": "AiDbAdapter",
+        "name": "JdbcAiTokenBudgetRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -42,32 +42,32 @@
     "messages": [
       {
         "from": "Quản trị viên",
-        "to": "AiUsageController",
+        "to": "AdminLanguageConfigController",
         "text": "Đánh dấu đã xem cảnh báo bất thường"
       },
       {
-        "from": "AiUsageController",
-        "to": "ReviewUsageAlert",
+        "from": "AdminLanguageConfigController",
+        "to": "ReviewUsageAlertCommandHandler",
         "text": "Kiểm quyền cập nhật ngân sách"
       },
       {
-        "from": "ReviewUsageAlert",
-        "to": "AlertStorePort",
+        "from": "ReviewUsageAlertCommandHandler",
+        "to": "AiBudgetAdminRepository",
         "text": "Đổi cảnh báo đang mở thành đã xem"
       },
       {
-        "from": "AlertStorePort",
-        "to": "AiDbAdapter",
+        "from": "AiBudgetAdminRepository",
+        "to": "JdbcAiTokenBudgetRepository",
         "text": "Cập nhật theo mã cảnh báo"
       },
       {
-        "from": "AiDbAdapter",
+        "from": "JdbcAiTokenBudgetRepository",
         "to": "PostgreSQL",
         "text": "Đổi OPEN thành REVIEWED nếu còn mở"
       },
       {
         "from": "PostgreSQL",
-        "to": "ReviewUsageAlert",
+        "to": "ReviewUsageAlertCommandHandler",
         "text": "Trả số dòng đã đổi",
         "kind": "return"
       },
@@ -76,13 +76,13 @@
           "label": "Cảnh báo tồn tại?",
           "then": [
             {
-              "from": "ReviewUsageAlert",
-              "to": "AiUsageController",
+              "from": "ReviewUsageAlertCommandHandler",
+              "to": "AdminLanguageConfigController",
               "text": "Trả trạng thái đã xem; lặp lại không ghi đè",
               "kind": "return"
             },
             {
-              "from": "AiUsageController",
+              "from": "AdminLanguageConfigController",
               "to": "Quản trị viên",
               "text": "Bỏ thẻ khỏi danh sách",
               "kind": "return"
@@ -90,13 +90,13 @@
           ],
           "else": [
             {
-              "from": "ReviewUsageAlert",
-              "to": "AiUsageController",
+              "from": "ReviewUsageAlertCommandHandler",
+              "to": "AdminLanguageConfigController",
               "text": "Báo không tìm thấy cảnh báo",
               "kind": "return"
             },
             {
-              "from": "AiUsageController",
+              "from": "AdminLanguageConfigController",
               "to": "Quản trị viên",
               "text": "Hiển thị lỗi",
               "kind": "return"

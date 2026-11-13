@@ -1,4 +1,7 @@
-// PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md section 9.
+// Wired to F6 #19 / #23 (03-dd/api/F6_interview-bank.md): the server filters, sorts and pages, this view
+// only sends `AdminListParams`; mock mode answers the same contract (entities/interview-question/api/
+// admin-mock.ts). Selection is limited to the page on screen: any filter, sort or page change clears it
+// (DD SHR0301 BR-SC-01). Layout and history below are from the prototype.
 //
 // Layout follows 09-layoutBase/Admin - Câu hỏi phỏng vấn.dc.html: header with a CSV import and a
 // "Câu hỏi mới" CTA (:147-149), a filter bar (:165-183), then the list and numbered paging
@@ -13,22 +16,20 @@
 // A3 both edit the entire bank (DEC-2026-0830-interview-bank-crud), with no "only what I authored" rule.
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { Gauge, Pencil, Tags, Trash2 } from "lucide-react";
 import {
-  levelLabel,
   levelTone,
-  topicLabel,
   useInterviewLevels,
   useInterviewTopics,
-  type InterviewQuestion,
-  type InterviewQuestionPage,
-  type QuestionLevel,
-  type QuestionTopic,
+  type AdminListParams,
+  type AdminQuestionRow,
+  type AdminSortKey,
 } from "@/entities/interview-question";
-import { useT } from "@/shared/i18n";
-import { usePersistedPageSize } from "@/shared/lib";
+import { ApiError } from "@/shared/api";
+import { useApiErrorMessage, useT } from "@/shared/i18n";
+import { usePersistedPageSize, useDebounced } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
 import {
   Badge,
@@ -47,13 +48,18 @@ import {
   FilterMenu,
   type DataTableColumn,
 } from "@/shared/ui";
-import { useInterviewQuestionPage } from "../api";
+import {
+  useAdminQuestionList,
+  useQuestionUsage,
+  useRetireQuestions,
+} from "../api";
 import { CsvImportDialog } from "./csv-import-dialog";
 import { LevelManagerDialog } from "./level-manager-dialog";
 import { TopicManagerDialog } from "./topic-manager-dialog";
 
 // 8 is the default, 20 and 50 the other choices: same as the problem list (SHR0201 Q4).
 const PAGE_SIZES = [8, 20, 50] as const;
+const SEARCH_MAX_LENGTH = 100;
 
 type SortKey =
   | "code"
@@ -65,8 +71,17 @@ type SortKey =
   | "usage"
   | "score";
 
-type TopicFilter = QuestionTopic | "all";
-type LevelFilter = QuestionLevel | "all";
+// Column key on screen -> `sort` parameter of #19.
+const SORT_PARAM: Record<SortKey, AdminSortKey> = {
+  code: "displayNo",
+  question: "title",
+  topic: "topic",
+  level: "level",
+  followUps: "followUpCount",
+  rubric: "rubricCount",
+  usage: "usageCount",
+  score: "averageScorePercent",
+};
 
 type Props = {
   /** Area root for row links and the create button, e.g. "/admin/interview-questions". */
@@ -75,36 +90,30 @@ type Props = {
   canManageTopics?: boolean;
 };
 
-/** Loads the bank, then hands it to the form that owns filters, sorting, selection and local deletes. */
-export function InterviewQuestionManagementView(props: Props) {
-  const t = useT("interviewQuestionManagement");
-  const query = useInterviewQuestionPage();
+/** `IQ-014`: a label from `displayNo`, never a key (BD SHR0301 Q5). */
+const codeLabel = (row: AdminQuestionRow) =>
+  `IQ-${String(row.displayNo).padStart(3, "0")}`;
 
-  if (query.isError) return <ErrorState>{t("loadFailed")}</ErrorState>;
-  if (!query.data) {
-    return (
-      <div className="flex flex-col gap-3.5" aria-busy="true">
-        <Skeleton className="h-[62px] w-full" />
-        <Skeleton className="h-[360px] w-full" />
-      </div>
-    );
-  }
-  return <InterviewQuestionManagementForm {...props} page={query.data} />;
-}
+const labelOf = (
+  list: readonly { key: string; label: string }[],
+  ref: { code: string; displayName: string },
+) => list.find((item) => item.key === ref.code)?.label ?? ref.displayName;
 
-function InterviewQuestionManagementForm({
+export function InterviewQuestionManagementView({
   basePath,
   canManageTopics = false,
-  page,
-}: Props & { page: InterviewQuestionPage }) {
+}: Props) {
   const t = useT("interviewQuestionManagement");
+  const apiMessage = useApiErrorMessage();
   const topicList = useInterviewTopics();
   const levelList = useInterviewLevels();
+  const usage = useQuestionUsage();
+  const retire = useRetireQuestions();
   const [managingTopics, setManagingTopics] = useState(false);
   const [managingLevels, setManagingLevels] = useState(false);
   const [query, setQuery] = useState("");
-  const [topic, setTopic] = useState<TopicFilter>("all");
-  const [level, setLevel] = useState<LevelFilter>("all");
+  const [topic, setTopic] = useState("all");
+  const [level, setLevel] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = usePersistedPageSize(
     "algoprep-interview-questions-page-size",
@@ -120,138 +129,102 @@ function InterviewQuestionManagementForm({
     direction: "asc",
   });
   const [importingCsv, setImportingCsv] = useState(false);
-  const [pendingDelete, setPendingDelete] = useState<InterviewQuestion | null>(
+  const [pendingDelete, setPendingDelete] = useState<AdminQuestionRow | null>(
     null,
-  );
-  const [deletedCodes, setDeletedCodes] = useState<ReadonlySet<string>>(
-    new Set(),
   );
   const [selected, setSelected] = useState<ReadonlySet<string>>(new Set());
   const [confirmingBulkDelete, setConfirmingBulkDelete] = useState(false);
 
-  const filtered = useMemo(() => {
-    const needle = query.trim().toLowerCase();
-    const rows = page.questions.filter(
-      (question) =>
-        !deletedCodes.has(question.code) &&
-        (topic === "all" || question.topic === topic) &&
-        (level === "all" || question.level === level) &&
-        (!needle ||
-          question.question.toLowerCase().includes(needle) ||
-          question.code.toLowerCase().includes(needle)),
-    );
-
-    if (!sort.key) return rows;
-    const factor = sort.direction === "asc" ? 1 : -1;
-    const levelRank = (key: string) =>
-      levelList.findIndex((item) => item.key === key);
-    return [...rows].sort((left, right) => {
-      switch (sort.key) {
-        case "code":
-          return (
-            left.code.localeCompare(right.code, "vi", { numeric: true }) *
-            factor
-          );
-        case "question":
-          return left.question.localeCompare(right.question, "vi") * factor;
-        case "topic":
-          return (
-            topicLabel(topicList, left.topic).localeCompare(
-              topicLabel(topicList, right.topic),
-              "vi",
-            ) * factor
-          );
-        case "level":
-          // Admin-chosen order of the level list, not a fixed easy < medium < hard.
-          return (levelRank(left.level) - levelRank(right.level)) * factor;
-        case "followUps":
-          return (left.followUps.length - right.followUps.length) * factor;
-        case "rubric":
-          return (left.rubric.length - right.rubric.length) * factor;
-        case "usage":
-          return (left.usageCount - right.usageCount) * factor;
-        default:
-          return (left.averageScore - right.averageScore) * factor;
-      }
-    });
-  }, [
-    page.questions,
-    deletedCodes,
-    query,
+  // Typing filters live, but only a pause in typing becomes a request.
+  const debouncedQuery = useDebounced(query);
+  const params: AdminListParams = {
+    q: debouncedQuery.trim().slice(0, SEARCH_MAX_LENGTH),
     topic,
     level,
-    sort,
-    topicList,
-    levelList,
-  ]);
+    sort: sort.key ? SORT_PARAM[sort.key] : "",
+    dir: sort.direction,
+    page: currentPage,
+    pageSize,
+  };
+  const list = useAdminQuestionList(params);
+  const data = list.data;
 
-  // Questions still on screen (not locally deleted) per topic, so the manager can refuse deleting a
-  // topic that is in use.
-  const topicUsage = useMemo(() => {
-    const counts: Record<string, number> = {};
-    for (const question of page.questions) {
-      if (!deletedCodes.has(question.code))
-        counts[question.topic] = (counts[question.topic] ?? 0) + 1;
-    }
-    return counts;
-  }, [page.questions, deletedCodes]);
+  if (list.isError && !data)
+    return (
+      <ErrorState>
+        <div className="flex flex-col items-center gap-3">
+          <p>{t("loadFailed")}</p>
+          <Button variant="ghost" onClick={() => void list.refetch()}>
+            {t("retry")}
+          </Button>
+        </div>
+      </ErrorState>
+    );
+  if (!data) {
+    return (
+      <div className="flex flex-col gap-3.5" aria-busy="true">
+        <Skeleton className="h-[62px] w-full" />
+        <Skeleton className="h-[360px] w-full" />
+      </div>
+    );
+  }
 
-  const levelUsage = useMemo(() => {
-    const counts: Record<string, number> = {};
-    for (const question of page.questions) {
-      if (!deletedCodes.has(question.code))
-        counts[question.level] = (counts[question.level] ?? 0) + 1;
-    }
-    return counts;
-  }, [page.questions, deletedCodes]);
+  const rows = data.items;
+  const busy = retire.isPending;
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
-  // Deleting rows can leave the stored page past the last one; clamp rather than render an empty page.
-  const safePage = Math.min(currentPage, totalPages);
-  const visible = filtered.slice(
-    (safePage - 1) * pageSize,
-    safePage * pageSize,
-  );
+  // Any change of what the table shows starts from an empty selection.
+  function change(apply: () => void, resetPage = true) {
+    apply();
+    if (resetPage) setCurrentPage(1);
+    setSelected(new Set());
+  }
 
-  // Selection survives filter changes, so a bulk delete can reach rows the filter now hides.
-  const hiddenSelectedCount = useMemo(() => {
-    const shown = new Set(filtered.map((question) => question.code));
-    return [...selected].filter((code) => !shown.has(code)).length;
-  }, [filtered, selected]);
-
-  function toggleRow(code: string) {
+  function toggleRow(id: string) {
     setSelected((previous) => {
       const next = new Set(previous);
-      if (next.has(code)) next.delete(code);
-      else next.add(code);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   }
 
-  function deleteSelected() {
-    const count = selected.size;
-    setDeletedCodes((previous) => new Set([...previous, ...selected]));
-    setSelected(new Set());
-    toast.success(t("toast.bulkDeleted", { count }));
+  /** Partial success is a 200: report what went through, keep the failed ids selected. */
+  function retireIds(ids: string[], single?: AdminQuestionRow) {
+    retire.mutate(ids, {
+      onSuccess: (result) => {
+        const failed = new Set(result.failedItems.map((item) => item.id));
+        setSelected(
+          (previous) => new Set([...previous].filter((id) => failed.has(id))),
+        );
+        if (result.failedItems.length === 0) {
+          toast.success(
+            single
+              ? t("toast.deleted", { code: codeLabel(single) })
+              : t("toast.bulkDeleted", { count: result.retiredIds.length }),
+          );
+          return;
+        }
+        toast.warning(
+          t("toast.bulkPartial", {
+            done: result.retiredIds.length,
+            failed: result.failedItems.length,
+            reason: apiMessage(new ApiError(result.failedItems[0]!.code, 0)),
+          }),
+        );
+      },
+      onError: (error) => toast.error(apiMessage(error)),
+    });
   }
 
   // Live filtering stays silent; only an explicit submit (Enter) reports the result count.
   function announceSearch() {
+    const count = data!.page.totalItems;
     toast.info(
-      filtered.length === 0
-        ? t("toast.searchEmpty")
-        : t("toast.searchResult", { count: filtered.length }),
+      count === 0 ? t("toast.searchEmpty") : t("toast.searchResult", { count }),
     );
   }
 
-  function resetToFirstPage<T>(setter: (value: T) => void) {
-    return (value: T) => {
-      setter(value);
-      setCurrentPage(1);
-    };
-  }
-
-  const columns: DataTableColumn<InterviewQuestion>[] = [
+  const columns: DataTableColumn<AdminQuestionRow>[] = [
     {
       key: "code",
       sortable: true,
@@ -259,7 +232,7 @@ function InterviewQuestionManagementForm({
       width: "92px",
       render: (question) => (
         <span className="font-mono text-xs whitespace-nowrap text-[var(--color-text-muted)]">
-          {question.code}
+          {codeLabel(question)}
         </span>
       ),
     },
@@ -270,10 +243,10 @@ function InterviewQuestionManagementForm({
       width: "38%",
       render: (question) => (
         <EllipsisLink
-          href={`${basePath}/${question.code}`}
+          href={`${basePath}/${question.id}`}
           className="font-semibold"
         >
-          {question.question}
+          {question.title}
         </EllipsisLink>
       ),
     },
@@ -284,7 +257,7 @@ function InterviewQuestionManagementForm({
       width: "140px",
       render: (question) => (
         <span className="block truncate text-[12.5px] text-[var(--color-text-muted)]">
-          {topicLabel(topicList, question.topic)}
+          {labelOf(topicList, question.topic)}
         </span>
       ),
     },
@@ -294,8 +267,8 @@ function InterviewQuestionManagementForm({
       header: t("columnLevel"),
       width: "116px",
       render: (question) => (
-        <Badge variant={levelTone(levelList, question.level)}>
-          {levelLabel(levelList, question.level)}
+        <Badge variant={levelTone(levelList, question.level.code)}>
+          {labelOf(levelList, question.level)}
         </Badge>
       ),
     },
@@ -306,7 +279,7 @@ function InterviewQuestionManagementForm({
       width: "84px",
       align: "right",
       render: (question) => (
-        <span className="font-mono">{question.followUps.length}</span>
+        <span className="font-mono">{question.followUpCount}</span>
       ),
     },
     {
@@ -316,7 +289,7 @@ function InterviewQuestionManagementForm({
       width: "84px",
       align: "right",
       render: (question) => (
-        <span className="font-mono">{question.rubric.length}</span>
+        <span className="font-mono">{question.rubricCount}</span>
       ),
     },
     {
@@ -337,9 +310,12 @@ function InterviewQuestionManagementForm({
       header: t("columnScore"),
       width: "76px",
       align: "right",
+      // null until the first completed practice attempt (DD F6 19.3).
       render: (question) => (
         <span className="font-mono font-semibold">
-          {question.averageScore.toFixed(1)}
+          {question.averageScorePercent === null
+            ? "-"
+            : `${Math.round(question.averageScorePercent)}%`}
         </span>
       ),
     },
@@ -353,13 +329,13 @@ function InterviewQuestionManagementForm({
           <IconAction
             icon={Pencil}
             label={t("edit")}
-            ariaLabel={t("editQuestion", { code: question.code })}
-            href={`${basePath}/${question.code}/edit`}
+            ariaLabel={t("editQuestion", { code: codeLabel(question) })}
+            href={`${basePath}/${question.id}/edit`}
           />
           <IconAction
             icon={Trash2}
             label={t("delete")}
-            ariaLabel={t("deleteQuestion", { code: question.code })}
+            ariaLabel={t("deleteQuestion", { code: codeLabel(question) })}
             tone="danger"
             onClick={() => setPendingDelete(question)}
           />
@@ -372,7 +348,7 @@ function InterviewQuestionManagementForm({
     <div>
       <PageHeader
         title={t("title")}
-        description={t("subtitle", { total: page.totalQuestions })}
+        description={t("subtitle", { total: data.total })}
         actions={
           <>
             {canManageTopics ? (
@@ -418,21 +394,18 @@ function InterviewQuestionManagementForm({
             label: t("searchLabel"),
             placeholder: t("searchPlaceholder"),
             value: query,
-            onChange: (next) => {
-              setQuery(next);
-              setCurrentPage(1);
-            },
+            onChange: (next) => change(() => setQuery(next)),
             onSubmit: announceSearch,
           }}
           resultCount={t("resultCount", {
-            shown: filtered.length,
-            total: page.questions.length,
+            shown: data.page.totalItems,
+            total: data.total,
           })}
         >
           <FilterMenu
             label={t("topicFilterLabel")}
             value={topic}
-            onValueChange={resetToFirstPage(setTopic)}
+            onValueChange={(value) => change(() => setTopic(value))}
             options={[
               { value: "all" as const, label: t("filterAll") },
               ...topicList.map((topic) => ({
@@ -444,7 +417,7 @@ function InterviewQuestionManagementForm({
           <FilterMenu
             label={t("levelFilterLabel")}
             value={level}
-            onValueChange={resetToFirstPage(setLevel)}
+            onValueChange={(value) => change(() => setLevel(value))}
             options={[
               { value: "all" as const, label: t("filterAll") },
               ...levelList.map((item) => ({
@@ -457,20 +430,14 @@ function InterviewQuestionManagementForm({
 
         <BulkActionBar
           count={selected.size}
-          label={
-            hiddenSelectedCount > 0
-              ? t("selectionLabelHidden", {
-                  count: selected.size,
-                  hidden: hiddenSelectedCount,
-                })
-              : t("selectionLabel", { count: selected.size })
-          }
+          label={t("selectionLabel", { count: selected.size })}
         >
           {/* Bulk delete only. There is no duplicate action anywhere on this list (owner, 2026-10-08). */}
           <Button
             variant="ghost"
             size="sm"
             className="text-[var(--color-admin-negative-text)]"
+            disabled={busy}
             onClick={() => setConfirmingBulkDelete(true)}
           >
             {t("bulk.delete")}
@@ -480,45 +447,41 @@ function InterviewQuestionManagementForm({
         <DataTable
           caption={t("tableCaption")}
           columns={columns}
-          rows={visible}
-          rowKey={(question) => question.code}
+          rows={rows}
+          rowKey={(question) => question.id}
           selection={{
             selectedKeys: selected,
             onToggleRow: toggleRow,
             onToggleAll: (selectAll) =>
               setSelected(
-                selectAll ? new Set(visible.map((row) => row.code)) : new Set(),
+                selectAll ? new Set(rows.map((row) => row.id)) : new Set(),
               ),
             selectAllLabel: t("selectAll"),
-            rowLabel: (question) => t("selectRow", { code: question.code }),
+            rowLabel: (question) =>
+              t("selectRow", { code: codeLabel(question) }),
           }}
-          emptyMessage={t("emptyFiltered")}
+          emptyMessage={data.total === 0 ? t("emptyBank") : t("emptyFiltered")}
           minWidth={1000}
           sort={{
             key: sort.key,
             direction: sort.direction,
-            onSortChange: (key, direction) => {
-              setSort({ key: key as SortKey, direction });
-              setCurrentPage(1);
-            },
+            onSortChange: (key, direction) =>
+              change(() => setSort({ key: key as SortKey, direction })),
           }}
         />
 
         <Pagination
-          page={safePage}
+          page={data.page.number}
           pageSize={pageSize}
           pageSizeOptions={PAGE_SIZES}
           pageSizeLabel={t("pageSizeLabel")}
-          onPageSizeChange={(size) => {
-            setPageSize(size);
-            setCurrentPage(1);
-          }}
-          total={filtered.length}
-          onPageChange={setCurrentPage}
+          onPageSizeChange={(size) => change(() => setPageSize(size))}
+          total={data.page.totalItems}
+          onPageChange={(next) => change(() => setCurrentPage(next), false)}
           summary={t("pageLabel", {
-            page: safePage,
-            totalPages,
-            shown: visible.length,
+            page: data.page.number,
+            totalPages: data.page.totalPages,
+            shown: rows.length,
           })}
           previousLabel={t("previous")}
           nextLabel={t("next")}
@@ -530,26 +493,26 @@ function InterviewQuestionManagementForm({
       <TopicManagerDialog
         open={managingTopics}
         onClose={() => setManagingTopics(false)}
-        usage={topicUsage}
+        usage={usage.data?.topics ?? {}}
       />
 
       <LevelManagerDialog
         open={managingLevels}
         onClose={() => setManagingLevels(false)}
-        usage={levelUsage}
+        usage={usage.data?.levels ?? {}}
       />
 
       <CsvImportDialog
         open={importingCsv}
         onClose={() => setImportingCsv(false)}
-        existing={page.questions.map((question) => question.question)}
+        existing={rows.map((question) => question.title)}
       />
 
       <ConfirmDialog
         open={confirmingBulkDelete}
         onClose={() => setConfirmingBulkDelete(false)}
         onConfirm={() => {
-          deleteSelected();
+          retireIds([...selected]);
           setConfirmingBulkDelete(false);
         }}
         title={t("confirmBulkDeleteTitle", { count: selected.size })}
@@ -558,32 +521,18 @@ function InterviewQuestionManagementForm({
         destructive
       >
         {t("confirmDeleteBody")}
-        {hiddenSelectedCount > 0 ? (
-          <span className="mt-2 block font-semibold text-[var(--color-admin-warn-text)]">
-            {t("confirmBulkDeleteHidden", { count: hiddenSelectedCount })}
-          </span>
-        ) : null}
       </ConfirmDialog>
 
       <ConfirmDialog
         open={pendingDelete !== null}
         onClose={() => setPendingDelete(null)}
         onConfirm={() => {
-          if (pendingDelete) {
-            setDeletedCodes((previous) =>
-              new Set(previous).add(pendingDelete.code),
-            );
-            // A deleted row must not stay counted in the selection.
-            setSelected((previous) => {
-              const next = new Set(previous);
-              next.delete(pendingDelete.code);
-              return next;
-            });
-            toast.success(t("toast.deleted", { code: pendingDelete.code }));
-          }
+          if (pendingDelete) retireIds([pendingDelete.id], pendingDelete);
           setPendingDelete(null);
         }}
-        title={t("confirmDeleteTitle", { code: pendingDelete?.code ?? "" })}
+        title={t("confirmDeleteTitle", {
+          code: pendingDelete ? codeLabel(pendingDelete) : "",
+        })}
         confirmLabel={t("delete")}
         cancelLabel={t("cancel")}
         destructive

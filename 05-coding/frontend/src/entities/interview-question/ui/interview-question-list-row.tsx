@@ -9,7 +9,8 @@
 import { cn } from "@/shared/lib";
 import { Badge, type BadgeVariant } from "@/shared/ui";
 import { BookmarkToggle } from "./bookmark-toggle";
-import type { InterviewQuestion, RecallLevel } from "../model/types";
+import type { LearnerQuestionItem } from "../model/learner-types";
+import type { RecallLevel } from "../model/types";
 
 const RECALL_VARIANT: Record<RecallLevel, BadgeVariant> = {
   known: "success",
@@ -30,7 +31,7 @@ export function InterviewQuestionListRow({
   onSelect,
   onToggleBookmark,
 }: {
-  question: InterviewQuestion;
+  question: LearnerQuestionItem;
   topicLabel: string;
   levelLabel: string;
   levelTone: BadgeVariant;
@@ -69,7 +70,7 @@ export function InterviewQuestionListRow({
           </span>
         </div>
         <p className="text-[13.5px] leading-snug font-medium text-pretty">
-          {question.question}
+          {question.title}
         </p>
       </button>
       <BookmarkToggle

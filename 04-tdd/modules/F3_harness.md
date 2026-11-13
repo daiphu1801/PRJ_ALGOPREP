@@ -1,5 +1,29 @@
 # TDD — Tiêu chí nghiệm thu module `harness` (F3)
 
+**D02u — 2026-11-04:** Backend F3 local đã đóng, giữ ngoại lệ C08/AC-49 HTTP/UI tiếp tục hoãn theo owner. Review đủ 50 AC với symbol/oracle và mức bằng chứng; 6/6 test Spring startup mới (AC-44) và Spotless/Checkstyle/SpotBugs đạt. 114 file lõi/resource + 2 HTTP khớp nguồn đã kiểm; không chạy lại suite cũ hoặc full regression. Cache-on conditional chưa bật; F4/FE/FINAL còn mở. [Report](F:/prj_algoprep/06-plan/reports/261104-f3-backend-closeout/report.md).
+
+Ma trận mục 3 phản ánh trạng thái backend D02u; báo cáo có đủ 50 dòng symbol/test/bằng chứng. Các checkpoint bên dưới giữ lịch sử, không phải task backend F3 còn mở. QA testcase riêng giữ trạng thái thực thi riêng; không đồng nghĩa đã chạy toàn QA/FE.
+
+
+**2026-11-02:** có P1/P2 nội bộ nối F2 DB thật, version/matching/source/permission oracles;
+owning common40/F2 189/harness790 và35 component/regression tests đạt. Bốn application
+source-copy mutation (access/version/flag/P5) và hai SQL mutation (draft/deleted) bị bắt.
+Không tick AC vỏ REST, worker/finalize hoặc persisted grading E2E từ evidence nội bộ này.
+Report `261102-1532-f2-f3-spec-readers`; các checkpoint D02a–f bên dưới là lịch sử.
+
+**D02f 2026-11-02:** RequiredGoldenMatrixTest bổ sung đủ nhóm DD logic §10.2:22 ca ×3
+ngôn ngữ, so byte spec/user/wrapper/starter/LineMap,286 fixture file. Checker độc lập và
+manifest tại handoff/f3-f4-debt-closeout; report `261102-0850-f3-f4-debt-closeout` ghi gate cuối.
+Đây là source-helper golden, không đóng PreparedProgram P2/F2/specVersion/quyền hoặc E2E.
+
+**Checkpoint D02e 2026-11-01:** có component `ProgramPackagingTest` và
+`ExecutionBridgeFlowTest` nối source sinh thật → payload F3 → F4 → disposable go-judge:
+Java/C++/Python, wrapper và Standard I/O, P3 compile mapping, P4 matching, 90/91/92 và giới hạn.
+AC-06/09/11/13–18 có thêm bằng chứng component; không tick toàn AC khi còn P2/F2 reader/
+specVersion/quyền hoặc workflow persisted. Test fixtures chỉ ở src/test, không là adapter F2.
+Kết quả/count/log cuối ở `06-plan/reports/261101-2250-f3-f4-execution-bridge/report.md`;
+Maven owning không tự chạy container flow nếu thiếu system property endpoint probe.
+
 > Bounded Context: F3 `harness` · DD: `03-dd/api/F3_harness.md` (hợp đồng cổng), `03-dd/logic/F3_harness.md`,
 > `03-dd/validation/F3_harness.md` · Cập nhật: 2026-10-23
 >
@@ -24,6 +48,12 @@ Ba ngôn ngữ nộp bài là đúng Java, C++, Python (`CLAUDE.md`, mục Locke
 ### Mã khung (`GetStarterCode`)
 
 ### AC-01 — Mã khung bọc hàm đúng chữ ký và đúng cách đặt tên của từng ngôn ngữ
+
+**Checkpoint component 2026-11-01, D02a:** StarterCodeRendererTest có 52 lượt test cho lõi typed
+(golden sáu khung, declaration dùng chung P6, default, node comment, lỗi/STD bypass, template,
+concurrent), trong đó 11 ca Java compile thật. Probe Python/C++ syntax chạy riêng, hai ca mỗi
+ngôn ngữ. Focused verify 254 test đạt 17:08:50 +07:00. P1/F2 access/spec reader và P2 chưa có,
+nên không tick AC-01–05 hoặc QA HTTP/E2E toàn phần từ bằng chứng helper.
 - **Tiền điều kiện**: bài `twoSum` có chữ ký chung: tên hàm `two_sum`, trả về mảng một chiều số nguyên, hai tham số `nums` (mảng số nguyên) và `target` (số nguyên); bài hỗ trợ mô hình Bọc hàm.
 - **Hành động**: xin mã khung bọc hàm cho từng ngôn ngữ.
 - **Kết quả mong đợi**: Python có hàm `two_sum`; Java và C++ có hàm `twoSum`; mỗi bản có đúng một hàm, đủ hai tham số theo thứ tự, kiểu đúng ngôn ngữ; không có mã đọc input hay in output (phần đó bị ẩn); mã khung biên dịch được ngay khi chưa sửa gì. Nếu chữ ký dùng danh sách liên kết hoặc cây nhị phân, mã khung có chú thích mô tả các trường của node.
@@ -56,6 +86,13 @@ Ba ngôn ngữ nộp bài là đúng Java, C++, Python (`CLAUDE.md`, mục Locke
 ### Ghép mã và đóng gói (`prepare`)
 
 ### AC-06 — Mã người học nằm đúng vị trí đã biết, bảng ánh xạ dòng khớp
+
+> Component D02b 2026-11-01: ProgramSourceAssemblerTest kiểm source bảy dòng, ranh giới USER,
+> call-site nhiều dòng và ba tên file; AssembledSourceCompileMappingTest truyền LineMap vào P3 thật.
+> AC-06/07/08/09/10/12 mới có bằng chứng helper (source/regions/validation/determinism),
+> chưa có PreparedProgram/plugin/payload hay QA execution. Bảng truy vết P2 cuối file giữ mở
+> cho phần cổng đầy đủ. Xem `06-plan/reports/261101-1720-f3-source-assembly/report.md`.
+
 - **Tiền điều kiện**: bài có chữ ký hàm; mã người học dài 7 dòng.
 - **Hành động**: chuẩn bị gói chấm bọc hàm cho từng ngôn ngữ.
 - **Kết quả mong đợi**: trong tệp mã nguồn đã ghép, dòng đầu của mã người học nằm ngay sau phần khung đầu; dòng cuối của mã người học là dòng thứ 7 của vùng đó; dòng liền sau là dòng đầu của phần khung cuối. Bảng ánh xạ dòng ghi đúng số dòng khung đầu và số dòng mã người học (7), đúng với tệp thật.
@@ -98,6 +135,13 @@ Ba ngôn ngữ nộp bài là đúng Java, C++, Python (`CLAUDE.md`, mục Locke
 - **Nguồn**: `[SoT: 02-bd/architecture/F3_harness.md:223,280-282]`; `03-dd/logic/F3_harness.md` mục 4.5; P2.
 
 ### AC-13 — Mỗi kiểu dữ liệu trong lược đồ đọc vào rồi in ra đúng chuỗi chuẩn ở cả ba ngôn ngữ
+
+> D02d 2026-11-01 đã có parser/printer và wrapper thực sinh từ typed draft. Probe go-judge riêng
+> kiểm 60 bộ dữ liệu echo × ba ngôn ngữ (sáu scalar, ARRAY/LIST các kiểu và độ sâu, node/rỗng),
+> cùng ca hành vi, input sai, biên byte UTF-8 và guard. Đây là bằng chứng codegen/toolchain
+> trực tiếp cho bảng kiểu; P2 reader/version/ExecutionPlan và F4 grading đầu cuối vẫn chưa có.
+> Không coi AC có điều kiện tích hợp hoặc bộ QA riêng là đã chạy. Báo cáo:
+> `06-plan/reports/261101-2200-f3-wrapper-read-call-print/report.md`.
 - **Tiền điều kiện**: với mỗi kiểu trong lược đồ (số nguyên, số nguyên dài, số thực, đúng/sai, ký tự, chuỗi, mảng một đến ba chiều, danh sách lồng, danh sách liên kết, cây nhị phân), một bài mẫu có hàm trả lại đúng tham số nhận vào.
 - **Hành động**: chạy chương trình sinh ra trong môi trường chấm thật với input mẫu theo đúng định dạng, kể cả các ca rỗng (mảng rỗng, danh sách liên kết rỗng, cây rỗng).
 - **Kết quả mong đợi**: output bằng đúng chuỗi in chuẩn của kiểu đó, giống nhau ở cả ba ngôn ngữ; số thực in cố định 12 chữ số thập phân; cây khác hình dạng cho chuỗi khác nhau.
@@ -126,14 +170,27 @@ Ba ngôn ngữ nộp bài là đúng Java, C++, Python (`CLAUDE.md`, mục Locke
 ### AC-17 — Lỗi thuộc mã khung bị che hoàn toàn khỏi người học
 - **Tiền điều kiện**: đầu ra biên dịch có lỗi nằm hoàn toàn trong phần khung (đầu hoặc cuối) và không có lỗi nào của người học.
 - **Hành động**: dịch lỗi.
-- **Kết quả mong đợi**: người học chỉ thấy một thông điệp cố định, không nội suy theo lỗi thật; thông điệp **không** chứa đoạn mã khung, tên biến hoặc hàm nội bộ, đường dẫn tệp tạm, hay số phiên bản trình biên dịch; toàn văn lỗi thật được ghi vào nhật ký nội bộ kèm mã đối chiếu, và không đi qua bất kỳ đường nào người học truy cập được.
+- **Kết quả mong đợi**: người học chỉ thấy một thông điệp cố định, không nội suy theo lỗi thật; thông điệp **không** chứa đoạn mã khung, tên biến hoặc hàm nội bộ, đường dẫn tệp tạm, hay số phiên bản trình biên dịch; lỗi thật ở bản tối đa 65.536 ký tự được ghi vào log nội bộ kèm correlationId/truncated, không đi qua đường học viên truy cập được. Chủ dự án chốt 2026-11-01: không trả source/caret; logger lỗi vẫn trả report sạch, có thể mất log.
 - **Nguồn**: `[SoT: 01-rd/req/F3_harness.md:19-21]` (F3-12); `[SoT: 02-bd/security/F3_harness.md:59-70]`; `03-dd/logic/F3_harness.md` mục 6.3, 6.5, 8; P3.
 
 ### AC-18 — Sai chữ ký hàm hoặc thiếu hàm cho thông báo đúng chữ ký, không phải "lỗi hệ thống"
+
+**D02t 2026-11-04 — đạt persisted E2E local:** 6 ca sai tên/sai số tham số ở Java/C++/Python đi từ đặc tả v2 đã lưu và starter HTTP tới submit/Rabbit/worker/sandbox thật, trả COMPILE_ERROR với chữ ký hiện hành qua DB/API, không lộ chi tiết khung. Ba ca lời giải đúng đạt Accepted và lưu 10 kết quả testcase. [Report](F:/prj_algoprep/06-plan/reports/261104-f3-persisted-acceptance/report.md). Các checkpoint bên dưới là lịch sử; không thay trạng thái toàn bộ QA riêng hoặc nghiệm thu tổng module.
+
+**D02d 2026-11-01:** wrapper thực đã nối guard Python resource; probe kiểm thiếu method/sai arity
+→ 92, default/*args thành công, constructor/descriptor/thân hàm giữ runtime error. Maven kiểm
+hai ca compiler Java thật + P3 từ LineMap của wrapper thực (USER và CALL_SITE). F4 chưa phân
+loại/lưu/trả lỗi qua API, nên AC-18 E2E vẫn mở; checkpoint cũ bên dưới là lịch sử trước D02d.
 - **Tiền điều kiện**: mã người học đúng cú pháp nhưng hàm đặt sai tên (hoặc sai số tham số) ở cả ba ngôn ngữ; lỗi do trình biên dịch báo tại dòng gọi hàm của khung.
 - **Hành động**: dịch lỗi.
 - **Kết quả mong đợi**: thông báo yêu cầu kiểm tra tên hàm, số tham số và kiểu, kèm chữ ký đúng của bài theo ngôn ngữ đó (chữ ký này đã hiển thị cho người học ở mã khung); không hiển thị dòng mã khung.
 - **Nguồn**: `03-dd/logic/F3_harness.md` mục 6.3, 6.4; P3.
+
+**Checkpoint AC-18, 2026-11-01:** P3 đã kiểm mapping call-site cho ba ngôn ngữ, chưa phải phát
+hiện sai chữ ký Python thật. Đã điều tra bằng 11 fixture kiểm soát: py_compile đều PASS, lookup/
+bind phát hiện tên/số tham số sai. Chủ dự án chọn guard trước call trong sandbox, hỗ trợ kế thừa/
+default/*args; TypeError trong thân hàm vẫn là lỗi chạy. Guard/wire contract P2/F4 chưa triển khai,
+AC-18 chưa đóng E2E. Chi tiết `handoff/f3-p3-compile-errors/python-signature-investigation.md`.
 
 ### AC-19 — Thiếu hoặc thừa dấu đóng khối cho thông báo gợi ý cố định
 - **Tiền điều kiện**: mã Java và C++ thiếu một dấu đóng khối ở cuối; mã có một dấu đóng khối thừa; lỗi được báo ở dòng thuộc phần khung cuối.
@@ -170,7 +227,7 @@ Ba ngôn ngữ nộp bài là đúng Java, C++, Python (`CLAUDE.md`, mục Locke
 ### AC-24 — `TRIMMED`: khác biệt khoảng trắng thừa không làm sai, khác biệt nội dung vẫn sai
 - **Tiền điều kiện**: bài có chiến lược `TRIMMED`, kiểu trả về mảng nhiều chiều hoặc mô hình Standard I/O để kiểm dòng trống.
 - **Hành động**: so output có khoảng trắng thừa đầu và cuối dòng, nhiều dấu cách liên tiếp giữa các số, với expected-output chuẩn; so thêm output khác một giá trị và output khác số dòng trống ở giữa.
-- **Kết quả mong đợi**: ca khoảng trắng khớp; ca khác một giá trị hoặc khác số dòng trống ở giữa không khớp. Với kiểu danh sách lồng và cây nhị phân, `TRIMMED` cho cùng kết quả như `EXACT`.
+- **Kết quả mong đợi**: ca khoảng trắng khớp; ca khác một giá trị hoặc khác số dòng trống ở giữa không khớp. Với LIST, BINARY_TREE và ARRAY(STRING), `TRIMMED` cho cùng kết quả như `EXACT`; `["a  b"]` khác `["a b"]`. Ngoại lệ ARRAY(STRING) do chủ dự án chốt 2026-11-01, đã triển khai và kiểm component P4.
 - **Nguồn**: `[SoT: 01-rd/req/F3_harness.md:16-18]` (F3-08); `[SoT: 02-bd/architecture/F3_harness.md:243-246]`; P4.
 
 ### AC-25 — `EPSILON`: giá trị đúng sát biên được chấp nhận, vượt biên bị loại
@@ -324,6 +381,27 @@ Ba ngôn ngữ nộp bài là đúng Java, C++, Python (`CLAUDE.md`, mục Locke
 
 ### AC-49 — Xem trước chữ ký hàm từ bản nháp chưa lưu
 
+**Checkpoint 2026-11-01:** lõi typed P6 có 48 test trong PreviewFunctionSignatureHandlerTest:
+bảng scalar/ARRAY/LIST/node, tên/override/thứ tự tham số, hard/soft, ba null, immutable và concurrent,
+bean scan cùng P3/P4. Focused verify 202 test đạt lúc 16:47:19 +07:00. HTTP/JSON/Redis đã được
+chủ dự án hoãn; chưa có bằng chứng 401/403/413/429 hoặc đối chiếu save/starter. Không tick AC-49
+toàn phần hoặc trạng thái thực thi tám testcase QA từ bằng chứng component.
+
+**Cập nhật 2026-11-08 (mở lại C08, `DEC-2026-1108-f3-preview-rate-limit-owner`):** lớp HTTP đã triển khai và có bằng chứng.
+
+| Điều kiện của AC-49 | Bằng chứng |
+| :--- | :--- |
+| 401 khi chưa đăng nhập, 403 với học viên | `PreviewFunctionSignatureFlowTest.anonymousIs401AndAStudentIs403` |
+| Ba dòng khai báo đổi theo bản nháp | `instructorAndAdminGetThreeDeclarationsThatFollowTheDraft`; trình duyệt thật `f3-f4-real-preview.spec.ts` ca 1 |
+| Thiếu chữ ký không hiện dòng khai báo; nửa vời là lỗi cứng `HRN-V17` | `anEmptyDraftHasNoDeclarationLinesAndAHalfFilledOneIsAHardError` |
+| Bản nháp sai báo lỗi `HRN-060` kèm đường dẫn; không lưu gì | `aWrongDraftIsReportedAsHrn060WithPathsAndNothingIsSaved` (đếm bảng `problems`, `problem_specs` không đổi); ca trình duyệt thật |
+| 16.384 byte được xử lý, 16.385 byte trả `413 HRN-062` trước khi gọi P5, tính theo byte | `theBodyCapIsExactlySixteenKibibytesOfUtf8` (gồm ký tự nhiều byte) |
+| Quá 10 lần/giây/người trả `429 HRN-061` kèm `retryAfterSeconds`; người khác không bị ảnh hưởng | `moreThanTenCallsInOneSecondGetHrn061WithRetryAfter` |
+| Redis lỗi thì cho qua | `RedisPreviewRateLimitAdapterTest` |
+| Khớp với mã khung sau khi lưu | `thePreviewMatchesTheStarterCodeAfterTheSpecIsSaved`; trình duyệt thật `f3-f4-real-preview.spec.ts` ca 2 (so từng ngôn ngữ với `starter-code`) |
+
+Bảng AC-49: bằng chứng HTTP và trình duyệt, 2026-11-08. Tám testcase QA trong `04-tdd/testcases/modules/F3_harness/F3_harness_contracts.md` là tài liệu thiết kế, chưa chạy riêng; các ca trên là bằng chứng chạy thật.
+
 - **Tiền điều kiện**: người soạn đang biên soạn một bài dùng Bọc hàm, đã nhập tên hàm và các kiểu tham số nhưng chưa lưu.
 - **Hành động**: xem trước chữ ký, đổi một kiểu rồi xem trước lại; thử bản nháp thiếu chữ ký và bản nháp sai kiểu.
 - **Kết quả mong đợi**: ba dòng khai báo cho Java, C++ và Python đổi theo bản nháp mới, khớp với mã khung sau khi lưu. Bản nháp thiếu chữ ký không hiện dòng khai báo; bản nháp sai được báo lỗi để sửa. Body JSON UTF-8 vượt 16.384 byte trả `413 HRN-062` trước khi gọi P5. Xem trước không lưu thay đổi bài.
@@ -340,58 +418,89 @@ Ba ngôn ngữ nộp bài là đúng Java, C++, Python (`CLAUDE.md`, mục Locke
 
 Bảng 1: Truy vết tiêu chí tới cổng và khối quy tắc. Cột "Test case" điền khi có test thật theo `testcase-generation`.
 
+**Bằng chứng P3 2026-11-01:** 59 test `MapCompileErrorHandlerTest` và 1 test log adapter mới;
+cùng P4/P5 có 154 test chọn lọc đạt lúc `2026-11-01T16:16:10+07:00`. Fixture thực tế: javac
+25.0.2, g++ 11.4.0, Python 3.12.10; không phải image judge/gói P2 và không chạy suite F1/bootstrap.
+Trace component không thay trạng thái thực thi QA riêng. Báo cáo: `handoff/f3-p3-compile-errors/report.md`.
+
+| AC | Test component P3 tiêu biểu |
+| :--- | :--- |
+| AC-14–16 | `mapsFirstNestedAndLastUserLinesForEveryCompiler`, `realJavacAndGppFixturesMapTheirThreeUserErrors`, `realPythonSyntaxFixturesMapUserLines` |
+| AC-17/19 | `hidesPrefixEpilogueAndUnrecognizedCompilerOutput`, `sourceAndCaretLinesAreNeverAppendedToMessages`, `discardsUserMessagesThatRevealHarnessIdentifiersOrCompilerVersion` |
+| AC-18 | `callSiteUsesOnlyTheFixedSignatureMismatchKey`; D02t `wrongSavedSignatureIsPersistedCompileErrorWithCurrentDeclaration` chạy 6 ca compiler/guard thật, DB/API |
+| AC-20 | `userErrorsWinAndAreDeduplicatedSortedAndLimitedAfterMapping` |
+| AC-21 | `standardIoClampsEofAndEmbeddedLocationsToTheLastUserLine`, `onlyCppStandardIoUsesTheNoMainLinkerPattern` |
+| AC-22 | `cppNotesRequireAUserErrorParentAndKeepTheirOwnUserLocations`, `warningsBreakNoteAssociationAndSameLineOrderIsStable` |
+
+**Bằng chứng P4 2026-11-01:** 59 test trong
+`05-coding/backend/algoprep-harness/src/test/java/com/algoprep/harness/application/query/MatchOutputMatcherTest.java`.
+Verify tập trung P4 + contract P5 đạt 94 test lúc `2026-11-01T15:39:46+07:00`; không chạy suite
+F1/bootstrap hoặc tích hợp F4. Trạng thái component dưới đây không đổi trạng thái thực thi của
+các tài liệu QA riêng và không đóng toàn bộ module. Báo cáo: `handoff/f3-p4-output-matching/report.md`.
+
+| AC | Test component tiêu biểu |
+| :--- | :--- |
+| AC-23 | `exactAndTrimmedFollowLineRules` |
+| AC-24 | `exactAndTrimmedFollowLineRules`, `trimmedPreservesListStringsAndDoesNotNormalizeTreeSpaces`, `trimmedPreservesStringArrayContentsAsConfirmedByOwner` |
+| AC-25 | `epsilonIsInclusiveAndHandlesNonFiniteValues` |
+| AC-26 | `epsilonComparesNestedLeavesAndShapeSeparately`, `standardIoUsesLineAndTokenShapeUnlessATypeIsSupplied` |
+| AC-27 | `unorderedIsAMultisetOfTopLevelElementsAndRows`, `unorderedUsesPrintedDoubleValuesRatherThanEpsilon` |
+| AC-28 | `trimmedPreservesListStringsAndDoesNotNormalizeTreeSpaces`, `emptyContainersAndLinkedTreeShapesAreValid` |
+| AC-29 | `sentinelIsAWholeLineAndTheLastOccurrenceWins`, `missingSentinelNeverMatchesEvenAnEmptyExpected` |
+| AC-30 | `malformedExpectedIsAnErrorWhileMalformedActualIsNoMatch`, `invalidConfigurationIs051BeforeMatching`, `invalidExpectedStillRaises050WhenSentinelIsMissing`, `resultsAndErrorsDoNotExposeExpectedDataOrParserCauses` |
+
 | AC | Cổng / luồng | Khối quy tắc | Test viewpoint ở DD | Test case | Trạng thái |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| AC-01 | P1 `getStarterCode` | BR-01, BR-05 | P1-T01, P1-T03 | [TC-F3-AC01-01 đến -02](../testcases/modules/F3_harness/F3_starter_code.md) | chưa |
-| AC-02 | P1 | BR-01 | P1-T07 | [TC-F3-AC02-01](../testcases/modules/F3_harness/F3_starter_code.md) | chưa |
-| AC-03 | P1 | BR-04 | P1-T02 | [TC-F3-AC03-01](../testcases/modules/F3_harness/F3_starter_code.md) | chưa |
-| AC-04 | P1, P2 | BR-05 | P1-T04, P2-T03 | [TC-F3-AC04-01 đến -02](../testcases/modules/F3_harness/F3_starter_code.md), [TC-F3-AC04-03](../testcases/modules/F3_harness/F3_prepare_source_and_version.md) | chưa |
-| AC-05 | P1 | BR-05 | P1-T05, P1-T06 | [TC-F3-AC05-01 đến -02](../testcases/modules/F3_harness/F3_starter_code.md) | chưa |
-| AC-06 | P2 `prepare` | BR-03 | P2-T01 | [TC-F3-AC06-01 đến -02 (ca -02 chờ golden)](../testcases/modules/F3_harness/F3_prepare_source_and_version.md) | chưa |
-| AC-07 | P2 | BR-03 | P2-T02 | [TC-F3-AC07-01](../testcases/modules/F3_harness/F3_prepare_source_and_version.md) | chưa |
-| AC-08 | P2 | BR-02 | P2-T07 | [TC-F3-AC08-01–02](../testcases/modules/F3_harness/F3_prepare_source_and_version.md) | chưa |
-| AC-09 | P2 | BR-03 | P2-T08 | [TC-F3-AC09-01–03](../testcases/modules/F3_harness/F3_prepare_source_and_version.md) | chưa |
-| AC-10 | P2 | validation mục 5 | P2-T05, P2-T06 | [TC-F3-AC10-01–04](../testcases/modules/F3_harness/F3_prepare_source_and_version.md) | chưa |
-| AC-11 | P2 | BR-09 | P2-T04 | [TC-F3-AC11-01–02](../testcases/modules/F3_harness/F3_prepare_source_and_version.md) | chưa |
-| AC-12 | P2 | BR-04 | P2-T01 | [TC-F3-AC12-01](../testcases/modules/F3_harness/F3_prepare_source_and_version.md) | chưa |
-| AC-13 | P2 (tầng chuỗi công cụ) | mục 3.3, 3.4, 10.3 | P2-T01 | [TC-F3-AC13-01–07](../testcases/modules/F3_harness/F3_type_roundtrip.md) | chưa |
-| AC-14 | P3 `map` (Java) | BR-07 | mục 6.1 api | [TC-F3-AC14-01](../testcases/modules/F3_harness/F3_compile_error_mapping.md) | chưa |
-| AC-15 | P3 (C++) | BR-07 | mục 6.1 api | [TC-F3-AC15-01](../testcases/modules/F3_harness/F3_compile_error_mapping.md) | chưa |
-| AC-16 | P3 (Python) | BR-07 | mục 6.1 api | [TC-F3-AC16-01](../testcases/modules/F3_harness/F3_compile_error_mapping.md) | chưa |
-| AC-17 | P3 | BR-07 | mục 6.1 api | [TC-F3-AC17-01–03](../testcases/modules/F3_harness/F3_compile_error_mapping.md) | chưa |
-| AC-18 | P3 | BR-07 | mục 6.1 api | [TC-F3-AC18-01](../testcases/modules/F3_harness/F3_compile_error_mapping.md) | chưa |
-| AC-19 | P3 | BR-07 | mục 6.1 api | [TC-F3-AC19-01](../testcases/modules/F3_harness/F3_compile_error_mapping.md) | chưa |
-| AC-20 | P3 | BR-07 | mục 6.1 api | [TC-F3-AC20-01–02](../testcases/modules/F3_harness/F3_compile_error_mapping.md) | chưa |
-| AC-21 | P3 (Standard I/O) | BR-07 | mục 6.1 api | [TC-F3-AC21-01–02](../testcases/modules/F3_harness/F3_compile_error_mapping.md) | chưa |
-| AC-22 | P3 (C++ mẫu) | BR-07 | mục 6.1 api | [TC-F3-AC22-01](../testcases/modules/F3_harness/F3_compile_error_mapping.md) | chưa |
-| AC-23 | P4 `match` (`EXACT`) | BR-08 | mục 6.2 api | [TC-F3-AC23-01 đến -04](../testcases/modules/F3_harness/F3_output_matching.md) | chưa |
-| AC-24 | P4 (`TRIMMED`) | BR-08 | mục 6.2 api | [TC-F3-AC24-01 đến -05](../testcases/modules/F3_harness/F3_output_matching.md) | chưa |
-| AC-25 | P4 (`EPSILON` biên) | BR-08 | mục 6.2 api | [TC-F3-AC25-01 đến -03](../testcases/modules/F3_harness/F3_output_matching.md) | chưa |
-| AC-26 | P4 (`EPSILON` lồng, Standard I/O) | BR-08 | mục 6.2 api | [TC-F3-AC26-01 đến -07](../testcases/modules/F3_harness/F3_output_matching.md) | chưa |
-| AC-27 | P4 (`UNORDERED_SET`) | BR-08 | mục 6.2 api | [TC-F3-AC27-01 đến -04](../testcases/modules/F3_harness/F3_harness_contracts.md) | chưa |
-| AC-28 | P4 (cây) | BR-08 | mục 6.2 api | [TC-F3-AC28-01 đến -02](../testcases/modules/F3_harness/F3_output_matching_edge_cases.md) | chưa |
-| AC-29 | P4 (dòng đánh dấu) | BR-06 | mục 6.2 api | [TC-F3-AC29-01 đến -03](../testcases/modules/F3_harness/F3_output_matching_edge_cases.md) | chưa |
-| AC-30 | P4 (không lộ dữ liệu) | BR-08 | mục 6.2 api | [TC-F3-AC30-01 đến -05](../testcases/modules/F3_harness/F3_output_matching_edge_cases.md) | chưa |
-| AC-31 | P5 `evaluate` | validation mục 2 | mục 6.3 api | [TC-F3-AC31-01 đến -04](../testcases/modules/F3_harness/F3_spec_type_validation.md) | chưa |
-| AC-32 | P5 | validation mục 2 | mục 6.3 api | [TC-F3-AC32-01 đến -05](../testcases/modules/F3_harness/F3_spec_type_validation.md) | chưa |
-| AC-33 | P5 | validation Bảng 1 | mục 6.3 api | [TC-F3-AC33-01 đến -02](../testcases/modules/F3_harness/F3_spec_type_validation.md) | chưa |
-| AC-34 | P5 | validation mục 2 | mục 6.3 api | [TC-F3-AC34-01](../testcases/modules/F3_harness/F3_spec_type_validation.md) | chưa |
-| AC-35 | P5 | validation Bảng 2 | mục 6.3 api | [TC-F3-AC35-01 đến -09](../testcases/modules/F3_harness/F3_spec_semantic_validation.md) | chưa |
-| AC-36 | P5 | validation Bảng 2 | mục 6.3 api | [TC-F3-AC36-01 đến -04](../testcases/modules/F3_harness/F3_spec_semantic_validation.md) | chưa |
-| AC-37 | P5 | validation Bảng 3 | mục 6.3 api | [TC-F3-AC37-01 đến -08](../testcases/modules/F3_harness/F3_spec_semantic_validation.md) | chưa |
-| AC-38 | P5 | validation Bảng 2 | mục 6.3 api | [TC-F3-AC38-01 đến -02](../testcases/modules/F3_harness/F3_spec_semantic_validation.md) | chưa |
-| AC-39 | O1 `findSpec` | BR-09 | O1-T03, P2-T09 | [TC-F3-AC39-01 đến -02](../testcases/modules/F3_harness/F3_spec_read_invalidation.md) | chưa |
-| AC-40 | E1 `ProblemSpecChanged` | BR-09 | E1-T01 đến E1-T04 | [TC-F3-AC40-01 đến -04](../testcases/modules/F3_harness/F3_spec_read_invalidation.md) | chưa |
-| AC-41 | P2 (chương trình sinh ra) | mục 3.5 logic | P2-T01 | [TC-F3-AC41-01 đến -02](../testcases/modules/F3_harness/F3_generated_program_safety.md) | chưa |
-| AC-42 | P2 | mục 8 logic | P2-T01 | [TC-F3-AC42-01](../testcases/modules/F3_harness/F3_generated_program_safety.md) | chưa |
-| AC-43 | P2 | BR-02, BR-06 | P2-T07 | [TC-F3-AC43-01](../testcases/modules/F3_harness/F3_generated_program_safety.md) | chưa |
-| AC-44 | khởi động | BR-02 | (không có ở DD) | [TC-F3-AC44-01 đến -03](../testcases/modules/F3_harness/F3_generated_program_safety.md) | chưa |
-| AC-45 | P1, adapter P2/P3 | API §1.2, validation Bảng 4 | `HRN-010` | [TC-F3-AC45-01 đến -03](../testcases/modules/F3_harness/F3_generated_program_safety.md) | chưa |
-| AC-46 | schema | `02-bd/database/F3_harness.md` mục 1 | (không có ở DD) | [TC-F3-AC46-01](../testcases/modules/F3_harness/F3_generated_program_safety.md) | chưa |
-| AC-47 | P1, P2, P3, P4 | mục 8 logic | (không có ở DD) | [TC-F3-AC47-01](../testcases/modules/F3_harness/F3_generated_program_safety.md) | chưa |
-| AC-48 | P1, O2, GET mã khung | mục 3.1 API | P1-T08 | [TC-F3-AC48-01 đến -04](../testcases/modules/F3_harness/F3_harness_contracts.md) | chưa |
-| AC-49 | P6, POST xem trước chữ ký | mục 3.7 API | `HRN-062` | [TC-F3-AC49-01 đến -08](../testcases/modules/F3_harness/F3_harness_contracts.md) | chưa |
-| AC-50 | P2, P3 | Q8 logic | | [TC-F3-AC50-01 đến -03](../testcases/modules/F3_harness/F3_harness_contracts.md) | chưa |
+| AC-01 | P1 `getStarterCode` | BR-01, BR-05 | P1-T01, P1-T03 | [TC-F3-AC01-01 đến -02](../testcases/modules/F3_harness/F3_starter_code.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-02 | P1 | BR-01 | P1-T07 | [TC-F3-AC02-01](../testcases/modules/F3_harness/F3_starter_code.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-03 | P1 | BR-04 | P1-T02 | [TC-F3-AC03-01](../testcases/modules/F3_harness/F3_starter_code.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-04 | P1, P2 | BR-05 | P1-T04, P2-T03 | [TC-F3-AC04-01 đến -02](../testcases/modules/F3_harness/F3_starter_code.md), [TC-F3-AC04-03](../testcases/modules/F3_harness/F3_prepare_source_and_version.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-05 | P1 | BR-05 | P1-T05, P1-T06 | [TC-F3-AC05-01 đến -02](../testcases/modules/F3_harness/F3_starter_code.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-06 | P2 `prepare` | BR-03 | P2-T01 | [TC-F3-AC06-01 đến -02 (ca -02 chờ golden)](../testcases/modules/F3_harness/F3_prepare_source_and_version.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-07 | P2 | BR-03 | P2-T02 | [TC-F3-AC07-01](../testcases/modules/F3_harness/F3_prepare_source_and_version.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-08 | P2 | BR-02 | P2-T07 | [TC-F3-AC08-01–02](../testcases/modules/F3_harness/F3_prepare_source_and_version.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-09 | P2 | BR-03 | P2-T08 | [TC-F3-AC09-01–03](../testcases/modules/F3_harness/F3_prepare_source_and_version.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-10 | P2 | validation mục 5 | P2-T05, P2-T06 | [TC-F3-AC10-01–04](../testcases/modules/F3_harness/F3_prepare_source_and_version.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-11 | P2 | BR-09 | P2-T04 | [TC-F3-AC11-01–02](../testcases/modules/F3_harness/F3_prepare_source_and_version.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-12 | P2 | BR-04 | P2-T01 | [TC-F3-AC12-01](../testcases/modules/F3_harness/F3_prepare_source_and_version.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-13 | P2 (tầng chuỗi công cụ) | mục 3.3, 3.4, 10.3 | P2-T01 | [TC-F3-AC13-01–07](../testcases/modules/F3_harness/F3_type_roundtrip.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-14 | P3 `map` (Java) | BR-07 | mục 6.1 api | [TC-F3-AC14-01](../testcases/modules/F3_harness/F3_compile_error_mapping.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-15 | P3 (C++) | BR-07 | mục 6.1 api | [TC-F3-AC15-01](../testcases/modules/F3_harness/F3_compile_error_mapping.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-16 | P3 (Python) | BR-07 | mục 6.1 api | [TC-F3-AC16-01](../testcases/modules/F3_harness/F3_compile_error_mapping.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-17 | P3 | BR-07 | mục 6.1 api | [TC-F3-AC17-01–03](../testcases/modules/F3_harness/F3_compile_error_mapping.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-18 | P3 và guard Python qua F4 | BR-07 | mục 6.1 api | [TC-F3-AC18-01](../testcases/modules/F3_harness/F3_compile_error_mapping.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-19 | P3 | BR-07 | mục 6.1 api | [TC-F3-AC19-01](../testcases/modules/F3_harness/F3_compile_error_mapping.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-20 | P3 | BR-07 | mục 6.1 api | [TC-F3-AC20-01–02](../testcases/modules/F3_harness/F3_compile_error_mapping.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-21 | P3 (Standard I/O) | BR-07 | mục 6.1 api | [TC-F3-AC21-01–02](../testcases/modules/F3_harness/F3_compile_error_mapping.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-22 | P3 (C++ mẫu) | BR-07 | mục 6.1 api | [TC-F3-AC22-01](../testcases/modules/F3_harness/F3_compile_error_mapping.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-23 | P4 `match` (`EXACT`) | BR-08 | mục 6.2 api | [TC-F3-AC23-01 đến -04](../testcases/modules/F3_harness/F3_output_matching.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-24 | P4 (`TRIMMED`) | BR-08 | mục 6.2 api | [TC-F3-AC24-01 đến -05](../testcases/modules/F3_harness/F3_output_matching.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-25 | P4 (`EPSILON` biên) | BR-08 | mục 6.2 api | [TC-F3-AC25-01 đến -03](../testcases/modules/F3_harness/F3_output_matching.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-26 | P4 (`EPSILON` lồng, Standard I/O) | BR-08 | mục 6.2 api | [TC-F3-AC26-01 đến -07](../testcases/modules/F3_harness/F3_output_matching.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-27 | P4 (`UNORDERED_SET`) | BR-08 | mục 6.2 api | [TC-F3-AC27-01 đến -04](../testcases/modules/F3_harness/F3_harness_contracts.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-28 | P4 (cây) | BR-08 | mục 6.2 api | [TC-F3-AC28-01 đến -02](../testcases/modules/F3_harness/F3_output_matching_edge_cases.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-29 | P4 (dòng đánh dấu) | BR-06 | mục 6.2 api | [TC-F3-AC29-01 đến -03](../testcases/modules/F3_harness/F3_output_matching_edge_cases.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-30 | P4 (không lộ dữ liệu) | BR-08 | mục 6.2 api | [TC-F3-AC30-01 đến -05](../testcases/modules/F3_harness/F3_output_matching_edge_cases.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-31 | P5 `evaluate` | validation mục 2 | mục 6.3 api | [TC-F3-AC31-01 đến -04](../testcases/modules/F3_harness/F3_spec_type_validation.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-32 | P5 | validation mục 2 | mục 6.3 api | [TC-F3-AC32-01 đến -05](../testcases/modules/F3_harness/F3_spec_type_validation.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-33 | P5 | validation Bảng 1 | mục 6.3 api | [TC-F3-AC33-01 đến -02](../testcases/modules/F3_harness/F3_spec_type_validation.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-34 | P5 | validation mục 2 | mục 6.3 api | [TC-F3-AC34-01](../testcases/modules/F3_harness/F3_spec_type_validation.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-35 | P5 | validation Bảng 2 | mục 6.3 api | [TC-F3-AC35-01 đến -09](../testcases/modules/F3_harness/F3_spec_semantic_validation.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-36 | P5 | validation Bảng 2 | mục 6.3 api | [TC-F3-AC36-01 đến -04](../testcases/modules/F3_harness/F3_spec_semantic_validation.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-37 | P5 | validation Bảng 3 | mục 6.3 api | [TC-F3-AC37-01 đến -08](../testcases/modules/F3_harness/F3_spec_semantic_validation.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-38 | P5 | validation Bảng 2 | mục 6.3 api | [TC-F3-AC38-01 đến -02](../testcases/modules/F3_harness/F3_spec_semantic_validation.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-39 | O1 `findSpec` | BR-09 | O1-T03, P2-T09 | [TC-F3-AC39-01 đến -02](../testcases/modules/F3_harness/F3_spec_read_invalidation.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-40 | E1 `ProblemSpecChanged` | BR-09 | E1-T01 đến E1-T04 | [TC-F3-AC40-01 đến -04](../testcases/modules/F3_harness/F3_spec_read_invalidation.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-41 | P2 (chương trình sinh ra) | mục 3.5 logic | P2-T01 | [TC-F3-AC41-01 đến -02](../testcases/modules/F3_harness/F3_generated_program_safety.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-42 | P2 | mục 8 logic | P2-T01 | [TC-F3-AC42-01](../testcases/modules/F3_harness/F3_generated_program_safety.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-43 | P2 | BR-02, BR-06 | P2-T07 | [TC-F3-AC43-01](../testcases/modules/F3_harness/F3_generated_program_safety.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-44 | khởi động | BR-02 | (không có ở DD) | [TC-F3-AC44-01 đến -03](../testcases/modules/F3_harness/F3_generated_program_safety.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-45 | P1, adapter P2/P3 | API §1.2, validation Bảng 4 | `HRN-010` | [TC-F3-AC45-01 đến -03](../testcases/modules/F3_harness/F3_generated_program_safety.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-46 | schema | `02-bd/database/F3_harness.md` mục 1 | (không có ở DD) | [TC-F3-AC46-01](../testcases/modules/F3_harness/F3_generated_program_safety.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-47 | P1, P2, P3, P4 | mục 8 logic | (không có ở DD) | [TC-F3-AC47-01](../testcases/modules/F3_harness/F3_generated_program_safety.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-48 | P1, O2, GET mã khung | mục 3.1 API | P1-T08 | [TC-F3-AC48-01 đến -04](../testcases/modules/F3_harness/F3_harness_contracts.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
+| AC-49 | P6, POST xem trước chữ ký | mục 3.7 API | `HRN-062` | [TC-F3-AC49-01 đến -08](../testcases/modules/F3_harness/F3_harness_contracts.md) | 2026-11-08: HTTP, 401/403/413/429 và khớp starter có bằng chứng (xem AC-49); lõi typed D02u |
+| AC-50 | P2, P3 | Q8 logic | | [TC-F3-AC50-01 đến -03](../testcases/modules/F3_harness/F3_harness_contracts.md) | D02u: Đạt backend local; xem ma trận symbol/oracle D02u |
 
 Mỗi cổng có ít nhất một tiêu chí: P1 (AC-01 đến AC-05), P2 (AC-06 đến AC-13), P3 (AC-14 đến AC-22), P4 (AC-23 đến
 AC-30), P5 (AC-31 đến AC-38), O1 (AC-39), E1 (AC-40). Số hiệu P, O, E theo `03-dd/api/F3_harness.md` Bảng 1.
@@ -400,11 +509,30 @@ AC-30), P5 (AC-31 đến AC-38), O1 (AC-39), E1 (AC-40). Số hiệu P, O, E the
 
 Không còn quyết định chủ dự án đang chờ. Các Q2, Q3, Q4, Q8, Q12–Q14 và Q16 của DD F3 đã đóng; tiêu chí mới phải bám theo hợp đồng DD hiện hành.
 
-## 5. Chưa phủ được
+## 5. Giới hạn sau nghiệm thu backend F3 local (D02u)
 
-| Điều không nghiệm thu được ở đây | Vì sao | Cách phủ sau |
+| Giới hạn | Trạng thái | Mốc kiểm tiếp |
 | :--- | :--- | :--- |
-| Khớp thật giữa mẫu lỗi biên dịch trong test và đầu ra của trình biên dịch trên image go-judge | Image chưa build (`01-rd/system/SYS0401_judge_engine.md:283-295`); regex phụ thuộc phiên bản | Tầng "chuỗi công cụ" của `03-dd/logic/F3_harness.md` mục 10.3 chụp lại mẫu thật khi image sẵn sàng |
-| Hành vi khi hai module chạy cùng nhau trong môi trường thật (hàng đợi, giới hạn tài nguyên) | Thuộc giai đoạn xây dựng 2 (`.nexa/control/dependency-map.md`) | Test tích hợp cùng `judge-orchestration` |
-| Hiệu năng sinh mã dưới tải | Cache trong tiến trình mặc định tắt, chưa đo | Chỉ đo và thêm tiêu chí khi cần bật cache |
-| Thông điệp lỗi lúc chạy (ngoại lệ trong hàm người học) có lộ mã khung không | F3 chỉ xử lý lỗi biên dịch; F4 không lưu/trả stderr của `FUNCTION_WRAPPER` | Kiểm ở F4 AC-76 theo Q14/D5 đã chốt của DD F3 |
+| C08/AC-49 HTTP và UI preview | Xong 2026-11-08 (`DEC-2026-1108-f3-preview-rate-limit-owner`) | Không còn mở |
+| Cache-on/listener và duplicate/out-of-order event | Chưa bật theo mặc định BD; nhánh không cache đã kiểm fresh version ở D02s | Chỉ thêm cache sau khi đo có nhu cầu và chốt invalidation |
+| Hiệu năng tải, phiên bản compiler/image mới | Không có benchmark/SLO hoặc bảo đảm cho mọi image tương lai | Chạy lại fixture khi đổi toolchain hoặc cần đo tải |
+| Production nhiều API/worker process, quyền/retention của log nội bộ ở môi trường triển khai | Ngoài mốc local; regex/compiler thật và worker local đã có D02e/n1/t | Mốc triển khai/vận hành tương ứng |
+| Full regression F3/F4, FE/browser và QA testcase riêng | D02u chỉ chạy 6 startup tests mới, giữ bằng chứng cũ đã đối chiếu hash | FINAL khi clear F3/F4 theo owner |
+
+
+## Bằng chứng D02s — 2026-11-04
+
+**D02s — F3 REST starter P1, 2026-11-04:** HTTP starter/quyền hiện hành/phiên bản thật đã kiểm; nhánh F3 không cache đọc v1→v2 không chờ event và từ chối expected version cũ. 57 test liên quan đạt (13 unit mới, 18 API mới, 26 hợp đồng/wiring trực tiếp), 5/5 mutation bị bắt; Spotless/Checkstyle/SpotBugs đạt. Chỉ tập trung F3/F4, task riêng F1/F2 tạm gác. C08/cache-on giữ giới hạn đã nêu, D09/persisted E2E và FE chưa đóng. [Report](F:/prj_algoprep/06-plan/reports/261104-f3-starter-http/report.md).
+
+| AC | Bằng chứng backend | Chưa đóng |
+| :--- | :--- | :--- |
+| AC-01–05 | HTTP 6 tổ hợp, override, unsupported/missing signature, Sample thật | Golden/node toàn bộ và FE không chạy lại |
+| AC-39/45 | HTTP port503/recovery và unsupported language400 | Không gọi là regression mọi P2/P3 |
+| AC-48 | JWT live role, admin demotion, IDOR/deleted404, published/unpublished | FE/browser |
+| AC-40 | Nhánh default no-cache/fresh version/matching/stale expected | Cache-on/E1 delivery, TC-F3-AC40-01–04 chưa PASS |
+| AC-18/D09, AC-49 | Chưa đóng bởi D02s | Persisted E2E; AC-49 xong 2026-11-08 (xem mục AC-49) |
+
+Không tick QA toàn module hoặc browser dựa trên Sample E2E. Nguồn/hash/log và phạm vi ở report/evidence.
+
+
+**D02t — 2026-11-04:** D09/AC-18 local persisted E2E đã đạt 9/9 ca mới (3 Accepted + 6 sai tên/arity, Java/CPP/Python), spec v2/source/DB/API/quyền thật; static gates đạt. Không sửa production code, không chạy full regression. C08/cache-on và nghiệm thu tổng F3 giữ phạm vi riêng. [Report](F:/prj_algoprep/06-plan/reports/261104-f3-persisted-acceptance/report.md).

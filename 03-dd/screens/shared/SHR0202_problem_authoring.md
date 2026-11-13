@@ -53,7 +53,7 @@ EVT-30 “Nhờ AI soạn nháp” đã cắt. Không có ô “Stack (MB)” �
 
 ### BR-SC-01 Thứ tự lưu và xuất bản
 
-Tạo mới gọi F2 §36 lấy UUID rồi chuyển URL edit; mọi mutation phụ thuộc ID chỉ bật sau đó. Bấm “Lưu và xuất bản” lưu nội dung, spec và AI context đang dirty theo thứ tự cần thiết, đợi response, rồi gọi F2 §40. Nếu một bước lỗi, dừng và giữ trạng thái chưa xuất bản; không báo thành công. Chọn `PUBLISHED` ở cột thuộc tính dùng cùng checklist; không cho đường tắt qua việc đổi select. Checklist là gợi ý client; F2 §40 là thẩm quyền cuối. [SoT: BD EVT-32–33, Q8; F2 §36–40]
+Tạo mới gọi F2 §36 lấy UUID rồi chuyển URL edit; mọi mutation phụ thuộc ID chỉ bật sau đó. Bấm “Lưu và xuất bản” lưu nội dung, spec và AI context đang dirty theo thứ tự cần thiết, đợi response, rồi gọi F2 §40. Nếu một bước lỗi, dừng và giữ trạng thái chưa xuất bản; không báo thành công. Chọn `PUBLISHED` ở cột thuộc tính dùng cùng checklist; không cho đường tắt qua việc đổi select. Checklist là gợi ý client; F2 §40 là thẩm quyền cuối. Chế độ thật: mục `SPEC_DECLARED` hiển thị theo `specDeclared` của máy chủ khi đặc tả giữ nguyên như đã lưu và không chặn nút xuất bản ở client (Owner chốt 2026-11-08, BD Q24). [SoT: BD EVT-32–33, Q8, Q24; F2 §36–40]
 
 ### BR-SC-02 Ví dụ, testcase và phiên bản
 
@@ -65,11 +65,15 @@ Xoá ví dụ khi bài PUBLISHED còn đúng hai ví dụ bị chặn với toas
 
 ### BR-SC-04 Ghép cặp tệp testcase
 
-EVT-15 chọn nhiều tệp văn bản có cùng tên gốc và hai hậu tố `.in`/`.out` (ví dụ `case01.in`, `case01.out`); một tên gốc tạo đúng một cặp `clientKey`. So khớp tên gốc phân biệt hoa thường, không chấp nhận tệp thiếu vế, trùng vế hoặc tên gốc rỗng; hiện lỗi trước khi xin URL F2 §46. Không nhận ZIP vì F2 không có hợp đồng giải nén. `visibility` mặc định HIDDEN cho cặp mới; người soạn có thể đổi từng cặp trước khi xin URL. Sau #46, PUT hai URL của mỗi cặp và chỉ gọi #47 khi mọi vế đã tải thành công; lỗi tải giữ danh sách để thử lại trong hạn URL. F2 #47 xác nhận nguyên lô, không thêm một phần. [SoT: F2 §46–47, Q-08; quy ước tệp là quyết định DD màn]
+**Owner chốt 2026-11-07 (Q-08, A20):** tệp được ghép theo cùng tên gốc với hậu tố `.in` và `.out` (`01.in` với `01.out`). EVT-15 chọn nhiều tệp văn bản có cùng tên gốc và hai hậu tố `.in`/`.out` (ví dụ `case01.in`, `case01.out`); một tên gốc tạo đúng một cặp `clientKey`. Giao diện hiện bảng các cặp khớp và báo tên lẻ hoặc trùng trước khi tải lên; API F2 vẫn nhận một cặp mỗi item. Nút "Tải lên hàng loạt" sẽ dựng theo quy tắc này (hàm `realBulkUpload` đã có, chưa có nút). So khớp tên gốc phân biệt hoa thường, không chấp nhận tệp thiếu vế, trùng vế hoặc tên gốc rỗng; hiện lỗi trước khi xin URL F2 §46. Không nhận ZIP vì F2 không có hợp đồng giải nén. `visibility` mặc định HIDDEN cho cặp mới; người soạn có thể đổi từng cặp trước khi xin URL. Sau #46, PUT hai URL của mỗi cặp và chỉ gọi #47 khi mọi vế đã tải thành công; lỗi tải giữ danh sách để thử lại trong hạn URL. F2 #47 xác nhận nguyên lô, không thêm một phần. [SoT: F2 §46–47, Q-08; quy ước tệp là quyết định DD màn]
 
 ### BR-SC-05 Xem trước dòng khai báo hàm
 
-Khi bản nháp `functionName`, kiểu trả về và tham số thay đổi, đợi 400 ms sau lần gõ cuối rồi gọi F3 §3.7; không gọi khi tab Đặc tả chưa mở. Phản hồi chứa cả ba ngôn ngữ; đổi tab ngôn ngữ chỉ đổi dòng đang hiển thị. Hủy request cũ khi sửa tiếp; chỉ áp kết quả nếu body gửi đi còn bằng bản nháp hiện tại. `wrapperSupported=false` hiển thị lý do và không bịa chữ ký; `HRN-060` đánh dấu trường theo `details.violations`; `429 HRN-061` giữ dòng gần nhất kèm trạng thái đang chờ, tự thử lại sau `retryAfterSeconds` nếu bản nháp không đổi. Preview không lưu đặc tả; F2 §38 vẫn là đường ghi duy nhất. [Owner 2026-10-25; F3 §3.7]
+Khi bản nháp `functionName`, kiểu trả về, tham số hoặc matching thay đổi, đợi 400 ms sau lần gõ cuối rồi gọi F3 §3.7; không gọi khi tab Đặc tả chưa mở hoặc chưa có tên hàm. Query key dùng body hiện hành cùng phạm vi tài khoản, còn debounce chỉ quyết định thời điểm gọi: kết quả của body trước không được hiện trong cửa sổ 400 ms. Request cũ bị hủy bằng AbortSignal khi bản nháp đổi hoặc màn bị tháo. Phản hồi chứa cả ba ngôn ngữ; tab Java/C++/Python chỉ đổi dòng đang hiển thị và ô override, không gọi lại endpoint. `wrapperSupported=false` hiển thị các lý do `unsupportedReasons` của server và không bịa chữ ký. `HRN-060` đánh dấu trường theo `details.violations`, kể cả kiểu lồng; lỗi gửi toast đã dịch, không hiển thị detail thô. `429 HRN-061` hiển thị trạng thái chờ và tự thử lại sau `retryAfterSeconds` chỉ khi bản nháp vẫn còn được quan sát; sửa bản nháp/rời màn hủy retry. Chỉ giữ declaration đã có cho chính body hiện hành, không lấy declaration của body khác làm dòng đang chờ. `413 HRN-062` có thông báo 16 KB, không tự thử lại.
+
+**Đồng bộ triển khai 2026-11-12 (GAP-03):** `useSignaturePreview` truyền signal xuống API, key theo body chưa debounce, rate-limit retry có thời gian từ server; `SpecEditor` dùng một query chung, map violations và lý do không hỗ trợ, ba tab ngôn ngữ. Mock-mode giữ minh họa cục bộ và không gọi API. Các giới hạn preview ghi ngày 2026-11-08 đã được xử lý; bằng chứng kiểm mới tại `06-plan/reports/261112-f1-f4-followup-fix/preview.md`.
+
+Preview không lưu đặc tả; F2 §38 vẫn là đường ghi duy nhất. [Owner 2026-10-25; F3 §3.7]
 
 ## 5. Kiểm tra phía client
 
@@ -110,3 +114,55 @@ Prototype còn mock store, kết quả chạy mẫu giả, toggle công khai tro
 ### Đồng bộ baseline 2026-10-29
 
 Theo `DEC-2026-1029-f2-migration-readiness`, xuất bản lại sau khi sửa testcase trong lúc rút bài phải dùng phiên bản bộ chấm mới nếu nội dung đã duyệt khác snapshot; giống thì không tăng. Giao diện dùng version backend trả, không tự tính. Tag khác case là cùng một tag. Epsilon ngoài miền trả PRB-036/HRN-V20, không âm thầm làm tròn. Các câu hỏi backend của màn đã đóng theo DD F2 §61; nợ prototype/nối API không phải câu hỏi thiết kế.
+
+## Nối API thật (F2-6 phần 2, 2026-11-06)
+
+Bảng dưới liệt kê endpoint màn tiêu thụ và hiện trạng; hợp đồng chỉ định nghĩa ở `03-dd/api/F2_problem-bank.md`.
+
+| Endpoint | Hiện trạng |
+| :--- | :--- |
+| `#33`, `#34` | `realLoadDraft`; bài không thấy `PRB-010` (404) hiện không tìm thấy |
+| `#35` đến `#39` | `realSaveDraft`; `PRB-020` (409), `PRB-036`, `PRB-039`, `PRB-053`, `PRB-030` dịch qua `apiErrors` |
+| `#40` | Khối số liệu; lỗi thì hiện `-`; `acRate=null` hiện `-` |
+| `#41` đến `#43` | Ghi ngay từng dòng; `PRB-046`, `PRB-048`, `PRB-054`, `PRB-011` |
+| `#44` | Hàm `realReorderTestcases` có test, chưa có giao diện |
+| `#45`, `#46` | Hàm `realBulkUpload` có test, chưa có nút; quy tắc ghép cặp đã chốt 2026-11-07 (BR-SC-04) |
+| `#47` | Kết quả là toast; `PRB-040`, `PRB-055`, `PRB-050`, lỗi biên dịch |
+| `#48` | Còn mock (chưa có endpoint) |
+
+Test đường thật: `real-authoring.test.ts` (44 ca: ánh xạ, chuỗi lưu, từng mã lỗi), `views/shared/problem-authoring/ui/problem-authoring-real.test.tsx` (14 ca).
+
+### Quyết định kỹ thuật đã duyệt (Owner chốt 2026-11-07)
+
+Bảng dưới ghi các điểm mà bản nối API thật đã chọn và owner chấp nhận ngày 2026-11-07; không còn là câu hỏi mở.
+
+Bảng 1: Điểm đã duyệt của màn `SHR0202`
+
+| Mã | Quyết định | Nơi trong mã |
+| :-: | :--- | :--- |
+| A22 | Bài mới chưa lưu chưa biết trần sinh testcase bằng AI: `aiGeneration.limit = 0` cho tới lần lưu đầu | `entities/problem/api/real-authoring.ts` |
+| A23 | Giới hạn khởi tạo của form mới 1000 ms, 256 MB, 64 KB là hằng số của giao diện vì không có endpoint đọc mặc định hệ thống; máy chủ vẫn điền giới hạn thiếu | `real-authoring.ts:141-143` |
+| A24 | Bài nhiều chủ đề: màn chọn một chủ đề, các chủ đề còn lại giữ nguyên trong `otherTopicIds`; kiểu chữ ký lạ hiện là `OTHER` kèm cảnh báo | `real-authoring.ts:171`, `:310` |
+| A25 | Khi xuất bản, client không chặn theo kết quả chạy đáp án mẫu; máy chủ quyết qua `PRB-030` (BD EVT-33) | `UpdateProblemPublishStatus` ở DD F2 #39 |
+
+## Ghi chú đồng bộ prototype 2026-11-07: Tải lên hàng loạt (EVT-15)
+
+API tiêu thụ: `#45` `POST /problem-bank/authoring/problems/{id}/testcases/bulk-upload-url`, PUT thẳng lên MinIO (`credentials: omit`), `#46` `.../bulk-upload/confirm` qua `realBulkUpload` (`entities/problem/api/real-authoring.ts`). Hợp đồng không đổi; không sửa `03-dd/api/**`.
+
+Slice: `views/shared/problem-authoring/model/bulk-pairs.ts` (ghép cặp `.in`/`.out`, kiểm giới hạn, thuần hàm, có test), `ui/bulk-upload-dialog.tsx` (popup), nút và `bulkUpload()` trong `ui/problem-authoring-view.tsx`; `shared/ui/form/file-picker-button.tsx` và `shared/lib/format-bytes.ts` thêm mới ở `shared`. `clientKey` gửi lên là `p1`, `p2`, ... theo thứ tự tên tự nhiên; popup đổi lại thành tên gốc khi báo lỗi `PRB-045`.
+
+i18n: `problemAuthoring.testcase.btnBulkUpload`, `problemAuthoring.bulk.*` (vi, en). Mã lỗi dùng sẵn trong `apiErrors`: `PRB-044`, `PRB-045` (kèm `details.items`), `PRB-046`, `PRB-047`, `PRB-052`.
+
+Còn mở: 1) nút khoá ở bài mới chưa lưu (cần id bài), chưa có lựa chọn "lưu rồi tải lên" một bước; 2) tệp lạ chặn cả lô (owner chưa nói có nên bỏ qua tệp thừa như README); 3) chưa duyệt hình, chưa chạy trình duyệt với MinIO thật.
+
+## Ghi chú đồng bộ prototype 2026-11-08: mục "đã khai đặc tả" theo máy chủ (F-C-01)
+
+Nguồn: kiểm trình duyệt thật đợt C, `06-plan/reports/261108-1130-f1-f2-dot-c-kiem-trinh-duyet/report.md`; quyết định `DEC-2026-1108-f2-spec-declared-server-verdict`. Hợp đồng `03-dd/api/**` không đổi (`checklist.specDeclared` đã có trong phản hồi §34). Luật phía máy chủ (bài Standard I/O không cần chữ ký) đã được xác nhận và ghi vào DD api, logic, validation F2 (`DEC-2026-1108-f2-spec-declared-stdio-exempt`).
+
+Hành vi (chế độ thật): `ServerState.specDeclared` lấy từ `checklist.specDeclared` của §34 và được làm mới sau mỗi lần lưu trọn vẹn. Mục checklist `specDeclared` hiện giá trị đó khi `draft.spec` còn bằng bản đã lưu; khi tác giả đang sửa đặc tả, hoặc máy chủ chưa có phán quyết (bài chưa lưu, bản sao), dùng lại phép kiểm client `isSpecComplete`. `publish()` bỏ cả `solutionPasses` lẫn `specDeclared` khỏi danh sách chặn ở client; `PRB-030` của máy chủ nêu mục còn thiếu bằng lời. Chế độ mock giữ nguyên.
+
+Slice: `entities/problem/model/draft-types.ts` (`ServerState.specDeclared`), `entities/problem/api/real-authoring.ts` (`DetailDto.checklist`, `serverState`), `views/shared/problem-authoring/ui/problem-authoring-view.tsx` (`specDone`, `serverSpecDeclared`, `publish()`).
+
+Kiểm thử: `problem-authoring-real.test.tsx` thêm 3 ca (đặc tả stdin/stdout được máy chủ coi là đã khai hiện Đạt và xuất bản không bị chặn; không có phán quyết thì giữ phép kiểm client; máy chủ nói chưa đạt thì thắng phép kiểm client), `real-authoring.test.ts` thêm 1 ca ánh xạ. Ca "đã khai thì xuất bản không bị chặn" và ca "máy chủ nói chưa đạt thì thắng" đỏ khi bỏ bản sửa; ca giữ phép kiểm client là ca dự phòng, xanh cả hai trường hợp. Kiểm trình duyệt thật: bài `TWO-SUM` (đã xuất bản) hiện Đạt sáng và tối; một bài stdin/stdout đủ điều kiện được xuất bản từ giao diện, DB ghi `PUBLISHED`.
+
+Còn mở: 1) khi tác giả đang sửa đặc tả chưa lưu, mục vẫn theo phép kiểm client (đòi chữ ký hàm) tới khi bấm Lưu; xuất bản vẫn không bị chặn nên chỉ ảnh hưởng hiển thị; 2) ghi chú trước (mục 3 "chưa chạy trình duyệt với MinIO thật") đã được kiểm ở đợt C cùng ngày.

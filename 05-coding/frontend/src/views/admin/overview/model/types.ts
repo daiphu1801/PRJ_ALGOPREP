@@ -7,8 +7,8 @@ import { z } from "zod";
 
 export const statSummarySchema = z.object({
   value: z.number(),
-  deltaPercent: z.number(),
-  deltaDirection: z.enum(["up", "down"]),
+  deltaPercent: z.number().nullable(),
+  deltaDirection: z.enum(["up", "down", "none"]),
   sparklineSeries: z.array(z.number()),
 });
 export type StatSummary = z.infer<typeof statSummarySchema>;
@@ -18,6 +18,8 @@ export const submissionsByLanguageSchema = z.object({
   series: z.array(
     z.object({
       label: z.string(),
+      /** Message key under `adminOverview` (real mode: the label comes from the code the server sent). */
+      labelKey: z.string().optional(),
       colorVar: z.string(),
       points: z.array(z.number()),
     }),
@@ -27,14 +29,24 @@ export type SubmissionsByLanguage = z.infer<typeof submissionsByLanguageSchema>;
 
 export const verdictDistributionSchema = z.object({
   slices: z.array(
-    z.object({ label: z.string(), value: z.number(), colorVar: z.string() }),
+    z.object({
+      label: z.string(),
+      labelKey: z.string().optional(),
+      value: z.number(),
+      colorVar: z.string(),
+    }),
   ),
 });
 export type VerdictDistribution = z.infer<typeof verdictDistributionSchema>;
 
 export const difficultyBreakdownSchema = z.object({
   legend: z.array(
-    z.object({ label: z.string(), value: z.number(), colorVar: z.string() }),
+    z.object({
+      label: z.string(),
+      labelKey: z.string().optional(),
+      value: z.number(),
+      colorVar: z.string(),
+    }),
   ),
   // Keyed by problem level key; the block lays them out in the admin-managed level order.
   levels: z.array(

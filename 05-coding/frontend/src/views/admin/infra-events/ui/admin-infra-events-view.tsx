@@ -10,6 +10,8 @@
 "use client";
 
 import Link from "next/link";
+import { isMockMode } from "@/shared/api";
+import { RealInfraEvents } from "./real-infra-events";
 import { useMemo, useState } from "react";
 import {
   INFRA_LEVELS,
@@ -59,6 +61,7 @@ export function AdminInfraEventsView({
   initialLevel?: InfraLevel | "all";
 }) {
   const query = useInfraEvents();
+  if (!isMockMode()) return <RealInfraEvents initialLevel={initialLevel} />;
   return (
     <QueryBoundary query={query}>
       {(all) => (

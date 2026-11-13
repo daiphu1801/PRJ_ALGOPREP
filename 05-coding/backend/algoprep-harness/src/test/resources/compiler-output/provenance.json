@@ -1,0 +1,36 @@
+{
+  "javac": "javac 25.0.2",
+  "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+  "g++": "g++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0",
+  "cpp_image_id": "sha256:cfbf20fa4744ca309fe3b62fb9a63041cc667b0e2bd6a1287867dba5692b62e1",
+  "scope": "Manual source-region fixtures; not P2 codegen or the go-judge toolchain",
+  "prefixLineCount": 2,
+  "userLineCount": 7,
+  "fixtures": [
+    {
+      "language": "java",
+      "fixture": "three-user-errors",
+      "exit_code": 1
+    },
+    {
+      "language": "cpp",
+      "fixture": "three-user-errors",
+      "exit_code": 1
+    },
+    {
+      "language": "python",
+      "fixture": "first",
+      "exit_code": 1
+    },
+    {
+      "language": "python",
+      "fixture": "nested",
+      "exit_code": 1
+    },
+    {
+      "language": "python",
+      "fixture": "last",
+      "exit_code": 1
+    }
+  ]
+}

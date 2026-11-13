@@ -9,10 +9,12 @@ import { AppToaster } from "./app-toaster";
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider>
-      <QueryProvider>
-        <AuthProvider>{children}</AuthProvider>
-        <AppToaster />
-      </QueryProvider>
+      <AuthProvider>
+        <QueryProvider>
+          {children}
+          <AppToaster />
+        </QueryProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 }

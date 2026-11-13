@@ -35,18 +35,22 @@ import {
   type InterviewStage,
 } from "@/entities/mock-interview";
 import { useInterviewTopics } from "@/entities/interview-question";
+import { isMockMode } from "@/shared/api";
 import { useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
 import {
   Badge,
   Button,
   ConfirmDialog,
+  NoticeTile,
   QueryBoundary,
   SegmentedTabs,
   TextArea,
   Toggle,
 } from "@/shared/ui";
+import type { InterviewSession } from "../model/session-types";
 import { useMockInterviewSession } from "../model/use-mock-interview-session";
+import { useRealInterviewSession } from "../model/use-real-interview-session";
 
 // Per-message cap [SoT: 02-bd/screens/users/USR0302_mock_interview.md Sheet 5 khu vực F NO 1].
 const MESSAGE_MAX_LENGTH = 4000;
@@ -120,9 +124,21 @@ function formatElapsed(seconds: number): string {
   return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
+// The mode is fixed per build (NEXT_PUBLIC_MOCK_DATA), so the choice never changes between renders.
+function MockSessionScreen() {
+  return <InterviewScreen session={useMockInterviewSession()} />;
+}
+
+function RealSessionScreen() {
+  return <InterviewScreen session={useRealInterviewSession()} />;
+}
+
 export function MockInterviewView() {
+  return isMockMode() ? <MockSessionScreen /> : <RealSessionScreen />;
+}
+
+function InterviewScreen({ session }: { session: InterviewSession }) {
   const t = useT("mockInterview");
-  const session = useMockInterviewSession();
   const topicList = useInterviewTopics();
   const submissionsQuery = useAcceptedSubmissionOptions();
   const bankQuery = useBankQuestionOptions();
@@ -130,10 +146,24 @@ export function MockInterviewView() {
   const [earlyExitOpen, setEarlyExitOpen] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
+  // The draft is cleared at once and put back when the server refused the answer (BR-SC-04).
+  const submit = () => {
+    const text = draft;
+    setDraft("");
+    void session.sendMessage(text).then((taken) => {
+      if (!taken) setDraft((current) => current || text);
+    });
+  };
+
   // Finishing (all turns used or stopped early) is reported once, whichever path got there.
   const reportedResult = useRef(false);
   useEffect(() => {
-    if (session.screenState === "result" && !reportedResult.current)
+    // The real hook reports once itself (a reopened finished session is silent, DD BR-SC-08).
+    if (
+      isMockMode() &&
+      session.screenState === "result" &&
+      !reportedResult.current
+    )
       toast.success(t("toast.finished"));
     reportedResult.current = session.screenState === "result";
   }, [session.screenState, t]);
@@ -175,44 +205,58 @@ export function MockInterviewView() {
 
               {session.entryType === "submission" ? (
                 <QueryBoundary query={submissionsQuery}>
-                  {(submissions) => (
-                    <ul className="flex flex-col gap-2">
-                      {submissions.map((submission) => (
-                        <li key={submission.id}>
-                          <PickRow
-                            icon={SourceIcon}
-                            selected={session.submissionId === submission.id}
-                            onPick={() => session.setSubmissionId(submission.id)}
-                            title={submission.problemTitle}
-                            meta={
-                              <Badge variant="neutral">
-                                {submission.language}
-                              </Badge>
-                            }
-                          />
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                  {(submissions) =>
+                    submissions.length === 0 ? (
+                      <p className="text-[13px] text-[var(--color-text-muted)]">
+                        {t("emptySubmissions")}
+                      </p>
+                    ) : (
+                      <ul className="flex flex-col gap-2">
+                        {submissions.map((submission) => (
+                          <li key={submission.id}>
+                            <PickRow
+                              icon={SourceIcon}
+                              selected={session.submissionId === submission.id}
+                              onPick={() =>
+                                session.setSubmissionId(submission.id)
+                              }
+                              title={submission.problemTitle}
+                              meta={
+                                <Badge variant="neutral">
+                                  {submission.language}
+                                </Badge>
+                              }
+                            />
+                          </li>
+                        ))}
+                      </ul>
+                    )
+                  }
                 </QueryBoundary>
               ) : null}
 
               {session.entryType === "bank" ? (
                 <QueryBoundary query={bankQuery}>
-                  {(questions) => (
-                    <ul className="flex flex-col gap-2">
-                      {questions.map((question) => (
-                        <li key={question.id}>
-                          <PickRow
-                            icon={SourceIcon}
-                            selected={session.questionId === question.id}
-                            onPick={() => session.setQuestionId(question.id)}
-                            title={question.title}
-                          />
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                  {(questions) =>
+                    questions.length === 0 ? (
+                      <p className="text-[13px] text-[var(--color-text-muted)]">
+                        {t("emptyBank")}
+                      </p>
+                    ) : (
+                      <ul className="flex flex-col gap-2">
+                        {questions.map((question) => (
+                          <li key={question.id}>
+                            <PickRow
+                              icon={SourceIcon}
+                              selected={session.questionId === question.id}
+                              onPick={() => session.setQuestionId(question.id)}
+                              title={question.title}
+                            />
+                          </li>
+                        ))}
+                      </ul>
+                    )
+                  }
                 </QueryBoundary>
               ) : null}
 
@@ -278,70 +322,78 @@ export function MockInterviewView() {
           <aside className="glass-card border border-[var(--color-border)] p-5 lg:sticky lg:top-24">
             <h2 className="mb-4 text-[14.5px] font-bold">{t("configTitle")}</h2>
 
-            <div className="mb-4">
-              <p className="mb-1.5 text-xs font-medium text-[var(--color-text-muted)]">
-                {t("levelLabel")}
+            {session.entryType === "submission" && !isMockMode() ? (
+              <p className="mb-5 text-[12.5px] text-[var(--color-text-muted)]">
+                {t("submissionConfigNote")}
               </p>
-              <SegmentedTabs
-                label={t("levelLabel")}
-                value={session.level}
-                onValueChange={session.setLevel}
-                options={INTERVIEWER_LEVELS.map((level) => ({
-                  value: level,
-                  label: t(`level.${level}`),
-                }))}
-              />
-              <p className="mt-2 text-[12.5px] text-[var(--color-text-muted)]">
-                {t(`levelDesc.${session.level}`)}
-              </p>
-            </div>
+            ) : (
+              <>
+                <div className="mb-4">
+                  <p className="mb-1.5 text-xs font-medium text-[var(--color-text-muted)]">
+                    {t("levelLabel")}
+                  </p>
+                  <SegmentedTabs
+                    label={t("levelLabel")}
+                    value={session.level}
+                    onValueChange={session.setLevel}
+                    options={INTERVIEWER_LEVELS.map((level) => ({
+                      value: level,
+                      label: t(`level.${level}`),
+                    }))}
+                  />
+                  <p className="mt-2 text-[12.5px] text-[var(--color-text-muted)]">
+                    {t(`levelDesc.${session.level}`)}
+                  </p>
+                </div>
 
-            <div className="mb-4">
-              <p className="mb-1.5 text-xs font-medium text-[var(--color-text-muted)]">
-                {t("turnsLabel")}
-              </p>
-              <SegmentedTabs
-                label={t("turnsLabel")}
-                value={String(session.maxTurns)}
-                onValueChange={(value) =>
-                  session.setMaxTurns(
-                    Number(value) as (typeof MAX_TURNS_OPTIONS)[number],
-                  )
-                }
-                options={MAX_TURNS_OPTIONS.map((turns) => ({
-                  value: String(turns),
-                  label: t("turnsOption", { count: turns }),
-                }))}
-              />
-            </div>
+                <div className="mb-4">
+                  <p className="mb-1.5 text-xs font-medium text-[var(--color-text-muted)]">
+                    {t("turnsLabel")}
+                  </p>
+                  <SegmentedTabs
+                    label={t("turnsLabel")}
+                    value={String(session.maxTurns)}
+                    onValueChange={(value) =>
+                      session.setMaxTurns(
+                        Number(value) as (typeof MAX_TURNS_OPTIONS)[number],
+                      )
+                    }
+                    options={MAX_TURNS_OPTIONS.map((turns) => ({
+                      value: String(turns),
+                      label: t("turnsOption", { count: turns }),
+                    }))}
+                  />
+                </div>
 
-            <div className="mb-5 flex items-center justify-between rounded-xl border border-[var(--color-border)] px-3 py-2.5">
-              <span className="flex items-center gap-2 text-[13px] font-semibold">
-                <Lightbulb
-                  className="h-4 w-4 text-[var(--color-admin-warn)]"
-                  aria-hidden="true"
-                />
-                {t("hintLabel")}
-              </span>
-              <Toggle
-                checked={session.hintAllowed}
-                onCheckedChange={session.setHintAllowed}
-                label={t("hintLabel")}
-              />
-            </div>
+                <div className="mb-5 flex items-center justify-between rounded-xl border border-[var(--color-border)] px-3 py-2.5">
+                  <span className="flex items-center gap-2 text-[13px] font-semibold">
+                    <Lightbulb
+                      className="h-4 w-4 text-[var(--color-admin-warn)]"
+                      aria-hidden="true"
+                    />
+                    {t("hintLabel")}
+                  </span>
+                  <Toggle
+                    checked={session.hintAllowed}
+                    onCheckedChange={session.setHintAllowed}
+                    label={t("hintLabel")}
+                  />
+                </div>
+              </>
+            )}
 
             <Button
               variant="cta"
               size="md"
               className="w-full"
-              disabled={!session.canStart}
+              disabled={!session.canStart || session.starting}
               onClick={() => {
                 setDraft("");
                 session.start();
               }}
             >
               <Rocket className="mr-2 h-4 w-4" aria-hidden="true" />
-              {t("startCta")}
+              {session.starting ? t("startPending") : t("startCta")}
             </Button>
           </aside>
         </div>
@@ -392,23 +444,27 @@ export function MockInterviewView() {
               );
             })}
             <span className="ml-auto font-mono text-[12.5px] text-[var(--color-text-muted)]">
-              {t("turnCount", {
-                current: session.turnCount,
-                total: session.maxTurns,
-              })}
+              {session.turnLimit === null
+                ? t("turnCountOpen", { current: session.turnCount })
+                : t("turnCount", {
+                    current: session.turnCount,
+                    total: session.turnLimit,
+                  })}
             </span>
             <span className="font-mono text-[12.5px] text-[var(--color-text-muted)]">
               {formatElapsed(session.elapsedSeconds)}
             </span>
           </div>
-          <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-[var(--color-track)]">
-            <div
-              className="h-full rounded-full bg-[var(--color-primary)] transition-all"
-              style={{
-                width: `${Math.min(100, (session.turnCount / session.maxTurns) * 100)}%`,
-              }}
-            />
-          </div>
+          {session.turnLimit === null ? null : (
+            <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-[var(--color-track)]">
+              <div
+                className="h-full rounded-full bg-[var(--color-primary)] transition-all"
+                style={{
+                  width: `${Math.min(100, (session.turnCount / session.turnLimit) * 100)}%`,
+                }}
+              />
+            </div>
+          )}
         </div>
 
         <div className="flex min-h-0 flex-1 flex-col gap-4 lg:flex-row">
@@ -453,14 +509,20 @@ export function MockInterviewView() {
                             (ai ? "" : "text-right")
                           }
                         >
-                          {ai ? t("aiName") : t("youName")}
+                          {message.kind === "hint"
+                            ? t("hintBlockTitle")
+                            : ai
+                              ? t("aiName")
+                              : t("youName")}
                         </p>
                         <div
                           className={
                             "rounded-2xl px-3.5 py-2.5 text-[13.5px] leading-relaxed whitespace-pre-wrap " +
-                            (ai
-                              ? "rounded-bl-md bg-[var(--color-surface-hover)]"
-                              : "rounded-br-md bg-[var(--color-primary)] text-[var(--color-on-primary)]")
+                            (message.kind === "hint"
+                              ? "rounded-bl-md border border-dashed border-[var(--color-admin-warn)]"
+                              : ai
+                                ? "rounded-bl-md bg-[var(--color-surface-hover)]"
+                                : "rounded-br-md bg-[var(--color-primary)] text-[var(--color-on-primary)]")
                           }
                         >
                           {message.content}
@@ -477,6 +539,54 @@ export function MockInterviewView() {
                     {t("aiTyping")}
                   </span>
                 ) : null}
+                {session.runState === "restoring" ? (
+                  <span
+                    role="status"
+                    className="text-[12px] text-[var(--color-text-subtle)]"
+                  >
+                    {t("restoringLabel")}
+                  </span>
+                ) : null}
+                {session.runState === "waiting" ? (
+                  <NoticeTile tone="info" title={t("waitingReply")}>
+                    {session.waitingSlow ? t("waitingSlow") : null}
+                  </NoticeTile>
+                ) : null}
+                {session.runState === "failedTurn" ? (
+                  <NoticeTile
+                    tone="negative"
+                    title={t("turnFailedTitle")}
+                    action={
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={session.retryTurn}
+                      >
+                        {t("turnRetry")}
+                      </Button>
+                    }
+                  >
+                    {t("turnFailedBody")}
+                  </NoticeTile>
+                ) : null}
+                {session.runState === "completionPending" ? (
+                  <NoticeTile
+                    tone="warn"
+                    title={t("completionPendingTitle")}
+                    action={
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={session.retryComplete}
+                      >
+                        {t("completionRetry")}
+                      </Button>
+                    }
+                  />
+                ) : null}
+                {session.runState === "completing" ? (
+                  <NoticeTile tone="info" title={t("completingLabel")} />
+                ) : null}
                 <div ref={chatEndRef} />
               </div>
             </div>
@@ -487,29 +597,30 @@ export function MockInterviewView() {
                 hideLabel
                 value={draft}
                 rows={3}
-                readOnly={session.isAiTyping}
+                readOnly={session.runState !== "idle"}
                 maxLength={MESSAGE_MAX_LENGTH}
                 onChange={(event) => setDraft(event.target.value)}
                 onKeyDown={(event) => {
                   if (
                     event.key === "Enter" &&
                     (event.ctrlKey || event.metaKey) &&
-                    !session.isAiTyping &&
+                    session.runState === "idle" &&
                     draft.trim()
                   ) {
-                    session.sendMessage(draft);
-                    setDraft("");
+                    submit();
                   }
                 }}
                 className="resize-none border-0 bg-transparent px-1 text-[14px] focus-visible:outline-none"
                 placeholder={t("messageInputPlaceholder")}
               />
               <div className="mt-2 flex flex-wrap items-center gap-2 border-t border-[var(--color-border)] pt-2.5">
-                {session.hintAllowed ? (
+                {session.hintOffered ? (
                   <Button
                     variant="ghost"
                     size="sm"
-                    disabled={session.isAiTyping}
+                    disabled={
+                      session.runState !== "idle" || session.hintPending
+                    }
                     onClick={session.requestHint}
                     className="border border-[var(--color-border)]"
                   >
@@ -523,6 +634,7 @@ export function MockInterviewView() {
                 <Button
                   variant="ghost"
                   size="sm"
+                  disabled={session.runState !== "idle"}
                   onClick={() => setEarlyExitOpen(true)}
                   className="border border-[var(--color-border)] text-[var(--color-admin-negative-text)]"
                 >
@@ -535,11 +647,10 @@ export function MockInterviewView() {
                 <Button
                   variant="primary"
                   size="md"
-                  disabled={session.isAiTyping || draft.trim().length === 0}
-                  onClick={() => {
-                    session.sendMessage(draft);
-                    setDraft("");
-                  }}
+                  disabled={
+                    session.runState !== "idle" || draft.trim().length === 0
+                  }
+                  onClick={submit}
                 >
                   <SendHorizontal className="mr-2 h-4 w-4" aria-hidden="true" />
                   {t("send")}
@@ -568,13 +679,15 @@ export function MockInterviewView() {
                   {t("turnsLeftLabel")}
                 </dt>
                 <dd className="text-right font-mono font-semibold">
-                  {Math.max(0, session.maxTurns - session.turnCount)}
+                  {session.turnLimit === null
+                    ? "—"
+                    : Math.max(0, session.turnLimit - session.turnCount)}
                 </dd>
                 <dt className="text-[var(--color-text-muted)]">
                   {t("hintLabel")}
                 </dt>
                 <dd className="text-right font-semibold">
-                  {session.hintAllowed ? t("hintOn") : t("hintOff")}
+                  {session.hintOffered ? t("hintOn") : t("hintOff")}
                 </dd>
               </dl>
             </div>
@@ -604,11 +717,17 @@ export function MockInterviewView() {
             session.stopEarly();
           }}
           title={t("earlyExitTitle")}
-          confirmLabel={t("earlyExitConfirm")}
+          confirmLabel={
+            session.turnCount === 0 && !isMockMode()
+              ? t("earlyExitNoTurnConfirm")
+              : t("earlyExitConfirm")
+          }
           cancelLabel={t("earlyExitCancel")}
           destructive
         >
-          {t("earlyExitBody")}
+          {session.turnCount === 0 && !isMockMode()
+            ? t("earlyExitNoTurnBody")
+            : t("earlyExitBody")}
         </ConfirmDialog>
       </section>
     );
@@ -651,7 +770,8 @@ export function MockInterviewView() {
             >
               <div className="mb-2 flex items-baseline justify-between gap-2">
                 <p className="text-[13.5px] font-semibold">
-                  {t(`rubric.${code}`)} ({RUBRIC_WEIGHTS[code]}%)
+                  {t(`rubric.${code}`)} (
+                  {criterion.weightPercent ?? RUBRIC_WEIGHTS[code]}%)
                 </p>
                 <p className="font-mono text-sm font-semibold">
                   {criterion.score} / 10

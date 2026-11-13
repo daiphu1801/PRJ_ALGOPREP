@@ -14,22 +14,22 @@
         "role": "actor"
       },
       {
-        "name": "JudgeOpsController",
+        "name": "AdminQueueControlController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "SetQueueConsumptionPaused",
+        "name": "SetQueueConsumptionPausedCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "QueueSettingsPort",
+        "name": "AdminQueueRepository",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "JudgeDbAdapter",
+        "name": "JdbcAdminQueueRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -50,44 +50,44 @@
       },
       {
         "from": "Quản trị viên",
-        "to": "JudgeOpsController",
+        "to": "AdminQueueControlController",
         "text": "Chọn tạm dừng hoặc tiếp tục hàng đợi"
       },
       {
-        "from": "JudgeOpsController",
-        "to": "SetQueueConsumptionPaused",
+        "from": "AdminQueueControlController",
+        "to": "SetQueueConsumptionPausedCommandHandler",
         "text": "Lưu trạng thái mong muốn"
       },
       {
-        "from": "SetQueueConsumptionPaused",
-        "to": "QueueSettingsPort",
+        "from": "SetQueueConsumptionPausedCommandHandler",
+        "to": "AdminQueueRepository",
         "text": "Khóa và đọc trạng thái hiện tại"
       },
       {
-        "from": "QueueSettingsPort",
-        "to": "JudgeDbAdapter",
+        "from": "AdminQueueRepository",
+        "to": "JdbcAdminQueueRepository",
         "text": "Đọc cấu hình cụm"
       },
       {
-        "from": "JudgeDbAdapter",
+        "from": "JdbcAdminQueueRepository",
         "to": "PostgreSQL",
         "text": "Khóa dòng cấu hình hàng đợi"
       },
       {
         "from": "PostgreSQL",
-        "to": "JudgeDbAdapter",
+        "to": "JdbcAdminQueueRepository",
         "text": "Trạng thái hiện tại",
         "kind": "return"
       },
       {
-        "from": "JudgeDbAdapter",
-        "to": "QueueSettingsPort",
+        "from": "JdbcAdminQueueRepository",
+        "to": "AdminQueueRepository",
         "text": "Trạng thái hiện tại",
         "kind": "return"
       },
       {
-        "from": "QueueSettingsPort",
-        "to": "SetQueueConsumptionPaused",
+        "from": "AdminQueueRepository",
+        "to": "SetQueueConsumptionPausedCommandHandler",
         "text": "Trạng thái hiện tại",
         "kind": "return"
       },
@@ -96,13 +96,13 @@
           "label": "Trạng thái đã đổi từ lúc tải trang?",
           "then": [
             {
-              "from": "SetQueueConsumptionPaused",
-              "to": "JudgeOpsController",
+              "from": "SetQueueConsumptionPausedCommandHandler",
+              "to": "AdminQueueControlController",
               "text": "Báo xung đột, yêu cầu tải lại",
               "kind": "return"
             },
             {
-              "from": "JudgeOpsController",
+              "from": "AdminQueueControlController",
               "to": "Quản trị viên",
               "text": "Hiển thị trạng thái mới để chọn lại",
               "kind": "return"
@@ -110,39 +110,39 @@
           ],
           "else": [
             {
-              "from": "SetQueueConsumptionPaused",
-              "to": "QueueSettingsPort",
+              "from": "SetQueueConsumptionPausedCommandHandler",
+              "to": "AdminQueueRepository",
               "text": "Ghi trạng thái mới; mở lại thì đặt lại đồng hồ bài chờ"
             },
             {
-              "from": "QueueSettingsPort",
-              "to": "JudgeDbAdapter",
+              "from": "AdminQueueRepository",
+              "to": "JdbcAdminQueueRepository",
               "text": "Cập nhật cấu hình và bài chờ trong giao dịch"
             },
             {
-              "from": "JudgeDbAdapter",
+              "from": "JdbcAdminQueueRepository",
               "to": "PostgreSQL",
               "text": "Lưu cờ và mốc bài chờ"
             },
             {
-              "from": "SetQueueConsumptionPaused",
+              "from": "SetQueueConsumptionPausedCommandHandler",
               "to": "AuditLogPort",
               "text": "Ghi nhật ký đổi trạng thái cùng giao dịch"
             },
             {
               "from": "AuditLogPort",
-              "to": "SetQueueConsumptionPaused",
+              "to": "SetQueueConsumptionPausedCommandHandler",
               "text": "Nhật ký đã ghi",
               "kind": "return"
             },
             {
-              "from": "SetQueueConsumptionPaused",
-              "to": "JudgeOpsController",
+              "from": "SetQueueConsumptionPausedCommandHandler",
+              "to": "AdminQueueControlController",
               "text": "Trả trạng thái đã lưu",
               "kind": "return"
             },
             {
-              "from": "JudgeOpsController",
+              "from": "AdminQueueControlController",
               "to": "Quản trị viên",
               "text": "Hiển thị trạng thái đã chọn",
               "kind": "return"

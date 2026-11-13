@@ -53,7 +53,9 @@
 | Tên vật lý (slug) | `instructor_overview` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A2 (`INSTRUCTOR`) |
-| Phiên bản | V0.15 |
+| Phiên bản | V0.17 |
+| V0.16 | Hiện trạng bản dựng (4.5) | Khối "Hoạt động gần đây" nối API thật `GET /instructor/dashboard/recent-activity` (#45, `03-dd/api/F1_identity.md` mục 0.8, Triển khai 2026-11-05): máy chủ trả loại hoạt động và tên người làm, không trả câu chữ và không có tiêu đề bài (F1 không đọc `problem-bank`), nên màn ghép câu theo loại qua i18n (`instructorOverview.activity.type.*`), thời gian tương đối bằng `formatRelativeVN`. Dòng "vừa nộp bài đạt Accepted" mất tên bài so với mock; muốn có tên bài phải thêm cổng F2 (chưa quyết). Các khối khác không đổi | 2026/11/05 | Claude |
+| V0.17 | Hiện trạng bản dựng (4.5) | Sửa 2026-11-07 (F2-6 phần 3, nối FE). Khối "Bài tập của tôi" đọc thật F2 #54 `GET /instructor/assigned-problems/top` qua `useTopAssignedProblems` (`05-coding/frontend/src/entities/class-assignment/api/queries.ts`): năm bài nhiều lượt nộp nhất trong các lớp của giảng viên, máy chủ sắp xếp và cắt; F4 lỗi thì máy chủ trả danh sách rỗng và khối hiện câu "Chưa có dữ liệu", không có số bịa. Chưa duyệt hình, RD không đổi | 2026-11-07 | AI |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/21 |
 | Người cập nhật | Claude |
@@ -80,6 +82,8 @@
 | V0.13 | Sheet 5 (D NO 7, DTO NO 10), Câu hỏi mở Q8 | Áp `DEC-2026-1014-batch7-remaining-open-questions` (ponytail bậc 5): Q8 đóng, "Lớp của tôi" giữ `completionPct` do `identity` tính; bỏ câu đề xuất read model `class_completion_stats`. Cách đánh số: không đổi NO | 2026/10/14 | AI |
 | V0.14 | Hiện trạng bản dựng (4.5) | Áp `DEC-2026-1018-instructor-overview-richer`: bản dựng dựng lại 8 khối có biểu đồ, thêm hai thẻ số liệu, lịch dạy trong tuần, biểu đồ lượt nộp 7 ngày, bài nộp gần đây. Thiết kế dữ liệu và endpoint không đổi. Chưa duyệt hình | 2026/10/18 | AI |
 | V0.15 | Sheet 5 (khu vực D NO 7), Sheet 7 (7.1 NO 10), các dòng `[Nguồn]`, Câu hỏi mở Q8 | Sửa 2026-10-22 đồng bộ DB, `DEC-2026-1022-identity-schema-sync` mục 4 (ID-05): `completionPct` do `identity` **tính khi đọc** (công thức V0.13 giữ nguyên, thêm điều kiện học viên còn ghi danh `left_at IS NULL`), không có bảng read model `class_completion_stats` (đã bỏ ở DB, `02-bd/database/F1_identity.md:122`); nội dung V0.13 đã đúng nên không đổi quyết định. Đọc lại số dòng mọi trích dẫn `02-bd/database/{F1_identity,F2_problem-bank,F5_ai-review}.md` (đã dịch dòng; ví dụ `identity_recent_activity` từ `:115-116` thành `:194-195`, `class_assignments` từ `:116-128` thành `:175-187`) và sửa trích dẫn `.nexa/control/decision-registry.md:3865` thành `:1796`. Không đổi RD, không đổi code | 2026/10/22 | Claude |
+| V0.16 | Hiện trạng bản dựng (4.0) | Sửa 2026-11-07 (nối FE, việc 7a, 7b, 8). Thẻ lớp, nửa vòng tròn "Học viên", "Lớp của tôi" đọc F1 #56 (`useInstructorClassSummary`) thay #19: có `completionPercent`, `absentCount` thật; F4 lỗi (`IDT-507`) thì #56 lùi về #19 và hai khối cần số F4 không vẽ. "Bài nộp gần đây" chế độ thật lấy 5 dòng đầu của F4 #13 (`useInstructorSubmissionPage`, `result=all`, trang 1; cờ `leftClass` đi kèm); chế độ mock giữ `buildSubmissionRows`. **Biểu đồ "Lượt nộp theo ngày" ẩn ở chế độ thật** (chủ dự án chốt 2026-11-07: không có endpoint đếm theo ngày cho giảng viên, một trang 20 dòng của #13 sẽ vẽ sai). Khối "Bài tập của tôi" (#54) lỗi mạng hiện khối lỗi có nút thử lại, không còn câu rỗng. `useClassStudents` chỉ còn mock. Chưa duyệt hình | 2026/11/07 | AI |
+| V0.17 | Hiện trạng bản dựng (4.0) | Sửa 2026-11-07 (kiểm trình duyệt thật, phát hiện F1). Thẻ "Tổng học viên" và "vắng bài" đọc số người không trùng của F1 #56 (`studentCount`, `absentStudentCount`) thay vì cộng số học viên từng thẻ lớp (học viên ở hai lớp bị đếm hai lần: 5 thay vì 3). Khi #56 lỗi và danh sách #19 thay thế thì quay về cộng theo lớp. Hook `useInstructorClassTotals`; test `real-class-metrics.test.ts`. Báo cáo `06-plan/reports/261107-2100-f1-f2-kiem-trinh-duyet/report.md`. Chưa duyệt hình. |
 
 ---
 
@@ -318,7 +322,7 @@ Bảng 4.0: Các khối của bản dựng sau `DEC-2026-1018-instructor-overvie
 | Thẻ "Học viên": nửa vòng tròn + thanh "Vắng bài theo lớp" | `studentCount`, `absentCount` | Thêm thanh vắng theo từng lớp |
 | "Lớp của tôi", "Bài giao cho lớp" | `completionPct`, `submissionCount` | Nhãn lớp kèm số học viên |
 | "Lịch dạy trong tuần" | `class.schedule` | Khối mới, ngày hôm nay được tô |
-| "Lượt nộp theo ngày" (cột chồng 7 ngày) | bài nộp của học viên các lớp | Mốc 7 ngày lấy theo bài nộp mới nhất của mock; chủ dự án chốt 2026-10-18 giữ mock, chỉ kiểm lại khi có API thật |
+| "Lượt nộp theo ngày" (cột chồng 7 ngày) | bài nộp của học viên các lớp (**chế độ thật: ẩn**, V0.16) | Mốc 7 ngày lấy theo bài nộp mới nhất của mock; chủ dự án chốt 2026-10-18 giữ mock, chỉ kiểm lại khi có API thật |
 | "Bài nộp gần đây" | `buildSubmissionRows`, 5 dòng mới nhất | Liên kết sang trang kết quả giảng viên với `from=submissions` |
 | "Hoạt động gần đây" | `ACTIVITY_FEED` cục bộ | Không đổi |
 
@@ -340,7 +344,7 @@ Bảng 4.1: Đối chiếu bản dựng Next.js với thiết kế sau `DEC-2026
 | "Hoạt động gần đây": thẻ hàng hai, 4 mục (dữ liệu cục bộ `ACTIVITY_FEED`, chưa gọi API), 2 cột từ 768px | Đã dựng, chưa duyệt hình | cùng tệp `:21-46,153-175` |
 | Bố cục tổng: hàng một 3 thẻ cao bằng nhau (`h-full`), dưới 1024px xếp dọc | Đã dựng, chưa duyệt hình | cùng tệp `:72,74,105,126` |
 | **Khoảng cách prototype đã biết (2026-10-14):** số ở giữa biểu đồ "Học viên" là tổng `studentCount` theo từng lớp, trong khi thiết kế chốt đếm `DISTINCT student_id` (người) theo `DEC-2026-1014-instructor-batch1-counting-rules` | Chưa khớp thiết kế nhưng chủ dự án chốt 2026-10-18 giữ mock, đếm theo người khi có API thật. Dữ liệu mock không có học viên nằm ở hai lớp nên hai cách ra cùng số; ghi vào `06-plan/PROTOTYPE_DEBT.md` do tài liệu khác phụ trách | `05-coding/frontend/src/views/teacher/overview/ui/instructor-overview-view.tsx:57-58` |
-| Nguồn dữ liệu của bản dựng: `useInstructorClasses` (`studentCount`, `absentCount`, `completionPct`) và `useClassAssignments` (`submissionCount`, `title`) | Dữ liệu mock/entity, tên trường khớp | `05-coding/frontend/src/views/teacher/overview/ui/instructor-overview-view.tsx:54-58`; `05-coding/frontend/src/entities/class/model/types.ts:38-41`; `05-coding/frontend/src/entities/class-assignment/model/types.ts:16` |
+| Nguồn dữ liệu của bản dựng: `useInstructorClasses` (`studentCount`, `absentCount`, `completionPct`) và `useTopAssignedProblems` (`submissionCount`, `title`; thật từ 2026-11-07 qua F2 #54, mock tự tính năm bài đầu từ danh sách mock) | Dữ liệu mock/entity, tên trường khớp | `05-coding/frontend/src/views/teacher/overview/ui/instructor-overview-view.tsx:54-58`; `05-coding/frontend/src/entities/class/model/types.ts:38-41`; `05-coding/frontend/src/entities/class-assignment/model/types.ts:16` |
 
 Toàn bộ các dòng "chưa duyệt hình" ở trên là thay đổi trình bày của prototype ngày 2026-10-14, chủ dự án chưa duyệt; RD không đổi.
 

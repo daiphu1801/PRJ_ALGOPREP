@@ -13,9 +13,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactElement } from "react";
 import { aiTokenBudget } from "@/entities/ai-budget";
+import { resetMockUsageAlerts } from "./ai-usage/api/__mock__/ai-usage-mocks";
 import { toast, useToasts } from "@/shared/lib/toast-store";
 
 vi.mock("@/shared/i18n", () => ({
+  useApiErrorMessage: () => () => "apiError",
   useT: () => (key: string) => key,
   useLocale: () => "vi",
 }));
@@ -62,12 +64,19 @@ describe("admin toasts", () => {
       target: { value: "an@x.vn" },
     });
     fireEvent.click(screen.getByRole("button", { name: "addDialog.submit" }));
-    expect(read().at(-1)).toEqual(["success", "addDialog.createdBody"]);
+    // Creating an account is a call now, so the success toast arrives after it settles.
+    await waitFor(() =>
+      expect(read().at(-1)).toEqual(["success", "addDialog.createdBody"]),
+    );
   });
 
-  it("export dialog: bad range errors, good range succeeds", () => {
+  it("export dialog: bad range errors, good range succeeds", async () => {
     const read = watch();
-    render(<ExportLogDialog open onClose={() => {}} />);
+    render(
+      withQuery(
+        <ExportLogDialog open onClose={() => {}} retentionDays={90} />,
+      ),
+    );
     const day = (offset: number) =>
       new Date(Date.now() + offset * 86_400_000).toISOString().slice(0, 10);
     fireEvent.change(screen.getByLabelText("exportDialog.from"), {
@@ -87,7 +96,10 @@ describe("admin toasts", () => {
     fireEvent.click(
       screen.getByRole("button", { name: "exportDialog.submit" }),
     );
-    expect(read().at(-1)).toEqual(["success", "exportDialog.doneBody"]);
+    // The export is a call now, so the success toast arrives after it settles.
+    await waitFor(() =>
+      expect(read().at(-1)).toEqual(["success", "exportDialog.doneBody"]),
+    );
   });
 
   it("permission matrix: a duplicate role name raises an error toast", async () => {
@@ -138,7 +150,9 @@ describe("admin toasts", () => {
     fireEvent.click(
       screen.getByRole("button", { name: "publishDialog.confirm" }),
     );
-    expect(read().at(-1)).toEqual(["success", "publishDone"]);
+    await waitFor(() =>
+      expect(read().at(-1)).toEqual(["success", "publishDone"]),
+    );
   });
 
   it("ai config: saving an empty instruction is refused, a real one lands in the draft", async () => {
@@ -152,21 +166,25 @@ describe("admin toasts", () => {
 
     fireEvent.change(box, { target: { value: "Chi thi moi" } });
     fireEvent.click(screen.getByRole("button", { name: "editDialog.save" }));
-    expect(read().at(-1)).toEqual(["success", "editDialog.saved"]);
+    await waitFor(() =>
+      expect(read().at(-1)).toEqual(["success", "editDialog.saved"]),
+    );
     expect(screen.getByText("pendingCount")).toBeInTheDocument();
   });
 
-  it("ai limits: saving a bad cap raises an error toast, a good one a success toast", () => {
+  it("ai limits: saving a bad cap raises an error toast, a good one a success toast", async () => {
     const read = watch();
-    render(<AdminAiLimitsView />);
-    const input = screen.getByLabelText("budget.limitLabel");
+    render(withQuery(<AdminAiLimitsView />));
+    const input = await screen.findByLabelText("budget.limitLabel");
     fireEvent.change(input, { target: { value: "0" } });
     fireEvent.click(screen.getByRole("button", { name: "budget.saveLimit" }));
     expect(read().at(-1)).toEqual(["error", "budget.errorLimit"]);
 
     fireEvent.change(input, { target: { value: "60000000" } });
     fireEvent.click(screen.getByRole("button", { name: "budget.saveLimit" }));
-    expect(read().at(-1)).toEqual(["success", "budget.savedLimit"]);
+    await waitFor(() =>
+      expect(read().at(-1)).toEqual(["success", "budget.savedLimit"]),
+    );
     aiTokenBudget.set({ limitTokens: 52_000_000, locked: false });
   });
 
@@ -184,9 +202,12 @@ describe("admin toasts", () => {
     fireEvent.click(
       await screen.findByRole("button", { name: "markReviewed" }),
     );
+    await waitFor(() =>
+      expect(screen.queryByText("alert.anomalousAccount.title")).toBeNull(),
+    );
     expect(screen.queryByText("noAlerts")).toBeNull();
-    expect(screen.queryByText("alert.anomalousAccount.title")).toBeNull();
     expect(screen.getByText("alert.budgetRunningOut.title")).toBeTruthy();
     expect(read()).toEqual([["success", "markReviewedDone"]]);
+    resetMockUsageAlerts();
   });
 });

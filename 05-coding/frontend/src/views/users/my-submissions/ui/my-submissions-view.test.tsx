@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   fireEvent,
   render,
@@ -8,6 +8,13 @@ import {
 } from "@testing-library/react";
 import { withTestProviders } from "@/shared/test/render-with-providers";
 import { MySubmissionsView } from "./my-submissions-view";
+import { mockUrl } from "@/shared/test/mock-url";
+
+vi.mock("next/navigation", async () => {
+  const { navigationMock, mockUrl } = await import("@/shared/test/mock-url");
+  return navigationMock({ push: (url: string) => mockUrl.reset(url) });
+});
+beforeEach(() => mockUrl.reset("/submissions"));
 
 async function renderView() {
   const result = render(withTestProviders(<MySubmissionsView />));

@@ -9,7 +9,9 @@ import { deleteMyAccount } from "@/entities/user";
 export type DeactivateResult =
   | { status: "idle" }
   | { status: "done" }
-  | { status: "error"; errorKey: string };
+  | { status: "error"; errorKey: string; error?: undefined }
+  // An API failure (IDT-432 last administrator, rate limit, outage) for `useApiErrorMessage`.
+  | { status: "error"; error: unknown; errorKey?: undefined };
 
 export function useDeactivateAccount(email: string) {
   const router = useRouter();
@@ -23,7 +25,13 @@ export function useDeactivateAccount(email: string) {
   const confirm = useCallback(async (): Promise<DeactivateResult> => {
     if (!canConfirm) return { status: "idle" };
     setIsSubmitting(true);
-    const outcome = await deleteMyAccount(confirmPhrase.trim());
+    let outcome: Awaited<ReturnType<typeof deleteMyAccount>>;
+    try {
+      outcome = await deleteMyAccount(confirmPhrase.trim());
+    } catch (error) {
+      setIsSubmitting(false);
+      return { status: "error", error };
+    }
     if (!outcome.ok) {
       setIsSubmitting(false);
       return { status: "error", errorKey: outcome.message };

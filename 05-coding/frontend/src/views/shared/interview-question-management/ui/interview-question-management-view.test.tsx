@@ -17,6 +17,8 @@ import { InterviewQuestionManagementView } from "./interview-question-management
 vi.mock("@/shared/i18n", () => ({
   useT: () => (key: string, params?: Record<string, unknown>) =>
     params ? `${key} ${JSON.stringify(params)}` : key,
+  useApiErrorMessage: () => (error: unknown) =>
+    `apiError:${(error as { code?: string }).code}`,
 }));
 
 beforeEach(() => act(() => toast.clear()));
@@ -47,7 +49,9 @@ describe("InterviewQuestionManagementView toasts", () => {
         name: "delete",
       }),
     );
-    expect(toasts.result.current.at(-1)).toMatchObject({ tone: "success" });
+    await waitFor(() =>
+      expect(toasts.result.current.at(-1)).toMatchObject({ tone: "success" }),
+    );
     expect(toasts.result.current.at(-1)?.message).toMatch(/^toast\.deleted/);
   });
 
@@ -59,6 +63,8 @@ describe("InterviewQuestionManagementView toasts", () => {
     const box = screen.getByLabelText("searchLabel");
     fireEvent.change(box, { target: { value: "zzzz-no-match" } });
     expect(toasts.result.current).toHaveLength(0);
+    // The server answers the search; Enter then reports its count.
+    await screen.findByText("emptyFiltered");
     fireEvent.keyDown(box, { key: "Enter" });
     expect(toasts.result.current.at(-1)).toMatchObject({
       tone: "info",
@@ -125,9 +131,14 @@ describe("InterviewQuestionManagementView list controls", () => {
     );
     const header = screen.getByRole("button", { name: /^columnUsage/ });
     fireEvent.click(header);
+    await waitFor(() =>
+      expect(
+        screen.getByRole("columnheader", { name: /columnUsage/ }),
+      ).toHaveAttribute("aria-sort", "ascending"),
+    );
     const ascending = codes();
     fireEvent.click(header);
-    expect(codes()).not.toEqual(ascending);
+    await waitFor(() => expect(codes()).not.toEqual(ascending));
     expect(
       screen.getByRole("columnheader", { name: /columnUsage/ }),
     ).toHaveAttribute("aria-sort", "descending");
@@ -238,30 +249,27 @@ describe("InterviewQuestionManagementView row selection", () => {
         name: "delete",
       }),
     );
-    expect(toasts.result.current.at(-1)?.message).toMatch(
-      /^toast\.bulkDeleted/,
+    await waitFor(() =>
+      expect(toasts.result.current.at(-1)?.message).toMatch(
+        /^toast\.bulkDeleted/,
+      ),
     );
     expect(screen.queryByRole("region")).toBeNull();
   });
 
-  it("warns when the filter hides some selected rows", async () => {
+  it("clears the selection when the filter changes", async () => {
     await renderLoaded(
       <InterviewQuestionManagementView basePath="/admin/interview-questions" />,
     );
     fireEvent.click(
       screen.getAllByRole("checkbox", { name: /^selectRow/ })[0]!,
     );
+    expect(screen.getByRole("region")).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("searchLabel"), {
       target: { value: "zzzz-no-match" },
     });
-    // The bulk pop-up itself says how many selected rows the filter hides (F3).
-    expect(screen.getByRole("region")).toHaveAccessibleName(
-      /^selectionLabelHidden/,
-    );
-    fireEvent.click(screen.getByRole("button", { name: "bulk.delete" }));
-    expect(
-      within(screen.getByRole("dialog")).getByText(/^confirmBulkDeleteHidden/),
-    ).toBeInTheDocument();
+    // A filter change starts from an empty selection (DD SHR0301 BR-SC-01).
+    expect(screen.queryByRole("region")).toBeNull();
   });
 });
 

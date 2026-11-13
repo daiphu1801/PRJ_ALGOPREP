@@ -24,6 +24,7 @@ Bảng 0.2: Lịch sử sửa.
 | Ver | Mục | Nội dung | Ngày |
 | :--- | :--- | :--- | :--- |
 | V0.1 | Toàn bộ | Tạo mới từ prototype đã dựng và DD của F2, F3, F4, F5. Chốt cách nối mock sang endpoint thật, hợp đồng nối lại realtime ở mức màn, danh sách lệch cần chủ dự án quyết | 2026-10-23 |
+| V0.2 | BR-SC-09, P5 | Gỡ danh sách `notes` khỏi thẻ quick-insight (F5 #6 không có `notes`): `problem-detail-view.tsx`, kiểu `SolutionReviewQuickInsight`, mock bài 1 | 2026-11-12 |
 
 Bảng 0.3: Viết tắt nguồn trích dẫn dùng trong file này.
 
@@ -222,7 +223,7 @@ Mười khối dưới là những việc đi qua nhiều sự kiện hoặc kh�
   - "Phân tích bài giải" và "Phỏng vấn giả lập" hiện khi lượt nộp `ACCEPTED` **và** quick-insight không lỗi. Không có endpoint báo "AI đang khả dụng" nên lấy trạng thái quick-insight làm tín hiệu `[SoT: Suy luận]` (OQ-6); hết hạn mức AI do màn đích xử lý.
   - Liên kết trong tab Solution Review trỏ tới `review.submissionId` do F5 trả (báo cáo mới nhất), **không** tới lượt nộp mới nhất của lịch sử như bản dựng [SoT: F5:380; PV:513-528].
   - Màn này không tự kích hoạt F5 (hành động tự chọn ở màn đích, BD:809).
-- **Tab rút gọn:** chỉ hai chỉ số độ phức tạp và liên kết báo cáo đầy đủ; khối nhận xét ngắn trong BD cũ đã bỏ theo RD cập nhật `DEC-2026-1025-dd-workspace-quick-insight-trim`. Prototype còn in `notes` mock cần gỡ khi nối API.
+- **Tab rút gọn:** chỉ hai chỉ số độ phức tạp và liên kết báo cáo đầy đủ; khối nhận xét ngắn trong BD cũ đã bỏ theo RD cập nhật `DEC-2026-1025-dd-workspace-quick-insight-trim`. `notes` đã gỡ khỏi mã và kiểu `SolutionReviewQuickInsight` ngày 2026-11-12 (owner, ponytail bậc 2: F5 #6 không có trường này).
 
 ### BR-SC-10 Sao lưu và hoàn tác nháp trước khi áp dụng mã AI
 
@@ -318,7 +319,7 @@ Bảng 8.1: Lệch giữa prototype và thiết kế, cần làm khi nối thậ
 | P2 | Không STOMP, kết quả sau `setTimeout` | BR-SC-05, BR-SC-06 | PV:13-15, 341-378 |
 | P3 | `lang`, `model`, `tab` ở `useState` | Ghi URL bằng replace | PV:134-137; BD:388, 779 |
 | P4 | Khoá chỉ hai nút Run, Submit lúc `running`; ô soạn không `readOnly` | Khoá ba nhóm chọn và ô soạn (cần S1) | PV:834-841; BD:654 |
-| P5 | Tab Solution Review luôn hiện, in `notes` mock, liên kết theo lượt nộp mới nhất | Ẩn tab khi không có báo cáo; không có `notes`; liên kết theo `review.submissionId` | PV:486-533; BD:593; F5:380 |
+| P5 | Tab Solution Review luôn hiện, in `notes` mock (đã gỡ 2026-11-12), liên kết theo lượt nộp mới nhất | Ẩn tab khi không có báo cáo; không có `notes`; liên kết theo `review.submissionId` | PV:486-533; BD:593; F5:380 |
 | P6 | Nút Lưu bài chỉ đổi state | Gọi `ToggleMyProblemBookmark` lạc quan | PV:291-301 |
 | P7 | Nhãn "Cả hai mô hình khả dụng" ở tab Đề bài | Nhãn **mô hình đang chọn** (BD Khu vực D NO 4) và câu giải thích mô hình (NO 6) | PV:406-413; BD:490, 492 |
 | P8 | "Xem kết quả chấm" chỉ khi `Accepted` | Mọi trạng thái cuối | PV:780-801; BD:674 |
@@ -347,3 +348,14 @@ Bảng 8.2: Câu hỏi mở.
 | OQ-9 | Axios timeout của Run Code | 65 giây (hơn hạn 60 giây của máy chủ) | 5 |
 | OQ-10 | Dữ liệu vào của Sample ở mô hình Bọc hàm: BD muốn tách theo tham số, F2 chỉ trả `parameterNames` và chuỗi input chưa tách (F2:549) | Hiện nguyên chuỗi input trong một khối kèm dòng "Tham số: a, b, c"; không tự tách ở client | 2 |
 | OQ-11 | **Đã chốt 2026-10-24** (`DEC-2026-1024-dd-screens-users-core-contract-changes`): mọi route của học viên dùng `problemId` (UUID); `slug` chỉ để hiển thị | Đã chốt, BD `USR0201` Sheet 3 đã sửa (BD `USR0102` không có route slug) | 4 |
+
+## Nối API thật (F2-6 phần 2, 2026-11-06)
+
+Bảng dưới liệt kê endpoint màn tiêu thụ và hiện trạng; hợp đồng chỉ định nghĩa ở `03-dd/api/F2_problem-bank.md`.
+
+| Endpoint | Hiện trạng |
+| :--- | :--- |
+| `#11` | `useSetBookmark` (`entities/problem/api/saved-queries.ts`, `real-bookmarks.ts` `realSetBookmarked`); toast sau khi máy chủ trả lời; `PRB-010` giữ nguyên trạng thái nút |
+| `#5`, `#6`, `#7` | Đã nối bởi lát F3/F4 (`fetchWorkspaceProblem`) |
+
+Test đường thật: `views/users/problem-detail/ui/problem-detail-real.test.tsx` (lưu, bỏ lưu, `PRB-010`); `real-bookmarks.test.ts` (`#11`).

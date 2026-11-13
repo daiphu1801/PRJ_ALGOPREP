@@ -20,17 +20,20 @@
 "use client";
 
 import { UserMinus } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   initialsOfClassStudent,
-  useClassStudents,
+  type ClassStudent,
   useInstructorClasses,
+  useInstructorStudentPage,
   useRemoveStudent,
   STUDENT_STATUS_VARIANT,
 } from "@/entities/class";
+import { isMockMode } from "@/shared/api";
 import { useT } from "@/shared/i18n";
+import { useDebounced } from "@/shared/lib/use-debounced";
 import { toast } from "@/shared/lib/toast-store";
 import {
   Badge,
@@ -104,28 +107,24 @@ export function ClassProgressView() {
     setUrlParams({ page: value > 1 ? String(value) : null });
   const [removeTarget, setRemoveTarget] = useState<{
     id: string;
+    classId: string;
     name: string;
   } | null>(null);
   const removeStudent = useRemoveStudent();
 
   const filterClassId = classTab === "all" ? undefined : classTab;
-  const studentsQuery = useClassStudents(filterClassId);
+  // The server searches and pages (F1 #59); the real search waits for a pause in typing.
+  const debouncedQuery = useDebounced(query);
+  const studentsQuery = useInstructorStudentPage({
+    classId: filterClassId,
+    q: (isMockMode() ? query : debouncedQuery).trim(),
+    page,
+    pageSize: PAGE_SIZE,
+  });
+  const pageRows = studentsQuery.data?.rows ?? [];
+  const totalRows = studentsQuery.data?.total ?? 0;
 
-  const filteredStudents = useMemo(() => {
-    const needle = query.trim().toLowerCase();
-    return (studentsQuery.data ?? []).filter(
-      (s) => !needle || s.name.toLowerCase().includes(needle),
-    );
-  }, [studentsQuery.data, query]);
-
-  const pageRows = filteredStudents.slice(
-    (page - 1) * PAGE_SIZE,
-    page * PAGE_SIZE,
-  );
-
-  const columns: DataTableColumn<
-    NonNullable<typeof studentsQuery.data>[number]
-  >[] = [
+  const columns: DataTableColumn<ClassStudent>[] = [
     {
       key: "name",
       header: t("studentList.col.studentName"),
@@ -200,7 +199,13 @@ export function ClassProgressView() {
           label={t("btnRemoveStudent")}
           ariaLabel={`${t("btnRemoveStudent")} ${row.name}`}
           tone="danger"
-          onClick={() => setRemoveTarget({ id: row.id, name: row.name })}
+          onClick={() =>
+            setRemoveTarget({
+              id: row.id,
+              classId: row.classId,
+              name: row.name,
+            })
+          }
         />
       ),
     },
@@ -242,8 +247,8 @@ export function ClassProgressView() {
           />
           <span className="ml-auto text-[12.5px] text-[var(--color-text-muted)]">
             {t("studentList.resultCount", {
-              shown: filteredStudents.length,
-              total: studentsQuery.data?.length ?? 0,
+              shown: pageRows.length,
+              total: totalRows,
             })}
           </span>
         </div>
@@ -252,7 +257,7 @@ export function ClassProgressView() {
           caption={t("header.title")}
           columns={columns}
           rows={pageRows}
-          rowKey={(row) => row.id}
+          rowKey={(row) => `${row.classId}:${row.id}`}
           status={
             studentsQuery.isLoading
               ? "loading"
@@ -267,11 +272,11 @@ export function ClassProgressView() {
         <Pagination
           page={page}
           pageSize={PAGE_SIZE}
-          total={filteredStudents.length}
+          total={totalRows}
           onPageChange={setPage}
           summary={t("pageSummary", {
             page,
-            total: Math.max(1, Math.ceil(filteredStudents.length / PAGE_SIZE)),
+            total: Math.max(1, Math.ceil(totalRows / PAGE_SIZE)),
           })}
           previousLabel={t("previous")}
           nextLabel={t("next")}
@@ -284,10 +289,13 @@ export function ClassProgressView() {
         onConfirm={() => {
           if (removeTarget) {
             const name = removeTarget.name;
-            removeStudent.mutate(removeTarget.id, {
-              onSuccess: () => toast.success(t("toast.removed", { name })),
-              onError: () => toast.error(t("toast.failed")),
-            });
+            removeStudent.mutate(
+              { classId: removeTarget.classId, studentId: removeTarget.id },
+              {
+                onSuccess: () => toast.success(t("toast.removed", { name })),
+                onError: () => toast.error(t("toast.failed")),
+              },
+            );
           }
           setRemoveTarget(null);
         }}
