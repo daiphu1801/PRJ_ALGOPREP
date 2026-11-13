@@ -17,27 +17,27 @@
         "role": "actor"
       },
       {
-        "name": "MockInterviewController",
+        "name": "InterviewSessionController",
         "role": "controller",
-        "stereo": "presentation"
+        "stereo": "presentation REST"
       },
       {
-        "name": "StartInterviewCommandHandler",
+        "name": "OpenInterviewSessionCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "SubmissionPort",
+        "name": "SubmissionSnapshotPort",
         "role": "repository",
         "stereo": "cổng F4"
       },
       {
-        "name": "ProblemPort",
+        "name": "ProblemContextPort",
         "role": "repository",
         "stereo": "cổng F2"
       },
       {
-        "name": "AiBudgetPort",
+        "name": "AiCostGatePort",
         "role": "repository",
         "stereo": "output port F5"
       },
@@ -52,11 +52,6 @@
         "stereo": "schema ai"
       },
       {
-        "name": "AiLimitPort",
-        "role": "repository",
-        "stereo": "output port"
-      },
-      {
         "name": "Redis",
         "role": "datastore",
         "stereo": "giới hạn theo giờ"
@@ -68,12 +63,12 @@
       },
       {
         "from": "Sinh viên",
-        "to": "MockInterviewController",
+        "to": "InterviewSessionController",
         "text": "Chọn bài đã đạt, câu hỏi hoặc chủ đề"
       },
       {
-        "from": "MockInterviewController",
-        "to": "StartInterviewCommandHandler",
+        "from": "InterviewSessionController",
+        "to": "OpenInterviewSessionCommandHandler",
         "text": "Yêu cầu mở phiên"
       },
       {
@@ -81,37 +76,37 @@
           "label": "Từ bài nộp đã đạt?",
           "then": [
             {
-              "from": "StartInterviewCommandHandler",
-              "to": "SubmissionPort",
+              "from": "OpenInterviewSessionCommandHandler",
+              "to": "SubmissionSnapshotPort",
               "text": "Kiểm bài đã đạt và đúng chủ"
             },
             {
-              "from": "SubmissionPort",
-              "to": "StartInterviewCommandHandler",
+              "from": "SubmissionSnapshotPort",
+              "to": "OpenInterviewSessionCommandHandler",
               "text": "Bản chụp bài nộp",
               "kind": "return"
             },
             {
-              "from": "StartInterviewCommandHandler",
-              "to": "ProblemPort",
+              "from": "OpenInterviewSessionCommandHandler",
+              "to": "ProblemContextPort",
               "text": "Lấy ngữ cảnh bài toán"
             },
             {
-              "from": "ProblemPort",
-              "to": "StartInterviewCommandHandler",
+              "from": "ProblemContextPort",
+              "to": "OpenInterviewSessionCommandHandler",
               "text": "Đề bài và chỉ dẫn theo bài",
               "kind": "return"
             }
           ],
           "else": [
             {
-              "from": "StartInterviewCommandHandler",
-              "to": "StartInterviewCommandHandler",
+              "from": "OpenInterviewSessionCommandHandler",
+              "to": "OpenInterviewSessionCommandHandler",
               "text": "Dùng câu hỏi hoặc chủ đề người học chọn"
             },
             {
-              "from": "StartInterviewCommandHandler",
-              "to": "StartInterviewCommandHandler",
+              "from": "OpenInterviewSessionCommandHandler",
+              "to": "OpenInterviewSessionCommandHandler",
               "text": "Giữ mức phỏng vấn, số lượt, quyền gợi ý"
             }
           ]
@@ -121,12 +116,12 @@
         "phase": "Giai đoạn 2 - Chặn phiên mới khi hết ngân sách hoặc vượt hạn mức"
       },
       {
-        "from": "StartInterviewCommandHandler",
-        "to": "AiBudgetPort",
+        "from": "OpenInterviewSessionCommandHandler",
+        "to": "AiCostGatePort",
         "text": "Kiểm ngân sách cho phiên mới"
       },
       {
-        "from": "AiBudgetPort",
+        "from": "AiCostGatePort",
         "to": "JdbcInterviewSessionRepository",
         "text": "Tính mức token trong chu kỳ"
       },
@@ -143,35 +138,35 @@
       },
       {
         "from": "JdbcInterviewSessionRepository",
-        "to": "AiBudgetPort",
+        "to": "AiCostGatePort",
         "text": "Kết quả kiểm",
         "kind": "return"
       },
       {
-        "from": "AiBudgetPort",
-        "to": "StartInterviewCommandHandler",
+        "from": "AiCostGatePort",
+        "to": "OpenInterviewSessionCommandHandler",
         "text": "Cho phép hoặc từ chối",
         "kind": "return"
       },
       {
-        "from": "StartInterviewCommandHandler",
-        "to": "AiLimitPort",
+        "from": "OpenInterviewSessionCommandHandler",
+        "to": "AiCostGatePort",
         "text": "Kiểm thời gian chờ và số phiên trong giờ"
       },
       {
-        "from": "AiLimitPort",
+        "from": "AiCostGatePort",
         "to": "Redis",
         "text": "Giữ lượt mở phiên"
       },
       {
         "from": "Redis",
-        "to": "AiLimitPort",
+        "to": "AiCostGatePort",
         "text": "Cho phép hoặc vượt giới hạn",
         "kind": "return"
       },
       {
-        "from": "AiLimitPort",
-        "to": "StartInterviewCommandHandler",
+        "from": "AiCostGatePort",
+        "to": "OpenInterviewSessionCommandHandler",
         "text": "Tiếp tục ở trang 1b hoặc từ chối",
         "kind": "return"
       }

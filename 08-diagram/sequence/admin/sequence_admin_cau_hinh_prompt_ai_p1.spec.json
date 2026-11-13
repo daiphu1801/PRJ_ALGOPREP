@@ -24,9 +24,9 @@
         "stereo": "application query"
       },
       {
-        "name": "AiPromptTemplateRepository",
+        "name": "PromptTemplateRepository",
         "role": "repository",
-        "stereo": "output port"
+        "stereo": "domain output port"
       },
       {
         "name": "JdbcAiPromptTemplateRepository",
@@ -55,11 +55,11 @@
       },
       {
         "from": "ListPromptTemplatesQueryHandler",
-        "to": "AiPromptTemplateRepository",
+        "to": "PromptTemplateRepository",
         "text": "Đọc chỉ thị của ba tính năng"
       },
       {
-        "from": "AiPromptTemplateRepository",
+        "from": "PromptTemplateRepository",
         "to": "JdbcAiPromptTemplateRepository",
         "text": "Tìm phiên bản đang chạy và bản nháp"
       },
@@ -76,12 +76,12 @@
       },
       {
         "from": "JdbcAiPromptTemplateRepository",
-        "to": "AiPromptTemplateRepository",
+        "to": "PromptTemplateRepository",
         "text": "Các phiên bản hiện có",
         "kind": "return"
       },
       {
-        "from": "AiPromptTemplateRepository",
+        "from": "PromptTemplateRepository",
         "to": "ListPromptTemplatesQueryHandler",
         "text": "Các phiên bản hiện có",
         "kind": "return"

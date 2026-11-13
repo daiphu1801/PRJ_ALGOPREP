@@ -24,9 +24,9 @@
         "stereo": "application command"
       },
       {
-        "name": "AiPromptTemplateRepository",
+        "name": "PromptTemplateRepository",
         "role": "repository",
-        "stereo": "output port"
+        "stereo": "domain output port"
       },
       {
         "name": "JdbcAiPromptTemplateRepository",
@@ -60,11 +60,11 @@
       },
       {
         "from": "PublishPromptTemplateCommandHandler",
-        "to": "AiPromptTemplateRepository",
+        "to": "PromptTemplateRepository",
         "text": "Khóa bản đang chạy và đọc bản nháp"
       },
       {
-        "from": "AiPromptTemplateRepository",
+        "from": "PromptTemplateRepository",
         "to": "JdbcAiPromptTemplateRepository",
         "text": "Đọc phiên bản của các tính năng đã chọn"
       },
@@ -81,12 +81,12 @@
       },
       {
         "from": "JdbcAiPromptTemplateRepository",
-        "to": "AiPromptTemplateRepository",
+        "to": "PromptTemplateRepository",
         "text": "Bản đang chạy và bản nháp",
         "kind": "return"
       },
       {
-        "from": "AiPromptTemplateRepository",
+        "from": "PromptTemplateRepository",
         "to": "PublishPromptTemplateCommandHandler",
         "text": "Bản đang chạy và bản nháp",
         "kind": "return"
@@ -97,11 +97,11 @@
           "then": [
             {
               "from": "PublishPromptTemplateCommandHandler",
-              "to": "AiPromptTemplateRepository",
+              "to": "PromptTemplateRepository",
               "text": "Lưu bản mới đang chạy và lưu trữ bản cũ"
             },
             {
-              "from": "AiPromptTemplateRepository",
+              "from": "PromptTemplateRepository",
               "to": "JdbcAiPromptTemplateRepository",
               "text": "Đổi phiên bản trong một giao dịch"
             },

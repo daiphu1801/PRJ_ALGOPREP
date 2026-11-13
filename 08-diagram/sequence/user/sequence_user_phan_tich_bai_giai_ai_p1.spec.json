@@ -20,12 +20,12 @@
         "stereo": "presentation"
       },
       {
-        "name": "AnalyzeAcceptedSubmissionCommandHandler",
+        "name": "GetOrCreateSolutionReviewCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "AcceptedSubmissionReadPort",
+        "name": "SubmissionSnapshotPort",
         "role": "repository",
         "stereo": "cổng F4"
       },
@@ -61,38 +61,38 @@
       },
       {
         "from": "SolutionReviewController",
-        "to": "AnalyzeAcceptedSubmissionCommandHandler",
+        "to": "GetOrCreateSolutionReviewCommandHandler",
         "text": "Kiểm bài và tạo báo cáo"
       },
       {
-        "from": "AnalyzeAcceptedSubmissionCommandHandler",
-        "to": "AcceptedSubmissionReadPort",
+        "from": "GetOrCreateSolutionReviewCommandHandler",
+        "to": "SubmissionSnapshotPort",
         "text": "Lấy bản chụp bài đã đạt"
       },
       {
-        "from": "AcceptedSubmissionReadPort",
+        "from": "SubmissionSnapshotPort",
         "to": "JudgeBridge",
         "text": "Hỏi phần chấm bài"
       },
       {
         "from": "JudgeBridge",
-        "to": "AcceptedSubmissionReadPort",
+        "to": "SubmissionSnapshotPort",
         "text": "Bài đã đạt hoặc từ chối",
         "kind": "return"
       },
       {
-        "from": "AcceptedSubmissionReadPort",
-        "to": "AnalyzeAcceptedSubmissionCommandHandler",
+        "from": "SubmissionSnapshotPort",
+        "to": "GetOrCreateSolutionReviewCommandHandler",
         "text": "Mã nguồn và chủ bài nộp",
         "kind": "return"
       },
       {
-        "from": "AnalyzeAcceptedSubmissionCommandHandler",
-        "to": "AnalyzeAcceptedSubmissionCommandHandler",
+        "from": "GetOrCreateSolutionReviewCommandHandler",
+        "to": "GetOrCreateSolutionReviewCommandHandler",
         "text": "Kiểm người yêu cầu là chủ bài"
       },
       {
-        "from": "AnalyzeAcceptedSubmissionCommandHandler",
+        "from": "GetOrCreateSolutionReviewCommandHandler",
         "to": "SolutionReviewRepository",
         "text": "Tìm báo cáo của bài nộp"
       },
@@ -120,7 +120,7 @@
       },
       {
         "from": "SolutionReviewRepository",
-        "to": "AnalyzeAcceptedSubmissionCommandHandler",
+        "to": "GetOrCreateSolutionReviewCommandHandler",
         "text": "Báo cáo hoặc chưa có",
         "kind": "return"
       },
@@ -129,7 +129,7 @@
           "label": "Đã có báo cáo?",
           "then": [
             {
-              "from": "AnalyzeAcceptedSubmissionCommandHandler",
+              "from": "GetOrCreateSolutionReviewCommandHandler",
               "to": "SolutionReviewController",
               "text": "Trả báo cáo cũ, không gọi AI",
               "kind": "return"
@@ -143,17 +143,17 @@
           ],
           "else": [
             {
-              "from": "AnalyzeAcceptedSubmissionCommandHandler",
-              "to": "AnalyzeAcceptedSubmissionCommandHandler",
+              "from": "GetOrCreateSolutionReviewCommandHandler",
+              "to": "GetOrCreateSolutionReviewCommandHandler",
               "text": "Giữ quyền tạo một báo cáo cho bài"
             },
             {
-              "from": "AnalyzeAcceptedSubmissionCommandHandler",
-              "to": "AnalyzeAcceptedSubmissionCommandHandler",
+              "from": "GetOrCreateSolutionReviewCommandHandler",
+              "to": "GetOrCreateSolutionReviewCommandHandler",
               "text": "Chuẩn hoá mã và tạo dấu vân tay"
             },
             {
-              "from": "AnalyzeAcceptedSubmissionCommandHandler",
+              "from": "GetOrCreateSolutionReviewCommandHandler",
               "to": "SolutionReviewRepository",
               "text": "Tìm bản phân tích dùng lại"
             },
@@ -181,7 +181,7 @@
             },
             {
               "from": "SolutionReviewRepository",
-              "to": "AnalyzeAcceptedSubmissionCommandHandler",
+              "to": "GetOrCreateSolutionReviewCommandHandler",
               "text": "Tiếp tục ở trang 2",
               "kind": "return"
             }

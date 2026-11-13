@@ -70,7 +70,6 @@ export {
   useGenerateTestcases,
   useProblemDetail,
   useProblemDraft,
-  useProblemListPage,
   usePublishProblem,
   useRunSampleTestcases,
   useSaveProblemDraft,

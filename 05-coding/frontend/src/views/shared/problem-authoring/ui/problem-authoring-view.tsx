@@ -16,7 +16,17 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { ArrowLeft, ArrowUp, ArrowDown, Play, Check, Eye, Pencil, Trash2, X } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowUp,
+  ArrowDown,
+  Play,
+  Check,
+  Eye,
+  Pencil,
+  Trash2,
+  X,
+} from "lucide-react";
 import {
   AI_GUARD_KEYS,
   TESTCASE_CATEGORIES,
@@ -582,7 +592,8 @@ function ProblemAuthoringForm({
     // and its PRB-030 names the item if it is still missing.
     const clientBlocking = server
       ? blocking.filter(
-          (item) => item.key !== "solutionPasses" && item.key !== "specDeclared",
+          (item) =>
+            item.key !== "solutionPasses" && item.key !== "specDeclared",
         )
       : blocking;
     if (clientBlocking.length > 0) {
@@ -613,19 +624,28 @@ function ProblemAuthoringForm({
       if (running) return;
       setRunning(true);
       try {
-        const run = await realRunReferenceSolution(id, {
-          language: draft.solutionLanguage,
-          sourceCode: draft.solution,
-        }, testcaseId);
+        const run = await realRunReferenceSolution(
+          id,
+          {
+            language: draft.solutionLanguage,
+            sourceCode: draft.solution,
+          },
+          testcaseId,
+        );
         if (run.compileError !== null) {
           toast.error(t("runCompileError"));
         } else if (run.total === 0) {
           toast.warning(t("runBlocked.noTestcase"));
         } else {
-          if (!testcaseId) setDraft((previous) => ({
-            ...previous,
-            solutionCheck: { ran: true, passed: run.passed, total: run.total },
-          }));
+          if (!testcaseId)
+            setDraft((previous) => ({
+              ...previous,
+              solutionCheck: {
+                ran: true,
+                passed: run.passed,
+                total: run.total,
+              },
+            }));
           if (run.allPass) {
             toast.success(
               t("runResultBody", { passed: run.passed, total: run.total }),
@@ -651,12 +671,15 @@ function ProblemAuthoringForm({
       }
       return;
     }
-    const total = draft.testcases.filter((row) => testcaseId ? row.id === testcaseId : row.approved).length;
+    const total = draft.testcases.filter((row) =>
+      testcaseId ? row.id === testcaseId : row.approved,
+    ).length;
     const passed = total;
-    if (!testcaseId) setDraft((previous) => ({
-      ...previous,
-      solutionCheck: { ran: true, passed, total },
-    }));
+    if (!testcaseId)
+      setDraft((previous) => ({
+        ...previous,
+        solutionCheck: { ran: true, passed, total },
+      }));
     // The run result is an operation result, so it is a toast; a failing run is a warning.
     (passed === total ? toast.success : toast.warning)(
       t("runResultBody", { passed, total }),
@@ -666,7 +689,10 @@ function ProblemAuthoringForm({
   // F2-14: the server generates from the saved problem and persists unapproved rows.
   // Merge by testcase ID because large testcase content is stored outside the response.
   async function generateTestcases() {
-    if (server && (!id || dirty)) { toast.warning(t("generateNeedsSave")); return; }
+    if (server && (!id || dirty)) {
+      toast.warning(t("generateNeedsSave"));
+      return;
+    }
     if (!canGenerate) {
       toast.warning(t("generateLockedBody", { samples: seedSamples }));
       return;
@@ -693,11 +719,28 @@ function ProblemAuthoringForm({
         constraints: draft.constraints,
         samples,
       });
-      const known = new Set(draft.testcases.map((row) => server ? row.id : row.input));
-      const fresh = result.testcases.filter((row) => !known.has(server ? row.id : row.input));
+      const known = new Set(
+        draft.testcases.map((row) => (server ? row.id : row.input)),
+      );
+      const fresh = result.testcases.filter(
+        (row) => !known.has(server ? row.id : row.input),
+      );
       if (result.aiGeneration) setAiGeneration(result.aiGeneration);
-      if (result.problemUpdatedAt) { lock.current = result.problemUpdatedAt; setSavedAt(result.problemUpdatedAt); }
-      if (server && fresh.length > 0) setSaved(previous => previous ? {...previous, testcases: [...previous.testcases, ...fresh]} : previous);
+      else if (!server)
+        setAiGeneration((previous) => ({
+          ...previous,
+          used: previous.used + 1,
+        }));
+      if (result.problemUpdatedAt) {
+        lock.current = result.problemUpdatedAt;
+        setSavedAt(result.problemUpdatedAt);
+      }
+      if (server && fresh.length > 0)
+        setSaved((previous) =>
+          previous
+            ? { ...previous, testcases: [...previous.testcases, ...fresh] }
+            : previous,
+        );
       const skipped = result.testcases.length - fresh.length;
       if (fresh.length > 0) {
         setDraft((previous) => ({
@@ -725,13 +768,18 @@ function ProblemAuthoringForm({
     } catch (error) {
       if (
         error instanceof ApiError &&
-        (error.code === "AI_GENERATION_LIMIT_REACHED" || error.code === "PRB-042")
+        (error.code === "AI_GENERATION_LIMIT_REACHED" ||
+          error.code === "PRB-042")
       ) {
         toast.warning(
           t("toast.generateLimitReached", { limit: aiGeneration.limit }),
         );
       } else {
-        toast.error(error instanceof ApiError ? apiMessage(error) : t("toast.generateFailed"));
+        toast.error(
+          server && error instanceof ApiError
+            ? apiMessage(error)
+            : t("toast.generateFailed"),
+        );
       }
     }
   }
@@ -766,8 +814,14 @@ function ProblemAuthoringForm({
   const specDone =
     server !== undefined && specSaved && serverSpecDeclared !== null
       ? serverSpecDeclared
-      : server !== undefined && !draft.spec.signature.functionName.trim() && draft.spec.signature.parameters.length === 0
-        ? Boolean(draft.spec.stdinFormat.trim() && draft.spec.stdoutFormat.trim() && matchingValid(draft.spec))
+      : server !== undefined &&
+          !draft.spec.signature.functionName.trim() &&
+          draft.spec.signature.parameters.length === 0
+        ? Boolean(
+            draft.spec.stdinFormat.trim() &&
+            draft.spec.stdoutFormat.trim() &&
+            matchingValid(draft.spec),
+          )
         : isSpecComplete(draft.spec);
   const checklist = [
     { key: "minTestcases", done: approved.length >= 8, tab: "testcases" },
@@ -818,25 +872,51 @@ function ProblemAuthoringForm({
 
   async function editTestcase(row: Testcase) {
     if (readOnly || testcaseAction.current) return;
-    if (!liveId || !row.largeSides?.length) { setTestcaseDialog(row); return; }
-    testcaseAction.current = true; setTestcaseBusy(true);
-    try { setTestcaseDialog(await realReadTestcaseContent(liveId, row.id)); }
-    catch (error) { toast.error(apiMessage(error)); }
-    finally { testcaseAction.current = false; setTestcaseBusy(false); }
+    if (!liveId || !row.largeSides?.length) {
+      setTestcaseDialog(row);
+      return;
+    }
+    testcaseAction.current = true;
+    setTestcaseBusy(true);
+    try {
+      setTestcaseDialog(await realReadTestcaseContent(liveId, row.id));
+    } catch (error) {
+      toast.error(apiMessage(error));
+    } finally {
+      testcaseAction.current = false;
+      setTestcaseBusy(false);
+    }
   }
   async function reorderTestcase(rowId: string, targetIndex: number) {
     if (readOnly || testcaseAction.current || running) return;
-    const from = draft.testcases.findIndex(row => row.id === rowId);
-    if (from < 0 || targetIndex < 0 || targetIndex >= draft.testcases.length || from === targetIndex) return;
+    const from = draft.testcases.findIndex((row) => row.id === rowId);
+    if (
+      from < 0 ||
+      targetIndex < 0 ||
+      targetIndex >= draft.testcases.length ||
+      from === targetIndex
+    )
+      return;
     const next = [...draft.testcases];
     next.splice(targetIndex, 0, next.splice(from, 1)[0]!);
-    testcaseAction.current = true; setTestcaseBusy(true);
+    testcaseAction.current = true;
+    setTestcaseBusy(true);
     try {
-      if (liveId) lock.current = (await realReorderTestcases(liveId, next.map(row => row.id))).updatedAt;
+      if (liveId)
+        lock.current = (
+          await realReorderTestcases(
+            liveId,
+            next.map((row) => row.id),
+          )
+        ).updatedAt;
       if (liveId) commitTestcases(() => next);
-      else patch({testcases: next, solutionCheck: STALE_CHECK});
-    } catch (error) { toast.error(apiMessage(error)); }
-    finally { testcaseAction.current = false; setTestcaseBusy(false); }
+      else patch({ testcases: next, solutionCheck: STALE_CHECK });
+    } catch (error) {
+      toast.error(apiMessage(error));
+    } finally {
+      testcaseAction.current = false;
+      setTestcaseBusy(false);
+    }
   }
   const testcaseColumns: DataTableColumn<Testcase>[] = [
     {
@@ -844,12 +924,27 @@ function ProblemAuthoringForm({
       header: "#",
       width: "40px",
       render: (row) => (
-        <span className="font-mono text-[11.5px] text-[var(--color-text-subtle)]"
-          draggable={!readOnly && !testcaseBusy && !running} title={t("reorderHint")}
-          onDragStart={() => { draggedTestcase.current = row.id; }}
-          onDragEnd={() => { draggedTestcase.current = null; }}
-          onDragOver={event => event.preventDefault()}
-          onDrop={event => { event.preventDefault(); if (draggedTestcase.current) void reorderTestcase(draggedTestcase.current, draft.testcases.indexOf(row)); draggedTestcase.current = null; }}>
+        <span
+          className="font-mono text-[11.5px] text-[var(--color-text-subtle)]"
+          draggable={!readOnly && !testcaseBusy && !running}
+          title={t("reorderHint")}
+          onDragStart={() => {
+            draggedTestcase.current = row.id;
+          }}
+          onDragEnd={() => {
+            draggedTestcase.current = null;
+          }}
+          onDragOver={(event) => event.preventDefault()}
+          onDrop={(event) => {
+            event.preventDefault();
+            if (draggedTestcase.current)
+              void reorderTestcase(
+                draggedTestcase.current,
+                draft.testcases.indexOf(row),
+              );
+            draggedTestcase.current = null;
+          }}
+        >
           {draft.testcases.indexOf(row) + 1}
         </span>
       ),
@@ -899,12 +994,38 @@ function ProblemAuthoringForm({
       align: "right",
       render: (row) => (
         <div className="flex justify-end gap-1">
-          <IconAction icon={ArrowUp} label={t("moveUp")} disabled={readOnly || testcaseBusy || running || draft.testcases.indexOf(row) === 0}
-            onClick={() => reorderTestcase(row.id, draft.testcases.indexOf(row) - 1)} />
-          <IconAction icon={ArrowDown} label={t("moveDown")} disabled={readOnly || testcaseBusy || running || draft.testcases.indexOf(row) === draft.testcases.length - 1}
-            onClick={() => reorderTestcase(row.id, draft.testcases.indexOf(row) + 1)} />
-          <IconAction icon={Play} label={t("runOne")} disabled={readOnly || testcaseBusy || running}
-            onClick={() => runSolution(row.id)} />
+          <IconAction
+            icon={ArrowUp}
+            label={t("moveUp")}
+            disabled={
+              readOnly ||
+              testcaseBusy ||
+              running ||
+              draft.testcases.indexOf(row) === 0
+            }
+            onClick={() =>
+              reorderTestcase(row.id, draft.testcases.indexOf(row) - 1)
+            }
+          />
+          <IconAction
+            icon={ArrowDown}
+            label={t("moveDown")}
+            disabled={
+              readOnly ||
+              testcaseBusy ||
+              running ||
+              draft.testcases.indexOf(row) === draft.testcases.length - 1
+            }
+            onClick={() =>
+              reorderTestcase(row.id, draft.testcases.indexOf(row) + 1)
+            }
+          />
+          <IconAction
+            icon={Play}
+            label={t("runOne")}
+            disabled={readOnly || testcaseBusy || running}
+            onClick={() => runSolution(row.id)}
+          />
           <IconAction
             icon={Pencil}
             label={t("edit")}
@@ -949,7 +1070,14 @@ function ProblemAuthoringForm({
             <Button
               variant="primary"
               size="sm"
-              disabled={!dirty || saving || readOnly}
+              disabled={
+                !dirty ||
+                saving ||
+                running ||
+                generate.isPending ||
+                testcaseBusy ||
+                readOnly
+              }
               onClick={save}
             >
               {t("save")}
@@ -957,7 +1085,13 @@ function ProblemAuthoringForm({
             <Button
               variant="cta"
               size="sm"
-              disabled={saving || readOnly}
+              disabled={
+                saving ||
+                running ||
+                generate.isPending ||
+                testcaseBusy ||
+                readOnly
+              }
               aria-disabled={blocking.length > 0 || undefined}
               onClick={publish}
             >
@@ -973,7 +1107,10 @@ function ProblemAuthoringForm({
         </div>
       ) : null}
 
-      <fieldset disabled={saving || running || generate.isPending || testcaseBusy} className="grid min-w-0 grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1fr)_300px]">
+      <fieldset
+        disabled={saving || running || generate.isPending || testcaseBusy}
+        className="grid min-w-0 grid-cols-1 items-start gap-4 2xl:grid-cols-[minmax(0,1fr)_300px]"
+      >
         <div className="flex min-w-0 flex-col gap-3.5">
           <Card className="px-1.5 py-1.5">
             <SegmentedTabs
@@ -997,491 +1134,529 @@ function ProblemAuthoringForm({
             />
           </Card>
 
-          {tab === "content" ? (
-            <>
-              <Card
-                title={t("statementTitle")}
-                description={t("statementSubtitle")}
-              >
-                <div className="flex flex-col gap-3">
-                  <TextField
-                    label={t("titleLabel")}
-                    value={draft.title}
-                    onChange={(event) => patch({ title: event.target.value })}
-                  />
-                  <TextArea
-                    label={t("bodyLabel")}
-                    rows={12}
-                    value={draft.body}
-                    onChange={(event) => patch({ body: event.target.value })}
-                    className="font-mono text-[12.5px] leading-relaxed"
-                  />
-                </div>
-              </Card>
-
-              <Card title={t("limitsTitle")} description={t("limitsSubtitle")}>
-                <div className="mb-4 grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(150px,1fr))]">
-                  {LIMIT_KEYS.map((key) => (
+          <fieldset
+            disabled={readOnly}
+            className="flex min-w-0 flex-col gap-3.5"
+          >
+            {tab === "content" ? (
+              <>
+                <Card
+                  title={t("statementTitle")}
+                  description={t("statementSubtitle")}
+                >
+                  <div className="flex flex-col gap-3">
                     <TextField
-                      key={key}
-                      label={t(`limit.${key}`)}
+                      label={t("titleLabel")}
+                      value={draft.title}
+                      onChange={(event) => patch({ title: event.target.value })}
+                    />
+                    <TextArea
+                      label={t("bodyLabel")}
+                      rows={12}
+                      value={draft.body}
+                      onChange={(event) => patch({ body: event.target.value })}
+                      className="font-mono text-[12.5px] leading-relaxed"
+                    />
+                  </div>
+                </Card>
+
+                <Card
+                  title={t("limitsTitle")}
+                  description={t("limitsSubtitle")}
+                >
+                  <div className="mb-4 grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(150px,1fr))]">
+                    {LIMIT_KEYS.map((key) => (
+                      <TextField
+                        key={key}
+                        label={t(`limit.${key}`)}
+                        type="number"
+                        min={1}
+                        value={draft.limits[key]}
+                        onChange={(event) =>
+                          patch({
+                            limits: {
+                              ...draft.limits,
+                              [key]: Number(event.target.value),
+                            },
+                          })
+                        }
+                        className="font-mono"
+                      />
+                    ))}
+                    <TextField
+                      label={t("limit.maxSubmissionsPerHour")}
                       type="number"
                       min={1}
-                      value={draft.limits[key]}
+                      placeholder={t("limit.systemDefault")}
+                      value={draft.limits.maxSubmissionsPerHour ?? ""}
                       onChange={(event) =>
                         patch({
                           limits: {
                             ...draft.limits,
-                            [key]: Number(event.target.value),
+                            maxSubmissionsPerHour:
+                              event.target.value === ""
+                                ? null
+                                : Number(event.target.value),
                           },
                         })
                       }
                       className="font-mono"
                     />
-                  ))}
-                  <TextField
-                    label={t("limit.maxSubmissionsPerHour")}
-                    type="number"
-                    min={1}
-                    placeholder={t("limit.systemDefault")}
-                    value={draft.limits.maxSubmissionsPerHour ?? ""}
+                  </div>
+                  <TextArea
+                    label={t("constraintsLabel")}
+                    rows={4}
+                    value={draft.constraints}
+                    onChange={(event) =>
+                      patch({ constraints: event.target.value })
+                    }
+                    className="font-mono text-[12.5px]"
+                  />
+                </Card>
+
+                <Card
+                  title={t("solutionTitle")}
+                  description={t("solutionSubtitle")}
+                >
+                  {/* BD SHR0202 NO9: the reference solution's language, one of the three judged ones. */}
+                  <SelectField
+                    label={t("solutionLanguageLabel")}
+                    value={draft.solutionLanguage}
                     onChange={(event) =>
                       patch({
-                        limits: {
-                          ...draft.limits,
-                          maxSubmissionsPerHour:
-                            event.target.value === ""
-                              ? null
-                              : Number(event.target.value),
-                        },
+                        solutionLanguage: event.target.value,
+                        solutionCheck: STALE_CHECK,
                       })
                     }
-                    className="font-mono"
+                    options={SOLUTION_LANGUAGES.map((language) => ({
+                      value: language,
+                      label: language,
+                    }))}
+                    wrapperClassName="mb-3 max-w-[220px]"
                   />
-                </div>
-                <TextArea
-                  label={t("constraintsLabel")}
-                  rows={4}
-                  value={draft.constraints}
-                  onChange={(event) =>
-                    patch({ constraints: event.target.value })
-                  }
-                  className="font-mono text-[12.5px]"
-                />
-              </Card>
-
-              <Card
-                title={t("solutionTitle")}
-                description={t("solutionSubtitle")}
-              >
-                {/* BD SHR0202 NO9: the reference solution's language, one of the three judged ones. */}
-                <SelectField
-                  label={t("solutionLanguageLabel")}
-                  value={draft.solutionLanguage}
-                  onChange={(event) =>
-                    patch({
-                      solutionLanguage: event.target.value,
-                      solutionCheck: STALE_CHECK,
-                    })
-                  }
-                  options={SOLUTION_LANGUAGES.map((language) => ({
-                    value: language,
-                    label: language,
-                  }))}
-                  wrapperClassName="mb-3 max-w-[220px]"
-                />
-                <TextArea
-                  label={t("solutionLabel", {
-                    language: draft.solutionLanguage,
-                  })}
-                  rows={14}
-                  value={draft.solution}
-                  onChange={(event) =>
-                    patch({
-                      solution: event.target.value,
-                      solutionCheck: STALE_CHECK,
-                    })
-                  }
-                  className="font-mono text-[12.5px] leading-relaxed"
-                />
-              </Card>
-            </>
-          ) : null}
-
-          {tab === "examples" ? (
-            <Card
-              title={t("examplesTitle")}
-              description={t("examplesSubtitle")}
-              action={
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={() => setExampleDialog("new")}
-                >
-                  {t("addExample")}
-                </Button>
-              }
-            >
-              {draft.examples.length === 0 ? (
-                <p className="text-[13px] text-[var(--color-text-muted)]">
-                  {t("emptyExamples")}
-                </p>
-              ) : null}
-              <div className="flex flex-col gap-2.5">
-                {draft.examples.map((example, index) => (
-                  <div
-                    key={example.id}
-                    className="glass-surface rounded-2xl border border-[var(--color-border)] px-3.5 py-3"
-                  >
-                    <div className="mb-2 flex items-center justify-between gap-2">
-                      <p className="text-[11px] font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
-                        {t("exampleIndex", { index: index + 1 })}
-                      </p>
-                      <div className="flex gap-1">
-                        <IconAction
-                          icon={Pencil}
-                          label={t("edit")}
-                          onClick={() => setExampleDialog(example)}
-                        />
-                        <IconAction
-                          icon={Trash2}
-                          label={t("delete")}
-                          tone="danger"
-                          onClick={() => requestDeleteExample(example)}
-                        />
-                      </div>
-                    </div>
-                    <dl className="flex flex-col gap-1.5 text-[12.5px]">
-                      <div className="flex gap-2">
-                        <dt className="w-20 shrink-0 text-[var(--color-text-subtle)]">
-                          {t("exampleInput")}
-                        </dt>
-                        <dd className="min-w-0 font-mono">{example.input}</dd>
-                      </div>
-                      <div className="flex gap-2">
-                        <dt className="w-20 shrink-0 text-[var(--color-text-subtle)]">
-                          {t("exampleOutput")}
-                        </dt>
-                        <dd className="min-w-0 font-mono">{example.output}</dd>
-                      </div>
-                      <div className="flex gap-2">
-                        <dt className="w-20 shrink-0 text-[var(--color-text-subtle)]">
-                          {t("exampleExplanation")}
-                        </dt>
-                        <dd className="min-w-0 text-pretty text-[var(--color-text-muted)]">
-                          {example.explanation}
-                        </dd>
-                      </div>
-                    </dl>
-                  </div>
-                ))}
-              </div>
-            </Card>
-          ) : null}
-
-          {tab === "testcases" ? (
-            <Card
-              title={t("testcasesTitle")}
-              description={t("testcasesSubtitle", {
-                total: draft.testcases.length,
-                publicCount: publicTestcases,
-              })}
-              className="min-w-0"
-              action={
-                <div className="flex gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="border border-[var(--color-border)]"
-                    aria-disabled={
-                      approved.length === 0 ||
-                      !draft.solution.trim() ||
-                      undefined
+                  <TextArea
+                    label={t("solutionLabel", {
+                      language: draft.solutionLanguage,
+                    })}
+                    rows={14}
+                    value={draft.solution}
+                    onChange={(event) =>
+                      patch({
+                        solution: event.target.value,
+                        solutionCheck: STALE_CHECK,
+                      })
                     }
-                    aria-busy={running || undefined}
-                    disabled={running}
-                    onClick={() => runSolution()}
-                  >
-                    {running ? t("running") : t("runSolution")}
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="border border-[var(--color-border)]"
-                    disabled={bulkNeedsSave || readOnly}
-                    title={bulkNeedsSave ? t("bulk.saveFirst") : undefined}
-                    onClick={() => setBulkOpen(true)}
-                  >
-                    {t("testcase.btnBulkUpload")}
-                  </Button>
+                    className="font-mono text-[12.5px] leading-relaxed"
+                  />
+                </Card>
+              </>
+            ) : null}
+
+            {tab === "examples" ? (
+              <Card
+                title={t("examplesTitle")}
+                description={t("examplesSubtitle")}
+                action={
                   <Button
                     variant="primary"
                     size="sm"
-                    onClick={() => setTestcaseDialog("new")}
+                    onClick={() => setExampleDialog("new")}
                   >
-                    {t("addTestcase")}
+                    {t("addExample")}
                   </Button>
-                </div>
-              }
-            >
-              {server?.willCopy && !id ? (
-                <div className="mb-3">
-                  <NoticeTile
-                    tone="info"
-                    title={t(
-                      server.willCopy.hasSpec
-                        ? "copyWillCopyWithSpec"
-                        : "copyWillCopy",
-                      { count: server.willCopy.testcaseCount },
-                    )}
-                  />
-                </div>
-              ) : null}
-              {testcasesHidden ? (
-                <div className="mb-3">
-                  <NoticeTile
-                    tone="info"
-                    title={t("testcasesHiddenNotice", {
-                      total: server.testcaseSummary.total,
-                    })}
-                  />
-                </div>
-              ) : null}
-              {/* F2-18: the run result is a toast; only the stale state stays on the page. */}
-              <div
-                className={draft.solutionCheck.ran ? undefined : "mb-3"}
-              ></div>
-              {/* No "Điểm" column and no weight block — PROTOTYPE_DEBT 2.6. The partial score that
-                  survived (F4-13) is an automatic pass ratio, not an author-declared weight. */}
-              <DataTable
-                caption={t("testcasesTitle")}
-                columns={testcaseColumns}
-                rows={draft.testcases}
-                rowKey={(row) => row.id}
-                emptyMessage={t("emptyTestcases")}
-                minWidth={720}
-              />
-            </Card>
-          ) : null}
-
-          {tab === "spec" ? (
-            <SpecEditor
-              spec={draft.spec}
-              onChange={(spec) => patch({ spec })}
-            />
-          ) : null}
-
-          {tab === "ai" ? (
-            <div className="flex flex-col gap-3.5">
-              <Card
-                title={t("generateTitle")}
-                description={t("generateSubtitle")}
+                }
               >
-                <div className="mt-3.5 flex flex-col gap-3">
-                  {/* No inline notice (owner, 2026-10-03): looks disabled while locked but stays
-                      clickable, and the click says why with a toast. */}
-                  <div className="flex flex-wrap items-center gap-3">
+                {draft.examples.length === 0 ? (
+                  <p className="text-[13px] text-[var(--color-text-muted)]">
+                    {t("emptyExamples")}
+                  </p>
+                ) : null}
+                <div className="flex flex-col gap-2.5">
+                  {draft.examples.map((example, index) => (
+                    <div
+                      key={example.id}
+                      className="glass-surface rounded-2xl border border-[var(--color-border)] px-3.5 py-3"
+                    >
+                      <div className="mb-2 flex items-center justify-between gap-2">
+                        <p className="text-[11px] font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
+                          {t("exampleIndex", { index: index + 1 })}
+                        </p>
+                        <div className="flex gap-1">
+                          <IconAction
+                            icon={Pencil}
+                            label={t("edit")}
+                            onClick={() => setExampleDialog(example)}
+                          />
+                          <IconAction
+                            icon={Trash2}
+                            label={t("delete")}
+                            tone="danger"
+                            onClick={() => requestDeleteExample(example)}
+                          />
+                        </div>
+                      </div>
+                      <dl className="flex flex-col gap-1.5 text-[12.5px]">
+                        <div className="flex gap-2">
+                          <dt className="w-20 shrink-0 text-[var(--color-text-subtle)]">
+                            {t("exampleInput")}
+                          </dt>
+                          <dd className="min-w-0 font-mono">{example.input}</dd>
+                        </div>
+                        <div className="flex gap-2">
+                          <dt className="w-20 shrink-0 text-[var(--color-text-subtle)]">
+                            {t("exampleOutput")}
+                          </dt>
+                          <dd className="min-w-0 font-mono">
+                            {example.output}
+                          </dd>
+                        </div>
+                        <div className="flex gap-2">
+                          <dt className="w-20 shrink-0 text-[var(--color-text-subtle)]">
+                            {t("exampleExplanation")}
+                          </dt>
+                          <dd className="min-w-0 text-pretty text-[var(--color-text-muted)]">
+                            {example.explanation}
+                          </dd>
+                        </div>
+                      </dl>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            ) : null}
+
+            {tab === "testcases" ? (
+              <Card
+                title={t("testcasesTitle")}
+                description={t("testcasesSubtitle", {
+                  total: testcaseCount,
+                  publicCount: testcasesHidden
+                    ? server.testcaseSummary.sample
+                    : publicTestcases,
+                })}
+                className="min-w-0"
+                action={
+                  <div className="flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="border border-[var(--color-border)]"
+                      aria-disabled={
+                        approved.length === 0 ||
+                        !draft.solution.trim() ||
+                        undefined
+                      }
+                      aria-busy={running || undefined}
+                      disabled={running}
+                      onClick={() => runSolution()}
+                    >
+                      {running ? t("running") : t("runSolution")}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="border border-[var(--color-border)]"
+                      disabled={bulkNeedsSave || readOnly}
+                      title={bulkNeedsSave ? t("bulk.saveFirst") : undefined}
+                      onClick={() => setBulkOpen(true)}
+                    >
+                      {t("testcase.btnBulkUpload")}
+                    </Button>
                     <Button
                       variant="primary"
-                      aria-disabled={
-                        !canGenerate || attemptsLeft <= 0 || undefined
-                      }
-                      aria-busy={generate.isPending || undefined}
-                      disabled={generate.isPending}
-                      onClick={generateTestcases}
+                      size="sm"
+                      onClick={() => setTestcaseDialog("new")}
                     >
-                      {generate.isPending
-                        ? t("generating")
-                        : t("generateAction")}
+                      {t("addTestcase")}
                     </Button>
-                    <span className="text-[12.5px] text-[var(--color-text-muted)]">
-                      {t("generateQuota", {
-                        left: attemptsLeft,
-                        limit: aiGeneration.limit,
-                      })}
-                    </span>
                   </div>
-                  {generate.isPending ? (
-                    <NoticeTile tone="info" title={t("generating")}>
-                      {t("generatingBody")}
-                    </NoticeTile>
-                  ) : null}
-                </div>
-              </Card>
-
-              <Card
-                title={t("coverageTitle")}
-                description={t("coverageSubtitle")}
+                }
               >
-                <div className="flex flex-wrap gap-2">
-                  {coverage.map((row) => (
-                    <Badge
-                      key={row.category}
-                      variant={row.approved > 0 ? "success" : "neutral"}
-                    >
-                      {t(`category.${row.category}`)}: {row.approved}/
-                      {row.total}
-                    </Badge>
-                  ))}
-                </div>
+                {server?.willCopy && !id ? (
+                  <div className="mb-3">
+                    <NoticeTile
+                      tone="info"
+                      title={t(
+                        server.willCopy.hasSpec
+                          ? "copyWillCopyWithSpec"
+                          : "copyWillCopy",
+                        { count: server.willCopy.testcaseCount },
+                      )}
+                    />
+                  </div>
+                ) : null}
+                {testcasesHidden ? (
+                  <div className="mb-3">
+                    <NoticeTile
+                      tone="info"
+                      title={t("testcasesHiddenNotice", {
+                        total: server.testcaseSummary.total,
+                      })}
+                    />
+                  </div>
+                ) : null}
+                {/* F2-18: the run result is a toast; only the stale state stays on the page. */}
+                <div
+                  className={draft.solutionCheck.ran ? undefined : "mb-3"}
+                ></div>
+                {/* No "Điểm" column and no weight block — PROTOTYPE_DEBT 2.6. The partial score that
+                  survived (F4-13) is an automatic pass ratio, not an author-declared weight. */}
+                {!testcasesHidden ? (
+                  <DataTable
+                    caption={t("testcasesTitle")}
+                    columns={testcaseColumns}
+                    rows={draft.testcases}
+                    rowKey={(row) => row.id}
+                    emptyMessage={t("emptyTestcases")}
+                    minWidth={720}
+                  />
+                ) : null}
               </Card>
+            ) : null}
 
-              <Card
-                title={t("draftsTitle")}
-                description={t("draftsSubtitle", { count: drafts.length })}
-              >
-                {drafts.length === 0 ? (
-                  <p className="text-[13px] text-[var(--text-muted)]">
-                    {t("draftsEmpty")}
-                  </p>
-                ) : (
-                  <ul className="flex flex-col gap-2.5">
-                    {drafts.map((row) => (
-                      <li
-                        key={row.id}
-                        className="flex flex-wrap items-center gap-2.5 rounded-lg border border-[var(--border)] p-2.5"
-                      >
-                        <Badge variant="neutral">
-                          {row.category
-                            ? t(`category.${row.category}`)
-                            : t("category.typical")}
-                        </Badge>
-                        <code className="flex-1 text-[12.5px]">
-                          {row.input}
-                        </code>
-                        <IconAction
-                          icon={Check}
-                          label={t("approveAction")}
-                          onClick={() => approveDraft(row.id)}
-                        />
-                        <IconAction
-                          icon={X}
-                          label={t("rejectAction")}
-                          tone="danger"
-                          onClick={() => rejectDraft(row.id)}
-                        />
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </Card>
+            {tab === "spec" ? (
+              <SpecEditor
+                spec={draft.spec}
+                onChange={(spec) => patch({ spec })}
+              />
+            ) : null}
 
-              <Card title={t("aiTitle")} description={t("aiSubtitle")}>
-                <TextArea
-                  label={t("aiBriefLabel")}
-                  rows={5}
-                  value={draft.aiBrief}
-                  onChange={(event) => patch({ aiBrief: event.target.value })}
-                  className="font-mono text-[12.5px]"
-                />
-                <div className="mt-3.5 flex flex-col gap-2.5">
-                  {AI_GUARD_KEYS.map((key: AiGuardKey) => (
-                    <SettingRow
-                      key={key}
-                      label={t(`aiGuard.${key}.label`)}
-                      description={t(`aiGuard.${key}.meta`)}
-                    >
-                      <Toggle
-                        checked={draft.aiGuards[key]}
-                        onCheckedChange={(value) =>
-                          patch({
-                            aiGuards: { ...draft.aiGuards, [key]: value },
-                          })
+            {tab === "ai" ? (
+              <div className="flex flex-col gap-3.5">
+                <Card
+                  title={t("generateTitle")}
+                  description={t("generateSubtitle")}
+                >
+                  <div className="mt-3.5 flex flex-col gap-3">
+                    {/* No inline notice (owner, 2026-10-03): looks disabled while locked but stays
+                      clickable, and the click says why with a toast. */}
+                    <div className="flex flex-wrap items-center gap-3">
+                      <Button
+                        variant="primary"
+                        aria-disabled={
+                          !canGenerate || attemptsLeft <= 0 || undefined
                         }
+                        aria-busy={generate.isPending || undefined}
+                        disabled={generate.isPending}
+                        onClick={generateTestcases}
+                      >
+                        {generate.isPending
+                          ? t("generating")
+                          : t("generateAction")}
+                      </Button>
+                      <span className="text-[12.5px] text-[var(--color-text-muted)]">
+                        {t("generateQuota", {
+                          left: attemptsLeft,
+                          limit: aiGeneration.limit,
+                        })}
+                      </span>
+                    </div>
+                    {generate.isPending ? (
+                      <NoticeTile tone="info" title={t("generating")}>
+                        {t("generatingBody")}
+                      </NoticeTile>
+                    ) : null}
+                  </div>
+                </Card>
+
+                <Card
+                  title={t("coverageTitle")}
+                  description={t("coverageSubtitle")}
+                >
+                  <div className="flex flex-wrap gap-2">
+                    {coverage.map((row) => (
+                      <Badge
+                        key={row.category}
+                        variant={row.approved > 0 ? "success" : "neutral"}
+                      >
+                        {t(`category.${row.category}`)}: {row.approved}/
+                        {row.total}
+                      </Badge>
+                    ))}
+                  </div>
+                </Card>
+
+                <Card
+                  title={t("draftsTitle")}
+                  description={t("draftsSubtitle", { count: drafts.length })}
+                >
+                  {drafts.length === 0 ? (
+                    <p className="text-[13px] text-[var(--text-muted)]">
+                      {t("draftsEmpty")}
+                    </p>
+                  ) : (
+                    <ul className="flex flex-col gap-2.5">
+                      {drafts.map((row) => (
+                        <li
+                          key={row.id}
+                          className="flex flex-wrap items-center gap-2.5 rounded-lg border border-[var(--border)] p-2.5"
+                        >
+                          <Badge variant="neutral">
+                            {row.category
+                              ? t(`category.${row.category}`)
+                              : t("category.typical")}
+                          </Badge>
+                          <code className="flex-1 text-[12.5px]">
+                            {row.input}
+                          </code>
+                          <IconAction
+                            icon={Check}
+                            label={t("approveAction")}
+                            onClick={() => approveDraft(row.id)}
+                          />
+                          <IconAction
+                            icon={X}
+                            label={t("rejectAction")}
+                            tone="danger"
+                            onClick={() => rejectDraft(row.id)}
+                          />
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </Card>
+
+                <Card title={t("aiTitle")} description={t("aiSubtitle")}>
+                  <TextArea
+                    label={t("aiBriefLabel")}
+                    rows={5}
+                    value={draft.aiBrief}
+                    onChange={(event) => patch({ aiBrief: event.target.value })}
+                    className="font-mono text-[12.5px]"
+                  />
+                  <div className="mt-3.5 flex flex-col gap-2.5">
+                    {AI_GUARD_KEYS.map((key: AiGuardKey) => (
+                      <SettingRow
+                        key={key}
                         label={t(`aiGuard.${key}.label`)}
-                      />
-                    </SettingRow>
-                  ))}
-                </div>
-              </Card>
-            </div>
-          ) : null}
+                        description={t(`aiGuard.${key}.meta`)}
+                      >
+                        <Toggle
+                          checked={draft.aiGuards[key]}
+                          onCheckedChange={(value) =>
+                            patch({
+                              aiGuards: { ...draft.aiGuards, [key]: value },
+                            })
+                          }
+                          label={t(`aiGuard.${key}.label`)}
+                        />
+                      </SettingRow>
+                    ))}
+                  </div>
+                </Card>
+              </div>
+            ) : null}
+          </fieldset>
         </div>
 
-        <div className="flex flex-col gap-3.5 xl:sticky xl:top-[92px]">
+        <div className="flex flex-col gap-3.5 2xl:sticky 2xl:top-[92px]">
           <Card title={t("propertiesTitle")}>
-            <div className="flex flex-col gap-3.5">
-              <fieldset disabled={readOnly} className="flex flex-col gap-2">
-                <legend className="mb-2 text-sm font-medium">{t("topicLabel")}</legend>
-                {topicList.map(topic => {
-                  const selectedTopics = [draft.topic, ...(draft.otherTopicIds ?? [])].filter(Boolean);
-                  return <label key={topic.key} className="flex items-center gap-2 text-sm">
-                    <input type="checkbox" checked={selectedTopics.includes(topic.key)} onChange={event => {
-                      const next = event.target.checked ? [...new Set([...selectedTopics, topic.key])] : selectedTopics.filter(key => key !== topic.key);
-                      patch({topic: next[0] ?? "", otherTopicIds: next.slice(1)});
-                    }} />{topic.label}
-                  </label>;
-                })}
-              </fieldset>
-              <div>
-                <p className="mb-1.5 text-[11px] font-semibold tracking-[0.07em] text-[var(--color-text-subtle)] uppercase">
-                  {t("difficultyLabel")}
-                </p>
-                <SelectField
-                  label={t("difficultyLabel")}
-                  hideLabel
-                  value={draft.difficulty}
+            <fieldset disabled={readOnly}>
+              <div className="flex flex-col gap-3.5">
+                <fieldset disabled={readOnly} className="flex flex-col gap-2">
+                  <legend className="mb-2 text-sm font-medium">
+                    {t("topicLabel")}
+                  </legend>
+                  {topicList.map((topic) => {
+                    const selectedTopics = [
+                      draft.topic,
+                      ...(draft.otherTopicIds ?? []),
+                    ].filter(Boolean);
+                    return (
+                      <label
+                        key={topic.key}
+                        className="flex items-center gap-2 text-sm"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selectedTopics.includes(topic.key)}
+                          onChange={(event) => {
+                            const next = event.target.checked
+                              ? [...new Set([...selectedTopics, topic.key])]
+                              : selectedTopics.filter(
+                                  (key) => key !== topic.key,
+                                );
+                            patch({
+                              topic: next[0] ?? "",
+                              otherTopicIds: next.slice(1),
+                            });
+                          }}
+                        />
+                        {topic.label}
+                      </label>
+                    );
+                  })}
+                </fieldset>
+                <div>
+                  <p className="mb-1.5 text-[11px] font-semibold tracking-[0.07em] text-[var(--color-text-subtle)] uppercase">
+                    {t("difficultyLabel")}
+                  </p>
+                  <SelectField
+                    label={t("difficultyLabel")}
+                    hideLabel
+                    value={draft.difficulty}
+                    onChange={(event) =>
+                      patch({ difficulty: event.target.value })
+                    }
+                    options={[
+                      // A level an admin deleted while this form was open stays visible, but cannot be re-picked.
+                      ...(levelList.some(
+                        (level) => level.key === draft.difficulty,
+                      )
+                        ? []
+                        : [
+                            {
+                              value: draft.difficulty,
+                              label: draft.difficulty,
+                              disabled: true,
+                            },
+                          ]),
+                      ...levelList.map((level) => ({
+                        value: level.key,
+                        label: level.label,
+                      })),
+                    ]}
+                  />
+                </div>
+                <div>
+                  <p className="mb-1.5 text-[11px] font-semibold tracking-[0.07em] text-[var(--color-text-subtle)] uppercase">
+                    {t("statusLabel")}
+                  </p>
+                  {/* Two states only — DEC-2026-0830-problem-lifecycle-two-states. */}
+                  <SegmentedTabs
+                    label={t("statusLabel")}
+                    value={draft.status}
+                    onValueChange={(value) => patch({ status: value })}
+                    className="w-full"
+                    options={[
+                      { value: "draft" as const, label: t("status.draft") },
+                      {
+                        value: "published" as const,
+                        label: t("status.published"),
+                      },
+                    ]}
+                  />
+                </div>
+                {/* BD SHR0202 props NO4: free tags, comma separated in the prototype. */}
+                <TextField
+                  label={t("tagsLabel")}
+                  placeholder={t("tagsPlaceholder")}
+                  value={draft.tags.join(", ")}
                   onChange={(event) =>
-                    patch({ difficulty: event.target.value })
+                    patch({
+                      tags: event.target.value
+                        .split(",")
+                        .map((tag) => tag.trim())
+                        .filter(
+                          (tag, index, all) =>
+                            // Keep the trailing empty entry while typing so "a, " can become "a, b".
+                            tag !== "" || index === all.length - 1,
+                        ),
+                    })
                   }
-                  options={[
-                    // A level an admin deleted while this form was open stays visible, but cannot be re-picked.
-                    ...(levelList.some(
-                      (level) => level.key === draft.difficulty,
-                    )
-                      ? []
-                      : [
-                          {
-                            value: draft.difficulty,
-                            label: draft.difficulty,
-                            disabled: true,
-                          },
-                        ]),
-                    ...levelList.map((level) => ({
-                      value: level.key,
-                      label: level.label,
-                    })),
-                  ]}
                 />
               </div>
-              <div>
-                <p className="mb-1.5 text-[11px] font-semibold tracking-[0.07em] text-[var(--color-text-subtle)] uppercase">
-                  {t("statusLabel")}
-                </p>
-                {/* Two states only — DEC-2026-0830-problem-lifecycle-two-states. */}
-                <SegmentedTabs
-                  label={t("statusLabel")}
-                  value={draft.status}
-                  onValueChange={(value) => patch({ status: value })}
-                  className="w-full"
-                  options={[
-                    { value: "draft" as const, label: t("status.draft") },
-                    {
-                      value: "published" as const,
-                      label: t("status.published"),
-                    },
-                  ]}
-                />
-              </div>
-              {/* BD SHR0202 props NO4: free tags, comma separated in the prototype. */}
-              <TextField
-                label={t("tagsLabel")}
-                placeholder={t("tagsPlaceholder")}
-                value={draft.tags.join(", ")}
-                onChange={(event) =>
-                  patch({
-                    tags: event.target.value
-                      .split(",")
-                      .map((tag) => tag.trim())
-                      .filter(
-                        (tag, index, all) =>
-                          // Keep the trailing empty entry while typing so "a, " can become "a, b".
-                          tag !== "" || index === all.length - 1,
-                      ),
-                  })
-                }
-              />
-            </div>
+            </fieldset>
           </Card>
 
           {/* BD SHR0202 props NO6, 7, 10. NO8-9 have no column (Q5), so they are not shown. */}

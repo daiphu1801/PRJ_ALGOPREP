@@ -118,7 +118,7 @@ Theo `DEC-2026-0820-architecture-baseline`: không import schema khác. `problem
 | Sự kiện phát ra | Ai lắng nghe | Payload tối thiểu | Dùng để |
 | :--- | :--- | :--- | :--- |
 | `ProblemSpecChanged` | `harness` | `problem_id`, `spec_version` (không phải `testcase_set_version` — hai khái niệm khác nhau, xem mục 2 database), diff chữ ký hàm. Sửa 2026-10-22 (đồng bộ DB, phase 3, DEC-2026-1022-problem-bank-schema-sync): `spec_version` tăng khi **bất kỳ cột nào** của `problem_specs` đổi (chiến lược so khớp, định dạng stdin/stdout, tên hàm, kiểu trả về, tham số, ghi đè tên; `database/F2_problem-bank.md` mục 1.4), không chỉ chữ ký hàm | Vô hiệu hoá/tái sinh mã bọc hàm đã cache cho bài đó nếu `harness` có cache theo `problem_id` |
-| `ProblemPublished` / `ProblemUnpublished` | Chưa có consumer trong bản này | `problem_id`, `actor_user_id`, `occurred_at` | Phát cho tích hợp về sau; F1 chưa có `activity_type` tương ứng, F4 kiểm xuất bản đồng bộ khi nhận bài |
+| `ProblemPublished` / `ProblemUnpublished` | Queue durable `problem-bank.lifecycle-pending` giữ tin; business consumer chưa được định nghĩa | `problem_id`, `actor_user_id`, `occurred_at` | Tích hợp về sau; queue bind hai key published/unpublished, không TTL/drop/auto-ack. F1 chưa có `activity_type`, F4 vẫn kiểm đồng bộ; confirm là lưu broker, chưa phải xử lý nghiệp vụ (`DEC-2026-1113-f2-lifecycle-backlog-and-f4-target-publication`) |
 | `TestcaseSetVersionBumped` | Chưa có consumer trong bản này | `problem_id`, `testcase_set_version`, `bumped_at` | Phát sau commit khi bộ chấm đổi để tích hợp/cache về sau. F4 đọc đồng bộ `currentTestcaseSetVersion` lúc nhận bài nộp rồi ghim vào dòng `PENDING`; worker đọc bundle snapshot bất biến của phiên bản đó, không dùng sự kiện để gán phiên bản (`DEC-2026-1025-dd-submission-testcase-snapshot`) |
 | `ProblemAssignedToClass` / `ProblemUnassignedFromClass` | `identity` chỉ nghe `ProblemAssignedToClass` | `problem_id`, `class_id`, `actor_user_id` | Tạo hoạt động giao bài cho lớp; gỡ bài được đọc đồng bộ, chưa có consumer |
 
@@ -218,3 +218,12 @@ Baseline 2026-10-29: `DEC-2026-1029-f2-migration-readiness`; không còn câu h�
   `DEC-2026-0831-partial-score-testcase-ratio`.
 - `02-bd/architecture/F3_harness.md` — phía tiêu thụ đặc tả hàm do module này cung cấp.
 - `06-plan/260912-1055-bd-rollout-order.md` — thứ tự triển khai BD.
+
+
+## Bổ sung 2026-11-11 — Đóng tích hợp F2
+
+ClassDeleted đã có consumer `ClassDeletedListener` → `ApplyClassDeletedCommandHandler` → `JdbcClassDeletedRepository`; producer F1 dùng identity Outbox bền vững. Consumer chỉ UPDATE removed_at của assignment hoạt động, không xóa bài/lượt nộp, không audit hoặc phát thêm event; duplicate no-op tự nhiên.
+
+Cache decorator @Primary bọc reader JDBC/cổng trạng thái F1: list/summary TTL60 dùng `problem.catalog_cache_epoch` đọc từ DB; epoch tăng cùng transaction mutation, Redis version mirror sau commit. Status-filter đọc origin, solve-state riêng userId; Redis lỗi/payload sai cấu trúc đọc nguồn. Không cache quyền. Các ghi chú “chưa có cache” ở các lát lịch sử không còn mô tả runtime hiện hành.
+
+Relay F2 đã có JOB-PB-01/02; V2.004 xoay vòng retry qua last_attempted_at, không để batch tin unroutable chặn event chưa thử. GET #57 /authoring/defaults đọc bốn scalar an toàn qua cổng F4 và settings F2; không tạo phụ thuộc frontend vào cấu hình quản trị.

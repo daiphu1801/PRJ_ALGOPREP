@@ -355,6 +355,13 @@ describe("realLoadDraft (#33, #34, #14, #40)", () => {
 
   it("a duplicate loads #34: (bản sao) suffix, new example ids, no testcases, what will be copied", async () => {
     get.mockImplementation(async (path: string) => {
+      if (path === "/problem-bank/authoring/defaults")
+        return {
+          timeLimitMs: 1000,
+          memoryLimitMb: 256,
+          maxOutputSizeKb: 64,
+          maxAiGenerationsPerProblem: 2,
+        };
       if (path === "/problem-bank/levels") return levelsDto;
       if (path === `${A}/${P}/duplicate-source`)
         return {

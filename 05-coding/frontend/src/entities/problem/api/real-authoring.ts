@@ -3,10 +3,12 @@
 // the server keeps it in separate resources, so a save is a short sequence (content, spec, AI context,
 // status) and testcases are written one by one the moment the author confirms them.
 //
-// Left on mock: #48 (AI testcase generation) has no endpoint yet, see `queries.ts`.
 import { api, ApiError } from "@/shared/api";
 import { realListLevels } from "./real-catalog";
 import type {
+  DroppedReason,
+  GenerateTestcasesInput,
+  GenerateTestcasesResult,
   MatchingStrategy,
   ProblemDraft,
   ProblemDraftRecord,
@@ -164,7 +166,7 @@ function toType(dto: TypeRefDto): SpecType {
     : "OTHER"; // A kind the schema does not know: the screen shows it as "OTHER" and warns.
   return {
     kind,
-    ...(kind === "OTHER" ? {rawType: {...dto}} : {}),
+    ...(kind === "OTHER" ? { rawType: { ...dto } } : {}),
     ...(dto.of ? { of: toType(dto.of) } : {}),
     ...(dto.dimensions ? { dimensions: dto.dimensions } : {}),
   };
@@ -237,12 +239,16 @@ export function specBody(spec: ProblemSpec, expectedUpdatedAt: string | null) {
 
 export type SignaturePreview = {
   wrapperSupported: boolean;
+  unsupportedReasons?: { code: string; path: string }[];
   /** Keyed JAVA / CPP / PYTHON; null when the draft cannot be shown (DD F3 3.7). */
   declarations: Record<"JAVA" | "CPP" | "PYTHON", string | null>;
 };
 
 /** The body of F3 P6; a signature is previewed whole, so callers only send a declared one. */
-export function previewBody(signature: ProblemSpec["signature"]) {
+export function previewBody(
+  signature: ProblemSpec["signature"],
+  matching?: Pick<ProblemSpec, "matchingStrategy" | "epsilon">,
+) {
   return {
     functionName: signature.functionName.trim(),
     returnType: fromType(signature.returnType),
@@ -255,15 +261,31 @@ export function previewBody(signature: ProblemSpec["signature"]) {
         .filter(([, name]) => name && name.trim())
         .map(([language, name]) => [language.toUpperCase(), name]),
     ),
+    ...(matching
+      ? {
+          matchingStrategy: matching.matchingStrategy,
+          epsilonValue:
+            matching.epsilon.trim() !== "" &&
+            Number.isFinite(Number(matching.epsilon))
+              ? Number(matching.epsilon)
+              : null,
+        }
+      : {}),
   };
 }
 
 /** F3 P6 (03-dd/api/F3_harness.md 3.7): the declaration lines exactly as the starter code will have them. */
-export function realPreviewSignature(signature: ProblemSpec["signature"]) {
-  return api.post<SignaturePreview>(
-    "/harness/function-signature/preview",
-    previewBody(signature),
-  );
+export function realPreviewSignature(
+  signature: ProblemSpec["signature"],
+  signal?: AbortSignal,
+  matching?: Pick<ProblemSpec, "matchingStrategy" | "epsilon">,
+) {
+  const body = previewBody(signature, matching);
+  return signal
+    ? api.post<SignaturePreview>("/harness/function-signature/preview", body, {
+        signal,
+      })
+    : api.post<SignaturePreview>("/harness/function-signature/preview", body);
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -436,9 +458,14 @@ export async function realLoadDraft(
 ): Promise<ProblemDraftRecord> {
   const [levels, defaults] = await Promise.all([
     loadLevels(),
-    problemId ? Promise.resolve(null) : api.get<{
-      timeLimitMs: number; memoryLimitMb: number; maxOutputSizeKb: number; maxAiGenerationsPerProblem: number;
-    }>("/problem-bank/authoring/defaults"),
+    problemId
+      ? Promise.resolve(null)
+      : api.get<{
+          timeLimitMs: number;
+          memoryLimitMb: number;
+          maxOutputSizeKb: number;
+          maxAiGenerationsPerProblem: number;
+        }>("/problem-bank/authoring/defaults"),
   ]);
   if (problemId) {
     const [record, stats] = await Promise.all([
@@ -862,7 +889,7 @@ export async function realRunReferenceSolution(
   }>(`${BASE}/${problemId}/reference-solution/run`, {
     language: LANGUAGE_TO_WIRE[code.language] ?? "JAVA",
     sourceCode: code.sourceCode,
-    ...(testcaseId ? {testcaseId} : {}),
+    ...(testcaseId ? { testcaseId } : {}),
   });
   const failed = [...dto.results]
     .filter((row) => row.verdict === "FAIL")
@@ -880,37 +907,65 @@ export async function realRunReferenceSolution(
 }
 
 /** Author-only hydration; signed URLs are refreshed from the detail endpoint on every open. */
-export async function realReadTestcaseContent(problemId: string, testcaseId: string): Promise<Testcase> {
-  const detail = await api.get<{testcases: (TestcaseDto & {inputDownloadUrl?: string | null; expectedOutputDownloadUrl?: string | null})[]}>(`${BASE}/${problemId}`);
-  const row = detail.testcases.find(item => item.id === testcaseId);
+export async function realReadTestcaseContent(
+  problemId: string,
+  testcaseId: string,
+): Promise<Testcase> {
+  const detail = await api.get<{
+    testcases: (TestcaseDto & {
+      inputDownloadUrl?: string | null;
+      expectedOutputDownloadUrl?: string | null;
+    })[];
+  }>(`${BASE}/${problemId}`);
+  const row = detail.testcases.find((item) => item.id === testcaseId);
   if (!row) throw new ApiError("PRB-011", 404);
   async function read(inline: string | null, url?: string | null) {
     if (inline !== null) return inline;
     if (!url) throw new ApiError("PRB-052", 503);
-    const response = await fetch(url, {credentials: "omit", signal: AbortSignal.timeout(10000)});
+    const response = await fetch(url, {
+      credentials: "omit",
+      signal: AbortSignal.timeout(10000),
+    });
     if (!response.ok) throw new ApiError("PRB-052", 503);
     const bytes = await response.arrayBuffer();
     if (bytes.byteLength > 1048576) throw new ApiError("PRB-048", 422);
-    return new TextDecoder("utf-8", {fatal: true}).decode(bytes);
+    return new TextDecoder("utf-8", { fatal: true }).decode(bytes);
   }
-  const [input, expected] = await Promise.all([read(row.input, row.inputDownloadUrl), read(row.expectedOutput, row.expectedOutputDownloadUrl)]);
-  return {...toTestcase(row), input, expected, largeSides: undefined};
+  const [input, expected] = await Promise.all([
+    read(row.input, row.inputDownloadUrl),
+    read(row.expectedOutput, row.expectedOutputDownloadUrl),
+  ]);
+  return { ...toTestcase(row), input, expected, largeSides: undefined };
 }
 
 /** #48 uses the saved problem, an empty body, and server-owned quota/state. */
-export async function realGenerateTestcases(input: import("../model/draft-types").GenerateTestcasesInput): Promise<import("../model/draft-types").GenerateTestcasesResult> {
+export async function realGenerateTestcases(
+  input: GenerateTestcasesInput,
+): Promise<GenerateTestcasesResult> {
   if (!input.problemId) throw new ApiError("PRB-041", 422);
   const result = await api.post<{
-    testcases: TestcaseDto[]; dropped: {reason: string; count: number}[];
-    warnings: {code: string}[]; aiGeneration: {used: number; limit: number}; problemUpdatedAt: string;
+    testcases: TestcaseDto[];
+    dropped: { reason: string; count: number }[];
+    warnings: { code: string }[];
+    aiGeneration: { used: number; limit: number };
+    problemUpdatedAt: string;
   }>(`${BASE}/${input.problemId}/testcases/generate`, {});
-  const reasons: Record<string, import("../model/draft-types").DroppedReason> = {
-    INVALID_CONSTRAINT: "invalidConstraint", REFERENCE_FAILED: "referenceFailed", TIMEOUT: "timeout", DUPLICATE_INPUT: "duplicateInput",
+  const reasons: Record<string, DroppedReason> = {
+    INVALID_CONSTRAINT: "invalidConstraint",
+    REFERENCE_FAILED: "referenceFailed",
+    TIMEOUT: "timeout",
+    DUPLICATE_INPUT: "duplicateInput",
   };
   return {
     testcases: result.testcases.map(toTestcase),
-    dropped: result.dropped.map(row => ({reason: reasons[row.reason] ?? "invalidConstraint", count: row.count})),
-    largestCaseWarning: result.warnings.some(row => row.code === "LARGEST_CASE_TIMEOUT"),
-    aiGeneration: result.aiGeneration, problemUpdatedAt: result.problemUpdatedAt,
+    dropped: result.dropped.map((row) => ({
+      reason: reasons[row.reason] ?? "invalidConstraint",
+      count: row.count,
+    })),
+    largestCaseWarning: result.warnings.some(
+      (row) => row.code === "LARGEST_CASE_TIMEOUT",
+    ),
+    aiGeneration: result.aiGeneration,
+    problemUpdatedAt: result.problemUpdatedAt,
   };
 }

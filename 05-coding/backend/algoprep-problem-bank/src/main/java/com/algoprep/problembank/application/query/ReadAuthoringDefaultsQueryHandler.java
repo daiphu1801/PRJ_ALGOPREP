@@ -1,7 +1,7 @@
 package com.algoprep.problembank.application.query;
 
-import com.algoprep.problembank.application.dto.AuthoringDefaults;
 import com.algoprep.common.exception.ServiceUnavailableException;
+import com.algoprep.problembank.application.dto.AuthoringDefaults;
 import com.algoprep.problembank.application.ports.in.ReadAuthoringDefaultsUseCase;
 import com.algoprep.problembank.application.ports.out.JudgeConfigReadPort;
 import com.algoprep.problembank.domain.ports.out.ProblemAuthoringReadRepository;
@@ -22,7 +22,11 @@ class ReadAuthoringDefaultsQueryHandler implements ReadAuthoringDefaultsUseCase 
   public AuthoringDefaults get() {
     try {
       var limits = judge.getGradingDefaults();
-      return new AuthoringDefaults(limits.timeLimitMs(), limits.memoryLimitMb(), limits.maxOutputSizeKb(), repository.aiGenerationLimit());
+      return new AuthoringDefaults(
+          limits.timeLimitMs(),
+          limits.memoryLimitMb(),
+          limits.maxOutputSizeKb(),
+          repository.aiGenerationLimit());
     } catch (RuntimeException unavailable) {
       throw new ServiceUnavailableException("PRB-050", "Authoring defaults unavailable", null);
     }

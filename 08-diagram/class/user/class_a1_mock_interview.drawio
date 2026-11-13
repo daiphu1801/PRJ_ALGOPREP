@@ -4,58 +4,71 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="t_interviewController" value='&lt;div style="text-align:center"&gt;&lt;b&gt;MockInterviewController&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;start(caller&amp;nbsp;:&amp;nbsp;Jwt,&amp;nbsp;command&amp;nbsp;:&amp;nbsp;StartInterviewCommand)&amp;nbsp;:&amp;nbsp;InterviewSession&lt;br&gt;+&amp;nbsp;advanceStage(sessionId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;InterviewStage&lt;br&gt;+&amp;nbsp;getRubric(sessionId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;InterviewRubric' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="319.75" y="60" width="469.29999999999995" height="82" as="geometry" />
+        <mxCell id="t_sessionController" value='&lt;div style="text-align:center"&gt;&lt;b&gt;InterviewSessionController&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;open(auth&amp;nbsp;:&amp;nbsp;JwtToken,&amp;nbsp;body&amp;nbsp;:&amp;nbsp;OpenRequest)&amp;nbsp;:&amp;nbsp;OpenResponse&lt;br&gt;+&amp;nbsp;detail(auth&amp;nbsp;:&amp;nbsp;JwtToken,&amp;nbsp;sessionId&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;DetailResponse&lt;br&gt;+&amp;nbsp;complete(auth&amp;nbsp;:&amp;nbsp;JwtToken,&amp;nbsp;sessionId&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;ResultView' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="356.15" y="60" width="402.2" height="82" as="geometry" />
         </mxCell>
-        <mxCell id="t_startHandler" value='&lt;div style="text-align:center"&gt;&lt;b&gt;StartInterviewCommandHandler&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;startFromAccepted(submissionId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;studentId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;InterviewSession&lt;br&gt;+&amp;nbsp;startSelfPractice(studentId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;settings&amp;nbsp;:&amp;nbsp;PracticeSettings)&amp;nbsp;:&amp;nbsp;InterviewSession' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="54" y="212" width="542.5" height="68" as="geometry" />
+        <mxCell id="t_openHandler" value='&lt;div style="text-align:center"&gt;&lt;b&gt;OpenInterviewSessionCommandHandler&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;open(command&amp;nbsp;:&amp;nbsp;OpenInterviewSessionCommand)&amp;nbsp;:&amp;nbsp;OpenedInterviewSession' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="66" y="212" width="451" height="54" as="geometry" />
         </mxCell>
-        <mxCell id="t_stageHandler" value='&lt;div style="text-align:center"&gt;&lt;b&gt;MockInterviewStageCommandHandler&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;advanceStage(command&amp;nbsp;:&amp;nbsp;AdvanceStageCommand)&amp;nbsp;:&amp;nbsp;InterviewRubric' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="646.5" y="212" width="408.29999999999995" height="54" as="geometry" />
+        <mxCell id="t_turnHandler" value='&lt;div style="text-align:center"&gt;&lt;b&gt;SendInterviewTurnCommandHandler&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;send(command&amp;nbsp;:&amp;nbsp;SendInterviewTurnCommand,&amp;nbsp;sink&amp;nbsp;:&amp;nbsp;InterviewTurnSink)&amp;nbsp;:&amp;nbsp;void' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="567" y="212" width="481.5" height="54" as="geometry" />
         </mxCell>
-        <mxCell id="t_sessionRepo" value='&lt;div style="text-align:center"&gt;&lt;b&gt;InterviewSessionRepository&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;save(session&amp;nbsp;:&amp;nbsp;InterviewSession)&lt;br&gt;+&amp;nbsp;findById(sessionId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;Optional&amp;lt;InterviewSession&amp;gt;' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="172.95" y="350" width="371.7" height="82" as="geometry" />
+        <mxCell id="t_sessionRepo" value='&lt;div style="text-align:center"&gt;&lt;b&gt;InterviewSessionRepository&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;insertOpened(session&amp;nbsp;:&amp;nbsp;InterviewSession,&amp;nbsp;opening&amp;nbsp;:&amp;nbsp;InterviewTurn)&amp;nbsp;:&amp;nbsp;void&lt;br&gt;+&amp;nbsp;find(sessionId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;Optional&amp;lt;InterviewSession&amp;gt;&lt;br&gt;+&amp;nbsp;turns(sessionId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;List&amp;lt;InterviewTurn&amp;gt;' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="93.45000000000005" y="336" width="475.4" height="96" as="geometry" />
         </mxCell>
-        <mxCell id="t_aiPort" value='&lt;div style="text-align:center"&gt;&lt;b&gt;InterviewAiPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;streamTurn(context&amp;nbsp;:&amp;nbsp;StageContext)&amp;nbsp;:&amp;nbsp;TokenStream&lt;br&gt;+&amp;nbsp;evaluateRubric(sessionId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;InterviewRubric' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="594.65" y="350" width="341.2" height="82" as="geometry" />
+        <mxCell id="t_chatMemoryPort" value='&lt;div style="text-align:center"&gt;&lt;b&gt;InterviewChatMemoryPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;read(sessionId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;Optional&amp;lt;List&amp;lt;ChatMessage&amp;gt;&amp;gt;&lt;br&gt;+&amp;nbsp;write(sessionId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;messages&amp;nbsp;:&amp;nbsp;List&amp;lt;ChatMessage&amp;gt;)&amp;nbsp;:&amp;nbsp;void' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="618.85" y="336" width="402.2" height="82" as="geometry" />
         </mxCell>
-        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.261;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_interviewController" target="t_startHandler">
+        <mxCell id="t_llmPort" value='&lt;div style="text-align:center"&gt;&lt;b&gt;LlmProviderPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;streamTurn(memory&amp;nbsp;:&amp;nbsp;ChatMemoryRef,&amp;nbsp;sys&amp;nbsp;:&amp;nbsp;SystemInstruction,&amp;nbsp;data&amp;nbsp;:&amp;nbsp;UserData)&amp;nbsp;:&amp;nbsp;Flux&amp;lt;TokenChunk&amp;gt;' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="249.40000000000003" y="502" width="615.6999999999999" height="68" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.262;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_sessionController" target="t_openHandler">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="442.075" y="165.33333333333334" />
-            <mxPoint x="325.25" y="165.33333333333334" />
+            <mxPoint x="461.7" y="165.33333333333334" />
+            <mxPoint x="291.5" y="165.33333333333334" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e2" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.739;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_interviewController" target="t_stageHandler">
+        <mxCell id="e2" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.738;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_sessionController" target="t_turnHandler">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="666.7249999999999" y="188.66666666666666" />
-            <mxPoint x="850.65" y="188.66666666666666" />
+            <mxPoint x="652.8" y="188.66666666666666" />
+            <mxPoint x="807.75" y="188.66666666666666" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e3" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_startHandler" target="t_sessionRepo">
+        <mxCell id="e3" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_openHandler" target="t_sessionRepo">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="325.25" y="303.3333333333333" />
-            <mxPoint x="358.79999999999995" y="303.3333333333333" />
+            <mxPoint x="291.5" y="283.5" />
+            <mxPoint x="331.15000000000003" y="283.5" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e4" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_stageHandler" target="t_aiPort">
+        <mxCell id="e4" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.740;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_turnHandler" target="t_chatMemoryPort">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="850.65" y="326.6666666666667" />
-            <mxPoint x="765.25" y="326.6666666666667" />
+            <mxPoint x="923.125" y="318.5" />
+            <mxPoint x="819.95" y="318.5" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e5" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.260;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_turnHandler" target="t_llmPort">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="692.375" y="301" />
+            <mxPoint x="30" y="301" />
+            <mxPoint x="30" y="467" />
+            <mxPoint x="557.25" y="467" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="title" value="A1 — Phỏng vấn giả lập ba giai đoạn" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="0" y="10" width="1084.8" height="30" as="geometry" />
+          <mxGeometry x="0" y="10" width="1078.5" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="v5" value="Ghi chú: MockInterviewController điều phối phiên phỏng vấn 3 giai đoạn khởi tạo từ bài Accepted hoặc tự luyện.&lt;br&gt;Ghi chú: Kết quả đánh giá 4 tiêu chí được lưu dưới dạng rubric; phiên kết thúc an toàn nếu AI suy giảm." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="30" y="452" width="1100" height="44" as="geometry" />
+        <mxCell id="v6" value="Ghi chú: InterviewSessionController điều phối phiên phỏng vấn 3 giai đoạn khởi tạo từ bài Accepted hoặc tự luyện.&lt;br&gt;Ghi chú: InterviewChatMemoryPort lưu trữ ngữ cảnh hội thoại đa lượt trong Redis; LlmProviderPort phát luồng SSE thời gian thực." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="30" y="590" width="1100" height="44" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

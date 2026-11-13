@@ -15,19 +15,19 @@
         "role": "actor"
       },
       {
-        "name": "InterviewPracticeController",
+        "name": "PracticeAnswersController",
         "role": "controller",
-        "stereo": "presentation"
+        "stereo": "presentation REST"
       },
       {
-        "name": "EvaluatePracticeAnswerCommandHandler",
+        "name": "SubmitPracticeAnswerCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "AiEvaluationPort",
+        "name": "AnswerFeedbackPort",
         "role": "repository",
-        "stereo": "output port"
+        "stereo": "output port F6"
       },
       {
         "name": "SpringAiFeedbackAdapter",
@@ -39,9 +39,9 @@
         "role": "external"
       },
       {
-        "name": "InterviewQuestionRepository",
+        "name": "LearnerQuestionRepository",
         "role": "repository",
-        "stereo": "output port"
+        "stereo": "output port F6"
       },
       {
         "name": "JdbcInterviewQuestionRepository",
@@ -64,17 +64,17 @@
         "phase": "Giai đoạn 3 - Xin nhận xét theo bộ tiêu chí"
       },
       {
-        "from": "EvaluatePracticeAnswerCommandHandler",
-        "to": "EvaluatePracticeAnswerCommandHandler",
+        "from": "SubmitPracticeAnswerCommandHandler",
+        "to": "SubmitPracticeAnswerCommandHandler",
         "text": "Ghép chỉ thị cố định, tiêu chí tham chiếu và dữ liệu câu trả lời"
       },
       {
-        "from": "EvaluatePracticeAnswerCommandHandler",
-        "to": "AiEvaluationPort",
+        "from": "SubmitPracticeAnswerCommandHandler",
+        "to": "AnswerFeedbackPort",
         "text": "Xin so sánh câu trả lời với từng tiêu chí"
       },
       {
-        "from": "AiEvaluationPort",
+        "from": "AnswerFeedbackPort",
         "to": "SpringAiFeedbackAdapter",
         "text": "Gọi mô hình với thời hạn 30 giây"
       },
@@ -91,13 +91,13 @@
       },
       {
         "from": "SpringAiFeedbackAdapter",
-        "to": "AiEvaluationPort",
+        "to": "AnswerFeedbackPort",
         "text": "Kiểm tra cấu trúc nhận xét",
         "kind": "return"
       },
       {
-        "from": "AiEvaluationPort",
-        "to": "EvaluatePracticeAnswerCommandHandler",
+        "from": "AnswerFeedbackPort",
+        "to": "SubmitPracticeAnswerCommandHandler",
         "text": "Nhận xét hoặc thông tin lỗi",
         "kind": "return"
       },
@@ -106,12 +106,12 @@
           "label": "AI trả nhận xét hợp lệ?",
           "then": [
             {
-              "from": "EvaluatePracticeAnswerCommandHandler",
-              "to": "InterviewQuestionRepository",
+              "from": "SubmitPracticeAnswerCommandHandler",
+              "to": "LearnerQuestionRepository",
               "text": "Tạo lượt luyện hoàn tất và cập nhật tiến độ"
             },
             {
-              "from": "InterviewQuestionRepository",
+              "from": "LearnerQuestionRepository",
               "to": "JdbcInterviewQuestionRepository",
               "text": "Lưu một lượt mới trong cùng giao dịch"
             },
@@ -128,29 +128,29 @@
             },
             {
               "from": "JdbcInterviewQuestionRepository",
-              "to": "InterviewQuestionRepository",
+              "to": "LearnerQuestionRepository",
               "text": "Đã commit",
               "kind": "return"
             },
             {
-              "from": "InterviewQuestionRepository",
-              "to": "EvaluatePracticeAnswerCommandHandler",
+              "from": "LearnerQuestionRepository",
+              "to": "SubmitPracticeAnswerCommandHandler",
               "text": "Đã lưu lượt luyện",
               "kind": "return"
             },
             {
-              "from": "EvaluatePracticeAnswerCommandHandler",
+              "from": "SubmitPracticeAnswerCommandHandler",
               "to": "RecordAiTokenUsageUseCase",
               "text": "Ghi token đã dùng sau commit"
             },
             {
-              "from": "EvaluatePracticeAnswerCommandHandler",
-              "to": "InterviewPracticeController",
+              "from": "SubmitPracticeAnswerCommandHandler",
+              "to": "PracticeAnswersController",
               "text": "Trả nhận xét và trạng thái hoàn tất",
               "kind": "return"
             },
             {
-              "from": "InterviewPracticeController",
+              "from": "PracticeAnswersController",
               "to": "Sinh viên",
               "text": "Hiển thị nhận xét theo tiêu chí",
               "kind": "return"
@@ -158,12 +158,12 @@
           ],
           "else": [
             {
-              "from": "EvaluatePracticeAnswerCommandHandler",
-              "to": "InterviewQuestionRepository",
+              "from": "SubmitPracticeAnswerCommandHandler",
+              "to": "LearnerQuestionRepository",
               "text": "Tạo lượt luyện thất bại và cập nhật tiến độ"
             },
             {
-              "from": "InterviewQuestionRepository",
+              "from": "LearnerQuestionRepository",
               "to": "JdbcInterviewQuestionRepository",
               "text": "Lưu câu trả lời cùng mã lỗi"
             },
@@ -180,29 +180,29 @@
             },
             {
               "from": "JdbcInterviewQuestionRepository",
-              "to": "InterviewQuestionRepository",
+              "to": "LearnerQuestionRepository",
               "text": "Đã commit",
               "kind": "return"
             },
             {
-              "from": "InterviewQuestionRepository",
-              "to": "EvaluatePracticeAnswerCommandHandler",
+              "from": "LearnerQuestionRepository",
+              "to": "SubmitPracticeAnswerCommandHandler",
               "text": "Đã lưu câu trả lời",
               "kind": "return"
             },
             {
-              "from": "EvaluatePracticeAnswerCommandHandler",
+              "from": "SubmitPracticeAnswerCommandHandler",
               "to": "RecordAiTokenUsageUseCase",
               "text": "Ghi token nếu nhà cung cấp đã báo"
             },
             {
-              "from": "EvaluatePracticeAnswerCommandHandler",
-              "to": "InterviewPracticeController",
+              "from": "SubmitPracticeAnswerCommandHandler",
+              "to": "PracticeAnswersController",
               "text": "Trả lượt đã lưu kèm lý do chưa có nhận xét",
               "kind": "return"
             },
             {
-              "from": "InterviewPracticeController",
+              "from": "PracticeAnswersController",
               "to": "Sinh viên",
               "text": "Hiển thị câu trả lời đã lưu và lỗi nhận xét",
               "kind": "return"

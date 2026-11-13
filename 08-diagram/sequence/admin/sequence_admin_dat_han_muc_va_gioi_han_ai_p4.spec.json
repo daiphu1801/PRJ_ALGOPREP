@@ -24,9 +24,9 @@
         "stereo": "application"
       },
       {
-        "name": "AiTokenBudgetRepository",
+        "name": "AiBudgetRepository",
         "role": "repository",
-        "stereo": "output port"
+        "stereo": "persistence adapter"
       },
       {
         "name": "JdbcAiTokenBudgetRepository",
@@ -55,11 +55,11 @@
       },
       {
         "from": "ManageModelPriceCommandHandler",
-        "to": "AiTokenBudgetRepository",
+        "to": "AiBudgetRepository",
         "text": "Tạo mô hình với đơn giá bằng không"
       },
       {
-        "from": "AiTokenBudgetRepository",
+        "from": "AiBudgetRepository",
         "to": "JdbcAiTokenBudgetRepository",
         "text": "Lưu mô hình mới"
       },
@@ -87,11 +87,11 @@
           "then": [
             {
               "from": "ManageModelPriceCommandHandler",
-              "to": "AiTokenBudgetRepository",
+              "to": "AiBudgetRepository",
               "text": "Cập nhật tên hoặc đơn giá không âm"
             },
             {
-              "from": "AiTokenBudgetRepository",
+              "from": "AiBudgetRepository",
               "to": "JdbcAiTokenBudgetRepository",
               "text": "Lưu các trường được gửi"
             },
@@ -104,11 +104,11 @@
           "else": [
             {
               "from": "ManageModelPriceCommandHandler",
-              "to": "AiTokenBudgetRepository",
+              "to": "AiBudgetRepository",
               "text": "Xóa mô hình, kể cả khi đã xóa"
             },
             {
-              "from": "AiTokenBudgetRepository",
+              "from": "AiBudgetRepository",
               "to": "JdbcAiTokenBudgetRepository",
               "text": "Xóa theo mã"
             },

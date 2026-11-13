@@ -79,6 +79,9 @@ test("the signature lines come from the server, follow the draft and save nothin
     ["CPP", "cpp"],
     ["PYTHON", "python"],
   ] as const) {
+    await page
+      .getByRole("button", { name: spec.language[language], exact: true })
+      .click();
     expect(intDeclarations[key]).toBeTruthy();
     await expect(row(page, language)).toContainText(
       intDeclarations[key]!.trim().split("\n")[0]!,
@@ -94,6 +97,9 @@ test("the signature lines come from the server, follow the draft and save nothin
   const changed = previewResponse(page);
   await page.getByLabel(spec.returnType).selectOption({ label: "string" });
   const changedBody = await (await changed).json();
+  await page
+    .getByRole("button", { name: spec.language.java, exact: true })
+    .click();
   expect(changedBody.declarations.JAVA).not.toBe(intDeclarations.JAVA);
   await expect(row(page, "java")).toContainText(
     changedBody.declarations.JAVA.trim().split("\n")[0],

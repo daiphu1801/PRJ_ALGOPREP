@@ -361,6 +361,8 @@ Vỏ HTTP đếm byte của body JSON UTF-8 trước khi parse/gọi P5: tối �
 
 Test viewpoints: (1) cùng bản nháp trả ba khai báo và override chỉ đổi ngôn ngữ tương ứng; (2) chữ ký chưa đủ trả ba `null`, không gọi F2; (3) vi phạm cứng trả đường dẫn và mã `HRN-Vnn`; (4) STUDENT nhận 403, anonymous 401; (5) body 16 KiB và giới hạn tần suất; (6) kết quả khớp dòng khai báo trong starter code sinh từ cùng đặc tả sau khi lưu.
 
+**Nối FE hoàn chỉnh 2026-11-12 (GAP-03):** SHR0202 dùng body hiện hành làm query key, chỉ debounce thời điểm gọi400ms; AbortSignal hủy request/retry khi body đổi hoặc rời tab. Phản hồi cũ không hiện trong cửa sổ debounce. Một query chung trả ba declaration, tab ngôn ngữ không gọi lại. FE map HRN-060 theo JSON pointer, giữ unsupportedReasons server, dịch HRN-060/061/062;429 tự thử lại theo retryAfterSeconds cho body còn hiện hành,413 không tự thử lại. Chi tiết UI và bằng chứng mới: `03-dd/screens/shared/SHR0202_problem_authoring.md` §preview và `06-plan/reports/261112-f1-f4-followup-fix/preview.md`.
+
 ## 4. Cổng ra O1 — `ProblemSpecReaderPort.findSpec`
 
 Khai báo trong `domain/ports/out` của `harness` (outbound port nằm trong ngôn ngữ của bên gọi,

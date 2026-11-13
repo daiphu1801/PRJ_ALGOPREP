@@ -28,7 +28,7 @@
         "stereo": "presentation"
       },
       {
-        "name": "AnalyzeAcceptedSubmissionCommandHandler",
+        "name": "GetOrCreateSolutionReviewCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
@@ -38,9 +38,9 @@
         "stereo": "domain"
       },
       {
-        "name": "AiProviderPort",
+        "name": "LlmProviderPort",
         "role": "repository",
-        "stereo": "output port"
+        "stereo": "output port F5"
       },
       {
         "name": "SpringAiLlmAdapter",
@@ -72,7 +72,7 @@
         "phase": "Giai đoạn 3 - Mã nguồn là dữ liệu, không là chỉ thị (F5-17)"
       },
       {
-        "from": "AnalyzeAcceptedSubmissionCommandHandler",
+        "from": "GetOrCreateSolutionReviewCommandHandler",
         "to": "PromptComposer",
         "text": "Dựng yêu cầu phân tích an toàn"
       },
@@ -93,17 +93,17 @@
       },
       {
         "from": "PromptComposer",
-        "to": "AnalyzeAcceptedSubmissionCommandHandler",
+        "to": "GetOrCreateSolutionReviewCommandHandler",
         "text": "Chỉ thị và dữ liệu đã tách riêng",
         "kind": "return"
       },
       {
-        "from": "AnalyzeAcceptedSubmissionCommandHandler",
-        "to": "AiProviderPort",
+        "from": "GetOrCreateSolutionReviewCommandHandler",
+        "to": "LlmProviderPort",
         "text": "Yêu cầu phân tích có cấu trúc"
       },
       {
-        "from": "AiProviderPort",
+        "from": "LlmProviderPort",
         "to": "SpringAiLlmAdapter",
         "text": "Gửi yêu cầu tới mô hình AI"
       },
@@ -120,13 +120,13 @@
       },
       {
         "from": "SpringAiLlmAdapter",
-        "to": "AiProviderPort",
+        "to": "LlmProviderPort",
         "text": "Kết quả có cấu trúc",
         "kind": "return"
       },
       {
-        "from": "AiProviderPort",
-        "to": "AnalyzeAcceptedSubmissionCommandHandler",
+        "from": "LlmProviderPort",
+        "to": "GetOrCreateSolutionReviewCommandHandler",
         "text": "Báo cáo và lượng token",
         "kind": "return"
       },
@@ -134,17 +134,17 @@
         "phase": "Giai đoạn 4 - Kiểm báo cáo và ghi kết quả (F5-02 đến F5-08, F5-21)"
       },
       {
-        "from": "AnalyzeAcceptedSubmissionCommandHandler",
-        "to": "AnalyzeAcceptedSubmissionCommandHandler",
+        "from": "GetOrCreateSolutionReviewCommandHandler",
+        "to": "GetOrCreateSolutionReviewCommandHandler",
         "text": "Kiểm độ phức tạp, rủi ro, độ dễ đọc"
       },
       {
-        "from": "AnalyzeAcceptedSubmissionCommandHandler",
-        "to": "AnalyzeAcceptedSubmissionCommandHandler",
+        "from": "GetOrCreateSolutionReviewCommandHandler",
+        "to": "GetOrCreateSolutionReviewCommandHandler",
         "text": "Bỏ so sánh tối ưu khi chưa có dữ liệu"
       },
       {
-        "from": "AnalyzeAcceptedSubmissionCommandHandler",
+        "from": "GetOrCreateSolutionReviewCommandHandler",
         "to": "SolutionReviewRepository",
         "text": "Lưu báo cáo, token và sự kiện"
       },
@@ -172,12 +172,12 @@
       },
       {
         "from": "SolutionReviewRepository",
-        "to": "AnalyzeAcceptedSubmissionCommandHandler",
+        "to": "GetOrCreateSolutionReviewCommandHandler",
         "text": "Báo cáo hoàn tất",
         "kind": "return"
       },
       {
-        "from": "AnalyzeAcceptedSubmissionCommandHandler",
+        "from": "GetOrCreateSolutionReviewCommandHandler",
         "to": "SolutionReviewController",
         "text": "Trả báo cáo hỗ trợ học tập",
         "kind": "return"

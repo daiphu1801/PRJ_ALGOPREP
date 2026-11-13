@@ -15,9 +15,9 @@
         "role": "actor"
       },
       {
-        "name": "InterviewPracticeController",
+        "name": "InterviewQuestionsController",
         "role": "controller",
-        "stereo": "presentation"
+        "stereo": "presentation REST"
       },
       {
         "name": "GetInterviewQuestionQueryHandler",
@@ -25,9 +25,9 @@
         "stereo": "application query"
       },
       {
-        "name": "InterviewQuestionRepository",
+        "name": "LearnerQuestionRepository",
         "role": "repository",
-        "stereo": "output port"
+        "stereo": "output port F6"
       },
       {
         "name": "JdbcInterviewQuestionRepository",
@@ -46,21 +46,21 @@
       },
       {
         "from": "Sinh viên",
-        "to": "InterviewPracticeController",
+        "to": "InterviewQuestionsController",
         "text": "Chọn chủ đề, mức độ và trạng thái ôn tập"
       },
       {
-        "from": "InterviewPracticeController",
+        "from": "InterviewQuestionsController",
         "to": "GetInterviewQuestionQueryHandler",
         "text": "Lấy danh sách câu hỏi phù hợp"
       },
       {
         "from": "GetInterviewQuestionQueryHandler",
-        "to": "InterviewQuestionRepository",
+        "to": "LearnerQuestionRepository",
         "text": "Tìm câu đang hiển thị cho người học"
       },
       {
-        "from": "InterviewQuestionRepository",
+        "from": "LearnerQuestionRepository",
         "to": "JdbcInterviewQuestionRepository",
         "text": "Áp bộ lọc và phân trang"
       },
@@ -77,24 +77,24 @@
       },
       {
         "from": "JdbcInterviewQuestionRepository",
-        "to": "InterviewQuestionRepository",
+        "to": "LearnerQuestionRepository",
         "text": "Danh sách câu hỏi",
         "kind": "return"
       },
       {
         "from": "GetInterviewQuestionQueryHandler",
-        "to": "InterviewQuestionRepository",
+        "to": "LearnerQuestionRepository",
         "text": "Danh sách câu hỏi",
         "kind": "return"
       },
       {
-        "from": "InterviewQuestionRepository",
-        "to": "InterviewPracticeController",
+        "from": "LearnerQuestionRepository",
+        "to": "InterviewQuestionsController",
         "text": "Danh sách và số trang",
         "kind": "return"
       },
       {
-        "from": "InterviewPracticeController",
+        "from": "InterviewQuestionsController",
         "to": "Sinh viên",
         "text": "Hiển thị danh sách câu hỏi",
         "kind": "return"
@@ -104,21 +104,21 @@
       },
       {
         "from": "Sinh viên",
-        "to": "InterviewPracticeController",
+        "to": "InterviewQuestionsController",
         "text": "Mở một câu hỏi"
       },
       {
-        "from": "InterviewPracticeController",
+        "from": "InterviewQuestionsController",
         "to": "GetInterviewQuestionQueryHandler",
         "text": "Lấy nội dung câu hỏi"
       },
       {
         "from": "GetInterviewQuestionQueryHandler",
-        "to": "InterviewQuestionRepository",
+        "to": "LearnerQuestionRepository",
         "text": "Tìm câu đang hiển thị và dữ liệu của người gọi"
       },
       {
-        "from": "InterviewQuestionRepository",
+        "from": "LearnerQuestionRepository",
         "to": "JdbcInterviewQuestionRepository",
         "text": "Đọc nội dung học và khả năng luyện"
       },
@@ -135,13 +135,13 @@
       },
       {
         "from": "JdbcInterviewQuestionRepository",
-        "to": "InterviewQuestionRepository",
+        "to": "LearnerQuestionRepository",
         "text": "Chi tiết câu hỏi",
         "kind": "return"
       },
       {
         "from": "GetInterviewQuestionQueryHandler",
-        "to": "InterviewQuestionRepository",
+        "to": "LearnerQuestionRepository",
         "text": "Chi tiết câu hỏi",
         "kind": "return"
       },
@@ -150,13 +150,13 @@
           "label": "Câu hỏi đang hoạt động?",
           "then": [
             {
-              "from": "InterviewQuestionRepository",
-              "to": "InterviewPracticeController",
+              "from": "LearnerQuestionRepository",
+              "to": "InterviewQuestionsController",
               "text": "Nội dung học đã soạn sẵn; có thể luyện khi có tiêu chí",
               "kind": "return"
             },
             {
-              "from": "InterviewPracticeController",
+              "from": "InterviewQuestionsController",
               "to": "Sinh viên",
               "text": "Hiển thị nội dung học và nút luyện phù hợp",
               "kind": "return"
@@ -164,13 +164,13 @@
           ],
           "else": [
             {
-              "from": "InterviewQuestionRepository",
-              "to": "InterviewPracticeController",
+              "from": "LearnerQuestionRepository",
+              "to": "InterviewQuestionsController",
               "text": "Không tìm thấy câu hỏi",
               "kind": "return"
             },
             {
-              "from": "InterviewPracticeController",
+              "from": "InterviewQuestionsController",
               "to": "Sinh viên",
               "text": "Báo câu hỏi không còn hiển thị",
               "kind": "return"

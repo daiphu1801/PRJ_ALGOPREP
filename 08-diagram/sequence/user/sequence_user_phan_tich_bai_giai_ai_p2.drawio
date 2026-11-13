@@ -16,7 +16,7 @@
         <mxCell id="v3" value="Giai đoạn 2 - Kết quả dùng lại không tốn lượt AI (F5-20)" style="algoprep=phase;rounded=0;whiteSpace=wrap;html=1;fillColor=#EFEFEF;strokeColor=#999999;dashed=1;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#1A1A1A;fontSize=13;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="40" y="144" width="1390" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="v4" value='AnalyzeAccepted&lt;br&gt;Submission&lt;br&gt;CommandHandler&lt;br&gt;&lt;font style="font-size:9px"&gt;(application command)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=68;fontSize=11;fillColor=#FFF2CC;strokeColor=#B8952A;fontColor=#1A1A1A;" vertex="1" parent="1">
+        <mxCell id="v4" value='GetOrCreate&lt;br&gt;SolutionReview&lt;br&gt;CommandHandler&lt;br&gt;&lt;font style="font-size:9px"&gt;(application command)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=68;fontSize=11;fillColor=#FFF2CC;strokeColor=#B8952A;fontColor=#1A1A1A;" vertex="1" parent="1">
           <mxGeometry x="60" y="60" width="130" height="940" as="geometry" />
         </mxCell>
         <mxCell id="v5" value='SolutionReview&lt;br&gt;Repository&lt;br&gt;&lt;font style="font-size:9px"&gt;(output port F5)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=68;fontSize=11;fillColor=#FFC7CE;strokeColor=#B0525E;fontColor=#1A1A1A;" vertex="1" parent="1">
@@ -28,7 +28,7 @@
         <mxCell id="v7" value='PostgreSQL&lt;br&gt;&lt;font style="font-size:9px"&gt;(schema ai)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=68;fontSize=11;fillColor=#D9D9D9;strokeColor=#7A7A7A;fontColor=#1A1A1A;" vertex="1" parent="1">
           <mxGeometry x="525" y="60" width="130" height="940" as="geometry" />
         </mxCell>
-        <mxCell id="v8" value='AiLimitPort&lt;br&gt;&lt;font style="font-size:9px"&gt;(output port)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=68;fontSize=11;fillColor=#FFC7CE;strokeColor=#B0525E;fontColor=#1A1A1A;" vertex="1" parent="1">
+        <mxCell id="v8" value='AiCostGatePort&lt;br&gt;&lt;font style="font-size:9px"&gt;(output port)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=68;fontSize=11;fillColor=#FFC7CE;strokeColor=#B0525E;fontColor=#1A1A1A;" vertex="1" parent="1">
           <mxGeometry x="680" y="60" width="130" height="940" as="geometry" />
         </mxCell>
         <mxCell id="v9" value='RedisLimit&lt;br&gt;Adapter&lt;br&gt;&lt;font style="font-size:9px"&gt;(infrastructure)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=68;fontSize=11;fillColor=#FFC7CE;strokeColor=#B0525E;fontColor=#1A1A1A;" vertex="1" parent="1">
@@ -37,7 +37,7 @@
         <mxCell id="v10" value='Redis&lt;br&gt;&lt;font style="font-size:9px"&gt;(giới hạn theo giờ)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=68;fontSize=11;fillColor=#D9D9D9;strokeColor=#7A7A7A;fontColor=#1A1A1A;" vertex="1" parent="1">
           <mxGeometry x="990" y="60" width="130" height="940" as="geometry" />
         </mxCell>
-        <mxCell id="v11" value='ProblemPort&lt;br&gt;&lt;font style="font-size:9px"&gt;(cổng F2)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=68;fontSize=11;fillColor=#FFC7CE;strokeColor=#B0525E;fontColor=#1A1A1A;" vertex="1" parent="1">
+        <mxCell id="v11" value='ProblemContext&lt;br&gt;Port&lt;br&gt;&lt;font style="font-size:9px"&gt;(cổng F2)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=68;fontSize=11;fillColor=#FFC7CE;strokeColor=#B0525E;fontColor=#1A1A1A;" vertex="1" parent="1">
           <mxGeometry x="1145" y="60" width="130" height="940" as="geometry" />
         </mxCell>
         <mxCell id="v12" value='ProblemBridge&lt;br&gt;&lt;font style="font-size:9px"&gt;(adapter liên module)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=68;fontSize=11;fillColor=#FFC7CE;strokeColor=#B0525E;fontColor=#1A1A1A;" vertex="1" parent="1">

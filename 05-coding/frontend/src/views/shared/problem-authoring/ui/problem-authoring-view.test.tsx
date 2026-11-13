@@ -56,6 +56,11 @@ describe("ProblemAuthoringView testcase tab", () => {
     expect(
       toasts.result.current.map((item) => [item.tone, item.message]),
     ).toEqual([["error", "dialog.required"]]);
+    await waitFor(() =>
+      expect(
+        within(dialog).getByRole("button", { name: "dialog.save" }),
+      ).toBeEnabled(),
+    );
 
     const fields = within(dialog).getAllByRole("textbox");
     fireEvent.change(fields[0]!, { target: { value: 's = "xyz", t = "y"' } });
@@ -64,6 +69,9 @@ describe("ProblemAuthoringView testcase tab", () => {
       within(dialog).getByRole("button", { name: "dialog.save" }),
     );
 
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+    );
     expect(screen.getByText('s = "xyz", t = "y"')).toBeInTheDocument();
     // No inline notice any more: a stale run shows as the checklist item going back to pending.
     const solutionItem = () =>
@@ -386,6 +394,7 @@ describe("ProblemAuthoringView spec tab (F2-03, F2-04)", () => {
   it("shows the starter-code preview of each language for the sample problem", async () => {
     await openSpecTab();
     for (const language of ["java", "cpp", "python"]) {
+      fireEvent.click(screen.getByRole("button", { name: `spec.language.${language}` }));
       expect(
         screen.getByRole("listitem", { name: `spec.language.${language}` }),
       ).toBeInTheDocument();

@@ -50,6 +50,8 @@ Chỉ một tiến trình được bật worker. Profile cấp48 kết nối Hik
 
 ## Kiểm tra
 
+Từ13/11, target mới được công bố trước khi đổi concurrency. Resize lỗi khôi phục target/counters cũ để lần poll sau thử lại và readiness unhealthy cho tới lần kiểm tra gate phục hồi. Target và active là hai gauge riêng; việc chúng khác nhau lúc tăng/giảm/drain không tự chứng minh mất job. Hồi quy thứ tự ngay trong callback resize: `WorkerScalePublicationTest`.
+
 - `/actuator/health/readiness` phải UP; role worker bao gồm `gradingWorker`. Pause có chủ đích vẫn UP.
 - Prometheus có `judge_grading_consumers_target` và `judge_grading_consumers_active`. Target giữ nguyên khi pause; active về 0 sau drain. Metric không đợi khóa điều khiển đang drain.
 - Pause không ngắt job đang xử lý. Resume nhận phần còn trong queue. Tắt autoscale đặt target về 1 và cho consumer đang bận hoàn tất.
@@ -65,3 +67,18 @@ docker compose -f docker-compose.worker-sandbox.yml down
 ```
 
 Lệnh trên chỉ quản lý project sandbox tùy chọn; không dùng `down` của compose hạ tầng để dọn sandbox kiểm thử.
+
+## Backlog tích hợp sự kiện Published/Unpublished F2
+
+`ProblemLifecycleBindingConfig` khai báo queue durable `problem-bank.lifecycle-pending`, exchange topic durable `algoprep.domain-events`, hai binding chính xác `problem.problem.published` và `problem.problem.unpublished`. Queue không exclusive/auto-delete, không TTL/expiry hoặc overflow drop. Publisher gửi persistent message, confirm thành công rồi outbox mới ghi published. Event chưa được nghiệp vụ F1/F4 xử lý: consumer tích hợp được bổ sung khi có hợp đồng, phải dedupe theo eventId và xử lý thứ tự/phiên bản phù hợp.
+
+Theo dõi đúng vhost triển khai (ví dụ vhost kiểm tải riêng):
+
+```powershell
+docker exec algoprep-rabbitmq rabbitmqctl list_bindings -p algoprep_followup_load source_name destination_name routing_key
+docker exec algoprep-rabbitmq rabbitmqctl list_queues -p algoprep_followup_load name durable auto_delete messages_ready messages_unacknowledged consumers
+```
+
+`consumers=0` và có messages_ready ở queue này là trạng thái chờ tích hợp có chủ ý. Theo dõi độ dài queue, dung lượng broker và disk/publisher-blocked alarm; budget/alert triển khai cần tính cả backlog được giữ. Không áp policy TTL/max-length drop lên queue này. Nếu broker từ chối hoặc confirm timeout, outbox giữ pending và tiếp tục backoff tối đa300s; key sai vẫn phải unroutable, không bind wildcard để nuốt mọi sự kiện.
+
+Sự kiện pending cũ trong DB sẽ được relay theo lịch backoff khi ứng dụng có topology mới chạy; không ép `published_at` bằng SQL. Khi rollback ứng dụng, giữ queue và các message đã confirm vì chúng có thể là bản lưu còn lại sau retention outbox90ngày; không purge/delete để làm sạch biểu đồ. Replay hoặc di chuyển phải xác minh số lượng/eventId và lưu bền vững trước ack. Kiểm thử chỉ purge queue trong RabbitMQ Testcontainers riêng, không purge queue dùng chung.

@@ -85,12 +85,15 @@ final class WorkerConsumptionControl implements SmartLifecycle {
       var proposal = scaling.copy();
       int before = scaling.target();
       int after = proposal.poll(control);
+      // Publish the desired target before the container can expose its new active count.
+      target = after;
       if (before != after) {
         resize(before, after, control);
       }
       scaling = proposal;
-      target = proposal.target();
     } catch (RuntimeException e) {
+      // A rejected resize must retain the committed counters and target for the next poll.
+      target = scaling.target();
       healthy = false;
       LOG.warn("Grading consumer control is unavailable");
     }

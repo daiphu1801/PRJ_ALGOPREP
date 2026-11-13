@@ -4,62 +4,61 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="t_practiceController" value='&lt;div style="text-align:center"&gt;&lt;b&gt;InterviewPracticeController&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;search(caller&amp;nbsp;:&amp;nbsp;Jwt,&amp;nbsp;filter&amp;nbsp;:&amp;nbsp;QuestionFilter)&amp;nbsp;:&amp;nbsp;Page&amp;lt;Question&amp;gt;&lt;br&gt;+&amp;nbsp;study(questionId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;StudyContent&lt;br&gt;+&amp;nbsp;selfRate(caller&amp;nbsp;:&amp;nbsp;Jwt,&amp;nbsp;questionId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;rating&amp;nbsp;:&amp;nbsp;String)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="298" y="60" width="414.4" height="82" as="geometry" />
+        <mxCell id="t_questionController" value='&lt;div style="text-align:center"&gt;&lt;b&gt;InterviewQuestionsController&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;list(caller&amp;nbsp;:&amp;nbsp;JwtToken,&amp;nbsp;params&amp;nbsp;:&amp;nbsp;Map)&amp;nbsp;:&amp;nbsp;Items&lt;br&gt;+&amp;nbsp;get(caller&amp;nbsp;:&amp;nbsp;JwtToken,&amp;nbsp;questionId&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;Detail&lt;br&gt;+&amp;nbsp;rate(caller&amp;nbsp;:&amp;nbsp;JwtToken,&amp;nbsp;questionId&amp;nbsp;:&amp;nbsp;String,&amp;nbsp;req&amp;nbsp;:&amp;nbsp;Request)&amp;nbsp;:&amp;nbsp;Recall' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="118.04999999999995" y="60" width="451" height="82" as="geometry" />
         </mxCell>
-        <mxCell id="t_evalHandler" value='&lt;div style="text-align:center"&gt;&lt;b&gt;EvaluatePracticeAnswerCommandHandler&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;evaluate(command&amp;nbsp;:&amp;nbsp;EvaluateAnswerCommand)&amp;nbsp;:&amp;nbsp;PracticeFeedback' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="78" y="212" width="402.2" height="54" as="geometry" />
+        <mxCell id="t_practiceController" value='&lt;div style="text-align:center"&gt;&lt;b&gt;PracticeAnswersController&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;submit(caller&amp;nbsp;:&amp;nbsp;JwtToken,&amp;nbsp;questionId&amp;nbsp;:&amp;nbsp;String,&amp;nbsp;req&amp;nbsp;:&amp;nbsp;Request)&amp;nbsp;:&amp;nbsp;AttemptDto' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="619.05" y="60" width="487.59999999999997" height="54" as="geometry" />
         </mxCell>
-        <mxCell id="t_questionRepo" value='&lt;div style="text-align:center"&gt;&lt;b&gt;InterviewQuestionRepository&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;findPublished(filter&amp;nbsp;:&amp;nbsp;QuestionFilter)&amp;nbsp;:&amp;nbsp;Page&amp;lt;Question&amp;gt;&lt;br&gt;+&amp;nbsp;findStudyContent(questionId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;Optional&amp;lt;StudyContent&amp;gt;' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="530.2" y="212" width="402.2" height="82" as="geometry" />
+        <mxCell id="t_submitHandler" value='&lt;div style="text-align:center"&gt;&lt;b&gt;SubmitPracticeAnswerCommandHandler&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;submit(in&amp;nbsp;:&amp;nbsp;PracticeSubmission)&amp;nbsp;:&amp;nbsp;PracticeOutcome' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="747.1499999999999" y="212" width="335.09999999999997" height="54" as="geometry" />
         </mxCell>
-        <mxCell id="t_historyRepo" value='&lt;div style="text-align:center"&gt;&lt;b&gt;PracticeHistoryRepository&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;recordRating(userId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;questionId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;rating&amp;nbsp;:&amp;nbsp;String)&lt;br&gt;+&amp;nbsp;getProgress(userId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;PracticeProgress' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="294.95" y="364" width="420.5" height="82" as="geometry" />
+        <mxCell id="t_questionRepo" value='&lt;div style="text-align:center"&gt;&lt;b&gt;LearnerQuestionRepository&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;page(criteria&amp;nbsp;:&amp;nbsp;LearnerQuestionCriteria)&amp;nbsp;:&amp;nbsp;LearnerQuestionPage&lt;br&gt;+&amp;nbsp;find(userId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;questionId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;Optional&amp;lt;LearnerQuestion&amp;gt;&lt;br&gt;+&amp;nbsp;rate(userId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;questionId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;rating&amp;nbsp;:&amp;nbsp;RecallRating)&amp;nbsp;:&amp;nbsp;Optional&amp;lt;RecallState&amp;gt;' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="142.44999999999993" y="212" width="554.6999999999999" height="96" as="geometry" />
         </mxCell>
-        <mxCell id="t_aiPort" value='&lt;div style="text-align:center"&gt;&lt;b&gt;AiEvaluationPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;compare(answer&amp;nbsp;:&amp;nbsp;String,&amp;nbsp;rubrics&amp;nbsp;:&amp;nbsp;List&amp;lt;AnswerRubric&amp;gt;)&amp;nbsp;:&amp;nbsp;PracticeFeedback' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="264.45" y="516" width="481.5" height="68" as="geometry" />
+        <mxCell id="t_practiceRepo" value='&lt;div style="text-align:center"&gt;&lt;b&gt;PracticeRepository&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;findActiveQuestion(questionId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;Optional&amp;lt;PracticeQuestion&amp;gt;&lt;br&gt;+&amp;nbsp;insertAttempt(attempt&amp;nbsp;:&amp;nbsp;NewAttempt,&amp;nbsp;attemptNo&amp;nbsp;:&amp;nbsp;int)&amp;nbsp;:&amp;nbsp;AnswerAttempt&lt;br&gt;+&amp;nbsp;attempts(userId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;questionId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;before&amp;nbsp;:&amp;nbsp;Integer,&amp;nbsp;limit&amp;nbsp;:&amp;nbsp;int)&amp;nbsp;:&amp;nbsp;AttemptPage' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="54" y="378" width="566.9" height="96" as="geometry" />
         </mxCell>
-        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.817;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_practiceController" target="t_questionRepo">
+        <mxCell id="t_feedbackPort" value='&lt;div style="text-align:center"&gt;&lt;b&gt;AnswerFeedbackPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;reserve(userId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;category&amp;nbsp;:&amp;nbsp;LearnerCategory,&amp;nbsp;limit&amp;nbsp;:&amp;nbsp;int)&amp;nbsp;:&amp;nbsp;GateTicket&lt;br&gt;+&amp;nbsp;compareAnswer(request&amp;nbsp;:&amp;nbsp;FeedbackRequest)&amp;nbsp;:&amp;nbsp;FeedbackResult' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="670.9" y="378" width="499.79999999999995" height="82" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_questionController" target="t_questionRepo">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="636.6666666666667" y="194.5" />
-            <mxPoint x="731.3000000000001" y="194.5" />
+            <mxPoint x="343.54999999999995" y="165.33333333333334" />
+            <mxPoint x="419.7999999999999" y="165.33333333333334" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e2" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_practiceController" target="t_historyRepo">
+        <mxCell id="e2" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_practiceController" target="t_submitHandler">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="505.19999999999993" y="177" />
-            <mxPoint x="30" y="177" />
-            <mxPoint x="30" y="340.6666666666667" />
-            <mxPoint x="505.2" y="340.6666666666667" />
+            <mxPoint x="862.8499999999999" y="188.66666666666666" />
+            <mxPoint x="914.6999999999998" y="188.66666666666666" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e3" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.183;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_practiceController" target="t_evalHandler">
+        <mxCell id="e3" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.265;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_submitHandler" target="t_practiceRepo">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="373.73333333333335" y="159.5" />
-            <mxPoint x="279.1" y="159.5" />
+            <mxPoint x="835.9249999999998" y="331.3333333333333" />
+            <mxPoint x="337.45" y="331.3333333333333" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e4" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_evalHandler" target="t_aiPort">
+        <mxCell id="e4" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.735;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_submitHandler" target="t_feedbackPort">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="279.1" y="317.3333333333333" />
-            <mxPoint x="42" y="317.3333333333333" />
-            <mxPoint x="42" y="481" />
-            <mxPoint x="505.2" y="481" />
+            <mxPoint x="993.4749999999999" y="354.6666666666667" />
+            <mxPoint x="920.8" y="354.6666666666667" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="title" value="A1 — Học và luyện câu hỏi phỏng vấn" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="0" y="10" width="962.4" height="30" as="geometry" />
+          <mxGeometry x="0" y="10" width="1200.6999999999998" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="v5" value="Ghi chú: InterviewPracticeController phục vụ duyệt câu hỏi, xem khung đáp án mẫu và ghi nhận mức độ ghi nhớ (RecallRating).&lt;br&gt;Ghi chú: EvaluatePracticeAnswerCommandHandler đối chiếu câu trả lời tự luận với rubric qua AiEvaluationPort." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="30" y="604" width="1100" height="44" as="geometry" />
+        <mxCell id="v5" value="Ghi chú: InterviewQuestionsController phục vụ duyệt câu hỏi, xem khung đáp án mẫu và ghi nhận mức độ ghi nhớ (RecallRating).&lt;br&gt;Ghi chú: SubmitPracticeAnswerCommandHandler đối chiếu câu trả lời tự luận với rubric qua AnswerFeedbackPort." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="30" y="494" width="1100" height="44" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

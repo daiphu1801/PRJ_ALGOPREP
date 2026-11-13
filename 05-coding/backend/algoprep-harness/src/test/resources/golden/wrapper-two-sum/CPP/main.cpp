@@ -38,6 +38,29 @@ struct ApHInput {
         while (index < lines.size()) if (!apH_trim(lines[index++]).empty()) apH_inputError();
     }
 };
+// Match the ASCII numeric grammar without instantiating std::regex in every submission.
+bool apH_digits(const std::string& value, size_t& index) {
+    size_t start = index;
+    while (index < value.size() && value[index] >= '0' && value[index] <= '9') ++index;
+    return index != start;
+}
+bool apH_number(const std::string& value, bool decimal) {
+    size_t index = 0;
+    if (index < value.size() && (value[index] == '+' || value[index] == '-')) ++index;
+    bool digits = apH_digits(value, index);
+    if (decimal && index < value.size() && value[index] == '.') {
+        ++index;
+        bool fraction = apH_digits(value, index);
+        digits = digits || fraction;
+    }
+    if (!digits) return false;
+    if (decimal && index < value.size() && (value[index] == 'e' || value[index] == 'E')) {
+        ++index;
+        if (index < value.size() && (value[index] == '+' || value[index] == '-')) ++index;
+        if (!apH_digits(value, index)) return false;
+    }
+    return index == value.size();
+}
 template<class T> T apH_scalar(const std::string& raw) {
     if constexpr (std::is_same_v<T, std::string>) return raw;
     else {
@@ -50,14 +73,12 @@ template<class T> T apH_scalar(const std::string& raw) {
                 if (raw.size() != 1 || (unsigned char)raw[0] < 33 || (unsigned char)raw[0] > 126) apH_inputError();
                 return raw[0];
             } else if constexpr (std::is_integral_v<T>) {
-                static const std::regex pattern("[+-]?[0-9]+");
-                if (!std::regex_match(value, pattern)) apH_inputError();
+                if (!apH_number(value, false)) apH_inputError();
                 long long number = std::stoll(value);
                 if (number < std::numeric_limits<T>::min() || number > std::numeric_limits<T>::max()) apH_inputError();
                 return static_cast<T>(number);
             } else {
-                static const std::regex pattern("[+-]?(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:[eE][+-]?[0-9]+)?");
-                if (!std::regex_match(value, pattern)) apH_inputError();
+                if (!apH_number(value, true)) apH_inputError();
                 char* end;
                 double number = std::strtod(value.c_str(), &end);
                 if (*end || !std::isfinite(number)) apH_inputError();
@@ -76,7 +97,10 @@ struct ApHOutput {
     size_t limit;
     ApHOutput() {
         const char* raw = std::getenv("APH_MAX_RESULT_BYTES");
-        if (!raw || !std::regex_match(raw, std::regex("[0-9]+"))) apH_outputError();
+        if (!raw) apH_outputError();
+        std::string value(raw);
+        size_t end = 0;
+        if (!apH_digits(value, end) || end != value.size()) apH_outputError();
         try { limit = std::stoull(raw); } catch (const std::exception&) { apH_outputError(); }
         if (!limit || limit > static_cast<unsigned long long>(LLONG_MAX)) apH_outputError();
     }

@@ -4,49 +4,49 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="t_evalHandler" value='&lt;div style="text-align:center"&gt;&lt;b&gt;EvaluatePracticeAnswerCommandHandler&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;evaluate(command&amp;nbsp;:&amp;nbsp;EvaluateAnswerCommand)&amp;nbsp;:&amp;nbsp;PracticeFeedback' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="304.29999999999995" y="60" width="402.2" height="54" as="geometry" />
+        <mxCell id="t_submitHandler" value='&lt;div style="text-align:center"&gt;&lt;b&gt;SubmitPracticeAnswerCommandHandler&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;submit(in&amp;nbsp;:&amp;nbsp;PracticeSubmission)&amp;nbsp;:&amp;nbsp;PracticeOutcome' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="392.75" y="60" width="335.09999999999997" height="54" as="geometry" />
         </mxCell>
-        <mxCell id="t_questionRepo" value='&lt;div style="text-align:center"&gt;&lt;b&gt;InterviewQuestionRepository&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;findRubrics(questionId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;List&amp;lt;AnswerRubric&amp;gt;' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="66" y="184" width="347.29999999999995" height="68" as="geometry" />
+        <mxCell id="t_questionRepo" value='&lt;div style="text-align:center"&gt;&lt;b&gt;LearnerQuestionRepository&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;find(userId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;questionId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;Optional&amp;lt;LearnerQuestion&amp;gt;&lt;br&gt;+&amp;nbsp;isActive(questionId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;boolean' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="66" y="184" width="438.79999999999995" height="82" as="geometry" />
         </mxCell>
-        <mxCell id="t_aiPort" value='&lt;div style="text-align:center"&gt;&lt;b&gt;AiEvaluationPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;compare(answer&amp;nbsp;:&amp;nbsp;String,&amp;nbsp;rubrics&amp;nbsp;:&amp;nbsp;List&amp;lt;AnswerRubric&amp;gt;)&amp;nbsp;:&amp;nbsp;PracticeFeedback' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="463.29999999999995" y="184" width="481.5" height="68" as="geometry" />
+        <mxCell id="t_feedbackPort" value='&lt;div style="text-align:center"&gt;&lt;b&gt;AnswerFeedbackPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;reserve(userId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;category&amp;nbsp;:&amp;nbsp;LearnerCategory,&amp;nbsp;limit&amp;nbsp;:&amp;nbsp;int)&amp;nbsp;:&amp;nbsp;GateTicket&lt;br&gt;+&amp;nbsp;compareAnswer(request&amp;nbsp;:&amp;nbsp;FeedbackRequest)&amp;nbsp;:&amp;nbsp;FeedbackResult&lt;br&gt;+&amp;nbsp;refund(ticket&amp;nbsp;:&amp;nbsp;GateTicket)&amp;nbsp;:&amp;nbsp;void' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="554.8" y="184" width="499.79999999999995" height="96" as="geometry" />
         </mxCell>
-        <mxCell id="t_historyRepo" value='&lt;div style="text-align:center"&gt;&lt;b&gt;PracticeHistoryRepository&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;recordAttempt(userId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;topicId&amp;nbsp;:&amp;nbsp;UUID)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="353.1" y="322" width="304.59999999999997" height="68" as="geometry" />
+        <mxCell id="t_practiceRepo" value='&lt;div style="text-align:center"&gt;&lt;b&gt;PracticeRepository&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;insertAttempt(attempt&amp;nbsp;:&amp;nbsp;NewAttempt,&amp;nbsp;attemptNo&amp;nbsp;:&amp;nbsp;int)&amp;nbsp;:&amp;nbsp;AnswerAttempt&lt;br&gt;+&amp;nbsp;touchHistory(userId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;topicId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;firstAttempt&amp;nbsp;:&amp;nbsp;boolean)&amp;nbsp;:&amp;nbsp;void' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="316.5" y="350" width="487.59999999999997" height="82" as="geometry" />
         </mxCell>
-        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.183;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_evalHandler" target="t_questionRepo">
+        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.187;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_submitHandler" target="t_questionRepo">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="377.99999999999994" y="131.5" />
-            <mxPoint x="239.64999999999998" y="131.5" />
+            <mxPoint x="455.26666666666665" y="131.5" />
+            <mxPoint x="285.4" y="131.5" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e2" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.817;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_evalHandler" target="t_aiPort">
+        <mxCell id="e2" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.813;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_submitHandler" target="t_feedbackPort">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="632.8" y="166.5" />
-            <mxPoint x="704.05" y="166.5" />
+            <mxPoint x="665.3333333333333" y="166.5" />
+            <mxPoint x="804.6999999999999" y="166.5" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e3" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_evalHandler" target="t_historyRepo">
+        <mxCell id="e3" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_submitHandler" target="t_practiceRepo">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="505.4" y="149" />
+            <mxPoint x="560.3" y="149" />
             <mxPoint x="30" y="149" />
-            <mxPoint x="30" y="287" />
-            <mxPoint x="505.4" y="287" />
+            <mxPoint x="30" y="315" />
+            <mxPoint x="560.3" y="315" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="title" value="A4 — Đối chiếu câu trả lời lý thuyết" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="0" y="10" width="974.8" height="30" as="geometry" />
+          <mxGeometry x="0" y="10" width="1084.6" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="v4" value="Ghi chú: EvaluatePracticeAnswerCommandHandler đối chiếu câu trả lời của người học với rubric chuẩn qua AiEvaluationPort.&lt;br&gt;Ghi chú: Kết quả đối chiếu gồm điểm đạt, tiêu chí còn thiếu và gợi ý ôn tập; PracticeHistoryRepository ghi nhận tiến độ." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="30" y="410" width="1100" height="44" as="geometry" />
+        <mxCell id="v4" value="Ghi chú: SubmitPracticeAnswerCommandHandler đối chiếu câu trả lời của người học với rubric chuẩn qua AnswerFeedbackPort.&lt;br&gt;Ghi chú: Kết quả đối chiếu gồm điểm đạt, tiêu chí còn thiếu và gợi ý ôn tập; PracticeRepository ghi nhận số lần nộp và cập nhật lịch sử." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="30" y="452" width="1100" height="44" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

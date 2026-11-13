@@ -1,5 +1,5 @@
 {
-  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a4_system.md:67. Nguồn thiết kế: 05-coding/backend/algoprep-interview-bank/src/main/java/com/algoprep/interviewbank/. [SoT: Suy luận] Cấu trúc CommandHandler và Port chuẩn theo kiến trúc Hexagonal của dự án.",
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a4_system.md:67. Nguồn thiết kế: 05-coding/backend/algoprep-interview-bank/src/main/java/com/algoprep/interviewbank/. Cấu trúc CommandHandler và Port chuẩn theo kiến trúc Hexagonal / Clean Architecture của phân hệ F6.",
   "kind": "class",
   "title": "A4 — Đối chiếu câu trả lời lý thuyết",
   "covers": [
@@ -9,58 +9,62 @@
     "legend": "shared",
     "classes": [
       {
-        "id": "evalHandler",
-        "name": "EvaluatePracticeAnswerCommandHandler",
+        "id": "submitHandler",
+        "name": "SubmitPracticeAnswerCommandHandler",
         "methods": [
-          "+ evaluate(command : EvaluateAnswerCommand) : PracticeFeedback"
+          "+ submit(in : PracticeSubmission) : PracticeOutcome"
         ]
       },
       {
         "id": "questionRepo",
-        "name": "InterviewQuestionRepository",
+        "name": "LearnerQuestionRepository",
         "kind": "interface",
         "methods": [
-          "+ findRubrics(questionId : UUID) : List<AnswerRubric>"
+          "+ find(userId : UUID, questionId : UUID) : Optional<LearnerQuestion>",
+          "+ isActive(questionId : UUID) : boolean"
         ]
       },
       {
-        "id": "aiPort",
-        "name": "AiEvaluationPort",
+        "id": "feedbackPort",
+        "name": "AnswerFeedbackPort",
         "kind": "interface",
         "methods": [
-          "+ compare(answer : String, rubrics : List<AnswerRubric>) : PracticeFeedback"
+          "+ reserve(userId : UUID, category : LearnerCategory, limit : int) : GateTicket",
+          "+ compareAnswer(request : FeedbackRequest) : FeedbackResult",
+          "+ refund(ticket : GateTicket) : void"
         ]
       },
       {
-        "id": "historyRepo",
-        "name": "PracticeHistoryRepository",
+        "id": "practiceRepo",
+        "name": "PracticeRepository",
         "kind": "interface",
         "methods": [
-          "+ recordAttempt(userId : UUID, topicId : UUID)"
+          "+ insertAttempt(attempt : NewAttempt, attemptNo : int) : AnswerAttempt",
+          "+ touchHistory(userId : UUID, topicId : UUID, firstAttempt : boolean) : void"
         ]
       }
     ],
     "externals": [],
     "relations": [
       {
-        "from": "evalHandler",
+        "from": "submitHandler",
         "to": "questionRepo",
         "kind": "dependency"
       },
       {
-        "from": "evalHandler",
-        "to": "aiPort",
+        "from": "submitHandler",
+        "to": "feedbackPort",
         "kind": "dependency"
       },
       {
-        "from": "evalHandler",
-        "to": "historyRepo",
+        "from": "submitHandler",
+        "to": "practiceRepo",
         "kind": "dependency"
       }
     ],
     "notes": [
-      "EvaluatePracticeAnswerCommandHandler đối chiếu câu trả lời của người học với rubric chuẩn qua AiEvaluationPort.",
-      "Kết quả đối chiếu gồm điểm đạt, tiêu chí còn thiếu và gợi ý ôn tập; PracticeHistoryRepository ghi nhận tiến độ."
+      "SubmitPracticeAnswerCommandHandler đối chiếu câu trả lời của người học với rubric chuẩn qua AnswerFeedbackPort.",
+      "Kết quả đối chiếu gồm điểm đạt, tiêu chí còn thiếu và gợi ý ôn tập; PracticeRepository ghi nhận số lần nộp và cập nhật lịch sử."
     ]
   }
 }

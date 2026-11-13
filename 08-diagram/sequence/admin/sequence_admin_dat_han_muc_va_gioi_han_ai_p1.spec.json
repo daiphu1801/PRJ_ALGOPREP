@@ -24,9 +24,9 @@
         "stereo": "application"
       },
       {
-        "name": "AiTokenBudgetRepository",
+        "name": "AiBudgetRepository",
         "role": "repository",
-        "stereo": "output port"
+        "stereo": "persistence adapter"
       },
       {
         "name": "JdbcAiTokenBudgetRepository",
@@ -60,11 +60,11 @@
       },
       {
         "from": "UnlockAiTokenBudgetCommandHandler",
-        "to": "AiTokenBudgetRepository",
+        "to": "AiBudgetRepository",
         "text": "Khóa cấu hình và tính token đã dùng"
       },
       {
-        "from": "AiTokenBudgetRepository",
+        "from": "AiBudgetRepository",
         "to": "JdbcAiTokenBudgetRepository",
         "text": "Đọc ngân sách trong giao dịch"
       },
@@ -85,11 +85,11 @@
           "then": [
             {
               "from": "UnlockAiTokenBudgetCommandHandler",
-              "to": "AiTokenBudgetRepository",
+              "to": "AiBudgetRepository",
               "text": "Xóa thời điểm khóa"
             },
             {
-              "from": "AiTokenBudgetRepository",
+              "from": "AiBudgetRepository",
               "to": "JdbcAiTokenBudgetRepository",
               "text": "Lưu trạng thái mở"
             },

@@ -1,5 +1,5 @@
 {
-  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a1_student.md:117-125. Nguồn thiết kế: 05-coding/backend/algoprep-ai-review/src/main/java/com/algoprep/aireview/. [SoT: Suy luận] Cấu trúc Controller, CommandHandler và Port chuẩn theo kiến trúc Hexagonal của dự án.",
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a1_student.md:117-125. Nguồn thiết kế: 05-coding/backend/algoprep-ai-review/src/main/java/com/algoprep/aireview/. Cấu trúc Controller, CommandHandler và Port chuẩn theo kiến trúc Hexagonal / Clean Architecture của phân hệ F5.",
   "kind": "class",
   "title": "A1 — Phân tích bài giải đã Accepted",
   "covers": [
@@ -19,23 +19,23 @@
         "id": "reviewController",
         "name": "SolutionReviewController",
         "methods": [
-          "+ requestReview(submissionId : UUID) : SolutionReview",
-          "+ getReport(submissionId : UUID) : SolutionReview"
+          "+ solutionReview(auth : JwtToken, submissionId : String) : ReviewResponse",
+          "+ reviewedProblemIds(auth : JwtToken) : ProblemIdsResponse"
         ]
       },
       {
         "id": "reviewHandler",
-        "name": "AnalyzeAcceptedSubmissionCommandHandler",
+        "name": "GetOrCreateSolutionReviewCommandHandler",
         "methods": [
-          "+ handle(command : AnalyzeSubmissionCommand) : SolutionReview"
+          "+ getOrCreate(callerId : UUID, category : CallerCategory, submissionId : UUID) : StoredSolutionReview"
         ]
       },
       {
         "id": "submissionPort",
-        "name": "AcceptedSubmissionReadPort",
+        "name": "SubmissionSnapshotPort",
         "kind": "interface",
         "methods": [
-          "+ requireAccepted(submissionId : UUID) : SubmissionState"
+          "+ getAccepted(submissionId : UUID) : SubmissionSnapshot"
         ]
       },
       {
@@ -43,16 +43,16 @@
         "name": "SolutionReviewRepository",
         "kind": "interface",
         "methods": [
-          "+ findByHash(sourceHash : String) : Optional<SolutionReview>",
-          "+ save(review : SolutionReview)"
+          "+ findBySubmission(submissionId : UUID) : Optional<StoredSolutionReview>",
+          "+ insertReview(review : StoredSolutionReview) : boolean"
         ]
       },
       {
-        "id": "aiPort",
-        "name": "AiProviderPort",
+        "id": "llmPort",
+        "name": "LlmProviderPort",
         "kind": "interface",
         "methods": [
-          "+ analyzeSolution(context : SolutionReviewContext) : SolutionReview"
+          "+ completeStructured(sys : SystemInstruction, data : UserData, schema : ResponseSchema) : StructuredResult"
         ]
       }
     ],
@@ -75,13 +75,13 @@
       },
       {
         "from": "reviewHandler",
-        "to": "aiPort",
+        "to": "llmPort",
         "kind": "dependency"
       }
     ],
     "notes": [
-      "SolutionReviewController chỉ tiếp nhận phân tích cho bài nộp đạt Accepted; cache theo sourceHash.",
-      "AiProviderPort phân tích độ phức tạp thời gian/không gian, kiểm tra trường hợp biên và đề xuất mã tối ưu."
+      "SolutionReviewController tiếp nhận phân tích cho bài nộp đạt Accepted; kiểm tra quyền sở hữu.",
+      "LlmProviderPort gọi Spring AI phân tích có cấu trúc 4 tiêu chí; kết quả lưu cache và database."
     ]
   }
 }

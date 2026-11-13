@@ -243,8 +243,11 @@ describe("a turn over the stream", () => {
       "readonly",
     );
     expect(screen.getByRole("button", { name: m.send })).toBeDisabled();
+    // The server answers 409 to a complete call while a turn is in flight, so the button waits too.
+    expect(screen.getByRole("button", { name: m.stopEarlyCta })).toBeDisabled();
     release();
     await screen.findByText("Next question?");
+    expect(screen.getByRole("button", { name: m.stopEarlyCta })).toBeEnabled();
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 

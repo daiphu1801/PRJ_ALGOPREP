@@ -24,9 +24,9 @@
         "stereo": "application"
       },
       {
-        "name": "AiTokenBudgetRepository",
+        "name": "AiBudgetRepository",
         "role": "repository",
-        "stereo": "output port"
+        "stereo": "persistence adapter"
       },
       {
         "name": "JdbcAiTokenBudgetRepository",
@@ -59,11 +59,11 @@
           "then": [
             {
               "from": "UpdateRateLimitConfigCommandHandler",
-              "to": "AiTokenBudgetRepository",
+              "to": "AiBudgetRepository",
               "text": "Lưu các ô được gửi"
             },
             {
-              "from": "AiTokenBudgetRepository",
+              "from": "AiBudgetRepository",
               "to": "JdbcAiTokenBudgetRepository",
               "text": "Cập nhật từng phần"
             },

@@ -638,7 +638,7 @@ class PersistedWorkerFlowTest {
         queued.add(submit("PYTHON", "STANDARD_IO", source("PYTHON", "STANDARD_IO")));
       }
       httpPause(admin, true, false);
-      // The container grows before the target gauge is stored, so wait for both, not just active.
+      // Separate gauges are not an atomic snapshot; wait for both to reach the new target.
       waitUntil(
           () ->
               metrics.get("judge.grading.consumers.active").gauge().value() >= 2

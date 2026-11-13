@@ -17,12 +17,12 @@
         "role": "actor"
       },
       {
-        "name": "MockInterviewController",
+        "name": "InterviewSessionController",
         "role": "controller",
-        "stereo": "presentation"
+        "stereo": "presentation REST"
       },
       {
-        "name": "MockInterviewStageCommandHandler",
+        "name": "CompleteInterviewSessionCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
@@ -42,7 +42,7 @@
         "stereo": "schema ai"
       },
       {
-        "name": "InterviewAiPort",
+        "name": "LlmProviderPort",
         "role": "repository",
         "stereo": "output port"
       },
@@ -62,16 +62,16 @@
       },
       {
         "from": "Sinh viên",
-        "to": "MockInterviewController",
+        "to": "InterviewSessionController",
         "text": "Yêu cầu kết thúc và chấm"
       },
       {
-        "from": "MockInterviewController",
-        "to": "MockInterviewStageCommandHandler",
+        "from": "InterviewSessionController",
+        "to": "CompleteInterviewSessionCommandHandler",
         "text": "Kiểm chủ phiên và trạng thái"
       },
       {
-        "from": "MockInterviewStageCommandHandler",
+        "from": "CompleteInterviewSessionCommandHandler",
         "to": "InterviewSessionRepository",
         "text": "Đọc phiên cùng toàn bộ hội thoại"
       },
@@ -99,7 +99,7 @@
       },
       {
         "from": "InterviewSessionRepository",
-        "to": "MockInterviewStageCommandHandler",
+        "to": "CompleteInterviewSessionCommandHandler",
         "text": "Phiên cần chấm hoặc đã hoàn tất",
         "kind": "return"
       },
@@ -108,25 +108,25 @@
           "label": "Đã có bảng điểm?",
           "then": [
             {
-              "from": "MockInterviewStageCommandHandler",
-              "to": "MockInterviewController",
+              "from": "CompleteInterviewSessionCommandHandler",
+              "to": "InterviewSessionController",
               "text": "Trả bảng điểm đã lưu",
               "kind": "return"
             }
           ],
           "else": [
             {
-              "from": "MockInterviewStageCommandHandler",
-              "to": "MockInterviewStageCommandHandler",
+              "from": "CompleteInterviewSessionCommandHandler",
+              "to": "CompleteInterviewSessionCommandHandler",
               "text": "Kiểm đã có ít nhất một lượt trả lời"
             },
             {
-              "from": "MockInterviewStageCommandHandler",
-              "to": "InterviewAiPort",
+              "from": "CompleteInterviewSessionCommandHandler",
+              "to": "LlmProviderPort",
               "text": "Xin đánh giá bốn tiêu chí"
             },
             {
-              "from": "InterviewAiPort",
+              "from": "LlmProviderPort",
               "to": "SpringAiLlmAdapter",
               "text": "Gọi mô hình AI"
             },
@@ -143,23 +143,23 @@
             },
             {
               "from": "SpringAiLlmAdapter",
-              "to": "InterviewAiPort",
+              "to": "LlmProviderPort",
               "text": "Bảng điểm có cấu trúc",
               "kind": "return"
             },
             {
-              "from": "InterviewAiPort",
-              "to": "MockInterviewStageCommandHandler",
+              "from": "LlmProviderPort",
+              "to": "CompleteInterviewSessionCommandHandler",
               "text": "Bảng điểm và lượng token",
               "kind": "return"
             },
             {
-              "from": "MockInterviewStageCommandHandler",
-              "to": "MockInterviewStageCommandHandler",
+              "from": "CompleteInterviewSessionCommandHandler",
+              "to": "CompleteInterviewSessionCommandHandler",
               "text": "Kiểm đủ bốn tiêu chí và mức điểm"
             },
             {
-              "from": "MockInterviewStageCommandHandler",
+              "from": "CompleteInterviewSessionCommandHandler",
               "to": "InterviewSessionRepository",
               "text": "Lưu điểm, đóng phiên và sự kiện"
             },
@@ -187,13 +187,13 @@
             },
             {
               "from": "InterviewSessionRepository",
-              "to": "MockInterviewStageCommandHandler",
+              "to": "CompleteInterviewSessionCommandHandler",
               "text": "Bảng điểm tham khảo",
               "kind": "return"
             },
             {
-              "from": "MockInterviewStageCommandHandler",
-              "to": "MockInterviewController",
+              "from": "CompleteInterviewSessionCommandHandler",
+              "to": "InterviewSessionController",
               "text": "Trả bảng điểm tham khảo",
               "kind": "return"
             }
@@ -201,7 +201,7 @@
         }
       },
       {
-        "from": "MockInterviewController",
+        "from": "InterviewSessionController",
         "to": "Sinh viên",
         "text": "Hiển thị đánh giá hỗ trợ học tập",
         "kind": "return"

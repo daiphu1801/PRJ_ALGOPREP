@@ -1,5 +1,5 @@
 {
-  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a4_system.md:53-62. Nguồn thiết kế: 05-coding/backend/algoprep-ai-review/src/main/java/com/algoprep/aireview/. [SoT: Suy luận] Cấu trúc CommandHandler và Port chuẩn theo kiến trúc Hexagonal của dự án.",
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a4_system.md:53-62. Nguồn thiết kế: 05-coding/backend/algoprep-ai-review/src/main/java/com/algoprep/aireview/. Cấu trúc CommandHandler và Port chuẩn theo kiến trúc Hexagonal / Clean Architecture của phân hệ F5.",
   "kind": "class",
   "title": "A4 — Điều phối AI và suy giảm có kiểm soát",
   "covers": [
@@ -22,41 +22,41 @@
     "classes": [
       {
         "id": "reviewHandler",
-        "name": "AnalyzeAcceptedSubmissionCommandHandler",
+        "name": "GetOrCreateSolutionReviewCommandHandler",
         "methods": [
-          "+ handle(command : AnalyzeSubmissionCommand) : SolutionReview",
-          "+ degradeOnFailure(cause : Throwable) : ReviewFallback"
+          "+ getOrCreate(callerId : UUID, category : CallerCategory, submissionId : UUID) : StoredSolutionReview"
         ]
       },
       {
-        "id": "interviewHandler",
-        "name": "MockInterviewStageCommandHandler",
+        "id": "turnHandler",
+        "name": "SendInterviewTurnCommandHandler",
         "methods": [
-          "+ advanceStage(command : AdvanceStageCommand) : InterviewRubric"
+          "+ send(command : SendInterviewTurnCommand, sink : InterviewTurnSink) : void"
         ]
       },
       {
-        "id": "submissionBridge",
-        "name": "AcceptedSubmissionReadPort",
+        "id": "submissionPort",
+        "name": "SubmissionSnapshotPort",
         "kind": "interface",
         "methods": [
-          "+ requireAccepted(id : UUID) : SubmissionState"
+          "+ getAccepted(submissionId : UUID) : SubmissionSnapshot"
         ]
       },
       {
-        "id": "aiPort",
-        "name": "AiProviderPort",
+        "id": "llmPort",
+        "name": "LlmProviderPort",
         "kind": "interface",
         "methods": [
-          "+ complete(context : SafeAiContext) : AiResponse"
+          "+ completeStructured(sys : SystemInstruction, ctx : PerProblemContext, data : UserData) : StructuredResult",
+          "+ streamTurn(mem : ChatMemoryRef, sys : SystemInstruction, ctx : PerProblemContext) : Flux<TokenChunk>"
         ]
       },
       {
-        "id": "budgetPort",
-        "name": "AiBudgetPort",
+        "id": "costGatePort",
+        "name": "AiCostGatePort",
         "kind": "interface",
         "methods": [
-          "+ checkBudget(actorId : UUID, tokens : int) : boolean"
+          "+ gate(userId : UUID, category : CallerCategory, feature : FeatureCode) : GateOutcome"
         ]
       },
       {
@@ -64,7 +64,8 @@
         "name": "SolutionReviewRepository",
         "kind": "interface",
         "methods": [
-          "+ save(review : SolutionReview)"
+          "+ findBySubmission(submissionId : UUID) : Optional<StoredSolutionReview>",
+          "+ insertReview(review : StoredSolutionReview) : boolean"
         ]
       }
     ],
@@ -72,17 +73,17 @@
     "relations": [
       {
         "from": "reviewHandler",
-        "to": "submissionBridge",
+        "to": "submissionPort",
         "kind": "dependency"
       },
       {
         "from": "reviewHandler",
-        "to": "aiPort",
+        "to": "llmPort",
         "kind": "dependency"
       },
       {
         "from": "reviewHandler",
-        "to": "budgetPort",
+        "to": "costGatePort",
         "kind": "dependency"
       },
       {
@@ -91,14 +92,14 @@
         "kind": "dependency"
       },
       {
-        "from": "interviewHandler",
-        "to": "aiPort",
+        "from": "turnHandler",
+        "to": "llmPort",
         "kind": "dependency"
       }
     ],
     "notes": [
-      "AnalyzeAcceptedSubmissionCommandHandler chỉ phân tích bài nộp đã Accepted và tự suy giảm khi AI lỗi.",
-      "AiBudgetPort kiểm tra hạn mức trước khi gọi model; AcceptedSubmissionReadPort lấy dữ liệu qua bridge."
+      "GetOrCreateSolutionReviewCommandHandler chỉ phân tích bài nộp đã Accepted và tự suy giảm khi AI lỗi.",
+      "AiCostGatePort kiểm tra hạn mức token trước khi gọi model; LlmProviderPort gọi Spring AI và phòng vệ prompt injection."
     ]
   }
 }

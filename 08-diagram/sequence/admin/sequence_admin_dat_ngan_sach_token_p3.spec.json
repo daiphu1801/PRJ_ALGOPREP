@@ -24,9 +24,9 @@
         "stereo": "application"
       },
       {
-        "name": "AiTokenBudgetRepository",
+        "name": "AiBudgetAdminRepository",
         "role": "repository",
-        "stereo": "output port"
+        "stereo": "persistence adapter"
       },
       {
         "name": "JdbcAiTokenBudgetRepository",
@@ -52,11 +52,11 @@
       },
       {
         "from": "ReviewUsageAlertCommandHandler",
-        "to": "AiTokenBudgetRepository",
+        "to": "AiBudgetAdminRepository",
         "text": "Đổi cảnh báo đang mở thành đã xem"
       },
       {
-        "from": "AiTokenBudgetRepository",
+        "from": "AiBudgetAdminRepository",
         "to": "JdbcAiTokenBudgetRepository",
         "text": "Cập nhật theo mã cảnh báo"
       },

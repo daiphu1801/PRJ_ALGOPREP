@@ -634,6 +634,7 @@ function InterviewScreen({ session }: { session: InterviewSession }) {
                 <Button
                   variant="ghost"
                   size="sm"
+                  disabled={session.runState !== "idle"}
                   onClick={() => setEarlyExitOpen(true)}
                   className="border border-[var(--color-border)] text-[var(--color-admin-negative-text)]"
                 >

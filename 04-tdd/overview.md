@@ -36,7 +36,7 @@ Tài liệu chia hai trục: `modules/` kiểm hợp đồng máy chủ, quyền
 | Mã | Phạm vi | TDD | Số AC |
 | :--- | :--- | :--- | ---: |
 | F1 | Định danh, tài khoản, lớp, quyền, nhật ký | [F1_identity.md](modules/F1_identity.md) | 80 |
-| F2 | Ngân hàng bài, testcase, giao bài, sự kiện | [F2_problem-bank.md](modules/F2_problem-bank.md) | 94 |
+| F2 | Ngân hàng bài, testcase, giao bài, sự kiện | [F2_problem-bank.md](modules/F2_problem-bank.md) | 95 |
 | F3 | Mã khung, bọc hàm, so khớp kết quả | [F3_harness.md](modules/F3_harness.md) | 50 |
 | F4 | Nộp bài, chấm, hàng đợi, cấu hình máy chấm | [F4_judge-orchestration.md](modules/F4_judge-orchestration.md) | 77 |
 | F5 | Phân tích AI, phỏng vấn giả lập, ngân sách | [F5_ai-review.md](modules/F5_ai-review.md) | 58 |
@@ -77,3 +77,8 @@ Mỗi trường hợp trong bảng là nhắc việc chọn dữ liệu kiểm; 
 | [F2 AC-56](modules/F2_problem-bank.md) | Thêm testcase đã duyệt; duyệt nháp; sửa Sample/Hidden đã duyệt; xoá testcase đã duyệt; đổi `position` kể cả kéo nháp; chỉ đổi nhãn; sửa nội dung nháp chưa duyệt; gửi lại thứ tự cũ; lặp với bài chưa xuất bản | Phiên bản tăng đúng một lần và snapshot mới bất biến khi bộ chấm hoặc thứ tự chung đổi trên bài `PUBLISHED`; các nhánh còn lại không tăng. Đối chiếu DD F2 BR-11 và AC-57/59/60 để dựng dữ liệu hợp lệ |
 | [SHR0202 PA-AC-02](screens/shared/SHR0202_problem_authoring.md) | Tệp thiếu cặp; cặp trùng; tải một tệp lỗi; xác nhận lô; sinh AI lỗi; chạy đáp án mẫu lỗi; sửa/xoá làm bài xuất bản dưới ngưỡng | Không tạo dấu đạt giả, không tự duyệt, không ghi nửa lô, dữ liệu trước thao tác bị từ chối được giữ. Đối chiếu DD màn mục 3, 7 và DD F2 cho lỗi máy chủ |
 | [F4 AC-77](modules/F4_judge-orchestration.md) | Bằng/vượt ngưỡng; vượt ngưỡng một/hai lượt; chạm trần 8; rỗng ba/bốn lượt; consumer còn việc; pause/resume; tắt tự mở rộng; hai leader/mất khoá | Mục tiêu và số consumer thực theo JOB-JD-05; bài đang chạy không bị huỷ và không nhận việc mới khi pause hoặc mất leader |
+
+
+### Bổ sung F2 defaults — 2026-11-11
+
+F2 thêm AC-95 theo DD §64/#57; 13 ca QA TC-F2-AC95-01–13 ở [cụm mặc định soạn bài](testcases/modules/F2_problem-bank/F2_authoring_defaults.md), trạng thái từng ca Chưa thực hiện. F2 hiện 95 AC/171 ca trong 14 cụm; các số 552/476 và tổng các module ở baseline phía trên giữ nguyên mốc lịch sử, không phải kết quả kiểm kê toàn hệ thống hiện hành. Trạng thái sản phẩm F2 hiện 88 Đạt/7 code xong chờ nghiệm thu live pipeline AI, xem [bảng TDD hiện hành](modules/F2_problem-bank.md) và [bằng chứng closure](../06-plan/reports/261110-f2-full-closure/acceptance-status.md); không suy thực thi từng ca QA từ trạng thái AC.

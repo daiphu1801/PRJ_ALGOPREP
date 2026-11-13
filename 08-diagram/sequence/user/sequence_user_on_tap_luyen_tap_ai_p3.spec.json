@@ -15,9 +15,9 @@
         "role": "actor"
       },
       {
-        "name": "InterviewPracticeController",
+        "name": "InterviewQuestionsController",
         "role": "controller",
-        "stereo": "presentation"
+        "stereo": "presentation REST"
       },
       {
         "name": "RateQuestionRecall",
@@ -30,9 +30,9 @@
         "stereo": "application query"
       },
       {
-        "name": "PracticeHistoryRepository",
+        "name": "PracticeRepository",
         "role": "repository",
-        "stereo": "output port"
+        "stereo": "output port F6"
       },
       {
         "name": "TopicProgressRepository",
@@ -56,21 +56,21 @@
       },
       {
         "from": "Sinh viên",
-        "to": "InterviewPracticeController",
+        "to": "InterviewQuestionsController",
         "text": "Chọn biết rõ, mơ hồ hoặc quên"
       },
       {
-        "from": "InterviewPracticeController",
+        "from": "InterviewQuestionsController",
         "to": "RateQuestionRecall",
         "text": "Cập nhật mức tự chấm cho câu hỏi"
       },
       {
         "from": "RateQuestionRecall",
-        "to": "PracticeHistoryRepository",
+        "to": "PracticeRepository",
         "text": "Kiểm tra câu đang hiển thị và ghi mức hiện tại"
       },
       {
-        "from": "PracticeHistoryRepository",
+        "from": "PracticeRepository",
         "to": "JdbcInterviewQuestionRepository",
         "text": "Đọc câu hỏi và mức tự chấm hiện hành"
       },
@@ -96,11 +96,11 @@
             },
             {
               "from": "RateQuestionRecall",
-              "to": "PracticeHistoryRepository",
+              "to": "PracticeRepository",
               "text": "Ghi đè mức hiện tại và ngày ôn tiếp theo"
             },
             {
-              "from": "PracticeHistoryRepository",
+              "from": "PracticeRepository",
               "to": "JdbcInterviewQuestionRepository",
               "text": "Lưu một dòng cho người học và câu hỏi"
             },
@@ -117,24 +117,24 @@
             },
             {
               "from": "JdbcInterviewQuestionRepository",
-              "to": "PracticeHistoryRepository",
+              "to": "PracticeRepository",
               "text": "Mức và lịch ôn mới",
               "kind": "return"
             },
             {
-              "from": "PracticeHistoryRepository",
+              "from": "PracticeRepository",
               "to": "RateQuestionRecall",
               "text": "Mức và lịch ôn mới",
               "kind": "return"
             },
             {
               "from": "RateQuestionRecall",
-              "to": "InterviewPracticeController",
+              "to": "InterviewQuestionsController",
               "text": "Ngày ôn tiếp theo",
               "kind": "return"
             },
             {
-              "from": "InterviewPracticeController",
+              "from": "InterviewQuestionsController",
               "to": "Sinh viên",
               "text": "Hiển thị lịch ôn mới",
               "kind": "return"
@@ -143,12 +143,12 @@
           "else": [
             {
               "from": "RateQuestionRecall",
-              "to": "InterviewPracticeController",
+              "to": "InterviewQuestionsController",
               "text": "Báo câu hỏi không còn hiển thị",
               "kind": "return"
             },
             {
-              "from": "InterviewPracticeController",
+              "from": "InterviewQuestionsController",
               "to": "Sinh viên",
               "text": "Hiển thị lỗi",
               "kind": "return"
@@ -161,11 +161,11 @@
       },
       {
         "from": "Sinh viên",
-        "to": "InterviewPracticeController",
+        "to": "InterviewQuestionsController",
         "text": "Mở tiến độ ôn tập"
       },
       {
-        "from": "InterviewPracticeController",
+        "from": "InterviewQuestionsController",
         "to": "GetMyInterviewTopicProgress",
         "text": "Tính tiến độ của người gọi"
       },
@@ -175,7 +175,7 @@
         "text": "Đếm câu đang hoạt động và câu từng luyện"
       },
       {
-        "from": "PracticeHistoryRepository",
+        "from": "PracticeRepository",
         "to": "JdbcInterviewQuestionRepository",
         "text": "Tổng hợp theo chủ đề, kể cả chủ đề chưa có câu"
       },
@@ -192,24 +192,24 @@
       },
       {
         "from": "JdbcInterviewQuestionRepository",
-        "to": "PracticeHistoryRepository",
+        "to": "PracticeRepository",
         "text": "Tiến độ theo chủ đề",
         "kind": "return"
       },
       {
-        "from": "PracticeHistoryRepository",
+        "from": "PracticeRepository",
         "to": "GetMyInterviewTopicProgress",
         "text": "Tiến độ theo chủ đề",
         "kind": "return"
       },
       {
         "from": "GetMyInterviewTopicProgress",
-        "to": "InterviewPracticeController",
+        "to": "InterviewQuestionsController",
         "text": "Số câu đã luyện và tổng số câu",
         "kind": "return"
       },
       {
-        "from": "InterviewPracticeController",
+        "from": "InterviewQuestionsController",
         "to": "Sinh viên",
         "text": "Hiển thị tiến độ từng chủ đề",
         "kind": "return"

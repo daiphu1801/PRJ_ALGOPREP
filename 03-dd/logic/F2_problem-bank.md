@@ -357,10 +357,11 @@ sandbox/status/audit; kernel không tự áp publish HTTP hoặc gọi Rabbit tr
 
 ## BR-25 — Cache Redis
 
-- **`problem:list:v<phiên bản>:<hash>`** TTL 60 giây (`02-bd/database/F2_problem-bank.md:279`): cache phần danh sách không phụ thuộc người dùng (không gồm `solveState` và không có `status`). Khoá phiên bản `problem:list:version` tăng (`INCR`) khi: xuất bản/rút xuống/xoá, lưu nội dung bài `PUBLISHED`, đổi độ khó/chủ đề theo lô, mọi thao tác danh mục. Nhờ đó bài rút xuống **biến ngay** khỏi `problem_list` (RD F2-15) trong khi `acRate` cũ tối đa 60 giây.
+- **`problem:list:v<phiên bản>:<hash>`** TTL 60 giây: cache phần danh sách không phụ thuộc người dùng, không gồm `solveState`. Có `status` filter thì đọc origin trực tiếp để phân trang theo đúng người gọi. Hash SHA-256 của filter đã chuẩn hóa và paging. Phiên bản authoritative đọc từ singleton `problem.catalog_cache_epoch`, tăng cùng giao dịch khi xuất bản/rút xuống/xoá, lưu nội dung `PUBLISHED`, đổi độ khó/chủ đề theo lô và danh mục; rollback dữ liệu cũng rollback epoch. Redis `problem:list:version` chỉ là mirror tương thích tăng sau commit. Redis lỗi rồi phục hồi không thể tái dùng namespace trước khi rút bài (`DEC-2026-1110-f2-durable-catalog-cache-epoch`). `acRate` có thể cũ tối đa 60 giây.
+- **`problem:summary:v<phiên bản>`** TTL 60 giây, dùng cùng DB epoch; không chứa trạng thái người dùng.
 - **`problem:spec:<problemId>`**: sở hữu bởi `problem-bank`; xoá chủ động khi `problem_specs` đổi (BR-05); `harness` đọc qua `ProblemSpecQuery.findSpec`.
 - **`problem:solvestate:<userId>`** TTL 60 giây; **`problem:upload:<uploadId>`** TTL 20 phút; **`problem:gen:lock:<problemId>`** TTL 10 phút.
-- **Suy giảm êm**: Redis chết -> bỏ cache, đọc thẳng DB; khoá chống song song sinh testcase không lấy được thì từ chối sinh (`503`) thay vì chạy không khoá.
+- **Suy giảm êm**: Redis read/decode/write lỗi hoặc payload sai cấu trúc thì đọc origin; lỗi origin không bị chuyển thành dữ liệu giả hoặc cache map rỗng. Cache solve-state chỉ ghi kết quả thành công, khóa theo userId. Khoá chống song song sinh testcase không lấy được thì từ chối sinh (`503`) thay vì chạy không khoá.
 
 ## BR-26 — Phát sự kiện và cổng đồng bộ
 

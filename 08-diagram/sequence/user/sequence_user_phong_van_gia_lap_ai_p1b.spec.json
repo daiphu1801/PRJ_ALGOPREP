@@ -16,12 +16,12 @@
         "role": "actor"
       },
       {
-        "name": "MockInterviewController",
+        "name": "InterviewSessionController",
         "role": "controller",
-        "stereo": "presentation"
+        "stereo": "presentation REST"
       },
       {
-        "name": "StartInterviewCommandHandler",
+        "name": "OpenInterviewSessionCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
@@ -31,7 +31,7 @@
         "stereo": "domain"
       },
       {
-        "name": "InterviewAiPort",
+        "name": "LlmProviderPort",
         "role": "repository",
         "stereo": "output port"
       },
@@ -65,7 +65,7 @@
         "phase": "Giai đoạn 3 - Tạo câu hỏi mở đầu trước khi lưu phiên"
       },
       {
-        "from": "StartInterviewCommandHandler",
+        "from": "OpenInterviewSessionCommandHandler",
         "to": "PromptComposer",
         "text": "Dựng lời chào giai đoạn Giải trình"
       },
@@ -76,17 +76,17 @@
       },
       {
         "from": "PromptComposer",
-        "to": "StartInterviewCommandHandler",
+        "to": "OpenInterviewSessionCommandHandler",
         "text": "Yêu cầu mở đầu an toàn",
         "kind": "return"
       },
       {
-        "from": "StartInterviewCommandHandler",
-        "to": "InterviewAiPort",
+        "from": "OpenInterviewSessionCommandHandler",
+        "to": "LlmProviderPort",
         "text": "Xin câu hỏi mở đầu"
       },
       {
-        "from": "InterviewAiPort",
+        "from": "LlmProviderPort",
         "to": "SpringAiLlmAdapter",
         "text": "Gọi mô hình AI"
       },
@@ -103,13 +103,13 @@
       },
       {
         "from": "SpringAiLlmAdapter",
-        "to": "InterviewAiPort",
+        "to": "LlmProviderPort",
         "text": "Kết quả đã gom đủ",
         "kind": "return"
       },
       {
-        "from": "InterviewAiPort",
-        "to": "StartInterviewCommandHandler",
+        "from": "LlmProviderPort",
+        "to": "OpenInterviewSessionCommandHandler",
         "text": "Câu mở đầu hợp lệ",
         "kind": "return"
       },
@@ -117,7 +117,7 @@
         "phase": "Giai đoạn 4 - Lưu phiên sau khi có câu mở đầu hợp lệ"
       },
       {
-        "from": "StartInterviewCommandHandler",
+        "from": "OpenInterviewSessionCommandHandler",
         "to": "InterviewSessionRepository",
         "text": "Lưu phiên, câu mở đầu và token"
       },
@@ -145,18 +145,18 @@
       },
       {
         "from": "InterviewSessionRepository",
-        "to": "StartInterviewCommandHandler",
+        "to": "OpenInterviewSessionCommandHandler",
         "text": "Câu mở đầu và mã phiên",
         "kind": "return"
       },
       {
-        "from": "StartInterviewCommandHandler",
-        "to": "MockInterviewController",
+        "from": "OpenInterviewSessionCommandHandler",
+        "to": "InterviewSessionController",
         "text": "Trả phiên mới và câu mở đầu",
         "kind": "return"
       },
       {
-        "from": "MockInterviewController",
+        "from": "InterviewSessionController",
         "to": "Sinh viên",
         "text": "Hiển thị câu hỏi mở đầu",
         "kind": "return"

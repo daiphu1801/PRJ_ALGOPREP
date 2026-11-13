@@ -13,6 +13,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.springframework.amqp.core.MessageDeliveryMode;
+import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -77,6 +81,10 @@ class ProblemOutboxRelayFlowTest {
   @Autowired ControlledPublisher publisher;
   @Autowired RabbitTemplate rabbit;
 
+  @Autowired
+  @Qualifier("problemLifecyclePendingQueue")
+  Queue lifecyclePending;
+
   @BeforeEach
   void reset() {
     jdbc.update("DELETE FROM problem.outbox_events");
@@ -88,6 +96,7 @@ class ProblemOutboxRelayFlowTest {
           channel.exchangeDeclare("algoprep.domain-events", "topic", true);
           channel.queueDeclare(QUEUE, false, false, true, null);
           channel.queuePurge(QUEUE);
+          channel.queuePurge(lifecyclePending.getName());
           channel.queueBind(QUEUE, "algoprep.domain-events", "problem.problem.*");
           return null;
         });
@@ -123,6 +132,60 @@ class ProblemOutboxRelayFlowTest {
     assertThat(pending()).isZero();
     assertThat(attempts(id)).isEqualTo(2);
     assertThat(rabbit.receive(QUEUE, 5000)).isNotNull();
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+    "problem.problem.published,ProblemPublished",
+    "problem.problem.unpublished,ProblemUnpublished"
+  })
+  void lifecycleEventIsConfirmedIntoTheDurableProductionBacklog(String routingKey, String type) {
+    rabbit.execute(
+        channel -> {
+          channel.queueUnbind(QUEUE, "algoprep.domain-events", "problem.problem.*");
+          return null;
+        });
+    UUID id = seed(routingKey, "{\"payload\":{\"problemId\":\"synthetic\"}}");
+    jdbc.update("UPDATE problem.outbox_events SET event_type=? WHERE id=?", type, id);
+    String envelope =
+        jdbc.queryForObject(
+            "SELECT payload::text FROM problem.outbox_events WHERE id=?", String.class, id);
+    assertThat(relay.relay()).isEqualTo(1);
+    assertThat(pending()).isZero();
+    assertThat(attempts(id)).isEqualTo(1);
+    assertThat(lifecyclePending.isDurable()).isTrue();
+    assertThat(lifecyclePending.isExclusive()).isFalse();
+    assertThat(lifecyclePending.isAutoDelete()).isFalse();
+    assertThat(lifecyclePending.getArguments()).isEmpty();
+    var message = rabbit.receive(lifecyclePending.getName(), 5000);
+    assertThat(message).isNotNull();
+    assertThat(message.getMessageProperties().getMessageId()).isEqualTo(id.toString());
+    assertThat(message.getMessageProperties().getType()).isEqualTo(type);
+    assertThat(message.getMessageProperties().getReceivedDeliveryMode())
+        .isEqualTo(MessageDeliveryMode.PERSISTENT);
+    assertThat(new String(message.getBody(), StandardCharsets.UTF_8)).isEqualTo(envelope);
+    assertThat(rabbit.receive(QUEUE)).isNull();
+    assertThat(relay.relay()).isZero();
+  }
+
+  @Test
+  void anUnacknowledgedLifecycleMessageCanBeRequeuedWithoutChangingItsIdentity() {
+    UUID id = seed("problem.problem.published", "{}");
+    assertThat(relay.relay()).isEqualTo(1);
+    rabbit.execute(
+        channel -> {
+          var delivery = channel.basicGet(lifecyclePending.getName(), false);
+          assertThat(delivery).isNotNull();
+          assertThat(delivery.getProps().getMessageId()).isEqualTo(id.toString());
+          channel.basicNack(delivery.getEnvelope().getDeliveryTag(), false, true);
+          return null;
+        });
+    var retried = rabbit.receive(lifecyclePending.getName(), 5000);
+    assertThat(retried).isNotNull();
+    assertThat(retried.getMessageProperties().getMessageId()).isEqualTo(id.toString());
+    assertThat(retried.getMessageProperties().isRedelivered()).isTrue();
+    assertThat(pending()).isZero();
+    assertThat(attempts(id)).isEqualTo(1);
   }
 
   @Test

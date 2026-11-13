@@ -1,13 +1,9 @@
-// PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md section 10.2 (USR0202_my_submissions).
-//
 // Layout follows 02-bd/screens/users/USR0202_my_submissions.md Sheet 4.4: filter toolbar (B),
 // history table (C), footer + pagination (D). The stats strip (A) was removed 2026-10-18 (owner: no
-// list screen carries a KPI strip). Reference mockup: 09-layoutBase/Bài đã nộp.dc.html. Filter
-// state lives in local state here rather than the URL (BD calls for `q`/`verdict`/`language`/`page`
-// query params, deferred: no DD yet to lock the param names against).
+// list screen carries a KPI strip). Filters and pagination follow the URL contract; search waits400ms.
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { isMockMode } from "@/shared/api";
 import {
@@ -29,6 +25,8 @@ import {
   type DateLocale,
 } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
+import { useSubmissionFilters } from "../model/use-submission-filters";
+import { normalizeSubmissionQuery } from "../model/submission-url";
 import {
   Badge,
   Button,
@@ -66,10 +64,8 @@ export function MySubmissionsView() {
   const t = useT("mySubmissions");
   const locale = useLocale() as DateLocale;
   const levels = useProblemLevels();
-  const [query, setQuery] = useState("");
-  const [verdict, setVerdict] = useState<VerdictFilter>("ALL");
-  const [language, setLanguage] = useState<LanguageFilter>("ALL");
-  const [page, setPage] = useState(1);
+  const { filters, query, setQuery, navigate } = useSubmissionFilters();
+  const { verdict, language, page } = filters;
   const [pageSize, setPageSize] = usePersistedPageSize(
     "algoprep-my-submissions-page-size",
     PAGE_SIZES,
@@ -77,7 +73,7 @@ export function MySubmissionsView() {
   );
 
   const listQuery = useMySubmissionsPage({
-    query,
+    query: filters.query,
     verdict,
     language,
     page,
@@ -90,14 +86,34 @@ export function MySubmissionsView() {
     setLastPage(listQuery.data);
   }
   const listPage = listQuery.data ?? lastPage;
-
-  function updateFilter<T>(setter: (value: T) => void, value: T) {
-    setter(value);
-    setPage(1);
-  }
+  const pendingAnnouncement = useRef<string | null>(null);
+  useEffect(() => {
+    if (
+      pendingAnnouncement.current !== filters.query ||
+      listQuery.isFetching ||
+      !listQuery.data
+    )
+      return;
+    pendingAnnouncement.current = null;
+    toast.info(
+      listQuery.data.totalItems > 0
+        ? t("toast.searchResult", { count: listQuery.data.totalItems })
+        : t("toast.searchEmpty"),
+    );
+  }, [filters.query, listQuery.data, listQuery.isFetching, t]);
 
   // The list filters live while typing (no toast per keystroke); Enter is the explicit search.
   function announceSearch() {
+    const normalized = normalizeSubmissionQuery(query);
+    if (
+      normalized !== filters.query ||
+      listQuery.isFetching ||
+      !listQuery.data
+    ) {
+      pendingAnnouncement.current = normalized;
+      navigate({ query: normalized, page: 1 });
+      return;
+    }
     toast.info(
       listPage.totalItems > 0
         ? t("toast.searchResult", { count: listPage.totalItems })
@@ -247,14 +263,16 @@ export function MySubmissionsView() {
             placeholder: t("filter.searchPlaceholder"),
             value: query,
             maxLength: SEARCH_MAX_LENGTH,
-            onChange: (next) => updateFilter(setQuery, next),
+            onChange: setQuery,
             onSubmit: announceSearch,
           }}
         >
           <FilterMenu
             label={t("filter.verdictLabel")}
             value={verdict}
-            onValueChange={(value) => updateFilter(setVerdict, value)}
+            onValueChange={(value) =>
+              navigate({ verdict: value as VerdictFilter, page: 1 })
+            }
             options={[
               { value: "ALL", label: t("filter.all") },
               { value: "ACCEPTED", label: t("verdict.ACCEPTED") },
@@ -270,7 +288,9 @@ export function MySubmissionsView() {
           <FilterMenu
             label={t("filter.languageLabel")}
             value={language}
-            onValueChange={(value) => updateFilter(setLanguage, value)}
+            onValueChange={(value) =>
+              navigate({ language: value as LanguageFilter, page: 1 })
+            }
             options={[
               { value: "ALL", label: t("filter.all") },
               { value: "PYTHON", label: t("language.PYTHON") },
@@ -293,12 +313,12 @@ export function MySubmissionsView() {
           page={listPage.currentPage}
           pageSize={listPage.pageSize}
           total={listPage.totalItems}
-          onPageChange={setPage}
+          onPageChange={(page) => navigate({ page })}
           pageSizeOptions={isMockMode() ? PAGE_SIZES : undefined}
           pageSizeLabel={t("footer.pageSizeLabel")}
           onPageSizeChange={(size) => {
             setPageSize(size);
-            setPage(1);
+            navigate({ page: 1 });
           }}
           summary={t("footer.summary", {
             from:

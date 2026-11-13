@@ -1,5 +1,7 @@
 # DD API — Module `judge-orchestration` (F4)
 
+**Cập nhật2026-11-12 — ACCEPT-02:** trần `workerAutoscaleMax` trong queue snapshot đọc `judge.autoscale.max-workers` deployment, mặc định8, phải dương; runtime dùng cùng giá trị và guard pool >= trần+10. Hikari chờ kết nối2000ms; lỗi lấy connection/mở transaction của submission detail/progress trả503 JDG-506 cố định, không SQL/cause. Theo `DEC-2026-1112-f4-worker-scaling-and-db-wait`; không đổi route/response shape hoặc quyền hiện hành.
+
 **Triển khai 2026-11-03, D02m — worker persistence:** năm cổng nội bộ cho
 COMPILING/JUDGING, token, kết quả testcase và finalization chung worker/sweep tương lai.
 REQUIRES_NEW/READ_COMMITTED, heartbeat guarded trước INSERT/consume; giữ pinned version,

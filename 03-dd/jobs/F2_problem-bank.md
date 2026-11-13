@@ -10,6 +10,8 @@
 
 ## 1. JOB-PB-01 — Relay Outbox
 
+**Cập nhật13/11 — `DEC-2026-1113-f2-lifecycle-backlog-and-f4-target-publication`:** hai key `problem.problem.published`/`unpublished` được bind vào queue `problem-bank.lifecycle-pending` durable, không exclusive/auto-delete, TTL hoặc overflow drop. Message persistent giữ nguyên envelope/eventId; chưa có business consumer. Confirm đánh dấu đã lưu broker, không phải nghiệp vụ đã xử lý. Queue tồn đọng được giám sát và giữ để consumer tích hợp tương lai đọc/replay có dedupe; không tạo consumer ack bỏ hoặc purge. Lỗi broker/binding và key khác vẫn theo backoff/fairness hiện có. Runbook: `05-coding/judge-engine/WORKER-RUNBOOK.md`.
+
 | Mục | Hợp đồng |
 | :--- | :--- |
 | Kích hoạt | `fixedDelay = 2 s` sau khi lần trước kết thúc |

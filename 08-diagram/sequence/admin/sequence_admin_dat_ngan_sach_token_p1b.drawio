@@ -22,7 +22,7 @@
         <mxCell id="v5" value='SetTokenBudget&lt;br&gt;LimitCommand&lt;br&gt;Handler&lt;br&gt;&lt;font style="font-size:9px"&gt;(application)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=68;fontSize=11;fillColor=#FFF2CC;strokeColor=#B8952A;fontColor=#1A1A1A;" vertex="1" parent="1">
           <mxGeometry x="370" y="60" width="130" height="438" as="geometry" />
         </mxCell>
-        <mxCell id="v6" value='AiTokenBudget&lt;br&gt;Repository&lt;br&gt;&lt;font style="font-size:9px"&gt;(output port)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=68;fontSize=11;fillColor=#FFC7CE;strokeColor=#B0525E;fontColor=#1A1A1A;" vertex="1" parent="1">
+        <mxCell id="v6" value='AiBudgetAdmin&lt;br&gt;Repository&lt;br&gt;&lt;font style="font-size:9px"&gt;(persistence adapter)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=68;fontSize=11;fillColor=#FFC7CE;strokeColor=#B0525E;fontColor=#1A1A1A;" vertex="1" parent="1">
           <mxGeometry x="525" y="60" width="130" height="438" as="geometry" />
         </mxCell>
         <mxCell id="v7" value='JdbcAiToken&lt;br&gt;Budget&lt;br&gt;Repository&lt;br&gt;&lt;font style="font-size:9px"&gt;(persistence adapter)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=68;fontSize=11;fillColor=#FFC7CE;strokeColor=#B0525E;fontColor=#1A1A1A;" vertex="1" parent="1">

@@ -1,4 +1,8 @@
-import axios, { type AxiosError } from "axios";
+import axios, {
+  CanceledError,
+  type AxiosError,
+  type InternalAxiosRequestConfig,
+} from "axios";
 import { env } from "@/shared/api/config";
 import { type ErrorBody, toApiError } from "./api-error";
 import { tokenStore } from "./token-store";
@@ -9,21 +13,28 @@ const httpClient = axios.create({
 });
 
 httpClient.interceptors.request.use((config) => {
+  Object.assign(config, { _sessionGeneration: tokenStore.generation() });
   const token = tokenStore.get();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
-});
+}, undefined, { synchronous: true });
 
 // Prevent infinite token-refresh loops: a refresh the server refuses logs the user out, no retry.
 // `ended` is true only for that refusal (401 or 403); a 5xx or a dropped connection says nothing
 // about the session, so the user stays signed in and the failed call simply fails.
 type RefreshResult = { token: string | null; ended: boolean };
-let refreshInFlight: Promise<RefreshResult> | null = null;
+let refreshInFlight: {
+  generation: number;
+  promise: Promise<RefreshResult>;
+} | null = null;
 
 async function refreshSession(): Promise<RefreshResult> {
-  refreshInFlight ??= axios
+  const generation = tokenStore.generation();
+  if (refreshInFlight?.generation === generation)
+    return refreshInFlight.promise;
+  const pending = axios
     .post<{ accessToken: string }>(
       `${env.apiBaseUrl.replace(/\/$/, "")}/identity/auth/refresh`,
       null,
@@ -33,19 +44,24 @@ async function refreshSession(): Promise<RefreshResult> {
       },
     )
     .then((res) => {
+      if (generation !== tokenStore.generation())
+        return { token: null, ended: false };
       const token = res.data.accessToken;
       return typeof token === "string" && token.length > 0
         ? { token, ended: false }
         : { token: null, ended: true };
     })
     .catch((error: unknown) => {
+      if (generation !== tokenStore.generation())
+        return { token: null, ended: false };
       const status = axios.isAxiosError(error) ? error.response?.status : 0;
       return { token: null, ended: status === 401 || status === 403 };
     })
     .finally(() => {
-      refreshInFlight = null;
+      if (refreshInFlight?.promise === pending) refreshInFlight = null;
     });
-  return refreshInFlight;
+  refreshInFlight = { generation, promise: pending };
+  return pending;
 }
 
 export async function refreshAccessToken(): Promise<string | null> {
@@ -58,10 +74,28 @@ function isAuthEndpoint(url: string | undefined): boolean {
   return url?.includes(AUTH_PATH) ?? false;
 }
 
+function assertCurrentSession(
+  config: InternalAxiosRequestConfig | undefined,
+): void {
+  const generation = (
+    config as
+      (InternalAxiosRequestConfig & { _sessionGeneration?: number }) | undefined
+  )?._sessionGeneration;
+  if (generation !== undefined && generation !== tokenStore.generation()) {
+    throw new CanceledError("Session changed");
+  }
+}
+
 httpClient.interceptors.response.use(
-  (response) => response,
-  async (error: AxiosError<ErrorBody>) => {
+  (response) => {
+    assertCurrentSession(response.config);
+    return response;
+  },
+  async (failure: unknown) => {
+    if (axios.isCancel(failure)) return Promise.reject(failure);
+    const error = failure as AxiosError<ErrorBody>;
     const original = error.config;
+    assertCurrentSession(original);
     // A 401 from an auth endpoint (wrong password, bad code, refresh itself) is the answer, not an
     // expired session, so it must not trigger a refresh.
     if (
@@ -71,8 +105,12 @@ httpClient.interceptors.response.use(
       !isAuthEndpoint(original.url)
     ) {
       const { token: newToken, ended } = await refreshSession();
+      assertCurrentSession(original);
       if (newToken) {
         tokenStore.set(newToken);
+        // A refresh cookie may now belong to another account (for example another tab).
+        // Never replay the old account's request or mutation with that new identity.
+        assertCurrentSession(original);
         Object.assign(original, { _retried: true });
         return httpClient.request(original);
       }
@@ -115,8 +153,12 @@ export async function apiGet<T>(
   return res.data;
 }
 
-export async function apiPost<T>(url: string, body?: unknown): Promise<T> {
-  const res = await httpClient.post<T>(url, body);
+export async function apiPost<T>(
+  url: string,
+  body?: unknown,
+  options?: { signal?: AbortSignal },
+): Promise<T> {
+  const res = await httpClient.post<T>(url, body, options);
   return res.data;
 }
 

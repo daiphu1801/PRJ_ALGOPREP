@@ -29,9 +29,9 @@
         "stereo": "application command"
       },
       {
-        "name": "AiPromptTemplateRepository",
+        "name": "PromptTemplateRepository",
         "role": "repository",
-        "stereo": "output port"
+        "stereo": "domain output port"
       },
       {
         "name": "JdbcAiPromptTemplateRepository",
@@ -60,11 +60,11 @@
       },
       {
         "from": "GetPromptHistoryQueryHandler",
-        "to": "AiPromptTemplateRepository",
+        "to": "PromptTemplateRepository",
         "text": "Đọc bản chạy, lưu trữ và nháp"
       },
       {
-        "from": "AiPromptTemplateRepository",
+        "from": "PromptTemplateRepository",
         "to": "JdbcAiPromptTemplateRepository",
         "text": "Tìm lịch sử theo thời gian"
       },
@@ -81,12 +81,12 @@
       },
       {
         "from": "JdbcAiPromptTemplateRepository",
-        "to": "AiPromptTemplateRepository",
+        "to": "PromptTemplateRepository",
         "text": "Lịch sử phiên bản",
         "kind": "return"
       },
       {
-        "from": "AiPromptTemplateRepository",
+        "from": "PromptTemplateRepository",
         "to": "GetPromptHistoryQueryHandler",
         "text": "Lịch sử phiên bản",
         "kind": "return"
@@ -118,11 +118,11 @@
       },
       {
         "from": "UpdatePromptDraftCommandHandler",
-        "to": "AiPromptTemplateRepository",
+        "to": "PromptTemplateRepository",
         "text": "Ghi riêng chỉ thị, giữ mô hình và quy tắc đã chọn"
       },
       {
-        "from": "AiPromptTemplateRepository",
+        "from": "PromptTemplateRepository",
         "to": "JdbcAiPromptTemplateRepository",
         "text": "Tạo hoặc cập nhật bản nháp"
       },

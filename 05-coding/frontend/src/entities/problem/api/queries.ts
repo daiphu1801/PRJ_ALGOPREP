@@ -3,7 +3,7 @@ import { currentUserScope } from "@/shared/api/user-scope";
 //
 // Data boundary of the problem-authoring screens (authoring, read-only detail, preview). Same shape
 // as the other entities: `withMockData(mock, fetchReal)` switched by NEXT_PUBLIC_MOCK_DATA. Wiring
-// the backend means passing the real call; #48 (AI generation) is the one slot still on `notImplemented`.
+// the backend means passing the real call, including persisted AI testcase generation (#48).
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchOverviewProblem } from "./workspace-queries";
 import {
@@ -11,7 +11,13 @@ import {
   submitRealCode,
   type ExecutionInput,
 } from "./real-execution";
-import { useMockMutation, useMockQuery, withMockData } from "@/shared/api";
+import {
+  ApiError,
+  isMockMode,
+  useMockMutation,
+  useMockQuery,
+  withMockData,
+} from "@/shared/api";
 import {
   previewBody,
   realLoadDraft,
@@ -29,7 +35,6 @@ import {
 } from "./__mock__/problem-draft-mocks";
 import {
   fetchProblemDetail,
-  fetchProblemListPage,
   simulateSampleRun,
   simulateSubmission,
 } from "./__mock__/problem-mocks";
@@ -47,14 +52,6 @@ import type {
 
 const PROBLEM_BANK_SPEC = "03-dd/api/F2_problem-bank.md";
 const JUDGE_SPEC = "03-dd/api/F4_judge-orchestration.md";
-
-/** Catalogue page: topics, rows, in-progress and class assignments (`ListPublishedProblems` and siblings, F2 sections 2-5). */
-export const useProblemListPage = () =>
-  useMockQuery({
-    queryKey: ["problem", "list-page"],
-    mock: fetchProblemListPage,
-    spec: PROBLEM_BANK_SPEC,
-  });
 
 /** `GetProblemForWorkspace` / `GetProblemOverview`. `null` = unknown or unpublished id (the screen shows "not found"). */
 export const useProblemDetail = (problemId: string | undefined) =>
@@ -92,7 +89,12 @@ export const useCreateSubmission = () =>
   });
 
 const draftKey = (problemId?: string, fromId?: string) =>
-  ["problem-draft", problemId ?? "new", fromId ?? null] as const;
+  [
+    "problem-draft",
+    currentUserScope(),
+    problemId ?? "new",
+    fromId ?? null,
+  ] as const;
 
 /**
  * `GetProblemForAuthoring` (#33), `GetDuplicateSource` (#34) for a copy. Stale at once: an editor opened
@@ -181,14 +183,43 @@ export function useGenerateTestcases() {
  * draft (the query key is the body), so a stale answer is never shown for a newer draft; the caller
  * keeps the local sketch while this loads, when the signature is not declared, or when it fails.
  */
-export function useSignaturePreview(signature: FunctionSignature) {
+export function useSignaturePreview(
+  signature: FunctionSignature,
+  matching?: Pick<ProblemDraft["spec"], "matchingStrategy" | "epsilon">,
+) {
   const declared = signature.functionName.trim() !== "";
-  const body = useDebounced(JSON.stringify(previewBody(signature)), 400);
-  return useQuery({
-    queryKey: ["problem", "signature-preview", body],
-    queryFn: () => realPreviewSignature(JSON.parse(body)),
-    enabled: declared,
-    retry: false,
+  const body = JSON.stringify(previewBody(signature, matching));
+  const settledBody = useDebounced(body, 400);
+  const query = useQuery({
+    queryKey: ["problem", "signature-preview", currentUserScope(), body],
+    queryFn: ({ signal }) => realPreviewSignature(signature, signal, matching),
+    enabled: !isMockMode() && declared && body === settledBody,
+    retry: (_count, error) =>
+      error instanceof ApiError &&
+      error.code === "HRN-061" &&
+      error.status === 429,
+    retryDelay: (_count, error) => {
+      const seconds =
+        error instanceof ApiError
+          ? Number(error.details?.retryAfterSeconds)
+          : 1;
+      return Number.isFinite(seconds) && seconds > 0
+        ? Math.min(seconds * 1000, 2147483647)
+        : 1000;
+    },
     staleTime: Number.POSITIVE_INFINITY,
   });
+  const failure = query.error ?? query.failureReason;
+  return {
+    ...query,
+    debouncing: declared && body !== settledBody,
+    rateLimited:
+      failure instanceof ApiError &&
+      failure.code === "HRN-061" &&
+      failure.status === 429,
+    retryAfterSeconds:
+      failure instanceof ApiError
+        ? Math.max(1, Number(failure.details?.retryAfterSeconds) || 1)
+        : 1,
+  };
 }

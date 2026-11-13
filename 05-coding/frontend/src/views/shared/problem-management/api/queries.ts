@@ -2,6 +2,7 @@
 // the server (or its mock) filters, sorts and pages, the screen only sends `AdminListParams`. The view
 // passes no author: the server scopes A2 to their own problems from the token (BD SHR0201 Q1).
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { currentUserScope } from "@/shared/api/user-scope";
 import { useProblemLevels } from "@/entities/problem";
 import { useMockMutation, useMockQuery, withMockData } from "@/shared/api";
 import {
@@ -40,13 +41,22 @@ export function useAdminProblemList(params: AdminListParams) {
   const levels = useProblemLevels();
   const levelId = levels.find((level) => level.key === params.level)?.id;
   return useQuery({
-    queryKey: [...ADMIN_PROBLEMS_KEY, "list", params, levelId ?? null],
+    queryKey: [
+      ...ADMIN_PROBLEMS_KEY,
+      "list",
+      currentUserScope(),
+      params,
+      levelId ?? null,
+    ],
     queryFn: () =>
       withMockData(
         () => loadAdminProblemList(params),
         () => realListAdminProblems(params, levelId),
       ),
-    placeholderData: keepPreviousData,
+    placeholderData: (data, previous) =>
+      previous?.queryKey[2] === currentUserScope()
+        ? keepPreviousData(data)
+        : undefined,
     staleTime: 0,
     retry: false,
   });
@@ -55,7 +65,7 @@ export function useAdminProblemList(params: AdminListParams) {
 /** `GetTopicDistribution`: its own query, so a failure here leaves the table alone. */
 export const useTopicDistribution = () =>
   useMockQuery({
-    queryKey: [...ADMIN_PROBLEMS_KEY, "distribution"],
+    queryKey: [...ADMIN_PROBLEMS_KEY, "distribution", currentUserScope()],
     mock: loadTopicDistribution,
     real: realTopicDistribution,
     spec: SPEC,
@@ -65,7 +75,7 @@ export const useTopicDistribution = () =>
 /** `GetAttentionList`. */
 export const useAttentionList = () =>
   useMockQuery({
-    queryKey: [...ADMIN_PROBLEMS_KEY, "attention"],
+    queryKey: [...ADMIN_PROBLEMS_KEY, "attention", currentUserScope()],
     mock: loadAttentionList,
     real: realAttentionList,
     spec: SPEC,
@@ -118,19 +128,31 @@ export const useExportProblems = () =>
     spec: SPEC,
   });
 
-export const useBulkUnpublish = () => useMockMutation({
-  mock: mockBulkUnpublish, real: realBulkUnpublish, invalidate: refresh, spec: SPEC,
-});
-export const useBulkTopic = () => useMockMutation({
-  mock: ({ids, topicId}: {ids: string[]; topicId: string}) => mockBulkTopic(ids, topicId),
-  real: ({ids, topicId}: {ids: string[]; topicId: string}) => realBulkTopic(ids, topicId),
-  invalidate: refresh, spec: SPEC,
-});
+export const useBulkUnpublish = () =>
+  useMockMutation({
+    mock: mockBulkUnpublish,
+    real: realBulkUnpublish,
+    invalidate: refresh,
+    spec: SPEC,
+  });
+export const useBulkTopic = () =>
+  useMockMutation({
+    mock: ({ ids, topicId }: { ids: string[]; topicId: string }) =>
+      mockBulkTopic(ids, topicId),
+    real: ({ ids, topicId }: { ids: string[]; topicId: string }) =>
+      realBulkTopic(ids, topicId),
+    invalidate: refresh,
+    spec: SPEC,
+  });
 export function useExportFilteredProblems() {
   const levels = useProblemLevels();
   return useMockMutation({
     mock: mockExportFilteredProblems,
-    real: (params: AdminListParams) => realExportFilteredProblems(params, levels.find(item => item.key === params.level)?.id),
+    real: (params: AdminListParams) =>
+      realExportFilteredProblems(
+        params,
+        levels.find((item) => item.key === params.level)?.id,
+      ),
     spec: SPEC,
   });
 }

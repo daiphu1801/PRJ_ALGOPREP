@@ -54,10 +54,14 @@ describe("API contract", () => {
     });
     client.defaults.adapter = adapter;
     vi.spyOn(axios, "create").mockReturnValue(client);
-    const post = vi
-      .spyOn(axios, "post")
-      .mockResolvedValue({ data: { accessToken: "renewed" } });
+    const post = vi.spyOn(axios, "post").mockResolvedValue({
+      data: {
+        accessToken: `h.${btoa(JSON.stringify({ sub: "A", revision: 2 }))}.s`,
+      },
+    });
     const { api } = await import("./client");
+    const { tokenStore: store } = await import("./token-store");
+    store.set(`h.${btoa(JSON.stringify({ sub: "A", revision: 1 }))}.s`);
     await expect(api.get("/identity/me/profile")).rejects.toMatchObject({
       code: "IDT-105",
       status: 401,
@@ -65,7 +69,7 @@ describe("API contract", () => {
     expect(adapter).toHaveBeenCalledTimes(2);
     expect(post).toHaveBeenCalledTimes(1);
     expect(adapter.mock.calls[1]?.[0].headers.Authorization).toBe(
-      "Bearer renewed",
+      `Bearer h.${btoa(JSON.stringify({ sub: "A", revision: 2 }))}.s`,
     );
   });
   async function failingClient(url: string, status: number, data: unknown) {

@@ -15,5 +15,6 @@
 | [Giao bài và sự kiện lớp](F2_class_assignments.md) | AC-72–80; danh sách, giao/gỡ, thống kê, consumer | 13 |
 | [Cổng, quyền và cache](F2_ports_privacy_cache.md) | AC-81–88; port, Hidden, Function, Redis, lớp | 11 |
 | [Hạn mức và tiến độ độ khó](F2_reference_rate_level_progress.md) | AC-91–92; cửa sổ chạy reference, số liệu Dashboard | 4 |
+| [Mặc định soạn bài](F2_authoring_defaults.md) | AC-95; #57 live settings, quyền OR, lỗi nguồn an toàn, form mới/copy/existing | 13 |
 
-Tổng **158 ca thiết kế** trong 13 cụm; 94/94 AC F2 có ca theo nguồn, mốc thiết kế đã đóng và chưa thực thi. Oracle phản hồi lỗi Outbox của AC-75/90 đã chốt 2026-10-27. Truy vết AC nằm trong TDD F2/F4 tương ứng; [biên bản đợt 1](../../AUDIT_DOT1.md).
+Tổng **171 ca thiết kế** trong 14 cụm; 95/95 AC F2 có ca theo nguồn. Bổ sung 2026-11-11: 13 ca AC-95 defaults, review thiết kế xong, thực thi **Chưa thực hiện**; xem [cụm mới](F2_authoring_defaults.md). Baseline 158 ca/13 cụm/94 AC của đợt 1 được giữ ở lịch sử và [biên bản đợt 1](../../AUDIT_DOT1.md), không được dùng như kết quả thực thi. Oracle phản hồi lỗi Outbox của AC-75/90 đã chốt 2026-10-27.

@@ -175,6 +175,17 @@ describe("real auth API", () => {
     });
   });
 
+  it("does not clear a new session when an earlier logout finishes late", async () => {
+    tokenStore.set("account-A");
+    let finish!: (value: unknown) => void;
+    post.mockImplementationOnce(() => new Promise((resolve) => { finish = resolve; }));
+    const logout = realLogout();
+    tokenStore.set("account-B");
+    finish({});
+    await logout;
+    expect(tokenStore.get()).toBe("account-B");
+  });
+
   it("clears the in-memory token on logout even when the call fails", async () => {
     tokenStore.set("jwt");
     post.mockRejectedValue(new ApiError("UNKNOWN_ERROR", 0));

@@ -1,5 +1,16 @@
 # go-judge — engine thực thi mã trong sandbox
 
+## Kiểm hồi quy bộ đọc số C++ (13/11/2026)
+
+Runtime FUNCTION_WRAPPER C++ kiểm grammar số bằng bộ quét ASCII, giữ conversion/range checks và output framing. Cách này giảm chi phí compile của regex template; không thay giới hạn compile10s hoặc `-O2`. Script dưới kiểm grammar độc lập, conversion/range/input lỗi và output budget trên engine thật, chỉ dùng dữ liệu tin cậy, tự dọn artifact của chính nó:
+
+```powershell
+# Từ root repo, engine toolchain đang chạy tại127.0.0.1:5050; dùng tên evidence mới.
+python 05-coding/judge-engine/verify-cpp-numeric.py 05-coding/backend/algoprep-harness/src/main/resources/harness-templates/cpp/runtime.txt 06-plan/reports/cpp-numeric-new-run.json
+```
+
+Không chạy probe đồng thời với benchmark tải. Bằng chứng và giới hạn của đợt tối ưu nằm tại [chẩn đoán F4](../../06-plan/reports/261113-f4-performance/diagnosis.md).
+
 Engine mặc định của AlgoPrep, chốt bởi `DEC-2026-0823-go-judge-default-engine`. Chi tiết kỹ thuật:
 `01-rd/system/SYS0401_judge_engine.md`.
 

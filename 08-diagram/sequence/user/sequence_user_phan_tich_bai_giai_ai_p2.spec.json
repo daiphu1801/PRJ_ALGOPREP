@@ -12,7 +12,7 @@
     "detail": true,
     "participants": [
       {
-        "name": "AnalyzeAcceptedSubmissionCommandHandler",
+        "name": "GetOrCreateSolutionReviewCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
@@ -32,7 +32,7 @@
         "stereo": "schema ai"
       },
       {
-        "name": "AiLimitPort",
+        "name": "AiCostGatePort",
         "role": "repository",
         "stereo": "output port"
       },
@@ -47,7 +47,7 @@
         "stereo": "giới hạn theo giờ"
       },
       {
-        "name": "ProblemPort",
+        "name": "ProblemContextPort",
         "role": "repository",
         "stereo": "cổng F2"
       },
@@ -66,12 +66,12 @@
           "label": "Có bản dùng lại?",
           "then": [
             {
-              "from": "AnalyzeAcceptedSubmissionCommandHandler",
-              "to": "AnalyzeAcceptedSubmissionCommandHandler",
+              "from": "GetOrCreateSolutionReviewCommandHandler",
+              "to": "GetOrCreateSolutionReviewCommandHandler",
               "text": "Sao chép kết quả cho bài nộp mới"
             },
             {
-              "from": "AnalyzeAcceptedSubmissionCommandHandler",
+              "from": "GetOrCreateSolutionReviewCommandHandler",
               "to": "SolutionReviewRepository",
               "text": "Lưu báo cáo và sự kiện hoàn tất"
             },
@@ -99,14 +99,14 @@
             },
             {
               "from": "SolutionReviewRepository",
-              "to": "AnalyzeAcceptedSubmissionCommandHandler",
+              "to": "GetOrCreateSolutionReviewCommandHandler",
               "text": "Trả kết quả, không gọi AI",
               "kind": "return"
             }
           ],
           "else": [
             {
-              "from": "AnalyzeAcceptedSubmissionCommandHandler",
+              "from": "GetOrCreateSolutionReviewCommandHandler",
               "to": "SolutionReviewRepository",
               "text": "Kiểm ngân sách còn dùng được"
             },
@@ -134,17 +134,17 @@
             },
             {
               "from": "SolutionReviewRepository",
-              "to": "AnalyzeAcceptedSubmissionCommandHandler",
+              "to": "GetOrCreateSolutionReviewCommandHandler",
               "text": "Cho phép hoặc từ chối",
               "kind": "return"
             },
             {
-              "from": "AnalyzeAcceptedSubmissionCommandHandler",
-              "to": "AiLimitPort",
+              "from": "GetOrCreateSolutionReviewCommandHandler",
+              "to": "AiCostGatePort",
               "text": "Giữ lượt trong giờ và thời gian chờ"
             },
             {
-              "from": "AiLimitPort",
+              "from": "AiCostGatePort",
               "to": "RedisLimitAdapter",
               "text": "Kiểm giới hạn theo người học"
             },
@@ -161,35 +161,35 @@
             },
             {
               "from": "RedisLimitAdapter",
-              "to": "AiLimitPort",
+              "to": "AiCostGatePort",
               "text": "Kết quả giới hạn",
               "kind": "return"
             },
             {
-              "from": "AiLimitPort",
-              "to": "AnalyzeAcceptedSubmissionCommandHandler",
+              "from": "AiCostGatePort",
+              "to": "GetOrCreateSolutionReviewCommandHandler",
               "text": "Được gọi AI hoặc từ chối",
               "kind": "return"
             },
             {
-              "from": "AnalyzeAcceptedSubmissionCommandHandler",
-              "to": "ProblemPort",
+              "from": "GetOrCreateSolutionReviewCommandHandler",
+              "to": "ProblemContextPort",
               "text": "Lấy ngữ cảnh bài toán"
             },
             {
-              "from": "ProblemPort",
+              "from": "ProblemContextPort",
               "to": "ProblemBridge",
               "text": "Hỏi phần ngân hàng bài toán"
             },
             {
               "from": "ProblemBridge",
-              "to": "ProblemPort",
+              "to": "ProblemContextPort",
               "text": "Đề bài và chỉ dẫn theo bài",
               "kind": "return"
             },
             {
-              "from": "ProblemPort",
-              "to": "AnalyzeAcceptedSubmissionCommandHandler",
+              "from": "ProblemContextPort",
+              "to": "GetOrCreateSolutionReviewCommandHandler",
               "text": "Tiếp tục ở trang 3",
               "kind": "return"
             }

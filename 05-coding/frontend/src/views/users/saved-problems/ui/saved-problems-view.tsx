@@ -231,6 +231,7 @@ export function SavedProblemsView() {
               hideLabel
               rows={3}
               maxLength={NOTE_MAX_LENGTH}
+              disabled={saveNote.isPending}
               value={noteEdit.draft}
               onChange={(event) =>
                 setNoteEdit({ ...noteEdit, draft: event.target.value })
@@ -249,6 +250,7 @@ export function SavedProblemsView() {
                   variant="ghost"
                   size="sm"
                   className="border border-[var(--color-border)]"
+                  disabled={saveNote.isPending}
                   onClick={() => setNoteEdit(null)}
                 >
                   {t("table.noteCancel")}

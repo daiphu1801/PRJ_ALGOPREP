@@ -1,5 +1,5 @@
 {
-  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a3_admin.md:56-64. Nguồn mã nguồn: 05-coding/backend/algoprep-judge/src/main/java/com/algoprep/judge/presentation/controller/AdminLanguageConfigController.java và UpdateAdminLanguageConfigCommandHandler.java.",
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a3_admin.md:56-64. Nguồn mã nguồn: 05-coding/backend/algoprep-judge/src/main/java/com/algoprep/judge/presentation/controller/AdminLanguageConfigController.java và 05-coding/backend/algoprep-ai-review/src/main/java/com/algoprep/aireview/domain/ports/out/.",
   "kind": "class",
   "title": "A3 — Cấu hình hệ thống và AI",
   "covers": [
@@ -38,20 +38,22 @@
       },
       {
         "id": "budgetRepo",
-        "name": "AiTokenBudgetRepository",
+        "name": "AiBudgetAdminRepository",
         "kind": "interface",
         "methods": [
-          "+ readBudget() : AiTokenBudgetConfig",
-          "+ saveBudget(config : AiTokenBudgetConfig)"
+          "+ readPolicy() : BudgetPolicy",
+          "+ setDailyLimit(category : CallerCategory, limit : int) : void",
+          "+ unlock(date : LocalDate) : boolean"
         ]
       },
       {
         "id": "promptRepo",
-        "name": "AiPromptTemplateRepository",
+        "name": "PromptTemplateRepository",
         "kind": "interface",
         "methods": [
-          "+ findActive(featureCode : String) : PromptTemplate",
-          "+ publishVersion(template : PromptTemplate)"
+          "+ active(featureCode : FeatureCode) : Optional<PromptSnapshot>",
+          "+ saveDraft(featureCode : FeatureCode, content : String) : void",
+          "+ publishDraft(featureCode : FeatureCode) : PromptSnapshot"
         ]
       }
     ],
@@ -70,7 +72,7 @@
     ],
     "notes": [
       "AdminLanguageConfigController cấu hình danh sách ngôn ngữ nộp bài và hệ số nhân tài nguyên máy chấm.",
-      "AiTokenBudgetRepository và AiPromptTemplateRepository quản trị ngân sách token và template AI hệ thống."
+      "AiBudgetAdminRepository và PromptTemplateRepository quản trị hạn mức ngân sách token và System Prompt AI."
     ]
   }
 }

@@ -27,25 +27,43 @@ function FormShell({ title, onClose, onSave, children }: FormShellProps) {
   return (
     <Modal
       open
-      onClose={() => { if (!pending) onClose(); }}
+      onClose={() => {
+        if (!pending) onClose();
+      }}
       title={title}
       className="max-w-lg"
       footer={
         <>
-          <Button variant="ghost" size="sm" disabled={pending} onClick={onClose}>
+          <Button
+            variant="ghost"
+            size="sm"
+            disabled={pending}
+            onClick={onClose}
+          >
             {t("dialog.cancel")}
           </Button>
-          <Button size="sm" disabled={pending} aria-busy={pending} onClick={async () => {
-            if (pending) return;
-            setPending(true);
-            try { await onSave(); } finally { setPending(false); }
-          }}>
+          <Button
+            size="sm"
+            disabled={pending}
+            aria-busy={pending}
+            onClick={async () => {
+              if (pending) return;
+              setPending(true);
+              try {
+                await onSave();
+              } finally {
+                setPending(false);
+              }
+            }}
+          >
             {t("dialog.save")}
           </Button>
         </>
       }
     >
-      <div className="flex flex-col gap-3">{children}</div>
+      <fieldset disabled={pending} className="flex min-w-0 flex-col gap-3">
+        {children}
+      </fieldset>
     </Modal>
   );
 }
@@ -54,7 +72,9 @@ type TestcaseDialogProps = {
   /** Undefined = adding a new row. */
   testcase?: Testcase;
   onClose: () => void;
-  onSave: (values: Pick<Testcase, "input" | "expected" | "visibility">) => void | Promise<void>;
+  onSave: (
+    values: Pick<Testcase, "input" | "expected" | "visibility">,
+  ) => void | Promise<void>;
 };
 
 export function TestcaseDialog({
@@ -73,7 +93,8 @@ export function TestcaseDialog({
   const largeInput = testcase?.largeSides?.includes("input") ?? false;
   const largeExpected = testcase?.largeSides?.includes("expected") ?? false;
   const invalid =
-    (!largeInput && input.length === 0) || (!largeExpected && expected.length === 0);
+    (!largeInput && input.length === 0) ||
+    (!largeExpected && expected.length === 0);
 
   async function submit() {
     setTouched(true);
@@ -81,8 +102,12 @@ export function TestcaseDialog({
       toast.error(t("dialog.required"));
       return;
     }
-    if (new TextEncoder().encode(input).length > 1048576 || new TextEncoder().encode(expected).length > 1048576) {
-      toast.error(t("testcaseTooLarge")); return;
+    if (
+      new TextEncoder().encode(input).length > 1048576 ||
+      new TextEncoder().encode(expected).length > 1048576
+    ) {
+      toast.error(t("testcaseTooLarge"));
+      return;
     }
     await onSave({
       input,

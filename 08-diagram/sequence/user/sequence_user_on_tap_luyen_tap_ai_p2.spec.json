@@ -15,19 +15,19 @@
         "role": "actor"
       },
       {
-        "name": "InterviewPracticeController",
+        "name": "PracticeAnswersController",
         "role": "controller",
-        "stereo": "presentation"
+        "stereo": "presentation REST"
       },
       {
-        "name": "EvaluatePracticeAnswerCommandHandler",
+        "name": "SubmitPracticeAnswerCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "InterviewQuestionRepository",
+        "name": "LearnerQuestionRepository",
         "role": "repository",
-        "stereo": "output port"
+        "stereo": "output port F6"
       },
       {
         "name": "JdbcInterviewQuestionRepository",
@@ -66,26 +66,26 @@
       },
       {
         "from": "Sinh viên",
-        "to": "InterviewPracticeController",
+        "to": "PracticeAnswersController",
         "text": "Nộp câu trả lời để luyện"
       },
       {
-        "from": "InterviewPracticeController",
-        "to": "InterviewPracticeController",
+        "from": "PracticeAnswersController",
+        "to": "PracticeAnswersController",
         "text": "Kiểm tra câu trả lời có nội dung và tối đa 5.000 ký tự"
       },
       {
-        "from": "InterviewPracticeController",
-        "to": "EvaluatePracticeAnswerCommandHandler",
+        "from": "PracticeAnswersController",
+        "to": "SubmitPracticeAnswerCommandHandler",
         "text": "Yêu cầu nhận xét cho câu trả lời"
       },
       {
-        "from": "EvaluatePracticeAnswerCommandHandler",
-        "to": "InterviewQuestionRepository",
+        "from": "SubmitPracticeAnswerCommandHandler",
+        "to": "LearnerQuestionRepository",
         "text": "Kiểm tra câu hỏi đang hiển thị và có tiêu chí"
       },
       {
-        "from": "InterviewQuestionRepository",
+        "from": "LearnerQuestionRepository",
         "to": "JdbcInterviewQuestionRepository",
         "text": "Đọc câu hỏi và bộ tiêu chí"
       },
@@ -102,13 +102,13 @@
       },
       {
         "from": "JdbcInterviewQuestionRepository",
-        "to": "InterviewQuestionRepository",
+        "to": "LearnerQuestionRepository",
         "text": "Câu hỏi và bộ tiêu chí",
         "kind": "return"
       },
       {
-        "from": "InterviewQuestionRepository",
-        "to": "EvaluatePracticeAnswerCommandHandler",
+        "from": "LearnerQuestionRepository",
+        "to": "SubmitPracticeAnswerCommandHandler",
         "text": "Câu hỏi và bộ tiêu chí",
         "kind": "return"
       },
@@ -117,7 +117,7 @@
           "label": "Câu hỏi hợp lệ và có tiêu chí?",
           "then": [
             {
-              "from": "EvaluatePracticeAnswerCommandHandler",
+              "from": "SubmitPracticeAnswerCommandHandler",
               "to": "PracticeRateLimitPort",
               "text": "Ghi nhận một lượt luyện trong giờ"
             },
@@ -134,13 +134,13 @@
           ],
           "else": [
             {
-              "from": "EvaluatePracticeAnswerCommandHandler",
-              "to": "InterviewPracticeController",
+              "from": "SubmitPracticeAnswerCommandHandler",
+              "to": "PracticeAnswersController",
               "text": "Báo câu hỏi không hợp lệ hoặc chưa có tiêu chí",
               "kind": "return"
             },
             {
-              "from": "InterviewPracticeController",
+              "from": "PracticeAnswersController",
               "to": "Sinh viên",
               "text": "Hiển thị lý do không thể luyện",
               "kind": "return"
@@ -156,7 +156,7 @@
           "label": "Đã vượt 20 lượt trong giờ?",
           "then": [
             {
-              "from": "EvaluatePracticeAnswerCommandHandler",
+              "from": "SubmitPracticeAnswerCommandHandler",
               "to": "PracticeRateLimitPort",
               "text": "Hoàn lại lượt vừa ghi"
             },
@@ -171,13 +171,13 @@
               "text": "Hoàn lại lượt vừa ghi"
             },
             {
-              "from": "EvaluatePracticeAnswerCommandHandler",
-              "to": "InterviewPracticeController",
+              "from": "SubmitPracticeAnswerCommandHandler",
+              "to": "PracticeAnswersController",
               "text": "Báo đã đạt hạn mức theo giờ",
               "kind": "return"
             },
             {
-              "from": "InterviewPracticeController",
+              "from": "PracticeAnswersController",
               "to": "Sinh viên",
               "text": "Hiển thị hạn mức theo giờ",
               "kind": "return"
@@ -185,7 +185,7 @@
           ],
           "else": [
             {
-              "from": "EvaluatePracticeAnswerCommandHandler",
+              "from": "SubmitPracticeAnswerCommandHandler",
               "to": "CheckAiBudgetUseCase",
               "text": "Kiểm tra ngân sách AI dùng chung"
             }
@@ -197,7 +197,7 @@
           "label": "Ngân sách đang khóa?",
           "then": [
             {
-              "from": "EvaluatePracticeAnswerCommandHandler",
+              "from": "SubmitPracticeAnswerCommandHandler",
               "to": "PracticeRateLimitPort",
               "text": "Hoàn lại lượt vừa ghi"
             },
@@ -212,13 +212,13 @@
               "text": "Hoàn lại lượt vừa ghi"
             },
             {
-              "from": "EvaluatePracticeAnswerCommandHandler",
-              "to": "InterviewPracticeController",
+              "from": "SubmitPracticeAnswerCommandHandler",
+              "to": "PracticeAnswersController",
               "text": "Báo chưa thể luyện vì ngân sách",
               "kind": "return"
             },
             {
-              "from": "InterviewPracticeController",
+              "from": "PracticeAnswersController",
               "to": "Sinh viên",
               "text": "Hiển thị tình trạng ngân sách",
               "kind": "return"
@@ -227,13 +227,13 @@
           "else": [
             {
               "from": "CheckAiBudgetUseCase",
-              "to": "EvaluatePracticeAnswerCommandHandler",
+              "to": "SubmitPracticeAnswerCommandHandler",
               "text": "Cho phép tiếp tục luyện",
               "kind": "return"
             },
             {
-              "from": "EvaluatePracticeAnswerCommandHandler",
-              "to": "EvaluatePracticeAnswerCommandHandler",
+              "from": "SubmitPracticeAnswerCommandHandler",
+              "to": "SubmitPracticeAnswerCommandHandler",
               "text": "Chuyển sang bước nhận xét AI"
             }
           ]

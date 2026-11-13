@@ -1,7 +1,7 @@
 {
-  "_": "Nguon tieu chi: 01-rd/req/user_stories/a2_instructor.md:156-164. Nguon thiet ke: 03-dd/logic/F1_identity.md; 03-dd/logic/F6_interview-bank.md; V6.001 migration. [SoT: Suy luan] Ten lop va chu ky phuong thuc theo mo hinh CQRS tuong thich he thong.",
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a2_instructor.md:156-164. Nguồn thiết kế: 05-coding/backend/algoprep-interview-bank/src/main/java/com/algoprep/interviewbank/. Cấu trúc Controller, CommandHandler và Port chuẩn theo kiến trúc Hexagonal / Clean Architecture của phân hệ F6.",
   "kind": "class",
-  "title": "A2 — Soan cau hoi phong van",
+  "title": "A2 — Soạn câu hỏi phỏng vấn",
   "covers": [
     "F1-14",
     "F6-08",
@@ -11,65 +11,76 @@
     "legend": "shared",
     "classes": [
       {
-        "id": "authorCtrl",
-        "name": "InterviewQuestionAuthoringController",
+        "id": "adminCtrl",
+        "name": "AdminQuestionsController",
         "methods": [
-          "+ create(caller : JwtAuthenticationToken, body : CreateQuestionRequest) : CreatedQuestionResponse",
-          "+ update(caller : JwtAuthenticationToken, questionId : UUID, body : UpdateQuestionRequest) : QuestionResponse",
-          "+ delete(caller : JwtAuthenticationToken, questionId : UUID) : ResponseEntity<Void>",
-          "+ importCsv(caller : JwtAuthenticationToken, file : MultipartFile) : ImportResult"
+          "+ list(params : Map) : Rows",
+          "+ get(questionId : String) : Detail",
+          "+ create(caller : JwtToken, req : Request) : Detail",
+          "+ update(caller : JwtToken, questionId : String, req : Request) : Detail"
         ]
       },
       {
-        "id": "manageHandler",
-        "name": "ManageInterviewQuestionCommandHandler",
+        "id": "bulkCtrl",
+        "name": "AdminQuestionBulkController",
         "methods": [
-          "+ create(command : CreateQuestionCommand) : UUID",
-          "+ update(command : UpdateQuestionCommand)",
-          "+ softDelete(questionId : UUID, actorId : UUID)"
+          "+ retire(caller : JwtToken, req : Request) : Retired",
+          "+ importRows(caller : JwtToken, req : Request) : Imported"
+        ]
+      },
+      {
+        "id": "createHandler",
+        "name": "CreateQuestionCommandHandler",
+        "methods": [
+          "+ execute(command : QuestionCommand) : AdminQuestion"
         ]
       },
       {
         "id": "questionRepo",
-        "name": "InterviewQuestionRepository",
+        "name": "AdminQuestionRepository",
         "kind": "interface",
         "methods": [
-          "+ save(question : InterviewQuestion)",
-          "+ findById(questionId : UUID) : Optional<InterviewQuestion>",
-          "+ softDelete(questionId : UUID)",
-          "+ existsRubric(questionId : UUID) : boolean"
+          "+ page(criteria : QuestionListCriteria) : AdminQuestionPage",
+          "+ findActive(id : UUID) : Optional<AdminQuestion>",
+          "+ insert(draft : QuestionDraft, actor : UUID) : AdminQuestion",
+          "+ retire(id : UUID) : void"
         ]
       },
       {
         "id": "auditPort",
-        "name": "AuditLogPort",
+        "name": "InterviewBankAuditPort",
         "kind": "interface",
         "methods": [
-          "+ record(entry : AuditEntry)"
+          "+ record(entry : InterviewAuditEntry) : void"
         ]
       }
     ],
     "externals": [],
     "relations": [
       {
-        "from": "authorCtrl",
-        "to": "manageHandler",
+        "from": "adminCtrl",
+        "to": "createHandler",
         "kind": "dependency"
       },
       {
-        "from": "manageHandler",
+        "from": "bulkCtrl",
         "to": "questionRepo",
         "kind": "dependency"
       },
       {
-        "from": "manageHandler",
+        "from": "createHandler",
+        "to": "questionRepo",
+        "kind": "dependency"
+      },
+      {
+        "from": "createHandler",
         "to": "auditPort",
         "kind": "dependency"
       }
     ],
     "notes": [
-      "Soan cau hoi phong van kem danh sach follow-up va rubric tieu chi cham co trong so.",
-      "Xoa cau hoi thuc hien xoa mem (soft-delete) de bao toan lich su phien phong van cua hoc vien."
+      "AdminQuestionsController phục vụ soạn câu hỏi phỏng vấn kèm danh sách câu hỏi đào sâu (follow-up) và rubric chấm điểm.",
+      "AdminQuestionBulkController hỗ trợ nhập hàng loạt và thu hồi câu hỏi; InterviewBankAuditPort ghi nhận nhật ký quản trị."
     ]
   }
 }

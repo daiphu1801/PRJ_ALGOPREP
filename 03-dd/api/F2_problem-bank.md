@@ -130,7 +130,13 @@ Bảng 0.6: Cấu hình trần sinh testcase (F2-14) — màn `ADM0303` khu vự
 | 55 | GET | `/settings/ai-testcase-generation` | `GetAiTestcaseGenerationSettings` | `AI_CONFIG:READ` | 56 |
 | 56 | PUT | `/settings/ai-testcase-generation` | `UpdateAiTestcaseGenerationSettings` | `AI_CONFIG:UPDATE` | 57 |
 
-Tổng cộng **56 endpoint HTTP**. Ngoài ra module phơi **cổng vào nội bộ** (không có route, mục 58) và phát/nhận **sự kiện** (mục 59).
+Bảng 0.7: Mặc định soạn bài — màn `SHR0202` tạo mới/nhân bản.
+
+| # | Method | Path | Tên nghiệp vụ BD | Quyền | Mục |
+| :-: | :--- | :--- | :--- | :--- | :-: |
+| 57 | GET | `/authoring/defaults` | `ReadAuthoringDefaults` (SHR0202 mới/nhân bản) | `PROBLEM_AUTHORING:CREATE` hoặc `PROBLEM_AUTHORING:READ` | 64 |
+
+Tổng cộng **59 route HTTP**: 57 mục đánh số và hai mục mở rộng #13A/#13B (đối chiếu endpoint-matrix ngày 2026-11-10). Ngoài ra module phơi **cổng vào nội bộ** (không có route, mục 58) và phát/nhận **sự kiện** (mục 59).
 
 Ghi chú về đối chiếu tên: `ListSampleTestcases` (`USR0102`) và `GetProblemSampleTestcases` (`USR0201`) là cùng một việc, cùng dữ liệu, cùng quyền; DD gộp
 thành endpoint #7 để không có hai route cho một dữ liệu `[SoT: Suy luận — ponytail bậc 4]`.
@@ -276,7 +282,7 @@ updatedBy: { userId: uuid, displayName: string|null } | null, duplicatedFromProb
 | Phân trang | có (`page`, `pageSize` 12/24/48, mặc định 12) |
 | Nguồn BD | `02-bd/screens/users/USR0101_problem_list.md:560`; F2-11 (`01-rd/req/F2_problem-bank.md:45-47`) |
 
-**Triển khai 2026-11-05 (F2-4a, #1).** `GET /api/v1/problem-bank/problems`, mọi tài khoản đã đăng nhập. Mã: `PublishedProblemController`, `ReadPublishedProblemsQueryHandler`, `JdbcPublishedProblemReadRepository`. Mọi tham số đọc rộng rãi: `q` cắt còn 100 ký tự, `%` và `_` hiểu nguyên văn; `pageSize` ngoài 12/24/48 về 12; `page` nhỏ hơn 1 về 1, vượt trang cuối thì trả trang cuối; `difficulty` không có trong `problem_levels` coi như Tất cả. Trạng thái giải đọc từ F1 qua `SolveStatePort` (cầu `SolveStateBridge`, chờ 2 giây); không đọc được thì `solveStateAvailable = false`, `solveState = null` và điều kiện `status` bị bỏ. **Chưa có cache Redis** `problem:solvestate` và `problem:list` (DD 2.5 bước 6, BR-23, BR-25): ghi nợ ở `PROTOTYPE_DEBT.md`. F1 thêm cổng trong tiến trình `ListAllMySolveStatesUseCase` (không route HTTP) vì #48 chỉ nhận tối đa 100 id; `IN_PROGRESS` của F1 là `ATTEMPTED` của F2 (owner chốt 2026-11-05).
+**Triển khai 2026-11-05 (F2-4a, #1).** `GET /api/v1/problem-bank/problems`, mọi tài khoản đã đăng nhập. Mã: `PublishedProblemController`, `ReadPublishedProblemsQueryHandler`, `JdbcPublishedProblemReadRepository`. Mọi tham số đọc rộng rãi: `q` cắt còn 100 ký tự, `%` và `_` hiểu nguyên văn; `pageSize` ngoài 12/24/48 về 12; `page` nhỏ hơn 1 về 1, vượt trang cuối thì trả trang cuối; `difficulty` không có trong `problem_levels` coi như Tất cả. Trạng thái giải đọc từ F1 qua `SolveStatePort` (cầu `SolveStateBridge`, chờ 2 giây); không đọc được thì `solveStateAvailable = false`, `solveState = null` và điều kiện `status` bị bỏ. **Cập nhật 2026-11-11:** cache đọc list/solve-state TTL 60 giây đã triển khai; list dùng DB epoch, status-filter đọc origin, Redis lỗi đọc nguồn theo BR-25. F1 thêm cổng trong tiến trình `ListAllMySolveStatesUseCase` (không route HTTP) vì #48 chỉ nhận tối đa 100 id; `IN_PROGRESS` của F1 là `ATTEMPTED` của F2 (owner chốt 2026-11-05).
 
 ### 2.2 Request (query)
 | Trường | Kiểu | Bắt buộc | Ràng buộc | Ghi chú |
@@ -885,7 +891,7 @@ Luôn trả đúng tối đa 7 dòng, không phân trang (`USR0601:555`).
 | Idempotent | có |
 | Nguồn BD | `USR0601_dashboard.md:815`; `USR0501_my_progress.md:521`; cùng use case với cổng `ProblemBankStatsPort.publishedCatalogSummary()` (mục 58) |
 
-**Triển khai 2026-11-05 (F2-4b, #13).** `GET /api/v1/problem-bank/catalog/summary`. Chưa có cache theo phiên bản danh sách (BR-25), xem `PROTOTYPE_DEBT.md`.
+**Triển khai 2026-11-05 (F2-4b, #13).** `GET /api/v1/problem-bank/catalog/summary`. Cập nhật 2026-11-11: cache `problem:summary:v<DB epoch>` TTL 60 giây; Redis lỗi đọc origin (BR-25).
 
 ### 14.2 Request
 Không tham số.
@@ -2934,7 +2940,7 @@ Khoá dòng `problem_bank_settings` id 1, ghi giá trị cũ; `UPDATE ... SET ma
 JDBC thật; bridge bootstrap cung cấp O1/O2 cho harness. Spec/flag/version từ một SELECT;
 read query trả DTO typed qua codec S2a (chỉ mở visibility, không đổi parser). Unknown kind
 thành OTHER trong bộ nhớ, JSON DB giữ nguyên. Lát này đọc DB trực tiếp, không tin Redis spec
-stale; chưa bật cache đọc F2/harness. O1 là cổng trusted, vẫn đọc được spec cho pending work
+stale; F2 list/summary đã có cache DB epoch; cache đọc spec/harness giữ quyết định riêng. O1 là cổng trusted, vẫn đọc được spec cho pending work
 khi bài rút/xóa mềm; quyền P1 luôn qua O2 hiện hành, deleted/missing trả false.
 Không có route HTTP mới. F4 grading/sample/snapshot ports chưa triển khai trong lát này.
 Report `261102-1532-f2-f3-spec-readers`.
@@ -3031,8 +3037,8 @@ Bảng 59.1: Sự kiện phát ra.
 | `eventType` | Khi nào | `payload` | Bên nghe | Dùng để |
 | :--- | :--- | :--- | :--- | :--- |
 | `ProblemSpecChanged` | mục 38: **bất kỳ cột nào** của `problem_specs` đổi (`spec_version` tăng) | `{ problemId, specVersion, changedColumns: [string], signatureChanged: bool, signatureBefore?: {functionName, returnType, parameters}, signatureAfter?: {...} }` | `harness` | vô hiệu cache mã bọc hàm theo `problem_id`, so `specVersion` để bỏ qua sự kiện cũ (`02-bd/architecture/F2_problem-bank.md:67`) |
-| `ProblemPublished` | mục 29, 40: `UNPUBLISHED -> PUBLISHED` | `{ problemId, actorUserId, occurredAt }` | Chưa có consumer | Dành cho tích hợp về sau; F1 chưa có `activity_type`, F4 kiểm xuất bản đồng bộ |
-| `ProblemUnpublished` | mục 30, 33, 40: `PUBLISHED -> UNPUBLISHED` (kể cả do xoá mềm) | `{ problemId, actorUserId, occurredAt }` | Chưa có consumer | Dành cho tích hợp về sau; F1 chưa có `activity_type`, F4 kiểm xuất bản đồng bộ |
+| `ProblemPublished` | mục 29, 40: `UNPUBLISHED -> PUBLISHED` | `{ problemId, actorUserId, occurredAt }` | Queue durable `problem-bank.lifecycle-pending`, chưa có business consumer | Bind `problem.problem.published`, giữ persistent envelope/eventId cho tích hợp sau; F1 chưa có `activity_type`, F4 kiểm đồng bộ |
+| `ProblemUnpublished` | mục 30, 33, 40: `PUBLISHED -> UNPUBLISHED` (kể cả do xoá mềm) | `{ problemId, actorUserId, occurredAt }` | Cùng queue durable `problem-bank.lifecycle-pending` | Bind `problem.problem.unpublished`; không TTL/drop/consumer ack bỏ; confirm là lưu broker, không phải business processing |
 | `TestcaseSetVersionBumped` | mục 40 (tái xuất bản có đổi bộ chấm), 42, 43, 44, 45, 47: bộ testcase đã duyệt (Sample hoặc Hidden) của bài `PUBLISHED` đổi | `{ problemId, testcaseSetVersion, bumpedAt }` | Chưa có consumer | Dành cho quan sát/cache về sau; F4 ghim phiên bản lúc nộp bằng lời gọi đồng bộ, bundle bất biến ở `testcase_set_snapshots` |
 | `ProblemAssignedToClass` | mục 53: tạo dòng giao bài mới | `{ problemId, classId, actorUserId, problemTitle, assignedAt }` | `identity` | `activity_type = CLASS_PROBLEM_PUBLISHED` (`03-dd/api/F1_identity.md:258`); `problemTitle` là trường thêm `[SoT: Suy luận]` để feed khỏi phải hỏi lại |
 | `ProblemUnassignedFromClass` | mục 54: gỡ mềm | `{ problemId, classId, actorUserId, removedAt }` | Chưa có consumer | Lịch sử lớp đọc `removed_at` đồng bộ; dành cho tích hợp về sau |
@@ -3185,3 +3191,20 @@ Bảng 61.3: Điểm lệch với DD của hai module anh em (đã đọc `03-dd
 ## 63. Baseline migration F2 (2026-10-29)
 
 Hợp đồng DDL và seed ở BD database F2 §7. Tag unique lower(name); mỗi vế testcase đúng một dạng INLINE/MINIO; EPSILON bắt buộc epsilon dương biểu diễn chính xác trong NUMERIC(18,12), chiến lược khác chỉ giữ epsilon hợp lệ hoặc NULL. Không tự làm tròn: lỗi 422 PRB-036/HRN-V20. Tái xuất bản so bộ chấm với snapshot trước khi công bố, khác thì tăng đúng một version, giống thì dùng lại; lỗi snapshot rollback với PRB-052. Chỉ SubmissionGraded nuôi problem_stats, bỏ SYSTEM_ERROR và chống trùng trong cùng giao dịch. Tất cả nội dung Q/D-PB lịch sử được đọc cùng baseline này.
+
+
+## 64. Đọc mặc định soạn bài — endpoint #57
+
+`GET /api/v1/problem-bank/authoring/defaults` — `ReadAuthoringDefaults`, màn SHR0202 tạo mới/nhân bản. Cần một trong `PROBLEM_AUTHORING:CREATE` hoặc `PROBLEM_AUTHORING:READ`. Không query/body, không nhận userId, không mutation hoặc audit.
+
+```json
+{"timeLimitMs":1000,"memoryLimitMb":256,"maxOutputSizeKb":64,"maxAiGenerationsPerProblem":2}
+```
+
+Số trên là ví dụ: time/memory/output đọc cấu hình F4 hiện tại qua JudgeConfigReadPort; AI cap đọc problem_bank_settings của F2. Chỉ trả bốn scalar, không compile timeout, worker, ngân sách hoặc secret. Anonymous/hết JWT 401; thiếu cả hai quyền 403 PRB-002; nguồn lỗi 503 PRB-050 với detail cố định `Authoring defaults unavailable`, không lộ exception nội bộ. Bài đang tồn tại giữ limits riêng, không bị defaults ghi đè; form mới/nhân bản không fallback hằng khi nguồn lỗi. Bản sao giữ limits từ duplicate-source theo §35; #57 cung cấp AI cap hiện tại với used=0 cho form bản sao, không ghi đè limits nguồn bằng mặc định hệ thống.
+
+Mã: AuthoringDefaultsController → ReadAuthoringDefaultsUseCase → ReadAuthoringDefaultsQueryHandler. FE realLoadDraft gọi khi tạo mới/nhân bản. Quyết định DEC-2026-1110-f2-authoring-defaults; AC-95 theo dõi nghiệm thu.
+
+### Ghi chú cache và consumer UI (2026-11-11)
+
+List/summary TTL60 dùng DB epoch tăng transactionally; Redis mirror sau commit. Status-filter đọc origin; solve-state TTL60 riêng userId, lỗi không cache thành rỗng. Xem BR-25 và V2.003. GET /catalog/summary (#13) vẫn là API hợp lệ; FE Tổng quan đã nhận totalPublished từ #13B /me/levels/progress nên không phát thêm request #13 chỉ để tạo caller. Tiến độ lớp #13A đọc meta toàn lớp, solvedCount null khác 0.

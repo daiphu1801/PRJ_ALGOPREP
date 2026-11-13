@@ -24,9 +24,9 @@
         "stereo": "application command"
       },
       {
-        "name": "AiPromptTemplateRepository",
+        "name": "PromptTemplateRepository",
         "role": "repository",
-        "stereo": "output port"
+        "stereo": "domain output port"
       },
       {
         "name": "JdbcAiPromptTemplateRepository",
@@ -64,11 +64,11 @@
           "then": [
             {
               "from": "UpdatePromptDraftCommandHandler",
-              "to": "AiPromptTemplateRepository",
+              "to": "PromptTemplateRepository",
               "text": "Tìm bản nháp của tính năng"
             },
             {
-              "from": "AiPromptTemplateRepository",
+              "from": "PromptTemplateRepository",
               "to": "JdbcAiPromptTemplateRepository",
               "text": "Đọc bản nháp hiện tại"
             },
@@ -85,23 +85,23 @@
             },
             {
               "from": "JdbcAiPromptTemplateRepository",
-              "to": "AiPromptTemplateRepository",
+              "to": "PromptTemplateRepository",
               "text": "Bản nháp hoặc chưa có",
               "kind": "return"
             },
             {
-              "from": "AiPromptTemplateRepository",
+              "from": "PromptTemplateRepository",
               "to": "UpdatePromptDraftCommandHandler",
               "text": "Bản nháp hoặc chưa có",
               "kind": "return"
             },
             {
               "from": "UpdatePromptDraftCommandHandler",
-              "to": "AiPromptTemplateRepository",
+              "to": "PromptTemplateRepository",
               "text": "Tạo hoặc cập nhật cùng bản nháp"
             },
             {
-              "from": "AiPromptTemplateRepository",
+              "from": "PromptTemplateRepository",
               "to": "JdbcAiPromptTemplateRepository",
               "text": "Lưu chỉ thị và lựa chọn mô hình"
             },

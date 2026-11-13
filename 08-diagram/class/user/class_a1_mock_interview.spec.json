@@ -1,5 +1,5 @@
 {
-  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a1_student.md:134-149. Nguồn thiết kế: 05-coding/backend/algoprep-ai-review/src/main/java/com/algoprep/aireview/. [SoT: Suy luận] Cấu trúc Controller, CommandHandler và Port chuẩn theo kiến trúc Hexagonal của dự án.",
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a1_student.md:134-149. Nguồn thiết kế: 05-coding/backend/algoprep-ai-review/src/main/java/com/algoprep/aireview/. Cấu trúc Controller, CommandHandler và Port chuẩn theo kiến trúc Hexagonal / Clean Architecture của phân hệ F5.",
   "kind": "class",
   "title": "A1 — Phỏng vấn giả lập ba giai đoạn",
   "covers": [
@@ -18,27 +18,26 @@
     "legend": "shared",
     "classes": [
       {
-        "id": "interviewController",
-        "name": "MockInterviewController",
+        "id": "sessionController",
+        "name": "InterviewSessionController",
         "methods": [
-          "+ start(caller : Jwt, command : StartInterviewCommand) : InterviewSession",
-          "+ advanceStage(sessionId : UUID) : InterviewStage",
-          "+ getRubric(sessionId : UUID) : InterviewRubric"
+          "+ open(auth : JwtToken, body : OpenRequest) : OpenResponse",
+          "+ detail(auth : JwtToken, sessionId : String) : DetailResponse",
+          "+ complete(auth : JwtToken, sessionId : String) : ResultView"
         ]
       },
       {
-        "id": "startHandler",
-        "name": "StartInterviewCommandHandler",
+        "id": "openHandler",
+        "name": "OpenInterviewSessionCommandHandler",
         "methods": [
-          "+ startFromAccepted(submissionId : UUID, studentId : UUID) : InterviewSession",
-          "+ startSelfPractice(studentId : UUID, settings : PracticeSettings) : InterviewSession"
+          "+ open(command : OpenInterviewSessionCommand) : OpenedInterviewSession"
         ]
       },
       {
-        "id": "stageHandler",
-        "name": "MockInterviewStageCommandHandler",
+        "id": "turnHandler",
+        "name": "SendInterviewTurnCommandHandler",
         "methods": [
-          "+ advanceStage(command : AdvanceStageCommand) : InterviewRubric"
+          "+ send(command : SendInterviewTurnCommand, sink : InterviewTurnSink) : void"
         ]
       },
       {
@@ -46,46 +45,60 @@
         "name": "InterviewSessionRepository",
         "kind": "interface",
         "methods": [
-          "+ save(session : InterviewSession)",
-          "+ findById(sessionId : UUID) : Optional<InterviewSession>"
+          "+ insertOpened(session : InterviewSession, opening : InterviewTurn) : void",
+          "+ find(sessionId : UUID) : Optional<InterviewSession>",
+          "+ turns(sessionId : UUID) : List<InterviewTurn>"
         ]
       },
       {
-        "id": "aiPort",
-        "name": "InterviewAiPort",
+        "id": "chatMemoryPort",
+        "name": "InterviewChatMemoryPort",
         "kind": "interface",
         "methods": [
-          "+ streamTurn(context : StageContext) : TokenStream",
-          "+ evaluateRubric(sessionId : UUID) : InterviewRubric"
+          "+ read(sessionId : UUID) : Optional<List<ChatMessage>>",
+          "+ write(sessionId : UUID, messages : List<ChatMessage>) : void"
+        ]
+      },
+      {
+        "id": "llmPort",
+        "name": "LlmProviderPort",
+        "kind": "interface",
+        "methods": [
+          "+ streamTurn(memory : ChatMemoryRef, sys : SystemInstruction, data : UserData) : Flux<TokenChunk>"
         ]
       }
     ],
     "externals": [],
     "relations": [
       {
-        "from": "interviewController",
-        "to": "startHandler",
+        "from": "sessionController",
+        "to": "openHandler",
         "kind": "dependency"
       },
       {
-        "from": "interviewController",
-        "to": "stageHandler",
+        "from": "sessionController",
+        "to": "turnHandler",
         "kind": "dependency"
       },
       {
-        "from": "startHandler",
+        "from": "openHandler",
         "to": "sessionRepo",
         "kind": "dependency"
       },
       {
-        "from": "stageHandler",
-        "to": "aiPort",
+        "from": "turnHandler",
+        "to": "chatMemoryPort",
+        "kind": "dependency"
+      },
+      {
+        "from": "turnHandler",
+        "to": "llmPort",
         "kind": "dependency"
       }
     ],
     "notes": [
-      "MockInterviewController điều phối phiên phỏng vấn 3 giai đoạn khởi tạo từ bài Accepted hoặc tự luyện.",
-      "Kết quả đánh giá 4 tiêu chí được lưu dưới dạng rubric; phiên kết thúc an toàn nếu AI suy giảm."
+      "InterviewSessionController điều phối phiên phỏng vấn 3 giai đoạn khởi tạo từ bài Accepted hoặc tự luyện.",
+      "InterviewChatMemoryPort lưu trữ ngữ cảnh hội thoại đa lượt trong Redis; LlmProviderPort phát luồng SSE thời gian thực."
     ]
   }
 }

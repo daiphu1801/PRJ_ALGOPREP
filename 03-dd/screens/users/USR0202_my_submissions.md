@@ -1,5 +1,7 @@
 # DD màn hình — Bài đã nộp (`USR0202`)
 
+> Triển khai bổ sung 2026-11-12: `use-submission-filters.ts` và `submission-url.ts` đã thực hiện URL source of truth, chuẩn hóa q/verdict/language/page, debounce400ms và Back/Forward. API real đã có từ đợt trước.21 focused tests và browser direct-link page2/refresh/Back đạt; xem [bằng chứng](../../../06-plan/reports/261112-f1-f4-followup-fix/submissions-url.md) và [browser](../../../06-plan/reports/261112-f1-f4-followup-fix/browser.md). Các cột “mock/chưa có” trong bản mô tả gốc bên dưới là checkpoint thiết kế, không còn là trạng thái triển khai hiện tại.
+
 > Tuân khung `03-dd/screens/README.md` mục 4 (chín mục 0 đến 8) và quy tắc cứng mục 5. Request, response, mã lỗi nằm ở file API của module và chỉ được liệt kê theo ID. Không có logic backend ở đây. Màn chỉ đọc: một danh sách phân trang máy chủ, hai nút điều hướng mỗi dòng, không form ghi.
 
 ## 0. Thông tin tài liệu

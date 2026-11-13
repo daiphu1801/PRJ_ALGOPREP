@@ -16,16 +16,16 @@
         <mxCell id="v3" value="Sinh viên" style="shape=umlLifeline;participant=umlActor;perimeter=lifelinePerimeter;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=40;verticalAlign=top;spacingTop=40;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
           <mxGeometry x="110" y="60" width="30" height="992" as="geometry" />
         </mxCell>
-        <mxCell id="v4" value='MockInterview&lt;br&gt;Controller&lt;br&gt;&lt;font style="font-size:9px"&gt;(presentation SSE)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=68;fontSize=11;fillColor=#C6EFCE;strokeColor=#5E8E5E;fontColor=#1A1A1A;" vertex="1" parent="1">
+        <mxCell id="v4" value='Interview&lt;br&gt;Session&lt;br&gt;Controller&lt;br&gt;&lt;font style="font-size:9px"&gt;(presentation REST)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=68;fontSize=11;fillColor=#C6EFCE;strokeColor=#5E8E5E;fontColor=#1A1A1A;" vertex="1" parent="1">
           <mxGeometry x="215" y="60" width="130" height="992" as="geometry" />
         </mxCell>
-        <mxCell id="v5" value='MockInterview&lt;br&gt;StageCommand&lt;br&gt;Handler&lt;br&gt;&lt;font style="font-size:9px"&gt;(application command)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=68;fontSize=11;fillColor=#FFF2CC;strokeColor=#B8952A;fontColor=#1A1A1A;" vertex="1" parent="1">
+        <mxCell id="v5" value='Request&lt;br&gt;InterviewHint&lt;br&gt;CommandHandler&lt;br&gt;&lt;font style="font-size:9px"&gt;(application command)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=68;fontSize=11;fillColor=#FFF2CC;strokeColor=#B8952A;fontColor=#1A1A1A;" vertex="1" parent="1">
           <mxGeometry x="370" y="60" width="130" height="992" as="geometry" />
         </mxCell>
         <mxCell id="v6" value='PromptComposer&lt;br&gt;&lt;font style="font-size:9px"&gt;(domain)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=68;fontSize=11;fillColor=#FFF2CC;strokeColor=#B8952A;fontColor=#1A1A1A;" vertex="1" parent="1">
           <mxGeometry x="525" y="60" width="130" height="992" as="geometry" />
         </mxCell>
-        <mxCell id="v7" value='InterviewAiPort&lt;br&gt;&lt;font style="font-size:9px"&gt;(output port)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=68;fontSize=11;fillColor=#FFC7CE;strokeColor=#B0525E;fontColor=#1A1A1A;" vertex="1" parent="1">
+        <mxCell id="v7" value='LlmProviderPort&lt;br&gt;&lt;font style="font-size:9px"&gt;(output port)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=68;fontSize=11;fillColor=#FFC7CE;strokeColor=#B0525E;fontColor=#1A1A1A;" vertex="1" parent="1">
           <mxGeometry x="680" y="60" width="130" height="992" as="geometry" />
         </mxCell>
         <mxCell id="v8" value='SpringAiLlm&lt;br&gt;Adapter&lt;br&gt;&lt;font style="font-size:9px"&gt;(infrastructure)&lt;/font&gt;' style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;size=68;fontSize=11;fillColor=#FFC7CE;strokeColor=#B0525E;fontColor=#1A1A1A;" vertex="1" parent="1">

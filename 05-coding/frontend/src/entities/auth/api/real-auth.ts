@@ -206,10 +206,13 @@ export const realRestoreAccount = (ticket: string): Promise<{ ok: true }> =>
     .then(() => ({ ok: true }));
 
 export const realLogout = async (): Promise<void> => {
+  const generation = tokenStore.generation();
   try {
     await api.post(`${BASE}/logout`);
   } finally {
-    tokenStore.set(null);
-    setMustChangePassword(false);
+    if (generation === tokenStore.generation()) {
+      tokenStore.set(null);
+      setMustChangePassword(false);
+    }
   }
 };

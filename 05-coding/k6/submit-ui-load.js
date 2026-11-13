@@ -99,7 +99,8 @@ export const options = {
     },
   },
   thresholds,
-  setupTimeout: "60s",
+  // Authenticate serially before the timed workload, including the largest 120-actor row.
+  setupTimeout: "180s",
   summaryTrendStats: ["avg", "min", "med", "p(90)", "p(95)", "p(99)", "max"],
   systemTags: [
     "status",
@@ -131,7 +132,7 @@ function params(token, name) {
     timeout: "10s",
   };
 }
-function login(actor) {
+function login(actor, actorIndex) {
   const response = http.post(
     BASE + "/identity/auth/login",
     JSON.stringify({ email: actor.email, password: fixture.password }),
@@ -144,8 +145,15 @@ function login(actor) {
   const body = json(response);
   if (response.status !== 200 || !body || !body.accessToken) {
     authErrors.add(1);
+    const candidateCode = body && (body.errorCode || body.code);
+    const safeCode =
+      typeof candidateCode === "string" && /^[A-Z0-9_-]{1,48}$/.test(candidateCode)
+        ? candidateCode
+        : "none";
     exec.test.abort(
-      "Synthetic load actor login failed; verify isolated fixture/backend (no token logged)",
+      "Synthetic load actor login failed in setup: actorIndex=" + actorIndex +
+        " http=" + response.status + " transportCode=" + (response.error_code || 0) +
+        " appCode=" + safeCode + "; verify isolated fixture/backend (no token logged)",
     );
   }
   return body.accessToken;
@@ -163,16 +171,18 @@ export function setup() {
   const row = MODE + "-r" + REPEAT + "-v" + VUS;
   if (!fixture.accountSets[row] || fixture.accountSets[row].length !== VUS)
     throw new Error("No dedicated actors for " + row);
-  const token = login(fixture.accountSets[row][0]);
+  // Setup data stays in k6 memory; do not persist or print bearer tokens.
+  // Dedicated actors also make per-student submit quota independent between rows.
+  const tokens = fixture.accountSets[row].map((actor, index) => login(actor, index));
   const checkProblem = http.get(
     BASE + "/problem-bank/problems/" + fixture.problemId + "/workspace",
-    params(token, "setup-fixture"),
+    params(tokens[0], "setup-fixture"),
   );
   if (checkProblem.status !== 200)
     throw new Error(
       "Published fixture not available on target backend; stop before load",
     );
-  return { row };
+  return { row, tokens };
 }
 
 let token = null;
@@ -308,9 +318,9 @@ function uiProgress(id, state, language, deadline) {
 
 export default function (data) {
   const started = Date.now();
-  const actor = fixture.accountSets[data.row][__VU - 1];
-  if (!actor) exec.test.abort("VU has no dedicated synthetic actor");
-  if (!token) token = login(actor);
+  if (!data.tokens || !data.tokens[__VU - 1])
+    exec.test.abort("VU has no preauthenticated dedicated synthetic actor");
+  token = data.tokens[__VU - 1];
   const language = LANGUAGES[(__VU + __ITER - 1) % LANGUAGES.length];
   const submit = http.post(
     BASE + "/judge/problems/" + fixture.problemId + "/submissions",
@@ -329,7 +339,10 @@ export default function (data) {
     language,
   });
   accepted.add(submit.status === 201, { language });
-  if (submit.status === 401) token = null;
+  if (submit.status === 401) {
+    authErrors.add(1);
+    exec.test.abort("Preauthenticated load actor rejected during timed row: HTTP401 (no token logged)");
+  }
   if (submit.status === 201 && admission && admission.submissionId) {
     const state = {
       done: false,

@@ -704,6 +704,8 @@ lệnh, timestamp, exit code và cleanup evidence; không cộng test ở lần 
 | **Nguồn** | [SoT: 03-dd/logic/F4_judge-orchestration.md] BR-JD-04 bước 8; quyết định chủ dự án 2026-10-25 |
 
 ### AC-77 — Bật tự động mở rộng làm thay đổi khả năng nhận bài của worker
+
+**Bổ sung kiểm chứng13/11:** `WorkerScalePublicationTest` đọc target ngay trong callback resize khi tăng/giảm, kiểm rollback cả hai hướng và retry giữ counters.3ca đỏ trên code cũ,3đạt sau sửa. `WorkerOperationsFlowTest` và `PersistedWorkerFlowTest` kiểm Rabbit/PG/HTTP/engine thật; hai gauge độc lập vẫn cần chờ hội tụ. Xem [báo cáo đóng bàn giao](../../06-plan/reports/261113-f2-f4-handoff-closure/report.md).
 | Mục | Nội dung |
 | :--- | :--- |
 | **Tiền đề** | Quản trị viên bật tự động mở rộng, `autoscaleJobThreshold = 20`, một consumer đang nhận bài; quan sát được `pendingCount` và số consumer mục tiêu/thực đang chạy |

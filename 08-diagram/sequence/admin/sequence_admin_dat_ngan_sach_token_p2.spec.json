@@ -19,9 +19,9 @@
         "stereo": "scheduled job"
       },
       {
-        "name": "AiTokenBudgetRepository",
+        "name": "AiBudgetAdminRepository",
         "role": "repository",
-        "stereo": "output port"
+        "stereo": "persistence adapter"
       },
       {
         "name": "JdbcAiTokenBudgetRepository",
@@ -47,11 +47,11 @@
       },
       {
         "from": "AiAnomalySweepJob",
-        "to": "AiTokenBudgetRepository",
+        "to": "AiBudgetAdminRepository",
         "text": "Đếm lượt dùng 24 giờ theo tài khoản"
       },
       {
-        "from": "AiTokenBudgetRepository",
+        "from": "AiBudgetAdminRepository",
         "to": "JdbcAiTokenBudgetRepository",
         "text": "Đọc mức dùng và cảnh báo đang mở"
       },
@@ -83,11 +83,11 @@
             },
             {
               "from": "AiAnomalySweepJob",
-              "to": "AiTokenBudgetRepository",
+              "to": "AiBudgetAdminRepository",
               "text": "Ghi cảnh báo mới nếu chưa có cảnh báo mở"
             },
             {
-              "from": "AiTokenBudgetRepository",
+              "from": "AiBudgetAdminRepository",
               "to": "JdbcAiTokenBudgetRepository",
               "text": "Lưu cảnh báo"
             },

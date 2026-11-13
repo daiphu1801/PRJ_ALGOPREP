@@ -1,5 +1,5 @@
 {
-  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a1_student.md:158-167. Nguồn thiết kế: 05-coding/backend/algoprep-interview-bank/src/main/java/com/algoprep/interviewbank/. [SoT: Suy luận] Cấu trúc Controller, CommandHandler và Port chuẩn theo kiến trúc Hexagonal của dự án.",
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a1_student.md:158-167. Nguồn thiết kế: 05-coding/backend/algoprep-interview-bank/src/main/java/com/algoprep/interviewbank/. Cấu trúc Controller, CommandHandler và Port chuẩn theo kiến trúc Hexagonal / Clean Architecture của phân hệ F6.",
   "kind": "class",
   "title": "A1 — Học và luyện câu hỏi phỏng vấn",
   "covers": [
@@ -19,74 +19,84 @@
     "legend": "shared",
     "classes": [
       {
-        "id": "practiceController",
-        "name": "InterviewPracticeController",
+        "id": "questionController",
+        "name": "InterviewQuestionsController",
         "methods": [
-          "+ search(caller : Jwt, filter : QuestionFilter) : Page<Question>",
-          "+ study(questionId : UUID) : StudyContent",
-          "+ selfRate(caller : Jwt, questionId : UUID, rating : String)"
+          "+ list(caller : JwtToken, params : Map) : Items",
+          "+ get(caller : JwtToken, questionId : String) : Detail",
+          "+ rate(caller : JwtToken, questionId : String, req : Request) : Recall"
         ]
       },
       {
-        "id": "evalHandler",
-        "name": "EvaluatePracticeAnswerCommandHandler",
+        "id": "practiceController",
+        "name": "PracticeAnswersController",
         "methods": [
-          "+ evaluate(command : EvaluateAnswerCommand) : PracticeFeedback"
+          "+ submit(caller : JwtToken, questionId : String, req : Request) : AttemptDto"
+        ]
+      },
+      {
+        "id": "submitHandler",
+        "name": "SubmitPracticeAnswerCommandHandler",
+        "methods": [
+          "+ submit(in : PracticeSubmission) : PracticeOutcome"
         ]
       },
       {
         "id": "questionRepo",
-        "name": "InterviewQuestionRepository",
+        "name": "LearnerQuestionRepository",
         "kind": "interface",
         "methods": [
-          "+ findPublished(filter : QuestionFilter) : Page<Question>",
-          "+ findStudyContent(questionId : UUID) : Optional<StudyContent>"
+          "+ page(criteria : LearnerQuestionCriteria) : LearnerQuestionPage",
+          "+ find(userId : UUID, questionId : UUID) : Optional<LearnerQuestion>",
+          "+ rate(userId : UUID, questionId : UUID, rating : RecallRating) : Optional<RecallState>"
         ]
       },
       {
-        "id": "historyRepo",
-        "name": "PracticeHistoryRepository",
+        "id": "practiceRepo",
+        "name": "PracticeRepository",
         "kind": "interface",
         "methods": [
-          "+ recordRating(userId : UUID, questionId : UUID, rating : String)",
-          "+ getProgress(userId : UUID) : PracticeProgress"
+          "+ findActiveQuestion(questionId : UUID) : Optional<PracticeQuestion>",
+          "+ insertAttempt(attempt : NewAttempt, attemptNo : int) : AnswerAttempt",
+          "+ attempts(userId : UUID, questionId : UUID, before : Integer, limit : int) : AttemptPage"
         ]
       },
       {
-        "id": "aiPort",
-        "name": "AiEvaluationPort",
+        "id": "feedbackPort",
+        "name": "AnswerFeedbackPort",
         "kind": "interface",
         "methods": [
-          "+ compare(answer : String, rubrics : List<AnswerRubric>) : PracticeFeedback"
+          "+ reserve(userId : UUID, category : LearnerCategory, limit : int) : GateTicket",
+          "+ compareAnswer(request : FeedbackRequest) : FeedbackResult"
         ]
       }
     ],
     "externals": [],
     "relations": [
       {
-        "from": "practiceController",
+        "from": "questionController",
         "to": "questionRepo",
         "kind": "dependency"
       },
       {
         "from": "practiceController",
-        "to": "historyRepo",
+        "to": "submitHandler",
         "kind": "dependency"
       },
       {
-        "from": "practiceController",
-        "to": "evalHandler",
+        "from": "submitHandler",
+        "to": "practiceRepo",
         "kind": "dependency"
       },
       {
-        "from": "evalHandler",
-        "to": "aiPort",
+        "from": "submitHandler",
+        "to": "feedbackPort",
         "kind": "dependency"
       }
     ],
     "notes": [
-      "InterviewPracticeController phục vụ duyệt câu hỏi, xem khung đáp án mẫu và ghi nhận mức độ ghi nhớ (RecallRating).",
-      "EvaluatePracticeAnswerCommandHandler đối chiếu câu trả lời tự luận với rubric qua AiEvaluationPort."
+      "InterviewQuestionsController phục vụ duyệt câu hỏi, xem khung đáp án mẫu và ghi nhận mức độ ghi nhớ (RecallRating).",
+      "SubmitPracticeAnswerCommandHandler đối chiếu câu trả lời tự luận với rubric qua AnswerFeedbackPort."
     ]
   }
 }

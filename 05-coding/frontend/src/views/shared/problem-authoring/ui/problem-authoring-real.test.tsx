@@ -105,6 +105,13 @@ function detail(over: Record<string, unknown> = {}) {
 
 function routes(dto: unknown = detail()) {
   apiMock.get.mockImplementation(async (path: string) => {
+    if (path === "/problem-bank/authoring/defaults")
+      return {
+        timeLimitMs: 1000,
+        memoryLimitMb: 256,
+        maxOutputSizeKb: 64,
+        maxAiGenerationsPerProblem: 2,
+      };
     if (path === "/problem-bank/levels")
       return {
         items: [
@@ -305,10 +312,10 @@ describe("ProblemAuthoringView with the real API", () => {
     );
   });
 
-  it("without a server verdict the client rule stays, so a spec with no signature reads as pending", async () => {
+  it("without a server verdict complete STDIO formats satisfy the local spec check", async () => {
     routes(detail(stdioOnly));
     await open();
-    expect(pendingSpec()).toBeInTheDocument();
+    expect(pendingSpec()).not.toBeInTheDocument();
   });
 
   it("the server's 'not declared' wins over a spec the client would call complete", async () => {

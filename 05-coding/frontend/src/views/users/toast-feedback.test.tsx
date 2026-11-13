@@ -142,8 +142,14 @@ describe("student views raise toasts for operation results", () => {
     const read = observe();
     renderWithQuery(<MockInterviewView />);
     fireEvent.click(await screen.findByText("1. Two Sum"));
+    vi.useFakeTimers();
     fireEvent.click(screen.getByText("startCta"));
-    fireEvent.click(await screen.findByText("stopEarlyCta"));
+    const stop = screen.getByText("stopEarlyCta");
+    // Complete the mock typing interval without depending on real CPU scheduling.
+    await act(async () => { await vi.advanceTimersByTimeAsync(5000); });
+    vi.useRealTimers();
+    expect(stop.closest("button")).toBeEnabled();
+    fireEvent.click(stop);
     fireEvent.click(screen.getByText("earlyExitConfirm"));
     await waitFor(() =>
       expect(read()).toEqual([["success", "toast.finished"]]),
