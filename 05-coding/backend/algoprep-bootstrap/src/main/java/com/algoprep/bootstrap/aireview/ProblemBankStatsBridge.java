@@ -3,7 +3,7 @@ package com.algoprep.bootstrap.aireview;
 import com.algoprep.aireview.application.ports.out.ProblemBankStatsPort;
 import com.algoprep.aireview.domain.model.ProblemSummary;
 import com.algoprep.bootstrap.identity.BridgeDeadline;
-import com.algoprep.problembank.application.ports.in.ProblemBankStatsUseCase;
+import com.algoprep.problembank.application.ports.in.stats.ProblemBankStatsUseCase;
 import java.time.Duration;
 import java.util.List;
 import java.util.Set;

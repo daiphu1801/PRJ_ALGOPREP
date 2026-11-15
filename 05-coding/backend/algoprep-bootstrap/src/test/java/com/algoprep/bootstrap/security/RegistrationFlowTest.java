@@ -10,8 +10,8 @@ import static org.mockito.Mockito.reset;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-import com.algoprep.identity.application.dto.VerifyEmailCommand;
-import com.algoprep.identity.application.ports.in.VerifyEmailUseCase;
+import com.algoprep.identity.application.dto.registration.VerifyEmailCommand;
+import com.algoprep.identity.application.ports.in.registration.VerifyEmailUseCase;
 import com.algoprep.identity.application.ports.out.EmailPort;
 import com.algoprep.identity.application.ports.out.EmailVerificationOtpPort;
 import com.algoprep.identity.domain.ports.out.RegistrationRepository;

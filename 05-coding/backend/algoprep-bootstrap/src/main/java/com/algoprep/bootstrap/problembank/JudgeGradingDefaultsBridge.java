@@ -1,7 +1,7 @@
 package com.algoprep.bootstrap.problembank;
 
-import com.algoprep.judge.application.ports.in.ReadGradingDefaultsUseCase;
-import com.algoprep.problembank.application.dto.JudgeGradingDefaults;
+import com.algoprep.judge.application.ports.in.grading.ReadGradingDefaultsUseCase;
+import com.algoprep.problembank.application.dto.grading.JudgeGradingDefaults;
 import com.algoprep.problembank.application.ports.out.JudgeConfigReadPort;
 import org.springframework.stereotype.Component;
 

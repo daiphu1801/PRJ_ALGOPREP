@@ -1,8 +1,8 @@
 package com.algoprep.bootstrap.problembank;
 
-import com.algoprep.aireview.application.dto.TestcaseScriptGeneration;
-import com.algoprep.aireview.application.ports.in.GenerateTestcaseScriptUseCase;
-import com.algoprep.problembank.application.dto.TestcaseGeneration;
+import com.algoprep.aireview.application.dto.testcase.TestcaseScriptGeneration;
+import com.algoprep.aireview.application.ports.in.testcase.GenerateTestcaseScriptUseCase;
+import com.algoprep.problembank.application.dto.generation.TestcaseGeneration;
 import com.algoprep.problembank.application.ports.out.TestcaseScriptGenerationPort;
 import org.springframework.stereotype.Component;
 

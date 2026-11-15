@@ -3,9 +3,9 @@ package com.algoprep.bootstrap.security;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.algoprep.identity.application.ports.in.BootstrapFirstAdminUseCase;
-import com.algoprep.identity.application.ports.in.PurgePendingAccountsUseCase;
-import com.algoprep.identity.application.ports.in.PurgeRefreshTokensUseCase;
+import com.algoprep.identity.application.ports.in.admin.BootstrapFirstAdminUseCase;
+import com.algoprep.identity.application.ports.in.auth.PurgeRefreshTokensUseCase;
+import com.algoprep.identity.application.ports.in.registration.PurgePendingAccountsUseCase;
 import com.algoprep.identity.domain.ports.out.RefreshTokenRepository;
 import java.util.List;
 import java.util.Map;

@@ -3,8 +3,8 @@ package com.algoprep.bootstrap.judge;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.algoprep.judge.application.ports.out.SubmissionQueuePort;
-import com.algoprep.judge.domain.model.PendingSubmission.Owner;
-import com.algoprep.problembank.application.ports.in.PublishTestcaseSnapshotUseCase;
+import com.algoprep.judge.domain.model.submission.PendingSubmission.Owner;
+import com.algoprep.problembank.application.ports.in.snapshot.PublishTestcaseSnapshotUseCase;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.GetResponse;
 import io.minio.BucketExistsArgs;

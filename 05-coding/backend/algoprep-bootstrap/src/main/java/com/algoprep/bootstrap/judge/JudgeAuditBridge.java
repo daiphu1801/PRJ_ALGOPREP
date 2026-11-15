@@ -1,7 +1,7 @@
 package com.algoprep.bootstrap.judge;
 
-import com.algoprep.identity.application.ports.in.RecordSystemAuditUseCase;
-import com.algoprep.identity.domain.model.AuditEntry;
+import com.algoprep.identity.application.ports.in.audit.RecordSystemAuditUseCase;
+import com.algoprep.identity.domain.model.audit.AuditEntry;
 import com.algoprep.judge.domain.model.JudgeAuditEntry;
 import com.algoprep.judge.domain.ports.out.JudgeAuditPort;
 import org.springframework.stereotype.Component;

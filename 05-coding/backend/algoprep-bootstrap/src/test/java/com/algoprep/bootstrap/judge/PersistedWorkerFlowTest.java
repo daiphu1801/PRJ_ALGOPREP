@@ -2,8 +2,8 @@ package com.algoprep.bootstrap.judge;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.algoprep.judge.domain.model.PendingSubmission.Owner;
-import com.algoprep.problembank.application.ports.in.PublishTestcaseSnapshotUseCase;
+import com.algoprep.judge.domain.model.submission.PendingSubmission.Owner;
+import com.algoprep.problembank.application.ports.in.snapshot.PublishTestcaseSnapshotUseCase;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.GetResponse;
 import io.minio.BucketExistsArgs;
@@ -107,10 +107,17 @@ class PersistedWorkerFlowTest {
         .isEqualTo("UP");
   }
 
-  @Autowired com.algoprep.judge.application.ports.in.BeginSubmissionCompilationUseCase begin;
-  @Autowired com.algoprep.judge.application.ports.in.BeginSubmissionJudgingUseCase judging;
-  @Autowired com.algoprep.judge.application.ports.in.IssueSubmissionRunTokenUseCase runTokens;
-  @Autowired com.algoprep.judge.application.ports.in.RecordSubmissionTestcaseUseCase results;
+  @Autowired
+  com.algoprep.judge.application.ports.in.execution.BeginSubmissionCompilationUseCase begin;
+
+  @Autowired
+  com.algoprep.judge.application.ports.in.execution.BeginSubmissionJudgingUseCase judging;
+
+  @Autowired
+  com.algoprep.judge.application.ports.in.execution.IssueSubmissionRunTokenUseCase runTokens;
+
+  @Autowired
+  com.algoprep.judge.application.ports.in.execution.RecordSubmissionTestcaseUseCase results;
 
   @Test
   void redeliveryWithPersistedResultsEndsAsWorkerTimeoutWithoutRunningAgain() throws Exception {
@@ -126,7 +133,7 @@ class PersistedWorkerFlowTest {
     var issued = runTokens.issue(id, testcase).orElseThrow();
     assertThat(
             results.record(
-                new com.algoprep.judge.domain.model.WorkerRecords.TestcaseWrite(
+                new com.algoprep.judge.domain.model.execution.WorkerRecords.TestcaseWrite(
                     id, testcase, issued.id(), 1, true, "AC", 1, 1, "1", null, false)))
         .isTrue();
     int compiles = counting.compiles.get();
@@ -203,11 +210,11 @@ class PersistedWorkerFlowTest {
   private final JsonMapper json = JsonMapper.builder().findAndAddModules().build();
   private final java.net.http.HttpClient http = java.net.http.HttpClient.newHttpClient();
   @Autowired JdbcTemplate jdbc;
-  @Autowired com.algoprep.judge.application.ports.in.RelayJudgeOutboxUseCase outboxRelay;
+  @Autowired com.algoprep.judge.application.ports.in.outbox.RelayJudgeOutboxUseCase outboxRelay;
   @Autowired PublishTestcaseSnapshotUseCase snapshots;
   @Autowired CountingEngine counting;
   @Autowired com.algoprep.judge.domain.ports.out.WorkerLeasePort leases;
-  @Autowired com.algoprep.judge.application.ports.in.SweepStaleSubmissionsUseCase sweep;
+  @Autowired com.algoprep.judge.application.ports.in.maintenance.SweepStaleSubmissionsUseCase sweep;
 
   @Autowired
   @Qualifier("testcaseServiceClient")
@@ -215,7 +222,7 @@ class PersistedWorkerFlowTest {
 
   private Owner owner;
 
-  @Autowired com.algoprep.problembank.application.ports.in.SaveProblemSpecUseCase saveSpec;
+  @Autowired com.algoprep.problembank.application.ports.in.problem.SaveProblemSpecUseCase saveSpec;
 
   private void saveNextSpecification() {
     UUID author =
@@ -226,7 +233,7 @@ class PersistedWorkerFlowTest {
     body.set("parameters", json.readTree("[{\"name\":\"value\",\"type\":{\"kind\":\"INT\"}}]"));
     body.set("nameOverrides", json.createObjectNode());
     saveSpec.save(
-        new com.algoprep.problembank.application.dto.SaveProblemSpecCommand(
+        new com.algoprep.problembank.application.dto.problem.SaveProblemSpecCommand(
             owner.problemId(),
             author,
             false,

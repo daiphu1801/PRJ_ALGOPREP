@@ -5,11 +5,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.algoprep.common.exception.ResourceNotFoundException;
 import com.algoprep.judge.application.ports.out.ProblemGradingSpecPort;
-import com.algoprep.problembank.application.ports.in.PublishTestcaseSnapshotUseCase;
+import com.algoprep.problembank.application.ports.in.snapshot.PublishTestcaseSnapshotUseCase;
 import com.algoprep.problembank.application.ports.out.TestcaseObjectStorePort;
 import com.algoprep.problembank.application.snapshot.TestcaseSnapshotCodec;
 import com.algoprep.problembank.domain.exception.TestcaseStorageUnavailableException;
-import com.algoprep.problembank.domain.model.SnapshotMetadata;
+import com.algoprep.problembank.domain.model.snapshot.SnapshotMetadata;
 import com.algoprep.problembank.domain.ports.out.SnapshotPublicationRepository;
 import io.minio.BucketExistsArgs;
 import io.minio.ListObjectsArgs;

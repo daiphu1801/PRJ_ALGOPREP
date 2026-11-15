@@ -1,6 +1,6 @@
 package com.algoprep.bootstrap.problembank;
 
-import com.algoprep.identity.application.ports.in.ReadUserDisplayNamesUseCase;
+import com.algoprep.identity.application.ports.in.admin.ReadUserDisplayNamesUseCase;
 import com.algoprep.problembank.application.ports.out.UserDirectoryPort;
 import java.time.Duration;
 import java.util.Collection;

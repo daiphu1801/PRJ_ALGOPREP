@@ -8,7 +8,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-import com.algoprep.judge.application.ports.in.GetQueueMonitorBatchUseCase;
+import com.algoprep.judge.application.ports.in.queue.GetQueueMonitorBatchUseCase;
 import com.algoprep.judge.domain.ports.out.QueueMonitorRepository;
 import java.util.Map;
 import java.util.UUID;

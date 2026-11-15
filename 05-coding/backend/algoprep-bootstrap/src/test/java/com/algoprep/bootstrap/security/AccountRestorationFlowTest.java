@@ -11,10 +11,10 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-import com.algoprep.identity.application.dto.RestoreAccountCommand;
-import com.algoprep.identity.application.ports.in.RestoreDeactivatedAccountUseCase;
+import com.algoprep.identity.application.dto.account.RestoreAccountCommand;
+import com.algoprep.identity.application.ports.in.account.RestoreDeactivatedAccountUseCase;
 import com.algoprep.identity.application.ports.out.RestorationTicketPort;
-import com.algoprep.identity.domain.model.RestorationTicketSecrets;
+import com.algoprep.identity.domain.model.account.RestorationTicketSecrets;
 import com.algoprep.identity.domain.ports.out.AccountRestorationRepository;
 import com.jayway.jsonpath.JsonPath;
 import java.sql.Timestamp;

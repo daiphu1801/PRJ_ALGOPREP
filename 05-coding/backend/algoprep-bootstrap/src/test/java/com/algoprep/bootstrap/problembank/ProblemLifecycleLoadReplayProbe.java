@@ -2,7 +2,7 @@ package com.algoprep.bootstrap.problembank;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.algoprep.problembank.application.ports.in.RelayProblemOutboxUseCase;
+import com.algoprep.problembank.application.ports.in.outbox.RelayProblemOutboxUseCase;
 import com.rabbitmq.client.ConnectionFactory;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -83,7 +83,7 @@ class ProblemLifecycleLoadReplayProbe {
         Class.forName(
             "com.algoprep.problembank.infrastructure.messaging.RabbitProblemDomainEventAdapter"),
         Class.forName(
-            "com.algoprep.problembank.application.command.RelayProblemOutboxCommandHandler"));
+            "com.algoprep.problembank.application.command.outbox.RelayProblemOutboxCommandHandler"));
     context.refresh();
     return context;
   }

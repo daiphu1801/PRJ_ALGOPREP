@@ -2,10 +2,10 @@ package com.algoprep.bootstrap.judge;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.algoprep.judge.application.ports.in.GetClassStudentSubmissionMetricsUseCase;
+import com.algoprep.judge.application.ports.in.metrics.GetClassStudentSubmissionMetricsUseCase;
 import com.algoprep.judge.application.ports.out.ClassSubmissionMetricsCache;
 import com.algoprep.judge.domain.metrics.ClassSubmissionMetricsCalculator;
-import com.algoprep.judge.domain.model.ClassMetricsScope;
+import com.algoprep.judge.domain.model.metrics.ClassMetricsScope;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;

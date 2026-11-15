@@ -10,7 +10,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import com.algoprep.identity.application.ports.out.AccessTokenPort;
 import com.algoprep.identity.domain.model.BaseCategory;
-import com.algoprep.judge.application.ports.in.EvaluateProgramUseCase;
+import com.algoprep.judge.application.ports.in.execution.EvaluateProgramUseCase;
 import com.algoprep.judge.application.ports.out.JudgeExecutionPort;
 import com.algoprep.judge.application.ports.out.SampleQuotaPort;
 import com.algoprep.judge.domain.exception.JudgeInfrastructureException;

@@ -10,8 +10,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import com.algoprep.identity.application.ports.out.OAuthProviderPort;
 import com.algoprep.identity.domain.exception.OAuthCodeRejectedException;
-import com.algoprep.identity.domain.model.OAuthProfile;
-import com.algoprep.identity.domain.model.OAuthProvider;
+import com.algoprep.identity.domain.model.auth.OAuthProfile;
+import com.algoprep.identity.domain.model.auth.OAuthProvider;
 import com.jayway.jsonpath.JsonPath;
 import java.util.Optional;
 import java.util.UUID;

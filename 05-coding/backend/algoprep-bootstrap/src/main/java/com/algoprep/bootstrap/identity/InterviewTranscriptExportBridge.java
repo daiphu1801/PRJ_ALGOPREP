@@ -1,8 +1,8 @@
 package com.algoprep.bootstrap.identity;
 
-import com.algoprep.aireview.application.dto.InterviewTranscript;
-import com.algoprep.aireview.application.ports.in.InterviewTranscriptReadUseCase;
-import com.algoprep.identity.application.dto.InterviewTranscriptExport;
+import com.algoprep.aireview.application.dto.interview.InterviewTranscript;
+import com.algoprep.aireview.application.ports.in.interview.InterviewTranscriptReadUseCase;
+import com.algoprep.identity.application.dto.account.InterviewTranscriptExport;
 import com.algoprep.identity.application.ports.out.InterviewTranscriptExportPort;
 import java.time.Duration;
 import java.util.UUID;

@@ -2,12 +2,12 @@ package com.algoprep.bootstrap.judge;
 
 import com.algoprep.judge.application.dto.GradingSpecification;
 import com.algoprep.judge.application.dto.GradingTestcase;
-import com.algoprep.judge.application.dto.GradingTestcaseSnapshot;
+import com.algoprep.judge.application.dto.execution.GradingTestcaseSnapshot;
 import com.algoprep.judge.application.ports.out.ProblemGradingSpecPort;
 import com.algoprep.judge.domain.exception.ProblemGradingReadException;
-import com.algoprep.problembank.application.ports.in.ReadProblemGradingSpecUseCase;
-import com.algoprep.problembank.application.ports.in.ReadSampleTestcasesUseCase;
-import com.algoprep.problembank.application.ports.in.ReadTestcaseSnapshotUseCase;
+import com.algoprep.problembank.application.ports.in.grading.ReadProblemGradingSpecUseCase;
+import com.algoprep.problembank.application.ports.in.grading.ReadSampleTestcasesUseCase;
+import com.algoprep.problembank.application.ports.in.snapshot.ReadTestcaseSnapshotUseCase;
 import com.algoprep.problembank.domain.exception.GradingDataException;
 import com.algoprep.problembank.domain.model.TestcaseData;
 import java.util.List;
@@ -37,7 +37,7 @@ public final class ProblemGradingReadBridge implements ProblemGradingSpecPort {
   }
 
   private GradingSpecification specification(
-      com.algoprep.problembank.domain.model.GradingSpecification result) {
+      com.algoprep.problembank.domain.model.grading.GradingSpecification result) {
     var data = result.data();
     var limits = data.limits();
     return new GradingSpecification(

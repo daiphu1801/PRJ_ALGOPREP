@@ -6,8 +6,8 @@ import com.algoprep.harness.application.dto.PrepareSubmissionCommand;
 import com.algoprep.harness.application.dto.SubmissionModel;
 import com.algoprep.harness.application.ports.in.PrepareSubmissionUseCase;
 import com.algoprep.judge.application.dto.ExecutionModels.Matching;
-import com.algoprep.judge.application.dto.WorkerPreparation.Prepared;
-import com.algoprep.judge.application.dto.WorkerPreparation.Request;
+import com.algoprep.judge.application.dto.execution.WorkerPreparation.Prepared;
+import com.algoprep.judge.application.dto.execution.WorkerPreparation.Request;
 import com.algoprep.judge.application.ports.out.WorkerProgramPort;
 import org.springframework.stereotype.Component;
 

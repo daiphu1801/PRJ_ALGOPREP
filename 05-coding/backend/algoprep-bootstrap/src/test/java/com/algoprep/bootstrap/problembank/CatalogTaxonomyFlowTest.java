@@ -11,8 +11,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import com.algoprep.identity.application.ports.out.AccessTokenPort;
 import com.algoprep.identity.domain.model.BaseCategory;
-import com.algoprep.problembank.application.dto.CatalogCommand;
-import com.algoprep.problembank.application.ports.in.CreateProblemLevelUseCase;
+import com.algoprep.problembank.application.dto.catalog.CatalogCommand;
+import com.algoprep.problembank.application.ports.in.catalog.CreateProblemLevelUseCase;
 import com.jayway.jsonpath.JsonPath;
 import java.util.ArrayList;
 import java.util.List;

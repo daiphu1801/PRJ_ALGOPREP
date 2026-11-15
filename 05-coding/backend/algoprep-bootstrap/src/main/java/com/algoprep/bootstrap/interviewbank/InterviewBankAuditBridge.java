@@ -1,7 +1,7 @@
 package com.algoprep.bootstrap.interviewbank;
 
-import com.algoprep.identity.application.ports.in.RecordSystemAuditUseCase;
-import com.algoprep.identity.domain.model.AuditEntry;
+import com.algoprep.identity.application.ports.in.audit.RecordSystemAuditUseCase;
+import com.algoprep.identity.domain.model.audit.AuditEntry;
 import com.algoprep.interviewbank.domain.model.InterviewAuditEntry;
 import com.algoprep.interviewbank.domain.ports.out.InterviewBankAuditPort;
 import org.springframework.stereotype.Component;

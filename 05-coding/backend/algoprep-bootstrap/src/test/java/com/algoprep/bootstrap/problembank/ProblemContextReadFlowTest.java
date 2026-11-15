@@ -4,9 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.algoprep.common.exception.ResourceNotFoundException;
-import com.algoprep.problembank.application.dto.SaveAiContextCommand;
-import com.algoprep.problembank.application.ports.in.ReadProblemContextUseCase;
-import com.algoprep.problembank.application.ports.in.SaveAiAuthoringContextUseCase;
+import com.algoprep.problembank.application.dto.generation.SaveAiContextCommand;
+import com.algoprep.problembank.application.ports.in.generation.SaveAiAuthoringContextUseCase;
+import com.algoprep.problembank.application.ports.in.grading.ReadProblemContextUseCase;
 import java.sql.Timestamp;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;

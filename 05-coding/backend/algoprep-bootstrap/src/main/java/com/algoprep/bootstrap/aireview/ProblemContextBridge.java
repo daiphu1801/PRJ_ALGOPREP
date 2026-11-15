@@ -3,8 +3,8 @@ package com.algoprep.bootstrap.aireview;
 import com.algoprep.aireview.application.ports.out.ProblemContextPort;
 import com.algoprep.aireview.domain.exception.AiProviderUnavailableException;
 import com.algoprep.aireview.domain.model.ProblemContext;
-import com.algoprep.problembank.application.ports.in.ReadProblemContextUseCase;
-import com.algoprep.problembank.domain.model.ProblemContextView;
+import com.algoprep.problembank.application.ports.in.grading.ReadProblemContextUseCase;
+import com.algoprep.problembank.domain.model.grading.ProblemContextView;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
 

@@ -2,10 +2,10 @@ package com.algoprep.bootstrap.problembank;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.algoprep.problembank.application.ports.in.CleanProblemOutboxUseCase;
-import com.algoprep.problembank.application.ports.in.RelayProblemOutboxUseCase;
+import com.algoprep.problembank.application.ports.in.outbox.CleanProblemOutboxUseCase;
+import com.algoprep.problembank.application.ports.in.outbox.RelayProblemOutboxUseCase;
 import com.algoprep.problembank.application.ports.out.ProblemDomainEventPort;
-import com.algoprep.problembank.domain.model.OutboxEvent;
+import com.algoprep.problembank.domain.model.outbox.OutboxEvent;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;

@@ -1,7 +1,7 @@
 package com.algoprep.bootstrap.problembank;
 
-import com.algoprep.identity.application.ports.in.RecordSystemAuditUseCase;
-import com.algoprep.identity.domain.model.AuditEntry;
+import com.algoprep.identity.application.ports.in.audit.RecordSystemAuditUseCase;
+import com.algoprep.identity.domain.model.audit.AuditEntry;
 import com.algoprep.problembank.domain.model.CatalogAuditEntry;
 import com.algoprep.problembank.domain.ports.out.ProblemAuditPort;
 import org.springframework.stereotype.Component;

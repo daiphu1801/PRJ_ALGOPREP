@@ -1,10 +1,10 @@
 package com.algoprep.bootstrap.judge;
 
-import com.algoprep.judge.application.dto.SubmissionReads.Problem;
+import com.algoprep.judge.application.dto.read.SubmissionReads.Problem;
 import com.algoprep.judge.application.ports.out.ProblemSummaryReadPort;
-import com.algoprep.problembank.application.ports.in.ReadSubmissionProblemSummariesUseCase;
-import com.algoprep.problembank.application.ports.in.ReadSubmissionSampleIdsUseCase;
-import com.algoprep.problembank.application.ports.in.SearchSubmissionProblemsUseCase;
+import com.algoprep.problembank.application.ports.in.grading.ReadSubmissionProblemSummariesUseCase;
+import com.algoprep.problembank.application.ports.in.grading.ReadSubmissionSampleIdsUseCase;
+import com.algoprep.problembank.application.ports.in.grading.SearchSubmissionProblemsUseCase;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;

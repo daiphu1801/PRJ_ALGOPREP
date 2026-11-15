@@ -1,7 +1,7 @@
 package com.algoprep.bootstrap.judge;
 
-import com.algoprep.identity.application.ports.in.ReadSubmissionClassScopeUseCase;
-import com.algoprep.judge.application.dto.SubmissionReads.Membership;
+import com.algoprep.identity.application.ports.in.classes.ReadSubmissionClassScopeUseCase;
+import com.algoprep.judge.application.dto.read.SubmissionReads.Membership;
 import com.algoprep.judge.application.ports.out.ClassScopeReadPort;
 import java.util.List;
 import java.util.UUID;

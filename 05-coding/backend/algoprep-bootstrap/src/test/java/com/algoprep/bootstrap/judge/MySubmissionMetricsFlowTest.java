@@ -12,7 +12,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import com.algoprep.identity.application.ports.out.AccessTokenPort;
 import com.algoprep.identity.domain.model.BaseCategory;
-import com.algoprep.judge.application.ports.in.GetMyTopicSubmissionMetricsUseCase;
+import com.algoprep.judge.application.ports.in.metrics.GetMyTopicSubmissionMetricsUseCase;
 import com.algoprep.judge.application.ports.out.ProblemTopicReadPort;
 import com.algoprep.judge.domain.ports.out.MySubmissionMetricsRepository;
 import java.math.BigDecimal;

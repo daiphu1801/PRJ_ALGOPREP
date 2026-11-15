@@ -3,7 +3,7 @@ package com.algoprep.bootstrap.problembank;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.algoprep.identity.application.ports.in.ReadUserDisplayNamesUseCase;
+import com.algoprep.identity.application.ports.in.admin.ReadUserDisplayNamesUseCase;
 import com.algoprep.identity.domain.ports.out.UserDisplayNamesRepository;
 import com.algoprep.problembank.application.ports.out.UserDirectoryPort;
 import java.io.ByteArrayOutputStream;

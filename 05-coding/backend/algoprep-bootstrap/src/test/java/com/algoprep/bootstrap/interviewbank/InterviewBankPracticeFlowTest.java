@@ -10,11 +10,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import com.algoprep.aireview.domain.exception.AiProviderUnavailableException;
 import com.algoprep.aireview.domain.model.CallOptions;
-import com.algoprep.aireview.domain.model.ChatMemoryRef;
 import com.algoprep.aireview.domain.model.LlmUsage;
 import com.algoprep.aireview.domain.model.ResponseSchema;
 import com.algoprep.aireview.domain.model.StructuredResult;
 import com.algoprep.aireview.domain.model.TokenChunk;
+import com.algoprep.aireview.domain.model.interview.ChatMemoryRef;
 import com.algoprep.aireview.domain.ports.out.LlmProviderPort;
 import com.algoprep.aireview.domain.prompt.ComposedPrompt;
 import com.algoprep.aireview.domain.prompt.PerProblemContext;

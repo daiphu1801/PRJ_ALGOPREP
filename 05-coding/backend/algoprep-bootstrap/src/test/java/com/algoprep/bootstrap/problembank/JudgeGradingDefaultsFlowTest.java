@@ -3,7 +3,7 @@ package com.algoprep.bootstrap.problembank;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.algoprep.problembank.application.dto.JudgeGradingDefaults;
+import com.algoprep.problembank.application.dto.grading.JudgeGradingDefaults;
 import com.algoprep.problembank.application.ports.out.JudgeConfigReadPort;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

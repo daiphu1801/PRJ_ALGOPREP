@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.algoprep.identity.application.ports.out.AccessTokenPort;
 import com.algoprep.identity.domain.model.BaseCategory;
-import com.algoprep.judge.application.ports.in.BroadcastQueueMonitorUseCase;
-import com.algoprep.judge.application.ports.in.GetQueueMonitorBatchUseCase;
+import com.algoprep.judge.application.ports.in.queue.BroadcastQueueMonitorUseCase;
+import com.algoprep.judge.application.ports.in.queue.GetQueueMonitorBatchUseCase;
 import com.algoprep.judge.application.ports.out.QueueMonitorAudiencePort;
 import java.time.Instant;
 import java.util.UUID;

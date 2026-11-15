@@ -11,11 +11,11 @@ import static org.mockito.Mockito.reset;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-import com.algoprep.identity.application.dto.ResetPasswordCommand;
-import com.algoprep.identity.application.ports.in.ResetPasswordUseCase;
+import com.algoprep.identity.application.dto.password.ResetPasswordCommand;
+import com.algoprep.identity.application.ports.in.password.ResetPasswordUseCase;
 import com.algoprep.identity.application.ports.out.EmailPort;
 import com.algoprep.identity.application.ports.out.PasswordResetOtpPort;
-import com.algoprep.identity.domain.model.PasswordResetChallenge;
+import com.algoprep.identity.domain.model.password.PasswordResetChallenge;
 import com.algoprep.identity.domain.ports.out.AuditLogPort;
 import com.jayway.jsonpath.JsonPath;
 import jakarta.servlet.http.Cookie;

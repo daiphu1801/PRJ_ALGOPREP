@@ -5,7 +5,7 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
-import com.algoprep.identity.application.ports.in.PurgeExpiredAuditLogsUseCase;
+import com.algoprep.identity.application.ports.in.audit.PurgeExpiredAuditLogsUseCase;
 import com.algoprep.identity.application.ports.out.AccessTokenPort;
 import com.algoprep.identity.domain.model.BaseCategory;
 import com.jayway.jsonpath.JsonPath;

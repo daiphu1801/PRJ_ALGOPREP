@@ -4,11 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-import com.algoprep.aireview.application.ports.in.CleanAiOutboxUseCase;
-import com.algoprep.aireview.application.ports.in.RelayAiOutboxUseCase;
+import com.algoprep.aireview.application.ports.in.outbox.CleanAiOutboxUseCase;
+import com.algoprep.aireview.application.ports.in.outbox.RelayAiOutboxUseCase;
 import com.algoprep.aireview.application.ports.out.AiDomainEventPort;
-import com.algoprep.aireview.domain.model.AiOutboxEvent;
 import com.algoprep.aireview.domain.model.SubmissionSnapshot;
+import com.algoprep.aireview.domain.model.outbox.AiOutboxEvent;
 import com.algoprep.aireview.domain.ports.out.AiOutboxRepository;
 import com.algoprep.identity.application.ports.out.AccessTokenPort;
 import com.algoprep.identity.domain.model.BaseCategory;

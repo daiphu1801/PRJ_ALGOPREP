@@ -1,9 +1,9 @@
 package com.algoprep.bootstrap.identity;
 
 import com.algoprep.identity.application.ports.out.ProblemBankStatsPort;
-import com.algoprep.identity.domain.model.AdminSubmissionBlocks.LevelRef;
-import com.algoprep.identity.domain.model.AdminSubmissionBlocks.PublishedProblem;
-import com.algoprep.problembank.application.ports.in.ProblemBankStatsUseCase;
+import com.algoprep.identity.domain.model.admin.AdminSubmissionBlocks.LevelRef;
+import com.algoprep.identity.domain.model.admin.AdminSubmissionBlocks.PublishedProblem;
+import com.algoprep.problembank.application.ports.in.stats.ProblemBankStatsUseCase;
 import java.time.Duration;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;

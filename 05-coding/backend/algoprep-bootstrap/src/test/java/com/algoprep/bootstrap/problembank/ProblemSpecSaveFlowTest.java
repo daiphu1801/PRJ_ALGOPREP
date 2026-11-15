@@ -7,8 +7,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import com.algoprep.identity.application.ports.out.AccessTokenPort;
 import com.algoprep.identity.domain.model.BaseCategory;
-import com.algoprep.problembank.application.dto.SaveProblemSpecCommand;
-import com.algoprep.problembank.application.ports.in.SaveProblemSpecUseCase;
+import com.algoprep.problembank.application.dto.problem.SaveProblemSpecCommand;
+import com.algoprep.problembank.application.ports.in.problem.SaveProblemSpecUseCase;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;

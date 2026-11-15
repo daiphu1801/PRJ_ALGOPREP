@@ -4,12 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.algoprep.common.exception.AlgoPrepException;
-import com.algoprep.problembank.application.dto.SaveProblemContentCommand;
-import com.algoprep.problembank.application.dto.SaveProblemSpecCommand;
-import com.algoprep.problembank.application.ports.in.SaveProblemContentUseCase;
-import com.algoprep.problembank.application.ports.in.SaveProblemSpecUseCase;
-import com.algoprep.problembank.domain.model.ProblemContentData;
+import com.algoprep.problembank.application.dto.problem.SaveProblemContentCommand;
+import com.algoprep.problembank.application.dto.problem.SaveProblemSpecCommand;
+import com.algoprep.problembank.application.ports.in.problem.SaveProblemContentUseCase;
+import com.algoprep.problembank.application.ports.in.problem.SaveProblemSpecUseCase;
 import com.algoprep.problembank.domain.model.ProblemContentSnapshot;
+import com.algoprep.problembank.domain.model.problem.ProblemContentData;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Callable;

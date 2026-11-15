@@ -19,7 +19,7 @@ import com.algoprep.judge.application.dto.ExecutionModels.RunRequest;
 import com.algoprep.judge.application.dto.ExecutionModels.Status;
 import com.algoprep.judge.application.dto.ExecutionModels.Testcase;
 import com.algoprep.judge.application.dto.ExecutionModels.Verdict;
-import com.algoprep.judge.application.ports.in.EvaluateProgramUseCase;
+import com.algoprep.judge.application.ports.in.execution.EvaluateProgramUseCase;
 import com.algoprep.judge.application.ports.out.JudgeExecutionPort;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +56,7 @@ class ExecutionBridgeFlowTest {
     context.register(
         HarnessProgramBridge.class,
         com.algoprep.judge.infrastructure.gojudge.GoJudgeAdapter.class,
-        Class.forName("com.algoprep.judge.application.command.EvaluateProgram"));
+        Class.forName("com.algoprep.judge.application.command.execution.EvaluateProgram"));
     context.refresh();
     packaging = context.getBean(ProgramPackaging.class);
     bridge = context.getBean(HarnessProgramBridge.class);

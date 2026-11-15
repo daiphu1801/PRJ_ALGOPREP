@@ -3,7 +3,7 @@ package com.algoprep.bootstrap.judge;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.algoprep.problembank.domain.model.ClassAssignmentSnapshot;
+import com.algoprep.problembank.domain.model.assignment.ClassAssignmentSnapshot;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;

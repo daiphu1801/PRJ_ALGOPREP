@@ -6,7 +6,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-import com.algoprep.judge.application.ports.in.GetQueueMonitorBatchUseCase;
+import com.algoprep.judge.application.ports.in.queue.GetQueueMonitorBatchUseCase;
 import java.time.Duration;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

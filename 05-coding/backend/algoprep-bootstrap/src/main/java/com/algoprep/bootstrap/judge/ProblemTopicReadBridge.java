@@ -1,7 +1,7 @@
 package com.algoprep.bootstrap.judge;
 
 import com.algoprep.judge.application.ports.out.ProblemTopicReadPort;
-import com.algoprep.problembank.application.ports.in.ReadHistoricalTopicProblemIdsUseCase;
+import com.algoprep.problembank.application.ports.in.grading.ReadHistoricalTopicProblemIdsUseCase;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;

@@ -6,7 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-import com.algoprep.identity.application.ports.in.AnonymizeDeletedAccountsUseCase;
+import com.algoprep.identity.application.ports.in.account.AnonymizeDeletedAccountsUseCase;
 import com.jayway.jsonpath.JsonPath;
 import jakarta.servlet.http.Cookie;
 import java.net.URI;

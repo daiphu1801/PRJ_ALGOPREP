@@ -334,7 +334,8 @@ class MyClassAssignmentsFlowTest {
         .read(
             org.mockito.ArgumentMatchers
                 .<java.util.Collection<
-                        com.algoprep.problembank.domain.model.StudentClassModels.AssignmentKey>>
+                        com.algoprep.problembank.domain.model.assignment.StudentClassModels
+                            .AssignmentKey>>
                     argThat(k -> k.size() == 25));
     var degraded = body(call(BASE + "/class-problems", student));
     assertThat(degraded.path("items")).hasSize(20);

@@ -2,7 +2,7 @@ package com.algoprep.bootstrap.problembank;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.algoprep.problembank.application.ports.in.ProblemBankStatsUseCase;
+import com.algoprep.problembank.application.ports.in.stats.ProblemBankStatsUseCase;
 import io.minio.BucketExistsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;

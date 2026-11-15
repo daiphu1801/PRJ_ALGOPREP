@@ -6,8 +6,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.aireview.domain.model.CallerCategory;
-import com.algoprep.identity.application.ports.in.ReadUserBaseCategoriesUseCase;
-import com.algoprep.identity.application.ports.in.ReadUserDisplayNamesUseCase;
+import com.algoprep.identity.application.ports.in.admin.ReadUserBaseCategoriesUseCase;
+import com.algoprep.identity.application.ports.in.admin.ReadUserDisplayNamesUseCase;
 import com.algoprep.identity.domain.model.BaseCategory;
 import java.time.Duration;
 import java.util.List;

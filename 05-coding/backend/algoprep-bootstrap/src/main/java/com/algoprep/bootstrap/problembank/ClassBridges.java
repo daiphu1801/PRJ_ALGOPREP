@@ -1,15 +1,15 @@
 package com.algoprep.bootstrap.problembank;
 
 import com.algoprep.common.exception.ServiceUnavailableException;
-import com.algoprep.identity.application.ports.in.ListInstructorClassesUseCase;
-import com.algoprep.judge.application.dto.AssignedProblemMetricsQuery;
-import com.algoprep.judge.application.ports.in.GetAssignedProblemMetricsUseCase;
-import com.algoprep.judge.domain.model.AssignmentPeriod;
+import com.algoprep.identity.application.ports.in.classes.ListInstructorClassesUseCase;
+import com.algoprep.judge.application.dto.metrics.AssignedProblemMetricsQuery;
+import com.algoprep.judge.application.ports.in.metrics.GetAssignedProblemMetricsUseCase;
+import com.algoprep.judge.domain.model.metrics.AssignmentPeriod;
 import com.algoprep.problembank.application.ports.out.ClassProblemMetricsPort;
 import com.algoprep.problembank.application.ports.out.InstructorClassPort;
-import com.algoprep.problembank.domain.model.ClassAssignmentModels.ClassRef;
-import com.algoprep.problembank.domain.model.ClassAssignmentModels.Metric;
-import com.algoprep.problembank.domain.model.ClassAssignmentSnapshot;
+import com.algoprep.problembank.domain.model.assignment.ClassAssignmentModels.ClassRef;
+import com.algoprep.problembank.domain.model.assignment.ClassAssignmentModels.Metric;
+import com.algoprep.problembank.domain.model.assignment.ClassAssignmentSnapshot;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;

@@ -1,11 +1,11 @@
 package com.algoprep.bootstrap.identity;
 
 import com.algoprep.identity.application.ports.out.ClassMetricsPort;
-import com.algoprep.identity.domain.model.ClassProblemWindow;
-import com.algoprep.identity.domain.model.ClassRosterEntry;
-import com.algoprep.identity.domain.model.StudentMetrics;
-import com.algoprep.judge.application.ports.in.GetClassStudentSubmissionMetricsUseCase;
-import com.algoprep.judge.domain.model.ClassMetricsScope;
+import com.algoprep.identity.domain.model.classes.ClassProblemWindow;
+import com.algoprep.identity.domain.model.classes.ClassRosterEntry;
+import com.algoprep.identity.domain.model.classes.StudentMetrics;
+import com.algoprep.judge.application.ports.in.metrics.GetClassStudentSubmissionMetricsUseCase;
+import com.algoprep.judge.domain.model.metrics.ClassMetricsScope;
 import java.time.Duration;
 import java.util.List;
 import java.util.UUID;

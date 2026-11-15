@@ -1,16 +1,16 @@
 package com.algoprep.bootstrap.problembank;
 
-import com.algoprep.identity.application.ports.in.ListMyClassesUseCase;
-import com.algoprep.judge.application.ports.in.GetMyClassAssignmentStatesUseCase;
-import com.algoprep.judge.application.ports.in.GetMyTopicSubmissionMetricsUseCase;
-import com.algoprep.judge.domain.model.AssignmentPeriod;
+import com.algoprep.identity.application.ports.in.classes.ListMyClassesUseCase;
+import com.algoprep.judge.application.ports.in.metrics.GetMyClassAssignmentStatesUseCase;
+import com.algoprep.judge.application.ports.in.metrics.GetMyTopicSubmissionMetricsUseCase;
+import com.algoprep.judge.domain.model.metrics.AssignmentPeriod;
 import com.algoprep.problembank.application.ports.out.MyClassAssignmentStatePort;
 import com.algoprep.problembank.application.ports.out.MyTopicSubmissionMetricsPort;
 import com.algoprep.problembank.application.ports.out.StudentEnrollmentPort;
-import com.algoprep.problembank.domain.model.ClassAssignmentModels.ClassRef;
-import com.algoprep.problembank.domain.model.StudentClassModels.AssignmentKey;
-import com.algoprep.problembank.domain.model.StudentClassModels.ClassSolveState;
-import com.algoprep.problembank.domain.model.SuggestedProblemModels.TopicMetric;
+import com.algoprep.problembank.domain.model.assignment.ClassAssignmentModels.ClassRef;
+import com.algoprep.problembank.domain.model.assignment.StudentClassModels.AssignmentKey;
+import com.algoprep.problembank.domain.model.assignment.StudentClassModels.ClassSolveState;
+import com.algoprep.problembank.domain.model.student.SuggestedProblemModels.TopicMetric;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.HashMap;

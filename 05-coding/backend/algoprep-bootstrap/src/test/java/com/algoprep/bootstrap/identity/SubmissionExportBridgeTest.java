@@ -3,11 +3,11 @@ package com.algoprep.bootstrap.identity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.algoprep.judge.application.dto.SubmissionReads.Filters;
-import com.algoprep.judge.application.dto.SubmissionReads.History;
-import com.algoprep.judge.application.dto.SubmissionReads.Page;
-import com.algoprep.judge.application.dto.SubmissionReads.Problem;
-import com.algoprep.judge.application.ports.in.ListMySubmissionHistoryUseCase;
+import com.algoprep.judge.application.dto.read.SubmissionReads.Filters;
+import com.algoprep.judge.application.dto.read.SubmissionReads.History;
+import com.algoprep.judge.application.dto.read.SubmissionReads.Page;
+import com.algoprep.judge.application.dto.read.SubmissionReads.Problem;
+import com.algoprep.judge.application.ports.in.read.ListMySubmissionHistoryUseCase;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;

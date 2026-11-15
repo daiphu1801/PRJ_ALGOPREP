@@ -1,10 +1,10 @@
 package com.algoprep.bootstrap.identity;
 
-import com.algoprep.identity.application.dto.SubmissionExport;
+import com.algoprep.identity.application.dto.account.SubmissionExport;
 import com.algoprep.identity.application.ports.out.SubmissionExportPort;
-import com.algoprep.judge.application.dto.SubmissionReads.Filters;
-import com.algoprep.judge.application.dto.SubmissionReads.History;
-import com.algoprep.judge.application.ports.in.ListMySubmissionHistoryUseCase;
+import com.algoprep.judge.application.dto.read.SubmissionReads.Filters;
+import com.algoprep.judge.application.dto.read.SubmissionReads.History;
+import com.algoprep.judge.application.ports.in.read.ListMySubmissionHistoryUseCase;
 import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Map;

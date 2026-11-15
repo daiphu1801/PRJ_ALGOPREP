@@ -9,20 +9,20 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.aireview.domain.exception.AiProviderUnavailableException;
-import com.algoprep.aireview.domain.exception.AiSubmissionNotAcceptedException;
-import com.algoprep.aireview.domain.exception.AiSubmissionNotFoundException;
+import com.algoprep.aireview.domain.exception.review.AiSubmissionNotAcceptedException;
+import com.algoprep.aireview.domain.exception.review.AiSubmissionNotFoundException;
 import com.algoprep.aireview.domain.model.AiAuditEntry;
 import com.algoprep.common.exception.ResourceNotFoundException;
-import com.algoprep.identity.application.ports.in.RecordSystemAuditUseCase;
-import com.algoprep.identity.domain.model.AuditEntry;
-import com.algoprep.judge.application.ports.in.GetAcceptedSubmissionSnapshotUseCase;
+import com.algoprep.identity.application.ports.in.audit.RecordSystemAuditUseCase;
+import com.algoprep.identity.domain.model.audit.AuditEntry;
+import com.algoprep.judge.application.ports.in.grading.GetAcceptedSubmissionSnapshotUseCase;
 import com.algoprep.judge.domain.exception.JudgeReadUnavailableException;
 import com.algoprep.judge.domain.exception.SubmissionNotAcceptedException;
 import com.algoprep.judge.domain.exception.SubmissionNotFoundException;
 import com.algoprep.judge.domain.model.AcceptedSubmissionSnapshot;
-import com.algoprep.problembank.application.ports.in.ProblemBankStatsUseCase;
-import com.algoprep.problembank.domain.model.ProblemBankStatsModels.ProblemStat;
-import com.algoprep.problembank.domain.model.ProblemContextView;
+import com.algoprep.problembank.application.ports.in.stats.ProblemBankStatsUseCase;
+import com.algoprep.problembank.domain.model.grading.ProblemContextView;
+import com.algoprep.problembank.domain.model.stats.ProblemBankStatsModels.ProblemStat;
 import java.lang.reflect.Proxy;
 import java.time.Duration;
 import java.util.List;
@@ -72,7 +72,8 @@ class AiReviewBridgesTest {
   // emitted an unqualified reference to the use case, so this test does not name the type.
   private ProblemContextBridge bridgeAnswering(Object answerOrFailure) throws Exception {
     Class<?> port =
-        Class.forName("com.algoprep.problembank.application.ports.in.ReadProblemContextUseCase");
+        Class.forName(
+            "com.algoprep.problembank.application.ports.in.grading.ReadProblemContextUseCase");
     Object proxy =
         Proxy.newProxyInstance(
             port.getClassLoader(),

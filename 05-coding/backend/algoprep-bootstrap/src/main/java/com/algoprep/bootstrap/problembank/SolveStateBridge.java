@@ -1,9 +1,9 @@
 package com.algoprep.bootstrap.problembank;
 
-import com.algoprep.identity.application.ports.in.ListAllMySolveStatesUseCase;
-import com.algoprep.identity.domain.model.SolveState;
+import com.algoprep.identity.application.ports.in.progress.ListAllMySolveStatesUseCase;
+import com.algoprep.identity.domain.model.progress.SolveState;
 import com.algoprep.problembank.application.ports.out.SolveStatePort;
-import com.algoprep.problembank.domain.model.PublishedProblemModels.SolveStates;
+import com.algoprep.problembank.domain.model.student.PublishedProblemModels.SolveStates;
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.Optional;

@@ -1,8 +1,8 @@
 package com.algoprep.bootstrap.identity;
 
 import com.algoprep.identity.application.ports.out.ClassAssignmentLookupPort;
-import com.algoprep.identity.domain.model.ClassProblemWindow;
-import com.algoprep.problembank.application.ports.in.ListClassAssignmentsUseCase;
+import com.algoprep.identity.domain.model.classes.ClassProblemWindow;
+import com.algoprep.problembank.application.ports.in.assignment.ListClassAssignmentsUseCase;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;

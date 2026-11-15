@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.identity.application.ports.in.ListAllMySolveStatesUseCase;
-import com.algoprep.identity.domain.model.SolveState;
+import com.algoprep.identity.application.ports.in.progress.ListAllMySolveStatesUseCase;
+import com.algoprep.identity.domain.model.progress.SolveState;
 import java.time.Duration;
 import java.util.Map;
 import java.util.UUID;

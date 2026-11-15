@@ -18,11 +18,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import com.algoprep.aireview.domain.exception.AiProviderUnavailableException;
 import com.algoprep.aireview.domain.model.CallOptions;
-import com.algoprep.aireview.domain.model.ChatMemoryRef;
 import com.algoprep.aireview.domain.model.LlmUsage;
 import com.algoprep.aireview.domain.model.ResponseSchema;
 import com.algoprep.aireview.domain.model.StructuredResult;
 import com.algoprep.aireview.domain.model.TokenChunk;
+import com.algoprep.aireview.domain.model.interview.ChatMemoryRef;
 import com.algoprep.aireview.domain.ports.out.LlmProviderPort;
 import com.algoprep.aireview.domain.prompt.ComposedPrompt;
 import com.algoprep.aireview.domain.prompt.PerProblemContext;
@@ -31,10 +31,10 @@ import com.algoprep.aireview.domain.prompt.UserData;
 import com.algoprep.identity.application.ports.out.AccessTokenPort;
 import com.algoprep.identity.domain.model.BaseCategory;
 import com.algoprep.problembank.application.dto.ReferenceSolutionRun;
-import com.algoprep.problembank.application.dto.TestcaseGeneration.GeneratorRun;
-import com.algoprep.problembank.application.dto.TestcaseGeneration.ReferenceOutput;
-import com.algoprep.problembank.application.dto.TestcaseGeneration.ReferenceStatus;
-import com.algoprep.problembank.application.dto.TestcaseGeneration.ScriptStatus;
+import com.algoprep.problembank.application.dto.generation.TestcaseGeneration.GeneratorRun;
+import com.algoprep.problembank.application.dto.generation.TestcaseGeneration.ReferenceOutput;
+import com.algoprep.problembank.application.dto.generation.TestcaseGeneration.ReferenceStatus;
+import com.algoprep.problembank.application.dto.generation.TestcaseGeneration.ScriptStatus;
 import com.algoprep.problembank.application.ports.out.GeneratorSandboxPort;
 import com.algoprep.problembank.application.ports.out.SampleSolutionRunnerPort;
 import java.util.ArrayDeque;

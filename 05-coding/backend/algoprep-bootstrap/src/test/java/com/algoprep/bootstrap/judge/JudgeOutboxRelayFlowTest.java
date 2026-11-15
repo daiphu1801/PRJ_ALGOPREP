@@ -3,9 +3,9 @@ package com.algoprep.bootstrap.judge;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.algoprep.judge.application.ports.in.RelayJudgeOutboxUseCase;
+import com.algoprep.judge.application.ports.in.outbox.RelayJudgeOutboxUseCase;
 import com.algoprep.judge.application.ports.out.JudgeDomainEventPort;
-import com.algoprep.judge.domain.model.OutboxEvent;
+import com.algoprep.judge.domain.model.outbox.OutboxEvent;
 import java.time.Duration;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;

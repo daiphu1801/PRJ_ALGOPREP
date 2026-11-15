@@ -8,7 +8,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import com.algoprep.identity.application.ports.out.AccessTokenPort;
 import com.algoprep.identity.domain.model.BaseCategory;
-import com.algoprep.judge.application.dto.WorkerScaling;
+import com.algoprep.judge.application.dto.execution.WorkerScaling;
 import com.algoprep.judge.domain.ports.out.AdminQueueRepository;
 import com.algoprep.judge.domain.ports.out.JudgeMaintenanceRepository;
 import com.algoprep.judge.domain.ports.out.WorkerJobRepository;

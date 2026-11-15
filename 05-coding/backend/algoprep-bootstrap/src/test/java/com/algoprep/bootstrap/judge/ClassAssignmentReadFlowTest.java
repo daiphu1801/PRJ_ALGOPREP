@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.algoprep.judge.application.ports.out.ClassAssignmentReadPort;
-import com.algoprep.problembank.application.ports.in.ListClassAssignmentsUseCase;
-import com.algoprep.problembank.domain.model.ClassAssignmentSnapshot;
+import com.algoprep.problembank.application.ports.in.assignment.ListClassAssignmentsUseCase;
+import com.algoprep.problembank.domain.model.assignment.ClassAssignmentSnapshot;
 import com.algoprep.problembank.domain.ports.out.ClassAssignmentReadRepository;
 import java.io.ByteArrayOutputStream;
 import java.net.URL;

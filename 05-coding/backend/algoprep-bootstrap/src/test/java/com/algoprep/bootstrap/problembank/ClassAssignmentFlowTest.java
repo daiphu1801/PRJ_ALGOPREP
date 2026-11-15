@@ -11,8 +11,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import com.algoprep.identity.application.ports.out.AccessTokenPort;
 import com.algoprep.identity.domain.model.BaseCategory;
-import com.algoprep.judge.application.ports.in.GetAssignedProblemMetricsUseCase;
-import com.algoprep.judge.domain.model.ClassProblemMetric;
+import com.algoprep.judge.application.ports.in.metrics.GetAssignedProblemMetricsUseCase;
+import com.algoprep.judge.domain.model.metrics.ClassProblemMetric;
 import io.minio.BucketExistsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
@@ -105,7 +105,7 @@ class ClassAssignmentFlowTest {
 
   // The judge handler is one bean for P6 and P7; replacing it for P6 also removes P7, which
   // StudentJudgeBridges needs to start.
-  @MockitoBean com.algoprep.judge.application.ports.in.GetMyClassAssignmentStatesUseCase p7;
+  @MockitoBean com.algoprep.judge.application.ports.in.metrics.GetMyClassAssignmentStatesUseCase p7;
 
   private final Map<UUID, ClassProblemMetric> numbers = new HashMap<>();
   private MockMvc mvc;
@@ -137,7 +137,7 @@ class ClassAssignmentFlowTest {
         .thenAnswer(
             call -> {
               var query =
-                  (com.algoprep.judge.application.dto.AssignedProblemMetricsQuery)
+                  (com.algoprep.judge.application.dto.metrics.AssignedProblemMetricsQuery)
                       call.getArgument(0);
               var out = new HashMap<UUID, ClassProblemMetric>();
               for (UUID id : query.problemIds()) {

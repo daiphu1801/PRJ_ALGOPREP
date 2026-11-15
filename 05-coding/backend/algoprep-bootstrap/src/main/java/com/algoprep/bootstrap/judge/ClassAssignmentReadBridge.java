@@ -2,7 +2,7 @@ package com.algoprep.bootstrap.judge;
 
 import com.algoprep.judge.application.dto.ClassAssignment;
 import com.algoprep.judge.application.ports.out.ClassAssignmentReadPort;
-import com.algoprep.problembank.application.ports.in.ListClassAssignmentsUseCase;
+import com.algoprep.problembank.application.ports.in.assignment.ListClassAssignmentsUseCase;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;

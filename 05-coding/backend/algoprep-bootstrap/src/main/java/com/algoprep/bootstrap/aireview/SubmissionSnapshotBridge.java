@@ -2,10 +2,10 @@ package com.algoprep.bootstrap.aireview;
 
 import com.algoprep.aireview.application.ports.out.SubmissionSnapshotPort;
 import com.algoprep.aireview.domain.exception.AiProviderUnavailableException;
-import com.algoprep.aireview.domain.exception.AiSubmissionNotAcceptedException;
-import com.algoprep.aireview.domain.exception.AiSubmissionNotFoundException;
+import com.algoprep.aireview.domain.exception.review.AiSubmissionNotAcceptedException;
+import com.algoprep.aireview.domain.exception.review.AiSubmissionNotFoundException;
 import com.algoprep.aireview.domain.model.SubmissionSnapshot;
-import com.algoprep.judge.application.ports.in.GetAcceptedSubmissionSnapshotUseCase;
+import com.algoprep.judge.application.ports.in.grading.GetAcceptedSubmissionSnapshotUseCase;
 import com.algoprep.judge.domain.exception.SubmissionNotAcceptedException;
 import com.algoprep.judge.domain.exception.SubmissionNotFoundException;
 import java.util.UUID;

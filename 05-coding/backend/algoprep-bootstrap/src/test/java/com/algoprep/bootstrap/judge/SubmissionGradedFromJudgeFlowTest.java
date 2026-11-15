@@ -2,15 +2,15 @@ package com.algoprep.bootstrap.judge;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.algoprep.judge.application.ports.in.BeginSubmissionCompilationUseCase;
-import com.algoprep.judge.application.ports.in.BeginSubmissionJudgingUseCase;
-import com.algoprep.judge.application.ports.in.FinalizeSubmissionUseCase;
-import com.algoprep.judge.application.ports.in.IssueSubmissionRunTokenUseCase;
-import com.algoprep.judge.application.ports.in.RecordSubmissionTestcaseUseCase;
-import com.algoprep.judge.application.ports.in.RelayJudgeOutboxUseCase;
-import com.algoprep.judge.domain.model.WorkerRecords.FinishCommand;
-import com.algoprep.judge.domain.model.WorkerRecords.FinishKind;
-import com.algoprep.judge.domain.model.WorkerRecords.TestcaseWrite;
+import com.algoprep.judge.application.ports.in.execution.BeginSubmissionCompilationUseCase;
+import com.algoprep.judge.application.ports.in.execution.BeginSubmissionJudgingUseCase;
+import com.algoprep.judge.application.ports.in.execution.FinalizeSubmissionUseCase;
+import com.algoprep.judge.application.ports.in.execution.IssueSubmissionRunTokenUseCase;
+import com.algoprep.judge.application.ports.in.execution.RecordSubmissionTestcaseUseCase;
+import com.algoprep.judge.application.ports.in.outbox.RelayJudgeOutboxUseCase;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.FinishCommand;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.FinishKind;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.TestcaseWrite;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;

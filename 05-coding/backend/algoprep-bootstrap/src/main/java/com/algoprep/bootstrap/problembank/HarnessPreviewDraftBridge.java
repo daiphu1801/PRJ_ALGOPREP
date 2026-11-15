@@ -5,7 +5,7 @@ import com.algoprep.common.functionspec.FunctionSpecDraft;
 import com.algoprep.common.functionspec.SpecEvaluation.Violation;
 import com.algoprep.harness.application.ports.out.PreviewDraftParserPort;
 import com.algoprep.harness.application.preview.PreviewSpecInvalidException;
-import com.algoprep.problembank.application.command.ProblemSpecJson;
+import com.algoprep.problembank.application.command.problem.ProblemSpecJson;
 import com.algoprep.problembank.domain.exception.ProblemSpecInvalidException;
 import java.util.List;
 import java.util.Set;

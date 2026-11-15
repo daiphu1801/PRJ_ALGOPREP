@@ -5,13 +5,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
-import com.algoprep.identity.application.ports.in.DeleteClassUseCase;
-import com.algoprep.identity.application.ports.in.RelayIdentityOutboxUseCase;
+import com.algoprep.identity.application.ports.in.classes.DeleteClassUseCase;
+import com.algoprep.identity.application.ports.in.outbox.RelayIdentityOutboxUseCase;
 import com.algoprep.identity.application.ports.out.AccessTokenPort;
 import com.algoprep.identity.domain.model.BaseCategory;
 import com.algoprep.judge.application.ports.out.ProblemGradingSpecPort;
 import com.algoprep.judge.application.ports.out.ProblemTopicReadPort;
-import com.algoprep.problembank.application.ports.in.ApplyClassDeletedUseCase;
+import com.algoprep.problembank.application.ports.in.assignment.ApplyClassDeletedUseCase;
 import com.algoprep.problembank.application.ports.out.ProblemListVersionPort;
 import com.algoprep.problembank.domain.ports.out.StudentCatalogReadRepository;
 import java.time.Duration;
