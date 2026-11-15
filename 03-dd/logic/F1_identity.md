@@ -80,8 +80,7 @@ theo DEC.
   4. Đăng nhập đúng → xoá key (`DEL`), không giữ lịch sử đếm cho lần sau.
 - **Kết quả**: chặn dò mật khẩu theo cả email lẫn IP mà không khoá tài khoản vĩnh viễn.
 - **Nguồn IP (soát độc lập F1, C1, chốt 2026-11-03):** IP là địa chỉ socket của kết nối tới backend. Khi trình duyệt đi qua rewrite của Next, đó luôn là IP của Next, nên khoá `(email, IP)` thực tế là khoá theo email: một người ẩn danh gửi 5 lần sai khoá được tài khoản bất kỳ trong 15 phút. **Không** bật `server.forward-headers-strategy`: Next không làm sạch `X-Forwarded-For` (giữ nguyên giá trị client tự gửi), nên tin header này cho phép giả IP để né khoá, yếu hơn hiện tại. Rủi ro được chấp nhận cho bản demo (ponytail bậc 3). Khi triển khai thật, đặt một reverse proxy do mình kiểm soát (nginx) ghi đè `X-Forwarded-For` bằng IP thật rồi mới bật `forward-headers-strategy=native` cùng `server.tomcat.remoteip.internal-proxies` chỉ nhận proxy đó.
-- **Xử lý lỗi**: Redis down → **fail-open** (cho phép đăng nhập, không rate-limit) — đúng nguyên tắc F1-F4
-  không phụ thuộc một thành phần phụ trợ để hoạt động; ghi log cảnh báo mức WARN.
+- **Xử lý lỗi (SEC-02, 2026-11-15):** Redis thiếu, down/timeout, counter hỏng hoặc thao tác ghi/xóa không hoàn tất → fail-closed có kiểm soát, `503 IDT-510`, không tiếp tục kiểm mật khẩu khi precheck lỗi. Lỗi ghi counter không biến thành `401`; lỗi xóa counter làm giao dịch tạo phiên rollback và không phát cookie/token. `ChangeMyPassword` dùng chung `LoginAttemptPort`, nên cũng trả `503 IDT-510` và không đổi mật khẩu nếu limiter lỗi. Không ghi email/IP/key hoặc nguyên nhân hạ tầng vào phản hồi. Thay thế fail-open cũ theo đợt khắc phục ZAP được chủ dự án cho phép; đánh đổi: các thao tác cần limiter tạm không khả dụng khi Redis lỗi, không bỏ kiểm soát brute force.
 
 ## BR-02 — Refresh token rotation và phát hiện tái sử dụng
 
@@ -386,3 +385,11 @@ ghi `identity_recent_activity` theo lịch**. Nhãn `ABSENT` vẫn tồn tại n
 `07-review/bd_open_questions_with_solutions_260924.md`,
 `DEC-2026-0921-class-completion-owned-by-identity`, `DEC-2026-0921-teacher-screens-conflict-resolutions`,
 `DEC-2026-0922-users-and-admin-conflict-resolutions`.
+
+## Bổ sung 2026-11-15 — thu hồi phiên khi logout
+
+- `LogoutCommandHandler` tìm family qua cookie refresh, kể cả token đã rotate, rồi ghi thu hồi family và phát `SessionRevoked` qua port `SessionRevocationPublisher`.
+- `JdbcRefreshTokenRepository` ghi tombstone PostgreSQL `identity.session_revocations(family_id, revoked_at)` trong cùng transaction; truy vấn refresh cũng nhận diện tombstone. Không dùng Redis làm nguồn thu hồi thứ hai.
+- `IdentityJwtAuthenticationConverter` yêu cầu claim `sid` dạng UUID và kiểm tombstone cùng trạng thái tài khoản trong truy vấn xác thực. Token của family bị thu hồi không còn qua được HTTP hoặc outbound WebSocket.
+- Adapter sự kiện chỉ publish sau commit; rollback không đóng socket. Bootstrap nhận sự kiện và đóng socket family tương ứng, giữ các family khác. Gate outbound vẫn kiểm account/quyền/expiry.
+- Migration `identity/V1.005__session_revocations.sql` phải chạy trước khi nhận request theo bản mới; giữ tombstone khi dữ liệu refresh hết hạn được dọn. Thiết kế dọn tombstone theo thời hạn token tối đa là công việc vận hành riêng, chưa thêm lịch xoá trong patch.

@@ -167,16 +167,22 @@ class LoginInfrastructureTest {
   }
 
   @Test
+  @org.junit.jupiter.api.DisplayName("SEC-02: Redis timeout returns 503 without issuing a session")
   void redisTimeoutFailsOpenForCorrectAndIncorrectCredentials() throws Exception {
     String email = account();
     REDIS.execInContainer("redis-cli", "CLIENT", "PAUSE", "2500", "ALL");
     try {
-      assertThat(login(email, PASSWORD, IP, "/login").getStatus()).isEqualTo(200);
-      assertThat(login(email, "wrong", IP, "/login").getStatus()).isEqualTo(401);
+      for (String password : List.of(PASSWORD, "wrong")) {
+        var response = login(email, password, IP, "/login");
+        assertThat(response.getStatus()).isEqualTo(503);
+        assertThat(response.getContentAsString()).contains("IDT-510").doesNotContain("accessToken");
+        assertThat(response.getHeader("Set-Cookie")).isNull();
+      }
     } finally {
       // redis-cli waits until CLIENT PAUSE ends, so the next test sees a healthy server.
       assertThat(REDIS.execInContainer("redis-cli", "PING").getStdout()).contains("PONG");
     }
+    assertThat(login(email, PASSWORD, IP, "/login").getStatus()).isEqualTo(200);
   }
 
   private MockHttpServletResponse login(String email, String password, String ip, String route)

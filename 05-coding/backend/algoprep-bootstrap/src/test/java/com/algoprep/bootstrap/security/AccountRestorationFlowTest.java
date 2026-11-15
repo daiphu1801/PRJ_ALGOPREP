@@ -308,7 +308,7 @@ class AccountRestorationFlowTest {
     REDIS.execInContainer("redis-cli", "CLIENT", "PAUSE", "2500", "ALL");
     try {
       assertThatThrownBy(() -> restore(ticket)).isInstanceOf(Exception.class);
-      assertThatThrownBy(() -> login(email, PASSWORD, "/login")).isInstanceOf(Exception.class);
+      assertError(login(email, PASSWORD, "/login"), 503, "IDT-510");
       assertThat(user(email)).containsEntry("status", "DEACTIVATED");
       assertThat(sessionCount(email)).isZero();
     } finally {

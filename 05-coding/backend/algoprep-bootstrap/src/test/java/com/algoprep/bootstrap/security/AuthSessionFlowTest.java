@@ -19,9 +19,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
@@ -33,9 +36,7 @@ import org.testcontainers.utility.MountableFile;
  */
 @SpringBootTest(
     properties = {
-      "spring.autoconfigure.exclude="
-          + "org.springframework.boot.data.redis.autoconfigure.RedisAutoConfiguration,"
-          + "org.springframework.boot.amqp.autoconfigure.RabbitAutoConfiguration",
+      "spring.autoconfigure.exclude=org.springframework.boot.amqp.autoconfigure.RabbitAutoConfiguration",
       "spring.datasource.hikari.maximum-pool-size=2"
     })
 @ActiveProfiles("test")
@@ -54,6 +55,16 @@ class AuthSessionFlowTest {
               "/docker-entrypoint-initdb.d/01-schemas.sql");
 
   private static final String PASSWORD_HASH = new BCryptPasswordEncoder().encode(PASSWORD);
+
+  @Container
+  static final GenericContainer<?> REDIS =
+      new GenericContainer<>("redis:7.4-alpine").withExposedPorts(6379);
+
+  @DynamicPropertySource
+  static void infrastructure(DynamicPropertyRegistry properties) {
+    properties.add("spring.data.redis.host", REDIS::getHost);
+    properties.add("spring.data.redis.port", () -> REDIS.getMappedPort(6379));
+  }
 
   @Autowired private WebApplicationContext context;
   @Autowired private JdbcTemplate jdbc;

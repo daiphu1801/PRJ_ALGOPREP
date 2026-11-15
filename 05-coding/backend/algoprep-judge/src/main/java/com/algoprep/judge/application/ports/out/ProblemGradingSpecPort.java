@@ -11,6 +11,9 @@ import java.util.UUID;
 public interface ProblemGradingSpecPort {
   Optional<GradingSpecification> loadGradingSpec(UUID problemId);
 
+  /** Excludes withdrawn problems before reading/validating their specification. */
+  Optional<GradingSpecification> loadPublishedGradingSpec(UUID problemId);
+
   List<GradingTestcase> loadSampleTestcases(UUID problemId);
 
   GradingTestcaseSnapshot loadTestcaseSnapshot(UUID problemId, int version);

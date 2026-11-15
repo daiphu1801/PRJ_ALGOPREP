@@ -2,10 +2,12 @@ package com.algoprep.bootstrap.config;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ScheduledFuture;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -20,6 +22,38 @@ final class SubmissionSocketSessions {
 
   void opened(WebSocketSession session) {
     sessions.put(session.getId(), new Entry(session));
+  }
+
+  void authenticated(String sessionId, JwtAuthenticationToken authentication) {
+    Entry entry = sessions.get(sessionId);
+    if (entry == null) {
+      throw new IllegalArgumentException("Request denied");
+    }
+    entry.authentication = authentication;
+  }
+
+  JwtAuthenticationToken authentication(String sessionId) {
+    Entry entry = sessions.get(sessionId);
+    return entry == null ? null : entry.authentication;
+  }
+
+  void reject(String sessionId) {
+    Entry entry = sessions.get(sessionId);
+    closed(sessionId);
+    if (entry != null) {
+      close(entry);
+    }
+  }
+
+  void revokeFamily(UUID familyId) {
+    sessions.forEach(
+        (sessionId, entry) -> {
+          var authentication = entry.authentication;
+          if (authentication != null
+              && familyId.toString().equals(authentication.getToken().getClaimAsString("sid"))) {
+            reject(sessionId);
+          }
+        });
   }
 
   void expireAdmin(String sessionId, Instant expiry) {
@@ -56,6 +90,7 @@ final class SubmissionSocketSessions {
   private static final class Entry {
     private final WebSocketSession session;
     private ScheduledFuture<?> expiry;
+    private volatile JwtAuthenticationToken authentication;
 
     private Entry(WebSocketSession session) {
       this.session = session;

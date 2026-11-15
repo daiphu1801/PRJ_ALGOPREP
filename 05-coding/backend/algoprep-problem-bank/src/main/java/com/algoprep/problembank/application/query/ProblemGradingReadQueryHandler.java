@@ -52,6 +52,20 @@ class ProblemGradingReadQueryHandler
     }
   }
 
+  @Override
+  @Transactional(readOnly = true)
+  public Optional<GradingSpecification> loadPublishedGradingSpec(UUID problemId) {
+    Objects.requireNonNull(problemId);
+    try {
+      return repository
+          .findGradingSpec(problemId)
+          .filter(row -> row.data().problem().published())
+          .map(this::specification);
+    } catch (RuntimeException failure) {
+      throw classify(failure);
+    }
+  }
+
   private GradingSpecification specification(GradingReadSnapshot row) {
     var data = row.data();
     if (data.versions().specVersion() < 1 || data.versions().currentTestcaseSetVersion() < 1) {

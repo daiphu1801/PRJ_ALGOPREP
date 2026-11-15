@@ -63,7 +63,7 @@ class RecordPendingSubmissionCommandHandler implements RecordPendingSubmissionUs
       RecordPendingSubmissionCommand command, Program program) {
     GradingSpecification spec =
         problems
-            .loadGradingSpec(command.owner().problemId())
+            .loadPublishedGradingSpec(command.owner().problemId())
             .orElseThrow(() -> new SubmissionAdmissionException("JDG-101"));
     checkProblem(spec, program);
     int limit =

@@ -36,6 +36,11 @@ public final class ProblemGradingReadBridge implements ProblemGradingSpecPort {
     return read(() -> specifications.loadGradingSpec(problemId).map(this::specification));
   }
 
+  @Override
+  public Optional<GradingSpecification> loadPublishedGradingSpec(UUID problemId) {
+    return read(() -> specifications.loadPublishedGradingSpec(problemId).map(this::specification));
+  }
+
   private GradingSpecification specification(
       com.algoprep.problembank.domain.model.grading.GradingSpecification result) {
     var data = result.data();

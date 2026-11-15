@@ -60,7 +60,8 @@ management:
         include: health,prometheus
   endpoint:
     health:
-      show-details: when-authorized
+      show-details: never
+      show-components: never
       probes:
         enabled: true
   metrics:

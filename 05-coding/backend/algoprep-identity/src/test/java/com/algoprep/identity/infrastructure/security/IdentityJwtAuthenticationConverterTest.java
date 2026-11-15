@@ -32,6 +32,7 @@ class IdentityJwtAuthenticationConverterTest {
     Jwt.Builder builder =
         Jwt.withTokenValue("token")
             .header("alg", "RS256")
+            .claim("sid", UUID.randomUUID().toString())
             .issuedAt(Instant.now())
             .expiresAt(Instant.now().plusSeconds(60));
     if (subject != null) {

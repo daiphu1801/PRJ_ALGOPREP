@@ -19,6 +19,9 @@ scrape_configs:
   # (`./mvnw spring-boot:run` tren may that), khong phai mot service trong file compose.
   - job_name: algoprep-backend
     metrics_path: /actuator/prometheus
+    authorization:
+      type: Bearer
+      credentials_file: /etc/prometheus/secrets/backend-metrics-token
     static_configs:
       - targets: ["host.docker.internal:8080"]
         labels:
@@ -29,6 +32,9 @@ scrape_configs:
     scrape_interval: 5s
     scrape_timeout: 4s
     metrics_path: /actuator/prometheus
+    authorization:
+      type: Bearer
+      credentials_file: /etc/prometheus/secrets/backend-metrics-token
     static_configs:
       - targets: ["host.docker.internal:8081"]
         labels:

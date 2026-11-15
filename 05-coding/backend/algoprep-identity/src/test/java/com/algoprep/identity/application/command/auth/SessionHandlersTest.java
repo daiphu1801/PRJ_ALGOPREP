@@ -47,7 +47,9 @@ class SessionHandlersTest {
   private final SessionIssuer issuer = new SessionIssuer(accessTokens, tokens, ids, clock, 30);
   private final RefreshSessionCommandHandler refresh =
       new RefreshSessionCommandHandler(tokens, users, audit, issuer, clock);
-  private final LogoutCommandHandler logout = new LogoutCommandHandler(tokens, clock);
+  private final com.algoprep.identity.application.ports.out.SessionRevocationPublisher revocations =
+      mock(com.algoprep.identity.application.ports.out.SessionRevocationPublisher.class);
+  private final LogoutCommandHandler logout = new LogoutCommandHandler(tokens, clock, revocations);
 
   private final UUID userId = UUID.randomUUID();
   private final UUID familyId = UUID.randomUUID();
@@ -184,6 +186,7 @@ class SessionHandlersTest {
     StoredRefreshToken live = stored(NOW.plus(Duration.ofDays(1)), null);
     storeFor(live);
     logout.logout(RAW);
-    verify(tokens).revoke(live.id(), NOW);
+    org.mockito.Mockito.verify(tokens, org.mockito.Mockito.times(2))
+        .revokeFamily(live.familyId(), NOW);
   }
 }

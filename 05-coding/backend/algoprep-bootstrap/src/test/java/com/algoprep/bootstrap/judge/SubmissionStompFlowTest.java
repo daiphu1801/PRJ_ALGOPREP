@@ -367,6 +367,7 @@ class SubmissionStompFlowTest {
     JwtClaimsSet claims =
         JwtClaimsSet.builder()
             .subject(userId.toString())
+            .claim("sid", UUID.randomUUID().toString())
             .issuedAt(Instant.now().minusSeconds(60))
             .expiresAt(expiry)
             .build();

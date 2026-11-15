@@ -2,6 +2,8 @@
 
 Ngày đối chiếu: **14/11/2026**. Dùng khi đọc report ZAP, Network của trình duyệt, log API và kết quả QA.
 
+Cập nhật bản vá **15/11/2026**: `503 IDT-510` là bộ đếm chống dò mật khẩu không khả dụng (Redis lỗi, yêu cầu bị từ chối để giữ bảo vệ); `409 PRB-059` là xung đột cấp mã bài sau cả candidate dự phòng, có thể thử tạo lại. Không nhầm hai mã nghiệp vụ này với HTTP 510 hoặc 59. Trạng thái kiểm chứng bản vá xem [checklist](F:/prj_algoprep/06-plan/261115-zap-security-remediation-checklist.md).
+
 Đây là **tài liệu tham chiếu**, không thêm AC hay thay hợp đồng lỗi. Hợp đồng chính vẫn nằm ở [DD API](F:/prj_algoprep/03-dd/api/api.md) và từng module. Danh mục cuối file được tổng hợp từ DD, mã nguồn backend và thông báo tiếng Việt; không đồng nghĩa mọi mã đều đã được thực thi kiểm chứng.
 
 Đọc nhanh: mục **1** cho 401/403/500; mục **3** cho danh mục HTTP; mục **5** để phân biệt `errorCode`; mục **7** để đọc report ZAP; mục **10** để `Ctrl+F` mã riêng như `IDT-102` hoặc `AIR-501`.
@@ -237,14 +239,15 @@ Các validation mật khẩu/tên/profile F1 được đối chiếu thêm tại
 
 ## 10. Danh mục mã AlgoPrep theo nguồn hiện có
 
-Đã đối chiếu **288 mã duy nhất** trong DD API/validation, mã nguồn Java chính và thông báo giao diện; **259 mã** được nhắc trong backend `src/main/java`. Đây là độ phủ tra cứu của các nguồn đã rà, không phải số mã lỗi đã test PASS. Mã chỉ có trong DD hoặc giao diện chưa chứng minh đã có API triển khai.
+Đã đối chiếu **290 mã duy nhất** trong DD API/validation, mã nguồn Java chính và thông báo giao diện (bổ sung `IDT-510`, `PRB-059` ngày 15/11); **261 mã** được nhắc trong backend `src/main/java`. Đây là độ phủ tra cứu của các nguồn đã rà, không phải số mã lỗi đã test PASS. Mã chỉ có trong DD hoặc giao diện chưa chứng minh đã có API triển khai.
 
 Cột HTTP ưu tiên số được ghi rõ trong DD/Javadoc; nếu có nhiều số phải đọc nguồn/endpoint để chọn nhánh. `Không ghi trực tiếp` có nghĩa nguồn tra chưa cho ánh xạ chắc chắn, **không** có nghĩa mã được trả HTTP 200. Các dòng nội bộ không được tự đổi thành lỗi HTTP. Mục thông tin giữ nhãn từ bảng nguồn để tránh bỏ mất điều kiện áp dụng.
 
-### 10.1. F1 — Identity / tài khoản và quyền — 77 mã
+### 10.1. F1 — Identity / tài khoản và quyền — 78 mã
 
 | Mã | HTTP được ghi trong nguồn | Ý nghĩa / điều kiện theo nguồn | Nguồn để mở đối chiếu |
 |---|---|---|---|
+| `IDT-510` | 503 | Bảo vệ thử mật khẩu không khả dụng: Redis thiếu/lỗi hoặc counter không hợp lệ; đăng nhập/đổi mật khẩu dùng limiter bị từ chối, không phát phiên hoặc commit mật khẩu. Thử lại sau khi hạ tầng hồi phục. | [RateLimitUnavailableException](F:/prj_algoprep/05-coding/backend/algoprep-identity/src/main/java/com/algoprep/identity/domain/exception/RateLimitUnavailableException.java), [DD API F1](F:/prj_algoprep/03-dd/api/F1_identity.md) |
 | `IDT-101` | 409 | Thông báo giao diện: Email này đã được đăng ký | [05-coding/frontend/messages/vi.json:25](F:/prj_algoprep/05-coding/frontend/messages/vi.json:25) |
 | `IDT-102` | 401 | Thông báo giao diện: Sai email hoặc mật khẩu | [05-coding/frontend/messages/vi.json:26](F:/prj_algoprep/05-coding/frontend/messages/vi.json:26) |
 | `IDT-103` | 429 | Luồng: Đăng nhập sai; Ngưỡng: 5 lần / 15 phút; Khoá: `(email, IP)` | [03-dd/validation/F1_identity.md:32](F:/prj_algoprep/03-dd/validation/F1_identity.md:32) |
@@ -323,10 +326,11 @@ Cột HTTP ưu tiên số được ghi rõ trong DD/Javadoc; nếu có nhiều s
 | `IDT-V27` | 422 | Ý nghĩa: `problemIds` của #48 thiếu, rỗng, có phần tử sai dạng UUID hoặc quá 100 id (**Triển khai 2026-11-05**, `[SoT: Suy luận]`, owner chốt ngày 2026-11-05); Dùng cho: #48 | [03-dd/api/F1_identity.md:153](F:/prj_algoprep/03-dd/api/F1_identity.md:153) |
 | `IDT-V28` | 400 | Ý nghĩa: `provider` ở đường dẫn không phải `github` hoặc `google` (**Triển khai 2026-11-05**, `[SoT: Suy luận]`); Dùng cho: #5, #6 | [03-dd/api/F1_identity.md:163](F:/prj_algoprep/03-dd/api/F1_identity.md:163) |
 
-### 10.2. F2 — Problem bank / ngân hàng bài tập — 49 mã
+### 10.2. F2 — Problem bank / ngân hàng bài tập — 50 mã
 
 | Mã | HTTP được ghi trong nguồn | Ý nghĩa / điều kiện theo nguồn | Nguồn để mở đối chiếu |
 |---|---|---|---|
+| `PRB-059` | 409 | Candidate cấp mã bài dự phòng cũng bị trùng; giao dịch tạo/nhân bản không thành công, thử tạo lại. Sau 20 slug số, backend thử hậu tố UUID đầy đủ trước khi trả mã này; mã cũ không đổi. | [ProblemCodeAllocationException](F:/prj_algoprep/05-coding/backend/algoprep-problem-bank/src/main/java/com/algoprep/problembank/domain/exception/ProblemCodeAllocationException.java), [DD API F2](F:/prj_algoprep/03-dd/api/F2_problem-bank.md) |
 | `PRB-001` | 400 | Tên enum: `VALIDATION_FAILED`; Ý nghĩa: trường sai, thiếu, quá độ dài; `details.fields[] = { field, rule }`; Mục dùng: mọi endpoint ghi | [03-dd/api/F2_problem-bank.md:3068](F:/prj_algoprep/03-dd/api/F2_problem-bank.md:3068) |
 | `PRB-002` | 403 | Tên enum: `FORBIDDEN_FUNCTION`; Ý nghĩa: thiếu `FUNCTION:ACTION` cần thiết; Mục dùng: mọi endpoint có quyền | [03-dd/api/F2_problem-bank.md:3069](F:/prj_algoprep/03-dd/api/F2_problem-bank.md:3069) |
 | `PRB-003` | 403 | Tên enum: `NOT_PROBLEM_AUTHOR`; Ý nghĩa: A2 ghi lên bài `PUBLISHED` của người khác; Mục dùng: 29-33, 35-45, 46-49 | [03-dd/api/F2_problem-bank.md:3070](F:/prj_algoprep/03-dd/api/F2_problem-bank.md:3070) |
@@ -566,3 +570,22 @@ Cột HTTP ưu tiên số được ghi rõ trong DD/Javadoc; nếu có nhiều s
 - Định nghĩa từng mã: nguồn được liên kết ở mỗi dòng; ưu tiên hợp đồng DD đang hiệu lực và quyết định owner, đối chiếu handler khi đọc kết quả thực thi.
 - Khi thay hợp đồng mã/HTTP, cập nhật DD trước hoặc cùng thay đổi được duyệt rồi cập nhật bản tra cứu này. Không dùng bản tra cứu để tự ghi đè AC hay đánh dấu testcase đạt.
 - Tài liệu không có nghĩa mọi mã ít gặp hoặc mã chỉ xuất hiện trong thiết kế đều đang được server phát ra. Hành vi thực tế cần được kiểm ở đúng bản build, endpoint, quyền và dữ liệu.
+
+## Diễn giải sau bản vá bảo mật 15/11/2026
+
+| Tình huống | HTTP | Ý nghĩa khi đọc report |
+|---|---|---|
+| Logout hợp lệ | 204 | Cookie bị xoá; family hiện tại bị thu hồi, socket trên instance hiện tại đóng sau commit. |
+| Dùng access token cũ sau logout | 401 | Thu hồi theo `sid` đã có hiệu lực; không cần chờ JWT hết hạn. |
+| Token thiếu/sai định dạng `sid` | 401 | Token không đủ hợp đồng phiên hiện hành; đăng nhập lại. |
+| Dùng token của phiên khác sau logout một phiên | 200 nếu đủ quyền | Logout theo phiên không thu hồi tất cả phiên của tài khoản. |
+| Không thể đọc nguồn xác thực/thu hồi PostgreSQL | 503 IDT-503 | Fail closed; không diễn giải là mật khẩu sai. |
+| `/actuator/prometheus` thiếu/sai dedicated monitoring bearer | 401 | Chặn scrape công khai; JWT người dùng không thay thế monitoring token. |
+| `/actuator/health` trả status và tên nhóm liveness/readiness | 200 | Chỉ thông tin sẵn sàng cơ bản, không còn chi tiết DB/disk/component. Không đếm alert phát hiện health thành lỗi lộ chi tiết cũ. |
+
+Không bổ sung mã nghiệp vụ mới cho logout/monitoring; catalog vẫn 290 mã tham chiếu, trong đó 261 mã backend của lần đối chiếu trước.
+
+
+### ZAP-FINAL-01 — phân biệt 404 với lỗi đặc tả
+
+Bản vá 15/11/2026 đưa draft/deleted chưa có spec về `404 JDG-101` ở execution-limits, run-sample và admission. UUID không tồn tại cũng 404. Bài publish có spec hợp lệ vẫn 200 ở execution-limits; bài publish cố tình thiếu/sai spec không được che thành 404. Đây là sửa thứ tự kiểm visibility, không thêm mã lỗi mới; xem [bằng chứng bản vá](F:/prj_algoprep/07-review/261115-zap-final-01-fix/runtime-regression.json). Các dòng báo 500 của lần scan trước vẫn là lịch sử trước vá.

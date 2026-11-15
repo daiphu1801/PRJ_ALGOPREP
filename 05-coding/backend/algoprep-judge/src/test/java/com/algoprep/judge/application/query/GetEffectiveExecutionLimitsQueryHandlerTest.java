@@ -42,7 +42,7 @@ class GetEffectiveExecutionLimitsQueryHandlerTest {
             null,
             null,
             List.of());
-    when(problems.loadGradingSpec(problem)).thenReturn(Optional.of(spec));
+    when(problems.loadPublishedGradingSpec(problem)).thenReturn(Optional.of(spec));
     when(settings.read())
         .thenReturn(
             List.of(
@@ -62,7 +62,7 @@ class GetEffectiveExecutionLimitsQueryHandlerTest {
     assertThatThrownBy(() -> handler.get(problem, "RUST"))
         .isInstanceOfSatisfying(
             AlgoPrepException.class, e -> assertThat(e.errorCode()).isEqualTo("JDG-V03"));
-    when(problems.loadGradingSpec(problem)).thenReturn(Optional.empty());
+    when(problems.loadPublishedGradingSpec(problem)).thenReturn(Optional.empty());
     assertThatThrownBy(() -> handler.get(problem, null))
         .isInstanceOfSatisfying(
             AlgoPrepException.class, e -> assertThat(e.errorCode()).isEqualTo("JDG-101"));

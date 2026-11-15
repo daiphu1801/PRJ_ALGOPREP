@@ -48,7 +48,7 @@ class SubmissionAdmissionFixture {
         java.util.stream.IntStream.range(0, count)
             .mapToObj(i -> new GradingSpecification.Testcase(UUID.randomUUID(), "HIDDEN", i + 1))
             .toList();
-    when(problems.loadGradingSpec(owner.problemId()))
+    when(problems.loadPublishedGradingSpec(owner.problemId()))
         .thenReturn(
             Optional.of(
                 new GradingSpecification(

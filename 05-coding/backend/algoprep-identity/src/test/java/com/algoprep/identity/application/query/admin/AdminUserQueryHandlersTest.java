@@ -58,6 +58,18 @@ class AdminUserQueryHandlersTest {
   }
 
   @Test
+  void nulIsRejectedBeforeTrimmingOrCallingTheRepository() {
+    for (String keyword : List.of("a\0b", "\0abc", "abc\0", "\0", " \0 ")) {
+      assertThatThrownBy(() -> list.list(new ListUsersQuery(null, null, keyword, null, null)))
+          .isInstanceOfSatisfying(
+              AlgoPrepException.class, error -> assertThat(error.errorCode()).isEqualTo("IDT-V17"));
+    }
+    org.mockito.Mockito.verifyNoInteractions(users);
+    list.list(new ListUsersQuery(null, null, "  Nguyễn Văn Tú  ", null, null));
+    verify(users).search(null, null, "Nguyễn Văn Tú", 1, 20);
+  }
+
+  @Test
   void sharesAreRoundedToOneDecimalAndAZeroTotalGivesZeros() {
     Map<String, Long> counts = new LinkedHashMap<>();
     counts.put("STUDENT", 1L);

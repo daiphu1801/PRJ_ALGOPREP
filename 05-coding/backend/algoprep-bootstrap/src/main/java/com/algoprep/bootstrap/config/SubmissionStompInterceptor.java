@@ -85,9 +85,10 @@ final class SubmissionStompInterceptor implements ChannelInterceptor {
     }
     UUID.fromString(jwt.getSubject());
     AbstractAuthenticationToken auth = converter.convert(jwt);
-    if (!(auth instanceof JwtAuthenticationToken) || !auth.isAuthenticated()) {
+    if (!(auth instanceof JwtAuthenticationToken authenticated) || !auth.isAuthenticated()) {
       throw new IllegalArgumentException();
     }
+    sessions.authenticated(Objects.requireNonNull(headers.getSessionId()), authenticated);
     headers.setUser(auth);
   }
 

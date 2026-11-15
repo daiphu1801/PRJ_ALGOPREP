@@ -98,7 +98,7 @@ Nguồn: `02-bd/architecture/F4_judge-orchestration.md:155-185`, `DEC-2026-0912-
 - **Tiền điều kiện**: người gọi là `STUDENT` đã xác thực; bài ở trạng thái xuất bản; ngôn ngữ đang `enabled`; mô hình hợp lệ cho bài; mã không rỗng và không quá 65.536 byte UTF-8.
 - **Các bước**:
   1. Kiểm đầu vào (lớp Presentation) theo `03-dd/validation/F4_judge-orchestration.md` mục 2.
-  2. `loadGradingSpec(problemId)` qua `ProblemGradingSpecPort`: không xuất bản hoặc ẩn mềm thì `JDG-101` (không phân biệt, `USR0102` Sheet 9 NO 2); `functionWrapperSupported = false` mà mô hình `FUNCTION_WRAPPER` thì `JDG-103`; số testcase đã duyệt bằng 0 thì `JDG-104`; `snapshotReady=false` thì `503 JDG-504` trước khi tạo lượt.
+  2. `loadPublishedGradingSpec(problemId)` qua `ProblemGradingSpecPort`: không xuất bản hoặc ẩn mềm thì `JDG-101` (không phân biệt, `USR0102` Sheet 9 NO 2); `functionWrapperSupported = false` mà mô hình `FUNCTION_WRAPPER` thì `JDG-103`; số testcase đã duyệt bằng 0 thì `JDG-104`; `snapshotReady=false` thì `503 JDG-504` trước khi tạo lượt.
   3. Kiểm `language_configs.enabled` của ngôn ngữ; `false` thì `JDG-102`.
   4. Mở giao dịch. Lấy khoá tư vấn mức giao dịch `pg_advisory_xact_lock(hashtextextended(userId || ':' || problemId, 0))` để việc **kiểm giới hạn rồi ghi** là nguyên tử với cùng một cặp (người, bài) `[SoT: Suy luận]`.
   5. Đếm lượt nộp của cặp trong một giờ gần nhất; so với `maxSubmissionsPerHour` của bài, `NULL` thì mặc định **60** (hằng số `judge.submission.default-hourly-limit`, `02-bd/database/F2_problem-bank.md:295`). Đã đạt giới hạn thì `JDG-106`. Đếm mọi lượt nộp, kể cả lượt kết thúc `SYSTEM_ERROR` do hạ tầng `[SoT: Suy luận]`: BD không loại trừ, và loại trừ sẽ cần thêm trạng thái hay cột.
@@ -491,3 +491,10 @@ page/tab normalize theo bảng3/7; beyond-end clamp, empty page1, pageSize từ 
 
 
 **D02af — 2026-11-05:** STOMP admin W2 có QUEUE_BATCH thật theo chu kỳ5s, một lô chung cho mọi admin, không query khi không có subscriber hợp lệ. Snapshot/counts/infra-summary cùng transaction RR; outbound chặn phiên hết JWT hoặc đã unsubscribe.64 test liên quan đạt (18 mới),6/6 mutation,28/28 dòng logic mới; Spotless/Checkstyle/SpotBugs phạm vi chọn đạt. Backend F4-3 đủ API và W2; tiếp theo FINAL BE/full regression khi clear. FE/browser/C08 và production nhiều process giữ mốc riêng. Chưa commit/merge. [Report](F:/prj_algoprep/06-plan/reports/261105-f4-admin-queue-stream/report.md).
+
+
+## Bổ sung 2026-11-15 — đọc đặc tả theo visibility cho học viên
+
+`GetEffectiveExecutionLimitsQueryHandler`, `SampleRunContext` và admission dùng `loadPublishedGradingSpec`. Adapter F2 đọc một snapshot SQL rồi lọc `published` (bao gồm `NOT deleted`) trước khi kiểm version/matching hoặc gọi object storage. Vì vậy bài nháp hợp lệ chưa có spec trả 404 `JDG-101`, giống UUID không tồn tại; không phát sinh 500 chỉ vì chưa soạn đặc tả.
+
+Worker tiếp tục dùng `loadGradingSpec` nội bộ để không mất metadata hợp lệ của bài nộp đã được nhận khi bài được rút khỏi học viên sau đó. Không thay đường đọc bundle bất biến đã ghim. Bài đã publish nhưng spec thiếu/sai vẫn là lỗi dữ liệu `SPEC_UNAVAILABLE`, lỗi DB/storage vẫn là lỗi hạ tầng; không biến các lỗi này thành 404. Không thêm mã HTTP/nghiệp vụ mới.

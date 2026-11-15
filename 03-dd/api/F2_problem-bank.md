@@ -1,5 +1,7 @@
 # DD API — Module `problem-bank` (F2)
 
+**Bản vá ZAP 2026-11-15 (SEC-03):** tạo/nhân bản bài dùng BR-03 với fallback hậu tố UUID đầy đủ sau 20 collision số, giới hạn code vẫn 64 ký tự và không đổi code đã có. Nếu cả candidate dự phòng trùng, trả `409 PRB-059` / `PROBLEM_CODE_ALLOCATION_CONFLICT` để thử lại, không trả 500 do hết lượt cấp mã. Mã này bổ sung cho bảng 60.1; không thay chính sách cấp mã của topic/level hoặc triển khai migration mã `BT-…`.
+
 **S2b lõi nội bộ, 2026-11-02:** có cổng tạo draft thường/lưu nội dung bằng DB thật, chưa
 triển khai transport POST/PUT§36/37. Inbound nhận typed content và actor/action context tin cậy;
 creation nhận limits tường minh, level thiếu đọc mức đầu DB, quotaNULL giữNULL. Result nội bộ
@@ -3061,7 +3063,7 @@ Bảng 59.2: Sự kiện nhận vào.
 
 ## 60. Bảng mã lỗi `PRB`
 
-Bảng 60.1: Mã lỗi của module (`error.code`, backend trả mã, giao diện dịch qua `messages/{locale}.json`). Dải dùng: `PRB-001` tới `PRB-058` (`PRB-034`, `PRB-035` đã bỏ vì trùng `HRN-V22`, `HRN-V20`). Cảnh báo không chặn dùng tiền tố `PRB-W`.
+Bảng 60.1: Mã lỗi của module (`error.code`, backend trả mã, giao diện dịch qua `messages/{locale}.json`). Dải dùng: `PRB-001` tới `PRB-059` (`PRB-034`, `PRB-035` đã bỏ vì trùng `HRN-V22`, `HRN-V20`). Cảnh báo không chặn dùng tiền tố `PRB-W`.
 
 | Mã | HTTP | Tên enum | Ý nghĩa | Mục dùng |
 | :--- | :-: | :--- | :--- | :--- |
@@ -3107,6 +3109,7 @@ Bảng 60.1: Mã lỗi của module (`error.code`, backend trả mã, giao diệ
 | PRB-056 | 503 (§38); trong `failedItems` của HTTP200 (§53) | `OUTBOX_WRITE_FAILED` | lỗi ghi Outbox; §38 rollback toàn bộ lưu spec, §53 rollback riêng bài và tiếp tục lô | 38, 53 |
 | PRB-057 | 503 | `SOLVE_STATE_UNAVAILABLE` | không đọc được trạng thái giải của người gọi khi endpoint không được phép trả số giả (tiến độ theo mức độ); owner duyệt 2026-11-05 | 14A |
 | PRB-058 | 503 | `CLASS_SERVICE_UNAVAILABLE` | không đọc được danh sách lớp của giảng viên từ `identity` nên không kiểm được quyền sở hữu lớp; owner duyệt 2026-11-06 | 50 đến 55 |
+| PRB-059 | 409 | `PROBLEM_CODE_ALLOCATION_CONFLICT` | Candidate cấp mã dự phòng UUID đầy đủ cũng trùng; thử tạo lại, không trả 500 do quá 20 tiêu đề giống nhau | 35, 36 |
 | PRB-W01 | (cảnh báo, `200`) | `TYPE_OUTSIDE_SCHEMA` | vi phạm mềm `HRN-V01` tới `HRN-V07`, `functionWrapperSupported = false`; mã gốc trong `reasonCode` | 38 |
 
 Mã `PRB-024`, `PRB-026` tới `PRB-029`, `PRB-034`, `PRB-035`, `PRB-038` để trống có chủ đích (dự phòng theo nhóm).

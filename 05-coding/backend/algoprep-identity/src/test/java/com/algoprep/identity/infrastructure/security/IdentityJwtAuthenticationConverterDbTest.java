@@ -21,6 +21,7 @@ class IdentityJwtAuthenticationConverterDbTest {
   private Jwt jwt() {
     return Jwt.withTokenValue("t")
         .header("alg", "RS256")
+        .claim("sid", UUID.randomUUID().toString())
         .subject(user.toString())
         .issuedAt(Instant.now())
         .expiresAt(Instant.now().plusSeconds(60))

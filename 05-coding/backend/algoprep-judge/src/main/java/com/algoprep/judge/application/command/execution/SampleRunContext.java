@@ -37,7 +37,7 @@ class SampleRunContext {
     SampleRunBudget.check();
     var spec =
         problems
-            .loadGradingSpec(command.problemId())
+            .loadPublishedGradingSpec(command.problemId())
             .filter(s -> s.problem().published())
             .orElseThrow(() -> new SubmissionAdmissionException("JDG-101"));
     if (command.submissionModel().equals("FUNCTION_WRAPPER")

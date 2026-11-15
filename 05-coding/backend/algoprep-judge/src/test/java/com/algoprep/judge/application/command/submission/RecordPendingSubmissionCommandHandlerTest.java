@@ -71,7 +71,7 @@ class RecordPendingSubmissionCommandHandlerTest {
   @Test
   void missingProblemAndDisabledLanguageFailClosed() {
     var f = new SubmissionAdmissionFixture();
-    when(f.problems.loadGradingSpec(f.owner.problemId())).thenReturn(Optional.empty());
+    when(f.problems.loadPublishedGradingSpec(f.owner.problemId())).thenReturn(Optional.empty());
     rejected(() -> f.handler().recordPending(f.command()), "JDG-101");
     f.spec(true, true, true, 1, null);
     when(f.repository.languageEnabled("PYTHON")).thenReturn(false);
@@ -127,7 +127,7 @@ class RecordPendingSubmissionCommandHandlerTest {
     var f = new SubmissionAdmissionFixture();
     var raw = new IllegalStateException("SQL secret-source");
     switch (phase) {
-      case "spec" -> when(f.problems.loadGradingSpec(any())).thenThrow(raw);
+      case "spec" -> when(f.problems.loadPublishedGradingSpec(any())).thenThrow(raw);
       case "enabled" -> when(f.repository.languageEnabled(any())).thenThrow(raw);
       case "lock" -> doThrow(raw).when(f.repository).lockPair(any());
       case "clock" -> when(f.repository.databaseNow()).thenThrow(raw);
@@ -149,7 +149,7 @@ class RecordPendingSubmissionCommandHandlerTest {
     var f = new SubmissionAdmissionFixture();
     var error =
         new ProblemGradingReadException(ProblemGradingReadException.Reason.SPEC_UNAVAILABLE);
-    when(f.problems.loadGradingSpec(any())).thenThrow(error);
+    when(f.problems.loadPublishedGradingSpec(any())).thenThrow(error);
     assertThatThrownBy(() -> f.handler().recordPending(f.command())).isSameAs(error);
     verifyNoInteractions(f.repository);
   }

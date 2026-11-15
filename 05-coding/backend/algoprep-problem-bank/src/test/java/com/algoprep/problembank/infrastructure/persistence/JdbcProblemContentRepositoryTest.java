@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
+import com.algoprep.problembank.domain.exception.ProblemCodeAllocationException;
 import com.algoprep.problembank.domain.model.problem.ProblemContentData;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -207,13 +208,15 @@ class JdbcProblemContentRepositoryTest {
   }
 
   @Test
+  @org.junit.jupiter.api.DisplayName("SEC-03: bounded allocation conflict has structured PRB-059")
   void createRetriesCodeCollisionsThenGivesUpAfterTwentyAttempts() {
     db.onUpdate("INSERT INTO problem.problems", 0);
 
     assertThatThrownBy(() -> repo.create(ACTOR, content(List.of(), List.of(), List.of(), null)))
-        .isInstanceOf(IllegalStateException.class)
-        .hasMessageContaining("exhausted");
-    assertThat(db.count("INSERT INTO problem.problems")).isEqualTo(20);
+        .isInstanceOfSatisfying(
+            ProblemCodeAllocationException.class,
+            error -> assertThat(error.errorCode()).isEqualTo("PRB-059"));
+    assertThat(db.count("INSERT INTO problem.problems")).isEqualTo(21);
   }
 
   @Test

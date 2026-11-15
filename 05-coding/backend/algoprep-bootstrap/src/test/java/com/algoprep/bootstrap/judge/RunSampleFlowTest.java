@@ -1,6 +1,7 @@
 package com.algoprep.bootstrap.judge;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
@@ -14,6 +15,7 @@ import com.algoprep.judge.application.ports.in.execution.EvaluateProgramUseCase;
 import com.algoprep.judge.application.ports.out.JudgeExecutionPort;
 import com.algoprep.judge.application.ports.out.SampleQuotaPort;
 import com.algoprep.judge.domain.exception.JudgeInfrastructureException;
+import com.algoprep.judge.domain.exception.ProblemGradingReadException;
 import io.minio.BucketExistsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
@@ -499,6 +501,43 @@ class RunSampleFlowTest {
             .andReturn()
             .getResponse();
     assertThat(malformed.getStatus()).isEqualTo(404);
+  }
+
+  @Test
+  void learnerReadsRejectDraftAndDeletedWithoutSpecificationBeforeGradingValidation()
+      throws Exception {
+    jdbc.update("DELETE FROM problem.problem_specs WHERE problem_id=?", problem);
+    var auth = "Bearer " + token(student, BaseCategory.STUDENT);
+    for (boolean deleted : List.of(false, true)) {
+      jdbc.update(
+          "UPDATE problem.problems SET status='UNPUBLISHED',deleted=? WHERE id=?",
+          deleted,
+          problem);
+      for (UUID id : List.of(problem, UUID.randomUUID())) {
+        var response =
+            mvc.perform(
+                    get("/api/v1/judge/problems/" + id + "/execution-limits")
+                        .header("Authorization", auth))
+                .andReturn()
+                .getResponse();
+        assertThat(response.getStatus()).isEqualTo(404);
+        assertThat(json.readTree(response.getContentAsString()).path("errorCode").asString())
+            .isEqualTo("JDG-101");
+      }
+      assertThat(reject(problem, request(), "JDG-101")).isEqualTo(404);
+    }
+  }
+
+  @Test
+  void publishedMissingSpecificationRemainsDataFailureRatherThanNotFound() {
+    jdbc.update("DELETE FROM problem.problem_specs WHERE problem_id=?", problem);
+    var auth = "Bearer " + token(student, BaseCategory.STUDENT);
+    assertThatThrownBy(
+            () ->
+                mvc.perform(
+                    get("/api/v1/judge/problems/" + problem + "/execution-limits")
+                        .header("Authorization", auth)))
+        .hasRootCauseInstanceOf(ProblemGradingReadException.class);
   }
 
   @Test

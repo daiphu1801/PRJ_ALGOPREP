@@ -32,6 +32,9 @@ class ListUsersQueryHandler implements ListUsersUseCase {
   @Override
   @Transactional(readOnly = true)
   public AdminUserPage list(ListUsersQuery query) {
+    if (query.keyword() != null && query.keyword().indexOf('\0') >= 0) {
+      throw invalid();
+    }
     String status = oneOf(query.status(), STATUSES);
     String category = oneOf(query.role(), CATEGORIES);
     String keyword = query.keyword() == null ? "" : query.keyword().trim();

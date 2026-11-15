@@ -121,6 +121,7 @@ class SubmissionStompSecurityTest {
 
   private static StompHeaderAccessor connect(String bearer) {
     var headers = StompHeaderAccessor.create(StompCommand.CONNECT);
+    headers.setSessionId("session");
     headers.setAcceptVersion("1.2");
     headers.setNativeHeader("Authorization", bearer);
     return headers;

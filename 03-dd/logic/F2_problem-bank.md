@@ -104,7 +104,7 @@ Bảng 0.1: Danh mục khối quy tắc.
   1. Chuẩn hoá Unicode NFD, bỏ dấu kết hợp, đổi `đ`/`Đ` thành `d`/`D`.
   2. Chữ HOA; mọi chuỗi ký tự không thuộc `[A-Z0-9]` thành một dấu `-`; bỏ `-` ở hai đầu; cắt còn tối đa 64 ký tự (cắt rồi bỏ `-` cuối).
   3. Slug rỗng (tên toàn ký hiệu) dùng mã dự phòng `PROBLEM`, `TOPIC`, `LEVEL`.
-  4. Trùng: thử `slug`, `slug-2`, `slug-3`...; unique tính **cả bài `deleted`** (`02-bd/database/F2_problem-bank.md:18`). Cách làm an toàn đồng thời: `INSERT` với `ON CONFLICT DO NOTHING`, không chèn được thì thử hậu tố kế (tối đa 20 lần, quá thì `500`).
+  4. Trùng: thử `slug`, `slug-2`, `slug-3`...; unique tính **cả bài `deleted`** (`02-bd/database/F2_problem-bank.md:18`). Cách làm an toàn đồng thời: `INSERT` với `ON CONFLICT DO NOTHING`. **Bản vá SEC-03, 2026-11-15, riêng bài toán:** sau 20 candidate số, thử thêm một candidate `slug-<UUID đầy đủ của bài mới>` (UUID chữ HOA, không cắt UUID); nếu candidate này cũng trùng thì `409 PRB-059`, client thử lại. Không còn `500` do quá 20 bài cùng tên. Chủ đề/độ khó vẫn theo allocator riêng, không mở rộng thay đổi này sang catalogue. Không đổi mã cũ; phương án mã ngắn `BT-…` thuộc plan chuyển đổi riêng.
   5. Hậu tố tính vào giới hạn 64 ký tự (cắt phần gốc trước khi thêm hậu tố).
 - **Hậu điều kiện**: `code` bất biến, không đổi khi đổi tên/tiêu đề; ba mức seed giữ `EASY`, `MEDIUM`, `HARD` (`02-bd/database/F2_problem-bank.md:96`).
 
@@ -392,3 +392,8 @@ sandbox/status/audit; kernel không tự áp publish HTTP hoặc gọi Rabbit tr
 ## BR-28 — Baseline migration đã đóng (2026-10-29)
 
 Theo `DEC-2026-1029-f2-migration-readiness`: tag find-or-create phải dùng lower(name) cùng unique expression index, an toàn đồng thời. Epsilon khi được gửi/lưu phải >0, <=999999.999999999999, biểu diễn chính xác với scale tối đa 12 sau bỏ số 0 dư; EPSILON bắt buộc có. Kiểm trước ghi, không để DB làm tròn epsilon âm thầm. Khi SaveProblemSpec vi phạm miền epsilon, trả 422 PRB-036 với HRN-V20. Trạng thái chữ ký cùng NULL hoặc đủ ba trường; parameters [] hợp lệ. DDL/seed/NOT NULL/CHECK theo BD database §7; application đặt updated_at trên mọi ghi, không dựa vào DEFAULT để cập nhật.
+
+
+## Bổ sung 2026-11-15 — hai hợp đồng đọc grading metadata
+
+`ReadProblemGradingSpecUseCase.loadGradingSpec` giữ hợp đồng nội bộ: metadata hợp lệ của bài đã rút vẫn đọc được để phục vụ worker đã nhận bài nộp. `loadPublishedGradingSpec` dành cho các luồng học viên: cùng truy vấn raw snapshot, lọc bài chưa publish/deleted trước bước validation spec/storage; không tách thành hai truy vấn visibility và spec có thể lệch thời điểm. Chỉ absence/visibility được trả Optional.empty; lỗi spec của bài publish và lỗi hạ tầng vẫn giữ phân loại hiện có. Xem ZAP-FINAL-01 trong báo cáo sau vá.

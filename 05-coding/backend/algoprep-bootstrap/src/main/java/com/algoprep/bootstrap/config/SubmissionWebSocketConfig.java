@@ -1,5 +1,6 @@
 package com.algoprep.bootstrap.config;
 
+import com.algoprep.identity.domain.model.auth.SessionRevoked;
 import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -8,6 +9,7 @@ import org.springframework.boot.task.SimpleAsyncTaskSchedulerBuilder;
 import org.springframework.boot.task.ThreadPoolTaskSchedulerBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.EventListener;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.converter.JacksonJsonMessageConverter;
@@ -101,6 +103,16 @@ class SubmissionWebSocketConfig implements WebSocketMessageBrokerConfigurer {
   @Override
   public void configureClientInboundChannel(ChannelRegistration registration) {
     registration.interceptors(new SubmissionStompInterceptor(decoder, converter, sessions));
+  }
+
+  @Override
+  public void configureClientOutboundChannel(ChannelRegistration registration) {
+    registration.interceptors(new SubmissionStompOutboundInterceptor(converter, sessions));
+  }
+
+  @EventListener
+  public void onSessionRevoked(SessionRevoked event) {
+    sessions.revokeFamily(event.familyId());
   }
 
   @Override

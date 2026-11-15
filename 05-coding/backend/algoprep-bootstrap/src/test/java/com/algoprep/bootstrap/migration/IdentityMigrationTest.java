@@ -51,6 +51,7 @@ class IdentityMigrationTest {
           "user_preferences",
           "oauth_identities",
           "refresh_tokens",
+          "session_revocations",
           "classes",
           "class_invite_codes",
           "class_enrollments",
@@ -76,7 +77,7 @@ class IdentityMigrationTest {
   @Autowired private Flyway flyway;
 
   @Test
-  @DisplayName("creates exactly the 19 identity tables including the class event outbox")
+  @DisplayName("creates exactly the 20 identity tables including session revocation tombstones")
   void createsAllTables() {
     List<String> tables =
         jdbc.queryForList(

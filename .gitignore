@@ -156,3 +156,6 @@ temp/
 # Scanner caches written by SonarQube analysis
 .sonar/
 .scannerwork/
+
+# Local Prometheus scrape credentials; distribute through the deployment secret store.
+05-coding/monitoring/secrets/

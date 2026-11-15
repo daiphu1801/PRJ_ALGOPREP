@@ -71,9 +71,9 @@ judge:
 management:
   endpoint:
     health:
-      # Local thi hien chi tiet cho de chan doan; moi truong that dung mac dinh when-authorized
-      # trong application.yml.
-      show-details: always
+      # Keep public liveness free of infrastructure details in every environment.
+      show-details: never
+      show-components: never
 
 logging:
   level:

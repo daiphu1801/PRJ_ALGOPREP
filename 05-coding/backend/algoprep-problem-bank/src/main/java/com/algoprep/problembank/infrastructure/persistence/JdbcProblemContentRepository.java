@@ -1,6 +1,7 @@
 package com.algoprep.problembank.infrastructure.persistence;
 
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
+import com.algoprep.problembank.domain.exception.ProblemCodeAllocationException;
 import com.algoprep.problembank.domain.model.ProblemContentSnapshot;
 import com.algoprep.problembank.domain.model.problem.ProblemCode;
 import com.algoprep.problembank.domain.model.problem.ProblemContentData;
@@ -97,7 +98,7 @@ class JdbcProblemContentRepository implements ProblemContentRepository {
   @Override
   public UUID create(UUID actorId, ProblemContentData content) {
     UUID id = ids.newId();
-    for (int attempt = 1; attempt <= 20; attempt++) {
+    for (int attempt = 1; attempt <= 21; attempt++) {
       int inserted =
           jdbc.getObject()
               .sql(
@@ -106,7 +107,11 @@ class JdbcProblemContentRepository implements ProblemContentRepository {
           VALUES(:id,:code,:title,:actor,:actor,:level,:time,:memory,:output) ON CONFLICT(code) DO NOTHING
           """)
               .param("id", id)
-              .param("code", ProblemCode.from(content.title(), attempt))
+              .param(
+                  "code",
+                  attempt <= 20
+                      ? ProblemCode.from(content.title(), attempt)
+                      : ProblemCode.withIdentitySuffix(content.title(), id))
               .param("title", content.title())
               .param("actor", actorId)
               .param("level", content.levelId())
@@ -118,7 +123,7 @@ class JdbcProblemContentRepository implements ProblemContentRepository {
         return id;
       }
     }
-    throw new IllegalStateException("Problem code allocation exhausted");
+    throw new ProblemCodeAllocationException();
   }
 
   @Override

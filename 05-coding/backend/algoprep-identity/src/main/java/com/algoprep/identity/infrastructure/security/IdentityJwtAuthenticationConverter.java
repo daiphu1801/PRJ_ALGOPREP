@@ -39,6 +39,7 @@ class IdentityJwtAuthenticationConverter implements Converter<Jwt, AbstractAuthe
       SELECT u.status, r.id AS role_id, r.base_category, r.permission_version
       FROM identity.users u JOIN identity.roles r ON r.id = u.role_id
       WHERE u.id = :id
+        AND NOT EXISTS (SELECT 1 FROM identity.session_revocations s WHERE s.family_id = :sid)
       """;
 
   private static final String MATRIX_SQL =
@@ -60,8 +61,9 @@ class IdentityJwtAuthenticationConverter implements Converter<Jwt, AbstractAuthe
   @Override
   public AbstractAuthenticationToken convert(Jwt jwt) {
     UUID userId = parseSubject(jwt);
+    UUID sessionId = parseSessionId(jwt);
     try {
-      return authenticate(jwt, jdbcProvider.getObject(), userId);
+      return authenticate(jwt, jdbcProvider.getObject(), userId, sessionId);
     } catch (DataAccessException e) {
       // Fail closed (BD security section 1), but say "unavailable" instead of "unauthenticated":
       // the entry point turns this cause into 503 so the client retries instead of logging out.
@@ -69,10 +71,12 @@ class IdentityJwtAuthenticationConverter implements Converter<Jwt, AbstractAuthe
     }
   }
 
-  private AbstractAuthenticationToken authenticate(Jwt jwt, JdbcClient jdbc, UUID userId) {
+  private AbstractAuthenticationToken authenticate(
+      Jwt jwt, JdbcClient jdbc, UUID userId, UUID sessionId) {
     Account account =
         jdbc.sql(ACCOUNT_SQL)
             .param("id", userId)
+            .param("sid", sessionId)
             .query(
                 (rs, n) ->
                     new Account(
@@ -114,6 +118,18 @@ class IdentityJwtAuthenticationConverter implements Converter<Jwt, AbstractAuthe
       return UUID.fromString(subject);
     } catch (IllegalArgumentException e) {
       throw new InvalidBearerTokenException("Malformed subject", e);
+    }
+  }
+
+  private static UUID parseSessionId(Jwt jwt) {
+    Object claim = jwt.getClaim("sid");
+    if (!(claim instanceof String sessionId)) {
+      throw new InvalidBearerTokenException("Missing session identity");
+    }
+    try {
+      return UUID.fromString(sessionId);
+    } catch (IllegalArgumentException error) {
+      throw new InvalidBearerTokenException("Malformed session identity");
     }
   }
 

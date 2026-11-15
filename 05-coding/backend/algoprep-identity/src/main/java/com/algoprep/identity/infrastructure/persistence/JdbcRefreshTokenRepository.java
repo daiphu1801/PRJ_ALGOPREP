@@ -42,7 +42,8 @@ class JdbcRefreshTokenRepository implements RefreshTokenRepository {
     return jdbcProvider
         .getObject()
         .sql(
-            "SELECT id, user_id, family_id, expires_at, revoked_at FROM identity.refresh_tokens"
+            "SELECT id, user_id, family_id, expires_at, COALESCE(revoked_at,"
+                + " (SELECT s.revoked_at FROM identity.session_revocations s WHERE s.family_id=rt.family_id)) AS revoked_at FROM identity.refresh_tokens rt"
                 + " WHERE token_hash = :hash FOR UPDATE")
         .param("hash", tokenHash)
         .query(
@@ -70,6 +71,13 @@ class JdbcRefreshTokenRepository implements RefreshTokenRepository {
 
   @Override
   public void revokeFamily(UUID familyId, Instant at) {
+    jdbcProvider
+        .getObject()
+        .sql(
+            "INSERT INTO identity.session_revocations(family_id,revoked_at) VALUES(:familyId,:at) ON CONFLICT(family_id) DO NOTHING")
+        .param("familyId", familyId)
+        .param("at", Timestamp.from(at))
+        .update();
     jdbcProvider
         .getObject()
         .sql(

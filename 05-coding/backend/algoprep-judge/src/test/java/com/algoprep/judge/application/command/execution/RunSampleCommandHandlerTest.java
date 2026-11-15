@@ -59,7 +59,7 @@ class RunSampleCommandHandlerTest {
 
   @BeforeEach
   void setup() {
-    when(problems.loadGradingSpec(problem)).thenReturn(Optional.of(spec(true, true)));
+    when(problems.loadPublishedGradingSpec(problem)).thenReturn(Optional.of(spec(true, true)));
     when(problems.loadSampleTestcases(problem)).thenReturn(List.of(testcase("SAMPLE")));
     when(settings.read()).thenReturn(List.of(config(true, false)));
     when(quota.reserve(any(), any())).thenReturn(new Reservation(true, 0));
@@ -137,11 +137,11 @@ class RunSampleCommandHandlerTest {
 
   @Test
   void unavailablePublishedStateNoSamplesDisabledLanguageAndWrapperAreRejected() {
-    when(problems.loadGradingSpec(problem)).thenReturn(Optional.empty());
+    when(problems.loadPublishedGradingSpec(problem)).thenReturn(Optional.empty());
     assertThatThrownBy(() -> handler.run(command("x"))).satisfies(e -> code(e, "JDG-101"));
-    when(problems.loadGradingSpec(problem)).thenReturn(Optional.of(spec(false, true)));
+    when(problems.loadPublishedGradingSpec(problem)).thenReturn(Optional.of(spec(false, true)));
     assertThatThrownBy(() -> handler.run(command("x"))).satisfies(e -> code(e, "JDG-101"));
-    when(problems.loadGradingSpec(problem)).thenReturn(Optional.of(spec(true, false)));
+    when(problems.loadPublishedGradingSpec(problem)).thenReturn(Optional.of(spec(true, false)));
     assertThatThrownBy(
             () -> handler.run(new Command(user, problem, "PYTHON", "FUNCTION_WRAPPER", "x")))
         .satisfies(e -> code(e, "JDG-103"));

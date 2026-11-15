@@ -1,6 +1,7 @@
 package com.algoprep.identity.infrastructure.ratelimit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -10,9 +11,11 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.algoprep.identity.domain.exception.RateLimitUnavailableException;
 import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.data.redis.RedisConnectionFailureException;
@@ -49,6 +52,7 @@ class RedisRateLimitAdaptersTest {
   @Test
   void loginRecordsAndClearsFailures() {
     var adapter = new RedisLoginAttemptAdapter(provider);
+    when(redis.execute(any(RedisScript.class), anyList())).thenReturn(1L);
     adapter.recordFailure("a@b.c", "ip");
     verify(redis).execute(any(RedisScript.class), eq(List.of("identity:ratelimit:login:a@b.c:ip")));
     adapter.clear("a@b.c", "ip");
@@ -56,26 +60,50 @@ class RedisRateLimitAdaptersTest {
   }
 
   @Test
+  @DisplayName("SEC-02: missing or broken Redis fails closed for every limiter operation")
   void loginFailsOpenWhenRedisIsMissingOrBroken() {
     var missing = new RedisLoginAttemptAdapter(absent);
-    assertThat(missing.isBlocked("e", "ip")).isFalse();
-    missing.recordFailure("e", "ip");
-    missing.clear("e", "ip");
+    unavailable(() -> missing.isBlocked("e", "ip"));
+    unavailable(() -> missing.recordFailure("e", "ip"));
+    unavailable(() -> missing.clear("e", "ip"));
     when(ops.get(anyString())).thenThrow(new RedisConnectionFailureException("down"));
     when(redis.execute(any(RedisScript.class), anyList()))
         .thenThrow(new RedisConnectionFailureException("down"));
     when(redis.delete(anyString())).thenThrow(new RedisConnectionFailureException("down"));
     var broken = new RedisLoginAttemptAdapter(provider);
-    assertThat(broken.isBlocked("e", "ip")).isFalse();
-    broken.recordFailure("e", "ip");
-    broken.clear("e", "ip");
+    unavailable(() -> broken.isBlocked("e", "ip"));
+    unavailable(() -> broken.recordFailure("e", "ip"));
+    unavailable(() -> broken.clear("e", "ip"));
     verify(redis).delete("identity:ratelimit:login:e:ip");
   }
 
   @Test
+  @DisplayName("SEC-02: malformed counters fail closed")
   void loginTreatsGarbageCounterAsNotBlocked() {
-    when(ops.get(anyString())).thenReturn("abc");
-    assertThat(new RedisLoginAttemptAdapter(provider).isBlocked("e", "ip")).isFalse();
+    var adapter = new RedisLoginAttemptAdapter(provider);
+    for (String count : List.of("abc", "-1", "99999999999999999999999999999")) {
+      when(ops.get(anyString())).thenReturn(count);
+      unavailable(() -> adapter.isBlocked("e", "ip"));
+    }
+  }
+
+  @Test
+  void loginCannotProceedWhenCounterWriteHasNoValidResult() {
+    var adapter = new RedisLoginAttemptAdapter(provider);
+    when(redis.execute(any(RedisScript.class), anyList())).thenReturn(null, 0L, -1L);
+    for (int i = 0; i < 3; i++) {
+      unavailable(() -> adapter.recordFailure("e", "ip"));
+    }
+    when(redis.delete("identity:ratelimit:login:e:ip")).thenReturn((Boolean) null);
+    unavailable(() -> adapter.clear("e", "ip"));
+  }
+
+  private static void unavailable(Runnable action) {
+    assertThatThrownBy(action::run)
+        .isInstanceOfSatisfying(
+            RateLimitUnavailableException.class,
+            error -> assertThat(error.errorCode()).isEqualTo("IDT-510"))
+        .hasNoCause();
   }
 
   @Test

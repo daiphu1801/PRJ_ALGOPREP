@@ -87,6 +87,10 @@ final class QueueStreamWireClient implements WebSocket.Listener, AutoCloseable {
     assertThat(frames.poll(300, TimeUnit.MILLISECONDS)).isNull();
   }
 
+  void awaitClosed() throws Exception {
+    assertThat(closed.get(5, TimeUnit.SECONDS)).isNotNull();
+  }
+
   void denied() throws Exception {
     assertThat(next()).isEqualTo("ERROR\nmessage:Request denied\ncontent-length:0\n\n");
     assertThat(closed.get(5, TimeUnit.SECONDS)).isNotNull();

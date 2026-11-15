@@ -30,7 +30,8 @@ import org.testcontainers.utility.MountableFile;
       "spring.autoconfigure.exclude=org.springframework.boot.data.redis.autoconfigure.RedisAutoConfiguration,org.springframework.boot.amqp.autoconfigure.RabbitAutoConfiguration",
       "spring.datasource.hikari.maximum-pool-size=2",
       "spring.datasource.hikari.minimum-idle=0",
-      "spring.datasource.hikari.pool-name=scale-readiness"
+      "spring.datasource.hikari.pool-name=scale-readiness",
+      "algoprep.monitoring.bearer-token=pool-scrape-token"
     })
 @ActiveProfiles("test")
 @Testcontainers
@@ -87,7 +88,11 @@ class DatabasePoolReadinessFlowTest {
         Connection second = pool.getConnection()) {
       assertThat(first.isClosed()).isFalse();
       assertThat(second.isClosed()).isFalse();
-      var response = mvc.perform(get("/actuator/prometheus")).andReturn().getResponse();
+      var response =
+          mvc.perform(
+                  get("/actuator/prometheus").header("Authorization", "Bearer pool-scrape-token"))
+              .andReturn()
+              .getResponse();
       assertThat(response.getStatus()).isEqualTo(200);
       assertThat(response.getContentAsString())
           .contains(

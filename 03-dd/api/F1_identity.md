@@ -1,5 +1,7 @@
 # DD — API module `identity` (F1)
 
+**Bản vá ZAP 2026-11-15:** các API đăng nhập thường/giảng viên và đổi mật khẩu đang có dùng chung limiter BR-01. Khi không kiểm tra/ghi/xóa được bộ đếm Redis, trả `503` với `errorCode: "IDT-510"` (`PASSWORD_ATTEMPT_PROTECTION_UNAVAILABLE`), không phát phiên mới hoặc commit thay đổi mật khẩu. Hành vi Redis khỏe vẫn giữ 401/429 hiện hành; đây là thay đổi fail-open sang fail-closed có kiểm soát. Danh sách người dùng #35 từ chối NUL trong `q` trước chuẩn hóa, trả `400 IDT-V17`.
+
 > DD đầu tiên của dự án (`03-dd/` trước đây chỉ có `.gitkeep`). Đọc cùng `02-bd/architecture/F1_identity.md`,
 > `02-bd/database/F1_identity.md`, `02-bd/security/F1_identity.md` — DD này **không lặp lại** nội dung đã chốt ở
 > BD, chỉ ghi thêm phần BD chưa nói được: hợp đồng endpoint xuyên màn, quyết định kỹ thuật, và các khối quy
@@ -28,7 +30,7 @@ Quét toàn bộ `02-bd/screens/**` (Sheet 7.3 "Danh sách endpoint") tìm mọi
 | 1 | POST | `/api/v1/identity/auth/register` | Đăng ký email + mật khẩu (F1-01) | `SHR0101_auth` | Công khai |
 | 2 | POST | `/api/v1/identity/auth/login` | Đăng nhập, trả access token + set cookie refresh token (F1-02) | `SHR0101_auth` | Công khai; rate-limit BR-01 |
 | 3 | POST | `/api/v1/identity/auth/refresh` | Xoay vòng refresh token, cấp access token mới (F1-03) | Toàn hệ thống (interceptor HTTP client) | Công khai nhưng bắt buộc header `X-Requested-With` (`02-bd/security/F1_identity.md:16-18`); BR-02 |
-| 4 | POST | `/api/v1/identity/auth/logout` | Thu hồi refresh token hiện tại, xoá cookie (F1-04) | `SHR0101_auth`, mọi khung `_shell.md` (menu người dùng) | |
+| 4 | POST | `/api/v1/identity/auth/logout` | Thu hồi phiên hiện tại theo `sid` (access token, refresh family, WebSocket), xoá cookie (F1-04) | `SHR0101_auth`, mọi khung `_shell.md` (menu người dùng) | |
 | 5 | GET | `/api/v1/identity/auth/oauth/{provider}/redirect` | Bắt đầu luồng OAuth (`provider` = `github`\|`google`), trả URL kèm `state` (F1-15) | `SHR0101_auth` | Công khai; BR-03 |
 | 6 | GET | `/api/v1/identity/auth/oauth/{provider}/callback` | Nhận callback OAuth, đối chiếu `state`, tự liên kết hoặc tạo tài khoản (F1-15) | `SHR0101_auth` | Công khai; BR-03 |
 | 7 | POST | `/api/v1/identity/auth/password/forgot` | Gửi OTP quên mật khẩu (F1-17) | `SHR0101_auth` | Công khai; luôn trả 200 (chống dò email, `02-bd/security/F1_identity.md:45-46`) |
@@ -160,6 +162,7 @@ Mọi endpoint lớp của giảng viên kiểm ô `CLASS_MANAGEMENT:READ` cho �
 | `IDT-507` | 503 | Số liệu F4 hoặc danh sách bài giao F2 mà một lần đọc lớp cần không đọc được (hết hạn hoặc lỗi); thân lỗi không có chi tiết nguồn, không thay bằng số 0 (**Triển khai 2026-11-07**; **Owner chốt 2026-11-07**, A7; trước đó DD ghi "503 chung" chưa có mã) | #28, #29, #56 đến #59 (riêng #26 không trả mã này mà hạ thành `200` với số liệu `null`, xem ghi chú 2026-11-07) |
 | `IDT-508` | 503 | Lịch sử nộp bài F4 mà tệp xuất `scope=submissions` cần không đọc được (hết hạn 20 giây hoặc lỗi); thân lỗi không có chi tiết nguồn, hạn mức được trả lại bằng `DEL` khoá Redis để học viên thử lại ngay (**Triển khai 2026-11-07**; **Owner chốt 2026-11-07**, B7) | #16 (`scope=submissions`) |
 | `IDT-509` | 503 | Cổng đọc hội thoại phỏng vấn của F5 không trả lời (lỗi hoặc quá 5 giây) trong tệp xuất #17; thân lỗi không có chi tiết nguồn, hạn mức được trả lại để thử lại ngay (**Triển khai 2026-11-11**, F5-9; số mã `IDT-509` do code chọn, chờ owner xác nhận) | #17 |
+| `IDT-510` | 503 | Bảo vệ thử mật khẩu không khả dụng (Redis thiếu/lỗi/counter hỏng); fail closed, không phát phiên mới hoặc commit đổi mật khẩu | #2, #49, #13 (đổi mật khẩu đang có) |
 | `IDT-V28` | 400 | `provider` ở đường dẫn không phải `github` hoặc `google` (**Triển khai 2026-11-05**, `[SoT: Suy luận]`) | #5, #6 |
 
 ### 0.5. Ma trận phân quyền và vai trò — `ADM0202_permission_matrix.md`
@@ -554,3 +557,9 @@ ClassDeleted ghi `identity.outbox_events` cùng giao dịch xóa lớp; relay pu
 ## Bổ sung 2026-11-15 — Cập nhật đường dẫn gói sau khi gom thư mục con
 
 Mục `application/query` ở khối "Triển khai 2026-11-07" (F1-7) nay là `application/query/classes`. Mười nhóm gói của module: `02-bd/architecture/F1_identity.md` mục 1.1.
+
+### Quyết định bảo mật 2026-11-15 — logout theo phiên
+
+Chủ dự án chọn thu hồi ngay theo phiên. `POST /identity/auth/logout` giữ response 204 và xoá cookie; cookie refresh đã xoay vòng vẫn nhận diện được family. Khi có family hợp lệ, transaction ghi tombstone `identity.session_revocations` và thu hồi refresh family. Access token mang cùng `sid` bị từ chối 401 ở request tiếp theo dù JWT chưa hết hạn; phiên khác của cùng tài khoản còn hợp lệ. Token thiếu `sid` hoặc `sid` không phải UUID bị 401. Không đọc được nguồn xác thực PostgreSQL vẫn fail closed 503 IDT-503.
+
+Sau commit, sự kiện thu hồi đóng ngay socket của family trên instance hiện tại, kể cả socket đang im lặng. Outbound gate kiểm lại nguồn thu hồi trước MESSAGE. Việc đóng ngay socket đang im lặng trên nhiều instance cần cơ chế phát sự kiện liên instance; không suy rộng bằng chứng single-instance hiện tại. Không đảm bảo thu hồi request/frame đã được cho phép trước commit.

@@ -35,6 +35,80 @@ class ProblemGradingReadQueryHandlerTest {
   private final UUID testcaseId = UUID.randomUUID();
   private final String key = "problems/" + id + "/snapshots/7.json";
 
+  @Test
+  void publishedReadRejectsWithdrawnBeforeSpecificationValidationOrStorage() {
+    for (var invalid : List.of(data(0, null, null), data(1, "OTHER", null))) {
+      var withdrawn =
+          new GradingSpecData(
+              new GradingSpecData.Problem(id, false, true),
+              invalid.limits(),
+              invalid.versions(),
+              invalid.matching());
+      when(repository.findGradingSpec(id))
+          .thenReturn(
+              Optional.of(
+                  new GradingReadSnapshot(
+                      withdrawn, List.of(), new SnapshotMetadata(id, 7, key, 1, "a".repeat(64)))));
+      assertThat(handler.loadPublishedGradingSpec(id)).isEmpty();
+    }
+    verifyNoInteractions(storage);
+  }
+
+  @Test
+  void publishedReadKeepsAbsenceAndPublishedMetadata() {
+    when(repository.findGradingSpec(id)).thenReturn(Optional.empty());
+    assertThat(handler.loadPublishedGradingSpec(id)).isEmpty();
+    specification(new SnapshotMetadata(id, 7, key, 1, "a".repeat(64)));
+    when(storage.head(key)).thenReturn(123L);
+    var result = handler.loadPublishedGradingSpec(id).orElseThrow();
+    assertThat(result.data().problem().published()).isTrue();
+    assertThat(result.data().versions().specVersion()).isEqualTo(130);
+    assertThat(result.snapshotReady()).isTrue();
+  }
+
+  @Test
+  void publishedReadKeepsDataAndInfrastructureFailuresDistinctFromAbsence() {
+    for (var invalid :
+        List.of(data(0, null, null), data(1, "OTHER", null), data(1, "EPSILON", null))) {
+      when(repository.findGradingSpec(id))
+          .thenReturn(Optional.of(new GradingReadSnapshot(invalid, List.of(), null)));
+      failure(
+          () -> handler.loadPublishedGradingSpec(id), GradingDataException.Kind.SPEC_UNAVAILABLE);
+    }
+    when(repository.findGradingSpec(id)).thenThrow(new IllegalStateException("private SQL"));
+    failure(() -> handler.loadPublishedGradingSpec(id), GradingDataException.Kind.INFRASTRUCTURE);
+    verifyNoInteractions(storage);
+  }
+
+  @Test
+  void internalReadStillReturnsWithdrawnValidMetadataForAdmittedWorkerJobs() {
+    var valid = data(1, "EXACT", null);
+    var withdrawn =
+        new GradingSpecData(
+            new GradingSpecData.Problem(id, false, true),
+            valid.limits(),
+            valid.versions(),
+            valid.matching());
+    when(repository.findGradingSpec(id))
+        .thenReturn(
+            Optional.of(
+                new GradingReadSnapshot(
+                    withdrawn, List.of(), new SnapshotMetadata(id, 7, key, 1, "a".repeat(64)))));
+    when(storage.head(key)).thenReturn(123L);
+    var internal = handler.loadGradingSpec(id).orElseThrow();
+    assertThat(internal.data().problem().published()).isFalse();
+    assertThat(internal.snapshotReady()).isTrue();
+    assertThat(handler.loadPublishedGradingSpec(id)).isEmpty();
+    verify(storage).head(key);
+  }
+
+  @Test
+  void publishedReadNullArgumentDoesNotQueryDependencies() {
+    assertThatThrownBy(() -> handler.loadPublishedGradingSpec(null))
+        .isInstanceOf(NullPointerException.class);
+    verifyNoInteractions(repository, storage);
+  }
+
   private GradingSpecData data(int version, String matching, BigDecimal epsilon) {
     return new GradingSpecData(
         new GradingSpecData.Problem(id, true, true),

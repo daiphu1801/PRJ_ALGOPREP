@@ -1,12 +1,15 @@
 package com.algoprep.bootstrap.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -32,7 +35,8 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
  *       header (BD security section 1); that check belongs to its controller.
  *   <li><strong>No CORS configuration.</strong> The Next.js frontend is a different origin, but the
  *       allowed origins per environment are a decision, not a guessable value.
- *   <li><strong>{@code /actuator/prometheus} is public</strong> on purpose, see the comment below.
+ *   <li><strong>{@code /actuator/prometheus} uses a dedicated scrape bearer credential</strong>,
+ *       checked by a separate stateless filter chain. Public health exposes status only.
  * </ul>
  *
  * <p>The security headers, including the {@code Content-Security-Policy} that {@code
@@ -54,23 +58,42 @@ public class SecurityConfig {
   }
 
   @Bean
+  @Order(0)
+  public SecurityFilterChain managementFilterChain(
+      HttpSecurity http,
+      @Value("${algoprep.monitoring.bearer-token:${ALGOPREP_MONITORING_TOKEN:}}")
+          String scrapeToken)
+      throws Exception {
+    http.securityMatcher(actuatorBasePath + "/**")
+        .authorizeHttpRequests(
+            auth ->
+                auth.requestMatchers(
+                        HttpMethod.GET,
+                        actuatorBasePath + "/health",
+                        actuatorBasePath + "/health/**")
+                    .permitAll()
+                    .requestMatchers(HttpMethod.GET, actuatorBasePath + "/prometheus")
+                    .access(
+                        (authentication, context) ->
+                            new AuthorizationDecision(
+                                MonitoringToken.matches(
+                                    scrapeToken, context.getRequest().getHeader("Authorization"))))
+                    .anyRequest()
+                    .denyAll())
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .exceptionHandling(
+            errors ->
+                errors.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+        .headers(this::hardenHeaders);
+    return http.build();
+  }
+
+  @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.authorizeHttpRequests(
             auth ->
-                auth.requestMatchers(actuatorBasePath + "/health", actuatorBasePath + "/health/**")
-                    .permitAll()
-                    // /actuator/prometheus mo cong khai, va day la mot danh doi co y thuc, khong
-                    // phai bo sot. Prometheus trong 05-coding/docker-compose.yml scrape endpoint
-                    // nay va KHONG co co che xac thuc nao duoc cau hinh, nen neu de yeu cau dang
-                    // nhap thi giam sat chet trong im lang — 401 khong hien len o dau ngoai log cua
-                    // Prometheus. Mot bao dong khong bao gio keu con te hon khong co bao dong.
-                    //
-                    // NO KY THUAT: endpoint nay lo ten metric va so lieu JVM (khong lo du lieu
-                    // nguoi dung). Truoc khi trien khai that phai chuyen actuator sang mot cong
-                    // rieng (`management.server.port`) khong publish ra ngoai. Xem
-                    // 05-coding/backend/README.md muc no ky thuat.
-                    .requestMatchers(actuatorBasePath + "/prometheus")
-                    .permitAll()
+                auth
                     // Public auth endpoints of module identity (DD api F1 section 0.1). Each one
                     // enforces its own rules (rate limit, OTP, cookie plus header).
                     .requestMatchers("/api/v1/identity/auth/**")

@@ -3,6 +3,8 @@ package com.algoprep.bootstrap.judge;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.judge.domain.exception.ProblemGradingReadException;
@@ -29,6 +31,38 @@ class ProblemGradingReadBridgeTest {
       new ProblemGradingReadBridge(specs, samples, snapshots);
   private final UUID id = UUID.randomUUID();
   private final UUID testcaseId = UUID.randomUUID();
+
+  @Test
+  void publishedReadUsesDedicatedBoundaryAndPreservesAbsenceAndMetadata() {
+    when(specs.loadPublishedGradingSpec(id)).thenReturn(Optional.empty());
+    assertThat(bridge.loadPublishedGradingSpec(id)).isEmpty();
+    var data =
+        new GradingSpecData(
+            new GradingSpecData.Problem(id, true, true),
+            new GradingSpecData.Limits(1700, 384, 96, null),
+            new GradingSpecData.Versions(130, 7),
+            new GradingSpecData.Matching("EXACT", null));
+    when(specs.loadPublishedGradingSpec(id))
+        .thenReturn(Optional.of(new GradingSpecification(data, List.of(), true)));
+    var result = bridge.loadPublishedGradingSpec(id).orElseThrow();
+    assertThat(result.problem().published()).isTrue();
+    assertThat(result.problem().snapshotReady()).isTrue();
+    assertThat(result.versions().specVersion()).isEqualTo(130);
+    verify(specs, never()).loadGradingSpec(id);
+  }
+
+  @Test
+  void publishedReadDoesNotTurnDataOrInfrastructureFailureIntoNotFound() {
+    when(specs.loadPublishedGradingSpec(id))
+        .thenThrow(new GradingDataException(GradingDataException.Kind.SPEC_UNAVAILABLE))
+        .thenThrow(new GradingDataException(GradingDataException.Kind.INFRASTRUCTURE));
+    reason(
+        () -> bridge.loadPublishedGradingSpec(id),
+        ProblemGradingReadException.Reason.SPEC_UNAVAILABLE);
+    reason(
+        () -> bridge.loadPublishedGradingSpec(id),
+        ProblemGradingReadException.Reason.SANDBOX_FAULT);
+  }
 
   @Test
   void preservesAllMetadataUnitsPrecisionFlagsAndNullableQuota() {

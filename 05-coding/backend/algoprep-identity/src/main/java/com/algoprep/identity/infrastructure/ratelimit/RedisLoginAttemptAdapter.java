@@ -1,19 +1,19 @@
 package com.algoprep.identity.infrastructure.ratelimit;
 
 import com.algoprep.identity.application.ports.out.LoginAttemptPort;
+import com.algoprep.identity.domain.exception.RateLimitUnavailableException;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Component;
 
-/** BR-01: counter expires 15 minutes after the first failure; Redis errors fail open. */
+/**
+ * BR-01: counter expires 15 minutes after the first failure; unavailable protection fails closed.
+ */
 @Component
 class RedisLoginAttemptAdapter implements LoginAttemptPort {
-  private static final Logger LOG = LoggerFactory.getLogger(RedisLoginAttemptAdapter.class);
   private static final DefaultRedisScript<Long> FAILURE =
       new DefaultRedisScript<>(
           """
@@ -33,14 +33,19 @@ class RedisLoginAttemptAdapter implements LoginAttemptPort {
     try {
       StringRedisTemplate redis = redisProvider.getIfAvailable();
       if (redis == null) {
-        unavailable();
-        return false;
+        throw unavailable();
       }
       String count = redis.opsForValue().get(key(email, sourceIp));
-      return count != null && Long.parseLong(count) >= 5;
+      if (count == null) {
+        return false;
+      }
+      long failures = Long.parseLong(count);
+      if (failures < 0) {
+        throw unavailable();
+      }
+      return failures >= 5;
     } catch (DataAccessException | NumberFormatException ex) {
-      unavailable();
-      return false;
+      throw unavailable();
     }
   }
 
@@ -49,12 +54,14 @@ class RedisLoginAttemptAdapter implements LoginAttemptPort {
     try {
       StringRedisTemplate redis = redisProvider.getIfAvailable();
       if (redis == null) {
-        unavailable();
-        return;
+        throw unavailable();
       }
-      redis.execute(FAILURE, List.of(key(email, sourceIp)));
+      Long count = redis.execute(FAILURE, List.of(key(email, sourceIp)));
+      if (count == null || count < 1) {
+        throw unavailable();
+      }
     } catch (DataAccessException ex) {
-      unavailable();
+      throw unavailable();
     }
   }
 
@@ -63,12 +70,13 @@ class RedisLoginAttemptAdapter implements LoginAttemptPort {
     try {
       StringRedisTemplate redis = redisProvider.getIfAvailable();
       if (redis == null) {
-        unavailable();
-        return;
+        throw unavailable();
       }
-      redis.delete(key(email, sourceIp));
+      if (redis.delete(key(email, sourceIp)) == null) {
+        throw unavailable();
+      }
     } catch (DataAccessException ex) {
-      unavailable();
+      throw unavailable();
     }
   }
 
@@ -76,7 +84,7 @@ class RedisLoginAttemptAdapter implements LoginAttemptPort {
     return "identity:ratelimit:login:" + email + ":" + sourceIp;
   }
 
-  private static void unavailable() {
-    LOG.warn("Login rate limiting unavailable; allowing authentication without throttling (BR-01)");
+  private static RateLimitUnavailableException unavailable() {
+    return new RateLimitUnavailableException();
   }
 }

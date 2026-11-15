@@ -31,7 +31,7 @@ class GetEffectiveExecutionLimitsQueryHandler implements GetEffectiveExecutionLi
     }
     var spec =
         problems
-            .loadGradingSpec(problemId)
+            .loadPublishedGradingSpec(problemId)
             .filter(s -> s.problem().published())
             .orElseThrow(() -> new SubmissionAdmissionException("JDG-101"));
     var base = spec.limits();
