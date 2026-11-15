@@ -50,7 +50,7 @@ Bảng 2.1 ánh xạ đủ EVT Sheet 8.
 
 | EVT | API ID | Hook/mutation đích | Hiện trạng |
 | :--- | :--- | :--- | :--- |
-| EVT-1 tải | F1 #28 `GetClassStudentProfile`; F2 #49/§50 `ListClassAssignments?classId`; F4 #12 `ListStudentClassSubmissions` | `useClassStudentDetail`, `useClassAssignments` (chỉ mock; chế độ thật dùng `useClassAssignmentsPage` #49), `useStudentClassSubmissions` | #28, #49 và #12 thật; `useClassAssignments` tắt ở chế độ thật (2026-11-07) |
+| EVT-1 tải | F1 #28 `GetClassStudentProfile`; F2 #49/§50 `ListClassAssignments?classId`; F4 #12 `ListStudentClassSubmissions` | `useClassStudentDetail`, `useClassAssignmentsPage` (#49), `useStudentClassSubmissions` | #28, #49 và #12 thật; `useClassAssignments` đã xoá 2026-11-14 (trước đó tắt ở chế độ thật từ 2026-11-07) |
 | EVT-2 quay lại | Không API; `router.back()` với fallback màn lớp | Navigation | Có |
 | EVT-3 quản lý lớp | Không API; `/instructor/classes` | `next/link` | Có |
 | EVT-4 mở gỡ | Không API | dialog state | Có |

@@ -16,7 +16,7 @@
 | app | `app/(admin)/admin/interview-questions/{new,[questionId]/edit}/page.tsx`, route tương ứng dưới `(instructor)` | Truyền `questionId`, `basePath`, quyền A2/A3 |
 | views | `views/shared/interview-question-authoring/ui/interview-question-authoring-view.tsx` | Form bốn nhóm, trạng thái lưu, popup xem trước |
 | features | `features/author-interview-question/` | Bản nháp form, kiểm rubric, lưu/xoá mềm |
-| entities | `entities/interview-question/api/queries.ts`, `mutations.ts` | F6 §9–10, §20–23 |
+| entities | `entities/interview-question/api/admin-queries.ts` | F6 §9–10, §20–23 |
 | shared | `MarkdownEditor`, `NumberStepper`, `ConfirmDialog`, `PreviewDialog` | Dùng lại ở hai actor, dialog trả focus |
 
 ## 2. API tiêu thụ

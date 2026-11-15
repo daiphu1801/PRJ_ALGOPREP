@@ -2,6 +2,8 @@
 
 Xem [tổng quan TDD](overview.md) để tra ma trận 6 module, 40 màn, quy tắc QA và trạng thái truy vết trước khi sinh testcase.
 
+Tra cứu khi đọc report/API: [HTTP status và mã lỗi AlgoPrep](HTTP_STATUS_VA_MA_LOI_THAM_CHIEU.md) — giải thích 401/403/500 và các status khác, phân biệt với `errorCode`, tổng hợp mã theo module và cách đọc kết quả ZAP. Đây là tài liệu tham chiếu; hợp đồng chi tiết vẫn thuộc DD, không thay AC hay trạng thái nghiệm thu.
+
 TDD theo hai trục của BD và DD. Tiêu chí mô tả kết quả người nghiệm thu quan sát được; các chi tiết request, mã lỗi, bảng dữ liệu và thuật toán nằm ở DD. Test case QA có thể được thiết kế từ tài liệu trước khi code hoàn tất; mã test case được liên kết trong bảng truy vết khi kịch bản đã được review. Bằng chứng thực thi và trạng thái Đạt/Trượt chỉ ghi sau khi chạy trên hệ thống tương ứng.
 
 | Trục | Đường dẫn | Nguồn chính | Phạm vi |

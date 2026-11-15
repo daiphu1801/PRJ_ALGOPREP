@@ -43,7 +43,7 @@
 | app | `app/(student)/interview-bank/[questionId]/page.tsx` | Render view chi tiết; tên phân đoạn là `questionId` | Có [SoT: DEBT:2127] |
 | views | `views/users/interview-question-detail/ui/interview-question-detail-view.tsx` | Hiển thị nội dung, chuyển chế độ, gửi câu trả lời, lịch sử và xác nhận rời | Có, mock/local state |
 | views | `views/users/interview-question-detail/model/` | Adapter, query state, dirty guard và request generation | Đích; một số trạng thái hiện để trong component |
-| entities | `entities/interview-question/api/queries.ts` | F6 #3, #4, #5, #6, #7 | Có query stubs/mock; đổi theo API DTO |
+| entities | `entities/interview-question/api/learner-queries.ts` | F6 #3, #4, #5, #6, #7 | Có, nối API thật (`useLearnerQuestionDetail`, `useSubmitPracticeAnswer`, `usePracticeAttempts`) |
 | entities | `entities/interview-question/model/types.ts` | `InterviewQuestionDetail`, `RecallDto`, `AnswerAttempt` | Có; rà soát theo contract F6 |
 | shared | `ConfirmDialog`, `Markdown`, `Button`, `Textarea`, `toast`, `useT`, `useLocale` | Dùng chung; popup rời màn chỉ có “Ở lại” và “Rời màn” | `ConfirmDialog` có trong prototype [SoT: BD Sheet 8 EVT-11, EVT-12] |
 

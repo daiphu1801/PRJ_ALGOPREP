@@ -906,7 +906,7 @@ Không có tham số.
 | `items[].modelId` | string ≤ 50 | |
 | `items[].responseGuards` | object \| null | `{ citeLines, answerInVietnamese, noFullSolution }`, `null` với `GENERATE_TESTCASE` (`DB5:25`) |
 | `items[].responseSchemaVersion` | string | chỉ đọc |
-| `items[].maxTokens` | int | từ `application.yml`, **chỉ đọc**, không có đường ghi (`A301` dòng 445) |
+| `items[].maxTokens` | int | **chỉ đọc**, không có đường ghi (`A301` dòng 445). Bản dựng hiện lấy từ hằng số `CallOptions.maxTokensFor(feature)` (`05-coding/backend/algoprep-ai-review/src/main/java/com/algoprep/aireview/domain/model/CallOptions.java`), chưa đọc từ `application.yml` (lệch DD, ghi nhận 2026-11-14): 8192 cho `GENERATE_TESTCASE` (model suy luận dùng hết 4096 token làm nội dung rỗng, lỗi F-01), 4096 cho các tính năng còn lại |
 | `items[].publishedAt`, `createdAt` | ISO-8601 | màn lấy `createdAt` khi `publishedAt` null (`A301` dòng 443) |
 | `modelOptions[]` | string[] | bí danh `default` luôn đứng đầu, sau đó là các model dev khai báo ở `application.yml`, không trùng lặp (`DEC-2026-1010-admin-selects-model-per-prompt`, `DEC-2026-1112-ai-model-alias-default-always-allowed`) |
 

@@ -16,7 +16,7 @@
 | app | `app/(admin)/admin/interview-questions/page.tsx`, route tương ứng `(instructor)` | Truyền basePath, quyền quản lý danh mục cho A3 |
 | views | `views/shared/interview-question-management/ui/` | Bảng, popup chủ đề/độ khó/CSV, trạng thái từng vùng |
 | features | `features/manage-interview-questions/` | Tìm/lọc/chọn dòng, xác nhận xoá, parse CSV |
-| entities | `entities/interview-question/api/queries.ts`, `mutations.ts` | F6 §9–19, §23–24 |
+| entities | `entities/interview-question/api/admin-queries.ts` | F6 §9–19, §23–24 |
 | shared | `ManagedListDialog`, `DataTable`, `ConfirmDialog`, `FilePicker` | Dùng chung; không nhân đôi theo actor |
 
 ## 2. API tiêu thụ

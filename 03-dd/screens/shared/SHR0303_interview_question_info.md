@@ -18,7 +18,7 @@ Mã `IQ-%03d` lấy từ `displayNo` để hiển thị; không dùng mã làm r
 | app | `app/(admin)/admin/interview-questions/[questionId]/page.tsx`; `app/(instructor)/instructor/interview-questions/[questionId]/page.tsx` | Truyền UUID và `basePath` cố định theo khu |
 | views | `views/shared/interview-question-info/ui/interview-question-info-view.tsx` | Trang chỉ đọc: nội dung, câu đào sâu, rubric, phân loại, sử dụng |
 | features | `features/interview-question-preview/` | Popup “Xem như học viên” dùng cùng thành phần với `SHR0302`; tại màn này nhận dữ liệu **đã lưu** từ F6 §20 |
-| entities | `entities/interview-question/api/queries.ts`, `model/admin-question-adapter.ts` | Đọc chi tiết F6, danh mục chủ đề/mức; chuyển DTO thành props trình bày; bỏ dữ liệu mock theo mã `IQ-*` |
+| entities | `entities/interview-question/api/admin-queries.ts`, `model/admin-question-adapter.ts` | Đọc chi tiết F6, danh mục chủ đề/mức; chuyển DTO thành props trình bày; bỏ dữ liệu mock theo mã `IQ-*` |
 | shared | `MarkdownPreview`, `Card`, `Badge`, `QueryBoundary`, `EmptyState`, `ErrorState`, `Dialog` | Dùng lại, không nhân bản renderer Markdown/LaTeX |
 
 `InterviewQuestionInfoView` nhận `{ questionId: string; basePath: "/admin/interview-questions" | "/instructor/interview-questions" }`. `basePath` không đến từ URL nhập tay. Mã `IQ-*` chỉ tạo từ `displayNo` sau khi query thành công. [SoT: BD SHR0303 Sheet 3; `interview-question-info-view.tsx:27-45`]
@@ -27,7 +27,7 @@ Mã `IQ-%03d` lấy từ `displayNo` để hiển thị; không dùng mã làm r
 
 | Sự kiện | Endpoint | Việc làm |
 | :--- | :--- | :--- |
-| EVT-1 mở màn | F6 #20 `GET /admin/questions/{questionId}` | Đọc nội dung, rubric, `usage` trong **một** response; hiện mock `useInterviewQuestion` cần thay |
+| EVT-1 mở màn | F6 #20 `GET /admin/questions/{questionId}` | Đọc nội dung, rubric, `usage` trong **một** response; hook mock `useInterviewQuestion` đã xoá 2026-11-14, dùng `useAdminQuestion` |
 | EVT-1 nhãn chủ đề/mức | F6 §9 `GET /topics`, §10 `GET /levels` | Query danh mục dùng chung với `SHR0301`/`SHR0302`; không dùng hằng ba mức |
 | EVT-2 quay lại | Không gọi API | Link về `basePath` |
 | EVT-3 Sửa | Không gọi API | Link `{basePath}/{questionId}/edit`, chỉ khi có quyền `UPDATE` |
@@ -82,7 +82,7 @@ Dùng `interviewQuestionInfo.*`, nhãn chung `interviewQuestionAuthoring.*`, `ap
 
 ## 8. Nợ prototype và câu hỏi mở
 
-Prototype còn dùng mã `IQ-*` làm route, `useInterviewQuestion` đọc mock, nút Preview chưa gắn hành động, điểm mock `x / 5`. F6 §20 đã đóng các nguồn dữ liệu: `usage` có trong chi tiết, điểm thang phần trăm, `RETIRED` trả 404. Bản dựng cần nối UUID từ danh sách `SHR0301` và popup dùng chung với `SHR0302`; nợ ở `06-plan/PROTOTYPE_DEBT.md` chỉ gỡ sau khi nối API thật.
+Prototype còn dùng mã `IQ-*` làm route, hook mock `useInterviewQuestion` đã xoá 2026-11-14 (nay dùng `useAdminQuestion`), nút Preview chưa gắn hành động, điểm mock `x / 5`. F6 §20 đã đóng các nguồn dữ liệu: `usage` có trong chi tiết, điểm thang phần trăm, `RETIRED` trả 404. Bản dựng cần nối UUID từ danh sách `SHR0301` và popup dùng chung với `SHR0302`; nợ ở `06-plan/PROTOTYPE_DEBT.md` chỉ gỡ sau khi nối API thật.
 
 | # | Câu hỏi | Kết luận DD |
 | :--- | :--- | :--- |

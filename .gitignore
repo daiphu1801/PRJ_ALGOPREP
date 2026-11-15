@@ -152,3 +152,7 @@ temp/
 *.swp
 *.swo
 *~
+
+# Scanner caches written by SonarQube analysis
+.sonar/
+.scannerwork/

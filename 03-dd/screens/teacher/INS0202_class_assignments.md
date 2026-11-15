@@ -49,16 +49,16 @@ Bảng 2.1 nối mọi sự kiện Sheet 8 và luồng popup.
 
 | EVT | API ID | Hook/mutation đích | Hiện trạng |
 | :--- | :--- | :--- | :--- |
-| EVT-1 tải | F2 #50/§51 summary, F1 #19 classes, F2 #49/§50 assignments | `useAssignmentSummary`, `useInstructorClasses`, `useClassAssignments` | Mock |
+| EVT-1 tải | F2 #50/§51 summary, F1 #19 classes, F2 #49/§50 assignments | `useAssignmentSummary`, `useInstructorClasses`, `useClassAssignmentsPage` | Mock |
 | EVT-2 mở popup | F2 #51/§52 `ListAssignableProblems` sau khi chọn lớp; F2 #52/§53 khi bấm “Giao n bài” trong popup | `useAssignableProblems`, `assignProblemsToClass` | Mock |
-| EVT-3 tìm bài | F2 #49/§50, `q` debounce | `useClassAssignments` | Mock |
+| EVT-3 tìm bài | F2 #49/§50, `q` debounce | `useClassAssignmentsPage` | Mock |
 | EVT-4 lọc lớp | F2 #49/§50 với `classId` | như trên | Mock |
 | EVT-5 chi tiết bài | Không API; `/instructor/problems/{problemId}` | `next/link` | Có, cần đúng route |
 | EVT-6 mở gỡ | Không API | dialog state | Có |
 | EVT-7 chọn lớp gỡ | Không API | dialog state | Có |
 | EVT-8 xác nhận gỡ | F2 #53/§54 `RemoveClassAssignment` | `removeClassAssignment` | Mock |
 | EVT-9 huỷ gỡ | Không API | dialog state | Có |
-| EVT-10 đổi trang | F2 #49/§50 `page`, `pageSize=20` | `useClassAssignments` | Mock |
+| EVT-10 đổi trang | F2 #49/§50 `page`, `pageSize=20` | `useClassAssignmentsPage` | Mock |
 
 Không có realtime. F2 #49 trả một dòng mỗi bài và `assignedClasses`; màn không tự cộng `submissionCount` toàn hệ thống. Bài đã rút vẫn hiện nhãn, có thể gỡ nhưng không mở như bài công khai của người học. `[SoT: F2 §50; BD Sheet 9]`
 
@@ -139,4 +139,4 @@ Test đường thật: `real-assignments.test.ts` (13 ca), `views/teacher/class-
 
 `#50` (`realAssignmentSummary`) trả `avgAcRatePercent`; `AssignmentSummary.avgAcRate` hiển thị ở dòng mô tả đầu màn, sau số bài đã gán, khoá `classAssignments.header.avgAcRate` ("AC trung bình {value}"). `null` hoặc mock không có giá trị: "-". 0 thật: "0%". Test: `class-assignments-real.test.tsx` (hai ca: 62%, 0%, và dấu gạch khi `null`).
 
-Còn mở: chỗ đặt (dòng tóm tắt thay cho thẻ riêng của BD Sheet 5 B NO 4) `[SoT: Suy luận]`, chờ owner xem hình; `useClassAssignments()` không phân trang còn mock cho `INS0101` và `INS0204`.
+Còn mở: chỗ đặt (dòng tóm tắt thay cho thẻ riêng của BD Sheet 5 B NO 4) `[SoT: Suy luận]`, chờ owner xem hình; hook `useClassAssignments()` không phân trang đã xoá 2026-11-14 vì không còn nơi gọi (INS0101 và INS0204 không dùng).
