@@ -1,4 +1,4 @@
-package com.algoprep.judge.application.ports.in;
+package com.algoprep.judge.application.ports.in.execution;
 
 import java.util.UUID;
 

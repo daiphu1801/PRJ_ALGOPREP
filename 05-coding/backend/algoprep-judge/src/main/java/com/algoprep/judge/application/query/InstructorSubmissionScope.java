@@ -2,12 +2,12 @@ package com.algoprep.judge.application.query;
 
 import com.algoprep.common.exception.ServiceUnavailableException;
 import com.algoprep.judge.application.dto.ClassAssignment;
-import com.algoprep.judge.application.dto.SubmissionReads.Membership;
+import com.algoprep.judge.application.dto.read.SubmissionReads.Membership;
 import com.algoprep.judge.application.ports.out.ClassAssignmentReadPort;
 import com.algoprep.judge.application.ports.out.ClassScopeReadPort;
-import com.algoprep.judge.domain.model.InstructorReadFilter;
 import com.algoprep.judge.domain.model.InstructorReadWindow;
-import com.algoprep.judge.domain.model.ScopedSubmission;
+import com.algoprep.judge.domain.model.read.InstructorReadFilter;
+import com.algoprep.judge.domain.model.read.ScopedSubmission;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;

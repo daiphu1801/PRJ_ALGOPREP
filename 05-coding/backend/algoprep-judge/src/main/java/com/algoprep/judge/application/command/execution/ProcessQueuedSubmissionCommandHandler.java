@@ -1,11 +1,11 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.execution;
 
 import com.algoprep.common.exception.DomainRuleViolationException;
-import com.algoprep.judge.application.ports.in.ProcessQueuedSubmissionUseCase;
+import com.algoprep.judge.application.ports.in.execution.ProcessQueuedSubmissionUseCase;
 import com.algoprep.judge.domain.exception.ProblemGradingReadException;
 import com.algoprep.judge.domain.exception.WorkerPersistenceException;
-import com.algoprep.judge.domain.model.WorkerJob;
-import com.algoprep.judge.domain.model.WorkerRecords.FinishKind;
+import com.algoprep.judge.domain.model.execution.WorkerJob;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.FinishKind;
 import com.algoprep.judge.domain.ports.out.WorkerJobRepository;
 import com.algoprep.judge.domain.ports.out.WorkerLeasePort;
 import com.algoprep.judge.domain.ports.out.WorkerLeasePort.Lease;

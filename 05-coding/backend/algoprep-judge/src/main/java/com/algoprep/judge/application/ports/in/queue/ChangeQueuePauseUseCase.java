@@ -1,6 +1,6 @@
-package com.algoprep.judge.application.ports.in;
+package com.algoprep.judge.application.ports.in.queue;
 
-import com.algoprep.judge.application.dto.QueuePauseChange;
+import com.algoprep.judge.application.dto.queue.QueuePauseChange;
 
 /**
  * Trusted transaction kernel, not an admin authorization boundary. A future admin caller must check

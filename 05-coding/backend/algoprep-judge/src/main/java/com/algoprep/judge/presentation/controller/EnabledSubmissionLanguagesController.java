@@ -1,6 +1,6 @@
 package com.algoprep.judge.presentation.controller;
 
-import com.algoprep.judge.application.ports.in.GetEnabledJudgeLanguagesUseCase;
+import com.algoprep.judge.application.ports.in.language.GetEnabledJudgeLanguagesUseCase;
 import com.algoprep.judge.domain.exception.JudgeReadUnavailableException;
 import java.util.List;
 import org.springframework.security.access.prepost.PreAuthorize;

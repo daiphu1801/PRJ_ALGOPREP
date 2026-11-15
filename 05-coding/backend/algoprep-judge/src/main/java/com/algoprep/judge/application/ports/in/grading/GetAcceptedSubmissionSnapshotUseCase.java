@@ -1,4 +1,4 @@
-package com.algoprep.judge.application.ports.in;
+package com.algoprep.judge.application.ports.in.grading;
 
 import com.algoprep.judge.domain.model.AcceptedSubmissionSnapshot;
 import java.util.UUID;

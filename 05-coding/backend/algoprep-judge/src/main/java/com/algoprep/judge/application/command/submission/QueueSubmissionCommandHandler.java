@@ -1,10 +1,10 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.submission;
 
-import com.algoprep.judge.application.dto.QueuedSubmissionResult;
 import com.algoprep.judge.application.dto.RecordPendingSubmissionCommand;
-import com.algoprep.judge.application.ports.in.QueueSubmissionUseCase;
-import com.algoprep.judge.application.ports.in.RecordPendingSubmissionUseCase;
+import com.algoprep.judge.application.dto.submission.QueuedSubmissionResult;
 import com.algoprep.judge.application.ports.in.ResolveQueueFailureUseCase;
+import com.algoprep.judge.application.ports.in.submission.QueueSubmissionUseCase;
+import com.algoprep.judge.application.ports.in.submission.RecordPendingSubmissionUseCase;
 import com.algoprep.judge.application.ports.out.SubmissionQueuePort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

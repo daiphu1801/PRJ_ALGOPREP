@@ -10,12 +10,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.judge.application.dto.LearnerListLimit;
-import com.algoprep.judge.application.dto.SubmissionReads.Problem;
+import com.algoprep.judge.application.dto.read.LearnerListLimit;
+import com.algoprep.judge.application.dto.read.SubmissionReads.Problem;
 import com.algoprep.judge.application.ports.out.CurrentMetricsStudentPort;
 import com.algoprep.judge.application.ports.out.ProblemSummaryReadPort;
 import com.algoprep.judge.domain.exception.JudgeReadUnavailableException;
-import com.algoprep.judge.domain.model.LearnerSubmissionCandidate;
+import com.algoprep.judge.domain.model.read.LearnerSubmissionCandidate;
 import com.algoprep.judge.domain.ports.out.LearnerSubmissionListRepository;
 import java.time.Instant;
 import java.util.List;

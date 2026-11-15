@@ -8,8 +8,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.judge.domain.model.AdminSubmissionStats.LevelProblems;
-import com.algoprep.judge.domain.model.AdminSubmissionStats.Totals;
+import com.algoprep.judge.domain.model.metrics.AdminSubmissionStats.LevelProblems;
+import com.algoprep.judge.domain.model.metrics.AdminSubmissionStats.Totals;
 import com.algoprep.judge.domain.ports.out.AdminSubmissionStatsRepository;
 import java.time.Instant;
 import java.time.LocalDate;

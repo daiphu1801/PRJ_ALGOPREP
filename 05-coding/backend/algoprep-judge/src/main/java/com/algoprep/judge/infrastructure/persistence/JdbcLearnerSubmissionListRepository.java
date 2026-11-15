@@ -1,6 +1,6 @@
 package com.algoprep.judge.infrastructure.persistence;
 
-import com.algoprep.judge.domain.model.LearnerSubmissionCandidate;
+import com.algoprep.judge.domain.model.read.LearnerSubmissionCandidate;
 import com.algoprep.judge.domain.ports.out.LearnerSubmissionListRepository;
 import java.sql.ResultSet;
 import java.sql.SQLException;

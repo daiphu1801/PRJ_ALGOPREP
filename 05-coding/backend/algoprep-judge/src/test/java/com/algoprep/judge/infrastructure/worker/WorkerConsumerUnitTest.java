@@ -9,9 +9,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.judge.application.dto.WorkerScaling;
-import com.algoprep.judge.application.ports.in.ProcessQueuedSubmissionUseCase;
-import com.algoprep.judge.domain.model.WorkerControl;
+import com.algoprep.judge.application.dto.execution.WorkerScaling;
+import com.algoprep.judge.application.ports.in.execution.ProcessQueuedSubmissionUseCase;
+import com.algoprep.judge.domain.model.execution.WorkerControl;
 import com.algoprep.judge.domain.ports.out.WorkerJobRepository;
 import com.algoprep.judge.domain.ports.out.WorkerLeasePort;
 import com.algoprep.judge.domain.ports.out.WorkerLeasePort.Lease;

@@ -1,11 +1,11 @@
 package com.algoprep.judge.application.query;
 
-import com.algoprep.judge.application.ports.in.GetEnabledJudgeLanguagesUseCase;
-import com.algoprep.judge.application.ports.in.GetGeneratorSandboxLimitsUseCase;
-import com.algoprep.judge.application.ports.in.GetLanguageMultipliersUseCase;
+import com.algoprep.judge.application.ports.in.grading.GetGeneratorSandboxLimitsUseCase;
+import com.algoprep.judge.application.ports.in.language.GetEnabledJudgeLanguagesUseCase;
+import com.algoprep.judge.application.ports.in.language.GetLanguageMultipliersUseCase;
 import com.algoprep.judge.domain.exception.JudgeReadUnavailableException;
-import com.algoprep.judge.domain.model.GeneratorSandboxLimits;
-import com.algoprep.judge.domain.model.LanguageMultipliers;
+import com.algoprep.judge.domain.model.grading.GeneratorSandboxLimits;
+import com.algoprep.judge.domain.model.language.LanguageMultipliers;
 import com.algoprep.judge.domain.ports.out.JudgeConfigRepository;
 import java.util.List;
 import org.springframework.stereotype.Service;

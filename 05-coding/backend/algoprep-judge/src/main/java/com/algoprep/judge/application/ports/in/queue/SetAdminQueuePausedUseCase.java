@@ -1,6 +1,6 @@
-package com.algoprep.judge.application.ports.in;
+package com.algoprep.judge.application.ports.in.queue;
 
-import com.algoprep.judge.application.dto.AdminQueueFlag;
+import com.algoprep.judge.application.dto.queue.AdminQueueFlag;
 import java.util.UUID;
 
 /** API #16: optimistic pause/resume, heartbeat refresh and REQUIRED audit. */

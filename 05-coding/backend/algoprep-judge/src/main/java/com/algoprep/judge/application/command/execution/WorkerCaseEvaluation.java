@@ -1,13 +1,13 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.execution;
 
 import com.algoprep.judge.application.dto.ExecutionModels.Model;
 import com.algoprep.judge.application.dto.ExecutionModels.RunResult;
 import com.algoprep.judge.application.dto.ExecutionModels.Status;
 import com.algoprep.judge.application.dto.GradingTestcase;
 import com.algoprep.judge.application.ports.out.HarnessEvaluationPort;
-import com.algoprep.judge.domain.model.WorkerRecords.TestcaseWrite;
-import com.algoprep.judge.domain.model.WorkerRecords.Token;
-import com.algoprep.judge.domain.model.WrapperDebugBudget;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.TestcaseWrite;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.Token;
+import com.algoprep.judge.domain.model.execution.WrapperDebugBudget;
 import org.springframework.stereotype.Component;
 
 @Component

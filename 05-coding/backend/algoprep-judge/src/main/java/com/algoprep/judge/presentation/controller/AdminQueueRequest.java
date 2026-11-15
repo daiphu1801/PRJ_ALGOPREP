@@ -1,6 +1,6 @@
 package com.algoprep.judge.presentation.controller;
 
-import com.algoprep.judge.application.dto.QueueSettingsChange;
+import com.algoprep.judge.application.dto.queue.QueueSettingsChange;
 import com.algoprep.judge.domain.exception.AdminConfigException;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.DeserializationFeature;

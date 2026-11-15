@@ -1,10 +1,10 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.execution;
 
 import com.algoprep.judge.application.dto.ExecutionModels.Limits;
-import com.algoprep.judge.application.dto.GradingTestcaseSnapshot;
-import com.algoprep.judge.application.dto.WorkerPreparation.Prepared;
-import com.algoprep.judge.domain.model.WorkerJob;
-import com.algoprep.judge.domain.model.WorkerSettings;
+import com.algoprep.judge.application.dto.execution.GradingTestcaseSnapshot;
+import com.algoprep.judge.application.dto.execution.WorkerPreparation.Prepared;
+import com.algoprep.judge.domain.model.execution.WorkerJob;
+import com.algoprep.judge.domain.model.execution.WorkerSettings;
 import com.algoprep.judge.domain.ports.out.WorkerLeasePort.Lease;
 
 record WorkerExecutionRequest(

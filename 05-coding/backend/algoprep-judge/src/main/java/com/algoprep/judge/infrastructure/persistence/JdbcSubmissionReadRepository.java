@@ -1,7 +1,7 @@
 package com.algoprep.judge.infrastructure.persistence;
 
-import com.algoprep.judge.domain.model.HistoryWindow;
-import com.algoprep.judge.domain.model.SubmissionReadState;
+import com.algoprep.judge.domain.model.read.HistoryWindow;
+import com.algoprep.judge.domain.model.read.SubmissionReadState;
 import com.algoprep.judge.domain.ports.out.SubmissionReadRepository;
 import java.sql.ResultSet;
 import java.sql.SQLException;

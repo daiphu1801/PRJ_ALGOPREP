@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.judge.domain.model.AdminQueueSettings;
-import com.algoprep.judge.domain.model.AdminQueueState;
+import com.algoprep.judge.domain.model.queue.AdminQueueSettings;
+import com.algoprep.judge.domain.model.queue.AdminQueueState;
 import com.algoprep.judge.domain.ports.out.AdminQueueRepository;
 import java.time.Instant;
 import org.junit.jupiter.api.Test;

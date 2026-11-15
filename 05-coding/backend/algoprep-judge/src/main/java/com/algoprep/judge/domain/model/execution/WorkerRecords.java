@@ -1,6 +1,6 @@
-package com.algoprep.judge.domain.model;
+package com.algoprep.judge.domain.model.execution;
 
-import com.algoprep.judge.domain.model.PendingSubmission.Owner;
+import com.algoprep.judge.domain.model.submission.PendingSubmission.Owner;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Objects;

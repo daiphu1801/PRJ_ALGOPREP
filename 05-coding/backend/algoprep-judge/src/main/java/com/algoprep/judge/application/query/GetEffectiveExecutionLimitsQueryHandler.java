@@ -1,7 +1,7 @@
 package com.algoprep.judge.application.query;
 
-import com.algoprep.judge.application.dto.ExecutionLimitsView;
-import com.algoprep.judge.application.ports.in.GetEffectiveExecutionLimitsUseCase;
+import com.algoprep.judge.application.dto.grading.ExecutionLimitsView;
+import com.algoprep.judge.application.ports.in.grading.GetEffectiveExecutionLimitsUseCase;
 import com.algoprep.judge.application.ports.out.ProblemGradingSpecPort;
 import com.algoprep.judge.domain.exception.SubmissionAdmissionException;
 import com.algoprep.judge.domain.ports.out.SampleSettingsRepository;

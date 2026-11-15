@@ -1,7 +1,7 @@
 package com.algoprep.judge.infrastructure.worker;
 
-import com.algoprep.judge.application.dto.WorkerScaling;
-import com.algoprep.judge.application.ports.in.ProcessQueuedSubmissionUseCase;
+import com.algoprep.judge.application.dto.execution.WorkerScaling;
+import com.algoprep.judge.application.ports.in.execution.ProcessQueuedSubmissionUseCase;
 import com.algoprep.judge.domain.ports.out.WorkerJobRepository;
 import com.algoprep.judge.domain.ports.out.WorkerLeasePort;
 import org.springframework.amqp.core.AcknowledgeMode;

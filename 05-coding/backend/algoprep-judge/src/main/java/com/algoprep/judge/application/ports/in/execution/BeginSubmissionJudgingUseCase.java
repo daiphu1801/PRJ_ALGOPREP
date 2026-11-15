@@ -1,6 +1,6 @@
-package com.algoprep.judge.application.ports.in;
+package com.algoprep.judge.application.ports.in.execution;
 
-import com.algoprep.judge.domain.model.WorkerRecords.State;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.State;
 import java.util.Optional;
 import java.util.UUID;
 

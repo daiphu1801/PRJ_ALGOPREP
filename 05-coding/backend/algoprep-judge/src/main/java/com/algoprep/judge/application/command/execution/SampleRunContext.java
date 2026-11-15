@@ -1,16 +1,16 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.execution;
 
 import com.algoprep.judge.application.dto.ExecutionModels.Limits;
 import com.algoprep.judge.application.dto.GradingSpecification;
 import com.algoprep.judge.application.dto.GradingTestcase;
-import com.algoprep.judge.application.dto.SampleRun.Command;
-import com.algoprep.judge.application.dto.SampleRun.Preparation;
-import com.algoprep.judge.application.dto.WorkerPreparation.Prepared;
+import com.algoprep.judge.application.dto.execution.SampleRun.Command;
+import com.algoprep.judge.application.dto.execution.SampleRun.Preparation;
+import com.algoprep.judge.application.dto.execution.WorkerPreparation.Prepared;
 import com.algoprep.judge.application.ports.out.ProblemGradingSpecPort;
 import com.algoprep.judge.application.ports.out.SampleProgramPort;
 import com.algoprep.judge.domain.exception.SampleRunException;
 import com.algoprep.judge.domain.exception.SubmissionAdmissionException;
-import com.algoprep.judge.domain.model.SampleSettings;
+import com.algoprep.judge.domain.model.execution.SampleSettings;
 import com.algoprep.judge.domain.ports.out.SampleSettingsRepository;
 import java.util.List;
 import java.util.UUID;

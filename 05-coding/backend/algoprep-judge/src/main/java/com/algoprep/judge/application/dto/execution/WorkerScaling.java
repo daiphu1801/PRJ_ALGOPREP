@@ -1,6 +1,6 @@
-package com.algoprep.judge.application.dto;
+package com.algoprep.judge.application.dto.execution;
 
-import com.algoprep.judge.domain.model.WorkerControl;
+import com.algoprep.judge.domain.model.execution.WorkerControl;
 
 /** Stateful counters are private to the one elected worker process. */
 public final class WorkerScaling {

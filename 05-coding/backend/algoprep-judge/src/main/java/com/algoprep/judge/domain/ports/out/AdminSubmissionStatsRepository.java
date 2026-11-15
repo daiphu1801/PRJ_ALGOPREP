@@ -1,10 +1,10 @@
 package com.algoprep.judge.domain.ports.out;
 
-import com.algoprep.judge.domain.model.AdminSubmissionStats.DayCount;
-import com.algoprep.judge.domain.model.AdminSubmissionStats.LanguageDay;
-import com.algoprep.judge.domain.model.AdminSubmissionStats.MonthCount;
-import com.algoprep.judge.domain.model.AdminSubmissionStats.ProblemCount;
-import com.algoprep.judge.domain.model.AdminSubmissionStats.Totals;
+import com.algoprep.judge.domain.model.metrics.AdminSubmissionStats.DayCount;
+import com.algoprep.judge.domain.model.metrics.AdminSubmissionStats.LanguageDay;
+import com.algoprep.judge.domain.model.metrics.AdminSubmissionStats.MonthCount;
+import com.algoprep.judge.domain.model.metrics.AdminSubmissionStats.ProblemCount;
+import com.algoprep.judge.domain.model.metrics.AdminSubmissionStats.Totals;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;

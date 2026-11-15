@@ -3,10 +3,10 @@ package com.algoprep.judge.infrastructure.persistence;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.algoprep.judge.domain.model.AdminLanguageConfig;
-import com.algoprep.judge.domain.model.AdminLanguageConfig.Defaults;
-import com.algoprep.judge.domain.model.AdminLanguageConfig.Language;
-import com.algoprep.judge.domain.model.AdminLanguageConfig.Sandbox;
+import com.algoprep.judge.domain.model.language.AdminLanguageConfig;
+import com.algoprep.judge.domain.model.language.AdminLanguageConfig.Defaults;
+import com.algoprep.judge.domain.model.language.AdminLanguageConfig.Language;
+import com.algoprep.judge.domain.model.language.AdminLanguageConfig.Sandbox;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.Instant;

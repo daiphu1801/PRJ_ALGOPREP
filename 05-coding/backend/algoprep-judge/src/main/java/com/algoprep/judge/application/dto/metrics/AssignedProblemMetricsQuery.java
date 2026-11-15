@@ -1,6 +1,6 @@
-package com.algoprep.judge.application.dto;
+package com.algoprep.judge.application.dto.metrics;
 
-import com.algoprep.judge.domain.model.AssignmentPeriod;
+import com.algoprep.judge.domain.model.metrics.AssignmentPeriod;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;

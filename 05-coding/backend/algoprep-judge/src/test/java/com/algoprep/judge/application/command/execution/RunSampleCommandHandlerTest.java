@@ -1,4 +1,4 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.execution;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -20,15 +20,15 @@ import com.algoprep.judge.application.dto.ExecutionModels.TestcaseResult;
 import com.algoprep.judge.application.dto.ExecutionModels.Verdict;
 import com.algoprep.judge.application.dto.GradingSpecification;
 import com.algoprep.judge.application.dto.GradingTestcase;
-import com.algoprep.judge.application.dto.SampleRun.Command;
-import com.algoprep.judge.application.dto.SampleRun.Reservation;
-import com.algoprep.judge.application.dto.WorkerPreparation.Prepared;
-import com.algoprep.judge.application.ports.in.EvaluateProgramUseCase;
+import com.algoprep.judge.application.dto.execution.SampleRun.Command;
+import com.algoprep.judge.application.dto.execution.SampleRun.Reservation;
+import com.algoprep.judge.application.dto.execution.WorkerPreparation.Prepared;
+import com.algoprep.judge.application.ports.in.execution.EvaluateProgramUseCase;
 import com.algoprep.judge.application.ports.out.ProblemGradingSpecPort;
 import com.algoprep.judge.application.ports.out.SampleProgramPort;
 import com.algoprep.judge.application.ports.out.SampleQuotaPort;
-import com.algoprep.judge.domain.model.SampleSettings;
-import com.algoprep.judge.domain.model.WorkerSettings;
+import com.algoprep.judge.domain.model.execution.SampleSettings;
+import com.algoprep.judge.domain.model.execution.WorkerSettings;
 import com.algoprep.judge.domain.ports.out.SampleSettingsRepository;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;

@@ -1,4 +1,4 @@
-package com.algoprep.judge.domain.model;
+package com.algoprep.judge.domain.model.outbox;
 
 import java.util.UUID;
 

@@ -1,4 +1,4 @@
-package com.algoprep.judge.application.dto;
+package com.algoprep.judge.application.dto.submission;
 
 import java.time.Instant;
 import java.util.UUID;

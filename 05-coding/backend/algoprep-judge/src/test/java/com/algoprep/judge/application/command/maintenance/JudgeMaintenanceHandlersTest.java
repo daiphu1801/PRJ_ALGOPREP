@@ -1,4 +1,4 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.maintenance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -8,8 +8,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.judge.application.dto.QueuePauseChange;
-import com.algoprep.judge.domain.model.WorkerRecords.Finished;
+import com.algoprep.judge.application.command.FinalizeSubmissionCommandHandler;
+import com.algoprep.judge.application.command.WorkerTransactions;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.Finished;
 import com.algoprep.judge.domain.ports.out.JudgeMaintenanceRepository;
 import java.util.List;
 import java.util.Optional;
@@ -45,9 +46,9 @@ class JudgeMaintenanceHandlersTest {
         .isEqualTo(1);
     verify(finalizer)
         .finishLocked(
-            new com.algoprep.judge.domain.model.WorkerRecords.FinishCommand(
+            new com.algoprep.judge.domain.model.execution.WorkerRecords.FinishCommand(
                 stale,
-                com.algoprep.judge.domain.model.WorkerRecords.FinishKind.SYSTEM_ERROR,
+                com.algoprep.judge.domain.model.execution.WorkerRecords.FinishKind.SYSTEM_ERROR,
                 "WORKER_TIMEOUT",
                 null));
   }
@@ -73,24 +74,6 @@ class JudgeMaintenanceHandlersTest {
         .isZero();
     verify(repository, never()).deletePublished(90, 5000);
     verify(repository, never()).deleteTestcaseDetails(90, 5000);
-  }
-
-  @Test
-  void resumeRefreshesOnlyOnARealPausedToOpenTransition() {
-    var handler = new ChangeQueuePauseCommandHandler(repository);
-    when(repository.lockQueuePaused()).thenReturn(true, false, false);
-    assertThat(handler.change(true, false)).isEqualTo(QueuePauseChange.CHANGED);
-    assertThat(handler.change(false, false)).isEqualTo(QueuePauseChange.UNCHANGED);
-    assertThat(handler.change(true, false)).isEqualTo(QueuePauseChange.CONFLICT);
-    verify(repository).refreshPendingHeartbeat();
-    verify(repository).changeQueuePaused(false);
-  }
-
-  @Test
-  void pauseDoesNotRewritePendingHeartbeat() {
-    assertThat(new ChangeQueuePauseCommandHandler(repository).change(false, true))
-        .isEqualTo(QueuePauseChange.CHANGED);
-    verify(repository, never()).refreshPendingHeartbeat();
   }
 
   @Test

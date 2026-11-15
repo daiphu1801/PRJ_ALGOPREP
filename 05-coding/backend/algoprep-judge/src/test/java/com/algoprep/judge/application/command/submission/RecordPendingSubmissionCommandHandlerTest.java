@@ -1,4 +1,4 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.submission;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -14,8 +14,8 @@ import com.algoprep.judge.application.dto.RecordPendingSubmissionCommand;
 import com.algoprep.judge.domain.exception.ProblemGradingReadException;
 import com.algoprep.judge.domain.exception.SubmissionAdmissionException;
 import com.algoprep.judge.domain.exception.SubmissionAdmissionUnavailableException;
-import com.algoprep.judge.domain.model.PendingSubmission;
-import com.algoprep.judge.domain.model.PendingSubmission.Owner;
+import com.algoprep.judge.domain.model.submission.PendingSubmission;
+import com.algoprep.judge.domain.model.submission.PendingSubmission.Owner;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

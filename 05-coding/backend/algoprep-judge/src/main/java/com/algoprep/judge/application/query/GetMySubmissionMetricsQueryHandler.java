@@ -1,12 +1,12 @@
 package com.algoprep.judge.application.query;
 
 import com.algoprep.common.exception.InvalidRequestException;
-import com.algoprep.judge.application.dto.MySubmissionMetricQuery;
-import com.algoprep.judge.application.dto.MySubmissionMetrics;
-import com.algoprep.judge.application.dto.MySubmissionMetrics.TopicMetric;
-import com.algoprep.judge.application.dto.MySubmissionMetrics.TopicRatio;
-import com.algoprep.judge.application.ports.in.GetMySubmissionMetricsUseCase;
-import com.algoprep.judge.application.ports.in.GetMyTopicSubmissionMetricsUseCase;
+import com.algoprep.judge.application.dto.metrics.MySubmissionMetricQuery;
+import com.algoprep.judge.application.dto.metrics.MySubmissionMetrics;
+import com.algoprep.judge.application.dto.metrics.MySubmissionMetrics.TopicMetric;
+import com.algoprep.judge.application.dto.metrics.MySubmissionMetrics.TopicRatio;
+import com.algoprep.judge.application.ports.in.metrics.GetMySubmissionMetricsUseCase;
+import com.algoprep.judge.application.ports.in.metrics.GetMyTopicSubmissionMetricsUseCase;
 import com.algoprep.judge.application.ports.out.CurrentMetricsStudentPort;
 import com.algoprep.judge.application.ports.out.ProblemTopicReadPort;
 import com.algoprep.judge.domain.exception.MySubmissionMetricsUnavailableException;

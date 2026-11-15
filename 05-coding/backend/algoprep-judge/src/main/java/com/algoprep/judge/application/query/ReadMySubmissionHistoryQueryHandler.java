@@ -1,14 +1,14 @@
 package com.algoprep.judge.application.query;
 
 import com.algoprep.common.exception.InvalidRequestException;
-import com.algoprep.judge.application.dto.SubmissionReads.Filters;
-import com.algoprep.judge.application.dto.SubmissionReads.History;
-import com.algoprep.judge.application.dto.SubmissionReads.Page;
-import com.algoprep.judge.application.dto.SubmissionReads.Summary;
-import com.algoprep.judge.application.ports.in.ListMyProblemSubmissionsUseCase;
-import com.algoprep.judge.application.ports.in.ListMySubmissionHistoryUseCase;
+import com.algoprep.judge.application.dto.read.SubmissionReads.Filters;
+import com.algoprep.judge.application.dto.read.SubmissionReads.History;
+import com.algoprep.judge.application.dto.read.SubmissionReads.Page;
+import com.algoprep.judge.application.dto.read.SubmissionReads.Summary;
+import com.algoprep.judge.application.ports.in.read.ListMyProblemSubmissionsUseCase;
+import com.algoprep.judge.application.ports.in.read.ListMySubmissionHistoryUseCase;
 import com.algoprep.judge.application.ports.out.ProblemSummaryReadPort;
-import com.algoprep.judge.domain.model.HistoryWindow;
+import com.algoprep.judge.domain.model.read.HistoryWindow;
 import com.algoprep.judge.domain.ports.out.SubmissionReadRepository;
 import java.util.List;
 import java.util.Set;

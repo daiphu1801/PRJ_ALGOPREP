@@ -1,10 +1,10 @@
 package com.algoprep.judge.application.query;
 
-import com.algoprep.judge.application.dto.QueueMonitorBatch;
-import com.algoprep.judge.application.dto.QueueMonitorBatch.InfraSummary;
-import com.algoprep.judge.application.ports.in.GetInfraSummaryUseCase;
-import com.algoprep.judge.application.ports.in.GetQueueMonitorBatchUseCase;
-import com.algoprep.judge.application.ports.in.GetQueueSnapshotUseCase;
+import com.algoprep.judge.application.dto.queue.QueueMonitorBatch;
+import com.algoprep.judge.application.dto.queue.QueueMonitorBatch.InfraSummary;
+import com.algoprep.judge.application.ports.in.infra.GetInfraSummaryUseCase;
+import com.algoprep.judge.application.ports.in.queue.GetQueueMonitorBatchUseCase;
+import com.algoprep.judge.application.ports.in.queue.GetQueueSnapshotUseCase;
 import com.algoprep.judge.domain.ports.out.QueueMonitorRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;

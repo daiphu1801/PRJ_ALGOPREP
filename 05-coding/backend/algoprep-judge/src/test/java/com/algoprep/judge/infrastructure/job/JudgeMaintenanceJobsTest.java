@@ -6,9 +6,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.judge.application.ports.in.PurgePublishedJudgeEventsUseCase;
-import com.algoprep.judge.application.ports.in.PurgeTestcaseDetailsUseCase;
-import com.algoprep.judge.application.ports.in.SweepStaleSubmissionsUseCase;
+import com.algoprep.judge.application.ports.in.maintenance.PurgePublishedJudgeEventsUseCase;
+import com.algoprep.judge.application.ports.in.maintenance.PurgeTestcaseDetailsUseCase;
+import com.algoprep.judge.application.ports.in.maintenance.SweepStaleSubmissionsUseCase;
 import org.junit.jupiter.api.Test;
 
 class JudgeMaintenanceJobsTest {

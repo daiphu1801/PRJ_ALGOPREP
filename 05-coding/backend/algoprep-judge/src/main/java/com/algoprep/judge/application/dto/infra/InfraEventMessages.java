@@ -1,7 +1,7 @@
-package com.algoprep.judge.application.dto;
+package com.algoprep.judge.application.dto.infra;
 
-import com.algoprep.judge.domain.model.InfraEvents.Event;
-import com.algoprep.judge.domain.model.InfraEvents.Row;
+import com.algoprep.judge.domain.model.infra.InfraEvents.Event;
+import com.algoprep.judge.domain.model.infra.InfraEvents.Row;
 import java.util.Map;
 
 /** Application-owned templates also parameterize SQL keyword matching of the displayed text. */

@@ -1,4 +1,4 @@
-package com.algoprep.judge.domain.model;
+package com.algoprep.judge.domain.model.execution;
 
 import java.math.BigDecimal;
 

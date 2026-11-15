@@ -1,6 +1,6 @@
-package com.algoprep.judge.application.dto;
+package com.algoprep.judge.application.dto.grading;
 
-import com.algoprep.judge.domain.model.SampleSettings.Effective;
+import com.algoprep.judge.domain.model.execution.SampleSettings.Effective;
 import java.util.List;
 import java.util.UUID;
 

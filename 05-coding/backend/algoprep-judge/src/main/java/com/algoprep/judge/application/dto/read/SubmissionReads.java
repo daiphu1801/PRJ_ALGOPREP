@@ -1,5 +1,6 @@
-package com.algoprep.judge.application.dto;
+package com.algoprep.judge.application.dto.read;
 
+import com.algoprep.judge.application.dto.ClassAssignment;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;

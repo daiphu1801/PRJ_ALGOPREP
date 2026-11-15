@@ -1,17 +1,17 @@
 package com.algoprep.judge.application.query;
 
-import com.algoprep.judge.application.dto.LearnerListLimit;
-import com.algoprep.judge.application.dto.LearnerSubmissionLists.AcceptedItem;
-import com.algoprep.judge.application.dto.LearnerSubmissionLists.AcceptedProblem;
-import com.algoprep.judge.application.dto.LearnerSubmissionLists.InProgressItem;
-import com.algoprep.judge.application.dto.LearnerSubmissionLists.ProgressProblem;
-import com.algoprep.judge.application.dto.SubmissionReads.Problem;
-import com.algoprep.judge.application.ports.in.ListMyAcceptedSubmissionsUseCase;
-import com.algoprep.judge.application.ports.in.ListMyInProgressProblemsUseCase;
+import com.algoprep.judge.application.dto.read.LearnerListLimit;
+import com.algoprep.judge.application.dto.read.LearnerSubmissionLists.AcceptedItem;
+import com.algoprep.judge.application.dto.read.LearnerSubmissionLists.AcceptedProblem;
+import com.algoprep.judge.application.dto.read.LearnerSubmissionLists.InProgressItem;
+import com.algoprep.judge.application.dto.read.LearnerSubmissionLists.ProgressProblem;
+import com.algoprep.judge.application.dto.read.SubmissionReads.Problem;
+import com.algoprep.judge.application.ports.in.read.ListMyAcceptedSubmissionsUseCase;
+import com.algoprep.judge.application.ports.in.read.ListMyInProgressProblemsUseCase;
 import com.algoprep.judge.application.ports.out.CurrentMetricsStudentPort;
 import com.algoprep.judge.application.ports.out.ProblemSummaryReadPort;
 import com.algoprep.judge.domain.exception.JudgeReadUnavailableException;
-import com.algoprep.judge.domain.model.LearnerSubmissionCandidate;
+import com.algoprep.judge.domain.model.read.LearnerSubmissionCandidate;
 import com.algoprep.judge.domain.ports.out.LearnerSubmissionListRepository;
 import java.util.ArrayList;
 import java.util.List;

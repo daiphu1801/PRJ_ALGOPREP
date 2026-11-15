@@ -1,7 +1,7 @@
-package com.algoprep.judge.application.ports.in;
+package com.algoprep.judge.application.ports.in.metrics;
 
-import com.algoprep.judge.application.dto.AssignedProblemMetricsQuery;
-import com.algoprep.judge.domain.model.ClassProblemMetric;
+import com.algoprep.judge.application.dto.metrics.AssignedProblemMetricsQuery;
+import com.algoprep.judge.domain.model.metrics.ClassProblemMetric;
 import java.util.Map;
 import java.util.UUID;
 

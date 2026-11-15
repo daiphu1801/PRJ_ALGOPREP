@@ -1,7 +1,7 @@
-package com.algoprep.judge.application.ports.in;
+package com.algoprep.judge.application.ports.in.metrics;
 
-import com.algoprep.judge.domain.model.AssignmentPeriod;
-import com.algoprep.judge.domain.model.AssignmentSolveState;
+import com.algoprep.judge.domain.model.metrics.AssignmentPeriod;
+import com.algoprep.judge.domain.model.metrics.AssignmentSolveState;
 import java.util.List;
 import java.util.Map;
 

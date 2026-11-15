@@ -1,10 +1,10 @@
 package com.algoprep.judge.application.query;
 
-import com.algoprep.judge.application.dto.QueueJobsQuery;
-import com.algoprep.judge.application.ports.in.GetQueueSnapshotUseCase;
-import com.algoprep.judge.application.ports.in.ListQueueJobsUseCase;
-import com.algoprep.judge.domain.model.QueueMonitoring.Jobs;
-import com.algoprep.judge.domain.model.QueueMonitoring.Snapshot;
+import com.algoprep.judge.application.dto.queue.QueueJobsQuery;
+import com.algoprep.judge.application.ports.in.queue.GetQueueSnapshotUseCase;
+import com.algoprep.judge.application.ports.in.queue.ListQueueJobsUseCase;
+import com.algoprep.judge.domain.model.queue.QueueMonitoring.Jobs;
+import com.algoprep.judge.domain.model.queue.QueueMonitoring.Snapshot;
 import com.algoprep.judge.domain.ports.out.QueueMonitorRepository;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;

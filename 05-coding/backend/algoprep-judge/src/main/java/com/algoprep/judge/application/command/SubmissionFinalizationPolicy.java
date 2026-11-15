@@ -1,15 +1,15 @@
 package com.algoprep.judge.application.command;
 
-import com.algoprep.judge.domain.model.WorkerRecords.FinishCommand;
-import com.algoprep.judge.domain.model.WorkerRecords.FinishKind;
-import com.algoprep.judge.domain.model.WorkerRecords.Outcome;
-import com.algoprep.judge.domain.model.WorkerRecords.Result;
-import com.algoprep.judge.domain.model.WorkerRecords.State;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.FinishCommand;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.FinishKind;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.Outcome;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.Result;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.State;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
-final class SubmissionFinalizationPolicy {
+public final class SubmissionFinalizationPolicy {
   private SubmissionFinalizationPolicy() {}
 
   static Outcome summarize(State state, FinishCommand command, List<Result> rows) {

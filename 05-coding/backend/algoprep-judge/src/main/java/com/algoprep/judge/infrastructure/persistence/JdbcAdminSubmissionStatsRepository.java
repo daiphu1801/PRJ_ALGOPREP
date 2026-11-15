@@ -1,10 +1,10 @@
 package com.algoprep.judge.infrastructure.persistence;
 
-import com.algoprep.judge.domain.model.AdminSubmissionStats.DayCount;
-import com.algoprep.judge.domain.model.AdminSubmissionStats.LanguageDay;
-import com.algoprep.judge.domain.model.AdminSubmissionStats.MonthCount;
-import com.algoprep.judge.domain.model.AdminSubmissionStats.ProblemCount;
-import com.algoprep.judge.domain.model.AdminSubmissionStats.Totals;
+import com.algoprep.judge.domain.model.metrics.AdminSubmissionStats.DayCount;
+import com.algoprep.judge.domain.model.metrics.AdminSubmissionStats.LanguageDay;
+import com.algoprep.judge.domain.model.metrics.AdminSubmissionStats.MonthCount;
+import com.algoprep.judge.domain.model.metrics.AdminSubmissionStats.ProblemCount;
+import com.algoprep.judge.domain.model.metrics.AdminSubmissionStats.Totals;
 import com.algoprep.judge.domain.ports.out.AdminSubmissionStatsRepository;
 import java.time.Duration;
 import java.time.Instant;

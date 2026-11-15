@@ -1,12 +1,12 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.submission;
 
-import static com.algoprep.judge.application.command.RecordPendingSubmissionCommandHandlerTest.rejected;
+import static com.algoprep.judge.application.command.submission.RecordPendingSubmissionCommandHandlerTest.rejected;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
-import com.algoprep.judge.application.ports.in.RecordPendingSubmissionUseCase;
+import com.algoprep.judge.application.ports.in.submission.RecordPendingSubmissionUseCase;
 import com.algoprep.judge.application.ports.out.ProblemGradingSpecPort;
 import com.algoprep.judge.domain.ports.out.SubmissionAdmissionRepository;
 import java.io.ByteArrayOutputStream;
@@ -40,7 +40,8 @@ class SubmissionAdmissionMutationTest {
   void copiedAdmissionCannotSkipItsGuards(String rule) throws Exception {
     Path directory = Path.of("src/main/java/com/algoprep/judge/application/command");
     String handler =
-        Files.readString(directory.resolve("RecordPendingSubmissionCommandHandler.java"));
+        Files.readString(
+            directory.resolve("submission/RecordPendingSubmissionCommandHandler.java"));
     String validation = Files.readString(directory.resolve("SubmissionAdmissionValidation.java"));
     String changedHandler =
         switch (rule) {
@@ -68,7 +69,9 @@ class SubmissionAdmissionMutationTest {
     assertThat(changedHandler + changedValidation).isNotEqualTo(handler + validation);
     candidate(handler, validation, rule, false);
     candidate(changedHandler, changedValidation, rule, true);
-    assertThat(Files.readString(directory.resolve("RecordPendingSubmissionCommandHandler.java")))
+    assertThat(
+            Files.readString(
+                directory.resolve("submission/RecordPendingSubmissionCommandHandler.java")))
         .isEqualTo(handler);
     assertThat(Files.readString(directory.resolve("SubmissionAdmissionValidation.java")))
         .isEqualTo(validation);
@@ -105,7 +108,7 @@ class SubmissionAdmissionMutationTest {
         new URLClassLoader(new URL[] {folder.toUri().toURL()}, getClass().getClassLoader())) {
       var type =
           loader.loadClass(
-              "com.algoprep.judge.application.command.mutationcopy.RecordPendingSubmissionCommandHandler");
+              "com.algoprep.judge.application.command.submission.mutationcopy.RecordPendingSubmissionCommandHandler");
       var constructor =
           type.getDeclaredConstructor(
               SubmissionAdmissionRepository.class,
@@ -142,10 +145,18 @@ class SubmissionAdmissionMutationTest {
 
   private static void compile(Path folder, String handler, String validation) throws Exception {
     String prefix = "package com.algoprep.judge.application.command;";
+    String handlerPrefix = "package com.algoprep.judge.application.command.submission;";
+    String validatorImport =
+        "import com.algoprep.judge.application.command.SubmissionAdmissionValidation;";
     Path writer = folder.resolve("RecordPendingSubmissionCommandHandler.java");
     Path validator = folder.resolve("SubmissionAdmissionValidation.java");
-    Files.writeString(writer, handler.replace(prefix, prefix.replace(";", ".mutationcopy;")));
-    Files.writeString(validator, validation.replace(prefix, prefix.replace(";", ".mutationcopy;")));
+    Files.writeString(
+        writer,
+        handler
+            .replace(handlerPrefix, handlerPrefix.replace(";", ".mutationcopy;"))
+            .replace(validatorImport, ""));
+    Files.writeString(
+        validator, validation.replace(prefix, handlerPrefix.replace(";", ".mutationcopy;")));
     var errors = new ByteArrayOutputStream();
     int exit =
         ToolProvider.getSystemJavaCompiler()

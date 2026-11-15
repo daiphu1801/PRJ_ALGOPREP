@@ -1,8 +1,10 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.maintenance;
 
-import com.algoprep.judge.application.ports.in.SweepStaleSubmissionsUseCase;
-import com.algoprep.judge.domain.model.WorkerRecords.FinishCommand;
-import com.algoprep.judge.domain.model.WorkerRecords.FinishKind;
+import com.algoprep.judge.application.command.FinalizeSubmissionCommandHandler;
+import com.algoprep.judge.application.command.WorkerTransactions;
+import com.algoprep.judge.application.ports.in.maintenance.SweepStaleSubmissionsUseCase;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.FinishCommand;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.FinishKind;
 import com.algoprep.judge.domain.ports.out.JudgeMaintenanceRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

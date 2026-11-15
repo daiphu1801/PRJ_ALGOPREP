@@ -1,15 +1,15 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.queue;
 
-import com.algoprep.judge.application.dto.AdminQueueFlag;
-import com.algoprep.judge.application.dto.QueuePauseChange;
-import com.algoprep.judge.application.dto.QueueSettingsChange;
-import com.algoprep.judge.application.ports.in.ChangeQueuePauseUseCase;
-import com.algoprep.judge.application.ports.in.SetAdminQueueAutoscaleUseCase;
-import com.algoprep.judge.application.ports.in.SetAdminQueuePausedUseCase;
-import com.algoprep.judge.application.ports.in.UpdateAdminQueueSettingsUseCase;
+import com.algoprep.judge.application.dto.queue.AdminQueueFlag;
+import com.algoprep.judge.application.dto.queue.QueuePauseChange;
+import com.algoprep.judge.application.dto.queue.QueueSettingsChange;
+import com.algoprep.judge.application.ports.in.queue.ChangeQueuePauseUseCase;
+import com.algoprep.judge.application.ports.in.queue.SetAdminQueueAutoscaleUseCase;
+import com.algoprep.judge.application.ports.in.queue.SetAdminQueuePausedUseCase;
+import com.algoprep.judge.application.ports.in.queue.UpdateAdminQueueSettingsUseCase;
 import com.algoprep.judge.domain.exception.AdminConfigException;
-import com.algoprep.judge.domain.model.AdminQueueSettings;
 import com.algoprep.judge.domain.model.JudgeAuditEntry;
+import com.algoprep.judge.domain.model.queue.AdminQueueSettings;
 import com.algoprep.judge.domain.ports.out.AdminQueueRepository;
 import com.algoprep.judge.domain.ports.out.JudgeAuditPort;
 import java.util.LinkedHashMap;

@@ -1,9 +1,9 @@
-package com.algoprep.judge.domain.model;
+package com.algoprep.judge.domain.model.metrics;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.algoprep.judge.application.dto.AssignedProblemMetricsQuery;
+import com.algoprep.judge.application.dto.metrics.AssignedProblemMetricsQuery;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;

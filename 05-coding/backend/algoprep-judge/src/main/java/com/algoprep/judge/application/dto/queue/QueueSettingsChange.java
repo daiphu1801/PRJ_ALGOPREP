@@ -1,4 +1,4 @@
-package com.algoprep.judge.application.dto;
+package com.algoprep.judge.application.dto.queue;
 
 import com.algoprep.judge.domain.exception.AdminConfigException;
 import java.util.Map;

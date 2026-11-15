@@ -1,10 +1,10 @@
 package com.algoprep.judge.application.query;
 
-import com.algoprep.judge.application.ports.in.GetClassStudentSubmissionMetricsUseCase;
+import com.algoprep.judge.application.ports.in.metrics.GetClassStudentSubmissionMetricsUseCase;
 import com.algoprep.judge.application.ports.out.ClassSubmissionMetricsCache;
 import com.algoprep.judge.domain.metrics.ClassSubmissionMetricsCalculator;
-import com.algoprep.judge.domain.model.ClassMetricsScope;
-import com.algoprep.judge.domain.model.StudentSubmissionMetrics;
+import com.algoprep.judge.domain.model.metrics.ClassMetricsScope;
+import com.algoprep.judge.domain.model.metrics.StudentSubmissionMetrics;
 import com.algoprep.judge.domain.ports.out.ClassSubmissionMetricsRepository;
 import java.time.LocalDate;
 import java.util.List;

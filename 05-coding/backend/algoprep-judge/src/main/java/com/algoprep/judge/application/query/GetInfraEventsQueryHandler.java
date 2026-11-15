@@ -1,12 +1,12 @@
 package com.algoprep.judge.application.query;
 
-import com.algoprep.judge.application.dto.InfraEventMessages;
-import com.algoprep.judge.application.dto.InfraEventQuery;
-import com.algoprep.judge.application.ports.in.GetInfraSummaryUseCase;
-import com.algoprep.judge.application.ports.in.ListInfraEventsUseCase;
-import com.algoprep.judge.domain.model.InfraEvents.Filter;
-import com.algoprep.judge.domain.model.InfraEvents.Page;
-import com.algoprep.judge.domain.model.InfraEvents.Summary;
+import com.algoprep.judge.application.dto.infra.InfraEventMessages;
+import com.algoprep.judge.application.dto.infra.InfraEventQuery;
+import com.algoprep.judge.application.ports.in.infra.GetInfraSummaryUseCase;
+import com.algoprep.judge.application.ports.in.infra.ListInfraEventsUseCase;
+import com.algoprep.judge.domain.model.infra.InfraEvents.Filter;
+import com.algoprep.judge.domain.model.infra.InfraEvents.Page;
+import com.algoprep.judge.domain.model.infra.InfraEvents.Summary;
 import com.algoprep.judge.domain.ports.out.InfraEventRepository;
 import java.util.List;
 import org.springframework.stereotype.Service;

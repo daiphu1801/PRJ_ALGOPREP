@@ -1,6 +1,6 @@
 package com.algoprep.judge.infrastructure.ratelimit;
 
-import com.algoprep.judge.application.dto.SampleRun.Reservation;
+import com.algoprep.judge.application.dto.execution.SampleRun.Reservation;
 import com.algoprep.judge.application.ports.out.SampleQuotaPort;
 import java.util.List;
 import java.util.UUID;

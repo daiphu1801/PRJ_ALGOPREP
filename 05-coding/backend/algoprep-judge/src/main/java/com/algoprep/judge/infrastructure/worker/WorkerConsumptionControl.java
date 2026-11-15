@@ -1,6 +1,6 @@
 package com.algoprep.judge.infrastructure.worker;
 
-import com.algoprep.judge.application.dto.WorkerScaling;
+import com.algoprep.judge.application.dto.execution.WorkerScaling;
 import com.algoprep.judge.domain.ports.out.WorkerJobRepository;
 import com.algoprep.judge.domain.ports.out.WorkerLeasePort;
 import com.algoprep.judge.domain.ports.out.WorkerLeasePort.Lease;
@@ -100,7 +100,7 @@ final class WorkerConsumptionControl implements SmartLifecycle {
   }
 
   private void resize(
-      int before, int after, com.algoprep.judge.domain.model.WorkerControl control) {
+      int before, int after, com.algoprep.judge.domain.model.execution.WorkerControl control) {
     try {
       container.setConcurrency(Integer.toString(after));
     } catch (RuntimeException e) {

@@ -1,7 +1,7 @@
 package com.algoprep.judge.domain.ports.out;
 
-import com.algoprep.judge.domain.model.SubmissionActivityDay;
-import com.algoprep.judge.domain.model.TopicSubmissionCount;
+import com.algoprep.judge.domain.model.metrics.SubmissionActivityDay;
+import com.algoprep.judge.domain.model.metrics.TopicSubmissionCount;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.execution;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -11,13 +11,16 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
+import com.algoprep.judge.application.command.FinalizeSubmissionCommandHandler;
+import com.algoprep.judge.application.command.SubmissionFinalizationPolicyTest;
+import com.algoprep.judge.application.command.WorkerTransactions;
 import com.algoprep.judge.application.ports.out.SubmissionProgressPort;
 import com.algoprep.judge.domain.exception.WorkerPersistenceException;
-import com.algoprep.judge.domain.model.WorkerRecords.FinishCommand;
-import com.algoprep.judge.domain.model.WorkerRecords.FinishKind;
-import com.algoprep.judge.domain.model.WorkerRecords.Result;
-import com.algoprep.judge.domain.model.WorkerRecords.State;
-import com.algoprep.judge.domain.model.WorkerRecords.TestcaseWrite;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.FinishCommand;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.FinishKind;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.Result;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.State;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.TestcaseWrite;
 import com.algoprep.judge.domain.ports.out.SubmissionWorkerRepository;
 import java.util.List;
 import java.util.Optional;

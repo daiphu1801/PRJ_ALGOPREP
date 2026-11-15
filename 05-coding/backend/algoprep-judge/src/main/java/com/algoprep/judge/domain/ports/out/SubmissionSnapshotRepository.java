@@ -1,6 +1,6 @@
 package com.algoprep.judge.domain.ports.out;
 
-import com.algoprep.judge.domain.model.SubmissionSnapshotLookup;
+import com.algoprep.judge.domain.model.read.SubmissionSnapshotLookup;
 import java.util.Optional;
 import java.util.UUID;
 

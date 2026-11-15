@@ -1,6 +1,6 @@
 package com.algoprep.judge.domain.ports.out;
 
-import com.algoprep.judge.domain.model.SubmissionLifecycleView;
+import com.algoprep.judge.domain.model.queue.SubmissionLifecycleView;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;

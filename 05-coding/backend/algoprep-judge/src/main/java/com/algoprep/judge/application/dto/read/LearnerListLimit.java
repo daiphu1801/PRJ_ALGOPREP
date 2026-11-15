@@ -1,4 +1,4 @@
-package com.algoprep.judge.application.dto;
+package com.algoprep.judge.application.dto.read;
 
 import com.algoprep.common.exception.InvalidRequestException;
 

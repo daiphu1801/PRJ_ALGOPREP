@@ -1,7 +1,7 @@
-package com.algoprep.judge.application.ports.in;
+package com.algoprep.judge.application.ports.in.read;
 
-import com.algoprep.judge.application.dto.LearnerListLimit;
-import com.algoprep.judge.application.dto.LearnerSubmissionLists.AcceptedItem;
+import com.algoprep.judge.application.dto.read.LearnerListLimit;
+import com.algoprep.judge.application.dto.read.LearnerSubmissionLists.AcceptedItem;
 import java.util.List;
 
 public interface ListMyAcceptedSubmissionsUseCase {

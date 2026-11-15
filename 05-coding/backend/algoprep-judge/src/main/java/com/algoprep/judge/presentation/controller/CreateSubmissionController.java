@@ -1,11 +1,11 @@
 package com.algoprep.judge.presentation.controller;
 
-import com.algoprep.judge.application.dto.QueuedSubmissionResult;
 import com.algoprep.judge.application.dto.RecordPendingSubmissionCommand;
-import com.algoprep.judge.application.ports.in.CreateSubmissionUseCase;
+import com.algoprep.judge.application.dto.submission.QueuedSubmissionResult;
+import com.algoprep.judge.application.ports.in.submission.CreateSubmissionUseCase;
 import com.algoprep.judge.domain.exception.SubmissionAdmissionException;
-import com.algoprep.judge.domain.model.PendingSubmission.Owner;
-import com.algoprep.judge.domain.model.PendingSubmission.Program;
+import com.algoprep.judge.domain.model.submission.PendingSubmission.Owner;
+import com.algoprep.judge.domain.model.submission.PendingSubmission.Program;
 import java.time.Instant;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;

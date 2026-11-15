@@ -1,7 +1,7 @@
-package com.algoprep.judge.application.dto;
+package com.algoprep.judge.application.dto.queue;
 
-import com.algoprep.judge.domain.model.QueueMonitoring.Counts;
-import com.algoprep.judge.domain.model.QueueMonitoring.Snapshot;
+import com.algoprep.judge.domain.model.queue.QueueMonitoring.Counts;
+import com.algoprep.judge.domain.model.queue.QueueMonitoring.Snapshot;
 import java.time.Instant;
 
 /** DD W2: aggregate-only refresh hint, never the tab-dependent job list. */

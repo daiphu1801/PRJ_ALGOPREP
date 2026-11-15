@@ -1,7 +1,7 @@
 package com.algoprep.judge.infrastructure.persistence;
 
-import com.algoprep.judge.domain.model.SampleSettings;
-import com.algoprep.judge.domain.model.WorkerSettings;
+import com.algoprep.judge.domain.model.execution.SampleSettings;
+import com.algoprep.judge.domain.model.execution.WorkerSettings;
 import com.algoprep.judge.domain.ports.out.SampleSettingsRepository;
 import java.util.List;
 import org.springframework.beans.factory.ObjectProvider;

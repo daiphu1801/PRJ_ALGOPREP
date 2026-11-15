@@ -1,4 +1,6 @@
-package com.algoprep.judge.application.dto;
+package com.algoprep.judge.application.dto.submission;
+
+import com.algoprep.judge.application.dto.QueueFailureResolution;
 
 /**
  * Internal result, not an HTTP response. A future caller emits the final STOMP notice only when

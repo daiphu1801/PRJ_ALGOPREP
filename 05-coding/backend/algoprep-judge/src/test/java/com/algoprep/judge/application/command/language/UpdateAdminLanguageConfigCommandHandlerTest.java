@@ -1,4 +1,4 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.language;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -9,12 +9,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.judge.domain.exception.AdminConfigException;
-import com.algoprep.judge.domain.model.AdminLanguageConfig;
-import com.algoprep.judge.domain.model.AdminLanguageConfig.Defaults;
-import com.algoprep.judge.domain.model.AdminLanguageConfig.Generator;
-import com.algoprep.judge.domain.model.AdminLanguageConfig.Language;
-import com.algoprep.judge.domain.model.AdminLanguageConfig.Sandbox;
 import com.algoprep.judge.domain.model.JudgeAuditEntry;
+import com.algoprep.judge.domain.model.language.AdminLanguageConfig;
+import com.algoprep.judge.domain.model.language.AdminLanguageConfig.Defaults;
+import com.algoprep.judge.domain.model.language.AdminLanguageConfig.Generator;
+import com.algoprep.judge.domain.model.language.AdminLanguageConfig.Language;
+import com.algoprep.judge.domain.model.language.AdminLanguageConfig.Sandbox;
 import com.algoprep.judge.domain.ports.out.AdminLanguageConfigRepository;
 import com.algoprep.judge.domain.ports.out.JudgeAuditPort;
 import java.math.BigDecimal;

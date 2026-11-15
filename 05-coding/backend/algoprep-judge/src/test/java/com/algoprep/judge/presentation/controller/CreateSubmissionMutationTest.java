@@ -2,9 +2,9 @@ package com.algoprep.judge.presentation.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.algoprep.judge.application.dto.PendingSubmissionTicket;
-import com.algoprep.judge.application.dto.QueuedSubmissionResult;
-import com.algoprep.judge.application.ports.in.CreateSubmissionUseCase;
+import com.algoprep.judge.application.dto.submission.PendingSubmissionTicket;
+import com.algoprep.judge.application.dto.submission.QueuedSubmissionResult;
+import com.algoprep.judge.application.ports.in.submission.CreateSubmissionUseCase;
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URLClassLoader;

@@ -1,4 +1,4 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.queue;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -10,13 +10,13 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.judge.application.dto.QueuePauseChange;
-import com.algoprep.judge.application.dto.QueueSettingsChange;
-import com.algoprep.judge.application.ports.in.ChangeQueuePauseUseCase;
+import com.algoprep.judge.application.dto.queue.QueuePauseChange;
+import com.algoprep.judge.application.dto.queue.QueueSettingsChange;
+import com.algoprep.judge.application.ports.in.queue.ChangeQueuePauseUseCase;
 import com.algoprep.judge.domain.exception.AdminConfigException;
-import com.algoprep.judge.domain.model.AdminQueueSettings;
-import com.algoprep.judge.domain.model.AdminQueueState;
 import com.algoprep.judge.domain.model.JudgeAuditEntry;
+import com.algoprep.judge.domain.model.queue.AdminQueueSettings;
+import com.algoprep.judge.domain.model.queue.AdminQueueState;
 import com.algoprep.judge.domain.ports.out.AdminQueueRepository;
 import com.algoprep.judge.domain.ports.out.JudgeAuditPort;
 import java.time.Instant;

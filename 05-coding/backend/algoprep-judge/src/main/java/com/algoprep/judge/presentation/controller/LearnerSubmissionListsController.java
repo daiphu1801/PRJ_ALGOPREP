@@ -1,11 +1,11 @@
 package com.algoprep.judge.presentation.controller;
 
 import com.algoprep.common.exception.InvalidRequestException;
-import com.algoprep.judge.application.dto.LearnerListLimit;
-import com.algoprep.judge.application.dto.LearnerSubmissionLists.AcceptedItem;
-import com.algoprep.judge.application.dto.LearnerSubmissionLists.InProgressItem;
-import com.algoprep.judge.application.ports.in.ListMyAcceptedSubmissionsUseCase;
-import com.algoprep.judge.application.ports.in.ListMyInProgressProblemsUseCase;
+import com.algoprep.judge.application.dto.read.LearnerListLimit;
+import com.algoprep.judge.application.dto.read.LearnerSubmissionLists.AcceptedItem;
+import com.algoprep.judge.application.dto.read.LearnerSubmissionLists.InProgressItem;
+import com.algoprep.judge.application.ports.in.read.ListMyAcceptedSubmissionsUseCase;
+import com.algoprep.judge.application.ports.in.read.ListMyInProgressProblemsUseCase;
 import java.util.List;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;

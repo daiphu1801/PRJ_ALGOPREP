@@ -1,10 +1,10 @@
 package com.algoprep.judge.presentation.controller;
 
-import com.algoprep.judge.application.dto.InfraEventQuery;
-import com.algoprep.judge.application.ports.in.GetInfraSummaryUseCase;
-import com.algoprep.judge.application.ports.in.ListInfraEventsUseCase;
-import com.algoprep.judge.domain.model.InfraEvents.Page;
-import com.algoprep.judge.domain.model.InfraEvents.Summary;
+import com.algoprep.judge.application.dto.infra.InfraEventQuery;
+import com.algoprep.judge.application.ports.in.infra.GetInfraSummaryUseCase;
+import com.algoprep.judge.application.ports.in.infra.ListInfraEventsUseCase;
+import com.algoprep.judge.domain.model.infra.InfraEvents.Page;
+import com.algoprep.judge.domain.model.infra.InfraEvents.Summary;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;

@@ -1,4 +1,4 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.queue;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.Mockito.doThrow;
@@ -7,8 +7,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.judge.application.dto.QueueMonitorBatch;
-import com.algoprep.judge.application.ports.in.GetQueueMonitorBatchUseCase;
+import com.algoprep.judge.application.dto.queue.QueueMonitorBatch;
+import com.algoprep.judge.application.ports.in.queue.GetQueueMonitorBatchUseCase;
 import com.algoprep.judge.application.ports.out.QueueMonitorAudiencePort;
 import com.algoprep.judge.application.ports.out.QueueMonitorBroadcastPort;
 import java.time.Instant;

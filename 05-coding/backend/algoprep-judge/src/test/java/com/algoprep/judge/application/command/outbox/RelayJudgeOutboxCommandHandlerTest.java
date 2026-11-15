@@ -1,4 +1,4 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.outbox;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -7,7 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.judge.application.ports.out.JudgeDomainEventPort;
-import com.algoprep.judge.domain.model.OutboxEvent;
+import com.algoprep.judge.domain.model.outbox.OutboxEvent;
 import com.algoprep.judge.domain.ports.out.JudgeOutboxRepository;
 import java.util.List;
 import java.util.UUID;

@@ -1,9 +1,9 @@
 package com.algoprep.judge.infrastructure.persistence;
 
-import com.algoprep.judge.domain.model.InfraEvents.Filter;
-import com.algoprep.judge.domain.model.InfraEvents.Position;
-import com.algoprep.judge.domain.model.InfraEvents.Row;
-import com.algoprep.judge.domain.model.InfraEvents.Summary;
+import com.algoprep.judge.domain.model.infra.InfraEvents.Filter;
+import com.algoprep.judge.domain.model.infra.InfraEvents.Position;
+import com.algoprep.judge.domain.model.infra.InfraEvents.Row;
+import com.algoprep.judge.domain.model.infra.InfraEvents.Summary;
 import com.algoprep.judge.domain.ports.out.InfraEventRepository;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;

@@ -1,12 +1,13 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.submission;
 
-import static com.algoprep.judge.application.command.RecordPendingSubmissionCommandHandlerTest.rejected;
+import static com.algoprep.judge.application.command.submission.RecordPendingSubmissionCommandHandlerTest.rejected;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
+import com.algoprep.judge.application.command.SubmissionAdmissionValidation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;

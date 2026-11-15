@@ -10,16 +10,16 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionTemplate;
 
 @Component
-class WorkerTransactions {
+public class WorkerTransactions {
   private final TransactionTemplate transaction;
 
-  WorkerTransactions(@Lazy PlatformTransactionManager manager) {
+  public WorkerTransactions(@Lazy PlatformTransactionManager manager) {
     transaction = new TransactionTemplate(manager);
     transaction.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
     transaction.setIsolationLevel(TransactionDefinition.ISOLATION_READ_COMMITTED);
   }
 
-  <T> T execute(Supplier<T> operation) {
+  public <T> T execute(Supplier<T> operation) {
     try {
       return Objects.requireNonNull(transaction.execute(status -> operation.get()));
     } catch (RuntimeException error) {

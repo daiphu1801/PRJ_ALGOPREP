@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import com.algoprep.judge.application.ports.in.BroadcastQueueMonitorUseCase;
+import com.algoprep.judge.application.ports.in.queue.BroadcastQueueMonitorUseCase;
 import org.junit.jupiter.api.Test;
 import org.springframework.scheduling.annotation.Scheduled;
 

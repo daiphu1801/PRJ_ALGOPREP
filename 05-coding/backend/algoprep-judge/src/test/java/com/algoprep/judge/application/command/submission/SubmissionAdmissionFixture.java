@@ -1,4 +1,4 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.submission;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -7,8 +7,8 @@ import com.algoprep.common.domain.ports.out.IdGeneratorPort;
 import com.algoprep.judge.application.dto.GradingSpecification;
 import com.algoprep.judge.application.dto.RecordPendingSubmissionCommand;
 import com.algoprep.judge.application.ports.out.ProblemGradingSpecPort;
-import com.algoprep.judge.domain.model.PendingSubmission.Owner;
-import com.algoprep.judge.domain.model.PendingSubmission.Program;
+import com.algoprep.judge.domain.model.submission.PendingSubmission.Owner;
+import com.algoprep.judge.domain.model.submission.PendingSubmission.Program;
 import com.algoprep.judge.domain.ports.out.SubmissionAdmissionRepository;
 import java.time.Instant;
 import java.util.List;

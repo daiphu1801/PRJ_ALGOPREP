@@ -1,7 +1,7 @@
 package com.algoprep.judge.infrastructure.persistence;
 
-import com.algoprep.judge.domain.model.AdminQueueSettings;
-import com.algoprep.judge.domain.model.AdminQueueState;
+import com.algoprep.judge.domain.model.queue.AdminQueueSettings;
+import com.algoprep.judge.domain.model.queue.AdminQueueState;
 import com.algoprep.judge.domain.ports.out.AdminQueueRepository;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;

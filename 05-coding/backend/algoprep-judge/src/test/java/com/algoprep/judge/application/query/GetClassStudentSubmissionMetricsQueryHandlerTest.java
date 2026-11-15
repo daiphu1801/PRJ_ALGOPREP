@@ -9,9 +9,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.judge.application.ports.out.ClassSubmissionMetricsCache;
-import com.algoprep.judge.domain.model.ClassMetricSubmission;
-import com.algoprep.judge.domain.model.ClassMetricsScope;
-import com.algoprep.judge.domain.model.StudentSubmissionMetrics;
+import com.algoprep.judge.domain.model.metrics.ClassMetricSubmission;
+import com.algoprep.judge.domain.model.metrics.ClassMetricsScope;
+import com.algoprep.judge.domain.model.metrics.StudentSubmissionMetrics;
 import com.algoprep.judge.domain.ports.out.ClassSubmissionMetricsRepository;
 import java.math.BigDecimal;
 import java.time.Instant;

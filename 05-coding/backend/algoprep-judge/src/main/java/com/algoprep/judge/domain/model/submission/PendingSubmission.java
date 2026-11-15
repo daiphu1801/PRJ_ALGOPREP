@@ -1,4 +1,4 @@
-package com.algoprep.judge.domain.model;
+package com.algoprep.judge.domain.model.submission;
 
 import java.time.Instant;
 import java.util.UUID;

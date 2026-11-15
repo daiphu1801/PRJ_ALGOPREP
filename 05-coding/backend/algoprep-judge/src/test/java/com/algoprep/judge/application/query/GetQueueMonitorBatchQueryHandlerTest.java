@@ -5,12 +5,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.judge.application.ports.in.GetInfraSummaryUseCase;
-import com.algoprep.judge.application.ports.in.GetQueueSnapshotUseCase;
-import com.algoprep.judge.domain.model.InfraEvents.Summary;
-import com.algoprep.judge.domain.model.QueueMonitoring.Counts;
-import com.algoprep.judge.domain.model.QueueMonitoring.JobSettings;
-import com.algoprep.judge.domain.model.QueueMonitoring.Snapshot;
+import com.algoprep.judge.application.ports.in.infra.GetInfraSummaryUseCase;
+import com.algoprep.judge.application.ports.in.queue.GetQueueSnapshotUseCase;
+import com.algoprep.judge.domain.model.infra.InfraEvents.Summary;
+import com.algoprep.judge.domain.model.queue.QueueMonitoring.Counts;
+import com.algoprep.judge.domain.model.queue.QueueMonitoring.JobSettings;
+import com.algoprep.judge.domain.model.queue.QueueMonitoring.Snapshot;
 import com.algoprep.judge.domain.ports.out.QueueMonitorRepository;
 import java.time.Instant;
 import org.junit.jupiter.api.Test;

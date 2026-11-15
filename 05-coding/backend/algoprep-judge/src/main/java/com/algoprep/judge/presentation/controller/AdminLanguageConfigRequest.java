@@ -1,11 +1,11 @@
 package com.algoprep.judge.presentation.controller;
 
 import com.algoprep.judge.domain.exception.AdminConfigException;
-import com.algoprep.judge.domain.model.AdminLanguageConfig;
-import com.algoprep.judge.domain.model.AdminLanguageConfig.Defaults;
-import com.algoprep.judge.domain.model.AdminLanguageConfig.Generator;
-import com.algoprep.judge.domain.model.AdminLanguageConfig.Language;
-import com.algoprep.judge.domain.model.AdminLanguageConfig.Sandbox;
+import com.algoprep.judge.domain.model.language.AdminLanguageConfig;
+import com.algoprep.judge.domain.model.language.AdminLanguageConfig.Defaults;
+import com.algoprep.judge.domain.model.language.AdminLanguageConfig.Generator;
+import com.algoprep.judge.domain.model.language.AdminLanguageConfig.Language;
+import com.algoprep.judge.domain.model.language.AdminLanguageConfig.Sandbox;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;

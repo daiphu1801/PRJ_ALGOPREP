@@ -1,10 +1,10 @@
 package com.algoprep.judge.domain.ports.out;
 
-import com.algoprep.judge.domain.model.WorkerRecords.Outcome;
-import com.algoprep.judge.domain.model.WorkerRecords.Result;
-import com.algoprep.judge.domain.model.WorkerRecords.State;
-import com.algoprep.judge.domain.model.WorkerRecords.TestcaseWrite;
-import com.algoprep.judge.domain.model.WorkerRecords.Token;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.Outcome;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.Result;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.State;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.TestcaseWrite;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.Token;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

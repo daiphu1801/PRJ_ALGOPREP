@@ -6,8 +6,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.judge.application.ports.in.ProcessQueuedSubmissionUseCase;
-import com.algoprep.judge.domain.model.WorkerControl;
+import com.algoprep.judge.application.ports.in.execution.ProcessQueuedSubmissionUseCase;
+import com.algoprep.judge.domain.model.execution.WorkerControl;
 import com.algoprep.judge.domain.ports.out.WorkerJobRepository;
 import com.algoprep.judge.domain.ports.out.WorkerLeasePort;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;

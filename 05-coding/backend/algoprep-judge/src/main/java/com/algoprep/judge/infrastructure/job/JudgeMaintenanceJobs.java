@@ -1,8 +1,8 @@
 package com.algoprep.judge.infrastructure.job;
 
-import com.algoprep.judge.application.ports.in.PurgePublishedJudgeEventsUseCase;
-import com.algoprep.judge.application.ports.in.PurgeTestcaseDetailsUseCase;
-import com.algoprep.judge.application.ports.in.SweepStaleSubmissionsUseCase;
+import com.algoprep.judge.application.ports.in.maintenance.PurgePublishedJudgeEventsUseCase;
+import com.algoprep.judge.application.ports.in.maintenance.PurgeTestcaseDetailsUseCase;
+import com.algoprep.judge.application.ports.in.maintenance.SweepStaleSubmissionsUseCase;
 import java.util.function.LongSupplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

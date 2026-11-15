@@ -1,6 +1,6 @@
 package com.algoprep.judge.infrastructure.job;
 
-import com.algoprep.judge.application.ports.in.RelayJudgeOutboxUseCase;
+import com.algoprep.judge.application.ports.in.outbox.RelayJudgeOutboxUseCase;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;

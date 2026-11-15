@@ -1,6 +1,6 @@
 package com.algoprep.judge.infrastructure.job;
 
-import com.algoprep.judge.application.ports.in.BroadcastQueueMonitorUseCase;
+import com.algoprep.judge.application.ports.in.queue.BroadcastQueueMonitorUseCase;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Scheduled;

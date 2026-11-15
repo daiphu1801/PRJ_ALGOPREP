@@ -1,12 +1,13 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.execution;
 
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
+import com.algoprep.judge.application.command.WorkerTransactions;
 import com.algoprep.judge.application.dto.TestcaseProgress;
-import com.algoprep.judge.application.ports.in.IssueSubmissionRunTokenUseCase;
-import com.algoprep.judge.application.ports.in.RecordSubmissionTestcaseUseCase;
+import com.algoprep.judge.application.ports.in.execution.IssueSubmissionRunTokenUseCase;
+import com.algoprep.judge.application.ports.in.execution.RecordSubmissionTestcaseUseCase;
 import com.algoprep.judge.application.ports.out.SubmissionProgressPort;
-import com.algoprep.judge.domain.model.WorkerRecords.TestcaseWrite;
-import com.algoprep.judge.domain.model.WorkerRecords.Token;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.TestcaseWrite;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.Token;
 import com.algoprep.judge.domain.ports.out.SubmissionWorkerRepository;
 import java.util.Objects;
 import java.util.Optional;

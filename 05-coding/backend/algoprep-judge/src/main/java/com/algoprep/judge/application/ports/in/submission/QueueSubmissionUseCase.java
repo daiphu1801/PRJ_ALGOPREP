@@ -1,7 +1,7 @@
-package com.algoprep.judge.application.ports.in;
+package com.algoprep.judge.application.ports.in.submission;
 
-import com.algoprep.judge.application.dto.QueuedSubmissionResult;
 import com.algoprep.judge.application.dto.RecordPendingSubmissionCommand;
+import com.algoprep.judge.application.dto.submission.QueuedSubmissionResult;
 
 /**
  * Trusted STUDENT caller supplies its authenticated user id. Admission commits before publishing;

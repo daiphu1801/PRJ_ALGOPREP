@@ -1,6 +1,6 @@
 package com.algoprep.judge.infrastructure.worker;
 
-import com.algoprep.judge.application.ports.in.ProcessQueuedSubmissionUseCase;
+import com.algoprep.judge.application.ports.in.execution.ProcessQueuedSubmissionUseCase;
 import com.rabbitmq.client.Channel;
 import java.io.IOException;
 import java.util.UUID;

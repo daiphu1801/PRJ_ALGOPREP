@@ -2,17 +2,17 @@ package com.algoprep.judge.infrastructure.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.algoprep.judge.domain.model.AssignmentMetricScope;
-import com.algoprep.judge.domain.model.AssignmentPeriod;
-import com.algoprep.judge.domain.model.AssignmentSolveState;
-import com.algoprep.judge.domain.model.ClassMetricsScope;
-import com.algoprep.judge.domain.model.HistoryWindow;
-import com.algoprep.judge.domain.model.InfraEvents.Filter;
-import com.algoprep.judge.domain.model.InstructorReadFilter;
 import com.algoprep.judge.domain.model.InstructorReadWindow;
-import com.algoprep.judge.domain.model.LearnerSubmissionCandidate;
-import com.algoprep.judge.domain.model.PendingSubmission.Owner;
-import com.algoprep.judge.domain.model.QueueMonitoring.JobSettings;
+import com.algoprep.judge.domain.model.infra.InfraEvents.Filter;
+import com.algoprep.judge.domain.model.metrics.AssignmentMetricScope;
+import com.algoprep.judge.domain.model.metrics.AssignmentPeriod;
+import com.algoprep.judge.domain.model.metrics.AssignmentSolveState;
+import com.algoprep.judge.domain.model.metrics.ClassMetricsScope;
+import com.algoprep.judge.domain.model.queue.QueueMonitoring.JobSettings;
+import com.algoprep.judge.domain.model.read.HistoryWindow;
+import com.algoprep.judge.domain.model.read.InstructorReadFilter;
+import com.algoprep.judge.domain.model.read.LearnerSubmissionCandidate;
+import com.algoprep.judge.domain.model.submission.PendingSubmission.Owner;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -60,12 +60,12 @@ class JdbcReadModelsPgTest extends PostgresTestBase {
     for (int i = 1; i <= 2; i++) {
       var testcase = UUID.randomUUID();
       var token =
-          new com.algoprep.judge.domain.model.WorkerRecords.Token(
+          new com.algoprep.judge.domain.model.execution.WorkerRecords.Token(
               UUID.randomUUID(), UUID.randomUUID());
       worker.issue(sub, testcase, token);
       var state = worker.lock(sub).orElseThrow();
       worker.save(
-          new com.algoprep.judge.domain.model.WorkerRecords.TestcaseWrite(
+          new com.algoprep.judge.domain.model.execution.WorkerRecords.TestcaseWrite(
               sub,
               testcase,
               token.id(),
@@ -454,10 +454,10 @@ class JdbcReadModelsPgTest extends PostgresTestBase {
     tx.executeWithoutResult(s -> repo.lockPair(owner));
     var id = UUID.randomUUID();
     repo.insert(
-        new com.algoprep.judge.domain.model.PendingSubmission(
+        new com.algoprep.judge.domain.model.submission.PendingSubmission(
             id,
             owner,
-            new com.algoprep.judge.domain.model.PendingSubmission.Program(
+            new com.algoprep.judge.domain.model.submission.PendingSubmission.Program(
                 "CPP", "STANDARD_IO", "int main(){}", "EDITOR"),
             2,
             ago(Duration.ofSeconds(1))));

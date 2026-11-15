@@ -1,9 +1,9 @@
 package com.algoprep.judge.infrastructure.persistence;
 
 import com.algoprep.judge.domain.exception.WorkerPersistenceException;
-import com.algoprep.judge.domain.model.WorkerControl;
-import com.algoprep.judge.domain.model.WorkerJob;
-import com.algoprep.judge.domain.model.WorkerSettings;
+import com.algoprep.judge.domain.model.execution.WorkerControl;
+import com.algoprep.judge.domain.model.execution.WorkerJob;
+import com.algoprep.judge.domain.model.execution.WorkerSettings;
 import com.algoprep.judge.domain.ports.out.WorkerJobRepository;
 import java.util.Optional;
 import java.util.UUID;

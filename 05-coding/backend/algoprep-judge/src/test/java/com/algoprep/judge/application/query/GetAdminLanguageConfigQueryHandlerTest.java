@@ -5,7 +5,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.judge.domain.model.AdminLanguageConfig;
+import com.algoprep.judge.domain.model.language.AdminLanguageConfig;
 import com.algoprep.judge.domain.ports.out.AdminLanguageConfigRepository;
 import org.junit.jupiter.api.Test;
 

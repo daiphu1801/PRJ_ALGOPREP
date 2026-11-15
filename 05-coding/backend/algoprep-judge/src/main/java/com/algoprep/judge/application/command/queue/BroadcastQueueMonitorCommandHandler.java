@@ -1,7 +1,7 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.queue;
 
-import com.algoprep.judge.application.ports.in.BroadcastQueueMonitorUseCase;
-import com.algoprep.judge.application.ports.in.GetQueueMonitorBatchUseCase;
+import com.algoprep.judge.application.ports.in.queue.BroadcastQueueMonitorUseCase;
+import com.algoprep.judge.application.ports.in.queue.GetQueueMonitorBatchUseCase;
 import com.algoprep.judge.application.ports.out.QueueMonitorAudiencePort;
 import com.algoprep.judge.application.ports.out.QueueMonitorBroadcastPort;
 import org.slf4j.Logger;

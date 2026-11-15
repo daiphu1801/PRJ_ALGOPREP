@@ -1,6 +1,6 @@
 package com.algoprep.judge.infrastructure.persistence;
 
-import com.algoprep.judge.domain.model.GradingDefaults;
+import com.algoprep.judge.domain.model.grading.GradingDefaults;
 import com.algoprep.judge.domain.ports.out.GradingDefaultsRepository;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.jdbc.core.JdbcTemplate;

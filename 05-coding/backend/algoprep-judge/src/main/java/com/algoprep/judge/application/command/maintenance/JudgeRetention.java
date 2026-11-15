@@ -1,5 +1,6 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.maintenance;
 
+import com.algoprep.judge.application.command.WorkerTransactions;
 import com.algoprep.judge.domain.ports.out.JudgeMaintenanceRepository;
 import java.util.function.IntSupplier;
 

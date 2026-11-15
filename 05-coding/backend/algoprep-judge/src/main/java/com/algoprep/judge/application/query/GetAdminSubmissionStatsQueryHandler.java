@@ -1,15 +1,15 @@
 package com.algoprep.judge.application.query;
 
-import com.algoprep.judge.application.ports.in.GetAdminDifficultyBreakdownUseCase;
-import com.algoprep.judge.application.ports.in.GetAdminSubmissionsByDayUseCase;
-import com.algoprep.judge.application.ports.in.GetAdminSubmissionsByLanguageUseCase;
-import com.algoprep.judge.application.ports.in.GetAdminSubmissionsByMonthUseCase;
-import com.algoprep.judge.application.ports.in.GetAdminSubmissionsSummaryUseCase;
-import com.algoprep.judge.application.ports.in.GetAdminTopProblemsUseCase;
-import com.algoprep.judge.application.ports.in.GetAdminVerdictDistributionUseCase;
+import com.algoprep.judge.application.ports.in.metrics.GetAdminDifficultyBreakdownUseCase;
+import com.algoprep.judge.application.ports.in.metrics.GetAdminSubmissionsByDayUseCase;
+import com.algoprep.judge.application.ports.in.metrics.GetAdminSubmissionsByLanguageUseCase;
+import com.algoprep.judge.application.ports.in.metrics.GetAdminSubmissionsByMonthUseCase;
+import com.algoprep.judge.application.ports.in.metrics.GetAdminSubmissionsSummaryUseCase;
+import com.algoprep.judge.application.ports.in.metrics.GetAdminTopProblemsUseCase;
+import com.algoprep.judge.application.ports.in.metrics.GetAdminVerdictDistributionUseCase;
 import com.algoprep.judge.domain.metrics.AdminSubmissionStatsCalculator;
-import com.algoprep.judge.domain.model.AdminSubmissionStats;
-import com.algoprep.judge.domain.model.AdminSubmissionStats.LevelProblems;
+import com.algoprep.judge.domain.model.metrics.AdminSubmissionStats;
+import com.algoprep.judge.domain.model.metrics.AdminSubmissionStats.LevelProblems;
 import com.algoprep.judge.domain.ports.out.AdminSubmissionStatsRepository;
 import java.time.YearMonth;
 import java.util.List;

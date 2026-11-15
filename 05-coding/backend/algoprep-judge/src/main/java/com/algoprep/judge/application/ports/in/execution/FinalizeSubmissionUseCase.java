@@ -1,7 +1,7 @@
-package com.algoprep.judge.application.ports.in;
+package com.algoprep.judge.application.ports.in.execution;
 
-import com.algoprep.judge.domain.model.WorkerRecords.FinishCommand;
-import com.algoprep.judge.domain.model.WorkerRecords.Finished;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.FinishCommand;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.Finished;
 import java.util.Optional;
 
 /** Internal trusted worker/sweep boundary. Public callers cannot supply grading writes. */

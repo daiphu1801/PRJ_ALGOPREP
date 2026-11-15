@@ -1,15 +1,15 @@
 package com.algoprep.judge.presentation.controller;
 
-import com.algoprep.judge.application.dto.SubmissionReads.ClassHistory;
-import com.algoprep.judge.application.dto.SubmissionReads.Filters;
-import com.algoprep.judge.application.dto.SubmissionReads.InstructorDetail;
-import com.algoprep.judge.application.dto.SubmissionReads.InstructorItem;
-import com.algoprep.judge.application.dto.SubmissionReads.Page;
-import com.algoprep.judge.application.dto.SubmissionReads.Problem;
-import com.algoprep.judge.application.dto.SubmissionReads.TestcaseDetail;
-import com.algoprep.judge.application.ports.in.GetInstructorSubmissionDetailUseCase;
-import com.algoprep.judge.application.ports.in.ListInstructorSubmissionsUseCase;
-import com.algoprep.judge.application.ports.in.ListStudentClassSubmissionsUseCase;
+import com.algoprep.judge.application.dto.read.SubmissionReads.ClassHistory;
+import com.algoprep.judge.application.dto.read.SubmissionReads.Filters;
+import com.algoprep.judge.application.dto.read.SubmissionReads.InstructorDetail;
+import com.algoprep.judge.application.dto.read.SubmissionReads.InstructorItem;
+import com.algoprep.judge.application.dto.read.SubmissionReads.Page;
+import com.algoprep.judge.application.dto.read.SubmissionReads.Problem;
+import com.algoprep.judge.application.dto.read.SubmissionReads.TestcaseDetail;
+import com.algoprep.judge.application.ports.in.read.GetInstructorSubmissionDetailUseCase;
+import com.algoprep.judge.application.ports.in.read.ListInstructorSubmissionsUseCase;
+import com.algoprep.judge.application.ports.in.read.ListStudentClassSubmissionsUseCase;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;

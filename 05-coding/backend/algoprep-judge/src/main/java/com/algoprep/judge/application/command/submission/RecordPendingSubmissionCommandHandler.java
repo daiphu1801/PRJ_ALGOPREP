@@ -1,17 +1,18 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.submission;
 
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
+import com.algoprep.judge.application.command.SubmissionAdmissionValidation;
 import com.algoprep.judge.application.dto.GradingSpecification;
-import com.algoprep.judge.application.dto.PendingSubmissionTicket;
-import com.algoprep.judge.application.dto.PendingSubmissionTicket.ProgramType;
 import com.algoprep.judge.application.dto.RecordPendingSubmissionCommand;
-import com.algoprep.judge.application.ports.in.RecordPendingSubmissionUseCase;
+import com.algoprep.judge.application.dto.submission.PendingSubmissionTicket;
+import com.algoprep.judge.application.dto.submission.PendingSubmissionTicket.ProgramType;
+import com.algoprep.judge.application.ports.in.submission.RecordPendingSubmissionUseCase;
 import com.algoprep.judge.application.ports.out.ProblemGradingSpecPort;
 import com.algoprep.judge.domain.exception.ProblemGradingReadException;
 import com.algoprep.judge.domain.exception.SubmissionAdmissionException;
 import com.algoprep.judge.domain.exception.SubmissionAdmissionUnavailableException;
-import com.algoprep.judge.domain.model.PendingSubmission;
-import com.algoprep.judge.domain.model.PendingSubmission.Program;
+import com.algoprep.judge.domain.model.submission.PendingSubmission;
+import com.algoprep.judge.domain.model.submission.PendingSubmission.Program;
 import com.algoprep.judge.domain.ports.out.SubmissionAdmissionRepository;
 import java.time.Instant;
 import java.util.Map;

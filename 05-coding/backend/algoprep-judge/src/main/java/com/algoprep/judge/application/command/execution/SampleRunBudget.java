@@ -1,4 +1,4 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.execution;
 
 import com.algoprep.judge.domain.exception.SampleRunException;
 import java.util.concurrent.Callable;

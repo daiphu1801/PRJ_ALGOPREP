@@ -1,4 +1,4 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.execution;
 
 import com.algoprep.common.exception.DomainRuleViolationException;
 import com.algoprep.judge.application.dto.ExecutionModels.CompileRequest;
@@ -11,11 +11,11 @@ import com.algoprep.judge.application.dto.ExecutionModels.Status;
 import com.algoprep.judge.application.dto.ExecutionModels.Testcase;
 import com.algoprep.judge.application.dto.ExecutionModels.TestcaseResult;
 import com.algoprep.judge.application.dto.ExecutionModels.Verdict;
-import com.algoprep.judge.application.ports.in.EvaluateProgramUseCase;
+import com.algoprep.judge.application.ports.in.execution.EvaluateProgramUseCase;
 import com.algoprep.judge.application.ports.out.HarnessEvaluationPort;
 import com.algoprep.judge.application.ports.out.JudgeExecutionPort;
 import com.algoprep.judge.domain.exception.JudgeInfrastructureException;
-import com.algoprep.judge.domain.model.WrapperDebugBudget;
+import com.algoprep.judge.domain.model.execution.WrapperDebugBudget;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;

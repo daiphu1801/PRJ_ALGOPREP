@@ -1,4 +1,4 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.queue;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -35,7 +35,7 @@ class QueueFailureMutationTest {
       throws Exception {
     Path file =
         Path.of(
-            "src/main/java/com/algoprep/judge/application/command/ResolveQueueFailureCommandHandler.java");
+            "src/main/java/com/algoprep/judge/application/command/queue/ResolveQueueFailureCommandHandler.java");
     String source = Files.readString(file);
     String mutant =
         switch (rule) {
@@ -70,7 +70,7 @@ class QueueFailureMutationTest {
       var constructor =
           loader
               .loadClass(
-                  "com.algoprep.judge.application.command.mutationcopy.ResolveQueueFailureCommandHandler")
+                  "com.algoprep.judge.application.command.queue.mutationcopy.ResolveQueueFailureCommandHandler")
               .getDeclaredConstructor(
                   QueueFailureRepository.class,
                   IdGeneratorPort.class,
@@ -111,7 +111,7 @@ class QueueFailureMutationTest {
   private Path compile(String source, boolean mutant) throws Exception {
     Path folder = Files.createDirectories(temporary.resolve(mutant ? "mutant" : "original"));
     Path file = folder.resolve("ResolveQueueFailureCommandHandler.java");
-    String prefix = "package com.algoprep.judge.application.command;";
+    String prefix = "package com.algoprep.judge.application.command.queue;";
     Files.writeString(file, source.replace(prefix, prefix.replace(";", ".mutationcopy;")));
     var errors = new ByteArrayOutputStream();
     int exit =

@@ -1,6 +1,6 @@
 package com.algoprep.judge.application.query;
 
-import com.algoprep.judge.application.ports.in.GetAcceptedSubmissionSnapshotUseCase;
+import com.algoprep.judge.application.ports.in.grading.GetAcceptedSubmissionSnapshotUseCase;
 import com.algoprep.judge.domain.exception.JudgeReadUnavailableException;
 import com.algoprep.judge.domain.exception.SubmissionNotAcceptedException;
 import com.algoprep.judge.domain.exception.SubmissionNotFoundException;

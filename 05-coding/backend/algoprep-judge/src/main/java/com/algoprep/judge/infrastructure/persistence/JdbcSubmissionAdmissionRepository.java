@@ -1,7 +1,7 @@
 package com.algoprep.judge.infrastructure.persistence;
 
-import com.algoprep.judge.domain.model.PendingSubmission;
-import com.algoprep.judge.domain.model.PendingSubmission.Owner;
+import com.algoprep.judge.domain.model.submission.PendingSubmission;
+import com.algoprep.judge.domain.model.submission.PendingSubmission.Owner;
 import com.algoprep.judge.domain.ports.out.SubmissionAdmissionRepository;
 import java.time.Instant;
 import java.time.OffsetDateTime;

@@ -1,9 +1,9 @@
-package com.algoprep.judge.application.dto;
+package com.algoprep.judge.application.dto.execution;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.algoprep.judge.domain.model.WorkerControl;
+import com.algoprep.judge.domain.model.execution.WorkerControl;
 import org.junit.jupiter.api.Test;
 
 class ConfiguredWorkerScalingTest {

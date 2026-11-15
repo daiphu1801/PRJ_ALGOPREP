@@ -1,4 +1,4 @@
-package com.algoprep.judge.application.dto;
+package com.algoprep.judge.application.dto.queue;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -1,4 +1,4 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.execution;
 
 import com.algoprep.judge.application.dto.ExecutionModels.CompileRequest;
 import com.algoprep.judge.application.dto.ExecutionModels.Limits;
@@ -8,7 +8,7 @@ import com.algoprep.judge.application.ports.out.HarnessEvaluationPort;
 import com.algoprep.judge.application.ports.out.JudgeExecutionPort;
 import com.algoprep.judge.application.ports.out.JudgeExecutionPort.CompiledExecution;
 import com.algoprep.judge.domain.exception.ProblemGradingReadException;
-import com.algoprep.judge.domain.model.WorkerRecords.FinishKind;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.FinishKind;
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.StandardCharsets;

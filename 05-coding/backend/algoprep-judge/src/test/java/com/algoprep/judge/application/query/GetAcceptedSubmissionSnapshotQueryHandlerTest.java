@@ -9,7 +9,7 @@ import com.algoprep.judge.domain.exception.JudgeReadUnavailableException;
 import com.algoprep.judge.domain.exception.SubmissionNotAcceptedException;
 import com.algoprep.judge.domain.exception.SubmissionNotFoundException;
 import com.algoprep.judge.domain.model.AcceptedSubmissionSnapshot;
-import com.algoprep.judge.domain.model.SubmissionSnapshotLookup;
+import com.algoprep.judge.domain.model.read.SubmissionSnapshotLookup;
 import com.algoprep.judge.domain.ports.out.SubmissionSnapshotRepository;
 import java.util.List;
 import java.util.Optional;

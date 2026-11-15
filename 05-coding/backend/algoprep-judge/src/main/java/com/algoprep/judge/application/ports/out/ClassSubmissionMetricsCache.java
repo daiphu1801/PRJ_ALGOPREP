@@ -1,7 +1,7 @@
 package com.algoprep.judge.application.ports.out;
 
-import com.algoprep.judge.domain.model.ClassMetricsScope;
-import com.algoprep.judge.domain.model.StudentSubmissionMetrics;
+import com.algoprep.judge.domain.model.metrics.ClassMetricsScope;
+import com.algoprep.judge.domain.model.metrics.StudentSubmissionMetrics;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;

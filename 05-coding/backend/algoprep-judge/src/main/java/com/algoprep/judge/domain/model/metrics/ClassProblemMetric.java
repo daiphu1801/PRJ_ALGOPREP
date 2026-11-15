@@ -1,4 +1,4 @@
-package com.algoprep.judge.domain.model;
+package com.algoprep.judge.domain.model.metrics;
 
 /** Only the contracted aggregate leaves the repository; no learner or source data. */
 public record ClassProblemMetric(long submissionCount, Double acRatePercent) {

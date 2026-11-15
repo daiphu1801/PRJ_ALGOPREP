@@ -1,6 +1,7 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.maintenance;
 
-import com.algoprep.judge.application.ports.in.PurgePublishedJudgeEventsUseCase;
+import com.algoprep.judge.application.command.WorkerTransactions;
+import com.algoprep.judge.application.ports.in.maintenance.PurgePublishedJudgeEventsUseCase;
 import com.algoprep.judge.domain.ports.out.JudgeMaintenanceRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

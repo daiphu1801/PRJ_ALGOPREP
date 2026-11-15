@@ -1,6 +1,6 @@
 package com.algoprep.judge.domain.ports.out;
 
-import com.algoprep.judge.domain.model.AdminLanguageConfig;
+import com.algoprep.judge.domain.model.language.AdminLanguageConfig;
 import java.util.UUID;
 
 /** Own-schema configuration only; missing rows fail closed, never fabricated defaults. */

@@ -1,6 +1,6 @@
 package com.algoprep.judge.domain.ports.out;
 
-import com.algoprep.judge.domain.model.LearnerSubmissionCandidate;
+import com.algoprep.judge.domain.model.read.LearnerSubmissionCandidate;
 import java.util.List;
 import java.util.UUID;
 

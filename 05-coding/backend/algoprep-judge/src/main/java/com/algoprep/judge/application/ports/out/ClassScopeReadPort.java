@@ -1,6 +1,6 @@
 package com.algoprep.judge.application.ports.out;
 
-import com.algoprep.judge.application.dto.SubmissionReads.Membership;
+import com.algoprep.judge.application.dto.read.SubmissionReads.Membership;
 import java.util.List;
 import java.util.UUID;
 

@@ -1,11 +1,11 @@
 package com.algoprep.judge.infrastructure.persistence;
 
-import com.algoprep.judge.domain.model.PendingSubmission.Owner;
-import com.algoprep.judge.domain.model.WorkerRecords.Outcome;
-import com.algoprep.judge.domain.model.WorkerRecords.Result;
-import com.algoprep.judge.domain.model.WorkerRecords.State;
-import com.algoprep.judge.domain.model.WorkerRecords.TestcaseWrite;
-import com.algoprep.judge.domain.model.WorkerRecords.Token;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.Outcome;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.Result;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.State;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.TestcaseWrite;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.Token;
+import com.algoprep.judge.domain.model.submission.PendingSubmission.Owner;
 import com.algoprep.judge.domain.ports.out.SubmissionWorkerRepository;
 import java.sql.ResultSet;
 import java.sql.SQLException;

@@ -1,9 +1,9 @@
 package com.algoprep.judge.application.query;
 
-import com.algoprep.judge.application.dto.SubmissionReads.Detail;
-import com.algoprep.judge.application.dto.SubmissionReads.Progress;
-import com.algoprep.judge.application.ports.in.GetOwnedSubmissionDetailUseCase;
-import com.algoprep.judge.application.ports.in.GetSubmissionProgressUseCase;
+import com.algoprep.judge.application.dto.read.SubmissionReads.Detail;
+import com.algoprep.judge.application.dto.read.SubmissionReads.Progress;
+import com.algoprep.judge.application.ports.in.read.GetOwnedSubmissionDetailUseCase;
+import com.algoprep.judge.application.ports.in.read.GetSubmissionProgressUseCase;
 import com.algoprep.judge.domain.ports.out.SubmissionReadRepository;
 import java.util.UUID;
 import org.springframework.stereotype.Service;

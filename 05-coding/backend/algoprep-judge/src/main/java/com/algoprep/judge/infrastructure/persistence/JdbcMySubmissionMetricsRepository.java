@@ -1,7 +1,7 @@
 package com.algoprep.judge.infrastructure.persistence;
 
-import com.algoprep.judge.domain.model.SubmissionActivityDay;
-import com.algoprep.judge.domain.model.TopicSubmissionCount;
+import com.algoprep.judge.domain.model.metrics.SubmissionActivityDay;
+import com.algoprep.judge.domain.model.metrics.TopicSubmissionCount;
 import com.algoprep.judge.domain.ports.out.MySubmissionMetricsRepository;
 import java.time.Instant;
 import java.time.LocalDate;

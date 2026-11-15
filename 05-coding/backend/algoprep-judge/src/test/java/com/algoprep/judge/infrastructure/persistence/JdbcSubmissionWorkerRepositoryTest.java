@@ -3,11 +3,11 @@ package com.algoprep.judge.infrastructure.persistence;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.algoprep.judge.domain.model.PendingSubmission.Owner;
-import com.algoprep.judge.domain.model.WorkerRecords.Outcome;
-import com.algoprep.judge.domain.model.WorkerRecords.State;
-import com.algoprep.judge.domain.model.WorkerRecords.TestcaseWrite;
-import com.algoprep.judge.domain.model.WorkerRecords.Token;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.Outcome;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.State;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.TestcaseWrite;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.Token;
+import com.algoprep.judge.domain.model.submission.PendingSubmission.Owner;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.OffsetDateTime;

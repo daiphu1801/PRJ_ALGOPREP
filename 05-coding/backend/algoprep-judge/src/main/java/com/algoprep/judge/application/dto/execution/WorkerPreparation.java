@@ -1,8 +1,8 @@
-package com.algoprep.judge.application.dto;
+package com.algoprep.judge.application.dto.execution;
 
 import com.algoprep.judge.application.dto.ExecutionModels.Matching;
 import com.algoprep.judge.application.dto.ExecutionModels.Program;
-import com.algoprep.judge.domain.model.WorkerJob;
+import com.algoprep.judge.domain.model.execution.WorkerJob;
 
 public final class WorkerPreparation {
   private WorkerPreparation() {}

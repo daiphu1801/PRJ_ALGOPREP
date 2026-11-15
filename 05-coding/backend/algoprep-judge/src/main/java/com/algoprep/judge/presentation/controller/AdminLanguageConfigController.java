@@ -1,8 +1,8 @@
 package com.algoprep.judge.presentation.controller;
 
-import com.algoprep.judge.application.ports.in.GetAdminLanguageConfigUseCase;
-import com.algoprep.judge.application.ports.in.UpdateAdminLanguageConfigUseCase;
-import com.algoprep.judge.domain.model.AdminLanguageConfig;
+import com.algoprep.judge.application.ports.in.language.GetAdminLanguageConfigUseCase;
+import com.algoprep.judge.application.ports.in.language.UpdateAdminLanguageConfigUseCase;
+import com.algoprep.judge.domain.model.language.AdminLanguageConfig;
 import java.util.UUID;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

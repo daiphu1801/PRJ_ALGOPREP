@@ -1,4 +1,4 @@
-package com.algoprep.judge.application.ports.in;
+package com.algoprep.judge.application.ports.in.execution;
 
 import com.algoprep.judge.application.dto.ExecutionModels.EvaluationRequest;
 import com.algoprep.judge.application.dto.ExecutionModels.EvaluationResult;

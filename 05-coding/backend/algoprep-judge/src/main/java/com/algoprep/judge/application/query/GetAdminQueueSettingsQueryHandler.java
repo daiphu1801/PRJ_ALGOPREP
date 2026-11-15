@@ -1,7 +1,7 @@
 package com.algoprep.judge.application.query;
 
-import com.algoprep.judge.application.ports.in.GetAdminQueueSettingsUseCase;
-import com.algoprep.judge.domain.model.AdminQueueSettings;
+import com.algoprep.judge.application.ports.in.queue.GetAdminQueueSettingsUseCase;
+import com.algoprep.judge.domain.model.queue.AdminQueueSettings;
 import com.algoprep.judge.domain.ports.out.AdminQueueRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

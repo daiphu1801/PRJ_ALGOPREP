@@ -1,7 +1,7 @@
-package com.algoprep.judge.application.dto;
+package com.algoprep.judge.application.dto.metrics;
 
 import com.algoprep.common.exception.InvalidRequestException;
-import com.algoprep.judge.domain.model.SubmissionMetricRange;
+import com.algoprep.judge.domain.model.metrics.SubmissionMetricRange;
 import java.util.Set;
 import java.util.UUID;
 

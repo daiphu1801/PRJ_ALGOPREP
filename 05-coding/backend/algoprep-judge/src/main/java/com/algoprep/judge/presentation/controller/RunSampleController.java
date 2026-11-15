@@ -1,10 +1,10 @@
 package com.algoprep.judge.presentation.controller;
 
-import com.algoprep.judge.application.dto.ExecutionLimitsView;
-import com.algoprep.judge.application.dto.SampleRun.Command;
-import com.algoprep.judge.application.dto.SampleRun.Result;
-import com.algoprep.judge.application.ports.in.GetEffectiveExecutionLimitsUseCase;
-import com.algoprep.judge.application.ports.in.RunSampleUseCase;
+import com.algoprep.judge.application.dto.execution.SampleRun.Command;
+import com.algoprep.judge.application.dto.execution.SampleRun.Result;
+import com.algoprep.judge.application.dto.grading.ExecutionLimitsView;
+import com.algoprep.judge.application.ports.in.execution.RunSampleUseCase;
+import com.algoprep.judge.application.ports.in.grading.GetEffectiveExecutionLimitsUseCase;
 import com.algoprep.judge.domain.exception.SubmissionAdmissionException;
 import java.util.UUID;
 import org.springframework.security.access.prepost.PreAuthorize;

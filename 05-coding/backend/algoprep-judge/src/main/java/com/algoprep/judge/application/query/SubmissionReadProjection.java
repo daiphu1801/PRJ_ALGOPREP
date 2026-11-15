@@ -1,15 +1,15 @@
 package com.algoprep.judge.application.query;
 
-import com.algoprep.judge.application.dto.SubmissionReads.Detail;
-import com.algoprep.judge.application.dto.SubmissionReads.History;
-import com.algoprep.judge.application.dto.SubmissionReads.Problem;
-import com.algoprep.judge.application.dto.SubmissionReads.Progress;
-import com.algoprep.judge.application.dto.SubmissionReads.ProgressCase;
-import com.algoprep.judge.application.dto.SubmissionReads.Summary;
-import com.algoprep.judge.application.dto.SubmissionReads.Testcase;
-import com.algoprep.judge.application.dto.SubmissionReads.TestcaseDetail;
+import com.algoprep.judge.application.dto.read.SubmissionReads.Detail;
+import com.algoprep.judge.application.dto.read.SubmissionReads.History;
+import com.algoprep.judge.application.dto.read.SubmissionReads.Problem;
+import com.algoprep.judge.application.dto.read.SubmissionReads.Progress;
+import com.algoprep.judge.application.dto.read.SubmissionReads.ProgressCase;
+import com.algoprep.judge.application.dto.read.SubmissionReads.Summary;
+import com.algoprep.judge.application.dto.read.SubmissionReads.Testcase;
+import com.algoprep.judge.application.dto.read.SubmissionReads.TestcaseDetail;
 import com.algoprep.judge.application.ports.out.ProblemSummaryReadPort;
-import com.algoprep.judge.domain.model.SubmissionReadState;
+import com.algoprep.judge.domain.model.read.SubmissionReadState;
 import com.algoprep.judge.domain.ports.out.SubmissionReadRepository;
 import java.math.BigDecimal;
 import java.math.RoundingMode;

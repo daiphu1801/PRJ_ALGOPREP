@@ -1,7 +1,7 @@
 package com.algoprep.judge.domain.ports.out;
 
-import com.algoprep.judge.domain.model.PendingSubmission;
-import com.algoprep.judge.domain.model.PendingSubmission.Owner;
+import com.algoprep.judge.domain.model.submission.PendingSubmission;
+import com.algoprep.judge.domain.model.submission.PendingSubmission.Owner;
 import java.time.Instant;
 
 /**

@@ -1,4 +1,4 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.submission;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -8,17 +8,17 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.judge.application.dto.PendingSubmissionTicket;
 import com.algoprep.judge.application.dto.QueueFailureResolution;
-import com.algoprep.judge.application.dto.QueuedSubmissionResult;
 import com.algoprep.judge.application.dto.RecordPendingSubmissionCommand;
 import com.algoprep.judge.application.dto.SubmissionFinishedProgress;
-import com.algoprep.judge.application.ports.in.QueueSubmissionUseCase;
+import com.algoprep.judge.application.dto.submission.PendingSubmissionTicket;
+import com.algoprep.judge.application.dto.submission.QueuedSubmissionResult;
+import com.algoprep.judge.application.ports.in.submission.QueueSubmissionUseCase;
 import com.algoprep.judge.application.ports.out.SubmissionProgressPort;
 import com.algoprep.judge.domain.exception.SubmissionAdmissionException;
-import com.algoprep.judge.domain.model.PendingSubmission.Owner;
-import com.algoprep.judge.domain.model.PendingSubmission.Program;
-import com.algoprep.judge.domain.model.SubmissionLifecycleView;
+import com.algoprep.judge.domain.model.queue.SubmissionLifecycleView;
+import com.algoprep.judge.domain.model.submission.PendingSubmission.Owner;
+import com.algoprep.judge.domain.model.submission.PendingSubmission.Program;
 import java.time.Instant;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;

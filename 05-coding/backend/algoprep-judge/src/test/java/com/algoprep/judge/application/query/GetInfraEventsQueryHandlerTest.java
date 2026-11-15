@@ -6,11 +6,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.judge.application.dto.InfraEventMessages;
-import com.algoprep.judge.application.dto.InfraEventQuery;
-import com.algoprep.judge.domain.model.InfraEvents.Position;
-import com.algoprep.judge.domain.model.InfraEvents.Row;
-import com.algoprep.judge.domain.model.InfraEvents.Summary;
+import com.algoprep.judge.application.dto.infra.InfraEventMessages;
+import com.algoprep.judge.application.dto.infra.InfraEventQuery;
+import com.algoprep.judge.domain.model.infra.InfraEvents.Position;
+import com.algoprep.judge.domain.model.infra.InfraEvents.Row;
+import com.algoprep.judge.domain.model.infra.InfraEvents.Summary;
 import com.algoprep.judge.domain.ports.out.InfraEventRepository;
 import java.time.Instant;
 import java.util.List;

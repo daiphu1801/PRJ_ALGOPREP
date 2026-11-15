@@ -1,13 +1,13 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.execution;
 
 import com.algoprep.common.exception.DomainRuleViolationException;
 import com.algoprep.judge.application.dto.GradingSpecification;
-import com.algoprep.judge.application.dto.GradingTestcaseSnapshot;
+import com.algoprep.judge.application.dto.execution.GradingTestcaseSnapshot;
 import com.algoprep.judge.application.ports.out.ProblemGradingSpecPort;
 import com.algoprep.judge.domain.exception.JudgeInfrastructureException;
 import com.algoprep.judge.domain.exception.ProblemGradingReadException;
-import com.algoprep.judge.domain.model.WorkerJob;
-import com.algoprep.judge.domain.model.WorkerSettings;
+import com.algoprep.judge.domain.model.execution.WorkerJob;
+import com.algoprep.judge.domain.model.execution.WorkerSettings;
 import com.algoprep.judge.domain.ports.out.WorkerLeasePort.Lease;
 import java.util.Comparator;
 import java.util.HashSet;

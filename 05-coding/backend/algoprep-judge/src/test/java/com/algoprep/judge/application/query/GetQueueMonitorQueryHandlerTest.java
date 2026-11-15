@@ -6,11 +6,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.judge.application.dto.QueueJobsQuery;
-import com.algoprep.judge.domain.model.QueueMonitoring.Counts;
-import com.algoprep.judge.domain.model.QueueMonitoring.Facts;
-import com.algoprep.judge.domain.model.QueueMonitoring.Job;
-import com.algoprep.judge.domain.model.QueueMonitoring.JobSettings;
+import com.algoprep.judge.application.dto.queue.QueueJobsQuery;
+import com.algoprep.judge.domain.model.queue.QueueMonitoring.Counts;
+import com.algoprep.judge.domain.model.queue.QueueMonitoring.Facts;
+import com.algoprep.judge.domain.model.queue.QueueMonitoring.Job;
+import com.algoprep.judge.domain.model.queue.QueueMonitoring.JobSettings;
 import com.algoprep.judge.domain.ports.out.QueueMonitorRepository;
 import java.time.Instant;
 import java.util.List;

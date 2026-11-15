@@ -1,4 +1,4 @@
-package com.algoprep.judge.domain.model;
+package com.algoprep.judge.domain.model.grading;
 
 /** Current base limits, before any language multipliers; units remain explicit. */
 public record GradingDefaults(

@@ -7,8 +7,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.judge.domain.exception.JudgeReadUnavailableException;
-import com.algoprep.judge.domain.model.GeneratorSandboxLimits;
-import com.algoprep.judge.domain.model.LanguageMultipliers;
+import com.algoprep.judge.domain.model.grading.GeneratorSandboxLimits;
+import com.algoprep.judge.domain.model.language.LanguageMultipliers;
 import com.algoprep.judge.domain.ports.out.JudgeConfigRepository;
 import java.math.BigDecimal;
 import java.util.ArrayList;

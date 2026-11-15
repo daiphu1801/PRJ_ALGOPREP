@@ -1,5 +1,6 @@
-package com.algoprep.judge.domain.model;
+package com.algoprep.judge.domain.model.metrics;
 
+import com.algoprep.judge.domain.model.InstructorReadWindow;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;

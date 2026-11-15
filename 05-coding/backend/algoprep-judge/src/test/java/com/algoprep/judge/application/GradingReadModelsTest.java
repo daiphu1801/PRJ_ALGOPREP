@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.algoprep.judge.application.dto.GradingSpecification;
 import com.algoprep.judge.application.dto.GradingTestcase;
-import com.algoprep.judge.application.dto.GradingTestcaseSnapshot;
+import com.algoprep.judge.application.dto.execution.GradingTestcaseSnapshot;
 import com.algoprep.judge.domain.exception.ProblemGradingReadException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;

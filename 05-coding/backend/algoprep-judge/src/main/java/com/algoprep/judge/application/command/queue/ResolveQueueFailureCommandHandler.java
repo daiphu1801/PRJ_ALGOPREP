@@ -1,10 +1,10 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.queue;
 
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
 import com.algoprep.judge.application.dto.QueueFailureResolution;
 import com.algoprep.judge.application.ports.in.ResolveQueueFailureUseCase;
 import com.algoprep.judge.domain.exception.QueueFailureFinalizationUnavailableException;
-import com.algoprep.judge.domain.model.SubmissionLifecycleView;
+import com.algoprep.judge.domain.model.queue.SubmissionLifecycleView;
 import com.algoprep.judge.domain.ports.out.QueueFailureRepository;
 import java.util.Objects;
 import java.util.UUID;

@@ -1,5 +1,6 @@
-package com.algoprep.judge.application.dto;
+package com.algoprep.judge.application.dto.execution;
 
+import com.algoprep.judge.application.dto.ExecutionModels;
 import com.algoprep.judge.application.dto.ExecutionModels.TestcaseResult;
 import java.util.List;
 import java.util.UUID;

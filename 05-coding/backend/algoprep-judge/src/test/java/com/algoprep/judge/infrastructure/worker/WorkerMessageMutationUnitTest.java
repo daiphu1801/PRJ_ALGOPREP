@@ -6,7 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-import com.algoprep.judge.application.ports.in.ProcessQueuedSubmissionUseCase;
+import com.algoprep.judge.application.ports.in.execution.ProcessQueuedSubmissionUseCase;
 import com.rabbitmq.client.Channel;
 import java.io.ByteArrayOutputStream;
 import java.net.URL;

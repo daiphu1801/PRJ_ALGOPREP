@@ -1,8 +1,8 @@
 package com.algoprep.judge.infrastructure.cache;
 
 import com.algoprep.judge.application.ports.out.ClassSubmissionMetricsCache;
-import com.algoprep.judge.domain.model.ClassMetricsScope;
-import com.algoprep.judge.domain.model.StudentSubmissionMetrics;
+import com.algoprep.judge.domain.model.metrics.ClassMetricsScope;
+import com.algoprep.judge.domain.model.metrics.StudentSubmissionMetrics;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

@@ -1,6 +1,6 @@
 package com.algoprep.judge.domain.ports.out;
 
-import com.algoprep.judge.domain.model.AdminQueueState;
+import com.algoprep.judge.domain.model.queue.AdminQueueState;
 import java.util.Map;
 import java.util.UUID;
 

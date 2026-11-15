@@ -1,15 +1,15 @@
 package com.algoprep.judge.presentation.controller;
 
-import com.algoprep.judge.application.dto.SubmissionReads.Detail;
-import com.algoprep.judge.application.dto.SubmissionReads.Filters;
-import com.algoprep.judge.application.dto.SubmissionReads.History;
-import com.algoprep.judge.application.dto.SubmissionReads.Page;
-import com.algoprep.judge.application.dto.SubmissionReads.Progress;
-import com.algoprep.judge.application.dto.SubmissionReads.Summary;
-import com.algoprep.judge.application.ports.in.GetOwnedSubmissionDetailUseCase;
-import com.algoprep.judge.application.ports.in.GetSubmissionProgressUseCase;
-import com.algoprep.judge.application.ports.in.ListMyProblemSubmissionsUseCase;
-import com.algoprep.judge.application.ports.in.ListMySubmissionHistoryUseCase;
+import com.algoprep.judge.application.dto.read.SubmissionReads.Detail;
+import com.algoprep.judge.application.dto.read.SubmissionReads.Filters;
+import com.algoprep.judge.application.dto.read.SubmissionReads.History;
+import com.algoprep.judge.application.dto.read.SubmissionReads.Page;
+import com.algoprep.judge.application.dto.read.SubmissionReads.Progress;
+import com.algoprep.judge.application.dto.read.SubmissionReads.Summary;
+import com.algoprep.judge.application.ports.in.read.GetOwnedSubmissionDetailUseCase;
+import com.algoprep.judge.application.ports.in.read.GetSubmissionProgressUseCase;
+import com.algoprep.judge.application.ports.in.read.ListMyProblemSubmissionsUseCase;
+import com.algoprep.judge.application.ports.in.read.ListMySubmissionHistoryUseCase;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.security.access.prepost.PreAuthorize;

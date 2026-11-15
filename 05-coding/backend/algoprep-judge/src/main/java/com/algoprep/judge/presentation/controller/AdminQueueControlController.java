@@ -1,10 +1,10 @@
 package com.algoprep.judge.presentation.controller;
 
-import com.algoprep.judge.application.ports.in.GetAdminQueueSettingsUseCase;
-import com.algoprep.judge.application.ports.in.SetAdminQueueAutoscaleUseCase;
-import com.algoprep.judge.application.ports.in.SetAdminQueuePausedUseCase;
-import com.algoprep.judge.application.ports.in.UpdateAdminQueueSettingsUseCase;
-import com.algoprep.judge.domain.model.AdminQueueSettings;
+import com.algoprep.judge.application.ports.in.queue.GetAdminQueueSettingsUseCase;
+import com.algoprep.judge.application.ports.in.queue.SetAdminQueueAutoscaleUseCase;
+import com.algoprep.judge.application.ports.in.queue.SetAdminQueuePausedUseCase;
+import com.algoprep.judge.application.ports.in.queue.UpdateAdminQueueSettingsUseCase;
+import com.algoprep.judge.domain.model.queue.AdminQueueSettings;
 import java.time.Instant;
 import java.util.UUID;
 import org.springframework.security.access.prepost.PreAuthorize;

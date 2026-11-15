@@ -1,6 +1,6 @@
-package com.algoprep.judge.application.dto;
+package com.algoprep.judge.application.dto.infra;
 
-import com.algoprep.judge.domain.model.InfraEvents.Position;
+import com.algoprep.judge.domain.model.infra.InfraEvents.Position;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;

@@ -1,7 +1,7 @@
 package com.algoprep.judge.application.query;
 
-import com.algoprep.judge.application.ports.in.ReadGradingDefaultsUseCase;
-import com.algoprep.judge.domain.model.GradingDefaults;
+import com.algoprep.judge.application.ports.in.grading.ReadGradingDefaultsUseCase;
+import com.algoprep.judge.domain.model.grading.GradingDefaults;
 import com.algoprep.judge.domain.ports.out.GradingDefaultsRepository;
 import org.springframework.stereotype.Service;
 

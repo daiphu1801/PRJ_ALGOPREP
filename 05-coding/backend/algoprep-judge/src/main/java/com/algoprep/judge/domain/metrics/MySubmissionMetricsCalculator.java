@@ -1,7 +1,7 @@
 package com.algoprep.judge.domain.metrics;
 
-import com.algoprep.judge.domain.model.SubmissionActivityDay;
-import com.algoprep.judge.domain.model.SubmissionMetricRange;
+import com.algoprep.judge.domain.model.metrics.SubmissionActivityDay;
+import com.algoprep.judge.domain.model.metrics.SubmissionMetricRange;
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;

@@ -1,7 +1,7 @@
 package com.algoprep.judge.infrastructure.messaging;
 
 import com.algoprep.judge.application.ports.out.JudgeDomainEventPort;
-import com.algoprep.judge.domain.model.OutboxEvent;
+import com.algoprep.judge.domain.model.outbox.OutboxEvent;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.ConnectionFactory;
 import java.nio.charset.StandardCharsets;

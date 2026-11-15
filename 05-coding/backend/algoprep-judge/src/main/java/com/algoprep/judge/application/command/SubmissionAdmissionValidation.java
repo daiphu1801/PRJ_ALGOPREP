@@ -2,16 +2,16 @@ package com.algoprep.judge.application.command;
 
 import com.algoprep.judge.application.dto.RecordPendingSubmissionCommand;
 import com.algoprep.judge.domain.exception.SubmissionAdmissionException;
-import com.algoprep.judge.domain.model.PendingSubmission.Program;
+import com.algoprep.judge.domain.model.submission.PendingSubmission.Program;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 
-final class SubmissionAdmissionValidation {
+public final class SubmissionAdmissionValidation {
   private SubmissionAdmissionValidation() {}
 
-  static Program validate(RecordPendingSubmissionCommand command) {
+  public static Program validate(RecordPendingSubmissionCommand command) {
     Objects.requireNonNull(command);
     Objects.requireNonNull(command.owner());
     Objects.requireNonNull(command.owner().userId());

@@ -1,7 +1,7 @@
 package com.algoprep.judge.application.query;
 
-import com.algoprep.judge.application.ports.in.GetAdminLanguageConfigUseCase;
-import com.algoprep.judge.domain.model.AdminLanguageConfig;
+import com.algoprep.judge.application.ports.in.language.GetAdminLanguageConfigUseCase;
+import com.algoprep.judge.domain.model.language.AdminLanguageConfig;
 import com.algoprep.judge.domain.ports.out.AdminLanguageConfigRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;

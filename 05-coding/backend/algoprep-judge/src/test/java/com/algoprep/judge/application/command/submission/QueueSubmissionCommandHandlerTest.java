@@ -1,4 +1,4 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.submission;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -7,14 +7,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.judge.application.dto.PendingSubmissionTicket;
-import com.algoprep.judge.application.dto.PendingSubmissionTicket.ProgramType;
+import com.algoprep.judge.application.command.queue.QueueFailureFixture;
 import com.algoprep.judge.application.dto.QueueFailureResolution;
-import com.algoprep.judge.application.ports.in.RecordPendingSubmissionUseCase;
+import com.algoprep.judge.application.dto.submission.PendingSubmissionTicket;
+import com.algoprep.judge.application.dto.submission.PendingSubmissionTicket.ProgramType;
 import com.algoprep.judge.application.ports.in.ResolveQueueFailureUseCase;
+import com.algoprep.judge.application.ports.in.submission.RecordPendingSubmissionUseCase;
 import com.algoprep.judge.application.ports.out.SubmissionQueuePort;
 import com.algoprep.judge.domain.exception.SubmissionAdmissionException;
-import com.algoprep.judge.domain.model.SubmissionLifecycleView;
+import com.algoprep.judge.domain.model.queue.SubmissionLifecycleView;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;

@@ -1,14 +1,14 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.execution;
 
 import com.algoprep.common.exception.DomainRuleViolationException;
 import com.algoprep.judge.application.dto.ExecutionModels.Limits;
 import com.algoprep.judge.application.dto.GradingSpecification;
-import com.algoprep.judge.application.dto.WorkerPreparation;
+import com.algoprep.judge.application.dto.execution.WorkerPreparation;
 import com.algoprep.judge.application.ports.out.ProblemGradingSpecPort;
 import com.algoprep.judge.application.ports.out.WorkerProgramPort;
 import com.algoprep.judge.domain.exception.ProblemGradingReadException;
-import com.algoprep.judge.domain.model.WorkerJob;
-import com.algoprep.judge.domain.model.WorkerSettings;
+import com.algoprep.judge.domain.model.execution.WorkerJob;
+import com.algoprep.judge.domain.model.execution.WorkerSettings;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import org.springframework.stereotype.Component;

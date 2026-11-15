@@ -1,6 +1,6 @@
 package com.algoprep.judge.domain.ports.out;
 
-import com.algoprep.judge.domain.model.GradingDefaults;
+import com.algoprep.judge.domain.model.grading.GradingDefaults;
 
 /** Reads the singleton owned by judge. */
 public interface GradingDefaultsRepository {

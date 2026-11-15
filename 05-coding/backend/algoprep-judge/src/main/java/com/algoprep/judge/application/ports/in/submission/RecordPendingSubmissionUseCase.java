@@ -1,7 +1,7 @@
-package com.algoprep.judge.application.ports.in;
+package com.algoprep.judge.application.ports.in.submission;
 
-import com.algoprep.judge.application.dto.PendingSubmissionTicket;
 import com.algoprep.judge.application.dto.RecordPendingSubmissionCommand;
+import com.algoprep.judge.application.dto.submission.PendingSubmissionTicket;
 
 /**
  * Trusted admission kernel, not an HTTP endpoint. Caller authenticates a STUDENT and supplies only

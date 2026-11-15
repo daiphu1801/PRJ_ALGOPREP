@@ -1,7 +1,7 @@
 package com.algoprep.judge.infrastructure.persistence;
 
-import com.algoprep.judge.domain.model.InstructorReadFilter;
-import com.algoprep.judge.domain.model.ScopedSubmission;
+import com.algoprep.judge.domain.model.read.InstructorReadFilter;
+import com.algoprep.judge.domain.model.read.ScopedSubmission;
 import com.algoprep.judge.domain.ports.out.InstructorSubmissionRepository;
 import java.time.OffsetDateTime;
 import java.util.List;

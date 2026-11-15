@@ -1,9 +1,9 @@
 package com.algoprep.judge.infrastructure.persistence;
 
-import com.algoprep.judge.domain.model.AssignmentMetricScope;
-import com.algoprep.judge.domain.model.AssignmentPeriod;
-import com.algoprep.judge.domain.model.AssignmentSolveState;
-import com.algoprep.judge.domain.model.ClassProblemMetric;
+import com.algoprep.judge.domain.model.metrics.AssignmentMetricScope;
+import com.algoprep.judge.domain.model.metrics.AssignmentPeriod;
+import com.algoprep.judge.domain.model.metrics.AssignmentSolveState;
+import com.algoprep.judge.domain.model.metrics.ClassProblemMetric;
 import com.algoprep.judge.domain.ports.out.AssignmentMetricsRepository;
 import java.time.OffsetDateTime;
 import java.util.LinkedHashMap;

@@ -1,6 +1,6 @@
-package com.algoprep.judge.application.dto;
+package com.algoprep.judge.application.dto.metrics;
 
-import com.algoprep.judge.domain.model.SubmissionActivityDay;
+import com.algoprep.judge.domain.model.metrics.SubmissionActivityDay;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;

@@ -3,8 +3,8 @@ package com.algoprep.judge.domain.metrics;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.algoprep.judge.domain.model.ClassMetricSubmission;
-import com.algoprep.judge.domain.model.ClassMetricsScope;
+import com.algoprep.judge.domain.model.metrics.ClassMetricSubmission;
+import com.algoprep.judge.domain.model.metrics.ClassMetricsScope;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;

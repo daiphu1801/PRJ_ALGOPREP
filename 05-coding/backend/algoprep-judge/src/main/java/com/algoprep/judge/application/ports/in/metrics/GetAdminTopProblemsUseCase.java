@@ -1,6 +1,6 @@
-package com.algoprep.judge.application.ports.in;
+package com.algoprep.judge.application.ports.in.metrics;
 
-import com.algoprep.judge.domain.model.AdminSubmissionStats;
+import com.algoprep.judge.domain.model.metrics.AdminSubmissionStats;
 
 /** Trusted admin caller in identity owns authorization, metadata and per-block caching. */
 public interface GetAdminTopProblemsUseCase {

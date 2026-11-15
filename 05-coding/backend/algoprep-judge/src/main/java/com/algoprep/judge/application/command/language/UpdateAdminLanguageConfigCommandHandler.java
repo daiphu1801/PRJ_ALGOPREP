@@ -1,10 +1,10 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.language;
 
-import com.algoprep.judge.application.dto.AdminConfigFields;
-import com.algoprep.judge.application.ports.in.UpdateAdminLanguageConfigUseCase;
+import com.algoprep.judge.application.dto.language.AdminConfigFields;
+import com.algoprep.judge.application.ports.in.language.UpdateAdminLanguageConfigUseCase;
 import com.algoprep.judge.domain.exception.AdminConfigException;
-import com.algoprep.judge.domain.model.AdminLanguageConfig;
 import com.algoprep.judge.domain.model.JudgeAuditEntry;
+import com.algoprep.judge.domain.model.language.AdminLanguageConfig;
 import com.algoprep.judge.domain.ports.out.AdminLanguageConfigRepository;
 import com.algoprep.judge.domain.ports.out.JudgeAuditPort;
 import java.math.BigDecimal;

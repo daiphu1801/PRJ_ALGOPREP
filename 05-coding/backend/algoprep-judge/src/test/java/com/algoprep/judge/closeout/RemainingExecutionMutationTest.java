@@ -18,7 +18,7 @@ import com.algoprep.judge.application.dto.ExecutionModels.RunResult;
 import com.algoprep.judge.application.dto.ExecutionModels.Status;
 import com.algoprep.judge.application.dto.ExecutionModels.Testcase;
 import com.algoprep.judge.application.dto.ExecutionModels.Verdict;
-import com.algoprep.judge.application.ports.in.EvaluateProgramUseCase;
+import com.algoprep.judge.application.ports.in.execution.EvaluateProgramUseCase;
 import com.algoprep.judge.application.ports.out.HarnessEvaluationPort;
 import com.algoprep.judge.application.ports.out.JudgeExecutionPort;
 import com.algoprep.judge.domain.exception.JudgeInfrastructureException;
@@ -79,7 +79,7 @@ class RemainingExecutionMutationTest {
 
   private String location(Rule rule) {
     return switch (rule) {
-      case HIDDEN_STDERR, ADMIN_STDERR, AC_STDERR -> "application/command";
+      case HIDDEN_STDERR, ADMIN_STDERR, AC_STDERR -> "application/command/execution";
       case ENV_REMOVE, ENV_ADD, COLLECTOR_CAP, BODY_CAP -> "infrastructure/gojudge";
       default -> "application/classify";
     };

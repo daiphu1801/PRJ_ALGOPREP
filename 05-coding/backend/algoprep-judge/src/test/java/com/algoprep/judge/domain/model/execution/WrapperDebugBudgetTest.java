@@ -1,4 +1,4 @@
-package com.algoprep.judge.domain.model;
+package com.algoprep.judge.domain.model.execution;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

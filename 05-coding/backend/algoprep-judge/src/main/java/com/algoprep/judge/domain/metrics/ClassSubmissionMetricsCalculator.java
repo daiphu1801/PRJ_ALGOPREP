@@ -1,10 +1,10 @@
 package com.algoprep.judge.domain.metrics;
 
-import com.algoprep.judge.domain.model.ClassMetricSubmission;
-import com.algoprep.judge.domain.model.ClassMetricsScope;
-import com.algoprep.judge.domain.model.StudentSubmissionMetrics;
-import com.algoprep.judge.domain.model.StudentSubmissionMetrics.AssignmentResult;
-import com.algoprep.judge.domain.model.StudentSubmissionMetrics.Week;
+import com.algoprep.judge.domain.model.metrics.ClassMetricSubmission;
+import com.algoprep.judge.domain.model.metrics.ClassMetricsScope;
+import com.algoprep.judge.domain.model.metrics.StudentSubmissionMetrics;
+import com.algoprep.judge.domain.model.metrics.StudentSubmissionMetrics.AssignmentResult;
+import com.algoprep.judge.domain.model.metrics.StudentSubmissionMetrics.Week;
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;

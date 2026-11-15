@@ -1,4 +1,4 @@
-package com.algoprep.judge.domain.model;
+package com.algoprep.judge.domain.model.execution;
 
 /** Raw UTF-8 debug budget, independent of the result and engine collector budgets. */
 public final class WrapperDebugBudget {

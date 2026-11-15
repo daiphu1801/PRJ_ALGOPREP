@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import com.algoprep.judge.application.ports.in.RelayJudgeOutboxUseCase;
+import com.algoprep.judge.application.ports.in.outbox.RelayJudgeOutboxUseCase;
 import org.junit.jupiter.api.Test;
 
 class JudgeOutboxRelayJobTest {

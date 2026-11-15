@@ -1,7 +1,7 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.queue;
 
-import com.algoprep.judge.application.dto.QueuePauseChange;
-import com.algoprep.judge.application.ports.in.ChangeQueuePauseUseCase;
+import com.algoprep.judge.application.dto.queue.QueuePauseChange;
+import com.algoprep.judge.application.ports.in.queue.ChangeQueuePauseUseCase;
 import com.algoprep.judge.domain.ports.out.JudgeMaintenanceRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;

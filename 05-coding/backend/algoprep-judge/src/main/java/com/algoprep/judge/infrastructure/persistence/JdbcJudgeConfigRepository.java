@@ -1,7 +1,7 @@
 package com.algoprep.judge.infrastructure.persistence;
 
-import com.algoprep.judge.domain.model.GeneratorSandboxLimits;
-import com.algoprep.judge.domain.model.LanguageMultipliers;
+import com.algoprep.judge.domain.model.grading.GeneratorSandboxLimits;
+import com.algoprep.judge.domain.model.language.LanguageMultipliers;
 import com.algoprep.judge.domain.ports.out.JudgeConfigRepository;
 import java.util.List;
 import java.util.Optional;

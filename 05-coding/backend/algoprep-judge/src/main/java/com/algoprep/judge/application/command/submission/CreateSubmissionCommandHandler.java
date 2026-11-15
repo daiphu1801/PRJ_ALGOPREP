@@ -1,10 +1,10 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.submission;
 
-import com.algoprep.judge.application.dto.QueuedSubmissionResult;
 import com.algoprep.judge.application.dto.RecordPendingSubmissionCommand;
 import com.algoprep.judge.application.dto.SubmissionFinishedProgress;
-import com.algoprep.judge.application.ports.in.CreateSubmissionUseCase;
-import com.algoprep.judge.application.ports.in.QueueSubmissionUseCase;
+import com.algoprep.judge.application.dto.submission.QueuedSubmissionResult;
+import com.algoprep.judge.application.ports.in.submission.CreateSubmissionUseCase;
+import com.algoprep.judge.application.ports.in.submission.QueueSubmissionUseCase;
 import com.algoprep.judge.application.ports.out.SubmissionProgressPort;
 import com.algoprep.judge.domain.exception.SubmissionAdmissionException;
 import java.util.Map;

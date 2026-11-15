@@ -8,10 +8,10 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.InvalidRequestException;
-import com.algoprep.judge.application.dto.LearnerListLimit;
-import com.algoprep.judge.application.ports.in.GetEnabledJudgeLanguagesUseCase;
-import com.algoprep.judge.application.ports.in.ListMyAcceptedSubmissionsUseCase;
-import com.algoprep.judge.application.ports.in.ListMyInProgressProblemsUseCase;
+import com.algoprep.judge.application.dto.read.LearnerListLimit;
+import com.algoprep.judge.application.ports.in.language.GetEnabledJudgeLanguagesUseCase;
+import com.algoprep.judge.application.ports.in.read.ListMyAcceptedSubmissionsUseCase;
+import com.algoprep.judge.application.ports.in.read.ListMyInProgressProblemsUseCase;
 import com.algoprep.judge.domain.exception.JudgeReadUnavailableException;
 import java.util.List;
 import org.junit.jupiter.api.Test;

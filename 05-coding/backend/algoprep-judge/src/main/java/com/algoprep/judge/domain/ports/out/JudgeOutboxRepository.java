@@ -1,6 +1,6 @@
 package com.algoprep.judge.domain.ports.out;
 
-import com.algoprep.judge.domain.model.OutboxEvent;
+import com.algoprep.judge.domain.model.outbox.OutboxEvent;
 import java.util.List;
 import java.util.UUID;
 

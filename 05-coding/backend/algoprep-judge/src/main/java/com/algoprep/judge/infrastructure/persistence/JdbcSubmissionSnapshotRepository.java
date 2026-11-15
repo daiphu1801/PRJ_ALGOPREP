@@ -1,7 +1,7 @@
 package com.algoprep.judge.infrastructure.persistence;
 
 import com.algoprep.judge.domain.model.AcceptedSubmissionSnapshot;
-import com.algoprep.judge.domain.model.SubmissionSnapshotLookup;
+import com.algoprep.judge.domain.model.read.SubmissionSnapshotLookup;
 import com.algoprep.judge.domain.ports.out.SubmissionSnapshotRepository;
 import java.util.Optional;
 import java.util.UUID;

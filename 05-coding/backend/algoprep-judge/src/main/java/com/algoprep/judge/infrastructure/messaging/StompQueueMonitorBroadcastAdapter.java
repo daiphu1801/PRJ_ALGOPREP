@@ -1,6 +1,6 @@
 package com.algoprep.judge.infrastructure.messaging;
 
-import com.algoprep.judge.application.dto.QueueMonitorBatch;
+import com.algoprep.judge.application.dto.queue.QueueMonitorBatch;
 import com.algoprep.judge.application.ports.out.QueueMonitorBroadcastPort;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageType;

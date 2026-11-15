@@ -1,13 +1,13 @@
 package com.algoprep.judge.application.command;
 
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
-import com.algoprep.judge.domain.model.WorkerRecords.Finished;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.Finished;
 import com.algoprep.judge.domain.ports.out.SubmissionWorkerRepository;
 import java.util.UUID;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.node.ObjectNode;
 
-final class WorkerSubmissionEvents {
+public final class WorkerSubmissionEvents {
   private final SubmissionWorkerRepository repository;
   private final IdGeneratorPort ids;
   private final JsonMapper json = JsonMapper.builder().build();

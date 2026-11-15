@@ -10,12 +10,12 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.InvalidRequestException;
-import com.algoprep.judge.application.dto.MySubmissionMetricQuery;
+import com.algoprep.judge.application.dto.metrics.MySubmissionMetricQuery;
 import com.algoprep.judge.application.ports.out.CurrentMetricsStudentPort;
 import com.algoprep.judge.application.ports.out.ProblemTopicReadPort;
 import com.algoprep.judge.domain.exception.MySubmissionMetricsUnavailableException;
-import com.algoprep.judge.domain.model.SubmissionMetricRange;
-import com.algoprep.judge.domain.model.TopicSubmissionCount;
+import com.algoprep.judge.domain.model.metrics.SubmissionMetricRange;
+import com.algoprep.judge.domain.model.metrics.TopicSubmissionCount;
 import com.algoprep.judge.domain.ports.out.MySubmissionMetricsRepository;
 import java.time.Instant;
 import java.util.LinkedHashMap;

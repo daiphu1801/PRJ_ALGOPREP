@@ -1,10 +1,10 @@
 package com.algoprep.judge.presentation.controller;
 
-import com.algoprep.judge.application.dto.QueueJobsQuery;
-import com.algoprep.judge.application.ports.in.GetQueueSnapshotUseCase;
-import com.algoprep.judge.application.ports.in.ListQueueJobsUseCase;
-import com.algoprep.judge.domain.model.QueueMonitoring.Jobs;
-import com.algoprep.judge.domain.model.QueueMonitoring.Snapshot;
+import com.algoprep.judge.application.dto.queue.QueueJobsQuery;
+import com.algoprep.judge.application.ports.in.queue.GetQueueSnapshotUseCase;
+import com.algoprep.judge.application.ports.in.queue.ListQueueJobsUseCase;
+import com.algoprep.judge.domain.model.queue.QueueMonitoring.Jobs;
+import com.algoprep.judge.domain.model.queue.QueueMonitoring.Snapshot;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

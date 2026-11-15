@@ -3,13 +3,13 @@ package com.algoprep.judge.application.command;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.algoprep.judge.domain.model.PendingSubmission.Owner;
-import com.algoprep.judge.domain.model.WorkerRecords.FinishCommand;
-import com.algoprep.judge.domain.model.WorkerRecords.FinishKind;
-import com.algoprep.judge.domain.model.WorkerRecords.Result;
-import com.algoprep.judge.domain.model.WorkerRecords.State;
-import com.algoprep.judge.domain.model.WorkerRecords.TestcaseWrite;
-import com.algoprep.judge.domain.model.WorkerRecords.Token;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.FinishCommand;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.FinishKind;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.Result;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.State;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.TestcaseWrite;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.Token;
+import com.algoprep.judge.domain.model.submission.PendingSubmission.Owner;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -18,8 +18,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-class SubmissionFinalizationPolicyTest {
-  static State state(String status, Integer total) {
+public class SubmissionFinalizationPolicyTest {
+  public static State state(String status, Integer total) {
     return new State(
         UUID.randomUUID(),
         new Owner(UUID.randomUUID(), UUID.randomUUID()),

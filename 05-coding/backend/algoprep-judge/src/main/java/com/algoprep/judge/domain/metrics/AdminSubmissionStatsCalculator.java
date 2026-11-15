@@ -1,14 +1,14 @@
 package com.algoprep.judge.domain.metrics;
 
-import com.algoprep.judge.domain.model.AdminSubmissionStats;
-import com.algoprep.judge.domain.model.AdminSubmissionStats.DayCount;
-import com.algoprep.judge.domain.model.AdminSubmissionStats.LanguageDay;
-import com.algoprep.judge.domain.model.AdminSubmissionStats.LanguageSeries;
-import com.algoprep.judge.domain.model.AdminSubmissionStats.LevelProblems;
-import com.algoprep.judge.domain.model.AdminSubmissionStats.MonthCount;
-import com.algoprep.judge.domain.model.AdminSubmissionStats.ProblemCount;
-import com.algoprep.judge.domain.model.AdminSubmissionStats.Totals;
-import com.algoprep.judge.domain.model.AdminSubmissionStats.VerdictSlice;
+import com.algoprep.judge.domain.model.metrics.AdminSubmissionStats;
+import com.algoprep.judge.domain.model.metrics.AdminSubmissionStats.DayCount;
+import com.algoprep.judge.domain.model.metrics.AdminSubmissionStats.LanguageDay;
+import com.algoprep.judge.domain.model.metrics.AdminSubmissionStats.LanguageSeries;
+import com.algoprep.judge.domain.model.metrics.AdminSubmissionStats.LevelProblems;
+import com.algoprep.judge.domain.model.metrics.AdminSubmissionStats.MonthCount;
+import com.algoprep.judge.domain.model.metrics.AdminSubmissionStats.ProblemCount;
+import com.algoprep.judge.domain.model.metrics.AdminSubmissionStats.Totals;
+import com.algoprep.judge.domain.model.metrics.AdminSubmissionStats.VerdictSlice;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;

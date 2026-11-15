@@ -1,8 +1,8 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.outbox;
 
-import com.algoprep.judge.application.ports.in.RelayJudgeOutboxUseCase;
+import com.algoprep.judge.application.ports.in.outbox.RelayJudgeOutboxUseCase;
 import com.algoprep.judge.application.ports.out.JudgeDomainEventPort;
-import com.algoprep.judge.domain.model.OutboxEvent;
+import com.algoprep.judge.domain.model.outbox.OutboxEvent;
 import com.algoprep.judge.domain.ports.out.JudgeOutboxRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

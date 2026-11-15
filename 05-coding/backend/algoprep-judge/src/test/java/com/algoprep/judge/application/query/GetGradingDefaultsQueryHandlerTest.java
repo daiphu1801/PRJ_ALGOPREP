@@ -7,7 +7,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.judge.domain.model.GradingDefaults;
+import com.algoprep.judge.domain.model.grading.GradingDefaults;
 import com.algoprep.judge.domain.ports.out.GradingDefaultsRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataAccessResourceFailureException;

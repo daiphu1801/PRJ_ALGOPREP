@@ -1,6 +1,6 @@
-package com.algoprep.judge.application.ports.in;
+package com.algoprep.judge.application.ports.in.metrics;
 
-import com.algoprep.judge.application.dto.MySubmissionMetrics.TopicRatio;
+import com.algoprep.judge.application.dto.metrics.MySubmissionMetrics.TopicRatio;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;

@@ -1,6 +1,6 @@
-package com.algoprep.judge.application.dto;
+package com.algoprep.judge.application.dto.language;
 
-import com.algoprep.judge.domain.model.AdminLanguageConfig;
+import com.algoprep.judge.domain.model.language.AdminLanguageConfig;
 import java.util.LinkedHashMap;
 import java.util.Map;
 

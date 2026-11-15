@@ -1,4 +1,4 @@
-package com.algoprep.judge.domain.model;
+package com.algoprep.judge.domain.model.read;
 
 import java.math.BigDecimal;
 import java.time.Instant;

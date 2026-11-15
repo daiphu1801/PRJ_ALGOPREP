@@ -1,9 +1,9 @@
 package com.algoprep.judge.infrastructure.persistence;
 
-import com.algoprep.judge.domain.model.QueueMonitoring.Counts;
-import com.algoprep.judge.domain.model.QueueMonitoring.Facts;
-import com.algoprep.judge.domain.model.QueueMonitoring.Job;
-import com.algoprep.judge.domain.model.QueueMonitoring.JobSettings;
+import com.algoprep.judge.domain.model.queue.QueueMonitoring.Counts;
+import com.algoprep.judge.domain.model.queue.QueueMonitoring.Facts;
+import com.algoprep.judge.domain.model.queue.QueueMonitoring.Job;
+import com.algoprep.judge.domain.model.queue.QueueMonitoring.JobSettings;
 import com.algoprep.judge.domain.ports.out.QueueMonitorRepository;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;

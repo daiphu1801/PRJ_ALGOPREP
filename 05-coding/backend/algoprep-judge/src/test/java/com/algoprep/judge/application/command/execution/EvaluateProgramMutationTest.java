@@ -1,4 +1,4 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.execution;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -20,7 +20,7 @@ import com.algoprep.judge.application.dto.ExecutionModels.RunResult;
 import com.algoprep.judge.application.dto.ExecutionModels.Status;
 import com.algoprep.judge.application.dto.ExecutionModels.Testcase;
 import com.algoprep.judge.application.dto.ExecutionModels.Verdict;
-import com.algoprep.judge.application.ports.in.EvaluateProgramUseCase;
+import com.algoprep.judge.application.ports.in.execution.EvaluateProgramUseCase;
 import com.algoprep.judge.application.ports.out.HarnessEvaluationPort;
 import com.algoprep.judge.application.ports.out.JudgeExecutionPort;
 import java.io.ByteArrayOutputStream;
@@ -39,7 +39,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 /** Controlled mutations of trusted source copies only; delivery source is never changed. */
 class EvaluateProgramMutationTest {
   private static final String CLASS_NAME =
-      "com.algoprep.judge.application.command.mutationcopy.EvaluateProgram";
+      "com.algoprep.judge.application.command.execution.mutationcopy.EvaluateProgram";
   @TempDir Path temporary;
 
   enum Rule {
@@ -52,7 +52,8 @@ class EvaluateProgramMutationTest {
   @EnumSource(Rule.class)
   void originalIsGreenAndWeakenedSourceCopyIsCaught(Rule rule) throws Exception {
     Path source =
-        Path.of("src/main/java/com/algoprep/judge/application/command/EvaluateProgram.java");
+        Path.of(
+            "src/main/java/com/algoprep/judge/application/command/execution/EvaluateProgram.java");
     String original = Files.readString(source, StandardCharsets.UTF_8);
     assertProtected(rule, executeCopy(original, "original", rule));
     String changed = weaken(original, rule);
@@ -99,8 +100,8 @@ class EvaluateProgramMutationTest {
     String isolated =
         replaceOnce(
             source,
-            "package com.algoprep.judge.application.command;",
-            "package com.algoprep.judge.application.command.mutationcopy;");
+            "package com.algoprep.judge.application.command.execution;",
+            "package com.algoprep.judge.application.command.execution.mutationcopy;");
     Files.writeString(java, isolated, StandardCharsets.UTF_8);
     var output = new ByteArrayOutputStream();
     int code =

@@ -1,8 +1,8 @@
 package com.algoprep.judge.infrastructure.persistence;
 
-import com.algoprep.judge.domain.model.PendingSubmission.Owner;
-import com.algoprep.judge.domain.model.SubmissionLifecycleView;
-import com.algoprep.judge.domain.model.SubmissionLifecycleView.Timing;
+import com.algoprep.judge.domain.model.queue.SubmissionLifecycleView;
+import com.algoprep.judge.domain.model.queue.SubmissionLifecycleView.Timing;
+import com.algoprep.judge.domain.model.submission.PendingSubmission.Owner;
 import com.algoprep.judge.domain.ports.out.QueueFailureRepository;
 import java.sql.ResultSet;
 import java.sql.SQLException;

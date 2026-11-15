@@ -1,7 +1,7 @@
 package com.algoprep.judge.domain.ports.out;
 
-import com.algoprep.judge.domain.model.HistoryWindow;
-import com.algoprep.judge.domain.model.SubmissionReadState;
+import com.algoprep.judge.domain.model.read.HistoryWindow;
+import com.algoprep.judge.domain.model.read.SubmissionReadState;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;

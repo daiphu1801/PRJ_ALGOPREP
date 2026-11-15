@@ -1,7 +1,7 @@
 package com.algoprep.judge.infrastructure.persistence;
 
-import com.algoprep.judge.domain.model.ClassMetricSubmission;
-import com.algoprep.judge.domain.model.ClassMetricsScope;
+import com.algoprep.judge.domain.model.metrics.ClassMetricSubmission;
+import com.algoprep.judge.domain.model.metrics.ClassMetricsScope;
 import com.algoprep.judge.domain.ports.out.ClassSubmissionMetricsRepository;
 import java.time.Instant;
 import java.time.OffsetDateTime;

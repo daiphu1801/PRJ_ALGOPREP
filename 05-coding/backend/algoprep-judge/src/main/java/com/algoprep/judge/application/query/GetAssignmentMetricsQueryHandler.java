@@ -1,17 +1,17 @@
 package com.algoprep.judge.application.query;
 
-import com.algoprep.judge.application.dto.AssignedProblemMetricsQuery;
-import com.algoprep.judge.application.dto.SubmissionReads.Membership;
-import com.algoprep.judge.application.ports.in.GetAssignedProblemMetricsUseCase;
-import com.algoprep.judge.application.ports.in.GetMyClassAssignmentStatesUseCase;
+import com.algoprep.judge.application.dto.metrics.AssignedProblemMetricsQuery;
+import com.algoprep.judge.application.dto.read.SubmissionReads.Membership;
+import com.algoprep.judge.application.ports.in.metrics.GetAssignedProblemMetricsUseCase;
+import com.algoprep.judge.application.ports.in.metrics.GetMyClassAssignmentStatesUseCase;
 import com.algoprep.judge.application.ports.out.ClassScopeReadPort;
 import com.algoprep.judge.application.ports.out.CurrentMetricsStudentPort;
 import com.algoprep.judge.domain.exception.AssignmentMetricsUnavailableException;
-import com.algoprep.judge.domain.model.AssignmentMetricScope;
-import com.algoprep.judge.domain.model.AssignmentPeriod;
-import com.algoprep.judge.domain.model.AssignmentSolveState;
-import com.algoprep.judge.domain.model.ClassProblemMetric;
 import com.algoprep.judge.domain.model.InstructorReadWindow;
+import com.algoprep.judge.domain.model.metrics.AssignmentMetricScope;
+import com.algoprep.judge.domain.model.metrics.AssignmentPeriod;
+import com.algoprep.judge.domain.model.metrics.AssignmentSolveState;
+import com.algoprep.judge.domain.model.metrics.ClassProblemMetric;
 import com.algoprep.judge.domain.ports.out.AssignmentMetricsRepository;
 import java.util.List;
 import java.util.Map;

@@ -11,14 +11,14 @@ import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.AlgoPrepException;
 import com.algoprep.judge.application.dto.ClassAssignment;
-import com.algoprep.judge.application.dto.SubmissionReads.Filters;
-import com.algoprep.judge.application.dto.SubmissionReads.Membership;
-import com.algoprep.judge.application.dto.SubmissionReads.Problem;
+import com.algoprep.judge.application.dto.read.SubmissionReads.Filters;
+import com.algoprep.judge.application.dto.read.SubmissionReads.Membership;
+import com.algoprep.judge.application.dto.read.SubmissionReads.Problem;
 import com.algoprep.judge.application.ports.out.ClassAssignmentReadPort;
 import com.algoprep.judge.application.ports.out.ClassScopeReadPort;
 import com.algoprep.judge.application.ports.out.ProblemSummaryReadPort;
-import com.algoprep.judge.domain.model.ScopedSubmission;
-import com.algoprep.judge.domain.model.SubmissionReadState;
+import com.algoprep.judge.domain.model.read.ScopedSubmission;
+import com.algoprep.judge.domain.model.read.SubmissionReadState;
 import com.algoprep.judge.domain.ports.out.InstructorSubmissionRepository;
 import com.algoprep.judge.domain.ports.out.SubmissionReadRepository;
 import java.math.BigDecimal;
@@ -120,7 +120,7 @@ class SubmissionReadHandlersTest {
   }
 
   private static void assertHidden(
-      com.algoprep.judge.application.dto.SubmissionReads.Testcase line) {
+      com.algoprep.judge.application.dto.read.SubmissionReads.Testcase line) {
     assertThat(line.visibility()).isEqualTo("HIDDEN");
     assertThat(line.testcaseId()).isNull();
     assertThat(line.actualOutput()).isNull();

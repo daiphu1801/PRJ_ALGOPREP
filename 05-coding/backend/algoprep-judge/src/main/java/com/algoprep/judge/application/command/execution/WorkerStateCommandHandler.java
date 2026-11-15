@@ -1,10 +1,11 @@
-package com.algoprep.judge.application.command;
+package com.algoprep.judge.application.command.execution;
 
+import com.algoprep.judge.application.command.WorkerTransactions;
 import com.algoprep.judge.application.dto.SubmissionStatusProgress;
-import com.algoprep.judge.application.ports.in.BeginSubmissionCompilationUseCase;
-import com.algoprep.judge.application.ports.in.BeginSubmissionJudgingUseCase;
+import com.algoprep.judge.application.ports.in.execution.BeginSubmissionCompilationUseCase;
+import com.algoprep.judge.application.ports.in.execution.BeginSubmissionJudgingUseCase;
 import com.algoprep.judge.application.ports.out.SubmissionProgressPort;
-import com.algoprep.judge.domain.model.WorkerRecords.State;
+import com.algoprep.judge.domain.model.execution.WorkerRecords.State;
 import com.algoprep.judge.domain.ports.out.SubmissionWorkerRepository;
 import java.util.Objects;
 import java.util.Optional;

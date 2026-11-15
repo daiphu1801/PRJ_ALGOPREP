@@ -1,11 +1,11 @@
 package com.algoprep.judge.presentation.controller;
 
 import com.algoprep.common.exception.InvalidRequestException;
-import com.algoprep.judge.application.dto.MySubmissionMetricQuery;
-import com.algoprep.judge.application.dto.MySubmissionMetrics.TopicMetric;
-import com.algoprep.judge.application.ports.in.GetMySubmissionMetricsUseCase;
-import com.algoprep.judge.domain.model.SubmissionActivityDay;
-import com.algoprep.judge.domain.model.SubmissionMetricRange;
+import com.algoprep.judge.application.dto.metrics.MySubmissionMetricQuery;
+import com.algoprep.judge.application.dto.metrics.MySubmissionMetrics.TopicMetric;
+import com.algoprep.judge.application.ports.in.metrics.GetMySubmissionMetricsUseCase;
+import com.algoprep.judge.domain.model.metrics.SubmissionActivityDay;
+import com.algoprep.judge.domain.model.metrics.SubmissionMetricRange;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.Instant;
 import java.util.LinkedHashSet;
