@@ -36,7 +36,7 @@ Lỗi ghi Outbox rollback cả kết quả cuối. Không phát SubmissionAccept
 
 ## Pause/resume
 
-`ChangeQueuePauseUseCase.change(expectedPaused, paused)` là kernel nội bộ có transaction
+`ChangeQueuePauseUseCase.change(expectedPaused, paused)` (package `com.algoprep.judge.application.ports.in.queue`) là kernel nội bộ có transaction
 REQUIRED/READ_COMMITTED, trả CHANGED/UNCHANGED/CONFLICT. Kernel khóa cluster_settings,
 kiểm expectedPaused và chỉ khi true→false mới làm mới updated_at của các bài PENDING
 trong cùng transaction đổi cờ. Heartbeat lấy giờ PostgreSQL sau khi lấy khóa.

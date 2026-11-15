@@ -92,6 +92,32 @@ duy nhất** phụ thuộc một dịch vụ ngoài monolith [SoT: `dependency-m
 
 **Không dùng MinIO riêng** — xác nhận ở mục 7 (Storage).
 
+### 1.1. Quy ước gom nhóm package theo tính năng
+
+Các thư mục phẳng trong `algoprep-judge` có quá nhiều file (trước khi gom: `application/ports/in` 56, `domain/model` 37, `application/command` 32, `application/dto` 31) nên được gom thành package con theo tính năng (Bảng 1.1). Việc gom chỉ là di chuyển file, không đổi logic và không đổi ranh giới module Maven. Bảng ánh xạ từng class cũ sang mới nằm ở `06-plan/reports/p6-moves-judge.tsv`.
+
+Bảng 1.1: Nhóm tính năng dùng để chia package trong `algoprep-judge`, kèm ví dụ class ở từng tầng (`ports.in` là `application/ports/in`, `command` là `application/command`, `dto` là `application/dto`, `model` là `domain/model`; dấu gạch là tầng không có class của nhóm).
+
+| Nhóm | Nội dung | `ports.in` | `command` | `dto` | `model` |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `execution` | Worker chấm, chạy mẫu, chạy chương trình, hoàn tất bài nộp | `EvaluateProgramUseCase`, `FinalizeSubmissionUseCase` | `ProcessQueuedSubmissionCommandHandler`, `RunSampleCommandHandler` | `WorkerPreparation`, `SampleRun` | `WorkerJob`, `SampleSettings` |
+| `grading` | Giới hạn chạy, mặc định chấm, ảnh chụp bài đã đạt | `GetEffectiveExecutionLimitsUseCase`, `ReadGradingDefaultsUseCase` | - | `ExecutionLimitsView` | `GradingDefaults`, `GeneratorSandboxLimits` |
+| `infra` | Tổng quan và sự kiện hạ tầng cho admin | `GetInfraSummaryUseCase`, `ListInfraEventsUseCase` | - | `InfraEventQuery`, `InfraEventMessages` | `InfraEvents` |
+| `language` | Cấu hình ngôn ngữ, hệ số nhân thời gian | `GetEnabledJudgeLanguagesUseCase`, `UpdateAdminLanguageConfigUseCase` | `UpdateAdminLanguageConfigCommandHandler` | `AdminConfigFields` | `AdminLanguageConfig`, `LanguageMultipliers` |
+| `maintenance` | Quét bài kẹt, dọn dữ liệu cũ | `SweepStaleSubmissionsUseCase`, `PurgeTestcaseDetailsUseCase` | `SweepStaleSubmissionsCommandHandler`, `JudgeRetention` | - | - |
+| `metrics` | Số liệu nộp bài cho admin, học viên, giảng viên | `GetAdminSubmissionsByDayUseCase`, `GetMySubmissionMetricsUseCase` | - | `MySubmissionMetrics`, `AssignedProblemMetricsQuery` | `AdminSubmissionStats`, `ClassMetricsScope` |
+| `outbox` | Relay outbox sự kiện của F4 | `RelayJudgeOutboxUseCase` | `RelayJudgeOutboxCommandHandler` | - | `OutboxEvent` |
+| `queue` | Giám sát và điều khiển hàng đợi (tạm dừng, cấu hình, xử lý lỗi) | `ChangeQueuePauseUseCase`, `GetQueueMonitorBatchUseCase` | `ChangeQueuePauseCommandHandler`, `BroadcastQueueMonitorCommandHandler` | `QueueMonitorBatch`, `QueuePauseChange` | `AdminQueueSettings`, `QueueMonitoring` |
+| `read` | Đọc bài nộp, tiến độ, lịch sử của học viên và giảng viên | `GetOwnedSubmissionDetailUseCase`, `ListMySubmissionHistoryUseCase` | - | `SubmissionReads`, `LearnerSubmissionLists` | `HistoryWindow`, `ScopedSubmission` |
+| `submission` | Tiếp nhận bài nộp, ghi `PENDING`, đẩy vào hàng đợi | `CreateSubmissionUseCase`, `QueueSubmissionUseCase` | `CreateSubmissionCommandHandler`, `RecordPendingSubmissionCommandHandler` | `PendingSubmissionTicket`, `QueuedSubmissionResult` | `PendingSubmission` |
+
+Quy tắc áp dụng:
+
+- Chỉ thư mục có hơn khoảng 30 file mới được gom: `application/ports/in`, `application/command`, `application/dto`, `domain/model`. Các thư mục nhỏ (`application/query`, `application/ports/out`, `domain/ports/out`, `domain/exception`, `infrastructure/persistence`, `presentation/controller`) giữ phẳng.
+- Cùng một tên nhóm dùng ở mọi tầng có class của nhóm đó, để cổng vào `application.ports.in.queue` khớp handler `application.command.queue`.
+- Class dùng chung nhiều nhóm ở lại package cha của tầng và là `public` ở đó: `ResolveQueueFailureUseCase` (`ports.in`); `FinalizeSubmissionCommandHandler`, `SubmissionAdmissionValidation`, `SubmissionFinalizationPolicy`, `WorkerSubmissionEvents`, `WorkerTransactions` (`command`); `ClassAssignment`, `GradingSpecification`, `GradingTestcase`, `SubmissionProgress`, `TestcaseProgress`, `RecordPendingSubmissionCommand` cùng một số kiểu khác (`dto`); `AcceptedSubmissionSnapshot`, `InstructorReadWindow`, `JudgeAuditEntry` (`model`).
+- Không giữ file `package-info.java` trong module này.
+
 ## 2. Phạm vi nghiệp vụ module này bao trùm
 
 Đọc từ `01-rd/req/F4_judge-orchestration.md` (F4-01 → F4-13):
@@ -495,3 +521,13 @@ P3 mới đọc DB mỗi lần, không fallback/cache ở F4; unknown language l
 
 
 **D02af — 2026-11-05:** STOMP admin W2 có QUEUE_BATCH thật theo chu kỳ5s, một lô chung cho mọi admin, không query khi không có subscriber hợp lệ. Snapshot/counts/infra-summary cùng transaction RR; outbound chặn phiên hết JWT hoặc đã unsubscribe.64 test liên quan đạt (18 mới),6/6 mutation,28/28 dòng logic mới; Spotless/Checkstyle/SpotBugs phạm vi chọn đạt. Backend F4-3 đủ API và W2; tiếp theo FINAL BE/full regression khi clear. FE/browser/C08 và production nhiều process giữ mốc riêng. Chưa commit/merge. [Report](F:/prj_algoprep/06-plan/reports/261105-f4-admin-queue-stream/report.md).
+
+
+## 11. Lịch sử sửa đổi
+
+Bảng 11.1: Lịch sử sửa đổi BD kiến trúc `judge-orchestration`.
+
+| Ngày | Nội dung | Căn cứ |
+| :--- | :--- | :--- |
+| 2026-09-12 | BD lần đầu | `06-plan/260912-1055-bd-rollout-order.md` |
+| 2026-11-15 | Thêm mục 1.1: quy ước gom nhóm package theo tính năng, class dùng chung ở lại package cha, bỏ `package-info.java`; cập nhật đường dẫn gói sau khi gom thư mục con | owner duyệt Phase 6, `06-plan/261114-1645-sonarqube-clear-coverage-90.md`, `06-plan/reports/p6-moves-judge.tsv` |

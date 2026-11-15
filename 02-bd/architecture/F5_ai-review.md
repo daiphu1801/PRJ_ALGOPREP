@@ -23,6 +23,32 @@ Module Maven `algoprep-ai-review`, schema PostgreSQL `ai` [SoT: `.nexa/domain-re
 - `presentation` — REST controller (F5.1, kết quả JSON tĩnh) + SSE controller (F5.2, stream từng lượt hội
   thoại). Hợp đồng API cụ thể để ở `03-dd/api/F5_ai-review.md`, không lặp lại ở đây.
 
+### 1.1. Quy ước gom nhóm package theo tính năng
+
+Các thư mục phẳng trong `algoprep-ai-review` quá nhiều file (riêng `domain/model` có 51, `application/command` có 45, `application/ports/in` có 41) nên được gom thành package con theo tính năng (Bảng 1.1). Việc gom chỉ là di chuyển file, không đổi logic và không đổi ranh giới module Maven.
+
+Bảng 1.1: Nhóm tính năng dùng để chia package trong `algoprep-ai-review`.
+
+| Nhóm | Nội dung |
+| :--- | :--- |
+| `budget` | Hạn mức token, khóa và mở khóa, đổi kỳ, cấu hình giới hạn, cổng chi phí (`ReviewCostGate`, `InterviewCostGate`) |
+| `usage` | Ghi sổ token, thống kê theo ngày, cảnh báo bất thường, top người dùng và top bài |
+| `price` | Bảng giá model |
+| `prompt` | Mẫu prompt: bản nháp, xuất bản, lịch sử |
+| `interview` | Mock Interview: phiên, lượt, gợi ý, chấm rubric, quét phiên rỗi |
+| `review` | Solution Review: tạo hoặc lấy báo cáo, cache, báo cáo gần đây |
+| `practice` | Phản hồi câu trả lời luyện tập (F6 gọi sang) |
+| `outbox` | Relay và dọn outbox sự kiện AI |
+| `testcase` | Sinh script testcase |
+
+Quy tắc áp dụng:
+
+- Chỉ thư mục có hơn khoảng 30 file mới được gom: `application/ports/in`, `application/command`, `application/dto`, `domain/model`, `domain/exception`. Các thư mục nhỏ (`application/ports/out`, `application/query`, `domain/ports/out`, `infrastructure/**`, `presentation/**`) giữ phẳng.
+- Cùng một tên nhóm dùng ở mọi tầng, để cổng vào `application.ports.in.budget` khớp handler `application.command.budget`.
+- Kiểu dùng chung nhiều nhóm (`FeatureCode`, `CallOptions`, `StructuredResult`, `LlmUsage`, `ProblemContext`, `SubmissionSnapshot`, các exception `AiProviderUnavailable`, `AiRateLimited`, `AiInvalidRequest`, `AiInvalidResponse`, `AiNotOwner`) ở lại package cha.
+- Không giữ file `package-info.java` trong module này.
+- Class chỉ dùng trong một nhóm giữ quyền truy cập package-private. Class phải mở `public` vì nhiều nhóm dùng chung thì không bị ép vào nhóm nào mà ở lại package cha của tầng đó, giống `CallOptions` hay `FeatureCode` (hiện có `ReviewCostGate` và `InterviewCostGate` trong `application/command`).
+
 Hạ tầng phụ thuộc: PostgreSQL · **Redis** (`ChatMemory` phiên phỏng vấn, cache kết quả F5.1 theo source
 hash, bộ đếm rate-limit) · **SSE** (stream phản hồi Mock Interview) · **Spring AI** ra một LLM provider
 ngoài [SoT: `.nexa/control/dependency-map.md` mục 2, hàng `ai-review`].
@@ -348,3 +374,4 @@ Bảng 12.1: Lịch sử sửa đổi BD kiến trúc `ai-review`.
 | 2026-09-12 | BD lần đầu | `06-plan/260912-1055-bd-rollout-order.md` |
 | 2026-10-29 | Mục 3.5: `aiBrief` vào user message (F5-08) | quyết định owner 2026-10-29 |
 | 2026-11-08 | Mục 3.1 viết lại: bỏ consumer `SubmissionAccepted`, F5 gọi cổng snapshot F4 khi học viên bấm; mục 1, tiêu đề và mục 11 sửa theo; bảng Lớp 2 ở mục 5 khớp mục 3.5 (aiBrief ở user message, chỉ hai cờ boolean ở system message) | `03-dd/api/F5_ai-review.md:1877`, Q7 `:1950`; owner chốt 2026-11-08 |
+| 2026-11-15 | Thêm mục 1.1: quy ước gom nhóm package theo tính năng, class `public` dùng chung ở lại package cha, bỏ `package-info.java` | owner duyệt Phase 6, `06-plan/261114-1645-sonarqube-clear-coverage-90.md` |

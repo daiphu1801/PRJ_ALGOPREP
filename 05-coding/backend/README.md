@@ -30,6 +30,10 @@ không cho dấu gạch trong tên package. Tên schema **ngắn hơn** tên con
 (`problem-bank` → `problem`, `judge-orchestration` → `judge`, `ai-review` → `ai`). Bảng ánh xạ đầy
 đủ: `.nexa/domain-registry.json`; luật chống trôi: `01-rd/system/SYS0201_codebase_structure.md` mục 3.
 
+## Quy ước gom nhóm package (sửa 2026-11-15)
+
+Khi một thư mục trong tầng (`domain/model`, `application/command`, `application/ports/in`, `application/dto`, `domain/exception`) vượt khoảng 30 file thì tách thành package con theo nhóm tính năng đặt tên theo khái niệm nghiệp vụ. Cùng một tên nhóm dùng ở mọi tầng; kiểu dùng chung nhiều nhóm ở lại package cha; không giữ file `package-info.java`. Ví dụ đầy đủ: `02-bd/architecture/F5_ai-review.md` mục 1.1. Bảng "Trạng thái" ở trên là ảnh chụp lúc dựng khung base (2026-09-01), không phản ánh số class hiện tại.
+
 ## Lệnh
 
 ```bash

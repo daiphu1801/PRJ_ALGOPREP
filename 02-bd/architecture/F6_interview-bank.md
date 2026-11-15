@@ -1,6 +1,6 @@
 # BD — Kiến trúc module `interview-bank` (F6)
 
-> Trạng thái: **BD lần đầu**, 2026-09-12. Module cuối cùng của trục Bounded Context theo
+> Trạng thái: **BD lần đầu**, 2026-09-12; sửa 2026-11-15 (thêm mục 1.1: quy ước gom package `domain/model` thành bốn nhóm `question`, `study`, `practice`, `feedback`, sau đợt tái cấu trúc package Phase 6). Module cuối cùng của trục Bounded Context theo
 > `06-plan/260912-1055-bd-rollout-order.md`. **Độc lập hoàn toàn với luồng nộp bài** — không đọc
 > `02-bd/architecture/F3_harness.md` hay `02-bd/architecture/F4_judge-orchestration.md`, không cần chờ hai
 > module đó xong [SoT: `.nexa/control/dependency-map.md` dòng 103, bảng thứ tự triển khai — `interview-bank`
@@ -29,6 +29,26 @@ Module Maven `algoprep-interview-bank`, schema PostgreSQL `interview_bank`
 - `presentation` — REST controller (danh sách/lọc/bookmark/chế độ học/chế độ luyện/tiến độ, actor A1;
   CRUD ngân hàng câu hỏi, actor A2/A3; sửa 2026-10-22: bỏ "bộ câu hỏi"). Hợp đồng API cụ thể để ở
   `03-dd/api/F6_interview-bank.md`, không lặp lại ở đây.
+
+### 1.1. Quy ước gom nhóm package theo tính năng
+
+Thư mục `domain/model` của `algoprep-interview-bank` có 34 file nên được gom thành bốn package con theo tính năng (Bảng 1.1). Việc gom chỉ là di chuyển file, không đổi logic và không đổi ranh giới module Maven. Quy ước chung và ví dụ đầy đủ nằm ở `02-bd/architecture/F5_ai-review.md` mục 1.1.
+
+Bảng 1.1: Nhóm tính năng dùng để chia package `domain/model` trong `algoprep-interview-bank`.
+
+| Nhóm | Nội dung |
+| :--- | :--- |
+| `question` | Quản trị ngân hàng câu hỏi: bản nháp, dòng và trang danh sách phía quản trị, tiêu chí lọc, sắp xếp (`AdminQuestion`, `QuestionDraft`, `QuestionListCriteria`, `QuestionSort`...) |
+| `study` | Chế độ học và theo dõi tiến độ: câu hỏi phía học viên, tự chấm mức thuộc bài, tiến độ theo chủ đề (`LearnerQuestion`, `RecallRating`, `RecallState`, `TopicProgress`...) |
+| `practice` | Chế độ luyện: lượt trả lời, chính sách luyện, khóa câu hỏi, danh mục phía học viên (`AnswerAttempt`, `PracticePolicy`, `QuestionLock`, `LearnerCategory`...) |
+| `feedback` | Phản hồi AI cho câu trả lời luyện tập: yêu cầu, kết quả, tiêu chí, trạng thái (`Feedback`, `FeedbackRequest`, `FeedbackResult`...) |
+
+Quy tắc áp dụng:
+
+- Chỉ `domain/model` được gom (hơn khoảng 30 file). Các thư mục khác (`application/**`, `domain/ports/out`, `infrastructure/**`, `presentation/**`) còn nhỏ nên giữ phẳng; nếu sau này một thư mục vượt khoảng 30 file thì dùng đúng tên nhóm trên ở tầng đó.
+- Kiểu dùng chung nhiều nhóm (`RubricCriterion`, `QuestionSearch`, `CatalogItem`, `CatalogKind`, `CatalogSlug`, `GateTicket`, `InterviewAuditEntry`) ở lại package cha `domain/model`.
+- Không giữ file `package-info.java` trong module này.
+- Class chỉ dùng trong một nhóm giữ quyền truy cập package-private; class phải `public` vì nhiều nhóm dùng chung thì ở lại package cha.
 
 Hạ tầng phụ thuộc: PostgreSQL · **Redis** (rate-limit gọi AI của Chế độ luyện, cùng vai trò với
 `ai-review` nhưng namespace key riêng) · **Spring AI** chỉ cho phản hồi Chế độ luyện (F6-08)

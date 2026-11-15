@@ -71,6 +71,34 @@ Hạ tầng phụ thuộc: PostgreSQL + **MinIO/S3** (bộ testcase lớn) + Red
 [SoT: `.nexa/control/dependency-map.md` mục 2]. Vì có MinIO, `02-bd/storage/F2_problem-bank.md` **bắt buộc
 phải tồn tại** — khác `identity`.
 
+### 1.1. Quy ước gom nhóm package theo tính năng
+
+Bốn thư mục của `algoprep-problem-bank` có quá nhiều file (`application/ports/in` 53, `domain/model` 42, `application/command` 39, `application/dto` 34) nên được gom thành package con theo tính năng (Bảng 1.1). Việc gom chỉ là di chuyển file, không đổi logic và không đổi ranh giới module Maven.
+
+Bảng 1.1: Nhóm tính năng dùng để chia package trong `algoprep-problem-bank`.
+
+| Nhóm | Nội dung | Ví dụ class (theo tầng) |
+| :--- | :--- | :--- |
+| `assignment` | Giao bài cho lớp, lịch sử bài giao, xử lý `ClassDeleted` | `ports.in`: `ManageClassAssignmentsUseCase`, `ApplyClassDeletedUseCase`; `command`: `ClassAssignmentCommandHandler`, `ApplyClassDeletedCommandHandler`; `dto`: `ClassAssignmentViews`; `model`: `ClassAssignmentSnapshot` |
+| `bulk` | Thao tác hàng loạt trên bài, xuất CSV | `ports.in`: `BulkProblemActionsUseCase`, `ExportProblemsCsvUseCase`; `command`: `BulkProblemCommandHandler`; `dto`: `BulkProblemActionResult`, `ExportedCsv` |
+| `catalog` | Danh mục độ khó và chủ đề (F2-02) | `ports.in`: `CreateProblemLevelUseCase`, `DeleteProblemTopicUseCase`; `command`: `CatalogMutationService`, `CreateProblemLevelCommandHandler`; `dto`: `CatalogCommand`; `model`: `CatalogItem`, `CatalogSlug` |
+| `generation` | Sinh testcase bằng AI, ngữ cảnh soạn bài cho AI, cấu hình sinh | `ports.in`: `GenerateTestcasesUseCase`, `AiGenerationSettingsUseCase`; `command`: `GenerateTestcasesCommandHandler`, `GeneratedTestcaseWriter`; `dto`: `TestcaseGeneration`; `model`: `TestcaseGenerationRun` |
+| `grading` | Cổng đọc cho F4 (đặc tả chấm, Sample, snapshot ghim) và nhận kết quả nộp bài | `ports.in`: `ReadProblemGradingSpecUseCase`, `ApplySubmissionGradedUseCase`; `command`: `ApplySubmissionGradedCommandHandler`; `dto`: `JudgeGradingDefaults`; `model`: `GradingSpecification`, `ProblemContextView` |
+| `outbox` | Relay và dọn outbox sự kiện của F2 | `ports.in`: `RelayProblemOutboxUseCase`, `CleanProblemOutboxUseCase`; `command`: `RelayProblemOutboxCommandHandler`; `model`: `OutboxEvent` |
+| `problem` | Vòng đời bài: tạo, soạn nội dung, đặc tả, nhân bản, danh sách soạn | `ports.in`: `CreateProblemUseCase`, `ListAuthoringProblemsUseCase`; `command`: `CreateProblemCommandHandler`, `SaveProblemContentCommandHandler`, `ProblemDuplicator`; `dto`: `CreateProblemCommand`, `AuthoringDefaults`; `model`: `ProblemCode`, `ProblemContentData` |
+| `snapshot` | Công bố và đọc snapshot testcase, đổi trạng thái xuất bản | `ports.in`: `PublishTestcaseSnapshotUseCase`, `UpdateProblemPublishStatusUseCase`; `command`: `PublishGate`, `PublishTestcaseSnapshotCommandHandler`; `dto`: `SnapshotPublicationResult`; `model`: `SnapshotMetadata`, `TestcaseSnapshot` |
+| `stats` | Thống kê ngân hàng bài, danh sách cần chú ý, phân bố chủ đề | `ports.in`: `GetProblemStatsUseCase`, `GetAttentionListUseCase`; `dto`: `ProblemStatsView`; `model`: `ApprovalCounts`, `AttentionCount` |
+| `student` | Phía học viên: catalogue đã xuất bản, gợi ý bài, bookmark | `ports.in`: `StudentCatalogUseCase`, `MyBookmarksUseCase`, `SuggestedProblemsUseCase`; `command`: `MyBookmarksHandler`; `dto`: `StudentCatalogViews`; `model`: `StudentCatalogModels` |
+| `testcase` | Soạn testcase thủ công và tải lên hàng loạt | `ports.in`: `AuthorTestcasesUseCase`, `BulkTestcaseUploadUseCase`; `command`: `BulkTestcaseUploadCommandHandler`; `dto`: `TestcaseCommands`; `model`: `TestcaseDescriptor` |
+
+Quy tắc áp dụng:
+
+- Chỉ thư mục có hơn khoảng 30 file mới được gom: `application/ports/in`, `application/command`, `application/dto`, `domain/model`. Các thư mục nhỏ (`application/query`, `application/policy`, `domain/ports/out`, `domain/exception`, `infrastructure/persistence`, `presentation/controller`) giữ phẳng.
+- Cùng một tên nhóm dùng ở mọi tầng, để cổng vào `application.ports.in.snapshot` khớp handler `application.command.snapshot` và model `domain.model.snapshot`. Nhóm không có class ở tầng nào thì không tạo thư mục ở tầng đó (ví dụ `bulk` không có `domain/model`).
+- Kiểu dùng chung nhiều nhóm ở lại package cha của tầng và là `public`: `domain/model` gồm `AuthoringProblemRecord`, `CatalogAuditEntry`, `ProblemContentSnapshot`, `ProblemTouch`, `StoredGradingTestcase`, `StoredTestcase`, `TestcaseData`; `application/command` gồm `AuthorTestcasesCommandHandler`, `ProblemContentValidation`, `StatusChangeRecorder`, `TestcaseAuthoringSupport`, `TestcaseContentStore`; `application/dto` gồm `AuthoringScope`, `ProblemAuthoringView`, `ReferenceSolutionRun`.
+- Không giữ file `package-info.java` trong module này.
+- Class chỉ dùng trong một nhóm giữ quyền truy cập package-private.
+
 ## 2. Phạm vi nghiệp vụ module này bao trùm
 
 Đọc từ `01-rd/req/F2_problem-bank.md` (F2-01 → F2-17):
@@ -227,3 +255,10 @@ ClassDeleted đã có consumer `ClassDeletedListener` → `ApplyClassDeletedComm
 Cache decorator @Primary bọc reader JDBC/cổng trạng thái F1: list/summary TTL60 dùng `problem.catalog_cache_epoch` đọc từ DB; epoch tăng cùng transaction mutation, Redis version mirror sau commit. Status-filter đọc origin, solve-state riêng userId; Redis lỗi/payload sai cấu trúc đọc nguồn. Không cache quyền. Các ghi chú “chưa có cache” ở các lát lịch sử không còn mô tả runtime hiện hành.
 
 Relay F2 đã có JOB-PB-01/02; V2.004 xoay vòng retry qua last_attempted_at, không để batch tin unroutable chặn event chưa thử. GET #57 /authoring/defaults đọc bốn scalar an toàn qua cổng F4 và settings F2; không tạo phụ thuộc frontend vào cấu hình quản trị.
+
+
+## Lịch sử sửa đổi
+
+| Ngày | Nội dung | Nguồn |
+| :--- | :--- | :--- |
+| 2026-11-15 | Thêm mục 1.1: quy ước gom nhóm package theo tính năng (11 nhóm), class `public` dùng chung ở lại package cha, bỏ `package-info.java`; cập nhật đường dẫn gói sau khi gom thư mục con | owner duyệt Phase 6, `06-plan/261114-1645-sonarqube-clear-coverage-90.md` |

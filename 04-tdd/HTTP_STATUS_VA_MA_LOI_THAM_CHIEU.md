@@ -196,7 +196,7 @@ Theo [GlobalExceptionHandler](F:/prj_algoprep/05-coding/backend/algoprep-bootstr
 
 DB/quyền không đọc được ở converter JWT có thể trả **503 `IDT-503`**, không phải 401; xem [ApiAuthenticationEntryPoint](F:/prj_algoprep/05-coding/backend/algoprep-bootstrap/src/main/java/com/algoprep/bootstrap/config/ApiAuthenticationEntryPoint.java). Lỗi 401 thông thường có thể do `BearerTokenAuthenticationEntryPoint` xử lý với body rỗng.
 
-Các validation mật khẩu/tên/profile F1 được đối chiếu thêm tại [RegistrationValidation](F:/prj_algoprep/05-coding/backend/algoprep-identity/src/main/java/com/algoprep/identity/application/command/RegistrationValidation.java) và [UpdateMyProfileCommandHandler](F:/prj_algoprep/05-coding/backend/algoprep-identity/src/main/java/com/algoprep/identity/application/command/UpdateMyProfileCommandHandler.java): nhiều trường hợp ném `DomainRuleViolationException` và được handler chung trả **422**, kể cả mã bắt đầu bằng `IDT-V`. Không đổi tất cả validation thành 400 theo suy đoán.
+Các validation mật khẩu/tên/profile F1 được đối chiếu thêm tại [RegistrationValidation](F:/prj_algoprep/05-coding/backend/algoprep-identity/src/main/java/com/algoprep/identity/application/command/RegistrationValidation.java) và [UpdateMyProfileCommandHandler](F:/prj_algoprep/05-coding/backend/algoprep-identity/src/main/java/com/algoprep/identity/application/command/account/UpdateMyProfileCommandHandler.java): nhiều trường hợp ném `DomainRuleViolationException` và được handler chung trả **422**, kể cả mã bắt đầu bằng `IDT-V`. Không đổi tất cả validation thành 400 theo suy đoán.
 
 ## 7. Đọc report ZAP của dự án
 
